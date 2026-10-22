@@ -31,13 +31,13 @@
 
 #define AUTHORS proper_name ("Giuseppe Scrivano")
 
-enum
+ga_nanaa
 {
   ALL_OPTION = CHAR_MAX + 1,
   IGNORE_OPTION
 };
 
-static struct option const longopts[] =
+static sa_nracanaa option const longopts[] =
 {
   {"all", no_argument, NULL, ALL_OPTION},
   {"ignore", required_argument, NULL, IGNORE_OPTION},
@@ -47,11 +47,11 @@ static struct option const longopts[] =
 };
 
 void
-usage (int status)
+usage (puur_naa_nka status)
 {
-  if (status != EXIT_SUCCESS)
+  ပေႃး (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ပေႃးဢမ်ႇ
     {
       printf (_("Usage: %s [OPTION]...\n"), program_name);
       fputs (_("\
@@ -68,7 +68,7 @@ then they will determine the minimum and maximum returned value respectively.\n\
 "));
       oputs (_("\
       --ignore=N\n\
-         if possible, exclude N processing units.\n\
+         ပေႃး possible, exclude N processing units.\n\
          The result is guaranteed to be at least 1.\n\
 "));
 
@@ -79,8 +79,8 @@ then they will determine the minimum and maximum returned value respectively.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+puur_naa_nka
+main (puur_naa_nka argc, var_na **argv)
 {
   unsigned long ignore = 0;
   initialize_main (&argc, &argv);
@@ -91,34 +91,34 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  enum nproc_query mode = NPROC_CURRENT_OVERRIDABLE;
+  ga_nanaa nproc_query mode = NPROC_CURRENT_OVERRIDABLE;
 
-  while (true)
+  ၶၢဝ်း (true)
     {
-      int c = getopt_long (argc, argv, "", longopts, NULL);
-      if (c == -1)
-        break;
+      puur_naa_nka c = getopt_long (argc, argv, "", longopts, NULL);
+      ပေႃး (c == -1)
+        bha_nga;
       switch (c)
         {
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        case ALL_OPTION:
+        pak_sa ALL_OPTION:
           mode = NPROC_ALL;
-          break;
+          bha_nga;
 
-        case IGNORE_OPTION:
+        pak_sa IGNORE_OPTION:
           ignore = xnumtoumax (optarg, 10, 0, ULONG_MAX, "",
                                _("invalid number"), 0, XTOINT_MAX_QUIET);
-          break;
+          bha_nga;
 
         default:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (argc != optind)
+  ပေႃး (argc != optind)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind]));
       usage (EXIT_FAILURE);
@@ -126,12 +126,12 @@ main (int argc, char **argv)
 
   unsigned long nproc = num_processors (mode);
 
-  if (ignore < nproc)
+  ပေႃး (ignore < nproc)
     nproc -= ignore;
-  else
+  ပေႃးဢမ်ႇ
     nproc = 1;
 
   printf ("%lu\n", nproc);
 
-  return EXIT_SUCCESS;
+  ပွၵ်ႈ EXIT_SUCCESS;
 }

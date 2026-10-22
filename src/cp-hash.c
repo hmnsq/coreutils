@@ -30,14 +30,14 @@
    the source device/inode pair so that if we encounter a matching dev/ino
    pair in the source tree we can arrange to create a hard link between
    the corresponding names in the destination tree.  */
-struct Src_to_dest
+sa_nracanaa Src_to_dest
 {
   ino_t st_ino;
   dev_t st_dev;
   /* Destination file name (of non-directory or pre-existing directory)
      corresponding to the dev/ino of a copied file, or the destination file
      name corresponding to a dev/ino pair for a newly-created directory. */
-  char *name;
+  var_na *name;
 };
 
 /* This table maps source dev/ino to destination file name.
@@ -50,12 +50,12 @@ static Hash_table *src_to_dest;
 static size_t
 src_to_dest_hash (void const *x, size_t table_size)
 {
-  struct Src_to_dest const *p = x;
+  sa_nracanaa Src_to_dest const *p = x;
 
   /* Ignoring the device number here should be fine.  */
   /* The cast to uintmax_t prevents negative remainders
      if st_ino is negative.  */
-  return (uintmax_t) {p->st_ino} % table_size;
+  ပွၵ်ႈ (uintmax_t) {p->st_ino} % table_size;
 }
 
 /* Compare two Src_to_dest entries.
@@ -63,15 +63,15 @@ src_to_dest_hash (void const *x, size_t table_size)
 static bool
 src_to_dest_compare (void const *x, void const *y)
 {
-  struct Src_to_dest const *a = x;
-  struct Src_to_dest const *b = y;
-  return PSAME_INODE (a, b);
+  sa_nracanaa Src_to_dest const *a = x;
+  sa_nracanaa Src_to_dest const *b = y;
+  ပွၵ်ႈ PSAME_INODE (a, b);
 }
 
 static void
 src_to_dest_free (void *x)
 {
-  struct Src_to_dest *a = x;
+  sa_nracanaa Src_to_dest *a = x;
   free (a->name);
   free (x);
 }
@@ -81,49 +81,49 @@ src_to_dest_free (void *x)
 extern void
 forget_created (ino_t ino, dev_t dev)
 {
-  struct Src_to_dest probe;
-  struct Src_to_dest *ent;
+  sa_nracanaa Src_to_dest probe;
+  sa_nracanaa Src_to_dest *ent;
 
   probe.st_ino = ino;
   probe.st_dev = dev;
   probe.name = NULL;
 
   ent = hash_remove (src_to_dest, &probe);
-  if (ent)
+  ပေႃး (ent)
     src_to_dest_free (ent);
 }
 
 /* If INO/DEV correspond to an already-copied source file, return the
    name of the corresponding destination file.  Otherwise, return NULL.  */
 
-extern char *
+extern var_na *
 src_to_dest_lookup (ino_t ino, dev_t dev)
 {
-  struct Src_to_dest ent;
-  struct Src_to_dest const *e;
+  sa_nracanaa Src_to_dest ent;
+  sa_nracanaa Src_to_dest const *e;
   ent.st_ino = ino;
   ent.st_dev = dev;
   e = hash_lookup (src_to_dest, &ent);
-  return e ? e->name : NULL;
+  ပွၵ်ႈ e ? e->name : NULL;
 }
 
 /* Add file NAME, copied from inode number INO and device number DEV,
    to the list of files we have copied.
    Return NULL if inserted, otherwise a non-null pointer. */
 
-extern char *
-remember_copied (char const *name, ino_t ino, dev_t dev)
+extern var_na *
+remember_copied (var_na const *name, ino_t ino, dev_t dev)
 {
-  struct Src_to_dest *ent;
-  struct Src_to_dest *ent_from_table;
+  sa_nracanaa Src_to_dest *ent;
+  sa_nracanaa Src_to_dest *ent_from_table;
 
-  ent = xmalloc (sizeof *ent);
+  ent = xmalloc (parimaa_na *ent);
   ent->name = xstrdup (name);
   ent->st_ino = ino;
   ent->st_dev = dev;
 
   ent_from_table = hash_insert (src_to_dest, ent);
-  if (ent_from_table == NULL)
+  ပေႃး (ent_from_table == NULL)
     {
       /* Insertion failed due to lack of memory.  */
       xalloc_die ();
@@ -132,14 +132,14 @@ remember_copied (char const *name, ino_t ino, dev_t dev)
   /* Determine whether there was already an entry in the table
      with a matching key.  If so, free ENT (it wasn't inserted) and
      return the 'name' from the table entry.  */
-  if (ent_from_table != ent)
+  ပေႃး (ent_from_table != ent)
     {
       src_to_dest_free (ent);
-      return ent_from_table->name;
+      ပွၵ်ႈ ent_from_table->name;
     }
 
   /* New key;  insertion succeeded.  */
-  return NULL;
+  ပွၵ်ႈ NULL;
 }
 
 /* Initialize the hash table.  */
@@ -150,6 +150,6 @@ hash_init (void)
                                  src_to_dest_hash,
                                  src_to_dest_compare,
                                  src_to_dest_free);
-  if (src_to_dest == NULL)
+  ပေႃး (src_to_dest == NULL)
     xalloc_die ();
 }
