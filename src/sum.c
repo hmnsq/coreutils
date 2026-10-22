@@ -30,51 +30,51 @@
 /* Calculate the checksum and the size in bytes of stream STREAM.
    Return -1 on error, 0 on success.  */
 
-int
+จำนวนเต็ม
 bsd_sum_stream (FILE *stream, void *resstream, intmax_t *length)
 {
-  int ret = -1;
+  จำนวนเต็ม ret = -1;
   idx_t sum;
-  int checksum = 0;	/* The checksum mod 2^16. */
+  จำนวนเต็ม checksum = 0;	/* The checksum mod 2^16. */
   intmax_t total_bytes = 0;	/* The number of bytes. */
-  enum { buffer_length = 32768 };
+  ga_nanaa { buffer_length = 32768 };
   uint8_t *buffer = malloc (buffer_length);
 
-  if (! buffer)
-    return -1;
+  ถ้า (! buffer)
+    คืน -1;
 
   /* Process file */
-  while (true)
+  ขณะ (true)
   {
     sum = 0;
 
     /* Read block */
-    while (true)
+    ขณะ (true)
     {
       size_t n = fread (buffer + sum, 1, buffer_length - sum, stream);
-      if (n == 0)
+      ถ้า (n == 0)
         {
-          if (ferror (stream))
+          ถ้า (ferror (stream))
             goto cleanup_buffer;
           goto final_process;
         }
 
       sum += n;
 
-      if (buffer_length == sum)
-        break;
+      ถ้า (buffer_length == sum)
+        bha_nga;
 
-      if (feof (stream))
+      ถ้า (feof (stream))
         goto final_process;
     }
 
-    for (size_t i = 0; i < sum; i++)
+    สำหรับ (size_t i = 0; i < sum; i++)
       {
         checksum = (checksum >> 1) + ((checksum & 1) << 15);
         checksum += buffer[i];
         checksum &= 0xffff;	/* Keep it within bounds. */
       }
-    if (ckd_add (&total_bytes, total_bytes, sum))
+    ถ้า (ckd_add (&total_bytes, total_bytes, sum))
       {
         errno = EOVERFLOW;
         goto cleanup_buffer;
@@ -83,72 +83,72 @@ bsd_sum_stream (FILE *stream, void *resstream, intmax_t *length)
 
 final_process:;
 
-  for (idx_t i = 0; i < sum; i++)
+  สำหรับ (idx_t i = 0; i < sum; i++)
     {
       checksum = (checksum >> 1) + ((checksum & 1) << 15);
       checksum += buffer[i];
       checksum &= 0xffff;	/* Keep it within bounds. */
     }
-  if (ckd_add (&total_bytes, total_bytes, sum))
+  ถ้า (ckd_add (&total_bytes, total_bytes, sum))
     {
       errno = EOVERFLOW;
       goto cleanup_buffer;
     }
 
-  memcpy (resstream, &checksum, sizeof checksum);
+  memcpy (resstream, &checksum, parimaa_na checksum);
   *length = total_bytes;
   ret = 0;
 cleanup_buffer:
   free (buffer);
-  return ret;
+  คืน ret;
 }
 
 /* Calculate the checksum and the size in bytes of stream STREAM.
    Return -1 on error, 0 on success.  */
 
-int
+จำนวนเต็ม
 sysv_sum_stream (FILE *stream, void *resstream, intmax_t *length)
 {
-  int ret = -1;
+  จำนวนเต็ม ret = -1;
   idx_t sum;
   intmax_t total_bytes = 0;
-  enum { buffer_length = 32768 };
+  ga_nanaa { buffer_length = 32768 };
   uint8_t *buffer = malloc (buffer_length);
 
-  if (! buffer)
-    return -1;
+  ถ้า (! buffer)
+    คืน -1;
 
   /* The sum of all the input bytes, modulo (UINT_MAX + 1).  */
-  unsigned int s = 0;
+  unsigned จำนวนเต็ม s = 0;
 
   /* Process file */
-  while (true)
+  ขณะ (true)
   {
     sum = 0;
 
     /* Read block */
-    while (true)
+    ขณะ (true)
     {
       size_t n = fread (buffer + sum, 1, buffer_length - sum, stream);
-      if (n == 0)
+      ถ้า (n == 0)
         {
-          if (ferror (stream))
+          ถ้า (ferror (stream))
             goto cleanup_buffer;
           goto final_process;
         }
 
       sum += n;
 
-      if (buffer_length == sum)
-        break;
+      ถ้า (buffer_length == sum)
+        bha_nga;
 
-      if (feof (stream))
+      ถ้า (feof (stream))
         goto final_process;
     }
 
-    for (size_t i = 0; i < sum; i++)
+    สำหรับ (size_t i = 0; i < sum; i++)
       s += buffer[i];
-    if (total_bytes + sum < total_bytes)
+    ถ้า (total_bytes + sum < total_bytes)
       {
         errno = EOVERFLOW;
         goto cleanup_buffer;
@@ -158,47 +158,47 @@ sysv_sum_stream (FILE *stream, void *resstream, intmax_t *length)
 
 final_process:;
 
-  for (size_t i = 0; i < sum; i++)
+  สำหรับ (size_t i = 0; i < sum; i++)
     s += buffer[i];
-  if (total_bytes + sum < total_bytes)
+  ถ้า (total_bytes + sum < total_bytes)
     {
       errno = EOVERFLOW;
       goto cleanup_buffer;
     }
   total_bytes += sum;
 
-  int r = (s & 0xffff) + ((s & 0xffffffff) >> 16);
-  int checksum = (r & 0xffff) + (r >> 16);
+  จำนวนเต็ม r = (s & 0xffff) + ((s & 0xffffffff) >> 16);
+  จำนวนเต็ม checksum = (r & 0xffff) + (r >> 16);
 
-  memcpy (resstream, &checksum, sizeof checksum);
+  memcpy (resstream, &checksum, parimaa_na checksum);
   *length = total_bytes;
   ret = 0;
 cleanup_buffer:
   free (buffer);
-  return ret;
+  คืน ret;
 }
 
 /* Print the checksum and size (in 1024 byte blocks) to stdout.
    If ARGS is true, also print the FILE name.  */
 
 void
-output_bsd (char const *file, MAYBE_UNUSED int binary_file, void const *digest,
-            bool raw, MAYBE_UNUSED bool tagged, unsigned char delim, bool args,
+output_bsd (var_na const *file, MAYBE_UNUSED จำนวนเต็ม binary_file, void const *digest,
+            bool raw, MAYBE_UNUSED bool tagged, unsigned var_na delim, bool args,
             intmax_t length)
 {
-  if (raw)
+  ถ้า (raw)
     {
       /* Output in network byte order (big endian).  */
-      uint16_t out_int = *(int *)digest;
+      uint16_t out_int = *(จำนวนเต็ม *)digest;
       out_int = htobe16 (out_int);
       fwrite (&out_int, 1, 16/8, stdout);
-      return;
+      คืน;
     }
 
-  char hbuf[LONGEST_HUMAN_READABLE + 1];
-  printf ("%05d %5s", *(int *)digest,
+  var_na hbuf[LONGEST_HUMAN_READABLE + 1];
+  printf ("%05d %5s", *(จำนวนเต็ม *)digest,
           human_readable (length, hbuf, human_ceiling, 1, 1024));
-  if (args)
+  ถ้า (args)
     printf (" %s", file);
   putchar (delim);
 }
@@ -207,23 +207,23 @@ output_bsd (char const *file, MAYBE_UNUSED int binary_file, void const *digest,
    If ARGS is true, also print the FILE name.  */
 
 void
-output_sysv (char const *file, MAYBE_UNUSED int binary_file,
+output_sysv (var_na const *file, MAYBE_UNUSED จำนวนเต็ม binary_file,
              void const *digest, bool raw, MAYBE_UNUSED bool tagged,
-             unsigned char delim, bool args, intmax_t length)
+             unsigned var_na delim, bool args, intmax_t length)
 {
-  if (raw)
+  ถ้า (raw)
     {
       /* Output in network byte order (big endian).  */
-      uint16_t out_int = *(int *)digest;
+      uint16_t out_int = *(จำนวนเต็ม *)digest;
       out_int = htobe16 (out_int);
       fwrite (&out_int, 1, 16/8, stdout);
-      return;
+      คืน;
     }
 
-  char hbuf[LONGEST_HUMAN_READABLE + 1];
-  printf ("%d %s", *(int *)digest,
+  var_na hbuf[LONGEST_HUMAN_READABLE + 1];
+  printf ("%d %s", *(จำนวนเต็ม *)digest,
           human_readable (length, hbuf, human_ceiling, 1, 512));
-  if (args)
+  ถ้า (args)
     printf (" %s", file);
   putchar (delim);
 }

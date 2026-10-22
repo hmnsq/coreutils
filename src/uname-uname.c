@@ -1,2 +1,2 @@
 #include "uname.h"
-enum uname_modes uname_mode = UNAME_UNAME;
+ga_nanaa uname_modes uname_mode = UNAME_UNAME;

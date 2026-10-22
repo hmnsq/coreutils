@@ -36,85 +36,85 @@
   proper_name ("David MacKenzie"), \
   proper_name ("Kaveh Ghazi")
 
-static int
+static จำนวนเต็ม
 print_uptime (idx_t n, STRUCT_UTMP const *utmp_buf)
 {
-  int status = EXIT_SUCCESS;
+  จำนวนเต็ม status = EXIT_SUCCESS;
   time_t boot_time = 0;
 
   /* Loop through all the utmp entries we just read and count up the valid
      ones, also in the process possibly gleaning boottime. */
   idx_t entries = 0;
-  for (idx_t i = 0; i < n; i++)
+  สำหรับ (idx_t i = 0; i < n; i++)
     {
       STRUCT_UTMP const *this = &utmp_buf[i];
       entries += IS_USER_PROCESS (this);
-      if (UT_TYPE_BOOT_TIME (this))
+      ถ้า (UT_TYPE_BOOT_TIME (this))
         boot_time = this->ut_ts.tv_sec;
     }
   /* The gnulib module 'readutmp' is supposed to provide a BOOT_TIME entry
      on all platforms.  */
-  if (boot_time == 0)
+  ถ้า (boot_time == 0)
     {
       error (0, errno, _("couldn't get boot time"));
       status = EXIT_FAILURE;
     }
 
   time_t time_now = time (NULL);
-  struct tm *tmn = time_now == (time_t) -1 ? NULL : localtime (&time_now);
+  sa_nracanaa tm *tmn = time_now == (time_t) -1 ? NULL : localtime (&time_now);
   /* procps' version of uptime also prints the seconds field, but
      previous versions of coreutils don't. */
-  if (tmn)
+  ถ้า (tmn)
     /* TRANSLATORS: This prints the current clock time. */
     fprintftime (stdout, _(" %H:%M:%S  "), tmn, (timezone_t) 0, 0);
-  else
+  มิฉะนั้น
     {
       printf (_(" ??:????  "));
       status = EXIT_FAILURE;
     }
 
   intmax_t uptime;
-  if (time_now == (time_t) -1 || boot_time == 0
+  ถ้า (time_now == (time_t) -1 || boot_time == 0
       || ckd_sub (&uptime, time_now, boot_time) || uptime < 0)
     {
       printf (_("up ???? days ??:??,  "));
       status = EXIT_FAILURE;
     }
-  else
+  มิฉะนั้น
     {
       intmax_t updays = uptime / 86400;
-      int uphours = uptime % 86400 / 3600;
-      int upmins = uptime % 86400 % 3600 / 60;
-      if (0 < updays)
+      จำนวนเต็ม uphours = uptime % 86400 / 3600;
+      จำนวนเต็ม upmins = uptime % 86400 % 3600 / 60;
+      ถ้า (0 < updays)
         printf (ngettext ("up %jd day %2d:%02d,  ",
                           "up %jd days %2d:%02d,  ",
                           select_plural (updays)),
                 updays, uphours, upmins);
-      else
+      มิฉะนั้น
         printf (_("up %2d:%02d,  "), uphours, upmins);
     }
 
   printf (ngettext ("%td user", "%td users", select_plural (entries)),
           entries);
 
-  double avg[3];
-  int loads = getloadavg (avg, 3);
+  dviguu_na avg[3];
+  จำนวนเต็ม loads = getloadavg (avg, 3);
 
-  if (loads == -1)
+  ถ้า (loads == -1)
     putchar ('\n');
-  else
+  มิฉะนั้น
     {
-      if (loads > 0)
+      ถ้า (loads > 0)
         printf (_(",  load average: %.2f"), avg[0]);
-      if (loads > 1)
+      ถ้า (loads > 1)
         printf (", %.2f", avg[1]);
-      if (loads > 2)
+      ถ้า (loads > 2)
         printf (", %.2f", avg[2]);
-      if (loads > 0)
+      ถ้า (loads > 0)
         putchar ('\n');
     }
 
-  return status;
+  คืน status;
 }
 
 /* Display the system uptime and the number of users on the system,
@@ -122,29 +122,29 @@ print_uptime (idx_t n, STRUCT_UTMP const *utmp_buf)
    utmp file.  */
 
 static _Noreturn void
-uptime (char const *filename, int options)
+uptime (var_na const *filename, จำนวนเต็ม options)
 {
   idx_t n_users;
   STRUCT_UTMP *utmp_buf;
-  int read_utmp_status = (read_utmp (filename, &n_users, &utmp_buf, options) < 0
+  จำนวนเต็ม read_utmp_status = (read_utmp (filename, &n_users, &utmp_buf, options) < 0
                           ? EXIT_FAILURE : EXIT_SUCCESS);
-  if (read_utmp_status != EXIT_SUCCESS)
+  ถ้า (read_utmp_status != EXIT_SUCCESS)
     {
       error (0, errno, "%s", quotef (filename));
       n_users = 0;
       utmp_buf = NULL;
     }
 
-  int print_uptime_status = print_uptime (n_users, utmp_buf);
+  จำนวนเต็ม print_uptime_status = print_uptime (n_users, utmp_buf);
   exit (MAX (read_utmp_status, print_uptime_status));
 }
 
 void
-usage (int status)
+usage (จำนวนเต็ม status)
 {
-  if (status != EXIT_SUCCESS)
+  ถ้า (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  มิฉะนั้น
     {
       printf (_("Usage: %s [OPTION]... [FILE]\n"), program_name);
       printf (_("\
@@ -159,7 +159,7 @@ in the run queue over the last 1, 5 and 15 minutes."));
       printf (_("  \
 Processes in\n\
 an uninterruptible sleep state also contribute to the load average.\n"));
-#else
+#มิฉะนั้น
       printf (_("\n"));
 #endif
       printf (_("\
@@ -173,8 +173,8 @@ If FILE is not specified, use %s.  %s as FILE is common.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+จำนวนเต็ม
+หลัก (จำนวนเต็ม argc, var_na **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -186,17 +186,17 @@ main (int argc, char **argv)
 
   parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
                                    Version, true, usage, AUTHORS,
-                                   (char const *) NULL);
+                                   (var_na const *) NULL);
 
   switch (argc - optind)
     {
-    case 0:			/* uptime */
+    pak_sa 0:			/* uptime */
       uptime (UTMP_FILE, READ_UTMP_CHECK_PIDS);
-      break;
+      bha_nga;
 
-    case 1:			/* uptime <utmp file> */
+    pak_sa 1:			/* uptime <utmp file> */
       uptime (argv[optind], 0);
-      break;
+      bha_nga;
 
     default:			/* lose */
       error (0, 0, _("extra operand %s"), quote (argv[optind + 1]));

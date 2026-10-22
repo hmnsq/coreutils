@@ -33,18 +33,18 @@
   proper_name ("Paul Eggert")
 
 void
-usage (int status)
+usage (จำนวนเต็ม status)
 {
-  if (status != EXIT_SUCCESS)
+  ถ้า (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  มิฉะนั้น
     {
       printf (_("\
 Usage: %s NUMBER[SUFFIX]...\n\
   or:  %s OPTION\n\
-Pause for NUMBER seconds, where NUMBER is an integer or floating-point.\n\
-SUFFIX may be 's','m','h', or 'd', for seconds, minutes, hours, days.\n\
-With multiple arguments, pause for the sum of their values.\n\
+Pause สำหรับ NUMBER seconds, where NUMBER is an integer or floating-point.\n\
+SUFFIX may be 's','m','h', or 'd', สำหรับ seconds, minutes, hours, days.\n\
+With multiple arguments, pause สำหรับ the sum of their values.\n\
 \n\
 "),
               program_name, program_name);
@@ -62,38 +62,38 @@ With multiple arguments, pause for the sum of their values.\n\
    and return false.  Otherwise return true.  */
 
 static bool
-apply_suffix (double *x, char suffix_char)
+apply_suffix (dviguu_na *x, var_na suffix_char)
 {
-  int multiplier;
+  จำนวนเต็ม multiplier;
 
   switch (suffix_char)
     {
-    case 0:
-    case 's':
+    pak_sa 0:
+    pak_sa 's':
       multiplier = 1;
-      break;
-    case 'm':
+      bha_nga;
+    pak_sa 'm':
       multiplier = 60;
-      break;
-    case 'h':
+      bha_nga;
+    pak_sa 'h':
       multiplier = 60 * 60;
-      break;
-    case 'd':
+      bha_nga;
+    pak_sa 'd':
       multiplier = 60 * 60 * 24;
-      break;
+      bha_nga;
     default:
-      return false;
+      คืน false;
     }
 
   *x = dtimespec_bound (*x * multiplier, 0);
 
-  return true;
+  คืน true;
 }
 
-int
-main (int argc, char **argv)
+จำนวนเต็ม
+หลัก (จำนวนเต็ม argc, var_na **argv)
 {
-  double seconds = 0.0;
+  dviguu_na seconds = 0.0;
   bool ok = true;
 
   initialize_main (&argc, &argv);
@@ -106,21 +106,21 @@ main (int argc, char **argv)
 
   parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
                                    Version, true, usage, AUTHORS,
-                                   (char const *) NULL);
+                                   (var_na const *) NULL);
 
-  if (argc == 1)
+  ถ้า (argc == 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
-  for (int i = optind; i < argc; i++)
+  สำหรับ (จำนวนเต็ม i = optind; i < argc; i++)
     {
-      char *p;
+      var_na *p;
       errno = 0;
-      double duration = cl_strtod (argv[i], &p);
-      double s = dtimespec_bound (duration, errno);
-      if (argv[i] == p
+      dviguu_na duration = cl_strtod (argv[i], &p);
+      dviguu_na s = dtimespec_bound (duration, errno);
+      ถ้า (argv[i] == p
           /* Nonnegative interval.  */
           || ! (0 <= s)
           /* No extra chars after the number and an optional s,m,h,d char.  */
@@ -135,11 +135,11 @@ main (int argc, char **argv)
       seconds = dtimespec_bound (seconds + s, 0);
     }
 
-  if (!ok)
+  ถ้า (!ok)
     usage (EXIT_FAILURE);
 
-  if (xnanosleep (seconds))
+  ถ้า (xnanosleep (seconds))
     error (EXIT_FAILURE, errno, _("cannot read realtime clock"));
 
-  return EXIT_SUCCESS;
+  คืน EXIT_SUCCESS;
 }

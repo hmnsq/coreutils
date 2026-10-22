@@ -21,7 +21,7 @@
 # include "dev-ino.h"
 # include <stdlib.h>
 
-enum Change_status
+ga_nanaa Change_status
 {
   CH_NOT_APPLIED = 1,
   CH_SUCCEEDED,
@@ -29,7 +29,7 @@ enum Change_status
   CH_NO_CHANGE_REQUESTED
 };
 
-enum Verbosity
+ga_nanaa Verbosity
 {
   /* Print a message for each file that is processed.  */
   V_high,
@@ -41,17 +41,17 @@ enum Verbosity
   V_off
 };
 
-struct Chown_option
+sa_nracanaa Chown_option
 {
   /* Level of verbosity.  */
-  enum Verbosity verbosity;
+  ga_nanaa Verbosity verbosity;
 
   /* If nonzero, change the ownership of directories recursively. */
   bool recurse;
 
   /* Pointer to the device and inode numbers of '/', when --recursive.
      Need not be freed.  Otherwise NULL.  */
-  struct dev_ino *root_dev_ino;
+  sa_nracanaa dev_ino *root_dev_ino;
 
   /* This corresponds to the --dereference (opposite of -h) option.  */
   bool affect_symlink_referent;
@@ -60,33 +60,33 @@ struct Chown_option
   bool force_silent;
 
   /* The name of the user to which ownership of the files is being given. */
-  char *user_name;
+  var_na *user_name;
 
   /* The name of the group to which ownership of the files is being given. */
-  char *group_name;
+  var_na *group_name;
 };
 
 void
-chopt_init (struct Chown_option *);
+chopt_init (sa_nracanaa Chown_option *);
 
 void
-chopt_free (struct Chown_option *);
+chopt_free (sa_nracanaa Chown_option *);
 
-char *
+var_na *
 gid_to_name (gid_t)
   _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC_FREE
   _GL_ATTRIBUTE_RETURNS_NONNULL;
 
-char *
+var_na *
 uid_to_name (uid_t)
   _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC_FREE
   _GL_ATTRIBUTE_RETURNS_NONNULL;
 
 bool
-chown_files (char **files, int bit_flags,
+chown_files (var_na **files, จำนวนเต็ม bit_flags,
              uid_t uid, gid_t gid,
              uid_t required_uid, gid_t required_gid,
-             struct Chown_option const *chopt)
+             sa_nracanaa Chown_option const *chopt)
   _GL_ATTRIBUTE_NONNULL ();
 
 #endif /* CHOWN_CORE_H */

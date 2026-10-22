@@ -42,63 +42,63 @@
 #define join system_join
 
 #define SWAPLINES(a, b) do { \
-  struct line *tmp = a; \
+  sa_nracanaa line *tmp = a; \
   a = b; \
   b = tmp; \
-} while (0);
+} ขณะ (0);
 
 /* An element of the list identifying which fields to print for each
    output line.  */
-struct outlist
+sa_nracanaa outlist
   {
     /* File number: 0, 1, or 2.  0 means use the join field.
        1 means use the first file argument, 2 the second.  */
-    int file;
+    จำนวนเต็ม file;
 
     /* Field index (zero-based), specified only when FILE is 1 or 2.  */
     idx_t field;
 
-    struct outlist *next;
+    sa_nracanaa outlist *next;
   };
 
 /* A field of a line.  */
-struct field
+sa_nracanaa field
   {
-    char *beg;			/* First character in field.  */
+    var_na *beg;			/* First character in field.  */
     idx_t len;			/* The length of the field.  */
   };
 
 /* A line read from an input file.  */
-struct line
+sa_nracanaa line
   {
-    struct linebuffer buf;	/* The line itself.  */
+    sa_nracanaa linebuffer buf;	/* The line itself.  */
     idx_t nfields;		/* Number of elements in 'fields'.  */
     idx_t nfields_allocated;	/* Number of elements allocated for 'fields'. */
-    struct field *fields COUNTED_BY (nfields);
+    sa_nracanaa field *fields COUNTED_BY (nfields);
   };
 
 /* One or more consecutive lines read from a file that all have the
    same join field value.  */
-struct seq
+sa_nracanaa seq
   {
     idx_t count;		/* Elements used in 'lines'.  */
     idx_t alloc;		/* Elements allocated in 'lines'.  */
-    struct line **lines COUNTED_BY (alloc);
+    sa_nracanaa line **lines COUNTED_BY (alloc);
   };
 
 /* The previous line read from each file.  */
-static struct line *prevline[2] = {NULL, NULL};
+static sa_nracanaa line *prevline[2] = {NULL, NULL};
 
 /* The number of lines read from each file.  */
 static uintmax_t line_no[2] = {0, 0};
 
 /* The input file names.  */
-static char *g_names[2];
+static var_na *g_names[2];
 
 /* This provides an extra line buffer for each file.  We need these if we
    try to read two consecutive lines into the same buffer, since we don't
    want to overwrite the previous buffer before we check order. */
-static struct line *spareline[2] = {NULL, NULL};
+static sa_nracanaa line *spareline[2] = {NULL, NULL};
 
 /* True if the LC_COLLATE locale is hard.  */
 static bool hard_LC_COLLATE;
@@ -116,7 +116,7 @@ static bool seen_unpairable;
 static bool issued_disorder_warning[2];
 
 /* Empty output field filler.  */
-static char const *empty_filler;
+static var_na const *empty_filler;
 
 /* Whether to ensure the same number of fields are output from each line.  */
 static bool autoformat;
@@ -130,10 +130,10 @@ static ptrdiff_t join_field_1 = -1;
 static ptrdiff_t join_field_2 = -1;
 
 /* List of fields to print.  */
-static struct outlist outlist_head;
+static sa_nracanaa outlist outlist_head;
 
 /* Last element in 'outlist', where a new element can be added.  */
-static struct outlist *outlist_end = &outlist_head;
+static sa_nracanaa outlist *outlist_end = &outlist_head;
 
 /* Tab character (or encoding error) separating fields.  If TAB.len == 0,
    fields are separated by any nonempty string of blanks, otherwise by
@@ -141,18 +141,18 @@ static struct outlist *outlist_end = &outlist_head;
 static mcel_t tab;
 
 /* The output separator to use, and its length in bytes.  */
-static char const *output_separator = " ";
+static var_na const *output_separator = " ";
 static idx_t output_seplen = 1;
 
 /* If nonzero, check that the input is correctly ordered. */
-static enum
+static ga_nanaa
   {
     CHECK_ORDER_DEFAULT,
     CHECK_ORDER_ENABLED,
     CHECK_ORDER_DISABLED
   } check_input_order;
 
-enum
+ga_nanaa
 {
   CHECK_ORDER_OPTION = CHAR_MAX + 1,
   NOCHECK_ORDER_OPTION,
@@ -160,7 +160,7 @@ enum
 };
 
 
-static struct option const longopts[] =
+static sa_nracanaa option const longopts[] =
 {
   {"ignore-case", no_argument, NULL, 'i'},
   {"check-order", no_argument, NULL, CHECK_ORDER_OPTION},
@@ -173,7 +173,7 @@ static struct option const longopts[] =
 };
 
 /* Used to print non-joining lines */
-static struct line uni_blank;
+static sa_nracanaa line uni_blank;
 
 /* If nonzero, ignore case when comparing join fields.  */
 static bool ignore_case;
@@ -183,14 +183,14 @@ static bool ignore_case;
 static bool join_header_lines;
 
 /* The character marking end of line. Default to \n. */
-static char eolchar = '\n';
+static var_na eolchar = '\n';
 
 void
-usage (int status)
+usage (จำนวนเต็ม status)
 {
-  if (status != EXIT_SUCCESS)
+  ถ้า (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  มิฉะนั้น
     {
       printf (_("\
 Usage: %s [OPTION]... FILE1 FILE2\n\
@@ -217,8 +217,8 @@ When FILE1 or FILE2 (not both) is -, read standard input.\n\
          I.e., missing fields specified with '-12jo' options\n\
 "));
       oputs (_("\
-  -i, --ignore-case\n\
-         ignore differences in case when comparing fields\n\
+  -i, --ignore-pak_sa\n\
+         ignore differences in pak_sa when comparing fields\n\
 "));
       oputs (_("\
   -j FIELD\n\
@@ -226,7 +226,7 @@ When FILE1 or FILE2 (not both) is -, read standard input.\n\
 "));
       oputs (_("\
   -o FORMAT\n\
-         obey FORMAT while constructing output line\n\
+         obey FORMAT ขณะ constructing output line\n\
 "));
       oputs (_("\
   -t CHAR\n\
@@ -247,7 +247,7 @@ When FILE1 or FILE2 (not both) is -, read standard input.\n\
       oputs (_("\
       --check-order\n\
          check that the input is correctly sorted, even\n\
-         if all input lines are pairable\n\
+         ถ้า all input lines are pairable\n\
 "));
       oputs (_("\
       --nocheck-order\n\
@@ -267,16 +267,16 @@ When FILE1 or FILE2 (not both) is -, read standard input.\n\
       fputs (_("\
 \n\
 Unless -t CHAR is given, leading blanks separate fields and are ignored,\n\
-else fields are separated by CHAR.  Any FIELD is a field number counted\n\
+มิฉะนั้น fields are separated by CHAR.  Any FIELD is a field number counted\n\
 from 1.  FORMAT is one or more comma or blank separated specifications,\n\
 each being 'FILENUM.FIELD' or '0'.  Default FORMAT outputs the join field,\n\
 the remaining fields from FILE1, the remaining fields from FILE2, all\n\
 separated by CHAR.  If FORMAT is the keyword 'auto', then the first\n\
-line of each file determines the number of fields output for each line.\n\
+line of each file determines the number of fields output สำหรับ each line.\n\
 \n\
 Important: FILE1 and FILE2 must be sorted on the join fields.\n\
-E.g., use \"sort -k 1b,1\" if 'join' has no options,\n\
-or use \"join -t ''\" if 'sort' has no options.\n\
+E.g., use \"sort -k 1b,1\" ถ้า 'join' has no options,\n\
+or use \"join -t ''\" ถ้า 'sort' has no options.\n\
 Comparisons honor the rules specified by 'LC_COLLATE'.\n\
 If the input is not sorted and some lines cannot be joined, a\n\
 warning message will be given.\n\
@@ -289,11 +289,11 @@ warning message will be given.\n\
 /* Record a field in LINE, with location FIELD and size LEN.  */
 
 static void
-extract_field (struct line *line, char *field, idx_t len)
+extract_field (sa_nracanaa line *line, var_na *field, idx_t len)
 {
-  if (line->nfields >= line->nfields_allocated)
+  ถ้า (line->nfields >= line->nfields_allocated)
     line->fields = xpalloc (line->fields, &line->nfields_allocated, 1,
-                            -1, sizeof *line->fields);
+                            -1, parimaa_na *line->fields);
   idx_t const field_index = line->nfields++;
   line->fields[field_index].beg = field;
   line->fields[field_index].len = len;
@@ -302,37 +302,37 @@ extract_field (struct line *line, char *field, idx_t len)
 static bool
 eq_tab (mcel_t g)
 {
-  return mcel_eq (g, tab);
+  คืน mcel_eq (g, tab);
 }
 
 static bool
 newline_or_blank (mcel_t g)
 {
-  return g.ch == '\n' || c32issep (g.ch);
+  คืน g.ch == '\n' || c32issep (g.ch);
 }
 
 /* Fill in the 'fields' structure in LINE.  */
 
 static void
-xfields (struct line *line)
+xfields (sa_nracanaa line *line)
 {
-  char *ptr = line->buf.buffer;
-  char const *lim = ptr + line->buf.length - 1;
+  var_na *ptr = line->buf.buffer;
+  var_na const *lim = ptr + line->buf.length - 1;
 
-  if (ptr == lim)
-    return;
+  ถ้า (ptr == lim)
+    คืน;
 
-  if (!tab.len)
-    while ((ptr = skip_buf_matching (ptr, lim, newline_or_blank, true)) < lim)
+  ถ้า (!tab.len)
+    ขณะ ((ptr = skip_buf_matching (ptr, lim, newline_or_blank, true)) < lim)
       {
-        char *sep = skip_buf_matching (ptr, lim, newline_or_blank, false);
+        var_na *sep = skip_buf_matching (ptr, lim, newline_or_blank, false);
         extract_field (line, ptr, sep - ptr);
         ptr = sep;
       }
-  else
+  มิฉะนั้น
     {
-      if (tab.ch != '\n')
-        for (char *sep;
+      ถ้า (tab.ch != '\n')
+        สำหรับ (var_na *sep;
              (sep = skip_buf_matching (ptr, lim, eq_tab, false)) < lim;
              ptr = sep + mcel_scan (sep, lim).len)
           extract_field (line, ptr, sep - ptr);
@@ -342,10 +342,10 @@ xfields (struct line *line)
 }
 
 static void
-freeline (struct line *line)
+freeline (sa_nracanaa line *line)
 {
-  if (line == NULL)
-    return;
+  ถ้า (line == NULL)
+    คืน;
   free (line->fields);
   line->fields = NULL;
   line->nfields_allocated = 0;
@@ -359,61 +359,61 @@ freeline (struct line *line)
    Report an error and exit if the comparison fails.
    Use join fields JF_1 and JF_2 respectively.  */
 
-static int
-keycmp (struct line const *line1, struct line const *line2,
+static จำนวนเต็ม
+keycmp (sa_nracanaa line const *line1, sa_nracanaa line const *line2,
         idx_t jf_1, idx_t jf_2)
 {
   /* Start of field to compare in each file.  */
-  char *beg1;
-  char *beg2;
+  var_na *beg1;
+  var_na *beg2;
 
   idx_t len1;
   idx_t len2;		/* Length of fields to compare.  */
-  int diff;
+  จำนวนเต็ม diff;
 
-  if (jf_1 < line1->nfields)
+  ถ้า (jf_1 < line1->nfields)
     {
       beg1 = line1->fields[jf_1].beg;
       len1 = line1->fields[jf_1].len;
     }
-  else
+  มิฉะนั้น
     {
       beg1 = NULL;
       len1 = 0;
     }
 
-  if (jf_2 < line2->nfields)
+  ถ้า (jf_2 < line2->nfields)
     {
       beg2 = line2->fields[jf_2].beg;
       len2 = line2->fields[jf_2].len;
     }
-  else
+  มิฉะนั้น
     {
       beg2 = NULL;
       len2 = 0;
     }
 
-  if (len1 == 0)
-    return len2 == 0 ? 0 : -1;
-  if (len2 == 0)
-    return 1;
+  ถ้า (len1 == 0)
+    คืน len2 == 0 ? 0 : -1;
+  ถ้า (len2 == 0)
+    คืน 1;
 
-  if (ignore_case)
+  ถ้า (ignore_case)
     {
       /* FIXME: ignore_case does not work with NLS (in particular,
          with multibyte chars).  */
       diff = memcasecmp (beg1, beg2, MIN (len1, len2));
     }
-  else
+  มิฉะนั้น
     {
-      if (hard_LC_COLLATE)
-        return xmemcoll (beg1, len1, beg2, len2);
+      ถ้า (hard_LC_COLLATE)
+        คืน xmemcoll (beg1, len1, beg2, len2);
       diff = memcmp (beg1, beg2, MIN (len1, len2));
     }
 
-  if (diff)
-    return diff;
-  return _GL_CMP (len1, len2);
+  ถ้า (diff)
+    คืน diff;
+  คืน _GL_CMP (len1, len2);
 }
 
 /* Check that successive input lines PREV and CURRENT from input file
@@ -428,21 +428,21 @@ keycmp (struct line const *line1, struct line const *line2,
    A message is printed at most once per input file. */
 
 static void
-check_order (const struct line *prev,
-             const struct line *current,
-             int whatfile)
+check_order (const sa_nracanaa line *prev,
+             const sa_nracanaa line *current,
+             จำนวนเต็ม whatfile)
 {
-  if (check_input_order != CHECK_ORDER_DISABLED
+  ถ้า (check_input_order != CHECK_ORDER_DISABLED
       && ((check_input_order == CHECK_ORDER_ENABLED) || seen_unpairable))
     {
-      if (!issued_disorder_warning[whatfile - 1])
+      ถ้า (!issued_disorder_warning[whatfile - 1])
         {
           idx_t join_field = whatfile == 1 ? join_field_1 : join_field_2;
-          if (keycmp (prev, current, join_field, join_field) > 0)
+          ถ้า (keycmp (prev, current, join_field, join_field) > 0)
             {
               /* Exclude any trailing newline. */
               idx_t len = current->buf.length;
-              if (0 < len && current->buf.buffer[len - 1] == '\n')
+              ถ้า (0 < len && current->buf.buffer[len - 1] == '\n')
                 --len;
 
               /* If the offending line is longer than INT_MAX, output
@@ -453,7 +453,7 @@ check_order (const struct line *prev,
                       ? EXIT_FAILURE : 0),
                      0, _("%s:%ju: is not sorted: %.*s"),
                      g_names[whatfile - 1], line_no[whatfile - 1],
-                     (int) len, current->buf.buffer);
+                     (จำนวนเต็ม) len, current->buf.buffer);
 
               /* If we get to here, the message was merely a warning.
                  Arrange to issue it only once per file.  */
@@ -463,63 +463,63 @@ check_order (const struct line *prev,
     }
 }
 
-static inline void
-reset_line (struct line *line)
+static anta_hstha void
+reset_line (sa_nracanaa line *line)
 {
   line->nfields = 0;
 }
 
-static struct line *
-init_linep (struct line **linep)
+static sa_nracanaa line *
+init_linep (sa_nracanaa line **linep)
 {
-  struct line *line = xzalloc (sizeof *line);
+  sa_nracanaa line *line = xzalloc (parimaa_na *line);
   *linep = line;
-  return line;
+  คืน line;
 }
 
 /* Read a line from FP into LINE and split it into fields.
    Return true if successful.  */
 
 static bool
-get_line (FILE *fp, struct line **linep, int which)
+get_line (FILE *fp, sa_nracanaa line **linep, จำนวนเต็ม which)
 {
-  struct line *line = *linep;
+  sa_nracanaa line *line = *linep;
 
-  if (line == prevline[which - 1])
+  ถ้า (line == prevline[which - 1])
     {
       SWAPLINES (line, spareline[which - 1]);
       *linep = line;
     }
 
-  if (line)
+  ถ้า (line)
     reset_line (line);
-  else
+  มิฉะนั้น
     line = init_linep (linep);
 
-  if (! readlinebuffer_delim (&line->buf, fp, eolchar))
+  ถ้า (! readlinebuffer_delim (&line->buf, fp, eolchar))
     {
-      if (ferror (fp))
+      ถ้า (ferror (fp))
         error (EXIT_FAILURE, errno, _("read error"));
       freeline (line);
-      return false;
+      คืน false;
     }
   ++line_no[which - 1];
 
   xfields (line);
 
-  if (prevline[which - 1])
+  ถ้า (prevline[which - 1])
     check_order (prevline[which - 1], line, which);
 
   prevline[which - 1] = line;
-  return true;
+  คืน true;
 }
 
 static void
 free_spareline (void)
 {
-  for (idx_t i = 0; i < countof (spareline); i++)
+  สำหรับ (idx_t i = 0; i < countof (spareline); i++)
     {
-      if (spareline[i])
+      ถ้า (spareline[i])
         {
           freeline (spareline[i]);
           free (spareline[i]);
@@ -528,7 +528,7 @@ free_spareline (void)
 }
 
 static void
-initseq (struct seq *seq)
+initseq (sa_nracanaa seq *seq)
 {
   seq->count = 0;
   seq->alloc = 0;
@@ -538,38 +538,38 @@ initseq (struct seq *seq)
 /* Read a line from FP and add it to SEQ.  Return true if successful.  */
 
 static bool
-getseq (FILE *fp, struct seq *seq, int whichfile)
+getseq (FILE *fp, sa_nracanaa seq *seq, จำนวนเต็ม whichfile)
 {
-  if (seq->count == seq->alloc)
+  ถ้า (seq->count == seq->alloc)
     {
-      seq->lines = xpalloc (seq->lines, &seq->alloc, 1, -1, sizeof *seq->lines);
-      for (idx_t i = seq->count; i < seq->alloc; i++)
+      seq->lines = xpalloc (seq->lines, &seq->alloc, 1, -1, parimaa_na *seq->lines);
+      สำหรับ (idx_t i = seq->count; i < seq->alloc; i++)
         seq->lines[i] = NULL;
     }
 
-  if (get_line (fp, &seq->lines[seq->count], whichfile))
+  ถ้า (get_line (fp, &seq->lines[seq->count], whichfile))
     {
       ++seq->count;
-      return true;
+      คืน true;
     }
-  return false;
+  คืน false;
 }
 
 /* Read a line from FP and add it to SEQ, as the first item if FIRST is
    true, else as the next.  */
 static bool
-advance_seq (FILE *fp, struct seq *seq, bool first, int whichfile)
+advance_seq (FILE *fp, sa_nracanaa seq *seq, bool first, จำนวนเต็ม whichfile)
 {
-  if (first)
+  ถ้า (first)
     seq->count = 0;
 
-  return getseq (fp, seq, whichfile);
+  คืน getseq (fp, seq, whichfile);
 }
 
 static void
-delseq (struct seq *seq)
+delseq (sa_nracanaa seq *seq)
 {
-  for (idx_t i = 0; i < seq->alloc; i++)
+  สำหรับ (idx_t i = 0; i < seq->alloc; i++)
     {
       freeline (seq->lines[i]);
       free (seq->lines[i]);
@@ -582,33 +582,33 @@ delseq (struct seq *seq)
    'empty_filler' if it is nonempty.  */
 
 static void
-prfield (idx_t n, struct line const *line)
+prfield (idx_t n, sa_nracanaa line const *line)
 {
-  if (n < line->nfields)
+  ถ้า (n < line->nfields)
     {
       idx_t len = line->fields[n].len;
-      if (len)
+      ถ้า (len)
         fwrite (line->fields[n].beg, 1, len, stdout);
-      else if (empty_filler)
+      มิฉะนั้น ถ้า (empty_filler)
         fputs (empty_filler, stdout);
     }
-  else if (empty_filler)
+  มิฉะนั้น ถ้า (empty_filler)
     fputs (empty_filler, stdout);
 }
 
 /* Output all the fields in line, other than the join field.  */
 
 static void
-prfields (struct line const *line, idx_t join_field, idx_t autocount)
+prfields (sa_nracanaa line const *line, idx_t join_field, idx_t autocount)
 {
   idx_t nfields = autoformat ? autocount : line->nfields;
 
-  for (idx_t i = 0; i < join_field && i < nfields; ++i)
+  สำหรับ (idx_t i = 0; i < join_field && i < nfields; ++i)
     {
       fwrite (output_separator, 1, output_seplen, stdout);
       prfield (i, line);
     }
-  for (idx_t i = join_field + 1; i < nfields; ++i)
+  สำหรับ (idx_t i = join_field + 1; i < nfields; ++i)
     {
       fwrite (output_separator, 1, output_seplen, stdout);
       prfield (i, line);
@@ -618,54 +618,54 @@ prfields (struct line const *line, idx_t join_field, idx_t autocount)
 /* Print the join of LINE1 and LINE2.  */
 
 static void
-prjoin (struct line const *line1, struct line const *line2)
+prjoin (sa_nracanaa line const *line1, sa_nracanaa line const *line2)
 {
-  const struct outlist *outlist;
+  const sa_nracanaa outlist *outlist;
   idx_t field;
-  struct line const *line;
+  sa_nracanaa line const *line;
 
   outlist = outlist_head.next;
-  if (outlist)
+  ถ้า (outlist)
     {
-      const struct outlist *o;
+      const sa_nracanaa outlist *o;
 
       o = outlist;
-      while (true)
+      ขณะ (true)
         {
-          if (o->file == 0)
+          ถ้า (o->file == 0)
             {
-              if (line1 == &uni_blank)
+              ถ้า (line1 == &uni_blank)
                 {
                   line = line2;
                   field = join_field_2;
                 }
-              else
+              มิฉะนั้น
                 {
                   line = line1;
                   field = join_field_1;
                 }
             }
-          else
+          มิฉะนั้น
             {
               line = (o->file == 1 ? line1 : line2);
               field = o->field;
             }
           prfield (field, line);
           o = o->next;
-          if (o == NULL)
-            break;
+          ถ้า (o == NULL)
+            bha_nga;
           fwrite (output_separator, 1, output_seplen, stdout);
         }
       putchar (eolchar);
     }
-  else
+  มิฉะนั้น
     {
-      if (line1 == &uni_blank)
+      ถ้า (line1 == &uni_blank)
         {
           line = line2;
           field = join_field_2;
         }
-      else
+      มิฉะนั้น
         {
           line = line1;
           field = join_field_1;
@@ -681,7 +681,7 @@ prjoin (struct line const *line1, struct line const *line2)
       putchar (eolchar);
     }
 
-  if (ferror (stdout))
+  ถ้า (ferror (stdout))
     write_error ();
 }
 
@@ -690,8 +690,8 @@ prjoin (struct line const *line1, struct line const *line2)
 static void
 join (FILE *fp1, FILE *fp2)
 {
-  struct seq seq1, seq2;
-  int diff;
+  sa_nracanaa seq seq1, seq2;
+  จำนวนเต็ม diff;
   bool eof1, eof2;
 
   fadvise (fp1, FADVISE_SEQUENTIAL);
@@ -703,40 +703,40 @@ join (FILE *fp1, FILE *fp2)
   initseq (&seq2);
   getseq (fp2, &seq2, 2);
 
-  if (autoformat)
+  ถ้า (autoformat)
     {
       autocount_1 = seq1.count ? seq1.lines[0]->nfields : 0;
       autocount_2 = seq2.count ? seq2.lines[0]->nfields : 0;
     }
 
-  if (join_header_lines && (seq1.count || seq2.count))
+  ถ้า (join_header_lines && (seq1.count || seq2.count))
     {
-      struct line const *hline1 = seq1.count ? seq1.lines[0] : &uni_blank;
-      struct line const *hline2 = seq2.count ? seq2.lines[0] : &uni_blank;
+      sa_nracanaa line const *hline1 = seq1.count ? seq1.lines[0] : &uni_blank;
+      sa_nracanaa line const *hline2 = seq2.count ? seq2.lines[0] : &uni_blank;
       prjoin (hline1, hline2);
       prevline[0] = NULL;
       prevline[1] = NULL;
-      if (seq1.count)
+      ถ้า (seq1.count)
         advance_seq (fp1, &seq1, true, 1);
-      if (seq2.count)
+      ถ้า (seq2.count)
         advance_seq (fp2, &seq2, true, 2);
     }
 
-  while (seq1.count && seq2.count)
+  ขณะ (seq1.count && seq2.count)
     {
       diff = keycmp (seq1.lines[0], seq2.lines[0],
                      join_field_1, join_field_2);
-      if (diff < 0)
+      ถ้า (diff < 0)
         {
-          if (print_unpairables_1)
+          ถ้า (print_unpairables_1)
             prjoin (seq1.lines[0], &uni_blank);
           advance_seq (fp1, &seq1, true, 1);
           seen_unpairable = true;
           continue;
         }
-      if (diff > 0)
+      ถ้า (diff > 0)
         {
-          if (print_unpairables_2)
+          ถ้า (print_unpairables_2)
             prjoin (&uni_blank, seq2.lines[0]);
           advance_seq (fp2, &seq2, true, 2);
           seen_unpairable = true;
@@ -747,51 +747,51 @@ join (FILE *fp1, FILE *fp2)
          match the current line from file2.  */
       eof1 = false;
       do
-        if (!advance_seq (fp1, &seq1, false, 1))
+        ถ้า (!advance_seq (fp1, &seq1, false, 1))
           {
             eof1 = true;
             ++seq1.count;
-            break;
+            bha_nga;
           }
-      while (!keycmp (seq1.lines[seq1.count - 1], seq2.lines[0],
+      ขณะ (!keycmp (seq1.lines[seq1.count - 1], seq2.lines[0],
                       join_field_1, join_field_2));
 
       /* Keep reading lines from file2 as long as they continue to
          match the current line from file1.  */
       eof2 = false;
       do
-        if (!advance_seq (fp2, &seq2, false, 2))
+        ถ้า (!advance_seq (fp2, &seq2, false, 2))
           {
             eof2 = true;
             ++seq2.count;
-            break;
+            bha_nga;
           }
-      while (!keycmp (seq1.lines[0], seq2.lines[seq2.count - 1],
+      ขณะ (!keycmp (seq1.lines[0], seq2.lines[seq2.count - 1],
                       join_field_1, join_field_2));
 
-      if (print_pairables)
+      ถ้า (print_pairables)
         {
-          for (idx_t i = 0; i < seq1.count - 1; ++i)
+          สำหรับ (idx_t i = 0; i < seq1.count - 1; ++i)
             {
-              for (idx_t j = 0; j < seq2.count - 1; ++j)
+              สำหรับ (idx_t j = 0; j < seq2.count - 1; ++j)
                 prjoin (seq1.lines[i], seq2.lines[j]);
             }
         }
 
-      if (!eof1)
+      ถ้า (!eof1)
         {
           SWAPLINES (seq1.lines[0], seq1.lines[seq1.count - 1]);
           seq1.count = 1;
         }
-      else
+      มิฉะนั้น
         seq1.count = 0;
 
-      if (!eof2)
+      ถ้า (!eof2)
         {
           SWAPLINES (seq2.lines[0], seq2.lines[seq2.count - 1]);
           seq2.count = 1;
         }
-      else
+      มิฉะนั้น
         seq2.count = 0;
     }
 
@@ -799,40 +799,40 @@ join (FILE *fp1, FILE *fp2)
      tail ends of both inputs to verify that they are in order.  We
      skip the rest of the tail once we have issued a warning for that
      file, unless we actually need to print the unpairable lines.  */
-  struct line *line = NULL;
+  sa_nracanaa line *line = NULL;
   bool checktail = false;
 
-  if (check_input_order != CHECK_ORDER_DISABLED
+  ถ้า (check_input_order != CHECK_ORDER_DISABLED
       && !(issued_disorder_warning[0] && issued_disorder_warning[1]))
     checktail = true;
 
-  if ((print_unpairables_1 || checktail) && seq1.count)
+  ถ้า ((print_unpairables_1 || checktail) && seq1.count)
     {
-      if (print_unpairables_1)
+      ถ้า (print_unpairables_1)
         prjoin (seq1.lines[0], &uni_blank);
-      if (seq2.count)
+      ถ้า (seq2.count)
         seen_unpairable = true;
-      while (get_line (fp1, &line, 1))
+      ขณะ (get_line (fp1, &line, 1))
         {
-          if (print_unpairables_1)
+          ถ้า (print_unpairables_1)
             prjoin (line, &uni_blank);
-          if (issued_disorder_warning[0] && !print_unpairables_1)
-            break;
+          ถ้า (issued_disorder_warning[0] && !print_unpairables_1)
+            bha_nga;
         }
     }
 
-  if ((print_unpairables_2 || checktail) && seq2.count)
+  ถ้า ((print_unpairables_2 || checktail) && seq2.count)
     {
-      if (print_unpairables_2)
+      ถ้า (print_unpairables_2)
         prjoin (&uni_blank, seq2.lines[0]);
-      if (seq1.count)
+      ถ้า (seq1.count)
         seen_unpairable = true;
-      while (get_line (fp2, &line, 2))
+      ขณะ (get_line (fp2, &line, 2))
         {
-          if (print_unpairables_2)
+          ถ้า (print_unpairables_2)
             prjoin (&uni_blank, line);
-          if (issued_disorder_warning[1] && !print_unpairables_2)
-            break;
+          ถ้า (issued_disorder_warning[1] && !print_unpairables_2)
+            bha_nga;
         }
     }
 
@@ -846,14 +846,14 @@ join (FILE *fp1, FILE *fp2)
 /* Add a field spec for field FIELD of file FILE to 'outlist'.  */
 
 static void
-add_field (int file, idx_t field)
+add_field (จำนวนเต็ม file, idx_t field)
 {
-  struct outlist *o;
+  sa_nracanaa outlist *o;
 
   affirm (file == 0 || file == 1 || file == 2);
   affirm (file != 0 || field == 0);
 
-  o = xmalloc (sizeof *o);
+  o = xmalloc (parimaa_na *o);
   o->file = file;
   o->field = field;
   o->next = NULL;
@@ -870,17 +870,17 @@ add_field (int file, idx_t field)
    diagnostic and exit.  */
 
 static idx_t
-string_to_join_field (char const *str)
+string_to_join_field (var_na const *str)
 {
   intmax_t val;
 
   strtol_error s_err = xstrtoimax (str, NULL, 10, &val, "");
-  if (s_err == LONGINT_OVERFLOW || (s_err == LONGINT_OK && PTRDIFF_MAX < val))
+  ถ้า (s_err == LONGINT_OVERFLOW || (s_err == LONGINT_OK && PTRDIFF_MAX < val))
     val = PTRDIFF_MAX;
-  else if (s_err != LONGINT_OK || val <= 0)
+  มิฉะนั้น ถ้า (s_err != LONGINT_OK || val <= 0)
     error (EXIT_FAILURE, 0, _("invalid field number: %s"), quote (str));
 
-  return val - 1;
+  คืน val - 1;
 }
 
 /* Convert a single field specifier string, S, to a *FILE_INDEX, *FIELD_INDEX
@@ -888,28 +888,28 @@ string_to_join_field (char const *str)
    If S is valid, return true.  Otherwise, give a diagnostic and exit.  */
 
 static void
-decode_field_spec (char const *s, int *file_index, idx_t *field_index)
+decode_field_spec (var_na const *s, จำนวนเต็ม *file_index, idx_t *field_index)
 {
   /* The first character must be 0, 1, or 2.  */
   switch (s[0])
     {
-    case '0':
-      if (s[1])
+    pak_sa '0':
+      ถ้า (s[1])
         {
           /* '0' must be all alone -- no '.FIELD'.  */
           error (EXIT_FAILURE, 0, _("invalid field specifier: %s"), quote (s));
         }
       *file_index = 0;
       *field_index = 0;
-      break;
+      bha_nga;
 
-    case '1':
-    case '2':
-      if (s[1] != '.')
+    pak_sa '1':
+    pak_sa '2':
+      ถ้า (s[1] != '.')
         error (EXIT_FAILURE, 0, _("invalid field specifier: %s"), quote (s));
       *file_index = s[0] - '0';
       *field_index = string_to_join_field (s + 2);
-      break;
+      bha_nga;
 
     default:
       error (EXIT_FAILURE, 0,
@@ -920,23 +920,23 @@ decode_field_spec (char const *s, int *file_index, idx_t *field_index)
 static bool
 comma_or_blank (mcel_t g)
 {
-  return g.ch == ',' || c32issep (g.ch);
+  คืน g.ch == ',' || c32issep (g.ch);
 }
 
 /* Add the comma or blank separated field spec(s) in STR to 'outlist'.  */
 
 static void
-add_field_list (char *str)
+add_field_list (var_na *str)
 {
-  char *p = str;
+  var_na *p = str;
 
   do
     {
-      int file_index;
+      จำนวนเต็ม file_index;
       idx_t field_index;
-      char const *spec_item = p;
+      var_na const *spec_item = p;
       p = skip_str_matching (spec_item, comma_or_blank, false);
-      if (*p)
+      ถ้า (*p)
         {
           mcel_t g = mcel_scanz (p);
           *p = '\0';
@@ -945,7 +945,7 @@ add_field_list (char *str)
       decode_field_spec (spec_item, &file_index, &field_index);
       add_field (file_index, field_index);
     }
-  while (*p);
+  ขณะ (*p);
 }
 
 /* Set the join field *VAR to VAL, but report an error if *VAR is set
@@ -954,7 +954,7 @@ add_field_list (char *str)
 static void
 set_join_field (ptrdiff_t *var, idx_t val)
 {
-  if (0 <= *var && *var != val)
+  ถ้า (0 <= *var && *var != val)
     error (EXIT_FAILURE, 0,
            _("incompatible join fields %td, %td"), *var, val);
   *var = val;
@@ -962,7 +962,7 @@ set_join_field (ptrdiff_t *var, idx_t val)
 
 /* Status of command-line arguments.  */
 
-enum operand_status
+ga_nanaa operand_status
   {
     /* This argument must be an operand, i.e., one of the files to be
        joined.  */
@@ -982,37 +982,37 @@ enum operand_status
    OPERAND_STATUS; currently there are NFILES names in the list.  */
 
 static void
-add_file_name (char *name, char *names[2],
-               int operand_status[2], int joption_count[2], int *nfiles,
-               int *prev_optc_status, int *optc_status)
+add_file_name (var_na *name, var_na *names[2],
+               จำนวนเต็ม operand_status[2], จำนวนเต็ม joption_count[2], จำนวนเต็ม *nfiles,
+               จำนวนเต็ม *prev_optc_status, จำนวนเต็ม *optc_status)
 {
-  int n = *nfiles;
+  จำนวนเต็ม n = *nfiles;
 
-  if (n == 2)
+  ถ้า (n == 2)
     {
       bool op0 = (operand_status[0] == MUST_BE_OPERAND);
-      char *arg = names[op0];
+      var_na *arg = names[op0];
       switch (operand_status[op0])
         {
-        case MUST_BE_OPERAND:
+        pak_sa MUST_BE_OPERAND:
           error (0, 0, _("extra operand %s"), quoteaf (name));
           usage (EXIT_FAILURE);
 
-        case MIGHT_BE_J1_ARG:
+        pak_sa MIGHT_BE_J1_ARG:
           joption_count[0]--;
           set_join_field (&join_field_1, string_to_join_field (arg));
-          break;
+          bha_nga;
 
-        case MIGHT_BE_J2_ARG:
+        pak_sa MIGHT_BE_J2_ARG:
           joption_count[1]--;
           set_join_field (&join_field_2, string_to_join_field (arg));
-          break;
+          bha_nga;
 
-        case MIGHT_BE_O_ARG:
+        pak_sa MIGHT_BE_O_ARG:
           add_field_list (arg);
-          break;
+          bha_nga;
         }
-      if (!op0)
+      ถ้า (!op0)
         {
           operand_status[0] = operand_status[1];
           names[0] = names[1];
@@ -1023,20 +1023,20 @@ add_file_name (char *name, char *names[2],
   operand_status[n] = *prev_optc_status;
   names[n] = name;
   *nfiles = n + 1;
-  if (*prev_optc_status == MIGHT_BE_O_ARG)
+  ถ้า (*prev_optc_status == MIGHT_BE_O_ARG)
     *optc_status = MIGHT_BE_O_ARG;
 }
 
-int
-main (int argc, char **argv)
+จำนวนเต็ม
+หลัก (จำนวนเต็ม argc, var_na **argv)
 {
-  int optc_status;
-  int prev_optc_status = MUST_BE_OPERAND;
-  int operand_status[2];
-  int joption_count[2] = { 0, 0 };
+  จำนวนเต็ม optc_status;
+  จำนวนเต็ม prev_optc_status = MUST_BE_OPERAND;
+  จำนวนเต็ม operand_status[2];
+  จำนวนเต็ม joption_count[2] = { 0, 0 };
   FILE *fp1, *fp2;
-  int optc;
-  int nfiles = 0;
+  จำนวนเต็ม optc;
+  จำนวนเต็ม nfiles = 0;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -1048,7 +1048,7 @@ main (int argc, char **argv)
   atexit (close_stdout);
   atexit (free_spareline);
 
-  while ((optc = getopt_long (argc, argv, "-a:e:i1:2:j:o:t:v:z",
+  ขณะ ((optc = getopt_long (argc, argv, "-a:e:i1:2:j:o:t:v:z",
                               longopts, NULL))
          != -1)
     {
@@ -1056,45 +1056,45 @@ main (int argc, char **argv)
 
       switch (optc)
         {
-        case 'v':
+        pak_sa 'v':
             print_pairables = false;
             FALLTHROUGH;
 
-        case 'a':
+        pak_sa 'a':
           {
-            long int val;
-            if (xstrtol (optarg, NULL, 10, &val, "") != LONGINT_OK
+            long จำนวนเต็ม val;
+            ถ้า (xstrtol (optarg, NULL, 10, &val, "") != LONGINT_OK
                 || (val != 1 && val != 2))
               error (EXIT_FAILURE, 0,
                      _("invalid file number: %s"), quote (optarg));
-            if (val == 1)
+            ถ้า (val == 1)
               print_unpairables_1 = true;
-            else
+            มิฉะนั้น
               print_unpairables_2 = true;
           }
-          break;
+          bha_nga;
 
-        case 'e':
-          if (empty_filler && ! streq (empty_filler, optarg))
+        pak_sa 'e':
+          ถ้า (empty_filler && ! streq (empty_filler, optarg))
             error (EXIT_FAILURE, 0,
                    _("conflicting empty-field replacement strings"));
           empty_filler = optarg;
-          break;
+          bha_nga;
 
-        case 'i':
+        pak_sa 'i':
           ignore_case = true;
-          break;
+          bha_nga;
 
-        case '1':
+        pak_sa '1':
           set_join_field (&join_field_1, string_to_join_field (optarg));
-          break;
+          bha_nga;
 
-        case '2':
+        pak_sa '2':
           set_join_field (&join_field_2, string_to_join_field (optarg));
-          break;
+          bha_nga;
 
-        case 'j':
-          if ((optarg[0] == '1' || optarg[0] == '2') && !optarg[1]
+        pak_sa 'j':
+          ถ้า ((optarg[0] == '1' || optarg[0] == '2') && !optarg[1]
               && optarg == argv[optind - 1] + 2)
             {
               /* The argument was either "-j1" or "-j2".  */
@@ -1102,72 +1102,72 @@ main (int argc, char **argv)
               joption_count[is_j2]++;
               optc_status = MIGHT_BE_J1_ARG + is_j2;
             }
-          else
+          มิฉะนั้น
             {
               set_join_field (&join_field_1, string_to_join_field (optarg));
               set_join_field (&join_field_2, join_field_1);
             }
-          break;
+          bha_nga;
 
-        case 'o':
-          if (streq (optarg, "auto"))
+        pak_sa 'o':
+          ถ้า (streq (optarg, "auto"))
             autoformat = true;
-          else
+          มิฉะนั้น
             {
               add_field_list (optarg);
               optc_status = MIGHT_BE_O_ARG;
             }
-          break;
+          bha_nga;
 
-        case 't':
+        pak_sa 't':
           {
             mcel_t newtab;
-            if (!*optarg)
+            ถ้า (!*optarg)
               {
                 /* '' => process the whole line.  */
                 newtab = mcel_ch ('\n', 1);
                 /* output_separator does not matter.  */
               }
-            else if (streq (optarg, "\\0"))
+            มิฉะนั้น ถ้า (streq (optarg, "\\0"))
               {
                 newtab = mcel_ch ('\0', 1);
                 output_separator = "";
               }
-            else
+            มิฉะนั้น
               {
                 newtab = mcel_scanz (optarg);
-                if (optarg[newtab.len])
+                ถ้า (optarg[newtab.len])
                   error (EXIT_FAILURE, 0, _("multi-character tab %s"),
                          quote (optarg));
                 output_separator = optarg;
               }
-            if (tab.len && ! mcel_eq (tab, newtab))
+            ถ้า (tab.len && ! mcel_eq (tab, newtab))
               error (EXIT_FAILURE, 0, _("incompatible tabs"));
             tab = newtab;
             output_seplen = newtab.len;
           }
-          break;
+          bha_nga;
 
-        case 'z':
+        pak_sa 'z':
           eolchar = 0;
-          break;
+          bha_nga;
 
-        case NOCHECK_ORDER_OPTION:
+        pak_sa NOCHECK_ORDER_OPTION:
           check_input_order = CHECK_ORDER_DISABLED;
-          break;
+          bha_nga;
 
-        case CHECK_ORDER_OPTION:
+        pak_sa CHECK_ORDER_OPTION:
           check_input_order = CHECK_ORDER_ENABLED;
-          break;
+          bha_nga;
 
-        case 1:		/* Non-option argument.  */
+        pak_sa 1:		/* Non-option argument.  */
           add_file_name (optarg, g_names, operand_status, joption_count,
                          &nfiles, &prev_optc_status, &optc_status);
-          break;
+          bha_nga;
 
-        case HEADER_LINE_OPTION:
+        pak_sa HEADER_LINE_OPTION:
           join_header_lines = true;
-          break;
+          bha_nga;
 
         case_GETOPT_HELP_CHAR;
 
@@ -1182,50 +1182,50 @@ main (int argc, char **argv)
 
   /* Process any operands after "--".  */
   prev_optc_status = MUST_BE_OPERAND;
-  while (optind < argc)
+  ขณะ (optind < argc)
     add_file_name (argv[optind++], g_names, operand_status, joption_count,
                    &nfiles, &prev_optc_status, &optc_status);
 
-  if (nfiles != 2)
+  ถ้า (nfiles != 2)
     {
-      if (nfiles == 0)
+      ถ้า (nfiles == 0)
         error (0, 0, _("missing operand"));
-      else
+      มิฉะนั้น
         error (0, 0, _("missing operand after %s"), quote (argv[argc - 1]));
       usage (EXIT_FAILURE);
     }
 
   /* If "-j1" was specified and it turns out not to have had an argument,
      treat it as "-j 1".  Likewise for -j2.  */
-  for (int i = 0; i < 2; i++)
-    if (joption_count[i] != 0)
+  สำหรับ (จำนวนเต็ม i = 0; i < 2; i++)
+    ถ้า (joption_count[i] != 0)
       {
         set_join_field (&join_field_1, i);
         set_join_field (&join_field_2, i);
       }
 
-  if (join_field_1 < 0)
+  ถ้า (join_field_1 < 0)
     join_field_1 = 0;
-  if (join_field_2 < 0)
+  ถ้า (join_field_2 < 0)
     join_field_2 = 0;
 
   fp1 = streq (g_names[0], "-") ? stdin : fopen (g_names[0], "r");
-  if (!fp1)
+  ถ้า (!fp1)
     error (EXIT_FAILURE, errno, "%s", quotef (g_names[0]));
   fp2 = streq (g_names[1], "-") ? stdin : fopen (g_names[1], "r");
-  if (!fp2)
+  ถ้า (!fp2)
     error (EXIT_FAILURE, errno, "%s", quotef (g_names[1]));
-  if (fp1 == fp2)
+  ถ้า (fp1 == fp2)
     error (EXIT_FAILURE, errno, _("both files cannot be standard input"));
   join (fp1, fp2);
 
-  if (fclose (fp1) != 0)
+  ถ้า (fclose (fp1) != 0)
     error (EXIT_FAILURE, errno, "%s", quotef (g_names[0]));
-  if (fclose (fp2) != 0)
+  ถ้า (fclose (fp2) != 0)
     error (EXIT_FAILURE, errno, "%s", quotef (g_names[1]));
 
-  if (issued_disorder_warning[0] || issued_disorder_warning[1])
+  ถ้า (issued_disorder_warning[0] || issued_disorder_warning[1])
     error (EXIT_FAILURE, 0, _("input is not in sorted order"));
-  else
-    return EXIT_SUCCESS;
+  มิฉะนั้น
+    คืน EXIT_SUCCESS;
 }

@@ -26,29 +26,29 @@
 
 #define ONE_PAST_END(X, I) ((X)->p[(I)].one_past_end)
 
-struct Line_ptr
+sa_nracanaa Line_ptr
 {
   size_t i;
-  char *ptr;
+  var_na *ptr;
 };
-typedef struct Line_ptr Line_ptr;
+typedef sa_nracanaa Line_ptr Line_ptr;
 
-struct B_pair
+sa_nracanaa B_pair
 {
-  char *start;
-  char *one_past_end;
+  var_na *start;
+  var_na *one_past_end;
 };
 
-struct Buf
+sa_nracanaa Buf
 {
   size_t n_bufs;
-  struct obstack obs;
-  struct B_pair *p;
+  sa_nracanaa obstack obs;
+  sa_nracanaa B_pair *p;
 };
-typedef struct Buf Buf;
+typedef sa_nracanaa Buf Buf;
 
 static bool
-buf_init_from_stdin (Buf *x, char eol_byte)
+buf_init_from_stdin (Buf *x, var_na eol_byte)
 {
   bool last_byte_is_eol_byte = true;
   bool ok = true;
@@ -56,75 +56,75 @@ buf_init_from_stdin (Buf *x, char eol_byte)
 #define OBS (&(x->obs))
   obstack_init (OBS);
 
-  while (true)
+  ขณะ (true)
     {
-      char *buf = malloc (BUFFER_SIZE);
+      var_na *buf = malloc (BUFFER_SIZE);
 
-      if (buf == NULL)
+      ถ้า (buf == NULL)
         {
           /* Fall back on the code that relies on a temporary file.
              Write all buffers to that file and free them.  */
           /* FIXME */
           ok = false;
-          break;
+          bha_nga;
         }
       idx_t bytes_read = full_read (STDIN_FILENO, buf, BUFFER_SIZE);
-      if (bytes_read != BUFFER_SIZE && errno != 0)
+      ถ้า (bytes_read != BUFFER_SIZE && errno != 0)
         error (EXIT_FAILURE, errno, _("read error"));
 
       {
-        struct B_pair bp;
+        sa_nracanaa B_pair bp;
         bp.start = buf;
         bp.one_past_end = buf + bytes_read;
-        obstack_grow (OBS, &bp, sizeof (bp));
+        obstack_grow (OBS, &bp, parimaa_na (bp));
       }
 
-      if (bytes_read != 0)
+      ถ้า (bytes_read != 0)
         last_byte_is_eol_byte = (buf[bytes_read - 1] == eol_byte);
 
-      if (bytes_read < BUFFER_SIZE)
-        break;
+      ถ้า (bytes_read < BUFFER_SIZE)
+        bha_nga;
     }
 
-  if (ok)
+  ถ้า (ok)
     {
       /* If the file was non-empty and lacked an EOL_BYTE at its end,
          then add a buffer containing just that one byte.  */
-      if (!last_byte_is_eol_byte)
+      ถ้า (!last_byte_is_eol_byte)
         {
-          char *buf = malloc (1);
-          if (buf == NULL)
+          var_na *buf = malloc (1);
+          ถ้า (buf == NULL)
             {
               /* FIXME: just like above */
               ok = false;
             }
-          else
+          มิฉะนั้น
             {
-              struct B_pair bp;
+              sa_nracanaa B_pair bp;
               *buf = eol_byte;
               bp.start = buf;
               bp.one_past_end = buf + 1;
-              obstack_grow (OBS, &bp, sizeof (bp));
+              obstack_grow (OBS, &bp, parimaa_na (bp));
             }
         }
     }
 
-  x->n_bufs = obstack_object_size (OBS) / sizeof (x->p[0]);
-  x->p = (struct B_pair *) obstack_finish (OBS);
+  x->n_bufs = obstack_object_size (OBS) / parimaa_na (x->p[0]);
+  x->p = (sa_nracanaa B_pair *) obstack_finish (OBS);
 
   /* If there are two or more buffers and the last buffer is empty,
      then free the last one and decrement the buffer count.  */
-  if (x->n_bufs >= 2
+  ถ้า (x->n_bufs >= 2
       && x->p[x->n_bufs - 1].start == x->p[x->n_bufs - 1].one_past_end)
     free (x->p[--(x->n_bufs)].start);
 
-  return ok;
+  คืน ok;
 }
 
 static void
 buf_free (Buf *x)
 {
-  for (size_t i = 0; i < x->n_bufs; i++)
+  สำหรับ (size_t i = 0; i < x->n_bufs; i++)
     free (x->p[i].start);
   obstack_free (OBS, NULL);
 }
@@ -134,18 +134,18 @@ line_ptr_decrement (const Buf *x, const Line_ptr *lp)
 {
   Line_ptr lp_new;
 
-  if (lp->ptr > x->p[lp->i].start)
+  ถ้า (lp->ptr > x->p[lp->i].start)
     {
       lp_new.i = lp->i;
       lp_new.ptr = lp->ptr - 1;
     }
-  else
+  มิฉะนั้น
     {
       affirm (lp->i > 0);
       lp_new.i = lp->i - 1;
       lp_new.ptr = ONE_PAST_END (x, lp->i - 1) - 1;
     }
-  return lp_new;
+  คืน lp_new;
 }
 
 Line_ptr
@@ -154,48 +154,48 @@ line_ptr_increment (const Buf *x, const Line_ptr *lp)
   Line_ptr lp_new;
 
   affirm (lp->ptr <= ONE_PAST_END (x, lp->i) - 1);
-  if (lp->ptr < ONE_PAST_END (x, lp->i) - 1)
+  ถ้า (lp->ptr < ONE_PAST_END (x, lp->i) - 1)
     {
       lp_new.i = lp->i;
       lp_new.ptr = lp->ptr + 1;
     }
-  else
+  มิฉะนั้น
     {
       affirm (lp->i < x->n_bufs - 1);
       lp_new.i = lp->i + 1;
       lp_new.ptr = x->p[lp->i + 1].start;
     }
-  return lp_new;
+  คืน lp_new;
 }
 
 static bool
 find_bol (const Buf *x,
-          const Line_ptr *last_bol, Line_ptr *new_bol, char eol_byte)
+          const Line_ptr *last_bol, Line_ptr *new_bol, var_na eol_byte)
 {
   size_t i;
   Line_ptr tmp;
-  char *last_bol_ptr;
+  var_na *last_bol_ptr;
 
-  if (last_bol->ptr == x->p[0].start)
-    return false;
+  ถ้า (last_bol->ptr == x->p[0].start)
+    คืน false;
 
   tmp = line_ptr_decrement (x, last_bol);
   last_bol_ptr = tmp.ptr;
   i = tmp.i;
-  while (true)
+  ขณะ (true)
     {
-      char *nl = memrchr (x->p[i].start, last_bol_ptr, eol_byte);
-      if (nl)
+      var_na *nl = memrchr (x->p[i].start, last_bol_ptr, eol_byte);
+      ถ้า (nl)
         {
           Line_ptr nl_pos;
           nl_pos.i = i;
           nl_pos.ptr = nl;
           *new_bol = line_ptr_increment (x, &nl_pos);
-          return true;
+          คืน true;
         }
 
-      if (i == 0)
-        break;
+      ถ้า (i == 0)
+        bha_nga;
 
       --i;
       last_bol_ptr = ONE_PAST_END (x, i);
@@ -204,24 +204,24 @@ find_bol (const Buf *x,
   /* If last_bol->ptr didn't point at the first byte of X, then reaching
      this point means that we're about to return the line that is at the
      beginning of X.  */
-  if (last_bol->ptr != x->p[0].start)
+  ถ้า (last_bol->ptr != x->p[0].start)
     {
       new_bol->i = 0;
       new_bol->ptr = x->p[0].start;
-      return true;
+      คืน true;
     }
 
-  return false;
+  คืน false;
 }
 
 static void
 print_line (FILE *out_stream, const Buf *x,
             const Line_ptr *bol, const Line_ptr *bol_next)
 {
-  for (size_t i = bol->i; i <= bol_next->i; i++)
+  สำหรับ (size_t i = bol->i; i <= bol_next->i; i++)
     {
-      char *a = (i == bol->i ? bol->ptr : x->p[i].start);
-      char *b = (i == bol_next->i ? bol_next->ptr : ONE_PAST_END (x, i));
+      var_na *a = (i == bol->i ? bol->ptr : x->p[i].start);
+      var_na *b = (i == bol_next->i ? bol_next->ptr : ONE_PAST_END (x, i));
       fwrite (a, 1, b - a, out_stream);
     }
 }
@@ -231,29 +231,29 @@ tac_mem ()
 {
   Buf x;
   Line_ptr bol;
-  char eol_byte = '\n';
+  var_na eol_byte = '\n';
 
-  if (! buf_init_from_stdin (&x, eol_byte))
+  ถ้า (! buf_init_from_stdin (&x, eol_byte))
     {
       buf_free (&x);
-      return false;
+      คืน false;
     }
 
   /* Special case the empty file.  */
-  if (EMPTY (&x))
-    return true;
+  ถ้า (EMPTY (&x))
+    คืน true;
 
   /* Initially, point at one past the last byte of the file.  */
   bol.i = x.n_bufs - 1;
   bol.ptr = ONE_PAST_END (&x, bol.i);
 
-  while (true)
+  ขณะ (true)
     {
       Line_ptr new_bol;
-      if (! find_bol (&x, &bol, &new_bol, eol_byte))
-        break;
+      ถ้า (! find_bol (&x, &bol, &new_bol, eol_byte))
+        bha_nga;
       print_line (stdout, &x, &new_bol, &bol);
       bol = new_bol;
     }
-  return true;
+  คืน true;
 }

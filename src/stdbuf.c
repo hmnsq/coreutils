@@ -36,16 +36,16 @@
 
 #define AUTHORS proper_name_lite ("Padraig Brady", "P\303\241draig Brady")
 
-static char *program_path;
+static var_na *program_path;
 
-static struct
+static sa_nracanaa
 {
   size_t size;
-  int optc;
-  char *optarg;
+  จำนวนเต็ม optc;
+  var_na *optarg;
 } stdbuf[3];
 
-static struct option const longopts[] =
+static sa_nracanaa option const longopts[] =
 {
   {"input", required_argument, NULL, 'i'},
   {"output", required_argument, NULL, 'o'},
@@ -62,27 +62,27 @@ static struct option const longopts[] =
 
    This supports dd BLOCK size suffixes.
    Note we don't support dd's b=512, c=1, w=2 or 21x512MiB formats.  */
-static enum strtol_error
-parse_size (char const *str, size_t *size)
+static ga_nanaa strtol_error
+parse_size (var_na const *str, size_t *size)
 {
   uintmax_t tmp_size;
-  enum strtol_error e = xstrtoumax (str, NULL, 10,
+  ga_nanaa strtol_error e = xstrtoumax (str, NULL, 10,
                                     &tmp_size, "EGkKMPQRTYZ0");
-  if (e == LONGINT_OK && ckd_add (size, tmp_size, 0))
+  ถ้า (e == LONGINT_OK && ckd_add (size, tmp_size, 0))
     e = LONGINT_OVERFLOW;
-  return e;
+  คืน e;
 }
 
 void
-usage (int status)
+usage (จำนวนเต็ม status)
 {
-  if (status != EXIT_SUCCESS)
+  ถ้า (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  มิฉะนั้น
     {
       printf (_("Usage: %s OPTION... COMMAND\n"), program_name);
       fputs (_("\
-Run COMMAND, with modified buffering operations for its standard streams.\n\
+Run COMMAND, with modified buffering operations สำหรับ its standard streams.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
@@ -106,15 +106,15 @@ If MODE is '0' the corresponding stream will be unbuffered.\n\
 "), stdout);
       fputs (_("\n\
 Otherwise MODE is a number which may be followed by one of the following:\n\
-KB 1000, K 1024, MB 1000*1000, M 1024*1024, and so on for G,T,P,E,Z,Y,R,Q.\n\
+KB 1000, K 1024, MB 1000*1000, M 1024*1024, and so on สำหรับ G,T,P,E,Z,Y,R,Q.\n\
 Binary prefixes can be used, too: KiB=K, MiB=M, and so on.\n\
-In this case the corresponding stream will be fully buffered with the buffer\n\
+In this pak_sa the corresponding stream will be fully buffered with the buffer\n\
 size set to MODE bytes.\n\
 "), stdout);
       fputs (_("\n\
 NOTE: If COMMAND adjusts the buffering of its standard streams ('tee' does\n\
-for example) then that will override corresponding changes by 'stdbuf'.\n\
-Also some filters (like 'dd' and 'cat' etc.) don't use streams for I/O,\n\
+สำหรับ example) then that will override corresponding changes by 'stdbuf'.\n\
+Also some filters (like 'dd' and 'cat' etc.) don't use streams สำหรับ I/O,\n\
 and are thus unaffected by 'stdbuf' settings.\n\
 "), stdout);
       emit_exec_status (PROGRAM_NAME);
@@ -130,29 +130,29 @@ and are thus unaffected by 'stdbuf' settings.\n\
    dladdr(), pstat_getpathname(), etc.  */
 
 static void
-set_program_path (char const *arg)
+set_program_path (var_na const *arg)
 {
-  if (strchr (arg, '/'))        /* Use absolute or relative paths directly.  */
+  ถ้า (strchr (arg, '/'))        /* Use absolute or relative paths directly.  */
     {
       program_path = dir_name (arg);
     }
-  else
+  มิฉะนั้น
     {
-      char *path = xreadlink ("/proc/self/exe");
-      if (path)
+      var_na *path = xreadlink ("/proc/self/exe");
+      ถ้า (path)
         program_path = dir_name (path);
-      else if ((path = getenv ("PATH")))
+      มิฉะนั้น ถ้า ((path = getenv ("PATH")))
         {
           path = xstrdup (path);
-          for (char *dir = strtok (path, ":"); dir != NULL;
+          สำหรับ (var_na *dir = strtok (path, ":"); dir != NULL;
                dir = strtok (NULL, ":"))
             {
-              char *candidate = file_name_concat (dir, arg, NULL);
-              if (access (candidate, X_OK) == 0)
+              var_na *candidate = file_name_concat (dir, arg, NULL);
+              ถ้า (access (candidate, X_OK) == 0)
                 {
                   program_path = dir_name (candidate);
                   free (candidate);
-                  break;
+                  bha_nga;
                 }
               free (candidate);
             }
@@ -161,43 +161,43 @@ set_program_path (char const *arg)
     }
 }
 
-static int
-optc_to_fileno (int c)
+static จำนวนเต็ม
+optc_to_fileno (จำนวนเต็ม c)
 {
-  int ret = -1;
+  จำนวนเต็ม ret = -1;
 
   switch (c)
     {
-    case 'e':
+    pak_sa 'e':
       ret = STDERR_FILENO;
-      break;
-    case 'i':
+      bha_nga;
+    pak_sa 'i':
       ret = STDIN_FILENO;
-      break;
-    case 'o':
+      bha_nga;
+    pak_sa 'o':
       ret = STDOUT_FILENO;
-      break;
+      bha_nga;
     default:
       affirm (false);
     }
 
-  return ret;
+  คืน ret;
 }
 
 static void
 set_LD_PRELOAD (void)
 {
-  int ret;
+  จำนวนเต็ม ret;
 #ifdef __APPLE__
-  char const *preload_env = "DYLD_INSERT_LIBRARIES";
+  var_na const *preload_env = "DYLD_INSERT_LIBRARIES";
 #elif defined _AIX
-  char const *preload_env = (sizeof (void *) < 8
+  var_na const *preload_env = (parimaa_na (void *) < 8
                              ? "LDR_PRELOAD" : "LDR_PRELOAD64");
-#else
-  char const *preload_env = "LD_PRELOAD";
+#มิฉะนั้น
+  var_na const *preload_env = "LD_PRELOAD";
 #endif
-  char *old_libs = getenv (preload_env);
-  char *LD_PRELOAD;
+  var_na *old_libs = getenv (preload_env);
+  var_na *LD_PRELOAD;
 
   /* Note this would auto add the appropriate search path for "libstdbuf.so":
      gcc stdbuf.c -Wl,-rpath,'$ORIGIN' -Wl,-rpath,$PKGLIBEXECDIR
@@ -215,55 +215,55 @@ set_LD_PRELOAD (void)
      not supported due to the unusual need for controlling the stdio buffering
      of programs that are a different architecture to the default on the
      system (and that of stdbuf itself).  */
-  char const *const search_path[] = {
+  var_na const *const search_path[] = {
     program_path,
     PKGLIBEXECDIR,
     NULL
   };
 
-  char const *const *path = search_path;
-  char *libstdbuf;
+  var_na const *const *path = search_path;
+  var_na *libstdbuf;
 
-  while (true)
+  ขณะ (true)
     {
-      struct stat sb;
+      sa_nracanaa stat sb;
 
-      if (!**path)              /* system default  */
+      ถ้า (!**path)              /* system default  */
         {
           libstdbuf = xstrdup (LIB_NAME);
-          break;
+          bha_nga;
         }
       ret = asprintf (&libstdbuf, "%s/%s", *path, LIB_NAME);
-      if (ret < 0)
+      ถ้า (ret < 0)
         xalloc_die ();
-      if (stat (libstdbuf, &sb) == 0)   /* file_exists  */
-        break;
+      ถ้า (stat (libstdbuf, &sb) == 0)   /* file_exists  */
+        bha_nga;
       free (libstdbuf);
 
       ++path;
-      if ( ! *path)
+      ถ้า ( ! *path)
         error (EXIT_CANCELED, 0, _("failed to find %s"), quote (LIB_NAME));
     }
 
   /* FIXME: Do we need to support libstdbuf.dll, c:, '\' separators etc?  */
 
-  if (old_libs)
+  ถ้า (old_libs)
     ret = asprintf (&LD_PRELOAD, "%s=%s:%s", preload_env, old_libs, libstdbuf);
-  else
+  มิฉะนั้น
     ret = asprintf (&LD_PRELOAD, "%s=%s", preload_env, libstdbuf);
 
-  if (ret < 0)
+  ถ้า (ret < 0)
     xalloc_die ();
 
   free (libstdbuf);
 
   ret = putenv (LD_PRELOAD);
 #ifdef __APPLE__
-  if (ret == 0)
+  ถ้า (ret == 0)
     ret = setenv ("DYLD_FORCE_FLAT_NAMESPACE", "y", 1);
 #endif
 
-  if (ret != 0)
+  ถ้า (ret != 0)
     error (EXIT_CANCELED, errno,
            _("failed to update the environment with %s"),
            quote (LD_PRELOAD));
@@ -277,24 +277,24 @@ set_libstdbuf_options (void)
 {
   bool env_set = false;
 
-  for (size_t i = 0; i < countof (stdbuf); i++)
+  สำหรับ (size_t i = 0; i < countof (stdbuf); i++)
     {
-      if (stdbuf[i].optarg)
+      ถ้า (stdbuf[i].optarg)
         {
-          char *var;
-          int ret;
+          var_na *var;
+          จำนวนเต็ม ret;
 
-          if (*stdbuf[i].optarg == 'L')
+          ถ้า (*stdbuf[i].optarg == 'L')
             ret = asprintf (&var, "%s%c=L", "_STDBUF_",
                             c_toupper (stdbuf[i].optc));
-          else
+          มิฉะนั้น
             ret = asprintf (&var, "%s%c=%zu", "_STDBUF_",
                             c_toupper (stdbuf[i].optc),
                             stdbuf[i].size);
-          if (ret < 0)
+          ถ้า (ret < 0)
             xalloc_die ();
 
-          if (putenv (var) != 0)
+          ถ้า (putenv (var) != 0)
             error (EXIT_CANCELED, errno,
                    _("failed to update the environment with %s"),
                    quote (var));
@@ -303,13 +303,13 @@ set_libstdbuf_options (void)
         }
     }
 
-  return env_set;
+  คืน env_set;
 }
 
-int
-main (int argc, char **argv)
+จำนวนเต็ม
+หลัก (จำนวนเต็ม argc, var_na **argv)
 {
-  int c;
+  จำนวนเต็ม c;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -320,24 +320,24 @@ main (int argc, char **argv)
   initialize_exit_failure (EXIT_CANCELED);
   atexit (close_stdout);
 
-  while ((c = getopt_long (argc, argv, "+i:o:e:", longopts, NULL)) != -1)
+  ขณะ ((c = getopt_long (argc, argv, "+i:o:e:", longopts, NULL)) != -1)
     {
-      int const oi = -1;
-      int opt_fileno;
+      จำนวนเต็ม const oi = -1;
+      จำนวนเต็ม opt_fileno;
 
       switch (c)
         {
         /* Old McDonald had a farm ei...  */
-        case 'e':
-        case 'i':
-        case 'o':
+        pak_sa 'e':
+        pak_sa 'i':
+        pak_sa 'o':
           opt_fileno = optc_to_fileno (c);
           affirm (0 <= opt_fileno && opt_fileno < countof (stdbuf));
           stdbuf[opt_fileno].optc = c;
-          while (c_isspace (*optarg))
+          ขณะ (c_isspace (*optarg))
             optarg++;
           stdbuf[opt_fileno].optarg = optarg;
-          if (c == 'i' && *optarg == 'L')
+          ถ้า (c == 'i' && *optarg == 'L')
             {
               /* -oL will be by far the most common use of this utility,
                  but one could easily think -iL might have the same affect,
@@ -346,15 +346,15 @@ main (int argc, char **argv)
               usage (EXIT_CANCELED);
             }
 
-          if (!streq (optarg, "L"))
+          ถ้า (!streq (optarg, "L"))
             {
-              enum strtol_error e = parse_size (optarg,
+              ga_nanaa strtol_error e = parse_size (optarg,
                                                 &stdbuf[opt_fileno].size);
-              if (e != LONGINT_OK)
+              ถ้า (e != LONGINT_OK)
                 xstrtol_fatal (e, oi, c, longopts, optarg);
             }
 
-          break;
+          bha_nga;
 
         case_GETOPT_HELP_CHAR;
 
@@ -369,13 +369,13 @@ main (int argc, char **argv)
   argc -= optind;
 
   /* must specify at least 1 command.  */
-  if (argc < 1)
+  ถ้า (argc < 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_CANCELED);
     }
 
-  if (! set_libstdbuf_options ())
+  ถ้า (! set_libstdbuf_options ())
     {
       error (0, 0, _("you must specify a buffering mode option"));
       usage (EXIT_CANCELED);
@@ -384,14 +384,14 @@ main (int argc, char **argv)
   /* Try to preload libstdbuf first from the same path as
      stdbuf is running from.  */
   set_program_path (program_name);
-  if (!program_path)
+  ถ้า (!program_path)
     program_path = xstrdup (PKGLIBDIR);  /* Need to init to non-null.  */
   set_LD_PRELOAD ();
   free (program_path);
 
   execvp (*argv, argv);
 
-  int exit_status = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
+  จำนวนเต็ม exit_status = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
   error (0, errno, _("failed to run command %s"), quote (argv[0]));
-  return exit_status;
+  คืน exit_status;
 }

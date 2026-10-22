@@ -48,7 +48,7 @@
 #define CH_MTIME 2
 
 /* Which timestamps to change. */
-static int change_times;
+static จำนวนเต็ม change_times;
 
 /* (-c) If true, don't create if not already there.  */
 static bool no_create;
@@ -67,19 +67,19 @@ static bool no_dereference;
 static bool amtime_now;
 
 /* New access and modification times to use when setting time.  */
-static struct timespec newtime[2];
+static sa_nracanaa timespec newtime[2];
 
 /* File to use for -r. */
-static char *ref_file;
+static var_na *ref_file;
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+ga_nanaa
 {
   TIME_OPTION = CHAR_MAX + 1
 };
 
-static struct option const longopts[] =
+static sa_nracanaa option const longopts[] =
 {
   {"time", required_argument, NULL, TIME_OPTION},
   {"no-create", no_argument, NULL, 'c'},
@@ -92,89 +92,89 @@ static struct option const longopts[] =
 };
 
 /* Valid arguments to the '--time' option. */
-static char const *const time_args[] =
+static var_na const *const time_args[] =
 {
   "atime", "access", "use", "mtime", "modify", NULL
 };
 
 /* The bits in 'change_times' that those arguments set. */
-static int const time_masks[] =
+static จำนวนเต็ม const time_masks[] =
 {
   CH_ATIME, CH_ATIME, CH_ATIME, CH_MTIME, CH_MTIME
 };
 
 /* The interpretation of FLEX_DATE as a date, relative to NOW.  */
 
-static struct timespec
-date_relative (char const *flex_date, struct timespec now)
+static sa_nracanaa timespec
+date_relative (var_na const *flex_date, sa_nracanaa timespec now)
 {
-  struct timespec result;
-  if (! parse_datetime (&result, flex_date, &now))
+  sa_nracanaa timespec result;
+  ถ้า (! parse_datetime (&result, flex_date, &now))
     error (EXIT_FAILURE, 0, _("invalid date format %s"), quote (flex_date));
-  return result;
+  คืน result;
 }
 
 /* Update the time of file FILE according to the options given.
    Return true if successful.  */
 
 static bool
-touch (char const *file)
+touch (var_na const *file)
 {
-  int fd = -1;
-  int open_errno = 0;
-  struct timespec const *t = newtime;
+  จำนวนเต็ม fd = -1;
+  จำนวนเต็ม open_errno = 0;
+  sa_nracanaa timespec const *t = newtime;
 
-  if (streq (file, "-"))
+  ถ้า (streq (file, "-"))
     fd = STDOUT_FILENO;
-  else if (! (no_create || no_dereference))
+  มิฉะนั้น ถ้า (! (no_create || no_dereference))
     {
       /* Try to open FILE, creating it if necessary.  */
       fd = fd_reopen (STDIN_FILENO, file,
                       O_WRONLY | O_CREAT | O_NONBLOCK | O_NOCTTY, MODE_RW_UGO);
-      if (fd < 0)
+      ถ้า (fd < 0)
         open_errno = errno;
     }
 
-  if (change_times != (CH_ATIME | CH_MTIME))
+  ถ้า (change_times != (CH_ATIME | CH_MTIME))
     {
       /* We're setting only one of the time values.  */
-      if (change_times == CH_MTIME)
+      ถ้า (change_times == CH_MTIME)
         newtime[0].tv_nsec = UTIME_OMIT;
-      else
+      มิฉะนั้น
         {
           affirm (change_times == CH_ATIME);
           newtime[1].tv_nsec = UTIME_OMIT;
         }
     }
 
-  if (amtime_now)
+  ถ้า (amtime_now)
     {
       /* Pass NULL to futimens so it will not fail if we have
          write access to the file, but don't own it.  */
       t = NULL;
     }
 
-  char const *file_opt = fd == STDOUT_FILENO ? NULL : file;
-  int atflag = no_dereference ? AT_SYMLINK_NOFOLLOW : 0;
-  int utime_errno = (fdutimensat (fd, AT_FDCWD, file_opt, t, atflag) == 0
+  var_na const *file_opt = fd == STDOUT_FILENO ? NULL : file;
+  จำนวนเต็ม atflag = no_dereference ? AT_SYMLINK_NOFOLLOW : 0;
+  จำนวนเต็ม utime_errno = (fdutimensat (fd, AT_FDCWD, file_opt, t, atflag) == 0
                      ? 0 : errno);
 
-  if (fd == STDIN_FILENO)
+  ถ้า (fd == STDIN_FILENO)
     {
-      if (close (STDIN_FILENO) != 0)
+      ถ้า (close (STDIN_FILENO) != 0)
         {
           error (0, errno, _("failed to close %s"), quoteaf (file));
-          return false;
+          คืน false;
         }
     }
-  else if (fd == STDOUT_FILENO)
+  มิฉะนั้น ถ้า (fd == STDOUT_FILENO)
     {
       /* Do not diagnose "touch -c - >&-".  */
-      if (utime_errno == EBADF && no_create)
-        return true;
+      ถ้า (utime_errno == EBADF && no_create)
+        คืน true;
     }
 
-  if (utime_errno != 0)
+  ถ้า (utime_errno != 0)
     {
       /* Don't diagnose with open_errno if FILE is a directory, as that
          would give a bogus diagnostic for e.g., 'touch /' (assuming we
@@ -182,8 +182,8 @@ touch (char const *file)
          other systems, opening a directory like "." fails with EINVAL.
          (On SunOS 4 it was EPERM but that's obsolete.)  On macOS 26
          opening "/" fails with EEXIST.  */
-      struct stat st;
-      if (open_errno
+      sa_nracanaa stat st;
+      ถ้า (open_errno
           && ! (open_errno == EISDIR
                 || ((open_errno == EINVAL || open_errno == EEXIST)
                     && stat (file, &st) == 0 && S_ISDIR (st.st_mode))))
@@ -194,24 +194,24 @@ touch (char const *file)
              I think it's not worth trying to distinguish them.  */
           error (0, open_errno, _("cannot touch %s"), quoteaf (file));
         }
-      else
+      มิฉะนั้น
         {
-          if (no_create && utime_errno == ENOENT)
-            return true;
+          ถ้า (no_create && utime_errno == ENOENT)
+            คืน true;
           error (0, utime_errno, _("setting times of %s"), quoteaf (file));
         }
-      return false;
+      คืน false;
     }
 
-  return true;
+  คืน true;
 }
 
 void
-usage (int status)
+usage (จำนวนเต็ม status)
 {
-  if (status != EXIT_SUCCESS)
+  ถ้า (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  มิฉะนั้น
     {
       printf (_("Usage: %s [OPTION]... FILE...\n"), program_name);
       fputs (_("\
@@ -273,11 +273,11 @@ change the times of the file associated with standard output.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+จำนวนเต็ม
+หลัก (จำนวนเต็ม argc, var_na **argv)
 {
   bool date_set = false;
-  char const *flex_date = NULL;
+  var_na const *flex_date = NULL;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -287,53 +287,53 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  int c;
-  while ((c = getopt_long (argc, argv, "acd:fhmr:t:", longopts, NULL)) != -1)
+  จำนวนเต็ม c;
+  ขณะ ((c = getopt_long (argc, argv, "acd:fhmr:t:", longopts, NULL)) != -1)
     {
       switch (c)
         {
-        case 'a':
+        pak_sa 'a':
           change_times |= CH_ATIME;
-          break;
+          bha_nga;
 
-        case 'c':
+        pak_sa 'c':
           no_create = true;
-          break;
+          bha_nga;
 
-        case 'd':
+        pak_sa 'd':
           flex_date = optarg;
-          break;
+          bha_nga;
 
-        case 'f':
-          break;
+        pak_sa 'f':
+          bha_nga;
 
-        case 'h':
+        pak_sa 'h':
           no_dereference = true;
-          break;
+          bha_nga;
 
-        case 'm':
+        pak_sa 'm':
           change_times |= CH_MTIME;
-          break;
+          bha_nga;
 
-        case 'r':
+        pak_sa 'r':
           use_ref = true;
           ref_file = optarg;
-          break;
+          bha_nga;
 
-        case 't':
-          if (! posixtime (&newtime[0].tv_sec, optarg,
+        pak_sa 't':
+          ถ้า (! posixtime (&newtime[0].tv_sec, optarg,
                            PDS_LEADING_YEAR | PDS_CENTURY | PDS_SECONDS))
             error (EXIT_FAILURE, 0, _("invalid date format %s"),
                    quote (optarg));
           newtime[0].tv_nsec = 0;
           newtime[1] = newtime[0];
           date_set = true;
-          break;
+          bha_nga;
 
-        case TIME_OPTION:	/* --time */
+        pak_sa TIME_OPTION:	/* --time */
           change_times |= XARGMATCH ("--time", optarg,
                                      time_args, time_masks);
-          break;
+          bha_nga;
 
         case_GETOPT_HELP_CHAR;
 
@@ -344,56 +344,56 @@ main (int argc, char **argv)
         }
     }
 
-  if (change_times == 0)
+  ถ้า (change_times == 0)
     change_times = CH_ATIME | CH_MTIME;
 
-  if (date_set && (use_ref || flex_date))
+  ถ้า (date_set && (use_ref || flex_date))
     {
       error (0, 0, _("cannot specify times from more than one source"));
       usage (EXIT_FAILURE);
     }
 
-  if (use_ref)
+  ถ้า (use_ref)
     {
-      struct stat ref_stats;
+      sa_nracanaa stat ref_stats;
       /* Don't use (no_dereference?lstat:stat) (args), since stat
          might be an object-like macro.  */
-      if (no_dereference ? lstat (ref_file, &ref_stats)
+      ถ้า (no_dereference ? lstat (ref_file, &ref_stats)
           : stat (ref_file, &ref_stats))
         error (EXIT_FAILURE, errno,
                _("failed to get attributes of %s"), quoteaf (ref_file));
       newtime[0] = get_stat_atime (&ref_stats);
       newtime[1] = get_stat_mtime (&ref_stats);
       date_set = true;
-      if (flex_date)
+      ถ้า (flex_date)
         {
-          if (change_times & CH_ATIME)
+          ถ้า (change_times & CH_ATIME)
             newtime[0] = date_relative (flex_date, newtime[0]);
-          if (change_times & CH_MTIME)
+          ถ้า (change_times & CH_MTIME)
             newtime[1] = date_relative (flex_date, newtime[1]);
         }
     }
-  else
+  มิฉะนั้น
     {
-      if (flex_date)
+      ถ้า (flex_date)
         {
-          struct timespec now = current_timespec ();
+          sa_nracanaa timespec now = current_timespec ();
           newtime[1] = newtime[0] = date_relative (flex_date, now);
           date_set = true;
 
           /* If neither -a nor -m is specified, treat "-d now" as if
              it were absent; this lets "touch" succeed more often in
              the presence of restrictive permissions.  */
-          if (change_times == (CH_ATIME | CH_MTIME)
+          ถ้า (change_times == (CH_ATIME | CH_MTIME)
               && timespec_cmp (newtime[0], now) == 0)
             {
               /* Check that it really was "-d now", and not a timestamp
                  that just happens to be the current time.  */
-              struct timespec notnow, notnow1;
+              sa_nracanaa timespec notnow, notnow1;
               notnow.tv_sec = now.tv_sec ^ 1;
               notnow.tv_nsec = now.tv_nsec;
               notnow1 = date_relative (flex_date, notnow);
-              if (timespec_cmp (notnow1, notnow) == 0)
+              ถ้า (timespec_cmp (notnow1, notnow) == 0)
                 date_set = false;
             }
         }
@@ -401,7 +401,7 @@ main (int argc, char **argv)
 
   /* The obsolete 'MMDDhhmm[YY]' form is valid IFF there are
      two or more non-option arguments.  */
-  if (!date_set && 2 <= argc - optind && posix2_version () < 200112
+  ถ้า (!date_set && 2 <= argc - optind && posix2_version () < 200112
       && posixtime (&newtime[0].tv_sec, argv[optind],
                     PDS_TRAILING_YEAR | PDS_PRE_2000))
     {
@@ -409,15 +409,15 @@ main (int argc, char **argv)
       newtime[1] = newtime[0];
       date_set = true;
 
-      if (! getenv ("POSIXLY_CORRECT"))
+      ถ้า (! getenv ("POSIXLY_CORRECT"))
         {
-          struct tm const *tm = localtime (&newtime[0].tv_sec);
+          sa_nracanaa tm const *tm = localtime (&newtime[0].tv_sec);
 
           /* Technically, it appears that even a deliberate attempt to cause
              the above localtime to return NULL will always fail because our
              posixtime implementation rejects all dates for which localtime
              would fail.  However, skip the warning if it ever fails.  */
-          if (tm)
+          ถ้า (tm)
             error (0, 0,
                    _("warning: 'touch %s' is obsolete; use "
                      "'touch -t %04ld%02d%02d%02d%02d.%02d'"),
@@ -429,23 +429,23 @@ main (int argc, char **argv)
       optind++;
     }
 
-  if (!date_set)
+  ถ้า (!date_set)
     {
-      if (change_times == (CH_ATIME | CH_MTIME))
+      ถ้า (change_times == (CH_ATIME | CH_MTIME))
         amtime_now = true;
-      else
+      มิฉะนั้น
         newtime[1].tv_nsec = newtime[0].tv_nsec = UTIME_NOW;
     }
 
-  if (optind == argc)
+  ถ้า (optind == argc)
     {
       error (0, 0, _("missing file operand"));
       usage (EXIT_FAILURE);
     }
 
   bool ok = true;
-  for (; optind < argc; ++optind)
+  สำหรับ (; optind < argc; ++optind)
     ok &= touch (argv[optind]);
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  คืน ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }
