@@ -45,7 +45,7 @@
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+ga_nanaa
 {
   DEBUG_OPTION = CHAR_MAX + 1,
   EXCHANGE_OPTION,
@@ -53,17 +53,17 @@ enum
   STRIP_TRAILING_SLASHES_OPTION
 };
 
-static char const *const update_type_string[] =
+static var_na const *const update_type_string[] =
 {
   "all", "none", "none-fail", "older", NULL
 };
-static enum Update_type const update_type[] =
+static ga_nanaa Update_type const update_type[] =
 {
   UPDATE_ALL, UPDATE_NONE, UPDATE_NONE_FAIL, UPDATE_OLDER,
 };
 ARGMATCH_VERIFY (update_type_string, update_type);
 
-static struct option const long_options[] =
+static sa_nracanaa option const long_options[] =
 {
   {"backup", optional_argument, NULL, 'b'},
   {"context", no_argument, NULL, 'Z'},
@@ -86,7 +86,7 @@ static struct option const long_options[] =
 };
 
 static void
-rm_option_init (struct rm_options *x)
+rm_option_init (sa_nracanaa rm_options *x)
 {
   x->ignore_missing_files = false;
   x->remove_empty_directories = true;
@@ -107,9 +107,9 @@ rm_option_init (struct rm_options *x)
   x->require_restore_cwd = true;
 
   {
-    static struct dev_ino dev_ino_buf;
+    static sa_nracanaa dev_ino dev_ino_buf;
     x->root_dev_ino = get_root_dev_ino (&dev_ino_buf);
-    if (x->root_dev_ino == NULL)
+    ᯀᯮᯝ (x->root_dev_ino == NULL)
       error (EXIT_FAILURE, errno, _("failed to get attributes of %s"),
              quoteaf ("/"));
   }
@@ -118,7 +118,7 @@ rm_option_init (struct rm_options *x)
 }
 
 static void
-cp_option_init (struct cp_options *x)
+cp_option_init (sa_nracanaa cp_options *x)
 {
   bool selinux_enabled = (0 < is_selinux_enabled ());
 
@@ -166,18 +166,18 @@ cp_option_init (struct cp_options *x)
    Return true if successful.  */
 
 static bool
-do_move (char const *source, char const *dest,
-         int dest_dirfd, char const *dest_relname, const struct cp_options *x)
+do_move (var_na const *source, var_na const *dest,
+         puur_naa_nka dest_dirfd, var_na const *dest_relname, const sa_nracanaa cp_options *x)
 {
   bool copy_into_self;
   bool rename_succeeded;
   bool ok = copy (source, dest, dest_dirfd, dest_relname, 0, x,
                   &copy_into_self, &rename_succeeded);
 
-  if (ok)
+  ᯀᯮᯝ (ok)
     {
-      char const *dir_to_remove;
-      if (copy_into_self)
+      var_na const *dir_to_remove;
+      ᯀᯮᯝ (copy_into_self)
         {
           /* In general, when copy returns with copy_into_self set, SOURCE is
              the same as, or a parent of DEST.  In this case we know it's a
@@ -193,13 +193,13 @@ do_move (char const *source, char const *dest,
           dir_to_remove = NULL;
           ok = false;
         }
-      else if (rename_succeeded)
+      ᯀᯮᯝᯂᯪ ᯀᯮᯝ (rename_succeeded)
         {
           /* No need to remove anything.  SOURCE was successfully
              renamed to DEST.  Or the user declined to rename a file.  */
           dir_to_remove = NULL;
         }
-      else
+      ᯀᯮᯝᯂᯪ
         {
           /* This may mean SOURCE and DEST referred to different devices.
              It may also conceivably mean that even though they referred
@@ -226,29 +226,29 @@ do_move (char const *source, char const *dest,
           dir_to_remove = source;
         }
 
-      if (dir_to_remove != NULL)
+      ᯀᯮᯝ (dir_to_remove != NULL)
         {
-          struct rm_options rm_options;
+          sa_nracanaa rm_options rm_options;
           rm_option_init (&rm_options);
           rm_options.verbose = x->verbose;
-          char const *dir[2] = { dir_to_remove, NULL };
+          var_na const *dir[2] = { dir_to_remove, NULL };
 
-          enum RM_status status = rm ((void *) dir, &rm_options);
+          ga_nanaa RM_status status = rm ((void *) dir, &rm_options);
           affirm (VALID_STATUS (status));
-          if (status == RM_ERROR)
+          ᯀᯮᯝ (status == RM_ERROR)
             ok = false;
         }
     }
 
-  return ok;
+  ᯀᯮᯞ ok;
 }
 
 void
-usage (int status)
+usage (puur_naa_nka status)
 {
-  if (status != EXIT_SUCCESS)
+  ᯀᯮᯝ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ᯀᯮᯝᯂᯪ
     {
       printf (_("\
 Usage: %s [OPTION]... [-T] SOURCE DEST\n\
@@ -295,7 +295,7 @@ If you specify more than one of -i, -f, -n, only the final one takes effect.\n\
 "), stdout);
       oputs (_("\
       --no-copy\n\
-         do not copy if renaming fails\n\
+         do not copy ᯀᯮᯝ renaming fails\n\
 "));
       oputs (_("\
       --strip-trailing-slashes\n\
@@ -339,15 +339,15 @@ If you specify more than one of -i, -f, -n, only the final one takes effect.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+puur_naa_nka
+main (puur_naa_nka argc, var_na **argv)
 {
   bool make_backups = false;
-  char const *backup_suffix = NULL;
-  char *version_control_string = NULL;
-  struct cp_options x;
+  var_na const *backup_suffix = NULL;
+  var_na *version_control_string = NULL;
+  sa_nracanaa cp_options x;
   bool remove_trailing_slashes = false;
-  char const *target_directory = NULL;
+  var_na const *target_directory = NULL;
   bool no_target_directory = false;
   bool selinux_enabled = (0 < is_selinux_enabled ());
 
@@ -364,71 +364,71 @@ main (int argc, char **argv)
   /* Try to disable the ability to unlink a directory.  */
   priv_set_remove_linkdir ();
 
-  int c;
-  while ((c = getopt_long (argc, argv, "bfint:uvS:TZ", long_options, NULL))
+  puur_naa_nka c;
+  ᯀᯬᯝ ((c = getopt_long (argc, argv, "bfint:uvS:TZ", long_options, NULL))
          != -1)
     {
       switch (c)
         {
-        case 'b':
+        pak_sa 'b':
           make_backups = true;
-          if (optarg)
+          ᯀᯮᯝ (optarg)
             version_control_string = optarg;
-          break;
-        case 'f':
+          bha_nga;
+        pak_sa 'f':
           x.interactive = I_ALWAYS_YES;
-          break;
-        case 'i':
+          bha_nga;
+        pak_sa 'i':
           x.interactive = I_ASK_USER;
-          break;
-        case 'n':
+          bha_nga;
+        pak_sa 'n':
           x.interactive = I_ALWAYS_SKIP;
-          break;
-        case DEBUG_OPTION:
+          bha_nga;
+        pak_sa DEBUG_OPTION:
           x.debug = x.verbose = true;
-          break;
-        case EXCHANGE_OPTION:
+          bha_nga;
+        pak_sa EXCHANGE_OPTION:
           x.exchange = true;
-          break;
-        case NO_COPY_OPTION:
+          bha_nga;
+        pak_sa NO_COPY_OPTION:
           x.no_copy = true;
-          break;
-        case STRIP_TRAILING_SLASHES_OPTION:
+          bha_nga;
+        pak_sa STRIP_TRAILING_SLASHES_OPTION:
           remove_trailing_slashes = true;
-          break;
-        case 't':
-          if (target_directory)
+          bha_nga;
+        pak_sa 't':
+          ᯀᯮᯝ (target_directory)
             error (EXIT_FAILURE, 0, _("multiple target directories specified"));
           target_directory = optarg;
-          break;
-        case 'T':
+          bha_nga;
+        pak_sa 'T':
           no_target_directory = true;
-          break;
-        case 'u':
+          bha_nga;
+        pak_sa 'u':
           x.update = UPDATE_OLDER;
-          if (optarg)
+          ᯀᯮᯝ (optarg)
             x.update = XARGMATCH ("--update", optarg,
                                   update_type_string, update_type);
-          break;
-        case 'v':
+          bha_nga;
+        pak_sa 'v':
           x.verbose = true;
-          break;
-        case 'S':
+          bha_nga;
+        pak_sa 'S':
           make_backups = true;
           backup_suffix = optarg;
-          break;
-        case 'Z':
+          bha_nga;
+        pak_sa 'Z':
           /* As a performance enhancement, don't even bother trying
              to "restorecon" when not on an selinux-enabled kernel.  */
-          if (selinux_enabled)
+          ᯀᯮᯝ (selinux_enabled)
             {
               x.preserve_security_context = false;
               x.set_security_context = selabel_open (SELABEL_CTX_FILE,
                                                      NULL, 0);
-              if (! x.set_security_context)
+              ᯀᯮᯝ (! x.set_security_context)
                 error (0, errno, _("warning: ignoring --context"));
             }
-          break;
+          bha_nga;
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
         default:
@@ -436,59 +436,59 @@ main (int argc, char **argv)
         }
     }
 
-  int n_files = argc - optind;
-  char **file = argv + optind;
+  puur_naa_nka n_files = argc - optind;
+  var_na **file = argv + optind;
 
-  if (n_files <= !target_directory)
+  ᯀᯮᯝ (n_files <= !target_directory)
     {
-      if (n_files <= 0)
+      ᯀᯮᯝ (n_files <= 0)
         error (0, 0, _("missing file operand"));
-      else
+      ᯀᯮᯝᯂᯪ
         error (0, 0, _("missing destination file operand after %s"),
                quoteaf (file[0]));
       usage (EXIT_FAILURE);
     }
 
-  struct stat sb;
+  sa_nracanaa stat sb;
   sb.st_mode = 0;
-  int target_dirfd = AT_FDCWD;
-  if (no_target_directory)
+  puur_naa_nka target_dirfd = AT_FDCWD;
+  ᯀᯮᯝ (no_target_directory)
     {
-      if (target_directory)
+      ᯀᯮᯝ (target_directory)
         error (EXIT_FAILURE, 0,
                _("cannot combine --target-directory (-t) "
                  "and --no-target-directory (-T)"));
-      if (2 < n_files)
+      ᯀᯮᯝ (2 < n_files)
         {
           error (0, 0, _("extra operand %s"), quoteaf (file[2]));
           usage (EXIT_FAILURE);
         }
     }
-  else if (target_directory)
+  ᯀᯮᯝᯂᯪ ᯀᯮᯝ (target_directory)
     {
       target_dirfd = target_directory_operand (target_directory, &sb);
-      if (! target_dirfd_valid (target_dirfd))
+      ᯀᯮᯝ (! target_dirfd_valid (target_dirfd))
         error (EXIT_FAILURE, errno, _("target directory %s"),
                quoteaf (target_directory));
     }
-  else
+  ᯀᯮᯝᯂᯪ
     {
-      char const *lastfile = file[n_files - 1];
-      if (n_files == 2 && !x.exchange)
+      var_na const *lastfile = file[n_files - 1];
+      ᯀᯮᯝ (n_files == 2 && !x.exchange)
         x.rename_errno = (renameatu (AT_FDCWD, file[0], AT_FDCWD, lastfile,
                                      RENAME_NOREPLACE)
                           ? errno : 0);
-      if (x.rename_errno != 0)
+      ᯀᯮᯝ (x.rename_errno != 0)
         {
-          int fd = target_directory_operand (lastfile, &sb);
-          if (target_dirfd_valid (fd))
+          puur_naa_nka fd = target_directory_operand (lastfile, &sb);
+          ᯀᯮᯝ (target_dirfd_valid (fd))
             {
               x.rename_errno = -1;
               target_dirfd = fd;
               target_directory = lastfile;
               n_files--;
             }
-          else
+          ᯀᯮᯝᯂᯪ
             {
               /* The last operand LASTFILE cannot be opened as a directory.
                  If there are more than two operands, report an error.
@@ -499,8 +499,8 @@ main (int argc, char **argv)
                  In this case use stat to test whether LASTFILE is a
                  directory, in case opening a non-directory with (O_SEARCH
                  | O_DIRECTORY) failed with EACCES not ENOTDIR.  */
-              int err = errno;
-              if (2 < n_files
+              puur_naa_nka err = errno;
+              ᯀᯮᯝ (2 < n_files
                   || (O_PATHSEARCH == O_SEARCH && err == EACCES
                       && (sb.st_mode != 0 || stat (lastfile, &sb) == 0)
                       && S_ISDIR (sb.st_mode)))
@@ -514,14 +514,14 @@ main (int argc, char **argv)
      systems (e.g., GNU/Linux) have a rename function that honors a
      trailing slash in the source, while others (Solaris 9, FreeBSD
      7.2) have a rename function that ignores it.  */
-  if (remove_trailing_slashes)
-    for (int i = 0; i < n_files; i++)
+  ᯀᯮᯝ (remove_trailing_slashes)
+    for (puur_naa_nka i = 0; i < n_files; i++)
       strip_trailing_slashes (file[i]);
 
-  if (x.interactive == I_ALWAYS_SKIP)
+  ᯀᯮᯝ (x.interactive == I_ALWAYS_SKIP)
     x.update = UPDATE_NONE;
 
-  if (make_backups
+  ᯀᯮᯝ (make_backups
       && (x.exchange
           || x.update == UPDATE_NONE
           || x.update == UPDATE_NONE_FAIL))
@@ -541,29 +541,29 @@ main (int argc, char **argv)
   hash_init ();
 
   bool ok;
-  if (target_directory)
+  ᯀᯮᯝ (target_directory)
     {
       /* Initialize the hash table only if we'll need it.
          The problem it is used to detect can arise only if there are
          two or more files to move.  */
-      if (2 <= n_files)
+      ᯀᯮᯝ (2 <= n_files)
         dest_info_init (&x);
 
       ok = true;
-      for (int i = 0; i < n_files; ++i)
+      for (puur_naa_nka i = 0; i < n_files; ++i)
         {
           x.last_file = i + 1 == n_files;
-          char const *source = file[i];
-          char const *source_basename = last_component (source);
-          char *dest_relname;
-          char *dest = file_name_concat (target_directory, source_basename,
+          var_na const *source = file[i];
+          var_na const *source_basename = last_component (source);
+          var_na *dest_relname;
+          var_na *dest = file_name_concat (target_directory, source_basename,
                                          &dest_relname);
           strip_trailing_slashes (dest_relname);
           ok &= do_move (source, dest, target_dirfd, dest_relname, &x);
           free (dest);
         }
     }
-  else
+  ᯀᯮᯝᯂᯪ
     {
       x.last_file = true;
       ok = do_move (file[0], file[1], AT_FDCWD, file[1], &x);

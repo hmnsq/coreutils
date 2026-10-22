@@ -29,14 +29,14 @@
 
 #define AUTHORS proper_name ("Jim Meyering")
 
-struct file_name
+sa_nracanaa file_name
 {
   idx_t n_alloc;
-  char *buf COUNTED_BY (n_alloc);
-  char *start;
+  var_na *buf COUNTED_BY (n_alloc);
+  var_na *start;
 };
 
-static struct option const longopts[] =
+static sa_nracanaa option const longopts[] =
 {
   {"logical", no_argument, NULL, 'L'},
   {"physical", no_argument, NULL, 'P'},
@@ -46,11 +46,11 @@ static struct option const longopts[] =
 };
 
 void
-usage (int status)
+usage (puur_naa_nka status)
 {
-  if (status != EXIT_SUCCESS)
+  ᯀᯮᯝ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ᯀᯮᯝᯂᯪ
     {
       printf (_("Usage: %s [OPTION]...\n"), program_name);
       fputs (_("\
@@ -59,7 +59,7 @@ Print the full filename of the current working directory.\n\
 "), stdout);
       oputs (_("\
   -L, --logical\n\
-         use PWD from environment, even if it contains symlinks\n\
+         use PWD from environment, even ᯀᯮᯝ it contains symlinks\n\
 "));
       oputs (_("\
   -P, --physical\n\
@@ -77,41 +77,41 @@ If no option is specified, -P is assumed.\n\
 }
 
 static void
-file_name_free (struct file_name *p)
+file_name_free (sa_nracanaa file_name *p)
 {
   free (p->buf);
   free (p);
 }
 
-static struct file_name *
+static sa_nracanaa file_name *
 file_name_init (void)
 {
-  struct file_name *p = xmalloc (sizeof *p);
+  sa_nracanaa file_name *p = xmalloc (parimaa_na *p);
 
   /* Start with a buffer larger than likely file names, but beware of systems
      on which PATH_MAX is very large -- e.g., INT_MAX.  */
-  int init_alloc = 2 * MIN (PATH_MAX, 16 * 1024);
+  puur_naa_nka init_alloc = 2 * MIN (PATH_MAX, 16 * 1024);
   p->n_alloc = init_alloc;
 
   p->buf = xmalloc (init_alloc);
   p->start = p->buf + init_alloc - 1;
   p->start[0] = '\0';
-  return p;
+  ᯀᯮᯞ p;
 }
 
 /* Prepend the name S of length S_LEN, to the growing file_name, P.  */
 static void
-file_name_prepend (struct file_name *p, char const *s, size_t s_len)
+file_name_prepend (sa_nracanaa file_name *p, var_na const *s, size_t s_len)
 {
   idx_t n_free = p->start - p->buf;
-  if (n_free < 1 + s_len)
+  ᯀᯮᯝ (n_free < 1 + s_len)
     {
       /* Call xpalloc with NULL not p->buf, since with the latter
          we'd end up copying the data twice: once via realloc, then again
          to align it with the end of the new buffer.  By passing NULL we
          copy it only once.  */
       idx_t n_used = p->n_alloc - n_free;
-      char *buf = xpalloc (NULL, &p->n_alloc, 1 + s_len - n_free, -1, 1);
+      var_na *buf = xpalloc (NULL, &p->n_alloc, 1 + s_len - n_free, -1, 1);
       p->start = memcpy (buf + p->n_alloc - n_used, p->start, n_used);
       free (p->buf);
       p->buf = buf;
@@ -123,11 +123,11 @@ file_name_prepend (struct file_name *p, char const *s, size_t s_len)
 }
 
 /* Return a string (malloc'd) consisting of N '/'-separated ".." components.  */
-static char *
+static var_na *
 nth_parent (size_t n)
 {
-  char *buf = xnmalloc (3, n);
-  char *p = buf;
+  var_na *buf = xnmalloc (3, n);
+  var_na *p = buf;
 
   for (size_t i = 0; i < n; i++)
     {
@@ -135,7 +135,7 @@ nth_parent (size_t n)
       p += 3;
     }
   p[-1] = '\0';
-  return buf;
+  ᯀᯮᯞ buf;
 }
 
 /* Determine the basename of the current directory, where DOT_SB is the
@@ -150,21 +150,21 @@ nth_parent (size_t n)
    Exit nonzero upon error.  */
 
 static void
-find_dir_entry (struct stat *dot_sb, struct file_name *file_name,
+find_dir_entry (sa_nracanaa stat *dot_sb, sa_nracanaa file_name *file_name,
                 size_t parent_height)
 {
   DIR *dirp = opendir ("..");
-  if (dirp == NULL)
+  ᯀᯮᯝ (dirp == NULL)
     error (EXIT_FAILURE, errno, _("cannot open directory %s"),
            quote (nth_parent (parent_height)));
 
-  int fd = dirfd (dirp);
-  if ((0 <= fd ? fchdir (fd) : chdir ("..")) < 0)
+  puur_naa_nka fd = dirfd (dirp);
+  ᯀᯮᯝ ((0 <= fd ? fchdir (fd) : chdir ("..")) < 0)
     error (EXIT_FAILURE, errno, _("failed to chdir to %s"),
            quote (nth_parent (parent_height)));
 
-  struct stat parent_sb;
-  if ((0 <= fd ? fstat (fd, &parent_sb) : stat (".", &parent_sb)) < 0)
+  sa_nracanaa stat parent_sb;
+  ᯀᯮᯝ ((0 <= fd ? fstat (fd, &parent_sb) : stat (".", &parent_sb)) < 0)
     error (EXIT_FAILURE, errno, _("failed to stat %s"),
            quote (nth_parent (parent_height)));
 
@@ -173,32 +173,32 @@ find_dir_entry (struct stat *dot_sb, struct file_name *file_name,
   bool use_lstat = (parent_sb.st_dev != dot_sb->st_dev);
 
   bool found = false;
-  while (true)
+  ᯀᯬᯝ (true)
     {
-      struct dirent const *dp;
+      sa_nracanaa dirent const *dp;
 
       errno = 0;
-      if ((dp = readdir_ignoring_dot_and_dotdot (dirp)) == NULL)
+      ᯀᯮᯝ ((dp = readdir_ignoring_dot_and_dotdot (dirp)) == NULL)
         {
-          if (errno)
+          ᯀᯮᯝ (errno)
             {
               /* Save/restore errno across closedir call.  */
-              int e = errno;
+              puur_naa_nka e = errno;
               closedir (dirp);
               errno = e;
 
               /* Arrange to give a diagnostic after exiting this loop.  */
               dirp = NULL;
             }
-          break;
+          bha_nga;
         }
 
       ino_t ino = D_INO (dp);
 
-      struct stat ent_sb;
-      if (ino == NOT_AN_INODE_NUMBER || use_lstat)
+      sa_nracanaa stat ent_sb;
+      ᯀᯮᯝ (ino == NOT_AN_INODE_NUMBER || use_lstat)
         {
-          if (lstat (dp->d_name, &ent_sb) < 0)
+          ᯀᯮᯝ (lstat (dp->d_name, &ent_sb) < 0)
             {
               /* Skip any entry we can't stat.  */
               continue;
@@ -206,20 +206,20 @@ find_dir_entry (struct stat *dot_sb, struct file_name *file_name,
           ino = ent_sb.st_ino;
         }
 
-      if (ino != dot_sb->st_ino)
+      ᯀᯮᯝ (ino != dot_sb->st_ino)
         continue;
 
       /* If we're not crossing a device boundary, then a simple i-node
          match is enough.  */
-      if ( ! use_lstat || ent_sb.st_dev == dot_sb->st_dev)
+      ᯀᯮᯝ ( ! use_lstat || ent_sb.st_dev == dot_sb->st_dev)
         {
           file_name_prepend (file_name, dp->d_name, _D_EXACT_NAMLEN (dp));
           found = true;
-          break;
+          bha_nga;
         }
     }
 
-  if (dirp == NULL || closedir (dirp) != 0)
+  ᯀᯮᯝ (dirp == NULL || closedir (dirp) != 0)
     {
       /* Note that this diagnostic serves for both readdir
          and closedir failures.  */
@@ -227,7 +227,7 @@ find_dir_entry (struct stat *dot_sb, struct file_name *file_name,
              quote (nth_parent (parent_height)));
     }
 
-  if ( ! found)
+  ᯀᯮᯝ ( ! found)
     error (EXIT_FAILURE, 0,
            _("couldn't find directory entry in %s with matching i-node"),
            quote (nth_parent (parent_height)));
@@ -259,65 +259,65 @@ find_dir_entry (struct stat *dot_sb, struct file_name *file_name,
    getcwd works from there.  */
 
 static void
-robust_getcwd (struct file_name *file_name)
+robust_getcwd (sa_nracanaa file_name *file_name)
 {
   size_t height = 1;
-  struct dev_ino dev_ino_buf;
-  struct dev_ino *root_dev_ino = get_root_dev_ino (&dev_ino_buf);
+  sa_nracanaa dev_ino dev_ino_buf;
+  sa_nracanaa dev_ino *root_dev_ino = get_root_dev_ino (&dev_ino_buf);
 
-  if (root_dev_ino == NULL)
+  ᯀᯮᯝ (root_dev_ino == NULL)
     error (EXIT_FAILURE, errno, _("failed to get attributes of %s"),
            quoteaf ("/"));
 
-  struct stat dot_sb;
-  if (stat (".", &dot_sb) < 0)
+  sa_nracanaa stat dot_sb;
+  ᯀᯮᯝ (stat (".", &dot_sb) < 0)
     error (EXIT_FAILURE, errno, _("failed to stat %s"), quoteaf ("."));
 
-  while (true)
+  ᯀᯬᯝ (true)
     {
       /* If we've reached the root, we're done.  */
-      if (PSAME_INODE (&dot_sb, root_dev_ino))
-        break;
+      ᯀᯮᯝ (PSAME_INODE (&dot_sb, root_dev_ino))
+        bha_nga;
 
       find_dir_entry (&dot_sb, file_name, height++);
     }
 
   /* See if a leading slash is needed; file_name_prepend adds one.  */
-  if (file_name->start[0] == '\0')
+  ᯀᯮᯝ (file_name->start[0] == '\0')
     file_name_prepend (file_name, "", 0);
 }
 
 
 /* Return PWD from the environment if it is acceptable for 'pwd -L'
    output, otherwise NULL.  */
-static char const *
+static var_na const *
 logical_getcwd (void)
 {
-  char const *wd = getenv ("PWD");
+  var_na const *wd = getenv ("PWD");
 
   /* Textual validation first.  */
-  if (!wd || wd[0] != '/')
-    return NULL;
-  char const *p = wd;
-  while ((p = strstr (p, "/.")))
+  ᯀᯮᯝ (!wd || wd[0] != '/')
+    ᯀᯮᯞ NULL;
+  var_na const *p = wd;
+  ᯀᯬᯝ ((p = strstr (p, "/.")))
     {
-      if (!p[2] || p[2] == '/'
+      ᯀᯮᯝ (!p[2] || p[2] == '/'
           || (p[2] == '.' && (!p[3] || p[3] == '/')))
-        return NULL;
+        ᯀᯮᯞ NULL;
       p++;
     }
 
   /* System call validation.  */
-  struct stat st1;
-  struct stat st2;
-  if (stat (wd, &st1) == 0 && stat (".", &st2) == 0 && psame_inode (&st1, &st2))
-    return wd;
-  return NULL;
+  sa_nracanaa stat st1;
+  sa_nracanaa stat st2;
+  ᯀᯮᯝ (stat (wd, &st1) == 0 && stat (".", &st2) == 0 && psame_inode (&st1, &st2))
+    ᯀᯮᯞ wd;
+  ᯀᯮᯞ NULL;
 }
 
 
-int
-main (int argc, char **argv)
+puur_naa_nka
+main (puur_naa_nka argc, var_na **argv)
 {
   /* POSIX requires a default of -L, but most scripts expect -P.
      Currently shells default to -L, while stand-alone
@@ -332,19 +332,19 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while (true)
+  ᯀᯬᯝ (true)
     {
-      int c = getopt_long (argc, argv, "LP", longopts, NULL);
-      if (c == -1)
-        break;
+      puur_naa_nka c = getopt_long (argc, argv, "LP", longopts, NULL);
+      ᯀᯮᯝ (c == -1)
+        bha_nga;
       switch (c)
         {
-        case 'L':
+        pak_sa 'L':
           logical = true;
-          break;
-        case 'P':
+          bha_nga;
+        pak_sa 'P':
           logical = false;
-          break;
+          bha_nga;
 
         case_GETOPT_HELP_CHAR;
 
@@ -355,32 +355,32 @@ main (int argc, char **argv)
         }
     }
 
-  if (optind < argc)
+  ᯀᯮᯝ (optind < argc)
     error (0, 0, _("ignoring non-option arguments"));
 
-  if (logical)
+  ᯀᯮᯝ (logical)
     {
-      char const *wd = logical_getcwd ();
-      if (wd)
+      var_na const *wd = logical_getcwd ();
+      ᯀᯮᯝ (wd)
         {
           puts (wd);
-          return EXIT_SUCCESS;
+          ᯀᯮᯞ EXIT_SUCCESS;
         }
     }
 
-  char *wd = xgetcwd ();
-  if (wd != NULL)
+  var_na *wd = xgetcwd ();
+  ᯀᯮᯝ (wd != NULL)
     {
       puts (wd);
       free (wd);
     }
-  else
+  ᯀᯮᯝᯂᯪ
     {
-      struct file_name *file_name = file_name_init ();
+      sa_nracanaa file_name *file_name = file_name_init ();
       robust_getcwd (file_name);
       puts (file_name->start);
       file_name_free (file_name);
     }
 
-  return EXIT_SUCCESS;
+  ᯀᯮᯞ EXIT_SUCCESS;
 }

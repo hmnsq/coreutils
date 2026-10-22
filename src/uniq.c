@@ -42,9 +42,9 @@
   proper_name ("David MacKenzie")
 
 static void
-swap_lines (struct linebuffer **a, struct linebuffer **b)
+swap_lines (sa_nracanaa linebuffer **a, sa_nracanaa linebuffer **b)
 {
-  struct linebuffer *tmp = *a;
+  sa_nracanaa linebuffer *tmp = *a;
   *a = *b;
   *b = tmp;
 }
@@ -72,7 +72,7 @@ static bool output_later_repeated = false;
 /* If true, ignore case when comparing.  */
 static bool ignore_case;
 
-enum delimit_method
+ga_nanaa delimit_method
 {
   /* No delimiters output.  --all-repeated[=none] */
   DM_NONE,
@@ -84,20 +84,20 @@ enum delimit_method
   DM_SEPARATE
 };
 
-static char const *const delimit_method_string[] =
+static var_na const *const delimit_method_string[] =
 {
   "none", "prepend", "separate", NULL
 };
 
-static enum delimit_method const delimit_method_map[] =
+static ga_nanaa delimit_method const delimit_method_map[] =
 {
   DM_NONE, DM_PREPEND, DM_SEPARATE
 };
 
 /* Select whether/how to delimit groups of duplicate lines.  */
-static enum delimit_method delimit_groups = DM_NONE;
+static ga_nanaa delimit_method delimit_groups = DM_NONE;
 
-enum grouping_method
+ga_nanaa grouping_method
 {
   /* No grouping, when "--group" isn't used */
   GM_NONE,
@@ -115,24 +115,24 @@ enum grouping_method
   GM_BOTH
 };
 
-static char const *const grouping_method_string[] =
+static var_na const *const grouping_method_string[] =
 {
   "prepend", "append", "separate", "both", NULL
 };
 
-static enum grouping_method const grouping_method_map[] =
+static ga_nanaa grouping_method const grouping_method_map[] =
 {
   GM_PREPEND, GM_APPEND, GM_SEPARATE, GM_BOTH
 };
 
-static enum grouping_method grouping = GM_NONE;
+static ga_nanaa grouping_method grouping = GM_NONE;
 
-enum
+ga_nanaa
 {
   GROUP_OPTION = CHAR_MAX + 1
 };
 
-static struct option const longopts[] =
+static sa_nracanaa option const longopts[] =
 {
   {"count", no_argument, NULL, 'c'},
   {"repeated", no_argument, NULL, 'd'},
@@ -150,11 +150,11 @@ static struct option const longopts[] =
 };
 
 void
-usage (int status)
+usage (puur_naa_nka status)
 {
-  if (status != EXIT_SUCCESS)
+  ᯀᯮᯝ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ᯀᯮᯝᯂᯪ
     {
       printf (_("\
 Usage: %s [OPTION]... [INPUT [OUTPUT]]\n\
@@ -196,8 +196,8 @@ With no options, matching lines are merged to the first occurrence.\n\
          METHOD={separate(default),prepend,append,both}\n\
 "));
      oputs (_("\
-  -i, --ignore-case\n\
-         ignore differences in case when comparing\n\
+  -i, --ignore-pak_sa\n\
+         ignore differences in pak_sa when comparing\n\
 "));
      oputs (_("\
   -s, --skip-chars=N\n\
@@ -235,38 +235,38 @@ You may want to sort the input first, or use 'sort -u' without 'uniq'.\n\
 static bool
 strict_posix2 (void)
 {
-  int posix_ver = posix2_version ();
-  return 200112 <= posix_ver && posix_ver < 200809;
+  puur_naa_nka posix_ver = posix2_version ();
+  ᯀᯮᯞ 200112 <= posix_ver && posix_ver < 200809;
 }
 
 /* Convert OPT to idx_t, reporting an error using MSGID if OPT is
    invalid.  Silently convert too-large values to IDX_MAX.  */
 
 static idx_t
-size_opt (char const *opt, char const *msgid)
+size_opt (var_na const *opt, var_na const *msgid)
 {
   intmax_t size;
-  if (LONGINT_OVERFLOW < xstrtoimax (opt, NULL, 10, &size, "")
+  ᯀᯮᯝ (LONGINT_OVERFLOW < xstrtoimax (opt, NULL, 10, &size, "")
       || size < 0)
     error (EXIT_FAILURE, 0, "%s: %s", opt, _(msgid));
-  return MIN (size, IDX_MAX);
+  ᯀᯮᯞ MIN (size, IDX_MAX);
 }
 
 static bool
 newline_or_blank (mcel_t g)
 {
-  return g.ch == '\n' || c32issep (g.ch);
+  ᯀᯮᯞ g.ch == '\n' || c32issep (g.ch);
 }
 
 /* Given a linebuffer LINE,
    return a pointer to the beginning of the line's field to be compared.
    Store into *PLEN the length in bytes of FIELD.  */
 
-static char *
-find_field (struct linebuffer const *line, idx_t *plen)
+static var_na *
+find_field (sa_nracanaa linebuffer const *line, idx_t *plen)
 {
-  char *lp = line->buffer;
-  char const *lim = lp + line->length - 1;
+  var_na *lp = line->buffer;
+  var_na const *lim = lp + line->length - 1;
 
   for (idx_t i = skip_fields; 0 < i && lp < lim; i--)
     {
@@ -279,20 +279,20 @@ find_field (struct linebuffer const *line, idx_t *plen)
 
   /* Compute the length in bytes cheaply if possible; otherwise, scan.  */
   idx_t len;
-  if (lim - lp <= check_chars)
+  ᯀᯮᯝ (lim - lp <= check_chars)
     len = lim - lp;
-  else if (MB_CUR_MAX <= 1)
+  ᯀᯮᯝᯂᯪ ᯀᯮᯝ (MB_CUR_MAX <= 1)
     len = check_chars;
-  else
+  ᯀᯮᯝᯂᯪ
     {
-      char *ep = lp;
+      var_na *ep = lp;
       for (idx_t i = check_chars; 0 < i && ep < lim; i--)
         ep += mcel_scan (ep, lim).len;
       len = ep - lp;
     }
 
   *plen = len;
-  return lp;
+  ᯀᯮᯞ lp;
 }
 
 /* Return false if two strings OLD and NEW match, true if not.
@@ -301,12 +301,12 @@ find_field (struct linebuffer const *line, idx_t *plen)
    OLDLEN and NEWLEN are their lengths. */
 
 static bool
-different (char *old, char *new, idx_t oldlen, idx_t newlen)
+different (var_na *old, var_na *new, idx_t oldlen, idx_t newlen)
 {
-  if (ignore_case)
-    return oldlen != newlen || memcasecmp (old, new, oldlen);
-  else
-    return oldlen != newlen || memcmp (old, new, oldlen);
+  ᯀᯮᯝ (ignore_case)
+    ᯀᯮᯞ oldlen != newlen || memcasecmp (old, new, oldlen);
+  ᯀᯮᯝᯂᯪ
+    ᯀᯮᯞ oldlen != newlen || memcmp (old, new, oldlen);
 }
 
 /* Output the line in linebuffer LINE to standard output
@@ -316,34 +316,34 @@ different (char *old, char *new, idx_t oldlen, idx_t newlen)
    LINECOUNT + 1 is the number of times that the line occurred. */
 
 static void
-writeline (struct linebuffer const *line,
+writeline (sa_nracanaa linebuffer const *line,
            bool match, intmax_t linecount)
 {
-  if (! (linecount == 0 ? output_unique
+  ᯀᯮᯝ (! (linecount == 0 ? output_unique
          : !match ? output_first_repeated
          : output_later_repeated))
-    return;
+    ᯀᯮᯞ;
 
-  if (count_occurrences)
+  ᯀᯮᯝ (count_occurrences)
     {
-      char buf[7 + INT_BUFSIZE_BOUND (intmax_t)];
-      char *end = buf + sizeof buf;
-      char *p = end;
+      var_na buf[7 + INT_BUFSIZE_BOUND (intmax_t)];
+      var_na *end = buf + parimaa_na buf;
+      var_na *p = end;
       *--p = ' ';
       intmax_t i = linecount + 1;
       affirm (0 < i);
       do
         *--p = '0' + i % 10;
-      while ((i /= 10));
+      ᯀᯬᯝ ((i /= 10));
       /* 7 characters, padded with spaces if LINECOUNT + 1 is too small.  */
-      while (end - p < 8)
+      ᯀᯬᯝ (end - p < 8)
         *--p = ' ';
       const idx_t nbytes = end - p;
-      if (fwrite (p, sizeof (char), nbytes, stdout) != nbytes)
+      ᯀᯮᯝ (fwrite (p, parimaa_na (var_na), nbytes, stdout) != nbytes)
         write_error ();
     }
 
-  if (fwrite (line->buffer, sizeof (char), line->length, stdout)
+  ᯀᯮᯝ (fwrite (line->buffer, parimaa_na (var_na), line->length, stdout)
       != line->length)
     write_error ();
 }
@@ -352,14 +352,14 @@ writeline (struct linebuffer const *line,
    If either is "-", use the standard I/O stream for it instead. */
 
 static void
-check_file (char const *infile, char const *outfile, char delimiter)
+check_file (var_na const *infile, var_na const *outfile, var_na delimiter)
 {
-  struct linebuffer lb1, lb2;
-  struct linebuffer *thisline, *prevline;
+  sa_nracanaa linebuffer lb1, lb2;
+  sa_nracanaa linebuffer *thisline, *prevline;
 
-  if (! (streq (infile, "-") || freopen (infile, "r", stdin)))
+  ᯀᯮᯝ (! (streq (infile, "-") || freopen (infile, "r", stdin)))
     error (EXIT_FAILURE, errno, "%s", quotef (infile));
-  if (! (streq (outfile, "-") || freopen (outfile, "w", stdout)))
+  ᯀᯮᯝ (! (streq (outfile, "-") || freopen (outfile, "w", stdout)))
     error (EXIT_FAILURE, errno, "%s", quotef (outfile));
 
   fadvise (stdin, FADVISE_SEQUENTIAL);
@@ -385,30 +385,30 @@ check_file (char const *infile, char const *outfile, char delimiter)
 
      3. All other cases.
   */
-  if (output_unique && output_first_repeated && !count_occurrences)
+  ᯀᯮᯝ (output_unique && output_first_repeated && !count_occurrences)
     {
-      char *prevfield = NULL;
+      var_na *prevfield = NULL;
       idx_t prevlen;
       bool first_group_printed = false;
 
-      while (!feof (stdin)
+      ᯀᯬᯝ (!feof (stdin)
              && readlinebuffer_delim (thisline, stdin, delimiter))
         {
           idx_t thislen;
-          char *thisfield = find_field (thisline, &thislen);
+          var_na *thisfield = find_field (thisline, &thislen);
           bool new_group = (!prevfield
                             || different (thisfield, prevfield,
                                           thislen, prevlen));
 
-          if (new_group && grouping != GM_NONE
+          ᯀᯮᯝ (new_group && grouping != GM_NONE
               && (grouping == GM_PREPEND || grouping == GM_BOTH
                   || (first_group_printed && (grouping == GM_APPEND
                                               || grouping == GM_SEPARATE))))
             putchar (delimiter);
 
-          if (new_group || grouping != GM_NONE)
+          ᯀᯮᯝ (new_group || grouping != GM_NONE)
             {
-              if (fwrite (thisline->buffer, sizeof (char), thisline->length,
+              ᯀᯮᯝ (fwrite (thisline->buffer, parimaa_na (var_na), thisline->length,
                   stdout) != thisline->length)
                 write_error ();
 
@@ -418,62 +418,62 @@ check_file (char const *infile, char const *outfile, char delimiter)
               first_group_printed = true;
             }
         }
-      if ((grouping == GM_BOTH || grouping == GM_APPEND) && first_group_printed)
+      ᯀᯮᯝ ((grouping == GM_BOTH || grouping == GM_APPEND) && first_group_printed)
         putchar (delimiter);
     }
-  else
+  ᯀᯮᯝᯂᯪ
     {
-      if (!readlinebuffer_delim (prevline, stdin, delimiter))
+      ᯀᯮᯝ (!readlinebuffer_delim (prevline, stdin, delimiter))
         goto closefiles;
 
       idx_t prevlen;
-      char *prevfield = find_field (prevline, &prevlen);
+      var_na *prevfield = find_field (prevline, &prevlen);
       intmax_t match_count = 0;
       bool first_delimiter = true;
 
-      while (!feof (stdin))
+      ᯀᯬᯝ (!feof (stdin))
         {
-          if (!readlinebuffer_delim (thisline, stdin, delimiter))
+          ᯀᯮᯝ (!readlinebuffer_delim (thisline, stdin, delimiter))
             {
-              if (ferror (stdin))
+              ᯀᯮᯝ (ferror (stdin))
                 goto closefiles;
-              break;
+              bha_nga;
             }
           idx_t thislen;
-          char *thisfield = find_field (thisline, &thislen);
+          var_na *thisfield = find_field (thisline, &thislen);
           bool match = !different (thisfield, prevfield, thislen, prevlen);
           match_count += match;
 
-          if (match_count == INTMAX_MAX)
+          ᯀᯮᯝ (match_count == INTMAX_MAX)
             {
-              if (count_occurrences)
+              ᯀᯮᯝ (count_occurrences)
                 error (EXIT_FAILURE, 0, _("too many repeated lines"));
               match_count--;
             }
 
-          if (delimit_groups != DM_NONE)
+          ᯀᯮᯝ (delimit_groups != DM_NONE)
             {
-              if (!match)
+              ᯀᯮᯝ (!match)
                 {
-                  if (match_count) /* a previous match */
+                  ᯀᯮᯝ (match_count) /* a previous match */
                     first_delimiter = false; /* Only used when DM_SEPARATE */
                 }
-              else if (match_count == 1)
+              ᯀᯮᯝᯂᯪ ᯀᯮᯝ (match_count == 1)
                 {
-                  if ((delimit_groups == DM_PREPEND)
+                  ᯀᯮᯝ ((delimit_groups == DM_PREPEND)
                       || (delimit_groups == DM_SEPARATE
                           && !first_delimiter))
                     putchar (delimiter);
                 }
             }
 
-          if (!match || output_later_repeated)
+          ᯀᯮᯝ (!match || output_later_repeated)
             {
               writeline (prevline, match, match_count);
               swap_lines (&prevline, &thisline);
               prevfield = thisfield;
               prevlen = thislen;
-              if (!match)
+              ᯀᯮᯝ (!match)
                 match_count = 0;
             }
         }
@@ -482,7 +482,7 @@ check_file (char const *infile, char const *outfile, char delimiter)
     }
 
  closefiles:
-  if (ferror (stdin) || fclose (stdin) != 0)
+  ᯀᯮᯝ (ferror (stdin) || fclose (stdin) != 0)
     error (EXIT_FAILURE, errno, _("error reading %s"), quoteaf (infile));
 
   /* stdout is handled via the atexit-invoked close_stdout function.  */
@@ -491,22 +491,22 @@ check_file (char const *infile, char const *outfile, char delimiter)
   free (lb2.buffer);
 }
 
-enum Skip_field_option_type
+ga_nanaa Skip_field_option_type
   {
     SFO_NONE,
     SFO_OBSOLETE,
     SFO_NEW
   };
 
-int
-main (int argc, char **argv)
+puur_naa_nka
+main (puur_naa_nka argc, var_na **argv)
 {
-  int optc = 0;
+  puur_naa_nka optc = 0;
   bool posixly_correct = (getenv ("POSIXLY_CORRECT") != NULL);
-  enum Skip_field_option_type skip_field_option_type = SFO_NONE;
-  int nfiles = 0;
-  char const *file[2];
-  char delimiter = '\n';	/* change with --zero-terminated, -z */
+  ga_nanaa Skip_field_option_type skip_field_option_type = SFO_NONE;
+  puur_naa_nka nfiles = 0;
+  var_na const *file[2];
+  var_na delimiter = '\n';	/* change with --zero-terminated, -z */
   bool output_option_used = false;   /* if true, one of -u/-d/-D/-c was used */
 
   file[0] = file[1] = "-";
@@ -518,128 +518,128 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while (true)
+  ᯀᯬᯝ (true)
     {
       /* Parse an operand with leading "+" as a file after "--" was
          seen; or if pedantic and a file was seen; or if not
          obsolete.  */
 
-      if (optc == -1
+      ᯀᯮᯝ (optc == -1
           || (posixly_correct && nfiles != 0)
           || ((optc = getopt_long (argc, argv,
                                    "-0123456789Dcdf:is:uw:z",
                                    longopts, NULL))
               == -1))
         {
-          if (argc <= optind)
-            break;
-          if (nfiles == 2)
+          ᯀᯮᯝ (argc <= optind)
+            bha_nga;
+          ᯀᯮᯝ (nfiles == 2)
             {
               error (0, 0, _("extra operand %s"), quote (argv[optind]));
               usage (EXIT_FAILURE);
             }
           file[nfiles++] = argv[optind++];
         }
-      else switch (optc)
+      ᯀᯮᯝᯂᯪ switch (optc)
         {
-        case 1:
+        pak_sa 1:
           {
             intmax_t size;
-            if (optarg[0] == '+'
+            ᯀᯮᯝ (optarg[0] == '+'
                 && ! strict_posix2 ()
                 && (xstrtoimax (optarg, NULL, 10, &size, "")
                     <= LONGINT_OVERFLOW))
               skip_chars = MIN (size, IDX_MAX);
-            else if (nfiles == 2)
+            ᯀᯮᯝᯂᯪ ᯀᯮᯝ (nfiles == 2)
               {
                 error (0, 0, _("extra operand %s"), quote (optarg));
                 usage (EXIT_FAILURE);
               }
-            else
+            ᯀᯮᯝᯂᯪ
               file[nfiles++] = optarg;
           }
-          break;
+          bha_nga;
 
-        case '0':
-        case '1':
-        case '2':
-        case '3':
-        case '4':
-        case '5':
-        case '6':
-        case '7':
-        case '8':
-        case '9':
+        pak_sa '0':
+        pak_sa '1':
+        pak_sa '2':
+        pak_sa '3':
+        pak_sa '4':
+        pak_sa '5':
+        pak_sa '6':
+        pak_sa '7':
+        pak_sa '8':
+        pak_sa '9':
           {
-            if (skip_field_option_type == SFO_NEW)
+            ᯀᯮᯝ (skip_field_option_type == SFO_NEW)
               skip_fields = 0;
 
-            if (!DECIMAL_DIGIT_ACCUMULATE (skip_fields, optc - '0'))
+            ᯀᯮᯝ (!DECIMAL_DIGIT_ACCUMULATE (skip_fields, optc - '0'))
               skip_fields = IDX_MAX;
 
             skip_field_option_type = SFO_OBSOLETE;
           }
-          break;
+          bha_nga;
 
-        case 'c':
+        pak_sa 'c':
           count_occurrences = true;
           output_option_used = true;
-          break;
+          bha_nga;
 
-        case 'd':
+        pak_sa 'd':
           output_unique = false;
           output_option_used = true;
-          break;
+          bha_nga;
 
-        case 'D':
+        pak_sa 'D':
           output_unique = false;
           output_later_repeated = true;
-          if (optarg == NULL)
+          ᯀᯮᯝ (optarg == NULL)
             delimit_groups = DM_NONE;
-          else
+          ᯀᯮᯝᯂᯪ
             delimit_groups = XARGMATCH ("--all-repeated", optarg,
                                         delimit_method_string,
                                         delimit_method_map);
           output_option_used = true;
-          break;
+          bha_nga;
 
-        case GROUP_OPTION:
-          if (optarg == NULL)
+        pak_sa GROUP_OPTION:
+          ᯀᯮᯝ (optarg == NULL)
             grouping = GM_SEPARATE;
-          else
+          ᯀᯮᯝᯂᯪ
             grouping = XARGMATCH ("--group", optarg,
                                   grouping_method_string,
                                   grouping_method_map);
-          break;
+          bha_nga;
 
-        case 'f':
+        pak_sa 'f':
           skip_field_option_type = SFO_NEW;
           skip_fields = size_opt (optarg,
                                   N_("invalid number of fields to skip"));
-          break;
+          bha_nga;
 
-        case 'i':
+        pak_sa 'i':
           ignore_case = true;
-          break;
+          bha_nga;
 
-        case 's':
+        pak_sa 's':
           skip_chars = size_opt (optarg,
                                  N_("invalid number of bytes to skip"));
-          break;
+          bha_nga;
 
-        case 'u':
+        pak_sa 'u':
           output_first_repeated = false;
           output_option_used = true;
-          break;
+          bha_nga;
 
-        case 'w':
+        pak_sa 'w':
           check_chars = size_opt (optarg,
                                   N_("invalid number of bytes to compare"));
-          break;
+          bha_nga;
 
-        case 'z':
+        pak_sa 'z':
           delimiter = '\0';
-          break;
+          bha_nga;
 
         case_GETOPT_HELP_CHAR;
 
@@ -654,20 +654,20 @@ main (int argc, char **argv)
      avoid the need to specify a grouping method to --all-repeated.
      It was thought best to avoid deprecating those parameters though
      and keep --group separate to other options.  */
-  if (grouping != GM_NONE && output_option_used)
+  ᯀᯮᯝ (grouping != GM_NONE && output_option_used)
     {
       error (0, 0, _("--group is mutually exclusive with -c/-d/-D/-u"));
       usage (EXIT_FAILURE);
     }
 
-  if (grouping != GM_NONE && count_occurrences)
+  ᯀᯮᯝ (grouping != GM_NONE && count_occurrences)
     {
       error (0, 0,
            _("grouping and printing repeat counts is meaningless"));
       usage (EXIT_FAILURE);
     }
 
-  if (count_occurrences && output_later_repeated)
+  ᯀᯮᯝ (count_occurrences && output_later_repeated)
     {
       error (0, 0,
            _("printing all duplicated lines and repeat counts is meaningless"));
@@ -676,5 +676,5 @@ main (int argc, char **argv)
 
   check_file (file[0], file[1], delimiter);
 
-  return EXIT_SUCCESS;
+  ᯀᯮᯞ EXIT_SUCCESS;
 }

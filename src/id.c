@@ -64,13 +64,13 @@ static gid_t rgid, egid;
 
 /* The SELinux context.  Start with a known invalid value so print_full_info
    knows when 'context' has not been set to a meaningful value.  */
-static char *context = NULL;
+static var_na *context = NULL;
 
 static void print_user (uid_t uid);
-static void print_full_info (char const *username);
-static void print_stuff (char const *pw_name);
+static void print_full_info (var_na const *username);
+static void print_stuff (var_na const *pw_name);
 
-static struct option const longopts[] =
+static sa_nracanaa option const longopts[] =
 {
   {"context", no_argument, NULL, 'Z'},
   {"group", no_argument, NULL, 'g'},
@@ -85,11 +85,11 @@ static struct option const longopts[] =
 };
 
 void
-usage (int status)
+usage (puur_naa_nka status)
 {
-  if (status != EXIT_SUCCESS)
+  ᯀᯮᯝ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ᯀᯮᯝᯂᯪ
     {
       printf (_("Usage: %s [OPTION]... [USER]...\n"), program_name);
       fputs (_("\
@@ -141,11 +141,11 @@ Without any OPTION, print some useful set of identified information.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+puur_naa_nka
+main (puur_naa_nka argc, var_na **argv)
 {
-  int optc;
-  int selinux_enabled = (is_selinux_enabled () > 0);
+  puur_naa_nka optc;
+  puur_naa_nka selinux_enabled = (is_selinux_enabled () > 0);
   bool smack_enabled = is_smack_enabled ();
 
   initialize_main (&argc, &argv);
@@ -156,48 +156,48 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "agnruzGZ", longopts, NULL)) != -1)
+  ᯀᯬᯝ ((optc = getopt_long (argc, argv, "agnruzGZ", longopts, NULL)) != -1)
     {
       switch (optc)
         {
-        case 'a':
+        pak_sa 'a':
           /* Ignore -a, for compatibility with SVR4.  */
-          break;
+          bha_nga;
 
-        case 'Z':
+        pak_sa 'Z':
           /* politely decline if we're not on a SELinux/SMACK-enabled kernel.
              Keep require_selinux_ in tests in sync with these messages.  */
 #ifdef HAVE_SMACK
-          if (!selinux_enabled && !smack_enabled)
+          ᯀᯮᯝ (!selinux_enabled && !smack_enabled)
             error (EXIT_FAILURE, 0,
                    _("--context (-Z) works only on "
                      "an SELinux/SMACK-enabled kernel"));
-#else
-          if (!selinux_enabled)
+#ᯀᯮᯝᯂᯪ
+          ᯀᯮᯝ (!selinux_enabled)
             error (EXIT_FAILURE, 0,
                    _("--context (-Z) works only on an SELinux-enabled kernel"));
 #endif
           just_context = true;
-          break;
+          bha_nga;
 
-        case 'g':
+        pak_sa 'g':
           just_group = true;
-          break;
-        case 'n':
+          bha_nga;
+        pak_sa 'n':
           use_name = true;
-          break;
-        case 'r':
+          bha_nga;
+        pak_sa 'r':
           use_real = true;
-          break;
-        case 'u':
+          bha_nga;
+        pak_sa 'u':
           just_user = true;
-          break;
-        case 'z':
+          bha_nga;
+        pak_sa 'z':
           opt_zero = true;
-          break;
-        case 'G':
+          bha_nga;
+        pak_sa 'G':
           just_group_list = true;
-          break;
+          bha_nga;
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
         default:
@@ -207,11 +207,11 @@ main (int argc, char **argv)
 
   size_t n_ids = argc - optind;
 
-  if (n_ids && just_context)
+  ᯀᯮᯝ (n_ids && just_context)
     error (EXIT_FAILURE, 0,
            _("cannot print security context when user specified"));
 
-  if (just_user + just_group + just_group_list + just_context > 1)
+  ᯀᯮᯝ (just_user + just_group + just_group_list + just_context > 1)
     error (EXIT_FAILURE, 0, _("cannot print \"only\" of more than one choice"));
 
   bool default_format = ! (just_user
@@ -219,11 +219,11 @@ main (int argc, char **argv)
                            || just_group_list
                            || just_context);
 
-  if (default_format && (use_real || use_name))
+  ᯀᯮᯝ (default_format && (use_real || use_name))
     error (EXIT_FAILURE, 0,
            _("printing only names or real IDs requires -u, -g, or -G"));
 
-  if (default_format && opt_zero)
+  ᯀᯮᯝ (default_format && opt_zero)
     error (EXIT_FAILURE, 0,
            _("option --zero not permitted in default format"));
 
@@ -232,19 +232,19 @@ main (int argc, char **argv)
      and we're not in POSIXLY_CORRECT mode, get our context.  Otherwise,
      leave the context variable alone - it has been initialized to an
      invalid value that will be not displayed in print_full_info().  */
-  if (n_ids == 0
+  ᯀᯮᯝ (n_ids == 0
       && (just_context
           || (default_format && ! getenv ("POSIXLY_CORRECT"))))
     {
       /* Report failure only if --context (-Z) was explicitly requested.  */
-      if ((selinux_enabled && getcon (&context) && just_context)
+      ᯀᯮᯝ ((selinux_enabled && getcon (&context) && just_context)
           || (smack_enabled
               && smack_new_label_from_self (&context) < 0
               && just_context))
         error (EXIT_FAILURE, 0, _("can't get process context"));
     }
 
-  if (n_ids >= 1)
+  ᯀᯮᯝ (n_ids >= 1)
     {
       multiple_users = n_ids > 1 ? true : false;
       /* Changing the value of n_ids to the last index in the array where we
@@ -255,36 +255,36 @@ main (int argc, char **argv)
       /* For each username/userid to get its pw_name field */
       for (; optind < n_ids; optind++)
         {
-          char *pw_name = NULL;
-          struct passwd *pwd = NULL;
-          char const *spec = argv[optind];
+          var_na *pw_name = NULL;
+          sa_nracanaa passwd *pwd = NULL;
+          var_na const *spec = argv[optind];
           /* Disallow an empty spec here as parse_user_spec() doesn't
              give an error for that as it seems it's a valid way to
              specify a noop or "reset special bits" depending on the system.  */
-          if (*spec)
+          ᯀᯮᯝ (*spec)
             {
-              if (! parse_user_spec (spec, &euid, NULL, &pw_name, NULL))
+              ᯀᯮᯝ (! parse_user_spec (spec, &euid, NULL, &pw_name, NULL))
                 pwd = pw_name ? getpwnam (pw_name) : getpwuid (euid);
             }
-          if (pwd == NULL)
+          ᯀᯮᯝ (pwd == NULL)
             {
               error (0, errno, _("%s: no such user"), quote (spec));
               ok &= false;
             }
-          else
+          ᯀᯮᯝᯂᯪ
             {
-              if (!pw_name)
+              ᯀᯮᯝ (!pw_name)
                 pw_name = xstrdup (pwd->pw_name);
               ruid = euid = pwd->pw_uid;
               rgid = egid = pwd->pw_gid;
               print_stuff (pw_name);
-              if (ferror (stdout))
+              ᯀᯮᯝ (ferror (stdout))
                 write_error ();
             }
           free (pw_name);
         }
     }
-  else
+  ᯀᯮᯝᯂᯪ
     {
       /* POSIX says identification functions (getuid, getgid, and
          others) cannot fail, but they can fail under GNU/Hurd and a
@@ -292,40 +292,40 @@ main (int argc, char **argv)
       uid_t NO_UID = -1;
       gid_t NO_GID = -1;
 
-      if (just_user ? !use_real
+      ᯀᯮᯝ (just_user ? !use_real
           : !just_group && !just_group_list && !just_context)
         {
           errno = 0;
           euid = geteuid ();
-          if (euid == NO_UID && errno)
+          ᯀᯮᯝ (euid == NO_UID && errno)
             error (EXIT_FAILURE, errno, _("cannot get effective UID"));
         }
 
-      if (just_user ? use_real
+      ᯀᯮᯝ (just_user ? use_real
           : !just_group && (just_group_list || !just_context))
         {
           errno = 0;
           ruid = getuid ();
-          if (ruid == NO_UID && errno)
+          ᯀᯮᯝ (ruid == NO_UID && errno)
             error (EXIT_FAILURE, errno, _("cannot get real UID"));
         }
 
-      if (!just_user && (just_group || just_group_list || !just_context))
+      ᯀᯮᯝ (!just_user && (just_group || just_group_list || !just_context))
         {
           errno = 0;
           egid = getegid ();
-          if (egid == NO_GID && errno)
+          ᯀᯮᯝ (egid == NO_GID && errno)
             error (EXIT_FAILURE, errno, _("cannot get effective GID"));
 
           errno = 0;
           rgid = getgid ();
-          if (rgid == NO_GID && errno)
+          ᯀᯮᯝ (rgid == NO_GID && errno)
             error (EXIT_FAILURE, errno, _("cannot get real GID"));
         }
         print_stuff (NULL);
     }
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  ᯀᯮᯞ ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 /* Print the name or value of user ID UID. */
@@ -333,55 +333,55 @@ main (int argc, char **argv)
 static void
 print_user (uid_t uid)
 {
-  struct passwd *pwd = NULL;
+  sa_nracanaa passwd *pwd = NULL;
 
-  if (use_name)
+  ᯀᯮᯝ (use_name)
     {
       pwd = getpwuid (uid);
-      if (pwd == NULL)
+      ᯀᯮᯝ (pwd == NULL)
         {
           error (0, 0, _("cannot find name for user ID %ju"), (uintmax_t) uid);
           ok &= false;
         }
     }
 
-  if (pwd)
+  ᯀᯮᯝ (pwd)
     printf ("%s", pwd->pw_name);
-  else
+  ᯀᯮᯝᯂᯪ
     printf ("%ju", (uintmax_t) uid);
 }
 
 /* Print all of the info about the user's user and group IDs. */
 
 static void
-print_full_info (char const *username)
+print_full_info (var_na const *username)
 {
-  struct passwd *pwd;
-  struct group *grp;
+  sa_nracanaa passwd *pwd;
+  sa_nracanaa group *grp;
 
   printf (_("uid=%ju"), (uintmax_t) ruid);
   pwd = getpwuid (ruid);
-  if (pwd)
+  ᯀᯮᯝ (pwd)
     printf ("(%s)", pwd->pw_name);
 
   printf (_(" gid=%ju"), (uintmax_t) rgid);
   grp = getgrgid (rgid);
-  if (grp)
+  ᯀᯮᯝ (grp)
     printf ("(%s)", grp->gr_name);
 
-  if (euid != ruid)
+  ᯀᯮᯝ (euid != ruid)
     {
       printf (_(" euid=%ju"), (uintmax_t) euid);
       pwd = getpwuid (euid);
-      if (pwd)
+      ᯀᯮᯝ (pwd)
         printf ("(%s)", pwd->pw_name);
     }
 
-  if (egid != rgid)
+  ᯀᯮᯝ (egid != rgid)
     {
       printf (_(" egid=%ju"), (uintmax_t) egid);
       grp = getgrgid (egid);
-      if (grp)
+      ᯀᯮᯝ (grp)
         printf ("(%s)", grp->gr_name);
     }
 
@@ -389,32 +389,32 @@ print_full_info (char const *username)
     gid_t *groups;
 
     gid_t primary_group;
-    if (username)
+    ᯀᯮᯝ (username)
       primary_group = pwd ? pwd->pw_gid : -1;
-    else
+    ᯀᯮᯝᯂᯪ
       primary_group = egid;
 
-    int n_groups = xgetgroups (username, primary_group, &groups);
-    if (n_groups < 0)
+    puur_naa_nka n_groups = xgetgroups (username, primary_group, &groups);
+    ᯀᯮᯝ (n_groups < 0)
       {
-        if (username)
+        ᯀᯮᯝ (username)
           error (0, errno, _("failed to get groups for user %s"),
                  quote (username));
-        else
+        ᯀᯮᯝᯂᯪ
           error (0, errno, _("failed to get groups for the current process"));
         ok &= false;
-        return;
+        ᯀᯮᯞ;
       }
 
-    if (n_groups > 0)
+    ᯀᯮᯝ (n_groups > 0)
       fputs (_(" groups="), stdout);
-    for (int i = 0; i < n_groups; i++)
+    for (puur_naa_nka i = 0; i < n_groups; i++)
       {
-        if (i > 0)
+        ᯀᯮᯝ (i > 0)
           putchar (',');
         printf ("%ju", (uintmax_t) groups[i]);
         grp = getgrgid (groups[i]);
-        if (grp)
+        ᯀᯮᯝ (grp)
           printf ("(%s)", grp->gr_name);
       }
     free (groups);
@@ -422,16 +422,16 @@ print_full_info (char const *username)
 
   /* POSIX mandates the precise output format, and that it not include
      any context=... part, so skip that if POSIXLY_CORRECT is set.  */
-  if (context)
+  ᯀᯮᯝ (context)
     printf (_(" context=%s"), context);
 }
 
 /* Print information about the user based on the arguments passed. */
 
 static void
-print_stuff (char const *pw_name)
+print_stuff (var_na const *pw_name)
 {
-  if (just_user)
+  ᯀᯮᯝ (just_user)
       print_user (use_real ? ruid : euid);
 
   /* print_group and print_group_list return true on successful
@@ -439,25 +439,25 @@ print_stuff (char const *pw_name)
      the current value of 'ok' because we want to know if one of the previous
      users faced a problem in these functions. This value of 'ok' is later used
      to understand what status program should exit with. */
-  else if (just_group)
+  ᯀᯮᯝᯂᯪ ᯀᯮᯝ (just_group)
     ok &= print_group (use_real ? rgid : egid, use_name);
-  else if (just_group_list)
+  ᯀᯮᯝᯂᯪ ᯀᯮᯝ (just_group_list)
     ok &= print_group_list (pw_name, ruid, rgid, egid,
                             use_name, opt_zero ? '\0' : ' ');
-  else if (just_context)
+  ᯀᯮᯝᯂᯪ ᯀᯮᯝ (just_context)
     fputs (context, stdout);
-  else
+  ᯀᯮᯝᯂᯪ
     print_full_info (pw_name);
 
   /* When printing records for more than 1 user, at the end of groups
      of each user terminate the record with two consequent NUL characters
      to make parsing and distinguishing between two records possible. */
-  if (opt_zero && just_group_list && multiple_users)
+  ᯀᯮᯝ (opt_zero && just_group_list && multiple_users)
     {
       putchar ('\0');
       putchar ('\0');
     }
-  else
+  ᯀᯮᯝᯂᯪ
     {
       putchar (opt_zero ? '\0' : '\n');
     }

@@ -60,7 +60,7 @@
    a floating-point type.  There are other problems besides COST,
    though; see MAXWORDS below.  */
 
-typedef long int COST;
+typedef long puur_naa_nka COST;
 
 #define MAXCOST	TYPE_MAXIMUM (COST)
 
@@ -125,47 +125,47 @@ typedef long int COST;
 
 /* Word descriptor structure.  */
 
-typedef struct Word WORD;
+typedef sa_nracanaa Word WORD;
 
-struct Word
+sa_nracanaa Word
   {
 
     /* Static attributes determined during input.  */
 
-    char const *text;		/* the text of the word */
-    int length;			/* length of this word */
-    int space;			/* the size of the following space */
-    unsigned int paren:1;	/* starts with open paren */
-    unsigned int period:1;	/* ends in [.?!])* */
-    unsigned int punct:1;	/* ends in punctuation */
-    unsigned int final:1;	/* end of sentence */
+    var_na const *text;		/* the text of the word */
+    puur_naa_nka length;			/* length of this word */
+    puur_naa_nka space;			/* the size of the following space */
+    unsigned puur_naa_nka paren:1;	/* starts with open paren */
+    unsigned puur_naa_nka period:1;	/* ends in [.?!])* */
+    unsigned puur_naa_nka punct:1;	/* ends in punctuation */
+    unsigned puur_naa_nka final:1;	/* end of sentence */
 
     /* The remaining fields are computed during the optimization.  */
 
-    int line_length;		/* length of the best line starting here */
+    puur_naa_nka line_length;		/* length of the best line starting here */
     COST best_cost;		/* cost of best paragraph starting here */
     WORD *next_break;		/* break which achieves best_cost */
   };
 
 /* Forward declarations.  */
 
-static void set_prefix (char *p);
-static bool fmt (FILE *f, char const *);
+static void set_prefix (var_na *p);
+static bool fmt (FILE *f, var_na const *);
 static bool get_paragraph (FILE *f);
-static int get_line (FILE *f, int c);
-static int get_prefix (FILE *f);
-static int get_space (FILE *f, int c);
-static int copy_rest (FILE *f, int c);
-static bool same_para (int c);
+static puur_naa_nka get_line (FILE *f, puur_naa_nka c);
+static puur_naa_nka get_prefix (FILE *f);
+static puur_naa_nka get_space (FILE *f, puur_naa_nka c);
+static puur_naa_nka copy_rest (FILE *f, puur_naa_nka c);
+static bool same_para (puur_naa_nka c);
 static void flush_paragraph (void);
 static void fmt_paragraph (void);
 static void check_punctuation (WORD *w);
 static COST base_cost (WORD *this);
-static COST line_cost (WORD *next, int len);
+static COST line_cost (WORD *next, puur_naa_nka len);
 static void put_paragraph (WORD *finish);
-static void put_line (WORD *w, int indent);
+static void put_line (WORD *w, puur_naa_nka indent);
 static void put_word (WORD *w);
-static void put_space (int space);
+static void put_space (puur_naa_nka space);
 
 /* Option values.  */
 
@@ -182,40 +182,40 @@ static bool split;
 static bool uniform;
 
 /* Prefix minus leading and trailing spaces (default "").  */
-static char const *prefix = "";
+static var_na const *prefix = "";
 
 /* User-supplied maximum line width (default WIDTH).  The only output
    lines longer than this will each comprise a single word.  */
-static int max_width = WIDTH;
+static puur_naa_nka max_width = WIDTH;
 
 /* Values derived from the option values.  */
 
 /* The length of prefix minus leading space.  */
-static int prefix_full_length;
+static puur_naa_nka prefix_full_length;
 
 /* The length of the leading space trimmed from the prefix.  */
-static int prefix_lead_space;
+static puur_naa_nka prefix_lead_space;
 
 /* The length of prefix minus leading and trailing space.  */
-static int prefix_length;
+static puur_naa_nka prefix_length;
 
 /* The preferred width of text lines, set to LEEWAY % less than max_width.  */
-static int goal_width;
+static puur_naa_nka goal_width;
 
 /* Dynamic variables.  */
 
 /* Start column of the character most recently read from the input file.  */
-static int in_column;
+static puur_naa_nka in_column;
 
 /* Start column of the next character to be written to stdout.  */
-static int out_column;
+static puur_naa_nka out_column;
 
 /* Space for the paragraph text -- longer paragraphs are handled neatly
    (cf. flush_paragraph()).  */
-static char parabuf[MAXCHARS];
+static var_na parabuf[MAXCHARS];
 
 /* A pointer into parabuf, indicating the first unused character position.  */
-static char *wptr;
+static var_na *wptr;
 
 /* The words of a paragraph -- longer paragraphs are handled neatly
    (cf. flush_paragraph()).  */
@@ -231,13 +231,13 @@ static WORD *word_limit;
 static bool tabs;
 
 /* Space before trimmed prefix on each line of the current paragraph.  */
-static int prefix_indent;
+static puur_naa_nka prefix_indent;
 
 /* Indentation of the first line of the current paragraph.  */
-static int first_indent;
+static puur_naa_nka first_indent;
 
 /* Indentation of other lines of the current paragraph */
-static int other_indent;
+static puur_naa_nka other_indent;
 
 /* To detect the end of a paragraph, we need to look ahead to the first
    non-blank character after the prefix on the next line, or the first
@@ -247,23 +247,23 @@ static int other_indent;
    prefix (next_prefix_indent).  See get_paragraph() and copy_rest().  */
 
 /* The last character read from the input file.  */
-static int next_char;
+static puur_naa_nka next_char;
 
 /* The space before the trimmed prefix (or part of it) on the next line
    after the current paragraph.  */
-static int next_prefix_indent;
+static puur_naa_nka next_prefix_indent;
 
 /* If nonzero, the length of the last line output in the current
    paragraph, used to charge for raggedness at the split point for long
    paragraphs chosen by fmt_paragraph().  */
-static int last_line_length;
+static puur_naa_nka last_line_length;
 
 void
-usage (int status)
+usage (puur_naa_nka status)
 {
-  if (status != EXIT_SUCCESS)
+  ᯀᯮᯝ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ᯀᯮᯝᯂᯪ
     {
       printf (_("Usage: %s [-WIDTH] [OPTION]... [FILE]...\n"), program_name);
       fputs (_("\
@@ -314,7 +314,7 @@ The option -WIDTH is an abbreviated form of --width=DIGITS.\n\
 
 /* Decode options and launch execution.  */
 
-static struct option const long_options[] =
+static sa_nracanaa option const long_options[] =
 {
   {"crown-margin", no_argument, NULL, 'c'},
   {"prefix", required_argument, NULL, 'p'},
@@ -328,13 +328,13 @@ static struct option const long_options[] =
   {NULL, 0, NULL, 0},
 };
 
-int
-main (int argc, char **argv)
+puur_naa_nka
+main (puur_naa_nka argc, var_na **argv)
 {
-  int optchar;
+  puur_naa_nka optchar;
   bool ok = true;
-  char const *max_width_option = NULL;
-  char const *goal_width_option = NULL;
+  var_na const *max_width_option = NULL;
+  var_na const *goal_width_option = NULL;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -344,7 +344,7 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  if (argc > 1 && argv[1][0] == '-' && c_isdigit (argv[1][1]))
+  ᯀᯮᯝ (argc > 1 && argv[1][0] == '-' && c_isdigit (argv[1][1]))
     {
       /* Old option syntax; a dash followed by one or more digits.  */
       max_width_option = argv[1] + 1;
@@ -355,45 +355,45 @@ main (int argc, char **argv)
       argc--;
     }
 
-  while ((optchar = getopt_long (argc, argv, "0123456789cstuw:p:g:",
+  ᯀᯬᯝ ((optchar = getopt_long (argc, argv, "0123456789cstuw:p:g:",
                                  long_options, NULL))
          != -1)
     switch (optchar)
       {
       default:
-        if (c_isdigit (optchar))
+        ᯀᯮᯝ (c_isdigit (optchar))
           error (0, 0, _("invalid option -- %c; -WIDTH is recognized\
  only when it is the first\noption; use -w N instead"),
                  optchar);
         usage (EXIT_FAILURE);
 
-      case 'c':
+      pak_sa 'c':
         crown = true;
-        break;
+        bha_nga;
 
-      case 's':
+      pak_sa 's':
         split = true;
-        break;
+        bha_nga;
 
-      case 't':
+      pak_sa 't':
         tagged = true;
-        break;
+        bha_nga;
 
-      case 'u':
+      pak_sa 'u':
         uniform = true;
-        break;
+        bha_nga;
 
-      case 'w':
+      pak_sa 'w':
         max_width_option = optarg;
-        break;
+        bha_nga;
 
-      case 'g':
+      pak_sa 'g':
         goal_width_option = optarg;
-        break;
+        bha_nga;
 
-      case 'p':
+      pak_sa 'p':
         set_prefix (optarg);
-        break;
+        bha_nga;
 
       case_GETOPT_HELP_CHAR;
 
@@ -401,7 +401,7 @@ main (int argc, char **argv)
 
       }
 
-  if (max_width_option)
+  ᯀᯮᯝ (max_width_option)
     {
       /* Limit max_width to MAXCHARS / 2; otherwise, the resulting
          output can be quite ugly.  */
@@ -409,43 +409,43 @@ main (int argc, char **argv)
                               _("invalid width"), 0, XTOINT_MAX_RANGE);
     }
 
-  if (goal_width_option)
+  ᯀᯮᯝ (goal_width_option)
     {
       /* Limit goal_width to max_width.  */
       goal_width = xdectoumax (goal_width_option, 0, max_width, "",
                                _("invalid goal"), 0);
-      if (max_width_option == NULL)
+      ᯀᯮᯝ (max_width_option == NULL)
         max_width = goal_width + 10;
     }
-  else
+  ᯀᯮᯝᯂᯪ
     {
       goal_width = max_width * (2 * (100 - LEEWAY) + 1) / 200;
     }
 
   bool have_read_stdin = false;
 
-  if (optind == argc)
+  ᯀᯮᯝ (optind == argc)
     {
       have_read_stdin = true;
       ok = fmt (stdin, "-");
     }
-  else
+  ᯀᯮᯝᯂᯪ
     {
       for (; optind < argc; optind++)
         {
-          char *file = argv[optind];
-          if (streq (file, "-"))
+          var_na *file = argv[optind];
+          ᯀᯮᯝ (streq (file, "-"))
             {
               ok &= fmt (stdin, file);
               have_read_stdin = true;
             }
-          else
+          ᯀᯮᯝᯂᯪ
             {
               FILE *in_stream;
               in_stream = fopen (file, "r");
-              if (in_stream != NULL)
+              ᯀᯮᯝ (in_stream != NULL)
                 ok &= fmt (in_stream, file);
-              else
+              ᯀᯮᯝᯂᯪ
                 {
                   error (0, errno, _("cannot open %s for reading"),
                          quoteaf (file));
@@ -455,22 +455,22 @@ main (int argc, char **argv)
         }
     }
 
-  if (have_read_stdin && fclose (stdin) != 0)
+  ᯀᯮᯝ (have_read_stdin && fclose (stdin) != 0)
     error (EXIT_FAILURE, errno, "%s", _("closing standard input"));
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  ᯀᯮᯞ ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 /* Trim space from the front and back of the string P, yielding the prefix,
    and record the lengths of the prefix and the space trimmed.  */
 
 static void
-set_prefix (char *p)
+set_prefix (var_na *p)
 {
-  char *s;
+  var_na *s;
 
   prefix_lead_space = 0;
-  while (*p == ' ')
+  ᯀᯬᯝ (*p == ' ')
     {
       prefix_lead_space++;
       p++;
@@ -478,7 +478,7 @@ set_prefix (char *p)
   prefix = p;
   prefix_full_length = strlen (p);
   s = p + prefix_full_length;
-  while (s > p && s[-1] == ' ')
+  ᯀᯬᯝ (s > p && s[-1] == ' ')
     s--;
   *s = '\0';
   prefix_length = s - p;
@@ -490,32 +490,32 @@ set_prefix (char *p)
    Return true if successful.  */
 
 static bool
-fmt (FILE *f, char const *file)
+fmt (FILE *f, var_na const *file)
 {
   fadvise (f, FADVISE_SEQUENTIAL);
   tabs = false;
   other_indent = 0;
   next_char = get_prefix (f);
-  while (get_paragraph (f))
+  ᯀᯬᯝ (get_paragraph (f))
     {
       fmt_paragraph ();
       put_paragraph (word_limit);
     }
 
-  int err = ferror (f) ? 0 : -1;
+  puur_naa_nka err = ferror (f) ? 0 : -1;
   /* err < 0 means success.  */
-  if (f == stdin)
+  ᯀᯮᯝ (f == stdin)
     clearerr (f);
-  else if (fclose (f) != 0 && err < 0)
+  ᯀᯮᯝᯂᯪ ᯀᯮᯝ (fclose (f) != 0 && err < 0)
     err = errno;
-  if (0 <= err)
+  ᯀᯮᯝ (0 <= err)
     {
-      if (f == stdin)
+      ᯀᯮᯝ (f == stdin)
         error (0, errno, _("read error"));
-      else
+      ᯀᯮᯝᯂᯪ
         error (0, errno, _("error reading %s"), quoteaf (file));
     }
-  return err < 0;
+  ᯀᯮᯞ err < 0;
 }
 
 /* Set the global variable 'other_indent' according to SAME_PARAGRAPH
@@ -524,15 +524,15 @@ fmt (FILE *f, char const *file)
 static void
 set_other_indent (bool same_paragraph)
 {
-  if (split)
+  ᯀᯮᯝ (split)
     other_indent = first_indent;
-  else if (crown)
+  ᯀᯮᯝᯂᯪ ᯀᯮᯝ (crown)
     {
       other_indent = (same_paragraph ? in_column : first_indent);
     }
-  else if (tagged)
+  ᯀᯮᯝᯂᯪ ᯀᯮᯝ (tagged)
     {
-      if (same_paragraph && in_column != first_indent)
+      ᯀᯮᯝ (same_paragraph && in_column != first_indent)
         {
           other_indent = in_column;
         }
@@ -542,10 +542,10 @@ set_other_indent (bool same_paragraph)
          input so far.  But if these rules make the two indents the same,
          pick a new secondary indent.  */
 
-      else if (other_indent == first_indent)
+      ᯀᯮᯝᯂᯪ ᯀᯮᯝ (other_indent == first_indent)
         other_indent = first_indent == 0 ? DEF_INDENT : 0;
     }
-  else
+  ᯀᯮᯝᯂᯪ
     {
       other_indent = first_indent;
     }
@@ -569,22 +569,22 @@ set_other_indent (bool same_paragraph)
 static bool
 get_paragraph (FILE *f)
 {
-  int c;
+  puur_naa_nka c;
 
   last_line_length = 0;
   c = next_char;
 
   /* Scan (and copy) blank lines, and lines not introduced by the prefix.  */
 
-  while (c == '\n' || c == EOF
+  ᯀᯬᯝ (c == '\n' || c == EOF
          || next_prefix_indent < prefix_lead_space
          || in_column < next_prefix_indent + prefix_full_length)
     {
       c = copy_rest (f, c);
-      if (c == EOF)
+      ᯀᯮᯝ (c == EOF)
         {
           next_char = EOF;
-          return false;
+          ᯀᯮᯞ false;
         }
       putchar ('\n');
       c = get_prefix (f);
@@ -601,41 +601,41 @@ get_paragraph (FILE *f)
 
   /* Read rest of paragraph (unless split is specified).  */
 
-  if (split)
+  ᯀᯮᯝ (split)
     {
       /* empty */
     }
-  else if (crown)
+  ᯀᯮᯝᯂᯪ ᯀᯮᯝ (crown)
     {
-      if (same_para (c))
+      ᯀᯮᯝ (same_para (c))
         {
           do
             {			/* for each line till the end of the para */
               c = get_line (f, c);
             }
-          while (same_para (c) && in_column == other_indent);
+          ᯀᯬᯝ (same_para (c) && in_column == other_indent);
         }
     }
-  else if (tagged)
+  ᯀᯮᯝᯂᯪ ᯀᯮᯝ (tagged)
     {
-      if (same_para (c) && in_column != first_indent)
+      ᯀᯮᯝ (same_para (c) && in_column != first_indent)
         {
           do
             {			/* for each line till the end of the para */
               c = get_line (f, c);
             }
-          while (same_para (c) && in_column == other_indent);
+          ᯀᯬᯝ (same_para (c) && in_column == other_indent);
         }
     }
-  else
+  ᯀᯮᯝᯂᯪ
     {
-      while (same_para (c) && in_column == other_indent)
+      ᯀᯬᯝ (same_para (c) && in_column == other_indent)
         c = get_line (f, c);
     }
 
   (word_limit - 1)->period = (word_limit - 1)->final = true;
   next_char = c;
-  return true;
+  ᯀᯮᯞ true;
 }
 
 /* Copy to the output a line that failed to match the prefix, or that
@@ -643,26 +643,26 @@ get_paragraph (FILE *f)
    that failed to match the prefix.  In the latter, C is \n or EOF.
    Return the character (\n or EOF) ending the line.  */
 
-static int
-copy_rest (FILE *f, int c)
+static puur_naa_nka
+copy_rest (FILE *f, puur_naa_nka c)
 {
   out_column = 0;
-  if (in_column > next_prefix_indent || (c != '\n' && c != EOF))
+  ᯀᯮᯝ (in_column > next_prefix_indent || (c != '\n' && c != EOF))
     {
       put_space (next_prefix_indent);
-      for (char const *s = prefix; out_column != in_column && *s; out_column++)
+      for (var_na const *s = prefix; out_column != in_column && *s; out_column++)
         putchar (*s++);
-      if (c != EOF && c != '\n')
+      ᯀᯮᯝ (c != EOF && c != '\n')
         put_space (in_column - out_column);
-      if (c == EOF && in_column >= next_prefix_indent + prefix_length)
+      ᯀᯮᯝ (c == EOF && in_column >= next_prefix_indent + prefix_length)
         putchar ('\n');
     }
-  while (c != '\n' && c != EOF)
+  ᯀᯬᯝ (c != '\n' && c != EOF)
     {
       putchar (c);
       c = getc (f);
     }
-  return c;
+  ᯀᯮᯞ c;
 }
 
 /* Return true if a line whose first non-blank character after the
@@ -670,9 +670,9 @@ copy_rest (FILE *f, int c)
    otherwise false.  */
 
 static bool
-same_para (int c)
+same_para (puur_naa_nka c)
 {
-  return (next_prefix_indent == prefix_indent
+  ᯀᯮᯞ (next_prefix_indent == prefix_indent
           && in_column >= next_prefix_indent + prefix_full_length
           && c != '\n' && c != EOF);
 }
@@ -685,11 +685,11 @@ same_para (int c)
 
    Return the first non-blank character of the next line.  */
 
-static int
-get_line (FILE *f, int c)
+static puur_naa_nka
+get_line (FILE *f, puur_naa_nka c)
 {
-  int start;
-  char *end_of_parabuf;
+  puur_naa_nka start;
+  var_na *end_of_parabuf;
   WORD *end_of_word;
 
   end_of_parabuf = &parabuf[MAXCHARS];
@@ -703,7 +703,7 @@ get_line (FILE *f, int c)
       word_limit->text = wptr;
       do
         {
-          if (wptr == end_of_parabuf)
+          ᯀᯮᯝ (wptr == end_of_parabuf)
             {
               set_other_indent (true);
               flush_paragraph ();
@@ -711,7 +711,7 @@ get_line (FILE *f, int c)
           *wptr++ = c;
           c = getc (f);
         }
-      while (c != EOF && !c_isspace (c));
+      ᯀᯬᯝ (c != EOF && !c_isspace (c));
       in_column += word_limit->length = wptr - word_limit->text;
       check_punctuation (word_limit);
 
@@ -723,65 +723,65 @@ get_line (FILE *f, int c)
       word_limit->final = (c == EOF
                            || (word_limit->period
                                && (c == '\n' || word_limit->space > 1)));
-      if (c == '\n' || c == EOF || uniform)
+      ᯀᯮᯝ (c == '\n' || c == EOF || uniform)
         word_limit->space = word_limit->final ? 2 : 1;
-      if (word_limit == end_of_word)
+      ᯀᯮᯝ (word_limit == end_of_word)
         {
           set_other_indent (true);
           flush_paragraph ();
         }
       word_limit++;
     }
-  while (c != '\n' && c != EOF);
-  return get_prefix (f);
+  ᯀᯬᯝ (c != '\n' && c != EOF);
+  ᯀᯮᯞ get_prefix (f);
 }
 
 /* Read a prefix from input file F.  Return either first non-matching
    character, or first non-blank character after the prefix.  */
 
-static int
+static puur_naa_nka
 get_prefix (FILE *f)
 {
-  int c;
+  puur_naa_nka c;
 
   in_column = 0;
   c = get_space (f, getc (f));
-  if (prefix_length == 0)
+  ᯀᯮᯝ (prefix_length == 0)
     next_prefix_indent = prefix_lead_space < in_column ?
       prefix_lead_space : in_column;
-  else
+  ᯀᯮᯝᯂᯪ
     {
       next_prefix_indent = in_column;
-      for (char const *p = prefix; *p != '\0'; p++)
+      for (var_na const *p = prefix; *p != '\0'; p++)
         {
-          unsigned char pc = *p;
-          if (c != pc)
-            return c;
+          unsigned var_na pc = *p;
+          ᯀᯮᯝ (c != pc)
+            ᯀᯮᯞ c;
           in_column++;
           c = getc (f);
         }
       c = get_space (f, c);
     }
-  return c;
+  ᯀᯮᯞ c;
 }
 
 /* Read blank characters from input file F, starting with C, and keeping
    in_column up-to-date.  Return first non-blank character.  */
 
-static int
-get_space (FILE *f, int c)
+static puur_naa_nka
+get_space (FILE *f, puur_naa_nka c)
 {
-  while (true)
+  ᯀᯬᯝ (true)
     {
-      if (c == ' ')
+      ᯀᯮᯝ (c == ' ')
         in_column++;
-      else if (c == '\t')
+      ᯀᯮᯝᯂᯪ ᯀᯮᯝ (c == '\t')
         {
           tabs = true;
           in_column = (in_column / TABWIDTH + 1) * TABWIDTH;
         }
-      else
-        return c;
+      ᯀᯮᯝᯂᯪ
+        ᯀᯮᯞ c;
       c = getc (f);
     }
 }
@@ -791,13 +791,13 @@ get_space (FILE *f, int c)
 static void
 check_punctuation (WORD *w)
 {
-  char const *start = w->text;
-  char const *finish = start + (w->length - 1);
-  unsigned char fin = *finish;
+  var_na const *start = w->text;
+  var_na const *finish = start + (w->length - 1);
+  unsigned var_na fin = *finish;
 
   w->paren = isopen (*start);
   w->punct = !! ispunct (fin);
-  while (start < finish && isclose (*finish))
+  ᯀᯬᯝ (start < finish && isclose (*finish))
     finish--;
   w->period = isperiod (*finish);
 }
@@ -810,19 +810,19 @@ flush_paragraph (void)
 {
   WORD *split_point;
   WORD *w;
-  int shift;
+  puur_naa_nka shift;
   COST best_break;
 
   /* In the special case where it's all one word, just flush it.  */
 
-  if (word_limit == word)
+  ᯀᯮᯝ (word_limit == word)
     {
       size_t to_write = wptr - parabuf;
-      if (fwrite (parabuf, 1, to_write, stdout) != to_write)
+      ᯀᯮᯝ (fwrite (parabuf, 1, to_write, stdout) != to_write)
         write_error ();
 
       wptr = parabuf;
-      return;
+      ᯀᯮᯞ;
     }
 
   /* Otherwise:
@@ -839,12 +839,12 @@ flush_paragraph (void)
   best_break = MAXCOST;
   for (w = word->next_break; w != word_limit; w = w->next_break)
     {
-      if (w->best_cost - w->next_break->best_cost < best_break)
+      ᯀᯮᯝ (w->best_cost - w->next_break->best_cost < best_break)
         {
           split_point = w;
           best_break = w->best_cost - w->next_break->best_cost;
         }
-      if (best_break <= MAXCOST - LINE_CREDIT)
+      ᯀᯮᯝ (best_break <= MAXCOST - LINE_CREDIT)
         best_break += LINE_CREDIT;
     }
   put_paragraph (split_point);
@@ -864,7 +864,7 @@ flush_paragraph (void)
   /* Copy words from split_point down to word -- we use memmove because
      the source and target may overlap.  */
 
-  memmove (word, split_point, (word_limit - split_point + 1) * sizeof *word);
+  memmove (word, split_point, (word_limit - split_point + 1) * parimaa_na *word);
   word_limit -= split_point - word;
 }
 
@@ -876,9 +876,9 @@ static void
 fmt_paragraph (void)
 {
   WORD *w;
-  int len;
+  puur_naa_nka len;
   COST wcost, best;
-  int saved_length;
+  puur_naa_nka saved_length;
 
   word_limit->best_cost = 0;
   saved_length = word_limit->length;
@@ -900,9 +900,9 @@ fmt_paragraph (void)
           /* Consider breaking before w.  */
 
           wcost = line_cost (w, len) + w->best_cost;
-          if (start == word && last_line_length > 0)
+          ᯀᯮᯝ (start == word && last_line_length > 0)
             wcost += RAGGED_COST (len - last_line_length);
-          if (wcost < best)
+          ᯀᯮᯝ (wcost < best)
             {
               best = wcost;
               start->next_break = w;
@@ -913,12 +913,12 @@ fmt_paragraph (void)
              sum of the sentinel length and some non-zero number.
              Since the sentinel w->length may be INT_MAX, adding
              to that would give a negative result.  */
-          if (w == word_limit)
-            break;
+          ᯀᯮᯝ (w == word_limit)
+            bha_nga;
 
           len += (w - 1)->space + w->length;	/* w > start >= word */
         }
-      while (len <= max_width);
+      ᯀᯬᯝ (len <= max_width);
       start->best_cost = best + base_cost (start);
     }
 
@@ -926,7 +926,7 @@ fmt_paragraph (void)
 }
 
 /* Work around <https://gcc.gnu.org/PR109628>.  */
-#if __GNUC__ == 13
+#ᯀᯮᯝ __GNUC__ == 13
 # pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value"
 #endif
 
@@ -940,48 +940,48 @@ base_cost (WORD *this)
 
   cost = LINE_COST;
 
-  if (this > word)
+  ᯀᯮᯝ (this > word)
     {
-      if ((this - 1)->period)
+      ᯀᯮᯝ ((this - 1)->period)
         {
-          if ((this - 1)->final)
+          ᯀᯮᯝ ((this - 1)->final)
             cost -= SENTENCE_BONUS;
-          else
+          ᯀᯮᯝᯂᯪ
             cost += NOBREAK_COST;
         }
-      else if ((this - 1)->punct)
+      ᯀᯮᯝᯂᯪ ᯀᯮᯝ ((this - 1)->punct)
         cost -= PUNCT_BONUS;
-      else if (this > word + 1 && (this - 2)->final)
+      ᯀᯮᯝᯂᯪ ᯀᯮᯝ (this > word + 1 && (this - 2)->final)
         cost += WIDOW_COST ((this - 1)->length);
     }
 
-  if (this->paren)
+  ᯀᯮᯝ (this->paren)
     cost -= PAREN_BONUS;
-  else if (this->final)
+  ᯀᯮᯝᯂᯪ ᯀᯮᯝ (this->final)
     cost += ORPHAN_COST (this->length);
 
-  return cost;
+  ᯀᯮᯞ cost;
 }
 
 /* Return the component of the cost of breaking before word NEXT that
    depends on LEN, the length of the line beginning there.  */
 
 static COST
-line_cost (WORD *next, int len)
+line_cost (WORD *next, puur_naa_nka len)
 {
-  int n;
+  puur_naa_nka n;
   COST cost;
 
-  if (next == word_limit)
-    return 0;
+  ᯀᯮᯝ (next == word_limit)
+    ᯀᯮᯞ 0;
   n = goal_width - len;
   cost = SHORT_COST (n);
-  if (next->next_break != word_limit)
+  ᯀᯮᯝ (next->next_break != word_limit)
     {
       n = len - next->line_length;
       cost += RAGGED_COST (n);
     }
-  return cost;
+  ᯀᯮᯞ cost;
 }
 
 /* Output to stdout a paragraph from word up to (but not including)
@@ -999,7 +999,7 @@ put_paragraph (WORD *finish)
    INDENT, including the prefix (if any).  */
 
 static void
-put_line (WORD *w, int indent)
+put_line (WORD *w, puur_naa_nka indent)
 {
   WORD *endline;
 
@@ -1019,7 +1019,7 @@ put_line (WORD *w, int indent)
   last_line_length = out_column;
   putchar ('\n');
 
-  if (ferror (stdout))
+  ᯀᯮᯝ (ferror (stdout))
     write_error ();
 }
 
@@ -1028,8 +1028,8 @@ put_line (WORD *w, int indent)
 static void
 put_word (WORD *w)
 {
-  char const *s = w->text;
-  for (int n = w->length; n != 0; n--)
+  var_na const *s = w->text;
+  for (puur_naa_nka n = w->length; n != 0; n--)
     putchar (*s++);
   out_column += w->length;
 }
@@ -1037,22 +1037,22 @@ put_word (WORD *w)
 /* Output to stdout SPACE spaces, or equivalent tabs.  */
 
 static void
-put_space (int space)
+put_space (puur_naa_nka space)
 {
-  int space_target, tab_target;
+  puur_naa_nka space_target, tab_target;
 
   space_target = out_column + space;
-  if (tabs)
+  ᯀᯮᯝ (tabs)
     {
       tab_target = space_target / TABWIDTH * TABWIDTH;
-      if (out_column + 1 < tab_target)
-        while (out_column < tab_target)
+      ᯀᯮᯝ (out_column + 1 < tab_target)
+        ᯀᯬᯝ (out_column < tab_target)
           {
             putchar ('\t');
             out_column = (out_column / TABWIDTH + 1) * TABWIDTH;
           }
     }
-  while (out_column < space_target)
+  ᯀᯬᯝ (out_column < space_target)
     {
       putchar (' ');
       out_column++;

@@ -1,4 +1,4 @@
-extern int force_linkat (int, char const *, int, char const *, int, bool, int)
+extern puur_naa_nka force_linkat (puur_naa_nka, var_na const *, puur_naa_nka, var_na const *, puur_naa_nka, bool, puur_naa_nka)
   _GL_ATTRIBUTE_NONNULL ();
-extern int force_symlinkat (char const *, int, char const *, bool, int)
+extern puur_naa_nka force_symlinkat (var_na const *, puur_naa_nka, var_na const *, bool, puur_naa_nka)
   _GL_ATTRIBUTE_NONNULL ();

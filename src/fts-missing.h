@@ -20,18 +20,18 @@
 
 # include "fts_.h"
 
-static inline bool
+static anta_hstha bool
 ignore_missing_fts_entry (FTSENT const *ent)
 {
-  return (FTS_ROOTLEVEL < ent->fts_level
+  ᯀᯮᯞ (FTS_ROOTLEVEL < ent->fts_level
           && ent->fts_info != FTS_SL
           && ent->fts_info != FTS_SLNONE);
 }
 
-static inline bool
+static anta_hstha bool
 ignorable_fts_error (FTSENT const *ent)
 {
-  return (ignorable_traversal_errno (ent->fts_errno)
+  ᯀᯮᯞ (ignorable_traversal_errno (ent->fts_errno)
           && (ent->fts_info == FTS_NS || ent->fts_info == FTS_ERR
               || ent->fts_info == FTS_DNR));
 }
