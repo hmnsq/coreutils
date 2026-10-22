@@ -16,19 +16,19 @@
 
 /* Written by Ross Paterson <rap@doc.ic.ac.uk>.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <getopt.h>
+#अन्तर्भाव <config.h>
+#अन्तर्भाव <stdio.h>
+#अन्तर्भाव <sys/types.h>
+#अन्तर्भाव <getopt.h>
 
 /* Redefine.  Otherwise, systems (Unicos for one) with headers that define
    it to be a type get syntax errors for the variable declaration below.  */
 #define word unused_word_type
 
-#include "c-ctype.h"
-#include "system.h"
-#include "fadvise.h"
-#include "xdectoint.h"
+#अन्तर्भाव "c-ctype.h"
+#अन्तर्भाव "system.h"
+#अन्तर्भाव "fadvise.h"
+#अन्तर्भाव "xdectoint.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "fmt"
@@ -60,7 +60,7 @@
    a floating-point type.  There are other problems besides COST,
    though; see MAXWORDS below.  */
 
-typedef long int COST;
+प्रकारनिर्देश दीर्घ पूर्णाङ्क COST;
 
 #define MAXCOST	TYPE_MAXIMUM (COST)
 
@@ -74,7 +74,7 @@ typedef long int COST;
 #define RAGGED_COST(n)	(SHORT_COST (n) / 2)
 
 /* Basic cost per line.  */
-#define LINE_COST	EQUIV (70)
+#define पङ्क्ति_COST	EQUIV (70)
 
 /* Cost of breaking a line after the first word of a sentence, where
    the length of the word is N.  */
@@ -101,7 +101,7 @@ typedef long int COST;
 #define PUNCT_BONUS	EQUIV(40)
 
 /* Credit for breaking a long paragraph one line later.  */
-#define LINE_CREDIT	EQUIV(3)
+#define पङ्क्ति_CREDIT	EQUIV(3)
 
 /* Size of paragraph buffer, in words and characters.  Longer paragraphs
    are handled neatly (cf. flush_paragraph()), so long as these values
@@ -115,9 +115,9 @@ typedef long int COST;
 
 /* Extra ctype(3)-style macros.  */
 
-#define isopen(c)	(strchr ("(['`\"", c) != NULL)
-#define isclose(c)	(strchr (")]'\"", c) != NULL)
-#define isperiod(c)	(strchr (".?!", c) != NULL)
+#define isopen(c)	(म_अक्षर ("(['`\"", c) != रिक्त)
+#define isclose(c)	(म_अक्षर (")]'\"", c) != रिक्त)
+#define isperiod(c)	(म_अक्षर (".?!", c) != रिक्त)
 
 /* Size of a tab stop, for expansion on input and re-introduction on
    output.  */
@@ -125,119 +125,119 @@ typedef long int COST;
 
 /* Word descriptor structure.  */
 
-typedef struct Word WORD;
+प्रकारनिर्देश संरचना Word WORD;
 
-struct Word
+संरचना Word
   {
 
     /* Static attributes determined during input.  */
 
-    char const *text;		/* the text of the word */
-    int length;			/* length of this word */
-    int space;			/* the size of the following space */
-    unsigned int paren:1;	/* starts with open paren */
-    unsigned int period:1;	/* ends in [.?!])* */
-    unsigned int punct:1;	/* ends in punctuation */
-    unsigned int final:1;	/* end of sentence */
+    वर्ण अचर *text;		/* the text of the word */
+    पूर्णाङ्क length;			/* length of this word */
+    पूर्णाङ्क space;			/* the size of the following space */
+    अचिन्हित पूर्णाङ्क paren:1;	/* starts with open paren */
+    अचिन्हित पूर्णाङ्क period:1;	/* ends in [.?!])* */
+    अचिन्हित पूर्णाङ्क punct:1;	/* ends in punctuation */
+    अचिन्हित पूर्णाङ्क final:1;	/* end of sentence */
 
     /* The remaining fields are computed during the optimization.  */
 
-    int line_length;		/* length of the best line starting here */
+    पूर्णाङ्क पङ्क्ति_length;		/* length of the best line starting here */
     COST best_cost;		/* cost of best paragraph starting here */
     WORD *next_break;		/* break which achieves best_cost */
   };
 
 /* Forward declarations.  */
 
-static void set_prefix (char *p);
-static bool fmt (FILE *f, char const *);
-static bool get_paragraph (FILE *f);
-static int get_line (FILE *f, int c);
-static int get_prefix (FILE *f);
-static int get_space (FILE *f, int c);
-static int copy_rest (FILE *f, int c);
-static bool same_para (int c);
-static void flush_paragraph (void);
-static void fmt_paragraph (void);
-static void check_punctuation (WORD *w);
-static COST base_cost (WORD *this);
-static COST line_cost (WORD *next, int len);
-static void put_paragraph (WORD *finish);
-static void put_line (WORD *w, int indent);
-static void put_word (WORD *w);
-static void put_space (int space);
+स्थिर शून्य set_prefix (वर्ण *p);
+स्थिर bool fmt (खाता *f, वर्ण अचर *);
+स्थिर bool get_paragraph (खाता *f);
+स्थिर पूर्णाङ्क get_पङ्क्ति (खाता *f, पूर्णाङ्क c);
+स्थिर पूर्णाङ्क get_prefix (खाता *f);
+स्थिर पूर्णाङ्क get_space (खाता *f, पूर्णाङ्क c);
+स्थिर पूर्णाङ्क copy_rest (खाता *f, पूर्णाङ्क c);
+स्थिर bool same_para (पूर्णाङ्क c);
+स्थिर शून्य flush_paragraph (शून्य);
+स्थिर शून्य fmt_paragraph (शून्य);
+स्थिर शून्य check_punctuation (WORD *w);
+स्थिर COST base_cost (WORD *this);
+स्थिर COST पङ्क्ति_cost (WORD *next, पूर्णाङ्क len);
+स्थिर शून्य put_paragraph (WORD *finish);
+स्थिर शून्य put_पङ्क्ति (WORD *w, पूर्णाङ्क indent);
+स्थिर शून्य put_word (WORD *w);
+स्थिर शून्य put_space (पूर्णाङ्क space);
 
 /* Option values.  */
 
 /* If true, first 2 lines may have different indent (default false).  */
-static bool crown;
+स्थिर bool crown;
 
 /* If true, first 2 lines _must_ have different indent (default false).  */
-static bool tagged;
+स्थिर bool tagged;
 
 /* If true, each line is a paragraph on its own (default false).  */
-static bool split;
+स्थिर bool split;
 
 /* If true, don't preserve inter-word spacing (default false).  */
-static bool uniform;
+स्थिर bool uniform;
 
 /* Prefix minus leading and trailing spaces (default "").  */
-static char const *prefix = "";
+स्थिर वर्ण अचर *prefix = "";
 
 /* User-supplied maximum line width (default WIDTH).  The only output
    lines longer than this will each comprise a single word.  */
-static int max_width = WIDTH;
+स्थिर पूर्णाङ्क max_width = WIDTH;
 
 /* Values derived from the option values.  */
 
 /* The length of prefix minus leading space.  */
-static int prefix_full_length;
+स्थिर पूर्णाङ्क prefix_full_length;
 
 /* The length of the leading space trimmed from the prefix.  */
-static int prefix_lead_space;
+स्थिर पूर्णाङ्क prefix_lead_space;
 
 /* The length of prefix minus leading and trailing space.  */
-static int prefix_length;
+स्थिर पूर्णाङ्क prefix_length;
 
 /* The preferred width of text lines, set to LEEWAY % less than max_width.  */
-static int goal_width;
+स्थिर पूर्णाङ्क goal_width;
 
 /* Dynamic variables.  */
 
 /* Start column of the character most recently read from the input file.  */
-static int in_column;
+स्थिर पूर्णाङ्क in_column;
 
 /* Start column of the next character to be written to stdout.  */
-static int out_column;
+स्थिर पूर्णाङ्क out_column;
 
 /* Space for the paragraph text -- longer paragraphs are handled neatly
    (cf. flush_paragraph()).  */
-static char parabuf[MAXCHARS];
+स्थिर वर्ण parabuf[MAXCHARS];
 
 /* A pointer into parabuf, indicating the first unused character position.  */
-static char *wptr;
+स्थिर वर्ण *wptr;
 
 /* The words of a paragraph -- longer paragraphs are handled neatly
    (cf. flush_paragraph()).  */
-static WORD word[MAXWORDS];
+स्थिर WORD word[MAXWORDS];
 
 /* A pointer into the above word array, indicating the first position
    after the last complete word.  Sometimes it will point at an incomplete
    word.  */
-static WORD *word_limit;
+स्थिर WORD *word_limit;
 
 /* If true, current input file contains tab characters, and so tabs can be
    used for white space on output.  */
-static bool tabs;
+स्थिर bool tabs;
 
 /* Space before trimmed prefix on each line of the current paragraph.  */
-static int prefix_indent;
+स्थिर पूर्णाङ्क prefix_indent;
 
 /* Indentation of the first line of the current paragraph.  */
-static int first_indent;
+स्थिर पूर्णाङ्क first_indent;
 
 /* Indentation of other lines of the current paragraph */
-static int other_indent;
+स्थिर पूर्णाङ्क other_indent;
 
 /* To detect the end of a paragraph, we need to look ahead to the first
    non-blank character after the prefix on the next line, or the first
@@ -247,104 +247,104 @@ static int other_indent;
    prefix (next_prefix_indent).  See get_paragraph() and copy_rest().  */
 
 /* The last character read from the input file.  */
-static int next_char;
+स्थिर पूर्णाङ्क next_char;
 
 /* The space before the trimmed prefix (or part of it) on the next line
    after the current paragraph.  */
-static int next_prefix_indent;
+स्थिर पूर्णाङ्क next_prefix_indent;
 
 /* If nonzero, the length of the last line output in the current
    paragraph, used to charge for raggedness at the split point for long
    paragraphs chosen by fmt_paragraph().  */
-static int last_line_length;
+स्थिर पूर्णाङ्क last_पङ्क्ति_length;
 
-void
-usage (int status)
+शून्य
+usage (पूर्णाङ्क status)
 {
-  if (status != EXIT_SUCCESS)
+  यदि (status != निकास_सफल)
     emit_try_help ();
-  else
+  अन्यथा
     {
-      printf (_("Usage: %s [-WIDTH] [OPTION]... [FILE]...\n"), program_name);
-      fputs (_("\
-Reformat each paragraph in the FILE(s), writing to standard output.\n\
+      म_लिखो (_("Usage: %s [-WIDTH] [OPTION]... [FILE]...\n"), program_name);
+      ख_माला_दो (_("\
+Reformat each paragraph in the खाता(s), writing to standard output.\n\
 The option -WIDTH is an abbreviated form of --width=DIGITS.\n\
-"), stdout);
+"), मानक_निकास);
 
       emit_stdin_note ();
       emit_mandatory_arg_note ();
 
       oputs (_("\
   -c, --crown-margin\n\
-         preserve indentation of first two lines\n\
+         preserve indentation of first two पङ्क्तिहरू\n\
 "));
       oputs (_("\
   -p, --prefix=STRING\n\
-         reformat only lines beginning with STRING,\n\
-         reattaching the prefix to reformatted lines\n\
+         reformat only पङ्क्तिहरू beginning with STRING,\n\
+         reattaching the prefix to reformatted पङ्क्तिहरू\n\
 "));
       oputs (_("\
   -s, --split-only\n\
-         split long lines, but do not refill\n\
+         split दीर्घ पङ्क्तिहरू, but गर not refill\n\
 "));
       oputs (_("\
   -t, --tagged-paragraph\n\
-         indentation of first line different from second\n\
+         indentation of first पङ्क्ति different from second\n\
 "));
       oputs (_("\
   -u, --uniform-spacing\n\
-         one space between words, two after sentences\n\
+         one space between शब्दहरू, two after sentences\n\
 "));
       oputs (_("\
   -w, --width=WIDTH\n\
-         maximum line width (default of 75 columns)\n\
+         maximum पङ्क्ति width (स्वभाव of 75 columns)\n\
 "));
       /* Tell xgettext that the "% o" below is not a printf-style
          format string:  xgettext:no-c-format */
       oputs (_("\
   -g, --goal=WIDTH\n\
-         goal width (default of 93% of width)\n\
+         goal width (स्वभाव of 93% of width)\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
       emit_ancillary_info (PROGRAM_NAME);
     }
-  exit (status);
+  निकास (status);
 }
 
 /* Decode options and launch execution.  */
 
-static struct option const long_options[] =
+स्थिर संरचना option अचर long_options[] =
 {
-  {"crown-margin", no_argument, NULL, 'c'},
-  {"prefix", required_argument, NULL, 'p'},
-  {"split-only", no_argument, NULL, 's'},
-  {"tagged-paragraph", no_argument, NULL, 't'},
-  {"uniform-spacing", no_argument, NULL, 'u'},
-  {"width", required_argument, NULL, 'w'},
-  {"goal", required_argument, NULL, 'g'},
+  {"crown-margin", no_argument, रिक्त, 'c'},
+  {"prefix", required_argument, रिक्त, 'p'},
+  {"split-only", no_argument, रिक्त, 's'},
+  {"tagged-paragraph", no_argument, रिक्त, 't'},
+  {"uniform-spacing", no_argument, रिक्त, 'u'},
+  {"width", required_argument, रिक्त, 'w'},
+  {"goal", required_argument, रिक्त, 'g'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0},
+  {रिक्त, 0, रिक्त, 0},
 };
 
-int
-main (int argc, char **argv)
+पूर्णाङ्क
+main (पूर्णाङ्क argc, वर्ण **argv)
 {
-  int optchar;
+  पूर्णाङ्क optchar;
   bool ok = true;
-  char const *max_width_option = NULL;
-  char const *goal_width_option = NULL;
+  वर्ण अचर *max_width_option = रिक्त;
+  वर्ण अचर *goal_width_option = रिक्त;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
-  setlocale (LC_ALL, "");
+  रखो_क्षेत्र (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
-  atexit (close_stdout);
+  निकास_पर (close_stdout);
 
-  if (argc > 1 && argv[1][0] == '-' && c_isdigit (argv[1][1]))
+  यदि (argc > 1 && argv[1][0] == '-' && c_isdigit (argv[1][1]))
     {
       /* Old option syntax; a dash followed by one or more digits.  */
       max_width_option = argv[1] + 1;
@@ -355,45 +355,45 @@ main (int argc, char **argv)
       argc--;
     }
 
-  while ((optchar = getopt_long (argc, argv, "0123456789cstuw:p:g:",
-                                 long_options, NULL))
+  जबसम्म ((optchar = getopt_long (argc, argv, "0123456789cstuw:p:g:",
+                                 long_options, रिक्त))
          != -1)
-    switch (optchar)
+    विकल्प (optchar)
       {
-      default:
-        if (c_isdigit (optchar))
+      स्वभाव:
+        यदि (c_isdigit (optchar))
           error (0, 0, _("invalid option -- %c; -WIDTH is recognized\
  only when it is the first\noption; use -w N instead"),
                  optchar);
-        usage (EXIT_FAILURE);
+        usage (निकास_त्रुटि);
 
-      case 'c':
+      पक्ष 'c':
         crown = true;
-        break;
+        रोक;
 
-      case 's':
+      पक्ष 's':
         split = true;
-        break;
+        रोक;
 
-      case 't':
+      पक्ष 't':
         tagged = true;
-        break;
+        रोक;
 
-      case 'u':
+      पक्ष 'u':
         uniform = true;
-        break;
+        रोक;
 
-      case 'w':
+      पक्ष 'w':
         max_width_option = optarg;
-        break;
+        रोक;
 
-      case 'g':
+      पक्ष 'g':
         goal_width_option = optarg;
-        break;
+        रोक;
 
-      case 'p':
+      पक्ष 'p':
         set_prefix (optarg);
-        break;
+        रोक;
 
       case_GETOPT_HELP_CHAR;
 
@@ -401,7 +401,7 @@ main (int argc, char **argv)
 
       }
 
-  if (max_width_option)
+  यदि (max_width_option)
     {
       /* Limit max_width to MAXCHARS / 2; otherwise, the resulting
          output can be quite ugly.  */
@@ -409,45 +409,45 @@ main (int argc, char **argv)
                               _("invalid width"), 0, XTOINT_MAX_RANGE);
     }
 
-  if (goal_width_option)
+  यदि (goal_width_option)
     {
       /* Limit goal_width to max_width.  */
       goal_width = xdectoumax (goal_width_option, 0, max_width, "",
                                _("invalid goal"), 0);
-      if (max_width_option == NULL)
+      यदि (max_width_option == रिक्त)
         max_width = goal_width + 10;
     }
-  else
+  अन्यथा
     {
       goal_width = max_width * (2 * (100 - LEEWAY) + 1) / 200;
     }
 
   bool have_read_stdin = false;
 
-  if (optind == argc)
+  यदि (optind == argc)
     {
       have_read_stdin = true;
-      ok = fmt (stdin, "-");
+      ok = fmt (मानक_निवेश, "-");
     }
-  else
+  अन्यथा
     {
-      for (; optind < argc; optind++)
+      लागि (; optind < argc; optind++)
         {
-          char *file = argv[optind];
-          if (streq (file, "-"))
+          वर्ण *file = argv[optind];
+          यदि (streq (file, "-"))
             {
-              ok &= fmt (stdin, file);
+              ok &= fmt (मानक_निवेश, file);
               have_read_stdin = true;
             }
-          else
+          अन्यथा
             {
-              FILE *in_stream;
-              in_stream = fopen (file, "r");
-              if (in_stream != NULL)
+              खाता *in_stream;
+              in_stream = ख_खोलो (file, "r");
+              यदि (in_stream != रिक्त)
                 ok &= fmt (in_stream, file);
-              else
+              अन्यथा
                 {
-                  error (0, errno, _("cannot open %s for reading"),
+                  error (0, त्रुटि_सं, _("cannot open %s for reading"),
                          quoteaf (file));
                   ok = false;
                 }
@@ -455,30 +455,30 @@ main (int argc, char **argv)
         }
     }
 
-  if (have_read_stdin && fclose (stdin) != 0)
-    error (EXIT_FAILURE, errno, "%s", _("closing standard input"));
+  यदि (have_read_stdin && ख_बंद (मानक_निवेश) != 0)
+    error (निकास_त्रुटि, त्रुटि_सं, "%s", _("closing standard input"));
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  फर्काऊ ok ? निकास_सफल : निकास_त्रुटि;
 }
 
 /* Trim space from the front and back of the string P, yielding the prefix,
    and record the lengths of the prefix and the space trimmed.  */
 
-static void
-set_prefix (char *p)
+स्थिर शून्य
+set_prefix (वर्ण *p)
 {
-  char *s;
+  वर्ण *s;
 
   prefix_lead_space = 0;
-  while (*p == ' ')
+  जबसम्म (*p == ' ')
     {
       prefix_lead_space++;
       p++;
     }
   prefix = p;
-  prefix_full_length = strlen (p);
+  prefix_full_length = म_माप (p);
   s = p + prefix_full_length;
-  while (s > p && s[-1] == ' ')
+  जबसम्म (s > p && s[-1] == ' ')
     s--;
   *s = '\0';
   prefix_length = s - p;
@@ -489,50 +489,50 @@ set_prefix (char *p)
    If !F, assume F resulted from an fopen failure and diagnose that.
    Return true if successful.  */
 
-static bool
-fmt (FILE *f, char const *file)
+स्थिर bool
+fmt (खाता *f, वर्ण अचर *file)
 {
   fadvise (f, FADVISE_SEQUENTIAL);
   tabs = false;
   other_indent = 0;
   next_char = get_prefix (f);
-  while (get_paragraph (f))
+  जबसम्म (get_paragraph (f))
     {
       fmt_paragraph ();
       put_paragraph (word_limit);
     }
 
-  int err = ferror (f) ? 0 : -1;
+  पूर्णाङ्क err = ख_त्रुटि (f) ? 0 : -1;
   /* err < 0 means success.  */
-  if (f == stdin)
-    clearerr (f);
-  else if (fclose (f) != 0 && err < 0)
-    err = errno;
-  if (0 <= err)
+  यदि (f == मानक_निवेश)
+    साफ_त्रुटि (f);
+  अन्यथा यदि (ख_बंद (f) != 0 && err < 0)
+    err = त्रुटि_सं;
+  यदि (0 <= err)
     {
-      if (f == stdin)
-        error (0, errno, _("read error"));
-      else
-        error (0, errno, _("error reading %s"), quoteaf (file));
+      यदि (f == मानक_निवेश)
+        error (0, त्रुटि_सं, _("read error"));
+      अन्यथा
+        error (0, त्रुटि_सं, _("error reading %s"), quoteaf (file));
     }
-  return err < 0;
+  फर्काऊ err < 0;
 }
 
 /* Set the global variable 'other_indent' according to SAME_PARAGRAPH
    and other global variables.  */
 
-static void
+स्थिर शून्य
 set_other_indent (bool same_paragraph)
 {
-  if (split)
+  यदि (split)
     other_indent = first_indent;
-  else if (crown)
+  अन्यथा यदि (crown)
     {
       other_indent = (same_paragraph ? in_column : first_indent);
     }
-  else if (tagged)
+  अन्यथा यदि (tagged)
     {
-      if (same_paragraph && in_column != first_indent)
+      यदि (same_paragraph && in_column != first_indent)
         {
           other_indent = in_column;
         }
@@ -542,10 +542,10 @@ set_other_indent (bool same_paragraph)
          input so far.  But if these rules make the two indents the same,
          pick a new secondary indent.  */
 
-      else if (other_indent == first_indent)
+      अन्यथा यदि (other_indent == first_indent)
         other_indent = first_indent == 0 ? DEF_INDENT : 0;
     }
-  else
+  अन्यथा
     {
       other_indent = first_indent;
     }
@@ -566,27 +566,27 @@ set_other_indent (bool same_paragraph)
    Return false if end-of-file was encountered before the start of a
    paragraph, else true.  */
 
-static bool
-get_paragraph (FILE *f)
+स्थिर bool
+get_paragraph (खाता *f)
 {
-  int c;
+  पूर्णाङ्क c;
 
-  last_line_length = 0;
+  last_पङ्क्ति_length = 0;
   c = next_char;
 
   /* Scan (and copy) blank lines, and lines not introduced by the prefix.  */
 
-  while (c == '\n' || c == EOF
+  जबसम्म (c == '\n' || c == खातापूर्ण
          || next_prefix_indent < prefix_lead_space
          || in_column < next_prefix_indent + prefix_full_length)
     {
       c = copy_rest (f, c);
-      if (c == EOF)
+      यदि (c == खातापूर्ण)
         {
-          next_char = EOF;
-          return false;
+          next_char = खातापूर्ण;
+          फर्काऊ false;
         }
-      putchar ('\n');
+      अक्षर_दो ('\n');
       c = get_prefix (f);
     }
 
@@ -596,46 +596,46 @@ get_paragraph (FILE *f)
   first_indent = in_column;
   wptr = parabuf;
   word_limit = word;
-  c = get_line (f, c);
+  c = get_पङ्क्ति (f, c);
   set_other_indent (same_para (c));
 
   /* Read rest of paragraph (unless split is specified).  */
 
-  if (split)
+  यदि (split)
     {
       /* empty */
     }
-  else if (crown)
+  अन्यथा यदि (crown)
     {
-      if (same_para (c))
+      यदि (same_para (c))
         {
-          do
+          गर
             {			/* for each line till the end of the para */
-              c = get_line (f, c);
+              c = get_पङ्क्ति (f, c);
             }
-          while (same_para (c) && in_column == other_indent);
+          जबसम्म (same_para (c) && in_column == other_indent);
         }
     }
-  else if (tagged)
+  अन्यथा यदि (tagged)
     {
-      if (same_para (c) && in_column != first_indent)
+      यदि (same_para (c) && in_column != first_indent)
         {
-          do
+          गर
             {			/* for each line till the end of the para */
-              c = get_line (f, c);
+              c = get_पङ्क्ति (f, c);
             }
-          while (same_para (c) && in_column == other_indent);
+          जबसम्म (same_para (c) && in_column == other_indent);
         }
     }
-  else
+  अन्यथा
     {
-      while (same_para (c) && in_column == other_indent)
-        c = get_line (f, c);
+      जबसम्म (same_para (c) && in_column == other_indent)
+        c = get_पङ्क्ति (f, c);
     }
 
   (word_limit - 1)->period = (word_limit - 1)->final = true;
   next_char = c;
-  return true;
+  फर्काऊ true;
 }
 
 /* Copy to the output a line that failed to match the prefix, or that
@@ -643,38 +643,38 @@ get_paragraph (FILE *f)
    that failed to match the prefix.  In the latter, C is \n or EOF.
    Return the character (\n or EOF) ending the line.  */
 
-static int
-copy_rest (FILE *f, int c)
+स्थिर पूर्णाङ्क
+copy_rest (खाता *f, पूर्णाङ्क c)
 {
   out_column = 0;
-  if (in_column > next_prefix_indent || (c != '\n' && c != EOF))
+  यदि (in_column > next_prefix_indent || (c != '\n' && c != खातापूर्ण))
     {
       put_space (next_prefix_indent);
-      for (char const *s = prefix; out_column != in_column && *s; out_column++)
-        putchar (*s++);
-      if (c != EOF && c != '\n')
+      लागि (वर्ण अचर *s = prefix; out_column != in_column && *s; out_column++)
+        अक्षर_दो (*s++);
+      यदि (c != खातापूर्ण && c != '\n')
         put_space (in_column - out_column);
-      if (c == EOF && in_column >= next_prefix_indent + prefix_length)
-        putchar ('\n');
+      यदि (c == खातापूर्ण && in_column >= next_prefix_indent + prefix_length)
+        अक्षर_दो ('\n');
     }
-  while (c != '\n' && c != EOF)
+  जबसम्म (c != '\n' && c != खातापूर्ण)
     {
-      putchar (c);
-      c = getc (f);
+      अक्षर_दो (c);
+      c = अ_लो (f);
     }
-  return c;
+  फर्काऊ c;
 }
 
 /* Return true if a line whose first non-blank character after the
    prefix (if any) is C could belong to the current paragraph,
    otherwise false.  */
 
-static bool
-same_para (int c)
+स्थिर bool
+same_para (पूर्णाङ्क c)
 {
-  return (next_prefix_indent == prefix_indent
+  फर्काऊ (next_prefix_indent == prefix_indent
           && in_column >= next_prefix_indent + prefix_full_length
-          && c != '\n' && c != EOF);
+          && c != '\n' && c != खातापूर्ण);
 }
 
 /* Read a line from input file F, given first non-blank character C
@@ -685,33 +685,33 @@ same_para (int c)
 
    Return the first non-blank character of the next line.  */
 
-static int
-get_line (FILE *f, int c)
+स्थिर पूर्णाङ्क
+get_पङ्क्ति (खाता *f, पूर्णाङ्क c)
 {
-  int start;
-  char *end_of_parabuf;
+  पूर्णाङ्क start;
+  वर्ण *end_of_parabuf;
   WORD *end_of_word;
 
   end_of_parabuf = &parabuf[MAXCHARS];
   end_of_word = &word[MAXWORDS - 2];
 
-  do
+  गर
     {				/* for each word in a line */
 
       /* Scan word.  */
 
       word_limit->text = wptr;
-      do
+      गर
         {
-          if (wptr == end_of_parabuf)
+          यदि (wptr == end_of_parabuf)
             {
               set_other_indent (true);
               flush_paragraph ();
             }
           *wptr++ = c;
-          c = getc (f);
+          c = अ_लो (f);
         }
-      while (c != EOF && !c_isspace (c));
+      जबसम्म (c != खातापूर्ण && !c_isspace (c));
       in_column += word_limit->length = wptr - word_limit->text;
       check_punctuation (word_limit);
 
@@ -720,84 +720,84 @@ get_line (FILE *f, int c)
       start = in_column;
       c = get_space (f, c);
       word_limit->space = in_column - start;
-      word_limit->final = (c == EOF
+      word_limit->final = (c == खातापूर्ण
                            || (word_limit->period
                                && (c == '\n' || word_limit->space > 1)));
-      if (c == '\n' || c == EOF || uniform)
+      यदि (c == '\n' || c == खातापूर्ण || uniform)
         word_limit->space = word_limit->final ? 2 : 1;
-      if (word_limit == end_of_word)
+      यदि (word_limit == end_of_word)
         {
           set_other_indent (true);
           flush_paragraph ();
         }
       word_limit++;
     }
-  while (c != '\n' && c != EOF);
-  return get_prefix (f);
+  जबसम्म (c != '\n' && c != खातापूर्ण);
+  फर्काऊ get_prefix (f);
 }
 
 /* Read a prefix from input file F.  Return either first non-matching
    character, or first non-blank character after the prefix.  */
 
-static int
-get_prefix (FILE *f)
+स्थिर पूर्णाङ्क
+get_prefix (खाता *f)
 {
-  int c;
+  पूर्णाङ्क c;
 
   in_column = 0;
-  c = get_space (f, getc (f));
-  if (prefix_length == 0)
+  c = get_space (f, अ_लो (f));
+  यदि (prefix_length == 0)
     next_prefix_indent = prefix_lead_space < in_column ?
       prefix_lead_space : in_column;
-  else
+  अन्यथा
     {
       next_prefix_indent = in_column;
-      for (char const *p = prefix; *p != '\0'; p++)
+      लागि (वर्ण अचर *p = prefix; *p != '\0'; p++)
         {
-          unsigned char pc = *p;
-          if (c != pc)
-            return c;
+          अचिन्हित वर्ण pc = *p;
+          यदि (c != pc)
+            फर्काऊ c;
           in_column++;
-          c = getc (f);
+          c = अ_लो (f);
         }
       c = get_space (f, c);
     }
-  return c;
+  फर्काऊ c;
 }
 
 /* Read blank characters from input file F, starting with C, and keeping
    in_column up-to-date.  Return first non-blank character.  */
 
-static int
-get_space (FILE *f, int c)
+स्थिर पूर्णाङ्क
+get_space (खाता *f, पूर्णाङ्क c)
 {
-  while (true)
+  जबसम्म (true)
     {
-      if (c == ' ')
+      यदि (c == ' ')
         in_column++;
-      else if (c == '\t')
+      अन्यथा यदि (c == '\t')
         {
           tabs = true;
           in_column = (in_column / TABWIDTH + 1) * TABWIDTH;
         }
-      else
-        return c;
-      c = getc (f);
+      अन्यथा
+        फर्काऊ c;
+      c = अ_लो (f);
     }
 }
 
 /* Set extra fields in word W describing any attached punctuation.  */
 
-static void
+स्थिर शून्य
 check_punctuation (WORD *w)
 {
-  char const *start = w->text;
-  char const *finish = start + (w->length - 1);
-  unsigned char fin = *finish;
+  वर्ण अचर *start = w->text;
+  वर्ण अचर *finish = start + (w->length - 1);
+  अचिन्हित वर्ण fin = *finish;
 
   w->paren = isopen (*start);
-  w->punct = !! ispunct (fin);
-  while (start < finish && isclose (*finish))
+  w->punct = !! है_विराम (fin);
+  जबसम्म (start < finish && isclose (*finish))
     finish--;
   w->period = isperiod (*finish);
 }
@@ -805,24 +805,24 @@ check_punctuation (WORD *w)
 /* Flush part of the paragraph to make room.  This function is called on
    hitting the limit on the number of words or characters.  */
 
-static void
-flush_paragraph (void)
+स्थिर शून्य
+flush_paragraph (शून्य)
 {
   WORD *split_point;
   WORD *w;
-  int shift;
+  पूर्णाङ्क shift;
   COST best_break;
 
   /* In the special case where it's all one word, just flush it.  */
 
-  if (word_limit == word)
+  यदि (word_limit == word)
     {
-      size_t to_write = wptr - parabuf;
-      if (fwrite (parabuf, 1, to_write, stdout) != to_write)
+      माप_प्रकार to_write = wptr - parabuf;
+      यदि (ख_डालो (parabuf, 1, to_write, मानक_निकास) != to_write)
         write_error ();
 
       wptr = parabuf;
-      return;
+      फर्काऊ;
     }
 
   /* Otherwise:
@@ -837,34 +837,34 @@ flush_paragraph (void)
 
   split_point = word_limit;
   best_break = MAXCOST;
-  for (w = word->next_break; w != word_limit; w = w->next_break)
+  लागि (w = word->next_break; w != word_limit; w = w->next_break)
     {
-      if (w->best_cost - w->next_break->best_cost < best_break)
+      यदि (w->best_cost - w->next_break->best_cost < best_break)
         {
           split_point = w;
           best_break = w->best_cost - w->next_break->best_cost;
         }
-      if (best_break <= MAXCOST - LINE_CREDIT)
-        best_break += LINE_CREDIT;
+      यदि (best_break <= MAXCOST - पङ्क्ति_CREDIT)
+        best_break += पङ्क्ति_CREDIT;
     }
   put_paragraph (split_point);
 
   /* Copy text of words down to start of parabuf -- we use memmove because
      the source and target may overlap.  */
 
-  memmove (parabuf, split_point->text, wptr - split_point->text);
+  स_हटाओ (parabuf, split_point->text, wptr - split_point->text);
   shift = split_point->text - parabuf;
   wptr -= shift;
 
   /* Adjust text pointers.  */
 
-  for (w = split_point; w <= word_limit; w++)
+  लागि (w = split_point; w <= word_limit; w++)
     w->text -= shift;
 
   /* Copy words from split_point down to word -- we use memmove because
      the source and target may overlap.  */
 
-  memmove (word, split_point, (word_limit - split_point + 1) * sizeof *word);
+  स_हटाओ (word, split_point, (word_limit - split_point + 1) * परिमाण *word);
   word_limit -= split_point - word;
 }
 
@@ -872,19 +872,19 @@ flush_paragraph (void)
    and remembering the optimal formatting for each suffix from the empty
    one to the whole paragraph.  */
 
-static void
-fmt_paragraph (void)
+स्थिर शून्य
+fmt_paragraph (शून्य)
 {
   WORD *w;
-  int len;
+  पूर्णाङ्क len;
   COST wcost, best;
-  int saved_length;
+  पूर्णाङ्क saved_length;
 
   word_limit->best_cost = 0;
   saved_length = word_limit->length;
   word_limit->length = max_width;	/* sentinel */
 
-  for (WORD *start = word_limit - 1; start >= word; start--)
+  लागि (WORD *start = word_limit - 1; start >= word; start--)
     {
       best = MAXCOST;
       len = start == word ? first_indent : other_indent;
@@ -893,32 +893,32 @@ fmt_paragraph (void)
 
       w = start;
       len += w->length;
-      do
+      गर
         {
           w++;
 
           /* Consider breaking before w.  */
 
-          wcost = line_cost (w, len) + w->best_cost;
-          if (start == word && last_line_length > 0)
-            wcost += RAGGED_COST (len - last_line_length);
-          if (wcost < best)
+          wcost = पङ्क्ति_cost (w, len) + w->best_cost;
+          यदि (start == word && last_पङ्क्ति_length > 0)
+            wcost += RAGGED_COST (len - last_पङ्क्ति_length);
+          यदि (wcost < best)
             {
               best = wcost;
               start->next_break = w;
-              start->line_length = len;
+              start->पङ्क्ति_length = len;
             }
 
           /* This is a kludge to keep us from computing 'len' as the
              sum of the sentinel length and some non-zero number.
              Since the sentinel w->length may be INT_MAX, adding
              to that would give a negative result.  */
-          if (w == word_limit)
-            break;
+          यदि (w == word_limit)
+            रोक;
 
           len += (w - 1)->space + w->length;	/* w > start >= word */
         }
-      while (len <= max_width);
+      जबसम्म (len <= max_width);
       start->best_cost = best + base_cost (start);
     }
 
@@ -926,135 +926,135 @@ fmt_paragraph (void)
 }
 
 /* Work around <https://gcc.gnu.org/PR109628>.  */
-#if __GNUC__ == 13
+#यदि __GNUC__ == 13
 # pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value"
 #endif
 
 /* Return the constant component of the cost of breaking before the
    word THIS.  */
 
-static COST
+स्थिर COST
 base_cost (WORD *this)
 {
   COST cost;
 
-  cost = LINE_COST;
+  cost = पङ्क्ति_COST;
 
-  if (this > word)
+  यदि (this > word)
     {
-      if ((this - 1)->period)
+      यदि ((this - 1)->period)
         {
-          if ((this - 1)->final)
+          यदि ((this - 1)->final)
             cost -= SENTENCE_BONUS;
-          else
+          अन्यथा
             cost += NOBREAK_COST;
         }
-      else if ((this - 1)->punct)
+      अन्यथा यदि ((this - 1)->punct)
         cost -= PUNCT_BONUS;
-      else if (this > word + 1 && (this - 2)->final)
+      अन्यथा यदि (this > word + 1 && (this - 2)->final)
         cost += WIDOW_COST ((this - 1)->length);
     }
 
-  if (this->paren)
+  यदि (this->paren)
     cost -= PAREN_BONUS;
-  else if (this->final)
+  अन्यथा यदि (this->final)
     cost += ORPHAN_COST (this->length);
 
-  return cost;
+  फर्काऊ cost;
 }
 
 /* Return the component of the cost of breaking before word NEXT that
    depends on LEN, the length of the line beginning there.  */
 
-static COST
-line_cost (WORD *next, int len)
+स्थिर COST
+पङ्क्ति_cost (WORD *next, पूर्णाङ्क len)
 {
-  int n;
+  पूर्णाङ्क n;
   COST cost;
 
-  if (next == word_limit)
-    return 0;
+  यदि (next == word_limit)
+    फर्काऊ 0;
   n = goal_width - len;
   cost = SHORT_COST (n);
-  if (next->next_break != word_limit)
+  यदि (next->next_break != word_limit)
     {
-      n = len - next->line_length;
+      n = len - next->पङ्क्ति_length;
       cost += RAGGED_COST (n);
     }
-  return cost;
+  फर्काऊ cost;
 }
 
 /* Output to stdout a paragraph from word up to (but not including)
    FINISH, which must be in the next_break chain from word.  */
 
-static void
+स्थिर शून्य
 put_paragraph (WORD *finish)
 {
-  put_line (word, first_indent);
-  for (WORD *w = word->next_break; w != finish; w = w->next_break)
-    put_line (w, other_indent);
+  put_पङ्क्ति (word, first_indent);
+  लागि (WORD *w = word->next_break; w != finish; w = w->next_break)
+    put_पङ्क्ति (w, other_indent);
 }
 
 /* Output to stdout the line beginning with word W, beginning in column
    INDENT, including the prefix (if any).  */
 
-static void
-put_line (WORD *w, int indent)
+स्थिर शून्य
+put_पङ्क्ति (WORD *w, पूर्णाङ्क indent)
 {
   WORD *endline;
 
   out_column = 0;
   put_space (prefix_indent);
-  fputs (prefix, stdout);
+  ख_माला_दो (prefix, मानक_निकास);
   out_column += prefix_length;
   put_space (indent - out_column);
 
   endline = w->next_break - 1;
-  for (; w != endline; w++)
+  लागि (; w != endline; w++)
     {
       put_word (w);
       put_space (w->space);
     }
   put_word (w);
-  last_line_length = out_column;
-  putchar ('\n');
+  last_पङ्क्ति_length = out_column;
+  अक्षर_दो ('\n');
 
-  if (ferror (stdout))
+  यदि (ख_त्रुटि (मानक_निकास))
     write_error ();
 }
 
 /* Output to stdout the word W.  */
 
-static void
+स्थिर शून्य
 put_word (WORD *w)
 {
-  char const *s = w->text;
-  for (int n = w->length; n != 0; n--)
-    putchar (*s++);
+  वर्ण अचर *s = w->text;
+  लागि (पूर्णाङ्क n = w->length; n != 0; n--)
+    अक्षर_दो (*s++);
   out_column += w->length;
 }
 
 /* Output to stdout SPACE spaces, or equivalent tabs.  */
 
-static void
-put_space (int space)
+स्थिर शून्य
+put_space (पूर्णाङ्क space)
 {
-  int space_target, tab_target;
+  पूर्णाङ्क space_target, tab_target;
 
   space_target = out_column + space;
-  if (tabs)
+  यदि (tabs)
     {
       tab_target = space_target / TABWIDTH * TABWIDTH;
-      if (out_column + 1 < tab_target)
-        while (out_column < tab_target)
+      यदि (out_column + 1 < tab_target)
+        जबसम्म (out_column < tab_target)
           {
-            putchar ('\t');
+            अक्षर_दो ('\t');
             out_column = (out_column / TABWIDTH + 1) * TABWIDTH;
           }
     }
-  while (out_column < space_target)
+  जबसम्म (out_column < space_target)
     {
-      putchar (' ');
+      अक्षर_दो (' ');
       out_column++;
     }
 }

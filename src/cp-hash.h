@@ -1,5 +1,5 @@
-void hash_init (void);
-void forget_created (ino_t ino, dev_t dev);
-char *remember_copied (char const *node, ino_t ino, dev_t dev)
+शून्य hash_init (शून्य);
+शून्य forget_created (ino_t ino, dev_t dev);
+वर्ण *remember_copied (वर्ण अचर *गाँठो, ino_t ino, dev_t dev)
   _GL_ATTRIBUTE_NONNULL ();
-char *src_to_dest_lookup (ino_t ino, dev_t dev);
+वर्ण *src_to_dest_lookup (ino_t ino, dev_t dev);

@@ -20,18 +20,18 @@
 
 # include "fts_.h"
 
-static inline bool
-ignore_missing_fts_entry (FTSENT const *ent)
+स्थिर अन्तःस्थ bool
+ignore_missing_fts_entry (FTSENT अचर *ent)
 {
-  return (FTS_ROOTLEVEL < ent->fts_level
+  फर्काऊ (FTS_ROOTLEVEL < ent->fts_level
           && ent->fts_info != FTS_SL
           && ent->fts_info != FTS_SLNONE);
 }
 
-static inline bool
-ignorable_fts_error (FTSENT const *ent)
+स्थिर अन्तःस्थ bool
+ignorable_fts_error (FTSENT अचर *ent)
 {
-  return (ignorable_traversal_errno (ent->fts_errno)
+  फर्काऊ (ignorable_traversal_errno (ent->fts_errno)
           && (ent->fts_info == FTS_NS || ent->fts_info == FTS_ERR
               || ent->fts_info == FTS_DNR));
 }

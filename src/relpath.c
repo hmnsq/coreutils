@@ -16,45 +16,45 @@
 
 /* Written by Pádraig Brady.  */
 
-#include <config.h>
+#अन्तर्भाव <config.h>
 
-#include "system.h"
-#include "relpath.h"
+#अन्तर्भाव "system.h"
+#अन्तर्भाव "relpath.h"
 
 
 /* Return the length of the longest common prefix
    of canonical PATH1 and PATH2, ensuring only full path components
    are matched.  Return 0 on no match.  */
 ATTRIBUTE_PURE
-static int
-path_common_prefix (char const *path1, char const *path2)
+स्थिर पूर्णाङ्क
+path_common_prefix (वर्ण अचर *path1, वर्ण अचर *path2)
 {
-  int i = 0;
-  int ret = 0;
+  पूर्णाङ्क i = 0;
+  पूर्णाङ्क ret = 0;
 
   /* We already know path1[0] and path2[0] are '/'.  Special case
      '//', which is only present in a canonical name on platforms
      where it is distinct.  */
-  if ((path1[1] == '/') != (path2[1] == '/'))
-    return 0;
+  यदि ((path1[1] == '/') != (path2[1] == '/'))
+    फर्काऊ 0;
 
-  while (*path1 && *path2)
+  जबसम्म (*path1 && *path2)
     {
-      if (*path1 != *path2)
-        break;
-      if (*path1 == '/')
+      यदि (*path1 != *path2)
+        रोक;
+      यदि (*path1 == '/')
         ret = i + 1;
       path1++;
       path2++;
       i++;
     }
 
-  if ((!*path1 && !*path2)
+  यदि ((!*path1 && !*path2)
       || (!*path1 && *path2 == '/')
       || (!*path2 && *path1 == '/'))
     ret = i;
 
-  return ret;
+  फर्काऊ ret;
 }
 
 /* Either output STR to stdout or
@@ -62,72 +62,72 @@ path_common_prefix (char const *path1, char const *path2)
    and update *PBUF to point to the end of the buffer
    and adjust *PLEN to reflect the remaining space.
    Return TRUE on failure.  */
-static bool
-buffer_or_output (char const *str, char **pbuf, size_t *plen)
+स्थिर bool
+buffer_or_output (वर्ण अचर *str, वर्ण **pbuf, माप_प्रकार *plen)
 {
-  if (*pbuf)
+  यदि (*pbuf)
     {
-      size_t slen = strlen (str);
-      if (slen >= *plen)
-        return true;
-      memcpy (*pbuf, str, slen + 1);
+      माप_प्रकार slen = म_माप (str);
+      यदि (slen >= *plen)
+        फर्काऊ true;
+      स_नकल (*pbuf, str, slen + 1);
       *pbuf += slen;
       *plen -= slen;
     }
-  else
+  अन्यथा
     {
-      fputs (str, stdout);
+      ख_माला_दो (str, मानक_निकास);
     }
 
-  return false;
+  फर्काऊ false;
 }
 
 /* Output the relative representation if possible.
    If BUF is non-null, write to that buffer rather than to stdout.  */
 bool
-relpath (char const *can_fname, char const *can_reldir, char *buf, size_t len)
+relpath (वर्ण अचर *can_fname, वर्ण अचर *can_reldir, वर्ण *buf, माप_प्रकार len)
 {
   bool buf_err = false;
 
   /* Skip the prefix common to --relative-to and path.  */
-  int common_index = path_common_prefix (can_reldir, can_fname);
-  if (!common_index)
-    return false;
+  पूर्णाङ्क common_index = path_common_prefix (can_reldir, can_fname);
+  यदि (!common_index)
+    फर्काऊ false;
 
-  char const *relto_suffix = can_reldir + common_index;
-  char const *fname_suffix = can_fname + common_index;
+  वर्ण अचर *relto_suffix = can_reldir + common_index;
+  वर्ण अचर *fname_suffix = can_fname + common_index;
 
   /* Skip over extraneous '/'.  */
-  if (*relto_suffix == '/')
+  यदि (*relto_suffix == '/')
     relto_suffix++;
-  if (*fname_suffix == '/')
+  यदि (*fname_suffix == '/')
     fname_suffix++;
 
   /* Replace remaining components of --relative-to with '..', to get
      to a common directory.  Then output the remainder of fname.  */
-  if (*relto_suffix)
+  यदि (*relto_suffix)
     {
       buf_err |= buffer_or_output ("..", &buf, &len);
-      for (; *relto_suffix; ++relto_suffix)
+      लागि (; *relto_suffix; ++relto_suffix)
         {
-          if (*relto_suffix == '/')
+          यदि (*relto_suffix == '/')
             buf_err |= buffer_or_output ("/..", &buf, &len);
         }
 
-      if (*fname_suffix)
+      यदि (*fname_suffix)
         {
           buf_err |= buffer_or_output ("/", &buf, &len);
           buf_err |= buffer_or_output (fname_suffix, &buf, &len);
         }
     }
-  else
+  अन्यथा
     {
         buf_err |= buffer_or_output (*fname_suffix ? fname_suffix : ".",
                                      &buf, &len);
     }
 
-  if (buf_err)
+  यदि (buf_err)
     error (0, ENAMETOOLONG, "%s", _("generating relative path"));
 
-  return !buf_err;
+  फर्काऊ !buf_err;
 }

@@ -16,19 +16,19 @@
 
 /* Written by Pádraig Brady.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#अन्तर्भाव <config.h>
+#अन्तर्भाव <stdio.h>
+#अन्तर्भाव <getopt.h>
+#अन्तर्भाव <sys/types.h>
 
-#include "system.h"
-#include "assure.h"
-#include "filenamecat.h"
-#include "quote.h"
-#include "xreadlink.h"
-#include "xstrtol-error.h"
-#include "xstrtol.h"
-#include "c-ctype.h"
+#अन्तर्भाव "system.h"
+#अन्तर्भाव "assure.h"
+#अन्तर्भाव "filenamecat.h"
+#अन्तर्भाव "quote.h"
+#अन्तर्भाव "xreadlink.h"
+#अन्तर्भाव "xstrtol-error.h"
+#अन्तर्भाव "xstrtol.h"
+#अन्तर्भाव "c-ctype.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "stdbuf"
@@ -36,23 +36,23 @@
 
 #define AUTHORS proper_name_lite ("Padraig Brady", "P\303\241draig Brady")
 
-static char *program_path;
+स्थिर वर्ण *program_path;
 
-static struct
+स्थिर संरचना
 {
-  size_t size;
-  int optc;
-  char *optarg;
+  माप_प्रकार size;
+  पूर्णाङ्क optc;
+  वर्ण *optarg;
 } stdbuf[3];
 
-static struct option const longopts[] =
+स्थिर संरचना option अचर longopts[] =
 {
-  {"input", required_argument, NULL, 'i'},
-  {"output", required_argument, NULL, 'o'},
-  {"error", required_argument, NULL, 'e'},
+  {"input", required_argument, रिक्त, 'i'},
+  {"output", required_argument, रिक्त, 'o'},
+  {"error", required_argument, रिक्त, 'e'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {रिक्त, 0, रिक्त, 0}
 };
 
 /* Set size to the value of STR, interpreted as a decimal integer,
@@ -62,33 +62,33 @@ static struct option const longopts[] =
 
    This supports dd BLOCK size suffixes.
    Note we don't support dd's b=512, c=1, w=2 or 21x512MiB formats.  */
-static enum strtol_error
-parse_size (char const *str, size_t *size)
+स्थिर गणना strtol_error
+parse_size (वर्ण अचर *str, माप_प्रकार *size)
 {
   uintmax_t tmp_size;
-  enum strtol_error e = xstrtoumax (str, NULL, 10,
+  गणना strtol_error e = xstrtoumax (str, रिक्त, 10,
                                     &tmp_size, "EGkKMPQRTYZ0");
-  if (e == LONGINT_OK && ckd_add (size, tmp_size, 0))
+  यदि (e == LONGINT_OK && ckd_add (size, tmp_size, 0))
     e = LONGINT_OVERFLOW;
-  return e;
+  फर्काऊ e;
 }
 
-void
-usage (int status)
+शून्य
+usage (पूर्णाङ्क status)
 {
-  if (status != EXIT_SUCCESS)
+  यदि (status != निकास_सफल)
     emit_try_help ();
-  else
+  अन्यथा
     {
-      printf (_("Usage: %s OPTION... COMMAND\n"), program_name);
-      fputs (_("\
-Run COMMAND, with modified buffering operations for its standard streams.\n\
-"), stdout);
+      म_लिखो (_("Usage: %s OPTION... COMMAND\n"), program_name);
+      ख_माला_दो (_("\
+Run COMMAND, with modified buffering operations लागि its standard streams.\n\
+"), मानक_निकास);
 
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -i, --input=MODE   adjust standard input stream buffering\n\
+  -i, --आगत=MODE   adjust standard आगत stream buffering\n\
 "));
       oputs (_("\
   -o, --output=MODE  adjust standard output stream buffering\n\
@@ -98,29 +98,29 @@ Run COMMAND, with modified buffering operations for its standard streams.\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
-      fputs (_("\n\
-If MODE is 'L' the corresponding stream will be line buffered.\n\
-This option is invalid with standard input.\n"), stdout);
-      fputs (_("\n\
+      ख_माला_दो (_("\n\
+If MODE is 'L' the corresponding stream will be पङ्क्ति buffered.\n\
+This option is invalid with standard आगत.\n"), मानक_निकास);
+      ख_माला_दो (_("\n\
 If MODE is '0' the corresponding stream will be unbuffered.\n\
-"), stdout);
-      fputs (_("\n\
-Otherwise MODE is a number which may be followed by one of the following:\n\
-KB 1000, K 1024, MB 1000*1000, M 1024*1024, and so on for G,T,P,E,Z,Y,R,Q.\n\
-Binary prefixes can be used, too: KiB=K, MiB=M, and so on.\n\
-In this case the corresponding stream will be fully buffered with the buffer\n\
+"), मानक_निकास);
+      ख_माला_दो (_("\n\
+Otherwise MODE is a सङ्ख्या which may be followed by one of the following:\n\
+KB 1000, K 1024, MB 1000*1000, M 1024*1024, and so on लागि G,T,P,E,Z,Y,R,Q.\n\
+द्विआधारी_2 prefixes can be used, too: KiB=K, MiB=M, and so on.\n\
+In this पक्ष the corresponding stream will be fully buffered with the buffer\n\
 size set to MODE bytes.\n\
-"), stdout);
-      fputs (_("\n\
+"), मानक_निकास);
+      ख_माला_दो (_("\n\
 NOTE: If COMMAND adjusts the buffering of its standard streams ('tee' does\n\
-for example) then that will override corresponding changes by 'stdbuf'.\n\
-Also some filters (like 'dd' and 'cat' etc.) don't use streams for I/O,\n\
+लागि example) then that will override corresponding changes by 'stdbuf'.\n\
+Also some filters (like 'dd' and 'cat' etc.) don't use streams लागि I/O,\n\
 and are thus unaffected by 'stdbuf' settings.\n\
-"), stdout);
+"), मानक_निकास);
       emit_exec_status (PROGRAM_NAME);
       emit_ancillary_info (PROGRAM_NAME);
     }
-  exit (status);
+  निकास (status);
 }
 
 /* argv[0] can be anything really, but generally it contains
@@ -129,75 +129,75 @@ and are thus unaffected by 'stdbuf' settings.\n\
    search getenv("PATH"), readlink("/prof/self/exe"), getenv("_"),
    dladdr(), pstat_getpathname(), etc.  */
 
-static void
-set_program_path (char const *arg)
+स्थिर शून्य
+set_program_path (वर्ण अचर *arg)
 {
-  if (strchr (arg, '/'))        /* Use absolute or relative paths directly.  */
+  यदि (म_अक्षर (arg, '/'))        /* Use absolute or relative paths directly.  */
     {
       program_path = dir_name (arg);
     }
-  else
+  अन्यथा
     {
-      char *path = xreadlink ("/proc/self/exe");
-      if (path)
+      वर्ण *path = xreadlink ("/proc/self/exe");
+      यदि (path)
         program_path = dir_name (path);
-      else if ((path = getenv ("PATH")))
+      अन्यथा यदि ((path = दो_पर्या ("PATH")))
         {
           path = xstrdup (path);
-          for (char *dir = strtok (path, ":"); dir != NULL;
-               dir = strtok (NULL, ":"))
+          लागि (वर्ण *dir = म_मोहर (path, ":"); dir != रिक्त;
+               dir = म_मोहर (रिक्त, ":"))
             {
-              char *candidate = file_name_concat (dir, arg, NULL);
-              if (access (candidate, X_OK) == 0)
+              वर्ण *candidate = file_name_concat (dir, arg, रिक्त);
+              यदि (access (candidate, X_OK) == 0)
                 {
                   program_path = dir_name (candidate);
-                  free (candidate);
-                  break;
+                  मुक्त (candidate);
+                  रोक;
                 }
-              free (candidate);
+              मुक्त (candidate);
             }
         }
-      free (path);
+      मुक्त (path);
     }
 }
 
-static int
-optc_to_fileno (int c)
+स्थिर पूर्णाङ्क
+optc_to_fileno (पूर्णाङ्क c)
 {
-  int ret = -1;
+  पूर्णाङ्क ret = -1;
 
-  switch (c)
+  विकल्प (c)
     {
-    case 'e':
+    पक्ष 'e':
       ret = STDERR_FILENO;
-      break;
-    case 'i':
+      रोक;
+    पक्ष 'i':
       ret = STDIN_FILENO;
-      break;
-    case 'o':
+      रोक;
+    पक्ष 'o':
       ret = STDOUT_FILENO;
-      break;
-    default:
+      रोक;
+    स्वभाव:
       affirm (false);
     }
 
-  return ret;
+  फर्काऊ ret;
 }
 
-static void
-set_LD_PRELOAD (void)
+स्थिर शून्य
+set_LD_PRELOAD (शून्य)
 {
-  int ret;
+  पूर्णाङ्क ret;
 #ifdef __APPLE__
-  char const *preload_env = "DYLD_INSERT_LIBRARIES";
-#elif defined _AIX
-  char const *preload_env = (sizeof (void *) < 8
+  वर्ण अचर *preload_env = "DYLD_INSERT_LIBRARIES";
+#अथवायदि defined _AIX
+  वर्ण अचर *preload_env = (परिमाण (शून्य *) < 8
                              ? "LDR_PRELOAD" : "LDR_PRELOAD64");
-#else
-  char const *preload_env = "LD_PRELOAD";
+#अन्यथा
+  वर्ण अचर *preload_env = "LD_PRELOAD";
 #endif
-  char *old_libs = getenv (preload_env);
-  char *LD_PRELOAD;
+  वर्ण *old_libs = दो_पर्या (preload_env);
+  वर्ण *LD_PRELOAD;
 
   /* Note this would auto add the appropriate search path for "libstdbuf.so":
      gcc stdbuf.c -Wl,-rpath,'$ORIGIN' -Wl,-rpath,$PKGLIBEXECDIR
@@ -215,56 +215,56 @@ set_LD_PRELOAD (void)
      not supported due to the unusual need for controlling the stdio buffering
      of programs that are a different architecture to the default on the
      system (and that of stdbuf itself).  */
-  char const *const search_path[] = {
+  वर्ण अचर *अचर खोज_path[] = {
     program_path,
     PKGLIBEXECDIR,
-    NULL
+    रिक्त
   };
 
-  char const *const *path = search_path;
-  char *libstdbuf;
+  वर्ण अचर *अचर *path = खोज_path;
+  वर्ण *libstdbuf;
 
-  while (true)
+  जबसम्म (true)
     {
-      struct stat sb;
+      संरचना stat sb;
 
-      if (!**path)              /* system default  */
+      यदि (!**path)              /* system default  */
         {
           libstdbuf = xstrdup (LIB_NAME);
-          break;
+          रोक;
         }
       ret = asprintf (&libstdbuf, "%s/%s", *path, LIB_NAME);
-      if (ret < 0)
+      यदि (ret < 0)
         xalloc_die ();
-      if (stat (libstdbuf, &sb) == 0)   /* file_exists  */
-        break;
-      free (libstdbuf);
+      यदि (stat (libstdbuf, &sb) == 0)   /* file_exists  */
+        रोक;
+      मुक्त (libstdbuf);
 
       ++path;
-      if ( ! *path)
+      यदि ( ! *path)
         error (EXIT_CANCELED, 0, _("failed to find %s"), quote (LIB_NAME));
     }
 
   /* FIXME: Do we need to support libstdbuf.dll, c:, '\' separators etc?  */
 
-  if (old_libs)
+  यदि (old_libs)
     ret = asprintf (&LD_PRELOAD, "%s=%s:%s", preload_env, old_libs, libstdbuf);
-  else
+  अन्यथा
     ret = asprintf (&LD_PRELOAD, "%s=%s", preload_env, libstdbuf);
 
-  if (ret < 0)
+  यदि (ret < 0)
     xalloc_die ();
 
-  free (libstdbuf);
+  मुक्त (libstdbuf);
 
   ret = putenv (LD_PRELOAD);
 #ifdef __APPLE__
-  if (ret == 0)
+  यदि (ret == 0)
     ret = setenv ("DYLD_FORCE_FLAT_NAMESPACE", "y", 1);
 #endif
 
-  if (ret != 0)
-    error (EXIT_CANCELED, errno,
+  यदि (ret != 0)
+    error (EXIT_CANCELED, त्रुटि_सं,
            _("failed to update the environment with %s"),
            quote (LD_PRELOAD));
 }
@@ -272,30 +272,30 @@ set_LD_PRELOAD (void)
 /* Populate environ with _STDBUF_I=$MODE _STDBUF_O=$MODE _STDBUF_E=$MODE.
    Return TRUE if any environment variables set.   */
 
-static bool
-set_libstdbuf_options (void)
+स्थिर bool
+set_libstdbuf_options (शून्य)
 {
   bool env_set = false;
 
-  for (size_t i = 0; i < countof (stdbuf); i++)
+  लागि (माप_प्रकार i = 0; i < countof (stdbuf); i++)
     {
-      if (stdbuf[i].optarg)
+      यदि (stdbuf[i].optarg)
         {
-          char *var;
-          int ret;
+          वर्ण *var;
+          पूर्णाङ्क ret;
 
-          if (*stdbuf[i].optarg == 'L')
+          यदि (*stdbuf[i].optarg == 'L')
             ret = asprintf (&var, "%s%c=L", "_STDBUF_",
                             c_toupper (stdbuf[i].optc));
-          else
+          अन्यथा
             ret = asprintf (&var, "%s%c=%zu", "_STDBUF_",
                             c_toupper (stdbuf[i].optc),
                             stdbuf[i].size);
-          if (ret < 0)
+          यदि (ret < 0)
             xalloc_die ();
 
-          if (putenv (var) != 0)
-            error (EXIT_CANCELED, errno,
+          यदि (putenv (var) != 0)
+            error (EXIT_CANCELED, त्रुटि_सं,
                    _("failed to update the environment with %s"),
                    quote (var));
 
@@ -303,41 +303,41 @@ set_libstdbuf_options (void)
         }
     }
 
-  return env_set;
+  फर्काऊ env_set;
 }
 
-int
-main (int argc, char **argv)
+पूर्णाङ्क
+main (पूर्णाङ्क argc, वर्ण **argv)
 {
-  int c;
+  पूर्णाङ्क c;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
-  setlocale (LC_ALL, "");
+  रखो_क्षेत्र (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   initialize_exit_failure (EXIT_CANCELED);
-  atexit (close_stdout);
+  निकास_पर (close_stdout);
 
-  while ((c = getopt_long (argc, argv, "+i:o:e:", longopts, NULL)) != -1)
+  जबसम्म ((c = getopt_long (argc, argv, "+i:o:e:", longopts, रिक्त)) != -1)
     {
-      int const oi = -1;
-      int opt_fileno;
+      पूर्णाङ्क अचर oi = -1;
+      पूर्णाङ्क opt_fileno;
 
-      switch (c)
+      विकल्प (c)
         {
         /* Old McDonald had a farm ei...  */
-        case 'e':
-        case 'i':
-        case 'o':
+        पक्ष 'e':
+        पक्ष 'i':
+        पक्ष 'o':
           opt_fileno = optc_to_fileno (c);
           affirm (0 <= opt_fileno && opt_fileno < countof (stdbuf));
           stdbuf[opt_fileno].optc = c;
-          while (c_isspace (*optarg))
+          जबसम्म (c_isspace (*optarg))
             optarg++;
           stdbuf[opt_fileno].optarg = optarg;
-          if (c == 'i' && *optarg == 'L')
+          यदि (c == 'i' && *optarg == 'L')
             {
               /* -oL will be by far the most common use of this utility,
                  but one could easily think -iL might have the same affect,
@@ -346,21 +346,21 @@ main (int argc, char **argv)
               usage (EXIT_CANCELED);
             }
 
-          if (!streq (optarg, "L"))
+          यदि (!streq (optarg, "L"))
             {
-              enum strtol_error e = parse_size (optarg,
+              गणना strtol_error e = parse_size (optarg,
                                                 &stdbuf[opt_fileno].size);
-              if (e != LONGINT_OK)
+              यदि (e != LONGINT_OK)
                 xstrtol_fatal (e, oi, c, longopts, optarg);
             }
 
-          break;
+          रोक;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        स्वभाव:
           usage (EXIT_CANCELED);
         }
     }
@@ -369,13 +369,13 @@ main (int argc, char **argv)
   argc -= optind;
 
   /* must specify at least 1 command.  */
-  if (argc < 1)
+  यदि (argc < 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_CANCELED);
     }
 
-  if (! set_libstdbuf_options ())
+  यदि (! set_libstdbuf_options ())
     {
       error (0, 0, _("you must specify a buffering mode option"));
       usage (EXIT_CANCELED);
@@ -384,14 +384,14 @@ main (int argc, char **argv)
   /* Try to preload libstdbuf first from the same path as
      stdbuf is running from.  */
   set_program_path (program_name);
-  if (!program_path)
+  यदि (!program_path)
     program_path = xstrdup (PKGLIBDIR);  /* Need to init to non-null.  */
   set_LD_PRELOAD ();
-  free (program_path);
+  मुक्त (program_path);
 
   execvp (*argv, argv);
 
-  int exit_status = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
-  error (0, errno, _("failed to run command %s"), quote (argv[0]));
-  return exit_status;
+  पूर्णाङ्क exit_status = त्रुटि_सं == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
+  error (0, त्रुटि_सं, _("failed to run command %s"), quote (argv[0]));
+  फर्काऊ exit_status;
 }

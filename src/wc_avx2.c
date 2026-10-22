@@ -14,46 +14,46 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
+#अन्तर्भाव <config.h>
 
-#include "wc.h"
-#include "system.h"
-#include "ioblksize.h"
+#अन्तर्भाव "wc.h"
+#अन्तर्भाव "system.h"
+#अन्तर्भाव "ioblksize.h"
 
-#include <x86intrin.h>
+#अन्तर्भाव <x86intrin.h>
 
 /* Read FD and return a summary.  */
-extern struct wc_lines
-wc_lines_avx2 (int fd)
+बाह्य संरचना wc_पङ्क्तिहरू
+wc_पङ्क्तिहरू_avx2 (पूर्णाङ्क fd)
 {
-  intmax_t lines = 0;
+  intmax_t पङ्क्तिहरू = 0;
   intmax_t bytes = 0;
 
   __m256i endlines = _mm256_set1_epi8 ('\n');
 
-  while (true)
+  जबसम्म (true)
     {
-       __m256i avx_buf[IO_BUFSIZE / sizeof (__m256i)];
-      ssize_t bytes_read = read (fd, avx_buf, sizeof avx_buf);
-      if (bytes_read <= 0)
-        return (struct wc_lines) { bytes_read == 0 ? 0 : errno, lines, bytes };
+       __m256i avx_buf[IO_BUFSIZE / परिमाण (__m256i)];
+      ssize_t bytes_read = पठ (fd, avx_buf, परिमाण avx_buf);
+      यदि (bytes_read <= 0)
+        फर्काऊ (संरचना wc_पङ्क्तिहरू) { bytes_read == 0 ? 0 : त्रुटि_सं, पङ्क्तिहरू, bytes };
 
       bytes += bytes_read;
       __m256i *datap = avx_buf;
 
-      while (bytes_read >= 32)
+      जबसम्म (bytes_read >= 32)
         {
            __m256i to_match = _mm256_load_si256 (datap);
            __m256i matches = _mm256_cmpeq_epi8 (to_match, endlines);
-           int mask = _mm256_movemask_epi8 (matches);
-           lines += __builtin_popcount (mask);
+           पूर्णाङ्क mask = _mm256_movemask_epi8 (matches);
+           पङ्क्तिहरू += __builtin_popcount (mask);
            datap += 1;
            bytes_read -= 32;
         }
 
       /* Finish up any left over bytes */
-      char *end = (char *) datap + bytes_read;
-      for (char *p = (char *) datap; p < end; p++)
-        lines += *p == '\n';
+      वर्ण *end = (वर्ण *) datap + bytes_read;
+      लागि (वर्ण *p = (वर्ण *) datap; p < end; p++)
+        पङ्क्तिहरू += *p == '\n';
     }
 }

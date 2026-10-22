@@ -19,24 +19,24 @@
 
    Written by Alex Deymo <deymo@chromium.org>.  */
 
-#include <config.h>
-#include <getopt.h>
-#include <stdio.h>
-#if HAVE_PRCTL
+#अन्तर्भाव <config.h>
+#अन्तर्भाव <getopt.h>
+#अन्तर्भाव <stdio.h>
+#यदि HAVE_PRCTL
 # include <sys/prctl.h>
 #endif
 
-#include "system.h"
-#include "quote.h"
+#अन्तर्भाव "system.h"
+#अन्तर्भाव "quote.h"
 
-#ifdef SINGLE_BINARY
+#ifdef SINGLE_द्विआधारी
 /* Declare the main function on each one of the selected tools.  This name
    needs to match the one passed as CFLAGS on single-binary.mk (generated
    by gen-single-binary.sh). */
-# define SINGLE_BINARY_PROGRAM(prog_name_str, main_name) \
-  int single_binary_main_##main_name (int, char **);
+# define SINGLE_द्विआधारी_PROGRAM(prog_name_str, main_name) \
+  पूर्णाङ्क single_द्विआधारी_main##main_name (पूर्णाङ्क, वर्ण **);
 # include "coreutils.h"
-# undef SINGLE_BINARY_PROGRAM
+# undef SINGLE_द्विआधारी_PROGRAM
 #endif
 
 /* The official name of this program (e.g., no 'g' prefix).  */
@@ -45,96 +45,96 @@
 #define AUTHORS \
   proper_name ("Alex Deymo")
 
-static struct option const long_options[] =
+स्थिर संरचना option अचर long_options[] =
 {
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {रिक्त, 0, रिक्त, 0}
 };
 
 
-void
-usage (int status)
+शून्य
+usage (पूर्णाङ्क status)
 {
-  if (status != EXIT_SUCCESS)
+  यदि (status != निकास_सफल)
     emit_try_help ();
-  else
+  अन्यथा
     {
-      printf (_("\
+      म_लिखो (_("\
 Usage: %s --coreutils-prog=PROGRAM_NAME [PARAMETERS]... \n"),
               program_name);
-      fputs (_("\
+      ख_माला_दो (_("\
 Execute the PROGRAM_NAME built-in program with the given PARAMETERS.\n\
-\n"), stdout);
+\n"), मानक_निकास);
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
 
-#ifdef SINGLE_BINARY
+#ifdef SINGLE_द्विआधारी
 /* XXX: Ideally we'd like to present "install" here, not "ginstall".  */
-      char const *prog_name_list =
-# define SINGLE_BINARY_PROGRAM(prog_name_str, main_name) " " prog_name_str
+      वर्ण अचर *prog_name_list =
+# define SINGLE_द्विआधारी_PROGRAM(prog_name_str, main_name) " " prog_name_str
 # include "coreutils.h"
-# undef SINGLE_BINARY_PROGRAM
+# undef SINGLE_द्विआधारी_PROGRAM
       ;
-      printf ("\n\
+      म_लिखो ("\n\
 Built-in programs:\n\
 %s\n", prog_name_list);
 #endif
 
-      printf (_("\
+      म_लिखो (_("\
 \n\
-Use: '%s --coreutils-prog=PROGRAM_NAME --help' for individual program help.\n"),
+Use: '%s --coreutils-prog=PROGRAM_NAME --help' लागि individual program help.\n"),
               program_name);
       emit_ancillary_info (PROGRAM_NAME);
     }
-  exit (status);
+  निकास (status);
 }
 
-static void
-launch_program (char const *prog_name, int prog_argc, char **prog_argv)
+स्थिर शून्य
+launch_program (वर्ण अचर *prog_name, पूर्णाङ्क prog_argc, वर्ण **prog_argv)
 {
-  int (*prog_main) (int, char **) = NULL;
+  पूर्णाङ्क (*prog_main) (पूर्णाङ्क, वर्ण **) = रिक्त;
 
   /* Ensure that at least one parameter was passed.  */
-  if (!prog_argc || !prog_argv || !prog_argv[0] || !prog_name)
-    return;
+  यदि (!prog_argc || !prog_argv || !prog_argv[0] || !prog_name)
+    फर्काऊ;
 
-#ifdef SINGLE_BINARY
-  if (false);
+#ifdef SINGLE_द्विआधारी
+  यदि (false);
   /* Look up the right main program.  */
-# define SINGLE_BINARY_PROGRAM(prog_name_str, main_name) \
-  else if (streq (prog_name_str, prog_name)) \
-    prog_main = single_binary_main_##main_name;
+# define SINGLE_द्विआधारी_PROGRAM(prog_name_str, main_name) \
+  अन्यथा यदि (streq (prog_name_str, prog_name)) \
+    prog_main = single_द्विआधारी_main##main_name;
 # include "coreutils.h"
-# undef SINGLE_BINARY_PROGRAM
+# undef SINGLE_द्विआधारी_PROGRAM
 #endif
 
-  if (! prog_main)
-    return;
+  यदि (! prog_main)
+    फर्काऊ;
 
-#if HAVE_PRCTL && defined PR_SET_NAME
+#यदि HAVE_PRCTL && defined PR_SET_NAME
   /* Not being able to set the program name is not a fatal error.  */
   prctl (PR_SET_NAME, last_component (prog_argv[0]));
 #endif
-#if HAVE_PRCTL && defined PR_SET_MM_ARG_START
+#यदि HAVE_PRCTL && defined PR_SET_MM_ARG_START
   /* Shift the beginning of the command line to prog_argv[0] (if set) so
      /proc/$pid/cmdline reflects a more specific value.  Note one needs
      CAP_SYS_RESOURCE or root privileges for this to succeed.  */
   prctl (PR_SET_MM, PR_SET_MM_ARG_START, prog_argv[0], 0, 0);
 #endif
 
-  exit (prog_main (prog_argc, prog_argv));
+  निकास (prog_main (prog_argc, prog_argv));
 }
 
-int
-main (int argc, char **argv)
+पूर्णाङ्क
+main (पूर्णाङ्क argc, वर्ण **argv)
 {
-  char *prog_name = last_component (argv[0]);
-  int optc;
+  वर्ण *prog_name = last_component (argv[0]);
+  पूर्णाङ्क optc;
 
   /* Map external name to internal name.  */
-  char ginstall[] = "ginstall";
-  if (streq (prog_name, "install"))
+  वर्ण ginstall[] = "ginstall";
+  यदि (streq (prog_name, "install"))
     prog_name = ginstall;
 
   /* If this program is called directly as "coreutils" or if the value of
@@ -148,29 +148,29 @@ main (int argc, char **argv)
        path/to/coreutils --coreutils-prog=someprog someprog ...
      The third argument is what the program will see as argv[0].  */
 
-  size_t nskip = 0;
-  if (argc >= 2)
+  माप_प्रकार nskip = 0;
+  यदि (argc >= 2)
     {
-      char *arg_name = NULL;
+      वर्ण *arg_name = रिक्त;
 
       /* If calling coreutils directly, the "script" name isn't passed.
          Distinguish the two cases with a -shebang suffix.  */
-      if (STRPREFIX (argv[1], "--coreutils-prog="))
+      यदि (STRPREFIX (argv[1], "--coreutils-prog="))
         {
           nskip = 1;
-          arg_name = prog_name = argv[1] + strlen ("--coreutils-prog=");
+          arg_name = prog_name = argv[1] + म_माप ("--coreutils-prog=");
         }
-      else if (STRPREFIX (argv[1], "--coreutils-prog-shebang="))
+      अन्यथा यदि (STRPREFIX (argv[1], "--coreutils-prog-shebang="))
         {
           nskip = 2;
-          prog_name = argv[1] + strlen ("--coreutils-prog-shebang=");
-          if (argc >= 3)
+          prog_name = argv[1] + म_माप ("--coreutils-prog-shebang=");
+          यदि (argc >= 3)
             arg_name = last_component (argv[2]);
-          else
+          अन्यथा
             arg_name = prog_name;
         }
 
-      if (nskip)
+      यदि (nskip)
         {
           argv[nskip] = arg_name; /* XXX: Discards any specified path.  */
           launch_program (prog_name, argc - nskip, argv + nskip);
@@ -179,28 +179,28 @@ main (int argc, char **argv)
 
   /* Only process options if calling multi-call binary directly,
      otherwise `foo --version` would succeed.  */
-  if (nskip || (prog_name && !str_endswith (prog_name, "coreutils")))
+  यदि (nskip || (prog_name && !str_endswith (prog_name, "coreutils")))
     {
-      fprintf (stderr, _("%s: unknown program %s\n"),
+      ख_लिखो (मानक_त्रुटि, _("%s: unknown program %s\n"),
                PROGRAM_NAME, quote (prog_name));
-      exit (EXIT_FAILURE);
+      निकास (निकास_त्रुटि);
     }
 
   /* From here on, we behave like any other coreutils program.  */
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
-  setlocale (LC_ALL, "");
+  रखो_क्षेत्र (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
-  atexit (close_stdout);
+  निकास_पर (close_stdout);
 
-  if ((optc = getopt_long (argc, argv, "", long_options, NULL)) != -1)
-    switch (optc)
+  यदि ((optc = getopt_long (argc, argv, "", long_options, रिक्त)) != -1)
+    विकल्प (optc)
       {
       case_GETOPT_HELP_CHAR;
 
       case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
       }
 
-  usage (EXIT_FAILURE);
+  usage (निकास_त्रुटि);
 }

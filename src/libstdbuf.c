@@ -16,20 +16,20 @@
 
 /* Written by Pádraig Brady.  LD_PRELOAD idea from Brian Dessent.  */
 
-#include <config.h>
-#include <stddef.h>
-#include <stdio.h>
-#include <stdlib.h>
+#अन्तर्भाव <config.h>
+#अन्तर्भाव <stddef.h>
+#अन्तर्भाव <stdio.h>
+#अन्तर्भाव <stdlib.h>
 
-#include "gettext.h"
+#अन्तर्भाव "gettext.h"
 #define _(msgid) gettext (msgid)
 
 /* Deactivate config.h's "rpl_"-prefixed definitions, since we don't
    link gnulib here, and the replacements aren't needed.  */
-#undef fprintf
-#undef free
-#undef malloc
-#undef strtoul
+#undef ख_लिखो
+#undef मुक्त
+#undef दो_स्मृति
+#undef म_से_अदीर्घ
 
 /* Note currently for glibc (2.3.5) the following call does not change
    the buffer size, and more problematically does not give any indication
@@ -67,67 +67,67 @@
    However I think it's just a buggy implementation due to the various
    inconsistencies with write sizes and subsequent writes.  */
 
-static void
-apply_mode (FILE *stream, char const *stream_name, char const *envvar)
+स्थिर शून्य
+apply_mode (खाता *stream, वर्ण अचर *stream_name, वर्ण अचर *envvar)
 {
-  char *buf = NULL;
-  int setvbuf_mode;
-  unsigned long int size = 0;
+  वर्ण *buf = रिक्त;
+  पूर्णाङ्क setvbuf_mode;
+  अचिन्हित दीर्घ पूर्णाङ्क size = 0;
 
-  char const *mode = getenv (envvar);
-  if (!mode)
-    return;
+  वर्ण अचर *mode = दो_पर्या (envvar);
+  यदि (!mode)
+    फर्काऊ;
 
-  if (*mode == '0')
+  यदि (*mode == '0')
     setvbuf_mode = _IONBF;
-  else if (*mode == 'L')
+  अन्यथा यदि (*mode == 'L')
     setvbuf_mode = _IOLBF;      /* FIXME: should we allow 1ML  */
-  else
+  अन्यथा
     {
       setvbuf_mode = _IOFBF;
-      char *mode_end;
-      size = strtoul (mode, &mode_end, 10);
-      if (size == 0 || *mode_end)
+      वर्ण *mode_end;
+      size = म_से_अदीर्घ (mode, &mode_end, 10);
+      यदि (size == 0 || *mode_end)
         {
-          fprintf (stderr, _("invalid buffering mode %s for %s\n"),
+          ख_लिखो (मानक_त्रुटि, _("invalid buffering mode %s for %s\n"),
                    mode, stream_name);
-          return;
+          फर्काऊ;
         }
 
       /* If strtoul might have overflowed or if the size is more than
          half of size_t range, treat it as an allocation failure.
          Huge sizes can cause problems with some stdio implementations.  */
-      buf = (size <= ((unsigned long int) -2 < (size_t) -1 / 2
-                      ? (unsigned long int) -2 : (size_t) -1 / 2)
-             ? malloc (size) : NULL);
-      if (!buf)
+      buf = (size <= ((अचिन्हित दीर्घ पूर्णाङ्क) -2 < (माप_प्रकार) -1 / 2
+                      ? (अचिन्हित दीर्घ पूर्णाङ्क) -2 : (माप_प्रकार) -1 / 2)
+             ? दो_स्मृति (size) : रिक्त);
+      यदि (!buf)
         {
           /* We could defer the allocation to libc, however since
              glibc currently ignores the combination of null buffer
              with non zero size, we'll fail here.  */
-          fprintf (stderr,
+          ख_लिखो (मानक_त्रुटि,
                    _("failed to allocate a %lu byte stdio buffer\n"),
                    size);
-          return;
+          फर्काऊ;
         }
       /* buf will be freed by fclose.  */
     }
 
-  if (setvbuf (stream, buf, setvbuf_mode, size) != 0)
+  यदि (रखो_भबफ (stream, buf, setvbuf_mode, size) != 0)
     {
-      fprintf (stderr, _("could not set buffering of %s to mode %s\n"),
+      ख_लिखो (मानक_त्रुटि, _("could not set buffering of %s to mode %s\n"),
                stream_name, mode);
-      free (buf);
+      मुक्त (buf);
     }
 }
 
 /* Use __attribute to avoid elision of __attribute__ on SUNPRO_C etc.  */
-static void __attribute ((constructor))
-stdbuf (void)
+स्थिर शून्य __attribute ((constructor))
+stdbuf (शून्य)
 {
   /* Do first so can write errors to stderr.  */
-  apply_mode (stderr, "stderr", "_STDBUF_E");
+  apply_mode (मानक_त्रुटि, "stderr", "_STDBUF_E");
 
-  apply_mode (stdin, "stdin", "_STDBUF_I");
-  apply_mode (stdout, "stdout", "_STDBUF_O");
+  apply_mode (मानक_निवेश, "stdin", "_STDBUF_I");
+  apply_mode (मानक_निकास, "stdout", "_STDBUF_O");
 }
