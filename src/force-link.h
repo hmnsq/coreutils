@@ -1,4 +1,4 @@
-extern int force_linkat (int, char const *, int, char const *, int, bool, int)
+बाह्य पूर्णांक force_linkat (पूर्णांक, अक्षर स्थिरांक *, पूर्णांक, अक्षर स्थिरांक *, पूर्णांक, bool, पूर्णांक)
   _GL_ATTRIBUTE_NONNULL ();
-extern int force_symlinkat (char const *, int, char const *, bool, int)
+बाह्य पूर्णांक force_symlinkat (अक्षर स्थिरांक *, पूर्णांक, अक्षर स्थिरांक *, bool, पूर्णांक)
   _GL_ATTRIBUTE_NONNULL ();

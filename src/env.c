@@ -16,24 +16,24 @@
 
 /* Richard Mlynarik and David MacKenzie */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <argz.h>
-#include <getopt.h>
-#include <c-ctype.h>
-#include <signal.h>
+#अन्तर्भाव <config.h>
+#अन्तर्भाव <stdio.h>
+#अन्तर्भाव <sys/types.h>
+#अन्तर्भाव <argz.h>
+#अन्तर्भाव <getopt.h>
+#अन्तर्भाव <c-ctype.h>
+#अन्तर्भाव <signal.h>
 
-#include "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
-#include "hash.h"
-#include "hashcode-mem.h"
-#include "system.h"
-#include "operand2sig.h"
-#include "printenv.h"
-#include "quote.h"
-#include "read-file.h"
-#include "sig2str.h"
-#include "xbinary-io.h"
+#अन्तर्भाव "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
+#अन्तर्भाव "hash.h"
+#अन्तर्भाव "hashcode-mem.h"
+#अन्तर्भाव "system.h"
+#अन्तर्भाव "operand2sig.h"
+#अन्तर्भाव "printenv.h"
+#अन्तर्भाव "quote.h"
+#अन्तर्भाव "read-file.h"
+#अन्तर्भाव "sig2str.h"
+#अन्तर्भाव "xbinary-io.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "env"
@@ -44,65 +44,65 @@
   proper_name ("Assaf Gordon")
 
 /* Array of envvars to unset.  */
-static char const **usvars;
-static idx_t usvars_alloc;
-static idx_t usvars_used;
+स्थिर अक्षर स्थिरांक **usvars;
+स्थिर idx_t usvars_alloc;
+स्थिर idx_t usvars_used;
 
 /* Storage for entries read by --env0-from.  */
-static char *env0_from_buffer;
+स्थिर अक्षर *env0_from_buffer;
 
 /* An environment vector managed directly to preserve raw entries.  */
-struct env_vector
+संरचना env_vector
 {
-  char **variable;
+  अक्षर **variable;
   idx_t used;
   idx_t allocated;
 };
 
 /* Annotate the output with extra info to aid the user.  */
-static bool dev_debug;
+स्थिर bool dev_debug;
 #define vmsg devmsg
 
 /* Buffer and length of extracted envvars in -S strings.  */
-static char *varname;
-static idx_t vnlen;
+स्थिर अक्षर *varname;
+स्थिर idx_t vnlen;
 
 /* On mingw, winbase.h defines this to zero.  Undefine it so we can use it
    in the enum.  */
 #undef IGNORE
 
 /* Possible actions on each signal.  */
-enum SIGNAL_MODE {
+गणना SIGNAL_MODE {
   UNCHANGED = 0,
   DEFAULT,       /* Set to default handler (SIG_DFL).  */
   DEFAULT_NOERR, /* Ditto, but ignore sigaction(2) errors.  */
   IGNORE,        /* Set to ignore (SIG_IGN).  */
   IGNORE_NOERR   /* Ditto, but ignore sigaction(2) errors.  */
 };
-static enum SIGNAL_MODE *signals;
+स्थिर गणना SIGNAL_MODE *signals;
 
 /* Set of signals to block.  */
-static sigset_t block_signals;
+स्थिर sigset_t block_signals;
 
 /* Set of signals to unblock.  */
-static sigset_t unblock_signals;
+स्थिर sigset_t unblock_signals;
 
 /* Whether signal mask adjustment requested.  */
-static bool sig_mask_changed;
+स्थिर bool sig_mask_changed;
 
 /* Whether to list non default handling.  */
-static bool report_signal_handling;
+स्थिर bool report_signal_handling;
 
 /* The isspace characters in the C locale.  */
 #define C_ISSPACE_CHARS " \t\n\v\f\r"
 
-static char const shortopts[] = "+a:C:iS:u:v0" C_ISSPACE_CHARS;
+स्थिर अक्षर स्थिरांक shortopts[] = "+a:C:iS:u:v0" C_ISSPACE_CHARS;
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+गणना
 {
-  ENV0_FROM_OPTION = CHAR_MAX + 1,
+  ENV0_FROM_OPTION = अक्षर_उच्च + 1,
   DEFAULT_SIGNAL_OPTION,
   IGNORE_SIGNAL_OPTION,
   BLOCK_SIGNAL_OPTION,
@@ -110,39 +110,39 @@ enum
   QUOTING_STYLE_OPTION,
 };
 
-static struct option const longopts[] =
+स्थिर संरचना option स्थिरांक longopts[] =
 {
-  {"argv0", required_argument, NULL, 'a'},
-  {"ignore-environment", no_argument, NULL, 'i'},
-  {"env0-from", required_argument, NULL, ENV0_FROM_OPTION},
-  {"null", no_argument, NULL, '0'},
-  {"unset", required_argument, NULL, 'u'},
-  {"chdir", required_argument, NULL, 'C'},
-  {"default-signal", optional_argument, NULL, DEFAULT_SIGNAL_OPTION},
-  {"ignore-signal",  optional_argument, NULL, IGNORE_SIGNAL_OPTION},
-  {"block-signal",   optional_argument, NULL, BLOCK_SIGNAL_OPTION},
-  {"list-signal-handling", no_argument, NULL,  LIST_SIGNAL_HANDLING_OPTION},
-  {"debug", no_argument, NULL, 'v'},
-  {"quoting-style", required_argument, NULL, QUOTING_STYLE_OPTION},
-  {"split-string", required_argument, NULL, 'S'},
+  {"argv0", required_argument, रिक्त, 'a'},
+  {"ignore-environment", no_argument, रिक्त, 'i'},
+  {"env0-from", required_argument, रिक्त, ENV0_FROM_OPTION},
+  {"null", no_argument, रिक्त, '0'},
+  {"unset", required_argument, रिक्त, 'u'},
+  {"chdir", required_argument, रिक्त, 'C'},
+  {"default-signal", optional_argument, रिक्त, DEFAULT_SIGNAL_OPTION},
+  {"ignore-signal",  optional_argument, रिक्त, IGNORE_SIGNAL_OPTION},
+  {"block-signal",   optional_argument, रिक्त, BLOCK_SIGNAL_OPTION},
+  {"list-signal-handling", no_argument, रिक्त,  LIST_SIGNAL_HANDLING_OPTION},
+  {"debug", no_argument, रिक्त, 'v'},
+  {"quoting-style", required_argument, रिक्त, QUOTING_STYLE_OPTION},
+  {"split-string", required_argument, रिक्त, 'S'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {रिक्त, 0, रिक्त, 0}
 };
 
-void
-usage (int status)
+शून्य
+usage (पूर्णांक status)
 {
-  if (status != EXIT_SUCCESS)
+  जर (status != निकास_सफल)
     emit_try_help ();
-  else
+  अन्यथा
     {
-      printf (_("\
-Usage: %s [OPTION]... [-] [NAME=VALUE]... [COMMAND [ARG]...]\n"),
+      म_लिखो (_("\
+Usage: %s [OPTION]... [-] [NAME=मूल्य_2]... [COMMAND [ARG]...]\n"),
               program_name);
-      fputs (_("\
-Set each NAME to VALUE in the environment and run COMMAND.\n\
-"), stdout);
+      ख_माला_दो (_("\
+Set each NAME to मूल्य_2 in the environment and run COMMAND.\n\
+"), मानक_निकास);
 
       emit_mandatory_arg_note ();
 
@@ -155,318 +155,318 @@ Set each NAME to VALUE in the environment and run COMMAND.\n\
          start with an empty environment\n\
 "));
       oputs (_("\
-      --env0-from=FILE\n\
-         read NUL-delimited environment entries from FILE\n\
+      --env0-from=खाता\n\
+         पठ NUL-delimited environment entries from खाता\n\
 "));
       oputs (_("\
   -0, --null\n\
-         end each output line with NUL, not newline\n\
+         end each output ओळ with NUL, not newline\n\
 "));
       oputs (_("\
   -u, --unset=NAME\n\
-         remove variable from the environment\n\
+         हटाओ variable from the environment\n\
 "));
       oputs (_("\
-  -C, --chdir=DIR\n\
-         change working directory to DIR\n\
+  -C, --स_बदलो=सूची\n\
+         change working directory to सूची\n\
 "));
       oputs (_("\
       --quoting-style=WORD\n\
-         use quoting style WORD for names and values:\n\
+         use quoting style WORD साठी names and मूल्ये:\n\
            literal, locale, shell, shell-always,\n\
            shell-escape, shell-escape-always, c, escape\n\
 "));
       oputs (_("\
   -S, --split-string=S\n\
          process and split S into separate arguments;\n\
-         used to pass multiple arguments on shebang lines\n\
+         used to pass multiple arguments on shebang ओळी\n\
 "));
       oputs (_("\
-      --block-signal[=SIG]\n\
-         block delivery of SIG signal(s) to COMMAND\n\
+      --block-संकेत[=SIG]\n\
+         block delivery of SIG संकेत(s) to COMMAND\n\
 "));
       oputs (_("\
-      --default-signal[=SIG]\n\
-         reset handling of SIG signal(s) to the default\n\
+      --पूर्वनिर्धारित-संकेत[=SIG]\n\
+         reset handling of SIG संकेत(s) to the पूर्वनिर्धारित\n\
 "));
       oputs (_("\
-      --ignore-signal[=SIG]\n\
-         set handling of SIG signal(s) to do nothing\n\
+      --ignore-संकेत[=SIG]\n\
+         set handling of SIG संकेत(s) to करा nothing\n\
 "));
       oputs (_("\
-      --list-signal-handling\n\
-         list non default signal handling to standard error\n\
+      --list-संकेत-handling\n\
+         list non पूर्वनिर्धारित संकेत handling to standard error\n\
 "));
       oputs (_("\
   -v, --debug\n\
-         print verbose information for each processing step\n\
+         print verbose information साठी each processing step\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
-      fputs (_("\
+      ख_माला_दो (_("\
 \n\
 A mere - implies -i.  If no COMMAND, print the resulting environment.\n\
-"), stdout);
-      fputs (_("\
+"), मानक_निकास);
+      ख_माला_दो (_("\
 \n\
-SIG may be a signal name like 'PIPE', or a signal number like '13'.\n\
+SIG may be a संकेत name like 'PIPE', or a संकेत संख्या like '13'.\n\
 Without SIG, all known signals are included.  Multiple signals can be\n\
 comma-separated.  An empty SIG argument is a no-op.\n\
-"), stdout);
+"), मानक_निकास);
       emit_exec_status (PROGRAM_NAME);
       emit_ancillary_info (PROGRAM_NAME);
     }
-  exit (status);
+  निकास (status);
 }
 
-static void
-append_unset_var (char const *var)
+स्थिर शून्य
+append_unset_var (अक्षर स्थिरांक *var)
 {
-  if (usvars_used == usvars_alloc)
-    usvars = xpalloc (usvars, &usvars_alloc, 1, -1, sizeof *usvars);
+  जर (usvars_used == usvars_alloc)
+    usvars = xpalloc (usvars, &usvars_alloc, 1, -1, आकार *usvars);
   usvars[usvars_used++] = var;
 }
 
-static void
-unset_envvars (void)
+स्थिर शून्य
+unset_envvars (शून्य)
 {
-  for (idx_t i = 0; i < usvars_used; ++i)
+  साठी (idx_t i = 0; i < usvars_used; ++i)
     {
       vmsg (_("unsetting: %s\n"), quote (usvars[i]));
 
-      if (unsetenv (usvars[i]))
-        error (EXIT_CANCELED, errno, _("cannot unset %s"),
+      जर (unsetenv (usvars[i]))
+        error (EXIT_CANCELED, त्रुटि_सं, _("cannot unset %s"),
                quote (usvars[i]));
     }
 }
 
 /* Return true if ENTRY is an assignment whose name is NAME.  */
-static bool
-entry_has_name (char const *entry, char const *name, idx_t name_length)
+स्थिर bool
+entry_has_name (अक्षर स्थिरांक *entry, अक्षर स्थिरांक *name, idx_t name_length)
 {
-  char const *eq = strchr (entry, '=');
-  return (eq && eq - entry == name_length
+  अक्षर स्थिरांक *eq = म_अक्षर (entry, '=');
+  परत (eq && eq - entry == name_length
           && memeq (entry, name, name_length));
 }
 
-#if ! defined _WIN32 || defined __CYGWIN__
+#जर ! defined _WIN32 || defined __CYGWIN__
 /* Hash an environment vector slot by the name in its assignment.  */
-static size_t
-env_vector_slot_hash (void const *x, size_t table_size)
+स्थिर माप_प्रकार
+env_vector_slot_hash (शून्य स्थिरांक *x, माप_प्रकार table_size)
 {
-  char *const *slot = x;
-  char const *entry = *slot;
-  char const *eq = strchr (entry, '=');
-  return hash_pjw_bare (entry, eq - entry) % table_size;
+  अक्षर *स्थिरांक *slot = x;
+  अक्षर स्थिरांक *entry = *slot;
+  अक्षर स्थिरांक *eq = म_अक्षर (entry, '=');
+  परत hash_pjw_bare (entry, eq - entry) % table_size;
 }
 
-static bool
-env_vector_slot_compare (void const *x, void const *y)
+स्थिर bool
+env_vector_slot_compare (शून्य स्थिरांक *x, शून्य स्थिरांक *y)
 {
-  char const *a = * (char *const *) x;
-  char const *b = * (char *const *) y;
-  char const *b_eq = strchr (b, '=');
-  return entry_has_name (a, b, b_eq - b);
+  अक्षर स्थिरांक *a = * (अक्षर *स्थिरांक *) x;
+  अक्षर स्थिरांक *b = * (अक्षर *स्थिरांक *) y;
+  अक्षर स्थिरांक *b_eq = म_अक्षर (b, '=');
+  परत entry_has_name (a, b, b_eq - b);
 }
 #endif
 
 /* Remove the requested variables from ENV,
    directly, preserving other raw entries.  */
-static void
-unset_envvars_in_vector (struct env_vector *env)
+स्थिर शून्य
+unset_envvars_in_vector (संरचना env_vector *env)
 {
-  for (idx_t i = 0; i < usvars_used; ++i)
+  साठी (idx_t i = 0; i < usvars_used; ++i)
     {
-      char const *name = usvars[i];
+      अक्षर स्थिरांक *name = usvars[i];
       vmsg (_("unsetting: %s\n"), quote (name));
 
-      if (! *name || strchr (name, '='))
+      जर (! *name || म_अक्षर (name, '='))
         error (EXIT_CANCELED, EINVAL, _("cannot unset %s"), quoteaf (name));
 
-      idx_t name_length = strlen (name);
+      idx_t name_length = म_माप (name);
       idx_t dest = 0;
-      for (idx_t source = 0; source < env->used; ++source)
-        if (! entry_has_name (env->variable[source], name, name_length))
+      साठी (idx_t source = 0; source < env->used; ++source)
+        जर (! entry_has_name (env->variable[source], name, name_length))
           env->variable[dest++] = env->variable[source];
 
       env->used = dest;
-      env->variable[dest] = NULL;
+      env->variable[dest] = रिक्त;
     }
 }
 
 /* Add ASSIGNMENT to the environment.  EQ points to its '=' byte.  */
-static void
-set_envvar (char *assignment, char *eq)
+स्थिर शून्य
+set_envvar (अक्षर *assignment, अक्षर *eq)
 {
   vmsg (_("setting:   %s\n"), quote (assignment));
 
-  if (putenv (assignment))
+  जर (putenv (assignment))
     {
       *eq = '\0';
-      error (EXIT_CANCELED, errno, _("cannot set %s"), quote (assignment));
+      error (EXIT_CANCELED, त्रुटि_सं, _("cannot set %s"), quote (assignment));
     }
 }
 
 /* Add ASSIGNMENT to ENV directly, preserving other raw entries.
    EQ points to its '=' byte.  Replace the first existing assignment
    with the same name, as putenv does, or append ASSIGNMENT if none.  */
-static void
-set_envvar_in_vector (struct env_vector *env, char *assignment, char *eq)
+स्थिर शून्य
+set_envvar_in_vector (संरचना env_vector *env, अक्षर *assignment, अक्षर *eq)
 {
   vmsg (_("setting:   %s\n"), quote (assignment));
 
   idx_t name_length = eq - assignment;
-  for (idx_t i = 0; i < env->used; ++i)
-    if (entry_has_name (env->variable[i], assignment, name_length))
+  साठी (idx_t i = 0; i < env->used; ++i)
+    जर (entry_has_name (env->variable[i], assignment, name_length))
       {
         env->variable[i] = assignment;
-        return;
+        परत;
       }
 
-  if (env->used + 1 == env->allocated)
+  जर (env->used + 1 == env->allocated)
     {
       env->variable = xpalloc (env->variable, &env->allocated, 1, -1,
-                               sizeof *env->variable);
+                               आकार *env->variable);
       environ = env->variable;
     }
 
   env->variable[env->used++] = assignment;
-  env->variable[env->used] = NULL;
+  env->variable[env->used] = रिक्त;
 }
 
 /* Read the NUL-delimited environment entries in FILE.  */
-static size_t
-read_env_file (char const *file)
+स्थिर माप_प्रकार
+read_env_file (अक्षर स्थिरांक *file)
 {
-  size_t size;
-  if (streq (file, "-"))
+  माप_प्रकार size;
+  जर (streq (file, "-"))
     {
-      xset_binary_mode (STDIN_FILENO, O_BINARY);
-      env0_from_buffer = fread_file (stdin, RF_BINARY, &size);
+      xset_द्विमान_mode (STDIN_FILENO, O_द्विमान);
+      env0_from_buffer = fread_file (मानक_निवेश, RF_द्विमान, &size);
     }
-  else
-    env0_from_buffer = read_file (file, RF_BINARY, &size);
+  अन्यथा
+    env0_from_buffer = read_file (file, RF_द्विमान, &size);
 
-  if (! env0_from_buffer)
-    error (EXIT_CANCELED, errno, _("cannot read %s"), quoteaf (file));
-  if (size && env0_from_buffer[size - 1] != '\0')
+  जर (! env0_from_buffer)
+    error (EXIT_CANCELED, त्रुटि_सं, _("cannot read %s"), quoteaf (file));
+  जर (size && env0_from_buffer[size - 1] != '\0')
     error (EXIT_CANCELED, 0, _("%s: file must end with a NUL byte"),
            quotef (file));
 
-  return size;
+  परत size;
 }
 
 /* Merge the NUL-delimited entries in FILE into the environment.
    Return true if ENV now owns the environment vector.  */
-static bool
-set_envvars_from_file (struct env_vector *env, char const *file)
+स्थिर bool
+set_envvars_from_file (संरचना env_vector *env, अक्षर स्थिरांक *file)
 {
-  size_t size = read_env_file (file);
+  माप_प्रकार size = read_env_file (file);
 
-#if defined _WIN32 && ! defined __CYGWIN__
-  (void) env;
+#जर defined _WIN32 && ! defined __CYGWIN__
+  (शून्य) env;
   /* On native Windows, _putenv keeps _environ, _wenviron, and the process
      environment block synchronized.  Replacing environ directly would
      conflict with its ownership of those data structures.  */
-  char *assignment = NULL;
-  while ((assignment = argz_next (env0_from_buffer, size, assignment)))
+  अक्षर *assignment = रिक्त;
+  पर्यंत ((assignment = argz_next (env0_from_buffer, size, assignment)))
     {
-      char *eq = strchr (assignment, '=');
-      if (! eq)
+      अक्षर *eq = म_अक्षर (assignment, '=');
+      जर (! eq)
         error (EXIT_CANCELED, 0,
                _("invalid variable specification %s in %s"),
                quoteaf_n (0, assignment), quoteaf_n (1, file));
 
       set_envvar (assignment, eq);
     }
-  return false;
-#else
+  परत false;
+#अन्यथा
   /* Construct and index the merged vector, rather than making putenv
      repeatedly scan the growing environment for every assignment.  */
-  idx_t file_count = argz_count (env0_from_buffer, size);
+  idx_t file_मोजणी = argz_मोजणी (env0_from_buffer, size);
 
-  if (file_count == 0)
-    return false;
+  जर (file_मोजणी == 0)
+    परत false;
 
-  idx_t inherited_count = 0;
-  while (environ[inherited_count])
-    ++inherited_count;
+  idx_t inherited_मोजणी = 0;
+  पर्यंत (environ[inherited_मोजणी])
+    ++inherited_मोजणी;
 
-  if (IDX_MAX - inherited_count <= file_count)
+  जर (IDX_MAX - inherited_मोजणी <= file_मोजणी)
     xalloc_die ();
-  idx_t max_count = inherited_count + file_count;
-  char **merged = xnmalloc (max_count + 1, sizeof *merged);
-  memcpy (merged, environ, inherited_count * sizeof *merged);
-  merged[inherited_count] = NULL;
+  idx_t max_मोजणी = inherited_मोजणी + file_मोजणी;
+  अक्षर **merged = xnmalloc (max_मोजणी + 1, आकार *merged);
+  स_नकल (merged, environ, inherited_मोजणी * आकार *merged);
+  merged[inherited_मोजणी] = रिक्त;
 
   Hash_table *slot_table
-    = hash_initialize (max_count, NULL, env_vector_slot_hash,
-                       env_vector_slot_compare, NULL);
-  if (! slot_table)
+    = hash_initialize (max_मोजणी, रिक्त, env_vector_slot_hash,
+                       env_vector_slot_compare, रिक्त);
+  जर (! slot_table)
     xalloc_die ();
 
   /* Index only the first occurrence of each inherited name, matching
      putenv's replacement of the first such entry.  */
-  for (idx_t i = 0; i < inherited_count; ++i)
+  साठी (idx_t i = 0; i < inherited_मोजणी; ++i)
     {
-      char *eq = strchr (merged[i], '=');
-      if (! eq)
-        continue;
+      अक्षर *eq = म_अक्षर (merged[i], '=');
+      जर (! eq)
+        सुरूठेवा;
 
-      if (! hash_insert (slot_table, &merged[i]))
+      जर (! hash_घाला (slot_table, &merged[i]))
         xalloc_die ();
     }
 
-  idx_t merged_count = inherited_count;
-  char *assignment = NULL;
-  while ((assignment = argz_next (env0_from_buffer, size, assignment)))
+  idx_t merged_मोजणी = inherited_मोजणी;
+  अक्षर *assignment = रिक्त;
+  पर्यंत ((assignment = argz_next (env0_from_buffer, size, assignment)))
     {
-      char *eq = strchr (assignment, '=');
-      if (! eq)
+      अक्षर *eq = म_अक्षर (assignment, '=');
+      जर (! eq)
         {
           vmsg (_("adding:    %s\n"), quote (assignment));
-          merged[merged_count++] = assignment;
+          merged[merged_मोजणी++] = assignment;
         }
-      else
+      अन्यथा
         {
           vmsg (_("setting:   %s\n"), quote (assignment));
 
-          char **slot = hash_lookup (slot_table, &assignment);
-          if (slot)
+          अक्षर **slot = hash_lookup (slot_table, &assignment);
+          जर (slot)
             *slot = assignment;
-          else
+          अन्यथा
             {
-              merged[merged_count] = assignment;
-              if (! hash_insert (slot_table, &merged[merged_count]))
+              merged[merged_मोजणी] = assignment;
+              जर (! hash_घाला (slot_table, &merged[merged_मोजणी]))
                 xalloc_die ();
-              ++merged_count;
+              ++merged_मोजणी;
             }
         }
     }
 
-  merged[merged_count] = NULL;
+  merged[merged_मोजणी] = रिक्त;
   env->variable = merged;
-  env->used = merged_count;
-  env->allocated = max_count + 1;
+  env->used = merged_मोजणी;
+  env->allocated = max_मोजणी + 1;
   environ = merged;
   hash_free (slot_table);
-  return true;
+  परत true;
 #endif
 }
 
 /* Replace the environment with the NUL-delimited entries in FILE,
    preserving the entries byte-for-byte and in their original order.  */
-static void
-set_raw_environment_from_file (struct env_vector *env,
-                               char const *file)
+स्थिर शून्य
+set_raw_environment_from_file (संरचना env_vector *env,
+                               अक्षर स्थिरांक *file)
 {
-  size_t size = read_env_file (file);
-  idx_t entry_count = argz_count (env0_from_buffer, size);
+  माप_प्रकार size = read_env_file (file);
+  idx_t entry_मोजणी = argz_मोजणी (env0_from_buffer, size);
 
-  env->allocated = entry_count + 1;
-  env->variable = xnmalloc (env->allocated, sizeof *env->variable);
+  env->allocated = entry_मोजणी + 1;
+  env->variable = xnmalloc (env->allocated, आकार *env->variable);
   argz_extract (env0_from_buffer, size, env->variable);
-  env->used = entry_count;
+  env->used = entry_मोजणी;
   environ = env->variable;
 }
 
@@ -476,19 +476,19 @@ set_raw_environment_from_file (struct env_vector *env,
    rest of letters are alnum or underscore.
    Any other character is an error.  */
 ATTRIBUTE_PURE
-static char const *
-scan_varname (char const *str)
+स्थिर अक्षर स्थिरांक *
+scan_varname (अक्षर स्थिरांक *str)
 {
-  if (str[1] == '{' && (c_isalpha (str[2]) || str[2] == '_'))
+  जर (str[1] == '{' && (c_isalpha (str[2]) || str[2] == '_'))
     {
-      char const *end = str + 3;
-      while (c_isalnum (*end) || *end == '_')
+      अक्षर स्थिरांक *end = str + 3;
+      पर्यंत (c_isalnum (*end) || *end == '_')
         ++end;
-      if (*end == '}')
-        return end;
+      जर (*end == '}')
+        परत end;
     }
 
-  return NULL;
+  परत रिक्त;
 }
 
 /* Return a pointer to a static buffer containing the VARNAME as
@@ -496,31 +496,31 @@ scan_varname (char const *str)
    The returned string will be NUL terminated.
    The returned pointer should not be freed.
    Return NULL if not a valid ${VARNAME} syntax.  */
-static char *
-extract_varname (char const *str)
+स्थिर अक्षर *
+extract_varname (अक्षर स्थिरांक *str)
 {
-  char const *p = scan_varname (str);
+  अक्षर स्थिरांक *p = scan_varname (str);
 
-  if (!p)
-    return NULL;
+  जर (!p)
+    परत रिक्त;
 
   /* -2 and +2 (below) account for the '${' prefix.  */
   idx_t i = p - str - 2;
 
-  if (i >= vnlen)
+  जर (i >= vnlen)
     {
-      free (varname);
-      varname = xpalloc (NULL, &vnlen, i + 1 - vnlen, -1, sizeof *varname);
+      मुक्त (varname);
+      varname = xpalloc (रिक्त, &vnlen, i + 1 - vnlen, -1, आकार *varname);
     }
 
-  memcpy (varname, str + 2, i);
+  स_नकल (varname, str + 2, i);
   varname[i] = 0;
 
-  return varname;
+  परत varname;
 }
 
 /* Temporary buffer used by --split-string processing.  */
-struct splitbuf
+संरचना splitbuf
 {
   /* Buffer address, arg count, and half the number of elements in the buffer.
      ARGC and ARGV are as in 'main', and ARGC + 1 <= HALF_ALLOC so
@@ -539,12 +539,12 @@ struct splitbuf
 
      During assembly, ARGV[ARGC] contains the offset of the first
      unused string byte (relative to ARGV + HALF_ALLOC).  */
-  char **argv;
-  int argc;
+  अक्षर **argv;
+  पूर्णांक argc;
   idx_t half_alloc;
 
   /* The number of extra argv slots to keep room for.  */
-  int extra_argc;
+  पूर्णांक extra_argc;
 
   /* Whether processing should act as if the most recent character
      seen was a separator.  */
@@ -553,37 +553,37 @@ struct splitbuf
 
 /* Expand SS so that it has at least one more argv slot and at least
    one more string byte.  */
-static void
-splitbuf_grow (struct splitbuf *ss)
+स्थिर शून्य
+splitbuf_grow (संरचना splitbuf *ss)
 {
   idx_t old_half_alloc = ss->half_alloc;
   idx_t string_bytes = (intptr_t) ss->argv[ss->argc];
   ss->argv = xpalloc (ss->argv, &ss->half_alloc, 1,
-                      MIN (INT_MAX, IDX_MAX), 2 * sizeof *ss->argv);
-  memmove (ss->argv + ss->half_alloc, ss->argv + old_half_alloc, string_bytes);
+                      MIN (पूर्णांक_उच्च, IDX_MAX), 2 * आकार *ss->argv);
+  स_हटाओ (ss->argv + ss->half_alloc, ss->argv + old_half_alloc, string_bytes);
 }
 
 /* In SS, append C to the last string.  */
-static void
-splitbuf_append_byte (struct splitbuf *ss, char c)
+स्थिर शून्य
+splitbuf_append_byte (संरचना splitbuf *ss, अक्षर c)
 {
   idx_t string_bytes = (intptr_t) ss->argv[ss->argc];
-  if (ss->half_alloc * sizeof *ss->argv <= string_bytes)
+  जर (ss->half_alloc * आकार *ss->argv <= string_bytes)
     splitbuf_grow (ss);
-  ((char *) (ss->argv + ss->half_alloc))[string_bytes] = c;
-  ss->argv[ss->argc] = (char *) (intptr_t) {string_bytes + 1};
+  ((अक्षर *) (ss->argv + ss->half_alloc))[string_bytes] = c;
+  ss->argv[ss->argc] = (अक्षर *) (intptr_t) {string_bytes + 1};
 }
 
 /* If SS's most recent character was a separator, finish off its
    previous argument and start a new one.  */
-static void
-check_start_new_arg (struct splitbuf *ss)
+स्थिर शून्य
+check_start_new_arg (संरचना splitbuf *ss)
 {
-  if (ss->sep)
+  जर (ss->sep)
     {
       splitbuf_append_byte (ss, '\0');
-      int argc = ss->argc;
-      if (ss->half_alloc <= argc + ss->extra_argc + 1)
+      पूर्णांक argc = ss->argc;
+      जर (ss->half_alloc <= argc + ss->extra_argc + 1)
         splitbuf_grow (ss);
       ss->argv[argc + 1] = ss->argv[argc];
       ss->argc = argc + 1;
@@ -593,15 +593,15 @@ check_start_new_arg (struct splitbuf *ss)
 
 /* All additions to SS have been made.  Convert its offsets to pointers,
    and return the resulting argument vector.  */
-static char **
-splitbuf_finishup (struct splitbuf *ss)
+स्थिर अक्षर **
+splitbuf_finishup (संरचना splitbuf *ss)
 {
-  int argc = ss->argc;
-  char **argv = ss->argv;
-  char *stringbase = (char *) (ss->argv + ss->half_alloc);
-  for (int i = 1; i < argc; i++)
+  पूर्णांक argc = ss->argc;
+  अक्षर **argv = ss->argv;
+  अक्षर *stringbase = (अक्षर *) (ss->argv + ss->half_alloc);
+  साठी (पूर्णांक i = 1; i < argc; i++)
     argv[i] = stringbase + (intptr_t) argv[i];
-  return argv;
+  परत argv;
 }
 
 /* Return a newly-allocated argv-like array,
@@ -629,128 +629,128 @@ splitbuf_finishup (struct splitbuf *ss)
    However, 'env' does not free since it's about to exec or exit anyway
    and the complexity of keeping track of the storage that may have been
    allocated via multiple calls to build_argv is not worth the hassle.  */
-static char **
-build_argv (char const *str, int extra_argc, int *argc)
+स्थिर अक्षर **
+build_argv (अक्षर स्थिरांक *str, पूर्णांक extra_argc, पूर्णांक *argc)
 {
   bool dq = false, sq = false;
-  struct splitbuf ss;
-  ss.argv = xnmalloc (extra_argc + 2, 2 * sizeof *ss.argv);
+  संरचना splitbuf ss;
+  ss.argv = xnmalloc (extra_argc + 2, 2 * आकार *ss.argv);
   ss.argc = 1;
   ss.half_alloc = extra_argc + 2;
   ss.extra_argc = extra_argc;
   ss.sep = true;
-  ss.argv[ss.argc] = NULL;
+  ss.argv[ss.argc] = रिक्त;
 
   /* In the following loop,
      'break' causes the character 'newc' to be added to *dest,
      'continue' skips the character.  */
-  while (*str)
+  पर्यंत (*str)
     {
-      char newc = *str; /* Default: add the next character.  */
+      अक्षर newc = *str; /* Default: add the next character.  */
 
-      switch (*str)
+      निवड (*str)
         {
-        case '\'':
-          if (dq)
-            break;
+        स्थिती '\'':
+          जर (dq)
+            थांबा;
           sq = !sq;
           check_start_new_arg (&ss);
           ++str;
-          continue;
+          सुरूठेवा;
 
-        case '"':
-          if (sq)
-            break;
+        स्थिती '"':
+          जर (sq)
+            थांबा;
           dq = !dq;
           check_start_new_arg (&ss);
           ++str;
-          continue;
+          सुरूठेवा;
 
-        case ' ': case '\t': case '\n': case '\v': case '\f': case '\r':
+        स्थिती ' ': स्थिती '\t': स्थिती '\n': स्थिती '\v': स्थिती '\f': स्थिती '\r':
           /* Start a new argument if outside quotes.  */
-          if (sq || dq)
-            break;
+          जर (sq || dq)
+            थांबा;
           ss.sep = true;
-          str += strspn (str, C_ISSPACE_CHARS);
-          continue;
+          str += म_अखोज (str, C_ISSPACE_CHARS);
+          सुरूठेवा;
 
-        case '#':
-          if (!ss.sep)
-            break;
-          goto eos; /* '#' as first char terminates the string.  */
+        स्थिती '#':
+          जर (!ss.sep)
+            थांबा;
+          जा eos; /* '#' as first char terminates the string.  */
 
-        case '\\':
+        स्थिती '\\':
           /* Backslash inside single-quotes is not special, except \\
              and \'.  */
-          if (sq && str[1] != '\\' && str[1] != '\'')
-            break;
+          जर (sq && str[1] != '\\' && str[1] != '\'')
+            थांबा;
 
           /* Skip the backslash and examine the next character.  */
           newc = *++str;
-          switch (newc)
+          निवड (newc)
             {
-            case '"': case '#': case '$': case '\'': case '\\':
+            स्थिती '"': स्थिती '#': स्थिती '$': स्थिती '\'': स्थिती '\\':
               /* Pass escaped character as-is.  */
-              break;
+              थांबा;
 
-            case '_':
-              if (!dq)
+            स्थिती '_':
+              जर (!dq)
                 {
                   ++str;  /* '\_' outside double-quotes is arg separator.  */
                   ss.sep = true;
-                  continue;
+                  सुरूठेवा;
                 }
               newc = ' ';  /* '\_' inside double-quotes is space.  */
-              break;
+              थांबा;
 
-            case 'c':
-              if (dq)
+            स्थिती 'c':
+              जर (dq)
                 error (EXIT_CANCELED, 0,
                        _("'\\c' must not appear in double-quoted -S string"));
-              goto eos; /* '\c' terminates the string.  */
+              जा eos; /* '\c' terminates the string.  */
 
-            case 'f': newc = '\f'; break;
-            case 'n': newc = '\n'; break;
-            case 'r': newc = '\r'; break;
-            case 't': newc = '\t'; break;
-            case 'v': newc = '\v'; break;
+            स्थिती 'f': newc = '\f'; थांबा;
+            स्थिती 'n': newc = '\n'; थांबा;
+            स्थिती 'r': newc = '\r'; थांबा;
+            स्थिती 't': newc = '\t'; थांबा;
+            स्थिती 'v': newc = '\v'; थांबा;
 
-            case '\0':
+            स्थिती '\0':
               error (EXIT_CANCELED, 0,
                      _("invalid backslash at end of string in -S"));
 
-            default:
+            पूर्वनिर्धारित:
               error (EXIT_CANCELED, 0,
                      _("invalid sequence '\\%c' in -S"), newc);
             }
-          break;
+          थांबा;
 
-        case '$':
+        स्थिती '$':
           /* ${VARNAME} are not expanded inside single-quotes.  */
-          if (sq)
-            break;
+          जर (sq)
+            थांबा;
 
           /* Store the ${VARNAME} value.  */
           {
-            char *n = extract_varname (str);
-            if (!n)
+            अक्षर *n = extract_varname (str);
+            जर (!n)
               error (EXIT_CANCELED, 0,
                      _("only ${VARNAME} expansion is supported, error at: %s"),
                      str);
 
-            char *v = getenv (n);
-            if (v)
+            अक्षर *v = दो_पर्या (n);
+            जर (v)
               {
                 check_start_new_arg (&ss);
                 vmsg (_("expanding ${%s} into %s\n"), n, quote (v));
-                for (; *v; v++)
+                साठी (; *v; v++)
                   splitbuf_append_byte (&ss, *v);
               }
-            else
+            अन्यथा
               vmsg (_("replacing ${%s} with empty string\n"), n);
 
-            str = strchr (str, '}') + 1;
-            continue;
+            str = म_अक्षर (str, '}') + 1;
+            सुरूठेवा;
           }
         }
 
@@ -759,13 +759,13 @@ build_argv (char const *str, int extra_argc, int *argc)
       ++str;
     }
 
-  if (dq || sq)
+  जर (dq || sq)
     error (EXIT_CANCELED, 0, _("no terminating quote in -S string"));
 
  eos:
   splitbuf_append_byte (&ss, '\0');
   *argc = ss.argc;
-  return splitbuf_finishup (&ss);
+  परत splitbuf_finishup (&ss);
 }
 
 /* Process an "-S" string and create the corresponding argv array.
@@ -789,29 +789,29 @@ build_argv (char const *str, int extra_argc, int *argc)
       argv[6] = NULL
    argc will be updated from 4 to 6.
    optind will be reset to 0 to force getopt_long to rescan all arguments.  */
-static void
-parse_split_string (char const *str, int *orig_optind,
-                    int *orig_argc, char ***orig_argv)
+स्थिर शून्य
+parse_split_string (अक्षर स्थिरांक *str, पूर्णांक *orig_optind,
+                    पूर्णांक *orig_argc, अक्षर ***orig_argv)
 {
-  int extra_argc = *orig_argc - *orig_optind, newargc;
-  char **newargv = build_argv (str, extra_argc, &newargc);
+  पूर्णांक extra_argc = *orig_argc - *orig_optind, newargc;
+  अक्षर **newargv = build_argv (str, extra_argc, &newargc);
 
   /* Restore argv[0] - the 'env' executable name.  */
   *newargv = (*orig_argv)[0];
 
   /* Print parsed arguments.  */
-  if (dev_debug && 1 < newargc)
+  जर (dev_debug && 1 < newargc)
     {
       vmsg (_("split -S:  %s\n"), quote (str));
       vmsg (_(" into:     %s\n"), quote (newargv[1]));
-      for (int i = 2; i < newargc; i++)
+      साठी (पूर्णांक i = 2; i < newargc; i++)
         vmsg (_("     &     %s\n"), quote (newargv[i]));
     }
 
   /* Add remaining arguments and terminating null from the original
      command line.  */
-  memcpy (newargv + newargc, *orig_argv + *orig_optind,
-          (extra_argc + 1) * sizeof *newargv);
+  स_नकल (newargv + newargc, *orig_argv + *orig_optind,
+          (extra_argc + 1) * आकार *newargv);
 
   /* Set new values for original getopt variables.  */
   *orig_argc = newargc + extra_argc;
@@ -819,48 +819,48 @@ parse_split_string (char const *str, int *orig_optind,
   *orig_optind = 0; /* Tell getopt to restart from first argument.  */
 }
 
-static void
-parse_signal_action_params (char const *arg, bool set_default)
+स्थिर शून्य
+parse_signal_action_params (अक्षर स्थिरांक *arg, bool set_default)
 {
-  if (! arg)
+  जर (! arg)
     {
       /* Without an argument, reset all signals.
          Some signals cannot be set to ignore or default (e.g., SIGKILL,
          SIGSTOP on most OSes, and SIGCONT on AIX.) - so ignore errors.  */
-      for (int i = 1 ; i <= SIGNUM_BOUND; i++)
+      साठी (पूर्णांक i = 1 ; i <= SIGNUM_BOUND; i++)
         signals[i] = set_default ? DEFAULT_NOERR : IGNORE_NOERR;
-      return;
+      परत;
     }
 
-  char *optarg_writable = xstrdup (arg);
+  अक्षर *optarg_writable = xstrdup (arg);
 
-  char *opt_sig = strtok (optarg_writable, ",");
-  while (opt_sig)
+  अक्षर *opt_sig = म_मोहर (optarg_writable, ",");
+  पर्यंत (opt_sig)
     {
-      int signum = operand2sig (opt_sig);
+      पूर्णांक signum = operand2sig (opt_sig);
       /* operand2sig accepts signal 0 (EXIT) - but we reject it.  */
-      if (signum == 0)
+      जर (signum == 0)
         error (0, 0, _("%s: invalid signal"), quote (opt_sig));
-      if (signum <= 0)
+      जर (signum <= 0)
         usage (exit_failure);
 
       signals[signum] = set_default ? DEFAULT : IGNORE;
 
-      opt_sig = strtok (NULL, ",");
+      opt_sig = म_मोहर (रिक्त, ",");
     }
 
-  free (optarg_writable);
+  मुक्त (optarg_writable);
 }
 
-static void
-reset_signal_handlers (void)
+स्थिर शून्य
+reset_signal_handlers (शून्य)
 {
-  for (int i = 1; i <= SIGNUM_BOUND; i++)
+  साठी (पूर्णांक i = 1; i <= SIGNUM_BOUND; i++)
     {
-      struct sigaction act;
+      संरचना sigaction act;
 
-      if (signals[i] == UNCHANGED)
-        continue;
+      जर (signals[i] == UNCHANGED)
+        सुरूठेवा;
 
       bool ignore_errors = (signals[i] == DEFAULT_NOERR
                             || signals[i] == IGNORE_NOERR);
@@ -868,26 +868,26 @@ reset_signal_handlers (void)
       bool set_to_default = (signals[i] == DEFAULT
                              || signals[i] == DEFAULT_NOERR);
 
-      int sig_err = sigaction (i, NULL, &act);
+      पूर्णांक sig_err = sigaction (i, रिक्त, &act);
 
-      if (sig_err && !ignore_errors)
-        error (EXIT_CANCELED, errno,
+      जर (sig_err && !ignore_errors)
+        error (EXIT_CANCELED, त्रुटि_सं,
                _("failed to get signal action for signal %d"), i);
 
-      if (! sig_err)
+      जर (! sig_err)
         {
-          act.sa_handler = set_to_default ? SIG_DFL : SIG_IGN;
-          sig_err = sigaction (i, &act, NULL);
-          if (sig_err && !ignore_errors)
-            error (EXIT_CANCELED, errno,
+          act.sa_handler = set_to_default ? संक_पूर्व : संक_छोड़ो;
+          sig_err = sigaction (i, &act, रिक्त);
+          जर (sig_err && !ignore_errors)
+            error (EXIT_CANCELED, त्रुटि_सं,
                    _("failed to set signal action for signal %d"), i);
         }
 
-      if (dev_debug)
+      जर (dev_debug)
         {
-          char signame[SIG2STR_MAX];
-          if (sig2str (i, signame) != 0)
-            snprintf (signame, sizeof signame, "SIG%d", i);
+          अक्षर signame[SIG2STR_MAX];
+          जर (sig2str (i, signame) != 0)
+            snprintf (signame, आकार signame, "SIG%d", i);
           vmsg (_("Reset signal %s (%d) to %s%s\n"),
                   signame, i,
                   set_to_default ? "DEFAULT" : "IGNORE",
@@ -897,16 +897,16 @@ reset_signal_handlers (void)
 }
 
 
-static void
-parse_block_signal_params (char const *arg, bool block)
+स्थिर शून्य
+parse_block_signal_params (अक्षर स्थिरांक *arg, bool block)
 {
-  if (! arg)
+  जर (! arg)
     {
       /* Without an argument, reset all signals.  */
       sigfillset (block ? &block_signals : &unblock_signals);
       sigemptyset (block ? &unblock_signals : &block_signals);
     }
-  else if (! sig_mask_changed)
+  अन्यथा जर (! sig_mask_changed)
     {
       /* Initialize the sets.  */
       sigemptyset (&block_signals);
@@ -915,197 +915,197 @@ parse_block_signal_params (char const *arg, bool block)
 
   sig_mask_changed = true;
 
-  if (! arg)
-    return;
+  जर (! arg)
+    परत;
 
-  char *optarg_writable = xstrdup (arg);
+  अक्षर *optarg_writable = xstrdup (arg);
 
-  char *opt_sig = strtok (optarg_writable, ",");
-  while (opt_sig)
+  अक्षर *opt_sig = म_मोहर (optarg_writable, ",");
+  पर्यंत (opt_sig)
     {
-      int signum = operand2sig (opt_sig);
+      पूर्णांक signum = operand2sig (opt_sig);
       /* operand2sig accepts signal 0 (EXIT) - but we reject it.  */
-      if (signum == 0)
+      जर (signum == 0)
         error (0, 0, _("%s: invalid signal"), quote (opt_sig));
-      if (signum <= 0)
+      जर (signum <= 0)
         usage (exit_failure);
 
-      if (sigaddset (block ? &block_signals : &unblock_signals, signum) == -1)
+      जर (sigaddset (block ? &block_signals : &unblock_signals, signum) == -1)
         {
-          if (block)
-            error (EXIT_CANCELED, errno,
+          जर (block)
+            error (EXIT_CANCELED, त्रुटि_सं,
                    _("failed to block signal %d"), signum);
           /* else diagnosed in parse_signal_action_params().  */
         }
-      else
+      अन्यथा
         sigdelset (block ? &unblock_signals : &block_signals, signum);
 
-      opt_sig = strtok (NULL, ",");
+      opt_sig = म_मोहर (रिक्त, ",");
     }
 
-  free (optarg_writable);
+  मुक्त (optarg_writable);
 }
 
-static void
-set_signal_proc_mask (void)
+स्थिर शून्य
+set_signal_proc_mask (शून्य)
 {
   /* Get the existing signal mask */
   sigset_t set;
 
   sigemptyset (&set);
 
-  if (sigprocmask (0, NULL, &set))
-    error (EXIT_CANCELED, errno, _("failed to get signal process mask"));
+  जर (sigprocmask (0, रिक्त, &set))
+    error (EXIT_CANCELED, त्रुटि_सं, _("failed to get signal process mask"));
 
-  for (int i = 1; i <= SIGNUM_BOUND; i++)
+  साठी (पूर्णांक i = 1; i <= SIGNUM_BOUND; i++)
     {
-      char const *debug_act = NULL;
+      अक्षर स्थिरांक *debug_act = रिक्त;
 
-      if (sigismember (&block_signals, i))
+      जर (sigismember (&block_signals, i))
         {
           sigaddset (&set, i);
           debug_act = "BLOCK";
         }
-      else if (sigismember (&unblock_signals, i))
+      अन्यथा जर (sigismember (&unblock_signals, i))
         {
           sigdelset (&set, i);
           debug_act = "UNBLOCK";
         }
 
-      if (dev_debug && debug_act)
+      जर (dev_debug && debug_act)
         {
-          char signame[SIG2STR_MAX];
-          if (sig2str (i, signame) != 0)
-            snprintf (signame, sizeof signame, "SIG%d", i);
+          अक्षर signame[SIG2STR_MAX];
+          जर (sig2str (i, signame) != 0)
+            snprintf (signame, आकार signame, "SIG%d", i);
           vmsg (_("signal %s (%d) mask set to %s\n"),
                   signame, i, debug_act);
         }
     }
 
-  if (sigprocmask (SIG_SETMASK, &set, NULL))
-    error (EXIT_CANCELED, errno, _("failed to set signal process mask"));
+  जर (sigprocmask (SIG_SETMASK, &set, रिक्त))
+    error (EXIT_CANCELED, त्रुटि_सं, _("failed to set signal process mask"));
 }
 
-static void
-list_signal_handling (void)
+स्थिर शून्य
+list_signal_handling (शून्य)
 {
   sigset_t set;
 
   sigemptyset (&set);
-  if (sigprocmask (0, NULL, &set))
-    error (EXIT_CANCELED, errno, _("failed to get signal process mask"));
+  जर (sigprocmask (0, रिक्त, &set))
+    error (EXIT_CANCELED, त्रुटि_सं, _("failed to get signal process mask"));
 
-  for (int i = 1; i <= SIGNUM_BOUND; i++)
+  साठी (पूर्णांक i = 1; i <= SIGNUM_BOUND; i++)
     {
-      struct sigaction act;
-      if (sigaction (i, NULL, &act))
-        continue;
+      संरचना sigaction act;
+      जर (sigaction (i, रिक्त, &act))
+        सुरूठेवा;
 
-      char const *ignored = act.sa_handler == SIG_IGN ? "IGNORE" : "";
-      char const *blocked = sigismember (&set, i) ? "BLOCK" : "";
-      char const *connect = *ignored && *blocked ? "," : "";
+      अक्षर स्थिरांक *ignored = act.sa_handler == संक_छोड़ो ? "IGNORE" : "";
+      अक्षर स्थिरांक *blocked = sigismember (&set, i) ? "BLOCK" : "";
+      अक्षर स्थिरांक *connect = *ignored && *blocked ? "," : "";
 
-      if (! *ignored && ! *blocked)
-        continue;
+      जर (! *ignored && ! *blocked)
+        सुरूठेवा;
 
-      char signame[SIG2STR_MAX];
-      if (sig2str (i, signame) != 0)
-        snprintf (signame, sizeof signame, "SIG%d", i);
-      fprintf (stderr, "%-10s (%2d): %s%s%s\n", signame, i,
+      अक्षर signame[SIG2STR_MAX];
+      जर (sig2str (i, signame) != 0)
+        snprintf (signame, आकार signame, "SIG%d", i);
+      ख_लिखो (मानक_त्रुटि, "%-10s (%2d): %s%s%s\n", signame, i,
                blocked, connect, ignored);
     }
 }
 
-static void
-initialize_signals (void)
+स्थिर शून्य
+initialize_signals (शून्य)
 {
-  signals = xmalloc ((sizeof *signals) * (SIGNUM_BOUND + 1));
+  signals = xmalloc ((आकार *signals) * (SIGNUM_BOUND + 1));
 
-  for (int i = 0 ; i <= SIGNUM_BOUND; i++)
+  साठी (पूर्णांक i = 0 ; i <= SIGNUM_BOUND; i++)
     signals[i] = UNCHANGED;
 }
 
-int
-main (int argc, char **argv)
+पूर्णांक
+main (पूर्णांक argc, अक्षर **argv)
 {
   bool ignore_environment = false;
   bool opt_nul_terminate_output = false;
-  int quoting_style_opt = -1;
-  char const *newdir = NULL;
-  char const *env0_from_file = NULL;
-  char *argv0 = NULL;
-  struct env_vector env_vector;
+  पूर्णांक quoting_style_opt = -1;
+  अक्षर स्थिरांक *newdir = रिक्त;
+  अक्षर स्थिरांक *env0_from_file = रिक्त;
+  अक्षर *argv0 = रिक्त;
+  संरचना env_vector env_vector;
 #ifdef lint
-  memset (&env_vector, 0, sizeof env_vector);
-  char **initial_environ = environ;
+  स_रखो (&env_vector, 0, आकार env_vector);
+  अक्षर **initial_environ = environ;
 #endif
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
-  setlocale (LC_ALL, "");
+  रखो_क्षेत्र (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   initialize_exit_failure (EXIT_CANCELED);
-  atexit (close_stdout);
+  निकास_पर (close_stdout);
 
   initialize_signals ();
 
-  int optc;
-  while ((optc = getopt_long (argc, argv, shortopts, longopts, NULL)) != -1)
+  पूर्णांक optc;
+  पर्यंत ((optc = getopt_long (argc, argv, shortopts, longopts, रिक्त)) != -1)
     {
-      switch (optc)
+      निवड (optc)
         {
-        case 'a':
+        स्थिती 'a':
           argv0 = optarg;
-          break;
-        case 'i':
+          थांबा;
+        स्थिती 'i':
           ignore_environment = true;
-          break;
-        case 'u':
+          थांबा;
+        स्थिती 'u':
           append_unset_var (optarg);
-          break;
-        case 'v':
+          थांबा;
+        स्थिती 'v':
           dev_debug = true;
-          break;
-        case '0':
+          थांबा;
+        स्थिती '0':
           opt_nul_terminate_output = true;
           quoting_style_opt = literal_quoting_style;
-          break;
-        case ENV0_FROM_OPTION:
+          थांबा;
+        स्थिती ENV0_FROM_OPTION:
           env0_from_file = optarg;
-          break;
-        case DEFAULT_SIGNAL_OPTION:
+          थांबा;
+        स्थिती DEFAULT_SIGNAL_OPTION:
           parse_signal_action_params (optarg, true);
           parse_block_signal_params (optarg, false);
-          break;
-        case IGNORE_SIGNAL_OPTION:
+          थांबा;
+        स्थिती IGNORE_SIGNAL_OPTION:
           parse_signal_action_params (optarg, false);
-          break;
-        case BLOCK_SIGNAL_OPTION:
+          थांबा;
+        स्थिती BLOCK_SIGNAL_OPTION:
           parse_block_signal_params (optarg, true);
-          break;
-        case LIST_SIGNAL_HANDLING_OPTION:
+          थांबा;
+        स्थिती LIST_SIGNAL_HANDLING_OPTION:
           report_signal_handling = true;
-          break;
-        case QUOTING_STYLE_OPTION:
+          थांबा;
+        स्थिती QUOTING_STYLE_OPTION:
           quoting_style_opt = XARGMATCH ("--quoting-style", optarg,
                                          quoting_style_args,
                                          quoting_style_vals);
-          break;
-        case 'C':
+          थांबा;
+        स्थिती 'C':
           newdir = optarg;
-          break;
-        case 'S':
+          थांबा;
+        स्थिती 'S':
           parse_split_string (optarg, &optind, &argc, &argv);
-          break;
-        case ' ': case '\t': case '\n': case '\v': case '\f': case '\r':
+          थांबा;
+        स्थिती ' ': स्थिती '\t': स्थिती '\n': स्थिती '\v': स्थिती '\f': स्थिती '\r':
           /* These are undocumented options.  Attempt to detect
              incorrect shebang usage with extraneous space, e.g.:
                 #!/usr/bin/env -i command
              In which case argv[1] == "-i command".  */
           {
-            char c = optc;
+            अक्षर c = optc;
             error (0, 0, _("invalid option -- %s"), quote_mem (&c, 1));
             error (0, 0, _("use -[v]S to pass options in shebang lines"));
             usage (EXIT_CANCELED);
@@ -1113,155 +1113,155 @@ main (int argc, char **argv)
 
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        पूर्वनिर्धारित:
           usage (EXIT_CANCELED);
         }
     }
 
-  if (optind < argc && streq (argv[optind], "-"))
+  जर (optind < argc && streq (argv[optind], "-"))
     {
       ignore_environment = true;
       ++optind;
     }
 
-  int program_index = optind;
-  while (program_index < argc && strchr (argv[program_index], '='))
+  पूर्णांक program_index = optind;
+  पर्यंत (program_index < argc && म_अक्षर (argv[program_index], '='))
     program_index++;
   bool program_specified = program_index < argc;
 
   bool quote_output = false;
-  int qs = quoting_style_opt;
-  if (! program_specified && qs < 0 && isatty (STDOUT_FILENO))
+  पूर्णांक qs = quoting_style_opt;
+  जर (! program_specified && qs < 0 && isatty (STDOUT_FILENO))
     {
       /* Get the value from $QUOTING_STYLE before unsetting env vars.  */
       qs = getenv_quoting_style ();
-      if (qs < 0)
+      जर (qs < 0)
         qs = shell_escape_quoting_style;
     }
-  if (0 <= qs && qs != literal_quoting_style)
+  जर (0 <= qs && qs != literal_quoting_style)
     {
-      set_quoting_style (NULL, qs);
+      set_quoting_style (रिक्त, qs);
       quote_output = true;
     }
 
   bool env_vector_active = false;
-  if (ignore_environment && env0_from_file)
+  जर (ignore_environment && env0_from_file)
     {
       vmsg (_("clearing environment\n"));
       set_raw_environment_from_file (&env_vector, env0_from_file);
       env_vector_active = true;
     }
-  else if (ignore_environment)
+  अन्यथा जर (ignore_environment)
     {
       vmsg (_("clearing environment\n"));
-#if defined _WIN32 && ! defined __CYGWIN__
-      static char *dummy_environ[] = { NULL };
+#जर defined _WIN32 && ! defined __CYGWIN__
+      स्थिर अक्षर *dummy_environ[] = { रिक्त };
       environ = dummy_environ;
-#else
-      env_vector.variable = xnmalloc (1, sizeof *env_vector.variable);
-      env_vector.variable[0] = NULL;
+#अन्यथा
+      env_vector.variable = xnmalloc (1, आकार *env_vector.variable);
+      env_vector.variable[0] = रिक्त;
       env_vector.used = 0;
       env_vector.allocated = 1;
       environ = env_vector.variable;
       env_vector_active = true;
 #endif
     }
-  else if (env0_from_file)
+  अन्यथा जर (env0_from_file)
     env_vector_active = set_envvars_from_file (&env_vector, env0_from_file);
 
-  if (! ignore_environment || env0_from_file)
+  जर (! ignore_environment || env0_from_file)
     {
-      if (env_vector_active)
+      जर (env_vector_active)
         unset_envvars_in_vector (&env_vector);
-      else
+      अन्यथा
         unset_envvars ();
     }
 
-  char *eq;
-  while (optind < argc && (eq = strchr (argv[optind], '=')))
+  अक्षर *eq;
+  पर्यंत (optind < argc && (eq = म_अक्षर (argv[optind], '=')))
     {
-      if (env_vector_active)
+      जर (env_vector_active)
         set_envvar_in_vector (&env_vector, argv[optind], eq);
-      else
+      अन्यथा
         set_envvar (argv[optind], eq);
       optind++;
     }
 
-  if (opt_nul_terminate_output && program_specified)
+  जर (opt_nul_terminate_output && program_specified)
     {
       error (0, 0, _("cannot specify --null (-0) with command"));
       usage (EXIT_CANCELED);
     }
 
-  if (newdir && ! program_specified)
+  जर (newdir && ! program_specified)
     {
       error (0, 0, _("must specify command with --chdir (-C)"));
       usage (EXIT_CANCELED);
     }
 
-  if (argv0 && ! program_specified)
+  जर (argv0 && ! program_specified)
     {
       error (0, 0, _("must specify command with --argv0 (-a)"));
       usage (EXIT_CANCELED);
     }
 
-  if (! program_specified)
+  जर (! program_specified)
     {
-      char const terminator = opt_nul_terminate_output ? '\0' : '\n';
+      अक्षर स्थिरांक terminator = opt_nul_terminate_output ? '\0' : '\n';
 
-      if (opt_nul_terminate_output)
-        xset_binary_mode (STDOUT_FILENO, O_BINARY);
+      जर (opt_nul_terminate_output)
+        xset_द्विमान_mode (STDOUT_FILENO, O_द्विमान);
 
       /* Print the environment and exit.  */
-      for (char *const *e = environ; *e; ++e)
+      साठी (अक्षर *स्थिरांक *e = environ; *e; ++e)
         print_envvar (*e, terminator, quote_output);
 #ifdef lint
-      if (env_vector_active)
+      जर (env_vector_active)
         {
           environ = initial_environ;
-          free (env_vector.variable);
-          free (env0_from_buffer);
+          मुक्त (env_vector.variable);
+          मुक्त (env0_from_buffer);
         }
 #endif
-      return EXIT_SUCCESS;
+      परत निकास_सफल;
     }
 
   reset_signal_handlers ();
-  if (sig_mask_changed)
+  जर (sig_mask_changed)
     set_signal_proc_mask ();
 
-  if (report_signal_handling)
+  जर (report_signal_handling)
     list_signal_handling ();
 
-  if (newdir)
+  जर (newdir)
     {
       vmsg (_("change dir: %s\n"), quote (newdir));
 
-      if (chdir (newdir) != 0)
-        error (EXIT_CANCELED, errno, _("cannot change directory to %s"),
+      जर (स_बदलो (newdir) != 0)
+        error (EXIT_CANCELED, त्रुटि_सं, _("cannot change directory to %s"),
                quoteaf (newdir));
     }
 
-  char *program = argv[optind];
-  if (argv0)
+  अक्षर *program = argv[optind];
+  जर (argv0)
     {
       vmsg ("argv0:     %s\n", quote (argv0));
       argv[optind] = argv0;
     }
 
-  if (dev_debug)
+  जर (dev_debug)
     {
       vmsg (_("executing: %s\n"), quote (program));
-      for (int i=optind; i<argc; ++i)
+      साठी (पूर्णांक i=optind; i<argc; ++i)
         vmsg ("   arg[%d]= %s\n", i-optind, quote (argv[i]));
     }
 
   execvp (program, &argv[optind]);
 
-  int exit_status = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
-  error (0, errno, "%s", quote (program));
+  पूर्णांक exit_status = त्रुटि_सं == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
+  error (0, त्रुटि_सं, "%s", quote (program));
 
-  if (exit_status == EXIT_ENOENT && strpbrk (program, C_ISSPACE_CHARS))
+  जर (exit_status == EXIT_ENOENT && strpbrk (program, C_ISSPACE_CHARS))
     error (0, 0, _("use -[v]S to pass options in shebang lines"));
 
   main_exit (exit_status);

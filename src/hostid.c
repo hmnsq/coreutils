@@ -17,65 +17,65 @@
 
 /* Written by Jim Meyering.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
+#अन्तर्भाव <config.h>
+#अन्तर्भाव <stdio.h>
+#अन्तर्भाव <sys/types.h>
 
-#include "system.h"
-#include "long-options.h"
-#include "quote.h"
+#अन्तर्भाव "system.h"
+#अन्तर्भाव "long-options.h"
+#अन्तर्भाव "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "hostid"
 
 #define AUTHORS proper_name ("Jim Meyering")
 
-void
-usage (int status)
+शून्य
+usage (पूर्णांक status)
 {
-  if (status != EXIT_SUCCESS)
+  जर (status != निकास_सफल)
     emit_try_help ();
-  else
+  अन्यथा
     {
-      printf (_("\
+      म_लिखो (_("\
 Usage: %s [OPTION]\n\
-Print the numeric identifier (in hexadecimal) for the current host.\n\
+Print the numeric identifier (in hexadecimal) साठी the current host.\n\
 \n\
 "), program_name);
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
       emit_ancillary_info (PROGRAM_NAME);
     }
-  exit (status);
+  निकास (status);
 }
 
-int
-main (int argc, char **argv)
+पूर्णांक
+main (पूर्णांक argc, अक्षर **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
-  setlocale (LC_ALL, "");
+  रखो_क्षेत्र (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
-  atexit (close_stdout);
+  निकास_पर (close_stdout);
 
   parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
                                    Version, true, usage, AUTHORS,
-                                   (char const *) NULL);
+                                   (अक्षर स्थिरांक *) रिक्त);
 
-  if (optind < argc)
+  जर (optind < argc)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind]));
-      usage (EXIT_FAILURE);
+      usage (निकास_त्रुटि);
     }
 
   /* POSIX says gethostid returns a "32-bit identifier" but is silent
      whether it's sign-extended.  Turn off any sign-extension.  This
      is a no-op unless unsigned int is wider than 32 bits.  */
-  unsigned int id = gethostid () & 0xffffffff;
+  अचिन्हित पूर्णांक id = gethostid () & 0xffffffff;
 
-  printf ("%08x\n", id);
+  म_लिखो ("%08x\n", id);
 
-  return EXIT_SUCCESS;
+  परत निकास_सफल;
 }

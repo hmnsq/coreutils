@@ -16,23 +16,23 @@
 
 /* Written by Richard M. Stallman and David MacKenzie. */
 
-#include <config.h>
+#अन्तर्भाव <config.h>
 
-#include <getopt.h>
-#include <sys/types.h>
+#अन्तर्भाव <getopt.h>
+#अन्तर्भाव <sys/types.h>
 
-#include "system.h"
-#include "argmatch.h"
-#include "assure.h"
-#include "linebuffer.h"
-#include "fadvise.h"
-#include "mcel.h"
-#include "posixver.h"
-#include "skipchars.h"
-#include "stdio--.h"
-#include "xstrtol.h"
-#include "memcasecmp.h"
-#include "quote.h"
+#अन्तर्भाव "system.h"
+#अन्तर्भाव "argmatch.h"
+#अन्तर्भाव "assure.h"
+#अन्तर्भाव "linebuffer.h"
+#अन्तर्भाव "fadvise.h"
+#अन्तर्भाव "mcel.h"
+#अन्तर्भाव "posixver.h"
+#अन्तर्भाव "skipchars.h"
+#अन्तर्भाव "stdio--.h"
+#अन्तर्भाव "xstrtol.h"
+#अन्तर्भाव "memcasecmp.h"
+#अन्तर्भाव "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "uniq"
@@ -41,38 +41,38 @@
   proper_name ("Richard M. Stallman"), \
   proper_name ("David MacKenzie")
 
-static void
-swap_lines (struct linebuffer **a, struct linebuffer **b)
+स्थिर शून्य
+swap_ओळी (संरचना linebuffer **a, संरचना linebuffer **b)
 {
-  struct linebuffer *tmp = *a;
+  संरचना linebuffer *tmp = *a;
   *a = *b;
   *b = tmp;
 }
 
 /* Number of fields to skip on each line when doing comparisons. */
-static idx_t skip_fields = false;
+स्थिर idx_t skip_fields = false;
 
 /* Number of chars to skip after skipping any fields. */
-static idx_t skip_chars = false;
+स्थिर idx_t skip_chars = false;
 
 /* Number of chars to compare. */
-static idx_t check_chars = IDX_MAX;
+स्थिर idx_t check_chars = IDX_MAX;
 
 /* Whether to precede the output lines with a count of the number of
    times they occurred in the input. */
-static bool count_occurrences = false;
+स्थिर bool मोजणी_occurrences = false;
 
 /* Which lines to output: unique lines, the first of a group of
    repeated lines, and the second and subsequent of a group of
    repeated lines.  */
-static bool output_unique = true;
-static bool output_first_repeated = true;
-static bool output_later_repeated = false;
+स्थिर bool output_unique = true;
+स्थिर bool output_first_repeated = true;
+स्थिर bool output_later_repeated = false;
 
 /* If true, ignore case when comparing.  */
-static bool ignore_case;
+स्थिर bool ignore_case;
 
-enum delimit_method
+गणना delimit_method
 {
   /* No delimiters output.  --all-repeated[=none] */
   DM_NONE,
@@ -84,20 +84,20 @@ enum delimit_method
   DM_SEPARATE
 };
 
-static char const *const delimit_method_string[] =
+स्थिर अक्षर स्थिरांक *स्थिरांक delimit_method_string[] =
 {
-  "none", "prepend", "separate", NULL
+  "none", "prepend", "separate", रिक्त
 };
 
-static enum delimit_method const delimit_method_map[] =
+स्थिर गणना delimit_method स्थिरांक delimit_method_map[] =
 {
   DM_NONE, DM_PREPEND, DM_SEPARATE
 };
 
 /* Select whether/how to delimit groups of duplicate lines.  */
-static enum delimit_method delimit_groups = DM_NONE;
+स्थिर गणना delimit_method delimit_groups = DM_NONE;
 
-enum grouping_method
+गणना grouping_method
 {
   /* No grouping, when "--group" isn't used */
   GM_NONE,
@@ -115,76 +115,76 @@ enum grouping_method
   GM_BOTH
 };
 
-static char const *const grouping_method_string[] =
+स्थिर अक्षर स्थिरांक *स्थिरांक grouping_method_string[] =
 {
-  "prepend", "append", "separate", "both", NULL
+  "prepend", "append", "separate", "both", रिक्त
 };
 
-static enum grouping_method const grouping_method_map[] =
+स्थिर गणना grouping_method स्थिरांक grouping_method_map[] =
 {
   GM_PREPEND, GM_APPEND, GM_SEPARATE, GM_BOTH
 };
 
-static enum grouping_method grouping = GM_NONE;
+स्थिर गणना grouping_method grouping = GM_NONE;
 
-enum
+गणना
 {
-  GROUP_OPTION = CHAR_MAX + 1
+  GROUP_OPTION = अक्षर_उच्च + 1
 };
 
-static struct option const longopts[] =
+स्थिर संरचना option स्थिरांक longopts[] =
 {
-  {"count", no_argument, NULL, 'c'},
-  {"repeated", no_argument, NULL, 'd'},
-  {"all-repeated", optional_argument, NULL, 'D'},
-  {"group", optional_argument, NULL, GROUP_OPTION},
-  {"ignore-case", no_argument, NULL, 'i'},
-  {"unique", no_argument, NULL, 'u'},
-  {"skip-fields", required_argument, NULL, 'f'},
-  {"skip-chars", required_argument, NULL, 's'},
-  {"check-chars", required_argument, NULL, 'w'},
-  {"zero-terminated", no_argument, NULL, 'z'},
+  {"count", no_argument, रिक्त, 'c'},
+  {"repeated", no_argument, रिक्त, 'd'},
+  {"all-repeated", optional_argument, रिक्त, 'D'},
+  {"group", optional_argument, रिक्त, GROUP_OPTION},
+  {"ignore-case", no_argument, रिक्त, 'i'},
+  {"unique", no_argument, रिक्त, 'u'},
+  {"skip-fields", required_argument, रिक्त, 'f'},
+  {"skip-chars", required_argument, रिक्त, 's'},
+  {"check-chars", required_argument, रिक्त, 'w'},
+  {"zero-terminated", no_argument, रिक्त, 'z'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {रिक्त, 0, रिक्त, 0}
 };
 
-void
-usage (int status)
+शून्य
+usage (पूर्णांक status)
 {
-  if (status != EXIT_SUCCESS)
+  जर (status != निकास_सफल)
     emit_try_help ();
-  else
+  अन्यथा
     {
-      printf (_("\
-Usage: %s [OPTION]... [INPUT [OUTPUT]]\n\
+      म_लिखो (_("\
+Usage: %s [OPTION]... [आदान_2 [OUTPUT]]\n\
 "),
               program_name);
-      fputs (_("\
-Filter adjacent matching lines from INPUT (or standard input),\n\
+      ख_माला_दो (_("\
+Filter adjacent matching ओळी from आदान_2 (or standard आदान),\n\
 writing to OUTPUT (or standard output).\n\
 \n\
-With no options, matching lines are merged to the first occurrence.\n\
-"), stdout);
+With no options, matching ओळी are merged to the first occurrence.\n\
+"), मानक_निकास);
 
       emit_mandatory_arg_note ();
 
      oputs (_("\
-  -c, --count\n\
-         prefix lines by the number of occurrences\n\
+  -c, --मोजणी\n\
+         prefix ओळी by the संख्या of occurrences\n\
 "));
      oputs (_("\
   -d, --repeated\n\
-         only print duplicate lines, one for each group\n\
+         only print duplicate ओळी, one साठी each group\n\
 "));
      oputs (_("\
   -D\n\
-         print all duplicate lines\n\
+         print all duplicate ओळी\n\
 "));
      oputs (_("\
       --all-repeated[=METHOD]\n\
-         like -D, but allow separating groups with an empty line;\n\
-         METHOD={none(default),prepend,separate}\n\
+         like -D, but allow separating groups with an empty ओळ;\n\
+         METHOD={none(पूर्वनिर्धारित),prepend,separate}\n\
 "));
      oputs (_("\
   -f, --skip-fields=N\n\
@@ -192,12 +192,12 @@ With no options, matching lines are merged to the first occurrence.\n\
 "));
      oputs (_("\
       --group[=METHOD]\n\
-         show all items, separating groups with an empty line;\n\
-         METHOD={separate(default),prepend,append,both}\n\
+         show all वस्तुसंच, separating groups with an empty ओळ;\n\
+         METHOD={separate(पूर्वनिर्धारित),prepend,append,both}\n\
 "));
      oputs (_("\
-  -i, --ignore-case\n\
-         ignore differences in case when comparing\n\
+  -i, --ignore-स्थिती\n\
+         ignore differences in स्थिती when comparing\n\
 "));
      oputs (_("\
   -s, --skip-chars=N\n\
@@ -205,94 +205,94 @@ With no options, matching lines are merged to the first occurrence.\n\
 "));
      oputs (_("\
   -u, --unique\n\
-         only print unique lines\n\
+         only print unique ओळी\n\
 "));
      oputs (_("\
   -z, --zero-terminated\n\
-         line delimiter is NUL, not newline\n\
+         ओळ delimiter is NUL, not newline\n\
 "));
      oputs (_("\
   -w, --check-chars=N\n\
-         compare no more than N characters in lines\n\
+         compare no more than N characters in ओळी\n\
 "));
      oputs (HELP_OPTION_DESCRIPTION);
      oputs (VERSION_OPTION_DESCRIPTION);
-     fputs (_("\
+     ख_माला_दो (_("\
 \n\
 A field is a run of blanks (usually spaces and/or TABs), then non-blank\n\
 characters.  Fields are skipped before chars.\n\
-"), stdout);
-     fputs (_("\
+"), मानक_निकास);
+     ख_माला_दो (_("\
 \n\
-'uniq' does not detect repeated lines unless they are adjacent.\n\
-You may want to sort the input first, or use 'sort -u' without 'uniq'.\n\
-"), stdout);
+'uniq' does not detect repeated ओळी unless they are adjacent.\n\
+You may want to sort the आदान first, or use 'sort -u' without 'uniq'.\n\
+"), मानक_निकास);
       emit_ancillary_info (PROGRAM_NAME);
     }
-  exit (status);
+  निकास (status);
 }
 
-static bool
-strict_posix2 (void)
+स्थिर bool
+strict_posix2 (शून्य)
 {
-  int posix_ver = posix2_version ();
-  return 200112 <= posix_ver && posix_ver < 200809;
+  पूर्णांक posix_ver = posix2_version ();
+  परत 200112 <= posix_ver && posix_ver < 200809;
 }
 
 /* Convert OPT to idx_t, reporting an error using MSGID if OPT is
    invalid.  Silently convert too-large values to IDX_MAX.  */
 
-static idx_t
-size_opt (char const *opt, char const *msgid)
+स्थिर idx_t
+size_opt (अक्षर स्थिरांक *opt, अक्षर स्थिरांक *msgid)
 {
   intmax_t size;
-  if (LONGINT_OVERFLOW < xstrtoimax (opt, NULL, 10, &size, "")
+  जर (LONGINT_OVERFLOW < xstrtoimax (opt, रिक्त, 10, &size, "")
       || size < 0)
-    error (EXIT_FAILURE, 0, "%s: %s", opt, _(msgid));
-  return MIN (size, IDX_MAX);
+    error (निकास_त्रुटि, 0, "%s: %s", opt, _(msgid));
+  परत MIN (size, IDX_MAX);
 }
 
-static bool
+स्थिर bool
 newline_or_blank (mcel_t g)
 {
-  return g.ch == '\n' || c32issep (g.ch);
+  परत g.ch == '\n' || c32issep (g.ch);
 }
 
 /* Given a linebuffer LINE,
    return a pointer to the beginning of the line's field to be compared.
    Store into *PLEN the length in bytes of FIELD.  */
 
-static char *
-find_field (struct linebuffer const *line, idx_t *plen)
+स्थिर अक्षर *
+find_field (संरचना linebuffer स्थिरांक *ओळ, idx_t *plen)
 {
-  char *lp = line->buffer;
-  char const *lim = lp + line->length - 1;
+  अक्षर *lp = ओळ->buffer;
+  अक्षर स्थिरांक *lim = lp + ओळ->length - 1;
 
-  for (idx_t i = skip_fields; 0 < i && lp < lim; i--)
+  साठी (idx_t i = skip_fields; 0 < i && lp < lim; i--)
     {
       lp = skip_buf_matching (lp, lim, newline_or_blank, true);
       lp = skip_buf_matching (lp, lim, newline_or_blank, false);
     }
 
-  for (idx_t i = skip_chars; 0 < i && lp < lim; i--)
+  साठी (idx_t i = skip_chars; 0 < i && lp < lim; i--)
     lp += mcel_scan (lp, lim).len;
 
   /* Compute the length in bytes cheaply if possible; otherwise, scan.  */
   idx_t len;
-  if (lim - lp <= check_chars)
+  जर (lim - lp <= check_chars)
     len = lim - lp;
-  else if (MB_CUR_MAX <= 1)
+  अन्यथा जर (MB_CUR_MAX <= 1)
     len = check_chars;
-  else
+  अन्यथा
     {
-      char *ep = lp;
-      for (idx_t i = check_chars; 0 < i && ep < lim; i--)
+      अक्षर *ep = lp;
+      साठी (idx_t i = check_chars; 0 < i && ep < lim; i--)
         ep += mcel_scan (ep, lim).len;
       len = ep - lp;
     }
 
   *plen = len;
-  return lp;
+  परत lp;
 }
 
 /* Return false if two strings OLD and NEW match, true if not.
@@ -300,13 +300,13 @@ find_field (struct linebuffer const *line, idx_t *plen)
    but rather to the beginnings of the fields to compare.
    OLDLEN and NEWLEN are their lengths. */
 
-static bool
-different (char *old, char *new, idx_t oldlen, idx_t newlen)
+स्थिर bool
+different (अक्षर *old, अक्षर *new, idx_t oldlen, idx_t newlen)
 {
-  if (ignore_case)
-    return oldlen != newlen || memcasecmp (old, new, oldlen);
-  else
-    return oldlen != newlen || memcmp (old, new, oldlen);
+  जर (ignore_case)
+    परत oldlen != newlen || memcasecmp (old, new, oldlen);
+  अन्यथा
+    परत oldlen != newlen || स_भेद (old, new, oldlen);
 }
 
 /* Output the line in linebuffer LINE to standard output
@@ -315,54 +315,54 @@ different (char *old, char *new, idx_t oldlen, idx_t newlen)
    If requested, print the number of times it occurred, as well;
    LINECOUNT + 1 is the number of times that the line occurred. */
 
-static void
-writeline (struct linebuffer const *line,
+स्थिर शून्य
+writeline (संरचना linebuffer स्थिरांक *ओळ,
            bool match, intmax_t linecount)
 {
-  if (! (linecount == 0 ? output_unique
+  जर (! (linecount == 0 ? output_unique
          : !match ? output_first_repeated
          : output_later_repeated))
-    return;
+    परत;
 
-  if (count_occurrences)
+  जर (मोजणी_occurrences)
     {
-      char buf[7 + INT_BUFSIZE_BOUND (intmax_t)];
-      char *end = buf + sizeof buf;
-      char *p = end;
+      अक्षर buf[7 + INT_BUFSIZE_BOUND (intmax_t)];
+      अक्षर *end = buf + आकार buf;
+      अक्षर *p = end;
       *--p = ' ';
       intmax_t i = linecount + 1;
       affirm (0 < i);
-      do
+      करा
         *--p = '0' + i % 10;
-      while ((i /= 10));
+      पर्यंत ((i /= 10));
       /* 7 characters, padded with spaces if LINECOUNT + 1 is too small.  */
-      while (end - p < 8)
+      पर्यंत (end - p < 8)
         *--p = ' ';
-      const idx_t nbytes = end - p;
-      if (fwrite (p, sizeof (char), nbytes, stdout) != nbytes)
+      स्थिरांक idx_t nbytes = end - p;
+      जर (ख_डालो (p, आकार (अक्षर), nbytes, मानक_निकास) != nbytes)
         write_error ();
     }
 
-  if (fwrite (line->buffer, sizeof (char), line->length, stdout)
-      != line->length)
+  जर (ख_डालो (ओळ->buffer, आकार (अक्षर), ओळ->length, मानक_निकास)
+      != ओळ->length)
     write_error ();
 }
 
 /* Process input file INFILE with output to OUTFILE.
    If either is "-", use the standard I/O stream for it instead. */
 
-static void
-check_file (char const *infile, char const *outfile, char delimiter)
+स्थिर शून्य
+check_file (अक्षर स्थिरांक *infile, अक्षर स्थिरांक *outfile, अक्षर delimiter)
 {
-  struct linebuffer lb1, lb2;
-  struct linebuffer *thisline, *prevline;
+  संरचना linebuffer lb1, lb2;
+  संरचना linebuffer *thisline, *prevline;
 
-  if (! (streq (infile, "-") || freopen (infile, "r", stdin)))
-    error (EXIT_FAILURE, errno, "%s", quotef (infile));
-  if (! (streq (outfile, "-") || freopen (outfile, "w", stdout)))
-    error (EXIT_FAILURE, errno, "%s", quotef (outfile));
+  जर (! (streq (infile, "-") || ख_व_खोलो (infile, "r", मानक_निवेश)))
+    error (निकास_त्रुटि, त्रुटि_सं, "%s", quotef (infile));
+  जर (! (streq (outfile, "-") || ख_व_खोलो (outfile, "w", मानक_निकास)))
+    error (निकास_त्रुटि, त्रुटि_सं, "%s", quotef (outfile));
 
-  fadvise (stdin, FADVISE_SEQUENTIAL);
+  fadvise (मानक_निवेश, FADVISE_SEQUENTIAL);
 
   thisline = &lb1;
   prevline = &lb2;
@@ -385,268 +385,268 @@ check_file (char const *infile, char const *outfile, char delimiter)
 
      3. All other cases.
   */
-  if (output_unique && output_first_repeated && !count_occurrences)
+  जर (output_unique && output_first_repeated && !मोजणी_occurrences)
     {
-      char *prevfield = NULL;
+      अक्षर *prevfield = रिक्त;
       idx_t prevlen;
       bool first_group_printed = false;
 
-      while (!feof (stdin)
-             && readlinebuffer_delim (thisline, stdin, delimiter))
+      पर्यंत (!ख_पूर्ण (मानक_निवेश)
+             && readlinebuffer_delim (thisline, मानक_निवेश, delimiter))
         {
           idx_t thislen;
-          char *thisfield = find_field (thisline, &thislen);
+          अक्षर *thisfield = find_field (thisline, &thislen);
           bool new_group = (!prevfield
                             || different (thisfield, prevfield,
                                           thislen, prevlen));
 
-          if (new_group && grouping != GM_NONE
+          जर (new_group && grouping != GM_NONE
               && (grouping == GM_PREPEND || grouping == GM_BOTH
                   || (first_group_printed && (grouping == GM_APPEND
                                               || grouping == GM_SEPARATE))))
-            putchar (delimiter);
+            अक्षर_दो (delimiter);
 
-          if (new_group || grouping != GM_NONE)
+          जर (new_group || grouping != GM_NONE)
             {
-              if (fwrite (thisline->buffer, sizeof (char), thisline->length,
-                  stdout) != thisline->length)
+              जर (ख_डालो (thisline->buffer, आकार (अक्षर), thisline->length,
+                  मानक_निकास) != thisline->length)
                 write_error ();
 
-              swap_lines (&prevline, &thisline);
+              swap_ओळी (&prevline, &thisline);
               prevfield = thisfield;
               prevlen = thislen;
               first_group_printed = true;
             }
         }
-      if ((grouping == GM_BOTH || grouping == GM_APPEND) && first_group_printed)
-        putchar (delimiter);
+      जर ((grouping == GM_BOTH || grouping == GM_APPEND) && first_group_printed)
+        अक्षर_दो (delimiter);
     }
-  else
+  अन्यथा
     {
-      if (!readlinebuffer_delim (prevline, stdin, delimiter))
-        goto closefiles;
+      जर (!readlinebuffer_delim (prevline, मानक_निवेश, delimiter))
+        जा closefiles;
 
       idx_t prevlen;
-      char *prevfield = find_field (prevline, &prevlen);
-      intmax_t match_count = 0;
+      अक्षर *prevfield = find_field (prevline, &prevlen);
+      intmax_t match_मोजणी = 0;
       bool first_delimiter = true;
 
-      while (!feof (stdin))
+      पर्यंत (!ख_पूर्ण (मानक_निवेश))
         {
-          if (!readlinebuffer_delim (thisline, stdin, delimiter))
+          जर (!readlinebuffer_delim (thisline, मानक_निवेश, delimiter))
             {
-              if (ferror (stdin))
-                goto closefiles;
-              break;
+              जर (ख_त्रुटि (मानक_निवेश))
+                जा closefiles;
+              थांबा;
             }
           idx_t thislen;
-          char *thisfield = find_field (thisline, &thislen);
+          अक्षर *thisfield = find_field (thisline, &thislen);
           bool match = !different (thisfield, prevfield, thislen, prevlen);
-          match_count += match;
+          match_मोजणी += match;
 
-          if (match_count == INTMAX_MAX)
+          जर (match_मोजणी == INTMAX_MAX)
             {
-              if (count_occurrences)
-                error (EXIT_FAILURE, 0, _("too many repeated lines"));
-              match_count--;
+              जर (मोजणी_occurrences)
+                error (निकास_त्रुटि, 0, _("too many repeated lines"));
+              match_मोजणी--;
             }
 
-          if (delimit_groups != DM_NONE)
+          जर (delimit_groups != DM_NONE)
             {
-              if (!match)
+              जर (!match)
                 {
-                  if (match_count) /* a previous match */
+                  जर (match_मोजणी) /* a previous match */
                     first_delimiter = false; /* Only used when DM_SEPARATE */
                 }
-              else if (match_count == 1)
+              अन्यथा जर (match_मोजणी == 1)
                 {
-                  if ((delimit_groups == DM_PREPEND)
+                  जर ((delimit_groups == DM_PREPEND)
                       || (delimit_groups == DM_SEPARATE
                           && !first_delimiter))
-                    putchar (delimiter);
+                    अक्षर_दो (delimiter);
                 }
             }
 
-          if (!match || output_later_repeated)
+          जर (!match || output_later_repeated)
             {
-              writeline (prevline, match, match_count);
-              swap_lines (&prevline, &thisline);
+              writeline (prevline, match, match_मोजणी);
+              swap_ओळी (&prevline, &thisline);
               prevfield = thisfield;
               prevlen = thislen;
-              if (!match)
-                match_count = 0;
+              जर (!match)
+                match_मोजणी = 0;
             }
         }
 
-      writeline (prevline, false, match_count);
+      writeline (prevline, false, match_मोजणी);
     }
 
  closefiles:
-  if (ferror (stdin) || fclose (stdin) != 0)
-    error (EXIT_FAILURE, errno, _("error reading %s"), quoteaf (infile));
+  जर (ख_त्रुटि (मानक_निवेश) || ख_बंद (मानक_निवेश) != 0)
+    error (निकास_त्रुटि, त्रुटि_सं, _("error reading %s"), quoteaf (infile));
 
   /* stdout is handled via the atexit-invoked close_stdout function.  */
 
-  free (lb1.buffer);
-  free (lb2.buffer);
+  मुक्त (lb1.buffer);
+  मुक्त (lb2.buffer);
 }
 
-enum Skip_field_option_type
+गणना Skip_field_option_type
   {
     SFO_NONE,
     SFO_OBSOLETE,
     SFO_NEW
   };
 
-int
-main (int argc, char **argv)
+पूर्णांक
+main (पूर्णांक argc, अक्षर **argv)
 {
-  int optc = 0;
-  bool posixly_correct = (getenv ("POSIXLY_CORRECT") != NULL);
-  enum Skip_field_option_type skip_field_option_type = SFO_NONE;
-  int nfiles = 0;
-  char const *file[2];
-  char delimiter = '\n';	/* change with --zero-terminated, -z */
+  पूर्णांक optc = 0;
+  bool posixly_correct = (दो_पर्या ("POSIXLY_CORRECT") != रिक्त);
+  गणना Skip_field_option_type skip_field_option_type = SFO_NONE;
+  पूर्णांक nfiles = 0;
+  अक्षर स्थिरांक *file[2];
+  अक्षर delimiter = '\n';	/* change with --zero-terminated, -z */
   bool output_option_used = false;   /* if true, one of -u/-d/-D/-c was used */
 
   file[0] = file[1] = "-";
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
-  setlocale (LC_ALL, "");
+  रखो_क्षेत्र (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
-  atexit (close_stdout);
+  निकास_पर (close_stdout);
 
-  while (true)
+  पर्यंत (true)
     {
       /* Parse an operand with leading "+" as a file after "--" was
          seen; or if pedantic and a file was seen; or if not
          obsolete.  */
 
-      if (optc == -1
+      जर (optc == -1
           || (posixly_correct && nfiles != 0)
           || ((optc = getopt_long (argc, argv,
                                    "-0123456789Dcdf:is:uw:z",
-                                   longopts, NULL))
+                                   longopts, रिक्त))
               == -1))
         {
-          if (argc <= optind)
-            break;
-          if (nfiles == 2)
+          जर (argc <= optind)
+            थांबा;
+          जर (nfiles == 2)
             {
               error (0, 0, _("extra operand %s"), quote (argv[optind]));
-              usage (EXIT_FAILURE);
+              usage (निकास_त्रुटि);
             }
           file[nfiles++] = argv[optind++];
         }
-      else switch (optc)
+      अन्यथा निवड (optc)
         {
-        case 1:
+        स्थिती 1:
           {
             intmax_t size;
-            if (optarg[0] == '+'
+            जर (optarg[0] == '+'
                 && ! strict_posix2 ()
-                && (xstrtoimax (optarg, NULL, 10, &size, "")
+                && (xstrtoimax (optarg, रिक्त, 10, &size, "")
                     <= LONGINT_OVERFLOW))
               skip_chars = MIN (size, IDX_MAX);
-            else if (nfiles == 2)
+            अन्यथा जर (nfiles == 2)
               {
                 error (0, 0, _("extra operand %s"), quote (optarg));
-                usage (EXIT_FAILURE);
+                usage (निकास_त्रुटि);
               }
-            else
+            अन्यथा
               file[nfiles++] = optarg;
           }
-          break;
+          थांबा;
 
-        case '0':
-        case '1':
-        case '2':
-        case '3':
-        case '4':
-        case '5':
-        case '6':
-        case '7':
-        case '8':
-        case '9':
+        स्थिती '0':
+        स्थिती '1':
+        स्थिती '2':
+        स्थिती '3':
+        स्थिती '4':
+        स्थिती '5':
+        स्थिती '6':
+        स्थिती '7':
+        स्थिती '8':
+        स्थिती '9':
           {
-            if (skip_field_option_type == SFO_NEW)
+            जर (skip_field_option_type == SFO_NEW)
               skip_fields = 0;
 
-            if (!DECIMAL_DIGIT_ACCUMULATE (skip_fields, optc - '0'))
+            जर (!DECIMAL_DIGIT_ACCUMULATE (skip_fields, optc - '0'))
               skip_fields = IDX_MAX;
 
             skip_field_option_type = SFO_OBSOLETE;
           }
-          break;
+          थांबा;
 
-        case 'c':
-          count_occurrences = true;
+        स्थिती 'c':
+          मोजणी_occurrences = true;
           output_option_used = true;
-          break;
+          थांबा;
 
-        case 'd':
+        स्थिती 'd':
           output_unique = false;
           output_option_used = true;
-          break;
+          थांबा;
 
-        case 'D':
+        स्थिती 'D':
           output_unique = false;
           output_later_repeated = true;
-          if (optarg == NULL)
+          जर (optarg == रिक्त)
             delimit_groups = DM_NONE;
-          else
+          अन्यथा
             delimit_groups = XARGMATCH ("--all-repeated", optarg,
                                         delimit_method_string,
                                         delimit_method_map);
           output_option_used = true;
-          break;
+          थांबा;
 
-        case GROUP_OPTION:
-          if (optarg == NULL)
+        स्थिती GROUP_OPTION:
+          जर (optarg == रिक्त)
             grouping = GM_SEPARATE;
-          else
+          अन्यथा
             grouping = XARGMATCH ("--group", optarg,
                                   grouping_method_string,
                                   grouping_method_map);
-          break;
+          थांबा;
 
-        case 'f':
+        स्थिती 'f':
           skip_field_option_type = SFO_NEW;
           skip_fields = size_opt (optarg,
                                   N_("invalid number of fields to skip"));
-          break;
+          थांबा;
 
-        case 'i':
+        स्थिती 'i':
           ignore_case = true;
-          break;
+          थांबा;
 
-        case 's':
+        स्थिती 's':
           skip_chars = size_opt (optarg,
                                  N_("invalid number of bytes to skip"));
-          break;
+          थांबा;
 
-        case 'u':
+        स्थिती 'u':
           output_first_repeated = false;
           output_option_used = true;
-          break;
+          थांबा;
 
-        case 'w':
+        स्थिती 'w':
           check_chars = size_opt (optarg,
                                   N_("invalid number of bytes to compare"));
-          break;
+          थांबा;
 
-        case 'z':
+        स्थिती 'z':
           delimiter = '\0';
-          break;
+          थांबा;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
-          usage (EXIT_FAILURE);
+        पूर्वनिर्धारित:
+          usage (निकास_त्रुटि);
         }
     }
 
@@ -654,27 +654,27 @@ main (int argc, char **argv)
      avoid the need to specify a grouping method to --all-repeated.
      It was thought best to avoid deprecating those parameters though
      and keep --group separate to other options.  */
-  if (grouping != GM_NONE && output_option_used)
+  जर (grouping != GM_NONE && output_option_used)
     {
       error (0, 0, _("--group is mutually exclusive with -c/-d/-D/-u"));
-      usage (EXIT_FAILURE);
+      usage (निकास_त्रुटि);
     }
 
-  if (grouping != GM_NONE && count_occurrences)
+  जर (grouping != GM_NONE && मोजणी_occurrences)
     {
       error (0, 0,
            _("grouping and printing repeat counts is meaningless"));
-      usage (EXIT_FAILURE);
+      usage (निकास_त्रुटि);
     }
 
-  if (count_occurrences && output_later_repeated)
+  जर (मोजणी_occurrences && output_later_repeated)
     {
       error (0, 0,
            _("printing all duplicated lines and repeat counts is meaningless"));
-      usage (EXIT_FAILURE);
+      usage (निकास_त्रुटि);
     }
 
   check_file (file[0], file[1], delimiter);
 
-  return EXIT_SUCCESS;
+  परत निकास_सफल;
 }

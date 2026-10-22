@@ -17,32 +17,32 @@
 #ifndef PRINTENV_H
 # define PRINTENV_H 1
 
-static inline void
-print_envvar (char const *entry, char terminator, bool quoted)
+स्थिर ओळीत शून्य
+print_envvar (अक्षर स्थिरांक *entry, अक्षर terminator, bool quoted)
 {
-  if (! quoted)
-    fputs (entry, stdout);
-  else
+  जर (! quoted)
+    ख_माला_दो (entry, मानक_निकास);
+  अन्यथा
     {
-      idx_t const entry_len = strlen (entry);
-      char const *equal = memchr (entry, '=', entry_len);
+      idx_t स्थिरांक entry_len = म_माप (entry);
+      अक्षर स्थिरांक *equal = स_प्रथम (entry, '=', entry_len);
 
       /* If the parent process manipulates ENVIRON directly, it is possible
          that an entry does not contain an equal sign.  */
-      idx_t const var_len = equal ? equal - entry : entry_len;
-      fputs (quoteN_mem (entry, var_len), stdout);
+      idx_t स्थिरांक var_len = equal ? equal - entry : entry_len;
+      ख_माला_दो (quoteN_mem (entry, var_len), मानक_निकास);
 
-      if (equal)
+      जर (equal)
         {
-          putchar ('=');
-          char const *val = equal + 1;
-          idx_t const val_len = entry_len - (val - entry);
+          अक्षर_दो ('=');
+          अक्षर स्थिरांक *val = equal + 1;
+          idx_t स्थिरांक val_len = entry_len - (val - entry);
           /* Prefer "VAR=" over "VAR=''".  */
-          if (0 < val_len)
-            fputs (quoteN_mem (val, val_len), stdout);
+          जर (0 < val_len)
+            ख_माला_दो (quoteN_mem (val, val_len), मानक_निकास);
         }
     }
-  putchar (terminator);
+  अक्षर_दो (terminator);
 }
 
 #endif

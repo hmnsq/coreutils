@@ -14,82 +14,82 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include <sys/types.h>
+#अन्तर्भाव <config.h>
+#अन्तर्भाव <sys/types.h>
 
-#include "system.h"
-#include "save-cwd.h"
-#include "xgetcwd.h"
-#include "find-mount-point.h"
+#अन्तर्भाव "system.h"
+#अन्तर्भाव "save-cwd.h"
+#अन्तर्भाव "xgetcwd.h"
+#अन्तर्भाव "find-mount-point.h"
 
 /* Return the root mountpoint of the file system on which FILE exists, in
    malloced storage.  FILE_STAT should be the result of stating FILE.
    Give a diagnostic and return NULL if unable to determine the mount point.
    Exit if unable to restore current working directory.  */
-extern char *
-find_mount_point (char const *file, struct stat const *file_stat)
+बाह्य अक्षर *
+find_mount_point (अक्षर स्थिरांक *file, संरचना stat स्थिरांक *file_stat)
 {
-  struct saved_cwd cwd;
-  struct stat last_stat;
-  char *mp = NULL;		/* The malloc'd mount point.  */
+  संरचना saved_cwd cwd;
+  संरचना stat last_stat;
+  अक्षर *mp = रिक्त;		/* The malloc'd mount point.  */
 
-  if (save_cwd (&cwd) != 0)
+  जर (save_cwd (&cwd) != 0)
     {
-      error (0, errno, _("cannot get current directory"));
-      return NULL;
+      error (0, त्रुटि_सं, _("cannot get current directory"));
+      परत रिक्त;
     }
 
-  if (S_ISDIR (file_stat->st_mode))
+  जर (S_ISDIR (file_stat->st_mode))
     /* FILE is a directory, so just chdir there directly.  */
     {
       last_stat = *file_stat;
-      if (chdir (file) < 0)
+      जर (स_बदलो (file) < 0)
         {
-          error (0, errno, _("cannot change to directory %s"), quoteaf (file));
-          return NULL;
+          error (0, त्रुटि_सं, _("cannot change to directory %s"), quoteaf (file));
+          परत रिक्त;
         }
     }
-  else
+  अन्यथा
     /* FILE is some other kind of file; use its directory.  */
     {
-      char *dir = dir_name (file);
+      अक्षर *dir = dir_name (file);
 
-      if (chdir (dir) < 0)
+      जर (स_बदलो (dir) < 0)
         {
-          error (0, errno, _("cannot change to directory %s"), quoteaf (dir));
-          free (dir);
-          return NULL;
+          error (0, त्रुटि_सं, _("cannot change to directory %s"), quoteaf (dir));
+          मुक्त (dir);
+          परत रिक्त;
         }
 
-      if (stat (".", &last_stat) < 0)
+      जर (stat (".", &last_stat) < 0)
         {
-          error (0, errno, _("cannot stat current directory (now %s)"),
+          error (0, त्रुटि_सं, _("cannot stat current directory (now %s)"),
                  quoteaf (dir));
-          free (dir);
-          goto done;
+          मुक्त (dir);
+          जा done;
         }
 
-      free (dir);
+      मुक्त (dir);
     }
 
   /* Now walk up FILE's parents until we find another file system or /,
      chdiring as we go.  LAST_STAT holds stat information for the last place
      we visited.  */
-  while (true)
+  पर्यंत (true)
     {
-      struct stat st;
-      if (stat ("..", &st) < 0)
+      संरचना stat st;
+      जर (stat ("..", &st) < 0)
         {
-          error (0, errno, _("cannot stat %s"), quoteaf (".."));
-          goto done;
+          error (0, त्रुटि_सं, _("cannot stat %s"), quoteaf (".."));
+          जा done;
         }
-      if (st.st_dev != last_stat.st_dev || st.st_ino == last_stat.st_ino)
+      जर (st.st_dev != last_stat.st_dev || st.st_ino == last_stat.st_ino)
         /* cwd is the mount point.  */
-        break;
-      if (chdir ("..") < 0)
+        थांबा;
+      जर (स_बदलो ("..") < 0)
         {
-          error (0, errno, _("cannot change to directory %s"), quoteaf (".."));
-          goto done;
+          error (0, त्रुटि_सं, _("cannot change to directory %s"), quoteaf (".."));
+          जा done;
         }
       last_stat = st;
     }
@@ -100,13 +100,13 @@ find_mount_point (char const *file, struct stat const *file_stat)
 done:
   /* Restore the original cwd.  */
   {
-    int save_errno = errno;
-    if (restore_cwd (&cwd) != 0)
-      error (EXIT_FAILURE, errno,
+    पूर्णांक save_errno = त्रुटि_सं;
+    जर (restore_cwd (&cwd) != 0)
+      error (निकास_त्रुटि, त्रुटि_सं,
              _("failed to return to initial working directory"));
     free_cwd (&cwd);
-    errno = save_errno;
+    त्रुटि_सं = save_errno;
   }
 
-  return mp;
+  परत mp;
 }

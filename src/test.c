@@ -20,35 +20,35 @@
 /* Define TEST_STANDALONE to get the /bin/test version.  Otherwise, you get
    the shell builtin version. */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
+#अन्तर्भाव <config.h>
+#अन्तर्भाव <stdio.h>
+#अन्तर्भाव <sys/types.h>
 
 #define TEST_STANDALONE 1
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME (test_mode == TEST_TEST ? "test" : "[")
 
-#include "system.h"
-#include "assure.h"
-#include "c-ctype.h"
-#include "issymlink.h"
-#include "quote.h"
-#include "stat-time.h"
-#include "strnumcmp.h"
-#include "test.h"
+#अन्तर्भाव "system.h"
+#अन्तर्भाव "assure.h"
+#अन्तर्भाव "c-ctype.h"
+#अन्तर्भाव "issymlink.h"
+#अन्तर्भाव "quote.h"
+#अन्तर्भाव "stat-time.h"
+#अन्तर्भाव "strnumcmp.h"
+#अन्तर्भाव "test.h"
 
-#include <stdarg.h>
+#अन्तर्भाव <stdarg.h>
 
-#if HAVE_SYS_PARAM_H
+#जर HAVE_SYS_PARAM_H
 # include <sys/param.h>
 #endif
 
 /* Exit status for syntax errors, etc.  */
-enum { TEST_TRUE, TEST_FALSE, TEST_FAILURE };
+गणना { TEST_TRUE, TEST_FALSE, TEST_FAILURE };
 
 /* Binary operators.  */
-enum binop
+गणना binop
   {
     /* String comparisons, e.g., EQ_STRING_BINOP for = or ==.  */
     EQ_STRING_BINOP, GT_STRING_BINOP, LT_STRING_BINOP, NE_STRING_BINOP,
@@ -58,39 +58,39 @@ enum binop
     EF_BINOP, NT_BINOP, OT_BINOP
   };
 
-#if defined TEST_STANDALONE
-# define test_exit(val) exit (val)
-# define test_main_return(val) return val
-#else
-   static jmp_buf test_exit_buf;
-   static int test_error_return = 0;
-# define test_exit(val) test_error_return = val, longjmp (test_exit_buf, 1)
+#जर defined TEST_STANDALONE
+# define test_exit(val) निकास (val)
+# define test_main_return(val) परत val
+#अन्यथा
+   स्थिर लाँघ_बफ test_exit_buf;
+   स्थिर पूर्णांक test_error_return = 0;
+# define test_exit(val) test_error_return = val, दीर्घ_लाँघ (test_exit_buf, 1)
 # define test_main_return(val) test_exit (val)
 #endif /* !TEST_STANDALONE */
 
-static int pos;		/* The offset of the current argument in ARGV. */
-static int argc;	/* The number of arguments present in ARGV. */
-static char **argv;	/* The argument list. */
+स्थिर पूर्णांक pos;		/* The offset of the current argument in ARGV. */
+स्थिर पूर्णांक argc;	/* The number of arguments present in ARGV. */
+स्थिर अक्षर **argv;	/* The argument list. */
 
-static bool unary_operator (void);
-static bool binary_operator (bool, enum binop);
-static bool two_arguments (void);
-static bool three_arguments (void);
-static bool posixtest (int);
+स्थिर bool unary_operator (शून्य);
+स्थिर bool द्विमान_operator (bool, गणना binop);
+स्थिर bool two_arguments (शून्य);
+स्थिर bool three_arguments (शून्य);
+स्थिर bool posixtest (पूर्णांक);
 
-static bool expr (void);
-static bool term (void);
-static bool and (void);
-static bool or (void);
+स्थिर bool अभिव्यक्ती (शून्य);
+स्थिर bool term (शून्य);
+स्थिर bool and (शून्य);
+स्थिर bool or (शून्य);
 
-static void beyond (void);
+स्थिर शून्य beyond (शून्य);
 
-ATTRIBUTE_FORMAT ((printf, 1, 2))
-static _Noreturn void
-test_syntax_error (char const *format, ...)
+ATTRIBUTE_FORMAT ((म_लिखो, 1, 2))
+स्थिर _Noreturn शून्य
+test_syntax_error (अक्षर स्थिरांक *format, ...)
 {
-  va_list ap;
-  va_start (ap, format);
+  बहु_सूची ap;
+  बहु_शुरू (ap, format);
   verror (0, 0, format, ap);
   test_exit (TEST_FAILURE);
 }
@@ -99,17 +99,17 @@ test_syntax_error (char const *format, ...)
    past the end of the argument list.  This check is suppressed if the
    argument is false.  */
 
-static void
+स्थिर शून्य
 advance (bool f)
 {
   ++pos;
 
-  if (f && pos >= argc)
+  जर (f && pos >= argc)
     beyond ();
 }
 
-static void
-unary_advance (void)
+स्थिर शून्य
+unary_advance (शून्य)
 {
   advance (true);
   ++pos;
@@ -119,8 +119,8 @@ unary_advance (void)
  * beyond - call when we're beyond the end of the argument list (an
  *	error condition)
  */
-static _Noreturn void
-beyond (void)
+स्थिर _Noreturn शून्य
+beyond (शून्य)
 {
   test_syntax_error (_("missing argument after %s"), quote (argv[argc - 1]));
 }
@@ -128,34 +128,34 @@ beyond (void)
 /* If the characters pointed to by STRING constitute a valid number,
    return a pointer to the start of the number, skipping any blanks or
    leading '+'.  Otherwise, report an error and exit.  */
-static char const *
-find_int (char const *string)
+स्थिर अक्षर स्थिरांक *
+find_int (अक्षर स्थिरांक *string)
 {
-  char const *p;
-  char const *number_start;
+  अक्षर स्थिरांक *p;
+  अक्षर स्थिरांक *संख्या_start;
 
-  for (p = string; isspace (to_uchar (*p)); p++)
-    continue;
+  साठी (p = string; है_खाली (to_uchar (*p)); p++)
+    सुरूठेवा;
 
-  if (*p == '+')
+  जर (*p == '+')
     {
       p++;
-      number_start = p;
+      संख्या_start = p;
     }
-  else
+  अन्यथा
     {
-      number_start = p;
+      संख्या_start = p;
       p += (*p == '-');
     }
 
-  if (c_isdigit (*p++))
+  जर (c_isdigit (*p++))
     {
-      while (c_isdigit (*p))
+      पर्यंत (c_isdigit (*p))
         p++;
-      while (isspace (to_uchar (*p)))
+      पर्यंत (है_खाली (to_uchar (*p)))
         p++;
-      if (!*p)
-        return number_start;
+      जर (!*p)
+        परत संख्या_start;
     }
 
   test_syntax_error (_("invalid integer %s"), quote (string));
@@ -164,21 +164,21 @@ find_int (char const *string)
 /* Return the modification time of FILENAME.
    If unsuccessful, return an invalid timestamp that is less
    than all valid timestamps.  */
-static struct timespec
-get_mtime (char const *filename)
+स्थिर संरचना timespec
+get_mtime (अक्षर स्थिरांक *filename)
 {
-  struct stat finfo;
-  return (stat (filename, &finfo) < 0
-          ? make_timespec (TYPE_MINIMUM (time_t), -1)
+  संरचना stat finfo;
+  परत (stat (filename, &finfo) < 0
+          ? make_timespec (TYPE_MINIMUM (समय_प्रकार), -1)
           : get_stat_mtime (&finfo));
 }
 
 /* Return the type of S, one of the test command's binary operators.
    If S is not a binary operator, return -1.  */
-static int
-binop (char const *s)
+स्थिर पूर्णांक
+binop (अक्षर स्थिरांक *s)
 {
-  return (  streq (s, "="  ) ? EQ_STRING_BINOP
+  परत (  streq (s, "="  ) ? EQ_STRING_BINOP
           : streq (s, "==" ) ? EQ_STRING_BINOP /* an alias for = */
           : streq (s, "!=" ) ? NE_STRING_BINOP
           : streq (s, ">"  ) ? GT_STRING_BINOP
@@ -213,142 +213,142 @@ binop (char const *s)
  *	'-l' string
  *	positive and negative integers
  */
-static bool
-term (void)
+स्थिर bool
+term (शून्य)
 {
-  bool value;
+  bool मूल्य;
   bool negated = false;
-  int bop;
+  पूर्णांक bop;
 
   /* Deal with leading 'not's.  */
-  while (pos < argc && argv[pos][0] == '!' && argv[pos][1] == '\0')
+  पर्यंत (pos < argc && argv[pos][0] == '!' && argv[pos][1] == '\0')
     {
       advance (true);
       negated = !negated;
     }
 
-  if (pos >= argc)
+  जर (pos >= argc)
     beyond ();
 
   /* A paren-bracketed argument. */
-  if (argv[pos][0] == '(' && argv[pos][1] == '\0')
+  जर (argv[pos][0] == '(' && argv[pos][1] == '\0')
     {
-      int nargs;
+      पूर्णांक nargs;
 
       advance (true);
 
-      for (nargs = 1;
+      साठी (nargs = 1;
            pos + nargs < argc && ! streq (argv[pos + nargs], ")");
            nargs++)
-        if (nargs == 4)
+        जर (nargs == 4)
           {
             nargs = argc - pos;
-            break;
+            थांबा;
           }
 
-      value = posixtest (nargs);
-      if (!argv[pos])
+      मूल्य = posixtest (nargs);
+      जर (!argv[pos])
         test_syntax_error (_("%s expected"), quote (")"));
-      else
-        if (argv[pos][0] != ')' || argv[pos][1])
+      अन्यथा
+        जर (argv[pos][0] != ')' || argv[pos][1])
           test_syntax_error (_("%s expected, found %s"),
                              quote_n (0, ")"), quote_n (1, argv[pos]));
       advance (false);
     }
 
   /* Are there enough arguments left that this could be dyadic?  */
-  else if (4 <= argc - pos && streq (argv[pos], "-l")
+  अन्यथा जर (4 <= argc - pos && streq (argv[pos], "-l")
            && 0 <= (bop = binop (argv[pos + 2])))
-    value = binary_operator (true, bop);
-  else if (3 <= argc - pos
+    मूल्य = द्विमान_operator (true, bop);
+  अन्यथा जर (3 <= argc - pos
            && 0 <= (bop = binop (argv[pos + 1])))
-    value = binary_operator (false, bop);
+    मूल्य = द्विमान_operator (false, bop);
 
   /* It might be a switch type argument.  */
-  else if (argv[pos][0] == '-' && argv[pos][1] && argv[pos][1] != 'a'
+  अन्यथा जर (argv[pos][0] == '-' && argv[pos][1] && argv[pos][1] != 'a'
            && argv[pos][1] != 'o' && argv[pos][2] == '\0')
-    value = unary_operator ();
-  else
+    मूल्य = unary_operator ();
+  अन्यथा
     {
-      value = (argv[pos][0] != '\0');
+      मूल्य = (argv[pos][0] != '\0');
       advance (false);
     }
 
-  return negated ^ value;
+  परत negated ^ मूल्य;
 }
 
-static bool
-binary_operator (bool l_is_l, enum binop bop)
+स्थिर bool
+द्विमान_operator (bool l_is_l, गणना binop bop)
 {
-  int op;
+  पूर्णांक op;
 
-  if (l_is_l)
+  जर (l_is_l)
     advance (false);
   op = pos + 1;
 
   /* Is the right integer expression of the form '-l string'? */
   bool r_is_l = op < argc - 2 && streq (argv[op + 1], "-l");
-  if (r_is_l)
+  जर (r_is_l)
     advance (false);
 
   pos += 3;
 
-  switch (bop)
+  निवड (bop)
     {
-    case EQ_BINOP: case GE_BINOP: case GT_BINOP:
-    case LE_BINOP: case LT_BINOP: case NE_BINOP:
+    स्थिती EQ_BINOP: स्थिती GE_BINOP: स्थिती GT_BINOP:
+    स्थिती LE_BINOP: स्थिती LT_BINOP: स्थिती NE_BINOP:
       {
-        char lbuf[INT_BUFSIZE_BOUND (uintmax_t)];
-        char rbuf[INT_BUFSIZE_BOUND (uintmax_t)];
-        char const *l = (l_is_l
-                         ? umaxtostr (strlen (argv[op - 1]), lbuf)
+        अक्षर lbuf[INT_BUFSIZE_BOUND (uintmax_t)];
+        अक्षर rbuf[INT_BUFSIZE_BOUND (uintmax_t)];
+        अक्षर स्थिरांक *l = (l_is_l
+                         ? umaxtostr (म_माप (argv[op - 1]), lbuf)
                          : find_int (argv[op - 1]));
-        char const *r = (r_is_l
-                         ? umaxtostr (strlen (argv[op + 2]), rbuf)
+        अक्षर स्थिरांक *r = (r_is_l
+                         ? umaxtostr (म_माप (argv[op + 2]), rbuf)
                          : find_int (argv[op + 1]));
-        int cmp = strintcmp (l, r);
-        switch (+bop)
+        पूर्णांक cmp = strintcmp (l, r);
+        निवड (+bop)
           {
-          case EQ_BINOP: return cmp == 0;
-          case GE_BINOP: return cmp >= 0;
-          case GT_BINOP: return cmp >  0;
-          case LE_BINOP: return cmp <= 0;
-          case LT_BINOP: return cmp <  0;
-          case NE_BINOP: return cmp != 0;
+          स्थिती EQ_BINOP: परत cmp == 0;
+          स्थिती GE_BINOP: परत cmp >= 0;
+          स्थिती GT_BINOP: परत cmp >  0;
+          स्थिती LE_BINOP: परत cmp <= 0;
+          स्थिती LT_BINOP: परत cmp <  0;
+          स्थिती NE_BINOP: परत cmp != 0;
           }
         unreachable ();
       }
 
-    case NT_BINOP: case OT_BINOP:
+    स्थिती NT_BINOP: स्थिती OT_BINOP:
       {
-        if (l_is_l | r_is_l)
+        जर (l_is_l | r_is_l)
           test_syntax_error (_("%s does not accept -l"),
                              argv[op]);
-        int cmp = timespec_cmp (get_mtime (argv[op - 1]),
+        पूर्णांक cmp = timespec_cmp (get_mtime (argv[op - 1]),
                                 get_mtime (argv[op + 1]));
-        return bop == OT_BINOP ? cmp < 0 : cmp > 0;
+        परत bop == OT_BINOP ? cmp < 0 : cmp > 0;
       }
 
-    case EF_BINOP:
-      if (l_is_l | r_is_l)
+    स्थिती EF_BINOP:
+      जर (l_is_l | r_is_l)
         test_syntax_error (_("-ef does not accept -l"));
-      else
+      अन्यथा
         {
-          struct stat st[2];
-          return (stat (argv[op - 1], &st[0]) == 0
+          संरचना stat st[2];
+          परत (stat (argv[op - 1], &st[0]) == 0
                   && stat (argv[op + 1], &st[1]) == 0
                   && psame_inode (&st[0], &st[1]));
         }
 
-    case EQ_STRING_BINOP:
-    case NE_STRING_BINOP:
-      return streq (argv[op - 1], argv[op + 1]) == (bop == EQ_STRING_BINOP);
+    स्थिती EQ_STRING_BINOP:
+    स्थिती NE_STRING_BINOP:
+      परत streq (argv[op - 1], argv[op + 1]) == (bop == EQ_STRING_BINOP);
 
-    case GT_STRING_BINOP:
-    case LT_STRING_BINOP:
+    स्थिती GT_STRING_BINOP:
+    स्थिती LT_STRING_BINOP:
       {
-        int cmp = strcoll (argv[op - 1], argv[op + 1]);
-        return bop == LT_STRING_BINOP ? cmp < 0 : cmp > 0;
+        पूर्णांक cmp = strcoll (argv[op - 1], argv[op + 1]);
+        परत bop == LT_STRING_BINOP ? cmp < 0 : cmp > 0;
       }
     }
 
@@ -356,14 +356,14 @@ binary_operator (bool l_is_l, enum binop bop)
   affirm (false);
 }
 
-static bool
-unary_operator (void)
+स्थिर bool
+unary_operator (शून्य)
 {
-  struct stat stat_buf;
+  संरचना stat stat_buf;
 
-  switch (argv[pos][1])
+  निवड (argv[pos][1])
     {
-    default:
+    पूर्वनिर्धारित:
       test_syntax_error (_("%s: unary operator expected"), quote (argv[pos]));
 
       /* All of the following unary operators use unary_advance (), which
@@ -371,131 +371,131 @@ unary_operator (void)
          pos right past it.  This means that pos - 1 is the location of the
          argument. */
 
-    case 'e':			/* file exists in the file system? */
+    स्थिती 'e':			/* file exists in the file system? */
       unary_advance ();
-      return stat (argv[pos - 1], &stat_buf) == 0;
+      परत stat (argv[pos - 1], &stat_buf) == 0;
 
-    case 'r':			/* file is readable? */
+    स्थिती 'r':			/* file is readable? */
       unary_advance ();
-      return euidaccess (argv[pos - 1], R_OK) == 0;
+      परत euidaccess (argv[pos - 1], R_OK) == 0;
 
-    case 'w':			/* File is writable? */
+    स्थिती 'w':			/* File is writable? */
       unary_advance ();
-      return euidaccess (argv[pos - 1], W_OK) == 0;
+      परत euidaccess (argv[pos - 1], W_OK) == 0;
 
-    case 'x':			/* File is executable? */
+    स्थिती 'x':			/* File is executable? */
       unary_advance ();
-      return euidaccess (argv[pos - 1], X_OK) == 0;
+      परत euidaccess (argv[pos - 1], X_OK) == 0;
 
-    case 'N':  /* File exists and has been modified since it was last read? */
+    स्थिती 'N':  /* File exists and has been modified since it was last read? */
       {
         unary_advance ();
-        if (stat (argv[pos - 1], &stat_buf) != 0)
-          return false;
-        struct timespec atime = get_stat_atime (&stat_buf);
-        struct timespec mtime = get_stat_mtime (&stat_buf);
-        return (timespec_cmp (mtime, atime) > 0);
+        जर (stat (argv[pos - 1], &stat_buf) != 0)
+          परत false;
+        संरचना timespec atime = get_stat_atime (&stat_buf);
+        संरचना timespec mtime = get_stat_mtime (&stat_buf);
+        परत (timespec_cmp (mtime, atime) > 0);
       }
 
-    case 'O':			/* File is owned by you? */
+    स्थिती 'O':			/* File is owned by you? */
       {
         unary_advance ();
-        if (stat (argv[pos - 1], &stat_buf) != 0)
-          return false;
-        errno = 0;
+        जर (stat (argv[pos - 1], &stat_buf) != 0)
+          परत false;
+        त्रुटि_सं = 0;
         uid_t euid = geteuid ();
         uid_t NO_UID = -1;
-        return ! (euid == NO_UID && errno) && euid == stat_buf.st_uid;
+        परत ! (euid == NO_UID && त्रुटि_सं) && euid == stat_buf.st_uid;
       }
 
-    case 'G':			/* File is owned by your group? */
+    स्थिती 'G':			/* File is owned by your group? */
       {
         unary_advance ();
-        if (stat (argv[pos - 1], &stat_buf) != 0)
-          return false;
-        errno = 0;
+        जर (stat (argv[pos - 1], &stat_buf) != 0)
+          परत false;
+        त्रुटि_सं = 0;
         gid_t egid = getegid ();
         gid_t NO_GID = -1;
-        return ! (egid == NO_GID && errno) && egid == stat_buf.st_gid;
+        परत ! (egid == NO_GID && त्रुटि_सं) && egid == stat_buf.st_gid;
       }
 
-    case 'f':			/* File is a file? */
+    स्थिती 'f':			/* File is a file? */
       unary_advance ();
       /* Under POSIX, -f is true if the given file exists
          and is a regular file. */
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      परत (stat (argv[pos - 1], &stat_buf) == 0
               && S_ISREG (stat_buf.st_mode));
 
-    case 'd':			/* File is a directory? */
+    स्थिती 'd':			/* File is a directory? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      परत (stat (argv[pos - 1], &stat_buf) == 0
               && S_ISDIR (stat_buf.st_mode));
 
-    case 's':			/* File has something in it? */
+    स्थिती 's':			/* File has something in it? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      परत (stat (argv[pos - 1], &stat_buf) == 0
               && 0 < stat_buf.st_size);
 
-    case 'S':			/* File is a socket? */
+    स्थिती 'S':			/* File is a socket? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      परत (stat (argv[pos - 1], &stat_buf) == 0
               && S_ISSOCK (stat_buf.st_mode));
 
-    case 'c':			/* File is character special? */
+    स्थिती 'c':			/* File is character special? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      परत (stat (argv[pos - 1], &stat_buf) == 0
               && S_ISCHR (stat_buf.st_mode));
 
-    case 'b':			/* File is block special? */
+    स्थिती 'b':			/* File is block special? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      परत (stat (argv[pos - 1], &stat_buf) == 0
               && S_ISBLK (stat_buf.st_mode));
 
-    case 'p':			/* File is a named pipe? */
+    स्थिती 'p':			/* File is a named pipe? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      परत (stat (argv[pos - 1], &stat_buf) == 0
               && S_ISFIFO (stat_buf.st_mode));
 
-    case 'L':			/* Same as -h  */
+    स्थिती 'L':			/* Same as -h  */
       /*FALLTHROUGH*/
 
-    case 'h':			/* File is a symbolic link? */
+    स्थिती 'h':			/* File is a symbolic link? */
       unary_advance ();
-      return issymlink (argv[pos - 1]) == 1;
+      परत issymlink (argv[pos - 1]) == 1;
 
-    case 'u':			/* File is setuid? */
+    स्थिती 'u':			/* File is setuid? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      परत (stat (argv[pos - 1], &stat_buf) == 0
               && (stat_buf.st_mode & S_ISUID));
 
-    case 'g':			/* File is setgid? */
+    स्थिती 'g':			/* File is setgid? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      परत (stat (argv[pos - 1], &stat_buf) == 0
               && (stat_buf.st_mode & S_ISGID));
 
-    case 'k':			/* File has sticky bit set? */
+    स्थिती 'k':			/* File has sticky bit set? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      परत (stat (argv[pos - 1], &stat_buf) == 0
               && (stat_buf.st_mode & S_ISVTX));
 
-    case 't':			/* File (fd) is a terminal? */
+    स्थिती 't':			/* File (fd) is a terminal? */
       {
-        long int fd;
-        char const *arg;
+        दीर्घ पूर्णांक fd;
+        अक्षर स्थिरांक *arg;
         unary_advance ();
         arg = find_int (argv[pos - 1]);
-        errno = 0;
-        fd = strtol (arg, NULL, 10);
-        return (errno != ERANGE && 0 <= fd && fd <= INT_MAX && isatty (fd));
+        त्रुटि_सं = 0;
+        fd = म_से_दीर्घ (arg, रिक्त, 10);
+        परत (त्रुटि_सं != दुस्फल && 0 <= fd && fd <= पूर्णांक_उच्च && isatty (fd));
       }
 
-    case 'n':			/* True if arg has some length. */
+    स्थिती 'n':			/* True if arg has some length. */
       unary_advance ();
-      return argv[pos - 1][0] != 0;
+      परत argv[pos - 1][0] != 0;
 
-    case 'z':			/* True if arg has no length. */
+    स्थिती 'z':			/* True if arg has no length. */
       unary_advance ();
-      return argv[pos - 1][0] == '\0';
+      परत argv[pos - 1][0] == '\0';
     }
 }
 
@@ -504,16 +504,16 @@ unary_operator (void)
  *	term
  *	term '-a' and
  */
-static bool
-and (void)
+स्थिर bool
+and (शून्य)
 {
-  bool value = true;
+  bool मूल्य = true;
 
-  while (true)
+  पर्यंत (true)
     {
-      value &= term ();
-      if (! (pos < argc && streq (argv[pos], "-a")))
-        return value;
+      मूल्य &= term ();
+      जर (! (pos < argc && streq (argv[pos], "-a")))
+        परत मूल्य;
       advance (false);
     }
 }
@@ -523,16 +523,16 @@ and (void)
  *	and
  *	and '-o' or
  */
-static bool
-or (void)
+स्थिर bool
+or (शून्य)
 {
-  bool value = false;
+  bool मूल्य = false;
 
-  while (true)
+  पर्यंत (true)
     {
-      value |= and ();
-      if (! (pos < argc && streq (argv[pos], "-o")))
-        return value;
+      मूल्य |= and ();
+      जर (! (pos < argc && streq (argv[pos], "-o")))
+        परत मूल्य;
       advance (false);
     }
 }
@@ -541,169 +541,169 @@ or (void)
  * expr:
  *	or
  */
-static bool
-expr (void)
+स्थिर bool
+अभिव्यक्ती (शून्य)
 {
-  if (pos >= argc)
+  जर (pos >= argc)
     beyond ();
 
-  return or ();		/* Same with this. */
+  परत or ();		/* Same with this. */
 }
 
-static bool
-one_argument (void)
+स्थिर bool
+one_argument (शून्य)
 {
-  return argv[pos++][0] != '\0';
+  परत argv[pos++][0] != '\0';
 }
 
-static bool
-two_arguments (void)
+स्थिर bool
+two_arguments (शून्य)
 {
-  bool value;
+  bool मूल्य;
 
-  if (streq (argv[pos], "!"))
+  जर (streq (argv[pos], "!"))
     {
       advance (false);
-      value = ! one_argument ();
+      मूल्य = ! one_argument ();
     }
-  else if (argv[pos][0] == '-'
+  अन्यथा जर (argv[pos][0] == '-'
            && argv[pos][1] != '\0'
            && argv[pos][2] == '\0')
     {
-      value = unary_operator ();
+      मूल्य = unary_operator ();
     }
-  else
+  अन्यथा
     beyond ();
-  return (value);
+  परत (मूल्य);
 }
 
-static bool
-three_arguments (void)
+स्थिर bool
+three_arguments (शून्य)
 {
-  bool value;
-  int bop = binop (argv[pos + 1]);
+  bool मूल्य;
+  पूर्णांक bop = binop (argv[pos + 1]);
 
-  if (0 <= bop)
-    value = binary_operator (false, bop);
-  else if (streq (argv[pos], "!"))
+  जर (0 <= bop)
+    मूल्य = द्विमान_operator (false, bop);
+  अन्यथा जर (streq (argv[pos], "!"))
     {
       advance (true);
-      value = !two_arguments ();
+      मूल्य = !two_arguments ();
     }
-  else if (streq (argv[pos], "(") && streq (argv[pos + 2], ")"))
+  अन्यथा जर (streq (argv[pos], "(") && streq (argv[pos + 2], ")"))
     {
       advance (false);
-      value = one_argument ();
+      मूल्य = one_argument ();
       advance (false);
     }
-  else if (streq (argv[pos + 1], "-a") || streq (argv[pos + 1], "-o")
+  अन्यथा जर (streq (argv[pos + 1], "-a") || streq (argv[pos + 1], "-o")
            || streq (argv[pos + 1], ">") || streq (argv[pos + 1], "<"))
-    value = expr ();
-  else
+    मूल्य = अभिव्यक्ती ();
+  अन्यथा
     test_syntax_error (_("%s: binary operator expected"),
                        quote (argv[pos + 1]));
-  return (value);
+  परत (मूल्य);
 }
 
 /* This is an implementation of a Posix.2 proposal by David Korn. */
-static bool
-posixtest (int nargs)
+स्थिर bool
+posixtest (पूर्णांक nargs)
 {
-  bool value;
+  bool मूल्य;
 
-  switch (nargs)
+  निवड (nargs)
     {
-      case 1:
-        value = one_argument ();
-        break;
+      स्थिती 1:
+        मूल्य = one_argument ();
+        थांबा;
 
-      case 2:
-        value = two_arguments ();
-        break;
+      स्थिती 2:
+        मूल्य = two_arguments ();
+        थांबा;
 
-      case 3:
-        value = three_arguments ();
-        break;
+      स्थिती 3:
+        मूल्य = three_arguments ();
+        थांबा;
 
-      case 4:
-        if (streq (argv[pos], "!"))
+      स्थिती 4:
+        जर (streq (argv[pos], "!"))
           {
             advance (true);
-            value = !three_arguments ();
-            break;
+            मूल्य = !three_arguments ();
+            थांबा;
           }
-        if (streq (argv[pos], "(") && streq (argv[pos + 3], ")"))
+        जर (streq (argv[pos], "(") && streq (argv[pos + 3], ")"))
           {
             advance (false);
-            value = two_arguments ();
+            मूल्य = two_arguments ();
             advance (false);
-            break;
+            थांबा;
           }
         FALLTHROUGH;
-      case 5:
-      default:
+      स्थिती 5:
+      पूर्वनिर्धारित:
         affirm (0 < nargs);
-        value = expr ();
+        मूल्य = अभिव्यक्ती ();
     }
 
-  return (value);
+  परत (मूल्य);
 }
 
-#if defined TEST_STANDALONE
+#जर defined TEST_STANDALONE
 
-void
-usage (int status)
+शून्य
+usage (पूर्णांक status)
 {
-  if (status != EXIT_SUCCESS)
+  जर (status != निकास_सफल)
     emit_try_help ();
-  else
+  अन्यथा
     {
-      fputs (_("\
+      ख_माला_दो (_("\
 Usage: test EXPRESSION\n\
   or:  test\n\
   or:  [ EXPRESSION ]\n\
   or:  [ ]\n\
   or:  [ OPTION\n\
-"), stdout);
-      fputs (_("\
+"), मानक_निकास);
+      ख_माला_दो (_("\
 Exit with the status determined by EXPRESSION.\n\
 \n\
-"), stdout);
+"), मानक_निकास);
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
-      fputs (_("\
+      ख_माला_दो (_("\
 \n\
 An omitted EXPRESSION defaults to false.  Otherwise,\n\
-EXPRESSION is true or false and sets exit status.  It is one of:\n\
-"), stdout);
-      fputs (_("\
+EXPRESSION is true or false and sets निकास status.  It is one of:\n\
+"), मानक_निकास);
+      ख_माला_दो (_("\
 \n\
   ( EXPRESSION )               EXPRESSION is true\n\
   ! EXPRESSION                 EXPRESSION is false\n\
   EXPRESSION1 -a EXPRESSION2   both EXPRESSION1 and EXPRESSION2 are true\n\
   EXPRESSION1 -o EXPRESSION2   either EXPRESSION1 or EXPRESSION2 is true\n\
-"), stdout);
-      fputs (_("\
+"), मानक_निकास);
+      ख_माला_दो (_("\
 \n\
-"), stdout);
+"), मानक_निकास);
       oputs (_("\
   -n STRING            the length of STRING is nonzero\n\
 "));
-      fputs (_("\
+      ख_माला_दो (_("\
   STRING               equivalent to -n STRING\n\
-"), stdout);
+"), मानक_निकास);
       oputs (_("\
   -z STRING            the length of STRING is zero\n\
 "));
-      fputs (_("\
+      ख_माला_दो (_("\
   STRING1 = STRING2    the strings are equal\n\
   STRING1 != STRING2   the strings are not equal\n\
   STRING1 > STRING2    STRING1 is greater than STRING2 in the current locale\n\
   STRING1 < STRING2    STRING1 is less than STRING2 in the current locale\n\
-"), stdout);
-      fputs (_("\
+"), मानक_निकास);
+      ख_माला_दो (_("\
 \n\
-"), stdout);
+"), मानक_निकास);
       oputs (_("\
   INTEGER1 -eq INTEGER2   INTEGER1 is equal to INTEGER2\n\
 "));
@@ -722,9 +722,9 @@ EXPRESSION is true or false and sets exit status.  It is one of:\n\
       oputs (_("\
   INTEGER1 -ne INTEGER2   INTEGER1 is not equal to INTEGER2\n\
 "));
-      fputs (_("\
+      ख_माला_दो (_("\
 \n\
-"), stdout);
+"), मानक_निकास);
       oputs (_("\
   FILE1 -ef FILE2   FILE1 and FILE2 have the same device and inode numbers\n\
 "));
@@ -734,92 +734,92 @@ EXPRESSION is true or false and sets exit status.  It is one of:\n\
       oputs (_("\
   FILE1 -ot FILE2   FILE1 is older than FILE2\n\
 "));
-      fputs (_("\
+      ख_माला_दो (_("\
 \n\
-"), stdout);
+"), मानक_निकास);
       oputs (_("\
-  -b FILE     FILE exists and is block special\n\
+  -b खाता     खाता exists and is block special\n\
 "));
       oputs (_("\
-  -c FILE     FILE exists and is character special\n\
+  -c खाता     खाता exists and is character special\n\
 "));
       oputs (_("\
-  -d FILE     FILE exists and is a directory\n\
+  -d खाता     खाता exists and is a directory\n\
 "));
       oputs (_("\
-  -e FILE     FILE exists\n\
+  -e खाता     खाता exists\n\
 "));
       oputs (_("\
-  -f FILE     FILE exists and is a regular file\n\
+  -f खाता     खाता exists and is a regular file\n\
 "));
       oputs (_("\
-  -g FILE     FILE exists and its set-group-ID bit is set\n\
+  -g खाता     खाता exists and its set-group-ID bit is set\n\
 "));
       oputs (_("\
-  -G FILE     FILE exists and is owned by the effective group ID\n\
+  -G खाता     खाता exists and is owned by the effective group ID\n\
 "));
       oputs (_("\
-  -h FILE     FILE exists and is a symbolic link (same as -L)\n\
+  -h खाता     खाता exists and is a symbolic link (same as -L)\n\
 "));
       oputs (_("\
-  -k FILE     FILE exists and has its sticky bit set\n\
+  -k खाता     खाता exists and has its sticky bit set\n\
 "));
       oputs (_("\
-  -L FILE     FILE exists and is a symbolic link (same as -h)\n\
+  -L खाता     खाता exists and is a symbolic link (same as -h)\n\
 "));
       oputs (_("\
-  -N FILE     FILE exists and has been modified since it was last read\n\
+  -N खाता     खाता exists and has been modified since it was last पठ\n\
 "));
       oputs (_("\
-  -O FILE     FILE exists and is owned by the effective user ID\n\
+  -O खाता     खाता exists and is owned by the effective user ID\n\
 "));
       oputs (_("\
-  -p FILE     FILE exists and is a named pipe\n\
+  -p खाता     खाता exists and is a named pipe\n\
 "));
       oputs (_("\
-  -r FILE     FILE exists and the user has read access\n\
+  -r खाता     खाता exists and the user has पठ access\n\
 "));
       oputs (_("\
-  -s FILE     FILE exists and has a size greater than zero\n\
+  -s खाता     खाता exists and has a size greater than zero\n\
 "));
       oputs (_("\
-  -S FILE     FILE exists and is a socket\n\
+  -S खाता     खाता exists and is a socket\n\
 "));
       oputs (_("\
   -t FD       file descriptor FD is opened on a terminal\n\
 "));
       oputs (_("\
-  -u FILE     FILE exists and its set-user-ID bit is set\n\
+  -u खाता     खाता exists and its set-user-ID bit is set\n\
 "));
       oputs (_("\
-  -w FILE     FILE exists and the user has write access\n\
+  -w खाता     खाता exists and the user has लिख access\n\
 "));
       oputs (_("\
-  -x FILE     FILE exists and the user has execute (or search) access\n\
+  -x खाता     खाता exists and the user has execute (or शोध) access\n\
 "));
-      fputs (_("\
+      ख_माला_दो (_("\
 \n\
-Except for -h and -L, all FILE-related tests dereference symbolic links.\n\
-Beware that parentheses need to be escaped (e.g., by backslashes) for shells.\n\
+Except साठी -h and -L, all खाता-related tests dereference symbolic links.\n\
+Beware that parentheses need to be escaped (e.g., by backslashes) साठी shells.\n\
 INTEGER may also be -l STRING, which evaluates to the length of STRING.\n\
-"), stdout);
-      fputs (_("\
+"), मानक_निकास);
+      ख_माला_दो (_("\
 \n\
-Binary -a and -o are ambiguous.  Use 'test EXPR1 && test EXPR2'\n\
+द्विमान_2 -a and -o are ambiguous.  Use 'test EXPR1 && test EXPR2'\n\
 or 'test EXPR1 || test EXPR2' instead.\n\
-"), stdout);
-      fputs (_("\
+"), मानक_निकास);
+      ख_माला_दो (_("\
 \n\
 '[' honors --help and --version, but 'test' treats them as STRINGs.\n\
-"), stdout);
-      printf (USAGE_BUILTIN_WARNING, _("test and/or ["));
+"), मानक_निकास);
+      म_लिखो (USAGE_BUILTIN_WARNING, _("test and/or ["));
       emit_ancillary_info (PROGRAM_NAME);
     }
-  exit (status);
+  निकास (status);
 }
 #endif /* TEST_STANDALONE */
 
-#if !defined TEST_STANDALONE
+#जर !defined TEST_STANDALONE
 # define main test_command
 #endif
 
@@ -833,32 +833,32 @@ or 'test EXPR1 || test EXPR2' instead.\n\
  * test:
  *	test expr
  */
-int
-main (int margc, char **margv)
+पूर्णांक
+main (पूर्णांक margc, अक्षर **margv)
 {
-  bool value;
+  bool मूल्य;
 
-#if !defined TEST_STANDALONE
-  int code;
+#जर !defined TEST_STANDALONE
+  पूर्णांक code;
 
-  code = setjmp (test_exit_buf);
+  code = बनाओ_लाँघ (test_exit_buf);
 
-  if (code)
-    return (test_error_return);
-#else /* TEST_STANDALONE */
+  जर (code)
+    परत (test_error_return);
+#अन्यथा /* TEST_STANDALONE */
   initialize_main (&margc, &margv);
   set_program_name (margv[0]);
-  setlocale (LC_ALL, "");
+  रखो_क्षेत्र (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   initialize_exit_failure (TEST_FAILURE);
-  atexit (close_stdout);
+  निकास_पर (close_stdout);
 #endif /* TEST_STANDALONE */
 
   argv = margv;
 
-  if (test_mode == TEST_LBRACKET)
+  जर (test_mode == TEST_LBRACKET)
     {
       /* Recognize --help or --version, but only when invoked in the
          "[" form, when the last argument is not "]".  Use direct
@@ -866,19 +866,19 @@ main (int margc, char **margv)
          abbreviations.  POSIX allows "[ --help" and "[ --version" to
          have the usual GNU behavior, but it requires "test --help"
          and "test --version" to exit silently with status 0.  */
-      if (margc == 2)
+      जर (margc == 2)
         {
-          if (streq (margv[1], "--help"))
-            usage (EXIT_SUCCESS);
+          जर (streq (margv[1], "--help"))
+            usage (निकास_सफल);
 
-          if (streq (margv[1], "--version"))
+          जर (streq (margv[1], "--version"))
             {
-              version_etc (stdout, PROGRAM_NAME, PACKAGE_NAME, Version, AUTHORS,
-                           (char *) NULL);
-              test_main_return (EXIT_SUCCESS);
+              version_etc (मानक_निकास, PROGRAM_NAME, PACKAGE_NAME, Version, AUTHORS,
+                           (अक्षर *) रिक्त);
+              test_main_return (निकास_सफल);
             }
         }
-      if (margc < 2 || !streq (margv[margc - 1], "]"))
+      जर (margc < 2 || !streq (margv[margc - 1], "]"))
         test_syntax_error (_("missing %s"), quote ("]"));
 
       --margc;
@@ -887,13 +887,13 @@ main (int margc, char **margv)
   argc = margc;
   pos = 1;
 
-  if (pos >= argc)
+  जर (pos >= argc)
     test_main_return (TEST_FALSE);
 
-  value = posixtest (argc - 1);
+  मूल्य = posixtest (argc - 1);
 
-  if (pos != argc)
+  जर (pos != argc)
     test_syntax_error (_("extra argument %s"), quote (argv[pos]));
 
-  test_main_return (value ? TEST_TRUE : TEST_FALSE);
+  test_main_return (मूल्य ? TEST_TRUE : TEST_FALSE);
 }

@@ -23,19 +23,19 @@
    idle: -u
 */
 
-#include <config.h>
-#include <getopt.h>
-#include <stdio.h>
+#अन्तर्भाव <config.h>
+#अन्तर्भाव <getopt.h>
+#अन्तर्भाव <stdio.h>
 
-#include <sys/types.h>
-#include "system.h"
+#अन्तर्भाव <sys/types.h>
+#अन्तर्भाव "system.h"
 
-#include "c-ctype.h"
-#include "canon-host.h"
-#include "readutmp.h"
-#include "hard-locale.h"
-#include "quote.h"
-#include "xvasprintf.h"
+#अन्तर्भाव "c-ctype.h"
+#अन्तर्भाव "canon-host.h"
+#अन्तर्भाव "readutmp.h"
+#अन्तर्भाव "hard-locale.h"
+#अन्तर्भाव "quote.h"
+#अन्तर्भाव "xvasprintf.h"
 
 #ifdef TTY_GROUP_NAME
 # include <grp.h>
@@ -51,206 +51,206 @@
 
 #ifdef RUN_LVL
 # define UT_TYPE_RUN_LVL(U) ((U)->ut_type == RUN_LVL)
-#else
+#अन्यथा
 # define UT_TYPE_RUN_LVL(U) false
 #endif
 
 #ifdef INIT_PROCESS
 # define UT_TYPE_INIT_PROCESS(U) ((U)->ut_type == INIT_PROCESS)
-#else
+#अन्यथा
 # define UT_TYPE_INIT_PROCESS(U) false
 #endif
 
 #ifdef DEAD_PROCESS
 # define UT_TYPE_DEAD_PROCESS(U) ((U)->ut_type == DEAD_PROCESS)
-#else
+#अन्यथा
 # define UT_TYPE_DEAD_PROCESS(U) false
 #endif
 
 #ifdef NEW_TIME
 # define UT_TYPE_NEW_TIME(U) ((U)->ut_type == NEW_TIME)
-#else
+#अन्यथा
 # define UT_TYPE_NEW_TIME(U) false
 #endif
 
 #define IDLESTR_LEN 6
 
-#if HAVE_STRUCT_XTMP_UT_PID
+#जर HAVE_STRUCT_XTMP_UT_PID
 # define PIDSTR_DECL_AND_INIT(Var, Utmp_ent) \
-  char Var[INT_STRLEN_BOUND (Utmp_ent->ut_pid) + 1]; \
-  sprintf (Var, "%ld", (long int) (Utmp_ent->ut_pid))
-#else
+  अक्षर Var[INT_STRLEN_BOUND (Utmp_ent->ut_pid) + 1]; \
+  प्र_लिखो (Var, "%ld", (दीर्घ पूर्णांक) (Utmp_ent->ut_pid))
+#अन्यथा
 # define PIDSTR_DECL_AND_INIT(Var, Utmp_ent) \
-  char const *Var = ""
+  अक्षर स्थिरांक *Var = ""
 #endif
 
-#if HAVE_STRUCT_XTMP_UT_ID
+#जर HAVE_STRUCT_XTMP_UT_ID
 # define UT_ID(U) ((U)->ut_id)
-#else
+#अन्यथा
 # define UT_ID(U) "??"
 #endif
 
 /* If true, attempt to canonicalize hostnames via a DNS lookup. */
-static bool do_lookup;
+स्थिर bool do_lookup;
 
 /* If true, display only a list of usernames and count of
    the users logged on.
    Ignored for 'who am i'.  */
-static bool short_list;
+स्थिर bool short_list;
 
 /* If true, display only name, line, and time fields.  */
-static bool short_output;
+स्थिर bool short_output;
 
 /* If true, display the hours:minutes since each user has touched
    the keyboard, or "." if within the last minute, or "old" if
    not within the last day.  */
-static bool include_idle;
+स्थिर bool include_idle;
 
 /* If true, display a line at the top describing each field.  */
-static bool include_heading;
+स्थिर bool include_heading;
 
 /* If true, display a '+' for each user if mesg y, a '-' if mesg n,
    or a '?' if their tty cannot be statted. */
-static bool include_mesg;
+स्थिर bool include_mesg;
 
 /* If true, display process termination & exit status.  */
-static bool include_exit;
+स्थिर bool include_exit;
 
 /* If true, display the last boot time.  */
-static bool need_boottime;
+स्थिर bool need_boottime;
 
 /* If true, display dead processes.  */
-static bool need_deadprocs;
+स्थिर bool need_deadprocs;
 
 /* If true, display processes waiting for user login.  */
-static bool need_login;
+स्थिर bool need_login;
 
 /* If true, display processes started by init.  */
-static bool need_initspawn;
+स्थिर bool need_initspawn;
 
 /* If true, display the last clock change.  */
-static bool need_clockchange;
+स्थिर bool need_clockchange;
 
 /* If true, display the current runlevel.  */
-static bool need_runlevel;
+स्थिर bool need_runlevel;
 
 /* If true, display user processes.  */
-static bool need_users;
+स्थिर bool need_users;
 
 /* If true, display info only for the controlling tty.  */
-static bool my_line_only;
+स्थिर bool my_ओळ_only;
 
 /* The strftime format to use for login times, and its expected
    output width.  */
-static char const *time_format;
-static int time_format_width;
+स्थिर अक्षर स्थिरांक *time_format;
+स्थिर पूर्णांक time_format_width;
 
 /* for long options with no corresponding short option, use enum */
-enum
+गणना
 {
-  LOOKUP_OPTION = CHAR_MAX + 1
+  LOOKUP_OPTION = अक्षर_उच्च + 1
 };
 
-static struct option const longopts[] =
+स्थिर संरचना option स्थिरांक longopts[] =
 {
-  {"all", no_argument, NULL, 'a'},
-  {"boot", no_argument, NULL, 'b'},
-  {"count", no_argument, NULL, 'q'},
-  {"dead", no_argument, NULL, 'd'},
-  {"heading", no_argument, NULL, 'H'},
-  {"login", no_argument, NULL, 'l'},
-  {"lookup", no_argument, NULL, LOOKUP_OPTION},
-  {"message", no_argument, NULL, 'T'},
-  {"mesg", no_argument, NULL, 'T'},
-  {"process", no_argument, NULL, 'p'},
-  {"runlevel", no_argument, NULL, 'r'},
-  {"short", no_argument, NULL, 's'},
-  {"time", no_argument, NULL, 't'},
-  {"users", no_argument, NULL, 'u'},
-  {"writable", no_argument, NULL, 'T'},
+  {"all", no_argument, रिक्त, 'a'},
+  {"boot", no_argument, रिक्त, 'b'},
+  {"count", no_argument, रिक्त, 'q'},
+  {"dead", no_argument, रिक्त, 'd'},
+  {"heading", no_argument, रिक्त, 'H'},
+  {"login", no_argument, रिक्त, 'l'},
+  {"lookup", no_argument, रिक्त, LOOKUP_OPTION},
+  {"message", no_argument, रिक्त, 'T'},
+  {"mesg", no_argument, रिक्त, 'T'},
+  {"process", no_argument, रिक्त, 'p'},
+  {"runlevel", no_argument, रिक्त, 'r'},
+  {"short", no_argument, रिक्त, 's'},
+  {"time", no_argument, रिक्त, 't'},
+  {"users", no_argument, रिक्त, 'u'},
+  {"writable", no_argument, रिक्त, 'T'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {रिक्त, 0, रिक्त, 0}
 };
 
 /* Return a string representing the time between WHEN and now.
    BOOTTIME is the time of last reboot.
    FIXME: locale? */
-static char const *
-idle_string (time_t when, time_t boottime)
+स्थिर अक्षर स्थिरांक *
+idle_string (समय_प्रकार when, समय_प्रकार boottime)
 {
-  static time_t now = TYPE_MINIMUM (time_t);
+  स्थिर समय_प्रकार now = TYPE_MINIMUM (समय_प्रकार);
 
-  if (now == TYPE_MINIMUM (time_t))
-    time (&now);
+  जर (now == TYPE_MINIMUM (समय_प्रकार))
+    समय (&now);
 
-  int seconds_idle;
-  if (boottime < when && when <= now
+  पूर्णांक seconds_idle;
+  जर (boottime < when && when <= now
       && ! ckd_sub (&seconds_idle, now, when)
       && seconds_idle < 24 * 60 * 60)
     {
-      if (seconds_idle < 60)
-        return "  .  ";
-      else
+      जर (seconds_idle < 60)
+        परत "  .  ";
+      अन्यथा
         {
-          static char idle_hhmm[IDLESTR_LEN];
-          sprintf (idle_hhmm, "%02d:%02d",
+          स्थिर अक्षर idle_hhmm[IDLESTR_LEN];
+          प्र_लिखो (idle_hhmm, "%02d:%02d",
                    seconds_idle / (60 * 60),
                    (seconds_idle % (60 * 60)) / 60);
-          return idle_hhmm;
+          परत idle_hhmm;
         }
     }
 
-  return _(" old ");
+  परत _(" old ");
 }
 
 /* Return a time string.  */
-static char const *
-time_string (STRUCT_UTMP const *utmp_ent)
+स्थिर अक्षर स्थिरांक *
+time_string (STRUCT_UTMP स्थिरांक *utmp_ent)
 {
-  static char buf[INT_STRLEN_BOUND (intmax_t) + sizeof "-%m-%d %H:%M"];
-  struct tm *tmp = localtime (&utmp_ent->ut_ts.tv_sec);
+  स्थिर अक्षर buf[INT_STRLEN_BOUND (intmax_t) + आकार "-%m-%d %H:%M"];
+  संरचना पंचांग *tmp = स_स्थानीय (&utmp_ent->ut_ts.tv_sec);
 
-  if (tmp)
+  जर (tmp)
     {
-      strftime (buf, sizeof buf, time_format, tmp);
-      return buf;
+      स_माला (buf, आकार buf, time_format, tmp);
+      परत buf;
     }
-  else
-    return timetostr (utmp_ent->ut_ts.tv_sec, buf);
+  अन्यथा
+    परत timetostr (utmp_ent->ut_ts.tv_sec, buf);
 }
 
 /* Print formatted output line. Uses mostly arbitrary field sizes, probably
    will need tweaking if any of the localization stuff is done, or for 64 bit
    pids, etc. */
-static void
-print_line (char const *user, const char state,
-            char const *line,
-            char const *time_str, char const *idle, char const *pid,
-            char const *comment, char const *exitstr)
+स्थिर शून्य
+print_ओळ (अक्षर स्थिरांक *user, स्थिरांक अक्षर state,
+            अक्षर स्थिरांक *ओळ,
+            अक्षर स्थिरांक *time_str, अक्षर स्थिरांक *idle, अक्षर स्थिरांक *pid,
+            अक्षर स्थिरांक *comment, अक्षर स्थिरांक *exitstr)
 {
-  static char mesg[3] = { ' ', 'x', '\0' };
-  char *buf;
-  char x_idle[1 + IDLESTR_LEN + 1];
-  char x_pid[1 + INT_STRLEN_BOUND (pid_t) + 1];
-  char *x_exitstr;
+  स्थिर अक्षर mesg[3] = { ' ', 'x', '\0' };
+  अक्षर *buf;
+  अक्षर x_idle[1 + IDLESTR_LEN + 1];
+  अक्षर x_pid[1 + INT_STRLEN_BOUND (pid_t) + 1];
+  अक्षर *x_exitstr;
 
   mesg[1] = state;
 
-  if (include_idle && !short_output && strlen (idle) < sizeof x_idle - 1)
-    sprintf (x_idle, " %-6s", idle);
-  else
+  जर (include_idle && !short_output && म_माप (idle) < आकार x_idle - 1)
+    प्र_लिखो (x_idle, " %-6s", idle);
+  अन्यथा
     *x_idle = '\0';
 
-  if (!short_output && strlen (pid) < sizeof x_pid - 1)
-    sprintf (x_pid, " %10s", pid);
-  else
+  जर (!short_output && म_माप (pid) < आकार x_pid - 1)
+    प्र_लिखो (x_pid, " %10s", pid);
+  अन्यथा
     *x_pid = '\0';
 
-  x_exitstr = xmalloc (include_exit ? 1 + MAX (12, strlen (exitstr)) + 1 : 1);
-  if (include_exit)
-    sprintf (x_exitstr, " %-12s", exitstr);
-  else
+  x_exitstr = xmalloc (include_exit ? 1 + MAX (12, म_माप (exitstr)) + 1 : 1);
+  जर (include_exit)
+    प्र_लिखो (x_exitstr, " %-12s", exitstr);
+  अन्यथा
     *x_exitstr = '\0';
 
   buf = xasprintf ("%-8s"
@@ -264,7 +264,7 @@ print_line (char const *user, const char state,
                    ,
                    user ? user : "   .",
                    include_mesg ? mesg : "",
-                   line,
+                   ओळ,
                    time_format_width,
                    time_str,
                    x_idle,
@@ -279,321 +279,321 @@ print_line (char const *user, const char state,
 
   {
     /* Remove any trailing spaces.  */
-    char *p = buf + strlen (buf);
-    while (*--p == ' ')
+    अक्षर *p = buf + म_माप (buf);
+    पर्यंत (*--p == ' ')
       /* empty */;
     *(p + 1) = '\0';
   }
 
-  puts (buf);
-  free (buf);
-  free (x_exitstr);
+  माला_दो (buf);
+  मुक्त (buf);
+  मुक्त (x_exitstr);
 }
 
 /* Return true if a terminal device given as PSTAT allows other users
    to send messages to; false otherwise */
-static bool
-is_tty_writable (struct stat const *pstat)
+स्थिर bool
+is_tty_writable (संरचना stat स्थिरांक *pstat)
 {
 #ifdef TTY_GROUP_NAME
   /* Ensure the group of the TTY device matches TTY_GROUP_NAME, more info at
      https://bugzilla.redhat.com/454261 */
-  struct group *ttygr = getgrnam (TTY_GROUP_NAME);
-  if (!ttygr || (pstat->st_gid != ttygr->gr_gid))
-    return false;
+  संरचना group *ttygr = getgrnam (TTY_GROUP_NAME);
+  जर (!ttygr || (pstat->st_gid != ttygr->gr_gid))
+    परत false;
 #endif
 
-  return pstat->st_mode & S_IWGRP;
+  परत pstat->st_mode & S_IWGRP;
 }
 
 /* Send properly parsed USER_PROCESS info to print_line.  The most
    recent boot time is BOOTTIME. */
-static void
-print_user (STRUCT_UTMP const *utmp_ent, time_t boottime)
+स्थिर शून्य
+print_user (STRUCT_UTMP स्थिरांक *utmp_ent, समय_प्रकार boottime)
 {
-  struct stat stats;
-  time_t last_change;
-  char mesg;
-  char idlestr[IDLESTR_LEN + 1];
+  संरचना stat stats;
+  समय_प्रकार last_change;
+  अक्षर mesg;
+  अक्षर idlestr[IDLESTR_LEN + 1];
   PIDSTR_DECL_AND_INIT (pidstr, utmp_ent);
-  static char *hoststr;
-#if HAVE_STRUCT_XTMP_UT_HOST
-  static idx_t hostlen;
+  स्थिर अक्षर *hoststr;
+#जर HAVE_STRUCT_XTMP_UT_HOST
+  स्थिर idx_t hostlen;
 #endif
 
   /* If ut_line contains a space, the device name starts after the space.  */
-  char *line = utmp_ent->ut_line;
-  char *space = strchr (line, ' ');
-  line = space ? space + 1 : line;
+  अक्षर *ओळ = utmp_ent->ut_ओळ;
+  अक्षर *space = म_अक्षर (ओळ, ' ');
+  ओळ = space ? space + 1 : ओळ;
 
-  int dirfd;
-  if (IS_ABSOLUTE_FILE_NAME (line))
+  पूर्णांक dirfd;
+  जर (IS_ABSOLUTE_FILE_NAME (ओळ))
     dirfd = AT_FDCWD;
-  else
+  अन्यथा
     {
-      static int dev_dirfd;
-      if (!dev_dirfd)
+      स्थिर पूर्णांक dev_dirfd;
+      जर (!dev_dirfd)
         {
-          dev_dirfd = open ("/dev", O_PATHSEARCH | O_DIRECTORY);
-          if (dev_dirfd < 0)
+          dev_dirfd = खोलो ("/dev", O_PATHSEARCH | O_DIRECTORY);
+          जर (dev_dirfd < 0)
             dev_dirfd = AT_FDCWD - 1;
         }
       dirfd = dev_dirfd;
     }
 
-  if (AT_FDCWD <= dirfd && fstatat (dirfd, line, &stats, 0) == 0)
+  जर (AT_FDCWD <= dirfd && fstatat (dirfd, ओळ, &stats, 0) == 0)
     {
       mesg = is_tty_writable (&stats) ? '+' : '-';
       last_change = stats.st_atime;
     }
-  else
+  अन्यथा
     {
       mesg = '?';
       last_change = 0;
     }
 
-  if (last_change)
-    sprintf (idlestr, "%.*s", IDLESTR_LEN, idle_string (last_change, boottime));
-  else
-    sprintf (idlestr, "  ?");
+  जर (last_change)
+    प्र_लिखो (idlestr, "%.*s", IDLESTR_LEN, idle_string (last_change, boottime));
+  अन्यथा
+    प्र_लिखो (idlestr, "  ?");
 
-#if HAVE_STRUCT_XTMP_UT_HOST
-  if (utmp_ent->ut_host[0])
+#जर HAVE_STRUCT_XTMP_UT_HOST
+  जर (utmp_ent->ut_host[0])
     {
-      char *host = NULL;
-      char *display = NULL;
-      char *ut_host = utmp_ent->ut_host;
+      अक्षर *host = रिक्त;
+      अक्षर *display = रिक्त;
+      अक्षर *ut_host = utmp_ent->ut_host;
 
       /* Look for an X display.  */
-      display = strchr (ut_host, ':');
-      if (display)
+      display = म_अक्षर (ut_host, ':');
+      जर (display)
         *display++ = '\0';
 
-      if (*ut_host && do_lookup)
+      जर (*ut_host && do_lookup)
         {
           /* See if we can canonicalize it.  */
           host = canon_host (ut_host);
         }
 
-      if (! host)
+      जर (! host)
         host = ut_host;
 
-      if (display)
+      जर (display)
         {
-          idx_t needed = strlen (host) + strlen (display) + 4;
-          if (hostlen < needed)
+          idx_t needed = म_माप (host) + म_माप (display) + 4;
+          जर (hostlen < needed)
             {
-              free (hoststr);
-              hoststr = xpalloc (NULL, &hostlen, needed - hostlen, -1, 1);
+              मुक्त (hoststr);
+              hoststr = xpalloc (रिक्त, &hostlen, needed - hostlen, -1, 1);
             }
-          char *p = hoststr;
+          अक्षर *p = hoststr;
           *p++ = '(';
           p = stpcpy (p, host);
           *p++ = ':';
-          strcpy (stpcpy (p, display), ")");
+          म_नकल (stpcpy (p, display), ")");
         }
-      else
+      अन्यथा
         {
-          idx_t needed = strlen (host) + 3;
-          if (hostlen < needed)
+          idx_t needed = म_माप (host) + 3;
+          जर (hostlen < needed)
             {
-              free (hoststr);
-              hoststr = xpalloc (NULL, &hostlen, needed - hostlen, -1, 1);
+              मुक्त (hoststr);
+              hoststr = xpalloc (रिक्त, &hostlen, needed - hostlen, -1, 1);
             }
-          char *p = hoststr;
+          अक्षर *p = hoststr;
           *p++ = '(';
-          strcpy (stpcpy (p, host), ")");
+          म_नकल (stpcpy (p, host), ")");
         }
 
-      if (host != ut_host)
-        free (host);
+      जर (host != ut_host)
+        मुक्त (host);
     }
-  else
+  अन्यथा
     {
-      if (hostlen < 1)
+      जर (hostlen < 1)
         hoststr = xpalloc (hoststr, &hostlen, 1, -1, 1);
       *hoststr = '\0';
     }
 #endif
 
-  print_line (utmp_ent->ut_user, mesg,
-              utmp_ent->ut_line,
+  print_ओळ (utmp_ent->ut_user, mesg,
+              utmp_ent->ut_ओळ,
               time_string (utmp_ent), idlestr, pidstr,
               hoststr ? hoststr : "", "");
 }
 
-static void
-print_boottime (STRUCT_UTMP const *utmp_ent)
+स्थिर शून्य
+print_boottime (STRUCT_UTMP स्थिरांक *utmp_ent)
 {
-  print_line ("", ' ', _("system boot"),
+  print_ओळ ("", ' ', _("system boot"),
               time_string (utmp_ent), "", "", "", "");
 }
 
-static char *
-make_id_equals_comment (STRUCT_UTMP const *utmp_ent)
+स्थिर अक्षर *
+make_id_equals_comment (STRUCT_UTMP स्थिरांक *utmp_ent)
 {
-  char const *id = UT_ID (utmp_ent);
-  idx_t idlen = strlen (id);
-  char const *prefix = _("id=");
-  idx_t prefixlen = strlen (prefix);
-  char *comment = xmalloc (prefixlen + idlen + 1);
-  char *p = mempcpy (comment, prefix, prefixlen);
+  अक्षर स्थिरांक *id = UT_ID (utmp_ent);
+  idx_t idlen = म_माप (id);
+  अक्षर स्थिरांक *prefix = _("id=");
+  idx_t prefixlen = म_माप (prefix);
+  अक्षर *comment = xmalloc (prefixlen + idlen + 1);
+  अक्षर *p = mempcpy (comment, prefix, prefixlen);
   p = mempcpy (p, id, idlen);
   *p = '\0';
-  return comment;
+  परत comment;
 }
 
-static void
-print_deadprocs (STRUCT_UTMP const *utmp_ent)
+स्थिर शून्य
+print_deadprocs (STRUCT_UTMP स्थिरांक *utmp_ent)
 {
-  static char *exitstr;
-  char *comment = make_id_equals_comment (utmp_ent);
+  स्थिर अक्षर *exitstr;
+  अक्षर *comment = make_id_equals_comment (utmp_ent);
   PIDSTR_DECL_AND_INIT (pidstr, utmp_ent);
 
-  if (!exitstr)
-    exitstr = xmalloc (strlen (_("term="))
+  जर (!exitstr)
+    exitstr = xmalloc (म_माप (_("term="))
                        + INT_STRLEN_BOUND (utmp_ent->ut_exit.e_termination) + 1
-                       + strlen (_("exit="))
+                       + म_माप (_("exit="))
                        + INT_STRLEN_BOUND (utmp_ent->ut_exit.e_exit)
                        + 1);
-  sprintf (exitstr, "%s%d %s%d", _("term="), utmp_ent->ut_exit.e_termination,
+  प्र_लिखो (exitstr, "%s%d %s%d", _("term="), utmp_ent->ut_exit.e_termination,
            _("exit="), utmp_ent->ut_exit.e_exit);
 
   /* FIXME: add idle time? */
 
-  print_line ("", ' ', utmp_ent->ut_line,
+  print_ओळ ("", ' ', utmp_ent->ut_ओळ,
               time_string (utmp_ent), "", pidstr, comment, exitstr);
-  free (comment);
+  मुक्त (comment);
 }
 
-static void
-print_login (STRUCT_UTMP const *utmp_ent)
+स्थिर शून्य
+print_login (STRUCT_UTMP स्थिरांक *utmp_ent)
 {
-  char *comment = make_id_equals_comment (utmp_ent);
+  अक्षर *comment = make_id_equals_comment (utmp_ent);
   PIDSTR_DECL_AND_INIT (pidstr, utmp_ent);
 
   /* FIXME: add idle time? */
 
-  print_line (_("LOGIN"), ' ', utmp_ent->ut_line,
+  print_ओळ (_("LOGIN"), ' ', utmp_ent->ut_ओळ,
               time_string (utmp_ent), "", pidstr, comment, "");
-  free (comment);
+  मुक्त (comment);
 }
 
-static void
-print_initspawn (STRUCT_UTMP const *utmp_ent)
+स्थिर शून्य
+print_initspawn (STRUCT_UTMP स्थिरांक *utmp_ent)
 {
-  char *comment = make_id_equals_comment (utmp_ent);
+  अक्षर *comment = make_id_equals_comment (utmp_ent);
   PIDSTR_DECL_AND_INIT (pidstr, utmp_ent);
 
-  print_line ("", ' ', utmp_ent->ut_line,
+  print_ओळ ("", ' ', utmp_ent->ut_ओळ,
               time_string (utmp_ent), "", pidstr, comment, "");
-  free (comment);
+  मुक्त (comment);
 }
 
-static void
-print_clockchange (STRUCT_UTMP const *utmp_ent)
+स्थिर शून्य
+print_clockchange (STRUCT_UTMP स्थिरांक *utmp_ent)
 {
   /* FIXME: handle NEW_TIME & OLD_TIME both */
-  print_line ("", ' ', _("clock change"),
+  print_ओळ ("", ' ', _("clock change"),
               time_string (utmp_ent), "", "", "", "");
 }
 
-static void
-print_runlevel (STRUCT_UTMP const *utmp_ent)
+स्थिर शून्य
+print_runlevel (STRUCT_UTMP स्थिरांक *utmp_ent)
 {
-  static char *runlevline, *comment;
-  unsigned char last = utmp_ent->ut_pid / 256;
-  unsigned char curr = utmp_ent->ut_pid % 256;
+  स्थिर अक्षर *runlevline, *comment;
+  अचिन्हित अक्षर last = utmp_ent->ut_pid / 256;
+  अचिन्हित अक्षर curr = utmp_ent->ut_pid % 256;
 
-  if (!runlevline)
-    runlevline = xmalloc (strlen (_("run-level")) + 3);
-  sprintf (runlevline, "%s %c", _("run-level"), curr);
+  जर (!runlevline)
+    runlevline = xmalloc (म_माप (_("run-level")) + 3);
+  प्र_लिखो (runlevline, "%s %c", _("run-level"), curr);
 
-  if (!comment)
-    comment = xmalloc (strlen (_("last=")) + 2);
-  sprintf (comment, "%s%c", _("last="), (last == 'N') ? 'S' : last);
+  जर (!comment)
+    comment = xmalloc (म_माप (_("last=")) + 2);
+  प्र_लिखो (comment, "%s%c", _("last="), (last == 'N') ? 'S' : last);
 
-  print_line ("", ' ', runlevline, time_string (utmp_ent),
+  print_ओळ ("", ' ', runlevline, time_string (utmp_ent),
               "", "", c_isprint (last) ? comment : "", "");
 }
 
 /* Print the username of each valid entry and the number of valid entries
    in UTMP_BUF, which should have N elements. */
-static void
-list_entries_who (idx_t n, STRUCT_UTMP const *utmp_buf)
+स्थिर शून्य
+list_entries_who (idx_t n, STRUCT_UTMP स्थिरांक *utmp_buf)
 {
   idx_t entries = 0;
 
-  while (n--)
+  पर्यंत (n--)
     {
-      if (IS_USER_PROCESS (utmp_buf))
+      जर (IS_USER_PROCESS (utmp_buf))
         {
-          char *trimmed_name;
+          अक्षर *trimmed_name;
 
           trimmed_name = extract_trimmed_name (utmp_buf);
 
-          if (entries)
-            putchar (' ');
-          fputs (trimmed_name, stdout);
-          free (trimmed_name);
+          जर (entries)
+            अक्षर_दो (' ');
+          ख_माला_दो (trimmed_name, मानक_निकास);
+          मुक्त (trimmed_name);
           entries++;
         }
       utmp_buf++;
     }
-  printf (_("\n# users=%td\n"), entries);
+  म_लिखो (_("\n# users=%td\n"), entries);
 }
 
-static void
-print_heading (void)
+स्थिर शून्य
+print_heading (शून्य)
 {
-  print_line (_("NAME"), ' ', _("LINE"), _("TIME"), _("IDLE"),
+  print_ओळ (_("NAME"), ' ', _("LINE"), _("TIME"), _("IDLE"),
               _("PID"), _("COMMENT"), _("EXIT"));
 }
 
 /* Display UTMP_BUF, which should have N entries. */
-static void
-scan_entries (idx_t n, STRUCT_UTMP const *utmp_buf)
+स्थिर शून्य
+scan_entries (idx_t n, STRUCT_UTMP स्थिरांक *utmp_buf)
 {
-  char *ttyname_b IF_LINT ( = NULL);
-  time_t boottime = TYPE_MINIMUM (time_t);
+  अक्षर *ttyname_b IF_LINT ( = रिक्त);
+  समय_प्रकार boottime = TYPE_MINIMUM (समय_प्रकार);
 
-  if (include_heading)
+  जर (include_heading)
     print_heading ();
 
-  if (my_line_only)
+  जर (my_ओळ_only)
     {
       ttyname_b = ttyname (STDIN_FILENO);
-      if (!ttyname_b)
-        return;
-      if (STRNCMP_LIT (ttyname_b, "/dev/") == 0)
-        ttyname_b += sizeof "/dev/" - 1;	/* Discard /dev/ prefix.  */
+      जर (!ttyname_b)
+        परत;
+      जर (STRNCMP_LIT (ttyname_b, "/dev/") == 0)
+        ttyname_b += आकार "/dev/" - 1;	/* Discard /dev/ prefix.  */
     }
 
-  while (n--)
+  पर्यंत (n--)
     {
-      if (!my_line_only
-          || str_endswith (utmp_buf->ut_line, ttyname_b))
+      जर (!my_ओळ_only
+          || str_endswith (utmp_buf->ut_ओळ, ttyname_b))
         {
-          if (need_users && IS_USER_PROCESS (utmp_buf))
+          जर (need_users && IS_USER_PROCESS (utmp_buf))
             print_user (utmp_buf, boottime);
-          else if (need_runlevel && UT_TYPE_RUN_LVL (utmp_buf))
+          अन्यथा जर (need_runlevel && UT_TYPE_RUN_LVL (utmp_buf))
             print_runlevel (utmp_buf);
-          else if (need_boottime && UT_TYPE_BOOT_TIME (utmp_buf))
+          अन्यथा जर (need_boottime && UT_TYPE_BOOT_TIME (utmp_buf))
             print_boottime (utmp_buf);
           /* I've never seen one of these, so I don't know what it should
              look like :^)
              FIXME: handle OLD_TIME also, perhaps show the delta? */
-          else if (need_clockchange && UT_TYPE_NEW_TIME (utmp_buf))
+          अन्यथा जर (need_clockchange && UT_TYPE_NEW_TIME (utmp_buf))
             print_clockchange (utmp_buf);
-          else if (need_initspawn && UT_TYPE_INIT_PROCESS (utmp_buf))
+          अन्यथा जर (need_initspawn && UT_TYPE_INIT_PROCESS (utmp_buf))
             print_initspawn (utmp_buf);
-          else if (need_login && UT_TYPE_LOGIN_PROCESS (utmp_buf))
+          अन्यथा जर (need_login && UT_TYPE_LOGIN_PROCESS (utmp_buf))
             print_login (utmp_buf);
-          else if (need_deadprocs && UT_TYPE_DEAD_PROCESS (utmp_buf))
+          अन्यथा जर (need_deadprocs && UT_TYPE_DEAD_PROCESS (utmp_buf))
             print_deadprocs (utmp_buf);
         }
 
-      if (UT_TYPE_BOOT_TIME (utmp_buf))
+      जर (UT_TYPE_BOOT_TIME (utmp_buf))
         boottime = utmp_buf->ut_ts.tv_sec;
 
       utmp_buf++;
@@ -602,79 +602,79 @@ scan_entries (idx_t n, STRUCT_UTMP const *utmp_buf)
 
 /* Display a list of who is on the system, according to utmp file FILENAME.
    Use read_utmp OPTIONS to read the file.  */
-static void
-who (char const *filename, int options)
+स्थिर शून्य
+who (अक्षर स्थिरांक *filename, पूर्णांक options)
 {
   idx_t n_users;
   STRUCT_UTMP *utmp_buf;
-  if (short_list)
+  जर (short_list)
     options |= READ_UTMP_USER_PROCESS;
-  if (read_utmp (filename, &n_users, &utmp_buf, options) != 0)
-    error (EXIT_FAILURE, errno, "%s", quotef (filename));
+  जर (read_utmp (filename, &n_users, &utmp_buf, options) != 0)
+    error (निकास_त्रुटि, त्रुटि_सं, "%s", quotef (filename));
 
-  if (short_list)
+  जर (short_list)
     list_entries_who (n_users, utmp_buf);
-  else
+  अन्यथा
     scan_entries (n_users, utmp_buf);
 
-  free (utmp_buf);
+  मुक्त (utmp_buf);
 }
 
-void
-usage (int status)
+शून्य
+usage (पूर्णांक status)
 {
-  if (status != EXIT_SUCCESS)
+  जर (status != निकास_सफल)
     emit_try_help ();
-  else
+  अन्यथा
     {
-      printf (_("Usage: %s [OPTION]... [ FILE | ARG1 ARG2 ]\n"), program_name);
-      fputs (_("\
+      म_लिखो (_("Usage: %s [OPTION]... [ FILE | ARG1 ARG2 ]\n"), program_name);
+      ख_माला_दो (_("\
 Print information about users who are currently logged in.\n\
-"), stdout);
-      fputs (_("\
+"), मानक_निकास);
+      ख_माला_दो (_("\
 \n\
-"), stdout);
+"), मानक_निकास);
       oputs (_("\
   -a, --all         same as -b -d --login -p -r -t -T -u\n\
 "));
       oputs (_("\
-  -b, --boot        time of last system boot\n\
+  -b, --boot        समय of last प्रणाली boot\n\
 "));
       oputs (_("\
   -d, --dead        print dead processes\n\
 "));
       oputs (_("\
-  -H, --heading     print line of column headings\n\
+  -H, --heading     print ओळ of column headings\n\
 "));
       oputs (_("\
-  -l, --login       print system login processes\n\
+  -l, --login       print प्रणाली login processes\n\
 "));
       oputs (_("\
       --lookup      attempt to canonicalize hostnames via DNS\n\
 "));
       oputs (_("\
-  -m                only hostname and user associated with standard input\n\
+  -m                only hostname and user associated with standard आदान\n\
 "));
       oputs (_("\
   -p, --process     print active processes spawned by init\n\
 "));
       oputs (_("\
-  -q, --count       all login names and number of users logged on\n\
+  -q, --मोजणी       all login names and संख्या of users logged on\n\
 "));
       oputs (_("\
   -r, --runlevel    print current runlevel\n\
 "));
       oputs (_("\
-  -s, --short       print only name, line, and time (default)\n\
+  -s, --लघु       print only name, ओळ, and समय (पूर्वनिर्धारित)\n\
 "));
       oputs (_("\
-  -t, --time        print last system clock change\n\
+  -t, --समय        print last प्रणाली घड़ी change\n\
 "));
       oputs (_("\
   -T, -w, --mesg    add user's message status as +, - or ?\n\
 "));
       oputs (_("\
-  -u, --users       list users logged in, including idle time\n\
+  -u, --users       list users logged in, including idle समय\n\
 "));
       oputs (_("\
       --message     same as -T\n\
@@ -684,36 +684,36 @@ Print information about users who are currently logged in.\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
-      printf (_("\
+      म_लिखो (_("\
 \n\
-If FILE is not specified, use %s.  %s as FILE is common.\n\
+If खाता is not specified, use %s.  %s as खाता is common.\n\
 If ARG1 ARG2 given, -m presumed: 'am i' or 'mom likes' are usual.\n\
 "), UTMP_FILE, WTMP_FILE);
       emit_ancillary_info (PROGRAM_NAME);
     }
-  exit (status);
+  निकास (status);
 }
 
-int
-main (int argc, char **argv)
+पूर्णांक
+main (पूर्णांक argc, अक्षर **argv)
 {
-  int optc;
+  पूर्णांक optc;
   bool assumptions = true;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
-  setlocale (LC_ALL, "");
+  रखो_क्षेत्र (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
-  atexit (close_stdout);
+  निकास_पर (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "abdlmpqrstuwHT", longopts, NULL))
+  पर्यंत ((optc = getopt_long (argc, argv, "abdlmpqrstuwHT", longopts, रिक्त))
          != -1)
     {
-      switch (optc)
+      निवड (optc)
         {
-        case 'a':
+        स्थिती 'a':
           need_boottime = true;
           need_deadprocs = true;
           need_login = true;
@@ -725,122 +725,122 @@ main (int argc, char **argv)
           include_idle = true;
           include_exit = true;
           assumptions = false;
-          break;
+          थांबा;
 
-        case 'b':
+        स्थिती 'b':
           need_boottime = true;
           assumptions = false;
-          break;
+          थांबा;
 
-        case 'd':
+        स्थिती 'd':
           need_deadprocs = true;
           include_idle = true;
           include_exit = true;
           assumptions = false;
-          break;
+          थांबा;
 
-        case 'H':
+        स्थिती 'H':
           include_heading = true;
-          break;
+          थांबा;
 
-        case 'l':
+        स्थिती 'l':
           need_login = true;
           include_idle = true;
           assumptions = false;
-          break;
+          थांबा;
 
-        case 'm':
-          my_line_only = true;
-          break;
+        स्थिती 'm':
+          my_ओळ_only = true;
+          थांबा;
 
-        case 'p':
+        स्थिती 'p':
           need_initspawn = true;
           assumptions = false;
-          break;
+          थांबा;
 
-        case 'q':
+        स्थिती 'q':
           short_list = true;
-          break;
+          थांबा;
 
-        case 'r':
+        स्थिती 'r':
           need_runlevel = true;
           include_idle = true;
           assumptions = false;
-          break;
+          थांबा;
 
-        case 's':
+        स्थिती 's':
           short_output = true;
-          break;
+          थांबा;
 
-        case 't':
+        स्थिती 't':
           need_clockchange = true;
           assumptions = false;
-          break;
+          थांबा;
 
-        case 'T':
-        case 'w':
+        स्थिती 'T':
+        स्थिती 'w':
           include_mesg = true;
-          break;
+          थांबा;
 
-        case 'u':
+        स्थिती 'u':
           need_users = true;
           include_idle = true;
           assumptions = false;
-          break;
+          थांबा;
 
-        case LOOKUP_OPTION:
+        स्थिती LOOKUP_OPTION:
           do_lookup = true;
-          break;
+          थांबा;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
-          usage (EXIT_FAILURE);
+        पूर्वनिर्धारित:
+          usage (निकास_त्रुटि);
         }
     }
 
-  if (assumptions)
+  जर (assumptions)
     {
       need_users = true;
       short_output = true;
     }
 
-  if (include_exit)
+  जर (include_exit)
     {
       short_output = false;
     }
 
-  if (hard_locale (LC_TIME))
+  जर (hard_locale (LC_TIME))
     {
       time_format = "%Y-%m-%d %H:%M";
       time_format_width = 4 + 1 + 2 + 1 + 2 + 1 + 2 + 1 + 2;
     }
-  else
+  अन्यथा
     {
       time_format = "%b %e %H:%M";
       time_format_width = 3 + 1 + 2 + 1 + 2 + 1 + 2;
     }
 
-  switch (argc - optind)
+  निवड (argc - optind)
     {
-    case 2:			/* who <blurf> <glop> */
-      my_line_only = true;
+    स्थिती 2:			/* who <blurf> <glop> */
+      my_ओळ_only = true;
       FALLTHROUGH;
-    case -1:
-    case 0:			/* who */
+    स्थिती -1:
+    स्थिती 0:			/* who */
       who (UTMP_FILE, READ_UTMP_CHECK_PIDS);
-      break;
+      थांबा;
 
-    case 1:			/* who <utmp file> */
+    स्थिती 1:			/* who <utmp file> */
       who (argv[optind], 0);
-      break;
+      थांबा;
 
-    default:			/* lose */
+    पूर्वनिर्धारित:			/* lose */
       error (0, 0, _("extra operand %s"), quote (argv[optind + 2]));
-      usage (EXIT_FAILURE);
+      usage (निकास_त्रुटि);
     }
 
-  return EXIT_SUCCESS;
+  परत निकास_सफल;
 }

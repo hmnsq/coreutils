@@ -16,15 +16,15 @@
 
 /* Written by Dmitry V. Levin */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#अन्तर्भाव <config.h>
+#अन्तर्भाव <stdio.h>
+#अन्तर्भाव <getopt.h>
+#अन्तर्भाव <sys/types.h>
 
-#include "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
-#include "system.h"
-#include "canonicalize.h"
-#include "areadlink.h"
+#अन्तर्भाव "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
+#अन्तर्भाव "system.h"
+#अन्तर्भाव "canonicalize.h"
+#अन्तर्भाव "areadlink.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "readlink"
@@ -32,39 +32,39 @@
 #define AUTHORS proper_name ("Dmitry V. Levin")
 
 /* If true, do not output the trailing newline.  */
-static bool no_newline;
+स्थिर bool no_newline;
 
 /* If true, report error messages.  */
-static bool verbose;
+स्थिर bool verbose;
 
 /* If true, quote output according to the selected quoting style.  */
-static bool quote_output;
+स्थिर bool quote_output;
 
-static struct option const longopts[] =
+स्थिर संरचना option स्थिरांक longopts[] =
 {
-  {"canonicalize", no_argument, NULL, 'f'},
-  {"canonicalize-existing", no_argument, NULL, 'e'},
-  {"canonicalize-missing", no_argument, NULL, 'm'},
-  {"no-newline", no_argument, NULL, 'n'},
-  {"quiet", no_argument, NULL, 'q'},
-  {"silent", no_argument, NULL, 's'},
-  {"verbose", no_argument, NULL, 'v'},
-  {"zero", no_argument, NULL, 'z'},
+  {"canonicalize", no_argument, रिक्त, 'f'},
+  {"canonicalize-existing", no_argument, रिक्त, 'e'},
+  {"canonicalize-missing", no_argument, रिक्त, 'm'},
+  {"no-newline", no_argument, रिक्त, 'n'},
+  {"quiet", no_argument, रिक्त, 'q'},
+  {"silent", no_argument, रिक्त, 's'},
+  {"verbose", no_argument, रिक्त, 'v'},
+  {"zero", no_argument, रिक्त, 'z'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {रिक्त, 0, रिक्त, 0}
 };
 
-void
-usage (int status)
+शून्य
+usage (पूर्णांक status)
 {
-  if (status != EXIT_SUCCESS)
+  जर (status != निकास_सफल)
     emit_try_help ();
-  else
+  अन्यथा
     {
-      printf (_("Usage: %s [OPTION]... FILE...\n"), program_name);
-      fputs (_("Print value of a symbolic link or canonical file name\n\n"),
-             stdout);
+      म_लिखो (_("Usage: %s [OPTION]... FILE...\n"), program_name);
+      ख_माला_दो (_("Print value of a symbolic link or canonical file name\n\n"),
+             मानक_निकास);
       oputs (_("\
   -f, --canonicalize\n\
          canonicalize by following every symlink\n\
@@ -85,7 +85,7 @@ usage (int status)
 "));
       oputs (_("\
   -n, --no-newline\n\
-         do not output the trailing delimiter\n\
+         करा not output the trailing delimiter\n\
 "));
       oputs (_("\
   -q, --quiet\n\
@@ -93,126 +93,126 @@ usage (int status)
       oputs (_("\
   -s, --silent\n\
          suppress most error messages\n\
-         (on by default if POSIXLY_CORRECT is not set)\n\
+         (on by पूर्वनिर्धारित जर POSIXLY_CORRECT is not set)\n\
 "));
       oputs (_("\
   -v, --verbose\n\
          report error messages\n\
-         (on by default if POSIXLY_CORRECT is set)\n\
+         (on by पूर्वनिर्धारित जर POSIXLY_CORRECT is set)\n\
 "));
       oputs (_("\
   -z, --zero\n\
-         end each output line with NUL, not newline\n\
+         end each output ओळ with NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
       emit_ancillary_info (PROGRAM_NAME);
     }
-  exit (status);
+  निकास (status);
 }
 
-int
-main (int argc, char **argv)
+पूर्णांक
+main (पूर्णांक argc, अक्षर **argv)
 {
   /* If not -1, use this method to canonicalize.  */
-  int can_mode = -1;
-  int status = EXIT_SUCCESS;
-  int optc;
+  पूर्णांक can_mode = -1;
+  पूर्णांक status = निकास_सफल;
+  पूर्णांक optc;
   bool use_nuls = false;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
-  setlocale (LC_ALL, "");
+  रखो_क्षेत्र (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
-  atexit (close_stdout);
+  निकास_पर (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "efmnqsvz", longopts, NULL)) != -1)
+  पर्यंत ((optc = getopt_long (argc, argv, "efmnqsvz", longopts, रिक्त)) != -1)
     {
-      switch (optc)
+      निवड (optc)
         {
-        case 'e':
+        स्थिती 'e':
           can_mode = CAN_EXISTING;
-          break;
-        case 'f':
+          थांबा;
+        स्थिती 'f':
           can_mode = CAN_ALL_BUT_LAST;
-          break;
-        case 'm':
+          थांबा;
+        स्थिती 'm':
           can_mode = CAN_MISSING;
-          break;
-        case 'n':
+          थांबा;
+        स्थिती 'n':
           no_newline = true;
-          break;
-        case 'q':
-        case 's':
+          थांबा;
+        स्थिती 'q':
+        स्थिती 's':
           verbose = false;
-          break;
-        case 'v':
+          थांबा;
+        स्थिती 'v':
           verbose = true;
-          break;
-        case 'z':
+          थांबा;
+        स्थिती 'z':
           use_nuls = true;
-          break;
+          थांबा;
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
-          usage (EXIT_FAILURE);
+        पूर्वनिर्धारित:
+          usage (निकास_त्रुटि);
         }
     }
 
-  if (optind >= argc)
+  जर (optind >= argc)
     {
       error (0, 0, _("missing operand"));
-      usage (EXIT_FAILURE);
+      usage (निकास_त्रुटि);
     }
 
-  if (argc - optind > 1)
+  जर (argc - optind > 1)
     {
-      if (no_newline)
+      जर (no_newline)
         error (0, 0, _("ignoring --no-newline with multiple arguments"));
       no_newline = false;
     }
 
-  if (!use_nuls && isatty (STDOUT_FILENO))
+  जर (!use_nuls && isatty (STDOUT_FILENO))
     {
-      int qs = getenv_quoting_style ();
-      if (qs < 0)
+      पूर्णांक qs = getenv_quoting_style ();
+      जर (qs < 0)
         qs = shell_escape_quoting_style;
-      if (qs != literal_quoting_style)
+      जर (qs != literal_quoting_style)
         {
-          set_quoting_style (NULL, qs);
+          set_quoting_style (रिक्त, qs);
           quote_output = true;
         }
     }
 
   /* POSIX requires a diagnostic message written to standard error and a
      non-zero exit status when given a file that is not a symbolic link.  */
-  if (getenv ("POSIXLY_CORRECT") != NULL)
+  जर (दो_पर्या ("POSIXLY_CORRECT") != रिक्त)
     verbose = true;
 
-  for (; optind < argc; ++optind)
+  साठी (; optind < argc; ++optind)
     {
-      char const *fname = argv[optind];
-      char *value = (can_mode != -1
+      अक्षर स्थिरांक *fname = argv[optind];
+      अक्षर *मूल्य = (can_mode != -1
                      ? canonicalize_filename_mode (fname, can_mode)
                      : areadlink_with_size (fname, 63));
-      if (value)
+      जर (मूल्य)
         {
-          fputs (quote_output ? quoteN (value) : value, stdout);
-          if (! no_newline)
-            putchar (use_nuls ? '\0' : '\n');
-          free (value);
-          if (ferror (stdout))
+          ख_माला_दो (quote_output ? quoteN (मूल्य) : मूल्य, मानक_निकास);
+          जर (! no_newline)
+            अक्षर_दो (use_nuls ? '\0' : '\n');
+          मुक्त (मूल्य);
+          जर (ख_त्रुटि (मानक_निकास))
             write_error ();
         }
-      else
+      अन्यथा
         {
-          status = EXIT_FAILURE;
-          if (verbose)
-            error (0, errno, "%s", quotef (fname));
+          status = निकास_त्रुटि;
+          जर (verbose)
+            error (0, त्रुटि_सं, "%s", quotef (fname));
         }
     }
 
-  return status;
+  परत status;
 }

@@ -18,18 +18,18 @@
    Reworked to use chdir and avoid recursion, and later, rewritten
    once again, to use fts, by Jim Meyering.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#अन्तर्भाव <config.h>
+#अन्तर्भाव <stdio.h>
+#अन्तर्भाव <getopt.h>
+#अन्तर्भाव <sys/types.h>
 
-#include "system.h"
-#include "argmatch.h"
-#include "assure.h"
-#include "remove.h"
-#include "root-dev-ino.h"
-#include "yesno.h"
-#include "priv-set.h"
+#अन्तर्भाव "system.h"
+#अन्तर्भाव "argmatch.h"
+#अन्तर्भाव "assure.h"
+#अन्तर्भाव "remove.h"
+#अन्तर्भाव "root-dev-ino.h"
+#अन्तर्भाव "yesno.h"
+#अन्तर्भाव "priv-set.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "rm"
@@ -42,52 +42,52 @@
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+गणना
 {
-  INTERACTIVE_OPTION = CHAR_MAX + 1,
+  INTERACTIVE_OPTION = अक्षर_उच्च + 1,
   ONE_FILE_SYSTEM,
-  NO_PRESERVE_ROOT,
-  PRESERVE_ROOT,
-  PRESUME_INPUT_TTY_OPTION
+  NO_PRESERVE_मूळ,
+  PRESERVE_मूळ,
+  PRESUME_आदान_TTY_OPTION
 };
 
-enum interactive_type
+गणना interactive_type
   {
     interactive_never,		/* 0: no option or --interactive=never */
     interactive_once,		/* 1: -I or --interactive=once */
     interactive_always		/* 2: default, -i or --interactive=always */
   };
 
-static struct option const long_opts[] =
+स्थिर संरचना option स्थिरांक long_opts[] =
 {
-  {"force", no_argument, NULL, 'f'},
-  {"interactive", optional_argument, NULL, INTERACTIVE_OPTION},
+  {"force", no_argument, रिक्त, 'f'},
+  {"interactive", optional_argument, रिक्त, INTERACTIVE_OPTION},
 
-  {"one-file-system", no_argument, NULL, ONE_FILE_SYSTEM},
-  {"no-preserve-root", no_argument, NULL, NO_PRESERVE_ROOT},
-  {"preserve-root", optional_argument, NULL, PRESERVE_ROOT},
+  {"one-file-system", no_argument, रिक्त, ONE_FILE_SYSTEM},
+  {"no-preserve-root", no_argument, रिक्त, NO_PRESERVE_मूळ},
+  {"preserve-root", optional_argument, रिक्त, PRESERVE_मूळ},
 
   /* This is solely for testing.  Do not document.  */
   /* It is relatively difficult to ensure that there is a tty on stdin.
      Since rm acts differently depending on that, without this option,
      it'd be harder to test the parts of rm that depend on that setting.  */
-  {"-presume-input-tty", no_argument, NULL, PRESUME_INPUT_TTY_OPTION},
+  {"-presume-input-tty", no_argument, रिक्त, PRESUME_आदान_TTY_OPTION},
 
-  {"recursive", no_argument, NULL, 'r'},
-  {"dir", no_argument, NULL, 'd'},
-  {"verbose", no_argument, NULL, 'v'},
+  {"recursive", no_argument, रिक्त, 'r'},
+  {"dir", no_argument, रिक्त, 'd'},
+  {"verbose", no_argument, रिक्त, 'v'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {रिक्त, 0, रिक्त, 0}
 };
 
-static char const *const interactive_args[] =
+स्थिर अक्षर स्थिरांक *स्थिरांक interactive_args[] =
 {
   "never", "no", "none",
   "once",
-  "always", "yes", NULL
+  "always", "yes", रिक्त
 };
-static enum interactive_type const interactive_types[] =
+स्थिर गणना interactive_type स्थिरांक interactive_types[] =
 {
   interactive_never, interactive_never, interactive_never,
   interactive_once,
@@ -98,41 +98,41 @@ ARGMATCH_VERIFY (interactive_args, interactive_types);
 /* Advise the user about invalid usages like "rm -foo" if the file
    "-foo" exists, assuming ARGC and ARGV are as with 'main'.  */
 
-static void
-diagnose_leading_hyphen (int argc, char **argv)
+स्थिर शून्य
+diagnose_leading_hyphen (पूर्णांक argc, अक्षर **argv)
 {
   /* OPTIND is unreliable, so iterate through the arguments looking
      for a file name that looks like an option.  */
 
-  for (int i = 1; i < argc; i++)
+  साठी (पूर्णांक i = 1; i < argc; i++)
     {
-      char const *arg = argv[i];
-      struct stat st;
+      अक्षर स्थिरांक *arg = argv[i];
+      संरचना stat st;
 
-      if (arg[0] == '-' && arg[1] && lstat (arg, &st) == 0)
+      जर (arg[0] == '-' && arg[1] && lstat (arg, &st) == 0)
         {
-          fprintf (stderr,
+          ख_लिखो (मानक_त्रुटि,
                    _("Try '%s ./%s' to remove the file %s.\n"),
                    argv[0],
                    quotearg_n_style (1, shell_escape_quoting_style, arg),
                    quoteaf (arg));
-          break;
+          थांबा;
         }
     }
 }
 
-void
-usage (int status)
+शून्य
+usage (पूर्णांक status)
 {
-  if (status != EXIT_SUCCESS)
+  जर (status != निकास_सफल)
     emit_try_help ();
-  else
+  अन्यथा
     {
-      printf (_("Usage: %s [OPTION]... [FILE]...\n"), program_name);
-      fputs (_("\
-Remove (unlink) the FILE(s).\n\
+      म_लिखो (_("Usage: %s [OPTION]... [FILE]...\n"), program_name);
+      ख_माला_दो (_("\
+Remove (unlink) the खाता(s).\n\
 \n\
-"), stdout);
+"), मानक_निकास);
       oputs (_("\
   -f, --force\n\
          ignore nonexistent files and arguments, never prompt\n\
@@ -145,7 +145,7 @@ Remove (unlink) the FILE(s).\n\
   -I\n\
          prompt once before removing more than three files,\n\
          or when removing recursively; less intrusive than -i,\n\
-         while still giving protection against most mistakes\n\
+         पर्यंत still giving protection against most mistakes\n\
 "));
       oputs (_("\
       --interactive[=WHEN]\n\
@@ -153,28 +153,28 @@ Remove (unlink) the FILE(s).\n\
          without WHEN, prompt always\n\
 "));
       oputs (_("\
-      --one-file-system\n\
+      --one-file-प्रणाली\n\
          when removing a hierarchy recursively,\n\
-         skip any directory that is on a file system different\n\
-         from that of the corresponding command line argument\n\
+         skip any directory that is on a file प्रणाली different\n\
+         from that of the corresponding command ओळ argument\n\
 "));
       oputs (_("\
-      --no-preserve-root\n\
-         do not treat '/' specially\n\
+      --no-preserve-मूळ\n\
+         करा not treat '/' specially\n\
 "));
       oputs (_("\
-      --preserve-root[=all]\n\
-         do not remove '/' (default);\n\
-         with 'all', reject any command line argument\n\
+      --preserve-मूळ[=all]\n\
+         करा not हटाओ '/' (पूर्वनिर्धारित);\n\
+         with 'all', reject any command ओळ argument\n\
          on a separate device from its parent\n\
 "));
       oputs (_("\
   -r, -R, --recursive\n\
-         remove directories and their contents recursively\n\
+         हटाओ directories and their contents recursively\n\
 "));
       oputs (_("\
   -d, --dir\n\
-         remove empty directories\n\
+         हटाओ empty directories\n\
 "));
       oputs (_("\
   -v, --verbose\n\
@@ -182,46 +182,46 @@ Remove (unlink) the FILE(s).\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
-      fputs (_("\
+      ख_माला_दो (_("\
 \n\
-By default, rm does not remove directories.  Use the --recursive (-r or -R)\n\
-option to remove each listed directory, too, along with all of its contents.\n\
-"), stdout);
-      fputs (_("\
+By पूर्वनिर्धारित, rm does not हटाओ directories.  Use the --recursive (-r or -R)\n\
+option to हटाओ each listed directory, too, along with all of its contents.\n\
+"), मानक_निकास);
+      ख_माला_दो (_("\
 \n\
-Any attempt to remove a file whose last file name component is '.' or '..'\n\
+Any attempt to हटाओ a file whose last file name component is '.' or '..'\n\
 is rejected with a diagnostic.\n\
-"), stdout);
-      printf (_("\
+"), मानक_निकास);
+      म_लिखो (_("\
 \n\
-To remove a file whose name starts with a '-', for example '-foo',\n\
+To हटाओ a file whose name starts with a '-', साठी example '-foo',\n\
 use one of these commands:\n\
   %s -- -foo\n\
 \n\
   %s ./-foo\n\
 "),
               program_name, program_name);
-      fputs (_("\
+      ख_माला_दो (_("\
 \n\
-If you use rm to remove a file, it might be possible to recover\n\
-some of its contents, given sufficient expertise and/or time.  For greater\n\
+If you use rm to हटाओ a file, it might be possible to recover\n\
+some of its contents, given sufficient expertise and/or समय.  For greater\n\
 assurance that the contents are unrecoverable, consider using shred(1).\n\
-"), stdout);
+"), मानक_निकास);
       emit_ancillary_info (PROGRAM_NAME);
     }
-  exit (status);
+  निकास (status);
 }
 
-static void
-rm_option_init (struct rm_options *x)
+स्थिर शून्य
+rm_option_init (संरचना rm_options *x)
 {
   x->ignore_missing_files = false;
   x->interactive = RMI_SOMETIMES;
   x->one_file_system = false;
   x->remove_empty_directories = false;
   x->recursive = false;
-  x->root_dev_ino = NULL;
-  x->preserve_all_root = false;
+  x->मूळ_dev_ino = रिक्त;
+  x->preserve_all_मूळ = false;
   x->stdin_tty = isatty (STDIN_FILENO);
   x->verbose = false;
 
@@ -230,154 +230,154 @@ rm_option_init (struct rm_options *x)
   x->require_restore_cwd = false;
 }
 
-int
-main (int argc, char **argv)
+पूर्णांक
+main (पूर्णांक argc, अक्षर **argv)
 {
-  bool preserve_root = true;
-  struct rm_options x;
+  bool preserve_मूळ = true;
+  संरचना rm_options x;
   bool prompt_once = false;
-  int c;
+  पूर्णांक c;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
-  setlocale (LC_ALL, "");
+  रखो_क्षेत्र (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
-  atexit (close_stdin);
+  निकास_पर (close_stdin);
 
   rm_option_init (&x);
 
   /* Try to disable the ability to unlink a directory.  */
   priv_set_remove_linkdir ();
 
-  while ((c = getopt_long (argc, argv, "dfirvIR", long_opts, NULL)) != -1)
+  पर्यंत ((c = getopt_long (argc, argv, "dfirvIR", long_opts, रिक्त)) != -1)
     {
-      switch (c)
+      निवड (c)
         {
-        case 'd':
+        स्थिती 'd':
           x.remove_empty_directories = true;
-          break;
+          थांबा;
 
-        case 'f':
+        स्थिती 'f':
           x.interactive = RMI_NEVER;
           x.ignore_missing_files = true;
           prompt_once = false;
-          break;
+          थांबा;
 
-        case 'i':
+        स्थिती 'i':
           x.interactive = RMI_ALWAYS;
           x.ignore_missing_files = false;
           prompt_once = false;
-          break;
+          थांबा;
 
-        case 'I':
+        स्थिती 'I':
           x.interactive = RMI_SOMETIMES;
           x.ignore_missing_files = false;
           prompt_once = true;
-          break;
+          थांबा;
 
-        case 'r':
-        case 'R':
+        स्थिती 'r':
+        स्थिती 'R':
           x.recursive = true;
-          break;
+          थांबा;
 
-        case INTERACTIVE_OPTION:
+        स्थिती INTERACTIVE_OPTION:
           {
-            int i;
-            if (optarg)
+            पूर्णांक i;
+            जर (optarg)
               i = XARGMATCH ("--interactive", optarg, interactive_args,
                              interactive_types);
-            else
+            अन्यथा
               i = interactive_always;
-            switch (i)
+            निवड (i)
               {
-              case interactive_never:
+              स्थिती interactive_never:
                 x.interactive = RMI_NEVER;
                 prompt_once = false;
-                break;
+                थांबा;
 
-              case interactive_once:
+              स्थिती interactive_once:
                 x.interactive = RMI_SOMETIMES;
                 x.ignore_missing_files = false;
                 prompt_once = true;
-                break;
+                थांबा;
 
-              case interactive_always:
+              स्थिती interactive_always:
                 x.interactive = RMI_ALWAYS;
                 x.ignore_missing_files = false;
                 prompt_once = false;
-                break;
+                थांबा;
               }
-            break;
+            थांबा;
           }
 
-        case ONE_FILE_SYSTEM:
+        स्थिती ONE_FILE_SYSTEM:
           x.one_file_system = true;
-          break;
+          थांबा;
 
-        case NO_PRESERVE_ROOT:
-          if (! streq (argv[optind - 1], "--no-preserve-root"))
-            error (EXIT_FAILURE, 0,
+        स्थिती NO_PRESERVE_मूळ:
+          जर (! streq (argv[optind - 1], "--no-preserve-root"))
+            error (निकास_त्रुटि, 0,
                    _("you may not abbreviate the --no-preserve-root option"));
-          preserve_root = false;
-          break;
+          preserve_मूळ = false;
+          थांबा;
 
-        case PRESERVE_ROOT:
-          if (optarg)
+        स्थिती PRESERVE_मूळ:
+          जर (optarg)
             {
-              if (streq (optarg, "all"))
-                x.preserve_all_root = true;
-              else
-                error (EXIT_FAILURE, 0,
+              जर (streq (optarg, "all"))
+                x.preserve_all_मूळ = true;
+              अन्यथा
+                error (निकास_त्रुटि, 0,
                        _("unrecognized --preserve-root argument: %s"),
                        quoteaf (optarg));
             }
-          preserve_root = true;
-          break;
+          preserve_मूळ = true;
+          थांबा;
 
-        case PRESUME_INPUT_TTY_OPTION:
+        स्थिती PRESUME_आदान_TTY_OPTION:
           x.stdin_tty = true;
-          break;
+          थांबा;
 
-        case 'v':
+        स्थिती 'v':
           x.verbose = true;
-          break;
+          थांबा;
 
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        पूर्वनिर्धारित:
           diagnose_leading_hyphen (argc, argv);
-          usage (EXIT_FAILURE);
+          usage (निकास_त्रुटि);
         }
     }
 
-  if (argc <= optind)
+  जर (argc <= optind)
     {
-      if (x.ignore_missing_files)
-        return EXIT_SUCCESS;
-      else
+      जर (x.ignore_missing_files)
+        परत निकास_सफल;
+      अन्यथा
         {
           error (0, 0, _("missing operand"));
-          usage (EXIT_FAILURE);
+          usage (निकास_त्रुटि);
         }
     }
 
-  if (x.recursive && preserve_root)
+  जर (x.recursive && preserve_मूळ)
     {
-      static struct dev_ino dev_ino_buf;
-      x.root_dev_ino = get_root_dev_ino (&dev_ino_buf);
-      if (x.root_dev_ino == NULL)
-        error (EXIT_FAILURE, errno, _("failed to get attributes of %s"),
+      स्थिर संरचना dev_ino dev_ino_buf;
+      x.मूळ_dev_ino = get_मूळ_dev_ino (&dev_ino_buf);
+      जर (x.मूळ_dev_ino == रिक्त)
+        error (निकास_त्रुटि, त्रुटि_सं, _("failed to get attributes of %s"),
                quoteaf ("/"));
     }
 
   uintmax_t n_files = argc - optind;
-  char **file =  argv + optind;
+  अक्षर **file =  argv + optind;
 
-  if (prompt_once && (x.recursive || 3 < n_files))
+  जर (prompt_once && (x.recursive || 3 < n_files))
     {
-      fprintf (stderr,
+      ख_लिखो (मानक_त्रुटि,
                (x.recursive
                 ? ngettext ("%s: remove %ju argument recursively? ",
                             "%s: remove %ju arguments recursively? ",
@@ -386,11 +386,11 @@ main (int argc, char **argv)
                             "%s: remove %ju arguments? ",
                             select_plural (n_files))),
                program_name, n_files);
-      if (!yesno ())
-        return EXIT_SUCCESS;
+      जर (!yesno ())
+        परत निकास_सफल;
     }
 
-  enum RM_status status = rm (file, &x);
+  गणना RM_status status = rm (file, &x);
   affirm (VALID_STATUS (status));
-  return status == RM_ERROR ? EXIT_FAILURE : EXIT_SUCCESS;
+  परत status == RM_ERROR ? निकास_त्रुटि : निकास_सफल;
 }

@@ -16,93 +16,93 @@
 
 /* Written by Paul Eggert.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
-#include <signal.h>
+#अन्तर्भाव <config.h>
+#अन्तर्भाव <stdio.h>
+#अन्तर्भाव <getopt.h>
+#अन्तर्भाव <sys/types.h>
+#अन्तर्भाव <signal.h>
 
-#include "system.h"
-#include "c-ctype.h"
-#include "sig2str.h"
-#include "operand2sig.h"
-#include "quote.h"
+#अन्तर्भाव "system.h"
+#अन्तर्भाव "c-ctype.h"
+#अन्तर्भाव "sig2str.h"
+#अन्तर्भाव "operand2sig.h"
+#अन्तर्भाव "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "kill"
 
 #define AUTHORS proper_name ("Paul Eggert")
 
-static char const short_options[] =
+स्थिर अक्षर स्थिरांक short_options[] =
   "0::1::2::3::4::5::6::7::8::9::"
   "A::B::C::D::E::F::G::H::I::J::K::M::"
   "N::O::P::Q::R::S::T::U::V::W::X::Y::Z::"
   "Lln:s:t";
 
-static struct option const long_options[] =
+स्थिर संरचना option स्थिरांक long_options[] =
 {
-  {"list", no_argument, NULL, 'l'},
-  {"signal", required_argument, NULL, 's'},
-  {"table", no_argument, NULL, 't'},
+  {"list", no_argument, रिक्त, 'l'},
+  {"signal", required_argument, रिक्त, 's'},
+  {"table", no_argument, रिक्त, 't'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {रिक्त, 0, रिक्त, 0}
 };
 
-void
-usage (int status)
+शून्य
+usage (पूर्णांक status)
 {
-  if (status != EXIT_SUCCESS)
+  जर (status != निकास_सफल)
     emit_try_help ();
-  else
+  अन्यथा
     {
-      printf (_("\
+      म_लिखो (_("\
 Usage: %s [-s SIGNAL | -SIGNAL] PID...\n\
   or:  %s -l [SIGNAL]...\n\
   or:  %s -t [SIGNAL]...\n\
 "),
               program_name, program_name, program_name);
-      fputs (_("\
+      ख_माला_दो (_("\
 Send signals to processes, or list signals.\n\
-"), stdout);
+"), मानक_निकास);
 
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -s, --signal=SIGNAL, -SIGNAL\n\
-         specify the name or number of the signal to be sent\n\
+  -s, --संकेत=SIGNAL, -SIGNAL\n\
+         specify the name or संख्या of the संकेत to be sent\n\
 "));
       oputs (_("\
   -l, --list\n\
-         list signal names, or convert signal names to/from numbers\n\
+         list संकेत names, or convert संकेत names to/from numbers\n\
 "));
       oputs (_("\
   -t, --table\n\
-         print a table of signal information\n\
+         print a table of संकेत information\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
-      fputs (_("\n\
-SIGNAL may be a signal name like 'HUP', or a signal number like '1',\n\
-or the exit status of a process terminated by a signal.\n\
-PID is an integer; if negative it identifies a process group.\n\
-"), stdout);
-      printf (USAGE_BUILTIN_WARNING, PROGRAM_NAME);
+      ख_माला_दो (_("\n\
+SIGNAL may be a संकेत name like 'HUP', or a संकेत संख्या like '1',\n\
+or the निकास status of a process terminated by a संकेत.\n\
+PID is an integer; जर negative it identifies a process group.\n\
+"), मानक_निकास);
+      म_लिखो (USAGE_BUILTIN_WARNING, PROGRAM_NAME);
       emit_ancillary_info (PROGRAM_NAME);
     }
-  exit (status);
+  निकास (status);
 }
 
 /* Print a row of 'kill -t' output.  NUM_WIDTH is the maximum signal
    number width, and SIGNUM is the signal number to print.  The
    maximum name width is NAME_WIDTH, and SIGNAME is the name to print.  */
 
-static void
-print_table_row (int num_width, int signum,
-                 int name_width, char const *signame)
+स्थिर शून्य
+print_table_row (पूर्णांक अंक_width, पूर्णांक signum,
+                 पूर्णांक name_width, अक्षर स्थिरांक *signame)
 {
-  char const *description = strsignal (signum);
-  printf ("%*d %-*s %s\n", num_width, signum, name_width, signame,
+  अक्षर स्थिरांक *description = strsignal (signum);
+  म_लिखो ("%*d %-*s %s\n", अंक_width, signum, name_width, signame,
           description ? description : "?");
 }
 
@@ -110,201 +110,201 @@ print_table_row (int num_width, int signum,
    Print the names specified by ARGV if nonzero; otherwise,
    print all known names.  Return a suitable exit status.  */
 
-static int
-list_signals (bool table, char *const *argv)
+स्थिर पूर्णांक
+list_signals (bool table, अक्षर *स्थिरांक *argv)
 {
-  int status = EXIT_SUCCESS;
-  char signame[SIG2STR_MAX];
+  पूर्णांक status = निकास_सफल;
+  अक्षर signame[SIG2STR_MAX];
 
-  if (table)
+  जर (table)
     {
-      int name_width = 0;
+      पूर्णांक name_width = 0;
 
       /* Compute the maximum width of a signal number.  */
-      int num_width = 1;
-      for (int signum = 1; signum <= SIGNUM_BOUND / 10; signum *= 10)
-        num_width++;
+      पूर्णांक अंक_width = 1;
+      साठी (पूर्णांक signum = 1; signum <= SIGNUM_BOUND / 10; signum *= 10)
+        अंक_width++;
 
       /* Compute the maximum width of a signal name.  */
-      for (int signum = 0; signum <= SIGNUM_BOUND; signum++)
-        if (sig2str (signum, signame) == 0)
+      साठी (पूर्णांक signum = 0; signum <= SIGNUM_BOUND; signum++)
+        जर (sig2str (signum, signame) == 0)
           {
-            idx_t len = strlen (signame);
-            if (name_width < len)
+            idx_t len = म_माप (signame);
+            जर (name_width < len)
               name_width = len;
           }
 
-      if (argv)
-        for (; *argv; argv++)
+      जर (argv)
+        साठी (; *argv; argv++)
           {
-            int signum = operand2sig (*argv);
-            if (signum < 0)
-              status = EXIT_FAILURE;
-            else
+            पूर्णांक signum = operand2sig (*argv);
+            जर (signum < 0)
+              status = निकास_त्रुटि;
+            अन्यथा
               {
-                if (sig2str (signum, signame) != 0)
-                  snprintf (signame, sizeof signame, "SIG%d", signum);
-                print_table_row (num_width, signum, name_width, signame);
+                जर (sig2str (signum, signame) != 0)
+                  snprintf (signame, आकार signame, "SIG%d", signum);
+                print_table_row (अंक_width, signum, name_width, signame);
               }
           }
-      else
-        for (int signum = 0; signum <= SIGNUM_BOUND; signum++)
-          if (sig2str (signum, signame) == 0)
-            print_table_row (num_width, signum, name_width, signame);
+      अन्यथा
+        साठी (पूर्णांक signum = 0; signum <= SIGNUM_BOUND; signum++)
+          जर (sig2str (signum, signame) == 0)
+            print_table_row (अंक_width, signum, name_width, signame);
     }
-  else
+  अन्यथा
     {
-      if (argv)
-        for (; *argv; argv++)
+      जर (argv)
+        साठी (; *argv; argv++)
           {
-            int signum = operand2sig (*argv);
-            if (signum < 0)
-              status = EXIT_FAILURE;
-            else if (c_isdigit (**argv))
+            पूर्णांक signum = operand2sig (*argv);
+            जर (signum < 0)
+              status = निकास_त्रुटि;
+            अन्यथा जर (c_isdigit (**argv))
               {
-                if (sig2str (signum, signame) == 0)
-                  puts (signame);
-                else
-                  printf ("%d\n", signum);
+                जर (sig2str (signum, signame) == 0)
+                  माला_दो (signame);
+                अन्यथा
+                  म_लिखो ("%d\n", signum);
               }
-            else
-              printf ("%d\n", signum);
+            अन्यथा
+              म_लिखो ("%d\n", signum);
           }
-      else
-        for (int signum = 0; signum <= SIGNUM_BOUND; signum++)
-          if (sig2str (signum, signame) == 0)
-            puts (signame);
+      अन्यथा
+        साठी (पूर्णांक signum = 0; signum <= SIGNUM_BOUND; signum++)
+          जर (sig2str (signum, signame) == 0)
+            माला_दो (signame);
     }
 
-  return status;
+  परत status;
 }
 
 /* Send signal SIGNUM to all the processes or process groups specified
    by ARGV.  Return a suitable exit status.  */
 
-static int
-send_signals (int signum, char *const *argv)
+स्थिर पूर्णांक
+send_signals (पूर्णांक signum, अक्षर *स्थिरांक *argv)
 {
-  int status = EXIT_SUCCESS;
-  char const *arg = *argv;
+  पूर्णांक status = निकास_सफल;
+  अक्षर स्थिरांक *arg = *argv;
 
-  do
+  करा
     {
-      char *endp;
-      intmax_t n = (errno = 0, strtoimax (arg, &endp, 10));
+      अक्षर *endp;
+      intmax_t n = (त्रुटि_सं = 0, strtoimax (arg, &endp, 10));
       pid_t pid;
 
-      if (errno == ERANGE || ckd_add (&pid, n, 0)
+      जर (त्रुटि_सं == दुस्फल || ckd_add (&pid, n, 0)
           || arg == endp || *endp)
         {
           error (0, 0, _("%s: invalid process id"), quote (arg));
-          status = EXIT_FAILURE;
+          status = निकास_त्रुटि;
         }
-      else if (kill (pid, signum) != 0)
+      अन्यथा जर (समाप्त (pid, signum) != 0)
         {
-          if (errno == EINVAL)
-            error (0, errno, "%d", signum);
-          else
-            error (0, errno, "%s", quote (arg));
-          status = EXIT_FAILURE;
+          जर (त्रुटि_सं == EINVAL)
+            error (0, त्रुटि_सं, "%d", signum);
+          अन्यथा
+            error (0, त्रुटि_सं, "%s", quote (arg));
+          status = निकास_त्रुटि;
         }
     }
-  while ((arg = *++argv));
+  पर्यंत ((arg = *++argv));
 
-  return status;
+  परत status;
 }
 
-int
-main (int argc, char **argv)
+पूर्णांक
+main (पूर्णांक argc, अक्षर **argv)
 {
-  int optc;
+  पूर्णांक optc;
   bool list = false;
   bool table = false;
-  int signum = -1;
+  पूर्णांक signum = -1;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
-  setlocale (LC_ALL, "");
+  रखो_क्षेत्र (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
-  atexit (close_stdout);
+  निकास_पर (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, short_options, long_options, NULL))
+  पर्यंत ((optc = getopt_long (argc, argv, short_options, long_options, रिक्त))
          != -1)
-    switch (optc)
+    निवड (optc)
       {
-      case '0': case '1': case '2': case '3': case '4':
-      case '5': case '6': case '7': case '8': case '9':
-        if (optind != 2)
+      स्थिती '0': स्थिती '1': स्थिती '2': स्थिती '3': स्थिती '4':
+      स्थिती '5': स्थिती '6': स्थिती '7': स्थिती '8': स्थिती '9':
+        जर (optind != 2)
           {
             /* This option is actually a process-id.  */
             optind--;
-            goto no_more_options;
+            जा no_more_options;
           }
         FALLTHROUGH;
-      case 'A': case 'B': case 'C': case 'D': case 'E':
-      case 'F': case 'G': case 'H': case 'I': case 'J':
-      case 'K': /*case 'L':*/ case 'M': case 'N': case 'O':
-      case 'P': case 'Q': case 'R': case 'S': case 'T':
-      case 'U': case 'V': case 'W': case 'X': case 'Y':
-      case 'Z':
-        if (! optarg)
-          optarg = argv[optind - 1] + strlen (argv[optind - 1]);
-        if (optarg != argv[optind - 1] + 2)
+      स्थिती 'A': स्थिती 'B': स्थिती 'C': स्थिती 'D': स्थिती 'E':
+      स्थिती 'F': स्थिती 'G': स्थिती 'H': स्थिती 'I': स्थिती 'J':
+      स्थिती 'K': /*case 'L':*/ स्थिती 'M': स्थिती 'N': स्थिती 'O':
+      स्थिती 'P': स्थिती 'Q': स्थिती 'R': स्थिती 'S': स्थिती 'T':
+      स्थिती 'U': स्थिती 'V': स्थिती 'W': स्थिती 'X': स्थिती 'Y':
+      स्थिती 'Z':
+        जर (! optarg)
+          optarg = argv[optind - 1] + म_माप (argv[optind - 1]);
+        जर (optarg != argv[optind - 1] + 2)
           {
             error (0, 0, _("invalid option -- %c"), optc);
-            usage (EXIT_FAILURE);
+            usage (निकास_त्रुटि);
           }
         optarg--;
         FALLTHROUGH;
-      case 'n': /* -n is not documented, but is for Bash compatibility.  */
-      case 's':
-        if (0 <= signum)
+      स्थिती 'n': /* -n is not documented, but is for Bash compatibility.  */
+      स्थिती 's':
+        जर (0 <= signum)
           {
             error (0, 0, _("%s: multiple signals specified"), quote (optarg));
-            usage (EXIT_FAILURE);
+            usage (निकास_त्रुटि);
           }
         signum = operand2sig (optarg);
-        if (signum < 0)
-          usage (EXIT_FAILURE);
-        break;
+        जर (signum < 0)
+          usage (निकास_त्रुटि);
+        थांबा;
 
-      case 'L': /* -L is not documented, but is for procps compatibility.  */
-      case 't':
+      स्थिती 'L': /* -L is not documented, but is for procps compatibility.  */
+      स्थिती 't':
         table = true;
         FALLTHROUGH;
-      case 'l':
-        if (list)
+      स्थिती 'l':
+        जर (list)
           {
             error (0, 0, _("multiple -l or -t options specified"));
-            usage (EXIT_FAILURE);
+            usage (निकास_त्रुटि);
           }
         list = true;
-        break;
+        थांबा;
 
       case_GETOPT_HELP_CHAR;
       case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-      default:
-        usage (EXIT_FAILURE);
+      पूर्वनिर्धारित:
+        usage (निकास_त्रुटि);
       }
  no_more_options:
 
-  if (signum < 0)
-    signum = SIGTERM;
-  else if (list)
+  जर (signum < 0)
+    signum = संक_इति;
+  अन्यथा जर (list)
     {
       error (0, 0, _("cannot combine signal with -l or -t"));
-      usage (EXIT_FAILURE);
+      usage (निकास_त्रुटि);
     }
 
-  if ( ! list && argc <= optind)
+  जर ( ! list && argc <= optind)
     {
       error (0, 0, _("no process ID specified"));
-      usage (EXIT_FAILURE);
+      usage (निकास_त्रुटि);
     }
 
-  return (list
-          ? list_signals (table, optind < argc ? argv + optind : NULL)
+  परत (list
+          ? list_signals (table, optind < argc ? argv + optind : रिक्त)
           : send_signals (signum, argv + optind));
 }

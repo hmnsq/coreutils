@@ -20,31 +20,31 @@
 # include <stdint.h>
 # include <stdio.h>
 
-extern bool cksum_debug;
+बाह्य bool cksum_debug;
 
-extern int
-crc_sum_stream (FILE *stream, void *resstream, intmax_t *length);
+बाह्य पूर्णांक
+crc_sum_stream (खाता *stream, शून्य *resstream, intmax_t *length);
 
-extern int
-crc32b_sum_stream (FILE *stream, void *resstream, intmax_t *length);
+बाह्य पूर्णांक
+crc32b_sum_stream (खाता *stream, शून्य *resstream, intmax_t *length);
 
-extern void
-output_crc (char const *file, int binary_file, void const *digest, bool raw,
-            bool tagged, unsigned char delim, bool args, intmax_t length)
+बाह्य शून्य
+output_crc (अक्षर स्थिरांक *file, पूर्णांक द्विमान_file, शून्य स्थिरांक *digest, bool raw,
+            bool tagged, अचिन्हित अक्षर delim, bool args, intmax_t length)
   _GL_ATTRIBUTE_NONNULL ((3));
 
-extern bool
-cksum_vmull (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out);
+बाह्य bool
+cksum_vmull (खाता *fp, uint_fast32_t *crc_out, intmax_t *length_out);
 
-extern bool
-cksum_pclmul (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out);
+बाह्य bool
+cksum_pclmul (खाता *fp, uint_fast32_t *crc_out, intmax_t *length_out);
 
-extern bool
-cksum_avx2 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out);
+बाह्य bool
+cksum_avx2 (खाता *fp, uint_fast32_t *crc_out, intmax_t *length_out);
 
-extern bool
-cksum_avx512 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out);
+बाह्य bool
+cksum_avx512 (खाता *fp, uint_fast32_t *crc_out, intmax_t *length_out);
 
-extern uint_fast32_t const crctab[8][256];
+बाह्य uint_fast32_t स्थिरांक crctab[8][256];
 
 #endif
