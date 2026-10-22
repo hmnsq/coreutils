@@ -17,113 +17,113 @@
    Written by Torbjörn Granlund, Sweden (tege@sics.se).
    Rewritten to use lib/hash.c by Jim Meyering.  */
 
-#include <config.h>
+#अन्तर्भाव <config.h>
 
-#include <sys/types.h>
-#include "system.h"
+#अन्तर्भाव <sys/types.h>
+#अन्तर्भाव "system.h"
 
-#include "hash.h"
-#include "cp-hash.h"
+#अन्तर्भाव "hash.h"
+#अन्तर्भाव "cp-hash.h"
 
 /* Use ST_DEV and ST_INO as the key, FILENAME as the value.
    These are used e.g., in copy.c to associate the destination name with
    the source device/inode pair so that if we encounter a matching dev/ino
    pair in the source tree we can arrange to create a hard link between
    the corresponding names in the destination tree.  */
-struct Src_to_dest
+संरचना Src_to_dest
 {
   ino_t st_ino;
   dev_t st_dev;
   /* Destination file name (of non-directory or pre-existing directory)
      corresponding to the dev/ino of a copied file, or the destination file
      name corresponding to a dev/ino pair for a newly-created directory. */
-  char *name;
+  वर्ण *name;
 };
 
 /* This table maps source dev/ino to destination file name.
    We use it to preserve hard links when copying.  */
-static Hash_table *src_to_dest;
+स्थिर Hash_table *src_to_dest;
 
 /* Initial size of the above hash table.  */
 #define INITIAL_TABLE_SIZE 103
 
-static size_t
-src_to_dest_hash (void const *x, size_t table_size)
+स्थिर माप_प्रकार
+src_to_dest_hash (शून्य ध्रुव *x, माप_प्रकार table_size)
 {
-  struct Src_to_dest const *p = x;
+  संरचना Src_to_dest ध्रुव *p = x;
 
   /* Ignoring the device number here should be fine.  */
   /* The cast to uintmax_t prevents negative remainders
      if st_ino is negative.  */
-  return (uintmax_t) {p->st_ino} % table_size;
+  प्रत्यागम (uintmax_t) {p->st_ino} % table_size;
 }
 
 /* Compare two Src_to_dest entries.
    Return true if their keys are judged 'equal'.  */
-static bool
-src_to_dest_compare (void const *x, void const *y)
+स्थिर bool
+src_to_dest_compare (शून्य ध्रुव *x, शून्य ध्रुव *y)
 {
-  struct Src_to_dest const *a = x;
-  struct Src_to_dest const *b = y;
-  return PSAME_INODE (a, b);
+  संरचना Src_to_dest ध्रुव *a = x;
+  संरचना Src_to_dest ध्रुव *b = y;
+  प्रत्यागम PSAME_INODE (a, b);
 }
 
-static void
-src_to_dest_free (void *x)
+स्थिर शून्य
+src_to_dest_free (शून्य *x)
 {
-  struct Src_to_dest *a = x;
-  free (a->name);
-  free (x);
+  संरचना Src_to_dest *a = x;
+  मुक्त (a->name);
+  मुक्त (x);
 }
 
 /* Remove the entry matching INO/DEV from the table
    that maps source ino/dev to destination file name.  */
-extern void
+बाह्य शून्य
 forget_created (ino_t ino, dev_t dev)
 {
-  struct Src_to_dest probe;
-  struct Src_to_dest *ent;
+  संरचना Src_to_dest probe;
+  संरचना Src_to_dest *ent;
 
   probe.st_ino = ino;
   probe.st_dev = dev;
-  probe.name = NULL;
+  probe.name = रिक्त;
 
   ent = hash_remove (src_to_dest, &probe);
-  if (ent)
+  यदि (ent)
     src_to_dest_free (ent);
 }
 
 /* If INO/DEV correspond to an already-copied source file, return the
    name of the corresponding destination file.  Otherwise, return NULL.  */
 
-extern char *
+बाह्य वर्ण *
 src_to_dest_lookup (ino_t ino, dev_t dev)
 {
-  struct Src_to_dest ent;
-  struct Src_to_dest const *e;
+  संरचना Src_to_dest ent;
+  संरचना Src_to_dest ध्रुव *e;
   ent.st_ino = ino;
   ent.st_dev = dev;
   e = hash_lookup (src_to_dest, &ent);
-  return e ? e->name : NULL;
+  प्रत्यागम e ? e->name : रिक्त;
 }
 
 /* Add file NAME, copied from inode number INO and device number DEV,
    to the list of files we have copied.
    Return NULL if inserted, otherwise a non-null pointer. */
 
-extern char *
-remember_copied (char const *name, ino_t ino, dev_t dev)
+बाह्य वर्ण *
+remember_copied (वर्ण ध्रुव *name, ino_t ino, dev_t dev)
 {
-  struct Src_to_dest *ent;
-  struct Src_to_dest *ent_from_table;
+  संरचना Src_to_dest *ent;
+  संरचना Src_to_dest *ent_from_table;
 
-  ent = xmalloc (sizeof *ent);
+  ent = xmalloc (परिमाण *ent);
   ent->name = xstrdup (name);
   ent->st_ino = ino;
   ent->st_dev = dev;
 
-  ent_from_table = hash_insert (src_to_dest, ent);
-  if (ent_from_table == NULL)
+  ent_from_table = hash_जोड़ो (src_to_dest, ent);
+  यदि (ent_from_table == रिक्त)
     {
       /* Insertion failed due to lack of memory.  */
       xalloc_die ();
@@ -132,24 +132,24 @@ remember_copied (char const *name, ino_t ino, dev_t dev)
   /* Determine whether there was already an entry in the table
      with a matching key.  If so, free ENT (it wasn't inserted) and
      return the 'name' from the table entry.  */
-  if (ent_from_table != ent)
+  यदि (ent_from_table != ent)
     {
       src_to_dest_free (ent);
-      return ent_from_table->name;
+      प्रत्यागम ent_from_table->name;
     }
 
   /* New key;  insertion succeeded.  */
-  return NULL;
+  प्रत्यागम रिक्त;
 }
 
 /* Initialize the hash table.  */
-extern void
-hash_init (void)
+बाह्य शून्य
+hash_init (शून्य)
 {
-  src_to_dest = hash_initialize (INITIAL_TABLE_SIZE, NULL,
+  src_to_dest = hash_initialize (INITIAL_TABLE_SIZE, रिक्त,
                                  src_to_dest_hash,
                                  src_to_dest_compare,
                                  src_to_dest_free);
-  if (src_to_dest == NULL)
+  यदि (src_to_dest == रिक्त)
     xalloc_die ();
 }

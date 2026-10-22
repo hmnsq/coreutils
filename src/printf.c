@@ -14,18 +14,18 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <wchar.h>
+#अन्तर्भाव <config.h>
+#अन्तर्भाव <stdio.h>
+#अन्तर्भाव <sys/types.h>
+#अन्तर्भाव <wchar.h>
 
-#include "system.h"
-#include "c-ctype.h"
-#include "cl-strtod.h"
-#include "octhexdigits.h"
-#include "quote.h"
-#include "unicodeio.h"
-#include "xprintf.h"
+#अन्तर्भाव "system.h"
+#अन्तर्भाव "c-ctype.h"
+#अन्तर्भाव "cl-strtod.h"
+#अन्तर्भाव "octhexdigits.h"
+#अन्तर्भाव "quote.h"
+#अन्तर्भाव "unicodeio.h"
+#अन्तर्भाव "xprintf.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "printf"
@@ -33,79 +33,79 @@
 #define AUTHORS proper_name ("David MacKenzie")
 
 /* The value to return to the calling program.  */
-static int exit_status;
+स्थिर पूर्णाङ्क exit_status;
 
 /* True if the POSIXLY_CORRECT environment variable is set.  */
-static bool posixly_correct;
+स्थिर bool posixly_correct;
 
 /* This message appears in N_() here rather than just in _() below because
    the sole use would have been in a #define.  */
-static char const *const cfcc_msg =
+स्थिर वर्ण ध्रुव *ध्रुव cfcc_संदेश =
  N_("warning: %s: character(s) following character constant have been ignored");
 
-void
-usage (int status)
+शून्य
+usage (पूर्णाङ्क status)
 {
-  if (status != EXIT_SUCCESS)
+  यदि (status != निकास_सफल)
     emit_try_help ();
-  else
+  अन्यथा
     {
-      printf (_("\
+      म_लिखो (_("\
 Usage: %s FORMAT [ARGUMENT]...\n\
   or:  %s OPTION\n\
 "),
               program_name, program_name);
-      fputs (_("\
+      ख_माला_दो (_("\
 Print ARGUMENT(s) according to FORMAT, or execute according to OPTION:\n\
 \n\
-"), stdout);
+"), मानक_निकास);
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
-      fputs (_("\
+      ख_माला_दो (_("\
 \n\
-FORMAT controls the output as in C printf.  Interpreted sequences are:\n\
+FORMAT controls the output as in C म_लिखो.  Interpreted sequences are:\n\
 \n\
-  \\\"      double quote\n\
-"), stdout);
-      fputs (_("\
+  \\\"      द्विगुण quote\n\
+"), मानक_निकास);
+      ख_माला_दो (_("\
   \\\\      backslash\n\
   \\a      alert (bell)\n\
   \\b      backspace\n\
   \\c      produce no further output\n\
   \\e      escape\n\
   \\f      form feed\n\
-  \\n      new line\n\
-  \\r      carriage return\n\
+  \\n      new पंक्ति\n\
+  \\r      carriage प्रत्यागम\n\
   \\t      horizontal tab\n\
   \\v      vertical tab\n\
-"), stdout);
-      fputs (_("\
-  \\NNN    byte with octal value NNN (1 to 3 digits)\n\
-  \\xHH    byte with hexadecimal value HH (1 to 2 digits)\n\
-  \\uHHHH  Unicode (ISO/IEC 10646) character with hex value HHHH (4 digits)\n\
-  \\UHHHHHHHH  Unicode character with hex value HHHHHHHH (8 digits)\n\
-"), stdout);
-      fputs (_("\
+"), मानक_निकास);
+      ख_माला_दो (_("\
+  \\NNN    byte with octal मूल्य NNN (1 to 3 digits)\n\
+  \\xHH    byte with hexadecimal मूल्य HH (1 to 2 digits)\n\
+  \\uHHHH  Unicode (ISO/IEC 10646) character with hex मूल्य HHHH (4 digits)\n\
+  \\UHHHHHHHH  Unicode character with hex मूल्य HHHHHHHH (8 digits)\n\
+"), मानक_निकास);
+      ख_माला_दो (_("\
 \n\
   %%      a single %\n\
   %b      ARGUMENT as a string with '\\' escapes interpreted,\n\
           except that octal escapes should have a leading 0 like \\0NNN\n\
-  %q      ARGUMENT is printed in a format that can be reused as shell input,\n\
+  %q      ARGUMENT is printed in a format that can be reused as shell निवेश,\n\
           escaping non-printable characters with the POSIX $'' syntax\
 \n\n\
-and all C printf(3) format specifications ending with one of diouxXfaAeEgGcs,\n\
+and all C म_लिखो(3) format specifications ending with one of diouxXfaAeEgGcs,\n\
 with ARGUMENTs converted to proper type first.\n\
-"), stdout);
-      fputs (_("\
+"), मानक_निकास);
+      ख_माला_दो (_("\
 FORMAT is reused to convert all specified arguments.\n\
-"), stdout);
-      fputs (_("\
+"), मानक_निकास);
+      ख_माला_दो (_("\
 The following table shows supported conversion specifiers,\n\
 with examples including usage of width, precision, and flags.\n\
 \n\
   CONVERSION  Shell format example        Output\n\
-  %s          '[%10s]' 'left pad'         [  left pad]\n\
-  %s          '[%-10s]' 'right pad'       [right pad ]\n\
+  %s          '[%10s]' 'left pad'         [  बायाँ pad]\n\
+  %s          '[%-10s]' 'right pad'       [दायाँ pad ]\n\
   %c %s       '%c %.3s' un unibyte        u uni\n\
 \n\
   %d %i       \"%'d ;%04i\" 1234 '-1'       1,234 ;-001\n\
@@ -119,54 +119,54 @@ with examples including usage of width, precision, and flags.\n\
 \n\
   %b          '%bfoo' 'bar\\cbaz' qux      bar\n\
   %q          '%q ' 'a' \\;b $'c\\n'        a ';b' 'c'$'\\n'\n\
-"), stdout);
-      printf (USAGE_BUILTIN_WARNING, PROGRAM_NAME);
+"), मानक_निकास);
+      म_लिखो (USAGE_BUILTIN_WARNING, PROGRAM_NAME);
       emit_ancillary_info (PROGRAM_NAME);
     }
-  exit (status);
+  निकास (status);
 }
 
-static void
-verify_numeric (char const *s, char const *end)
+स्थिर शून्य
+verify_numeric (वर्ण ध्रुव *s, वर्ण ध्रुव *end)
 {
-  if (s == end)
+  यदि (s == end)
     {
       error (0, 0, _("%s: expected a numeric value"), quote (s));
-      exit_status = EXIT_FAILURE;
+      exit_status = निकास_त्रुटि;
     }
-  else if (errno)
+  अन्यथा यदि (त्रुटि_सं)
     {
-      error (0, errno, "%s", quote (s));
-      exit_status = EXIT_FAILURE;
+      error (0, त्रुटि_सं, "%s", quote (s));
+      exit_status = निकास_त्रुटि;
     }
-  else if (*end)
+  अन्यथा यदि (*end)
     {
       error (0, 0, _("%s: value not completely converted"), quote (s));
-      exit_status = EXIT_FAILURE;
+      exit_status = निकास_त्रुटि;
     }
 }
 
-#define STRTOX(TYPE, FUNC_NAME, LIB_FUNC_EXPR)				 \
-static TYPE								 \
-FUNC_NAME (char const *s)						 \
+#define STRTOX(TYPE, FUNC_NAME, LIB_FUNC_व्यंजक)				 \
+स्थिर TYPE								 \
+FUNC_NAME (वर्ण ध्रुव *s)						 \
 {									 \
-  char *end;								 \
+  वर्ण *end;								 \
   TYPE val;								 \
                                                                          \
-  if ((*s == '\"' || *s == '\'') && *(s + 1))				 \
+  यदि ((*s == '\"' || *s == '\'') && *(s + 1))				 \
     {									 \
-      unsigned char ch = *++s;						 \
+      अचिन्हित वर्ण ch = *++s;						 \
       val = ch;								 \
                                                                          \
-      if (MB_CUR_MAX > 1 && *(s + 1))					 \
+      यदि (MB_CUR_MAX > 1 && *(s + 1))					 \
         {								 \
           mbstate_t mbstate; mbszero (&mbstate);			 \
-          wchar_t wc;							 \
-          size_t slen = strlen (s);					 \
+          ब_अक्षर_प्रकार wc;							 \
+          माप_प्रकार slen = म_माप (s);					 \
           ssize_t bytes;						 \
           /* Use mbrtowc not mbrtoc32, as per POSIX.  */		 \
           bytes = mbrtowc (&wc, s, slen, &mbstate);			 \
-          if (0 < bytes)						 \
+          यदि (0 < bytes)						 \
             {								 \
               val = wc;							 \
               s += bytes - 1;						 \
@@ -177,59 +177,59 @@ FUNC_NAME (char const *s)						 \
          are characters following the character constant and that GNU	 \
          printf is ignoring those characters.  If POSIXLY_CORRECT *is*	 \
          set, then don't give the warning.  */				 \
-      if (*++s != 0 && !posixly_correct)				 \
-        error (0, 0, _(cfcc_msg), s);					 \
+      यदि (*++s != 0 && !posixly_correct)				 \
+        error (0, 0, _(cfcc_संदेश), s);					 \
     }									 \
-  else									 \
+  अन्यथा									 \
     {									 \
-      errno = 0;							 \
-      val = (LIB_FUNC_EXPR);						 \
+      त्रुटि_सं = 0;							 \
+      val = (LIB_FUNC_व्यंजक);						 \
       verify_numeric (s, end);						 \
     }									 \
-  return val;								 \
+  प्रत्यागम val;								 \
 }									 \
 
 STRTOX (intmax_t,    vstrtoimax, strtoimax (s, &end, 0))
 STRTOX (uintmax_t,   vstrtoumax, strtoumax (s, &end, 0))
-STRTOX (long double, vstrtold,   cl_strtold (s, &end))
+STRTOX (दीर्घ द्विगुण, vstrtold,   cl_strtold (s, &end))
 
 /* Output a single-character \ escape.  */
 
-static void
-print_esc_char (char c)
+स्थिर शून्य
+print_esc_char (वर्ण c)
 {
-  switch (c)
+  विकल्प (c)
     {
-    case 'a':			/* Alert. */
-      putchar ('\a');
-      break;
-    case 'b':			/* Backspace. */
-      putchar ('\b');
-      break;
-    case 'c':			/* Cancel the rest of the output. */
-      exit (EXIT_SUCCESS);
-      break;
-    case 'e':			/* Escape. */
-      putchar ('\x1B');
-      break;
-    case 'f':			/* Form feed. */
-      putchar ('\f');
-      break;
-    case 'n':			/* New line. */
-      putchar ('\n');
-      break;
-    case 'r':			/* Carriage return. */
-      putchar ('\r');
-      break;
-    case 't':			/* Horizontal tab. */
-      putchar ('\t');
-      break;
-    case 'v':			/* Vertical tab. */
-      putchar ('\v');
-      break;
-    default:
-      putchar (c);
-      break;
+    पक्ष 'a':			/* Alert. */
+      अक्षर_दो ('\a');
+      भङ्ग;
+    पक्ष 'b':			/* Backspace. */
+      अक्षर_दो ('\b');
+      भङ्ग;
+    पक्ष 'c':			/* Cancel the rest of the output. */
+      निकास (निकास_सफल);
+      भङ्ग;
+    पक्ष 'e':			/* Escape. */
+      अक्षर_दो ('\x1B');
+      भङ्ग;
+    पक्ष 'f':			/* Form feed. */
+      अक्षर_दो ('\f');
+      भङ्ग;
+    पक्ष 'n':			/* New line. */
+      अक्षर_दो ('\n');
+      भङ्ग;
+    पक्ष 'r':			/* Carriage return. */
+      अक्षर_दो ('\r');
+      भङ्ग;
+    पक्ष 't':			/* Horizontal tab. */
+      अक्षर_दो ('\t');
+      भङ्ग;
+    पक्ष 'v':			/* Vertical tab. */
+      अक्षर_दो ('\v');
+      भङ्ग;
+    स्वभाव:
+      अक्षर_दो (c);
+      भङ्ग;
     }
 }
 
@@ -239,82 +239,82 @@ print_esc_char (char c)
    If OCTAL_0 is nonzero, octal escapes are of the form \0ooo, where o
    is an octal digit; otherwise they are of the form \ooo.  */
 
-static int
-print_esc (char const *escstart, bool octal_0)
+स्थिर पूर्णाङ्क
+print_esc (वर्ण ध्रुव *escstart, bool octal_0)
 {
-  char const *p = escstart + 1;
-  int esc_value = 0;		/* Value of \nnn escape. */
-  int esc_length;		/* Length of \nnn escape. */
+  वर्ण ध्रुव *p = escstart + 1;
+  पूर्णाङ्क esc_मूल्य = 0;		/* Value of \nnn escape. */
+  पूर्णाङ्क esc_length;		/* Length of \nnn escape. */
 
-  if (*p == 'x')
+  यदि (*p == 'x')
     {
       /* A hexadecimal \xhh escape sequence must have 1 or 2 hex. digits.  */
-      for (esc_length = 0, ++p;
+      प्रति (esc_length = 0, ++p;
            esc_length < 2 && c_isxdigit (*p);
            ++esc_length, ++p)
-        esc_value = esc_value * 16 + fromhex (*p);
-      if (esc_length == 0)
-        error (EXIT_FAILURE, 0, _("missing hexadecimal number in escape"));
-      putchar (esc_value);
+        esc_मूल्य = esc_मूल्य * 16 + fromhex (*p);
+      यदि (esc_length == 0)
+        error (निकास_त्रुटि, 0, _("missing hexadecimal number in escape"));
+      अक्षर_दो (esc_मूल्य);
     }
-  else if (isoct (*p))
+  अन्यथा यदि (isoct (*p))
     {
       /* Parse \0ooo (if octal_0 && *p == '0') or \ooo (otherwise).
          Allow \ooo if octal_0 && *p != '0'; this is an undocumented
          extension to POSIX that is compatible with Bash 2.05b.  */
-      for (esc_length = 0, p += octal_0 && *p == '0';
+      प्रति (esc_length = 0, p += octal_0 && *p == '0';
            esc_length < 3 && isoct (*p);
            ++esc_length, ++p)
-        esc_value = esc_value * 8 + fromoct (*p);
-      putchar (esc_value);
+        esc_मूल्य = esc_मूल्य * 8 + fromoct (*p);
+      अक्षर_दो (esc_मूल्य);
     }
-  else if (*p && strchr ("\"\\abcefnrtv", *p))
+  अन्यथा यदि (*p && म_अक्षर ("\"\\abcefnrtv", *p))
     print_esc_char (*p++);
-  else if (*p == 'u' || *p == 'U')
+  अन्यथा यदि (*p == 'u' || *p == 'U')
     {
-      char esc_char = *p;
-      unsigned int uni_value;
+      वर्ण esc_char = *p;
+      अचिन्हित पूर्णाङ्क uni_मूल्य;
 
-      uni_value = 0;
-      for (esc_length = (esc_char == 'u' ? 4 : 8), ++p;
+      uni_मूल्य = 0;
+      प्रति (esc_length = (esc_char == 'u' ? 4 : 8), ++p;
            esc_length > 0;
            --esc_length, ++p)
         {
-          if (! c_isxdigit (*p))
-            error (EXIT_FAILURE, 0, _("missing hexadecimal number in escape"));
-          uni_value = uni_value * 16 + fromhex (*p);
+          यदि (! c_isxdigit (*p))
+            error (निकास_त्रुटि, 0, _("missing hexadecimal number in escape"));
+          uni_मूल्य = uni_मूल्य * 16 + fromhex (*p);
         }
 
       /* Error for invalid code points 0000D800 through 0000DFFF inclusive.
          Note print_unicode_char() would print the literal \u.. in this case. */
-      if (uni_value >= 0xd800 && uni_value <= 0xdfff)
-        error (EXIT_FAILURE, 0, _("invalid universal character name \\%c%0*x"),
-               esc_char, (esc_char == 'u' ? 4 : 8), uni_value);
+      यदि (uni_मूल्य >= 0xd800 && uni_मूल्य <= 0xdfff)
+        error (निकास_त्रुटि, 0, _("invalid universal character name \\%c%0*x"),
+               esc_char, (esc_char == 'u' ? 4 : 8), uni_मूल्य);
 
-      print_unicode_char (stdout, uni_value, 0);
+      print_unicode_char (मानक_निकास, uni_मूल्य, 0);
     }
-  else
+  अन्यथा
     {
-      putchar ('\\');
-      if (*p)
+      अक्षर_दो ('\\');
+      यदि (*p)
         {
-          putchar (*p);
+          अक्षर_दो (*p);
           p++;
         }
     }
-  return p - escstart - 1;
+  प्रत्यागम p - escstart - 1;
 }
 
 /* Print string STR, evaluating \ escapes. */
 
-static void
-print_esc_string (char const *str)
+स्थिर शून्य
+print_esc_string (वर्ण ध्रुव *str)
 {
-  for (; *str; str++)
-    if (*str == '\\')
+  प्रति (; *str; str++)
+    यदि (*str == '\\')
       str += print_esc (str, true);
-    else
-      putchar (*str);
+    अन्यथा
+      अक्षर_दो (*str);
 }
 
 /* Evaluate a printf conversion specification.  START is the start of
@@ -323,42 +323,42 @@ print_esc_string (char const *str)
    values, if HAVE_FIELD_WIDTH and HAVE_PRECISION are true, respectively.
    ARGUMENT is the argument to be formatted.  */
 
-static void
-print_direc (char const *start, char conversion,
-             bool have_field_width, int field_width,
-             bool have_precision, int precision,
-             char const *argument)
+स्थिर शून्य
+print_direc (वर्ण ध्रुव *start, वर्ण conversion,
+             bool have_field_width, पूर्णाङ्क field_width,
+             bool have_precision, पूर्णाङ्क precision,
+             वर्ण ध्रुव *argument)
 {
-  char *p;		/* Null-terminated copy of % directive. */
+  वर्ण *p;		/* Null-terminated copy of % directive. */
 
   /* Create a null-terminated copy of the % directive, with an
      intmax_t-wide length modifier substituted for any existing
      integer length modifier.  */
   {
-    char *q;
-    char const *length_modifier;
-    size_t length_modifier_len;
+    वर्ण *q;
+    वर्ण ध्रुव *length_modifier;
+    माप_प्रकार length_modifier_len;
 
-    switch (conversion)
+    विकल्प (conversion)
       {
-      case 'd': case 'i': case 'o': case 'u': case 'x': case 'X':
+      पक्ष 'd': पक्ष 'i': पक्ष 'o': पक्ष 'u': पक्ष 'x': पक्ष 'X':
         length_modifier = "j";
         length_modifier_len = 1;
-        break;
+        भङ्ग;
 
-      case 'a': case 'e': case 'f': case 'g':
-      case 'A': case 'E': case 'F': case 'G':
+      पक्ष 'a': पक्ष 'e': पक्ष 'f': पक्ष 'g':
+      पक्ष 'A': पक्ष 'E': पक्ष 'F': पक्ष 'G':
         length_modifier = "L";
         length_modifier_len = 1;
-        break;
+        भङ्ग;
 
-      default:
+      स्वभाव:
         length_modifier = start;  /* Any valid pointer will do.  */
         length_modifier_len = 0;
-        break;
+        भङ्ग;
       }
 
-    size_t length = strlen (start);
+    माप_प्रकार length = म_माप (start);
     p = xmalloc (length + length_modifier_len + 2);
     q = mempcpy (p, start, length);
     q = mempcpy (q, length_modifier, length_modifier_len);
@@ -366,153 +366,153 @@ print_direc (char const *start, char conversion,
     *q = '\0';
   }
 
-  switch (conversion)
+  विकल्प (conversion)
     {
-    case 'd':
-    case 'i':
+    पक्ष 'd':
+    पक्ष 'i':
       {
         intmax_t arg = argument ? vstrtoimax (argument) : 0;
-        if (!have_field_width)
+        यदि (!have_field_width)
           {
-            if (!have_precision)
+            यदि (!have_precision)
               xprintf (p, arg);
-            else
+            अन्यथा
               xprintf (p, precision, arg);
           }
-        else
+        अन्यथा
           {
-            if (!have_precision)
+            यदि (!have_precision)
               xprintf (p, field_width, arg);
-            else
+            अन्यथा
               xprintf (p, field_width, precision, arg);
           }
       }
-      break;
+      भङ्ग;
 
-    case 'o':
-    case 'u':
-    case 'x':
-    case 'X':
+    पक्ष 'o':
+    पक्ष 'u':
+    पक्ष 'x':
+    पक्ष 'X':
       {
         uintmax_t arg = argument ? vstrtoumax (argument) : 0;
-        if (!have_field_width)
+        यदि (!have_field_width)
           {
-            if (!have_precision)
+            यदि (!have_precision)
               xprintf (p, arg);
-            else
+            अन्यथा
               xprintf (p, precision, arg);
           }
-        else
+        अन्यथा
           {
-            if (!have_precision)
+            यदि (!have_precision)
               xprintf (p, field_width, arg);
-            else
+            अन्यथा
               xprintf (p, field_width, precision, arg);
           }
       }
-      break;
+      भङ्ग;
 
-    case 'a':
-    case 'A':
-    case 'e':
-    case 'E':
-    case 'f':
-    case 'F':
-    case 'g':
-    case 'G':
+    पक्ष 'a':
+    पक्ष 'A':
+    पक्ष 'e':
+    पक्ष 'E':
+    पक्ष 'f':
+    पक्ष 'F':
+    पक्ष 'g':
+    पक्ष 'G':
       {
-        long double arg = argument ? vstrtold (argument) : 0;
-        if (!have_field_width)
+        दीर्घ द्विगुण arg = argument ? vstrtold (argument) : 0;
+        यदि (!have_field_width)
           {
-            if (!have_precision)
+            यदि (!have_precision)
               xprintf (p, arg);
-            else
+            अन्यथा
               xprintf (p, precision, arg);
           }
-        else
+        अन्यथा
           {
-            if (!have_precision)
+            यदि (!have_precision)
               xprintf (p, field_width, arg);
-            else
+            अन्यथा
               xprintf (p, field_width, precision, arg);
           }
       }
-      break;
+      भङ्ग;
 
-    case 'c':
+    पक्ष 'c':
       {
-        char c = argument ? *argument : '\0';
-        if (!have_field_width)
+        वर्ण c = argument ? *argument : '\0';
+        यदि (!have_field_width)
           xprintf (p, c);
-        else
+        अन्यथा
           xprintf (p, field_width, c);
       }
-      break;
+      भङ्ग;
 
-    case 's':
-      if (!argument)
+    पक्ष 's':
+      यदि (!argument)
         argument = "";
-      if (!have_field_width)
+      यदि (!have_field_width)
         {
-          if (!have_precision)
+          यदि (!have_precision)
             xprintf (p, argument);
-          else
+          अन्यथा
             xprintf (p, precision, argument);
         }
-      else
+      अन्यथा
         {
-          if (!have_precision)
+          यदि (!have_precision)
             xprintf (p, field_width, argument);
-          else
+          अन्यथा
             xprintf (p, field_width, precision, argument);
         }
-      break;
+      भङ्ग;
     }
 
-  free (p);
+  मुक्त (p);
 }
 
 /* Set curr_arg from indexed %i$ or otherwise next in sequence.
    POS can be 0,1,2,3 corresponding to
    [%][width][.precision][conversion] respectively.  */
 
-struct arg_cursor
+संरचना arg_cursor
 {
-  char const *f;	/* Pointer into 'format'.  */
-  int curr_arg;		/* Current offset.  */
-  int curr_s_arg;	/* Current sequential offset.  */
-  int end_arg;		/* End arg processed.  */
-  int direc_arg;	/* Arg for main directive.  */
+  वर्ण ध्रुव *f;	/* Pointer into 'format'.  */
+  पूर्णाङ्क curr_arg;		/* Current offset.  */
+  पूर्णाङ्क curr_s_arg;	/* Current sequential offset.  */
+  पूर्णाङ्क end_arg;		/* End arg processed.  */
+  पूर्णाङ्क direc_arg;	/* Arg for main directive.  */
 };
-ATTRIBUTE_PURE static struct arg_cursor
-get_curr_arg (int pos, struct arg_cursor ac)
+ATTRIBUTE_PURE स्थिर संरचना arg_cursor
+get_curr_arg (पूर्णाङ्क pos, संरचना arg_cursor ac)
 {
   /* Convert sequences like "123$" by hand to avoid problems with strtol,
      which might treat "$" as part of the number in some locales.  */
-  int arg = 0;
-  char const *f = ac.f;
-  if (pos < 3 && c_isdigit (*f))
+  पूर्णाङ्क arg = 0;
+  वर्ण ध्रुव *f = ac.f;
+  यदि (pos < 3 && c_isdigit (*f))
     {
       bool v = false;
-      int a = *f++ - '0';
-      for (; c_isdigit (*f); f++)
+      पूर्णाङ्क a = *f++ - '0';
+      प्रति (; c_isdigit (*f); f++)
         {
           v |= ckd_mul (&a, a, 10);
           v |= ckd_add (&a, a, *f - '0');
         }
-      if (*f == '$')
-        arg = v ? INT_MAX : a;
+      यदि (*f == '$')
+        arg = v ? पूर्णांक_उच्च : a;
     }
 
-  if (0 < arg)
+  यदि (0 < arg)
     {
       /* Process indexed %i$ format.  */
       arg--;
       ac.f = f + 1;
-      if (pos == 0)
+      यदि (pos == 0)
         ac.direc_arg = arg;
     }
-  else
+  अन्यथा
     {
       /* Process sequential arg.  */
       arg = (pos == 0 ? (ac.direc_arg = -1)
@@ -520,171 +520,171 @@ get_curr_arg (int pos, struct arg_cursor ac)
              : ac.direc_arg);
     }
 
-  if (0 <= arg)
+  यदि (0 <= arg)
     {
       ac.curr_arg = arg;
       ac.end_arg = MAX (ac.end_arg, arg);
     }
-  return ac;
+  प्रत्यागम ac;
 }
 
 /* Print the text in FORMAT, using ARGV (with ARGC elements) for
    arguments to any '%' directives.
    Return the number of elements of ARGV used.  */
 
-static int
-print_formatted (char const *format, int argc, char **argv)
+स्थिर पूर्णाङ्क
+print_formatted (वर्ण ध्रुव *format, पूर्णाङ्क argc, वर्ण **argv)
 {
-  struct arg_cursor ac;
+  संरचना arg_cursor ac;
   ac.curr_arg = ac.curr_s_arg = ac.end_arg = ac.direc_arg = -1;
-  char const *direc_start;	/* Start of % directive.  */
-  char *direc;			/* Generated % directive.  */
-  char *pdirec;			/* Pointer to current end of directive.  */
+  वर्ण ध्रुव *direc_start;	/* Start of % directive.  */
+  वर्ण *direc;			/* Generated % directive.  */
+  वर्ण *pdirec;			/* Pointer to current end of directive.  */
   bool have_field_width;	/* True if FIELD_WIDTH is valid.  */
-  int field_width = 0;		/* Arg to first '*'.  */
+  पूर्णाङ्क field_width = 0;		/* Arg to first '*'.  */
   bool have_precision;		/* True if PRECISION is valid.  */
-  int precision = 0;		/* Arg to second '*'.  */
-  char ok[UCHAR_MAX + 1];	/* ok['x'] is true if %x is allowed.  */
+  पूर्णाङ्क precision = 0;		/* Arg to second '*'.  */
+  वर्ण ok[अच_अक्षर_उच्च + 1];	/* ok['x'] is true if %x is allowed.  */
 
-  direc = xmalloc (strlen (format) + 1);
+  direc = xmalloc (म_माप (format) + 1);
 
-  for (ac.f = format; *ac.f; ac.f++)
+  प्रति (ac.f = format; *ac.f; ac.f++)
     {
-      switch (*ac.f)
+      विकल्प (*ac.f)
         {
-        case '%':
+        पक्ष '%':
           direc_start = ac.f;
           pdirec = direc;
           *pdirec++ = *ac.f++;
           have_field_width = have_precision = false;
-          if (*ac.f == '%')
+          यदि (*ac.f == '%')
             {
-              putchar ('%');
-              break;
+              अक्षर_दो ('%');
+              भङ्ग;
             }
 
           ac = get_curr_arg (0, ac);
 
-          if (*ac.f == 'b')
+          यदि (*ac.f == 'b')
             {
               /* FIXME: Field width and precision are not supported
                  for %b, even though POSIX requires it.  */
               ac = get_curr_arg (3, ac);
-              if (ac.curr_arg < argc)
+              यदि (ac.curr_arg < argc)
                 print_esc_string (argv[ac.curr_arg]);
-              break;
+              भङ्ग;
             }
 
-          if (*ac.f == 'q')
+          यदि (*ac.f == 'q')
             {
               ac = get_curr_arg (3, ac);
-              if (ac.curr_arg < argc)
+              यदि (ac.curr_arg < argc)
                 {
-                  fputs (quotearg_style (shell_escape_quoting_style,
-                                         argv[ac.curr_arg]), stdout);
+                  ख_माला_दो (quotearg_style (shell_escape_quoting_style,
+                                         argv[ac.curr_arg]), मानक_निकास);
                 }
-              break;
+              भङ्ग;
             }
 
-          memset (ok, 0, sizeof ok);
+          स_रखो (ok, 0, परिमाण ok);
           ok['a'] = ok['A'] = ok['c'] = ok['d'] = ok['e'] = ok['E'] =
             ok['f'] = ok['F'] = ok['g'] = ok['G'] = ok['i'] = ok['o'] =
             ok['s'] = ok['u'] = ok['x'] = ok['X'] = 1;
 
-          for (;; ac.f++)
+          प्रति (;; ac.f++)
             {
-              switch (*ac.f)
+              विकल्प (*ac.f)
                 {
-#if (__GLIBC__ == 2 && 2 <= __GLIBC_MINOR__) || 3 <= __GLIBC__
-                case 'I':
+#यदि (__GLIBC__ == 2 && 2 <= __GLIBC_MINOR__) || 3 <= __GLIBC__
+                पक्ष 'I':
 #endif
-                case '\'':
+                पक्ष '\'':
                   ok['a'] = ok['A'] = ok['c'] = ok['e'] = ok['E'] =
                     ok['o'] = ok['s'] = ok['x'] = ok['X'] = 0;
-                  break;
-                case '-': case '+': case ' ':
-                  break;
-                case '#':
+                  भङ्ग;
+                पक्ष '-': पक्ष '+': पक्ष ' ':
+                  भङ्ग;
+                पक्ष '#':
                   ok['c'] = ok['d'] = ok['i'] = ok['s'] = ok['u'] = 0;
-                  break;
-                case '0':
+                  भङ्ग;
+                पक्ष '0':
                   ok['c'] = ok['s'] = 0;
-                  break;
-                default:
-                  goto no_more_flag_characters;
+                  भङ्ग;
+                स्वभाव:
+                  गच्छ no_more_flag_characters;
                 }
               *pdirec++ = *ac.f;
             }
         no_more_flag_characters:
 
-          if (*ac.f == '*')
+          यदि (*ac.f == '*')
             {
               *pdirec++ = *ac.f++;
 
               ac = get_curr_arg (1, ac);
 
-              if (ac.curr_arg < argc)
+              यदि (ac.curr_arg < argc)
                 {
                   intmax_t width = vstrtoimax (argv[ac.curr_arg]);
-                  if (INT_MIN <= width && width <= INT_MAX)
+                  यदि (पूर्णांक_न्यून <= width && width <= पूर्णांक_उच्च)
                     field_width = width;
-                  else
-                    error (EXIT_FAILURE, 0, _("invalid field width: %s"),
+                  अन्यथा
+                    error (निकास_त्रुटि, 0, _("invalid field width: %s"),
                            quote (argv[ac.curr_arg]));
                 }
-              else
+              अन्यथा
                 field_width = 0;
               have_field_width = true;
             }
-          else
-            while (c_isdigit (*ac.f))
+          अन्यथा
+            यावत् (c_isdigit (*ac.f))
               *pdirec++ = *ac.f++;
-          if (*ac.f == '.')
+          यदि (*ac.f == '.')
             {
               *pdirec++ = *ac.f++;
               ok['c'] = 0;
-              if (*ac.f == '*')
+              यदि (*ac.f == '*')
                 {
                   *pdirec++ = *ac.f++;
 
                   ac = get_curr_arg (2, ac);
 
-                  if (ac.curr_arg < argc)
+                  यदि (ac.curr_arg < argc)
                     {
                       intmax_t prec = vstrtoimax (argv[ac.curr_arg]);
-                      if (prec < 0)
+                      यदि (prec < 0)
                         {
                           /* A negative precision is taken as if the
                              precision were omitted, so -1 is safe
                              here even if prec < INT_MIN.  */
                           precision = -1;
                         }
-                      else if (INT_MAX < prec)
-                        error (EXIT_FAILURE, 0, _("invalid precision: %s"),
+                      अन्यथा यदि (पूर्णांक_उच्च < prec)
+                        error (निकास_त्रुटि, 0, _("invalid precision: %s"),
                                quote (argv[ac.curr_arg]));
-                      else
+                      अन्यथा
                         precision = prec;
                     }
-                  else
+                  अन्यथा
                     precision = 0;
                   have_precision = true;
                 }
-              else
-                while (c_isdigit (*ac.f))
+              अन्यथा
+                यावत् (c_isdigit (*ac.f))
                   *pdirec++ = *ac.f++;
             }
 
           *pdirec++ = '\0';
 
-          while (*ac.f == 'l' || *ac.f == 'L' || *ac.f == 'h'
+          यावत् (*ac.f == 'l' || *ac.f == 'L' || *ac.f == 'h'
                  || *ac.f == 'j' || *ac.f == 't' || *ac.f == 'z')
             ++ac.f;
 
           {
-            unsigned char conversion = *ac.f;
-            int speclen = MIN (ac.f + 1 - direc_start, INT_MAX);
-            if (! ok[conversion])
-              error (EXIT_FAILURE, 0,
+            अचिन्हित वर्ण conversion = *ac.f;
+            पूर्णाङ्क speclen = MIN (ac.f + 1 - direc_start, पूर्णांक_उच्च);
+            यदि (! ok[conversion])
+              error (निकास_त्रुटि, 0,
                      _("%.*s: invalid conversion specification"),
                      speclen, direc_start);
           }
@@ -694,84 +694,84 @@ print_formatted (char const *format, int argc, char **argv)
           print_direc (direc, *ac.f,
                        have_field_width, field_width,
                        have_precision, precision,
-                       ac.curr_arg < argc ? argv[ac.curr_arg] : NULL);
+                       ac.curr_arg < argc ? argv[ac.curr_arg] : रिक्त);
 
-          break;
+          भङ्ग;
 
-        case '\\':
+        पक्ष '\\':
           ac.f += print_esc (ac.f, false);
-          break;
+          भङ्ग;
 
-        default:
-          putchar (*ac.f);
+        स्वभाव:
+          अक्षर_दो (*ac.f);
         }
     }
 
-  free (direc);
-  return MIN (argc, ac.end_arg + 1);
+  मुक्त (direc);
+  प्रत्यागम MIN (argc, ac.end_arg + 1);
 }
 
-int
-main (int argc, char **argv)
+पूर्णाङ्क
+main (पूर्णाङ्क argc, वर्ण **argv)
 {
-  char *format;
-  int args_used;
+  वर्ण *format;
+  पूर्णाङ्क args_used;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
-  setlocale (LC_ALL, "");
+  रखो_क्षेत्र (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
-  atexit (close_stdout);
+  निकास_पर (close_stdout);
 
-  posixly_correct = (getenv ("POSIXLY_CORRECT") != NULL);
+  posixly_correct = (दो_पर्या ("POSIXLY_CORRECT") != रिक्त);
 
   /* We directly parse options, rather than use parse_long_options, in
      order to avoid accepting abbreviations.  */
-  if (argc == 2)
+  यदि (argc == 2)
     {
-      if (streq (argv[1], "--help"))
-        usage (EXIT_SUCCESS);
+      यदि (streq (argv[1], "--help"))
+        usage (निकास_सफल);
 
-      if (streq (argv[1], "--version"))
+      यदि (streq (argv[1], "--version"))
         {
-          version_etc (stdout, PROGRAM_NAME, PACKAGE_NAME, Version, AUTHORS,
-                       (char *) NULL);
-          return EXIT_SUCCESS;
+          version_etc (मानक_निकास, PROGRAM_NAME, PACKAGE_NAME, Version, AUTHORS,
+                       (वर्ण *) रिक्त);
+          प्रत्यागम निकास_सफल;
         }
     }
 
   /* The above handles --help and --version.
      Since there is no other invocation of getopt, handle '--' here.  */
-  if (1 < argc && streq (argv[1], "--"))
+  यदि (1 < argc && streq (argv[1], "--"))
     {
       --argc;
       ++argv;
     }
 
-  if (argc <= 1)
+  यदि (argc <= 1)
     {
       error (0, 0, _("missing operand"));
-      usage (EXIT_FAILURE);
+      usage (निकास_त्रुटि);
     }
 
   format = argv[1];
   argc -= 2;
   argv += 2;
 
-  do
+  कुरु
     {
       args_used = print_formatted (format, argc, argv);
       argc -= args_used;
       argv += args_used;
     }
-  while (args_used > 0 && argc > 0);
+  यावत् (args_used > 0 && argc > 0);
 
-  if (argc > 0)
+  यदि (argc > 0)
     error (0, 0,
            _("warning: ignoring excess arguments, starting with %s"),
            quote (argv[0]));
 
-  return exit_status;
+  प्रत्यागम exit_status;
 }

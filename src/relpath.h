@@ -19,7 +19,7 @@
 #ifndef _RELPATH_H
 # define _RELPATH_H
 
-extern bool
-relpath (char const *can_fname, char const *can_reldir, char *buf, size_t len);
+बाह्य bool
+relpath (वर्ण ध्रुव *can_fname, वर्ण ध्रुव *can_reldir, वर्ण *buf, माप_प्रकार len);
 
 #endif

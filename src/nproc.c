@@ -16,59 +16,59 @@
 
 /* Written by Giuseppe Scrivano.  */
 
-#include <config.h>
-#include <getopt.h>
-#include <stdio.h>
-#include <sys/types.h>
+#अन्तर्भाव <config.h>
+#अन्तर्भाव <getopt.h>
+#अन्तर्भाव <stdio.h>
+#अन्तर्भाव <sys/types.h>
 
-#include "system.h"
-#include "nproc.h"
-#include "quote.h"
-#include "xdectoint.h"
+#अन्तर्भाव "system.h"
+#अन्तर्भाव "nproc.h"
+#अन्तर्भाव "quote.h"
+#अन्तर्भाव "xdectoint.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "nproc"
 
 #define AUTHORS proper_name ("Giuseppe Scrivano")
 
-enum
+गणना
 {
-  ALL_OPTION = CHAR_MAX + 1,
+  ALL_OPTION = अक्षर_उच्च + 1,
   IGNORE_OPTION
 };
 
-static struct option const longopts[] =
+स्थिर संरचना option ध्रुव longopts[] =
 {
-  {"all", no_argument, NULL, ALL_OPTION},
-  {"ignore", required_argument, NULL, IGNORE_OPTION},
+  {"all", no_argument, रिक्त, ALL_OPTION},
+  {"ignore", required_argument, रिक्त, IGNORE_OPTION},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {रिक्त, 0, रिक्त, 0}
 };
 
-void
-usage (int status)
+शून्य
+usage (पूर्णाङ्क status)
 {
-  if (status != EXIT_SUCCESS)
+  यदि (status != निकास_सफल)
     emit_try_help ();
-  else
+  अन्यथा
     {
-      printf (_("Usage: %s [OPTION]...\n"), program_name);
-      fputs (_("\
-Print the number of processing units available to the current process,\n\
-which may be less than the number of online processors.\n\
+      म_लिखो (_("Usage: %s [OPTION]...\n"), program_name);
+      ख_माला_दो (_("\
+Print the संख्या of processing units available to the current process,\n\
+which may be less than the संख्या of online processors.\n\
 If the 'OMP_NUM_THREADS' or 'OMP_THREAD_LIMIT' environment variables are set,\n\
-then they will determine the minimum and maximum returned value respectively.\n\
+then they will determine the minimum and maximum returned मूल्य respectively.\n\
 \n\
-"), stdout);
+"), मानक_निकास);
       oputs (_("\
       --all\n\
-         print the number of installed processors,\n\
+         print the संख्या of installed processors,\n\
          disregarding any OpenMP environment variables, or CPU quotas.\n\
 "));
       oputs (_("\
       --ignore=N\n\
-         if possible, exclude N processing units.\n\
+         यदि possible, exclude N processing units.\n\
          The result is guaranteed to be at least 1.\n\
 "));
 
@@ -76,62 +76,62 @@ then they will determine the minimum and maximum returned value respectively.\n\
       oputs (VERSION_OPTION_DESCRIPTION);
       emit_ancillary_info (PROGRAM_NAME);
     }
-  exit (status);
+  निकास (status);
 }
 
-int
-main (int argc, char **argv)
+पूर्णाङ्क
+main (पूर्णाङ्क argc, वर्ण **argv)
 {
-  unsigned long ignore = 0;
+  अचिन्हित दीर्घ ignore = 0;
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
-  setlocale (LC_ALL, "");
+  रखो_क्षेत्र (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
-  atexit (close_stdout);
+  निकास_पर (close_stdout);
 
-  enum nproc_query mode = NPROC_CURRENT_OVERRIDABLE;
+  गणना nproc_query mode = NPROC_CURRENT_OVERRIDABLE;
 
-  while (true)
+  यावत् (true)
     {
-      int c = getopt_long (argc, argv, "", longopts, NULL);
-      if (c == -1)
-        break;
-      switch (c)
+      पूर्णाङ्क c = getopt_long (argc, argv, "", longopts, रिक्त);
+      यदि (c == -1)
+        भङ्ग;
+      विकल्प (c)
         {
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        case ALL_OPTION:
+        पक्ष ALL_OPTION:
           mode = NPROC_ALL;
-          break;
+          भङ्ग;
 
-        case IGNORE_OPTION:
-          ignore = xnumtoumax (optarg, 10, 0, ULONG_MAX, "",
+        पक्ष IGNORE_OPTION:
+          ignore = xnumtoumax (optarg, 10, 0, अच_दीर्घ_उच्च, "",
                                _("invalid number"), 0, XTOINT_MAX_QUIET);
-          break;
+          भङ्ग;
 
-        default:
-          usage (EXIT_FAILURE);
+        स्वभाव:
+          usage (निकास_त्रुटि);
         }
     }
 
-  if (argc != optind)
+  यदि (argc != optind)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind]));
-      usage (EXIT_FAILURE);
+      usage (निकास_त्रुटि);
     }
 
-  unsigned long nproc = num_processors (mode);
+  अचिन्हित दीर्घ nproc = अंक_processors (mode);
 
-  if (ignore < nproc)
+  यदि (ignore < nproc)
     nproc -= ignore;
-  else
+  अन्यथा
     nproc = 1;
 
-  printf ("%lu\n", nproc);
+  म_लिखो ("%lu\n", nproc);
 
-  return EXIT_SUCCESS;
+  प्रत्यागम निकास_सफल;
 }
