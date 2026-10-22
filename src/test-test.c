@@ -1,2 +1,2 @@
-#include "test.h"
-enum test_modes test_mode = TEST_TEST;
+#অন্তর্ভাব "test.h"
+গণনা test_modes test_mode = TEST_TEST;

@@ -14,38 +14,38 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include <getopt.h>
-#include <stdio.h>
-#include <sys/types.h>
+#অন্তর্ভাব <config.h>
+#অন্তর্ভাব <getopt.h>
+#অন্তর্ভাব <stdio.h>
+#অন্তর্ভাব <sys/types.h>
 
-#include "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
-#include "system.h"
-#include "quote.h"
+#অন্তর্ভাব "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
+#অন্তর্ভাব "system.h"
+#অন্তর্ভাব "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "basename"
 
 #define AUTHORS proper_name ("David MacKenzie")
 
-static bool quote_output;
+স্থির bool quote_output;
 
-static struct option const longopts[] =
+স্থির কাঠামো option ধ্রুবক longopts[] =
 {
-  {"multiple", no_argument, NULL, 'a'},
-  {"suffix", required_argument, NULL, 's'},
-  {"zero", no_argument, NULL, 'z'},
+  {"multiple", no_argument, ফাঁকা, 'a'},
+  {"suffix", required_argument, ফাঁকা, 's'},
+  {"zero", no_argument, ফাঁকা, 'z'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ফাঁকা, 0, ফাঁকা, 0}
 };
 
-void
-usage (int status)
+শূন্য
+usage (পূর্ণসংখ্যা status)
 {
-  if (status != EXIT_SUCCESS)
+  যদি (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  অন্যথা
     {
       printf (_("\
 Usage: %s NAME [SUFFIX]\n\
@@ -69,7 +69,7 @@ If specified, also remove a trailing SUFFIX.\n\
 "));
       oputs (_("\
   -z, --zero\n\
-         end each output line with NUL, not newline\n\
+         end each output সারি with NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -90,16 +90,16 @@ Examples:\n\
 /* Remove SUFFIX from the end of NAME if it is there, unless NAME
    consists entirely of SUFFIX.  */
 
-static void
-remove_suffix (char *name, char const *suffix, idx_t suffix_len)
+স্থির শূন্য
+remove_suffix (অক্ষর *name, অক্ষর ধ্রুবক *suffix, idx_t suffix_len)
 {
-  char *np = name + strlen (name);
-  char const *sp = suffix + suffix_len;
+  অক্ষর *np = name + strlen (name);
+  অক্ষর ধ্রুবক *sp = suffix + suffix_len;
 
-  while (np > name && sp > suffix)
-    if (*--np != *--sp)
-      return;
-  if (np > name)
+  যখন (np > name && sp > suffix)
+    যদি (*--np != *--sp)
+      ফেরত;
+  যদি (np > name)
     *np = '\0';
 }
 
@@ -107,11 +107,11 @@ remove_suffix (char *name, char const *suffix, idx_t suffix_len)
    length of SUFFIX_LEN bytes, remove the trailing SUFFIX.
    Finally, output the result string.  */
 
-static void
-perform_basename (char const *string, char const *suffix, idx_t suffix_len,
+স্থির শূন্য
+perform_basename (অক্ষর ধ্রুবক *string, অক্ষর ধ্রুবক *suffix, idx_t suffix_len,
                   bool use_nuls)
 {
-  char *name = base_name (string);
+  অক্ষর *name = base_name (string);
   strip_trailing_slashes (name);
 
   /* Per POSIX, 'basename // /' must return '//' on platforms with
@@ -120,21 +120,21 @@ perform_basename (char const *string, char const *suffix, idx_t suffix_len,
      skipping suffix stripping if base_name returned an absolute path
      or a drive letter (only possible if name is a file-system
      root).  */
-  if (0 < suffix_len && IS_RELATIVE_FILE_NAME (name)
+  যদি (0 < suffix_len && IS_RELATIVE_FILE_NAME (name)
       && ! FILE_SYSTEM_PREFIX_LEN (name))
     remove_suffix (name, suffix, suffix_len);
 
   fputs (quote_output ? quoteN (name) : name, stdout);
   putchar (use_nuls ? '\0' : '\n');
-  free (name);
+  মুক্ত (name);
 }
 
-int
-main (int argc, char **argv)
+পূর্ণসংখ্যা
+প্রধান (পূর্ণসংখ্যা argc, অক্ষর **argv)
 {
   bool multiple_names = false;
   bool use_nuls = false;
-  char const *suffix = NULL;
+  অক্ষর ধ্রুবক *suffix = ফাঁকা;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -144,72 +144,72 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while (true)
+  যখন (true)
     {
-      int c = getopt_long (argc, argv, "+as:z", longopts, NULL);
+      পূর্ণসংখ্যা c = getopt_long (argc, argv, "+as:z", longopts, ফাঁকা);
 
-      if (c == -1)
-        break;
+      যদি (c == -1)
+        বিরতি;
 
-      switch (c)
+      নির্বাচন (c)
         {
-        case 's':
+        ক্ষেত্র 's':
           suffix = optarg;
           /* -s implies -a, so...  */
           FALLTHROUGH;
 
-        case 'a':
+        ক্ষেত্র 'a':
           multiple_names = true;
-          break;
+          বিরতি;
 
-        case 'z':
+        ক্ষেত্র 'z':
           use_nuls = true;
-          break;
+          বিরতি;
 
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        পূর্বনির্ধারিত:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (argc < optind + 1)
+  যদি (argc < optind + 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
-  if (! multiple_names)
+  যদি (! multiple_names)
     {
-      if (optind + 2 == argc)
+      যদি (optind + 2 == argc)
         suffix = argv[optind + 1];
-      else if (optind + 2 < argc)
+      অন্যথা যদি (optind + 2 < argc)
         {
           error (0, 0, _("extra operand %s"), quote (argv[optind + 2]));
           usage (EXIT_FAILURE);
         }
     }
 
-  if (!use_nuls && isatty (STDOUT_FILENO))
+  যদি (!use_nuls && isatty (STDOUT_FILENO))
     {
-      int qs = getenv_quoting_style ();
-      if (qs < 0)
+      পূর্ণসংখ্যা qs = getenv_quoting_style ();
+      যদি (qs < 0)
         qs = shell_escape_quoting_style;
-      if (qs != literal_quoting_style)
+      যদি (qs != literal_quoting_style)
         {
-          set_quoting_style (NULL, qs);
+          set_quoting_style (ফাঁকা, qs);
           quote_output = true;
         }
     }
 
   idx_t suffix_len = suffix ? strlen (suffix) : 0;
 
-  char **file = argv + optind;
-  int n_files = multiple_names ? argc - optind : 1;
+  অক্ষর **file = argv + optind;
+  পূর্ণসংখ্যা n_files = multiple_names ? argc - optind : 1;
 
-  for (int i = 0; i < n_files; ++i)
+  জন্য (পূর্ণসংখ্যা i = 0; i < n_files; ++i)
     perform_basename (file[i], suffix, suffix_len, use_nuls);
 
-  return EXIT_SUCCESS;
+  ফেরত EXIT_SUCCESS;
 }

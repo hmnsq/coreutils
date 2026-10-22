@@ -19,7 +19,7 @@
 
 # include <stdio.h>
 
-extern void prog_fprintf (FILE *fp, char const *fmt, ...)
+বাহ্যিক শূন্য prog_fprintf (FILE *fp, অক্ষর ধ্রুবক *fmt, ...)
   _GL_ATTRIBUTE_FORMAT ((__printf__, 2, 3)) _GL_ATTRIBUTE_NONNULL ((1, 2));
 
 #endif

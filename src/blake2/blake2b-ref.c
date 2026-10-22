@@ -17,14 +17,14 @@
 # include <config.h>
 #endif
 
-#include <stdint.h>
-#include <string.h>
-#include <stdio.h>
+#অন্তর্ভাব <stdint.h>
+#অন্তর্ভাব <string.h>
+#অন্তর্ভাব <stdio.h>
 
-#include "blake2.h"
-#include "blake2-impl.h"
+#অন্তর্ভাব "blake2.h"
+#অন্তর্ভাব "blake2-impl.h"
 
-static const uint64_t blake2b_IV[8] =
+স্থির ধ্রুবক uint64_t blake2b_IV[8] =
 {
   0x6a09e667f3bcc908ULL, 0xbb67ae8584caa73bULL,
   0x3c6ef372fe94f82bULL, 0xa54ff53a5f1d36f1ULL,
@@ -32,7 +32,7 @@ static const uint64_t blake2b_IV[8] =
   0x1f83d9abfb41bd6bULL, 0x5be0cd19137e2179ULL
 };
 
-static const uint8_t blake2b_sigma[12][16] =
+স্থির ধ্রুবক uint8_t blake2b_sigma[12][16] =
 {
   {  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15 } ,
   { 14, 10,  4,  8,  9, 15, 13,  6,  1, 12,  0,  2, 11,  7,  5,  3 } ,
@@ -49,113 +49,113 @@ static const uint8_t blake2b_sigma[12][16] =
 };
 
 
-static void blake2b_set_lastnode( blake2b_state *S )
+স্থির শূন্য blake2b_set_lastnode( blake2b_state *S )
 {
   S->f[1] = (uint64_t)-1;
 }
 
 /* Some helper functions, not necessarily useful */
-static int blake2b_is_lastblock( const blake2b_state *S )
+স্থির পূর্ণসংখ্যা blake2b_is_lastblock( ধ্রুবক blake2b_state *S )
 {
-  return S->f[0] != 0;
+  ফেরত S->f[0] != 0;
 }
 
-static void blake2b_set_lastblock( blake2b_state *S )
+স্থির শূন্য blake2b_set_lastblock( blake2b_state *S )
 {
-  if( S->last_node ) blake2b_set_lastnode( S );
+  যদি( S->last_গ্রন্থি ) blake2b_set_lastnode( S );
 
   S->f[0] = (uint64_t)-1;
 }
 
-static void blake2b_increment_counter( blake2b_state *S, const uint64_t inc )
+স্থির শূন্য blake2b_increment_গণক( blake2b_state *S, ধ্রুবক uint64_t inc )
 {
   S->t[0] += inc;
   S->t[1] += ( S->t[0] < inc );
 }
 
-static void blake2b_init0( blake2b_state *S )
+স্থির শূন্য blake2b_init0( blake2b_state *S )
 {
   size_t i;
-  memset( S, 0, sizeof( blake2b_state ) );
+  memset( S, 0, আকার( blake2b_state ) );
 
-  for( i = 0; i < 8; ++i ) S->h[i] = blake2b_IV[i];
+  জন্য( i = 0; i < 8; ++i ) S->h[i] = blake2b_IV[i];
 }
 
 /* init xors IV with input parameter block */
-int blake2b_init_param( blake2b_state *S, const blake2b_param *P )
+পূর্ণসংখ্যা blake2b_init_param( blake2b_state *S, ধ্রুবক blake2b_param *P )
 {
-  const uint8_t *p = ( const uint8_t * )( P );
+  ধ্রুবক uint8_t *p = ( ধ্রুবক uint8_t * )( P );
   size_t i;
 
   blake2b_init0( S );
 
   /* IV XOR ParamBlock */
-  for( i = 0; i < 8; ++i )
-    S->h[i] ^= load64( p + sizeof( S->h[i] ) * i );
+  জন্য( i = 0; i < 8; ++i )
+    S->h[i] ^= load64( p + আকার( S->h[i] ) * i );
 
-  S->outlen = P->digest_length;
-  return 0;
+  S->outlen = P->digest_দৈর্ঘ্য;
+  ফেরত 0;
 }
 
 
 
-int blake2b_init( blake2b_state *S, size_t outlen )
+পূর্ণসংখ্যা blake2b_init( blake2b_state *S, size_t outlen )
 {
   blake2b_param P[1];
 
-  if ( ( !outlen ) || ( outlen > BLAKE2B_OUTBYTES ) ) return -1;
+  যদি ( ( !outlen ) || ( outlen > BLAKE2B_OUTBYTES ) ) ফেরত -1;
 
-  P->digest_length = (uint8_t)outlen;
-  P->key_length    = 0;
+  P->digest_দৈর্ঘ্য = (uint8_t)outlen;
+  P->চাবি_দৈর্ঘ্য    = 0;
   P->fanout        = 1;
   P->depth         = 1;
-  store32( &P->leaf_length, 0 );
-  store32( &P->node_offset, 0 );
-  store32( &P->xof_length, 0 );
-  P->node_depth    = 0;
-  P->inner_length  = 0;
-  memset( P->reserved, 0, sizeof( P->reserved ) );
-  memset( P->salt,     0, sizeof( P->salt ) );
-  memset( P->personal, 0, sizeof( P->personal ) );
-  return blake2b_init_param( S, P );
+  store32( &P->leaf_দৈর্ঘ্য, 0 );
+  store32( &P->গ্রন্থি_offset, 0 );
+  store32( &P->xof_দৈর্ঘ্য, 0 );
+  P->গ্রন্থি_depth    = 0;
+  P->inner_দৈর্ঘ্য  = 0;
+  memset( P->reserved, 0, আকার( P->reserved ) );
+  memset( P->salt,     0, আকার( P->salt ) );
+  memset( P->personal, 0, আকার( P->personal ) );
+  ফেরত blake2b_init_param( S, P );
 }
 
 
-int blake2b_init_key( blake2b_state *S, size_t outlen, const void *key, size_t keylen )
+পূর্ণসংখ্যা blake2b_init_চাবি( blake2b_state *S, size_t outlen, ধ্রুবক শূন্য *চাবি, size_t keylen )
 {
   blake2b_param P[1];
 
-  if ( ( !outlen ) || ( outlen > BLAKE2B_OUTBYTES ) ) return -1;
+  যদি ( ( !outlen ) || ( outlen > BLAKE2B_OUTBYTES ) ) ফেরত -1;
 
-  if ( !key || !keylen || keylen > BLAKE2B_KEYBYTES ) return -1;
+  যদি ( !চাবি || !keylen || keylen > BLAKE2B_KEYBYTES ) ফেরত -1;
 
-  P->digest_length = (uint8_t)outlen;
-  P->key_length    = (uint8_t)keylen;
+  P->digest_দৈর্ঘ্য = (uint8_t)outlen;
+  P->চাবি_দৈর্ঘ্য    = (uint8_t)keylen;
   P->fanout        = 1;
   P->depth         = 1;
-  store32( &P->leaf_length, 0 );
-  store32( &P->node_offset, 0 );
-  store32( &P->xof_length, 0 );
-  P->node_depth    = 0;
-  P->inner_length  = 0;
-  memset( P->reserved, 0, sizeof( P->reserved ) );
-  memset( P->salt,     0, sizeof( P->salt ) );
-  memset( P->personal, 0, sizeof( P->personal ) );
+  store32( &P->leaf_দৈর্ঘ্য, 0 );
+  store32( &P->গ্রন্থি_offset, 0 );
+  store32( &P->xof_দৈর্ঘ্য, 0 );
+  P->গ্রন্থি_depth    = 0;
+  P->inner_দৈর্ঘ্য  = 0;
+  memset( P->reserved, 0, আকার( P->reserved ) );
+  memset( P->salt,     0, আকার( P->salt ) );
+  memset( P->personal, 0, আকার( P->personal ) );
 
-  if( blake2b_init_param( S, P ) < 0 ) return -1;
+  যদি( blake2b_init_param( S, P ) < 0 ) ফেরত -1;
 
   {
     uint8_t block[BLAKE2B_BLOCKBYTES];
     memset( block, 0, BLAKE2B_BLOCKBYTES );
-    memcpy( block, key, keylen );
+    memcpy( block, চাবি, keylen );
     blake2b_update( S, block, BLAKE2B_BLOCKBYTES );
     secure_zero_memory( block, BLAKE2B_BLOCKBYTES ); /* Burn the key from stack */
   }
-  return 0;
+  ফেরত 0;
 }
 
 #define G(r,i,a,b,c,d)                      \
-  do {                                      \
+  করো {                                      \
     a = a + b + m[blake2b_sigma[r][2 * i + 0]]; \
     d = rotr64(d ^ a, 32);                  \
     c = c + d;                              \
@@ -164,10 +164,10 @@ int blake2b_init_key( blake2b_state *S, size_t outlen, const void *key, size_t k
     d = rotr64(d ^ a, 16);                  \
     c = c + d;                              \
     b = rotr64(b ^ c, 63);                  \
-  } while(0)
+  } যখন(0)
 
 #define ROUND(r)                    \
-  do {                              \
+  করো {                              \
     G(r,0,v[ 0],v[ 4],v[ 8],v[12]); \
     G(r,1,v[ 1],v[ 5],v[ 9],v[13]); \
     G(r,2,v[ 2],v[ 6],v[10],v[14]); \
@@ -176,19 +176,19 @@ int blake2b_init_key( blake2b_state *S, size_t outlen, const void *key, size_t k
     G(r,5,v[ 1],v[ 6],v[11],v[12]); \
     G(r,6,v[ 2],v[ 7],v[ 8],v[13]); \
     G(r,7,v[ 3],v[ 4],v[ 9],v[14]); \
-  } while(0)
+  } যখন(0)
 
-static void blake2b_compress( blake2b_state *S, const uint8_t block[BLAKE2B_BLOCKBYTES] )
+স্থির শূন্য blake2b_compress( blake2b_state *S, ধ্রুবক uint8_t block[BLAKE2B_BLOCKBYTES] )
 {
   uint64_t m[16];
   uint64_t v[16];
   size_t i;
 
-  for( i = 0; i < 16; ++i ) {
-    m[i] = load64( block + i * sizeof( m[i] ) );
+  জন্য( i = 0; i < 16; ++i ) {
+    m[i] = load64( block + i * আকার( m[i] ) );
   }
 
-  for( i = 0; i < 8; ++i ) {
+  জন্য( i = 0; i < 8; ++i ) {
     v[i] = S->h[i];
   }
 
@@ -214,7 +214,7 @@ static void blake2b_compress( blake2b_state *S, const uint8_t block[BLAKE2B_BLOC
   ROUND( 10 );
   ROUND( 11 );
 
-  for( i = 0; i < 8; ++i ) {
+  জন্য( i = 0; i < 8; ++i ) {
     S->h[i] = S->h[i] ^ v[i] ^ v[i + 8];
   }
 }
@@ -222,22 +222,22 @@ static void blake2b_compress( blake2b_state *S, const uint8_t block[BLAKE2B_BLOC
 #undef G
 #undef ROUND
 
-int blake2b_update( blake2b_state *S, const void *pin, size_t inlen )
+পূর্ণসংখ্যা blake2b_update( blake2b_state *S, ধ্রুবক শূন্য *pin, size_t inlen )
 {
-  const unsigned char * in = (const unsigned char *)pin;
-  if( inlen > 0 )
+  ধ্রুবক unsigned অক্ষর * in = (ধ্রুবক unsigned অক্ষর *)pin;
+  যদি( inlen > 0 )
   {
-    size_t left = S->buflen;
-    size_t fill = BLAKE2B_BLOCKBYTES - left;
-    if( inlen > fill )
+    size_t বাম = S->buflen;
+    size_t fill = BLAKE2B_BLOCKBYTES - বাম;
+    যদি( inlen > fill )
     {
       S->buflen = 0;
-      memcpy( S->buf + left, in, fill ); /* Fill buffer */
-      blake2b_increment_counter( S, BLAKE2B_BLOCKBYTES );
+      memcpy( S->buf + বাম, in, fill ); /* Fill buffer */
+      blake2b_increment_গণক( S, BLAKE2B_BLOCKBYTES );
       blake2b_compress( S, S->buf ); /* Compress */
       in += fill; inlen -= fill;
-      while(inlen > BLAKE2B_BLOCKBYTES) {
-        blake2b_increment_counter(S, BLAKE2B_BLOCKBYTES);
+      যখন(inlen > BLAKE2B_BLOCKBYTES) {
+        blake2b_increment_গণক(S, BLAKE2B_BLOCKBYTES);
         blake2b_compress( S, in );
         in += BLAKE2B_BLOCKBYTES;
         inlen -= BLAKE2B_BLOCKBYTES;
@@ -246,138 +246,138 @@ int blake2b_update( blake2b_state *S, const void *pin, size_t inlen )
     memcpy( S->buf + S->buflen, in, inlen );
     S->buflen += inlen;
   }
-  return 0;
+  ফেরত 0;
 }
 
-int blake2b_final( blake2b_state *S, void *out, size_t outlen )
+পূর্ণসংখ্যা blake2b_final( blake2b_state *S, শূন্য *out, size_t outlen )
 {
-  uint8_t buffer[BLAKE2B_OUTBYTES] = {0};
+  uint8_t বাফার[BLAKE2B_OUTBYTES] = {0};
   size_t i;
 
-  if( out == NULL || outlen < S->outlen )
-    return -1;
+  যদি( out == ফাঁকা || outlen < S->outlen )
+    ফেরত -1;
 
-  if( blake2b_is_lastblock( S ) )
-    return -1;
+  যদি( blake2b_is_lastblock( S ) )
+    ফেরত -1;
 
-  blake2b_increment_counter( S, S->buflen );
+  blake2b_increment_গণক( S, S->buflen );
   blake2b_set_lastblock( S );
   memset( S->buf + S->buflen, 0, BLAKE2B_BLOCKBYTES - S->buflen ); /* Padding */
   blake2b_compress( S, S->buf );
 
-  for( i = 0; i < 8; ++i ) /* Output full hash to temp buffer */
-    store64( buffer + sizeof( S->h[i] ) * i, S->h[i] );
+  জন্য( i = 0; i < 8; ++i ) /* Output full hash to temp buffer */
+    store64( বাফার + আকার( S->h[i] ) * i, S->h[i] );
 
-  memcpy( out, buffer, S->outlen );
-  secure_zero_memory(buffer, sizeof(buffer));
-  return 0;
+  memcpy( out, বাফার, S->outlen );
+  secure_zero_memory(বাফার, আকার(বাফার));
+  ফেরত 0;
 }
 
 /* inlen, at least, should be uint64_t. Others can be size_t. */
-int blake2b( void *out, size_t outlen, const void *in, size_t inlen, const void *key, size_t keylen )
+পূর্ণসংখ্যা blake2b( শূন্য *out, size_t outlen, ধ্রুবক শূন্য *in, size_t inlen, ধ্রুবক শূন্য *চাবি, size_t keylen )
 {
   blake2b_state S[1];
 
   /* Verify parameters */
-  if ( NULL == in && inlen > 0 ) return -1;
+  যদি ( ফাঁকা == in && inlen > 0 ) ফেরত -1;
 
-  if ( NULL == out ) return -1;
+  যদি ( ফাঁকা == out ) ফেরত -1;
 
-  if( NULL == key && keylen > 0 ) return -1;
+  যদি( ফাঁকা == চাবি && keylen > 0 ) ফেরত -1;
 
-  if( !outlen || outlen > BLAKE2B_OUTBYTES ) return -1;
+  যদি( !outlen || outlen > BLAKE2B_OUTBYTES ) ফেরত -1;
 
-  if( keylen > BLAKE2B_KEYBYTES ) return -1;
+  যদি( keylen > BLAKE2B_KEYBYTES ) ফেরত -1;
 
-  if( keylen > 0 )
+  যদি( keylen > 0 )
   {
-    if( blake2b_init_key( S, outlen, key, keylen ) < 0 ) return -1;
+    যদি( blake2b_init_চাবি( S, outlen, চাবি, keylen ) < 0 ) ফেরত -1;
   }
-  else
+  অন্যথা
   {
-    if( blake2b_init( S, outlen ) < 0 ) return -1;
+    যদি( blake2b_init( S, outlen ) < 0 ) ফেরত -1;
   }
 
-  blake2b_update( S, ( const uint8_t * )in, inlen );
+  blake2b_update( S, ( ধ্রুবক uint8_t * )in, inlen );
   blake2b_final( S, out, outlen );
-  return 0;
+  ফেরত 0;
 }
 
-int blake2( void *out, size_t outlen, const void *in, size_t inlen, const void *key, size_t keylen ) {
-  return blake2b(out, outlen, in, inlen, key, keylen);
+পূর্ণসংখ্যা blake2( শূন্য *out, size_t outlen, ধ্রুবক শূন্য *in, size_t inlen, ধ্রুবক শূন্য *চাবি, size_t keylen ) {
+  ফেরত blake2b(out, outlen, in, inlen, চাবি, keylen);
 }
 
-#if defined(SUPERCOP)
-int crypto_hash( unsigned char *out, unsigned char *in, unsigned long long inlen )
+#যদি defined(SUPERCOP)
+পূর্ণসংখ্যা crypto_hash( unsigned অক্ষর *out, unsigned অক্ষর *in, unsigned long long inlen )
 {
-  return blake2b( out, BLAKE2B_OUTBYTES, in, inlen, NULL, 0 );
+  ফেরত blake2b( out, BLAKE2B_OUTBYTES, in, inlen, ফাঁকা, 0 );
 }
 #endif
 
-#if defined(BLAKE2B_SELFTEST)
-#include <string.h>
-#include "blake2-kat.h"
-int main( void )
+#যদি defined(BLAKE2B_SELFTEST)
+#অন্তর্ভাব <string.h>
+#অন্তর্ভাব "blake2-kat.h"
+পূর্ণসংখ্যা প্রধান( শূন্য )
 {
-  uint8_t key[BLAKE2B_KEYBYTES];
-  uint8_t buf[BLAKE2_KAT_LENGTH];
+  uint8_t চাবি[BLAKE2B_KEYBYTES];
+  uint8_t buf[BLAKE2_KAT_দৈর্ঘ্য];
   size_t i, step;
 
-  for( i = 0; i < BLAKE2B_KEYBYTES; ++i )
-    key[i] = ( uint8_t )i;
+  জন্য( i = 0; i < BLAKE2B_KEYBYTES; ++i )
+    চাবি[i] = ( uint8_t )i;
 
-  for( i = 0; i < BLAKE2_KAT_LENGTH; ++i )
+  জন্য( i = 0; i < BLAKE2_KAT_দৈর্ঘ্য; ++i )
     buf[i] = ( uint8_t )i;
 
   /* Test simple API */
-  for( i = 0; i < BLAKE2_KAT_LENGTH; ++i )
+  জন্য( i = 0; i < BLAKE2_KAT_দৈর্ঘ্য; ++i )
   {
     uint8_t hash[BLAKE2B_OUTBYTES];
-    blake2b( hash, BLAKE2B_OUTBYTES, buf, i, key, BLAKE2B_KEYBYTES );
+    blake2b( hash, BLAKE2B_OUTBYTES, buf, i, চাবি, BLAKE2B_KEYBYTES );
 
-    if( 0 != memcmp( hash, blake2b_keyed_kat[i], BLAKE2B_OUTBYTES ) )
+    যদি( 0 != memcmp( hash, blake2b_keyed_kat[i], BLAKE2B_OUTBYTES ) )
     {
-      goto fail;
+      যাও fail;
     }
   }
 
   /* Test streaming API */
-  for(step = 1; step < BLAKE2B_BLOCKBYTES; ++step) {
-    for (i = 0; i < BLAKE2_KAT_LENGTH; ++i) {
+  জন্য(step = 1; step < BLAKE2B_BLOCKBYTES; ++step) {
+    জন্য (i = 0; i < BLAKE2_KAT_দৈর্ঘ্য; ++i) {
       uint8_t hash[BLAKE2B_OUTBYTES];
       blake2b_state S;
       uint8_t * p = buf;
       size_t mlen = i;
-      int err = 0;
+      পূর্ণসংখ্যা err = 0;
 
-      if( (err = blake2b_init_key(&S, BLAKE2B_OUTBYTES, key, BLAKE2B_KEYBYTES)) < 0 ) {
-        goto fail;
+      যদি( (err = blake2b_init_চাবি(&S, BLAKE2B_OUTBYTES, চাবি, BLAKE2B_KEYBYTES)) < 0 ) {
+        যাও fail;
       }
 
-      while (mlen >= step) {
-        if ( (err = blake2b_update(&S, p, step)) < 0 ) {
-          goto fail;
+      যখন (mlen >= step) {
+        যদি ( (err = blake2b_update(&S, p, step)) < 0 ) {
+          যাও fail;
         }
         mlen -= step;
         p += step;
       }
-      if ( (err = blake2b_update(&S, p, mlen)) < 0) {
-        goto fail;
+      যদি ( (err = blake2b_update(&S, p, mlen)) < 0) {
+        যাও fail;
       }
-      if ( (err = blake2b_final(&S, hash, BLAKE2B_OUTBYTES)) < 0) {
-        goto fail;
+      যদি ( (err = blake2b_final(&S, hash, BLAKE2B_OUTBYTES)) < 0) {
+        যাও fail;
       }
 
-      if (0 != memcmp(hash, blake2b_keyed_kat[i], BLAKE2B_OUTBYTES)) {
-        goto fail;
+      যদি (0 != memcmp(hash, blake2b_keyed_kat[i], BLAKE2B_OUTBYTES)) {
+        যাও fail;
       }
     }
   }
 
   puts( "ok" );
-  return 0;
+  ফেরত 0;
 fail:
   puts("error");
-  return -1;
+  ফেরত -1;
 }
 #endif

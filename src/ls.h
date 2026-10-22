@@ -1,4 +1,4 @@
-enum ls_modes
+গণনা ls_modes
 {
   /* This is for the 'ls' program.  */
   LS_LS,
@@ -10,4 +10,4 @@ enum ls_modes
   LS_LONG_FORMAT
 };
 
-extern enum ls_modes ls_mode;
+বাহ্যিক গণনা ls_modes ls_mode;

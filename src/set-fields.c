@@ -16,38 +16,38 @@
 
 /* Extracted from cut.c by Assaf Gordon */
 
-#include <config.h>
+#অন্তর্ভাব <config.h>
 
-#include "system.h"
-#include "c-ctype.h"
-#include "quote.h"
-#include "set-fields.h"
+#অন্তর্ভাব "system.h"
+#অন্তর্ভাব "c-ctype.h"
+#অন্তর্ভাব "quote.h"
+#অন্তর্ভাব "set-fields.h"
 
 /* Array of `struct field_range_pair' holding all the finite ranges. */
-struct field_range_pair *frp;
+কাঠামো field_range_pair *frp;
 
 /* Number of finite ranges specified by the user. */
 idx_t n_frp;
 
 /* Number of `struct field_range_pair's allocated. */
-static idx_t n_frp_allocated;
+স্থির idx_t n_frp_allocated;
 
 #define FATAL_ERROR(Message)                                            \
-  do                                                                    \
+  করো                                                                    \
     {                                                                   \
       error (0, 0, (Message));                                          \
       usage (EXIT_FAILURE);                                             \
     }                                                                   \
-  while (0)
+  যখন (0)
 
 /* Append LOW, HIGH to the list RP of range pairs, allocating additional
    space if necessary.  Update global variable N_FRP.  When allocating,
    update global variable N_FRP_ALLOCATED.  */
-static void
+স্থির শূন্য
 add_range_pair (uintmax_t lo, uintmax_t hi)
 {
-  if (n_frp == n_frp_allocated)
-    frp = xpalloc (frp, &n_frp_allocated, 1, -1, sizeof *frp);
+  যদি (n_frp == n_frp_allocated)
+    frp = xpalloc (frp, &n_frp_allocated, 1, -1, আকার *frp);
   frp[n_frp].lo = lo;
   frp[n_frp].hi = hi;
   ++n_frp;
@@ -56,41 +56,41 @@ add_range_pair (uintmax_t lo, uintmax_t hi)
 
 /* Comparison function for qsort to order the list of
    struct field_range_pairs.  */
-static int
-compare_ranges (const void *a, const void *b)
+স্থির পূর্ণসংখ্যা
+compare_ranges (ধ্রুবক শূন্য *a, ধ্রুবক শূন্য *b)
 {
-  struct field_range_pair const *ap = a, *bp = b;
-  return _GL_CMP (ap->lo, bp->lo);
+  কাঠামো field_range_pair ধ্রুবক *ap = a, *bp = b;
+  ফেরত _GL_CMP (ap->lo, bp->lo);
 }
 
 /* Reallocate Range Pair entries, with corresponding
    entries outside the range of each specified entry.  */
 
-static void
-complement_rp (void)
+স্থির শূন্য
+complement_rp (শূন্য)
 {
-  struct field_range_pair *c = frp;
+  কাঠামো field_range_pair *c = frp;
   idx_t n = n_frp;
 
-  frp = NULL;
+  frp = ফাঁকা;
   n_frp = 0;
   n_frp_allocated = 0;
 
-  if (c[0].lo > 1)
+  যদি (c[0].lo > 1)
     add_range_pair (1, c[0].lo - 1);
 
-  for (idx_t i = 1; i < n; ++i)
+  জন্য (idx_t i = 1; i < n; ++i)
     {
-      if (c[i - 1].hi + 1 == c[i].lo)
-        continue;
+      যদি (c[i - 1].hi + 1 == c[i].lo)
+        চালু;
 
       add_range_pair (c[i - 1].hi + 1, c[i].lo - 1);
     }
 
-  if (c[n - 1].hi < UINTMAX_MAX)
+  যদি (c[n - 1].hi < UINTMAX_MAX)
     add_range_pair (c[n - 1].hi + 1, UINTMAX_MAX);
 
-  free (c);
+  মুক্ত (c);
 }
 
 /* Given the list of field or byte range specifications FIELDSTR,
@@ -132,11 +132,11 @@ complement_rp (void)
    given '3-',    frp = [ { .lo = 3,           .hi = UINTMAX_MAX },
                           { .lo = UINTMAX_MAX, .hi = UINTMAX_MAX } ];
 */
-void
-set_fields (char const *fieldstr, unsigned int options)
+শূন্য
+set_fields (অক্ষর ধ্রুবক *fieldstr, unsigned পূর্ণসংখ্যা options)
 {
   uintmax_t initial = 1;	/* Value of first number in a range.  */
-  uintmax_t value = 0;		/* If nonzero, a number being accumulated.  */
+  uintmax_t মান = 0;		/* If nonzero, a number being accumulated.  */
   bool lhs_specified = false;
   bool rhs_specified = false;
   bool dash_found = false;	/* True if a '-' is found in this field.  */
@@ -146,21 +146,21 @@ set_fields (char const *fieldstr, unsigned int options)
   /* Collect and store in RP the range end points. */
 
   /* Special case: '--field=-' means all fields, emulate '--field=1-' . */
-  if ((options & SETFLD_ALLOW_DASH) && streq (fieldstr,"-"))
+  যদি ((options & SETFLD_ALLOW_DASH) && streq (fieldstr,"-"))
     {
-      value = 1;
+      মান = 1;
       lhs_specified = true;
       dash_found = true;
       fieldstr++;
     }
 
-  while (true)
+  যখন (true)
     {
-      if (*fieldstr == '-')
+      যদি (*fieldstr == '-')
         {
           in_digits = false;
           /* Starting a range. */
-          if (dash_found)
+          যদি (dash_found)
             FATAL_ERROR ((options & SETFLD_ERRMSG_USE_POS)
                          ? _("invalid byte or character range")
                          : _("invalid field range"));
@@ -168,101 +168,101 @@ set_fields (char const *fieldstr, unsigned int options)
           dash_found = true;
           fieldstr++;
 
-          if (lhs_specified && !value)
+          যদি (lhs_specified && !মান)
             FATAL_ERROR ((options & SETFLD_ERRMSG_USE_POS)
                          ? _("byte/character positions are numbered from 1")
                          : _("fields are numbered from 1"));
 
-          initial = (lhs_specified ? value : 1);
-          value = 0;
+          initial = (lhs_specified ? মান : 1);
+          মান = 0;
         }
-      else if (*fieldstr == ','
+      অন্যথা যদি (*fieldstr == ','
                || isblank (to_uchar (*fieldstr)) || *fieldstr == '\0')
         {
           in_digits = false;
           /* Ending the string, or this field/byte sublist. */
-          if (dash_found)
+          যদি (dash_found)
             {
               dash_found = false;
 
-              if (!lhs_specified && !rhs_specified)
+              যদি (!lhs_specified && !rhs_specified)
                 {
                   /* if a lone dash is allowed, emulate '1-' for all fields */
-                  if (options & SETFLD_ALLOW_DASH)
+                  যদি (options & SETFLD_ALLOW_DASH)
                     initial = 1;
-                  else
+                  অন্যথা
                     FATAL_ERROR (_("invalid range with no endpoint: -"));
                 }
 
               /* A range.  Possibilities: -n, m-n, n-.
                  In any case, 'initial' contains the start of the range. */
-              if (!rhs_specified)
+              যদি (!rhs_specified)
                 {
                   /* 'n-'.  From 'initial' to end of line. */
                   add_range_pair (initial, UINTMAX_MAX);
                 }
-              else
+              অন্যথা
                 {
                   /* 'm-n' or '-n' (1-n). */
-                  if (value < initial)
+                  যদি (মান < initial)
                     FATAL_ERROR (_("invalid decreasing range"));
 
-                  add_range_pair (initial, value);
+                  add_range_pair (initial, মান);
                 }
-              value = 0;
+              মান = 0;
             }
-          else
+          অন্যথা
             {
               /* A simple field number, not a range. */
-              if (value == 0)
+              যদি (মান == 0)
                 FATAL_ERROR ((options & SETFLD_ERRMSG_USE_POS)
                              ? _("byte/character positions are numbered from 1")
                              : _("fields are numbered from 1"));
 
-              add_range_pair (value, value);
-              value = 0;
+              add_range_pair (মান, মান);
+              মান = 0;
             }
 
-          if (*fieldstr == '\0')
-            break;
+          যদি (*fieldstr == '\0')
+            বিরতি;
 
           fieldstr++;
           lhs_specified = false;
           rhs_specified = false;
         }
-      else if (c_isdigit (*fieldstr))
+      অন্যথা যদি (c_isdigit (*fieldstr))
         {
           /* Record beginning of digit string, in case we have to
              complain about it.  */
-          static char const *num_start;
-          if (!in_digits || !num_start)
-            num_start = fieldstr;
+          স্থির অক্ষর ধ্রুবক *অঙ্ক_start;
+          যদি (!in_digits || !অঙ্ক_start)
+            অঙ্ক_start = fieldstr;
           in_digits = true;
 
-          if (dash_found)
+          যদি (dash_found)
             rhs_specified = 1;
-          else
+          অন্যথা
             lhs_specified = 1;
 
           /* Detect overflow.  */
-          if (!DECIMAL_DIGIT_ACCUMULATE (value, *fieldstr - '0')
-              || value == UINTMAX_MAX)
+          যদি (!DECIMAL_DIGIT_ACCUMULATE (মান, *fieldstr - '0')
+              || মান == UINTMAX_MAX)
             {
               /* In case the user specified -c$(echo 2^64|bc),22,
                  complain only about the first number.  */
-              char *bad_num = ximemdup0 (num_start,
-                                         strspn (num_start, "0123456789"));
+              অক্ষর *bad_অঙ্ক = ximemdup0 (অঙ্ক_start,
+                                         strspn (অঙ্ক_start, "0123456789"));
               error (0, 0, (options & SETFLD_ERRMSG_USE_POS)
                            ?_("byte/character offset %s is too large")
                            :_("field number %s is too large"),
-                           quote (bad_num));
-              free (bad_num);
+                           quote (bad_অঙ্ক));
+              মুক্ত (bad_অঙ্ক);
               usage (EXIT_FAILURE);
             }
 
           fieldstr++;
         }
-      else
+      অন্যথা
         {
           error (0, 0, (options & SETFLD_ERRMSG_USE_POS)
                        ?_("invalid byte/character position %s")
@@ -272,37 +272,37 @@ set_fields (char const *fieldstr, unsigned int options)
         }
     }
 
-  if (!n_frp)
+  যদি (!n_frp)
     FATAL_ERROR ((options&SETFLD_ERRMSG_USE_POS)
                  ? _("missing list of byte/character positions")
                  : _("missing list of fields"));
 
-  qsort (frp, n_frp, sizeof (frp[0]), compare_ranges);
+  qsort (frp, n_frp, আকার (frp[0]), compare_ranges);
 
   /* Merge range pairs (e.g. `2-5,3-4' becomes `2-5'). */
-  for (idx_t i = 0; i < n_frp; ++i)
+  জন্য (idx_t i = 0; i < n_frp; ++i)
     {
-      for (idx_t j = i + 1; j < n_frp; ++j)
+      জন্য (idx_t j = i + 1; j < n_frp; ++j)
         {
-          if (frp[j].lo <= frp[i].hi)
+          যদি (frp[j].lo <= frp[i].hi)
             {
               frp[i].hi = MAX (frp[j].hi, frp[i].hi);
-              memmove (frp + j, frp + j + 1, (n_frp - j - 1) * sizeof *frp);
+              memmove (frp + j, frp + j + 1, (n_frp - j - 1) * আকার *frp);
               n_frp--;
               j--;
             }
-          else
-            break;
+          অন্যথা
+            বিরতি;
         }
     }
 
-  if (options & SETFLD_COMPLEMENT)
+  যদি (options & SETFLD_COMPLEMENT)
     complement_rp ();
 
   /* After merging, reallocate RP so we release memory to the system.
      Also add a sentinel at the end of RP, to avoid out of bounds access
      and for performance reasons.  */
   ++n_frp;
-  frp = xreallocarray (frp, n_frp, sizeof (struct field_range_pair));
+  frp = xreallocarray (frp, n_frp, আকার (কাঠামো field_range_pair));
   frp[n_frp - 1].lo = frp[n_frp - 1].hi = UINTMAX_MAX;
 }

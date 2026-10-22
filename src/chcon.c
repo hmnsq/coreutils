@@ -14,20 +14,20 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <getopt.h>
-#include <selinux/selinux.h>
+#অন্তর্ভাব <config.h>
+#অন্তর্ভাব <stdio.h>
+#অন্তর্ভাব <sys/types.h>
+#অন্তর্ভাব <getopt.h>
+#অন্তর্ভাব <selinux/selinux.h>
 
-#include "system.h"
-#include "dev-ino.h"
-#include "fts-missing.h"
-#include "ignore-value.h"
-#include "quote.h"
-#include "root-dev-ino.h"
-#include "selinux-at.h"
-#include "xfts.h"
+#অন্তর্ভাব "system.h"
+#অন্তর্ভাব "dev-ino.h"
+#অন্তর্ভাব "fts-missing.h"
+#অন্তর্ভাব "ignore-value.h"
+#অন্তর্ভাব "quote.h"
+#অন্তর্ভাব "root-dev-ino.h"
+#অন্তর্ভাব "selinux-at.h"
+#অন্তর্ভাব "xfts.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "chcon"
@@ -38,74 +38,74 @@
 
 /* If nonzero, and the systems has support for it, change the context
    of symbolic links rather than any files they point to.  */
-static bool affect_symlink_referent;
+স্থির bool affect_symlink_referent;
 
 /* If true, change the modes of directories recursively. */
-static bool recurse;
+স্থির bool recurse;
 
 /* Level of verbosity. */
-static bool verbose;
+স্থির bool verbose;
 
 /* Pointer to the device and inode numbers of '/', when --recursive.
    Otherwise NULL.  */
-static struct dev_ino *root_dev_ino;
+স্থির কাঠামো dev_ino *মূল_dev_ino;
 
 /* The name of the context file is being given. */
-static char const *specified_context;
+স্থির অক্ষর ধ্রুবক *specified_context;
 
 /* Specific components of the context */
-static char const *specified_user;
-static char const *specified_role;
-static char const *specified_range;
-static char const *specified_type;
+স্থির অক্ষর ধ্রুবক *specified_user;
+স্থির অক্ষর ধ্রুবক *specified_role;
+স্থির অক্ষর ধ্রুবক *specified_range;
+স্থির অক্ষর ধ্রুবক *specified_type;
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+গণনা
 {
   DEREFERENCE_OPTION = CHAR_MAX + 1,
-  NO_PRESERVE_ROOT,
-  PRESERVE_ROOT,
+  NO_PRESERVE_মূল,
+  PRESERVE_মূল,
   REFERENCE_FILE_OPTION
 };
 
-static struct option const long_options[] =
+স্থির কাঠামো option ধ্রুবক long_options[] =
 {
-  {"recursive", no_argument, NULL, 'R'},
-  {"dereference", no_argument, NULL, DEREFERENCE_OPTION},
-  {"no-dereference", no_argument, NULL, 'h'},
-  {"no-preserve-root", no_argument, NULL, NO_PRESERVE_ROOT},
-  {"preserve-root", no_argument, NULL, PRESERVE_ROOT},
-  {"reference", required_argument, NULL, REFERENCE_FILE_OPTION},
-  {"user", required_argument, NULL, 'u'},
-  {"role", required_argument, NULL, 'r'},
-  {"type", required_argument, NULL, 't'},
-  {"range", required_argument, NULL, 'l'},
-  {"verbose", no_argument, NULL, 'v'},
+  {"recursive", no_argument, ফাঁকা, 'R'},
+  {"dereference", no_argument, ফাঁকা, DEREFERENCE_OPTION},
+  {"no-dereference", no_argument, ফাঁকা, 'h'},
+  {"no-preserve-root", no_argument, ফাঁকা, NO_PRESERVE_মূল},
+  {"preserve-root", no_argument, ফাঁকা, PRESERVE_মূল},
+  {"reference", required_argument, ফাঁকা, REFERENCE_FILE_OPTION},
+  {"user", required_argument, ফাঁকা, 'u'},
+  {"role", required_argument, ফাঁকা, 'r'},
+  {"type", required_argument, ফাঁকা, 't'},
+  {"range", required_argument, ফাঁকা, 'l'},
+  {"verbose", no_argument, ফাঁকা, 'v'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ফাঁকা, 0, ফাঁকা, 0}
 };
 
 /* Given a security context, CONTEXT, derive a context_t (*RET),
    setting any portions selected via the global variables, specified_user,
    specified_role, etc.  */
-static int
-compute_context_from_mask (char const *context, context_t *ret)
+স্থির পূর্ণসংখ্যা
+compute_context_from_mask (অক্ষর ধ্রুবক *context, context_t *ret)
 {
   bool ok = true;
   context_t new_context = context_new (context);
-  if (!new_context)
+  যদি (!new_context)
     {
       error (0, errno, _("failed to create security context: %s"),
              quote (context));
-      return 1;
+      ফেরত 1;
     }
 
 #define SET_COMPONENT(C, comp)						\
-   do									\
+   করো									\
      {									\
-       if (specified_ ## comp						\
+       যদি (specified_ ## comp						\
            && context_ ## comp ## _set ((C), specified_ ## comp))	\
          {								\
             error (0, errno,						\
@@ -114,84 +114,84 @@ compute_context_from_mask (char const *context, context_t *ret)
            ok = false;							\
          }								\
      }									\
-   while (0)
+   যখন (0)
 
   SET_COMPONENT (new_context, user);
   SET_COMPONENT (new_context, range);
   SET_COMPONENT (new_context, role);
   SET_COMPONENT (new_context, type);
 
-  if (!ok)
+  যদি (!ok)
     {
-      int saved_errno = errno;
+      পূর্ণসংখ্যা saved_errno = errno;
       context_free (new_context);
       errno = saved_errno;
-      return 1;
+      ফেরত 1;
     }
 
   *ret = new_context;
-  return 0;
+  ফেরত 0;
 }
 
 /* Change the context of FILE, using specified components.
    If it is a directory and -R is given, recurse.
    Return 0 if successful, 1 if errors occurred. */
 
-static int
-change_file_context (int fd, char const *file, bool ignore_missing)
+স্থির পূর্ণসংখ্যা
+change_file_context (পূর্ণসংখ্যা fd, অক্ষর ধ্রুবক *file, bool ignore_missing)
 {
-  char *file_context = NULL;
-  context_t context IF_LINT (= NULL);
-  char const * context_string;
-  int errors = 0;
+  অক্ষর *file_context = ফাঁকা;
+  context_t context IF_LINT (= ফাঁকা);
+  অক্ষর ধ্রুবক * context_string;
+  পূর্ণসংখ্যা errors = 0;
 
-  if (specified_context == NULL)
+  যদি (specified_context == ফাঁকা)
     {
-      int status = (affect_symlink_referent
+      পূর্ণসংখ্যা status = (affect_symlink_referent
                     ? getfileconat (fd, file, &file_context)
                     : lgetfileconat (fd, file, &file_context));
 
-      if (status < 0 && errno != ENODATA)
+      যদি (status < 0 && errno != ENODATA)
         {
-          if (ignore_missing && ignorable_traversal_errno (errno))
-            return 0;
+          যদি (ignore_missing && ignorable_traversal_errno (errno))
+            ফেরত 0;
           error (0, errno, _("failed to get security context of %s"),
                  quoteaf (file));
-          return 1;
+          ফেরত 1;
         }
 
       /* If the file doesn't have a context, and we're not setting all of
          the context components, there isn't really an obvious default.
          Thus, we just give up. */
-      if (file_context == NULL)
+      যদি (file_context == ফাঁকা)
         {
           error (0, 0, _("can't apply partial context to unlabeled file %s"),
                  quoteaf (file));
-          return 1;
+          ফেরত 1;
         }
 
-      if (compute_context_from_mask (file_context, &context))
+      যদি (compute_context_from_mask (file_context, &context))
         {
           freecon (file_context);
-          return 1;
+          ফেরত 1;
         }
 
       context_string = context_str (context);
     }
-  else
+  অন্যথা
     {
       context_string = specified_context;
     }
 
-  if (file_context == NULL || ! streq (context_string, file_context))
+  যদি (file_context == ফাঁকা || ! streq (context_string, file_context))
     {
-      int fail = (affect_symlink_referent
+      পূর্ণসংখ্যা fail = (affect_symlink_referent
                   ?  setfileconat (fd, file, context_string)
                   : lsetfileconat (fd, file, context_string));
 
-      if (fail)
+      যদি (fail)
         {
-          if (! (ignore_missing && ignorable_traversal_errno (errno)))
+          যদি (! (ignore_missing && ignorable_traversal_errno (errno)))
             {
               errors = 1;
               error (0, errno, _("failed to change context of %s to %s"),
@@ -200,57 +200,57 @@ change_file_context (int fd, char const *file, bool ignore_missing)
         }
     }
 
-  if (specified_context == NULL)
+  যদি (specified_context == ফাঁকা)
     {
       context_free (context);
       freecon (file_context);
     }
 
-  return errors;
+  ফেরত errors;
 }
 
 /* Change the context of FILE.
    Return true if successful.  This function is called
    once for every file system object that fts encounters.  */
 
-static bool
+স্থির bool
 process_file (FTS *fts, FTSENT *ent)
 {
-  char const *file_full_name = ent->fts_path;
-  char const *file = ent->fts_accpath;
-  const struct stat *file_stats = ent->fts_statp;
+  অক্ষর ধ্রুবক *file_full_name = ent->fts_path;
+  অক্ষর ধ্রুবক *file = ent->fts_accpath;
+  ধ্রুবক কাঠামো stat *file_stats = ent->fts_statp;
   bool ok = true;
   bool ignore_missing = ignore_missing_fts_entry (ent);
 
-  if (ignore_missing && ignorable_fts_error (ent))
-    return true;
+  যদি (ignore_missing && ignorable_fts_error (ent))
+    ফেরত true;
 
-  switch (ent->fts_info)
+  নির্বাচন (ent->fts_info)
     {
-    case FTS_D:
-      if (recurse)
+    ক্ষেত্র FTS_D:
+      যদি (recurse)
         {
-          if (ROOT_DEV_INO_CHECK (root_dev_ino, ent->fts_statp))
+          যদি (মূল_DEV_INO_CHECK (মূল_dev_ino, ent->fts_statp))
             {
               /* This happens e.g., with "chcon -R --preserve-root ... /"
                  and with "chcon -RH --preserve-root ... symlink-to-root".  */
-              ROOT_DEV_INO_WARN (file_full_name);
+              মূল_DEV_INO_WARN (file_full_name);
               /* Tell fts not to traverse into this hierarchy.  */
               fts_set (fts, ent, FTS_SKIP);
               /* Ensure that we do not process "/" on the second visit.  */
-              ignore_value (fts_read (fts));
-              return false;
+              ignore_মান (fts_read (fts));
+              ফেরত false;
             }
-          return true;
+          ফেরত true;
         }
-      break;
+      বিরতি;
 
-    case FTS_DP:
-      if (! recurse)
-        return true;
-      break;
+    ক্ষেত্র FTS_DP:
+      যদি (! recurse)
+        ফেরত true;
+      বিরতি;
 
-    case FTS_NS:
+    ক্ষেত্র FTS_NS:
       /* For a top-level file or directory, this FTS_NS (stat failed)
          indicator is determined at the time of the initial fts_open call.
          With programs like chmod, chown, and chgrp, that modify
@@ -258,108 +258,108 @@ process_file (FTS *fts, FTSENT *ent)
          accessible when control reaches this point.  So, if this is
          the first time we've seen the FTS_NS for this file, tell
          fts_read to stat it "again".  */
-      if (ent->fts_level == FTS_ROOTLEVEL && ent->fts_number == 0)
+      যদি (ent->fts_level == FTS_ROOTLEVEL && ent->fts_সংখ্যা == 0)
         {
-          ent->fts_number = 1;
+          ent->fts_সংখ্যা = 1;
           fts_set (fts, ent, FTS_AGAIN);
-          return true;
+          ফেরত true;
         }
       error (0, ent->fts_errno, _("cannot access %s"),
              quoteaf (file_full_name));
       ok = false;
-      break;
+      বিরতি;
 
-    case FTS_ERR:
+    ক্ষেত্র FTS_ERR:
       error (0, ent->fts_errno, "%s", quotef (file_full_name));
       ok = false;
-      break;
+      বিরতি;
 
-    case FTS_DNR:
+    ক্ষেত্র FTS_DNR:
       error (0, ent->fts_errno, _("cannot read directory %s"),
              quoteaf (file_full_name));
       ok = false;
-      break;
+      বিরতি;
 
-    case FTS_DC:		/* directory that causes cycles */
-      if (cycle_warning_required (fts, ent))
+    ক্ষেত্র FTS_DC:		/* directory that causes cycles */
+      যদি (cycle_warning_required (fts, ent))
         {
           emit_cycle_warning (file_full_name);
-          return false;
+          ফেরত false;
         }
-      break;
+      বিরতি;
 
-    default:
-      break;
+    পূর্বনির্ধারিত:
+      বিরতি;
     }
 
-  if (ent->fts_info == FTS_DP
-      && ok && ROOT_DEV_INO_CHECK (root_dev_ino, file_stats))
+  যদি (ent->fts_info == FTS_DP
+      && ok && মূল_DEV_INO_CHECK (মূল_dev_ino, file_stats))
     {
-      ROOT_DEV_INO_WARN (file_full_name);
+      মূল_DEV_INO_WARN (file_full_name);
       ok = false;
     }
 
-  if (ok)
+  যদি (ok)
     {
-      if (verbose)
+      যদি (verbose)
         printf (_("changing security context of %s\n"),
                 quoteaf (file_full_name));
 
-      if (change_file_context (fts->fts_cwd_fd, file, ignore_missing) != 0)
+      যদি (change_file_context (fts->fts_cwd_fd, file, ignore_missing) != 0)
         ok = false;
     }
 
-  if ( ! recurse)
+  যদি ( ! recurse)
     fts_set (fts, ent, FTS_SKIP);
 
-  return ok;
+  ফেরত ok;
 }
 
 /* Recursively operate on the specified FILES (the last entry
    of which is null).  BIT_FLAGS controls how fts works.
    Return true if successful.  */
 
-static bool
-process_files (char **files, int bit_flags)
+স্থির bool
+process_files (অক্ষর **files, পূর্ণসংখ্যা bit_flags)
 {
   bool ok = true;
 
-  FTS *fts = xfts_open (files, bit_flags, NULL);
+  FTS *fts = xfts_open (files, bit_flags, ফাঁকা);
 
-  while (true)
+  যখন (true)
     {
       FTSENT *ent;
 
       ent = fts_read (fts);
-      if (ent == NULL)
+      যদি (ent == ফাঁকা)
         {
-          if (errno != 0)
+          যদি (errno != 0)
             {
               /* FIXME: try to give a better message  */
               error (0, errno, _("fts_read failed"));
               ok = false;
             }
-          break;
+          বিরতি;
         }
 
       ok &= process_file (fts, ent);
     }
 
-  if (fts_close (fts) != 0)
+  যদি (fts_close (fts) != 0)
     {
       error (0, errno, _("fts_close failed"));
       ok = false;
     }
 
-  return ok;
+  ফেরত ok;
 }
 
-void
-usage (int status)
+শূন্য
+usage (পূর্ণসংখ্যা status)
 {
-  if (status != EXIT_SUCCESS)
+  যদি (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  অন্যথা
     {
       printf (_("\
 Usage: %s [OPTION]... CONTEXT FILE...\n\
@@ -377,7 +377,7 @@ With --reference, change the security context of each FILE to that of RFILE.\n\
       oputs (_("\
       --dereference\n\
          affect the referent of each symbolic link (this is\n\
-         the default), rather than the symbolic link itself\n\
+         the পূর্বনির্ধারিত), rather than the symbolic link itself\n\
 "));
       oputs (_("\
   -h, --no-dereference\n\
@@ -400,16 +400,16 @@ With --reference, change the security context of each FILE to that of RFILE.\n\
          set range RANGE in the target security context\n\
 "));
       oputs (_("\
-      --no-preserve-root\n\
-         do not treat '/' specially (the default)\n\
+      --no-preserve-মূল\n\
+         করো not treat '/' specially (the পূর্বনির্ধারিত)\n\
 "));
       oputs (_("\
-      --preserve-root\n\
+      --preserve-মূল\n\
          fail to operate recursively on '/'\n\
 "));
       oputs (_("\
       --reference=RFILE\n\
-         use RFILE's security context rather than specifying a CONTEXT value\n\
+         use RFILE's security context rather than specifying a CONTEXT মান\n\
 "));
       oputs (_("\
   -R, --recursive\n\
@@ -417,7 +417,7 @@ With --reference, change the security context of each FILE to that of RFILE.\n\
 "));
       oputs (_("\
   -v, --verbose\n\
-         output a diagnostic for every file processed\n\
+         output a diagnostic জন্য every file processed\n\
 "));
       emit_symlink_recurse_options ("-P");
       oputs (HELP_OPTION_DESCRIPTION);
@@ -427,21 +427,21 @@ With --reference, change the security context of each FILE to that of RFILE.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+পূর্ণসংখ্যা
+প্রধান (পূর্ণসংখ্যা argc, অক্ষর **argv)
 {
   /* Bit flags that control how fts works.  */
-  int bit_flags = FTS_PHYSICAL;
+  পূর্ণসংখ্যা bit_flags = FTS_PHYSICAL;
 
   /* 1 if --dereference, 0 if --no-dereference, -1 if neither has been
      specified.  */
-  int dereference = -1;
+  পূর্ণসংখ্যা dereference = -1;
 
   bool ok;
-  bool preserve_root = false;
+  bool preserve_মূল = false;
   bool component_specified = false;
-  char *reference_file = NULL;
-  int optc;
+  অক্ষর *reference_file = ফাঁকা;
+  পূর্ণসংখ্যা optc;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -451,159 +451,159 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "HLPRhvu:r:t:l:",
-                              long_options, NULL))
+  যখন ((optc = getopt_long (argc, argv, "HLPRhvu:r:t:l:",
+                              long_options, ফাঁকা))
          != -1)
     {
-      switch (optc)
+      নির্বাচন (optc)
         {
-        case 'H': /* Traverse command-line symlinks-to-directories.  */
+        ক্ষেত্র 'H': /* Traverse command-line symlinks-to-directories.  */
           bit_flags = FTS_COMFOLLOW | FTS_PHYSICAL;
-          break;
+          বিরতি;
 
-        case 'L': /* Traverse all symlinks-to-directories.  */
+        ক্ষেত্র 'L': /* Traverse all symlinks-to-directories.  */
           bit_flags = FTS_LOGICAL;
-          break;
+          বিরতি;
 
-        case 'P': /* Traverse no symlinks-to-directories.  */
+        ক্ষেত্র 'P': /* Traverse no symlinks-to-directories.  */
           bit_flags = FTS_PHYSICAL;
-          break;
+          বিরতি;
 
-        case 'h': /* --no-dereference: affect symlinks */
+        ক্ষেত্র 'h': /* --no-dereference: affect symlinks */
           dereference = 0;
-          break;
+          বিরতি;
 
-        case DEREFERENCE_OPTION: /* --dereference: affect the referent
+        ক্ষেত্র DEREFERENCE_OPTION: /* --dereference: affect the referent
                                     of each symlink */
           dereference = 1;
-          break;
+          বিরতি;
 
-        case NO_PRESERVE_ROOT:
-          preserve_root = false;
-          break;
+        ক্ষেত্র NO_PRESERVE_মূল:
+          preserve_মূল = false;
+          বিরতি;
 
-        case PRESERVE_ROOT:
-          preserve_root = true;
-          break;
+        ক্ষেত্র PRESERVE_মূল:
+          preserve_মূল = true;
+          বিরতি;
 
-        case REFERENCE_FILE_OPTION:
+        ক্ষেত্র REFERENCE_FILE_OPTION:
           reference_file = optarg;
-          break;
+          বিরতি;
 
-        case 'R':
+        ক্ষেত্র 'R':
           recurse = true;
-          break;
+          বিরতি;
 
-        case 'f':
+        ক্ষেত্র 'f':
           /* ignore */
-          break;
+          বিরতি;
 
-        case 'v':
+        ক্ষেত্র 'v':
           verbose = true;
-          break;
+          বিরতি;
 
-        case 'u':
+        ক্ষেত্র 'u':
           specified_user = optarg;
           component_specified = true;
-          break;
+          বিরতি;
 
-        case 'r':
+        ক্ষেত্র 'r':
           specified_role = optarg;
           component_specified = true;
-          break;
+          বিরতি;
 
-        case 't':
+        ক্ষেত্র 't':
           specified_type = optarg;
           component_specified = true;
-          break;
+          বিরতি;
 
-        case 'l':
+        ক্ষেত্র 'l':
           specified_range = optarg;
           component_specified = true;
-          break;
+          বিরতি;
 
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        পূর্বনির্ধারিত:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (recurse)
+  যদি (recurse)
     {
-      if (bit_flags == FTS_PHYSICAL)
+      যদি (bit_flags == FTS_PHYSICAL)
         {
-          if (dereference == 1)
+          যদি (dereference == 1)
             error (EXIT_FAILURE, 0,
                    _("-R --dereference requires either -H or -L"));
           affect_symlink_referent = false;
         }
-      else
+      অন্যথা
         {
-          if (dereference == 0)
+          যদি (dereference == 0)
             error (EXIT_FAILURE, 0, _("-R -h requires -P"));
           affect_symlink_referent = true;
         }
     }
-  else
+  অন্যথা
     {
       bit_flags = FTS_PHYSICAL;
       affect_symlink_referent = (dereference != 0);
     }
 
-  if (argc - optind < (reference_file || component_specified ? 1 : 2))
+  যদি (argc - optind < (reference_file || component_specified ? 1 : 2))
     {
-      if (argc <= optind)
+      যদি (argc <= optind)
         error (0, 0, _("missing operand"));
-      else
+      অন্যথা
         error (0, 0, _("missing operand after %s"), quote (argv[argc - 1]));
       usage (EXIT_FAILURE);
     }
 
-  if (reference_file)
+  যদি (reference_file)
     {
-      char *ref_context = NULL;
+      অক্ষর *ref_context = ফাঁকা;
 
-      if (getfilecon (reference_file, &ref_context) < 0)
+      যদি (getfilecon (reference_file, &ref_context) < 0)
         error (EXIT_FAILURE, errno, _("failed to get security context of %s"),
                quoteaf (reference_file));
 
       specified_context = ref_context;
     }
-  else if (component_specified)
+  অন্যথা যদি (component_specified)
     {
       /* FIXME: it's already null, so this is a no-op. */
-      specified_context = NULL;
+      specified_context = ফাঁকা;
     }
-  else
+  অন্যথা
     {
       specified_context = argv[optind++];
-      if (0 < is_selinux_enabled ()
+      যদি (0 < is_selinux_enabled ()
           && security_check_context (specified_context) < 0)
         error (EXIT_FAILURE, errno, _("invalid context: %s"),
                quote (specified_context));
     }
 
-  if (reference_file && component_specified)
+  যদি (reference_file && component_specified)
     {
       error (0, 0, _("conflicting security context specifiers given"));
       usage (EXIT_FAILURE);
     }
 
-  if (recurse && preserve_root)
+  যদি (recurse && preserve_মূল)
     {
-      static struct dev_ino dev_ino_buf;
-      root_dev_ino = get_root_dev_ino (&dev_ino_buf);
-      if (root_dev_ino == NULL)
+      স্থির কাঠামো dev_ino dev_ino_buf;
+      মূল_dev_ino = get_মূল_dev_ino (&dev_ino_buf);
+      যদি (মূল_dev_ino == ফাঁকা)
         error (EXIT_FAILURE, errno, _("failed to get attributes of %s"),
                quoteaf ("/"));
     }
-  else
+  অন্যথা
     {
-      root_dev_ino = NULL;
+      মূল_dev_ino = ফাঁকা;
     }
 
   ok = process_files (argv + optind, bit_flags | FTS_NOSTAT);
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  ফেরত ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

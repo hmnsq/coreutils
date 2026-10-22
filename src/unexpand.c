@@ -33,17 +33,17 @@
 
    David MacKenzie <djm@gnu.ai.mit.edu> */
 
-#include <config.h>
+#অন্তর্ভাব <config.h>
 
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#অন্তর্ভাব <stdio.h>
+#অন্তর্ভাব <getopt.h>
+#অন্তর্ভাব <sys/types.h>
 
-#include "system.h"
-#include "ioblksize.h"
-#include "mbbuf.h"
-#include "mcel.h"
-#include "expand-common.h"
+#অন্তর্ভাব "system.h"
+#অন্তর্ভাব "ioblksize.h"
+#অন্তর্ভাব "mbbuf.h"
+#অন্তর্ভাব "mcel.h"
+#অন্তর্ভাব "expand-common.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "unexpand"
@@ -54,27 +54,27 @@
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+গণনা
 {
   CONVERT_FIRST_ONLY_OPTION = CHAR_MAX + 1
 };
 
-static struct option const longopts[] =
+স্থির কাঠামো option ধ্রুবক longopts[] =
 {
-  {"tabs", required_argument, NULL, 't'},
-  {"all", no_argument, NULL, 'a'},
-  {"first-only", no_argument, NULL, CONVERT_FIRST_ONLY_OPTION},
+  {"tabs", required_argument, ফাঁকা, 't'},
+  {"all", no_argument, ফাঁকা, 'a'},
+  {"first-only", no_argument, ফাঁকা, CONVERT_FIRST_ONLY_OPTION},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ফাঁকা, 0, ফাঁকা, 0}
 };
 
-void
-usage (int status)
+শূন্য
+usage (পূর্ণসংখ্যা status)
 {
-  if (status != EXIT_SUCCESS)
+  যদি (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  অন্যথা
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE]...\n\
@@ -110,30 +110,30 @@ Convert blanks in each FILE to tabs, writing to standard output.\n\
 /* Change blanks to tabs, writing to stdout.
    Read each file in 'file_list', in order.  */
 
-static void
-unexpand (void)
+স্থির শূন্য
+unexpand (শূন্য)
 {
   /* Input stream.  */
-  FILE *fp = next_file (NULL);
+  FILE *fp = পরবর্তী_file (ফাঁকা);
 
   /* The array of pending blanks.  In non-POSIX locales, blanks can
      include characters other than spaces, so the blanks must be
      stored, not merely counted.  */
-  char *pending_blank;
+  অক্ষর *pending_blank;
 
-  if (!fp)
-    return;
+  যদি (!fp)
+    ফেরত;
 
-  static char line_in[IO_BUFSIZE];
+  স্থির অক্ষর সারি_in[IO_BUFSIZE];
   mbbuf_t mbbuf;
-  mbbuf_init (&mbbuf, line_in, sizeof line_in, fp);
+  mbbuf_init (&mbbuf, সারি_in, আকার সারি_in, fp);
 
   /* The worst case is a non-blank character, then one blank, then a
      tab stop, then MAX_COLUMN_WIDTH - 1 blanks, then a non-blank; so
      allocate MAX_COLUMN_WIDTH bytes to store the blanks.  */
   pending_blank = xinmalloc (max_column_width, MB_CUR_MAX);
 
-  while (true)
+  যখন (true)
     {
       /* Input character, or EOF.  */
       mcel_t g;
@@ -149,10 +149,10 @@ unexpand (void)
       colno column = 0;
 
       /* Column the next input tab stop is on.  */
-      colno next_tab_column = 0;
+      colno পরবর্তী_tab_column = 0;
 
       /* Index in TAB_LIST of next tab stop to examine.  */
-      idx_t tab_index = 0;
+      idx_t tab_সূচক = 0;
 
       /* If true, the first pending blank came just before a tab stop.  */
       bool one_blank_before_tab_stop = false;
@@ -160,7 +160,7 @@ unexpand (void)
       /* If true, the previous input character was a blank.  This is
          initially true, since initial strings of blanks are treated
          as if the line was preceded by a blank.  */
-      bool prev_blank = true;
+      bool পূর্ব_blank = true;
 
       /* Number of pending columns of blanks.  */
       idx_t pending = 0;
@@ -168,56 +168,56 @@ unexpand (void)
 
       /* Convert a line of text.  */
 
-      do
+      করো
         {
-          while ((g = mbbuf_get_char (&mbbuf)).ch == MBBUF_EOF
-                 && (fp = next_file (fp)))
-            mbbuf_init (&mbbuf, line_in, sizeof line_in, fp);
+          যখন ((g = mbbuf_get_char (&mbbuf)).ch == MBBUF_EOF
+                 && (fp = পরবর্তী_file (fp)))
+            mbbuf_init (&mbbuf, সারি_in, আকার সারি_in, fp);
 
-          if (convert)
+          যদি (convert)
             {
               bool blank = c32issep (g.ch);
 
-              if (blank)
+              যদি (blank)
                 {
                   bool last_tab;
 
-                  next_tab_column = get_next_tab_column (column, &tab_index,
+                  পরবর্তী_tab_column = get_পরবর্তী_tab_column (column, &tab_সূচক,
                                                          &last_tab);
 
-                  if (last_tab)
+                  যদি (last_tab)
                     convert = false;
 
-                  if (convert)
+                  যদি (convert)
                     {
-                      if (g.ch == '\t')
+                      যদি (g.ch == '\t')
                         {
-                          column = next_tab_column;
+                          column = পরবর্তী_tab_column;
 
-                          if (pending)
+                          যদি (pending)
                             pending_blank[0] = '\t';
                         }
-                      else
+                      অন্যথা
                         {
-                          int width = c32width (g.ch);
+                          পূর্ণসংখ্যা width = c32width (g.ch);
                           column += width < 0 ? 1 : width;
 
-                          if (! (prev_blank && column >= next_tab_column))
+                          যদি (! (পূর্ব_blank && column >= পরবর্তী_tab_column))
                             {
                               /* It is not yet known whether the pending blanks
                                  will be replaced by tabs.  */
-                              if (column == next_tab_column)
+                              যদি (column == পরবর্তী_tab_column)
                                 one_blank_before_tab_stop = true;
                               memcpy (pending_blank + pending,
                                       mbbuf_char_offset (&mbbuf, g), g.len);
                               pending += g.len;
-                              prev_blank = true;
-                              continue;
+                              পূর্ব_blank = true;
+                              চালু;
                             }
 
                           /* Replace the pending blanks by a tab or two.  */
                           g.len = 0;
-                          if (putc ('\t', stdout) < 0)
+                          যদি (putc ('\t', stdout) < 0)
                             write_error ();
                           pending_blank[0] = '\t';
                         }
@@ -227,55 +227,55 @@ unexpand (void)
                       pending = one_blank_before_tab_stop;
                     }
                 }
-              else if (g.ch == '\b')
+              অন্যথা যদি (g.ch == '\b')
                 {
                   /* Go back one column, and force recalculation of the
                      next tab stop.  */
                   column -= !!column;
-                  next_tab_column = column;
-                  tab_index -= !!tab_index;
+                  পরবর্তী_tab_column = column;
+                  tab_সূচক -= !!tab_সূচক;
                 }
-              else
+              অন্যথা
                 {
-                  int width = c32width (g.ch);
-                  if (ckd_add (&column, column, width < 0 ? 1 : width))
+                  পূর্ণসংখ্যা width = c32width (g.ch);
+                  যদি (ckd_add (&column, column, width < 0 ? 1 : width))
                     error (EXIT_FAILURE, 0, _("input line is too long"));
                 }
 
-              if (pending)
+              যদি (pending)
                 {
-                  if (pending > 1 && one_blank_before_tab_stop)
+                  যদি (pending > 1 && one_blank_before_tab_stop)
                     pending_blank[0] = '\t';
-                  if (fwrite (pending_blank, 1, pending, stdout) != pending)
+                  যদি (fwrite (pending_blank, 1, pending, stdout) != pending)
                     write_error ();
                   pending = 0;
                   one_blank_before_tab_stop = false;
                 }
 
-              prev_blank = blank;
-              convert &= convert_entire_line || blank;
+              পূর্ব_blank = blank;
+              convert &= convert_entire_সারি || blank;
             }
 
-          if (g.ch == MBBUF_EOF)
+          যদি (g.ch == MBBUF_EOF)
             {
-              free (pending_blank);
-              return;
+              মুক্ত (pending_blank);
+              ফেরত;
             }
 
-          fwrite (mbbuf_char_offset (&mbbuf, g), sizeof (char), g.len, stdout);
-          if (ferror (stdout))
+          fwrite (mbbuf_char_offset (&mbbuf, g), আকার (অক্ষর), g.len, stdout);
+          যদি (ferror (stdout))
             write_error ();
         }
-      while (g.ch != '\n');
+      যখন (g.ch != '\n');
     }
 }
 
-int
-main (int argc, char **argv)
+পূর্ণসংখ্যা
+প্রধান (পূর্ণসংখ্যা argc, অক্ষর **argv)
 {
   bool have_tabval = false;
   colno tabval IF_LINT ( = 0);
-  int c;
+  পূর্ণসংখ্যা c;
 
   /* If true, cancel the effect of any -a (explicit or implicit in -t),
      so that only leading blanks will be considered.  */
@@ -289,55 +289,55 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((c = getopt_long (argc, argv, ",0123456789at:", longopts, NULL))
+  যখন ((c = getopt_long (argc, argv, ",0123456789at:", longopts, ফাঁকা))
          != -1)
     {
-      switch (c)
+      নির্বাচন (c)
         {
-        case '?':
+        ক্ষেত্র '?':
           usage (EXIT_FAILURE);
-        case 'a':
-          convert_entire_line = true;
-          break;
-        case 't':
-          convert_entire_line = true;
+        ক্ষেত্র 'a':
+          convert_entire_সারি = true;
+          বিরতি;
+        ক্ষেত্র 't':
+          convert_entire_সারি = true;
           parse_tab_stops (optarg);
-          break;
-        case CONVERT_FIRST_ONLY_OPTION:
+          বিরতি;
+        ক্ষেত্র CONVERT_FIRST_ONLY_OPTION:
           convert_first_only = true;
-          break;
-        case ',':
-          if (have_tabval)
+          বিরতি;
+        ক্ষেত্র ',':
+          যদি (have_tabval)
             add_tab_stop (tabval);
           have_tabval = false;
-          break;
+          বিরতি;
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
-          if (!have_tabval)
+        পূর্বনির্ধারিত:
+          যদি (!have_tabval)
             {
               tabval = 0;
               have_tabval = true;
             }
-          if (!DECIMAL_DIGIT_ACCUMULATE (tabval, c - '0'))
+          যদি (!DECIMAL_DIGIT_ACCUMULATE (tabval, c - '0'))
             error (EXIT_FAILURE, 0, _("tab stop is too large"));
-          break;
+          বিরতি;
         }
     }
 
-  if (convert_first_only)
-    convert_entire_line = false;
+  যদি (convert_first_only)
+    convert_entire_সারি = false;
 
-  if (have_tabval)
+  যদি (have_tabval)
     add_tab_stop (tabval);
 
   finalize_tab_stops ();
 
-  set_file_list ((optind < argc) ? &argv[optind] : NULL);
+  set_file_list ((optind < argc) ? &argv[optind] : ফাঁকা);
 
   unexpand ();
 
   cleanup_file_list_stdin ();
 
-  return exit_status;
+  ফেরত exit_status;
 }

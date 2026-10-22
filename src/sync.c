@@ -16,13 +16,13 @@
 
 /* Written by Jim Meyering */
 
-#include <config.h>
-#include <getopt.h>
-#include <stdio.h>
-#include <sys/types.h>
+#অন্তর্ভাব <config.h>
+#অন্তর্ভাব <getopt.h>
+#অন্তর্ভাব <stdio.h>
+#অন্তর্ভাব <sys/types.h>
 
-#include "system.h"
-#include "assure.h"
+#অন্তর্ভাব "system.h"
+#অন্তর্ভাব "assure.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "sync"
@@ -35,29 +35,29 @@
 # define HAVE_SYNCFS 0
 #endif
 
-enum sync_mode
+গণনা sync_mode
 {
   MODE_FILE,
-  MODE_DATA,
+  MODE_তথ্য,
   MODE_FILE_SYSTEM,
   MODE_SYNC
 };
 
-static struct option const long_options[] =
+স্থির কাঠামো option ধ্রুবক long_options[] =
 {
-  {"data", no_argument, NULL, 'd'},
-  {"file-system", no_argument, NULL, 'f'},
+  {"data", no_argument, ফাঁকা, 'd'},
+  {"file-system", no_argument, ফাঁকা, 'f'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ফাঁকা, 0, ফাঁকা, 0}
 };
 
-void
-usage (int status)
+শূন্য
+usage (পূর্ণসংখ্যা status)
 {
-  if (status != EXIT_SUCCESS)
+  যদি (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  অন্যথা
     {
       printf (_("Usage: %s [OPTION] [FILE]...\n"), program_name);
       fputs (_("\
@@ -69,7 +69,7 @@ or their containing file systems.\n\
 "), stdout);
 
       oputs (_("\
-  -d, --data             sync only file data, no unneeded metadata\n\
+  -d, --তথ্য             sync only file তথ্য, no unneeded metadata\n\
 "));
       oputs (_("\
   -f, --file-system      sync the file systems that contain the files\n\
@@ -84,39 +84,39 @@ or their containing file systems.\n\
 /* Sync the specified FILE, or file systems associated with FILE.
    Return 1 on success.  */
 
-static bool
-sync_arg (enum sync_mode mode, char const *file)
+স্থির bool
+sync_arg (গণনা sync_mode mode, অক্ষর ধ্রুবক *file)
 {
-  int open_flags = O_RDONLY | O_NONBLOCK;
+  পূর্ণসংখ্যা open_flags = O_RDONLY | O_NONBLOCK;
 
-#if defined _AIX || defined __CYGWIN__
+#যদি defined _AIX || defined __CYGWIN__
   /* AIX 7.1, CYGWIN 2.9.0, fsync requires write access to file.  */
-  if (mode == MODE_FILE)
+  যদি (mode == MODE_FILE)
     open_flags = O_WRONLY | O_NONBLOCK;
 #endif
 
   /* Note O_PATH might be supported with syncfs(),
      though as of Linux 3.18 is not.  */
-  int fd = open (file, open_flags);
-  if (fd < 0)
+  পূর্ণসংখ্যা fd = open (file, open_flags);
+  যদি (fd < 0)
     {
       /* Use the O_RDONLY errno, which is significant
          with directories for example.  */
-      int rd_errno = errno;
-      if (open_flags != (O_WRONLY | O_NONBLOCK))
+      পূর্ণসংখ্যা rd_errno = errno;
+      যদি (open_flags != (O_WRONLY | O_NONBLOCK))
         fd = open (file, O_WRONLY | O_NONBLOCK);
-      if (fd < 0)
+      যদি (fd < 0)
         {
           error (0, rd_errno, _("error opening %s"), quoteaf (file));
-          return false;
+          ফেরত false;
         }
     }
 
   bool ret = true;
   /* We used O_NONBLOCK above to not hang with fifos,
      so reset that here.  */
-  int fdflags = fcntl (fd, F_GETFL);
-  if (fdflags == -1
+  পূর্ণসংখ্যা fdflags = fcntl (fd, F_GETFL);
+  যদি (fdflags == -1
       || fcntl (fd, F_SETFL, fdflags & ~O_NONBLOCK) < 0)
     {
       error (0, errno, _("couldn't reset non-blocking mode %s"),
@@ -124,49 +124,49 @@ sync_arg (enum sync_mode mode, char const *file)
       ret = false;
     }
 
-  if (ret)
+  যদি (ret)
     {
-      int sync_status = -1;
+      পূর্ণসংখ্যা sync_status = -1;
 
-      switch (mode)
+      নির্বাচন (mode)
         {
-        case MODE_DATA:
+        ক্ষেত্র MODE_তথ্য:
           sync_status = fdatasync (fd);
-          break;
+          বিরতি;
 
-        case MODE_FILE:
+        ক্ষেত্র MODE_FILE:
           sync_status = fsync (fd);
-          break;
+          বিরতি;
 
-        case MODE_FILE_SYSTEM:
-#if HAVE_SYNCFS
+        ক্ষেত্র MODE_FILE_SYSTEM:
+#যদি HAVE_SYNCFS
           sync_status = syncfs (fd);
-          break;
+          বিরতি;
 #endif
-        case MODE_SYNC: default:
+        ক্ষেত্র MODE_SYNC: পূর্বনির্ধারিত:
           affirm (false);
         }
 
-      if (sync_status < 0)
+      যদি (sync_status < 0)
         {
           error (0, errno, _("error syncing %s"), quoteaf (file));
           ret = false;
         }
     }
 
-  if (close (fd) < 0)
+  যদি (close (fd) < 0)
     {
       error (0, errno, _("failed to close %s"), quoteaf (file));
       ret = false;
     }
 
-  return ret;
+  ফেরত ret;
 }
 
-int
-main (int argc, char **argv)
+পূর্ণসংখ্যা
+প্রধান (পূর্ণসংখ্যা argc, অক্ষর **argv)
 {
-  bool arg_data = false, arg_file_system = false;
+  bool arg_তথ্য = false, arg_file_system = false;
   bool ok = true;
 
   initialize_main (&argc, &argv);
@@ -177,55 +177,55 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  int c;
-  while ((c = getopt_long (argc, argv, "df", long_options, NULL))
+  পূর্ণসংখ্যা c;
+  যখন ((c = getopt_long (argc, argv, "df", long_options, ফাঁকা))
          != -1)
     {
-      switch (c)
+      নির্বাচন (c)
         {
-        case 'd':
-          arg_data = true;
-          break;
+        ক্ষেত্র 'd':
+          arg_তথ্য = true;
+          বিরতি;
 
-        case 'f':
+        ক্ষেত্র 'f':
           arg_file_system = true;
-          break;
+          বিরতি;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        পূর্বনির্ধারিত:
           usage (EXIT_FAILURE);
         }
     }
 
   bool args_specified = optind < argc;
 
-  if (arg_data && arg_file_system)
+  যদি (arg_তথ্য && arg_file_system)
     error (EXIT_FAILURE, 0,
            _("cannot specify both --data and --file-system"));
 
-  if (!args_specified && arg_data)
+  যদি (!args_specified && arg_তথ্য)
     error (EXIT_FAILURE, 0, _("--data needs at least one argument"));
 
-  enum sync_mode mode;
-  if (! args_specified || (arg_file_system && ! HAVE_SYNCFS))
+  গণনা sync_mode mode;
+  যদি (! args_specified || (arg_file_system && ! HAVE_SYNCFS))
     mode = MODE_SYNC;
-  else if (arg_file_system)
+  অন্যথা যদি (arg_file_system)
     mode = MODE_FILE_SYSTEM;
-  else if (! arg_data)
+  অন্যথা যদি (! arg_তথ্য)
     mode = MODE_FILE;
-  else
-    mode = MODE_DATA;
+  অন্যথা
+    mode = MODE_তথ্য;
 
-  if (mode == MODE_SYNC)
+  যদি (mode == MODE_SYNC)
     sync ();
-  else
+  অন্যথা
     {
-      for (; optind < argc; optind++)
+      জন্য (; optind < argc; optind++)
         ok &= sync_arg (mode, argv[optind]);
     }
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  ফেরত ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

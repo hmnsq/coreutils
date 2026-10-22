@@ -17,28 +17,28 @@
 #ifndef PRINTENV_H
 # define PRINTENV_H 1
 
-static inline void
-print_envvar (char const *entry, char terminator, bool quoted)
+স্থির অন্তঃরেখ শূন্য
+print_envvar (অক্ষর ধ্রুবক *entry, অক্ষর terminator, bool quoted)
 {
-  if (! quoted)
+  যদি (! quoted)
     fputs (entry, stdout);
-  else
+  অন্যথা
     {
-      idx_t const entry_len = strlen (entry);
-      char const *equal = memchr (entry, '=', entry_len);
+      idx_t ধ্রুবক entry_len = strlen (entry);
+      অক্ষর ধ্রুবক *equal = memchr (entry, '=', entry_len);
 
       /* If the parent process manipulates ENVIRON directly, it is possible
          that an entry does not contain an equal sign.  */
-      idx_t const var_len = equal ? equal - entry : entry_len;
+      idx_t ধ্রুবক var_len = equal ? equal - entry : entry_len;
       fputs (quoteN_mem (entry, var_len), stdout);
 
-      if (equal)
+      যদি (equal)
         {
           putchar ('=');
-          char const *val = equal + 1;
-          idx_t const val_len = entry_len - (val - entry);
+          অক্ষর ধ্রুবক *val = equal + 1;
+          idx_t ধ্রুবক val_len = entry_len - (val - entry);
           /* Prefer "VAR=" over "VAR=''".  */
-          if (0 < val_len)
+          যদি (0 < val_len)
             fputs (quoteN_mem (val, val_len), stdout);
         }
     }

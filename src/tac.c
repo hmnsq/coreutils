@@ -34,20 +34,20 @@
 tac -r -s '.\|
 ' file */
 
-#include <config.h>
+#অন্তর্ভাব <config.h>
 
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
-#include "system.h"
+#অন্তর্ভাব <stdio.h>
+#অন্তর্ভাব <getopt.h>
+#অন্তর্ভাব <sys/types.h>
+#অন্তর্ভাব "system.h"
 
-#include <regex.h>
+#অন্তর্ভাব <regex.h>
 
-#include "filenamecat.h"
-#include "full-read.h"
-#include "full-write.h"
-#include "temp-stream.h"
-#include "xbinary-io.h"
+#অন্তর্ভাব "filenamecat.h"
+#অন্তর্ভাব "full-read.h"
+#অন্তর্ভাব "full-write.h"
+#অন্তর্ভাব "temp-stream.h"
+#অন্তর্ভাব "xbinary-io.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "tac"
@@ -64,64 +64,64 @@ tac -r -s '.\|
 #define WRITESIZE 8192
 
 /* The string that separates the records of the file. */
-static char const *separator = "\n";
+স্থির অক্ষর ধ্রুবক *separator = "\n";
 
 /* True if we have ever read standard input.  */
-static bool have_read_stdin = false;
+স্থির bool have_read_stdin = false;
 
 /* If true, print 'separator' along with the record preceding it
    in the file; otherwise with the record following it. */
-static bool separator_ends_record = true;
+স্থির bool separator_ends_record = true;
 
 /* 0 if 'separator' is to be matched as a regular expression;
    otherwise, the length of 'separator', used as a sentinel to
    stop the search. */
-static size_t sentinel_length = 1;
+স্থির size_t sentinel_দৈর্ঘ্য = 1;
 
 /* The length of a match with 'separator'.  If 'sentinel_length' is 0,
    'match_length' is computed every time a match succeeds;
    otherwise, it is simply the length of 'separator'. */
-static size_t match_length;
+স্থির size_t match_দৈর্ঘ্য;
 
 /* The input buffer. */
-static char *G_buffer;
+স্থির অক্ষর *G_বাফার;
 
 /* The number of bytes to read at once into 'buffer'. */
-static size_t read_size;
+স্থির size_t read_আকার;
 
 /* The size of 'buffer'.  This is read_size * 2 + sentinel_length + 2.
    The extra 2 bytes allow 'past_end' to have a value beyond the
    end of 'G_buffer' and 'match_start' to run off the front of 'G_buffer'. */
-static size_t G_buffer_size;
+স্থির size_t G_বাফার_আকার;
 
 /* The compiled regular expression representing 'separator'. */
-static struct re_pattern_buffer compiled_separator;
-static char compiled_separator_fastmap[UCHAR_MAX + 1];
-static struct re_registers regs;
+স্থির কাঠামো re_pattern_বাফার compiled_separator;
+স্থির অক্ষর compiled_separator_fastmap[UCHAR_MAX + 1];
+স্থির কাঠামো re_registers regs;
 
-static struct option const longopts[] =
+স্থির কাঠামো option ধ্রুবক longopts[] =
 {
-  {"before", no_argument, NULL, 'b'},
-  {"regex", no_argument, NULL, 'r'},
-  {"separator", required_argument, NULL, 's'},
+  {"before", no_argument, ফাঁকা, 'b'},
+  {"regex", no_argument, ফাঁকা, 'r'},
+  {"separator", required_argument, ফাঁকা, 's'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ফাঁকা, 0, ফাঁকা, 0}
 };
 
-void
-usage (int status)
+শূন্য
+usage (পূর্ণসংখ্যা status)
 {
-  if (status != EXIT_SUCCESS)
+  যদি (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  অন্যথা
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE]...\n\
 "),
               program_name);
       fputs (_("\
-Write each FILE to standard output, last line first.\n\
+Write each FILE to standard output, last সারি first.\n\
 "), stdout);
 
       emit_stdin_note ();
@@ -139,7 +139,7 @@ Write each FILE to standard output, last line first.\n\
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
       fputs (_("\n\
-Non-seekable input is buffered to $TMPDIR, defaulting to /tmp.\n\
+Non-seekable প্রবেশ is buffered to $TMPDIR, defaulting to /tmp.\n\
 "), stdout);
       emit_ancillary_info (PROGRAM_NAME);
     }
@@ -149,112 +149,112 @@ Non-seekable input is buffered to $TMPDIR, defaulting to /tmp.\n\
 /* Print the characters from START to PAST_END - 1.
    If START is null, just flush the buffer. */
 
-static void
-output (char const *start, char const *past_end)
+স্থির শূন্য
+output (অক্ষর ধ্রুবক *start, অক্ষর ধ্রুবক *past_end)
 {
-  static char buffer[WRITESIZE];
-  static size_t bytes_in_buffer = 0;
+  স্থির অক্ষর বাফার[WRITESIZE];
+  স্থির size_t bytes_in_বাফার = 0;
   size_t bytes_to_add = past_end - start;
-  size_t bytes_available = WRITESIZE - bytes_in_buffer;
+  size_t bytes_available = WRITESIZE - bytes_in_বাফার;
 
-  if (!start)
+  যদি (!start)
     {
-      if (full_write (STDOUT_FILENO, buffer, bytes_in_buffer)
-          != bytes_in_buffer)
+      যদি (full_write (STDOUT_FILENO, বাফার, bytes_in_বাফার)
+          != bytes_in_বাফার)
         write_error ();
-      bytes_in_buffer = 0;
-      return;
+      bytes_in_বাফার = 0;
+      ফেরত;
     }
 
   /* Write out as many full buffers as possible. */
-  while (bytes_to_add >= bytes_available)
+  যখন (bytes_to_add >= bytes_available)
     {
-      memcpy (buffer + bytes_in_buffer, start, bytes_available);
+      memcpy (বাফার + bytes_in_বাফার, start, bytes_available);
       bytes_to_add -= bytes_available;
       start += bytes_available;
-      if (full_write (STDOUT_FILENO, buffer, WRITESIZE) != WRITESIZE)
+      যদি (full_write (STDOUT_FILENO, বাফার, WRITESIZE) != WRITESIZE)
         write_error ();
-      bytes_in_buffer = 0;
+      bytes_in_বাফার = 0;
       bytes_available = WRITESIZE;
     }
 
-  memcpy (buffer + bytes_in_buffer, start, bytes_to_add);
-  bytes_in_buffer += bytes_to_add;
+  memcpy (বাফার + bytes_in_বাফার, start, bytes_to_add);
+  bytes_in_বাফার += bytes_to_add;
 }
 
 /* Print in reverse the file open on descriptor FD for reading FILE.
    The file is already positioned at FILE_POS, which should be near its end.
    Return true if successful.  */
 
-static bool
-tac_seekable (int input_fd, char const *file, off_t file_pos)
+স্থির bool
+tac_seekable (পূর্ণসংখ্যা প্রবেশ_fd, অক্ষর ধ্রুবক *file, off_t file_pos)
 {
   /* Pointer to the location in 'G_buffer' where the search for
      the next separator will begin. */
-  char *match_start;
+  অক্ষর *match_start;
 
   /* Pointer to one past the rightmost character in 'G_buffer' that
      has not been printed yet. */
-  char *past_end;
+  অক্ষর *past_end;
 
   /* Length of the record growing in 'G_buffer'. */
-  ptrdiff_t saved_record_size;
+  ptrdiff_t saved_record_আকার;
 
   /* True if 'output' has not been called yet for any file.
      Only used when the separator is attached to the preceding record. */
   bool first_time = true;
-  char first_char = *separator;	/* Speed optimization, non-regexp. */
-  char const *separator1 = separator + 1; /* Speed optimization, non-regexp. */
-  size_t match_length1 = match_length - 1; /* Speed optimization, non-regexp. */
+  অক্ষর first_char = *separator;	/* Speed optimization, non-regexp. */
+  অক্ষর ধ্রুবক *separator1 = separator + 1; /* Speed optimization, non-regexp. */
+  size_t match_length1 = match_দৈর্ঘ্য - 1; /* Speed optimization, non-regexp. */
 
   /* Arrange for the first read to lop off enough to leave the rest of the
      file a multiple of 'read_size'.  Since 'read_size' can change, this may
      not always hold during the program run, but since it usually will, leave
      it here for i/o efficiency (page/sector boundaries and all that).
      Note: the efficiency gain has not been verified. */
-  size_t remainder = file_pos % read_size;
-  if (remainder != 0)
+  size_t remainder = file_pos % read_আকার;
+  যদি (remainder != 0)
     {
       file_pos -= remainder;
-      if (lseek (input_fd, file_pos, SEEK_SET) < 0)
+      যদি (lseek (প্রবেশ_fd, file_pos, SEEK_SET) < 0)
         error (0, errno, _("%s: seek failed"), quotef (file));
     }
 
   /* Scan backward, looking for end of file.  This caters to proc-like
      file systems where the file size is just an estimate.  */
-  while ((saved_record_size = read (input_fd, G_buffer, read_size)) == 0
+  যখন ((saved_record_আকার = পঠ (প্রবেশ_fd, G_বাফার, read_আকার)) == 0
          && file_pos != 0)
     {
-      off_t rsize = read_size;
-      if (lseek (input_fd, -rsize, SEEK_CUR) < 0)
+      off_t rsize = read_আকার;
+      যদি (lseek (প্রবেশ_fd, -rsize, SEEK_CUR) < 0)
         error (0, errno, _("%s: seek failed"), quotef (file));
-      file_pos -= read_size;
+      file_pos -= read_আকার;
     }
 
   /* Now scan forward, looking for end of file.  */
-  while (saved_record_size == read_size)
+  যখন (saved_record_আকার == read_আকার)
     {
-      ssize_t nread = read (input_fd, G_buffer, read_size);
-      if (nread == 0)
-        break;
-      saved_record_size = nread;
-      if (saved_record_size < 0)
-        break;
+      ssize_t nread = পঠ (প্রবেশ_fd, G_বাফার, read_আকার);
+      যদি (nread == 0)
+        বিরতি;
+      saved_record_আকার = nread;
+      যদি (saved_record_আকার < 0)
+        বিরতি;
       file_pos += nread;
     }
 
-  if (saved_record_size < 0)
+  যদি (saved_record_আকার < 0)
     {
       error (0, errno, _("%s: read error"), quotef (file));
-      return false;
+      ফেরত false;
     }
 
-  match_start = past_end = G_buffer + saved_record_size;
+  match_start = past_end = G_বাফার + saved_record_আকার;
   /* For non-regexp search, move past impossible positions for a match. */
-  if (sentinel_length)
+  যদি (sentinel_দৈর্ঘ্য)
     match_start -= match_length1;
 
-  while (true)
+  যখন (true)
     {
       /* Search backward from 'match_start' - 1 to 'G_buffer' for a match
          with 'separator'; for speed, use strncmp if 'separator' contains no
@@ -262,34 +262,34 @@ tac_seekable (int input_fd, char const *file, off_t file_pos)
          If the match succeeds, set 'match_start' to point to the start of
          the match and 'match_length' to the length of the match.
          Otherwise, make 'match_start' < 'G_buffer'. */
-      if (sentinel_length == 0)
+      যদি (sentinel_দৈর্ঘ্য == 0)
         {
-          size_t i = match_start - G_buffer;
+          size_t i = match_start - G_বাফার;
           regoff_t ri = i;
           regoff_t range = 1 - ri;
           regoff_t ret;
 
-          if (1 < range)
+          যদি (1 < range)
             error (EXIT_FAILURE, 0, _("record too large"));
 
-          if (range == 1
-              || ((ret = re_search (&compiled_separator, G_buffer,
+          যদি (range == 1
+              || ((ret = re_অনুসন্ধান (&compiled_separator, G_বাফার,
                                     i, i - 1, range, &regs))
                   == -1))
-            match_start = G_buffer - 1;
-          else if (ret == -2)
+            match_start = G_বাফার - 1;
+          অন্যথা যদি (ret == -2)
             error (EXIT_FAILURE, 0,
                    _("error in regular expression search"));
-          else
+          অন্যথা
             {
-              match_start = G_buffer + regs.start[0];
-              match_length = regs.end[0] - regs.start[0];
+              match_start = G_বাফার + regs.start[0];
+              match_দৈর্ঘ্য = regs.end[0] - regs.start[0];
             }
         }
-      else
+      অন্যথা
         {
           /* 'match_length' is constant for non-regexp boundaries. */
-          while (*--match_start != first_char
+          যখন (*--match_start != first_char
                  || (match_length1 && !STREQ_LEN (match_start + 1, separator1,
                                                   match_length1)))
             /* Do nothing. */ ;
@@ -297,85 +297,85 @@ tac_seekable (int input_fd, char const *file, off_t file_pos)
 
       /* Check whether we backed off the front of 'G_buffer' without finding
          a match for 'separator'. */
-      if (match_start < G_buffer)
+      যদি (match_start < G_বাফার)
         {
-          if (file_pos == 0)
+          যদি (file_pos == 0)
             {
               /* Hit the beginning of the file; print the remaining record. */
-              output (G_buffer, past_end);
-              return true;
+              output (G_বাফার, past_end);
+              ফেরত true;
             }
 
-          saved_record_size = past_end - G_buffer;
-          if (saved_record_size > read_size)
+          saved_record_আকার = past_end - G_বাফার;
+          যদি (saved_record_আকার > read_আকার)
             {
               /* 'G_buffer_size' is about twice 'read_size', so since
                  we want to read in another 'read_size' bytes before
                  the data already in 'G_buffer', we need to increase
                  'G_buffer_size'. */
-              char *newbuffer;
-              size_t offset = sentinel_length ? sentinel_length : 1;
-              size_t old_G_buffer_size = G_buffer_size;
+              অক্ষর *newbuffer;
+              size_t offset = sentinel_দৈর্ঘ্য ? sentinel_দৈর্ঘ্য : 1;
+              size_t old_G_বাফার_আকার = G_বাফার_আকার;
 
-              read_size *= 2;
-              G_buffer_size = read_size * 2 + sentinel_length + 2;
-              if (G_buffer_size < old_G_buffer_size)
+              read_আকার *= 2;
+              G_বাফার_আকার = read_আকার * 2 + sentinel_দৈর্ঘ্য + 2;
+              যদি (G_বাফার_আকার < old_G_বাফার_আকার)
                 xalloc_die ();
-              newbuffer = xrealloc (G_buffer - offset, G_buffer_size);
+              newbuffer = xrealloc (G_বাফার - offset, G_বাফার_আকার);
               newbuffer += offset;
-              G_buffer = newbuffer;
+              G_বাফার = newbuffer;
             }
 
           /* Back up to the start of the next bufferfull of the file.  */
-          if (file_pos >= read_size)
-            file_pos -= read_size;
-          else
+          যদি (file_pos >= read_আকার)
+            file_pos -= read_আকার;
+          অন্যথা
             {
-              read_size = file_pos;
+              read_আকার = file_pos;
               file_pos = 0;
             }
-          if (lseek (input_fd, file_pos, SEEK_SET) < 0)
+          যদি (lseek (প্রবেশ_fd, file_pos, SEEK_SET) < 0)
             error (0, errno, _("%s: seek failed"), quotef (file));
 
           /* Shift the pending record data right to make room for the new.
              The source and destination regions probably overlap.  */
-          memmove (G_buffer + read_size, G_buffer, saved_record_size);
-          past_end = G_buffer + read_size + saved_record_size;
+          memmove (G_বাফার + read_আকার, G_বাফার, saved_record_আকার);
+          past_end = G_বাফার + read_আকার + saved_record_আকার;
           /* For non-regexp searches, avoid unnecessary scanning. */
-          if (sentinel_length)
-            match_start = G_buffer + read_size;
-          else
+          যদি (sentinel_দৈর্ঘ্য)
+            match_start = G_বাফার + read_আকার;
+          অন্যথা
             match_start = past_end;
 
-          if (full_read (input_fd, G_buffer, read_size) != read_size)
+          যদি (full_read (প্রবেশ_fd, G_বাফার, read_আকার) != read_আকার)
             {
               error (0, errno, _("%s: read error"), quotef (file));
-              return false;
+              ফেরত false;
             }
         }
-      else
+      অন্যথা
         {
           /* Found a match of 'separator'. */
-          if (separator_ends_record)
+          যদি (separator_ends_record)
             {
-              char *match_end = match_start + match_length;
+              অক্ষর *match_end = match_start + match_দৈর্ঘ্য;
 
               /* If this match of 'separator' isn't at the end of the
                  file, print the record. */
-              if (!first_time || match_end != past_end)
+              যদি (!first_time || match_end != past_end)
                 output (match_end, past_end);
               past_end = match_end;
               first_time = false;
             }
-          else
+          অন্যথা
             {
               output (match_start, past_end);
               past_end = match_start;
             }
 
           /* For non-regex matching, we can back up.  */
-          if (sentinel_length > 0)
-            match_start -= match_length - 1;
+          যদি (sentinel_দৈর্ঘ্য > 0)
+            match_start -= match_দৈর্ঘ্য - 1;
         }
     }
 }
@@ -384,30 +384,30 @@ tac_seekable (int input_fd, char const *file, off_t file_pos)
    a temporary file, and set *G_TMP and *G_TEMPFILE to the resulting stream
    and file name.  Return the number of bytes copied, or -1 on error.  */
 
-static off_t
-copy_to_temp (FILE **g_tmp, char **g_tempfile, int input_fd, char const *file)
+স্থির off_t
+copy_to_অস্থায়ী (FILE **g_tmp, অক্ষর **g_tempfile, পূর্ণসংখ্যা প্রবেশ_fd, অক্ষর ধ্রুবক *file)
 {
   FILE *fp;
-  char *file_name;
+  অক্ষর *file_name;
   uintmax_t bytes_copied = 0;
-  if (!temp_stream (&fp, &file_name))
-    return -1;
+  যদি (!অস্থায়ী_stream (&fp, &file_name))
+    ফেরত -1;
 
-  while (true)
+  যখন (true)
     {
-      ssize_t bytes_read = read (input_fd, G_buffer, read_size);
-      if (bytes_read == 0)
-        break;
-      if (bytes_read < 0)
+      ssize_t bytes_read = পঠ (প্রবেশ_fd, G_বাফার, read_আকার);
+      যদি (bytes_read == 0)
+        বিরতি;
+      যদি (bytes_read < 0)
         {
           error (0, errno, _("%s: read error"), quotef (file));
-          return -1;
+          ফেরত -1;
         }
 
-      if (fwrite (G_buffer, 1, bytes_read, fp) != bytes_read)
+      যদি (fwrite (G_বাফার, 1, bytes_read, fp) != bytes_read)
         {
           error (0, errno, _("%s: write error"), quotef (file_name));
-          return -1;
+          ফেরত -1;
         }
 
       /* Implicitly <= OFF_T_MAX due to preceding fwrite(),
@@ -416,89 +416,89 @@ copy_to_temp (FILE **g_tmp, char **g_tempfile, int input_fd, char const *file)
       bytes_copied += bytes_read;
     }
 
-  if (fflush (fp) != 0)
+  যদি (fflush (fp) != 0)
     {
       error (0, errno, _("%s: write error"), quotef (file_name));
-      return -1;
+      ফেরত -1;
     }
 
   *g_tmp = fp;
   *g_tempfile = file_name;
-  return bytes_copied;
+  ফেরত bytes_copied;
 }
 
 /* Copy INPUT_FD to a temporary, then tac that file.
    Return true if successful.  */
 
-static bool
-tac_nonseekable (int input_fd, char const *file)
+স্থির bool
+tac_nonseekable (পূর্ণসংখ্যা প্রবেশ_fd, অক্ষর ধ্রুবক *file)
 {
   FILE *tmp_stream;
-  char *tmp_file;
-  off_t bytes_copied = copy_to_temp (&tmp_stream, &tmp_file, input_fd, file);
-  if (bytes_copied < 0)
-    return false;
+  অক্ষর *tmp_file;
+  off_t bytes_copied = copy_to_অস্থায়ী (&tmp_stream, &tmp_file, প্রবেশ_fd, file);
+  যদি (bytes_copied < 0)
+    ফেরত false;
 
   bool ok = tac_seekable (fileno (tmp_stream), tmp_file, bytes_copied);
-  return ok;
+  ফেরত ok;
 }
 
 /* Print FILE in reverse, copying it to a temporary
    file first if it is not seekable.
    Return true if successful.  */
 
-static bool
-tac_file (char const *filename)
+স্থির bool
+tac_file (অক্ষর ধ্রুবক *filename)
 {
   bool ok;
-  off_t file_size;
-  int fd;
+  off_t file_আকার;
+  পূর্ণসংখ্যা fd;
   bool is_stdin = streq (filename, "-");
 
-  if (is_stdin)
+  যদি (is_stdin)
     {
       have_read_stdin = true;
       fd = STDIN_FILENO;
       filename = _("standard input");
-      xset_binary_mode (STDIN_FILENO, O_BINARY);
+      xset_দ্বিমিক_mode (STDIN_FILENO, O_দ্বিমিক);
     }
-  else
+  অন্যথা
     {
-      fd = open (filename, O_RDONLY | O_BINARY);
-      if (fd < 0)
+      fd = open (filename, O_RDONLY | O_দ্বিমিক);
+      যদি (fd < 0)
         {
           error (0, errno, _("failed to open %s for reading"),
                  quoteaf (filename));
-          return false;
+          ফেরত false;
         }
     }
 
-  file_size = lseek (fd, 0, SEEK_END);
+  file_আকার = lseek (fd, 0, SEEK_END);
 
-  ok = (file_size < 0 || isatty (fd)
+  ok = (file_আকার < 0 || isatty (fd)
         ? tac_nonseekable (fd, filename)
-        : tac_seekable (fd, filename, file_size));
+        : tac_seekable (fd, filename, file_আকার));
 
-  if (!is_stdin && close (fd) != 0)
+  যদি (!is_stdin && close (fd) != 0)
     {
       error (0, errno, _("%s: read error"), quotef (filename));
       ok = false;
     }
-  return ok;
+  ফেরত ok;
 }
 
-int
-main (int argc, char **argv)
+পূর্ণসংখ্যা
+প্রধান (পূর্ণসংখ্যা argc, অক্ষর **argv)
 {
-  char const *error_message;	/* Return value from re_compile_pattern. */
-  int optc;
+  অক্ষর ধ্রুবক *error_message;	/* Return value from re_compile_pattern. */
+  পূর্ণসংখ্যা optc;
   bool ok;
-  size_t half_buffer_size;
+  size_t half_বাফার_আকার;
 
   /* Initializer for file_list if no file-arguments
      were specified on the command line.  */
-  static char const *const default_file_list[] = {"-", NULL};
-  char const *const *file;
+  স্থির অক্ষর ধ্রুবক *ধ্রুবক default_file_list[] = {"-", ফাঁকা};
+  অক্ষর ধ্রুবক *ধ্রুবক *file;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -508,81 +508,81 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "brs:", longopts, NULL)) != -1)
+  যখন ((optc = getopt_long (argc, argv, "brs:", longopts, ফাঁকা)) != -1)
     {
-      switch (optc)
+      নির্বাচন (optc)
         {
-        case 'b':
+        ক্ষেত্র 'b':
           separator_ends_record = false;
-          break;
-        case 'r':
-          sentinel_length = 0;
-          break;
-        case 's':
+          বিরতি;
+        ক্ষেত্র 'r':
+          sentinel_দৈর্ঘ্য = 0;
+          বিরতি;
+        ক্ষেত্র 's':
           separator = optarg;
-          break;
+          বিরতি;
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        পূর্বনির্ধারিত:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (sentinel_length == 0)
+  যদি (sentinel_দৈর্ঘ্য == 0)
     {
-      if (*separator == 0)
+      যদি (*separator == 0)
         error (EXIT_FAILURE, 0, _("separator cannot be empty"));
 
-      compiled_separator.buffer = NULL;
+      compiled_separator.বাফার = ফাঁকা;
       compiled_separator.allocated = 0;
       compiled_separator.fastmap = compiled_separator_fastmap;
-      compiled_separator.translate = NULL;
+      compiled_separator.translate = ফাঁকা;
       error_message = re_compile_pattern (separator, strlen (separator),
                                           &compiled_separator);
-      if (error_message)
+      যদি (error_message)
         error (EXIT_FAILURE, 0, "%s", (error_message));
     }
-  else
-    match_length = sentinel_length = *separator ? strlen (separator) : 1;
+  অন্যথা
+    match_দৈর্ঘ্য = sentinel_দৈর্ঘ্য = *separator ? strlen (separator) : 1;
 
-  read_size = INITIAL_READSIZE;
-  while (sentinel_length >= read_size / 2)
+  read_আকার = INITIAL_READSIZE;
+  যখন (sentinel_দৈর্ঘ্য >= read_আকার / 2)
     {
-      if (SIZE_MAX / 2 < read_size)
+      যদি (SIZE_MAX / 2 < read_আকার)
         xalloc_die ();
-      read_size *= 2;
+      read_আকার *= 2;
     }
-  half_buffer_size = read_size + sentinel_length + 1;
-  G_buffer_size = 2 * half_buffer_size;
-  if (! (read_size < half_buffer_size && half_buffer_size < G_buffer_size))
+  half_বাফার_আকার = read_আকার + sentinel_দৈর্ঘ্য + 1;
+  G_বাফার_আকার = 2 * half_বাফার_আকার;
+  যদি (! (read_আকার < half_বাফার_আকার && half_বাফার_আকার < G_বাফার_আকার))
     xalloc_die ();
-  G_buffer = xmalloc (G_buffer_size);
-  if (sentinel_length)
+  G_বাফার = xmalloc (G_বাফার_আকার);
+  যদি (sentinel_দৈর্ঘ্য)
     {
-      memcpy (G_buffer, separator, sentinel_length + !!*separator);
-      G_buffer += sentinel_length;
+      memcpy (G_বাফার, separator, sentinel_দৈর্ঘ্য + !!*separator);
+      G_বাফার += sentinel_দৈর্ঘ্য;
     }
-  else
+  অন্যথা
     {
-      ++G_buffer;
+      ++G_বাফার;
     }
 
   file = (optind < argc
-          ? (char const *const *) &argv[optind]
+          ? (অক্ষর ধ্রুবক *ধ্রুবক *) &argv[optind]
           : default_file_list);
 
-  xset_binary_mode (STDOUT_FILENO, O_BINARY);
+  xset_দ্বিমিক_mode (STDOUT_FILENO, O_দ্বিমিক);
 
   {
     ok = true;
-    for (size_t i = 0; file[i]; ++i)
+    জন্য (size_t i = 0; file[i]; ++i)
       ok &= tac_file (file[i]);
   }
 
   /* Flush the output buffer. */
-  output ((char *) NULL, (char *) NULL);
+  output ((অক্ষর *) ফাঁকা, (অক্ষর *) ফাঁকা);
 
-  if (have_read_stdin && close (STDIN_FILENO) < 0)
+  যদি (have_read_stdin && close (STDIN_FILENO) < 0)
     {
       error (0, errno, "-");
       ok = false;

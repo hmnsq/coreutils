@@ -17,26 +17,26 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with
 this program.  If not, see https://www.gnu.org/licenses/.  */
 
-#include <inttypes.h>
+#অন্তর্ভাব <inttypes.h>
 
-#include <limits.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <errno.h>
+#অন্তর্ভাব <limits.h>
+#অন্তর্ভাব <stdint.h>
+#অন্তর্ভাব <stdio.h>
+#অন্তর্ভাব <string.h>
+#অন্তর্ভাব <stdlib.h>
+#অন্তর্ভাব <errno.h>
 
 /* This program is compiled in a separate directory to avoid linking to Gnulib
    which may be cross-compiled.  Therefore, we also do not have config.h and
    attribute.h.  Just define what we need.  */
-#if 2 < __GNUC__ + (95 <= __GNUC_MINOR__)
+#যদি 2 < __GNUC__ + (95 <= __GNUC_MINOR__)
 # define ATTRIBUTE_CONST __attribute__ ((__const__))
-#else
+#অন্যথা
 # define ATTRIBUTE_CONST
 #endif
-#if 3 < __GNUC__
+#যদি 3 < __GNUC__
 # define ATTRIBUTE_MALLOC __attribute__ ((__malloc__))
-#else
+#অন্যথা
 # define ATTRIBUTE_MALLOC
 #endif
 
@@ -48,14 +48,14 @@ this program.  If not, see https://www.gnu.org/licenses/.  */
    for you, please report a bug; in the meantime compile with, e.g.,
    -Dwide_uint='unsigned __int128' to override the heuristic.  */
 #ifndef wide_uint
-# if 4 < __GNUC__ + (6 <= __GNUC_MINOR__) && ULONG_MAX >> 31 >> 31 >> 1 != 0
-typedef unsigned __int128 wide_uint;
-# else
-typedef uintmax_t wide_uint;
+# যদি 4 < __GNUC__ + (6 <= __GNUC_MINOR__) && ULONG_MAX >> 31 >> 31 >> 1 != 0
+প্রকারলেখ unsigned __int128 wide_uint;
+# অন্যথা
+প্রকারলেখ uintmax_t wide_uint;
 # endif
 #endif
 
-struct prime
+কাঠামো মৌলিক
 {
   unsigned p;
   wide_uint pinv; /* Inverse mod b = 2^{bitsize of wide_uint} */
@@ -63,21 +63,21 @@ struct prime
 };
 
 ATTRIBUTE_CONST
-static wide_uint
+স্থির wide_uint
 binvert (wide_uint a)
 {
   wide_uint x = 0xf5397db1 >> (4 * ((a / 2) & 0x7));
-  for (;;)
+  জন্য (;;)
     {
       wide_uint y = 2 * x - x * x * a;
-      if (y == x)
-        return x;
+      যদি (y == x)
+        ফেরত x;
       x = y;
     }
 }
 
-static void
-process_prime (struct prime *info, unsigned p)
+স্থির শূন্য
+process_মৌলিক (কাঠামো মৌলিক *info, unsigned p)
 {
   wide_uint max = -1;
   info->p = p;
@@ -85,28 +85,28 @@ process_prime (struct prime *info, unsigned p)
   info->lim = max / p;
 }
 
-static void
-print_wide_uint (wide_uint n, int nesting, unsigned wide_uint_bits)
+স্থির শূন্য
+print_wide_uint (wide_uint n, পূর্ণসংখ্যা nesting, unsigned wide_uint_bits)
 {
   /* Number of bits per integer literal.  8 is too many, because
      uintmax_t is 32 bits on some machines so we cannot shift by 32 bits.
      So use 7.  */
-  int hex_digits_per_literal = 7;
-  int bits_per_literal = hex_digits_per_literal * 4;
+  পূর্ণসংখ্যা hex_digits_per_literal = 7;
+  পূর্ণসংখ্যা bits_per_literal = hex_digits_per_literal * 4;
 
   unsigned remainder = n & ((1 << bits_per_literal) - 1);
 
-  if (n != remainder)
+  যদি (n != remainder)
     {
-      int needs_parentheses = n >> bits_per_literal >> bits_per_literal != 0;
-      if (needs_parentheses)
+      পূর্ণসংখ্যা needs_parentheses = n >> bits_per_literal >> bits_per_literal != 0;
+      যদি (needs_parentheses)
         printf ("(");
       print_wide_uint (n >> bits_per_literal, nesting + 1, wide_uint_bits);
-      if (needs_parentheses)
+      যদি (needs_parentheses)
         printf (")\n%*s", nesting + 3, "");
       printf (" << %d | ", bits_per_literal);
     }
-  else if (nesting)
+  অন্যথা যদি (nesting)
     {
       printf ("(mp_limb_t) ");
       hex_digits_per_literal
@@ -117,34 +117,34 @@ print_wide_uint (wide_uint n, int nesting, unsigned wide_uint_bits)
 }
 
 /* Work around <https://gcc.gnu.org/PR109635>.  */
-#if 13 <= __GNUC__
+#যদি 13 <= __GNUC__
 # pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value"
 #endif
 
-static void
-output_primes (const struct prime *primes, unsigned nprimes)
+স্থির শূন্য
+output_primes (ধ্রুবক কাঠামো মৌলিক *primes, unsigned nprimes)
 {
   unsigned i;
   unsigned p;
-  int is_prime;
+  পূর্ণসংখ্যা is_মৌলিক;
 
   /* Compute wide_uint_bits by repeated shifting, rather than by
      multiplying sizeof by CHAR_BIT, as this works even if the
      wide_uint representation has holes.  */
   unsigned wide_uint_bits = 0;
   wide_uint mask = -1;
-  for (wide_uint_bits = 0; mask; wide_uint_bits++)
+  জন্য (wide_uint_bits = 0; mask; wide_uint_bits++)
     mask >>= 1;
 
   puts ("/* Generated file -- DO NOT EDIT */\n");
   printf ("#define WIDE_UINT_BITS %u\n", wide_uint_bits);
 
-  for (i = 0; i < nprimes; i++)
+  জন্য (i = 0; i < nprimes; i++)
     {
       /* Check that primes[i].p fits in int_least16_t on all platforms,
          and that its square fits in int_least32_t on all platforms,
          as factor.c relies on this.  */
-      if ((1 << (16 - 1)) <= primes[i].p)
+      যদি ((1 << (16 - 1)) <= primes[i].p)
         abort ();
 
       printf ("P (%u,\n   (", primes[i].p);
@@ -154,94 +154,94 @@ output_primes (const struct prime *primes, unsigned nprimes)
 
   /* Find next prime */
   p = primes[nprimes - 1].p;
-  do
+  করো
     {
       p += 2;
-      for (i = 0, is_prime = 1; is_prime; i++)
+      জন্য (i = 0, is_মৌলিক = 1; is_মৌলিক; i++)
         {
-          if (primes[i].p * primes[i].p > p)
-            break;
-          if (p * primes[i].pinv <= primes[i].lim)
+          যদি (primes[i].p * primes[i].p > p)
+            বিরতি;
+          যদি (p * primes[i].pinv <= primes[i].lim)
             {
-              is_prime = 0;
-              break;
+              is_মৌলিক = 0;
+              বিরতি;
             }
         }
     }
-  while (!is_prime);
+  যখন (!is_মৌলিক);
 
   printf ("#define SQUARE_OF_FIRST_OMITTED_PRIME %u\n", p * p);
 }
 
 ATTRIBUTE_MALLOC
-static void *
+স্থির শূন্য *
 xalloc (size_t s)
 {
-  void *p = malloc (s);
-  if (p)
-    return p;
+  শূন্য *p = malloc (s);
+  যদি (p)
+    ফেরত p;
 
   fprintf (stderr, "Virtual memory exhausted.\n");
   exit (EXIT_FAILURE);
 }
 
-int
-main (int argc, char **argv)
+পূর্ণসংখ্যা
+প্রধান (পূর্ণসংখ্যা argc, অক্ষর **argv)
 {
-  int limit;
+  পূর্ণসংখ্যা limit;
 
-  char *sieve;
-  size_t size, i;
+  অক্ষর *sieve;
+  size_t আকার_2, i;
 
-  struct prime *prime_list;
+  কাঠামো মৌলিক *মৌলিক_list;
   unsigned nprimes;
 
-  if (argc != 2)
+  যদি (argc != 2)
     {
       fprintf (stderr, "Usage: %s LIMIT\n"
                "Produces a list of odd primes <= LIMIT\n", argv[0]);
-      return EXIT_FAILURE;
+      ফেরত EXIT_FAILURE;
     }
   limit = atoi (argv[1]);
-  if (limit < 3)
-    return EXIT_SUCCESS;
+  যদি (limit < 3)
+    ফেরত EXIT_SUCCESS;
 
   /* Make limit odd */
-  if ( !(limit & 1))
+  যদি ( !(limit & 1))
     limit--;
 
-  size = (limit - 1) / 2;
+  আকার_2 = (limit - 1) / 2;
   /* sieve[i] represents 3+2*i */
-  sieve = xalloc (size);
-  memset (sieve, 1, size);
+  sieve = xalloc (আকার_2);
+  memset (sieve, 1, আকার_2);
 
-  prime_list = xalloc (size * sizeof (*prime_list));
+  মৌলিক_list = xalloc (আকার_2 * আকার (*মৌলিক_list));
   nprimes = 0;
 
-  for (i = 0; i < size;)
+  জন্য (i = 0; i < আকার_2;)
     {
       unsigned p = 3 + 2 * i;
       unsigned j;
 
-      process_prime (&prime_list[nprimes++], p);
+      process_মৌলিক (&মৌলিক_list[nprimes++], p);
 
-      for (j = (p * p - 3) / 2; j < size; j += p)
+      জন্য (j = (p * p - 3) / 2; j < আকার_2; j += p)
         sieve[j] = 0;
 
-      while (++i < size && sieve[i] == 0)
+      যখন (++i < আকার_2 && sieve[i] == 0)
         ;
     }
 
-  output_primes (prime_list, nprimes);
+  output_primes (মৌলিক_list, nprimes);
 
-  free (sieve);
-  free (prime_list);
+  মুক্ত (sieve);
+  মুক্ত (মৌলিক_list);
 
-  if (ferror (stdout) || fclose (stdout))
+  যদি (ferror (stdout) || fclose (stdout))
     {
       fprintf (stderr, "write error: %s\n", strerror (errno));
-      return EXIT_FAILURE;
+      ফেরত EXIT_FAILURE;
     }
 
-  return EXIT_SUCCESS;
+  ফেরত EXIT_SUCCESS;
 }

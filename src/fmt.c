@@ -16,19 +16,19 @@
 
 /* Written by Ross Paterson <rap@doc.ic.ac.uk>.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <getopt.h>
+#অন্তর্ভাব <config.h>
+#অন্তর্ভাব <stdio.h>
+#অন্তর্ভাব <sys/types.h>
+#অন্তর্ভাব <getopt.h>
 
 /* Redefine.  Otherwise, systems (Unicos for one) with headers that define
    it to be a type get syntax errors for the variable declaration below.  */
 #define word unused_word_type
 
-#include "c-ctype.h"
-#include "system.h"
-#include "fadvise.h"
-#include "xdectoint.h"
+#অন্তর্ভাব "c-ctype.h"
+#অন্তর্ভাব "system.h"
+#অন্তর্ভাব "fadvise.h"
+#অন্তর্ভাব "xdectoint.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "fmt"
@@ -60,7 +60,7 @@
    a floating-point type.  There are other problems besides COST,
    though; see MAXWORDS below.  */
 
-typedef long int COST;
+প্রকারলেখ long পূর্ণসংখ্যা COST;
 
 #define MAXCOST	TYPE_MAXIMUM (COST)
 
@@ -74,7 +74,7 @@ typedef long int COST;
 #define RAGGED_COST(n)	(SHORT_COST (n) / 2)
 
 /* Basic cost per line.  */
-#define LINE_COST	EQUIV (70)
+#define সারি_COST	EQUIV (70)
 
 /* Cost of breaking a line after the first word of a sentence, where
    the length of the word is N.  */
@@ -101,7 +101,7 @@ typedef long int COST;
 #define PUNCT_BONUS	EQUIV(40)
 
 /* Credit for breaking a long paragraph one line later.  */
-#define LINE_CREDIT	EQUIV(3)
+#define সারি_CREDIT	EQUIV(3)
 
 /* Size of paragraph buffer, in words and characters.  Longer paragraphs
    are handled neatly (cf. flush_paragraph()), so long as these values
@@ -115,9 +115,9 @@ typedef long int COST;
 
 /* Extra ctype(3)-style macros.  */
 
-#define isopen(c)	(strchr ("(['`\"", c) != NULL)
-#define isclose(c)	(strchr (")]'\"", c) != NULL)
-#define isperiod(c)	(strchr (".?!", c) != NULL)
+#define isopen(c)	(strchr ("(['`\"", c) != ফাঁকা)
+#define isclose(c)	(strchr (")]'\"", c) != ফাঁকা)
+#define isperiod(c)	(strchr (".?!", c) != ফাঁকা)
 
 /* Size of a tab stop, for expansion on input and re-introduction on
    output.  */
@@ -125,119 +125,119 @@ typedef long int COST;
 
 /* Word descriptor structure.  */
 
-typedef struct Word WORD;
+প্রকারলেখ কাঠামো Word WORD;
 
-struct Word
+কাঠামো Word
   {
 
     /* Static attributes determined during input.  */
 
-    char const *text;		/* the text of the word */
-    int length;			/* length of this word */
-    int space;			/* the size of the following space */
-    unsigned int paren:1;	/* starts with open paren */
-    unsigned int period:1;	/* ends in [.?!])* */
-    unsigned int punct:1;	/* ends in punctuation */
-    unsigned int final:1;	/* end of sentence */
+    অক্ষর ধ্রুবক *text;		/* the text of the word */
+    পূর্ণসংখ্যা দৈর্ঘ্য;			/* length of this word */
+    পূর্ণসংখ্যা space;			/* the size of the following space */
+    unsigned পূর্ণসংখ্যা paren:1;	/* starts with open paren */
+    unsigned পূর্ণসংখ্যা period:1;	/* ends in [.?!])* */
+    unsigned পূর্ণসংখ্যা punct:1;	/* ends in punctuation */
+    unsigned পূর্ণসংখ্যা final:1;	/* end of sentence */
 
     /* The remaining fields are computed during the optimization.  */
 
-    int line_length;		/* length of the best line starting here */
+    পূর্ণসংখ্যা সারি_দৈর্ঘ্য;		/* length of the best line starting here */
     COST best_cost;		/* cost of best paragraph starting here */
-    WORD *next_break;		/* break which achieves best_cost */
+    WORD *পরবর্তী_break;		/* break which achieves best_cost */
   };
 
 /* Forward declarations.  */
 
-static void set_prefix (char *p);
-static bool fmt (FILE *f, char const *);
-static bool get_paragraph (FILE *f);
-static int get_line (FILE *f, int c);
-static int get_prefix (FILE *f);
-static int get_space (FILE *f, int c);
-static int copy_rest (FILE *f, int c);
-static bool same_para (int c);
-static void flush_paragraph (void);
-static void fmt_paragraph (void);
-static void check_punctuation (WORD *w);
-static COST base_cost (WORD *this);
-static COST line_cost (WORD *next, int len);
-static void put_paragraph (WORD *finish);
-static void put_line (WORD *w, int indent);
-static void put_word (WORD *w);
-static void put_space (int space);
+স্থির শূন্য set_prefix (অক্ষর *p);
+স্থির bool fmt (FILE *f, অক্ষর ধ্রুবক *);
+স্থির bool get_paragraph (FILE *f);
+স্থির পূর্ণসংখ্যা get_সারি (FILE *f, পূর্ণসংখ্যা c);
+স্থির পূর্ণসংখ্যা get_prefix (FILE *f);
+স্থির পূর্ণসংখ্যা get_space (FILE *f, পূর্ণসংখ্যা c);
+স্থির পূর্ণসংখ্যা copy_rest (FILE *f, পূর্ণসংখ্যা c);
+স্থির bool same_para (পূর্ণসংখ্যা c);
+স্থির শূন্য flush_paragraph (শূন্য);
+স্থির শূন্য fmt_paragraph (শূন্য);
+স্থির শূন্য check_punctuation (WORD *w);
+স্থির COST base_cost (WORD *this);
+স্থির COST সারি_cost (WORD *পরবর্তী, পূর্ণসংখ্যা len);
+স্থির শূন্য put_paragraph (WORD *finish);
+স্থির শূন্য put_সারি (WORD *w, পূর্ণসংখ্যা indent);
+স্থির শূন্য put_word (WORD *w);
+স্থির শূন্য put_space (পূর্ণসংখ্যা space);
 
 /* Option values.  */
 
 /* If true, first 2 lines may have different indent (default false).  */
-static bool crown;
+স্থির bool crown;
 
 /* If true, first 2 lines _must_ have different indent (default false).  */
-static bool tagged;
+স্থির bool tagged;
 
 /* If true, each line is a paragraph on its own (default false).  */
-static bool split;
+স্থির bool split;
 
 /* If true, don't preserve inter-word spacing (default false).  */
-static bool uniform;
+স্থির bool uniform;
 
 /* Prefix minus leading and trailing spaces (default "").  */
-static char const *prefix = "";
+স্থির অক্ষর ধ্রুবক *prefix = "";
 
 /* User-supplied maximum line width (default WIDTH).  The only output
    lines longer than this will each comprise a single word.  */
-static int max_width = WIDTH;
+স্থির পূর্ণসংখ্যা max_width = WIDTH;
 
 /* Values derived from the option values.  */
 
 /* The length of prefix minus leading space.  */
-static int prefix_full_length;
+স্থির পূর্ণসংখ্যা prefix_full_দৈর্ঘ্য;
 
 /* The length of the leading space trimmed from the prefix.  */
-static int prefix_lead_space;
+স্থির পূর্ণসংখ্যা prefix_lead_space;
 
 /* The length of prefix minus leading and trailing space.  */
-static int prefix_length;
+স্থির পূর্ণসংখ্যা prefix_দৈর্ঘ্য;
 
 /* The preferred width of text lines, set to LEEWAY % less than max_width.  */
-static int goal_width;
+স্থির পূর্ণসংখ্যা goal_width;
 
 /* Dynamic variables.  */
 
 /* Start column of the character most recently read from the input file.  */
-static int in_column;
+স্থির পূর্ণসংখ্যা in_column;
 
 /* Start column of the next character to be written to stdout.  */
-static int out_column;
+স্থির পূর্ণসংখ্যা out_column;
 
 /* Space for the paragraph text -- longer paragraphs are handled neatly
    (cf. flush_paragraph()).  */
-static char parabuf[MAXCHARS];
+স্থির অক্ষর parabuf[MAXCHARS];
 
 /* A pointer into parabuf, indicating the first unused character position.  */
-static char *wptr;
+স্থির অক্ষর *wptr;
 
 /* The words of a paragraph -- longer paragraphs are handled neatly
    (cf. flush_paragraph()).  */
-static WORD word[MAXWORDS];
+স্থির WORD word[MAXWORDS];
 
 /* A pointer into the above word array, indicating the first position
    after the last complete word.  Sometimes it will point at an incomplete
    word.  */
-static WORD *word_limit;
+স্থির WORD *word_limit;
 
 /* If true, current input file contains tab characters, and so tabs can be
    used for white space on output.  */
-static bool tabs;
+স্থির bool tabs;
 
 /* Space before trimmed prefix on each line of the current paragraph.  */
-static int prefix_indent;
+স্থির পূর্ণসংখ্যা prefix_indent;
 
 /* Indentation of the first line of the current paragraph.  */
-static int first_indent;
+স্থির পূর্ণসংখ্যা first_indent;
 
 /* Indentation of other lines of the current paragraph */
-static int other_indent;
+স্থির পূর্ণসংখ্যা other_indent;
 
 /* To detect the end of a paragraph, we need to look ahead to the first
    non-blank character after the prefix on the next line, or the first
@@ -247,23 +247,23 @@ static int other_indent;
    prefix (next_prefix_indent).  See get_paragraph() and copy_rest().  */
 
 /* The last character read from the input file.  */
-static int next_char;
+স্থির পূর্ণসংখ্যা পরবর্তী_char;
 
 /* The space before the trimmed prefix (or part of it) on the next line
    after the current paragraph.  */
-static int next_prefix_indent;
+স্থির পূর্ণসংখ্যা পরবর্তী_prefix_indent;
 
 /* If nonzero, the length of the last line output in the current
    paragraph, used to charge for raggedness at the split point for long
    paragraphs chosen by fmt_paragraph().  */
-static int last_line_length;
+স্থির পূর্ণসংখ্যা last_সারি_দৈর্ঘ্য;
 
-void
-usage (int status)
+শূন্য
+usage (পূর্ণসংখ্যা status)
 {
-  if (status != EXIT_SUCCESS)
+  যদি (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  অন্যথা
     {
       printf (_("Usage: %s [-WIDTH] [OPTION]... [FILE]...\n"), program_name);
       fputs (_("\
@@ -276,34 +276,34 @@ The option -WIDTH is an abbreviated form of --width=DIGITS.\n\
 
       oputs (_("\
   -c, --crown-margin\n\
-         preserve indentation of first two lines\n\
+         preserve indentation of first two সারিগুলি\n\
 "));
       oputs (_("\
   -p, --prefix=STRING\n\
-         reformat only lines beginning with STRING,\n\
-         reattaching the prefix to reformatted lines\n\
+         reformat only সারিগুলি beginning with STRING,\n\
+         reattaching the prefix to reformatted সারিগুলি\n\
 "));
       oputs (_("\
   -s, --split-only\n\
-         split long lines, but do not refill\n\
+         split long সারিগুলি, but করো not refill\n\
 "));
       oputs (_("\
   -t, --tagged-paragraph\n\
-         indentation of first line different from second\n\
+         indentation of first সারি different from second\n\
 "));
       oputs (_("\
   -u, --uniform-spacing\n\
-         one space between words, two after sentences\n\
+         one space between শব্দগুলি, two after sentences\n\
 "));
       oputs (_("\
   -w, --width=WIDTH\n\
-         maximum line width (default of 75 columns)\n\
+         maximum সারি width (পূর্বনির্ধারিত of 75 columns)\n\
 "));
       /* Tell xgettext that the "% o" below is not a printf-style
          format string:  xgettext:no-c-format */
       oputs (_("\
   -g, --goal=WIDTH\n\
-         goal width (default of 93% of width)\n\
+         goal width (পূর্বনির্ধারিত of 93% of width)\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -314,27 +314,27 @@ The option -WIDTH is an abbreviated form of --width=DIGITS.\n\
 
 /* Decode options and launch execution.  */
 
-static struct option const long_options[] =
+স্থির কাঠামো option ধ্রুবক long_options[] =
 {
-  {"crown-margin", no_argument, NULL, 'c'},
-  {"prefix", required_argument, NULL, 'p'},
-  {"split-only", no_argument, NULL, 's'},
-  {"tagged-paragraph", no_argument, NULL, 't'},
-  {"uniform-spacing", no_argument, NULL, 'u'},
-  {"width", required_argument, NULL, 'w'},
-  {"goal", required_argument, NULL, 'g'},
+  {"crown-margin", no_argument, ফাঁকা, 'c'},
+  {"prefix", required_argument, ফাঁকা, 'p'},
+  {"split-only", no_argument, ফাঁকা, 's'},
+  {"tagged-paragraph", no_argument, ফাঁকা, 't'},
+  {"uniform-spacing", no_argument, ফাঁকা, 'u'},
+  {"width", required_argument, ফাঁকা, 'w'},
+  {"goal", required_argument, ফাঁকা, 'g'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0},
+  {ফাঁকা, 0, ফাঁকা, 0},
 };
 
-int
-main (int argc, char **argv)
+পূর্ণসংখ্যা
+প্রধান (পূর্ণসংখ্যা argc, অক্ষর **argv)
 {
-  int optchar;
+  পূর্ণসংখ্যা optchar;
   bool ok = true;
-  char const *max_width_option = NULL;
-  char const *goal_width_option = NULL;
+  অক্ষর ধ্রুবক *max_width_option = ফাঁকা;
+  অক্ষর ধ্রুবক *goal_width_option = ফাঁকা;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -344,7 +344,7 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  if (argc > 1 && argv[1][0] == '-' && c_isdigit (argv[1][1]))
+  যদি (argc > 1 && argv[1][0] == '-' && c_isdigit (argv[1][1]))
     {
       /* Old option syntax; a dash followed by one or more digits.  */
       max_width_option = argv[1] + 1;
@@ -355,45 +355,45 @@ main (int argc, char **argv)
       argc--;
     }
 
-  while ((optchar = getopt_long (argc, argv, "0123456789cstuw:p:g:",
-                                 long_options, NULL))
+  যখন ((optchar = getopt_long (argc, argv, "0123456789cstuw:p:g:",
+                                 long_options, ফাঁকা))
          != -1)
-    switch (optchar)
+    নির্বাচন (optchar)
       {
-      default:
-        if (c_isdigit (optchar))
+      পূর্বনির্ধারিত:
+        যদি (c_isdigit (optchar))
           error (0, 0, _("invalid option -- %c; -WIDTH is recognized\
  only when it is the first\noption; use -w N instead"),
                  optchar);
         usage (EXIT_FAILURE);
 
-      case 'c':
+      ক্ষেত্র 'c':
         crown = true;
-        break;
+        বিরতি;
 
-      case 's':
+      ক্ষেত্র 's':
         split = true;
-        break;
+        বিরতি;
 
-      case 't':
+      ক্ষেত্র 't':
         tagged = true;
-        break;
+        বিরতি;
 
-      case 'u':
+      ক্ষেত্র 'u':
         uniform = true;
-        break;
+        বিরতি;
 
-      case 'w':
+      ক্ষেত্র 'w':
         max_width_option = optarg;
-        break;
+        বিরতি;
 
-      case 'g':
+      ক্ষেত্র 'g':
         goal_width_option = optarg;
-        break;
+        বিরতি;
 
-      case 'p':
+      ক্ষেত্র 'p':
         set_prefix (optarg);
-        break;
+        বিরতি;
 
       case_GETOPT_HELP_CHAR;
 
@@ -401,7 +401,7 @@ main (int argc, char **argv)
 
       }
 
-  if (max_width_option)
+  যদি (max_width_option)
     {
       /* Limit max_width to MAXCHARS / 2; otherwise, the resulting
          output can be quite ugly.  */
@@ -409,43 +409,43 @@ main (int argc, char **argv)
                               _("invalid width"), 0, XTOINT_MAX_RANGE);
     }
 
-  if (goal_width_option)
+  যদি (goal_width_option)
     {
       /* Limit goal_width to max_width.  */
       goal_width = xdectoumax (goal_width_option, 0, max_width, "",
                                _("invalid goal"), 0);
-      if (max_width_option == NULL)
+      যদি (max_width_option == ফাঁকা)
         max_width = goal_width + 10;
     }
-  else
+  অন্যথা
     {
       goal_width = max_width * (2 * (100 - LEEWAY) + 1) / 200;
     }
 
   bool have_read_stdin = false;
 
-  if (optind == argc)
+  যদি (optind == argc)
     {
       have_read_stdin = true;
       ok = fmt (stdin, "-");
     }
-  else
+  অন্যথা
     {
-      for (; optind < argc; optind++)
+      জন্য (; optind < argc; optind++)
         {
-          char *file = argv[optind];
-          if (streq (file, "-"))
+          অক্ষর *file = argv[optind];
+          যদি (streq (file, "-"))
             {
               ok &= fmt (stdin, file);
               have_read_stdin = true;
             }
-          else
+          অন্যথা
             {
               FILE *in_stream;
               in_stream = fopen (file, "r");
-              if (in_stream != NULL)
+              যদি (in_stream != ফাঁকা)
                 ok &= fmt (in_stream, file);
-              else
+              অন্যথা
                 {
                   error (0, errno, _("cannot open %s for reading"),
                          quoteaf (file));
@@ -455,33 +455,33 @@ main (int argc, char **argv)
         }
     }
 
-  if (have_read_stdin && fclose (stdin) != 0)
+  যদি (have_read_stdin && fclose (stdin) != 0)
     error (EXIT_FAILURE, errno, "%s", _("closing standard input"));
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  ফেরত ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 /* Trim space from the front and back of the string P, yielding the prefix,
    and record the lengths of the prefix and the space trimmed.  */
 
-static void
-set_prefix (char *p)
+স্থির শূন্য
+set_prefix (অক্ষর *p)
 {
-  char *s;
+  অক্ষর *s;
 
   prefix_lead_space = 0;
-  while (*p == ' ')
+  যখন (*p == ' ')
     {
       prefix_lead_space++;
       p++;
     }
   prefix = p;
-  prefix_full_length = strlen (p);
-  s = p + prefix_full_length;
-  while (s > p && s[-1] == ' ')
+  prefix_full_দৈর্ঘ্য = strlen (p);
+  s = p + prefix_full_দৈর্ঘ্য;
+  যখন (s > p && s[-1] == ' ')
     s--;
   *s = '\0';
-  prefix_length = s - p;
+  prefix_দৈর্ঘ্য = s - p;
 }
 
 /* Read F and send formatted output to stdout.
@@ -489,50 +489,50 @@ set_prefix (char *p)
    If !F, assume F resulted from an fopen failure and diagnose that.
    Return true if successful.  */
 
-static bool
-fmt (FILE *f, char const *file)
+স্থির bool
+fmt (FILE *f, অক্ষর ধ্রুবক *file)
 {
   fadvise (f, FADVISE_SEQUENTIAL);
   tabs = false;
   other_indent = 0;
-  next_char = get_prefix (f);
-  while (get_paragraph (f))
+  পরবর্তী_char = get_prefix (f);
+  যখন (get_paragraph (f))
     {
       fmt_paragraph ();
       put_paragraph (word_limit);
     }
 
-  int err = ferror (f) ? 0 : -1;
+  পূর্ণসংখ্যা err = ferror (f) ? 0 : -1;
   /* err < 0 means success.  */
-  if (f == stdin)
+  যদি (f == stdin)
     clearerr (f);
-  else if (fclose (f) != 0 && err < 0)
+  অন্যথা যদি (fclose (f) != 0 && err < 0)
     err = errno;
-  if (0 <= err)
+  যদি (0 <= err)
     {
-      if (f == stdin)
+      যদি (f == stdin)
         error (0, errno, _("read error"));
-      else
+      অন্যথা
         error (0, errno, _("error reading %s"), quoteaf (file));
     }
-  return err < 0;
+  ফেরত err < 0;
 }
 
 /* Set the global variable 'other_indent' according to SAME_PARAGRAPH
    and other global variables.  */
 
-static void
+স্থির শূন্য
 set_other_indent (bool same_paragraph)
 {
-  if (split)
+  যদি (split)
     other_indent = first_indent;
-  else if (crown)
+  অন্যথা যদি (crown)
     {
       other_indent = (same_paragraph ? in_column : first_indent);
     }
-  else if (tagged)
+  অন্যথা যদি (tagged)
     {
-      if (same_paragraph && in_column != first_indent)
+      যদি (same_paragraph && in_column != first_indent)
         {
           other_indent = in_column;
         }
@@ -542,10 +542,10 @@ set_other_indent (bool same_paragraph)
          input so far.  But if these rules make the two indents the same,
          pick a new secondary indent.  */
 
-      else if (other_indent == first_indent)
+      অন্যথা যদি (other_indent == first_indent)
         other_indent = first_indent == 0 ? DEF_INDENT : 0;
     }
-  else
+  অন্যথা
     {
       other_indent = first_indent;
     }
@@ -566,25 +566,25 @@ set_other_indent (bool same_paragraph)
    Return false if end-of-file was encountered before the start of a
    paragraph, else true.  */
 
-static bool
+স্থির bool
 get_paragraph (FILE *f)
 {
-  int c;
+  পূর্ণসংখ্যা c;
 
-  last_line_length = 0;
-  c = next_char;
+  last_সারি_দৈর্ঘ্য = 0;
+  c = পরবর্তী_char;
 
   /* Scan (and copy) blank lines, and lines not introduced by the prefix.  */
 
-  while (c == '\n' || c == EOF
-         || next_prefix_indent < prefix_lead_space
-         || in_column < next_prefix_indent + prefix_full_length)
+  যখন (c == '\n' || c == EOF
+         || পরবর্তী_prefix_indent < prefix_lead_space
+         || in_column < পরবর্তী_prefix_indent + prefix_full_দৈর্ঘ্য)
     {
       c = copy_rest (f, c);
-      if (c == EOF)
+      যদি (c == EOF)
         {
-          next_char = EOF;
-          return false;
+          পরবর্তী_char = EOF;
+          ফেরত false;
         }
       putchar ('\n');
       c = get_prefix (f);
@@ -592,50 +592,50 @@ get_paragraph (FILE *f)
 
   /* Got a suitable first line for a paragraph.  */
 
-  prefix_indent = next_prefix_indent;
+  prefix_indent = পরবর্তী_prefix_indent;
   first_indent = in_column;
   wptr = parabuf;
   word_limit = word;
-  c = get_line (f, c);
+  c = get_সারি (f, c);
   set_other_indent (same_para (c));
 
   /* Read rest of paragraph (unless split is specified).  */
 
-  if (split)
+  যদি (split)
     {
       /* empty */
     }
-  else if (crown)
+  অন্যথা যদি (crown)
     {
-      if (same_para (c))
+      যদি (same_para (c))
         {
-          do
+          করো
             {			/* for each line till the end of the para */
-              c = get_line (f, c);
+              c = get_সারি (f, c);
             }
-          while (same_para (c) && in_column == other_indent);
+          যখন (same_para (c) && in_column == other_indent);
         }
     }
-  else if (tagged)
+  অন্যথা যদি (tagged)
     {
-      if (same_para (c) && in_column != first_indent)
+      যদি (same_para (c) && in_column != first_indent)
         {
-          do
+          করো
             {			/* for each line till the end of the para */
-              c = get_line (f, c);
+              c = get_সারি (f, c);
             }
-          while (same_para (c) && in_column == other_indent);
+          যখন (same_para (c) && in_column == other_indent);
         }
     }
-  else
+  অন্যথা
     {
-      while (same_para (c) && in_column == other_indent)
-        c = get_line (f, c);
+      যখন (same_para (c) && in_column == other_indent)
+        c = get_সারি (f, c);
     }
 
   (word_limit - 1)->period = (word_limit - 1)->final = true;
-  next_char = c;
-  return true;
+  পরবর্তী_char = c;
+  ফেরত true;
 }
 
 /* Copy to the output a line that failed to match the prefix, or that
@@ -643,37 +643,37 @@ get_paragraph (FILE *f)
    that failed to match the prefix.  In the latter, C is \n or EOF.
    Return the character (\n or EOF) ending the line.  */
 
-static int
-copy_rest (FILE *f, int c)
+স্থির পূর্ণসংখ্যা
+copy_rest (FILE *f, পূর্ণসংখ্যা c)
 {
   out_column = 0;
-  if (in_column > next_prefix_indent || (c != '\n' && c != EOF))
+  যদি (in_column > পরবর্তী_prefix_indent || (c != '\n' && c != EOF))
     {
-      put_space (next_prefix_indent);
-      for (char const *s = prefix; out_column != in_column && *s; out_column++)
+      put_space (পরবর্তী_prefix_indent);
+      জন্য (অক্ষর ধ্রুবক *s = prefix; out_column != in_column && *s; out_column++)
         putchar (*s++);
-      if (c != EOF && c != '\n')
+      যদি (c != EOF && c != '\n')
         put_space (in_column - out_column);
-      if (c == EOF && in_column >= next_prefix_indent + prefix_length)
+      যদি (c == EOF && in_column >= পরবর্তী_prefix_indent + prefix_দৈর্ঘ্য)
         putchar ('\n');
     }
-  while (c != '\n' && c != EOF)
+  যখন (c != '\n' && c != EOF)
     {
       putchar (c);
       c = getc (f);
     }
-  return c;
+  ফেরত c;
 }
 
 /* Return true if a line whose first non-blank character after the
    prefix (if any) is C could belong to the current paragraph,
    otherwise false.  */
 
-static bool
-same_para (int c)
+স্থির bool
+same_para (পূর্ণসংখ্যা c)
 {
-  return (next_prefix_indent == prefix_indent
-          && in_column >= next_prefix_indent + prefix_full_length
+  ফেরত (পরবর্তী_prefix_indent == prefix_indent
+          && in_column >= পরবর্তী_prefix_indent + prefix_full_দৈর্ঘ্য
           && c != '\n' && c != EOF);
 }
 
@@ -685,25 +685,25 @@ same_para (int c)
 
    Return the first non-blank character of the next line.  */
 
-static int
-get_line (FILE *f, int c)
+স্থির পূর্ণসংখ্যা
+get_সারি (FILE *f, পূর্ণসংখ্যা c)
 {
-  int start;
-  char *end_of_parabuf;
+  পূর্ণসংখ্যা start;
+  অক্ষর *end_of_parabuf;
   WORD *end_of_word;
 
   end_of_parabuf = &parabuf[MAXCHARS];
   end_of_word = &word[MAXWORDS - 2];
 
-  do
+  করো
     {				/* for each word in a line */
 
       /* Scan word.  */
 
       word_limit->text = wptr;
-      do
+      করো
         {
-          if (wptr == end_of_parabuf)
+          যদি (wptr == end_of_parabuf)
             {
               set_other_indent (true);
               flush_paragraph ();
@@ -711,8 +711,8 @@ get_line (FILE *f, int c)
           *wptr++ = c;
           c = getc (f);
         }
-      while (c != EOF && !c_isspace (c));
-      in_column += word_limit->length = wptr - word_limit->text;
+      যখন (c != EOF && !c_isspace (c));
+      in_column += word_limit->দৈর্ঘ্য = wptr - word_limit->text;
       check_punctuation (word_limit);
 
       /* Scan inter-word space.  */
@@ -723,81 +723,81 @@ get_line (FILE *f, int c)
       word_limit->final = (c == EOF
                            || (word_limit->period
                                && (c == '\n' || word_limit->space > 1)));
-      if (c == '\n' || c == EOF || uniform)
+      যদি (c == '\n' || c == EOF || uniform)
         word_limit->space = word_limit->final ? 2 : 1;
-      if (word_limit == end_of_word)
+      যদি (word_limit == end_of_word)
         {
           set_other_indent (true);
           flush_paragraph ();
         }
       word_limit++;
     }
-  while (c != '\n' && c != EOF);
-  return get_prefix (f);
+  যখন (c != '\n' && c != EOF);
+  ফেরত get_prefix (f);
 }
 
 /* Read a prefix from input file F.  Return either first non-matching
    character, or first non-blank character after the prefix.  */
 
-static int
+স্থির পূর্ণসংখ্যা
 get_prefix (FILE *f)
 {
-  int c;
+  পূর্ণসংখ্যা c;
 
   in_column = 0;
   c = get_space (f, getc (f));
-  if (prefix_length == 0)
-    next_prefix_indent = prefix_lead_space < in_column ?
+  যদি (prefix_দৈর্ঘ্য == 0)
+    পরবর্তী_prefix_indent = prefix_lead_space < in_column ?
       prefix_lead_space : in_column;
-  else
+  অন্যথা
     {
-      next_prefix_indent = in_column;
-      for (char const *p = prefix; *p != '\0'; p++)
+      পরবর্তী_prefix_indent = in_column;
+      জন্য (অক্ষর ধ্রুবক *p = prefix; *p != '\0'; p++)
         {
-          unsigned char pc = *p;
-          if (c != pc)
-            return c;
+          unsigned অক্ষর pc = *p;
+          যদি (c != pc)
+            ফেরত c;
           in_column++;
           c = getc (f);
         }
       c = get_space (f, c);
     }
-  return c;
+  ফেরত c;
 }
 
 /* Read blank characters from input file F, starting with C, and keeping
    in_column up-to-date.  Return first non-blank character.  */
 
-static int
-get_space (FILE *f, int c)
+স্থির পূর্ণসংখ্যা
+get_space (FILE *f, পূর্ণসংখ্যা c)
 {
-  while (true)
+  যখন (true)
     {
-      if (c == ' ')
+      যদি (c == ' ')
         in_column++;
-      else if (c == '\t')
+      অন্যথা যদি (c == '\t')
         {
           tabs = true;
           in_column = (in_column / TABWIDTH + 1) * TABWIDTH;
         }
-      else
-        return c;
+      অন্যথা
+        ফেরত c;
       c = getc (f);
     }
 }
 
 /* Set extra fields in word W describing any attached punctuation.  */
 
-static void
+স্থির শূন্য
 check_punctuation (WORD *w)
 {
-  char const *start = w->text;
-  char const *finish = start + (w->length - 1);
-  unsigned char fin = *finish;
+  অক্ষর ধ্রুবক *start = w->text;
+  অক্ষর ধ্রুবক *finish = start + (w->দৈর্ঘ্য - 1);
+  unsigned অক্ষর fin = *finish;
 
   w->paren = isopen (*start);
   w->punct = !! ispunct (fin);
-  while (start < finish && isclose (*finish))
+  যখন (start < finish && isclose (*finish))
     finish--;
   w->period = isperiod (*finish);
 }
@@ -805,24 +805,24 @@ check_punctuation (WORD *w)
 /* Flush part of the paragraph to make room.  This function is called on
    hitting the limit on the number of words or characters.  */
 
-static void
-flush_paragraph (void)
+স্থির শূন্য
+flush_paragraph (শূন্য)
 {
   WORD *split_point;
   WORD *w;
-  int shift;
+  পূর্ণসংখ্যা shift;
   COST best_break;
 
   /* In the special case where it's all one word, just flush it.  */
 
-  if (word_limit == word)
+  যদি (word_limit == word)
     {
       size_t to_write = wptr - parabuf;
-      if (fwrite (parabuf, 1, to_write, stdout) != to_write)
+      যদি (fwrite (parabuf, 1, to_write, stdout) != to_write)
         write_error ();
 
       wptr = parabuf;
-      return;
+      ফেরত;
     }
 
   /* Otherwise:
@@ -837,15 +837,15 @@ flush_paragraph (void)
 
   split_point = word_limit;
   best_break = MAXCOST;
-  for (w = word->next_break; w != word_limit; w = w->next_break)
+  জন্য (w = word->পরবর্তী_break; w != word_limit; w = w->পরবর্তী_break)
     {
-      if (w->best_cost - w->next_break->best_cost < best_break)
+      যদি (w->best_cost - w->পরবর্তী_break->best_cost < best_break)
         {
           split_point = w;
-          best_break = w->best_cost - w->next_break->best_cost;
+          best_break = w->best_cost - w->পরবর্তী_break->best_cost;
         }
-      if (best_break <= MAXCOST - LINE_CREDIT)
-        best_break += LINE_CREDIT;
+      যদি (best_break <= MAXCOST - সারি_CREDIT)
+        best_break += সারি_CREDIT;
     }
   put_paragraph (split_point);
 
@@ -858,13 +858,13 @@ flush_paragraph (void)
 
   /* Adjust text pointers.  */
 
-  for (w = split_point; w <= word_limit; w++)
+  জন্য (w = split_point; w <= word_limit; w++)
     w->text -= shift;
 
   /* Copy words from split_point down to word -- we use memmove because
      the source and target may overlap.  */
 
-  memmove (word, split_point, (word_limit - split_point + 1) * sizeof *word);
+  memmove (word, split_point, (word_limit - split_point + 1) * আকার *word);
   word_limit -= split_point - word;
 }
 
@@ -872,19 +872,19 @@ flush_paragraph (void)
    and remembering the optimal formatting for each suffix from the empty
    one to the whole paragraph.  */
 
-static void
-fmt_paragraph (void)
+স্থির শূন্য
+fmt_paragraph (শূন্য)
 {
   WORD *w;
-  int len;
+  পূর্ণসংখ্যা len;
   COST wcost, best;
-  int saved_length;
+  পূর্ণসংখ্যা saved_দৈর্ঘ্য;
 
   word_limit->best_cost = 0;
-  saved_length = word_limit->length;
-  word_limit->length = max_width;	/* sentinel */
+  saved_দৈর্ঘ্য = word_limit->দৈর্ঘ্য;
+  word_limit->দৈর্ঘ্য = max_width;	/* sentinel */
 
-  for (WORD *start = word_limit - 1; start >= word; start--)
+  জন্য (WORD *start = word_limit - 1; start >= word; start--)
     {
       best = MAXCOST;
       len = start == word ? first_indent : other_indent;
@@ -892,167 +892,167 @@ fmt_paragraph (void)
       /* At least one word, however long, in the line.  */
 
       w = start;
-      len += w->length;
-      do
+      len += w->দৈর্ঘ্য;
+      করো
         {
           w++;
 
           /* Consider breaking before w.  */
 
-          wcost = line_cost (w, len) + w->best_cost;
-          if (start == word && last_line_length > 0)
-            wcost += RAGGED_COST (len - last_line_length);
-          if (wcost < best)
+          wcost = সারি_cost (w, len) + w->best_cost;
+          যদি (start == word && last_সারি_দৈর্ঘ্য > 0)
+            wcost += RAGGED_COST (len - last_সারি_দৈর্ঘ্য);
+          যদি (wcost < best)
             {
               best = wcost;
-              start->next_break = w;
-              start->line_length = len;
+              start->পরবর্তী_break = w;
+              start->সারি_দৈর্ঘ্য = len;
             }
 
           /* This is a kludge to keep us from computing 'len' as the
              sum of the sentinel length and some non-zero number.
              Since the sentinel w->length may be INT_MAX, adding
              to that would give a negative result.  */
-          if (w == word_limit)
-            break;
+          যদি (w == word_limit)
+            বিরতি;
 
-          len += (w - 1)->space + w->length;	/* w > start >= word */
+          len += (w - 1)->space + w->দৈর্ঘ্য;	/* w > start >= word */
         }
-      while (len <= max_width);
+      যখন (len <= max_width);
       start->best_cost = best + base_cost (start);
     }
 
-  word_limit->length = saved_length;
+  word_limit->দৈর্ঘ্য = saved_দৈর্ঘ্য;
 }
 
 /* Work around <https://gcc.gnu.org/PR109628>.  */
-#if __GNUC__ == 13
+#যদি __GNUC__ == 13
 # pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value"
 #endif
 
 /* Return the constant component of the cost of breaking before the
    word THIS.  */
 
-static COST
+স্থির COST
 base_cost (WORD *this)
 {
   COST cost;
 
-  cost = LINE_COST;
+  cost = সারি_COST;
 
-  if (this > word)
+  যদি (this > word)
     {
-      if ((this - 1)->period)
+      যদি ((this - 1)->period)
         {
-          if ((this - 1)->final)
+          যদি ((this - 1)->final)
             cost -= SENTENCE_BONUS;
-          else
+          অন্যথা
             cost += NOBREAK_COST;
         }
-      else if ((this - 1)->punct)
+      অন্যথা যদি ((this - 1)->punct)
         cost -= PUNCT_BONUS;
-      else if (this > word + 1 && (this - 2)->final)
-        cost += WIDOW_COST ((this - 1)->length);
+      অন্যথা যদি (this > word + 1 && (this - 2)->final)
+        cost += WIDOW_COST ((this - 1)->দৈর্ঘ্য);
     }
 
-  if (this->paren)
+  যদি (this->paren)
     cost -= PAREN_BONUS;
-  else if (this->final)
-    cost += ORPHAN_COST (this->length);
+  অন্যথা যদি (this->final)
+    cost += ORPHAN_COST (this->দৈর্ঘ্য);
 
-  return cost;
+  ফেরত cost;
 }
 
 /* Return the component of the cost of breaking before word NEXT that
    depends on LEN, the length of the line beginning there.  */
 
-static COST
-line_cost (WORD *next, int len)
+স্থির COST
+সারি_cost (WORD *পরবর্তী, পূর্ণসংখ্যা len)
 {
-  int n;
+  পূর্ণসংখ্যা n;
   COST cost;
 
-  if (next == word_limit)
-    return 0;
+  যদি (পরবর্তী == word_limit)
+    ফেরত 0;
   n = goal_width - len;
   cost = SHORT_COST (n);
-  if (next->next_break != word_limit)
+  যদি (পরবর্তী->পরবর্তী_break != word_limit)
     {
-      n = len - next->line_length;
+      n = len - পরবর্তী->সারি_দৈর্ঘ্য;
       cost += RAGGED_COST (n);
     }
-  return cost;
+  ফেরত cost;
 }
 
 /* Output to stdout a paragraph from word up to (but not including)
    FINISH, which must be in the next_break chain from word.  */
 
-static void
+স্থির শূন্য
 put_paragraph (WORD *finish)
 {
-  put_line (word, first_indent);
-  for (WORD *w = word->next_break; w != finish; w = w->next_break)
-    put_line (w, other_indent);
+  put_সারি (word, first_indent);
+  জন্য (WORD *w = word->পরবর্তী_break; w != finish; w = w->পরবর্তী_break)
+    put_সারি (w, other_indent);
 }
 
 /* Output to stdout the line beginning with word W, beginning in column
    INDENT, including the prefix (if any).  */
 
-static void
-put_line (WORD *w, int indent)
+স্থির শূন্য
+put_সারি (WORD *w, পূর্ণসংখ্যা indent)
 {
   WORD *endline;
 
   out_column = 0;
   put_space (prefix_indent);
   fputs (prefix, stdout);
-  out_column += prefix_length;
+  out_column += prefix_দৈর্ঘ্য;
   put_space (indent - out_column);
 
-  endline = w->next_break - 1;
-  for (; w != endline; w++)
+  endline = w->পরবর্তী_break - 1;
+  জন্য (; w != endline; w++)
     {
       put_word (w);
       put_space (w->space);
     }
   put_word (w);
-  last_line_length = out_column;
+  last_সারি_দৈর্ঘ্য = out_column;
   putchar ('\n');
 
-  if (ferror (stdout))
+  যদি (ferror (stdout))
     write_error ();
 }
 
 /* Output to stdout the word W.  */
 
-static void
+স্থির শূন্য
 put_word (WORD *w)
 {
-  char const *s = w->text;
-  for (int n = w->length; n != 0; n--)
+  অক্ষর ধ্রুবক *s = w->text;
+  জন্য (পূর্ণসংখ্যা n = w->দৈর্ঘ্য; n != 0; n--)
     putchar (*s++);
-  out_column += w->length;
+  out_column += w->দৈর্ঘ্য;
 }
 
 /* Output to stdout SPACE spaces, or equivalent tabs.  */
 
-static void
-put_space (int space)
+স্থির শূন্য
+put_space (পূর্ণসংখ্যা space)
 {
-  int space_target, tab_target;
+  পূর্ণসংখ্যা space_target, tab_target;
 
   space_target = out_column + space;
-  if (tabs)
+  যদি (tabs)
     {
       tab_target = space_target / TABWIDTH * TABWIDTH;
-      if (out_column + 1 < tab_target)
-        while (out_column < tab_target)
+      যদি (out_column + 1 < tab_target)
+        যখন (out_column < tab_target)
           {
             putchar ('\t');
             out_column = (out_column / TABWIDTH + 1) * TABWIDTH;
           }
     }
-  while (out_column < space_target)
+  যখন (out_column < space_target)
     {
       putchar (' ');
       out_column++;

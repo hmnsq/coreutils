@@ -20,45 +20,45 @@
 
    Ørn E. Hansen added NLS support in 1997.  */
 
-#include <config.h>
+#অন্তর্ভাব <config.h>
 
-#include <getopt.h>
-#include <pthread.h>
-#include <sys/resource.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <signal.h>
-#include <spawn.h>
-#include "system.h"
-#include "argmatch.h"
-#include "assure.h"
-#include "c-ctype.h"
-#include "fadvise.h"
-#include "filevercmp.h"
-#include "findprog.h"
-#include "flexmember.h"
-#include "hard-locale.h"
-#include "hash.h"
-#include "heap.h"
-#include "ignore-value.h"
-#include "mbswidth.h"
-#include "nproc.h"
-#include "physmem.h"
-#include "posixver.h"
-#include "quote.h"
-#include "randread.h"
-#include "readtokens0.h"
-#include "stdlib--.h"
-#include "strnumcmp.h"
-#include "term-sig.h"
-#include "unistd--.h"
-#include "xmemcoll.h"
-#include "xnanosleep.h"
-#include "xstrtol.h"
-#include "xstrtol-error.h"
+#অন্তর্ভাব <getopt.h>
+#অন্তর্ভাব <pthread.h>
+#অন্তর্ভাব <sys/resource.h>
+#অন্তর্ভাব <sys/types.h>
+#অন্তর্ভাব <sys/wait.h>
+#অন্তর্ভাব <signal.h>
+#অন্তর্ভাব <spawn.h>
+#অন্তর্ভাব "system.h"
+#অন্তর্ভাব "argmatch.h"
+#অন্তর্ভাব "assure.h"
+#অন্তর্ভাব "c-ctype.h"
+#অন্তর্ভাব "fadvise.h"
+#অন্তর্ভাব "filevercmp.h"
+#অন্তর্ভাব "findprog.h"
+#অন্তর্ভাব "flexmember.h"
+#অন্তর্ভাব "hard-locale.h"
+#অন্তর্ভাব "hash.h"
+#অন্তর্ভাব "heap.h"
+#অন্তর্ভাব "ignore-value.h"
+#অন্তর্ভাব "mbswidth.h"
+#অন্তর্ভাব "nproc.h"
+#অন্তর্ভাব "physmem.h"
+#অন্তর্ভাব "posixver.h"
+#অন্তর্ভাব "quote.h"
+#অন্তর্ভাব "randread.h"
+#অন্তর্ভাব "readtokens0.h"
+#অন্তর্ভাব "stdlib--.h"
+#অন্তর্ভাব "strnumcmp.h"
+#অন্তর্ভাব "term-sig.h"
+#অন্তর্ভাব "unistd--.h"
+#অন্তর্ভাব "xmemcoll.h"
+#অন্তর্ভাব "xnanosleep.h"
+#অন্তর্ভাব "xstrtol.h"
+#অন্তর্ভাব "xstrtol-error.h"
 
-#ifndef RLIMIT_DATA
-struct rlimit { size_t rlim_cur; };
+#ifndef RLIMIT_তথ্য
+কাঠামো rlimit { size_t rlim_cur; };
 # define getrlimit(Resource, Rlp) (-1)
 #endif
 
@@ -69,14 +69,14 @@ struct rlimit { size_t rlim_cur; };
   proper_name ("Mike Haertel"), \
   proper_name ("Paul Eggert")
 
-#if HAVE_LANGINFO_CODESET
+#যদি HAVE_LANGINFO_CODESET
 # include <langinfo.h>
 #endif
 
-#if !defined OPEN_MAX && defined NR_OPEN
+#যদি !defined OPEN_MAX && defined NR_OPEN
 # define OPEN_MAX NR_OPEN
 #endif
-#if !defined OPEN_MAX
+#যদি !defined OPEN_MAX
 # define OPEN_MAX 20
 #endif
 
@@ -89,7 +89,7 @@ struct rlimit { size_t rlim_cur; };
 /* Maximum number of lines to merge every time a NODE is taken from
    the merge queue.  Node is at LEVEL in the binary merge tree,
    and is responsible for merging TOTAL lines. */
-#define MAX_MERGE(total, level) (((total) >> (2 * ((level) + 1))) + 1)
+#define MAX_MERGE(যোগ_2, level) (((যোগ_2) >> (2 * ((level) + 1))) + 1)
 
 /* Heuristic value for the number of lines for which it is worth creating
    a subthread, during an internal merge sort.  I.e., it is a small number
@@ -99,15 +99,15 @@ struct rlimit { size_t rlim_cur; };
    lines of gensort -a output is sorted slightly faster with --parallel=2
    than with --parallel=1.  By contrast, using --parallel=1 is about 10%
    faster than using --parallel=2 with a 64K-line input.  */
-enum { SUBTHREAD_LINES_HEURISTIC = 128 * 1024 };
-static_assert (4 <= SUBTHREAD_LINES_HEURISTIC);
+গণনা { SUBTHREAD_সারিগুলি_HEURISTIC = 128 * 1024 };
+static_assert (4 <= SUBTHREAD_সারিগুলি_HEURISTIC);
 
 /* The number of threads after which there are
    diminishing performance gains.  */
-enum { DEFAULT_MAX_THREADS = 8 };
+গণনা { DEFAULT_MAX_THREADS = 8 };
 
 /* Exit statuses.  */
-enum
+গণনা
   {
     /* POSIX says to exit with status 1 if invoked with -c and the
        input is not properly sorted.  */
@@ -118,7 +118,7 @@ enum
     SORT_FAILURE = 2
   };
 
-enum
+গণনা
   {
     /* The number of times we should try to spawn a compression process
        (we retry if the posix_spawnp call fails with EAGAIN).  We don't _need_
@@ -132,50 +132,50 @@ enum
     MAX_TRIES_DECOMPRESS = 9
   };
 
-enum
+গণনা
   {
     /* Level of the end-of-merge node, one level above the root. */
     MERGE_END = 0,
 
     /* Level of the root node in merge tree. */
-    MERGE_ROOT = 1
+    MERGE_মূল = 1
   };
 
 /* The representation of the decimal point in the current locale.  */
-static char decimal_point;
+স্থির অক্ষর decimal_point;
 
 /* Thousands separator; if outside char range, there is no separator.  */
-static int thousands_sep;
+স্থির পূর্ণসংখ্যা thousands_sep;
 /* We currently ignore multi-byte grouping chars.  */
-static bool thousands_sep_ignored;
+স্থির bool thousands_sep_ignored;
 
 /* Nonzero if the corresponding locales are hard.  */
-static bool hard_LC_COLLATE;
-#if HAVE_NL_LANGINFO
-static bool hard_LC_TIME;
+স্থির bool hard_LC_COLLATE;
+#যদি HAVE_NL_LANGINFO
+স্থির bool hard_LC_TIME;
 #endif
 
 #define NONZERO(x) ((x) != 0)
 
 /* The kind of blanks for '-b' to skip in various options. */
-enum blanktype { bl_start, bl_end, bl_both };
+গণনা blanktype { bl_start, bl_end, bl_both };
 
 /* The character marking end of line. Default to \n. */
-static char eolchar = '\n';
+স্থির অক্ষর eolchar = '\n';
 
 /* Lines are held in memory as counted strings. */
-struct line
+কাঠামো সারি
 {
-  char *text;			/* Text of the line. */
-  size_t length;		/* Length including final newline. */
-  char *keybeg;			/* Start of first key. */
-  char *keylim;			/* Limit of first key. */
+  অক্ষর *text;			/* Text of the line. */
+  size_t দৈর্ঘ্য;		/* Length including final newline. */
+  অক্ষর *keybeg;			/* Start of first key. */
+  অক্ষর *keylim;			/* Limit of first key. */
 };
 
 /* Input buffers. */
-struct buffer
+কাঠামো বাফার
 {
-  char *buf;			/* Dynamically allocated buffer,
+  অক্ষর *buf;			/* Dynamically allocated buffer,
                                    partitioned into 3 regions:
                                    - input data;
                                    - unused area;
@@ -183,15 +183,15 @@ struct buffer
   size_t used;			/* Number of bytes used for input data.  */
   size_t nlines;		/* Number of lines in the line array.  */
   idx_t alloc;			/* Number of bytes allocated. */
-  size_t left;			/* Number of bytes left from previous reads. */
-  size_t line_bytes;		/* Number of bytes to reserve for each line. */
+  size_t বাম;			/* Number of bytes left from previous reads. */
+  size_t সারি_bytes;		/* Number of bytes to reserve for each line. */
   bool eof;			/* An EOF has been read.  */
 };
 
 /* Policy for sizing the main sort buffer.  INITIAL is the allocation
    to try first.  LIMIT is the largest allocation to try while reading
    normal input; a single input line can still force a larger buffer.  */
-struct sort_buffer_policy
+কাঠামো sort_বাফার_policy
 {
   size_t initial;
   size_t limit;
@@ -199,14 +199,14 @@ struct sort_buffer_policy
 };
 
 /* Sort key.  */
-struct keyfield
+কাঠামো keyfield
 {
   size_t sword;			/* Zero-origin 'word' to start at. */
   size_t schar;			/* Additional characters to skip. */
   size_t eword;			/* Zero-origin last 'word' of key. */
   size_t echar;			/* Additional characters in field. */
-  bool const *ignore;		/* Boolean array of characters to ignore. */
-  char const *translate;	/* Translation applied to characters. */
+  bool ধ্রুবক *ignore;		/* Boolean array of characters to ignore. */
+  অক্ষর ধ্রুবক *translate;	/* Translation applied to characters. */
   bool skipsblanks;		/* Skip leading blanks when finding start.  */
   bool skipeblanks;		/* Skip leading blanks when finding end.  */
   bool numeric;			/* Flag for numeric comparison.  Handle
@@ -221,44 +221,44 @@ struct keyfield
   bool reverse;			/* Reverse the sense of comparison. */
   bool version;			/* sort by version number */
   bool traditional_used;	/* Traditional key option format is used. */
-  struct keyfield *next;	/* Next keyfield to try. */
+  কাঠামো keyfield *পরবর্তী;	/* Next keyfield to try. */
 };
 
-struct month
+কাঠামো month
 {
-  char const *name;
-  int val;
+  অক্ষর ধ্রুবক *name;
+  পূর্ণসংখ্যা val;
 };
 
 /* Binary merge tree node. */
-struct merge_node
+কাঠামো merge_গ্রন্থি
 {
-  struct line *lo;              /* Lines to merge from LO child node. */
-  struct line *hi;              /* Lines to merge from HI child node. */
-  struct line *end_lo;          /* End of available lines from LO. */
-  struct line *end_hi;          /* End of available lines from HI. */
-  struct line **dest;           /* Pointer to destination of merge. */
+  কাঠামো সারি *lo;              /* Lines to merge from LO child node. */
+  কাঠামো সারি *hi;              /* Lines to merge from HI child node. */
+  কাঠামো সারি *end_lo;          /* End of available lines from LO. */
+  কাঠামো সারি *end_hi;          /* End of available lines from HI. */
+  কাঠামো সারি **dest;           /* Pointer to destination of merge. */
   size_t nlo;                   /* Total Lines remaining from LO. */
   size_t nhi;                   /* Total lines remaining from HI. */
-  struct merge_node *parent;    /* Parent node. */
-  struct merge_node *lo_child;  /* LO child node. */
-  struct merge_node *hi_child;  /* HI child node. */
-  unsigned int level;           /* Level in merge tree. */
+  কাঠামো merge_গ্রন্থি *parent;    /* Parent node. */
+  কাঠামো merge_গ্রন্থি *lo_child;  /* LO child node. */
+  কাঠামো merge_গ্রন্থি *hi_child;  /* HI child node. */
+  unsigned পূর্ণসংখ্যা level;           /* Level in merge tree. */
   bool queued;                  /* Node is already in heap. */
   pthread_mutex_t lock;         /* Lock for node operations. */
 };
 
 /* Priority queue of merge nodes. */
-struct merge_node_queue
+কাঠামো merge_গ্রন্থি_queue
 {
-  struct heap *priority_queue;  /* Priority queue of merge tree nodes. */
+  কাঠামো heap *priority_queue;  /* Priority queue of merge tree nodes. */
   pthread_mutex_t mutex;        /* Lock for queue operations. */
   pthread_cond_t cond;          /* Conditional wait for empty queue to populate
                                    when popping. */
 };
 
 /* Used to implement --unique (-u).  */
-static struct line saved_line;
+স্থির কাঠামো সারি saved_সারি;
 
 /* FIXME: None of these tables work with multibyte character sets.
    Also, there are many other bugs when handling multibyte characters.
@@ -267,22 +267,22 @@ static struct line saved_line;
    tricky.  */
 
 /* Table of blanks.  */
-static bool blanks[UCHAR_LIM];
+স্থির bool blanks[UCHAR_LIM];
 
 /* Table of non-printing characters. */
-static bool nonprinting[UCHAR_LIM];
+স্থির bool nonprinting[UCHAR_LIM];
 
 /* Table of non-dictionary characters (not letters, digits, or blanks). */
-static bool nondictionary[UCHAR_LIM];
+স্থির bool nondictionary[UCHAR_LIM];
 
 /* Translation table folding lower case to upper.  */
-static char fold_toupper[UCHAR_LIM];
+স্থির অক্ষর fold_toupper[UCHAR_LIM];
 
 #define MONTHS_PER_YEAR 12
 
 /* Table mapping month names to integers.
    Alphabetic order allows binary search. */
-static struct month monthtab[] =
+স্থির কাঠামো month monthtab[] =
 {
   {"APR", 4},
   {"AUG", 8},
@@ -302,28 +302,28 @@ static struct month monthtab[] =
 #define NMERGE_DEFAULT 16
 
 /* Minimum size for a merge or check buffer.  */
-#define MIN_MERGE_BUFFER_SIZE (2 + sizeof (struct line))
+#define MIN_MERGE_বাফার_আকার (2 + আকার (কাঠামো সারি))
 
 /* Minimum sort size; the code might not work with smaller sizes.  */
-#define MIN_SORT_SIZE (nmerge * MIN_MERGE_BUFFER_SIZE)
+#define MIN_SORT_আকার (nmerge * MIN_MERGE_বাফার_আকার)
 
 /* The number of bytes needed for a merge or check buffer, which can
    function relatively efficiently even if it holds only one line.  If
    a longer line is seen, this value is increased.  */
-static size_t merge_buffer_size = MAX (MIN_MERGE_BUFFER_SIZE, 256 * 1024);
+স্থির size_t merge_বাফার_আকার = MAX (MIN_MERGE_বাফার_আকার, 256 * 1024);
 
 /* The approximate maximum number of bytes of main memory to use, as
    specified by the user.  Zero if the user has not specified a size.  */
-static size_t sort_size;
+স্থির size_t sort_আকার;
 
 /* The initial allocation factor for non-regular files.
    This is used, e.g., when reading from a pipe.
    Don't make it too big, since it is multiplied by ~130 to
    obtain the size of the actual buffer sort will allocate.
    Also, there may be 8 threads all doing this at the same time.  */
-#define INPUT_FILE_SIZE_GUESS (128 * 1024)
+#define প্রবেশ_FILE_আকার_GUESS (128 * 1024)
 
-static struct
+স্থির কাঠামো
 {
   /* Number of temporary directory names used.  */
   idx_t n_dirs;
@@ -333,106 +333,106 @@ static struct
 
   /* Array of directory names in which any temporary files are
      to be created. */
-  char const **dirs COUNTED_BY (n_dirs);
-} temp_dirs;
+  অক্ষর ধ্রুবক **dirs COUNTED_BY (n_dirs);
+} অস্থায়ী_dirs;
 
 
 
 /* Flag to reverse the order of all comparisons. */
-static bool reverse;
+স্থির bool reverse;
 
 /* Flag for stable sort.  This turns off the last ditch bytewise
    comparison of lines, and instead leaves lines in the same order
    they were read if all keys compare equal.  */
-static bool stable;
+স্থির bool stable;
 
 /* An int value outside char range.  */
-enum { NON_CHAR = CHAR_MAX + 1 };
+গণনা { NON_CHAR = CHAR_MAX + 1 };
 
 /* If TAB has this value, blanks separate fields.  */
-enum { TAB_DEFAULT = CHAR_MAX + 1 };
+গণনা { TAB_DEFAULT = CHAR_MAX + 1 };
 
 /* Tab character separating fields.  If TAB_DEFAULT, then fields are
    separated by the empty string between a non-blank character and a blank
    character. */
-static int tab = TAB_DEFAULT;
+স্থির পূর্ণসংখ্যা tab = TAB_DEFAULT;
 
 /* Flag to remove consecutive duplicate lines from the output.
    Only the last of a sequence of equal lines will be output. */
-static bool unique;
+স্থির bool unique;
 
 /* Nonzero if any of the input files are the standard input. */
-static bool have_read_stdin;
+স্থির bool have_read_stdin;
 
 /* List of key field comparisons to be tried.  */
-static struct keyfield *keylist;
+স্থির কাঠামো keyfield *keylist;
 
 /* Program used to (de)compress temp files.  Must accept -d.  */
-static char const *compress_program;
+স্থির অক্ষর ধ্রুবক *compress_program;
 
 /* Annotate the output with extra info to aid the user.  */
-static bool debug;
+স্থির bool debug;
 
 /* Maximum number of files to merge in one go.  If more than this
    number are present, temp files will be used. */
-static unsigned int nmerge = NMERGE_DEFAULT;
+স্থির unsigned পূর্ণসংখ্যা nmerge = NMERGE_DEFAULT;
 
 /* Whether SIGPIPE had the default disposition at startup.  */
-static bool default_SIGPIPE;
+স্থির bool default_SIGPIPE;
 
 /* The list of temporary files. */
-struct tempnode
+কাঠামো tempnode
 {
-  struct tempnode *volatile next;
+  কাঠামো tempnode *অস্থির পরবর্তী;
   pid_t pid;     /* The subprocess PID; undefined if state == UNCOMPRESSED.  */
-  char state;
-  char name[FLEXIBLE_ARRAY_MEMBER];
+  অক্ষর state;
+  অক্ষর name[FLEXIBLE_ARRAY_MEMBER];
 };
-static struct tempnode *volatile temphead;
-static struct tempnode *volatile *temptail = &temphead;
+স্থির কাঠামো tempnode *অস্থির temphead;
+স্থির কাঠামো tempnode *অস্থির *temptail = &temphead;
 
 /* Clean up any remaining temporary files.  */
 
-static void
-cleanup (void)
+স্থির শূন্য
+cleanup (শূন্য)
 {
-  for (struct tempnode const *node = temphead; node; node = node->next)
-    unlink (node->name);
-  temphead = NULL;
+  জন্য (কাঠামো tempnode ধ্রুবক *গ্রন্থি = temphead; গ্রন্থি; গ্রন্থি = গ্রন্থি->পরবর্তী)
+    unlink (গ্রন্থি->name);
+  temphead = ফাঁকা;
 }
 
 /* Handle interrupts and hangups. */
 
-static void
-sighandler (int sig)
+স্থির শূন্য
+sighandler (পূর্ণসংখ্যা sig)
 {
   cleanup ();
 
-  signal (sig, SIG_DFL);
-  raise (sig);
+  সংকেত (sig, SIG_DFL);
+  তোলো (sig);
 }
 
 /* Report MESSAGE for FILE, then clean up and exit.
    If FILE is null, it represents standard output.  */
 
-static void
-sort_die (char const *message, char const *file)
+স্থির শূন্য
+sort_die (অক্ষর ধ্রুবক *message, অক্ষর ধ্রুবক *file)
 {
   /* If we got EPIPE writing to stdout (from a previous fwrite() or fclose()
      and SIGPIPE was originally SIG_DFL, mimic standard SIGPIPE behavior.  */
-  if (errno == EPIPE && !file && default_SIGPIPE)
+  যদি (errno == EPIPE && !file && default_SIGPIPE)
     sighandler (SIGPIPE);
 
   error (SORT_FAILURE, errno, "%s: %s", message,
          quotef (file ? file : _("standard output")));
 }
 
-void
-usage (int status)
+শূন্য
+usage (পূর্ণসংখ্যা status)
 {
-  if (status != EXIT_SUCCESS)
+  যদি (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  অন্যথা
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE]...\n\
@@ -452,19 +452,19 @@ Ordering options:\n\
 "), stdout);
       oputs (_("\
   -b, --ignore-leading-blanks\n\
-         ignore leading blanks when finding sort keys in each line\n\
+         ignore leading blanks when finding sort চাবিগুলি in each সারি\n\
 "));
       oputs (_("\
   -d, --dictionary-order\n\
          consider only blanks and alphanumeric characters\n\
 "));
       oputs (_("\
-  -f, --ignore-case\n\
-         fold lower case to upper case characters\n\
+  -f, --ignore-ক্ষেত্র\n\
+         fold lower ক্ষেত্র to upper ক্ষেত্র characters\n\
 "));
       oputs (_("\
   -g, --general-numeric-sort\n\
-         compare according to general numerical value\n\
+         compare according to general numerical মান\n\
 "));
       oputs (_("\
   -i, --ignore-nonprinting\n\
@@ -480,12 +480,12 @@ Ordering options:\n\
 "));
       oputs (_("\
   -n, --numeric-sort\n\
-         compare according to string numerical value;\n\
-         see full documentation for supported strings\n\
+         compare according to string numerical মান;\n\
+         see full documentation জন্য supported strings\n\
 "));
       oputs (_("\
   -R, --random-sort\n\
-         shuffle, but group identical keys.  See also shuf(1)\n\
+         shuffle, but group identical চাবিগুলি.  See also shuf(1)\n\
 "));
       oputs (_("\
       --random-source=FILE\n\
@@ -493,7 +493,7 @@ Ordering options:\n\
 "));
       oputs (_("\
   -r, --reverse\n\
-         reverse the result of comparisons\n\
+         reverse the ফলাফল of comparisons\n\
 "));
       oputs (_("\
       --sort=WORD\n\
@@ -511,16 +511,16 @@ Other options:\n\
 \n\
 "), stdout);
       oputs (_("\
-      --batch-size=NMERGE\n\
-         merge at most NMERGE inputs at once; for more use temp files\n\
+      --batch-আকার_2=NMERGE\n\
+         merge at most NMERGE inputs at once; জন্য more use অস্থায়ী files\n\
 "));
       oputs (_("\
   -c, --check, --check=diagnose-first\n\
-         check for sorted input; do not sort\n\
+         check জন্য sorted প্রবেশ; করো not sort\n\
 "));
       oputs (_("\
   -C, --check=quiet, --check=silent\n\
-         like -c, but do not report first bad line\n\
+         like -c, but করো not report first bad সারি\n\
 "));
       oputs (_("\
       --compress-program=PROG\n\
@@ -528,34 +528,34 @@ Other options:\n\
 "));
       oputs (_("\
       --debug\n\
-         annotate the part of the line used to sort,\n\
+         annotate the part of the সারি used to sort,\n\
          and warn about questionable usage to standard error\n\
 "));
       oputs (_("\
       --files0-from=F\n\
-         read input from the files specified by NUL-terminated names in file F;\
+         পঠ প্রবেশ from the files specified by NUL-terminated names in file F;\
 \n\
-         If F is -, read names from standard input\n\
+         If F is -, পঠ names from standard প্রবেশ\n\
 "));
       oputs (_("\
-  -k, --key=KEYDEF\n\
-         sort via a key; KEYDEF gives location and type\n\
+  -k, --চাবি=KEYDEF\n\
+         sort via a চাবি; KEYDEF gives location and type\n\
 "));
       oputs (_("\
   -m, --merge\n\
-         merge already sorted files; do not sort\n\
+         merge already sorted files; করো not sort\n\
 "));
       oputs (_("\
   -o, --output=FILE\n\
-         write result to FILE instead of standard output\n\
+         লিখ ফলাফল to FILE instead of standard output\n\
 "));
       oputs (_("\
   -s, --stable\n\
          stabilize sort by disabling last-resort comparison\n\
 "));
       oputs (_("\
-  -S, --buffer-size=SIZE\n\
-         use SIZE for main memory buffer\n\
+  -S, --বাফার-আকার_2=আকার_3\n\
+         use আকার_3 জন্য প্রধান memory বাফার\n\
 "));
       oputs (_("\
   -t, --field-separator=SEP\n\
@@ -563,44 +563,44 @@ Other options:\n\
 "));
       oprintf (_("\
   -T, --temporary-directory=DIR\n\
-         use DIR for temporaries, not $TMPDIR or %s;\n\
+         use DIR জন্য temporaries, not $TMPDIR or %s;\n\
          multiple options specify multiple directories\n\
 "), DEFAULT_TMPDIR);
       oputs (_("\
       --parallel=N\n\
-         change the number of sorts run concurrently to N\n\
+         change the সংখ্যা of sorts run concurrently to N\n\
 "));
       oputs (_("\
   -u, --unique\n\
-         output only the first of lines with equal keys;\n\
-         with -c, check for strict ordering\n\
+         output only the first of সারিগুলি with equal চাবিগুলি;\n\
+         with -c, check জন্য strict ordering\n\
 "));
       oputs (_("\
   -z, --zero-terminated\n\
-         line delimiter is NUL, not newline\n\
+         সারি delimiter is NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-KEYDEF is F[.C][OPTS][,F[.C][OPTS]] for start and stop position, where F is a\n\
-field number and C a character position in the field; both are origin 1, and\n\
-the stop position defaults to the line's end.  If neither -t nor -b is in\n\
+KEYDEF is F[.C][OPTS][,F[.C][OPTS]] জন্য start and stop position, where F is a\n\
+field সংখ্যা and C a character position in the field; both are origin 1, and\n\
+the stop position defaults to the সারি's end.  If neither -t nor -b is in\n\
 effect, characters in a field are counted from the beginning of the preceding\n\
 whitespace.  OPTS is one or more single-letter ordering options [bdfgiMhnRrV],\
 \n\
-which override global ordering options for that key.  If no key is given, use\n\
-the entire line as the key.  Use --debug to diagnose incorrect key usage.\n\
+which override global ordering options জন্য that চাবি.  If no চাবি is given, use\n\
+the entire সারি as the চাবি.  Use --debug to diagnose incorrect চাবি usage.\n\
 \n\
-SIZE may be followed by the following multiplicative suffixes:\n\
+আকার_3 may be followed by the following multiplicative suffixes:\n\
 "), stdout);
       fputs (_("\
-% 1% of memory, b 1, K 1024 (default), and so on for M, G, T, P, E, Z, Y, R, Q.\
+% 1% of memory, b 1, K 1024 (পূর্বনির্ধারিত), and so on জন্য M, G, T, P, E, Z, Y, R, Q.\
 \n\n\
 *** WARNING ***\n\
 The locale specified by the environment affects sort order.\n\
 Set LC_ALL=C to get the traditional sort order that uses\n\
-native byte values.\n\
+native byte মানসমূহ.\n\
 "), stdout );
       emit_ancillary_info (PROGRAM_NAME);
     }
@@ -610,7 +610,7 @@ native byte values.\n\
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+গণনা
 {
   CHECK_OPTION = CHAR_MAX + 1,
   COMPRESS_PROGRAM_OPTION,
@@ -622,41 +622,41 @@ enum
   PARALLEL_OPTION
 };
 
-static char const short_options[] = "-bcCdfghik:mMno:rRsS:t:T:uVy:z";
+স্থির অক্ষর ধ্রুবক short_options[] = "-bcCdfghik:mMno:rRsS:t:T:uVy:z";
 
-static struct option const long_options[] =
+স্থির কাঠামো option ধ্রুবক long_options[] =
 {
-  {"ignore-leading-blanks", no_argument, NULL, 'b'},
-  {"check", optional_argument, NULL, CHECK_OPTION},
-  {"compress-program", required_argument, NULL, COMPRESS_PROGRAM_OPTION},
-  {"debug", no_argument, NULL, DEBUG_PROGRAM_OPTION},
-  {"dictionary-order", no_argument, NULL, 'd'},
-  {"ignore-case", no_argument, NULL, 'f'},
-  {"files0-from", required_argument, NULL, FILES0_FROM_OPTION},
-  {"general-numeric-sort", no_argument, NULL, 'g'},
-  {"ignore-nonprinting", no_argument, NULL, 'i'},
-  {"key", required_argument, NULL, 'k'},
-  {"merge", no_argument, NULL, 'm'},
-  {"month-sort", no_argument, NULL, 'M'},
-  {"numeric-sort", no_argument, NULL, 'n'},
-  {"human-numeric-sort", no_argument, NULL, 'h'},
-  {"version-sort", no_argument, NULL, 'V'},
-  {"random-sort", no_argument, NULL, 'R'},
-  {"random-source", required_argument, NULL, RANDOM_SOURCE_OPTION},
-  {"sort", required_argument, NULL, SORT_OPTION},
-  {"output", required_argument, NULL, 'o'},
-  {"reverse", no_argument, NULL, 'r'},
-  {"stable", no_argument, NULL, 's'},
-  {"batch-size", required_argument, NULL, NMERGE_OPTION},
-  {"buffer-size", required_argument, NULL, 'S'},
-  {"field-separator", required_argument, NULL, 't'},
-  {"temporary-directory", required_argument, NULL, 'T'},
-  {"unique", no_argument, NULL, 'u'},
-  {"zero-terminated", no_argument, NULL, 'z'},
-  {"parallel", required_argument, NULL, PARALLEL_OPTION},
+  {"ignore-leading-blanks", no_argument, ফাঁকা, 'b'},
+  {"check", optional_argument, ফাঁকা, CHECK_OPTION},
+  {"compress-program", required_argument, ফাঁকা, COMPRESS_PROGRAM_OPTION},
+  {"debug", no_argument, ফাঁকা, DEBUG_PROGRAM_OPTION},
+  {"dictionary-order", no_argument, ফাঁকা, 'd'},
+  {"ignore-case", no_argument, ফাঁকা, 'f'},
+  {"files0-from", required_argument, ফাঁকা, FILES0_FROM_OPTION},
+  {"general-numeric-sort", no_argument, ফাঁকা, 'g'},
+  {"ignore-nonprinting", no_argument, ফাঁকা, 'i'},
+  {"key", required_argument, ফাঁকা, 'k'},
+  {"merge", no_argument, ফাঁকা, 'm'},
+  {"month-sort", no_argument, ফাঁকা, 'M'},
+  {"numeric-sort", no_argument, ফাঁকা, 'n'},
+  {"human-numeric-sort", no_argument, ফাঁকা, 'h'},
+  {"version-sort", no_argument, ফাঁকা, 'V'},
+  {"random-sort", no_argument, ফাঁকা, 'R'},
+  {"random-source", required_argument, ফাঁকা, RANDOM_SOURCE_OPTION},
+  {"sort", required_argument, ফাঁকা, SORT_OPTION},
+  {"output", required_argument, ফাঁকা, 'o'},
+  {"reverse", no_argument, ফাঁকা, 'r'},
+  {"stable", no_argument, ফাঁকা, 's'},
+  {"batch-size", required_argument, ফাঁকা, NMERGE_OPTION},
+  {"buffer-size", required_argument, ফাঁকা, 'S'},
+  {"field-separator", required_argument, ফাঁকা, 't'},
+  {"temporary-directory", required_argument, ফাঁকা, 'T'},
+  {"unique", no_argument, ফাঁকা, 'u'},
+  {"zero-terminated", no_argument, ফাঁকা, 'z'},
+  {"parallel", required_argument, ফাঁকা, PARALLEL_OPTION},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0},
+  {ফাঁকা, 0, ফাঁকা, 0},
 };
 
 #define CHECK_TABLE \
@@ -664,13 +664,13 @@ static struct option const long_options[] =
   _ct_("silent",         'C') \
   _ct_("diagnose-first", 'c')
 
-static char const *const check_args[] =
+স্থির অক্ষর ধ্রুবক *ধ্রুবক check_args[] =
 {
 #define _ct_(_s, _c) _s,
-  CHECK_TABLE NULL
+  CHECK_TABLE ফাঁকা
 #undef  _ct_
 };
-static char const check_types[] =
+স্থির অক্ষর ধ্রুবক check_types[] =
 {
 #define _ct_(_s, _c) _c,
   CHECK_TABLE
@@ -685,13 +685,13 @@ static char const check_types[] =
   _st_("random",          'R') \
   _st_("version",         'V')
 
-static char const *const sort_args[] =
+স্থির অক্ষর ধ্রুবক *ধ্রুবক sort_args[] =
 {
 #define _st_(_s, _c) _s,
-  SORT_TABLE NULL
+  SORT_TABLE ফাঁকা
 #undef  _st_
 };
-static char const sort_types[] =
+স্থির অক্ষর ধ্রুবক sort_types[] =
 {
 #define _st_(_s, _c) _c,
   SORT_TABLE
@@ -699,73 +699,73 @@ static char const sort_types[] =
 };
 
 /* The set of signals that are caught.  */
-static sigset_t caught_signals;
+স্থির sigset_t caught_signals;
 
 /* Critical section status.  */
-struct cs_status
+কাঠামো cs_status
 {
   bool valid;
   sigset_t sigs;
 };
 
 /* Enter a critical section.  */
-static void
-cs_enter (struct cs_status *status)
+স্থির শূন্য
+cs_enter (কাঠামো cs_status *status)
 {
-  int ret = pthread_sigmask (SIG_BLOCK, &caught_signals, &status->sigs);
+  পূর্ণসংখ্যা ret = pthread_sigmask (SIG_BLOCK, &caught_signals, &status->sigs);
   status->valid = ret == 0;
 }
 
 /* Leave a critical section.  */
-static void
-cs_leave (struct cs_status const *status)
+স্থির শূন্য
+cs_leave (কাঠামো cs_status ধ্রুবক *status)
 {
-  if (status->valid)
+  যদি (status->valid)
     {
       /* Ignore failure when restoring the signal mask. */
-      pthread_sigmask (SIG_SETMASK, &status->sigs, NULL);
+      pthread_sigmask (SIG_SETMASK, &status->sigs, ফাঁকা);
     }
 }
 
 /* Possible states for a temp file.  If compressed, the file's status
    is unreaped or reaped, depending on whether 'sort' has waited for
    the subprocess to finish.  */
-enum { UNCOMPRESSED, UNREAPED, REAPED };
+গণনা { UNCOMPRESSED, UNREAPED, REAPED };
 
 /* A file to be sorted.  */
-struct sortfile
+কাঠামো sortfile
 {
   /* The file's name.  */
-  char const *name;
+  অক্ষর ধ্রুবক *name;
 
   /* Non-null if this is a temporary file, in which case NAME == TEMP->name.  */
-  struct tempnode *temp;
+  কাঠামো tempnode *অস্থায়ী;
 };
 
 /* Map PIDs of unreaped subprocesses to their struct tempnode objects.  */
-static Hash_table *proctab;
+স্থির Hash_table *proctab;
 
-enum { INIT_PROCTAB_SIZE = 47 };
+গণনা { INIT_PROCTAB_আকার = 47 };
 
-static size_t
-proctab_hasher (void const *entry, size_t tabsize)
+স্থির size_t
+proctab_hasher (শূন্য ধ্রুবক *entry, size_t tabsize)
 {
-  struct tempnode const *node = entry;
-  return node->pid % tabsize;
+  কাঠামো tempnode ধ্রুবক *গ্রন্থি = entry;
+  ফেরত গ্রন্থি->pid % tabsize;
 }
 
-static bool
-proctab_comparator (void const *e1, void const *e2)
+স্থির bool
+proctab_comparator (শূন্য ধ্রুবক *e1, শূন্য ধ্রুবক *e2)
 {
-  struct tempnode const *n1 = e1;
-  struct tempnode const *n2 = e2;
-  return n1->pid == n2->pid;
+  কাঠামো tempnode ধ্রুবক *n1 = e1;
+  কাঠামো tempnode ধ্রুবক *n2 = e2;
+  ফেরত n1->pid == n2->pid;
 }
 
 /* The number of unreaped child processes.  */
-static pid_t nprocs;
+স্থির pid_t nprocs;
 
-static bool delete_proc (pid_t);
+স্থির bool delete_proc (pid_t);
 
 /* If PID is positive, wait for the child process with that PID to
    exit, and assume that PID has already been removed from the process
@@ -774,88 +774,88 @@ static bool delete_proc (pid_t);
    child's process ID.  However, if PID is 0 and no children have
    exited, return 0 without waiting.  */
 
-static pid_t
+স্থির pid_t
 reap (pid_t pid)
 {
-  int status;
+  পূর্ণসংখ্যা status;
   pid_t cpid = waitpid ((pid ? pid : -1), &status, (pid ? 0 : WNOHANG));
 
-  if (cpid < 0)
+  যদি (cpid < 0)
     error (SORT_FAILURE, errno, _("waiting for %s [-d]"),
            quoteaf (compress_program));
-  else if (0 < cpid && (0 < pid || delete_proc (cpid)))
+  অন্যথা যদি (0 < cpid && (0 < pid || delete_proc (cpid)))
     {
-      if (! WIFEXITED (status) || WEXITSTATUS (status))
+      যদি (! WIFEXITED (status) || WEXITSTATUS (status))
         error (SORT_FAILURE, 0, _("%s [-d] terminated abnormally"),
                quoteaf (compress_program));
       --nprocs;
     }
 
-  return cpid;
+  ফেরত cpid;
 }
 
 /* TEMP represents a new process; add it to the process table.  Create
    the process table the first time it's called.  */
 
-static void
-register_proc (struct tempnode *temp)
+স্থির শূন্য
+register_proc (কাঠামো tempnode *অস্থায়ী)
 {
-  if (! proctab)
+  যদি (! proctab)
     {
-      proctab = hash_initialize (INIT_PROCTAB_SIZE, NULL,
+      proctab = hash_initialize (INIT_PROCTAB_আকার, ফাঁকা,
                                  proctab_hasher,
                                  proctab_comparator,
-                                 NULL);
-      if (! proctab)
+                                 ফাঁকা);
+      যদি (! proctab)
         xalloc_die ();
     }
 
-  temp->state = UNREAPED;
+  অস্থায়ী->state = UNREAPED;
 
-  if (! hash_insert (proctab, temp))
+  যদি (! hash_ঢোকাও (proctab, অস্থায়ী))
     xalloc_die ();
 }
 
 /* If PID is in the process table, remove it and return true.
    Otherwise, return false.  */
 
-static bool
+স্থির bool
 delete_proc (pid_t pid)
 {
-  struct tempnode test;
+  কাঠামো tempnode test;
 
   test.pid = pid;
-  struct tempnode *node = hash_remove (proctab, &test);
-  if (! node)
-    return false;
-  node->state = REAPED;
-  return true;
+  কাঠামো tempnode *গ্রন্থি = hash_remove (proctab, &test);
+  যদি (! গ্রন্থি)
+    ফেরত false;
+  গ্রন্থি->state = REAPED;
+  ফেরত true;
 }
 
 /* Remove PID from the process table, and wait for it to exit if it
    hasn't already.  */
 
-static void
+স্থির শূন্য
 wait_proc (pid_t pid)
 {
-  if (delete_proc (pid))
+  যদি (delete_proc (pid))
     reap (pid);
 }
 
 /* Reap any exited children.  Do not block; reap only those that have
    already exited.  */
 
-static void
-reap_exited (void)
+স্থির শূন্য
+reap_exited (শূন্য)
 {
-  while (0 < nprocs && reap (0))
-    continue;
+  যখন (0 < nprocs && reap (0))
+    চালু;
 }
 
 /* Reap at least one exited child, waiting if necessary.  */
 
-static void
-reap_some (void)
+স্থির শূন্য
+reap_some (শূন্য)
 {
   reap (-1);
   reap_exited ();
@@ -863,23 +863,23 @@ reap_some (void)
 
 /* Reap all children, waiting if necessary.  */
 
-static void
-reap_all (void)
+স্থির শূন্য
+reap_all (শূন্য)
 {
-  while (0 < nprocs)
+  যখন (0 < nprocs)
     reap (-1);
 }
 
 /* Cleanup actions to take when exiting.  */
 
-static void
-exit_cleanup (void)
+স্থির শূন্য
+exit_cleanup (শূন্য)
 {
-  if (temphead)
+  যদি (temphead)
     {
       /* Clean up any remaining temporary files in a critical section so
          that a signal handler does not try to clean them too.  */
-      struct cs_status cs;
+      কাঠামো cs_status cs;
       cs_enter (&cs);
       cleanup ();
       cs_leave (&cs);
@@ -894,61 +894,61 @@ exit_cleanup (void)
    failure is due to file descriptor exhaustion and
    SURVIVE_FD_EXHAUSTION; otherwise, die.  */
 
-static struct tempnode *
-create_temp_file (int *pfd, bool survive_fd_exhaustion)
+স্থির কাঠামো tempnode *
+create_অস্থায়ী_file (পূর্ণসংখ্যা *pfd, bool survive_fd_exhaustion)
 {
-  static char const slashbase[] = "/sortXXXXXX";
-  static idx_t temp_dir_index;
-  int fd;
-  int saved_errno;
-  char const *temp_dir = temp_dirs.dirs[temp_dir_index];
-  size_t len = strlen (temp_dir);
-  struct tempnode *node =
-    xmalloc (FLEXSIZEOF (struct tempnode, name, len + sizeof slashbase));
-  char *file = node->name;
-  struct cs_status cs;
+  স্থির অক্ষর ধ্রুবক slashbase[] = "/sortXXXXXX";
+  স্থির idx_t অস্থায়ী_dir_সূচক;
+  পূর্ণসংখ্যা fd;
+  পূর্ণসংখ্যা saved_errno;
+  অক্ষর ধ্রুবক *অস্থায়ী_dir = অস্থায়ী_dirs.dirs[অস্থায়ী_dir_সূচক];
+  size_t len = strlen (অস্থায়ী_dir);
+  কাঠামো tempnode *গ্রন্থি =
+    xmalloc (FLEXSIZEOF (কাঠামো tempnode, name, len + আকার slashbase));
+  অক্ষর *file = গ্রন্থি->name;
+  কাঠামো cs_status cs;
 
-  memcpy (file, temp_dir, len);
-  memcpy (file + len, slashbase, sizeof slashbase);
-  node->next = NULL;
-  if (++temp_dir_index == temp_dirs.n_dirs)
-    temp_dir_index = 0;
+  memcpy (file, অস্থায়ী_dir, len);
+  memcpy (file + len, slashbase, আকার slashbase);
+  গ্রন্থি->পরবর্তী = ফাঁকা;
+  যদি (++অস্থায়ী_dir_সূচক == অস্থায়ী_dirs.n_dirs)
+    অস্থায়ী_dir_সূচক = 0;
 
   /* Create the temporary file in a critical section, to avoid races.  */
   cs_enter (&cs);
   fd = mkostemp (file, O_CLOEXEC);
-  if (0 <= fd)
+  যদি (0 <= fd)
     {
-      *temptail = node;
-      temptail = &node->next;
+      *temptail = গ্রন্থি;
+      temptail = &গ্রন্থি->পরবর্তী;
     }
   saved_errno = errno;
   cs_leave (&cs);
   errno = saved_errno;
 
-  if (fd < 0)
+  যদি (fd < 0)
     {
-      if (! (survive_fd_exhaustion && errno == EMFILE))
+      যদি (! (survive_fd_exhaustion && errno == EMFILE))
         error (SORT_FAILURE, errno, _("cannot create temporary file in %s"),
-               quoteaf (temp_dir));
-      free (node);
-      node = NULL;
+               quoteaf (অস্থায়ী_dir));
+      মুক্ত (গ্রন্থি);
+      গ্রন্থি = ফাঁকা;
     }
 
   *pfd = fd;
-  return node;
+  ফেরত গ্রন্থি;
 }
 
 /* Return a pointer to stdout status, or NULL on failure.  */
 
-static struct stat *
-get_outstatus (void)
+স্থির কাঠামো stat *
+get_outstatus (শূন্য)
 {
-  static int outstat_errno;
-  static struct stat outstat;
-  if (outstat_errno == 0)
+  স্থির পূর্ণসংখ্যা outstat_errno;
+  স্থির কাঠামো stat outstat;
+  যদি (outstat_errno == 0)
     outstat_errno = fstat (STDOUT_FILENO, &outstat) == 0 ? -1 : errno;
-  return outstat_errno < 0 ? &outstat : NULL;
+  ফেরত outstat_errno < 0 ? &outstat : ফাঁকা;
 }
 
 /* Return a stream for FILE, opened with mode HOW.  If HOW is "w",
@@ -999,127 +999,127 @@ get_outstatus (void)
    cache immediately after processing.  This is done implicitly
    however when the files are unlinked.  */
 
-static FILE *
-stream_open (char const *file, char const *how)
+স্থির FILE *
+stream_open (অক্ষর ধ্রুবক *file, অক্ষর ধ্রুবক *how)
 {
   FILE *fp;
 
-  if (*how == 'r')
+  যদি (*how == 'r')
     {
-      if (streq (file, "-"))
+      যদি (streq (file, "-"))
         {
           have_read_stdin = true;
           fp = stdin;
         }
-      else
+      অন্যথা
         {
-          int fd = open (file, O_RDONLY | O_CLOEXEC);
-          fp = fd < 0 ? NULL : fdopen (fd, how);
+          পূর্ণসংখ্যা fd = open (file, O_RDONLY | O_CLOEXEC);
+          fp = fd < 0 ? ফাঁকা : fdopen (fd, how);
         }
       fadvise (fp, FADVISE_SEQUENTIAL);
     }
-  else if (*how == 'w')
+  অন্যথা যদি (*how == 'w')
     {
-      if (file && ftruncate (STDOUT_FILENO, 0) != 0)
+      যদি (file && ftruncate (STDOUT_FILENO, 0) != 0)
         {
-          int ftruncate_errno = errno;
-          struct stat *outst = get_outstatus ();
-          if (!outst || S_ISREG (outst->st_mode) || S_TYPEISSHM (outst))
+          পূর্ণসংখ্যা ftruncate_errno = errno;
+          কাঠামো stat *outst = get_outstatus ();
+          যদি (!outst || S_ISREG (outst->st_mode) || S_TYPEISSHM (outst))
             error (SORT_FAILURE, ftruncate_errno, _("%s: error truncating"),
                    quotef (file));
         }
       fp = stdout;
     }
-  else
+  অন্যথা
     affirm (!"unexpected mode passed to stream_open");
 
-  return fp;
+  ফেরত fp;
 }
 
 /* Same as stream_open, except always return a non-null value; die on
    failure.  */
 
-static FILE *
-xfopen (char const *file, char const *how)
+স্থির FILE *
+xfopen (অক্ষর ধ্রুবক *file, অক্ষর ধ্রুবক *how)
 {
   FILE *fp = stream_open (file, how);
-  if (!fp)
+  যদি (!fp)
     sort_die (_("open failed"), file);
-  return fp;
+  ফেরত fp;
 }
 
 /* Close FP, whose name is FILE, and report any errors.  */
 
-static void
-xfclose (FILE *fp, char const *file)
+স্থির শূন্য
+xfclose (FILE *fp, অক্ষর ধ্রুবক *file)
 {
-  switch (fileno (fp))
+  নির্বাচন (fileno (fp))
     {
-    case STDIN_FILENO:
+    ক্ষেত্র STDIN_FILENO:
       /* Allow reading stdin from tty more than once.  */
       clearerr (fp);
-      break;
+      বিরতি;
 
-    case STDOUT_FILENO:
+    ক্ষেত্র STDOUT_FILENO:
       /* Don't close stdout just yet.  close_stdout does that.  */
-      if (fflush (fp) != 0)
+      যদি (fflush (fp) != 0)
         sort_die (_("fflush failed"), file);
-      break;
+      বিরতি;
 
-    default:
-      if (fclose (fp) != 0)
+    পূর্বনির্ধারিত:
+      যদি (fclose (fp) != 0)
         sort_die (_("close failed"), file);
-      break;
+      বিরতি;
     }
 }
 
 /* Move OLDFD to NEWFD.  If OLDFD != NEWFD, NEWFD is not close-on-exec.  */
 
-static void
-move_fd (int oldfd, int newfd)
+স্থির শূন্য
+move_fd (পূর্ণসংখ্যা oldfd, পূর্ণসংখ্যা newfd)
 {
-  if (oldfd != newfd)
+  যদি (oldfd != newfd)
     {
       /* These should never fail for our usage.  */
-      ignore_value (dup2 (oldfd, newfd));
-      ignore_value (close (oldfd));
+      ignore_মান (dup2 (oldfd, newfd));
+      ignore_মান (close (oldfd));
     }
 }
 
 /* Setup ACTION to move OLDFD to NEWFD.  If OLDFD != NEWFD, NEWFD is not
    close-on-exec.  Returns 0 if successful, or an error number otherwise.  */
 
-static int
+স্থির পূর্ণসংখ্যা
 posix_spawn_file_actions_move_fd (posix_spawn_file_actions_t *actions,
-                                  int oldfd, int newfd)
+                                  পূর্ণসংখ্যা oldfd, পূর্ণসংখ্যা newfd)
 {
-  int result = 0;
-  if (oldfd != newfd)
+  পূর্ণসংখ্যা ফলাফল = 0;
+  যদি (oldfd != newfd)
     {
-      result = posix_spawn_file_actions_adddup2 (actions, oldfd, newfd);
-      if (result == 0)
-        result = posix_spawn_file_actions_addclose (actions, oldfd);
+      ফলাফল = posix_spawn_file_actions_adddup2 (actions, oldfd, newfd);
+      যদি (ফলাফল == 0)
+        ফলাফল = posix_spawn_file_actions_addclose (actions, oldfd);
     }
-  return result;
+  ফেরত ফলাফল;
 }
 
 /* Look up COMPRESS_PROGRAM in $PATH, and return the resolved program name.
    Upon error, return NULL with errno set.  */
 
-static char const *
-get_resolved_compress_program (void)
+স্থির অক্ষর ধ্রুবক *
+get_resolved_compress_program (শূন্য)
 {
   /* Use a cache, to perform the search only once.  */
-  static char const *resolved_compress_program_cache /* = NULL */;
+  স্থির অক্ষর ধ্রুবক *resolved_compress_program_cache /* = NULL */;
 
-  if (resolved_compress_program_cache == NULL)
+  যদি (resolved_compress_program_cache == ফাঁকা)
     {
       resolved_compress_program_cache =
-        find_in_given_path (compress_program, getenv ("PATH"), NULL, false);
+        find_in_given_path (compress_program, getenv ("PATH"), ফাঁকা, false);
       /* If resolved_compress_program_cache == NULL, errno is set here.  */
     }
 
-  return resolved_compress_program_cache;
+  ফেরত resolved_compress_program_cache;
 }
 
 /* Execute COMPRESS_PROGRAM in a child process.  The child processes pid is
@@ -1127,15 +1127,15 @@ get_resolved_compress_program (void)
    a child process before giving up.  Return 0 on success, or an error number
    otherwise.  */
 
-static int
-pipe_child (pid_t *pid, int pipefds[2], int tempfd, bool decompress,
+স্থির পূর্ণসংখ্যা
+pipe_child (pid_t *pid, পূর্ণসংখ্যা pipefds[2], পূর্ণসংখ্যা tempfd, bool decompress,
             size_t tries)
 {
-  char const *resolved_compress_program;
-  struct tempnode *saved_temphead;
-  double wait_retry = 0.25;
-  struct cs_status cs;
-  int result;
+  অক্ষর ধ্রুবক *resolved_compress_program;
+  কাঠামো tempnode *saved_temphead;
+  দ্বিগুণ wait_retry = 0.25;
+  কাঠামো cs_status cs;
+  পূর্ণসংখ্যা ফলাফল;
   posix_spawnattr_t attr;
   posix_spawn_file_actions_t actions;
 
@@ -1144,41 +1144,41 @@ pipe_child (pid_t *pid, int pipefds[2], int tempfd, bool decompress,
      implementations/emulations of posix_spawn we get only a
      generic (fatal) error from the child in that case.  */
   resolved_compress_program = get_resolved_compress_program ();
-  if (resolved_compress_program == NULL)
-    return errno;
+  যদি (resolved_compress_program == ফাঁকা)
+    ফেরত errno;
 
-  if ((result = posix_spawnattr_init (&attr)))
-    return result;
-  if ((result = posix_spawnattr_setflags (&attr, POSIX_SPAWN_USEVFORK))
-      || (result = posix_spawn_file_actions_init (&actions)))
+  যদি ((ফলাফল = posix_spawnattr_init (&attr)))
+    ফেরত ফলাফল;
+  যদি ((ফলাফল = posix_spawnattr_setflags (&attr, POSIX_SPAWN_USEVFORK))
+      || (ফলাফল = posix_spawn_file_actions_init (&actions)))
     {
       posix_spawnattr_destroy (&attr);
-      return result;
+      ফেরত ফলাফল;
     }
 
-  if (pipe2 (pipefds, O_CLOEXEC) < 0)
+  যদি (pipe2 (pipefds, O_CLOEXEC) < 0)
     {
-      int saved_errno = errno;
+      পূর্ণসংখ্যা saved_errno = errno;
       posix_spawnattr_destroy (&attr);
       posix_spawn_file_actions_destroy (&actions);
-      return saved_errno;
+      ফেরত saved_errno;
     }
 
-  if ((result = posix_spawn_file_actions_addclose (&actions, STDIN_FILENO))
-      || (result = posix_spawn_file_actions_addclose (&actions, STDOUT_FILENO))
+  যদি ((ফলাফল = posix_spawn_file_actions_addclose (&actions, STDIN_FILENO))
+      || (ফলাফল = posix_spawn_file_actions_addclose (&actions, STDOUT_FILENO))
       || (decompress
-          ? ((result = posix_spawn_file_actions_addclose (&actions,
+          ? ((ফলাফল = posix_spawn_file_actions_addclose (&actions,
                                                           pipefds[0]))
-             || (result = posix_spawn_file_actions_move_fd (&actions, tempfd,
+             || (ফলাফল = posix_spawn_file_actions_move_fd (&actions, tempfd,
                                                             STDIN_FILENO))
-             || (result = posix_spawn_file_actions_move_fd (&actions,
+             || (ফলাফল = posix_spawn_file_actions_move_fd (&actions,
                                                             pipefds[1],
                                                             STDOUT_FILENO)))
-          : ((result = posix_spawn_file_actions_addclose (&actions,
+          : ((ফলাফল = posix_spawn_file_actions_addclose (&actions,
                                                           pipefds[1]))
-             || (result = posix_spawn_file_actions_move_fd (&actions, tempfd,
+             || (ফলাফল = posix_spawn_file_actions_move_fd (&actions, tempfd,
                                                             STDOUT_FILENO))
-             || (result = posix_spawn_file_actions_move_fd (&actions,
+             || (ফলাফল = posix_spawn_file_actions_move_fd (&actions,
                                                             pipefds[0],
                                                             STDIN_FILENO)))))
     {
@@ -1186,14 +1186,14 @@ pipe_child (pid_t *pid, int pipefds[2], int tempfd, bool decompress,
       close (pipefds[1]);
       posix_spawnattr_destroy (&attr);
       posix_spawn_file_actions_destroy (&actions);
-      return result;
+      ফেরত ফলাফল;
     }
 
-  char const *const argv[] =
+  অক্ষর ধ্রুবক *ধ্রুবক argv[] =
     {
       resolved_compress_program,
-      decompress ? "-d" : NULL,
-      NULL
+      decompress ? "-d" : ফাঁকা,
+      ফাঁকা
     };
 
   /* At least NMERGE + 1 subprocesses are needed.  More could be created, but
@@ -1203,27 +1203,27 @@ pipe_child (pid_t *pid, int pipefds[2], int tempfd, bool decompress,
      previous merge finish (1 subprocess) in parallel with the current
      merge (NMERGE + 1 subprocesses).  */
 
-  if (nmerge + 1 < nprocs)
+  যদি (nmerge + 1 < nprocs)
     reap_some ();
 
-  while (tries--)
+  যখন (tries--)
     {
       /* This is so the child process won't delete our temp files
          if it receives a signal before exec-ing.  */
       cs_enter (&cs);
       saved_temphead = temphead;
-      temphead = NULL;
+      temphead = ফাঁকা;
 
-      result = posix_spawnp (pid, resolved_compress_program, &actions, &attr,
-                             (char * const *) argv, environ);
+      ফলাফল = posix_spawnp (pid, resolved_compress_program, &actions, &attr,
+                             (অক্ষর * ধ্রুবক *) argv, environ);
 
       temphead = saved_temphead;
 
       cs_leave (&cs);
 
-      if (result != EAGAIN)
-        break;
-      else
+      যদি (ফলাফল != EAGAIN)
+        বিরতি;
+      অন্যথা
         {
           /* [v]fork/clone are indicating resource constraints,
              so back-off for a while and retry.  */
@@ -1236,15 +1236,15 @@ pipe_child (pid_t *pid, int pipefds[2], int tempfd, bool decompress,
   posix_spawnattr_destroy (&attr);
   posix_spawn_file_actions_destroy (&actions);
 
-  if (result)
+  যদি (ফলাফল)
     {
       close (pipefds[0]);
       close (pipefds[1]);
     }
-  else
+  অন্যথা
     ++nprocs;
 
-  return result;
+  ফেরত ফলাফল;
 }
 
 /* Create a temporary file and, if asked for, start a compressor
@@ -1253,57 +1253,57 @@ pipe_child (pid_t *pid, int pipefds[2], int tempfd, bool decompress,
    fails, return NULL if the failure is due to file descriptor
    exhaustion and SURVIVE_FD_EXHAUSTION; otherwise, die.  */
 
-static struct tempnode *
-maybe_create_temp (FILE **pfp, bool survive_fd_exhaustion)
+স্থির কাঠামো tempnode *
+maybe_create_অস্থায়ী (FILE **pfp, bool survive_fd_exhaustion)
 {
-  int tempfd;
-  struct tempnode *node = create_temp_file (&tempfd, survive_fd_exhaustion);
-  if (! node)
-    return NULL;
+  পূর্ণসংখ্যা tempfd;
+  কাঠামো tempnode *গ্রন্থি = create_অস্থায়ী_file (&tempfd, survive_fd_exhaustion);
+  যদি (! গ্রন্থি)
+    ফেরত ফাঁকা;
 
-  node->state = UNCOMPRESSED;
+  গ্রন্থি->state = UNCOMPRESSED;
 
-  if (compress_program)
+  যদি (compress_program)
     {
-      int pipefds[2];
-      static int last_result = 0;
+      পূর্ণসংখ্যা pipefds[2];
+      স্থির পূর্ণসংখ্যা last_ফলাফল = 0;
 
-      int result = pipe_child (&node->pid, pipefds, tempfd, false,
+      পূর্ণসংখ্যা ফলাফল = pipe_child (&গ্রন্থি->pid, pipefds, tempfd, false,
                                MAX_TRIES_COMPRESS);
 
-      if (result)
+      যদি (ফলাফল)
         {
-          if (result != last_result)
-            error (0, result, _("could not run compress program %s"),
+          যদি (ফলাফল != last_ফলাফল)
+            error (0, ফলাফল, _("could not run compress program %s"),
                    quoteaf (compress_program));
         }
-      else
+      অন্যথা
         {
           close (tempfd);
           close (pipefds[0]);
           tempfd = pipefds[1];
 
-          register_proc (node);
+          register_proc (গ্রন্থি);
         }
 
-      last_result = result;
+      last_ফলাফল = ফলাফল;
     }
 
   *pfp = fdopen (tempfd, "w");
-  if (! *pfp)
-    sort_die (_("couldn't create temporary file"), node->name);
+  যদি (! *pfp)
+    sort_die (_("couldn't create temporary file"), গ্রন্থি->name);
 
-  return node;
+  ফেরত গ্রন্থি;
 }
 
 /* Create a temporary file and, if asked for, start a compressor
    to that file.  Set *PFP to the file handle and return the address
    of the new temp node.  Die on failure.  */
 
-static struct tempnode *
-create_temp (FILE **pfp)
+স্থির কাঠামো tempnode *
+create_অস্থায়ী (FILE **pfp)
 {
-  return maybe_create_temp (pfp, false);
+  ফেরত maybe_create_অস্থায়ী (pfp, false);
 }
 
 /* Open a compressed temp file and start a decompression process through
@@ -1311,113 +1311,113 @@ create_temp (FILE **pfp)
    EMFILE) if we ran out of file descriptors, and die on any other
    kind of failure.  */
 
-static FILE *
-open_temp (struct tempnode *temp)
+স্থির FILE *
+open_অস্থায়ী (কাঠামো tempnode *অস্থায়ী)
 {
-  int tempfd, pipefds[2];
-  FILE *fp = NULL;
+  পূর্ণসংখ্যা tempfd, pipefds[2];
+  FILE *fp = ফাঁকা;
 
-  if (temp->state == UNREAPED)
-    wait_proc (temp->pid);
+  যদি (অস্থায়ী->state == UNREAPED)
+    wait_proc (অস্থায়ী->pid);
 
-  tempfd = open (temp->name, O_RDONLY);
-  if (tempfd < 0)
-    return NULL;
+  tempfd = open (অস্থায়ী->name, O_RDONLY);
+  যদি (tempfd < 0)
+    ফেরত ফাঁকা;
 
   pid_t child;
-  int result = pipe_child (&child, pipefds, tempfd, true,
+  পূর্ণসংখ্যা ফলাফল = pipe_child (&child, pipefds, tempfd, true,
                            MAX_TRIES_DECOMPRESS);
 
-  if (result)
+  যদি (ফলাফল)
     {
-      if (result != EMFILE)
-        error (SORT_FAILURE, result, _("could not run compress program %s -d"),
+      যদি (ফলাফল != EMFILE)
+        error (SORT_FAILURE, ফলাফল, _("could not run compress program %s -d"),
                quoteaf (compress_program));
       close (tempfd);
       errno = EMFILE;
     }
-  else
+  অন্যথা
     {
-      temp->pid = child;
-      register_proc (temp);
+      অস্থায়ী->pid = child;
+      register_proc (অস্থায়ী);
       close (tempfd);
       close (pipefds[1]);
 
       fp = fdopen (pipefds[0], "r");
-      if (! fp)
+      যদি (! fp)
         {
-          int saved_errno = errno;
+          পূর্ণসংখ্যা saved_errno = errno;
           close (pipefds[0]);
           errno = saved_errno;
         }
     }
 
-  return fp;
+  ফেরত fp;
 }
 
 /* Append DIR to the array of temporary directory names.  */
-static void
-add_temp_dir (char const *dir)
+স্থির শূন্য
+add_অস্থায়ী_dir (অক্ষর ধ্রুবক *dir)
 {
-  if (temp_dirs.n_dirs == temp_dirs.n_dirs_alloc)
-    temp_dirs.dirs = xpalloc (temp_dirs.dirs, &temp_dirs.n_dirs_alloc, 1, -1,
-                              sizeof *temp_dirs.dirs);
+  যদি (অস্থায়ী_dirs.n_dirs == অস্থায়ী_dirs.n_dirs_alloc)
+    অস্থায়ী_dirs.dirs = xpalloc (অস্থায়ী_dirs.dirs, &অস্থায়ী_dirs.n_dirs_alloc, 1, -1,
+                              আকার *অস্থায়ী_dirs.dirs);
 
-  idx_t const dir_idx = temp_dirs.n_dirs++;
-  temp_dirs.dirs[dir_idx] = dir;
+  idx_t ধ্রুবক dir_idx = অস্থায়ী_dirs.n_dirs++;
+  অস্থায়ী_dirs.dirs[dir_idx] = dir;
 }
 
 /* Remove NAME from the list of temporary files.  */
 
-static void
-zaptemp (char const *name)
+স্থির শূন্য
+zaptemp (অক্ষর ধ্রুবক *name)
 {
-  struct tempnode *volatile *pnode;
-  struct tempnode *node;
-  struct tempnode *next;
-  int unlink_status;
-  int unlink_errno = 0;
-  struct cs_status cs;
+  কাঠামো tempnode *অস্থির *pnode;
+  কাঠামো tempnode *গ্রন্থি;
+  কাঠামো tempnode *পরবর্তী;
+  পূর্ণসংখ্যা unlink_status;
+  পূর্ণসংখ্যা unlink_errno = 0;
+  কাঠামো cs_status cs;
 
-  for (pnode = &temphead; (node = *pnode)->name != name; pnode = &node->next)
-    continue;
+  জন্য (pnode = &temphead; (গ্রন্থি = *pnode)->name != name; pnode = &গ্রন্থি->পরবর্তী)
+    চালু;
 
-  if (node->state == UNREAPED)
-    wait_proc (node->pid);
+  যদি (গ্রন্থি->state == UNREAPED)
+    wait_proc (গ্রন্থি->pid);
 
   /* Unlink the temporary file in a critical section to avoid races.  */
-  next = node->next;
+  পরবর্তী = গ্রন্থি->পরবর্তী;
   cs_enter (&cs);
   unlink_status = unlink (name);
   unlink_errno = errno;
-  *pnode = next;
+  *pnode = পরবর্তী;
   cs_leave (&cs);
 
-  if (unlink_status != 0)
+  যদি (unlink_status != 0)
     error (0, unlink_errno, _("warning: cannot remove: %s"), quotef (name));
-  if (! next)
+  যদি (! পরবর্তী)
     temptail = pnode;
-  free (node);
+  মুক্ত (গ্রন্থি);
 }
 
-#if HAVE_NL_LANGINFO
+#যদি HAVE_NL_LANGINFO
 
-static int
-struct_month_cmp (void const *m1, void const *m2)
+স্থির পূর্ণসংখ্যা
+struct_month_cmp (শূন্য ধ্রুবক *m1, শূন্য ধ্রুবক *m2)
 {
-  struct month const *month1 = m1;
-  struct month const *month2 = m2;
-  return strcmp (month1->name, month2->name);
+  কাঠামো month ধ্রুবক *month1 = m1;
+  কাঠামো month ধ্রুবক *month2 = m2;
+  ফেরত strcmp (month1->name, month2->name);
 }
 
 #endif
 
 /* Initialize the character class tables. */
 
-static void
-inittables (void)
+স্থির শূন্য
+inittables (শূন্য)
 {
-  for (size_t i = 0; i < UCHAR_LIM; ++i)
+  জন্য (size_t i = 0; i < UCHAR_LIM; ++i)
     {
       blanks[i] = i == '\n' || isblank (i);
       nondictionary[i] = ! blanks[i] && ! isalnum (i);
@@ -1425,28 +1425,28 @@ inittables (void)
       fold_toupper[i] = toupper (i);
     }
 
-#if HAVE_NL_LANGINFO
+#যদি HAVE_NL_LANGINFO
   /* If we're not in the "C" locale, read different names for months.  */
-  if (hard_LC_TIME)
+  যদি (hard_LC_TIME)
     {
-      for (size_t i = 0; i < MONTHS_PER_YEAR; i++)
+      জন্য (size_t i = 0; i < MONTHS_PER_YEAR; i++)
         {
-          char const *s;
+          অক্ষর ধ্রুবক *s;
           size_t s_len;
           size_t j, k;
-          char *name;
+          অক্ষর *name;
 
           s = nl_langinfo (ABMON_1 + i);
           s_len = strlen (s);
           monthtab[i].name = name = xmalloc (s_len + 1);
           monthtab[i].val = i + 1;
 
-          for (j = k = 0; j < s_len; j++)
-            if (! isblank (to_uchar (s[j])))
+          জন্য (j = k = 0; j < s_len; j++)
+            যদি (! isblank (to_uchar (s[j])))
               name[k++] = fold_toupper[to_uchar (s[j])];
           name[k] = '\0';
         }
-      qsort (monthtab, MONTHS_PER_YEAR, sizeof *monthtab, struct_month_cmp);
+      qsort (monthtab, MONTHS_PER_YEAR, আকার *monthtab, struct_month_cmp);
     }
 #endif
 }
@@ -1454,29 +1454,29 @@ inittables (void)
 /* Specify how many inputs may be merged at once.
    This may be set on the command-line with the
    --batch-size option. */
-static void
-specify_nmerge (int oi, char c, char const *s)
+স্থির শূন্য
+specify_nmerge (পূর্ণসংখ্যা oi, অক্ষর c, অক্ষর ধ্রুবক *s)
 {
   uintmax_t n;
-  struct rlimit rlimit;
-  enum strtol_error e = xstrtoumax (s, NULL, 10, &n, "");
+  কাঠামো rlimit rlimit;
+  গণনা strtol_error e = xstrtoumax (s, ফাঁকা, 10, &n, "");
 
   /* Try to find out how many file descriptors we'll be able
      to open.  We need at least nmerge + 3 (STDIN_FILENO,
      STDOUT_FILENO and STDERR_FILENO). */
-  unsigned int max_nmerge = ((getrlimit (RLIMIT_NOFILE, &rlimit) == 0
+  unsigned পূর্ণসংখ্যা max_nmerge = ((getrlimit (RLIMIT_NOFILE, &rlimit) == 0
                               ? rlimit.rlim_cur
                               : OPEN_MAX)
                              - 3);
 
-  if (e == LONGINT_OK)
+  যদি (e == LONGINT_OK)
     {
       nmerge = n;
-      if (nmerge != n)
+      যদি (nmerge != n)
         e = LONGINT_OVERFLOW;
-      else
+      অন্যথা
         {
-          if (nmerge < 2)
+          যদি (nmerge < 2)
             {
               error (0, 0, _("invalid --%s argument %s"),
                      long_options[oi].name, quote (s));
@@ -1484,16 +1484,16 @@ specify_nmerge (int oi, char c, char const *s)
                      _("minimum --%s argument is %s"),
                      long_options[oi].name, quote ("2"));
             }
-          else if (max_nmerge < nmerge)
+          অন্যথা যদি (max_nmerge < nmerge)
             {
               e = LONGINT_OVERFLOW;
             }
-          else
-            return;
+          অন্যথা
+            ফেরত;
         }
     }
 
-  if (e == LONGINT_OVERFLOW)
+  যদি (e == LONGINT_OVERFLOW)
     {
       error (0, 0, _("--%s argument %s too large"),
              long_options[oi].name, quote (s));
@@ -1501,58 +1501,58 @@ specify_nmerge (int oi, char c, char const *s)
              _("maximum --%s argument with current rlimit is %u"),
              long_options[oi].name, max_nmerge);
     }
-  else
+  অন্যথা
     xstrtol_fatal (e, oi, c, long_options, s);
 }
 
 /* Specify the amount of main memory to use when sorting.  */
-static void
-specify_sort_size (int oi, char c, char const *s)
+স্থির শূন্য
+specify_sort_আকার (পূর্ণসংখ্যা oi, অক্ষর c, অক্ষর ধ্রুবক *s)
 {
   uintmax_t n;
-  char *suffix;
-  enum strtol_error e = xstrtoumax (s, &suffix, 10, &n, "EgGkKmMPQRtTYZ");
+  অক্ষর *suffix;
+  গণনা strtol_error e = xstrtoumax (s, &suffix, 10, &n, "EgGkKmMPQRtTYZ");
 
   /* The default unit is KiB.  */
-  if (e == LONGINT_OK && c_isdigit (suffix[-1]) && ckd_mul (&n, n, 1024))
+  যদি (e == LONGINT_OK && c_isdigit (suffix[-1]) && ckd_mul (&n, n, 1024))
     e = LONGINT_OVERFLOW;
 
   /* A 'b' suffix means bytes; a '%' suffix means percent of memory.  */
-  if (e == LONGINT_INVALID_SUFFIX_CHAR && c_isdigit (suffix[-1]) && ! suffix[1])
-    switch (suffix[0])
+  যদি (e == LONGINT_INVALID_SUFFIX_CHAR && c_isdigit (suffix[-1]) && ! suffix[1])
+    নির্বাচন (suffix[0])
       {
-      case 'b':
+      ক্ষেত্র 'b':
         e = LONGINT_OK;
-        break;
+        বিরতি;
 
-      case '%':
+      ক্ষেত্র '%':
         {
-          double mem = physmem_total () * n / 100;
+          দ্বিগুণ mem = physmem_যোগ () * n / 100;
 
           /* Use "<", not "<=", to avoid problems with rounding.  */
-          if (mem < UINTMAX_MAX)
+          যদি (mem < UINTMAX_MAX)
             {
               n = mem;
               e = LONGINT_OK;
             }
-          else
+          অন্যথা
             e = LONGINT_OVERFLOW;
         }
-        break;
+        বিরতি;
       }
 
-  if (e == LONGINT_OK)
+  যদি (e == LONGINT_OK)
     {
       /* If multiple sort sizes are specified, take the maximum, so
          that option order does not matter.  */
-      if (n < sort_size)
-        return;
+      যদি (n < sort_আকার)
+        ফেরত;
 
-      sort_size = n;
-      if (sort_size == n)
+      sort_আকার = n;
+      যদি (sort_আকার == n)
         {
-          sort_size = MAX (sort_size, MIN_SORT_SIZE);
-          return;
+          sort_আকার = MAX (sort_আকার, MIN_SORT_আকার);
+          ফেরত;
         }
 
       e = LONGINT_OVERFLOW;
@@ -1562,121 +1562,121 @@ specify_sort_size (int oi, char c, char const *s)
 }
 
 /* Specify the number of threads to spawn during internal sort.  */
-static size_t
-specify_nthreads (int oi, char c, char const *s)
+স্থির size_t
+specify_nthreads (পূর্ণসংখ্যা oi, অক্ষর c, অক্ষর ধ্রুবক *s)
 {
   uintmax_t nthreads;
-  enum strtol_error e = xstrtoumax (s, NULL, 10, &nthreads, "");
-  if (e == LONGINT_OVERFLOW)
-    return SIZE_MAX;
-  if (e != LONGINT_OK)
+  গণনা strtol_error e = xstrtoumax (s, ফাঁকা, 10, &nthreads, "");
+  যদি (e == LONGINT_OVERFLOW)
+    ফেরত SIZE_MAX;
+  যদি (e != LONGINT_OK)
     xstrtol_fatal (e, oi, c, long_options, s);
-  if (SIZE_MAX < nthreads)
+  যদি (SIZE_MAX < nthreads)
     nthreads = SIZE_MAX;
-  if (nthreads == 0)
+  যদি (nthreads == 0)
     error (SORT_FAILURE, 0, _("number in parallel must be nonzero"));
-  return nthreads;
+  ফেরত nthreads;
 }
 
 /* Return the default sort size.  This is a growth limit, not necessarily
    the initial allocation size.  */
-static size_t
-default_sort_size (void)
+স্থির size_t
+default_sort_আকার (শূন্য)
 {
   /* Let SIZE be MEM, but no more than the maximum object size,
      total memory, or system resource limits.  Don't bother to check
      for values like RLIM_INFINITY since in practice they are not much
      less than SIZE_MAX.  */
-  size_t size = SIZE_MAX;
-  struct rlimit rlimit;
-  if (getrlimit (RLIMIT_DATA, &rlimit) == 0 && rlimit.rlim_cur < size)
-    size = rlimit.rlim_cur;
+  size_t আকার_2 = SIZE_MAX;
+  কাঠামো rlimit rlimit;
+  যদি (getrlimit (RLIMIT_তথ্য, &rlimit) == 0 && rlimit.rlim_cur < আকার_2)
+    আকার_2 = rlimit.rlim_cur;
 #ifdef RLIMIT_AS
-  if (getrlimit (RLIMIT_AS, &rlimit) == 0 && rlimit.rlim_cur < size)
-    size = rlimit.rlim_cur;
+  যদি (getrlimit (RLIMIT_AS, &rlimit) == 0 && rlimit.rlim_cur < আকার_2)
+    আকার_2 = rlimit.rlim_cur;
 #endif
 
   /* Leave a large safety margin for the above limits, as failure can
      occur when they are exceeded.  */
-  size /= 2;
+  আকার_2 /= 2;
 
 #ifdef RLIMIT_RSS
   /* Leave a 1/16 margin for RSS to leave room for code, stack, etc.
      Exceeding RSS is not fatal, but can be quite slow.  */
-  if (getrlimit (RLIMIT_RSS, &rlimit) == 0 && rlimit.rlim_cur / 16 * 15 < size)
-    size = rlimit.rlim_cur / 16 * 15;
+  যদি (getrlimit (RLIMIT_RSS, &rlimit) == 0 && rlimit.rlim_cur / 16 * 15 < আকার_2)
+    আকার_2 = rlimit.rlim_cur / 16 * 15;
 #endif
 
   /* Let MEM be available memory or 1/8 of total memory, whichever
      is greater.  */
-  double avail = physmem_available ();
-  double total = physmem_total ();
-  double mem = MAX (avail, total / 8);
+  দ্বিগুণ avail = physmem_available ();
+  দ্বিগুণ যোগ_2 = physmem_যোগ ();
+  দ্বিগুণ mem = MAX (avail, যোগ_2 / 8);
 
   /* Leave a 1/4 margin for physical memory.  */
-  if (total * 0.75 < size)
-    size = total * 0.75;
+  যদি (যোগ_2 * 0.75 < আকার_2)
+    আকার_2 = যোগ_2 * 0.75;
 
   /* Return the minimum of MEM and SIZE, but no less than
      MIN_SORT_SIZE.  Avoid the MIN macro here, as it is not quite
      right when only one argument is floating point.  */
-  if (mem < size)
-    size = mem;
-  return MAX (size, MIN_SORT_SIZE);
+  যদি (mem < আকার_2)
+    আকার_2 = mem;
+  ফেরত MAX (আকার_2, MIN_SORT_আকার);
 }
 
 /* Return true if *ALLOC has been adjusted to a size suitable for a sort
    buffer.  */
 
-static bool
-line_aligned_size (size_t *alloc)
+স্থির bool
+সারি_aligned_আকার (size_t *alloc)
 {
-  size_t size = *alloc;
-  size_t alignment = sizeof (struct line);
-  size_t padding = alignment - size % alignment;
+  size_t আকার_2 = *alloc;
+  size_t alignment = আকার (কাঠামো সারি);
+  size_t padding = alignment - আকার_2 % alignment;
   size_t aligned;
 
-  if (ckd_add (&aligned, size, padding))
-    return false;
+  যদি (ckd_add (&aligned, আকার_2, padding))
+    ফেরত false;
 
   *alloc = aligned;
-  return true;
+  ফেরত true;
 }
 
 /* Return the default initial allocation for a growable sort buffer.  */
 
-static size_t
-default_initial_sort_size (size_t line_bytes)
+স্থির size_t
+default_initial_sort_আকার (size_t সারি_bytes)
 {
-  size_t size = line_bytes + 2;
-  size_t input_size;
+  size_t আকার_2 = সারি_bytes + 2;
+  size_t প্রবেশ_আকার;
 
-  if (ckd_mul (&input_size, INPUT_FILE_SIZE_GUESS, line_bytes + 1)
-      || ckd_add (&size, size, input_size))
-    return SIZE_MAX;
+  যদি (ckd_mul (&প্রবেশ_আকার, প্রবেশ_FILE_আকার_GUESS, সারি_bytes + 1)
+      || ckd_add (&আকার_2, আকার_2, প্রবেশ_আকার))
+    ফেরত SIZE_MAX;
 
-  return MAX (size, MIN_SORT_SIZE);
+  ফেরত MAX (আকার_2, MIN_SORT_আকার);
 }
 
 /* Store into *WORST_CASE the allocation needed for FILE_SIZE input bytes
    in the worst case, where each input byte is a line delimiter except
    for a final non-delimiter byte.  Return false on overflow.  */
 
-static bool
-input_size_buffer_bytes (uintmax_t file_size, size_t line_bytes,
+স্থির bool
+প্রবেশ_আকার_বাফার_bytes (uintmax_t file_আকার, size_t সারি_bytes,
                          size_t *worst_case)
 {
-  size_t worst_case_per_input_byte = line_bytes + 1;
+  size_t worst_case_per_প্রবেশ_byte = সারি_bytes + 1;
 
-  if (SIZE_MAX / worst_case_per_input_byte < file_size)
-    return false;
+  যদি (SIZE_MAX / worst_case_per_প্রবেশ_byte < file_আকার)
+    ফেরত false;
 
-  size_t size = file_size * worst_case_per_input_byte;
-  if (SIZE_MAX - size < 1)
-    return false;
+  size_t আকার_2 = file_আকার * worst_case_per_প্রবেশ_byte;
+  যদি (SIZE_MAX - আকার_2 < 1)
+    ফেরত false;
 
-  *worst_case = size + 1;
-  return true;
+  *worst_case = আকার_2 + 1;
+  ফেরত true;
 }
 
 /* Set *POLICY to the sort buffer policy to use with the input files identified
@@ -1686,241 +1686,241 @@ input_size_buffer_bytes (uintmax_t file_size, size_t line_bytes,
    information.  Do not exceed the size bound specified by the user
    (or a default size bound, if the user does not specify one).  */
 
-static void
-sort_buffer_policy (FILE *const *fps, size_t nfps,
-                    char *const *files, size_t nfiles,
-                    size_t line_bytes,
-                    struct sort_buffer_policy *policy)
+স্থির শূন্য
+sort_বাফার_policy (FILE *ধ্রুবক *fps, size_t nfps,
+                    অক্ষর *ধ্রুবক *files, size_t nfiles,
+                    size_t সারি_bytes,
+                    কাঠামো sort_বাফার_policy *policy)
 {
-  size_t size_bound = sort_size ? sort_size : default_sort_size ();
+  size_t আকার_bound = sort_আকার ? sort_আকার : default_sort_আকার ();
   size_t initial_bound =
-    sort_size ? size_bound : default_initial_sort_size (line_bytes);
+    sort_আকার ? আকার_bound : default_initial_sort_আকার (সারি_bytes);
 
   /* In the worst case, each input byte is a newline.  */
-  size_t worst_case_per_input_byte = line_bytes + 1;
+  size_t worst_case_per_প্রবেশ_byte = সারি_bytes + 1;
 
   /* Keep enough room for one extra input line and an extra byte.
      This extra room might be needed when preparing to read EOF.  */
-  size_t size = worst_case_per_input_byte + 1;
+  size_t আকার_2 = worst_case_per_প্রবেশ_byte + 1;
 
-  initial_bound = MIN (initial_bound, size_bound);
-  policy->limit = size_bound;
+  initial_bound = MIN (initial_bound, আকার_bound);
+  policy->limit = আকার_bound;
   policy->growth_failed = false;
 
-  for (size_t i = 0; i < nfiles; i++)
+  জন্য (size_t i = 0; i < nfiles; i++)
     {
-      struct stat st;
-      off_t file_size;
+      কাঠামো stat st;
+      off_t file_আকার;
       size_t worst_case;
-      bool known_size;
+      bool known_আকার;
 
-      if (size_bound <= size)
+      যদি (আকার_bound <= আকার_2)
         {
-          policy->initial = size_bound;
-          return;
+          policy->initial = আকার_bound;
+          ফেরত;
         }
 
-      if ((i < nfps ? fstat (fileno (fps[i]), &st)
+      যদি ((i < nfps ? fstat (fileno (fps[i]), &st)
            : streq (files[i], "-") ? fstat (STDIN_FILENO, &st)
            : stat (files[i], &st))
           != 0)
         sort_die (_("stat failed"), files[i]);
 
-      known_size = usable_st_size (&st) && 0 < st.st_size;
-      if (known_size)
-        file_size = st.st_size;
-      else
+      known_আকার = usable_st_আকার (&st) && 0 < st.st_আকার;
+      যদি (known_আকার)
+        file_আকার = st.st_আকার;
+      অন্যথা
         {
           /* The file has unknown size.  If the user specified a sort
              buffer size, use that; otherwise, guess the size.  */
-          if (sort_size)
+          যদি (sort_আকার)
             {
-              policy->initial = size_bound;
-              return;
+              policy->initial = আকার_bound;
+              ফেরত;
             }
-          file_size = INPUT_FILE_SIZE_GUESS;
+          file_আকার = প্রবেশ_FILE_আকার_GUESS;
         }
 
       /* Add the amount of memory needed to represent the worst case
          where the input consists entirely of newlines followed by a
          single non-newline.  Check for overflow.  */
-      if (! input_size_buffer_bytes (file_size, line_bytes, &worst_case)
-          || size_bound - size <= worst_case)
+      যদি (! প্রবেশ_আকার_বাফার_bytes (file_আকার, সারি_bytes, &worst_case)
+          || আকার_bound - আকার_2 <= worst_case)
         {
-          policy->initial = size_bound;
-          return;
+          policy->initial = আকার_bound;
+          ফেরত;
         }
 
-      if (! known_size && ! sort_size
-          && (initial_bound <= size || initial_bound - size <= worst_case))
+      যদি (! known_আকার && ! sort_আকার
+          && (initial_bound <= আকার_2 || initial_bound - আকার_2 <= worst_case))
         {
-          policy->initial = MAX (size, initial_bound);
-          return;
+          policy->initial = MAX (আকার_2, initial_bound);
+          ফেরত;
         }
 
-      size += worst_case;
+      আকার_2 += worst_case;
     }
 
-  policy->initial = MAX (size, MIN_SORT_SIZE);
+  policy->initial = MAX (আকার_2, MIN_SORT_আকার);
 }
 
 /* Initialize BUF.  Reserve LINE_BYTES bytes for each line; LINE_BYTES
    must be at least sizeof (struct line).  Allocate ALLOC bytes
    initially.  */
 
-static void
-initbuf (struct buffer *buf, size_t line_bytes, size_t alloc)
+স্থির শূন্য
+initbuf (কাঠামো বাফার *buf, size_t সারি_bytes, size_t alloc)
 {
   /* Ensure that the line array is properly aligned.  If the desired
      size cannot be allocated, repeatedly halve it until allocation
      succeeds.  The smaller allocation may hurt overall performance,
      but that's better than failing.  */
-  while (true)
+  যখন (true)
     {
-      if (! line_aligned_size (&alloc))
-        buf->buf = NULL;
-      else
+      যদি (! সারি_aligned_আকার (&alloc))
+        buf->buf = ফাঁকা;
+      অন্যথা
         buf->buf = malloc (alloc);
-      if (buf->buf)
-        break;
+      যদি (buf->buf)
+        বিরতি;
       alloc /= 2;
-      if (alloc <= line_bytes + 1)
+      যদি (alloc <= সারি_bytes + 1)
         xalloc_die ();
     }
 
-  buf->line_bytes = line_bytes;
+  buf->সারি_bytes = সারি_bytes;
   buf->alloc = alloc;
-  buf->used = buf->left = buf->nlines = 0;
+  buf->used = buf->বাম = buf->nlines = 0;
   buf->eof = false;
 }
 
 /* Return one past the limit of the line array.  */
 
-static inline struct line *
-buffer_linelim (struct buffer const *buf)
+স্থির অন্তঃরেখ কাঠামো সারি *
+বাফার_linelim (কাঠামো বাফার ধ্রুবক *buf)
 {
-  void *linelim = buf->buf + buf->alloc;
-  return linelim;
+  শূন্য *linelim = buf->buf + buf->alloc;
+  ফেরত linelim;
 }
 
 /* Try to resize BUF to ALLOC bytes.  Return true if successful.  This
    preserves the input data and the line array, adjusting line pointers
    when the buffer base changes.  */
 
-static bool
-try_growbuf (struct buffer *buf, size_t alloc)
+স্থির bool
+try_growbuf (কাঠামো বাফার *buf, size_t alloc)
 {
-  if (! line_aligned_size (&alloc) || alloc <= buf->alloc)
-    return false;
+  যদি (! সারি_aligned_আকার (&alloc) || alloc <= buf->alloc)
+    ফেরত false;
 
-  char *newbuf = malloc (alloc);
-  if (! newbuf)
-    return false;
+  অক্ষর *newbuf = malloc (alloc);
+  যদি (! newbuf)
+    ফেরত false;
 
-  char *oldbuf = buf->buf;
-  struct line *old_linelim = buffer_linelim (buf);
-  struct line *old_line = old_linelim - buf->nlines;
+  অক্ষর *oldbuf = buf->buf;
+  কাঠামো সারি *old_linelim = বাফার_linelim (buf);
+  কাঠামো সারি *old_সারি = old_linelim - buf->nlines;
 
   memcpy (newbuf, oldbuf, buf->used);
 
-  struct line *new_linelim = (void *) (newbuf + alloc);
-  struct line *new_line = new_linelim - buf->nlines;
-  memcpy (new_line, old_line, buf->nlines * sizeof *new_line);
+  কাঠামো সারি *new_linelim = (শূন্য *) (newbuf + alloc);
+  কাঠামো সারি *new_সারি = new_linelim - buf->nlines;
+  memcpy (new_সারি, old_সারি, buf->nlines * আকার *new_সারি);
 
-  for (struct line *line = new_line; line < new_linelim; line++)
+  জন্য (কাঠামো সারি *সারি = new_সারি; সারি < new_linelim; সারি++)
     {
-      line->text = newbuf + (line->text - oldbuf);
-      if (keylist)
+      সারি->text = newbuf + (সারি->text - oldbuf);
+      যদি (keylist)
         {
-          line->keybeg = newbuf + (line->keybeg - oldbuf);
-          line->keylim = newbuf + (line->keylim - oldbuf);
+          সারি->keybeg = newbuf + (সারি->keybeg - oldbuf);
+          সারি->keylim = newbuf + (সারি->keylim - oldbuf);
         }
     }
 
-  free (oldbuf);
+  মুক্ত (oldbuf);
   buf->buf = newbuf;
   buf->alloc = alloc;
-  return true;
+  ফেরত true;
 }
 
 /* Try to grow BUF according to POLICY.  Return true if the buffer grew.  */
 
-static bool
-maybe_growbuf (struct buffer *buf, struct sort_buffer_policy *policy)
+স্থির bool
+maybe_growbuf (কাঠামো বাফার *buf, কাঠামো sort_বাফার_policy *policy)
 {
-  if (! policy || policy->growth_failed || policy->limit <= buf->alloc)
-    return false;
+  যদি (! policy || policy->growth_failed || policy->limit <= buf->alloc)
+    ফেরত false;
 
   size_t alloc;
-  if (buf->alloc <= policy->limit / 3)
+  যদি (buf->alloc <= policy->limit / 3)
     alloc = buf->alloc * 3;
-  else
+  অন্যথা
     alloc = policy->limit;
 
-  if (try_growbuf (buf, alloc))
-    return true;
+  যদি (try_growbuf (buf, alloc))
+    ফেরত true;
 
   policy->growth_failed = true;
-  return false;
+  ফেরত false;
 }
 
 /* Return a pointer to the first character of the field specified
    by KEY in LINE. */
 
-static char *
-begfield (struct line const *line, struct keyfield const *key)
+স্থির অক্ষর *
+begfield (কাঠামো সারি ধ্রুবক *সারি, কাঠামো keyfield ধ্রুবক *চাবি)
 {
-  char *ptr = line->text, *lim = ptr + line->length - 1;
-  size_t sword = key->sword;
-  size_t schar = key->schar;
+  অক্ষর *ptr = সারি->text, *lim = ptr + সারি->দৈর্ঘ্য - 1;
+  size_t sword = চাবি->sword;
+  size_t schar = চাবি->schar;
 
   /* The leading field separator itself is included in a field when -t
      is absent.  */
 
-  if (tab != TAB_DEFAULT)
-    while (ptr < lim && sword--)
+  যদি (tab != TAB_DEFAULT)
+    যখন (ptr < lim && sword--)
       {
-        char *sep = memchr (ptr, tab, lim - ptr);
+        অক্ষর *sep = memchr (ptr, tab, lim - ptr);
         ptr = sep ? sep : lim;
-        if (ptr < lim)
+        যদি (ptr < lim)
           ++ptr;
       }
-  else
-    while (ptr < lim && sword--)
+  অন্যথা
+    যখন (ptr < lim && sword--)
       {
-        while (ptr < lim && blanks[to_uchar (*ptr)])
+        যখন (ptr < lim && blanks[to_uchar (*ptr)])
           ++ptr;
-        while (ptr < lim && !blanks[to_uchar (*ptr)])
+        যখন (ptr < lim && !blanks[to_uchar (*ptr)])
           ++ptr;
       }
 
   /* If we're ignoring leading blanks when computing the Start
      of the field, skip past them here.  */
-  if (key->skipsblanks)
-    while (ptr < lim && blanks[to_uchar (*ptr)])
+  যদি (চাবি->skipsblanks)
+    যখন (ptr < lim && blanks[to_uchar (*ptr)])
       ++ptr;
 
   /* Advance PTR by SCHAR (if possible), but no further than LIM.  */
   size_t remaining_bytes = lim - ptr;
-  if (schar < remaining_bytes)
+  যদি (schar < remaining_bytes)
     ptr += schar;
-  else
+  অন্যথা
     ptr = lim;
 
-  return ptr;
+  ফেরত ptr;
 }
 
 /* Return the limit of (a pointer to the first character after) the field
    in LINE specified by KEY. */
 
 ATTRIBUTE_PURE
-static char *
-limfield (struct line const *line, struct keyfield const *key)
+স্থির অক্ষর *
+limfield (কাঠামো সারি ধ্রুবক *সারি, কাঠামো keyfield ধ্রুবক *চাবি)
 {
-  char *ptr = line->text, *lim = ptr + line->length - 1;
-  size_t eword = key->eword, echar = key->echar;
+  অক্ষর *ptr = সারি->text, *lim = ptr + সারি->দৈর্ঘ্য - 1;
+  size_t eword = চাবি->eword, echar = চাবি->echar;
 
-  if (echar == 0)
+  যদি (echar == 0)
     eword++; /* Skip all of end field.  */
 
   /* Move PTR past EWORD fields or to one past the last byte on LINE,
@@ -1930,20 +1930,20 @@ limfield (struct line const *line, struct keyfield const *key)
      'beginning' is the first character following the delimiting TAB.
      Otherwise, leave PTR pointing at the first 'blank' character after
      the preceding field.  */
-  if (tab != TAB_DEFAULT)
-    while (ptr < lim && eword--)
+  যদি (tab != TAB_DEFAULT)
+    যখন (ptr < lim && eword--)
       {
-        char *sep = memchr (ptr, tab, lim - ptr);
+        অক্ষর *sep = memchr (ptr, tab, lim - ptr);
         ptr = sep ? sep : lim;
-        if (ptr < lim && (eword || echar))
+        যদি (ptr < lim && (eword || echar))
           ++ptr;
       }
-  else
-    while (ptr < lim && eword--)
+  অন্যথা
+    যখন (ptr < lim && eword--)
       {
-        while (ptr < lim && blanks[to_uchar (*ptr)])
+        যখন (ptr < lim && blanks[to_uchar (*ptr)])
           ++ptr;
-        while (ptr < lim && !blanks[to_uchar (*ptr)])
+        যখন (ptr < lim && !blanks[to_uchar (*ptr)])
           ++ptr;
       }
 
@@ -1979,42 +1979,42 @@ limfield (struct line const *line, struct keyfield const *key)
      */
 
   /* Make LIM point to the end of (one byte past) the current field.  */
-  if (tab != TAB_DEFAULT)
+  যদি (tab != TAB_DEFAULT)
     {
-      char *newlim;
+      অক্ষর *newlim;
       newlim = memchr (ptr, tab, lim - ptr);
-      if (newlim)
+      যদি (newlim)
         lim = newlim;
     }
-  else
+  অন্যথা
     {
-      char *newlim;
+      অক্ষর *newlim;
       newlim = ptr;
-      while (newlim < lim && blanks[to_uchar (*newlim)])
+      যখন (newlim < lim && blanks[to_uchar (*newlim)])
         ++newlim;
-      while (newlim < lim && !blanks[to_uchar (*newlim)])
+      যখন (newlim < lim && !blanks[to_uchar (*newlim)])
         ++newlim;
       lim = newlim;
     }
 #endif
 
-  if (echar != 0) /* We need to skip over a portion of the end field.  */
+  যদি (echar != 0) /* We need to skip over a portion of the end field.  */
     {
       /* If we're ignoring leading blanks when computing the End
          of the field, skip past them here.  */
-      if (key->skipeblanks)
-        while (ptr < lim && blanks[to_uchar (*ptr)])
+      যদি (চাবি->skipeblanks)
+        যখন (ptr < lim && blanks[to_uchar (*ptr)])
           ++ptr;
 
       /* Advance PTR by ECHAR (if possible), but no further than LIM.  */
       size_t remaining_bytes = lim - ptr;
-      if (echar < remaining_bytes)
+      যদি (echar < remaining_bytes)
         ptr += echar;
-      else
+      অন্যথা
         ptr = lim;
     }
 
-  return ptr;
+  ফেরত ptr;
 }
 
 /* Fill BUF reading from FP, moving buf->left bytes from the end
@@ -2023,127 +2023,127 @@ limfield (struct line const *line, struct keyfield const *key)
    table too.  FILE is the name of the file corresponding to FP.
    Return true if some input was read.  */
 
-static bool
-fillbuf (struct buffer *buf, FILE *fp, char const *file,
-         struct sort_buffer_policy *policy)
+স্থির bool
+fillbuf (কাঠামো বাফার *buf, FILE *fp, অক্ষর ধ্রুবক *file,
+         কাঠামো sort_বাফার_policy *policy)
 {
-  struct keyfield const *key = keylist;
-  char eol = eolchar;
-  size_t line_bytes = buf->line_bytes;
-  size_t mergesize = merge_buffer_size - MIN_MERGE_BUFFER_SIZE;
+  কাঠামো keyfield ধ্রুবক *চাবি = keylist;
+  অক্ষর eol = eolchar;
+  size_t সারি_bytes = buf->সারি_bytes;
+  size_t mergesize = merge_বাফার_আকার - MIN_MERGE_বাফার_আকার;
 
-  if (buf->eof)
-    return false;
+  যদি (buf->eof)
+    ফেরত false;
 
-  if (buf->used != buf->left)
+  যদি (buf->used != buf->বাম)
     {
-      memmove (buf->buf, buf->buf + buf->used - buf->left, buf->left);
-      buf->used = buf->left;
+      memmove (buf->buf, buf->buf + buf->used - buf->বাম, buf->বাম);
+      buf->used = buf->বাম;
       buf->nlines = 0;
     }
 
-  while (true)
+  যখন (true)
     {
-      char *ptr = buf->buf + buf->used;
-      struct line *linelim = buffer_linelim (buf);
-      struct line *line = linelim - buf->nlines;
-      size_t avail = (char *) linelim - buf->nlines * line_bytes - ptr;
-      char *line_start = buf->nlines ? line->text + line->length : buf->buf;
+      অক্ষর *ptr = buf->buf + buf->used;
+      কাঠামো সারি *linelim = বাফার_linelim (buf);
+      কাঠামো সারি *সারি = linelim - buf->nlines;
+      size_t avail = (অক্ষর *) linelim - buf->nlines * সারি_bytes - ptr;
+      অক্ষর *সারি_start = buf->nlines ? সারি->text + সারি->দৈর্ঘ্য : buf->buf;
 
-      while (line_bytes + 1 < avail)
+      যখন (সারি_bytes + 1 < avail)
         {
           /* Read as many bytes as possible, but do not read so many
              bytes that there might not be enough room for the
              corresponding line array.  The worst case is when the
              rest of the input file consists entirely of newlines,
              except that the last byte is not a newline.  */
-          size_t readsize = (avail - 1) / (line_bytes + 1);
+          size_t readsize = (avail - 1) / (সারি_bytes + 1);
           size_t bytes_read = fread (ptr, 1, readsize, fp);
-          char *ptrlim = ptr + bytes_read;
-          char *p;
+          অক্ষর *ptrlim = ptr + bytes_read;
+          অক্ষর *p;
           avail -= bytes_read;
 
-          if (bytes_read != readsize)
+          যদি (bytes_read != readsize)
             {
-              if (ferror (fp))
+              যদি (ferror (fp))
                 sort_die (_("read failed"), file);
-              if (feof (fp))
+              যদি (feof (fp))
                 {
                   buf->eof = true;
-                  if (buf->buf == ptrlim)
-                    return false;
-                  if (line_start != ptrlim && ptrlim[-1] != eol)
+                  যদি (buf->buf == ptrlim)
+                    ফেরত false;
+                  যদি (সারি_start != ptrlim && ptrlim[-1] != eol)
                     *ptrlim++ = eol;
                 }
             }
 
           /* Find and record each line in the just-read input.  */
-          while ((p = memchr (ptr, eol, ptrlim - ptr)))
+          যখন ((p = memchr (ptr, eol, ptrlim - ptr)))
             {
               /* Delimit the line with NUL. This eliminates the need to
                  temporarily replace the last byte with NUL when calling
                  xmemcoll, which increases performance.  */
               *p = '\0';
               ptr = p + 1;
-              line--;
-              line->text = line_start;
-              line->length = ptr - line_start;
-              mergesize = MAX (mergesize, line->length);
-              avail -= line_bytes;
+              সারি--;
+              সারি->text = সারি_start;
+              সারি->দৈর্ঘ্য = ptr - সারি_start;
+              mergesize = MAX (mergesize, সারি->দৈর্ঘ্য);
+              avail -= সারি_bytes;
 
-              if (key)
+              যদি (চাবি)
                 {
                   /* Precompute the position of the first key for
                      efficiency.  */
-                  line->keylim = (key->eword == SIZE_MAX
+                  সারি->keylim = (চাবি->eword == SIZE_MAX
                                   ? p
-                                  : limfield (line, key));
+                                  : limfield (সারি, চাবি));
 
-                  if (key->sword != SIZE_MAX)
-                    line->keybeg = begfield (line, key);
-                  else
+                  যদি (চাবি->sword != SIZE_MAX)
+                    সারি->keybeg = begfield (সারি, চাবি);
+                  অন্যথা
                     {
-                      if (key->skipsblanks)
-                        while (blanks[to_uchar (*line_start)])
-                          line_start++;
-                      line->keybeg = line_start;
+                      যদি (চাবি->skipsblanks)
+                        যখন (blanks[to_uchar (*সারি_start)])
+                          সারি_start++;
+                      সারি->keybeg = সারি_start;
                     }
                 }
 
-              line_start = ptr;
+              সারি_start = ptr;
             }
 
           ptr = ptrlim;
-          if (buf->eof)
-            break;
+          যদি (buf->eof)
+            বিরতি;
         }
 
       buf->used = ptr - buf->buf;
-      buf->nlines = buffer_linelim (buf) - line;
-      if (buf->nlines != 0)
+      buf->nlines = বাফার_linelim (buf) - সারি;
+      যদি (buf->nlines != 0)
         {
-          if (! buf->eof && maybe_growbuf (buf, policy))
-            continue;
-          buf->left = ptr - line_start;
-          merge_buffer_size = mergesize + MIN_MERGE_BUFFER_SIZE;
-          return true;
+          যদি (! buf->eof && maybe_growbuf (buf, policy))
+            চালু;
+          buf->বাম = ptr - সারি_start;
+          merge_বাফার_আকার = mergesize + MIN_MERGE_বাফার_আকার;
+          ফেরত true;
         }
 
       {
         /* The current input line is too long to fit in the buffer.
            Increase the buffer size and try again, keeping it properly
            aligned.  */
-        idx_t line_alloc = buf->alloc / sizeof (struct line);
-        buf->buf = xpalloc (buf->buf, &line_alloc, 1, -1, sizeof (struct line));
-        buf->alloc = line_alloc * sizeof (struct line);
+        idx_t সারি_alloc = buf->alloc / আকার (কাঠামো সারি);
+        buf->buf = xpalloc (buf->buf, &সারি_alloc, 1, -1, আকার (কাঠামো সারি));
+        buf->alloc = সারি_alloc * আকার (কাঠামো সারি);
       }
     }
 }
 
 /* Table that maps characters to order-of-magnitude values.  */
-static char const unit_order[UCHAR_LIM] =
+স্থির অক্ষর ধ্রুবক unit_order[UCHAR_LIM] =
   {
-#if ! ('K' == 75 && 'M' == 77 && 'G' == 71 && 'T' == 84 && 'P' == 80 \
+#যদি ! ('K' == 75 && 'M' == 77 && 'G' == 71 && 'T' == 84 && 'P' == 80 \
        && 'E' == 69 && 'Z' == 90 && 'Y' == 89 && 'R' == 82 && 'Q' == 81 \
        && 'k' == 107)
     /* This initializer syntax works on all C99 hosts.  For now, use
@@ -2152,7 +2152,7 @@ static char const unit_order[UCHAR_LIM] =
     ['K']=1, ['M']=2, ['G']=3, ['T']=4, ['P']=5, ['E']=6, ['Z']=7, ['Y']=8,
     ['R']=9, ['Q']=10,
     ['k']=1,
-#else
+#অন্যথা
     /* Generate the following table with this command:
        perl -e 'my %a=(k=>1,K=>1,M=>2,G=>3,T=>4,P=>5,E=>6,Z=>7,Y=>8,R=>9,Q=>10);
        foreach my $i (0..255) {my $c=chr($i); $a{$c} ||= 0;print "$a{$c}, "}'\
@@ -2175,12 +2175,12 @@ static char const unit_order[UCHAR_LIM] =
    decimal_point chars only.  Returns the highest digit found in the number,
    or '\0' if no digit has been found.  Upon return *number points at the
    character that immediately follows after the given number.  */
-static char
-traverse_raw_number (char const **number)
+স্থির অক্ষর
+traverse_raw_সংখ্যা (অক্ষর ধ্রুবক **সংখ্যা)
 {
-  char const *p = *number;
-  char ch;
-  char max_digit = '\0';
+  অক্ষর ধ্রুবক *p = *সংখ্যা;
+  অক্ষর ch;
+  অক্ষর max_digit = '\0';
   bool ends_with_thousands_sep = false;
 
   /* Scan to end of number.
@@ -2189,33 +2189,33 @@ traverse_raw_number (char const **number)
      to be lacking in units.
      FIXME: add support for multibyte thousands_sep and decimal_point.  */
 
-  while (c_isdigit (ch = *p++))
+  যখন (c_isdigit (ch = *p++))
     {
-      if (max_digit < ch)
+      যদি (max_digit < ch)
         max_digit = ch;
 
       /* Allow to skip only one occurrence of thousands_sep to avoid finding
          the unit in the next column in case thousands_sep matches as blank
          and is used as column delimiter.  */
       ends_with_thousands_sep = (*p == thousands_sep);
-      if (ends_with_thousands_sep)
+      যদি (ends_with_thousands_sep)
         ++p;
     }
 
-  if (ends_with_thousands_sep)
+  যদি (ends_with_thousands_sep)
     {
       /* thousands_sep not followed by digit is not allowed.  */
-      *number = p - 2;
-      return max_digit;
+      *সংখ্যা = p - 2;
+      ফেরত max_digit;
     }
 
-  if (ch == decimal_point)
-    while (c_isdigit (ch = *p++))
-      if (max_digit < ch)
+  যদি (ch == decimal_point)
+    যখন (c_isdigit (ch = *p++))
+      যদি (max_digit < ch)
         max_digit = ch;
 
-  *number = p - 1;
-  return max_digit;
+  *সংখ্যা = p - 1;
+  ফেরত max_digit;
 }
 
 /* Return an integer that represents the order of magnitude of the
@@ -2224,36 +2224,36 @@ traverse_raw_number (char const **number)
    Negative numbers get negative orders; zero numbers have a zero order.  */
 
 ATTRIBUTE_PURE
-static int
-find_unit_order (char const *number)
+স্থির পূর্ণসংখ্যা
+find_unit_order (অক্ষর ধ্রুবক *সংখ্যা)
 {
-  bool minus_sign = (*number == '-');
-  char const *p = number + minus_sign;
-  char max_digit = traverse_raw_number (&p);
-  if ('0' < max_digit)
+  bool minus_sign = (*সংখ্যা == '-');
+  অক্ষর ধ্রুবক *p = সংখ্যা + minus_sign;
+  অক্ষর max_digit = traverse_raw_সংখ্যা (&p);
+  যদি ('0' < max_digit)
     {
-      unsigned char ch = *p;
-      int order = unit_order[ch];
-      return (minus_sign ? -order : order);
+      unsigned অক্ষর ch = *p;
+      পূর্ণসংখ্যা order = unit_order[ch];
+      ফেরত (minus_sign ? -order : order);
     }
-  else
-    return 0;
+  অন্যথা
+    ফেরত 0;
 }
 
 /* Compare numbers A and B ending in units with SI or IEC prefixes
        <none/unknown> < K/k < M < G < T < P < E < Z < Y < R < Q */
 
 ATTRIBUTE_PURE
-static int
-human_numcompare (char const *a, char const *b)
+স্থির পূর্ণসংখ্যা
+human_numcompare (অক্ষর ধ্রুবক *a, অক্ষর ধ্রুবক *b)
 {
-  while (blanks[to_uchar (*a)])
+  যখন (blanks[to_uchar (*a)])
     a++;
-  while (blanks[to_uchar (*b)])
+  যখন (blanks[to_uchar (*b)])
     b++;
 
-  int diff = find_unit_order (a) - find_unit_order (b);
-  return (diff ? diff : strnumcmp (a, b, decimal_point, thousands_sep));
+  পূর্ণসংখ্যা diff = find_unit_order (a) - find_unit_order (b);
+  ফেরত (diff ? diff : strnumcmp (a, b, decimal_point, thousands_sep));
 }
 
 /* Compare strings A and B as numbers without explicitly converting them to
@@ -2261,47 +2261,47 @@ human_numcompare (char const *a, char const *b)
    hideously fast. */
 
 ATTRIBUTE_PURE
-static int
-numcompare (char const *a, char const *b)
+স্থির পূর্ণসংখ্যা
+numcompare (অক্ষর ধ্রুবক *a, অক্ষর ধ্রুবক *b)
 {
-  while (blanks[to_uchar (*a)])
+  যখন (blanks[to_uchar (*a)])
     a++;
-  while (blanks[to_uchar (*b)])
+  যখন (blanks[to_uchar (*b)])
     b++;
 
-  return strnumcmp (a, b, decimal_point, thousands_sep);
+  ফেরত strnumcmp (a, b, decimal_point, thousands_sep);
 }
 
-static int
-nan_compare (long double a, long double b)
+স্থির পূর্ণসংখ্যা
+nan_compare (long দ্বিগুণ a, long দ্বিগুণ b)
 {
-  char buf[2][sizeof "-nan""()" + CHAR_BIT * sizeof a];
-  snprintf (buf[0], sizeof buf[0], "%Lf", a);
-  snprintf (buf[1], sizeof buf[1], "%Lf", b);
-  return strcmp (buf[0], buf[1]);
+  অক্ষর buf[2][আকার "-nan""()" + CHAR_BIT * আকার a];
+  snprintf (buf[0], আকার buf[0], "%Lf", a);
+  snprintf (buf[1], আকার buf[1], "%Lf", b);
+  ফেরত strcmp (buf[0], buf[1]);
 }
 
-static int
-general_numcompare (char const *sa, char const *sb)
+স্থির পূর্ণসংখ্যা
+general_numcompare (অক্ষর ধ্রুবক *sa, অক্ষর ধ্রুবক *sb)
 {
   /* FIXME: maybe add option to try expensive FP conversion
      only if A and B can't be compared more cheaply/accurately.  */
 
-  char *ea;
-  char *eb;
-  long double a = strtold (sa, &ea);
-  long double b = strtold (sb, &eb);
+  অক্ষর *ea;
+  অক্ষর *eb;
+  long দ্বিগুণ a = strtold (sa, &ea);
+  long দ্বিগুণ b = strtold (sb, &eb);
 
   /* Put conversion errors at the start of the collating sequence.  */
-  if (sa == ea)
-    return sb == eb ? 0 : -1;
-  if (sb == eb)
-    return 1;
+  যদি (sa == ea)
+    ফেরত sb == eb ? 0 : -1;
+  যদি (sb == eb)
+    ফেরত 1;
 
   /* Sort numbers in the usual way, where -0 == +0.  Put NaNs after
      conversion errors but before numbers; sort them by internal
      bit-pattern, for lack of a more portable alternative.  */
-  return (a < b ? -1
+  ফেরত (a < b ? -1
           : a > b ? 1
           : a == b ? 0
           : b == b ? -1
@@ -2312,57 +2312,57 @@ general_numcompare (char const *sa, char const *sb)
 /* Return an integer in 1..12 of the month name MONTH.
    Return 0 if the name in S is not recognized.  */
 
-static int
-getmonth (char const *month, char **ea)
+স্থির পূর্ণসংখ্যা
+getmonth (অক্ষর ধ্রুবক *month, অক্ষর **ea)
 {
   size_t lo = 0;
   size_t hi = MONTHS_PER_YEAR;
 
-  while (blanks[to_uchar (*month)])
+  যখন (blanks[to_uchar (*month)])
     month++;
 
-  do
+  করো
     {
       size_t ix = (lo + hi) / 2;
-      char const *m = month;
-      char const *n = monthtab[ix].name;
+      অক্ষর ধ্রুবক *m = month;
+      অক্ষর ধ্রুবক *n = monthtab[ix].name;
 
-      for (;; m++, n++)
+      জন্য (;; m++, n++)
         {
-          if (!*n)
+          যদি (!*n)
             {
-              if (ea)
-                *ea = (char *) m;
-              return monthtab[ix].val;
+              যদি (ea)
+                *ea = (অক্ষর *) m;
+              ফেরত monthtab[ix].val;
             }
-          if (to_uchar (fold_toupper[to_uchar (*m)]) < to_uchar (*n))
+          যদি (to_uchar (fold_toupper[to_uchar (*m)]) < to_uchar (*n))
             {
               hi = ix;
-              break;
+              বিরতি;
             }
-          else if (to_uchar (fold_toupper[to_uchar (*m)]) > to_uchar (*n))
+          অন্যথা যদি (to_uchar (fold_toupper[to_uchar (*m)]) > to_uchar (*n))
             {
               lo = ix + 1;
-              break;
+              বিরতি;
             }
         }
     }
-  while (lo < hi);
+  যখন (lo < hi);
 
-  return 0;
+  ফেরত 0;
 }
 
 /* When using the OpenSSL implementation, dynamically link only if -R.
    This saves startup time in the usual (sans -R) case.  */
 
-#if DLOPEN_LIBCRYPTO && HAVE_OPENSSL_MD5
+#যদি DLOPEN_LIBCRYPTO && HAVE_OPENSSL_MD5
 /* In the typical case where md5.h does not #undef HAVE_OPENSSL_MD5,
    trick md5.h into declaring and using pointers to functions not functions.
    This causes the compiler's -lcrypto option to have no effect,
    as sort.o no longer uses any crypto symbols statically.  */
 
-# if 14 <= __GNUC__
-#  pragma GCC diagnostic push
+# যদি 14 <= __GNUC__
+#  pragma GCC diagnostic ঠেলো
 #  pragma GCC diagnostic ignored "-Wmissing-variable-declarations"
 # endif
 # define MD5_Init (*ptr_MD5_Init)
@@ -2370,11 +2370,11 @@ getmonth (char const *month, char **ea)
 # define MD5_Final (*ptr_MD5_Final)
 #endif
 
-#include "md5.h"
+#অন্তর্ভাব "md5.h"
 
-#if DLOPEN_LIBCRYPTO && HAVE_OPENSSL_MD5
-# if 14 <= __GNUC__
-#  pragma GCC diagnostic pop
+#যদি DLOPEN_LIBCRYPTO && HAVE_OPENSSL_MD5
+# যদি 14 <= __GNUC__
+#  pragma GCC diagnostic বের_করো
 # endif
 # include <dlfcn.h>
 
@@ -2387,66 +2387,66 @@ SD_ELF_NOTE_DLOPEN ("random-sort",
                     LIBCRYPTO_SONAME);
 
 /* Diagnose a dynamic linking failure.  */
-static void
-link_failure (void)
+স্থির শূন্য
+link_failure (শূন্য)
 {
   error (SORT_FAILURE, 0, "%s", dlerror ());
 }
 
 /* Return a function pointer in HANDLE for SYMBOL.  */
-static void *
-symbol_address (void *handle, char const *symbol)
+স্থির শূন্য *
+প্রতীক_address (শূন্য *handle, অক্ষর ধ্রুবক *প্রতীক)
 {
-  void *address = dlsym (handle, symbol);
-  if (!address)
+  শূন্য *address = dlsym (handle, প্রতীক);
+  যদি (!address)
     link_failure ();
-  return address;
+  ফেরত address;
 }
 #endif
 
 /* Dynamically link the crypto library, if it needs linking.  */
-static void
-link_libcrypto (void)
+স্থির শূন্য
+link_libcrypto (শূন্য)
 {
-#if DLOPEN_LIBCRYPTO && HAVE_OPENSSL_MD5
-  void *handle = dlopen (LIBCRYPTO_SONAME, RTLD_LAZY | RTLD_GLOBAL);
-  if (!handle)
+#যদি DLOPEN_LIBCRYPTO && HAVE_OPENSSL_MD5
+  শূন্য *handle = dlopen (LIBCRYPTO_SONAME, RTLD_LAZY | RTLD_GLOBAL);
+  যদি (!handle)
     link_failure ();
-  ptr_MD5_Init = symbol_address (handle, "MD5_Init");
-  ptr_MD5_Update = symbol_address (handle, "MD5_Update");
-  ptr_MD5_Final = symbol_address (handle, "MD5_Final");
+  ptr_MD5_Init = প্রতীক_address (handle, "MD5_Init");
+  ptr_MD5_Update = প্রতীক_address (handle, "MD5_Update");
+  ptr_MD5_Final = প্রতীক_address (handle, "MD5_Final");
 #endif
 }
 
 /* A randomly chosen MD5 state, used for random comparison.  */
-static struct md5_ctx random_md5_state;
+স্থির কাঠামো md5_ctx random_md5_state;
 
 /* Initialize the randomly chosen MD5 state.  */
 
-static void
-random_md5_state_init (char const *random_source)
+স্থির শূন্য
+random_md5_state_init (অক্ষর ধ্রুবক *random_source)
 {
-  unsigned char buf[MD5_DIGEST_SIZE];
-  struct randread_source *r = randread_new (random_source, sizeof buf);
-  if (! r)
+  unsigned অক্ষর buf[MD5_DIGEST_আকার];
+  কাঠামো randread_source *r = randread_new (random_source, আকার buf);
+  যদি (! r)
     sort_die (_("open failed"), random_source ? random_source : "getrandom");
-  randread (r, buf, sizeof buf);
-  if (randread_free (r) != 0)
+  randread (r, buf, আকার buf);
+  যদি (randread_free (r) != 0)
     sort_die (_("close failed"), random_source);
   link_libcrypto ();
   md5_init_ctx (&random_md5_state);
-  md5_process_bytes (buf, sizeof buf, &random_md5_state);
+  md5_process_bytes (buf, আকার buf, &random_md5_state);
 }
 
 /* This is like strxfrm, except it reports any error and exits.  */
 
-static size_t
-xstrxfrm (char *restrict dest, char const *restrict src, size_t destsize)
+স্থির size_t
+xstrxfrm (অক্ষর *restrict dest, অক্ষর ধ্রুবক *restrict src, size_t destsize)
 {
   errno = 0;
-  size_t translated_size = strxfrm (dest, src, destsize);
+  size_t translated_আকার = strxfrm (dest, src, destsize);
 
-  if (errno)
+  যদি (errno)
     {
       error (0, errno, _("string transformation failed"));
       error (0, 0, _("set LC_ALL='C' to work around the problem"));
@@ -2455,37 +2455,37 @@ xstrxfrm (char *restrict dest, char const *restrict src, size_t destsize)
              quotearg_n_style (0, locale_quoting_style, src));
     }
 
-  return translated_size;
+  ফেরত translated_আকার;
 }
 
 /* Compare the keys TEXTA (of length LENA) and TEXTB (of length LENB)
    using one or more random hash functions.  TEXTA[LENA] and
    TEXTB[LENB] must be zero.  */
 
-static int
-compare_random (char *restrict texta, size_t lena,
-                char *restrict textb, size_t lenb)
+স্থির পূর্ণসংখ্যা
+compare_random (অক্ষর *restrict texta, size_t lena,
+                অক্ষর *restrict textb, size_t lenb)
 {
   /* XFRM_DIFF records the equivalent of memcmp on the transformed
      data.  This is used to break ties if there is a checksum
      collision, and this is good enough given the astronomically low
      probability of a collision.  */
-  int xfrm_diff = 0;
+  পূর্ণসংখ্যা xfrm_diff = 0;
 
-  char stackbuf[4000];
-  char *buf = stackbuf;
-  size_t bufsize = sizeof stackbuf;
-  void *allocated = NULL;
-  uint32_t dig[2][MD5_DIGEST_SIZE / sizeof (uint32_t)];
-  struct md5_ctx s[2];
+  অক্ষর stackbuf[4000];
+  অক্ষর *buf = stackbuf;
+  size_t bufsize = আকার stackbuf;
+  শূন্য *allocated = ফাঁকা;
+  uint32_t dig[2][MD5_DIGEST_আকার / আকার (uint32_t)];
+  কাঠামো md5_ctx s[2];
   s[0] = s[1] = random_md5_state;
 
-  if (hard_LC_COLLATE)
+  যদি (hard_LC_COLLATE)
     {
-      char const *lima = texta + lena;
-      char const *limb = textb + lenb;
+      অক্ষর ধ্রুবক *lima = texta + lena;
+      অক্ষর ধ্রুবক *limb = textb + lenb;
 
-      while (true)
+      যখন (true)
         {
           /* Transform the text into the basis of comparison, so that byte
              strings that would otherwise considered to be equal are
@@ -2503,15 +2503,15 @@ compare_random (char *restrict texta, size_t lena,
              twice on typical implementations.  Don't worry about
              size_t overflow, as the guess need not be correct.  */
           size_t guess_bufsize = 3 * (lena + lenb) + 2;
-          if (bufsize < guess_bufsize)
+          যদি (bufsize < guess_bufsize)
             {
               bufsize = MAX (guess_bufsize, bufsize * 3 / 2);
-              free (allocated);
+              মুক্ত (allocated);
               buf = allocated = malloc (bufsize);
-              if (! buf)
+              যদি (! buf)
                 {
                   buf = stackbuf;
-                  bufsize = sizeof stackbuf;
+                  bufsize = আকার stackbuf;
                 }
             }
 
@@ -2520,21 +2520,21 @@ compare_random (char *restrict texta, size_t lena,
           bool a_fits = sizea <= bufsize;
           size_t sizeb =
             (textb < limb
-             ? (xstrxfrm ((a_fits ? buf + sizea : NULL), textb,
+             ? (xstrxfrm ((a_fits ? buf + sizea : ফাঁকা), textb,
                           (a_fits ? bufsize - sizea : 0))
                 + 1)
              : 0);
 
-          if (! (a_fits && sizea + sizeb <= bufsize))
+          যদি (! (a_fits && sizea + sizeb <= bufsize))
             {
               bufsize = sizea + sizeb;
-              if (bufsize < SIZE_MAX / 3)
+              যদি (bufsize < SIZE_MAX / 3)
                 bufsize = bufsize * 3 / 2;
-              free (allocated);
+              মুক্ত (allocated);
               buf = allocated = xmalloc (bufsize);
-              if (texta < lima)
+              যদি (texta < lima)
                 strxfrm (buf, texta, sizea);
-              if (textb < limb)
+              যদি (textb < limb)
                 strxfrm (buf + sizea, textb, sizeb);
             }
 
@@ -2542,15 +2542,15 @@ compare_random (char *restrict texta, size_t lena,
              exiting the loop if both strings are exhausted.  When
              exiting the loop, prepare to finish off the tiebreaker
              comparison properly.  */
-          if (texta < lima)
+          যদি (texta < lima)
             texta += strlen (texta) + 1;
-          if (textb < limb)
+          যদি (textb < limb)
             textb += strlen (textb) + 1;
-          if (! (texta < lima || textb < limb))
+          যদি (! (texta < lima || textb < limb))
             {
               lena = sizea; texta = buf;
               lenb = sizeb; textb = buf + sizea;
-              break;
+              বিরতি;
             }
 
           /* Accumulate the transformed data in the corresponding
@@ -2559,10 +2559,10 @@ compare_random (char *restrict texta, size_t lena,
           md5_process_bytes (buf + sizea, sizeb, &s[1]);
 
           /* Update the tiebreaker comparison of the transformed data.  */
-          if (! xfrm_diff)
+          যদি (! xfrm_diff)
             {
               xfrm_diff = memcmp (buf, buf + sizea, MIN (sizea, sizeb));
-              if (! xfrm_diff)
+              যদি (! xfrm_diff)
                 xfrm_diff = _GL_CMP (sizea, sizeb);
             }
         }
@@ -2571,55 +2571,55 @@ compare_random (char *restrict texta, size_t lena,
   /* Compute and compare the checksums.  */
   md5_process_bytes (texta, lena, &s[0]); md5_finish_ctx (&s[0], dig[0]);
   md5_process_bytes (textb, lenb, &s[1]); md5_finish_ctx (&s[1], dig[1]);
-  int diff = memcmp (dig[0], dig[1], sizeof dig[0]);
+  পূর্ণসংখ্যা diff = memcmp (dig[0], dig[1], আকার dig[0]);
 
   /* Fall back on the tiebreaker if the checksums collide.  */
-  if (! diff)
+  যদি (! diff)
     {
-      if (! xfrm_diff)
+      যদি (! xfrm_diff)
         {
           xfrm_diff = memcmp (texta, textb, MIN (lena, lenb));
-          if (! xfrm_diff)
+          যদি (! xfrm_diff)
             xfrm_diff = _GL_CMP (lena, lenb);
         }
 
       diff = xfrm_diff;
     }
 
-  free (allocated);
+  মুক্ত (allocated);
 
-  return diff;
+  ফেরত diff;
 }
 
 /* Return the printable width of the block of memory starting at
    TEXT and ending just before LIM, counting each tab as one byte.
    FIXME: Should we generally be counting non printable chars?  */
 
-static size_t
-debug_width (char const *text, char const *lim)
+স্থির size_t
+debug_width (অক্ষর ধ্রুবক *text, অক্ষর ধ্রুবক *lim)
 {
   size_t width = mbsnwidth (text, lim - text, 0);
-  while (text < lim)
+  যখন (text < lim)
     width += (*text++ == '\t');
-  return width;
+  ফেরত width;
 }
 
 /* For debug mode, "underline" a key at the
    specified offset and screen width.  */
 
-static void
-mark_key (size_t offset, size_t width)
+স্থির শূন্য
+mark_চাবি (size_t offset, size_t width)
 {
-  while (offset--)
+  যখন (offset--)
     putchar (' ');
 
-  if (!width)
+  যদি (!width)
     printf (_("^ no match for key\n"));
-  else
+  অন্যথা
     {
-      do
+      করো
         putchar ('_');
-      while (--width);
+      যখন (--width);
 
       putchar ('\n');
     }
@@ -2627,62 +2627,62 @@ mark_key (size_t offset, size_t width)
 
 /* Return true if KEY is a numeric key.  */
 
-static inline bool
-key_numeric (struct keyfield const *key)
+স্থির অন্তঃরেখ bool
+চাবি_numeric (কাঠামো keyfield ধ্রুবক *চাবি)
 {
-  return key->numeric || key->general_numeric || key->human_numeric;
+  ফেরত চাবি->numeric || চাবি->general_numeric || চাবি->human_numeric;
 }
 
 /* For LINE, output a debugging line that underlines KEY in LINE.
    If KEY is null, underline the whole line.  */
 
-static void
-debug_key (struct line const *line, struct keyfield const *key)
+স্থির শূন্য
+debug_চাবি (কাঠামো সারি ধ্রুবক *সারি, কাঠামো keyfield ধ্রুবক *চাবি)
 {
-  char *text = line->text;
-  char *beg = text;
-  char *lim = text + line->length - 1;
+  অক্ষর *text = সারি->text;
+  অক্ষর *beg = text;
+  অক্ষর *lim = text + সারি->দৈর্ঘ্য - 1;
 
-  if (key)
+  যদি (চাবি)
     {
-      if (key->sword != SIZE_MAX)
-        beg = begfield (line, key);
-      if (key->eword != SIZE_MAX)
+      যদি (চাবি->sword != SIZE_MAX)
+        beg = begfield (সারি, চাবি);
+      যদি (চাবি->eword != SIZE_MAX)
         {
-          lim = limfield (line, key);
+          lim = limfield (সারি, চাবি);
           /* Treat field ends before field starts as empty fields.  */
           lim = MAX (beg, lim);
         }
 
-      if ((key->skipsblanks && key->sword == SIZE_MAX)
-          || key->month || key_numeric (key))
+      যদি ((চাবি->skipsblanks && চাবি->sword == SIZE_MAX)
+          || চাবি->month || চাবি_numeric (চাবি))
         {
-          char saved = *lim;
+          অক্ষর saved = *lim;
           *lim = '\0';
 
-          while (blanks[to_uchar (*beg)])
+          যখন (blanks[to_uchar (*beg)])
             beg++;
 
-          char *tighter_lim = beg;
+          অক্ষর *tighter_lim = beg;
 
-          if (lim < beg)
+          যদি (lim < beg)
             tighter_lim = lim;
-          else if (key->month)
+          অন্যথা যদি (চাবি->month)
             getmonth (beg, &tighter_lim);
-          else if (key->general_numeric)
-            ignore_value (strtold (beg, &tighter_lim));
-          else if (key->numeric || key->human_numeric)
+          অন্যথা যদি (চাবি->general_numeric)
+            ignore_মান (strtold (beg, &tighter_lim));
+          অন্যথা যদি (চাবি->numeric || চাবি->human_numeric)
             {
-              char const *p = beg + (beg < lim && *beg == '-');
-              char max_digit = traverse_raw_number (&p);
-              if ('0' <= max_digit)
+              অক্ষর ধ্রুবক *p = beg + (beg < lim && *beg == '-');
+              অক্ষর max_digit = traverse_raw_সংখ্যা (&p);
+              যদি ('0' <= max_digit)
                 {
-                  unsigned char ch = *p;
-                  tighter_lim = (char *) p
-                    + (key->human_numeric && unit_order[ch]);
+                  unsigned অক্ষর ch = *p;
+                  tighter_lim = (অক্ষর *) p
+                    + (চাবি->human_numeric && unit_order[ch]);
                 }
             }
-          else
+          অন্যথা
             tighter_lim = lim;
 
           *lim = saved;
@@ -2692,226 +2692,226 @@ debug_key (struct line const *line, struct keyfield const *key)
 
   size_t offset = debug_width (text, beg);
   size_t width = debug_width (beg, lim);
-  mark_key (offset, width);
+  mark_চাবি (offset, width);
 }
 
 /* Debug LINE by underlining its keys.  */
 
-static void
-debug_line (struct line const *line)
+স্থির শূন্য
+debug_সারি (কাঠামো সারি ধ্রুবক *সারি)
 {
-  struct keyfield const *key = keylist;
+  কাঠামো keyfield ধ্রুবক *চাবি = keylist;
 
-  do
-    debug_key (line, key);
-  while (key && ((key = key->next) || ! (unique || stable)));
+  করো
+    debug_চাবি (সারি, চাবি);
+  যখন (চাবি && ((চাবি = চাবি->পরবর্তী) || ! (unique || stable)));
 }
 
 /* Return whether sorting options specified for key.  */
 
-static bool
-default_key_compare (struct keyfield const *key)
+স্থির bool
+default_চাবি_compare (কাঠামো keyfield ধ্রুবক *চাবি)
 {
-  return ! (key->ignore
-            || key->translate
-            || key->skipsblanks
-            || key->skipeblanks
-            || key_numeric (key)
-            || key->month
-            || key->version
-            || key->random
+  ফেরত ! (চাবি->ignore
+            || চাবি->translate
+            || চাবি->skipsblanks
+            || চাবি->skipeblanks
+            || চাবি_numeric (চাবি)
+            || চাবি->month
+            || চাবি->version
+            || চাবি->random
             /* || key->reverse */
            );
 }
 
 /* Convert a key to the short options used to specify it.  */
 
-static void
-key_to_opts (struct keyfield const *key, char *opts)
+স্থির শূন্য
+চাবি_to_opts (কাঠামো keyfield ধ্রুবক *চাবি, অক্ষর *opts)
 {
-  if (key->skipsblanks || key->skipeblanks)
+  যদি (চাবি->skipsblanks || চাবি->skipeblanks)
     *opts++ = 'b';/* either disables global -b  */
-  if (key->ignore == nondictionary)
+  যদি (চাবি->ignore == nondictionary)
     *opts++ = 'd';
-  if (key->translate)
+  যদি (চাবি->translate)
     *opts++ = 'f';
-  if (key->general_numeric)
+  যদি (চাবি->general_numeric)
     *opts++ = 'g';
-  if (key->human_numeric)
+  যদি (চাবি->human_numeric)
     *opts++ = 'h';
-  if (key->ignore == nonprinting)
+  যদি (চাবি->ignore == nonprinting)
     *opts++ = 'i';
-  if (key->month)
+  যদি (চাবি->month)
     *opts++ = 'M';
-  if (key->numeric)
+  যদি (চাবি->numeric)
     *opts++ = 'n';
-  if (key->random)
+  যদি (চাবি->random)
     *opts++ = 'R';
-  if (key->reverse)
+  যদি (চাবি->reverse)
     *opts++ = 'r';
-  if (key->version)
+  যদি (চাবি->version)
     *opts++ = 'V';
   *opts = '\0';
 }
 
 /* Output data independent key warnings to stderr.  */
 
-static void
-key_warnings (struct keyfield const *gkey, bool gkey_only)
+স্থির শূন্য
+চাবি_warnings (কাঠামো keyfield ধ্রুবক *gkey, bool gkey_only)
 {
-  struct keyfield ugkey = *gkey;
+  কাঠামো keyfield ugkey = *gkey;
   unsigned long keynum = 1;
   bool basic_numeric_field = false;
   bool general_numeric_field = false;
   bool basic_numeric_field_span = false;
   bool general_numeric_field_span = false;
 
-  for (struct keyfield *key = keylist; key; key = key->next, keynum++)
+  জন্য (কাঠামো keyfield *চাবি = keylist; চাবি; চাবি = চাবি->পরবর্তী, keynum++)
     {
-      if (key_numeric (key))
+      যদি (চাবি_numeric (চাবি))
         {
-          if (key->general_numeric)
+          যদি (চাবি->general_numeric)
             general_numeric_field = true;
-          else
+          অন্যথা
             basic_numeric_field = true;
         }
 
-      if (key->traditional_used)
+      যদি (চাবি->traditional_used)
         {
-          size_t sword = key->sword;
-          size_t eword = key->eword;
-          char tmp[INT_BUFSIZE_BOUND (uintmax_t)];
+          size_t sword = চাবি->sword;
+          size_t eword = চাবি->eword;
+          অক্ষর tmp[INT_BUFSIZE_BOUND (uintmax_t)];
           /* obsolescent syntax +A.x -B.y is equivalent to:
                -k A+1.x+1,B.y   (when y = 0)
                -k A+1.x+1,B+1.y (when y > 0)  */
-          char obuf[INT_BUFSIZE_BOUND (sword) * 2 + 4]; /* +# -#  */
-          char nbuf[INT_BUFSIZE_BOUND (sword) * 2 + 5]; /* -k #,#  */
-          char *po = obuf;
-          char *pn = nbuf;
+          অক্ষর obuf[INT_BUFSIZE_BOUND (sword) * 2 + 4]; /* +# -#  */
+          অক্ষর nbuf[INT_BUFSIZE_BOUND (sword) * 2 + 5]; /* -k #,#  */
+          অক্ষর *po = obuf;
+          অক্ষর *pn = nbuf;
 
-          if (sword == SIZE_MAX)
+          যদি (sword == SIZE_MAX)
             sword++;
 
           po = stpcpy (stpcpy (po, "+"), umaxtostr (sword, tmp));
           pn = stpcpy (stpcpy (pn, "-k "), umaxtostr (sword + 1, tmp));
-          if (key->eword != SIZE_MAX)
+          যদি (চাবি->eword != SIZE_MAX)
             {
               stpcpy (stpcpy (po, " -"), umaxtostr (eword + 1, tmp));
               stpcpy (stpcpy (pn, ","),
                       umaxtostr (eword + 1
-                                 + (key->echar == SIZE_MAX), tmp));
+                                 + (চাবি->echar == SIZE_MAX), tmp));
             }
           error (0, 0, _("obsolescent key %s used; consider %s instead"),
                  quote_n (0, obuf), quote_n (1, nbuf));
         }
 
       /* Warn about field specs that will never match.  */
-      bool zero_width = key->sword != SIZE_MAX && key->eword < key->sword;
-      if (zero_width)
+      bool zero_width = চাবি->sword != SIZE_MAX && চাবি->eword < চাবি->sword;
+      যদি (zero_width)
         error (0, 0, _("key %lu has zero width and will be ignored"), keynum);
 
       /* Warn about significant leading blanks.  */
-      bool implicit_skip = key_numeric (key) || key->month;
-      bool line_offset = key->eword == 0 && key->echar != 0; /* -k1.x,1.y  */
-      if (!zero_width && !gkey_only && tab == TAB_DEFAULT && !line_offset
-          && ((!key->skipsblanks && !implicit_skip)
-              || (!key->skipsblanks && key->schar)
-              || (!key->skipeblanks && key->echar)))
+      bool implicit_skip = চাবি_numeric (চাবি) || চাবি->month;
+      bool সারি_offset = চাবি->eword == 0 && চাবি->echar != 0; /* -k1.x,1.y  */
+      যদি (!zero_width && !gkey_only && tab == TAB_DEFAULT && !সারি_offset
+          && ((!চাবি->skipsblanks && !implicit_skip)
+              || (!চাবি->skipsblanks && চাবি->schar)
+              || (!চাবি->skipeblanks && চাবি->echar)))
         error (0, 0, _("leading blanks are significant in key %lu; "
                        "consider also specifying 'b'"), keynum);
 
       /* Warn about numeric comparisons spanning fields,
          as field delimiters could be interpreted as part
          of the number (maybe only in other locales).  */
-      if (!gkey_only && key_numeric (key))
+      যদি (!gkey_only && চাবি_numeric (চাবি))
         {
-          size_t sword = key->sword + 1;
-          size_t eword = key->eword + 1;
-          if (!sword)
+          size_t sword = চাবি->sword + 1;
+          size_t eword = চাবি->eword + 1;
+          যদি (!sword)
             sword++;
-          if (!eword || sword < eword)
+          যদি (!eword || sword < eword)
             {
               error (0, 0, _("key %lu is numeric and spans multiple fields"),
                      keynum);
-              if (key->general_numeric)
+              যদি (চাবি->general_numeric)
                 general_numeric_field_span = true;
-              else
+              অন্যথা
                 basic_numeric_field_span = true;
             }
         }
 
       /* Flag global options not copied or specified in any key.  */
-      if (ugkey.ignore && (ugkey.ignore == key->ignore))
-        ugkey.ignore = NULL;
-      if (ugkey.translate && (ugkey.translate == key->translate))
-        ugkey.translate = NULL;
-      ugkey.skipsblanks &= !key->skipsblanks;
-      ugkey.skipeblanks &= !key->skipeblanks;
-      ugkey.month &= !key->month;
-      ugkey.numeric &= !key->numeric;
-      ugkey.general_numeric &= !key->general_numeric;
-      ugkey.human_numeric &= !key->human_numeric;
-      ugkey.random &= !key->random;
-      ugkey.version &= !key->version;
-      ugkey.reverse &= !key->reverse;
+      যদি (ugkey.ignore && (ugkey.ignore == চাবি->ignore))
+        ugkey.ignore = ফাঁকা;
+      যদি (ugkey.translate && (ugkey.translate == চাবি->translate))
+        ugkey.translate = ফাঁকা;
+      ugkey.skipsblanks &= !চাবি->skipsblanks;
+      ugkey.skipeblanks &= !চাবি->skipeblanks;
+      ugkey.month &= !চাবি->month;
+      ugkey.numeric &= !চাবি->numeric;
+      ugkey.general_numeric &= !চাবি->general_numeric;
+      ugkey.human_numeric &= !চাবি->human_numeric;
+      ugkey.random &= !চাবি->random;
+      ugkey.version &= !চাবি->version;
+      ugkey.reverse &= !চাবি->reverse;
     }
 
   /* Explicitly warn if field delimiters in this locale
      don't constrain numbers.  */
-  bool number_locale_warned = false;
-  if (basic_numeric_field_span)
+  bool সংখ্যা_locale_warned = false;
+  যদি (basic_numeric_field_span)
     {
-      if (tab == TAB_DEFAULT
+      যদি (tab == TAB_DEFAULT
           ? thousands_sep != NON_CHAR && (isblank (to_uchar (thousands_sep)))
           : tab == thousands_sep)
         {
           error (0, 0,
                  _("field separator %s is treated as a "
                    "group separator in numbers"),
-                 quote (((char []) {thousands_sep, 0})));
-          number_locale_warned = true;
+                 quote (((অক্ষর []) {thousands_sep, 0})));
+          সংখ্যা_locale_warned = true;
         }
     }
-  if (basic_numeric_field_span || general_numeric_field_span)
+  যদি (basic_numeric_field_span || general_numeric_field_span)
     {
-      if (tab == TAB_DEFAULT
+      যদি (tab == TAB_DEFAULT
           ? thousands_sep != NON_CHAR && (isblank (to_uchar (decimal_point)))
           : tab == decimal_point)
         {
           error (0, 0,
                  _("field separator %s is treated as a "
                    "decimal point in numbers"),
-                 quote (((char []) {decimal_point, 0})));
-          number_locale_warned = true;
+                 quote (((অক্ষর []) {decimal_point, 0})));
+          সংখ্যা_locale_warned = true;
         }
-      else if (tab == '-')
+      অন্যথা যদি (tab == '-')
         {
           error (0, 0,
                  _("field separator %s is treated as a "
                    "minus sign in numbers"),
-                 quote (((char []) {tab, 0})));
+                 quote (((অক্ষর []) {tab, 0})));
         }
-      else if (general_numeric_field_span && tab == '+')
+      অন্যথা যদি (general_numeric_field_span && tab == '+')
         {
           error (0, 0,
                  _("field separator %s is treated as a "
                    "plus sign in numbers"),
-                 quote (((char []) {tab, 0})));
+                 quote (((অক্ষর []) {tab, 0})));
         }
     }
 
   /* Explicitly indicate the decimal point used in this locale,
      as it suggests that robust scripts need to consider
      setting the locale when comparing numbers.  */
-  if ((basic_numeric_field || general_numeric_field) && ! number_locale_warned)
+  যদি ((basic_numeric_field || general_numeric_field) && ! সংখ্যা_locale_warned)
     {
       error (0, 0,
              _("numbers use %s as a decimal point in this locale"),
-             quote (((char []) {decimal_point, 0})));
+             quote (((অক্ষর []) {decimal_point, 0})));
 
     }
 
-  if (basic_numeric_field && thousands_sep_ignored)
+  যদি (basic_numeric_field && thousands_sep_ignored)
     {
       error (0, 0,
              _("the multi-byte number group separator "
@@ -2920,55 +2920,55 @@ key_warnings (struct keyfield const *gkey, bool gkey_only)
 
   /* Warn about ignored global options flagged above.
      This clears all flags if UGKEY is the only one in the list.  */
-  if (!default_key_compare (&ugkey)
+  যদি (!default_চাবি_compare (&ugkey)
       || (ugkey.reverse && (stable || unique) && keylist))
     {
       bool ugkey_reverse = ugkey.reverse;
-      if (!(stable || unique))
+      যদি (!(stable || unique))
         ugkey.reverse = false;
       /* The following is too big, but guaranteed to be "big enough".  */
-      char opts[sizeof short_options];
-      key_to_opts (&ugkey, opts);
+      অক্ষর opts[আকার short_options];
+      চাবি_to_opts (&ugkey, opts);
       error (0, 0,
              ngettext ("option '-%s' is ignored",
                        "options '-%s' are ignored",
                        select_plural (strlen (opts))), opts);
       ugkey.reverse = ugkey_reverse;
     }
-  if (ugkey.reverse && !(stable || unique) && keylist)
+  যদি (ugkey.reverse && !(stable || unique) && keylist)
     error (0, 0, _("option '-r' only applies to last-resort comparison"));
 }
 
 /* Return either the sense of DIFF or its reverse, depending on REVERSED.
    If REVERSED, do not simply negate DIFF as that can mishandle INT_MIN.  */
 
-static int
-diff_reversed (int diff, bool reversed)
+স্থির পূর্ণসংখ্যা
+diff_reversed (পূর্ণসংখ্যা diff, bool reversed)
 {
-  return reversed ? _GL_CMP (0, diff) : diff;
+  ফেরত reversed ? _GL_CMP (0, diff) : diff;
 }
 
 /* Compare two lines A and B trying every key in sequence until there
    are no more keys or a difference is found. */
 
-static int
-keycompare (struct line const *a, struct line const *b)
+স্থির পূর্ণসংখ্যা
+keycompare (কাঠামো সারি ধ্রুবক *a, কাঠামো সারি ধ্রুবক *b)
 {
-  struct keyfield *key = keylist;
+  কাঠামো keyfield *চাবি = keylist;
 
   /* For the first iteration only, the key positions have been
      precomputed for us. */
-  char *texta = a->keybeg;
-  char *textb = b->keybeg;
-  char *lima = a->keylim;
-  char *limb = b->keylim;
+  অক্ষর *texta = a->keybeg;
+  অক্ষর *textb = b->keybeg;
+  অক্ষর *lima = a->keylim;
+  অক্ষর *limb = b->keylim;
 
-  int diff;
+  পূর্ণসংখ্যা diff;
 
-  while (true)
+  যখন (true)
     {
-      char const *translate = key->translate;
-      bool const *ignore = key->ignore;
+      অক্ষর ধ্রুবক *translate = চাবি->translate;
+      bool ধ্রুবক *ignore = চাবি->ignore;
 
       /* Treat field ends before field starts as empty fields.  */
       lima = MAX (texta, lima);
@@ -2978,21 +2978,21 @@ keycompare (struct line const *a, struct line const *b)
       size_t lena = lima - texta;
       size_t lenb = limb - textb;
 
-      if (hard_LC_COLLATE || key_numeric (key)
-          || key->month || key->random || key->version)
+      যদি (hard_LC_COLLATE || চাবি_numeric (চাবি)
+          || চাবি->month || চাবি->random || চাবি->version)
         {
           /* Ordinarily use the keys in-place, temporarily null-terminated.  */
-          char *ta = texta;
-          char *tb = textb;
+          অক্ষর *ta = texta;
+          অক্ষর *tb = textb;
           size_t tlena = lena;
           size_t tlenb = lenb;
-          char enda = ta[tlena];
-          char endb = tb[tlenb];
+          অক্ষর enda = ta[tlena];
+          অক্ষর endb = tb[tlenb];
 
-          void *allocated = NULL;
-          char stackbuf[4000];
+          শূন্য *allocated = ফাঁকা;
+          অক্ষর stackbuf[4000];
 
-          if (ignore || translate)
+          যদি (ignore || translate)
             {
               /* Compute with copies of the keys, which are the result of
                  translating or ignoring characters, and which need their
@@ -3001,23 +3001,23 @@ keycompare (struct line const *a, struct line const *b)
               size_t i;
 
               /* Allocate space for copies.  */
-              size_t size = lena + 1 + lenb + 1;
-              if (size <= sizeof stackbuf)
+              size_t আকার_2 = lena + 1 + lenb + 1;
+              যদি (আকার_2 <= আকার stackbuf)
                 ta = stackbuf;
-              else
-                ta = allocated = xmalloc (size);
+              অন্যথা
+                ta = allocated = xmalloc (আকার_2);
               tb = ta + lena + 1;
 
               /* Put into each copy a version of the key in which the
                  requested characters are ignored or translated.  */
-              for (tlena = i = 0; i < lena; i++)
-                if (! (ignore && ignore[to_uchar (texta[i])]))
+              জন্য (tlena = i = 0; i < lena; i++)
+                যদি (! (ignore && ignore[to_uchar (texta[i])]))
                   ta[tlena++] = (translate
                                  ? translate[to_uchar (texta[i])]
                                  : texta[i]);
 
-              for (tlenb = i = 0; i < lenb; i++)
-                if (! (ignore && ignore[to_uchar (textb[i])]))
+              জন্য (tlenb = i = 0; i < lenb; i++)
+                যদি (! (ignore && ignore[to_uchar (textb[i])]))
                   tb[tlenb++] = (translate
                                  ? translate[to_uchar (textb[i])]
                                  : textb[i]);
@@ -3026,151 +3026,151 @@ keycompare (struct line const *a, struct line const *b)
           ta[tlena] = '\0';
           tb[tlenb] = '\0';
 
-          if (key->numeric)
+          যদি (চাবি->numeric)
             diff = numcompare (ta, tb);
-          else if (key->general_numeric)
+          অন্যথা যদি (চাবি->general_numeric)
             diff = general_numcompare (ta, tb);
-          else if (key->human_numeric)
+          অন্যথা যদি (চাবি->human_numeric)
             diff = human_numcompare (ta, tb);
-          else if (key->month)
-            diff = getmonth (ta, NULL) - getmonth (tb, NULL);
-          else if (key->random)
+          অন্যথা যদি (চাবি->month)
+            diff = getmonth (ta, ফাঁকা) - getmonth (tb, ফাঁকা);
+          অন্যথা যদি (চাবি->random)
             diff = compare_random (ta, tlena, tb, tlenb);
-          else if (key->version)
+          অন্যথা যদি (চাবি->version)
             diff = filenvercmp (ta, tlena, tb, tlenb);
-          else
+          অন্যথা
             {
               /* Locale-dependent string sorting.  This is slower than
                  C-locale sorting, which is implemented below.  */
-              if (tlena == 0)
+              যদি (tlena == 0)
                 diff = - NONZERO (tlenb);
-              else if (tlenb == 0)
+              অন্যথা যদি (tlenb == 0)
                 diff = 1;
-              else
+              অন্যথা
                 diff = xmemcoll0 (ta, tlena + 1, tb, tlenb + 1);
             }
 
           ta[tlena] = enda;
           tb[tlenb] = endb;
 
-          free (allocated);
+          মুক্ত (allocated);
         }
-      else if (ignore)
+      অন্যথা যদি (ignore)
         {
 #define CMP_WITH_IGNORE(A, B)						\
-  do									\
+  করো									\
     {									\
-          while (true)							\
+          যখন (true)							\
             {								\
-              while (texta < lima && ignore[to_uchar (*texta)])		\
+              যখন (texta < lima && ignore[to_uchar (*texta)])		\
                 ++texta;						\
-              while (textb < limb && ignore[to_uchar (*textb)])		\
+              যখন (textb < limb && ignore[to_uchar (*textb)])		\
                 ++textb;						\
-              if (! (texta < lima && textb < limb))			\
+              যদি (! (texta < lima && textb < limb))			\
                 {							\
                   diff = (texta < lima) - (textb < limb);		\
-                  break;						\
+                  বিরতি;						\
                 }							\
               diff = to_uchar (A) - to_uchar (B);			\
-              if (diff)							\
-                break;							\
+              যদি (diff)							\
+                বিরতি;							\
               ++texta;							\
               ++textb;							\
             }								\
                                                                         \
     }									\
-  while (0)
+  যখন (0)
 
-          if (translate)
+          যদি (translate)
             CMP_WITH_IGNORE (translate[to_uchar (*texta)],
                              translate[to_uchar (*textb)]);
-          else
+          অন্যথা
             CMP_WITH_IGNORE (*texta, *textb);
         }
-      else
+      অন্যথা
         {
           size_t lenmin = MIN (lena, lenb);
-          if (lenmin == 0)
+          যদি (lenmin == 0)
             diff = 0;
-          else if (translate)
+          অন্যথা যদি (translate)
             {
               size_t i = 0;
-              do
+              করো
                 {
                   diff = (to_uchar (translate[to_uchar (texta[i])])
                           - to_uchar (translate[to_uchar (textb[i])]));
-                  if (diff)
-                    break;
+                  যদি (diff)
+                    বিরতি;
                   i++;
                 }
-              while (i < lenmin);
+              যখন (i < lenmin);
             }
-          else
+          অন্যথা
             diff = memcmp (texta, textb, lenmin);
 
-          if (! diff)
+          যদি (! diff)
             diff = _GL_CMP (lena, lenb);
         }
 
-      if (diff)
-        break;
+      যদি (diff)
+        বিরতি;
 
-      key = key->next;
-      if (! key)
-        return 0;
+      চাবি = চাবি->পরবর্তী;
+      যদি (! চাবি)
+        ফেরত 0;
 
       /* Find the beginning and limit of the next field.  */
-      if (key->eword != SIZE_MAX)
-        lima = limfield (a, key), limb = limfield (b, key);
-      else
-        lima = a->text + a->length - 1, limb = b->text + b->length - 1;
+      যদি (চাবি->eword != SIZE_MAX)
+        lima = limfield (a, চাবি), limb = limfield (b, চাবি);
+      অন্যথা
+        lima = a->text + a->দৈর্ঘ্য - 1, limb = b->text + b->দৈর্ঘ্য - 1;
 
-      if (key->sword != SIZE_MAX)
-        texta = begfield (a, key), textb = begfield (b, key);
-      else
+      যদি (চাবি->sword != SIZE_MAX)
+        texta = begfield (a, চাবি), textb = begfield (b, চাবি);
+      অন্যথা
         {
           texta = a->text, textb = b->text;
-          if (key->skipsblanks)
+          যদি (চাবি->skipsblanks)
             {
-              while (texta < lima && blanks[to_uchar (*texta)])
+              যখন (texta < lima && blanks[to_uchar (*texta)])
                 ++texta;
-              while (textb < limb && blanks[to_uchar (*textb)])
+              যখন (textb < limb && blanks[to_uchar (*textb)])
                 ++textb;
             }
         }
     }
 
-  return diff_reversed (diff, key->reverse);
+  ফেরত diff_reversed (diff, চাবি->reverse);
 }
 
 /* Compare two lines A and B, returning negative, zero, or positive
    depending on whether A compares less than, equal to, or greater than B. */
 
-static int
-compare (struct line const *a, struct line const *b)
+স্থির পূর্ণসংখ্যা
+compare (কাঠামো সারি ধ্রুবক *a, কাঠামো সারি ধ্রুবক *b)
 {
-  int diff;
+  পূর্ণসংখ্যা diff;
   size_t alen, blen;
 
   /* First try to compare on the specified keys (if any).
      The only two cases with no key at all are unadorned sort,
      and unadorned sort -r. */
-  if (keylist)
+  যদি (keylist)
     {
       diff = keycompare (a, b);
-      if (diff || unique || stable)
-        return diff;
+      যদি (diff || unique || stable)
+        ফেরত diff;
     }
 
   /* If the keys all compare equal (or no keys were specified)
      fall through to the default comparison.  */
-  alen = a->length - 1, blen = b->length - 1;
+  alen = a->দৈর্ঘ্য - 1, blen = b->দৈর্ঘ্য - 1;
 
-  if (alen == 0)
+  যদি (alen == 0)
     diff = - NONZERO (blen);
-  else if (blen == 0)
+  অন্যথা যদি (blen == 0)
     diff = 1;
-  else if (hard_LC_COLLATE)
+  অন্যথা যদি (hard_LC_COLLATE)
     {
       /* xmemcoll0 is a performance enhancement as
          it will not unconditionally write '\0' after the
@@ -3178,14 +3178,14 @@ compare (struct line const *a, struct line const *b)
          a 3% increase in performance for short lines.  */
       diff = xmemcoll0 (a->text, alen + 1, b->text, blen + 1);
     }
-  else
+  অন্যথা
     {
       diff = memcmp (a->text, b->text, MIN (alen, blen));
-      if (!diff)
+      যদি (!diff)
         diff = _GL_CMP (alen, blen);
     }
 
-  return diff_reversed (diff, reverse);
+  ফেরত diff_reversed (diff, reverse);
 }
 
 /* Write LINE to output stream FP; the output file's name is
@@ -3193,35 +3193,35 @@ compare (struct line const *a, struct line const *b)
    otherwise.  If debugging is enabled and FP is standard output,
    append some debugging information.  */
 
-static void
-write_line (struct line const *line, FILE *fp, char const *output_file)
+স্থির শূন্য
+write_সারি (কাঠামো সারি ধ্রুবক *সারি, FILE *fp, অক্ষর ধ্রুবক *output_file)
 {
-  char *buf = line->text;
-  size_t n_bytes = line->length;
-  char *ebuf = buf + n_bytes;
+  অক্ষর *buf = সারি->text;
+  size_t n_bytes = সারি->দৈর্ঘ্য;
+  অক্ষর *ebuf = buf + n_bytes;
 
-  if (!output_file && debug)
+  যদি (!output_file && debug)
     {
       /* Convert TAB to '>' and EOL to \n, and then output debugging info.  */
-      char const *c = buf;
+      অক্ষর ধ্রুবক *c = buf;
 
-      while (c < ebuf)
+      যখন (c < ebuf)
         {
-          char wc = *c++;
-          if (wc == '\t')
+          অক্ষর wc = *c++;
+          যদি (wc == '\t')
             wc = '>';
-          else if (c == ebuf)
+          অন্যথা যদি (c == ebuf)
             wc = '\n';
-          if (fputc (wc, fp) == EOF)
+          যদি (fputc (wc, fp) == EOF)
             sort_die (_("write failed"), output_file);
         }
 
-      debug_line (line);
+      debug_সারি (সারি);
     }
-  else
+  অন্যথা
     {
       ebuf[-1] = eolchar;
-      if (fwrite (buf, 1, n_bytes, fp) != n_bytes)
+      যদি (fwrite (buf, 1, n_bytes, fp) != n_bytes)
         sort_die (_("write failed"), output_file);
       ebuf[-1] = '\0';
     }
@@ -3232,85 +3232,85 @@ write_line (struct line const *line, FILE *fp, char const *output_file)
    diagnostic (FILE_NAME, line number, contents of line) to stderr if
    they are not in order.  */
 
-static bool
-check (char const *file_name, char checkonly)
+স্থির bool
+check (অক্ষর ধ্রুবক *file_name, অক্ষর checkonly)
 {
   FILE *fp = xfopen (file_name, "r");
-  struct buffer buf;		/* Input buffer. */
-  struct line temp;		/* Copy of previous line. */
+  কাঠামো বাফার buf;		/* Input buffer. */
+  কাঠামো সারি অস্থায়ী;		/* Copy of previous line. */
   size_t alloc = 0;
-  uintmax_t line_number = 0;
-  struct keyfield const *key = keylist;
+  uintmax_t সারি_সংখ্যা = 0;
+  কাঠামো keyfield ধ্রুবক *চাবি = keylist;
   bool nonunique = ! unique;
   bool ordered = true;
 
-  initbuf (&buf, sizeof (struct line),
-           MAX (merge_buffer_size, sort_size));
-  temp.text = NULL;
+  initbuf (&buf, আকার (কাঠামো সারি),
+           MAX (merge_বাফার_আকার, sort_আকার));
+  অস্থায়ী.text = ফাঁকা;
 
-  while (fillbuf (&buf, fp, file_name, NULL))
+  যখন (fillbuf (&buf, fp, file_name, ফাঁকা))
     {
-      struct line const *line = buffer_linelim (&buf);
-      struct line const *linebase = line - buf.nlines;
+      কাঠামো সারি ধ্রুবক *সারি = বাফার_linelim (&buf);
+      কাঠামো সারি ধ্রুবক *linebase = সারি - buf.nlines;
 
       /* Make sure the line saved from the old buffer contents is
          less than or equal to the first line of the new buffer. */
-      if (alloc && nonunique <= compare (&temp, line - 1))
+      যদি (alloc && nonunique <= compare (&অস্থায়ী, সারি - 1))
         {
         found_disorder:
           {
-            if (checkonly == 'c')
+            যদি (checkonly == 'c')
               {
-                struct line const *disorder_line = line - 1;
-                uintmax_t disorder_line_number =
-                  buffer_linelim (&buf) - disorder_line + line_number;
+                কাঠামো সারি ধ্রুবক *disorder_সারি = সারি - 1;
+                uintmax_t disorder_সারি_সংখ্যা =
+                  বাফার_linelim (&buf) - disorder_সারি + সারি_সংখ্যা;
                 fprintf (stderr, _("%s: %s:%ju: disorder: "),
-                         program_name, file_name, disorder_line_number);
-                write_line (disorder_line, stderr, _("standard error"));
+                         program_name, file_name, disorder_সারি_সংখ্যা);
+                write_সারি (disorder_সারি, stderr, _("standard error"));
               }
 
             ordered = false;
-            break;
+            বিরতি;
           }
         }
 
       /* Compare each line in the buffer with its successor.  */
-      while (linebase < --line)
-        if (nonunique <= compare (line, line - 1))
-          goto found_disorder;
+      যখন (linebase < --সারি)
+        যদি (nonunique <= compare (সারি, সারি - 1))
+          যাও found_disorder;
 
-      line_number += buf.nlines;
+      সারি_সংখ্যা += buf.nlines;
 
       /* Save the last line of the buffer.  */
-      if (alloc < line->length)
+      যদি (alloc < সারি->দৈর্ঘ্য)
         {
-          do
+          করো
             {
               alloc *= 2;
-              if (! alloc)
+              যদি (! alloc)
                 {
-                  alloc = line->length;
-                  break;
+                  alloc = সারি->দৈর্ঘ্য;
+                  বিরতি;
                 }
             }
-          while (alloc < line->length);
+          যখন (alloc < সারি->দৈর্ঘ্য);
 
-          free (temp.text);
-          temp.text = xmalloc (alloc);
+          মুক্ত (অস্থায়ী.text);
+          অস্থায়ী.text = xmalloc (alloc);
         }
-      memcpy (temp.text, line->text, line->length);
-      temp.length = line->length;
-      if (key)
+      memcpy (অস্থায়ী.text, সারি->text, সারি->দৈর্ঘ্য);
+      অস্থায়ী.দৈর্ঘ্য = সারি->দৈর্ঘ্য;
+      যদি (চাবি)
         {
-          temp.keybeg = temp.text + (line->keybeg - line->text);
-          temp.keylim = temp.text + (line->keylim - line->text);
+          অস্থায়ী.keybeg = অস্থায়ী.text + (সারি->keybeg - সারি->text);
+          অস্থায়ী.keylim = অস্থায়ী.text + (সারি->keylim - সারি->text);
         }
     }
 
   xfclose (fp, file_name);
-  free (buf.buf);
-  free (temp.text);
-  return ordered;
+  মুক্ত (buf.buf);
+  মুক্ত (অস্থায়ী.text);
+  ফেরত ordered;
 }
 
 /* Open FILES (there are NFILES of them) and store the resulting array
@@ -3318,23 +3318,23 @@ check (char const *file_name, char checkonly)
    number of successfully opened files, setting errno if this value is
    less than NFILES.  */
 
-static size_t
-open_input_files (struct sortfile *files, size_t nfiles, FILE ***pfps)
+স্থির size_t
+open_প্রবেশ_files (কাঠামো sortfile *files, size_t nfiles, FILE ***pfps)
 {
-  FILE **fps = *pfps = xnmalloc (nfiles, sizeof *fps);
-  int i;
+  FILE **fps = *pfps = xnmalloc (nfiles, আকার *fps);
+  পূর্ণসংখ্যা i;
 
   /* Open as many input files as we can.  */
-  for (i = 0; i < nfiles; i++)
+  জন্য (i = 0; i < nfiles; i++)
     {
-      fps[i] = (files[i].temp && files[i].temp->state != UNCOMPRESSED
-                ? open_temp (files[i].temp)
+      fps[i] = (files[i].অস্থায়ী && files[i].অস্থায়ী->state != UNCOMPRESSED
+                ? open_অস্থায়ী (files[i].অস্থায়ী)
                 : stream_open (files[i].name, "r"));
-      if (!fps[i])
-        break;
+      যদি (!fps[i])
+        বিরতি;
     }
 
-  return i;
+  ফেরত i;
 }
 
 /* Merge lines from FILES onto OFP.  NTEMPS is the number of temporary
@@ -3345,52 +3345,52 @@ open_input_files (struct sortfile *files, size_t nfiles, FILE ***pfps)
    OUTPUT_FILE gives the name of the output file.  If it is null,
    the output file is standard output.  */
 
-static void
-mergefps (struct sortfile *files, size_t ntemps, size_t nfiles,
-          FILE *ofp, char const *output_file, FILE **fps)
+স্থির শূন্য
+mergefps (কাঠামো sortfile *files, size_t ntemps, size_t nfiles,
+          FILE *ofp, অক্ষর ধ্রুবক *output_file, FILE **fps)
 {
-  struct buffer *buffer = xnmalloc (nfiles, sizeof *buffer);
+  কাঠামো বাফার *বাফার = xnmalloc (nfiles, আকার *বাফার);
                                 /* Input buffers for each file. */
-  struct line saved;		/* Saved line storage for unique check. */
-  struct line const *savedline = NULL;
+  কাঠামো সারি saved;		/* Saved line storage for unique check. */
+  কাঠামো সারি ধ্রুবক *savedline = ফাঁকা;
                                 /* &saved if there is a saved line. */
   size_t savealloc = 0;		/* Size allocated for the saved line. */
-  struct line const **cur = xnmalloc (nfiles, sizeof *cur);
+  কাঠামো সারি ধ্রুবক **cur = xnmalloc (nfiles, আকার *cur);
                                 /* Current line in each line table. */
-  struct line const **base = xnmalloc (nfiles, sizeof *base);
+  কাঠামো সারি ধ্রুবক **base = xnmalloc (nfiles, আকার *base);
                                 /* Base of each line table.  */
-  size_t *ord = xnmalloc (nfiles, sizeof *ord);
+  size_t *ord = xnmalloc (nfiles, আকার *ord);
                                 /* Table representing a permutation of fps,
                                    such that cur[ord[0]] is the smallest line
                                    and will be next output. */
   size_t t;
-  struct keyfield const *key = keylist;
-  saved.text = NULL;
+  কাঠামো keyfield ধ্রুবক *চাবি = keylist;
+  saved.text = ফাঁকা;
 
   /* Read initial lines from each input file. */
-  for (size_t i = 0; i < nfiles; )
+  জন্য (size_t i = 0; i < nfiles; )
     {
-      initbuf (&buffer[i], sizeof (struct line),
-               MAX (merge_buffer_size, sort_size / nfiles));
-      if (fillbuf (&buffer[i], fps[i], files[i].name, NULL))
+      initbuf (&বাফার[i], আকার (কাঠামো সারি),
+               MAX (merge_বাফার_আকার, sort_আকার / nfiles));
+      যদি (fillbuf (&বাফার[i], fps[i], files[i].name, ফাঁকা))
         {
-          struct line const *linelim = buffer_linelim (&buffer[i]);
+          কাঠামো সারি ধ্রুবক *linelim = বাফার_linelim (&বাফার[i]);
           cur[i] = linelim - 1;
-          base[i] = linelim - buffer[i].nlines;
+          base[i] = linelim - বাফার[i].nlines;
           i++;
         }
-      else
+      অন্যথা
         {
           /* fps[i] is empty; eliminate it from future consideration.  */
           xfclose (fps[i], files[i].name);
-          if (i < ntemps)
+          যদি (i < ntemps)
             {
               ntemps--;
               zaptemp (files[i].name);
             }
-          free (buffer[i].buf);
+          মুক্ত (বাফার[i].buf);
           --nfiles;
-          for (size_t j = i; j < nfiles; ++j)
+          জন্য (size_t j = i; j < nfiles; ++j)
             {
               files[j] = files[j + 1];
               fps[j] = fps[j + 1];
@@ -3401,45 +3401,45 @@ mergefps (struct sortfile *files, size_t ntemps, size_t nfiles,
   /* Set up the ord table according to comparisons among input lines.
      Since this only reorders two items if one is strictly greater than
      the other, it is stable. */
-  for (size_t i = 0; i < nfiles; ++i)
+  জন্য (size_t i = 0; i < nfiles; ++i)
     ord[i] = i;
-  for (size_t i = 1; i < nfiles; ++i)
-    if (0 < compare (cur[ord[i - 1]], cur[ord[i]]))
+  জন্য (size_t i = 1; i < nfiles; ++i)
+    যদি (0 < compare (cur[ord[i - 1]], cur[ord[i]]))
       t = ord[i - 1], ord[i - 1] = ord[i], ord[i] = t, i = 0;
 
   /* Repeatedly output the smallest line until no input remains. */
-  while (nfiles)
+  যখন (nfiles)
     {
-      struct line const *smallest = cur[ord[0]];
+      কাঠামো সারি ধ্রুবক *smallest = cur[ord[0]];
 
       /* If uniquified output is turned on, output only the first of
          an identical series of lines. */
-      if (unique)
+      যদি (unique)
         {
-          if (savedline && compare (savedline, smallest))
+          যদি (savedline && compare (savedline, smallest))
             {
-              savedline = NULL;
-              write_line (&saved, ofp, output_file);
+              savedline = ফাঁকা;
+              write_সারি (&saved, ofp, output_file);
             }
-          if (!savedline)
+          যদি (!savedline)
             {
               savedline = &saved;
-              if (savealloc < smallest->length)
+              যদি (savealloc < smallest->দৈর্ঘ্য)
                 {
-                  do
-                    if (! savealloc)
+                  করো
+                    যদি (! savealloc)
                       {
-                        savealloc = smallest->length;
-                        break;
+                        savealloc = smallest->দৈর্ঘ্য;
+                        বিরতি;
                       }
-                  while ((savealloc *= 2) < smallest->length);
+                  যখন ((savealloc *= 2) < smallest->দৈর্ঘ্য);
 
-                  free (saved.text);
+                  মুক্ত (saved.text);
                   saved.text = xmalloc (savealloc);
                 }
-              saved.length = smallest->length;
-              memcpy (saved.text, smallest->text, saved.length);
-              if (key)
+              saved.দৈর্ঘ্য = smallest->দৈর্ঘ্য;
+              memcpy (saved.text, smallest->text, saved.দৈর্ঘ্য);
+              যদি (চাবি)
                 {
                   saved.keybeg =
                     saved.text + (smallest->keybeg - smallest->text);
@@ -3448,46 +3448,46 @@ mergefps (struct sortfile *files, size_t ntemps, size_t nfiles,
                 }
             }
         }
-      else
-        write_line (smallest, ofp, output_file);
+      অন্যথা
+        write_সারি (smallest, ofp, output_file);
 
       /* Check if we need to read more lines into memory. */
-      if (base[ord[0]] < smallest)
+      যদি (base[ord[0]] < smallest)
         cur[ord[0]] = smallest - 1;
-      else
+      অন্যথা
         {
-          if (fillbuf (&buffer[ord[0]], fps[ord[0]], files[ord[0]].name,
-                       NULL))
+          যদি (fillbuf (&বাফার[ord[0]], fps[ord[0]], files[ord[0]].name,
+                       ফাঁকা))
             {
-              struct line const *linelim = buffer_linelim (&buffer[ord[0]]);
+              কাঠামো সারি ধ্রুবক *linelim = বাফার_linelim (&বাফার[ord[0]]);
               cur[ord[0]] = linelim - 1;
-              base[ord[0]] = linelim - buffer[ord[0]].nlines;
+              base[ord[0]] = linelim - বাফার[ord[0]].nlines;
             }
-          else
+          অন্যথা
             {
               /* We reached EOF on fps[ord[0]].  */
-              for (size_t i = 1; i < nfiles; ++i)
-                if (ord[i] > ord[0])
+              জন্য (size_t i = 1; i < nfiles; ++i)
+                যদি (ord[i] > ord[0])
                   --ord[i];
               --nfiles;
               xfclose (fps[ord[0]], files[ord[0]].name);
-              if (ord[0] < ntemps)
+              যদি (ord[0] < ntemps)
                 {
                   ntemps--;
                   zaptemp (files[ord[0]].name);
                 }
-              free (buffer[ord[0]].buf);
-              for (size_t i = ord[0]; i < nfiles; ++i)
+              মুক্ত (বাফার[ord[0]].buf);
+              জন্য (size_t i = ord[0]; i < nfiles; ++i)
                 {
                   fps[i] = fps[i + 1];
                   files[i] = files[i + 1];
-                  buffer[i] = buffer[i + 1];
+                  বাফার[i] = বাফার[i + 1];
                   cur[i] = cur[i + 1];
                   base[i] = base[i + 1];
                 }
-              for (size_t i = 0; i < nfiles; ++i)
+              জন্য (size_t i = 0; i < nfiles; ++i)
                 ord[i] = ord[i + 1];
-              continue;
+              চালু;
             }
         }
 
@@ -3500,37 +3500,37 @@ mergefps (struct sortfile *files, size_t ntemps, size_t nfiles,
         size_t hi = nfiles;
         size_t probe = lo;
         size_t ord0 = ord[0];
-        size_t count_of_smaller_lines;
+        size_t গুনতি_of_smaller_সারিগুলি;
 
-        while (lo < hi)
+        যখন (lo < hi)
           {
-            int cmp = compare (cur[ord0], cur[ord[probe]]);
-            if (cmp < 0 || (cmp == 0 && ord0 < ord[probe]))
+            পূর্ণসংখ্যা cmp = compare (cur[ord0], cur[ord[probe]]);
+            যদি (cmp < 0 || (cmp == 0 && ord0 < ord[probe]))
               hi = probe;
-            else
+            অন্যথা
               lo = probe + 1;
             probe = (lo + hi) / 2;
           }
 
-        count_of_smaller_lines = lo - 1;
-        for (size_t j = 0; j < count_of_smaller_lines; j++)
+        গুনতি_of_smaller_সারিগুলি = lo - 1;
+        জন্য (size_t j = 0; j < গুনতি_of_smaller_সারিগুলি; j++)
           ord[j] = ord[j + 1];
-        ord[count_of_smaller_lines] = ord0;
+        ord[গুনতি_of_smaller_সারিগুলি] = ord0;
       }
     }
 
-  if (unique && savedline)
+  যদি (unique && savedline)
     {
-      write_line (&saved, ofp, output_file);
-      free (saved.text);
+      write_সারি (&saved, ofp, output_file);
+      মুক্ত (saved.text);
     }
 
   xfclose (ofp, output_file);
-  free (fps);
-  free (buffer);
-  free (ord);
-  free (base);
-  free (cur);
+  মুক্ত (fps);
+  মুক্ত (বাফার);
+  মুক্ত (ord);
+  মুক্ত (base);
+  মুক্ত (cur);
 }
 
 /* Merge lines from FILES onto OFP.  NTEMPS is the number of temporary
@@ -3543,16 +3543,16 @@ mergefps (struct sortfile *files, size_t ntemps, size_t nfiles,
    less than NFILES if we ran low on file descriptors, but in this
    case it is never less than 2.  */
 
-static size_t
-mergefiles (struct sortfile *files, size_t ntemps, size_t nfiles,
-            FILE *ofp, char const *output_file)
+স্থির size_t
+mergefiles (কাঠামো sortfile *files, size_t ntemps, size_t nfiles,
+            FILE *ofp, অক্ষর ধ্রুবক *output_file)
 {
   FILE **fps;
-  size_t nopened = open_input_files (files, nfiles, &fps);
-  if (nopened < nfiles && nopened < 2)
+  size_t nopened = open_প্রবেশ_files (files, nfiles, &fps);
+  যদি (nopened < nfiles && nopened < 2)
     sort_die (_("open failed"), files[nopened].name);
   mergefps (files, ntemps, nopened, ofp, output_file, fps);
-  return nopened;
+  ফেরত nopened;
 }
 
 /* Merge into T (of size NLINES) the two sorted arrays of lines
@@ -3561,35 +3561,35 @@ mergefiles (struct sortfile *files, size_t ntemps, size_t nfiles,
    T and LO point just past their respective arrays, and the arrays
    are in reverse order.  NLINES must be at least 2.  */
 
-static void
-mergelines (struct line *restrict t, size_t nlines,
-            struct line const *restrict lo)
+স্থির শূন্য
+mergelines (কাঠামো সারি *restrict t, size_t nlines,
+            কাঠামো সারি ধ্রুবক *restrict lo)
 {
   size_t nlo = nlines / 2;
   size_t nhi = nlines - nlo;
-  struct line *hi = t - nlo;
+  কাঠামো সারি *hi = t - nlo;
 
-  while (true)
-    if (compare (lo - 1, hi - 1) <= 0)
+  যখন (true)
+    যদি (compare (lo - 1, hi - 1) <= 0)
       {
         *--t = *--lo;
-        if (! --nlo)
+        যদি (! --nlo)
           {
             /* HI must equal T now, and there is no need to copy from
                HI to T. */
-            return;
+            ফেরত;
           }
       }
-    else
+    অন্যথা
       {
         *--t = *--hi;
-        if (! --nhi)
+        যদি (! --nhi)
           {
-            do
+            করো
               *--t = *--lo;
-            while (--nlo);
+            যখন (--nlo);
 
-            return;
+            ফেরত;
           }
       }
 }
@@ -3608,96 +3608,96 @@ mergelines (struct line *restrict t, size_t nlines,
    writes that this memory optimization was originally published by
    D. A. Bell, Comp J. 1 (1958), 75.  */
 
-static void
-sequential_sort (struct line *restrict lines, size_t nlines,
-                 struct line *restrict temp, bool to_temp)
+স্থির শূন্য
+sequential_sort (কাঠামো সারি *restrict সারিগুলি, size_t nlines,
+                 কাঠামো সারি *restrict অস্থায়ী, bool to_অস্থায়ী)
 {
-  if (nlines == 2)
+  যদি (nlines == 2)
     {
       /* Declare 'swap' as int, not bool, to work around a bug
         <https://lists.gnu.org/r/bug-coreutils/2005-10/msg00086.html>
          in the IBM xlc 6.0.0.0 compiler in 64-bit mode.  */
-      int swap = (0 < compare (&lines[-1], &lines[-2]));
-      if (to_temp)
+      পূর্ণসংখ্যা swap = (0 < compare (&সারিগুলি[-1], &সারিগুলি[-2]));
+      যদি (to_অস্থায়ী)
         {
-          temp[-1] = lines[-1 - swap];
-          temp[-2] = lines[-2 + swap];
+          অস্থায়ী[-1] = সারিগুলি[-1 - swap];
+          অস্থায়ী[-2] = সারিগুলি[-2 + swap];
         }
-      else if (swap)
+      অন্যথা যদি (swap)
         {
-          temp[-1] = lines[-1];
-          lines[-1] = lines[-2];
-          lines[-2] = temp[-1];
+          অস্থায়ী[-1] = সারিগুলি[-1];
+          সারিগুলি[-1] = সারিগুলি[-2];
+          সারিগুলি[-2] = অস্থায়ী[-1];
         }
     }
-  else
+  অন্যথা
     {
       size_t nlo = nlines / 2;
       size_t nhi = nlines - nlo;
-      struct line *lo = lines;
-      struct line *hi = lines - nlo;
+      কাঠামো সারি *lo = সারিগুলি;
+      কাঠামো সারি *hi = সারিগুলি - nlo;
 
-      sequential_sort (hi, nhi, temp - (to_temp ? nlo : 0), to_temp);
-      if (1 < nlo)
-        sequential_sort (lo, nlo, temp, !to_temp);
-      else if (!to_temp)
-        temp[-1] = lo[-1];
+      sequential_sort (hi, nhi, অস্থায়ী - (to_অস্থায়ী ? nlo : 0), to_অস্থায়ী);
+      যদি (1 < nlo)
+        sequential_sort (lo, nlo, অস্থায়ী, !to_অস্থায়ী);
+      অন্যথা যদি (!to_অস্থায়ী)
+        অস্থায়ী[-1] = lo[-1];
 
-      struct line *dest;
-      struct line const *sorted_lo;
-      if (to_temp)
+      কাঠামো সারি *dest;
+      কাঠামো সারি ধ্রুবক *sorted_lo;
+      যদি (to_অস্থায়ী)
         {
-          dest = temp;
-          sorted_lo = lines;
+          dest = অস্থায়ী;
+          sorted_lo = সারিগুলি;
         }
-      else
+      অন্যথা
         {
-          dest = lines;
-          sorted_lo = temp;
+          dest = সারিগুলি;
+          sorted_lo = অস্থায়ী;
         }
       mergelines (dest, nlines, sorted_lo);
     }
 }
 
-static struct merge_node *init_node (struct merge_node *restrict,
-                                     struct merge_node *restrict,
-                                     struct line *, size_t, size_t, bool);
+স্থির কাঠামো merge_গ্রন্থি *init_গ্রন্থি (কাঠামো merge_গ্রন্থি *restrict,
+                                     কাঠামো merge_গ্রন্থি *restrict,
+                                     কাঠামো সারি *, size_t, size_t, bool);
 
 
 /* Create and return a merge tree for NTHREADS threads, sorting NLINES
    lines, with destination DEST.  */
-static struct merge_node *
-merge_tree_init (size_t nthreads, size_t nlines, struct line *dest)
+স্থির কাঠামো merge_গ্রন্থি *
+merge_বৃক্ষ_init (size_t nthreads, size_t nlines, কাঠামো সারি *dest)
 {
-  struct merge_node *merge_tree = xmalloc (2 * sizeof *merge_tree * nthreads);
+  কাঠামো merge_গ্রন্থি *merge_বৃক্ষ = xmalloc (2 * আকার *merge_বৃক্ষ * nthreads);
 
-  struct merge_node *root = merge_tree;
-  root->lo = root->hi = root->end_lo = root->end_hi = NULL;
-  root->dest = NULL;
-  root->nlo = root->nhi = nlines;
-  root->parent = NULL;
-  root->level = MERGE_END;
-  root->queued = false;
-  pthread_mutex_init (&root->lock, NULL);
+  কাঠামো merge_গ্রন্থি *মূল = merge_বৃক্ষ;
+  মূল->lo = মূল->hi = মূল->end_lo = মূল->end_hi = ফাঁকা;
+  মূল->dest = ফাঁকা;
+  মূল->nlo = মূল->nhi = nlines;
+  মূল->parent = ফাঁকা;
+  মূল->level = MERGE_END;
+  মূল->queued = false;
+  pthread_mutex_init (&মূল->lock, ফাঁকা);
 
-  init_node (root, root + 1, dest, nthreads, nlines, false);
-  return merge_tree;
+  init_গ্রন্থি (মূল, মূল + 1, dest, nthreads, nlines, false);
+  ফেরত merge_বৃক্ষ;
 }
 
 /* Destroy the merge tree. */
-static void
-merge_tree_destroy (size_t nthreads, struct merge_node *merge_tree)
+স্থির শূন্য
+merge_বৃক্ষ_destroy (size_t nthreads, কাঠামো merge_গ্রন্থি *merge_বৃক্ষ)
 {
   size_t n_nodes = nthreads * 2;
-  struct merge_node *node = merge_tree;
+  কাঠামো merge_গ্রন্থি *গ্রন্থি = merge_বৃক্ষ;
 
-  while (n_nodes--)
+  যখন (n_nodes--)
     {
-      pthread_mutex_destroy (&node->lock);
-      node++;
+      pthread_mutex_destroy (&গ্রন্থি->lock);
+      গ্রন্থি++;
     }
 
-  free (merge_tree);
+  মুক্ত (merge_বৃক্ষ);
 }
 
 /* Initialize a merge tree node and its descendants.  The node's
@@ -3707,82 +3707,82 @@ merge_tree_destroy (size_t nthreads, struct merge_node *merge_tree)
    TOTAL_LINES.  IS_LO_CHILD is true if the node is the low child of
    its parent.  */
 
-static struct merge_node *
-init_node (struct merge_node *restrict parent,
-           struct merge_node *restrict node_pool,
-           struct line *dest, size_t nthreads,
-           size_t total_lines, bool is_lo_child)
+স্থির কাঠামো merge_গ্রন্থি *
+init_গ্রন্থি (কাঠামো merge_গ্রন্থি *restrict parent,
+           কাঠামো merge_গ্রন্থি *restrict গ্রন্থি_pool,
+           কাঠামো সারি *dest, size_t nthreads,
+           size_t যোগ_সারিগুলি, bool is_lo_child)
 {
   size_t nlines = (is_lo_child ? parent->nlo : parent->nhi);
   size_t nlo = nlines / 2;
   size_t nhi = nlines - nlo;
-  struct line *lo = dest - total_lines;
-  struct line *hi = lo - nlo;
-  struct line **parent_end = (is_lo_child ? &parent->end_lo : &parent->end_hi);
+  কাঠামো সারি *lo = dest - যোগ_সারিগুলি;
+  কাঠামো সারি *hi = lo - nlo;
+  কাঠামো সারি **parent_end = (is_lo_child ? &parent->end_lo : &parent->end_hi);
 
-  struct merge_node *node = node_pool++;
-  node->lo = node->end_lo = lo;
-  node->hi = node->end_hi = hi;
-  node->dest = parent_end;
-  node->nlo = nlo;
-  node->nhi = nhi;
-  node->parent = parent;
-  node->level = parent->level + 1;
-  node->queued = false;
-  pthread_mutex_init (&node->lock, NULL);
+  কাঠামো merge_গ্রন্থি *গ্রন্থি = গ্রন্থি_pool++;
+  গ্রন্থি->lo = গ্রন্থি->end_lo = lo;
+  গ্রন্থি->hi = গ্রন্থি->end_hi = hi;
+  গ্রন্থি->dest = parent_end;
+  গ্রন্থি->nlo = nlo;
+  গ্রন্থি->nhi = nhi;
+  গ্রন্থি->parent = parent;
+  গ্রন্থি->level = parent->level + 1;
+  গ্রন্থি->queued = false;
+  pthread_mutex_init (&গ্রন্থি->lock, ফাঁকা);
 
-  if (nthreads > 1)
+  যদি (nthreads > 1)
     {
       size_t lo_threads = nthreads / 2;
       size_t hi_threads = nthreads - lo_threads;
-      node->lo_child = node_pool;
-      node_pool = init_node (node, node_pool, lo, lo_threads,
-                             total_lines, true);
-      node->hi_child = node_pool;
-      node_pool = init_node (node, node_pool, hi, hi_threads,
-                             total_lines, false);
+      গ্রন্থি->lo_child = গ্রন্থি_pool;
+      গ্রন্থি_pool = init_গ্রন্থি (গ্রন্থি, গ্রন্থি_pool, lo, lo_threads,
+                             যোগ_সারিগুলি, true);
+      গ্রন্থি->hi_child = গ্রন্থি_pool;
+      গ্রন্থি_pool = init_গ্রন্থি (গ্রন্থি, গ্রন্থি_pool, hi, hi_threads,
+                             যোগ_সারিগুলি, false);
     }
-  else
+  অন্যথা
     {
-      node->lo_child = NULL;
-      node->hi_child = NULL;
+      গ্রন্থি->lo_child = ফাঁকা;
+      গ্রন্থি->hi_child = ফাঁকা;
     }
-  return node_pool;
+  ফেরত গ্রন্থি_pool;
 }
 
 
 /* Compare two merge nodes A and B for priority.  */
 
-static int
-compare_nodes (void const *a, void const *b)
+স্থির পূর্ণসংখ্যা
+compare_nodes (শূন্য ধ্রুবক *a, শূন্য ধ্রুবক *b)
 {
-  struct merge_node const *nodea = a;
-  struct merge_node const *nodeb = b;
-  if (nodea->level == nodeb->level)
-      return (nodea->nlo + nodea->nhi) < (nodeb->nlo + nodeb->nhi);
-  return nodea->level < nodeb->level;
+  কাঠামো merge_গ্রন্থি ধ্রুবক *nodea = a;
+  কাঠামো merge_গ্রন্থি ধ্রুবক *nodeb = b;
+  যদি (nodea->level == nodeb->level)
+      ফেরত (nodea->nlo + nodea->nhi) < (nodeb->nlo + nodeb->nhi);
+  ফেরত nodea->level < nodeb->level;
 }
 
 /* Lock a merge tree NODE.  */
 
-static inline void
-lock_node (struct merge_node *node)
+স্থির অন্তঃরেখ শূন্য
+lock_গ্রন্থি (কাঠামো merge_গ্রন্থি *গ্রন্থি)
 {
-  pthread_mutex_lock (&node->lock);
+  pthread_mutex_lock (&গ্রন্থি->lock);
 }
 
 /* Unlock a merge tree NODE. */
 
-static inline void
-unlock_node (struct merge_node *node)
+স্থির অন্তঃরেখ শূন্য
+unlock_গ্রন্থি (কাঠামো merge_গ্রন্থি *গ্রন্থি)
 {
-  pthread_mutex_unlock (&node->lock);
+  pthread_mutex_unlock (&গ্রন্থি->lock);
 }
 
 /* Destroy merge QUEUE. */
 
-static void
-queue_destroy (struct merge_node_queue *queue)
+স্থির শূন্য
+queue_destroy (কাঠামো merge_গ্রন্থি_queue *queue)
 {
   heap_free (queue->priority_queue);
   pthread_cond_destroy (&queue->cond);
@@ -3792,43 +3792,43 @@ queue_destroy (struct merge_node_queue *queue)
 /* Initialize merge QUEUE, allocating space suitable for a maximum of
    NTHREADS threads.  */
 
-static void
-queue_init (struct merge_node_queue *queue, size_t nthreads)
+স্থির শূন্য
+queue_init (কাঠামো merge_গ্রন্থি_queue *queue, size_t nthreads)
 {
   /* Though it's highly unlikely all nodes are in the heap at the same
      time, the heap should accommodate all of them.  Counting a null
      dummy head for the heap, reserve 2 * NTHREADS nodes.  */
   queue->priority_queue = heap_alloc (compare_nodes, 2 * nthreads);
-  pthread_mutex_init (&queue->mutex, NULL);
-  pthread_cond_init (&queue->cond, NULL);
+  pthread_mutex_init (&queue->mutex, ফাঁকা);
+  pthread_cond_init (&queue->cond, ফাঁকা);
 }
 
 /* Insert NODE into QUEUE.  The caller either holds a lock on NODE, or
    does not need to lock NODE.  */
 
-static void
-queue_insert (struct merge_node_queue *queue, struct merge_node *node)
+স্থির শূন্য
+queue_ঢোকাও (কাঠামো merge_গ্রন্থি_queue *queue, কাঠামো merge_গ্রন্থি *গ্রন্থি)
 {
   pthread_mutex_lock (&queue->mutex);
-  heap_insert (queue->priority_queue, node);
-  node->queued = true;
+  heap_ঢোকাও (queue->priority_queue, গ্রন্থি);
+  গ্রন্থি->queued = true;
   pthread_cond_signal (&queue->cond);
   pthread_mutex_unlock (&queue->mutex);
 }
 
 /* Pop the top node off the priority QUEUE, lock the node, return it.  */
 
-static struct merge_node *
-queue_pop (struct merge_node_queue *queue)
+স্থির কাঠামো merge_গ্রন্থি *
+queue_বের_করো (কাঠামো merge_গ্রন্থি_queue *queue)
 {
-  struct merge_node *node;
+  কাঠামো merge_গ্রন্থি *গ্রন্থি;
   pthread_mutex_lock (&queue->mutex);
-  while (! (node = heap_remove_top (queue->priority_queue)))
+  যখন (! (গ্রন্থি = heap_remove_শীর্ষ (queue->priority_queue)))
     pthread_cond_wait (&queue->cond, &queue->mutex);
   pthread_mutex_unlock (&queue->mutex);
-  lock_node (node);
-  node->queued = false;
-  return node;
+  lock_গ্রন্থি (গ্রন্থি);
+  গ্রন্থি->queued = false;
+  ফেরত গ্রন্থি;
 }
 
 /* Output LINE to TFP, unless -u is specified and the line compares
@@ -3838,17 +3838,17 @@ queue_pop (struct merge_node_queue *queue)
    This function does not save the line for comparison later, so it is
    appropriate only for internal sort.  */
 
-static void
-write_unique (struct line const *line, FILE *tfp, char const *temp_output)
+স্থির শূন্য
+write_unique (কাঠামো সারি ধ্রুবক *সারি, FILE *tfp, অক্ষর ধ্রুবক *অস্থায়ী_output)
 {
-  if (unique)
+  যদি (unique)
     {
-      if (saved_line.text && ! compare (line, &saved_line))
-        return;
-      saved_line = *line;
+      যদি (saved_সারি.text && ! compare (সারি, &saved_সারি))
+        ফেরত;
+      saved_সারি = *সারি;
     }
 
-  write_line (line, tfp, temp_output);
+  write_সারি (সারি, tfp, অস্থায়ী_output);
 }
 
 /* Merge the lines currently available to a NODE in the binary
@@ -3858,103 +3858,103 @@ write_unique (struct line const *line, FILE *tfp, char const *temp_output)
    If merging at the top level, send output to TFP.  TEMP_OUTPUT is
    the name of TFP, or is null if TFP is standard output.  */
 
-static void
-mergelines_node (struct merge_node *restrict node, size_t total_lines,
-                 FILE *tfp, char const *temp_output)
+স্থির শূন্য
+mergelines_গ্রন্থি (কাঠামো merge_গ্রন্থি *restrict গ্রন্থি, size_t যোগ_সারিগুলি,
+                 FILE *tfp, অক্ষর ধ্রুবক *অস্থায়ী_output)
 {
-  struct line *lo_orig = node->lo;
-  struct line *hi_orig = node->hi;
-  size_t to_merge = MAX_MERGE (total_lines, node->level);
+  কাঠামো সারি *lo_orig = গ্রন্থি->lo;
+  কাঠামো সারি *hi_orig = গ্রন্থি->hi;
+  size_t to_merge = MAX_MERGE (যোগ_সারিগুলি, গ্রন্থি->level);
   size_t merged_lo;
   size_t merged_hi;
 
-  if (node->level > MERGE_ROOT)
+  যদি (গ্রন্থি->level > MERGE_মূল)
     {
       /* Merge to destination buffer. */
-      struct line *dest = *node->dest;
-      while (node->lo != node->end_lo && node->hi != node->end_hi && to_merge--)
-        if (compare (node->lo - 1, node->hi - 1) <= 0)
-          *--dest = *--node->lo;
-        else
-          *--dest = *--node->hi;
+      কাঠামো সারি *dest = *গ্রন্থি->dest;
+      যখন (গ্রন্থি->lo != গ্রন্থি->end_lo && গ্রন্থি->hi != গ্রন্থি->end_hi && to_merge--)
+        যদি (compare (গ্রন্থি->lo - 1, গ্রন্থি->hi - 1) <= 0)
+          *--dest = *--গ্রন্থি->lo;
+        অন্যথা
+          *--dest = *--গ্রন্থি->hi;
 
-      merged_lo = lo_orig - node->lo;
-      merged_hi = hi_orig - node->hi;
+      merged_lo = lo_orig - গ্রন্থি->lo;
+      merged_hi = hi_orig - গ্রন্থি->hi;
 
-      if (node->nhi == merged_hi)
-        while (node->lo != node->end_lo && to_merge--)
-          *--dest = *--node->lo;
-      else if (node->nlo == merged_lo)
-        while (node->hi != node->end_hi && to_merge--)
-          *--dest = *--node->hi;
-      *node->dest = dest;
+      যদি (গ্রন্থি->nhi == merged_hi)
+        যখন (গ্রন্থি->lo != গ্রন্থি->end_lo && to_merge--)
+          *--dest = *--গ্রন্থি->lo;
+      অন্যথা যদি (গ্রন্থি->nlo == merged_lo)
+        যখন (গ্রন্থি->hi != গ্রন্থি->end_hi && to_merge--)
+          *--dest = *--গ্রন্থি->hi;
+      *গ্রন্থি->dest = dest;
     }
-  else
+  অন্যথা
     {
       /* Merge directly to output. */
-      while (node->lo != node->end_lo && node->hi != node->end_hi && to_merge--)
+      যখন (গ্রন্থি->lo != গ্রন্থি->end_lo && গ্রন্থি->hi != গ্রন্থি->end_hi && to_merge--)
         {
-          if (compare (node->lo - 1, node->hi - 1) <= 0)
-            write_unique (--node->lo, tfp, temp_output);
-          else
-            write_unique (--node->hi, tfp, temp_output);
+          যদি (compare (গ্রন্থি->lo - 1, গ্রন্থি->hi - 1) <= 0)
+            write_unique (--গ্রন্থি->lo, tfp, অস্থায়ী_output);
+          অন্যথা
+            write_unique (--গ্রন্থি->hi, tfp, অস্থায়ী_output);
         }
 
-      merged_lo = lo_orig - node->lo;
-      merged_hi = hi_orig - node->hi;
+      merged_lo = lo_orig - গ্রন্থি->lo;
+      merged_hi = hi_orig - গ্রন্থি->hi;
 
-      if (node->nhi == merged_hi)
+      যদি (গ্রন্থি->nhi == merged_hi)
         {
-          while (node->lo != node->end_lo && to_merge--)
-            write_unique (--node->lo, tfp, temp_output);
+          যখন (গ্রন্থি->lo != গ্রন্থি->end_lo && to_merge--)
+            write_unique (--গ্রন্থি->lo, tfp, অস্থায়ী_output);
         }
-      else if (node->nlo == merged_lo)
+      অন্যথা যদি (গ্রন্থি->nlo == merged_lo)
         {
-          while (node->hi != node->end_hi && to_merge--)
-            write_unique (--node->hi, tfp, temp_output);
+          যখন (গ্রন্থি->hi != গ্রন্থি->end_hi && to_merge--)
+            write_unique (--গ্রন্থি->hi, tfp, অস্থায়ী_output);
         }
     }
 
   /* Update NODE. */
-  merged_lo = lo_orig - node->lo;
-  merged_hi = hi_orig - node->hi;
-  node->nlo -= merged_lo;
-  node->nhi -= merged_hi;
+  merged_lo = lo_orig - গ্রন্থি->lo;
+  merged_hi = hi_orig - গ্রন্থি->hi;
+  গ্রন্থি->nlo -= merged_lo;
+  গ্রন্থি->nhi -= merged_hi;
 }
 
 /* Into QUEUE, insert NODE if it is not already queued, and if one of
    NODE's children has available lines and the other either has
    available lines or has exhausted its lines.  */
 
-static void
-queue_check_insert (struct merge_node_queue *queue, struct merge_node *node)
+স্থির শূন্য
+queue_check_ঢোকাও (কাঠামো merge_গ্রন্থি_queue *queue, কাঠামো merge_গ্রন্থি *গ্রন্থি)
 {
-  if (! node->queued)
+  যদি (! গ্রন্থি->queued)
     {
-      bool lo_avail = (node->lo - node->end_lo) != 0;
-      bool hi_avail = (node->hi - node->end_hi) != 0;
-      if (lo_avail ? hi_avail || ! node->nhi : hi_avail && ! node->nlo)
-        queue_insert (queue, node);
+      bool lo_avail = (গ্রন্থি->lo - গ্রন্থি->end_lo) != 0;
+      bool hi_avail = (গ্রন্থি->hi - গ্রন্থি->end_hi) != 0;
+      যদি (lo_avail ? hi_avail || ! গ্রন্থি->nhi : hi_avail && ! গ্রন্থি->nlo)
+        queue_ঢোকাও (queue, গ্রন্থি);
     }
 }
 
 /* Into QUEUE, insert NODE's parent if the parent can now be worked on.  */
 
-static void
-queue_check_insert_parent (struct merge_node_queue *queue,
-                           struct merge_node *node)
+স্থির শূন্য
+queue_check_ঢোকাও_parent (কাঠামো merge_গ্রন্থি_queue *queue,
+                           কাঠামো merge_গ্রন্থি *গ্রন্থি)
 {
-  if (node->level > MERGE_ROOT)
+  যদি (গ্রন্থি->level > MERGE_মূল)
     {
-      lock_node (node->parent);
-      queue_check_insert (queue, node->parent);
-      unlock_node (node->parent);
+      lock_গ্রন্থি (গ্রন্থি->parent);
+      queue_check_ঢোকাও (queue, গ্রন্থি->parent);
+      unlock_গ্রন্থি (গ্রন্থি->parent);
     }
-  else if (node->nlo + node->nhi == 0)
+  অন্যথা যদি (গ্রন্থি->nlo + গ্রন্থি->nhi == 0)
     {
       /* If the MERGE_ROOT NODE has finished merging, insert the
          MERGE_END node.  */
-      queue_insert (queue, node->parent);
+      queue_ঢোকাও (queue, গ্রন্থি->parent);
     }
 }
 
@@ -3964,72 +3964,72 @@ queue_check_insert_parent (struct merge_node_queue *queue,
    level, send output to TFP.  TEMP_OUTPUT is the name of TFP, or is
    null if TFP is standard output.  */
 
-static void
-merge_loop (struct merge_node_queue *queue,
-            size_t total_lines, FILE *tfp, char const *temp_output)
+স্থির শূন্য
+merge_loop (কাঠামো merge_গ্রন্থি_queue *queue,
+            size_t যোগ_সারিগুলি, FILE *tfp, অক্ষর ধ্রুবক *অস্থায়ী_output)
 {
-  while (true)
+  যখন (true)
     {
-      struct merge_node *node = queue_pop (queue);
+      কাঠামো merge_গ্রন্থি *গ্রন্থি = queue_বের_করো (queue);
 
-      if (node->level == MERGE_END)
+      যদি (গ্রন্থি->level == MERGE_END)
         {
-          unlock_node (node);
+          unlock_গ্রন্থি (গ্রন্থি);
           /* Reinsert so other threads can pop it. */
-          queue_insert (queue, node);
-          break;
+          queue_ঢোকাও (queue, গ্রন্থি);
+          বিরতি;
         }
-      mergelines_node (node, total_lines, tfp, temp_output);
-      queue_check_insert (queue, node);
-      queue_check_insert_parent (queue, node);
+      mergelines_গ্রন্থি (গ্রন্থি, যোগ_সারিগুলি, tfp, অস্থায়ী_output);
+      queue_check_ঢোকাও (queue, গ্রন্থি);
+      queue_check_ঢোকাও_parent (queue, গ্রন্থি);
 
-      unlock_node (node);
+      unlock_গ্রন্থি (গ্রন্থি);
     }
 }
 
 
-static void sortlines (struct line *restrict, size_t, size_t,
-                       struct merge_node *, struct merge_node_queue *,
-                       FILE *, char const *);
+স্থির শূন্য sortlines (কাঠামো সারি *restrict, size_t, size_t,
+                       কাঠামো merge_গ্রন্থি *, কাঠামো merge_গ্রন্থি_queue *,
+                       FILE *, অক্ষর ধ্রুবক *);
 
 /* Thread arguments for sortlines_thread. */
 
-struct thread_args
+কাঠামো thread_args
 {
   /* Source, i.e., the array of lines to sort.  This points just past
      the end of the array.  */
-  struct line *lines;
+  কাঠামো সারি *সারিগুলি;
 
   /* Number of threads to use.  If 0 or 1, sort single-threaded.  */
   size_t nthreads;
 
   /* Number of lines in LINES and DEST.  */
-  size_t const total_lines;
+  size_t ধ্রুবক যোগ_সারিগুলি;
 
   /* Merge node. Lines from this node and this node's sibling will merged
      to this node's parent. */
-  struct merge_node *const node;
+  কাঠামো merge_গ্রন্থি *ধ্রুবক গ্রন্থি;
 
   /* The priority queue controlling available work for the entire
      internal sort.  */
-  struct merge_node_queue *const queue;
+  কাঠামো merge_গ্রন্থি_queue *ধ্রুবক queue;
 
   /* If at the top level, the file to output to, and the file's name.
      If the file is standard output, the file's name is null.  */
   FILE *tfp;
-  char const *output_temp;
+  অক্ষর ধ্রুবক *output_অস্থায়ী;
 };
 
 /* Like sortlines, except with a signature acceptable to pthread_create.  */
 
-static void *
-sortlines_thread (void *data)
+স্থির শূন্য *
+sortlines_thread (শূন্য *তথ্য)
 {
-  struct thread_args const *args = data;
-  sortlines (args->lines, args->nthreads, args->total_lines,
-             args->node, args->queue, args->tfp,
-             args->output_temp);
-  return NULL;
+  কাঠামো thread_args ধ্রুবক *args = তথ্য;
+  sortlines (args->সারিগুলি, args->nthreads, args->যোগ_সারিগুলি,
+             args->গ্রন্থি, args->queue, args->tfp,
+             args->output_অস্থায়ী);
+  ফেরত ফাঁকা;
 }
 
 /* Sort lines, possibly in parallel.  The arguments are as in struct
@@ -4056,47 +4056,47 @@ sortlines_thread (void *data)
    merge. This continues until all lines at all nodes of the merge tree
    have been merged. */
 
-static void
-sortlines (struct line *restrict lines, size_t nthreads,
-           size_t total_lines, struct merge_node *node,
-           struct merge_node_queue *queue, FILE *tfp, char const *temp_output)
+স্থির শূন্য
+sortlines (কাঠামো সারি *restrict সারিগুলি, size_t nthreads,
+           size_t যোগ_সারিগুলি, কাঠামো merge_গ্রন্থি *গ্রন্থি,
+           কাঠামো merge_গ্রন্থি_queue *queue, FILE *tfp, অক্ষর ধ্রুবক *অস্থায়ী_output)
 {
-  size_t nlines = node->nlo + node->nhi;
+  size_t nlines = গ্রন্থি->nlo + গ্রন্থি->nhi;
 
   /* Calculate thread arguments. */
   size_t lo_threads = nthreads / 2;
   size_t hi_threads = nthreads - lo_threads;
   pthread_t thread;
-  struct thread_args args = {lines, lo_threads, total_lines,
-                             node->lo_child, queue, tfp, temp_output};
+  কাঠামো thread_args args = {সারিগুলি, lo_threads, যোগ_সারিগুলি,
+                             গ্রন্থি->lo_child, queue, tfp, অস্থায়ী_output};
 
-  if (nthreads > 1 && SUBTHREAD_LINES_HEURISTIC <= nlines
-      && pthread_create (&thread, NULL, sortlines_thread, &args) == 0)
+  যদি (nthreads > 1 && SUBTHREAD_সারিগুলি_HEURISTIC <= nlines
+      && pthread_create (&thread, ফাঁকা, sortlines_thread, &args) == 0)
     {
-      sortlines (lines - node->nlo, hi_threads, total_lines,
-                 node->hi_child, queue, tfp, temp_output);
-      pthread_join (thread, NULL);
+      sortlines (সারিগুলি - গ্রন্থি->nlo, hi_threads, যোগ_সারিগুলি,
+                 গ্রন্থি->hi_child, queue, tfp, অস্থায়ী_output);
+      pthread_join (thread, ফাঁকা);
     }
-  else
+  অন্যথা
     {
       /* Nthreads = 1, this is a leaf NODE, or pthread_create failed.
          Sort with 1 thread. */
-      size_t nlo = node->nlo;
-      size_t nhi = node->nhi;
-      struct line *temp = lines - total_lines;
-      if (1 < nhi)
-        sequential_sort (lines - nlo, nhi, temp - nlo / 2, false);
-      if (1 < nlo)
-        sequential_sort (lines, nlo, temp, false);
+      size_t nlo = গ্রন্থি->nlo;
+      size_t nhi = গ্রন্থি->nhi;
+      কাঠামো সারি *অস্থায়ী = সারিগুলি - যোগ_সারিগুলি;
+      যদি (1 < nhi)
+        sequential_sort (সারিগুলি - nlo, nhi, অস্থায়ী - nlo / 2, false);
+      যদি (1 < nlo)
+        sequential_sort (সারিগুলি, nlo, অস্থায়ী, false);
 
       /* Update merge NODE. No need to lock yet. */
-      node->lo = lines;
-      node->hi = lines - nlo;
-      node->end_lo = lines - nlo;
-      node->end_hi = lines - nlo - nhi;
+      গ্রন্থি->lo = সারিগুলি;
+      গ্রন্থি->hi = সারিগুলি - nlo;
+      গ্রন্থি->end_lo = সারিগুলি - nlo;
+      গ্রন্থি->end_hi = সারিগুলি - nlo - nhi;
 
-      queue_insert (queue, node);
-      merge_loop (queue, total_lines, tfp, temp_output);
+      queue_ঢোকাও (queue, গ্রন্থি);
+      merge_loop (queue, যোগ_সারিগুলি, tfp, অস্থায়ী_output);
     }
 }
 
@@ -4117,25 +4117,25 @@ sortlines (struct line *restrict lines, size_t nthreads,
    Catching these obscure cases would slow down performance in
    common cases.  */
 
-static void
-avoid_trashing_input (struct sortfile *files, size_t ntemps,
-                      size_t nfiles, char const *outfile)
+স্থির শূন্য
+avoid_trashing_প্রবেশ (কাঠামো sortfile *files, size_t ntemps,
+                      size_t nfiles, অক্ষর ধ্রুবক *outfile)
 {
-  struct tempnode *tempcopy = NULL;
+  কাঠামো tempnode *tempcopy = ফাঁকা;
 
-  for (size_t i = ntemps; i < nfiles; i++)
+  জন্য (size_t i = ntemps; i < nfiles; i++)
     {
       bool is_stdin = streq (files[i].name, "-");
       bool same;
-      struct stat instat;
+      কাঠামো stat instat;
 
-      if (outfile && streq (outfile, files[i].name) && !is_stdin)
+      যদি (outfile && streq (outfile, files[i].name) && !is_stdin)
         same = true;
-      else
+      অন্যথা
         {
-          struct stat *outst = get_outstatus ();
-          if (!outst)
-            break;
+          কাঠামো stat *outst = get_outstatus ();
+          যদি (!outst)
+            বিরতি;
 
           same = (((is_stdin
                     ? fstat (STDIN_FILENO, &instat)
@@ -4144,17 +4144,17 @@ avoid_trashing_input (struct sortfile *files, size_t ntemps,
                   && psame_inode (&instat, outst));
         }
 
-      if (same)
+      যদি (same)
         {
-          if (! tempcopy)
+          যদি (! tempcopy)
             {
               FILE *tftp;
-              tempcopy = create_temp (&tftp);
+              tempcopy = create_অস্থায়ী (&tftp);
               mergefiles (&files[i], 0, 1, tftp, tempcopy->name);
             }
 
           files[i].name = tempcopy->name;
-          files[i].temp = tempcopy;
+          files[i].অস্থায়ী = tempcopy;
         }
     }
 }
@@ -4168,15 +4168,15 @@ avoid_trashing_input (struct sortfile *files, size_t ntemps,
    Catching these obscure cases could slow down performance in
    common cases.  */
 
-static void
-check_inputs (char *const *files, size_t nfiles)
+স্থির শূন্য
+check_inputs (অক্ষর *ধ্রুবক *files, size_t nfiles)
 {
-  for (size_t i = 0; i < nfiles; i++)
+  জন্য (size_t i = 0; i < nfiles; i++)
     {
-      if (streq (files[i], "-"))
-        continue;
+      যদি (streq (files[i], "-"))
+        চালু;
 
-      if (euidaccess (files[i], R_OK) != 0)
+      যদি (euidaccess (files[i], R_OK) != 0)
         sort_die (_("cannot read"), files[i]);
     }
 }
@@ -4185,14 +4185,14 @@ check_inputs (char *const *files, size_t nfiles)
    and point stdout to it.  Do not truncate the file.
    Exit with a diagnostic on failure.  */
 
-static void
-check_output (char const *outfile)
+স্থির শূন্য
+check_output (অক্ষর ধ্রুবক *outfile)
 {
-  if (outfile)
+  যদি (outfile)
     {
-      int oflags = O_WRONLY | O_BINARY | O_CLOEXEC | O_CREAT;
-      int outfd = open (outfile, oflags, MODE_RW_UGO);
-      if (outfd < 0)
+      পূর্ণসংখ্যা oflags = O_WRONLY | O_দ্বিমিক | O_CLOEXEC | O_CREAT;
+      পূর্ণসংখ্যা outfd = open (outfile, oflags, MODE_RW_UGO);
+      যদি (outfd < 0)
         sort_die (_("open failed"), outfile);
       move_fd (outfd, STDOUT_FILENO);
     }
@@ -4203,11 +4203,11 @@ check_output (char const *outfile)
    NFILES is the total number of files.  Put the output in
    OUTPUT_FILE; a null OUTPUT_FILE stands for standard output.  */
 
-static void
-merge (struct sortfile *files, size_t ntemps, size_t nfiles,
-       char const *output_file)
+স্থির শূন্য
+merge (কাঠামো sortfile *files, size_t ntemps, size_t nfiles,
+       অক্ষর ধ্রুবক *output_file)
 {
-  while (nmerge < nfiles)
+  যখন (nmerge < nfiles)
     {
       /* Number of input files processed so far.  */
       size_t in;
@@ -4225,68 +4225,68 @@ merge (struct sortfile *files, size_t ntemps, size_t nfiles,
       /* Do as many NMERGE-size merges as possible. In the case that
          nmerge is bogus, increment by the maximum number of file
          descriptors allowed.  */
-      for (out = in = 0; nmerge <= nfiles - in; out++)
+      জন্য (out = in = 0; nmerge <= nfiles - in; out++)
         {
           FILE *tfp;
-          struct tempnode *temp = create_temp (&tfp);
-          size_t num_merged = mergefiles (&files[in], MIN (ntemps, nmerge),
-                                          nmerge, tfp, temp->name);
-          ntemps -= MIN (ntemps, num_merged);
-          files[out].name = temp->name;
-          files[out].temp = temp;
-          in += num_merged;
+          কাঠামো tempnode *অস্থায়ী = create_অস্থায়ী (&tfp);
+          size_t অঙ্ক_merged = mergefiles (&files[in], MIN (ntemps, nmerge),
+                                          nmerge, tfp, অস্থায়ী->name);
+          ntemps -= MIN (ntemps, অঙ্ক_merged);
+          files[out].name = অস্থায়ী->name;
+          files[out].অস্থায়ী = অস্থায়ী;
+          in += অঙ্ক_merged;
         }
 
       remainder = nfiles - in;
       cheap_slots = nmerge - out % nmerge;
 
-      if (cheap_slots < remainder)
+      যদি (cheap_slots < remainder)
         {
           /* So many files remain that they can't all be put into the last
              NMERGE-sized output window.  Do one more merge.  Merge as few
              files as possible, to avoid needless I/O.  */
           size_t nshortmerge = remainder - cheap_slots + 1;
           FILE *tfp;
-          struct tempnode *temp = create_temp (&tfp);
-          size_t num_merged = mergefiles (&files[in], MIN (ntemps, nshortmerge),
-                                          nshortmerge, tfp, temp->name);
-          ntemps -= MIN (ntemps, num_merged);
-          files[out].name = temp->name;
-          files[out++].temp = temp;
-          in += num_merged;
+          কাঠামো tempnode *অস্থায়ী = create_অস্থায়ী (&tfp);
+          size_t অঙ্ক_merged = mergefiles (&files[in], MIN (ntemps, nshortmerge),
+                                          nshortmerge, tfp, অস্থায়ী->name);
+          ntemps -= MIN (ntemps, অঙ্ক_merged);
+          files[out].name = অস্থায়ী->name;
+          files[out++].অস্থায়ী = অস্থায়ী;
+          in += অঙ্ক_merged;
         }
 
       /* Put the remaining input files into the last NMERGE-sized output
          window, so they will be merged in the next pass.  */
-      memmove (&files[out], &files[in], (nfiles - in) * sizeof *files);
+      memmove (&files[out], &files[in], (nfiles - in) * আকার *files);
       ntemps += out;
       nfiles -= in - out;
     }
 
-  avoid_trashing_input (files, ntemps, nfiles, output_file);
+  avoid_trashing_প্রবেশ (files, ntemps, nfiles, output_file);
 
   /* We aren't guaranteed that this final mergefiles will work, therefore we
      try to merge into the output, and then merge as much as we can into a
      temp file if we can't. Repeat.  */
 
-  while (true)
+  যখন (true)
     {
       /* Merge directly into the output file if possible.  */
       FILE **fps;
-      size_t nopened = open_input_files (files, nfiles, &fps);
+      size_t nopened = open_প্রবেশ_files (files, nfiles, &fps);
 
-      if (nopened == nfiles)
+      যদি (nopened == nfiles)
         {
           FILE *ofp = stream_open (output_file, "w");
-          if (ofp)
+          যদি (ofp)
             {
               mergefps (files, ntemps, nfiles, ofp, output_file, fps);
-              break;
+              বিরতি;
             }
-          if (errno != EMFILE || nopened <= 2)
+          যদি (errno != EMFILE || nopened <= 2)
             sort_die (_("open failed"), output_file);
         }
-      else if (nopened <= 2)
+      অন্যথা যদি (nopened <= 2)
         sort_die (_("open failed"), files[nopened].name);
 
       /* We ran out of file descriptors.  Close one of the input
@@ -4295,23 +4295,23 @@ merge (struct sortfile *files, size_t ntemps, size_t nfiles,
          (e.g., some other process could open a file between the time
          we closed and tried to create).  */
       FILE *tfp;
-      struct tempnode *temp;
-      do
+      কাঠামো tempnode *অস্থায়ী;
+      করো
         {
           nopened--;
           xfclose (fps[nopened], files[nopened].name);
-          temp = maybe_create_temp (&tfp, ! (nopened <= 2));
+          অস্থায়ী = maybe_create_অস্থায়ী (&tfp, ! (nopened <= 2));
         }
-      while (!temp);
+      যখন (!অস্থায়ী);
 
       /* Merge into the newly allocated temporary.  */
-      mergefps (&files[0], MIN (ntemps, nopened), nopened, tfp, temp->name,
+      mergefps (&files[0], MIN (ntemps, nopened), nopened, tfp, অস্থায়ী->name,
                 fps);
       ntemps -= MIN (ntemps, nopened);
-      files[0].name = temp->name;
-      files[0].temp = temp;
+      files[0].name = অস্থায়ী->name;
+      files[0].অস্থায়ী = অস্থায়ী;
 
-      memmove (&files[1], &files[nopened], (nfiles - nopened) * sizeof *files);
+      memmove (&files[1], &files[nopened], (nfiles - nopened) * আকার *files);
       ntemps++;
       nfiles -= nopened - 1;
     }
@@ -4319,12 +4319,12 @@ merge (struct sortfile *files, size_t ntemps, size_t nfiles,
 
 /* Sort NFILES FILES onto OUTPUT_FILE.  Use at most NTHREADS threads.  */
 
-static void
-sort (char *const *files, size_t nfiles, char const *output_file,
+স্থির শূন্য
+sort (অক্ষর *ধ্রুবক *files, size_t nfiles, অক্ষর ধ্রুবক *output_file,
       size_t nthreads)
 {
-  struct buffer buf;
-  struct sort_buffer_policy policy;
+  কাঠামো বাফার buf;
+  কাঠামো sort_বাফার_policy policy;
   size_t ntemps = 0;
   bool output_file_created = false;
 
@@ -4332,117 +4332,117 @@ sort (char *const *files, size_t nfiles, char const *output_file,
   policy.initial = policy.limit = 0;
   policy.growth_failed = false;
 
-  while (nfiles)
+  যখন (nfiles)
     {
-      char const *temp_output;
-      char const *file = *files;
+      অক্ষর ধ্রুবক *অস্থায়ী_output;
+      অক্ষর ধ্রুবক *file = *files;
       FILE *fp = xfopen (file, "r");
       FILE *tfp;
 
-      size_t bytes_per_line;
-      if (nthreads > 1)
+      size_t bytes_per_সারি;
+      যদি (nthreads > 1)
         {
           /* Get log P. */
           size_t tmp = 1;
           size_t mult = 1;
-          while (tmp < nthreads)
+          যখন (tmp < nthreads)
             {
               tmp *= 2;
               mult++;
             }
-          bytes_per_line = (mult * sizeof (struct line));
+          bytes_per_সারি = (mult * আকার (কাঠামো সারি));
         }
-      else
-        bytes_per_line = sizeof (struct line) * 3 / 2;
+      অন্যথা
+        bytes_per_সারি = আকার (কাঠামো সারি) * 3 / 2;
 
-      if (! buf.alloc)
+      যদি (! buf.alloc)
         {
-          sort_buffer_policy (&fp, 1, files, nfiles, bytes_per_line,
+          sort_বাফার_policy (&fp, 1, files, nfiles, bytes_per_সারি,
                               &policy);
-          initbuf (&buf, bytes_per_line, policy.initial);
+          initbuf (&buf, bytes_per_সারি, policy.initial);
         }
       buf.eof = false;
       files++;
       nfiles--;
 
-      while (fillbuf (&buf, fp, file, &policy))
+      যখন (fillbuf (&buf, fp, file, &policy))
         {
-          struct line *line;
+          কাঠামো সারি *সারি;
 
-          if (buf.eof && nfiles
-              && (bytes_per_line + 1
-                  < (buf.alloc - buf.used - bytes_per_line * buf.nlines)))
+          যদি (buf.eof && nfiles
+              && (bytes_per_সারি + 1
+                  < (buf.alloc - buf.used - bytes_per_সারি * buf.nlines)))
             {
               /* End of file, but there is more input and buffer room.
                  Concatenate the next input file; this is faster in
                  the usual case.  */
-              buf.left = buf.used;
-              break;
+              buf.বাম = buf.used;
+              বিরতি;
             }
 
-          saved_line.text = NULL;
-          line = buffer_linelim (&buf);
-          if (buf.eof && !nfiles && !ntemps && !buf.left)
+          saved_সারি.text = ফাঁকা;
+          সারি = বাফার_linelim (&buf);
+          যদি (buf.eof && !nfiles && !ntemps && !buf.বাম)
             {
               xfclose (fp, file);
               tfp = xfopen (output_file, "w");
-              temp_output = output_file;
+              অস্থায়ী_output = output_file;
               output_file_created = true;
             }
-          else
+          অন্যথা
             {
               ++ntemps;
-              temp_output = create_temp (&tfp)->name;
+              অস্থায়ী_output = create_অস্থায়ী (&tfp)->name;
             }
-          if (1 < buf.nlines)
+          যদি (1 < buf.nlines)
             {
-              if (nthreads > 1)
+              যদি (nthreads > 1)
                 {
-                  struct merge_node_queue queue;
+                  কাঠামো merge_গ্রন্থি_queue queue;
                   queue_init (&queue, nthreads);
-                  struct merge_node *merge_tree =
-                    merge_tree_init (nthreads, buf.nlines, line);
+                  কাঠামো merge_গ্রন্থি *merge_বৃক্ষ =
+                    merge_বৃক্ষ_init (nthreads, buf.nlines, সারি);
 
-                  sortlines (line, nthreads, buf.nlines, merge_tree + 1,
-                             &queue, tfp, temp_output);
+                  sortlines (সারি, nthreads, buf.nlines, merge_বৃক্ষ + 1,
+                             &queue, tfp, অস্থায়ী_output);
 
-                  merge_tree_destroy (nthreads, merge_tree);
+                  merge_বৃক্ষ_destroy (nthreads, merge_বৃক্ষ);
                   queue_destroy (&queue);
                 }
-              else
+              অন্যথা
                 {
-                  sequential_sort (line, buf.nlines,
-                                   line - buf.nlines, false);
-                  for (size_t i = 0; i < buf.nlines; i++)
-                    write_unique (line - i - 1, tfp, temp_output);
+                  sequential_sort (সারি, buf.nlines,
+                                   সারি - buf.nlines, false);
+                  জন্য (size_t i = 0; i < buf.nlines; i++)
+                    write_unique (সারি - i - 1, tfp, অস্থায়ী_output);
                 }
             }
-          else
-            write_unique (line - 1, tfp, temp_output);
+          অন্যথা
+            write_unique (সারি - 1, tfp, অস্থায়ী_output);
 
-          xfclose (tfp, temp_output);
+          xfclose (tfp, অস্থায়ী_output);
 
-          if (output_file_created)
-            goto finish;
+          যদি (output_file_created)
+            যাও finish;
         }
       xfclose (fp, file);
     }
 
  finish:
-  free (buf.buf);
+  মুক্ত (buf.buf);
 
-  if (! output_file_created)
+  যদি (! output_file_created)
     {
-      struct tempnode *node = temphead;
-      struct sortfile *tempfiles = xnmalloc (ntemps, sizeof *tempfiles);
-      for (size_t i = 0; node; i++)
+      কাঠামো tempnode *গ্রন্থি = temphead;
+      কাঠামো sortfile *tempfiles = xnmalloc (ntemps, আকার *tempfiles);
+      জন্য (size_t i = 0; গ্রন্থি; i++)
         {
-          tempfiles[i].name = node->name;
-          tempfiles[i].temp = node;
-          node = node->next;
+          tempfiles[i].name = গ্রন্থি->name;
+          tempfiles[i].অস্থায়ী = গ্রন্থি;
+          গ্রন্থি = গ্রন্থি->পরবর্তী;
         }
       merge (tempfiles, ntemps, ntemps, output_file);
-      free (tempfiles);
+      মুক্ত (tempfiles);
     }
 
   reap_all ();
@@ -4450,22 +4450,22 @@ sort (char *const *files, size_t nfiles, char const *output_file,
 
 /* Insert a malloc'd copy of key KEY_ARG at the end of the key list.  */
 
-static void
-insertkey (struct keyfield *key_arg)
+স্থির শূন্য
+insertkey (কাঠামো keyfield *চাবি_arg)
 {
-  struct keyfield **p;
-  struct keyfield *key = xmemdup (key_arg, sizeof *key);
+  কাঠামো keyfield **p;
+  কাঠামো keyfield *চাবি = xmemdup (চাবি_arg, আকার *চাবি);
 
-  for (p = &keylist; *p; p = &(*p)->next)
-    continue;
-  *p = key;
-  key->next = NULL;
+  জন্য (p = &keylist; *p; p = &(*p)->পরবর্তী)
+    চালু;
+  *p = চাবি;
+  চাবি->পরবর্তী = ফাঁকা;
 }
 
 /* Report a bad field specification SPEC, with extra info MSGID.  */
 
-static void
-badfieldspec (char const *spec, char const *msgid)
+স্থির শূন্য
+badfieldspec (অক্ষর ধ্রুবক *spec, অক্ষর ধ্রুবক *msgid)
 {
   error (SORT_FAILURE, 0, _("%s: invalid field specification %s"),
          _(msgid), quote (spec));
@@ -4473,26 +4473,26 @@ badfieldspec (char const *spec, char const *msgid)
 
 /* Report incompatible options.  */
 
-static void
-incompatible_options (char const *opts)
+স্থির শূন্য
+incompatible_options (অক্ষর ধ্রুবক *opts)
 {
   error (SORT_FAILURE, 0, _("options '-%s' are incompatible"), (opts));
 }
 
 /* Check compatibility of ordering options.  */
 
-static void
-check_ordering_compatibility (void)
+স্থির শূন্য
+check_ordering_compatibility (শূন্য)
 {
-  for (struct keyfield *key = keylist; key; key = key->next)
-    if (1 < (key->numeric + key->general_numeric + key->human_numeric
-             + key->month + (key->version | key->random | !!key->ignore)))
+  জন্য (কাঠামো keyfield *চাবি = keylist; চাবি; চাবি = চাবি->পরবর্তী)
+    যদি (1 < (চাবি->numeric + চাবি->general_numeric + চাবি->human_numeric
+             + চাবি->month + (চাবি->version | চাবি->random | !!চাবি->ignore)))
       {
         /* The following is too big, but guaranteed to be "big enough".  */
-        char opts[sizeof short_options];
+        অক্ষর opts[আকার short_options];
         /* Clear flags we're not interested in.  */
-        key->skipsblanks = key->skipeblanks = key->reverse = false;
-        key_to_opts (key, opts);
+        চাবি->skipsblanks = চাবি->skipeblanks = চাবি->reverse = false;
+        চাবি_to_opts (চাবি, opts);
         incompatible_options (opts);
       }
 }
@@ -4503,33 +4503,33 @@ check_ordering_compatibility (void)
    substitute SIZE_MAX.  If MSGID is null, return NULL after
    failure; otherwise, report MSGID and exit on failure.  */
 
-static char const *
-parse_field_count (char const *string, size_t *val, char const *msgid)
+স্থির অক্ষর ধ্রুবক *
+parse_field_গুনতি (অক্ষর ধ্রুবক *string, size_t *val, অক্ষর ধ্রুবক *msgid)
 {
-  char *suffix;
+  অক্ষর *suffix;
   uintmax_t n;
 
-  switch (xstrtoumax (string, &suffix, 10, &n, ""))
+  নির্বাচন (xstrtoumax (string, &suffix, 10, &n, ""))
     {
-    case LONGINT_OK:
-    case LONGINT_INVALID_SUFFIX_CHAR:
+    ক্ষেত্র LONGINT_OK:
+    ক্ষেত্র LONGINT_INVALID_SUFFIX_CHAR:
       *val = n;
-      if (*val == n)
-        break;
+      যদি (*val == n)
+        বিরতি;
       FALLTHROUGH;
-    case LONGINT_OVERFLOW:
-    case LONGINT_OVERFLOW | LONGINT_INVALID_SUFFIX_CHAR:
+    ক্ষেত্র LONGINT_OVERFLOW:
+    ক্ষেত্র LONGINT_OVERFLOW | LONGINT_INVALID_SUFFIX_CHAR:
       *val = SIZE_MAX;
-      break;
+      বিরতি;
 
-    case LONGINT_INVALID:
-      if (msgid)
+    ক্ষেত্র LONGINT_INVALID:
+      যদি (msgid)
         error (SORT_FAILURE, 0, _("%s: invalid count at start of %s"),
                _(msgid), quote (string));
-      return NULL;
+      ফেরত ফাঁকা;
     }
 
-  return suffix;
+  ফেরত suffix;
 }
 
 /* Set the ordering options for KEY specified in S.
@@ -4537,92 +4537,92 @@ parse_field_count (char const *string, size_t *val, char const *msgid)
    is not a valid ordering option.
    BLANKTYPE is the kind of blanks that 'b' should skip. */
 
-static char *
-set_ordering (char const *s, struct keyfield *key, enum blanktype blanktype)
+স্থির অক্ষর *
+set_ordering (অক্ষর ধ্রুবক *s, কাঠামো keyfield *চাবি, গণনা blanktype blanktype)
 {
-  while (*s)
+  যখন (*s)
     {
-      switch (*s)
+      নির্বাচন (*s)
         {
-        case 'b':
-          if (blanktype == bl_start || blanktype == bl_both)
-            key->skipsblanks = true;
-          if (blanktype == bl_end || blanktype == bl_both)
-            key->skipeblanks = true;
-          break;
-        case 'd':
-          key->ignore = nondictionary;
-          break;
-        case 'f':
-          key->translate = fold_toupper;
-          break;
-        case 'g':
-          key->general_numeric = true;
-          break;
-        case 'h':
-          key->human_numeric = true;
-          break;
-        case 'i':
+        ক্ষেত্র 'b':
+          যদি (blanktype == bl_start || blanktype == bl_both)
+            চাবি->skipsblanks = true;
+          যদি (blanktype == bl_end || blanktype == bl_both)
+            চাবি->skipeblanks = true;
+          বিরতি;
+        ক্ষেত্র 'd':
+          চাবি->ignore = nondictionary;
+          বিরতি;
+        ক্ষেত্র 'f':
+          চাবি->translate = fold_toupper;
+          বিরতি;
+        ক্ষেত্র 'g':
+          চাবি->general_numeric = true;
+          বিরতি;
+        ক্ষেত্র 'h':
+          চাবি->human_numeric = true;
+          বিরতি;
+        ক্ষেত্র 'i':
           /* Option order should not matter, so don't let -i override
              -d.  -d implies -i, but -i does not imply -d.  */
-          if (! key->ignore)
-            key->ignore = nonprinting;
-          break;
-        case 'M':
-          key->month = true;
-          break;
-        case 'n':
-          key->numeric = true;
-          break;
-        case 'R':
-          key->random = true;
-          break;
-        case 'r':
-          key->reverse = true;
-          break;
-        case 'V':
-          key->version = true;
-          break;
-        default:
-          return (char *) s;
+          যদি (! চাবি->ignore)
+            চাবি->ignore = nonprinting;
+          বিরতি;
+        ক্ষেত্র 'M':
+          চাবি->month = true;
+          বিরতি;
+        ক্ষেত্র 'n':
+          চাবি->numeric = true;
+          বিরতি;
+        ক্ষেত্র 'R':
+          চাবি->random = true;
+          বিরতি;
+        ক্ষেত্র 'r':
+          চাবি->reverse = true;
+          বিরতি;
+        ক্ষেত্র 'V':
+          চাবি->version = true;
+          বিরতি;
+        পূর্বনির্ধারিত:
+          ফেরত (অক্ষর *) s;
         }
       ++s;
     }
-  return (char *) s;
+  ফেরত (অক্ষর *) s;
 }
 
 /* Initialize KEY.  */
 
-static struct keyfield *
-key_init (struct keyfield *key)
+স্থির কাঠামো keyfield *
+চাবি_init (কাঠামো keyfield *চাবি)
 {
-  memset (key, 0, sizeof *key);
-  key->eword = SIZE_MAX;
-  return key;
+  memset (চাবি, 0, আকার *চাবি);
+  চাবি->eword = SIZE_MAX;
+  ফেরত চাবি;
 }
 
-int
-main (int argc, char **argv)
+পূর্ণসংখ্যা
+প্রধান (পূর্ণসংখ্যা argc, অক্ষর **argv)
 {
-  struct keyfield *key;
-  struct keyfield key_buf;
-  struct keyfield gkey;
+  কাঠামো keyfield *চাবি;
+  কাঠামো keyfield চাবি_buf;
+  কাঠামো keyfield gkey;
   bool gkey_only = false;
-  char const *s;
-  int c = 0;
-  char checkonly = 0;
+  অক্ষর ধ্রুবক *s;
+  পূর্ণসংখ্যা c = 0;
+  অক্ষর checkonly = 0;
   bool mergeonly = false;
-  char *random_source = NULL;
+  অক্ষর *random_source = ফাঁকা;
   bool need_random = false;
   size_t nthreads = 0;
   size_t nfiles = 0;
-  bool posixly_correct = (getenv ("POSIXLY_CORRECT") != NULL);
-  int posix_ver = posix2_version ();
+  bool posixly_correct = (getenv ("POSIXLY_CORRECT") != ফাঁকা);
+  পূর্ণসংখ্যা posix_ver = posix2_version ();
   bool traditional_usage = ! (200112 <= posix_ver && posix_ver < 200809);
-  char **files;
-  char *files_from = NULL;
-  struct Tokens tok;
-  char const *outfile = NULL;
+  অক্ষর **files;
+  অক্ষর *files_from = ফাঁকা;
+  কাঠামো Tokens tok;
+  অক্ষর ধ্রুবক *outfile = ফাঁকা;
   bool locale_ok;
 
   initialize_main (&argc, &argv);
@@ -4634,43 +4634,43 @@ main (int argc, char **argv)
   initialize_exit_failure (SORT_FAILURE);
 
   hard_LC_COLLATE = hard_locale (LC_COLLATE);
-#if HAVE_NL_LANGINFO
+#যদি HAVE_NL_LANGINFO
   hard_LC_TIME = hard_locale (LC_TIME);
 #endif
 
   /* Get locale's representation of the decimal point.  */
   {
-    struct lconv const *locale = localeconv ();
+    কাঠামো lconv ধ্রুবক *locale = localeconv ();
 
     /* If the locale doesn't define a decimal point, or if the decimal
        point is multibyte, use the C locale's decimal point.  FIXME:
        add support for multibyte decimal points.  */
     decimal_point = locale->decimal_point[0];
-    if (! decimal_point || locale->decimal_point[1])
+    যদি (! decimal_point || locale->decimal_point[1])
       decimal_point = '.';
 
     /* FIXME: add support for multibyte thousands separators.  */
     thousands_sep = locale->thousands_sep[0];
-    if (thousands_sep && locale->thousands_sep[1])
+    যদি (thousands_sep && locale->thousands_sep[1])
       thousands_sep_ignored = true;
-    if (! thousands_sep || locale->thousands_sep[1])
+    যদি (! thousands_sep || locale->thousands_sep[1])
       thousands_sep = NON_CHAR;
   }
 
   inittables ();
 
   {
-    enum { nsigs = countof (term_sig) };
+    গণনা { nsigs = countof (term_sig) };
 
-    struct sigaction act;
+    কাঠামো sigaction act;
 
     sigemptyset (&caught_signals);
-    for (size_t i = 0; i < nsigs; i++)
+    জন্য (size_t i = 0; i < nsigs; i++)
       {
-        if (term_sig[i] == SIGPIPE)
-          continue;  /* Handled below.  */
-        sigaction (term_sig[i], NULL, &act);
-        if (act.sa_handler != SIG_IGN)
+        যদি (term_sig[i] == SIGPIPE)
+          চালু;  /* Handled below.  */
+        sigaction (term_sig[i], ফাঁকা, &act);
+        যদি (act.sa_handler != SIG_IGN)
           sigaddset (&caught_signals, term_sig[i]);
       }
 
@@ -4678,33 +4678,33 @@ main (int argc, char **argv)
     act.sa_mask = caught_signals;
     act.sa_flags = 0;
 
-    for (size_t i = 0; i < nsigs; i++)
+    জন্য (size_t i = 0; i < nsigs; i++)
       {
-        if (term_sig[i] == SIGPIPE)
-          continue;  /* Handled below.  */
-        if (sigismember (&caught_signals, term_sig[i]))
-          sigaction (term_sig[i], &act, NULL);
+        যদি (term_sig[i] == SIGPIPE)
+          চালু;  /* Handled below.  */
+        যদি (sigismember (&caught_signals, term_sig[i]))
+          sigaction (term_sig[i], &act, ফাঁকা);
       }
   }
-  signal (SIGCHLD, SIG_DFL); /* Don't inherit CHLD handling from parent.  */
+  সংকেত (SIGCHLD, SIG_DFL); /* Don't inherit CHLD handling from parent.  */
 
   /* The signal mask is known, so it is safe to invoke exit_cleanup.  */
   atexit (exit_cleanup);
 
-  key_init (&gkey);
+  চাবি_init (&gkey);
   gkey.sword = SIZE_MAX;
 
-  files = xnmalloc (argc, sizeof *files);
+  files = xnmalloc (argc, আকার *files);
 
-  while (true)
+  যখন (true)
     {
       /* Parse an operand as a file after "--" was seen; or if
          pedantic and a file was seen, unless the POSIX version
          is not 1003.1-2001 and -c was not seen and the operand is
          "-o FILE" or "-oFILE".  */
-      int oi = -1;
+      পূর্ণসংখ্যা oi = -1;
 
-      if (c == -1
+      যদি (c == -1
           || (posixly_correct && nfiles != 0
               && ! (traditional_usage
                     && ! checkonly
@@ -4715,42 +4715,42 @@ main (int argc, char **argv)
                                 long_options, &oi))
               == -1))
         {
-          if (argc <= optind)
-            break;
+          যদি (argc <= optind)
+            বিরতি;
           files[nfiles++] = argv[optind++];
         }
-      else switch (c)
+      অন্যথা নির্বাচন (c)
         {
-        case 1:
-          key = NULL;
-          if (optarg[0] == '+')
+        ক্ষেত্র 1:
+          চাবি = ফাঁকা;
+          যদি (optarg[0] == '+')
             {
               bool minus_pos_usage = (optind != argc && argv[optind][0] == '-'
                                       && c_isdigit (argv[optind][1]));
               traditional_usage |= minus_pos_usage && !posixly_correct;
-              if (traditional_usage)
+              যদি (traditional_usage)
                 {
                   /* Treat +POS1 [-POS2] as a key if possible; but silently
                      treat an operand as a file if it is not a valid +POS1.  */
-                  key = key_init (&key_buf);
-                  s = parse_field_count (optarg + 1, &key->sword, NULL);
-                  if (s && *s == '.')
-                    s = parse_field_count (s + 1, &key->schar, NULL);
-                  if (! (key->sword || key->schar))
-                    key->sword = SIZE_MAX;
-                  if (! s || *set_ordering (s, key, bl_start))
-                    key = NULL;
-                  else
+                  চাবি = চাবি_init (&চাবি_buf);
+                  s = parse_field_গুনতি (optarg + 1, &চাবি->sword, ফাঁকা);
+                  যদি (s && *s == '.')
+                    s = parse_field_গুনতি (s + 1, &চাবি->schar, ফাঁকা);
+                  যদি (! (চাবি->sword || চাবি->schar))
+                    চাবি->sword = SIZE_MAX;
+                  যদি (! s || *set_ordering (s, চাবি, bl_start))
+                    চাবি = ফাঁকা;
+                  অন্যথা
                     {
-                      if (minus_pos_usage)
+                      যদি (minus_pos_usage)
                         {
-                          char const *optarg1 = argv[optind++];
-                          s = parse_field_count (optarg1 + 1, &key->eword,
+                          অক্ষর ধ্রুবক *optarg1 = argv[optind++];
+                          s = parse_field_গুনতি (optarg1 + 1, &চাবি->eword,
                                              N_("invalid number after '-'"));
-                          if (*s == '.')
-                            s = parse_field_count (s + 1, &key->echar,
+                          যদি (*s == '.')
+                            s = parse_field_গুনতি (s + 1, &চাবি->echar,
                                                N_("invalid number after '.'"));
-                          if (!key->echar && key->eword)
+                          যদি (!চাবি->echar && চাবি->eword)
                             {
                               /* obsolescent syntax +A.x -B.y is equivalent to:
                                    -k A+1.x+1,B.y   (when y = 0)
@@ -4758,158 +4758,158 @@ main (int argc, char **argv)
                                  So eword is decremented as in the -k case
                                  only when the end field (B) is specified and
                                  echar (y) is 0.  */
-                              key->eword--;
+                              চাবি->eword--;
                             }
-                          if (*set_ordering (s, key, bl_end))
+                          যদি (*set_ordering (s, চাবি, bl_end))
                             badfieldspec (optarg1,
                                       N_("stray character in field spec"));
                         }
-                      key->traditional_used = true;
-                      insertkey (key);
+                      চাবি->traditional_used = true;
+                      insertkey (চাবি);
                     }
                 }
             }
-          if (! key)
+          যদি (! চাবি)
             files[nfiles++] = optarg;
-          break;
+          বিরতি;
 
-        case SORT_OPTION:
+        ক্ষেত্র SORT_OPTION:
           c = XARGMATCH ("--sort", optarg, sort_args, sort_types);
           FALLTHROUGH;
-        case 'b':
-        case 'd':
-        case 'f':
-        case 'g':
-        case 'h':
-        case 'i':
-        case 'M':
-        case 'n':
-        case 'r':
-        case 'R':
-        case 'V':
+        ক্ষেত্র 'b':
+        ক্ষেত্র 'd':
+        ক্ষেত্র 'f':
+        ক্ষেত্র 'g':
+        ক্ষেত্র 'h':
+        ক্ষেত্র 'i':
+        ক্ষেত্র 'M':
+        ক্ষেত্র 'n':
+        ক্ষেত্র 'r':
+        ক্ষেত্র 'R':
+        ক্ষেত্র 'V':
           {
-            char str[2];
+            অক্ষর str[2];
             str[0] = c;
             str[1] = '\0';
             set_ordering (str, &gkey, bl_both);
           }
-          break;
+          বিরতি;
 
-        case CHECK_OPTION:
+        ক্ষেত্র CHECK_OPTION:
           c = (optarg
                ? XARGMATCH ("--check", optarg, check_args, check_types)
                : 'c');
           FALLTHROUGH;
-        case 'c':
-        case 'C':
-          if (checkonly && checkonly != c)
+        ক্ষেত্র 'c':
+        ক্ষেত্র 'C':
+          যদি (checkonly && checkonly != c)
             incompatible_options ("cC");
           checkonly = c;
-          break;
+          বিরতি;
 
-        case COMPRESS_PROGRAM_OPTION:
-          if (compress_program && !streq (compress_program, optarg))
+        ক্ষেত্র COMPRESS_PROGRAM_OPTION:
+          যদি (compress_program && !streq (compress_program, optarg))
             error (SORT_FAILURE, 0, _("multiple compress programs specified"));
           compress_program = optarg;
-          break;
+          বিরতি;
 
-        case DEBUG_PROGRAM_OPTION:
+        ক্ষেত্র DEBUG_PROGRAM_OPTION:
           debug = true;
-          break;
+          বিরতি;
 
-        case FILES0_FROM_OPTION:
+        ক্ষেত্র FILES0_FROM_OPTION:
           files_from = optarg;
-          break;
+          বিরতি;
 
-        case 'k':
-          key = key_init (&key_buf);
+        ক্ষেত্র 'k':
+          চাবি = চাবি_init (&চাবি_buf);
 
           /* Get POS1. */
-          s = parse_field_count (optarg, &key->sword,
+          s = parse_field_গুনতি (optarg, &চাবি->sword,
                                  N_("invalid number at field start"));
-          if (! key->sword--)
+          যদি (! চাবি->sword--)
             {
               /* Provoke with 'sort -k0' */
               badfieldspec (optarg, N_("field number is zero"));
             }
-          if (*s == '.')
+          যদি (*s == '.')
             {
-              s = parse_field_count (s + 1, &key->schar,
+              s = parse_field_গুনতি (s + 1, &চাবি->schar,
                                      N_("invalid number after '.'"));
-              if (! key->schar--)
+              যদি (! চাবি->schar--)
                 {
                   /* Provoke with 'sort -k1.0' */
                   badfieldspec (optarg, N_("character offset is zero"));
                 }
             }
-          if (! (key->sword || key->schar))
-            key->sword = SIZE_MAX;
-          s = set_ordering (s, key, bl_start);
-          if (*s != ',')
+          যদি (! (চাবি->sword || চাবি->schar))
+            চাবি->sword = SIZE_MAX;
+          s = set_ordering (s, চাবি, bl_start);
+          যদি (*s != ',')
             {
-              key->eword = SIZE_MAX;
-              key->echar = 0;
+              চাবি->eword = SIZE_MAX;
+              চাবি->echar = 0;
             }
-          else
+          অন্যথা
             {
               /* Get POS2. */
-              s = parse_field_count (s + 1, &key->eword,
+              s = parse_field_গুনতি (s + 1, &চাবি->eword,
                                      N_("invalid number after ','"));
-              if (! key->eword--)
+              যদি (! চাবি->eword--)
                 {
                   /* Provoke with 'sort -k1,0' */
                   badfieldspec (optarg, N_("field number is zero"));
                 }
-              if (*s == '.')
+              যদি (*s == '.')
                 {
-                  s = parse_field_count (s + 1, &key->echar,
+                  s = parse_field_গুনতি (s + 1, &চাবি->echar,
                                          N_("invalid number after '.'"));
                 }
-              s = set_ordering (s, key, bl_end);
+              s = set_ordering (s, চাবি, bl_end);
             }
-          if (*s)
+          যদি (*s)
             badfieldspec (optarg, N_("stray character in field spec"));
-          insertkey (key);
-          break;
+          insertkey (চাবি);
+          বিরতি;
 
-        case 'm':
+        ক্ষেত্র 'm':
           mergeonly = true;
-          break;
+          বিরতি;
 
-        case NMERGE_OPTION:
+        ক্ষেত্র NMERGE_OPTION:
           specify_nmerge (oi, c, optarg);
-          break;
+          বিরতি;
 
-        case 'o':
-          if (outfile && !streq (outfile, optarg))
+        ক্ষেত্র 'o':
+          যদি (outfile && !streq (outfile, optarg))
             error (SORT_FAILURE, 0, _("multiple output files specified"));
           outfile = optarg;
-          break;
+          বিরতি;
 
-        case RANDOM_SOURCE_OPTION:
-          if (random_source && !streq (random_source, optarg))
+        ক্ষেত্র RANDOM_SOURCE_OPTION:
+          যদি (random_source && !streq (random_source, optarg))
             error (SORT_FAILURE, 0, _("multiple random sources specified"));
           random_source = optarg;
-          break;
+          বিরতি;
 
-        case 's':
+        ক্ষেত্র 's':
           stable = true;
-          break;
+          বিরতি;
 
-        case 'S':
-          specify_sort_size (oi, c, optarg);
-          break;
+        ক্ষেত্র 'S':
+          specify_sort_আকার (oi, c, optarg);
+          বিরতি;
 
-        case 't':
+        ক্ষেত্র 't':
           {
-            char newtab = optarg[0];
-            if (! newtab)
+            অক্ষর newtab = optarg[0];
+            যদি (! newtab)
               error (SORT_FAILURE, 0, _("empty tab"));
-            if (optarg[1])
+            যদি (optarg[1])
               {
-                if (streq (optarg, "\\0"))
+                যদি (streq (optarg, "\\0"))
                   newtab = '\0';
-                else
+                অন্যথা
                   {
                     /* Provoke with 'sort -txx'.  Complain about
                        "multi-character tab" instead of "multibyte tab", so
@@ -4919,25 +4919,25 @@ main (int argc, char **argv)
                            quote (optarg));
                   }
               }
-            if (tab != TAB_DEFAULT && tab != newtab)
+            যদি (tab != TAB_DEFAULT && tab != newtab)
               error (SORT_FAILURE, 0, _("incompatible tabs"));
             tab = newtab;
           }
-          break;
+          বিরতি;
 
-        case 'T':
-          add_temp_dir (optarg);
-          break;
+        ক্ষেত্র 'T':
+          add_অস্থায়ী_dir (optarg);
+          বিরতি;
 
-        case PARALLEL_OPTION:
+        ক্ষেত্র PARALLEL_OPTION:
           nthreads = specify_nthreads (oi, c, optarg);
-          break;
+          বিরতি;
 
-        case 'u':
+        ক্ষেত্র 'u':
           unique = true;
-          break;
+          বিরতি;
 
-        case 'y':
+        ক্ষেত্র 'y':
           /* Accept and ignore e.g. -y0 for compatibility with Solaris 2.x
              through Solaris 7.  It is also accepted by many non-Solaris
              "sort" implementations, e.g., AIX 5.2, HP-UX 11i v2, IRIX 6.5.
@@ -4948,24 +4948,24 @@ main (int argc, char **argv)
              emulate Solaris 8 and 9 "sort -y 100" which ignores the "100",
              and which in general ignores the argument after "-y" if it
              consists entirely of digits (it can even be empty).  */
-          if (optarg == argv[optind - 1])
+          যদি (optarg == argv[optind - 1])
             {
-              char const *p;
-              for (p = optarg; c_isdigit (*p); p++)
-                continue;
+              অক্ষর ধ্রুবক *p;
+              জন্য (p = optarg; c_isdigit (*p); p++)
+                চালু;
               optind -= (*p != '\0');
             }
-          break;
+          বিরতি;
 
-        case 'z':
+        ক্ষেত্র 'z':
           eolchar = 0;
-          break;
+          বিরতি;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        পূর্বনির্ধারিত:
           usage (SORT_FAILURE);
         }
     }
@@ -4973,13 +4973,13 @@ main (int argc, char **argv)
   /* Ignore SIGPIPE so write failures are reported via EPIPE errno.
      For stdout, sort_die() will reraise SIGPIPE if it was originally SIG_DFL.
      For compression pipes, sort_die() will exit with SORT_FAILURE.  */
-  default_SIGPIPE = (signal (SIGPIPE, SIG_IGN) == SIG_DFL);
+  default_SIGPIPE = (সংকেত (SIGPIPE, SIG_IGN) == SIG_DFL);
 
-  if (files_from)
+  যদি (files_from)
     {
       /* When using --files0-from=F, you may not specify any files
          on the command-line.  */
-      if (nfiles)
+      যদি (nfiles)
         {
           error (0, 0, _("extra operand %s"), quoteaf (files[0]));
           fprintf (stderr, "%s\n",
@@ -4991,62 +4991,62 @@ main (int argc, char **argv)
 
       readtokens0_init (&tok);
 
-      if (! readtokens0 (stream, &tok))
+      যদি (! readtokens0 (stream, &tok))
         error (SORT_FAILURE, 0, _("cannot read file names from %s"),
                quoteaf (files_from));
       xfclose (stream, files_from);
 
-      if (tok.n_tok)
+      যদি (tok.n_tok)
         {
-          free (files);
+          মুক্ত (files);
           files = tok.tok;
           nfiles = tok.n_tok;
-          for (size_t i = 0; i < nfiles; i++)
+          জন্য (size_t i = 0; i < nfiles; i++)
             {
-              if (streq (files[i], "-"))
+              যদি (streq (files[i], "-"))
                 error (SORT_FAILURE, 0, _("when reading file names from "
                                           "standard input, "
                                           "no file name of %s allowed"),
                        quoteaf (files[i]));
-              else if (files[i][0] == '\0')
+              অন্যথা যদি (files[i][0] == '\0')
                 {
                   /* Using the standard 'filename:line-number:' prefix here is
                      not totally appropriate, since NUL is the separator,
                      not NL, but it might be better than nothing.  */
-                  unsigned long int file_number = i + 1;
+                  unsigned long পূর্ণসংখ্যা file_সংখ্যা = i + 1;
                   error (SORT_FAILURE, 0,
                          _("%s:%lu: invalid zero-length file name"),
-                         quotef (files_from), file_number);
+                         quotef (files_from), file_সংখ্যা);
                 }
             }
         }
-      else
+      অন্যথা
         error (SORT_FAILURE, 0, _("no input from %s"),
                quoteaf (files_from));
     }
 
   /* Inheritance of global options to individual keys. */
-  for (key = keylist; key; key = key->next)
+  জন্য (চাবি = keylist; চাবি; চাবি = চাবি->পরবর্তী)
     {
-      if (default_key_compare (key) && !key->reverse)
+      যদি (default_চাবি_compare (চাবি) && !চাবি->reverse)
         {
-          key->ignore = gkey.ignore;
-          key->translate = gkey.translate;
-          key->skipsblanks = gkey.skipsblanks;
-          key->skipeblanks = gkey.skipeblanks;
-          key->month = gkey.month;
-          key->numeric = gkey.numeric;
-          key->general_numeric = gkey.general_numeric;
-          key->human_numeric = gkey.human_numeric;
-          key->version = gkey.version;
-          key->random = gkey.random;
-          key->reverse = gkey.reverse;
+          চাবি->ignore = gkey.ignore;
+          চাবি->translate = gkey.translate;
+          চাবি->skipsblanks = gkey.skipsblanks;
+          চাবি->skipeblanks = gkey.skipeblanks;
+          চাবি->month = gkey.month;
+          চাবি->numeric = gkey.numeric;
+          চাবি->general_numeric = gkey.general_numeric;
+          চাবি->human_numeric = gkey.human_numeric;
+          চাবি->version = gkey.version;
+          চাবি->random = gkey.random;
+          চাবি->reverse = gkey.reverse;
         }
 
-      need_random |= key->random;
+      need_random |= চাবি->random;
     }
 
-  if (!keylist && !default_key_compare (&gkey))
+  যদি (!keylist && !default_চাবি_compare (&gkey))
     {
       gkey_only = true;
       insertkey (&gkey);
@@ -5055,11 +5055,11 @@ main (int argc, char **argv)
 
   check_ordering_compatibility ();
 
-  if (debug)
+  যদি (debug)
     {
-      if (checkonly || outfile)
+      যদি (checkonly || outfile)
         {
-          static char opts[] = "X --debug";
+          স্থির অক্ষর opts[] = "X --debug";
           opts[0] = (checkonly ? checkonly : 'o');
           incompatible_options (opts);
         }
@@ -5069,53 +5069,53 @@ main (int argc, char **argv)
 
       /* OpenBSD can only set some categories with LC_ALL above,
          so set LC_COLLATE explicitly to flag errors.  */
-      if (locale_ok)
+      যদি (locale_ok)
         locale_ok = !! setlocale (LC_COLLATE, "");
-      if (! locale_ok)
+      যদি (! locale_ok)
           error (0, 0, "%s", _("failed to set locale"));
-      if (hard_LC_COLLATE)
+      যদি (hard_LC_COLLATE)
         error (0, 0, _("text ordering performed using %s sorting rules"),
-               quote (setlocale (LC_COLLATE, NULL)));
-      else
+               quote (setlocale (LC_COLLATE, ফাঁকা)));
+      অন্যথা
         error (0, 0, "%s",
                _("text ordering performed using simple byte comparison"));
 
-      key_warnings (&gkey, gkey_only);
+      চাবি_warnings (&gkey, gkey_only);
     }
 
   reverse = gkey.reverse;
 
-  if (need_random)
+  যদি (need_random)
     random_md5_state_init (random_source);
 
-  if (temp_dirs.n_dirs == 0)
+  যদি (অস্থায়ী_dirs.n_dirs == 0)
     {
-      char const *tmp_dir = getenv ("TMPDIR");
-      add_temp_dir (tmp_dir ? tmp_dir : DEFAULT_TMPDIR);
+      অক্ষর ধ্রুবক *tmp_dir = getenv ("TMPDIR");
+      add_অস্থায়ী_dir (tmp_dir ? tmp_dir : DEFAULT_TMPDIR);
     }
 
-  if (nfiles == 0)
+  যদি (nfiles == 0)
     {
       nfiles = 1;
-      free (files);
-      files = xmalloc (sizeof *files);
-      *files = (char *) "-";
+      মুক্ত (files);
+      files = xmalloc (আকার *files);
+      *files = (অক্ষর *) "-";
     }
 
   /* Need to re-check that we meet the minimum requirement for memory
      usage with the final value for NMERGE. */
-  if (0 < sort_size)
-    sort_size = MAX (sort_size, MIN_SORT_SIZE);
+  যদি (0 < sort_আকার)
+    sort_আকার = MAX (sort_আকার, MIN_SORT_আকার);
 
-  if (checkonly)
+  যদি (checkonly)
     {
-      if (nfiles > 1)
+      যদি (nfiles > 1)
         error (SORT_FAILURE, 0, _("extra operand %s not allowed with -%c"),
                quoteaf (files[1]), checkonly);
 
-      if (outfile)
+      যদি (outfile)
         {
-          static char opts[] = {0, 'o', 0};
+          স্থির অক্ষর opts[] = {0, 'o', 0};
           opts[0] = checkonly;
           incompatible_options (opts);
         }
@@ -5131,31 +5131,31 @@ main (int argc, char **argv)
   /* Check output is writable, or exit immediately.  */
   check_output (outfile);
 
-  if (mergeonly)
+  যদি (mergeonly)
     {
-      struct sortfile *sortfiles = xcalloc (nfiles, sizeof *sortfiles);
+      কাঠামো sortfile *sortfiles = xcalloc (nfiles, আকার *sortfiles);
 
-      for (size_t i = 0; i < nfiles; ++i)
+      জন্য (size_t i = 0; i < nfiles; ++i)
         sortfiles[i].name = files[i];
 
       merge (sortfiles, 0, nfiles, outfile);
     }
-  else
+  অন্যথা
     {
-      if (!nthreads)
+      যদি (!nthreads)
         {
-          unsigned long int np = num_processors (NPROC_CURRENT_OVERRIDABLE);
+          unsigned long পূর্ণসংখ্যা np = অঙ্ক_processors (NPROC_CURRENT_OVERRIDABLE);
           nthreads = MIN (np, DEFAULT_MAX_THREADS);
         }
 
       /* Avoid integer overflow later.  */
-      size_t nthreads_max = SIZE_MAX / (2 * sizeof (struct merge_node));
+      size_t nthreads_max = SIZE_MAX / (2 * আকার (কাঠামো merge_গ্রন্থি));
       nthreads = MIN (nthreads, nthreads_max);
 
       sort (files, nfiles, outfile, nthreads);
     }
 
-  if (have_read_stdin && fclose (stdin) == EOF)
+  যদি (have_read_stdin && fclose (stdin) == EOF)
     sort_die (_("close failed"), "-");
 
   main_exit (EXIT_SUCCESS);

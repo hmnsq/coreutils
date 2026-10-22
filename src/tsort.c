@@ -20,17 +20,17 @@
    sort) in Donald E. Knuth, The Art of Computer Programming, Volume
    1/Fundamental Algorithms, page 262.  */
 
-#include <config.h>
+#অন্তর্ভাব <config.h>
 
-#include <getopt.h>
-#include <sys/types.h>
+#অন্তর্ভাব <getopt.h>
+#অন্তর্ভাব <sys/types.h>
 
-#include "system.h"
-#include "assure.h"
-#include "fadvise.h"
-#include "readtokens.h"
-#include "stdio--.h"
-#include "quote.h"
+#অন্তর্ভাব "system.h"
+#অন্তর্ভাব "assure.h"
+#অন্তর্ভাব "fadvise.h"
+#অন্তর্ভাব "readtokens.h"
+#অন্তর্ভাব "stdio--.h"
+#অন্তর্ভাব "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "tsort"
@@ -41,42 +41,42 @@
 #define DELIM " \t\n"
 
 /* Members of the list of successors.  */
-struct successor
+কাঠামো successor
 {
-  struct item *suc;
-  struct successor *next;
+  কাঠামো item *suc;
+  কাঠামো successor *পরবর্তী;
 };
 
 /* Each string is held in memory as the head of a list of successors.  */
-struct item
+কাঠামো item
 {
-  char const *str;
-  struct item *left, *right;
-  signed char balance; /* -1, 0, or +1 */
+  অক্ষর ধ্রুবক *str;
+  কাঠামো item *বাম, *ডান;
+  signed অক্ষর balance; /* -1, 0, or +1 */
   bool printed;
-  size_t count;
-  struct item *qlink;
-  struct successor *top;
+  size_t গুনতি;
+  কাঠামো item *qlink;
+  কাঠামো successor *শীর্ষ_2;
 };
 
 /* The head of the sorted list.  */
-static struct item *head = NULL;
+স্থির কাঠামো item *শীর্ষ = ফাঁকা;
 
 /* The tail of the list of 'zeros', strings that have no predecessors.  */
-static struct item *zeros = NULL;
+স্থির কাঠামো item *zeros = ফাঁকা;
 
 /* Used for loop detection.  */
-static struct item *loop = NULL;
+স্থির কাঠামো item *loop = ফাঁকা;
 
 /* The number of strings to sort.  */
-static size_t n_strings = 0;
+স্থির size_t n_strings = 0;
 
-void
-usage (int status)
+শূন্য
+usage (পূর্ণসংখ্যা status)
 {
-  if (status != EXIT_SUCCESS)
+  যদি (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  অন্যথা
     {
       printf (_("\
 Usage: %s [OPTION] [FILE]\n\
@@ -97,14 +97,14 @@ Write totally ordered list consistent with the partial ordering in FILE.\n\
 }
 
 /* Create a new item/node for STR.  */
-static struct item *
-new_item (char const *str)
+স্থির কাঠামো item *
+new_item (অক্ষর ধ্রুবক *str)
 {
   /* T1. Initialize (COUNT[k] <- 0 and TOP[k] <- ^).  */
-  struct item *k = xzalloc (sizeof *k);
-  if (str)
+  কাঠামো item *k = xzalloc (আকার *k);
+  যদি (str)
     k->str = xstrdup (str);
-  return k;
+  ফেরত k;
 }
 
 /* Search binary tree rooted at *ROOT for STR.  Allocate a new tree if
@@ -115,138 +115,138 @@ new_item (char const *str)
    insertion) in Donald E. Knuth, The Art of Computer Programming,
    Volume 3/Searching and Sorting, pages 455--457.  */
 
-static struct item *
-search_item (struct item *root, char const *str)
+স্থির কাঠামো item *
+অনুসন্ধান_item (কাঠামো item *মূল, অক্ষর ধ্রুবক *str)
 {
-  struct item *p, *q, *r, *s, *t;
-  int a;
+  কাঠামো item *p, *q, *r, *s, *t;
+  পূর্ণসংখ্যা a;
 
   /* Make sure the tree is not empty, since that is what the algorithm
      below expects.  */
-  if (root->right == NULL)
-    return (root->right = new_item (str));
+  যদি (মূল->ডান == ফাঁকা)
+    ফেরত (মূল->ডান = new_item (str));
 
   /* A1. Initialize.  */
-  t = root;
-  s = p = root->right;
+  t = মূল;
+  s = p = মূল->ডান;
 
-  while (true)
+  যখন (true)
     {
       /* A2. Compare.  */
       a = strcmp (str, p->str);
-      if (a == 0)
-        return p;
+      যদি (a == 0)
+        ফেরত p;
 
       /* A3 & A4.  Move left & right.  */
-      if (a < 0)
-        q = p->left;
-      else
-        q = p->right;
+      যদি (a < 0)
+        q = p->বাম;
+      অন্যথা
+        q = p->ডান;
 
-      if (q == NULL)
+      যদি (q == ফাঁকা)
         {
           /* A5. Insert.  */
           q = new_item (str);
 
           /* A3 & A4.  (continued).  */
-          if (a < 0)
-            p->left = q;
-          else
-            p->right = q;
+          যদি (a < 0)
+            p->বাম = q;
+          অন্যথা
+            p->ডান = q;
 
           /* A6. Adjust balance factors.  */
           a = strcmp (str, s->str);
-          if (a < 0)
+          যদি (a < 0)
             {
-              r = p = s->left;
+              r = p = s->বাম;
               a = -1;
             }
-          else
+          অন্যথা
             {
               affirm (0 < a);
-              r = p = s->right;
+              r = p = s->ডান;
               a = 1;
             }
 
-          while (p != q)
+          যখন (p != q)
             {
-              int cmp = strcmp (str, p->str);
-              if (cmp < 0)
+              পূর্ণসংখ্যা cmp = strcmp (str, p->str);
+              যদি (cmp < 0)
                 {
                   p->balance = -1;
-                  p = p->left;
+                  p = p->বাম;
                 }
-              else
+              অন্যথা
                 {
                   affirm (0 < cmp);
                   p->balance = 1;
-                  p = p->right;
+                  p = p->ডান;
                 }
             }
 
           /* A7. Balancing act.  */
-          if (s->balance == 0 || s->balance == -a)
+          যদি (s->balance == 0 || s->balance == -a)
             {
               s->balance += a;
-              return q;
+              ফেরত q;
             }
 
-          if (r->balance == a)
+          যদি (r->balance == a)
             {
               /* A8. Single Rotation.  */
               p = r;
-              if (a < 0)
+              যদি (a < 0)
                 {
-                  s->left = r->right;
-                  r->right = s;
+                  s->বাম = r->ডান;
+                  r->ডান = s;
                 }
-              else
+              অন্যথা
                 {
-                  s->right = r->left;
-                  r->left = s;
+                  s->ডান = r->বাম;
+                  r->বাম = s;
                 }
               s->balance = r->balance = 0;
             }
-          else
+          অন্যথা
             {
               /* A9. Double rotation.  */
-              if (a < 0)
+              যদি (a < 0)
                 {
-                  p = r->right;
-                  r->right = p->left;
-                  p->left = r;
-                  s->left = p->right;
-                  p->right = s;
+                  p = r->ডান;
+                  r->ডান = p->বাম;
+                  p->বাম = r;
+                  s->বাম = p->ডান;
+                  p->ডান = s;
                 }
-              else
+              অন্যথা
                 {
-                  p = r->left;
-                  r->left = p->right;
-                  p->right = r;
-                  s->right = p->left;
-                  p->left = s;
+                  p = r->বাম;
+                  r->বাম = p->ডান;
+                  p->ডান = r;
+                  s->ডান = p->বাম;
+                  p->বাম = s;
                 }
 
               s->balance = 0;
               r->balance = 0;
-              if (p->balance == a)
+              যদি (p->balance == a)
                 s->balance = -a;
-              else if (p->balance == -a)
+              অন্যথা যদি (p->balance == -a)
                 r->balance = a;
               p->balance = 0;
             }
 
           /* A10. Finishing touch.  */
-          if (s == t->right)
-            t->right = p;
-          else
-            t->left = p;
+          যদি (s == t->ডান)
+            t->ডান = p;
+          অন্যথা
+            t->বাম = p;
 
-          return q;
+          ফেরত q;
         }
 
       /* A3 & A4.  (continued).  */
-      if (q->balance)
+      যদি (q->balance)
         {
           t = p;
           s = q;
@@ -260,43 +260,43 @@ search_item (struct item *root, char const *str)
 
 /* Record the fact that J precedes K.  */
 
-static void
-record_relation (struct item *j, struct item *k)
+স্থির শূন্য
+record_relation (কাঠামো item *j, কাঠামো item *k)
 {
-  struct successor *p;
+  কাঠামো successor *p;
 
-  if (!streq (j->str, k->str))
+  যদি (!streq (j->str, k->str))
     {
-      k->count++;
-      p = xmalloc (sizeof *p);
+      k->গুনতি++;
+      p = xmalloc (আকার *p);
       p->suc = k;
-      p->next = j->top;
-      j->top = p;
+      p->পরবর্তী = j->শীর্ষ_2;
+      j->শীর্ষ_2 = p;
     }
 }
 
-static bool
-count_items (MAYBE_UNUSED struct item *unused)
+স্থির bool
+গুনতি_বস্তুসমূহ (MAYBE_UNUSED কাঠামো item *unused)
 {
   n_strings++;
-  return false;
+  ফেরত false;
 }
 
-static bool
-scan_zeros (struct item *k)
+স্থির bool
+scan_zeros (কাঠামো item *k)
 {
   /* Ignore strings that have already been printed.  */
-  if (k->count == 0 && !k->printed)
+  যদি (k->গুনতি == 0 && !k->printed)
     {
-      if (head == NULL)
-        head = k;
-      else
+      যদি (শীর্ষ == ফাঁকা)
+        শীর্ষ = k;
+      অন্যথা
         zeros->qlink = k;
 
       zeros = k;
     }
 
-  return false;
+  ফেরত false;
 }
 
 /* Try to detect the loop.  If we have detected that K is part of a
@@ -317,218 +317,218 @@ scan_zeros (struct item *k)
    loop has completely been constructed.  If the loop was found, the
    global variable LOOP will be null.  */
 
-static bool
-detect_loop (struct item *k)
+স্থির bool
+detect_loop (কাঠামো item *k)
 {
-  if (k->count > 0)
+  যদি (k->গুনতি > 0)
     {
       /* K does not have to be part of a cycle.  It is however part of
          a graph that contains a cycle.  */
 
-      if (loop == NULL)
+      যদি (loop == ফাঁকা)
         /* Start traversing the graph at K.  */
         loop = k;
-      else
+      অন্যথা
         {
-          struct successor **p = &k->top;
+          কাঠামো successor **p = &k->শীর্ষ_2;
 
-          while (*p)
+          যখন (*p)
             {
-              if ((*p)->suc == loop)
+              যদি ((*p)->suc == loop)
                 {
-                  if (k->qlink)
+                  যদি (k->qlink)
                     {
                       /* We have found a loop.  Retrace our steps.  */
-                      while (loop)
+                      যখন (loop)
                         {
-                          struct item *tmp = loop->qlink;
+                          কাঠামো item *tmp = loop->qlink;
 
                           error (0, 0, "%s", (loop->str));
 
                           /* Until we encounter K again.  */
-                          if (loop == k)
+                          যদি (loop == k)
                             {
                               /* Remove relation.  */
-                              struct successor *s = *p;
-                              s->suc->count--;
-                              *p = s->next;
-                              IF_LINT (free (s));
-                              break;
+                              কাঠামো successor *s = *p;
+                              s->suc->গুনতি--;
+                              *p = s->পরবর্তী;
+                              IF_LINT (মুক্ত (s));
+                              বিরতি;
                             }
 
                           /* Tidy things up since we might have to
                              detect another loop.  */
-                          loop->qlink = NULL;
+                          loop->qlink = ফাঁকা;
                           loop = tmp;
                         }
 
-                      while (loop)
+                      যখন (loop)
                         {
-                          struct item *tmp = loop->qlink;
+                          কাঠামো item *tmp = loop->qlink;
 
-                          loop->qlink = NULL;
+                          loop->qlink = ফাঁকা;
                           loop = tmp;
                         }
 
                       /* Since we have found the loop, stop walking
                          the tree.  */
-                      return true;
+                      ফেরত true;
                     }
-                  else
+                  অন্যথা
                     {
                       k->qlink = loop;
                       loop = k;
-                      break;
+                      বিরতি;
                     }
                 }
 
-              p = &(*p)->next;
+              p = &(*p)->পরবর্তী;
             }
         }
     }
 
-  return false;
+  ফেরত false;
 }
 
 /* Recurse (sub)tree rooted at ROOT, calling ACTION for each node.
    Stop when ACTION returns true.  */
 
-static bool
-recurse_tree (struct item *root, bool (*action) (struct item *))
+স্থির bool
+recurse_বৃক্ষ (কাঠামো item *মূল, bool (*action) (কাঠামো item *))
 {
-  if (root->left == NULL && root->right == NULL)
-    return (*action) (root);
-  else
+  যদি (মূল->বাম == ফাঁকা && মূল->ডান == ফাঁকা)
+    ফেরত (*action) (মূল);
+  অন্যথা
     {
-      if (root->left != NULL)
-        if (recurse_tree (root->left, action))
-          return true;
-      if ((*action) (root))
-        return true;
-      if (root->right != NULL)
-        if (recurse_tree (root->right, action))
-          return true;
+      যদি (মূল->বাম != ফাঁকা)
+        যদি (recurse_বৃক্ষ (মূল->বাম, action))
+          ফেরত true;
+      যদি ((*action) (মূল))
+        ফেরত true;
+      যদি (মূল->ডান != ফাঁকা)
+        যদি (recurse_বৃক্ষ (মূল->ডান, action))
+          ফেরত true;
     }
 
-  return false;
+  ফেরত false;
 }
 
 /* Walk the tree specified by the head ROOT, calling ACTION for
    each node.  */
 
-static void
-walk_tree (struct item *root, bool (*action) (struct item *))
+স্থির শূন্য
+walk_বৃক্ষ (কাঠামো item *মূল, bool (*action) (কাঠামো item *))
 {
-  if (root->right)
-    recurse_tree (root->right, action);
+  যদি (মূল->ডান)
+    recurse_বৃক্ষ (মূল->ডান, action);
 }
 
 /* Do a topological sort on FILE.  Exit with appropriate exit status.  */
 
-static _Noreturn void
-tsort (char const *file)
+স্থির _Noreturn শূন্য
+tsort (অক্ষর ধ্রুবক *file)
 {
   bool ok = true;
-  struct item *j = NULL;
-  struct item *k = NULL;
-  token_buffer tokenbuffer;
+  কাঠামো item *j = ফাঁকা;
+  কাঠামো item *k = ফাঁকা;
+  token_বাফার tokenbuffer;
   bool is_stdin = streq (file, "-");
 
   /* Initialize the head of the tree holding the strings we're sorting.  */
-  struct item *root = new_item (NULL);
+  কাঠামো item *মূল = new_item (ফাঁকা);
 
-  if (!is_stdin && ! freopen (file, "r", stdin))
+  যদি (!is_stdin && ! freopen (file, "r", stdin))
     error (EXIT_FAILURE, errno, "%s", quotef (file));
 
   fadvise (stdin, FADVISE_SEQUENTIAL);
 
   init_tokenbuffer (&tokenbuffer);
 
-  while (true)
+  যখন (true)
     {
       /* T2. Next Relation.  */
-      size_t len = readtoken (stdin, DELIM, sizeof (DELIM) - 1, &tokenbuffer);
-      if (len == (size_t) -1)
+      size_t len = readtoken (stdin, DELIM, আকার (DELIM) - 1, &tokenbuffer);
+      যদি (len == (size_t) -1)
         {
-          if (ferror (stdin))
+          যদি (ferror (stdin))
             error (EXIT_FAILURE, errno, _("%s: read error"), quotef (file));
-          break;
+          বিরতি;
         }
 
       affirm (len != 0);
 
-      k = search_item (root, tokenbuffer.buffer);
-      if (j)
+      k = অনুসন্ধান_item (মূল, tokenbuffer.বাফার);
+      যদি (j)
         {
           /* T3. Record the relation.  */
           record_relation (j, k);
-          k = NULL;
+          k = ফাঁকা;
         }
 
       j = k;
     }
 
-  if (k != NULL)
+  যদি (k != ফাঁকা)
     error (EXIT_FAILURE, 0, _("%s: input contains an odd number of tokens"),
            quotef (file));
 
   /* T1. Initialize (N <- n).  */
-  walk_tree (root, count_items);
+  walk_বৃক্ষ (মূল, গুনতি_বস্তুসমূহ);
 
-  while (n_strings > 0)
+  যখন (n_strings > 0)
     {
       /* T4. Scan for zeros.  */
-      walk_tree (root, scan_zeros);
+      walk_বৃক্ষ (মূল, scan_zeros);
 
-      while (head)
+      যখন (শীর্ষ)
         {
-          struct successor *p = head->top;
+          কাঠামো successor *p = শীর্ষ->শীর্ষ_2;
 
           /* T5. Output front of queue.  */
-          puts (head->str);
-          head->printed = true;
+          puts (শীর্ষ->str);
+          শীর্ষ->printed = true;
           n_strings--;
 
           /* T6. Erase relations.  */
-          while (p)
+          যখন (p)
             {
-              p->suc->count--;
-              if (p->suc->count == 0)
+              p->suc->গুনতি--;
+              যদি (p->suc->গুনতি == 0)
                 {
                   zeros->qlink = p->suc;
                   zeros = p->suc;
                 }
 
-              p = p->next;
+              p = p->পরবর্তী;
             }
 
           /* T7. Remove from queue.  */
-          head = head->qlink;
+          শীর্ষ = শীর্ষ->qlink;
         }
 
       /* T8.  End of process.  */
-      if (n_strings > 0)
+      যদি (n_strings > 0)
         {
           /* The input contains a loop.  */
           error (0, 0, _("%s: input contains a loop:"), quotef (file));
           ok = false;
 
           /* Print the loop and remove a relation to break it.  */
-          do
-            walk_tree (root, detect_loop);
-          while (loop);
+          করো
+            walk_বৃক্ষ (মূল, detect_loop);
+          যখন (loop);
         }
     }
 
-  if (fclose (stdin) != 0)
+  যদি (fclose (stdin) != 0)
     error (EXIT_FAILURE, errno, "%s",
            is_stdin ? _("standard input") : quotef (file));
 
   exit (ok ? EXIT_SUCCESS : EXIT_FAILURE);
 }
 
-int
-main (int argc, char **argv)
+পূর্ণসংখ্যা
+প্রধান (পূর্ণসংখ্যা argc, অক্ষর **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -538,34 +538,34 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while (true)
+  যখন (true)
     {
-      static struct option const long_options[] =
+      স্থির কাঠামো option ধ্রুবক long_options[] =
         {
           {GETOPT_HELP_OPTION_DECL},
           {GETOPT_VERSION_OPTION_DECL},
-          {NULL, 0, NULL, 0}
+          {ফাঁকা, 0, ফাঁকা, 0}
         };
-      int c = getopt_long (argc, argv, "w", long_options, NULL);
+      পূর্ণসংখ্যা c = getopt_long (argc, argv, "w", long_options, ফাঁকা);
 
-      if (c == -1)
-        break;
+      যদি (c == -1)
+        বিরতি;
 
-      switch (c)
+      নির্বাচন (c)
         {
-        case 'w':
-          break;
+        ক্ষেত্র 'w':
+          বিরতি;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        পূর্বনির্ধারিত:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (1 < argc - optind)
+  যদি (1 < argc - optind)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind + 1]));
       usage (EXIT_FAILURE);

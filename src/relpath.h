@@ -19,7 +19,7 @@
 #ifndef _RELPATH_H
 # define _RELPATH_H
 
-extern bool
-relpath (char const *can_fname, char const *can_reldir, char *buf, size_t len);
+বাহ্যিক bool
+relpath (অক্ষর ধ্রুবক *can_fname, অক্ষর ধ্রুবক *can_reldir, অক্ষর *buf, size_t len);
 
 #endif

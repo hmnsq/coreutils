@@ -16,18 +16,18 @@
 
 /* Written by Richard Stallman and David MacKenzie. */
 
-#include <config.h>
+#অন্তর্ভাব <config.h>
 
-#include <getopt.h>
-#include <sys/types.h>
-#include "system.h"
-#include "linebuffer.h"
-#include "fadvise.h"
-#include "hard-locale.h"
-#include "quote.h"
-#include "stdio--.h"
-#include "memcmp2.h"
-#include "xmemcoll.h"
+#অন্তর্ভাব <getopt.h>
+#অন্তর্ভাব <sys/types.h>
+#অন্তর্ভাব "system.h"
+#অন্তর্ভাব "linebuffer.h"
+#অন্তর্ভাব "fadvise.h"
+#অন্তর্ভাব "hard-locale.h"
+#অন্তর্ভাব "quote.h"
+#অন্তর্ভাব "stdio--.h"
+#অন্তর্ভাব "memcmp2.h"
+#অন্তর্ভাব "xmemcoll.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "comm"
@@ -37,118 +37,118 @@
   proper_name ("David MacKenzie")
 
 /* True if the LC_COLLATE locale is hard.  */
-static bool hard_LC_COLLATE;
+স্থির bool hard_LC_COLLATE;
 
 /* If true, print lines that are found only in file 1. */
-static bool only_file_1 = true;
+স্থির bool only_file_1 = true;
 
 /* If true, print lines that are found only in file 2. */
-static bool only_file_2 = true;
+স্থির bool only_file_2 = true;
 
 /* If true, print lines that are found in both files. */
-static bool both = true;
+স্থির bool both = true;
 
 /* If nonzero, we have seen at least one unpairable line. */
-static bool seen_unpairable;
+স্থির bool seen_unpairable;
 
 /* If nonzero, we have warned about disorder in that file. */
-static bool issued_disorder_warning[2];
+স্থির bool issued_disorder_warning[2];
 
 /* line delimiter.  */
-static unsigned char delim = '\n';
+স্থির unsigned অক্ষর delim = '\n';
 
 /* If true, print a summary.  */
-static bool total_option;
+স্থির bool যোগ_option;
 
 /* If nonzero, check that the input is correctly ordered. */
-static enum
+স্থির গণনা
   {
     CHECK_ORDER_DEFAULT,
     CHECK_ORDER_ENABLED,
     CHECK_ORDER_DISABLED
-  } check_input_order;
+  } check_প্রবেশ_order;
 
 /* Output columns will be delimited with this string, which may be set
    on the command-line with --output-delimiter=STR.  */
-static char const *col_sep = "\t";
-static size_t col_sep_len = 0;
+স্থির অক্ষর ধ্রুবক *col_sep = "\t";
+স্থির size_t col_sep_len = 0;
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+গণনা
 {
   CHECK_ORDER_OPTION = CHAR_MAX + 1,
   NOCHECK_ORDER_OPTION,
   OUTPUT_DELIMITER_OPTION,
-  TOTAL_OPTION
+  যোগ_OPTION
 };
 
-static struct option const long_options[] =
+স্থির কাঠামো option ধ্রুবক long_options[] =
 {
-  {"check-order", no_argument, NULL, CHECK_ORDER_OPTION},
-  {"nocheck-order", no_argument, NULL, NOCHECK_ORDER_OPTION},
-  {"output-delimiter", required_argument, NULL, OUTPUT_DELIMITER_OPTION},
-  {"total", no_argument, NULL, TOTAL_OPTION},
-  {"zero-terminated", no_argument, NULL, 'z'},
+  {"check-order", no_argument, ফাঁকা, CHECK_ORDER_OPTION},
+  {"nocheck-order", no_argument, ফাঁকা, NOCHECK_ORDER_OPTION},
+  {"output-delimiter", required_argument, ফাঁকা, OUTPUT_DELIMITER_OPTION},
+  {"total", no_argument, ফাঁকা, যোগ_OPTION},
+  {"zero-terminated", no_argument, ফাঁকা, 'z'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ফাঁকা, 0, ফাঁকা, 0}
 };
 
 
-void
-usage (int status)
+শূন্য
+usage (পূর্ণসংখ্যা status)
 {
-  if (status != EXIT_SUCCESS)
+  যদি (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  অন্যথা
     {
       printf (_("\
 Usage: %s [OPTION]... FILE1 FILE2\n\
 "),
               program_name);
       fputs (_("\
-Compare sorted files FILE1 and FILE2 line by line.\n\
+Compare sorted files FILE1 and FILE2 সারি by সারি.\n\
 "), stdout);
       fputs (_("\
 \n\
-When FILE1 or FILE2 is -, read standard input.\n\
+When FILE1 or FILE2 is -, পঠ standard প্রবেশ.\n\
 "), stdout);
       fputs (_("\
 \n\
 With no options, produce three-column output.  Column one contains\n\
-lines unique to FILE1, column two contains lines unique to FILE2,\n\
-and column three contains lines common to both files.\n\
+সারিগুলি unique to FILE1, column two contains সারিগুলি unique to FILE2,\n\
+and column three contains সারিগুলি common to both files.\n\
 "), stdout);
       oputs (_("\
-  -1     suppress column 1 (lines unique to FILE1)\n\
+  -1     suppress column 1 (সারিগুলি unique to FILE1)\n\
 "));
       oputs (_("\
-  -2     suppress column 2 (lines unique to FILE2)\n\
+  -2     suppress column 2 (সারিগুলি unique to FILE2)\n\
 "));
       oputs (_("\
-  -3     suppress column 3 (lines that appear in both files)\n\
+  -3     suppress column 3 (সারিগুলি that appear in both files)\n\
 "));
       oputs (_("\
       --check-order\n\
-         check that the input is correctly sorted,\n\
-         even if all input lines are pairable\n\
+         check that the প্রবেশ is correctly sorted,\n\
+         even যদি all প্রবেশ সারিগুলি are pairable\n\
 "));
       oputs (_("\
       --nocheck-order\n\
-         do not check that the input is correctly sorted\n\
+         করো not check that the প্রবেশ is correctly sorted\n\
 "));
       oputs (_("\
       --output-delimiter=STR\n\
          separate columns with STR\n\
 "));
       oputs (_("\
-      --total\n\
+      --যোগ_2\n\
          output a summary\n\
 "));
       oputs (_("\
   -z, --zero-terminated\n\
-         line delimiter is NUL, not newline\n\
+         সারি delimiter is NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -159,8 +159,8 @@ Comparisons honor the rules specified by 'LC_COLLATE'.\n\
       printf (_("\
 \n\
 Examples:\n\
-  %s -12 file1 file2  Print only lines present in both file1 and file2.\n\
-  %s -3 file1 file2  Print lines in file1 not in file2, and vice versa.\n\
+  %s -12 file1 file2  Print only সারিগুলি present in both file1 and file2.\n\
+  %s -3 file1 file2  Print সারিগুলি in file1 not in file2, and vice versa.\n\
 "),
               program_name, program_name);
       emit_ancillary_info (PROGRAM_NAME);
@@ -173,36 +173,36 @@ Examples:\n\
    CLASS is 1 for a line found only in file 1,
    2 for a line only in file 2, 3 for a line in both. */
 
-static void
-writeline (struct linebuffer const *line, int class)
+স্থির শূন্য
+writeline (কাঠামো linebuffer ধ্রুবক *সারি, পূর্ণসংখ্যা class)
 {
-  switch (class)
+  নির্বাচন (class)
     {
-    case 1:
-      if (!only_file_1)
-        return;
-      break;
+    ক্ষেত্র 1:
+      যদি (!only_file_1)
+        ফেরত;
+      বিরতি;
 
-    case 2:
-      if (!only_file_2)
-        return;
-      if (only_file_1)
+    ক্ষেত্র 2:
+      যদি (!only_file_2)
+        ফেরত;
+      যদি (only_file_1)
         fwrite (col_sep, 1, col_sep_len, stdout);
-      break;
+      বিরতি;
 
-    case 3:
-      if (!both)
-        return;
-      if (only_file_1)
+    ক্ষেত্র 3:
+      যদি (!both)
+        ফেরত;
+      যদি (only_file_1)
         fwrite (col_sep, 1, col_sep_len, stdout);
-      if (only_file_2)
+      যদি (only_file_2)
         fwrite (col_sep, 1, col_sep_len, stdout);
-      break;
+      বিরতি;
     }
 
-  fwrite (line->buffer, sizeof (char), line->length, stdout);
+  fwrite (সারি->বাফার, আকার (অক্ষর), সারি->দৈর্ঘ্য, stdout);
 
-  if (ferror (stdout))
+  যদি (ferror (stdout))
     write_error ();
 }
 
@@ -217,29 +217,29 @@ writeline (struct linebuffer const *line, int class)
 
    This function was copied (nearly) verbatim from 'src/join.c'. */
 
-static void
-check_order (struct linebuffer const *prev,
-             struct linebuffer const *current,
-             int whatfile)
+স্থির শূন্য
+check_order (কাঠামো linebuffer ধ্রুবক *পূর্ব,
+             কাঠামো linebuffer ধ্রুবক *current,
+             পূর্ণসংখ্যা whatfile)
 {
 
-  if (check_input_order != CHECK_ORDER_DISABLED
-      && ((check_input_order == CHECK_ORDER_ENABLED) || seen_unpairable))
+  যদি (check_প্রবেশ_order != CHECK_ORDER_DISABLED
+      && ((check_প্রবেশ_order == CHECK_ORDER_ENABLED) || seen_unpairable))
     {
-      if (!issued_disorder_warning[whatfile - 1])
+      যদি (!issued_disorder_warning[whatfile - 1])
         {
-          int order;
+          পূর্ণসংখ্যা order;
 
-          if (hard_LC_COLLATE)
-            order = xmemcoll (prev->buffer, prev->length - 1,
-                              current->buffer, current->length - 1);
-          else
-            order = memcmp2 (prev->buffer, prev->length - 1,
-                             current->buffer, current->length - 1);
+          যদি (hard_LC_COLLATE)
+            order = xmemcoll (পূর্ব->বাফার, পূর্ব->দৈর্ঘ্য - 1,
+                              current->বাফার, current->দৈর্ঘ্য - 1);
+          অন্যথা
+            order = memcmp2 (পূর্ব->বাফার, পূর্ব->দৈর্ঘ্য - 1,
+                             current->বাফার, current->দৈর্ঘ্য - 1);
 
-          if (0 < order)
+          যদি (0 < order)
             {
-              error ((check_input_order == CHECK_ORDER_ENABLED
+              error ((check_প্রবেশ_order == CHECK_ORDER_ENABLED
                       ? EXIT_FAILURE : 0),
                      0, _("file %d is not in sorted order"), whatfile);
 
@@ -257,131 +257,131 @@ check_order (struct linebuffer const *prev,
    merge them and output the result.
    Exit the program when done.  */
 
-static _Noreturn void
-compare_files (char **infiles)
+স্থির _Noreturn শূন্য
+compare_files (অক্ষর **infiles)
 {
   /* For each file, we have four linebuffers in lba. */
-  struct linebuffer lba[2][4];
+  কাঠামো linebuffer lba[2][4];
 
   /* thisline[i] points to the linebuffer holding the next available line
      in file i, or is null if there are no lines left in that file.  */
-  struct linebuffer *thisline[2];
+  কাঠামো linebuffer *thisline[2];
 
   /* all_line[i][alt[i][0]] also points to the linebuffer holding the
      current line in file i. We keep two buffers of history around so we
      can look two lines back when we get to the end of a file. */
-  struct linebuffer *all_line[2][4];
+  কাঠামো linebuffer *all_সারি[2][4];
 
   /* This is used to rotate through the buffers for each input file. */
-  int alt[2][3];
+  পূর্ণসংখ্যা alt[2][3];
 
   /* streams[i] holds the input stream for file i.  */
   FILE *streams[2];
 
   /* Counters for the summary.  */
-  uintmax_t total[] = {0, 0, 0};
+  uintmax_t যোগ_2[] = {0, 0, 0};
 
   /* Initialize the storage. */
-  for (int i = 0; i < 2; i++)
+  জন্য (পূর্ণসংখ্যা i = 0; i < 2; i++)
     {
-      for (int j = 0; j < 4; j++)
+      জন্য (পূর্ণসংখ্যা j = 0; j < 4; j++)
         {
           initbuffer (&lba[i][j]);
-          all_line[i][j] = &lba[i][j];
+          all_সারি[i][j] = &lba[i][j];
         }
       alt[i][0] = 0;
       alt[i][1] = 0;
       alt[i][2] = 0;
       streams[i] = (streq (infiles[i], "-") ? stdin : fopen (infiles[i], "r"));
-      if (!streams[i])
+      যদি (!streams[i])
         error (EXIT_FAILURE, errno, "%s", quotef (infiles[i]));
 
       fadvise (streams[i], FADVISE_SEQUENTIAL);
 
-      thisline[i] = readlinebuffer_delim (all_line[i][alt[i][0]], streams[i],
+      thisline[i] = readlinebuffer_delim (all_সারি[i][alt[i][0]], streams[i],
                                           delim);
-      if (ferror (streams[i]))
+      যদি (ferror (streams[i]))
         error (EXIT_FAILURE, errno, "%s", quotef (infiles[i]));
     }
 
-  while (thisline[0] || thisline[1])
+  যখন (thisline[0] || thisline[1])
     {
-      int order;
+      পূর্ণসংখ্যা order;
       bool fill_up[2] = { false, false };
 
       /* Compare the next available lines of the two files.  */
 
-      if (!thisline[0])
+      যদি (!thisline[0])
         order = 1;
-      else if (!thisline[1])
+      অন্যথা যদি (!thisline[1])
         order = -1;
-      else
+      অন্যথা
         {
-          if (hard_LC_COLLATE)
-            order = xmemcoll (thisline[0]->buffer, thisline[0]->length - 1,
-                              thisline[1]->buffer, thisline[1]->length - 1);
-          else
+          যদি (hard_LC_COLLATE)
+            order = xmemcoll (thisline[0]->বাফার, thisline[0]->দৈর্ঘ্য - 1,
+                              thisline[1]->বাফার, thisline[1]->দৈর্ঘ্য - 1);
+          অন্যথা
             {
-              size_t len = MIN (thisline[0]->length, thisline[1]->length) - 1;
-              order = memcmp (thisline[0]->buffer, thisline[1]->buffer, len);
-              if (order == 0)
-                order = _GL_CMP (thisline[0]->length, thisline[1]->length);
+              size_t len = MIN (thisline[0]->দৈর্ঘ্য, thisline[1]->দৈর্ঘ্য) - 1;
+              order = memcmp (thisline[0]->বাফার, thisline[1]->বাফার, len);
+              যদি (order == 0)
+                order = _GL_CMP (thisline[0]->দৈর্ঘ্য, thisline[1]->দৈর্ঘ্য);
             }
         }
 
       /* Output the line that is lesser. */
-      if (order == 0)
+      যদি (order == 0)
         {
           /* Line is seen in both files.  */
-          total[2]++;
+          যোগ_2[2]++;
           writeline (thisline[1], 3);
         }
-      else
+      অন্যথা
         {
           seen_unpairable = true;
-          if (order <= 0)
+          যদি (order <= 0)
             {
               /* Line is seen in file 1 only.  */
-              total[0]++;
+              যোগ_2[0]++;
               writeline (thisline[0], 1);
             }
-          else
+          অন্যথা
             {
               /* Line is seen in file 2 only.  */
-              total[1]++;
+              যোগ_2[1]++;
               writeline (thisline[1], 2);
             }
         }
 
       /* Step the file the line came from.
          If the files match, step both files.  */
-      if (0 <= order)
+      যদি (0 <= order)
         fill_up[1] = true;
-      if (order <= 0)
+      যদি (order <= 0)
         fill_up[0] = true;
 
-      for (int i = 0; i < 2; i++)
-        if (fill_up[i])
+      জন্য (পূর্ণসংখ্যা i = 0; i < 2; i++)
+        যদি (fill_up[i])
           {
             /* Rotate the buffers for this file. */
             alt[i][2] = alt[i][1];
             alt[i][1] = alt[i][0];
             alt[i][0] = (alt[i][0] + 1) & 0x03;
 
-            thisline[i] = readlinebuffer_delim (all_line[i][alt[i][0]],
+            thisline[i] = readlinebuffer_delim (all_সারি[i][alt[i][0]],
                                                 streams[i], delim);
 
-            if (thisline[i])
-              check_order (all_line[i][alt[i][1]], thisline[i], i + 1);
+            যদি (thisline[i])
+              check_order (all_সারি[i][alt[i][1]], thisline[i], i + 1);
 
             /* If this is the end of the file we may need to re-check
                the order of the previous two lines, since we might have
                discovered an unpairable match since we checked before. */
-            else if (all_line[i][alt[i][2]]->buffer)
-              check_order (all_line[i][alt[i][2]],
-                           all_line[i][alt[i][1]], i + 1);
+            অন্যথা যদি (all_সারি[i][alt[i][2]]->বাফার)
+              check_order (all_সারি[i][alt[i][2]],
+                           all_সারি[i][alt[i][1]], i + 1);
 
-            if (ferror (streams[i]))
+            যদি (ferror (streams[i]))
               error (EXIT_FAILURE, errno, "%s", quotef (infiles[i]));
 
             fill_up[i] = false;
@@ -389,43 +389,43 @@ compare_files (char **infiles)
     }
 
   /* Avoid closing standard input twice when invoking 'comm - -'.  */
-  const int n_streams = 2 - (streams[0] == streams[1]);
-  for (int i = 0; i < n_streams; i++)
-    if (fclose (streams[i]) != 0)
+  ধ্রুবক পূর্ণসংখ্যা n_streams = 2 - (streams[0] == streams[1]);
+  জন্য (পূর্ণসংখ্যা i = 0; i < n_streams; i++)
+    যদি (fclose (streams[i]) != 0)
       error (EXIT_FAILURE, errno, "%s", quotef (infiles[i]));
 
-  if (total_option)
+  যদি (যোগ_option)
     {
       /* Print the summary, minding the column and line delimiters.  */
-      if (col_sep_len == 1)
+      যদি (col_sep_len == 1)
         { /* Separate to handle NUL char.  */
           printf ("%ju%c%ju%c%ju%c%s%c",
-                  total[0], *col_sep,
-                  total[1], *col_sep,
-                  total[2], *col_sep,
+                  যোগ_2[0], *col_sep,
+                  যোগ_2[1], *col_sep,
+                  যোগ_2[2], *col_sep,
                   _("total"), delim);
         }
-      else
+      অন্যথা
         {
           printf ("%ju%s%ju%s%ju%s%s%c",
-                  total[0], col_sep,
-                  total[1], col_sep,
-                  total[2], col_sep,
+                  যোগ_2[0], col_sep,
+                  যোগ_2[1], col_sep,
+                  যোগ_2[2], col_sep,
                   _("total"), delim);
         }
     }
 
-  if (issued_disorder_warning[0] || issued_disorder_warning[1])
+  যদি (issued_disorder_warning[0] || issued_disorder_warning[1])
     error (EXIT_FAILURE, 0, _("input is not in sorted order"));
 
   /* Exit here to pacify gcc -fsanitizer=leak.  */
   exit (EXIT_SUCCESS);
 }
 
-int
-main (int argc, char **argv)
+পূর্ণসংখ্যা
+প্রধান (পূর্ণসংখ্যা argc, অক্ষর **argv)
 {
-  int c;
+  পূর্ণসংখ্যা c;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -436,65 +436,65 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((c = getopt_long (argc, argv, "123z", long_options, NULL)) != -1)
-    switch (c)
+  যখন ((c = getopt_long (argc, argv, "123z", long_options, ফাঁকা)) != -1)
+    নির্বাচন (c)
       {
-      case '1':
+      ক্ষেত্র '1':
         only_file_1 = false;
-        break;
+        বিরতি;
 
-      case '2':
+      ক্ষেত্র '2':
         only_file_2 = false;
-        break;
+        বিরতি;
 
-      case '3':
+      ক্ষেত্র '3':
         both = false;
-        break;
+        বিরতি;
 
-      case 'z':
+      ক্ষেত্র 'z':
         delim = '\0';
-        break;
+        বিরতি;
 
-      case NOCHECK_ORDER_OPTION:
-        check_input_order = CHECK_ORDER_DISABLED;
-        break;
+      ক্ষেত্র NOCHECK_ORDER_OPTION:
+        check_প্রবেশ_order = CHECK_ORDER_DISABLED;
+        বিরতি;
 
-      case CHECK_ORDER_OPTION:
-        check_input_order = CHECK_ORDER_ENABLED;
-        break;
+      ক্ষেত্র CHECK_ORDER_OPTION:
+        check_প্রবেশ_order = CHECK_ORDER_ENABLED;
+        বিরতি;
 
-      case OUTPUT_DELIMITER_OPTION:
-        if (col_sep_len && !streq (col_sep, optarg))
+      ক্ষেত্র OUTPUT_DELIMITER_OPTION:
+        যদি (col_sep_len && !streq (col_sep, optarg))
           error (EXIT_FAILURE, 0, _("multiple output delimiters specified"));
         col_sep = optarg;
         col_sep_len = *optarg ? strlen (optarg) : 1;
-        break;
+        বিরতি;
 
-      case TOTAL_OPTION:
-        total_option = true;
-        break;
+      ক্ষেত্র যোগ_OPTION:
+        যোগ_option = true;
+        বিরতি;
 
       case_GETOPT_HELP_CHAR;
 
       case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-      default:
+      পূর্বনির্ধারিত:
         usage (EXIT_FAILURE);
       }
 
-  if (! col_sep_len)
+  যদি (! col_sep_len)
     col_sep_len = 1;
 
-  if (argc - optind < 2)
+  যদি (argc - optind < 2)
     {
-      if (argc <= optind)
+      যদি (argc <= optind)
         error (0, 0, _("missing operand"));
-      else
+      অন্যথা
         error (0, 0, _("missing operand after %s"), quote (argv[argc - 1]));
       usage (EXIT_FAILURE);
     }
 
-  if (2 < argc - optind)
+  যদি (2 < argc - optind)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind + 2]));
       usage (EXIT_FAILURE);
