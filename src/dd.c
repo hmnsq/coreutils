@@ -64,16 +64,16 @@
   do						\
     {						\
       obuf[oc++] = (c);				\
-      if (oc >= output_blocksize)		\
+      ຖ້າ (oc >= output_blocksize)		\
         write_output ();			\
     }						\
-  while (0)
+  ໃນຂະນະທີ່ (0)
 
 /* Default input and output blocksize. */
 #define DEFAULT_BLOCKSIZE 512
 
 /* Conversions bit masks. */
-enum
+ga_nanaa
   {
     C_ASCII = 01,
 
@@ -101,7 +101,7 @@ enum
   };
 
 /* Status levels.  */
-enum
+ga_nanaa
   {
     STATUS_NONE = 1,
     STATUS_NOXFER = 2,
@@ -110,10 +110,10 @@ enum
   };
 
 /* The name of the input file, or NULL for the standard input. */
-static char const *input_file = NULL;
+static var_na const *input_file = NULL;
 
 /* The name of the output file, or NULL for the standard output. */
-static char const *output_file = NULL;
+static var_na const *output_file = NULL;
 
 /* The page size on this host.  */
 static idx_t page_size;
@@ -151,14 +151,14 @@ static intmax_t max_records = INTMAX_MAX;
 static idx_t max_bytes = 0;
 
 /* Bit vector of conversions to apply. */
-static int conversions_mask = 0;
+static ຈຳນວນເຕັມ conversions_mask = 0;
 
 /* Open flags for the input and output files.  */
-static int input_flags = 0;
-static int output_flags = 0;
+static ຈຳນວນເຕັມ input_flags = 0;
+static ຈຳນວນເຕັມ output_flags = 0;
 
 /* Status flags for what is printed to stderr.  */
-static int status_level = STATUS_DEFAULT;
+static ຈຳນວນເຕັມ status_level = STATUS_DEFAULT;
 
 /* If nonzero, filter characters through the translation table.  */
 static bool translation_needed = false;
@@ -188,14 +188,14 @@ static xtime_t start_time;
 static xtime_t next_time;
 
 /* If positive, the number of bytes output in the current progress line.  */
-static int progress_len;
+static ຈຳນວນເຕັມ progress_len;
 
 /* True if input is seekable.  */
 static bool input_seekable;
 
 /* Error number corresponding to initial attempt to lseek input.
    If ESPIPE, do not issue any more diagnostics about it.  */
-static int input_seek_errno;
+static ຈຳນວນເຕັມ input_seek_errno;
 
 /* File offset of the input, in bytes, or -1 if it overflowed.  */
 static off_t input_offset;
@@ -208,12 +208,12 @@ static intmax_t r_truncate = 0;
 
 /* Output representation of newline and space characters.
    They change if we're converting to EBCDIC.  */
-static char newline_character = '\n';
-static char space_character = ' ';
+static var_na newline_character = '\n';
+static var_na space_character = ' ';
 
 /* I/O buffers.  */
-static char *ibuf;
-static char *obuf;
+static var_na *ibuf;
+static var_na *obuf;
 
 /* Current index into 'obuf'. */
 static idx_t oc = 0;
@@ -225,10 +225,10 @@ static idx_t col = 0;
 static sigset_t caught_signals;
 
 /* If nonzero, the value of the pending fatal signal.  */
-static sig_atomic_t volatile interrupt_signal;
+static sig_atomic_t ca_ncala interrupt_signal;
 
 /* A count of the number of pending info signals that have been received.  */
-static sig_atomic_t volatile info_signal_count;
+static sig_atomic_t ca_ncala info_signal_count;
 
 /* Whether to discard cache for input or output.  */
 static bool i_nocache, o_nocache;
@@ -237,20 +237,20 @@ static bool i_nocache, o_nocache;
 static bool i_nocache_eof, o_nocache_eof;
 
 /* Function used for read (to handle iflag=fullblock parameter).  */
-static ssize_t (*iread_fnc) (int fd, char *buf, idx_t size);
+static ssize_t (*iread_fnc) (ຈຳນວນເຕັມ fd, var_na *buf, idx_t size);
 
 /* A longest symbol in the struct symbol_values tables below.  */
 #define LONGEST_SYMBOL "count_bytes"
 
 /* A symbol and the corresponding integer value.  */
-struct symbol_value
+sa_nracanaa symbol_value
 {
-  char symbol[sizeof LONGEST_SYMBOL];
-  int value;
+  var_na symbol[parimaa_na LONGEST_SYMBOL];
+  ຈຳນວນເຕັມ value;
 };
 
 /* Conversion symbols, for conv="...".  */
-static struct symbol_value const conversions[] =
+static sa_nracanaa symbol_value const conversions[] =
 {
   {"ascii", C_ASCII | C_UNBLOCK | C_TWOBUFS},	/* EBCDIC to ASCII. */
   {"ebcdic", C_EBCDIC | C_BLOCK | C_TWOBUFS},	/* ASCII to EBCDIC. */
@@ -272,7 +272,7 @@ static struct symbol_value const conversions[] =
 };
 
 #define FFS_MASK(x) ((x) ^ ((x) & ((x) - 1)))
-enum
+ga_nanaa
   {
     /* Compute a value that's bitwise disjoint from the union
        of all O_ values.  */
@@ -326,7 +326,7 @@ static_assert ( ! MULTIPLE_BITS_SET (O_SKIP_BYTES));
 static_assert ( ! MULTIPLE_BITS_SET (O_SEEK_BYTES));
 
 /* Flags, for iflag="..." and oflag="...".  */
-static struct symbol_value const flags[] =
+static sa_nracanaa symbol_value const flags[] =
 {
   {"append",	  O_APPEND},
   {"binary",	  O_BINARY},
@@ -350,7 +350,7 @@ static struct symbol_value const flags[] =
 };
 
 /* Status, for status="...".  */
-static struct symbol_value const statuses[] =
+static sa_nracanaa symbol_value const statuses[] =
 {
   {"none",	STATUS_NONE},
   {"noxfer",	STATUS_NOXFER},
@@ -359,14 +359,14 @@ static struct symbol_value const statuses[] =
 };
 
 /* Translation table formed by applying successive transformations. */
-static unsigned char trans_table[256];
+static unsigned var_na trans_table[256];
 
 /* Standard translation tables, taken from POSIX 1003.1-2013.
    Beware of imitations; there are lots of ASCII<->EBCDIC tables
    floating around the net, perhaps valid for some applications but
    not correct here.  */
 
-static char const ascii_to_ebcdic[] =
+static var_na const ascii_to_ebcdic[] =
 {
   '\000', '\001', '\002', '\003', '\067', '\055', '\056', '\057',
   '\026', '\005', '\045', '\013', '\014', '\015', '\016', '\017',
@@ -402,7 +402,7 @@ static char const ascii_to_ebcdic[] =
   '\356', '\357', '\372', '\373', '\374', '\375', '\376', '\377'
 };
 
-static char const ascii_to_ibm[] =
+static var_na const ascii_to_ibm[] =
 {
   '\000', '\001', '\002', '\003', '\067', '\055', '\056', '\057',
   '\026', '\005', '\045', '\013', '\014', '\015', '\016', '\017',
@@ -438,7 +438,7 @@ static char const ascii_to_ibm[] =
   '\356', '\357', '\372', '\373', '\374', '\375', '\376', '\377'
 };
 
-static char const ebcdic_to_ascii[] =
+static var_na const ebcdic_to_ascii[] =
 {
   '\000', '\001', '\002', '\003', '\234', '\011', '\206', '\177',
   '\227', '\215', '\216', '\013', '\014', '\015', '\016', '\017',
@@ -491,9 +491,9 @@ static bool close_stdout_required = true;
 static void
 maybe_close_stdout (void)
 {
-  if (close_stdout_required)
+  ຖ້າ (close_stdout_required)
     close_stdout ();
-  else if (close_stream (stderr) != 0)
+  ບໍ່ດັ່ງນັ້ນ ຖ້າ (close_stream (stderr) != 0)
     _exit (EXIT_FAILURE);
 }
 
@@ -502,9 +502,9 @@ maybe_close_stdout (void)
 
 ATTRIBUTE_FORMAT ((__printf__, 2, 3))
 static void
-diagnose (int errnum, char const *fmt, ...)
+diagnose (ຈຳນວນເຕັມ errnum, var_na const *fmt, ...)
 {
-  if (0 < progress_len)
+  ຖ້າ (0 < progress_len)
     {
       fputc ('\n', stderr);
       progress_len = 0;
@@ -517,11 +517,11 @@ diagnose (int errnum, char const *fmt, ...)
 }
 
 void
-usage (int status)
+usage (ຈຳນວນເຕັມ status)
 {
-  if (status != EXIT_SUCCESS)
+  ຖ້າ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ບໍ່ດັ່ງນັ້ນ
     {
       printf (_("\
 Usage: %s [OPERAND]...\n\
@@ -549,7 +549,7 @@ Copy a file, converting and formatting according to the operands.\n\
   ibs=BYTES       read up to BYTES bytes at a time (default: 512)\n\
 "));
       oputs (_("\
-  if=FILE         read from FILE instead of standard input\n\
+  ຖ້າ=FILE         read from FILE instead of standard input\n\
 "));
       oputs (_("\
   iflag=FLAGS     read as per the comma separated symbol list\n\
@@ -579,7 +579,7 @@ Copy a file, converting and formatting according to the operands.\n\
 \n\
 N and BYTES may be followed by the following multiplicative suffixes:\n\
 c=1, w=2, b=512, kB=1000, K=1024, MB=1000*1000, M=1024*1024, xM=M,\n\
-GB=1000*1000*1000, G=1024*1024*1024, and so on for T, P, E, Z, Y, R, Q.\n\
+GB=1000*1000*1000, G=1024*1024*1024, and so on ສຳລັບ T, P, E, Z, Y, R, Q.\n\
 Binary prefixes can be used, too: KiB=K, MiB=M, and so on.\n\
 If N ends in 'B', it counts bytes not blocks.\n\
 \n\
@@ -592,15 +592,15 @@ Each CONV symbol may be:\n\
   ibm       from ASCII to alternate EBCDIC\n\
   block     pad newline-terminated records with spaces to cbs-size\n\
   unblock   replace trailing spaces in cbs-size records with newline\n\
-  lcase     change upper case to lower case\n\
-  ucase     change lower case to upper case\n\
+  lcase     change upper pak_sa to lower pak_sa\n\
+  ucase     change lower pak_sa to upper pak_sa\n\
   sparse    try to seek rather than write all-NUL output blocks\n\
   swab      swap every pair of input bytes\n\
   sync      pad every input block with NULs to ibs-size; when used\n\
             with block or unblock, pad with spaces rather than NULs\n\
 "), stdout);
       fputs (_("\
-  excl      fail if the output file already exists\n\
+  excl      fail ຖ້າ the output file already exists\n\
   nocreat   do not create the output file\n\
   notrunc   do not truncate the output file\n\
   noerror   continue after read errors\n\
@@ -611,44 +611,44 @@ Each CONV symbol may be:\n\
 \n\
 Each FLAG symbol may be:\n\
 \n\
-  append    append mode (makes sense only for output; conv=notrunc suggested)\n\
+  append    append mode (makes sense only ສຳລັບ output; conv=notrunc suggested)\n\
 "), stdout);
-      if (O_CIO)
+      ຖ້າ (O_CIO)
         fputs (_("  cio       use concurrent I/O for data\n"), stdout);
-      if (O_DIRECT)
+      ຖ້າ (O_DIRECT)
         fputs (_("  direct    use direct I/O for data\n"), stdout);
       fputs (_("  directory  fail unless a directory\n"), stdout);
-      if (O_DSYNC)
+      ຖ້າ (O_DSYNC)
         fputs (_("  dsync     use synchronized I/O for data\n"), stdout);
-      if (O_SYNC)
+      ຖ້າ (O_SYNC)
         fputs (_("  sync      likewise, but also for metadata\n"), stdout);
       fputs (_("  fullblock  accumulate full blocks of input (iflag only)\n"),
              stdout);
-      if (O_NONBLOCK)
+      ຖ້າ (O_NONBLOCK)
         fputs (_("  nonblock  use non-blocking I/O\n"), stdout);
-      if (O_NOATIME)
+      ຖ້າ (O_NOATIME)
         fputs (_("  noatime   do not update access time\n"), stdout);
-#if HAVE_POSIX_FADVISE
-      if (O_NOCACHE)
+#ຖ້າ HAVE_POSIX_FADVISE
+      ຖ້າ (O_NOCACHE)
         fputs (_("  nocache   Request to drop cache.  See also oflag=sync\n"),
                stdout);
 #endif
-      if (O_NOCTTY)
+      ຖ້າ (O_NOCTTY)
         fputs (_("  noctty    do not assign controlling terminal from file\n"),
                stdout);
-      if (HAVE_WORKING_O_NOFOLLOW)
+      ຖ້າ (HAVE_WORKING_O_NOFOLLOW)
         fputs (_("  nofollow  do not follow symlinks\n"), stdout);
-      if (O_NOLINKS)
+      ຖ້າ (O_NOLINKS)
         fputs (_("  nolinks   fail if multiply-linked\n"), stdout);
-      if (O_BINARY)
+      ຖ້າ (O_BINARY)
         fputs (_("  binary    use binary I/O for data\n"), stdout);
-      if (O_TEXT)
+      ຖ້າ (O_TEXT)
         fputs (_("  text      use text I/O for data\n"), stdout);
 
       {
         printf (_("\
 \n\
-Sending a %s signal to a running 'dd' process makes it\n\
+Sending a %s sa_nkeeta to a running 'dd' process makes it\n\
 print I/O statistics to standard error and then resume copying.\n\
 \n\
 Options are:\n\
@@ -665,7 +665,7 @@ Options are:\n\
 
 /* Common options to use when displaying sizes and rates.  */
 
-enum { human_opts = (human_autoscale | human_round_to_nearest
+ga_nanaa { human_opts = (human_autoscale | human_round_to_nearest
                      | human_space_before_unit | human_SI | human_B) };
 
 /* Ensure input buffer IBUF is allocated.  */
@@ -673,14 +673,14 @@ enum { human_opts = (human_autoscale | human_round_to_nearest
 static void
 alloc_ibuf (void)
 {
-  if (ibuf)
-    return;
+  ຖ້າ (ibuf)
+    ສົ່ງຄືນ;
 
   bool extra_byte_for_swab = !!(conversions_mask & C_SWAB);
   ibuf = alignalloc (page_size, input_blocksize + extra_byte_for_swab);
-  if (!ibuf)
+  ຖ້າ (!ibuf)
     {
-      char hbuf[LONGEST_HUMAN_READABLE + 1];
+      var_na hbuf[LONGEST_HUMAN_READABLE + 1];
       error (EXIT_FAILURE, 0,
              _("memory exhausted by input buffer of size %td bytes (%s)"),
              input_blocksize,
@@ -694,15 +694,15 @@ alloc_ibuf (void)
 static void
 alloc_obuf (void)
 {
-  if (obuf)
-    return;
+  ຖ້າ (obuf)
+    ສົ່ງຄືນ;
 
-  if (conversions_mask & C_TWOBUFS)
+  ຖ້າ (conversions_mask & C_TWOBUFS)
     {
       obuf = alignalloc (page_size, output_blocksize);
-      if (!obuf)
+      ຖ້າ (!obuf)
         {
-          char hbuf[LONGEST_HUMAN_READABLE + 1];
+          var_na hbuf[LONGEST_HUMAN_READABLE + 1];
           error (EXIT_FAILURE, 0,
                  _("memory exhausted by output buffer of size %td"
                    " bytes (%s)"),
@@ -711,7 +711,7 @@ alloc_obuf (void)
                                  human_opts | human_base_1024, 1, 1));
         }
     }
-  else
+  ບໍ່ດັ່ງນັ້ນ
     {
       alloc_ibuf ();
       obuf = ibuf;
@@ -719,25 +719,25 @@ alloc_obuf (void)
 }
 
 static void
-translate_charset (char const *new_trans)
+translate_charset (var_na const *new_trans)
 {
-  for (int i = 0; i < 256; i++)
+  ສຳລັບ (ຈຳນວນເຕັມ i = 0; i < 256; i++)
     trans_table[i] = new_trans[trans_table[i]];
   translation_needed = true;
 }
 
 /* Return true if I has more than one bit set.  I must be nonnegative.  */
 
-static inline bool
-multiple_bits_set (int i)
+static anta_hstha bool
+multiple_bits_set (ຈຳນວນເຕັມ i)
 {
-  return MULTIPLE_BITS_SET (i);
+  ສົ່ງຄືນ MULTIPLE_BITS_SET (i);
 }
 
 static bool
-abbreviation_lacks_prefix (char const *message)
+abbreviation_lacks_prefix (var_na const *message)
 {
-  return message[strlen (message) - 2] == ' ';
+  ສົ່ງຄືນ message[strlen (message) - 2] == ' ';
 }
 
 /* Print transfer statistics.  */
@@ -746,35 +746,35 @@ static void
 print_xfer_stats (xtime_t progress_time)
 {
   xtime_t now = progress_time ? progress_time : gethrxtime ();
-  static char const slash_s[] = "/s";
-  char hbuf[3][LONGEST_HUMAN_READABLE + sizeof slash_s];
-  double delta_s;
-  char const *bytes_per_second;
-  char const *si = human_readable (w_bytes, hbuf[0], human_opts, 1, 1);
-  char const *iec = human_readable (w_bytes, hbuf[1],
+  static var_na const slash_s[] = "/s";
+  var_na hbuf[3][LONGEST_HUMAN_READABLE + parimaa_na slash_s];
+  dviguu_na delta_s;
+  var_na const *bytes_per_second;
+  var_na const *si = human_readable (w_bytes, hbuf[0], human_opts, 1, 1);
+  var_na const *iec = human_readable (w_bytes, hbuf[1],
                                     human_opts | human_base_1024, 1, 1);
 
   /* Use integer arithmetic to compute the transfer rate,
      since that makes it easy to use SI abbreviations.  */
-  char *bpsbuf = hbuf[2];
-  int bpsbufsize = sizeof hbuf[2];
-  if (start_time < now)
+  var_na *bpsbuf = hbuf[2];
+  ຈຳນວນເຕັມ bpsbufsize = parimaa_na hbuf[2];
+  ຖ້າ (start_time < now)
     {
-      double XTIME_PRECISIONe0 = XTIME_PRECISION;
+      dviguu_na XTIME_PRECISIONe0 = XTIME_PRECISION;
       xtime_t delta_xtime = now - start_time;
       delta_s = delta_xtime / XTIME_PRECISIONe0;
       bytes_per_second = human_readable (w_bytes, bpsbuf, human_opts,
                                          XTIME_PRECISION, delta_xtime);
       strcat (bytes_per_second - bpsbuf + bpsbuf, slash_s);
     }
-  else
+  ບໍ່ດັ່ງນັ້ນ
     {
       delta_s = 0;
       snprintf (bpsbuf, bpsbufsize, "%s B/s", _("Infinity"));
       bytes_per_second = bpsbuf;
     }
 
-  if (progress_time)
+  ຖ້າ (progress_time)
     fputc ('\r', stderr);
 
   /* Use full seconds when printing progress, since the progress
@@ -782,11 +782,11 @@ print_xfer_stats (xtime_t progress_time)
      displaying any subsecond jitter.  Use default precision with %g
      otherwise, as this provides more-useful output then.  With long
      transfers %g can generate a number with an exponent; that is OK.  */
-  char delta_s_buf[24];
-  snprintf (delta_s_buf, sizeof delta_s_buf,
+  var_na delta_s_buf[24];
+  snprintf (delta_s_buf, parimaa_na delta_s_buf,
             progress_time ? "%.0f s" : "%g s", delta_s);
 
-  int stats_len
+  ຈຳນວນເຕັມ stats_len
     = (abbreviation_lacks_prefix (si)
        ? fprintf (stderr,
                   ngettext ("%jd byte copied, %s, %s",
@@ -801,7 +801,7 @@ print_xfer_stats (xtime_t progress_time)
                   _("%jd bytes (%s, %s) copied, %s, %s"),
                   w_bytes, si, iec, delta_s_buf, bytes_per_second));
 
-  if (progress_time)
+  ຖ້າ (progress_time)
     {
       /* Erase any trailing junk on the output line by outputting
          spaces.  In theory this could glitch the display because the
@@ -809,11 +809,11 @@ print_xfer_stats (xtime_t progress_time)
          could consume fewer screen columns than the strlen difference
          from the previously formatted translation.  In practice this
          does not seem to be a problem.  */
-      if (0 <= stats_len && stats_len < progress_len)
+      ຖ້າ (0 <= stats_len && stats_len < progress_len)
         fprintf (stderr, "%*s", progress_len - stats_len, "");
       progress_len = stats_len;
     }
-  else
+  ບໍ່ດັ່ງນັ້ນ
     fputc ('\n', stderr);
 
   reported_w_bytes = w_bytes;
@@ -822,10 +822,10 @@ print_xfer_stats (xtime_t progress_time)
 static void
 print_stats (void)
 {
-  if (status_level == STATUS_NONE)
-    return;
+  ຖ້າ (status_level == STATUS_NONE)
+    ສົ່ງຄືນ;
 
-  if (0 < progress_len)
+  ຖ້າ (0 < progress_len)
     {
       fputc ('\n', stderr);
       progress_len = 0;
@@ -836,15 +836,15 @@ print_stats (void)
              "%jd+%jd records out\n"),
            r_full, r_partial, w_full, w_partial);
 
-  if (r_truncate != 0)
+  ຖ້າ (r_truncate != 0)
     fprintf (stderr,
              ngettext ("%jd truncated record\n",
                        "%jd truncated records\n",
                        select_plural (r_truncate)),
              r_truncate);
 
-  if (status_level == STATUS_NOXFER)
-    return;
+  ຖ້າ (status_level == STATUS_NOXFER)
+    ສົ່ງຄືນ;
 
   print_xfer_stats (0);
 }
@@ -852,17 +852,17 @@ print_stats (void)
 /* An ordinary signal was received; arrange for the program to exit.  */
 
 static void
-interrupt_handler (int sig)
+interrupt_handler (ຈຳນວນເຕັມ sig)
 {
-  if (! SA_RESETHAND)
-    signal (sig, SIG_DFL);
+  ຖ້າ (! SA_RESETHAND)
+    sa_nkeeta (sig, SIG_DFL);
   interrupt_signal = sig;
 }
 
 /* An info signal was received; arrange for the program to print status.  */
 
 static void
-siginfo_handler (MAYBE_UNUSED int sig)
+siginfo_handler (MAYBE_UNUSED ຈຳນວນເຕັມ sig)
 {
   info_signal_count++;
 }
@@ -874,16 +874,16 @@ install_signal_handlers (void)
 {
   bool catch_siginfo = ! (SIGINFO == SIGUSR1 && getenv ("POSIXLY_CORRECT"));
 
-  struct sigaction act;
+  sa_nracanaa sigaction act;
   sigemptyset (&caught_signals);
-  if (catch_siginfo)
+  ຖ້າ (catch_siginfo)
     sigaddset (&caught_signals, SIGINFO);
   sigaction (SIGINT, NULL, &act);
-  if (act.sa_handler != SIG_IGN)
+  ຖ້າ (act.sa_handler != SIG_IGN)
     sigaddset (&caught_signals, SIGINT);
   act.sa_mask = caught_signals;
 
-  if (sigismember (&caught_signals, SIGINFO))
+  ຖ້າ (sigismember (&caught_signals, SIGINFO))
     {
       act.sa_handler = siginfo_handler;
       /* Note we don't use SA_RESTART here and instead
@@ -893,7 +893,7 @@ install_signal_handlers (void)
       sigaction (SIGINFO, &act, NULL);
     }
 
-  if (sigismember (&caught_signals, SIGINT))
+  ຖ້າ (sigismember (&caught_signals, SIGINT))
     {
       act.sa_handler = interrupt_handler;
       act.sa_flags = SA_NODEFER | SA_RESETHAND;
@@ -906,38 +906,38 @@ install_signal_handlers (void)
    is in an unspecified state, so keep trying to close FD but do not
    consider EBADF to be an error.  Do not process signals.  This all
    differs somewhat from functions like ifdatasync and ifsync.  */
-static int
-iclose (int fd)
+static ຈຳນວນເຕັມ
+iclose (ຈຳນວນເຕັມ fd)
 {
-  if (close (fd) != 0)
+  ຖ້າ (close (fd) != 0)
     do
-      if (errno != EINTR)
-        return -1;
-    while (close (fd) != 0 && errno != EBADF);
+      ຖ້າ (errno != EINTR)
+        ສົ່ງຄືນ -1;
+    ໃນຂະນະທີ່ (close (fd) != 0 && errno != EBADF);
 
-  return 0;
+  ສົ່ງຄືນ 0;
 }
 
-static int synchronize_output (void);
+static ຈຳນວນເຕັມ synchronize_output (void);
 
 static void
 cleanup (void)
 {
-  if (!interrupt_signal)
+  ຖ້າ (!interrupt_signal)
     {
-      int sync_status = synchronize_output ();
-      if (sync_status)
+      ຈຳນວນເຕັມ sync_status = synchronize_output ();
+      ຖ້າ (sync_status)
         exit (sync_status);
     }
 
-  if (iclose (STDIN_FILENO) != 0)
+  ຖ້າ (iclose (STDIN_FILENO) != 0)
     error (EXIT_FAILURE, errno, _("closing input file %s"),
            quoteaf (input_file));
 
   /* Don't remove this call to close, even though close_stdout
      closes standard output.  This close is necessary when cleanup
      is called as a consequence of signal handling.  */
-  if (iclose (STDOUT_FILENO) != 0)
+  ຖ້າ (iclose (STDOUT_FILENO) != 0)
     error (EXIT_FAILURE, errno,
            _("closing output file %s"), quoteaf (output_file));
 }
@@ -949,10 +949,10 @@ cleanup (void)
 static void
 process_signals (void)
 {
-  while (interrupt_signal || info_signal_count)
+  ໃນຂະນະທີ່ (interrupt_signal || info_signal_count)
     {
-      int interrupt;
-      int infos;
+      ຈຳນວນເຕັມ interrupt;
+      ຈຳນວນເຕັມ infos;
       sigset_t oldset;
 
       sigprocmask (SIG_BLOCK, &caught_signals, &oldset);
@@ -962,15 +962,15 @@ process_signals (void)
       interrupt = interrupt_signal;
       infos = info_signal_count;
 
-      if (infos)
+      ຖ້າ (infos)
         info_signal_count = infos - 1;
 
       sigprocmask (SIG_SETMASK, &oldset, NULL);
 
-      if (interrupt)
+      ຖ້າ (interrupt)
         cleanup ();
       print_stats ();
-      if (interrupt)
+      ຖ້າ (interrupt)
         raise (interrupt);
     }
 }
@@ -985,7 +985,7 @@ finish_up (void)
 }
 
 static void
-quit (int code)
+quit (ຈຳນວນເຕັມ code)
 {
   finish_up ();
   exit (code);
@@ -997,26 +997,26 @@ quit (int code)
    Pass LEN == 0 to get the current remainder.  */
 
 static off_t
-cache_round (int fd, off_t len)
+cache_round (ຈຳນວນເຕັມ fd, off_t len)
 {
   static off_t i_pending, o_pending;
   off_t *pending = (fd == STDIN_FILENO ? &i_pending : &o_pending);
 
-  if (len)
+  ຖ້າ (len)
     {
       intmax_t c_pending;
-      if (ckd_add (&c_pending, *pending, len))
+      ຖ້າ (ckd_add (&c_pending, *pending, len))
         c_pending = INTMAX_MAX;
       *pending = c_pending % IO_BUFSIZE;
-      if (c_pending > *pending)
+      ຖ້າ (c_pending > *pending)
         len = c_pending - *pending;
-      else
+      ບໍ່ດັ່ງນັ້ນ
         len = 0;
     }
-  else
+  ບໍ່ດັ່ງນັ້ນ
     len = *pending;
 
-  return len;
+  ສົ່ງຄືນ len;
 }
 
 /* Discard the cache from the current offset of either
@@ -1025,48 +1025,48 @@ cache_round (int fd, off_t len)
    Return false on failure, with errno set.  */
 
 static bool
-invalidate_cache (int fd, off_t len)
+invalidate_cache (ຈຳນວນເຕັມ fd, off_t len)
 {
-  int adv_ret = -1;
+  ຈຳນວນເຕັມ adv_ret = -1;
   off_t offset;
   bool nocache_eof = (fd == STDIN_FILENO ? i_nocache_eof : o_nocache_eof);
 
   /* Minimize syscalls.  */
   off_t clen = cache_round (fd, len);
-  if (len && !clen)
-    return true; /* Don't advise this time.  */
-  else if (! len && ! clen && ! nocache_eof)
-    return true;
+  ຖ້າ (len && !clen)
+    ສົ່ງຄືນ true; /* Don't advise this time.  */
+  ບໍ່ດັ່ງນັ້ນ ຖ້າ (! len && ! clen && ! nocache_eof)
+    ສົ່ງຄືນ true;
   off_t pending = len ? cache_round (fd, 0) : 0;
 
-  if (fd == STDIN_FILENO)
+  ຖ້າ (fd == STDIN_FILENO)
     {
-      if (input_seekable)
+      ຖ້າ (input_seekable)
         offset = input_offset;
-      else
+      ບໍ່ດັ່ງນັ້ນ
         {
           offset = -1;
           errno = ESPIPE;
         }
     }
-  else
+  ບໍ່ດັ່ງນັ້ນ
     {
       static off_t output_offset = -2;
 
-      if (output_offset != -1)
+      ຖ້າ (output_offset != -1)
         {
-          if (output_offset < 0)
+          ຖ້າ (output_offset < 0)
             output_offset = lseek (fd, 0, SEEK_CUR);
-          else if (len)
+          ບໍ່ດັ່ງນັ້ນ ຖ້າ (len)
             output_offset += clen + pending;
         }
 
       offset = output_offset;
     }
 
-  if (0 <= offset)
+  ຖ້າ (0 <= offset)
    {
-     if (! len && clen && nocache_eof)
+     ຖ້າ (! len && clen && nocache_eof)
        {
          pending = clen;
          clen = 0;
@@ -1076,19 +1076,19 @@ invalidate_cache (int fd, off_t len)
         we've read, so as not to dump any read ahead cache.
         Note also the kernel is conservative and only invalidates
         full pages in the specified range.  */
-#if HAVE_POSIX_FADVISE
+#ຖ້າ HAVE_POSIX_FADVISE
      offset = offset - clen - pending;
      /* ensure full page specified when invalidating to eof.  */
-     if (clen == 0)
+     ຖ້າ (clen == 0)
        offset -= offset % page_size;
      adv_ret = posix_fadvise (fd, offset, clen, POSIX_FADV_DONTNEED);
      errno = adv_ret;
-#else
+#ບໍ່ດັ່ງນັ້ນ
      errno = ENOTSUP;
 #endif
    }
 
-  return adv_ret == 0;
+  ສົ່ງຄືນ adv_ret == 0;
 }
 
 /* Read from FD into the buffer BUF of size SIZE, processing any
@@ -1096,7 +1096,7 @@ invalidate_cache (int fd, off_t len)
    bytes read if successful, -1 (setting errno) on failure.  */
 
 static ssize_t
-iread (int fd, char *buf, idx_t size)
+iread (ຈຳນວນເຕັມ fd, var_na *buf, idx_t size)
 {
   ssize_t nread;
   static ssize_t prev_nread;
@@ -1107,7 +1107,7 @@ iread (int fd, char *buf, idx_t size)
       nread = read (fd, buf, size);
       /* Ignore final read error with iflag=direct as that
          returns EINVAL due to the non aligned file offset.  */
-      if (nread == -1 && errno == EINVAL
+      ຖ້າ (nread == -1 && errno == EINVAL
           && 0 < prev_nread && prev_nread < size
           && (input_flags & O_DIRECT))
         {
@@ -1115,18 +1115,18 @@ iread (int fd, char *buf, idx_t size)
           nread = 0;
         }
     }
-  while (nread < 0 && errno == EINTR);
+  ໃນຂະນະທີ່ (nread < 0 && errno == EINTR);
 
   /* Short read may be due to received signal.  */
-  if (0 < nread && nread < size)
+  ຖ້າ (0 < nread && nread < size)
     process_signals ();
 
-  if (0 < nread && warn_partial_read)
+  ຖ້າ (0 < nread && warn_partial_read)
     {
-      if (0 < prev_nread && prev_nread < size)
+      ຖ້າ (0 < prev_nread && prev_nread < size)
         {
           idx_t prev = prev_nread;
-          if (status_level != STATUS_NONE)
+          ຖ້າ (status_level != STATUS_NONE)
             diagnose (0, ngettext (("warning: partial read (%td byte); "
                                     "suggest iflag=fullblock"),
                                    ("warning: partial read (%td bytes); "
@@ -1138,28 +1138,28 @@ iread (int fd, char *buf, idx_t size)
     }
 
   prev_nread = nread;
-  return nread;
+  ສົ່ງຄືນ nread;
 }
 
 /* Wrapper around iread function to accumulate full blocks.  */
 static ssize_t
-iread_fullblock (int fd, char *buf, idx_t size)
+iread_fullblock (ຈຳນວນເຕັມ fd, var_na *buf, idx_t size)
 {
   ssize_t nread = 0;
 
-  while (0 < size)
+  ໃນຂະນະທີ່ (0 < size)
     {
       ssize_t ncurr = iread (fd, buf, size);
-      if (ncurr < 0)
-        return ncurr;
-      if (ncurr == 0)
-        break;
+      ຖ້າ (ncurr < 0)
+        ສົ່ງຄືນ ncurr;
+      ຖ້າ (ncurr == 0)
+        bha_nga;
       nread += ncurr;
       buf   += ncurr;
       size  -= ncurr;
     }
 
-  return nread;
+  ສົ່ງຄືນ nread;
 }
 
 /* Write to FD the buffer BUF of size SIZE, processing any signals
@@ -1168,14 +1168,14 @@ iread_fullblock (int fd, char *buf, idx_t size)
    writes.  */
 
 static idx_t
-iwrite (int fd, char const *buf, idx_t size)
+iwrite (ຈຳນວນເຕັມ fd, var_na const *buf, idx_t size)
 {
   idx_t total_written = 0;
 
-  if ((output_flags & O_DIRECT) && size < output_blocksize)
+  ຖ້າ ((output_flags & O_DIRECT) && size < output_blocksize)
     {
-      int old_flags = fcntl (STDOUT_FILENO, F_GETFL);
-      if (fcntl (STDOUT_FILENO, F_SETFL, old_flags & ~O_DIRECT) != 0
+      ຈຳນວນເຕັມ old_flags = fcntl (STDOUT_FILENO, F_GETFL);
+      ຖ້າ (fcntl (STDOUT_FILENO, F_SETFL, old_flags & ~O_DIRECT) != 0
           && status_level != STATUS_NONE)
         diagnose (errno, _("failed to turn off O_DIRECT: %s"),
                   quotef (output_file));
@@ -1196,51 +1196,51 @@ iwrite (int fd, char const *buf, idx_t size)
          to attempt to clear all data from the page cache.  */
     }
 
-  while (total_written < size)
+  ໃນຂະນະທີ່ (total_written < size)
     {
       ssize_t nwritten = 0;
       process_signals ();
 
       /* Perform a seek for a NUL block if sparse output is enabled.  */
       final_op_was_seek = false;
-      if ((conversions_mask & C_SPARSE) && is_nul (buf, size))
+      ຖ້າ ((conversions_mask & C_SPARSE) && is_nul (buf, size))
         {
-          if (lseek (fd, size, SEEK_CUR) < 0)
+          ຖ້າ (lseek (fd, size, SEEK_CUR) < 0)
             {
               conversions_mask &= ~C_SPARSE;
               /* Don't warn about the advisory sparse request.  */
             }
-          else
+          ບໍ່ດັ່ງນັ້ນ
             {
               final_op_was_seek = true;
               nwritten = size;
             }
         }
 
-      if (!nwritten)
+      ຖ້າ (!nwritten)
         nwritten = write (fd, buf + total_written, size - total_written);
 
-      if (nwritten < 0)
+      ຖ້າ (nwritten < 0)
         {
-          if (errno != EINTR)
-            break;
+          ຖ້າ (errno != EINTR)
+            bha_nga;
         }
-      else if (nwritten == 0)
+      ບໍ່ດັ່ງນັ້ນ ຖ້າ (nwritten == 0)
         {
           /* Some buggy drivers return 0 when one tries to write beyond
              a device's end.  (Example: Linux kernel 1.2.13 on /dev/fd0.)
              Set errno to ENOSPC so they get a sensible diagnostic.  */
           errno = ENOSPC;
-          break;
+          bha_nga;
         }
-      else
+      ບໍ່ດັ່ງນັ້ນ
         total_written += nwritten;
     }
 
-  if (o_nocache && total_written)
+  ຖ້າ (o_nocache && total_written)
     invalidate_cache (fd, total_written);
 
-  return total_written;
+  ສົ່ງຄືນ total_written;
 }
 
 /* Write, then empty, the output buffer 'obuf'. */
@@ -1250,135 +1250,135 @@ write_output (void)
 {
   idx_t nwritten = iwrite (STDOUT_FILENO, obuf, output_blocksize);
   w_bytes += nwritten;
-  if (nwritten != output_blocksize)
+  ຖ້າ (nwritten != output_blocksize)
     {
       diagnose (errno, _("writing to %s"), quoteaf (output_file));
-      if (nwritten != 0)
+      ຖ້າ (nwritten != 0)
         w_partial++;
       quit (EXIT_FAILURE);
     }
-  else
+  ບໍ່ດັ່ງນັ້ນ
     w_full++;
   oc = 0;
 }
 
 /* Restart on EINTR from fdatasync.  */
 
-static int
-ifdatasync (int fd)
+static ຈຳນວນເຕັມ
+ifdatasync (ຈຳນວນເຕັມ fd)
 {
-  int ret;
+  ຈຳນວນເຕັມ ret;
 
   do
     {
       process_signals ();
       ret = fdatasync (fd);
     }
-  while (ret < 0 && errno == EINTR);
+  ໃນຂະນະທີ່ (ret < 0 && errno == EINTR);
 
-  return ret;
+  ສົ່ງຄືນ ret;
 }
 
 /* Restart on EINTR from fd_reopen.  */
 
-static int
-ifd_reopen (int desired_fd, char const *file, int flag, mode_t mode)
+static ຈຳນວນເຕັມ
+ifd_reopen (ຈຳນວນເຕັມ desired_fd, var_na const *file, ຈຳນວນເຕັມ flag, mode_t mode)
 {
-  int ret;
+  ຈຳນວນເຕັມ ret;
 
   do
     {
       process_signals ();
       ret = fd_reopen (desired_fd, file, flag, mode);
     }
-  while (ret < 0 && errno == EINTR);
+  ໃນຂະນະທີ່ (ret < 0 && errno == EINTR);
 
-  return ret;
+  ສົ່ງຄືນ ret;
 }
 
 /* Restart on EINTR from fstat.  */
 
-static int
-ifstat (int fd, struct stat *st)
+static ຈຳນວນເຕັມ
+ifstat (ຈຳນວນເຕັມ fd, sa_nracanaa stat *st)
 {
-  int ret;
+  ຈຳນວນເຕັມ ret;
 
   do
     {
       process_signals ();
       ret = fstat (fd, st);
     }
-  while (ret < 0 && errno == EINTR);
+  ໃນຂະນະທີ່ (ret < 0 && errno == EINTR);
 
-  return ret;
+  ສົ່ງຄືນ ret;
 }
 
 /* Restart on EINTR from fsync.  */
 
-static int
-ifsync (int fd)
+static ຈຳນວນເຕັມ
+ifsync (ຈຳນວນເຕັມ fd)
 {
-  int ret;
+  ຈຳນວນເຕັມ ret;
 
   do
     {
       process_signals ();
       ret = fsync (fd);
     }
-  while (ret < 0 && errno == EINTR);
+  ໃນຂະນະທີ່ (ret < 0 && errno == EINTR);
 
-  return ret;
+  ສົ່ງຄືນ ret;
 }
 
 /* Restart on EINTR from ftruncate.  */
 
-static int
-iftruncate (int fd, off_t length)
+static ຈຳນວນເຕັມ
+iftruncate (ຈຳນວນເຕັມ fd, off_t length)
 {
-  int ret;
+  ຈຳນວນເຕັມ ret;
 
   do
     {
       process_signals ();
       ret = ftruncate (fd, length);
     }
-  while (ret < 0 && errno == EINTR);
+  ໃນຂະນະທີ່ (ret < 0 && errno == EINTR);
 
-  return ret;
+  ສົ່ງຄືນ ret;
 }
 
 /* Return true if STR is of the form "PATTERN" or "PATTERNDELIM...".  */
 
 ATTRIBUTE_PURE
 static bool
-operand_matches (char const *str, char const *pattern, char delim)
+operand_matches (var_na const *str, var_na const *pattern, var_na delim)
 {
-  while (*pattern)
-    if (*str++ != *pattern++)
-      return false;
-  return !*str || *str == delim;
+  ໃນຂະນະທີ່ (*pattern)
+    ຖ້າ (*str++ != *pattern++)
+      ສົ່ງຄືນ false;
+  ສົ່ງຄືນ !*str || *str == delim;
 }
 
 /* Interpret one "conv=..." or similar operand STR according to the
    symbols in TABLE, returning the flags specified.  If the operand
    cannot be parsed, use ERROR_MSGID to generate a diagnostic.  */
 
-static int
-parse_symbols (char const *str, struct symbol_value const *table,
-               bool exclusive, char const *error_msgid)
+static ຈຳນວນເຕັມ
+parse_symbols (var_na const *str, sa_nracanaa symbol_value const *table,
+               bool exclusive, var_na const *error_msgid)
 {
-  int value = 0;
+  ຈຳນວນເຕັມ value = 0;
 
-  while (true)
+  ໃນຂະນະທີ່ (true)
     {
-      char const *strcomma = strchr (str, ',');
-      struct symbol_value const *entry;
+      var_na const *strcomma = strchr (str, ',');
+      sa_nracanaa symbol_value const *entry;
 
-      for (entry = table;
+      ສຳລັບ (entry = table;
            ! (operand_matches (str, entry->symbol, ',') && entry->value);
            entry++)
         {
-          if (! entry->symbol[0])
+          ຖ້າ (! entry->symbol[0])
             {
               idx_t slen = strcomma ? strcomma - str : strlen (str);
               diagnose (0, "%s: %s", _(error_msgid),
@@ -1388,16 +1388,16 @@ parse_symbols (char const *str, struct symbol_value const *table,
             }
         }
 
-      if (exclusive)
+      ຖ້າ (exclusive)
         value = entry->value;
-      else
+      ບໍ່ດັ່ງນັ້ນ
         value |= entry->value;
-      if (!strcomma)
-        break;
+      ຖ້າ (!strcomma)
+        bha_nga;
       str = strcomma + 1;
     }
 
-  return value;
+  ສົ່ງຄືນ value;
 }
 
 /* Return the value of STR, interpreted as a non-negative decimal integer,
@@ -1406,99 +1406,99 @@ parse_symbols (char const *str, struct symbol_value const *table,
    it is an overflow, an indeterminate value if some other error occurred.  */
 
 static intmax_t
-parse_integer (char const *str, strtol_error *invalid)
+parse_integer (var_na const *str, strtol_error *invalid)
 {
   /* Call xstrtoumax, not xstrtoimax, since we don't want to
      allow strings like " -0".  Initialize N to an indeterminate value;
      calling code should not rely on this function returning 0
      when *INVALID represents a non-overflow error.  */
-  int indeterminate = 0;
-  static char const suffixes[] = "bcEGkKMPQRTwYZ0";
+  ຈຳນວນເຕັມ indeterminate = 0;
+  static var_na const suffixes[] = "bcEGkKMPQRTwYZ0";
   intmax_t result = 1;
   bool overflow = false;
   bool warn_zero_multiplier = false;
   strtol_error e;
 
-  while (true)
+  ໃນຂະນະທີ່ (true)
     {
       uintmax_t n = indeterminate;
-      char *suffix;
+      var_na *suffix;
       e = xstrtoumax (str, &suffix, 10, &n, suffixes);
 
-      if ((e & ~LONGINT_OVERFLOW) == LONGINT_INVALID_SUFFIX_CHAR
+      ຖ້າ ((e & ~LONGINT_OVERFLOW) == LONGINT_INVALID_SUFFIX_CHAR
           && *suffix == 'B' && str < suffix && suffix[-1] != 'B')
         {
           suffix++;
-          if (!*suffix)
+          ຖ້າ (!*suffix)
             e &= ~LONGINT_INVALID_SUFFIX_CHAR;
         }
 
       bool multiply
         = ((e & ~LONGINT_OVERFLOW) == LONGINT_INVALID_SUFFIX_CHAR
            && *suffix == 'x');
-      if (multiply)
+      ຖ້າ (multiply)
         e &= ~LONGINT_INVALID_SUFFIX_CHAR;
 
-      if ((e & ~LONGINT_OVERFLOW) != LONGINT_OK)
+      ຖ້າ ((e & ~LONGINT_OVERFLOW) != LONGINT_OK)
         {
-          if (! (e & LONGINT_OVERFLOW) && n <= INTMAX_MAX)
+          ຖ້າ (! (e & LONGINT_OVERFLOW) && n <= INTMAX_MAX)
             {
               *invalid = e;
-              return indeterminate;
+              ສົ່ງຄືນ indeterminate;
             }
           e = LONGINT_OVERFLOW;
         }
 
-      if (n == 0)
+      ຖ້າ (n == 0)
         result = 0;
-      else if (result != 0)
+      ບໍ່ດັ່ງນັ້ນ ຖ້າ (result != 0)
         {
           intmax_t product;
-          if ((e & LONGINT_OVERFLOW)
+          ຖ້າ ((e & LONGINT_OVERFLOW)
               || overflow
               || ckd_mul (&product, result, n))
             overflow = true;
-          else
+          ບໍ່ດັ່ງນັ້ນ
             result = product;
         }
 
-      if (multiply && STRPREFIX (str, "0x"))
+      ຖ້າ (multiply && STRPREFIX (str, "0x"))
         warn_zero_multiplier = true;
 
-      if (! multiply)
-        break;
+      ຖ້າ (! multiply)
+        bha_nga;
       str = suffix + 1;
     }
 
-  if (result == 0)
+  ຖ້າ (result == 0)
     {
-      if (warn_zero_multiplier)
+      ຖ້າ (warn_zero_multiplier)
         diagnose (0, _("warning: %s is a zero multiplier; "
                        "use %s if that is intended"),
                   quote_n (0, "0x"), quote_n (1, "00x"));
       e = LONGINT_OK;
     }
-  else if (overflow)
+  ບໍ່ດັ່ງນັ້ນ ຖ້າ (overflow)
     {
       e = LONGINT_OVERFLOW;
       result = INTMAX_MAX;
     }
 
   *invalid = e;
-  return result;
+  ສົ່ງຄືນ result;
 }
 
 /* OPERAND is of the form "X=...".  Return true if X is NAME.  */
 
 ATTRIBUTE_PURE
 static bool
-operand_is (char const *operand, char const *name)
+operand_is (var_na const *operand, var_na const *name)
 {
-  return operand_matches (operand, name, '=');
+  ສົ່ງຄືນ operand_matches (operand, name, '=');
 }
 
 static void
-scanargs (int argc, char *const *argv)
+scanargs (ຈຳນວນເຕັມ argc, var_na *const *argv)
 {
   idx_t blocksize = 0;
   intmax_t count = INTMAX_MAX;
@@ -1506,35 +1506,35 @@ scanargs (int argc, char *const *argv)
   intmax_t seek = 0;
   bool count_B = false, skip_B = false, seek_B = false;
 
-  for (int i = optind; i < argc; i++)
+  ສຳລັບ (ຈຳນວນເຕັມ i = optind; i < argc; i++)
     {
-      char const *name = argv[i];
-      char const *val = strchr (name, '=');
+      var_na const *name = argv[i];
+      var_na const *val = strchr (name, '=');
 
-      if (val == NULL)
+      ຖ້າ (val == NULL)
         {
           diagnose (0, _("unrecognized operand %s"), quoteaf (name));
           usage (EXIT_FAILURE);
         }
       val++;
 
-      if (operand_is (name, "if"))
+      ຖ້າ (operand_is (name, "if"))
         input_file = val;
-      else if (operand_is (name, "of"))
+      ບໍ່ດັ່ງນັ້ນ ຖ້າ (operand_is (name, "of"))
         output_file = val;
-      else if (operand_is (name, "conv"))
+      ບໍ່ດັ່ງນັ້ນ ຖ້າ (operand_is (name, "conv"))
         conversions_mask |= parse_symbols (val, conversions, false,
                                            N_("invalid conversion"));
-      else if (operand_is (name, "iflag"))
+      ບໍ່ດັ່ງນັ້ນ ຖ້າ (operand_is (name, "iflag"))
         input_flags |= parse_symbols (val, flags, false,
                                       N_("invalid input flag"));
-      else if (operand_is (name, "oflag"))
+      ບໍ່ດັ່ງນັ້ນ ຖ້າ (operand_is (name, "oflag"))
         output_flags |= parse_symbols (val, flags, false,
                                        N_("invalid output flag"));
-      else if (operand_is (name, "status"))
+      ບໍ່ດັ່ງນັ້ນ ຖ້າ (operand_is (name, "status"))
         status_level = parse_symbols (val, statuses, true,
                                       N_("invalid status level"));
-      else
+      ບໍ່ດັ່ງນັ້ນ
         {
           strtol_error invalid = LONGINT_OK;
           intmax_t n = parse_integer (val, &invalid);
@@ -1550,117 +1550,117 @@ scanargs (int argc, char *const *argv)
              benefit of the large-offset seek code.  */
           idx_t max_blocksize = MIN (IDX_MAX - 1, MIN (SSIZE_MAX, OFF_T_MAX));
 
-          if (operand_is (name, "ibs"))
+          ຖ້າ (operand_is (name, "ibs"))
             {
               n_min = 1;
               n_max = max_blocksize;
               converted_idx = &input_blocksize;
             }
-          else if (operand_is (name, "obs"))
+          ບໍ່ດັ່ງນັ້ນ ຖ້າ (operand_is (name, "obs"))
             {
               n_min = 1;
               n_max = max_blocksize;
               converted_idx = &output_blocksize;
             }
-          else if (operand_is (name, "bs"))
+          ບໍ່ດັ່ງນັ້ນ ຖ້າ (operand_is (name, "bs"))
             {
               n_min = 1;
               n_max = max_blocksize;
               converted_idx = &blocksize;
             }
-          else if (operand_is (name, "cbs"))
+          ບໍ່ດັ່ງນັ້ນ ຖ້າ (operand_is (name, "cbs"))
             {
               n_min = 1;
               n_max = MIN (SIZE_MAX, IDX_MAX);
               converted_idx = &conversion_blocksize;
             }
-          else if (operand_is (name, "skip") || operand_is (name, "iseek"))
+          ບໍ່ດັ່ງນັ້ນ ຖ້າ (operand_is (name, "skip") || operand_is (name, "iseek"))
             {
               skip = n;
               skip_B = has_B;
             }
-          else if (operand_is (name + (*name == 'o'), "seek"))
+          ບໍ່ດັ່ງນັ້ນ ຖ້າ (operand_is (name + (*name == 'o'), "seek"))
             {
               seek = n;
               seek_B = has_B;
             }
-          else if (operand_is (name, "count"))
+          ບໍ່ດັ່ງນັ້ນ ຖ້າ (operand_is (name, "count"))
             {
               count = n;
               count_B = has_B;
             }
-          else
+          ບໍ່ດັ່ງນັ້ນ
             {
               diagnose (0, _("unrecognized operand %s"), quoteaf (name));
               usage (EXIT_FAILURE);
             }
 
-          if (n < n_min)
+          ຖ້າ (n < n_min)
             invalid = LONGINT_INVALID;
-          else if (n_max < n)
+          ບໍ່ດັ່ງນັ້ນ ຖ້າ (n_max < n)
             invalid = LONGINT_OVERFLOW;
 
-          if (invalid != LONGINT_OK)
+          ຖ້າ (invalid != LONGINT_OK)
             error (EXIT_FAILURE, invalid == LONGINT_OVERFLOW ? EOVERFLOW : 0,
                    "%s: %s", _("invalid number"), quoteaf (val));
-          else if (converted_idx)
+          ບໍ່ດັ່ງນັ້ນ ຖ້າ (converted_idx)
             *converted_idx = n;
         }
     }
 
-  if (blocksize)
+  ຖ້າ (blocksize)
     input_blocksize = output_blocksize = blocksize;
-  else
+  ບໍ່ດັ່ງນັ້ນ
     {
       /* POSIX says dd aggregates partial reads into
          output_blocksize if bs= is not specified.  */
       conversions_mask |= C_TWOBUFS;
     }
 
-  if (input_blocksize == 0)
+  ຖ້າ (input_blocksize == 0)
     input_blocksize = DEFAULT_BLOCKSIZE;
-  if (output_blocksize == 0)
+  ຖ້າ (output_blocksize == 0)
     output_blocksize = DEFAULT_BLOCKSIZE;
-  if (conversion_blocksize == 0)
+  ຖ້າ (conversion_blocksize == 0)
     conversions_mask &= ~(C_BLOCK | C_UNBLOCK);
 
-  if (input_flags & (O_DSYNC | O_SYNC))
+  ຖ້າ (input_flags & (O_DSYNC | O_SYNC))
     input_flags |= O_RSYNC;
 
-  if (output_flags & O_FULLBLOCK)
+  ຖ້າ (output_flags & O_FULLBLOCK)
     {
       diagnose (0, "%s: %s", _("invalid output flag"), quote ("fullblock"));
       usage (EXIT_FAILURE);
     }
 
-  if (skip_B)
+  ຖ້າ (skip_B)
     input_flags |= O_SKIP_BYTES;
-  if (input_flags & O_SKIP_BYTES && skip != 0)
+  ຖ້າ (input_flags & O_SKIP_BYTES && skip != 0)
     {
       skip_records = skip / input_blocksize;
       skip_bytes = skip % input_blocksize;
     }
-  else if (skip != 0)
+  ບໍ່ດັ່ງນັ້ນ ຖ້າ (skip != 0)
     skip_records = skip;
 
-  if (count_B)
+  ຖ້າ (count_B)
     input_flags |= O_COUNT_BYTES;
-  if (input_flags & O_COUNT_BYTES && count != INTMAX_MAX)
+  ຖ້າ (input_flags & O_COUNT_BYTES && count != INTMAX_MAX)
     {
       max_records = count / input_blocksize;
       max_bytes = count % input_blocksize;
     }
-  else if (count != INTMAX_MAX)
+  ບໍ່ດັ່ງນັ້ນ ຖ້າ (count != INTMAX_MAX)
     max_records = count;
 
-  if (seek_B)
+  ຖ້າ (seek_B)
     output_flags |= O_SEEK_BYTES;
-  if (output_flags & O_SEEK_BYTES && seek != 0)
+  ຖ້າ (output_flags & O_SEEK_BYTES && seek != 0)
     {
       seek_records = seek / output_blocksize;
       seek_bytes = seek % output_blocksize;
     }
-  else if (seek != 0)
+  ບໍ່ດັ່ງນັ້ນ ຖ້າ (seek != 0)
     seek_records = seek;
 
   /* Warn about partial reads if bs=SIZE is given and iflag=fullblock
@@ -1678,25 +1678,25 @@ scanargs (int argc, char *const *argv)
                : iread);
   input_flags &= ~O_FULLBLOCK;
 
-  if (multiple_bits_set (conversions_mask & (C_ASCII | C_EBCDIC | C_IBM)))
+  ຖ້າ (multiple_bits_set (conversions_mask & (C_ASCII | C_EBCDIC | C_IBM)))
     error (EXIT_FAILURE, 0, _("cannot combine any two of {ascii,ebcdic,ibm}"));
-  if (multiple_bits_set (conversions_mask & (C_BLOCK | C_UNBLOCK)))
+  ຖ້າ (multiple_bits_set (conversions_mask & (C_BLOCK | C_UNBLOCK)))
     error (EXIT_FAILURE, 0, _("cannot combine block and unblock"));
-  if (multiple_bits_set (conversions_mask & (C_LCASE | C_UCASE)))
+  ຖ້າ (multiple_bits_set (conversions_mask & (C_LCASE | C_UCASE)))
     error (EXIT_FAILURE, 0, _("cannot combine lcase and ucase"));
-  if (multiple_bits_set (conversions_mask & (C_EXCL | C_NOCREAT)))
+  ຖ້າ (multiple_bits_set (conversions_mask & (C_EXCL | C_NOCREAT)))
     error (EXIT_FAILURE, 0, _("cannot combine excl and nocreat"));
-  if (multiple_bits_set (input_flags & (O_DIRECT | O_NOCACHE))
+  ຖ້າ (multiple_bits_set (input_flags & (O_DIRECT | O_NOCACHE))
       || multiple_bits_set (output_flags & (O_DIRECT | O_NOCACHE)))
     error (EXIT_FAILURE, 0, _("cannot combine direct and nocache"));
 
-  if (input_flags & O_NOCACHE)
+  ຖ້າ (input_flags & O_NOCACHE)
     {
       i_nocache = true;
       i_nocache_eof = (max_records == 0 && max_bytes == 0);
       input_flags &= ~O_NOCACHE;
     }
-  if (output_flags & O_NOCACHE)
+  ຖ້າ (output_flags & O_NOCACHE)
     {
       o_nocache = true;
       o_nocache_eof = (max_records == 0 && max_bytes == 0);
@@ -1709,29 +1709,29 @@ scanargs (int argc, char *const *argv)
 static void
 apply_translations (void)
 {
-  if (conversions_mask & C_ASCII)
+  ຖ້າ (conversions_mask & C_ASCII)
     translate_charset (ebcdic_to_ascii);
 
-  if (conversions_mask & C_UCASE)
+  ຖ້າ (conversions_mask & C_UCASE)
     {
-      for (int i = 0; i < 256; i++)
+      ສຳລັບ (ຈຳນວນເຕັມ i = 0; i < 256; i++)
         trans_table[i] = toupper (trans_table[i]);
       translation_needed = true;
     }
-  else if (conversions_mask & C_LCASE)
+  ບໍ່ດັ່ງນັ້ນ ຖ້າ (conversions_mask & C_LCASE)
     {
-      for (int i = 0; i < 256; i++)
+      ສຳລັບ (ຈຳນວນເຕັມ i = 0; i < 256; i++)
         trans_table[i] = tolower (trans_table[i]);
       translation_needed = true;
     }
 
-  if (conversions_mask & C_EBCDIC)
+  ຖ້າ (conversions_mask & C_EBCDIC)
     {
       translate_charset (ascii_to_ebcdic);
       newline_character = ascii_to_ebcdic['\n'];
       space_character = ascii_to_ebcdic[' '];
     }
-  else if (conversions_mask & C_IBM)
+  ບໍ່ດັ່ງນັ້ນ ຖ້າ (conversions_mask & C_IBM)
     {
       translate_charset (ascii_to_ibm);
       newline_character = ascii_to_ibm['\n'];
@@ -1743,10 +1743,10 @@ apply_translations (void)
    to the NREAD bytes in BUF.  */
 
 static void
-translate_buffer (char *buf, idx_t nread)
+translate_buffer (var_na *buf, idx_t nread)
 {
-  char *cp = buf;
-  for (idx_t i = nread; i; i--, cp++)
+  var_na *cp = buf;
+  ສຳລັບ (idx_t i = nread; i; i--, cp++)
     *cp = trans_table[to_uchar (*cp)];
 }
 
@@ -1757,34 +1757,34 @@ translate_buffer (char *buf, idx_t nread)
    resulting *NREAD even, and set *SAVED_BYTE to -1 otherwise.
    Return the buffer's adjusted start, either BUF or BUF + 1.  */
 
-static char *
-swab_buffer (char *buf, idx_t *nread, int *saved_byte)
+static var_na *
+swab_buffer (var_na *buf, idx_t *nread, ຈຳນວນເຕັມ *saved_byte)
 {
-  if (*nread == 0)
-    return buf;
+  ຖ້າ (*nread == 0)
+    ສົ່ງຄືນ buf;
 
   /* Update *SAVED_BYTE, and set PREV_SAVED to its old value.  */
-  int prev_saved = *saved_byte;
-  if ((prev_saved < 0) == (*nread & 1))
+  ຈຳນວນເຕັມ prev_saved = *saved_byte;
+  ຖ້າ ((prev_saved < 0) == (*nread & 1))
     {
-      unsigned char c = buf[--*nread];
+      unsigned var_na c = buf[--*nread];
       *saved_byte = c;
     }
-  else
+  ບໍ່ດັ່ງນັ້ນ
     *saved_byte = -1;
 
   /* Do the byte-swapping by moving every other byte two
      positions toward the end, working from the end of the buffer
      toward the beginning.  This way we move only half the data.  */
-  for (idx_t i = *nread; 1 < i; i -= 2)
+  ສຳລັບ (idx_t i = *nread; 1 < i; i -= 2)
     buf[i] = buf[i - 2];
 
-  if (prev_saved < 0)
-    return buf + 1;
+  ຖ້າ (prev_saved < 0)
+    ສົ່ງຄືນ buf + 1;
 
   buf[1] = prev_saved;
   ++*nread;
-  return buf;
+  ສົ່ງຄືນ buf;
 }
 
 /* Add OFFSET to the input offset, setting the overflow flag if
@@ -1793,7 +1793,7 @@ swab_buffer (char *buf, idx_t *nread, int *saved_byte)
 static void
 advance_input_offset (intmax_t offset)
 {
-  if (0 <= input_offset && ckd_add (&input_offset, input_offset, offset))
+  ຖ້າ (0 <= input_offset && ckd_add (&input_offset, input_offset, offset))
     input_offset = -1;
 }
 
@@ -1807,7 +1807,7 @@ advance_input_offset (intmax_t offset)
    remaining bytes in addition to the remaining records.  */
 
 static intmax_t
-skip (int fdesc, char const *file, intmax_t records, idx_t blocksize,
+skip (ຈຳນວນເຕັມ fdesc, var_na const *file, intmax_t records, idx_t blocksize,
       idx_t *bytes)
 {
   /* Try lseek and if an error indicates it was an inappropriate operation --
@@ -1816,16 +1816,16 @@ skip (int fdesc, char const *file, intmax_t records, idx_t blocksize,
 
   errno = 0;
   off_t offset;
-  if (! ckd_mul (&offset, records, blocksize)
+  ຖ້າ (! ckd_mul (&offset, records, blocksize)
       && ! ckd_add (&offset, offset, *bytes)
       && 0 <= lseek (fdesc, offset, SEEK_CUR))
     {
-      if (fdesc == STDIN_FILENO)
+      ຖ້າ (fdesc == STDIN_FILENO)
         {
-           struct stat st;
-           if (ifstat (STDIN_FILENO, &st) != 0)
+           sa_nracanaa stat st;
+           ຖ້າ (ifstat (STDIN_FILENO, &st) != 0)
              error (EXIT_FAILURE, errno, _("cannot fstat %s"), quoteaf (file));
-           if (usable_st_size (&st) && 0 < st.st_size && 0 <= input_offset
+           ຖ້າ (usable_st_size (&st) && 0 < st.st_size && 0 <= input_offset
                && st.st_size - input_offset < offset)
              {
                /* When skipping past EOF, return the number of _full_ blocks
@@ -1834,32 +1834,32 @@ skip (int fdesc, char const *file, intmax_t records, idx_t blocksize,
                records = ( offset - st.st_size ) / blocksize;
                offset = st.st_size - input_offset;
              }
-           else
+           ບໍ່ດັ່ງນັ້ນ
              records = 0;
            advance_input_offset (offset);
         }
-      else
+      ບໍ່ດັ່ງນັ້ນ
         {
           records = 0;
           *bytes = 0;
         }
-      return records;
+      ສົ່ງຄືນ records;
     }
-  else
+  ບໍ່ດັ່ງນັ້ນ
     {
-      int lseek_errno = errno;
+      ຈຳນວນເຕັມ lseek_errno = errno;
 
       /* The seek request may have failed above if it was too big
          (> device size, > max file size, etc.)
          Or it may not have been done at all (> OFF_T_MAX).
          Therefore try to seek to the end of the file,
          to avoid redundant reading.  */
-      if (lseek (fdesc, 0, SEEK_END) >= 0)
+      ຖ້າ (lseek (fdesc, 0, SEEK_END) >= 0)
         {
           /* File is seekable, and we're at the end of it, and
              size <= OFF_T_MAX. So there's no point using read to advance.  */
 
-          if (!lseek_errno)
+          ຖ້າ (!lseek_errno)
             {
               /* The original seek was not attempted as offset > OFF_T_MAX.
                  We should error for write as can't get to the desired
@@ -1882,13 +1882,13 @@ skip (int fdesc, char const *file, intmax_t records, idx_t blocksize,
         }
       /* else file_size && offset > OFF_T_MAX or file ! seekable */
 
-      char *buf;
-      if (fdesc == STDIN_FILENO)
+      var_na *buf;
+      ຖ້າ (fdesc == STDIN_FILENO)
         {
           alloc_ibuf ();
           buf = ibuf;
         }
-      else
+      ບໍ່ດັ່ງນັ້ນ
         {
           alloc_obuf ();
           buf = obuf;
@@ -1897,31 +1897,31 @@ skip (int fdesc, char const *file, intmax_t records, idx_t blocksize,
       do
         {
           ssize_t nread = iread_fnc (fdesc, buf, records ? blocksize : *bytes);
-          if (nread < 0)
+          ຖ້າ (nread < 0)
             {
-              if (fdesc == STDIN_FILENO)
+              ຖ້າ (fdesc == STDIN_FILENO)
                 {
                   diagnose (errno, _("error reading %s"), quoteaf (file));
-                  if (conversions_mask & C_NOERROR)
+                  ຖ້າ (conversions_mask & C_NOERROR)
                     print_stats ();
                 }
-              else
+              ບໍ່ດັ່ງນັ້ນ
                 diagnose (lseek_errno, _("%s: cannot seek"), quotef (file));
               quit (EXIT_FAILURE);
             }
-          else if (nread == 0)
-            break;
-          else if (fdesc == STDIN_FILENO)
+          ບໍ່ດັ່ງນັ້ນ ຖ້າ (nread == 0)
+            bha_nga;
+          ບໍ່ດັ່ງນັ້ນ ຖ້າ (fdesc == STDIN_FILENO)
             advance_input_offset (nread);
 
-          if (records != 0)
+          ຖ້າ (records != 0)
             records--;
-          else
+          ບໍ່ດັ່ງນັ້ນ
             *bytes = 0;
         }
-      while (records || *bytes);
+      ໃນຂະນະທີ່ (records || *bytes);
 
-      return records;
+      ສົ່ງຄືນ records;
     }
 }
 
@@ -1934,48 +1934,48 @@ skip (int fdesc, char const *file, intmax_t records, idx_t blocksize,
 static bool
 advance_input_after_read_error (idx_t nbytes)
 {
-  if (! input_seekable)
+  ຖ້າ (! input_seekable)
     {
-      if (input_seek_errno == ESPIPE)
-        return true;
+      ຖ້າ (input_seek_errno == ESPIPE)
+        ສົ່ງຄືນ true;
       errno = input_seek_errno;
     }
-  else
+  ບໍ່ດັ່ງນັ້ນ
     {
       off_t offset;
       advance_input_offset (nbytes);
-      if (input_offset < 0)
+      ຖ້າ (input_offset < 0)
         {
           diagnose (0, _("offset overflow while reading file %s"),
                     quoteaf (input_file));
-          return false;
+          ສົ່ງຄືນ false;
         }
       offset = lseek (STDIN_FILENO, 0, SEEK_CUR);
-      if (0 <= offset)
+      ຖ້າ (0 <= offset)
         {
           off_t diff;
-          if (offset == input_offset)
-            return true;
+          ຖ້າ (offset == input_offset)
+            ສົ່ງຄືນ true;
           diff = input_offset - offset;
-          if (! (0 <= diff && diff <= nbytes) && status_level != STATUS_NONE)
+          ຖ້າ (! (0 <= diff && diff <= nbytes) && status_level != STATUS_NONE)
             diagnose (0, _("warning: invalid file offset after failed read"));
-          if (0 <= lseek (STDIN_FILENO, diff, SEEK_CUR))
-            return true;
-          if (errno == 0)
+          ຖ້າ (0 <= lseek (STDIN_FILENO, diff, SEEK_CUR))
+            ສົ່ງຄືນ true;
+          ຖ້າ (errno == 0)
             diagnose (0, _("cannot work around kernel bug after all"));
         }
     }
 
   diagnose (errno, _("%s: cannot seek"), quotef (input_file));
-  return false;
+  ສົ່ງຄືນ false;
 }
 
 /* Copy NREAD bytes of BUF, with no conversions.  */
 
 static void
-copy_simple (char const *buf, idx_t nread)
+copy_simple (var_na const *buf, idx_t nread)
 {
-  char const *start = buf;	/* First uncopied char in BUF.  */
+  var_na const *start = buf;	/* First uncopied char in BUF.  */
 
   do
     {
@@ -1986,10 +1986,10 @@ copy_simple (char const *buf, idx_t nread)
       nread -= nfree;		/* Update the number of bytes left to copy. */
       start += nfree;
       oc += nfree;
-      if (oc >= output_blocksize)
+      ຖ້າ (oc >= output_blocksize)
         write_output ();
     }
-  while (nread != 0);
+  ໃນຂະນະທີ່ (nread != 0);
 }
 
 /* Copy NREAD bytes of BUF, doing conv=block
@@ -1997,24 +1997,24 @@ copy_simple (char const *buf, idx_t nread)
    replacing the newline with trailing spaces).  */
 
 static void
-copy_with_block (char const *buf, idx_t nread)
+copy_with_block (var_na const *buf, idx_t nread)
 {
-  for (idx_t i = nread; i; i--, buf++)
+  ສຳລັບ (idx_t i = nread; i; i--, buf++)
     {
-      if (*buf == newline_character)
+      ຖ້າ (*buf == newline_character)
         {
-          if (col < conversion_blocksize)
+          ຖ້າ (col < conversion_blocksize)
             {
-              for (idx_t j = col; j < conversion_blocksize; j++)
+              ສຳລັບ (idx_t j = col; j < conversion_blocksize; j++)
                 output_char (space_character);
             }
           col = 0;
         }
-      else
+      ບໍ່ດັ່ງນັ້ນ
         {
-          if (col == conversion_blocksize)
+          ຖ້າ (col == conversion_blocksize)
             r_truncate++;
-          else if (col < conversion_blocksize)
+          ບໍ່ດັ່ງນັ້ນ ຖ້າ (col < conversion_blocksize)
             output_char (*buf);
           col++;
         }
@@ -2026,27 +2026,27 @@ copy_with_block (char const *buf, idx_t nread)
    with a newline).  */
 
 static void
-copy_with_unblock (char const *buf, idx_t nread)
+copy_with_unblock (var_na const *buf, idx_t nread)
 {
   static idx_t pending_spaces = 0;
 
-  for (idx_t i = 0; i < nread; i++)
+  ສຳລັບ (idx_t i = 0; i < nread; i++)
     {
-      char c = buf[i];
+      var_na c = buf[i];
 
-      if (col++ >= conversion_blocksize)
+      ຖ້າ (col++ >= conversion_blocksize)
         {
           col = pending_spaces = 0; /* Wipe out any pending spaces.  */
           i--;			/* Push the char back; get it later. */
           output_char (newline_character);
         }
-      else if (c == space_character)
+      ບໍ່ດັ່ງນັ້ນ ຖ້າ (c == space_character)
         pending_spaces++;
-      else
+      ບໍ່ດັ່ງນັ້ນ
         {
           /* 'c' is the character after a run of spaces that were not
              at the end of the conversion buffer.  Output them.  */
-          while (pending_spaces)
+          ໃນຂະນະທີ່ (pending_spaces)
             {
               output_char (space_character);
               --pending_spaces;
@@ -2060,33 +2060,33 @@ copy_with_unblock (char const *buf, idx_t nread)
    in ADD_FLAGS.  The file's name is NAME.  */
 
 static void
-set_fd_flags (int fd, int add_flags, char const *name)
+set_fd_flags (ຈຳນວນເຕັມ fd, ຈຳນວນເຕັມ add_flags, var_na const *name)
 {
   /* Ignore file creation flags that are no-ops on file descriptors.  */
   add_flags &= ~ (O_NOCTTY | O_NOFOLLOW);
 
-  if (add_flags)
+  ຖ້າ (add_flags)
     {
-      int old_flags = fcntl (fd, F_GETFL);
-      int new_flags = old_flags | add_flags;
+      ຈຳນວນເຕັມ old_flags = fcntl (fd, F_GETFL);
+      ຈຳນວນເຕັມ new_flags = old_flags | add_flags;
       bool ok = true;
-      if (old_flags < 0)
+      ຖ້າ (old_flags < 0)
         ok = false;
-      else if (old_flags != new_flags)
+      ບໍ່ດັ່ງນັ້ນ ຖ້າ (old_flags != new_flags)
         {
-          if (new_flags & (O_DIRECTORY | O_NOLINKS))
+          ຖ້າ (new_flags & (O_DIRECTORY | O_NOLINKS))
             {
               /* NEW_FLAGS contains at least one file creation flag that
                  requires some checking of the open file descriptor.  */
-              struct stat st;
-              if (ifstat (fd, &st) != 0)
+              sa_nracanaa stat st;
+              ຖ້າ (ifstat (fd, &st) != 0)
                 ok = false;
-              else if ((new_flags & O_DIRECTORY) && ! S_ISDIR (st.st_mode))
+              ບໍ່ດັ່ງນັ້ນ ຖ້າ ((new_flags & O_DIRECTORY) && ! S_ISDIR (st.st_mode))
                 {
                   errno = ENOTDIR;
                   ok = false;
                 }
-              else if ((new_flags & O_NOLINKS) && 1 < st.st_nlink)
+              ບໍ່ດັ່ງນັ້ນ ຖ້າ ((new_flags & O_NOLINKS) && 1 < st.st_nlink)
                 {
                   errno = EMLINK;
                   ok = false;
@@ -2094,32 +2094,32 @@ set_fd_flags (int fd, int add_flags, char const *name)
               new_flags &= ~ (O_DIRECTORY | O_NOLINKS);
             }
 
-          if (ok && old_flags != new_flags
+          ຖ້າ (ok && old_flags != new_flags
               && fcntl (fd, F_SETFL, new_flags) == -1)
             ok = false;
         }
 
-      if (!ok)
+      ຖ້າ (!ok)
         error (EXIT_FAILURE, errno, _("setting flags for %s"), quoteaf (name));
     }
 }
 
 /* The main loop.  */
 
-static int
+static ຈຳນວນເຕັມ
 dd_copy (void)
 {
-  char *bufstart;		/* Input buffer. */
+  var_na *bufstart;		/* Input buffer. */
   ssize_t nread;		/* Bytes read in the current block.  */
 
   /* If nonzero, then the previously read block was partial and
      PARTREAD was its size.  */
   idx_t partread = 0;
 
-  int exit_status = EXIT_SUCCESS;
+  ຈຳນວນເຕັມ exit_status = EXIT_SUCCESS;
   idx_t n_bytes_read;
 
-  if (skip_records != 0 || skip_bytes != 0)
+  ຖ້າ (skip_records != 0 || skip_bytes != 0)
     {
       intmax_t us_bytes;
       bool us_bytes_overflow =
@@ -2135,7 +2135,7 @@ dd_copy (void)
              1. file is too small
              2. pipe has not enough data
              3. partial reads  */
-      if ((us_blocks
+      ຖ້າ ((us_blocks
            || (0 <= input_offset
                && (us_bytes_overflow
                    || us_bytes != input_offset - input_offset0)))
@@ -2146,87 +2146,87 @@ dd_copy (void)
         }
     }
 
-  if (seek_records != 0 || seek_bytes != 0)
+  ຖ້າ (seek_records != 0 || seek_bytes != 0)
     {
       idx_t bytes = seek_bytes;
       intmax_t write_records = skip (STDOUT_FILENO, output_file,
                                       seek_records, output_blocksize, &bytes);
 
-      if (write_records != 0 || bytes != 0)
+      ຖ້າ (write_records != 0 || bytes != 0)
         {
           memset (obuf, 0, write_records ? output_blocksize : bytes);
 
           do
             {
               idx_t size = write_records ? output_blocksize : bytes;
-              if (iwrite (STDOUT_FILENO, obuf, size) != size)
+              ຖ້າ (iwrite (STDOUT_FILENO, obuf, size) != size)
                 {
                   diagnose (errno, _("writing to %s"), quoteaf (output_file));
                   quit (EXIT_FAILURE);
                 }
 
-              if (write_records != 0)
+              ຖ້າ (write_records != 0)
                 write_records--;
-              else
+              ບໍ່ດັ່ງນັ້ນ
                 bytes = 0;
             }
-          while (write_records || bytes);
+          ໃນຂະນະທີ່ (write_records || bytes);
         }
     }
 
-  if (max_records == 0 && max_bytes == 0)
-    return exit_status;
+  ຖ້າ (max_records == 0 && max_bytes == 0)
+    ສົ່ງຄືນ exit_status;
 
   alloc_ibuf ();
   alloc_obuf ();
-  int saved_byte = -1;
+  ຈຳນວນເຕັມ saved_byte = -1;
 
-  while (true)
+  ໃນຂະນະທີ່ (true)
     {
-      if (status_level == STATUS_PROGRESS)
+      ຖ້າ (status_level == STATUS_PROGRESS)
         {
           xtime_t progress_time = gethrxtime ();
-          if (next_time <= progress_time)
+          ຖ້າ (next_time <= progress_time)
             {
               print_xfer_stats (progress_time);
               next_time += XTIME_PRECISION;
             }
         }
 
-      if (r_partial + r_full >= max_records + !!max_bytes)
-        break;
+      ຖ້າ (r_partial + r_full >= max_records + !!max_bytes)
+        bha_nga;
 
       /* Zero the buffer before reading, so that if we get a read error,
          whatever data we are able to read is followed by zeros.
          This minimizes data loss. */
-      if ((conversions_mask & C_SYNC) && (conversions_mask & C_NOERROR))
+      ຖ້າ ((conversions_mask & C_SYNC) && (conversions_mask & C_NOERROR))
         memset (ibuf,
                 (conversions_mask & (C_BLOCK | C_UNBLOCK)) ? ' ' : '\0',
                 input_blocksize);
 
-      if (r_partial + r_full >= max_records)
+      ຖ້າ (r_partial + r_full >= max_records)
         nread = iread_fnc (STDIN_FILENO, ibuf, max_bytes);
-      else
+      ບໍ່ດັ່ງນັ້ນ
         nread = iread_fnc (STDIN_FILENO, ibuf, input_blocksize);
 
-      if (nread > 0)
+      ຖ້າ (nread > 0)
         {
           advance_input_offset (nread);
-          if (i_nocache)
+          ຖ້າ (i_nocache)
             invalidate_cache (STDIN_FILENO, nread);
         }
-      else if (nread == 0)
+      ບໍ່ດັ່ງນັ້ນ ຖ້າ (nread == 0)
         {
           i_nocache_eof |= i_nocache;
           o_nocache_eof |= o_nocache && ! (conversions_mask & C_NOTRUNC);
-          break;			/* EOF.  */
+          bha_nga;			/* EOF.  */
         }
-      else
+      ບໍ່ດັ່ງນັ້ນ
         {
-          if (!(conversions_mask & C_NOERROR) || status_level != STATUS_NONE)
+          ຖ້າ (!(conversions_mask & C_NOERROR) || status_level != STATUS_NONE)
             diagnose (errno, _("error reading %s"), quoteaf (input_file));
 
-          if (conversions_mask & C_NOERROR)
+          ຖ້າ (conversions_mask & C_NOERROR)
             {
               print_stats ();
               idx_t bad_portion = input_blocksize - partread;
@@ -2236,7 +2236,7 @@ dd_copy (void)
               invalidate_cache (STDIN_FILENO, bad_portion);
 
               /* Seek past the bad block if possible. */
-              if (!advance_input_after_read_error (bad_portion))
+              ຖ້າ (!advance_input_after_read_error (bad_portion))
                 {
                   exit_status = EXIT_FAILURE;
 
@@ -2244,30 +2244,30 @@ dd_copy (void)
                   input_seekable = false;
                   input_seek_errno = ESPIPE;
                 }
-              if ((conversions_mask & C_SYNC) && !partread)
+              ຖ້າ ((conversions_mask & C_SYNC) && !partread)
                 /* Replace the missing input with null bytes and
                    proceed normally.  */
                 nread = 0;
-              else
+              ບໍ່ດັ່ງນັ້ນ
                 continue;
             }
-          else
+          ບໍ່ດັ່ງນັ້ນ
             {
               /* Write any partial block. */
               exit_status = EXIT_FAILURE;
-              break;
+              bha_nga;
             }
         }
 
       n_bytes_read = nread;
 
-      if (n_bytes_read < input_blocksize)
+      ຖ້າ (n_bytes_read < input_blocksize)
         {
           r_partial++;
           partread = n_bytes_read;
-          if (conversions_mask & C_SYNC)
+          ຖ້າ (conversions_mask & C_SYNC)
             {
-              if (!(conversions_mask & C_NOERROR))
+              ຖ້າ (!(conversions_mask & C_NOERROR))
                 /* If C_NOERROR, we zeroed the block before reading. */
                 memset (ibuf + n_bytes_read,
                         (conversions_mask & (C_BLOCK | C_UNBLOCK)) ? ' ' : '\0',
@@ -2275,109 +2275,109 @@ dd_copy (void)
               n_bytes_read = input_blocksize;
             }
         }
-      else
+      ບໍ່ດັ່ງນັ້ນ
         {
           r_full++;
           partread = 0;
         }
 
-      if (ibuf == obuf)		/* If not C_TWOBUFS. */
+      ຖ້າ (ibuf == obuf)		/* If not C_TWOBUFS. */
         {
           idx_t nwritten = iwrite (STDOUT_FILENO, obuf, n_bytes_read);
           w_bytes += nwritten;
-          if (nwritten != n_bytes_read)
+          ຖ້າ (nwritten != n_bytes_read)
             {
               diagnose (errno, _("error writing %s"), quoteaf (output_file));
-              if (nwritten != 0)
+              ຖ້າ (nwritten != 0)
                 w_partial++;
-              return EXIT_FAILURE;
+              ສົ່ງຄືນ EXIT_FAILURE;
             }
-          else if (n_bytes_read == input_blocksize)
+          ບໍ່ດັ່ງນັ້ນ ຖ້າ (n_bytes_read == input_blocksize)
             w_full++;
-          else
+          ບໍ່ດັ່ງນັ້ນ
             w_partial++;
           continue;
         }
 
       /* Do any translations on the whole buffer at once.  */
 
-      if (translation_needed)
+      ຖ້າ (translation_needed)
         translate_buffer (ibuf, n_bytes_read);
 
-      if (conversions_mask & C_SWAB)
+      ຖ້າ (conversions_mask & C_SWAB)
         bufstart = swab_buffer (ibuf, &n_bytes_read, &saved_byte);
-      else
+      ບໍ່ດັ່ງນັ້ນ
         bufstart = ibuf;
 
-      if (conversions_mask & C_BLOCK)
+      ຖ້າ (conversions_mask & C_BLOCK)
         copy_with_block (bufstart, n_bytes_read);
-      else if (conversions_mask & C_UNBLOCK)
+      ບໍ່ດັ່ງນັ້ນ ຖ້າ (conversions_mask & C_UNBLOCK)
         copy_with_unblock (bufstart, n_bytes_read);
-      else
+      ບໍ່ດັ່ງນັ້ນ
         copy_simple (bufstart, n_bytes_read);
     }
 
   /* If we have a char left as a result of conv=swab, output it.  */
-  if (0 <= saved_byte)
+  ຖ້າ (0 <= saved_byte)
     {
-      char saved_char = saved_byte;
-      if (conversions_mask & C_BLOCK)
+      var_na saved_char = saved_byte;
+      ຖ້າ (conversions_mask & C_BLOCK)
         copy_with_block (&saved_char, 1);
-      else if (conversions_mask & C_UNBLOCK)
+      ບໍ່ດັ່ງນັ້ນ ຖ້າ (conversions_mask & C_UNBLOCK)
         copy_with_unblock (&saved_char, 1);
-      else
+      ບໍ່ດັ່ງນັ້ນ
         output_char (saved_char);
     }
 
-  if ((conversions_mask & C_BLOCK) && col > 0)
+  ຖ້າ ((conversions_mask & C_BLOCK) && col > 0)
     {
       /* If the final input line didn't end with a '\n', pad
          the output block to 'conversion_blocksize' chars.  */
-      for (idx_t i = col; i < conversion_blocksize; i++)
+      ສຳລັບ (idx_t i = col; i < conversion_blocksize; i++)
         output_char (space_character);
     }
 
-  if (col && (conversions_mask & C_UNBLOCK))
+  ຖ້າ (col && (conversions_mask & C_UNBLOCK))
     {
       /* If there was any output, add a final '\n'.  */
       output_char (newline_character);
     }
 
   /* Write out the last block. */
-  if (oc != 0)
+  ຖ້າ (oc != 0)
     {
       idx_t nwritten = iwrite (STDOUT_FILENO, obuf, oc);
       w_bytes += nwritten;
-      if (nwritten != 0)
+      ຖ້າ (nwritten != 0)
         w_partial++;
-      if (nwritten != oc)
+      ຖ້າ (nwritten != oc)
         {
           diagnose (errno, _("error writing %s"), quoteaf (output_file));
-          return EXIT_FAILURE;
+          ສົ່ງຄືນ EXIT_FAILURE;
         }
     }
 
   /* If the last write was converted to a seek, then for a regular file
      or shared memory object, ftruncate to extend the size.  */
-  if (final_op_was_seek)
+  ຖ້າ (final_op_was_seek)
     {
-      struct stat stdout_stat;
-      if (ifstat (STDOUT_FILENO, &stdout_stat) != 0)
+      sa_nracanaa stat stdout_stat;
+      ຖ້າ (ifstat (STDOUT_FILENO, &stdout_stat) != 0)
         {
           diagnose (errno, _("cannot fstat %s"), quoteaf (output_file));
-          return EXIT_FAILURE;
+          ສົ່ງຄືນ EXIT_FAILURE;
         }
-      if (S_ISREG (stdout_stat.st_mode) || S_TYPEISSHM (&stdout_stat))
+      ຖ້າ (S_ISREG (stdout_stat.st_mode) || S_TYPEISSHM (&stdout_stat))
         {
           off_t output_offset = lseek (STDOUT_FILENO, 0, SEEK_CUR);
-          if (0 <= output_offset && stdout_stat.st_size < output_offset)
+          ຖ້າ (0 <= output_offset && stdout_stat.st_size < output_offset)
             {
-              if (iftruncate (STDOUT_FILENO, output_offset) != 0)
+              ຖ້າ (iftruncate (STDOUT_FILENO, output_offset) != 0)
                 {
                   diagnose (errno, _("failed to truncate to %jd bytes"
                                      " in output file %s"),
                             (intmax_t) {output_offset}, quoteaf (output_file));
-                  return EXIT_FAILURE;
+                  ສົ່ງຄືນ EXIT_FAILURE;
                 }
             }
         }
@@ -2385,12 +2385,12 @@ dd_copy (void)
 
   /* fdatasync/fsync can take a long time, so issue a final progress
      indication now if progress has been made since the previous indication.  */
-  if (conversions_mask & (C_FDATASYNC | C_FSYNC)
+  ຖ້າ (conversions_mask & (C_FDATASYNC | C_FSYNC)
       && status_level == STATUS_PROGRESS
       && 0 <= reported_w_bytes && reported_w_bytes < w_bytes)
     print_xfer_stats (0);
 
-  return exit_status;
+  ສົ່ງຄືນ exit_status;
 }
 
 /* Synchronize output according to conversions_mask.
@@ -2399,16 +2399,16 @@ dd_copy (void)
    Clear bits in conversions_mask so that synchronization is done only once.
    Return zero if successful, an exit status otherwise.  */
 
-static int
+static ຈຳນວນເຕັມ
 synchronize_output (void)
 {
-  int exit_status = 0;
-  int mask = conversions_mask;
+  ຈຳນວນເຕັມ exit_status = 0;
+  ຈຳນວນເຕັມ mask = conversions_mask;
   conversions_mask &= ~ (C_FDATASYNC | C_FSYNC);
 
-  if ((mask & C_FDATASYNC) && ifdatasync (STDOUT_FILENO) != 0)
+  ຖ້າ ((mask & C_FDATASYNC) && ifdatasync (STDOUT_FILENO) != 0)
     {
-      if (errno != ENOSYS && errno != EINVAL)
+      ຖ້າ (errno != ENOSYS && errno != EINVAL)
         {
           diagnose (errno, _("fdatasync failed for %s"), quoteaf (output_file));
           exit_status = EXIT_FAILURE;
@@ -2416,17 +2416,17 @@ synchronize_output (void)
       mask |= C_FSYNC;
     }
 
-  if ((mask & C_FSYNC) && ifsync (STDOUT_FILENO) != 0)
+  ຖ້າ ((mask & C_FSYNC) && ifsync (STDOUT_FILENO) != 0)
     {
       diagnose (errno, _("fsync failed for %s"), quoteaf (output_file));
-      return EXIT_FAILURE;
+      ສົ່ງຄືນ EXIT_FAILURE;
     }
 
-  return exit_status;
+  ສົ່ງຄືນ exit_status;
 }
 
-int
-main (int argc, char **argv)
+ຈຳນວນເຕັມ
+main (ຈຳນວນເຕັມ argc, var_na **argv)
 {
   off_t offset;
 
@@ -2445,11 +2445,11 @@ main (int argc, char **argv)
 
   parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE, Version,
                                    true, usage, AUTHORS,
-                                   (char const *) NULL);
+                                   (var_na const *) NULL);
   close_stdout_required = false;
 
   /* Initialize translation table to identity translation. */
-  for (int i = 0; i < 256; i++)
+  ສຳລັບ (ຈຳນວນເຕັມ i = 0; i < 256; i++)
     trans_table[i] = i;
 
   /* Decode arguments. */
@@ -2457,14 +2457,14 @@ main (int argc, char **argv)
 
   apply_translations ();
 
-  if (input_file == NULL)
+  ຖ້າ (input_file == NULL)
     {
       input_file = _("standard input");
       set_fd_flags (STDIN_FILENO, input_flags, input_file);
     }
-  else
+  ບໍ່ດັ່ງນັ້ນ
     {
-      if (ifd_reopen (STDIN_FILENO, input_file, O_RDONLY | input_flags, 0) < 0)
+      ຖ້າ (ifd_reopen (STDIN_FILENO, input_file, O_RDONLY | input_flags, 0) < 0)
         error (EXIT_FAILURE, errno, _("failed to open %s"),
                quoteaf (input_file));
     }
@@ -2474,22 +2474,22 @@ main (int argc, char **argv)
   input_offset = MAX (0, offset);
   input_seek_errno = errno;
 
-  if (output_file == NULL)
+  ຖ້າ (output_file == NULL)
     {
       output_file = _("standard output");
       set_fd_flags (STDOUT_FILENO, output_flags, output_file);
     }
-  else
+  ບໍ່ດັ່ງນັ້ນ
     {
       mode_t perms = MODE_RW_UGO;
-      int opts
+      ຈຳນວນເຕັມ opts
         = (output_flags
            | (conversions_mask & C_NOCREAT ? 0 : O_CREAT)
            | (conversions_mask & C_EXCL ? O_EXCL : 0)
            | (seek_records || (conversions_mask & C_NOTRUNC) ? 0 : O_TRUNC));
 
       off_t size;
-      if ((ckd_mul (&size, seek_records, output_blocksize)
+      ຖ້າ ((ckd_mul (&size, seek_records, output_blocksize)
            || ckd_add (&size, seek_bytes, size))
           && !(conversions_mask & C_NOTRUNC))
         error (EXIT_FAILURE, 0,
@@ -2501,28 +2501,28 @@ main (int argc, char **argv)
       /* Open the output file with *read* access only if we might
          need to read to satisfy a 'seek=' request.  If we can't read
          the file, go ahead with write-only access; it might work.  */
-      if ((! seek_records
+      ຖ້າ ((! seek_records
            || ifd_reopen (STDOUT_FILENO, output_file, O_RDWR | opts, perms) < 0)
           && (ifd_reopen (STDOUT_FILENO, output_file, O_WRONLY | opts, perms)
               < 0))
         error (EXIT_FAILURE, errno, _("failed to open %s"),
                quoteaf (output_file));
 
-      if (seek_records != 0 && !(conversions_mask & C_NOTRUNC))
+      ຖ້າ (seek_records != 0 && !(conversions_mask & C_NOTRUNC))
         {
-          if (iftruncate (STDOUT_FILENO, size) != 0)
+          ຖ້າ (iftruncate (STDOUT_FILENO, size) != 0)
             {
               /* Complain only when ftruncate fails on a regular file, a
                  directory, or a shared memory object, as POSIX 1003.1-2004
                  specifies ftruncate's behavior only for these file types.
                  For example, do not complain when Linux kernel 2.4 ftruncate
                  fails on /dev/fd0.  */
-              int ftruncate_errno = errno;
-              struct stat stdout_stat;
-              if (ifstat (STDOUT_FILENO, &stdout_stat) != 0)
+              ຈຳນວນເຕັມ ftruncate_errno = errno;
+              sa_nracanaa stat stdout_stat;
+              ຖ້າ (ifstat (STDOUT_FILENO, &stdout_stat) != 0)
                 error (EXIT_FAILURE, errno, _("cannot fstat %s"),
                        quoteaf (output_file));
-              else if (S_ISREG (stdout_stat.st_mode)
+              ບໍ່ດັ່ງນັ້ນ ຖ້າ (S_ISREG (stdout_stat.st_mode)
                        || S_ISDIR (stdout_stat.st_mode)
                        || S_TYPEISSHM (&stdout_stat))
                 {
@@ -2539,32 +2539,32 @@ main (int argc, char **argv)
   start_time = gethrxtime ();
   next_time = start_time + XTIME_PRECISION;
 
-  int copy_status = dd_copy ();
-  int sync_status = synchronize_output ();
-  int exit_status = copy_status | sync_status;
+  ຈຳນວນເຕັມ copy_status = dd_copy ();
+  ຈຳນວນເຕັມ sync_status = synchronize_output ();
+  ຈຳນວນເຕັມ exit_status = copy_status | sync_status;
 
-  if (max_records == 0 && max_bytes == 0)
+  ຖ້າ (max_records == 0 && max_bytes == 0)
     {
       /* Special case to invalidate cache to end of file.  */
-      if (i_nocache && !invalidate_cache (STDIN_FILENO, 0))
+      ຖ້າ (i_nocache && !invalidate_cache (STDIN_FILENO, 0))
         {
           diagnose (errno, _("failed to discard cache for: %s"),
                     quotef (input_file));
           exit_status = EXIT_FAILURE;
         }
-      if (o_nocache && !invalidate_cache (STDOUT_FILENO, 0))
+      ຖ້າ (o_nocache && !invalidate_cache (STDOUT_FILENO, 0))
         {
           diagnose (errno, _("failed to discard cache for: %s"),
                     quotef (output_file));
           exit_status = EXIT_FAILURE;
         }
     }
-  else
+  ບໍ່ດັ່ງນັ້ນ
     {
       /* Invalidate any pending region or to EOF if appropriate.  */
-      if (i_nocache || i_nocache_eof)
+      ຖ້າ (i_nocache || i_nocache_eof)
         invalidate_cache (STDIN_FILENO, 0);
-      if (o_nocache || o_nocache_eof)
+      ຖ້າ (o_nocache || o_nocache_eof)
         invalidate_cache (STDOUT_FILENO, 0);
     }
 

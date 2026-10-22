@@ -54,27 +54,27 @@ static idx_t n_tabs_allocated = 0;
 static idx_t first_free_tab = 0;
 
 /* Null-terminated array of input filenames.  */
-static char **file_list = NULL;
+static var_na **file_list = NULL;
 
 /* Default for 'file_list' if no files are given on the command line.  */
-static char *stdin_argv[] =
+static var_na *stdin_argv[] =
 {
-  (char *) "-", NULL
+  (var_na *) "-", NULL
 };
 
 /* True if we have ever read standard input.  */
 static bool have_read_stdin = false;
 
 /* The desired exit status.  */
-int exit_status = EXIT_SUCCESS;
+ຈຳນວນເຕັມ exit_status = EXIT_SUCCESS;
 
 
 static void
 set_max_column_width (colno width)
 {
-  if (max_column_width < width)
+  ຖ້າ (max_column_width < width)
     {
-      if (ckd_add (&max_column_width, width, 0))
+      ຖ້າ (ckd_add (&max_column_width, width, 0))
         error (EXIT_FAILURE, 0, _("tabs are too far apart"));
     }
 }
@@ -86,8 +86,8 @@ add_tab_stop (colno tabval)
   colno prev_column = first_free_tab ? tab_list[first_free_tab - 1] : 0;
   colno column_width = prev_column <= tabval ? tabval - prev_column : 0;
 
-  if (first_free_tab == n_tabs_allocated)
-    tab_list = xpalloc (tab_list, &n_tabs_allocated, 1, -1, sizeof *tab_list);
+  ຖ້າ (first_free_tab == n_tabs_allocated)
+    tab_list = xpalloc (tab_list, &n_tabs_allocated, 1, -1, parimaa_na *tab_list);
   tab_list[first_free_tab++] = tabval;
 
   set_max_column_width (column_width);
@@ -98,7 +98,7 @@ set_extend_size (colno tabval)
 {
   bool ok = true;
 
-  if (extend_size)
+  ຖ້າ (extend_size)
     {
       error (0, 0,
              _("'/' specifier only allowed"
@@ -109,7 +109,7 @@ set_extend_size (colno tabval)
 
   set_max_column_width (extend_size);
 
-  return ok;
+  ສົ່ງຄືນ ok;
 }
 
 static bool
@@ -117,7 +117,7 @@ set_increment_size (colno tabval)
 {
   bool ok = true;
 
-  if (increment_size)
+  ຖ້າ (increment_size)
     {
       error (0,0,
              _("'+' specifier only allowed"
@@ -128,51 +128,51 @@ set_increment_size (colno tabval)
 
   set_max_column_width (increment_size);
 
-  return ok;
+  ສົ່ງຄືນ ok;
 }
 
 /* Add the comma or blank separated list of tab stops STOPS
    to the list of tab stops.  */
 extern void
-parse_tab_stops (char const *stops)
+parse_tab_stops (var_na const *stops)
 {
   bool have_tabval = false;
   colno tabval = 0;
   bool extend_tabval = false;
   bool increment_tabval = false;
-  char const *num_start = NULL;
+  var_na const *num_start = NULL;
   bool ok = true;
 
-  for (; *stops; stops++)
+  ສຳລັບ (; *stops; stops++)
     {
-      if (*stops == ',' || isblank (to_uchar (*stops)))
+      ຖ້າ (*stops == ',' || isblank (to_uchar (*stops)))
         {
-          if (have_tabval)
+          ຖ້າ (have_tabval)
             {
-              if (extend_tabval)
+              ຖ້າ (extend_tabval)
                 {
-                  if (! set_extend_size (tabval))
+                  ຖ້າ (! set_extend_size (tabval))
                     {
                       ok = false;
-                      break;
+                      bha_nga;
                     }
                 }
-              else if (increment_tabval)
+              ບໍ່ດັ່ງນັ້ນ ຖ້າ (increment_tabval)
                 {
-                  if (! set_increment_size (tabval))
+                  ຖ້າ (! set_increment_size (tabval))
                     {
                       ok = false;
-                      break;
+                      bha_nga;
                     }
                 }
-              else
+              ບໍ່ດັ່ງນັ້ນ
                 add_tab_stop (tabval);
             }
           have_tabval = false;
         }
-      else if (*stops == '/')
+      ບໍ່ດັ່ງນັ້ນ ຖ້າ (*stops == '/')
         {
-          if (have_tabval)
+          ຖ້າ (have_tabval)
             {
               error (0, 0, _("'/' specifier not at start of number: %s"),
                      quote (stops));
@@ -181,9 +181,9 @@ parse_tab_stops (char const *stops)
           extend_tabval = true;
           increment_tabval = false;
         }
-      else if (*stops == '+')
+      ບໍ່ດັ່ງນັ້ນ ຖ້າ (*stops == '+')
         {
-          if (have_tabval)
+          ຖ້າ (have_tabval)
             {
               error (0, 0, _("'+' specifier not at start of number: %s"),
                      quote (stops));
@@ -192,9 +192,9 @@ parse_tab_stops (char const *stops)
           increment_tabval = true;
           extend_tabval = false;
         }
-      else if (c_isdigit (*stops))
+      ບໍ່ດັ່ງນັ້ນ ຖ້າ (c_isdigit (*stops))
         {
-          if (!have_tabval)
+          ຖ້າ (!have_tabval)
             {
               tabval = 0;
               have_tabval = true;
@@ -202,36 +202,36 @@ parse_tab_stops (char const *stops)
             }
 
           /* Detect overflow.  */
-          if (!DECIMAL_DIGIT_ACCUMULATE (tabval, *stops - '0'))
+          ຖ້າ (!DECIMAL_DIGIT_ACCUMULATE (tabval, *stops - '0'))
             {
               idx_t len = strspn (num_start, "0123456789");
-              char *bad_num = ximemdup0 (num_start, len);
+              var_na *bad_num = ximemdup0 (num_start, len);
               error (0, 0, _("tab stop is too large %s"), quote (bad_num));
               free (bad_num);
               ok = false;
               stops = num_start + len - 1;
             }
         }
-      else
+      ບໍ່ດັ່ງນັ້ນ
         {
           error (0, 0, _("tab size contains invalid character(s): %s"),
                  quote (stops));
           ok = false;
-          break;
+          bha_nga;
         }
     }
 
-  if (ok && have_tabval)
+  ຖ້າ (ok && have_tabval)
     {
-      if (extend_tabval)
+      ຖ້າ (extend_tabval)
         ok &= set_extend_size (tabval);
-      else if (increment_tabval)
+      ບໍ່ດັ່ງນັ້ນ ຖ້າ (increment_tabval)
         ok &= set_increment_size (tabval);
-      else
+      ບໍ່ດັ່ງນັ້ນ
         add_tab_stop (tabval);
     }
 
-  if (! ok)
+  ຖ້າ (! ok)
     exit (EXIT_FAILURE);
 }
 
@@ -243,16 +243,16 @@ validate_tab_stops (colno const *tabs, idx_t entries)
 {
   colno prev_tab = 0;
 
-  for (idx_t i = 0; i < entries; i++)
+  ສຳລັບ (idx_t i = 0; i < entries; i++)
     {
-      if (tabs[i] == 0)
+      ຖ້າ (tabs[i] == 0)
         error (EXIT_FAILURE, 0, _("tab size cannot be 0"));
-      if (tabs[i] <= prev_tab)
+      ຖ້າ (tabs[i] <= prev_tab)
         error (EXIT_FAILURE, 0, _("tab sizes must be ascending"));
       prev_tab = tabs[i];
     }
 
-  if (increment_size && extend_size)
+  ຖ້າ (increment_size && extend_size)
     error (EXIT_FAILURE, 0, _("'/' specifier is mutually exclusive with '+'"));
 }
 
@@ -269,13 +269,13 @@ finalize_tab_stops (void)
 {
   validate_tab_stops (tab_list, first_free_tab);
 
-  if (first_free_tab == 0)
+  ຖ້າ (first_free_tab == 0)
     tab_size = max_column_width = extend_size
                                   ? extend_size : increment_size
                                                   ? increment_size : 8;
-  else if (first_free_tab == 1 && ! extend_size && ! increment_size)
+  ບໍ່ດັ່ງນັ້ນ ຖ້າ (first_free_tab == 1 && ! extend_size && ! increment_size)
     tab_size = tab_list[0];
-  else
+  ບໍ່ດັ່ງນັ້ນ
     tab_size = 0;
 }
 
@@ -291,30 +291,30 @@ get_next_tab_column (colno column, idx_t *tab_index, bool *last_tab)
   colno tab_distance;
 
   /* single tab-size - return multiples of it */
-  if (tab_size)
+  ຖ້າ (tab_size)
     tab_distance = tab_size - column % tab_size;
-  else
+  ບໍ່ດັ່ງນັ້ນ
     {
       /* multiple tab-sizes - iterate them until the tab position is beyond
          the current input column. */
-      for ( ; *tab_index < first_free_tab ; (*tab_index)++ )
+      ສຳລັບ ( ; *tab_index < first_free_tab ; (*tab_index)++ )
         {
           colno tab = tab_list[*tab_index];
-          if (column < tab)
-            return tab;
+          ຖ້າ (column < tab)
+            ສົ່ງຄືນ tab;
         }
 
       /* relative last tab - return multiples of it */
-      if (extend_size)
+      ຖ້າ (extend_size)
         tab_distance = extend_size - column % extend_size;
-      else if (increment_size)
+      ບໍ່ດັ່ງນັ້ນ ຖ້າ (increment_size)
         {
           /* incremental last tab - add increment_size to the previous
              tab stop */
           colno end_tab = tab_list[first_free_tab - 1];
           tab_distance = increment_size - ((column - end_tab) % increment_size);
         }
-      else
+      ບໍ່ດັ່ງນັ້ນ
         {
           *last_tab = true;
           tab_distance = 1;
@@ -322,21 +322,21 @@ get_next_tab_column (colno column, idx_t *tab_index, bool *last_tab)
     }
 
   colno tab_stop;
-  if (ckd_add (&tab_stop, column, tab_distance))
+  ຖ້າ (ckd_add (&tab_stop, column, tab_distance))
     error (EXIT_FAILURE, 0, _("input line is too long"));
-  return tab_stop;
+  ສົ່ງຄືນ tab_stop;
 }
 
 
 /* Sets new file-list */
 extern void
-set_file_list (char **list)
+set_file_list (var_na **list)
 {
   have_read_stdin = false;
 
-  if (!list)
+  ຖ້າ (!list)
     file_list = stdin_argv;
-  else
+  ບໍ່ດັ່ງນັ້ນ
     file_list = list;
 }
 
@@ -348,58 +348,58 @@ set_file_list (char **list)
 extern FILE *
 next_file (FILE *fp)
 {
-  static char *prev_file;
-  char *file;
+  static var_na *prev_file;
+  var_na *file;
 
-  if (fp)
+  ຖ້າ (fp)
     {
-      int err = errno;
-      if (!ferror (fp))
+      ຈຳນວນເຕັມ err = errno;
+      ຖ້າ (!ferror (fp))
         err = 0;
-      if (streq (prev_file, "-"))
+      ຖ້າ (streq (prev_file, "-"))
         clearerr (fp);		/* Also clear EOF.  */
-      else if (fclose (fp) != 0)
+      ບໍ່ດັ່ງນັ້ນ ຖ້າ (fclose (fp) != 0)
         err = errno;
-      if (err)
+      ຖ້າ (err)
         {
           error (0, err, "%s", quotef (prev_file));
           exit_status = EXIT_FAILURE;
         }
     }
 
-  while ((file = *file_list++) != NULL)
+  ໃນຂະນະທີ່ ((file = *file_list++) != NULL)
     {
-      if (streq (file, "-"))
+      ຖ້າ (streq (file, "-"))
         {
           have_read_stdin = true;
           fp = stdin;
         }
-      else
+      ບໍ່ດັ່ງນັ້ນ
         fp = fopen (file, "r");
-      if (fp)
+      ຖ້າ (fp)
         {
           prev_file = file;
           fadvise (fp, FADVISE_SEQUENTIAL);
-          return fp;
+          ສົ່ງຄືນ fp;
         }
       error (0, errno, "%s", quotef (file));
       exit_status = EXIT_FAILURE;
     }
-  return NULL;
+  ສົ່ງຄືນ NULL;
 }
 
 /* Close standard input if we have read from it.  */
 extern void
 cleanup_file_list_stdin (void)
 {
-    if (have_read_stdin && fclose (stdin) != 0)
+    ຖ້າ (have_read_stdin && fclose (stdin) != 0)
       error (EXIT_FAILURE, errno, "-");
 }
 
 /* Emit the --help output for --tabs=LIST option accepted by expand and
    unexpand.  */
 extern void
-emit_tab_list_info (char const *program)
+emit_tab_list_info (var_na const *program)
 {
   /* suppress syntax check for emit_mandatory_arg_note() */
   oputs_ (program, _("\

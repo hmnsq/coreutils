@@ -22,12 +22,12 @@
 #include "ls.h"
 /* Ensure that the main for ls is declared even if the tool is not being built
    in this single-binary. */
-int single_binary_main_ls (int argc, char **argv);
-int single_binary_main_vdir (int argc, char **argv);
+ຈຳນວນເຕັມ single_binary_main_ls (ຈຳນວນເຕັມ argc, var_na **argv);
+ຈຳນວນເຕັມ single_binary_main_vdir (ຈຳນວນເຕັມ argc, var_na **argv);
 
-int
-single_binary_main_vdir (int argc, char **argv)
+ຈຳນວນເຕັມ
+single_binary_main_vdir (ຈຳນວນເຕັມ argc, var_na **argv)
 {
   ls_mode = LS_LONG_FORMAT;
-  return single_binary_main_ls (argc, argv);
+  ສົ່ງຄືນ single_binary_main_ls (argc, argv);
 }

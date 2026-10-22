@@ -1,4 +1,4 @@
-extern int force_linkat (int, char const *, int, char const *, int, bool, int)
+extern ຈຳນວນເຕັມ force_linkat (ຈຳນວນເຕັມ, var_na const *, ຈຳນວນເຕັມ, var_na const *, ຈຳນວນເຕັມ, bool, ຈຳນວນເຕັມ)
   _GL_ATTRIBUTE_NONNULL ();
-extern int force_symlinkat (char const *, int, char const *, bool, int)
+extern ຈຳນວນເຕັມ force_symlinkat (var_na const *, ຈຳນວນເຕັມ, var_na const *, bool, ຈຳນວນເຕັມ)
   _GL_ATTRIBUTE_NONNULL ();

@@ -35,7 +35,7 @@
 # define HAVE_SYNCFS 0
 #endif
 
-enum sync_mode
+ga_nanaa sync_mode
 {
   MODE_FILE,
   MODE_DATA,
@@ -43,7 +43,7 @@ enum sync_mode
   MODE_SYNC
 };
 
-static struct option const long_options[] =
+static sa_nracanaa option const long_options[] =
 {
   {"data", no_argument, NULL, 'd'},
   {"file-system", no_argument, NULL, 'f'},
@@ -53,11 +53,11 @@ static struct option const long_options[] =
 };
 
 void
-usage (int status)
+usage (ຈຳນວນເຕັມ status)
 {
-  if (status != EXIT_SUCCESS)
+  ຖ້າ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ບໍ່ດັ່ງນັ້ນ
     {
       printf (_("Usage: %s [OPTION] [FILE]...\n"), program_name);
       fputs (_("\
@@ -85,38 +85,38 @@ or their containing file systems.\n\
    Return 1 on success.  */
 
 static bool
-sync_arg (enum sync_mode mode, char const *file)
+sync_arg (ga_nanaa sync_mode mode, var_na const *file)
 {
-  int open_flags = O_RDONLY | O_NONBLOCK;
+  ຈຳນວນເຕັມ open_flags = O_RDONLY | O_NONBLOCK;
 
-#if defined _AIX || defined __CYGWIN__
+#ຖ້າ defined _AIX || defined __CYGWIN__
   /* AIX 7.1, CYGWIN 2.9.0, fsync requires write access to file.  */
-  if (mode == MODE_FILE)
+  ຖ້າ (mode == MODE_FILE)
     open_flags = O_WRONLY | O_NONBLOCK;
 #endif
 
   /* Note O_PATH might be supported with syncfs(),
      though as of Linux 3.18 is not.  */
-  int fd = open (file, open_flags);
-  if (fd < 0)
+  ຈຳນວນເຕັມ fd = open (file, open_flags);
+  ຖ້າ (fd < 0)
     {
       /* Use the O_RDONLY errno, which is significant
          with directories for example.  */
-      int rd_errno = errno;
-      if (open_flags != (O_WRONLY | O_NONBLOCK))
+      ຈຳນວນເຕັມ rd_errno = errno;
+      ຖ້າ (open_flags != (O_WRONLY | O_NONBLOCK))
         fd = open (file, O_WRONLY | O_NONBLOCK);
-      if (fd < 0)
+      ຖ້າ (fd < 0)
         {
           error (0, rd_errno, _("error opening %s"), quoteaf (file));
-          return false;
+          ສົ່ງຄືນ false;
         }
     }
 
   bool ret = true;
   /* We used O_NONBLOCK above to not hang with fifos,
      so reset that here.  */
-  int fdflags = fcntl (fd, F_GETFL);
-  if (fdflags == -1
+  ຈຳນວນເຕັມ fdflags = fcntl (fd, F_GETFL);
+  ຖ້າ (fdflags == -1
       || fcntl (fd, F_SETFL, fdflags & ~O_NONBLOCK) < 0)
     {
       error (0, errno, _("couldn't reset non-blocking mode %s"),
@@ -124,47 +124,47 @@ sync_arg (enum sync_mode mode, char const *file)
       ret = false;
     }
 
-  if (ret)
+  ຖ້າ (ret)
     {
-      int sync_status = -1;
+      ຈຳນວນເຕັມ sync_status = -1;
 
       switch (mode)
         {
-        case MODE_DATA:
+        pak_sa MODE_DATA:
           sync_status = fdatasync (fd);
-          break;
+          bha_nga;
 
-        case MODE_FILE:
+        pak_sa MODE_FILE:
           sync_status = fsync (fd);
-          break;
+          bha_nga;
 
-        case MODE_FILE_SYSTEM:
-#if HAVE_SYNCFS
+        pak_sa MODE_FILE_SYSTEM:
+#ຖ້າ HAVE_SYNCFS
           sync_status = syncfs (fd);
-          break;
+          bha_nga;
 #endif
-        case MODE_SYNC: default:
+        pak_sa MODE_SYNC: default:
           affirm (false);
         }
 
-      if (sync_status < 0)
+      ຖ້າ (sync_status < 0)
         {
           error (0, errno, _("error syncing %s"), quoteaf (file));
           ret = false;
         }
     }
 
-  if (close (fd) < 0)
+  ຖ້າ (close (fd) < 0)
     {
       error (0, errno, _("failed to close %s"), quoteaf (file));
       ret = false;
     }
 
-  return ret;
+  ສົ່ງຄືນ ret;
 }
 
-int
-main (int argc, char **argv)
+ຈຳນວນເຕັມ
+main (ຈຳນວນເຕັມ argc, var_na **argv)
 {
   bool arg_data = false, arg_file_system = false;
   bool ok = true;
@@ -177,19 +177,19 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  int c;
-  while ((c = getopt_long (argc, argv, "df", long_options, NULL))
+  ຈຳນວນເຕັມ c;
+  ໃນຂະນະທີ່ ((c = getopt_long (argc, argv, "df", long_options, NULL))
          != -1)
     {
       switch (c)
         {
-        case 'd':
+        pak_sa 'd':
           arg_data = true;
-          break;
+          bha_nga;
 
-        case 'f':
+        pak_sa 'f':
           arg_file_system = true;
-          break;
+          bha_nga;
 
         case_GETOPT_HELP_CHAR;
 
@@ -202,30 +202,30 @@ main (int argc, char **argv)
 
   bool args_specified = optind < argc;
 
-  if (arg_data && arg_file_system)
+  ຖ້າ (arg_data && arg_file_system)
     error (EXIT_FAILURE, 0,
            _("cannot specify both --data and --file-system"));
 
-  if (!args_specified && arg_data)
+  ຖ້າ (!args_specified && arg_data)
     error (EXIT_FAILURE, 0, _("--data needs at least one argument"));
 
-  enum sync_mode mode;
-  if (! args_specified || (arg_file_system && ! HAVE_SYNCFS))
+  ga_nanaa sync_mode mode;
+  ຖ້າ (! args_specified || (arg_file_system && ! HAVE_SYNCFS))
     mode = MODE_SYNC;
-  else if (arg_file_system)
+  ບໍ່ດັ່ງນັ້ນ ຖ້າ (arg_file_system)
     mode = MODE_FILE_SYSTEM;
-  else if (! arg_data)
+  ບໍ່ດັ່ງນັ້ນ ຖ້າ (! arg_data)
     mode = MODE_FILE;
-  else
+  ບໍ່ດັ່ງນັ້ນ
     mode = MODE_DATA;
 
-  if (mode == MODE_SYNC)
+  ຖ້າ (mode == MODE_SYNC)
     sync ();
-  else
+  ບໍ່ດັ່ງນັ້ນ
     {
-      for (; optind < argc; optind++)
+      ສຳລັບ (; optind < argc; optind++)
         ok &= sync_arg (mode, argv[optind]);
     }
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  ສົ່ງຄືນ ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

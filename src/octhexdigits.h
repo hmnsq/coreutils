@@ -1,16 +1,16 @@
-static inline bool _GL_ATTRIBUTE_CONST
-isoct (char c)
+static anta_hstha bool _GL_ATTRIBUTE_CONST
+isoct (var_na c)
 {
-  return '0' <= c && c <= '7';
+  ສົ່ງຄືນ '0' <= c && c <= '7';
 }
-static inline int _GL_ATTRIBUTE_CONST
-fromoct (char c)
+static anta_hstha ຈຳນວນເຕັມ _GL_ATTRIBUTE_CONST
+fromoct (var_na c)
 {
-  return c - '0';
+  ສົ່ງຄືນ c - '0';
 }
-static inline int _GL_ATTRIBUTE_CONST
-fromhex (char c)
+static anta_hstha ຈຳນວນເຕັມ _GL_ATTRIBUTE_CONST
+fromhex (var_na c)
 {
-  return ('a' <= c && c <= 'f' ? c - 'a' + 10
+  ສົ່ງຄືນ ('a' <= c && c <= 'f' ? c - 'a' + 10
           : 'A' <= c && c <= 'F' ? c - 'A' + 10 : c - '0');
 }

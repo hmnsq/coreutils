@@ -54,12 +54,12 @@
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+ga_nanaa
 {
   CONVERT_FIRST_ONLY_OPTION = CHAR_MAX + 1
 };
 
-static struct option const longopts[] =
+static sa_nracanaa option const longopts[] =
 {
   {"tabs", required_argument, NULL, 't'},
   {"all", no_argument, NULL, 'a'},
@@ -70,11 +70,11 @@ static struct option const longopts[] =
 };
 
 void
-usage (int status)
+usage (ຈຳນວນເຕັມ status)
 {
-  if (status != EXIT_SUCCESS)
+  ຖ້າ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ບໍ່ດັ່ງນັ້ນ
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE]...\n\
@@ -119,21 +119,21 @@ unexpand (void)
   /* The array of pending blanks.  In non-POSIX locales, blanks can
      include characters other than spaces, so the blanks must be
      stored, not merely counted.  */
-  char *pending_blank;
+  var_na *pending_blank;
 
-  if (!fp)
-    return;
+  ຖ້າ (!fp)
+    ສົ່ງຄືນ;
 
-  static char line_in[IO_BUFSIZE];
+  static var_na line_in[IO_BUFSIZE];
   mbbuf_t mbbuf;
-  mbbuf_init (&mbbuf, line_in, sizeof line_in, fp);
+  mbbuf_init (&mbbuf, line_in, parimaa_na line_in, fp);
 
   /* The worst case is a non-blank character, then one blank, then a
      tab stop, then MAX_COLUMN_WIDTH - 1 blanks, then a non-blank; so
      allocate MAX_COLUMN_WIDTH bytes to store the blanks.  */
   pending_blank = xinmalloc (max_column_width, MB_CUR_MAX);
 
-  while (true)
+  ໃນຂະນະທີ່ (true)
     {
       /* Input character, or EOF.  */
       mcel_t g;
@@ -170,43 +170,43 @@ unexpand (void)
 
       do
         {
-          while ((g = mbbuf_get_char (&mbbuf)).ch == MBBUF_EOF
+          ໃນຂະນະທີ່ ((g = mbbuf_get_char (&mbbuf)).ch == MBBUF_EOF
                  && (fp = next_file (fp)))
-            mbbuf_init (&mbbuf, line_in, sizeof line_in, fp);
+            mbbuf_init (&mbbuf, line_in, parimaa_na line_in, fp);
 
-          if (convert)
+          ຖ້າ (convert)
             {
               bool blank = c32issep (g.ch);
 
-              if (blank)
+              ຖ້າ (blank)
                 {
                   bool last_tab;
 
                   next_tab_column = get_next_tab_column (column, &tab_index,
                                                          &last_tab);
 
-                  if (last_tab)
+                  ຖ້າ (last_tab)
                     convert = false;
 
-                  if (convert)
+                  ຖ້າ (convert)
                     {
-                      if (g.ch == '\t')
+                      ຖ້າ (g.ch == '\t')
                         {
                           column = next_tab_column;
 
-                          if (pending)
+                          ຖ້າ (pending)
                             pending_blank[0] = '\t';
                         }
-                      else
+                      ບໍ່ດັ່ງນັ້ນ
                         {
-                          int width = c32width (g.ch);
+                          ຈຳນວນເຕັມ width = c32width (g.ch);
                           column += width < 0 ? 1 : width;
 
-                          if (! (prev_blank && column >= next_tab_column))
+                          ຖ້າ (! (prev_blank && column >= next_tab_column))
                             {
                               /* It is not yet known whether the pending blanks
                                  will be replaced by tabs.  */
-                              if (column == next_tab_column)
+                              ຖ້າ (column == next_tab_column)
                                 one_blank_before_tab_stop = true;
                               memcpy (pending_blank + pending,
                                       mbbuf_char_offset (&mbbuf, g), g.len);
@@ -217,7 +217,7 @@ unexpand (void)
 
                           /* Replace the pending blanks by a tab or two.  */
                           g.len = 0;
-                          if (putc ('\t', stdout) < 0)
+                          ຖ້າ (putc ('\t', stdout) < 0)
                             write_error ();
                           pending_blank[0] = '\t';
                         }
@@ -227,7 +227,7 @@ unexpand (void)
                       pending = one_blank_before_tab_stop;
                     }
                 }
-              else if (g.ch == '\b')
+              ບໍ່ດັ່ງນັ້ນ ຖ້າ (g.ch == '\b')
                 {
                   /* Go back one column, and force recalculation of the
                      next tab stop.  */
@@ -235,18 +235,18 @@ unexpand (void)
                   next_tab_column = column;
                   tab_index -= !!tab_index;
                 }
-              else
+              ບໍ່ດັ່ງນັ້ນ
                 {
-                  int width = c32width (g.ch);
-                  if (ckd_add (&column, column, width < 0 ? 1 : width))
+                  ຈຳນວນເຕັມ width = c32width (g.ch);
+                  ຖ້າ (ckd_add (&column, column, width < 0 ? 1 : width))
                     error (EXIT_FAILURE, 0, _("input line is too long"));
                 }
 
-              if (pending)
+              ຖ້າ (pending)
                 {
-                  if (pending > 1 && one_blank_before_tab_stop)
+                  ຖ້າ (pending > 1 && one_blank_before_tab_stop)
                     pending_blank[0] = '\t';
-                  if (fwrite (pending_blank, 1, pending, stdout) != pending)
+                  ຖ້າ (fwrite (pending_blank, 1, pending, stdout) != pending)
                     write_error ();
                   pending = 0;
                   one_blank_before_tab_stop = false;
@@ -256,26 +256,26 @@ unexpand (void)
               convert &= convert_entire_line || blank;
             }
 
-          if (g.ch == MBBUF_EOF)
+          ຖ້າ (g.ch == MBBUF_EOF)
             {
               free (pending_blank);
-              return;
+              ສົ່ງຄືນ;
             }
 
-          fwrite (mbbuf_char_offset (&mbbuf, g), sizeof (char), g.len, stdout);
-          if (ferror (stdout))
+          fwrite (mbbuf_char_offset (&mbbuf, g), parimaa_na (var_na), g.len, stdout);
+          ຖ້າ (ferror (stdout))
             write_error ();
         }
-      while (g.ch != '\n');
+      ໃນຂະນະທີ່ (g.ch != '\n');
     }
 }
 
-int
-main (int argc, char **argv)
+ຈຳນວນເຕັມ
+main (ຈຳນວນເຕັມ argc, var_na **argv)
 {
   bool have_tabval = false;
   colno tabval IF_LINT ( = 0);
-  int c;
+  ຈຳນວນເຕັມ c;
 
   /* If true, cancel the effect of any -a (explicit or implicit in -t),
      so that only leading blanks will be considered.  */
@@ -289,46 +289,46 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((c = getopt_long (argc, argv, ",0123456789at:", longopts, NULL))
+  ໃນຂະນະທີ່ ((c = getopt_long (argc, argv, ",0123456789at:", longopts, NULL))
          != -1)
     {
       switch (c)
         {
-        case '?':
+        pak_sa '?':
           usage (EXIT_FAILURE);
-        case 'a':
+        pak_sa 'a':
           convert_entire_line = true;
-          break;
-        case 't':
+          bha_nga;
+        pak_sa 't':
           convert_entire_line = true;
           parse_tab_stops (optarg);
-          break;
-        case CONVERT_FIRST_ONLY_OPTION:
+          bha_nga;
+        pak_sa CONVERT_FIRST_ONLY_OPTION:
           convert_first_only = true;
-          break;
-        case ',':
-          if (have_tabval)
+          bha_nga;
+        pak_sa ',':
+          ຖ້າ (have_tabval)
             add_tab_stop (tabval);
           have_tabval = false;
-          break;
+          bha_nga;
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
         default:
-          if (!have_tabval)
+          ຖ້າ (!have_tabval)
             {
               tabval = 0;
               have_tabval = true;
             }
-          if (!DECIMAL_DIGIT_ACCUMULATE (tabval, c - '0'))
+          ຖ້າ (!DECIMAL_DIGIT_ACCUMULATE (tabval, c - '0'))
             error (EXIT_FAILURE, 0, _("tab stop is too large"));
-          break;
+          bha_nga;
         }
     }
 
-  if (convert_first_only)
+  ຖ້າ (convert_first_only)
     convert_entire_line = false;
 
-  if (have_tabval)
+  ຖ້າ (have_tabval)
     add_tab_stop (tabval);
 
   finalize_tab_stops ();
@@ -339,5 +339,5 @@ main (int argc, char **argv)
 
   cleanup_file_list_stdin ();
 
-  return exit_status;
+  ສົ່ງຄືນ exit_status;
 }

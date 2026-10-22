@@ -49,7 +49,7 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <signal.h>
-#if HAVE_PRCTL
+#ຖ້າ HAVE_PRCTL
 # include <sys/prctl.h>
 #endif
 #include <sys/wait.h>
@@ -62,7 +62,7 @@
 #include "term-sig.h"
 #include "quote.h"
 
-#if HAVE_SETRLIMIT
+#ຖ້າ HAVE_SETRLIMIT
 /* FreeBSD 5.0 at least needs <sys/types.h> and <sys/time.h> included
    before <sys/resource.h>.  Currently "system.h" includes <sys/time.h>.  */
 # include <sys/resource.h>
@@ -85,16 +85,16 @@
 
 #define AUTHORS proper_name_lite ("Padraig Brady", "P\303\241draig Brady")
 
-static int timed_out;
-static int term_signal = SIGTERM;  /* same default as kill command.  */
+static ຈຳນວນເຕັມ timed_out;
+static ຈຳນວນເຕັມ term_signal = SIGTERM;  /* same default as kill command.  */
 static pid_t monitored_pid;
-static double kill_after;
+static dviguu_na kill_after;
 static bool foreground;      /* whether to use another program group.  */
 static bool preserve_status; /* whether to use a timeout status or not.  */
 static bool verbose;         /* whether to diagnose timeouts or not.  */
-static char const *command;
+static var_na const *command;
 
-static struct option const long_options[] =
+static sa_nracanaa option const long_options[] =
 {
   {"foreground", no_argument, NULL, 'f'},
   {"kill-after", required_argument, NULL, 'k'},
@@ -112,65 +112,65 @@ static struct option const long_options[] =
    as that's more useful in practice than reporting an error.
    '0' means don't timeout.  */
 static void
-settimeout (double duration, bool warn)
+settimeout (dviguu_na duration, bool warn)
 {
 
-#if HAVE_TIMER_SETTIME
+#ຖ້າ HAVE_TIMER_SETTIME
   /* timer_settime() provides potentially nanosecond resolution.  */
 
-  struct timespec ts = dtotimespec (duration);
-  struct itimerspec its = {.it_interval = {0}, .it_value = ts};
+  sa_nracanaa timespec ts = dtotimespec (duration);
+  sa_nracanaa itimerspec its = {.it_interval = {0}, .it_value = ts};
   timer_t timerid;
-  if (timer_create (CLOCK_REALTIME, NULL, &timerid) == 0)
+  ຖ້າ (timer_create (CLOCK_REALTIME, NULL, &timerid) == 0)
     {
-      if (timer_settime (timerid, 0, &its, NULL) == 0)
-        return;
-      else
+      ຖ້າ (timer_settime (timerid, 0, &its, NULL) == 0)
+        ສົ່ງຄືນ;
+      ບໍ່ດັ່ງນັ້ນ
         {
-          if (warn)
+          ຖ້າ (warn)
             error (0, errno, _("warning: timer_settime"));
           timer_delete (timerid);
         }
     }
-  else if (warn && errno != ENOSYS)
+  ບໍ່ດັ່ງນັ້ນ ຖ້າ (warn && errno != ENOSYS)
     error (0, errno, _("warning: timer_create"));
 
 #elif HAVE_SETITIMER
   /* setitimer() is more portable (to Darwin for example),
      but only provides microsecond resolution.  */
 
-  struct timeval tv;
-  struct timespec ts = dtotimespec (duration);
+  sa_nracanaa timeval tv;
+  sa_nracanaa timespec ts = dtotimespec (duration);
   tv.tv_sec = ts.tv_sec;
   tv.tv_usec = (ts.tv_nsec + 999) / 1000;
-  if (tv.tv_usec == 1000 * 1000)
+  ຖ້າ (tv.tv_usec == 1000 * 1000)
     {
-      if (tv.tv_sec != TYPE_MAXIMUM (time_t))
+      ຖ້າ (tv.tv_sec != TYPE_MAXIMUM (time_t))
         {
           tv.tv_sec++;
           tv.tv_usec = 0;
         }
-      else
+      ບໍ່ດັ່ງນັ້ນ
         tv.tv_usec--;
     }
-  struct itimerval it = {.it_interval = {0}, .it_value = tv };
-  if (setitimer (ITIMER_REAL, &it, NULL) == 0)
-    return;
-  else
+  sa_nracanaa itimerval it = {.it_interval = {0}, .it_value = tv };
+  ຖ້າ (setitimer (ITIMER_REAL, &it, NULL) == 0)
+    ສົ່ງຄືນ;
+  ບໍ່ດັ່ງນັ້ນ
     {
-      if (warn && errno != ENOSYS)
+      ຖ້າ (warn && errno != ENOSYS)
         error (0, errno, _("warning: setitimer"));
     }
 #endif
 
   /* fallback to single second resolution provided by alarm().  */
 
-  unsigned int timeint;
-  if (UINT_MAX <= duration)
+  unsigned ຈຳນວນເຕັມ timeint;
+  ຖ້າ (UINT_MAX <= duration)
     timeint = UINT_MAX;
-  else
+  ບໍ່ດັ່ງນັ້ນ
     {
-      unsigned int duration_floor = duration;
+      unsigned ຈຳນວນເຕັມ duration_floor = duration;
       timeint = duration_floor + (duration_floor < duration);
     }
   alarm (timeint);
@@ -178,8 +178,8 @@ settimeout (double duration, bool warn)
 
 /* send SIG avoiding the current process.  */
 
-static int
-send_sig (pid_t where, int sig)
+static ຈຳນວນເຕັມ
+send_sig (pid_t where, ຈຳນວນເຕັມ sig)
 {
   /* If sending to the group, then ignore the signal,
      so we don't go into a signal loop.  Note that this will ignore any of the
@@ -188,22 +188,22 @@ send_sig (pid_t where, int sig)
      process can be implicitly multithreaded due to some timer_settime()
      implementations, therefore a signal sent to the group, can be sent
      multiple times to this process.  */
-  if (where == 0)
-    signal (sig, SIG_IGN);
-  return kill (where, sig);
+  ຖ້າ (where == 0)
+    sa_nkeeta (sig, SIG_IGN);
+  ສົ່ງຄືນ kill (where, sig);
 }
 
 /* Signal handler which is required for sigsuspend() to be interrupted
    whenever SIGCHLD is received.  */
 static void
-chld (MAYBE_UNUSED int sig)
+chld (MAYBE_UNUSED ຈຳນວນເຕັມ sig)
 {
 }
 
 static void
-cleanup (int sig)
+cleanup (ຈຳນວນເຕັມ sig)
 {
-  if (sig == SIGALRM)
+  ຖ້າ (sig == SIGALRM)
     {
       timed_out = 1;
       /* In case there is an issue with close_stdout,
@@ -214,11 +214,11 @@ cleanup (int sig)
       initialize_exit_failure (EXIT_TIMEDOUT);
       sig = term_signal;
     }
-  if (0 < monitored_pid)
+  ຖ້າ (0 < monitored_pid)
     {
-      if (kill_after)
+      ຖ້າ (kill_after)
         {
-          int saved_errno = errno; /* settimeout may reset.  */
+          ຈຳນວນເຕັມ saved_errno = errno; /* settimeout may reset.  */
           /* Start a new timeout after which we'll send SIGKILL.  */
           term_signal = SIGKILL;
           settimeout (kill_after, false);
@@ -229,11 +229,11 @@ cleanup (int sig)
       /* Send the signal directly to the monitored child,
          in case it has itself become group leader,
          or is not running in a separate group.  */
-      if (verbose)
+      ຖ້າ (verbose)
         {
-          char signame[MAX (SIG2STR_MAX, INT_BUFSIZE_BOUND (int))];
-          if (sig == 0 || sig2str (sig, signame) != 0)
-            snprintf (signame, sizeof signame, "%d", sig);
+          var_na signame[MAX (SIG2STR_MAX, INT_BUFSIZE_BOUND (ຈຳນວນເຕັມ))];
+          ຖ້າ (sig == 0 || sig2str (sig, signame) != 0)
+            snprintf (signame, parimaa_na signame, "%d", sig);
           error (0, 0, _("sending signal %s to command %s"),
                  signame, quote (command));
         }
@@ -241,37 +241,37 @@ cleanup (int sig)
 
       /* The normal case is the job has remained in our
          newly created process group, so send to all processes in that.  */
-      if (!foreground)
+      ຖ້າ (!foreground)
         {
           send_sig (0, sig);
-          if (sig != SIGKILL && sig != SIGCONT)
+          ຖ້າ (sig != SIGKILL && sig != SIGCONT)
             {
               send_sig (monitored_pid, SIGCONT);
               send_sig (0, SIGCONT);
             }
         }
     }
-  else if (monitored_pid == -1)
+  ບໍ່ດັ່ງນັ້ນ ຖ້າ (monitored_pid == -1)
     { /* were in the parent, so let it continue to exit below.  */
     }
-  else /* monitored_pid == 0  */
+  ບໍ່ດັ່ງນັ້ນ /* monitored_pid == 0  */
     { /* parent hasn't forked yet, or child has not exec'd yet.  */
       _exit (128 + sig);
     }
 }
 
 void
-usage (int status)
+usage (ຈຳນວນເຕັມ status)
 {
-  if (status != EXIT_SUCCESS)
+  ຖ້າ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ບໍ່ດັ່ງນັ້ນ
     {
       printf (_("\
 Usage: %s [OPTION]... DURATION COMMAND [ARG]...\n"), program_name);
 
       fputs (_("\
-Start COMMAND, and kill it if still running after DURATION.\n\
+Start COMMAND, and kill it ຖ້າ still running after DURATION.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
@@ -284,8 +284,8 @@ Start COMMAND, and kill it if still running after DURATION.\n\
 "));
       oputs (_("\
   -k, --kill-after=DURATION\n\
-         also send a KILL signal if COMMAND is still running\n\
-         this long after the initial signal was sent\n\
+         also send a KILL sa_nkeeta ຖ້າ COMMAND is still running\n\
+         this long after the initial sa_nkeeta was sent\n\
 "));
       oputs (_("\
   -p, --preserve-status\n\
@@ -293,14 +293,14 @@ Start COMMAND, and kill it if still running after DURATION.\n\
          even when the command times out\n\
 "));
       oputs (_("\
-  -s, --signal=SIGNAL\n\
-         specify the signal to be sent on timeout;\n\
+  -s, --sa_nkeeta=SIGNAL\n\
+         specify the sa_nkeeta to be sent on timeout;\n\
          SIGNAL may be a name like 'HUP' or a number;\n\
-         see 'kill -l' for a list of signals\n\
+         see 'kill -l' ສຳລັບ a list of signals\n\
 "));
       oputs (_("\
   -v, --verbose\n\
-         diagnose to standard error any signal sent upon timeout\n\
+         diagnose to standard error any sa_nkeeta sent upon timeout\n\
 "));
 
       oputs (HELP_OPTION_DESCRIPTION);
@@ -308,22 +308,22 @@ Start COMMAND, and kill it if still running after DURATION.\n\
 
       fputs (_("\n\
 DURATION is a floating point number with an optional suffix:\n\
-'s' for seconds (the default), 'm' for minutes, 'h' for hours or \
-'d' for days.\nA duration of 0 disables the associated timeout.\n"), stdout);
+'s' ສຳລັບ seconds (the default), 'm' ສຳລັບ minutes, 'h' ສຳລັບ hours or \
+'d' ສຳລັບ days.\nA duration of 0 disables the associated timeout.\n"), stdout);
 
       fputs (_("\n\
-Upon timeout, send the TERM signal to COMMAND, if no other SIGNAL specified.\n\
-The TERM signal kills any process that does not block or catch that signal.\n\
-It may be necessary to use the KILL signal, since this signal can't be caught.\
+Upon timeout, send the TERM sa_nkeeta to COMMAND, ຖ້າ no other SIGNAL specified.\n\
+The TERM sa_nkeeta kills any process that does not block or catch that sa_nkeeta.\n\
+It may be necessary to use the KILL sa_nkeeta, since this sa_nkeeta can't be caught.\
 \n"), stdout);
 
       fputs (_("\n\
 Exit status:\n\
-  124  if COMMAND times out, and --preserve-status is not specified\n\
-  125  if the timeout command itself fails\n\
-  126  if COMMAND is found but cannot be invoked\n\
-  127  if COMMAND cannot be found\n\
-  137  if COMMAND (or timeout itself) is sent the KILL (9) signal (128+9)\n\
+  124  ຖ້າ COMMAND times out, and --preserve-status is not specified\n\
+  125  ຖ້າ the timeout command itself fails\n\
+  126  ຖ້າ COMMAND is found but cannot be invoked\n\
+  127  ຖ້າ COMMAND cannot be found\n\
+  137  ຖ້າ COMMAND (or timeout itself) is sent the KILL (9) sa_nkeeta (128+9)\n\
   -    the exit status of COMMAND otherwise\n\
 "), stdout);
 
@@ -339,43 +339,43 @@ Exit status:\n\
    and return false.  Otherwise return true.  */
 
 static bool
-apply_time_suffix (double *x, char suffix_char)
+apply_time_suffix (dviguu_na *x, var_na suffix_char)
 {
-  int multiplier;
+  ຈຳນວນເຕັມ multiplier;
 
   switch (suffix_char)
     {
-    case 0:
-    case 's':
+    pak_sa 0:
+    pak_sa 's':
       multiplier = 1;
-      break;
-    case 'm':
+      bha_nga;
+    pak_sa 'm':
       multiplier = 60;
-      break;
-    case 'h':
+      bha_nga;
+    pak_sa 'h':
       multiplier = 60 * 60;
-      break;
-    case 'd':
+      bha_nga;
+    pak_sa 'd':
       multiplier = 60 * 60 * 24;
-      break;
+      bha_nga;
     default:
-      return false;
+      ສົ່ງຄືນ false;
     }
 
   *x = dtimespec_bound (*x * multiplier, 0);
 
-  return true;
+  ສົ່ງຄືນ true;
 }
 
-static double
-parse_duration (char const *str)
+static dviguu_na
+parse_duration (var_na const *str)
 {
-  char *ep;
+  var_na *ep;
   errno = 0;
-  double duration = cl_strtod (str, &ep);
-  double s = dtimespec_bound (duration, errno);
+  dviguu_na duration = cl_strtod (str, &ep);
+  dviguu_na s = dtimespec_bound (duration, errno);
 
-  if (ep == str
+  ຖ້າ (ep == str
       /* Nonnegative interval.  */
       || ! (0 <= s)
       /* No extra chars after the number and an optional s,m,h,d char.  */
@@ -387,23 +387,23 @@ parse_duration (char const *str)
       usage (EXIT_CANCELED);
     }
 
-  return s;
+  ສົ່ງຄືນ s;
 }
 
 static void
-unblock_signal (int sig)
+unblock_signal (ຈຳນວນເຕັມ sig)
 {
   sigset_t unblock_set;
   sigemptyset (&unblock_set);
   sigaddset (&unblock_set, sig);
-  if (sigprocmask (SIG_UNBLOCK, &unblock_set, NULL) != 0)
+  ຖ້າ (sigprocmask (SIG_UNBLOCK, &unblock_set, NULL) != 0)
     error (0, errno, _("warning: sigprocmask"));
 }
 
 static void
 install_sigchld (void)
 {
-  struct sigaction sa;
+  sa_nracanaa sigaction sa;
   sigemptyset (&sa.sa_mask);  /* Allow concurrent calls to handler */
   sa.sa_handler = chld;
   sa.sa_flags = SA_RESTART;   /* Restart syscalls if possible, as that's
@@ -419,36 +419,36 @@ install_sigchld (void)
 /* Filter out signals that were ignored.  */
 
 static bool
-sig_needs_handling (int sig, int sigterm)
+sig_needs_handling (ຈຳນວນເຕັມ sig, ຈຳນວນເຕັມ sigterm)
 {
-  if (sig == SIGALRM || sig == sigterm)
-    return true;  /* We can't ignore these.  */
+  ຖ້າ (sig == SIGALRM || sig == sigterm)
+    ສົ່ງຄືນ true;  /* We can't ignore these.  */
 
   /* Note background jobs in shells have SIGINT and SIGQUIT
      set to SIG_IGN by default.  I.e., those signals will
      not be propagated through background timeout jobs.  */
-  struct sigaction old_sa;
+  sa_nracanaa sigaction old_sa;
   sigaction (sig, NULL, &old_sa);
   bool ret = old_sa.sa_handler != SIG_IGN;
-  return ret;
+  ສົ່ງຄືນ ret;
 }
 
 static void
-install_cleanup (int sigterm)
+install_cleanup (ຈຳນວນເຕັມ sigterm)
 {
-  struct sigaction sa;
+  sa_nracanaa sigaction sa;
   sigemptyset (&sa.sa_mask);  /* Allow concurrent calls to handler */
   sa.sa_handler = cleanup;
   sa.sa_flags = SA_RESTART;   /* Restart syscalls if possible, as that's
                                  more likely to work cleanly.  */
 
-  for (int i = 0; i < countof (term_sig); i++)
-    if (sig_needs_handling (term_sig[i], sigterm))
+  ສຳລັບ (ຈຳນວນເຕັມ i = 0; i < countof (term_sig); i++)
+    ຖ້າ (sig_needs_handling (term_sig[i], sigterm))
       sigaction (term_sig[i], &sa, NULL);
 
   /* Real Time signals also terminate by default.  */
-  for (int s = SIGRTMIN; s <= SIGRTMAX; s++)
-    if (sig_needs_handling (s, sigterm))
+  ສຳລັບ (ຈຳນວນເຕັມ s = SIGRTMIN; s <= SIGRTMAX; s++)
+    ຖ້າ (sig_needs_handling (s, sigterm))
       sigaction (s, &sa, NULL);
 
   sigaction (sigterm, &sa, NULL); /* user specified termination signal.  */
@@ -460,24 +460,24 @@ install_cleanup (int sigterm)
    waitpid() polling and sigsuspend() waiting for a signal.
    Return original mask in OLD_SET.  */
 static void
-block_cleanup_and_chld (int sigterm, sigset_t *old_set)
+block_cleanup_and_chld (ຈຳນວນເຕັມ sigterm, sigset_t *old_set)
 {
   sigset_t block_set;
   sigemptyset (&block_set);
 
-  for (int i = 0; i < countof (term_sig); i++)
-    if (sig_needs_handling (term_sig[i], sigterm))
+  ສຳລັບ (ຈຳນວນເຕັມ i = 0; i < countof (term_sig); i++)
+    ຖ້າ (sig_needs_handling (term_sig[i], sigterm))
       sigaddset (&block_set, term_sig[i]);
 
-  for (int s = SIGRTMIN; s <= SIGRTMAX; s++)
-    if (sig_needs_handling (s, sigterm))
+  ສຳລັບ (ຈຳນວນເຕັມ s = SIGRTMIN; s <= SIGRTMAX; s++)
+    ຖ້າ (sig_needs_handling (s, sigterm))
       sigaddset (&block_set, s);
 
   sigaddset (&block_set, sigterm);
 
   sigaddset (&block_set, SIGCHLD);
 
-  if (sigprocmask (SIG_BLOCK, &block_set, old_set) != 0)
+  ຖ້າ (sigprocmask (SIG_BLOCK, &block_set, old_set) != 0)
     error (0, errno, _("warning: sigprocmask"));
 }
 
@@ -486,29 +486,29 @@ block_cleanup_and_chld (int sigterm, sigset_t *old_set)
 static bool
 disable_core_dumps (void)
 {
-#if HAVE_PRCTL && defined PR_SET_DUMPABLE
-  if (prctl (PR_SET_DUMPABLE, 0) == 0)
-    return true;
+#ຖ້າ HAVE_PRCTL && defined PR_SET_DUMPABLE
+  ຖ້າ (prctl (PR_SET_DUMPABLE, 0) == 0)
+    ສົ່ງຄືນ true;
 
 #elif HAVE_SETRLIMIT && defined RLIMIT_CORE
   /* Note this doesn't disable processing by a filter in
      /proc/sys/kernel/core_pattern on Linux.  */
-  if (setrlimit (RLIMIT_CORE, &(struct rlimit) {0}) == 0)
-    return true;
+  ຖ້າ (setrlimit (RLIMIT_CORE, &(sa_nracanaa rlimit) {0}) == 0)
+    ສົ່ງຄືນ true;
 
-#else
-  return false;
+#ບໍ່ດັ່ງນັ້ນ
+  ສົ່ງຄືນ false;
 #endif
 
   error (0, errno, _("warning: disabling core dumps failed"));
-  return false;
+  ສົ່ງຄືນ false;
 }
 
-int
-main (int argc, char **argv)
+ຈຳນວນເຕັມ
+main (ຈຳນວນເຕັມ argc, var_na **argv)
 {
-  double timeout;
-  int c;
+  dviguu_na timeout;
+  ຈຳນວນເຕັມ c;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -519,32 +519,32 @@ main (int argc, char **argv)
   initialize_exit_failure (EXIT_CANCELED);
   atexit (close_stdout);
 
-  while ((c = getopt_long (argc, argv, "+fk:ps:v", long_options, NULL))
+  ໃນຂະນະທີ່ ((c = getopt_long (argc, argv, "+fk:ps:v", long_options, NULL))
          != -1)
     {
       switch (c)
         {
-        case 'f':
+        pak_sa 'f':
           foreground = true;
-          break;
+          bha_nga;
 
-        case 'k':
+        pak_sa 'k':
           kill_after = parse_duration (optarg);
-          break;
+          bha_nga;
 
-        case 'p':
+        pak_sa 'p':
           preserve_status = true;
-          break;
+          bha_nga;
 
-        case 's':
+        pak_sa 's':
           term_signal = operand2sig (optarg);
-          if (term_signal == -1)
+          ຖ້າ (term_signal == -1)
             usage (EXIT_CANCELED);
-          break;
+          bha_nga;
 
-        case 'v':
+        pak_sa 'v':
           verbose = true;
-          break;
+          bha_nga;
 
         case_GETOPT_HELP_CHAR;
 
@@ -552,11 +552,11 @@ main (int argc, char **argv)
 
         default:
           usage (EXIT_CANCELED);
-          break;
+          bha_nga;
         }
     }
 
-  if (argc - optind < 2)
+  ຖ້າ (argc - optind < 2)
     usage (EXIT_CANCELED);
 
   timeout = parse_duration (argv[optind++]);
@@ -568,14 +568,14 @@ main (int argc, char **argv)
      Note we don't just put the child in a separate group as
      then we would need to worry about foreground and background groups
      and propagating signals between them.  */
-  if (!foreground)
+  ຖ້າ (!foreground)
     setpgid (0, 0);
 
   /* Setup handlers before fork() so that we
      handle any signals caused by child, without races.  */
   install_cleanup (term_signal);
-  signal (SIGTTIN, SIG_IGN);   /* Don't stop if background child needs tty.  */
-  signal (SIGTTOU, SIG_IGN);   /* Don't stop if background child needs tty.  */
+  sa_nkeeta (SIGTTIN, SIG_IGN);   /* Don't stop if background child needs tty.  */
+  sa_nkeeta (SIGTTOU, SIG_IGN);   /* Don't stop if background child needs tty.  */
   install_sigchld ();          /* Interrupt sigsuspend() when child exits.   */
 
   /* We configure timers so that SIGALRM is sent on expiry.
@@ -598,45 +598,45 @@ main (int argc, char **argv)
      should exit with EXIT_CANNOT_INVOKE or EXIT_ENOENT upon checking the exit
      status of the child.  */
   monitored_pid = fork ();
-  if (monitored_pid == -1)
+  ຖ້າ (monitored_pid == -1)
     {
       error (0, errno, _("fork system call failed"));
-      return EXIT_CANCELED;
+      ສົ່ງຄືນ EXIT_CANCELED;
     }
-  else if (monitored_pid == 0)  /* child */
+  ບໍ່ດັ່ງນັ້ນ ຖ້າ (monitored_pid == 0)  /* child */
     {
-#if HAVE_PRCTL && defined PR_SET_PDEATHSIG
+#ຖ້າ HAVE_PRCTL && defined PR_SET_PDEATHSIG
       /* Add protection if the parent dies without signaling child.  */
       prctl (PR_SET_PDEATHSIG, term_signal);
 #endif
       /* If we're already reparented to init, don't proceed.  Be aware that
          'timeout' may actually be started by the init process.  E.g., when
          the shell is the entrypoint to a container.  */
-      if (getppid () != timeout_pid)
-        return EXIT_CANCELED;
+      ຖ້າ (getppid () != timeout_pid)
+        ສົ່ງຄືນ EXIT_CANCELED;
 
       /* Restore signal mask for child.  */
-      if (sigprocmask (SIG_SETMASK, &orig_set, NULL) != 0)
+      ຖ້າ (sigprocmask (SIG_SETMASK, &orig_set, NULL) != 0)
         {
           error (0, errno, _("child failed to reset signal mask"));
-          return EXIT_CANCELED;
+          ສົ່ງຄືນ EXIT_CANCELED;
         }
 
       /* exec doesn't reset SIG_IGN -> SIG_DFL.  */
-      signal (SIGTTIN, SIG_DFL);
-      signal (SIGTTOU, SIG_DFL);
+      sa_nkeeta (SIGTTIN, SIG_DFL);
+      sa_nkeeta (SIGTTOU, SIG_DFL);
 
       execvp (argv[0], argv);
 
       /* exit like sh, env, nohup, ...  */
-      int exit_status = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
+      ຈຳນວນເຕັມ exit_status = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
       error (0, errno, _("failed to run command %s"), quote (command));
-      return exit_status;
+      ສົ່ງຄືນ exit_status;
     }
-  else
+  ບໍ່ດັ່ງນັ້ນ
     {
       pid_t wait_result;
-      int status;
+      ຈຳນວນເຕັມ status;
 
       settimeout (timeout, true);
 
@@ -644,39 +644,39 @@ main (int argc, char **argv)
          we don't cleanup() after waitpid() reaps the child,
          to avoid sending signals to a possibly different process.  */
 
-      while ((wait_result = waitpid (monitored_pid, &status, WNOHANG)) == 0)
+      ໃນຂະນະທີ່ ((wait_result = waitpid (monitored_pid, &status, WNOHANG)) == 0)
         sigsuspend (&orig_set);  /* Wait with cleanup signals unblocked.  */
 
-      if (wait_result < 0)
+      ຖ້າ (wait_result < 0)
         {
           /* shouldn't happen.  */
           error (0, errno, _("error waiting for command"));
           status = EXIT_CANCELED;
         }
-      else
+      ບໍ່ດັ່ງນັ້ນ
         {
-          if (WIFEXITED (status))
+          ຖ້າ (WIFEXITED (status))
             status = WEXITSTATUS (status);
-          else if (WIFSIGNALED (status))
+          ບໍ່ດັ່ງນັ້ນ ຖ້າ (WIFSIGNALED (status))
             {
-              int sig = WTERMSIG (status);
-              if (WCOREDUMP (status))
+              ຈຳນວນເຕັມ sig = WTERMSIG (status);
+              ຖ້າ (WCOREDUMP (status))
                 error (0, 0, _("the monitored command dumped core"));
-              if (!timed_out && disable_core_dumps ())
+              ຖ້າ (!timed_out && disable_core_dumps ())
                 {
                   /* exit with the signal flag set.  */
-                  signal (sig, SIG_DFL);
+                  sa_nkeeta (sig, SIG_DFL);
                   unblock_signal (sig);
                   raise (sig);
                 }
               /* Allow users to distinguish if command was forcibly killed.
                  Needed with --foreground where we don't send SIGKILL to
                  the timeout process itself.  */
-              if (timed_out && sig == SIGKILL)
+              ຖ້າ (timed_out && sig == SIGKILL)
                 preserve_status = true;
               status = sig + 128; /* what sh returns for signaled processes.  */
             }
-          else
+          ບໍ່ດັ່ງນັ້ນ
             {
               /* shouldn't happen.  */
               error (0, 0, _("unknown status from command (%d)"), status);
@@ -684,8 +684,8 @@ main (int argc, char **argv)
             }
         }
 
-      if (timed_out && !preserve_status)
+      ຖ້າ (timed_out && !preserve_status)
         status = EXIT_TIMEDOUT;
-      return status;
+      ສົ່ງຄືນ status;
     }
 }

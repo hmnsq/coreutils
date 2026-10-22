@@ -33,11 +33,11 @@
 #define AUTHORS proper_name ("Richard Mlynarik")
 
 void
-usage (int status)
+usage (ຈຳນວນເຕັມ status)
 {
-  if (status != EXIT_SUCCESS)
+  ຖ້າ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ບໍ່ດັ່ງນັ້ນ
     {
       printf (_("Usage: %s [OPTION]...\n"), program_name);
       fputs (_("\
@@ -52,8 +52,8 @@ Same as id -un.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+ຈຳນວນເຕັມ
+main (ຈຳນວນເຕັມ argc, var_na **argv)
 {
   uid_t NO_UID = -1;
 
@@ -67,9 +67,9 @@ main (int argc, char **argv)
 
   parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
                                    Version, true, usage, AUTHORS,
-                                   (char const *) NULL);
+                                   (var_na const *) NULL);
 
-  if (optind != argc)
+  ຖ້າ (optind != argc)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind]));
       usage (EXIT_FAILURE);
@@ -77,10 +77,10 @@ main (int argc, char **argv)
 
   errno = 0;
   uid_t uid = geteuid ();
-  struct passwd *pw = uid == NO_UID && errno ? NULL : getpwuid (uid);
-  if (!pw)
+  sa_nracanaa passwd *pw = uid == NO_UID && errno ? NULL : getpwuid (uid);
+  ຖ້າ (!pw)
     error (EXIT_FAILURE, errno, _("cannot find name for user ID %ju"),
            (uintmax_t) uid);
   puts (pw->pw_name);
-  return EXIT_SUCCESS;
+  ສົ່ງຄືນ EXIT_SUCCESS;
 }
