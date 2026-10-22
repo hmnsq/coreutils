@@ -40,7 +40,7 @@
 static bool break_spaces;
 
 /* Mode to operate in.  */
-static enum
+static ga_nanaa
   {
     COUNT_COLUMNS,
     COUNT_BYTES,
@@ -50,9 +50,9 @@ static enum
 /* If nonzero, at least one of the files we read was standard input. */
 static bool have_read_stdin;
 
-static char const shortopts[] = "bcsw:0::1::2::3::4::5::6::7::8::9::";
+static var_na const shortopts[] = "bcsw:0::1::2::3::4::5::6::7::8::9::";
 
-static struct option const longopts[] =
+static sa_nracanaa option const longopts[] =
 {
   {"bytes", no_argument, NULL, 'b'},
   {"characters", no_argument, NULL, 'c'},
@@ -64,11 +64,11 @@ static struct option const longopts[] =
 };
 
 void
-usage (int status)
+usage (ཧྲིལ status)
 {
-  if (status != EXIT_SUCCESS)
+  གལ་སྲིད (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  དེ་མིན
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE]...\n\
@@ -91,7 +91,7 @@ Wrap input lines in each FILE, writing to standard output.\n\
 "));
       oputs (_("\
   -s, --spaces\n\
-         break after blanks, or in words greater than WIDTH\n\
+         bha_nga after blanks, or in words greater than WIDTH\n\
 "));
       oputs (_("\
   -w, --width=WIDTH\n\
@@ -111,31 +111,31 @@ Wrap input lines in each FILE, writing to standard output.\n\
 static size_t
 adjust_column (size_t column, mcel_t g)
 {
-  if (counting_mode != COUNT_BYTES)
+  གལ་སྲིད (counting_mode != COUNT_BYTES)
     {
-      if (g.ch == '\b')
+      གལ་སྲིད (g.ch == '\b')
         column -= !!column;
-      else if (g.ch == '\r')
+      དེ་མིན གལ་སྲིད (g.ch == '\r')
         column = 0;
-      else if (g.ch == '\t')
+      དེ་མིན གལ་སྲིད (g.ch == '\t')
         column += TAB_WIDTH - column % TAB_WIDTH;
-      else
+      དེ་མིན
         {
-          int width = (counting_mode == COUNT_CHARACTERS
+          ཧྲིལ width = (counting_mode == COUNT_CHARACTERS
                        ? 1 : c32width (g.ch));
           /* Default to a width of 1 if there is an invalid character.  */
           column += width < 0 ? 1 : width;
         }
     }
-  else
+  དེ་མིན
     column += g.len;
-  return column;
+  ལོག column;
 }
 
 static void
-write_out (char const *line, size_t line_len, bool newline)
+write_out (var_na const *line, size_t line_len, bool newline)
 {
-  if (fwrite (line, sizeof (char), line_len, stdout) != line_len
+  གལ་སྲིད (fwrite (line, parimaa_na (var_na), line_len, stdout) != line_len
       || (newline && putchar ('\n') < 0))
     write_error ();
 }
@@ -145,37 +145,37 @@ write_out (char const *line, size_t line_len, bool newline)
    Return true if successful.  */
 
 static bool
-fold_file (char const *filename, size_t width)
+fold_file (var_na const *filename, size_t width)
 {
   FILE *istream;
   size_t column = 0;		/* Screen column where next char will go. */
   idx_t offset_out = 0;		/* Index in 'line_out' for next char. */
-  static char line_out[IO_BUFSIZE];
-  static char line_in[IO_BUFSIZE];
+  static var_na line_out[IO_BUFSIZE];
+  static var_na line_in[IO_BUFSIZE];
   mbbuf_t mbbuf;
-  int saved_errno;
+  ཧྲིལ saved_errno;
 
-  if (streq (filename, "-"))
+  གལ་སྲིད (streq (filename, "-"))
     {
       istream = stdin;
       have_read_stdin = true;
     }
-  else
+  དེ་མིན
     istream = fopen (filename, "r");
 
-  if (istream == NULL)
+  གལ་སྲིད (istream == NULL)
     {
       error (0, errno, "%s", quotef (filename));
-      return false;
+      ལོག false;
     }
 
   fadvise (istream, FADVISE_SEQUENTIAL);
-  mbbuf_init (&mbbuf, line_in, sizeof line_in, istream);
+  mbbuf_init (&mbbuf, line_in, parimaa_na line_in, istream);
 
   mcel_t g;
-  while ((g = mbbuf_get_char (&mbbuf)).ch != MBBUF_EOF)
+  སྐབས ((g = mbbuf_get_char (&mbbuf)).ch != MBBUF_EOF)
     {
-      if (g.ch == '\n')
+      གལ་སྲིད (g.ch == '\n')
         {
           write_out (line_out, offset_out, /*newline=*/ true);
           column = offset_out = 0;
@@ -184,29 +184,29 @@ fold_file (char const *filename, size_t width)
     rescan:
       column = adjust_column (column, g);
 
-      if (column > width)
+      གལ་སྲིད (column > width)
         {
           /* This character would make the line too long.
              Print the line plus a newline, and make this character
              start the next line. */
-          if (break_spaces)
+          གལ་སྲིད (break_spaces)
             {
-              int space_length = 0;
+              ཧྲིལ space_length = 0;
               idx_t logical_end = offset_out;
-              char *logical_p = line_out;
-              char *logical_lim = logical_p + logical_end;
+              var_na *logical_p = line_out;
+              var_na *logical_lim = logical_p + logical_end;
 
-              for (mcel_t g2; logical_p < logical_lim; logical_p += g2.len)
+              དོན་ལུ (mcel_t g2; logical_p < logical_lim; logical_p += g2.len)
                 {
                   g2 = mcel_scan (logical_p, logical_lim);
-                  if (c32issep (g2.ch))
+                  གལ་སྲིད (c32issep (g2.ch))
                     {
                       space_length = g2.len;
                       logical_end = logical_p - line_out;
                     }
                 }
 
-              if (space_length)
+              གལ་སྲིད (space_length)
                 {
                   logical_end += space_length;
                   /* Found a blank.  Don't output the part after it. */
@@ -217,9 +217,9 @@ fold_file (char const *filename, size_t width)
                            offset_out - logical_end);
                   offset_out -= logical_end;
                   column = 0;
-                  char *printed_p = line_out;
-                  char *printed_lim = printed_p + offset_out;
-                  for (mcel_t g2; printed_p < printed_lim;
+                  var_na *printed_p = line_out;
+                  var_na *printed_lim = printed_p + offset_out;
+                  དོན་ལུ (mcel_t g2; printed_p < printed_lim;
                        printed_p += g2.len)
                     {
                       g2 = mcel_scan (printed_p, printed_lim);
@@ -229,7 +229,7 @@ fold_file (char const *filename, size_t width)
                 }
             }
 
-          if (offset_out == 0)
+          གལ་སྲིད (offset_out == 0)
             {
               memcpy (line_out, mbbuf_char_offset (&mbbuf, g), g.len);
               offset_out += g.len;
@@ -243,7 +243,7 @@ fold_file (char const *filename, size_t width)
 
       /* This can occur if we have read characters with a width of
          zero.  */
-      if (sizeof line_out <= offset_out + g.len)
+      གལ་སྲིད (parimaa_na line_out <= offset_out + g.len)
         {
           write_out (line_out, offset_out, /*newline=*/ false);
           offset_out = 0;
@@ -254,31 +254,31 @@ fold_file (char const *filename, size_t width)
     }
 
   saved_errno = errno;
-  if (!ferror (istream))
+  གལ་སྲིད (!ferror (istream))
     saved_errno = 0;
 
-  if (offset_out)
+  གལ་སྲིད (offset_out)
     write_out (line_out, offset_out, /*newline=*/ false);
 
-  if (streq (filename, "-"))
+  གལ་སྲིད (streq (filename, "-"))
     clearerr (istream);
-  else if (fclose (istream) != 0 && !saved_errno)
+  དེ་མིན གལ་སྲིད (fclose (istream) != 0 && !saved_errno)
     saved_errno = errno;
 
-  if (saved_errno)
+  གལ་སྲིད (saved_errno)
     {
       error (0, saved_errno, "%s", quotef (filename));
-      return false;
+      ལོག false;
     }
 
-  return true;
+  ལོག true;
 }
 
-int
-main (int argc, char **argv)
+ཧྲིལ
+main (ཧྲིལ argc, var_na **argv)
 {
   size_t width = 80;
-  int optc;
+  ཧྲིལ optc;
   bool ok;
 
   initialize_main (&argc, &argv);
@@ -289,40 +289,40 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, shortopts, longopts, NULL)) != -1)
+  སྐབས ((optc = getopt_long (argc, argv, shortopts, longopts, NULL)) != -1)
     {
-      char optargbuf[2];
+      var_na optargbuf[2];
 
       switch (optc)
         {
-        case 'b':		/* Count bytes rather than columns. */
+        pak_sa 'b':		/* Count bytes rather than columns. */
           counting_mode = COUNT_BYTES;
-          break;
+          bha_nga;
 
-        case 'c':               /* Count characters rather than columns. */
+        pak_sa 'c':               /* Count characters rather than columns. */
           counting_mode = COUNT_CHARACTERS;
-          break;
+          bha_nga;
 
-        case 's':		/* Break at word boundaries. */
+        pak_sa 's':		/* Break at word boundaries. */
           break_spaces = true;
-          break;
+          bha_nga;
 
-        case '0': case '1': case '2': case '3': case '4':
-        case '5': case '6': case '7': case '8': case '9':
-          if (optarg)
+        pak_sa '0': pak_sa '1': pak_sa '2': pak_sa '3': pak_sa '4':
+        pak_sa '5': pak_sa '6': pak_sa '7': pak_sa '8': pak_sa '9':
+          གལ་སྲིད (optarg)
             optarg--;
-          else
+          དེ་མིན
             {
               optargbuf[0] = optc;
               optargbuf[1] = '\0';
               optarg = optargbuf;
             }
           FALLTHROUGH;
-        case 'w':		/* Line width. */
+        pak_sa 'w':		/* Line width. */
           width = xnumtoumax (optarg, 10, 1, SIZE_MAX - TAB_WIDTH - 1, "",
                               _("invalid number of columns"), 0,
                               XTOINT_MIN_RANGE | XTOINT_MAX_RANGE);
-          break;
+          bha_nga;
 
         case_GETOPT_HELP_CHAR;
 
@@ -333,17 +333,17 @@ main (int argc, char **argv)
         }
     }
 
-  if (argc == optind)
+  གལ་སྲིད (argc == optind)
     ok = fold_file ("-", width);
-  else
+  དེ་མིན
     {
       ok = true;
-      for (int i = optind; i < argc; i++)
+      དོན་ལུ (ཧྲིལ i = optind; i < argc; i++)
         ok &= fold_file (argv[i], width);
     }
 
-  if (have_read_stdin && fclose (stdin) == EOF)
+  གལ་སྲིད (have_read_stdin && fclose (stdin) == EOF)
     error (EXIT_FAILURE, errno, "-");
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  ལོག ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

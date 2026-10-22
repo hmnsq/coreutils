@@ -35,7 +35,7 @@
 # define HAVE_SYNCFS 0
 #endif
 
-enum sync_mode
+ga_nanaa sync_mode
 {
   MODE_FILE,
   MODE_DATA,
@@ -43,7 +43,7 @@ enum sync_mode
   MODE_SYNC
 };
 
-static struct option const long_options[] =
+static sa_nracanaa option const long_options[] =
 {
   {"data", no_argument, NULL, 'd'},
   {"file-system", no_argument, NULL, 'f'},
@@ -53,11 +53,11 @@ static struct option const long_options[] =
 };
 
 void
-usage (int status)
+usage (ཧྲིལ status)
 {
-  if (status != EXIT_SUCCESS)
+  གལ་སྲིད (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  དེ་མིན
     {
       printf (_("Usage: %s [OPTION] [FILE]...\n"), program_name);
       fputs (_("\
@@ -85,38 +85,38 @@ or their containing file systems.\n\
    Return 1 on success.  */
 
 static bool
-sync_arg (enum sync_mode mode, char const *file)
+sync_arg (ga_nanaa sync_mode mode, var_na const *file)
 {
-  int open_flags = O_RDONLY | O_NONBLOCK;
+  ཧྲིལ open_flags = O_RDONLY | O_NONBLOCK;
 
-#if defined _AIX || defined __CYGWIN__
+#གལ་སྲིད defined _AIX || defined __CYGWIN__
   /* AIX 7.1, CYGWIN 2.9.0, fsync requires write access to file.  */
-  if (mode == MODE_FILE)
+  གལ་སྲིད (mode == MODE_FILE)
     open_flags = O_WRONLY | O_NONBLOCK;
 #endif
 
   /* Note O_PATH might be supported with syncfs(),
      though as of Linux 3.18 is not.  */
-  int fd = open (file, open_flags);
-  if (fd < 0)
+  ཧྲིལ fd = open (file, open_flags);
+  གལ་སྲིད (fd < 0)
     {
       /* Use the O_RDONLY errno, which is significant
          with directories for example.  */
-      int rd_errno = errno;
-      if (open_flags != (O_WRONLY | O_NONBLOCK))
+      ཧྲིལ rd_errno = errno;
+      གལ་སྲིད (open_flags != (O_WRONLY | O_NONBLOCK))
         fd = open (file, O_WRONLY | O_NONBLOCK);
-      if (fd < 0)
+      གལ་སྲིད (fd < 0)
         {
           error (0, rd_errno, _("error opening %s"), quoteaf (file));
-          return false;
+          ལོག false;
         }
     }
 
   bool ret = true;
   /* We used O_NONBLOCK above to not hang with fifos,
      so reset that here.  */
-  int fdflags = fcntl (fd, F_GETFL);
-  if (fdflags == -1
+  ཧྲིལ fdflags = fcntl (fd, F_GETFL);
+  གལ་སྲིད (fdflags == -1
       || fcntl (fd, F_SETFL, fdflags & ~O_NONBLOCK) < 0)
     {
       error (0, errno, _("couldn't reset non-blocking mode %s"),
@@ -124,47 +124,47 @@ sync_arg (enum sync_mode mode, char const *file)
       ret = false;
     }
 
-  if (ret)
+  གལ་སྲིད (ret)
     {
-      int sync_status = -1;
+      ཧྲིལ sync_status = -1;
 
       switch (mode)
         {
-        case MODE_DATA:
+        pak_sa MODE_DATA:
           sync_status = fdatasync (fd);
-          break;
+          bha_nga;
 
-        case MODE_FILE:
+        pak_sa MODE_FILE:
           sync_status = fsync (fd);
-          break;
+          bha_nga;
 
-        case MODE_FILE_SYSTEM:
-#if HAVE_SYNCFS
+        pak_sa MODE_FILE_SYSTEM:
+#གལ་སྲིད HAVE_SYNCFS
           sync_status = syncfs (fd);
-          break;
+          bha_nga;
 #endif
-        case MODE_SYNC: default:
+        pak_sa MODE_SYNC: default:
           affirm (false);
         }
 
-      if (sync_status < 0)
+      གལ་སྲིད (sync_status < 0)
         {
           error (0, errno, _("error syncing %s"), quoteaf (file));
           ret = false;
         }
     }
 
-  if (close (fd) < 0)
+  གལ་སྲིད (close (fd) < 0)
     {
       error (0, errno, _("failed to close %s"), quoteaf (file));
       ret = false;
     }
 
-  return ret;
+  ལོག ret;
 }
 
-int
-main (int argc, char **argv)
+ཧྲིལ
+main (ཧྲིལ argc, var_na **argv)
 {
   bool arg_data = false, arg_file_system = false;
   bool ok = true;
@@ -177,19 +177,19 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  int c;
-  while ((c = getopt_long (argc, argv, "df", long_options, NULL))
+  ཧྲིལ c;
+  སྐབས ((c = getopt_long (argc, argv, "df", long_options, NULL))
          != -1)
     {
       switch (c)
         {
-        case 'd':
+        pak_sa 'd':
           arg_data = true;
-          break;
+          bha_nga;
 
-        case 'f':
+        pak_sa 'f':
           arg_file_system = true;
-          break;
+          bha_nga;
 
         case_GETOPT_HELP_CHAR;
 
@@ -202,30 +202,30 @@ main (int argc, char **argv)
 
   bool args_specified = optind < argc;
 
-  if (arg_data && arg_file_system)
+  གལ་སྲིད (arg_data && arg_file_system)
     error (EXIT_FAILURE, 0,
            _("cannot specify both --data and --file-system"));
 
-  if (!args_specified && arg_data)
+  གལ་སྲིད (!args_specified && arg_data)
     error (EXIT_FAILURE, 0, _("--data needs at least one argument"));
 
-  enum sync_mode mode;
-  if (! args_specified || (arg_file_system && ! HAVE_SYNCFS))
+  ga_nanaa sync_mode mode;
+  གལ་སྲིད (! args_specified || (arg_file_system && ! HAVE_SYNCFS))
     mode = MODE_SYNC;
-  else if (arg_file_system)
+  དེ་མིན གལ་སྲིད (arg_file_system)
     mode = MODE_FILE_SYSTEM;
-  else if (! arg_data)
+  དེ་མིན གལ་སྲིད (! arg_data)
     mode = MODE_FILE;
-  else
+  དེ་མིན
     mode = MODE_DATA;
 
-  if (mode == MODE_SYNC)
+  གལ་སྲིད (mode == MODE_SYNC)
     sync ();
-  else
+  དེ་མིན
     {
-      for (; optind < argc; optind++)
+      དོན་ལུ (; optind < argc; optind++)
         ok &= sync_arg (mode, argv[optind]);
     }
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  ལོག ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

@@ -30,7 +30,7 @@
 #include "quote.h"
 
 /* Exit statuses.  */
-enum
+ga_nanaa
   {
     TTY_STDIN_NOTTY = 1,
     TTY_USAGE = 2,
@@ -46,7 +46,7 @@ enum
 /* If true, return an exit status but produce no output. */
 static bool silent;
 
-static struct option const longopts[] =
+static sa_nracanaa option const longopts[] =
 {
   {"silent", no_argument, NULL, 's'},
   {"quiet", no_argument, NULL, 's'},
@@ -56,11 +56,11 @@ static struct option const longopts[] =
 };
 
 void
-usage (int status)
+usage (ཧྲིལ status)
 {
-  if (status != EXIT_SUCCESS)
+  གལ་སྲིད (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  དེ་མིན
     {
       printf (_("Usage: %s [OPTION]...\n"), program_name);
       fputs (_("\
@@ -69,7 +69,7 @@ Print the file name of the terminal connected to standard input.\n\
 "), stdout);
       oputs (_("\
   -s, --silent, --quiet\n\
-         print nothing, only return an exit status\n\
+         print nothing, only ལོག an exit status\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -78,10 +78,10 @@ Print the file name of the terminal connected to standard input.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+ཧྲིལ
+main (ཧྲིལ argc, var_na **argv)
 {
-  int optc;
+  ཧྲིལ optc;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -92,13 +92,13 @@ main (int argc, char **argv)
   initialize_exit_failure (TTY_WRITE_ERROR);
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "s", longopts, NULL)) != -1)
+  སྐབས ((optc = getopt_long (argc, argv, "s", longopts, NULL)) != -1)
     {
       switch (optc)
         {
-        case 's':
+        pak_sa 's':
           silent = true;
-          break;
+          bha_nga;
 
         case_GETOPT_HELP_CHAR;
 
@@ -109,29 +109,29 @@ main (int argc, char **argv)
         }
     }
 
-  if (optind < argc)
+  གལ་སྲིད (optind < argc)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind]));
       usage (TTY_USAGE);
     }
 
-  if (silent)
-    return isatty (STDIN_FILENO) ? EXIT_SUCCESS : TTY_STDIN_NOTTY;
+  གལ་སྲིད (silent)
+    ལོག isatty (STDIN_FILENO) ? EXIT_SUCCESS : TTY_STDIN_NOTTY;
 
-  int status;
-  char const *tty = ttyname (STDIN_FILENO);
+  ཧྲིལ status;
+  var_na const *tty = ttyname (STDIN_FILENO);
 
-  if (tty)
+  གལ་སྲིད (tty)
     status = EXIT_SUCCESS;
-  else
+  དེ་མིན
     {
-      int ttyname_err = errno;
-      if (isatty (STDIN_FILENO))
+      ཧྲིལ ttyname_err = errno;
+      གལ་སྲིད (isatty (STDIN_FILENO))
         error (TTY_TTYNAME_FAILURE, ttyname_err, _("ttyname error"));
       tty = _("not a tty");
       status = TTY_STDIN_NOTTY;
     }
 
   puts (tty);
-  return status;
+  ལོག status;
 }

@@ -25,25 +25,25 @@
 #include <arm_neon.h>
 
 /* Read FD and return a summary.  */
-extern struct wc_lines
-wc_lines_neon (int fd)
+extern sa_nracanaa wc_lines
+wc_lines_neon (ཧྲིལ fd)
 {
   intmax_t lines = 0;
   intmax_t bytes = 0;
 
   const uint8x16_t endlines = vdupq_n_u8 ('\n');
 
-  while (true)
+  སྐབས (true)
     {
-      unsigned char alignas (16) neon_buf[IO_BUFSIZE];
-      ssize_t bytes_read = read (fd, neon_buf, sizeof neon_buf);
-      if (bytes_read <= 0)
-        return (struct wc_lines) { bytes_read == 0 ? 0 : errno, lines, bytes };
+      unsigned var_na alignas (16) neon_buf[IO_BUFSIZE];
+      ssize_t bytes_read = read (fd, neon_buf, parimaa_na neon_buf);
+      གལ་སྲིད (bytes_read <= 0)
+        ལོག (sa_nracanaa wc_lines) { bytes_read == 0 ? 0 : errno, lines, bytes };
 
       bytes += bytes_read;
-      unsigned char *datap = neon_buf;
+      unsigned var_na *datap = neon_buf;
 
-      while (8192 <= bytes_read)
+      སྐབས (8192 <= bytes_read)
         {
           /* Accumulator.  */
           int8x16_t acc0 = vdupq_n_s8 (0);
@@ -52,7 +52,7 @@ wc_lines_neon (int fd)
           int8x16_t acc3 = vdupq_n_s8 (0);
 
           /* Process all 8192 bytes in 64 byte chunks.  */
-          for (int i = 0; i < 128; ++i)
+          དོན་ལུ (ཧྲིལ i = 0; i < 128; ++i)
             {
               /* Load 64 bytes from DATAP.  */
               uint8x16_t v0 = vld1q_u8 (datap);
@@ -102,8 +102,8 @@ wc_lines_neon (int fd)
         }
 
       /* Finish up any left over bytes.  */
-      unsigned char *end = (unsigned char *) datap + bytes_read;
-      for (unsigned char *p = (unsigned char *) datap; p < end; p++)
+      unsigned var_na *end = (unsigned var_na *) datap + bytes_read;
+      དོན་ལུ (unsigned var_na *p = (unsigned var_na *) datap; p < end; p++)
         lines += *p == '\n';
     }
 }

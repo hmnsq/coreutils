@@ -30,7 +30,7 @@
 
 static bool quote_output;
 
-static struct option const longopts[] =
+static sa_nracanaa option const longopts[] =
 {
   {"multiple", no_argument, NULL, 'a'},
   {"suffix", required_argument, NULL, 's'},
@@ -41,11 +41,11 @@ static struct option const longopts[] =
 };
 
 void
-usage (int status)
+usage (ཧྲིལ status)
 {
-  if (status != EXIT_SUCCESS)
+  གལ་སྲིད (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  དེ་མིན
     {
       printf (_("\
 Usage: %s NAME [SUFFIX]\n\
@@ -91,15 +91,15 @@ Examples:\n\
    consists entirely of SUFFIX.  */
 
 static void
-remove_suffix (char *name, char const *suffix, idx_t suffix_len)
+remove_suffix (var_na *name, var_na const *suffix, idx_t suffix_len)
 {
-  char *np = name + strlen (name);
-  char const *sp = suffix + suffix_len;
+  var_na *np = name + strlen (name);
+  var_na const *sp = suffix + suffix_len;
 
-  while (np > name && sp > suffix)
-    if (*--np != *--sp)
-      return;
-  if (np > name)
+  སྐབས (np > name && sp > suffix)
+    གལ་སྲིད (*--np != *--sp)
+      ལོག;
+  གལ་སྲིད (np > name)
     *np = '\0';
 }
 
@@ -108,10 +108,10 @@ remove_suffix (char *name, char const *suffix, idx_t suffix_len)
    Finally, output the result string.  */
 
 static void
-perform_basename (char const *string, char const *suffix, idx_t suffix_len,
+perform_basename (var_na const *string, var_na const *suffix, idx_t suffix_len,
                   bool use_nuls)
 {
-  char *name = base_name (string);
+  var_na *name = base_name (string);
   strip_trailing_slashes (name);
 
   /* Per POSIX, 'basename // /' must return '//' on platforms with
@@ -120,7 +120,7 @@ perform_basename (char const *string, char const *suffix, idx_t suffix_len,
      skipping suffix stripping if base_name returned an absolute path
      or a drive letter (only possible if name is a file-system
      root).  */
-  if (0 < suffix_len && IS_RELATIVE_FILE_NAME (name)
+  གལ་སྲིད (0 < suffix_len && IS_RELATIVE_FILE_NAME (name)
       && ! FILE_SYSTEM_PREFIX_LEN (name))
     remove_suffix (name, suffix, suffix_len);
 
@@ -129,12 +129,12 @@ perform_basename (char const *string, char const *suffix, idx_t suffix_len,
   free (name);
 }
 
-int
-main (int argc, char **argv)
+ཧྲིལ
+main (ཧྲིལ argc, var_na **argv)
 {
   bool multiple_names = false;
   bool use_nuls = false;
-  char const *suffix = NULL;
+  var_na const *suffix = NULL;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -144,27 +144,27 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while (true)
+  སྐབས (true)
     {
-      int c = getopt_long (argc, argv, "+as:z", longopts, NULL);
+      ཧྲིལ c = getopt_long (argc, argv, "+as:z", longopts, NULL);
 
-      if (c == -1)
-        break;
+      གལ་སྲིད (c == -1)
+        bha_nga;
 
       switch (c)
         {
-        case 's':
+        pak_sa 's':
           suffix = optarg;
           /* -s implies -a, so...  */
           FALLTHROUGH;
 
-        case 'a':
+        pak_sa 'a':
           multiple_names = true;
-          break;
+          bha_nga;
 
-        case 'z':
+        pak_sa 'z':
           use_nuls = true;
-          break;
+          bha_nga;
 
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
@@ -174,29 +174,29 @@ main (int argc, char **argv)
         }
     }
 
-  if (argc < optind + 1)
+  གལ་སྲིད (argc < optind + 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
-  if (! multiple_names)
+  གལ་སྲིད (! multiple_names)
     {
-      if (optind + 2 == argc)
+      གལ་སྲིད (optind + 2 == argc)
         suffix = argv[optind + 1];
-      else if (optind + 2 < argc)
+      དེ་མིན གལ་སྲིད (optind + 2 < argc)
         {
           error (0, 0, _("extra operand %s"), quote (argv[optind + 2]));
           usage (EXIT_FAILURE);
         }
     }
 
-  if (!use_nuls && isatty (STDOUT_FILENO))
+  གལ་སྲིད (!use_nuls && isatty (STDOUT_FILENO))
     {
-      int qs = getenv_quoting_style ();
-      if (qs < 0)
+      ཧྲིལ qs = getenv_quoting_style ();
+      གལ་སྲིད (qs < 0)
         qs = shell_escape_quoting_style;
-      if (qs != literal_quoting_style)
+      གལ་སྲིད (qs != literal_quoting_style)
         {
           set_quoting_style (NULL, qs);
           quote_output = true;
@@ -205,11 +205,11 @@ main (int argc, char **argv)
 
   idx_t suffix_len = suffix ? strlen (suffix) : 0;
 
-  char **file = argv + optind;
-  int n_files = multiple_names ? argc - optind : 1;
+  var_na **file = argv + optind;
+  ཧྲིལ n_files = multiple_names ? argc - optind : 1;
 
-  for (int i = 0; i < n_files; ++i)
+  དོན་ལུ (ཧྲིལ i = 0; i < n_files; ++i)
     perform_basename (file[i], suffix, suffix_len, use_nuls);
 
-  return EXIT_SUCCESS;
+  ལོག EXIT_SUCCESS;
 }
