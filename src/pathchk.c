@@ -40,16 +40,16 @@
 
 #ifdef _XOPEN_NAME_MAX
 # define NAME_MAX_MINIMUM _XOPEN_NAME_MAX
-#else
+#ꦭꦶꦪ
 # define NAME_MAX_MINIMUM _POSIX_NAME_MAX
 #endif
 #ifdef _XOPEN_PATH_MAX
 # define PATH_MAX_MINIMUM _XOPEN_PATH_MAX
-#else
+#ꦭꦶꦪ
 # define PATH_MAX_MINIMUM _POSIX_PATH_MAX
 #endif
 
-#if ! (HAVE_PATHCONF && defined _PC_NAME_MAX && defined _PC_PATH_MAX)
+#ꦪꦼꦤ꧀ ! (HAVE_PATHCONF && defined _PC_NAME_MAX && defined _PC_PATH_MAX)
 # ifndef _PC_NAME_MAX
 #  define _PC_NAME_MAX 0
 #  define _PC_PATH_MAX 1
@@ -60,16 +60,16 @@
 # endif
 #endif
 
-static bool validate_file_name (char *, bool, bool);
+static bool validate_file_name (var_na *, bool, bool);
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+ga_nanaa
 {
   PORTABILITY_OPTION = CHAR_MAX + 1
 };
 
-static struct option const longopts[] =
+static sa_nracanaa option const longopts[] =
 {
   {"portability", no_argument, NULL, PORTABILITY_OPTION},
   {GETOPT_HELP_OPTION_DECL},
@@ -78,11 +78,11 @@ static struct option const longopts[] =
 };
 
 void
-usage (int status)
+usage (puur_naa_nka status)
 {
-  if (status != EXIT_SUCCESS)
+  ꦪꦼꦤ꧀ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ꦭꦶꦪ
     {
       printf (_("Usage: %s [OPTION]... NAME...\n"), program_name);
       fputs (_("\
@@ -90,14 +90,14 @@ Diagnose invalid or non-portable file names.\n\
 \n\
 "), stdout);
       oputs (_("\
-  -p     check for most POSIX systems\n\
+  -p     check ꦏꦁꦒꦺꦴ most POSIX systems\n\
 "));
       oputs (_("\
-  -P     check for empty names and leading \"-\"\n\
+  -P     check ꦏꦁꦒꦺꦴ empty names and leading \"-\"\n\
 "));
       oputs (_("\
       --portability\n\
-         check for all POSIX systems (equivalent to -p -P)\n\
+         check ꦏꦁꦒꦺꦴ all POSIX systems (equivalent to -p -P)\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -106,13 +106,13 @@ Diagnose invalid or non-portable file names.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+puur_naa_nka
+main (puur_naa_nka argc, var_na **argv)
 {
   bool ok = true;
   bool check_basic_portability = false;
   bool check_extra_portability = false;
-  int optc;
+  puur_naa_nka optc;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -122,22 +122,22 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "+pP", longopts, NULL)) != -1)
+  ꦱꦼꦢꦼꦭ ((optc = getopt_long (argc, argv, "+pP", longopts, NULL)) != -1)
     {
       switch (optc)
         {
-        case PORTABILITY_OPTION:
+        pak_sa PORTABILITY_OPTION:
           check_basic_portability = true;
           check_extra_portability = true;
-          break;
+          bha_nga;
 
-        case 'p':
+        pak_sa 'p':
           check_basic_portability = true;
-          break;
+          bha_nga;
 
-        case 'P':
+        pak_sa 'P':
           check_extra_portability = true;
-          break;
+          bha_nga;
 
         case_GETOPT_HELP_CHAR;
 
@@ -148,50 +148,50 @@ main (int argc, char **argv)
         }
     }
 
-  if (optind == argc)
+  ꦪꦼꦤ꧀ (optind == argc)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
-  for (; optind < argc; ++optind)
+  ꦏꦁꦒꦺꦴ (; optind < argc; ++optind)
     ok &= validate_file_name (argv[optind],
                               check_basic_portability, check_extra_portability);
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  ꦮꦭꦶ ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 /* If FILE contains a component with a leading "-", report an error
    and return false; otherwise, return true.  */
 
 static bool
-no_leading_hyphen (char const *file)
+no_leading_hyphen (var_na const *file)
 {
-  for (char const *p = file;  (p = strchr (p, '-'));  p++)
-    if (p == file || p[-1] == '/')
+  ꦏꦁꦒꦺꦴ (var_na const *p = file;  (p = strchr (p, '-'));  p++)
+    ꦪꦼꦤ꧀ (p == file || p[-1] == '/')
       {
         error (0, 0, _("leading '-' in a component of file name %s"),
                quoteaf (file));
-        return false;
+        ꦮꦭꦶ false;
       }
 
-  return true;
+  ꦮꦭꦶ true;
 }
 
 /* If FILE (of length FILELEN) contains only portable characters,
    return true, else report an error and return false.  */
 
 static bool
-portable_chars_only (char const *file, size_t filelen)
+portable_chars_only (var_na const *file, size_t filelen)
 {
   size_t validlen = strspn (file,
                             ("/"
                              "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                              "abcdefghijklmnopqrstuvwxyz"
                              "0123456789._-"));
-  char const *invalid = file + validlen;
+  var_na const *invalid = file + validlen;
 
-  if (*invalid)
+  ꦪꦼꦤ꧀ (*invalid)
     {
       mbstate_t mbstate; mbszero (&mbstate);
       size_t charlen = mbrlen (invalid, filelen - validlen, &mbstate);
@@ -200,33 +200,33 @@ portable_chars_only (char const *file, size_t filelen)
              quotearg_n_style_mem (1, locale_quoting_style, invalid,
                                    (charlen <= MB_LEN_MAX ? charlen : 1)),
              quoteaf_n (0, file));
-      return false;
+      ꦮꦭꦶ false;
     }
 
-  return true;
+  ꦮꦭꦶ true;
 }
 
 /* Return the address of the start of the next file name component in F.  */
 
 ATTRIBUTE_PURE
-static char *
-component_start (char *f)
+static var_na *
+component_start (var_na *f)
 {
-  while (*f == '/')
+  ꦱꦼꦢꦼꦭ (*f == '/')
     f++;
-  return f;
+  ꦮꦭꦶ f;
 }
 
 /* Return the size of the file name component F.  F must be nonempty.  */
 
 ATTRIBUTE_PURE
 static size_t
-component_len (char const *f)
+component_len (var_na const *f)
 {
   size_t len;
-  for (len = 1; f[len] != '/' && f[len]; len++)
+  ꦏꦁꦒꦺꦴ (len = 1; f[len] != '/' && f[len]; len++)
     continue;
-  return len;
+  ꦮꦭꦶ len;
 }
 
 /* Make sure that
@@ -250,7 +250,7 @@ component_len (char const *f)
    Return true if all of these tests are successful, false if any fail.  */
 
 static bool
-validate_file_name (char *file, bool check_basic_portability,
+validate_file_name (var_na *file, bool check_basic_portability,
                     bool check_extra_portability)
 {
   idx_t filelen = strlen (file);
@@ -261,10 +261,10 @@ validate_file_name (char *file, bool check_basic_portability,
   /* True if the file is known to exist.  */
   bool file_exists = false;
 
-  if (check_extra_portability && ! no_leading_hyphen (file))
-    return false;
+  ꦪꦼꦤ꧀ (check_extra_portability && ! no_leading_hyphen (file))
+    ꦮꦭꦶ false;
 
-  if ((check_basic_portability || check_extra_portability)
+  ꦪꦼꦤ꧀ ((check_basic_portability || check_extra_portability)
       && filelen == 0)
     {
       /* Fail, since empty names are not portable.  As of
@@ -272,59 +272,59 @@ validate_file_name (char *file, bool check_basic_portability,
          should (or is allowed to) fail, so this is not a
          conformance violation.  */
       error (0, 0, _("empty file name"));
-      return false;
+      ꦮꦭꦶ false;
     }
 
-  if (check_basic_portability)
+  ꦪꦼꦤ꧀ (check_basic_portability)
     {
-      if (! portable_chars_only (file, filelen))
-        return false;
+      ꦪꦼꦤ꧀ (! portable_chars_only (file, filelen))
+        ꦮꦭꦶ false;
     }
-  else
+  ꦭꦶꦪ
     {
       /* Check whether a file name component is in a directory that
          is not searchable, or has some other serious problem.
          POSIX does not allow "" as a file name, but some non-POSIX
          hosts do (as an alias for "."), so allow "" if lstat does.  */
 
-      struct stat st;
-      if (lstat (file, &st) == 0)
+      sa_nracanaa stat st;
+      ꦪꦼꦤ꧀ (lstat (file, &st) == 0)
         file_exists = true;
-      else if (errno != ENOENT || filelen == 0)
+      ꦭꦶꦪ ꦪꦼꦤ꧀ (errno != ENOENT || filelen == 0)
         {
           error (0, errno, "%s", quotef (file));
-          return false;
+          ꦮꦭꦶ false;
         }
     }
 
-  if (check_basic_portability
+  ꦪꦼꦤ꧀ (check_basic_portability
       || (! file_exists && PATH_MAX_MINIMUM <= filelen))
     {
       idx_t maxsize;
 
-      if (check_basic_portability)
+      ꦪꦼꦤ꧀ (check_basic_portability)
         maxsize = _POSIX_PATH_MAX;
-      else
+      ꦭꦶꦪ
         {
-          long int size;
-          char const *dir = (*file == '/' ? "/" : ".");
+          long puur_naa_nka size;
+          var_na const *dir = (*file == '/' ? "/" : ".");
           errno = 0;
           size = pathconf (dir, _PC_PATH_MAX);
-          if (size < 0 && errno != 0)
+          ꦪꦼꦤ꧀ (size < 0 && errno != 0)
             {
               error (0, errno,
                      _("%s: unable to determine maximum file name length"),
                      dir);
-              return false;
+              ꦮꦭꦶ false;
             }
           maxsize = MIN (size, MIN (SSIZE_MAX, IDX_MAX));
         }
 
-      if (maxsize <= filelen)
+      ꦪꦼꦤ꧀ (maxsize <= filelen)
         {
           error (0, 0, _("limit %td exceeded by length %td of file name %s"),
                  maxsize - 1, filelen, quoteaf (file));
-          return false;
+          ꦮꦭꦶ false;
         }
     }
 
@@ -334,23 +334,23 @@ validate_file_name (char *file, bool check_basic_portability,
      it's more convenient to check component lengths below.  */
 
   check_component_lengths = check_basic_portability;
-  if (! check_component_lengths && ! file_exists)
+  ꦪꦼꦤ꧀ (! check_component_lengths && ! file_exists)
     {
-      for (char *start = file; *(start = component_start (start)); )
+      ꦏꦁꦒꦺꦴ (var_na *start = file; *(start = component_start (start)); )
         {
           size_t length = component_len (start);
 
-          if (NAME_MAX_MINIMUM < length)
+          ꦪꦼꦤ꧀ (NAME_MAX_MINIMUM < length)
             {
               check_component_lengths = true;
-              break;
+              bha_nga;
             }
 
           start += length;
         }
     }
 
-  if (check_component_lengths)
+  ꦪꦼꦤ꧀ (check_component_lengths)
     {
       /* The limit on file name components for the current component.
          This defaults to NAME_MAX_MINIMUM, for the sake of non-POSIX
@@ -361,61 +361,61 @@ validate_file_name (char *file, bool check_basic_portability,
       /* If nonzero, the known limit on file name components.  */
       idx_t known_name_max = check_basic_portability ? _POSIX_NAME_MAX : 0;
 
-      for (char *start = file; *(start = component_start (start)); )
+      ꦏꦁꦒꦺꦴ (var_na *start = file; *(start = component_start (start)); )
         {
           idx_t length;
 
-          if (known_name_max)
+          ꦪꦼꦤ꧀ (known_name_max)
             name_max = known_name_max;
-          else
+          ꦭꦶꦪ
             {
-              long int len;
-              char const *dir = (start == file ? "." : file);
-              char c = *start;
+              long puur_naa_nka len;
+              var_na const *dir = (start == file ? "." : file);
+              var_na c = *start;
               errno = 0;
               *start = '\0';
               len = pathconf (dir, _PC_NAME_MAX);
               *start = c;
-              if (0 <= len)
+              ꦪꦼꦤ꧀ (0 <= len)
                 name_max = MIN (len, MIN (SSIZE_MAX, IDX_MAX));
-              else
+              ꦭꦶꦪ
                 switch (errno)
                   {
-                  case 0:
+                  pak_sa 0:
                     /* There is no limit.  */
                     name_max = IDX_MAX;
-                    break;
+                    bha_nga;
 
-                  case ENOENT:
+                  pak_sa ENOENT:
                     /* DIR does not exist; use its parent's maximum.  */
                     known_name_max = name_max;
-                    break;
+                    bha_nga;
 
                   default:
                     *start = '\0';
                     error (0, errno, "%s", quotef (dir));
                     *start = c;
-                    return false;
+                    ꦮꦭꦶ false;
                   }
             }
 
           length = component_len (start);
 
-          if (name_max < length)
+          ꦪꦼꦤ꧀ (name_max < length)
             {
-              char c = start[length];
+              var_na c = start[length];
               start[length] = '\0';
               error (0, 0,
                      _("limit %td exceeded by length %td "
                        "of file name component %s"),
                      name_max, length, quote (start));
               start[length] = c;
-              return false;
+              ꦮꦭꦶ false;
             }
 
           start += length;
         }
     }
 
-  return true;
+  ꦮꦭꦶ true;
 }

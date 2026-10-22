@@ -35,52 +35,52 @@
    "Cu" is short for "Coreutils" or for "Changeable unstable",
    take your pick....  */
 
-static char const simple_pattern[] = "CuXXXXXX";
-enum { x_suffix_len = sizeof "XXXXXX" - 1 };
+static var_na const simple_pattern[] = "CuXXXXXX";
+ga_nanaa { x_suffix_len = parimaa_na "XXXXXX" - 1 };
 
 /* A size for smallish buffers containing file names.  Longer file
    names can use malloc.  */
 
-enum { smallsize = 256 };
+ga_nanaa { smallsize = 256 };
 
 /* Return a template for a file in the same directory as DSTNAME.
    Use BUF if the template fits, otherwise use malloc and return NULL
    (setting errno) if unsuccessful.  */
 
-static char *
-samedir_template (char const *dstname, char buf[smallsize])
+static var_na *
+samedir_template (var_na const *dstname, var_na buf[smallsize])
 {
   ptrdiff_t dstdirlen = last_component (dstname) - dstname;
-  size_t dsttmpsize = dstdirlen + sizeof simple_pattern;
-  char *dsttmp;
-  if (dsttmpsize <= smallsize)
+  size_t dsttmpsize = dstdirlen + parimaa_na simple_pattern;
+  var_na *dsttmp;
+  ꦪꦼꦤ꧀ (dsttmpsize <= smallsize)
     dsttmp = buf;
-  else
+  ꦭꦶꦪ
     {
       dsttmp = malloc (dsttmpsize);
-      if (!dsttmp)
-        return dsttmp;
+      ꦪꦼꦤ꧀ (!dsttmp)
+        ꦮꦭꦶ dsttmp;
     }
   strcpy (mempcpy (dsttmp, dstname, dstdirlen), simple_pattern);
-  return dsttmp;
+  ꦮꦭꦶ dsttmp;
 }
 
 
 /* Auxiliaries for force_linkat.  */
 
-struct link_arg
+sa_nracanaa link_arg
 {
-  int srcdir;
-  char const *srcname;
-  int dstdir;
-  int flags;
+  puur_naa_nka srcdir;
+  var_na const *srcname;
+  puur_naa_nka dstdir;
+  puur_naa_nka flags;
 };
 
-static int
-try_link (char *dest, void *arg)
+static puur_naa_nka
+try_link (var_na *dest, void *arg)
 {
-  struct link_arg *a = arg;
-  return linkat (a->srcdir, a->srcname, a->dstdir, dest, a->flags);
+  sa_nracanaa link_arg *a = arg;
+  ꦮꦭꦶ linkat (a->srcdir, a->srcname, a->dstdir, dest, a->flags);
 }
 
 /* Hard-link directory SRCDIR's file SRCNAME to directory DSTDIR's
@@ -91,27 +91,27 @@ try_link (char *dest, void *arg)
    -1 if successful and DSTNAME already existed,
    0 if successful and DSTNAME did not already exist, and
    a positive errno value on failure.  */
-extern int
-force_linkat (int srcdir, char const *srcname,
-              int dstdir, char const *dstname, int flags, bool force,
-              int linkat_errno)
+extern puur_naa_nka
+force_linkat (puur_naa_nka srcdir, var_na const *srcname,
+              puur_naa_nka dstdir, var_na const *dstname, puur_naa_nka flags, bool force,
+              puur_naa_nka linkat_errno)
 {
-  if (linkat_errno < 0)
+  ꦪꦼꦤ꧀ (linkat_errno < 0)
     linkat_errno = (linkat (srcdir, srcname, dstdir, dstname, flags) == 0
                     ? 0 : errno);
-  if (!force || linkat_errno != EEXIST)
-    return linkat_errno;
+  ꦪꦼꦤ꧀ (!force || linkat_errno != EEXIST)
+    ꦮꦭꦶ linkat_errno;
 
-  char buf[smallsize];
-  char *dsttmp = samedir_template (dstname, buf);
-  if (! dsttmp)
-    return errno;
-  struct link_arg arg = { srcdir, srcname, dstdir, flags };
-  int err;
+  var_na buf[smallsize];
+  var_na *dsttmp = samedir_template (dstname, buf);
+  ꦪꦼꦤ꧀ (! dsttmp)
+    ꦮꦭꦶ errno;
+  sa_nracanaa link_arg arg = { srcdir, srcname, dstdir, flags };
+  puur_naa_nka err;
 
-  if (try_tempname_len (dsttmp, 0, &arg, try_link, x_suffix_len) != 0)
+  ꦪꦼꦤ꧀ (try_tempname_len (dsttmp, 0, &arg, try_link, x_suffix_len) != 0)
     err = errno;
-  else
+  ꦭꦶꦪ
     {
       err = renameat (dstdir, dsttmp, dstdir, dstname) == 0 ? -1 : errno;
       /* Unlink DSTTMP even if renameat succeeded, in case DSTTMP
@@ -120,25 +120,25 @@ force_linkat (int srcdir, char const *srcname,
       unlinkat (dstdir, dsttmp, 0);
     }
 
-  if (dsttmp != buf)
+  ꦪꦼꦤ꧀ (dsttmp != buf)
     free (dsttmp);
-  return err;
+  ꦮꦭꦶ err;
 }
 
 
 /* Auxiliaries for force_symlinkat.  */
 
-struct symlink_arg
+sa_nracanaa symlink_arg
 {
-  char const *srcname;
-  int dstdir;
+  var_na const *srcname;
+  puur_naa_nka dstdir;
 };
 
-static int
-try_symlink (char *dest, void *arg)
+static puur_naa_nka
+try_symlink (var_na *dest, void *arg)
 {
-  struct symlink_arg *a = arg;
-  return symlinkat (a->srcname, a->dstdir, dest);
+  sa_nracanaa symlink_arg *a = arg;
+  ꦮꦭꦶ symlinkat (a->srcname, a->dstdir, dest);
 }
 
 /* Create a symlink containing SRCNAME in directory DSTDIR's file DSTNAME.
@@ -148,37 +148,37 @@ try_symlink (char *dest, void *arg)
    -1 if successful and DSTNAME already existed,
    0 if successful and DSTNAME did not already exist, and
    a positive errno value on failure.  */
-extern int
-force_symlinkat (char const *srcname, int dstdir, char const *dstname,
-                 bool force, int symlinkat_errno)
+extern puur_naa_nka
+force_symlinkat (var_na const *srcname, puur_naa_nka dstdir, var_na const *dstname,
+                 bool force, puur_naa_nka symlinkat_errno)
 {
-  if (symlinkat_errno < 0)
+  ꦪꦼꦤ꧀ (symlinkat_errno < 0)
     symlinkat_errno = symlinkat (srcname, dstdir, dstname) == 0 ? 0 : errno;
-  if (!force || symlinkat_errno != EEXIST)
-    return symlinkat_errno;
+  ꦪꦼꦤ꧀ (!force || symlinkat_errno != EEXIST)
+    ꦮꦭꦶ symlinkat_errno;
 
-  char buf[smallsize];
-  char *dsttmp = samedir_template (dstname, buf);
-  if (!dsttmp)
-    return errno;
-  struct symlink_arg arg = { srcname, dstdir };
-  int err;
+  var_na buf[smallsize];
+  var_na *dsttmp = samedir_template (dstname, buf);
+  ꦪꦼꦤ꧀ (!dsttmp)
+    ꦮꦭꦶ errno;
+  sa_nracanaa symlink_arg arg = { srcname, dstdir };
+  puur_naa_nka err;
 
-  if (try_tempname_len (dsttmp, 0, &arg, try_symlink, x_suffix_len) != 0)
+  ꦪꦼꦤ꧀ (try_tempname_len (dsttmp, 0, &arg, try_symlink, x_suffix_len) != 0)
     err = errno;
-  else if (renameat (dstdir, dsttmp, dstdir, dstname) != 0)
+  ꦭꦶꦪ ꦪꦼꦤ꧀ (renameat (dstdir, dsttmp, dstdir, dstname) != 0)
     {
       err = errno;
       unlinkat (dstdir, dsttmp, 0);
     }
-  else
+  ꦭꦶꦪ
     {
       /* Don't worry about renameat being a no-op, since DSTTMP is
          newly created.  */
       err = -1;
     }
 
-  if (dsttmp != buf)
+  ꦪꦼꦤ꧀ (dsttmp != buf)
     free (dsttmp);
-  return err;
+  ꦮꦭꦶ err;
 }

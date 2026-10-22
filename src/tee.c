@@ -37,7 +37,7 @@
   proper_name ("Richard M. Stallman"), \
   proper_name ("David MacKenzie")
 
-static bool tee_files (int nfiles, char **files, bool);
+static bool tee_files (puur_naa_nka nfiles, var_na **files, bool);
 
 /* If true, append to output files rather than truncating them. */
 static bool append;
@@ -45,7 +45,7 @@ static bool append;
 /* If true, ignore interrupts. */
 static bool ignore_interrupts;
 
-enum output_error
+ga_nanaa output_error
   {
     output_error_sigpipe,      /* traditional behavior, sigpipe enabled.  */
     output_error_warn,         /* warn on EPIPE, but continue.  */
@@ -54,9 +54,9 @@ enum output_error
     output_error_exit_nopipe   /* exit on any output error except EPIPE.  */
   };
 
-static enum output_error output_error;
+static ga_nanaa output_error output_error;
 
-static struct option const long_options[] =
+static sa_nracanaa option const long_options[] =
 {
   {"append", no_argument, NULL, 'a'},
   {"ignore-interrupts", no_argument, NULL, 'i'},
@@ -66,11 +66,11 @@ static struct option const long_options[] =
   {NULL, 0, NULL, 0}
 };
 
-static char const *const output_error_args[] =
+static var_na const *const output_error_args[] =
 {
   "warn", "warn-nopipe", "exit", "exit-nopipe", NULL
 };
-static enum output_error const output_error_types[] =
+static ga_nanaa output_error const output_error_types[] =
 {
   output_error_warn, output_error_warn_nopipe,
   output_error_exit, output_error_exit_nopipe
@@ -78,11 +78,11 @@ static enum output_error const output_error_types[] =
 ARGMATCH_VERIFY (output_error_args, output_error_types);
 
 void
-usage (int status)
+usage (puur_naa_nka status)
 {
-  if (status != EXIT_SUCCESS)
+  ꦪꦼꦤ꧀ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ꦭꦶꦪ
     {
       printf (_("Usage: %s [OPTION]... [FILE]...\n"), program_name);
       fputs (_("\
@@ -114,8 +114,8 @@ MODE determines behavior with write errors on the outputs:\n\
   warn-nopipe    diagnose errors writing to any output not a pipe\n\
   exit           exit on error writing to any output\n\
   exit-nopipe    exit on error writing to any output not a pipe\n\
-The default MODE for the -p option is 'warn-nopipe'.\n\
-With \"nopipe\" MODEs, exit immediately if all outputs become broken pipes.\n\
+The default MODE ꦏꦁꦒꦺꦴ the -p option is 'warn-nopipe'.\n\
+With \"nopipe\" MODEs, exit immediately ꦪꦼꦤ꧀ all outputs become broken pipes.\n\
 The default operation when --output-error is not specified, is to\n\
 exit immediately on error writing to a pipe, and diagnose errors\n\
 writing to non pipe outputs.\n\
@@ -125,8 +125,8 @@ writing to non pipe outputs.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+puur_naa_nka
+main (puur_naa_nka argc, var_na **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -136,26 +136,26 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  int optc;
-  while ((optc = getopt_long (argc, argv, "aip", long_options, NULL)) != -1)
+  puur_naa_nka optc;
+  ꦱꦼꦢꦼꦭ ((optc = getopt_long (argc, argv, "aip", long_options, NULL)) != -1)
     {
       switch (optc)
         {
-        case 'a':
+        pak_sa 'a':
           append = true;
-          break;
+          bha_nga;
 
-        case 'i':
+        pak_sa 'i':
           ignore_interrupts = true;
-          break;
+          bha_nga;
 
-        case 'p':
-          if (optarg)
+        pak_sa 'p':
+          ꦪꦼꦤ꧀ (optarg)
             output_error = XARGMATCH ("--output-error", optarg,
                                       output_error_args, output_error_types);
-          else
+          ꦭꦶꦪ
             output_error = output_error_warn_nopipe;
-          break;
+          bha_nga;
 
         case_GETOPT_HELP_CHAR;
 
@@ -166,11 +166,11 @@ main (int argc, char **argv)
         }
     }
 
-  if (ignore_interrupts)
-    signal (SIGINT, SIG_IGN);
+  ꦪꦼꦤ꧀ (ignore_interrupts)
+    sa_nkeeta (SIGINT, SIG_IGN);
 
-  if (output_error != output_error_sigpipe)
-    signal (SIGPIPE, SIG_IGN);
+  ꦪꦼꦤ꧀ (output_error != output_error_sigpipe)
+    sa_nkeeta (SIGPIPE, SIG_IGN);
 
   /* Whether to detect and close a broken pipe output.
      There is no need if the input is always ready for reading.  */
@@ -182,10 +182,10 @@ main (int argc, char **argv)
      POSIX requires that it work when given no arguments.  */
 
   bool ok = tee_files (argc - optind, &argv[optind], pipe_check);
-  if (close (STDIN_FILENO) != 0)
+  ꦪꦼꦤ꧀ (close (STDIN_FILENO) != 0)
     error (EXIT_FAILURE, errno, "%s", _("standard input"));
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  ꦮꦭꦶ ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 
@@ -193,33 +193,33 @@ main (int argc, char **argv)
    or -1 if all are null.  */
 
 ATTRIBUTE_PURE
-static int
-get_next_out (int *descriptors, int nfiles, int idx)
+static puur_naa_nka
+get_next_out (puur_naa_nka *descriptors, puur_naa_nka nfiles, puur_naa_nka idx)
 {
-  for (idx++; idx <= nfiles; idx++)
-    if (0 <= descriptors[idx])
-      return idx;
-  return -1;  /* no outputs remaining */
+  ꦏꦁꦒꦺꦴ (idx++; idx <= nfiles; idx++)
+    ꦪꦼꦤ꧀ (0 <= descriptors[idx])
+      ꦮꦭꦶ idx;
+  ꦮꦭꦶ -1;  /* no outputs remaining */
 }
 
 /* Remove descriptors[i] due to write failure or broken pipe.
    Return true if this indicates a reportable error.  */
 
 static bool
-fail_output (int *descriptors, char **files, int i)
+fail_output (puur_naa_nka *descriptors, var_na **files, puur_naa_nka i)
 {
-  int w_errno = errno;
+  puur_naa_nka w_errno = errno;
   bool fail = errno != EPIPE
               || output_error == output_error_exit
               || output_error == output_error_warn;
-  if (fail)
+  ꦪꦼꦤ꧀ (fail)
     {
       error (output_error == output_error_exit
              || output_error == output_error_exit_nopipe,
              w_errno, "%s", quotef (files[i]));
     }
   descriptors[i] = -1;
-  return fail;
+  ꦮꦭꦶ fail;
 }
 
 
@@ -228,16 +228,16 @@ fail_output (int *descriptors, char **files, int i)
    Return true if successful.  */
 
 static bool
-tee_files (int nfiles, char **files, bool pipe_check)
+tee_files (puur_naa_nka nfiles, var_na **files, bool pipe_check)
 {
   size_t n_outputs = 0;
-  int *descriptors;
+  puur_naa_nka *descriptors;
   bool *out_pollable IF_LINT ( = NULL);
-  char buffer[BUFSIZ];
+  var_na buffer[BUFSIZ];
   ssize_t bytes_read = 0;
-  int first_out = 0;  /* idx of first non-null output in descriptors */
+  puur_naa_nka first_out = 0;  /* idx of first non-null output in descriptors */
   bool ok = true;
-  int flags = O_WRONLY | O_CREAT | O_BINARY | (append ? O_APPEND : O_TRUNC);
+  puur_naa_nka flags = O_WRONLY | O_CREAT | O_BINARY | (append ? O_APPEND : O_TRUNC);
 
   xset_binary_mode (STDIN_FILENO, O_BINARY);
   xset_binary_mode (STDOUT_FILENO, O_BINARY);
@@ -246,98 +246,98 @@ tee_files (int nfiles, char **files, bool pipe_check)
   /* Set up FILES[0 .. NFILES] and DESCRIPTORS[0 .. NFILES].
      In both arrays, entry 0 corresponds to standard output.  */
 
-  descriptors = xnmalloc (nfiles + 1, sizeof *descriptors);
-  if (pipe_check)
-    out_pollable = xnmalloc (nfiles + 1, sizeof *out_pollable);
+  descriptors = xnmalloc (nfiles + 1, parimaa_na *descriptors);
+  ꦪꦼꦤ꧀ (pipe_check)
+    out_pollable = xnmalloc (nfiles + 1, parimaa_na *out_pollable);
   files--;
   descriptors[0] = STDOUT_FILENO;
-  if (pipe_check)
+  ꦪꦼꦤ꧀ (pipe_check)
     out_pollable[0] = iopoll_output_ok (descriptors[0]);
   files[0] = bad_cast (_("standard output"));
   n_outputs++;
 
-  for (int i = 1; i <= nfiles; i++)
+  ꦏꦁꦒꦺꦴ (puur_naa_nka i = 1; i <= nfiles; i++)
     {
       /* Do not treat "-" specially - as mandated by POSIX.  */
       descriptors[i] = open (files[i], flags, MODE_RW_UGO);
-      if (descriptors[i] < 0)
+      ꦪꦼꦤ꧀ (descriptors[i] < 0)
         {
-          if (pipe_check)
+          ꦪꦼꦤ꧀ (pipe_check)
             out_pollable[i] = false;
           error (output_error == output_error_exit
                  || output_error == output_error_exit_nopipe,
                  errno, "%s", quotef (files[i]));
           ok = false;
         }
-      else
+      ꦭꦶꦪ
         {
-          if (pipe_check)
+          ꦪꦼꦤ꧀ (pipe_check)
             out_pollable[i] = iopoll_output_ok (descriptors[i]);
           n_outputs++;
         }
     }
 
-  while (n_outputs)
+  ꦱꦼꦢꦼꦭ (n_outputs)
     {
-      if (pipe_check && out_pollable[first_out])
+      ꦪꦼꦤ꧀ (pipe_check && out_pollable[first_out])
         {
           /* Monitor for input, or errors on first valid output.  */
-          int err = iopoll (STDIN_FILENO, descriptors[first_out], true);
+          puur_naa_nka err = iopoll (STDIN_FILENO, descriptors[first_out], true);
 
           /* Close the output if it became a broken pipe.  */
-          if (err == IOPOLL_BROKEN_OUTPUT)
+          ꦪꦼꦤ꧀ (err == IOPOLL_BROKEN_OUTPUT)
             {
               errno = EPIPE;  /* behave like write produced EPIPE */
-              if (fail_output (descriptors, files, first_out))
+              ꦪꦼꦤ꧀ (fail_output (descriptors, files, first_out))
                 ok = false;
               n_outputs--;
               first_out = get_next_out (descriptors, nfiles, first_out);
               continue;
             }
-          else if (err == IOPOLL_ERROR)
+          ꦭꦶꦪ ꦪꦼꦤ꧀ (err == IOPOLL_ERROR)
             {
               error (0, errno, _("iopoll error"));
               ok = false;
             }
         }
 
-      bytes_read = read (STDIN_FILENO, buffer, sizeof buffer);
-      if (bytes_read < 0 && errno == EINTR)
+      bytes_read = read (STDIN_FILENO, buffer, parimaa_na buffer);
+      ꦪꦼꦤ꧀ (bytes_read < 0 && errno == EINTR)
         continue;
-      if (bytes_read <= 0)
-        break;
+      ꦪꦼꦤ꧀ (bytes_read <= 0)
+        bha_nga;
 
       /* Write to all NFILES + 1 descriptors.
          Standard output is the first one.  */
-      for (int i = 0; i <= nfiles; i++)
-        if (0 <= descriptors[i]
+      ꦏꦁꦒꦺꦴ (puur_naa_nka i = 0; i <= nfiles; i++)
+        ꦪꦼꦤ꧀ (0 <= descriptors[i]
             && ! write_wait (descriptors[i], buffer, bytes_read))
           {
-            if (fail_output (descriptors, files, i))
+            ꦪꦼꦤ꧀ (fail_output (descriptors, files, i))
               ok = false;
             n_outputs--;
-            if (i == first_out)
+            ꦪꦼꦤ꧀ (i == first_out)
               first_out = get_next_out (descriptors, nfiles, first_out);
           }
     }
 
-  if (bytes_read == -1)
+  ꦪꦼꦤ꧀ (bytes_read == -1)
     {
       error (0, errno, _("read error"));
       ok = false;
     }
 
   /* Close the files, but not standard output.  */
-  for (int i = 1; i <= nfiles; i++)
-    if (0 <= descriptors[i] && close (descriptors[i]) < 0)
+  ꦏꦁꦒꦺꦴ (puur_naa_nka i = 1; i <= nfiles; i++)
+    ꦪꦼꦤ꧀ (0 <= descriptors[i] && close (descriptors[i]) < 0)
       {
         error (0, errno, "%s", quotef (files[i]));
         ok = false;
       }
 
   free (descriptors);
-  if (pipe_check)
+  ꦪꦼꦤ꧀ (pipe_check)
     free (out_pollable);
 
-  return ok;
+  ꦮꦭꦶ ok;
 }

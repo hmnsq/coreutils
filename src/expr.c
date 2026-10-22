@@ -53,7 +53,7 @@ static_assert (SIZE_MAX <= ULONG_MAX);
   proper_name ("Paul Eggert")
 
 /* Exit statuses.  */
-enum
+ga_nanaa
   {
     /* Invalid expression: e.g., its form does not conform to the
        grammar for expressions.  Our grammar is an extension of the
@@ -66,27 +66,27 @@ enum
   };
 
 /* The kinds of value we can have.  */
-enum valtype
+ga_nanaa valtype
 {
   integer,
   string
 };
-typedef enum valtype TYPE;
+typedef ga_nanaa valtype TYPE;
 
 /* A value is.... */
-struct valinfo
+sa_nracanaa valinfo
 {
   TYPE type;			/* Which kind. */
-  union
+  sa_ngha
   {				/* The value itself. */
     mpz_t i;
-    char *s;
+    var_na *s;
   } u;
 };
-typedef struct valinfo VALUE;
+typedef sa_nracanaa valinfo VALUE;
 
 /* The arguments given to the program, minus the program name.  */
-static char **args;
+static var_na **args;
 
 static VALUE *eval (bool);
 static bool nomoreargs (void);
@@ -112,46 +112,46 @@ static void printv (VALUE *v);
      mbs_logical_cspn ('\xCE\xB1bc','\xCE\xB1') => 1
      mbs_logical_cspn ('\xCE\xB1bc','c') => 3 */
 static size_t
-mbs_logical_cspn (char const *s, char const *accept)
+mbs_logical_cspn (var_na const *s, var_na const *accept)
 {
-  if (accept[0] == '\0')
-    return 0;
+  ꦪꦼꦤ꧀ (accept[0] == '\0')
+    ꦮꦭꦶ 0;
 
   /* General case.  */
-  if (MB_CUR_MAX > 1)
+  ꦪꦼꦤ꧀ (MB_CUR_MAX > 1)
     {
       size_t idx = 0;
-      for (char const *p = s; *p; )
+      ꦏꦁꦒꦺꦴ (var_na const *p = s; *p; )
         {
           ++idx;
           mcel_t g = mcel_scanz (p);
-          if (g.len == 1)
+          ꦪꦼꦤ꧀ (g.len == 1)
             {
-              if (mbschr (accept, *p))
-                return idx;
+              ꦪꦼꦤ꧀ (mbschr (accept, *p))
+                ꦮꦭꦶ idx;
             }
-          else
-            for (char const *a = accept; *a; )
+          ꦭꦶꦪ
+            ꦏꦁꦒꦺꦴ (var_na const *a = accept; *a; )
               {
                 mcel_t h = mcel_scanz (a);
-                if (mcel_eq (g, h))
-                  return idx;
+                ꦪꦼꦤ꧀ (mcel_eq (g, h))
+                  ꦮꦭꦶ idx;
                 a += h.len;
               }
           p += g.len;
         }
     }
-  else
+  ꦭꦶꦪ
     {
       /* single-byte locale,
          convert returned byte offset to 1-based index or zero if not found. */
       size_t i = strcspn (s, accept);
-      if (s[i])
-        return i + 1;
+      ꦪꦼꦤ꧀ (s[i])
+        ꦮꦭꦶ i + 1;
     }
 
   /* not found */
-  return 0;
+  ꦮꦭꦶ 0;
 }
 
 /* Extract the substring of S, from logical character
@@ -161,8 +161,8 @@ mbs_logical_cspn (char const *s, char const *accept)
 
    Upon exit, sets v->s to the new string.
    The new string might be empty if POS/LEN are invalid. */
-static char *
-mbs_logical_substr (char const *s, size_t pos, size_t len)
+static var_na *
+mbs_logical_substr (var_na const *s, size_t pos, size_t len)
 {
   size_t mb_cur_max = MB_CUR_MAX;
   idx_t llen = mb_cur_max <= 1 ? strlen (s) : mbslen (s); /* logical length */
@@ -170,26 +170,26 @@ mbs_logical_substr (char const *s, size_t pos, size_t len)
   /* characters to copy */
   size_t vlen = MIN (len, pos <= llen ? llen - pos + 1 : 0);
 
-  char const *substart = s;
+  var_na const *substart = s;
   idx_t sublen = 0;
-  if (pos == 0 || len == SIZE_MAX)
+  ꦪꦼꦤ꧀ (pos == 0 || len == SIZE_MAX)
     {
       /* The request is invalid.  Silently yield an empty string.  */
     }
-  else if (mb_cur_max <= 1)
+  ꦭꦶꦪ ꦪꦼꦤ꧀ (mb_cur_max <= 1)
     {
       substart += pos - 1;
       sublen = vlen;
     }
-  else
-    for (idx_t idx = 1; *s && vlen; idx++)
+  ꦭꦶꦪ
+    ꦏꦁꦒꦺꦴ (idx_t idx = 1; *s && vlen; idx++)
       {
         idx_t char_bytes = mcel_scanz (s).len;
 
         /* Skip until we reach the starting position.  */
-        if (pos <= idx)
+        ꦪꦼꦤ꧀ (pos <= idx)
           {
-            if (pos == idx)
+            ꦪꦼꦤ꧀ (pos == idx)
               substart = s;
 
             /* Add one character's length in bytes.  */
@@ -200,7 +200,7 @@ mbs_logical_substr (char const *s, size_t pos, size_t len)
         s += char_bytes;
       }
 
-  return ximemdup0 (substart, sublen);
+  ꦮꦭꦶ ximemdup0 (substart, sublen);
 }
 
 /* Return the number of logical characters (possibly multibyte)
@@ -212,22 +212,22 @@ mbs_logical_substr (char const *s, size_t pos, size_t len)
    up to the first 4 bytes (The U+2767 which occupies 3 bytes and 'x'):
       mbs_count_to_offset ("\xE2\x9D\xA7xyz", 4) => 2  */
 static size_t
-mbs_offset_to_chars (char const *s, size_t ofs)
+mbs_offset_to_chars (var_na const *s, size_t ofs)
 {
   size_t c = 0;
-  for (size_t d = 0; d < ofs && s[d]; d += mcel_scanz (s + d).len)
+  ꦏꦁꦒꦺꦴ (size_t d = 0; d < ofs && s[d]; d += mcel_scanz (s + d).len)
     c++;
-  return c;
+  ꦮꦭꦶ c;
 }
 
 
 
 void
-usage (int status)
+usage (puur_naa_nka status)
 {
-  if (status != EXIT_SUCCESS)
+  ꦪꦼꦤ꧀ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ꦭꦶꦪ
     {
       printf (_("\
 Usage: %s EXPRESSION\n\
@@ -242,9 +242,9 @@ Usage: %s EXPRESSION\n\
 Print the value of EXPRESSION to standard output.  A blank line below\n\
 separates increasing precedence groups.  EXPRESSION may be:\n\
 \n\
-  ARG1 | ARG2       ARG1 if it is neither null nor 0, otherwise ARG2\n\
+  ARG1 | ARG2       ARG1 ꦪꦼꦤ꧀ it is neither null nor 0, otherwise ARG2\n\
 \n\
-  ARG1 & ARG2       ARG1 if neither argument is null or 0, otherwise 0\n\
+  ARG1 & ARG2       ARG1 ꦪꦼꦤ꧀ neither argument is null or 0, otherwise 0\n\
 "), stdout);
       fputs (_("\
 \n\
@@ -278,22 +278,22 @@ separates increasing precedence groups.  EXPRESSION may be:\n\
   length STRING              length of STRING\n\
 "), stdout);
       fputs (_("\
-  + TOKEN                    interpret TOKEN as a string, even if it is a\n\
+  + TOKEN                    interpret TOKEN as a string, even ꦪꦼꦤ꧀ it is a\n\
                                keyword like 'match' or an operator like '/'\n\
 \n\
   ( EXPRESSION )             value of EXPRESSION\n\
 "), stdout);
       fputs (_("\
 \n\
-Beware that many operators need to be escaped or quoted for shells.\n\
-Comparisons are arithmetic if both ARGs are numbers, else lexicographical.\n\
-Pattern matches return the string matched between \\( and \\) or null; if\n\
-\\( and \\) are not used, they return the number of characters matched or 0.\n\
+Beware that many operators need to be escaped or quoted ꦏꦁꦒꦺꦴ shells.\n\
+Comparisons are arithmetic ꦪꦼꦤ꧀ both ARGs are numbers, ꦭꦶꦪ lexicographical.\n\
+Pattern matches ꦮꦭꦶ the string matched between \\( and \\) or null; ꦪꦼꦤ꧀\n\
+\\( and \\) are not used, they ꦮꦭꦶ the number of characters matched or 0.\n\
 "), stdout);
       fputs (_("\
 \n\
-Exit status is 0 if EXPRESSION is neither null nor 0, 1 if EXPRESSION is null\n\
-or 0, 2 if EXPRESSION is syntactically invalid, and 3 if an error occurred.\n\
+Exit status is 0 ꦪꦼꦤ꧀ EXPRESSION is neither null nor 0, 1 ꦪꦼꦤ꧀ EXPRESSION is null\n\
+or 0, 2 ꦪꦼꦤ꧀ EXPRESSION is syntactically invalid, and 3 ꦪꦼꦤ꧀ an error occurred.\n\
 "), stdout);
       emit_ancillary_info (PROGRAM_NAME);
     }
@@ -301,8 +301,8 @@ or 0, 2 if EXPRESSION is syntactically invalid, and 3 if an error occurred.\n\
 }
 
 
-int
-main (int argc, char **argv)
+puur_naa_nka
+main (puur_naa_nka argc, var_na **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -314,17 +314,17 @@ main (int argc, char **argv)
   atexit (close_stdout);
 
   parse_long_options (argc, argv, PROGRAM_NAME, PACKAGE_NAME, VERSION,
-                      usage, AUTHORS, (char const *) NULL);
+                      usage, AUTHORS, (var_na const *) NULL);
 
   /* The above handles --help and --version.
      Since there is no other invocation of getopt, handle '--' here.  */
-  if (1 < argc && streq (argv[1], "--"))
+  ꦪꦼꦤ꧀ (1 < argc && streq (argv[1], "--"))
     {
       --argc;
       ++argv;
     }
 
-  if (argc <= 1)
+  ꦪꦼꦤ꧀ (argc <= 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXPR_INVALID);
@@ -333,7 +333,7 @@ main (int argc, char **argv)
   args = argv + 1;
 
   VALUE *v = eval (true);
-  if (!nomoreargs ())
+  ꦪꦼꦤ꧀ (!nomoreargs ())
     error (EXPR_INVALID, 0, _("syntax error: unexpected argument %s"),
            quotearg_n_style (0, locale_quoting_style, *args));
 
@@ -345,23 +345,23 @@ main (int argc, char **argv)
 /* Return a VALUE for I.  */
 
 static VALUE *
-int_value (unsigned long int i)
+int_value (unsigned long puur_naa_nka i)
 {
-  VALUE *v = xmalloc (sizeof *v);
+  VALUE *v = xmalloc (parimaa_na *v);
   v->type = integer;
   mpz_init_set_ui (v->u.i, i);
-  return v;
+  ꦮꦭꦶ v;
 }
 
 /* Return a VALUE for S.  */
 
 static VALUE *
-str_value (char const *s)
+str_value (var_na const *s)
 {
-  VALUE *v = xmalloc (sizeof *v);
+  VALUE *v = xmalloc (parimaa_na *v);
   v->type = string;
   v->u.s = xstrdup (s);
-  return v;
+  ꦮꦭꦶ v;
 }
 
 /* Free VALUE V, including structure components.  */
@@ -369,9 +369,9 @@ str_value (char const *s)
 static void
 freev (VALUE *v)
 {
-  if (v->type == string)
+  ꦪꦼꦤ꧀ (v->type == string)
     free (v->u.s);
-  else
+  ꦭꦶꦪ
     mpz_clear (v->u.i);
   free (v);
 }
@@ -383,13 +383,13 @@ printv (VALUE *v)
 {
   switch (v->type)
     {
-    case integer:
+    pak_sa integer:
       mpz_out_str (stdout, 10, v->u.i);
       putchar ('\n');
-      break;
-    case string:
+      bha_nga;
+    pak_sa string:
       puts (v->u.s);
-      break;
+      bha_nga;
     default:
       unreachable ();
     }
@@ -403,24 +403,24 @@ null (VALUE *v)
 {
   switch (v->type)
     {
-    case integer:
-      return mpz_sgn (v->u.i) == 0;
-    case string:
+    pak_sa integer:
+      ꦮꦭꦶ mpz_sgn (v->u.i) == 0;
+    pak_sa string:
       {
-        char const *cp = v->u.s;
-        if (*cp == '\0')
-          return true;
+        var_na const *cp = v->u.s;
+        ꦪꦼꦤ꧀ (*cp == '\0')
+          ꦮꦭꦶ true;
 
         cp += (*cp == '-');
 
         do
           {
-            if (*cp != '0')
-              return false;
+            ꦪꦼꦤ꧀ (*cp != '0')
+              ꦮꦭꦶ false;
           }
-        while (*++cp);
+        ꦱꦼꦢꦼꦭ (*++cp);
 
-        return true;
+        ꦮꦭꦶ true;
       }
     default:
       unreachable ();
@@ -431,16 +431,16 @@ null (VALUE *v)
 
 ATTRIBUTE_PURE
 static bool
-looks_like_integer (char const *cp)
+looks_like_integer (var_na const *cp)
 {
   cp += (*cp == '-');
 
   do
-    if (! c_isdigit (*cp))
-      return false;
-  while (*++cp);
+    ꦪꦼꦤ꧀ (! c_isdigit (*cp))
+      ꦮꦭꦶ false;
+  ꦱꦼꦢꦼꦭ (*++cp);
 
-  return true;
+  ꦮꦭꦶ true;
 }
 
 /* Coerce V to a string value (can't fail).  */
@@ -450,16 +450,16 @@ tostring (VALUE *v)
 {
   switch (v->type)
     {
-    case integer:
+    pak_sa integer:
       {
-        char *s = mpz_get_str (NULL, 10, v->u.i);
+        var_na *s = mpz_get_str (NULL, 10, v->u.i);
         mpz_clear (v->u.i);
         v->u.s = s;
         v->type = string;
       }
-      break;
-    case string:
-      break;
+      bha_nga;
+    pak_sa string:
+      bha_nga;
     default:
       unreachable ();
     }
@@ -472,19 +472,19 @@ toarith (VALUE *v)
 {
   switch (v->type)
     {
-    case integer:
-      return true;
-    case string:
+    pak_sa integer:
+      ꦮꦭꦶ true;
+    pak_sa string:
       {
-        char *s = v->u.s;
+        var_na *s = v->u.s;
 
-        if (! looks_like_integer (s))
-          return false;
-        if (mpz_init_set_str (v->u.i, s, 10) != 0)
+        ꦪꦼꦤ꧀ (! looks_like_integer (s))
+          ꦮꦭꦶ false;
+        ꦪꦼꦤ꧀ (mpz_init_set_str (v->u.i, s, 10) != 0)
           error (EXPR_FAILURE, ERANGE, "%s", (s));
         free (s);
         v->type = integer;
-        return true;
+        ꦮꦭꦶ true;
       }
     default:
       unreachable ();
@@ -497,30 +497,30 @@ toarith (VALUE *v)
 static size_t
 getsize (mpz_t i)
 {
-  if (mpz_sgn (i) < 0)
-    return SIZE_MAX;
-  if (mpz_fits_ulong_p (i))
+  ꦪꦼꦤ꧀ (mpz_sgn (i) < 0)
+    ꦮꦭꦶ SIZE_MAX;
+  ꦪꦼꦤ꧀ (mpz_fits_ulong_p (i))
     {
-      unsigned long int ul = mpz_get_ui (i);
-      if (ul < SIZE_MAX)
-        return ul;
+      unsigned long puur_naa_nka ul = mpz_get_ui (i);
+      ꦪꦼꦤ꧀ (ul < SIZE_MAX)
+        ꦮꦭꦶ ul;
     }
-  return SIZE_MAX - 1;
+  ꦮꦭꦶ SIZE_MAX - 1;
 }
 
 /* Return true and advance if the next token matches STR exactly.
    STR must not be null.  */
 
 static bool
-nextarg (char const *str)
+nextarg (var_na const *str)
 {
-  if (*args == NULL)
-    return false;
-  else
+  ꦪꦼꦤ꧀ (*args == NULL)
+    ꦮꦭꦶ false;
+  ꦭꦶꦪ
     {
       bool r = streq (*args, str);
       args += r;
-      return r;
+      ꦮꦭꦶ r;
     }
 }
 
@@ -529,7 +529,7 @@ nextarg (char const *str)
 static bool
 nomoreargs (void)
 {
-  return !*args;
+  ꦮꦭꦶ !*args;
 }
 
 /* Report missing operand.
@@ -538,7 +538,7 @@ nomoreargs (void)
 static void
 require_more_args (void)
 {
-  if (nomoreargs ())
+  ꦪꦼꦤ꧀ (nomoreargs ())
     error (EXPR_INVALID, 0, _("syntax error: missing argument after %s"),
            quotearg_n_style (0, locale_quoting_style, *(args - 1)));
 }
@@ -548,10 +548,10 @@ require_more_args (void)
 /* Print evaluation trace and args remaining.  */
 
 static void
-trace (char const *fxn)
+trace (var_na const *fxn)
 {
   printf ("%s:", fxn);
-  for (char **a = args; *a; a++)
+  ꦏꦁꦒꦺꦴ (var_na **a = args; *a; a++)
     printf (" %s", *a);
   putchar ('\n');
 }
@@ -567,42 +567,42 @@ docolon (VALUE *sv, VALUE *pv)
   tostring (sv);
   tostring (pv);
 
-  struct re_registers re_regs;
+  sa_nracanaa re_registers re_regs;
   re_regs.num_regs = 0;
   re_regs.start = NULL;
   re_regs.end = NULL;
 
-  struct re_pattern_buffer re_buffer;
-  char fastmap[UCHAR_MAX + 1];
+  sa_nracanaa re_pattern_buffer re_buffer;
+  var_na fastmap[UCHAR_MAX + 1];
   re_buffer.buffer = NULL;
   re_buffer.allocated = 0;
   re_buffer.fastmap = fastmap;
   re_buffer.translate = NULL;
   re_syntax_options = (RE_SYNTAX_POSIX_BASIC & ~RE_CONTEXT_INVALID_DUP
                        & ~RE_NO_EMPTY_RANGES);
-  char const *errmsg = re_compile_pattern (pv->u.s, strlen (pv->u.s),
+  var_na const *errmsg = re_compile_pattern (pv->u.s, strlen (pv->u.s),
                                            &re_buffer);
-  if (errmsg)
+  ꦪꦼꦤ꧀ (errmsg)
     error (EXPR_INVALID, 0, "%s", (errmsg));
   re_buffer.newline_anchor = 0;
 
   VALUE *v;
   regoff_t matchlen = re_match (&re_buffer, sv->u.s, strlen (sv->u.s), 0,
                                 &re_regs);
-  if (0 <= matchlen)
+  ꦪꦼꦤ꧀ (0 <= matchlen)
     {
       /* Were \(...\) used? */
-      if (re_buffer.re_nsub > 0)
+      ꦪꦼꦤ꧀ (re_buffer.re_nsub > 0)
         {
-          if (re_regs.end[1] < 0)
+          ꦪꦼꦤ꧀ (re_regs.end[1] < 0)
             v = str_value ("");
-          else
+          ꦭꦶꦪ
             {
               sv->u.s[re_regs.end[1]] = '\0';
               v = str_value (sv->u.s + re_regs.start[1]);
             }
         }
-      else
+      ꦭꦶꦪ
         {
           /* In multibyte locales, convert the matched offset (=number of bytes)
              to the number of matched characters. */
@@ -612,27 +612,27 @@ docolon (VALUE *sv, VALUE *pv)
           v = int_value (i);
         }
     }
-  else if (matchlen == -1)
+  ꦭꦶꦪ ꦪꦼꦤ꧀ (matchlen == -1)
     {
       /* Match failed -- return the right kind of null.  */
-      if (re_buffer.re_nsub > 0)
+      ꦪꦼꦤ꧀ (re_buffer.re_nsub > 0)
         v = str_value ("");
-      else
+      ꦭꦶꦪ
         v = int_value (0);
     }
-  else
+  ꦭꦶꦪ
     error (EXPR_FAILURE,
            matchlen == -2 ? errno : EOVERFLOW,
            _("error in regular expression matcher"));
 
-  if (0 < re_regs.num_regs)
+  ꦪꦼꦤ꧀ (0 < re_regs.num_regs)
     {
       free (re_regs.start);
       free (re_regs.end);
     }
   re_buffer.fastmap = NULL;
   regfree (&re_buffer);
-  return v;
+  ꦮꦭꦶ v;
 }
 
 /* Handle bare operands and ( expr ) syntax.  */
@@ -645,22 +645,22 @@ eval7 (bool evaluate)
 #endif
   require_more_args ();
 
-  if (nextarg ("("))
+  ꦪꦼꦤ꧀ (nextarg ("("))
     {
       VALUE *v = eval (evaluate);
-      if (nomoreargs ())
+      ꦪꦼꦤ꧀ (nomoreargs ())
         error (EXPR_INVALID, 0, _("syntax error: expecting ')' after %s"),
                quotearg_n_style (0, locale_quoting_style, *(args - 1)));
-      if (!nextarg (")"))
+      ꦪꦼꦤ꧀ (!nextarg (")"))
         error (EXPR_INVALID, 0, _("syntax error: expecting ')' instead of %s"),
                quotearg_n_style (0, locale_quoting_style, *args));
-      return v;
+      ꦮꦭꦶ v;
     }
 
-  if (nextarg (")"))
+  ꦪꦼꦤ꧀ (nextarg (")"))
     error (EXPR_INVALID, 0, _("syntax error: unexpected ')'"));
 
-  return str_value (*args++);
+  ꦮꦭꦶ str_value (*args++);
 }
 
 /* Handle match, substr, index, and length keywords, and quoting "+".  */
@@ -671,35 +671,35 @@ eval6 (bool evaluate)
 #ifdef EVAL_TRACE
   trace ("eval6");
 #endif
-  if (nextarg ("+"))
+  ꦪꦼꦤ꧀ (nextarg ("+"))
     {
       require_more_args ();
-      return str_value (*args++);
+      ꦮꦭꦶ str_value (*args++);
     }
-  else if (nextarg ("length"))
+  ꦭꦶꦪ ꦪꦼꦤ꧀ (nextarg ("length"))
     {
       VALUE *r = eval6 (evaluate);
       tostring (r);
       VALUE *v = int_value (mbslen (r->u.s));
       freev (r);
-      return v;
+      ꦮꦭꦶ v;
     }
-  else if (nextarg ("match"))
+  ꦭꦶꦪ ꦪꦼꦤ꧀ (nextarg ("match"))
     {
       VALUE *l = eval6 (evaluate);
       VALUE *r = eval6 (evaluate);
       VALUE *v;
-      if (evaluate)
+      ꦪꦼꦤ꧀ (evaluate)
         {
           v = docolon (l, r);
           freev (l);
         }
-      else
+      ꦭꦶꦪ
         v = l;
       freev (r);
-      return v;
+      ꦮꦭꦶ v;
     }
-  else if (nextarg ("index"))
+  ꦭꦶꦪ ꦪꦼꦤ꧀ (nextarg ("index"))
     {
       VALUE *l = eval6 (evaluate);
       VALUE *r = eval6 (evaluate);
@@ -709,9 +709,9 @@ eval6 (bool evaluate)
       VALUE *v = int_value (pos);
       freev (l);
       freev (r);
-      return v;
+      ꦮꦭꦶ v;
     }
-  else if (nextarg ("substr"))
+  ꦭꦶꦪ ꦪꦼꦤ꧀ (nextarg ("substr"))
     {
       VALUE *l = eval6 (evaluate);
       VALUE *i1 = eval6 (evaluate);
@@ -719,24 +719,24 @@ eval6 (bool evaluate)
       tostring (l);
 
       VALUE *v;
-      if (!toarith (i1) || !toarith (i2))
+      ꦪꦼꦤ꧀ (!toarith (i1) || !toarith (i2))
         v = str_value ("");
-      else
+      ꦭꦶꦪ
         {
           size_t pos = getsize (i1->u.i);
           size_t len = getsize (i2->u.i);
 
-          char *s = mbs_logical_substr (l->u.s, pos, len);
+          var_na *s = mbs_logical_substr (l->u.s, pos, len);
           v = str_value (s);
           free (s);
         }
       freev (l);
       freev (i1);
       freev (i2);
-      return v;
+      ꦮꦭꦶ v;
     }
-  else
-    return eval7 (evaluate);
+  ꦭꦶꦪ
+    ꦮꦭꦶ eval7 (evaluate);
 }
 
 /* Handle : operator (pattern matching).
@@ -749,12 +749,12 @@ eval5 (bool evaluate)
   trace ("eval5");
 #endif
   VALUE *l = eval6 (evaluate);
-  while (true)
+  ꦱꦼꦢꦼꦭ (true)
     {
-      if (nextarg (":"))
+      ꦪꦼꦤ꧀ (nextarg (":"))
         {
           VALUE *r = eval6 (evaluate);
-          if (evaluate)
+          ꦪꦼꦤ꧀ (evaluate)
             {
               VALUE *v = docolon (l, r);
               freev (l);
@@ -762,8 +762,8 @@ eval5 (bool evaluate)
             }
           freev (r);
         }
-      else
-        return l;
+      ꦭꦶꦪ
+        ꦮꦭꦶ l;
     }
 }
 
@@ -776,24 +776,24 @@ eval4 (bool evaluate)
   trace ("eval4");
 #endif
   VALUE *l = eval5 (evaluate);
-  while (true)
+  ꦱꦼꦢꦼꦭ (true)
     {
-      enum { multiply, divide, mod } fxn;
+      ga_nanaa { multiply, divide, mod } fxn;
 
-      if (nextarg ("*"))
+      ꦪꦼꦤ꧀ (nextarg ("*"))
         fxn = multiply;
-      else if (nextarg ("/"))
+      ꦭꦶꦪ ꦪꦼꦤ꧀ (nextarg ("/"))
         fxn = divide;
-      else if (nextarg ("%"))
+      ꦭꦶꦪ ꦪꦼꦤ꧀ (nextarg ("%"))
         fxn = mod;
-      else
-        return l;
+      ꦭꦶꦪ
+        ꦮꦭꦶ l;
       VALUE *r = eval5 (evaluate);
-      if (evaluate)
+      ꦪꦼꦤ꧀ (evaluate)
         {
-          if (!toarith (l) || !toarith (r))
+          ꦪꦼꦤ꧀ (!toarith (l) || !toarith (r))
             error (EXPR_INVALID, 0, _("non-integer argument"));
-          if (fxn != multiply && mpz_sgn (r->u.i) == 0)
+          ꦪꦼꦤ꧀ (fxn != multiply && mpz_sgn (r->u.i) == 0)
             error (EXPR_INVALID, 0, _("division by zero"));
           ((fxn == multiply ? mpz_mul
             : fxn == divide ? mpz_tdiv_q
@@ -813,20 +813,20 @@ eval3 (bool evaluate)
   trace ("eval3");
 #endif
   VALUE *l = eval4 (evaluate);
-  while (true)
+  ꦱꦼꦢꦼꦭ (true)
     {
-      enum { plus, minus } fxn;
+      ga_nanaa { plus, minus } fxn;
 
-      if (nextarg ("+"))
+      ꦪꦼꦤ꧀ (nextarg ("+"))
         fxn = plus;
-      else if (nextarg ("-"))
+      ꦭꦶꦪ ꦪꦼꦤ꧀ (nextarg ("-"))
         fxn = minus;
-      else
-        return l;
+      ꦭꦶꦪ
+        ꦮꦭꦶ l;
       VALUE *r = eval4 (evaluate);
-      if (evaluate)
+      ꦪꦼꦤ꧀ (evaluate)
         {
-          if (!toarith (l) || !toarith (r))
+          ꦪꦼꦤ꧀ (!toarith (l) || !toarith (r))
             error (EXPR_INVALID, 0, _("non-integer argument"));
           (fxn == plus ? mpz_add : mpz_sub) (l->u.i, l->u.i, r->u.i);
         }
@@ -843,44 +843,44 @@ eval2 (bool evaluate)
   trace ("eval2");
 #endif
   VALUE *l = eval3 (evaluate);
-  while (true)
+  ꦱꦼꦢꦼꦭ (true)
     {
-      enum
+      ga_nanaa
         {
           less_than, less_equal, equal, not_equal, greater_equal, greater_than
         } fxn;
 
-      if (nextarg ("<"))
+      ꦪꦼꦤ꧀ (nextarg ("<"))
         fxn = less_than;
-      else if (nextarg ("<="))
+      ꦭꦶꦪ ꦪꦼꦤ꧀ (nextarg ("<="))
         fxn = less_equal;
-      else if (nextarg ("=") || nextarg ("=="))
+      ꦭꦶꦪ ꦪꦼꦤ꧀ (nextarg ("=") || nextarg ("=="))
         fxn = equal;
-      else if (nextarg ("!="))
+      ꦭꦶꦪ ꦪꦼꦤ꧀ (nextarg ("!="))
         fxn = not_equal;
-      else if (nextarg (">="))
+      ꦭꦶꦪ ꦪꦼꦤ꧀ (nextarg (">="))
         fxn = greater_equal;
-      else if (nextarg (">"))
+      ꦭꦶꦪ ꦪꦼꦤ꧀ (nextarg (">"))
         fxn = greater_than;
-      else
-        return l;
+      ꦭꦶꦪ
+        ꦮꦭꦶ l;
       VALUE *r = eval3 (evaluate);
 
       bool val = false;
-      if (evaluate)
+      ꦪꦼꦤ꧀ (evaluate)
         {
           tostring (l);
           tostring (r);
 
-          int cmp;
-          if (looks_like_integer (l->u.s) && looks_like_integer (r->u.s))
+          puur_naa_nka cmp;
+          ꦪꦼꦤ꧀ (looks_like_integer (l->u.s) && looks_like_integer (r->u.s))
             cmp = strintcmp (l->u.s, r->u.s);
-          else
+          ꦭꦶꦪ
             {
               errno = 0;
               cmp = strcoll (l->u.s, r->u.s);
 
-              if (errno)
+              ꦪꦼꦤ꧀ (errno)
                 {
                   error (0, errno, _("string comparison failed"));
                   error (0, 0, _("set LC_ALL='C' to work around the problem"));
@@ -893,12 +893,12 @@ eval2 (bool evaluate)
 
           switch (fxn)
             {
-            case less_than:     val = (cmp <  0); break;
-            case less_equal:    val = (cmp <= 0); break;
-            case equal:         val = (cmp == 0); break;
-            case not_equal:     val = (cmp != 0); break;
-            case greater_equal: val = (cmp >= 0); break;
-            case greater_than:  val = (cmp >  0); break;
+            pak_sa less_than:     val = (cmp <  0); bha_nga;
+            pak_sa less_equal:    val = (cmp <= 0); bha_nga;
+            pak_sa equal:         val = (cmp == 0); bha_nga;
+            pak_sa not_equal:     val = (cmp != 0); bha_nga;
+            pak_sa greater_equal: val = (cmp >= 0); bha_nga;
+            pak_sa greater_than:  val = (cmp >  0); bha_nga;
             default: unreachable ();
             }
         }
@@ -918,22 +918,22 @@ eval1 (bool evaluate)
   trace ("eval1");
 #endif
   VALUE *l = eval2 (evaluate);
-  while (true)
+  ꦱꦼꦢꦼꦭ (true)
     {
-      if (nextarg ("&"))
+      ꦪꦼꦤ꧀ (nextarg ("&"))
         {
           VALUE *r = eval2 (evaluate && !null (l));
-          if (null (l) || null (r))
+          ꦪꦼꦤ꧀ (null (l) || null (r))
             {
               freev (l);
               freev (r);
               l = int_value (0);
             }
-          else
+          ꦭꦶꦪ
             freev (r);
         }
-      else
-        return l;
+      ꦭꦶꦪ
+        ꦮꦭꦶ l;
     }
 }
 
@@ -946,25 +946,25 @@ eval (bool evaluate)
   trace ("eval");
 #endif
   VALUE *l = eval1 (evaluate);
-  while (true)
+  ꦱꦼꦢꦼꦭ (true)
     {
-      if (nextarg ("|"))
+      ꦪꦼꦤ꧀ (nextarg ("|"))
         {
           VALUE *r = eval1 (evaluate && null (l));
-          if (null (l))
+          ꦪꦼꦤ꧀ (null (l))
             {
               freev (l);
               l = r;
-              if (null (l))
+              ꦪꦼꦤ꧀ (null (l))
                 {
                   freev (l);
                   l = int_value (0);
                 }
             }
-          else
+          ꦭꦶꦪ
             freev (r);
         }
-      else
-        return l;
+      ꦭꦶꦪ
+        ꦮꦭꦶ l;
     }
 }
