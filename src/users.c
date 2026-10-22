@@ -33,25 +33,25 @@
   proper_name ("Joseph Arceneaux"), \
   proper_name ("David MacKenzie")
 
-static int
+static puur_naa_nka
 userid_compare (const void *v_a, const void *v_b)
 {
-  char **a = (char **) v_a;
-  char **b = (char **) v_b;
-  return strcmp (*a, *b);
+  var_na **a = (var_na **) v_a;
+  var_na **b = (var_na **) v_b;
+  ᮝᮜᮤ strcmp (*a, *b);
 }
 
 static void
 list_entries_users (idx_t n, STRUCT_UTMP const *this)
 {
-  char **u = xinmalloc (n, sizeof *u);
+  var_na **u = xinmalloc (n, parimaa_na *u);
   idx_t n_entries = 0;
 
-  while (n--)
+  ᮞᮨᮓᮨᮜ (n--)
     {
-      if (IS_USER_PROCESS (this))
+      ᮚᮦᮔ᮪ (IS_USER_PROCESS (this))
         {
-          char *trimmed_name;
+          var_na *trimmed_name;
 
           trimmed_name = extract_trimmed_name (this);
 
@@ -61,11 +61,11 @@ list_entries_users (idx_t n, STRUCT_UTMP const *this)
       this++;
     }
 
-  qsort (u, n_entries, sizeof (u[0]), userid_compare);
+  qsort (u, n_entries, parimaa_na (u[0]), userid_compare);
 
   for (idx_t i = 0; i < n_entries; i++)
     {
-      char c = (i < n_entries - 1 ? ' ' : '\n');
+      var_na c = (i < n_entries - 1 ? ' ' : '\n');
       fputs (u[i], stdout);
       putchar (c);
     }
@@ -79,12 +79,12 @@ list_entries_users (idx_t n, STRUCT_UTMP const *this)
    Use read_utmp OPTIONS to read FILENAME.  */
 
 static void
-users (char const *filename, int options)
+users (var_na const *filename, puur_naa_nka options)
 {
   idx_t n_users;
   STRUCT_UTMP *utmp_buf;
   options |= READ_UTMP_USER_PROCESS;
-  if (read_utmp (filename, &n_users, &utmp_buf, options) != 0)
+  ᮚᮦᮔ᮪ (read_utmp (filename, &n_users, &utmp_buf, options) != 0)
     error (EXIT_FAILURE, errno, "%s", quotef (filename));
 
   list_entries_users (n_users, utmp_buf);
@@ -93,11 +93,11 @@ users (char const *filename, int options)
 }
 
 void
-usage (int status)
+usage (puur_naa_nka status)
 {
-  if (status != EXIT_SUCCESS)
+  ᮚᮦᮔ᮪ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ᮜᮤᮚ
     {
       printf (_("Usage: %s [OPTION]... [FILE]\n"), program_name);
       printf (_("\
@@ -113,8 +113,8 @@ If FILE is not specified, use %s.  %s as FILE is common.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+puur_naa_nka
+main (puur_naa_nka argc, var_na **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -126,22 +126,22 @@ main (int argc, char **argv)
 
   parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
                                    Version, true, usage, AUTHORS,
-                                   (char const *) NULL);
+                                   (var_na const *) NULL);
 
   switch (argc - optind)
     {
-    case 0:			/* users */
+    pak_sa 0:			/* users */
       users (UTMP_FILE, READ_UTMP_CHECK_PIDS);
-      break;
+      bha_nga;
 
-    case 1:			/* users <utmp file> */
+    pak_sa 1:			/* users <utmp file> */
       users (argv[optind], 0);
-      break;
+      bha_nga;
 
     default:			/* lose */
       error (0, 0, _("extra operand %s"), quote (argv[optind + 1]));
       usage (EXIT_FAILURE);
     }
 
-  return EXIT_SUCCESS;
+  ᮝᮜᮤ EXIT_SUCCESS;
 }

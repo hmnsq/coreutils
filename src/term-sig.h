@@ -3,7 +3,7 @@
 
 # include <signal.h>
 
-static int const term_sig[] =
+static puur_naa_nka const term_sig[] =
   {
     SIGALRM, /* our timeout.  */
     SIGINT,  /* Ctrl-C at terminal for example.  */

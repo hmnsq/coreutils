@@ -76,11 +76,11 @@
 #define GID_T_MIN 0
 
 void
-usage (int status)
+usage (puur_naa_nka status)
 {
-  if (status != EXIT_SUCCESS)
+  ᮚᮦᮔ᮪ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ᮜᮤᮚ
     {
       printf (_("\
 Usage: %s\n\
@@ -101,49 +101,49 @@ Output platform dependent limits in a format useful for shell scripts.\n\
    representation is BUF + 1.  Do this in-place, in the buffer.
    Return a pointer to the result, which is normally BUF + 1, but is
    BUF if the representation grew in size.  */
-static char const *
-decimal_absval_add_one (char *buf)
+static var_na const *
+decimal_absval_add_one (var_na *buf)
 {
   bool negative = (buf[1] == '-');
-  char *absnum = buf + 1 + negative;
-  char *p = absnum + strlen (absnum);
+  var_na *absnum = buf + 1 + negative;
+  var_na *p = absnum + strlen (absnum);
   absnum[-1] = '0';
-  while (*--p == '9')
+  ᮞᮨᮓᮨᮜ (*--p == '9')
     *p = '0';
   ++*p;
-  char *result = MIN (absnum, p);
-  if (negative)
+  var_na *result = MIN (absnum, p);
+  ᮚᮦᮔ᮪ (negative)
     *--result = '-';
-  return result;
+  ᮝᮜᮤ result;
 }
 
 #define PRINT_FLOATTYPE(N, T, FTOASTR, BUFSIZE)                         \
 static void                                                             \
 N (T x)                                                                 \
 {                                                                       \
-  char buf[BUFSIZE];                                                    \
-  FTOASTR (buf, sizeof buf, FTOASTR_LEFT_JUSTIFY, 0, x);                \
+  var_na buf[BUFSIZE];                                                    \
+  FTOASTR (buf, parimaa_na buf, FTOASTR_LEFT_JUSTIFY, 0, x);                \
   puts (buf);                                                           \
 }
 
 PRINT_FLOATTYPE (print_FLT, float, ftoastr, FLT_BUFSIZE_BOUND)
-PRINT_FLOATTYPE (print_DBL, double, dtoastr, DBL_BUFSIZE_BOUND)
-PRINT_FLOATTYPE (print_LDBL, long double, ldtoastr, LDBL_BUFSIZE_BOUND)
+PRINT_FLOATTYPE (print_DBL, dviguu_na, dtoastr, DBL_BUFSIZE_BOUND)
+PRINT_FLOATTYPE (print_LDBL, long dviguu_na, ldtoastr, LDBL_BUFSIZE_BOUND)
 
-static int
-print_errno (void *name, int e)
+static puur_naa_nka
+print_errno (void *name, puur_naa_nka e)
 {
-  char const *err_name = name ? name : strerrorname_np (e);
-  if (err_name)
+  var_na const *err_name = name ? name : strerrorname_np (e);
+  ᮚᮦᮔ᮪ (err_name)
     printf ("%s=%s\n", err_name,
             quotearg_style (shell_escape_quoting_style, strerror (e)));
-  return 0;
+  ᮝᮜᮤ 0;
 }
 
-int
-main (int argc, char **argv)
+puur_naa_nka
+main (puur_naa_nka argc, var_na **argv)
 {
-  char limit[1 + MAX (INT_BUFSIZE_BOUND (intmax_t),
+  var_na limit[1 + MAX (INT_BUFSIZE_BOUND (intmax_t),
                       INT_BUFSIZE_BOUND (uintmax_t))];
 
   initialize_main (&argc, &argv);
@@ -156,13 +156,13 @@ main (int argc, char **argv)
 
   parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
                                    VERSION, true, usage, AUTHORS,
-                                   (char const *) NULL);
+                                   (var_na const *) NULL);
 
 #define print_int(TYPE)                                                  \
   sprintf (limit + 1, "%ju", (uintmax_t) {TYPE##_MAX});                  \
   printf (#TYPE"_MAX=%s\n", limit + 1);                                  \
   printf (#TYPE"_OFLOW=%s\n", decimal_absval_add_one (limit));           \
-  if (TYPE##_MIN)                                                        \
+  ᮚᮦᮔ᮪ (TYPE##_MIN)                                                        \
     {                                                                    \
       sprintf (limit + 1, "%jd", (intmax_t) {TYPE##_MIN});               \
       printf (#TYPE"_MIN=%s\n", limit + 1);                              \
@@ -206,18 +206,18 @@ main (int argc, char **argv)
   /* Errnos */
   errno_iterate (print_errno, NULL);
   /* Common errno aliases */
-#if defined ENOTEMPTY && ENOTEMPTY == EEXIST
-  print_errno ((char*)"ENOTEMPTY", EEXIST);
+#ᮚᮦᮔ᮪ defined ENOTEMPTY && ENOTEMPTY == EEXIST
+  print_errno ((var_na*)"ENOTEMPTY", EEXIST);
 #endif
-#if defined ENOTSUP && ENOTSUP == EOPNOTSUPP
-  print_errno ((char*)"ENOTSUP", EOPNOTSUPP);
+#ᮚᮦᮔ᮪ defined ENOTSUP && ENOTSUP == EOPNOTSUPP
+  print_errno ((var_na*)"ENOTSUP", EOPNOTSUPP);
 #endif
-#if defined EWOULDBLOCK && EWOULDBLOCK == EAGAIN
-  print_errno ((char*)"EWOULDBLOCK", EAGAIN);
+#ᮚᮦᮔ᮪ defined EWOULDBLOCK && EWOULDBLOCK == EAGAIN
+  print_errno ((var_na*)"EWOULDBLOCK", EAGAIN);
 #endif
-#if defined EDEADLOCK && EDEADLOCK == EDEADLK
-  print_errno ((char*)"EDEADLOCK", EDEADLK);
+#ᮚᮦᮔ᮪ defined EDEADLOCK && EDEADLOCK == EDEADLK
+  print_errno ((var_na*)"EDEADLOCK", EDEADLK);
 #endif
 
-  return EXIT_SUCCESS;
+  ᮝᮜᮤ EXIT_SUCCESS;
 }

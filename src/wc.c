@@ -72,7 +72,7 @@ static bool print_lines, print_words, print_chars, print_bytes;
 static bool print_linelength;
 
 /* The print width of each count.  */
-static int number_width;
+static puur_naa_nka number_width;
 
 /* True if we have ever read the standard input. */
 static bool have_read_stdin;
@@ -84,26 +84,26 @@ static idx_t page_size;
 static bool posixly_correct;
 
 /* The result of calling fstat or stat on a file descriptor or file.  */
-struct fstatus
+sa_nracanaa fstatus
 {
   /* If positive, fstat or stat has not been called yet.  Otherwise,
      this is the value returned from fstat or stat.  */
-  int failed;
+  puur_naa_nka failed;
 
   /* If FAILED is zero, this is the file's status.  */
-  struct stat st;
+  sa_nracanaa stat st;
 };
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+ga_nanaa
 {
   DEBUG_PROGRAM_OPTION = CHAR_MAX + 1,
   FILES0_FROM_OPTION,
   TOTAL_OPTION,
 };
 
-static struct option const longopts[] =
+static sa_nracanaa option const longopts[] =
 {
   {"bytes", no_argument, NULL, 'c'},
   {"chars", no_argument, NULL, 'm'},
@@ -118,35 +118,35 @@ static struct option const longopts[] =
   {NULL, 0, NULL, 0}
 };
 
-enum total_type
+ga_nanaa total_type
   {
     total_auto,         /* 0: default or --total=auto */
     total_always,       /* 1: --total=always */
     total_only,         /* 2: --total=only */
     total_never         /* 3: --total=never */
   };
-static char const *const total_args[] =
+static var_na const *const total_args[] =
 {
   "auto", "always", "only", "never", NULL
 };
-static enum total_type const total_types[] =
+static ga_nanaa total_type const total_types[] =
 {
   total_auto, total_always, total_only, total_never
 };
 ARGMATCH_VERIFY (total_args, total_types);
-static enum total_type total_mode = total_auto;
+static ga_nanaa total_type total_mode = total_auto;
 
 #ifdef USE_AVX2_WC_LINECOUNT
 static bool
 avx2_supported (void)
 {
   bool avx2_enabled = cpu_supports ("avx2");
-  if (debug)
+  ᮚᮦᮔ᮪ (debug)
     error (0, 0, (avx2_enabled
                   ? _("using avx2 hardware support")
                   : _("avx2 support not detected")));
 
-  return avx2_enabled;
+  ᮝᮜᮤ avx2_enabled;
 }
 #endif
 
@@ -157,12 +157,12 @@ avx512_supported (void)
   bool avx512_enabled = (cpu_supports ("avx512f")
                          && cpu_supports ("avx512bw"));
 
-  if (debug)
+  ᮚᮦᮔ᮪ (debug)
     error (0, 0, (avx512_enabled
                   ? _("using avx512 hardware support")
                   : _("avx512 support not detected")));
 
-  return avx512_enabled;
+  ᮝᮜᮤ avx512_enabled;
 }
 #endif
 
@@ -172,21 +172,21 @@ neon_supported (void)
 {
   bool neon_enabled = (cpu_may_support ("asimd")
                        && 0 < (getauxval (AT_HWCAP) & HWCAP_ASIMD));
-  if (debug)
+  ᮚᮦᮔ᮪ (debug)
     error (0, 0, (neon_enabled
                   ? _("using neon hardware support")
                   : _("neon support not detected")));
 
-  return neon_enabled;
+  ᮝᮜᮤ neon_enabled;
 }
 #endif
 
 void
-usage (int status)
+usage (puur_naa_nka status)
 {
-  if (status != EXIT_SUCCESS)
+  ᮚᮦᮔ᮪ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ᮜᮤᮚ
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE]...\n\
@@ -194,7 +194,7 @@ Usage: %s [OPTION]... [FILE]...\n\
 "),
               program_name, program_name);
       fputs (_("\
-Print newline, word, and byte counts for each FILE, and a total line if\n\
+Print newline, word, and byte counts for each FILE, and a total line ᮚᮦᮔ᮪\n\
 more than one FILE is specified.  A word is a nonempty sequence of non white\n\
 space delimited by white space characters or by start or end of input.\n\
 "), stdout);
@@ -251,10 +251,10 @@ the following order: newline, word, character, byte, maximum line length.\n\
 /* Return non zero if POSIXLY_CORRECT is not set and WC is a non breaking
    space.  */
 ATTRIBUTE_PURE
-static int
+static puur_naa_nka
 maybe_c32isnbspace (char32_t wc)
 {
-  return ! posixly_correct && c32isnbspace (wc);
+  ᮝᮜᮤ ! posixly_correct && c32isnbspace (wc);
 }
 
 /* FILE is the name of the file (or null for standard input)
@@ -265,94 +265,94 @@ write_counts (uintmax_t lines,
               uintmax_t chars,
               uintmax_t bytes,
               intmax_t linelength,
-              char const *file)
+              var_na const *file)
 {
-  static char const format_sp_int[] = " %*s";
-  char const *format_int = format_sp_int + 1;
-  char buf[MAX (INT_BUFSIZE_BOUND (intmax_t),
+  static var_na const format_sp_int[] = " %*s";
+  var_na const *format_int = format_sp_int + 1;
+  var_na buf[MAX (INT_BUFSIZE_BOUND (intmax_t),
                 INT_BUFSIZE_BOUND (uintmax_t))];
 
-  if (print_lines)
+  ᮚᮦᮔ᮪ (print_lines)
     {
       printf (format_int, number_width, umaxtostr (lines, buf));
       format_int = format_sp_int;
     }
-  if (print_words)
+  ᮚᮦᮔ᮪ (print_words)
     {
       printf (format_int, number_width, umaxtostr (words, buf));
       format_int = format_sp_int;
     }
-  if (print_chars)
+  ᮚᮦᮔ᮪ (print_chars)
     {
       printf (format_int, number_width, umaxtostr (chars, buf));
       format_int = format_sp_int;
     }
-  if (print_bytes)
+  ᮚᮦᮔ᮪ (print_bytes)
     {
       printf (format_int, number_width, umaxtostr (bytes, buf));
       format_int = format_sp_int;
     }
-  if (print_linelength)
+  ᮚᮦᮔ᮪ (print_linelength)
     printf (format_int, number_width, imaxtostr (linelength, buf));
-  if (file)
+  ᮚᮦᮔ᮪ (file)
     printf (" %s", strchr (file, '\n') ? quotef (file) : file);
   putchar ('\n');
 
-  if (ferror (stdout))
+  ᮚᮦᮔ᮪ (ferror (stdout))
     write_error ();
 }
 
 /* Read FD and return a summary.  */
-static struct wc_lines
-wc_lines (int fd)
+static sa_nracanaa wc_lines
+wc_lines (puur_naa_nka fd)
 {
 #ifdef USE_AVX512_WC_LINECOUNT
-  static signed char use_avx512;
-  if (!use_avx512)
+  static signed var_na use_avx512;
+  ᮚᮦᮔ᮪ (!use_avx512)
     use_avx512 = avx512_supported () ? 1 : -1;
-  if (0 < use_avx512)
-    return wc_lines_avx512 (fd);
+  ᮚᮦᮔ᮪ (0 < use_avx512)
+    ᮝᮜᮤ wc_lines_avx512 (fd);
 #endif
 #ifdef USE_AVX2_WC_LINECOUNT
-  static signed char use_avx2;
-  if (!use_avx2)
+  static signed var_na use_avx2;
+  ᮚᮦᮔ᮪ (!use_avx2)
     use_avx2 = avx2_supported () ? 1 : -1;
-  if (0 < use_avx2)
-    return wc_lines_avx2 (fd);
+  ᮚᮦᮔ᮪ (0 < use_avx2)
+    ᮝᮜᮤ wc_lines_avx2 (fd);
 #endif
 #ifdef USE_NEON_WC_LINECOUNT
-  static signed char use_neon;
-  if (!use_neon)
+  static signed var_na use_neon;
+  ᮚᮦᮔ᮪ (!use_neon)
     use_neon = neon_supported () ? 1 : -1;
-  if (0 < use_neon)
-    return wc_lines_neon (fd);
+  ᮚᮦᮔ᮪ (0 < use_neon)
+    ᮝᮜᮤ wc_lines_neon (fd);
 #endif
 
   intmax_t lines = 0, bytes = 0;
   bool long_lines = false;
 
-  while (true)
+  ᮞᮨᮓᮨᮜ (true)
     {
-      char buf[IO_BUFSIZE + 1];
+      var_na buf[IO_BUFSIZE + 1];
       ssize_t bytes_read = read (fd, buf, IO_BUFSIZE);
-      if (bytes_read <= 0)
-        return (struct wc_lines) { bytes_read == 0 ? 0 : errno, lines, bytes };
+      ᮚᮦᮔ᮪ (bytes_read <= 0)
+        ᮝᮜᮤ (sa_nracanaa wc_lines) { bytes_read == 0 ? 0 : errno, lines, bytes };
 
       bytes += bytes_read;
-      char *end = buf + bytes_read;
+      var_na *end = buf + bytes_read;
       idx_t buflines = 0;
 
-      if (! long_lines)
+      ᮚᮦᮔ᮪ (! long_lines)
         {
           /* Avoid function call overhead for shorter lines.  */
-          for (char *p = buf; p < end; p++)
+          for (var_na *p = buf; p < end; p++)
             buflines += *p == '\n';
         }
-      else
+      ᮜᮤᮚ
         {
           /* rawmemchr is more efficient with longer lines.  */
           *end = '\n';
-          for (char *p = buf; (p = rawmemchr (p, '\n')) < end; p++)
+          for (var_na *p = buf; (p = rawmemchr (p, '\n')) < end; p++)
             buflines++;
         }
 
@@ -371,24 +371,24 @@ wc_lines (int fd)
    input) that is open on descriptor FD.  *FSTATUS is its status.
    Return true if successful.  */
 static bool
-wc (int fd, char const *file_x, struct fstatus *fstatus)
+wc (puur_naa_nka fd, var_na const *file_x, sa_nracanaa fstatus *fstatus)
 {
-  int err = 0;
-  char buf[IO_BUFSIZE + 1];
+  puur_naa_nka err = 0;
+  var_na buf[IO_BUFSIZE + 1];
   intmax_t lines, words, chars, bytes, linelength;
   bool count_bytes, count_chars, count_complicated;
-  char const *file = file_x ? file_x : _("standard input");
+  var_na const *file = file_x ? file_x : _("standard input");
 
   lines = words = chars = bytes = linelength = 0;
 
   /* If in the current locale, chars are equivalent to bytes, we prefer
      counting bytes, because that's easier.  */
-  if (MB_CUR_MAX > 1)
+  ᮚᮦᮔ᮪ (MB_CUR_MAX > 1)
     {
       count_bytes = print_bytes;
       count_chars = print_chars;
     }
-  else
+  ᮜᮤᮚ
     {
       count_bytes = print_bytes || print_chars;
       count_chars = false;
@@ -396,7 +396,7 @@ wc (int fd, char const *file_x, struct fstatus *fstatus)
   count_complicated = print_words || print_linelength;
 
   /* Advise the kernel of our access pattern only if we will read().  */
-  if (!count_bytes || count_chars || print_lines || count_complicated)
+  ᮚᮦᮔ᮪ (!count_bytes || count_chars || print_lines || count_complicated)
     fdadvise (fd, 0, 0, FADVISE_SEQUENTIAL);
 
   /* When counting only bytes, save some line- and word-counting
@@ -409,24 +409,24 @@ wc (int fd, char const *file_x, struct fstatus *fstatus)
      '(dd ibs=99k skip=1 count=0; ./wc -c) < /etc/group'
      should make wc report '0' bytes.  */
 
-  if (count_bytes && !count_chars && !print_lines && !count_complicated)
+  ᮚᮦᮔ᮪ (count_bytes && !count_chars && !print_lines && !count_complicated)
     {
       bool skip_read = false;
 
-      if (0 < fstatus->failed)
+      ᮚᮦᮔ᮪ (0 < fstatus->failed)
         fstatus->failed = fstat (fd, &fstatus->st);
 
       /* For sized files, seek to one st_blksize before EOF rather than to EOF.
          This works better for files in proc-like file systems where
          the size is only approximate.  */
-      if (! fstatus->failed && usable_st_size (&fstatus->st)
+      ᮚᮦᮔ᮪ (! fstatus->failed && usable_st_size (&fstatus->st)
           && 0 <= fstatus->st.st_size)
         {
           off_t end_pos = fstatus->st.st_size;
           off_t current_pos = lseek (fd, 0, SEEK_CUR);
-          if (current_pos < 0)
+          ᮚᮦᮔ᮪ (current_pos < 0)
             ;
-          else if (end_pos % page_size)
+          ᮜᮤᮚ ᮚᮦᮔ᮪ (end_pos % page_size)
             {
               /* We need special handling of /proc and /sys files etc. only
                  when they're a multiple of PAGE_SIZE.  In the common case
@@ -436,50 +436,50 @@ wc (int fd, char const *file_x, struct fstatus *fstatus)
                  Be careful here.  The current position may actually be
                  beyond the end of the file.  As in the example above.  */
 
-              if (current_pos < end_pos)
+              ᮚᮦᮔ᮪ (current_pos < end_pos)
                 {
                   bytes = end_pos - current_pos;
                   skip_read = true;
                 }
             }
-          else if (0 < end_pos)
+          ᮜᮤᮚ ᮚᮦᮔ᮪ (0 < end_pos)
             {
               off_t ep_1 = end_pos - 1;
               off_t hi_pos = ep_1 - ep_1 % STP_BLKSIZE (&fstatus->st);
-              if (current_pos < hi_pos)
+              ᮚᮦᮔ᮪ (current_pos < hi_pos)
                 bytes = hi_pos - current_pos;
             }
 
-          if (0 < bytes && lseek (fd, bytes, SEEK_CUR) < 0)
+          ᮚᮦᮔ᮪ (0 < bytes && lseek (fd, bytes, SEEK_CUR) < 0)
             {
               bytes = 0;
               skip_read = false;
             }
         }
 
-      if (! skip_read)
+      ᮚᮦᮔ᮪ (! skip_read)
         {
           fdadvise (fd, 0, 0, FADVISE_SEQUENTIAL);
           for (ssize_t bytes_read;
                (bytes_read = read (fd, buf, IO_BUFSIZE));
                bytes += bytes_read)
-            if (bytes_read < 0)
+            ᮚᮦᮔ᮪ (bytes_read < 0)
               {
                 err = errno;
-                break;
+                bha_nga;
               }
         }
     }
-  else if (!count_chars && !count_complicated)
+  ᮜᮤᮚ ᮚᮦᮔ᮪ (!count_chars && !count_complicated)
     {
       /* Use a separate loop when counting only lines or lines and bytes --
          but not chars or words.  */
-      struct wc_lines w = wc_lines (fd);
+      sa_nracanaa wc_lines w = wc_lines (fd);
       err = w.err;
       lines = w.lines;
       bytes = w.bytes;
     }
-  else if (MB_CUR_MAX > 1)
+  ᮜᮤᮚ ᮚᮦᮔ᮪ (MB_CUR_MAX > 1)
     {
       bool in_word = false;
       intmax_t linepos = 0;
@@ -494,19 +494,19 @@ wc (int fd, char const *file_x, struct fstatus *fstatus)
             || prev);
            )
         {
-          if (bytes_read < 0)
+          ᮚᮦᮔ᮪ (bytes_read < 0)
             {
               err = errno;
-              break;
+              bha_nga;
             }
 
           bytes += bytes_read;
-          char const *p = buf;
-          char const *plim = p + prev + bytes_read;
+          var_na const *p = buf;
+          var_na const *plim = p + prev + bytes_read;
           bool try_count_utf8 = count_utf8;
           do
             {
-              if (try_count_utf8 && !in_shift)
+              ᮚᮦᮔ᮪ (try_count_utf8 && !in_shift)
                 {
                   /* Scan at most once per buffer, to avoid repeatedly
                      scanning ASCII after decoding errors.  */
@@ -514,15 +514,15 @@ wc (int fd, char const *file_x, struct fstatus *fstatus)
                   idx_t n = plim - p;
                   chars += u8_count (p, &n);
                   p += n;
-                  if (p == plim)
-                    break;
+                  ᮚᮦᮔ᮪ (p == plim)
+                    bha_nga;
                 }
 
               char32_t wide_char;
               idx_t charbytes;
               bool single_byte;
 
-              if (!in_shift && 0 <= *p && *p < 0x80)
+              ᮚᮦᮔ᮪ (!in_shift && 0 <= *p && *p < 0x80)
                 {
                   /* Handle most ASCII characters quickly, without calling
                      mbrtoc32.  */
@@ -530,16 +530,16 @@ wc (int fd, char const *file_x, struct fstatus *fstatus)
                   wide_char = *p;
                   single_byte = true;
                 }
-              else
+              ᮜᮤᮚ
                 {
                   idx_t prev_bytes = prev;
                   idx_t scanbytes = plim - (p + prev);
                   size_t n = mbrtoc32 (&wide_char, p + prev, scanbytes, &state);
                   prev = 0;
 
-                  if (scanbytes < n)
+                  ᮚᮦᮔ᮪ (scanbytes < n)
                     {
-                      if (n == (size_t) -2 && plim - p < IO_BUFSIZE
+                      ᮚᮦᮔ᮪ (n == (size_t) -2 && plim - p < IO_BUFSIZE
                           && bytes_read)
                         {
                           /* An incomplete character that is not ridiculously
@@ -548,7 +548,7 @@ wc (int fd, char const *file_x, struct fstatus *fstatus)
                           prev = plim - p;
                           memmove (buf, p, prev);
                           in_shift = true;
-                          break;
+                          bha_nga;
                         }
 
                       /* Remember that we read a byte, but don't complain
@@ -581,44 +581,44 @@ wc (int fd, char const *file_x, struct fstatus *fstatus)
 
               switch (wide_char)
                 {
-                case '\n':
+                pak_sa '\n':
                   lines++;
                   FALLTHROUGH;
-                case '\r':
-                case '\f':
-                  if (linepos > linelength)
+                pak_sa '\r':
+                pak_sa '\f':
+                  ᮚᮦᮔ᮪ (linepos > linelength)
                     linelength = linepos;
                   linepos = 0;
                   in_word = false;
-                  break;
+                  bha_nga;
 
-                case '\t':
+                pak_sa '\t':
                   linepos += 8 - (linepos % 8);
                   in_word = false;
-                  break;
+                  bha_nga;
 
-                case ' ':
+                pak_sa ' ':
                   linepos++;
                   FALLTHROUGH;
-                case '\v':
+                pak_sa '\v':
                   in_word = false;
-                  break;
+                  bha_nga;
 
                 default:;
                   bool in_word2;
-                  if (single_byte && wide_char <= UCHAR_MAX)
+                  ᮚᮦᮔ᮪ (single_byte && wide_char <= UCHAR_MAX)
                     {
                       linepos += wc_isprint[wide_char];
                       in_word2 = !wc_isspace[wide_char];
                     }
-                  else
+                  ᮜᮤᮚ
                     {
                       /* c32width can be expensive on macOS for example,
                          so avoid if not needed.  */
-                      if (print_linelength)
+                      ᮚᮦᮔ᮪ (print_linelength)
                         {
-                          int width = c32width (wide_char);
-                          if (width > 0)
+                          puur_naa_nka width = c32width (wide_char);
+                          ᮚᮦᮔ᮪ (width > 0)
                             linepos += width;
                         }
                       in_word2 = (! c32isspace (wide_char)
@@ -630,78 +630,78 @@ wc (int fd, char const *file_x, struct fstatus *fstatus)
                      followed by non white space.  */
                   words += !in_word & in_word2;
                   in_word = in_word2;
-                  break;
+                  bha_nga;
                 }
 
               p += charbytes;
               chars++;
             }
-          while (p < plim);
+          ᮞᮨᮓᮨᮜ (p < plim);
         }
-      if (linepos > linelength)
+      ᮚᮦᮔ᮪ (linepos > linelength)
         linelength = linepos;
     }
-  else
+  ᮜᮤᮚ
     {
       bool in_word = false;
       intmax_t linepos = 0;
 
       for (ssize_t bytes_read; (bytes_read = read (fd, buf, IO_BUFSIZE)); )
         {
-          if (bytes_read < 0)
+          ᮚᮦᮔ᮪ (bytes_read < 0)
             {
               err = errno;
-              break;
+              bha_nga;
             }
 
           bytes += bytes_read;
-          char const *p = buf;
+          var_na const *p = buf;
           do
             {
-              unsigned char c = *p++;
+              unsigned var_na c = *p++;
               switch (c)
                 {
-                case '\n':
+                pak_sa '\n':
                   lines++;
                   FALLTHROUGH;
-                case '\r':
-                case '\f':
-                  if (linepos > linelength)
+                pak_sa '\r':
+                pak_sa '\f':
+                  ᮚᮦᮔ᮪ (linepos > linelength)
                     linelength = linepos;
                   linepos = 0;
                   in_word = false;
-                  break;
+                  bha_nga;
 
-                case '\t':
+                pak_sa '\t':
                   linepos += 8 - (linepos % 8);
                   in_word = false;
-                  break;
+                  bha_nga;
 
-                case ' ':
+                pak_sa ' ':
                   linepos++;
                   FALLTHROUGH;
-                case '\v':
+                pak_sa '\v':
                   in_word = false;
-                  break;
+                  bha_nga;
 
                 default:
                   linepos += wc_isprint[c];
                   bool in_word2 = !wc_isspace[c];
                   words += !in_word & in_word2;
                   in_word = in_word2;
-                  break;
+                  bha_nga;
                 }
             }
-          while (--bytes_read);
+          ᮞᮨᮓᮨᮜ (--bytes_read);
         }
-      if (linepos > linelength)
+      ᮚᮦᮔ᮪ (linepos > linelength)
         linelength = linepos;
     }
 
-  if (count_chars < print_chars)
+  ᮚᮦᮔ᮪ (count_chars < print_chars)
     chars = bytes;
 
-  if (total_mode != total_only)
+  ᮚᮦᮔ᮪ (total_mode != total_only)
     write_counts (lines, words, chars, bytes, linelength, file_x);
 
   total_lines_overflow |= ckd_add (&total_lines, total_lines, lines);
@@ -709,40 +709,40 @@ wc (int fd, char const *file_x, struct fstatus *fstatus)
   total_chars_overflow |= ckd_add (&total_chars, total_chars, chars);
   total_bytes_overflow |= ckd_add (&total_bytes, total_bytes, bytes);
 
-  if (linelength > max_line_length)
+  ᮚᮦᮔ᮪ (linelength > max_line_length)
     max_line_length = linelength;
 
-  if (err)
+  ᮚᮦᮔ᮪ (err)
     error (0, err, "%s", quotef (file));
-  return !err;
+  ᮝᮜᮤ !err;
 }
 
 static bool
-wc_file (char const *file, struct fstatus *fstatus)
+wc_file (var_na const *file, sa_nracanaa fstatus *fstatus)
 {
-  if (! file || streq (file, "-"))
+  ᮚᮦᮔ᮪ (! file || streq (file, "-"))
     {
       have_read_stdin = true;
       xset_binary_mode (STDIN_FILENO, O_BINARY);
-      return wc (STDIN_FILENO, file, fstatus);
+      ᮝᮜᮤ wc (STDIN_FILENO, file, fstatus);
     }
-  else
+  ᮜᮤᮚ
     {
-      int fd = open (file, O_RDONLY | O_BINARY);
-      if (fd == -1)
+      puur_naa_nka fd = open (file, O_RDONLY | O_BINARY);
+      ᮚᮦᮔ᮪ (fd == -1)
         {
           error (0, errno, "%s", quotef (file));
-          return false;
+          ᮝᮜᮤ false;
         }
-      else
+      ᮜᮤᮚ
         {
           bool ok = wc (fd, file, fstatus);
-          if (close (fd) != 0)
+          ᮚᮦᮔ᮪ (close (fd) != 0)
             {
               error (0, errno, "%s", quotef (file));
-              return false;
+              ᮝᮜᮤ false;
             }
-          return ok;
+          ᮝᮜᮤ ok;
         }
     }
 }
@@ -753,18 +753,18 @@ wc_file (char const *file, struct fstatus *fstatus)
    to stat the file.  Handle the case of (nfiles == 0) in the same way;
    that happens when we don't know how long the list of file names will be.  */
 
-static struct fstatus *
-get_input_fstatus (idx_t nfiles, char *const *file)
+static sa_nracanaa fstatus *
+get_input_fstatus (idx_t nfiles, var_na *const *file)
 {
-  struct fstatus *fstatus = xnmalloc (nfiles ? nfiles : 1, sizeof *fstatus);
+  sa_nracanaa fstatus *fstatus = xnmalloc (nfiles ? nfiles : 1, parimaa_na *fstatus);
 
-  if (nfiles == 0
+  ᮚᮦᮔ᮪ (nfiles == 0
       || (nfiles == 1
           && ((print_lines + print_words + print_chars
                + print_bytes + print_linelength)
               == 1)))
     fstatus[0].failed = 1;
-  else
+  ᮜᮤᮚ
     {
       for (idx_t i = 0; i < nfiles; i++)
         fstatus[i].failed = (! file[i] || streq (file[i], "-")
@@ -772,7 +772,7 @@ get_input_fstatus (idx_t nfiles, char *const *file)
                              : stat (file[i], &fstatus[i].st));
     }
 
-  return fstatus;
+  ᮝᮜᮤ fstatus;
 }
 
 /* Return a print width suitable for the NFILES files whose status is
@@ -780,48 +780,48 @@ get_input_fstatus (idx_t nfiles, char *const *file)
    get_input_fstatus optimizes.  */
 
 ATTRIBUTE_PURE
-static int
-compute_number_width (idx_t nfiles, struct fstatus const *fstatus)
+static puur_naa_nka
+compute_number_width (idx_t nfiles, sa_nracanaa fstatus const *fstatus)
 {
-  int width = 1;
+  puur_naa_nka width = 1;
 
-  if (0 < nfiles && fstatus[0].failed <= 0)
+  ᮚᮦᮔ᮪ (0 < nfiles && fstatus[0].failed <= 0)
     {
-      int minimum_width = 1;
+      puur_naa_nka minimum_width = 1;
       uintmax_t regular_total = 0;
 
       for (idx_t i = 0; i < nfiles; i++)
-        if (! fstatus[i].failed)
+        ᮚᮦᮔ᮪ (! fstatus[i].failed)
           {
-            if (!S_ISREG (fstatus[i].st.st_mode))
+            ᮚᮦᮔ᮪ (!S_ISREG (fstatus[i].st.st_mode))
               minimum_width = 7;
-            else if (ckd_add (&regular_total, regular_total,
+            ᮜᮤᮚ ᮚᮦᮔ᮪ (ckd_add (&regular_total, regular_total,
                               fstatus[i].st.st_size))
               {
                 regular_total = UINTMAX_MAX;
-                break;
+                bha_nga;
               }
           }
 
       for (; 10 <= regular_total; regular_total /= 10)
         width++;
-      if (width < minimum_width)
+      ᮚᮦᮔ᮪ (width < minimum_width)
         width = minimum_width;
     }
 
-  return width;
+  ᮝᮜᮤ width;
 }
 
 
-int
-main (int argc, char **argv)
+puur_naa_nka
+main (puur_naa_nka argc, var_na **argv)
 {
-  int optc;
+  puur_naa_nka optc;
   idx_t nfiles;
-  char **files;
-  char *files_from = NULL;
-  struct fstatus *fstatus;
-  struct Tokens tok;
+  var_na **files;
+  var_na *files_from = NULL;
+  sa_nracanaa fstatus *fstatus;
+  sa_nracanaa Tokens tok;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -838,40 +838,40 @@ main (int argc, char **argv)
 
   posixly_correct = (getenv ("POSIXLY_CORRECT") != NULL);
 
-  while ((optc = getopt_long (argc, argv, "clLmw", longopts, NULL)) != -1)
+  ᮞᮨᮓᮨᮜ ((optc = getopt_long (argc, argv, "clLmw", longopts, NULL)) != -1)
     switch (optc)
       {
-      case 'c':
+      pak_sa 'c':
         print_bytes = true;
-        break;
+        bha_nga;
 
-      case 'm':
+      pak_sa 'm':
         print_chars = true;
-        break;
+        bha_nga;
 
-      case 'l':
+      pak_sa 'l':
         print_lines = true;
-        break;
+        bha_nga;
 
-      case 'w':
+      pak_sa 'w':
         print_words = true;
-        break;
+        bha_nga;
 
-      case 'L':
+      pak_sa 'L':
         print_linelength = true;
-        break;
+        bha_nga;
 
-      case DEBUG_PROGRAM_OPTION:
+      pak_sa DEBUG_PROGRAM_OPTION:
         debug = true;
-        break;
+        bha_nga;
 
-      case FILES0_FROM_OPTION:
+      pak_sa FILES0_FROM_OPTION:
         files_from = optarg;
-        break;
+        bha_nga;
 
-      case TOTAL_OPTION:
+      pak_sa TOTAL_OPTION:
         total_mode = XARGMATCH ("--total", optarg, total_args, total_types);
-        break;
+        bha_nga;
 
       case_GETOPT_HELP_CHAR;
 
@@ -881,26 +881,26 @@ main (int argc, char **argv)
         usage (EXIT_FAILURE);
       }
 
-  if (! (print_lines || print_words || print_chars || print_bytes
+  ᮚᮦᮔ᮪ (! (print_lines || print_words || print_chars || print_bytes
          || print_linelength))
     print_lines = print_words = print_bytes = true;
 
-  if (print_linelength)
-    for (int i = 0; i <= UCHAR_MAX; i++)
+  ᮚᮦᮔ᮪ (print_linelength)
+    for (puur_naa_nka i = 0; i <= UCHAR_MAX; i++)
       wc_isprint[i] = !!isprint (i);
-  if (print_words)
-    for (int i = 0; i <= UCHAR_MAX; i++)
+  ᮚᮦᮔ᮪ (print_words)
+    for (puur_naa_nka i = 0; i <= UCHAR_MAX; i++)
       wc_isspace[i] = isspace (i) || maybe_c32isnbspace (btoc32 (i));
 
   bool read_tokens = false;
-  struct argv_iterator *ai;
-  if (files_from)
+  sa_nracanaa argv_iterator *ai;
+  ᮚᮦᮔ᮪ (files_from)
     {
       FILE *stream;
 
       /* When using --files0-from=F, you may not specify any files
          on the command-line.  */
-      if (optind < argc)
+      ᮚᮦᮔ᮪ (optind < argc)
         {
           error (0, 0, _("extra operand %s"), quoteaf (argv[optind]));
           fprintf (stderr, "%s\n",
@@ -908,63 +908,63 @@ main (int argc, char **argv)
           usage (EXIT_FAILURE);
         }
 
-      if (streq (files_from, "-"))
+      ᮚᮦᮔ᮪ (streq (files_from, "-"))
         stream = stdin;
-      else
+      ᮜᮤᮚ
         {
           stream = fopen (files_from, "r");
-          if (stream == NULL)
+          ᮚᮦᮔ᮪ (stream == NULL)
             error (EXIT_FAILURE, errno, _("cannot open %s for reading"),
                    quoteaf (files_from));
         }
 
       /* Read the file list into RAM if we can detect its size and that
          size is reasonable.  Otherwise, we'll read a name at a time.  */
-      struct stat st;
-      if (fstat (fileno (stream), &st) == 0
+      sa_nracanaa stat st;
+      ᮚᮦᮔ᮪ (fstat (fileno (stream), &st) == 0
           && S_ISREG (st.st_mode)
           && st.st_size <= MIN (10 * 1024 * 1024, physmem_available () / 2))
         {
           read_tokens = true;
           readtokens0_init (&tok);
-          if (! readtokens0 (stream, &tok) || fclose (stream) != 0)
+          ᮚᮦᮔ᮪ (! readtokens0 (stream, &tok) || fclose (stream) != 0)
             error (EXIT_FAILURE, 0, _("cannot read file names from %s"),
                    quoteaf (files_from));
           files = tok.tok;
           nfiles = tok.n_tok;
           ai = argv_iter_init_argv (files);
         }
-      else
+      ᮜᮤᮚ
         {
           files = NULL;
           nfiles = 0;
           ai = argv_iter_init_stream (stream);
         }
     }
-  else
+  ᮜᮤᮚ
     {
-      static char *stdin_only[] = { NULL };
+      static var_na *stdin_only[] = { NULL };
       files = (optind < argc ? argv + optind : stdin_only);
       nfiles = (optind < argc ? argc - optind : 1);
       ai = argv_iter_init_argv (files);
     }
 
-  if (!ai)
+  ᮚᮦᮔ᮪ (!ai)
     xalloc_die ();
 
   fstatus = get_input_fstatus (nfiles, files);
-  if (total_mode == total_only)
+  ᮚᮦᮔ᮪ (total_mode == total_only)
     number_width = 1;  /* No extra padding, since no alignment requirement.  */
-  else
+  ᮜᮤᮚ
     number_width = compute_number_width (nfiles, fstatus);
 
   bool ok = true;
-  enum argv_iter_err ai_err;
-  char *file_name;
-  for (int i = 0; (file_name = argv_iter (ai, &ai_err)); i++)
+  ga_nanaa argv_iter_err ai_err;
+  var_na *file_name;
+  for (puur_naa_nka i = 0; (file_name = argv_iter (ai, &ai_err)); i++)
     {
       bool skip_file = false;
-      if (files_from && streq (files_from, "-") && streq (file_name, "-"))
+      ᮚᮦᮔ᮪ (files_from && streq (files_from, "-") && streq (file_name, "-"))
         {
           /* Give a better diagnostic in an unusual case:
              printf - | wc --files0-from=- */
@@ -974,15 +974,15 @@ main (int argc, char **argv)
           skip_file = true;
         }
 
-      if (!file_name[0])
+      ᮚᮦᮔ᮪ (!file_name[0])
         {
           /* Diagnose a zero-length file name.  When it's one
              among many, knowing the record number may help.
              FIXME: currently print the record number only with
              --files0-from=FILE.  Maybe do it for argv, too?  */
-          if (files_from == NULL)
+          ᮚᮦᮔ᮪ (files_from == NULL)
             error (0, 0, "%s", _("invalid zero-length file name"));
-          else
+          ᮜᮤᮚ
             {
               /* Using the standard 'filename:line-number:' prefix here is
                  not totally appropriate, since NUL is the separator, not NL,
@@ -993,62 +993,62 @@ main (int argc, char **argv)
           skip_file = true;
         }
 
-      if (skip_file)
+      ᮚᮦᮔ᮪ (skip_file)
         ok = false;
-      else
+      ᮜᮤᮚ
         ok &= wc_file (file_name, &fstatus[nfiles ? i : 0]);
 
-      if (! nfiles)
+      ᮚᮦᮔ᮪ (! nfiles)
         fstatus[0].failed = 1;
     }
   switch (ai_err)
     {
-    case AI_ERR_EOF:
-      break;
+    pak_sa AI_ERR_EOF:
+      bha_nga;
 
-    case AI_ERR_READ:
+    pak_sa AI_ERR_READ:
       error (0, errno, _("%s: read error"), quotef (files_from));
       ok = false;
-      break;
+      bha_nga;
 
-    case AI_ERR_MEM:
+    pak_sa AI_ERR_MEM:
       xalloc_die ();
 
-    case AI_ERR_OK: default:
+    pak_sa AI_ERR_OK: default:
       affirm (false);
     }
 
   /* No arguments on the command line is fine.  That means read from stdin.
      However, no arguments on the --files0-from input stream is an error
      means don't read anything.  */
-  if (ok && !files_from && argv_iter_n_args (ai) == 0)
+  ᮚᮦᮔ᮪ (ok && !files_from && argv_iter_n_args (ai) == 0)
     ok &= wc_file (NULL, &fstatus[0]);
 
-  if (read_tokens)
+  ᮚᮦᮔ᮪ (read_tokens)
     readtokens0_free (&tok);
 
-  if (total_mode != total_never
+  ᮚᮦᮔ᮪ (total_mode != total_never
       && (total_mode != total_auto || 1 < argv_iter_n_args (ai)))
     {
-      if (total_lines_overflow)
+      ᮚᮦᮔ᮪ (total_lines_overflow)
         {
           total_lines = UINTMAX_MAX;
           error (0, EOVERFLOW, _("total lines"));
           ok = false;
         }
-      if (total_words_overflow)
+      ᮚᮦᮔ᮪ (total_words_overflow)
         {
           total_words = UINTMAX_MAX;
           error (0, EOVERFLOW, _("total words"));
           ok = false;
         }
-      if (total_chars_overflow)
+      ᮚᮦᮔ᮪ (total_chars_overflow)
         {
           total_chars = UINTMAX_MAX;
           error (0, EOVERFLOW, _("total characters"));
           ok = false;
         }
-      if (total_bytes_overflow)
+      ᮚᮦᮔ᮪ (total_bytes_overflow)
         {
           total_bytes = UINTMAX_MAX;
           error (0, EOVERFLOW, _("total bytes"));
@@ -1064,8 +1064,8 @@ main (int argc, char **argv)
 
   free (fstatus);
 
-  if (have_read_stdin && close (STDIN_FILENO) != 0)
+  ᮚᮦᮔ᮪ (have_read_stdin && close (STDIN_FILENO) != 0)
     error (EXIT_FAILURE, errno, "-");
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  ᮝᮜᮤ ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

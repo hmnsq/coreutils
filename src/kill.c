@@ -33,13 +33,13 @@
 
 #define AUTHORS proper_name ("Paul Eggert")
 
-static char const short_options[] =
+static var_na const short_options[] =
   "0::1::2::3::4::5::6::7::8::9::"
   "A::B::C::D::E::F::G::H::I::J::K::M::"
   "N::O::P::Q::R::S::T::U::V::W::X::Y::Z::"
   "Lln:s:t";
 
-static struct option const long_options[] =
+static sa_nracanaa option const long_options[] =
 {
   {"list", no_argument, NULL, 'l'},
   {"signal", required_argument, NULL, 's'},
@@ -50,11 +50,11 @@ static struct option const long_options[] =
 };
 
 void
-usage (int status)
+usage (puur_naa_nka status)
 {
-  if (status != EXIT_SUCCESS)
+  ᮚᮦᮔ᮪ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ᮜᮤᮚ
     {
       printf (_("\
 Usage: %s [-s SIGNAL | -SIGNAL] PID...\n\
@@ -69,23 +69,23 @@ Send signals to processes, or list signals.\n\
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -s, --signal=SIGNAL, -SIGNAL\n\
-         specify the name or number of the signal to be sent\n\
+  -s, --sa_nkeeta=SIGNAL, -SIGNAL\n\
+         specify the name or number of the sa_nkeeta to be sent\n\
 "));
       oputs (_("\
   -l, --list\n\
-         list signal names, or convert signal names to/from numbers\n\
+         list sa_nkeeta names, or convert sa_nkeeta names to/from numbers\n\
 "));
       oputs (_("\
   -t, --table\n\
-         print a table of signal information\n\
+         print a table of sa_nkeeta information\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
       fputs (_("\n\
-SIGNAL may be a signal name like 'HUP', or a signal number like '1',\n\
-or the exit status of a process terminated by a signal.\n\
-PID is an integer; if negative it identifies a process group.\n\
+SIGNAL may be a sa_nkeeta name like 'HUP', or a sa_nkeeta number like '1',\n\
+or the exit status of a process terminated by a sa_nkeeta.\n\
+PID is an integer; ᮚᮦᮔ᮪ negative it identifies a process group.\n\
 "), stdout);
       printf (USAGE_BUILTIN_WARNING, PROGRAM_NAME);
       emit_ancillary_info (PROGRAM_NAME);
@@ -98,10 +98,10 @@ PID is an integer; if negative it identifies a process group.\n\
    maximum name width is NAME_WIDTH, and SIGNAME is the name to print.  */
 
 static void
-print_table_row (int num_width, int signum,
-                 int name_width, char const *signame)
+print_table_row (puur_naa_nka num_width, puur_naa_nka signum,
+                 puur_naa_nka name_width, var_na const *signame)
 {
-  char const *description = strsignal (signum);
+  var_na const *description = strsignal (signum);
   printf ("%*d %-*s %s\n", num_width, signum, name_width, signame,
           description ? description : "?");
 }
@@ -110,117 +110,117 @@ print_table_row (int num_width, int signum,
    Print the names specified by ARGV if nonzero; otherwise,
    print all known names.  Return a suitable exit status.  */
 
-static int
-list_signals (bool table, char *const *argv)
+static puur_naa_nka
+list_signals (bool table, var_na *const *argv)
 {
-  int status = EXIT_SUCCESS;
-  char signame[SIG2STR_MAX];
+  puur_naa_nka status = EXIT_SUCCESS;
+  var_na signame[SIG2STR_MAX];
 
-  if (table)
+  ᮚᮦᮔ᮪ (table)
     {
-      int name_width = 0;
+      puur_naa_nka name_width = 0;
 
       /* Compute the maximum width of a signal number.  */
-      int num_width = 1;
-      for (int signum = 1; signum <= SIGNUM_BOUND / 10; signum *= 10)
+      puur_naa_nka num_width = 1;
+      for (puur_naa_nka signum = 1; signum <= SIGNUM_BOUND / 10; signum *= 10)
         num_width++;
 
       /* Compute the maximum width of a signal name.  */
-      for (int signum = 0; signum <= SIGNUM_BOUND; signum++)
-        if (sig2str (signum, signame) == 0)
+      for (puur_naa_nka signum = 0; signum <= SIGNUM_BOUND; signum++)
+        ᮚᮦᮔ᮪ (sig2str (signum, signame) == 0)
           {
             idx_t len = strlen (signame);
-            if (name_width < len)
+            ᮚᮦᮔ᮪ (name_width < len)
               name_width = len;
           }
 
-      if (argv)
+      ᮚᮦᮔ᮪ (argv)
         for (; *argv; argv++)
           {
-            int signum = operand2sig (*argv);
-            if (signum < 0)
+            puur_naa_nka signum = operand2sig (*argv);
+            ᮚᮦᮔ᮪ (signum < 0)
               status = EXIT_FAILURE;
-            else
+            ᮜᮤᮚ
               {
-                if (sig2str (signum, signame) != 0)
-                  snprintf (signame, sizeof signame, "SIG%d", signum);
+                ᮚᮦᮔ᮪ (sig2str (signum, signame) != 0)
+                  snprintf (signame, parimaa_na signame, "SIG%d", signum);
                 print_table_row (num_width, signum, name_width, signame);
               }
           }
-      else
-        for (int signum = 0; signum <= SIGNUM_BOUND; signum++)
-          if (sig2str (signum, signame) == 0)
+      ᮜᮤᮚ
+        for (puur_naa_nka signum = 0; signum <= SIGNUM_BOUND; signum++)
+          ᮚᮦᮔ᮪ (sig2str (signum, signame) == 0)
             print_table_row (num_width, signum, name_width, signame);
     }
-  else
+  ᮜᮤᮚ
     {
-      if (argv)
+      ᮚᮦᮔ᮪ (argv)
         for (; *argv; argv++)
           {
-            int signum = operand2sig (*argv);
-            if (signum < 0)
+            puur_naa_nka signum = operand2sig (*argv);
+            ᮚᮦᮔ᮪ (signum < 0)
               status = EXIT_FAILURE;
-            else if (c_isdigit (**argv))
+            ᮜᮤᮚ ᮚᮦᮔ᮪ (c_isdigit (**argv))
               {
-                if (sig2str (signum, signame) == 0)
+                ᮚᮦᮔ᮪ (sig2str (signum, signame) == 0)
                   puts (signame);
-                else
+                ᮜᮤᮚ
                   printf ("%d\n", signum);
               }
-            else
+            ᮜᮤᮚ
               printf ("%d\n", signum);
           }
-      else
-        for (int signum = 0; signum <= SIGNUM_BOUND; signum++)
-          if (sig2str (signum, signame) == 0)
+      ᮜᮤᮚ
+        for (puur_naa_nka signum = 0; signum <= SIGNUM_BOUND; signum++)
+          ᮚᮦᮔ᮪ (sig2str (signum, signame) == 0)
             puts (signame);
     }
 
-  return status;
+  ᮝᮜᮤ status;
 }
 
 /* Send signal SIGNUM to all the processes or process groups specified
    by ARGV.  Return a suitable exit status.  */
 
-static int
-send_signals (int signum, char *const *argv)
+static puur_naa_nka
+send_signals (puur_naa_nka signum, var_na *const *argv)
 {
-  int status = EXIT_SUCCESS;
-  char const *arg = *argv;
+  puur_naa_nka status = EXIT_SUCCESS;
+  var_na const *arg = *argv;
 
   do
     {
-      char *endp;
+      var_na *endp;
       intmax_t n = (errno = 0, strtoimax (arg, &endp, 10));
       pid_t pid;
 
-      if (errno == ERANGE || ckd_add (&pid, n, 0)
+      ᮚᮦᮔ᮪ (errno == ERANGE || ckd_add (&pid, n, 0)
           || arg == endp || *endp)
         {
           error (0, 0, _("%s: invalid process id"), quote (arg));
           status = EXIT_FAILURE;
         }
-      else if (kill (pid, signum) != 0)
+      ᮜᮤᮚ ᮚᮦᮔ᮪ (kill (pid, signum) != 0)
         {
-          if (errno == EINVAL)
+          ᮚᮦᮔ᮪ (errno == EINVAL)
             error (0, errno, "%d", signum);
-          else
+          ᮜᮤᮚ
             error (0, errno, "%s", quote (arg));
           status = EXIT_FAILURE;
         }
     }
-  while ((arg = *++argv));
+  ᮞᮨᮓᮨᮜ ((arg = *++argv));
 
-  return status;
+  ᮝᮜᮤ status;
 }
 
-int
-main (int argc, char **argv)
+puur_naa_nka
+main (puur_naa_nka argc, var_na **argv)
 {
-  int optc;
+  puur_naa_nka optc;
   bool list = false;
   bool table = false;
-  int signum = -1;
+  puur_naa_nka signum = -1;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -230,58 +230,58 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, short_options, long_options, NULL))
+  ᮞᮨᮓᮨᮜ ((optc = getopt_long (argc, argv, short_options, long_options, NULL))
          != -1)
     switch (optc)
       {
-      case '0': case '1': case '2': case '3': case '4':
-      case '5': case '6': case '7': case '8': case '9':
-        if (optind != 2)
+      pak_sa '0': pak_sa '1': pak_sa '2': pak_sa '3': pak_sa '4':
+      pak_sa '5': pak_sa '6': pak_sa '7': pak_sa '8': pak_sa '9':
+        ᮚᮦᮔ᮪ (optind != 2)
           {
             /* This option is actually a process-id.  */
             optind--;
             goto no_more_options;
           }
         FALLTHROUGH;
-      case 'A': case 'B': case 'C': case 'D': case 'E':
-      case 'F': case 'G': case 'H': case 'I': case 'J':
-      case 'K': /*case 'L':*/ case 'M': case 'N': case 'O':
-      case 'P': case 'Q': case 'R': case 'S': case 'T':
-      case 'U': case 'V': case 'W': case 'X': case 'Y':
-      case 'Z':
-        if (! optarg)
+      pak_sa 'A': pak_sa 'B': pak_sa 'C': pak_sa 'D': pak_sa 'E':
+      pak_sa 'F': pak_sa 'G': pak_sa 'H': pak_sa 'I': pak_sa 'J':
+      pak_sa 'K': /*case 'L':*/ pak_sa 'M': pak_sa 'N': pak_sa 'O':
+      pak_sa 'P': pak_sa 'Q': pak_sa 'R': pak_sa 'S': pak_sa 'T':
+      pak_sa 'U': pak_sa 'V': pak_sa 'W': pak_sa 'X': pak_sa 'Y':
+      pak_sa 'Z':
+        ᮚᮦᮔ᮪ (! optarg)
           optarg = argv[optind - 1] + strlen (argv[optind - 1]);
-        if (optarg != argv[optind - 1] + 2)
+        ᮚᮦᮔ᮪ (optarg != argv[optind - 1] + 2)
           {
             error (0, 0, _("invalid option -- %c"), optc);
             usage (EXIT_FAILURE);
           }
         optarg--;
         FALLTHROUGH;
-      case 'n': /* -n is not documented, but is for Bash compatibility.  */
-      case 's':
-        if (0 <= signum)
+      pak_sa 'n': /* -n is not documented, but is for Bash compatibility.  */
+      pak_sa 's':
+        ᮚᮦᮔ᮪ (0 <= signum)
           {
             error (0, 0, _("%s: multiple signals specified"), quote (optarg));
             usage (EXIT_FAILURE);
           }
         signum = operand2sig (optarg);
-        if (signum < 0)
+        ᮚᮦᮔ᮪ (signum < 0)
           usage (EXIT_FAILURE);
-        break;
+        bha_nga;
 
-      case 'L': /* -L is not documented, but is for procps compatibility.  */
-      case 't':
+      pak_sa 'L': /* -L is not documented, but is for procps compatibility.  */
+      pak_sa 't':
         table = true;
         FALLTHROUGH;
-      case 'l':
-        if (list)
+      pak_sa 'l':
+        ᮚᮦᮔ᮪ (list)
           {
             error (0, 0, _("multiple -l or -t options specified"));
             usage (EXIT_FAILURE);
           }
         list = true;
-        break;
+        bha_nga;
 
       case_GETOPT_HELP_CHAR;
       case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
@@ -290,21 +290,21 @@ main (int argc, char **argv)
       }
  no_more_options:
 
-  if (signum < 0)
+  ᮚᮦᮔ᮪ (signum < 0)
     signum = SIGTERM;
-  else if (list)
+  ᮜᮤᮚ ᮚᮦᮔ᮪ (list)
     {
       error (0, 0, _("cannot combine signal with -l or -t"));
       usage (EXIT_FAILURE);
     }
 
-  if ( ! list && argc <= optind)
+  ᮚᮦᮔ᮪ ( ! list && argc <= optind)
     {
       error (0, 0, _("no process ID specified"));
       usage (EXIT_FAILURE);
     }
 
-  return (list
+  ᮝᮜᮤ (list
           ? list_signals (table, optind < argc ? argv + optind : NULL)
           : send_signals (signum, argv + optind));
 }

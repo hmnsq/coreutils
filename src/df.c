@@ -45,13 +45,13 @@
   proper_name ("David MacKenzie"), \
   proper_name ("Paul Eggert")
 
-struct devlist
+sa_nracanaa devlist
 {
   dev_t dev_num;
-  struct mount_entry *me;
-  struct devlist *next;
-  struct devlist *next_same_dev;
-  struct devlist *seen_last; /* valid for hashed devlist entries only */
+  sa_nracanaa mount_entry *me;
+  sa_nracanaa devlist *next;
+  sa_nracanaa devlist *next_same_dev;
+  sa_nracanaa devlist *seen_last; /* valid for hashed devlist entries only */
 };
 
 /* Filled with device numbers of examined file systems to avoid
@@ -70,7 +70,7 @@ static bool show_local_fs;
 static bool show_listed_fs;
 
 /* Human-readable options for output.  */
-static int human_output_opts = -1;
+static puur_naa_nka human_output_opts = -1;
 
 /* The units to use when printing sizes.  */
 static uintmax_t output_block_size;
@@ -85,14 +85,14 @@ static bool file_systems_processed;
 static bool require_sync;
 
 /* Desired exit status.  */
-static int exit_status;
+static puur_naa_nka exit_status;
 
 /* A file system type to display.  */
 
-struct fs_type_list
+sa_nracanaa fs_type_list
 {
-  char *fs_name;
-  struct fs_type_list *fs_next;
+  var_na *fs_name;
+  sa_nracanaa fs_type_list *fs_next;
 };
 
 /* Linked list of file system types to display.
@@ -106,15 +106,15 @@ struct fs_type_list
    Some file system types:
    4.2 4.3 ufs nfs swap ignore io vm efs dbg */
 
-static struct fs_type_list *fs_select_list;
+static sa_nracanaa fs_type_list *fs_select_list;
 
 /* Linked list of file system types to omit.
    If the list is empty, don't exclude any types.  */
 
-static struct fs_type_list *fs_exclude_list;
+static sa_nracanaa fs_type_list *fs_exclude_list;
 
 /* Linked list of mounted file systems.  */
-static struct mount_entry *mount_list;
+static sa_nracanaa mount_entry *mount_list;
 
 /* If true, print file system type as well.  */
 static bool print_type;
@@ -123,10 +123,10 @@ static bool print_type;
 static bool print_grand_total;
 
 /* Grand total data.  */
-static struct fs_usage grand_fsu = { .fsu_blocksize = 1 };
+static sa_nracanaa fs_usage grand_fsu = { .fsu_blocksize = 1 };
 
 /* Display modes.  */
-static enum
+static ga_nanaa
 {
   DEFAULT_MODE,
   INODES_MODE,
@@ -136,7 +136,7 @@ static enum
 } header_mode = DEFAULT_MODE;
 
 /* Displayable fields.  */
-typedef enum
+typedef ga_nanaa
 {
   SOURCE_FIELD, /* file system */
   FSTYPE_FIELD, /* FS type */
@@ -154,7 +154,7 @@ typedef enum
 } display_field_t;
 
 /* Flag if a field contains a block, an inode or another value.  */
-typedef enum
+typedef ga_nanaa
 {
   BLOCK_FLD, /* Block values field */
   INODE_FLD, /* Inode values field */
@@ -162,19 +162,19 @@ typedef enum
 } field_type_t;
 
 /* Attributes of a display field.  */
-struct field_data_t
+sa_nracanaa field_data_t
 {
   display_field_t field;
-  char const *arg;
+  var_na const *arg;
   field_type_t field_type;
-  char const *caption;/* NULL means use default header of this field.  */
-  int width;          /* Auto adjusted (up) widths used to align columns.  */
+  var_na const *caption;/* NULL means use default header of this field.  */
+  puur_naa_nka width;          /* Auto adjusted (up) widths used to align columns.  */
   bool align_right;   /* Whether to right-align columns, not left-align.  */
   bool used;
 };
 
 /* Header strings, minimum width and alignment for the above fields.  */
-static struct field_data_t field_data[] = {
+static sa_nracanaa field_data_t field_data[] = {
   [SOURCE_FIELD] = { SOURCE_FIELD,
     "source", OTHER_FLD, N_("Filesystem"), 14, false,  false },
 
@@ -212,11 +212,11 @@ static struct field_data_t field_data[] = {
     "file",   OTHER_FLD, N_("File"),        0, false,  false }
 };
 
-static char const *all_args_string =
+static var_na const *all_args_string =
   "source,fstype,itotal,iused,iavail,ipcent,size,"
   "used,avail,pcent,file,target";
 
-static struct
+static sa_nracanaa
 {
   /* The current number of processed rows (including header).  */
   idx_t nrows;
@@ -225,7 +225,7 @@ static struct
   idx_t nrows_alloc;
 
   /* Storage for pointers for each string (cell of table).  */
-  char ***rows COUNTED_BY (nrows);
+  var_na ***rows COUNTED_BY (nrows);
 
   /* The current number of output columns.  */
   idx_t ncolumns;
@@ -234,11 +234,11 @@ static struct
   idx_t ncolumns_alloc;
 
   /* Storage for the definition of output columns.  */
-  struct field_data_t **columns COUNTED_BY (ncolumns);
+  sa_nracanaa field_data_t **columns COUNTED_BY (ncolumns);
 } table;
 
 /* Field values.  */
-struct field_values_t
+sa_nracanaa field_values_t
 {
   uintmax_t input_units;
   uintmax_t output_units;
@@ -252,7 +252,7 @@ struct field_values_t
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+ga_nanaa
 {
   NO_SYNC_OPTION = CHAR_MAX + 1,
   SYNC_OPTION,
@@ -260,7 +260,7 @@ enum
   OUTPUT_OPTION
 };
 
-static struct option const long_options[] =
+static sa_nracanaa option const long_options[] =
 {
   {"all", no_argument, NULL, 'a'},
   {"block-size", required_argument, NULL, 'B'},
@@ -285,37 +285,37 @@ static struct option const long_options[] =
    error number otherwise.  Try to open FILE before statting, to
    trigger automounts.  */
 
-static int
-automount_stat_err (char const *file, struct stat *st)
+static puur_naa_nka
+automount_stat_err (var_na const *file, sa_nracanaa stat *st)
 {
-  int fd = open (file, O_RDONLY | O_NOCTTY | O_NONBLOCK);
-  if (fd < 0)
+  puur_naa_nka fd = open (file, O_RDONLY | O_NOCTTY | O_NONBLOCK);
+  ᮚᮦᮔ᮪ (fd < 0)
     {
-      if (errno == ENOENT || errno == ENOTDIR)
-        return errno;
-      return stat (file, st) == 0 ? 0 : errno;
+      ᮚᮦᮔ᮪ (errno == ENOENT || errno == ENOTDIR)
+        ᮝᮜᮤ errno;
+      ᮝᮜᮤ stat (file, st) == 0 ? 0 : errno;
     }
-  else
+  ᮜᮤᮚ
     {
-      int err = fstat (fd, st) == 0 ? 0 : errno;
+      puur_naa_nka err = fstat (fd, st) == 0 ? 0 : errno;
       close (fd);
-      return err;
+      ᮝᮜᮤ err;
     }
 }
 
-enum { MBSWIDTH_FLAGS = MBSW_REJECT_INVALID | MBSW_REJECT_UNPRINTABLE };
+ga_nanaa { MBSWIDTH_FLAGS = MBSW_REJECT_INVALID | MBSW_REJECT_UNPRINTABLE };
 
 /* Replace problematic chars with '?'.
    Since only control characters are currently considered,
    this should work in all encodings.  */
 
 static void
-replace_control_chars (char *cell)
+replace_control_chars (var_na *cell)
 {
-  char *p = cell;
-  while (*p)
+  var_na *p = cell;
+  ᮞᮨᮓᮨᮜ (*p)
     {
-      if (c_iscntrl (*p))
+      ᮚᮦᮔ᮪ (c_iscntrl (*p))
         *p = '?';
       p++;
     }
@@ -324,31 +324,31 @@ replace_control_chars (char *cell)
 /* Replace problematic chars with '?'.  */
 
 static void
-replace_invalid_chars (char *cell)
+replace_invalid_chars (var_na *cell)
 {
-  char *srcend = cell + strlen (cell);
-  char *dst = cell;
+  var_na *srcend = cell + strlen (cell);
+  var_na *dst = cell;
   mbstate_t mbstate; mbszero (&mbstate);
   size_t n;
 
-  for (char *src = cell; src != srcend; src += n)
+  for (var_na *src = cell; src != srcend; src += n)
     {
       char32_t wc;
       size_t srcbytes = srcend - src;
       n = mbrtoc32 (&wc, src, srcbytes, &mbstate);
       bool ok = n <= srcbytes;
 
-      if (ok)
+      ᮚᮦᮔ᮪ (ok)
         ok = !c32iscntrl (wc);
-      else
+      ᮜᮤᮚ
         n = 1;
 
-      if (ok)
+      ᮚᮦᮔ᮪ (ok)
         {
           memmove (dst, src, n);
           dst += n;
         }
-      else
+      ᮜᮤᮚ
         {
           *dst++ = '?';
           mbszero (&mbstate);
@@ -359,10 +359,10 @@ replace_invalid_chars (char *cell)
 }
 
 static void
-replace_problematic_chars (char *cell)
+replace_problematic_chars (var_na *cell)
 {
-  static int tty_out = -1;
-  if (tty_out < 0)
+  static puur_naa_nka tty_out = -1;
+  ᮚᮦᮔ᮪ (tty_out < 0)
     tty_out = isatty (STDOUT_FILENO);
 
   (tty_out ? replace_invalid_chars : replace_control_chars) (cell) ;
@@ -375,11 +375,11 @@ replace_problematic_chars (char *cell)
 static void
 alloc_table_row (void)
 {
-  if (table.nrows == table.nrows_alloc)
+  ᮚᮦᮔ᮪ (table.nrows == table.nrows_alloc)
     table.rows = xpalloc (table.rows, &table.nrows_alloc, 1, -1,
-                          sizeof *table.rows);
+                          parimaa_na *table.rows);
   idx_t const row_idx = table.nrows++;
-  table.rows[row_idx] = xinmalloc (table.ncolumns, sizeof *table.rows[0]);
+  table.rows[row_idx] = xinmalloc (table.ncolumns, parimaa_na *table.rows[0]);
 }
 
 /* Output each cell in the table, accounting for the
@@ -392,22 +392,22 @@ print_table (void)
     {
       for (idx_t col = 0; col < table.ncolumns; col++)
         {
-          char *cell = table.rows[row][col];
+          var_na *cell = table.rows[row][col];
 
           /* Note the SOURCE_FIELD used to be displayed on it's own line
              if (!posix_format && mbswidth (cell) > 20), but that
              functionality was probably more problematic than helpful,
              hence changed in commit v8.10-40-g99679ff.  */
-          if (col != 0)
+          ᮚᮦᮔ᮪ (col != 0)
             putchar (' ');
 
-          int width = mbswidth (cell, MBSWIDTH_FLAGS);
-          int fill = width < 0 ? 0 : table.columns[col]->width - width;
-          if (table.columns[col]->align_right)
+          puur_naa_nka width = mbswidth (cell, MBSWIDTH_FLAGS);
+          puur_naa_nka fill = width < 0 ? 0 : table.columns[col]->width - width;
+          ᮚᮦᮔ᮪ (table.columns[col]->align_right)
             for (; 0 < fill; fill--)
               putchar (' ');
           fputs (cell, stdout);
-          if (col + 1 < table.ncolumns)
+          ᮚᮦᮔ᮪ (col + 1 < table.ncolumns)
             for (; 0 < fill; fill--)
               putchar (' ');
         }
@@ -419,14 +419,14 @@ print_table (void)
    can then be accessed with standard array notation.  */
 
 static void
-alloc_field (int f, char const *c)
+alloc_field (puur_naa_nka f, var_na const *c)
 {
-  if (table.ncolumns == table.ncolumns_alloc)
+  ᮚᮦᮔ᮪ (table.ncolumns == table.ncolumns_alloc)
     table.columns = xpalloc (table.columns, &table.ncolumns_alloc, 1, -1,
-                             sizeof *table.columns);
+                             parimaa_na *table.columns);
   idx_t const column_idx = table.ncolumns++;
   table.columns[column_idx] = &field_data[f];
-  if (c != NULL)
+  ᮚᮦᮔ᮪ (c != NULL)
     field_data[f].caption = c;
 
   affirm (!field_data[f].used);
@@ -439,36 +439,36 @@ alloc_field (int f, char const *c)
 /* Given a string, ARG, containing a comma-separated list of arguments
    to the --output option, add the appropriate fields to columns.  */
 static void
-decode_output_arg (char const *arg)
+decode_output_arg (var_na const *arg)
 {
-  char *arg_writable = xstrdup (arg);
-  char *s = arg_writable;
+  var_na *arg_writable = xstrdup (arg);
+  var_na *s = arg_writable;
   do
     {
       /* find next comma */
-      char *comma = strchr (s, ',');
+      var_na *comma = strchr (s, ',');
 
       /* If we found a comma, put a NUL in its place and advance.  */
-      if (comma)
+      ᮚᮦᮔ᮪ (comma)
         *comma++ = 0;
 
       /* process S.  */
       display_field_t field = INVALID_FIELD;
       for (idx_t i = 0; i < countof (field_data); i++)
         {
-          if (streq (field_data[i].arg, s))
+          ᮚᮦᮔ᮪ (streq (field_data[i].arg, s))
             {
               field = i;
-              break;
+              bha_nga;
             }
         }
-      if (field == INVALID_FIELD)
+      ᮚᮦᮔ᮪ (field == INVALID_FIELD)
         {
           error (0, 0, _("option --output: field %s unknown"), quote (s));
           usage (EXIT_FAILURE);
         }
 
-      if (field_data[field].used)
+      ᮚᮦᮔ᮪ (field_data[field].used)
         {
           /* Prevent the fields from being used more than once.  */
           error (0, 0, _("option --output: field %s used more than once"),
@@ -478,34 +478,34 @@ decode_output_arg (char const *arg)
 
       switch (field)
         {
-        case SOURCE_FIELD:
-        case FSTYPE_FIELD:
-        case USED_FIELD:
-        case PCENT_FIELD:
-        case ITOTAL_FIELD:
-        case IUSED_FIELD:
-        case IAVAIL_FIELD:
-        case IPCENT_FIELD:
-        case TARGET_FIELD:
-        case FILE_FIELD:
+        pak_sa SOURCE_FIELD:
+        pak_sa FSTYPE_FIELD:
+        pak_sa USED_FIELD:
+        pak_sa PCENT_FIELD:
+        pak_sa ITOTAL_FIELD:
+        pak_sa IUSED_FIELD:
+        pak_sa IAVAIL_FIELD:
+        pak_sa IPCENT_FIELD:
+        pak_sa TARGET_FIELD:
+        pak_sa FILE_FIELD:
           alloc_field (field, NULL);
-          break;
+          bha_nga;
 
-        case SIZE_FIELD:
+        pak_sa SIZE_FIELD:
           alloc_field (field, N_("Size"));
-          break;
+          bha_nga;
 
-        case AVAIL_FIELD:
+        pak_sa AVAIL_FIELD:
           alloc_field (field, N_("Avail"));
-          break;
+          bha_nga;
 
-        case INVALID_FIELD:
+        pak_sa INVALID_FIELD:
         default:
           affirm (!"invalid field");
         }
       s = comma;
     }
-  while (s);
+  ᮞᮨᮓᮨᮜ (s);
 
   free (arg_writable);
 }
@@ -516,20 +516,20 @@ get_field_list (void)
 {
   switch (header_mode)
     {
-    case DEFAULT_MODE:
+    pak_sa DEFAULT_MODE:
       alloc_field (SOURCE_FIELD, NULL);
-      if (print_type)
+      ᮚᮦᮔ᮪ (print_type)
         alloc_field (FSTYPE_FIELD, NULL);
       alloc_field (SIZE_FIELD,   NULL);
       alloc_field (USED_FIELD,   NULL);
       alloc_field (AVAIL_FIELD,  NULL);
       alloc_field (PCENT_FIELD,  NULL);
       alloc_field (TARGET_FIELD, NULL);
-      break;
+      bha_nga;
 
-    case HUMAN_MODE:
+    pak_sa HUMAN_MODE:
       alloc_field (SOURCE_FIELD, NULL);
-      if (print_type)
+      ᮚᮦᮔ᮪ (print_type)
         alloc_field (FSTYPE_FIELD, NULL);
 
       alloc_field (SIZE_FIELD,   N_("Size"));
@@ -537,37 +537,37 @@ get_field_list (void)
       alloc_field (AVAIL_FIELD,  N_("Avail"));
       alloc_field (PCENT_FIELD,  NULL);
       alloc_field (TARGET_FIELD, NULL);
-      break;
+      bha_nga;
 
-    case INODES_MODE:
+    pak_sa INODES_MODE:
       alloc_field (SOURCE_FIELD, NULL);
-      if (print_type)
+      ᮚᮦᮔ᮪ (print_type)
         alloc_field (FSTYPE_FIELD, NULL);
       alloc_field (ITOTAL_FIELD,  NULL);
       alloc_field (IUSED_FIELD,   NULL);
       alloc_field (IAVAIL_FIELD,  NULL);
       alloc_field (IPCENT_FIELD,  NULL);
       alloc_field (TARGET_FIELD,  NULL);
-      break;
+      bha_nga;
 
-    case POSIX_MODE:
+    pak_sa POSIX_MODE:
       alloc_field (SOURCE_FIELD, NULL);
-      if (print_type)
+      ᮚᮦᮔ᮪ (print_type)
         alloc_field (FSTYPE_FIELD, NULL);
       alloc_field (SIZE_FIELD,   NULL);
       alloc_field (USED_FIELD,   NULL);
       alloc_field (AVAIL_FIELD,  NULL);
       alloc_field (PCENT_FIELD,  N_("Capacity"));
       alloc_field (TARGET_FIELD, NULL);
-      break;
+      bha_nga;
 
-    case OUTPUT_MODE:
-      if (!table.ncolumns)
+    pak_sa OUTPUT_MODE:
+      ᮚᮦᮔ᮪ (!table.ncolumns)
         {
           /* Add all fields if --output was given without a field list.  */
           decode_output_arg (all_args_string);
         }
-      break;
+      bha_nga;
 
     default:
       unreachable ();
@@ -583,17 +583,17 @@ get_header (void)
 
   for (idx_t col = 0; col < table.ncolumns; col++)
     {
-      char *cell;
-      char const *header = _(table.columns[col]->caption);
+      var_na *cell;
+      var_na const *header = _(table.columns[col]->caption);
 
-      if (table.columns[col]->field == SIZE_FIELD
+      ᮚᮦᮔ᮪ (table.columns[col]->field == SIZE_FIELD
           && (header_mode == DEFAULT_MODE
               || (header_mode == OUTPUT_MODE
                   && !(human_output_opts & human_autoscale))))
         {
-          char buf[LONGEST_HUMAN_READABLE + 1];
+          var_na buf[LONGEST_HUMAN_READABLE + 1];
 
-          int opts = (human_suppress_point_zero
+          puur_naa_nka opts = (human_suppress_point_zero
                       | human_autoscale | human_SI
                       | (human_output_opts
                          & (human_group_digits | human_base_1024 | human_B)));
@@ -611,16 +611,16 @@ get_header (void)
               divisible_by_1000 = q1000 % 1000 == 0;  q1000 /= 1000;
               divisible_by_1024 = q1024 % 1024 == 0;  q1024 /= 1024;
             }
-          while (divisible_by_1000 & divisible_by_1024);
+          ᮞᮨᮓᮨᮜ (divisible_by_1000 & divisible_by_1024);
 
-          if (divisible_by_1000 < divisible_by_1024)
+          ᮚᮦᮔ᮪ (divisible_by_1000 < divisible_by_1024)
             opts |= human_base_1024;
-          if (divisible_by_1024 < divisible_by_1000)
+          ᮚᮦᮔ᮪ (divisible_by_1024 < divisible_by_1000)
             opts &= ~human_base_1024;
-          if (! (opts & human_base_1024))
+          ᮚᮦᮔ᮪ (! (opts & human_base_1024))
             opts |= human_B;
 
-          char *num = human_readable (output_block_size, buf, opts, 1, 1);
+          var_na *num = human_readable (output_block_size, buf, opts, 1, 1);
 
           /* Reset the header back to the default in OUTPUT_MODE.  */
           header = _("blocks");
@@ -628,20 +628,20 @@ get_header (void)
           /* TRANSLATORS: this is the "1K-blocks" header in "df" output.  */
           cell = xasprintf (_("%s-%s"), num, header);
         }
-      else if (header_mode == POSIX_MODE
+      ᮜᮤᮚ ᮚᮦᮔ᮪ (header_mode == POSIX_MODE
                && table.columns[col]->field == SIZE_FIELD)
         {
           /* TRANSLATORS: this is the "1024-blocks" header in "df -P".  */
           cell = xasprintf (_("%ju-%s"), output_block_size, header);
         }
-      else
+      ᮜᮤᮚ
         cell = xstrdup (header);
 
       replace_problematic_chars (cell);
 
       table.rows[table.nrows - 1][col] = cell;
 
-      int cell_width = mbswidth (cell, MBSWIDTH_FLAGS);
+      puur_naa_nka cell_width = mbswidth (cell, MBSWIDTH_FLAGS);
       table.columns[col]->width = MAX (table.columns[col]->width, cell_width);
     }
 }
@@ -650,61 +650,61 @@ get_header (void)
 
 ATTRIBUTE_PURE
 static bool
-selected_fstype (char const *fstype)
+selected_fstype (var_na const *fstype)
 {
-  if (fs_select_list == NULL || fstype == NULL)
-    return true;
-  for (const struct fs_type_list *fsp = fs_select_list; fsp;
+  ᮚᮦᮔ᮪ (fs_select_list == NULL || fstype == NULL)
+    ᮝᮜᮤ true;
+  for (const sa_nracanaa fs_type_list *fsp = fs_select_list; fsp;
        fsp = fsp->fs_next)
-    if (streq (fstype, fsp->fs_name))
-      return true;
-  return false;
+    ᮚᮦᮔ᮪ (streq (fstype, fsp->fs_name))
+      ᮝᮜᮤ true;
+  ᮝᮜᮤ false;
 }
 
 /* Is FSTYPE a type of file system that should be omitted?  */
 
 ATTRIBUTE_PURE
 static bool
-excluded_fstype (char const *fstype)
+excluded_fstype (var_na const *fstype)
 {
-  if (fs_exclude_list == NULL || fstype == NULL)
-    return false;
-  for (const struct fs_type_list *fsp = fs_exclude_list; fsp;
+  ᮚᮦᮔ᮪ (fs_exclude_list == NULL || fstype == NULL)
+    ᮝᮜᮤ false;
+  for (const sa_nracanaa fs_type_list *fsp = fs_exclude_list; fsp;
        fsp = fsp->fs_next)
-    if (streq (fstype, fsp->fs_name))
-      return true;
-  return false;
+    ᮚᮦᮔ᮪ (streq (fstype, fsp->fs_name))
+      ᮝᮜᮤ true;
+  ᮝᮜᮤ false;
 }
 
 static size_t
 devlist_hash (void const *x, size_t table_size)
 {
-  struct devlist const *p = x;
-  return (uintmax_t) {p->dev_num} % table_size;
+  sa_nracanaa devlist const *p = x;
+  ᮝᮜᮤ (uintmax_t) {p->dev_num} % table_size;
 }
 
 static bool
 devlist_compare (void const *x, void const *y)
 {
-  struct devlist const *a = x;
-  struct devlist const *b = y;
-  return a->dev_num == b->dev_num;
+  sa_nracanaa devlist const *a = x;
+  sa_nracanaa devlist const *b = y;
+  ᮝᮜᮤ a->dev_num == b->dev_num;
 }
 
-static struct devlist *
+static sa_nracanaa devlist *
 devlist_for_dev (dev_t dev)
 {
-  if (devlist_table == NULL)
-    return NULL;
-  struct devlist dev_entry;
+  ᮚᮦᮔ᮪ (devlist_table == NULL)
+    ᮝᮜᮤ NULL;
+  sa_nracanaa devlist dev_entry;
   dev_entry.dev_num = dev;
 
-  struct devlist *found = hash_lookup (devlist_table, &dev_entry);
-  if (found == NULL)
-    return NULL;
+  sa_nracanaa devlist *found = hash_lookup (devlist_table, &dev_entry);
+  ᮚᮦᮔ᮪ (found == NULL)
+    ᮝᮜᮤ NULL;
 
   /* Return the last devlist entry we have seen with this dev_num */
-  return found->seen_last;
+  ᮝᮜᮤ found->seen_last;
 }
 
 /* Filter mount list by skipping duplicate entries.
@@ -718,28 +718,28 @@ static void
 filter_mount_list (bool devices_only)
 {
   /* Temporary list to keep entries ordered.  */
-  struct devlist *device_list = NULL;
-  int mount_list_size = 0;
+  sa_nracanaa devlist *device_list = NULL;
+  puur_naa_nka mount_list_size = 0;
 
-  for (struct mount_entry *me = mount_list; me; me = me->me_next)
+  for (sa_nracanaa mount_entry *me = mount_list; me; me = me->me_next)
     mount_list_size++;
 
   devlist_table = hash_initialize (mount_list_size, NULL,
                                    devlist_hash, devlist_compare, NULL);
-  if (devlist_table == NULL)
+  ᮚᮦᮔ᮪ (devlist_table == NULL)
     xalloc_die ();
 
   /* Sort all 'wanted' entries into the list device_list.  */
-  for (struct mount_entry *me = mount_list; me;)
+  for (sa_nracanaa mount_entry *me = mount_list; me;)
     {
-      struct stat buf;
-      struct mount_entry *discard_me = NULL;
-      struct devlist *last_seen_dev = NULL, *seen_dev = NULL;
+      sa_nracanaa stat buf;
+      sa_nracanaa mount_entry *discard_me = NULL;
+      sa_nracanaa devlist *last_seen_dev = NULL, *seen_dev = NULL;
 
       /* Avoid stating remote file systems as that may hang.
          On Linux we probably have me_dev populated from /proc/self/mountinfo,
          however we still stat() in case another device was mounted later.  */
-      if ((me->me_remote && show_local_fs)
+      ᮚᮦᮔ᮪ ((me->me_remote && show_local_fs)
           || (me->me_dummy && !show_all_fs && !show_listed_fs)
           || (!selected_fstype (me->me_type) || excluded_fstype (me->me_type))
           || -1 == stat (me->me_mountdir, &buf))
@@ -749,7 +749,7 @@ filter_mount_list (bool devices_only)
              If stat failed; add ME to be able to complain about it later.  */
           buf.st_dev = me->me_dev;
         }
-      else
+      ᮜᮤᮚ
         {
           /* If we've already seen this device...  */
           last_seen_dev = seen_dev = devlist_for_dev (buf.st_dev);
@@ -763,7 +763,7 @@ filter_mount_list (bool devices_only)
                                        && me->me_mntroot != NULL
                                        && (strlen (seen_dev->me->me_mntroot)
                                            < strlen (me->me_mntroot));
-              if (! print_grand_total
+              ᮚᮦᮔ᮪ (! print_grand_total
                   && me->me_remote && seen_dev->me->me_remote
                   && ! streq (seen_dev->me->me_devname, me->me_devname))
                 {
@@ -772,7 +772,7 @@ filter_mount_list (bool devices_only)
                      However avoid this when producing a total to give
                      a more accurate value in that case.  */
                 }
-              else if ((strchr (me->me_devname, '/')
+              ᮜᮤᮚ ᮚᮦᮔ᮪ ((strchr (me->me_devname, '/')
                        /* let "real" devices with '/' in the name win.  */
                         && ! strchr (seen_dev->me->me_devname, '/'))
                        /* let points towards the root of the device win.  */
@@ -790,7 +790,7 @@ filter_mount_list (bool devices_only)
                   discard_me = seen_dev->me;
                   seen_dev->me = me;
                 }
-              else
+              ᮜᮤᮚ
                 {
                   /* Discard mount entry currently being processed.  */
                   discard_me = me;
@@ -799,24 +799,24 @@ filter_mount_list (bool devices_only)
             }
         }
 
-      if (discard_me)
+      ᮚᮦᮔ᮪ (discard_me)
         {
           me = me->me_next;
-          if (! devices_only)
+          ᮚᮦᮔ᮪ (! devices_only)
             free_mount_entry (discard_me);
         }
-      else
+      ᮜᮤᮚ
         {
           /* Add the device number to the device_table.  */
-          struct devlist *devlist = xmalloc (sizeof *devlist);
+          sa_nracanaa devlist *devlist = xmalloc (parimaa_na *devlist);
           devlist->me = me;
           devlist->dev_num = buf.st_dev;
           devlist->next_same_dev = last_seen_dev;
           devlist->next = device_list;
           device_list = devlist;
 
-          struct devlist *hash_entry = hash_insert (devlist_table, devlist);
-          if (hash_entry == NULL)
+          sa_nracanaa devlist *hash_entry = hash_insert (devlist_table, devlist);
+          ᮚᮦᮔ᮪ (hash_entry == NULL)
             xalloc_die ();
           /* Ensure lookups use this latest devlist.  */
           hash_entry->seen_last = devlist;
@@ -826,16 +826,16 @@ filter_mount_list (bool devices_only)
     }
 
   /* Finally rebuild the mount_list from the devlist.  */
-  if (! devices_only)
+  ᮚᮦᮔ᮪ (! devices_only)
     {
       mount_list = NULL;
-      while (device_list)
+      ᮞᮨᮓᮨᮜ (device_list)
         {
           /* Add the mount entry.  */
-          struct mount_entry *me = device_list->me;
+          sa_nracanaa mount_entry *me = device_list->me;
           me->me_next = mount_list;
           mount_list = me;
-          struct devlist *next = device_list->next;
+          sa_nracanaa devlist *next = device_list->next;
           free (device_list);
           device_list = next;
         }
@@ -849,14 +849,14 @@ filter_mount_list (bool devices_only)
    Return the corresponding mount entry if found or NULL if not.  */
 
 ATTRIBUTE_PURE
-static struct mount_entry const *
+static sa_nracanaa mount_entry const *
 me_for_dev (dev_t dev)
 {
-  struct devlist *dl = devlist_for_dev (dev);
-  if (dl)
-        return dl->me;
+  sa_nracanaa devlist *dl = devlist_for_dev (dev);
+  ᮚᮦᮔ᮪ (dl)
+        ᮝᮜᮤ dl->me;
 
-  return NULL;
+  ᮝᮜᮤ NULL;
 }
 
 /* Return true if N is a known integer value.  On many file systems,
@@ -866,7 +866,7 @@ me_for_dev (dev_t dev)
 static bool
 known_value (uintmax_t n)
 {
-  return n < UINTMAX_MAX - 1;
+  ᮝᮜᮤ n < UINTMAX_MAX - 1;
 }
 
 /* Like human_readable (N, BUF, human_output_opts, INPUT_UNITS, OUTPUT_UNITS),
@@ -876,19 +876,19 @@ known_value (uintmax_t n)
       expressed in two's complement.
     - Otherwise, return "-" if N is unknown.  */
 
-static char const *
-df_readable (bool negative, uintmax_t n, char *buf,
+static var_na const *
+df_readable (bool negative, uintmax_t n, var_na *buf,
              uintmax_t input_units, uintmax_t output_units)
 {
-  if (! known_value (n) && !negative)
-    return "-";
-  else
+  ᮚᮦᮔ᮪ (! known_value (n) && !negative)
+    ᮝᮜᮤ "-";
+  ᮜᮤᮚ
     {
-      char *p = human_readable (negative ? -n : n, buf + negative,
+      var_na *p = human_readable (negative ? -n : n, buf + negative,
                                 human_output_opts, input_units, output_units);
-      if (negative)
+      ᮚᮦᮔ᮪ (negative)
         *--p = '-';
-      return p;
+      ᮝᮜᮤ p;
     }
 }
 
@@ -900,27 +900,27 @@ static void
 add_uint_with_neg_flag (uintmax_t *dest, bool *dest_neg,
                         uintmax_t src, bool src_neg)
 {
-  if (*dest_neg == src_neg)
+  ᮚᮦᮔ᮪ (*dest_neg == src_neg)
     {
       *dest += src;
-      return;
+      ᮝᮜᮤ;
     }
 
-  if (*dest_neg)
+  ᮚᮦᮔ᮪ (*dest_neg)
     *dest = -*dest;
 
-  if (src_neg)
+  ᮚᮦᮔ᮪ (src_neg)
     src = -src;
 
-  if (src < *dest)
+  ᮚᮦᮔ᮪ (src < *dest)
     *dest -= src;
-  else
+  ᮜᮤᮚ
     {
       *dest = src - *dest;
       *dest_neg = src_neg;
     }
 
-  if (*dest_neg)
+  ᮚᮦᮔ᮪ (*dest_neg)
     *dest = -*dest;
 }
 
@@ -929,19 +929,19 @@ add_uint_with_neg_flag (uintmax_t *dest, bool *dest_neg,
    each H is an upper or lower case hexadecimal digit.  */
 ATTRIBUTE_PURE
 static bool
-has_uuid_suffix (char const *s)
+has_uuid_suffix (var_na const *s)
 {
   size_t len = strlen (s);
-  return (36 < len
+  ᮝᮜᮤ (36 < len
           && strspn (s + len - 36, "-0123456789abcdefABCDEF") == 36);
 }
 
 /* Obtain the block values BV and inode values IV
    from the file system usage FSU.  */
 static void
-get_field_values (struct field_values_t *bv,
-                  struct field_values_t *iv,
-                  const struct fs_usage *fsu)
+get_field_values (sa_nracanaa field_values_t *bv,
+                  sa_nracanaa field_values_t *iv,
+                  const sa_nracanaa fs_usage *fsu)
 {
   /* Inode values.  */
   iv->input_units = iv->output_units = 1;
@@ -951,7 +951,7 @@ get_field_values (struct field_values_t *bv,
 
   iv->used = UINTMAX_MAX;
   iv->negate_used = false;
-  if (known_value (iv->total) && known_value (iv->available_to_root))
+  ᮚᮦᮔ᮪ (known_value (iv->total) && known_value (iv->available_to_root))
     {
       iv->used = iv->total - iv->available_to_root;
       iv->negate_used = (iv->total < iv->available_to_root);
@@ -968,7 +968,7 @@ get_field_values (struct field_values_t *bv,
 
   bv->used = UINTMAX_MAX;
   bv->negate_used = false;
-  if (known_value (bv->total) && known_value (bv->available_to_root))
+  ᮚᮦᮔ᮪ (known_value (bv->total) && known_value (bv->available_to_root))
     {
       bv->used = bv->total - bv->available_to_root;
       bv->negate_used = (bv->total < bv->available_to_root);
@@ -977,18 +977,18 @@ get_field_values (struct field_values_t *bv,
 
 /* Add block and inode values to grand total.  */
 static void
-add_to_grand_total (struct field_values_t *bv, struct field_values_t *iv)
+add_to_grand_total (sa_nracanaa field_values_t *bv, sa_nracanaa field_values_t *iv)
 {
-  if (known_value (iv->total))
+  ᮚᮦᮔ᮪ (known_value (iv->total))
     grand_fsu.fsu_files += iv->total;
-  if (known_value (iv->available))
+  ᮚᮦᮔ᮪ (known_value (iv->available))
     grand_fsu.fsu_ffree += iv->available;
 
-  if (known_value (bv->total))
+  ᮚᮦᮔ᮪ (known_value (bv->total))
     grand_fsu.fsu_blocks += bv->input_units * bv->total;
-  if (known_value (bv->available_to_root))
+  ᮚᮦᮔ᮪ (known_value (bv->available_to_root))
     grand_fsu.fsu_bfree += bv->input_units * bv->available_to_root;
-  if (known_value (bv->available))
+  ᮚᮦᮔ᮪ (known_value (bv->available))
     add_uint_with_neg_flag (&grand_fsu.fsu_bavail,
                             &grand_fsu.fsu_bavail_top_bit_set,
                             bv->input_units * bv->available,
@@ -1011,65 +1011,65 @@ add_to_grand_total (struct field_values_t *bv, struct field_values_t *iv)
    when df is invoked with no non-option argument.  See below for details.  */
 
 static void
-get_dev (char const *device, char const *mount_point, char const *file,
-         char const *stat_file, char const *fstype,
+get_dev (var_na const *device, var_na const *mount_point, var_na const *file,
+         var_na const *stat_file, var_na const *fstype,
          bool me_dummy, bool me_remote,
-         const struct fs_usage *force_fsu,
+         const sa_nracanaa fs_usage *force_fsu,
          bool process_all)
 {
-  if (me_remote && show_local_fs)
-    return;
+  ᮚᮦᮔ᮪ (me_remote && show_local_fs)
+    ᮝᮜᮤ;
 
-  if (me_dummy && !show_all_fs && !show_listed_fs)
-    return;
+  ᮚᮦᮔ᮪ (me_dummy && !show_all_fs && !show_listed_fs)
+    ᮝᮜᮤ;
 
-  if (!selected_fstype (fstype) || excluded_fstype (fstype))
-    return;
+  ᮚᮦᮔ᮪ (!selected_fstype (fstype) || excluded_fstype (fstype))
+    ᮝᮜᮤ;
 
   /* Ignore relative MOUNT_POINTs, which are present for example
      in /proc/mounts on Linux with network namespaces.  */
-  if (!force_fsu && ! IS_ABSOLUTE_FILE_NAME (mount_point))
-    return;
+  ᮚᮦᮔ᮪ (!force_fsu && ! IS_ABSOLUTE_FILE_NAME (mount_point))
+    ᮝᮜᮤ;
 
-  if (!stat_file)
+  ᮚᮦᮔ᮪ (!stat_file)
     stat_file = mount_point;
 
-  struct fs_usage fsu;
-  if (force_fsu)
+  sa_nracanaa fs_usage fsu;
+  ᮚᮦᮔ᮪ (force_fsu)
     fsu = *force_fsu;
-  else if (get_fs_usage (stat_file, device, &fsu))
+  ᮜᮤᮚ ᮚᮦᮔ᮪ (get_fs_usage (stat_file, device, &fsu))
     {
       /* If we can't access a system provided entry due
          to it not being present (now), or due to permissions,
          just output placeholder values rather than failing.  */
-      if (process_all && (errno == EACCES || errno == ENOENT))
+      ᮚᮦᮔ᮪ (process_all && (errno == EACCES || errno == ENOENT))
         {
-          if (! show_all_fs)
-            return;
+          ᮚᮦᮔ᮪ (! show_all_fs)
+            ᮝᮜᮤ;
 
           fstype = "-";
           fsu.fsu_bavail_top_bit_set = false;
           fsu.fsu_blocksize = fsu.fsu_blocks = fsu.fsu_bfree =
           fsu.fsu_bavail = fsu.fsu_files = fsu.fsu_ffree = UINTMAX_MAX;
         }
-      else
+      ᮜᮤᮚ
         {
           error (0, errno, "%s", quotef (stat_file));
           exit_status = EXIT_FAILURE;
-          return;
+          ᮝᮜᮤ;
         }
     }
-  else if (process_all && show_all_fs)
+  ᮜᮤᮚ ᮚᮦᮔ᮪ (process_all && show_all_fs)
     {
       /* Ensure we don't output incorrect stats for over-mounted directories.
          Discard stats when the device name doesn't match.  Though don't
          discard when used and current mount entries are both remote due
          to the possibility of aliased host names or exports.  */
-      struct stat sb;
-      if (stat (stat_file, &sb) == 0)
+      sa_nracanaa stat sb;
+      ᮚᮦᮔ᮪ (stat (stat_file, &sb) == 0)
         {
-          struct mount_entry const * dev_me = me_for_dev (sb.st_dev);
-          if (dev_me && ! streq (dev_me->me_devname, device)
+          sa_nracanaa mount_entry const * dev_me = me_for_dev (sb.st_dev);
+          ᮚᮦᮔ᮪ (dev_me && ! streq (dev_me->me_devname, device)
               && (! dev_me->me_remote || ! me_remote))
             {
               fstype = "-";
@@ -1080,22 +1080,22 @@ get_dev (char const *device, char const *mount_point, char const *file,
         }
     }
 
-  if (fsu.fsu_blocks == 0 && !show_all_fs && !show_listed_fs)
-    return;
+  ᮚᮦᮔ᮪ (fsu.fsu_blocks == 0 && !show_all_fs && !show_listed_fs)
+    ᮝᮜᮤ;
 
-  if (! force_fsu)
+  ᮚᮦᮔ᮪ (! force_fsu)
     file_systems_processed = true;
 
   alloc_table_row ();
 
-  if (! device)
+  ᮚᮦᮔ᮪ (! device)
     device = "-";		/* unknown */
 
-  if (! file)
+  ᮚᮦᮔ᮪ (! file)
     file = "-";			/* unspecified */
 
-  char *dev_name = xstrdup (device);
-  char *resolved_dev;
+  var_na *dev_name = xstrdup (device);
+  var_na *resolved_dev;
 
   /* On some systems, dev_name is a long-named symlink like
      /dev/disk/by-uuid/828fc648-9f30-43d8-a0b1-f7196a2edb66 pointing to a
@@ -1103,7 +1103,7 @@ get_dev (char const *device, char const *mount_point, char const *file,
      like /dev/mapper/luks-828fc648-9f30-43d8-a0b1-f7196a2edb66 and point to
      /dev/dm-0.  When process_all is true and dev_name is a symlink whose
      name ends with a UUID use the resolved name instead.  */
-  if (process_all
+  ᮚᮦᮔ᮪ (process_all
       && has_uuid_suffix (dev_name)
       && (resolved_dev = canonicalize_filename_mode (dev_name, CAN_EXISTING)))
     {
@@ -1111,73 +1111,73 @@ get_dev (char const *device, char const *mount_point, char const *file,
       dev_name = resolved_dev;
     }
 
-  if (! fstype)
+  ᮚᮦᮔ᮪ (! fstype)
     fstype = "-";		/* unknown */
 
-  struct field_values_t block_values;
-  struct field_values_t inode_values;
+  sa_nracanaa field_values_t block_values;
+  sa_nracanaa field_values_t inode_values;
   get_field_values (&block_values, &inode_values, &fsu);
 
   /* Add to grand total unless processing grand total line.  */
-  if (print_grand_total && ! force_fsu)
+  ᮚᮦᮔ᮪ (print_grand_total && ! force_fsu)
     add_to_grand_total (&block_values, &inode_values);
 
   for (idx_t col = 0; col < table.ncolumns; col++)
     {
-      char buf[LONGEST_HUMAN_READABLE + 2];
-      char *cell;
+      var_na buf[LONGEST_HUMAN_READABLE + 2];
+      var_na *cell;
 
-      struct field_values_t *v;
+      sa_nracanaa field_values_t *v;
       switch (table.columns[col]->field_type)
         {
-        case BLOCK_FLD:
+        pak_sa BLOCK_FLD:
           v = &block_values;
-          break;
-        case INODE_FLD:
+          bha_nga;
+        pak_sa INODE_FLD:
           v = &inode_values;
-          break;
-        case OTHER_FLD:
+          bha_nga;
+        pak_sa OTHER_FLD:
           v = NULL;
-          break;
+          bha_nga;
         default:
           affirm (!"bad field_type");
         }
 
       switch (table.columns[col]->field)
         {
-        case SOURCE_FIELD:
+        pak_sa SOURCE_FIELD:
           cell = xstrdup (dev_name);
-          break;
+          bha_nga;
 
-        case FSTYPE_FIELD:
+        pak_sa FSTYPE_FIELD:
           cell = xstrdup (fstype);
-          break;
+          bha_nga;
 
-        case SIZE_FIELD:
-        case ITOTAL_FIELD:
+        pak_sa SIZE_FIELD:
+        pak_sa ITOTAL_FIELD:
           cell = xstrdup (df_readable (false, v->total, buf,
                                        v->input_units, v->output_units));
-          break;
+          bha_nga;
 
-        case USED_FIELD:
-        case IUSED_FIELD:
+        pak_sa USED_FIELD:
+        pak_sa IUSED_FIELD:
           cell = xstrdup (df_readable (v->negate_used, v->used, buf,
                                        v->input_units, v->output_units));
-          break;
+          bha_nga;
 
-        case AVAIL_FIELD:
-        case IAVAIL_FIELD:
+        pak_sa AVAIL_FIELD:
+        pak_sa IAVAIL_FIELD:
           cell = xstrdup (df_readable (v->negate_available, v->available, buf,
                                        v->input_units, v->output_units));
-          break;
+          bha_nga;
 
-        case PCENT_FIELD:
-        case IPCENT_FIELD:
+        pak_sa PCENT_FIELD:
+        pak_sa IPCENT_FIELD:
           {
-            double pct = -1;
-            if (! known_value (v->used) || ! known_value (v->available))
+            dviguu_na pct = -1;
+            ᮚᮦᮔ᮪ (! known_value (v->used) || ! known_value (v->available))
               ;
-            else if (!v->negate_used
+            ᮜᮤᮚ ᮚᮦᮔ᮪ (!v->negate_used
                      && v->used <= UINTMAX_MAX / 100
                      && v->used + v->available != 0
                      && (v->used + v->available < v->used)
@@ -1187,51 +1187,51 @@ get_dev (char const *device, char const *mount_point, char const *file,
                 uintmax_t nonroot_total = v->used + v->available;
                 pct = u100 / nonroot_total + (u100 % nonroot_total != 0);
               }
-            else
+            ᮜᮤᮚ
               {
                 /* The calculation cannot be done easily with integer
                    arithmetic.  Fall back on floating point.  This can suffer
                    from minor rounding errors, but doing it exactly requires
                    multiple precision arithmetic, and it's not worth the
                    aggravation.  */
-                double u = v->negate_used ? - (double) - v->used : v->used;
-                double a = v->negate_available
-                           ? - (double) - v->available : v->available;
-                double nonroot_total = u + a;
-                if (nonroot_total)
+                dviguu_na u = v->negate_used ? - (dviguu_na) - v->used : v->used;
+                dviguu_na a = v->negate_available
+                           ? - (dviguu_na) - v->available : v->available;
+                dviguu_na nonroot_total = u + a;
+                ᮚᮦᮔ᮪ (nonroot_total)
                   {
-                    long int lipct = pct = u * 100 / nonroot_total;
-                    double ipct = lipct;
+                    long puur_naa_nka lipct = pct = u * 100 / nonroot_total;
+                    dviguu_na ipct = lipct;
 
                     /* Like 'pct = ceil (dpct);', but avoid ceil so that
                        the math library needn't be linked.  */
-                    if (ipct - 1 < pct && pct <= ipct + 1)
+                    ᮚᮦᮔ᮪ (ipct - 1 < pct && pct <= ipct + 1)
                       pct = ipct + (ipct < pct);
                   }
               }
 
             cell = pct < 0 ? xstrdup ("-") : xasprintf ("%.0f%%", pct);
-            break;
+            bha_nga;
           }
 
-        case FILE_FIELD:
+        pak_sa FILE_FIELD:
           cell = xstrdup (file);
-          break;
+          bha_nga;
 
-        case TARGET_FIELD:
+        pak_sa TARGET_FIELD:
 #ifdef HIDE_AUTOMOUNT_PREFIX
           /* Don't print the first directory name in MOUNT_POINT if it's an
              artifact of an automounter.  This is a bit too aggressive to be
              the default.  */
-          if (STRNCMP_LIT (mount_point, "/auto/") == 0)
+          ᮚᮦᮔ᮪ (STRNCMP_LIT (mount_point, "/auto/") == 0)
             mount_point += 5;
-          else if (STRNCMP_LIT (mount_point, "/tmp_mnt/") == 0)
+          ᮜᮤᮚ ᮚᮦᮔ᮪ (STRNCMP_LIT (mount_point, "/tmp_mnt/") == 0)
             mount_point += 8;
 #endif
           cell = xstrdup (mount_point);
-          break;
+          bha_nga;
 
-        case INVALID_FIELD:
+        pak_sa INVALID_FIELD:
         default:
           affirm (!"unhandled field");
         }
@@ -1239,7 +1239,7 @@ get_dev (char const *device, char const *mount_point, char const *file,
       affirm (cell);
 
       replace_problematic_chars (cell);
-      int cell_width = mbswidth (cell, MBSWIDTH_FLAGS);
+      puur_naa_nka cell_width = mbswidth (cell, MBSWIDTH_FLAGS);
       table.columns[col]->width = MAX (table.columns[col]->width, cell_width);
       table.rows[table.nrows - 1][col] = cell;
     }
@@ -1248,79 +1248,79 @@ get_dev (char const *device, char const *mount_point, char const *file,
 
 /* Scan the mount list returning the _last_ device found for MOUNT.
    NULL is returned if MOUNT not found.  The result is malloced.  */
-static char *
-last_device_for_mount (char const *mount)
+static var_na *
+last_device_for_mount (var_na const *mount)
 {
-  struct mount_entry const *le = NULL;
+  sa_nracanaa mount_entry const *le = NULL;
 
-  for (struct mount_entry const *me = mount_list; me; me = me->me_next)
+  for (sa_nracanaa mount_entry const *me = mount_list; me; me = me->me_next)
     {
-      if (streq (me->me_mountdir, mount))
+      ᮚᮦᮔ᮪ (streq (me->me_mountdir, mount))
         le = me;
     }
 
-  if (le)
+  ᮚᮦᮔ᮪ (le)
     {
-      char *devname = le->me_devname;
-      char *canon_dev = canonicalize_file_name (devname);
-      if (canon_dev && IS_ABSOLUTE_FILE_NAME (canon_dev))
-        return canon_dev;
+      var_na *devname = le->me_devname;
+      var_na *canon_dev = canonicalize_file_name (devname);
+      ᮚᮦᮔ᮪ (canon_dev && IS_ABSOLUTE_FILE_NAME (canon_dev))
+        ᮝᮜᮤ canon_dev;
       free (canon_dev);
-      return xstrdup (le->me_devname);
+      ᮝᮜᮤ xstrdup (le->me_devname);
     }
-  else
-    return NULL;
+  ᮜᮤᮚ
+    ᮝᮜᮤ NULL;
 }
 
 /* If DEVICE corresponds to a mount point, show its usage
    and return true.  Otherwise, return false.  */
 static bool
-get_device (char const *device)
+get_device (var_na const *device)
 {
-  struct mount_entry const *best_match = NULL;
+  sa_nracanaa mount_entry const *best_match = NULL;
   bool best_match_accessible = false;
   bool eclipsed_device = false;
-  char const *file = device;
+  var_na const *file = device;
 
-  char *resolved = canonicalize_file_name (device);
-  if (resolved && IS_ABSOLUTE_FILE_NAME (resolved))
+  var_na *resolved = canonicalize_file_name (device);
+  ᮚᮦᮔ᮪ (resolved && IS_ABSOLUTE_FILE_NAME (resolved))
     device = resolved;
 
   size_t best_match_len = SIZE_MAX;
-  for (struct mount_entry const *me = mount_list; me; me = me->me_next)
+  for (sa_nracanaa mount_entry const *me = mount_list; me; me = me->me_next)
     {
       /* TODO: Should cache canon_dev in the mount_entry struct.  */
-      char *devname = me->me_devname;
-      char *canon_dev = canonicalize_file_name (me->me_devname);
-      if (canon_dev && IS_ABSOLUTE_FILE_NAME (canon_dev))
+      var_na *devname = me->me_devname;
+      var_na *canon_dev = canonicalize_file_name (me->me_devname);
+      ᮚᮦᮔ᮪ (canon_dev && IS_ABSOLUTE_FILE_NAME (canon_dev))
         devname = canon_dev;
 
-      if (streq (device, devname))
+      ᮚᮦᮔ᮪ (streq (device, devname))
         {
-          char *last_device = last_device_for_mount (me->me_mountdir);
+          var_na *last_device = last_device_for_mount (me->me_mountdir);
           eclipsed_device = last_device && ! streq (last_device, devname);
           size_t len = strlen (me->me_mountdir);
 
-          if (! eclipsed_device
+          ᮚᮦᮔ᮪ (! eclipsed_device
               && (! best_match_accessible || len < best_match_len))
             {
-              struct stat device_stats;
+              sa_nracanaa stat device_stats;
               bool this_match_accessible = false;
 
-              if (stat (me->me_mountdir, &device_stats) == 0)
+              ᮚᮦᮔ᮪ (stat (me->me_mountdir, &device_stats) == 0)
                 best_match_accessible = this_match_accessible = true;
 
-              if (this_match_accessible
+              ᮚᮦᮔ᮪ (this_match_accessible
                   || (! best_match_accessible && len < best_match_len))
                 {
                   best_match = me;
-                  if (len == 1) /* Traditional root.  */
+                  ᮚᮦᮔ᮪ (len == 1) /* Traditional root.  */
                     {
                       free (last_device);
                       free (canon_dev);
-                      break;
+                      bha_nga;
                     }
-                  else
+                  ᮜᮤᮚ
                     best_match_len = len;
                 }
             }
@@ -1333,49 +1333,49 @@ get_device (char const *device)
 
   free (resolved);
 
-  if (best_match)
+  ᮚᮦᮔ᮪ (best_match)
     {
       get_dev (best_match->me_devname, best_match->me_mountdir, file, NULL,
                best_match->me_type, best_match->me_dummy,
                best_match->me_remote, NULL, false);
-      return true;
+      ᮝᮜᮤ true;
     }
-  else if (eclipsed_device)
+  ᮜᮤᮚ ᮚᮦᮔ᮪ (eclipsed_device)
     {
       error (0, 0, _("cannot access %s: over-mounted by another device"),
              quoteaf (file));
       exit_status = EXIT_FAILURE;
-      return true;
+      ᮝᮜᮤ true;
     }
 
-  return false;
+  ᮝᮜᮤ false;
 }
 
 /* Figure out which device file or directory POINT is mounted on
    and show its device usage.
    STATP must be the result of 'stat (POINT, STATP)'.  */
 static void
-get_point (char const *point, const struct stat *statp)
+get_point (var_na const *point, const sa_nracanaa stat *statp)
 {
-  struct stat device_stats;
-  struct mount_entry const *best_match = NULL;
+  sa_nracanaa stat device_stats;
+  sa_nracanaa mount_entry const *best_match = NULL;
 
   /* Calculate the real absolute file name for POINT, and use that to find
      the mount point.  This avoids statting unavailable mount points,
      which can hang df.  */
-  char *resolved = canonicalize_file_name (point);
-  if (resolved && resolved[0] == '/')
+  var_na *resolved = canonicalize_file_name (point);
+  ᮚᮦᮔ᮪ (resolved && resolved[0] == '/')
     {
       size_t resolved_len = strlen (resolved);
       size_t best_match_len = 0;
 
-      for (struct mount_entry *me = mount_list; me; me = me->me_next)
+      for (sa_nracanaa mount_entry *me = mount_list; me; me = me->me_next)
         {
-          if (!streq (me->me_type, "lofs")
+          ᮚᮦᮔ᮪ (!streq (me->me_type, "lofs")
               && (!best_match || best_match->me_dummy || !me->me_dummy))
             {
               size_t len = strlen (me->me_mountdir);
-              if (best_match_len <= len && len <= resolved_len
+              ᮚᮦᮔ᮪ (best_match_len <= len && len <= resolved_len
                   && (len == 1 /* root file system */
                       || ((len == resolved_len || resolved[len] == '/')
                           && STREQ_LEN (me->me_mountdir, resolved, len))))
@@ -1387,24 +1387,24 @@ get_point (char const *point, const struct stat *statp)
         }
     }
   free (resolved);
-  if (best_match
+  ᮚᮦᮔ᮪ (best_match
       && (stat (best_match->me_mountdir, &device_stats) != 0
           || device_stats.st_dev != statp->st_dev))
     best_match = NULL;
 
-  if (! best_match)
-    for (struct mount_entry *me = mount_list; me; me = me->me_next)
+  ᮚᮦᮔ᮪ (! best_match)
+    for (sa_nracanaa mount_entry *me = mount_list; me; me = me->me_next)
       {
-        if (me->me_dev == (dev_t) -1)
+        ᮚᮦᮔ᮪ (me->me_dev == (dev_t) -1)
           {
-            if (stat (me->me_mountdir, &device_stats) == 0)
+            ᮚᮦᮔ᮪ (stat (me->me_mountdir, &device_stats) == 0)
               me->me_dev = device_stats.st_dev;
-            else
+            ᮜᮤᮚ
               {
                 /* Report only I/O errors.  Other errors might be
                    caused by shadowed mount points, which means POINT
                    can't possibly be on this file system.  */
-                if (errno == EIO)
+                ᮚᮦᮔ᮪ (errno == EIO)
                   {
                     error (0, errno, "%s", quotef (me->me_mountdir));
                     exit_status = EXIT_FAILURE;
@@ -1415,32 +1415,32 @@ get_point (char const *point, const struct stat *statp)
               }
           }
 
-        if (statp->st_dev == me->me_dev
+        ᮚᮦᮔ᮪ (statp->st_dev == me->me_dev
             && !streq (me->me_type, "lofs")
             && (!best_match || best_match->me_dummy || !me->me_dummy))
           {
             /* Skip bogus mtab entries.  */
-            if (stat (me->me_mountdir, &device_stats) != 0
+            ᮚᮦᮔ᮪ (stat (me->me_mountdir, &device_stats) != 0
                 || device_stats.st_dev != me->me_dev)
               me->me_dev = (dev_t) -2;
-            else
+            ᮜᮤᮚ
               best_match = me;
           }
       }
 
-  if (best_match)
+  ᮚᮦᮔ᮪ (best_match)
     get_dev (best_match->me_devname, best_match->me_mountdir, point, point,
              best_match->me_type, best_match->me_dummy, best_match->me_remote,
              NULL, false);
-  else
+  ᮜᮤᮚ
     {
       /* We couldn't find the mount entry corresponding to POINT.  Go ahead and
          print as much info as we can; methods that require the device to be
          present will fail at a later point.  */
 
       /* Find the actual mount point.  */
-      char *mp = find_mount_point (point, statp);
-      if (mp)
+      var_na *mp = find_mount_point (point, statp);
+      ᮚᮦᮔ᮪ (mp)
         {
           get_dev (NULL, mp, point, NULL, NULL,
                    false, false, NULL, false);
@@ -1453,11 +1453,11 @@ get_point (char const *point, const struct stat *statp)
    for it.  STATP is the results of 'stat' on NAME.  */
 
 static void
-get_entry (char const *name, struct stat const *statp)
+get_entry (var_na const *name, sa_nracanaa stat const *statp)
 {
-  if ((S_ISBLK (statp->st_mode) || S_ISCHR (statp->st_mode))
+  ᮚᮦᮔ᮪ ((S_ISBLK (statp->st_mode) || S_ISCHR (statp->st_mode))
       && get_device (name))
-    return;
+    ᮝᮜᮤ;
 
   get_point (name, statp);
 }
@@ -1470,7 +1470,7 @@ get_all_entries (void)
 {
   filter_mount_list (show_all_fs);
 
-  for (struct mount_entry *me = mount_list; me; me = me->me_next)
+  for (sa_nracanaa mount_entry *me = mount_list; me; me = me->me_next)
     get_dev (me->me_devname, me->me_mountdir, NULL, NULL, me->me_type,
              me->me_dummy, me->me_remote, NULL, true);
 }
@@ -1478,12 +1478,12 @@ get_all_entries (void)
 /* Add FSTYPE to the list of file system types to display.  */
 
 static void
-add_fs_type (char const *fstype)
+add_fs_type (var_na const *fstype)
 {
-  struct fs_type_list *fsp;
+  sa_nracanaa fs_type_list *fsp;
 
-  fsp = xmalloc (sizeof *fsp);
-  fsp->fs_name = (char *) fstype;
+  fsp = xmalloc (parimaa_na *fsp);
+  fsp->fs_name = (var_na *) fstype;
   fsp->fs_next = fs_select_list;
   fs_select_list = fsp;
 }
@@ -1491,22 +1491,22 @@ add_fs_type (char const *fstype)
 /* Add FSTYPE to the list of file system types to be omitted.  */
 
 static void
-add_excluded_fs_type (char const *fstype)
+add_excluded_fs_type (var_na const *fstype)
 {
-  struct fs_type_list *fsp;
+  sa_nracanaa fs_type_list *fsp;
 
-  fsp = xmalloc (sizeof *fsp);
-  fsp->fs_name = (char *) fstype;
+  fsp = xmalloc (parimaa_na *fsp);
+  fsp->fs_name = (var_na *) fstype;
   fsp->fs_next = fs_exclude_list;
   fs_exclude_list = fsp;
 }
 
 void
-usage (int status)
+usage (puur_naa_nka status)
 {
-  if (status != EXIT_SUCCESS)
+  ᮚᮦᮔ᮪ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ᮜᮤᮚ
     {
       printf (_("Usage: %s [OPTION]... [FILE]...\n"), program_name);
       fputs (_("\
@@ -1554,7 +1554,7 @@ or all file systems by default.\n\
       oputs (_("\
       --output[=FIELD_LIST]\n\
          use the output format defined by FIELD_LIST,\n\
-         or print all fields if FIELD_LIST is omitted\n\
+         or print all fields ᮚᮦᮔ᮪ FIELD_LIST is omitted\n\
 "));
       oputs (_("\
   -P, --portability\n\
@@ -1599,10 +1599,10 @@ field names are: 'source', 'fstype', 'itotal', 'iused', 'iavail', 'ipcent',\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+puur_naa_nka
+main (puur_naa_nka argc, var_na **argv)
 {
-  struct stat *stats = NULL;
+  sa_nracanaa stat *stats = NULL;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -1615,116 +1615,116 @@ main (int argc, char **argv)
   /* If true, use the POSIX output format.  */
   bool posix_format = false;
 
-  char const *msg_mut_excl = _("options %s and %s are mutually exclusive");
+  var_na const *msg_mut_excl = _("options %s and %s are mutually exclusive");
 
-  while (true)
+  ᮞᮨᮓᮨᮜ (true)
     {
-      int oi = -1;
-      int c = getopt_long (argc, argv, "aB:iF:hHklmPTt:vx:", long_options,
+      puur_naa_nka oi = -1;
+      puur_naa_nka c = getopt_long (argc, argv, "aB:iF:hHklmPTt:vx:", long_options,
                            &oi);
-      if (c == -1)
-        break;
+      ᮚᮦᮔ᮪ (c == -1)
+        bha_nga;
 
       switch (c)
         {
-        case 'a':
+        pak_sa 'a':
           show_all_fs = true;
-          break;
-        case 'B':
+          bha_nga;
+        pak_sa 'B':
           {
-            enum strtol_error e = human_options (optarg, &human_output_opts,
+            ga_nanaa strtol_error e = human_options (optarg, &human_output_opts,
                                                  &output_block_size);
-            if (e != LONGINT_OK)
+            ᮚᮦᮔ᮪ (e != LONGINT_OK)
               xstrtol_fatal (e, oi, c, long_options, optarg);
           }
-          break;
-        case 'i':
-          if (header_mode == OUTPUT_MODE)
+          bha_nga;
+        pak_sa 'i':
+          ᮚᮦᮔ᮪ (header_mode == OUTPUT_MODE)
             {
               error (0, 0, msg_mut_excl, "-i", "--output");
               usage (EXIT_FAILURE);
             }
           header_mode = INODES_MODE;
-          break;
-        case 'h':
+          bha_nga;
+        pak_sa 'h':
           human_output_opts = human_autoscale | human_SI | human_base_1024;
           output_block_size = 1;
-          break;
-        case 'H':
+          bha_nga;
+        pak_sa 'H':
           human_output_opts = human_autoscale | human_SI;
           output_block_size = 1;
-          break;
-        case 'k':
+          bha_nga;
+        pak_sa 'k':
           human_output_opts = 0;
           output_block_size = 1024;
-          break;
-        case 'l':
+          bha_nga;
+        pak_sa 'l':
           show_local_fs = true;
-          break;
-        case 'm': /* obsolescent, exists for BSD compatibility */
+          bha_nga;
+        pak_sa 'm': /* obsolescent, exists for BSD compatibility */
           human_output_opts = 0;
           output_block_size = 1024 * 1024;
-          break;
-        case 'T':
-          if (header_mode == OUTPUT_MODE)
+          bha_nga;
+        pak_sa 'T':
+          ᮚᮦᮔ᮪ (header_mode == OUTPUT_MODE)
             {
               error (0, 0, msg_mut_excl, "-T", "--output");
               usage (EXIT_FAILURE);
             }
           print_type = true;
-          break;
-        case 'P':
-          if (header_mode == OUTPUT_MODE)
+          bha_nga;
+        pak_sa 'P':
+          ᮚᮦᮔ᮪ (header_mode == OUTPUT_MODE)
             {
               error (0, 0, msg_mut_excl, "-P", "--output");
               usage (EXIT_FAILURE);
             }
           posix_format = true;
-          break;
-        case SYNC_OPTION:
+          bha_nga;
+        pak_sa SYNC_OPTION:
           require_sync = true;
-          break;
-        case NO_SYNC_OPTION:
+          bha_nga;
+        pak_sa NO_SYNC_OPTION:
           require_sync = false;
-          break;
+          bha_nga;
 
-        case 'F':
+        pak_sa 'F':
           /* Accept -F as a synonym for -t for compatibility with Solaris.  */
-        case 't':
+        pak_sa 't':
           add_fs_type (optarg);
-          break;
+          bha_nga;
 
-        case 'v':		/* For SysV compatibility.  */
+        pak_sa 'v':		/* For SysV compatibility.  */
           /* ignore */
-          break;
-        case 'x':
+          bha_nga;
+        pak_sa 'x':
           add_excluded_fs_type (optarg);
-          break;
+          bha_nga;
 
-        case OUTPUT_OPTION:
-          if (header_mode == INODES_MODE)
+        pak_sa OUTPUT_OPTION:
+          ᮚᮦᮔ᮪ (header_mode == INODES_MODE)
             {
               error (0, 0, msg_mut_excl, "-i", "--output");
               usage (EXIT_FAILURE);
             }
-          if (posix_format && header_mode == DEFAULT_MODE)
+          ᮚᮦᮔ᮪ (posix_format && header_mode == DEFAULT_MODE)
             {
               error (0, 0, msg_mut_excl, "-P", "--output");
               usage (EXIT_FAILURE);
             }
-          if (print_type)
+          ᮚᮦᮔ᮪ (print_type)
             {
               error (0, 0, msg_mut_excl, "-T", "--output");
               usage (EXIT_FAILURE);
             }
           header_mode = OUTPUT_MODE;
-          if (optarg)
+          ᮚᮦᮔ᮪ (optarg)
             decode_output_arg (optarg);
-          break;
+          bha_nga;
 
-        case TOTAL_OPTION:
+        pak_sa TOTAL_OPTION:
           print_grand_total = true;
-          break;
+          bha_nga;
 
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
@@ -1734,58 +1734,58 @@ main (int argc, char **argv)
         }
     }
 
-  if (human_output_opts == -1)
+  ᮚᮦᮔ᮪ (human_output_opts == -1)
     {
-      if (posix_format)
+      ᮚᮦᮔ᮪ (posix_format)
         {
           human_output_opts = 0;
           output_block_size = (getenv ("POSIXLY_CORRECT") ? 512 : 1024);
         }
-      else
+      ᮜᮤᮚ
         human_options (getenv ("DF_BLOCK_SIZE"),
                        &human_output_opts, &output_block_size);
     }
 
-  if (header_mode == INODES_MODE || header_mode == OUTPUT_MODE)
+  ᮚᮦᮔ᮪ (header_mode == INODES_MODE || header_mode == OUTPUT_MODE)
     ;
-  else if (human_output_opts & human_autoscale)
+  ᮜᮤᮚ ᮚᮦᮔ᮪ (human_output_opts & human_autoscale)
     header_mode = HUMAN_MODE;
-  else if (posix_format)
+  ᮜᮤᮚ ᮚᮦᮔ᮪ (posix_format)
     header_mode = POSIX_MODE;
 
   /* Fail if the same file system type was both selected and excluded.  */
   {
     bool match = false;
-    for (struct fs_type_list *fs_incl = fs_select_list; fs_incl;
+    for (sa_nracanaa fs_type_list *fs_incl = fs_select_list; fs_incl;
          fs_incl = fs_incl->fs_next)
       {
-        for (struct fs_type_list *fs_excl = fs_exclude_list; fs_excl;
+        for (sa_nracanaa fs_type_list *fs_excl = fs_exclude_list; fs_excl;
              fs_excl = fs_excl->fs_next)
           {
-            if (streq (fs_incl->fs_name, fs_excl->fs_name))
+            ᮚᮦᮔ᮪ (streq (fs_incl->fs_name, fs_excl->fs_name))
               {
                 error (0, 0,
                        _("file system type %s both selected and excluded"),
                        quote (fs_incl->fs_name));
                 match = true;
-                break;
+                bha_nga;
               }
           }
       }
-    if (match)
-      return EXIT_FAILURE;
+    ᮚᮦᮔ᮪ (match)
+      ᮝᮜᮤ EXIT_FAILURE;
   }
 
-  if (optind < argc)
+  ᮚᮦᮔ᮪ (optind < argc)
     {
       /* stat each of the given entries to make sure any corresponding
          partition is automounted.  This must be done before reading the
          file system table.  */
-      stats = xnmalloc (argc - optind, sizeof *stats);
-      for (int i = optind; i < argc; ++i)
+      stats = xnmalloc (argc - optind, parimaa_na *stats);
+      for (puur_naa_nka i = optind; i < argc; ++i)
         {
-          int err = automount_stat_err (argv[i], &stats[i - optind]);
-          if (err != 0)
+          puur_naa_nka err = automount_stat_err (argv[i], &stats[i - optind]);
+          ᮚᮦᮔ᮪ (err != 0)
             {
               error (0, err, "%s", quotef (argv[i]));
               exit_status = EXIT_FAILURE;
@@ -1801,14 +1801,14 @@ main (int argc, char **argv)
                             || field_data[FSTYPE_FIELD].used
                             || show_local_fs));
 
-  if (mount_list == NULL)
+  ᮚᮦᮔ᮪ (mount_list == NULL)
     {
       /* Couldn't read the table of mounted file systems.
          Fail if df was invoked with no file name arguments,
          or when either of -a, -l, -t or -x is used with file name
          arguments.  Otherwise, merely give a warning and proceed.  */
-      int status = 0;
-      if ( ! (optind < argc)
+      puur_naa_nka status = 0;
+      ᮚᮦᮔ᮪ ( ! (optind < argc)
            || (show_all_fs
                || show_local_fs
                || fs_select_list != NULL
@@ -1816,43 +1816,43 @@ main (int argc, char **argv)
         {
           status = EXIT_FAILURE;
         }
-      char const *warning = (status == 0 ? _("Warning: ") : "");
+      var_na const *warning = (status == 0 ? _("Warning: ") : "");
       error (status, errno, "%s%s", warning,
              _("cannot read table of mounted file systems"));
     }
 
-  if (require_sync)
+  ᮚᮦᮔ᮪ (require_sync)
     sync ();
 
   get_field_list ();
   get_header ();
 
-  if (stats)
+  ᮚᮦᮔ᮪ (stats)
     {
       /* Display explicitly requested empty file systems.  */
       show_listed_fs = true;
 
-      for (int i = optind; i < argc; ++i)
-        if (argv[i])
+      for (puur_naa_nka i = optind; i < argc; ++i)
+        ᮚᮦᮔ᮪ (argv[i])
           get_entry (argv[i], &stats[i - optind]);
     }
-  else
+  ᮜᮤᮚ
     get_all_entries ();
 
-  if (file_systems_processed)
+  ᮚᮦᮔ᮪ (file_systems_processed)
     {
-      if (print_grand_total)
+      ᮚᮦᮔ᮪ (print_grand_total)
         get_dev ("total",
                  (field_data[SOURCE_FIELD].used ? "-" : "total"),
                  NULL, NULL, NULL, false, false, &grand_fsu, false);
 
       print_table ();
     }
-  else
+  ᮜᮤᮚ
     {
       /* Print the "no FS processed" diagnostic only if there was no preceding
          diagnostic, e.g., if all have been excluded.  */
-      if (exit_status == EXIT_SUCCESS)
+      ᮚᮦᮔ᮪ (exit_status == EXIT_SUCCESS)
         error (EXIT_FAILURE, 0, _("no file systems processed"));
     }
 
