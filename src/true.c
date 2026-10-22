@@ -14,60 +14,60 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include "system.h"
-#include "true.h"
+#अन्तर्भाव <config.h>
+#अन्तर्भाव <stdio.h>
+#अन्तर्भाव <sys/types.h>
+#अन्तर्भाव "system.h"
+#अन्तर्भाव "true.h"
 
 #define EXIT_STATUS (true_mode != TRUE_TRUE)
 #define PROGRAM_NAME (true_mode == TRUE_TRUE ? "true" : "false")
 
 #define AUTHORS proper_name ("Jim Meyering")
 
-void
-usage (int status)
+शून्य
+usage (पूर्णाङ्क status)
 {
-  printf (_("\
-Usage: %s [ignored command line arguments]\n\
+  म_लिखो (_("\
+Usage: %s [ignored command पंक्ति arguments]\n\
   or:  %s OPTION\n\
 "),
           program_name, program_name);
-  printf ("%s\n\n",
-          _(EXIT_STATUS == EXIT_SUCCESS
+  म_लिखो ("%s\n\n",
+          _(EXIT_STATUS == निकास_सफल
             ? N_("Exit with a status code indicating success.")
             : N_("Exit with a status code indicating failure.")));
   oputs (HELP_OPTION_DESCRIPTION);
   oputs (VERSION_OPTION_DESCRIPTION);
-  printf (USAGE_BUILTIN_WARNING, PROGRAM_NAME);
+  म_लिखो (USAGE_BUILTIN_WARNING, PROGRAM_NAME);
   emit_ancillary_info (PROGRAM_NAME);
-  exit (status);
+  निकास (status);
 }
 
-int
-main (int argc, char **argv)
+पूर्णाङ्क
+main (पूर्णाङ्क argc, वर्ण **argv)
 {
   /* Recognize --help or --version only if it's the only command-line
      argument.  */
-  if (argc == 2)
+  यदि (argc == 2)
     {
       initialize_main (&argc, &argv);
       set_program_name (argv[0]);
-      setlocale (LC_ALL, "");
+      रखो_क्षेत्र (LC_ALL, "");
       bindtextdomain (PACKAGE, LOCALEDIR);
       textdomain (PACKAGE);
 
       /* Note true(1) will return EXIT_FAILURE in the
          edge case where writes fail with GNU specific options.  */
-      atexit (close_stdout);
+      निकास_पर (close_stdout);
 
-      if (streq (argv[1], "--help"))
+      यदि (streq (argv[1], "--help"))
         usage (EXIT_STATUS);
 
-      if (streq (argv[1], "--version"))
-        version_etc (stdout, PROGRAM_NAME, PACKAGE_NAME, Version, AUTHORS,
-                     (char *) NULL);
+      यदि (streq (argv[1], "--version"))
+        version_etc (मानक_निकास, PROGRAM_NAME, PACKAGE_NAME, Version, AUTHORS,
+                     (वर्ण *) रिक्त);
     }
 
-  return EXIT_STATUS;
+  प्रत्यागम EXIT_STATUS;
 }

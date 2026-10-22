@@ -14,27 +14,27 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include <float.h>
-#include <getopt.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <langinfo.h>
+#अन्तर्भाव <config.h>
+#अन्तर्भाव <float.h>
+#अन्तर्भाव <getopt.h>
+#अन्तर्भाव <stdio.h>
+#अन्तर्भाव <sys/types.h>
+#अन्तर्भाव <langinfo.h>
 
-#include "argmatch.h"
-#include "assure.h"
-#include "c-ctype.h"
-#include "mbswidth.h"
-#include "mcel.h"
-#include "quote.h"
-#include "skipchars.h"
-#include "system.h"
-#include "utf8.h"
-#include "xstrtol.h"
+#अन्तर्भाव "argmatch.h"
+#अन्तर्भाव "assure.h"
+#अन्तर्भाव "c-ctype.h"
+#अन्तर्भाव "mbswidth.h"
+#अन्तर्भाव "mcel.h"
+#अन्तर्भाव "quote.h"
+#अन्तर्भाव "skipchars.h"
+#अन्तर्भाव "system.h"
+#अन्तर्भाव "utf8.h"
+#अन्तर्भाव "xstrtol.h"
 
-#include "set-fields.h"
+#अन्तर्भाव "set-fields.h"
 
-#if HAVE_FPSETPREC
+#यदि HAVE_FPSETPREC
 # include <ieeefp.h>
 #endif
 
@@ -44,11 +44,11 @@
 #define AUTHORS proper_name ("Assaf Gordon")
 
 /* Exit code when some numbers fail to convert.  */
-enum { EXIT_CONVERSION_WARNINGS = 2 };
+गणना { EXIT_CONVERSION_WARNINGS = 2 };
 
-enum
+गणना
 {
-  FROM_OPTION = CHAR_MAX + 1,
+  FROM_OPTION = अक्षर_उच्च + 1,
   FROM_UNIT_OPTION,
   TO_OPTION,
   TO_UNIT_OPTION,
@@ -65,7 +65,7 @@ enum
   UNIT_SEPARATOR_OPTION
 };
 
-enum scale_type
+गणना scale_type
 {
   scale_none,                   /* the default: no scaling.  */
   scale_auto,                   /* --from only.  */
@@ -74,28 +74,28 @@ enum scale_type
   scale_IEC_I                   /* 'i' suffix is required.  */
 };
 
-static char const *const scale_from_args[] =
+स्थिर वर्ण ध्रुव *ध्रुव scale_from_args[] =
 {
-  "none", "auto", "si", "iec", "iec-i", NULL
+  "none", "auto", "si", "iec", "iec-i", रिक्त
 };
 
-static enum scale_type const scale_from_types[] =
+स्थिर गणना scale_type ध्रुव scale_from_types[] =
 {
   scale_none, scale_auto, scale_SI, scale_IEC, scale_IEC_I
 };
 
-static char const *const scale_to_args[] =
+स्थिर वर्ण ध्रुव *ध्रुव scale_to_args[] =
 {
-  "none", "si", "iec", "iec-i", NULL
+  "none", "si", "iec", "iec-i", रिक्त
 };
 
-static enum scale_type const scale_to_types[] =
+स्थिर गणना scale_type ध्रुव scale_to_types[] =
 {
   scale_none, scale_SI, scale_IEC, scale_IEC_I
 };
 
 
-enum round_type
+गणना round_type
 {
   round_ceiling,
   round_floor,
@@ -104,18 +104,18 @@ enum round_type
   round_nearest,
 };
 
-static char const *const round_args[] =
+स्थिर वर्ण ध्रुव *ध्रुव round_args[] =
 {
-  "up", "down", "from-zero", "towards-zero", "nearest", NULL
+  "up", "down", "from-zero", "towards-zero", "nearest", रिक्त
 };
 
-static enum round_type const round_types[] =
+स्थिर गणना round_type ध्रुव round_types[] =
 {
   round_ceiling, round_floor, round_from_zero, round_to_zero, round_nearest
 };
 
 
-enum inval_type
+गणना inval_type
 {
   inval_abort,
   inval_fail,
@@ -123,345 +123,345 @@ enum inval_type
   inval_ignore
 };
 
-static char const *const inval_args[] =
+स्थिर वर्ण ध्रुव *ध्रुव inval_args[] =
 {
-  "abort", "fail", "warn", "ignore", NULL
+  "abort", "fail", "warn", "ignore", रिक्त
 };
 
-static enum inval_type const inval_types[] =
+स्थिर गणना inval_type ध्रुव inval_types[] =
 {
   inval_abort, inval_fail, inval_warn, inval_ignore
 };
 
-static struct option const longopts[] =
+स्थिर संरचना option ध्रुव longopts[] =
 {
-  {"from", required_argument, NULL, FROM_OPTION},
-  {"from-unit", required_argument, NULL, FROM_UNIT_OPTION},
-  {"to", required_argument, NULL, TO_OPTION},
-  {"to-unit", required_argument, NULL, TO_UNIT_OPTION},
-  {"round", required_argument, NULL, ROUND_OPTION},
-  {"padding", required_argument, NULL, PADDING_OPTION},
-  {"suffix", required_argument, NULL, SUFFIX_OPTION},
-  {"unit-separator", required_argument, NULL, UNIT_SEPARATOR_OPTION},
-  {"grouping", no_argument, NULL, GROUPING_OPTION},
-  {"delimiter", required_argument, NULL, 'd'},
-  {"field", required_argument, NULL, FIELD_OPTION},
-  {"debug", no_argument, NULL, DEBUG_OPTION},
-  {"-debug", no_argument, NULL, DEV_DEBUG_OPTION},
-  {"header", optional_argument, NULL, HEADER_OPTION},
-  {"format", required_argument, NULL, FORMAT_OPTION},
-  {"invalid", required_argument, NULL, INVALID_OPTION},
-  {"zero-terminated", no_argument, NULL, 'z'},
+  {"from", required_argument, रिक्त, FROM_OPTION},
+  {"from-unit", required_argument, रिक्त, FROM_UNIT_OPTION},
+  {"to", required_argument, रिक्त, TO_OPTION},
+  {"to-unit", required_argument, रिक्त, TO_UNIT_OPTION},
+  {"round", required_argument, रिक्त, ROUND_OPTION},
+  {"padding", required_argument, रिक्त, PADDING_OPTION},
+  {"suffix", required_argument, रिक्त, SUFFIX_OPTION},
+  {"unit-separator", required_argument, रिक्त, UNIT_SEPARATOR_OPTION},
+  {"grouping", no_argument, रिक्त, GROUPING_OPTION},
+  {"delimiter", required_argument, रिक्त, 'd'},
+  {"field", required_argument, रिक्त, FIELD_OPTION},
+  {"debug", no_argument, रिक्त, DEBUG_OPTION},
+  {"-debug", no_argument, रिक्त, DEV_DEBUG_OPTION},
+  {"header", optional_argument, रिक्त, HEADER_OPTION},
+  {"format", required_argument, रिक्त, FORMAT_OPTION},
+  {"invalid", required_argument, रिक्त, INVALID_OPTION},
+  {"zero-terminated", no_argument, रिक्त, 'z'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {रिक्त, 0, रिक्त, 0}
 };
 
 /* Maximum number of digits we can safely handle
    without precision loss, if scaling is 'none'.  */
-enum { MAX_UNSCALED_DIGITS = LDBL_DIG };
+गणना { MAX_UNSCALED_DIGITS = द_द्वि_भग्न };
 
 /* Maximum number of digits we can work with.
    This is equivalent to 999Q.
    NOTE: 'long double' can handle more than that, but there's
          no official suffix assigned beyond Quetta (1000^10).  */
-enum { MAX_ACCEPTABLE_DIGITS = 33 };
+गणना { MAX_ACCEPTABLE_DIGITS = 33 };
 
-static enum scale_type scale_from = scale_none;
-static enum scale_type scale_to = scale_none;
-static enum round_type round_style = round_from_zero;
-static enum inval_type inval_style = inval_abort;
-static char const *suffix = NULL;
-static char const *unit_separator = NULL;
-static uintmax_t from_unit_size = 1;
-static uintmax_t to_unit_size = 1;
-static int grouping = 0;
-static char *padding_buffer = NULL;
-static idx_t padding_buffer_size = 0;
-static intmax_t padding_width = 0;
-static int zero_padding_width = 0;
-static long int user_precision = -1;
-static char const *format_str = NULL;
-static char *format_str_prefix = NULL;
-static char *format_str_suffix = NULL;
+स्थिर गणना scale_type scale_from = scale_none;
+स्थिर गणना scale_type scale_to = scale_none;
+स्थिर गणना round_type round_style = round_from_zero;
+स्थिर गणना inval_type inval_style = inval_abort;
+स्थिर वर्ण ध्रुव *suffix = रिक्त;
+स्थिर वर्ण ध्रुव *unit_separator = रिक्त;
+स्थिर uintmax_t from_unit_size = 1;
+स्थिर uintmax_t to_unit_size = 1;
+स्थिर पूर्णाङ्क grouping = 0;
+स्थिर वर्ण *padding_buffer = रिक्त;
+स्थिर idx_t padding_buffer_size = 0;
+स्थिर intmax_t padding_width = 0;
+स्थिर पूर्णाङ्क zero_padding_width = 0;
+स्थिर दीर्घ पूर्णाङ्क user_precision = -1;
+स्थिर वर्ण ध्रुव *format_str = रिक्त;
+स्थिर वर्ण *format_str_prefix = रिक्त;
+स्थिर वर्ण *format_str_suffix = रिक्त;
 
 /* By default, any conversion error will terminate the program.  */
-static int conv_exit_code = EXIT_CONVERSION_WARNINGS;
+स्थिर पूर्णाङ्क conv_exit_code = EXIT_CONVERSION_WARNINGS;
 
 
 /* auto-pad each line based on skipped whitespace.  */
-static int auto_padding = 0;
+स्थिर पूर्णाङ्क auto_padding = 0;
 
 /* field delimiter - if NULL, blanks separate fields.  */
-static char const *delimiter = NULL;
+स्थिर वर्ण ध्रुव *delimiter = रिक्त;
 
 /* line delimiter.  */
-static unsigned char line_delim = '\n';
+स्थिर अचिन्हित वर्ण पंक्ति_delim = '\n';
 
 /* if non-zero, the first 'header' lines from STDIN are skipped.  */
-static uintmax_t header = 0;
+स्थिर uintmax_t header = 0;
 
 /* Debug for users: print warnings to STDERR about possible
    error (similar to sort's debug).  */
-static bool debug;
+स्थिर bool debug;
 
 /* will be set according to the current locale.  */
-static char const *decimal_point;
-static int decimal_point_length;
-static char const *thousands_sep;
-static int thousands_sep_length;
+स्थिर वर्ण ध्रुव *decimal_point;
+स्थिर पूर्णाङ्क decimal_point_length;
+स्थिर वर्ण ध्रुव *thousands_sep;
+स्थिर पूर्णाङ्क thousands_sep_length;
 
 /* debugging for developers.  Enables devmsg().  */
-static bool dev_debug = false;
+स्थिर bool dev_debug = false;
 
-static bool
+स्थिर bool
 newline_or_blank (mcel_t g)
 {
-  return g.ch == '\n' || c32issep (g.ch);
+  प्रत्यागम g.ch == '\n' || c32issep (g.ch);
 }
 
-static inline int
-default_scale_base (enum scale_type scale)
+स्थिर अन्तःस्थ पूर्णाङ्क
+default_scale_base (गणना scale_type scale)
 {
-  switch (scale)
+  विकल्प (scale)
     {
-    case scale_IEC:
-    case scale_IEC_I:
-      return 1024;
+    पक्ष scale_IEC:
+    पक्ष scale_IEC_I:
+      प्रत्यागम 1024;
 
-    case scale_none:
-    case scale_auto:
-    case scale_SI:
-    default:
-      return 1000;
+    पक्ष scale_none:
+    पक्ष scale_auto:
+    पक्ष scale_SI:
+    स्वभाव:
+      प्रत्यागम 1000;
     }
 }
 
-static char const zero_and_valid_suffixes[] = "0KkMGTPEZYRQ";
-static char const *valid_suffixes = 1 + zero_and_valid_suffixes;
+स्थिर वर्ण ध्रुव zero_and_valid_suffixes[] = "0KkMGTPEZYRQ";
+स्थिर वर्ण ध्रुव *valid_suffixes = 1 + zero_and_valid_suffixes;
 
-static inline bool
-valid_suffix (const char suf)
+स्थिर अन्तःस्थ bool
+valid_suffix (ध्रुव वर्ण suf)
 {
-  return strchr (valid_suffixes, suf) != NULL;
+  प्रत्यागम म_अक्षर (valid_suffixes, suf) != रिक्त;
 }
 
-static inline int
-suffix_power (const char suf)
+स्थिर अन्तःस्थ पूर्णाङ्क
+suffix_power (ध्रुव वर्ण suf)
 {
-  switch (suf)
+  विकल्प (suf)
     {
-    case 'k':                  /* kilo.  */
-    case 'K':                  /* kilo or kibi.  */
-      return 1;
+    पक्ष 'k':                  /* kilo.  */
+    पक्ष 'K':                  /* kilo or kibi.  */
+      प्रत्यागम 1;
 
-    case 'M':                  /* mega or mebi.  */
-      return 2;
+    पक्ष 'M':                  /* mega or mebi.  */
+      प्रत्यागम 2;
 
-    case 'G':                  /* giga or gibi.  */
-      return 3;
+    पक्ष 'G':                  /* giga or gibi.  */
+      प्रत्यागम 3;
 
-    case 'T':                  /* tera or tebi.  */
-      return 4;
+    पक्ष 'T':                  /* tera or tebi.  */
+      प्रत्यागम 4;
 
-    case 'P':                  /* peta or pebi.  */
-      return 5;
+    पक्ष 'P':                  /* peta or pebi.  */
+      प्रत्यागम 5;
 
-    case 'E':                  /* exa or exbi.  */
-      return 6;
+    पक्ष 'E':                  /* exa or exbi.  */
+      प्रत्यागम 6;
 
-    case 'Z':                  /* zetta or 2**70.  */
-      return 7;
+    पक्ष 'Z':                  /* zetta or 2**70.  */
+      प्रत्यागम 7;
 
-    case 'Y':                  /* yotta or 2**80.  */
-      return 8;
+    पक्ष 'Y':                  /* yotta or 2**80.  */
+      प्रत्यागम 8;
 
-    case 'R':                  /* ronna or 2**90.  */
-      return 9;
+    पक्ष 'R':                  /* ronna or 2**90.  */
+      प्रत्यागम 9;
 
-    case 'Q':                  /* quetta or 2**100.  */
-      return 10;
+    पक्ष 'Q':                  /* quetta or 2**100.  */
+      प्रत्यागम 10;
 
-    default:                   /* should never happen. assert?  */
-      return 0;
+    स्वभाव:                   /* should never happen. assert?  */
+      प्रत्यागम 0;
     }
 }
 
-static inline char const *
-suffix_power_char (int power)
+स्थिर अन्तःस्थ वर्ण ध्रुव *
+suffix_power_char (पूर्णाङ्क power)
 {
-  switch (power)
+  विकल्प (power)
     {
-    case 0:
-      return "";
+    पक्ष 0:
+      प्रत्यागम "";
 
-    case 1:
-      return "K";
+    पक्ष 1:
+      प्रत्यागम "K";
 
-    case 2:
-      return "M";
+    पक्ष 2:
+      प्रत्यागम "M";
 
-    case 3:
-      return "G";
+    पक्ष 3:
+      प्रत्यागम "G";
 
-    case 4:
-      return "T";
+    पक्ष 4:
+      प्रत्यागम "T";
 
-    case 5:
-      return "P";
+    पक्ष 5:
+      प्रत्यागम "P";
 
-    case 6:
-      return "E";
+    पक्ष 6:
+      प्रत्यागम "E";
 
-    case 7:
-      return "Z";
+    पक्ष 7:
+      प्रत्यागम "Z";
 
-    case 8:
-      return "Y";
+    पक्ष 8:
+      प्रत्यागम "Y";
 
-    case 9:
-      return "R";
+    पक्ष 9:
+      प्रत्यागम "R";
 
-    case 10:
-      return "Q";
+    पक्ष 10:
+      प्रत्यागम "Q";
 
-    default:
-      return "(error)";
+    स्वभाव:
+      प्रत्यागम "(error)";
     }
 }
 
 /* Similar to 'powl(3)' but without requiring 'libm'.  */
-static long double
-powerld (long double base, ptrdiff_t x)
+स्थिर दीर्घ द्विगुण
+powerld (दीर्घ द्विगुण base, सूचक_भेद_प्रकार x)
 {
-  long double result = base;
-  if (x == 0)
-    return 1;                   /* note for test coverage: this is never
+  दीर्घ द्विगुण result = base;
+  यदि (x == 0)
+    प्रत्यागम 1;                   /* note for test coverage: this is never
                                    reached, as 'powerld' won't be called if
                                    there's no suffix, hence, no "power".  */
 
   /* TODO: check for overflow, inf?  */
-  while (--x)
+  यावत् (--x)
     result *= base;
-  return result;
+  प्रत्यागम result;
 }
 
 /* Similar to 'fabs(3)' but without requiring 'libm'.  */
-static inline long double
-absld (long double val)
+स्थिर अन्तःस्थ दीर्घ द्विगुण
+absld (दीर्घ द्विगुण val)
 {
-  return val < 0 ? -val : val;
+  प्रत्यागम val < 0 ? -val : val;
 }
 
 /* Scale down 'val', returns 'updated val' and 'x', such that
      val*base^X = original val
      Similar to "frexpl(3)" but without requiring 'libm',
      allowing only integer scale, limited functionality and error checking.  */
-static long double
-expld (long double val, int base, int /*output */ *x)
+स्थिर दीर्घ द्विगुण
+expld (दीर्घ द्विगुण val, पूर्णाङ्क base, पूर्णाङ्क /*output */ *x)
 {
-  int power = 0;
+  पूर्णाङ्क power = 0;
 
-  if (val >= -LDBL_MAX && val <= LDBL_MAX)
+  यदि (val >= -द_द्वि_उच्च && val <= द_द्वि_उच्च)
     {
-      while (absld (val) >= base)
+      यावत् (absld (val) >= base)
         {
           ++power;
           val /= base;
         }
     }
-  if (x)
+  यदि (x)
     *x = power;
-  return val;
+  प्रत्यागम val;
 }
 
 /* EXTREMELY limited 'ceil' - without 'libm'.
    Assumes values that fit in intmax_t.  */
-static inline intmax_t
-simple_round_ceiling (long double val)
+स्थिर अन्तःस्थ intmax_t
+simple_round_ceiling (दीर्घ द्विगुण val)
 {
   intmax_t intval = val;
-  if (intval < val)
+  यदि (intval < val)
     intval++;
-  return intval;
+  प्रत्यागम intval;
 }
 
 /* EXTREMELY limited 'floor' - without 'libm'.
    Assumes values that fit in intmax_t.  */
-static inline intmax_t
-simple_round_floor (long double val)
+स्थिर अन्तःस्थ intmax_t
+simple_round_floor (दीर्घ द्विगुण val)
 {
-  return -simple_round_ceiling (-val);
+  प्रत्यागम -simple_round_ceiling (-val);
 }
 
 /* EXTREMELY limited 'round away from zero'.
    Assumes values that fit in intmax_t.  */
-static inline intmax_t
-simple_round_from_zero (long double val)
+स्थिर अन्तःस्थ intmax_t
+simple_round_from_zero (दीर्घ द्विगुण val)
 {
-  return val < 0 ? simple_round_floor (val) : simple_round_ceiling (val);
+  प्रत्यागम val < 0 ? simple_round_floor (val) : simple_round_ceiling (val);
 }
 
 /* EXTREMELY limited 'round away to zero'.
    Assumes values that fit in intmax_t.  */
-static inline intmax_t
-simple_round_to_zero (long double val)
+स्थिर अन्तःस्थ intmax_t
+simple_round_to_zero (दीर्घ द्विगुण val)
 {
-  return val;
+  प्रत्यागम val;
 }
 
 /* EXTREMELY limited 'round' - without 'libm'.
    Assumes values that fit in intmax_t.  */
-static inline intmax_t
-simple_round_nearest (long double val)
+स्थिर अन्तःस्थ intmax_t
+simple_round_nearest (दीर्घ द्विगुण val)
 {
-  return val < 0 ? val - 0.5 : val + 0.5;
+  प्रत्यागम val < 0 ? val - 0.5 : val + 0.5;
 }
 
 ATTRIBUTE_CONST
-static inline long double
-simple_round (long double val, enum round_type t)
+स्थिर अन्तःस्थ दीर्घ द्विगुण
+simple_round (दीर्घ द्विगुण val, गणना round_type t)
 {
   intmax_t rval;
   intmax_t intmax_mul = val / INTMAX_MAX;
-  val -= (long double) INTMAX_MAX * intmax_mul;
+  val -= (दीर्घ द्विगुण) INTMAX_MAX * intmax_mul;
 
-  switch (t)
+  विकल्प (t)
     {
-    case round_ceiling:
+    पक्ष round_ceiling:
       rval = simple_round_ceiling (val);
-      break;
+      भङ्ग;
 
-    case round_floor:
+    पक्ष round_floor:
       rval = simple_round_floor (val);
-      break;
+      भङ्ग;
 
-    case round_from_zero:
+    पक्ष round_from_zero:
       rval = simple_round_from_zero (val);
-      break;
+      भङ्ग;
 
-    case round_to_zero:
+    पक्ष round_to_zero:
       rval = simple_round_to_zero (val);
-      break;
+      भङ्ग;
 
-    case round_nearest:
+    पक्ष round_nearest:
       rval = simple_round_nearest (val);
-      break;
+      भङ्ग;
 
-    default:
+    स्वभाव:
       /* to silence the compiler - this should never happen.  */
-      return 0;
+      प्रत्यागम 0;
     }
 
-  return (long double) INTMAX_MAX * intmax_mul + rval;
+  प्रत्यागम (दीर्घ द्विगुण) INTMAX_MAX * intmax_mul + rval;
 }
 
-enum simple_strtod_error
+गणना simple_strtod_error
 {
   SSE_OK = 0,
   SSE_OK_PRECISION_LOSS,
   SSE_OVERFLOW,
-  SSE_INVALID_NUMBER,
+  SSE_INVALID_संख्या,
 
   /* the following are returned by 'simple_strtod_human'.  */
   SSE_VALID_BUT_FORBIDDEN_SUFFIX,
@@ -485,60 +485,60 @@ enum simple_strtod_error
       SSE_OK_PRECISION_LOSS - if more than 18 digits were used.
       SSE_OVERFLOW          - if more than 33 digits (999Q) were used.
       SSE_INVALID_NUMBER    - if no digits were found.  */
-static enum simple_strtod_error
-simple_strtod_int (char const *input_str,
-                   char **endptr, long double *value, bool *negative)
+स्थिर गणना simple_strtod_error
+simple_strtod_int (वर्ण ध्रुव *निवेश_str,
+                   वर्ण **endptr, दीर्घ द्विगुण *मूल्य, bool *negative)
 {
-  enum simple_strtod_error e = SSE_OK;
+  गणना simple_strtod_error e = SSE_OK;
 
-  long double val = 0;
-  int digits = 0;
+  दीर्घ द्विगुण val = 0;
+  पूर्णाङ्क digits = 0;
   bool found_digit = false;
 
-  if (*input_str == '-')
+  यदि (*निवेश_str == '-')
     {
-      input_str++;
+      निवेश_str++;
       *negative = true;
     }
-  else
+  अन्यथा
     *negative = false;
 
-  *endptr = (char *) input_str;
-  while (c_isdigit (**endptr))
+  *endptr = (वर्ण *) निवेश_str;
+  यावत् (c_isdigit (**endptr))
     {
-      int digit = (**endptr) - '0';
+      पूर्णाङ्क digit = (**endptr) - '0';
 
       found_digit = true;
 
-      if (val || digit)
+      यदि (val || digit)
         digits++;
 
-      if (digits > MAX_UNSCALED_DIGITS)
+      यदि (digits > MAX_UNSCALED_DIGITS)
         e = SSE_OK_PRECISION_LOSS;
 
-      if (digits > MAX_ACCEPTABLE_DIGITS)
-        return SSE_OVERFLOW;
+      यदि (digits > MAX_ACCEPTABLE_DIGITS)
+        प्रत्यागम SSE_OVERFLOW;
 
       val *= 10;
       val += digit;
 
       ++(*endptr);
 
-      if (thousands_sep_length > 0
+      यदि (thousands_sep_length > 0
           && STREQ_LEN (*endptr, thousands_sep, thousands_sep_length)
           && c_isdigit ((*endptr)[thousands_sep_length]))
         (*endptr) += thousands_sep_length;
     }
-  if (! found_digit
+  यदि (! found_digit
       && ! STREQ_LEN (*endptr, decimal_point, decimal_point_length))
-    return SSE_INVALID_NUMBER;
-  if (*negative)
+    प्रत्यागम SSE_INVALID_संख्या;
+  यदि (*negative)
     val = -val;
 
-  if (value)
-    *value = val;
+  यदि (मूल्य)
+    *मूल्य = val;
 
-  return e;
+  प्रत्यागम e;
 }
 
 /* Read a floating-point INPUT_STR represented as "NNNN[.NNNNN]",
@@ -555,61 +555,61 @@ simple_strtod_int (char const *input_str,
       SSE_OK_PRECISION_LOSS - if more than 18 digits were used.
       SSE_OVERFLOW          - if more than 33 digits (999Q) were used.
       SSE_INVALID_NUMBER    - if no digits were found.  */
-static enum simple_strtod_error
-simple_strtod_float (char const *input_str,
-                     char **endptr,
-                     long double *value,
-                     size_t *precision)
+स्थिर गणना simple_strtod_error
+simple_strtod_float (वर्ण ध्रुव *निवेश_str,
+                     वर्ण **endptr,
+                     दीर्घ द्विगुण *मूल्य,
+                     माप_प्रकार *precision)
 {
   bool negative;
-  enum simple_strtod_error e = SSE_OK;
+  गणना simple_strtod_error e = SSE_OK;
 
-  if (precision)
+  यदि (precision)
     *precision = 0;
 
   /* TODO: accept locale'd grouped values for the integral part.  */
-  e = simple_strtod_int (input_str, endptr, value, &negative);
-  if (e != SSE_OK && e != SSE_OK_PRECISION_LOSS)
-    return e;
+  e = simple_strtod_int (निवेश_str, endptr, मूल्य, &negative);
+  यदि (e != SSE_OK && e != SSE_OK_PRECISION_LOSS)
+    प्रत्यागम e;
 
   /* optional decimal point + fraction.  */
-  if (STREQ_LEN (*endptr, decimal_point, decimal_point_length))
+  यदि (STREQ_LEN (*endptr, decimal_point, decimal_point_length))
     {
-      char *ptr2;
-      long double val_frac = 0;
+      वर्ण *ptr2;
+      दीर्घ द्विगुण val_frac = 0;
       bool neg_frac;
 
       (*endptr) += decimal_point_length;
-      enum simple_strtod_error e2 =
+      गणना simple_strtod_error e2 =
         simple_strtod_int (*endptr, &ptr2, &val_frac, &neg_frac);
-      if (e2 != SSE_OK && e2 != SSE_OK_PRECISION_LOSS)
-        return e2;
-      if (e2 == SSE_OK_PRECISION_LOSS)
+      यदि (e2 != SSE_OK && e2 != SSE_OK_PRECISION_LOSS)
+        प्रत्यागम e2;
+      यदि (e2 == SSE_OK_PRECISION_LOSS)
         e = e2;                       /* propagate warning.  */
-      if (neg_frac)
-        return SSE_INVALID_NUMBER;
+      यदि (neg_frac)
+        प्रत्यागम SSE_INVALID_संख्या;
 
       /* number of digits in the fractions.  */
-      ptrdiff_t exponent = ptr2 - *endptr;
+      सूचक_भेद_प्रकार exponent = ptr2 - *endptr;
 
       val_frac /= powerld (10, exponent);
 
       /* TODO: detect loss of precision (only really 18 digits
          of precision across all digits (before and after '.')).  */
-      if (value)
+      यदि (मूल्य)
         {
-          if (negative)
-            *value -= val_frac;
-          else
-            *value += val_frac;
+          यदि (negative)
+            *मूल्य -= val_frac;
+          अन्यथा
+            *मूल्य += val_frac;
         }
 
-      if (precision)
+      यदि (precision)
         *precision = exponent;
 
       *endptr = ptr2;
     }
-  return e;
+  प्रत्यागम e;
 }
 
 /* Read a 'human' INPUT_STR represented as "NNNN[.NNNNN] + suffix",
@@ -631,73 +631,73 @@ simple_strtod_float (char const *input_str,
       SSE_VALID_BUT_FORBIDDEN_SUFFIX
       SSE_INVALID_SUFFIX
       SSE_MISSING_I_SUFFIX  */
-static enum simple_strtod_error
-simple_strtod_human (char const *input_str,
-                     char **endptr, long double *value, size_t *precision,
-                     enum scale_type allowed_scaling)
+स्थिर गणना simple_strtod_error
+simple_strtod_human (वर्ण ध्रुव *निवेश_str,
+                     वर्ण **endptr, दीर्घ द्विगुण *मूल्य, माप_प्रकार *precision,
+                     गणना scale_type allowed_scaling)
 {
-  int power = 0;
+  पूर्णाङ्क power = 0;
   /* 'scale_auto' is checked below.  */
-  int scale_base = default_scale_base (allowed_scaling);
+  पूर्णाङ्क scale_base = default_scale_base (allowed_scaling);
 
   devmsg ("simple_strtod_human:\n  input string: %s\n"
           "  locale decimal-point: %s\n"
           "  MAX_UNSCALED_DIGITS: %d\n",
-          quote_n (0, input_str),
+          quote_n (0, निवेश_str),
           quote_n (1, decimal_point),
           MAX_UNSCALED_DIGITS);
 
-  enum simple_strtod_error e =
-    simple_strtod_float (input_str, endptr, value, precision);
-  if (e != SSE_OK && e != SSE_OK_PRECISION_LOSS)
-    return e;
+  गणना simple_strtod_error e =
+    simple_strtod_float (निवेश_str, endptr, मूल्य, precision);
+  यदि (e != SSE_OK && e != SSE_OK_PRECISION_LOSS)
+    प्रत्यागम e;
 
   devmsg ("  parsed numeric value: %Lf\n"
-          "  input precision = %d\n", *value, (int)*precision);
+          "  input precision = %d\n", *मूल्य, (पूर्णाङ्क)*precision);
 
-  while (**endptr)
+  यावत् (**endptr)
     {
       /* process suffix.  */
 
       /* Skip a single blank, NBSP or specified unit separator.
          Note an explicit empty --unit-sep should disable blank matching. */
       bool matched_unit_sep = false;
-      if (unit_separator)
+      यदि (unit_separator)
         {
-          size_t sep_len = strlen (unit_separator);
-          if (STREQ_LEN (*endptr, unit_separator, sep_len))
+          माप_प्रकार sep_len = म_माप (unit_separator);
+          यदि (STREQ_LEN (*endptr, unit_separator, sep_len))
             {
               matched_unit_sep = true;
               (*endptr) += sep_len;
             }
         }
-      if (!matched_unit_sep)
+      यदि (!matched_unit_sep)
         {
           mcel_t g = mcel_scanz (*endptr);
-          if (c32issep (g.ch) || c32isnbspace (g.ch))
+          यदि (c32issep (g.ch) || c32isnbspace (g.ch))
             (*endptr) += g.len;
         }
 
-      if (**endptr == '\0')
-        break;  /* Treat as no suffix.  */
+      यदि (**endptr == '\0')
+        भङ्ग;  /* Treat as no suffix.  */
 
-      if (!valid_suffix (**endptr))
+      यदि (!valid_suffix (**endptr))
         {
           /* Trailing blanks are allowed.  */
           *endptr = skip_str_matching (*endptr, newline_or_blank, true);
-          if (**endptr == '\0')
-            break;
+          यदि (**endptr == '\0')
+            भङ्ग;
 
-          return SSE_INVALID_SUFFIX;
+          प्रत्यागम SSE_INVALID_SUFFIX;
         }
 
-      if (allowed_scaling == scale_none)
-        return SSE_VALID_BUT_FORBIDDEN_SUFFIX;
+      यदि (allowed_scaling == scale_none)
+        प्रत्यागम SSE_VALID_BUT_FORBIDDEN_SUFFIX;
 
       power = suffix_power (**endptr);
       (*endptr)++;                     /* skip first suffix character.  */
 
-      if (allowed_scaling == scale_auto && **endptr == 'i')
+      यदि (allowed_scaling == scale_auto && **endptr == 'i')
         {
           /* auto-scaling enabled, and the first suffix character
              is followed by an 'i' (e.g. Ki, Mi, Gi).  */
@@ -706,12 +706,12 @@ simple_strtod_human (char const *input_str,
           devmsg ("  Auto-scaling, found 'i', switching to base %d\n",
                   scale_base);
         }
-      else if (allowed_scaling == scale_IEC_I)
+      अन्यथा यदि (allowed_scaling == scale_IEC_I)
         {
-          if (**endptr == 'i')
+          यदि (**endptr == 'i')
             (*endptr)++;
-          else
-            return SSE_MISSING_I_SUFFIX;
+          अन्यथा
+            प्रत्यागम SSE_MISSING_I_SUFFIX;
         }
 
       *precision = 0;  /* Reset, to select precision based on scale.  */
@@ -719,57 +719,57 @@ simple_strtod_human (char const *input_str,
       /* Trailing blanks are allowed.  */
       *endptr = skip_str_matching (*endptr, newline_or_blank, true);
 
-      break;
+      भङ्ग;
     }
 
-  long double multiplier = powerld (scale_base, power);
+  दीर्घ द्विगुण multiplier = powerld (scale_base, power);
 
   devmsg ("  suffix power=%d^%d = %Lf\n", scale_base, power, multiplier);
 
   /* TODO: detect loss of precision and overflows.  */
-  (*value) = (*value) * multiplier;
+  (*मूल्य) = (*मूल्य) * multiplier;
 
-  devmsg ("  returning value: %Lf (%LG)\n", *value, *value);
+  devmsg ("  returning value: %Lf (%LG)\n", *मूल्य, *मूल्य);
 
-  return e;
+  प्रत्यागम e;
 }
 
 
-static void
-simple_strtod_fatal (enum simple_strtod_error err, char const *input_str)
+स्थिर शून्य
+simple_strtod_fatal (गणना simple_strtod_error err, वर्ण ध्रुव *निवेश_str)
 {
-  char const *msgid = NULL;
+  वर्ण ध्रुव *msgid = रिक्त;
 
-  switch (err)
+  विकल्प (err)
     {
-    case SSE_OVERFLOW:
+    पक्ष SSE_OVERFLOW:
       msgid = N_("value too large to be converted: %s");
-      break;
+      भङ्ग;
 
-    case SSE_INVALID_NUMBER:
+    पक्ष SSE_INVALID_संख्या:
       msgid = N_("invalid number: %s");
-      break;
+      भङ्ग;
 
-    case SSE_VALID_BUT_FORBIDDEN_SUFFIX:
+    पक्ष SSE_VALID_BUT_FORBIDDEN_SUFFIX:
       msgid = N_("rejecting suffix in input: %s (consider using --from)");
-      break;
+      भङ्ग;
 
-    case SSE_INVALID_SUFFIX:
+    पक्ष SSE_INVALID_SUFFIX:
       msgid = N_("invalid suffix in input: %s");
-      break;
+      भङ्ग;
 
-    case SSE_MISSING_I_SUFFIX:
+    पक्ष SSE_MISSING_I_SUFFIX:
       msgid = N_("missing 'i' suffix in input: %s (e.g Ki/Mi/Gi)");
-      break;
+      भङ्ग;
 
-    case SSE_OK_PRECISION_LOSS:
-    case SSE_OK:
+    पक्ष SSE_OK_PRECISION_LOSS:
+    पक्ष SSE_OK:
       /* should never happen - this function isn't called when OK.  */
       affirm (false);
     }
 
-  if (inval_style != inval_ignore)
-    error (conv_exit_code, 0, gettext (msgid), quote (input_str));
+  यदि (inval_style != inval_ignore)
+    error (conv_exit_code, 0, gettext (msgid), quote (निवेश_str));
 }
 
 /* Convert VAL to a human format string using PRECISION in BUF of size
@@ -777,24 +777,24 @@ simple_strtod_fatal (enum simple_strtod_error err, char const *input_str)
    the number of bytes needed to represent VAL.  If this number is not
    less than BUF_SIZE, the buffer is too small; if it is negative, the
    formatting failed for some reason.  */
-static int
-double_to_human (long double val, int precision,
-                 char *buf, idx_t buf_size,
-                 enum scale_type scale, int group, enum round_type round)
+स्थिर पूर्णाङ्क
+double_to_human (दीर्घ द्विगुण val, पूर्णाङ्क precision,
+                 वर्ण *buf, idx_t buf_size,
+                 गणना scale_type scale, पूर्णाङ्क group, गणना round_type round)
 {
-  char fmt[sizeof "%'0.*Lfi%s%s%s%s" + INT_STRLEN_BOUND (zero_padding_width)];
-  char *pfmt = fmt;
+  वर्ण fmt[परिमाण "%'0.*Lfi%s%s%s%s" + INT_STRLEN_BOUND (zero_padding_width)];
+  वर्ण *pfmt = fmt;
   *pfmt++ = '%';
 
-  if (group)
+  यदि (group)
     *pfmt++ = '\'';
 
-  if (zero_padding_width)
-    pfmt += sprintf (pfmt, "0%d", zero_padding_width);
+  यदि (zero_padding_width)
+    pfmt += प्र_लिखो (pfmt, "0%d", zero_padding_width);
 
   devmsg ("double_to_human:\n");
 
-  if (scale == scale_none)
+  यदि (scale == scale_none)
     {
       val *= powerld (10, precision);
       val = simple_round (val, round);
@@ -804,25 +804,25 @@ double_to_human (long double val, int precision,
               "  no scaling, returning (grouped) value: %'.*Lf\n" :
               "  no scaling, returning value: %.*Lf\n", precision, val);
 
-      strcpy (pfmt, ".*Lf%s");
+      म_नकल (pfmt, ".*Lf%s");
 
-      return snprintf (buf, buf_size, fmt, precision, val,
+      प्रत्यागम snprintf (buf, buf_size, fmt, precision, val,
                        suffix ? suffix : "");
     }
 
   /* Scaling requested by user. */
-  double scale_base = default_scale_base (scale);
+  द्विगुण scale_base = default_scale_base (scale);
 
   /* Normalize val to scale. */
-  int power = 0;
+  पूर्णाङ्क power = 0;
   val = expld (val, scale_base, &power);
   devmsg ("  scaled value to %Lf * %0.f ^ %d\n", val, scale_base, power);
 
   /* Perform rounding. */
-  int power_adjust = 0;
-  if (user_precision != -1)
+  पूर्णाङ्क power_adjust = 0;
+  यदि (user_precision != -1)
     power_adjust = MIN (power * 3, user_precision);
-  else if (absld (val) < 10)
+  अन्यथा यदि (absld (val) < 10)
     {
       /* for values less than 10, we allow one decimal-point digit,
          so adjust before rounding. */
@@ -836,7 +836,7 @@ double_to_human (long double val, int precision,
   /* two special cases after rounding:
      1. a "999.99" can turn into 1000 - so scale down
      2. a "9.99" can turn into 10 - so don't display decimal-point.  */
-  if (absld (val) >= scale_base)
+  यदि (absld (val) >= scale_base)
     {
       val /= scale_base;
       power++;
@@ -844,16 +844,16 @@ double_to_human (long double val, int precision,
 
   /* should "7.0" be printed as "7" ?
      if removing the ".0" is preferred, enable the fourth condition.  */
-  int show_decimal_point = (val != 0) && (absld (val) < 10) && (power > 0);
+  पूर्णाङ्क show_decimal_point = (val != 0) && (absld (val) < 10) && (power > 0);
   /* && (absld (val) > simple_round_floor (val))) */
 
   devmsg ("  after rounding, value=%Lf * %0.f ^ %d\n", val, scale_base, power);
 
-  strcpy (pfmt, ".*Lf%s%s%s%s");
+  म_नकल (pfmt, ".*Lf%s%s%s%s");
 
-  int prec = user_precision == -1 ? show_decimal_point : user_precision;
+  पूर्णाङ्क prec = user_precision == -1 ? show_decimal_point : user_precision;
 
-  return snprintf (buf, buf_size, fmt, prec, val,
+  प्रत्यागम snprintf (buf, buf_size, fmt, prec, val,
                    (power > 0 && unit_separator) ? unit_separator : "",
                    power == 1 && scale == scale_SI
                    ? "k" : suffix_power_char (power),
@@ -865,27 +865,27 @@ double_to_human (long double val, int precision,
    to an integral value.  Suffixes are handled as with --from=auto.
    Upon successful conversion, return that value.
    If it cannot be converted, give a diagnostic and exit.  */
-static uintmax_t
-unit_to_umax (char const *n_string)
+स्थिर uintmax_t
+unit_to_umax (वर्ण ध्रुव *n_string)
 {
   strtol_error s_err;
-  char const *c_string = n_string;
-  char *t_string = NULL;
-  size_t n_len = strlen (n_string);
-  char *end = NULL;
+  वर्ण ध्रुव *c_string = n_string;
+  वर्ण *t_string = रिक्त;
+  माप_प्रकार n_len = म_माप (n_string);
+  वर्ण *end = रिक्त;
   uintmax_t n;
-  char const *suffixes = valid_suffixes;
+  वर्ण ध्रुव *suffixes = valid_suffixes;
 
   /* Adjust suffixes so K=1000, Ki=1024, KiB=invalid.  */
-  if (n_len && ! c_isdigit (n_string[n_len - 1]))
+  यदि (n_len && ! c_isdigit (n_string[n_len - 1]))
     {
       t_string = xmalloc (n_len + 2);
       end = t_string + n_len - 1;
-      memcpy (t_string, n_string, n_len);
+      स_नकल (t_string, n_string, n_len);
 
-      if (*end == 'i' && 2 <= n_len && ! c_isdigit (*(end - 1)))
+      यदि (*end == 'i' && 2 <= n_len && ! c_isdigit (*(end - 1)))
         *end = '\0';
-      else
+      अन्यथा
         {
           *++end = 'B';
           *++end = '\0';
@@ -897,57 +897,57 @@ unit_to_umax (char const *n_string)
 
   s_err = xstrtoumax (c_string, &end, 10, &n, suffixes);
 
-  if (s_err != LONGINT_OK || *end || n == 0)
+  यदि (s_err != LONGINT_OK || *end || n == 0)
     {
-      free (t_string);
-      error (EXIT_FAILURE, 0, _("invalid unit size: %s"), quote (n_string));
+      मुक्त (t_string);
+      error (निकास_त्रुटि, 0, _("invalid unit size: %s"), quote (n_string));
     }
 
-  free (t_string);
+  मुक्त (t_string);
 
-  return n;
+  प्रत्यागम n;
 }
 
-void
-usage (int status)
+शून्य
+usage (पूर्णाङ्क status)
 {
-  if (status != EXIT_SUCCESS)
+  यदि (status != निकास_सफल)
     emit_try_help ();
-  else
+  अन्यथा
     {
-      printf (_("\
-Usage: %s [OPTION]... [NUMBER]...\n\
+      म_लिखो (_("\
+Usage: %s [OPTION]... [संख्या_2]...\n\
 "), program_name);
-      fputs (_("\
-Reformat NUMBER(s), or the numbers from standard input if none are specified.\n\
-"), stdout);
+      ख_माला_दो (_("\
+Reformat संख्या_2(s), or the numbers from standard निवेश यदि none are specified.\n\
+"), मानक_निकास);
       emit_mandatory_arg_note ();
       oputs (_("\
       --debug\n\
-         print warnings about invalid input\n\
+         print warnings about invalid निवेश\n\
 "));
       oputs (_("\
   -d, --delimiter=X\n\
-         use X instead of whitespace for field delimiter\n\
+         use X instead of whitespace प्रति field delimiter\n\
 "));
       oputs (_("\
       --field=FIELDS\n\
-         replace the numbers in these input fields (default=1);\n\
-         see FIELDS below for details\n\
+         replace the numbers in these निवेश fields (स्वभाव=1);\n\
+         see FIELDS below प्रति details\n\
 "));
       oputs (_("\
       --format=FORMAT\n\
-         use printf style floating-point FORMAT;\n\
-         see FORMAT below for details\n\
+         use म_लिखो style floating-point FORMAT;\n\
+         see FORMAT below प्रति details\n\
 "));
       oputs (_("\
       --from=UNIT\n\
-         auto-scale input numbers to UNITs; default is 'none';\n\
-         see UNIT below for details\n\
+         स्वतः-scale निवेश numbers to UNITs; स्वभाव is 'none';\n\
+         see UNIT below प्रति details\n\
 "));
       oputs (_("\
       --from-unit=N\n\
-         specify the input unit size (instead of the default 1)\n\
+         specify the निवेश unit size (instead of the स्वभाव 1)\n\
 "));
       oputs (_("\
       --grouping\n\
@@ -956,107 +956,107 @@ Reformat NUMBER(s), or the numbers from standard input if none are specified.\n\
 "));
       oputs (_("\
       --header[=N]\n\
-         print (without converting) the first N header lines;\n\
-         N defaults to 1 if not specified\n\
+         print (without converting) the first N header पंक्तियाँ;\n\
+         N defaults to 1 यदि not specified\n\
 "));
       oputs (_("\
       --invalid=MODE\n\
-         failure mode for invalid numbers;\n\
-         MODE can be: abort (default), fail, warn, ignore\n\
+         failure mode प्रति invalid numbers;\n\
+         MODE can be: पात (स्वभाव), fail, warn, ignore\n\
 "));
       oputs (_("\
       --padding=N\n\
          pad the output to N characters;\n\
-         positive N will right-align, negative N will left-align;\n\
-         padding is ignored if the output is wider than N;\n\
-         the default is to automatically pad if a whitespace is found\n\
+         positive N will दायाँ-align, negative N will बायाँ-align;\n\
+         padding is ignored यदि the output is wider than N;\n\
+         the स्वभाव is to automatically pad यदि a whitespace is found\n\
 "));
       oputs (_("\
       --round=METHOD\n\
-         use METHOD for rounding when scaling; METHOD can be:\n\
-         up, down, from-zero (default), towards-zero, nearest\n\
+         use METHOD प्रति rounding when scaling; METHOD can be:\n\
+         up, down, from-zero (स्वभाव), towards-zero, nearest\n\
 "));
       oputs (_("\
       --suffix=SUFFIX\n\
          add SUFFIX to output numbers,\n\
-         and accept an optional SUFFIX in input numbers\n\
+         and accept an optional SUFFIX in निवेश numbers\n\
 "));
       oputs (_("\
       --unit-separator=SEP\n\
-         insert SEP between number and unit on output,\n\
-         and accept an optional SEP in input numbers\n\
+         जोड़ो SEP between संख्या and unit on output,\n\
+         and accept an optional SEP in निवेश numbers\n\
 "));
       oputs (_("\
       --to=UNIT\n\
-         auto-scale output numbers to UNITs; see UNIT below\n\
+         स्वतः-scale output numbers to UNITs; see UNIT below\n\
 "));
       oputs (_("\
       --to-unit=N\n\
-         the output unit size (instead of the default 1)\n\
+         the output unit size (instead of the स्वभाव 1)\n\
 "));
       oputs (_("\
   -z, --zero-terminated\n\
-         line delimiter is NUL, not newline\n\
+         पंक्ति delimiter is NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
 
-      fputs (_("\
+      ख_माला_दो (_("\
 \n\
-UNIT options:\n"), stdout);
-      fputs (_("\
-  none       no auto-scaling is done; suffixes will trigger an error\n\
-"), stdout);
-      fputs (_("\
-  auto       accept optional single/two letter suffix:\n\
+UNIT options:\n"), मानक_निकास);
+      ख_माला_दो (_("\
+  none       no स्वतः-scaling is done; suffixes will trigger an error\n\
+"), मानक_निकास);
+      ख_माला_दो (_("\
+  स्वतः       accept optional single/two letter suffix:\n\
                1K = 1000, 1k = 1000,\n\
                1Ki = 1024,\n\
                1M = 1000000,\n\
-               1Mi = 1048576,\n"), stdout);
-      fputs (_("\
+               1Mi = 1048576,\n"), मानक_निकास);
+      ख_माला_दो (_("\
   si         accept optional single letter suffix:\n\
                1k = 1000, 1K = 1000,\n\
                1M = 1000000,\n\
-               ...\n"), stdout);
-      fputs (_("\
+               ...\n"), मानक_निकास);
+      ख_माला_दो (_("\
   iec        accept optional single letter suffix:\n\
                1K = 1024, 1k = 1024,\n\
                1M = 1048576,\n\
-               ...\n"), stdout);
-      fputs (_("\
+               ...\n"), मानक_निकास);
+      ख_माला_दो (_("\
   iec-i      accept optional two-letter suffix:\n\
                1Ki = 1024, 1ki = 1024,\n\
                1Mi = 1048576,\n\
-               ...\n"), stdout);
+               ...\n"), मानक_निकास);
 
-      fputs (_("\n\
+      ख_माला_दो (_("\n\
 FIELDS supports cut(1) style field ranges:\n\
   N    N'th field, counted from 1\n\
-  N-   from N'th field, to end of line\n\
+  N-   from N'th field, to end of पंक्ति\n\
   N-M  from N'th to M'th field (inclusive)\n\
   -M   from first to M'th field (inclusive)\n\
   -    all fields\n\
 Multiple fields/ranges can be separated with commas\n\
-"), stdout);
+"), मानक_निकास);
 
-      fputs (_("\n\
-FORMAT must be suitable for printing one floating-point argument '%f'.\n\
-Optional quote (%'f) will enable --grouping (if supported by current locale).\n\
-Optional width value (%10f) will pad output. Optional zero (%010f) width\n\
-will zero pad the number. Optional negative values (%-10f) will left align.\n\
-Optional precision (%.1f) will override the input determined precision.\n\
-"), stdout);
+      ख_माला_दो (_("\n\
+FORMAT must be suitable प्रति printing one floating-point argument '%f'.\n\
+Optional quote (%'f) will enable --grouping (यदि supported by current locale).\n\
+Optional width मूल्य (%10f) will pad output. Optional zero (%010f) width\n\
+will zero pad the संख्या. Optional negative मूल्यावली (%-10f) will बायाँ align.\n\
+Optional precision (%.1f) will override the निवेश determined precision.\n\
+"), मानक_निकास);
 
-      printf (_("\n\
-Exit status is 0 if all input numbers were successfully converted.\n\
-By default, %s will stop at the first conversion error with exit status 2.\n\
-With --invalid='fail' a warning is printed for each conversion error\n\
-and the exit status is 2.  With --invalid='warn' each conversion error is\n\
-diagnosed, but the exit status is 0.  With --invalid='ignore' conversion\n\
-errors are not diagnosed and the exit status is 0.\n\
+      म_लिखो (_("\n\
+Exit status is 0 यदि all निवेश numbers were successfully converted.\n\
+By स्वभाव, %s will stop at the first conversion error with निकास status 2.\n\
+With --invalid='fail' a warning is printed प्रति each conversion error\n\
+and the निकास status is 2.  With --invalid='warn' each conversion error is\n\
+diagnosed, but the निकास status is 0.  With --invalid='ignore' conversion\n\
+errors are not diagnosed and the निकास status is 0.\n\
 "), program_name);
 
-      printf (_("\n\
+      म_लिखो (_("\n\
 Examples:\n\
   $ %s --to=si 1000\n\
             -> \"1.0k\"\n\
@@ -1077,7 +1077,7 @@ Examples:\n\
               program_name, program_name, program_name);
       emit_ancillary_info (PROGRAM_NAME);
     }
-  exit (status);
+  निकास (status);
 }
 
 /* Given 'fmt' (a printf(3) compatible format string), extracts the following:
@@ -1095,73 +1095,73 @@ Examples:\n\
        padding_width, grouping,
        format_str_prefix, format_str_suffix
    2. The function aborts on any errors.  */
-static void
-parse_format_string (char const *fmt)
+स्थिर शून्य
+parse_format_string (वर्ण ध्रुव *fmt)
 {
-  size_t i;
-  size_t prefix_len = 0;
-  size_t suffix_pos;
-  char *endptr = NULL;
+  माप_प्रकार i;
+  माप_प्रकार prefix_len = 0;
+  माप_प्रकार suffix_pos;
+  वर्ण *endptr = रिक्त;
   bool zero_padding = false;
 
-  for (i = 0; !(fmt[i] == '%' && fmt[i + 1] != '%'); i += (fmt[i] == '%') + 1)
+  प्रति (i = 0; !(fmt[i] == '%' && fmt[i + 1] != '%'); i += (fmt[i] == '%') + 1)
     {
-      if (!fmt[i])
-        error (EXIT_FAILURE, 0,
+      यदि (!fmt[i])
+        error (निकास_त्रुटि, 0,
                _("format %s has no %% directive"), quote (fmt));
       prefix_len++;
     }
 
   i++;
-  while (true)
+  यावत् (true)
     {
-      size_t skip = strspn (fmt + i, " ");
+      माप_प्रकार skip = म_अखोज (fmt + i, " ");
       i += skip;
-      if (fmt[i] == '\'')
+      यदि (fmt[i] == '\'')
         {
           grouping = 1;
           i++;
         }
-      else if (fmt[i] == '0')
+      अन्यथा यदि (fmt[i] == '0')
         {
           zero_padding = true;
           i++;
         }
-      else if (! skip)
-        break;
+      अन्यथा यदि (! skip)
+        भङ्ग;
     }
 
   intmax_t pad = strtoimax (fmt + i, &endptr, 10);
 
-  if (pad != 0)
+  यदि (pad != 0)
     {
-      if (debug && padding_width && !(zero_padding && pad > 0))
+      यदि (debug && padding_width && !(zero_padding && pad > 0))
         error (0, 0, _("--format padding overriding --padding"));
 
       /* Set padding width and alignment.  On overflow, set widths to
          large values that cause later code to avoid undefined behavior
          and fail at a reasonable point.  */
-      if (pad < 0)
+      यदि (pad < 0)
         padding_width = pad;
-      else
+      अन्यथा
         {
-          if (zero_padding)
-            zero_padding_width = MIN (pad, INT_MAX);
-          else
+          यदि (zero_padding)
+            zero_padding_width = MIN (pad, पूर्णांक_उच्च);
+          अन्यथा
             padding_width = pad;
         }
     }
   i = endptr - fmt;
 
-  if (fmt[i] == '\0')
-    error (EXIT_FAILURE, 0, _("format %s ends in %%"), quote (fmt));
+  यदि (fmt[i] == '\0')
+    error (निकास_त्रुटि, 0, _("format %s ends in %%"), quote (fmt));
 
-  if (fmt[i] == '.')
+  यदि (fmt[i] == '.')
     {
       i++;
-      errno = 0;
-      user_precision = strtol (fmt + i, &endptr, 10);
-      if (errno == ERANGE || user_precision < 0 || SIZE_MAX < user_precision
+      त्रुटि_सं = 0;
+      user_precision = म_से_दीर्घ (fmt + i, &endptr, 10);
+      यदि (त्रुटि_सं == दुस्फल || user_precision < 0 || SIZE_MAX < user_precision
           || c_isblank (fmt[i]) || fmt[i] == '+')
         {
           /* Note we disallow negative user_precision to be
@@ -1169,27 +1169,27 @@ parse_format_string (char const *fmt)
              negative precision is only supported (and ignored)
              when used with '.*f'.  glibc at least will malform
              output when passed a direct negative precision.  */
-          error (EXIT_FAILURE, 0,
+          error (निकास_त्रुटि, 0,
                  _("invalid precision in format %s"), quote (fmt));
         }
       i = endptr - fmt;
     }
 
-  if (fmt[i] != 'f')
-    error (EXIT_FAILURE, 0, _("invalid format %s,"
+  यदि (fmt[i] != 'f')
+    error (निकास_त्रुटि, 0, _("invalid format %s,"
                               " directive must be %%[0]['][-][N][.][N]f"),
          quote (fmt));
   i++;
   suffix_pos = i;
 
-  for (; fmt[i] != '\0'; i += (fmt[i] == '%') + 1)
-    if (fmt[i] == '%' && fmt[i + 1] != '%')
-      error (EXIT_FAILURE, 0, _("format %s has too many %% directives"),
+  प्रति (; fmt[i] != '\0'; i += (fmt[i] == '%') + 1)
+    यदि (fmt[i] == '%' && fmt[i + 1] != '%')
+      error (निकास_त्रुटि, 0, _("format %s has too many %% directives"),
              quote (fmt));
 
-  if (prefix_len)
+  यदि (prefix_len)
     format_str_prefix = ximemdup0 (fmt, prefix_len);
-  if (fmt[suffix_pos] != '\0')
+  यदि (fmt[suffix_pos] != '\0')
     format_str_suffix = xstrdup (fmt + suffix_pos);
 
   devmsg ("format String:\n  input: %s\n  grouping: %s\n"
@@ -1209,80 +1209,80 @@ parse_format_string (char const *fmt)
 
    If there are any trailing characters after the number
    (besides a valid suffix) - exits with an error.  */
-static enum simple_strtod_error
-parse_human_number (char const *str, long double /*output */ *value,
-                    size_t *precision)
+स्थिर गणना simple_strtod_error
+parse_human_संख्या (वर्ण ध्रुव *str, दीर्घ द्विगुण /*output */ *मूल्य,
+                    माप_प्रकार *precision)
 {
-  char *ptr = NULL;
+  वर्ण *ptr = रिक्त;
 
-  enum simple_strtod_error e =
-    simple_strtod_human (str, &ptr, value, precision, scale_from);
-  if (e != SSE_OK && e != SSE_OK_PRECISION_LOSS)
+  गणना simple_strtod_error e =
+    simple_strtod_human (str, &ptr, मूल्य, precision, scale_from);
+  यदि (e != SSE_OK && e != SSE_OK_PRECISION_LOSS)
     {
       simple_strtod_fatal (e, str);
-      return e;
+      प्रत्यागम e;
     }
 
-  if (ptr && *ptr != '\0')
+  यदि (ptr && *ptr != '\0')
     {
-      if (inval_style != inval_ignore)
+      यदि (inval_style != inval_ignore)
         error (conv_exit_code, 0, _("invalid suffix in input %s: %s"),
                quote_n (0, str), quote_n (1, ptr));
       e = SSE_INVALID_SUFFIX;
     }
-  return e;
+  प्रत्यागम e;
 }
 
 
 /* Print the given VAL, using the requested representation.
    The number is printed to STDOUT, with padding and alignment.  */
-static bool
-prepare_padded_number (const long double val, size_t precision,
+स्थिर bool
+prepare_padded_संख्या (ध्रुव दीर्घ द्विगुण val, माप_प्रकार precision,
                        intmax_t *padding)
 {
   /* Generate Output. */
-  size_t precision_used = user_precision == -1 ? precision : user_precision;
+  माप_प्रकार precision_used = user_precision == -1 ? precision : user_precision;
 
   /* Can't reliably print too-large values without auto-scaling. */
-  int x;
+  पूर्णाङ्क x;
   expld (val, 10, &x);
 
-  if (scale_to == scale_none
+  यदि (scale_to == scale_none
       && x + precision_used > MAX_UNSCALED_DIGITS)
     {
-      if (inval_style != inval_ignore)
+      यदि (inval_style != inval_ignore)
         {
-          if (precision_used)
+          यदि (precision_used)
             error (conv_exit_code, 0,
                    _("value/precision too large to be printed: '%Lg/%zu'"
                      " (consider using --to)"), val, precision_used);
-          else
+          अन्यथा
             error (conv_exit_code, 0,
                    _("value too large to be printed: '%Lg'"
                      " (consider using --to)"), val);
         }
-      return false;
+      प्रत्यागम false;
     }
 
-  if (x > MAX_ACCEPTABLE_DIGITS - 1)
+  यदि (x > MAX_ACCEPTABLE_DIGITS - 1)
     {
-      if (inval_style != inval_ignore)
+      यदि (inval_style != inval_ignore)
         error (conv_exit_code, 0, _("value too large to be printed: '%Lg'"
                                     " (cannot handle values > 999Q)"), val);
-      return false;
+      प्रत्यागम false;
     }
 
-  while (true)
+  यावत् (true)
     {
-      int numlen = double_to_human (val, precision_used,
+      पूर्णाङ्क numlen = double_to_human (val, precision_used,
                                     padding_buffer, padding_buffer_size,
                                     scale_to, grouping, round_style);
-      ptrdiff_t growth;
-      if (numlen < 0 || ckd_sub (&growth, numlen, padding_buffer_size - 1))
-        error (EXIT_FAILURE, 0,
+      सूचक_भेद_प्रकार growth;
+      यदि (numlen < 0 || ckd_sub (&growth, numlen, padding_buffer_size - 1))
+        error (निकास_त्रुटि, 0,
                _("failed to prepare value '%Lf' for printing"), val);
-      if (growth <= 0)
-        break;
+      यदि (growth <= 0)
+        भङ्ग;
       padding_buffer = xpalloc (padding_buffer, &padding_buffer_size,
                                 growth, -1, 1);
     }
@@ -1291,462 +1291,462 @@ prepare_padded_number (const long double val, size_t precision,
           val, quote (padding_buffer));
 
   intmax_t pad = 0;
-  if (padding_width)
+  यदि (padding_width)
     {
-      int buf_width = mbswidth (padding_buffer,
+      पूर्णाङ्क buf_width = mbswidth (padding_buffer,
                                 MBSW_REJECT_INVALID | MBSW_REJECT_UNPRINTABLE);
-      if (0 <= buf_width)
+      यदि (0 <= buf_width)
         {
-          if (padding_width < 0)
+          यदि (padding_width < 0)
             {
-              if (padding_width < -buf_width)
+              यदि (padding_width < -buf_width)
                 pad = padding_width + buf_width;
             }
-          else
+          अन्यथा
             {
-              if (buf_width < padding_width)
+              यदि (buf_width < padding_width)
                 pad = padding_width - buf_width;
             }
         }
     }
 
   *padding = pad;
-  return true;
+  प्रत्यागम true;
 }
 
-static void
-print_padded_number (intmax_t padding)
+स्थिर शून्य
+print_padded_संख्या (intmax_t padding)
 {
-  if (format_str_prefix)
-    fputs (format_str_prefix, stdout);
+  यदि (format_str_prefix)
+    ख_माला_दो (format_str_prefix, मानक_निकास);
 
-  for (intmax_t p = padding; 0 < p; p--)
-    putchar (' ');
+  प्रति (intmax_t p = padding; 0 < p; p--)
+    अक्षर_दो (' ');
 
-  fputs (padding_buffer, stdout);
+  ख_माला_दो (padding_buffer, मानक_निकास);
 
-  for (intmax_t p = padding; p < 0; p++)
-    putchar (' ');
+  प्रति (intmax_t p = padding; p < 0; p++)
+    अक्षर_दो (' ');
 
-  if (format_str_suffix)
-    fputs (format_str_suffix, stdout);
+  यदि (format_str_suffix)
+    ख_माला_दो (format_str_suffix, मानक_निकास);
 }
 
 /* Converts the TEXT number string to the requested representation,
    and handles automatic suffix addition.  */
-static bool
-process_suffixed_number (char *text, long double *result,
-                         size_t *precision, long int field)
+स्थिर bool
+process_suffixed_संख्या (वर्ण *text, दीर्घ द्विगुण *result,
+                         माप_प्रकार *precision, दीर्घ पूर्णाङ्क field)
 {
-  char saved_suffix = '\0';
+  वर्ण saved_suffix = '\0';
 
-  if (suffix)
+  यदि (suffix)
     {
-      if (mbs_endswith (text, suffix))
+      यदि (mbs_endswith (text, suffix))
         {
-          saved_suffix = *(text + strlen (text) - strlen (suffix));
-          *(text + strlen (text) - strlen (suffix)) = '\0';
+          saved_suffix = *(text + म_माप (text) - म_माप (suffix));
+          *(text + म_माप (text) - म_माप (suffix)) = '\0';
           devmsg ("trimming suffix %s\n", quote (suffix));
         }
-      else
+      अन्यथा
         devmsg ("no valid suffix found\n");
     }
 
   /* Skip blanks - always.  */
-  char *p = skip_str_matching (text, newline_or_blank, true);
+  वर्ण *p = skip_str_matching (text, newline_or_blank, true);
 
   /* setup auto-padding.  */
-  if (auto_padding)
+  यदि (auto_padding)
     {
       padding_width = text < p || 1 < field
                       ? mbswidth (text,
                                   MBSW_REJECT_INVALID | MBSW_REJECT_UNPRINTABLE)
                       : 0;
-      if (padding_width < 0)
-        padding_width = strlen (text);
+      यदि (padding_width < 0)
+        padding_width = म_माप (text);
       devmsg ("setting Auto-Padding to %jd characters\n", padding_width);
     }
 
-  long double val = 0;
-  enum simple_strtod_error e = parse_human_number (p, &val, precision);
-  if (e == SSE_OK_PRECISION_LOSS && debug)
+  दीर्घ द्विगुण val = 0;
+  गणना simple_strtod_error e = parse_human_संख्या (p, &val, precision);
+  यदि (e == SSE_OK_PRECISION_LOSS && debug)
     error (0, 0, _("large input value %s: possible precision loss"),
            quote (p));
 
-  if (from_unit_size != 1 || to_unit_size != 1)
+  यदि (from_unit_size != 1 || to_unit_size != 1)
     val = (val * from_unit_size) / to_unit_size;
 
   *result = val;
 
-  if (e == SSE_OK || e == SSE_OK_PRECISION_LOSS)
-    return true;
-  else
+  यदि (e == SSE_OK || e == SSE_OK_PRECISION_LOSS)
+    प्रत्यागम true;
+  अन्यथा
     {
-      if (saved_suffix)
-        *(text + strlen (text)) = saved_suffix;
-      return false;
+      यदि (saved_suffix)
+        *(text + म_माप (text)) = saved_suffix;
+      प्रत्यागम false;
     }
 }
 
 /* Search for multi-byte character C in multi-byte string S.
    Return a pointer to the character, or NULL if not found.  */
 ATTRIBUTE_PURE
-static char *
-mbsmbchr (char const *s, char const *c)
+स्थिर वर्ण *
+mbsmbchr (वर्ण ध्रुव *s, वर्ण ध्रुव *c)
 {
-  unsigned char uc = *c;
+  अचिन्हित वर्ण uc = *c;
    /* GB18030 is the most restrictive for the 0x30 optimization below.  */
-  if (uc < 0x30 || MB_CUR_MAX == 1)
-    return (char *) strchr (s, uc);
-  else if (is_utf8_charset ())
-    return (char *) (uc < 0x80 ? strchr (s, uc) : strstr (s, c));
-  else
-    return *(c + 1) == '\0' ? mbschr (s, uc) : (char *) mbsstr (s, c);
+  यदि (uc < 0x30 || MB_CUR_MAX == 1)
+    प्रत्यागम (वर्ण *) म_अक्षर (s, uc);
+  अन्यथा यदि (is_utf8_charset ())
+    प्रत्यागम (वर्ण *) (uc < 0x80 ? म_अक्षर (s, uc) : म_माला (s, c));
+  अन्यथा
+    प्रत्यागम *(c + 1) == '\0' ? mbschr (s, uc) : (वर्ण *) mbsstr (s, c);
 }
 
 /* Return a pointer to the beginning of the next field in line.
    The line pointer is moved to the end of the next field. */
-static char *
-next_field (char **line)
+स्थिर वर्ण *
+next_field (वर्ण **पंक्ति)
 {
-  char *field_start = *line;
-  char *field_end   = field_start;
+  वर्ण *field_start = *पंक्ति;
+  वर्ण *field_end   = field_start;
 
-  if (delimiter)
+  यदि (delimiter)
     {
-      if (! (field_end = mbsmbchr (field_start, delimiter)))
-        field_end = strchr (field_start, '\0');
+      यदि (! (field_end = mbsmbchr (field_start, delimiter)))
+        field_end = म_अक्षर (field_start, '\0');
     }
-  else
+  अन्यथा
     {
       /* keep any space prefix in the returned field */
       field_end = skip_str_matching (field_end, newline_or_blank, true);
       field_end = skip_str_matching (field_end, newline_or_blank, false);
     }
 
-  *line = field_end;
-  return field_start;
+  *पंक्ति = field_end;
+  प्रत्यागम field_start;
 }
 
 ATTRIBUTE_PURE
-static bool
+स्थिर bool
 include_field (uintmax_t field)
 {
-  struct field_range_pair *p = frp;
-  if (!p)
-    return field == 1;
+  संरचना field_range_pair *p = frp;
+  यदि (!p)
+    प्रत्यागम field == 1;
 
-  while (p->lo != UINTMAX_MAX)
+  यावत् (p->lo != UINTMAX_MAX)
     {
-      if (p->lo <= field && p->hi >= field)
-        return true;
+      यदि (p->lo <= field && p->hi >= field)
+        प्रत्यागम true;
       ++p;
     }
-  return false;
+  प्रत्यागम false;
 }
 
 /* Convert and output the given field. If it is not included in the set
    of fields to process just output the original */
-static bool
-process_field (char *text, uintmax_t field)
+स्थिर bool
+process_field (वर्ण *text, uintmax_t field)
 {
-  long double val = 0;
-  size_t precision = 0;
-  bool valid_number = true;
+  दीर्घ द्विगुण val = 0;
+  माप_प्रकार precision = 0;
+  bool valid_संख्या = true;
 
-  if (include_field (field))
+  यदि (include_field (field))
     {
-      valid_number =
-        process_suffixed_number (text, &val, &precision, field);
+      valid_संख्या =
+        process_suffixed_संख्या (text, &val, &precision, field);
 
       intmax_t padding;
-      if (valid_number)
-        valid_number = prepare_padded_number (val, precision, &padding);
+      यदि (valid_संख्या)
+        valid_संख्या = prepare_padded_संख्या (val, precision, &padding);
 
-      if (valid_number)
-        print_padded_number (padding);
-      else
-        fputs (text, stdout);
+      यदि (valid_संख्या)
+        print_padded_संख्या (padding);
+      अन्यथा
+        ख_माला_दो (text, मानक_निकास);
     }
-  else
-    fputs (text, stdout);
+  अन्यथा
+    ख_माला_दो (text, मानक_निकास);
 
-  return valid_number;
+  प्रत्यागम valid_संख्या;
 }
 
 /* Convert number in a given line of text.
    NEWLINE specifies whether to output a '\n' for this "line".  */
-static int
-process_line (char *line, bool newline)
+स्थिर पूर्णाङ्क
+process_पंक्ति (वर्ण *पंक्ति, bool newline)
 {
-  char *next;
+  वर्ण *next;
   uintmax_t field = 0;
-  bool valid_number = true;
+  bool valid_संख्या = true;
 
-  while (true) {
+  यावत् (true) {
     ++field;
-    next = next_field (&line);
+    next = next_field (&पंक्ति);
 
-    if (*line != '\0')
+    यदि (*पंक्ति != '\0')
       {
         /* NUL terminate the current field string and process */
-        char end_field = *line;
-        *line = '\0';
+        वर्ण end_field = *पंक्ति;
+        *पंक्ति = '\0';
 
-        if (! process_field (next, field))
-          valid_number = false;
+        यदि (! process_field (next, field))
+          valid_संख्या = false;
 
-        if (delimiter != NULL)
-          fputs (delimiter, stdout);
-        else
-          fputc (' ', stdout);
+        यदि (delimiter != रिक्त)
+          ख_माला_दो (delimiter, मानक_निकास);
+        अन्यथा
+          ख_अक्षर_दो (' ', मानक_निकास);
 
-        if (delimiter)
-          line += MAX (strlen (delimiter), 1);
-        else
+        यदि (delimiter)
+          पंक्ति += MAX (म_माप (delimiter), 1);
+        अन्यथा
           {
-            *line = end_field;
-            mcel_t g = mcel_scanz (line);
-            line += g.len;
+            *पंक्ति = end_field;
+            mcel_t g = mcel_scanz (पंक्ति);
+            पंक्ति += g.len;
           }
       }
-    else
+    अन्यथा
       {
         /* end of the line, process the last field and finish */
-        if (! process_field (next, field))
-          valid_number = false;
+        यदि (! process_field (next, field))
+          valid_संख्या = false;
 
-        break;
+        भङ्ग;
       }
   }
 
-  if (newline)
-    putchar (line_delim);
+  यदि (newline)
+    अक्षर_दो (पंक्ति_delim);
 
- if (ferror (stdout))
+ यदि (ख_त्रुटि (मानक_निकास))
    write_error ();
 
-  return valid_number;
+  प्रत्यागम valid_संख्या;
 }
 
-int
-main (int argc, char **argv)
+पूर्णाङ्क
+main (पूर्णाङ्क argc, वर्ण **argv)
 {
-  int valid_numbers = 1;
+  पूर्णाङ्क valid_numbers = 1;
   bool locale_ok;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
-  locale_ok = !!setlocale (LC_ALL, "");
+  locale_ok = !!रखो_क्षेत्र (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
-#if HAVE_FPSETPREC
+#यदि HAVE_FPSETPREC
   /* Enabled extended precision if needed.  */
   fpsetprec (FP_PE);
 #endif
 
   decimal_point = nl_langinfo (RADIXCHAR);
-  if (decimal_point == NULL || strlen (decimal_point) == 0)
+  यदि (decimal_point == रिक्त || म_माप (decimal_point) == 0)
     decimal_point = ".";
-  decimal_point_length = strlen (decimal_point);
+  decimal_point_length = म_माप (decimal_point);
 
   thousands_sep = nl_langinfo (THOUSEP);
-  if (thousands_sep == NULL)
+  यदि (thousands_sep == रिक्त)
     thousands_sep = "";
-  thousands_sep_length = strlen (thousands_sep);
+  thousands_sep_length = म_माप (thousands_sep);
 
-  atexit (close_stdout);
+  निकास_पर (close_stdout);
 
-  while (true)
+  यावत् (true)
     {
-      int c = getopt_long (argc, argv, "d:z", longopts, NULL);
+      पूर्णाङ्क c = getopt_long (argc, argv, "d:z", longopts, रिक्त);
 
-      if (c == -1)
-        break;
+      यदि (c == -1)
+        भङ्ग;
 
-      switch (c)
+      विकल्प (c)
         {
-        case FROM_OPTION:
+        पक्ष FROM_OPTION:
           scale_from = XARGMATCH ("--from", optarg,
                                   scale_from_args, scale_from_types);
-          break;
+          भङ्ग;
 
-        case FROM_UNIT_OPTION:
+        पक्ष FROM_UNIT_OPTION:
           from_unit_size = unit_to_umax (optarg);
-          break;
+          भङ्ग;
 
-        case TO_OPTION:
+        पक्ष TO_OPTION:
           scale_to =
             XARGMATCH ("--to", optarg, scale_to_args, scale_to_types);
-          break;
+          भङ्ग;
 
-        case TO_UNIT_OPTION:
+        पक्ष TO_UNIT_OPTION:
           to_unit_size = unit_to_umax (optarg);
-          break;
+          भङ्ग;
 
-        case ROUND_OPTION:
+        पक्ष ROUND_OPTION:
           round_style = XARGMATCH ("--round", optarg, round_args, round_types);
-          break;
+          भङ्ग;
 
-        case GROUPING_OPTION:
+        पक्ष GROUPING_OPTION:
           grouping = 1;
-          break;
+          भङ्ग;
 
-        case PADDING_OPTION:
-          if (((xstrtoimax (optarg, NULL, 10, &padding_width, "")
+        पक्ष PADDING_OPTION:
+          यदि (((xstrtoimax (optarg, रिक्त, 10, &padding_width, "")
                 & ~LONGINT_OVERFLOW)
                != LONGINT_OK)
               || padding_width == 0)
-            error (EXIT_FAILURE, 0, _("invalid padding value %s"),
+            error (निकास_त्रुटि, 0, _("invalid padding value %s"),
                    quote (optarg));
           /* TODO: We probably want to apply a specific --padding
              to --header lines too.  */
-          break;
+          भङ्ग;
 
-        case FIELD_OPTION:
-          if (n_frp)
-            error (EXIT_FAILURE, 0, _("multiple field specifications"));
+        पक्ष FIELD_OPTION:
+          यदि (n_frp)
+            error (निकास_त्रुटि, 0, _("multiple field specifications"));
           set_fields (optarg, SETFLD_ALLOW_DASH);
-          break;
+          भङ्ग;
 
-        case 'd':
+        पक्ष 'd':
           /* Interpret -d '' to mean 'use the NUL byte as the delimiter.'  */
-          if (optarg[0] != '\0')
+          यदि (optarg[0] != '\0')
             {
               mcel_t g = mcel_scanz (optarg);
               /* Note we always allow single bytes, especially since mcel
                  explicitly does not avoid https://sourceware.org/PR29511
                  I.e., we ignore g.err, and rely on g.len==1 with g.err.  */
-              if (optarg[g.len] != '\0')
-                error (EXIT_FAILURE, 0,
+              यदि (optarg[g.len] != '\0')
+                error (निकास_त्रुटि, 0,
                        _("the delimiter must be a single character"));
             }
           delimiter = optarg;
-          break;
+          भङ्ग;
 
-        case 'z':
-          line_delim = '\0';
-          break;
+        पक्ष 'z':
+          पंक्ति_delim = '\0';
+          भङ्ग;
 
-        case SUFFIX_OPTION:
+        पक्ष SUFFIX_OPTION:
           suffix = optarg;
-          break;
+          भङ्ग;
 
-        case UNIT_SEPARATOR_OPTION:
+        पक्ष UNIT_SEPARATOR_OPTION:
           unit_separator = optarg;
-          break;
+          भङ्ग;
 
-        case DEBUG_OPTION:
+        पक्ष DEBUG_OPTION:
           debug = true;
-          break;
+          भङ्ग;
 
-        case DEV_DEBUG_OPTION:
+        पक्ष DEV_DEBUG_OPTION:
           dev_debug = true;
           debug = true;
-          break;
+          भङ्ग;
 
-        case HEADER_OPTION:
-          if (optarg)
+        पक्ष HEADER_OPTION:
+          यदि (optarg)
             {
-              if (xstrtoumax (optarg, NULL, 10, &header, "") != LONGINT_OK
+              यदि (xstrtoumax (optarg, रिक्त, 10, &header, "") != LONGINT_OK
                   || header == 0)
-                error (EXIT_FAILURE, 0, _("invalid header value %s"),
+                error (निकास_त्रुटि, 0, _("invalid header value %s"),
                        quote (optarg));
             }
-          else
+          अन्यथा
             {
               header = 1;
             }
-          break;
+          भङ्ग;
 
-        case FORMAT_OPTION:
+        पक्ष FORMAT_OPTION:
           format_str = optarg;
-          break;
+          भङ्ग;
 
-        case INVALID_OPTION:
+        पक्ष INVALID_OPTION:
           inval_style = XARGMATCH ("--invalid", optarg,
                                    inval_args, inval_types);
-          break;
+          भङ्ग;
 
           case_GETOPT_HELP_CHAR;
           case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
-          usage (EXIT_FAILURE);
+        स्वभाव:
+          usage (निकास_त्रुटि);
         }
     }
 
-  if (format_str != NULL && grouping)
-    error (EXIT_FAILURE, 0, _("--grouping cannot be combined with --format"));
+  यदि (format_str != रिक्त && grouping)
+    error (निकास_त्रुटि, 0, _("--grouping cannot be combined with --format"));
 
-  if (debug && ! locale_ok)
+  यदि (debug && ! locale_ok)
     error (0, 0, _("failed to set locale"));
 
   /* Warn about no-op.  */
-  if (debug && scale_from == scale_none && scale_to == scale_none
-      && !grouping && (padding_width == 0) && (format_str == NULL))
+  यदि (debug && scale_from == scale_none && scale_to == scale_none
+      && !grouping && (padding_width == 0) && (format_str == रिक्त))
     error (0, 0, _("no conversion option specified"));
 
-  if (debug && unit_separator && delimiter == NULL)
+  यदि (debug && unit_separator && delimiter == रिक्त)
     error (0, 0,
            _("field delimiters have higher precedence than unit separators"));
 
-  if (format_str)
+  यदि (format_str)
     parse_format_string (format_str);
 
-  if (grouping)
+  यदि (grouping)
     {
-      if (scale_to != scale_none)
-        error (EXIT_FAILURE, 0, _("grouping cannot be combined with --to"));
-      if (debug && thousands_sep_length == 0)
+      यदि (scale_to != scale_none)
+        error (निकास_त्रुटि, 0, _("grouping cannot be combined with --to"));
+      यदि (debug && thousands_sep_length == 0)
         error (0, 0, _("grouping has no effect in this locale"));
     }
 
-  auto_padding = (padding_width == 0 && delimiter == NULL);
+  auto_padding = (padding_width == 0 && delimiter == रिक्त);
 
-  if (inval_style != inval_abort)
+  यदि (inval_style != inval_abort)
     conv_exit_code = 0;
 
-  if (argc > optind)
+  यदि (argc > optind)
     {
-      if (debug && header)
+      यदि (debug && header)
         error (0, 0, _("--header ignored with command-line input"));
 
-      for (; optind < argc; optind++)
-        valid_numbers &= process_line (argv[optind], true);
+      प्रति (; optind < argc; optind++)
+        valid_numbers &= process_पंक्ति (argv[optind], true);
     }
-  else
+  अन्यथा
     {
-      char *line = NULL;
-      size_t line_allocated = 0;
+      वर्ण *पंक्ति = रिक्त;
+      माप_प्रकार पंक्ति_allocated = 0;
       ssize_t len;
 
-      while (header-- && getdelim (&line, &line_allocated,
-                                   line_delim, stdin) > 0)
+      यावत् (header-- && getdelim (&पंक्ति, &पंक्ति_allocated,
+                                   पंक्ति_delim, मानक_निवेश) > 0)
         {
-          if (fputs (line, stdout) == EOF)
+          यदि (ख_माला_दो (पंक्ति, मानक_निकास) == खातापूर्ण)
             write_error ();
         }
 
-      while ((len = getdelim (&line, &line_allocated,
-                              line_delim, stdin)) > 0)
+      यावत् ((len = getdelim (&पंक्ति, &पंक्ति_allocated,
+                              पंक्ति_delim, मानक_निवेश)) > 0)
         {
-          bool newline = line[len - 1] == line_delim;
-          if (newline)
-            line[len - 1] = '\0';
-          valid_numbers &= process_line (line, newline);
+          bool newline = पंक्ति[len - 1] == पंक्ति_delim;
+          यदि (newline)
+            पंक्ति[len - 1] = '\0';
+          valid_numbers &= process_पंक्ति (पंक्ति, newline);
         }
 
-      if (ferror (stdin))
-        error (EXIT_FAILURE, errno, _("error reading input"));
+      यदि (ख_त्रुटि (मानक_निवेश))
+        error (निकास_त्रुटि, त्रुटि_सं, _("error reading input"));
     }
 
-  if (debug && !valid_numbers)
+  यदि (debug && !valid_numbers)
     error (0, 0, _("failed to convert some of the input numbers"));
 
-  int exit_status = EXIT_SUCCESS;
-  if (!valid_numbers
+  पूर्णाङ्क exit_status = निकास_सफल;
+  यदि (!valid_numbers
       && inval_style != inval_warn && inval_style != inval_ignore)
     exit_status = EXIT_CONVERSION_WARNINGS;
 

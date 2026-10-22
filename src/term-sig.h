@@ -3,17 +3,17 @@
 
 # include <signal.h>
 
-static int const term_sig[] =
+स्थिर पूर्णाङ्क ध्रुव term_sig[] =
   {
     SIGALRM, /* our timeout.  */
-    SIGINT,  /* Ctrl-C at terminal for example.  */
+    संक_विघ्न,  /* Ctrl-C at terminal for example.  */
     SIGQUIT, /* Ctrl-\ at terminal for example.  */
     SIGHUP,  /* terminal closed for example.  */
-    SIGTERM, /* if terminated, stop monitored proc.  */
+    संक_इति, /* if terminated, stop monitored proc.  */
 
     SIGPIPE, SIGUSR1, SIGUSR2,
 
-    SIGILL, SIGTRAP, SIGABRT, SIGBUS, SIGFPE, SIGSEGV,
+    संक_अवैध, SIGTRAP, SIGABRT, SIGBUS, संक_भ_त्रुटि, संक_अंश,
 
 # ifdef SIGXCPU
     SIGXCPU,
