@@ -1,0 +1,628 @@
+# What is still missing
+
+76 languages. Each line says in how many languages it is missing.
+
+## Files in languages BURP cannot read yet
+
+
+## Keywords with no word in a language's table
+
+- guru:_exit: 75
+- guru:errno: 71
+- guru:EXIT_FAILURE: 71
+- guru:size_t: 71
+- guru:stdout: 71
+- guru:fputs: 71
+- guru:FILE: 71
+- guru:EXIT_SUCCESS: 71
+- guru:setlocale: 71
+- guru:atexit: 71
+- guru:time: 71
+- guru:stdin: 71
+- guru:ferror: 71
+- guru:stderr: 71
+- guru:close: 71
+- guru:strchr: 71
+- guru:fprintf: 71
+- guru:fwrite: 71
+- guru:getenv: 71
+- guru:CHAR_MAX: 71
+- guru:sprintf: 71
+- guru:fclose: 71
+- guru:EOF: 71
+- guru:BUFSIZ: 71
+- guru:system: 71
+- guru:fstat: 71
+- guru:ptrdiff_t: 71
+- guru:tm: 71
+- guru:SEEK_CUR: 71
+- guru:time_t: 71
+- guru:remove: 71
+- guru:getc: 71
+- guru:feof: 71
+- guru:UCHAR_MAX: 71
+- guru:memmove: 71
+- guru:fopen: 71
+- guru:SEEK_SET: 71
+- guru:fread: 71
+- guru:clearerr: 71
+- guru:dirname: 71
+- guru:fputc: 71
+- guru:memchr: 71
+- guru:strspn: 71
+- guru:DIR: 71
+- guru:SIG_IGN: 71
+- guru:ULONG_MAX: 71
+- guru:SEEK_END: 71
+- guru:SIG_DFL: 71
+- guru:isprint: 71
+- guru:kill: 71
+- guru:UINT_MAX: 71
+- guru:memcmp: 71
+- guru:times: 71
+- guru:fflush: 71
+- guru:va_start: 71
+- guru:strtok: 71
+- guru:chdir: 71
+- guru:va_list: 71
+- guru:va_end: 71
+- guru:freopen: 71
+- guru:ctime: 71
+- guru:CHAR_BIT: 71
+- guru:strrchr: 71
+- guru:SIGINT: 71
+- guru:closedir: 71
+- guru:strtol: 71
+- guru:USHRT_MAX: 71
+- guru:DBL_MANT_DIG: 71
+- guru:strtoul: 71
+- guru:strerror: 71
+- guru:strcspn: 71
+- guru:setvbuf: 71
+- guru:ERANGE: 71
+- guru:isfinite: 71
+- guru:sig_atomic_t: 71
+- guru:islower: 71
+- guru:localtime: 71
+- guru:ungetc: 71
+- guru:gettime: 71
+- guru:SIGTERM: 71
+- guru:abort: 71
+- guru:rmdir: 71
+- guru:FLT_MANT_DIG: 71
+- guru:LDBL_MANT_DIG: 71
+- guru:lconv: 71
+- guru:localeconv: 71
+- guru:isupper: 71
+- guru:clock: 71
+- guru:tolower: 71
+- guru:ispunct: 71
+- guru:mkdir: 71
+- guru:opendir: 71
+- guru:readdir: 71
+- guru:jmp_buf: 71
+- guru:longjmp: 71
+- guru:setjmp: 71
+- guru:LDBL_MAX: 71
+- guru:putc: 71
+- guru:strftime: 71
+- guru:INT_MIN: 71
+- guru:CHAR_MIN: 71
+- guru:settime: 71
+- guru:va_arg: 71
+- guru:asm: 71
+- guru:atoi: 71
+- guru:LDBL_DIG: 71
+- guru:wchar_t: 71
+- guru:vfprintf: 71
+- guru:LONG_MAX: 71
+- guru:pause: 71
+- guru:offsetof: 71
+- guru:vprintf: 71
+- guru:realloc: 71
+- guru:SIGILL: 71
+- guru:SIGFPE: 71
+- guru:SIGSEGV: 71
+- guru:fork: 71
+- guru:sigsuspend: 71
+- guru:iscntrl: 71
+- guru:isgraph: 71
+- guru:memset: 70
+- guru:open: 70
+- guru:puts: 70
+- guru:strcmp: 70
+- guru:strcpy: 70
+- guru:qsort: 70
+- guru:strcat: 70
+- guru:wait: 70
+- guru:restrict: 67
+- guru:log: 67
+- guru:#endif: 66
+- guru:#define: 66
+- guru:#ifdef: 66
+- guru:#ifndef: 66
+- guru:#undef: 66
+- guru:printf: 62
+- guru:unsigned: 62
+- guru:putchar: 62
+- guru:long: 62
+- guru:strlen: 62
+- guru:exit: 62
+- guru:memcpy: 62
+- guru:INT_MAX: 62
+- guru:template: 62
+- guru:signed: 62
+- guru:malloc: 62
+- guru:isspace: 62
+- guru:short: 62
+- guru:auto: 62
+- guru:toupper: 62
+- guru:strstr: 62
+- guru:strncmp: 62
+- guru:isalpha: 62
+- guru:isalnum: 62
+- guru:operator: 62
+- guru:main: 54
+- guru:static: 25
+- guru:const: 25
+- guru:NULL: 25
+- guru:void: 25
+- guru:default: 25
+- guru:free: 25
+- guru:do: 25
+- guru:switch: 25
+- guru:goto: 25
+- guru:continue: 25
+- guru:extern: 25
+- guru:read: 25
+- guru:typedef: 25
+- guru:#elif: 25
+- guru:write: 25
+- guru:float: 25
+- guru:raise: 25
+- guru:for: 9
+- guru:char: 9
+- guru:case: 9
+- guru:struct: 9
+- guru:break: 9
+- guru:enum: 9
+- guru:sizeof: 9
+- guru:inline: 9
+- guru:double: 9
+- guru:signal: 9
+- guru:union: 9
+- guru:volatile: 9
+- guru:register: 9
+- guru:if: 1
+- guru:int: 1
+- guru:return: 1
+- guru:else: 1
+- guru:while: 1
+- guru:#if: 1
+- guru:#else: 1
+
+## Names with no dictionary entry (the most common first)
+
+- `n`: 76
+- `_`: 76
+- `i`: 76
+- `error`: 76
+- `p`: 76
+- `x`: 76
+- `oputs`: 76
+- `argv`: 76
+- `s`: 76
+- `idx_t`: 76
+- `buf`: 76
+- `c`: 76
+- `argc`: 76
+- `f`: 76
+- `a`: 76
+- `file`: 76
+- `the`: 76
+- `name`: 76
+- `ok`: 76
+- `len`: 76
+- `optarg`: 76
+- `fd`: 76
+- `optind`: 76
+- `usage`: 76
+- `define`: 76
+- `b`: 76
+- `defined`: 76
+- `stat`: 76
+- `ctx`: 76
+- `quoteaf`: 76
+- `is`: 76
+- `v`: 76
+- `B16`: 76
+- `u`: 76
+- `quote`: 76
+- `r`: 76
+- `err`: 76
+- `streq`: 76
+- `files`: 76
+- `st`: 76
+- `arg`: 76
+- `tmp`: 76
+- `ent`: 76
+- `output`: 76
+- `quotef`: 76
+- `AUTHORS`: 76
+- `PACKAGE`: 76
+- `j`: 76
+- `val`: 76
+- `g`: 76
+- `e`: 76
+- `format`: 76
+- `ch`: 76
+- `t`: 76
+- `ret`: 76
+- `S`: 76
+- `type`: 76
+- `q`: 76
+- `str`: 76
+- `UDItype`: 76
+- `d`: 76
+- `filename`: 76
+- `fp`: 76
+- `proper_name`: 76
+- `mp_limb_t`: 76
+- `bl`: 76
+- `k`: 76
+- `ah`: 76
+- `pos`: 76
+- `USItype`: 76
+- `bh`: 76
+- `w`: 76
+- `dst_name`: 76
+- `al`: 76
+- `as`: 76
+- `l`: 76
+- `sh`: 76
+- `fmt`: 76
+- `sl`: 76
+- `n_read`: 76
+- `nfiles`: 76
+- `outlen`: 76
+- `n_files`: 76
+- `factors`: 76
+- `N`: 76
+- `optc`: 76
+- `option`: 76
+- `STDIN_FILENO`: 76
+- `dest`: 76
+- `each`: 76
+- `use`: 76
+- `affirm`: 76
+- `datap`: 76
+- `me`: 76
+- `cursor`: 76
+- `ignore`: 76
+- `from`: 76
+- `dir`: 76
+- `ptr`: 76
+- `suffix`: 76
+- `all`: 76
+- `dst_dirfd`: 76
+- `flags`: 76
+- `initialize_main`: 76
+- `endif`: 76
+- `n0`: 76
+- `string`: 76
+- `bindtextdomain`: 76
+- `textdomain`: 76
+- `HELP_OPTION_DESCRIPTION`: 76
+- `emit_ancillary_info`: 76
+- `LC_ALL`: 76
+- `n1`: 76
+- `LOCALEDIR`: 76
+- `be`: 76
+- `emit_try_help`: 76
+- `options`: 76
+- `UWtype`: 76
+- `MIN`: 76
+- `dereference`: 76
+- `STDOUT_FILENO`: 76
+- `state`: 76
+- `close_stdout`: 76
+- `diff`: 76
+- `umul_ppmm`: 76
+- `pformat`: 76
+- `fts`: 76
+- `src_name`: 76
+- `long_options`: 76
+- `xmalloc`: 76
+- `sb`: 76
+- `inlen`: 76
+- `EXIT_CANCELED`: 76
+- `dst_relname`: 76
+- `OPTION`: 76
+- `lo`: 76
+- `lim`: 76
+- `by`: 76
+- `verbose`: 76
+- `ac`: 76
+- `same`: 76
+- `GETOPT_HELP_OPTION_DECL`: 76
+- `getopt_long`: 76
+- `case_GETOPT_HELP_CHAR`: 76
+- `hi`: 76
+- `file_name`: 76
+- `src_sb`: 76
+- `longopts`: 76
+- `write_error`: 76
+- `m`: 76
+- `P`: 76
+- `standard`: 76
+- `characters`: 76
+- `precision`: 76
+- `when`: 76
+- `REV`: 76
+- `N_`: 76
+- `bufsize`: 76
+- `no`: 76
+- `columns`: 76
+- `specified`: 76
+- `are`: 76
+- `mbbuf`: 76
+- `prettyname`: 76
+- `qs`: 76
+- `HASH_ALGO_CKSUM`: 76
+- `w1`: 76
+- `w0`: 76
+- `src`: 76
+- `on`: 76
+- `scontext`: 76
+- `nlines`: 76
+- `h`: 76
+- `st_dev`: 76
+- `ss`: 76
+- `CHAR`: 76
+- `n_units`: 76
+- `Usage`: 76
+- `character`: 76
+- `MAX`: 76
+- `m1`: 76
+- `only`: 76
+- `chopt`: 76
+- `signum`: 76
+- `t0`: 76
+- `directory`: 76
+- `sig`: 76
+- `pad`: 76
+- `cp_options`: 76
+- `m0`: 76
+- `LONGINT_OK`: 76
+- `xstrdup`: 76
+- `list`: 76
+- `debug`: 76
+- `data3`: 76
+- `data5`: 76
+- `data7`: 76
+- `nbytes`: 76
+- `o`: 76
+- `s2`: 76
+- `context`: 76
+- `quoteaf_n`: 76
+- `change`: 76
+- `gid`: 76
+- `output_file`: 76
+- `bp`: 76
+- `alloc`: 76
+- `fields`: 76
+- `user`: 76
+- `idx`: 76
+- `info`: 76
+- `wd`: 76
+- `spec`: 76
+- `uid`: 76
+- `utmp_ent`: 76
+- `like`: 76
+- `bpout`: 76
+- `have_read_stdin`: 76
+- `S_ISREG`: 76
+- `xalloc_die`: 76
+- `shuffle_constant`: 76
+- `stats`: 76
+- `env`: 76
+- `s1`: 76
+- `fileinfo`: 76
+- `es`: 76
+- `newline`: 76
+- `infile`: 76
+- `fail`: 76
+- `F`: 76
+- `cmp`: 76
+- `ext`: 76
+- `resstream`: 76
+- `saved_errno`: 76
+- `S_ISDIR`: 76
+- `emit_mandatory_arg_note`: 76
+- `that`: 76
+- `than`: 76
+- `c_isdigit`: 76
+- `STRING`: 76
+- `utmp_buf`: 76
+- `statbuf`: 76
+- `cksum_algorithm`: 76
+- `AT_FDCWD`: 76
+- `control`: 76
+- `tab`: 76
+- `nread`: 76
+- `lseek`: 76
+- `reference`: 76
+- `device`: 76
+- `base58`: 76
+- `delimiter`: 76
+- `st_ino`: 76
+- `new_dst`: 76
+- `outfile`: 76
+- `but`: 76
+- `will`: 76
+- `T`: 76
+- `style`: 76
+- `before`: 76
+- `mp`: 76
+- `xpalloc`: 76
+- `one`: 76
+- `dst_sb`: 76
+- `ai`: 76
+- `endptr`: 76
+- `fspec`: 76
+- `If`: 76
+- `inbuf`: 76
+- `dst`: 76
+- `pwd`: 76
+- `four_mult_constant`: 76
+- `an`: 76
+- `seq`: 76
+- `stat_buf`: 76
+- `FORMAT`: 76
+- `wc`: 76
+- `oi`: 76
+- `signame`: 76
+- `udiv_qrnnd`: 76
+- `t1`: 76
+- `may`: 76
+- `symbolic`: 76
+- `current`: 76
+- `ap`: 76
+- `it`: 76
+- `act`: 76
+- `ph`: 76
+- `pl`: 76
+- `stat_ok`: 76
+- `eolbyte`: 76
+- `nthreads`: 76
+- `fstatus`: 76
+- `any`: 76
+- `z`: 76
+- `skip`: 76
+- `shell`: 76
+- `y`: 76
+- `update`: 76
+- `interactive`: 76
+
+## Comments with no translation
+
+- The official name of this program (e.g., no 'g' prefix).: 76
+- For long options that have no equivalent short option, use a
+   non-character as a pseudo short opti: 76
+- Deprecated.: 76
+- argmatch($QUOTING_STYLE).: 76
+- Ensure that the main for cksum is declared even if the tool is not built
+   in this single-binary.: 76
+- for now, always ignore them: 76
+- Number of bytes to read at once.: 76
+- True if we have ever read standard input.: 76
+- Also clear EOF.: 76
+- Exit statuses.: 76
+- newline=: 76
+- LONGLONG_STANDALONE: 76
+- directory that causes cycles: 76
+- These constants and general algorithms are taken from the Intel whitepaper
+     "Fast CRC Computatio: 76
+- XOR in initial CRC value (for us 0 so no effect), or CRC value
+             calculated for previous : 76
+- At end of loop we write out results from variables back into
+             the buffer, for use in sin: 76
+- Written by Alex Deymo <deymo@chromium.org>.: 76
+- The set of signals that are caught.: 76
+- default: 76
+- do not document: 76
+- obsolescent and undocumented: 76
+- obsolescent and undocumented alias: 76
+- Written by Pádraig Brady.: 76
+- Read FD and return a summary.: 76
+- Note that increasing this may decrease performance if --ignore-garbage
+   is used, because of the me: 76
+- garbage - return false: 76
+- Level of verbosity.: 76
+- Tell fts not to traverse into this hierarchy.: 76
+- Ensure that we do not process "/" on the second visit.: 76
+- For a top-level file or directory, this FTS_NS (stat failed)
+         indicator is determined at the: 76
+- FIXME: try to give a better message: 76
+- Bit flags that control how fts works.: 76
+- Traverse command-line symlinks-to-directories.: 76
+- Traverse all symlinks-to-directories.: 76
+- Traverse no symlinks-to-directories.: 76
+- --no-dereference: affect symlinks: 76
+- --dereference: affect the referent
+                                    of each symlink: 76
+- Written by David MacKenzie <djm@gnu.ai.mit.edu>: 76
+- line delimiter.: 76
+- Output in network byte order (big endian).: 76
+- definitely needed: 76
+- Input buffer.: 76
+- EOF.: 76
+- The local time zone rules, as per the TZ environment variable.: 76
+- When using --files0-from=F, you may not specify any files
+         on the command-line.: 76
+- Annotate the output with extra info to aid the user.: 76
+- Store into FACTORS a prime factor PRIME with multiplicity M.: 76
+- If there is enough room in the last buffer read, just append the new
+         one to it.  This is be: 76
+- If there's not enough room, link the new buffer onto the end of
+             the list, then either f: 76
+- Count the incomplete line on files that don't end with a newline.: 76
+- Written by Jim Meyering.: 76
+- Ignore: 76
+- We don't yet support -Z to restore context with SMACK.: 76
+- FIXME: maybe make this an option: 76
+- Written by Jim Meyering: 76
+- 1 random pass: 76
+- shouldn't happen.: 76
+- eof.: 76
+- skip any whitespace: 76
+- BeOS: 76
+- TRANSLATORS: This string uses format specifiers from
+                 'stat --help' without --file-s: 76
+- Speed optimization, non-regexp.: 76
+- TEST_STANDALONE: 76
+- lose: 76
+- Padding chars only on last block.: 76
+- Complete encoded blocks are used.: 76
+- translate 62nd and 63rd characters: 76
+- inlen==0 is request to flush output.
+     if there is a dangling bit - we are missing some bits,
+   : 76
+- Only accumulate input in this function.: 76
+- Name of input file.  May be "-".: 76
+- Parse command line options.: 76
+- If true, change the modes of directories recursively.: 76
+- Pointer to the device and inode numbers of '/', when --recursive.
+   Otherwise NULL.: 76
+- 1 if --dereference, 0 if --no-dereference, -1 if neither has been
+     specified.: 76
+- ignore: 76
+- Print a message for each file that is processed.: 76
+- Print a message for each file whose attributes we change.: 76
+- Do not be verbose.  This is the default.: 76
+- Remove trailing space.: 76
+- else look-up outside the chroot worked, then go with those.: 76
+- Make sure bin_buffer is properly aligned.: 76
+- Line buffer stdout to ensure lines are written atomically and immediately
+     so that processes run: 76
+- For SysV compatibility.: 76
+- !CRCTAB: 76
+- Fold in parallel eight 16-byte blocks into four 16-byte blocks: 76
+- Do multiplication here for four consecutive 16 byte blocks: 76
+- Now multiplication results for the four blocks is xor:ed with
+                 next four 16 byte blo: 76
+- Fold two 16-byte blocks into one 16-byte block: 76
+- And finish up last 0-31 bytes in a byte by byte fashion: 76
+- Written by Richard Stallman and David MacKenzie.: 76
+- True if the LC_COLLATE locale is hard.: 76
+- If nonzero, we have seen at least one unpairable line.: 76
+- If nonzero, we have warned about disorder in that file.: 76
+- If nonzero, check that the input is correctly ordered.: 76
+- Check that successive input lines PREV and CURRENT from input file
+   WHATFILE are presented in orde: 76
+- Extracted from cp.c and librarified by Jim Meyering.: 76
+- debug info about the last file copy.: 76
+- use verror module to print error message: 76
+- USE_XATTR: 76
+- Copy the file SRC_NAME to the file DST_NAME aka DST_DIRFD+DST_RELNAME.
+   If NONEXISTENT_DST is posi: 76
