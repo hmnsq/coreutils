@@ -20,67 +20,67 @@
 
    Simply call the system 'unlink' function */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
+#ضمن <config.h>
+#ضمن <stdio.h>
+#ضمن <sys/types.h>
 
-#include "system.h"
-#include "long-options.h"
-#include "quote.h"
+#ضمن "system.h"
+#ضمن "long-options.h"
+#ضمن "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "unlink"
+#تعریف_کن برنامه_NAME "unlink"
 
-#define AUTHORS proper_name ("Michael Stone")
+#تعریف_کن AUTHORS proper_name ("Michael Stone")
 
-void
-usage (int status)
+فراغ
+usage (صحيح وضعیت)
 {
-  if (status != EXIT_SUCCESS)
+  إذا (وضعیت != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  وإلا
     {
-      printf (_("\
+      چاپ_کن (_("\
 Usage: %s FILE\n\
-  or:  %s OPTION\n"), program_name, program_name);
+  or:  %s OPTION\n"), برنامه_name, برنامه_name);
       fputs (_("Call the unlink function to remove the specified FILE.\n\n"),
              stdout);
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (نسخه_OPTION_DESCRIPTION);
+      emit_ancillary_info (برنامه_NAME);
     }
-  exit (status);
+  خروج (وضعیت);
 }
 
-int
-main (int argc, char **argv)
+صحيح
+اصلی (صحيح argc, حرف **argv)
 {
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  مجموعه_برنامه_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
-                                   Version, true, usage, AUTHORS,
-                                   (char const *) NULL);
+  parse_gnu_standard_options_only (argc, argv, برنامه_NAME, PACKAGE_NAME,
+                                   نسخه, true, usage, AUTHORS,
+                                   (حرف ثابت *) عدم);
 
-  if (argc < optind + 1)
+  إذا (argc < optind + 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
-  if (optind + 1 < argc)
+  إذا (optind + 1 < argc)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind + 1]));
       usage (EXIT_FAILURE);
     }
 
-  if (unlink (argv[optind]) != 0)
+  إذا (unlink (argv[optind]) != 0)
     error (EXIT_FAILURE, errno, _("cannot unlink %s"), quoteaf (argv[optind]));
 
-  return EXIT_SUCCESS;
+  أرجع EXIT_SUCCESS;
 }

@@ -16,40 +16,40 @@
 
 /* Written by Daniel Walsh <dwalsh@redhat.com> */
 
-#ifndef COREUTILS_SELINUX_H
+#اگر_تعریف_نشده COREUTILS_SELINUX_H
 # define COREUTILS_SELINUX_H
 
-struct selabel_handle;
+بنية selabel_handle;
 
 /* Return true if ERR corresponds to an unsupported request,
    or if there is no context or it's inaccessible.  */
-static inline bool
-ignorable_ctx_err (int err)
+ساكن مضمن bool
+ignorable_ctx_err (صحيح err)
 {
-  return err == ENOTSUP || err == ENODATA;
+  أرجع err == ENOTSUP || err == ENODATA;
 }
 
-# if HAVE_SELINUX_LABEL_H
+# إذا HAVE_SELINUX_LABEL_H
 
-extern bool
-restorecon (struct selabel_handle *selabel_handle,
-            char const *path, bool recurse);
-extern int
-defaultcon (struct selabel_handle *selabel_handle,
-            char const *path, mode_t mode);
+خارجي bool
+restorecon (بنية selabel_handle *selabel_handle,
+            حرف ثابت *مسیر, bool recurse);
+خارجي صحيح
+defaultcon (بنية selabel_handle *selabel_handle,
+            حرف ثابت *مسیر, mode_t نما_2);
 
-# else
+# وإلا
 
-static inline bool
-restorecon (MAYBE_UNUSED struct selabel_handle *selabel_handle,
-            MAYBE_UNUSED char const *path, MAYBE_UNUSED bool recurse)
-{ errno = ENOTSUP; return false; }
+ساكن مضمن bool
+restorecon (MAYBE_استفادهنشده بنية selabel_handle *selabel_handle,
+            MAYBE_استفادهنشده حرف ثابت *مسیر, MAYBE_استفادهنشده bool recurse)
+{ errno = ENOTSUP; أرجع false; }
 
-static inline int
-defaultcon (MAYBE_UNUSED struct selabel_handle *selabel_handle,
-            MAYBE_UNUSED char const *path, MAYBE_UNUSED mode_t mode)
-{ errno = ENOTSUP; return -1; }
+ساكن مضمن صحيح
+defaultcon (MAYBE_استفادهنشده بنية selabel_handle *selabel_handle,
+            MAYBE_استفادهنشده حرف ثابت *مسیر, MAYBE_استفادهنشده mode_t نما_2)
+{ errno = ENOTSUP; أرجع -1; }
 
 # endif
 
-#endif
+#پایان_اگر

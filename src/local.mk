@@ -444,7 +444,7 @@ src_tail_SOURCES = src/tail.c src/iopoll.c
 src_tee_SOURCES = src/tee.c src/iopoll.c
 
 src_sum_SOURCES = src/sum.c src/sum.h src/cksum.c
-src_sum_CPPFLAGS = -DHASH_ALGO_SUM=1 $(AM_CPPFLAGS)
+src_sum_CPPFLAGS = -DHASH_ALGO_جمع=1 $(AM_CPPFLAGS)
 
 src_md5sum_SOURCES = src/cksum.c
 src_md5sum_CPPFLAGS = -DHASH_ALGO_MD5=1 $(AM_CPPFLAGS)
@@ -498,11 +498,11 @@ src_libcksum_vmull_a_CFLAGS = -march=armv8-a+crypto $(AM_CFLAGS)
 endif
 
 src_base64_SOURCES = src/basenc.c
-src_base64_CPPFLAGS = -DBASE_TYPE=64 $(AM_CPPFLAGS)
+src_base64_CPPFLAGS = -Dپایه_TYPE=64 $(AM_CPPFLAGS)
 src_base32_SOURCES = src/basenc.c
-src_base32_CPPFLAGS = -DBASE_TYPE=32 $(AM_CPPFLAGS)
+src_base32_CPPFLAGS = -Dپایه_TYPE=32 $(AM_CPPFLAGS)
 src_basenc_SOURCES = src/basenc.c
-src_basenc_CPPFLAGS = -DBASE_TYPE=42 $(AM_CPPFLAGS)
+src_basenc_CPPFLAGS = -Dپایه_TYPE=42 $(AM_CPPFLAGS)
 
 src_expand_SOURCES = src/expand.c src/expand-common.c
 src_unexpand_SOURCES = src/unexpand.c src/expand-common.c
@@ -543,7 +543,7 @@ src_libstdbuf_so_CFLAGS = -fPIC $(AM_CFLAGS)
 BUILT_SOURCES += src/coreutils.h
 if SINGLE_BINARY
 # Single binary dependencies
-src_coreutils_CFLAGS = -DSINGLE_BINARY $(AM_CFLAGS)
+src_coreutils_CFLAGS = -DSINGLE_دودویی $(AM_CFLAGS)
 #src_coreutils_LDFLAGS = $(AM_LDFLAGS)
 src_coreutils_LDADD = $(single_binary_deps) $(LDADD) $(single_binary_libs)
 EXTRA_src_coreutils_DEPENDENCIES = $(single_binary_deps)

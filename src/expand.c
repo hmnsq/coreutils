@@ -32,47 +32,47 @@
 
    David MacKenzie <djm@gnu.ai.mit.edu> */
 
-#include <config.h>
+#ضمن <config.h>
 
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#ضمن <stdio.h>
+#ضمن <getopt.h>
+#ضمن <sys/types.h>
 
-#include "system.h"
-#include "ioblksize.h"
-#include "mcel.h"
-#include "mbbuf.h"
-#include "expand-common.h"
+#ضمن "system.h"
+#ضمن "ioblksize.h"
+#ضمن "mcel.h"
+#ضمن "mbbuf.h"
+#ضمن "expand-common.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "expand"
+#تعریف_کن برنامه_NAME "expand"
 
-#define AUTHORS proper_name ("David MacKenzie")
+#تعریف_کن AUTHORS proper_name ("David MacKenzie")
 
-static char const shortopts[] = "it:0::1::2::3::4::5::6::7::8::9::";
+ساكن حرف ثابت shortopts[] = "it:0::1::2::3::4::5::6::7::8::9::";
 
-static struct option const longopts[] =
+ساكن بنية option ثابت longopts[] =
 {
-  {"tabs", required_argument, NULL, 't'},
-  {"initial", no_argument, NULL, 'i'},
+  {"tabs", required_آرگومان, عدم, 't'},
+  {"initial", no_آرگومان, عدم, 'i'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_نسخه_OPTION_DECL},
+  {عدم, 0, عدم, 0}
 };
 
-void
-usage (int status)
+فراغ
+usage (صحيح وضعیت)
 {
-  if (status != EXIT_SUCCESS)
+  إذا (وضعیت != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  وإلا
     {
-      printf (_("\
+      چاپ_کن (_("\
 Usage: %s [OPTION]... [FILE]...\n\
 "),
-              program_name);
+              برنامه_name);
       fputs (_("\
-Convert tabs in each FILE to spaces, writing to standard output.\n\
+Convert tabs درون each FILE مقصد spaces, writing مقصد standard output.\n\
 "), stdout);
 
       emit_stdin_note ();
@@ -80,38 +80,38 @@ Convert tabs in each FILE to spaces, writing to standard output.\n\
 
       oputs (_("\
   -i, --initial\n\
-         do not convert tabs after non blanks\n\
+         افعل not convert tabs after non blanks\n\
 "));
       oputs (_("\
   -t, --tabs=N\n\
          have tabs N characters apart, not 8\n\
 "));
-      emit_tab_list_info (PROGRAM_NAME);
+      emit_tab_list_info (برنامه_NAME);
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (نسخه_OPTION_DESCRIPTION);
+      emit_ancillary_info (برنامه_NAME);
     }
-  exit (status);
+  خروج (وضعیت);
 }
 
 
 /* Change tabs to spaces, writing to stdout.
    Read each file in 'file_list', in order.  */
 
-static void
-expand (void)
+ساكن فراغ
+expand (فراغ)
 {
   /* Input stream.  */
-  FILE *fp = next_file (NULL);
+  FILE *fp = بعدی_file (عدم);
 
-  if (!fp)
-    return;
+  إذا (!fp)
+    أرجع;
 
-  static char line_in[IO_BUFSIZE];
+  ساكن حرف سطر_درون[IO_BUFSIZE];
   mbbuf_t mbbuf;
-  mbbuf_init (&mbbuf, line_in, sizeof line_in, fp);
+  mbbuf_init (&mbbuf, سطر_درون, حجم سطر_درون, fp);
 
-  while (true)
+  طالما (true)
     {
       /* Input character, or EOF.  */
       mcel_t g;
@@ -124,122 +124,122 @@ expand (void)
          is true:  */
 
       /* Column of next input character.  */
-      colno column = 0;
+      colno ستونی = 0;
 
       /* Index in TAB_LIST of next tab stop to examine.  */
-      idx_t tab_index = 0;
+      idx_t tab_شاخص = 0;
 
 
       /* Convert a line of text.  */
 
-      do
+      افعل
         {
-          while ((g = mbbuf_get_char (&mbbuf)).ch == MBBUF_EOF
-                 && (fp = next_file (fp)))
-            mbbuf_init (&mbbuf, line_in, sizeof line_in, fp);
+          طالما ((g = mbbuf_get_char (&mbbuf)).ch == MBBUF_EOF
+                 && (fp = بعدی_file (fp)))
+            mbbuf_init (&mbbuf, سطر_درون, حجم سطر_درون, fp);
 
-          if (convert)
+          إذا (convert)
             {
-              convert &= convert_entire_line || c32issep (g.ch);
+              convert &= convert_entire_سطر || c32issep (g.ch);
 
-              if (g.ch == '\t')
+              إذا (g.ch == '\t')
                 {
                   /* Column the next input tab stop is on.  */
-                  bool last_tab;
-                  colno next_tab_column
-                    = get_next_tab_column (column, &tab_index, &last_tab);
+                  bool آخرین_tab;
+                  colno بعدی_tab_ستونی
+                    = get_بعدی_tab_ستونی (ستونی, &tab_شاخص, &آخرین_tab);
 
-                  while (++column < next_tab_column)
-                    if (putchar (' ') < 0)
+                  طالما (++ستونی < بعدی_tab_ستونی)
+                    إذا (حرف_چاپ_کن (' ') < 0)
                       write_error ();
 
-                  if (putchar (' ') < 0)
+                  إذا (حرف_چاپ_کن (' ') < 0)
                     write_error ();
 
-                  continue;
+                  استمر;
                 }
-              else if (g.ch == '\b')
+              وإلا إذا (g.ch == '\b')
                 {
                   /* Go back one column, and force recalculation of the
                      next tab stop.  */
-                  column -= !!column;
-                  tab_index -= !!tab_index;
+                  ستونی -= !!ستونی;
+                  tab_شاخص -= !!tab_شاخص;
                 }
-              else
+              وإلا
                 {
-                  int width = c32width (g.ch);
-                  if (ckd_add (&column, column, width < 0 ? 1 : width))
+                  صحيح عرض = c32width (g.ch);
+                  إذا (ckd_جمع_کن (&ستونی, ستونی, عرض < 0 ? 1 : عرض))
                     error (EXIT_FAILURE, 0, _("input line is too long"));
                 }
 
             }
 
-          if (g.ch == MBBUF_EOF)
-            return;
+          إذا (g.ch == MBBUF_EOF)
+            أرجع;
 
-          fwrite (mbbuf_char_offset (&mbbuf, g), sizeof (char), g.len, stdout);
-          if (ferror (stdout))
+          fwrite (mbbuf_char_جابه_جایی (&mbbuf, g), حجم (حرف), g.len, stdout);
+          إذا (ferror (stdout))
             write_error ();
         }
-      while (g.ch != '\n');
+      طالما (g.ch != '\n');
     }
 }
 
-int
-main (int argc, char **argv)
+صحيح
+اصلی (صحيح argc, حرف **argv)
 {
-  int c;
+  صحيح c;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  مجموعه_برنامه_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
-  convert_entire_line = true;
+  convert_entire_سطر = true;
 
-  while ((c = getopt_long (argc, argv, shortopts, longopts, NULL)) != -1)
+  طالما ((c = getopt_long (argc, argv, shortopts, longopts, عدم)) != -1)
     {
-      switch (c)
+      بدل (c)
         {
-        case 'i':
-          convert_entire_line = false;
-          break;
+        حالة 'i':
+          convert_entire_سطر = false;
+          اكسر;
 
-        case 't':
+        حالة 't':
           parse_tab_stops (optarg);
-          break;
+          اكسر;
 
-        case '0': case '1': case '2': case '3': case '4':
-        case '5': case '6': case '7': case '8': case '9':
-          if (optarg)
+        حالة '0': حالة '1': حالة '2': حالة '3': حالة '4':
+        حالة '5': حالة '6': حالة '7': حالة '8': حالة '9':
+          إذا (optarg)
             parse_tab_stops (optarg - 1);
-          else
+          وإلا
             {
-              char tab_stop[2];
+              حرف tab_stop[2];
               tab_stop[0] = c;
               tab_stop[1] = '\0';
               parse_tab_stops (tab_stop);
             }
-          break;
+          اكسر;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_نسخه_CHAR (برنامه_NAME, AUTHORS);
 
-        default:
+        افتراضي:
           usage (EXIT_FAILURE);
         }
     }
 
   finalize_tab_stops ();
 
-  set_file_list (optind < argc ? &argv[optind] : NULL);
+  مجموعه_file_list (optind < argc ? &argv[optind] : عدم);
 
   expand ();
 
   cleanup_file_list_stdin ();
 
-  return exit_status;
+  أرجع exit_وضعیت;
 }

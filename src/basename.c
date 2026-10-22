@@ -14,44 +14,44 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include <getopt.h>
-#include <stdio.h>
-#include <sys/types.h>
+#ضمن <config.h>
+#ضمن <getopt.h>
+#ضمن <stdio.h>
+#ضمن <sys/types.h>
 
-#include "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
-#include "system.h"
-#include "quote.h"
+#ضمن "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
+#ضمن "system.h"
+#ضمن "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "basename"
+#تعریف_کن برنامه_NAME "basename"
 
-#define AUTHORS proper_name ("David MacKenzie")
+#تعریف_کن AUTHORS proper_name ("David MacKenzie")
 
-static bool quote_output;
+ساكن bool quote_output;
 
-static struct option const longopts[] =
+ساكن بنية option ثابت longopts[] =
 {
-  {"multiple", no_argument, NULL, 'a'},
-  {"suffix", required_argument, NULL, 's'},
-  {"zero", no_argument, NULL, 'z'},
+  {"multiple", no_آرگومان, عدم, 'a'},
+  {"suffix", required_آرگومان, عدم, 's'},
+  {"zero", no_آرگومان, عدم, 'z'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_نسخه_OPTION_DECL},
+  {عدم, 0, عدم, 0}
 };
 
-void
-usage (int status)
+فراغ
+usage (صحيح وضعیت)
 {
-  if (status != EXIT_SUCCESS)
+  إذا (وضعیت != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  وإلا
     {
-      printf (_("\
+      چاپ_کن (_("\
 Usage: %s NAME [SUFFIX]\n\
   or:  %s OPTION... NAME...\n\
 "),
-              program_name, program_name);
+              برنامه_name, برنامه_name);
       fputs (_("\
 Print NAME with any leading directory components removed.\n\
 If specified, also remove a trailing SUFFIX.\n\
@@ -60,46 +60,46 @@ If specified, also remove a trailing SUFFIX.\n\
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -a, --multiple\n\
-         support multiple arguments and treat each as a NAME\n\
+  -a, --مضرب\n\
+         support مضرب arguments and treat each as a NAME\n\
 "));
       oputs (_("\
   -s, --suffix=SUFFIX\n\
-         remove a trailing SUFFIX; implies -a\n\
+         remove a trailing SUFFIX; نتیجه_میدهد -a\n\
 "));
       oputs (_("\
   -z, --zero\n\
-         end each output line with NUL, not newline\n\
+         انتها each output سطر with NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      printf (_("\
+      oputs (نسخه_OPTION_DESCRIPTION);
+      چاپ_کن (_("\
 \n\
 Examples:\n\
-  %s /usr/bin/sort          -> \"sort\"\n\
+  %s /usr/bin/مرتب_سازی          -> \"مرتب_سازی\"\n\
   %s include/stdio.h .h     -> \"stdio\"\n\
   %s -s .h include/stdio.h  -> \"stdio\"\n\
   %s -a any/str1 any/str2   -> \"str1\" followed by \"str2\"\n\
 "),
-              program_name, program_name, program_name, program_name);
-      emit_ancillary_info (PROGRAM_NAME);
+              برنامه_name, برنامه_name, برنامه_name, برنامه_name);
+      emit_ancillary_info (برنامه_NAME);
     }
-  exit (status);
+  خروج (وضعیت);
 }
 
 /* Remove SUFFIX from the end of NAME if it is there, unless NAME
    consists entirely of SUFFIX.  */
 
-static void
-remove_suffix (char *name, char const *suffix, idx_t suffix_len)
+ساكن فراغ
+remove_suffix (حرف *name, حرف ثابت *suffix, idx_t suffix_len)
 {
-  char *np = name + strlen (name);
-  char const *sp = suffix + suffix_len;
+  حرف *np = name + طول_رشته (name);
+  حرف ثابت *sp = suffix + suffix_len;
 
-  while (np > name && sp > suffix)
-    if (*--np != *--sp)
-      return;
-  if (np > name)
+  طالما (np > name && sp > suffix)
+    إذا (*--np != *--sp)
+      أرجع;
+  إذا (np > name)
     *np = '\0';
 }
 
@@ -107,11 +107,11 @@ remove_suffix (char *name, char const *suffix, idx_t suffix_len)
    length of SUFFIX_LEN bytes, remove the trailing SUFFIX.
    Finally, output the result string.  */
 
-static void
-perform_basename (char const *string, char const *suffix, idx_t suffix_len,
+ساكن فراغ
+perform_basename (حرف ثابت *string, حرف ثابت *suffix, idx_t suffix_len,
                   bool use_nuls)
 {
-  char *name = base_name (string);
+  حرف *name = پایه_name (string);
   strip_trailing_slashes (name);
 
   /* Per POSIX, 'basename // /' must return '//' on platforms with
@@ -120,96 +120,96 @@ perform_basename (char const *string, char const *suffix, idx_t suffix_len,
      skipping suffix stripping if base_name returned an absolute path
      or a drive letter (only possible if name is a file-system
      root).  */
-  if (0 < suffix_len && IS_RELATIVE_FILE_NAME (name)
-      && ! FILE_SYSTEM_PREFIX_LEN (name))
+  إذا (0 < suffix_len && IS_RELATIVE_FILE_NAME (name)
+      && ! FILE_SYSTEM_پیشوند_LEN (name))
     remove_suffix (name, suffix, suffix_len);
 
   fputs (quote_output ? quoteN (name) : name, stdout);
-  putchar (use_nuls ? '\0' : '\n');
-  free (name);
+  حرف_چاپ_کن (use_nuls ? '\0' : '\n');
+  حرر (name);
 }
 
-int
-main (int argc, char **argv)
+صحيح
+اصلی (صحيح argc, حرف **argv)
 {
-  bool multiple_names = false;
+  bool مضرب_نامها = false;
   bool use_nuls = false;
-  char const *suffix = NULL;
+  حرف ثابت *suffix = عدم;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  مجموعه_برنامه_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while (true)
+  طالما (true)
     {
-      int c = getopt_long (argc, argv, "+as:z", longopts, NULL);
+      صحيح c = getopt_long (argc, argv, "+as:z", longopts, عدم);
 
-      if (c == -1)
-        break;
+      إذا (c == -1)
+        اكسر;
 
-      switch (c)
+      بدل (c)
         {
-        case 's':
+        حالة 's':
           suffix = optarg;
           /* -s implies -a, so...  */
           FALLTHROUGH;
 
-        case 'a':
-          multiple_names = true;
-          break;
+        حالة 'a':
+          مضرب_نامها = true;
+          اكسر;
 
-        case 'z':
+        حالة 'z':
           use_nuls = true;
-          break;
+          اكسر;
 
         case_GETOPT_HELP_CHAR;
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_نسخه_CHAR (برنامه_NAME, AUTHORS);
 
-        default:
+        افتراضي:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (argc < optind + 1)
+  إذا (argc < optind + 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
-  if (! multiple_names)
+  إذا (! مضرب_نامها)
     {
-      if (optind + 2 == argc)
+      إذا (optind + 2 == argc)
         suffix = argv[optind + 1];
-      else if (optind + 2 < argc)
+      وإلا إذا (optind + 2 < argc)
         {
           error (0, 0, _("extra operand %s"), quote (argv[optind + 2]));
           usage (EXIT_FAILURE);
         }
     }
 
-  if (!use_nuls && isatty (STDOUT_FILENO))
+  إذا (!use_nuls && isatty (STDOUT_FILENO))
     {
-      int qs = getenv_quoting_style ();
-      if (qs < 0)
+      صحيح qs = getenv_quoting_style ();
+      إذا (qs < 0)
         qs = shell_escape_quoting_style;
-      if (qs != literal_quoting_style)
+      إذا (qs != literal_quoting_style)
         {
-          set_quoting_style (NULL, qs);
+          مجموعه_quoting_style (عدم, qs);
           quote_output = true;
         }
     }
 
-  idx_t suffix_len = suffix ? strlen (suffix) : 0;
+  idx_t suffix_len = suffix ? طول_رشته (suffix) : 0;
 
-  char **file = argv + optind;
-  int n_files = multiple_names ? argc - optind : 1;
+  حرف **file = argv + optind;
+  صحيح n_files = مضرب_نامها ? argc - optind : 1;
 
-  for (int i = 0; i < n_files; ++i)
+  لكل (صحيح i = 0; i < n_files; ++i)
     perform_basename (file[i], suffix, suffix_len, use_nuls);
 
-  return EXIT_SUCCESS;
+  أرجع EXIT_SUCCESS;
 }

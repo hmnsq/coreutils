@@ -18,58 +18,58 @@
 /* Equivalent to 'id -un'. */
 /* Written by Richard Mlynarik. */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <pwd.h>
+#ضمن <config.h>
+#ضمن <stdio.h>
+#ضمن <sys/types.h>
+#ضمن <pwd.h>
 
-#include "system.h"
-#include "long-options.h"
-#include "quote.h"
+#ضمن "system.h"
+#ضمن "long-options.h"
+#ضمن "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "whoami"
+#تعریف_کن برنامه_NAME "whoami"
 
-#define AUTHORS proper_name ("Richard Mlynarik")
+#تعریف_کن AUTHORS proper_name ("Richard Mlynarik")
 
-void
-usage (int status)
+فراغ
+usage (صحيح وضعیت)
 {
-  if (status != EXIT_SUCCESS)
+  إذا (وضعیت != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  وإلا
     {
-      printf (_("Usage: %s [OPTION]...\n"), program_name);
+      چاپ_کن (_("Usage: %s [OPTION]...\n"), برنامه_name);
       fputs (_("\
 Print the user name associated with the current effective user ID.\n\
 Same as id -un.\n\
 \n\
 "), stdout);
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (نسخه_OPTION_DESCRIPTION);
+      emit_ancillary_info (برنامه_NAME);
     }
-  exit (status);
+  خروج (وضعیت);
 }
 
-int
-main (int argc, char **argv)
+صحيح
+اصلی (صحيح argc, حرف **argv)
 {
   uid_t NO_UID = -1;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  مجموعه_برنامه_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
-                                   Version, true, usage, AUTHORS,
-                                   (char const *) NULL);
+  parse_gnu_standard_options_only (argc, argv, برنامه_NAME, PACKAGE_NAME,
+                                   نسخه, true, usage, AUTHORS,
+                                   (حرف ثابت *) عدم);
 
-  if (optind != argc)
+  إذا (optind != argc)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind]));
       usage (EXIT_FAILURE);
@@ -77,10 +77,10 @@ main (int argc, char **argv)
 
   errno = 0;
   uid_t uid = geteuid ();
-  struct passwd *pw = uid == NO_UID && errno ? NULL : getpwuid (uid);
-  if (!pw)
+  بنية passwd *pw = uid == NO_UID && errno ? عدم : getpwuid (uid);
+  إذا (!pw)
     error (EXIT_FAILURE, errno, _("cannot find name for user ID %ju"),
            (uintmax_t) uid);
   puts (pw->pw_name);
-  return EXIT_SUCCESS;
+  أرجع EXIT_SUCCESS;
 }

@@ -17,311 +17,311 @@
 /* Written by Stuart Kemp, cpsrk@groper.jcu.edu.au.
    Modified by David MacKenzie, djm@gnu.ai.mit.edu. */
 
-#include <config.h>
+#ضمن <config.h>
 
-#include <getopt.h>
-#include <sys/types.h>
-#include <signal.h>
+#ضمن <getopt.h>
+#ضمن <sys/types.h>
+#ضمن <signal.h>
 
-#include "system.h"
+#ضمن "system.h"
 
-#include <regex.h>
+#ضمن <regex.h>
 
-#include "c-ctype.h"
-#include "fd-reopen.h"
-#include "quote.h"
-#include "safe-read.h"
-#include "stdio--.h"
-#include "term-sig.h"
-#include "xdectoint.h"
-#include "xstrtol.h"
+#ضمن "c-ctype.h"
+#ضمن "fd-reopen.h"
+#ضمن "quote.h"
+#ضمن "safe-read.h"
+#ضمن "stdio--.h"
+#ضمن "term-sig.h"
+#ضمن "xdectoint.h"
+#ضمن "xstrtol.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "csplit"
+#تعریف_کن برنامه_NAME "csplit"
 
-#define AUTHORS \
+#تعریف_کن AUTHORS \
   proper_name ("Stuart Kemp"), \
   proper_name ("David MacKenzie")
 
 /* The default prefix for output file names. */
-#define DEFAULT_PREFIX	"xx"
+#تعریف_کن DEFAULT_پیشوند	"xx"
 
 /* A compiled pattern arg. */
-struct control
+بنية control
 {
-  intmax_t offset;		/* Offset from regexp to split at. */
-  intmax_t lines_required;	/* Number of lines required. */
+  intmax_t جابه_جایی;		/* Offset from regexp to split at. */
+  intmax_t سطرها_required;	/* Number of lines required. */
   intmax_t repeat;		/* Repeat count. */
-  int argnum;			/* ARGV index. */
+  صحيح argnum;			/* ARGV index. */
   bool repeat_forever;		/* True if '*' used as a repeat count. */
   bool ignore;			/* If true, produce no output (for regexp). */
   bool regexpr;			/* True if regular expression was used. */
-  struct re_pattern_buffer re_compiled;	/* Compiled regular expression. */
+  بنية re_الگو_میانگیر re_compiled;	/* Compiled regular expression. */
 };
 
 /* Initial size of data area in buffers. */
-#define START_SIZE	8191
+#تعریف_کن شروع_اندازه	8191
 
 /* Number of lines kept in each node in line list. */
-#define CTRL_SIZE	80
+#تعریف_کن CTRL_اندازه	80
 
-#ifdef DEBUG
+#اگر_تعریف_شده DEBUG
 /* Some small values to test the algorithms. */
-# define START_SIZE	200
-# define CTRL_SIZE	1
-#endif
+# define شروع_اندازه	200
+# define CTRL_اندازه	1
+#پایان_اگر
 
 /* A string with a length count. */
-struct cstring
+بنية cstring
 {
   idx_t len;
-  char *str;
+  حرف *str;
 };
 
 /* Pointers to the beginnings of lines in the buffer area.
    These structures are linked together if needed. */
-struct line
+بنية سطر
 {
-  idx_t used;			/* Number of offsets used in this struct. */
-  idx_t insert_index;		/* Next offset to use when inserting line. */
-  idx_t retrieve_index;	/* Next index to use when retrieving line. */
-  struct cstring starts[CTRL_SIZE]; /* Lines in the data area. */
-  struct line *next;		/* Next in linked list. */
+  idx_t استفاده_شده;			/* Number of offsets used in this struct. */
+  idx_t درج_شاخص;		/* Next offset to use when inserting line. */
+  idx_t retrieve_شاخص;	/* Next index to use when retrieving line. */
+  بنية cstring starts[CTRL_اندازه]; /* Lines in the data area. */
+  بنية سطر *بعدی;		/* Next in linked list. */
 };
 
 /* The structure to hold the input lines.
    Contains a pointer to the data area and a list containing
    pointers to the individual lines. */
-struct buffer_record
+بنية میانگیر_رکورد
 {
-  idx_t bytes_alloc;		/* Size of the buffer area. */
-  idx_t bytes_used;		/* Bytes used in the buffer area. */
-  intmax_t start_line;		/* First line number in this buffer. */
-  intmax_t first_available;	/* First line that can be retrieved. */
-  idx_t num_lines;		/* Number of complete lines in this buffer. */
-  char *buffer COUNTED_BY (bytes_alloc);	/* Data area. */
-  struct line *line_start;	/* Head of list of pointers to lines. */
-  struct line *curr_line;	/* The line start record currently in use. */
-  struct buffer_record *next;
+  idx_t بایتها_alloc;		/* Size of the buffer area. */
+  idx_t بایتها_استفاده_شده;		/* Bytes used in the buffer area. */
+  intmax_t شروع_سطر;		/* First line number in this buffer. */
+  intmax_t اولی_موجود;	/* First line that can be retrieved. */
+  idx_t رقم_سطرها;		/* Number of complete lines in this buffer. */
+  حرف *میانگیر COUNTED_BY (بایتها_alloc);	/* Data area. */
+  بنية سطر *سطر_شروع;	/* Head of list of pointers to lines. */
+  بنية سطر *curr_سطر;	/* The line start record currently in use. */
+  بنية میانگیر_رکورد *بعدی;
 };
 
-static void close_output_file (void);
-static void create_output_file (void);
-static void delete_all_files (bool);
-static void save_line_to_file (const struct cstring *line);
+ساكن فراغ close_output_file (فراغ);
+ساكن فراغ create_output_file (فراغ);
+ساكن فراغ delete_all_files (bool);
+ساكن فراغ save_سطر_مقصد_file (ثابت بنية cstring *سطر);
 
 /* Start of buffer list. */
-static struct buffer_record *head = NULL;
+ساكن بنية میانگیر_رکورد *سر = عدم;
 
 /* Partially read line. */
-static char *hold_area = NULL;
+ساكن حرف *hold_area = عدم;
 
 /* Number of bytes in 'hold_area'. */
-static idx_t hold_count = 0;
+ساكن idx_t hold_شمار = 0;
 
 /* Number of the last line in the buffers. */
-static intmax_t last_line_number = 0;
+ساكن intmax_t آخرین_سطر_عدد = 0;
 
 /* Number of the line currently being examined. */
-static intmax_t current_line = 0;
+ساكن intmax_t current_سطر = 0;
 
 /* If true, we have read EOF. */
-static bool have_read_eof = false;
+ساكن bool have_read_eof = false;
 
 /* Name of output files. */
-static char *volatile filename_space = NULL;
+ساكن حرف *متطاير filename_space = عدم;
 
 /* Prefix part of output file names. */
-static char const *volatile prefix = DEFAULT_PREFIX;
+ساكن حرف ثابت *متطاير پیشوند = DEFAULT_پیشوند;
 
 /* Suffix part of output file names. */
-static char *volatile suffix = NULL;
+ساكن حرف *متطاير suffix = عدم;
 
 /* Number of digits to use in output file names. */
-static int volatile digits = 2;
+ساكن صحيح متطاير digits = 2;
 
 /* Number of files created so far. */
-static int volatile files_created = 0;
+ساكن صحيح متطاير files_created = 0;
 
 /* Number of bytes written to current file. */
-static intmax_t bytes_written;
+ساكن intmax_t بایتها_written;
 
 /* Output file pointer. */
-static FILE *output_stream = NULL;
+ساكن FILE *output_جریان = عدم;
 
 /* Output file name. */
-static char *output_filename = NULL;
+ساكن حرف *output_filename = عدم;
 
 /* Perhaps it would be cleaner to pass arg values instead of indexes. */
-static char **global_argv;
+ساكن حرف **global_argv;
 
 /* If true, do not print the count of bytes in each output file. */
-static bool suppress_count;
+ساكن bool suppress_شمار;
 
 /* If true, remove output files on error. */
-static bool volatile remove_files = true;
+ساكن bool متطاير remove_files = true;
 
 /* If true, remove all output files which have a zero length. */
-static bool elide_empty_files;
+ساكن bool elide_خالی_files;
 
 /* If true, suppress the lines that match the PATTERN */
-static bool suppress_matched;
+ساكن bool suppress_matched;
 
 /* The compiled pattern arguments, which determine how to split
    the input file. */
-static struct control *controls;
+ساكن بنية control *controls;
 
 /* Number of elements in 'controls'. */
-static idx_t control_used;
+ساكن idx_t control_استفاده_شده;
 
 /* The set of signals that are caught.  */
-static sigset_t caught_signals;
+ساكن sigset_t caught_سیگنالها;
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+تعداد
 {
   SUPPRESS_MATCHED_OPTION = CHAR_MAX + 1
 };
 
-static struct option const longopts[] =
+ساكن بنية option ثابت longopts[] =
 {
-  {"digits", required_argument, NULL, 'n'},
-  {"quiet", no_argument, NULL, 'q'},  /* Deprecated.  */
-  {"silent", no_argument, NULL, 's'},
-  {"keep-files", no_argument, NULL, 'k'},
-  {"elide-empty-files", no_argument, NULL, 'z'},
-  {"prefix", required_argument, NULL, 'f'},
-  {"suffix-format", required_argument, NULL, 'b'},
-  {"suppress-matched", no_argument, NULL, SUPPRESS_MATCHED_OPTION},
+  {"digits", required_آرگومان, عدم, 'n'},
+  {"quiet", no_آرگومان, عدم, 'q'},  /* Deprecated.  */
+  {"silent", no_آرگومان, عدم, 's'},
+  {"keep-files", no_آرگومان, عدم, 'k'},
+  {"elide-empty-files", no_آرگومان, عدم, 'z'},
+  {"prefix", required_آرگومان, عدم, 'f'},
+  {"suffix-format", required_آرگومان, عدم, 'b'},
+  {"suppress-matched", no_آرگومان, عدم, SUPPRESS_MATCHED_OPTION},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_نسخه_OPTION_DECL},
+  {عدم, 0, عدم, 0}
 };
 
 /* Optionally remove files created so far; then exit.
    Called when an error detected. */
 
-static void
-cleanup (void)
+ساكن فراغ
+cleanup (فراغ)
 {
   sigset_t oldset;
 
   close_output_file ();
 
-  sigprocmask (SIG_BLOCK, &caught_signals, &oldset);
+  sigprocmask (SIG_BLOCK, &caught_سیگنالها, &oldset);
   delete_all_files (false);
-  sigprocmask (SIG_SETMASK, &oldset, NULL);
+  sigprocmask (SIG_SETMASK, &oldset, عدم);
 }
 
-static _Noreturn void
-cleanup_fatal (void)
+ساكن _Noreturn فراغ
+cleanup_fatal (فراغ)
 {
   cleanup ();
-  exit (EXIT_FAILURE);
+  خروج (EXIT_FAILURE);
 }
 
-extern void
-xalloc_die (void)
+خارجي فراغ
+xalloc_die (فراغ)
 {
   error (0, 0, "%s", _("memory exhausted"));
   cleanup_fatal ();
 }
 
-static void
-interrupt_handler (int sig)
+ساكن فراغ
+وقفه_handler (صحيح sig)
 {
   delete_all_files (true);
-  signal (sig, SIG_DFL);
+  إشارة (sig, SIG_DFL);
   /* The signal has been reset to SIG_DFL, but blocked during this
      handler.  Force the default action of this signal once the
      handler returns and the block is removed.  */
-  raise (sig);
+  ارفع (sig);
 }
 
 /* Keep track of NUM bytes of a partial line in buffer START.
    These bytes will be retrieved later when another large buffer is read.  */
 
-static void
-save_to_hold_area (char *start, idx_t num)
+ساكن فراغ
+save_مقصد_hold_area (حرف *شروع, idx_t رقم)
 {
-  free (hold_area);
-  hold_area = start;
-  hold_count = num;
+  حرر (hold_area);
+  hold_area = شروع;
+  hold_شمار = رقم;
 }
 
 /* Read up to MAX_N_BYTES bytes from the input stream into DEST.
    Return the number of bytes read. */
 
-static idx_t
-read_input (char *dest, idx_t max_n_bytes)
+ساكن idx_t
+read_درون_داد (حرف *dest, idx_t max_n_بایتها)
 {
-  if (max_n_bytes == 0)
-    return 0;
+  إذا (max_n_بایتها == 0)
+    أرجع 0;
 
-  ptrdiff_t bytes_read = safe_read (STDIN_FILENO, dest, max_n_bytes);
+  ptrdiff_t بایتها_read = امن_read (STDIN_FILENO, dest, max_n_بایتها);
 
-  if (bytes_read == 0)
+  إذا (بایتها_read == 0)
     have_read_eof = true;
 
-  if (bytes_read < 0)
+  إذا (بایتها_read < 0)
     {
       error (0, errno, _("read error"));
       cleanup_fatal ();
     }
 
-  return bytes_read;
+  أرجع بایتها_read;
 }
 
 /* Initialize existing line record P. */
 
-static void
-clear_line_control (struct line *p)
+ساكن فراغ
+clear_سطر_control (بنية سطر *p)
 {
-  p->used = 0;
-  p->insert_index = 0;
-  p->retrieve_index = 0;
+  p->استفاده_شده = 0;
+  p->درج_شاخص = 0;
+  p->retrieve_شاخص = 0;
 }
 
 /* Return a new, initialized line record. */
 
-static struct line *
-new_line_control (void)
+ساكن بنية سطر *
+new_سطر_control (فراغ)
 {
-  struct line *p = xmalloc (sizeof *p);
+  بنية سطر *p = xmalloc (حجم *p);
 
-  p->next = NULL;
-  clear_line_control (p);
+  p->بعدی = عدم;
+  clear_سطر_control (p);
 
-  return p;
+  أرجع p;
 }
 
 /* Record LINE_START, which is the address of the start of a line
    of length LINE_LEN in the large buffer, in the lines buffer of B. */
 
-static void
-keep_new_line (struct buffer_record *b, char *line_start, idx_t line_len)
+ساكن فراغ
+keep_new_سطر (بنية میانگیر_رکورد *b, حرف *سطر_شروع, idx_t سطر_len)
 {
-  struct line *l;
+  بنية سطر *l;
 
   /* If there is no existing area to keep line info, get some. */
-  if (b->line_start == NULL)
-    b->line_start = b->curr_line = new_line_control ();
+  إذا (b->سطر_شروع == عدم)
+    b->سطر_شروع = b->curr_سطر = new_سطر_control ();
 
   /* If existing area for lines is full, get more. */
-  if (b->curr_line->used == CTRL_SIZE)
+  إذا (b->curr_سطر->استفاده_شده == CTRL_اندازه)
     {
-      b->curr_line->next = new_line_control ();
-      b->curr_line = b->curr_line->next;
+      b->curr_سطر->بعدی = new_سطر_control ();
+      b->curr_سطر = b->curr_سطر->بعدی;
     }
 
-  l = b->curr_line;
+  l = b->curr_سطر;
 
   /* Record the start of the line, and update counters. */
-  l->starts[l->insert_index].str = line_start;
-  l->starts[l->insert_index].len = line_len;
-  l->used++;
-  l->insert_index++;
+  l->starts[l->درج_شاخص].str = سطر_شروع;
+  l->starts[l->درج_شاخص].len = سطر_len;
+  l->استفاده_شده++;
+  l->درج_شاخص++;
 }
 
 /* Scan the buffer in B for newline characters
@@ -332,108 +332,108 @@ keep_new_line (struct buffer_record *b, char *line_start, idx_t line_len)
    a pointer is kept to this area, which will be used when
    the next buffer is filled. */
 
-static idx_t
-record_line_starts (struct buffer_record *b)
+ساكن idx_t
+رکورد_سطر_starts (بنية میانگیر_رکورد *b)
 {
-  char *line_start;		/* Start of current line. */
-  idx_t lines;			/* Number of lines found. */
-  idx_t line_length;		/* Length of each line found. */
+  حرف *سطر_شروع;		/* Start of current line. */
+  idx_t سطرها;			/* Number of lines found. */
+  idx_t سطر_درازی;		/* Length of each line found. */
 
-  if (b->bytes_used == 0)
-    return 0;
+  إذا (b->بایتها_استفاده_شده == 0)
+    أرجع 0;
 
-  lines = 0;
-  line_start = b->buffer;
-  char *buffer_end = line_start + b->bytes_used;
-  *buffer_end = '\n';
+  سطرها = 0;
+  سطر_شروع = b->میانگیر;
+  حرف *میانگیر_انتها = سطر_شروع + b->بایتها_استفاده_شده;
+  *میانگیر_انتها = '\n';
 
-  while (true)
+  طالما (true)
     {
-      char *line_end = rawmemchr (line_start, '\n');
-      if (line_end == buffer_end)
-        break;
-      line_length = line_end - line_start + 1;
-      keep_new_line (b, line_start, line_length);
-      line_start = line_end + 1;
-      lines++;
+      حرف *سطر_انتها = rawmemchr (سطر_شروع, '\n');
+      إذا (سطر_انتها == میانگیر_انتها)
+        اكسر;
+      سطر_درازی = سطر_انتها - سطر_شروع + 1;
+      keep_new_سطر (b, سطر_شروع, سطر_درازی);
+      سطر_شروع = سطر_انتها + 1;
+      سطرها++;
     }
 
   /* Check for an incomplete last line. */
-  idx_t bytes_left = buffer_end - line_start;
-  if (bytes_left)
+  idx_t بایتها_چپ = میانگیر_انتها - سطر_شروع;
+  إذا (بایتها_چپ)
     {
-      if (have_read_eof)
+      إذا (have_read_eof)
         {
-          keep_new_line (b, line_start, bytes_left);
-          lines++;
+          keep_new_سطر (b, سطر_شروع, بایتها_چپ);
+          سطرها++;
         }
-      else
-        save_to_hold_area (ximemdup (line_start, bytes_left), bytes_left);
+      وإلا
+        save_مقصد_hold_area (ximemdup (سطر_شروع, بایتها_چپ), بایتها_چپ);
     }
 
-  b->num_lines = lines;
-  b->first_available = b->start_line = last_line_number + 1;
-  last_line_number += lines;
+  b->رقم_سطرها = سطرها;
+  b->اولی_موجود = b->شروع_سطر = آخرین_سطر_عدد + 1;
+  آخرین_سطر_عدد += سطرها;
 
-  return lines;
+  أرجع سطرها;
 }
 
 /* Work around <https://gcc.gnu.org/PR109614>.  */
-#if 13 <= __GNUC__
+#إذا 13 <= __GNUC__
 # pragma GCC diagnostic ignored "-Wanalyzer-mismatching-deallocation"
 # pragma GCC diagnostic ignored "-Wanalyzer-use-after-free"
 # pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value"
-#endif
+#پایان_اگر
 
-static void
-free_buffer (struct buffer_record *buf)
+ساكن فراغ
+free_میانگیر (بنية میانگیر_رکورد *buf)
 {
-  for (struct line *l = buf->line_start; l;)
+  لكل (بنية سطر *l = buf->سطر_شروع; l;)
     {
-      struct line *n = l->next;
-      free (l);
+      بنية سطر *n = l->بعدی;
+      حرر (l);
       l = n;
     }
-  free (buf->buffer);
-  free (buf);
+  حرر (buf->میانگیر);
+  حرر (buf);
 }
 
 /* Return a new buffer of at least MINSIZE bytes.  */
 
-static ATTRIBUTE_DEALLOC (free_buffer, 1)
-struct buffer_record *
-get_new_buffer (idx_t min_size)
+ساكن ATTRIBUTE_DEALLOC (free_میانگیر, 1)
+بنية میانگیر_رکورد *
+get_new_میانگیر (idx_t min_اندازه)
 {
-  struct buffer_record *new_buffer = xmalloc (sizeof *new_buffer);
-  new_buffer->bytes_alloc = 0;
-  new_buffer->buffer = xpalloc (NULL, &new_buffer->bytes_alloc, min_size,
+  بنية میانگیر_رکورد *new_میانگیر = xmalloc (حجم *new_میانگیر);
+  new_میانگیر->بایتها_alloc = 0;
+  new_میانگیر->میانگیر = xpalloc (عدم, &new_میانگیر->بایتها_alloc, min_اندازه,
                                 -1, 1);
-  new_buffer->bytes_used = 0;
-  new_buffer->start_line = new_buffer->first_available = last_line_number + 1;
-  new_buffer->num_lines = 0;
-  new_buffer->line_start = new_buffer->curr_line = NULL;
-  new_buffer->next = NULL;
+  new_میانگیر->بایتها_استفاده_شده = 0;
+  new_میانگیر->شروع_سطر = new_میانگیر->اولی_موجود = آخرین_سطر_عدد + 1;
+  new_میانگیر->رقم_سطرها = 0;
+  new_میانگیر->سطر_شروع = new_میانگیر->curr_سطر = عدم;
+  new_میانگیر->بعدی = عدم;
 
-  return new_buffer;
+  أرجع new_میانگیر;
 }
 
 /* Append buffer BUF to the linked list of buffers that contain
    some data yet to be processed. */
 
-static void
-save_buffer (struct buffer_record *buf)
+ساكن فراغ
+save_میانگیر (بنية میانگیر_رکورد *buf)
 {
-  buf->next = NULL;
-  buf->curr_line = buf->line_start;
+  buf->بعدی = عدم;
+  buf->curr_سطر = buf->سطر_شروع;
 
-  if (head == NULL)
-    head = buf;
-  else
+  إذا (سر == عدم)
+    سر = buf;
+  وإلا
     {
-      struct buffer_record *p;
-      for (p = head; p->next; p = p->next)
+      بنية میانگیر_رکورد *p;
+      لكل (p = سر; p->بعدی; p = p->بعدی)
         /* Do nothing. */ ;
-      p->next = buf;
+      p->بعدی = buf;
     }
 }
 
@@ -450,45 +450,45 @@ save_buffer (struct buffer_record *buf)
    Return true if a new buffer was obtained, otherwise false
    (in which case end-of-file must have been encountered). */
 
-static bool
-load_buffer (void)
+ساكن bool
+بارگیری_میانگیر (فراغ)
 {
-  if (have_read_eof)
-    return false;
+  إذا (have_read_eof)
+    أرجع false;
 
   /* We must make the buffer at least as large as the amount of data
      in the partial line left over from the last call,
      plus room for a sentinel '\n'. */
-  idx_t bytes_wanted = MAX (START_SIZE, hold_count + 1);
+  idx_t بایتها_wanted = MAX (شروع_اندازه, hold_شمار + 1);
 
-  while (true)
+  طالما (true)
     {
-      struct buffer_record *b = get_new_buffer (bytes_wanted);
-      idx_t bytes_alloc = b->bytes_alloc;
-      idx_t bytes_avail = bytes_alloc;
-      char *p = b->buffer;
+      بنية میانگیر_رکورد *b = get_new_میانگیر (بایتها_wanted);
+      idx_t بایتها_alloc = b->بایتها_alloc;
+      idx_t بایتها_avail = بایتها_alloc;
+      حرف *p = b->میانگیر;
 
       /* First check the 'holding' area for a partial line. */
-      if (hold_count)
+      إذا (hold_شمار)
         {
-          p = mempcpy (p, hold_area, hold_count);
-          b->bytes_used += hold_count;
-          bytes_avail -= hold_count;
-          hold_count = 0;
+          p = mempcpy (p, hold_area, hold_شمار);
+          b->بایتها_استفاده_شده += hold_شمار;
+          بایتها_avail -= hold_شمار;
+          hold_شمار = 0;
         }
 
-      b->bytes_used += read_input (p, bytes_avail - 1);
+      b->بایتها_استفاده_شده += read_درون_داد (p, بایتها_avail - 1);
 
-      if (record_line_starts (b) != 0)
+      إذا (رکورد_سطر_starts (b) != 0)
         {
-          save_buffer (b);
-          return true;
+          save_میانگیر (b);
+          أرجع true;
         }
 
-      free_buffer (b);
-      if (have_read_eof)
-        return false;
-      if (ckd_add (&bytes_wanted, bytes_alloc, bytes_alloc >> 1))
+      free_میانگیر (b);
+      إذا (have_read_eof)
+        أرجع false;
+      إذا (ckd_جمع_کن (&بایتها_wanted, بایتها_alloc, بایتها_alloc >> 1))
         xalloc_die ();
     }
 }
@@ -496,116 +496,116 @@ load_buffer (void)
 /* Return the line number of the first line that has not yet been retrieved.
    Return 0 if no lines available.  */
 
-static intmax_t
-get_first_line_in_buffer (void)
+ساكن intmax_t
+get_اولی_سطر_درون_میانگیر (فراغ)
 {
-  if (head == NULL && !load_buffer ())
-    return 0;
+  إذا (سر == عدم && !بارگیری_میانگیر ())
+    أرجع 0;
 
-  return head->first_available;
+  أرجع سر->اولی_موجود;
 }
 
 /* Return a pointer to the logical first line in the buffer and make the
    next line the logical first line.
    Return NULL if there is no more input. */
 
-static struct cstring *
-remove_line (void)
+ساكن بنية cstring *
+remove_سطر (فراغ)
 {
   /* If non-null, this is the buffer for which the previous call
      returned the final line.  So now, presuming that line has been
      processed, we can free the buffer and reset this pointer.  */
-  static struct buffer_record *prev_buf = NULL;
+  ساكن بنية میانگیر_رکورد *prev_buf = عدم;
 
-  struct cstring *line;		/* Return value. */
-  struct line *l;		/* For convenience. */
+  بنية cstring *سطر;		/* Return value. */
+  بنية سطر *l;		/* For convenience. */
 
-  if (prev_buf)
+  إذا (prev_buf)
     {
-      free_buffer (prev_buf);
-      prev_buf = NULL;
+      free_میانگیر (prev_buf);
+      prev_buf = عدم;
     }
 
-  if (head == NULL && !load_buffer ())
-    return NULL;
+  إذا (سر == عدم && !بارگیری_میانگیر ())
+    أرجع عدم;
 
-  if (current_line < head->first_available)
-    current_line = head->first_available;
+  إذا (current_سطر < سر->اولی_موجود)
+    current_سطر = سر->اولی_موجود;
 
-  ++(head->first_available);
+  ++(سر->اولی_موجود);
 
-  l = head->curr_line;
+  l = سر->curr_سطر;
 
-  line = &l->starts[l->retrieve_index];
+  سطر = &l->starts[l->retrieve_شاخص];
 
   /* Advance index to next line. */
-  if (++l->retrieve_index == l->used)
+  إذا (++l->retrieve_شاخص == l->استفاده_شده)
     {
       /* Go on to the next line record. */
-      head->curr_line = l->next;
-      if (head->curr_line == NULL || head->curr_line->used == 0)
+      سر->curr_سطر = l->بعدی;
+      إذا (سر->curr_سطر == عدم || سر->curr_سطر->استفاده_شده == 0)
         {
           /* Go on to the next data block.
              but first record the current one so we can free it
              once the line we're returning has been processed.  */
-          prev_buf = head;
-          head = head->next;
+          prev_buf = سر;
+          سر = سر->بعدی;
         }
     }
 
-  return line;
+  أرجع سطر;
 }
 
 /* Search the buffers for line LINENUM, reading more input if necessary.
    Return a pointer to the line, or NULL if it is not found in the file. */
 
-static struct cstring *
-find_line (intmax_t linenum)
+ساكن بنية cstring *
+پیدا_کن_سطر (intmax_t linenum)
 {
-  if (head == NULL && !load_buffer ())
-    return NULL;
+  إذا (سر == عدم && !بارگیری_میانگیر ())
+    أرجع عدم;
 
-  if (linenum < head->start_line)
-    return NULL;
+  إذا (linenum < سر->شروع_سطر)
+    أرجع عدم;
 
-  for (struct buffer_record *b = head;;)
+  لكل (بنية میانگیر_رکورد *b = سر;;)
     {
-      if (linenum < b->start_line + b->num_lines)
+      إذا (linenum < b->شروع_سطر + b->رقم_سطرها)
         {
           /* The line is in this buffer. */
-          struct line *l;
-          idx_t offset;	/* How far into the buffer the line is. */
+          بنية سطر *l;
+          idx_t جابه_جایی;	/* How far into the buffer the line is. */
 
-          l = b->line_start;
-          offset = linenum - b->start_line;
+          l = b->سطر_شروع;
+          جابه_جایی = linenum - b->شروع_سطر;
           /* Find the control record. */
-          while (offset >= CTRL_SIZE)
+          طالما (جابه_جایی >= CTRL_اندازه)
             {
-              l = l->next;
-              offset -= CTRL_SIZE;
+              l = l->بعدی;
+              جابه_جایی -= CTRL_اندازه;
             }
-          return &l->starts[offset];
+          أرجع &l->starts[جابه_جایی];
         }
-      if (b->next == NULL && !load_buffer ())
-        return NULL;
-      b = b->next;		/* Try the next data block. */
+      إذا (b->بعدی == عدم && !بارگیری_میانگیر ())
+        أرجع عدم;
+      b = b->بعدی;		/* Try the next data block. */
     }
 }
 
 /* Return true if at least one more line is available for input. */
 
-static bool
-no_more_lines (void)
+ساكن bool
+no_بیشتر_سطرها (فراغ)
 {
-  return find_line (current_line + 1) == NULL;
+  أرجع پیدا_کن_سطر (current_سطر + 1) == عدم;
 }
 
 /* Open NAME as standard input.  */
 
-static void
-set_input_file (char const *name)
+ساكن فراغ
+مجموعه_درون_داد_file (حرف ثابت *name)
 {
-  if (! streq (name, "-") && fd_reopen (STDIN_FILENO, name, O_RDONLY, 0) < 0)
+  إذا (! streq (name, "-") && fd_reopen (STDIN_FILENO, name, O_RDONLY, 0) < 0)
     error (EXIT_FAILURE, errno, _("cannot open %s for reading"),
            quoteaf (name));
 }
@@ -615,62 +615,62 @@ set_input_file (char const *name)
    If IGNORE is true, do not output lines selected here.
    ARGNUM is the index in ARGV of the current pattern. */
 
-static void
-write_to_file (intmax_t last_line, bool ignore, int argnum)
+ساكن فراغ
+write_مقصد_file (intmax_t آخرین_سطر, bool ignore, صحيح argnum)
 {
-  struct cstring *line;
-  intmax_t first_line;		/* First available input line. */
-  intmax_t lines;		/* Number of lines to output. */
+  بنية cstring *سطر;
+  intmax_t اولی_سطر;		/* First available input line. */
+  intmax_t سطرها;		/* Number of lines to output. */
 
-  first_line = get_first_line_in_buffer ();
+  اولی_سطر = get_اولی_سطر_درون_میانگیر ();
 
-  if (! first_line || first_line > last_line)
+  إذا (! اولی_سطر || اولی_سطر > آخرین_سطر)
     {
       error (0, 0, _("%s: line number out of range"),
              quote (global_argv[argnum]));
       cleanup_fatal ();
     }
 
-  lines = last_line - first_line;
+  سطرها = آخرین_سطر - اولی_سطر;
 
-  for (intmax_t i = 0; i < lines; i++)
+  لكل (intmax_t i = 0; i < سطرها; i++)
     {
-      line = remove_line ();
-      if (line == NULL)
+      سطر = remove_سطر ();
+      إذا (سطر == عدم)
         {
           error (0, 0, _("%s: line number out of range"),
                  quote (global_argv[argnum]));
           cleanup_fatal ();
         }
-      if (!ignore)
-        save_line_to_file (line);
+      إذا (!ignore)
+        save_سطر_مقصد_file (سطر);
     }
 }
 
 /* Output any lines left after all regexps have been processed. */
 
-static void
-dump_rest_of_file (void)
+ساكن فراغ
+dump_rest_از_file (فراغ)
 {
-  struct cstring *line;
+  بنية cstring *سطر;
 
-  while ((line = remove_line ()) != NULL)
-    save_line_to_file (line);
+  طالما ((سطر = remove_سطر ()) != عدم)
+    save_سطر_مقصد_file (سطر);
 }
 
 /* Handle an attempt to read beyond EOF under the control of record P,
    on iteration REPETITION if nonzero. */
 
-static void
-handle_line_error (const struct control *p, intmax_t repetition)
+ساكن فراغ
+handle_سطر_error (ثابت بنية control *p, intmax_t repetition)
 {
-  char buf[INT_BUFSIZE_BOUND (intmax_t)];
+  حرف buf[INT_BUFSIZE_BOUND (intmax_t)];
 
   fprintf (stderr, _("%s: %s: line number out of range"),
-           program_name, quote (imaxtostr (p->lines_required, buf)));
-  if (repetition)
+           برنامه_name, quote (imaxtostr (p->سطرها_required, buf)));
+  إذا (repetition)
     fprintf (stderr, _(" on repetition %jd\n"), repetition);
-  else
+  وإلا
     fprintf (stderr, "\n");
 
   cleanup_fatal ();
@@ -681,56 +681,56 @@ handle_line_error (const struct control *p, intmax_t repetition)
    P is the control record.
    REPETITION is the repetition number. */
 
-static void
-process_line_count (const struct control *p, intmax_t repetition)
+ساكن فراغ
+process_سطر_شمار (ثابت بنية control *p, intmax_t repetition)
 {
   intmax_t linenum;
-  intmax_t last_line_to_save = p->lines_required * (repetition + 1);
+  intmax_t آخرین_سطر_مقصد_save = p->سطرها_required * (repetition + 1);
 
   create_output_file ();
 
   /* Ensure that the line number specified is not 1 greater than
      the number of lines in the file.
      When suppressing matched lines, check before the loop. */
-  if (no_more_lines () && suppress_matched)
-    handle_line_error (p, repetition);
+  إذا (no_بیشتر_سطرها () && suppress_matched)
+    handle_سطر_error (p, repetition);
 
-  if (!(linenum = get_first_line_in_buffer ()))
-    handle_line_error (p, repetition);
+  إذا (!(linenum = get_اولی_سطر_درون_میانگیر ()))
+    handle_سطر_error (p, repetition);
 
-  while (linenum++ < last_line_to_save)
+  طالما (linenum++ < آخرین_سطر_مقصد_save)
     {
-      struct cstring *line = remove_line ();
-      if (line == NULL)
-        handle_line_error (p, repetition);
-      save_line_to_file (line);
+      بنية cstring *سطر = remove_سطر ();
+      إذا (سطر == عدم)
+        handle_سطر_error (p, repetition);
+      save_سطر_مقصد_file (سطر);
     }
 
   close_output_file ();
 
-  if (suppress_matched)
-    remove_line ();
+  إذا (suppress_matched)
+    remove_سطر ();
 
   /* Ensure that the line number specified is not 1 greater than
      the number of lines in the file. */
-  if (no_more_lines () && !suppress_matched)
-    handle_line_error (p, repetition);
+  إذا (no_بیشتر_سطرها () && !suppress_matched)
+    handle_سطر_error (p, repetition);
 }
 
-static void
-regexp_error (struct control *p, intmax_t repetition, bool ignore)
+ساكن فراغ
+regexp_error (بنية control *p, intmax_t repetition, bool ignore)
 {
   fprintf (stderr, _("%s: %s: match not found"),
-           program_name, quote (global_argv[p->argnum]));
+           برنامه_name, quote (global_argv[p->argnum]));
 
-  if (repetition)
+  إذا (repetition)
     fprintf (stderr, _(" on repetition %jd\n"), repetition);
-  else
+  وإلا
     fprintf (stderr, "\n");
 
-  if (!ignore)
+  إذا (!ignore)
     {
-      dump_rest_of_file ();
+      dump_rest_از_file ();
       close_output_file ();
     }
   cleanup_fatal ();
@@ -740,133 +740,133 @@ regexp_error (struct control *p, intmax_t repetition, bool ignore)
    it unless P->IGNORE is true.
    REPETITION is this repeat-count; 0 means the first time. */
 
-static void
-process_regexp (struct control *p, intmax_t repetition)
+ساكن فراغ
+process_regexp (بنية control *p, intmax_t repetition)
 {
-  struct cstring *line;		/* From input file. */
-  idx_t line_len;		/* To make "$" in regexps work. */
-  intmax_t break_line;		/* First line number of next file. */
+  بنية cstring *سطر;		/* From input file. */
+  idx_t سطر_len;		/* To make "$" in regexps work. */
+  intmax_t break_سطر;		/* First line number of next file. */
   bool ignore = p->ignore;	/* If true, skip this section. */
   regoff_t ret;
 
-  if (!ignore)
+  إذا (!ignore)
     create_output_file ();
 
   /* If there is no offset for the regular expression, or
      it is positive, then it is not necessary to buffer the lines. */
 
-  if (p->offset >= 0)
+  إذا (p->جابه_جایی >= 0)
     {
-      while (true)
+      طالما (true)
         {
-          line = find_line (++current_line);
-          if (line == NULL)
+          سطر = پیدا_کن_سطر (++current_سطر);
+          إذا (سطر == عدم)
             {
-              if (p->repeat_forever)
+              إذا (p->repeat_forever)
                 {
-                  if (!ignore)
+                  إذا (!ignore)
                     {
-                      dump_rest_of_file ();
+                      dump_rest_از_file ();
                       close_output_file ();
                     }
-                  exit (EXIT_SUCCESS);
+                  خروج (EXIT_SUCCESS);
                 }
-              else
+              وإلا
                 regexp_error (p, repetition, ignore);
             }
-          line_len = line->len;
-          if (line->str[line_len - 1] == '\n')
-            line_len--;
-          ret = re_search (&p->re_compiled, line->str, line_len,
-                           0, line_len, NULL);
-          if (ret == -2)
+          سطر_len = سطر->len;
+          إذا (سطر->str[سطر_len - 1] == '\n')
+            سطر_len--;
+          ret = re_جستجو (&p->re_compiled, سطر->str, سطر_len,
+                           0, سطر_len, عدم);
+          إذا (ret == -2)
             {
               error (0, 0, _("error in regular expression search"));
               cleanup_fatal ();
             }
-          if (ret == -1)
+          إذا (ret == -1)
             {
-              line = remove_line ();
-              if (!ignore)
-                save_line_to_file (line);
+              سطر = remove_سطر ();
+              إذا (!ignore)
+                save_سطر_مقصد_file (سطر);
             }
-          else
-            break;
+          وإلا
+            اكسر;
         }
     }
-  else
+  وإلا
     {
       /* Buffer the lines. */
-      while (true)
+      طالما (true)
         {
-          line = find_line (++current_line);
-          if (line == NULL)
+          سطر = پیدا_کن_سطر (++current_سطر);
+          إذا (سطر == عدم)
             {
-              if (p->repeat_forever)
+              إذا (p->repeat_forever)
                 {
-                  if (!ignore)
+                  إذا (!ignore)
                     {
-                      dump_rest_of_file ();
+                      dump_rest_از_file ();
                       close_output_file ();
                     }
-                  exit (EXIT_SUCCESS);
+                  خروج (EXIT_SUCCESS);
                 }
-              else
+              وإلا
                 regexp_error (p, repetition, ignore);
             }
-          line_len = line->len;
-          if (line->str[line_len - 1] == '\n')
-            line_len--;
-          ret = re_search (&p->re_compiled, line->str, line_len,
-                           0, line_len, NULL);
-          if (ret == -2)
+          سطر_len = سطر->len;
+          إذا (سطر->str[سطر_len - 1] == '\n')
+            سطر_len--;
+          ret = re_جستجو (&p->re_compiled, سطر->str, سطر_len,
+                           0, سطر_len, عدم);
+          إذا (ret == -2)
             {
               error (0, 0, _("error in regular expression search"));
               cleanup_fatal ();
             }
-          if (ret != -1)
-            break;
+          إذا (ret != -1)
+            اكسر;
         }
     }
 
   /* Account for any offset from this regexp. */
-  break_line = current_line + p->offset;
+  break_سطر = current_سطر + p->جابه_جایی;
 
-  write_to_file (break_line, ignore, p->argnum);
+  write_مقصد_file (break_سطر, ignore, p->argnum);
 
-  if (!ignore)
+  إذا (!ignore)
     close_output_file ();
 
-  if (p->offset > 0)
-    current_line = break_line;
+  إذا (p->جابه_جایی > 0)
+    current_سطر = break_سطر;
 
-  if (suppress_matched)
-    remove_line ();
+  إذا (suppress_matched)
+    remove_سطر ();
 }
 
 /* Split the input file according to the control records we have built. */
 
-static void
-split_file (void)
+ساكن فراغ
+تقسیم_file (فراغ)
 {
-  for (idx_t i = 0; i < control_used; i++)
+  لكل (idx_t i = 0; i < control_استفاده_شده; i++)
     {
-      if (controls[i].regexpr)
+      إذا (controls[i].regexpr)
         {
-          for (intmax_t j = 0; (controls[i].repeat_forever
+          لكل (intmax_t j = 0; (controls[i].repeat_forever
                        || j <= controls[i].repeat); j++)
             process_regexp (&controls[i], j);
         }
-      else
+      وإلا
         {
-          for (intmax_t j = 0; (controls[i].repeat_forever
+          لكل (intmax_t j = 0; (controls[i].repeat_forever
                        || j <= controls[i].repeat); j++)
-            process_line_count (&controls[i], j);
+            process_سطر_شمار (&controls[i], j);
         }
     }
 
   create_output_file ();
-  dump_rest_of_file ();
+  dump_rest_از_file ();
   close_output_file ();
 }
 
@@ -877,66 +877,66 @@ split_file (void)
    not guarantee this for the functions called below, but we don't
    know of any hosts where this implementation isn't safe.  */
 
-static char *
-make_filename (int num)
+ساكن حرف *
+make_filename (صحيح رقم)
 {
-  strcpy (filename_space, prefix);
-  if (suffix)
-    sprintf (filename_space + strlen (prefix), suffix, num);
-  else
-    sprintf (filename_space + strlen (prefix), "%0*d", digits, num);
-  return filename_space;
+  strcpy (filename_space, پیشوند);
+  إذا (suffix)
+    sprintf (filename_space + طول_رشته (پیشوند), suffix, رقم);
+  وإلا
+    sprintf (filename_space + طول_رشته (پیشوند), "%0*d", digits, رقم);
+  أرجع filename_space;
 }
 
 /* Create the next output file. */
 
-static void
-create_output_file (void)
+ساكن فراغ
+create_output_file (فراغ)
 {
-  int nfiles = files_created;
+  صحيح nfiles = files_created;
   bool fopen_ok;
-  int fopen_errno;
+  صحيح fopen_errno;
 
   output_filename = make_filename (nfiles);
 
-  if (nfiles == INT_MAX)
+  إذا (nfiles == بیشترین_صحیح)
     {
       fopen_ok = false;
       fopen_errno = EOVERFLOW;
     }
-  else
+  وإلا
     {
       /* Create the output file in a critical section, to avoid races.  */
       sigset_t oldset;
-      sigprocmask (SIG_BLOCK, &caught_signals, &oldset);
-      output_stream = fopen (output_filename, "w");
-      fopen_ok = (output_stream != NULL);
+      sigprocmask (SIG_BLOCK, &caught_سیگنالها, &oldset);
+      output_جریان = fopen (output_filename, "w");
+      fopen_ok = (output_جریان != عدم);
       fopen_errno = errno;
       files_created = nfiles + fopen_ok;
-      sigprocmask (SIG_SETMASK, &oldset, NULL);
+      sigprocmask (SIG_SETMASK, &oldset, عدم);
     }
 
-  if (! fopen_ok)
+  إذا (! fopen_ok)
     {
       error (0, fopen_errno, "%s", quotef (output_filename));
       cleanup_fatal ();
     }
-  bytes_written = 0;
+  بایتها_written = 0;
 }
 
 /* If requested, delete all the files we have created.  This function
    must be called only from critical sections.  */
 
-static void
-delete_all_files (bool in_signal_handler)
+ساكن فراغ
+delete_all_files (bool درون_signal_handler)
 {
-  if (! remove_files)
-    return;
+  إذا (! remove_files)
+    أرجع;
 
-  for (int i = files_created; 0 <= --i; )
+  لكل (صحيح i = files_created; 0 <= --i; )
     {
-      char const *name = make_filename (i);
-      if (unlink (name) != 0 && errno != ENOENT && !in_signal_handler)
+      حرف ثابت *name = make_filename (i);
+      إذا (unlink (name) != 0 && errno != ENOENT && !درون_signal_handler)
         error (0, errno, "%s", quotef (name));
     }
 
@@ -946,81 +946,81 @@ delete_all_files (bool in_signal_handler)
 /* Close the current output file and print the count
    of characters in this file. */
 
-static void
-close_output_file (void)
+ساكن فراغ
+close_output_file (فراغ)
 {
-  if (output_stream)
+  إذا (output_جریان)
     {
-      if (ferror (output_stream))
+      إذا (ferror (output_جریان))
         {
           error (0, 0, _("write error for %s"), quoteaf (output_filename));
-          output_stream = NULL;
+          output_جریان = عدم;
           cleanup_fatal ();
         }
-      if (fclose (output_stream) != 0)
+      إذا (fclose (output_جریان) != 0)
         {
           error (0, errno, "%s", quotef (output_filename));
-          output_stream = NULL;
+          output_جریان = عدم;
           cleanup_fatal ();
         }
-      if (bytes_written == 0 && elide_empty_files)
+      إذا (بایتها_written == 0 && elide_خالی_files)
         {
           sigset_t oldset;
           bool unlink_ok;
-          int unlink_errno;
+          صحيح unlink_errno;
 
           /* Remove the output file in a critical section, to avoid races.  */
-          sigprocmask (SIG_BLOCK, &caught_signals, &oldset);
+          sigprocmask (SIG_BLOCK, &caught_سیگنالها, &oldset);
           unlink_ok = (unlink (output_filename) == 0);
           unlink_errno = errno;
           files_created--;
-          sigprocmask (SIG_SETMASK, &oldset, NULL);
+          sigprocmask (SIG_SETMASK, &oldset, عدم);
 
-          if (! unlink_ok && unlink_errno != ENOENT)
+          إذا (! unlink_ok && unlink_errno != ENOENT)
             error (0, unlink_errno, "%s", quotef (output_filename));
         }
-      else
+      وإلا
         {
-          if (!suppress_count)
-            fprintf (stdout, "%jd\n", bytes_written);
+          إذا (!suppress_شمار)
+            fprintf (stdout, "%jd\n", بایتها_written);
         }
-      output_stream = NULL;
+      output_جریان = عدم;
     }
 }
 
 /* Save line LINE to the output file and
    increment the character count for the current file. */
 
-static void
-save_line_to_file (const struct cstring *line)
+ساكن فراغ
+save_سطر_مقصد_file (ثابت بنية cstring *سطر)
 {
-  idx_t l = fwrite (line->str, sizeof (char), line->len, output_stream);
-  if (l != line->len)
+  idx_t l = fwrite (سطر->str, حجم (حرف), سطر->len, output_جریان);
+  إذا (l != سطر->len)
     {
       error (0, errno, _("write error for %s"), quoteaf (output_filename));
-      output_stream = NULL;
+      output_جریان = عدم;
       cleanup_fatal ();
     }
-  bytes_written += line->len;
+  بایتها_written += سطر->len;
 }
 
 /* Return a new, initialized control record. */
 
-static struct control *
-new_control_record (void)
+ساكن بنية control *
+new_control_رکورد (فراغ)
 {
-  static idx_t control_allocated = 0; /* Total space allocated. */
-  struct control *p;
+  ساكن idx_t control_allocated = 0; /* Total space allocated. */
+  بنية control *p;
 
-  if (control_used == control_allocated)
-    controls = xpalloc (controls, &control_allocated, 1, -1, sizeof *controls);
-  p = &controls[control_used++];
+  إذا (control_استفاده_شده == control_allocated)
+    controls = xpalloc (controls, &control_allocated, 1, -1, حجم *controls);
+  p = &controls[control_استفاده_شده++];
   p->regexpr = false;
   p->repeat = 0;
   p->repeat_forever = false;
-  p->lines_required = 0;
-  p->offset = 0;
-  return p;
+  p->سطرها_required = 0;
+  p->جابه_جایی = 0;
+  أرجع p;
 }
 
 /* Check if there is a numeric offset after a regular expression.
@@ -1028,10 +1028,10 @@ new_control_record (void)
    P is the control record for this regular expression.
    NUM is the numeric part of STR. */
 
-static void
-check_for_offset (struct control *p, char const *str, char const *num)
+ساكن فراغ
+check_for_جابه_جایی (بنية control *p, حرف ثابت *str, حرف ثابت *رقم)
 {
-  if (xstrtoimax (num, NULL, 10, &p->offset, "") != LONGINT_OK)
+  إذا (xstrtoimax (رقم, عدم, 10, &p->جابه_جایی, "") != LONGINT_OK)
     error (EXIT_FAILURE, 0, _("%s: integer expected after delimiter"),
            quote (str));
 }
@@ -1041,24 +1041,24 @@ check_for_offset (struct control *p, char const *str, char const *num)
    and store its value in P.
    ARGNUM is the ARGV index of STR. */
 
-static void
-parse_repeat_count (int argnum, struct control *p, char *str)
+ساكن فراغ
+parse_repeat_شمار (صحيح argnum, بنية control *p, حرف *str)
 {
-  char *end;
+  حرف *انتها;
 
-  end = str + strlen (str) - 1;
-  if (*end != '}')
+  انتها = str + طول_رشته (str) - 1;
+  إذا (*انتها != '}')
     error (EXIT_FAILURE, 0, _("%s: '}' is required in repeat count"),
            quote (str));
-  *end = '\0';
+  *انتها = '\0';
 
-  if (str + 1 == end - 1 && *(str + 1) == '*')
+  إذا (str + 1 == انتها - 1 && *(str + 1) == '*')
     p->repeat_forever = true;
-  else
+  وإلا
     {
       uintmax_t val;
-      if (xstrtoumax (str + 1, NULL, 10, &val, "") != LONGINT_OK
-          || ckd_add (&p->repeat, val, 0))
+      إذا (xstrtoumax (str + 1, عدم, 10, &val, "") != LONGINT_OK
+          || ckd_جمع_کن (&p->repeat, val, 0))
         {
           error (EXIT_FAILURE, 0,
                  _("%s}: integer required between '{' and '}'"),
@@ -1066,7 +1066,7 @@ parse_repeat_count (int argnum, struct control *p, char *str)
         }
     }
 
-  *end = '}';
+  *انتها = '}';
 }
 
 /* Extract the regular expression from STR and check for a numeric offset.
@@ -1075,92 +1075,92 @@ parse_repeat_count (int argnum, struct control *p, char *str)
    ARGNUM is the ARGV index of STR.
    Unless IGNORE is true, mark these lines for output. */
 
-static struct control *
-extract_regexp (int argnum, bool ignore, char const *str)
+ساكن بنية control *
+استخراج_regexp (صحيح argnum, bool ignore, حرف ثابت *str)
 {
   idx_t len;			/* Number of bytes in this regexp. */
-  char delim = *str;
-  char const *closing_delim;
-  struct control *p;
-  char const *err;
+  حرف delim = *str;
+  حرف ثابت *closing_delim;
+  بنية control *p;
+  حرف ثابت *err;
 
   closing_delim = strrchr (str + 1, delim);
-  if (closing_delim == NULL)
+  إذا (closing_delim == عدم)
     error (EXIT_FAILURE, 0,
            _("%s: closing delimiter '%c' missing"), str, delim);
 
   len = closing_delim - str - 1;
-  p = new_control_record ();
+  p = new_control_رکورد ();
   p->argnum = argnum;
   p->ignore = ignore;
 
   p->regexpr = true;
-  p->re_compiled.buffer = NULL;
+  p->re_compiled.میانگیر = عدم;
   p->re_compiled.allocated = 0;
   p->re_compiled.fastmap = xmalloc (UCHAR_MAX + 1);
-  p->re_compiled.translate = NULL;
+  p->re_compiled.translate = عدم;
   re_syntax_options =
-    RE_SYNTAX_POSIX_BASIC & ~RE_CONTEXT_INVALID_DUP & ~RE_NO_EMPTY_RANGES;
-  err = re_compile_pattern (str + 1, len, &p->re_compiled);
-  if (err)
+    RE_SYNTAX_POSIX_BASIC & ~RE_CONTEXT_INVALID_DUP & ~RE_NO_خالی_RANGES;
+  err = re_compile_الگو (str + 1, len, &p->re_compiled);
+  إذا (err)
     {
       error (0, 0, _("%s: invalid regular expression: %s"), quote (str), err);
       cleanup_fatal ();
     }
 
-  if (closing_delim[1])
-    check_for_offset (p, str, closing_delim + 1);
+  إذا (closing_delim[1])
+    check_for_جابه_جایی (p, str, closing_delim + 1);
 
-  return p;
+  أرجع p;
 }
 
 /* Extract the break patterns from args START through ARGC - 1 of ARGV.
    After each pattern, check if the next argument is a repeat count. */
 
-static void
-parse_patterns (int argc, int start, char **argv)
+ساكن فراغ
+parse_patterns (صحيح argc, صحيح شروع, حرف **argv)
 {
-  struct control *p;		/* New control record created. */
-  static intmax_t last_val = 0;
+  بنية control *p;		/* New control record created. */
+  ساكن intmax_t آخرین_val = 0;
 
-  for (int i = start; i < argc; i++)
+  لكل (صحيح i = شروع; i < argc; i++)
     {
-      if (*argv[i] == '/' || *argv[i] == '%')
+      إذا (*argv[i] == '/' || *argv[i] == '%')
         {
-          p = extract_regexp (i, *argv[i] == '%', argv[i]);
+          p = استخراج_regexp (i, *argv[i] == '%', argv[i]);
         }
-      else
+      وإلا
         {
-          p = new_control_record ();
+          p = new_control_رکورد ();
           p->argnum = i;
 
           uintmax_t val;
-          if (xstrtoumax (argv[i], NULL, 10, &val, "") != LONGINT_OK
+          إذا (xstrtoumax (argv[i], عدم, 10, &val, "") != LONGINT_OK
               || INTMAX_MAX < val)
             error (EXIT_FAILURE, 0, _("%s: invalid pattern"), quote (argv[i]));
-          if (val == 0)
+          إذا (val == 0)
             error (EXIT_FAILURE, 0,
                    _("%s: line number must be greater than zero"), argv[i]);
-          if (val < last_val)
+          إذا (val < آخرین_val)
             error (EXIT_FAILURE, 0,
                    _("line number %s is smaller than preceding line number,"
-                     " %jd"), quote (argv[i]), last_val);
+                     " %jd"), quote (argv[i]), آخرین_val);
 
-          if (val == last_val)
+          إذا (val == آخرین_val)
             error (0, 0,
            _("warning: line number %s is the same as preceding line number"),
                    quote (argv[i]));
 
-          last_val = val;
+          آخرین_val = val;
 
-          p->lines_required = val;
+          p->سطرها_required = val;
         }
 
-      if (i + 1 < argc && *argv[i + 1] == '{')
+      إذا (i + 1 < argc && *argv[i + 1] == '{')
         {
           /* We have a repeat count. */
           i++;
-          parse_repeat_count (i, p, argv[i]);
+          parse_repeat_شمار (i, p, argv[i]);
         }
     }
 }
@@ -1168,34 +1168,34 @@ parse_patterns (int argc, int start, char **argv)
 
 
 /* Names for the printf format flags ' and #.  These can be ORed together.  */
-enum { FLAG_THOUSANDS = 1, FLAG_ALTERNATIVE = 2 };
+تعداد { FLAG_THOUSANDS = 1, FLAG_ALTERNATIVE = 2 };
 
 /* Scan the printf format flags in FORMAT, storing info about the
    flags into *FLAGS_PTR.  Return the number of flags found.  */
-static idx_t
-get_format_flags (char const *format, int *flags_ptr)
+ساكن idx_t
+get_format_flags (حرف ثابت *format, صحيح *flags_ptr)
 {
-  int flags = 0;
+  صحيح flags = 0;
 
-  for (idx_t count = 0; ; count++)
+  لكل (idx_t شمار = 0; ; شمار++)
     {
-      switch (format[count])
+      بدل (format[شمار])
         {
-        case '-':
-        case '0':
-          break;
+        حالة '-':
+        حالة '0':
+          اكسر;
 
-        case '\'':
+        حالة '\'':
           flags |= FLAG_THOUSANDS;
-          break;
+          اكسر;
 
-        case '#':
+        حالة '#':
           flags |= FLAG_ALTERNATIVE;
-          break;
+          اكسر;
 
-        default:
+        افتراضي:
           *flags_ptr = flags;
-          return count;
+          أرجع شمار;
         }
     }
 }
@@ -1203,41 +1203,41 @@ get_format_flags (char const *format, int *flags_ptr)
 /* Check that the printf format conversion specifier *FORMAT is valid
    and compatible with FLAGS.  Change it to 'd' if it is 'u',
    since the format will be used with a signed value.  */
-static void
-check_format_conv_type (char *format, int flags)
+ساكن فراغ
+check_format_conv_type (حرف *format, صحيح flags)
 {
-  unsigned char ch = *format;
-  int compatible_flags = FLAG_THOUSANDS;
+  بیعلامت حرف ch = *format;
+  صحيح compatible_flags = FLAG_THOUSANDS;
 
-  switch (ch)
+  بدل (ch)
     {
-    case 'd':
-    case 'i':
-      break;
+    حالة 'd':
+    حالة 'i':
+      اكسر;
 
-    case 'u':
+    حالة 'u':
       *format = 'd';
-      break;
+      اكسر;
 
-    case 'o':
-    case 'x':
-    case 'X':
+    حالة 'o':
+    حالة 'x':
+    حالة 'X':
       compatible_flags = FLAG_ALTERNATIVE;
-      break;
+      اكسر;
 
-    case 0:
+    حالة 0:
       error (EXIT_FAILURE, 0, _("missing conversion specifier in suffix"));
 
-    default:
-      if (isprint (ch))
+    افتراضي:
+      إذا (isprint (ch))
         error (EXIT_FAILURE, 0,
                _("invalid conversion specifier in suffix: %c"), ch);
-      else
+      وإلا
         error (EXIT_FAILURE, 0,
                _("invalid conversion specifier in suffix: \\%.3o"), ch);
     }
 
-  if (flags & ~ compatible_flags)
+  إذا (flags & ~ compatible_flags)
     error (EXIT_FAILURE, 0,
            _("invalid flags in conversion specification: %%%c%c"),
            (flags & ~ compatible_flags & FLAG_ALTERNATIVE ? '#' : '\''), ch);
@@ -1246,45 +1246,45 @@ check_format_conv_type (char *format, int flags)
 /* Return the maximum number of bytes that can be generated by
    applying FORMAT to an int value.  If the format is
    invalid, diagnose the problem and exit.  */
-static idx_t
-max_out (char *format)
+ساكن idx_t
+max_بیرون (حرف *format)
 {
   bool percent = false;
 
-  for (char *f = format; *f; f++)
-    if (*f == '%' && *++f != '%')
+  لكل (حرف *f = format; *f; f++)
+    إذا (*f == '%' && *++f != '%')
       {
-        if (percent)
+        إذا (percent)
           error (EXIT_FAILURE, 0,
                  _("too many %% conversion specifications in suffix"));
         percent = true;
-        int flags;
+        صحيح flags;
         f += get_format_flags (f, &flags);
-        while (c_isdigit (*f))
+        طالما (c_isdigit (*f))
           f++;
-        if (*f == '.')
-          while (c_isdigit (*++f))
-            continue;
+        إذا (*f == '.')
+          طالما (c_isdigit (*++f))
+            استمر;
         check_format_conv_type (f, flags);
       }
 
-  if (! percent)
+  إذا (! percent)
     error (EXIT_FAILURE, 0,
            _("missing %% conversion specification in suffix"));
 
-  int maxlen = snprintf (NULL, 0, format, INT_MAX);
-  if (! (0 <= maxlen && maxlen <= IDX_MAX))
+  صحيح maxlen = snprintf (عدم, 0, format, بیشترین_صحیح);
+  إذا (! (0 <= maxlen && maxlen <= IDX_MAX))
     xalloc_die ();
-  return maxlen;
+  أرجع maxlen;
 }
 
-int
-main (int argc, char **argv)
+صحيح
+اصلی (صحيح argc, حرف **argv)
 {
-  int optc;
+  صحيح optc;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  مجموعه_برنامه_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
@@ -1293,168 +1293,168 @@ main (int argc, char **argv)
 
   global_argv = argv;
 
-  while ((optc = getopt_long (argc, argv, "f:b:kn:sqz", longopts, NULL))
+  طالما ((optc = getopt_long (argc, argv, "f:b:kn:sqz", longopts, عدم))
          != -1)
-    switch (optc)
+    بدل (optc)
       {
-      case 'f':
-        prefix = optarg;
-        break;
+      حالة 'f':
+        پیشوند = optarg;
+        اكسر;
 
-      case 'b':
+      حالة 'b':
         suffix = optarg;
-        break;
+        اكسر;
 
-      case 'k':
+      حالة 'k':
         remove_files = false;
-        break;
+        اكسر;
 
-      case 'n':
-        digits = xdectoimax (optarg, 0, MIN (INT_MAX, IDX_MAX), "",
+      حالة 'n':
+        digits = xdectoimax (optarg, 0, MIN (بیشترین_صحیح, IDX_MAX), "",
                              _("invalid number"), 0);
-        break;
+        اكسر;
 
-      case 's':
-      case 'q':
-        suppress_count = true;
-        break;
+      حالة 's':
+      حالة 'q':
+        suppress_شمار = true;
+        اكسر;
 
-      case 'z':
-        elide_empty_files = true;
-        break;
+      حالة 'z':
+        elide_خالی_files = true;
+        اكسر;
 
-      case SUPPRESS_MATCHED_OPTION:
+      حالة SUPPRESS_MATCHED_OPTION:
         suppress_matched = true;
-        break;
+        اكسر;
 
       case_GETOPT_HELP_CHAR;
 
-      case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+      case_GETOPT_نسخه_CHAR (برنامه_NAME, AUTHORS);
 
-      default:
+      افتراضي:
         usage (EXIT_FAILURE);
       }
 
-  if (argc - optind < 2)
+  إذا (argc - optind < 2)
     {
-      if (argc <= optind)
+      إذا (argc <= optind)
         error (0, 0, _("missing operand"));
-      else
+      وإلا
         error (0, 0, _("missing operand after %s"), quote (argv[argc - 1]));
       usage (EXIT_FAILURE);
     }
 
-  idx_t prefix_len = strlen (prefix);
+  idx_t پیشوند_len = طول_رشته (پیشوند);
   idx_t max_digit_string_len
     = (suffix
-       ? max_out (suffix)
-       : MAX (INT_STRLEN_BOUND (int), digits));
-  idx_t filename_size;
-  if (ckd_add (&filename_size, prefix_len, max_digit_string_len + 1))
+       ? max_بیرون (suffix)
+       : MAX (INT_STRLEN_BOUND (صحيح), digits));
+  idx_t filename_اندازه;
+  إذا (ckd_جمع_کن (&filename_اندازه, پیشوند_len, max_digit_string_len + 1))
     xalloc_die ();
-  filename_space = ximalloc (filename_size);
+  filename_space = ximalloc (filename_اندازه);
 
-  set_input_file (argv[optind++]);
+  مجموعه_درون_داد_file (argv[optind++]);
 
   parse_patterns (argc, optind, argv);
 
   {
-    enum { nsigs = countof (term_sig) };
+    تعداد { nsigs = countof (جمله_sig) };
 
-    struct sigaction act;
+    بنية sigaction act;
 
-    sigemptyset (&caught_signals);
-    for (int i = 0; i < nsigs; i++)
+    sigemptyset (&caught_سیگنالها);
+    لكل (صحيح i = 0; i < nsigs; i++)
       {
-        sigaction (term_sig[i], NULL, &act);
-        if (act.sa_handler != SIG_IGN)
-          sigaddset (&caught_signals, term_sig[i]);
+        sigaction (جمله_sig[i], عدم, &act);
+        إذا (act.sa_handler != SIG_IGN)
+          sigaddset (&caught_سیگنالها, جمله_sig[i]);
       }
 
-    act.sa_handler = interrupt_handler;
-    act.sa_mask = caught_signals;
+    act.sa_handler = وقفه_handler;
+    act.sa_mask = caught_سیگنالها;
     act.sa_flags = 0;
 
-    for (int i = 0; i < nsigs; i++)
-      if (sigismember (&caught_signals, term_sig[i]))
-        sigaction (term_sig[i], &act, NULL);
+    لكل (صحيح i = 0; i < nsigs; i++)
+      إذا (sigismember (&caught_سیگنالها, جمله_sig[i]))
+        sigaction (جمله_sig[i], &act, عدم);
   }
 
-  split_file ();
+  تقسیم_file ();
 
-  if (close (STDIN_FILENO) != 0)
+  إذا (close (STDIN_FILENO) != 0)
     {
       error (0, errno, _("read error"));
       cleanup_fatal ();
     }
 
-  return EXIT_SUCCESS;
+  أرجع EXIT_SUCCESS;
 }
 
-void
-usage (int status)
+فراغ
+usage (صحيح وضعیت)
 {
-  if (status != EXIT_SUCCESS)
+  إذا (وضعیت != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  وإلا
     {
-      printf (_("\
-Usage: %s [OPTION]... FILE PATTERN...\n\
+      چاپ_کن (_("\
+Usage: %s [OPTION]... FILE الگو...\n\
 "),
-              program_name);
+              برنامه_name);
       fputs (_("\
-Output pieces of FILE separated by PATTERN(s) to files 'xx00', 'xx01', ...,\n\
-and output byte counts of each piece to standard output.\n\
+Output pieces از FILE separated by الگو(s) مقصد files 'xx00', 'xx01', ...,\n\
+and output byte counts از each piece مقصد standard output.\n\
 "), stdout);
        fputs (_("\
 \n\
-Read standard input if FILE is -\n\
+Read standard درون_داد إذا FILE is -\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
 
       oputs (_("\
   -b, --suffix-format=FORMAT\n\
-         use sprintf FORMAT instead of %02d\n\
+         use sprintf FORMAT instead از %02d\n\
 "));
       oputs (_("\
-  -f, --prefix=PREFIX\n\
-         use PREFIX instead of 'xx'\n\
+  -f, --پیشوند=پیشوند_2\n\
+         use پیشوند_2 instead از 'xx'\n\
 "));
       oputs (_("\
   -k, --keep-files\n\
-         do not remove output files on errors\n\
+         افعل not remove output files on errors\n\
 "));
       oputs (_("\
       --suppress-matched\n\
-         suppress the lines matching PATTERN\n\
+         suppress the سطرها matching الگو\n\
 "));
       oputs (_("\
   -n, --digits=DIGITS\n\
-         use specified number of digits instead of 2\n\
+         use specified عدد از digits instead از 2\n\
 "));
       oputs (_("\
   -s, --quiet, --silent\n\
-         do not print counts of output file sizes\n\
+         افعل not print counts از output file sizes\n\
 "));
       oputs (_("\
-  -z, --elide-empty-files\n\
-         suppress empty output files\n\
+  -z, --elide-خالی-files\n\
+         suppress خالی output files\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (نسخه_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-Each PATTERN may be:\n\
-  INTEGER            copy up to but not including specified line number\n\
-  /REGEXP/[OFFSET]   copy up to but not including a matching line\n\
-  %REGEXP%[OFFSET]   skip to, but not including a matching line\n\
-  {INTEGER}          repeat the previous pattern specified number of times\n\
-  {*}                repeat the previous pattern as many times as possible\n\
+Each الگو may be:\n\
+  INTEGER            copy به_بالا مقصد but not including specified سطر عدد\n\
+  /REGEXP/[جابه_جایی_2]   copy به_بالا مقصد but not including a matching سطر\n\
+  %REGEXP%[جابه_جایی_2]   skip مقصد, but not including a matching سطر\n\
+  {INTEGER}          repeat the قبلی الگو_2 specified عدد از times\n\
+  {*}                repeat the قبلی الگو_2 as many times as possible\n\
 \n\
-A line OFFSET is an integer optionally preceded by '+' or '-'\n\
+A سطر جابه_جایی_2 is an integer optionally preceded by '+' or '-'\n\
 "), stdout);
-      emit_ancillary_info (PROGRAM_NAME);
+      emit_ancillary_info (برنامه_NAME);
     }
-  exit (status);
+  خروج (وضعیت);
 }

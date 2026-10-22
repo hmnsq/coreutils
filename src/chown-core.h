@@ -15,13 +15,13 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#ifndef CHOWN_CORE_H
+#اگر_تعریف_نشده CHOWN_CORE_H
 # define CHOWN_CORE_H
 
 # include "dev-ino.h"
 # include <stdlib.h>
 
-enum Change_status
+تعداد Change_وضعیت
 {
   CH_NOT_APPLIED = 1,
   CH_SUCCEEDED,
@@ -29,10 +29,10 @@ enum Change_status
   CH_NO_CHANGE_REQUESTED
 };
 
-enum Verbosity
+تعداد Verbosity
 {
   /* Print a message for each file that is processed.  */
-  V_high,
+  V_بالا,
 
   /* Print a message for each file whose attributes we change.  */
   V_changes_only,
@@ -41,17 +41,17 @@ enum Verbosity
   V_off
 };
 
-struct Chown_option
+بنية Chown_option
 {
   /* Level of verbosity.  */
-  enum Verbosity verbosity;
+  تعداد Verbosity verbosity;
 
   /* If nonzero, change the ownership of directories recursively. */
   bool recurse;
 
   /* Pointer to the device and inode numbers of '/', when --recursive.
      Need not be freed.  Otherwise NULL.  */
-  struct dev_ino *root_dev_ino;
+  بنية dev_ino *ریشه_dev_ino;
 
   /* This corresponds to the --dereference (opposite of -h) option.  */
   bool affect_symlink_referent;
@@ -60,33 +60,33 @@ struct Chown_option
   bool force_silent;
 
   /* The name of the user to which ownership of the files is being given. */
-  char *user_name;
+  حرف *user_name;
 
   /* The name of the group to which ownership of the files is being given. */
-  char *group_name;
+  حرف *گروه_name;
 };
 
-void
-chopt_init (struct Chown_option *);
+فراغ
+chopt_init (بنية Chown_option *);
 
-void
-chopt_free (struct Chown_option *);
+فراغ
+chopt_free (بنية Chown_option *);
 
-char *
-gid_to_name (gid_t)
+حرف *
+gid_مقصد_name (gid_t)
   _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC_FREE
   _GL_ATTRIBUTE_RETURNS_NONNULL;
 
-char *
-uid_to_name (uid_t)
+حرف *
+uid_مقصد_name (uid_t)
   _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC_FREE
   _GL_ATTRIBUTE_RETURNS_NONNULL;
 
 bool
-chown_files (char **files, int bit_flags,
+chown_files (حرف **files, صحيح بیت_flags,
              uid_t uid, gid_t gid,
              uid_t required_uid, gid_t required_gid,
-             struct Chown_option const *chopt)
+             بنية Chown_option ثابت *chopt)
   _GL_ATTRIBUTE_NONNULL ();
 
-#endif /* CHOWN_CORE_H */
+#پایان_اگر /* CHOWN_CORE_H */

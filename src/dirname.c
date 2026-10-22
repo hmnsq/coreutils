@@ -17,138 +17,138 @@
 
 /* Written by David MacKenzie and Jim Meyering. */
 
-#include <config.h>
-#include <getopt.h>
-#include <stdio.h>
-#include <sys/types.h>
+#ضمن <config.h>
+#ضمن <getopt.h>
+#ضمن <stdio.h>
+#ضمن <sys/types.h>
 
-#include "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
-#include "system.h"
+#ضمن "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
+#ضمن "system.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "dirname"
+#تعریف_کن برنامه_NAME "dirname"
 
-#define AUTHORS \
+#تعریف_کن AUTHORS \
   proper_name ("David MacKenzie"), \
   proper_name ("Jim Meyering")
 
-static bool quote_output;
+ساكن bool quote_output;
 
-static struct option const longopts[] =
+ساكن بنية option ثابت longopts[] =
 {
-  {"zero", no_argument, NULL, 'z'},
+  {"zero", no_آرگومان, عدم, 'z'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_نسخه_OPTION_DECL},
+  {عدم, 0, عدم, 0}
 };
 
-void
-usage (int status)
+فراغ
+usage (صحيح وضعیت)
 {
-  if (status != EXIT_SUCCESS)
+  إذا (وضعیت != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  وإلا
     {
-      printf (_("\
+      چاپ_کن (_("\
 Usage: %s [OPTION] NAME...\n\
 "),
-              program_name);
+              برنامه_name);
       fputs (_("\
-Output each NAME with its last non-slash component and trailing slashes\n\
-removed; if NAME contains no /'s, output '.' (meaning the current directory).\n\
+Output each NAME with its آخرین non-slash component and trailing slashes\n\
+removed; إذا NAME شامل_است no /'s, output '.' (meaning the current directory).\n\
 \n\
 "), stdout);
       oputs (_("\
   -z, --zero\n\
-         end each output line with NUL, not newline\n\
+         انتها each output سطر with NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      printf (_("\
+      oputs (نسخه_OPTION_DESCRIPTION);
+      چاپ_کن (_("\
 \n\
 Examples:\n\
   %s /usr/bin/          -> \"/usr\"\n\
   %s dir1/str dir2/str  -> \"dir1\" followed by \"dir2\"\n\
   %s stdio.h            -> \".\"\n\
 "),
-              program_name, program_name, program_name);
-      emit_ancillary_info (PROGRAM_NAME);
+              برنامه_name, برنامه_name, برنامه_name);
+      emit_ancillary_info (برنامه_NAME);
     }
-  exit (status);
+  خروج (وضعیت);
 }
 
-int
-main (int argc, char **argv)
+صحيح
+اصلی (صحيح argc, حرف **argv)
 {
   bool use_nuls = false;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  مجموعه_برنامه_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while (true)
+  طالما (true)
     {
-      int c = getopt_long (argc, argv, "z", longopts, NULL);
+      صحيح c = getopt_long (argc, argv, "z", longopts, عدم);
 
-      if (c == -1)
-        break;
+      إذا (c == -1)
+        اكسر;
 
-      switch (c)
+      بدل (c)
         {
-        case 'z':
+        حالة 'z':
           use_nuls = true;
-          break;
+          اكسر;
 
         case_GETOPT_HELP_CHAR;
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_نسخه_CHAR (برنامه_NAME, AUTHORS);
 
-        default:
+        افتراضي:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (argc < optind + 1)
+  إذا (argc < optind + 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
 
-  if (!use_nuls && isatty (STDOUT_FILENO))
+  إذا (!use_nuls && isatty (STDOUT_FILENO))
     {
-      int qs = getenv_quoting_style ();
-      if (qs < 0)
+      صحيح qs = getenv_quoting_style ();
+      إذا (qs < 0)
         qs = shell_escape_quoting_style;
-      if (qs != literal_quoting_style)
+      إذا (qs != literal_quoting_style)
         {
-          set_quoting_style (NULL, qs);
+          مجموعه_quoting_style (عدم, qs);
           quote_output = true;
         }
     }
 
-  for (; optind < argc; optind++)
+  لكل (; optind < argc; optind++)
     {
-      char const *result = argv[optind];
-      idx_t len = dir_len (result);
+      حرف ثابت *نتیجه = argv[optind];
+      idx_t len = dir_len (نتیجه);
 
-      if (! len)
+      إذا (! len)
         {
-          static char const dot = '.';
-          result = &dot;
+          ساكن حرف ثابت dot = '.';
+          نتیجه = &dot;
           len = 1;
         }
-      if (quote_output)
+      إذا (quote_output)
         {
-          result = quoteN_mem (result, len);
-          len = strlen (result);
+          نتیجه = quoteN_mem (نتیجه, len);
+          len = طول_رشته (نتیجه);
         }
-      fwrite (result, 1, len, stdout);
-      putchar (use_nuls ? '\0' :'\n');
+      fwrite (نتیجه, 1, len, stdout);
+      حرف_چاپ_کن (use_nuls ? '\0' :'\n');
     }
 
-  return EXIT_SUCCESS;
+  أرجع EXIT_SUCCESS;
 }

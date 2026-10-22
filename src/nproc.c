@@ -16,122 +16,122 @@
 
 /* Written by Giuseppe Scrivano.  */
 
-#include <config.h>
-#include <getopt.h>
-#include <stdio.h>
-#include <sys/types.h>
+#ضمن <config.h>
+#ضمن <getopt.h>
+#ضمن <stdio.h>
+#ضمن <sys/types.h>
 
-#include "system.h"
-#include "nproc.h"
-#include "quote.h"
-#include "xdectoint.h"
+#ضمن "system.h"
+#ضمن "nproc.h"
+#ضمن "quote.h"
+#ضمن "xdectoint.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "nproc"
+#تعریف_کن برنامه_NAME "nproc"
 
-#define AUTHORS proper_name ("Giuseppe Scrivano")
+#تعریف_کن AUTHORS proper_name ("Giuseppe Scrivano")
 
-enum
+تعداد
 {
   ALL_OPTION = CHAR_MAX + 1,
   IGNORE_OPTION
 };
 
-static struct option const longopts[] =
+ساكن بنية option ثابت longopts[] =
 {
-  {"all", no_argument, NULL, ALL_OPTION},
-  {"ignore", required_argument, NULL, IGNORE_OPTION},
+  {"all", no_آرگومان, عدم, ALL_OPTION},
+  {"ignore", required_آرگومان, عدم, IGNORE_OPTION},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_نسخه_OPTION_DECL},
+  {عدم, 0, عدم, 0}
 };
 
-void
-usage (int status)
+فراغ
+usage (صحيح وضعیت)
 {
-  if (status != EXIT_SUCCESS)
+  إذا (وضعیت != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  وإلا
     {
-      printf (_("Usage: %s [OPTION]...\n"), program_name);
+      چاپ_کن (_("Usage: %s [OPTION]...\n"), برنامه_name);
       fputs (_("\
-Print the number of processing units available to the current process,\n\
-which may be less than the number of online processors.\n\
-If the 'OMP_NUM_THREADS' or 'OMP_THREAD_LIMIT' environment variables are set,\n\
-then they will determine the minimum and maximum returned value respectively.\n\
+Print the عدد از processing units موجود مقصد the current process,\n\
+which may be less than the عدد از online processors.\n\
+If the 'OMP_NUM_THREADS' or 'OMP_THREAD_LIMIT' environment variables are مجموعه_2,\n\
+then they will determine the minimum and بیشینه returned مقدار respectively.\n\
 \n\
 "), stdout);
       oputs (_("\
       --all\n\
-         print the number of installed processors,\n\
+         print the عدد از installed processors,\n\
          disregarding any OpenMP environment variables, or CPU quotas.\n\
 "));
       oputs (_("\
       --ignore=N\n\
-         if possible, exclude N processing units.\n\
-         The result is guaranteed to be at least 1.\n\
+         إذا possible, exclude N processing units.\n\
+         The نتیجه is guaranteed مقصد be at کمترین 1.\n\
 "));
 
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (نسخه_OPTION_DESCRIPTION);
+      emit_ancillary_info (برنامه_NAME);
     }
-  exit (status);
+  خروج (وضعیت);
 }
 
-int
-main (int argc, char **argv)
+صحيح
+اصلی (صحيح argc, حرف **argv)
 {
-  unsigned long ignore = 0;
+  بیعلامت دراز ignore = 0;
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  مجموعه_برنامه_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  enum nproc_query mode = NPROC_CURRENT_OVERRIDABLE;
+  تعداد nproc_query نما_2 = NPROC_CURRENT_OVERRIDABLE;
 
-  while (true)
+  طالما (true)
     {
-      int c = getopt_long (argc, argv, "", longopts, NULL);
-      if (c == -1)
-        break;
-      switch (c)
+      صحيح c = getopt_long (argc, argv, "", longopts, عدم);
+      إذا (c == -1)
+        اكسر;
+      بدل (c)
         {
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_نسخه_CHAR (برنامه_NAME, AUTHORS);
 
-        case ALL_OPTION:
-          mode = NPROC_ALL;
-          break;
+        حالة ALL_OPTION:
+          نما_2 = NPROC_ALL;
+          اكسر;
 
-        case IGNORE_OPTION:
+        حالة IGNORE_OPTION:
           ignore = xnumtoumax (optarg, 10, 0, ULONG_MAX, "",
                                _("invalid number"), 0, XTOINT_MAX_QUIET);
-          break;
+          اكسر;
 
-        default:
+        افتراضي:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (argc != optind)
+  إذا (argc != optind)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind]));
       usage (EXIT_FAILURE);
     }
 
-  unsigned long nproc = num_processors (mode);
+  بیعلامت دراز nproc = رقم_processors (نما_2);
 
-  if (ignore < nproc)
+  إذا (ignore < nproc)
     nproc -= ignore;
-  else
+  وإلا
     nproc = 1;
 
-  printf ("%lu\n", nproc);
+  چاپ_کن ("%lu\n", nproc);
 
-  return EXIT_SUCCESS;
+  أرجع EXIT_SUCCESS;
 }

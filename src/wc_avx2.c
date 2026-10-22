@@ -14,46 +14,46 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
+#ضمن <config.h>
 
-#include "wc.h"
-#include "system.h"
-#include "ioblksize.h"
+#ضمن "wc.h"
+#ضمن "system.h"
+#ضمن "ioblksize.h"
 
-#include <x86intrin.h>
+#ضمن <x86intrin.h>
 
 /* Read FD and return a summary.  */
-extern struct wc_lines
-wc_lines_avx2 (int fd)
+خارجي بنية wc_سطرها
+wc_سطرها_avx2 (صحيح fd)
 {
-  intmax_t lines = 0;
-  intmax_t bytes = 0;
+  intmax_t سطرها = 0;
+  intmax_t بایتها = 0;
 
   __m256i endlines = _mm256_set1_epi8 ('\n');
 
-  while (true)
+  طالما (true)
     {
-       __m256i avx_buf[IO_BUFSIZE / sizeof (__m256i)];
-      ssize_t bytes_read = read (fd, avx_buf, sizeof avx_buf);
-      if (bytes_read <= 0)
-        return (struct wc_lines) { bytes_read == 0 ? 0 : errno, lines, bytes };
+       __m256i avx_buf[IO_BUFSIZE / حجم (__m256i)];
+      ssize_t بایتها_read = اقرأ (fd, avx_buf, حجم avx_buf);
+      إذا (بایتها_read <= 0)
+        أرجع (بنية wc_سطرها) { بایتها_read == 0 ? 0 : errno, سطرها, بایتها };
 
-      bytes += bytes_read;
+      بایتها += بایتها_read;
       __m256i *datap = avx_buf;
 
-      while (bytes_read >= 32)
+      طالما (بایتها_read >= 32)
         {
-           __m256i to_match = _mm256_load_si256 (datap);
-           __m256i matches = _mm256_cmpeq_epi8 (to_match, endlines);
-           int mask = _mm256_movemask_epi8 (matches);
-           lines += __builtin_popcount (mask);
+           __m256i مقصد_تطابق = mm256_بارگیری_si256 (datap);
+           __m256i matches = _mm256_cmpeq_epi8 (مقصد_تطابق, endlines);
+           صحيح ماسک = _mm256_movemask_epi8 (matches);
+           سطرها += __builtin_popcount (ماسک);
            datap += 1;
-           bytes_read -= 32;
+           بایتها_read -= 32;
         }
 
       /* Finish up any left over bytes */
-      char *end = (char *) datap + bytes_read;
-      for (char *p = (char *) datap; p < end; p++)
-        lines += *p == '\n';
+      حرف *انتها = (حرف *) datap + بایتها_read;
+      لكل (حرف *p = (حرف *) datap; p < انتها; p++)
+        سطرها += *p == '\n';
     }
 }

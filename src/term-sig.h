@@ -1,9 +1,9 @@
-#ifndef TERM_SIG_H
-# define TERM_SIG_H
+#اگر_تعریف_نشده جمله_SIG_H
+# define جمله_SIG_H
 
 # include <signal.h>
 
-static int const term_sig[] =
+ساكن صحيح ثابت جمله_sig[] =
   {
     SIGALRM, /* our timeout.  */
     SIGINT,  /* Ctrl-C at terminal for example.  */
@@ -47,4 +47,4 @@ static int const term_sig[] =
 # endif
   };
 
-#endif
+#پایان_اگر

@@ -18,23 +18,23 @@
    Reworked to use chdir and avoid recursion, and later, rewritten
    once again, to use fts, by Jim Meyering.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#ضمن <config.h>
+#ضمن <stdio.h>
+#ضمن <getopt.h>
+#ضمن <sys/types.h>
 
-#include "system.h"
-#include "argmatch.h"
-#include "assure.h"
-#include "remove.h"
-#include "root-dev-ino.h"
-#include "yesno.h"
-#include "priv-set.h"
+#ضمن "system.h"
+#ضمن "argmatch.h"
+#ضمن "assure.h"
+#ضمن "remove.h"
+#ضمن "root-dev-ino.h"
+#ضمن "yesno.h"
+#ضمن "priv-set.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "rm"
+#تعریف_کن برنامه_NAME "rm"
 
-#define AUTHORS \
+#تعریف_کن AUTHORS \
   proper_name ("Paul Rubin"), \
   proper_name ("David MacKenzie"), \
   proper_name ("Richard M. Stallman"), \
@@ -42,93 +42,93 @@
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+تعداد
 {
   INTERACTIVE_OPTION = CHAR_MAX + 1,
   ONE_FILE_SYSTEM,
-  NO_PRESERVE_ROOT,
-  PRESERVE_ROOT,
-  PRESUME_INPUT_TTY_OPTION
+  NO_PRESERVE_ریشه,
+  PRESERVE_ریشه,
+  PRESUME_درون_داد_TTY_OPTION
 };
 
-enum interactive_type
+تعداد interactive_type
   {
     interactive_never,		/* 0: no option or --interactive=never */
     interactive_once,		/* 1: -I or --interactive=once */
     interactive_always		/* 2: default, -i or --interactive=always */
   };
 
-static struct option const long_opts[] =
+ساكن بنية option ثابت long_opts[] =
 {
-  {"force", no_argument, NULL, 'f'},
-  {"interactive", optional_argument, NULL, INTERACTIVE_OPTION},
+  {"force", no_آرگومان, عدم, 'f'},
+  {"interactive", optional_آرگومان, عدم, INTERACTIVE_OPTION},
 
-  {"one-file-system", no_argument, NULL, ONE_FILE_SYSTEM},
-  {"no-preserve-root", no_argument, NULL, NO_PRESERVE_ROOT},
-  {"preserve-root", optional_argument, NULL, PRESERVE_ROOT},
+  {"one-file-system", no_آرگومان, عدم, ONE_FILE_SYSTEM},
+  {"no-preserve-root", no_آرگومان, عدم, NO_PRESERVE_ریشه},
+  {"preserve-root", optional_آرگومان, عدم, PRESERVE_ریشه},
 
   /* This is solely for testing.  Do not document.  */
   /* It is relatively difficult to ensure that there is a tty on stdin.
      Since rm acts differently depending on that, without this option,
      it'd be harder to test the parts of rm that depend on that setting.  */
-  {"-presume-input-tty", no_argument, NULL, PRESUME_INPUT_TTY_OPTION},
+  {"-presume-input-tty", no_آرگومان, عدم, PRESUME_درون_داد_TTY_OPTION},
 
-  {"recursive", no_argument, NULL, 'r'},
-  {"dir", no_argument, NULL, 'd'},
-  {"verbose", no_argument, NULL, 'v'},
+  {"recursive", no_آرگومان, عدم, 'r'},
+  {"dir", no_آرگومان, عدم, 'd'},
+  {"verbose", no_آرگومان, عدم, 'v'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_نسخه_OPTION_DECL},
+  {عدم, 0, عدم, 0}
 };
 
-static char const *const interactive_args[] =
+ساكن حرف ثابت *ثابت interactive_آرگومانها[] =
 {
   "never", "no", "none",
   "once",
-  "always", "yes", NULL
+  "always", "yes", عدم
 };
-static enum interactive_type const interactive_types[] =
+ساكن تعداد interactive_type ثابت interactive_types[] =
 {
   interactive_never, interactive_never, interactive_never,
   interactive_once,
   interactive_always, interactive_always
 };
-ARGMATCH_VERIFY (interactive_args, interactive_types);
+ARGMATCH_VERIFY (interactive_آرگومانها, interactive_types);
 
 /* Advise the user about invalid usages like "rm -foo" if the file
    "-foo" exists, assuming ARGC and ARGV are as with 'main'.  */
 
-static void
-diagnose_leading_hyphen (int argc, char **argv)
+ساكن فراغ
+diagnose_leading_hyphen (صحيح argc, حرف **argv)
 {
   /* OPTIND is unreliable, so iterate through the arguments looking
      for a file name that looks like an option.  */
 
-  for (int i = 1; i < argc; i++)
+  لكل (صحيح i = 1; i < argc; i++)
     {
-      char const *arg = argv[i];
-      struct stat st;
+      حرف ثابت *arg = argv[i];
+      بنية stat st;
 
-      if (arg[0] == '-' && arg[1] && lstat (arg, &st) == 0)
+      إذا (arg[0] == '-' && arg[1] && lstat (arg, &st) == 0)
         {
           fprintf (stderr,
                    _("Try '%s ./%s' to remove the file %s.\n"),
                    argv[0],
                    quotearg_n_style (1, shell_escape_quoting_style, arg),
                    quoteaf (arg));
-          break;
+          اكسر;
         }
     }
 }
 
-void
-usage (int status)
+فراغ
+usage (صحيح وضعیت)
 {
-  if (status != EXIT_SUCCESS)
+  إذا (وضعیت != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  وإلا
     {
-      printf (_("Usage: %s [OPTION]... [FILE]...\n"), program_name);
+      چاپ_کن (_("Usage: %s [OPTION]... [FILE]...\n"), برنامه_name);
       fputs (_("\
 Remove (unlink) the FILE(s).\n\
 \n\
@@ -143,30 +143,30 @@ Remove (unlink) the FILE(s).\n\
 "));
       oputs (_("\
   -I\n\
-         prompt once before removing more than three files,\n\
+         prompt once before removing بیشتر than three files,\n\
          or when removing recursively; less intrusive than -i,\n\
-         while still giving protection against most mistakes\n\
+         طالما still giving protection against most mistakes\n\
 "));
       oputs (_("\
       --interactive[=WHEN]\n\
-         prompt according to WHEN: never, once (-I), or always (-i);\n\
+         prompt according مقصد WHEN: never, once (-I), or always (-i);\n\
          without WHEN, prompt always\n\
 "));
       oputs (_("\
       --one-file-system\n\
          when removing a hierarchy recursively,\n\
          skip any directory that is on a file system different\n\
-         from that of the corresponding command line argument\n\
+         from that از the corresponding command سطر آرگومان\n\
 "));
       oputs (_("\
-      --no-preserve-root\n\
-         do not treat '/' specially\n\
+      --no-preserve-ریشه\n\
+         افعل not treat '/' specially\n\
 "));
       oputs (_("\
-      --preserve-root[=all]\n\
-         do not remove '/' (default);\n\
-         with 'all', reject any command line argument\n\
-         on a separate device from its parent\n\
+      --preserve-ریشه[=all]\n\
+         افعل not remove '/' (افتراضي);\n\
+         with 'all', reject any command سطر آرگومان\n\
+         on a separate device from its والد\n\
 "));
       oputs (_("\
   -r, -R, --recursive\n\
@@ -174,54 +174,54 @@ Remove (unlink) the FILE(s).\n\
 "));
       oputs (_("\
   -d, --dir\n\
-         remove empty directories\n\
+         remove خالی directories\n\
 "));
       oputs (_("\
   -v, --verbose\n\
-         explain what is being done\n\
+         explain what is being انجامشده\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (نسخه_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-By default, rm does not remove directories.  Use the --recursive (-r or -R)\n\
-option to remove each listed directory, too, along with all of its contents.\n\
+By افتراضي, rm does not remove directories.  Use the --recursive (-r or -R)\n\
+option مقصد remove each listed directory, too, along with all از its contents.\n\
 "), stdout);
       fputs (_("\
 \n\
-Any attempt to remove a file whose last file name component is '.' or '..'\n\
+Any attempt مقصد remove a file whose آخرین file name component is '.' or '..'\n\
 is rejected with a diagnostic.\n\
 "), stdout);
-      printf (_("\
+      چاپ_کن (_("\
 \n\
-To remove a file whose name starts with a '-', for example '-foo',\n\
-use one of these commands:\n\
+مقصد_2 remove a file whose name starts with a '-', لكل example '-foo',\n\
+use one از these commands:\n\
   %s -- -foo\n\
 \n\
   %s ./-foo\n\
 "),
-              program_name, program_name);
+              برنامه_name, برنامه_name);
       fputs (_("\
 \n\
-If you use rm to remove a file, it might be possible to recover\n\
-some of its contents, given sufficient expertise and/or time.  For greater\n\
+If you use rm مقصد remove a file, it might be possible مقصد recover\n\
+some از its contents, given sufficient expertise and/or زمان.  For greater\n\
 assurance that the contents are unrecoverable, consider using shred(1).\n\
 "), stdout);
-      emit_ancillary_info (PROGRAM_NAME);
+      emit_ancillary_info (برنامه_NAME);
     }
-  exit (status);
+  خروج (وضعیت);
 }
 
-static void
-rm_option_init (struct rm_options *x)
+ساكن فراغ
+rm_option_init (بنية rm_options *x)
 {
   x->ignore_missing_files = false;
   x->interactive = RMI_SOMETIMES;
   x->one_file_system = false;
-  x->remove_empty_directories = false;
+  x->remove_خالی_directories = false;
   x->recursive = false;
-  x->root_dev_ino = NULL;
-  x->preserve_all_root = false;
+  x->ریشه_dev_ino = عدم;
+  x->preserve_all_ریشه = false;
   x->stdin_tty = isatty (STDIN_FILENO);
   x->verbose = false;
 
@@ -230,16 +230,16 @@ rm_option_init (struct rm_options *x)
   x->require_restore_cwd = false;
 }
 
-int
-main (int argc, char **argv)
+صحيح
+اصلی (صحيح argc, حرف **argv)
 {
-  bool preserve_root = true;
-  struct rm_options x;
+  bool preserve_ریشه = true;
+  بنية rm_options x;
   bool prompt_once = false;
-  int c;
+  صحيح c;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  مجموعه_برنامه_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
@@ -249,133 +249,133 @@ main (int argc, char **argv)
   rm_option_init (&x);
 
   /* Try to disable the ability to unlink a directory.  */
-  priv_set_remove_linkdir ();
+  priv_مجموعه_remove_linkdir ();
 
-  while ((c = getopt_long (argc, argv, "dfirvIR", long_opts, NULL)) != -1)
+  طالما ((c = getopt_long (argc, argv, "dfirvIR", long_opts, عدم)) != -1)
     {
-      switch (c)
+      بدل (c)
         {
-        case 'd':
-          x.remove_empty_directories = true;
-          break;
+        حالة 'd':
+          x.remove_خالی_directories = true;
+          اكسر;
 
-        case 'f':
+        حالة 'f':
           x.interactive = RMI_NEVER;
           x.ignore_missing_files = true;
           prompt_once = false;
-          break;
+          اكسر;
 
-        case 'i':
+        حالة 'i':
           x.interactive = RMI_ALWAYS;
           x.ignore_missing_files = false;
           prompt_once = false;
-          break;
+          اكسر;
 
-        case 'I':
+        حالة 'I':
           x.interactive = RMI_SOMETIMES;
           x.ignore_missing_files = false;
           prompt_once = true;
-          break;
+          اكسر;
 
-        case 'r':
-        case 'R':
+        حالة 'r':
+        حالة 'R':
           x.recursive = true;
-          break;
+          اكسر;
 
-        case INTERACTIVE_OPTION:
+        حالة INTERACTIVE_OPTION:
           {
-            int i;
-            if (optarg)
-              i = XARGMATCH ("--interactive", optarg, interactive_args,
+            صحيح i;
+            إذا (optarg)
+              i = XARGMATCH ("--interactive", optarg, interactive_آرگومانها,
                              interactive_types);
-            else
+            وإلا
               i = interactive_always;
-            switch (i)
+            بدل (i)
               {
-              case interactive_never:
+              حالة interactive_never:
                 x.interactive = RMI_NEVER;
                 prompt_once = false;
-                break;
+                اكسر;
 
-              case interactive_once:
+              حالة interactive_once:
                 x.interactive = RMI_SOMETIMES;
                 x.ignore_missing_files = false;
                 prompt_once = true;
-                break;
+                اكسر;
 
-              case interactive_always:
+              حالة interactive_always:
                 x.interactive = RMI_ALWAYS;
                 x.ignore_missing_files = false;
                 prompt_once = false;
-                break;
+                اكسر;
               }
-            break;
+            اكسر;
           }
 
-        case ONE_FILE_SYSTEM:
+        حالة ONE_FILE_SYSTEM:
           x.one_file_system = true;
-          break;
+          اكسر;
 
-        case NO_PRESERVE_ROOT:
-          if (! streq (argv[optind - 1], "--no-preserve-root"))
+        حالة NO_PRESERVE_ریشه:
+          إذا (! streq (argv[optind - 1], "--no-preserve-root"))
             error (EXIT_FAILURE, 0,
                    _("you may not abbreviate the --no-preserve-root option"));
-          preserve_root = false;
-          break;
+          preserve_ریشه = false;
+          اكسر;
 
-        case PRESERVE_ROOT:
-          if (optarg)
+        حالة PRESERVE_ریشه:
+          إذا (optarg)
             {
-              if (streq (optarg, "all"))
-                x.preserve_all_root = true;
-              else
+              إذا (streq (optarg, "all"))
+                x.preserve_all_ریشه = true;
+              وإلا
                 error (EXIT_FAILURE, 0,
                        _("unrecognized --preserve-root argument: %s"),
                        quoteaf (optarg));
             }
-          preserve_root = true;
-          break;
+          preserve_ریشه = true;
+          اكسر;
 
-        case PRESUME_INPUT_TTY_OPTION:
+        حالة PRESUME_درون_داد_TTY_OPTION:
           x.stdin_tty = true;
-          break;
+          اكسر;
 
-        case 'v':
+        حالة 'v':
           x.verbose = true;
-          break;
+          اكسر;
 
         case_GETOPT_HELP_CHAR;
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        case_GETOPT_نسخه_CHAR (برنامه_NAME, AUTHORS);
+        افتراضي:
           diagnose_leading_hyphen (argc, argv);
           usage (EXIT_FAILURE);
         }
     }
 
-  if (argc <= optind)
+  إذا (argc <= optind)
     {
-      if (x.ignore_missing_files)
-        return EXIT_SUCCESS;
-      else
+      إذا (x.ignore_missing_files)
+        أرجع EXIT_SUCCESS;
+      وإلا
         {
           error (0, 0, _("missing operand"));
           usage (EXIT_FAILURE);
         }
     }
 
-  if (x.recursive && preserve_root)
+  إذا (x.recursive && preserve_ریشه)
     {
-      static struct dev_ino dev_ino_buf;
-      x.root_dev_ino = get_root_dev_ino (&dev_ino_buf);
-      if (x.root_dev_ino == NULL)
+      ساكن بنية dev_ino dev_ino_buf;
+      x.ریشه_dev_ino = get_ریشه_dev_ino (&dev_ino_buf);
+      إذا (x.ریشه_dev_ino == عدم)
         error (EXIT_FAILURE, errno, _("failed to get attributes of %s"),
                quoteaf ("/"));
     }
 
   uintmax_t n_files = argc - optind;
-  char **file =  argv + optind;
+  حرف **file =  argv + optind;
 
-  if (prompt_once && (x.recursive || 3 < n_files))
+  إذا (prompt_once && (x.recursive || 3 < n_files))
     {
       fprintf (stderr,
                (x.recursive
@@ -385,12 +385,12 @@ main (int argc, char **argv)
                 : ngettext ("%s: remove %ju argument? ",
                             "%s: remove %ju arguments? ",
                             select_plural (n_files))),
-               program_name, n_files);
-      if (!yesno ())
-        return EXIT_SUCCESS;
+               برنامه_name, n_files);
+      إذا (!yesno ())
+        أرجع EXIT_SUCCESS;
     }
 
-  enum RM_status status = rm (file, &x);
-  affirm (VALID_STATUS (status));
-  return status == RM_ERROR ? EXIT_FAILURE : EXIT_SUCCESS;
+  تعداد RM_وضعیت وضعیت = rm (file, &x);
+  affirm (VALID_وضعیت (وضعیت));
+  أرجع وضعیت == RM_ERROR ? EXIT_FAILURE : EXIT_SUCCESS;
 }

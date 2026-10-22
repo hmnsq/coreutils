@@ -16,162 +16,162 @@
 
 /* Written by Pádraig Brady  */
 
-#include <config.h>             /* sets _FILE_OFFSET_BITS=64 etc. */
-#include <signal.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <float.h>
+#ضمن <config.h>             /* sets _FILE_OFFSET_BITS=64 etc. */
+#ضمن <signal.h>
+#ضمن <stdio.h>
+#ضمن <sys/types.h>
+#ضمن <float.h>
 
-#include "errno-iter.h"
-#include "ftoastr.h"
-#include "system.h"
-#include "ioblksize.h"
-#include "long-options.h"
+#ضمن "errno-iter.h"
+#ضمن "ftoastr.h"
+#ضمن "system.h"
+#ضمن "ioblksize.h"
+#ضمن "long-options.h"
 
-#define PROGRAM_NAME "getlimits"
+#تعریف_کن برنامه_NAME "getlimits"
 
-#define AUTHORS proper_name_lite ("Padraig Brady", "P\303\241draig Brady")
+#تعریف_کن AUTHORS proper_name_lite ("Padraig Brady", "P\303\241draig Brady")
 
-#ifndef TIME_T_MAX
-# define TIME_T_MAX TYPE_MAXIMUM (time_t)
-#endif
+#اگر_تعریف_نشده زمان_T_MAX
+# define زمان_T_MAX TYPE_بیشینه (time_t)
+#پایان_اگر
 
-#ifndef TIME_T_MIN
-# define TIME_T_MIN TYPE_MINIMUM (time_t)
-#endif
+#اگر_تعریف_نشده زمان_T_MIN
+# define زمان_T_MIN TYPE_MINIMUM (time_t)
+#پایان_اگر
 
-#ifndef SSIZE_MIN
+#اگر_تعریف_نشده SSIZE_MIN
 # define SSIZE_MIN TYPE_MINIMUM (ssize_t)
-#endif
+#پایان_اگر
 
-#ifndef PID_T_MIN
+#اگر_تعریف_نشده PID_T_MIN
 # define PID_T_MIN TYPE_MINIMUM (pid_t)
-#endif
+#پایان_اگر
 
-#ifndef OFF64_T_MAX
-# define OFF64_T_MAX TYPE_MAXIMUM (off64_t)
-#endif
+#اگر_تعریف_نشده OFF64_T_MAX
+# define OFF64_T_MAX TYPE_بیشینه (off64_t)
+#پایان_اگر
 
-#ifndef OFF64_T_MIN
+#اگر_تعریف_نشده OFF64_T_MIN
 # define OFF64_T_MIN TYPE_MINIMUM (off64_t)
-#endif
+#پایان_اگر
 
-#ifndef SIGRTMIN
+#اگر_تعریف_نشده SIGRTMIN
 # define SIGRTMIN 0
 # undef SIGRTMAX
-#endif
-#ifndef SIGRTMAX
+#پایان_اگر
+#اگر_تعریف_نشده SIGRTMAX
 # define SIGRTMAX (SIGRTMIN - 1)
-#endif
+#پایان_اگر
 
 /* These are not interesting to print.
  * Instead of these defines it would be nice to be able to do
  * #ifdef (TYPE##_MIN) in function macro below.  */
-#define SIZE_MIN 0
-#define UCHAR_MIN 0
-#define UINT_MIN 0
-#define ULONG_MIN 0
-#define UINTMAX_MIN 0
-#define UID_T_MIN 0
-#define GID_T_MIN 0
+#تعریف_کن اندازه_MIN 0
+#تعریف_کن UCHAR_MIN 0
+#تعریف_کن UINT_MIN 0
+#تعریف_کن ULONG_MIN 0
+#تعریف_کن UINTMAX_MIN 0
+#تعریف_کن UID_T_MIN 0
+#تعریف_کن GID_T_MIN 0
 
-void
-usage (int status)
+فراغ
+usage (صحيح وضعیت)
 {
-  if (status != EXIT_SUCCESS)
+  إذا (وضعیت != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  وإلا
     {
-      printf (_("\
+      چاپ_کن (_("\
 Usage: %s\n\
-"), program_name);
+"), برنامه_name);
 
       fputs (_("\
-Output platform dependent limits in a format useful for shell scripts.\n\
+Output platform dependent limits درون a format useful لكل shell scripts.\n\
 \n\
 "), stdout);
       fputs (HELP_OPTION_DESCRIPTION, stdout);
-      fputs (VERSION_OPTION_DESCRIPTION, stdout);
-      emit_ancillary_info (PROGRAM_NAME);
+      fputs (نسخه_OPTION_DESCRIPTION, stdout);
+      emit_ancillary_info (برنامه_NAME);
     }
-  exit (status);
+  خروج (وضعیت);
 }
 
 /* Add one to the absolute value of the number whose textual
    representation is BUF + 1.  Do this in-place, in the buffer.
    Return a pointer to the result, which is normally BUF + 1, but is
    BUF if the representation grew in size.  */
-static char const *
-decimal_absval_add_one (char *buf)
+ساكن حرف ثابت *
+decimal_absval_جمع_کن_one (حرف *buf)
 {
   bool negative = (buf[1] == '-');
-  char *absnum = buf + 1 + negative;
-  char *p = absnum + strlen (absnum);
+  حرف *absnum = buf + 1 + negative;
+  حرف *p = absnum + طول_رشته (absnum);
   absnum[-1] = '0';
-  while (*--p == '9')
+  طالما (*--p == '9')
     *p = '0';
   ++*p;
-  char *result = MIN (absnum, p);
-  if (negative)
-    *--result = '-';
-  return result;
+  حرف *نتیجه = MIN (absnum, p);
+  إذا (negative)
+    *--نتیجه = '-';
+  أرجع نتیجه;
 }
 
-#define PRINT_FLOATTYPE(N, T, FTOASTR, BUFSIZE)                         \
-static void                                                             \
+#تعریف_کن PRINT_FLOATTYPE(N, T, FTOASTR, BUFSIZE)                         \
+ساكن فراغ                                                             \
 N (T x)                                                                 \
 {                                                                       \
-  char buf[BUFSIZE];                                                    \
-  FTOASTR (buf, sizeof buf, FTOASTR_LEFT_JUSTIFY, 0, x);                \
+  حرف buf[BUFSIZE];                                                    \
+  FTOASTR (buf, حجم buf, FTOASTR_چپ_JUSTIFY, 0, x);                \
   puts (buf);                                                           \
 }
 
-PRINT_FLOATTYPE (print_FLT, float, ftoastr, FLT_BUFSIZE_BOUND)
-PRINT_FLOATTYPE (print_DBL, double, dtoastr, DBL_BUFSIZE_BOUND)
-PRINT_FLOATTYPE (print_LDBL, long double, ldtoastr, LDBL_BUFSIZE_BOUND)
+PRINT_FLOATTYPE (print_FLT, عائم, ftoastr, FLT_BUFSIZE_BOUND)
+PRINT_FLOATTYPE (print_DBL, مزدوج, dtoastr, DBL_BUFSIZE_BOUND)
+PRINT_FLOATTYPE (print_LDBL, دراز مزدوج, ldtoastr, LDBL_BUFSIZE_BOUND)
 
-static int
-print_errno (void *name, int e)
+ساكن صحيح
+print_errno (فراغ *name, صحيح e)
 {
-  char const *err_name = name ? name : strerrorname_np (e);
-  if (err_name)
-    printf ("%s=%s\n", err_name,
+  حرف ثابت *err_name = name ? name : strerrorname_np (e);
+  إذا (err_name)
+    چاپ_کن ("%s=%s\n", err_name,
             quotearg_style (shell_escape_quoting_style, strerror (e)));
-  return 0;
+  أرجع 0;
 }
 
-int
-main (int argc, char **argv)
+صحيح
+اصلی (صحيح argc, حرف **argv)
 {
-  char limit[1 + MAX (INT_BUFSIZE_BOUND (intmax_t),
+  حرف حد[1 + MAX (INT_BUFSIZE_BOUND (intmax_t),
                       INT_BUFSIZE_BOUND (uintmax_t))];
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  مجموعه_برنامه_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
-                                   VERSION, true, usage, AUTHORS,
-                                   (char const *) NULL);
+  parse_gnu_standard_options_only (argc, argv, برنامه_NAME, PACKAGE_NAME,
+                                   نسخه_2, true, usage, AUTHORS,
+                                   (حرف ثابت *) عدم);
 
-#define print_int(TYPE)                                                  \
-  sprintf (limit + 1, "%ju", (uintmax_t) {TYPE##_MAX});                  \
-  printf (#TYPE"_MAX=%s\n", limit + 1);                                  \
-  printf (#TYPE"_OFLOW=%s\n", decimal_absval_add_one (limit));           \
-  if (TYPE##_MIN)                                                        \
+#تعریف_کن print_int(TYPE)                                                  \
+  sprintf (حد + 1, "%ju", (uintmax_t) {TYPE##_MAX});                  \
+  چاپ_کن (#TYPE"_MAX=%s\n", حد + 1);                                  \
+  چاپ_کن (#TYPE"_OFLOW=%s\n", decimal_absval_جمع_کن_one (حد));           \
+  إذا (TYPE##_MIN)                                                        \
     {                                                                    \
-      sprintf (limit + 1, "%jd", (intmax_t) {TYPE##_MIN});               \
-      printf (#TYPE"_MIN=%s\n", limit + 1);                              \
-      printf (#TYPE"_UFLOW=%s\n", decimal_absval_add_one (limit));       \
+      sprintf (حد + 1, "%jd", (intmax_t) {TYPE##_MIN});               \
+      چاپ_کن (#TYPE"_MIN=%s\n", حد + 1);                              \
+      چاپ_کن (#TYPE"_UFLOW=%s\n", decimal_absval_جمع_کن_one (حد));       \
     }
 
-#define print_float(TYPE)                                                \
-  printf (#TYPE"_MIN="); print_##TYPE (TYPE##_MIN);                      \
-  printf (#TYPE"_MAX="); print_##TYPE (TYPE##_MAX);
+#تعریف_کن print_float(TYPE)                                                \
+  چاپ_کن (#TYPE"_MIN="); print_##TYPE (TYPE##_MIN);                      \
+  چاپ_کن (#TYPE"_MAX="); print_##TYPE (TYPE##_MAX);
 
   /* Variable sized ints */
   print_int (CHAR);
@@ -182,9 +182,9 @@ main (int argc, char **argv)
   print_int (UINT);
   print_int (LONG);
   print_int (ULONG);
-  print_int (SIZE);
+  print_int (اندازه_2);
   print_int (SSIZE);
-  print_int (TIME_T);
+  print_int (زمان_T);
   print_int (UID_T);
   print_int (GID_T);
   print_int (PID_T);
@@ -199,25 +199,25 @@ main (int argc, char **argv)
   print_float (LDBL);
 
   /* Other useful constants */
-  printf ("SIGRTMIN=%jd\n", (intmax_t) {SIGRTMIN});
-  printf ("SIGRTMAX=%jd\n", (intmax_t) {SIGRTMAX});
-  printf ("IO_BUFSIZE=%ju\n", (uintmax_t) {IO_BUFSIZE});
+  چاپ_کن ("SIGRTMIN=%jd\n", (intmax_t) {SIGRTMIN});
+  چاپ_کن ("SIGRTMAX=%jd\n", (intmax_t) {SIGRTMAX});
+  چاپ_کن ("IO_BUFSIZE=%ju\n", (uintmax_t) {IO_BUFSIZE});
 
   /* Errnos */
-  errno_iterate (print_errno, NULL);
+  errno_iterate (print_errno, عدم);
   /* Common errno aliases */
-#if defined ENOTEMPTY && ENOTEMPTY == EEXIST
-  print_errno ((char*)"ENOTEMPTY", EEXIST);
-#endif
-#if defined ENOTSUP && ENOTSUP == EOPNOTSUPP
-  print_errno ((char*)"ENOTSUP", EOPNOTSUPP);
-#endif
-#if defined EWOULDBLOCK && EWOULDBLOCK == EAGAIN
-  print_errno ((char*)"EWOULDBLOCK", EAGAIN);
-#endif
-#if defined EDEADLOCK && EDEADLOCK == EDEADLK
-  print_errno ((char*)"EDEADLOCK", EDEADLK);
-#endif
+#إذا defined ENOTEMPTY && ENOTEMPTY == EEXIST
+  print_errno ((حرف*)"ENOTEMPTY", EEXIST);
+#پایان_اگر
+#إذا defined ENOTSUP && ENOTSUP == EOPNOTSUPP
+  print_errno ((حرف*)"ENOTSUP", EOPNOTSUPP);
+#پایان_اگر
+#إذا defined EWOULDBLOCK && EWOULDBLOCK == EAGAIN
+  print_errno ((حرف*)"EWOULDBLOCK", EAGAIN);
+#پایان_اگر
+#إذا defined EDEADLOCK && EDEADLOCK == EDEADLK
+  print_errno ((حرف*)"EDEADLOCK", EDEADLK);
+#پایان_اگر
 
-  return EXIT_SUCCESS;
+  أرجع EXIT_SUCCESS;
 }

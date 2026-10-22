@@ -16,17 +16,17 @@
 
 /* Extracted from cp.c and librarified by Jim Meyering.  */
 
-#ifndef COPY_H
+#اگر_تعریف_نشده COPY_H
 # define COPY_H
 
 # include "hash.h"
 
-struct selabel_handle;
+بنية selabel_handle;
 
 /* Control creation of sparse files (files with holes).  */
-enum Sparse_type
+تعداد Sparse_type
 {
-  SPARSE_UNUSED,
+  SPARSE_استفادهنشده,
 
   /* Never create holes in DEST.  */
   SPARSE_NEVER,
@@ -45,7 +45,7 @@ enum Sparse_type
 };
 
 /* Control creation of COW files.  */
-enum Reflink_type
+تعداد Reflink_type
 {
   /* Do a standard copy.  */
   REFLINK_NEVER,
@@ -58,7 +58,7 @@ enum Reflink_type
 };
 
 /* Control how existing destination files are updated.  */
-enum Update_type
+تعداد Update_type
 {
   /* Always update..  */
   UPDATE_ALL,
@@ -74,7 +74,7 @@ enum Update_type
 };
 
 /* This type is used to help mv (via copy.c) distinguish these cases.  */
-enum Interactive
+تعداد Interactive
 {
   I_UNSPECIFIED,
   I_ALWAYS_YES,      /* -f.  */
@@ -83,7 +83,7 @@ enum Interactive
 };
 
 /* How to handle symbolic links.  */
-enum Dereference_symlink
+تعداد Dereference_symlink
 {
   DEREF_UNDEFINED = 1,
 
@@ -92,44 +92,44 @@ enum Dereference_symlink
 
   /* If the symbolic is a command line argument, then copy
      its referent.  Otherwise, copy the symbolic link itself.  -H  */
-  DEREF_COMMAND_LINE_ARGUMENTS,
+  DEREF_COMMAND_سطر_ARGUMENTS,
 
   /* Copy the referent of the symbolic link.  -L  */
   DEREF_ALWAYS
 };
 
-# define VALID_SPARSE_MODE(Mode)	\
-  ((Mode) == SPARSE_NEVER		\
-   || (Mode) == SPARSE_AUTO		\
-   || (Mode) == SPARSE_ALWAYS)
+# define VALID_SPARSE_نما(نما_3)	\
+  ((نما_3) == SPARSE_NEVER		\
+   || (نما_3) == SPARSE_AUTO		\
+   || (نما_3) == SPARSE_ALWAYS)
 
-# define VALID_REFLINK_MODE(Mode)	\
-  ((Mode) == REFLINK_NEVER		\
-   || (Mode) == REFLINK_AUTO		\
-   || (Mode) == REFLINK_ALWAYS)
+# define VALID_REFLINK_نما(نما_3)	\
+  ((نما_3) == REFLINK_NEVER		\
+   || (نما_3) == REFLINK_AUTO		\
+   || (نما_3) == REFLINK_ALWAYS)
 
 /* These options control how files are copied by at least the
    following programs: mv (when rename doesn't work), cp, install.
    So, if you add a new member, be sure to initialize it in
    mv.c, cp.c, and install.c.  */
-struct cp_options
+بنية cp_options
 {
-  enum backup_type backup_type;
+  تعداد backup_type backup_type;
 
   /* How to handle symlinks in the source.  */
-  enum Dereference_symlink dereference;
+  تعداد Dereference_symlink dereference;
 
   /* This value is used to determine whether to prompt before removing
      each existing destination file.  It works differently depending on
      whether move_mode is set.  See code/comments in copy.c.  */
-  enum Interactive interactive;
+  تعداد Interactive interactive;
 
   /* Control creation of sparse files.  */
-  enum Sparse_type sparse_mode;
+  تعداد Sparse_type sparse_نما;
 
   /* Set the mode of the destination file to exactly this value
      if SET_MODE is nonzero.  */
-  mode_t mode;
+  mode_t نما_2;
 
   /* If true, copy all files except directories (and, if not dereferencing
      them, symbolic links) as if they were regular files.  */
@@ -152,14 +152,14 @@ struct cp_options
 
   /* If MOVE_MODE, first try to rename.
      If that fails and NO_COPY, fail instead of copying.  */
-  bool move_mode, no_copy;
+  bool move_نما, no_copy;
 
   /* Exchange instead of renaming.  Valid only if MOVE_MODE and if
      BACKUP_TYPE == no_backups.  */
   bool exchange;
 
   /* If true, install(1) is the caller.  */
-  bool install_mode;
+  bool install_نما;
 
   /* Whether this process has appropriate privileges to chown a file
      whose owner is not the effective user ID.  */
@@ -179,12 +179,12 @@ struct cp_options
   /* If true, attempt to give the copies the original files' permissions,
      owner, group, and timestamps. */
   bool preserve_ownership;
-  bool preserve_mode;
+  bool preserve_نما;
   bool preserve_timestamps;
-  bool explicit_no_preserve_mode;
+  bool explicit_no_preserve_نما;
 
   /* If non-null, attempt to set specified security context */
-  struct selabel_handle *set_security_context;
+  بنية selabel_handle *مجموعه_security_context;
 
   /* Enabled for mv, and for cp by the --preserve=links option.
      If true, attempt to preserve in the destination files any
@@ -200,7 +200,7 @@ struct cp_options
 
   /* Optionally don't copy the data, either with CoW reflink files or
      explicitly with the --attributes-only option.  */
-  bool data_copy_required;
+  bool داده_copy_required;
 
   /* If true and any of the above (for preserve) file attributes cannot
      be applied to a destination file, treat it as a failure and return
@@ -248,14 +248,14 @@ struct cp_options
 
   /* If true, set file mode to value of MODE.  Otherwise,
      set it based on current umask modified by UMASK_KILL.  */
-  bool set_mode;
+  bool مجموعه_نما;
 
   /* If true, create symbolic links instead of copying files.
      Create destination directories as usual. */
   bool symbolic_link;
 
   /* Control if destination files are replaced.  */
-  enum Update_type update;
+  تعداد Update_type update;
 
   /* If true, display the names of the files before copying them. */
   bool verbose;
@@ -276,15 +276,15 @@ struct cp_options
 
   /* If true, this is the last filed to be copied.  mv uses this to
      avoid some unnecessary work.  */
-  bool last_file;
+  bool آخرین_file;
 
   /* Zero if the source has already been renamed to the destination; a
      positive errno number if this failed with the given errno; -1 if
      no attempt has been made to rename.  Always -1, except for mv.  */
-  int rename_errno;
+  صحيح rename_errno;
 
   /* Control creation of COW files.  */
-  enum Reflink_type reflink_mode;
+  تعداد Reflink_type reflink_نما;
 
   /* This is a set of destination name/inode/dev triples.  Each such triple
      represents a file we have created corresponding to a source file name
@@ -295,7 +295,7 @@ struct cp_options
      When renaming, it protects all non-directories.
      Use dest_info_init to initialize it, or set it to NULL to disable
      this feature.  */
-  Hash_table *dest_info;
+  Hash_جدول *dest_info;
 
   /* This is a set of dev/inode pairs.  This allows 'cp' to warn when the
      same file is given multiple times on the command line. E.g., with
@@ -303,70 +303,70 @@ struct cp_options
        rm -rf a b; touch a; mkdir b; cp a a ./a b
      Use src_info_init to initialize it, or set it to NULL to disable
      this feature.  */
-  Hash_table *src_info;
+  Hash_جدول *src_info;
 };
 
-enum copy_debug_val
+تعداد copy_debug_val
   {
    /* COPY_DEBUG_MAX is a dummy that ensures that any errno
       value can be assigned to an enum copy_debug_val.
       The other enum constants are negative,
       so that they do not collide with errno values.  */
-   COPY_DEBUG_MAX = INT_MAX,
+   COPY_DEBUG_MAX = بیشترین_صحیح,
 
    COPY_DEBUG_UNKNOWN = -1,
    COPY_DEBUG_NO = -2,
    COPY_DEBUG_YES = -3,
    COPY_DEBUG_EXTERNAL = -4,
-   COPY_DEBUG_EXTERNAL_INTERNAL = -5,
+   COPY_DEBUG_EXTERNAL_داخلی = -5,
    COPY_DEBUG_AVOIDED = -6,
   };
 
 /* debug info about the last file copy.  */
-struct copy_debug
+بنية copy_debug
 {
-  enum copy_debug_val offload;
-  enum copy_debug_val reflink;
-  enum copy_debug_val sparse_detection;
+  تعداد copy_debug_val offload;
+  تعداد copy_debug_val reflink;
+  تعداد copy_debug_val sparse_detection;
 };
 
 /* The type of a large counter.  Although it is always nonnegative,
    it is signed to help signed overflow checking catch any bugs.  */
-typedef intmax_t count_t;
-# define COUNT_MAX INTMAX_MAX
+تعريفنوع intmax_t شمار_t;
+# define شمار_MAX INTMAX_MAX
 
-bool copy (char const *src_name, char const *dst_name,
-           int dst_dirfd, char const *dst_relname,
-           int nonexistent_dst, const struct cp_options *options,
+bool copy (حرف ثابت *src_name, حرف ثابت *dst_name,
+           صحيح dst_dirfd, حرف ثابت *dst_relname,
+           صحيح nonexistent_dst, ثابت بنية cp_options *options,
            bool *copy_into_self, bool *rename_succeeded)
   _GL_ATTRIBUTE_NONNULL ((1, 2, 4, 6, 7));
 
-intmax_t copy_file_data (int ifd, struct stat const *ist, off_t ipos,
-                         char const *iname,
-                         int ofd, struct stat const *ost, off_t opos,
-                         char const *oname,
-                         count_t ibytes, struct cp_options const *x,
-                         struct copy_debug *copy_debug)
+intmax_t copy_file_داده (صحيح ifd, بنية stat ثابت *ist, off_t ipos,
+                         حرف ثابت *iname,
+                         صحيح ofd, بنية stat ثابت *ost, off_t opos,
+                         حرف ثابت *oname,
+                         شمار_t ibytes, بنية cp_options ثابت *x,
+                         بنية copy_debug *copy_debug)
   _GL_ATTRIBUTE_NONNULL ((2, 4, 6, 8, 10, 11));
 
-extern bool set_process_security_ctx (char const *src_name,
-                                      char const *dst_name,
-                                      mode_t mode, bool new_dst,
-                                      const struct cp_options *x)
+خارجي bool مجموعه_process_security_ctx (حرف ثابت *src_name,
+                                      حرف ثابت *dst_name,
+                                      mode_t نما_2, bool new_dst,
+                                      ثابت بنية cp_options *x)
   _GL_ATTRIBUTE_NONNULL ();
 
-extern bool set_file_security_ctx (char const *dst_name,
-                                   bool recurse, const struct cp_options *x)
+خارجي bool مجموعه_file_security_ctx (حرف ثابت *dst_name,
+                                   bool recurse, ثابت بنية cp_options *x)
   _GL_ATTRIBUTE_NONNULL ();
 
-void dest_info_init (struct cp_options *) _GL_ATTRIBUTE_NONNULL ();
-void dest_info_free (struct cp_options *) _GL_ATTRIBUTE_NONNULL ();
-void src_info_init (struct cp_options *) _GL_ATTRIBUTE_NONNULL ();
-void src_info_free (struct cp_options *) _GL_ATTRIBUTE_NONNULL ();
+فراغ dest_info_init (بنية cp_options *) _GL_ATTRIBUTE_NONNULL ();
+فراغ dest_info_free (بنية cp_options *) _GL_ATTRIBUTE_NONNULL ();
+فراغ src_info_init (بنية cp_options *) _GL_ATTRIBUTE_NONNULL ();
+فراغ src_info_free (بنية cp_options *) _GL_ATTRIBUTE_NONNULL ();
 
-void cp_options_default (struct cp_options *) _GL_ATTRIBUTE_NONNULL ();
-bool chown_failure_ok (struct cp_options const *)
-  _GL_ATTRIBUTE_NONNULL () _GL_ATTRIBUTE_PURE;
-mode_t cached_umask (void);
+فراغ cp_options_default (بنية cp_options *) _GL_ATTRIBUTE_NONNULL ();
+bool chown_failure_ok (بنية cp_options ثابت *)
+  _GL_ATTRIBUTE_NONNULL () GL_ATTRIBUTE_خالص;
+mode_t cached_umask (فراغ);
 
-#endif
+#پایان_اگر

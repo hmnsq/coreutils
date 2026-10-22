@@ -14,58 +14,58 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include <float.h>
-#include <getopt.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <langinfo.h>
+#ضمن <config.h>
+#ضمن <float.h>
+#ضمن <getopt.h>
+#ضمن <stdio.h>
+#ضمن <sys/types.h>
+#ضمن <langinfo.h>
 
-#include "argmatch.h"
-#include "assure.h"
-#include "c-ctype.h"
-#include "mbswidth.h"
-#include "mcel.h"
-#include "quote.h"
-#include "skipchars.h"
-#include "system.h"
-#include "utf8.h"
-#include "xstrtol.h"
+#ضمن "argmatch.h"
+#ضمن "assure.h"
+#ضمن "c-ctype.h"
+#ضمن "mbswidth.h"
+#ضمن "mcel.h"
+#ضمن "quote.h"
+#ضمن "skipchars.h"
+#ضمن "system.h"
+#ضمن "utf8.h"
+#ضمن "xstrtol.h"
 
-#include "set-fields.h"
+#ضمن "set-fields.h"
 
-#if HAVE_FPSETPREC
+#إذا HAVE_FPSETPREC
 # include <ieeefp.h>
-#endif
+#پایان_اگر
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "numfmt"
+#تعریف_کن برنامه_NAME "numfmt"
 
-#define AUTHORS proper_name ("Assaf Gordon")
+#تعریف_کن AUTHORS proper_name ("Assaf Gordon")
 
 /* Exit code when some numbers fail to convert.  */
-enum { EXIT_CONVERSION_WARNINGS = 2 };
+تعداد { EXIT_CONVERSION_WARNINGS = 2 };
 
-enum
+تعداد
 {
   FROM_OPTION = CHAR_MAX + 1,
   FROM_UNIT_OPTION,
-  TO_OPTION,
-  TO_UNIT_OPTION,
-  ROUND_OPTION,
+  مقصد_OPTION,
+  مقصد_UNIT_OPTION,
+  دور_OPTION,
   SUFFIX_OPTION,
   GROUPING_OPTION,
   PADDING_OPTION,
-  FIELD_OPTION,
+  فیلد_OPTION,
   DEBUG_OPTION,
   DEV_DEBUG_OPTION,
-  HEADER_OPTION,
+  سرآیند_OPTION,
   FORMAT_OPTION,
   INVALID_OPTION,
   UNIT_SEPARATOR_OPTION
 };
 
-enum scale_type
+تعداد scale_type
 {
   scale_none,                   /* the default: no scaling.  */
   scale_auto,                   /* --from only.  */
@@ -74,48 +74,48 @@ enum scale_type
   scale_IEC_I                   /* 'i' suffix is required.  */
 };
 
-static char const *const scale_from_args[] =
+ساكن حرف ثابت *ثابت scale_from_آرگومانها[] =
 {
-  "none", "auto", "si", "iec", "iec-i", NULL
+  "none", "auto", "si", "iec", "iec-i", عدم
 };
 
-static enum scale_type const scale_from_types[] =
+ساكن تعداد scale_type ثابت scale_from_types[] =
 {
   scale_none, scale_auto, scale_SI, scale_IEC, scale_IEC_I
 };
 
-static char const *const scale_to_args[] =
+ساكن حرف ثابت *ثابت scale_مقصد_آرگومانها[] =
 {
-  "none", "si", "iec", "iec-i", NULL
+  "none", "si", "iec", "iec-i", عدم
 };
 
-static enum scale_type const scale_to_types[] =
+ساكن تعداد scale_type ثابت scale_مقصد_types[] =
 {
   scale_none, scale_SI, scale_IEC, scale_IEC_I
 };
 
 
-enum round_type
+تعداد دور_type
 {
-  round_ceiling,
-  round_floor,
-  round_from_zero,
-  round_to_zero,
-  round_nearest,
+  دور_ceiling,
+  دور_floor,
+  دور_from_zero,
+  دور_مقصد_zero,
+  دور_نزدیکترین,
 };
 
-static char const *const round_args[] =
+ساكن حرف ثابت *ثابت دور_آرگومانها[] =
 {
-  "up", "down", "from-zero", "towards-zero", "nearest", NULL
+  "up", "down", "from-zero", "towards-zero", "nearest", عدم
 };
 
-static enum round_type const round_types[] =
+ساكن تعداد دور_type ثابت دور_types[] =
 {
-  round_ceiling, round_floor, round_from_zero, round_to_zero, round_nearest
+  دور_ceiling, دور_floor, دور_from_zero, دور_مقصد_zero, دور_نزدیکترین
 };
 
 
-enum inval_type
+تعداد inval_type
 {
   inval_abort,
   inval_fail,
@@ -123,345 +123,345 @@ enum inval_type
   inval_ignore
 };
 
-static char const *const inval_args[] =
+ساكن حرف ثابت *ثابت inval_آرگومانها[] =
 {
-  "abort", "fail", "warn", "ignore", NULL
+  "abort", "fail", "warn", "ignore", عدم
 };
 
-static enum inval_type const inval_types[] =
+ساكن تعداد inval_type ثابت inval_types[] =
 {
   inval_abort, inval_fail, inval_warn, inval_ignore
 };
 
-static struct option const longopts[] =
+ساكن بنية option ثابت longopts[] =
 {
-  {"from", required_argument, NULL, FROM_OPTION},
-  {"from-unit", required_argument, NULL, FROM_UNIT_OPTION},
-  {"to", required_argument, NULL, TO_OPTION},
-  {"to-unit", required_argument, NULL, TO_UNIT_OPTION},
-  {"round", required_argument, NULL, ROUND_OPTION},
-  {"padding", required_argument, NULL, PADDING_OPTION},
-  {"suffix", required_argument, NULL, SUFFIX_OPTION},
-  {"unit-separator", required_argument, NULL, UNIT_SEPARATOR_OPTION},
-  {"grouping", no_argument, NULL, GROUPING_OPTION},
-  {"delimiter", required_argument, NULL, 'd'},
-  {"field", required_argument, NULL, FIELD_OPTION},
-  {"debug", no_argument, NULL, DEBUG_OPTION},
-  {"-debug", no_argument, NULL, DEV_DEBUG_OPTION},
-  {"header", optional_argument, NULL, HEADER_OPTION},
-  {"format", required_argument, NULL, FORMAT_OPTION},
-  {"invalid", required_argument, NULL, INVALID_OPTION},
-  {"zero-terminated", no_argument, NULL, 'z'},
+  {"from", required_آرگومان, عدم, FROM_OPTION},
+  {"from-unit", required_آرگومان, عدم, FROM_UNIT_OPTION},
+  {"to", required_آرگومان, عدم, مقصد_OPTION},
+  {"to-unit", required_آرگومان, عدم, مقصد_UNIT_OPTION},
+  {"round", required_آرگومان, عدم, دور_OPTION},
+  {"padding", required_آرگومان, عدم, PADDING_OPTION},
+  {"suffix", required_آرگومان, عدم, SUFFIX_OPTION},
+  {"unit-separator", required_آرگومان, عدم, UNIT_SEPARATOR_OPTION},
+  {"grouping", no_آرگومان, عدم, GROUPING_OPTION},
+  {"delimiter", required_آرگومان, عدم, 'd'},
+  {"field", required_آرگومان, عدم, فیلد_OPTION},
+  {"debug", no_آرگومان, عدم, DEBUG_OPTION},
+  {"-debug", no_آرگومان, عدم, DEV_DEBUG_OPTION},
+  {"header", optional_آرگومان, عدم, سرآیند_OPTION},
+  {"format", required_آرگومان, عدم, FORMAT_OPTION},
+  {"invalid", required_آرگومان, عدم, INVALID_OPTION},
+  {"zero-terminated", no_آرگومان, عدم, 'z'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_نسخه_OPTION_DECL},
+  {عدم, 0, عدم, 0}
 };
 
 /* Maximum number of digits we can safely handle
    without precision loss, if scaling is 'none'.  */
-enum { MAX_UNSCALED_DIGITS = LDBL_DIG };
+تعداد { MAX_UNSCALED_DIGITS = LDBL_DIG };
 
 /* Maximum number of digits we can work with.
    This is equivalent to 999Q.
    NOTE: 'long double' can handle more than that, but there's
          no official suffix assigned beyond Quetta (1000^10).  */
-enum { MAX_ACCEPTABLE_DIGITS = 33 };
+تعداد { MAX_ACCEPTABLE_DIGITS = 33 };
 
-static enum scale_type scale_from = scale_none;
-static enum scale_type scale_to = scale_none;
-static enum round_type round_style = round_from_zero;
-static enum inval_type inval_style = inval_abort;
-static char const *suffix = NULL;
-static char const *unit_separator = NULL;
-static uintmax_t from_unit_size = 1;
-static uintmax_t to_unit_size = 1;
-static int grouping = 0;
-static char *padding_buffer = NULL;
-static idx_t padding_buffer_size = 0;
-static intmax_t padding_width = 0;
-static int zero_padding_width = 0;
-static long int user_precision = -1;
-static char const *format_str = NULL;
-static char *format_str_prefix = NULL;
-static char *format_str_suffix = NULL;
+ساكن تعداد scale_type scale_from = scale_none;
+ساكن تعداد scale_type scale_مقصد = scale_none;
+ساكن تعداد دور_type دور_style = دور_from_zero;
+ساكن تعداد inval_type inval_style = inval_abort;
+ساكن حرف ثابت *suffix = عدم;
+ساكن حرف ثابت *unit_separator = عدم;
+ساكن uintmax_t from_unit_اندازه = 1;
+ساكن uintmax_t مقصد_unit_اندازه = 1;
+ساكن صحيح grouping = 0;
+ساكن حرف *padding_میانگیر = عدم;
+ساكن idx_t padding_میانگیر_اندازه = 0;
+ساكن intmax_t padding_عرض = 0;
+ساكن صحيح zero_padding_عرض = 0;
+ساكن دراز صحيح user_precision = -1;
+ساكن حرف ثابت *format_str = عدم;
+ساكن حرف *format_str_پیشوند = عدم;
+ساكن حرف *format_str_suffix = عدم;
 
 /* By default, any conversion error will terminate the program.  */
-static int conv_exit_code = EXIT_CONVERSION_WARNINGS;
+ساكن صحيح conv_exit_کد = EXIT_CONVERSION_WARNINGS;
 
 
 /* auto-pad each line based on skipped whitespace.  */
-static int auto_padding = 0;
+ساكن صحيح auto_padding = 0;
 
 /* field delimiter - if NULL, blanks separate fields.  */
-static char const *delimiter = NULL;
+ساكن حرف ثابت *delimiter = عدم;
 
 /* line delimiter.  */
-static unsigned char line_delim = '\n';
+ساكن بیعلامت حرف سطر_delim = '\n';
 
 /* if non-zero, the first 'header' lines from STDIN are skipped.  */
-static uintmax_t header = 0;
+ساكن uintmax_t سرآیند = 0;
 
 /* Debug for users: print warnings to STDERR about possible
    error (similar to sort's debug).  */
-static bool debug;
+ساكن bool debug;
 
 /* will be set according to the current locale.  */
-static char const *decimal_point;
-static int decimal_point_length;
-static char const *thousands_sep;
-static int thousands_sep_length;
+ساكن حرف ثابت *decimal_نقطه;
+ساكن صحيح decimal_نقطه_درازی;
+ساكن حرف ثابت *thousands_sep;
+ساكن صحيح thousands_sep_درازی;
 
 /* debugging for developers.  Enables devmsg().  */
-static bool dev_debug = false;
+ساكن bool dev_debug = false;
 
-static bool
+ساكن bool
 newline_or_blank (mcel_t g)
 {
-  return g.ch == '\n' || c32issep (g.ch);
+  أرجع g.ch == '\n' || c32issep (g.ch);
 }
 
-static inline int
-default_scale_base (enum scale_type scale)
+ساكن مضمن صحيح
+default_scale_پایه (تعداد scale_type scale)
 {
-  switch (scale)
+  بدل (scale)
     {
-    case scale_IEC:
-    case scale_IEC_I:
-      return 1024;
+    حالة scale_IEC:
+    حالة scale_IEC_I:
+      أرجع 1024;
 
-    case scale_none:
-    case scale_auto:
-    case scale_SI:
-    default:
-      return 1000;
+    حالة scale_none:
+    حالة scale_auto:
+    حالة scale_SI:
+    افتراضي:
+      أرجع 1000;
     }
 }
 
-static char const zero_and_valid_suffixes[] = "0KkMGTPEZYRQ";
-static char const *valid_suffixes = 1 + zero_and_valid_suffixes;
+ساكن حرف ثابت zero_and_valid_suffixes[] = "0KkMGTPEZYRQ";
+ساكن حرف ثابت *valid_suffixes = 1 + zero_and_valid_suffixes;
 
-static inline bool
-valid_suffix (const char suf)
+ساكن مضمن bool
+valid_suffix (ثابت حرف suf)
 {
-  return strchr (valid_suffixes, suf) != NULL;
+  أرجع strchr (valid_suffixes, suf) != عدم;
 }
 
-static inline int
-suffix_power (const char suf)
+ساكن مضمن صحيح
+suffix_power (ثابت حرف suf)
 {
-  switch (suf)
+  بدل (suf)
     {
-    case 'k':                  /* kilo.  */
-    case 'K':                  /* kilo or kibi.  */
-      return 1;
+    حالة 'k':                  /* kilo.  */
+    حالة 'K':                  /* kilo or kibi.  */
+      أرجع 1;
 
-    case 'M':                  /* mega or mebi.  */
-      return 2;
+    حالة 'M':                  /* mega or mebi.  */
+      أرجع 2;
 
-    case 'G':                  /* giga or gibi.  */
-      return 3;
+    حالة 'G':                  /* giga or gibi.  */
+      أرجع 3;
 
-    case 'T':                  /* tera or tebi.  */
-      return 4;
+    حالة 'T':                  /* tera or tebi.  */
+      أرجع 4;
 
-    case 'P':                  /* peta or pebi.  */
-      return 5;
+    حالة 'P':                  /* peta or pebi.  */
+      أرجع 5;
 
-    case 'E':                  /* exa or exbi.  */
-      return 6;
+    حالة 'E':                  /* exa or exbi.  */
+      أرجع 6;
 
-    case 'Z':                  /* zetta or 2**70.  */
-      return 7;
+    حالة 'Z':                  /* zetta or 2**70.  */
+      أرجع 7;
 
-    case 'Y':                  /* yotta or 2**80.  */
-      return 8;
+    حالة 'Y':                  /* yotta or 2**80.  */
+      أرجع 8;
 
-    case 'R':                  /* ronna or 2**90.  */
-      return 9;
+    حالة 'R':                  /* ronna or 2**90.  */
+      أرجع 9;
 
-    case 'Q':                  /* quetta or 2**100.  */
-      return 10;
+    حالة 'Q':                  /* quetta or 2**100.  */
+      أرجع 10;
 
-    default:                   /* should never happen. assert?  */
-      return 0;
+    افتراضي:                   /* should never happen. assert?  */
+      أرجع 0;
     }
 }
 
-static inline char const *
-suffix_power_char (int power)
+ساكن مضمن حرف ثابت *
+suffix_power_char (صحيح power)
 {
-  switch (power)
+  بدل (power)
     {
-    case 0:
-      return "";
+    حالة 0:
+      أرجع "";
 
-    case 1:
-      return "K";
+    حالة 1:
+      أرجع "K";
 
-    case 2:
-      return "M";
+    حالة 2:
+      أرجع "M";
 
-    case 3:
-      return "G";
+    حالة 3:
+      أرجع "G";
 
-    case 4:
-      return "T";
+    حالة 4:
+      أرجع "T";
 
-    case 5:
-      return "P";
+    حالة 5:
+      أرجع "P";
 
-    case 6:
-      return "E";
+    حالة 6:
+      أرجع "E";
 
-    case 7:
-      return "Z";
+    حالة 7:
+      أرجع "Z";
 
-    case 8:
-      return "Y";
+    حالة 8:
+      أرجع "Y";
 
-    case 9:
-      return "R";
+    حالة 9:
+      أرجع "R";
 
-    case 10:
-      return "Q";
+    حالة 10:
+      أرجع "Q";
 
-    default:
-      return "(error)";
+    افتراضي:
+      أرجع "(error)";
     }
 }
 
 /* Similar to 'powl(3)' but without requiring 'libm'.  */
-static long double
-powerld (long double base, ptrdiff_t x)
+ساكن دراز مزدوج
+powerld (دراز مزدوج پایه_2, ptrdiff_t x)
 {
-  long double result = base;
-  if (x == 0)
-    return 1;                   /* note for test coverage: this is never
+  دراز مزدوج نتیجه = پایه_2;
+  إذا (x == 0)
+    أرجع 1;                   /* note for test coverage: this is never
                                    reached, as 'powerld' won't be called if
                                    there's no suffix, hence, no "power".  */
 
   /* TODO: check for overflow, inf?  */
-  while (--x)
-    result *= base;
-  return result;
+  طالما (--x)
+    نتیجه *= پایه_2;
+  أرجع نتیجه;
 }
 
 /* Similar to 'fabs(3)' but without requiring 'libm'.  */
-static inline long double
-absld (long double val)
+ساكن مضمن دراز مزدوج
+absld (دراز مزدوج val)
 {
-  return val < 0 ? -val : val;
+  أرجع val < 0 ? -val : val;
 }
 
 /* Scale down 'val', returns 'updated val' and 'x', such that
      val*base^X = original val
      Similar to "frexpl(3)" but without requiring 'libm',
      allowing only integer scale, limited functionality and error checking.  */
-static long double
-expld (long double val, int base, int /*output */ *x)
+ساكن دراز مزدوج
+expld (دراز مزدوج val, صحيح پایه_2, صحيح /*output */ *x)
 {
-  int power = 0;
+  صحيح power = 0;
 
-  if (val >= -LDBL_MAX && val <= LDBL_MAX)
+  إذا (val >= -LDBL_MAX && val <= LDBL_MAX)
     {
-      while (absld (val) >= base)
+      طالما (absld (val) >= پایه_2)
         {
           ++power;
-          val /= base;
+          val /= پایه_2;
         }
     }
-  if (x)
+  إذا (x)
     *x = power;
-  return val;
+  أرجع val;
 }
 
 /* EXTREMELY limited 'ceil' - without 'libm'.
    Assumes values that fit in intmax_t.  */
-static inline intmax_t
-simple_round_ceiling (long double val)
+ساكن مضمن intmax_t
+simple_دور_ceiling (دراز مزدوج val)
 {
   intmax_t intval = val;
-  if (intval < val)
+  إذا (intval < val)
     intval++;
-  return intval;
+  أرجع intval;
 }
 
 /* EXTREMELY limited 'floor' - without 'libm'.
    Assumes values that fit in intmax_t.  */
-static inline intmax_t
-simple_round_floor (long double val)
+ساكن مضمن intmax_t
+simple_دور_floor (دراز مزدوج val)
 {
-  return -simple_round_ceiling (-val);
+  أرجع -simple_دور_ceiling (-val);
 }
 
 /* EXTREMELY limited 'round away from zero'.
    Assumes values that fit in intmax_t.  */
-static inline intmax_t
-simple_round_from_zero (long double val)
+ساكن مضمن intmax_t
+simple_دور_from_zero (دراز مزدوج val)
 {
-  return val < 0 ? simple_round_floor (val) : simple_round_ceiling (val);
+  أرجع val < 0 ? simple_دور_floor (val) : simple_دور_ceiling (val);
 }
 
 /* EXTREMELY limited 'round away to zero'.
    Assumes values that fit in intmax_t.  */
-static inline intmax_t
-simple_round_to_zero (long double val)
+ساكن مضمن intmax_t
+simple_دور_مقصد_zero (دراز مزدوج val)
 {
-  return val;
+  أرجع val;
 }
 
 /* EXTREMELY limited 'round' - without 'libm'.
    Assumes values that fit in intmax_t.  */
-static inline intmax_t
-simple_round_nearest (long double val)
+ساكن مضمن intmax_t
+simple_دور_نزدیکترین (دراز مزدوج val)
 {
-  return val < 0 ? val - 0.5 : val + 0.5;
+  أرجع val < 0 ? val - 0.5 : val + 0.5;
 }
 
 ATTRIBUTE_CONST
-static inline long double
-simple_round (long double val, enum round_type t)
+ساكن مضمن دراز مزدوج
+simple_دور (دراز مزدوج val, تعداد دور_type t)
 {
   intmax_t rval;
   intmax_t intmax_mul = val / INTMAX_MAX;
-  val -= (long double) INTMAX_MAX * intmax_mul;
+  val -= (دراز مزدوج) INTMAX_MAX * intmax_mul;
 
-  switch (t)
+  بدل (t)
     {
-    case round_ceiling:
-      rval = simple_round_ceiling (val);
-      break;
+    حالة دور_ceiling:
+      rval = simple_دور_ceiling (val);
+      اكسر;
 
-    case round_floor:
-      rval = simple_round_floor (val);
-      break;
+    حالة دور_floor:
+      rval = simple_دور_floor (val);
+      اكسر;
 
-    case round_from_zero:
-      rval = simple_round_from_zero (val);
-      break;
+    حالة دور_from_zero:
+      rval = simple_دور_from_zero (val);
+      اكسر;
 
-    case round_to_zero:
-      rval = simple_round_to_zero (val);
-      break;
+    حالة دور_مقصد_zero:
+      rval = simple_دور_مقصد_zero (val);
+      اكسر;
 
-    case round_nearest:
-      rval = simple_round_nearest (val);
-      break;
+    حالة دور_نزدیکترین:
+      rval = simple_دور_نزدیکترین (val);
+      اكسر;
 
-    default:
+    افتراضي:
       /* to silence the compiler - this should never happen.  */
-      return 0;
+      أرجع 0;
     }
 
-  return (long double) INTMAX_MAX * intmax_mul + rval;
+  أرجع (دراز مزدوج) INTMAX_MAX * intmax_mul + rval;
 }
 
-enum simple_strtod_error
+تعداد simple_strtod_error
 {
   SSE_OK = 0,
   SSE_OK_PRECISION_LOSS,
-  SSE_OVERFLOW,
-  SSE_INVALID_NUMBER,
+  SSE_سرریز,
+  SSE_INVALID_عدد,
 
   /* the following are returned by 'simple_strtod_human'.  */
   SSE_VALID_BUT_FORBIDDEN_SUFFIX,
@@ -485,60 +485,60 @@ enum simple_strtod_error
       SSE_OK_PRECISION_LOSS - if more than 18 digits were used.
       SSE_OVERFLOW          - if more than 33 digits (999Q) were used.
       SSE_INVALID_NUMBER    - if no digits were found.  */
-static enum simple_strtod_error
-simple_strtod_int (char const *input_str,
-                   char **endptr, long double *value, bool *negative)
+ساكن تعداد simple_strtod_error
+simple_strtod_int (حرف ثابت *درون_داد_str,
+                   حرف **endptr, دراز مزدوج *مقدار, bool *negative)
 {
-  enum simple_strtod_error e = SSE_OK;
+  تعداد simple_strtod_error e = SSE_OK;
 
-  long double val = 0;
-  int digits = 0;
-  bool found_digit = false;
+  دراز مزدوج val = 0;
+  صحيح digits = 0;
+  bool یافت_digit = false;
 
-  if (*input_str == '-')
+  إذا (*درون_داد_str == '-')
     {
-      input_str++;
+      درون_داد_str++;
       *negative = true;
     }
-  else
+  وإلا
     *negative = false;
 
-  *endptr = (char *) input_str;
-  while (c_isdigit (**endptr))
+  *endptr = (حرف *) درون_داد_str;
+  طالما (c_isdigit (**endptr))
     {
-      int digit = (**endptr) - '0';
+      صحيح digit = (**endptr) - '0';
 
-      found_digit = true;
+      یافت_digit = true;
 
-      if (val || digit)
+      إذا (val || digit)
         digits++;
 
-      if (digits > MAX_UNSCALED_DIGITS)
+      إذا (digits > MAX_UNSCALED_DIGITS)
         e = SSE_OK_PRECISION_LOSS;
 
-      if (digits > MAX_ACCEPTABLE_DIGITS)
-        return SSE_OVERFLOW;
+      إذا (digits > MAX_ACCEPTABLE_DIGITS)
+        أرجع SSE_سرریز;
 
       val *= 10;
       val += digit;
 
       ++(*endptr);
 
-      if (thousands_sep_length > 0
-          && STREQ_LEN (*endptr, thousands_sep, thousands_sep_length)
-          && c_isdigit ((*endptr)[thousands_sep_length]))
-        (*endptr) += thousands_sep_length;
+      إذا (thousands_sep_درازی > 0
+          && STREQ_LEN (*endptr, thousands_sep, thousands_sep_درازی)
+          && c_isdigit ((*endptr)[thousands_sep_درازی]))
+        (*endptr) += thousands_sep_درازی;
     }
-  if (! found_digit
-      && ! STREQ_LEN (*endptr, decimal_point, decimal_point_length))
-    return SSE_INVALID_NUMBER;
-  if (*negative)
+  إذا (! یافت_digit
+      && ! STREQ_LEN (*endptr, decimal_نقطه, decimal_نقطه_درازی))
+    أرجع SSE_INVALID_عدد;
+  إذا (*negative)
     val = -val;
 
-  if (value)
-    *value = val;
+  إذا (مقدار)
+    *مقدار = val;
 
-  return e;
+  أرجع e;
 }
 
 /* Read a floating-point INPUT_STR represented as "NNNN[.NNNNN]",
@@ -555,39 +555,39 @@ simple_strtod_int (char const *input_str,
       SSE_OK_PRECISION_LOSS - if more than 18 digits were used.
       SSE_OVERFLOW          - if more than 33 digits (999Q) were used.
       SSE_INVALID_NUMBER    - if no digits were found.  */
-static enum simple_strtod_error
-simple_strtod_float (char const *input_str,
-                     char **endptr,
-                     long double *value,
+ساكن تعداد simple_strtod_error
+simple_strtod_float (حرف ثابت *درون_داد_str,
+                     حرف **endptr,
+                     دراز مزدوج *مقدار,
                      size_t *precision)
 {
   bool negative;
-  enum simple_strtod_error e = SSE_OK;
+  تعداد simple_strtod_error e = SSE_OK;
 
-  if (precision)
+  إذا (precision)
     *precision = 0;
 
   /* TODO: accept locale'd grouped values for the integral part.  */
-  e = simple_strtod_int (input_str, endptr, value, &negative);
-  if (e != SSE_OK && e != SSE_OK_PRECISION_LOSS)
-    return e;
+  e = simple_strtod_int (درون_داد_str, endptr, مقدار, &negative);
+  إذا (e != SSE_OK && e != SSE_OK_PRECISION_LOSS)
+    أرجع e;
 
   /* optional decimal point + fraction.  */
-  if (STREQ_LEN (*endptr, decimal_point, decimal_point_length))
+  إذا (STREQ_LEN (*endptr, decimal_نقطه, decimal_نقطه_درازی))
     {
-      char *ptr2;
-      long double val_frac = 0;
+      حرف *ptr2;
+      دراز مزدوج val_frac = 0;
       bool neg_frac;
 
-      (*endptr) += decimal_point_length;
-      enum simple_strtod_error e2 =
+      (*endptr) += decimal_نقطه_درازی;
+      تعداد simple_strtod_error e2 =
         simple_strtod_int (*endptr, &ptr2, &val_frac, &neg_frac);
-      if (e2 != SSE_OK && e2 != SSE_OK_PRECISION_LOSS)
-        return e2;
-      if (e2 == SSE_OK_PRECISION_LOSS)
+      إذا (e2 != SSE_OK && e2 != SSE_OK_PRECISION_LOSS)
+        أرجع e2;
+      إذا (e2 == SSE_OK_PRECISION_LOSS)
         e = e2;                       /* propagate warning.  */
-      if (neg_frac)
-        return SSE_INVALID_NUMBER;
+      إذا (neg_frac)
+        أرجع SSE_INVALID_عدد;
 
       /* number of digits in the fractions.  */
       ptrdiff_t exponent = ptr2 - *endptr;
@@ -596,20 +596,20 @@ simple_strtod_float (char const *input_str,
 
       /* TODO: detect loss of precision (only really 18 digits
          of precision across all digits (before and after '.')).  */
-      if (value)
+      إذا (مقدار)
         {
-          if (negative)
-            *value -= val_frac;
-          else
-            *value += val_frac;
+          إذا (negative)
+            *مقدار -= val_frac;
+          وإلا
+            *مقدار += val_frac;
         }
 
-      if (precision)
+      إذا (precision)
         *precision = exponent;
 
       *endptr = ptr2;
     }
-  return e;
+  أرجع e;
 }
 
 /* Read a 'human' INPUT_STR represented as "NNNN[.NNNNN] + suffix",
@@ -631,87 +631,87 @@ simple_strtod_float (char const *input_str,
       SSE_VALID_BUT_FORBIDDEN_SUFFIX
       SSE_INVALID_SUFFIX
       SSE_MISSING_I_SUFFIX  */
-static enum simple_strtod_error
-simple_strtod_human (char const *input_str,
-                     char **endptr, long double *value, size_t *precision,
-                     enum scale_type allowed_scaling)
+ساكن تعداد simple_strtod_error
+simple_strtod_human (حرف ثابت *درون_داد_str,
+                     حرف **endptr, دراز مزدوج *مقدار, size_t *precision,
+                     تعداد scale_type allowed_scaling)
 {
-  int power = 0;
+  صحيح power = 0;
   /* 'scale_auto' is checked below.  */
-  int scale_base = default_scale_base (allowed_scaling);
+  صحيح scale_پایه = default_scale_پایه (allowed_scaling);
 
   devmsg ("simple_strtod_human:\n  input string: %s\n"
           "  locale decimal-point: %s\n"
           "  MAX_UNSCALED_DIGITS: %d\n",
-          quote_n (0, input_str),
-          quote_n (1, decimal_point),
+          quote_n (0, درون_داد_str),
+          quote_n (1, decimal_نقطه),
           MAX_UNSCALED_DIGITS);
 
-  enum simple_strtod_error e =
-    simple_strtod_float (input_str, endptr, value, precision);
-  if (e != SSE_OK && e != SSE_OK_PRECISION_LOSS)
-    return e;
+  تعداد simple_strtod_error e =
+    simple_strtod_float (درون_داد_str, endptr, مقدار, precision);
+  إذا (e != SSE_OK && e != SSE_OK_PRECISION_LOSS)
+    أرجع e;
 
   devmsg ("  parsed numeric value: %Lf\n"
-          "  input precision = %d\n", *value, (int)*precision);
+          "  input precision = %d\n", *مقدار, (صحيح)*precision);
 
-  while (**endptr)
+  طالما (**endptr)
     {
       /* process suffix.  */
 
       /* Skip a single blank, NBSP or specified unit separator.
          Note an explicit empty --unit-sep should disable blank matching. */
       bool matched_unit_sep = false;
-      if (unit_separator)
+      إذا (unit_separator)
         {
-          size_t sep_len = strlen (unit_separator);
-          if (STREQ_LEN (*endptr, unit_separator, sep_len))
+          size_t sep_len = طول_رشته (unit_separator);
+          إذا (STREQ_LEN (*endptr, unit_separator, sep_len))
             {
               matched_unit_sep = true;
               (*endptr) += sep_len;
             }
         }
-      if (!matched_unit_sep)
+      إذا (!matched_unit_sep)
         {
           mcel_t g = mcel_scanz (*endptr);
-          if (c32issep (g.ch) || c32isnbspace (g.ch))
+          إذا (c32issep (g.ch) || c32isnbspace (g.ch))
             (*endptr) += g.len;
         }
 
-      if (**endptr == '\0')
-        break;  /* Treat as no suffix.  */
+      إذا (**endptr == '\0')
+        اكسر;  /* Treat as no suffix.  */
 
-      if (!valid_suffix (**endptr))
+      إذا (!valid_suffix (**endptr))
         {
           /* Trailing blanks are allowed.  */
           *endptr = skip_str_matching (*endptr, newline_or_blank, true);
-          if (**endptr == '\0')
-            break;
+          إذا (**endptr == '\0')
+            اكسر;
 
-          return SSE_INVALID_SUFFIX;
+          أرجع SSE_INVALID_SUFFIX;
         }
 
-      if (allowed_scaling == scale_none)
-        return SSE_VALID_BUT_FORBIDDEN_SUFFIX;
+      إذا (allowed_scaling == scale_none)
+        أرجع SSE_VALID_BUT_FORBIDDEN_SUFFIX;
 
       power = suffix_power (**endptr);
       (*endptr)++;                     /* skip first suffix character.  */
 
-      if (allowed_scaling == scale_auto && **endptr == 'i')
+      إذا (allowed_scaling == scale_auto && **endptr == 'i')
         {
           /* auto-scaling enabled, and the first suffix character
              is followed by an 'i' (e.g. Ki, Mi, Gi).  */
-          scale_base = 1024;
+          scale_پایه = 1024;
           (*endptr)++;              /* skip 'i' in suffix.  */
           devmsg ("  Auto-scaling, found 'i', switching to base %d\n",
-                  scale_base);
+                  scale_پایه);
         }
-      else if (allowed_scaling == scale_IEC_I)
+      وإلا إذا (allowed_scaling == scale_IEC_I)
         {
-          if (**endptr == 'i')
+          إذا (**endptr == 'i')
             (*endptr)++;
-          else
-            return SSE_MISSING_I_SUFFIX;
+          وإلا
+            أرجع SSE_MISSING_I_SUFFIX;
         }
 
       *precision = 0;  /* Reset, to select precision based on scale.  */
@@ -719,57 +719,57 @@ simple_strtod_human (char const *input_str,
       /* Trailing blanks are allowed.  */
       *endptr = skip_str_matching (*endptr, newline_or_blank, true);
 
-      break;
+      اكسر;
     }
 
-  long double multiplier = powerld (scale_base, power);
+  دراز مزدوج multiplier = powerld (scale_پایه, power);
 
-  devmsg ("  suffix power=%d^%d = %Lf\n", scale_base, power, multiplier);
+  devmsg ("  suffix power=%d^%d = %Lf\n", scale_پایه, power, multiplier);
 
   /* TODO: detect loss of precision and overflows.  */
-  (*value) = (*value) * multiplier;
+  (*مقدار) = (*مقدار) * multiplier;
 
-  devmsg ("  returning value: %Lf (%LG)\n", *value, *value);
+  devmsg ("  returning value: %Lf (%LG)\n", *مقدار, *مقدار);
 
-  return e;
+  أرجع e;
 }
 
 
-static void
-simple_strtod_fatal (enum simple_strtod_error err, char const *input_str)
+ساكن فراغ
+simple_strtod_fatal (تعداد simple_strtod_error err, حرف ثابت *درون_داد_str)
 {
-  char const *msgid = NULL;
+  حرف ثابت *msgid = عدم;
 
-  switch (err)
+  بدل (err)
     {
-    case SSE_OVERFLOW:
+    حالة SSE_سرریز:
       msgid = N_("value too large to be converted: %s");
-      break;
+      اكسر;
 
-    case SSE_INVALID_NUMBER:
+    حالة SSE_INVALID_عدد:
       msgid = N_("invalid number: %s");
-      break;
+      اكسر;
 
-    case SSE_VALID_BUT_FORBIDDEN_SUFFIX:
+    حالة SSE_VALID_BUT_FORBIDDEN_SUFFIX:
       msgid = N_("rejecting suffix in input: %s (consider using --from)");
-      break;
+      اكسر;
 
-    case SSE_INVALID_SUFFIX:
+    حالة SSE_INVALID_SUFFIX:
       msgid = N_("invalid suffix in input: %s");
-      break;
+      اكسر;
 
-    case SSE_MISSING_I_SUFFIX:
+    حالة SSE_MISSING_I_SUFFIX:
       msgid = N_("missing 'i' suffix in input: %s (e.g Ki/Mi/Gi)");
-      break;
+      اكسر;
 
-    case SSE_OK_PRECISION_LOSS:
-    case SSE_OK:
+    حالة SSE_OK_PRECISION_LOSS:
+    حالة SSE_OK:
       /* should never happen - this function isn't called when OK.  */
       affirm (false);
     }
 
-  if (inval_style != inval_ignore)
-    error (conv_exit_code, 0, gettext (msgid), quote (input_str));
+  إذا (inval_style != inval_ignore)
+    error (conv_exit_کد, 0, gettext (msgid), quote (درون_داد_str));
 }
 
 /* Convert VAL to a human format string using PRECISION in BUF of size
@@ -777,52 +777,52 @@ simple_strtod_fatal (enum simple_strtod_error err, char const *input_str)
    the number of bytes needed to represent VAL.  If this number is not
    less than BUF_SIZE, the buffer is too small; if it is negative, the
    formatting failed for some reason.  */
-static int
-double_to_human (long double val, int precision,
-                 char *buf, idx_t buf_size,
-                 enum scale_type scale, int group, enum round_type round)
+ساكن صحيح
+double_مقصد_human (دراز مزدوج val, صحيح precision,
+                 حرف *buf, idx_t buf_اندازه,
+                 تعداد scale_type scale, صحيح گروه, تعداد دور_type دور_2)
 {
-  char fmt[sizeof "%'0.*Lfi%s%s%s%s" + INT_STRLEN_BOUND (zero_padding_width)];
-  char *pfmt = fmt;
+  حرف fmt[حجم "%'0.*Lfi%s%s%s%s" + INT_STRLEN_BOUND (zero_padding_عرض)];
+  حرف *pfmt = fmt;
   *pfmt++ = '%';
 
-  if (group)
+  إذا (گروه)
     *pfmt++ = '\'';
 
-  if (zero_padding_width)
-    pfmt += sprintf (pfmt, "0%d", zero_padding_width);
+  إذا (zero_padding_عرض)
+    pfmt += sprintf (pfmt, "0%d", zero_padding_عرض);
 
   devmsg ("double_to_human:\n");
 
-  if (scale == scale_none)
+  إذا (scale == scale_none)
     {
       val *= powerld (10, precision);
-      val = simple_round (val, round);
+      val = simple_دور (val, دور_2);
       val /= powerld (10, precision);
 
-      devmsg ((group) ?
+      devmsg ((گروه) ?
               "  no scaling, returning (grouped) value: %'.*Lf\n" :
               "  no scaling, returning value: %.*Lf\n", precision, val);
 
       strcpy (pfmt, ".*Lf%s");
 
-      return snprintf (buf, buf_size, fmt, precision, val,
+      أرجع snprintf (buf, buf_اندازه, fmt, precision, val,
                        suffix ? suffix : "");
     }
 
   /* Scaling requested by user. */
-  double scale_base = default_scale_base (scale);
+  مزدوج scale_پایه = default_scale_پایه (scale);
 
   /* Normalize val to scale. */
-  int power = 0;
-  val = expld (val, scale_base, &power);
-  devmsg ("  scaled value to %Lf * %0.f ^ %d\n", val, scale_base, power);
+  صحيح power = 0;
+  val = expld (val, scale_پایه, &power);
+  devmsg ("  scaled value to %Lf * %0.f ^ %d\n", val, scale_پایه, power);
 
   /* Perform rounding. */
-  int power_adjust = 0;
-  if (user_precision != -1)
+  صحيح power_adjust = 0;
+  إذا (user_precision != -1)
     power_adjust = MIN (power * 3, user_precision);
-  else if (absld (val) < 10)
+  وإلا إذا (absld (val) < 10)
     {
       /* for values less than 10, we allow one decimal-point digit,
          so adjust before rounding. */
@@ -830,30 +830,30 @@ double_to_human (long double val, int precision,
     }
 
   val *= powerld (10, power_adjust);
-  val = simple_round (val, round);
+  val = simple_دور (val, دور_2);
   val /= powerld (10, power_adjust);
 
   /* two special cases after rounding:
      1. a "999.99" can turn into 1000 - so scale down
      2. a "9.99" can turn into 10 - so don't display decimal-point.  */
-  if (absld (val) >= scale_base)
+  إذا (absld (val) >= scale_پایه)
     {
-      val /= scale_base;
+      val /= scale_پایه;
       power++;
     }
 
   /* should "7.0" be printed as "7" ?
      if removing the ".0" is preferred, enable the fourth condition.  */
-  int show_decimal_point = (val != 0) && (absld (val) < 10) && (power > 0);
+  صحيح show_decimal_نقطه = (val != 0) && (absld (val) < 10) && (power > 0);
   /* && (absld (val) > simple_round_floor (val))) */
 
-  devmsg ("  after rounding, value=%Lf * %0.f ^ %d\n", val, scale_base, power);
+  devmsg ("  after rounding, value=%Lf * %0.f ^ %d\n", val, scale_پایه, power);
 
   strcpy (pfmt, ".*Lf%s%s%s%s");
 
-  int prec = user_precision == -1 ? show_decimal_point : user_precision;
+  صحيح prec = user_precision == -1 ? show_decimal_نقطه : user_precision;
 
-  return snprintf (buf, buf_size, fmt, prec, val,
+  أرجع snprintf (buf, buf_اندازه, fmt, prec, val,
                    (power > 0 && unit_separator) ? unit_separator : "",
                    power == 1 && scale == scale_SI
                    ? "k" : suffix_power_char (power),
@@ -865,150 +865,150 @@ double_to_human (long double val, int precision,
    to an integral value.  Suffixes are handled as with --from=auto.
    Upon successful conversion, return that value.
    If it cannot be converted, give a diagnostic and exit.  */
-static uintmax_t
-unit_to_umax (char const *n_string)
+ساكن uintmax_t
+unit_مقصد_umax (حرف ثابت *n_string)
 {
   strtol_error s_err;
-  char const *c_string = n_string;
-  char *t_string = NULL;
-  size_t n_len = strlen (n_string);
-  char *end = NULL;
+  حرف ثابت *c_string = n_string;
+  حرف *t_string = عدم;
+  size_t n_len = طول_رشته (n_string);
+  حرف *انتها = عدم;
   uintmax_t n;
-  char const *suffixes = valid_suffixes;
+  حرف ثابت *suffixes = valid_suffixes;
 
   /* Adjust suffixes so K=1000, Ki=1024, KiB=invalid.  */
-  if (n_len && ! c_isdigit (n_string[n_len - 1]))
+  إذا (n_len && ! c_isdigit (n_string[n_len - 1]))
     {
       t_string = xmalloc (n_len + 2);
-      end = t_string + n_len - 1;
-      memcpy (t_string, n_string, n_len);
+      انتها = t_string + n_len - 1;
+      کپی_حافظه (t_string, n_string, n_len);
 
-      if (*end == 'i' && 2 <= n_len && ! c_isdigit (*(end - 1)))
-        *end = '\0';
-      else
+      إذا (*انتها == 'i' && 2 <= n_len && ! c_isdigit (*(انتها - 1)))
+        *انتها = '\0';
+      وإلا
         {
-          *++end = 'B';
-          *++end = '\0';
+          *++انتها = 'B';
+          *++انتها = '\0';
           suffixes = zero_and_valid_suffixes;
         }
 
       c_string = t_string;
     }
 
-  s_err = xstrtoumax (c_string, &end, 10, &n, suffixes);
+  s_err = xstrtoumax (c_string, &انتها, 10, &n, suffixes);
 
-  if (s_err != LONGINT_OK || *end || n == 0)
+  إذا (s_err != LONGINT_OK || *انتها || n == 0)
     {
-      free (t_string);
+      حرر (t_string);
       error (EXIT_FAILURE, 0, _("invalid unit size: %s"), quote (n_string));
     }
 
-  free (t_string);
+  حرر (t_string);
 
-  return n;
+  أرجع n;
 }
 
-void
-usage (int status)
+فراغ
+usage (صحيح وضعیت)
 {
-  if (status != EXIT_SUCCESS)
+  إذا (وضعیت != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  وإلا
     {
-      printf (_("\
-Usage: %s [OPTION]... [NUMBER]...\n\
-"), program_name);
+      چاپ_کن (_("\
+Usage: %s [OPTION]... [عدد_2]...\n\
+"), برنامه_name);
       fputs (_("\
-Reformat NUMBER(s), or the numbers from standard input if none are specified.\n\
+Reformat عدد_2(s), or the numbers from standard درون_داد إذا none are specified.\n\
 "), stdout);
       emit_mandatory_arg_note ();
       oputs (_("\
       --debug\n\
-         print warnings about invalid input\n\
+         print warnings about invalid درون_داد\n\
 "));
       oputs (_("\
   -d, --delimiter=X\n\
-         use X instead of whitespace for field delimiter\n\
+         use X instead از whitespace لكل فیلد delimiter\n\
 "));
       oputs (_("\
-      --field=FIELDS\n\
-         replace the numbers in these input fields (default=1);\n\
-         see FIELDS below for details\n\
+      --فیلد=FIELDS\n\
+         replace the numbers درون these درون_داد fields (افتراضي=1);\n\
+         see FIELDS زیر لكل details\n\
 "));
       oputs (_("\
       --format=FORMAT\n\
-         use printf style floating-point FORMAT;\n\
-         see FORMAT below for details\n\
+         use چاپ_کن style floating-نقطه FORMAT;\n\
+         see FORMAT زیر لكل details\n\
 "));
       oputs (_("\
       --from=UNIT\n\
-         auto-scale input numbers to UNITs; default is 'none';\n\
-         see UNIT below for details\n\
+         خودکار-scale درون_داد numbers مقصد UNITs; افتراضي is 'none';\n\
+         see UNIT زیر لكل details\n\
 "));
       oputs (_("\
       --from-unit=N\n\
-         specify the input unit size (instead of the default 1)\n\
+         specify the درون_داد unit اندازه (instead از the افتراضي 1)\n\
 "));
       oputs (_("\
       --grouping\n\
-         use locale-defined grouping of digits, e.g. 1,000,000.\n\
-         This has no effect in the C/POSIX locale\n\
+         use locale-defined grouping از digits, e.g. 1,000,000.\n\
+         This has no effect درون the C/POSIX locale\n\
 "));
       oputs (_("\
-      --header[=N]\n\
-         print (without converting) the first N header lines;\n\
-         N defaults to 1 if not specified\n\
+      --سرآیند[=N]\n\
+         print (without converting) the اولی N سرآیند سطرها;\n\
+         N defaults مقصد 1 إذا not specified\n\
 "));
       oputs (_("\
-      --invalid=MODE\n\
-         failure mode for invalid numbers;\n\
-         MODE can be: abort (default), fail, warn, ignore\n\
+      --invalid=نما\n\
+         failure نما_2 لكل invalid numbers;\n\
+         نما can be: abort (افتراضي), fail, warn, ignore\n\
 "));
       oputs (_("\
       --padding=N\n\
-         pad the output to N characters;\n\
-         positive N will right-align, negative N will left-align;\n\
-         padding is ignored if the output is wider than N;\n\
-         the default is to automatically pad if a whitespace is found\n\
+         pad the output مقصد N characters;\n\
+         مثبت N will راست-align, negative N will چپ-align;\n\
+         padding is ignored إذا the output is wider than N;\n\
+         the افتراضي is مقصد automatically pad إذا a whitespace is یافت\n\
 "));
       oputs (_("\
-      --round=METHOD\n\
-         use METHOD for rounding when scaling; METHOD can be:\n\
-         up, down, from-zero (default), towards-zero, nearest\n\
+      --دور_2=روش\n\
+         use روش لكل rounding when scaling; روش can be:\n\
+         به_بالا, پایین, from-zero (افتراضي), towards-zero, نزدیکترین\n\
 "));
       oputs (_("\
       --suffix=SUFFIX\n\
-         add SUFFIX to output numbers,\n\
-         and accept an optional SUFFIX in input numbers\n\
+         جمع_کن SUFFIX مقصد output numbers,\n\
+         and accept an optional SUFFIX درون درون_داد numbers\n\
 "));
       oputs (_("\
       --unit-separator=SEP\n\
-         insert SEP between number and unit on output,\n\
-         and accept an optional SEP in input numbers\n\
+         درج SEP between عدد and unit on output,\n\
+         and accept an optional SEP درون درون_داد numbers\n\
 "));
       oputs (_("\
-      --to=UNIT\n\
-         auto-scale output numbers to UNITs; see UNIT below\n\
+      --مقصد=UNIT\n\
+         خودکار-scale output numbers مقصد UNITs; see UNIT زیر\n\
 "));
       oputs (_("\
-      --to-unit=N\n\
-         the output unit size (instead of the default 1)\n\
+      --مقصد-unit=N\n\
+         the output unit اندازه (instead از the افتراضي 1)\n\
 "));
       oputs (_("\
   -z, --zero-terminated\n\
-         line delimiter is NUL, not newline\n\
+         سطر delimiter is NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (نسخه_OPTION_DESCRIPTION);
 
       fputs (_("\
 \n\
 UNIT options:\n"), stdout);
       fputs (_("\
-  none       no auto-scaling is done; suffixes will trigger an error\n\
+  none       no خودکار-scaling is انجامشده; suffixes will trigger an error\n\
 "), stdout);
       fputs (_("\
-  auto       accept optional single/two letter suffix:\n\
+  خودکار       accept optional single/two letter suffix:\n\
                1K = 1000, 1k = 1000,\n\
                1Ki = 1024,\n\
                1M = 1000000,\n\
@@ -1030,54 +1030,54 @@ UNIT options:\n"), stdout);
                ...\n"), stdout);
 
       fputs (_("\n\
-FIELDS supports cut(1) style field ranges:\n\
-  N    N'th field, counted from 1\n\
-  N-   from N'th field, to end of line\n\
-  N-M  from N'th to M'th field (inclusive)\n\
-  -M   from first to M'th field (inclusive)\n\
+FIELDS supports cut(1) style فیلد ranges:\n\
+  N    N'th فیلد, counted from 1\n\
+  N-   from N'th فیلد, مقصد انتها از سطر\n\
+  N-M  from N'th to M'th فیلد (inclusive)\n\
+  -M   from اولی مقصد M'th فیلد (inclusive)\n\
   -    all fields\n\
-Multiple fields/ranges can be separated with commas\n\
+مضرب_2 fields/ranges can be separated with commas\n\
 "), stdout);
 
       fputs (_("\n\
-FORMAT must be suitable for printing one floating-point argument '%f'.\n\
-Optional quote (%'f) will enable --grouping (if supported by current locale).\n\
-Optional width value (%10f) will pad output. Optional zero (%010f) width\n\
-will zero pad the number. Optional negative values (%-10f) will left align.\n\
-Optional precision (%.1f) will override the input determined precision.\n\
+FORMAT must be suitable لكل printing one floating-نقطه آرگومان '%f'.\n\
+Optional quote (%'f) will enable --grouping (إذا supported by current locale).\n\
+Optional عرض مقدار (%10f) will pad output. Optional zero (%010f) عرض\n\
+will zero pad the عدد. Optional negative مقادیر (%-10f) will چپ align.\n\
+Optional precision (%.1f) will override the درون_داد determined precision.\n\
 "), stdout);
 
-      printf (_("\n\
-Exit status is 0 if all input numbers were successfully converted.\n\
-By default, %s will stop at the first conversion error with exit status 2.\n\
-With --invalid='fail' a warning is printed for each conversion error\n\
-and the exit status is 2.  With --invalid='warn' each conversion error is\n\
-diagnosed, but the exit status is 0.  With --invalid='ignore' conversion\n\
-errors are not diagnosed and the exit status is 0.\n\
-"), program_name);
+      چاپ_کن (_("\n\
+Exit وضعیت is 0 إذا all درون_داد numbers were successfully converted.\n\
+By افتراضي, %s will stop at the اولی conversion error with خروج وضعیت 2.\n\
+With --invalid='fail' a warning is printed لكل each conversion error\n\
+and the خروج وضعیت is 2.  With --invalid='warn' each conversion error is\n\
+diagnosed, but the خروج وضعیت is 0.  With --invalid='ignore' conversion\n\
+errors are not diagnosed and the خروج وضعیت is 0.\n\
+"), برنامه_name);
 
-      printf (_("\n\
+      چاپ_کن (_("\n\
 Examples:\n\
-  $ %s --to=si 1000\n\
+  $ %s --مقصد=si 1000\n\
             -> \"1.0k\"\n\
-  $ %s --to=iec 2048\n\
+  $ %s --مقصد=iec 2048\n\
            -> \"2.0K\"\n\
-  $ %s --to=iec-i 4096\n\
+  $ %s --مقصد=iec-i 4096\n\
            -> \"4.0Ki\"\n\
   $ echo 1K | %s --from=si\n\
            -> \"1000\"\n\
   $ echo 1K | %s --from=iec\n\
            -> \"1024\"\n\
-  $ df -B1 | %s --header --field 2-4 --to=si\n\
-  $ ls -l  | %s --header --field 5 --to=iec\n\
-  $ ls -lh | %s --header --field 5 --from=iec --padding=10\n\
-  $ ls -lh | %s --header --field 5 --from=iec --format %%10f\n"),
-              program_name, program_name, program_name,
-              program_name, program_name, program_name,
-              program_name, program_name, program_name);
-      emit_ancillary_info (PROGRAM_NAME);
+  $ df -B1 | %s --سرآیند --فیلد 2-4 --مقصد=si\n\
+  $ ls -l  | %s --سرآیند --فیلد 5 --مقصد=iec\n\
+  $ ls -lh | %s --سرآیند --فیلد 5 --from=iec --padding=10\n\
+  $ ls -lh | %s --سرآیند --فیلد 5 --from=iec --format %%10f\n"),
+              برنامه_name, برنامه_name, برنامه_name,
+              برنامه_name, برنامه_name, برنامه_name,
+              برنامه_name, برنامه_name, برنامه_name);
+      emit_ancillary_info (برنامه_NAME);
     }
-  exit (status);
+  خروج (وضعیت);
 }
 
 /* Given 'fmt' (a printf(3) compatible format string), extracts the following:
@@ -1095,73 +1095,73 @@ Examples:\n\
        padding_width, grouping,
        format_str_prefix, format_str_suffix
    2. The function aborts on any errors.  */
-static void
-parse_format_string (char const *fmt)
+ساكن فراغ
+parse_format_string (حرف ثابت *fmt)
 {
   size_t i;
-  size_t prefix_len = 0;
+  size_t پیشوند_len = 0;
   size_t suffix_pos;
-  char *endptr = NULL;
+  حرف *endptr = عدم;
   bool zero_padding = false;
 
-  for (i = 0; !(fmt[i] == '%' && fmt[i + 1] != '%'); i += (fmt[i] == '%') + 1)
+  لكل (i = 0; !(fmt[i] == '%' && fmt[i + 1] != '%'); i += (fmt[i] == '%') + 1)
     {
-      if (!fmt[i])
+      إذا (!fmt[i])
         error (EXIT_FAILURE, 0,
                _("format %s has no %% directive"), quote (fmt));
-      prefix_len++;
+      پیشوند_len++;
     }
 
   i++;
-  while (true)
+  طالما (true)
     {
       size_t skip = strspn (fmt + i, " ");
       i += skip;
-      if (fmt[i] == '\'')
+      إذا (fmt[i] == '\'')
         {
           grouping = 1;
           i++;
         }
-      else if (fmt[i] == '0')
+      وإلا إذا (fmt[i] == '0')
         {
           zero_padding = true;
           i++;
         }
-      else if (! skip)
-        break;
+      وإلا إذا (! skip)
+        اكسر;
     }
 
   intmax_t pad = strtoimax (fmt + i, &endptr, 10);
 
-  if (pad != 0)
+  إذا (pad != 0)
     {
-      if (debug && padding_width && !(zero_padding && pad > 0))
+      إذا (debug && padding_عرض && !(zero_padding && pad > 0))
         error (0, 0, _("--format padding overriding --padding"));
 
       /* Set padding width and alignment.  On overflow, set widths to
          large values that cause later code to avoid undefined behavior
          and fail at a reasonable point.  */
-      if (pad < 0)
-        padding_width = pad;
-      else
+      إذا (pad < 0)
+        padding_عرض = pad;
+      وإلا
         {
-          if (zero_padding)
-            zero_padding_width = MIN (pad, INT_MAX);
-          else
-            padding_width = pad;
+          إذا (zero_padding)
+            zero_padding_عرض = MIN (pad, بیشترین_صحیح);
+          وإلا
+            padding_عرض = pad;
         }
     }
   i = endptr - fmt;
 
-  if (fmt[i] == '\0')
+  إذا (fmt[i] == '\0')
     error (EXIT_FAILURE, 0, _("format %s ends in %%"), quote (fmt));
 
-  if (fmt[i] == '.')
+  إذا (fmt[i] == '.')
     {
       i++;
       errno = 0;
       user_precision = strtol (fmt + i, &endptr, 10);
-      if (errno == ERANGE || user_precision < 0 || SIZE_MAX < user_precision
+      إذا (errno == ERANGE || user_precision < 0 || SIZE_MAX < user_precision
           || c_isblank (fmt[i]) || fmt[i] == '+')
         {
           /* Note we disallow negative user_precision to be
@@ -1175,29 +1175,29 @@ parse_format_string (char const *fmt)
       i = endptr - fmt;
     }
 
-  if (fmt[i] != 'f')
+  إذا (fmt[i] != 'f')
     error (EXIT_FAILURE, 0, _("invalid format %s,"
                               " directive must be %%[0]['][-][N][.][N]f"),
          quote (fmt));
   i++;
   suffix_pos = i;
 
-  for (; fmt[i] != '\0'; i += (fmt[i] == '%') + 1)
-    if (fmt[i] == '%' && fmt[i + 1] != '%')
+  لكل (; fmt[i] != '\0'; i += (fmt[i] == '%') + 1)
+    إذا (fmt[i] == '%' && fmt[i + 1] != '%')
       error (EXIT_FAILURE, 0, _("format %s has too many %% directives"),
              quote (fmt));
 
-  if (prefix_len)
-    format_str_prefix = ximemdup0 (fmt, prefix_len);
-  if (fmt[suffix_pos] != '\0')
+  إذا (پیشوند_len)
+    format_str_پیشوند = ximemdup0 (fmt, پیشوند_len);
+  إذا (fmt[suffix_pos] != '\0')
     format_str_suffix = xstrdup (fmt + suffix_pos);
 
   devmsg ("format String:\n  input: %s\n  grouping: %s\n"
                    "  padding width: %jd\n"
                    "  prefix: %s\n  suffix: %s\n",
           quote_n (0, fmt), (grouping) ? "yes" : "no",
-          padding_width,
-          quote_n (1, format_str_prefix ? format_str_prefix : ""),
+          padding_عرض,
+          quote_n (1, format_str_پیشوند ? format_str_پیشوند : ""),
           quote_n (2, format_str_suffix ? format_str_suffix : ""));
 }
 
@@ -1209,546 +1209,546 @@ parse_format_string (char const *fmt)
 
    If there are any trailing characters after the number
    (besides a valid suffix) - exits with an error.  */
-static enum simple_strtod_error
-parse_human_number (char const *str, long double /*output */ *value,
+ساكن تعداد simple_strtod_error
+parse_human_عدد (حرف ثابت *str, دراز مزدوج /*output */ *مقدار,
                     size_t *precision)
 {
-  char *ptr = NULL;
+  حرف *ptr = عدم;
 
-  enum simple_strtod_error e =
-    simple_strtod_human (str, &ptr, value, precision, scale_from);
-  if (e != SSE_OK && e != SSE_OK_PRECISION_LOSS)
+  تعداد simple_strtod_error e =
+    simple_strtod_human (str, &ptr, مقدار, precision, scale_from);
+  إذا (e != SSE_OK && e != SSE_OK_PRECISION_LOSS)
     {
       simple_strtod_fatal (e, str);
-      return e;
+      أرجع e;
     }
 
-  if (ptr && *ptr != '\0')
+  إذا (ptr && *ptr != '\0')
     {
-      if (inval_style != inval_ignore)
-        error (conv_exit_code, 0, _("invalid suffix in input %s: %s"),
+      إذا (inval_style != inval_ignore)
+        error (conv_exit_کد, 0, _("invalid suffix in input %s: %s"),
                quote_n (0, str), quote_n (1, ptr));
       e = SSE_INVALID_SUFFIX;
     }
-  return e;
+  أرجع e;
 }
 
 
 /* Print the given VAL, using the requested representation.
    The number is printed to STDOUT, with padding and alignment.  */
-static bool
-prepare_padded_number (const long double val, size_t precision,
+ساكن bool
+prepare_padded_عدد (ثابت دراز مزدوج val, size_t precision,
                        intmax_t *padding)
 {
   /* Generate Output. */
-  size_t precision_used = user_precision == -1 ? precision : user_precision;
+  size_t precision_استفاده_شده = user_precision == -1 ? precision : user_precision;
 
   /* Can't reliably print too-large values without auto-scaling. */
-  int x;
+  صحيح x;
   expld (val, 10, &x);
 
-  if (scale_to == scale_none
-      && x + precision_used > MAX_UNSCALED_DIGITS)
+  إذا (scale_مقصد == scale_none
+      && x + precision_استفاده_شده > MAX_UNSCALED_DIGITS)
     {
-      if (inval_style != inval_ignore)
+      إذا (inval_style != inval_ignore)
         {
-          if (precision_used)
-            error (conv_exit_code, 0,
+          إذا (precision_استفاده_شده)
+            error (conv_exit_کد, 0,
                    _("value/precision too large to be printed: '%Lg/%zu'"
-                     " (consider using --to)"), val, precision_used);
-          else
-            error (conv_exit_code, 0,
+                     " (consider using --to)"), val, precision_استفاده_شده);
+          وإلا
+            error (conv_exit_کد, 0,
                    _("value too large to be printed: '%Lg'"
                      " (consider using --to)"), val);
         }
-      return false;
+      أرجع false;
     }
 
-  if (x > MAX_ACCEPTABLE_DIGITS - 1)
+  إذا (x > MAX_ACCEPTABLE_DIGITS - 1)
     {
-      if (inval_style != inval_ignore)
-        error (conv_exit_code, 0, _("value too large to be printed: '%Lg'"
+      إذا (inval_style != inval_ignore)
+        error (conv_exit_کد, 0, _("value too large to be printed: '%Lg'"
                                     " (cannot handle values > 999Q)"), val);
-      return false;
+      أرجع false;
     }
 
-  while (true)
+  طالما (true)
     {
-      int numlen = double_to_human (val, precision_used,
-                                    padding_buffer, padding_buffer_size,
-                                    scale_to, grouping, round_style);
+      صحيح numlen = double_مقصد_human (val, precision_استفاده_شده,
+                                    padding_میانگیر, padding_میانگیر_اندازه,
+                                    scale_مقصد, grouping, دور_style);
       ptrdiff_t growth;
-      if (numlen < 0 || ckd_sub (&growth, numlen, padding_buffer_size - 1))
+      إذا (numlen < 0 || ckd_sub (&growth, numlen, padding_میانگیر_اندازه - 1))
         error (EXIT_FAILURE, 0,
                _("failed to prepare value '%Lf' for printing"), val);
-      if (growth <= 0)
-        break;
-      padding_buffer = xpalloc (padding_buffer, &padding_buffer_size,
+      إذا (growth <= 0)
+        اكسر;
+      padding_میانگیر = xpalloc (padding_میانگیر, &padding_میانگیر_اندازه,
                                 growth, -1, 1);
     }
 
   devmsg ("formatting output:\n  value: %Lf\n  humanized: %s\n",
-          val, quote (padding_buffer));
+          val, quote (padding_میانگیر));
 
   intmax_t pad = 0;
-  if (padding_width)
+  إذا (padding_عرض)
     {
-      int buf_width = mbswidth (padding_buffer,
+      صحيح buf_عرض = mbswidth (padding_میانگیر,
                                 MBSW_REJECT_INVALID | MBSW_REJECT_UNPRINTABLE);
-      if (0 <= buf_width)
+      إذا (0 <= buf_عرض)
         {
-          if (padding_width < 0)
+          إذا (padding_عرض < 0)
             {
-              if (padding_width < -buf_width)
-                pad = padding_width + buf_width;
+              إذا (padding_عرض < -buf_عرض)
+                pad = padding_عرض + buf_عرض;
             }
-          else
+          وإلا
             {
-              if (buf_width < padding_width)
-                pad = padding_width - buf_width;
+              إذا (buf_عرض < padding_عرض)
+                pad = padding_عرض - buf_عرض;
             }
         }
     }
 
   *padding = pad;
-  return true;
+  أرجع true;
 }
 
-static void
-print_padded_number (intmax_t padding)
+ساكن فراغ
+print_padded_عدد (intmax_t padding)
 {
-  if (format_str_prefix)
-    fputs (format_str_prefix, stdout);
+  إذا (format_str_پیشوند)
+    fputs (format_str_پیشوند, stdout);
 
-  for (intmax_t p = padding; 0 < p; p--)
-    putchar (' ');
+  لكل (intmax_t p = padding; 0 < p; p--)
+    حرف_چاپ_کن (' ');
 
-  fputs (padding_buffer, stdout);
+  fputs (padding_میانگیر, stdout);
 
-  for (intmax_t p = padding; p < 0; p++)
-    putchar (' ');
+  لكل (intmax_t p = padding; p < 0; p++)
+    حرف_چاپ_کن (' ');
 
-  if (format_str_suffix)
+  إذا (format_str_suffix)
     fputs (format_str_suffix, stdout);
 }
 
 /* Converts the TEXT number string to the requested representation,
    and handles automatic suffix addition.  */
-static bool
-process_suffixed_number (char *text, long double *result,
-                         size_t *precision, long int field)
+ساكن bool
+process_suffixed_عدد (حرف *متن, دراز مزدوج *نتیجه,
+                         size_t *precision, دراز صحيح فیلد)
 {
-  char saved_suffix = '\0';
+  حرف saved_suffix = '\0';
 
-  if (suffix)
+  إذا (suffix)
     {
-      if (mbs_endswith (text, suffix))
+      إذا (mbs_endswith (متن, suffix))
         {
-          saved_suffix = *(text + strlen (text) - strlen (suffix));
-          *(text + strlen (text) - strlen (suffix)) = '\0';
+          saved_suffix = *(متن + طول_رشته (متن) - طول_رشته (suffix));
+          *(متن + طول_رشته (متن) - طول_رشته (suffix)) = '\0';
           devmsg ("trimming suffix %s\n", quote (suffix));
         }
-      else
+      وإلا
         devmsg ("no valid suffix found\n");
     }
 
   /* Skip blanks - always.  */
-  char *p = skip_str_matching (text, newline_or_blank, true);
+  حرف *p = skip_str_matching (متن, newline_or_blank, true);
 
   /* setup auto-padding.  */
-  if (auto_padding)
+  إذا (auto_padding)
     {
-      padding_width = text < p || 1 < field
-                      ? mbswidth (text,
+      padding_عرض = متن < p || 1 < فیلد
+                      ? mbswidth (متن,
                                   MBSW_REJECT_INVALID | MBSW_REJECT_UNPRINTABLE)
                       : 0;
-      if (padding_width < 0)
-        padding_width = strlen (text);
-      devmsg ("setting Auto-Padding to %jd characters\n", padding_width);
+      إذا (padding_عرض < 0)
+        padding_عرض = طول_رشته (متن);
+      devmsg ("setting Auto-Padding to %jd characters\n", padding_عرض);
     }
 
-  long double val = 0;
-  enum simple_strtod_error e = parse_human_number (p, &val, precision);
-  if (e == SSE_OK_PRECISION_LOSS && debug)
+  دراز مزدوج val = 0;
+  تعداد simple_strtod_error e = parse_human_عدد (p, &val, precision);
+  إذا (e == SSE_OK_PRECISION_LOSS && debug)
     error (0, 0, _("large input value %s: possible precision loss"),
            quote (p));
 
-  if (from_unit_size != 1 || to_unit_size != 1)
-    val = (val * from_unit_size) / to_unit_size;
+  إذا (from_unit_اندازه != 1 || مقصد_unit_اندازه != 1)
+    val = (val * from_unit_اندازه) / مقصد_unit_اندازه;
 
-  *result = val;
+  *نتیجه = val;
 
-  if (e == SSE_OK || e == SSE_OK_PRECISION_LOSS)
-    return true;
-  else
+  إذا (e == SSE_OK || e == SSE_OK_PRECISION_LOSS)
+    أرجع true;
+  وإلا
     {
-      if (saved_suffix)
-        *(text + strlen (text)) = saved_suffix;
-      return false;
+      إذا (saved_suffix)
+        *(متن + طول_رشته (متن)) = saved_suffix;
+      أرجع false;
     }
 }
 
 /* Search for multi-byte character C in multi-byte string S.
    Return a pointer to the character, or NULL if not found.  */
-ATTRIBUTE_PURE
-static char *
-mbsmbchr (char const *s, char const *c)
+ATTRIBUTE_خالص
+ساكن حرف *
+mbsmbchr (حرف ثابت *s, حرف ثابت *c)
 {
-  unsigned char uc = *c;
+  بیعلامت حرف uc = *c;
    /* GB18030 is the most restrictive for the 0x30 optimization below.  */
-  if (uc < 0x30 || MB_CUR_MAX == 1)
-    return (char *) strchr (s, uc);
-  else if (is_utf8_charset ())
-    return (char *) (uc < 0x80 ? strchr (s, uc) : strstr (s, c));
-  else
-    return *(c + 1) == '\0' ? mbschr (s, uc) : (char *) mbsstr (s, c);
+  إذا (uc < 0x30 || MB_CUR_MAX == 1)
+    أرجع (حرف *) strchr (s, uc);
+  وإلا إذا (is_utf8_charset ())
+    أرجع (حرف *) (uc < 0x80 ? strchr (s, uc) : جستجوی_رشته (s, c));
+  وإلا
+    أرجع *(c + 1) == '\0' ? mbschr (s, uc) : (حرف *) mbsstr (s, c);
 }
 
 /* Return a pointer to the beginning of the next field in line.
    The line pointer is moved to the end of the next field. */
-static char *
-next_field (char **line)
+ساكن حرف *
+بعدی_فیلد (حرف **سطر)
 {
-  char *field_start = *line;
-  char *field_end   = field_start;
+  حرف *فیلد_شروع = *سطر;
+  حرف *فیلد_انتها   = فیلد_شروع;
 
-  if (delimiter)
+  إذا (delimiter)
     {
-      if (! (field_end = mbsmbchr (field_start, delimiter)))
-        field_end = strchr (field_start, '\0');
+      إذا (! (فیلد_انتها = mbsmbchr (فیلد_شروع, delimiter)))
+        فیلد_انتها = strchr (فیلد_شروع, '\0');
     }
-  else
+  وإلا
     {
       /* keep any space prefix in the returned field */
-      field_end = skip_str_matching (field_end, newline_or_blank, true);
-      field_end = skip_str_matching (field_end, newline_or_blank, false);
+      فیلد_انتها = skip_str_matching (فیلد_انتها, newline_or_blank, true);
+      فیلد_انتها = skip_str_matching (فیلد_انتها, newline_or_blank, false);
     }
 
-  *line = field_end;
-  return field_start;
+  *سطر = فیلد_انتها;
+  أرجع فیلد_شروع;
 }
 
-ATTRIBUTE_PURE
-static bool
-include_field (uintmax_t field)
+ATTRIBUTE_خالص
+ساكن bool
+include_فیلد (uintmax_t فیلد)
 {
-  struct field_range_pair *p = frp;
-  if (!p)
-    return field == 1;
+  بنية فیلد_range_pair *p = frp;
+  إذا (!p)
+    أرجع فیلد == 1;
 
-  while (p->lo != UINTMAX_MAX)
+  طالما (p->lo != UINTMAX_MAX)
     {
-      if (p->lo <= field && p->hi >= field)
-        return true;
+      إذا (p->lo <= فیلد && p->hi >= فیلد)
+        أرجع true;
       ++p;
     }
-  return false;
+  أرجع false;
 }
 
 /* Convert and output the given field. If it is not included in the set
    of fields to process just output the original */
-static bool
-process_field (char *text, uintmax_t field)
+ساكن bool
+process_فیلد (حرف *متن, uintmax_t فیلد)
 {
-  long double val = 0;
+  دراز مزدوج val = 0;
   size_t precision = 0;
-  bool valid_number = true;
+  bool valid_عدد = true;
 
-  if (include_field (field))
+  إذا (include_فیلد (فیلد))
     {
-      valid_number =
-        process_suffixed_number (text, &val, &precision, field);
+      valid_عدد =
+        process_suffixed_عدد (متن, &val, &precision, فیلد);
 
       intmax_t padding;
-      if (valid_number)
-        valid_number = prepare_padded_number (val, precision, &padding);
+      إذا (valid_عدد)
+        valid_عدد = prepare_padded_عدد (val, precision, &padding);
 
-      if (valid_number)
-        print_padded_number (padding);
-      else
-        fputs (text, stdout);
+      إذا (valid_عدد)
+        print_padded_عدد (padding);
+      وإلا
+        fputs (متن, stdout);
     }
-  else
-    fputs (text, stdout);
+  وإلا
+    fputs (متن, stdout);
 
-  return valid_number;
+  أرجع valid_عدد;
 }
 
 /* Convert number in a given line of text.
    NEWLINE specifies whether to output a '\n' for this "line".  */
-static int
-process_line (char *line, bool newline)
+ساكن صحيح
+process_سطر (حرف *سطر, bool newline)
 {
-  char *next;
-  uintmax_t field = 0;
-  bool valid_number = true;
+  حرف *بعدی;
+  uintmax_t فیلد = 0;
+  bool valid_عدد = true;
 
-  while (true) {
-    ++field;
-    next = next_field (&line);
+  طالما (true) {
+    ++فیلد;
+    بعدی = بعدی_فیلد (&سطر);
 
-    if (*line != '\0')
+    إذا (*سطر != '\0')
       {
         /* NUL terminate the current field string and process */
-        char end_field = *line;
-        *line = '\0';
+        حرف انتها_فیلد = *سطر;
+        *سطر = '\0';
 
-        if (! process_field (next, field))
-          valid_number = false;
+        إذا (! process_فیلد (بعدی, فیلد))
+          valid_عدد = false;
 
-        if (delimiter != NULL)
+        إذا (delimiter != عدم)
           fputs (delimiter, stdout);
-        else
+        وإلا
           fputc (' ', stdout);
 
-        if (delimiter)
-          line += MAX (strlen (delimiter), 1);
-        else
+        إذا (delimiter)
+          سطر += MAX (طول_رشته (delimiter), 1);
+        وإلا
           {
-            *line = end_field;
-            mcel_t g = mcel_scanz (line);
-            line += g.len;
+            *سطر = انتها_فیلد;
+            mcel_t g = mcel_scanz (سطر);
+            سطر += g.len;
           }
       }
-    else
+    وإلا
       {
         /* end of the line, process the last field and finish */
-        if (! process_field (next, field))
-          valid_number = false;
+        إذا (! process_فیلد (بعدی, فیلد))
+          valid_عدد = false;
 
-        break;
+        اكسر;
       }
   }
 
-  if (newline)
-    putchar (line_delim);
+  إذا (newline)
+    حرف_چاپ_کن (سطر_delim);
 
- if (ferror (stdout))
+ إذا (ferror (stdout))
    write_error ();
 
-  return valid_number;
+  أرجع valid_عدد;
 }
 
-int
-main (int argc, char **argv)
+صحيح
+اصلی (صحيح argc, حرف **argv)
 {
-  int valid_numbers = 1;
+  صحيح valid_numbers = 1;
   bool locale_ok;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  مجموعه_برنامه_name (argv[0]);
   locale_ok = !!setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
-#if HAVE_FPSETPREC
+#إذا HAVE_FPSETPREC
   /* Enabled extended precision if needed.  */
   fpsetprec (FP_PE);
-#endif
+#پایان_اگر
 
-  decimal_point = nl_langinfo (RADIXCHAR);
-  if (decimal_point == NULL || strlen (decimal_point) == 0)
-    decimal_point = ".";
-  decimal_point_length = strlen (decimal_point);
+  decimal_نقطه = nl_langinfo (RADIXCHAR);
+  إذا (decimal_نقطه == عدم || طول_رشته (decimal_نقطه) == 0)
+    decimal_نقطه = ".";
+  decimal_نقطه_درازی = طول_رشته (decimal_نقطه);
 
   thousands_sep = nl_langinfo (THOUSEP);
-  if (thousands_sep == NULL)
+  إذا (thousands_sep == عدم)
     thousands_sep = "";
-  thousands_sep_length = strlen (thousands_sep);
+  thousands_sep_درازی = طول_رشته (thousands_sep);
 
   atexit (close_stdout);
 
-  while (true)
+  طالما (true)
     {
-      int c = getopt_long (argc, argv, "d:z", longopts, NULL);
+      صحيح c = getopt_long (argc, argv, "d:z", longopts, عدم);
 
-      if (c == -1)
-        break;
+      إذا (c == -1)
+        اكسر;
 
-      switch (c)
+      بدل (c)
         {
-        case FROM_OPTION:
+        حالة FROM_OPTION:
           scale_from = XARGMATCH ("--from", optarg,
-                                  scale_from_args, scale_from_types);
-          break;
+                                  scale_from_آرگومانها, scale_from_types);
+          اكسر;
 
-        case FROM_UNIT_OPTION:
-          from_unit_size = unit_to_umax (optarg);
-          break;
+        حالة FROM_UNIT_OPTION:
+          from_unit_اندازه = unit_مقصد_umax (optarg);
+          اكسر;
 
-        case TO_OPTION:
-          scale_to =
-            XARGMATCH ("--to", optarg, scale_to_args, scale_to_types);
-          break;
+        حالة مقصد_OPTION:
+          scale_مقصد =
+            XARGMATCH ("--to", optarg, scale_مقصد_آرگومانها, scale_مقصد_types);
+          اكسر;
 
-        case TO_UNIT_OPTION:
-          to_unit_size = unit_to_umax (optarg);
-          break;
+        حالة مقصد_UNIT_OPTION:
+          مقصد_unit_اندازه = unit_مقصد_umax (optarg);
+          اكسر;
 
-        case ROUND_OPTION:
-          round_style = XARGMATCH ("--round", optarg, round_args, round_types);
-          break;
+        حالة دور_OPTION:
+          دور_style = XARGMATCH ("--round", optarg, دور_آرگومانها, دور_types);
+          اكسر;
 
-        case GROUPING_OPTION:
+        حالة GROUPING_OPTION:
           grouping = 1;
-          break;
+          اكسر;
 
-        case PADDING_OPTION:
-          if (((xstrtoimax (optarg, NULL, 10, &padding_width, "")
-                & ~LONGINT_OVERFLOW)
+        حالة PADDING_OPTION:
+          إذا (((xstrtoimax (optarg, عدم, 10, &padding_عرض, "")
+                & ~LONGINT_سرریز)
                != LONGINT_OK)
-              || padding_width == 0)
+              || padding_عرض == 0)
             error (EXIT_FAILURE, 0, _("invalid padding value %s"),
                    quote (optarg));
           /* TODO: We probably want to apply a specific --padding
              to --header lines too.  */
-          break;
+          اكسر;
 
-        case FIELD_OPTION:
-          if (n_frp)
+        حالة فیلد_OPTION:
+          إذا (n_frp)
             error (EXIT_FAILURE, 0, _("multiple field specifications"));
-          set_fields (optarg, SETFLD_ALLOW_DASH);
-          break;
+          مجموعه_fields (optarg, SETFLD_ALLOW_DASH);
+          اكسر;
 
-        case 'd':
+        حالة 'd':
           /* Interpret -d '' to mean 'use the NUL byte as the delimiter.'  */
-          if (optarg[0] != '\0')
+          إذا (optarg[0] != '\0')
             {
               mcel_t g = mcel_scanz (optarg);
               /* Note we always allow single bytes, especially since mcel
                  explicitly does not avoid https://sourceware.org/PR29511
                  I.e., we ignore g.err, and rely on g.len==1 with g.err.  */
-              if (optarg[g.len] != '\0')
+              إذا (optarg[g.len] != '\0')
                 error (EXIT_FAILURE, 0,
                        _("the delimiter must be a single character"));
             }
           delimiter = optarg;
-          break;
+          اكسر;
 
-        case 'z':
-          line_delim = '\0';
-          break;
+        حالة 'z':
+          سطر_delim = '\0';
+          اكسر;
 
-        case SUFFIX_OPTION:
+        حالة SUFFIX_OPTION:
           suffix = optarg;
-          break;
+          اكسر;
 
-        case UNIT_SEPARATOR_OPTION:
+        حالة UNIT_SEPARATOR_OPTION:
           unit_separator = optarg;
-          break;
+          اكسر;
 
-        case DEBUG_OPTION:
+        حالة DEBUG_OPTION:
           debug = true;
-          break;
+          اكسر;
 
-        case DEV_DEBUG_OPTION:
+        حالة DEV_DEBUG_OPTION:
           dev_debug = true;
           debug = true;
-          break;
+          اكسر;
 
-        case HEADER_OPTION:
-          if (optarg)
+        حالة سرآیند_OPTION:
+          إذا (optarg)
             {
-              if (xstrtoumax (optarg, NULL, 10, &header, "") != LONGINT_OK
-                  || header == 0)
+              إذا (xstrtoumax (optarg, عدم, 10, &سرآیند, "") != LONGINT_OK
+                  || سرآیند == 0)
                 error (EXIT_FAILURE, 0, _("invalid header value %s"),
                        quote (optarg));
             }
-          else
+          وإلا
             {
-              header = 1;
+              سرآیند = 1;
             }
-          break;
+          اكسر;
 
-        case FORMAT_OPTION:
+        حالة FORMAT_OPTION:
           format_str = optarg;
-          break;
+          اكسر;
 
-        case INVALID_OPTION:
+        حالة INVALID_OPTION:
           inval_style = XARGMATCH ("--invalid", optarg,
-                                   inval_args, inval_types);
-          break;
+                                   inval_آرگومانها, inval_types);
+          اكسر;
 
           case_GETOPT_HELP_CHAR;
-          case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+          case_GETOPT_نسخه_CHAR (برنامه_NAME, AUTHORS);
 
-        default:
+        افتراضي:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (format_str != NULL && grouping)
+  إذا (format_str != عدم && grouping)
     error (EXIT_FAILURE, 0, _("--grouping cannot be combined with --format"));
 
-  if (debug && ! locale_ok)
+  إذا (debug && ! locale_ok)
     error (0, 0, _("failed to set locale"));
 
   /* Warn about no-op.  */
-  if (debug && scale_from == scale_none && scale_to == scale_none
-      && !grouping && (padding_width == 0) && (format_str == NULL))
+  إذا (debug && scale_from == scale_none && scale_مقصد == scale_none
+      && !grouping && (padding_عرض == 0) && (format_str == عدم))
     error (0, 0, _("no conversion option specified"));
 
-  if (debug && unit_separator && delimiter == NULL)
+  إذا (debug && unit_separator && delimiter == عدم)
     error (0, 0,
            _("field delimiters have higher precedence than unit separators"));
 
-  if (format_str)
+  إذا (format_str)
     parse_format_string (format_str);
 
-  if (grouping)
+  إذا (grouping)
     {
-      if (scale_to != scale_none)
+      إذا (scale_مقصد != scale_none)
         error (EXIT_FAILURE, 0, _("grouping cannot be combined with --to"));
-      if (debug && thousands_sep_length == 0)
+      إذا (debug && thousands_sep_درازی == 0)
         error (0, 0, _("grouping has no effect in this locale"));
     }
 
-  auto_padding = (padding_width == 0 && delimiter == NULL);
+  auto_padding = (padding_عرض == 0 && delimiter == عدم);
 
-  if (inval_style != inval_abort)
-    conv_exit_code = 0;
+  إذا (inval_style != inval_abort)
+    conv_exit_کد = 0;
 
-  if (argc > optind)
+  إذا (argc > optind)
     {
-      if (debug && header)
+      إذا (debug && سرآیند)
         error (0, 0, _("--header ignored with command-line input"));
 
-      for (; optind < argc; optind++)
-        valid_numbers &= process_line (argv[optind], true);
+      لكل (; optind < argc; optind++)
+        valid_numbers &= process_سطر (argv[optind], true);
     }
-  else
+  وإلا
     {
-      char *line = NULL;
-      size_t line_allocated = 0;
+      حرف *سطر = عدم;
+      size_t سطر_allocated = 0;
       ssize_t len;
 
-      while (header-- && getdelim (&line, &line_allocated,
-                                   line_delim, stdin) > 0)
+      طالما (سرآیند-- && getdelim (&سطر, &سطر_allocated,
+                                   سطر_delim, stdin) > 0)
         {
-          if (fputs (line, stdout) == EOF)
+          إذا (fputs (سطر, stdout) == EOF)
             write_error ();
         }
 
-      while ((len = getdelim (&line, &line_allocated,
-                              line_delim, stdin)) > 0)
+      طالما ((len = getdelim (&سطر, &سطر_allocated,
+                              سطر_delim, stdin)) > 0)
         {
-          bool newline = line[len - 1] == line_delim;
-          if (newline)
-            line[len - 1] = '\0';
-          valid_numbers &= process_line (line, newline);
+          bool newline = سطر[len - 1] == سطر_delim;
+          إذا (newline)
+            سطر[len - 1] = '\0';
+          valid_numbers &= process_سطر (سطر, newline);
         }
 
-      if (ferror (stdin))
+      إذا (ferror (stdin))
         error (EXIT_FAILURE, errno, _("error reading input"));
     }
 
-  if (debug && !valid_numbers)
+  إذا (debug && !valid_numbers)
     error (0, 0, _("failed to convert some of the input numbers"));
 
-  int exit_status = EXIT_SUCCESS;
-  if (!valid_numbers
+  صحيح exit_وضعیت = EXIT_SUCCESS;
+  إذا (!valid_numbers
       && inval_style != inval_warn && inval_style != inval_ignore)
-    exit_status = EXIT_CONVERSION_WARNINGS;
+    exit_وضعیت = EXIT_CONVERSION_WARNINGS;
 
-  main_exit (exit_status);
+  main_exit (exit_وضعیت);
 }
