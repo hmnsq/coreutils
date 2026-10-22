@@ -20,25 +20,25 @@
 
    Simply call the system 'link' function */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
+#ضمن <config.h>
+#ضمن <stdio.h>
+#ضمن <sys/types.h>
 
-#include "system.h"
-#include "long-options.h"
-#include "quote.h"
+#ضمن "system.h"
+#ضمن "long-options.h"
+#ضمن "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "link"
 
 #define AUTHORS proper_name ("Michael Stone")
 
-void
-usage (int status)
+فراغ
+usage (صحيح status)
 {
-  if (status != EXIT_SUCCESS)
+  إذا (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  وإلا
     {
       printf (_("\
 Usage: %s FILE1 FILE2\n\
@@ -53,8 +53,8 @@ Usage: %s FILE1 FILE2\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+صحيح
+الرئيسية (صحيح argc, حرف **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -66,26 +66,26 @@ main (int argc, char **argv)
 
   parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
                                    Version, true, usage, AUTHORS,
-                                   (char const *) NULL);
+                                   (حرف ثابت *) عدم);
 
-  if (argc < optind + 2)
+  إذا (argc < optind + 2)
     {
-      if (argc < optind + 1)
+      إذا (argc < optind + 1)
         error (0, 0, _("missing operand"));
-      else
+      وإلا
         error (0, 0, _("missing operand after %s"), quote (argv[optind]));
       usage (EXIT_FAILURE);
     }
 
-  if (optind + 2 < argc)
+  إذا (optind + 2 < argc)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind + 2]));
       usage (EXIT_FAILURE);
     }
 
-  if (link (argv[optind], argv[optind + 1]) != 0)
+  إذا (link (argv[optind], argv[optind + 1]) != 0)
     error (EXIT_FAILURE, errno, _("cannot create link %s to %s"),
            quoteaf_n (0, argv[optind + 1]), quoteaf_n (1, argv[optind]));
 
-  return EXIT_SUCCESS;
+  إرجاع EXIT_SUCCESS;
 }

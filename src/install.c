@@ -16,243 +16,243 @@
 
 /* Written by David MacKenzie <djm@gnu.ai.mit.edu> */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
-#include <signal.h>
-#include <pwd.h>
-#include <grp.h>
-#include <selinux/label.h>
-#include <spawn.h>
-#include <sys/wait.h>
+#ضمن <config.h>
+#ضمن <stdio.h>
+#ضمن <getopt.h>
+#ضمن <sys/types.h>
+#ضمن <signal.h>
+#ضمن <pwd.h>
+#ضمن <grp.h>
+#ضمن <selinux/label.h>
+#ضمن <spawn.h>
+#ضمن <sys/wait.h>
 
-#include "system.h"
-#include "backupfile.h"
-#include "cp-hash.h"
-#include "copy.h"
-#include "filenamecat.h"
-#include "full-read.h"
-#include "mkancesdirs.h"
-#include "mkdir-p.h"
-#include "modechange.h"
-#include "prog-fprintf.h"
-#include "quote.h"
-#include "savewd.h"
-#include "selinux.h"
-#include "stat-time.h"
-#include "targetdir.h"
-#include "utimens.h"
-#include "xstrtol.h"
+#ضمن "system.h"
+#ضمن "backupfile.h"
+#ضمن "cp-hash.h"
+#ضمن "copy.h"
+#ضمن "filenamecat.h"
+#ضمن "full-read.h"
+#ضمن "mkancesdirs.h"
+#ضمن "mkdir-p.h"
+#ضمن "modechange.h"
+#ضمن "prog-fprintf.h"
+#ضمن "quote.h"
+#ضمن "savewd.h"
+#ضمن "selinux.h"
+#ضمن "stat-time.h"
+#ضمن "targetdir.h"
+#ضمن "utimens.h"
+#ضمن "xstrtol.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "install"
 
 #define AUTHORS proper_name ("David MacKenzie")
 
-static int selinux_enabled = 0;
-static bool use_default_selinux_context = true;
+ساكن صحيح selinux_enabled = 0;
+ساكن bool use_default_selinux_context = true;
 
-#if ! HAVE_ENDGRENT
-# define endgrent() ((void) 0)
+#إذا ! HAVE_ENDGRENT
+# define endgrent() ((فراغ) 0)
 #endif
 
-#if ! HAVE_ENDPWENT
-# define endpwent() ((void) 0)
+#إذا ! HAVE_ENDPWENT
+# define endpwent() ((فراغ) 0)
 #endif
 
 /* The user name that will own the files, or NULL to make the owner
    the current user ID. */
-static char *owner_name;
+ساكن حرف *owner_name;
 
 /* The user ID corresponding to 'owner_name'. */
-static uid_t owner_id;
+ساكن uid_t owner_id;
 
 /* The group name that will own the files, or NULL to make the group
    the current group ID. */
-static char *group_name;
+ساكن حرف *group_name;
 
 /* The group ID corresponding to 'group_name'. */
-static gid_t group_id;
+ساكن gid_t group_id;
 
 #define DEFAULT_MODE (S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH)
 
 /* The file mode bits to which non-directory files will be set.  The umask has
    no effect. */
-static mode_t mode = DEFAULT_MODE;
+ساكن mode_t mode = DEFAULT_MODE;
 
 /* Similar, but for directories.  */
-static mode_t dir_mode = DEFAULT_MODE;
+ساكن mode_t dir_mode = DEFAULT_MODE;
 
 /* The file mode bits that the user cares about.  This should be a
    superset of DIR_MODE and a subset of CHMOD_MODE_BITS.  This matters
    for directories, since otherwise directories may keep their S_ISUID
    or S_ISGID bits.  */
-static mode_t dir_mode_bits = CHMOD_MODE_BITS;
+ساكن mode_t dir_mode_bits = CHMOD_MODE_BITS;
 
 /* Compare files before installing (-C) */
-static bool copy_only_if_needed;
+ساكن bool copy_only_if_needed;
 
 /* If true, strip executable files after copying them. */
-static bool strip_files;
+ساكن bool strip_files;
 
 /* If true, install a directory instead of a regular file. */
-static bool dir_arg;
+ساكن bool dir_arg;
 
 /* Program used to strip binaries, "strip" is default */
-static char const *strip_program = "strip";
+ساكن حرف ثابت *strip_program = "strip";
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+تعداد
 {
   DEBUG_OPTION = CHAR_MAX + 1,
   PRESERVE_CONTEXT_OPTION,
   STRIP_PROGRAM_OPTION
 };
 
-static struct option const long_options[] =
+ساكن بنية option ثابت long_options[] =
 {
-  {"backup", optional_argument, NULL, 'b'},
-  {"compare", no_argument, NULL, 'C'},
+  {"backup", optional_argument, عدم, 'b'},
+  {"compare", no_argument, عدم, 'C'},
   {GETOPT_SELINUX_CONTEXT_OPTION_DECL},
-  {"debug", no_argument, NULL, DEBUG_OPTION},
-  {"directory", no_argument, NULL, 'd'},
-  {"group", required_argument, NULL, 'g'},
-  {"mode", required_argument, NULL, 'm'},
-  {"no-target-directory", no_argument, NULL, 'T'},
-  {"owner", required_argument, NULL, 'o'},
-  {"preserve-timestamps", no_argument, NULL, 'p'},
-  {"preserve-context", no_argument, NULL, PRESERVE_CONTEXT_OPTION},
-  {"strip", no_argument, NULL, 's'},
-  {"strip-program", required_argument, NULL, STRIP_PROGRAM_OPTION},
-  {"suffix", required_argument, NULL, 'S'},
-  {"target-directory", required_argument, NULL, 't'},
-  {"verbose", no_argument, NULL, 'v'},
+  {"debug", no_argument, عدم, DEBUG_OPTION},
+  {"directory", no_argument, عدم, 'd'},
+  {"group", required_argument, عدم, 'g'},
+  {"mode", required_argument, عدم, 'm'},
+  {"no-target-directory", no_argument, عدم, 'T'},
+  {"owner", required_argument, عدم, 'o'},
+  {"preserve-timestamps", no_argument, عدم, 'p'},
+  {"preserve-context", no_argument, عدم, PRESERVE_CONTEXT_OPTION},
+  {"strip", no_argument, عدم, 's'},
+  {"strip-program", required_argument, عدم, STRIP_PROGRAM_OPTION},
+  {"suffix", required_argument, عدم, 'S'},
+  {"target-directory", required_argument, عدم, 't'},
+  {"verbose", no_argument, عدم, 'v'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {عدم, 0, عدم, 0}
 };
 
 /* Compare content of opened files using file descriptors A_FD and B_FD. Return
    true if files are equal. */
-static bool
-have_same_content (int a_fd, int b_fd)
+ساكن bool
+have_same_content (صحيح a_fd, صحيح b_fd)
 {
-  enum { CMP_BLOCK_SIZE = 4096 };
-  static char a_buff[CMP_BLOCK_SIZE];
-  static char b_buff[CMP_BLOCK_SIZE];
+  تعداد { CMP_BLOCK_SIZE = 4096 };
+  ساكن حرف a_buff[CMP_BLOCK_SIZE];
+  ساكن حرف b_buff[CMP_BLOCK_SIZE];
 
   idx_t size;
-  while (0 < (size = full_read (a_fd, a_buff, sizeof a_buff))) {
-    if (size != full_read (b_fd, b_buff, sizeof b_buff))
-      return false;
+  بينما (0 < (size = full_read (a_fd, a_buff, حجم a_buff))) {
+    إذا (size != full_read (b_fd, b_buff, حجم b_buff))
+      إرجاع false;
 
-    if (!memeq (a_buff, b_buff, size))
-      return false;
+    إذا (!memeq (a_buff, b_buff, size))
+      إرجاع false;
   }
 
-  return size == 0;
+  إرجاع size == 0;
 }
 
 /* Return true for mode with non-permission bits. */
-static bool
-extra_mode (mode_t input)
+ساكن bool
+extra_mode (mode_t إدخال)
 {
   mode_t mask = S_IRWXUGO | S_IFMT;
-  return !! (input & ~ mask);
+  إرجاع !! (إدخال & ~ mask);
 }
 
 /* Return true if copy of file SRC_NAME to file DEST_NAME aka
    DEST_DIRFD+DEST_RELNAME is necessary. */
-static bool
-need_copy (char const *src_name, char const *dest_name,
-           int dest_dirfd, char const *dest_relname,
-           const struct cp_options *x)
+ساكن bool
+need_copy (حرف ثابت *src_name, حرف ثابت *dest_name,
+           صحيح dest_dirfd, حرف ثابت *dest_relname,
+           ثابت بنية cp_options *x)
 {
-  if (extra_mode (mode))
-    return true;
+  إذا (extra_mode (mode))
+    إرجاع true;
 
   /* compare files using stat */
-  struct stat src_sb;
-  if (stat (src_name, &src_sb) != 0)
-    return true;
+  بنية stat src_sb;
+  إذا (stat (src_name, &src_sb) != 0)
+    إرجاع true;
 
-  struct stat dest_sb;
-  if (fstatat (dest_dirfd, dest_relname, &dest_sb, AT_SYMLINK_NOFOLLOW) != 0)
-    return true;
+  بنية stat dest_sb;
+  إذا (fstatat (dest_dirfd, dest_relname, &dest_sb, AT_SYMLINK_NOFOLLOW) != 0)
+    إرجاع true;
 
-  if (!S_ISREG (src_sb.st_mode) || !S_ISREG (dest_sb.st_mode)
+  إذا (!S_ISREG (src_sb.st_mode) || !S_ISREG (dest_sb.st_mode)
       || extra_mode (src_sb.st_mode) || extra_mode (dest_sb.st_mode))
-    return true;
+    إرجاع true;
 
-  if (src_sb.st_size != dest_sb.st_size
+  إذا (src_sb.st_size != dest_sb.st_size
       || (dest_sb.st_mode & CHMOD_MODE_BITS) != mode)
-    return true;
+    إرجاع true;
 
-  if (owner_id == (uid_t) -1)
+  إذا (owner_id == (uid_t) -1)
     {
       errno = 0;
       uid_t ruid = getuid ();
-      if ((ruid == (uid_t) -1 && errno) || dest_sb.st_uid != ruid)
-        return true;
+      إذا ((ruid == (uid_t) -1 && errno) || dest_sb.st_uid != ruid)
+        إرجاع true;
     }
-  else if (dest_sb.st_uid != owner_id)
-    return true;
+  وإلا إذا (dest_sb.st_uid != owner_id)
+    إرجاع true;
 
-  if (group_id == (uid_t) -1)
+  إذا (group_id == (uid_t) -1)
     {
       errno = 0;
       gid_t rgid = getgid ();
-      if ((rgid == (uid_t) -1 && errno) || dest_sb.st_gid != rgid)
-        return true;
+      إذا ((rgid == (uid_t) -1 && errno) || dest_sb.st_gid != rgid)
+        إرجاع true;
     }
-  else if (dest_sb.st_gid != group_id)
-    return true;
+  وإلا إذا (dest_sb.st_gid != group_id)
+    إرجاع true;
 
   /* compare SELinux context if preserving */
-  if (selinux_enabled && x->preserve_security_context)
+  إذا (selinux_enabled && x->preserve_security_context)
     {
-      char *file_scontext_raw = NULL;
-      if (getfilecon_raw (src_name, &file_scontext_raw) == -1)
-        return true;
+      حرف *file_scontext_raw = عدم;
+      إذا (getfilecon_raw (src_name, &file_scontext_raw) == -1)
+        إرجاع true;
 
-      char *to_scontext_raw = NULL;
-      if (getfilecon_raw (dest_name, &to_scontext_raw) == -1)
+      حرف *to_scontext_raw = عدم;
+      إذا (getfilecon_raw (dest_name, &to_scontext_raw) == -1)
         {
           freecon (file_scontext_raw);
-          return true;
+          إرجاع true;
         }
 
       bool scontext_match = streq (file_scontext_raw, to_scontext_raw);
 
       freecon (file_scontext_raw);
       freecon (to_scontext_raw);
-      if (!scontext_match)
-        return true;
+      إذا (!scontext_match)
+        إرجاع true;
     }
 
   /* compare files content */
-  int src_fd = open (src_name, O_RDONLY | O_BINARY);
-  if (src_fd < 0)
-    return true;
+  صحيح src_fd = open (src_name, O_RDONLY | O_ثنائي);
+  إذا (src_fd < 0)
+    إرجاع true;
 
-  int dest_fd = openat (dest_dirfd, dest_relname, O_RDONLY | O_BINARY);
-  if (dest_fd < 0)
+  صحيح dest_fd = openat (dest_dirfd, dest_relname, O_RDONLY | O_ثنائي);
+  إذا (dest_fd < 0)
     {
       close (src_fd);
-      return true;
+      إرجاع true;
     }
 
   bool content_match = have_same_content (src_fd, dest_fd);
 
   close (src_fd);
   close (dest_fd);
-  return !content_match;
+  إرجاع !content_match;
 }
 
-static void
-cp_option_init (struct cp_options *x)
+ساكن فراغ
+cp_option_init (بنية cp_options *x)
 {
   cp_options_default (x);
   x->copy_as_regular = true;
@@ -290,59 +290,59 @@ cp_option_init (struct cp_options *x)
   x->update = UPDATE_ALL;
   x->require_preserve_context = false;  /* Not used by install currently.  */
   x->preserve_security_context = false; /* Whether to copy context from src.  */
-  x->set_security_context = NULL; /* Whether to set sys default context.  */
+  x->set_security_context = عدم; /* Whether to set sys default context.  */
   x->preserve_xattr = false;
   x->verbose = false;
-  x->dest_info = NULL;
-  x->src_info = NULL;
+  x->dest_info = عدم;
+  x->src_info = عدم;
 }
 
-static struct selabel_handle *
-get_labeling_handle (void)
+ساكن بنية selabel_handle *
+get_labeling_handle (فراغ)
 {
-  static bool initialized;
-  static struct selabel_handle *hnd;
-  if (!initialized)
+  ساكن bool initialized;
+  ساكن بنية selabel_handle *hnd;
+  إذا (!initialized)
     {
       initialized = true;
-      hnd = selabel_open (SELABEL_CTX_FILE, NULL, 0);
-      if (!hnd)
+      hnd = selabel_open (SELABEL_CTX_FILE, عدم, 0);
+      إذا (!hnd)
         error (0, errno, _("warning: security labeling handle failed"));
     }
-  return hnd;
+  إرجاع hnd;
 }
 
 /* Modify file context to match the specified policy.
    If an error occurs the file will remain with the default directory
    context.  Note this sets the context to that returned by selabel_lookup
    and thus discards MLS levels and user identity of the FILE.  */
-static void
-setdefaultfilecon (char const *file)
+ساكن فراغ
+setdefaultfilecon (حرف ثابت *file)
 {
-  if (selinux_enabled != 1)
+  إذا (selinux_enabled != 1)
     {
       /* Indicate no context found. */
-      return;
+      إرجاع;
     }
 
-  struct stat st;
-  if (lstat (file, &st) != 0)
-    return;
+  بنية stat st;
+  إذا (lstat (file, &st) != 0)
+    إرجاع;
 
-  struct selabel_handle *hnd = get_labeling_handle ();
-  if (!hnd)
-    return;
+  بنية selabel_handle *hnd = get_labeling_handle ();
+  إذا (!hnd)
+    إرجاع;
 
-  char *scontext_raw = NULL;
-  if (selabel_lookup_raw (hnd, &scontext_raw, file, st.st_mode) != 0)
+  حرف *scontext_raw = عدم;
+  إذا (selabel_lookup_raw (hnd, &scontext_raw, file, st.st_mode) != 0)
     {
-      if (errno != ENOENT && ! ignorable_ctx_err (errno))
+      إذا (errno != ENOENT && ! ignorable_ctx_err (errno))
         error (0, errno, _("warning: %s: context lookup failed"),
                quotef (file));
-      return;
+      إرجاع;
     }
 
-  if (lsetfilecon_raw (file, scontext_raw) < 0 && errno != ENOTSUP)
+  إذا (lsetfilecon_raw (file, scontext_raw) < 0 && errno != ENOTSUP)
     error (0, errno,
            _("warning: %s: failed to change context to %s"),
            quotef_n (0, file), quote_n (1, scontext_raw));
@@ -351,40 +351,40 @@ setdefaultfilecon (char const *file)
 }
 
 /* Report that directory DIR was made, if OPTIONS requests this.  */
-static void
-announce_mkdir (char const *dir, void *options)
+ساكن فراغ
+announce_mkdir (حرف ثابت *dir, فراغ *options)
 {
-  struct cp_options const *x = options;
-  if (x->verbose)
+  بنية cp_options ثابت *x = options;
+  إذا (x->verbose)
     prog_fprintf (stdout, _("creating directory %s"), quoteaf (dir));
 }
 
 /* Make ancestor directory DIR, whose last file name component is
    COMPONENT, with options OPTIONS.  Assume the working directory is
    COMPONENT's parent.  */
-static int
-make_ancestor (char const *dir, char const *component, void *options)
+ساكن صحيح
+make_ancestor (حرف ثابت *dir, حرف ثابت *component, فراغ *options)
 {
-  struct cp_options const *x = options;
-  if (x->set_security_context
+  بنية cp_options ثابت *x = options;
+  إذا (x->set_security_context
       && defaultcon (x->set_security_context, component, S_IFDIR) < 0
       && ! ignorable_ctx_err (errno))
     error (0, errno, _("failed to set default creation context for %s"),
            quoteaf (dir));
 
-  int r = mkdir (component, DEFAULT_MODE);
-  if (r == 0)
+  صحيح r = mkdir (component, DEFAULT_MODE);
+  إذا (r == 0)
     announce_mkdir (dir, options);
-  return r;
+  إرجاع r;
 }
 
 /* Process a command-line file name, for the -d option.  */
-static int
-process_dir (char *dir, struct savewd *wd, void *options)
+ساكن صحيح
+process_dir (حرف *dir, بنية savewd *wd, فراغ *options)
 {
-  struct cp_options const *x = options;
+  بنية cp_options ثابت *x = options;
 
-  int ret = (make_dir_parents (dir, wd, make_ancestor, options,
+  صحيح ret = (make_dir_parents (dir, wd, make_ancestor, options,
                                dir_mode, announce_mkdir,
                                dir_mode_bits, owner_id, group_id, false)
           ? EXIT_SUCCESS
@@ -395,29 +395,29 @@ process_dir (char *dir, struct savewd *wd, void *options)
      final component of DIR is created.  So for now, create the
      final component with the context from previous component
      and here we set the context for the final component. */
-  if (ret == EXIT_SUCCESS && x->set_security_context)
+  إذا (ret == EXIT_SUCCESS && x->set_security_context)
     {
-      if (! restorecon (x->set_security_context, last_component (dir), false)
+      إذا (! restorecon (x->set_security_context, last_component (dir), false)
           && ! ignorable_ctx_err (errno))
         error (0, errno, _("failed to restore context for %s"),
                quoteaf (dir));
     }
 
-  return ret;
+  إرجاع ret;
 }
 
-enum copy_status { COPY_FAILED, COPY_OK, COPY_SKIPPED };
+تعداد copy_status { COPY_FAILED, COPY_OK, COPY_SKIPPED };
 
 /* Copy file FROM onto file TO aka TO_DIRFD+TO_RELNAME, creating TO if
    necessary.  Return COPY_OK if successful or COPY_SKIPPED if the copy
    was skipped.  */
 
-static enum copy_status
-copy_file (char const *from, char const *to,
-           int to_dirfd, char const *to_relname, const struct cp_options *x)
+ساكن تعداد copy_status
+copy_file (حرف ثابت *from, حرف ثابت *to,
+           صحيح to_dirfd, حرف ثابت *to_relname, ثابت بنية cp_options *x)
 {
-  if (copy_only_if_needed && !need_copy (from, to, to_dirfd, to_relname, x))
-    return COPY_SKIPPED;
+  إذا (copy_only_if_needed && !need_copy (from, to, to_dirfd, to_relname, x))
+    إرجاع COPY_SKIPPED;
 
   /* Allow installing from non-regular files like /dev/null.
      Charles Karney reported that some Sun version of install allows that
@@ -426,15 +426,15 @@ copy_file (char const *from, char const *to,
      is a directory.  */
 
   bool copy_into_self;
-  return (copy (from, to, to_dirfd, to_relname, 0, x, &copy_into_self, NULL)
+  إرجاع (copy (from, to, to_dirfd, to_relname, 0, x, &copy_into_self, عدم)
           ? COPY_OK : COPY_FAILED);
 }
 
 /* Set the attributes of file or directory NAME aka DIRFD+RELNAME.
    Return true if successful.  */
 
-static bool
-change_attributes (char const *name, int dirfd, char const *relname)
+ساكن bool
+change_attributes (حرف ثابت *name, صحيح dirfd, حرف ثابت *relname)
 {
   bool ok = false;
   /* chown must precede chmod because on some systems,
@@ -449,36 +449,36 @@ change_attributes (char const *name, int dirfd, char const *relname)
      If the file doesn't end up with the group they asked for, they'll
      want to know.  */
 
-  if (! (owner_id == (uid_t) -1 && group_id == (gid_t) -1)
+  إذا (! (owner_id == (uid_t) -1 && group_id == (gid_t) -1)
       && lchownat (dirfd, relname, owner_id, group_id) != 0)
     error (0, errno, _("cannot change ownership of %s"), quoteaf (name));
-  else if (chmodat (dirfd, relname, mode) != 0)
+  وإلا إذا (chmodat (dirfd, relname, mode) != 0)
     error (0, errno, _("cannot change permissions of %s"), quoteaf (name));
-  else
+  وإلا
     ok = true;
 
-  if (use_default_selinux_context)
+  إذا (use_default_selinux_context)
     setdefaultfilecon (name);
 
-  return ok;
+  إرجاع ok;
 }
 
 /* Set the timestamps of file DEST aka DIRFD+RELNAME to match those of SRC_SB.
    Return true if successful.  */
 
-static bool
-change_timestamps (struct stat const *src_sb, char const *dest,
-                   int dirfd, char const *relname)
+ساكن bool
+change_timestamps (بنية stat ثابت *src_sb, حرف ثابت *dest,
+                   صحيح dirfd, حرف ثابت *relname)
 {
-  struct timespec timespec[2] = { get_stat_atime (src_sb),
+  بنية timespec timespec[2] = { get_stat_atime (src_sb),
                                   get_stat_mtime (src_sb) };
 
-  if (utimensat (dirfd, relname, timespec, 0))
+  إذا (utimensat (dirfd, relname, timespec, 0))
     {
       error (0, errno, _("cannot set timestamps for %s"), quoteaf (dest));
-      return false;
+      إرجاع false;
     }
-  return true;
+  إرجاع true;
 }
 
 /* Strip the symbol table from the file NAME.
@@ -487,35 +487,35 @@ change_timestamps (struct stat const *src_sb, char const *dest,
    magic numbers vary so much from system to system that making
    it portable would be very difficult.  Not worth the effort. */
 
-static bool
-strip (char const *name)
+ساكن bool
+strip (حرف ثابت *name)
 {
   posix_spawnattr_t attr;
-  posix_spawnattr_t *attrp = NULL;
+  posix_spawnattr_t *attrp = عدم;
 
   /* Try to use vfork for systems where it matters.  */
-  if (posix_spawnattr_init (&attr) == 0)
+  إذا (posix_spawnattr_init (&attr) == 0)
     {
-      if (posix_spawnattr_setflags (&attr, POSIX_SPAWN_USEVFORK) == 0)
+      إذا (posix_spawnattr_setflags (&attr, POSIX_SPAWN_USEVFORK) == 0)
         attrp = &attr;
-      else
+      وإلا
         posix_spawnattr_destroy (&attr);
     }
 
   /* Construct the arguments to 'strip'.  */
-  char *concat_name = NULL;
-  char const *safe_name = name;
-  if (name && *name == '-')
-    safe_name = concat_name = file_name_concat (".", name, NULL);
-  char const *const argv[] = { strip_program, safe_name, NULL };
+  حرف *concat_name = عدم;
+  حرف ثابت *safe_name = name;
+  إذا (name && *name == '-')
+    safe_name = concat_name = file_name_concat (".", name, عدم);
+  حرف ثابت *ثابت argv[] = { strip_program, safe_name, عدم };
 
   /* Run 'strip'.  */
   pid_t pid;
-  int result = posix_spawnp (&pid, strip_program, NULL, attrp,
-                             (char * const *) argv, environ);
+  صحيح result = posix_spawnp (&pid, strip_program, عدم, attrp,
+                             (حرف * ثابت *) argv, environ);
 
   bool ok = false;
-  if (result != 0)
+  إذا (result != 0)
     {
       error (0, result,
              streq (strip_program, "strip")
@@ -523,73 +523,73 @@ strip (char const *name)
                : _("cannot run strip program %s"),
              quoteaf (strip_program));
     }
-  else
+  وإلا
     {
       /* Wait for 'strip' to complete, and emit a warning message on failure  */
-      int status;
-      if (waitpid (pid, &status, 0) < 0)
+      صحيح status;
+      إذا (waitpid (pid, &status, 0) < 0)
         error (0, errno, _("waiting for strip"));
-      else if (! WIFEXITED (status) || WEXITSTATUS (status))
+      وإلا إذا (! WIFEXITED (status) || WEXITSTATUS (status))
         error (0, 0, _("strip process terminated abnormally"));
-      else
+      وإلا
         ok = true;
     }
 
-  free (concat_name);
-  if (attrp)
+  حرر (concat_name);
+  إذا (attrp)
     posix_spawnattr_destroy (attrp);
 
-  return ok;
+  إرجاع ok;
 }
 
 /* Initialize the user and group ownership of the files to install. */
 
-static void
-get_ids (void)
+ساكن فراغ
+get_ids (فراغ)
 {
-  if (owner_name)
+  إذا (owner_name)
     {
-      struct passwd *pw = getpwnam (owner_name);
-      if (pw == NULL)
+      بنية passwd *pw = getpwnam (owner_name);
+      إذا (pw == عدم)
         {
           uintmax_t tmp;
-          if (xstrtoumax (owner_name, NULL, 0, &tmp, "") != LONGINT_OK
+          إذا (xstrtoumax (owner_name, عدم, 0, &tmp, "") != LONGINT_OK
               || ckd_add (&owner_id, tmp, 0))
             error (EXIT_FAILURE, 0, _("invalid user %s"),
                    quoteaf (owner_name));
         }
-      else
+      وإلا
         owner_id = pw->pw_uid;
       endpwent ();
     }
-  else
+  وإلا
     owner_id = (uid_t) -1;
 
-  if (group_name)
+  إذا (group_name)
     {
-      struct group *gr = getgrnam (group_name);
-      if (gr == NULL)
+      بنية group *gr = getgrnam (group_name);
+      إذا (gr == عدم)
         {
           uintmax_t tmp;
-          if (xstrtoumax (group_name, NULL, 0, &tmp, "") != LONGINT_OK
+          إذا (xstrtoumax (group_name, عدم, 0, &tmp, "") != LONGINT_OK
               || ckd_add (&group_id, tmp, 0))
             error (EXIT_FAILURE, 0, _("invalid group %s"),
                    quoteaf (group_name));
         }
-      else
+      وإلا
         group_id = gr->gr_gid;
       endgrent ();
     }
-  else
+  وإلا
     group_id = (gid_t) -1;
 }
 
-void
-usage (int status)
+فراغ
+usage (صحيح status)
 {
-  if (status != EXIT_SUCCESS)
+  إذا (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  وإلا
     {
       printf (_("\
 Usage: %s [OPTION]... [-T] SOURCE DEST\n\
@@ -606,7 +606,7 @@ package on a GNU/Linux system, you should instead be using a package manager\n\
 like yum(1) or apt-get(1).\n\
 \n\
 In the first three forms, copy SOURCE to DEST or multiple SOURCE(s) to\n\
-the existing DIRECTORY, while setting permission modes and owner/group.\n\
+the existing DIRECTORY, بينما setting permission modes and owner/group.\n\
 In the 4th form, create all components of the given DIRECTORY(ies).\n\
 "), stdout);
 
@@ -627,8 +627,8 @@ In the 4th form, create all components of the given DIRECTORY(ies).\n\
       oputs (_("\
   -C, --compare\n\
          compare content of source and destination files,\n\
-         and if no change to content, ownership, and permissions,\n\
-         do not modify the destination at all\n\
+         and إذا no change to content, ownership, and permissions,\n\
+         افعل not modify the destination at all\n\
 "));
       oputs (_("\
   -d, --directory\n\
@@ -664,7 +664,7 @@ In the 4th form, create all components of the given DIRECTORY(ies).\n\
 "));
       oputs (_("\
   -s, --strip\n\
-         strip symbol tables\n\
+         strip رمز tables\n\
 "));
       oputs (_("\
       --strip-program=PROGRAM\n\
@@ -693,11 +693,11 @@ In the 4th form, create all components of the given DIRECTORY(ies).\n\
       oputs (_("\
   -Z\n\
          set SELinux security context of destination file\n\
-         and each created directory, to default type\n\
+         and each created directory, to افتراضي type\n\
 "));
       oputs (_("\
       --context[=CTX]\n\
-         like -Z, or if CTX is specified then set the\n\
+         like -Z, or إذا CTX is specified then set the\n\
          SELinux or SMACK security context to CTX\n\
 "));
 
@@ -713,32 +713,32 @@ In the 4th form, create all components of the given DIRECTORY(ies).\n\
    appropriate attributes.  X gives the command options.
    Return true if successful.  */
 
-static bool
-install_file_in_file (char const *from, char const *to,
-                      int to_dirfd, char const *to_relname,
-                      const struct cp_options *x)
+ساكن bool
+install_file_in_file (حرف ثابت *from, حرف ثابت *to,
+                      صحيح to_dirfd, حرف ثابت *to_relname,
+                      ثابت بنية cp_options *x)
 {
-  struct stat from_sb;
-  if (x->preserve_timestamps && stat (from, &from_sb) != 0)
+  بنية stat from_sb;
+  إذا (x->preserve_timestamps && stat (from, &from_sb) != 0)
     {
       error (0, errno, _("cannot stat %s"), quoteaf (from));
-      return false;
+      إرجاع false;
     }
-  enum copy_status copy_status = copy_file (from, to, to_dirfd, to_relname, x);
-  if (copy_status == COPY_FAILED)
-    return false;
-  if (copy_status == COPY_OK && strip_files && ! strip (to))
+  تعداد copy_status copy_status = copy_file (from, to, to_dirfd, to_relname, x);
+  إذا (copy_status == COPY_FAILED)
+    إرجاع false;
+  إذا (copy_status == COPY_OK && strip_files && ! strip (to))
     {
-      if (unlinkat (to_dirfd, to_relname, 0) != 0)  /* Cleanup.  */
+      إذا (unlinkat (to_dirfd, to_relname, 0) != 0)  /* Cleanup.  */
         error (EXIT_FAILURE, errno, _("cannot unlink %s"), quoteaf (to));
-      return false;
+      إرجاع false;
     }
-  if (x->preserve_timestamps && (copy_status == COPY_SKIPPED || strip_files
+  إذا (x->preserve_timestamps && (copy_status == COPY_SKIPPED || strip_files
                                  || ! S_ISREG (from_sb.st_mode))
       && ! change_timestamps (&from_sb, to, to_dirfd, to_relname))
-    return false;
+    إرجاع false;
 
-  return copy_status == COPY_SKIPPED
+  إرجاع copy_status == COPY_SKIPPED
          || change_attributes (to, to_dirfd, to_relname);
 }
 
@@ -746,51 +746,51 @@ install_file_in_file (char const *from, char const *to,
    while maintaining the current Working Directory.
    Return true if successful.  */
 
-static bool
-mkancesdirs_safe_wd (char const *from, char *to, struct cp_options *x,
+ساكن bool
+mkancesdirs_safe_wd (حرف ثابت *from, حرف *to, بنية cp_options *x,
                      bool save_always)
 {
   bool save_working_directory =
     save_always
     || ! (IS_ABSOLUTE_FILE_NAME (from) && IS_ABSOLUTE_FILE_NAME (to));
 
-  struct savewd wd;
+  بنية savewd wd;
   savewd_init (&wd);
-  if (! save_working_directory)
+  إذا (! save_working_directory)
     savewd_finish (&wd);
 
-  int status = EXIT_SUCCESS;
-  if (mkancesdirs (to, &wd, make_ancestor, x) == -1)
+  صحيح status = EXIT_SUCCESS;
+  إذا (mkancesdirs (to, &wd, make_ancestor, x) == -1)
     {
       error (0, errno, _("cannot create directory %s"), quoteaf (to));
       status = EXIT_FAILURE;
     }
 
-  if (save_working_directory)
+  إذا (save_working_directory)
     {
-      int restore_result = savewd_restore (&wd, status);
-      int restore_errno = errno;
+      صحيح restore_result = savewd_restore (&wd, status);
+      صحيح restore_errno = errno;
       savewd_finish (&wd);
-      if (EXIT_SUCCESS < restore_result)
-        return false;
-      if (restore_result < 0 && status == EXIT_SUCCESS)
+      إذا (EXIT_SUCCESS < restore_result)
+        إرجاع false;
+      إذا (restore_result < 0 && status == EXIT_SUCCESS)
         {
           error (0, restore_errno, _("cannot create directory %s"),
                  quoteaf (to));
-          return false;
+          إرجاع false;
         }
     }
-  return status == EXIT_SUCCESS;
+  إرجاع status == EXIT_SUCCESS;
 }
 
 /* Copy file FROM onto file TO, creating any missing parent directories of TO.
    Return true if successful.  */
 
-static bool
-install_file_in_file_parents (char const *from, char *to,
-                              const struct cp_options *x)
+ساكن bool
+install_file_in_file_parents (حرف ثابت *from, حرف *to,
+                              ثابت بنية cp_options *x)
 {
-  return (mkancesdirs_safe_wd (from, to, (struct cp_options *)x, false)
+  إرجاع (mkancesdirs_safe_wd (from, to, (بنية cp_options *)x, false)
           && install_file_in_file (from, to, AT_FDCWD, to, x));
 }
 
@@ -798,34 +798,34 @@ install_file_in_file_parents (char const *from, char *to,
    and give the copy the appropriate attributes.
    Return true if successful.  */
 
-static bool
-install_file_in_dir (char const *from, char const *to_dir,
-                     const struct cp_options *x, bool mkdir_and_install,
-                     int *target_dirfd)
+ساكن bool
+install_file_in_dir (حرف ثابت *from, حرف ثابت *to_dir,
+                     ثابت بنية cp_options *x, bool mkdir_and_install,
+                     صحيح *target_dirfd)
 {
-  char const *from_base = last_component (from);
-  char *to_relname;
-  char *to = file_name_concat (to_dir, from_base, &to_relname);
+  حرف ثابت *from_base = last_component (from);
+  حرف *to_relname;
+  حرف *to = file_name_concat (to_dir, from_base, &to_relname);
   bool ret = true;
 
-  if (!target_dirfd_valid (*target_dirfd)
+  إذا (!target_dirfd_valid (*target_dirfd)
       && (ret = mkdir_and_install)
-      && (ret = mkancesdirs_safe_wd (from, to, (struct cp_options *) x, true)))
+      && (ret = mkancesdirs_safe_wd (from, to, (بنية cp_options *) x, true)))
     {
-      int fd = open (to_dir, O_PATHSEARCH | O_DIRECTORY);
-      if (fd < 0)
+      صحيح fd = open (to_dir, O_PATHSEARCH | O_DIRECTORY);
+      إذا (fd < 0)
         {
           error (0, errno, _("cannot open %s"), quoteaf (to));
           ret = false;
         }
-      else
+      وإلا
         *target_dirfd = fd;
     }
 
-  if (ret)
+  إذا (ret)
     {
-      int to_dirfd = *target_dirfd;
-      if (!target_dirfd_valid (to_dirfd))
+      صحيح to_dirfd = *target_dirfd;
+      إذا (!target_dirfd_valid (to_dirfd))
         {
           to_dirfd = AT_FDCWD;
           to_relname = to;
@@ -833,23 +833,23 @@ install_file_in_dir (char const *from, char const *to_dir,
       ret = install_file_in_file (from, to, to_dirfd, to_relname, x);
     }
 
-  free (to);
-  return ret;
+  حرر (to);
+  إرجاع ret;
 }
 
-int
-main (int argc, char **argv)
+صحيح
+الرئيسية (صحيح argc, حرف **argv)
 {
-  char const *specified_mode = NULL;
+  حرف ثابت *specified_mode = عدم;
   bool make_backups = false;
-  char const *backup_suffix = NULL;
-  char *version_control_string = NULL;
+  حرف ثابت *backup_suffix = عدم;
+  حرف *version_control_string = عدم;
   bool mkdir_and_install = false;
-  struct cp_options x;
-  char const *target_directory = NULL;
+  بنية cp_options x;
+  حرف ثابت *target_directory = عدم;
   bool no_target_directory = false;
   bool strip_program_specified = false;
-  char const *scontext = NULL;
+  حرف ثابت *scontext = عدم;
   /* set iff kernel has extra selinux system calls */
   selinux_enabled = (0 < is_selinux_enabled ());
 
@@ -865,84 +865,84 @@ main (int argc, char **argv)
 
   umask (0);
 
-  int optc;
-  while ((optc = getopt_long (argc, argv, "bcCsDdg:m:o:pt:TvS:Z", long_options,
-                              NULL))
+  صحيح optc;
+  بينما ((optc = getopt_long (argc, argv, "bcCsDdg:m:o:pt:TvS:Z", long_options,
+                              عدم))
          != -1)
     {
-      switch (optc)
+      بدل (optc)
         {
-        case 'b':
+        حالة 'b':
           make_backups = true;
-          if (optarg)
+          إذا (optarg)
             version_control_string = optarg;
-          break;
-        case 'c':
-          break;
-        case 'C':
+          اكسر;
+        حالة 'c':
+          اكسر;
+        حالة 'C':
           copy_only_if_needed = true;
-          break;
-        case 's':
+          اكسر;
+        حالة 's':
           strip_files = true;
 #ifdef SIGCHLD
           /* System V fork+wait does not work if SIGCHLD is ignored.  */
-          signal (SIGCHLD, SIG_DFL);
+          إشارة (SIGCHLD, SIG_DFL);
 #endif
-          break;
-        case DEBUG_OPTION:
+          اكسر;
+        حالة DEBUG_OPTION:
           x.debug = x.verbose = true;
-          break;
-        case STRIP_PROGRAM_OPTION:
+          اكسر;
+        حالة STRIP_PROGRAM_OPTION:
           strip_program = xstrdup (optarg);
           strip_program_specified = true;
-          break;
-        case 'd':
+          اكسر;
+        حالة 'd':
           dir_arg = true;
-          break;
-        case 'D':
+          اكسر;
+        حالة 'D':
           mkdir_and_install = true;
-          break;
-        case 'v':
+          اكسر;
+        حالة 'v':
           x.verbose = true;
-          break;
-        case 'g':
+          اكسر;
+        حالة 'g':
           group_name = optarg;
-          break;
-        case 'm':
+          اكسر;
+        حالة 'm':
           specified_mode = optarg;
-          break;
-        case 'o':
+          اكسر;
+        حالة 'o':
           owner_name = optarg;
-          break;
-        case 'p':
+          اكسر;
+        حالة 'p':
           x.preserve_timestamps = true;
-          break;
-        case 'S':
+          اكسر;
+        حالة 'S':
           make_backups = true;
           backup_suffix = optarg;
-          break;
-        case 't':
-          if (target_directory)
+          اكسر;
+        حالة 't':
+          إذا (target_directory)
             error (EXIT_FAILURE, 0,
                    _("multiple target directories specified"));
           target_directory = optarg;
-          break;
-        case 'T':
+          اكسر;
+        حالة 'T':
           no_target_directory = true;
-          break;
+          اكسر;
 
-        case PRESERVE_CONTEXT_OPTION:
-          if (! selinux_enabled)
+        حالة PRESERVE_CONTEXT_OPTION:
+          إذا (! selinux_enabled)
             {
               error (0, 0, _("WARNING: ignoring --preserve-context; "
                              "this kernel is not SELinux-enabled"));
-              break;
+              اكسر;
             }
           x.preserve_security_context = true;
           use_default_selinux_context = false;
-          break;
-        case 'Z':
-          if (selinux_enabled)
+          اكسر;
+        حالة 'Z':
+          إذا (selinux_enabled)
             {
               /* Disable use of the install(1) specific setdefaultfilecon().
                  Note setdefaultfilecon() is different from the newer and more
@@ -952,30 +952,30 @@ main (int argc, char **argv)
                  TODO: consider removing setdefaultfilecon() in future.  */
               use_default_selinux_context = false;
 
-              if (optarg)
+              إذا (optarg)
                 scontext = optarg;
-              else
+              وإلا
                 x.set_security_context = get_labeling_handle ();
             }
-          else if (optarg)
+          وإلا إذا (optarg)
             {
               error (0, 0,
                      _("warning: ignoring --context; "
                        "it requires an SELinux-enabled kernel"));
             }
-          break;
+          اكسر;
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        افتراضي:
           usage (EXIT_FAILURE);
         }
     }
 
   /* Check for invalid combinations of arguments. */
-  if (dir_arg && strip_files)
+  إذا (dir_arg && strip_files)
     error (EXIT_FAILURE, 0,
            _("the strip option may not be used when installing a directory"));
-  if (dir_arg && target_directory)
+  إذا (dir_arg && target_directory)
     error (EXIT_FAILURE, 0,
            _("target directory not allowed when installing a directory"));
 
@@ -985,113 +985,113 @@ main (int argc, char **argv)
                    : no_backups);
   set_simple_backup_suffix (backup_suffix);
 
-  if (x.preserve_security_context && (x.set_security_context || scontext))
+  إذا (x.preserve_security_context && (x.set_security_context || scontext))
     error (EXIT_FAILURE, 0,
            _("cannot set target context and preserve it"));
 
-  if (scontext && setfscreatecon (scontext) < 0)
+  إذا (scontext && setfscreatecon (scontext) < 0)
     error (EXIT_FAILURE, errno,
            _("failed to set default file creation context to %s"),
          quote (scontext));
 
-  int n_files = argc - optind;
-  char **file = argv + optind;
+  صحيح n_files = argc - optind;
+  حرف **file = argv + optind;
 
-  if (n_files <= ! (dir_arg || target_directory))
+  إذا (n_files <= ! (dir_arg || target_directory))
     {
-      if (n_files <= 0)
+      إذا (n_files <= 0)
         error (0, 0, _("missing file operand"));
-      else
+      وإلا
         error (0, 0, _("missing destination file operand after %s"),
                quoteaf (file[0]));
       usage (EXIT_FAILURE);
     }
 
-  struct stat sb;
-  int target_dirfd = AT_FDCWD;
-  if (no_target_directory)
+  بنية stat sb;
+  صحيح target_dirfd = AT_FDCWD;
+  إذا (no_target_directory)
     {
-      if (target_directory)
+      إذا (target_directory)
         error (EXIT_FAILURE, 0,
                _("cannot combine --target-directory (-t) "
                  "and --no-target-directory (-T)"));
-      if (2 < n_files)
+      إذا (2 < n_files)
         {
           error (0, 0, _("extra operand %s"), quoteaf (file[2]));
           usage (EXIT_FAILURE);
         }
     }
-  else if (target_directory)
+  وإلا إذا (target_directory)
     {
       target_dirfd = target_directory_operand (target_directory, &sb);
-      if (! (target_dirfd_valid (target_dirfd)
+      إذا (! (target_dirfd_valid (target_dirfd)
              || (mkdir_and_install && errno == ENOENT)))
         error (EXIT_FAILURE, errno, _("failed to access %s"),
                quoteaf (target_directory));
     }
-  else if (!dir_arg)
+  وإلا إذا (!dir_arg)
     {
-      char const *lastfile = file[n_files - 1];
-      int fd = target_directory_operand (lastfile, &sb);
-      if (target_dirfd_valid (fd))
+      حرف ثابت *lastfile = file[n_files - 1];
+      صحيح fd = target_directory_operand (lastfile, &sb);
+      إذا (target_dirfd_valid (fd))
         {
           target_dirfd = fd;
           target_directory = lastfile;
           n_files--;
         }
-      else if (2 < n_files)
+      وإلا إذا (2 < n_files)
         error (EXIT_FAILURE, errno, _("target %s"), quoteaf (lastfile));
     }
 
-  if (specified_mode)
+  إذا (specified_mode)
     {
-      struct mode_change *change = mode_compile (specified_mode);
-      if (!change)
+      بنية mode_change *change = mode_compile (specified_mode);
+      إذا (!change)
         error (EXIT_FAILURE, 0, _("invalid mode %s"), quote (specified_mode));
-      mode = mode_adjust (0, false, 0, change, NULL);
+      mode = mode_adjust (0, false, 0, change, عدم);
       dir_mode = mode_adjust (0, true, 0, change, &dir_mode_bits);
-      free (change);
+      حرر (change);
     }
 
-  if (strip_program_specified && !strip_files)
+  إذا (strip_program_specified && !strip_files)
     error (0, 0, _("WARNING: ignoring --strip-program option as -s option was "
                    "not specified"));
 
-  if (copy_only_if_needed && strip_files)
+  إذا (copy_only_if_needed && strip_files)
     {
       error (0, 0, _("options --compare (-C) and --strip are mutually "
                      "exclusive"));
       usage (EXIT_FAILURE);
     }
 
-  if (copy_only_if_needed && extra_mode (mode))
+  إذا (copy_only_if_needed && extra_mode (mode))
     error (0, 0, _("the --compare (-C) option is ignored when you"
                    " specify a mode with non-permission bits"));
 
   get_ids ();
 
-  int exit_status = EXIT_SUCCESS;
-  if (dir_arg)
+  صحيح exit_status = EXIT_SUCCESS;
+  إذا (dir_arg)
     exit_status = savewd_process_files (n_files, file, process_dir, &x);
-  else
+  وإلا
     {
       /* FIXME: it's a little gross that this initialization is
          required by copy.c::copy. */
       hash_init ();
 
-      if (!target_directory)
+      إذا (!target_directory)
         {
-          if (! (mkdir_and_install
+          إذا (! (mkdir_and_install
                  ? install_file_in_file_parents (file[0], file[1], &x)
                  : install_file_in_file (file[0], file[1], AT_FDCWD,
                                          file[1], &x)))
             exit_status = EXIT_FAILURE;
         }
-      else
+      وإلا
         {
           dest_info_init (&x);
-          for (int i = 0; i < n_files; i++)
-            if (! install_file_in_dir (file[i], target_directory, &x,
+          لكل (صحيح i = 0; i < n_files; i++)
+            إذا (! install_file_in_dir (file[i], target_directory, &x,
                                        i == 0 && mkdir_and_install,
                                        &target_dirfd))
               exit_status = EXIT_FAILURE;

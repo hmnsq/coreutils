@@ -16,18 +16,18 @@
 
 /* Written by Pádraig Brady.  LD_PRELOAD idea from Brian Dessent.  */
 
-#include <config.h>
-#include <stddef.h>
-#include <stdio.h>
-#include <stdlib.h>
+#ضمن <config.h>
+#ضمن <stddef.h>
+#ضمن <stdio.h>
+#ضمن <stdlib.h>
 
-#include "gettext.h"
+#ضمن "gettext.h"
 #define _(msgid) gettext (msgid)
 
 /* Deactivate config.h's "rpl_"-prefixed definitions, since we don't
    link gnulib here, and the replacements aren't needed.  */
 #undef fprintf
-#undef free
+#undef حرر
 #undef malloc
 #undef strtoul
 
@@ -67,40 +67,40 @@
    However I think it's just a buggy implementation due to the various
    inconsistencies with write sizes and subsequent writes.  */
 
-static void
-apply_mode (FILE *stream, char const *stream_name, char const *envvar)
+ساكن فراغ
+apply_mode (FILE *stream, حرف ثابت *stream_name, حرف ثابت *envvar)
 {
-  char *buf = NULL;
-  int setvbuf_mode;
-  unsigned long int size = 0;
+  حرف *buf = عدم;
+  صحيح setvbuf_mode;
+  unsigned long صحيح size = 0;
 
-  char const *mode = getenv (envvar);
-  if (!mode)
-    return;
+  حرف ثابت *mode = getenv (envvar);
+  إذا (!mode)
+    إرجاع;
 
-  if (*mode == '0')
+  إذا (*mode == '0')
     setvbuf_mode = _IONBF;
-  else if (*mode == 'L')
+  وإلا إذا (*mode == 'L')
     setvbuf_mode = _IOLBF;      /* FIXME: should we allow 1ML  */
-  else
+  وإلا
     {
       setvbuf_mode = _IOFBF;
-      char *mode_end;
+      حرف *mode_end;
       size = strtoul (mode, &mode_end, 10);
-      if (size == 0 || *mode_end)
+      إذا (size == 0 || *mode_end)
         {
           fprintf (stderr, _("invalid buffering mode %s for %s\n"),
                    mode, stream_name);
-          return;
+          إرجاع;
         }
 
       /* If strtoul might have overflowed or if the size is more than
          half of size_t range, treat it as an allocation failure.
          Huge sizes can cause problems with some stdio implementations.  */
-      buf = (size <= ((unsigned long int) -2 < (size_t) -1 / 2
-                      ? (unsigned long int) -2 : (size_t) -1 / 2)
-             ? malloc (size) : NULL);
-      if (!buf)
+      buf = (size <= ((unsigned long صحيح) -2 < (size_t) -1 / 2
+                      ? (unsigned long صحيح) -2 : (size_t) -1 / 2)
+             ? malloc (size) : عدم);
+      إذا (!buf)
         {
           /* We could defer the allocation to libc, however since
              glibc currently ignores the combination of null buffer
@@ -108,22 +108,22 @@ apply_mode (FILE *stream, char const *stream_name, char const *envvar)
           fprintf (stderr,
                    _("failed to allocate a %lu byte stdio buffer\n"),
                    size);
-          return;
+          إرجاع;
         }
       /* buf will be freed by fclose.  */
     }
 
-  if (setvbuf (stream, buf, setvbuf_mode, size) != 0)
+  إذا (setvbuf (stream, buf, setvbuf_mode, size) != 0)
     {
       fprintf (stderr, _("could not set buffering of %s to mode %s\n"),
                stream_name, mode);
-      free (buf);
+      حرر (buf);
     }
 }
 
 /* Use __attribute to avoid elision of __attribute__ on SUNPRO_C etc.  */
-static void __attribute ((constructor))
-stdbuf (void)
+ساكن فراغ __attribute ((constructor))
+stdbuf (فراغ)
 {
   /* Do first so can write errors to stderr.  */
   apply_mode (stderr, "stderr", "_STDBUF_E");

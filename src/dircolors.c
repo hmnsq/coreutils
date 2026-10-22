@@ -15,19 +15,19 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
+#ضمن <config.h>
 
-#include <sys/types.h>
-#include <fnmatch.h>
-#include <getopt.h>
+#ضمن <sys/types.h>
+#ضمن <fnmatch.h>
+#ضمن <getopt.h>
 
-#include "system.h"
-#include "dircolors.h"
-#include "c-ctype.h"
-#include "c-strcase.h"
-#include "obstack.h"
-#include "quote.h"
-#include "stdio--.h"
+#ضمن "system.h"
+#ضمن "dircolors.h"
+#ضمن "c-ctype.h"
+#ضمن "c-strcase.h"
+#ضمن "obstack.h"
+#ضمن "quote.h"
+#ضمن "stdio--.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "dircolors"
@@ -35,9 +35,9 @@
 #define AUTHORS proper_name ("H. Peter Anvin")
 
 #define obstack_chunk_alloc malloc
-#define obstack_chunk_free free
+#define obstack_chunk_free حرر
 
-enum Shell_syntax
+تعداد Shell_syntax
 {
   SHELL_SYNTAX_BOURNE,
   SHELL_SYNTAX_C,
@@ -48,56 +48,56 @@ enum Shell_syntax
 
 /* Accumulate in this obstack the value for the LS_COLORS environment
    variable.  */
-static struct obstack lsc_obstack;
+ساكن بنية obstack lsc_obstack;
 
-static char const *const slack_codes[] =
+ساكن حرف ثابت *ثابت slack_codes[] =
 {
   "NORMAL", "NORM", "FILE", "RESET", "DIR", "LNK", "LINK",
   "SYMLINK", "ORPHAN", "MISSING", "FIFO", "PIPE", "SOCK", "BLK", "BLOCK",
   "CHR", "CHAR", "DOOR", "EXEC", "LEFT", "LEFTCODE", "RIGHT", "RIGHTCODE",
   "END", "ENDCODE", "SUID", "SETUID", "SGID", "SETGID", "STICKY",
   "OTHER_WRITABLE", "OWR", "STICKY_OTHER_WRITABLE", "OWT", "CAPABILITY",
-  "MULTIHARDLINK", "CLRTOEOL", NULL
+  "MULTIHARDLINK", "CLRTOEOL", عدم
 };
 
-static char const *const ls_codes[] =
+ساكن حرف ثابت *ثابت ls_codes[] =
 {
   "no", "no", "fi", "rs", "di", "ln", "ln", "ln", "or", "mi", "pi", "pi",
   "so", "bd", "bd", "cd", "cd", "do", "ex", "lc", "lc", "rc", "rc", "ec", "ec",
   "su", "su", "sg", "sg", "st", "ow", "ow", "tw", "tw", "ca", "mh", "cl",
-  NULL
+  عدم
 };
 static_assert (countof (slack_codes) == countof (ls_codes));
 
 /* Whether to output escaped ls color codes for display.  */
-static bool print_ls_colors;
+ساكن bool print_ls_colors;
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+تعداد
 {
   PRINT_LS_COLORS_OPTION = CHAR_MAX + 1,
 };
 
-static struct option const long_options[] =
+ساكن بنية option ثابت long_options[] =
   {
-    {"bourne-shell", no_argument, NULL, 'b'},
-    {"sh", no_argument, NULL, 'b'},
-    {"csh", no_argument, NULL, 'c'},
-    {"c-shell", no_argument, NULL, 'c'},
-    {"print-database", no_argument, NULL, 'p'},
-    {"print-ls-colors", no_argument, NULL, PRINT_LS_COLORS_OPTION},
+    {"bourne-shell", no_argument, عدم, 'b'},
+    {"sh", no_argument, عدم, 'b'},
+    {"csh", no_argument, عدم, 'c'},
+    {"c-shell", no_argument, عدم, 'c'},
+    {"print-database", no_argument, عدم, 'p'},
+    {"print-ls-colors", no_argument, عدم, PRINT_LS_COLORS_OPTION},
     {GETOPT_HELP_OPTION_DECL},
     {GETOPT_VERSION_OPTION_DECL},
-    {NULL, 0, NULL, 0}
+    {عدم, 0, عدم, 0}
   };
 
-void
-usage (int status)
+فراغ
+usage (صحيح status)
 {
-  if (status != EXIT_SUCCESS)
+  إذا (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  وإلا
     {
       printf (_("Usage: %s [OPTION]... [FILE]\n"), program_name);
       fputs (_("\
@@ -119,13 +119,13 @@ Determine format of output:\n\
 "));
       oputs (_("\
       --print-ls-colors\n\
-         output fully escaped colors for display\n\
+         output fully escaped colors لكل display\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-If FILE is specified, read it to determine which colors to use for which\n\
+If FILE is specified, اقرأ it to determine which colors to use لكل which\n\
 file types and extensions.  Otherwise, a precompiled database is used.\n\
 For details on the format of these files, run 'dircolors --print-database'.\n\
 "), stdout);
@@ -138,67 +138,67 @@ For details on the format of these files, run 'dircolors --print-database'.\n\
 /* If the SHELL environment variable is set to 'csh' or 'tcsh,'
    assume C shell.  Else Bourne shell.  */
 
-static enum Shell_syntax
-guess_shell_syntax (void)
+ساكن تعداد Shell_syntax
+guess_shell_syntax (فراغ)
 {
-  char *shell;
+  حرف *shell;
 
   shell = getenv ("SHELL");
-  if (shell == NULL || *shell == '\0')
-    return SHELL_SYNTAX_UNKNOWN;
+  إذا (shell == عدم || *shell == '\0')
+    إرجاع SHELL_SYNTAX_UNKNOWN;
 
   shell = last_component (shell);
 
-  if (streq (shell, "csh") || streq (shell, "tcsh"))
-    return SHELL_SYNTAX_C;
+  إذا (streq (shell, "csh") || streq (shell, "tcsh"))
+    إرجاع SHELL_SYNTAX_C;
 
-  return SHELL_SYNTAX_BOURNE;
+  إرجاع SHELL_SYNTAX_BOURNE;
 }
 
-static void
-parse_line (char const *line, char **keyword, char **arg)
+ساكن فراغ
+parse_سطر (حرف ثابت *سطر, حرف **keyword, حرف **arg)
 {
-  char const *p;
-  char const *keyword_start;
-  char const *arg_start;
+  حرف ثابت *p;
+  حرف ثابت *keyword_start;
+  حرف ثابت *arg_start;
 
-  *keyword = NULL;
-  *arg = NULL;
+  *keyword = عدم;
+  *arg = عدم;
 
-  for (p = line; c_isspace (*p); ++p)
-    continue;
+  لكل (p = سطر; c_isspace (*p); ++p)
+    استمر;
 
   /* Ignore blank lines and shell-style comments.  */
-  if (*p == '\0' || *p == '#')
-    return;
+  إذا (*p == '\0' || *p == '#')
+    إرجاع;
 
   keyword_start = p;
 
-  while (!c_isspace (*p) && *p != '\0')
+  بينما (!c_isspace (*p) && *p != '\0')
     {
       ++p;
     }
 
   *keyword = ximemdup0 (keyword_start, p - keyword_start);
-  if (*p  == '\0')
-    return;
+  إذا (*p  == '\0')
+    إرجاع;
 
-  do
+  افعل
     {
       ++p;
     }
-  while (c_isspace (*p));
+  بينما (c_isspace (*p));
 
-  if (*p == '\0' || *p == '#')
-    return;
+  إذا (*p == '\0' || *p == '#')
+    إرجاع;
 
   arg_start = p;
 
-  while (*p != '\0' && *p != '#')
+  بينما (*p != '\0' && *p != '#')
     ++p;
 
-  for (--p; c_isspace (*p); --p)
-    continue;
+  لكل (--p; c_isspace (*p); --p)
+    استمر;
   ++p;
 
   *arg = ximemdup0 (arg_start, p - arg_start);
@@ -207,37 +207,37 @@ parse_line (char const *line, char **keyword, char **arg)
 /* Accumulate STR to LS_COLORS data.
    If outputting shell syntax, then escape appropriately.  */
 
-static void
-append_quoted (char const *str)
+ساكن فراغ
+append_quoted (حرف ثابت *str)
 {
   bool need_backslash = true;
 
-  while (*str != '\0')
+  بينما (*str != '\0')
     {
-      if (! print_ls_colors)
-        switch (*str)
+      إذا (! print_ls_colors)
+        بدل (*str)
           {
-          case '\'':
+          حالة '\'':
             APPEND_CHAR ('\'');
             APPEND_CHAR ('\\');
             APPEND_CHAR ('\'');
             need_backslash = true;
-            break;
+            اكسر;
 
-          case '\\':
-          case '^':
+          حالة '\\':
+          حالة '^':
             need_backslash = !need_backslash;
-            break;
+            اكسر;
 
-          case ':':
-          case '=':
-            if (need_backslash)
+          حالة ':':
+          حالة '=':
+            إذا (need_backslash)
               APPEND_CHAR ('\\');
             FALLTHROUGH;
 
-          default:
+          افتراضي:
             need_backslash = true;
-            break;
+            اكسر;
           }
 
       APPEND_CHAR (*str);
@@ -248,21 +248,21 @@ append_quoted (char const *str)
 /* Accumulate entry to LS_COLORS data.
    Use shell syntax unless PRINT_LS_COLORS is set.  */
 
-static void
-append_entry (char prefix, char const *item, char const *arg)
+ساكن فراغ
+append_entry (حرف prefix, حرف ثابت *item, حرف ثابت *arg)
 {
-  if (print_ls_colors)
+  إذا (print_ls_colors)
     {
       append_quoted ("\x1B[");
       append_quoted (arg);
       APPEND_CHAR ('m');
     }
-  if (prefix)
+  إذا (prefix)
     APPEND_CHAR (prefix);
   append_quoted (item);
   APPEND_CHAR (print_ls_colors ? '\t' : '=');
   append_quoted (arg);
-  if (print_ls_colors)
+  إذا (print_ls_colors)
     append_quoted ("\x1B[0m");
   APPEND_CHAR (print_ls_colors ? '\n' : ':');
 }
@@ -274,163 +274,163 @@ append_entry (char prefix, char const *item, char const *arg)
    upon failure (unrecognized keyword is the only way to fail here).
    Return true if successful.  */
 
-static bool
-dc_parse_stream (FILE *fp, char const *filename)
+ساكن bool
+dc_parse_stream (FILE *fp, حرف ثابت *filename)
 {
-  idx_t line_number = 0;
-  char const *next_G_line = G_line;
-  char *input_line = NULL;
-  size_t input_line_size = 0;
-  char const *line;
-  char const *term;
-  char const *colorterm;
+  idx_t سطر_العدد = 0;
+  حرف ثابت *next_G_سطر = G_سطر;
+  حرف *إدخال_سطر = عدم;
+  size_t إدخال_سطر_size = 0;
+  حرف ثابت *سطر;
+  حرف ثابت *term;
+  حرف ثابت *colorterm;
   bool ok = true;
 
   /* State for the parser.  */
-  enum { ST_TERMNO, ST_TERMYES, ST_TERMSURE, ST_GLOBAL } state = ST_GLOBAL;
+  تعداد { ST_TERMNO, ST_TERMYES, ST_TERMSURE, ST_GLOBAL } state = ST_GLOBAL;
 
   /* Get terminal type */
   term = getenv ("TERM");
-  if (term == NULL || *term == '\0')
+  إذا (term == عدم || *term == '\0')
     term = "none";
 
   /* Also match $COLORTERM.  */
   colorterm = getenv ("COLORTERM");
-  if (colorterm == NULL)
+  إذا (colorterm == عدم)
     colorterm = "";  /* Doesn't match default "?*"  */
 
-  while (true)
+  بينما (true)
     {
-      char *keywd, *arg;
+      حرف *keywd, *arg;
       bool unrecognized;
 
-      ++line_number;
+      ++سطر_العدد;
 
-      if (fp)
+      إذا (fp)
         {
-          if (getline (&input_line, &input_line_size, fp) <= 0)
+          إذا (getline (&إدخال_سطر, &إدخال_سطر_size, fp) <= 0)
             {
-              if (ferror (fp))
+              إذا (ferror (fp))
                 {
                   error (0, errno, _("%s: read error"), quotef (filename));
                   ok = false;
                 }
-              free (input_line);
-              break;
+              حرر (إدخال_سطر);
+              اكسر;
             }
-          line = input_line;
+          سطر = إدخال_سطر;
         }
-      else
+      وإلا
         {
-          if (next_G_line == G_line + sizeof G_line)
-            break;
-          line = next_G_line;
-          next_G_line += strlen (next_G_line) + 1;
+          إذا (next_G_سطر == G_سطر + حجم G_سطر)
+            اكسر;
+          سطر = next_G_سطر;
+          next_G_سطر += strlen (next_G_سطر) + 1;
         }
 
-      parse_line (line, &keywd, &arg);
+      parse_سطر (سطر, &keywd, &arg);
 
-      if (keywd == NULL)
-        continue;
+      إذا (keywd == عدم)
+        استمر;
 
-      if (arg == NULL)
+      إذا (arg == عدم)
         {
           error (0, 0, _("%s:%td: invalid line;  missing second token"),
-                 quotef (filename), line_number);
+                 quotef (filename), سطر_العدد);
           ok = false;
-          free (keywd);
-          continue;
+          حرر (keywd);
+          استمر;
         }
 
       unrecognized = false;
-      if (c_strcasecmp (keywd, "TERM") == 0)
+      إذا (c_strcasecmp (keywd, "TERM") == 0)
         {
-          if (state != ST_TERMSURE)
+          إذا (state != ST_TERMSURE)
             state = fnmatch (arg, term, 0) == 0 ? ST_TERMSURE : ST_TERMNO;
         }
-      else if (c_strcasecmp (keywd, "COLORTERM") == 0)
+      وإلا إذا (c_strcasecmp (keywd, "COLORTERM") == 0)
         {
-          if (state != ST_TERMSURE)
+          إذا (state != ST_TERMSURE)
             state = fnmatch (arg, colorterm, 0) == 0 ? ST_TERMSURE : ST_TERMNO;
         }
-      else
+      وإلا
         {
-          if (state == ST_TERMSURE)
+          إذا (state == ST_TERMSURE)
             state = ST_TERMYES;  /* Another {COLOR,}TERM can cancel.  */
 
-          if (state != ST_TERMNO)
+          إذا (state != ST_TERMNO)
             {
-              if (keywd[0] == '.')
+              إذا (keywd[0] == '.')
                 append_entry ('*', keywd, arg);
-              else if (keywd[0] == '*')
+              وإلا إذا (keywd[0] == '*')
                 append_entry (0, keywd, arg);
-              else if (c_strcasecmp (keywd, "OPTIONS") == 0
+              وإلا إذا (c_strcasecmp (keywd, "OPTIONS") == 0
                        || c_strcasecmp (keywd, "COLOR") == 0
                        || c_strcasecmp (keywd, "EIGHTBIT") == 0)
                 {
                   /* Ignore.  */
                 }
-              else
+              وإلا
                 {
-                  int i;
+                  صحيح i;
 
-                  for (i = 0; slack_codes[i] != NULL; ++i)
-                    if (c_strcasecmp (keywd, slack_codes[i]) == 0)
-                      break;
+                  لكل (i = 0; slack_codes[i] != عدم; ++i)
+                    إذا (c_strcasecmp (keywd, slack_codes[i]) == 0)
+                      اكسر;
 
-                  if (slack_codes[i] != NULL)
+                  إذا (slack_codes[i] != عدم)
                     append_entry (0, ls_codes[i], arg);
-                  else
+                  وإلا
                     unrecognized = true;
                 }
             }
-          else
+          وإلا
             unrecognized = true;
         }
 
-      if (unrecognized && (state == ST_TERMSURE || state == ST_TERMYES))
+      إذا (unrecognized && (state == ST_TERMSURE || state == ST_TERMYES))
         {
           error (0, 0, _("%s:%td: unrecognized keyword %s"),
                  (filename ? quotef (filename) : _("<internal>")),
-                 line_number, keywd);
+                 سطر_العدد, keywd);
           ok = false;
         }
 
-      free (keywd);
-      free (arg);
+      حرر (keywd);
+      حرر (arg);
     }
 
-  return ok;
+  إرجاع ok;
 }
 
-static bool
-dc_parse_file (char const *filename)
+ساكن bool
+dc_parse_file (حرف ثابت *filename)
 {
   bool ok;
 
-  if (! streq (filename, "-") && freopen (filename, "r", stdin) == NULL)
+  إذا (! streq (filename, "-") && freopen (filename, "r", stdin) == عدم)
     {
       error (0, errno, "%s", quotef (filename));
-      return false;
+      إرجاع false;
     }
 
   ok = dc_parse_stream (stdin, filename);
 
-  if (fclose (stdin) != 0)
+  إذا (fclose (stdin) != 0)
     {
       error (0, errno, "%s", quotef (filename));
-      return false;
+      إرجاع false;
     }
 
-  return ok;
+  إرجاع ok;
 }
 
-int
-main (int argc, char **argv)
+صحيح
+الرئيسية (صحيح argc, حرف **argv)
 {
   bool ok = true;
-  int optc;
-  enum Shell_syntax syntax = SHELL_SYNTAX_UNKNOWN;
+  صحيح optc;
+  تعداد Shell_syntax syntax = SHELL_SYNTAX_UNKNOWN;
   bool print_database = false;
 
   initialize_main (&argc, &argv);
@@ -441,30 +441,30 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "bcp", long_options, NULL)) != -1)
-    switch (optc)
+  بينما ((optc = getopt_long (argc, argv, "bcp", long_options, عدم)) != -1)
+    بدل (optc)
       {
-      case 'b':	/* Bourne shell syntax.  */
+      حالة 'b':	/* Bourne shell syntax.  */
         syntax = SHELL_SYNTAX_BOURNE;
-        break;
+        اكسر;
 
-      case 'c':	/* C shell syntax.  */
+      حالة 'c':	/* C shell syntax.  */
         syntax = SHELL_SYNTAX_C;
-        break;
+        اكسر;
 
-      case 'p':
+      حالة 'p':
         print_database = true;
-        break;
+        اكسر;
 
-      case PRINT_LS_COLORS_OPTION:
+      حالة PRINT_LS_COLORS_OPTION:
         print_ls_colors = true;
-        break;
+        اكسر;
 
       case_GETOPT_HELP_CHAR;
 
       case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-      default:
+      افتراضي:
         usage (EXIT_FAILURE);
       }
 
@@ -473,7 +473,7 @@ main (int argc, char **argv)
 
   /* It doesn't make sense to use --print with either of
      --bourne or --c-shell.  */
-  if ((print_database | print_ls_colors) && syntax != SHELL_SYNTAX_UNKNOWN)
+  إذا ((print_database | print_ls_colors) && syntax != SHELL_SYNTAX_UNKNOWN)
     {
       error (0, 0,
              _("the options to output non shell syntax,\n"
@@ -481,7 +481,7 @@ main (int argc, char **argv)
       usage (EXIT_FAILURE);
     }
 
-  if (print_database && print_ls_colors)
+  إذا (print_database && print_ls_colors)
     {
       error (0, 0,
              _("options --print-database and --print-ls-colors "
@@ -489,68 +489,68 @@ main (int argc, char **argv)
       usage (EXIT_FAILURE);
     }
 
-  if ((!print_database) < argc)
+  إذا ((!print_database) < argc)
     {
       error (0, 0, _("extra operand %s"),
              quote (argv[!print_database]));
-      if (print_database)
+      إذا (print_database)
         fprintf (stderr, "%s\n",
                  _("file operands cannot be combined with "
                    "--print-database (-p)"));
       usage (EXIT_FAILURE);
     }
 
-  if (print_database)
+  إذا (print_database)
     {
-      char const *p = G_line;
-      while (p - G_line < sizeof G_line)
+      حرف ثابت *p = G_سطر;
+      بينما (p - G_سطر < حجم G_سطر)
         {
           puts (p);
           p += strlen (p) + 1;
         }
     }
-  else
+  وإلا
     {
       /* If shell syntax was not explicitly specified, try to guess it. */
-      if (syntax == SHELL_SYNTAX_UNKNOWN && ! print_ls_colors)
+      إذا (syntax == SHELL_SYNTAX_UNKNOWN && ! print_ls_colors)
         {
           syntax = guess_shell_syntax ();
-          if (syntax == SHELL_SYNTAX_UNKNOWN)
+          إذا (syntax == SHELL_SYNTAX_UNKNOWN)
             error (EXIT_FAILURE, 0,
                    _("no SHELL environment variable,"
                      " and no shell type option given"));
         }
 
       obstack_init (&lsc_obstack);
-      if (argc == 0)
-        ok = dc_parse_stream (NULL, NULL);
-      else
+      إذا (argc == 0)
+        ok = dc_parse_stream (عدم, عدم);
+      وإلا
         ok = dc_parse_file (argv[0]);
 
-      if (ok)
+      إذا (ok)
         {
           size_t len = obstack_object_size (&lsc_obstack);
-          char *s = obstack_finish (&lsc_obstack);
-          char const *prefix;
-          char const *suffix;
+          حرف *s = obstack_finish (&lsc_obstack);
+          حرف ثابت *prefix;
+          حرف ثابت *suffix;
 
-          if (syntax == SHELL_SYNTAX_BOURNE)
+          إذا (syntax == SHELL_SYNTAX_BOURNE)
             {
               prefix = "LS_COLORS='";
               suffix = "';\nexport LS_COLORS\n";
             }
-          else
+          وإلا
             {
               prefix = "setenv LS_COLORS '";
               suffix = "'\n";
             }
-          if (! print_ls_colors)
+          إذا (! print_ls_colors)
             fputs (prefix, stdout);
           fwrite (s, 1, len, stdout);
-          if (! print_ls_colors)
+          إذا (! print_ls_colors)
             fputs (suffix, stdout);
         }
     }
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  إرجاع ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }
