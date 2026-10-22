@@ -22,49 +22,49 @@
 
    Rewrite cut_fields and cut_bytes -- Jim Meyering.  */
 
-#include <config.h>
+#ضمن <config.h>
 
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
-#include "system.h"
+#ضمن <stdio.h>
+#ضمن <getopt.h>
+#ضمن <sys/types.h>
+#ضمن "system.h"
 
-#include "argmatch.h"
-#include "assure.h"
-#include "c-ctype.h"
-#include "fadvise.h"
-#include "ioblksize.h"
-#include "mbbuf.h"
-#include "memchr2.h"
+#ضمن "argmatch.h"
+#ضمن "assure.h"
+#ضمن "c-ctype.h"
+#ضمن "fadvise.h"
+#ضمن "ioblksize.h"
+#ضمن "mbbuf.h"
+#ضمن "memchr2.h"
 
-#include "set-fields.h"
-#include "utf8.h"
+#ضمن "set-fields.h"
+#ضمن "utf8.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "cut"
+#تعریف_کرو پروگرام_NAME "cut"
 
-#define AUTHORS \
+#تعریف_کرو AUTHORS \
   proper_name ("David M. Ihnat"), \
   proper_name ("David MacKenzie"), \
   proper_name ("Jim Meyering")
 
-#define FATAL_ERROR(Message)						\
-  do									\
+#تعریف_کرو FATAL_ERROR(سنیہا)						\
+  افعل									\
     {									\
-      error (0, 0, (Message));						\
+      error (0, 0, (سنیہا));						\
       usage (EXIT_FAILURE);						\
     }									\
-  while (0)
+  طالما (0)
 
 /* Above this function call overhead becomes less of a concern.
    At this and below we avoid fwrite(), memchr() etc.  */
-#define SMALL_BYTE_THRESHOLD 3
+#تعریف_کرو SMALL_BYTE_حد 3
 
 /* Pointer inside RP.  When checking if a -b,-c,-f is selected
    by a finite range, we check if it is between CURRENT_RP.LO
    and CURRENT_RP.HI.  If the index is greater than
    CURRENT_RP.HI then we make CURRENT_RP to point to the next range pair.  */
-static struct field_range_pair *current_rp;
+ساكن بنية میدان_range_pair *current_rp;
 
 /* This buffer is used to support the semantics of the -s option
    (or lack of same) when the specified field list includes (does
@@ -73,125 +73,125 @@ static struct field_range_pair *current_rp;
    is followed by a delimiter or a newline before any of it may be
    output.  Otherwise, cut_fields can do the job without using this
    buffer.  */
-static char *field_1_buffer;
+ساكن حرف *میدان_1_بفر;
 
 /* The number of bytes allocated for FIELD_1_BUFFER.  */
-static idx_t field_1_bufsize;
+ساكن idx_t میدان_1_bufsize;
 
 /* If true, do not output lines containing no delimiter characters.
    Otherwise, all such lines are printed.  This option is valid only
    with field mode.  */
-static bool suppress_non_delimited;
+ساكن bool suppress_non_delimited;
 
 /* If true, print all bytes, characters, or fields _except_
    those that were specified.  */
-static bool complement;
+ساكن bool complement;
 
 /* The delimiter character for multibyte field mode.  */
-static mcel_t delim_mcel;
+ساكن mcel_t delim_mcel;
 
 /* The delimiter bytes
    (to be NUL terminated for strstr() optimization).  */
-static char delim_bytes[MCEL_LEN_MAX + 1];
+ساكن حرف delim_بائٹاں[MCEL_LEN_MAX + 1];
 
 /* The delimiter for each line/record.  */
-static unsigned char line_delim = '\n';
+ساكن بنانشانی حرف سطر_delim = '\n';
 
 /* The length of output_delimiter_string.  */
-static size_t output_delimiter_length;
+ساكن size_t output_delimiter_لمائی;
 
 /* The output field separator string.  Defaults to the 1-character
    string consisting of the input delimiter.  */
-static char *output_delimiter_string;
+ساكن حرف *output_delimiter_string;
 
 /* The output delimiter string contents, if the default.  */
-static char output_delimiter_default[MCEL_LEN_MAX];
+ساكن حرف output_delimiter_default[MCEL_LEN_MAX];
 
 /* True if we have ever read standard input.  */
-static bool have_read_stdin;
+ساكن bool have_read_stdin;
 
 /* If true, don't split multibyte characters in byte mode.  */
-static bool no_split;
+ساكن bool no_ونڈو;
 
 /* If true, interpret each run of whitespace as one field delimiter.  */
-static bool whitespace_delimited;
+ساكن bool whitespace_delimited;
 
 /* If true, ignore leading and trailing whitespace in -w mode.  */
-static bool trim_outer_whitespace;
+ساكن bool trim_outer_whitespace;
 
 /* If true, default the output delimiter to a single space.  */
-static bool space_output_delimiter_default;
+ساكن bool space_output_delimiter_default;
 
-enum whitespace_option
+تعداد whitespace_option
 {
   WHITESPACE_OPTION_TRIMMED
 };
 
-static char const *const whitespace_option_args[] =
+ساكن حرف ثابت *ثابت whitespace_option_دلیلاں[] =
 {
-  "trimmed", NULL
+  "trimmed", عدم
 };
 
-static enum whitespace_option const whitespace_option_types[] =
+ساكن تعداد whitespace_option ثابت whitespace_option_types[] =
 {
   WHITESPACE_OPTION_TRIMMED
 };
 
-ARGMATCH_VERIFY (whitespace_option_args, whitespace_option_types);
+ARGMATCH_VERIFY (whitespace_option_دلیلاں, whitespace_option_types);
 
 /* Whether to cut bytes, characters, or fields.  */
-static enum
+ساكن تعداد
 {
-  CUT_MODE_NONE,
-  CUT_MODE_BYTES,
-  CUT_MODE_CHARACTERS,
-  CUT_MODE_FIELDS
-} cut_mode = CUT_MODE_NONE;
+  CUT_منوال_NONE,
+  CUT_منوال_بائٹاں,
+  CUT_منوال_CHARACTERS,
+  CUT_منوال_FIELDS
+} cut_منوال = CUT_منوال_NONE;
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+تعداد
 {
   COMPLEMENT_OPTION = CHAR_MAX + 1
 };
 
-static struct option const longopts[] =
+ساكن بنية option ثابت longopts[] =
 {
-  {"bytes", required_argument, NULL, 'b'},
-  {"characters", required_argument, NULL, 'c'},
-  {"fields", required_argument, NULL, 'f'},
-  {"delimiter", required_argument, NULL, 'd'},
-  {"no-partial", no_argument, NULL, 'n'},
-  {"whitespace-delimited", optional_argument, NULL, 'w'},
-  {"only-delimited", no_argument, NULL, 's'},
-  {"output-delimiter", required_argument, NULL, 'O'},
-  {"complement", no_argument, NULL, COMPLEMENT_OPTION},
-  {"zero-terminated", no_argument, NULL, 'z'},
+  {"bytes", required_دلیل, عدم, 'b'},
+  {"characters", required_دلیل, عدم, 'c'},
+  {"fields", required_دلیل, عدم, 'f'},
+  {"delimiter", required_دلیل, عدم, 'd'},
+  {"no-partial", no_دلیل, عدم, 'n'},
+  {"whitespace-delimited", optional_دلیل, عدم, 'w'},
+  {"only-delimited", no_دلیل, عدم, 's'},
+  {"output-delimiter", required_دلیل, عدم, 'O'},
+  {"complement", no_دلیل, عدم, COMPLEMENT_OPTION},
+  {"zero-terminated", no_دلیل, عدم, 'z'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_نسخہ_OPTION_DECL},
+  {عدم, 0, عدم, 0}
 };
 
-void
-usage (int status)
+فراغ
+usage (صحيح حالت)
 {
-  if (status != EXIT_SUCCESS)
+  إذا (حالت != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  وإلا
     {
-      printf (_("\
+      لکھو (_("\
 Usage: %s OPTION... [FILE]...\n\
 "),
-              program_name);
+              پروگرام_name);
       fputs (_("\
-Print selected parts of lines from each FILE to standard output.\n\
+Print selected parts دا سطریں from each FILE منزل standard output.\n\
 "), stdout);
 
       emit_stdin_note ();
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -b, --bytes=LIST\n\
+  -b, --بائٹاں=LIST\n\
          select only these byte positions\n\
 "));
       oputs (_("\
@@ -200,20 +200,20 @@ Print selected parts of lines from each FILE to standard output.\n\
 "));
       oputs (_("\
       --complement\n\
-         complement the set of selected bytes, characters or fields\n\
+         complement the سیٹ_2 دا selected بائٹاں, characters or fields\n\
 "));
       oputs (_("\
   -d, --delimiter=DELIM\n\
-         use DELIM instead of TAB for field delimiter\n\
+         use DELIM instead دا TAB لكل میدان delimiter\n\
 "));
       oputs (_("\
   -f, --fields=LIST\n\
-         select only these fields;  also print any line that contains\n\
+         select only these fields;  also print any سطر that شامل_اے\n\
          no delimiter character, unless the -s option is specified\n\
 "));
       oputs (_("\
   -F LIST\n\
-         like -f, but also implies -w and -O ' '\n\
+         like -f, but also سٹا_دیندا -w and -O ' '\n\
 "));
       oputs (_("\
   -n, --no-partial\n\
@@ -222,94 +222,94 @@ Print selected parts of lines from each FILE to standard output.\n\
       oputs (_("\
   -O, --output-delimiter=STRING\n\
          use STRING as the output delimiter;\n\
-         the default is to use the input delimiter\n\
+         the افتراضي is منزل use the داخلہ delimiter\n\
 "));
       oputs (_("\
   -s, --only-delimited\n\
-         do not print lines not containing delimiters\n\
+         افعل not print سطریں not containing delimiters\n\
 "));
       oputs (_("\
   -w, --whitespace-delimited[=trimmed]\n\
-         use a run of blank characters as the field delimiter;\n\
+         use a لگاتار_2 دا blank characters as the میدان delimiter;\n\
          with 'trimmed', ignore leading and trailing blanks\n\
 "));
       oputs (_("\
   -z, --zero-terminated\n\
-         line delimiter is NUL, not newline\n\
+         سطر delimiter is NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (نسخہ_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-Use one, and only one of -b, -c, -f or -F.  Each LIST is made up of one\n\
-range, or many ranges separated by commas.  Selected input is written\n\
-in the same order that it is read, and is written exactly once.\n\
+Use one, and only one دا -b, -c, -f or -F.  Each LIST is made اتے دا one\n\
+range, or many ranges separated by commas.  Selected داخلہ is written\n\
+وچ the same ترتیب that it is اقرأ, and is written exactly once.\n\
 "), stdout);
       fputs (_("\
-Each range is one of:\n\
+Each range is one دا:\n\
 \n\
-  N     N'th byte, character or field, counted from 1\n\
-  N-    from N'th byte, character or field, to end of line\n\
-  N-M   from N'th to M'th (included) byte, character or field\n\
-  -M    from first to M'th (included) byte, character or field\n\
+  N     N'th byte, character or میدان, counted from 1\n\
+  N-    from N'th byte, character or میدان, منزل سرا دا سطر\n\
+  N-M   from N'th to M'th (included) byte, character or میدان\n\
+  -M    from پہلا منزل M'th (included) byte, character or میدان\n\
 "), stdout);
-      emit_ancillary_info (PROGRAM_NAME);
+      emit_ancillary_info (پروگرام_NAME);
     }
-  exit (status);
+  باہر_نکلو (حالت);
 }
 
 
 /* Increment *ITEM_IDX (i.e., a field or byte index),
    and if required CURRENT_RP.  */
 
-static inline void
-next_item (uintmax_t *item_idx)
+ساكن مضمن فراغ
+اگلا_شے (uintmax_t *شے_idx)
 {
-  (*item_idx)++;
-  if ((*item_idx) > current_rp->hi)
+  (*شے_idx)++;
+  إذا ((*شے_idx) > current_rp->hi)
     current_rp++;
 }
 
 /* Return nonzero if the K'th field or byte is printable.  */
 
-static inline bool
+ساكن مضمن bool
 print_kth (uintmax_t k)
 {
-  return current_rp->lo <= k;
+  أرجع current_rp->lo <= k;
 }
 
 /* Return nonzero if K'th byte is the beginning of a range.  */
 
-static inline bool
-is_range_start_index (uintmax_t k)
+ساكن مضمن bool
+is_range_شروع_اشاریہ (uintmax_t k)
 {
-  return k == current_rp->lo;
+  أرجع k == current_rp->lo;
 }
 
-static inline bool
-field_delim_is_line_delim (void)
+ساكن مضمن bool
+میدان_delim_is_سطر_delim (فراغ)
 {
-  return delim_mcel.len == 1 && delim_bytes[0] == line_delim;
+  أرجع delim_mcel.len == 1 && delim_بائٹاں[0] == سطر_delim;
 }
 
 /* This is equivalent to but faster than calling c32issep directly.
    It assumes all unibyte locales match c_isblank.  */
 
-static bool
+ساكن bool
 mcel_isblank (mcel_t g)
 {
-  return (g.len == 1 && c_isblank (g.ch)) || (g.len > 1 && c32issep (g.ch));
+  أرجع (g.len == 1 && c_isblank (g.ch)) || (g.len > 1 && c32issep (g.ch));
 }
 
 /* Return TRUE if it's valid to do a simple byte search
    for the delimiter bytes.  */
 
-static inline bool
-bytesearch_field_delim_ok (void)
+ساكن مضمن bool
+bytesearch_میدان_delim_ok (فراغ)
 {
-  unsigned char delim_0 = delim_bytes[0];
+  بنانشانی حرف delim_0 = delim_بائٹاں[0];
 
-  return (delim_mcel.len == 1
+  أرجع (delim_mcel.len == 1
           ? (MB_CUR_MAX <= 1
              || (is_utf8_charset ()
                  ? (delim_0 < 0x80 || delim_0 > 0xF4) : delim_0 < 0x30))
@@ -317,292 +317,292 @@ bytesearch_field_delim_ok (void)
 }
 
 
-enum field_terminator
+تعداد میدان_terminator
 {
-  FIELD_DATA,
-  FIELD_DELIMITER,
-  FIELD_LINE_DELIMITER,
-  FIELD_EOF
+  میدان_انکڑے,
+  میدان_DELIMITER,
+  میدان_سطر_DELIMITER,
+  میدان_EOF
 };
 
-enum bytesearch_mode
+تعداد bytesearch_منوال
 {
   BYTESEARCH_FIELDS,
-  BYTESEARCH_LINE_ONLY
+  BYTESEARCH_سطر_ONLY
 };
 
-struct bytesearch_context
+بنية bytesearch_context
 {
-  enum bytesearch_mode mode;
+  تعداد bytesearch_منوال منوال_2;
   bool blank_delimited;
   bool at_eof;
-  char *line_end;
-  bool line_end_known;
+  حرف *سطر_سرا;
+  bool سطر_سرا_معلوم;
 };
 
-static inline void
-bytesearch_context_reset (struct bytesearch_context *ctx)
+ساكن مضمن فراغ
+bytesearch_context_reset (بنية bytesearch_context *ctx)
 {
-  ctx->mode = BYTESEARCH_FIELDS;
-  ctx->line_end = NULL;
-  ctx->line_end_known = false;
+  ctx->منوال_2 = BYTESEARCH_FIELDS;
+  ctx->سطر_سرا = عدم;
+  ctx->سطر_سرا_معلوم = false;
 }
 
-struct mbfield_parser
+بنية mbfield_parser
 {
   bool whitespace_delimited;
   bool trim_outer_whitespace;
-  bool at_line_start;
+  bool at_سطر_شروع;
   bool have_saved;
   mcel_t saved_g;
 };
 
-static inline mcel_t
+ساكن مضمن mcel_t
 mbbuf_get_saved_char (mbbuf_t *mbbuf, bool *have_saved, mcel_t *saved_g)
 {
-  if (*have_saved)
+  إذا (*have_saved)
     {
       *have_saved = false;
-      return *saved_g;
+      أرجع *saved_g;
     }
-  return mbbuf_get_char (mbbuf);
+  أرجع mbbuf_get_char (mbbuf);
 }
 
-static inline enum field_terminator
-skip_whitespace_run (mbbuf_t *mbuf, struct mbfield_parser *parser,
-                     bool *have_pending_line,
+ساكن مضمن تعداد میدان_terminator
+skip_whitespace_لگاتار (mbbuf_t *mbuf, بنية mbfield_parser *parser,
+                     bool *have_pending_سطر,
                      bool have_initial_whitespace)
 {
   mcel_t g;
 
-  do
+  افعل
     {
       g = mbbuf_get_char (mbuf);
-      if (g.ch != MBBUF_EOF)
-        *have_pending_line = true;
+      إذا (g.ch != MBBUF_EOF)
+        *have_pending_سطر = true;
     }
-  while (g.ch != MBBUF_EOF && g.ch != line_delim && mcel_isblank (g));
+  طالما (g.ch != MBBUF_EOF && g.ch != سطر_delim && mcel_isblank (g));
 
-  bool trim_start = parser->trim_outer_whitespace && parser->at_line_start;
+  bool trim_شروع = parser->trim_outer_whitespace && parser->at_سطر_شروع;
 
-  if (parser->trim_outer_whitespace
-      && (g.ch == MBBUF_EOF || g.ch == line_delim))
+  إذا (parser->trim_outer_whitespace
+      && (g.ch == MBBUF_EOF || g.ch == سطر_delim))
     {
-      return g.ch == MBBUF_EOF ? FIELD_EOF : FIELD_LINE_DELIMITER;
+      أرجع g.ch == MBBUF_EOF ? میدان_EOF : میدان_سطر_DELIMITER;
     }
 
   parser->saved_g = g;
   parser->have_saved = true;
-  return trim_start && !have_initial_whitespace ? FIELD_DATA : FIELD_DELIMITER;
+  أرجع trim_شروع && !have_initial_whitespace ? میدان_انکڑے : میدان_DELIMITER;
 }
 
 /* Like fwrite, but avoid a function call for smaller amounts,
    and exit immediately upon error.  */
 
-static void
-write_bytes (char const *buf, size_t n_bytes)
+ساكن فراغ
+write_بائٹاں (حرف ثابت *buf, size_t n_بائٹاں)
 {
-  if (n_bytes <= SMALL_BYTE_THRESHOLD)
+  إذا (n_بائٹاں <= SMALL_BYTE_حد)
     {
-      for (size_t i = 0; i < n_bytes; i++)
-        if (putchar (buf[i]) < 0)
+      لكل (size_t i = 0; i < n_بائٹاں; i++)
+        إذا (حرف_لکھو (buf[i]) < 0)
           write_error ();
-      return;
+      أرجع;
     }
 
-  if (fwrite (buf, sizeof (char), n_bytes, stdout) != n_bytes)
+  إذا (fwrite (buf, حجم (حرف), n_بائٹاں, stdout) != n_بائٹاں)
     write_error ();
 }
 
 /* Like memcpy, but avoid a function call for smaller amounts.  */
 
-static inline void
-copy_bytes (char *dst, char const *src, size_t n_bytes)
+ساكن مضمن فراغ
+copy_بائٹاں (حرف *dst, حرف ثابت *src, size_t n_بائٹاں)
 {
-  if (n_bytes <= SMALL_BYTE_THRESHOLD)
+  إذا (n_بائٹاں <= SMALL_BYTE_حد)
     {
-      for (size_t i = 0; i < n_bytes; i++)
+      لكل (size_t i = 0; i < n_بائٹاں; i++)
         dst[i] = src[i];
-      return;
+      أرجع;
     }
 
-  memcpy (dst, src, n_bytes);
+  حافظہ_نقل (dst, src, n_بائٹاں);
 }
 
 /* Like memchr, but avoid a function call for smaller amounts.  */
 
-static inline void*
-search_bytes (char const *buf, int c, size_t n_bytes)
+ساكن مضمن فراغ*
+تلاش_بائٹاں (حرف ثابت *buf, صحيح c, size_t n_بائٹاں)
 {
-  if (n_bytes != 0 && to_uchar (buf[0]) == c)
-    return (char *) buf;
-  if (1 < n_bytes && to_uchar (buf[1]) == c)
-    return (char *) buf + 1;
+  إذا (n_بائٹاں != 0 && منزل_uchar (buf[0]) == c)
+    أرجع (حرف *) buf;
+  إذا (1 < n_بائٹاں && منزل_uchar (buf[1]) == c)
+    أرجع (حرف *) buf + 1;
 
-  return 2 < n_bytes ? (char *) memchr (buf + 2, c, n_bytes - 2) : NULL;
+  أرجع 2 < n_بائٹاں ? (حرف *) memchr (buf + 2, c, n_بائٹاں - 2) : عدم;
 }
 
-static inline void
-write_line_delim (void)
+ساكن مضمن فراغ
+write_سطر_delim (فراغ)
 {
-  if (putchar (line_delim) < 0)
+  إذا (حرف_لکھو (سطر_delim) < 0)
     write_error ();
 }
 
-static inline void
-reset_item_line (uintmax_t *item_idx, bool *print_delimiter)
+ساكن مضمن فراغ
+reset_شے_سطر (uintmax_t *شے_idx, bool *print_delimiter)
 {
-  write_line_delim ();
-  *item_idx = 0;
+  write_سطر_delim ();
+  *شے_idx = 0;
   *print_delimiter = false;
   current_rp = frp;
 }
 
-static inline void
-write_pending_line_delim (uintmax_t item_idx)
+ساكن مضمن فراغ
+write_pending_سطر_delim (uintmax_t شے_idx)
 {
-  if (item_idx > 0)
-    write_line_delim ();
+  إذا (شے_idx > 0)
+    write_سطر_delim ();
 }
 
-static inline void
-write_selected_item (bool *print_delimiter, bool range_start,
-                     char const *buf, size_t n_bytes)
+ساكن مضمن فراغ
+write_selected_شے (bool *print_delimiter, bool range_شروع,
+                     حرف ثابت *buf, size_t n_بائٹاں)
 {
-  if (output_delimiter_string != output_delimiter_default)
+  إذا (output_delimiter_string != output_delimiter_default)
     {
-      if (*print_delimiter && range_start)
-        write_bytes (output_delimiter_string, output_delimiter_length);
+      إذا (*print_delimiter && range_شروع)
+        write_بائٹاں (output_delimiter_string, output_delimiter_لمائی);
       *print_delimiter = true;
     }
 
-  write_bytes (buf, n_bytes);
+  write_بائٹاں (buf, n_بائٹاں);
 }
 
-static inline void
-append_field_1_chunk (char const *buf, idx_t len, idx_t *n_bytes)
+ساكن مضمن فراغ
+append_میدان_1_chunk (حرف ثابت *buf, idx_t len, idx_t *n_بائٹاں)
 {
-  if (field_1_bufsize - *n_bytes < len)
+  إذا (میدان_1_bufsize - *n_بائٹاں < len)
     {
-      field_1_buffer = xpalloc (field_1_buffer, &field_1_bufsize,
-                                len, -1, sizeof *field_1_buffer);
+      میدان_1_بفر = xpalloc (میدان_1_بفر, &میدان_1_bufsize,
+                                len, -1, حجم *میدان_1_بفر);
     }
 
-  copy_bytes (field_1_buffer + *n_bytes, buf, len);
-  *n_bytes += len;
+  copy_بائٹاں (میدان_1_بفر + *n_بائٹاں, buf, len);
+  *n_بائٹاں += len;
 }
 
-static inline void
-append_field_1_bytes (mbbuf_t *mbbuf, mcel_t g, idx_t *n_bytes)
+ساكن مضمن فراغ
+append_میدان_1_بائٹاں (mbbuf_t *mbbuf, mcel_t g, idx_t *n_بائٹاں)
 {
-  append_field_1_chunk (mbbuf_char_offset (mbbuf, g), g.len, n_bytes);
+  append_میدان_1_chunk (mbbuf_char_وتھ (mbbuf, g), g.len, n_بائٹاں);
 }
 
-static inline enum field_terminator
-scan_mb_blank_field (mbbuf_t *mbbuf, struct mbfield_parser *parser,
-                     bool *have_pending_line, bool write_field,
-                     idx_t *n_bytes)
+ساكن مضمن تعداد میدان_terminator
+جانچ_mb_blank_میدان (mbbuf_t *mbbuf, بنية mbfield_parser *parser,
+                     bool *have_pending_سطر, bool write_میدان,
+                     idx_t *n_بائٹاں)
 {
-  if (parser->trim_outer_whitespace && parser->at_line_start)
+  إذا (parser->trim_outer_whitespace && parser->at_سطر_شروع)
     {
-      enum field_terminator terminator
-        = skip_whitespace_run (mbbuf, parser, have_pending_line, false);
-      if (terminator != FIELD_DATA)
-        return terminator;
+      تعداد میدان_terminator terminator
+        = skip_whitespace_لگاتار (mbbuf, parser, have_pending_سطر, false);
+      إذا (terminator != میدان_انکڑے)
+        أرجع terminator;
     }
 
-  parser->at_line_start = false;
+  parser->at_سطر_شروع = false;
 
-  while (true)
+  طالما (true)
     {
       mcel_t g = mbbuf_get_saved_char (mbbuf, &parser->have_saved,
                                       &parser->saved_g);
-      if (g.ch == MBBUF_EOF)
-        return FIELD_EOF;
+      إذا (g.ch == MBBUF_EOF)
+        أرجع میدان_EOF;
 
-      *have_pending_line = true;
+      *have_pending_سطر = true;
 
-      if (g.ch == line_delim)
-        return FIELD_LINE_DELIMITER;
+      إذا (g.ch == سطر_delim)
+        أرجع میدان_سطر_DELIMITER;
 
-      if (mcel_isblank (g))
-        return skip_whitespace_run (mbbuf, parser, have_pending_line, true);
+      إذا (mcel_isblank (g))
+        أرجع skip_whitespace_لگاتار (mbbuf, parser, have_pending_سطر, true);
 
-      if (n_bytes)
-        append_field_1_bytes (mbbuf, g, n_bytes);
-      else if (write_field)
-        write_bytes (mbbuf_char_offset (mbbuf, g), g.len);
+      إذا (n_بائٹاں)
+        append_میدان_1_بائٹاں (mbbuf, g, n_بائٹاں);
+      وإلا إذا (write_میدان)
+        write_بائٹاں (mbbuf_char_وتھ (mbbuf, g), g.len);
     }
 }
 
-static inline enum field_terminator
-scan_mb_delim_field (mbbuf_t *mbbuf, bool *have_pending_line,
-                     bool write_field, idx_t *n_bytes)
+ساكن مضمن تعداد میدان_terminator
+جانچ_mb_delim_میدان (mbbuf_t *mbbuf, bool *have_pending_سطر,
+                     bool write_میدان, idx_t *n_بائٹاں)
 {
-  while (true)
+  طالما (true)
     {
       mcel_t g = mbbuf_get_char (mbbuf);
-      if (g.ch == MBBUF_EOF)
-        return FIELD_EOF;
+      إذا (g.ch == MBBUF_EOF)
+        أرجع میدان_EOF;
 
-      *have_pending_line = true;
+      *have_pending_سطر = true;
 
-      if (g.ch == line_delim)
-        return FIELD_LINE_DELIMITER;
+      إذا (g.ch == سطر_delim)
+        أرجع میدان_سطر_DELIMITER;
 
-      if (delim_mcel.err ? g.err == delim_mcel.err : mcel_eq (g, delim_mcel))
-        return FIELD_DELIMITER;
+      إذا (delim_mcel.err ? g.err == delim_mcel.err : mcel_eq (g, delim_mcel))
+        أرجع میدان_DELIMITER;
 
-      if (n_bytes)
-        append_field_1_bytes (mbbuf, g, n_bytes);
-      else if (write_field)
-        write_bytes (mbbuf_char_offset (mbbuf, g), g.len);
+      إذا (n_بائٹاں)
+        append_میدان_1_بائٹاں (mbbuf, g, n_بائٹاں);
+      وإلا إذا (write_میدان)
+        write_بائٹاں (mbbuf_char_وتھ (mbbuf, g), g.len);
     }
 }
 
-static inline enum field_terminator
-scan_mb_field (mbbuf_t *mbbuf, struct mbfield_parser *parser,
-               bool *have_pending_line, bool write_field, idx_t *n_bytes)
+ساكن مضمن تعداد میدان_terminator
+جانچ_mb_میدان (mbbuf_t *mbbuf, بنية mbfield_parser *parser,
+               bool *have_pending_سطر, bool write_میدان, idx_t *n_بائٹاں)
 {
-  return (parser->whitespace_delimited
-          ? scan_mb_blank_field (mbbuf, parser, have_pending_line,
-                                 write_field, n_bytes)
-          : scan_mb_delim_field (mbbuf, have_pending_line, write_field,
-                                 n_bytes));
+  أرجع (parser->whitespace_delimited
+          ? جانچ_mb_blank_میدان (mbbuf, parser, have_pending_سطر,
+                                 write_میدان, n_بائٹاں)
+          : جانچ_mb_delim_میدان (mbbuf, have_pending_سطر, write_میدان,
+                                 n_بائٹاں));
 }
 
 /* Skip input through the next line delimiter without decoding characters.
    PARSER may have saved a character beyond a whitespace delimiter.  */
 
-static enum field_terminator
-scan_mb_line_end (mbbuf_t *mbbuf, struct mbfield_parser *parser,
-                  bool *have_pending_line)
+ساكن تعداد میدان_terminator
+جانچ_mb_سطر_سرا (mbbuf_t *mbbuf, بنية mbfield_parser *parser,
+                  bool *have_pending_سطر)
 {
-  if (parser->have_saved)
+  إذا (parser->have_saved)
     {
       parser->have_saved = false;
-      if (parser->saved_g.ch == MBBUF_EOF)
-        return FIELD_EOF;
+      إذا (parser->saved_g.ch == MBBUF_EOF)
+        أرجع میدان_EOF;
 
-      *have_pending_line = true;
-      if (parser->saved_g.ch == line_delim)
-        return FIELD_LINE_DELIMITER;
+      *have_pending_سطر = true;
+      إذا (parser->saved_g.ch == سطر_delim)
+        أرجع میدان_سطر_DELIMITER;
     }
 
-  while (true)
+  طالما (true)
     {
-      idx_t available = mbbuf_topup (mbbuf);
-      if (available == 0)
-        return FIELD_EOF;
+      idx_t دستیاب = mbbuf_topup (mbbuf);
+      إذا (دستیاب == 0)
+        أرجع میدان_EOF;
 
-      char *buffer = mbbuf->buffer + mbbuf->offset;
-      char *line_end = search_bytes (buffer, line_delim, available);
-      idx_t n = line_end ? line_end - buffer + 1 : available;
+      حرف *بفر = mbbuf->بفر + mbbuf->وتھ;
+      حرف *سطر_سرا = تلاش_بائٹاں (بفر, سطر_delim, دستیاب);
+      idx_t n = سطر_سرا ? سطر_سرا - بفر + 1 : دستیاب;
       mbbuf_advance (mbbuf, n);
-      *have_pending_line = true;
+      *have_pending_سطر = true;
 
-      if (line_end)
-        return FIELD_LINE_DELIMITER;
+      إذا (سطر_سرا)
+        أرجع میدان_سطر_DELIMITER;
     }
 }
 
@@ -611,42 +611,42 @@ scan_mb_line_end (mbbuf_t *mbbuf, struct mbfield_parser *parser,
    represent a valid UTF-8 character.  BUF can contain invalid/NUL bytes,
    and must have room for a trailing NUL byte at BUF[LEN].  */
 
-ATTRIBUTE_PURE
-static char *
-find_field_delim (char *buf, size_t len)
+ATTRIBUTE_خالص
+ساكن حرف *
+لبھو_میدان_delim (حرف *buf, size_t len)
 {
-  if (len < delim_mcel.len)
-    return NULL;
+  إذا (len < delim_mcel.len)
+    أرجع عدم;
 
-#if ! __GLIBC__  /* Only S390 has optimized memmem on glibc-2.42  */
-  return memmem (buf, len, delim_bytes, delim_mcel.len);
-#else
-  if (delim_mcel.len == 1)
-    return memchr (buf, delim_bytes[0], len);
+#إذا ! __GLIBC__  /* Only S390 has optimized memmem on glibc-2.42  */
+  أرجع memmem (buf, len, delim_بائٹاں, delim_mcel.len);
+#وإلا
+  إذا (delim_mcel.len == 1)
+    أرجع memchr (buf, delim_بائٹاں[0], len);
 
-  char const *p = buf;
-  char const *end = buf + len;
+  حرف ثابت *p = buf;
+  حرف ثابت *سرا = buf + len;
 
-  char saved = buf[len];
+  حرف saved = buf[len];
   buf[len] = '\0'; /* for strstr.  */
 
-  while (p < end)
+  طالما (p < سرا)
     {
-      char const *nul = memchr (p, '\0', end - p);
-      if (!nul)
+      حرف ثابت *nul = memchr (p, '\0', سرا - p);
+      إذا (!nul)
         {
-          char const *match = strstr (p, delim_bytes);
+          حرف ثابت *میل = لڑی_کھوج (p, delim_بائٹاں);
           buf[len] = saved;
-          return (char *) match;
+          أرجع (حرف *) میل;
         }
 
-      if (p < nul)
+      إذا (p < nul)
         {
-          char const *match = strstr (p, delim_bytes);
-          if (match)
+          حرف ثابت *میل = لڑی_کھوج (p, delim_بائٹاں);
+          إذا (میل)
             {
               buf[len] = saved;
-              return (char *) match;
+              أرجع (حرف *) میل;
             }
         }
 
@@ -654,256 +654,256 @@ find_field_delim (char *buf, size_t len)
     }
 
   buf[len] = saved;
-  return NULL;
-#endif
+  أرجع عدم;
+#جے_انت
 }
 
 /* Return a pointer to the next TAB or SPACE in BUF, searching LEN bytes.
    Return NULL if none is found.
    It works for all unibyte locales, i.e., assumes they match c_isblank.  */
 
-ATTRIBUTE_PURE
-static char *
-find_c_blank (char *buf, size_t len)
+ATTRIBUTE_خالص
+ساكن حرف *
+لبھو_c_blank (حرف *buf, size_t len)
 {
   /* Avoid memchr2 setup for short fields.  */
   idx_t n = MIN (len, 16);
-  for (idx_t i = 0; i < n; i++)
-    if (c_isblank (buf[i]))
-      return buf + i;
+  لكل (idx_t i = 0; i < n; i++)
+    إذا (c_isblank (buf[i]))
+      أرجع buf + i;
 
-  return memchr2 (buf + n, ' ', '\t', len - n);
+  أرجع memchr2 (buf + n, ' ', '\t', len - n);
 }
 
 /* Return the number of trailing bytes in BUF that could be the initial
    bytes of a delimiter split across buffers.  */
 
-ATTRIBUTE_PURE
-static idx_t
-field_delim_overlap (char const *buf, idx_t len)
+ATTRIBUTE_خالص
+ساكن idx_t
+میدان_delim_overlap (حرف ثابت *buf, idx_t len)
 {
   idx_t overlap = MIN (len, delim_mcel.len - 1);
 
-  while (0 < overlap)
+  طالما (0 < overlap)
     {
-      if (memeq (buf + len - overlap, delim_bytes, overlap))
-        return overlap;
+      إذا (memeq (buf + len - overlap, delim_بائٹاں, overlap))
+        أرجع overlap;
       overlap--;
     }
 
-  return 0;
+  أرجع 0;
 }
 
 /* Byte search for line end or delimiter in BUF,
    returning results in CTX.  */
 
-static inline enum field_terminator
-find_field_terminator (char *buf, idx_t len,
-                       struct bytesearch_context *ctx, char **terminator)
+ساكن مضمن تعداد میدان_terminator
+لبھو_میدان_terminator (حرف *buf, idx_t len,
+                       بنية bytesearch_context *ctx, حرف **terminator)
 {
-  if (ctx->mode == BYTESEARCH_LINE_ONLY)
+  إذا (ctx->منوال_2 == BYTESEARCH_سطر_ONLY)
     {
-      if (!ctx->line_end_known)
+      إذا (!ctx->سطر_سرا_معلوم)
         {
-          ctx->line_end = memchr (buf, line_delim, len);
-          ctx->line_end_known = true;
+          ctx->سطر_سرا = memchr (buf, سطر_delim, len);
+          ctx->سطر_سرا_معلوم = true;
         }
 
-      *terminator = ctx->line_end;
-      return *terminator ? FIELD_LINE_DELIMITER : FIELD_DATA;
+      *terminator = ctx->سطر_سرا;
+      أرجع *terminator ? میدان_سطر_DELIMITER : میدان_انکڑے;
     }
 
-  if (field_delim_is_line_delim ())
+  إذا (میدان_delim_is_سطر_delim ())
     {
-      *terminator = memchr (buf, line_delim, len);
-      return *terminator ? FIELD_DELIMITER : FIELD_DATA;
+      *terminator = memchr (buf, سطر_delim, len);
+      أرجع *terminator ? میدان_DELIMITER : میدان_انکڑے;
     }
 
-  if (!ctx->line_end_known)
+  إذا (!ctx->سطر_سرا_معلوم)
     {
-      ctx->line_end = memchr (buf, line_delim, len);
-      ctx->line_end_known = true;
+      ctx->سطر_سرا = memchr (buf, سطر_delim, len);
+      ctx->سطر_سرا_معلوم = true;
     }
 
-  idx_t field_len = ctx->line_end ? ctx->line_end - buf : len;
+  idx_t میدان_len = ctx->سطر_سرا ? ctx->سطر_سرا - buf : len;
 
-  char *field_end = (ctx->blank_delimited
-                     ? find_c_blank (buf, field_len)
-                     : find_field_delim (buf, field_len));
+  حرف *میدان_سرا = (ctx->blank_delimited
+                     ? لبھو_c_blank (buf, میدان_len)
+                     : لبھو_میدان_delim (buf, میدان_len));
 
-  if (field_end)
+  إذا (میدان_سرا)
     {
-      *terminator = field_end;
-      return FIELD_DELIMITER;
+      *terminator = میدان_سرا;
+      أرجع میدان_DELIMITER;
     }
 
-  *terminator = ctx->line_end;
-  return ctx->line_end ? FIELD_LINE_DELIMITER : FIELD_DATA;
+  *terminator = ctx->سطر_سرا;
+  أرجع ctx->سطر_سرا ? میدان_سطر_DELIMITER : میدان_انکڑے;
 }
 
 /* Write the end-of-line delimiter if appropriate for the current line.  */
 
-static inline void
-maybe_write_line_delim (bool found_any_selected_field, uintmax_t field_idx)
+ساكن مضمن فراغ
+maybe_write_سطر_delim (bool لبھیا_any_selected_میدان, uintmax_t میدان_idx)
 {
-  if (found_any_selected_field
-      || !(suppress_non_delimited && field_idx == 1))
-    write_line_delim ();
+  إذا (لبھیا_any_selected_میدان
+      || !(suppress_non_delimited && میدان_idx == 1))
+    write_سطر_delim ();
 }
 
 /* Return TRUE if FIELD_IDX is selected,
    and write the output delimiter if appropriate.  */
 
-static inline bool
-begin_field_output (uintmax_t field_idx, bool buffer_first_field,
-                    bool *found_any_selected_field)
+ساكن مضمن bool
+begin_میدان_output (uintmax_t میدان_idx, bool بفر_پہلا_میدان,
+                    bool *لبھیا_any_selected_میدان)
 {
-  bool write_field = print_kth (field_idx);
+  bool write_میدان = print_kth (میدان_idx);
 
-  if (write_field && ! (field_idx == 1 && buffer_first_field))
+  إذا (write_میدان && ! (میدان_idx == 1 && بفر_پہلا_میدان))
     {
-      if (*found_any_selected_field)
-        write_bytes (output_delimiter_string, output_delimiter_length);
-      *found_any_selected_field = true;
+      إذا (*لبھیا_any_selected_میدان)
+        write_بائٹاں (output_delimiter_string, output_delimiter_لمائی);
+      *لبھیا_any_selected_میدان = true;
     }
 
-  return write_field;
+  أرجع write_میدان;
 }
 
-static inline bool
-handle_field_1 (uintmax_t field_idx, bool buffer_first_field,
-                idx_t *field_1_n_bytes)
+ساكن مضمن bool
+handle_میدان_1 (uintmax_t میدان_idx, bool بفر_پہلا_میدان,
+                idx_t *میدان_1_n_بائٹاں)
 {
-  bool field_1_selected = false;
+  bool میدان_1_selected = false;
 
-  if (field_idx == 1 && buffer_first_field)
+  إذا (میدان_idx == 1 && بفر_پہلا_میدان)
     {
-      if ((field_1_selected = print_kth (1)))
-        write_bytes (field_1_buffer, *field_1_n_bytes);
-      *field_1_n_bytes = 0;
+      إذا ((میدان_1_selected = print_kth (1)))
+        write_بائٹاں (میدان_1_بفر, *میدان_1_n_بائٹاں);
+      *میدان_1_n_بائٹاں = 0;
     }
 
-  return field_1_selected;
+  أرجع میدان_1_selected;
 }
 
-static inline void
-handle_field_delimiter (uintmax_t *field_idx, bool buffer_first_field,
-                        idx_t *field_1_n_bytes,
-                        bool *found_any_selected_field, bool *write_field)
+ساكن مضمن فراغ
+handle_میدان_delimiter (uintmax_t *میدان_idx, bool بفر_پہلا_میدان,
+                        idx_t *میدان_1_n_بائٹاں,
+                        bool *لبھیا_any_selected_میدان, bool *write_میدان)
 {
-  if (handle_field_1 (*field_idx, buffer_first_field, field_1_n_bytes))
-    *found_any_selected_field = true;
+  إذا (handle_میدان_1 (*میدان_idx, بفر_پہلا_میدان, میدان_1_n_بائٹاں))
+    *لبھیا_any_selected_میدان = true;
 
-  next_item (field_idx);
-  *write_field = begin_field_output (*field_idx, buffer_first_field,
-                                     found_any_selected_field);
+  اگلا_شے (میدان_idx);
+  *write_میدان = begin_میدان_output (*میدان_idx, بفر_پہلا_میدان,
+                                     لبھیا_any_selected_میدان);
 }
 
-static inline bool
-field_selection_exhausted (uintmax_t field_idx)
+ساكن مضمن bool
+میدان_selection_exhausted (uintmax_t میدان_idx)
 {
-  return !print_kth (field_idx) && current_rp->lo == UINTMAX_MAX;
+  أرجع !print_kth (میدان_idx) && current_rp->lo == UINTMAX_MAX;
 }
 
-static inline void
-finish_current_line (uintmax_t field_idx, bool buffer_first_field,
-                     idx_t *field_1_n_bytes,
-                     bool found_any_selected_field, bool line_terminated)
+ساكن مضمن فراغ
+انت_current_سطر (uintmax_t میدان_idx, bool بفر_پہلا_میدان,
+                     idx_t *میدان_1_n_بائٹاں,
+                     bool لبھیا_any_selected_میدان, bool سطر_terminated)
 {
-  if (field_idx == 1 && buffer_first_field)
+  إذا (میدان_idx == 1 && بفر_پہلا_میدان)
     {
-      if (!suppress_non_delimited
-          && (line_terminated || *field_1_n_bytes != 0))
+      إذا (!suppress_non_delimited
+          && (سطر_terminated || *میدان_1_n_بائٹاں != 0))
         {
-          write_bytes (field_1_buffer, *field_1_n_bytes);
-          write_line_delim ();
+          write_بائٹاں (میدان_1_بفر, *میدان_1_n_بائٹاں);
+          write_سطر_delim ();
         }
-      *field_1_n_bytes = 0;
+      *میدان_1_n_بائٹاں = 0;
     }
-  else
-    maybe_write_line_delim (found_any_selected_field, field_idx);
+  وإلا
+    maybe_write_سطر_delim (لبھیا_any_selected_میدان, میدان_idx);
 }
 
-static inline void
+ساكن مضمن فراغ
 sync_byte_selection (uintmax_t byte_idx)
 {
-  while (current_rp->hi <= byte_idx)
+  طالما (current_rp->hi <= byte_idx)
     current_rp++;
 }
 
-static inline void
-reset_field_line (uintmax_t *field_idx, bool *found_any_selected_field,
-                  bool *have_pending_line, struct mbfield_parser *parser)
+ساكن مضمن فراغ
+reset_میدان_سطر (uintmax_t *میدان_idx, bool *لبھیا_any_selected_میدان,
+                  bool *have_pending_سطر, بنية mbfield_parser *parser)
 {
-  *field_idx = 1;
+  *میدان_idx = 1;
   current_rp = frp;
-  *found_any_selected_field = false;
-  *have_pending_line = false;
+  *لبھیا_any_selected_میدان = false;
+  *have_pending_سطر = false;
   parser->have_saved = false;
-  parser->at_line_start = true;
+  parser->at_سطر_شروع = true;
 }
 
 /* Read from STREAM using buffered block reads, printing selected bytes.
    BYTE_IDX and PRINT_DELIMITER track the current line state and allow
    callers to hand off mid-line.  */
 
-static void
-cut_bytes (FILE *stream)
+ساكن فراغ
+cut_بائٹاں (FILE *دھارا)
 {
-  static char bytes_in[IO_BUFSIZE];
+  ساكن حرف بائٹاں_وچ[IO_BUFSIZE];
   uintmax_t byte_idx = 0;
   bool print_delimiter = false;
-  int fd = fileno (stream);
+  صحيح fd = fileno (دھارا);
 
   current_rp = frp;
 
-  while (true)
+  طالما (true)
     {
-      idx_t available = read (fd, bytes_in, sizeof bytes_in);
-      if (available <= 0)
+      idx_t دستیاب = اقرأ (fd, بائٹاں_وچ, حجم بائٹاں_وچ);
+      إذا (دستیاب <= 0)
         {
-          if (available < 0)
-            fseterr (stream);
-          write_pending_line_delim (byte_idx);
-          break;
+          إذا (دستیاب < 0)
+            fseterr (دھارا);
+          write_pending_سطر_delim (byte_idx);
+          اكسر;
         }
 
       idx_t processed = 0;
 
-      while (processed < available)
+      طالما (processed < دستیاب)
         {
-          char *line = bytes_in + processed;
-          idx_t to_process = available - processed;
-          char *line_end = search_bytes (line, line_delim, to_process);
-          char *end = line + (line_end ? line_end - line : to_process);
-          char *p = line;
+          حرف *سطر = بائٹاں_وچ + processed;
+          idx_t منزل_process = دستیاب - processed;
+          حرف *سطر_سرا = تلاش_بائٹاں (سطر, سطر_delim, منزل_process);
+          حرف *سرا = سطر + (سطر_سرا ? سطر_سرا - سطر : منزل_process);
+          حرف *p = سطر;
 
-          while (0 < end - p)
+          طالما (0 < سرا - p)
             {
               sync_byte_selection (byte_idx);
 
-              if (byte_idx + 1 < current_rp->lo)
+              إذا (byte_idx + 1 < current_rp->lo)
                 {
-                  idx_t skip = MIN (end - p, current_rp->lo - (byte_idx + 1));
+                  idx_t skip = MIN (سرا - p, current_rp->lo - (byte_idx + 1));
                   p += skip;
                   byte_idx += skip;
                 }
-              else
+              وإلا
                 {
-                  idx_t n = MIN (end - p, current_rp->hi - byte_idx);
-                  write_selected_item (&print_delimiter,
-                                       is_range_start_index (byte_idx + 1),
+                  idx_t n = MIN (سرا - p, current_rp->hi - byte_idx);
+                  write_selected_شے (&print_delimiter,
+                                       is_range_شروع_اشاریہ (byte_idx + 1),
                                        p, n);
                   p += n;
                   byte_idx += n;
                 }
             }
 
-          processed += end - line;
-          if (line_end)
+          processed += سرا - سطر;
+          إذا (سطر_سرا)
             {
               processed++;
-              reset_item_line (&byte_idx, &print_delimiter);
+              reset_شے_سطر (&byte_idx, &print_delimiter);
             }
         }
     }
@@ -912,613 +912,613 @@ cut_bytes (FILE *stream)
 /* Read from STREAM, printing selected bytes without splitting
    multibyte characters.  */
 
-static void
-cut_characters_mode (FILE *stream, bool byte_mode)
+ساكن فراغ
+cut_characters_منوال (FILE *دھارا, bool byte_منوال)
 {
   bool utf8 = is_utf8_charset ();
   uintmax_t idx = 0;
   bool print_delimiter = false;
-  static char bytes_in[IO_BUFSIZE];
+  ساكن حرف بائٹاں_وچ[IO_BUFSIZE];
   mbbuf_t mbbuf;
 
   current_rp = frp;
-  mbbuf_init (&mbbuf, bytes_in, sizeof bytes_in, stream);
+  mbbuf_init (&mbbuf, بائٹاں_وچ, حجم بائٹاں_وچ, دھارا);
 
-  while (true)
+  طالما (true)
     {
       /* Skip unselected line suffixes without decoding each character.  */
-      if (idx && field_selection_exhausted (idx))
+      إذا (idx && میدان_selection_exhausted (idx))
         {
-          idx_t available = mbbuf_topup (&mbbuf);
-          char *p = mbbuf.buffer + mbbuf.offset;
-          char *end = search_bytes (p, line_delim, available);
-          mbbuf_advance (&mbbuf, end ? end - p : available);
-          if (!end && available)
-            continue;
+          idx_t دستیاب = mbbuf_topup (&mbbuf);
+          حرف *p = mbbuf.بفر + mbbuf.وتھ;
+          حرف *سرا = تلاش_بائٹاں (p, سطر_delim, دستیاب);
+          mbbuf_advance (&mbbuf, سرا ? سرا - p : دستیاب);
+          إذا (!سرا && دستیاب)
+            استمر;
         }
 
       /* Count unselected ASCII/UTF-8 characters directly, for efficiency.  */
-      if (!byte_mode && utf8 && idx + 1 < current_rp->lo)
+      إذا (!byte_منوال && utf8 && idx + 1 < current_rp->lo)
         {
-          char const *p = mbbuf.buffer + mbbuf.offset;
+          حرف ثابت *p = mbbuf.بفر + mbbuf.وتھ;
           idx_t n = MIN (mbbuf_avail (&mbbuf), current_rp->lo - idx - 1);
-          char const *end = search_bytes (p, line_delim, n);
-          if (end)
+          حرف ثابت *سرا = تلاش_بائٹاں (p, سطر_delim, n);
+          إذا (سرا)
             {
               /* Even with ASCII, this cannot reach the next selection.  */
-              mbbuf_advance (&mbbuf, end - p + 1);
-              reset_item_line (&idx, &print_delimiter);
-              continue;
+              mbbuf_advance (&mbbuf, سرا - p + 1);
+              reset_شے_سطر (&idx, &print_delimiter);
+              استمر;
             }
 
-          idx += u8_count (p, &n);
+          idx += u8_گنتی (p, &n);
           mbbuf_advance (&mbbuf, n);
         }
 
       mcel_t g = mbbuf_get_char (&mbbuf);
 
-      if (g.ch == line_delim)
-        reset_item_line (&idx, &print_delimiter);
-      else if (g.ch == MBBUF_EOF)
+      إذا (g.ch == سطر_delim)
+        reset_شے_سطر (&idx, &print_delimiter);
+      وإلا إذا (g.ch == MBBUF_EOF)
         {
-          write_pending_line_delim (idx);
-          break;
+          write_pending_سطر_delim (idx);
+          اكسر;
         }
-      else if (byte_mode)
+      وإلا إذا (byte_منوال)
         {
-          bool first_selected_is_range_start = false;
-          bool seen_selected = false;
+          bool پہلا_selected_is_range_شروع = false;
+          bool تکیا_selected = false;
           bool suffix_selected = true;
 
-          for (idx_t i = 0; i < g.len; i++)
+          لكل (idx_t i = 0; i < g.len; i++)
             {
-              next_item (&idx);
-              if (print_kth (idx))
+              اگلا_شے (&idx);
+              إذا (print_kth (idx))
                 {
-                  if (!seen_selected)
+                  إذا (!تکیا_selected)
                     {
-                      seen_selected = true;
-                      first_selected_is_range_start
-                        = is_range_start_index (idx);
+                      تکیا_selected = true;
+                      پہلا_selected_is_range_شروع
+                        = is_range_شروع_اشاریہ (idx);
                     }
                 }
-              else if (seen_selected)
+              وإلا إذا (تکیا_selected)
                 suffix_selected = false;
             }
 
-          if (seen_selected && suffix_selected)
-            write_selected_item (&print_delimiter,first_selected_is_range_start,
-                                 mbbuf_char_offset (&mbbuf, g), g.len);
+          إذا (تکیا_selected && suffix_selected)
+            write_selected_شے (&print_delimiter,پہلا_selected_is_range_شروع,
+                                 mbbuf_char_وتھ (&mbbuf, g), g.len);
         }
-      else
+      وإلا
         {
-          next_item (&idx);
-          if (print_kth (idx))
-            write_selected_item (&print_delimiter,
-                                 is_range_start_index (idx),
-                                 mbbuf_char_offset (&mbbuf, g), g.len);
+          اگلا_شے (&idx);
+          إذا (print_kth (idx))
+            write_selected_شے (&print_delimiter,
+                                 is_range_شروع_اشاریہ (idx),
+                                 mbbuf_char_وتھ (&mbbuf, g), g.len);
         }
     }
 }
 
-static void
-cut_bytes_no_split (FILE *stream)
+ساكن فراغ
+cut_بائٹاں_no_ونڈو (FILE *دھارا)
 {
-  cut_characters_mode (stream, true);
+  cut_characters_منوال (دھارا, true);
 }
 
-static void
-cut_characters (FILE *stream)
+ساكن فراغ
+cut_characters (FILE *دھارا)
 {
-  cut_characters_mode (stream, false);
+  cut_characters_منوال (دھارا, false);
 }
 
 /* Read from STREAM, printing to standard output any selected fields,
    using a multibyte-aware field delimiter parser.  */
 
-static void
-cut_fields_mb_any (FILE *stream, bool whitespace_mode)
+ساكن فراغ
+cut_fields_mb_any (FILE *دھارا, bool whitespace_منوال)
 {
-  static char bytes_in[IO_BUFSIZE];
+  ساكن حرف بائٹاں_وچ[IO_BUFSIZE];
   mbbuf_t mbbuf;
-  struct mbfield_parser parser =
+  بنية mbfield_parser parser =
     {
-      .whitespace_delimited = whitespace_mode,
+      .whitespace_delimited = whitespace_منوال,
       .trim_outer_whitespace = trim_outer_whitespace,
-      .at_line_start = true,
+      .at_سطر_شروع = true,
       .saved_g = { .ch = MBBUF_EOF }
     };
-  uintmax_t field_idx = 1;
-  bool found_any_selected_field = false;
-  bool buffer_first_field;
-  bool have_pending_line = false;
-  bool write_field;
-  idx_t field_1_n_bytes = 0;
+  uintmax_t میدان_idx = 1;
+  bool لبھیا_any_selected_میدان = false;
+  bool بفر_پہلا_میدان;
+  bool have_pending_سطر = false;
+  bool write_میدان;
+  idx_t میدان_1_n_بائٹاں = 0;
 
   current_rp = frp;
-  mbbuf_init (&mbbuf, bytes_in, sizeof bytes_in, stream);
+  mbbuf_init (&mbbuf, بائٹاں_وچ, حجم بائٹاں_وچ, دھارا);
 
-  buffer_first_field = (suppress_non_delimited ^ !print_kth (1));
-  write_field = begin_field_output (field_idx, buffer_first_field,
-                                    &found_any_selected_field);
+  بفر_پہلا_میدان = (suppress_non_delimited ^ !print_kth (1));
+  write_میدان = begin_میدان_output (میدان_idx, بفر_پہلا_میدان,
+                                    &لبھیا_any_selected_میدان);
 
-  while (true)
+  طالما (true)
     {
-      enum field_terminator terminator;
-      if (!buffer_first_field || field_idx != 1)
-        terminator = scan_mb_field (&mbbuf, &parser, &have_pending_line,
-                                    write_field, NULL);
-      else
-        terminator = scan_mb_field (&mbbuf, &parser, &have_pending_line,
-                                    false, &field_1_n_bytes);
+      تعداد میدان_terminator terminator;
+      إذا (!بفر_پہلا_میدان || میدان_idx != 1)
+        terminator = جانچ_mb_میدان (&mbbuf, &parser, &have_pending_سطر,
+                                    write_میدان, عدم);
+      وإلا
+        terminator = جانچ_mb_میدان (&mbbuf, &parser, &have_pending_سطر,
+                                    false, &میدان_1_n_بائٹاں);
 
-      if (terminator == FIELD_DELIMITER)
+      إذا (terminator == میدان_DELIMITER)
         {
-          handle_field_delimiter (&field_idx, buffer_first_field,
-                                  &field_1_n_bytes,
-                                  &found_any_selected_field, &write_field);
-          if (! field_selection_exhausted (field_idx))
-            continue;
+          handle_میدان_delimiter (&میدان_idx, بفر_پہلا_میدان,
+                                  &میدان_1_n_بائٹاں,
+                                  &لبھیا_any_selected_میدان, &write_میدان);
+          إذا (! میدان_selection_exhausted (میدان_idx))
+            استمر;
 
-          terminator = scan_mb_line_end (&mbbuf, &parser,
-                                         &have_pending_line);
+          terminator = جانچ_mb_سطر_سرا (&mbbuf, &parser,
+                                         &have_pending_سطر);
         }
 
-      if (terminator == FIELD_EOF && !have_pending_line)
-        break;
+      إذا (terminator == میدان_EOF && !have_pending_سطر)
+        اكسر;
 
-      finish_current_line (field_idx, buffer_first_field,
-                           &field_1_n_bytes, found_any_selected_field,
-                           terminator == FIELD_LINE_DELIMITER);
-      if (terminator == FIELD_EOF)
-        break;
+      انت_current_سطر (میدان_idx, بفر_پہلا_میدان,
+                           &میدان_1_n_بائٹاں, لبھیا_any_selected_میدان,
+                           terminator == میدان_سطر_DELIMITER);
+      إذا (terminator == میدان_EOF)
+        اكسر;
 
-      reset_field_line (&field_idx, &found_any_selected_field,
-                        &have_pending_line, &parser);
-      write_field = begin_field_output (field_idx, buffer_first_field,
-                                        &found_any_selected_field);
+      reset_میدان_سطر (&میدان_idx, &لبھیا_any_selected_میدان,
+                        &have_pending_سطر, &parser);
+      write_میدان = begin_میدان_output (میدان_idx, بفر_پہلا_میدان,
+                                        &لبھیا_any_selected_میدان);
     }
 }
 
 /* Read from STREAM, printing to standard output any selected fields,
    using a multibyte field delimiter.  */
 
-static void
-cut_fields_mb (FILE *stream)
+ساكن فراغ
+cut_fields_mb (FILE *دھارا)
 {
-  cut_fields_mb_any (stream, false);
+  cut_fields_mb_any (دھارا, false);
 }
 
 /* Read from STREAM, printing to standard output any selected fields,
    using byte searches for a single-byte or valid UTF-8 field delimiter.  */
 
-static void
-cut_fields_bytesearch (FILE *stream)
+ساكن فراغ
+cut_fields_bytesearch (FILE *دھارا)
 {
   /* Leave 1 byte unused so space to NUL terminate (for strstr).  */
-  static char bytes_in[IO_BUFSIZE+1];
+  ساكن حرف بائٹاں_وچ[IO_BUFSIZE+1];
   mbbuf_t mbbuf;
-  uintmax_t field_idx = 1;
-  bool found_any_selected_field = false;
-  bool have_pending_line = false;
-  bool skip_blank_run = false;
-  bool pending_line_delim_field = false;
-  bool write_field;
-  idx_t field_1_n_bytes = 0;
+  uintmax_t میدان_idx = 1;
+  bool لبھیا_any_selected_میدان = false;
+  bool have_pending_سطر = false;
+  bool skip_blank_لگاتار = false;
+  bool pending_سطر_delim_میدان = false;
+  bool write_میدان;
+  idx_t میدان_1_n_بائٹاں = 0;
 
   current_rp = frp;
-  bool buffer_first_field = suppress_non_delimited ^ !print_kth (1);
-  mbbuf_init (&mbbuf, bytes_in, sizeof bytes_in - 1, stream);
-  write_field = begin_field_output (field_idx, buffer_first_field,
-                                    &found_any_selected_field);
+  bool بفر_پہلا_میدان = suppress_non_delimited ^ !print_kth (1);
+  mbbuf_init (&mbbuf, بائٹاں_وچ, حجم بائٹاں_وچ - 1, دھارا);
+  write_میدان = begin_میدان_output (میدان_idx, بفر_پہلا_میدان,
+                                    &لبھیا_any_selected_میدان);
 
-  struct bytesearch_context search = { .blank_delimited = whitespace_delimited};
-  bytesearch_context_reset (&search);
+  بنية bytesearch_context تلاش = { .blank_delimited = whitespace_delimited};
+  bytesearch_context_reset (&تلاش);
 
-  while (true)
+  طالما (true)
     {
       idx_t n_avail = mbbuf_topup (&mbbuf);
-      search.at_eof = mbbuf.eof;
-      search.line_end_known = false;
+      تلاش.at_eof = mbbuf.eof;
+      تلاش.سطر_سرا_معلوم = false;
 
-      if (pending_line_delim_field)
+      إذا (pending_سطر_delim_میدان)
         {
-          pending_line_delim_field = false;
+          pending_سطر_delim_میدان = false;
 
-          if (n_avail == 0)
+          إذا (n_avail == 0)
             {
-              if (handle_field_1 (field_idx, buffer_first_field,
-                                  &field_1_n_bytes))
-                next_item (&field_idx);
-              maybe_write_line_delim (found_any_selected_field, field_idx);
-              return;
+              إذا (handle_میدان_1 (میدان_idx, بفر_پہلا_میدان,
+                                  &میدان_1_n_بائٹاں))
+                اگلا_شے (&میدان_idx);
+              maybe_write_سطر_delim (لبھیا_any_selected_میدان, میدان_idx);
+              أرجع;
             }
 
-          handle_field_delimiter (&field_idx, buffer_first_field,
-                                  &field_1_n_bytes,
-                                  &found_any_selected_field, &write_field);
-          if (whitespace_delimited)
-            skip_blank_run = true;
+          handle_میدان_delimiter (&میدان_idx, بفر_پہلا_میدان,
+                                  &میدان_1_n_بائٹاں,
+                                  &لبھیا_any_selected_میدان, &write_میدان);
+          إذا (whitespace_delimited)
+            skip_blank_لگاتار = true;
         }
 
-      if (n_avail == 0)
-        break;
+      إذا (n_avail == 0)
+        اكسر;
 
-      char *chunk = mbbuf.buffer + mbbuf.offset;
+      حرف *chunk = mbbuf.بفر + mbbuf.وتھ;
       idx_t processed = 0;
 
       /* Fast path: no field delimiter in chunk — output or skip lines.  */
-      if (field_idx == 1
-          && (!whitespace_delimited || !field_selection_exhausted (field_idx))
-          && !field_delim_is_line_delim ()
+      إذا (میدان_idx == 1
+          && (!whitespace_delimited || !میدان_selection_exhausted (میدان_idx))
+          && !میدان_delim_is_سطر_delim ()
           && !(whitespace_delimited
-               ? find_c_blank (chunk, n_avail)
-               : find_field_delim (chunk, n_avail)))
+               ? لبھو_c_blank (chunk, n_avail)
+               : لبھو_میدان_delim (chunk, n_avail)))
         {
-          char *last_line_delim = search.at_eof
+          حرف *آخری_سطر_delim = تلاش.at_eof
                                   ? chunk + n_avail - 1
-                                  : memrchr (chunk, line_delim, n_avail);
-          if (last_line_delim)
+                                  : memrchr (chunk, سطر_delim, n_avail);
+          إذا (آخری_سطر_delim)
             {
-              idx_t n = last_line_delim - chunk + 1;
-              if (! suppress_non_delimited)
+              idx_t n = آخری_سطر_delim - chunk + 1;
+              إذا (! suppress_non_delimited)
                 {
-                  write_bytes (field_1_buffer, field_1_n_bytes);
-                  write_bytes (chunk, n);
-                  if (search.at_eof && chunk[n - 1] != line_delim)
-                    write_line_delim ();
+                  write_بائٹاں (میدان_1_بفر, میدان_1_n_بائٹاں);
+                  write_بائٹاں (chunk, n);
+                  إذا (تلاش.at_eof && chunk[n - 1] != سطر_delim)
+                    write_سطر_delim ();
                 }
-              field_1_n_bytes = 0;
+              میدان_1_n_بائٹاں = 0;
               mbbuf_advance (&mbbuf, n);
-              have_pending_line = false;
-              if (search.at_eof)
-                return;
-              continue;
+              have_pending_سطر = false;
+              إذا (تلاش.at_eof)
+                أرجع;
+              استمر;
             }
         }
 
-      while (processed < n_avail)
+      طالما (processed < n_avail)
         {
-          char *terminator = NULL;
+          حرف *terminator = عدم;
 
-          if (skip_blank_run)
+          إذا (skip_blank_لگاتار)
             {
-              while (processed < n_avail && c_isblank (chunk[processed]))
+              طالما (processed < n_avail && c_isblank (chunk[processed]))
                 processed++;
-              if (processed == n_avail)
-                break;
-              skip_blank_run = false;
+              إذا (processed == n_avail)
+                اكسر;
+              skip_blank_لگاتار = false;
             }
 
-          if (field_selection_exhausted (field_idx))
+          إذا (میدان_selection_exhausted (میدان_idx))
             {
-              if (field_delim_is_line_delim ())
+              إذا (میدان_delim_is_سطر_delim ())
                 {
-                  maybe_write_line_delim (found_any_selected_field,
-                                          field_idx);
+                  maybe_write_سطر_delim (لبھیا_any_selected_میدان,
+                                          میدان_idx);
                   mbbuf_advance (&mbbuf, processed);
-                  return;
+                  أرجع;
                 }
-              search.mode = BYTESEARCH_LINE_ONLY;
-              enum field_terminator terminator_kind
-                = find_field_terminator (chunk + processed, n_avail - processed,
-                                         &search, &terminator);
-              if (terminator_kind == FIELD_LINE_DELIMITER)
+              تلاش.منوال_2 = BYTESEARCH_سطر_ONLY;
+              تعداد میدان_terminator terminator_قسم
+                = لبھو_میدان_terminator (chunk + processed, n_avail - processed,
+                                         &تلاش, &terminator);
+              إذا (terminator_قسم == میدان_سطر_DELIMITER)
                 {
                   processed = terminator - chunk + 1;
-                  maybe_write_line_delim (found_any_selected_field,
-                                          field_idx);
-                  goto reset_line;
+                  maybe_write_سطر_delim (لبھیا_any_selected_میدان,
+                                          میدان_idx);
+                  اذهب reset_سطر;
                 }
               processed = n_avail;
-              break;
+              اكسر;
             }
 
-          enum field_terminator terminator_kind
-            = find_field_terminator (chunk + processed, n_avail - processed,
-                                     &search, &terminator);
-          idx_t field_len = terminator ? terminator - (chunk + processed)
+          تعداد میدان_terminator terminator_قسم
+            = لبھو_میدان_terminator (chunk + processed, n_avail - processed,
+                                     &تلاش, &terminator);
+          idx_t میدان_len = terminator ? terminator - (chunk + processed)
                                        : n_avail - processed;
 
-          if (terminator_kind == FIELD_DATA
-              && !search.at_eof
+          إذا (terminator_قسم == میدان_انکڑے
+              && !تلاش.at_eof
               && !whitespace_delimited
-              && !field_delim_is_line_delim ())
-            field_len -= field_delim_overlap (chunk + processed, field_len);
+              && !میدان_delim_is_سطر_delim ())
+            میدان_len -= میدان_delim_overlap (chunk + processed, میدان_len);
 
-          if (field_len || terminator)
-            have_pending_line = true;
+          إذا (میدان_len || terminator)
+            have_pending_سطر = true;
 
           /* Output field content.  */
-          if (field_idx == 1 && buffer_first_field)
-            append_field_1_chunk (chunk + processed, field_len,
-                                  &field_1_n_bytes);
-          else if (write_field)
-            write_bytes (chunk + processed, field_len);
-          processed += field_len;
+          إذا (میدان_idx == 1 && بفر_پہلا_میدان)
+            append_میدان_1_chunk (chunk + processed, میدان_len,
+                                  &میدان_1_n_بائٹاں);
+          وإلا إذا (write_میدان)
+            write_بائٹاں (chunk + processed, میدان_len);
+          processed += میدان_len;
 
-          if (terminator_kind == FIELD_DATA)
-            break;
+          إذا (terminator_قسم == میدان_انکڑے)
+            اكسر;
 
-          if (terminator_kind == FIELD_DELIMITER)
+          إذا (terminator_قسم == میدان_DELIMITER)
             {
-              if (field_delim_is_line_delim () && processed + 1 == n_avail)
+              إذا (میدان_delim_is_سطر_delim () && processed + 1 == n_avail)
                 {
                   processed++;
-                  pending_line_delim_field = true;
-                  break;
+                  pending_سطر_delim_میدان = true;
+                  اكسر;
                 }
 
               processed += whitespace_delimited ? 1 : delim_mcel.len;
-              handle_field_delimiter (&field_idx, buffer_first_field,
-                                      &field_1_n_bytes,
-                                      &found_any_selected_field, &write_field);
-              if (whitespace_delimited)
-                skip_blank_run = true;
+              handle_میدان_delimiter (&میدان_idx, بفر_پہلا_میدان,
+                                      &میدان_1_n_بائٹاں,
+                                      &لبھیا_any_selected_میدان, &write_میدان);
+              إذا (whitespace_delimited)
+                skip_blank_لگاتار = true;
             }
-          else
+          وإلا
             {
-              affirm (terminator_kind == FIELD_LINE_DELIMITER);
+              affirm (terminator_قسم == میدان_سطر_DELIMITER);
               processed++;
-              finish_current_line (field_idx, buffer_first_field,
-                                   &field_1_n_bytes,
-                                   found_any_selected_field, true);
+              انت_current_سطر (میدان_idx, بفر_پہلا_میدان,
+                                   &میدان_1_n_بائٹاں,
+                                   لبھیا_any_selected_میدان, true);
 
-            reset_line:
-              field_idx = 1;
+            reset_سطر:
+              میدان_idx = 1;
               current_rp = frp;
-              found_any_selected_field = false;
-              have_pending_line = false;
-              bytesearch_context_reset (&search);
-              write_field = begin_field_output (field_idx, buffer_first_field,
-                                                &found_any_selected_field);
+              لبھیا_any_selected_میدان = false;
+              have_pending_سطر = false;
+              bytesearch_context_reset (&تلاش);
+              write_میدان = begin_میدان_output (میدان_idx, بفر_پہلا_میدان,
+                                                &لبھیا_any_selected_میدان);
             }
         }
 
       mbbuf_advance (&mbbuf, processed);
     }
 
-  if (!have_pending_line)
-    return;
+  إذا (!have_pending_سطر)
+    أرجع;
 
-  finish_current_line (field_idx, buffer_first_field, &field_1_n_bytes,
-                       found_any_selected_field, false);
+  انت_current_سطر (میدان_idx, بفر_پہلا_میدان, &میدان_1_n_بائٹاں,
+                       لبھیا_any_selected_میدان, false);
 }
 
 /* Read from STREAM, printing to standard output any selected fields,
    using runs of whitespace as the field delimiter.  */
 
-static void
-cut_fields_ws (FILE *stream)
+ساكن فراغ
+cut_fields_ws (FILE *دھارا)
 {
-  if (MB_CUR_MAX <= 1 && !trim_outer_whitespace)
-    cut_fields_bytesearch (stream);
-  else
-    cut_fields_mb_any (stream, true);
+  إذا (MB_CUR_MAX <= 1 && !trim_outer_whitespace)
+    cut_fields_bytesearch (دھارا);
+  وإلا
+    cut_fields_mb_any (دھارا, true);
 }
 
 /* Process file FILE to standard output, using CUT_STREAM.
    Return true if successful.  */
 
-static bool
-cut_file (char const *file, void (*cut_stream) (FILE *))
+ساكن bool
+cut_file (حرف ثابت *file, فراغ (*cut_دھارا) (FILE *))
 {
-  FILE *stream;
+  FILE *دھارا;
 
-  if (streq (file, "-"))
+  إذا (streq (file, "-"))
     {
       have_read_stdin = true;
-      stream = stdin;
-      assume (stream);  /* Pacify GCC bug#109613.  */
+      دھارا = stdin;
+      assume (دھارا);  /* Pacify GCC bug#109613.  */
     }
-  else
+  وإلا
     {
-      stream = fopen (file, "r");
-      if (stream == NULL)
+      دھارا = fopen (file, "r");
+      إذا (دھارا == عدم)
         {
           error (0, errno, "%s", quotef (file));
-          return false;
+          أرجع false;
         }
     }
 
-  fadvise (stream, FADVISE_SEQUENTIAL);
+  fadvise (دھارا, FADVISE_SEQUENTIAL);
 
-  cut_stream (stream);
+  cut_دھارا (دھارا);
 
-  int err = errno;
-  if (!ferror (stream))
+  صحيح err = errno;
+  إذا (!ferror (دھارا))
     err = 0;
-  if (streq (file, "-"))
-    clearerr (stream);		/* Also clear EOF.  */
-  else if (fclose (stream) == EOF)
+  إذا (streq (file, "-"))
+    clearerr (دھارا);		/* Also clear EOF.  */
+  وإلا إذا (fclose (دھارا) == EOF)
     err = errno;
-  if (err)
+  إذا (err)
     {
       error (0, err, "%s", quotef (file));
-      return false;
+      أرجع false;
     }
-  return true;
+  أرجع true;
 }
 
-int
-main (int argc, char **argv)
+صحيح
+مکھ (صحيح argc, حرف **argv)
 {
-  int optc;
+  صحيح optc;
   bool ok;
   bool delim_specified = false;
   bool whitespace_delimited_specified = false;
-  char *spec_list_string = NULL;
+  حرف *spec_list_string = عدم;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  سیٹ_پروگرام_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "b:c:d:f:F:nO:szw", longopts, NULL))
+  طالما ((optc = getopt_long (argc, argv, "b:c:d:f:F:nO:szw", longopts, عدم))
          != -1)
     {
-      switch (optc)
+      بدل (optc)
         {
-        case 'b':
-          cut_mode = CUT_MODE_BYTES;
+        حالة 'b':
+          cut_منوال = CUT_منوال_بائٹاں;
           FALLTHROUGH;
-        case 'c':
-          if (optc == 'c')
-            cut_mode = CUT_MODE_CHARACTERS;
+        حالة 'c':
+          إذا (optc == 'c')
+            cut_منوال = CUT_منوال_CHARACTERS;
           FALLTHROUGH;
-        case 'f':
-        case 'F':
-          if (optc == 'f' || optc == 'F')
-            cut_mode = CUT_MODE_FIELDS;
-          if (optc == 'F')
+        حالة 'f':
+        حالة 'F':
+          إذا (optc == 'f' || optc == 'F')
+            cut_منوال = CUT_منوال_FIELDS;
+          إذا (optc == 'F')
             {
               whitespace_delimited = true;
               space_output_delimiter_default = true;
             }
-          if (spec_list_string)
+          إذا (spec_list_string)
             FATAL_ERROR (_("only one list may be specified"));
           spec_list_string = optarg;
-          break;
+          اكسر;
 
-        case 'd':
+        حالة 'd':
           {
             /* New delimiter.  */
             /* Interpret -d '' to mean 'use the NUL byte as the delimiter.'  */
             mcel_t g = delim_mcel = mcel_scanz (optarg);
-            if (optarg[0] && optarg[g.len])
+            إذا (optarg[0] && optarg[g.len])
               FATAL_ERROR (_("the delimiter must be a single character"));
             /* Note NUL is copied for use with strstr.  */
-            copy_bytes (delim_bytes, optarg, g.len + 1);
+            copy_بائٹاں (delim_بائٹاں, optarg, g.len + 1);
             delim_specified = true;
-            break;
+            اكسر;
           }
 
-        case 'w':
+        حالة 'w':
           whitespace_delimited = true;
           whitespace_delimited_specified = true;
           trim_outer_whitespace
             = (optarg
                && XARGMATCH ("--whitespace-delimited", optarg,
-                             whitespace_option_args,
+                             whitespace_option_دلیلاں,
                              whitespace_option_types)
                   == WHITESPACE_OPTION_TRIMMED);
-          break;
+          اكسر;
 
-        case 'O':
+        حالة 'O':
           /* Interpret --output-delimiter='' to mean
              'use the NUL byte as the delimiter.'  */
-          output_delimiter_length = (optarg[0] == '\0'
-                                     ? 1 : strlen (optarg));
+          output_delimiter_لمائی = (optarg[0] == '\0'
+                                     ? 1 : لڑی_لمبائی (optarg));
           output_delimiter_string = optarg;
-          break;
+          اكسر;
 
-        case 'n':
-          no_split = true;
-          break;
+        حالة 'n':
+          no_ونڈو = true;
+          اكسر;
 
-        case 's':
+        حالة 's':
           suppress_non_delimited = true;
-          break;
+          اكسر;
 
-        case 'z':
-          line_delim = '\0';
-          break;
+        حالة 'z':
+          سطر_delim = '\0';
+          اكسر;
 
-        case COMPLEMENT_OPTION:
+        حالة COMPLEMENT_OPTION:
           complement = true;
-          break;
+          اكسر;
 
         case_GETOPT_HELP_CHAR;
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        case_GETOPT_نسخہ_CHAR (پروگرام_NAME, AUTHORS);
+        افتراضي:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (!spec_list_string)
+  إذا (!spec_list_string)
     FATAL_ERROR (_("you must specify a list of bytes, characters, or fields"));
 
-  if (cut_mode == CUT_MODE_BYTES || cut_mode == CUT_MODE_CHARACTERS)
+  إذا (cut_منوال == CUT_منوال_بائٹاں || cut_منوال == CUT_منوال_CHARACTERS)
     {
-      if (delim_specified || whitespace_delimited)
-        FATAL_ERROR (_("an input delimiter makes sense\n\
+      إذا (delim_specified || whitespace_delimited)
+        FATAL_ERROR (_("an داخلہ delimiter makes sense\n\
 \tonly when operating on fields"));
 
-      if (suppress_non_delimited)
-        FATAL_ERROR (_("suppressing non-delimited lines makes sense\n\
+      إذا (suppress_non_delimited)
+        FATAL_ERROR (_("suppressing non-delimited سطریں makes sense\n\
 \tonly when operating on fields"));
     }
 
-  if (delim_specified && whitespace_delimited_specified)
+  إذا (delim_specified && whitespace_delimited_specified)
     FATAL_ERROR (_("-d and -w are mutually exclusive"));
 
-  if (delim_specified && !whitespace_delimited_specified)
+  إذا (delim_specified && !whitespace_delimited_specified)
     whitespace_delimited = false;
 
-  set_fields (spec_list_string,
-              (((cut_mode == CUT_MODE_BYTES
-                 || cut_mode == CUT_MODE_CHARACTERS)
+  سیٹ_fields (spec_list_string,
+              (((cut_منوال == CUT_منوال_بائٹاں
+                 || cut_منوال == CUT_منوال_CHARACTERS)
                 ? SETFLD_ERRMSG_USE_POS : 0)
                | (complement ? SETFLD_COMPLEMENT : 0)));
 
-  if (!delim_specified)
+  إذا (!delim_specified)
     {
-      delim_bytes[0] = '\t';
+      delim_بائٹاں[0] = '\t';
       delim_mcel = mcel_ch ('\t', 1);
     }
 
-  if (output_delimiter_string == NULL)
+  إذا (output_delimiter_string == عدم)
     {
       output_delimiter_string = output_delimiter_default;
-      if (space_output_delimiter_default)
+      إذا (space_output_delimiter_default)
         {
           output_delimiter_default[0] = ' ';
-          output_delimiter_length = 1;
+          output_delimiter_لمائی = 1;
         }
-      else
+      وإلا
         {
-          copy_bytes (output_delimiter_default, delim_bytes, delim_mcel.len);
-          output_delimiter_length = delim_mcel.len;
+          copy_بائٹاں (output_delimiter_default, delim_بائٹاں, delim_mcel.len);
+          output_delimiter_لمائی = delim_mcel.len;
         }
     }
 
-  void (*cut_stream) (FILE *) = NULL;
-  switch (cut_mode)
+  فراغ (*cut_دھارا) (FILE *) = عدم;
+  بدل (cut_منوال)
     {
-    case CUT_MODE_BYTES:
-      cut_stream = MB_CUR_MAX <= 1 || !no_split
-                   ? cut_bytes : cut_bytes_no_split;
-      break;
+    حالة CUT_منوال_بائٹاں:
+      cut_دھارا = MB_CUR_MAX <= 1 || !no_ونڈو
+                   ? cut_بائٹاں : cut_بائٹاں_no_ونڈو;
+      اكسر;
 
-    case CUT_MODE_CHARACTERS:
-      cut_stream = MB_CUR_MAX <= 1 ? cut_bytes : cut_characters;
-      break;
+    حالة CUT_منوال_CHARACTERS:
+      cut_دھارا = MB_CUR_MAX <= 1 ? cut_بائٹاں : cut_characters;
+      اكسر;
 
-    case CUT_MODE_FIELDS:
-      cut_stream = whitespace_delimited ? cut_fields_ws
-                   : bytesearch_field_delim_ok () ? cut_fields_bytesearch
+    حالة CUT_منوال_FIELDS:
+      cut_دھارا = whitespace_delimited ? cut_fields_ws
+                   : bytesearch_میدان_delim_ok () ? cut_fields_bytesearch
                    : cut_fields_mb;
-      break;
+      اكسر;
 
-    case CUT_MODE_NONE:
+    حالة CUT_منوال_NONE:
       affirm (false);
     }
-  affirm (cut_stream);
-  if (optind == argc)
-    ok = cut_file ("-", cut_stream);
-  else
-    for (ok = true; optind < argc; optind++)
-      ok &= cut_file (argv[optind], cut_stream);
+  affirm (cut_دھارا);
+  إذا (optind == argc)
+    ok = cut_file ("-", cut_دھارا);
+  وإلا
+    لكل (ok = true; optind < argc; optind++)
+      ok &= cut_file (argv[optind], cut_دھارا);
 
 
-  if (have_read_stdin && fclose (stdin) == EOF)
+  إذا (have_read_stdin && fclose (stdin) == EOF)
     {
       error (0, errno, "-");
       ok = false;
     }
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  أرجع ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

@@ -16,93 +16,93 @@
 
 /* Written by Paul Eggert.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
-#include <signal.h>
+#ضمن <config.h>
+#ضمن <stdio.h>
+#ضمن <getopt.h>
+#ضمن <sys/types.h>
+#ضمن <signal.h>
 
-#include "system.h"
-#include "c-ctype.h"
-#include "sig2str.h"
-#include "operand2sig.h"
-#include "quote.h"
+#ضمن "system.h"
+#ضمن "c-ctype.h"
+#ضمن "sig2str.h"
+#ضمن "operand2sig.h"
+#ضمن "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "kill"
+#تعریف_کرو پروگرام_NAME "kill"
 
-#define AUTHORS proper_name ("Paul Eggert")
+#تعریف_کرو AUTHORS proper_name ("Paul Eggert")
 
-static char const short_options[] =
+ساكن حرف ثابت short_options[] =
   "0::1::2::3::4::5::6::7::8::9::"
   "A::B::C::D::E::F::G::H::I::J::K::M::"
   "N::O::P::Q::R::S::T::U::V::W::X::Y::Z::"
   "Lln:s:t";
 
-static struct option const long_options[] =
+ساكن بنية option ثابت long_options[] =
 {
-  {"list", no_argument, NULL, 'l'},
-  {"signal", required_argument, NULL, 's'},
-  {"table", no_argument, NULL, 't'},
+  {"list", no_دلیل, عدم, 'l'},
+  {"signal", required_دلیل, عدم, 's'},
+  {"table", no_دلیل, عدم, 't'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_نسخہ_OPTION_DECL},
+  {عدم, 0, عدم, 0}
 };
 
-void
-usage (int status)
+فراغ
+usage (صحيح حالت)
 {
-  if (status != EXIT_SUCCESS)
+  إذا (حالت != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  وإلا
     {
-      printf (_("\
+      لکھو (_("\
 Usage: %s [-s SIGNAL | -SIGNAL] PID...\n\
   or:  %s -l [SIGNAL]...\n\
   or:  %s -t [SIGNAL]...\n\
 "),
-              program_name, program_name, program_name);
+              پروگرام_name, پروگرام_name, پروگرام_name);
       fputs (_("\
-Send signals to processes, or list signals.\n\
+Send اشارے منزل processes, or list اشارے.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -s, --signal=SIGNAL, -SIGNAL\n\
-         specify the name or number of the signal to be sent\n\
+  -s, --إشارة=SIGNAL, -SIGNAL\n\
+         specify the name or نمبر دا the إشارة منزل be گھلیا\n\
 "));
       oputs (_("\
   -l, --list\n\
-         list signal names, or convert signal names to/from numbers\n\
+         list إشارة ناں, or convert إشارة ناں منزل/from numbers\n\
 "));
       oputs (_("\
-  -t, --table\n\
-         print a table of signal information\n\
+  -t, --جدول\n\
+         print a جدول دا إشارة information\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (نسخہ_OPTION_DESCRIPTION);
       fputs (_("\n\
-SIGNAL may be a signal name like 'HUP', or a signal number like '1',\n\
-or the exit status of a process terminated by a signal.\n\
-PID is an integer; if negative it identifies a process group.\n\
+SIGNAL may be a إشارة name like 'HUP', or a إشارة نمبر like '1',\n\
+or the باہر_نکلو حالت دا a process terminated by a إشارة.\n\
+PID is an integer; إذا negative it identifies a process گروہ.\n\
 "), stdout);
-      printf (USAGE_BUILTIN_WARNING, PROGRAM_NAME);
-      emit_ancillary_info (PROGRAM_NAME);
+      لکھو (USAGE_BUILTIN_WARNING, پروگرام_NAME);
+      emit_ancillary_info (پروگرام_NAME);
     }
-  exit (status);
+  باہر_نکلو (حالت);
 }
 
 /* Print a row of 'kill -t' output.  NUM_WIDTH is the maximum signal
    number width, and SIGNUM is the signal number to print.  The
    maximum name width is NAME_WIDTH, and SIGNAME is the name to print.  */
 
-static void
-print_table_row (int num_width, int signum,
-                 int name_width, char const *signame)
+ساكن فراغ
+print_جدول_صف (صحيح عدد_چوڑائی, صحيح signum,
+                 صحيح name_چوڑائی, حرف ثابت *signame)
 {
-  char const *description = strsignal (signum);
-  printf ("%*d %-*s %s\n", num_width, signum, name_width, signame,
+  حرف ثابت *description = strsignal (signum);
+  لکھو ("%*d %-*s %s\n", عدد_چوڑائی, signum, name_چوڑائی, signame,
           description ? description : "?");
 }
 
@@ -110,201 +110,201 @@ print_table_row (int num_width, int signum,
    Print the names specified by ARGV if nonzero; otherwise,
    print all known names.  Return a suitable exit status.  */
 
-static int
-list_signals (bool table, char *const *argv)
+ساكن صحيح
+list_اشارے (bool جدول, حرف *ثابت *argv)
 {
-  int status = EXIT_SUCCESS;
-  char signame[SIG2STR_MAX];
+  صحيح حالت = EXIT_SUCCESS;
+  حرف signame[SIG2STR_MAX];
 
-  if (table)
+  إذا (جدول)
     {
-      int name_width = 0;
+      صحيح name_چوڑائی = 0;
 
       /* Compute the maximum width of a signal number.  */
-      int num_width = 1;
-      for (int signum = 1; signum <= SIGNUM_BOUND / 10; signum *= 10)
-        num_width++;
+      صحيح عدد_چوڑائی = 1;
+      لكل (صحيح signum = 1; signum <= SIGNUM_BOUND / 10; signum *= 10)
+        عدد_چوڑائی++;
 
       /* Compute the maximum width of a signal name.  */
-      for (int signum = 0; signum <= SIGNUM_BOUND; signum++)
-        if (sig2str (signum, signame) == 0)
+      لكل (صحيح signum = 0; signum <= SIGNUM_BOUND; signum++)
+        إذا (sig2str (signum, signame) == 0)
           {
-            idx_t len = strlen (signame);
-            if (name_width < len)
-              name_width = len;
+            idx_t len = لڑی_لمبائی (signame);
+            إذا (name_چوڑائی < len)
+              name_چوڑائی = len;
           }
 
-      if (argv)
-        for (; *argv; argv++)
+      إذا (argv)
+        لكل (; *argv; argv++)
           {
-            int signum = operand2sig (*argv);
-            if (signum < 0)
-              status = EXIT_FAILURE;
-            else
+            صحيح signum = operand2sig (*argv);
+            إذا (signum < 0)
+              حالت = EXIT_FAILURE;
+            وإلا
               {
-                if (sig2str (signum, signame) != 0)
-                  snprintf (signame, sizeof signame, "SIG%d", signum);
-                print_table_row (num_width, signum, name_width, signame);
+                إذا (sig2str (signum, signame) != 0)
+                  snprintf (signame, حجم signame, "SIG%d", signum);
+                print_جدول_صف (عدد_چوڑائی, signum, name_چوڑائی, signame);
               }
           }
-      else
-        for (int signum = 0; signum <= SIGNUM_BOUND; signum++)
-          if (sig2str (signum, signame) == 0)
-            print_table_row (num_width, signum, name_width, signame);
+      وإلا
+        لكل (صحيح signum = 0; signum <= SIGNUM_BOUND; signum++)
+          إذا (sig2str (signum, signame) == 0)
+            print_جدول_صف (عدد_چوڑائی, signum, name_چوڑائی, signame);
     }
-  else
+  وإلا
     {
-      if (argv)
-        for (; *argv; argv++)
+      إذا (argv)
+        لكل (; *argv; argv++)
           {
-            int signum = operand2sig (*argv);
-            if (signum < 0)
-              status = EXIT_FAILURE;
-            else if (c_isdigit (**argv))
+            صحيح signum = operand2sig (*argv);
+            إذا (signum < 0)
+              حالت = EXIT_FAILURE;
+            وإلا إذا (c_isdigit (**argv))
               {
-                if (sig2str (signum, signame) == 0)
+                إذا (sig2str (signum, signame) == 0)
                   puts (signame);
-                else
-                  printf ("%d\n", signum);
+                وإلا
+                  لکھو ("%d\n", signum);
               }
-            else
-              printf ("%d\n", signum);
+            وإلا
+              لکھو ("%d\n", signum);
           }
-      else
-        for (int signum = 0; signum <= SIGNUM_BOUND; signum++)
-          if (sig2str (signum, signame) == 0)
+      وإلا
+        لكل (صحيح signum = 0; signum <= SIGNUM_BOUND; signum++)
+          إذا (sig2str (signum, signame) == 0)
             puts (signame);
     }
 
-  return status;
+  أرجع حالت;
 }
 
 /* Send signal SIGNUM to all the processes or process groups specified
    by ARGV.  Return a suitable exit status.  */
 
-static int
-send_signals (int signum, char *const *argv)
+ساكن صحيح
+send_اشارے (صحيح signum, حرف *ثابت *argv)
 {
-  int status = EXIT_SUCCESS;
-  char const *arg = *argv;
+  صحيح حالت = EXIT_SUCCESS;
+  حرف ثابت *arg = *argv;
 
-  do
+  افعل
     {
-      char *endp;
+      حرف *endp;
       intmax_t n = (errno = 0, strtoimax (arg, &endp, 10));
       pid_t pid;
 
-      if (errno == ERANGE || ckd_add (&pid, n, 0)
+      إذا (errno == ERANGE || ckd_جوڑو (&pid, n, 0)
           || arg == endp || *endp)
         {
           error (0, 0, _("%s: invalid process id"), quote (arg));
-          status = EXIT_FAILURE;
+          حالت = EXIT_FAILURE;
         }
-      else if (kill (pid, signum) != 0)
+      وإلا إذا (kill (pid, signum) != 0)
         {
-          if (errno == EINVAL)
+          إذا (errno == EINVAL)
             error (0, errno, "%d", signum);
-          else
+          وإلا
             error (0, errno, "%s", quote (arg));
-          status = EXIT_FAILURE;
+          حالت = EXIT_FAILURE;
         }
     }
-  while ((arg = *++argv));
+  طالما ((arg = *++argv));
 
-  return status;
+  أرجع حالت;
 }
 
-int
-main (int argc, char **argv)
+صحيح
+مکھ (صحيح argc, حرف **argv)
 {
-  int optc;
+  صحيح optc;
   bool list = false;
-  bool table = false;
-  int signum = -1;
+  bool جدول = false;
+  صحيح signum = -1;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  سیٹ_پروگرام_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, short_options, long_options, NULL))
+  طالما ((optc = getopt_long (argc, argv, short_options, long_options, عدم))
          != -1)
-    switch (optc)
+    بدل (optc)
       {
-      case '0': case '1': case '2': case '3': case '4':
-      case '5': case '6': case '7': case '8': case '9':
-        if (optind != 2)
+      حالة '0': حالة '1': حالة '2': حالة '3': حالة '4':
+      حالة '5': حالة '6': حالة '7': حالة '8': حالة '9':
+        إذا (optind != 2)
           {
             /* This option is actually a process-id.  */
             optind--;
-            goto no_more_options;
+            اذهب no_ہور_options;
           }
         FALLTHROUGH;
-      case 'A': case 'B': case 'C': case 'D': case 'E':
-      case 'F': case 'G': case 'H': case 'I': case 'J':
-      case 'K': /*case 'L':*/ case 'M': case 'N': case 'O':
-      case 'P': case 'Q': case 'R': case 'S': case 'T':
-      case 'U': case 'V': case 'W': case 'X': case 'Y':
-      case 'Z':
-        if (! optarg)
-          optarg = argv[optind - 1] + strlen (argv[optind - 1]);
-        if (optarg != argv[optind - 1] + 2)
+      حالة 'A': حالة 'B': حالة 'C': حالة 'D': حالة 'E':
+      حالة 'F': حالة 'G': حالة 'H': حالة 'I': حالة 'J':
+      حالة 'K': /*case 'L':*/ حالة 'M': حالة 'N': حالة 'O':
+      حالة 'P': حالة 'Q': حالة 'R': حالة 'S': حالة 'T':
+      حالة 'U': حالة 'V': حالة 'W': حالة 'X': حالة 'Y':
+      حالة 'Z':
+        إذا (! optarg)
+          optarg = argv[optind - 1] + لڑی_لمبائی (argv[optind - 1]);
+        إذا (optarg != argv[optind - 1] + 2)
           {
             error (0, 0, _("invalid option -- %c"), optc);
             usage (EXIT_FAILURE);
           }
         optarg--;
         FALLTHROUGH;
-      case 'n': /* -n is not documented, but is for Bash compatibility.  */
-      case 's':
-        if (0 <= signum)
+      حالة 'n': /* -n is not documented, but is for Bash compatibility.  */
+      حالة 's':
+        إذا (0 <= signum)
           {
             error (0, 0, _("%s: multiple signals specified"), quote (optarg));
             usage (EXIT_FAILURE);
           }
         signum = operand2sig (optarg);
-        if (signum < 0)
+        إذا (signum < 0)
           usage (EXIT_FAILURE);
-        break;
+        اكسر;
 
-      case 'L': /* -L is not documented, but is for procps compatibility.  */
-      case 't':
-        table = true;
+      حالة 'L': /* -L is not documented, but is for procps compatibility.  */
+      حالة 't':
+        جدول = true;
         FALLTHROUGH;
-      case 'l':
-        if (list)
+      حالة 'l':
+        إذا (list)
           {
             error (0, 0, _("multiple -l or -t options specified"));
             usage (EXIT_FAILURE);
           }
         list = true;
-        break;
+        اكسر;
 
       case_GETOPT_HELP_CHAR;
-      case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-      default:
+      case_GETOPT_نسخہ_CHAR (پروگرام_NAME, AUTHORS);
+      افتراضي:
         usage (EXIT_FAILURE);
       }
- no_more_options:
+ no_ہور_options:
 
-  if (signum < 0)
+  إذا (signum < 0)
     signum = SIGTERM;
-  else if (list)
+  وإلا إذا (list)
     {
       error (0, 0, _("cannot combine signal with -l or -t"));
       usage (EXIT_FAILURE);
     }
 
-  if ( ! list && argc <= optind)
+  إذا ( ! list && argc <= optind)
     {
       error (0, 0, _("no process ID specified"));
       usage (EXIT_FAILURE);
     }
 
-  return (list
-          ? list_signals (table, optind < argc ? argv + optind : NULL)
-          : send_signals (signum, argv + optind));
+  أرجع (list
+          ? list_اشارے (جدول, optind < argc ? argv + optind : عدم)
+          : send_اشارے (signum, argv + optind));
 }

@@ -17,54 +17,54 @@
 
 /* Written by Jim Meyering.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
+#ضمن <config.h>
+#ضمن <stdio.h>
+#ضمن <sys/types.h>
 
-#include "system.h"
-#include "long-options.h"
-#include "quote.h"
+#ضمن "system.h"
+#ضمن "long-options.h"
+#ضمن "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "hostid"
+#تعریف_کرو پروگرام_NAME "hostid"
 
-#define AUTHORS proper_name ("Jim Meyering")
+#تعریف_کرو AUTHORS proper_name ("Jim Meyering")
 
-void
-usage (int status)
+فراغ
+usage (صحيح حالت)
 {
-  if (status != EXIT_SUCCESS)
+  إذا (حالت != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  وإلا
     {
-      printf (_("\
+      لکھو (_("\
 Usage: %s [OPTION]\n\
-Print the numeric identifier (in hexadecimal) for the current host.\n\
+Print the numeric identifier (وچ hexadecimal) لكل the current host.\n\
 \n\
-"), program_name);
+"), پروگرام_name);
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (نسخہ_OPTION_DESCRIPTION);
+      emit_ancillary_info (پروگرام_NAME);
     }
-  exit (status);
+  باہر_نکلو (حالت);
 }
 
-int
-main (int argc, char **argv)
+صحيح
+مکھ (صحيح argc, حرف **argv)
 {
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  سیٹ_پروگرام_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
-                                   Version, true, usage, AUTHORS,
-                                   (char const *) NULL);
+  parse_gnu_standard_options_only (argc, argv, پروگرام_NAME, PACKAGE_NAME,
+                                   نسخہ, true, usage, AUTHORS,
+                                   (حرف ثابت *) عدم);
 
-  if (optind < argc)
+  إذا (optind < argc)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind]));
       usage (EXIT_FAILURE);
@@ -73,9 +73,9 @@ main (int argc, char **argv)
   /* POSIX says gethostid returns a "32-bit identifier" but is silent
      whether it's sign-extended.  Turn off any sign-extension.  This
      is a no-op unless unsigned int is wider than 32 bits.  */
-  unsigned int id = gethostid () & 0xffffffff;
+  بنانشانی صحيح id = gethostid () & 0xffffffff;
 
-  printf ("%08x\n", id);
+  لکھو ("%08x\n", id);
 
-  return EXIT_SUCCESS;
+  أرجع EXIT_SUCCESS;
 }

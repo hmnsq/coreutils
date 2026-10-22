@@ -16,173 +16,173 @@
 
 /* David MacKenzie <djm@ai.mit.edu>  */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
-#include <selinux/label.h>
+#ضمن <config.h>
+#ضمن <stdio.h>
+#ضمن <getopt.h>
+#ضمن <sys/types.h>
+#ضمن <selinux/label.h>
 
-#include "system.h"
-#include "modechange.h"
-#include "quote.h"
-#include "selinux.h"
-#include "smack.h"
+#ضمن "system.h"
+#ضمن "modechange.h"
+#ضمن "quote.h"
+#ضمن "selinux.h"
+#ضمن "smack.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "mkfifo"
+#تعریف_کرو پروگرام_NAME "mkfifo"
 
-#define AUTHORS proper_name ("David MacKenzie")
+#تعریف_کرو AUTHORS proper_name ("David MacKenzie")
 
-static struct option const longopts[] =
+ساكن بنية option ثابت longopts[] =
 {
   {GETOPT_SELINUX_CONTEXT_OPTION_DECL},
-  {"mode", required_argument, NULL, 'm'},
+  {"mode", required_دلیل, عدم, 'm'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_نسخہ_OPTION_DECL},
+  {عدم, 0, عدم, 0}
 };
 
-void
-usage (int status)
+فراغ
+usage (صحيح حالت)
 {
-  if (status != EXIT_SUCCESS)
+  إذا (حالت != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  وإلا
     {
-      printf (_("Usage: %s [OPTION]... NAME...\n"), program_name);
+      لکھو (_("Usage: %s [OPTION]... NAME...\n"), پروگرام_name);
       fputs (_("\
-Create named pipes (FIFOs) with the given NAMEs.\n\
+Create named pipes (FIFOs) with the given ناں_2.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -m, --mode=MODE\n\
-         set file permission bits to MODE, not a=rw - umask\n\
+  -m, --منوال_2=منوال\n\
+         سیٹ_2 file permission بٹ_2 منزل منوال, not a=rw - umask\n\
 "));
       oputs (_("\
   -Z\n\
-         set the SELinux security context to default type\n\
+         سیٹ_2 the SELinux security context منزل افتراضي type\n\
 "));
       oputs (_("\
       --context[=CTX]\n\
-         like -Z, or if CTX is specified then set the\n\
-         SELinux or SMACK security context to CTX\n\
+         like -Z, or إذا CTX is specified then سیٹ_2 the\n\
+         SELinux or SMACK security context منزل CTX\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (نسخہ_OPTION_DESCRIPTION);
+      emit_ancillary_info (پروگرام_NAME);
     }
-  exit (status);
+  باہر_نکلو (حالت);
 }
 
-int
-main (int argc, char **argv)
+صحيح
+مکھ (صحيح argc, حرف **argv)
 {
-  char const *specified_mode = NULL;
-  char const *scontext = NULL;
-  struct selabel_handle *set_security_context = NULL;
+  حرف ثابت *specified_منوال = عدم;
+  حرف ثابت *scontext = عدم;
+  بنية selabel_handle *سیٹ_security_context = عدم;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  سیٹ_پروگرام_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  int optc;
-  while ((optc = getopt_long (argc, argv, "m:Z", longopts, NULL)) != -1)
+  صحيح optc;
+  طالما ((optc = getopt_long (argc, argv, "m:Z", longopts, عدم)) != -1)
     {
-      switch (optc)
+      بدل (optc)
         {
-        case 'm':
-          specified_mode = optarg;
-          break;
-        case 'Z':
-          if (is_smack_enabled ())
+        حالة 'm':
+          specified_منوال = optarg;
+          اكسر;
+        حالة 'Z':
+          إذا (is_smack_enabled ())
             {
               /* We don't yet support -Z to restore context with SMACK.  */
               scontext = optarg;
             }
-          else if (is_selinux_enabled () > 0)
+          وإلا إذا (is_selinux_enabled () > 0)
             {
-              if (optarg)
+              إذا (optarg)
                 scontext = optarg;
-              else
+              وإلا
                 {
-                  set_security_context = selabel_open (SELABEL_CTX_FILE,
-                                                       NULL, 0);
-                  if (! set_security_context)
+                  سیٹ_security_context = selabel_open (SELABEL_CTX_FILE,
+                                                       عدم, 0);
+                  إذا (! سیٹ_security_context)
                     error (0, errno, _("warning: ignoring --context"));
                 }
             }
-          else if (optarg)
+          وإلا إذا (optarg)
             {
               error (0, 0,
                      _("warning: ignoring --context; "
                        "it requires an SELinux/SMACK-enabled kernel"));
             }
-          break;
+          اكسر;
         case_GETOPT_HELP_CHAR;
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        case_GETOPT_نسخہ_CHAR (پروگرام_NAME, AUTHORS);
+        افتراضي:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (optind == argc)
+  إذا (optind == argc)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
-  if (scontext)
+  إذا (scontext)
     {
-      int ret = 0;
-      if (is_smack_enabled ())
-        ret = smack_set_label_for_self (scontext);
-      else
+      صحيح ret = 0;
+      إذا (is_smack_enabled ())
+        ret = smack_سیٹ_label_for_self (scontext);
+      وإلا
         ret = setfscreatecon (scontext);
 
-      if (ret < 0)
+      إذا (ret < 0)
         error (EXIT_FAILURE, errno,
                _("failed to set default file creation context to %s"),
                quote (scontext));
     }
 
-  mode_t newmode = MODE_RW_UGO;
-  if (specified_mode)
+  mode_t newmode = منوال_RW_UGO;
+  إذا (specified_منوال)
     {
-      struct mode_change *change = mode_compile (specified_mode);
-      if (!change)
+      بنية منوال_change *change = منوال_compile (specified_منوال);
+      إذا (!change)
         error (EXIT_FAILURE, 0, _("invalid mode"));
-      mode_t umask_value = umask (0);
-      umask (umask_value);
-      newmode = mode_adjust (newmode, false, umask_value, change, NULL);
-      free (change);
-      if (newmode & ~S_IRWXUGO)
+      mode_t umask_قدر = umask (0);
+      umask (umask_قدر);
+      newmode = منوال_adjust (newmode, false, umask_قدر, change, عدم);
+      حرر (change);
+      إذا (newmode & ~S_IRWXUGO)
         error (EXIT_FAILURE, 0,
                _("mode must specify only file permission bits"));
     }
 
-  int exit_status = EXIT_SUCCESS;
-  for (; optind < argc; ++optind)
+  صحيح exit_حالت = EXIT_SUCCESS;
+  لكل (; optind < argc; ++optind)
     {
-      if (set_security_context)
-        defaultcon (set_security_context, argv[optind], S_IFIFO);
-      if (mkfifo (argv[optind], newmode) != 0)
+      إذا (سیٹ_security_context)
+        defaultcon (سیٹ_security_context, argv[optind], S_IFIFO);
+      إذا (mkfifo (argv[optind], newmode) != 0)
         {
           error (0, errno, _("cannot create fifo %s"), quoteaf (argv[optind]));
-          exit_status = EXIT_FAILURE;
+          exit_حالت = EXIT_FAILURE;
         }
-      else if (specified_mode && lchmod (argv[optind], newmode) != 0)
+      وإلا إذا (specified_منوال && lchmod (argv[optind], newmode) != 0)
         {
           error (0, errno, _("cannot set permissions of %s"),
                  quoteaf (argv[optind]));
-          exit_status = EXIT_FAILURE;
+          exit_حالت = EXIT_FAILURE;
         }
     }
 
-  return exit_status;
+  أرجع exit_حالت;
 }

@@ -16,43 +16,43 @@
 
 /* Written by Pádraig Brady.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#ضمن <config.h>
+#ضمن <stdio.h>
+#ضمن <getopt.h>
+#ضمن <sys/types.h>
 
-#include "system.h"
-#include "assure.h"
-#include "filenamecat.h"
-#include "quote.h"
-#include "xreadlink.h"
-#include "xstrtol-error.h"
-#include "xstrtol.h"
-#include "c-ctype.h"
+#ضمن "system.h"
+#ضمن "assure.h"
+#ضمن "filenamecat.h"
+#ضمن "quote.h"
+#ضمن "xreadlink.h"
+#ضمن "xstrtol-error.h"
+#ضمن "xstrtol.h"
+#ضمن "c-ctype.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "stdbuf"
-#define LIB_NAME "libstdbuf.so" /* FIXME: don't hardcode  */
+#تعریف_کرو پروگرام_NAME "stdbuf"
+#تعریف_کرو LIB_NAME "libstdbuf.so" /* FIXME: don't hardcode  */
 
-#define AUTHORS proper_name_lite ("Padraig Brady", "P\303\241draig Brady")
+#تعریف_کرو AUTHORS proper_name_lite ("Padraig Brady", "P\303\241draig Brady")
 
-static char *program_path;
+ساكن حرف *پروگرام_رستہ;
 
-static struct
+ساكن بنية
 {
-  size_t size;
-  int optc;
-  char *optarg;
+  size_t ناپ;
+  صحيح optc;
+  حرف *optarg;
 } stdbuf[3];
 
-static struct option const longopts[] =
+ساكن بنية option ثابت longopts[] =
 {
-  {"input", required_argument, NULL, 'i'},
-  {"output", required_argument, NULL, 'o'},
-  {"error", required_argument, NULL, 'e'},
+  {"input", required_دلیل, عدم, 'i'},
+  {"output", required_دلیل, عدم, 'o'},
+  {"error", required_دلیل, عدم, 'e'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_نسخہ_OPTION_DECL},
+  {عدم, 0, عدم, 0}
 };
 
 /* Set size to the value of STR, interpreted as a decimal integer,
@@ -62,65 +62,65 @@ static struct option const longopts[] =
 
    This supports dd BLOCK size suffixes.
    Note we don't support dd's b=512, c=1, w=2 or 21x512MiB formats.  */
-static enum strtol_error
-parse_size (char const *str, size_t *size)
+ساكن تعداد strtol_error
+parse_ناپ (حرف ثابت *str, size_t *ناپ)
 {
-  uintmax_t tmp_size;
-  enum strtol_error e = xstrtoumax (str, NULL, 10,
-                                    &tmp_size, "EGkKMPQRTYZ0");
-  if (e == LONGINT_OK && ckd_add (size, tmp_size, 0))
-    e = LONGINT_OVERFLOW;
-  return e;
+  uintmax_t tmp_ناپ;
+  تعداد strtol_error e = xstrtoumax (str, عدم, 10,
+                                    &tmp_ناپ, "EGkKMPQRTYZ0");
+  إذا (e == LONGINT_OK && ckd_جوڑو (ناپ, tmp_ناپ, 0))
+    e = LONGINT_حد_توں_ودھ;
+  أرجع e;
 }
 
-void
-usage (int status)
+فراغ
+usage (صحيح حالت)
 {
-  if (status != EXIT_SUCCESS)
+  إذا (حالت != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  وإلا
     {
-      printf (_("Usage: %s OPTION... COMMAND\n"), program_name);
+      لکھو (_("Usage: %s OPTION... COMMAND\n"), پروگرام_name);
       fputs (_("\
-Run COMMAND, with modified buffering operations for its standard streams.\n\
+لگاتار COMMAND, with modified buffering operations لكل its standard streams.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -i, --input=MODE   adjust standard input stream buffering\n\
+  -i, --داخلہ=منوال   adjust standard داخلہ دھارا buffering\n\
 "));
       oputs (_("\
-  -o, --output=MODE  adjust standard output stream buffering\n\
+  -o, --output=منوال  adjust standard output دھارا buffering\n\
 "));
       oputs (_("\
-  -e, --error=MODE   adjust standard error stream buffering\n\
+  -e, --error=منوال   adjust standard error دھارا buffering\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (نسخہ_OPTION_DESCRIPTION);
       fputs (_("\n\
-If MODE is 'L' the corresponding stream will be line buffered.\n\
-This option is invalid with standard input.\n"), stdout);
+If منوال is 'L' the corresponding دھارا will be سطر buffered.\n\
+This option is invalid with standard داخلہ.\n"), stdout);
       fputs (_("\n\
-If MODE is '0' the corresponding stream will be unbuffered.\n\
+If منوال is '0' the corresponding دھارا will be unbuffered.\n\
 "), stdout);
       fputs (_("\n\
-Otherwise MODE is a number which may be followed by one of the following:\n\
-KB 1000, K 1024, MB 1000*1000, M 1024*1024, and so on for G,T,P,E,Z,Y,R,Q.\n\
-Binary prefixes can be used, too: KiB=K, MiB=M, and so on.\n\
-In this case the corresponding stream will be fully buffered with the buffer\n\
-size set to MODE bytes.\n\
+Otherwise منوال is a نمبر which may be followed by one دا the following:\n\
+KB 1000, K 1024, MB 1000*1000, M 1024*1024, and so on لكل G,T,P,E,Z,Y,R,Q.\n\
+ثنائی_2 prefixes can be ورتیا, too: KiB=K, MiB=M, and so on.\n\
+وچ_2 this حالة the corresponding دھارا will be fully buffered with the بفر\n\
+ناپ سیٹ_2 منزل منوال بائٹاں.\n\
 "), stdout);
       fputs (_("\n\
-NOTE: If COMMAND adjusts the buffering of its standard streams ('tee' does\n\
-for example) then that will override corresponding changes by 'stdbuf'.\n\
-Also some filters (like 'dd' and 'cat' etc.) don't use streams for I/O,\n\
+NOTE: If COMMAND adjusts the buffering دا its standard streams ('tee' does\n\
+لكل example) then that will override corresponding changes by 'stdbuf'.\n\
+Also some filters (like 'dd' and 'cat' etc.) don't use streams لكل I/O,\n\
 and are thus unaffected by 'stdbuf' settings.\n\
 "), stdout);
-      emit_exec_status (PROGRAM_NAME);
-      emit_ancillary_info (PROGRAM_NAME);
+      emit_exec_حالت (پروگرام_NAME);
+      emit_ancillary_info (پروگرام_NAME);
     }
-  exit (status);
+  باہر_نکلو (حالت);
 }
 
 /* argv[0] can be anything really, but generally it contains
@@ -129,75 +129,75 @@ and are thus unaffected by 'stdbuf' settings.\n\
    search getenv("PATH"), readlink("/prof/self/exe"), getenv("_"),
    dladdr(), pstat_getpathname(), etc.  */
 
-static void
-set_program_path (char const *arg)
+ساكن فراغ
+سیٹ_پروگرام_رستہ (حرف ثابت *arg)
 {
-  if (strchr (arg, '/'))        /* Use absolute or relative paths directly.  */
+  إذا (strchr (arg, '/'))        /* Use absolute or relative paths directly.  */
     {
-      program_path = dir_name (arg);
+      پروگرام_رستہ = dir_name (arg);
     }
-  else
+  وإلا
     {
-      char *path = xreadlink ("/proc/self/exe");
-      if (path)
-        program_path = dir_name (path);
-      else if ((path = getenv ("PATH")))
+      حرف *رستہ = xreadlink ("/proc/self/exe");
+      إذا (رستہ)
+        پروگرام_رستہ = dir_name (رستہ);
+      وإلا إذا ((رستہ = getenv ("PATH")))
         {
-          path = xstrdup (path);
-          for (char *dir = strtok (path, ":"); dir != NULL;
-               dir = strtok (NULL, ":"))
+          رستہ = xstrdup (رستہ);
+          لكل (حرف *dir = strtok (رستہ, ":"); dir != عدم;
+               dir = strtok (عدم, ":"))
             {
-              char *candidate = file_name_concat (dir, arg, NULL);
-              if (access (candidate, X_OK) == 0)
+              حرف *candidate = file_name_concat (dir, arg, عدم);
+              إذا (access (candidate, X_OK) == 0)
                 {
-                  program_path = dir_name (candidate);
-                  free (candidate);
-                  break;
+                  پروگرام_رستہ = dir_name (candidate);
+                  حرر (candidate);
+                  اكسر;
                 }
-              free (candidate);
+              حرر (candidate);
             }
         }
-      free (path);
+      حرر (رستہ);
     }
 }
 
-static int
-optc_to_fileno (int c)
+ساكن صحيح
+optc_منزل_fileno (صحيح c)
 {
-  int ret = -1;
+  صحيح ret = -1;
 
-  switch (c)
+  بدل (c)
     {
-    case 'e':
+    حالة 'e':
       ret = STDERR_FILENO;
-      break;
-    case 'i':
+      اكسر;
+    حالة 'i':
       ret = STDIN_FILENO;
-      break;
-    case 'o':
+      اكسر;
+    حالة 'o':
       ret = STDOUT_FILENO;
-      break;
-    default:
+      اكسر;
+    افتراضي:
       affirm (false);
     }
 
-  return ret;
+  أرجع ret;
 }
 
-static void
-set_LD_PRELOAD (void)
+ساكن فراغ
+سیٹ_LD_PRELOAD (فراغ)
 {
-  int ret;
-#ifdef __APPLE__
-  char const *preload_env = "DYLD_INSERT_LIBRARIES";
-#elif defined _AIX
-  char const *preload_env = (sizeof (void *) < 8
+  صحيح ret;
+#جے_تعریف_شدہ __APPLE__
+  حرف ثابت *preload_env = "DYLD_INSERT_LIBRARIES";
+#وإلاإذا defined _AIX
+  حرف ثابت *preload_env = (حجم (فراغ *) < 8
                              ? "LDR_PRELOAD" : "LDR_PRELOAD64");
-#else
-  char const *preload_env = "LD_PRELOAD";
-#endif
-  char *old_libs = getenv (preload_env);
-  char *LD_PRELOAD;
+#وإلا
+  حرف ثابت *preload_env = "LD_PRELOAD";
+#جے_انت
+  حرف *old_libs = getenv (preload_env);
+  حرف *LD_PRELOAD;
 
   /* Note this would auto add the appropriate search path for "libstdbuf.so":
      gcc stdbuf.c -Wl,-rpath,'$ORIGIN' -Wl,-rpath,$PKGLIBEXECDIR
@@ -215,55 +215,55 @@ set_LD_PRELOAD (void)
      not supported due to the unusual need for controlling the stdio buffering
      of programs that are a different architecture to the default on the
      system (and that of stdbuf itself).  */
-  char const *const search_path[] = {
-    program_path,
+  حرف ثابت *ثابت تلاش_رستہ[] = {
+    پروگرام_رستہ,
     PKGLIBEXECDIR,
-    NULL
+    عدم
   };
 
-  char const *const *path = search_path;
-  char *libstdbuf;
+  حرف ثابت *ثابت *رستہ = تلاش_رستہ;
+  حرف *libstdbuf;
 
-  while (true)
+  طالما (true)
     {
-      struct stat sb;
+      بنية stat sb;
 
-      if (!**path)              /* system default  */
+      إذا (!**رستہ)              /* system default  */
         {
           libstdbuf = xstrdup (LIB_NAME);
-          break;
+          اكسر;
         }
-      ret = asprintf (&libstdbuf, "%s/%s", *path, LIB_NAME);
-      if (ret < 0)
+      ret = asprintf (&libstdbuf, "%s/%s", *رستہ, LIB_NAME);
+      إذا (ret < 0)
         xalloc_die ();
-      if (stat (libstdbuf, &sb) == 0)   /* file_exists  */
-        break;
-      free (libstdbuf);
+      إذا (stat (libstdbuf, &sb) == 0)   /* file_exists  */
+        اكسر;
+      حرر (libstdbuf);
 
-      ++path;
-      if ( ! *path)
+      ++رستہ;
+      إذا ( ! *رستہ)
         error (EXIT_CANCELED, 0, _("failed to find %s"), quote (LIB_NAME));
     }
 
   /* FIXME: Do we need to support libstdbuf.dll, c:, '\' separators etc?  */
 
-  if (old_libs)
+  إذا (old_libs)
     ret = asprintf (&LD_PRELOAD, "%s=%s:%s", preload_env, old_libs, libstdbuf);
-  else
+  وإلا
     ret = asprintf (&LD_PRELOAD, "%s=%s", preload_env, libstdbuf);
 
-  if (ret < 0)
+  إذا (ret < 0)
     xalloc_die ();
 
-  free (libstdbuf);
+  حرر (libstdbuf);
 
   ret = putenv (LD_PRELOAD);
-#ifdef __APPLE__
-  if (ret == 0)
+#جے_تعریف_شدہ __APPLE__
+  إذا (ret == 0)
     ret = setenv ("DYLD_FORCE_FLAT_NAMESPACE", "y", 1);
-#endif
+#جے_انت
 
-  if (ret != 0)
+  إذا (ret != 0)
     error (EXIT_CANCELED, errno,
            _("failed to update the environment with %s"),
            quote (LD_PRELOAD));
@@ -272,47 +272,47 @@ set_LD_PRELOAD (void)
 /* Populate environ with _STDBUF_I=$MODE _STDBUF_O=$MODE _STDBUF_E=$MODE.
    Return TRUE if any environment variables set.   */
 
-static bool
-set_libstdbuf_options (void)
+ساكن bool
+سیٹ_libstdbuf_options (فراغ)
 {
-  bool env_set = false;
+  bool env_سیٹ = false;
 
-  for (size_t i = 0; i < countof (stdbuf); i++)
+  لكل (size_t i = 0; i < countof (stdbuf); i++)
     {
-      if (stdbuf[i].optarg)
+      إذا (stdbuf[i].optarg)
         {
-          char *var;
-          int ret;
+          حرف *var;
+          صحيح ret;
 
-          if (*stdbuf[i].optarg == 'L')
+          إذا (*stdbuf[i].optarg == 'L')
             ret = asprintf (&var, "%s%c=L", "_STDBUF_",
                             c_toupper (stdbuf[i].optc));
-          else
+          وإلا
             ret = asprintf (&var, "%s%c=%zu", "_STDBUF_",
                             c_toupper (stdbuf[i].optc),
-                            stdbuf[i].size);
-          if (ret < 0)
+                            stdbuf[i].ناپ);
+          إذا (ret < 0)
             xalloc_die ();
 
-          if (putenv (var) != 0)
+          إذا (putenv (var) != 0)
             error (EXIT_CANCELED, errno,
                    _("failed to update the environment with %s"),
                    quote (var));
 
-          env_set = true;
+          env_سیٹ = true;
         }
     }
 
-  return env_set;
+  أرجع env_سیٹ;
 }
 
-int
-main (int argc, char **argv)
+صحيح
+مکھ (صحيح argc, حرف **argv)
 {
-  int c;
+  صحيح c;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  سیٹ_پروگرام_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
@@ -320,24 +320,24 @@ main (int argc, char **argv)
   initialize_exit_failure (EXIT_CANCELED);
   atexit (close_stdout);
 
-  while ((c = getopt_long (argc, argv, "+i:o:e:", longopts, NULL)) != -1)
+  طالما ((c = getopt_long (argc, argv, "+i:o:e:", longopts, عدم)) != -1)
     {
-      int const oi = -1;
-      int opt_fileno;
+      صحيح ثابت oi = -1;
+      صحيح opt_fileno;
 
-      switch (c)
+      بدل (c)
         {
         /* Old McDonald had a farm ei...  */
-        case 'e':
-        case 'i':
-        case 'o':
-          opt_fileno = optc_to_fileno (c);
+        حالة 'e':
+        حالة 'i':
+        حالة 'o':
+          opt_fileno = optc_منزل_fileno (c);
           affirm (0 <= opt_fileno && opt_fileno < countof (stdbuf));
           stdbuf[opt_fileno].optc = c;
-          while (c_isspace (*optarg))
+          طالما (c_isspace (*optarg))
             optarg++;
           stdbuf[opt_fileno].optarg = optarg;
-          if (c == 'i' && *optarg == 'L')
+          إذا (c == 'i' && *optarg == 'L')
             {
               /* -oL will be by far the most common use of this utility,
                  but one could easily think -iL might have the same affect,
@@ -346,21 +346,21 @@ main (int argc, char **argv)
               usage (EXIT_CANCELED);
             }
 
-          if (!streq (optarg, "L"))
+          إذا (!streq (optarg, "L"))
             {
-              enum strtol_error e = parse_size (optarg,
-                                                &stdbuf[opt_fileno].size);
-              if (e != LONGINT_OK)
+              تعداد strtol_error e = parse_ناپ (optarg,
+                                                &stdbuf[opt_fileno].ناپ);
+              إذا (e != LONGINT_OK)
                 xstrtol_fatal (e, oi, c, longopts, optarg);
             }
 
-          break;
+          اكسر;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_نسخہ_CHAR (پروگرام_NAME, AUTHORS);
 
-        default:
+        افتراضي:
           usage (EXIT_CANCELED);
         }
     }
@@ -369,13 +369,13 @@ main (int argc, char **argv)
   argc -= optind;
 
   /* must specify at least 1 command.  */
-  if (argc < 1)
+  إذا (argc < 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_CANCELED);
     }
 
-  if (! set_libstdbuf_options ())
+  إذا (! سیٹ_libstdbuf_options ())
     {
       error (0, 0, _("you must specify a buffering mode option"));
       usage (EXIT_CANCELED);
@@ -383,15 +383,15 @@ main (int argc, char **argv)
 
   /* Try to preload libstdbuf first from the same path as
      stdbuf is running from.  */
-  set_program_path (program_name);
-  if (!program_path)
-    program_path = xstrdup (PKGLIBDIR);  /* Need to init to non-null.  */
-  set_LD_PRELOAD ();
-  free (program_path);
+  سیٹ_پروگرام_رستہ (پروگرام_name);
+  إذا (!پروگرام_رستہ)
+    پروگرام_رستہ = xstrdup (PKGLIBDIR);  /* Need to init to non-null.  */
+  سیٹ_LD_PRELOAD ();
+  حرر (پروگرام_رستہ);
 
   execvp (*argv, argv);
 
-  int exit_status = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
+  صحيح exit_حالت = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
   error (0, errno, _("failed to run command %s"), quote (argv[0]));
-  return exit_status;
+  أرجع exit_حالت;
 }

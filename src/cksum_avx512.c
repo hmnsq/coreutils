@@ -14,45 +14,45 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
+#ضمن <config.h>
 
-#include "cksum_crc.h"
+#ضمن "cksum_crc.h"
 
-#include <sys/types.h>
-#include <x86intrin.h>
-#include "system.h"
+#ضمن <sys/types.h>
+#ضمن <x86intrin.h>
+#ضمن "system.h"
 
 /* Number of bytes to read at once.  */
-#define BUFLEN (1 << 16)
+#تعریف_کرو BUFLEN (1 << 16)
 
 bool
-cksum_avx512 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
+cksum_avx512 (FILE *fp, uint_fast32_t *چکری_جانچ_باہرلا, intmax_t *لمائی_باہرلا)
 {
-  __m512i buf[BUFLEN / sizeof (__m512i)];
-  uint_fast32_t crc = 0;
-  intmax_t length = 0;
-  size_t bytes_read;
+  __m512i buf[BUFLEN / حجم (__m512i)];
+  uint_fast32_t چکری_جانچ = 0;
+  intmax_t لمائی = 0;
+  size_t بائٹاں_read;
   __m512i single_mult_constant;
   __m512i four_mult_constant;
   __m512i shuffle_constant;
 
-  if (!fp || !crc_out || !length_out)
-    return false;
+  إذا (!fp || !چکری_جانچ_باہرلا || !لمائی_باہرلا)
+    أرجع false;
 
   /* These constants and general algorithms are taken from the Intel whitepaper
      "Fast CRC Computation for Generic Polynomials Using PCLMULQDQ Instruction"
   */
-  single_mult_constant = _mm512_set_epi64 (0x8833794C, 0xE6228B11,
+  single_mult_constant = mm512_سیٹ_epi64 (0x8833794C, 0xE6228B11,
                                            0x8833794C, 0xE6228B11,
                                            0x8833794C, 0xE6228B11,
                                            0x8833794C, 0xE6228B11);
-  four_mult_constant = _mm512_set_epi64 (0xCBCF3BCB, 0x88FE2237,
+  four_mult_constant = mm512_سیٹ_epi64 (0xCBCF3BCB, 0x88FE2237,
                                          0xCBCF3BCB, 0x88FE2237,
                                          0xCBCF3BCB, 0x88FE2237,
                                          0xCBCF3BCB, 0x88FE2237);
 
   /* Constant to byteswap a full AVX512 register */
-  shuffle_constant = _mm512_set_epi8 (0, 1, 2, 3, 4, 5, 6, 7, 8,
+  shuffle_constant = mm512_سیٹ_epi8 (0, 1, 2, 3, 4, 5, 6, 7, 8,
                                       9, 10, 11, 12, 13, 14, 15,
                                       0, 1, 2, 3, 4, 5, 6, 7, 8,
                                       9, 10, 11, 12, 13, 14, 15,
@@ -60,9 +60,9 @@ cksum_avx512 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
                                       9, 10, 11, 12, 13, 14, 15,
                                       0, 1, 2, 3, 4, 5, 6, 7, 8,
                                       9, 10, 11, 12, 13, 14, 15);
-  while ((bytes_read = fread (buf, 1, BUFLEN, fp)) > 0)
+  طالما ((بائٹاں_read = fread (buf, 1, BUFLEN, fp)) > 0)
     {
-      __m512i data;
+      __m512i انکڑے;
       __m512i data2;
       __m512i data3;
       __m512i data4;
@@ -70,30 +70,30 @@ cksum_avx512 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
       __m512i data6;
       __m512i data7;
       __m512i data8;
-      __m512i fold_data;
-      __m512i xor_crc;
+      __m512i fold_انکڑے;
+      __m512i xor_چکری_جانچ;
 
       __m512i *datap;
 
-      if (ckd_add (&length, length, bytes_read))
+      إذا (ckd_جوڑو (&لمائی, لمائی, بائٹاں_read))
         {
           errno = EOVERFLOW;
-          return false;
+          أرجع false;
         }
 
       datap = buf;
 
       /* Fold in parallel 32x 16-byte blocks into 16x 16-byte blocks */
-      if (bytes_read >= 16 * 8 * 4)
+      إذا (بائٹاں_read >= 16 * 8 * 4)
         {
-          data = _mm512_loadu_si512 (datap);
-          data = _mm512_shuffle_epi8 (data, shuffle_constant);
+          انکڑے = _mm512_loadu_si512 (datap);
+          انکڑے = _mm512_shuffle_epi8 (انکڑے, shuffle_constant);
           /* XOR in initial CRC value (for us 0 so no effect), or CRC value
              calculated for previous BUFLEN buffer from fread */
-          xor_crc = _mm512_set_epi32 (0, 0, 0, 0, 0, 0, 0, 0,
-                                      0, 0, 0, 0, crc, 0, 0, 0);
-          crc = 0;
-          data = _mm512_xor_si512 (data, xor_crc);
+          xor_چکری_جانچ = mm512_سیٹ_epi32 (0, 0, 0, 0, 0, 0, 0, 0,
+                                      0, 0, 0, 0, چکری_جانچ, 0, 0, 0);
+          چکری_جانچ = 0;
+          انکڑے = _mm512_xor_si512 (انکڑے, xor_چکری_جانچ);
           data3 = _mm512_loadu_si512 (datap + 1);
           data3 = _mm512_shuffle_epi8 (data3, shuffle_constant);
           data5 = _mm512_loadu_si512 (datap + 2);
@@ -101,14 +101,14 @@ cksum_avx512 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
           data7 = _mm512_loadu_si512 (datap + 3);
           data7 = _mm512_shuffle_epi8 (data7, shuffle_constant);
 
-          while (bytes_read >= 16 * 8 * 4)
+          طالما (بائٹاں_read >= 16 * 8 * 4)
             {
               datap += 4;
 
               /* Do multiplication here for 16x consecutive 16 byte blocks */
-              data2 = _mm512_clmulepi64_epi128 (data, four_mult_constant,
+              data2 = _mm512_clmulepi64_epi128 (انکڑے, four_mult_constant,
                                                 0x00);
-              data = _mm512_clmulepi64_epi128 (data, four_mult_constant,
+              انکڑے = _mm512_clmulepi64_epi128 (انکڑے, four_mult_constant,
                                                0x11);
               data4 = _mm512_clmulepi64_epi128 (data3, four_mult_constant,
                                                 0x00);
@@ -128,10 +128,10 @@ cksum_avx512 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
                  "consumes" the first 16x blocks from the buffer.
                  Keep xor result in variables for multiplication in next
                  round of loop. */
-              data = _mm512_xor_si512 (data, data2);
+              انکڑے = _mm512_xor_si512 (انکڑے, data2);
               data2 = _mm512_loadu_si512 (datap);
               data2 = _mm512_shuffle_epi8 (data2, shuffle_constant);
-              data = _mm512_xor_si512 (data, data2);
+              انکڑے = _mm512_xor_si512 (انکڑے, data2);
 
               data3 = _mm512_xor_si512 (data3, data4);
               data4 = _mm512_loadu_si512 (datap + 1);
@@ -148,12 +148,12 @@ cksum_avx512 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
               data8 = _mm512_shuffle_epi8 (data8, shuffle_constant);
               data7 = _mm512_xor_si512 (data7, data8);
 
-              bytes_read -= (16 * 4 * 4);
+              بائٹاں_read -= (16 * 4 * 4);
             }
           /* At end of loop we write out results from variables back into
              the buffer, for use in single fold loop */
-          data = _mm512_shuffle_epi8 (data, shuffle_constant);
-          _mm512_storeu_si512 (datap, data);
+          انکڑے = _mm512_shuffle_epi8 (انکڑے, shuffle_constant);
+          _mm512_storeu_si512 (datap, انکڑے);
           data3 = _mm512_shuffle_epi8 (data3, shuffle_constant);
           _mm512_storeu_si512 (datap + 1, data3);
           data5 = _mm512_shuffle_epi8 (data5, shuffle_constant);
@@ -163,42 +163,42 @@ cksum_avx512 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
         }
 
       /* Fold two 64-byte blocks into one 64-byte block */
-      if (bytes_read >= 128)
+      إذا (بائٹاں_read >= 128)
         {
-          data = _mm512_loadu_si512 (datap);
-          data = _mm512_shuffle_epi8 (data, shuffle_constant);
-          xor_crc = _mm512_set_epi32 (0, 0, 0, 0, 0, 0, 0, 0,
-                                      0, 0, 0, 0, crc, 0, 0, 0);
-          crc = 0;
-          data = _mm512_xor_si512 (data, xor_crc);
-          while (bytes_read >= 128)
+          انکڑے = _mm512_loadu_si512 (datap);
+          انکڑے = _mm512_shuffle_epi8 (انکڑے, shuffle_constant);
+          xor_چکری_جانچ = mm512_سیٹ_epi32 (0, 0, 0, 0, 0, 0, 0, 0,
+                                      0, 0, 0, 0, چکری_جانچ, 0, 0, 0);
+          چکری_جانچ = 0;
+          انکڑے = _mm512_xor_si512 (انکڑے, xor_چکری_جانچ);
+          طالما (بائٹاں_read >= 128)
             {
               datap++;
 
-              data2 = _mm512_clmulepi64_epi128 (data, single_mult_constant,
+              data2 = _mm512_clmulepi64_epi128 (انکڑے, single_mult_constant,
                                                 0x00);
-              data = _mm512_clmulepi64_epi128 (data, single_mult_constant,
+              انکڑے = _mm512_clmulepi64_epi128 (انکڑے, single_mult_constant,
                                                0x11);
-              fold_data = _mm512_loadu_si512 (datap);
-              fold_data = _mm512_shuffle_epi8 (fold_data, shuffle_constant);
-              data = _mm512_xor_si512 (data, data2);
-              data = _mm512_xor_si512 (data, fold_data);
-              bytes_read -= 64;
+              fold_انکڑے = _mm512_loadu_si512 (datap);
+              fold_انکڑے = _mm512_shuffle_epi8 (fold_انکڑے, shuffle_constant);
+              انکڑے = _mm512_xor_si512 (انکڑے, data2);
+              انکڑے = _mm512_xor_si512 (انکڑے, fold_انکڑے);
+              بائٹاں_read -= 64;
             }
-          data = _mm512_shuffle_epi8 (data, shuffle_constant);
-          _mm512_storeu_si512 (datap, data);
+          انکڑے = _mm512_shuffle_epi8 (انکڑے, shuffle_constant);
+          _mm512_storeu_si512 (datap, انکڑے);
         }
 
       /* And finish up last 0-127 bytes in a byte by byte fashion */
-      unsigned char *cp = (unsigned char *)datap;
-      while (bytes_read--)
-        crc = (crc << 8) ^ crctab[0][((crc >> 24) ^ *cp++) & 0xFF];
-      if (feof (fp))
-        break;
+      بنانشانی حرف *cp = (بنانشانی حرف *)datap;
+      طالما (بائٹاں_read--)
+        چکری_جانچ = (چکری_جانچ << 8) ^ crctab[0][((چکری_جانچ >> 24) ^ *cp++) & 0xFF];
+      إذا (feof (fp))
+        اكسر;
     }
 
-  *crc_out = crc;
-  *length_out = length;
+  *چکری_جانچ_باہرلا = چکری_جانچ;
+  *لمائی_باہرلا = لمائی;
 
-  return !ferror (fp);
+  أرجع !ferror (fp);
 }

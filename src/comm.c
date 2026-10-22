@@ -16,156 +16,156 @@
 
 /* Written by Richard Stallman and David MacKenzie. */
 
-#include <config.h>
+#ضمن <config.h>
 
-#include <getopt.h>
-#include <sys/types.h>
-#include "system.h"
-#include "linebuffer.h"
-#include "fadvise.h"
-#include "hard-locale.h"
-#include "quote.h"
-#include "stdio--.h"
-#include "memcmp2.h"
-#include "xmemcoll.h"
+#ضمن <getopt.h>
+#ضمن <sys/types.h>
+#ضمن "system.h"
+#ضمن "linebuffer.h"
+#ضمن "fadvise.h"
+#ضمن "hard-locale.h"
+#ضمن "quote.h"
+#ضمن "stdio--.h"
+#ضمن "memcmp2.h"
+#ضمن "xmemcoll.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "comm"
+#تعریف_کرو پروگرام_NAME "comm"
 
-#define AUTHORS \
+#تعریف_کرو AUTHORS \
   proper_name ("Richard M. Stallman"), \
   proper_name ("David MacKenzie")
 
 /* True if the LC_COLLATE locale is hard.  */
-static bool hard_LC_COLLATE;
+ساكن bool hard_LC_COLLATE;
 
 /* If true, print lines that are found only in file 1. */
-static bool only_file_1 = true;
+ساكن bool only_file_1 = true;
 
 /* If true, print lines that are found only in file 2. */
-static bool only_file_2 = true;
+ساكن bool only_file_2 = true;
 
 /* If true, print lines that are found in both files. */
-static bool both = true;
+ساكن bool both = true;
 
 /* If nonzero, we have seen at least one unpairable line. */
-static bool seen_unpairable;
+ساكن bool تکیا_unpairable;
 
 /* If nonzero, we have warned about disorder in that file. */
-static bool issued_disorder_warning[2];
+ساكن bool issued_disorder_warning[2];
 
 /* line delimiter.  */
-static unsigned char delim = '\n';
+ساكن بنانشانی حرف delim = '\n';
 
 /* If true, print a summary.  */
-static bool total_option;
+ساكن bool کل_option;
 
 /* If nonzero, check that the input is correctly ordered. */
-static enum
+ساكن تعداد
   {
-    CHECK_ORDER_DEFAULT,
-    CHECK_ORDER_ENABLED,
-    CHECK_ORDER_DISABLED
-  } check_input_order;
+    CHECK_ترتیب_DEFAULT,
+    CHECK_ترتیب_ENABLED,
+    CHECK_ترتیب_DISABLED
+  } check_داخلہ_ترتیب;
 
 /* Output columns will be delimited with this string, which may be set
    on the command-line with --output-delimiter=STR.  */
-static char const *col_sep = "\t";
-static size_t col_sep_len = 0;
+ساكن حرف ثابت *خانہ_sep = "\t";
+ساكن size_t خانہ_sep_len = 0;
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+تعداد
 {
-  CHECK_ORDER_OPTION = CHAR_MAX + 1,
-  NOCHECK_ORDER_OPTION,
+  CHECK_ترتیب_OPTION = CHAR_MAX + 1,
+  NOCHECK_ترتیب_OPTION,
   OUTPUT_DELIMITER_OPTION,
-  TOTAL_OPTION
+  کل_OPTION
 };
 
-static struct option const long_options[] =
+ساكن بنية option ثابت long_options[] =
 {
-  {"check-order", no_argument, NULL, CHECK_ORDER_OPTION},
-  {"nocheck-order", no_argument, NULL, NOCHECK_ORDER_OPTION},
-  {"output-delimiter", required_argument, NULL, OUTPUT_DELIMITER_OPTION},
-  {"total", no_argument, NULL, TOTAL_OPTION},
-  {"zero-terminated", no_argument, NULL, 'z'},
+  {"check-order", no_دلیل, عدم, CHECK_ترتیب_OPTION},
+  {"nocheck-order", no_دلیل, عدم, NOCHECK_ترتیب_OPTION},
+  {"output-delimiter", required_دلیل, عدم, OUTPUT_DELIMITER_OPTION},
+  {"total", no_دلیل, عدم, کل_OPTION},
+  {"zero-terminated", no_دلیل, عدم, 'z'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_نسخہ_OPTION_DECL},
+  {عدم, 0, عدم, 0}
 };
 
 
-void
-usage (int status)
+فراغ
+usage (صحيح حالت)
 {
-  if (status != EXIT_SUCCESS)
+  إذا (حالت != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  وإلا
     {
-      printf (_("\
+      لکھو (_("\
 Usage: %s [OPTION]... FILE1 FILE2\n\
 "),
-              program_name);
+              پروگرام_name);
       fputs (_("\
-Compare sorted files FILE1 and FILE2 line by line.\n\
+Compare sorted files FILE1 and FILE2 سطر by سطر.\n\
 "), stdout);
       fputs (_("\
 \n\
-When FILE1 or FILE2 is -, read standard input.\n\
+When FILE1 or FILE2 is -, اقرأ standard داخلہ.\n\
 "), stdout);
       fputs (_("\
 \n\
-With no options, produce three-column output.  Column one contains\n\
-lines unique to FILE1, column two contains lines unique to FILE2,\n\
-and column three contains lines common to both files.\n\
+With no options, produce three-کالم output.  کالم_2 one شامل_اے\n\
+سطریں unique منزل FILE1, کالم two شامل_اے سطریں unique منزل FILE2,\n\
+and کالم three شامل_اے سطریں common منزل both files.\n\
 "), stdout);
       oputs (_("\
-  -1     suppress column 1 (lines unique to FILE1)\n\
+  -1     suppress کالم 1 (سطریں unique منزل FILE1)\n\
 "));
       oputs (_("\
-  -2     suppress column 2 (lines unique to FILE2)\n\
+  -2     suppress کالم 2 (سطریں unique منزل FILE2)\n\
 "));
       oputs (_("\
-  -3     suppress column 3 (lines that appear in both files)\n\
+  -3     suppress کالم 3 (سطریں that appear وچ both files)\n\
 "));
       oputs (_("\
-      --check-order\n\
-         check that the input is correctly sorted,\n\
-         even if all input lines are pairable\n\
+      --check-ترتیب\n\
+         check that the داخلہ is correctly sorted,\n\
+         even إذا all داخلہ سطریں are pairable\n\
 "));
       oputs (_("\
-      --nocheck-order\n\
-         do not check that the input is correctly sorted\n\
+      --nocheck-ترتیب\n\
+         افعل not check that the داخلہ is correctly sorted\n\
 "));
       oputs (_("\
       --output-delimiter=STR\n\
          separate columns with STR\n\
 "));
       oputs (_("\
-      --total\n\
+      --کل\n\
          output a summary\n\
 "));
       oputs (_("\
   -z, --zero-terminated\n\
-         line delimiter is NUL, not newline\n\
+         سطر delimiter is NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (نسخہ_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-Comparisons honor the rules specified by 'LC_COLLATE'.\n\
+Comparisons honor the قاعدے specified by 'LC_COLLATE'.\n\
 "), stdout);
-      printf (_("\
+      لکھو (_("\
 \n\
 Examples:\n\
-  %s -12 file1 file2  Print only lines present in both file1 and file2.\n\
-  %s -3 file1 file2  Print lines in file1 not in file2, and vice versa.\n\
+  %s -12 file1 file2  Print only سطریں present وچ both file1 and file2.\n\
+  %s -3 file1 file2  Print سطریں وچ file1 not وچ file2, and vice versa.\n\
 "),
-              program_name, program_name);
-      emit_ancillary_info (PROGRAM_NAME);
+              پروگرام_name, پروگرام_name);
+      emit_ancillary_info (پروگرام_NAME);
     }
-  exit (status);
+  باہر_نکلو (حالت);
 }
 
 /* Output the line in linebuffer LINE to stdout
@@ -173,36 +173,36 @@ Examples:\n\
    CLASS is 1 for a line found only in file 1,
    2 for a line only in file 2, 3 for a line in both. */
 
-static void
-writeline (struct linebuffer const *line, int class)
+ساكن فراغ
+writeline (بنية linebuffer ثابت *سطر, صحيح class)
 {
-  switch (class)
+  بدل (class)
     {
-    case 1:
-      if (!only_file_1)
-        return;
-      break;
+    حالة 1:
+      إذا (!only_file_1)
+        أرجع;
+      اكسر;
 
-    case 2:
-      if (!only_file_2)
-        return;
-      if (only_file_1)
-        fwrite (col_sep, 1, col_sep_len, stdout);
-      break;
+    حالة 2:
+      إذا (!only_file_2)
+        أرجع;
+      إذا (only_file_1)
+        fwrite (خانہ_sep, 1, خانہ_sep_len, stdout);
+      اكسر;
 
-    case 3:
-      if (!both)
-        return;
-      if (only_file_1)
-        fwrite (col_sep, 1, col_sep_len, stdout);
-      if (only_file_2)
-        fwrite (col_sep, 1, col_sep_len, stdout);
-      break;
+    حالة 3:
+      إذا (!both)
+        أرجع;
+      إذا (only_file_1)
+        fwrite (خانہ_sep, 1, خانہ_sep_len, stdout);
+      إذا (only_file_2)
+        fwrite (خانہ_sep, 1, خانہ_sep_len, stdout);
+      اكسر;
     }
 
-  fwrite (line->buffer, sizeof (char), line->length, stdout);
+  fwrite (سطر->بفر, حجم (حرف), سطر->لمائی, stdout);
 
-  if (ferror (stdout))
+  إذا (ferror (stdout))
     write_error ();
 }
 
@@ -217,29 +217,29 @@ writeline (struct linebuffer const *line, int class)
 
    This function was copied (nearly) verbatim from 'src/join.c'. */
 
-static void
-check_order (struct linebuffer const *prev,
-             struct linebuffer const *current,
-             int whatfile)
+ساكن فراغ
+check_ترتیب (بنية linebuffer ثابت *prev,
+             بنية linebuffer ثابت *current,
+             صحيح whatfile)
 {
 
-  if (check_input_order != CHECK_ORDER_DISABLED
-      && ((check_input_order == CHECK_ORDER_ENABLED) || seen_unpairable))
+  إذا (check_داخلہ_ترتیب != CHECK_ترتیب_DISABLED
+      && ((check_داخلہ_ترتیب == CHECK_ترتیب_ENABLED) || تکیا_unpairable))
     {
-      if (!issued_disorder_warning[whatfile - 1])
+      إذا (!issued_disorder_warning[whatfile - 1])
         {
-          int order;
+          صحيح ترتیب;
 
-          if (hard_LC_COLLATE)
-            order = xmemcoll (prev->buffer, prev->length - 1,
-                              current->buffer, current->length - 1);
-          else
-            order = memcmp2 (prev->buffer, prev->length - 1,
-                             current->buffer, current->length - 1);
+          إذا (hard_LC_COLLATE)
+            ترتیب = xmemcoll (prev->بفر, prev->لمائی - 1,
+                              current->بفر, current->لمائی - 1);
+          وإلا
+            ترتیب = memcmp2 (prev->بفر, prev->لمائی - 1,
+                             current->بفر, current->لمائی - 1);
 
-          if (0 < order)
+          إذا (0 < ترتیب)
             {
-              error ((check_input_order == CHECK_ORDER_ENABLED
+              error ((check_داخلہ_ترتیب == CHECK_ترتیب_ENABLED
                       ? EXIT_FAILURE : 0),
                      0, _("file %d is not in sorted order"), whatfile);
 
@@ -257,178 +257,178 @@ check_order (struct linebuffer const *prev,
    merge them and output the result.
    Exit the program when done.  */
 
-static _Noreturn void
-compare_files (char **infiles)
+ساكن _Noreturn فراغ
+compare_files (حرف **infiles)
 {
   /* For each file, we have four linebuffers in lba. */
-  struct linebuffer lba[2][4];
+  بنية linebuffer lba[2][4];
 
   /* thisline[i] points to the linebuffer holding the next available line
      in file i, or is null if there are no lines left in that file.  */
-  struct linebuffer *thisline[2];
+  بنية linebuffer *thisline[2];
 
   /* all_line[i][alt[i][0]] also points to the linebuffer holding the
      current line in file i. We keep two buffers of history around so we
      can look two lines back when we get to the end of a file. */
-  struct linebuffer *all_line[2][4];
+  بنية linebuffer *all_سطر[2][4];
 
   /* This is used to rotate through the buffers for each input file. */
-  int alt[2][3];
+  صحيح alt[2][3];
 
   /* streams[i] holds the input stream for file i.  */
   FILE *streams[2];
 
   /* Counters for the summary.  */
-  uintmax_t total[] = {0, 0, 0};
+  uintmax_t کل[] = {0, 0, 0};
 
   /* Initialize the storage. */
-  for (int i = 0; i < 2; i++)
+  لكل (صحيح i = 0; i < 2; i++)
     {
-      for (int j = 0; j < 4; j++)
+      لكل (صحيح j = 0; j < 4; j++)
         {
           initbuffer (&lba[i][j]);
-          all_line[i][j] = &lba[i][j];
+          all_سطر[i][j] = &lba[i][j];
         }
       alt[i][0] = 0;
       alt[i][1] = 0;
       alt[i][2] = 0;
       streams[i] = (streq (infiles[i], "-") ? stdin : fopen (infiles[i], "r"));
-      if (!streams[i])
+      إذا (!streams[i])
         error (EXIT_FAILURE, errno, "%s", quotef (infiles[i]));
 
       fadvise (streams[i], FADVISE_SEQUENTIAL);
 
-      thisline[i] = readlinebuffer_delim (all_line[i][alt[i][0]], streams[i],
+      thisline[i] = readlinebuffer_delim (all_سطر[i][alt[i][0]], streams[i],
                                           delim);
-      if (ferror (streams[i]))
+      إذا (ferror (streams[i]))
         error (EXIT_FAILURE, errno, "%s", quotef (infiles[i]));
     }
 
-  while (thisline[0] || thisline[1])
+  طالما (thisline[0] || thisline[1])
     {
-      int order;
-      bool fill_up[2] = { false, false };
+      صحيح ترتیب;
+      bool fill_اتے[2] = { false, false };
 
       /* Compare the next available lines of the two files.  */
 
-      if (!thisline[0])
-        order = 1;
-      else if (!thisline[1])
-        order = -1;
-      else
+      إذا (!thisline[0])
+        ترتیب = 1;
+      وإلا إذا (!thisline[1])
+        ترتیب = -1;
+      وإلا
         {
-          if (hard_LC_COLLATE)
-            order = xmemcoll (thisline[0]->buffer, thisline[0]->length - 1,
-                              thisline[1]->buffer, thisline[1]->length - 1);
-          else
+          إذا (hard_LC_COLLATE)
+            ترتیب = xmemcoll (thisline[0]->بفر, thisline[0]->لمائی - 1,
+                              thisline[1]->بفر, thisline[1]->لمائی - 1);
+          وإلا
             {
-              size_t len = MIN (thisline[0]->length, thisline[1]->length) - 1;
-              order = memcmp (thisline[0]->buffer, thisline[1]->buffer, len);
-              if (order == 0)
-                order = _GL_CMP (thisline[0]->length, thisline[1]->length);
+              size_t len = MIN (thisline[0]->لمائی, thisline[1]->لمائی) - 1;
+              ترتیب = memcmp (thisline[0]->بفر, thisline[1]->بفر, len);
+              إذا (ترتیب == 0)
+                ترتیب = _GL_CMP (thisline[0]->لمائی, thisline[1]->لمائی);
             }
         }
 
       /* Output the line that is lesser. */
-      if (order == 0)
+      إذا (ترتیب == 0)
         {
           /* Line is seen in both files.  */
-          total[2]++;
+          کل[2]++;
           writeline (thisline[1], 3);
         }
-      else
+      وإلا
         {
-          seen_unpairable = true;
-          if (order <= 0)
+          تکیا_unpairable = true;
+          إذا (ترتیب <= 0)
             {
               /* Line is seen in file 1 only.  */
-              total[0]++;
+              کل[0]++;
               writeline (thisline[0], 1);
             }
-          else
+          وإلا
             {
               /* Line is seen in file 2 only.  */
-              total[1]++;
+              کل[1]++;
               writeline (thisline[1], 2);
             }
         }
 
       /* Step the file the line came from.
          If the files match, step both files.  */
-      if (0 <= order)
-        fill_up[1] = true;
-      if (order <= 0)
-        fill_up[0] = true;
+      إذا (0 <= ترتیب)
+        fill_اتے[1] = true;
+      إذا (ترتیب <= 0)
+        fill_اتے[0] = true;
 
-      for (int i = 0; i < 2; i++)
-        if (fill_up[i])
+      لكل (صحيح i = 0; i < 2; i++)
+        إذا (fill_اتے[i])
           {
             /* Rotate the buffers for this file. */
             alt[i][2] = alt[i][1];
             alt[i][1] = alt[i][0];
             alt[i][0] = (alt[i][0] + 1) & 0x03;
 
-            thisline[i] = readlinebuffer_delim (all_line[i][alt[i][0]],
+            thisline[i] = readlinebuffer_delim (all_سطر[i][alt[i][0]],
                                                 streams[i], delim);
 
-            if (thisline[i])
-              check_order (all_line[i][alt[i][1]], thisline[i], i + 1);
+            إذا (thisline[i])
+              check_ترتیب (all_سطر[i][alt[i][1]], thisline[i], i + 1);
 
             /* If this is the end of the file we may need to re-check
                the order of the previous two lines, since we might have
                discovered an unpairable match since we checked before. */
-            else if (all_line[i][alt[i][2]]->buffer)
-              check_order (all_line[i][alt[i][2]],
-                           all_line[i][alt[i][1]], i + 1);
+            وإلا إذا (all_سطر[i][alt[i][2]]->بفر)
+              check_ترتیب (all_سطر[i][alt[i][2]],
+                           all_سطر[i][alt[i][1]], i + 1);
 
-            if (ferror (streams[i]))
+            إذا (ferror (streams[i]))
               error (EXIT_FAILURE, errno, "%s", quotef (infiles[i]));
 
-            fill_up[i] = false;
+            fill_اتے[i] = false;
           }
     }
 
   /* Avoid closing standard input twice when invoking 'comm - -'.  */
-  const int n_streams = 2 - (streams[0] == streams[1]);
-  for (int i = 0; i < n_streams; i++)
-    if (fclose (streams[i]) != 0)
+  ثابت صحيح n_streams = 2 - (streams[0] == streams[1]);
+  لكل (صحيح i = 0; i < n_streams; i++)
+    إذا (fclose (streams[i]) != 0)
       error (EXIT_FAILURE, errno, "%s", quotef (infiles[i]));
 
-  if (total_option)
+  إذا (کل_option)
     {
       /* Print the summary, minding the column and line delimiters.  */
-      if (col_sep_len == 1)
+      إذا (خانہ_sep_len == 1)
         { /* Separate to handle NUL char.  */
-          printf ("%ju%c%ju%c%ju%c%s%c",
-                  total[0], *col_sep,
-                  total[1], *col_sep,
-                  total[2], *col_sep,
+          لکھو ("%ju%c%ju%c%ju%c%s%c",
+                  کل[0], *خانہ_sep,
+                  کل[1], *خانہ_sep,
+                  کل[2], *خانہ_sep,
                   _("total"), delim);
         }
-      else
+      وإلا
         {
-          printf ("%ju%s%ju%s%ju%s%s%c",
-                  total[0], col_sep,
-                  total[1], col_sep,
-                  total[2], col_sep,
+          لکھو ("%ju%s%ju%s%ju%s%s%c",
+                  کل[0], خانہ_sep,
+                  کل[1], خانہ_sep,
+                  کل[2], خانہ_sep,
                   _("total"), delim);
         }
     }
 
-  if (issued_disorder_warning[0] || issued_disorder_warning[1])
+  إذا (issued_disorder_warning[0] || issued_disorder_warning[1])
     error (EXIT_FAILURE, 0, _("input is not in sorted order"));
 
   /* Exit here to pacify gcc -fsanitizer=leak.  */
-  exit (EXIT_SUCCESS);
+  باہر_نکلو (EXIT_SUCCESS);
 }
 
-int
-main (int argc, char **argv)
+صحيح
+مکھ (صحيح argc, حرف **argv)
 {
-  int c;
+  صحيح c;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  سیٹ_پروگرام_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
@@ -436,65 +436,65 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((c = getopt_long (argc, argv, "123z", long_options, NULL)) != -1)
-    switch (c)
+  طالما ((c = getopt_long (argc, argv, "123z", long_options, عدم)) != -1)
+    بدل (c)
       {
-      case '1':
+      حالة '1':
         only_file_1 = false;
-        break;
+        اكسر;
 
-      case '2':
+      حالة '2':
         only_file_2 = false;
-        break;
+        اكسر;
 
-      case '3':
+      حالة '3':
         both = false;
-        break;
+        اكسر;
 
-      case 'z':
+      حالة 'z':
         delim = '\0';
-        break;
+        اكسر;
 
-      case NOCHECK_ORDER_OPTION:
-        check_input_order = CHECK_ORDER_DISABLED;
-        break;
+      حالة NOCHECK_ترتیب_OPTION:
+        check_داخلہ_ترتیب = CHECK_ترتیب_DISABLED;
+        اكسر;
 
-      case CHECK_ORDER_OPTION:
-        check_input_order = CHECK_ORDER_ENABLED;
-        break;
+      حالة CHECK_ترتیب_OPTION:
+        check_داخلہ_ترتیب = CHECK_ترتیب_ENABLED;
+        اكسر;
 
-      case OUTPUT_DELIMITER_OPTION:
-        if (col_sep_len && !streq (col_sep, optarg))
+      حالة OUTPUT_DELIMITER_OPTION:
+        إذا (خانہ_sep_len && !streq (خانہ_sep, optarg))
           error (EXIT_FAILURE, 0, _("multiple output delimiters specified"));
-        col_sep = optarg;
-        col_sep_len = *optarg ? strlen (optarg) : 1;
-        break;
+        خانہ_sep = optarg;
+        خانہ_sep_len = *optarg ? لڑی_لمبائی (optarg) : 1;
+        اكسر;
 
-      case TOTAL_OPTION:
-        total_option = true;
-        break;
+      حالة کل_OPTION:
+        کل_option = true;
+        اكسر;
 
       case_GETOPT_HELP_CHAR;
 
-      case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+      case_GETOPT_نسخہ_CHAR (پروگرام_NAME, AUTHORS);
 
-      default:
+      افتراضي:
         usage (EXIT_FAILURE);
       }
 
-  if (! col_sep_len)
-    col_sep_len = 1;
+  إذا (! خانہ_sep_len)
+    خانہ_sep_len = 1;
 
-  if (argc - optind < 2)
+  إذا (argc - optind < 2)
     {
-      if (argc <= optind)
+      إذا (argc <= optind)
         error (0, 0, _("missing operand"));
-      else
+      وإلا
         error (0, 0, _("missing operand after %s"), quote (argv[argc - 1]));
       usage (EXIT_FAILURE);
     }
 
-  if (2 < argc - optind)
+  إذا (2 < argc - optind)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind + 2]));
       usage (EXIT_FAILURE);

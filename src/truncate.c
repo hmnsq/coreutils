@@ -20,267 +20,267 @@
    flexible wrt the size specifications and the use of long options,
    to better fit the "GNU" environment.  */
 
-#include <config.h>             /* sets _FILE_OFFSET_BITS=64 etc. */
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#ضمن <config.h>             /* sets _FILE_OFFSET_BITS=64 etc. */
+#ضمن <stdio.h>
+#ضمن <getopt.h>
+#ضمن <sys/types.h>
 
-#include "system.h"
-#include "quote.h"
-#include "stat-size.h"
-#include "xdectoint.h"
+#ضمن "system.h"
+#ضمن "quote.h"
+#ضمن "stat-size.h"
+#ضمن "xdectoint.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "truncate"
+#تعریف_کرو پروگرام_NAME "truncate"
 
-#define AUTHORS proper_name_lite ("Padraig Brady", "P\303\241draig Brady")
+#تعریف_کرو AUTHORS proper_name_lite ("Padraig Brady", "P\303\241draig Brady")
 
 /* (-c) If true, don't create if not already there */
-static bool no_create;
+ساكن bool no_create;
 
 /* (-o) If true, --size refers to blocks not bytes */
-static bool block_mode;
+ساكن bool بلاک_منوال;
 
 /* (-r) Reference file to use size from */
-static char const *ref_file;
+ساكن حرف ثابت *ref_file;
 
-static struct option const longopts[] =
+ساكن بنية option ثابت longopts[] =
 {
-  {"no-create", no_argument, NULL, 'c'},
-  {"io-blocks", no_argument, NULL, 'o'},
-  {"reference", required_argument, NULL, 'r'},
-  {"size", required_argument, NULL, 's'},
+  {"no-create", no_دلیل, عدم, 'c'},
+  {"io-blocks", no_دلیل, عدم, 'o'},
+  {"reference", required_دلیل, عدم, 'r'},
+  {"size", required_دلیل, عدم, 's'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_نسخہ_OPTION_DECL},
+  {عدم, 0, عدم, 0}
 };
 
-typedef enum
-{ rm_abs = 0, rm_rel, rm_min, rm_max, rm_rdn, rm_rup } rel_mode_t;
+تعريفنوع تعداد
+{ rm_abs = 0, rm_rel, rm_min, rm_max, rm_rdn, rm_rup } rel_منوال_t;
 
-void
-usage (int status)
+فراغ
+usage (صحيح حالت)
 {
-  if (status != EXIT_SUCCESS)
+  إذا (حالت != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  وإلا
     {
-      printf (_("Usage: %s OPTION... FILE...\n"), program_name);
+      لکھو (_("Usage: %s OPTION... FILE...\n"), پروگرام_name);
       fputs (_("\
-Shrink or extend the size of each FILE to the specified size\n\
+Shrink or extend the ناپ دا each FILE منزل the specified ناپ\n\
 \n\
-A FILE argument that does not exist is created.\n\
+A FILE دلیل that does not exist is created.\n\
 \n\
-If a FILE is larger than the specified size, the extra data is lost.\n\
+If a FILE is larger than the specified ناپ, the extra انکڑے is گواچا.\n\
 If a FILE is shorter, it is extended and the sparse extended part (hole)\n\
-reads as zero bytes.\n\
+reads as zero بائٹاں.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -c, --no-create        do not create any files\n\
+  -c, --no-create        افعل not create any files\n\
 "));
       oputs (_("\
-  -o, --io-blocks        treat SIZE as number of IO blocks instead of bytes\n\
+  -o, --io-بلاکاں        treat ناپ_2 as نمبر دا IO بلاکاں instead دا بائٹاں\n\
 "));
       oputs (_("\
-  -r, --reference=RFILE  base size on RFILE\n\
+  -r, --reference=RFILE  ادھار_2 ناپ on RFILE\n\
 "));
       oputs (_("\
-  -s, --size=SIZE        set or adjust the file size by SIZE bytes\n\
+  -s, --ناپ=ناپ_2        سیٹ_2 or adjust the file ناپ by ناپ_2 بائٹاں\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_size_note ();
+      oputs (نسخہ_OPTION_DESCRIPTION);
+      emit_ناپ_note ();
       fputs (_("\n\
-SIZE may also be prefixed by one of the following modifying characters:\n\
-'+' extend by, '-' reduce by, '<' at most, '>' at least,\n\
-'/' round down to multiple of, '%' round up to multiple of.\n"), stdout);
-      emit_ancillary_info (PROGRAM_NAME);
+ناپ_2 may also be prefixed by one دا the following modifying characters:\n\
+'+' extend by, '-' reduce by, '<' at most, '>' at گھٹ_توں_گھٹ,\n\
+'/' گیڑا_2 تھلے منزل مضرب دا, '%' گیڑا_2 اتے منزل مضرب دا.\n"), stdout);
+      emit_ancillary_info (پروگرام_NAME);
     }
-  exit (status);
+  باہر_نکلو (حالت);
 }
 
 /* return true on success, false on error.  */
-static bool
-do_ftruncate (int fd, char const *fname, off_t ssize, off_t rsize,
-              rel_mode_t rel_mode)
+ساكن bool
+do_ftruncate (صحيح fd, حرف ثابت *fname, off_t ssize, off_t rsize,
+              rel_منوال_t rel_منوال)
 {
-  struct stat sb;
+  بنية stat sb;
   off_t nsize;
 
-  if ((block_mode || (rel_mode && rsize < 0)) && fstat (fd, &sb) != 0)
+  إذا ((بلاک_منوال || (rel_منوال && rsize < 0)) && fstat (fd, &sb) != 0)
     {
       error (0, errno, _("cannot fstat %s"), quoteaf (fname));
-      return false;
+      أرجع false;
     }
-  if (block_mode)
+  إذا (بلاک_منوال)
     {
       ptrdiff_t blksize = STP_BLKSIZE (&sb);
       intmax_t ssize0 = ssize;
-      if (ckd_mul (&ssize, ssize, blksize))
+      إذا (ckd_mul (&ssize, ssize, blksize))
         {
           error (0, 0,
                  _("overflow in %jd * %td byte blocks for file %s"),
                  ssize0, blksize, quoteaf (fname));
-          return false;
+          أرجع false;
         }
     }
-  if (rel_mode)
+  إذا (rel_منوال)
     {
       off_t fsize;
 
-      if (0 <= rsize)
+      إذا (0 <= rsize)
         fsize = rsize;
-      else
+      وإلا
         {
-          if (usable_st_size (&sb))
+          إذا (usable_st_ناپ (&sb))
             {
-              fsize = sb.st_size;
-              if (fsize < 0)
+              fsize = sb.st_ناپ;
+              إذا (fsize < 0)
                 {
                   /* Sanity check.  Overflow is the only reason I can think
                      this would ever go negative. */
                   error (0, 0, _("%s has unusable, apparently negative size"),
                          quoteaf (fname));
-                  return false;
+                  أرجع false;
                 }
             }
-          else
+          وإلا
             {
               fsize = lseek (fd, 0, SEEK_END);
-              if (fsize < 0)
+              إذا (fsize < 0)
                 {
                   error (0, errno, _("cannot get the size of %s"),
                          quoteaf (fname));
-                  return false;
+                  أرجع false;
                 }
             }
         }
 
-      if (rel_mode == rm_min)
+      إذا (rel_منوال == rm_min)
         nsize = MAX (fsize, ssize);
-      else if (rel_mode == rm_max)
+      وإلا إذا (rel_منوال == rm_max)
         nsize = MIN (fsize, ssize);
-      else if (rel_mode == rm_rdn)
+      وإلا إذا (rel_منوال == rm_rdn)
         /* 0..ssize-1 -> 0 */
         nsize = fsize - fsize % ssize;
-      else
+      وإلا
         {
-          if (rel_mode == rm_rup)
+          إذا (rel_منوال == rm_rup)
             {
               /* 1..ssize -> ssize */
               off_t r = fsize % ssize;
               ssize = r == 0 ? 0 : ssize - r;
             }
-          if (ckd_add (&nsize, fsize, ssize))
+          إذا (ckd_جوڑو (&nsize, fsize, ssize))
             {
               error (0, 0, _("overflow extending size of file %s"),
                      quoteaf (fname));
-              return false;
+              أرجع false;
             }
         }
     }
-  else
+  وإلا
     nsize = ssize;
-  if (nsize < 0)
+  إذا (nsize < 0)
     nsize = 0;
 
-  if (ftruncate (fd, nsize) != 0)
+  إذا (ftruncate (fd, nsize) != 0)
     {
       error (0, errno, _("failed to truncate %s at %jd bytes"),
              quoteaf (fname), (intmax_t) {nsize});
-      return false;
+      أرجع false;
     }
 
-  return true;
+  أرجع true;
 }
 
-int
-main (int argc, char **argv)
+صحيح
+مکھ (صحيح argc, حرف **argv)
 {
-  bool got_size = false;
-  off_t size IF_LINT ( = 0);
+  bool got_ناپ = false;
+  off_t ناپ IF_LINT ( = 0);
   off_t rsize = -1;
-  rel_mode_t rel_mode = rm_abs;
-  int c;
+  rel_منوال_t rel_منوال = rm_abs;
+  صحيح c;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  سیٹ_پروگرام_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while ((c = getopt_long (argc, argv, "cor:s:", longopts, NULL)) != -1)
+  طالما ((c = getopt_long (argc, argv, "cor:s:", longopts, عدم)) != -1)
     {
-      switch (c)
+      بدل (c)
         {
-        case 'c':
+        حالة 'c':
           no_create = true;
-          break;
+          اكسر;
 
-        case 'o':
-          block_mode = true;
-          break;
+        حالة 'o':
+          بلاک_منوال = true;
+          اكسر;
 
-        case 'r':
+        حالة 'r':
           ref_file = optarg;
-          break;
+          اكسر;
 
-        case 's':
+        حالة 's':
           /* skip any whitespace */
-          while (isspace (to_uchar (*optarg)))
+          طالما (خلا_اے (منزل_uchar (*optarg)))
             optarg++;
-          switch (*optarg)
+          بدل (*optarg)
             {
-            case '<':
-              rel_mode = rm_max;
+            حالة '<':
+              rel_منوال = rm_max;
               optarg++;
-              break;
-            case '>':
-              rel_mode = rm_min;
+              اكسر;
+            حالة '>':
+              rel_منوال = rm_min;
               optarg++;
-              break;
-            case '/':
-              rel_mode = rm_rdn;
+              اكسر;
+            حالة '/':
+              rel_منوال = rm_rdn;
               optarg++;
-              break;
-            case '%':
-              rel_mode = rm_rup;
+              اكسر;
+            حالة '%':
+              rel_منوال = rm_rup;
               optarg++;
-              break;
+              اكسر;
             }
           /* skip any whitespace */
-          while (isspace (to_uchar (*optarg)))
+          طالما (خلا_اے (منزل_uchar (*optarg)))
             optarg++;
-          if (*optarg == '+' || *optarg == '-')
+          إذا (*optarg == '+' || *optarg == '-')
             {
-              if (rel_mode)
+              إذا (rel_منوال)
                 {
                   error (0, 0, _("multiple relative modifiers specified"));
                   /* Note other combinations are flagged as invalid numbers */
                   usage (EXIT_FAILURE);
                 }
-              rel_mode = rm_rel;
+              rel_منوال = rm_rel;
             }
           /* Support dd BLOCK size suffixes + lowercase g,t,m for bsd compat.
              Note we don't support dd's b=512, c=1, w=2 or 21x512MiB formats. */
-          size = xdectoimax (optarg, OFF_T_MIN, OFF_T_MAX, "EgGkKmMPQRtTYZ0",
+          ناپ = xdectoimax (optarg, OFF_T_MIN, OFF_T_MAX, "EgGkKmMPQRtTYZ0",
                              _("Invalid number"), 0);
           /* Rounding to multiple of 0 is nonsensical */
-          if ((rel_mode == rm_rup || rel_mode == rm_rdn) && size == 0)
+          إذا ((rel_منوال == rm_rup || rel_منوال == rm_rdn) && ناپ == 0)
             error (EXIT_FAILURE, 0, _("division by zero"));
-          got_size = true;
-          break;
+          got_ناپ = true;
+          اكسر;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_نسخہ_CHAR (پروگرام_NAME, AUTHORS);
 
-        default:
+        افتراضي:
           usage (EXIT_FAILURE);
         }
     }
@@ -289,91 +289,91 @@ main (int argc, char **argv)
   argc -= optind;
 
   /* must specify either size or reference file */
-  if (!ref_file && !got_size)
+  إذا (!ref_file && !got_ناپ)
     {
       error (0, 0, _("you must specify either %s or %s"),
              quote_n (0, "--size"), quote_n (1, "--reference"));
       usage (EXIT_FAILURE);
     }
   /* must specify a relative size with a reference file */
-  if (ref_file && got_size && !rel_mode)
+  إذا (ref_file && got_ناپ && !rel_منوال)
     {
       error (0, 0, _("you must specify a relative %s with %s"),
              quote_n (0, "--size"), quote_n (1, "--reference"));
       usage (EXIT_FAILURE);
     }
   /* block_mode without size is not valid */
-  if (block_mode && !got_size)
+  إذا (بلاک_منوال && !got_ناپ)
     {
       error (0, 0, _("%s was specified but %s was not"),
              quote_n (0, "--io-blocks"), quote_n (1, "--size"));
       usage (EXIT_FAILURE);
     }
   /* must specify at least 1 file */
-  if (argc < 1)
+  إذا (argc < 1)
     {
       error (0, 0, _("missing file operand"));
       usage (EXIT_FAILURE);
     }
 
-  if (ref_file)
+  إذا (ref_file)
     {
-      struct stat sb;
-      off_t file_size = -1;
-      if (stat (ref_file, &sb) != 0)
+      بنية stat sb;
+      off_t file_ناپ = -1;
+      إذا (stat (ref_file, &sb) != 0)
         error (EXIT_FAILURE, errno, _("cannot stat %s"), quoteaf (ref_file));
-      if (usable_st_size (&sb))
-        file_size = sb.st_size;
-      else
+      إذا (usable_st_ناپ (&sb))
+        file_ناپ = sb.st_ناپ;
+      وإلا
         {
           /* O_NONBLOCK so we do not hang forever on a FIFO with no writer.  */
-          int ref_fd = open (ref_file, O_RDONLY | O_NONBLOCK);
-          if (0 <= ref_fd)
+          صحيح ref_fd = open (ref_file, O_RDONLY | O_NONBLOCK);
+          إذا (0 <= ref_fd)
             {
-              off_t file_end = lseek (ref_fd, 0, SEEK_END);
-              int saved_errno = errno;
+              off_t file_سرا = lseek (ref_fd, 0, SEEK_END);
+              صحيح saved_errno = errno;
               close (ref_fd); /* ignore failure */
-              if (0 <= file_end)
-                file_size = file_end;
-              else
+              إذا (0 <= file_سرا)
+                file_ناپ = file_سرا;
+              وإلا
                 {
                   /* restore, in case close clobbered it. */
                   errno = saved_errno;
                 }
             }
         }
-      if (file_size < 0)
+      إذا (file_ناپ < 0)
         error (EXIT_FAILURE, errno, _("cannot get the size of %s"),
                quoteaf (ref_file));
-      if (!got_size)
-        size = file_size;
-      else
-        rsize = file_size;
+      إذا (!got_ناپ)
+        ناپ = file_ناپ;
+      وإلا
+        rsize = file_ناپ;
     }
 
-  int oflags = O_WRONLY | (no_create ? 0 : O_CREAT) | O_NONBLOCK;
+  صحيح oflags = O_WRONLY | (no_create ? 0 : O_CREAT) | O_NONBLOCK;
   bool errors = false;
 
-  for (char const *fname; (fname = *argv); argv++)
+  لكل (حرف ثابت *fname; (fname = *argv); argv++)
     {
-      int fd = open (fname, oflags, MODE_RW_UGO);
-      if (fd < 0)
+      صحيح fd = open (fname, oflags, منوال_RW_UGO);
+      إذا (fd < 0)
         {
           /* 'truncate -s0 -c no-such-file'  shouldn't gen error
              'truncate -s0 no-such-dir/file' should gen ENOENT error
              'truncate -s0 no-such-dir/' should gen EISDIR error
              'truncate -s0 .' should gen EISDIR error */
-          if (!(no_create && errno == ENOENT))
+          إذا (!(no_create && errno == ENOENT))
             {
               error (0, errno, _("cannot open %s for writing"),
                      quoteaf (fname));
               errors = true;
             }
         }
-      else
+      وإلا
         {
-          errors |= !do_ftruncate (fd, fname, size, rsize, rel_mode);
-          if (close (fd) != 0)
+          errors |= !do_ftruncate (fd, fname, ناپ, rsize, rel_منوال);
+          إذا (close (fd) != 0)
             {
               error (0, errno, _("failed to close %s"), quoteaf (fname));
               errors = true;
@@ -381,5 +381,5 @@ main (int argc, char **argv)
         }
     }
 
-  return errors ? EXIT_FAILURE : EXIT_SUCCESS;
+  أرجع errors ? EXIT_FAILURE : EXIT_SUCCESS;
 }

@@ -16,130 +16,130 @@
 
 /* Written by Ulrich Drepper <drepper@gnu.ai.mit.edu>.  */
 
-#include <config.h>
+#ضمن <config.h>
 
-#include <getopt.h>
-#include <sys/types.h>
+#ضمن <getopt.h>
+#ضمن <sys/types.h>
 
-#include "assure.h"
-#include "system.h"
-#include "argmatch.h"
-#include "c-ctype.h"
-#include "quote.h"
-#include "xdectoint.h"
-#include "xstrtol.h"
+#ضمن "assure.h"
+#ضمن "system.h"
+#ضمن "argmatch.h"
+#ضمن "c-ctype.h"
+#ضمن "quote.h"
+#ضمن "xdectoint.h"
+#ضمن "xstrtol.h"
 
-#ifndef HASH_ALGO_CKSUM
+#جے_بنا_تعریف HASH_ALGO_CKSUM
 # define HASH_ALGO_CKSUM 0
-#endif
+#جے_انت
 
-#if HASH_ALGO_SUM || HASH_ALGO_CKSUM
+#إذا HASH_ALGO_جوڑ || HASH_ALGO_CKSUM
 # include "sum.h"
-#endif
-#if HASH_ALGO_CKSUM
+#جے_انت
+#إذا HASH_ALGO_CKSUM
 # include "cksum.h"
 # include "cksum_crc.h"
 # include "base64.h"
-#endif
-#if HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
+#جے_انت
+#إذا HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
 # include "blake2/b2sum.h"
-#endif
-#if HASH_ALGO_MD5 || HASH_ALGO_CKSUM
+#جے_انت
+#إذا HASH_ALGO_MD5 || HASH_ALGO_CKSUM
 # include "md5.h"
-#endif
-#if HASH_ALGO_SHA1 || HASH_ALGO_CKSUM
+#جے_انت
+#إذا HASH_ALGO_SHA1 || HASH_ALGO_CKSUM
 # include "sha1.h"
-#endif
-#if HASH_ALGO_SHA256 || HASH_ALGO_SHA224 || HASH_ALGO_CKSUM
+#جے_انت
+#إذا HASH_ALGO_SHA256 || HASH_ALGO_SHA224 || HASH_ALGO_CKSUM
 # include "sha256.h"
-#endif
-#if HASH_ALGO_SHA512 || HASH_ALGO_SHA384 || HASH_ALGO_CKSUM
+#جے_انت
+#إذا HASH_ALGO_SHA512 || HASH_ALGO_SHA384 || HASH_ALGO_CKSUM
 # include "sha512.h"
-#endif
-#if HASH_ALGO_CKSUM
+#جے_انت
+#إذا HASH_ALGO_CKSUM
 # include "sha3.h"
-#endif
-#if HASH_ALGO_CKSUM
+#جے_انت
+#إذا HASH_ALGO_CKSUM
 # include "sm3.h"
-#endif
-#include "fadvise.h"
-#include "stdio--.h"
-#include "xbinary-io.h"
+#جے_انت
+#ضمن "fadvise.h"
+#ضمن "stdio--.h"
+#ضمن "xbinary-io.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#if HASH_ALGO_SUM
-# define PROGRAM_NAME "sum"
+#إذا HASH_ALGO_جوڑ
+# define پروگرام_NAME "sum"
 # define DIGEST_TYPE_STRING "BSD"
-# define DIGEST_STREAM sumfns[sum_algorithm]
-# define DIGEST_OUT sum_output_fns[sum_algorithm]
-# define DIGEST_BITS 16
+# define DIGEST_دھارا sumfns[جوڑ_algorithm]
+# define DIGEST_باہرلا جوڑ_output_fns[جوڑ_algorithm]
+# define DIGEST_بٹ 16
 # define DIGEST_ALIGN 4
-#elif HASH_ALGO_CKSUM
-# define MAX_DIGEST_BITS 512
+#وإلاإذا HASH_ALGO_CKSUM
+# define MAX_DIGEST_بٹ 512
 # define MAX_DIGEST_ALIGN 8
-# define DIGEST_TYPE_STRING algorithm_tags[cksum_algorithm]
-# define DIGEST_STREAM cksumfns[cksum_algorithm]
-# define DIGEST_OUT cksum_output_fns[cksum_algorithm]
-# define DIGEST_BITS MAX_DIGEST_BITS
+# define DIGEST_TYPE_STRING algorithm_ٹیگ_سوچی[cksum_algorithm]
+# define DIGEST_دھارا cksumfns[cksum_algorithm]
+# define DIGEST_باہرلا cksum_output_fns[cksum_algorithm]
+# define DIGEST_بٹ MAX_DIGEST_بٹ
 # define DIGEST_ALIGN MAX_DIGEST_ALIGN
-#elif HASH_ALGO_MD5
-# define PROGRAM_NAME "md5sum"
+#وإلاإذا HASH_ALGO_MD5
+# define پروگرام_NAME "md5sum"
 # define DIGEST_TYPE_STRING "MD5"
-# define DIGEST_STREAM md5_stream
-# define DIGEST_BITS 128
+# define DIGEST_دھارا md5_دھارا
+# define DIGEST_بٹ 128
 # define DIGEST_REFERENCE "RFC 1321"
 # define DIGEST_ALIGN 4
-#elif HASH_ALGO_BLAKE2
-# define PROGRAM_NAME "b2sum"
+#وإلاإذا HASH_ALGO_BLAKE2
+# define پروگرام_NAME "b2sum"
 # define DIGEST_TYPE_STRING "BLAKE2b"
-# define DIGEST_STREAM blake2b_stream
-# define DIGEST_BITS 512
+# define DIGEST_دھارا blake2b_دھارا
+# define DIGEST_بٹ 512
 # define DIGEST_REFERENCE "RFC 7693"
 # define DIGEST_ALIGN 8
-#elif HASH_ALGO_SHA1
-# define PROGRAM_NAME "sha1sum"
+#وإلاإذا HASH_ALGO_SHA1
+# define پروگرام_NAME "sha1sum"
 # define DIGEST_TYPE_STRING "SHA1"
-# define DIGEST_STREAM sha1_stream
-# define DIGEST_BITS 160
+# define DIGEST_دھارا sha1_دھارا
+# define DIGEST_بٹ 160
 # define DIGEST_REFERENCE "FIPS-180-1"
 # define DIGEST_ALIGN 4
-#elif HASH_ALGO_SHA256
-# define PROGRAM_NAME "sha256sum"
+#وإلاإذا HASH_ALGO_SHA256
+# define پروگرام_NAME "sha256sum"
 # define DIGEST_TYPE_STRING "SHA256"
-# define DIGEST_STREAM sha256_stream
-# define DIGEST_BITS 256
+# define DIGEST_دھارا sha256_دھارا
+# define DIGEST_بٹ 256
 # define DIGEST_REFERENCE "FIPS-180-2"
 # define DIGEST_ALIGN 4
-#elif HASH_ALGO_SHA224
-# define PROGRAM_NAME "sha224sum"
+#وإلاإذا HASH_ALGO_SHA224
+# define پروگرام_NAME "sha224sum"
 # define DIGEST_TYPE_STRING "SHA224"
-# define DIGEST_STREAM sha224_stream
-# define DIGEST_BITS 224
+# define DIGEST_دھارا sha224_دھارا
+# define DIGEST_بٹ 224
 # define DIGEST_REFERENCE "RFC 3874"
 # define DIGEST_ALIGN 4
-#elif HASH_ALGO_SHA512
-# define PROGRAM_NAME "sha512sum"
+#وإلاإذا HASH_ALGO_SHA512
+# define پروگرام_NAME "sha512sum"
 # define DIGEST_TYPE_STRING "SHA512"
-# define DIGEST_STREAM sha512_stream
-# define DIGEST_BITS 512
+# define DIGEST_دھارا sha512_دھارا
+# define DIGEST_بٹ 512
 # define DIGEST_REFERENCE "FIPS-180-2"
 # define DIGEST_ALIGN 8
-#elif HASH_ALGO_SHA384
-# define PROGRAM_NAME "sha384sum"
+#وإلاإذا HASH_ALGO_SHA384
+# define پروگرام_NAME "sha384sum"
 # define DIGEST_TYPE_STRING "SHA384"
-# define DIGEST_STREAM sha384_stream
-# define DIGEST_BITS 384
+# define DIGEST_دھارا sha384_دھارا
+# define DIGEST_بٹ 384
 # define DIGEST_REFERENCE "FIPS-180-2"
 # define DIGEST_ALIGN 8
-#else
+#وإلا
 # error "Can't decide which hash algorithm to compile."
-#endif
-#if !HASH_ALGO_SUM && !HASH_ALGO_CKSUM
-# define DIGEST_OUT output_file
-#endif
+#جے_انت
+#إذا !HASH_ALGO_جوڑ && !HASH_ALGO_CKSUM
+# define DIGEST_باہرلا output_file
+#جے_انت
 
-#if HASH_ALGO_CKSUM
-# define PROGRAM_NAME (!legacy_mode ? "cksum"			 \
+#إذا HASH_ALGO_CKSUM
+# define پروگرام_NAME (!legacy_منوال ? "cksum"			 \
                        : cksum_algorithm == md5 ? "md5sum"	 \
                        : cksum_algorithm == sha1 ? "sha1sum"	 \
                        : cksum_algorithm == sha224 ? "sha224sum" \
@@ -147,258 +147,258 @@
                        : cksum_algorithm == sha384 ? "sha384sum" \
                        : cksum_algorithm == sha512 ? "sha512sum" \
                        : "cksum")
-#endif
+#جے_انت
 
-#if HASH_ALGO_SUM
+#إذا HASH_ALGO_جوڑ
 # define AUTHORS \
   proper_name ("Kayvan Aghaiepour"), \
   proper_name ("David MacKenzie")
-#elif HASH_ALGO_CKSUM
+#وإلاإذا HASH_ALGO_CKSUM
 # define AUTHORS \
   proper_name_lite ("Padraig Brady", "P\303\241draig Brady"), \
   proper_name ("Q. Frank Xia")
-#elif HASH_ALGO_BLAKE2
+#وإلاإذا HASH_ALGO_BLAKE2
 # define AUTHORS \
   proper_name_lite ("Padraig Brady", "P\303\241draig Brady"), \
   proper_name ("Samuel Neves")
-#else
+#وإلا
 # define AUTHORS \
   proper_name ("Ulrich Drepper"), \
   proper_name ("Scott Miller"), \
   proper_name ("David Madore")
-#endif
-#if !HASH_ALGO_BLAKE2 && !HASH_ALGO_CKSUM
-# define DIGEST_HEX_BYTES (DIGEST_BITS / 4)
-#endif
-#define DIGEST_BIN_BYTES (DIGEST_BITS / 8)
+#جے_انت
+#إذا !HASH_ALGO_BLAKE2 && !HASH_ALGO_CKSUM
+# define DIGEST_HEX_بائٹاں (DIGEST_بٹ / 4)
+#جے_انت
+#تعریف_کرو DIGEST_BIN_بائٹاں (DIGEST_بٹ / 8)
 
 /* The minimum length of a valid digest line.  This length does
    not include any newline character at the end of a line.  */
-#if HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
-# define MIN_DIGEST_LINE_LENGTH 3 /* With -l 8.  */
-#else
-# define MIN_DIGEST_LINE_LENGTH \
-   (DIGEST_HEX_BYTES /* length of hexadecimal message digest */ \
+#إذا HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
+# define MIN_DIGEST_سطر_لمائی 3 /* With -l 8.  */
+#وإلا
+# define MIN_DIGEST_سطر_لمائی \
+   (DIGEST_HEX_بائٹاں /* length of hexadecimal message digest */ \
     + 1 /* blank */ \
     + 1 /* minimum filename length */ )
-#endif
+#جے_انت
 
-#if !HASH_ALGO_SUM
-static void
-output_file (char const *file, int binary_file, void const *digest,
-             bool raw, bool tagged, unsigned char delim, bool args,
-             intmax_t length);
-#endif
+#إذا !HASH_ALGO_جوڑ
+ساكن فراغ
+output_file (حرف ثابت *file, صحيح ثنائی_file, فراغ ثابت *digest,
+             bool raw, bool tagged, بنانشانی حرف delim, bool دلیلاں,
+             intmax_t لمائی);
+#جے_انت
 
 /* True if any of the files read were the standard input. */
-static bool have_read_stdin;
+ساكن bool have_read_stdin;
 
 /* The minimum length of a valid checksum line for the selected algorithm.  */
-static idx_t min_digest_line_length;
+ساكن idx_t min_digest_سطر_لمائی;
 
 /* Set to the length of a digest hex string for the selected algorithm.  */
-static idx_t digest_hex_bytes;
+ساكن idx_t digest_hex_بائٹاں;
 
 /* With --check, don't generate any output.
    The exit code indicates success or failure.  */
-static bool status_only = false;
+ساكن bool حالت_only = false;
 
 /* With --check, print a message to standard error warning about each
    improperly formatted checksum line.  */
-static bool warn = false;
+ساكن bool warn = false;
 
 /* With --check, ignore missing files.  */
-static bool ignore_missing = false;
+ساكن bool ignore_missing = false;
 
 /* With --check, suppress the "OK" printed for each verified file.  */
-static bool quiet = false;
+ساكن bool quiet = false;
 
 /* With --check, exit with a non-zero return code if any line is
    improperly formatted. */
-static bool strict = false;
+ساكن bool strict = false;
 
 /* Whether a BSD reversed format checksum is detected.  */
-static int bsd_reversed = -1;
+ساكن صحيح bsd_reversed = -1;
 
 /* line delimiter.  */
-static unsigned char digest_delim = '\n';
+ساكن بنانشانی حرف digest_delim = '\n';
 
-#if HASH_ALGO_CKSUM
+#إذا HASH_ALGO_CKSUM
 /* If true, print base64-encoded digests, not hex.  */
-static bool base64_digest = false;
-#endif
+ساكن bool base64_digest = false;
+#جے_انت
 
 /* If true, print binary digests, not hex.  */
-static bool raw_digest = false;
+ساكن bool raw_digest = false;
 
 /* blake2b and sha3 allow the -l option.  Luckily they both have the same
    maximum digest size.  */
-#if HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
-# if HASH_ALGO_CKSUM
-static_assert (BLAKE2B_OUTBYTES == SHA3_512_DIGEST_SIZE);
+#إذا HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
+# إذا HASH_ALGO_CKSUM
+static_assert (BLAKE2B_OUTBYTES == SHA3_512_DIGEST_ناپ);
 # endif
 # define DIGEST_MAX_LEN BLAKE2B_OUTBYTES
-static idx_t digest_length;
-#endif /* HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM */
+ساكن idx_t digest_لمائی;
+#جے_انت /* HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM */
 
-typedef void (*digest_output_fn)(char const *, int, void const *, bool,
-                                 bool, unsigned char, bool, intmax_t);
-#if HASH_ALGO_SUM
-enum Algorithm
+تعريفنوع فراغ (*digest_output_fn)(حرف ثابت *, صحيح, فراغ ثابت *, bool,
+                                 bool, بنانشانی حرف, bool, intmax_t);
+#إذا HASH_ALGO_جوڑ
+تعداد Algorithm
 {
   bsd,
   sysv,
 };
 
-static enum Algorithm sum_algorithm;
-static sumfn sumfns[]=
+ساكن تعداد Algorithm جوڑ_algorithm;
+ساكن sumfn sumfns[]=
 {
-  bsd_sum_stream,
-  sysv_sum_stream,
+  bsd_جوڑ_دھارا,
+  sysv_جوڑ_دھارا,
 };
-static digest_output_fn sum_output_fns[]=
+ساكن digest_output_fn جوڑ_output_fns[]=
 {
   output_bsd,
   output_sysv,
 };
-#endif
+#جے_انت
 
-#if HASH_ALGO_CKSUM
-static int
-md5_sum_stream (FILE *stream, void *resstream, MAYBE_UNUSED intmax_t *length)
+#إذا HASH_ALGO_CKSUM
+ساكن صحيح
+md5_جوڑ_دھارا (FILE *دھارا, فراغ *resstream, MAYBE_بن_ورتیا intmax_t *لمائی)
 {
-  return md5_stream (stream, resstream);
+  أرجع md5_دھارا (دھارا, resstream);
 }
-static int
-sha1_sum_stream (FILE *stream, void *resstream, MAYBE_UNUSED intmax_t *length)
+ساكن صحيح
+sha1_جوڑ_دھارا (FILE *دھارا, فراغ *resstream, MAYBE_بن_ورتیا intmax_t *لمائی)
 {
-  return sha1_stream (stream, resstream);
+  أرجع sha1_دھارا (دھارا, resstream);
 }
-static int
-sha224_sum_stream (FILE *stream, void *resstream,
-                   MAYBE_UNUSED intmax_t *length)
+ساكن صحيح
+sha224_جوڑ_دھارا (FILE *دھارا, فراغ *resstream,
+                   MAYBE_بن_ورتیا intmax_t *لمائی)
 {
-  return sha224_stream (stream, resstream);
+  أرجع sha224_دھارا (دھارا, resstream);
 }
-static int
-sha256_sum_stream (FILE *stream, void *resstream,
-                   MAYBE_UNUSED intmax_t *length)
+ساكن صحيح
+sha256_جوڑ_دھارا (FILE *دھارا, فراغ *resstream,
+                   MAYBE_بن_ورتیا intmax_t *لمائی)
 {
-  return sha256_stream (stream, resstream);
+  أرجع sha256_دھارا (دھارا, resstream);
 }
-static int
-sha384_sum_stream (FILE *stream, void *resstream,
-                   MAYBE_UNUSED intmax_t *length)
+ساكن صحيح
+sha384_جوڑ_دھارا (FILE *دھارا, فراغ *resstream,
+                   MAYBE_بن_ورتیا intmax_t *لمائی)
 {
-  return sha384_stream (stream, resstream);
+  أرجع sha384_دھارا (دھارا, resstream);
 }
-static int
-sha512_sum_stream (FILE *stream, void *resstream,
-                   MAYBE_UNUSED intmax_t *length)
+ساكن صحيح
+sha512_جوڑ_دھارا (FILE *دھارا, فراغ *resstream,
+                   MAYBE_بن_ورتیا intmax_t *لمائی)
 {
-  return sha512_stream (stream, resstream);
+  أرجع sha512_دھارا (دھارا, resstream);
 }
-static int
-sha2_sum_stream (FILE *stream, void *resstream, intmax_t *length)
+ساكن صحيح
+sha2_جوڑ_دھارا (FILE *دھارا, فراغ *resstream, intmax_t *لمائی)
 {
-  switch (*length)
+  بدل (*لمائی)
     {
-    case SHA224_DIGEST_SIZE:
-      return sha224_stream (stream, resstream);
-    case SHA256_DIGEST_SIZE:
-      return sha256_stream (stream, resstream);
-    case SHA384_DIGEST_SIZE:
-      return sha384_stream (stream, resstream);
-    case SHA512_DIGEST_SIZE:
-      return sha512_stream (stream, resstream);
-    default:
+    حالة SHA224_DIGEST_ناپ:
+      أرجع sha224_دھارا (دھارا, resstream);
+    حالة SHA256_DIGEST_ناپ:
+      أرجع sha256_دھارا (دھارا, resstream);
+    حالة SHA384_DIGEST_ناپ:
+      أرجع sha384_دھارا (دھارا, resstream);
+    حالة SHA512_DIGEST_ناپ:
+      أرجع sha512_دھارا (دھارا, resstream);
+    افتراضي:
       affirm (false);
     }
 }
-static int
-sha3_sum_stream (FILE *stream, void *resstream, intmax_t *length)
+ساكن صحيح
+sha3_جوڑ_دھارا (FILE *دھارا, فراغ *resstream, intmax_t *لمائی)
 {
-  switch (*length)
+  بدل (*لمائی)
     {
-    case SHA3_224_DIGEST_SIZE:
-      return sha3_224_stream (stream, resstream);
-    case SHA3_256_DIGEST_SIZE:
-      return sha3_256_stream (stream, resstream);
-    case SHA3_384_DIGEST_SIZE:
-      return sha3_384_stream (stream, resstream);
-    case SHA3_512_DIGEST_SIZE:
-      return sha3_512_stream (stream, resstream);
-    default:
+    حالة SHA3_224_DIGEST_ناپ:
+      أرجع sha3_224_دھارا (دھارا, resstream);
+    حالة SHA3_256_DIGEST_ناپ:
+      أرجع sha3_256_دھارا (دھارا, resstream);
+    حالة SHA3_384_DIGEST_ناپ:
+      أرجع sha3_384_دھارا (دھارا, resstream);
+    حالة SHA3_512_DIGEST_ناپ:
+      أرجع sha3_512_دھارا (دھارا, resstream);
+    افتراضي:
       affirm (false);
     }
 }
-static int
-blake2b_sum_stream (FILE *stream, void *resstream, intmax_t *length)
+ساكن صحيح
+blake2b_جوڑ_دھارا (FILE *دھارا, فراغ *resstream, intmax_t *لمائی)
 {
-  return blake2b_stream (stream, resstream, *length);
+  أرجع blake2b_دھارا (دھارا, resstream, *لمائی);
 }
-static int
-sm3_sum_stream (FILE *stream, void *resstream, MAYBE_UNUSED intmax_t *length)
+ساكن صحيح
+sm3_جوڑ_دھارا (FILE *دھارا, فراغ *resstream, MAYBE_بن_ورتیا intmax_t *لمائی)
 {
-  return sm3_stream (stream, resstream);
+  أرجع sm3_دھارا (دھارا, resstream);
 }
 
-static char const *const algorithm_args[] =
+ساكن حرف ثابت *ثابت algorithm_دلیلاں[] =
 {
   "bsd", "sysv", "crc", "crc32b", "md5", "sha1",
   "sha224", "sha256", "sha384", "sha512", /* Legacy naming */
-  "sha2", "sha3", "blake2b", "sm3", NULL
+  "sha2", "sha3", "blake2b", "sm3", عدم
 };
-static enum Algorithm const algorithm_types[] =
+ساكن تعداد Algorithm ثابت algorithm_types[] =
 {
-  bsd, sysv, crc, crc32b, md5, sha1,
+  bsd, sysv, چکری_جانچ, crc32b, md5, sha1,
   sha224, sha256, sha384, sha512,
   sha2, sha3, blake2b, sm3,
 };
-ARGMATCH_VERIFY (algorithm_args, algorithm_types);
+ARGMATCH_VERIFY (algorithm_دلیلاں, algorithm_types);
 
-static char const *const algorithm_tags[] =
+ساكن حرف ثابت *ثابت algorithm_ٹیگ_سوچی[] =
 {
   "BSD", "SYSV", "CRC", "CRC32B", "MD5", "SHA1",
   "SHA224", "SHA256", "SHA384", "SHA512",
-  "SHA2", "SHA3", "BLAKE2b", "SM3", NULL
+  "SHA2", "SHA3", "BLAKE2b", "SM3", عدم
 };
-static int const algorithm_bits[] =
+ساكن صحيح ثابت algorithm_بٹ[] =
 {
   16, 16, 32, 32, 128, 160,
   224, 256, 384, 512,
   512, 512, 512, 256, 0
 };
 
-static_assert (countof (algorithm_bits) == countof (algorithm_args));
+static_assert (countof (algorithm_بٹ) == countof (algorithm_دلیلاں));
 
-static bool algorithm_specified = false;
-static bool legacy_mode = false;
-enum Algorithm cksum_algorithm = crc;
+ساكن bool algorithm_specified = false;
+ساكن bool legacy_منوال = false;
+تعداد Algorithm cksum_algorithm = چکری_جانچ;
 
-static sumfn cksumfns[]=
+ساكن sumfn cksumfns[]=
 {
-  bsd_sum_stream,
-  sysv_sum_stream,
-  crc_sum_stream,
-  crc32b_sum_stream,
-  md5_sum_stream,
-  sha1_sum_stream,
-  sha224_sum_stream,
-  sha256_sum_stream,
-  sha384_sum_stream,
-  sha512_sum_stream,
-  sha2_sum_stream,
-  sha3_sum_stream,
-  blake2b_sum_stream,
-  sm3_sum_stream,
+  bsd_جوڑ_دھارا,
+  sysv_جوڑ_دھارا,
+  چکری_جانچ_جوڑ_دھارا,
+  crc32b_جوڑ_دھارا,
+  md5_جوڑ_دھارا,
+  sha1_جوڑ_دھارا,
+  sha224_جوڑ_دھارا,
+  sha256_جوڑ_دھارا,
+  sha384_جوڑ_دھارا,
+  sha512_جوڑ_دھارا,
+  sha2_جوڑ_دھارا,
+  sha3_جوڑ_دھارا,
+  blake2b_جوڑ_دھارا,
+  sm3_جوڑ_دھارا,
 };
-static digest_output_fn cksum_output_fns[]=
+ساكن digest_output_fn cksum_output_fns[]=
 {
   output_bsd,
   output_sysv,
-  output_crc,
-  output_crc,
+  output_چکری_جانچ,
+  output_چکری_جانچ,
   output_file,
   output_file,
   output_file,
@@ -411,222 +411,222 @@ static digest_output_fn cksum_output_fns[]=
   output_file,
 };
 bool cksum_debug;
-#endif
+#جے_انت
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
 
-enum
+تعداد
 {
   IGNORE_MISSING_OPTION = CHAR_MAX + 1,
-  STATUS_OPTION,
+  حالت_OPTION,
   QUIET_OPTION,
   STRICT_OPTION,
-  TAG_OPTION,
+  ٹیگ_OPTION,
   UNTAG_OPTION,
-  DEBUG_PROGRAM_OPTION,
+  DEBUG_پروگرام_OPTION,
   RAW_OPTION,
   BASE64_OPTION,
 };
 
-#if HASH_ALGO_CKSUM
-static struct option const legacy_long_options[] =
+#إذا HASH_ALGO_CKSUM
+ساكن بنية option ثابت legacy_long_options[] =
 {
-  { "check", no_argument, NULL, 'c' },
-  { "ignore-missing", no_argument, NULL, IGNORE_MISSING_OPTION },
-  { "quiet", no_argument, NULL, QUIET_OPTION },
-  { "status", no_argument, NULL, STATUS_OPTION },
-  { "warn", no_argument, NULL, 'w' },
-  { "strict", no_argument, NULL, STRICT_OPTION },
-  { "tag", no_argument, NULL, TAG_OPTION },
-  { "zero", no_argument, NULL, 'z' },
+  { "check", no_دلیل, عدم, 'c' },
+  { "ignore-missing", no_دلیل, عدم, IGNORE_MISSING_OPTION },
+  { "quiet", no_دلیل, عدم, QUIET_OPTION },
+  { "status", no_دلیل, عدم, حالت_OPTION },
+  { "warn", no_دلیل, عدم, 'w' },
+  { "strict", no_دلیل, عدم, STRICT_OPTION },
+  { "tag", no_دلیل, عدم, ٹیگ_OPTION },
+  { "zero", no_دلیل, عدم, 'z' },
 
-  { "binary", no_argument, NULL, 'b' }, /* Deprecated.  */
-  { "text", no_argument, NULL, 't' }, /* Deprecated.  */
+  { "binary", no_دلیل, عدم, 'b' }, /* Deprecated.  */
+  { "text", no_دلیل, عدم, 't' }, /* Deprecated.  */
 
   { GETOPT_HELP_OPTION_DECL },
-  { GETOPT_VERSION_OPTION_DECL },
-  { NULL, 0, NULL, 0 }
+  { GETOPT_نسخہ_OPTION_DECL },
+  { عدم, 0, عدم, 0 }
 };
-#endif
+#جے_انت
 
-static struct option const long_options[] =
+ساكن بنية option ثابت long_options[] =
 {
-#if HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
-  { "length", required_argument, NULL, 'l'},
-#endif
+#إذا HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
+  { "length", required_دلیل, عدم, 'l'},
+#جے_انت
 
-#if !HASH_ALGO_SUM
-  { "check", no_argument, NULL, 'c' },
-  { "ignore-missing", no_argument, NULL, IGNORE_MISSING_OPTION},
-  { "quiet", no_argument, NULL, QUIET_OPTION },
-  { "status", no_argument, NULL, STATUS_OPTION },
-  { "warn", no_argument, NULL, 'w' },
-  { "strict", no_argument, NULL, STRICT_OPTION },
-  { "tag", no_argument, NULL, TAG_OPTION },
-  { "zero", no_argument, NULL, 'z' },
+#إذا !HASH_ALGO_جوڑ
+  { "check", no_دلیل, عدم, 'c' },
+  { "ignore-missing", no_دلیل, عدم, IGNORE_MISSING_OPTION},
+  { "quiet", no_دلیل, عدم, QUIET_OPTION },
+  { "status", no_دلیل, عدم, حالت_OPTION },
+  { "warn", no_دلیل, عدم, 'w' },
+  { "strict", no_دلیل, عدم, STRICT_OPTION },
+  { "tag", no_دلیل, عدم, ٹیگ_OPTION },
+  { "zero", no_دلیل, عدم, 'z' },
 
-# if HASH_ALGO_CKSUM
-  { "algorithm", required_argument, NULL, 'a'},
-  { "base64", no_argument, NULL, BASE64_OPTION },
-  { "debug", no_argument, NULL, DEBUG_PROGRAM_OPTION},
-  { "raw", no_argument, NULL, RAW_OPTION},
-  { "untagged", no_argument, NULL, UNTAG_OPTION },
+# إذا HASH_ALGO_CKSUM
+  { "algorithm", required_دلیل, عدم, 'a'},
+  { "base64", no_دلیل, عدم, BASE64_OPTION },
+  { "debug", no_دلیل, عدم, DEBUG_پروگرام_OPTION},
+  { "raw", no_دلیل, عدم, RAW_OPTION},
+  { "untagged", no_دلیل, عدم, UNTAG_OPTION },
 # endif
-  { "binary", no_argument, NULL, 'b' }, /* Deprecated.  */
-  { "text", no_argument, NULL, 't' }, /* Deprecated.  */
+  { "binary", no_دلیل, عدم, 'b' }, /* Deprecated.  */
+  { "text", no_دلیل, عدم, 't' }, /* Deprecated.  */
 
-#else
-  {"sysv", no_argument, NULL, 's'},  /* Not in cksum.  */
-#endif
+#وإلا
+  {"sysv", no_دلیل, عدم, 's'},  /* Not in cksum.  */
+#جے_انت
 
   { GETOPT_HELP_OPTION_DECL },
-  { GETOPT_VERSION_OPTION_DECL },
-  { NULL, 0, NULL, 0 }
+  { GETOPT_نسخہ_OPTION_DECL },
+  { عدم, 0, عدم, 0 }
 };
 
-void
-usage (int status)
+فراغ
+usage (صحيح حالت)
 {
-  if (status != EXIT_SUCCESS)
+  إذا (حالت != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  وإلا
     {
-      printf (_("\
+      لکھو (_("\
 Usage: %s [OPTION]... [FILE]...\n\
-"), program_name);
-#if HASH_ALGO_CKSUM
-    if (legacy_mode)
+"), پروگرام_name);
+#إذا HASH_ALGO_CKSUM
+    إذا (legacy_منوال)
       {
-        printf (_("\
+        لکھو (_("\
 Print or check %s checksums.\n\
 "), DIGEST_TYPE_STRING);
         fputs (_("\
-Legacy interface to the cksum(1) utility.\n\
+Legacy interface منزل the cksum(1) utility.\n\
 "), stdout);
       }
-    else
+    وإلا
       fputs (_("\
 Print or verify checksums.\n\
-By default use the 32 bit CRC algorithm.\n\
+By افتراضي use the 32 ثنائی_ہندسہ چکری_جانچ_2 algorithm.\n\
 "), stdout);
-#else
-      printf (_("\
-Print or check %s (%d-bit) checksums.\n\
+#وإلا
+      لکھو (_("\
+Print or check %s (%d-ثنائی_ہندسہ) checksums.\n\
 "),
               DIGEST_TYPE_STRING,
-              DIGEST_BITS);
+              DIGEST_بٹ);
       fputs (_("\
-Legacy interface to the cksum(1) utility.\n\
+Legacy interface منزل the cksum(1) utility.\n\
 "), stdout);
-#endif
+#جے_انت
 
       emit_stdin_note ();
-#if HASH_ALGO_SUM
+#إذا HASH_ALGO_جوڑ
       oputs (_("\
   -r\n\
-         use BSD sum algorithm (the default), use 1K blocks\n\
+         use BSD جوڑ algorithm (the افتراضي), use 1K بلاکاں\n\
 "));
       oputs (_("\
   -s, --sysv\n\
-         use System V sum algorithm, use 512 bytes blocks\n\
+         use System V جوڑ algorithm, use 512 بائٹاں بلاکاں\n\
 "));
-#endif
-#if HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
+#جے_انت
+#إذا HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
         emit_mandatory_arg_note ();
-#endif
-#if HASH_ALGO_CKSUM
-     if (! legacy_mode)
+#جے_انت
+#إذا HASH_ALGO_CKSUM
+     إذا (! legacy_منوال)
         oputs (_("\
   -a, --algorithm=TYPE\n\
-         select the digest type to use.  See DIGEST below\n\
+         select the digest type منزل use.  See DIGEST ہیٹھاں\n\
 "));
-     if (! legacy_mode)
+     إذا (! legacy_منوال)
         oputs (_("\
       --base64\n\
          emit base64-encoded digests, not hexadecimal\n\
 "));
-#endif
-#if !HASH_ALGO_SUM
-# if HASH_ALGO_CKSUM
-     if (legacy_mode)
+#جے_انت
+#إذا !HASH_ALGO_جوڑ
+# إذا HASH_ALGO_CKSUM
+     إذا (legacy_منوال)
        {
 # endif
-      if (O_BINARY)
+      إذا (O_ثنائی)
         oputs (_("\
-  -b, --binary\n\
-         read in binary mode (default unless reading tty stdin)\n\
+  -b, --ثنائی\n\
+         اقرأ وچ ثنائی منوال_2 (افتراضي unless reading tty stdin)\n\
 "));
-      else
+      وإلا
         oputs (_("\
-  -b, --binary\n\
-         read in binary mode\n\
+  -b, --ثنائی\n\
+         اقرأ وچ ثنائی منوال_2\n\
 "));
-# if HASH_ALGO_CKSUM
+# إذا HASH_ALGO_CKSUM
        }
 # endif
         oputs (_("\
   -c, --check\n\
-         read checksums from the FILEs and check them\n\
+         اقرأ checksums from the FILEs and check them\n\
 "));
-# if HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
-#  if HASH_ALGO_CKSUM
-     if (! legacy_mode)
+# إذا HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
+#  إذا HASH_ALGO_CKSUM
+     إذا (! legacy_منوال)
 #  endif
         oputs (_("\
-  -l, --length=BITS\n\
-         digest length in bits; must not exceed the max size\n\
-         and must be a multiple of 8 for blake2b;\n\
-         must be 224, 256, 384, or 512 for sha2 or sha3\n\
+  -l, --لمائی=بٹ\n\
+         digest لمائی وچ بٹ_2; must not exceed the max ناپ\n\
+         and must be a مضرب دا 8 لكل blake2b;\n\
+         must be 224, 256, 384, or 512 لكل sha2 or sha3\n\
 "));
 # endif
-# if HASH_ALGO_CKSUM
-    if (! legacy_mode)
+# إذا HASH_ALGO_CKSUM
+    إذا (! legacy_منوال)
         oputs (_("\
       --raw\n\
-         emit a raw binary digest, not hexadecimal\n\
+         emit a raw ثنائی digest, not hexadecimal\n\
 "));
-    if (legacy_mode)
+    إذا (legacy_منوال)
       oputs (_("\
-      --tag\n\
+      --ٹیگ\n\
          create a BSD-style checksum\n\
 "));
-    else
+    وإلا
       oputs (_("\
-      --tag\n\
-         create a BSD-style checksum (the default)\n\
+      --ٹیگ\n\
+         create a BSD-style checksum (the افتراضي)\n\
 "));
-    if (! legacy_mode)
+    إذا (! legacy_منوال)
       oputs (_("\
       --untagged\n\
          create a reversed style checksum, without digest type\n\
 "));
-# else
+# وإلا
       oputs (_("\
-      --tag\n\
+      --ٹیگ\n\
          create a BSD-style checksum\n\
 "));
 # endif
-# if HASH_ALGO_CKSUM
-    if (legacy_mode)
+# إذا HASH_ALGO_CKSUM
+    إذا (legacy_منوال)
       {
 # endif
-      if (O_BINARY)
+      إذا (O_ثنائی)
         oputs (_("\
-  -t, --text\n\
-         read in text mode (default if reading tty stdin)\n\
+  -t, --متن\n\
+         اقرأ وچ متن منوال_2 (افتراضي إذا reading tty stdin)\n\
 "));
-      else
+      وإلا
         oputs (_("\
-  -t, --text\n\
-         read in text mode (default)\n\
+  -t, --متن\n\
+         اقرأ وچ متن منوال_2 (افتراضي)\n\
 "));
-# if HASH_ALGO_CKSUM
+# إذا HASH_ALGO_CKSUM
       }
 # endif
       oputs (_("\
   -z, --zero\n\
-         end each output line with NUL, not newline,\n\
+         سرا each output سطر with NUL, not newline,\n\
          and disable file name escaping\n\
 "));
       fputs (_("\
@@ -635,89 +635,89 @@ The following five options are useful only when verifying checksums:\n\
 "), stdout);
       oputs (_("\
       --ignore-missing\n\
-         don't fail or report status for missing files\n\
+         don't fail or report حالت لكل missing files\n\
 "));
       oputs (_("\
       --quiet\n\
-         don't print OK for each successfully verified file\n\
+         don't print OK لكل each successfully verified file\n\
 "));
       oputs (_("\
-      --status\n\
-         don't output anything, status code shows success\n\
+      --حالت\n\
+         don't output anything, حالت کوڈ shows success\n\
 "));
       oputs (_("\
       --strict\n\
-         exit non-zero for improperly formatted checksum lines\n\
+         باہر_نکلو non-zero لكل improperly formatted checksum سطریں\n\
 "));
       oputs (_("\
   -w, --warn\n\
-         warn about improperly formatted checksum lines\n\
+         warn about improperly formatted checksum سطریں\n\
 "));
-#endif
-#if HASH_ALGO_CKSUM
-    if (! legacy_mode)
+#جے_انت
+#إذا HASH_ALGO_CKSUM
+    إذا (! legacy_منوال)
       oputs (_("\
       --debug\n\
-         indicate which implementation used\n\
+         indicate which implementation ورتیا\n\
 "));
-#endif
+#جے_انت
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-#if HASH_ALGO_CKSUM
-    if (! legacy_mode)
+      oputs (نسخہ_OPTION_DESCRIPTION);
+#إذا HASH_ALGO_CKSUM
+    إذا (! legacy_منوال)
       fputs (_("\
 \n\
-DIGEST determines the digest algorithm and default output format:\n\
-  sysv      (equivalent to sum -s)\n\
-  bsd       (equivalent to sum -r)\n\
-  crc       (equivalent to cksum)\n\
-  crc32b    (only available through cksum)\n\
-  md5       (equivalent to md5sum)\n\
-  sha1      (equivalent to sha1sum)\n\
-  sha2      (equivalent to sha{224,256,384,512}sum)\n\
-  sha3      (only available through cksum)\n\
-  blake2b   (equivalent to b2sum)\n\
-  sm3       (only available through cksum)\n\
+DIGEST determines the digest algorithm and افتراضي output format:\n\
+  sysv      (equivalent منزل جوڑ -s)\n\
+  bsd       (equivalent منزل جوڑ -r)\n\
+  چکری_جانچ       (equivalent منزل cksum)\n\
+  crc32b    (only دستیاب through cksum)\n\
+  md5       (equivalent منزل md5sum)\n\
+  sha1      (equivalent منزل sha1sum)\n\
+  sha2      (equivalent منزل sha{224,256,384,512}جوڑ)\n\
+  sha3      (only دستیاب through cksum)\n\
+  blake2b   (equivalent منزل b2sum)\n\
+  sm3       (only دستیاب through cksum)\n\
 \n"), stdout);
-#endif
-#if !HASH_ALGO_SUM && !HASH_ALGO_CKSUM
-      printf (_("\
+#جے_انت
+#إذا !HASH_ALGO_جوڑ && !HASH_ALGO_CKSUM
+      لکھو (_("\
 \n\
-The sums are computed as described in %s.\n"), DIGEST_REFERENCE);
+The sums are computed as described وچ %s.\n"), DIGEST_REFERENCE);
       fputs (_("\
-When checking, the input should be a former output of this program.\n\
-The default mode is to print a line with: checksum, a space,\n\
-a character indicating input mode ('*' for binary, ' ' for text\n\
-or where binary is insignificant), and name for each FILE.\n\
+When checking, the داخلہ should be a former output دا this پروگرام.\n\
+The افتراضي منوال_2 is منزل print a سطر with: checksum, a space,\n\
+a character indicating داخلہ منوال_2 ('*' لكل ثنائی, ' ' لكل متن\n\
+or where ثنائی is insignificant), and name لكل each FILE.\n\
 \n\
-There is no difference between binary mode and text mode on GNU systems.\
+There is no difference between ثنائی منوال_2 and متن منوال_2 on GNU systems.\
 \n"), stdout);
-#endif
-#if HASH_ALGO_CKSUM
+#جے_انت
+#إذا HASH_ALGO_CKSUM
       fputs (_("\
-When checking, the input should be a former output of this program,\n\
-or equivalent standalone program.\
+When checking, the داخلہ should be a former output دا this پروگرام,\n\
+or equivalent standalone پروگرام.\
 \n"), stdout);
-#endif
-      emit_ancillary_info (PROGRAM_NAME);
+#جے_انت
+      emit_ancillary_info (پروگرام_NAME);
     }
 
-  exit (status);
+  باہر_نکلو (حالت);
 }
 
-#if !HASH_ALGO_SUM
+#إذا !HASH_ALGO_جوڑ
 /* Given a string S, return TRUE if it contains problematic characters
    that need escaping.  Note we escape '\' itself to provide some forward
    compat to introduce escaping of other characters.  */
 
-ATTRIBUTE_PURE
-static bool
-problematic_chars (char const *s)
+ATTRIBUTE_خالص
+ساكن bool
+problematic_chars (حرف ثابت *s)
 {
-  idx_t length = strcspn (s, "\\\n\r");
-  return s[length] != '\0';
+  idx_t لمائی = strcspn (s, "\\\n\r");
+  أرجع s[لمائی] != '\0';
 }
-#endif
+#جے_انت
 
 /* Given a file name, S of length S_LEN, that is not NUL-terminated,
    modify it in place, performing the equivalent of this sed substitution:
@@ -728,92 +728,92 @@ problematic_chars (char const *s)
    of backslashes or if it contains a backslash followed by anything other
    than "n" or another backslash, return NULL.  */
 
-static char *
-filename_unescape (char *s, idx_t s_len)
+ساكن حرف *
+filename_unescape (حرف *s, idx_t s_len)
 {
-  char *dst = s;
+  حرف *dst = s;
 
-  for (idx_t i = 0; i < s_len; i++)
+  لكل (idx_t i = 0; i < s_len; i++)
     {
-      switch (s[i])
+      بدل (s[i])
         {
-        case '\\':
-          if (i == s_len - 1)
+        حالة '\\':
+          إذا (i == s_len - 1)
             {
               /* File name ends with an unescaped backslash: invalid.  */
-              return NULL;
+              أرجع عدم;
             }
           ++i;
-          switch (s[i])
+          بدل (s[i])
             {
-            case 'n':
+            حالة 'n':
               *dst++ = '\n';
-              break;
-            case 'r':
+              اكسر;
+            حالة 'r':
               *dst++ = '\r';
-              break;
-            case '\\':
+              اكسر;
+            حالة '\\':
               *dst++ = '\\';
-              break;
-            default:
+              اكسر;
+            افتراضي:
               /* Only '\', 'n' or 'r' may follow a backslash.  */
-              return NULL;
+              أرجع عدم;
             }
-          break;
+          اكسر;
 
-        case '\0':
+        حالة '\0':
           /* The file name may not contain a NUL.  */
-          return NULL;
+          أرجع عدم;
 
-        default:
+        افتراضي:
           *dst++ = s[i];
-          break;
+          اكسر;
         }
     }
-  if (dst < s + s_len)
+  إذا (dst < s + s_len)
     *dst = '\0';
 
-  return s;
+  أرجع s;
 }
 
 /* Return true if S is a LEN-byte NUL-terminated string of hex or base64
    digits and has the expected length.  Otherwise, return false.  */
-ATTRIBUTE_PURE
-static bool
-valid_digits (unsigned char const *s, idx_t len)
+ATTRIBUTE_خالص
+ساكن bool
+valid_digits (بنانشانی حرف ثابت *s, idx_t len)
 {
-#if HASH_ALGO_CKSUM
-  if (len == BASE64_LENGTH (digest_length >> 3))
+#إذا HASH_ALGO_CKSUM
+  إذا (len == BASE64_لمائی (digest_لمائی >> 3))
     {
       idx_t i;
-      for (i = 0; i < len - digest_length % 3; i++)
+      لكل (i = 0; i < len - digest_لمائی % 3; i++)
         {
-          if (!isbase64 (*s))
-            return false;
+          إذا (!isbase64 (*s))
+            أرجع false;
           ++s;
         }
-      for ( ; i < len; i++)
+      لكل ( ; i < len; i++)
         {
-          if (*s != '=')
-            return false;
+          إذا (*s != '=')
+            أرجع false;
           ++s;
         }
     }
-  else
-#endif
-  if (len == digest_hex_bytes)
+  وإلا
+#جے_انت
+  إذا (len == digest_hex_بائٹاں)
     {
-      for (idx_t i = 0; i < digest_hex_bytes; i++)
+      لكل (idx_t i = 0; i < digest_hex_بائٹاں; i++)
         {
-          if (!c_isxdigit (*s))
-            return false;
+          إذا (!c_isxdigit (*s))
+            أرجع false;
           ++s;
         }
     }
-  else
-    return false;
+  وإلا
+    أرجع false;
 
-  return *s == '\0';
+  أرجع *s == '\0';
 }
 
 /* Split the checksum string S (of length S_LEN) from a BSD 'md5' or
@@ -821,102 +821,102 @@ valid_digits (unsigned char const *s, idx_t len)
    name.  S is modified.  Set *D_LEN to the length of the digest string.
    Return true if successful.  */
 
-static bool
-bsd_split_3 (char *s, idx_t s_len,
-             unsigned char **digest, idx_t *d_len,
-             char **file_name, bool escaped_filename)
+ساكن bool
+bsd_ونڈو_3 (حرف *s, idx_t s_len,
+             بنانشانی حرف **digest, idx_t *d_len,
+             حرف **file_name, bool escaped_filename)
 {
-  if (s_len == 0)
-    return false;
+  إذا (s_len == 0)
+    أرجع false;
 
   /* Find end of filename.  */
   idx_t i = s_len - 1;
-  while (i && s[i] != ')')
+  طالما (i && s[i] != ')')
     i--;
 
-  if (s[i] != ')')
-    return false;
+  إذا (s[i] != ')')
+    أرجع false;
 
   *file_name = s;
 
-  if (escaped_filename && filename_unescape (s, i) == NULL)
-    return false;
+  إذا (escaped_filename && filename_unescape (s, i) == عدم)
+    أرجع false;
 
   s[i++] = '\0';
 
-  while (c_isblank (s[i]))
+  طالما (c_isblank (s[i]))
     i++;
 
-  if (s[i] != '=')
-    return false;
+  إذا (s[i] != '=')
+    أرجع false;
 
   i++;
 
-  while (c_isblank (s[i]))
+  طالما (c_isblank (s[i]))
     i++;
 
-  *digest = (unsigned char *) &s[i];
+  *digest = (بنانشانی حرف *) &s[i];
 
   *d_len = s_len - i;
-  return valid_digits (*digest, *d_len);
+  أرجع valid_digits (*digest, *d_len);
 }
 
-#if HASH_ALGO_CKSUM
+#إذا HASH_ALGO_CKSUM
 /* Return the corresponding Algorithm for the string S,
    or -1 for no match.  */
 
-static ptrdiff_t
-algorithm_from_tag (char *s)
+ساكن ptrdiff_t
+algorithm_from_ٹیگ (حرف *s)
 {
   /* Limit check size to this length for perf reasons.  */
-  static idx_t max_tag_len;
-  if (! max_tag_len)
+  ساكن idx_t max_ٹیگ_len;
+  إذا (! max_ٹیگ_len)
     {
-      char const * const * tag = algorithm_tags;
-      while (*tag)
+      حرف ثابت * ثابت * ٹیگ = algorithm_ٹیگ_سوچی;
+      طالما (*ٹیگ)
         {
-          idx_t tag_len = strlen (*tag++);
-          max_tag_len = MAX (tag_len, max_tag_len);
+          idx_t ٹیگ_len = لڑی_لمبائی (*ٹیگ++);
+          max_ٹیگ_len = MAX (ٹیگ_len, max_ٹیگ_len);
         }
     }
 
   idx_t i = 0;
 
   /* Find end of tag */
-  while (i <= max_tag_len && s[i] && ! c_isblank (s[i])
+  طالما (i <= max_ٹیگ_len && s[i] && ! c_isblank (s[i])
          && s[i] != '-' && s[i] != '(')
     ++i;
 
-  if (i > max_tag_len)
-    return -1;
+  إذا (i > max_ٹیگ_len)
+    أرجع -1;
 
   /* Terminate tag, and lookup.  */
-  char sep = s[i];
+  حرف sep = s[i];
   s[i] = '\0';
-  ptrdiff_t algo = argmatch_exact (s, algorithm_tags);
+  ptrdiff_t algo = argmatch_exact (s, algorithm_ٹیگ_سوچی);
   s[i] = sep;
 
-  return algo;
+  أرجع algo;
 }
-#endif
+#جے_انت
 
 /* Split the string S (of length S_LEN) into three parts:
    a hexadecimal digest, binary flag, and the file name.
    S is modified.  Set *D_LEN to the length of the digest string.
    Return true if successful.  */
 
-static bool
-split_3 (char *s, idx_t s_len,
-         unsigned char **digest, idx_t *d_len, int *binary, char **file_name)
+ساكن bool
+ونڈو_3 (حرف *s, idx_t s_len,
+         بنانشانی حرف **digest, idx_t *d_len, صحيح *ثنائی, حرف **file_name)
 {
   bool escaped_filename = false;
   idx_t algo_name_len;
 
   idx_t i = 0;
-  while (c_isblank (s[i]))
+  طالما (c_isblank (s[i]))
     ++i;
 
-  if (s[i] == '\\')
+  إذا (s[i] == '\\')
     {
       ++i;
       escaped_filename = true;
@@ -924,109 +924,109 @@ split_3 (char *s, idx_t s_len,
 
   /* Check for BSD-style checksum line. */
 
-#if HASH_ALGO_CKSUM
-  if (! algorithm_specified || cksum_algorithm == sha2)
+#إذا HASH_ALGO_CKSUM
+  إذا (! algorithm_specified || cksum_algorithm == sha2)
     {
-      ptrdiff_t algo_tag = algorithm_from_tag (s + i);
-      if (! algorithm_specified)
+      ptrdiff_t algo_ٹیگ = algorithm_from_ٹیگ (s + i);
+      إذا (! algorithm_specified)
         {
-          if (algo_tag >= 0)
+          إذا (algo_ٹیگ >= 0)
             {
-              if (algo_tag <= crc32b)
-                return false;  /* We don't support checking these formats.  */
-              cksum_algorithm = algo_tag;
+              إذا (algo_ٹیگ <= crc32b)
+                أرجع false;  /* We don't support checking these formats.  */
+              cksum_algorithm = algo_ٹیگ;
             }
-          else
-            return false;      /* We only support tagged format without -a.  */
+          وإلا
+            أرجع false;      /* We only support tagged format without -a.  */
         }
-      else
+      وإلا
         {
-          if (cksum_algorithm == sha2 && (algo_tag == sha2
-              || algo_tag == sha224 || algo_tag == sha256
-              || algo_tag == sha384 || algo_tag == sha512))
-            cksum_algorithm = algo_tag;
+          إذا (cksum_algorithm == sha2 && (algo_ٹیگ == sha2
+              || algo_ٹیگ == sha224 || algo_ٹیگ == sha256
+              || algo_ٹیگ == sha384 || algo_ٹیگ == sha512))
+            cksum_algorithm = algo_ٹیگ;
         }
     }
-#endif
+#جے_انت
 
   /* Try to parse BSD or OpenSSL tagged format.  I.e.:
      openssl: MD5(f)= d41d8cd98f00b204e9800998ecf8427e
      bsd:     MD5 (f) = d41d8cd98f00b204e9800998ecf8427e  */
 
-  idx_t parse_offset = i;
-  algo_name_len = strlen (DIGEST_TYPE_STRING);
-  if (STREQ_LEN (s + i, DIGEST_TYPE_STRING, algo_name_len))
+  idx_t parse_وتھ = i;
+  algo_name_len = لڑی_لمبائی (DIGEST_TYPE_STRING);
+  إذا (STREQ_LEN (s + i, DIGEST_TYPE_STRING, algo_name_len))
     {
       i += algo_name_len;
-#if HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
+#إذا HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
 
-# if HASH_ALGO_BLAKE2
-      digest_length = DIGEST_MAX_LEN * 8;
-# else
-      digest_length = algorithm_bits[cksum_algorithm];
+# إذا HASH_ALGO_BLAKE2
+      digest_لمائی = DIGEST_MAX_LEN * 8;
+# وإلا
+      digest_لمائی = algorithm_بٹ[cksum_algorithm];
 # endif
-      if (s[i] == '-')  /* length specified. Not base64 */
+      إذا (s[i] == '-')  /* length specified. Not base64 */
         {
           ++i;
-          intmax_t length;
-          char *siend;
-          if (!c_isdigit (s[i])
-              || xstrtoimax (s + i, &siend, 0, &length, NULL) != LONGINT_OK)
-            return false;
-# if HASH_ALGO_CKSUM
-          else if (cksum_algorithm == sha2 || cksum_algorithm == sha3)
+          intmax_t لمائی;
+          حرف *siend;
+          إذا (!c_isdigit (s[i])
+              || xstrtoimax (s + i, &siend, 0, &لمائی, عدم) != LONGINT_OK)
+            أرجع false;
+# إذا HASH_ALGO_CKSUM
+          وإلا إذا (cksum_algorithm == sha2 || cksum_algorithm == sha3)
             {
-              if (length != SHA224_DIGEST_SIZE * 8
-                  && length != SHA256_DIGEST_SIZE * 8
-                  && length != SHA384_DIGEST_SIZE * 8
-                  && length != SHA512_DIGEST_SIZE * 8)
-                return false;
+              إذا (لمائی != SHA224_DIGEST_ناپ * 8
+                  && لمائی != SHA256_DIGEST_ناپ * 8
+                  && لمائی != SHA384_DIGEST_ناپ * 8
+                  && لمائی != SHA512_DIGEST_ناپ * 8)
+                أرجع false;
             }
 # endif
-          else if (!(0 < length && length <= digest_length && length % 8 == 0))
-            return false;
+          وإلا إذا (!(0 < لمائی && لمائی <= digest_لمائی && لمائی % 8 == 0))
+            أرجع false;
 
           i = siend - s;
-          digest_length = length;
+          digest_لمائی = لمائی;
         }
-      digest_hex_bytes = digest_length >> 2;
-#endif
-      if (s[i] == ' ')
+      digest_hex_بائٹاں = digest_لمائی >> 2;
+#جے_انت
+      إذا (s[i] == ' ')
         ++i;
-      if (s[i] == '(')  /* not base64 */
+      إذا (s[i] == '(')  /* not base64 */
         {
           ++i;
-          *binary = 0;
-          return bsd_split_3 (s + i, s_len - i,
+          *ثنائی = 0;
+          أرجع bsd_ونڈو_3 (s + i, s_len - i,
                               digest, d_len, file_name, escaped_filename);
         }
 
       /* Note with --base64 --untagged format, we may have matched a "tag".
          Even very short digests with: cksum -a blake2b -l24 --untagged --base64
          So fallback to checking untagged format if issues detecting tags.  */
-      i = parse_offset;
+      i = parse_وتھ;
     }
 
   /* Ignore this line if it is too short.
      Each line must have at least 'min_digest_line_length - 1' (or one more, if
      the first is a backslash) more characters to contain correct message digest
      information.  */
-  if (s_len - i < min_digest_line_length + (s[i] == '\\'))
-    return false;
+  إذا (s_len - i < min_digest_سطر_لمائی + (s[i] == '\\'))
+    أرجع false;
 
-  *digest = (unsigned char *) &s[i];
+  *digest = (بنانشانی حرف *) &s[i];
 
-#if HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
+#إذا HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
   /* Auto determine length.  */
-# if HASH_ALGO_CKSUM
-  if (cksum_algorithm == blake2b
+# إذا HASH_ALGO_CKSUM
+  إذا (cksum_algorithm == blake2b
       || cksum_algorithm == sha2 || cksum_algorithm == sha3) {
 # endif
-  unsigned char const *hp = *digest;
-  digest_hex_bytes = 0;
-  for (; c_isxdigit (*hp); ++hp, ++digest_hex_bytes)
+  بنانشانی حرف ثابت *hp = *digest;
+  digest_hex_بائٹاں = 0;
+  لكل (; c_isxdigit (*hp); ++hp, ++digest_hex_بائٹاں)
     ;
-# if HASH_ALGO_CKSUM
+# إذا HASH_ALGO_CKSUM
   /* Check the number of base64 characters.  This works because the hexadecimal
      character set is a subset of the base64 character set.
      Note there is the ambiguity that all characters are hex when they
@@ -1036,73 +1036,73 @@ split_3 (char *s, idx_t s_len,
      Similarly for sha3 and blake2b.
      However at this length the chances are exceedingly rare (1 in 480R),
      and smaller blake2b lengths aren't practical for verification anyway.  */
-  idx_t digest_base64_bytes = digest_hex_bytes;
+  idx_t digest_base64_بائٹاں = digest_hex_بائٹاں;
   idx_t trailing_equals = 0;
-  for (; isubase64 (*hp); ++hp, ++digest_base64_bytes)
+  لكل (; isubase64 (*hp); ++hp, ++digest_base64_بائٹاں)
     ;
-  for (; *hp == '='; ++hp, ++trailing_equals)
+  لكل (; *hp == '='; ++hp, ++trailing_equals)
     ;
-  if ((cksum_algorithm == sha2 || cksum_algorithm == sha3)
-      && digest_hex_bytes >> 1 != SHA224_DIGEST_SIZE
-      && digest_hex_bytes >> 1 != SHA256_DIGEST_SIZE
-      && digest_hex_bytes >> 1 != SHA384_DIGEST_SIZE
-      && digest_hex_bytes >> 1 != SHA512_DIGEST_SIZE)
+  إذا ((cksum_algorithm == sha2 || cksum_algorithm == sha3)
+      && digest_hex_بائٹاں >> 1 != SHA224_DIGEST_ناپ
+      && digest_hex_بائٹاں >> 1 != SHA256_DIGEST_ناپ
+      && digest_hex_بائٹاں >> 1 != SHA384_DIGEST_ناپ
+      && digest_hex_بائٹاں >> 1 != SHA512_DIGEST_ناپ)
     {
-      if (digest_base64_bytes + trailing_equals
-          == BASE64_LENGTH (SHA224_DIGEST_SIZE))
-        digest_hex_bytes = SHA224_DIGEST_SIZE * 2;
-      else if (digest_base64_bytes + trailing_equals
-               == BASE64_LENGTH (SHA256_DIGEST_SIZE))
-        digest_hex_bytes = SHA256_DIGEST_SIZE * 2;
-      else if (digest_base64_bytes + trailing_equals
-               == BASE64_LENGTH (SHA384_DIGEST_SIZE))
-        digest_hex_bytes = SHA384_DIGEST_SIZE * 2;
-      else if (digest_base64_bytes + trailing_equals
-               == BASE64_LENGTH (SHA512_DIGEST_SIZE))
-        digest_hex_bytes = SHA512_DIGEST_SIZE * 2;
-      else
-        return false;
+      إذا (digest_base64_بائٹاں + trailing_equals
+          == BASE64_لمائی (SHA224_DIGEST_ناپ))
+        digest_hex_بائٹاں = SHA224_DIGEST_ناپ * 2;
+      وإلا إذا (digest_base64_بائٹاں + trailing_equals
+               == BASE64_لمائی (SHA256_DIGEST_ناپ))
+        digest_hex_بائٹاں = SHA256_DIGEST_ناپ * 2;
+      وإلا إذا (digest_base64_بائٹاں + trailing_equals
+               == BASE64_لمائی (SHA384_DIGEST_ناپ))
+        digest_hex_بائٹاں = SHA384_DIGEST_ناپ * 2;
+      وإلا إذا (digest_base64_بائٹاں + trailing_equals
+               == BASE64_لمائی (SHA512_DIGEST_ناپ))
+        digest_hex_بائٹاں = SHA512_DIGEST_ناپ * 2;
+      وإلا
+        أرجع false;
     }
-  else if (cksum_algorithm == blake2b
-           && digest_hex_bytes < digest_base64_bytes)
+  وإلا إذا (cksum_algorithm == blake2b
+           && digest_hex_بائٹاں < digest_base64_بائٹاں)
     {
-      for (int j = 8; j <= DIGEST_MAX_LEN * 8; j += 8)
+      لكل (صحيح j = 8; j <= DIGEST_MAX_LEN * 8; j += 8)
         {
-          if (BASE64_LENGTH (j / 8) == digest_base64_bytes + trailing_equals
+          إذا (BASE64_لمائی (j / 8) == digest_base64_بائٹاں + trailing_equals
               && j % 3 == trailing_equals)
             {
-              digest_hex_bytes = j / 4;
-              break;
+              digest_hex_بائٹاں = j / 4;
+              اكسر;
             }
         }
     }
 # endif
-  if (digest_hex_bytes < 2 || digest_hex_bytes % 2
-      || DIGEST_MAX_LEN * 2 < digest_hex_bytes)
-    return false;
-  digest_length = digest_hex_bytes * 4;
-# if HASH_ALGO_CKSUM
+  إذا (digest_hex_بائٹاں < 2 || digest_hex_بائٹاں % 2
+      || DIGEST_MAX_LEN * 2 < digest_hex_بائٹاں)
+    أرجع false;
+  digest_لمائی = digest_hex_بائٹاں * 4;
+# إذا HASH_ALGO_CKSUM
   }
 # endif
-#endif
+#جے_انت
 
   /* This field must be the hexadecimal or base64 representation
      of the message digest.  */
-  while (s[i] && !c_isblank (s[i]))
+  طالما (s[i] && !c_isblank (s[i]))
     i++;
 
   /* The digest must be followed by at least one whitespace character.  */
-  if (i == s_len)
-    return false;
+  إذا (i == s_len)
+    أرجع false;
 
-  *d_len = &s[i] - (char *) *digest;
+  *d_len = &s[i] - (حرف *) *digest;
   s[i++] = '\0';
 
-  if (! valid_digits (*digest, *d_len))
-    return false;
+  إذا (! valid_digits (*digest, *d_len))
+    أرجع false;
 
   /* If "bsd reversed" format detected.  */
-  if ((s_len - i == 1) || (s[i] != ' ' && s[i] != '*'))
+  إذا ((s_len - i == 1) || (s[i] != ' ' && s[i] != '*'))
     {
       /* Don't allow mixing bsd and standard formats,
          to minimize security issues with attackers
@@ -1110,64 +1110,64 @@ split_3 (char *s, idx_t s_len,
          This assumes that with bsd format checksums
          that the first file name does not have
          a leading ' ' or '*'.  */
-      if (bsd_reversed == 0)
-        return false;
+      إذا (bsd_reversed == 0)
+        أرجع false;
       bsd_reversed = 1;
     }
-  else if (bsd_reversed != 1)
+  وإلا إذا (bsd_reversed != 1)
     {
       bsd_reversed = 0;
-      *binary = (s[i++] == '*');
+      *ثنائی = (s[i++] == '*');
     }
 
   /* All characters between the type indicator and end of line are
      significant -- that includes leading and trailing white space.  */
   *file_name = &s[i];
 
-  if (escaped_filename)
-    return filename_unescape (&s[i], s_len - i) != NULL;
+  إذا (escaped_filename)
+    أرجع filename_unescape (&s[i], s_len - i) != عدم;
 
-  return true;
+  أرجع true;
 }
 
-#if !HASH_ALGO_SUM
+#إذا !HASH_ALGO_جوڑ
 /* If ESCAPE is true, then translate each:
    NEWLINE byte to the string, "\\n",
    CARRIAGE RETURN byte to the string, "\\r",
    and each backslash to "\\\\".  */
-static void
-print_filename (char const *file, bool escape)
+ساكن فراغ
+print_filename (حرف ثابت *file, bool escape)
 {
-  if (! escape)
+  إذا (! escape)
     {
       fputs (file, stdout);
-      return;
+      أرجع;
     }
 
-  while (*file)
+  طالما (*file)
     {
-      switch (*file)
+      بدل (*file)
         {
-        case '\n':
+        حالة '\n':
           fputs ("\\n", stdout);
-          break;
+          اكسر;
 
-        case '\r':
+        حالة '\r':
           fputs ("\\r", stdout);
-          break;
+          اكسر;
 
-        case '\\':
+        حالة '\\':
           fputs ("\\\\", stdout);
-          break;
+          اكسر;
 
-        default:
-          putchar (*file);
-          break;
+        افتراضي:
+          حرف_لکھو (*file);
+          اكسر;
         }
       file++;
     }
 }
-#endif
+#جے_انت
 
 /* An interface to the function, DIGEST_STREAM.
    Operate on FILENAME (it may be "-").
@@ -1181,112 +1181,112 @@ print_filename (char const *file, bool escape)
    Put true in *MISSING if the file can't be opened due to ENOENT.
    Return true if successful.  */
 
-static bool
-digest_file (char const *filename, int *binary, unsigned char *bin_result,
-             bool *missing, MAYBE_UNUSED intmax_t *length)
+ساكن bool
+digest_file (حرف ثابت *filename, صحيح *ثنائی, بنانشانی حرف *bin_نتیجہ,
+             bool *missing, MAYBE_بن_ورتیا intmax_t *لمائی)
 {
   FILE *fp;
-  int err;
+  صحيح err;
   bool is_stdin = streq (filename, "-");
 
   *missing = false;
 
-  if (is_stdin)
+  إذا (is_stdin)
     {
       have_read_stdin = true;
       fp = stdin;
-      if (O_BINARY && *binary)
+      إذا (O_ثنائی && *ثنائی)
         {
-          if (*binary < 0)
-            *binary = ! isatty (STDIN_FILENO);
-          if (*binary)
-            xset_binary_mode (STDIN_FILENO, O_BINARY);
+          إذا (*ثنائی < 0)
+            *ثنائی = ! isatty (STDIN_FILENO);
+          إذا (*ثنائی)
+            xset_ثنائی_منوال (STDIN_FILENO, O_ثنائی);
         }
     }
-  else
+  وإلا
     {
-      fp = fopen (filename, O_BINARY ? (*binary ? "rb" : "rt") : "r");
-      if (fp == NULL)
+      fp = fopen (filename, O_ثنائی ? (*ثنائی ? "rb" : "rt") : "r");
+      إذا (fp == عدم)
         {
-          if (ignore_missing && errno == ENOENT)
+          إذا (ignore_missing && errno == ENOENT)
             {
               *missing = true;
-              return true;
+              أرجع true;
             }
           error (0, errno, "%s", quotef (filename));
-          return false;
+          أرجع false;
         }
     }
 
   fadvise (fp, FADVISE_SEQUENTIAL);
 
-#if HASH_ALGO_CKSUM
-  if (cksum_algorithm == blake2b
+#إذا HASH_ALGO_CKSUM
+  إذا (cksum_algorithm == blake2b
       || cksum_algorithm == sha2 || cksum_algorithm == sha3)
-    *length = digest_length >> 3;
-  err = DIGEST_STREAM (fp, bin_result, length);
-#elif HASH_ALGO_SUM
-  err = DIGEST_STREAM (fp, bin_result, length);
-#elif HASH_ALGO_BLAKE2
-  err = DIGEST_STREAM (fp, bin_result, digest_length >> 3);
-#else
-  err = DIGEST_STREAM (fp, bin_result);
-#endif
+    *لمائی = digest_لمائی >> 3;
+  err = DIGEST_دھارا (fp, bin_نتیجہ, لمائی);
+#وإلاإذا HASH_ALGO_جوڑ
+  err = DIGEST_دھارا (fp, bin_نتیجہ, لمائی);
+#وإلاإذا HASH_ALGO_BLAKE2
+  err = DIGEST_دھارا (fp, bin_نتیجہ, digest_لمائی >> 3);
+#وإلا
+  err = DIGEST_دھارا (fp, bin_نتیجہ);
+#جے_انت
   err = err ? errno : 0;
-  if (is_stdin)
+  إذا (is_stdin)
     clearerr (fp);
-  else if (fclose (fp) != 0 && !err)
+  وإلا إذا (fclose (fp) != 0 && !err)
     err = errno;
 
-  if (err)
+  إذا (err)
     {
       error (0, err, "%s", quotef (filename));
-      return false;
+      أرجع false;
     }
 
-  return true;
+  أرجع true;
 }
 
-#if !HASH_ALGO_SUM
-static void
-output_file (char const *file, int binary_file, void const *digest,
-             MAYBE_UNUSED bool raw, bool tagged, unsigned char delim,
-             MAYBE_UNUSED bool args, MAYBE_UNUSED intmax_t length)
+#إذا !HASH_ALGO_جوڑ
+ساكن فراغ
+output_file (حرف ثابت *file, صحيح ثنائی_file, فراغ ثابت *digest,
+             MAYBE_بن_ورتیا bool raw, bool tagged, بنانشانی حرف delim,
+             MAYBE_بن_ورتیا bool دلیلاں, MAYBE_بن_ورتیا intmax_t لمائی)
 {
-# if HASH_ALGO_CKSUM
-  if (raw)
+# إذا HASH_ALGO_CKSUM
+  إذا (raw)
     {
-      fwrite (digest, 1, digest_length >> 3, stdout);
-      return;
+      fwrite (digest, 1, digest_لمائی >> 3, stdout);
+      أرجع;
     }
 # endif
 
-  unsigned char const *bin_buffer = digest;
+  بنانشانی حرف ثابت *bin_بفر = digest;
 
   /* Output a leading backslash if the file name contains problematic chars.  */
   bool needs_escape = delim == '\n' && problematic_chars (file);
 
-  if (needs_escape)
-    putchar ('\\');
+  إذا (needs_escape)
+    حرف_لکھو ('\\');
 
-  if (tagged)
+  إذا (tagged)
     {
-# if HASH_ALGO_CKSUM
-      if (cksum_algorithm == sha2)
-        printf ("SHA%u", (unsigned int) digest_length);
-      else
+# إذا HASH_ALGO_CKSUM
+      إذا (cksum_algorithm == sha2)
+        لکھو ("SHA%u", (بنانشانی صحيح) digest_لمائی);
+      وإلا
 # endif
       fputs (DIGEST_TYPE_STRING, stdout);
-# if HASH_ALGO_BLAKE2
-      if (digest_length < DIGEST_MAX_LEN * 8)
-        printf ("-%u", (unsigned int) digest_length);
+# إذا HASH_ALGO_BLAKE2
+      إذا (digest_لمائی < DIGEST_MAX_LEN * 8)
+        لکھو ("-%u", (بنانشانی صحيح) digest_لمائی);
 # elif HASH_ALGO_CKSUM
-      if (cksum_algorithm == sha3)
-        printf ("-%u", (unsigned int) digest_length);
-      if (cksum_algorithm == blake2b)
+      إذا (cksum_algorithm == sha3)
+        لکھو ("-%u", (بنانشانی صحيح) digest_لمائی);
+      إذا (cksum_algorithm == blake2b)
         {
-          if (digest_length < DIGEST_MAX_LEN * 8)
-            printf ("-%u", (unsigned int) digest_length);
+          إذا (digest_لمائی < DIGEST_MAX_LEN * 8)
+            لکھو ("-%u", (بنانشانی صحيح) digest_لمائی);
         }
 # endif
       fputs (" (", stdout);
@@ -1294,242 +1294,242 @@ output_file (char const *file, int binary_file, void const *digest,
       fputs (") = ", stdout);
     }
 
-# if HASH_ALGO_CKSUM
-  if (base64_digest)
+# إذا HASH_ALGO_CKSUM
+  إذا (base64_digest)
     {
-      char b64[BASE64_LENGTH (DIGEST_BIN_BYTES) + 1];
-      base64_encode ((char const *) bin_buffer, digest_length >> 3,
-                     b64, sizeof b64);
+      حرف b64[BASE64_لمائی (DIGEST_BIN_بائٹاں) + 1];
+      base64_encode ((حرف ثابت *) bin_بفر, digest_لمائی >> 3,
+                     b64, حجم b64);
       fputs (b64, stdout);
     }
-  else
+  وإلا
 # endif
     {
-      for (idx_t i = 0; i < (digest_hex_bytes >> 1); ++i)
-        printf ("%02x", bin_buffer[i]);
+      لكل (idx_t i = 0; i < (digest_hex_بائٹاں >> 1); ++i)
+        لکھو ("%02x", bin_بفر[i]);
     }
 
-  if (!tagged)
+  إذا (!tagged)
     {
-      putchar (' ');
-      putchar (binary_file ? '*' : ' ');
+      حرف_لکھو (' ');
+      حرف_لکھو (ثنائی_file ? '*' : ' ');
       print_filename (file, needs_escape);
     }
 
-  putchar (delim);
+  حرف_لکھو (delim);
 }
-#endif
+#جے_انت
 
-#if HASH_ALGO_CKSUM
+#إذا HASH_ALGO_CKSUM
 /* Return true if B64_DIGEST is the same as the base64 digest of the
    DIGEST_LENGTH/8 bytes at BIN_BUFFER.  */
-static bool
-b64_equal (unsigned char const *b64_digest, unsigned char const *bin_buffer)
+ساكن bool
+b64_equal (بنانشانی حرف ثابت *b64_digest, بنانشانی حرف ثابت *bin_بفر)
 {
-  idx_t b64_n_bytes = BASE64_LENGTH (digest_length >> 3);
-  char b64[BASE64_LENGTH (DIGEST_BIN_BYTES) + 1];
-  base64_encode ((char const *) bin_buffer, digest_length >> 3,
-                 b64, sizeof b64);
-  return memeq (b64_digest, b64, b64_n_bytes + 1);
+  idx_t b64_n_بائٹاں = BASE64_لمائی (digest_لمائی >> 3);
+  حرف b64[BASE64_لمائی (DIGEST_BIN_بائٹاں) + 1];
+  base64_encode ((حرف ثابت *) bin_بفر, digest_لمائی >> 3,
+                 b64, حجم b64);
+  أرجع memeq (b64_digest, b64, b64_n_بائٹاں + 1);
 }
-#endif
+#جے_انت
 
 /* Return true if HEX_DIGEST is the same as the hex-encoded digest of the
    DIGEST_LENGTH/8 bytes at BIN_BUFFER.  */
-static bool
-hex_equal (unsigned char const *hex_digest, unsigned char const *bin_buffer)
+ساكن bool
+hex_equal (بنانشانی حرف ثابت *hex_digest, بنانشانی حرف ثابت *bin_بفر)
 {
-  static const char bin2hex[] = { '0', '1', '2', '3',
+  ساكن ثابت حرف bin2hex[] = { '0', '1', '2', '3',
                                   '4', '5', '6', '7',
                                   '8', '9', 'a', 'b',
                                   'c', 'd', 'e', 'f' };
-  idx_t digest_bin_bytes = digest_hex_bytes >> 1;
+  idx_t digest_bin_بائٹاں = digest_hex_بائٹاں >> 1;
 
   /* Compare generated binary number with text representation
      in check file.  Ignore case of hex digits.  */
   idx_t cnt;
-  for (cnt = 0; cnt < digest_bin_bytes; ++cnt)
+  لكل (cnt = 0; cnt < digest_bin_بائٹاں; ++cnt)
     {
-      if (c_tolower (hex_digest[2 * cnt])
-          != bin2hex[bin_buffer[cnt] >> 4]
+      إذا (c_tolower (hex_digest[2 * cnt])
+          != bin2hex[bin_بفر[cnt] >> 4]
           || (c_tolower (hex_digest[2 * cnt + 1])
-              != (bin2hex[bin_buffer[cnt] & 0xf])))
-        break;
+              != (bin2hex[bin_بفر[cnt] & 0xf])))
+        اكسر;
     }
-  return cnt == digest_bin_bytes;
+  أرجع cnt == digest_bin_بائٹاں;
 }
 
-static bool
-digest_check (char const *checkfile_name)
+ساكن bool
+digest_check (حرف ثابت *checkfile_name)
 {
-  FILE *checkfile_stream;
-  intmax_t n_misformatted_lines = 0;
+  FILE *checkfile_دھارا;
+  intmax_t n_misformatted_سطریں = 0;
   intmax_t n_mismatched_checksums = 0;
   intmax_t n_open_or_read_failures = 0;
-  bool properly_formatted_lines = false;
+  bool properly_formatted_سطریں = false;
   bool matched_checksums = false;
-  unsigned char bin_buffer_unaligned[DIGEST_BIN_BYTES + DIGEST_ALIGN];
+  بنانشانی حرف bin_بفر_unaligned[DIGEST_BIN_بائٹاں + DIGEST_ALIGN];
   /* Make sure bin_buffer is properly aligned. */
-  unsigned char *bin_buffer = ptr_align (bin_buffer_unaligned, DIGEST_ALIGN);
-  intmax_t line_number;
-  char *line;
-  size_t line_chars_allocated;
+  بنانشانی حرف *bin_بفر = ptr_align (bin_بفر_unaligned, DIGEST_ALIGN);
+  intmax_t سطر_نمبر;
+  حرف *سطر;
+  size_t سطر_chars_allocated;
   bool is_stdin = streq (checkfile_name, "-");
 
-  if (is_stdin)
+  إذا (is_stdin)
     {
       have_read_stdin = true;
       checkfile_name = _("standard input");
-      checkfile_stream = stdin;
+      checkfile_دھارا = stdin;
     }
-  else
+  وإلا
     {
-      checkfile_stream = fopen (checkfile_name, "r");
-      if (checkfile_stream == NULL)
+      checkfile_دھارا = fopen (checkfile_name, "r");
+      إذا (checkfile_دھارا == عدم)
         {
           error (0, errno, "%s", quotef (checkfile_name));
-          return false;
+          أرجع false;
         }
     }
 
-  line_number = 0;
-  line = NULL;
-  line_chars_allocated = 0;
-  do
+  سطر_نمبر = 0;
+  سطر = عدم;
+  سطر_chars_allocated = 0;
+  افعل
     {
-      char *filename;
-      int binary;
-      unsigned char *digest;
-      ssize_t line_length;
+      حرف *filename;
+      صحيح ثنائی;
+      بنانشانی حرف *digest;
+      ssize_t سطر_لمائی;
 
-      ++line_number;
-      if (line_number == 0)
+      ++سطر_نمبر;
+      إذا (سطر_نمبر == 0)
         error (EXIT_FAILURE, 0, _("%s: too many checksum lines"),
                quotef (checkfile_name));
 
-      line_length = getline (&line, &line_chars_allocated, checkfile_stream);
-      if (line_length <= 0)
-        break;
+      سطر_لمائی = getline (&سطر, &سطر_chars_allocated, checkfile_دھارا);
+      إذا (سطر_لمائی <= 0)
+        اكسر;
 
       /* Ignore comment lines, which begin with a '#' character.  */
-      if (line[0] == '#')
-        continue;
+      إذا (سطر[0] == '#')
+        استمر;
 
       /* Remove any trailing newline.  */
-      line_length -= line[line_length - 1] == '\n';
+      سطر_لمائی -= سطر[سطر_لمائی - 1] == '\n';
       /* Remove any trailing carriage return.  */
-      line_length -= line[line_length - (0 < line_length)] == '\r';
+      سطر_لمائی -= سطر[سطر_لمائی - (0 < سطر_لمائی)] == '\r';
 
       /* Ignore empty lines.  */
-      if (line_length == 0)
-        continue;
+      إذا (سطر_لمائی == 0)
+        استمر;
 
-      line[line_length] = '\0';
+      سطر[سطر_لمائی] = '\0';
 
       idx_t d_len;
-      if (! (split_3 (line, line_length, &digest, &d_len, &binary, &filename)
+      إذا (! (ونڈو_3 (سطر, سطر_لمائی, &digest, &d_len, &ثنائی, &filename)
              && ! (is_stdin && streq (filename, "-"))))
         {
-          ++n_misformatted_lines;
+          ++n_misformatted_سطریں;
 
-          if (warn)
+          إذا (warn)
             {
               error (0, 0,
                      _("%s: %jd"
                        ": improperly formatted %s checksum line"),
-                     quotef (checkfile_name), line_number,
+                     quotef (checkfile_name), سطر_نمبر,
                      DIGEST_TYPE_STRING);
             }
         }
-      else
+      وإلا
         {
           bool ok;
           bool missing;
 
-          properly_formatted_lines = true;
+          properly_formatted_سطریں = true;
 
-          intmax_t length;
-          ok = digest_file (filename, &binary, bin_buffer, &missing, &length);
+          intmax_t لمائی;
+          ok = digest_file (filename, &ثنائی, bin_بفر, &missing, &لمائی);
 
-          if (!ok)
+          إذا (!ok)
             {
               ++n_open_or_read_failures;
-              if (!status_only)
-                printf ("%s: %s\n", quotef (filename),_("FAILED open or read"));
+              إذا (!حالت_only)
+                لکھو ("%s: %s\n", quotef (filename),_("FAILED open or read"));
             }
-          else if (ignore_missing && missing)
+          وإلا إذا (ignore_missing && missing)
             {
               /* Ignore missing files with --ignore-missing.  */
               ;
             }
-          else
+          وإلا
             {
-              bool match = false;
-#if HASH_ALGO_CKSUM
-              if (d_len == BASE64_LENGTH (digest_length >> 3))
-                match = b64_equal (digest, bin_buffer);
-              else
-#endif
-                if (d_len == digest_hex_bytes)
-                  match = hex_equal (digest, bin_buffer);
+              bool میل = false;
+#إذا HASH_ALGO_CKSUM
+              إذا (d_len == BASE64_لمائی (digest_لمائی >> 3))
+                میل = b64_equal (digest, bin_بفر);
+              وإلا
+#جے_انت
+                إذا (d_len == digest_hex_بائٹاں)
+                  میل = hex_equal (digest, bin_بفر);
 
-              if (match)
+              إذا (میل)
                 matched_checksums = true;
-              else
+              وإلا
                 ++n_mismatched_checksums;
 
-              if (!status_only)
+              إذا (!حالت_only)
                 {
-                  if (! match || ! quiet)
+                  إذا (! میل || ! quiet)
                     fputs (quotef (filename), stdout);
 
-                  if (! match)
-                    printf (": %s\n", _("FAILED"));
-                  else if (!quiet)
-                    printf (": %s\n", _("OK"));
+                  إذا (! میل)
+                    لکھو (": %s\n", _("FAILED"));
+                  وإلا إذا (!quiet)
+                    لکھو (": %s\n", _("OK"));
                 }
             }
 
-          if (ferror (stdout))
+          إذا (ferror (stdout))
             write_error ();
         }
     }
-  while (!feof (checkfile_stream) && !ferror (checkfile_stream));
+  طالما (!feof (checkfile_دھارا) && !ferror (checkfile_دھارا));
 
-  free (line);
+  حرر (سطر);
 
-  int err = ferror (checkfile_stream) ? 0 : -1;
-  if (is_stdin)
-    clearerr (checkfile_stream);
-  else if (fclose (checkfile_stream) != 0 && err < 0)
+  صحيح err = ferror (checkfile_دھارا) ? 0 : -1;
+  إذا (is_stdin)
+    clearerr (checkfile_دھارا);
+  وإلا إذا (fclose (checkfile_دھارا) != 0 && err < 0)
     err = errno;
 
-  if (0 <= err)
+  إذا (0 <= err)
     {
       error (0, err, err ? "%s" : _("%s: read error"),
              quotef (checkfile_name));
-      return false;
+      أرجع false;
     }
 
-  if (! properly_formatted_lines)
+  إذا (! properly_formatted_سطریں)
     {
       /* Warn if no tests are found.  */
       error (0, 0, _("%s: no properly formatted checksum lines found"),
              quotef (checkfile_name));
     }
-  else
+  وإلا
     {
-      if (!status_only)
+      إذا (!حالت_only)
         {
-          if (n_misformatted_lines != 0)
+          إذا (n_misformatted_سطریں != 0)
             error (0, 0,
                    (ngettext
                     ("WARNING: %jd line is improperly formatted",
                      "WARNING: %jd lines are improperly formatted",
-                     select_plural (n_misformatted_lines))),
-                   n_misformatted_lines);
+                     select_plural (n_misformatted_سطریں))),
+                   n_misformatted_سطریں);
 
-          if (n_open_or_read_failures != 0)
+          إذا (n_open_or_read_failures != 0)
             error (0, 0,
                    (ngettext
                     ("WARNING: %jd listed file could not be read",
@@ -1537,7 +1537,7 @@ digest_check (char const *checkfile_name)
                      select_plural (n_open_or_read_failures))),
                    n_open_or_read_failures);
 
-          if (n_mismatched_checksums != 0)
+          إذا (n_mismatched_checksums != 0)
             error (0, 0,
                    (ngettext
                     ("WARNING: %jd computed checksum did NOT match",
@@ -1545,45 +1545,45 @@ digest_check (char const *checkfile_name)
                      select_plural (n_mismatched_checksums))),
                    n_mismatched_checksums);
 
-          if (ignore_missing && ! matched_checksums)
+          إذا (ignore_missing && ! matched_checksums)
             error (0, 0, _("%s: no file was verified"),
                    quotef (checkfile_name));
         }
     }
 
-  return (properly_formatted_lines
+  أرجع (properly_formatted_سطریں
           && matched_checksums
           && n_mismatched_checksums == 0
           && n_open_or_read_failures == 0
-          && (!strict || n_misformatted_lines == 0));
+          && (!strict || n_misformatted_سطریں == 0));
 }
 
-int
-main (int argc, char **argv)
+صحيح
+مکھ (صحيح argc, حرف **argv)
 {
-  unsigned char bin_buffer_unaligned[DIGEST_BIN_BYTES + DIGEST_ALIGN];
+  بنانشانی حرف bin_بفر_unaligned[DIGEST_BIN_بائٹاں + DIGEST_ALIGN];
   /* Make sure bin_buffer is properly aligned. */
-  unsigned char *bin_buffer = ptr_align (bin_buffer_unaligned, DIGEST_ALIGN);
+  بنانشانی حرف *bin_بفر = ptr_align (bin_بفر_unaligned, DIGEST_ALIGN);
   bool do_check = false;
-  int opt;
+  صحيح opt;
   bool ok = true;
-  int binary = -1;
-  int prefix_tag = -1;
-  struct option const *long_opts = long_options;
+  صحيح ثنائی = -1;
+  صحيح اگیتر_ٹیگ = -1;
+  بنية option ثابت *long_opts = long_options;
 
-#if HASH_ALGO_CKSUM
-  if (cksum_algorithm != crc)
+#إذا HASH_ALGO_CKSUM
+  إذا (cksum_algorithm != چکری_جانچ)
     {
-      legacy_mode = true;
-      prefix_tag = 0;
+      legacy_منوال = true;
+      اگیتر_ٹیگ = 0;
       algorithm_specified = true;
       long_opts = legacy_long_options;
     }
-#endif
+#جے_انت
 
   /* Setting values of global variables.  */
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  سیٹ_پروگرام_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
@@ -1592,198 +1592,198 @@ main (int argc, char **argv)
 
   /* Line buffer stdout to ensure lines are written atomically and immediately
      so that processes running in parallel do not intersperse their output.  */
-  setvbuf (stdout, NULL, _IOLBF, 0);
+  setvbuf (stdout, عدم, _IOLBF, 0);
 
-#if HASH_ALGO_SUM
-  char const *short_opts = "rs";
-#elif HASH_ALGO_CKSUM
-  char const *short_opts = legacy_mode ? "bctwz" : "a:l:bctwz";
-  char const *digest_length_str = "";
-#elif HASH_ALGO_BLAKE2
-  char const *short_opts = "l:bctwz";
-  char const *digest_length_str = "";
-#else
-  char const *short_opts = "bctwz";
-#endif
+#إذا HASH_ALGO_جوڑ
+  حرف ثابت *short_opts = "rs";
+#وإلاإذا HASH_ALGO_CKSUM
+  حرف ثابت *short_opts = legacy_منوال ? "bctwz" : "a:l:bctwz";
+  حرف ثابت *digest_لمائی_str = "";
+#وإلاإذا HASH_ALGO_BLAKE2
+  حرف ثابت *short_opts = "l:bctwz";
+  حرف ثابت *digest_لمائی_str = "";
+#وإلا
+  حرف ثابت *short_opts = "bctwz";
+#جے_انت
 
-  while ((opt = getopt_long (argc, argv, short_opts, long_opts, NULL))
+  طالما ((opt = getopt_long (argc, argv, short_opts, long_opts, عدم))
          != -1)
-    switch (opt)
+    بدل (opt)
       {
-#if HASH_ALGO_CKSUM
-      case 'a':
+#إذا HASH_ALGO_CKSUM
+      حالة 'a':
         cksum_algorithm = XARGMATCH_EXACT ("--algorithm", optarg,
-                                           algorithm_args, algorithm_types);
+                                           algorithm_دلیلاں, algorithm_types);
         algorithm_specified = true;
-        break;
+        اكسر;
 
-      case DEBUG_PROGRAM_OPTION:
+      حالة DEBUG_پروگرام_OPTION:
         cksum_debug = true;
-        break;
-#endif
-#if HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
-      case 'l':
-        digest_length = xnumtoimax (optarg, 10, 0, IDX_MAX, "",
+        اكسر;
+#جے_انت
+#إذا HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
+      حالة 'l':
+        digest_لمائی = xnumtoimax (optarg, 10, 0, IDX_MAX, "",
                                     _("invalid length"), 0,
                                     XTOINT_MAX_QUIET);
-        digest_length_str = optarg;
-        break;
-#endif
-#if !HASH_ALGO_SUM
-      case 'c':
+        digest_لمائی_str = optarg;
+        اكسر;
+#جے_انت
+#إذا !HASH_ALGO_جوڑ
+      حالة 'c':
         do_check = true;
-        break;
-      case STATUS_OPTION:
-        status_only = true;
+        اكسر;
+      حالة حالت_OPTION:
+        حالت_only = true;
         warn = false;
         quiet = false;
-        break;
-      case 'b':
-        binary = 1;
-        break;
-      case 't':
-        binary = 0;
-        break;
-      case 'w':
-        status_only = false;
+        اكسر;
+      حالة 'b':
+        ثنائی = 1;
+        اكسر;
+      حالة 't':
+        ثنائی = 0;
+        اكسر;
+      حالة 'w':
+        حالت_only = false;
         warn = true;
         quiet = false;
-        break;
-      case IGNORE_MISSING_OPTION:
+        اكسر;
+      حالة IGNORE_MISSING_OPTION:
         ignore_missing = true;
-        break;
-      case QUIET_OPTION:
-        status_only = false;
+        اكسر;
+      حالة QUIET_OPTION:
+        حالت_only = false;
         warn = false;
         quiet = true;
-        break;
-      case STRICT_OPTION:
+        اكسر;
+      حالة STRICT_OPTION:
         strict = true;
-        break;
-# if HASH_ALGO_CKSUM
-      case BASE64_OPTION:
+        اكسر;
+# إذا HASH_ALGO_CKSUM
+      حالة BASE64_OPTION:
         base64_digest = true;
-        break;
-      case RAW_OPTION:
+        اكسر;
+      حالة RAW_OPTION:
         raw_digest = true;
-        break;
-      case UNTAG_OPTION:
-        prefix_tag = 0;
-        break;
+        اكسر;
+      حالة UNTAG_OPTION:
+        اگیتر_ٹیگ = 0;
+        اكسر;
 # endif
-      case TAG_OPTION:
-        prefix_tag = 1;
-        break;
-      case 'z':
+      حالة ٹیگ_OPTION:
+        اگیتر_ٹیگ = 1;
+        اكسر;
+      حالة 'z':
         digest_delim = '\0';
-        break;
-#endif
-#if HASH_ALGO_SUM
-      case 'r':		/* For SysV compatibility. */
-        sum_algorithm = bsd;
-        break;
+        اكسر;
+#جے_انت
+#إذا HASH_ALGO_جوڑ
+      حالة 'r':		/* For SysV compatibility. */
+        جوڑ_algorithm = bsd;
+        اكسر;
 
-      case 's':
-        sum_algorithm = sysv;
-        break;
-#endif
+      حالة 's':
+        جوڑ_algorithm = sysv;
+        اكسر;
+#جے_انت
       case_GETOPT_HELP_CHAR;
-      case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-      default:
+      case_GETOPT_نسخہ_CHAR (پروگرام_NAME, AUTHORS);
+      افتراضي:
         usage (EXIT_FAILURE);
       }
 
-  min_digest_line_length = MIN_DIGEST_LINE_LENGTH;
-#if HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
-# if HASH_ALGO_CKSUM
-  if (digest_length && (cksum_algorithm != blake2b
+  min_digest_سطر_لمائی = MIN_DIGEST_سطر_لمائی;
+#إذا HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
+# إذا HASH_ALGO_CKSUM
+  إذا (digest_لمائی && (cksum_algorithm != blake2b
                         && cksum_algorithm != sha2
                         && cksum_algorithm != sha3))
     error (EXIT_FAILURE, 0,
            _("--length is only supported with --algorithm "
              "blake2b, sha2, or sha3"));
-  if (cksum_algorithm == sha2 || cksum_algorithm == sha3)
+  إذا (cksum_algorithm == sha2 || cksum_algorithm == sha3)
     {
       /* Do not require --length with --check.  */
-      if (digest_length == 0 && *digest_length_str == '\0' && ! do_check)
+      إذا (digest_لمائی == 0 && *digest_لمائی_str == '\0' && ! do_check)
         error (EXIT_FAILURE, 0, _("--algorithm=%s requires specifying "
                                   "--length 224, 256, 384, or 512"),
-               algorithm_args[cksum_algorithm]);
+               algorithm_دلیلاں[cksum_algorithm]);
       /* If --check and --length are used we verify the digest length.  */
-      if ((! do_check || *digest_length_str != '\0')
-          && digest_length != SHA224_DIGEST_SIZE * 8
-          && digest_length != SHA256_DIGEST_SIZE * 8
-          && digest_length != SHA384_DIGEST_SIZE * 8
-          && digest_length != SHA512_DIGEST_SIZE * 8)
+      إذا ((! do_check || *digest_لمائی_str != '\0')
+          && digest_لمائی != SHA224_DIGEST_ناپ * 8
+          && digest_لمائی != SHA256_DIGEST_ناپ * 8
+          && digest_لمائی != SHA384_DIGEST_ناپ * 8
+          && digest_لمائی != SHA512_DIGEST_ناپ * 8)
         {
-          error (0, 0, _("invalid length: %s"), quote (digest_length_str));
+          error (0, 0, _("invalid length: %s"), quote (digest_لمائی_str));
           error (EXIT_FAILURE, 0, _("digest length for %s must be "
                                     "224, 256, 384, or 512"),
                  quote (DIGEST_TYPE_STRING));
         }
     }
-  else
+  وإلا
     {
       /* If the digest length checks for SHA-3 are satisfied, the less strict
          checks for BLAKE2 will also be.  */
-# else
+# وإلا
     {
 # endif
-      if (digest_length > DIGEST_MAX_LEN * 8)
+      إذا (digest_لمائی > DIGEST_MAX_LEN * 8)
         {
-          error (0, 0, _("invalid length: %s"), quote (digest_length_str));
+          error (0, 0, _("invalid length: %s"), quote (digest_لمائی_str));
           error (EXIT_FAILURE, 0,
                  _("maximum digest length for %s is %d bits"),
                  quote (DIGEST_TYPE_STRING),
                  DIGEST_MAX_LEN * 8);
         }
-      if (digest_length % 8 != 0)
+      إذا (digest_لمائی % 8 != 0)
         {
-          error (0, 0, _("invalid length: %s"), quote (digest_length_str));
+          error (0, 0, _("invalid length: %s"), quote (digest_لمائی_str));
           error (EXIT_FAILURE, 0, _("length is not a multiple of 8"));
         }
     }
-  if (digest_length == 0)
+  إذا (digest_لمائی == 0)
     {
-# if HASH_ALGO_BLAKE2
-      digest_length = DIGEST_MAX_LEN * 8;
-# else
-      digest_length = algorithm_bits[cksum_algorithm];
+# إذا HASH_ALGO_BLAKE2
+      digest_لمائی = DIGEST_MAX_LEN * 8;
+# وإلا
+      digest_لمائی = algorithm_بٹ[cksum_algorithm];
 # endif
     }
-  digest_hex_bytes = digest_length >> 2;
-#else
-  digest_hex_bytes = DIGEST_HEX_BYTES;
-#endif
+  digest_hex_بائٹاں = digest_لمائی >> 2;
+#وإلا
+  digest_hex_بائٹاں = DIGEST_HEX_بائٹاں;
+#جے_انت
 
-#if HASH_ALGO_CKSUM
-  switch (+cksum_algorithm)
+#إذا HASH_ALGO_CKSUM
+  بدل (+cksum_algorithm)
     {
-    case bsd:
-    case sysv:
-    case crc:
-    case crc32b:
-        if (do_check && algorithm_specified)
+    حالة bsd:
+    حالة sysv:
+    حالة چکری_جانچ:
+    حالة crc32b:
+        إذا (do_check && algorithm_specified)
           error (EXIT_FAILURE, 0,
                  _("--check is not supported with "
                    "--algorithm={bsd,sysv,crc,crc32b}"));
-        break;
+        اكسر;
     }
 
-  if (base64_digest && raw_digest)
+  إذا (base64_digest && raw_digest)
    {
      error (0, 0, _("--base64 and --raw are mutually exclusive"));
      usage (EXIT_FAILURE);
    }
-#endif
+#جے_انت
 
-  if (digest_delim != '\n' && do_check)
+  إذا (digest_delim != '\n' && do_check)
     {
       error (0, 0, _("the --zero option is not supported when "
                      "verifying checksums"));
       usage (EXIT_FAILURE);
     }
-  if (1 <= prefix_tag && do_check)
+  إذا (1 <= اگیتر_ٹیگ && do_check)
     {
       /* Note we allow --untagged with --check to more
          seamlessly support --untagged in an emulation wrapper.  */
@@ -1792,14 +1792,14 @@ main (int argc, char **argv)
       usage (EXIT_FAILURE);
     }
 
-  if (0 <= binary && do_check)
+  إذا (0 <= ثنائی && do_check)
     {
       error (0, 0, _("the --binary and --text options are meaningless when "
                      "verifying checksums"));
       usage (EXIT_FAILURE);
     }
 
-  if (ignore_missing && !do_check)
+  إذا (ignore_missing && !do_check)
     {
       error (0, 0,
              _("the --ignore-missing option is meaningful only when "
@@ -1807,89 +1807,89 @@ main (int argc, char **argv)
       usage (EXIT_FAILURE);
     }
 
-  if (status_only && !do_check)
+  إذا (حالت_only && !do_check)
     {
       error (0, 0,
        _("the --status option is meaningful only when verifying checksums"));
       usage (EXIT_FAILURE);
     }
 
-  if (warn && !do_check)
+  إذا (warn && !do_check)
     {
       error (0, 0,
        _("the --warn option is meaningful only when verifying checksums"));
       usage (EXIT_FAILURE);
     }
 
-  if (quiet && !do_check)
+  إذا (quiet && !do_check)
     {
       error (0, 0,
        _("the --quiet option is meaningful only when verifying checksums"));
       usage (EXIT_FAILURE);
     }
 
-  if (strict & !do_check)
+  إذا (strict & !do_check)
    {
      error (0, 0,
         _("the --strict option is meaningful only when verifying checksums"));
      usage (EXIT_FAILURE);
    }
 
-  if (prefix_tag == -1)
-    prefix_tag = HASH_ALGO_CKSUM;
+  إذا (اگیتر_ٹیگ == -1)
+    اگیتر_ٹیگ = HASH_ALGO_CKSUM;
 
-  if (prefix_tag && !binary)
+  إذا (اگیتر_ٹیگ && !ثنائی)
    {
      /* This could be supported in a backwards compatible way
         by prefixing the output line with a space in text mode.
         However that's invasive enough that it was agreed to
         not support this mode with --tag, as --text use cases
         are adequately supported by the default output format.  */
-#if !HASH_ALGO_CKSUM
+#إذا !HASH_ALGO_CKSUM
      error (0, 0, _("--tag does not support --text mode"));
-#else
+#وإلا
      error (0, 0, _("--text mode is only supported with --untagged"));
-#endif
+#جے_انت
      usage (EXIT_FAILURE);
    }
 
-  if (!O_BINARY && binary < 0)
-    binary = 0;
-  else if (prefix_tag)
-    binary = 1;
+  إذا (!O_ثنائی && ثنائی < 0)
+    ثنائی = 0;
+  وإلا إذا (اگیتر_ٹیگ)
+    ثنائی = 1;
 
-  char **operand_lim = argv + argc;
-  if (optind == argc)
-    *operand_lim++ = bad_cast ("-");
-  else if (1 < argc - optind && raw_digest)
+  حرف **عملیہ_lim = argv + argc;
+  إذا (optind == argc)
+    *عملیہ_lim++ = bad_cast ("-");
+  وإلا إذا (1 < argc - optind && raw_digest)
     error (EXIT_FAILURE, 0,
            _("the --raw option is not supported with multiple files"));
 
-  for (char **operandp = argv + optind; operandp < operand_lim; operandp++)
+  لكل (حرف **operandp = argv + optind; operandp < عملیہ_lim; operandp++)
     {
-      char *file = *operandp;
-      if (do_check)
+      حرف *file = *operandp;
+      إذا (do_check)
         ok &= digest_check (file);
-      else
+      وإلا
         {
-          int binary_file = binary;
+          صحيح ثنائی_file = ثنائی;
           bool missing;
-          intmax_t length;
+          intmax_t لمائی;
 
-          if (! digest_file (file, &binary_file, bin_buffer, &missing, &length))
+          إذا (! digest_file (file, &ثنائی_file, bin_بفر, &missing, &لمائی))
             ok = false;
-          else
+          وإلا
             {
-              DIGEST_OUT (file, binary_file, bin_buffer, raw_digest, prefix_tag,
-                          digest_delim, optind != argc, length);
-              if (ferror (stdout))
+              DIGEST_باہرلا (file, ثنائی_file, bin_بفر, raw_digest, اگیتر_ٹیگ,
+                          digest_delim, optind != argc, لمائی);
+              إذا (ferror (stdout))
                 write_error ();
             }
         }
     }
 
-  if (have_read_stdin && fclose (stdin) == EOF)
+  إذا (have_read_stdin && fclose (stdin) == EOF)
     error (EXIT_FAILURE, errno, _("standard input"));
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  أرجع ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

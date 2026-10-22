@@ -13,384 +13,384 @@
    https://blake2.net.
 */
 
-#ifdef HAVE_CONFIG_H
+#جے_تعریف_شدہ HAVE_CONFIG_H
 # include <config.h>
-#endif
+#جے_انت
 
-#include <stdio.h>
-#include <stdlib.h>
+#ضمن <stdio.h>
+#ضمن <stdlib.h>
 
-#include "blake2.h"
+#ضمن "blake2.h"
 
-#if 0
+#إذا 0
 /* This will help compatibility with coreutils */
-int blake2s_stream( FILE *stream, void *resstream, size_t outbytes )
+صحيح blake2s_دھارا( FILE *دھارا, فراغ *resstream, size_t outbytes )
 {
-  int ret = -1;
-  size_t sum, n;
+  صحيح ret = -1;
+  size_t جوڑ, n;
   blake2s_state S[1];
-  static const size_t buffer_length = 32768;
-  uint8_t *buffer = ( uint8_t * )malloc( buffer_length );
+  ساكن ثابت size_t بفر_لمائی = 32768;
+  uint8_t *بفر = ( uint8_t * )حافظہ_دیو( بفر_لمائی );
 
-  if( !buffer ) return -1;
+  إذا( !بفر ) أرجع -1;
 
   blake2s_init( S, outbytes );
 
-  while( 1 )
+  طالما( 1 )
   {
-    sum = 0;
+    جوڑ = 0;
 
-    while( 1 )
+    طالما( 1 )
     {
-      n = fread( buffer + sum, 1, buffer_length - sum, stream );
-      sum += n;
+      n = fread( بفر + جوڑ, 1, بفر_لمائی - جوڑ, دھارا );
+      جوڑ += n;
 
-      if( buffer_length == sum )
-        break;
+      إذا( بفر_لمائی == جوڑ )
+        اكسر;
 
-      if( 0 == n )
+      إذا( 0 == n )
       {
-        if( ferror( stream ) )
-          goto cleanup_buffer;
+        إذا( ferror( دھارا ) )
+          اذهب cleanup_بفر;
 
-        goto final_process;
+        اذهب final_process;
       }
 
-      if( feof( stream ) )
-        goto final_process;
+      إذا( feof( دھارا ) )
+        اذهب final_process;
     }
 
-    blake2s_update( S, buffer, buffer_length );
+    blake2s_update( S, بفر, بفر_لمائی );
   }
 
 final_process:;
 
-  if( sum > 0 ) blake2s_update( S, buffer, sum );
+  إذا( جوڑ > 0 ) blake2s_update( S, بفر, جوڑ );
 
   blake2s_final( S, resstream, outbytes );
   ret = 0;
-cleanup_buffer:
-  free( buffer );
-  return ret;
+cleanup_بفر:
+  حرر( بفر );
+  أرجع ret;
 }
-#endif
+#جے_انت
 
-int blake2b_stream( FILE *stream, void *resstream, size_t outbytes )
+صحيح blake2b_دھارا( FILE *دھارا, فراغ *resstream, size_t outbytes )
 {
-  int ret = -1;
-  size_t sum, n;
+  صحيح ret = -1;
+  size_t جوڑ, n;
   blake2b_state S[1];
-  static const size_t buffer_length = 32768;
-  uint8_t *buffer = ( uint8_t * )malloc( buffer_length );
+  ساكن ثابت size_t بفر_لمائی = 32768;
+  uint8_t *بفر = ( uint8_t * )حافظہ_دیو( بفر_لمائی );
 
-  if( !buffer ) return -1;
+  إذا( !بفر ) أرجع -1;
 
   blake2b_init( S, outbytes );
 
-  while( 1 )
+  طالما( 1 )
   {
-    sum = 0;
+    جوڑ = 0;
 
-    while( 1 )
+    طالما( 1 )
     {
-      n = fread( buffer + sum, 1, buffer_length - sum, stream );
-      sum += n;
+      n = fread( بفر + جوڑ, 1, بفر_لمائی - جوڑ, دھارا );
+      جوڑ += n;
 
-      if( buffer_length == sum )
-        break;
+      إذا( بفر_لمائی == جوڑ )
+        اكسر;
 
-      if( 0 == n )
+      إذا( 0 == n )
       {
-        if( ferror( stream ) )
-          goto cleanup_buffer;
+        إذا( ferror( دھارا ) )
+          اذهب cleanup_بفر;
 
-        goto final_process;
+        اذهب final_process;
       }
 
-      if( feof( stream ) )
-        goto final_process;
+      إذا( feof( دھارا ) )
+        اذهب final_process;
     }
 
-    blake2b_update( S, buffer, buffer_length );
+    blake2b_update( S, بفر, بفر_لمائی );
   }
 
 final_process:;
 
-  if( sum > 0 ) blake2b_update( S, buffer, sum );
+  إذا( جوڑ > 0 ) blake2b_update( S, بفر, جوڑ );
 
   blake2b_final( S, resstream, outbytes );
   ret = 0;
-cleanup_buffer:
-  free( buffer );
-  return ret;
+cleanup_بفر:
+  حرر( بفر );
+  أرجع ret;
 }
 
-#if 0
+#إذا 0
 
-#include <errno.h>
-#include <getopt.h>
-#include <string.h>
-#include <unistd.h>
+#ضمن <errno.h>
+#ضمن <getopt.h>
+#ضمن <string.h>
+#ضمن <unistd.h>
 
-int blake2sp_stream( FILE *stream, void *resstream, size_t outbytes )
+صحيح blake2sp_دھارا( FILE *دھارا, فراغ *resstream, size_t outbytes )
 {
-  int ret = -1;
-  size_t sum, n;
+  صحيح ret = -1;
+  size_t جوڑ, n;
   blake2sp_state S[1];
-  static const size_t buffer_length = 16 * ( 1UL << 20 );
-  uint8_t *buffer = ( uint8_t * )malloc( buffer_length );
+  ساكن ثابت size_t بفر_لمائی = 16 * ( 1UL << 20 );
+  uint8_t *بفر = ( uint8_t * )حافظہ_دیو( بفر_لمائی );
 
-  if( !buffer ) return -1;
+  إذا( !بفر ) أرجع -1;
 
   blake2sp_init( S, outbytes );
 
-  while( 1 )
+  طالما( 1 )
   {
-    sum = 0;
+    جوڑ = 0;
 
-    while( 1 )
+    طالما( 1 )
     {
-      n = fread( buffer + sum, 1, buffer_length - sum, stream );
-      sum += n;
+      n = fread( بفر + جوڑ, 1, بفر_لمائی - جوڑ, دھارا );
+      جوڑ += n;
 
-      if( buffer_length == sum )
-        break;
+      إذا( بفر_لمائی == جوڑ )
+        اكسر;
 
-      if( 0 == n )
+      إذا( 0 == n )
       {
-        if( ferror( stream ) )
-          goto cleanup_buffer;
+        إذا( ferror( دھارا ) )
+          اذهب cleanup_بفر;
 
-        goto final_process;
+        اذهب final_process;
       }
 
-      if( feof( stream ) )
-        goto final_process;
+      إذا( feof( دھارا ) )
+        اذهب final_process;
     }
 
-    blake2sp_update( S, buffer, buffer_length );
+    blake2sp_update( S, بفر, بفر_لمائی );
   }
 
 final_process:;
 
-  if( sum > 0 ) blake2sp_update( S, buffer, sum );
+  إذا( جوڑ > 0 ) blake2sp_update( S, بفر, جوڑ );
 
   blake2sp_final( S, resstream, outbytes );
   ret = 0;
-cleanup_buffer:
-  free( buffer );
-  return ret;
+cleanup_بفر:
+  حرر( بفر );
+  أرجع ret;
 }
 
 
-int blake2bp_stream( FILE *stream, void *resstream, size_t outbytes )
+صحيح blake2bp_دھارا( FILE *دھارا, فراغ *resstream, size_t outbytes )
 {
-  int ret = -1;
-  size_t sum, n;
+  صحيح ret = -1;
+  size_t جوڑ, n;
   blake2bp_state S[1];
-  static const size_t buffer_length = 16 * ( 1UL << 20 );
-  uint8_t *buffer = ( uint8_t * )malloc( buffer_length );
+  ساكن ثابت size_t بفر_لمائی = 16 * ( 1UL << 20 );
+  uint8_t *بفر = ( uint8_t * )حافظہ_دیو( بفر_لمائی );
 
-  if( !buffer ) return -1;
+  إذا( !بفر ) أرجع -1;
 
   blake2bp_init( S, outbytes );
 
-  while( 1 )
+  طالما( 1 )
   {
-    sum = 0;
+    جوڑ = 0;
 
-    while( 1 )
+    طالما( 1 )
     {
-      n = fread( buffer + sum, 1, buffer_length - sum, stream );
-      sum += n;
+      n = fread( بفر + جوڑ, 1, بفر_لمائی - جوڑ, دھارا );
+      جوڑ += n;
 
-      if( buffer_length == sum )
-        break;
+      إذا( بفر_لمائی == جوڑ )
+        اكسر;
 
-      if( 0 == n )
+      إذا( 0 == n )
       {
-        if( ferror( stream ) )
-          goto cleanup_buffer;
+        إذا( ferror( دھارا ) )
+          اذهب cleanup_بفر;
 
-        goto final_process;
+        اذهب final_process;
       }
 
-      if( feof( stream ) )
-        goto final_process;
+      إذا( feof( دھارا ) )
+        اذهب final_process;
     }
 
-    blake2bp_update( S, buffer, buffer_length );
+    blake2bp_update( S, بفر, بفر_لمائی );
   }
 
 final_process:;
 
-  if( sum > 0 ) blake2bp_update( S, buffer, sum );
+  إذا( جوڑ > 0 ) blake2bp_update( S, بفر, جوڑ );
 
   blake2bp_final( S, resstream, outbytes );
   ret = 0;
-cleanup_buffer:
-  free( buffer );
-  return ret;
+cleanup_بفر:
+  حرر( بفر );
+  أرجع ret;
 }
 
-typedef int ( *blake2fn )( FILE *, void *, size_t );
+تعريفنوع صحيح ( *blake2fn )( FILE *, فراغ *, size_t );
 
 
-static void usage( char **argv, int errcode )
+ساكن فراغ usage( حرف **argv, صحيح errcode )
 {
-  FILE *out = errcode ? stderr : stdout;
-  fprintf( out, "Usage: %s [OPTION]... [FILE]...\n", argv[0] );
-  fprintf( out, "\n" );
-  fprintf( out, "With no FILE, or when FILE is -, read standard input.\n" );
-  fprintf( out, "\n" );
-  fprintf( out, "  -a <algo>    hash algorithm (blake2b is default): \n"
+  FILE *باہرلا = errcode ? stderr : stdout;
+  fprintf( باہرلا, "Usage: %s [OPTION]... [FILE]...\n", argv[0] );
+  fprintf( باہرلا, "\n" );
+  fprintf( باہرلا, "With no FILE, or when FILE is -, read standard input.\n" );
+  fprintf( باہرلا, "\n" );
+  fprintf( باہرلا, "  -a <algo>    hash algorithm (blake2b is default): \n"
                 "               [blake2b|blake2s|blake2bp|blake2sp]\n" );
-  fprintf( out, "  -l <length>  digest length in bits, must not exceed the maximum for\n"
+  fprintf( باہرلا, "  -l <length>  digest length in bits, must not exceed the maximum for\n"
                 "               the selected algorithm and must be a multiple of 8\n" );
-  fprintf( out, "  --tag        create a BSD-style checksum\n" );
-  fprintf( out, "  --help       display this help and exit\n" );
-  exit( errcode );
+  fprintf( باہرلا, "  --tag        create a BSD-style checksum\n" );
+  fprintf( باہرلا, "  --help       display this help and exit\n" );
+  باہر_نکلو( errcode );
 }
 
 
-int main( int argc, char **argv )
+صحيح مکھ( صحيح argc, حرف **argv )
 {
-  blake2fn blake2_stream = blake2b_stream;
-  unsigned long maxbytes = BLAKE2B_OUTBYTES;
-  const char *algorithm = "BLAKE2b";
-  unsigned long outbytes = 0;
-  unsigned char hash[BLAKE2B_OUTBYTES] = {0};
+  blake2fn blake2_دھارا = blake2b_دھارا;
+  بنانشانی لما maxbytes = BLAKE2B_OUTBYTES;
+  ثابت حرف *algorithm = "BLAKE2b";
+  بنانشانی لما outbytes = 0;
+  بنانشانی حرف hash[BLAKE2B_OUTBYTES] = {0};
   bool bsdstyle = false;
-  int c, i;
+  صحيح c, i;
   opterr = 1;
 
-  while( 1 )
+  طالما( 1 )
   {
-    int option_index = 0;
-    char *end = NULL;
-    unsigned long outbits;
-    static struct option long_options[] = {
-      { "help",  no_argument, 0,  0  },
-      { "tag",   no_argument, 0,  0  },
-      { NULL, 0, NULL, 0 }
+    صحيح option_اشاریہ = 0;
+    حرف *سرا = عدم;
+    بنانشانی لما outbits;
+    ساكن بنية option long_options[] = {
+      { "help",  no_دلیل, 0,  0  },
+      { "tag",   no_دلیل, 0,  0  },
+      { عدم, 0, عدم, 0 }
     };
 
-    c = getopt_long( argc, argv, "a:l:", long_options, &option_index );
-    if( c == -1 ) break;
-    switch( c )
+    c = getopt_long( argc, argv, "a:l:", long_options, &option_اشاریہ );
+    إذا( c == -1 ) اكسر;
+    بدل( c )
     {
-    case 'a':
-      if( 0 == strcmp( optarg, "blake2b" ) )
+    حالة 'a':
+      إذا( 0 == strcmp( optarg, "blake2b" ) )
       {
-        blake2_stream = blake2b_stream;
+        blake2_دھارا = blake2b_دھارا;
         maxbytes = BLAKE2B_OUTBYTES;
         algorithm = "BLAKE2b";
       }
-      else if ( 0 == strcmp( optarg, "blake2s" ) )
+      وإلا إذا ( 0 == strcmp( optarg, "blake2s" ) )
       {
-        blake2_stream = blake2s_stream;
+        blake2_دھارا = blake2s_دھارا;
         maxbytes = BLAKE2S_OUTBYTES;
         algorithm = "BLAKE2s";
       }
-      else if ( 0 == strcmp( optarg, "blake2bp" ) )
+      وإلا إذا ( 0 == strcmp( optarg, "blake2bp" ) )
       {
-        blake2_stream = blake2bp_stream;
+        blake2_دھارا = blake2bp_دھارا;
         maxbytes = BLAKE2B_OUTBYTES;
         algorithm = "BLAKE2bp";
       }
-      else if ( 0 == strcmp( optarg, "blake2sp" ) )
+      وإلا إذا ( 0 == strcmp( optarg, "blake2sp" ) )
       {
-        blake2_stream = blake2sp_stream;
+        blake2_دھارا = blake2sp_دھارا;
         maxbytes = BLAKE2S_OUTBYTES;
         algorithm = "BLAKE2sp";
       }
-      else
+      وإلا
       {
-        printf( "Invalid function name: `%s'\n", optarg );
+        لکھو( "Invalid function name: `%s'\n", optarg );
         usage( argv, 111 );
       }
 
-      break;
+      اكسر;
 
-    case 'l':
-      outbits = strtoul(optarg, &end, 10);
-      if( !end || *end != '\0' || outbits % 8 != 0)
+    حالة 'l':
+      outbits = strtoul(optarg, &سرا, 10);
+      إذا( !سرا || *سرا != '\0' || outbits % 8 != 0)
       {
-        printf( "Invalid length argument: `%s'\n", optarg);
+        لکھو( "Invalid length argument: `%s'\n", optarg);
         usage( argv, 111 );
       }
       outbytes = outbits / 8;
-      break;
+      اكسر;
 
-    case 0:
-      if( 0 == strcmp( "help", long_options[option_index].name ) )
+    حالة 0:
+      إذا( 0 == strcmp( "help", long_options[option_اشاریہ].name ) )
         usage( argv, 0 );
-      else if( 0 == strcmp( "tag", long_options[option_index].name ) )
+      وإلا إذا( 0 == strcmp( "tag", long_options[option_اشاریہ].name ) )
         bsdstyle = true;
-      break;
+      اكسر;
 
-    case '?':
+    حالة '?':
       usage( argv, 1 );
-      break;
+      اكسر;
     }
   }
 
-  if(outbytes > maxbytes)
+  إذا(outbytes > maxbytes)
   {
-    printf( "Invalid length argument: %lu\n", outbytes * 8 );
-    printf( "Maximum digest length for %s is %lu\n", algorithm, maxbytes * 8 );
+    لکھو( "Invalid length argument: %lu\n", outbytes * 8 );
+    لکھو( "Maximum digest length for %s is %lu\n", algorithm, maxbytes * 8 );
     usage( argv, 111 );
   }
-  else if( outbytes == 0 )
+  وإلا إذا( outbytes == 0 )
     outbytes = maxbytes;
 
-  if( optind == argc )
-    argv[argc++] = (char *) "-";
+  إذا( optind == argc )
+    argv[argc++] = (حرف *) "-";
 
-  for( i = optind; i < argc; ++i )
+  لكل( i = optind; i < argc; ++i )
   {
-    FILE *f = NULL;
-    if( argv[i][0] == '-' && argv[i][1] == '\0' )
+    FILE *f = عدم;
+    إذا( argv[i][0] == '-' && argv[i][1] == '\0' )
       f = stdin;
-    else
+    وإلا
       f = fopen( argv[i], "rb" );
 
-    if( !f )
+    إذا( !f )
     {
       fprintf( stderr, "Could not open `%s': %s\n", argv[i], strerror( errno ) );
-      continue;
+      استمر;
     }
 
-    if( blake2_stream( f, hash, outbytes ) < 0 )
+    إذا( blake2_دھارا( f, hash, outbytes ) < 0 )
     {
       fprintf( stderr, "Failed to hash `%s'\n", argv[i] );
     }
-    else
+    وإلا
     {
       size_t j;
-      if( bsdstyle )
+      إذا( bsdstyle )
       {
-        if( outbytes < maxbytes )
-          printf( "%s-%lu (%s) = ", algorithm, outbytes * 8, argv[i] );
-        else
-          printf( "%s (%s) = ", algorithm, argv[i] );
+        إذا( outbytes < maxbytes )
+          لکھو( "%s-%lu (%s) = ", algorithm, outbytes * 8, argv[i] );
+        وإلا
+          لکھو( "%s (%s) = ", algorithm, argv[i] );
       }
 
-      for( j = 0; j < outbytes; ++j )
-        printf( "%02x", hash[j] );
+      لكل( j = 0; j < outbytes; ++j )
+        لکھو( "%02x", hash[j] );
 
-      if( bsdstyle )
-        printf( "\n" );
-      else
-        printf( "  %s\n", argv[i] );
+      إذا( bsdstyle )
+        لکھو( "\n" );
+      وإلا
+        لکھو( "  %s\n", argv[i] );
     }
 
-    if( f == stdin )
+    إذا( f == stdin )
       clearerr( f );
-    else if( fclose( f ) != 0 )
+    وإلا إذا( fclose( f ) != 0 )
       fprintf( stderr, "Could not close `%s': %s\n", argv[i], strerror( errno ) );
   }
 
-  return 0;
+  أرجع 0;
 }
-#endif
+#جے_انت
