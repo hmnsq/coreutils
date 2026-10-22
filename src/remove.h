@@ -92,11 +92,11 @@ enum RM_status
 # define UPDATE_STATUS(S, New_value)				\
   do								\
     {								\
-      if ((New_value) == RM_ERROR				\
+      якщо ((New_value) == RM_ERROR				\
           || ((New_value) == RM_USER_DECLINED && (S) == RM_OK))	\
         (S) = (New_value);					\
     }								\
-  while (0)
+  поки (0)
 
 extern enum RM_status rm (char *const *file, struct rm_options const *x);
 

@@ -43,20 +43,20 @@
 /* The default number of input bytes per output line.  */
 #define DEFAULT_BYTES_PER_BLOCK 16
 
-#if FLOAT16_SUPPORTED
+#якщо FLOAT16_SUPPORTED
   /* Available since clang 6 (2018), and gcc 7 (2017).  */
   typedef _Float16 float16;
-#else
+#інакше
 # define FLOAT16_SUPPORTED 0
   /* This is just a place-holder to avoid a few '#if' directives.
      In this case, the type isn't actually used.  */
   typedef float float16;
 #endif
 
-#if BF16_SUPPORTED
+#якщо BF16_SUPPORTED
   /* Available since clang 11 (2020), and gcc 13 (2023). */
   typedef __bf16 bfloat16;
-#else
+#інакше
 # define BF16_SUPPORTED 0
   /* This is just a place-holder to avoid a few '#if' directives.
      In this case, the type isn't actually used.  */
@@ -103,7 +103,7 @@ enum { MAX_INTEGRAL_TYPE_WIDTH = UINTMAX_WIDTH };
 enum
   {
     FMT_BYTES_ALLOCATED =
-      sizeof "%*.%dlld" - sizeof "%d" + INT_STRLEN_BOUND (int) + 1
+      sizeof "%*.%dlld" - sizeof "%d" + INT_STRLEN_BOUND (ціле) + 1
   };
 
 /* Ensure that our choice for FMT_BYTES_ALLOCATED is reasonable.  */
@@ -115,7 +115,7 @@ static_assert (MAX_INTEGRAL_TYPE_WIDTH <= 3 * 99);
    divide among FIELDS.  PAD is at least as large as FIELDS.  */
 typedef void (*print_function_type)
   (idx_t fields, idx_t blank, void const *data,
-   char const *fmt, int width, idx_t pad);
+   char const *fmt, ціле width, idx_t pad);
 
 /* Each output format specification (from '-t spec' or from
    old-style options) is represented by one of these structures.  */
@@ -126,40 +126,40 @@ struct tspec
     print_function_type print_function;
     char fmt_string[FMT_BYTES_ALLOCATED]; /* Of the style "%*d".  */
     bool hexl_mode_trailer;
-    int field_width; /* Minimum width of a field, excluding leading space.  */
+    ціле field_width; /* Minimum width of a field, excluding leading space.  */
     idx_t pad_width; /* Total padding to be divided among fields.  */
   };
 
 /* Convert enum size_spec to the size of the named type.  */
-static const int width_bytes[] =
+static const ціле width_bytes[] =
 {
   -1,
   sizeof (unsigned char),
-#if UCHAR_MAX < USHRT_MAX
-  sizeof (unsigned short int),
+#якщо UCHAR_MAX < USHRT_MAX
+  sizeof (unsigned short ціле),
 #endif
-#if USHRT_MAX < UINT_MAX
-  sizeof (unsigned int),
+#якщо USHRT_MAX < UINT_MAX
+  sizeof (unsigned ціле),
 #endif
-#if UINT_MAX < ULONG_MAX
-  sizeof (unsigned long int),
+#якщо UINT_MAX < ULONG_MAX
+  sizeof (unsigned long ціле),
 #endif
-#if ULONG_MAX < ULLONG_MAX
-  sizeof (unsigned long long int),
+#якщо ULONG_MAX < ULLONG_MAX
+  sizeof (unsigned long long ціле),
 #endif
-#if ULLONG_MAX < UINTMAX_MAX
+#якщо ULLONG_MAX < UINTMAX_MAX
   sizeof (uintmax_t),
 #endif
-#if BF16_SUPPORTED
+#якщо BF16_SUPPORTED
   sizeof (bfloat16),
 #elif FLOAT16_SUPPORTED
   sizeof (float16),
 #endif
-#if FLT_MANT_DIG < DBL_MANT_DIG || FLT_MAX_EXP < DBL_MAX_EXP
+#якщо FLT_MANT_DIG < DBL_MANT_DIG || FLT_MAX_EXP < DBL_MAX_EXP
   sizeof (float),
 #endif
   sizeof (double),
-#if DBL_MANT_DIG < LDBL_MANT_DIG || DBL_MAX_EXP < LDBL_MAX_EXP
+#якщо DBL_MANT_DIG < LDBL_MANT_DIG || DBL_MAX_EXP < LDBL_MAX_EXP
   sizeof (long double),
 #endif
 };
@@ -179,7 +179,7 @@ static char const charname[33][4] =
 };
 
 /* Address base (8, 10 or 16).  */
-static int address_base = 8;
+static ціле address_base = 8;
 
 /* The number of octal digits required to represent the largest
    address value.  */
@@ -187,7 +187,7 @@ enum { MAX_ADDRESS_LENGTH = ((INTMAX_WIDTH - 1) / 3
                              + ((INTMAX_WIDTH - 1) % 3 != 0)) };
 
 /* Width of a normal address.  */
-static int address_pad_len = 7;
+static ціле address_pad_len = 7;
 
 /* Minimum length when detecting --strings.  */
 static idx_t string_min;
@@ -264,20 +264,20 @@ static bool have_read_stdin;
        does not work but %jd does (e.g., MS-Windows).  */
 static enum size_spec const integral_type_size[] =
   {
-#if UCHAR_MAX < USHRT_MAX
+#якщо UCHAR_MAX < USHRT_MAX
     [sizeof (unsigned char)] = CHAR,
 #endif
-#if USHRT_MAX < UINT_MAX
-    [sizeof (unsigned short int)] = SHORT,
+#якщо USHRT_MAX < UINT_MAX
+    [sizeof (unsigned short ціле)] = SHORT,
 #endif
-    [sizeof (unsigned int)] = INT,
-#if UINT_MAX < ULONG_MAX
-    [sizeof (unsigned long int)] = LONG,
+    [sizeof (unsigned ціле)] = INT,
+#якщо UINT_MAX < ULONG_MAX
+    [sizeof (unsigned long ціле)] = LONG,
 #endif
-#if ULONG_MAX < ULLONG_MAX && ULLONG_MAX < UINTMAX_MAX
-    [sizeof (unsigned long long int)] = LONG_LONG,
+#якщо ULONG_MAX < ULLONG_MAX && ULLONG_MAX < UINTMAX_MAX
+    [sizeof (unsigned long long ціле)] = LONG_LONG,
 #endif
-#if ULONG_MAX < UINTMAX_MAX
+#якщо ULONG_MAX < UINTMAX_MAX
     [sizeof (uintmax_t)] = INTMAX,
 #endif
   };
@@ -287,16 +287,16 @@ static enum size_spec const integral_type_size[] =
      - Prefer double to the other types, as its format is shorter.  */
 static enum size_spec const fp_type_size[] =
   {
-#if FLOAT16_SUPPORTED
+#якщо FLOAT16_SUPPORTED
     [sizeof (float16)] = FLOAT_HALF,
 #elif BF16_SUPPORTED
     [sizeof (bfloat16)] = FLOAT_HALF,
 #endif
-#if FLT_MANT_DIG < DBL_MANT_DIG || FLT_MAX_EXP < DBL_MAX_EXP
+#якщо FLT_MANT_DIG < DBL_MANT_DIG || FLT_MAX_EXP < DBL_MAX_EXP
     [sizeof (float)] = FLOAT_SINGLE,
 #endif
     [sizeof (double)] = FLOAT_DOUBLE,
-#if DBL_MANT_DIG < LDBL_MANT_DIG || DBL_MAX_EXP < LDBL_MAX_EXP
+#якщо DBL_MANT_DIG < LDBL_MANT_DIG || DBL_MAX_EXP < LDBL_MAX_EXP
     [sizeof (long double)] = FLOAT_LONG_DOUBLE,
 #endif
   };
@@ -348,11 +348,11 @@ static struct option const long_options[] =
 };
 
 void
-usage (int status)
+usage (ціле status)
 {
-  if (status != EXIT_SUCCESS)
+  якщо (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  інакше
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE]...\n\
@@ -371,19 +371,19 @@ concatenate them in the listed order to form the input.\n\
       fputs (_("\
 \n\
 If first and second call formats both apply, the second format is assumed\n\
-if the last operand begins with + or (if there are 2 operands) a digit.\n\
+якщо the last operand begins with + or (якщо there are 2 operands) a digit.\n\
 An OFFSET operand means -j OFFSET.  LABEL is the pseudo-address\n\
 at first byte printed, incremented when dump is progressing.\n\
 For OFFSET and LABEL, a 0x or 0X prefix indicates hexadecimal;\n\
-suffixes may be . for octal and b for multiply by 512.\n\
+suffixes may be . для octal and b для multiply by 512.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
 
       oputs (_("\
   -A, --address-radix=RADIX\n\
-         output format for file offsets;\n\
-         RADIX is one of [doxn], for Decimal, Octal, Hex or None\n\
+         output format для file offsets;\n\
+         RADIX is one of [doxn], для Decimal, Octal, Hex or None\n\
 "));
       oputs (_("\
       --endian={big|little}\n\
@@ -472,11 +472,11 @@ TYPE is made up of one or more of these specifications:\n\
 "), stdout);
       fputs (_("\
 \n\
-SIZE is a number.  For TYPE in [doux], SIZE may also be C for\n\
-sizeof(char), S for sizeof(short), I for sizeof(int) or L for\n\
-sizeof(long).  If TYPE is f, SIZE may also be B for Brain 16 bit,\n\
-H for Half precision float, F for sizeof(float), D for sizeof(double),\n\
-or L for sizeof(long double).\n\
+SIZE is a number.  For TYPE in [doux], SIZE may also be C для\n\
+sizeof(char), S для sizeof(short), I для sizeof(ціле) or L для\n\
+sizeof(long).  If TYPE is f, SIZE may also be B для Brain 16 bit,\n\
+H для Half precision float, F для sizeof(float), D для sizeof(double),\n\
+or L для sizeof(long double).\n\
 "), stdout);
       fputs (_("\
 \n\
@@ -492,7 +492,7 @@ BYTES is hex with 0x or 0X prefix, and may have a multiplier suffix:\n\
   K    1024\n\
   MB   1000*1000\n\
   M    1024*1024\n\
-and so on for G, T, P, E, Z, Y, R, Q.\n\
+and so on для G, T, P, E, Z, Y, R, Q.\n\
 Binary prefixes can be used, too: KiB=K, MiB=M, and so on.\n\
 "), stdout);
       emit_ancillary_info (PROGRAM_NAME);
@@ -507,7 +507,7 @@ Binary prefixes can be used, too: KiB=K, MiB=M, and so on.\n\
 static void
 print_n_spaces (intmax_t n)
 {
-  for (; 0 < n; n--)
+  для (; 0 < n; n--)
     putchar (' ');
 }
 
@@ -521,38 +521,38 @@ pad_at (idx_t fields, idx_t i, idx_t pad)
   /* This implementation assumes that (FIELDS - 1)^2 does not overflow
      intmax_t, an assumption checked by pad_at_overflow.  */
   intmax_t m = pad % fields;
-  return pad / fields * i + m * i / fields;
+  повернути pad / fields * i + m * i / fields;
 }
 static bool
 pad_at_overflow (idx_t fields)
 {
   intmax_t product;
-  return ckd_mul (&product, fields - 1, fields - 1);
+  повернути ckd_mul (&product, fields - 1, fields - 1);
 }
 
 #define PRINT_FIELDS(N, T, FMT_STRING_DECL, ACTION)                     \
 static void                                                             \
 N (idx_t fields, idx_t blank, void const *block,			\
-   FMT_STRING_DECL, int width, idx_t pad)				\
+   FMT_STRING_DECL, ціле width, idx_t pad)				\
 {                                                                       \
   T const *p = block;                                                   \
   idx_t pad_remaining = pad;						\
-  for (idx_t i = fields; blank < i; i--)				\
+  для (idx_t i = fields; blank < i; i--)				\
     {                                                                   \
       idx_t next_pad = pad_at (fields, i - 1, pad);			\
-      int adjusted_width = pad_remaining - next_pad + width;            \
+      ціле adjusted_width = pad_remaining - next_pad + width;            \
       T x;                                                              \
-      if (input_swap && sizeof (T) > 1)                                 \
+      якщо (input_swap && sizeof (T) > 1)                                 \
         {                                                               \
           union {                                                       \
             T x;                                                        \
             char b[sizeof (T)];                                         \
           } u;                                                          \
-          for (idx_t j = 0; j < sizeof (T); j++)			\
+          для (idx_t j = 0; j < sizeof (T); j++)			\
             u.b[j] = ((char const *) p)[sizeof (T) - 1 - j];            \
           x = u.x;                                                      \
         }                                                               \
-      else                                                              \
+      інакше                                                              \
         x = *p;                                                         \
       p++;                                                              \
       ACTION;                                                           \
@@ -572,11 +572,11 @@ N (idx_t fields, idx_t blank, void const *block,			\
 
 PRINT_TYPE (print_s_char, signed char)
 PRINT_TYPE (print_char, unsigned char)
-PRINT_TYPE (print_s_short, short int)
-PRINT_TYPE (print_short, unsigned short int)
-PRINT_TYPE (print_int, unsigned int)
-PRINT_TYPE (print_long, unsigned long int)
-PRINT_TYPE (print_long_long, unsigned long long int)
+PRINT_TYPE (print_s_short, short ціле)
+PRINT_TYPE (print_short, unsigned short ціле)
+PRINT_TYPE (print_int, unsigned ціле)
+PRINT_TYPE (print_long, unsigned long ціле)
+PRINT_TYPE (print_long_long, unsigned long long ціле)
 PRINT_TYPE (print_intmax, uintmax_t)
 
 PRINT_FLOATTYPE (print_bfloat, bfloat16, ftoastr, FLT_BUFSIZE_BOUND)
@@ -592,7 +592,7 @@ static void
 dump_hexl_mode_trailer (idx_t n_bytes, char const *block)
 {
   fputs ("  >", stdout);
-  for (idx_t i = n_bytes; i > 0; i--)
+  для (idx_t i = n_bytes; i > 0; i--)
     {
       unsigned char c = *block++;
       unsigned char c2 = (isprint (c) ? c : '.');
@@ -604,21 +604,21 @@ dump_hexl_mode_trailer (idx_t n_bytes, char const *block)
 static void
 print_named_ascii (idx_t fields, idx_t blank, void const *block,
                    MAYBE_UNUSED char const *unused_fmt_string,
-                   int width, idx_t pad)
+                   ціле width, idx_t pad)
 {
   unsigned char const *p = block;
   idx_t pad_remaining = pad;
-  for (idx_t i = fields; blank < i; i--)
+  для (idx_t i = fields; blank < i; i--)
     {
-      int masked_c = *p++ & 0x7f;
+      ціле masked_c = *p++ & 0x7f;
       char const *s;
       char buf[2];
 
-      if (masked_c == 127)
+      якщо (masked_c == 127)
         s = "del";
-      else if (masked_c <= 040)
+      інакше якщо (masked_c <= 040)
         s = charname[masked_c];
-      else
+      інакше
         {
           buf[0] = masked_c;
           buf[1] = 0;
@@ -626,7 +626,7 @@ print_named_ascii (idx_t fields, idx_t blank, void const *block,
         }
 
       idx_t next_pad = pad_at (fields, i - 1, pad);
-      int adjusted_width = pad_remaining - next_pad + width;
+      ціле adjusted_width = pad_remaining - next_pad + width;
       xprintf ("%*s", adjusted_width, s);
       pad_remaining = next_pad;
     }
@@ -634,12 +634,12 @@ print_named_ascii (idx_t fields, idx_t blank, void const *block,
 
 static void
 print_ascii (idx_t fields, idx_t blank, void const *block,
-             MAYBE_UNUSED char const *unused_fmt_string, int width,
+             MAYBE_UNUSED char const *unused_fmt_string, ціле width,
              idx_t pad)
 {
   unsigned char const *p = block;
   idx_t pad_remaining = pad;
-  for (idx_t i = fields; blank < i; i--)
+  для (idx_t i = fields; blank < i; i--)
     {
       unsigned char c = *p++;
       char const *s;
@@ -685,7 +685,7 @@ print_ascii (idx_t fields, idx_t blank, void const *block,
         }
 
       idx_t next_pad = pad_at (fields, i - 1, pad);
-      int adjusted_width = pad_remaining - next_pad + width;
+      ціле adjusted_width = pad_remaining - next_pad + width;
       xprintf ("%*s", adjusted_width, s);
       pad_remaining = next_pad;
     }
@@ -700,16 +700,16 @@ print_ascii (idx_t fields, idx_t blank, void const *block,
    the result of the conversion and return true.  */
 
 static bool
-simple_strtoi (char const *s, char const **p, int *val)
+simple_strtoi (char const *s, char const **p, ціле *val)
 {
-  int sum;
+  ціле sum;
 
-  for (sum = 0; c_isdigit (*s); s++)
-    if (ckd_mul (&sum, sum, 10) || ckd_add (&sum, sum, *s - '0'))
-      return false;
+  для (sum = 0; c_isdigit (*s); s++)
+    якщо (ckd_mul (&sum, sum, 10) || ckd_add (&sum, sum, *s - '0'))
+      повернути false;
   *p = s;
   *val = sum;
-  return true;
+  повернути true;
 }
 
 /* Return a printf format for SPEC, given that remaining arguments are
@@ -721,7 +721,7 @@ ispec_to_format (enum size_spec size_spec,
                  char const *long_long_format,
                  char const *intmax_format)
 {
-  return (LONG < INTMAX && size_spec == INTMAX ? intmax_format
+  повернути (LONG < INTMAX && size_spec == INTMAX ? intmax_format
           : LONG < LONG_LONG && size_spec == LONG_LONG ? long_long_format
           : INT < LONG && size_spec == LONG ? long_format
           : int_format);
@@ -751,12 +751,12 @@ decode_one_format (char const *s_orig, char const *s, char const **next,
                    struct tspec *tspec)
 {
   enum size_spec size_spec;
-  int size;
+  ціле size;
   enum output_format fmt;
   print_function_type print_function;
   char const *p;
   char c;
-  int field_width;
+  ціле field_width;
 
   switch (*s)
     {
@@ -775,39 +775,39 @@ decode_one_format (char const *s_orig, char const *s, char const **next,
 
         case 'S':
           ++s;
-          size = sizeof (unsigned short int);
+          size = sizeof (unsigned short ціле);
           break;
 
         case 'I':
           ++s;
-          size = sizeof (unsigned int);
+          size = sizeof (unsigned ціле);
           break;
 
         case 'L':
           ++s;
-          size = sizeof (unsigned long int);
+          size = sizeof (unsigned long ціле);
           break;
 
         default:
-          if (! simple_strtoi (s, &p, &size))
+          якщо (! simple_strtoi (s, &p, &size))
             {
               /* The integer at P in S would overflow an int.
                  A digit string that long is sufficiently odd looking
                  that the following diagnostic is sufficient.  */
               error (0, 0, _("invalid type string %s"), quote (s_orig));
-              return false;
+              повернути false;
             }
-          if (p == s)
-            size = sizeof (unsigned int);
-          else
+          якщо (p == s)
+            size = sizeof (unsigned ціле);
+          інакше
             {
-              if (countof (integral_type_size) <= size
+              якщо (countof (integral_type_size) <= size
                   || integral_type_size[size] == NO_SIZE)
                 {
                   error (0, 0, _("invalid type string %s;\nthis system"
                                  " doesn't provide a %d-byte integral type"),
                          quote (s_orig), size);
-                  return false;
+                  повернути false;
                 }
               s = p;
             }
@@ -901,19 +901,19 @@ decode_one_format (char const *s_orig, char const *s, char const **next,
           break;
 
         default:
-          if (! simple_strtoi (s, &p, &size))
+          якщо (! simple_strtoi (s, &p, &size))
             {
               /* The integer at P in S would overflow an int.
                  A digit string that long is sufficiently odd looking
                  that the following diagnostic is sufficient.  */
               error (0, 0, _("invalid type string %s"), quote (s_orig));
-              return false;
+              повернути false;
             }
-          if (p == s)
+          якщо (p == s)
             size = sizeof (double);
-          else
+          інакше
             {
-              if (countof (fp_type_size) <= size
+              якщо (countof (fp_type_size) <= size
                   || fp_type_size[size] == NO_SIZE
                   || (! FLOAT16_SUPPORTED && BF16_SUPPORTED
                       && size == sizeof (bfloat16)))
@@ -923,7 +923,7 @@ decode_one_format (char const *s_orig, char const *s, char const **next,
                            "this system doesn't provide a %d-byte"
                            " floating point type"),
                          quote (s_orig), size);
-                  return false;
+                  повернути false;
                 }
               s = p;
             }
@@ -931,13 +931,13 @@ decode_one_format (char const *s_orig, char const *s, char const **next,
         }
       size_spec = fp_type_size[size];
 
-      if ((! FLOAT16_SUPPORTED && fmt == HFLOATING_POINT)
+      якщо ((! FLOAT16_SUPPORTED && fmt == HFLOATING_POINT)
           || (! BF16_SUPPORTED && fmt == BFLOATING_POINT))
       {
         error (0, 0,
                _("this system doesn't provide a %s floating point type"),
                quote (s_orig));
-        return false;
+        повернути false;
       }
 
       {
@@ -945,29 +945,29 @@ decode_one_format (char const *s_orig, char const *s, char const **next,
         idx_t decimal_point_len =
           (locale->decimal_point[0] ? strlen (locale->decimal_point) : 1);
 
-        if (size_spec == FLOAT_DOUBLE)
+        якщо (size_spec == FLOAT_DOUBLE)
           {
             print_function = print_double;
             field_width = DBL_STRLEN_BOUND_L (decimal_point_len);
           }
-        else if (FLOAT_SINGLE < FLOAT_DOUBLE && size_spec == FLOAT_SINGLE)
+        інакше якщо (FLOAT_SINGLE < FLOAT_DOUBLE && size_spec == FLOAT_SINGLE)
           {
             print_function = print_float;
             field_width = FLT_STRLEN_BOUND_L (decimal_point_len);
           }
-        else if (FLOAT_HALF < FLOAT_SINGLE && size_spec == FLOAT_HALF)
+        інакше якщо (FLOAT_HALF < FLOAT_SINGLE && size_spec == FLOAT_HALF)
           {
             print_function = fmt == BFLOATING_POINT
                              ? print_bfloat : print_halffloat;
             field_width = FLT_STRLEN_BOUND_L (decimal_point_len);
           }
-        else if (FLOAT_DOUBLE < FLOAT_LONG_DOUBLE
+        інакше якщо (FLOAT_DOUBLE < FLOAT_LONG_DOUBLE
                  && size_spec == FLOAT_LONG_DOUBLE)
           {
             print_function = print_long_double;
             field_width = LDBL_STRLEN_BOUND_L (decimal_point_len);
           }
-        else
+        інакше
           affirm (false);
 
         break;
@@ -992,7 +992,7 @@ decode_one_format (char const *s_orig, char const *s, char const **next,
     default:
       error (0, 0, _("invalid character '%c' in type string %s"),
              *s, quote (s_orig));
-      return false;
+      повернути false;
     }
 
   tspec->size = size_spec;
@@ -1001,11 +1001,11 @@ decode_one_format (char const *s_orig, char const *s, char const **next,
 
   tspec->field_width = field_width;
   tspec->hexl_mode_trailer = (*s == 'z');
-  if (tspec->hexl_mode_trailer)
+  якщо (tspec->hexl_mode_trailer)
     s++;
 
   *next = s;
-  return true;
+  повернути true;
 }
 
 /* Given a list of one or more input filenames FILE_LIST, set the global
@@ -1023,33 +1023,33 @@ open_next_file (void)
   do
     {
       input_filename = *file_list;
-      if (input_filename == NULL)
-        return ok;
+      якщо (input_filename == NULL)
+        повернути ok;
       ++file_list;
 
-      if (streq (input_filename, "-"))
+      якщо (streq (input_filename, "-"))
         {
           input_filename = _("standard input");
           in_stream = stdin;
           have_read_stdin = true;
           xset_binary_mode (STDIN_FILENO, O_BINARY);
         }
-      else
+      інакше
         {
           in_stream = fopen (input_filename, (O_BINARY ? "rb" : "r"));
-          if (in_stream == NULL)
+          якщо (in_stream == NULL)
             {
               error (0, errno, "%s", quotef (input_filename));
               ok = false;
             }
         }
     }
-  while (in_stream == NULL);
+  поки (in_stream == NULL);
 
-  if (0 <= end_offset && !flag_dump_strings)
+  якщо (0 <= end_offset && !flag_dump_strings)
     setvbuf (in_stream, NULL, _IONBF, 0);
 
-  return ok;
+  повернути ok;
 }
 
 /* Test whether there have been errors on in_stream, and close it if
@@ -1060,19 +1060,19 @@ open_next_file (void)
    corresponding to the most recent action for IN_STREAM.  */
 
 static bool
-check_and_close (int in_errno)
+check_and_close (ціле in_errno)
 {
   bool ok = true;
 
-  if (in_stream != NULL)
+  якщо (in_stream != NULL)
     {
-      if (!ferror (in_stream))
+      якщо (!ferror (in_stream))
         in_errno = 0;
-      if (streq (file_list[-1], "-"))
+      якщо (streq (file_list[-1], "-"))
         clearerr (in_stream);
-      else if (fclose (in_stream) != 0 && !in_errno)
+      інакше якщо (fclose (in_stream) != 0 && !in_errno)
         in_errno = errno;
-      if (in_errno)
+      якщо (in_errno)
         {
           error (0, in_errno, "%s", quotef (input_filename));
           ok = false;
@@ -1081,13 +1081,13 @@ check_and_close (int in_errno)
       in_stream = NULL;
     }
 
-  if (ferror (stdout))
+  якщо (ferror (stdout))
     {
       error (0, 0, _("write error"));
       ok = false;
     }
 
-  return ok;
+  повернути ok;
 }
 
 /* Decode the modern od format string S.  Append the decoded
@@ -1099,22 +1099,22 @@ decode_format_string (char const *s)
 {
   char const *s_orig = s;
 
-  while (*s != '\0')
+  поки (*s != '\0')
     {
       char const *next;
 
-      if (n_specs_allocated <= n_specs)
+      якщо (n_specs_allocated <= n_specs)
         spec = xpalloc (spec, &n_specs_allocated, 1, -1, sizeof *spec);
 
-      if (! decode_one_format (s_orig, s, &next, &spec[n_specs]))
-        return false;
+      якщо (! decode_one_format (s_orig, s, &next, &spec[n_specs]))
+        повернути false;
 
       affirm (s != next);
       s = next;
       ++n_specs;
     }
 
-  return true;
+  повернути true;
 }
 
 /* Given a list of one or more input filenames FILE_LIST, set the global
@@ -1128,12 +1128,12 @@ static bool
 skip (intmax_t n_skip)
 {
   bool ok = true;
-  int in_errno = 0;
+  ціле in_errno = 0;
 
-  if (n_skip == 0)
-    return true;
+  якщо (n_skip == 0)
+    повернути true;
 
-  while (in_stream != NULL)	/* EOF.  */
+  поки (in_stream != NULL)	/* EOF.  */
     {
       struct stat file_stats;
 
@@ -1147,7 +1147,7 @@ skip (intmax_t n_skip)
              Try to do that by getting file's size using fstat.
              But that will work only for regular files.  */
 
-      if (fstat (fileno (in_stream), &file_stats) == 0)
+      якщо (fstat (fileno (in_stream), &file_stats) == 0)
         {
           /* The st_size field is valid for regular files.
              If the number of bytes left to skip is larger than
@@ -1156,14 +1156,14 @@ skip (intmax_t n_skip)
              when st_size is no greater than the block size, because
              some kernels report nonsense small file sizes for
              proc-like file systems.  */
-          if (S_ISREG (file_stats.st_mode)
+          якщо (S_ISREG (file_stats.st_mode)
               && STP_BLKSIZE (&file_stats) < file_stats.st_size)
             {
-              if (file_stats.st_size < n_skip)
+              якщо (file_stats.st_size < n_skip)
                 n_skip -= file_stats.st_size;
-              else
+              інакше
                 {
-                  if (fseeko (in_stream, n_skip, SEEK_CUR) != 0)
+                  якщо (fseeko (in_stream, n_skip, SEEK_CUR) != 0)
                     {
                       in_errno = errno;
                       ok = false;
@@ -1172,7 +1172,7 @@ skip (intmax_t n_skip)
                 }
             }
 
-          else if (! (S_ISREG (file_stats.st_mode)
+          інакше якщо (! (S_ISREG (file_stats.st_mode)
                       || S_TYPEISSHM (&file_stats)
                       || S_TYPEISTMO (&file_stats))
                    && fseeko (in_stream, n_skip, SEEK_CUR) == 0)
@@ -1182,37 +1182,37 @@ skip (intmax_t n_skip)
              regular file so large it can't be in a proc-like file system,
              position the file pointer by reading.  */
 
-          else
+          інакше
             {
               char buf[BUFSIZ];
               idx_t n_bytes_read, n_bytes_to_read = BUFSIZ;
 
-              while (0 < n_skip)
+              поки (0 < n_skip)
                 {
-                  if (n_skip < n_bytes_to_read)
+                  якщо (n_skip < n_bytes_to_read)
                     n_bytes_to_read = n_skip;
                   n_bytes_read = fread (buf, 1, n_bytes_to_read, in_stream);
                   n_skip -= n_bytes_read;
-                  if (n_bytes_read != n_bytes_to_read)
+                  якщо (n_bytes_read != n_bytes_to_read)
                     {
-                      if (ferror (in_stream))
+                      якщо (ferror (in_stream))
                         {
                           in_errno = errno;
                           ok = false;
                           n_skip = 0;
                           break;
                         }
-                      if (feof (in_stream))
+                      якщо (feof (in_stream))
                         break;
                     }
                 }
             }
 
-          if (n_skip == 0)
+          якщо (n_skip == 0)
             break;
         }
 
-      else   /* cannot fstat() file */
+      інакше   /* cannot fstat() file */
         {
           error (0, errno, "%s", quotef (input_filename));
           ok = false;
@@ -1223,10 +1223,10 @@ skip (intmax_t n_skip)
       ok &= open_next_file ();
     }
 
-  if (n_skip != 0)
+  якщо (n_skip != 0)
     error (EXIT_FAILURE, 0, _("cannot skip past end of combined input"));
 
-  return ok;
+  повернути ok;
 }
 
 static void
@@ -1253,23 +1253,23 @@ format_address_std (intmax_t address, char c)
     case 8:
       do
         *--p = '0' + (address & 7);
-      while ((address >>= 3) != 0);
+      поки ((address >>= 3) != 0);
       break;
 
     case 10:
       do
         *--p = '0' + (address % 10);
-      while ((address /= 10) != 0);
+      поки ((address /= 10) != 0);
       break;
 
     case 16:
       do
         *--p = "0123456789abcdef"[address & 15];
-      while ((address >>= 4) != 0);
+      поки ((address >>= 4) != 0);
       break;
     }
 
-  while (pbound < p)
+  поки (pbound < p)
     *--p = '0';
 
   fputs (p, stdout);
@@ -1280,7 +1280,7 @@ format_address_paren (intmax_t address, char c)
 {
   putchar ('(');
   format_address_std (address, ')');
-  if (c)
+  якщо (c)
     putchar (c);
 }
 
@@ -1290,7 +1290,7 @@ format_address_label (intmax_t address, char c)
   format_address_std (address, ' ');
 
   intmax_t addr;
-  if (ckd_add (&addr, address, pseudo_offset))
+  якщо (ckd_add (&addr, address, pseudo_offset))
     error (EXIT_FAILURE, 0, _("pseudo address too large for input"));
 
   format_address_paren (addr, c);
@@ -1313,41 +1313,41 @@ write_block (intmax_t current_offset, idx_t n_bytes,
   static bool first = true;
   static bool prev_pair_equal = false;
 
-  if (abbreviate_duplicate_blocks
+  якщо (abbreviate_duplicate_blocks
       && !first && n_bytes == bytes_per_block
       && memeq (prev_block, curr_block, bytes_per_block))
     {
-      if (prev_pair_equal)
+      якщо (prev_pair_equal)
         {
           /* The two preceding blocks were equal, and the current
              block is the same as the last one, so print nothing.  */
         }
-      else
+      інакше
         {
           printf ("*\n");
           prev_pair_equal = true;
         }
     }
-  else
+  інакше
     {
       prev_pair_equal = false;
-      for (idx_t i = 0; i < n_specs; i++)
+      для (idx_t i = 0; i < n_specs; i++)
         {
-          int datum_width = width_bytes[spec[i].size];
+          ціле datum_width = width_bytes[spec[i].size];
           idx_t fields_per_block = bytes_per_block / datum_width;
           idx_t blank_fields = (bytes_per_block - n_bytes) / datum_width;
-          if (i == 0)
+          якщо (i == 0)
             format_address (current_offset, '\0');
-          else
+          інакше
             print_n_spaces (address_pad_len);
           (*spec[i].print_function) (fields_per_block, blank_fields,
                                      curr_block, spec[i].fmt_string,
                                      spec[i].field_width, spec[i].pad_width);
-          if (spec[i].hexl_mode_trailer)
+          якщо (spec[i].hexl_mode_trailer)
             {
               /* Space-pad out to full line width, then dump the trailer.  */
-              int field_width = spec[i].field_width;
-              for (idx_t f = 0; f < blank_fields; f++)
+              ціле field_width = spec[i].field_width;
+              для (idx_t f = 0; f < blank_fields; f++)
                 print_n_spaces (field_width);
               idx_t pad_width = pad_at (fields_per_block, blank_fields,
                                         spec[i].pad_width);
@@ -1372,19 +1372,19 @@ write_block (intmax_t current_offset, idx_t n_bytes,
    true if successful.  */
 
 static bool
-read_char (int *c)
+read_char (ціле *c)
 {
   bool ok = true;
 
   *c = EOF;
 
-  while (in_stream && (*c = getc (in_stream)) < 0)
+  поки (in_stream && (*c = getc (in_stream)) < 0)
     {
       ok &= check_and_close (errno);
       ok &= open_next_file ();
     }
 
-  return ok;
+  повернути ok;
 }
 
 /* Read N bytes into BLOCK from the concatenation of the input files
@@ -1410,7 +1410,7 @@ read_block (idx_t n, char *block, idx_t *n_bytes_in_buffer)
 
   *n_bytes_in_buffer = 0;
 
-  while (in_stream != NULL)	/* EOF.  */
+  поки (in_stream != NULL)	/* EOF.  */
     {
       idx_t n_needed = n - *n_bytes_in_buffer;
       idx_t n_read = fread (block + *n_bytes_in_buffer,
@@ -1418,7 +1418,7 @@ read_block (idx_t n, char *block, idx_t *n_bytes_in_buffer)
 
       *n_bytes_in_buffer += n_read;
 
-      if (n_read == n_needed)
+      якщо (n_read == n_needed)
         break;
 
       ok &= check_and_close (errno);
@@ -1426,32 +1426,32 @@ read_block (idx_t n, char *block, idx_t *n_bytes_in_buffer)
       ok &= open_next_file ();
     }
 
-  return ok;
+  повернути ok;
 }
 
 /* Return the least common multiple of the sizes associated
    with the format specs.  */
 
 ATTRIBUTE_PURE
-static int
+static ціле
 get_lcm (void)
 {
-  int l_c_m = 1;
+  ціле l_c_m = 1;
 
-  for (idx_t i = 0; i < n_specs; i++)
+  для (idx_t i = 0; i < n_specs; i++)
     l_c_m = lcm (l_c_m, width_bytes[spec[i].size]);
-  return l_c_m;
+  повернути l_c_m;
 }
 
 /* Act like xstrtoimax (NPTR, NULL, BASE, VAL, VALID_SUFFIXES),
    except reject negative values, and *VAL may be set if
    LONGINT_INVALID is returned.  */
 static strtol_error
-xstr2nonneg (char const *restrict nptr, int base, intmax_t *val,
+xstr2nonneg (char const *restrict nptr, ціле base, intmax_t *val,
              char const *restrict valid_suffixes)
 {
   strtol_error s_err = xstrtoimax (nptr, NULL, base, val, valid_suffixes);
-  return s_err != LONGINT_INVALID && *val < 0 ? LONGINT_INVALID : s_err;
+  повернути s_err != LONGINT_INVALID && *val < 0 ? LONGINT_INVALID : s_err;
 }
 
 /* If STR is a valid traditional offset specification with an optional
@@ -1466,19 +1466,19 @@ parse_old_offset (char *str, intmax_t *offset)
   /* Skip over any leading '+'.  */
   char *s = str + (str[0] == '+');
 
-  if (! c_isdigit (s[0]))
-    return false;
+  якщо (! c_isdigit (s[0]))
+    повернути false;
 
   /* Determine the radix for S.  If there is a '.', followed first by
      optional 'b' or (undocumented) 'B' and then by end of string,
      it's decimal, otherwise, if the string begins with '0X' or '0x',
      it's hexadecimal, else octal.  */
   char *dot = strchr (s, '.');
-  if (dot && dot[(dot[1] == 'b' || dot[1] == 'B') + 1])
+  якщо (dot && dot[(dot[1] == 'b' || dot[1] == 'B') + 1])
     dot = NULL;
-  int radix = dot ? 10 : s[0] == '0' && (s[1] == 'x' || s[1] == 'X') ? 16 : 8;
+  ціле radix = dot ? 10 : s[0] == '0' && (s[1] == 'x' || s[1] == 'X') ? 16 : 8;
 
-  if (dot)
+  якщо (dot)
     {
       /* Temporarily remove the '.' from the decimal string.  */
       dot[0] = dot[1];
@@ -1487,16 +1487,16 @@ parse_old_offset (char *str, intmax_t *offset)
 
   enum strtol_error s_err = xstr2nonneg (s, radix, offset, "bB");
 
-  if (dot)
+  якщо (dot)
     {
       /* Restore the decimal string's original value.  */
       dot[1] = dot[0];
       dot[0] = '.';
     }
 
-  if (s_err == LONGINT_OVERFLOW)
+  якщо (s_err == LONGINT_OVERFLOW)
     error (EXIT_FAILURE, ERANGE, "%s", quotef (str));
-  return s_err == LONGINT_OK;
+  повернути s_err == LONGINT_OK;
 }
 
 /* Read a chunk of size BYTES_PER_BLOCK from the input files, write the
@@ -1528,28 +1528,28 @@ dump (void)
     {
       intmax_t needed_bound
         = end_offset < 0 ? INTMAX_MAX : end_offset - current_offset;
-      if (needed_bound <= 0)
+      якщо (needed_bound <= 0)
         {
           n_bytes_read = 0;
           break;
         }
       idx_t n_needed = MIN (bytes_per_block, needed_bound);
       ok &= read_block (n_needed, block[idx], &n_bytes_read);
-      if (n_bytes_read < bytes_per_block)
+      якщо (n_bytes_read < bytes_per_block)
         break;
       affirm (n_bytes_read == bytes_per_block);
       write_block (current_offset, n_bytes_read,
                    block[!idx], block[idx]);
-      if (ferror (stdout))
+      якщо (ferror (stdout))
         ok = false;
       current_offset += n_bytes_read;
       idx = !idx;
     }
-  while (ok);
+  поки (ok);
 
-  if (n_bytes_read > 0)
+  якщо (n_bytes_read > 0)
     {
-      int l_c_m = get_lcm ();
+      ціле l_c_m = get_lcm ();
 
       /* Ensure zero-byte padding up to the smallest multiple of l_c_m that
          is at least as large as n_bytes_read.  */
@@ -1561,15 +1561,15 @@ dump (void)
       current_offset += n_bytes_read;
     }
 
-  if (ok || current_offset)
+  якщо (ok || current_offset)
     format_address (current_offset, '\n');
 
-  if (0 <= end_offset && end_offset <= current_offset)
+  якщо (0 <= end_offset && end_offset <= current_offset)
     ok &= check_and_close (0);
 
   free (block[0]);
 
-  return ok;
+  повернути ok;
 }
 
 /* STRINGS mode.  Find each "string constant" in the input.
@@ -1586,38 +1586,38 @@ dump_strings (void)
   intmax_t address = n_bytes_to_skip;
   bool ok = true;
 
-  while (true)
+  поки (true)
     {
       idx_t i = 0;
-      int c = 1;  /* Init to 1 so can distinguish if NUL read.  */
+      ціле c = 1;  /* Init to 1 so can distinguish if NUL read.  */
 
-      if (0 <= end_offset
+      якщо (0 <= end_offset
           && (end_offset < string_min || end_offset - string_min < address))
         break;
 
       /* Store consecutive printable characters to BUF.  */
-      while (! (0 <= end_offset && end_offset <= address))
+      поки (! (0 <= end_offset && end_offset <= address))
         {
-          if (i == bufsize - 1)
+          якщо (i == bufsize - 1)
             buf = xpalloc (buf, &bufsize, 1, -1, sizeof *buf);
           ok &= read_char (&c);
-          if (c < 0)
+          якщо (c < 0)
             {
               free (buf);
-              return ok;
+              повернути ok;
             }
           address++;
           buf[i++] = c;
-          if (c == '\0')
+          якщо (c == '\0')
             break;		/* Print this string.  */
-          if (! isprint (c))
+          якщо (! isprint (c))
             {
               c = -1;		/* Give up on this string.  */
               break;
             }
         }
 
-      if (c < 0 || i - !c < string_min)
+      якщо (c < 0 || i - !c < string_min)
         continue;
 
       buf[i] = 0;
@@ -1626,7 +1626,7 @@ dump_strings (void)
 
       format_address (address - i, ' ');
 
-      for (i = 0; (c = buf[i]); i++)
+      для (i = 0; (c = buf[i]); i++)
         {
           switch (c)
             {
@@ -1671,14 +1671,14 @@ dump_strings (void)
   free (buf);
 
   ok &= check_and_close (0);
-  return ok;
+  повернути ok;
 }
 
-int
-main (int argc, char **argv)
+ціле
+main (ціле argc, char **argv)
 {
-  int n_files;
-  int l_c_m;
+  ціле n_files;
+  ціле l_c_m;
   idx_t desired_width = 0;
   bool modern = false;
   bool ok = true;
@@ -1701,13 +1701,13 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while (true)
+  поки (true)
     {
       intmax_t tmp;
       enum strtol_error s_err;
-      int oi = -1;
-      int c = getopt_long (argc, argv, short_options, long_options, &oi);
-      if (c == -1)
+      ціле oi = -1;
+      ціле c = getopt_long (argc, argv, short_options, long_options, &oi);
+      якщо (c == -1)
         break;
 
       switch (c)
@@ -1747,30 +1747,30 @@ main (int argc, char **argv)
         case 'j':
           modern = true;
           s_err = xstr2nonneg (optarg, 0, &n_bytes_to_skip, multipliers);
-          if (s_err != LONGINT_OK)
+          якщо (s_err != LONGINT_OK)
             xstrtol_fatal (s_err, oi, c, long_options, optarg);
           break;
 
         case 'N':
           modern = true;
           s_err = xstr2nonneg (optarg, 0, &max_bytes_to_format, multipliers);
-          if (s_err != LONGINT_OK)
+          якщо (s_err != LONGINT_OK)
             xstrtol_fatal (s_err, oi, c, long_options, optarg);
           break;
 
         case 'S':
           modern = true;
-          if (optarg == NULL)
+          якщо (optarg == NULL)
             string_min = 3;
-          else
+          інакше
             {
               s_err = xstr2nonneg (optarg, 0, &tmp, multipliers);
               /* The minimum string length + 1 must fit in idx_t,
                  since we may allocate a buffer of this size + 1.  */
               idx_t i;
-              if (s_err == LONGINT_OK && ckd_add (&i, tmp, 1))
+              якщо (s_err == LONGINT_OK && ckd_add (&i, tmp, 1))
                 s_err = LONGINT_OVERFLOW;
-              if (s_err != LONGINT_OK)
+              якщо (s_err != LONGINT_OK)
                 xstrtol_fatal (s_err, oi, c, long_options, optarg);
               string_min = tmp;
             }
@@ -1839,22 +1839,22 @@ main (int argc, char **argv)
 
         case 'w':
           modern = true;
-          if (optarg == NULL)
+          якщо (optarg == NULL)
             {
               desired_width = 32;
             }
-          else
+          інакше
             {
               intmax_t w_tmp;
               s_err = xstr2nonneg (optarg, 10, &w_tmp, "");
-              if (s_err == LONGINT_OK)
+              якщо (s_err == LONGINT_OK)
                 {
-                  if (ckd_add (&desired_width, w_tmp, 0))
+                  якщо (ckd_add (&desired_width, w_tmp, 0))
                     s_err = LONGINT_OVERFLOW;
-                  else if (desired_width == 0)
+                  інакше якщо (desired_width == 0)
                     s_err = LONGINT_INVALID;
                 }
-              if (s_err != LONGINT_OK)
+              якщо (s_err != LONGINT_OK)
                 xstrtol_fatal (s_err, oi, c, long_options, optarg);
             }
           break;
@@ -1869,10 +1869,10 @@ main (int argc, char **argv)
         }
     }
 
-  if (!ok)
-    return EXIT_FAILURE;
+  якщо (!ok)
+    повернути EXIT_FAILURE;
 
-  if (flag_dump_strings && n_specs > 0)
+  якщо (flag_dump_strings && n_specs > 0)
     error (EXIT_FAILURE, 0,
            _("no type may be specified when dumping strings"));
 
@@ -1890,7 +1890,7 @@ main (int argc, char **argv)
         od [file] [[+]offset[.][b]]
   */
 
-  if (!modern || traditional)
+  якщо (!modern || traditional)
     {
       intmax_t o1;
       intmax_t o2;
@@ -1898,7 +1898,7 @@ main (int argc, char **argv)
       switch (n_files)
         {
         case 1:
-          if ((traditional || argv[optind][0] == '+')
+          якщо ((traditional || argv[optind][0] == '+')
               && parse_old_offset (argv[optind], &o1))
             {
               n_bytes_to_skip = o1;
@@ -1908,11 +1908,11 @@ main (int argc, char **argv)
           break;
 
         case 2:
-          if ((traditional || argv[optind + 1][0] == '+'
+          якщо ((traditional || argv[optind + 1][0] == '+'
                || c_isdigit (argv[optind + 1][0]))
               && parse_old_offset (argv[optind + 1], &o2))
             {
-              if (traditional && parse_old_offset (argv[optind], &o1))
+              якщо (traditional && parse_old_offset (argv[optind], &o1))
                 {
                   n_bytes_to_skip = o1;
                   flag_pseudo_start = true;
@@ -1920,7 +1920,7 @@ main (int argc, char **argv)
                   argv += 2;
                   n_files -= 2;
                 }
-              else
+              інакше
                 {
                   n_bytes_to_skip = o2;
                   --n_files;
@@ -1931,7 +1931,7 @@ main (int argc, char **argv)
           break;
 
         case 3:
-          if (traditional
+          якщо (traditional
               && parse_old_offset (argv[optind + 1], &o1)
               && parse_old_offset (argv[optind + 2], &o2))
             {
@@ -1945,7 +1945,7 @@ main (int argc, char **argv)
           break;
         }
 
-      if (traditional && 1 < n_files)
+      якщо (traditional && 1 < n_files)
         {
           error (0, 0, _("extra operand %s"), quote (argv[optind + 1]));
           error (0, 0, "%s",
@@ -1954,33 +1954,33 @@ main (int argc, char **argv)
         }
     }
 
-  if (flag_pseudo_start)
+  якщо (flag_pseudo_start)
     {
-      if (format_address == format_address_none)
+      якщо (format_address == format_address_none)
         {
           address_base = 8;
           address_pad_len = 7;
           format_address = format_address_paren;
         }
-      else
+      інакше
         format_address = format_address_label;
     }
 
-  if (0 <= max_bytes_to_format
+  якщо (0 <= max_bytes_to_format
       && ckd_add (&end_offset, n_bytes_to_skip, max_bytes_to_format))
     error (EXIT_FAILURE, 0, _("skip-bytes + read-bytes is too large"));
 
-  if (n_specs == 0)
+  якщо (n_specs == 0)
     decode_format_string ("oS");
 
-  if (n_files > 0)
+  якщо (n_files > 0)
     {
       /* Set the global pointer FILE_LIST so that it
          references the first file-argument on the command-line.  */
 
       file_list = (char const *const *) &argv[optind];
     }
-  else
+  інакше
     {
       /* No files were listed on the command line.
          Set the global pointer FILE_LIST so that it
@@ -1991,12 +1991,12 @@ main (int argc, char **argv)
 
   /* open the first input file */
   ok = open_next_file ();
-  if (in_stream == NULL)
+  якщо (in_stream == NULL)
     goto cleanup;
 
   /* skip over any unwanted header bytes */
   ok &= skip (n_bytes_to_skip);
-  if (in_stream == NULL)
+  якщо (in_stream == NULL)
     goto cleanup;
 
   pseudo_offset = (flag_pseudo_start ? pseudo_start - n_bytes_to_skip : 0);
@@ -2004,37 +2004,37 @@ main (int argc, char **argv)
   /* Compute output block length.  */
   l_c_m = get_lcm ();
 
-  if (desired_width != 0)
+  якщо (desired_width != 0)
     {
-      if (desired_width % l_c_m == 0)
+      якщо (desired_width % l_c_m == 0)
         bytes_per_block = desired_width;
-      else
+      інакше
         {
           error (0, 0, _("warning: invalid width %td; using %d instead"),
                  desired_width, l_c_m);
           bytes_per_block = l_c_m;
         }
     }
-  else
+  інакше
     {
-      if (l_c_m < DEFAULT_BYTES_PER_BLOCK)
+      якщо (l_c_m < DEFAULT_BYTES_PER_BLOCK)
         bytes_per_block = (DEFAULT_BYTES_PER_BLOCK
                            - DEFAULT_BYTES_PER_BLOCK % l_c_m);
-      else
+      інакше
         bytes_per_block = l_c_m;
     }
 
   /* Compute padding necessary to align output block.  */
-  for (idx_t i = 0; i < n_specs; i++)
+  для (idx_t i = 0; i < n_specs; i++)
     {
       idx_t fields_per_block = bytes_per_block / width_bytes[spec[i].size];
-      if (pad_at_overflow (fields_per_block))
+      якщо (pad_at_overflow (fields_per_block))
         error (EXIT_FAILURE, 0, _("%td is too large"), desired_width);
       idx_t block_width = (spec[i].field_width + 1) * fields_per_block;
-      if (width_per_block < block_width)
+      якщо (width_per_block < block_width)
         width_per_block = block_width;
     }
-  for (idx_t i = 0; i < n_specs; i++)
+  для (idx_t i = 0; i < n_specs; i++)
     {
       idx_t fields_per_block = bytes_per_block / width_bytes[spec[i].size];
       idx_t block_width = spec[i].field_width * fields_per_block;
@@ -2043,7 +2043,7 @@ main (int argc, char **argv)
 
 #ifdef DEBUG
   printf ("lcm=%d, width_per_block=%td\n", l_c_m, width_per_block);
-  for (idx_t i = 0; i < n_specs; i++)
+  для (idx_t i = 0; i < n_specs; i++)
     {
       idx_t fields_per_block = bytes_per_block / width_bytes[spec[i].size];
       affirm (bytes_per_block % width_bytes[spec[i].size] == 0);
@@ -2058,8 +2058,8 @@ main (int argc, char **argv)
 
 cleanup:
 
-  if (have_read_stdin && fclose (stdin) < 0)
+  якщо (have_read_stdin && fclose (stdin) < 0)
     error (EXIT_FAILURE, errno, _("standard input"));
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  повернути ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

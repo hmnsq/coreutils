@@ -24,28 +24,28 @@
 
 /* Read FD and return a summary.  */
 extern struct wc_lines
-wc_lines_avx2 (int fd)
+wc_lines_avx2 (ціле fd)
 {
   intmax_t lines = 0;
   intmax_t bytes = 0;
 
   __m256i endlines = _mm256_set1_epi8 ('\n');
 
-  while (true)
+  поки (true)
     {
        __m256i avx_buf[IO_BUFSIZE / sizeof (__m256i)];
       ssize_t bytes_read = read (fd, avx_buf, sizeof avx_buf);
-      if (bytes_read <= 0)
-        return (struct wc_lines) { bytes_read == 0 ? 0 : errno, lines, bytes };
+      якщо (bytes_read <= 0)
+        повернути (struct wc_lines) { bytes_read == 0 ? 0 : errno, lines, bytes };
 
       bytes += bytes_read;
       __m256i *datap = avx_buf;
 
-      while (bytes_read >= 32)
+      поки (bytes_read >= 32)
         {
            __m256i to_match = _mm256_load_si256 (datap);
            __m256i matches = _mm256_cmpeq_epi8 (to_match, endlines);
-           int mask = _mm256_movemask_epi8 (matches);
+           ціле mask = _mm256_movemask_epi8 (matches);
            lines += __builtin_popcount (mask);
            datap += 1;
            bytes_read -= 32;
@@ -53,7 +53,7 @@ wc_lines_avx2 (int fd)
 
       /* Finish up any left over bytes */
       char *end = (char *) datap + bytes_read;
-      for (char *p = (char *) datap; p < end; p++)
+      для (char *p = (char *) datap; p < end; p++)
         lines += *p == '\n';
     }
 }

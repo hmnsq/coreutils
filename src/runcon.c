@@ -67,11 +67,11 @@ static struct option const long_options[] =
 };
 
 void
-usage (int status)
+usage (ціле status)
 {
-  if (status != EXIT_SUCCESS)
+  якщо (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  інакше
     {
       printf (_("\
 Usage: %s [CONTEXT COMMAND [ARG]...]\n\
@@ -91,7 +91,7 @@ With neither CONTEXT nor COMMAND, print the current security context.\n\
   -c, --compute      compute process transition context before modifying\n\
 "));
       oputs (_("\
-  -t, --type=TYPE    type (for same role as parent)\n\
+  -t, --type=TYPE    type (для same role as parent)\n\
 "));
       oputs (_("\
   -u, --user=USER    user identity\n\
@@ -110,8 +110,8 @@ With neither CONTEXT nor COMMAND, print the current security context.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+ціле
+main (ціле argc, char **argv)
 {
   char *role = NULL;
   char *range = NULL;
@@ -134,32 +134,32 @@ main (int argc, char **argv)
   initialize_exit_failure (EXIT_CANCELED);
   atexit (close_stdout);
 
-  while (true)
+  поки (true)
     {
-      int option_index = 0;
-      int c = getopt_long (argc, argv, "+r:t:u:l:c", long_options,
+      ціле option_index = 0;
+      ціле c = getopt_long (argc, argv, "+r:t:u:l:c", long_options,
                            &option_index);
-      if (c == -1)
+      якщо (c == -1)
         break;
       switch (c)
         {
         case 'r':
-          if (role)
+          якщо (role)
             error (EXIT_CANCELED, 0, _("multiple roles"));
           role = optarg;
           break;
         case 't':
-          if (type)
+          якщо (type)
             error (EXIT_CANCELED, 0, _("multiple types"));
           type = optarg;
           break;
         case 'u':
-          if (user)
+          якщо (user)
             error (EXIT_CANCELED, 0, _("multiple users"));
           user = optarg;
           break;
         case 'l':
-          if (range)
+          якщо (range)
             error (EXIT_CANCELED, 0, _("multiple levelranges"));
           range = optarg;
           break;
@@ -175,18 +175,18 @@ main (int argc, char **argv)
         }
     }
 
-  if (argc - optind == 0)
+  якщо (argc - optind == 0)
     {
-      if (getcon (&cur_context) < 0)
+      якщо (getcon (&cur_context) < 0)
         error (EXIT_CANCELED, errno, _("failed to get current context"));
       fputs (cur_context, stdout);
       fputc ('\n', stdout);
-      return EXIT_SUCCESS;
+      повернути EXIT_SUCCESS;
     }
 
-  if (!(user || role || type || range || compute_trans))
+  якщо (!(user || role || type || range || compute_trans))
     {
-      if (optind >= argc)
+      якщо (optind >= argc)
         {
           error (0, 0, _("you must specify -c, -t, -u, -l, -r, or context"));
           usage (EXIT_CANCELED);
@@ -194,38 +194,38 @@ main (int argc, char **argv)
       context = argv[optind++];
     }
 
-  if (optind >= argc)
+  якщо (optind >= argc)
     {
       error (0, 0, _("no command specified"));
       usage (EXIT_CANCELED);
     }
 
-  if (is_selinux_enabled () != 1)
+  якщо (is_selinux_enabled () != 1)
     error (EXIT_CANCELED, 0, _("%s may be used only on a SELinux kernel"),
            program_name);
 
-  if (context)
+  якщо (context)
     {
       con = context_new (context);
-      if (!con)
+      якщо (!con)
         error (EXIT_CANCELED, errno, _("failed to create security context: %s"),
                quote (context));
     }
-  else
+  інакше
     {
-      if (getcon (&cur_context) < 0)
+      якщо (getcon (&cur_context) < 0)
         error (EXIT_CANCELED, errno, _("failed to get current context"));
 
       /* We will generate context based on process transition */
-      if (compute_trans)
+      якщо (compute_trans)
         {
           /* Get context of file to be executed */
-          if (getfilecon (argv[optind], &file_context) == -1)
+          якщо (getfilecon (argv[optind], &file_context) == -1)
             error (EXIT_CANCELED, errno,
                    _("failed to get security context of %s"),
                    quoteaf (argv[optind]));
           /* compute result of process transition */
-          if (security_compute_create (cur_context, file_context,
+          якщо (security_compute_create (cur_context, file_context,
                                        string_to_security_class ("process"),
                                        &new_context) != 0)
             error (EXIT_CANCELED, errno, _("failed to compute a new context"));
@@ -238,36 +238,36 @@ main (int argc, char **argv)
         }
 
       con = context_new (cur_context);
-      if (!con)
+      якщо (!con)
         error (EXIT_CANCELED, errno, _("failed to create security context: %s"),
                quote (cur_context));
-      if (user && context_user_set (con, user))
+      якщо (user && context_user_set (con, user))
         error (EXIT_CANCELED, errno, _("failed to set new user: %s"),
                quote (user));
-      if (type && context_type_set (con, type))
+      якщо (type && context_type_set (con, type))
         error (EXIT_CANCELED, errno, _("failed to set new type: %s"),
                quote (type));
-      if (range && context_range_set (con, range))
+      якщо (range && context_range_set (con, range))
         error (EXIT_CANCELED, errno, _("failed to set new range: %s"),
                quote (range));
-      if (role && context_role_set (con, role))
+      якщо (role && context_role_set (con, role))
         error (EXIT_CANCELED, errno, _("failed to set new role: %s"),
                quote (role));
     }
 
-  if (security_check_context (context_str (con)) < 0)
+  якщо (security_check_context (context_str (con)) < 0)
     error (EXIT_CANCELED, errno, _("invalid context: %s"),
            quote (context_str (con)));
 
-  if (setexeccon (context_str (con)) != 0)
+  якщо (setexeccon (context_str (con)) != 0)
     error (EXIT_CANCELED, errno, _("unable to set security context %s"),
            quote (context_str (con)));
-  if (cur_context != NULL)
+  якщо (cur_context != NULL)
     freecon (cur_context);
 
   (compute_trans ? execv : execvp) (argv[optind], argv + optind);
 
-  int exit_status = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
+  ціле exit_status = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
   error (0, errno, "%s", quote (argv[optind]));
-  return exit_status;
+  повернути exit_status;
 }

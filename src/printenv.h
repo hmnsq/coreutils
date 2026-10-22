@@ -20,9 +20,9 @@
 static inline void
 print_envvar (char const *entry, char terminator, bool quoted)
 {
-  if (! quoted)
+  якщо (! quoted)
     fputs (entry, stdout);
-  else
+  інакше
     {
       idx_t const entry_len = strlen (entry);
       char const *equal = memchr (entry, '=', entry_len);
@@ -32,13 +32,13 @@ print_envvar (char const *entry, char terminator, bool quoted)
       idx_t const var_len = equal ? equal - entry : entry_len;
       fputs (quoteN_mem (entry, var_len), stdout);
 
-      if (equal)
+      якщо (equal)
         {
           putchar ('=');
           char const *val = equal + 1;
           idx_t const val_len = entry_len - (val - entry);
           /* Prefer "VAR=" over "VAR=''".  */
-          if (0 < val_len)
+          якщо (0 < val_len)
             fputs (quoteN_mem (val, val_len), stdout);
         }
     }

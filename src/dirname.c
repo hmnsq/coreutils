@@ -43,11 +43,11 @@ static struct option const longopts[] =
 };
 
 void
-usage (int status)
+usage (ціле status)
 {
-  if (status != EXIT_SUCCESS)
+  якщо (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  інакше
     {
       printf (_("\
 Usage: %s [OPTION] NAME...\n\
@@ -55,7 +55,7 @@ Usage: %s [OPTION] NAME...\n\
               program_name);
       fputs (_("\
 Output each NAME with its last non-slash component and trailing slashes\n\
-removed; if NAME contains no /'s, output '.' (meaning the current directory).\n\
+removed; якщо NAME contains no /'s, output '.' (meaning the current directory).\n\
 \n\
 "), stdout);
       oputs (_("\
@@ -77,8 +77,8 @@ Examples:\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+ціле
+main (ціле argc, char **argv)
 {
   bool use_nuls = false;
 
@@ -90,11 +90,11 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while (true)
+  поки (true)
     {
-      int c = getopt_long (argc, argv, "z", longopts, NULL);
+      ціле c = getopt_long (argc, argv, "z", longopts, NULL);
 
-      if (c == -1)
+      якщо (c == -1)
         break;
 
       switch (c)
@@ -111,37 +111,37 @@ main (int argc, char **argv)
         }
     }
 
-  if (argc < optind + 1)
+  якщо (argc < optind + 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
 
-  if (!use_nuls && isatty (STDOUT_FILENO))
+  якщо (!use_nuls && isatty (STDOUT_FILENO))
     {
-      int qs = getenv_quoting_style ();
-      if (qs < 0)
+      ціле qs = getenv_quoting_style ();
+      якщо (qs < 0)
         qs = shell_escape_quoting_style;
-      if (qs != literal_quoting_style)
+      якщо (qs != literal_quoting_style)
         {
           set_quoting_style (NULL, qs);
           quote_output = true;
         }
     }
 
-  for (; optind < argc; optind++)
+  для (; optind < argc; optind++)
     {
       char const *result = argv[optind];
       idx_t len = dir_len (result);
 
-      if (! len)
+      якщо (! len)
         {
           static char const dot = '.';
           result = &dot;
           len = 1;
         }
-      if (quote_output)
+      якщо (quote_output)
         {
           result = quoteN_mem (result, len);
           len = strlen (result);
@@ -150,5 +150,5 @@ main (int argc, char **argv)
       putchar (use_nuls ? '\0' :'\n');
     }
 
-  return EXIT_SUCCESS;
+  повернути EXIT_SUCCESS;
 }

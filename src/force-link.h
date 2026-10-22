@@ -1,4 +1,4 @@
-extern int force_linkat (int, char const *, int, char const *, int, bool, int)
+extern ціле force_linkat (ціле, char const *, ціле, char const *, ціле, bool, ціле)
   _GL_ATTRIBUTE_NONNULL ();
-extern int force_symlinkat (char const *, int, char const *, bool, int)
+extern ціле force_symlinkat (char const *, ціле, char const *, bool, ціле)
   _GL_ATTRIBUTE_NONNULL ();

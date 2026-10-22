@@ -47,11 +47,11 @@ enum { RESERVOIR_MIN_INPUT = 8192 * 1024 };
 
 
 void
-usage (int status)
+usage (ціле status)
 {
-  if (status != EXIT_SUCCESS)
+  якщо (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  інакше
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE]\n\
@@ -117,17 +117,17 @@ static struct option const long_opts[] =
 };
 
 static void
-input_from_argv (char **operand, int n_operands, char eolbyte)
+input_from_argv (char **operand, ціле n_operands, char eolbyte)
 {
   char *p;
   size_t size = n_operands;
-  int i;
+  ціле i;
 
-  for (i = 0; i < n_operands; i++)
+  для (i = 0; i < n_operands; i++)
     size += strlen (operand[i]);
   p = xmalloc (size);
 
-  for (i = 0; i < n_operands; i++)
+  для (i = 0; i < n_operands; i++)
     {
       char *p1 = stpcpy (p, operand[i]);
       operand[i] = p;
@@ -145,7 +145,7 @@ static char *
 next_line (char *line, char eolbyte)
 {
   char *p = rawmemchr (line, eolbyte);
-  return p + 1;
+  повернути p + 1;
 }
 
 /* Return the size of the input if possible or OFF_T_MAX if not.  */
@@ -156,20 +156,20 @@ input_size (void)
   off_t file_size;
 
   struct stat stat_buf;
-  if (fstat (STDIN_FILENO, &stat_buf) != 0)
-    return OFF_T_MAX;
-  if (usable_st_size (&stat_buf))
+  якщо (fstat (STDIN_FILENO, &stat_buf) != 0)
+    повернути OFF_T_MAX;
+  якщо (usable_st_size (&stat_buf))
     file_size = stat_buf.st_size;
-  else
-    return OFF_T_MAX;
+  інакше
+    повернути OFF_T_MAX;
 
   off_t input_offset = lseek (STDIN_FILENO, 0, SEEK_CUR);
-  if (input_offset < 0)
-    return OFF_T_MAX;
+  якщо (input_offset < 0)
+    повернути OFF_T_MAX;
 
   file_size -= input_offset;
 
-  return file_size;
+  повернути file_size;
 }
 
 /* Read all lines and store up to K permuted lines in *OUT_RSRV.
@@ -186,10 +186,10 @@ read_input_reservoir_sampling (FILE *in, char eolbyte, idx_t k,
   struct linebuffer *rsrv = NULL;
 
   /* Fill the first K lines, directly into the reservoir.  */
-  for (n_lines = 0; n_lines < k; n_lines++)
+  для (n_lines = 0; n_lines < k; n_lines++)
     {
       /* Enlarge reservoir if needed.  */
-      if (n_lines == n_alloc_lines)
+      якщо (n_lines == n_alloc_lines)
         {
           idx_t old = n_alloc_lines;
           rsrv = xpalloc (rsrv, &n_alloc_lines, 1, k, sizeof *rsrv);
@@ -197,12 +197,12 @@ read_input_reservoir_sampling (FILE *in, char eolbyte, idx_t k,
         }
 
       line = readlinebuffer_delim (&rsrv[n_lines], in, eolbyte);
-      if (!line)
+      якщо (!line)
         break;
     }
 
   /* last line wasn't null - so there may be more lines to read.  */
-  if (line != NULL)
+  якщо (line != NULL)
     {
       struct linebuffer dummy;
       initbuffer (&dummy);  /* space for lines not put in reservoir.  */
@@ -221,34 +221,34 @@ read_input_reservoir_sampling (FILE *in, char eolbyte, idx_t k,
           randint j = randint_choose (s, n_lines + 1);  /* 0 .. n_lines.  */
           line = (j < k) ? (&rsrv[j]) : (&dummy);
         }
-      while (readlinebuffer_delim (line, in, eolbyte) != NULL && n_lines++);
+      поки (readlinebuffer_delim (line, in, eolbyte) != NULL && n_lines++);
 
-      if (! n_lines)
+      якщо (! n_lines)
         error (EXIT_FAILURE, EOVERFLOW, _("too many input lines"));
 
       freebuffer (&dummy);
     }
 
   /* no more input lines, or an input error.  */
-  if (ferror (in))
+  якщо (ferror (in))
     error (EXIT_FAILURE, errno, _("read error"));
 
   *out_rsrv = rsrv;
-  return MIN (k, n_lines);
+  повернути MIN (k, n_lines);
 }
 
-static int
+static ціле
 write_permuted_output_reservoir (size_t n_lines, struct linebuffer *lines,
                                  size_t const *permutation)
 {
-  for (size_t i = 0; i < n_lines; i++)
+  для (size_t i = 0; i < n_lines; i++)
     {
       const struct linebuffer *p = &lines[permutation[i]];
-      if (fwrite (p->buffer, sizeof (char), p->length, stdout) != p->length)
-        return -1;
+      якщо (fwrite (p->buffer, sizeof (char), p->length, stdout) != p->length)
+        повернути -1;
     }
 
-  return 0;
+  повернути 0;
 }
 
 /* Read data from file IN.  Input lines are delimited by EOLBYTE;
@@ -276,116 +276,116 @@ read_input (FILE *in, char eolbyte, char ***pline)
      or if none left, stdin.  Doing that would give better performance by
      avoiding the reservoir CPU overhead when reading < RESERVOIR_MIN_INPUT
      from a pipe, and allow us to dispense with the input_size() function.  */
-  if (!(buf = fread_file (in, 0, &used)))
+  якщо (!(buf = fread_file (in, 0, &used)))
     error (EXIT_FAILURE, errno, _("read error"));
 
-  if (used && buf[used - 1] != eolbyte)
+  якщо (used && buf[used - 1] != eolbyte)
     buf[used++] = eolbyte;
 
   lim = buf + used;
 
   n_lines = 0;
-  for (p = buf; p < lim; p = next_line (p, eolbyte))
+  для (p = buf; p < lim; p = next_line (p, eolbyte))
     n_lines++;
 
   *pline = line = xnmalloc (n_lines + 1, sizeof *line);
 
   line[0] = p = buf;
-  for (size_t i = 1; i <= n_lines; i++)
+  для (size_t i = 1; i <= n_lines; i++)
     line[i] = p = next_line (p, eolbyte);
 
-  return n_lines;
+  повернути n_lines;
 }
 
 /* Output N_LINES lines to stdout from LINE array,
    chosen by the indices in PERMUTATION.
    PERMUTATION and LINE must have at least N_LINES elements.
    Strings in LINE must include the line-terminator character.  */
-static int
+static ціле
 write_permuted_lines (size_t n_lines, char *const *line,
                       size_t const *permutation)
 {
-  for (size_t i = 0; i < n_lines; i++)
+  для (size_t i = 0; i < n_lines; i++)
     {
       char *const *p = line + permutation[i];
       size_t len = p[1] - p[0];
-      if (fwrite (p[0], sizeof *p[0], len, stdout) != len)
-        return -1;
+      якщо (fwrite (p[0], sizeof *p[0], len, stdout) != len)
+        повернути -1;
     }
 
-  return 0;
+  повернути 0;
 }
 
 /* Print NUMBER followed by EOLBYTE to standard output.
    Return false on failure, true on success.  */
 static bool
-print_number (unsigned long int number, char eolbyte)
+print_number (unsigned long ціле number, char eolbyte)
 {
-  char buf[INT_BUFSIZE_BOUND (unsigned long int)];
-  char *p = buf + INT_STRLEN_BOUND (unsigned long int);
+  char buf[INT_BUFSIZE_BOUND (unsigned long ціле)];
+  char *p = buf + INT_STRLEN_BOUND (unsigned long ціле);
   *p = eolbyte;
   do
     *--p = '0' + number % 10;
-  while ((number /= 10) != 0);
+  поки ((number /= 10) != 0);
   idx_t len = buf + sizeof buf - p;
-  return fwrite (p, 1, len, stdout) == len;
+  повернути fwrite (p, 1, len, stdout) == len;
 }
 
 /* Output N_LINES of numbers to stdout, from PERMUTATION array.
    PERMUTATION must have at least N_LINES elements.  */
-static int
+static ціле
 write_permuted_numbers (size_t n_lines, size_t lo_input,
                         size_t const *permutation, char eolbyte)
 {
-  for (size_t i = 0; i < n_lines; i++)
+  для (size_t i = 0; i < n_lines; i++)
     {
-      unsigned long int n = lo_input + permutation[i];
-      if (! print_number (n, eolbyte))
-        return -1;
+      unsigned long ціле n = lo_input + permutation[i];
+      якщо (! print_number (n, eolbyte))
+        повернути -1;
     }
 
-  return 0;
+  повернути 0;
 }
 
 /* Output COUNT numbers to stdout, chosen randomly from range
    LO_INPUT through HI_INPUT.  */
-static int
+static ціле
 write_random_numbers (struct randint_source *s, size_t count,
                       size_t lo_input, size_t hi_input, char eolbyte)
 {
   const randint range = hi_input - lo_input + 1;
 
-  for (size_t i = 0; i < count; i++)
+  для (size_t i = 0; i < count; i++)
     {
-      unsigned long int j = lo_input + randint_choose (s, range);
-      if (! print_number (j, eolbyte))
-        return -1;
+      unsigned long ціле j = lo_input + randint_choose (s, range);
+      якщо (! print_number (j, eolbyte))
+        повернути -1;
     }
 
-  return 0;
+  повернути 0;
 }
 
 /* Output COUNT lines to stdout from LINES array.
    LINES must have at least N_LINES elements in it.
    Strings in LINES_ must include the line-terminator character.  */
-static int
+static ціле
 write_random_lines (struct randint_source *s, size_t count,
                     char *const *lines, size_t n_lines)
 {
-  for (size_t i = 0; i < count; i++)
+  для (size_t i = 0; i < count; i++)
     {
       const randint j = randint_choose (s, n_lines);
       char *const *p = lines + j;
       size_t len = p[1] - p[0];
-      if (fwrite (p[0], sizeof *p[0], len, stdout) != len)
-        return -1;
+      якщо (fwrite (p[0], sizeof *p[0], len, stdout) != len)
+        повернути -1;
     }
 
-  return 0;
+  повернути 0;
 }
 
-int
-main (int argc, char **argv)
+ціле
+main (ціле argc, char **argv)
 {
   bool echo = false;
   bool input_range = false;
@@ -399,15 +399,15 @@ main (int argc, char **argv)
   bool use_reservoir_sampling = false;
   bool repeat = false;
 
-  int optc;
-  int n_operands;
+  ціле optc;
+  ціле n_operands;
   char **operand;
   size_t n_lines;
   char **line = NULL;
   struct linebuffer *reservoir = NULL;
   struct randint_source *randint_source;
   size_t *permutation = NULL;
-  int i;
+  ціле i;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -417,7 +417,7 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "ei:n:o:rz", long_opts, NULL))
+  поки ((optc = getopt_long (argc, argv, "ei:n:o:rz", long_opts, NULL))
          != -1)
     switch (optc)
       {
@@ -427,27 +427,27 @@ main (int argc, char **argv)
 
       case 'i':
         {
-          if (input_range)
+          якщо (input_range)
             error (EXIT_FAILURE, 0, _("multiple -i options specified"));
           input_range = true;
 
           uintmax_t u;
           char *lo_end;
           strtol_error err = xstrtoumax (optarg, &lo_end, 10, &u, NULL);
-          if (err == LONGINT_OK)
+          якщо (err == LONGINT_OK)
             {
               lo_input = u;
-              if (lo_input != u)
+              якщо (lo_input != u)
                 err = LONGINT_OVERFLOW;
-              else if (*lo_end != '-')
+              інакше якщо (*lo_end != '-')
                 err = LONGINT_INVALID;
-              else
+              інакше
                 {
                   err = xstrtoumax (lo_end + 1, NULL, 10, &u, "");
-                  if (err == LONGINT_OK)
+                  якщо (err == LONGINT_OK)
                     {
                       hi_input = u;
-                      if (hi_input != u)
+                      якщо (hi_input != u)
                         err = LONGINT_OVERFLOW;
                     }
                 }
@@ -455,7 +455,7 @@ main (int argc, char **argv)
 
           n_lines = hi_input - lo_input + 1;
 
-          if (err != LONGINT_OK || (lo_input <= hi_input) == (n_lines == 0))
+          якщо (err != LONGINT_OK || (lo_input <= hi_input) == (n_lines == 0))
             error (EXIT_FAILURE, err == LONGINT_OVERFLOW ? EOVERFLOW : 0,
                    "%s: %s", _("invalid input range"), quote (optarg));
         }
@@ -466,22 +466,22 @@ main (int argc, char **argv)
           uintmax_t argval;
           strtol_error e = xstrtoumax (optarg, NULL, 10, &argval, "");
 
-          if (e == LONGINT_OK)
+          якщо (e == LONGINT_OK)
             head_lines = MIN (head_lines, argval);
-          else if (e != LONGINT_OVERFLOW)
+          інакше якщо (e != LONGINT_OVERFLOW)
             error (EXIT_FAILURE, 0, _("invalid line count: %s"),
                    quote (optarg));
         }
         break;
 
       case 'o':
-        if (outfile && !streq (outfile, optarg))
+        якщо (outfile && !streq (outfile, optarg))
           error (EXIT_FAILURE, 0, _("multiple output files specified"));
         outfile = optarg;
         break;
 
       case RANDOM_SOURCE_OPTION:
-        if (random_source && !streq (random_source, optarg))
+        якщо (random_source && !streq (random_source, optarg))
           error (EXIT_FAILURE, 0, _("multiple random sources specified"));
         random_source = optarg;
         break;
@@ -504,51 +504,51 @@ main (int argc, char **argv)
   operand = argv + optind;
 
   /* Check invalid usage.  */
-  if (echo && input_range)
+  якщо (echo && input_range)
     {
       error (0, 0, _("cannot combine -e and -i options"));
       usage (EXIT_FAILURE);
     }
-  if (input_range ? 0 < n_operands : !echo && 1 < n_operands)
+  якщо (input_range ? 0 < n_operands : !echo && 1 < n_operands)
     {
       error (0, 0, _("extra operand %s"), quote (operand[!input_range]));
       usage (EXIT_FAILURE);
     }
 
   /* Prepare input.  */
-  if (head_lines == 0)
+  якщо (head_lines == 0)
     {
       n_lines = 0;
       line = NULL;
     }
-  else if (echo)
+  інакше якщо (echo)
     {
       input_from_argv (operand, n_operands, eolbyte);
       n_lines = n_operands;
       line = operand;
     }
-  else if (input_range)
+  інакше якщо (input_range)
     {
       IF_LINT (n_lines = hi_input - lo_input + 1); /* Avoid GCC 10 warning.  */
       line = NULL;
     }
-  else
+  інакше
     {
       /* If an input file is specified, re-open it as stdin.  */
-      if (n_operands == 1
+      якщо (n_operands == 1
           && ! (streq (operand[0], "-")
                 || freopen (operand[0], "r", stdin)))
         error (EXIT_FAILURE, errno, "%s", quotef (operand[0]));
 
       fadvise (stdin, FADVISE_SEQUENTIAL);
 
-      if (repeat || head_lines == MIN (IDX_MAX, SIZE_MAX)
+      якщо (repeat || head_lines == MIN (IDX_MAX, SIZE_MAX)
           || input_size () <= RESERVOIR_MIN_INPUT)
         {
           n_lines = read_input (stdin, eolbyte, &input_lines);
           line = input_lines;
         }
-      else
+      інакше
         {
           use_reservoir_sampling = true;
           n_lines = SIZE_MAX;   /* unknown number of input lines, for now.  */
@@ -563,11 +563,11 @@ main (int argc, char **argv)
                                     (use_reservoir_sampling || repeat
                                      ? SIZE_MAX
                                      : randperm_bound (ahead_lines, n_lines)));
-  if (! randint_source)
+  якщо (! randint_source)
     error (EXIT_FAILURE, errno, "%s",
            quotef (random_source ? random_source : "getrandom"));
 
-  if (use_reservoir_sampling)
+  якщо (use_reservoir_sampling)
     {
       /* Instead of reading the entire file into 'line',
          use reservoir-sampling to store just AHEAD_LINES random lines.  */
@@ -579,43 +579,43 @@ main (int argc, char **argv)
   /* Close stdin now, rather than earlier, so that randint_all_new
      doesn't have to worry about opening something other than
      stdin.  */
-  if (! (head_lines == 0 || echo || input_range || fclose (stdin) == 0))
+  якщо (! (head_lines == 0 || echo || input_range || fclose (stdin) == 0))
     error (EXIT_FAILURE, errno, _("read error"));
 
-  if (!repeat)
+  якщо (!repeat)
     permutation = randperm_new (randint_source, ahead_lines, n_lines);
 
-  if (outfile && ! freopen (outfile, "w", stdout))
+  якщо (outfile && ! freopen (outfile, "w", stdout))
     error (EXIT_FAILURE, errno, "%s", quotef (outfile));
 
   /* Generate output according to requested method */
-  if (repeat)
+  якщо (repeat)
     {
-      if (head_lines == 0)
+      якщо (head_lines == 0)
         i = 0;
-      else
+      інакше
         {
-          if (n_lines == 0)
+          якщо (n_lines == 0)
             error (EXIT_FAILURE, 0, _("no lines to repeat"));
-          if (input_range)
+          якщо (input_range)
             i = write_random_numbers (randint_source, ahead_lines,
                                       lo_input, hi_input, eolbyte);
-          else
+          інакше
             i = write_random_lines (randint_source, ahead_lines, line, n_lines);
         }
     }
-  else
+  інакше
     {
-      if (use_reservoir_sampling)
+      якщо (use_reservoir_sampling)
         i = write_permuted_output_reservoir (n_lines, reservoir, permutation);
-      else if (input_range)
+      інакше якщо (input_range)
         i = write_permuted_numbers (ahead_lines, lo_input,
                                     permutation, eolbyte);
-      else
+      інакше
         i = write_permuted_lines (ahead_lines, line, permutation);
     }
 
-  if (i != 0)
+  якщо (i != 0)
     write_error ();
 
   IF_LINT (randint_all_free (randint_source));  /* For older valgrind.  */

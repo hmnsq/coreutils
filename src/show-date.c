@@ -21,20 +21,20 @@ show_date (char const *format, struct timespec when, timezone_t tz)
 {
   struct tm tm;
 
-  if (!localtime_rz (tz, &when.tv_sec, &tm))
+  якщо (!localtime_rz (tz, &when.tv_sec, &tm))
     {
       char buf[INT_BUFSIZE_BOUND (intmax_t)];
       error (0, 0, _("time %s is out of range"),
              quote (timetostr (when.tv_sec, buf)));
-      return false;
+      повернути false;
     }
 
-  if (fprintftime (stdout, format, &tm, tz, when.tv_nsec) < 0)
+  якщо (fprintftime (stdout, format, &tm, tz, when.tv_nsec) < 0)
     {
-      if (! ferror (stdout))  /* otherwise it will be diagnosed later.  */
+      якщо (! ferror (stdout))  /* otherwise it will be diagnosed later.  */
         error (0, errno, _("fprintftime error"));
-      return false;
+      повернути false;
     }
 
-  return true;
+  повернути true;
 }

@@ -150,11 +150,11 @@ static struct option const longopts[] =
 };
 
 void
-usage (int status)
+usage (ціле status)
 {
-  if (status != EXIT_SUCCESS)
+  якщо (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  інакше
     {
       printf (_("\
 Usage: %s [OPTION]... [INPUT [OUTPUT]]\n\
@@ -175,7 +175,7 @@ With no options, matching lines are merged to the first occurrence.\n\
 "));
      oputs (_("\
   -d, --repeated\n\
-         only print duplicate lines, one for each group\n\
+         only print duplicate lines, one для each group\n\
 "));
      oputs (_("\
   -D\n\
@@ -235,8 +235,8 @@ You may want to sort the input first, or use 'sort -u' without 'uniq'.\n\
 static bool
 strict_posix2 (void)
 {
-  int posix_ver = posix2_version ();
-  return 200112 <= posix_ver && posix_ver < 200809;
+  ціле posix_ver = posix2_version ();
+  повернути 200112 <= posix_ver && posix_ver < 200809;
 }
 
 /* Convert OPT to idx_t, reporting an error using MSGID if OPT is
@@ -246,16 +246,16 @@ static idx_t
 size_opt (char const *opt, char const *msgid)
 {
   intmax_t size;
-  if (LONGINT_OVERFLOW < xstrtoimax (opt, NULL, 10, &size, "")
+  якщо (LONGINT_OVERFLOW < xstrtoimax (opt, NULL, 10, &size, "")
       || size < 0)
     error (EXIT_FAILURE, 0, "%s: %s", opt, _(msgid));
-  return MIN (size, IDX_MAX);
+  повернути MIN (size, IDX_MAX);
 }
 
 static bool
 newline_or_blank (mcel_t g)
 {
-  return g.ch == '\n' || c32issep (g.ch);
+  повернути g.ch == '\n' || c32issep (g.ch);
 }
 
 /* Given a linebuffer LINE,
@@ -268,31 +268,31 @@ find_field (struct linebuffer const *line, idx_t *plen)
   char *lp = line->buffer;
   char const *lim = lp + line->length - 1;
 
-  for (idx_t i = skip_fields; 0 < i && lp < lim; i--)
+  для (idx_t i = skip_fields; 0 < i && lp < lim; i--)
     {
       lp = skip_buf_matching (lp, lim, newline_or_blank, true);
       lp = skip_buf_matching (lp, lim, newline_or_blank, false);
     }
 
-  for (idx_t i = skip_chars; 0 < i && lp < lim; i--)
+  для (idx_t i = skip_chars; 0 < i && lp < lim; i--)
     lp += mcel_scan (lp, lim).len;
 
   /* Compute the length in bytes cheaply if possible; otherwise, scan.  */
   idx_t len;
-  if (lim - lp <= check_chars)
+  якщо (lim - lp <= check_chars)
     len = lim - lp;
-  else if (MB_CUR_MAX <= 1)
+  інакше якщо (MB_CUR_MAX <= 1)
     len = check_chars;
-  else
+  інакше
     {
       char *ep = lp;
-      for (idx_t i = check_chars; 0 < i && ep < lim; i--)
+      для (idx_t i = check_chars; 0 < i && ep < lim; i--)
         ep += mcel_scan (ep, lim).len;
       len = ep - lp;
     }
 
   *plen = len;
-  return lp;
+  повернути lp;
 }
 
 /* Return false if two strings OLD and NEW match, true if not.
@@ -303,10 +303,10 @@ find_field (struct linebuffer const *line, idx_t *plen)
 static bool
 different (char *old, char *new, idx_t oldlen, idx_t newlen)
 {
-  if (ignore_case)
-    return oldlen != newlen || memcasecmp (old, new, oldlen);
-  else
-    return oldlen != newlen || memcmp (old, new, oldlen);
+  якщо (ignore_case)
+    повернути oldlen != newlen || memcasecmp (old, new, oldlen);
+  інакше
+    повернути oldlen != newlen || memcmp (old, new, oldlen);
 }
 
 /* Output the line in linebuffer LINE to standard output
@@ -319,12 +319,12 @@ static void
 writeline (struct linebuffer const *line,
            bool match, intmax_t linecount)
 {
-  if (! (linecount == 0 ? output_unique
+  якщо (! (linecount == 0 ? output_unique
          : !match ? output_first_repeated
          : output_later_repeated))
-    return;
+    повернути;
 
-  if (count_occurrences)
+  якщо (count_occurrences)
     {
       char buf[7 + INT_BUFSIZE_BOUND (intmax_t)];
       char *end = buf + sizeof buf;
@@ -334,16 +334,16 @@ writeline (struct linebuffer const *line,
       affirm (0 < i);
       do
         *--p = '0' + i % 10;
-      while ((i /= 10));
+      поки ((i /= 10));
       /* 7 characters, padded with spaces if LINECOUNT + 1 is too small.  */
-      while (end - p < 8)
+      поки (end - p < 8)
         *--p = ' ';
       const idx_t nbytes = end - p;
-      if (fwrite (p, sizeof (char), nbytes, stdout) != nbytes)
+      якщо (fwrite (p, sizeof (char), nbytes, stdout) != nbytes)
         write_error ();
     }
 
-  if (fwrite (line->buffer, sizeof (char), line->length, stdout)
+  якщо (fwrite (line->buffer, sizeof (char), line->length, stdout)
       != line->length)
     write_error ();
 }
@@ -357,9 +357,9 @@ check_file (char const *infile, char const *outfile, char delimiter)
   struct linebuffer lb1, lb2;
   struct linebuffer *thisline, *prevline;
 
-  if (! (streq (infile, "-") || freopen (infile, "r", stdin)))
+  якщо (! (streq (infile, "-") || freopen (infile, "r", stdin)))
     error (EXIT_FAILURE, errno, "%s", quotef (infile));
-  if (! (streq (outfile, "-") || freopen (outfile, "w", stdout)))
+  якщо (! (streq (outfile, "-") || freopen (outfile, "w", stdout)))
     error (EXIT_FAILURE, errno, "%s", quotef (outfile));
 
   fadvise (stdin, FADVISE_SEQUENTIAL);
@@ -385,13 +385,13 @@ check_file (char const *infile, char const *outfile, char delimiter)
 
      3. All other cases.
   */
-  if (output_unique && output_first_repeated && !count_occurrences)
+  якщо (output_unique && output_first_repeated && !count_occurrences)
     {
       char *prevfield = NULL;
       idx_t prevlen;
       bool first_group_printed = false;
 
-      while (!feof (stdin)
+      поки (!feof (stdin)
              && readlinebuffer_delim (thisline, stdin, delimiter))
         {
           idx_t thislen;
@@ -400,15 +400,15 @@ check_file (char const *infile, char const *outfile, char delimiter)
                             || different (thisfield, prevfield,
                                           thislen, prevlen));
 
-          if (new_group && grouping != GM_NONE
+          якщо (new_group && grouping != GM_NONE
               && (grouping == GM_PREPEND || grouping == GM_BOTH
                   || (first_group_printed && (grouping == GM_APPEND
                                               || grouping == GM_SEPARATE))))
             putchar (delimiter);
 
-          if (new_group || grouping != GM_NONE)
+          якщо (new_group || grouping != GM_NONE)
             {
-              if (fwrite (thisline->buffer, sizeof (char), thisline->length,
+              якщо (fwrite (thisline->buffer, sizeof (char), thisline->length,
                   stdout) != thisline->length)
                 write_error ();
 
@@ -418,12 +418,12 @@ check_file (char const *infile, char const *outfile, char delimiter)
               first_group_printed = true;
             }
         }
-      if ((grouping == GM_BOTH || grouping == GM_APPEND) && first_group_printed)
+      якщо ((grouping == GM_BOTH || grouping == GM_APPEND) && first_group_printed)
         putchar (delimiter);
     }
-  else
+  інакше
     {
-      if (!readlinebuffer_delim (prevline, stdin, delimiter))
+      якщо (!readlinebuffer_delim (prevline, stdin, delimiter))
         goto closefiles;
 
       idx_t prevlen;
@@ -431,11 +431,11 @@ check_file (char const *infile, char const *outfile, char delimiter)
       intmax_t match_count = 0;
       bool first_delimiter = true;
 
-      while (!feof (stdin))
+      поки (!feof (stdin))
         {
-          if (!readlinebuffer_delim (thisline, stdin, delimiter))
+          якщо (!readlinebuffer_delim (thisline, stdin, delimiter))
             {
-              if (ferror (stdin))
+              якщо (ferror (stdin))
                 goto closefiles;
               break;
             }
@@ -444,36 +444,36 @@ check_file (char const *infile, char const *outfile, char delimiter)
           bool match = !different (thisfield, prevfield, thislen, prevlen);
           match_count += match;
 
-          if (match_count == INTMAX_MAX)
+          якщо (match_count == INTMAX_MAX)
             {
-              if (count_occurrences)
+              якщо (count_occurrences)
                 error (EXIT_FAILURE, 0, _("too many repeated lines"));
               match_count--;
             }
 
-          if (delimit_groups != DM_NONE)
+          якщо (delimit_groups != DM_NONE)
             {
-              if (!match)
+              якщо (!match)
                 {
-                  if (match_count) /* a previous match */
+                  якщо (match_count) /* a previous match */
                     first_delimiter = false; /* Only used when DM_SEPARATE */
                 }
-              else if (match_count == 1)
+              інакше якщо (match_count == 1)
                 {
-                  if ((delimit_groups == DM_PREPEND)
+                  якщо ((delimit_groups == DM_PREPEND)
                       || (delimit_groups == DM_SEPARATE
                           && !first_delimiter))
                     putchar (delimiter);
                 }
             }
 
-          if (!match || output_later_repeated)
+          якщо (!match || output_later_repeated)
             {
               writeline (prevline, match, match_count);
               swap_lines (&prevline, &thisline);
               prevfield = thisfield;
               prevlen = thislen;
-              if (!match)
+              якщо (!match)
                 match_count = 0;
             }
         }
@@ -482,7 +482,7 @@ check_file (char const *infile, char const *outfile, char delimiter)
     }
 
  closefiles:
-  if (ferror (stdin) || fclose (stdin) != 0)
+  якщо (ferror (stdin) || fclose (stdin) != 0)
     error (EXIT_FAILURE, errno, _("error reading %s"), quoteaf (infile));
 
   /* stdout is handled via the atexit-invoked close_stdout function.  */
@@ -498,13 +498,13 @@ enum Skip_field_option_type
     SFO_NEW
   };
 
-int
-main (int argc, char **argv)
+ціле
+main (ціле argc, char **argv)
 {
-  int optc = 0;
+  ціле optc = 0;
   bool posixly_correct = (getenv ("POSIXLY_CORRECT") != NULL);
   enum Skip_field_option_type skip_field_option_type = SFO_NONE;
-  int nfiles = 0;
+  ціле nfiles = 0;
   char const *file[2];
   char delimiter = '\n';	/* change with --zero-terminated, -z */
   bool output_option_used = false;   /* if true, one of -u/-d/-D/-c was used */
@@ -518,44 +518,44 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while (true)
+  поки (true)
     {
       /* Parse an operand with leading "+" as a file after "--" was
          seen; or if pedantic and a file was seen; or if not
          obsolete.  */
 
-      if (optc == -1
+      якщо (optc == -1
           || (posixly_correct && nfiles != 0)
           || ((optc = getopt_long (argc, argv,
                                    "-0123456789Dcdf:is:uw:z",
                                    longopts, NULL))
               == -1))
         {
-          if (argc <= optind)
+          якщо (argc <= optind)
             break;
-          if (nfiles == 2)
+          якщо (nfiles == 2)
             {
               error (0, 0, _("extra operand %s"), quote (argv[optind]));
               usage (EXIT_FAILURE);
             }
           file[nfiles++] = argv[optind++];
         }
-      else switch (optc)
+      інакше switch (optc)
         {
         case 1:
           {
             intmax_t size;
-            if (optarg[0] == '+'
+            якщо (optarg[0] == '+'
                 && ! strict_posix2 ()
                 && (xstrtoimax (optarg, NULL, 10, &size, "")
                     <= LONGINT_OVERFLOW))
               skip_chars = MIN (size, IDX_MAX);
-            else if (nfiles == 2)
+            інакше якщо (nfiles == 2)
               {
                 error (0, 0, _("extra operand %s"), quote (optarg));
                 usage (EXIT_FAILURE);
               }
-            else
+            інакше
               file[nfiles++] = optarg;
           }
           break;
@@ -571,10 +571,10 @@ main (int argc, char **argv)
         case '8':
         case '9':
           {
-            if (skip_field_option_type == SFO_NEW)
+            якщо (skip_field_option_type == SFO_NEW)
               skip_fields = 0;
 
-            if (!DECIMAL_DIGIT_ACCUMULATE (skip_fields, optc - '0'))
+            якщо (!DECIMAL_DIGIT_ACCUMULATE (skip_fields, optc - '0'))
               skip_fields = IDX_MAX;
 
             skip_field_option_type = SFO_OBSOLETE;
@@ -594,9 +594,9 @@ main (int argc, char **argv)
         case 'D':
           output_unique = false;
           output_later_repeated = true;
-          if (optarg == NULL)
+          якщо (optarg == NULL)
             delimit_groups = DM_NONE;
-          else
+          інакше
             delimit_groups = XARGMATCH ("--all-repeated", optarg,
                                         delimit_method_string,
                                         delimit_method_map);
@@ -604,9 +604,9 @@ main (int argc, char **argv)
           break;
 
         case GROUP_OPTION:
-          if (optarg == NULL)
+          якщо (optarg == NULL)
             grouping = GM_SEPARATE;
-          else
+          інакше
             grouping = XARGMATCH ("--group", optarg,
                                   grouping_method_string,
                                   grouping_method_map);
@@ -654,20 +654,20 @@ main (int argc, char **argv)
      avoid the need to specify a grouping method to --all-repeated.
      It was thought best to avoid deprecating those parameters though
      and keep --group separate to other options.  */
-  if (grouping != GM_NONE && output_option_used)
+  якщо (grouping != GM_NONE && output_option_used)
     {
       error (0, 0, _("--group is mutually exclusive with -c/-d/-D/-u"));
       usage (EXIT_FAILURE);
     }
 
-  if (grouping != GM_NONE && count_occurrences)
+  якщо (grouping != GM_NONE && count_occurrences)
     {
       error (0, 0,
            _("grouping and printing repeat counts is meaningless"));
       usage (EXIT_FAILURE);
     }
 
-  if (count_occurrences && output_later_repeated)
+  якщо (count_occurrences && output_later_repeated)
     {
       error (0, 0,
            _("printing all duplicated lines and repeat counts is meaningless"));
@@ -676,5 +676,5 @@ main (int argc, char **argv)
 
   check_file (file[0], file[1], delimiter);
 
-  return EXIT_SUCCESS;
+  повернути EXIT_SUCCESS;
 }

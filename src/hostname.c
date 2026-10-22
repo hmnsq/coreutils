@@ -31,29 +31,29 @@
 #define AUTHORS proper_name ("Jim Meyering")
 
 #ifndef HAVE_SETHOSTNAME
-# if defined HAVE_SYSINFO && defined HAVE_SYS_SYSTEMINFO_H
+# якщо defined HAVE_SYSINFO && defined HAVE_SYS_SYSTEMINFO_H
 #  include <sys/systeminfo.h>
 # endif
 
-static int
+static ціле
 sethostname (char const *name, size_t namelen)
 {
-# if defined HAVE_SYSINFO && defined HAVE_SYS_SYSTEMINFO_H
+# якщо defined HAVE_SYSINFO && defined HAVE_SYS_SYSTEMINFO_H
   /* Using sysinfo() is the SVR4 mechanism to set a hostname. */
-  return (sysinfo (SI_SET_HOSTNAME, name, namelen) < 0 ? -1 : 0);
-# else
+  повернути (sysinfo (SI_SET_HOSTNAME, name, namelen) < 0 ? -1 : 0);
+# інакше
   errno = ENOTSUP;
-  return -1;
+  повернути -1;
 # endif
 }
 #endif
 
 void
-usage (int status)
+usage (ціле status)
 {
-  if (status != EXIT_SUCCESS)
+  якщо (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  інакше
     {
       printf (_("\
 Usage: %s [NAME]\n\
@@ -69,8 +69,8 @@ Print or set the hostname of the current system.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+ціле
+main (ціле argc, char **argv)
 {
   char *hostname;
 
@@ -86,24 +86,24 @@ main (int argc, char **argv)
                                    Version, true, usage, AUTHORS,
                                    (char const *) NULL);
 
-  if (optind + 1 < argc)
+  якщо (optind + 1 < argc)
      {
        error (0, 0, _("extra operand %s"), quote (argv[optind + 1]));
        usage (EXIT_FAILURE);
      }
 
-  if (optind + 1 == argc)
+  якщо (optind + 1 == argc)
     {
       /* Set hostname to operand.  */
       char const *name = argv[optind];
-      if (sethostname (name, strlen (name)) != 0)
+      якщо (sethostname (name, strlen (name)) != 0)
         error (EXIT_FAILURE, errno, _("cannot set name to %s"),
                quote (name));
     }
-  else
+  інакше
     {
       hostname = xgethostname ();
-      if (hostname == NULL)
+      якщо (hostname == NULL)
         error (EXIT_FAILURE, errno, _("cannot determine hostname"));
       puts (hostname);
     }

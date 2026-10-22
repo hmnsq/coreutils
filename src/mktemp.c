@@ -56,11 +56,11 @@ static struct option const longopts[] =
 };
 
 void
-usage (int status)
+usage (ціле status)
 {
-  if (status != EXIT_SUCCESS)
+  якщо (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  інакше
     {
       printf (_("Usage: %s [OPTION]... [TEMPLATE]\n"), program_name);
       fputs (_("\
@@ -87,12 +87,12 @@ Files are created u+rw, and directories u+rwx, minus umask restrictions.\n\
       oputs (_("\
       --suffix=SUFF\n\
          append SUFF to TEMPLATE; SUFF must not contain a slash.\n\
-         This option is implied if TEMPLATE does not end in X\n\
+         This option is implied якщо TEMPLATE does not end in X\n\
 "));
       oputs (_("\
   -p DIR, --tmpdir[=DIR]\n\
          interpret TEMPLATE relative to DIR;\n\
-         if DIR is not specified, use $TMPDIR if set, else /tmp.\n\
+         якщо DIR is not specified, use $TMPDIR якщо set, інакше /tmp.\n\
          With this option, TEMPLATE must not be an absolute name;\n\
          unlike with -t, TEMPLATE may contain slashes,\n\
          but mktemp creates only the final component\n\
@@ -100,8 +100,8 @@ Files are created u+rw, and directories u+rwx, minus umask restrictions.\n\
       oputs (_("\
   -t\n\
          interpret TEMPLATE as a single file name component,\n\
-         relative to a directory: $TMPDIR, if set;\n\
-         else the directory specified via -p; else /tmp [deprecated]\n\
+         relative to a directory: $TMPDIR, якщо set;\n\
+         інакше the directory specified via -p; інакше /tmp [deprecated]\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -115,22 +115,22 @@ static size_t
 count_consecutive_X_s (char const *s, size_t len)
 {
   size_t n = 0;
-  for ( ; len && s[len - 1] == 'X'; len--)
+  для ( ; len && s[len - 1] == 'X'; len--)
     ++n;
-  return n;
+  повернути n;
 }
 
-static int
+static ціле
 mkstemp_len (char *tmpl, size_t suff_len, size_t x_len, bool dry_run)
 {
-  return gen_tempname_len (tmpl, suff_len, 0, dry_run ? GT_NOCREATE : GT_FILE,
+  повернути gen_tempname_len (tmpl, suff_len, 0, dry_run ? GT_NOCREATE : GT_FILE,
                            x_len);
 }
 
-static int
+static ціле
 mkdtemp_len (char *tmpl, size_t suff_len, size_t x_len, bool dry_run)
 {
-  return gen_tempname_len (tmpl, suff_len, 0, dry_run ? GT_NOCREATE : GT_DIR,
+  повернути gen_tempname_len (tmpl, suff_len, 0, dry_run ? GT_NOCREATE : GT_DIR,
                            x_len);
 }
 
@@ -144,26 +144,26 @@ static bool stdout_closed;
 static void
 maybe_close_stdout (void)
 {
-  if (!stdout_closed)
+  якщо (!stdout_closed)
     close_stdout ();
-  else if (close_stream (stderr) != 0)
+  інакше якщо (close_stream (stderr) != 0)
     _exit (EXIT_FAILURE);
 }
 
-int
-main (int argc, char **argv)
+ціле
+main (ціле argc, char **argv)
 {
   char const *dest_dir;
   char const *dest_dir_arg = NULL;
   bool suppress_file_err = false;
-  int c;
+  ціле c;
   char *template;
   char *suffix = NULL;
   bool use_dest_dir = false;
   bool deprecated_t_option = false;
   bool create_directory = false;
   bool dry_run = false;
-  int status = EXIT_SUCCESS;
+  ціле status = EXIT_SUCCESS;
   size_t x_count;
   size_t suffix_len;
   char *dest_name = NULL;
@@ -176,7 +176,7 @@ main (int argc, char **argv)
 
   atexit (maybe_close_stdout);
 
-  while ((c = getopt_long (argc, argv, "dp:qtuV", longopts, NULL)) != -1)
+  поки ((c = getopt_long (argc, argv, "dp:qtuV", longopts, NULL)) != -1)
     {
       switch (c)
         {
@@ -212,27 +212,27 @@ main (int argc, char **argv)
         }
     }
 
-  int n_args = argc - optind;
-  if (2 <= n_args)
+  ціле n_args = argc - optind;
+  якщо (2 <= n_args)
     {
       error (0, 0, _("too many templates"));
       usage (EXIT_FAILURE);
     }
 
-  if (n_args == 0)
+  якщо (n_args == 0)
     {
       use_dest_dir = true;
       template = (char *) default_template;
     }
-  else
+  інакше
     {
       template = argv[optind];
     }
 
-  if (suffix)
+  якщо (suffix)
     {
       size_t len = strlen (template);
-      if (!len || template[len - 1] != 'X')
+      якщо (!len || template[len - 1] != 'X')
         {
           error (EXIT_FAILURE, 0,
                  _("with --suffix, template %s must end in X"),
@@ -245,61 +245,61 @@ main (int argc, char **argv)
       template = dest_name;
       suffix = dest_name + len;
     }
-  else
+  інакше
     {
       template = xstrdup (template);
       suffix = strrchr (template, 'X');
-      if (!suffix)
+      якщо (!suffix)
         suffix = strchr (template, '\0');
-      else
+      інакше
         suffix++;
       suffix_len = strlen (suffix);
     }
 
   /* At this point, template is malloc'd, and suffix points into template.  */
-  if (suffix_len && last_component (suffix) != suffix)
+  якщо (suffix_len && last_component (suffix) != suffix)
     {
       error (EXIT_FAILURE, 0,
              _("invalid suffix %s, contains directory separator"),
              quote (suffix));
     }
   x_count = count_consecutive_X_s (template, suffix - template);
-  if (x_count < 3)
+  якщо (x_count < 3)
     {
       /* when suffix was appended to template only diagnose the template.  */
-      if (template == dest_name)
+      якщо (template == dest_name)
         template[suffix - template] = '\0';
       error (EXIT_FAILURE, 0, _("too few X's in template %s"),
              quote (template));
     }
 
-  if (use_dest_dir)
+  якщо (use_dest_dir)
     {
-      if (deprecated_t_option)
+      якщо (deprecated_t_option)
         {
           char *env = getenv ("TMPDIR");
-          if (env && *env)
+          якщо (env && *env)
             dest_dir = env;
-          else if (dest_dir_arg && *dest_dir_arg)
+          інакше якщо (dest_dir_arg && *dest_dir_arg)
             dest_dir = dest_dir_arg;
-          else
+          інакше
             dest_dir = "/tmp";
 
-          if (last_component (template) != template)
+          якщо (last_component (template) != template)
             error (EXIT_FAILURE, 0,
                    _("invalid template, %s, contains directory separator"),
                    quote (template));
         }
-      else
+      інакше
         {
-          if (dest_dir_arg && *dest_dir_arg)
+          якщо (dest_dir_arg && *dest_dir_arg)
             dest_dir = dest_dir_arg;
-          else
+          інакше
             {
               char *env = getenv ("TMPDIR");
               dest_dir = (env && *env ? env : "/tmp");
             }
-          if (IS_ABSOLUTE_FILE_NAME (template))
+          якщо (IS_ABSOLUTE_FILE_NAME (template))
             error (EXIT_FAILURE, 0,
                    _("invalid template, %s; with --tmpdir,"
                      " it may not be absolute"),
@@ -316,39 +316,39 @@ main (int argc, char **argv)
      mkstemp may leave the buffer in an undefined state.  */
   dest_name = xstrdup (template);
 
-  if (create_directory)
+  якщо (create_directory)
     {
-      int err = mkdtemp_len (dest_name, suffix_len, x_count, dry_run);
-      if (err != 0)
+      ціле err = mkdtemp_len (dest_name, suffix_len, x_count, dry_run);
+      якщо (err != 0)
         {
-          if (!suppress_file_err)
+          якщо (!suppress_file_err)
             error (0, errno, _("failed to create directory via template %s"),
                    quote (template));
           status = EXIT_FAILURE;
         }
     }
-  else
+  інакше
     {
-      int fd = mkstemp_len (dest_name, suffix_len, x_count, dry_run);
-      if (fd < 0 || (!dry_run && close (fd) != 0))
+      ціле fd = mkstemp_len (dest_name, suffix_len, x_count, dry_run);
+      якщо (fd < 0 || (!dry_run && close (fd) != 0))
         {
-          if (!suppress_file_err)
+          якщо (!suppress_file_err)
             error (0, errno, _("failed to create file via template %s"),
                    quote (template));
           status = EXIT_FAILURE;
         }
     }
 
-  if (status == EXIT_SUCCESS)
+  якщо (status == EXIT_SUCCESS)
     {
       puts (dest_name);
       /* If we created a file, but then failed to output the file
          name, we should clean up the mess before failing.  */
-      if (!dry_run && ((stdout_closed = true), close_stream (stdout) != 0))
+      якщо (!dry_run && ((stdout_closed = true), close_stream (stdout) != 0))
         {
-          int saved_errno = errno;
+          ціле saved_errno = errno;
           (create_directory ? rmdir : unlink) (dest_name);
-          if (!suppress_file_err)
+          якщо (!suppress_file_err)
             error (0, saved_errno, _("write error"));
           status = EXIT_FAILURE;
         }

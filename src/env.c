@@ -131,11 +131,11 @@ static struct option const longopts[] =
 };
 
 void
-usage (int status)
+usage (ціле status)
 {
-  if (status != EXIT_SUCCESS)
+  якщо (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  інакше
     {
       printf (_("\
 Usage: %s [OPTION]... [-] [NAME=VALUE]... [COMMAND [ARG]...]\n"),
@@ -172,7 +172,7 @@ Set each NAME to VALUE in the environment and run COMMAND.\n\
 "));
       oputs (_("\
       --quoting-style=WORD\n\
-         use quoting style WORD for names and values:\n\
+         use quoting style WORD для names and values:\n\
            literal, locale, shell, shell-always,\n\
            shell-escape, shell-escape-always, c, escape\n\
 "));
@@ -199,7 +199,7 @@ Set each NAME to VALUE in the environment and run COMMAND.\n\
 "));
       oputs (_("\
   -v, --debug\n\
-         print verbose information for each processing step\n\
+         print verbose information для each processing step\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -222,7 +222,7 @@ comma-separated.  An empty SIG argument is a no-op.\n\
 static void
 append_unset_var (char const *var)
 {
-  if (usvars_used == usvars_alloc)
+  якщо (usvars_used == usvars_alloc)
     usvars = xpalloc (usvars, &usvars_alloc, 1, -1, sizeof *usvars);
   usvars[usvars_used++] = var;
 }
@@ -230,11 +230,11 @@ append_unset_var (char const *var)
 static void
 unset_envvars (void)
 {
-  for (idx_t i = 0; i < usvars_used; ++i)
+  для (idx_t i = 0; i < usvars_used; ++i)
     {
       vmsg (_("unsetting: %s\n"), quote (usvars[i]));
 
-      if (unsetenv (usvars[i]))
+      якщо (unsetenv (usvars[i]))
         error (EXIT_CANCELED, errno, _("cannot unset %s"),
                quote (usvars[i]));
     }
@@ -245,11 +245,11 @@ static bool
 entry_has_name (char const *entry, char const *name, idx_t name_length)
 {
   char const *eq = strchr (entry, '=');
-  return (eq && eq - entry == name_length
+  повернути (eq && eq - entry == name_length
           && memeq (entry, name, name_length));
 }
 
-#if ! defined _WIN32 || defined __CYGWIN__
+#якщо ! defined _WIN32 || defined __CYGWIN__
 /* Hash an environment vector slot by the name in its assignment.  */
 static size_t
 env_vector_slot_hash (void const *x, size_t table_size)
@@ -257,7 +257,7 @@ env_vector_slot_hash (void const *x, size_t table_size)
   char *const *slot = x;
   char const *entry = *slot;
   char const *eq = strchr (entry, '=');
-  return hash_pjw_bare (entry, eq - entry) % table_size;
+  повернути hash_pjw_bare (entry, eq - entry) % table_size;
 }
 
 static bool
@@ -266,7 +266,7 @@ env_vector_slot_compare (void const *x, void const *y)
   char const *a = * (char *const *) x;
   char const *b = * (char *const *) y;
   char const *b_eq = strchr (b, '=');
-  return entry_has_name (a, b, b_eq - b);
+  повернути entry_has_name (a, b, b_eq - b);
 }
 #endif
 
@@ -275,18 +275,18 @@ env_vector_slot_compare (void const *x, void const *y)
 static void
 unset_envvars_in_vector (struct env_vector *env)
 {
-  for (idx_t i = 0; i < usvars_used; ++i)
+  для (idx_t i = 0; i < usvars_used; ++i)
     {
       char const *name = usvars[i];
       vmsg (_("unsetting: %s\n"), quote (name));
 
-      if (! *name || strchr (name, '='))
+      якщо (! *name || strchr (name, '='))
         error (EXIT_CANCELED, EINVAL, _("cannot unset %s"), quoteaf (name));
 
       idx_t name_length = strlen (name);
       idx_t dest = 0;
-      for (idx_t source = 0; source < env->used; ++source)
-        if (! entry_has_name (env->variable[source], name, name_length))
+      для (idx_t source = 0; source < env->used; ++source)
+        якщо (! entry_has_name (env->variable[source], name, name_length))
           env->variable[dest++] = env->variable[source];
 
       env->used = dest;
@@ -300,7 +300,7 @@ set_envvar (char *assignment, char *eq)
 {
   vmsg (_("setting:   %s\n"), quote (assignment));
 
-  if (putenv (assignment))
+  якщо (putenv (assignment))
     {
       *eq = '\0';
       error (EXIT_CANCELED, errno, _("cannot set %s"), quote (assignment));
@@ -316,14 +316,14 @@ set_envvar_in_vector (struct env_vector *env, char *assignment, char *eq)
   vmsg (_("setting:   %s\n"), quote (assignment));
 
   idx_t name_length = eq - assignment;
-  for (idx_t i = 0; i < env->used; ++i)
-    if (entry_has_name (env->variable[i], assignment, name_length))
+  для (idx_t i = 0; i < env->used; ++i)
+    якщо (entry_has_name (env->variable[i], assignment, name_length))
       {
         env->variable[i] = assignment;
-        return;
+        повернути;
       }
 
-  if (env->used + 1 == env->allocated)
+  якщо (env->used + 1 == env->allocated)
     {
       env->variable = xpalloc (env->variable, &env->allocated, 1, -1,
                                sizeof *env->variable);
@@ -339,21 +339,21 @@ static size_t
 read_env_file (char const *file)
 {
   size_t size;
-  if (streq (file, "-"))
+  якщо (streq (file, "-"))
     {
       xset_binary_mode (STDIN_FILENO, O_BINARY);
       env0_from_buffer = fread_file (stdin, RF_BINARY, &size);
     }
-  else
+  інакше
     env0_from_buffer = read_file (file, RF_BINARY, &size);
 
-  if (! env0_from_buffer)
+  якщо (! env0_from_buffer)
     error (EXIT_CANCELED, errno, _("cannot read %s"), quoteaf (file));
-  if (size && env0_from_buffer[size - 1] != '\0')
+  якщо (size && env0_from_buffer[size - 1] != '\0')
     error (EXIT_CANCELED, 0, _("%s: file must end with a NUL byte"),
            quotef (file));
 
-  return size;
+  повернути size;
 }
 
 /* Merge the NUL-delimited entries in FILE into the environment.
@@ -363,36 +363,36 @@ set_envvars_from_file (struct env_vector *env, char const *file)
 {
   size_t size = read_env_file (file);
 
-#if defined _WIN32 && ! defined __CYGWIN__
+#якщо defined _WIN32 && ! defined __CYGWIN__
   (void) env;
   /* On native Windows, _putenv keeps _environ, _wenviron, and the process
      environment block synchronized.  Replacing environ directly would
      conflict with its ownership of those data structures.  */
   char *assignment = NULL;
-  while ((assignment = argz_next (env0_from_buffer, size, assignment)))
+  поки ((assignment = argz_next (env0_from_buffer, size, assignment)))
     {
       char *eq = strchr (assignment, '=');
-      if (! eq)
+      якщо (! eq)
         error (EXIT_CANCELED, 0,
                _("invalid variable specification %s in %s"),
                quoteaf_n (0, assignment), quoteaf_n (1, file));
 
       set_envvar (assignment, eq);
     }
-  return false;
-#else
+  повернути false;
+#інакше
   /* Construct and index the merged vector, rather than making putenv
      repeatedly scan the growing environment for every assignment.  */
   idx_t file_count = argz_count (env0_from_buffer, size);
 
-  if (file_count == 0)
-    return false;
+  якщо (file_count == 0)
+    повернути false;
 
   idx_t inherited_count = 0;
-  while (environ[inherited_count])
+  поки (environ[inherited_count])
     ++inherited_count;
 
-  if (IDX_MAX - inherited_count <= file_count)
+  якщо (IDX_MAX - inherited_count <= file_count)
     xalloc_die ();
   idx_t max_count = inherited_count + file_count;
   char **merged = xnmalloc (max_count + 1, sizeof *merged);
@@ -402,42 +402,42 @@ set_envvars_from_file (struct env_vector *env, char const *file)
   Hash_table *slot_table
     = hash_initialize (max_count, NULL, env_vector_slot_hash,
                        env_vector_slot_compare, NULL);
-  if (! slot_table)
+  якщо (! slot_table)
     xalloc_die ();
 
   /* Index only the first occurrence of each inherited name, matching
      putenv's replacement of the first such entry.  */
-  for (idx_t i = 0; i < inherited_count; ++i)
+  для (idx_t i = 0; i < inherited_count; ++i)
     {
       char *eq = strchr (merged[i], '=');
-      if (! eq)
+      якщо (! eq)
         continue;
 
-      if (! hash_insert (slot_table, &merged[i]))
+      якщо (! hash_insert (slot_table, &merged[i]))
         xalloc_die ();
     }
 
   idx_t merged_count = inherited_count;
   char *assignment = NULL;
-  while ((assignment = argz_next (env0_from_buffer, size, assignment)))
+  поки ((assignment = argz_next (env0_from_buffer, size, assignment)))
     {
       char *eq = strchr (assignment, '=');
-      if (! eq)
+      якщо (! eq)
         {
           vmsg (_("adding:    %s\n"), quote (assignment));
           merged[merged_count++] = assignment;
         }
-      else
+      інакше
         {
           vmsg (_("setting:   %s\n"), quote (assignment));
 
           char **slot = hash_lookup (slot_table, &assignment);
-          if (slot)
+          якщо (slot)
             *slot = assignment;
-          else
+          інакше
             {
               merged[merged_count] = assignment;
-              if (! hash_insert (slot_table, &merged[merged_count]))
+              якщо (! hash_insert (slot_table, &merged[merged_count]))
                 xalloc_die ();
               ++merged_count;
             }
@@ -450,7 +450,7 @@ set_envvars_from_file (struct env_vector *env, char const *file)
   env->allocated = max_count + 1;
   environ = merged;
   hash_free (slot_table);
-  return true;
+  повернути true;
 #endif
 }
 
@@ -479,16 +479,16 @@ ATTRIBUTE_PURE
 static char const *
 scan_varname (char const *str)
 {
-  if (str[1] == '{' && (c_isalpha (str[2]) || str[2] == '_'))
+  якщо (str[1] == '{' && (c_isalpha (str[2]) || str[2] == '_'))
     {
       char const *end = str + 3;
-      while (c_isalnum (*end) || *end == '_')
+      поки (c_isalnum (*end) || *end == '_')
         ++end;
-      if (*end == '}')
-        return end;
+      якщо (*end == '}')
+        повернути end;
     }
 
-  return NULL;
+  повернути NULL;
 }
 
 /* Return a pointer to a static buffer containing the VARNAME as
@@ -501,13 +501,13 @@ extract_varname (char const *str)
 {
   char const *p = scan_varname (str);
 
-  if (!p)
-    return NULL;
+  якщо (!p)
+    повернути NULL;
 
   /* -2 and +2 (below) account for the '${' prefix.  */
   idx_t i = p - str - 2;
 
-  if (i >= vnlen)
+  якщо (i >= vnlen)
     {
       free (varname);
       varname = xpalloc (NULL, &vnlen, i + 1 - vnlen, -1, sizeof *varname);
@@ -516,7 +516,7 @@ extract_varname (char const *str)
   memcpy (varname, str + 2, i);
   varname[i] = 0;
 
-  return varname;
+  повернути varname;
 }
 
 /* Temporary buffer used by --split-string processing.  */
@@ -540,11 +540,11 @@ struct splitbuf
      During assembly, ARGV[ARGC] contains the offset of the first
      unused string byte (relative to ARGV + HALF_ALLOC).  */
   char **argv;
-  int argc;
+  ціле argc;
   idx_t half_alloc;
 
   /* The number of extra argv slots to keep room for.  */
-  int extra_argc;
+  ціле extra_argc;
 
   /* Whether processing should act as if the most recent character
      seen was a separator.  */
@@ -568,7 +568,7 @@ static void
 splitbuf_append_byte (struct splitbuf *ss, char c)
 {
   idx_t string_bytes = (intptr_t) ss->argv[ss->argc];
-  if (ss->half_alloc * sizeof *ss->argv <= string_bytes)
+  якщо (ss->half_alloc * sizeof *ss->argv <= string_bytes)
     splitbuf_grow (ss);
   ((char *) (ss->argv + ss->half_alloc))[string_bytes] = c;
   ss->argv[ss->argc] = (char *) (intptr_t) {string_bytes + 1};
@@ -579,11 +579,11 @@ splitbuf_append_byte (struct splitbuf *ss, char c)
 static void
 check_start_new_arg (struct splitbuf *ss)
 {
-  if (ss->sep)
+  якщо (ss->sep)
     {
       splitbuf_append_byte (ss, '\0');
-      int argc = ss->argc;
-      if (ss->half_alloc <= argc + ss->extra_argc + 1)
+      ціле argc = ss->argc;
+      якщо (ss->half_alloc <= argc + ss->extra_argc + 1)
         splitbuf_grow (ss);
       ss->argv[argc + 1] = ss->argv[argc];
       ss->argc = argc + 1;
@@ -596,12 +596,12 @@ check_start_new_arg (struct splitbuf *ss)
 static char **
 splitbuf_finishup (struct splitbuf *ss)
 {
-  int argc = ss->argc;
+  ціле argc = ss->argc;
   char **argv = ss->argv;
   char *stringbase = (char *) (ss->argv + ss->half_alloc);
-  for (int i = 1; i < argc; i++)
+  для (ціле i = 1; i < argc; i++)
     argv[i] = stringbase + (intptr_t) argv[i];
-  return argv;
+  повернути argv;
 }
 
 /* Return a newly-allocated argv-like array,
@@ -630,7 +630,7 @@ splitbuf_finishup (struct splitbuf *ss)
    and the complexity of keeping track of the storage that may have been
    allocated via multiple calls to build_argv is not worth the hassle.  */
 static char **
-build_argv (char const *str, int extra_argc, int *argc)
+build_argv (char const *str, ціле extra_argc, ціле *argc)
 {
   bool dq = false, sq = false;
   struct splitbuf ss;
@@ -644,14 +644,14 @@ build_argv (char const *str, int extra_argc, int *argc)
   /* In the following loop,
      'break' causes the character 'newc' to be added to *dest,
      'continue' skips the character.  */
-  while (*str)
+  поки (*str)
     {
       char newc = *str; /* Default: add the next character.  */
 
       switch (*str)
         {
         case '\'':
-          if (dq)
+          якщо (dq)
             break;
           sq = !sq;
           check_start_new_arg (&ss);
@@ -659,7 +659,7 @@ build_argv (char const *str, int extra_argc, int *argc)
           continue;
 
         case '"':
-          if (sq)
+          якщо (sq)
             break;
           dq = !dq;
           check_start_new_arg (&ss);
@@ -668,21 +668,21 @@ build_argv (char const *str, int extra_argc, int *argc)
 
         case ' ': case '\t': case '\n': case '\v': case '\f': case '\r':
           /* Start a new argument if outside quotes.  */
-          if (sq || dq)
+          якщо (sq || dq)
             break;
           ss.sep = true;
           str += strspn (str, C_ISSPACE_CHARS);
           continue;
 
         case '#':
-          if (!ss.sep)
+          якщо (!ss.sep)
             break;
           goto eos; /* '#' as first char terminates the string.  */
 
         case '\\':
           /* Backslash inside single-quotes is not special, except \\
              and \'.  */
-          if (sq && str[1] != '\\' && str[1] != '\'')
+          якщо (sq && str[1] != '\\' && str[1] != '\'')
             break;
 
           /* Skip the backslash and examine the next character.  */
@@ -694,7 +694,7 @@ build_argv (char const *str, int extra_argc, int *argc)
               break;
 
             case '_':
-              if (!dq)
+              якщо (!dq)
                 {
                   ++str;  /* '\_' outside double-quotes is arg separator.  */
                   ss.sep = true;
@@ -704,7 +704,7 @@ build_argv (char const *str, int extra_argc, int *argc)
               break;
 
             case 'c':
-              if (dq)
+              якщо (dq)
                 error (EXIT_CANCELED, 0,
                        _("'\\c' must not appear in double-quoted -S string"));
               goto eos; /* '\c' terminates the string.  */
@@ -727,26 +727,26 @@ build_argv (char const *str, int extra_argc, int *argc)
 
         case '$':
           /* ${VARNAME} are not expanded inside single-quotes.  */
-          if (sq)
+          якщо (sq)
             break;
 
           /* Store the ${VARNAME} value.  */
           {
             char *n = extract_varname (str);
-            if (!n)
+            якщо (!n)
               error (EXIT_CANCELED, 0,
                      _("only ${VARNAME} expansion is supported, error at: %s"),
                      str);
 
             char *v = getenv (n);
-            if (v)
+            якщо (v)
               {
                 check_start_new_arg (&ss);
                 vmsg (_("expanding ${%s} into %s\n"), n, quote (v));
-                for (; *v; v++)
+                для (; *v; v++)
                   splitbuf_append_byte (&ss, *v);
               }
-            else
+            інакше
               vmsg (_("replacing ${%s} with empty string\n"), n);
 
             str = strchr (str, '}') + 1;
@@ -759,13 +759,13 @@ build_argv (char const *str, int extra_argc, int *argc)
       ++str;
     }
 
-  if (dq || sq)
+  якщо (dq || sq)
     error (EXIT_CANCELED, 0, _("no terminating quote in -S string"));
 
  eos:
   splitbuf_append_byte (&ss, '\0');
   *argc = ss.argc;
-  return splitbuf_finishup (&ss);
+  повернути splitbuf_finishup (&ss);
 }
 
 /* Process an "-S" string and create the corresponding argv array.
@@ -790,21 +790,21 @@ build_argv (char const *str, int extra_argc, int *argc)
    argc will be updated from 4 to 6.
    optind will be reset to 0 to force getopt_long to rescan all arguments.  */
 static void
-parse_split_string (char const *str, int *orig_optind,
-                    int *orig_argc, char ***orig_argv)
+parse_split_string (char const *str, ціле *orig_optind,
+                    ціле *orig_argc, char ***orig_argv)
 {
-  int extra_argc = *orig_argc - *orig_optind, newargc;
+  ціле extra_argc = *orig_argc - *orig_optind, newargc;
   char **newargv = build_argv (str, extra_argc, &newargc);
 
   /* Restore argv[0] - the 'env' executable name.  */
   *newargv = (*orig_argv)[0];
 
   /* Print parsed arguments.  */
-  if (dev_debug && 1 < newargc)
+  якщо (dev_debug && 1 < newargc)
     {
       vmsg (_("split -S:  %s\n"), quote (str));
       vmsg (_(" into:     %s\n"), quote (newargv[1]));
-      for (int i = 2; i < newargc; i++)
+      для (ціле i = 2; i < newargc; i++)
         vmsg (_("     &     %s\n"), quote (newargv[i]));
     }
 
@@ -822,26 +822,26 @@ parse_split_string (char const *str, int *orig_optind,
 static void
 parse_signal_action_params (char const *arg, bool set_default)
 {
-  if (! arg)
+  якщо (! arg)
     {
       /* Without an argument, reset all signals.
          Some signals cannot be set to ignore or default (e.g., SIGKILL,
          SIGSTOP on most OSes, and SIGCONT on AIX.) - so ignore errors.  */
-      for (int i = 1 ; i <= SIGNUM_BOUND; i++)
+      для (ціле i = 1 ; i <= SIGNUM_BOUND; i++)
         signals[i] = set_default ? DEFAULT_NOERR : IGNORE_NOERR;
-      return;
+      повернути;
     }
 
   char *optarg_writable = xstrdup (arg);
 
   char *opt_sig = strtok (optarg_writable, ",");
-  while (opt_sig)
+  поки (opt_sig)
     {
-      int signum = operand2sig (opt_sig);
+      ціле signum = operand2sig (opt_sig);
       /* operand2sig accepts signal 0 (EXIT) - but we reject it.  */
-      if (signum == 0)
+      якщо (signum == 0)
         error (0, 0, _("%s: invalid signal"), quote (opt_sig));
-      if (signum <= 0)
+      якщо (signum <= 0)
         usage (exit_failure);
 
       signals[signum] = set_default ? DEFAULT : IGNORE;
@@ -855,11 +855,11 @@ parse_signal_action_params (char const *arg, bool set_default)
 static void
 reset_signal_handlers (void)
 {
-  for (int i = 1; i <= SIGNUM_BOUND; i++)
+  для (ціле i = 1; i <= SIGNUM_BOUND; i++)
     {
       struct sigaction act;
 
-      if (signals[i] == UNCHANGED)
+      якщо (signals[i] == UNCHANGED)
         continue;
 
       bool ignore_errors = (signals[i] == DEFAULT_NOERR
@@ -868,25 +868,25 @@ reset_signal_handlers (void)
       bool set_to_default = (signals[i] == DEFAULT
                              || signals[i] == DEFAULT_NOERR);
 
-      int sig_err = sigaction (i, NULL, &act);
+      ціле sig_err = sigaction (i, NULL, &act);
 
-      if (sig_err && !ignore_errors)
+      якщо (sig_err && !ignore_errors)
         error (EXIT_CANCELED, errno,
                _("failed to get signal action for signal %d"), i);
 
-      if (! sig_err)
+      якщо (! sig_err)
         {
           act.sa_handler = set_to_default ? SIG_DFL : SIG_IGN;
           sig_err = sigaction (i, &act, NULL);
-          if (sig_err && !ignore_errors)
+          якщо (sig_err && !ignore_errors)
             error (EXIT_CANCELED, errno,
                    _("failed to set signal action for signal %d"), i);
         }
 
-      if (dev_debug)
+      якщо (dev_debug)
         {
           char signame[SIG2STR_MAX];
-          if (sig2str (i, signame) != 0)
+          якщо (sig2str (i, signame) != 0)
             snprintf (signame, sizeof signame, "SIG%d", i);
           vmsg (_("Reset signal %s (%d) to %s%s\n"),
                   signame, i,
@@ -900,13 +900,13 @@ reset_signal_handlers (void)
 static void
 parse_block_signal_params (char const *arg, bool block)
 {
-  if (! arg)
+  якщо (! arg)
     {
       /* Without an argument, reset all signals.  */
       sigfillset (block ? &block_signals : &unblock_signals);
       sigemptyset (block ? &unblock_signals : &block_signals);
     }
-  else if (! sig_mask_changed)
+  інакше якщо (! sig_mask_changed)
     {
       /* Initialize the sets.  */
       sigemptyset (&block_signals);
@@ -915,29 +915,29 @@ parse_block_signal_params (char const *arg, bool block)
 
   sig_mask_changed = true;
 
-  if (! arg)
-    return;
+  якщо (! arg)
+    повернути;
 
   char *optarg_writable = xstrdup (arg);
 
   char *opt_sig = strtok (optarg_writable, ",");
-  while (opt_sig)
+  поки (opt_sig)
     {
-      int signum = operand2sig (opt_sig);
+      ціле signum = operand2sig (opt_sig);
       /* operand2sig accepts signal 0 (EXIT) - but we reject it.  */
-      if (signum == 0)
+      якщо (signum == 0)
         error (0, 0, _("%s: invalid signal"), quote (opt_sig));
-      if (signum <= 0)
+      якщо (signum <= 0)
         usage (exit_failure);
 
-      if (sigaddset (block ? &block_signals : &unblock_signals, signum) == -1)
+      якщо (sigaddset (block ? &block_signals : &unblock_signals, signum) == -1)
         {
-          if (block)
+          якщо (block)
             error (EXIT_CANCELED, errno,
                    _("failed to block signal %d"), signum);
           /* else diagnosed in parse_signal_action_params().  */
         }
-      else
+      інакше
         sigdelset (block ? &unblock_signals : &block_signals, signum);
 
       opt_sig = strtok (NULL, ",");
@@ -954,35 +954,35 @@ set_signal_proc_mask (void)
 
   sigemptyset (&set);
 
-  if (sigprocmask (0, NULL, &set))
+  якщо (sigprocmask (0, NULL, &set))
     error (EXIT_CANCELED, errno, _("failed to get signal process mask"));
 
-  for (int i = 1; i <= SIGNUM_BOUND; i++)
+  для (ціле i = 1; i <= SIGNUM_BOUND; i++)
     {
       char const *debug_act = NULL;
 
-      if (sigismember (&block_signals, i))
+      якщо (sigismember (&block_signals, i))
         {
           sigaddset (&set, i);
           debug_act = "BLOCK";
         }
-      else if (sigismember (&unblock_signals, i))
+      інакше якщо (sigismember (&unblock_signals, i))
         {
           sigdelset (&set, i);
           debug_act = "UNBLOCK";
         }
 
-      if (dev_debug && debug_act)
+      якщо (dev_debug && debug_act)
         {
           char signame[SIG2STR_MAX];
-          if (sig2str (i, signame) != 0)
+          якщо (sig2str (i, signame) != 0)
             snprintf (signame, sizeof signame, "SIG%d", i);
           vmsg (_("signal %s (%d) mask set to %s\n"),
                   signame, i, debug_act);
         }
     }
 
-  if (sigprocmask (SIG_SETMASK, &set, NULL))
+  якщо (sigprocmask (SIG_SETMASK, &set, NULL))
     error (EXIT_CANCELED, errno, _("failed to set signal process mask"));
 }
 
@@ -992,24 +992,24 @@ list_signal_handling (void)
   sigset_t set;
 
   sigemptyset (&set);
-  if (sigprocmask (0, NULL, &set))
+  якщо (sigprocmask (0, NULL, &set))
     error (EXIT_CANCELED, errno, _("failed to get signal process mask"));
 
-  for (int i = 1; i <= SIGNUM_BOUND; i++)
+  для (ціле i = 1; i <= SIGNUM_BOUND; i++)
     {
       struct sigaction act;
-      if (sigaction (i, NULL, &act))
+      якщо (sigaction (i, NULL, &act))
         continue;
 
       char const *ignored = act.sa_handler == SIG_IGN ? "IGNORE" : "";
       char const *blocked = sigismember (&set, i) ? "BLOCK" : "";
       char const *connect = *ignored && *blocked ? "," : "";
 
-      if (! *ignored && ! *blocked)
+      якщо (! *ignored && ! *blocked)
         continue;
 
       char signame[SIG2STR_MAX];
-      if (sig2str (i, signame) != 0)
+      якщо (sig2str (i, signame) != 0)
         snprintf (signame, sizeof signame, "SIG%d", i);
       fprintf (stderr, "%-10s (%2d): %s%s%s\n", signame, i,
                blocked, connect, ignored);
@@ -1021,16 +1021,16 @@ initialize_signals (void)
 {
   signals = xmalloc ((sizeof *signals) * (SIGNUM_BOUND + 1));
 
-  for (int i = 0 ; i <= SIGNUM_BOUND; i++)
+  для (ціле i = 0 ; i <= SIGNUM_BOUND; i++)
     signals[i] = UNCHANGED;
 }
 
-int
-main (int argc, char **argv)
+ціле
+main (ціле argc, char **argv)
 {
   bool ignore_environment = false;
   bool opt_nul_terminate_output = false;
-  int quoting_style_opt = -1;
+  ціле quoting_style_opt = -1;
   char const *newdir = NULL;
   char const *env0_from_file = NULL;
   char *argv0 = NULL;
@@ -1051,8 +1051,8 @@ main (int argc, char **argv)
 
   initialize_signals ();
 
-  int optc;
-  while ((optc = getopt_long (argc, argv, shortopts, longopts, NULL)) != -1)
+  ціле optc;
+  поки ((optc = getopt_long (argc, argv, shortopts, longopts, NULL)) != -1)
     {
       switch (optc)
         {
@@ -1118,46 +1118,46 @@ main (int argc, char **argv)
         }
     }
 
-  if (optind < argc && streq (argv[optind], "-"))
+  якщо (optind < argc && streq (argv[optind], "-"))
     {
       ignore_environment = true;
       ++optind;
     }
 
-  int program_index = optind;
-  while (program_index < argc && strchr (argv[program_index], '='))
+  ціле program_index = optind;
+  поки (program_index < argc && strchr (argv[program_index], '='))
     program_index++;
   bool program_specified = program_index < argc;
 
   bool quote_output = false;
-  int qs = quoting_style_opt;
-  if (! program_specified && qs < 0 && isatty (STDOUT_FILENO))
+  ціле qs = quoting_style_opt;
+  якщо (! program_specified && qs < 0 && isatty (STDOUT_FILENO))
     {
       /* Get the value from $QUOTING_STYLE before unsetting env vars.  */
       qs = getenv_quoting_style ();
-      if (qs < 0)
+      якщо (qs < 0)
         qs = shell_escape_quoting_style;
     }
-  if (0 <= qs && qs != literal_quoting_style)
+  якщо (0 <= qs && qs != literal_quoting_style)
     {
       set_quoting_style (NULL, qs);
       quote_output = true;
     }
 
   bool env_vector_active = false;
-  if (ignore_environment && env0_from_file)
+  якщо (ignore_environment && env0_from_file)
     {
       vmsg (_("clearing environment\n"));
       set_raw_environment_from_file (&env_vector, env0_from_file);
       env_vector_active = true;
     }
-  else if (ignore_environment)
+  інакше якщо (ignore_environment)
     {
       vmsg (_("clearing environment\n"));
-#if defined _WIN32 && ! defined __CYGWIN__
+#якщо defined _WIN32 && ! defined __CYGWIN__
       static char *dummy_environ[] = { NULL };
       environ = dummy_environ;
-#else
+#інакше
       env_vector.variable = xnmalloc (1, sizeof *env_vector.variable);
       env_vector.variable[0] = NULL;
       env_vector.used = 0;
@@ -1166,102 +1166,102 @@ main (int argc, char **argv)
       env_vector_active = true;
 #endif
     }
-  else if (env0_from_file)
+  інакше якщо (env0_from_file)
     env_vector_active = set_envvars_from_file (&env_vector, env0_from_file);
 
-  if (! ignore_environment || env0_from_file)
+  якщо (! ignore_environment || env0_from_file)
     {
-      if (env_vector_active)
+      якщо (env_vector_active)
         unset_envvars_in_vector (&env_vector);
-      else
+      інакше
         unset_envvars ();
     }
 
   char *eq;
-  while (optind < argc && (eq = strchr (argv[optind], '=')))
+  поки (optind < argc && (eq = strchr (argv[optind], '=')))
     {
-      if (env_vector_active)
+      якщо (env_vector_active)
         set_envvar_in_vector (&env_vector, argv[optind], eq);
-      else
+      інакше
         set_envvar (argv[optind], eq);
       optind++;
     }
 
-  if (opt_nul_terminate_output && program_specified)
+  якщо (opt_nul_terminate_output && program_specified)
     {
       error (0, 0, _("cannot specify --null (-0) with command"));
       usage (EXIT_CANCELED);
     }
 
-  if (newdir && ! program_specified)
+  якщо (newdir && ! program_specified)
     {
       error (0, 0, _("must specify command with --chdir (-C)"));
       usage (EXIT_CANCELED);
     }
 
-  if (argv0 && ! program_specified)
+  якщо (argv0 && ! program_specified)
     {
       error (0, 0, _("must specify command with --argv0 (-a)"));
       usage (EXIT_CANCELED);
     }
 
-  if (! program_specified)
+  якщо (! program_specified)
     {
       char const terminator = opt_nul_terminate_output ? '\0' : '\n';
 
-      if (opt_nul_terminate_output)
+      якщо (opt_nul_terminate_output)
         xset_binary_mode (STDOUT_FILENO, O_BINARY);
 
       /* Print the environment and exit.  */
-      for (char *const *e = environ; *e; ++e)
+      для (char *const *e = environ; *e; ++e)
         print_envvar (*e, terminator, quote_output);
 #ifdef lint
-      if (env_vector_active)
+      якщо (env_vector_active)
         {
           environ = initial_environ;
           free (env_vector.variable);
           free (env0_from_buffer);
         }
 #endif
-      return EXIT_SUCCESS;
+      повернути EXIT_SUCCESS;
     }
 
   reset_signal_handlers ();
-  if (sig_mask_changed)
+  якщо (sig_mask_changed)
     set_signal_proc_mask ();
 
-  if (report_signal_handling)
+  якщо (report_signal_handling)
     list_signal_handling ();
 
-  if (newdir)
+  якщо (newdir)
     {
       vmsg (_("change dir: %s\n"), quote (newdir));
 
-      if (chdir (newdir) != 0)
+      якщо (chdir (newdir) != 0)
         error (EXIT_CANCELED, errno, _("cannot change directory to %s"),
                quoteaf (newdir));
     }
 
   char *program = argv[optind];
-  if (argv0)
+  якщо (argv0)
     {
       vmsg ("argv0:     %s\n", quote (argv0));
       argv[optind] = argv0;
     }
 
-  if (dev_debug)
+  якщо (dev_debug)
     {
       vmsg (_("executing: %s\n"), quote (program));
-      for (int i=optind; i<argc; ++i)
+      для (ціле i=optind; i<argc; ++i)
         vmsg ("   arg[%d]= %s\n", i-optind, quote (argv[i]));
     }
 
   execvp (program, &argv[optind]);
 
-  int exit_status = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
+  ціле exit_status = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
   error (0, errno, "%s", quote (program));
 
-  if (exit_status == EXIT_ENOENT && strpbrk (program, C_ISSPACE_CHARS))
+  якщо (exit_status == EXIT_ENOENT && strpbrk (program, C_ISSPACE_CHARS))
     error (0, 0, _("use -[v]S to pass options in shebang lines"));
 
   main_exit (exit_status);

@@ -44,11 +44,11 @@ static struct option const longopts[] =
 };
 
 void
-usage (int status)
+usage (ціле status)
 {
-  if (status != EXIT_SUCCESS)
+  якщо (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  інакше
     {
       printf (_("Usage: %s [OPTION]... NAME TYPE [MAJOR MINOR]\n"),
               program_name);
@@ -68,7 +68,7 @@ Create the special file NAME of the given TYPE.\n\
 "));
       oputs (_("\
       --context[=CTX]\n\
-         like -Z, or if CTX is specified then set the\n\
+         like -Z, or якщо CTX is specified then set the\n\
          SELinux or SMACK security context to CTX\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
@@ -77,7 +77,7 @@ Create the special file NAME of the given TYPE.\n\
 \n\
 Both MAJOR and MINOR must be specified when TYPE is b, c, or u, and they\n\
 must be omitted when TYPE is p.  If MAJOR or MINOR begins with 0x or 0X,\n\
-it is interpreted as hexadecimal; otherwise, if it begins with 0, as octal;\n\
+it is interpreted as hexadecimal; otherwise, якщо it begins with 0, as octal;\n\
 otherwise, as decimal.  TYPE may be:\n\
 "), stdout);
       fputs (_("\
@@ -92,8 +92,8 @@ otherwise, as decimal.  TYPE may be:\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+ціле
+main (ціле argc, char **argv)
 {
   char const *specified_mode = NULL;
   char const *scontext = NULL;
@@ -107,8 +107,8 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  int optc;
-  while ((optc = getopt_long (argc, argv, "m:Z", longopts, NULL)) != -1)
+  ціле optc;
+  поки ((optc = getopt_long (argc, argv, "m:Z", longopts, NULL)) != -1)
     {
       switch (optc)
         {
@@ -116,24 +116,24 @@ main (int argc, char **argv)
           specified_mode = optarg;
           break;
         case 'Z':
-          if (is_smack_enabled ())
+          якщо (is_smack_enabled ())
             {
               /* We don't yet support -Z to restore context with SMACK.  */
               scontext = optarg;
             }
-          else if (is_selinux_enabled () > 0)
+          інакше якщо (is_selinux_enabled () > 0)
             {
-              if (optarg)
+              якщо (optarg)
                 scontext = optarg;
-              else
+              інакше
                 {
                   set_security_context = selabel_open (SELABEL_CTX_FILE,
                                                        NULL, 0);
-                  if (! set_security_context)
+                  якщо (! set_security_context)
                     error (0, errno, _("warning: ignoring --context"));
                 }
             }
-          else if (optarg)
+          інакше якщо (optarg)
             {
               error (0, 0,
                      _("warning: ignoring --context; "
@@ -148,16 +148,16 @@ main (int argc, char **argv)
     }
 
   mode_t newmode = MODE_RW_UGO;
-  if (specified_mode)
+  якщо (specified_mode)
     {
       struct mode_change *change = mode_compile (specified_mode);
-      if (!change)
+      якщо (!change)
         error (EXIT_FAILURE, 0, _("invalid mode"));
       mode_t umask_value = umask (0);
       umask (umask_value);
       newmode = mode_adjust (newmode, false, umask_value, change, NULL);
       free (change);
-      if (newmode & ~S_IRWXUGO)
+      якщо (newmode & ~S_IRWXUGO)
         error (EXIT_FAILURE, 0,
                _("mode must specify only file permission bits"));
     }
@@ -165,41 +165,41 @@ main (int argc, char **argv)
   /* If the number of arguments is 0 or 1,
      or (if it's 2 or more and the second one starts with 'p'), then there
      must be exactly two operands.  Otherwise, there must be four.  */
-  int expected_operands = (argc <= optind
+  ціле expected_operands = (argc <= optind
                            || (optind + 1 < argc && argv[optind + 1][0] == 'p')
                            ? 2 : 4);
 
-  if (argc - optind < expected_operands)
+  якщо (argc - optind < expected_operands)
     {
-      if (argc <= optind)
+      якщо (argc <= optind)
         error (0, 0, _("missing operand"));
-      else
+      інакше
         error (0, 0, _("missing operand after %s"), quote (argv[argc - 1]));
-      if (expected_operands == 4 && argc - optind == 2)
+      якщо (expected_operands == 4 && argc - optind == 2)
         fprintf (stderr, "%s\n",
                  _("Special files require major and minor device numbers."));
       usage (EXIT_FAILURE);
     }
 
-  if (expected_operands < argc - optind)
+  якщо (expected_operands < argc - optind)
     {
       error (0, 0, _("extra operand %s"),
              quote (argv[optind + expected_operands]));
-      if (expected_operands == 2 && argc - optind == 4)
+      якщо (expected_operands == 2 && argc - optind == 4)
         fprintf (stderr, "%s\n",
                  _("Fifos do not have major and minor device numbers."));
       usage (EXIT_FAILURE);
     }
 
-  if (scontext)
+  якщо (scontext)
     {
-      int ret = 0;
-      if (is_smack_enabled ())
+      ціле ret = 0;
+      якщо (is_smack_enabled ())
         ret = smack_set_label_for_self (scontext);
-      else
+      інакше
         ret = setfscreatecon (scontext);
 
-      if (ret < 0)
+      якщо (ret < 0)
         error (EXIT_FAILURE, errno,
                _("failed to set default file creation context to %s"),
                quote (scontext));
@@ -214,7 +214,7 @@ main (int argc, char **argv)
     case 'b':			/* 'block' or 'buffered' */
 #ifndef S_IFBLK
       error (EXIT_FAILURE, 0, _("block special files not supported"));
-#else
+#інакше
       node_type = S_IFBLK;
 #endif
       goto block_or_character;
@@ -223,7 +223,7 @@ main (int argc, char **argv)
     case 'u':			/* 'unbuffered' */
 #ifndef S_IFCHR
       error (EXIT_FAILURE, 0, _("character special files not supported"));
-#else
+#інакше
       node_type = S_IFCHR;
 #endif
       goto block_or_character;
@@ -232,37 +232,37 @@ main (int argc, char **argv)
       {
         char const *s_major = argv[optind + 2];
         uintmax_t i_major;
-        if (xstrtoumax (s_major, NULL, 0, &i_major, "") != LONGINT_OK
+        якщо (xstrtoumax (s_major, NULL, 0, &i_major, "") != LONGINT_OK
             || i_major != (major_t) i_major)
           error (EXIT_FAILURE, 0,
                  _("invalid major device number %s"), quote (s_major));
 
         char const *s_minor = argv[optind + 3];
         uintmax_t i_minor;
-        if (xstrtoumax (s_minor, NULL, 0, &i_minor, "") != LONGINT_OK
+        якщо (xstrtoumax (s_minor, NULL, 0, &i_minor, "") != LONGINT_OK
             || i_minor != (minor_t) i_minor)
           error (EXIT_FAILURE, 0,
                  _("invalid minor device number %s"), quote (s_minor));
 
         dev_t device = makedev (i_major, i_minor);
 #ifdef NODEV
-        if (device == NODEV)
+        якщо (device == NODEV)
           error (EXIT_FAILURE, 0, _("invalid device %s %s"),
                  s_major, s_minor);
 #endif
 
-        if (set_security_context)
+        якщо (set_security_context)
           defaultcon (set_security_context, argv[optind], node_type);
 
-        if (mknod (argv[optind], newmode | node_type, device) != 0)
+        якщо (mknod (argv[optind], newmode | node_type, device) != 0)
           error (EXIT_FAILURE, errno, "%s", quotef (argv[optind]));
       }
       break;
 
     case 'p':			/* 'pipe' */
-      if (set_security_context)
+      якщо (set_security_context)
         defaultcon (set_security_context, argv[optind], S_IFIFO);
-      if (mkfifo (argv[optind], newmode) != 0)
+      якщо (mkfifo (argv[optind], newmode) != 0)
         error (EXIT_FAILURE, errno, "%s", quotef (argv[optind]));
       break;
 
@@ -271,9 +271,9 @@ main (int argc, char **argv)
       usage (EXIT_FAILURE);
     }
 
-  if (specified_mode && lchmod (argv[optind], newmode) != 0)
+  якщо (specified_mode && lchmod (argv[optind], newmode) != 0)
     error (EXIT_FAILURE, errno, _("cannot set permissions of %s"),
            quoteaf (argv[optind]));
 
-  return EXIT_SUCCESS;
+  повернути EXIT_SUCCESS;
 }

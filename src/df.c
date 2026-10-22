@@ -70,7 +70,7 @@ static bool show_local_fs;
 static bool show_listed_fs;
 
 /* Human-readable options for output.  */
-static int human_output_opts = -1;
+static ціле human_output_opts = -1;
 
 /* The units to use when printing sizes.  */
 static uintmax_t output_block_size;
@@ -85,7 +85,7 @@ static bool file_systems_processed;
 static bool require_sync;
 
 /* Desired exit status.  */
-static int exit_status;
+static ціле exit_status;
 
 /* A file system type to display.  */
 
@@ -168,7 +168,7 @@ struct field_data_t
   char const *arg;
   field_type_t field_type;
   char const *caption;/* NULL means use default header of this field.  */
-  int width;          /* Auto adjusted (up) widths used to align columns.  */
+  ціле width;          /* Auto adjusted (up) widths used to align columns.  */
   bool align_right;   /* Whether to right-align columns, not left-align.  */
   bool used;
 };
@@ -285,21 +285,21 @@ static struct option const long_options[] =
    error number otherwise.  Try to open FILE before statting, to
    trigger automounts.  */
 
-static int
+static ціле
 automount_stat_err (char const *file, struct stat *st)
 {
-  int fd = open (file, O_RDONLY | O_NOCTTY | O_NONBLOCK);
-  if (fd < 0)
+  ціле fd = open (file, O_RDONLY | O_NOCTTY | O_NONBLOCK);
+  якщо (fd < 0)
     {
-      if (errno == ENOENT || errno == ENOTDIR)
-        return errno;
-      return stat (file, st) == 0 ? 0 : errno;
+      якщо (errno == ENOENT || errno == ENOTDIR)
+        повернути errno;
+      повернути stat (file, st) == 0 ? 0 : errno;
     }
-  else
+  інакше
     {
-      int err = fstat (fd, st) == 0 ? 0 : errno;
+      ціле err = fstat (fd, st) == 0 ? 0 : errno;
       close (fd);
-      return err;
+      повернути err;
     }
 }
 
@@ -313,9 +313,9 @@ static void
 replace_control_chars (char *cell)
 {
   char *p = cell;
-  while (*p)
+  поки (*p)
     {
-      if (c_iscntrl (*p))
+      якщо (c_iscntrl (*p))
         *p = '?';
       p++;
     }
@@ -331,24 +331,24 @@ replace_invalid_chars (char *cell)
   mbstate_t mbstate; mbszero (&mbstate);
   size_t n;
 
-  for (char *src = cell; src != srcend; src += n)
+  для (char *src = cell; src != srcend; src += n)
     {
       char32_t wc;
       size_t srcbytes = srcend - src;
       n = mbrtoc32 (&wc, src, srcbytes, &mbstate);
       bool ok = n <= srcbytes;
 
-      if (ok)
+      якщо (ok)
         ok = !c32iscntrl (wc);
-      else
+      інакше
         n = 1;
 
-      if (ok)
+      якщо (ok)
         {
           memmove (dst, src, n);
           dst += n;
         }
-      else
+      інакше
         {
           *dst++ = '?';
           mbszero (&mbstate);
@@ -361,8 +361,8 @@ replace_invalid_chars (char *cell)
 static void
 replace_problematic_chars (char *cell)
 {
-  static int tty_out = -1;
-  if (tty_out < 0)
+  static ціле tty_out = -1;
+  якщо (tty_out < 0)
     tty_out = isatty (STDOUT_FILENO);
 
   (tty_out ? replace_invalid_chars : replace_control_chars) (cell) ;
@@ -375,7 +375,7 @@ replace_problematic_chars (char *cell)
 static void
 alloc_table_row (void)
 {
-  if (table.nrows == table.nrows_alloc)
+  якщо (table.nrows == table.nrows_alloc)
     table.rows = xpalloc (table.rows, &table.nrows_alloc, 1, -1,
                           sizeof *table.rows);
   idx_t const row_idx = table.nrows++;
@@ -388,9 +388,9 @@ alloc_table_row (void)
 static void
 print_table (void)
 {
-  for (idx_t row = 0; row < table.nrows; row++)
+  для (idx_t row = 0; row < table.nrows; row++)
     {
-      for (idx_t col = 0; col < table.ncolumns; col++)
+      для (idx_t col = 0; col < table.ncolumns; col++)
         {
           char *cell = table.rows[row][col];
 
@@ -398,17 +398,17 @@ print_table (void)
              if (!posix_format && mbswidth (cell) > 20), but that
              functionality was probably more problematic than helpful,
              hence changed in commit v8.10-40-g99679ff.  */
-          if (col != 0)
+          якщо (col != 0)
             putchar (' ');
 
-          int width = mbswidth (cell, MBSWIDTH_FLAGS);
-          int fill = width < 0 ? 0 : table.columns[col]->width - width;
-          if (table.columns[col]->align_right)
-            for (; 0 < fill; fill--)
+          ціле width = mbswidth (cell, MBSWIDTH_FLAGS);
+          ціле fill = width < 0 ? 0 : table.columns[col]->width - width;
+          якщо (table.columns[col]->align_right)
+            для (; 0 < fill; fill--)
               putchar (' ');
           fputs (cell, stdout);
-          if (col + 1 < table.ncolumns)
-            for (; 0 < fill; fill--)
+          якщо (col + 1 < table.ncolumns)
+            для (; 0 < fill; fill--)
               putchar (' ');
         }
       putchar ('\n');
@@ -419,14 +419,14 @@ print_table (void)
    can then be accessed with standard array notation.  */
 
 static void
-alloc_field (int f, char const *c)
+alloc_field (ціле f, char const *c)
 {
-  if (table.ncolumns == table.ncolumns_alloc)
+  якщо (table.ncolumns == table.ncolumns_alloc)
     table.columns = xpalloc (table.columns, &table.ncolumns_alloc, 1, -1,
                              sizeof *table.columns);
   idx_t const column_idx = table.ncolumns++;
   table.columns[column_idx] = &field_data[f];
-  if (c != NULL)
+  якщо (c != NULL)
     field_data[f].caption = c;
 
   affirm (!field_data[f].used);
@@ -449,26 +449,26 @@ decode_output_arg (char const *arg)
       char *comma = strchr (s, ',');
 
       /* If we found a comma, put a NUL in its place and advance.  */
-      if (comma)
+      якщо (comma)
         *comma++ = 0;
 
       /* process S.  */
       display_field_t field = INVALID_FIELD;
-      for (idx_t i = 0; i < countof (field_data); i++)
+      для (idx_t i = 0; i < countof (field_data); i++)
         {
-          if (streq (field_data[i].arg, s))
+          якщо (streq (field_data[i].arg, s))
             {
               field = i;
               break;
             }
         }
-      if (field == INVALID_FIELD)
+      якщо (field == INVALID_FIELD)
         {
           error (0, 0, _("option --output: field %s unknown"), quote (s));
           usage (EXIT_FAILURE);
         }
 
-      if (field_data[field].used)
+      якщо (field_data[field].used)
         {
           /* Prevent the fields from being used more than once.  */
           error (0, 0, _("option --output: field %s used more than once"),
@@ -505,7 +505,7 @@ decode_output_arg (char const *arg)
         }
       s = comma;
     }
-  while (s);
+  поки (s);
 
   free (arg_writable);
 }
@@ -518,7 +518,7 @@ get_field_list (void)
     {
     case DEFAULT_MODE:
       alloc_field (SOURCE_FIELD, NULL);
-      if (print_type)
+      якщо (print_type)
         alloc_field (FSTYPE_FIELD, NULL);
       alloc_field (SIZE_FIELD,   NULL);
       alloc_field (USED_FIELD,   NULL);
@@ -529,7 +529,7 @@ get_field_list (void)
 
     case HUMAN_MODE:
       alloc_field (SOURCE_FIELD, NULL);
-      if (print_type)
+      якщо (print_type)
         alloc_field (FSTYPE_FIELD, NULL);
 
       alloc_field (SIZE_FIELD,   N_("Size"));
@@ -541,7 +541,7 @@ get_field_list (void)
 
     case INODES_MODE:
       alloc_field (SOURCE_FIELD, NULL);
-      if (print_type)
+      якщо (print_type)
         alloc_field (FSTYPE_FIELD, NULL);
       alloc_field (ITOTAL_FIELD,  NULL);
       alloc_field (IUSED_FIELD,   NULL);
@@ -552,7 +552,7 @@ get_field_list (void)
 
     case POSIX_MODE:
       alloc_field (SOURCE_FIELD, NULL);
-      if (print_type)
+      якщо (print_type)
         alloc_field (FSTYPE_FIELD, NULL);
       alloc_field (SIZE_FIELD,   NULL);
       alloc_field (USED_FIELD,   NULL);
@@ -562,7 +562,7 @@ get_field_list (void)
       break;
 
     case OUTPUT_MODE:
-      if (!table.ncolumns)
+      якщо (!table.ncolumns)
         {
           /* Add all fields if --output was given without a field list.  */
           decode_output_arg (all_args_string);
@@ -581,19 +581,19 @@ get_header (void)
 {
   alloc_table_row ();
 
-  for (idx_t col = 0; col < table.ncolumns; col++)
+  для (idx_t col = 0; col < table.ncolumns; col++)
     {
       char *cell;
       char const *header = _(table.columns[col]->caption);
 
-      if (table.columns[col]->field == SIZE_FIELD
+      якщо (table.columns[col]->field == SIZE_FIELD
           && (header_mode == DEFAULT_MODE
               || (header_mode == OUTPUT_MODE
                   && !(human_output_opts & human_autoscale))))
         {
           char buf[LONGEST_HUMAN_READABLE + 1];
 
-          int opts = (human_suppress_point_zero
+          ціле opts = (human_suppress_point_zero
                       | human_autoscale | human_SI
                       | (human_output_opts
                          & (human_group_digits | human_base_1024 | human_B)));
@@ -611,13 +611,13 @@ get_header (void)
               divisible_by_1000 = q1000 % 1000 == 0;  q1000 /= 1000;
               divisible_by_1024 = q1024 % 1024 == 0;  q1024 /= 1024;
             }
-          while (divisible_by_1000 & divisible_by_1024);
+          поки (divisible_by_1000 & divisible_by_1024);
 
-          if (divisible_by_1000 < divisible_by_1024)
+          якщо (divisible_by_1000 < divisible_by_1024)
             opts |= human_base_1024;
-          if (divisible_by_1024 < divisible_by_1000)
+          якщо (divisible_by_1024 < divisible_by_1000)
             opts &= ~human_base_1024;
-          if (! (opts & human_base_1024))
+          якщо (! (opts & human_base_1024))
             opts |= human_B;
 
           char *num = human_readable (output_block_size, buf, opts, 1, 1);
@@ -628,20 +628,20 @@ get_header (void)
           /* TRANSLATORS: this is the "1K-blocks" header in "df" output.  */
           cell = xasprintf (_("%s-%s"), num, header);
         }
-      else if (header_mode == POSIX_MODE
+      інакше якщо (header_mode == POSIX_MODE
                && table.columns[col]->field == SIZE_FIELD)
         {
           /* TRANSLATORS: this is the "1024-blocks" header in "df -P".  */
           cell = xasprintf (_("%ju-%s"), output_block_size, header);
         }
-      else
+      інакше
         cell = xstrdup (header);
 
       replace_problematic_chars (cell);
 
       table.rows[table.nrows - 1][col] = cell;
 
-      int cell_width = mbswidth (cell, MBSWIDTH_FLAGS);
+      ціле cell_width = mbswidth (cell, MBSWIDTH_FLAGS);
       table.columns[col]->width = MAX (table.columns[col]->width, cell_width);
     }
 }
@@ -652,13 +652,13 @@ ATTRIBUTE_PURE
 static bool
 selected_fstype (char const *fstype)
 {
-  if (fs_select_list == NULL || fstype == NULL)
-    return true;
-  for (const struct fs_type_list *fsp = fs_select_list; fsp;
+  якщо (fs_select_list == NULL || fstype == NULL)
+    повернути true;
+  для (const struct fs_type_list *fsp = fs_select_list; fsp;
        fsp = fsp->fs_next)
-    if (streq (fstype, fsp->fs_name))
-      return true;
-  return false;
+    якщо (streq (fstype, fsp->fs_name))
+      повернути true;
+  повернути false;
 }
 
 /* Is FSTYPE a type of file system that should be omitted?  */
@@ -667,20 +667,20 @@ ATTRIBUTE_PURE
 static bool
 excluded_fstype (char const *fstype)
 {
-  if (fs_exclude_list == NULL || fstype == NULL)
-    return false;
-  for (const struct fs_type_list *fsp = fs_exclude_list; fsp;
+  якщо (fs_exclude_list == NULL || fstype == NULL)
+    повернути false;
+  для (const struct fs_type_list *fsp = fs_exclude_list; fsp;
        fsp = fsp->fs_next)
-    if (streq (fstype, fsp->fs_name))
-      return true;
-  return false;
+    якщо (streq (fstype, fsp->fs_name))
+      повернути true;
+  повернути false;
 }
 
 static size_t
 devlist_hash (void const *x, size_t table_size)
 {
   struct devlist const *p = x;
-  return (uintmax_t) {p->dev_num} % table_size;
+  повернути (uintmax_t) {p->dev_num} % table_size;
 }
 
 static bool
@@ -688,23 +688,23 @@ devlist_compare (void const *x, void const *y)
 {
   struct devlist const *a = x;
   struct devlist const *b = y;
-  return a->dev_num == b->dev_num;
+  повернути a->dev_num == b->dev_num;
 }
 
 static struct devlist *
 devlist_for_dev (dev_t dev)
 {
-  if (devlist_table == NULL)
-    return NULL;
+  якщо (devlist_table == NULL)
+    повернути NULL;
   struct devlist dev_entry;
   dev_entry.dev_num = dev;
 
   struct devlist *found = hash_lookup (devlist_table, &dev_entry);
-  if (found == NULL)
-    return NULL;
+  якщо (found == NULL)
+    повернути NULL;
 
   /* Return the last devlist entry we have seen with this dev_num */
-  return found->seen_last;
+  повернути found->seen_last;
 }
 
 /* Filter mount list by skipping duplicate entries.
@@ -719,18 +719,18 @@ filter_mount_list (bool devices_only)
 {
   /* Temporary list to keep entries ordered.  */
   struct devlist *device_list = NULL;
-  int mount_list_size = 0;
+  ціле mount_list_size = 0;
 
-  for (struct mount_entry *me = mount_list; me; me = me->me_next)
+  для (struct mount_entry *me = mount_list; me; me = me->me_next)
     mount_list_size++;
 
   devlist_table = hash_initialize (mount_list_size, NULL,
                                    devlist_hash, devlist_compare, NULL);
-  if (devlist_table == NULL)
+  якщо (devlist_table == NULL)
     xalloc_die ();
 
   /* Sort all 'wanted' entries into the list device_list.  */
-  for (struct mount_entry *me = mount_list; me;)
+  для (struct mount_entry *me = mount_list; me;)
     {
       struct stat buf;
       struct mount_entry *discard_me = NULL;
@@ -739,7 +739,7 @@ filter_mount_list (bool devices_only)
       /* Avoid stating remote file systems as that may hang.
          On Linux we probably have me_dev populated from /proc/self/mountinfo,
          however we still stat() in case another device was mounted later.  */
-      if ((me->me_remote && show_local_fs)
+      якщо ((me->me_remote && show_local_fs)
           || (me->me_dummy && !show_all_fs && !show_listed_fs)
           || (!selected_fstype (me->me_type) || excluded_fstype (me->me_type))
           || -1 == stat (me->me_mountdir, &buf))
@@ -749,12 +749,12 @@ filter_mount_list (bool devices_only)
              If stat failed; add ME to be able to complain about it later.  */
           buf.st_dev = me->me_dev;
         }
-      else
+      інакше
         {
           /* If we've already seen this device...  */
           last_seen_dev = seen_dev = devlist_for_dev (buf.st_dev);
 
-          for (; seen_dev && ! discard_me; seen_dev = seen_dev->next_same_dev)
+          для (; seen_dev && ! discard_me; seen_dev = seen_dev->next_same_dev)
             {
               bool target_nearer_root = strlen (seen_dev->me->me_mountdir)
                                         > strlen (me->me_mountdir);
@@ -763,7 +763,7 @@ filter_mount_list (bool devices_only)
                                        && me->me_mntroot != NULL
                                        && (strlen (seen_dev->me->me_mntroot)
                                            < strlen (me->me_mntroot));
-              if (! print_grand_total
+              якщо (! print_grand_total
                   && me->me_remote && seen_dev->me->me_remote
                   && ! streq (seen_dev->me->me_devname, me->me_devname))
                 {
@@ -772,7 +772,7 @@ filter_mount_list (bool devices_only)
                      However avoid this when producing a total to give
                      a more accurate value in that case.  */
                 }
-              else if ((strchr (me->me_devname, '/')
+              інакше якщо ((strchr (me->me_devname, '/')
                        /* let "real" devices with '/' in the name win.  */
                         && ! strchr (seen_dev->me->me_devname, '/'))
                        /* let points towards the root of the device win.  */
@@ -790,7 +790,7 @@ filter_mount_list (bool devices_only)
                   discard_me = seen_dev->me;
                   seen_dev->me = me;
                 }
-              else
+              інакше
                 {
                   /* Discard mount entry currently being processed.  */
                   discard_me = me;
@@ -799,13 +799,13 @@ filter_mount_list (bool devices_only)
             }
         }
 
-      if (discard_me)
+      якщо (discard_me)
         {
           me = me->me_next;
-          if (! devices_only)
+          якщо (! devices_only)
             free_mount_entry (discard_me);
         }
-      else
+      інакше
         {
           /* Add the device number to the device_table.  */
           struct devlist *devlist = xmalloc (sizeof *devlist);
@@ -816,7 +816,7 @@ filter_mount_list (bool devices_only)
           device_list = devlist;
 
           struct devlist *hash_entry = hash_insert (devlist_table, devlist);
-          if (hash_entry == NULL)
+          якщо (hash_entry == NULL)
             xalloc_die ();
           /* Ensure lookups use this latest devlist.  */
           hash_entry->seen_last = devlist;
@@ -826,10 +826,10 @@ filter_mount_list (bool devices_only)
     }
 
   /* Finally rebuild the mount_list from the devlist.  */
-  if (! devices_only)
+  якщо (! devices_only)
     {
       mount_list = NULL;
-      while (device_list)
+      поки (device_list)
         {
           /* Add the mount entry.  */
           struct mount_entry *me = device_list->me;
@@ -853,10 +853,10 @@ static struct mount_entry const *
 me_for_dev (dev_t dev)
 {
   struct devlist *dl = devlist_for_dev (dev);
-  if (dl)
-        return dl->me;
+  якщо (dl)
+        повернути dl->me;
 
-  return NULL;
+  повернути NULL;
 }
 
 /* Return true if N is a known integer value.  On many file systems,
@@ -866,7 +866,7 @@ me_for_dev (dev_t dev)
 static bool
 known_value (uintmax_t n)
 {
-  return n < UINTMAX_MAX - 1;
+  повернути n < UINTMAX_MAX - 1;
 }
 
 /* Like human_readable (N, BUF, human_output_opts, INPUT_UNITS, OUTPUT_UNITS),
@@ -880,15 +880,15 @@ static char const *
 df_readable (bool negative, uintmax_t n, char *buf,
              uintmax_t input_units, uintmax_t output_units)
 {
-  if (! known_value (n) && !negative)
-    return "-";
-  else
+  якщо (! known_value (n) && !negative)
+    повернути "-";
+  інакше
     {
       char *p = human_readable (negative ? -n : n, buf + negative,
                                 human_output_opts, input_units, output_units);
-      if (negative)
+      якщо (negative)
         *--p = '-';
-      return p;
+      повернути p;
     }
 }
 
@@ -900,27 +900,27 @@ static void
 add_uint_with_neg_flag (uintmax_t *dest, bool *dest_neg,
                         uintmax_t src, bool src_neg)
 {
-  if (*dest_neg == src_neg)
+  якщо (*dest_neg == src_neg)
     {
       *dest += src;
-      return;
+      повернути;
     }
 
-  if (*dest_neg)
+  якщо (*dest_neg)
     *dest = -*dest;
 
-  if (src_neg)
+  якщо (src_neg)
     src = -src;
 
-  if (src < *dest)
+  якщо (src < *dest)
     *dest -= src;
-  else
+  інакше
     {
       *dest = src - *dest;
       *dest_neg = src_neg;
     }
 
-  if (*dest_neg)
+  якщо (*dest_neg)
     *dest = -*dest;
 }
 
@@ -932,7 +932,7 @@ static bool
 has_uuid_suffix (char const *s)
 {
   size_t len = strlen (s);
-  return (36 < len
+  повернути (36 < len
           && strspn (s + len - 36, "-0123456789abcdefABCDEF") == 36);
 }
 
@@ -951,7 +951,7 @@ get_field_values (struct field_values_t *bv,
 
   iv->used = UINTMAX_MAX;
   iv->negate_used = false;
-  if (known_value (iv->total) && known_value (iv->available_to_root))
+  якщо (known_value (iv->total) && known_value (iv->available_to_root))
     {
       iv->used = iv->total - iv->available_to_root;
       iv->negate_used = (iv->total < iv->available_to_root);
@@ -968,7 +968,7 @@ get_field_values (struct field_values_t *bv,
 
   bv->used = UINTMAX_MAX;
   bv->negate_used = false;
-  if (known_value (bv->total) && known_value (bv->available_to_root))
+  якщо (known_value (bv->total) && known_value (bv->available_to_root))
     {
       bv->used = bv->total - bv->available_to_root;
       bv->negate_used = (bv->total < bv->available_to_root);
@@ -979,16 +979,16 @@ get_field_values (struct field_values_t *bv,
 static void
 add_to_grand_total (struct field_values_t *bv, struct field_values_t *iv)
 {
-  if (known_value (iv->total))
+  якщо (known_value (iv->total))
     grand_fsu.fsu_files += iv->total;
-  if (known_value (iv->available))
+  якщо (known_value (iv->available))
     grand_fsu.fsu_ffree += iv->available;
 
-  if (known_value (bv->total))
+  якщо (known_value (bv->total))
     grand_fsu.fsu_blocks += bv->input_units * bv->total;
-  if (known_value (bv->available_to_root))
+  якщо (known_value (bv->available_to_root))
     grand_fsu.fsu_bfree += bv->input_units * bv->available_to_root;
-  if (known_value (bv->available))
+  якщо (known_value (bv->available))
     add_uint_with_neg_flag (&grand_fsu.fsu_bavail,
                             &grand_fsu.fsu_bavail_top_bit_set,
                             bv->input_units * bv->available,
@@ -1017,59 +1017,59 @@ get_dev (char const *device, char const *mount_point, char const *file,
          const struct fs_usage *force_fsu,
          bool process_all)
 {
-  if (me_remote && show_local_fs)
-    return;
+  якщо (me_remote && show_local_fs)
+    повернути;
 
-  if (me_dummy && !show_all_fs && !show_listed_fs)
-    return;
+  якщо (me_dummy && !show_all_fs && !show_listed_fs)
+    повернути;
 
-  if (!selected_fstype (fstype) || excluded_fstype (fstype))
-    return;
+  якщо (!selected_fstype (fstype) || excluded_fstype (fstype))
+    повернути;
 
   /* Ignore relative MOUNT_POINTs, which are present for example
      in /proc/mounts on Linux with network namespaces.  */
-  if (!force_fsu && ! IS_ABSOLUTE_FILE_NAME (mount_point))
-    return;
+  якщо (!force_fsu && ! IS_ABSOLUTE_FILE_NAME (mount_point))
+    повернути;
 
-  if (!stat_file)
+  якщо (!stat_file)
     stat_file = mount_point;
 
   struct fs_usage fsu;
-  if (force_fsu)
+  якщо (force_fsu)
     fsu = *force_fsu;
-  else if (get_fs_usage (stat_file, device, &fsu))
+  інакше якщо (get_fs_usage (stat_file, device, &fsu))
     {
       /* If we can't access a system provided entry due
          to it not being present (now), or due to permissions,
          just output placeholder values rather than failing.  */
-      if (process_all && (errno == EACCES || errno == ENOENT))
+      якщо (process_all && (errno == EACCES || errno == ENOENT))
         {
-          if (! show_all_fs)
-            return;
+          якщо (! show_all_fs)
+            повернути;
 
           fstype = "-";
           fsu.fsu_bavail_top_bit_set = false;
           fsu.fsu_blocksize = fsu.fsu_blocks = fsu.fsu_bfree =
           fsu.fsu_bavail = fsu.fsu_files = fsu.fsu_ffree = UINTMAX_MAX;
         }
-      else
+      інакше
         {
           error (0, errno, "%s", quotef (stat_file));
           exit_status = EXIT_FAILURE;
-          return;
+          повернути;
         }
     }
-  else if (process_all && show_all_fs)
+  інакше якщо (process_all && show_all_fs)
     {
       /* Ensure we don't output incorrect stats for over-mounted directories.
          Discard stats when the device name doesn't match.  Though don't
          discard when used and current mount entries are both remote due
          to the possibility of aliased host names or exports.  */
       struct stat sb;
-      if (stat (stat_file, &sb) == 0)
+      якщо (stat (stat_file, &sb) == 0)
         {
           struct mount_entry const * dev_me = me_for_dev (sb.st_dev);
-          if (dev_me && ! streq (dev_me->me_devname, device)
+          якщо (dev_me && ! streq (dev_me->me_devname, device)
               && (! dev_me->me_remote || ! me_remote))
             {
               fstype = "-";
@@ -1080,18 +1080,18 @@ get_dev (char const *device, char const *mount_point, char const *file,
         }
     }
 
-  if (fsu.fsu_blocks == 0 && !show_all_fs && !show_listed_fs)
-    return;
+  якщо (fsu.fsu_blocks == 0 && !show_all_fs && !show_listed_fs)
+    повернути;
 
-  if (! force_fsu)
+  якщо (! force_fsu)
     file_systems_processed = true;
 
   alloc_table_row ();
 
-  if (! device)
+  якщо (! device)
     device = "-";		/* unknown */
 
-  if (! file)
+  якщо (! file)
     file = "-";			/* unspecified */
 
   char *dev_name = xstrdup (device);
@@ -1103,7 +1103,7 @@ get_dev (char const *device, char const *mount_point, char const *file,
      like /dev/mapper/luks-828fc648-9f30-43d8-a0b1-f7196a2edb66 and point to
      /dev/dm-0.  When process_all is true and dev_name is a symlink whose
      name ends with a UUID use the resolved name instead.  */
-  if (process_all
+  якщо (process_all
       && has_uuid_suffix (dev_name)
       && (resolved_dev = canonicalize_filename_mode (dev_name, CAN_EXISTING)))
     {
@@ -1111,7 +1111,7 @@ get_dev (char const *device, char const *mount_point, char const *file,
       dev_name = resolved_dev;
     }
 
-  if (! fstype)
+  якщо (! fstype)
     fstype = "-";		/* unknown */
 
   struct field_values_t block_values;
@@ -1119,10 +1119,10 @@ get_dev (char const *device, char const *mount_point, char const *file,
   get_field_values (&block_values, &inode_values, &fsu);
 
   /* Add to grand total unless processing grand total line.  */
-  if (print_grand_total && ! force_fsu)
+  якщо (print_grand_total && ! force_fsu)
     add_to_grand_total (&block_values, &inode_values);
 
-  for (idx_t col = 0; col < table.ncolumns; col++)
+  для (idx_t col = 0; col < table.ncolumns; col++)
     {
       char buf[LONGEST_HUMAN_READABLE + 2];
       char *cell;
@@ -1175,9 +1175,9 @@ get_dev (char const *device, char const *mount_point, char const *file,
         case IPCENT_FIELD:
           {
             double pct = -1;
-            if (! known_value (v->used) || ! known_value (v->available))
+            якщо (! known_value (v->used) || ! known_value (v->available))
               ;
-            else if (!v->negate_used
+            інакше якщо (!v->negate_used
                      && v->used <= UINTMAX_MAX / 100
                      && v->used + v->available != 0
                      && (v->used + v->available < v->used)
@@ -1187,7 +1187,7 @@ get_dev (char const *device, char const *mount_point, char const *file,
                 uintmax_t nonroot_total = v->used + v->available;
                 pct = u100 / nonroot_total + (u100 % nonroot_total != 0);
               }
-            else
+            інакше
               {
                 /* The calculation cannot be done easily with integer
                    arithmetic.  Fall back on floating point.  This can suffer
@@ -1198,14 +1198,14 @@ get_dev (char const *device, char const *mount_point, char const *file,
                 double a = v->negate_available
                            ? - (double) - v->available : v->available;
                 double nonroot_total = u + a;
-                if (nonroot_total)
+                якщо (nonroot_total)
                   {
-                    long int lipct = pct = u * 100 / nonroot_total;
+                    long ціле lipct = pct = u * 100 / nonroot_total;
                     double ipct = lipct;
 
                     /* Like 'pct = ceil (dpct);', but avoid ceil so that
                        the math library needn't be linked.  */
-                    if (ipct - 1 < pct && pct <= ipct + 1)
+                    якщо (ipct - 1 < pct && pct <= ipct + 1)
                       pct = ipct + (ipct < pct);
                   }
               }
@@ -1223,9 +1223,9 @@ get_dev (char const *device, char const *mount_point, char const *file,
           /* Don't print the first directory name in MOUNT_POINT if it's an
              artifact of an automounter.  This is a bit too aggressive to be
              the default.  */
-          if (STRNCMP_LIT (mount_point, "/auto/") == 0)
+          якщо (STRNCMP_LIT (mount_point, "/auto/") == 0)
             mount_point += 5;
-          else if (STRNCMP_LIT (mount_point, "/tmp_mnt/") == 0)
+          інакше якщо (STRNCMP_LIT (mount_point, "/tmp_mnt/") == 0)
             mount_point += 8;
 #endif
           cell = xstrdup (mount_point);
@@ -1239,7 +1239,7 @@ get_dev (char const *device, char const *mount_point, char const *file,
       affirm (cell);
 
       replace_problematic_chars (cell);
-      int cell_width = mbswidth (cell, MBSWIDTH_FLAGS);
+      ціле cell_width = mbswidth (cell, MBSWIDTH_FLAGS);
       table.columns[col]->width = MAX (table.columns[col]->width, cell_width);
       table.rows[table.nrows - 1][col] = cell;
     }
@@ -1253,23 +1253,23 @@ last_device_for_mount (char const *mount)
 {
   struct mount_entry const *le = NULL;
 
-  for (struct mount_entry const *me = mount_list; me; me = me->me_next)
+  для (struct mount_entry const *me = mount_list; me; me = me->me_next)
     {
-      if (streq (me->me_mountdir, mount))
+      якщо (streq (me->me_mountdir, mount))
         le = me;
     }
 
-  if (le)
+  якщо (le)
     {
       char *devname = le->me_devname;
       char *canon_dev = canonicalize_file_name (devname);
-      if (canon_dev && IS_ABSOLUTE_FILE_NAME (canon_dev))
-        return canon_dev;
+      якщо (canon_dev && IS_ABSOLUTE_FILE_NAME (canon_dev))
+        повернути canon_dev;
       free (canon_dev);
-      return xstrdup (le->me_devname);
+      повернути xstrdup (le->me_devname);
     }
-  else
-    return NULL;
+  інакше
+    повернути NULL;
 }
 
 /* If DEVICE corresponds to a mount point, show its usage
@@ -1283,44 +1283,44 @@ get_device (char const *device)
   char const *file = device;
 
   char *resolved = canonicalize_file_name (device);
-  if (resolved && IS_ABSOLUTE_FILE_NAME (resolved))
+  якщо (resolved && IS_ABSOLUTE_FILE_NAME (resolved))
     device = resolved;
 
   size_t best_match_len = SIZE_MAX;
-  for (struct mount_entry const *me = mount_list; me; me = me->me_next)
+  для (struct mount_entry const *me = mount_list; me; me = me->me_next)
     {
       /* TODO: Should cache canon_dev in the mount_entry struct.  */
       char *devname = me->me_devname;
       char *canon_dev = canonicalize_file_name (me->me_devname);
-      if (canon_dev && IS_ABSOLUTE_FILE_NAME (canon_dev))
+      якщо (canon_dev && IS_ABSOLUTE_FILE_NAME (canon_dev))
         devname = canon_dev;
 
-      if (streq (device, devname))
+      якщо (streq (device, devname))
         {
           char *last_device = last_device_for_mount (me->me_mountdir);
           eclipsed_device = last_device && ! streq (last_device, devname);
           size_t len = strlen (me->me_mountdir);
 
-          if (! eclipsed_device
+          якщо (! eclipsed_device
               && (! best_match_accessible || len < best_match_len))
             {
               struct stat device_stats;
               bool this_match_accessible = false;
 
-              if (stat (me->me_mountdir, &device_stats) == 0)
+              якщо (stat (me->me_mountdir, &device_stats) == 0)
                 best_match_accessible = this_match_accessible = true;
 
-              if (this_match_accessible
+              якщо (this_match_accessible
                   || (! best_match_accessible && len < best_match_len))
                 {
                   best_match = me;
-                  if (len == 1) /* Traditional root.  */
+                  якщо (len == 1) /* Traditional root.  */
                     {
                       free (last_device);
                       free (canon_dev);
                       break;
                     }
-                  else
+                  інакше
                     best_match_len = len;
                 }
             }
@@ -1333,22 +1333,22 @@ get_device (char const *device)
 
   free (resolved);
 
-  if (best_match)
+  якщо (best_match)
     {
       get_dev (best_match->me_devname, best_match->me_mountdir, file, NULL,
                best_match->me_type, best_match->me_dummy,
                best_match->me_remote, NULL, false);
-      return true;
+      повернути true;
     }
-  else if (eclipsed_device)
+  інакше якщо (eclipsed_device)
     {
       error (0, 0, _("cannot access %s: over-mounted by another device"),
              quoteaf (file));
       exit_status = EXIT_FAILURE;
-      return true;
+      повернути true;
     }
 
-  return false;
+  повернути false;
 }
 
 /* Figure out which device file or directory POINT is mounted on
@@ -1364,18 +1364,18 @@ get_point (char const *point, const struct stat *statp)
      the mount point.  This avoids statting unavailable mount points,
      which can hang df.  */
   char *resolved = canonicalize_file_name (point);
-  if (resolved && resolved[0] == '/')
+  якщо (resolved && resolved[0] == '/')
     {
       size_t resolved_len = strlen (resolved);
       size_t best_match_len = 0;
 
-      for (struct mount_entry *me = mount_list; me; me = me->me_next)
+      для (struct mount_entry *me = mount_list; me; me = me->me_next)
         {
-          if (!streq (me->me_type, "lofs")
+          якщо (!streq (me->me_type, "lofs")
               && (!best_match || best_match->me_dummy || !me->me_dummy))
             {
               size_t len = strlen (me->me_mountdir);
-              if (best_match_len <= len && len <= resolved_len
+              якщо (best_match_len <= len && len <= resolved_len
                   && (len == 1 /* root file system */
                       || ((len == resolved_len || resolved[len] == '/')
                           && STREQ_LEN (me->me_mountdir, resolved, len))))
@@ -1387,24 +1387,24 @@ get_point (char const *point, const struct stat *statp)
         }
     }
   free (resolved);
-  if (best_match
+  якщо (best_match
       && (stat (best_match->me_mountdir, &device_stats) != 0
           || device_stats.st_dev != statp->st_dev))
     best_match = NULL;
 
-  if (! best_match)
-    for (struct mount_entry *me = mount_list; me; me = me->me_next)
+  якщо (! best_match)
+    для (struct mount_entry *me = mount_list; me; me = me->me_next)
       {
-        if (me->me_dev == (dev_t) -1)
+        якщо (me->me_dev == (dev_t) -1)
           {
-            if (stat (me->me_mountdir, &device_stats) == 0)
+            якщо (stat (me->me_mountdir, &device_stats) == 0)
               me->me_dev = device_stats.st_dev;
-            else
+            інакше
               {
                 /* Report only I/O errors.  Other errors might be
                    caused by shadowed mount points, which means POINT
                    can't possibly be on this file system.  */
-                if (errno == EIO)
+                якщо (errno == EIO)
                   {
                     error (0, errno, "%s", quotef (me->me_mountdir));
                     exit_status = EXIT_FAILURE;
@@ -1415,24 +1415,24 @@ get_point (char const *point, const struct stat *statp)
               }
           }
 
-        if (statp->st_dev == me->me_dev
+        якщо (statp->st_dev == me->me_dev
             && !streq (me->me_type, "lofs")
             && (!best_match || best_match->me_dummy || !me->me_dummy))
           {
             /* Skip bogus mtab entries.  */
-            if (stat (me->me_mountdir, &device_stats) != 0
+            якщо (stat (me->me_mountdir, &device_stats) != 0
                 || device_stats.st_dev != me->me_dev)
               me->me_dev = (dev_t) -2;
-            else
+            інакше
               best_match = me;
           }
       }
 
-  if (best_match)
+  якщо (best_match)
     get_dev (best_match->me_devname, best_match->me_mountdir, point, point,
              best_match->me_type, best_match->me_dummy, best_match->me_remote,
              NULL, false);
-  else
+  інакше
     {
       /* We couldn't find the mount entry corresponding to POINT.  Go ahead and
          print as much info as we can; methods that require the device to be
@@ -1440,7 +1440,7 @@ get_point (char const *point, const struct stat *statp)
 
       /* Find the actual mount point.  */
       char *mp = find_mount_point (point, statp);
-      if (mp)
+      якщо (mp)
         {
           get_dev (NULL, mp, point, NULL, NULL,
                    false, false, NULL, false);
@@ -1455,9 +1455,9 @@ get_point (char const *point, const struct stat *statp)
 static void
 get_entry (char const *name, struct stat const *statp)
 {
-  if ((S_ISBLK (statp->st_mode) || S_ISCHR (statp->st_mode))
+  якщо ((S_ISBLK (statp->st_mode) || S_ISCHR (statp->st_mode))
       && get_device (name))
-    return;
+    повернути;
 
   get_point (name, statp);
 }
@@ -1470,7 +1470,7 @@ get_all_entries (void)
 {
   filter_mount_list (show_all_fs);
 
-  for (struct mount_entry *me = mount_list; me; me = me->me_next)
+  для (struct mount_entry *me = mount_list; me; me = me->me_next)
     get_dev (me->me_devname, me->me_mountdir, NULL, NULL, me->me_type,
              me->me_dummy, me->me_remote, NULL, true);
 }
@@ -1502,11 +1502,11 @@ add_excluded_fs_type (char const *fstype)
 }
 
 void
-usage (int status)
+usage (ціле status)
 {
-  if (status != EXIT_SUCCESS)
+  якщо (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  інакше
     {
       printf (_("Usage: %s [OPTION]... [FILE]...\n"), program_name);
       fputs (_("\
@@ -1554,7 +1554,7 @@ or all file systems by default.\n\
       oputs (_("\
       --output[=FIELD_LIST]\n\
          use the output format defined by FIELD_LIST,\n\
-         or print all fields if FIELD_LIST is omitted\n\
+         or print all fields якщо FIELD_LIST is omitted\n\
 "));
       oputs (_("\
   -P, --portability\n\
@@ -1599,8 +1599,8 @@ field names are: 'source', 'fstype', 'itotal', 'iused', 'iavail', 'ipcent',\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+ціле
+main (ціле argc, char **argv)
 {
   struct stat *stats = NULL;
 
@@ -1617,12 +1617,12 @@ main (int argc, char **argv)
 
   char const *msg_mut_excl = _("options %s and %s are mutually exclusive");
 
-  while (true)
+  поки (true)
     {
-      int oi = -1;
-      int c = getopt_long (argc, argv, "aB:iF:hHklmPTt:vx:", long_options,
+      ціле oi = -1;
+      ціле c = getopt_long (argc, argv, "aB:iF:hHklmPTt:vx:", long_options,
                            &oi);
-      if (c == -1)
+      якщо (c == -1)
         break;
 
       switch (c)
@@ -1634,12 +1634,12 @@ main (int argc, char **argv)
           {
             enum strtol_error e = human_options (optarg, &human_output_opts,
                                                  &output_block_size);
-            if (e != LONGINT_OK)
+            якщо (e != LONGINT_OK)
               xstrtol_fatal (e, oi, c, long_options, optarg);
           }
           break;
         case 'i':
-          if (header_mode == OUTPUT_MODE)
+          якщо (header_mode == OUTPUT_MODE)
             {
               error (0, 0, msg_mut_excl, "-i", "--output");
               usage (EXIT_FAILURE);
@@ -1666,7 +1666,7 @@ main (int argc, char **argv)
           output_block_size = 1024 * 1024;
           break;
         case 'T':
-          if (header_mode == OUTPUT_MODE)
+          якщо (header_mode == OUTPUT_MODE)
             {
               error (0, 0, msg_mut_excl, "-T", "--output");
               usage (EXIT_FAILURE);
@@ -1674,7 +1674,7 @@ main (int argc, char **argv)
           print_type = true;
           break;
         case 'P':
-          if (header_mode == OUTPUT_MODE)
+          якщо (header_mode == OUTPUT_MODE)
             {
               error (0, 0, msg_mut_excl, "-P", "--output");
               usage (EXIT_FAILURE);
@@ -1702,23 +1702,23 @@ main (int argc, char **argv)
           break;
 
         case OUTPUT_OPTION:
-          if (header_mode == INODES_MODE)
+          якщо (header_mode == INODES_MODE)
             {
               error (0, 0, msg_mut_excl, "-i", "--output");
               usage (EXIT_FAILURE);
             }
-          if (posix_format && header_mode == DEFAULT_MODE)
+          якщо (posix_format && header_mode == DEFAULT_MODE)
             {
               error (0, 0, msg_mut_excl, "-P", "--output");
               usage (EXIT_FAILURE);
             }
-          if (print_type)
+          якщо (print_type)
             {
               error (0, 0, msg_mut_excl, "-T", "--output");
               usage (EXIT_FAILURE);
             }
           header_mode = OUTPUT_MODE;
-          if (optarg)
+          якщо (optarg)
             decode_output_arg (optarg);
           break;
 
@@ -1734,35 +1734,35 @@ main (int argc, char **argv)
         }
     }
 
-  if (human_output_opts == -1)
+  якщо (human_output_opts == -1)
     {
-      if (posix_format)
+      якщо (posix_format)
         {
           human_output_opts = 0;
           output_block_size = (getenv ("POSIXLY_CORRECT") ? 512 : 1024);
         }
-      else
+      інакше
         human_options (getenv ("DF_BLOCK_SIZE"),
                        &human_output_opts, &output_block_size);
     }
 
-  if (header_mode == INODES_MODE || header_mode == OUTPUT_MODE)
+  якщо (header_mode == INODES_MODE || header_mode == OUTPUT_MODE)
     ;
-  else if (human_output_opts & human_autoscale)
+  інакше якщо (human_output_opts & human_autoscale)
     header_mode = HUMAN_MODE;
-  else if (posix_format)
+  інакше якщо (posix_format)
     header_mode = POSIX_MODE;
 
   /* Fail if the same file system type was both selected and excluded.  */
   {
     bool match = false;
-    for (struct fs_type_list *fs_incl = fs_select_list; fs_incl;
+    для (struct fs_type_list *fs_incl = fs_select_list; fs_incl;
          fs_incl = fs_incl->fs_next)
       {
-        for (struct fs_type_list *fs_excl = fs_exclude_list; fs_excl;
+        для (struct fs_type_list *fs_excl = fs_exclude_list; fs_excl;
              fs_excl = fs_excl->fs_next)
           {
-            if (streq (fs_incl->fs_name, fs_excl->fs_name))
+            якщо (streq (fs_incl->fs_name, fs_excl->fs_name))
               {
                 error (0, 0,
                        _("file system type %s both selected and excluded"),
@@ -1772,20 +1772,20 @@ main (int argc, char **argv)
               }
           }
       }
-    if (match)
-      return EXIT_FAILURE;
+    якщо (match)
+      повернути EXIT_FAILURE;
   }
 
-  if (optind < argc)
+  якщо (optind < argc)
     {
       /* stat each of the given entries to make sure any corresponding
          partition is automounted.  This must be done before reading the
          file system table.  */
       stats = xnmalloc (argc - optind, sizeof *stats);
-      for (int i = optind; i < argc; ++i)
+      для (ціле i = optind; i < argc; ++i)
         {
-          int err = automount_stat_err (argv[i], &stats[i - optind]);
-          if (err != 0)
+          ціле err = automount_stat_err (argv[i], &stats[i - optind]);
+          якщо (err != 0)
             {
               error (0, err, "%s", quotef (argv[i]));
               exit_status = EXIT_FAILURE;
@@ -1801,14 +1801,14 @@ main (int argc, char **argv)
                             || field_data[FSTYPE_FIELD].used
                             || show_local_fs));
 
-  if (mount_list == NULL)
+  якщо (mount_list == NULL)
     {
       /* Couldn't read the table of mounted file systems.
          Fail if df was invoked with no file name arguments,
          or when either of -a, -l, -t or -x is used with file name
          arguments.  Otherwise, merely give a warning and proceed.  */
-      int status = 0;
-      if ( ! (optind < argc)
+      ціле status = 0;
+      якщо ( ! (optind < argc)
            || (show_all_fs
                || show_local_fs
                || fs_select_list != NULL
@@ -1821,38 +1821,38 @@ main (int argc, char **argv)
              _("cannot read table of mounted file systems"));
     }
 
-  if (require_sync)
+  якщо (require_sync)
     sync ();
 
   get_field_list ();
   get_header ();
 
-  if (stats)
+  якщо (stats)
     {
       /* Display explicitly requested empty file systems.  */
       show_listed_fs = true;
 
-      for (int i = optind; i < argc; ++i)
-        if (argv[i])
+      для (ціле i = optind; i < argc; ++i)
+        якщо (argv[i])
           get_entry (argv[i], &stats[i - optind]);
     }
-  else
+  інакше
     get_all_entries ();
 
-  if (file_systems_processed)
+  якщо (file_systems_processed)
     {
-      if (print_grand_total)
+      якщо (print_grand_total)
         get_dev ("total",
                  (field_data[SOURCE_FIELD].used ? "-" : "total"),
                  NULL, NULL, NULL, false, false, &grand_fsu, false);
 
       print_table ();
     }
-  else
+  інакше
     {
       /* Print the "no FS processed" diagnostic only if there was no preceding
          diagnostic, e.g., if all have been excluded.  */
-      if (exit_status == EXIT_SUCCESS)
+      якщо (exit_status == EXIT_SUCCESS)
         error (EXIT_FAILURE, 0, _("no file systems processed"));
     }
 

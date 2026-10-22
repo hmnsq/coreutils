@@ -27,7 +27,7 @@ extern bool convert_entire_line;
 extern idx_t max_column_width;
 
 /* The desired exit status.  */
-extern int exit_status;
+extern ціле exit_status;
 
 /* Add tab stop TABVAL to the end of 'tab_list'.  */
 extern void
