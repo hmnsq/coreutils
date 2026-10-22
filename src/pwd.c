@@ -14,43 +14,43 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include <getopt.h>
-#include <stdio.h>
-#include <sys/types.h>
+#ଅନ୍ତର୍ଭାଵ <config.h>
+#ଅନ୍ତର୍ଭାଵ <getopt.h>
+#ଅନ୍ତର୍ଭାଵ <stdio.h>
+#ଅନ୍ତର୍ଭାଵ <sys/types.h>
 
-#include "system.h"
-#include "quote.h"
-#include "root-dev-ino.h"
-#include "xgetcwd.h"
+#ଅନ୍ତର୍ଭାଵ "system.h"
+#ଅନ୍ତର୍ଭାଵ "quote.h"
+#ଅନ୍ତର୍ଭାଵ "root-dev-ino.h"
+#ଅନ୍ତର୍ଭାଵ "xgetcwd.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "pwd"
 
 #define AUTHORS proper_name ("Jim Meyering")
 
-struct file_name
+ସଂରଚନା file_name
 {
   idx_t n_alloc;
-  char *buf COUNTED_BY (n_alloc);
-  char *start;
+  ଅକ୍ଷର *buf COUNTED_BY (n_alloc);
+  ଅକ୍ଷର *start;
 };
 
-static struct option const longopts[] =
+ସ୍ଥିର ସଂରଚନା option ଅଚଳ longopts[] =
 {
-  {"logical", no_argument, NULL, 'L'},
-  {"physical", no_argument, NULL, 'P'},
+  {"logical", no_argument, ଖାଲି, 'L'},
+  {"physical", no_argument, ଖାଲି, 'P'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ଖାଲି, 0, ଖାଲି, 0}
 };
 
-void
-usage (int status)
+ଶୂନ୍ୟ
+usage (ପୂର୍ଣ୍ଣସଂଖ୍ୟା status)
 {
-  if (status != EXIT_SUCCESS)
+  ଯଦି (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ଅନ୍ୟଥା
     {
       printf (_("Usage: %s [OPTION]...\n"), program_name);
       fputs (_("\
@@ -59,7 +59,7 @@ Print the full filename of the current working directory.\n\
 "), stdout);
       oputs (_("\
   -L, --logical\n\
-         use PWD from environment, even if it contains symlinks\n\
+         use PWD from environment, even ଯଦି it contains symlinks\n\
 "));
       oputs (_("\
   -P, --physical\n\
@@ -76,44 +76,44 @@ If no option is specified, -P is assumed.\n\
   exit (status);
 }
 
-static void
-file_name_free (struct file_name *p)
+ସ୍ଥିର ଶୂନ୍ୟ
+file_name_free (ସଂରଚନା file_name *p)
 {
-  free (p->buf);
-  free (p);
+  ମୁକ୍ତ (p->buf);
+  ମୁକ୍ତ (p);
 }
 
-static struct file_name *
-file_name_init (void)
+ସ୍ଥିର ସଂରଚନା file_name *
+file_name_init (ଶୂନ୍ୟ)
 {
-  struct file_name *p = xmalloc (sizeof *p);
+  ସଂରଚନା file_name *p = xmalloc (ଆକାର *p);
 
   /* Start with a buffer larger than likely file names, but beware of systems
      on which PATH_MAX is very large -- e.g., INT_MAX.  */
-  int init_alloc = 2 * MIN (PATH_MAX, 16 * 1024);
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା init_alloc = 2 * MIN (PATH_MAX, 16 * 1024);
   p->n_alloc = init_alloc;
 
   p->buf = xmalloc (init_alloc);
   p->start = p->buf + init_alloc - 1;
   p->start[0] = '\0';
-  return p;
+  ଫେରନ୍ତୁ p;
 }
 
 /* Prepend the name S of length S_LEN, to the growing file_name, P.  */
-static void
-file_name_prepend (struct file_name *p, char const *s, size_t s_len)
+ସ୍ଥିର ଶୂନ୍ୟ
+file_name_prepend (ସଂରଚନା file_name *p, ଅକ୍ଷର ଅଚଳ *s, size_t s_len)
 {
   idx_t n_free = p->start - p->buf;
-  if (n_free < 1 + s_len)
+  ଯଦି (n_free < 1 + s_len)
     {
       /* Call xpalloc with NULL not p->buf, since with the latter
          we'd end up copying the data twice: once via realloc, then again
          to align it with the end of the new buffer.  By passing NULL we
          copy it only once.  */
       idx_t n_used = p->n_alloc - n_free;
-      char *buf = xpalloc (NULL, &p->n_alloc, 1 + s_len - n_free, -1, 1);
+      ଅକ୍ଷର *buf = xpalloc (ଖାଲି, &p->n_alloc, 1 + s_len - n_free, -1, 1);
       p->start = memcpy (buf + p->n_alloc - n_used, p->start, n_used);
-      free (p->buf);
+      ମୁକ୍ତ (p->buf);
       p->buf = buf;
     }
 
@@ -123,19 +123,19 @@ file_name_prepend (struct file_name *p, char const *s, size_t s_len)
 }
 
 /* Return a string (malloc'd) consisting of N '/'-separated ".." components.  */
-static char *
+ସ୍ଥିର ଅକ୍ଷର *
 nth_parent (size_t n)
 {
-  char *buf = xnmalloc (3, n);
-  char *p = buf;
+  ଅକ୍ଷର *buf = xnmalloc (3, n);
+  ଅକ୍ଷର *p = buf;
 
-  for (size_t i = 0; i < n; i++)
+  ପାଇଁ (size_t i = 0; i < n; i++)
     {
       memcpy (p, "../", 3);
       p += 3;
     }
   p[-1] = '\0';
-  return buf;
+  ଫେରନ୍ତୁ buf;
 }
 
 /* Determine the basename of the current directory, where DOT_SB is the
@@ -149,22 +149,22 @@ nth_parent (size_t n)
    PARENT_HEIGHT is 1.  This is solely for diagnostics.
    Exit nonzero upon error.  */
 
-static void
-find_dir_entry (struct stat *dot_sb, struct file_name *file_name,
+ସ୍ଥିର ଶୂନ୍ୟ
+find_dir_entry (ସଂରଚନା stat *dot_sb, ସଂରଚନା file_name *file_name,
                 size_t parent_height)
 {
   DIR *dirp = opendir ("..");
-  if (dirp == NULL)
+  ଯଦି (dirp == ଖାଲି)
     error (EXIT_FAILURE, errno, _("cannot open directory %s"),
            quote (nth_parent (parent_height)));
 
-  int fd = dirfd (dirp);
-  if ((0 <= fd ? fchdir (fd) : chdir ("..")) < 0)
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା fd = dirfd (dirp);
+  ଯଦି ((0 <= fd ? fchdir (fd) : chdir ("..")) < 0)
     error (EXIT_FAILURE, errno, _("failed to chdir to %s"),
            quote (nth_parent (parent_height)));
 
-  struct stat parent_sb;
-  if ((0 <= fd ? fstat (fd, &parent_sb) : stat (".", &parent_sb)) < 0)
+  ସଂରଚନା stat parent_sb;
+  ଯଦି ((0 <= fd ? fstat (fd, &parent_sb) : stat (".", &parent_sb)) < 0)
     error (EXIT_FAILURE, errno, _("failed to stat %s"),
            quote (nth_parent (parent_height)));
 
@@ -173,53 +173,53 @@ find_dir_entry (struct stat *dot_sb, struct file_name *file_name,
   bool use_lstat = (parent_sb.st_dev != dot_sb->st_dev);
 
   bool found = false;
-  while (true)
+  ଯେତେବେଳେ (true)
     {
-      struct dirent const *dp;
+      ସଂରଚନା dirent ଅଚଳ *dp;
 
       errno = 0;
-      if ((dp = readdir_ignoring_dot_and_dotdot (dirp)) == NULL)
+      ଯଦି ((dp = readdir_ignoring_dot_and_dotdot (dirp)) == ଖାଲି)
         {
-          if (errno)
+          ଯଦି (errno)
             {
               /* Save/restore errno across closedir call.  */
-              int e = errno;
+              ପୂର୍ଣ୍ଣସଂଖ୍ୟା e = errno;
               closedir (dirp);
               errno = e;
 
               /* Arrange to give a diagnostic after exiting this loop.  */
-              dirp = NULL;
+              dirp = ଖାଲି;
             }
-          break;
+          ଭାଙ୍ଗ;
         }
 
       ino_t ino = D_INO (dp);
 
-      struct stat ent_sb;
-      if (ino == NOT_AN_INODE_NUMBER || use_lstat)
+      ସଂରଚନା stat ent_sb;
+      ଯଦି (ino == NOT_AN_INODE_ସଂଖ୍ୟା || use_lstat)
         {
-          if (lstat (dp->d_name, &ent_sb) < 0)
+          ଯଦି (lstat (dp->d_name, &ent_sb) < 0)
             {
               /* Skip any entry we can't stat.  */
-              continue;
+              ଜାରି;
             }
           ino = ent_sb.st_ino;
         }
 
-      if (ino != dot_sb->st_ino)
-        continue;
+      ଯଦି (ino != dot_sb->st_ino)
+        ଜାରି;
 
       /* If we're not crossing a device boundary, then a simple i-node
          match is enough.  */
-      if ( ! use_lstat || ent_sb.st_dev == dot_sb->st_dev)
+      ଯଦି ( ! use_lstat || ent_sb.st_dev == dot_sb->st_dev)
         {
           file_name_prepend (file_name, dp->d_name, _D_EXACT_NAMLEN (dp));
           found = true;
-          break;
+          ଭାଙ୍ଗ;
         }
     }
 
-  if (dirp == NULL || closedir (dirp) != 0)
+  ଯଦି (dirp == ଖାଲି || closedir (dirp) != 0)
     {
       /* Note that this diagnostic serves for both readdir
          and closedir failures.  */
@@ -227,7 +227,7 @@ find_dir_entry (struct stat *dot_sb, struct file_name *file_name,
              quote (nth_parent (parent_height)));
     }
 
-  if ( ! found)
+  ଯଦି ( ! found)
     error (EXIT_FAILURE, 0,
            _("couldn't find directory entry in %s with matching i-node"),
            quote (nth_parent (parent_height)));
@@ -258,71 +258,71 @@ find_dir_entry (struct stat *dot_sb, struct file_name *file_name,
    in case the unreadable directory is close enough to the root that
    getcwd works from there.  */
 
-static void
-robust_getcwd (struct file_name *file_name)
+ସ୍ଥିର ଶୂନ୍ୟ
+robust_getcwd (ସଂରଚନା file_name *file_name)
 {
   size_t height = 1;
-  struct dev_ino dev_ino_buf;
-  struct dev_ino *root_dev_ino = get_root_dev_ino (&dev_ino_buf);
+  ସଂରଚନା dev_ino dev_ino_buf;
+  ସଂରଚନା dev_ino *ମୂଳ_dev_ino = get_ମୂଳ_dev_ino (&dev_ino_buf);
 
-  if (root_dev_ino == NULL)
+  ଯଦି (ମୂଳ_dev_ino == ଖାଲି)
     error (EXIT_FAILURE, errno, _("failed to get attributes of %s"),
            quoteaf ("/"));
 
-  struct stat dot_sb;
-  if (stat (".", &dot_sb) < 0)
+  ସଂରଚନା stat dot_sb;
+  ଯଦି (stat (".", &dot_sb) < 0)
     error (EXIT_FAILURE, errno, _("failed to stat %s"), quoteaf ("."));
 
-  while (true)
+  ଯେତେବେଳେ (true)
     {
       /* If we've reached the root, we're done.  */
-      if (PSAME_INODE (&dot_sb, root_dev_ino))
-        break;
+      ଯଦି (PSAME_INODE (&dot_sb, ମୂଳ_dev_ino))
+        ଭାଙ୍ଗ;
 
       find_dir_entry (&dot_sb, file_name, height++);
     }
 
   /* See if a leading slash is needed; file_name_prepend adds one.  */
-  if (file_name->start[0] == '\0')
+  ଯଦି (file_name->start[0] == '\0')
     file_name_prepend (file_name, "", 0);
 }
 
 
 /* Return PWD from the environment if it is acceptable for 'pwd -L'
    output, otherwise NULL.  */
-static char const *
-logical_getcwd (void)
+ସ୍ଥିର ଅକ୍ଷର ଅଚଳ *
+logical_getcwd (ଶୂନ୍ୟ)
 {
-  char const *wd = getenv ("PWD");
+  ଅକ୍ଷର ଅଚଳ *wd = getenv ("PWD");
 
   /* Textual validation first.  */
-  if (!wd || wd[0] != '/')
-    return NULL;
-  char const *p = wd;
-  while ((p = strstr (p, "/.")))
+  ଯଦି (!wd || wd[0] != '/')
+    ଫେରନ୍ତୁ ଖାଲି;
+  ଅକ୍ଷର ଅଚଳ *p = wd;
+  ଯେତେବେଳେ ((p = strstr (p, "/.")))
     {
-      if (!p[2] || p[2] == '/'
+      ଯଦି (!p[2] || p[2] == '/'
           || (p[2] == '.' && (!p[3] || p[3] == '/')))
-        return NULL;
+        ଫେରନ୍ତୁ ଖାଲି;
       p++;
     }
 
   /* System call validation.  */
-  struct stat st1;
-  struct stat st2;
-  if (stat (wd, &st1) == 0 && stat (".", &st2) == 0 && psame_inode (&st1, &st2))
-    return wd;
-  return NULL;
+  ସଂରଚନା stat st1;
+  ସଂରଚନା stat st2;
+  ଯଦି (stat (wd, &st1) == 0 && stat (".", &st2) == 0 && psame_inode (&st1, &st2))
+    ଫେରନ୍ତୁ wd;
+  ଫେରନ୍ତୁ ଖାଲି;
 }
 
 
-int
-main (int argc, char **argv)
+ପୂର୍ଣ୍ଣସଂଖ୍ୟା
+ମୁଖ୍ୟ (ପୂର୍ଣ୍ଣସଂଖ୍ୟା argc, ଅକ୍ଷର **argv)
 {
   /* POSIX requires a default of -L, but most scripts expect -P.
      Currently shells default to -L, while stand-alone
      pwd implementations default to -P.  */
-  bool logical = (getenv ("POSIXLY_CORRECT") != NULL);
+  bool logical = (getenv ("POSIXLY_CORRECT") != ଖାଲି);
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -332,55 +332,55 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while (true)
+  ଯେତେବେଳେ (true)
     {
-      int c = getopt_long (argc, argv, "LP", longopts, NULL);
-      if (c == -1)
-        break;
-      switch (c)
+      ପୂର୍ଣ୍ଣସଂଖ୍ୟା c = getopt_long (argc, argv, "LP", longopts, ଖାଲି);
+      ଯଦି (c == -1)
+        ଭାଙ୍ଗ;
+      ବାଛ (c)
         {
-        case 'L':
+        ସ୍ଥିତି 'L':
           logical = true;
-          break;
-        case 'P':
+          ଭାଙ୍ଗ;
+        ସ୍ଥିତି 'P':
           logical = false;
-          break;
+          ଭାଙ୍ଗ;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        ପୂର୍ବନିର୍ଦ୍ଧାରିତ:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (optind < argc)
+  ଯଦି (optind < argc)
     error (0, 0, _("ignoring non-option arguments"));
 
-  if (logical)
+  ଯଦି (logical)
     {
-      char const *wd = logical_getcwd ();
-      if (wd)
+      ଅକ୍ଷର ଅଚଳ *wd = logical_getcwd ();
+      ଯଦି (wd)
         {
           puts (wd);
-          return EXIT_SUCCESS;
+          ଫେରନ୍ତୁ EXIT_SUCCESS;
         }
     }
 
-  char *wd = xgetcwd ();
-  if (wd != NULL)
+  ଅକ୍ଷର *wd = xgetcwd ();
+  ଯଦି (wd != ଖାଲି)
     {
       puts (wd);
-      free (wd);
+      ମୁକ୍ତ (wd);
     }
-  else
+  ଅନ୍ୟଥା
     {
-      struct file_name *file_name = file_name_init ();
+      ସଂରଚନା file_name *file_name = file_name_init ();
       robust_getcwd (file_name);
       puts (file_name->start);
       file_name_free (file_name);
     }
 
-  return EXIT_SUCCESS;
+  ଫେରନ୍ତୁ EXIT_SUCCESS;
 }

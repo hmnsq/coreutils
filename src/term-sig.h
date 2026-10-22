@@ -3,7 +3,7 @@
 
 # include <signal.h>
 
-static int const term_sig[] =
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା ଅଚଳ term_sig[] =
   {
     SIGALRM, /* our timeout.  */
     SIGINT,  /* Ctrl-C at terminal for example.  */

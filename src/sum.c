@@ -18,187 +18,187 @@
 
 /* Written by Kayvan Aghaiepour and David MacKenzie. */
 
-#include <config.h>
+#ଅନ୍ତର୍ଭାଵ <config.h>
 
-#include <stdio.h>
-#include <sys/types.h>
-#include <endian.h>
-#include "system.h"
-#include "human.h"
-#include "sum.h"
+#ଅନ୍ତର୍ଭାଵ <stdio.h>
+#ଅନ୍ତର୍ଭାଵ <sys/types.h>
+#ଅନ୍ତର୍ଭାଵ <endian.h>
+#ଅନ୍ତର୍ଭାଵ "system.h"
+#ଅନ୍ତର୍ଭାଵ "human.h"
+#ଅନ୍ତର୍ଭାଵ "sum.h"
 
 /* Calculate the checksum and the size in bytes of stream STREAM.
    Return -1 on error, 0 on success.  */
 
-int
-bsd_sum_stream (FILE *stream, void *resstream, intmax_t *length)
+ପୂର୍ଣ୍ଣସଂଖ୍ୟା
+bsd_sum_stream (FILE *stream, ଶୂନ୍ୟ *resstream, intmax_t *length)
 {
-  int ret = -1;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା ret = -1;
   idx_t sum;
-  int checksum = 0;	/* The checksum mod 2^16. */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା checksum = 0;	/* The checksum mod 2^16. */
   intmax_t total_bytes = 0;	/* The number of bytes. */
-  enum { buffer_length = 32768 };
+  ଗଣନା { buffer_length = 32768 };
   uint8_t *buffer = malloc (buffer_length);
 
-  if (! buffer)
-    return -1;
+  ଯଦି (! buffer)
+    ଫେରନ୍ତୁ -1;
 
   /* Process file */
-  while (true)
+  ଯେତେବେଳେ (true)
   {
     sum = 0;
 
     /* Read block */
-    while (true)
+    ଯେତେବେଳେ (true)
     {
       size_t n = fread (buffer + sum, 1, buffer_length - sum, stream);
-      if (n == 0)
+      ଯଦି (n == 0)
         {
-          if (ferror (stream))
-            goto cleanup_buffer;
-          goto final_process;
+          ଯଦି (ferror (stream))
+            ଯାଅ cleanup_buffer;
+          ଯାଅ final_process;
         }
 
       sum += n;
 
-      if (buffer_length == sum)
-        break;
+      ଯଦି (buffer_length == sum)
+        ଭାଙ୍ଗ;
 
-      if (feof (stream))
-        goto final_process;
+      ଯଦି (feof (stream))
+        ଯାଅ final_process;
     }
 
-    for (size_t i = 0; i < sum; i++)
+    ପାଇଁ (size_t i = 0; i < sum; i++)
       {
         checksum = (checksum >> 1) + ((checksum & 1) << 15);
         checksum += buffer[i];
         checksum &= 0xffff;	/* Keep it within bounds. */
       }
-    if (ckd_add (&total_bytes, total_bytes, sum))
+    ଯଦି (ckd_add (&total_bytes, total_bytes, sum))
       {
         errno = EOVERFLOW;
-        goto cleanup_buffer;
+        ଯାଅ cleanup_buffer;
       }
   }
 
 final_process:;
 
-  for (idx_t i = 0; i < sum; i++)
+  ପାଇଁ (idx_t i = 0; i < sum; i++)
     {
       checksum = (checksum >> 1) + ((checksum & 1) << 15);
       checksum += buffer[i];
       checksum &= 0xffff;	/* Keep it within bounds. */
     }
-  if (ckd_add (&total_bytes, total_bytes, sum))
+  ଯଦି (ckd_add (&total_bytes, total_bytes, sum))
     {
       errno = EOVERFLOW;
-      goto cleanup_buffer;
+      ଯାଅ cleanup_buffer;
     }
 
-  memcpy (resstream, &checksum, sizeof checksum);
+  memcpy (resstream, &checksum, ଆକାର checksum);
   *length = total_bytes;
   ret = 0;
 cleanup_buffer:
-  free (buffer);
-  return ret;
+  ମୁକ୍ତ (buffer);
+  ଫେରନ୍ତୁ ret;
 }
 
 /* Calculate the checksum and the size in bytes of stream STREAM.
    Return -1 on error, 0 on success.  */
 
-int
-sysv_sum_stream (FILE *stream, void *resstream, intmax_t *length)
+ପୂର୍ଣ୍ଣସଂଖ୍ୟା
+sysv_sum_stream (FILE *stream, ଶୂନ୍ୟ *resstream, intmax_t *length)
 {
-  int ret = -1;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା ret = -1;
   idx_t sum;
   intmax_t total_bytes = 0;
-  enum { buffer_length = 32768 };
+  ଗଣନା { buffer_length = 32768 };
   uint8_t *buffer = malloc (buffer_length);
 
-  if (! buffer)
-    return -1;
+  ଯଦି (! buffer)
+    ଫେରନ୍ତୁ -1;
 
   /* The sum of all the input bytes, modulo (UINT_MAX + 1).  */
-  unsigned int s = 0;
+  unsigned ପୂର୍ଣ୍ଣସଂଖ୍ୟା s = 0;
 
   /* Process file */
-  while (true)
+  ଯେତେବେଳେ (true)
   {
     sum = 0;
 
     /* Read block */
-    while (true)
+    ଯେତେବେଳେ (true)
     {
       size_t n = fread (buffer + sum, 1, buffer_length - sum, stream);
-      if (n == 0)
+      ଯଦି (n == 0)
         {
-          if (ferror (stream))
-            goto cleanup_buffer;
-          goto final_process;
+          ଯଦି (ferror (stream))
+            ଯାଅ cleanup_buffer;
+          ଯାଅ final_process;
         }
 
       sum += n;
 
-      if (buffer_length == sum)
-        break;
+      ଯଦି (buffer_length == sum)
+        ଭାଙ୍ଗ;
 
-      if (feof (stream))
-        goto final_process;
+      ଯଦି (feof (stream))
+        ଯାଅ final_process;
     }
 
-    for (size_t i = 0; i < sum; i++)
+    ପାଇଁ (size_t i = 0; i < sum; i++)
       s += buffer[i];
-    if (total_bytes + sum < total_bytes)
+    ଯଦି (total_bytes + sum < total_bytes)
       {
         errno = EOVERFLOW;
-        goto cleanup_buffer;
+        ଯାଅ cleanup_buffer;
       }
     total_bytes += sum;
   }
 
 final_process:;
 
-  for (size_t i = 0; i < sum; i++)
+  ପାଇଁ (size_t i = 0; i < sum; i++)
     s += buffer[i];
-  if (total_bytes + sum < total_bytes)
+  ଯଦି (total_bytes + sum < total_bytes)
     {
       errno = EOVERFLOW;
-      goto cleanup_buffer;
+      ଯାଅ cleanup_buffer;
     }
   total_bytes += sum;
 
-  int r = (s & 0xffff) + ((s & 0xffffffff) >> 16);
-  int checksum = (r & 0xffff) + (r >> 16);
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା r = (s & 0xffff) + ((s & 0xffffffff) >> 16);
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା checksum = (r & 0xffff) + (r >> 16);
 
-  memcpy (resstream, &checksum, sizeof checksum);
+  memcpy (resstream, &checksum, ଆକାର checksum);
   *length = total_bytes;
   ret = 0;
 cleanup_buffer:
-  free (buffer);
-  return ret;
+  ମୁକ୍ତ (buffer);
+  ଫେରନ୍ତୁ ret;
 }
 
 /* Print the checksum and size (in 1024 byte blocks) to stdout.
    If ARGS is true, also print the FILE name.  */
 
-void
-output_bsd (char const *file, MAYBE_UNUSED int binary_file, void const *digest,
-            bool raw, MAYBE_UNUSED bool tagged, unsigned char delim, bool args,
+ଶୂନ୍ୟ
+output_bsd (ଅକ୍ଷର ଅଚଳ *file, MAYBE_UNUSED ପୂର୍ଣ୍ଣସଂଖ୍ୟା ଦ୍ୱିମିକ_file, ଶୂନ୍ୟ ଅଚଳ *digest,
+            bool raw, MAYBE_UNUSED bool tagged, unsigned ଅକ୍ଷର delim, bool args,
             intmax_t length)
 {
-  if (raw)
+  ଯଦି (raw)
     {
       /* Output in network byte order (big endian).  */
-      uint16_t out_int = *(int *)digest;
+      uint16_t out_int = *(ପୂର୍ଣ୍ଣସଂଖ୍ୟା *)digest;
       out_int = htobe16 (out_int);
       fwrite (&out_int, 1, 16/8, stdout);
-      return;
+      ଫେରନ୍ତୁ;
     }
 
-  char hbuf[LONGEST_HUMAN_READABLE + 1];
-  printf ("%05d %5s", *(int *)digest,
+  ଅକ୍ଷର hbuf[LONGEST_HUMAN_READABLE + 1];
+  printf ("%05d %5s", *(ପୂର୍ଣ୍ଣସଂଖ୍ୟା *)digest,
           human_readable (length, hbuf, human_ceiling, 1, 1024));
-  if (args)
+  ଯଦି (args)
     printf (" %s", file);
   putchar (delim);
 }
@@ -206,24 +206,24 @@ output_bsd (char const *file, MAYBE_UNUSED int binary_file, void const *digest,
 /* Print the checksum and size (in 512 byte blocks) to stdout.
    If ARGS is true, also print the FILE name.  */
 
-void
-output_sysv (char const *file, MAYBE_UNUSED int binary_file,
-             void const *digest, bool raw, MAYBE_UNUSED bool tagged,
-             unsigned char delim, bool args, intmax_t length)
+ଶୂନ୍ୟ
+output_sysv (ଅକ୍ଷର ଅଚଳ *file, MAYBE_UNUSED ପୂର୍ଣ୍ଣସଂଖ୍ୟା ଦ୍ୱିମିକ_file,
+             ଶୂନ୍ୟ ଅଚଳ *digest, bool raw, MAYBE_UNUSED bool tagged,
+             unsigned ଅକ୍ଷର delim, bool args, intmax_t length)
 {
-  if (raw)
+  ଯଦି (raw)
     {
       /* Output in network byte order (big endian).  */
-      uint16_t out_int = *(int *)digest;
+      uint16_t out_int = *(ପୂର୍ଣ୍ଣସଂଖ୍ୟା *)digest;
       out_int = htobe16 (out_int);
       fwrite (&out_int, 1, 16/8, stdout);
-      return;
+      ଫେରନ୍ତୁ;
     }
 
-  char hbuf[LONGEST_HUMAN_READABLE + 1];
-  printf ("%d %s", *(int *)digest,
+  ଅକ୍ଷର hbuf[LONGEST_HUMAN_READABLE + 1];
+  printf ("%d %s", *(ପୂର୍ଣ୍ଣସଂଖ୍ୟା *)digest,
           human_readable (length, hbuf, human_ceiling, 1, 512));
-  if (args)
+  ଯଦି (args)
     printf (" %s", file);
   putchar (delim);
 }

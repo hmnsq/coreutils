@@ -16,19 +16,19 @@
 
 /* Extracted from chown.c/chgrp.c and librarified by Jim Meyering.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <pwd.h>
-#include <grp.h>
+#ଅନ୍ତର୍ଭାଵ <config.h>
+#ଅନ୍ତର୍ଭାଵ <stdio.h>
+#ଅନ୍ତର୍ଭାଵ <sys/types.h>
+#ଅନ୍ତର୍ଭାଵ <pwd.h>
+#ଅନ୍ତର୍ଭାଵ <grp.h>
 
-#include "system.h"
-#include "assure.h"
-#include "chown-core.h"
-#include "fts-missing.h"
-#include "ignore-value.h"
-#include "root-dev-ino.h"
-#include "xfts.h"
+#ଅନ୍ତର୍ଭାଵ "system.h"
+#ଅନ୍ତର୍ଭାଵ "assure.h"
+#ଅନ୍ତର୍ଭାଵ "chown-core.h"
+#ଅନ୍ତର୍ଭାଵ "fts-missing.h"
+#ଅନ୍ତର୍ଭାଵ "ignore-value.h"
+#ଅନ୍ତର୍ଭାଵ "root-dev-ino.h"
+#ଅନ୍ତର୍ଭାଵ "xfts.h"
 
 #define FTSENT_IS_DIRECTORY(E)	\
   ((E)->fts_info == FTS_D	\
@@ -36,7 +36,7 @@
    || (E)->fts_info == FTS_DP	\
    || (E)->fts_info == FTS_DNR)
 
-enum RCH_status
+ଗଣନା RCH_status
   {
     /* we called fchown and close, and both succeeded */
     RC_ok = 2,
@@ -55,44 +55,44 @@ enum RCH_status
     RC_error
   };
 
-extern void
-chopt_init (struct Chown_option *chopt)
+ବାହ୍ୟ ଶୂନ୍ୟ
+chopt_init (ସଂରଚନା Chown_option *chopt)
 {
   chopt->verbosity = V_off;
-  chopt->root_dev_ino = NULL;
+  chopt->ମୂଳ_dev_ino = ଖାଲି;
   chopt->affect_symlink_referent = true;
   chopt->recurse = false;
   chopt->force_silent = false;
-  chopt->user_name = NULL;
-  chopt->group_name = NULL;
+  chopt->user_name = ଖାଲି;
+  chopt->group_name = ଖାଲି;
 }
 
-extern void
-chopt_free (struct Chown_option *chopt)
+ବାହ୍ୟ ଶୂନ୍ୟ
+chopt_free (ସଂରଚନା Chown_option *chopt)
 {
-  free (chopt->user_name);
-  free (chopt->group_name);
+  ମୁକ୍ତ (chopt->user_name);
+  ମୁକ୍ତ (chopt->group_name);
 }
 
 /* Convert the numeric user-id, UID, to a string stored in xmalloc'd memory,
    and return it.  Use the decimal representation of the ID.  */
 
-static char *
+ସ୍ଥିର ଅକ୍ଷର *
 uid_to_str (uid_t uid)
 {
-  char buf[INT_BUFSIZE_BOUND (intmax_t)];
-  return xstrdup (TYPE_SIGNED (uid_t) ? imaxtostr (uid, buf)
+  ଅକ୍ଷର buf[INT_BUFSIZE_BOUND (intmax_t)];
+  ଫେରନ୍ତୁ xstrdup (TYPE_SIGNED (uid_t) ? imaxtostr (uid, buf)
                   : umaxtostr (uid, buf));
 }
 
 /* Convert the numeric group-id, GID, to a string stored in xmalloc'd memory,
    and return it.  Use the decimal representation of the ID.  */
 
-static char *
+ସ୍ଥିର ଅକ୍ଷର *
 gid_to_str (gid_t gid)
 {
-  char buf[INT_BUFSIZE_BOUND (intmax_t)];
-  return xstrdup (TYPE_SIGNED (gid_t) ? imaxtostr (gid, buf)
+  ଅକ୍ଷର buf[INT_BUFSIZE_BOUND (intmax_t)];
+  ଫେରନ୍ତୁ xstrdup (TYPE_SIGNED (gid_t) ? imaxtostr (gid, buf)
                   : umaxtostr (gid, buf));
 }
 
@@ -100,110 +100,110 @@ gid_to_str (gid_t gid)
    and return it.  If there's no corresponding group name, use the decimal
    representation of the ID.  */
 
-extern char *
+ବାହ୍ୟ ଅକ୍ଷର *
 gid_to_name (gid_t gid)
 {
-  struct group *grp = getgrgid (gid);
-  return grp ? xstrdup (grp->gr_name) : gid_to_str (gid);
+  ସଂରଚନା group *grp = getgrgid (gid);
+  ଫେରନ୍ତୁ grp ? xstrdup (grp->gr_name) : gid_to_str (gid);
 }
 
 /* Convert the numeric user-id, UID, to a string stored in xmalloc'd memory,
    and return it.  If there's no corresponding user name, use the decimal
    representation of the ID.  */
 
-extern char *
+ବାହ୍ୟ ଅକ୍ଷର *
 uid_to_name (uid_t uid)
 {
-  struct passwd *pwd = getpwuid (uid);
-  return pwd ? xstrdup (pwd->pw_name) : uid_to_str (uid);
+  ସଂରଚନା passwd *pwd = getpwuid (uid);
+  ଫେରନ୍ତୁ pwd ? xstrdup (pwd->pw_name) : uid_to_str (uid);
 }
 
 /* Allocate a string representing USER and GROUP.  */
 
-static char *
-user_group_str (char const *user, char const *group)
+ସ୍ଥିର ଅକ୍ଷର *
+user_group_str (ଅକ୍ଷର ଅଚଳ *user, ଅକ୍ଷର ଅଚଳ *group)
 {
-  char *spec = NULL;
+  ଅକ୍ଷର *spec = ଖାଲି;
 
-  if (user)
+  ଯଦି (user)
     {
-      if (group)
+      ଯଦି (group)
         {
           spec = xmalloc (strlen (user) + 1 + strlen (group) + 1);
           stpcpy (stpcpy (stpcpy (spec, user), ":"), group);
         }
-      else
+      ଅନ୍ୟଥା
         {
           spec = xstrdup (user);
         }
     }
-  else if (group)
+  ଅନ୍ୟଥା ଯଦି (group)
     {
       spec = xstrdup (group);
     }
 
-  return spec;
+  ଫେରନ୍ତୁ spec;
 }
 
 /* Tell the user how/if the user and group of FILE have been changed.
    If USER is null, give the group-oriented messages.
    CHANGED describes what (if anything) has happened. */
 
-static void
-describe_change (char const *file, enum Change_status changed,
-                 char const *old_user, char const *old_group,
-                 char const *user, char const *group)
+ସ୍ଥିର ଶୂନ୍ୟ
+describe_change (ଅକ୍ଷର ଅଚଳ *file, ଗଣନା Change_status changed,
+                 ଅକ୍ଷର ଅଚଳ *old_user, ଅକ୍ଷର ଅଚଳ *old_group,
+                 ଅକ୍ଷର ଅଚଳ *user, ଅକ୍ଷର ଅଚଳ *group)
 {
-  if (changed == CH_NOT_APPLIED)
+  ଯଦି (changed == CH_NOT_APPLIED)
     {
       printf (_("neither symbolic link %s nor referent has been changed\n"),
               quoteaf (file));
-      return;
+      ଫେରନ୍ତୁ;
     }
 
-  char *spec = user_group_str (user, group);
-  char *old_spec = user_group_str (user ? old_user : NULL,
-                                   group ? old_group : NULL);
+  ଅକ୍ଷର *spec = user_group_str (user, group);
+  ଅକ୍ଷର *old_spec = user_group_str (user ? old_user : ଖାଲି,
+                                   group ? old_group : ଖାଲି);
 
-  char const *fmt;
-  switch (changed)
+  ଅକ୍ଷର ଅଚଳ *fmt;
+  ବାଛ (changed)
     {
-    case CH_SUCCEEDED:
+    ସ୍ଥିତି CH_SUCCEEDED:
       fmt = (user ? _("changed ownership of %s from %s to %s\n")
              : group ? _("changed group of %s from %s to %s\n")
              : _("no change to ownership of %s\n"));
-      break;
-    case CH_FAILED:
-      if (old_spec)
+      ଭାଙ୍ଗ;
+    ସ୍ଥିତି CH_FAILED:
+      ଯଦି (old_spec)
         {
           fmt = (user ? _("failed to change ownership of %s from %s to %s\n")
                  : group ? _("failed to change group of %s from %s to %s\n")
                  : _("failed to change ownership of %s\n"));
         }
-      else
+      ଅନ୍ୟଥା
         {
           fmt = (user ? _("failed to change ownership of %s to %s\n")
                  : group ? _("failed to change group of %s to %s\n")
                  : _("failed to change ownership of %s\n"));
-          free (old_spec);
+          ମୁକ୍ତ (old_spec);
           old_spec = spec;
-          spec = NULL;
+          spec = ଖାଲି;
         }
-      break;
-    case CH_NO_CHANGE_REQUESTED:
+      ଭାଙ୍ଗ;
+    ସ୍ଥିତି CH_NO_CHANGE_REQUESTED:
       fmt = (user ? _("ownership of %s retained as %s\n")
              : group ? _("group of %s retained as %s\n")
              : _("ownership of %s retained\n"));
-      break;
-    case CH_NOT_APPLIED:
-    default:
+      ଭାଙ୍ଗ;
+    ସ୍ଥିତି CH_NOT_APPLIED:
+    ପୂର୍ବନିର୍ଦ୍ଧାରିତ:
       affirm (false);
     }
 
   printf (fmt, quoteaf (file), old_spec, spec);
 
-  free (old_spec);
-  free (spec);
+  ମୁକ୍ତ (old_spec);
+  ମୁକ୍ତ (spec);
 }
 
 /* Change the owner and/or group of the FILE to UID and/or GID (safely)
@@ -224,50 +224,50 @@ describe_change (char const *file, enum Change_status changed,
 
    Return one of the RCH_status values.  */
 
-static enum RCH_status
-restricted_chown (int cwd_fd, char const *file,
-                  struct stat const *orig_st,
+ସ୍ଥିର ଗଣନା RCH_status
+restricted_chown (ପୂର୍ଣ୍ଣସଂଖ୍ୟା cwd_fd, ଅକ୍ଷର ଅଚଳ *file,
+                  ସଂରଚନା stat ଅଚଳ *orig_st,
                   uid_t uid, gid_t gid,
                   uid_t required_uid, gid_t required_gid)
 {
-  if (required_uid == (uid_t) -1 && required_gid == (gid_t) -1)
-    return RC_do_ordinary_chown;
+  ଯଦି (required_uid == (uid_t) -1 && required_gid == (gid_t) -1)
+    ଫେରନ୍ତୁ RC_do_ordinary_chown;
 
-  int open_flags = O_NONBLOCK | O_NOCTTY;
-  if (! S_ISREG (orig_st->st_mode))
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା open_flags = O_NONBLOCK | O_NOCTTY;
+  ଯଦି (! S_ISREG (orig_st->st_mode))
     {
-      if (S_ISDIR (orig_st->st_mode))
+      ଯଦି (S_ISDIR (orig_st->st_mode))
         open_flags |= O_DIRECTORY;
-      else
-        return RC_do_ordinary_chown;
+      ଅନ୍ୟଥା
+        ଫେରନ୍ତୁ RC_do_ordinary_chown;
     }
 
-  int fd = openat (cwd_fd, file, O_RDONLY | open_flags);
-  if (! (0 <= fd
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା fd = openat (cwd_fd, file, O_RDONLY | open_flags);
+  ଯଦି (! (0 <= fd
          || (errno == EACCES && S_ISREG (orig_st->st_mode)
              && 0 <= (fd = openat (cwd_fd, file, O_WRONLY | open_flags)))))
-    return (errno == EACCES ? RC_do_ordinary_chown : RC_error);
+    ଫେରନ୍ତୁ (errno == EACCES ? RC_do_ordinary_chown : RC_error);
 
-  enum RCH_status status = RC_ok;
-  struct stat st;
-  if (fstat (fd, &st) != 0)
+  ଗଣନା RCH_status status = RC_ok;
+  ସଂରଚନା stat st;
+  ଯଦି (fstat (fd, &st) != 0)
     status = RC_error;
-  else if (! psame_inode (orig_st, &st))
+  ଅନ୍ୟଥା ଯଦି (! psame_inode (orig_st, &st))
     status = RC_inode_changed;
-  else if ((required_uid == (uid_t) -1 || required_uid == st.st_uid)
+  ଅନ୍ୟଥା ଯଦି ((required_uid == (uid_t) -1 || required_uid == st.st_uid)
            && (required_gid == (gid_t) -1 || required_gid == st.st_gid))
     {
-#if HAVE_FCHOWN
-      if (fchown (fd, uid, gid) == 0)
-        return close (fd) < 0 ? RC_error : RC_ok;
+#ଯଦି HAVE_FCHOWN
+      ଯଦି (fchown (fd, uid, gid) == 0)
+        ଫେରନ୍ତୁ close (fd) < 0 ? RC_error : RC_ok;
 #endif
       status = RC_error;
     }
 
-  int saved_errno = errno;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା saved_errno = errno;
   close (fd);
   errno = saved_errno;
-  return status;
+  ଫେରନ୍ତୁ status;
 }
 
 /* Change the owner and/or group of the file specified by FTS and ENT
@@ -276,46 +276,46 @@ restricted_chown (int cwd_fd, char const *file,
    If REQUIRED_GID is not -1, then skip files with any other group ID.
    CHOPT specifies additional options.
    Return true if successful.  */
-static bool
+ସ୍ଥିର bool
 change_file_owner (FTS *fts, FTSENT *ent,
                    uid_t uid, gid_t gid,
                    uid_t required_uid, gid_t required_gid,
-                   struct Chown_option const *chopt)
+                   ସଂରଚନା Chown_option ଅଚଳ *chopt)
 {
-  char const *file_full_name = ent->fts_path;
-  char const *file = ent->fts_accpath;
+  ଅକ୍ଷର ଅଚଳ *file_full_name = ent->fts_path;
+  ଅକ୍ଷର ଅଚଳ *file = ent->fts_accpath;
   bool ok = true;
   bool ignore_missing = ignore_missing_fts_entry (ent);
 
-  if (ignore_missing && ignorable_fts_error (ent))
-    return true;
+  ଯଦି (ignore_missing && ignorable_fts_error (ent))
+    ଫେରନ୍ତୁ true;
 
-  switch (ent->fts_info)
+  ବାଛ (ent->fts_info)
     {
-    case FTS_D:
-      if (chopt->recurse)
+    ସ୍ଥିତି FTS_D:
+      ଯଦି (chopt->recurse)
         {
-          if (ROOT_DEV_INO_CHECK (chopt->root_dev_ino, ent->fts_statp))
+          ଯଦି (ମୂଳ_DEV_INO_CHECK (chopt->ମୂଳ_dev_ino, ent->fts_statp))
             {
               /* This happens e.g., with "chown -R --preserve-root 0 /"
                  and with "chown -RH --preserve-root 0 symlink-to-root".  */
-              ROOT_DEV_INO_WARN (file_full_name);
+              ମୂଳ_DEV_INO_WARN (file_full_name);
               /* Tell fts not to traverse into this hierarchy.  */
               fts_set (fts, ent, FTS_SKIP);
               /* Ensure that we do not process "/" on the second visit.  */
-              ignore_value (fts_read (fts));
-              return false;
+              ignore_ମୂଲ୍ୟ (fts_read (fts));
+              ଫେରନ୍ତୁ false;
             }
-          return true;
+          ଫେରନ୍ତୁ true;
         }
-      break;
+      ଭାଙ୍ଗ;
 
-    case FTS_DP:
-      if (! chopt->recurse)
-        return true;
-      break;
+    ସ୍ଥିତି FTS_DP:
+      ଯଦି (! chopt->recurse)
+        ଫେରନ୍ତୁ true;
+      ଭାଙ୍ଗ;
 
-    case FTS_NS:
+    ସ୍ଥିତି FTS_NS:
       /* For a top-level file or directory, this FTS_NS (stat failed)
          indicator is determined at the time of the initial fts_open call.
          With programs like chmod, chown, and chgrp, that modify
@@ -323,73 +323,73 @@ change_file_owner (FTS *fts, FTSENT *ent,
          accessible when control reaches this point.  So, if this is
          the first time we've seen the FTS_NS for this file, tell
          fts_read to stat it "again".  */
-      if (ent->fts_level == FTS_ROOTLEVEL && ent->fts_number == 0)
+      ଯଦି (ent->fts_level == FTS_ROOTLEVEL && ent->fts_ସଂଖ୍ୟା == 0)
         {
-          ent->fts_number = 1;
+          ent->fts_ସଂଖ୍ୟା = 1;
           fts_set (fts, ent, FTS_AGAIN);
-          return true;
+          ଫେରନ୍ତୁ true;
         }
-      if (! chopt->force_silent)
+      ଯଦି (! chopt->force_silent)
         error (0, ent->fts_errno, _("cannot access %s"),
                quoteaf (file_full_name));
       ok = false;
-      break;
+      ଭାଙ୍ଗ;
 
-    case FTS_ERR:
-      if (! chopt->force_silent)
+    ସ୍ଥିତି FTS_ERR:
+      ଯଦି (! chopt->force_silent)
         error (0, ent->fts_errno, "%s", quotef (file_full_name));
       ok = false;
-      break;
+      ଭାଙ୍ଗ;
 
-    case FTS_DNR:
-      if (! chopt->force_silent)
+    ସ୍ଥିତି FTS_DNR:
+      ଯଦି (! chopt->force_silent)
         error (0, ent->fts_errno, _("cannot read directory %s"),
                quoteaf (file_full_name));
       ok = false;
-      break;
+      ଭାଙ୍ଗ;
 
-    case FTS_DC:		/* directory that causes cycles */
-      if (cycle_warning_required (fts, ent))
+    ସ୍ଥିତି FTS_DC:		/* directory that causes cycles */
+      ଯଦି (cycle_warning_required (fts, ent))
         {
           emit_cycle_warning (file_full_name);
-          return false;
+          ଫେରନ୍ତୁ false;
         }
-      break;
+      ଭାଙ୍ଗ;
 
-    default:
-      break;
+    ପୂର୍ବନିର୍ଦ୍ଧାରିତ:
+      ଭାଙ୍ଗ;
     }
 
   bool do_chown;
-  struct stat stat_buf;
-  struct stat const *file_stats;
-  if (!ok)
+  ସଂରଚନା stat stat_buf;
+  ସଂରଚନା stat ଅଚଳ *file_stats;
+  ଯଦି (!ok)
     {
       do_chown = false;
-      file_stats = NULL;
+      file_stats = ଖାଲି;
     }
-  else if (required_uid == (uid_t) -1 && required_gid == (gid_t) -1
+  ଅନ୍ୟଥା ଯଦି (required_uid == (uid_t) -1 && required_gid == (gid_t) -1
            && chopt->verbosity == V_off
-           && ! chopt->root_dev_ino
+           && ! chopt->ମୂଳ_dev_ino
            && ! chopt->affect_symlink_referent)
     {
       do_chown = true;
       file_stats = ent->fts_statp;
     }
-  else
+  ଅନ୍ୟଥା
     {
       file_stats = ent->fts_statp;
 
       /* If this is a symlink and we're dereferencing them,
          stat it to get info on the referent.  */
-      if (chopt->affect_symlink_referent && S_ISLNK (file_stats->st_mode))
+      ଯଦି (chopt->affect_symlink_referent && S_ISLNK (file_stats->st_mode))
         {
-          if (fstatat (fts->fts_cwd_fd, file, &stat_buf, 0) != 0)
+          ଯଦି (fstatat (fts->fts_cwd_fd, file, &stat_buf, 0) != 0)
             {
-              if (ignore_missing
+              ଯଦି (ignore_missing
                   && ignorable_traversal_errno (errno))
-                return true;
-              if (! chopt->force_silent)
+                ଫେରନ୍ତୁ true;
+              ଯଦି (! chopt->force_silent)
                 error (0, errno, _("cannot dereference %s"),
                        quoteaf (file_full_name));
               ok = false;
@@ -406,31 +406,31 @@ change_file_owner (FTS *fts, FTSENT *ent,
     }
 
   /* This happens when chown -LR --preserve-root encounters a symlink-to-/.  */
-  if (ok
+  ଯଦି (ok
       && FTSENT_IS_DIRECTORY (ent)
-      && ROOT_DEV_INO_CHECK (chopt->root_dev_ino, file_stats))
+      && ମୂଳ_DEV_INO_CHECK (chopt->ମୂଳ_dev_ino, file_stats))
     {
-      ROOT_DEV_INO_WARN (file_full_name);
-      return false;
+      ମୂଳ_DEV_INO_WARN (file_full_name);
+      ଫେରନ୍ତୁ false;
     }
 
   bool symlink_changed = true;
-  if (do_chown)
+  ଯଦି (do_chown)
     {
-      if ( ! chopt->affect_symlink_referent)
+      ଯଦି ( ! chopt->affect_symlink_referent)
         {
           ok = (lchownat (fts->fts_cwd_fd, file, uid, gid) == 0);
 
           /* Ignore any error due to lack of support; POSIX requires
              this behavior for top-level symbolic links with -h, and
              implies that it's required for all symbolic links.  */
-          if (!ok && is_ENOTSUP (errno))
+          ଯଦି (!ok && is_ENOTSUP (errno))
             {
               ok = true;
               symlink_changed = false;
             }
         }
-      else
+      ଅନ୍ୟଥା
         {
           /* If possible, avoid a race condition with --from=O:G and without the
              (-h) --no-dereference option.  If fts's stat call determined
@@ -442,30 +442,30 @@ change_file_owner (FTS *fts, FTSENT *ent,
              chown(2) calls.  If FILE is a regular file or a directory
              that can be opened, this race condition can be avoided safely.  */
 
-          enum RCH_status err
+          ଗଣନା RCH_status err
             = restricted_chown (fts->fts_cwd_fd, file, file_stats, uid, gid,
                                 required_uid, required_gid);
-          switch (err)
+          ବାଛ (err)
             {
-            case RC_ok:
-              break;
+            ସ୍ଥିତି RC_ok:
+              ଭାଙ୍ଗ;
 
-            case RC_do_ordinary_chown:
+            ସ୍ଥିତି RC_do_ordinary_chown:
               ok = (chownat (fts->fts_cwd_fd, file, uid, gid) == 0);
-              break;
+              ଭାଙ୍ଗ;
 
-            case RC_error:
+            ସ୍ଥିତି RC_error:
               ok = false;
-              break;
+              ଭାଙ୍ଗ;
 
-            case RC_inode_changed:
+            ସ୍ଥିତି RC_inode_changed:
               /* FIXME: give a diagnostic in this case?  */
-            case RC_excluded:
+            ସ୍ଥିତି RC_excluded:
               do_chown = false;
               ok = false;
-              break;
+              ଭାଙ୍ଗ;
 
-            default:
+            ପୂର୍ବନିର୍ଦ୍ଧାରିତ:
               unreachable ();
             }
         }
@@ -477,12 +477,12 @@ change_file_owner (FTS *fts, FTSENT *ent,
          by some other user and operating on files in a directory
          where M has write access.  */
 
-      if (do_chown && !ok)
+      ଯଦି (do_chown && !ok)
         {
-          if (ignore_missing
+          ଯଦି (ignore_missing
               && ignorable_traversal_errno (errno))
-            return true;
-          if (! chopt->force_silent)
+            ଫେରନ୍ତୁ true;
+          ଯଦି (! chopt->force_silent)
             error (0, errno, (uid != (uid_t) -1
                               ? _("changing ownership of %s")
                               : _("changing group of %s")),
@@ -490,46 +490,46 @@ change_file_owner (FTS *fts, FTSENT *ent,
         }
     }
 
-  if (chopt->verbosity != V_off)
+  ଯଦି (chopt->verbosity != V_off)
     {
       bool changed =
         ((do_chown && ok && symlink_changed)
          && ! ((uid == (uid_t) -1 || uid == file_stats->st_uid)
                && (gid == (gid_t) -1 || gid == file_stats->st_gid)));
 
-      if (changed || chopt->verbosity == V_high)
+      ଯଦି (changed || chopt->verbosity == V_ଉପର)
         {
-          enum Change_status ch_status =
+          ଗଣନା Change_status ch_status =
             (!ok ? CH_FAILED
              : !symlink_changed ? CH_NOT_APPLIED
              : !changed ? CH_NO_CHANGE_REQUESTED
              : CH_SUCCEEDED);
-          char *old_usr = (file_stats
-                           ? uid_to_name (file_stats->st_uid) : NULL);
-          char *old_grp = (file_stats
-                           ? gid_to_name (file_stats->st_gid) : NULL);
-          char *new_usr = chopt->user_name
+          ଅକ୍ଷର *old_usr = (file_stats
+                           ? uid_to_name (file_stats->st_uid) : ଖାଲି);
+          ଅକ୍ଷର *old_grp = (file_stats
+                           ? gid_to_name (file_stats->st_gid) : ଖାଲି);
+          ଅକ୍ଷର *new_usr = chopt->user_name
                           ? chopt->user_name : uid != -1
-                                               ? uid_to_str (uid) : NULL;
-          char *new_grp = chopt->group_name
+                                               ? uid_to_str (uid) : ଖାଲି;
+          ଅକ୍ଷର *new_grp = chopt->group_name
                           ? chopt->group_name : gid != -1
-                                               ? gid_to_str (gid) : NULL;
+                                               ? gid_to_str (gid) : ଖାଲି;
           describe_change (file_full_name, ch_status,
                            old_usr, old_grp,
                            new_usr, new_grp);
-          free (old_usr);
-          free (old_grp);
-          if (new_usr != chopt->user_name)
-            free (new_usr);
-          if (new_grp != chopt->group_name)
-            free (new_grp);
+          ମୁକ୍ତ (old_usr);
+          ମୁକ୍ତ (old_grp);
+          ଯଦି (new_usr != chopt->user_name)
+            ମୁକ୍ତ (new_usr);
+          ଯଦି (new_grp != chopt->group_name)
+            ମୁକ୍ତ (new_grp);
         }
     }
 
-  if ( ! chopt->recurse)
+  ଯଦି ( ! chopt->recurse)
     fts_set (fts, ent, FTS_SKIP);
 
-  return ok;
+  ଫେରନ୍ତୁ ok;
 }
 
 /* Change the owner and/or group of the specified FILES.
@@ -541,48 +541,48 @@ change_file_owner (FTS *fts, FTSENT *ent,
    If REQUIRED_UID and/or REQUIRED_GID is not -1, then change only
    files with user ID and group ID that match the non-(-1) value(s).
    Return true if successful.  */
-extern bool
-chown_files (char **files, int bit_flags,
+ବାହ୍ୟ bool
+chown_files (ଅକ୍ଷର **files, ପୂର୍ଣ୍ଣସଂଖ୍ୟା bit_flags,
              uid_t uid, gid_t gid,
              uid_t required_uid, gid_t required_gid,
-             struct Chown_option const *chopt)
+             ସଂରଚନା Chown_option ଅଚଳ *chopt)
 {
   bool ok = true;
 
   /* Use lstat and stat only if they're needed.  */
-  int stat_flags = ((required_uid != (uid_t) -1 || required_gid != (gid_t) -1
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା stat_flags = ((required_uid != (uid_t) -1 || required_gid != (gid_t) -1
                      || chopt->affect_symlink_referent
                      || chopt->verbosity != V_off)
                     ? 0
                     : FTS_NOSTAT);
 
-  FTS *fts = xfts_open (files, bit_flags | stat_flags, NULL);
+  FTS *fts = xfts_open (files, bit_flags | stat_flags, ଖାଲି);
 
-  while (true)
+  ଯେତେବେଳେ (true)
     {
       FTSENT *ent = fts_read (fts);
 
-      if (ent == NULL)
+      ଯଦି (ent == ଖାଲି)
         {
-          if (errno != 0)
+          ଯଦି (errno != 0)
             {
               /* FIXME: try to give a better message  */
-              if (! chopt->force_silent)
+              ଯଦି (! chopt->force_silent)
                 error (0, errno, _("fts_read failed"));
               ok = false;
             }
-          break;
+          ଭାଙ୍ଗ;
         }
 
       ok &= change_file_owner (fts, ent, uid, gid,
                                required_uid, required_gid, chopt);
     }
 
-  if (fts_close (fts) != 0)
+  ଯଦି (fts_close (fts) != 0)
     {
       error (0, errno, _("fts_close failed"));
       ok = false;
     }
 
-  return ok;
+  ଫେରନ୍ତୁ ok;
 }

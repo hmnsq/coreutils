@@ -32,40 +32,40 @@
 
    David MacKenzie <djm@gnu.ai.mit.edu> */
 
-#include <config.h>
+#ଅନ୍ତର୍ଭାଵ <config.h>
 
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#ଅନ୍ତର୍ଭାଵ <stdio.h>
+#ଅନ୍ତର୍ଭାଵ <getopt.h>
+#ଅନ୍ତର୍ଭାଵ <sys/types.h>
 
-#include "system.h"
-#include "ioblksize.h"
-#include "mcel.h"
-#include "mbbuf.h"
-#include "expand-common.h"
+#ଅନ୍ତର୍ଭାଵ "system.h"
+#ଅନ୍ତର୍ଭାଵ "ioblksize.h"
+#ଅନ୍ତର୍ଭାଵ "mcel.h"
+#ଅନ୍ତର୍ଭାଵ "mbbuf.h"
+#ଅନ୍ତର୍ଭାଵ "expand-common.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "expand"
 
 #define AUTHORS proper_name ("David MacKenzie")
 
-static char const shortopts[] = "it:0::1::2::3::4::5::6::7::8::9::";
+ସ୍ଥିର ଅକ୍ଷର ଅଚଳ shortopts[] = "it:0::1::2::3::4::5::6::7::8::9::";
 
-static struct option const longopts[] =
+ସ୍ଥିର ସଂରଚନା option ଅଚଳ longopts[] =
 {
-  {"tabs", required_argument, NULL, 't'},
-  {"initial", no_argument, NULL, 'i'},
+  {"tabs", required_argument, ଖାଲି, 't'},
+  {"initial", no_argument, ଖାଲି, 'i'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ଖାଲି, 0, ଖାଲି, 0}
 };
 
-void
-usage (int status)
+ଶୂନ୍ୟ
+usage (ପୂର୍ଣ୍ଣସଂଖ୍ୟା status)
 {
-  if (status != EXIT_SUCCESS)
+  ଯଦି (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ଅନ୍ୟଥା
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE]...\n\
@@ -80,7 +80,7 @@ Convert tabs in each FILE to spaces, writing to standard output.\n\
 
       oputs (_("\
   -i, --initial\n\
-         do not convert tabs after non blanks\n\
+         କର not convert tabs after non blanks\n\
 "));
       oputs (_("\
   -t, --tabs=N\n\
@@ -98,20 +98,20 @@ Convert tabs in each FILE to spaces, writing to standard output.\n\
 /* Change tabs to spaces, writing to stdout.
    Read each file in 'file_list', in order.  */
 
-static void
-expand (void)
+ସ୍ଥିର ଶୂନ୍ୟ
+expand (ଶୂନ୍ୟ)
 {
   /* Input stream.  */
-  FILE *fp = next_file (NULL);
+  FILE *fp = next_file (ଖାଲି);
 
-  if (!fp)
-    return;
+  ଯଦି (!fp)
+    ଫେରନ୍ତୁ;
 
-  static char line_in[IO_BUFSIZE];
+  ସ୍ଥିର ଅକ୍ଷର ଧାଡ଼ି_in[IO_BUFSIZE];
   mbbuf_t mbbuf;
-  mbbuf_init (&mbbuf, line_in, sizeof line_in, fp);
+  mbbuf_init (&mbbuf, ଧାଡ଼ି_in, ଆକାର ଧାଡ଼ି_in, fp);
 
-  while (true)
+  ଯେତେବେଳେ (true)
     {
       /* Input character, or EOF.  */
       mcel_t g;
@@ -132,63 +132,63 @@ expand (void)
 
       /* Convert a line of text.  */
 
-      do
+      କର
         {
-          while ((g = mbbuf_get_char (&mbbuf)).ch == MBBUF_EOF
+          ଯେତେବେଳେ ((g = mbbuf_get_char (&mbbuf)).ch == MBBUF_EOF
                  && (fp = next_file (fp)))
-            mbbuf_init (&mbbuf, line_in, sizeof line_in, fp);
+            mbbuf_init (&mbbuf, ଧାଡ଼ି_in, ଆକାର ଧାଡ଼ି_in, fp);
 
-          if (convert)
+          ଯଦି (convert)
             {
-              convert &= convert_entire_line || c32issep (g.ch);
+              convert &= convert_entire_ଧାଡ଼ି || c32issep (g.ch);
 
-              if (g.ch == '\t')
+              ଯଦି (g.ch == '\t')
                 {
                   /* Column the next input tab stop is on.  */
                   bool last_tab;
                   colno next_tab_column
                     = get_next_tab_column (column, &tab_index, &last_tab);
 
-                  while (++column < next_tab_column)
-                    if (putchar (' ') < 0)
+                  ଯେତେବେଳେ (++column < next_tab_column)
+                    ଯଦି (putchar (' ') < 0)
                       write_error ();
 
-                  if (putchar (' ') < 0)
+                  ଯଦି (putchar (' ') < 0)
                     write_error ();
 
-                  continue;
+                  ଜାରି;
                 }
-              else if (g.ch == '\b')
+              ଅନ୍ୟଥା ଯଦି (g.ch == '\b')
                 {
                   /* Go back one column, and force recalculation of the
                      next tab stop.  */
                   column -= !!column;
                   tab_index -= !!tab_index;
                 }
-              else
+              ଅନ୍ୟଥା
                 {
-                  int width = c32width (g.ch);
-                  if (ckd_add (&column, column, width < 0 ? 1 : width))
+                  ପୂର୍ଣ୍ଣସଂଖ୍ୟା width = c32width (g.ch);
+                  ଯଦି (ckd_add (&column, column, width < 0 ? 1 : width))
                     error (EXIT_FAILURE, 0, _("input line is too long"));
                 }
 
             }
 
-          if (g.ch == MBBUF_EOF)
-            return;
+          ଯଦି (g.ch == MBBUF_EOF)
+            ଫେରନ୍ତୁ;
 
-          fwrite (mbbuf_char_offset (&mbbuf, g), sizeof (char), g.len, stdout);
-          if (ferror (stdout))
+          fwrite (mbbuf_char_offset (&mbbuf, g), ଆକାର (ଅକ୍ଷର), g.len, stdout);
+          ଯଦି (ferror (stdout))
             write_error ();
         }
-      while (g.ch != '\n');
+      ଯେତେବେଳେ (g.ch != '\n');
     }
 }
 
-int
-main (int argc, char **argv)
+ପୂର୍ଣ୍ଣସଂଖ୍ୟା
+ମୁଖ୍ୟ (ପୂର୍ଣ୍ଣସଂଖ୍ୟା argc, ଅକ୍ଷର **argv)
 {
-  int c;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା c;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -197,49 +197,49 @@ main (int argc, char **argv)
   textdomain (PACKAGE);
 
   atexit (close_stdout);
-  convert_entire_line = true;
+  convert_entire_ଧାଡ଼ି = true;
 
-  while ((c = getopt_long (argc, argv, shortopts, longopts, NULL)) != -1)
+  ଯେତେବେଳେ ((c = getopt_long (argc, argv, shortopts, longopts, ଖାଲି)) != -1)
     {
-      switch (c)
+      ବାଛ (c)
         {
-        case 'i':
-          convert_entire_line = false;
-          break;
+        ସ୍ଥିତି 'i':
+          convert_entire_ଧାଡ଼ି = false;
+          ଭାଙ୍ଗ;
 
-        case 't':
+        ସ୍ଥିତି 't':
           parse_tab_stops (optarg);
-          break;
+          ଭାଙ୍ଗ;
 
-        case '0': case '1': case '2': case '3': case '4':
-        case '5': case '6': case '7': case '8': case '9':
-          if (optarg)
+        ସ୍ଥିତି '0': ସ୍ଥିତି '1': ସ୍ଥିତି '2': ସ୍ଥିତି '3': ସ୍ଥିତି '4':
+        ସ୍ଥିତି '5': ସ୍ଥିତି '6': ସ୍ଥିତି '7': ସ୍ଥିତି '8': ସ୍ଥିତି '9':
+          ଯଦି (optarg)
             parse_tab_stops (optarg - 1);
-          else
+          ଅନ୍ୟଥା
             {
-              char tab_stop[2];
+              ଅକ୍ଷର tab_stop[2];
               tab_stop[0] = c;
               tab_stop[1] = '\0';
               parse_tab_stops (tab_stop);
             }
-          break;
+          ଭାଙ୍ଗ;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        ପୂର୍ବନିର୍ଦ୍ଧାରିତ:
           usage (EXIT_FAILURE);
         }
     }
 
   finalize_tab_stops ();
 
-  set_file_list (optind < argc ? &argv[optind] : NULL);
+  set_file_list (optind < argc ? &argv[optind] : ଖାଲି);
 
   expand ();
 
   cleanup_file_list_stdin ();
 
-  return exit_status;
+  ଫେରନ୍ତୁ exit_status;
 }

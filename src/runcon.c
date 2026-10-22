@@ -40,38 +40,38 @@
  *     4            N         error
  */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <selinux/selinux.h>
-#include <selinux/context.h>
-#include <sys/types.h>
-#include "system.h"
-#include "quote.h"
+#ଅନ୍ତର୍ଭାଵ <config.h>
+#ଅନ୍ତର୍ଭାଵ <stdio.h>
+#ଅନ୍ତର୍ଭାଵ <getopt.h>
+#ଅନ୍ତର୍ଭାଵ <selinux/selinux.h>
+#ଅନ୍ତର୍ଭାଵ <selinux/context.h>
+#ଅନ୍ତର୍ଭାଵ <sys/types.h>
+#ଅନ୍ତର୍ଭାଵ "system.h"
+#ଅନ୍ତର୍ଭାଵ "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "runcon"
 
 #define AUTHORS proper_name ("Russell Coker")
 
-static struct option const long_options[] =
+ସ୍ଥିର ସଂରଚନା option ଅଚଳ long_options[] =
 {
-  {"role", required_argument, NULL, 'r'},
-  {"type", required_argument, NULL, 't'},
-  {"user", required_argument, NULL, 'u'},
-  {"range", required_argument, NULL, 'l'},
-  {"compute", no_argument, NULL, 'c'},
+  {"role", required_argument, ଖାଲି, 'r'},
+  {"type", required_argument, ଖାଲି, 't'},
+  {"user", required_argument, ଖାଲି, 'u'},
+  {"range", required_argument, ଖାଲି, 'l'},
+  {"compute", no_argument, ଖାଲି, 'c'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ଖାଲି, 0, ଖାଲି, 0}
 };
 
-void
-usage (int status)
+ଶୂନ୍ୟ
+usage (ପୂର୍ଣ୍ଣସଂଖ୍ୟା status)
 {
-  if (status != EXIT_SUCCESS)
+  ଯଦି (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ଅନ୍ୟଥା
     {
       printf (_("\
 Usage: %s [CONTEXT COMMAND [ARG]...]\n\
@@ -91,7 +91,7 @@ With neither CONTEXT nor COMMAND, print the current security context.\n\
   -c, --compute      compute process transition context before modifying\n\
 "));
       oputs (_("\
-  -t, --type=TYPE    type (for same role as parent)\n\
+  -t, --type=TYPE    type (ପାଇଁ same role as parent)\n\
 "));
       oputs (_("\
   -u, --user=USER    user identity\n\
@@ -110,17 +110,17 @@ With neither CONTEXT nor COMMAND, print the current security context.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+ପୂର୍ଣ୍ଣସଂଖ୍ୟା
+ମୁଖ୍ୟ (ପୂର୍ଣ୍ଣସଂଖ୍ୟା argc, ଅକ୍ଷର **argv)
 {
-  char *role = NULL;
-  char *range = NULL;
-  char *user = NULL;
-  char *type = NULL;
-  char *context = NULL;
-  char *cur_context = NULL;
-  char *file_context = NULL;
-  char *new_context = NULL;
+  ଅକ୍ଷର *role = ଖାଲି;
+  ଅକ୍ଷର *range = ଖାଲି;
+  ଅକ୍ଷର *user = ଖାଲି;
+  ଅକ୍ଷର *type = ଖାଲି;
+  ଅକ୍ଷର *context = ଖାଲି;
+  ଅକ୍ଷର *cur_context = ଖାଲି;
+  ଅକ୍ଷର *file_context = ଖାଲି;
+  ଅକ୍ଷର *new_context = ଖାଲି;
   bool compute_trans = false;
 
   context_t con;
@@ -134,59 +134,59 @@ main (int argc, char **argv)
   initialize_exit_failure (EXIT_CANCELED);
   atexit (close_stdout);
 
-  while (true)
+  ଯେତେବେଳେ (true)
     {
-      int option_index = 0;
-      int c = getopt_long (argc, argv, "+r:t:u:l:c", long_options,
+      ପୂର୍ଣ୍ଣସଂଖ୍ୟା option_index = 0;
+      ପୂର୍ଣ୍ଣସଂଖ୍ୟା c = getopt_long (argc, argv, "+r:t:u:l:c", long_options,
                            &option_index);
-      if (c == -1)
-        break;
-      switch (c)
+      ଯଦି (c == -1)
+        ଭାଙ୍ଗ;
+      ବାଛ (c)
         {
-        case 'r':
-          if (role)
+        ସ୍ଥିତି 'r':
+          ଯଦି (role)
             error (EXIT_CANCELED, 0, _("multiple roles"));
           role = optarg;
-          break;
-        case 't':
-          if (type)
+          ଭାଙ୍ଗ;
+        ସ୍ଥିତି 't':
+          ଯଦି (type)
             error (EXIT_CANCELED, 0, _("multiple types"));
           type = optarg;
-          break;
-        case 'u':
-          if (user)
+          ଭାଙ୍ଗ;
+        ସ୍ଥିତି 'u':
+          ଯଦି (user)
             error (EXIT_CANCELED, 0, _("multiple users"));
           user = optarg;
-          break;
-        case 'l':
-          if (range)
+          ଭାଙ୍ଗ;
+        ସ୍ଥିତି 'l':
+          ଯଦି (range)
             error (EXIT_CANCELED, 0, _("multiple levelranges"));
           range = optarg;
-          break;
-        case 'c':
+          ଭାଙ୍ଗ;
+        ସ୍ଥିତି 'c':
           compute_trans = true;
-          break;
+          ଭାଙ୍ଗ;
 
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        ପୂର୍ବନିର୍ଦ୍ଧାରିତ:
           usage (EXIT_CANCELED);
-          break;
+          ଭାଙ୍ଗ;
         }
     }
 
-  if (argc - optind == 0)
+  ଯଦି (argc - optind == 0)
     {
-      if (getcon (&cur_context) < 0)
+      ଯଦି (getcon (&cur_context) < 0)
         error (EXIT_CANCELED, errno, _("failed to get current context"));
       fputs (cur_context, stdout);
       fputc ('\n', stdout);
-      return EXIT_SUCCESS;
+      ଫେରନ୍ତୁ EXIT_SUCCESS;
     }
 
-  if (!(user || role || type || range || compute_trans))
+  ଯଦି (!(user || role || type || range || compute_trans))
     {
-      if (optind >= argc)
+      ଯଦି (optind >= argc)
         {
           error (0, 0, _("you must specify -c, -t, -u, -l, -r, or context"));
           usage (EXIT_CANCELED);
@@ -194,38 +194,38 @@ main (int argc, char **argv)
       context = argv[optind++];
     }
 
-  if (optind >= argc)
+  ଯଦି (optind >= argc)
     {
       error (0, 0, _("no command specified"));
       usage (EXIT_CANCELED);
     }
 
-  if (is_selinux_enabled () != 1)
+  ଯଦି (is_selinux_enabled () != 1)
     error (EXIT_CANCELED, 0, _("%s may be used only on a SELinux kernel"),
            program_name);
 
-  if (context)
+  ଯଦି (context)
     {
       con = context_new (context);
-      if (!con)
+      ଯଦି (!con)
         error (EXIT_CANCELED, errno, _("failed to create security context: %s"),
                quote (context));
     }
-  else
+  ଅନ୍ୟଥା
     {
-      if (getcon (&cur_context) < 0)
+      ଯଦି (getcon (&cur_context) < 0)
         error (EXIT_CANCELED, errno, _("failed to get current context"));
 
       /* We will generate context based on process transition */
-      if (compute_trans)
+      ଯଦି (compute_trans)
         {
           /* Get context of file to be executed */
-          if (getfilecon (argv[optind], &file_context) == -1)
+          ଯଦି (getfilecon (argv[optind], &file_context) == -1)
             error (EXIT_CANCELED, errno,
                    _("failed to get security context of %s"),
                    quoteaf (argv[optind]));
           /* compute result of process transition */
-          if (security_compute_create (cur_context, file_context,
+          ଯଦି (security_compute_create (cur_context, file_context,
                                        string_to_security_class ("process"),
                                        &new_context) != 0)
             error (EXIT_CANCELED, errno, _("failed to compute a new context"));
@@ -238,36 +238,36 @@ main (int argc, char **argv)
         }
 
       con = context_new (cur_context);
-      if (!con)
+      ଯଦି (!con)
         error (EXIT_CANCELED, errno, _("failed to create security context: %s"),
                quote (cur_context));
-      if (user && context_user_set (con, user))
+      ଯଦି (user && context_user_set (con, user))
         error (EXIT_CANCELED, errno, _("failed to set new user: %s"),
                quote (user));
-      if (type && context_type_set (con, type))
+      ଯଦି (type && context_type_set (con, type))
         error (EXIT_CANCELED, errno, _("failed to set new type: %s"),
                quote (type));
-      if (range && context_range_set (con, range))
+      ଯଦି (range && context_range_set (con, range))
         error (EXIT_CANCELED, errno, _("failed to set new range: %s"),
                quote (range));
-      if (role && context_role_set (con, role))
+      ଯଦି (role && context_role_set (con, role))
         error (EXIT_CANCELED, errno, _("failed to set new role: %s"),
                quote (role));
     }
 
-  if (security_check_context (context_str (con)) < 0)
+  ଯଦି (security_check_context (context_str (con)) < 0)
     error (EXIT_CANCELED, errno, _("invalid context: %s"),
            quote (context_str (con)));
 
-  if (setexeccon (context_str (con)) != 0)
+  ଯଦି (setexeccon (context_str (con)) != 0)
     error (EXIT_CANCELED, errno, _("unable to set security context %s"),
            quote (context_str (con)));
-  if (cur_context != NULL)
+  ଯଦି (cur_context != ଖାଲି)
     freecon (cur_context);
 
   (compute_trans ? execv : execvp) (argv[optind], argv + optind);
 
-  int exit_status = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା exit_status = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
   error (0, errno, "%s", quote (argv[optind]));
-  return exit_status;
+  ଫେରନ୍ତୁ exit_status;
 }

@@ -16,26 +16,26 @@
 
 /* Written by Jim Meyering */
 
-#include <config.h>
+#ଅନ୍ତର୍ଭାଵ <config.h>
 
-#include <stdio.h>
-#include <sys/types.h>
-#include <getopt.h>
+#ଅନ୍ତର୍ଭାଵ <stdio.h>
+#ଅନ୍ତର୍ଭାଵ <sys/types.h>
+#ଅନ୍ତର୍ଭାଵ <getopt.h>
 
-#include "system.h"
-#include "assure.h"
-#include "c-ctype.h"
-#include "fadvise.h"
-#include "quote.h"
-#include "xbinary-io.h"
-#include "xstrtol.h"
+#ଅନ୍ତର୍ଭାଵ "system.h"
+#ଅନ୍ତର୍ଭାଵ "assure.h"
+#ଅନ୍ତର୍ଭାଵ "c-ctype.h"
+#ଅନ୍ତର୍ଭାଵ "fadvise.h"
+#ଅନ୍ତର୍ଭାଵ "quote.h"
+#ଅନ୍ତର୍ଭାଵ "xbinary-io.h"
+#ଅନ୍ତର୍ଭାଵ "xstrtol.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "tr"
 
 #define AUTHORS proper_name ("Jim Meyering")
 
-enum { N_CHARS = UCHAR_MAX + 1 };
+ଗଣନା { N_CHARS = UCHAR_MAX + 1 };
 
 /* An unsigned integer type big enough to hold a repeat count or an
    unsigned character.  POSIX requires support for repeat counts as
@@ -43,7 +43,7 @@ enum { N_CHARS = UCHAR_MAX + 1 };
    match the length of an argument string, we need at least size_t to
    avoid arbitrary internal limits.  It doesn't cost much to use
    uintmax_t, though.  */
-typedef uintmax_t count;
+ପ୍ରକାରବ୍ୟାଖ୍ୟା uintmax_t ଗଣନା_2;
 
 /* The value for Spec_list->state that indicates to
    get_next that it should initialize the tail pointer.
@@ -61,11 +61,11 @@ typedef uintmax_t count;
 
 /* The maximum possible repeat count.  Due to how the states are
    implemented, it can be as much as BEGIN_STATE.  */
-#define REPEAT_COUNT_MAXIMUM BEGIN_STATE
+#define REPEAT_ଗଣନା_MAXIMUM BEGIN_STATE
 
 /* The following (but not CC_NO_CLASS) are indices into the array of
    valid character class strings.  */
-enum Char_class
+ଗଣନା Char_class
   {
     CC_ALNUM = 0, CC_ALPHA = 1, CC_BLANK = 2, CC_CNTRL = 3,
     CC_DIGIT = 4, CC_GRAPH = 5, CC_LOWER = 6, CC_PRINT = 7,
@@ -79,7 +79,7 @@ enum Char_class
    is used only when translating and then, only to make sure that upper
    and lower class constructs have the same relative positions in string1
    and string2.  */
-enum Upper_Lower_class
+ଗଣନା Upper_Lower_class
   {
     UL_LOWER,
     UL_UPPER,
@@ -87,7 +87,7 @@ enum Upper_Lower_class
   };
 
 /* The type of a List_element.  See build_spec_list for more details.  */
-enum Range_element_type
+ଗଣନା Range_element_type
   {
     RE_NORMAL_CHAR,
     RE_RANGE,
@@ -101,25 +101,25 @@ enum Range_element_type
        tr -cs 'a-zA-Z_' '[\n*]'
    String1 has 3 constructs, two of which are ranges (a-z and A-Z),
    and a single normal character, '_'.  String2 has one construct.  */
-struct List_element
+ସଂରଚନା List_element
   {
-    enum Range_element_type type;
-    struct List_element *next;
-    union
+    ଗଣନା Range_element_type type;
+    ସଂରଚନା List_element *next;
+    ସଂଘ
       {
-        unsigned char normal_char;
-        struct			/* unnamed */
+        unsigned ଅକ୍ଷର normal_char;
+        ସଂରଚନା			/* unnamed */
           {
-            unsigned char first_char;
-            unsigned char last_char;
+            unsigned ଅକ୍ଷର first_char;
+            unsigned ଅକ୍ଷର last_char;
           }
         range;
-        enum Char_class char_class;
-        unsigned char equiv_code;
-        struct			/* unnamed */
+        ଗଣନା Char_class char_class;
+        unsigned ଅକ୍ଷର equiv_code;
+        ସଂରଚନା			/* unnamed */
           {
-            unsigned char the_repeated_char;
-            count repeat_count;
+            unsigned ଅକ୍ଷର the_repeated_char;
+            ଗଣନା_2 repeat_ଗଣନା;
           }
         repeated_char;
       }
@@ -135,24 +135,24 @@ struct List_element
    'tail', which is first used to construct the list.  After construction,
    it is used by get_next to save its state when traversing the list.
    The member 'state' serves a similar function.  */
-struct Spec_list
+ସଂରଚନା Spec_list
   {
     /* Points to the head of the list of range elements.
        The first struct is a dummy; its members are never used.  */
-    struct List_element *head;
+    ସଂରଚନା List_element *head;
 
     /* When appending, points to the last element.  When traversing via
        get_next(), points to the element to process next.  Setting
        Spec_list.state to the value BEGIN_STATE before calling get_next
        signals get_next to initialize tail to point to head->next.  */
-    struct List_element *tail;
+    ସଂରଚନା List_element *tail;
 
     /* Used to save state between calls to get_next.  */
-    count state;
+    ଗଣନା_2 state;
 
     /* Length, in the sense that length ('a-z[:digit:]123abc')
        is 42 ( = 26 + 10 + 6).  */
-    count length;
+    ଗଣନା_2 length;
 
     /* The number of [c*] and [c*0] constructs that appear in this spec.  */
     size_t n_indefinite_repeats;
@@ -160,7 +160,7 @@ struct Spec_list
     /* If n_indefinite_repeats is nonzero, this points to the List_element
        corresponding to the last [c*] or [c*0] construct encountered in
        this spec.  Otherwise it is undefined.  */
-    struct List_element *indefinite_repeat_element;
+    ସଂରଚନା List_element *indefinite_repeat_element;
 
     /* True if this spec contains at least one equivalence
        class construct e.g. [=c=].  */
@@ -179,31 +179,31 @@ struct Spec_list
    any backslash-escaped characters (other than octal or \a, \b, \f, \n,
    etc.) are marked as such in this structure by setting the corresponding
    entry in the ESCAPED vector.  */
-struct E_string
+ସଂରଚନା E_string
 {
-  char *s;
+  ଅକ୍ଷର *s;
   bool *escaped;
   size_t len;
 };
 
 /* Return nonzero if the Ith character of escaped string ES matches C
    and is not escaped itself.  */
-static inline bool
-es_match (struct E_string const *es, size_t i, char c)
+ସ୍ଥିର ଧାଡ଼ିଭିତରେ bool
+es_match (ସଂରଚନା E_string ଅଚଳ *es, size_t i, ଅକ୍ଷର c)
 {
-  return es->s[i] == c && !es->escaped[i];
+  ଫେରନ୍ତୁ es->s[i] == c && !es->escaped[i];
 }
 
 /* When true, each sequence in the input of a repeated character
    (call it c) is replaced (in the output) by a single occurrence of c
    for every c in the squeeze set.  */
-static bool squeeze_repeats = false;
+ସ୍ଥିର bool squeeze_repeats = false;
 
 /* When true, removes characters in the delete set from input.  */
-static bool delete = false;
+ସ୍ଥିର bool delete = false;
 
 /* Use the complement of set1 in place of set1.  */
-static bool complement = false;
+ସ୍ଥିର bool complement = false;
 
 /* When tr is performing translation and string1 is longer than string2,
    POSIX says that the result is unspecified.  That gives the implementer
@@ -233,15 +233,15 @@ static bool complement = false;
    of the POSIX constructs [:alpha:], [=c=], and [c*10], so if by
    some unfortunate coincidence you use such constructs in scripts
    expecting to use some other version of tr, the scripts will break.  */
-static bool truncate_set1 = false;
+ସ୍ଥିର bool truncate_set1 = false;
 
 /* An alias for (!delete && non_option_args == 2).
    It is set in main and used there and in validate().  */
-static bool translating;
+ସ୍ଥିର bool translating;
 
-static char io_buf[BUFSIZ];
+ସ୍ଥିର ଅକ୍ଷର io_buf[BUFSIZ];
 
-static char const *const char_class_name[] =
+ସ୍ଥିର ଅକ୍ଷର ଅଚଳ *ଅଚଳ char_class_name[] =
 {
   "alnum", "alpha", "blank", "cntrl", "digit", "graph",
   "lower", "print", "punct", "space", "upper", "xdigit"
@@ -251,43 +251,43 @@ static char const *const char_class_name[] =
    squeeze set if and only if in_squeeze_set[c] is true.  The squeeze
    set is defined by the last (possibly, the only) string argument
    on the command line when the squeeze option is given.  */
-static bool in_squeeze_set[N_CHARS];
+ସ୍ଥିର bool in_squeeze_set[N_CHARS];
 
 /* Array of boolean values.  A character 'c' is a member of the
    delete set if and only if in_delete_set[c] is true.  The delete
    set is defined by the first (or only) string argument on the
    command line when the delete option is given.  */
-static bool in_delete_set[N_CHARS];
+ସ୍ଥିର bool in_delete_set[N_CHARS];
 
 /* Array of character values defining the translation (if any) that
    tr is to perform.  Translation is performed only when there are
    two specification strings and the delete switch is not given.  */
-static char xlate[N_CHARS];
+ସ୍ଥିର ଅକ୍ଷର xlate[N_CHARS];
 
-static struct option const long_options[] =
+ସ୍ଥିର ସଂରଚନା option ଅଚଳ long_options[] =
 {
-  {"complement", no_argument, NULL, 'c'},
-  {"delete", no_argument, NULL, 'd'},
-  {"squeeze-repeats", no_argument, NULL, 's'},
-  {"truncate-set1", no_argument, NULL, 't'},
+  {"complement", no_argument, ଖାଲି, 'c'},
+  {"delete", no_argument, ଖାଲି, 'd'},
+  {"squeeze-repeats", no_argument, ଖାଲି, 's'},
+  {"truncate-set1", no_argument, ଖାଲି, 't'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ଖାଲି, 0, ଖାଲି, 0}
 };
 
-void
-usage (int status)
+ଶୂନ୍ୟ
+usage (ପୂର୍ଣ୍ଣସଂଖ୍ୟା status)
 {
-  if (status != EXIT_SUCCESS)
+  ଯଦି (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ଅନ୍ୟଥା
     {
       printf (_("\
 Usage: %s [OPTION]... STRING1 [STRING2]\n\
 "),
               program_name);
       fputs (_("\
-Translate, squeeze, and/or delete characters from standard input,\n\
+Translate, squeeze, and/or delete characters from standard ନିବେଶ,\n\
 writing to standard output.  STRING1 and STRING2 specify arrays of\n\
 characters ARRAY1 and ARRAY2 that control the action.\n\
 \n\
@@ -298,7 +298,7 @@ characters ARRAY1 and ARRAY2 that control the action.\n\
 "));
       oputs (_("\
   -d, --delete\n\
-         delete characters in ARRAY1, do not translate\n\
+         delete characters in ARRAY1, କର not translate\n\
 "));
       oputs (_("\
   -s, --squeeze-repeats\n\
@@ -317,20 +317,20 @@ characters ARRAY1 and ARRAY2 that control the action.\n\
 ARRAYs are specified as strings of characters.  Most represent themselves.\n\
 Interpreted sequences are:\n\
 \n\
-  \\NNN            character with octal value NNN (1 to 3 octal digits)\n\
+  \\NNN            character with octal ମୂଲ୍ୟ NNN (1 to 3 octal digits)\n\
   \\\\              backslash\n\
   \\a              audible BEL\n\
   \\b              backspace\n\
   \\f              form feed\n\
-  \\n              new line\n\
-  \\r              return\n\
+  \\n              new ଧାଡ଼ି\n\
+  \\r              ଫେରନ୍ତୁ\n\
   \\t              horizontal tab\n\
 "), stdout);
      fputs (_("\
   \\v              vertical tab\n\
   CHAR1-CHAR2     all characters from CHAR1 to CHAR2 in ascending order\n\
   [CHAR*]         in ARRAY2, copies of CHAR until length of ARRAY1\n\
-  [CHAR*REPEAT]   REPEAT copies of CHAR, REPEAT octal if starting with 0\n\
+  [CHAR*REPEAT]   REPEAT copies of CHAR, REPEAT octal ଯଦି starting with 0\n\
   [:alnum:]       all letters and digits\n\
   [:alpha:]       all letters\n\
   [:blank:]       all horizontal whitespace\n\
@@ -339,22 +339,22 @@ Interpreted sequences are:\n\
 "), stdout);
      fputs (_("\
   [:graph:]       all printable characters, not including space\n\
-  [:lower:]       all lower case letters\n\
+  [:lower:]       all lower ସ୍ଥିତି letters\n\
   [:print:]       all printable characters, including space\n\
   [:punct:]       all punctuation characters\n\
   [:space:]       all horizontal or vertical whitespace\n\
-  [:upper:]       all upper case letters\n\
+  [:upper:]       all upper ସ୍ଥିତି letters\n\
   [:xdigit:]      all hexadecimal digits\n\
   [=CHAR=]        all characters which are equivalent to CHAR\n\
 "), stdout);
      fputs (_("\
 \n\
-Translation occurs if -d is not given and both STRING1 and STRING2 appear.\n\
+Translation occurs ଯଦି -d is not given and both STRING1 and STRING2 appear.\n\
 -t is only significant when translating.  ARRAY2 is extended to length of\n\
 ARRAY1 by repeating its last character as necessary.  Excess characters\n\
 of ARRAY2 are ignored.  Character classes expand in unspecified order;\n\
-while translating, '[:lower:]' and '[:upper:]' may be used in pairs to\n\
-specify case conversion.  Squeezing occurs after translation or deletion.\n\
+ଯେତେବେଳେ translating, '[:lower:]' and '[:upper:]' may be used in pairs to\n\
+specify ସ୍ଥିତି conversion.  Squeezing occurs after translation or deletion.\n\
 Arguments like '[...]' should be quoted, to avoid potential shell globbing.\n\
 "), stdout);
       emit_ancillary_info (PROGRAM_NAME);
@@ -365,71 +365,71 @@ Arguments like '[...]' should be quoted, to avoid potential shell globbing.\n\
 /* Return nonzero if the character C is a member of the
    equivalence class containing the character EQUIV_CLASS.  */
 
-static inline bool
-is_equiv_class_member (unsigned char equiv_class, unsigned char c)
+ସ୍ଥିର ଧାଡ଼ିଭିତରେ bool
+is_equiv_class_member (unsigned ଅକ୍ଷର equiv_class, unsigned ଅକ୍ଷର c)
 {
-  return (equiv_class == c);
+  ଫେରନ୍ତୁ (equiv_class == c);
 }
 
 /* Return true if the character C is a member of the
    character class CHAR_CLASS.  */
 
 ATTRIBUTE_PURE
-static bool
-is_char_class_member (enum Char_class char_class, unsigned char c)
+ସ୍ଥିର bool
+is_char_class_member (ଗଣନା Char_class char_class, unsigned ଅକ୍ଷର c)
 {
-  int result;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା result;
 
-  switch (char_class)
+  ବାଛ (char_class)
     {
-    case CC_ALNUM:
+    ସ୍ଥିତି CC_ALNUM:
       result = isalnum (c);
-      break;
-    case CC_ALPHA:
+      ଭାଙ୍ଗ;
+    ସ୍ଥିତି CC_ALPHA:
       result = isalpha (c);
-      break;
-    case CC_BLANK:
+      ଭାଙ୍ଗ;
+    ସ୍ଥିତି CC_BLANK:
       result = isblank (c);
-      break;
-    case CC_CNTRL:
+      ଭାଙ୍ଗ;
+    ସ୍ଥିତି CC_CNTRL:
       result = iscntrl (c);
-      break;
-    case CC_DIGIT:
+      ଭାଙ୍ଗ;
+    ସ୍ଥିତି CC_DIGIT:
       result = c_isdigit (c);
-      break;
-    case CC_GRAPH:
+      ଭାଙ୍ଗ;
+    ସ୍ଥିତି CC_GRAPH:
       result = isgraph (c);
-      break;
-    case CC_LOWER:
+      ଭାଙ୍ଗ;
+    ସ୍ଥିତି CC_LOWER:
       result = islower (c);
-      break;
-    case CC_PRINT:
+      ଭାଙ୍ଗ;
+    ସ୍ଥିତି CC_PRINT:
       result = isprint (c);
-      break;
-    case CC_PUNCT:
+      ଭାଙ୍ଗ;
+    ସ୍ଥିତି CC_PUNCT:
       result = ispunct (c);
-      break;
-    case CC_SPACE:
+      ଭାଙ୍ଗ;
+    ସ୍ଥିତି CC_SPACE:
       result = isspace (c);
-      break;
-    case CC_UPPER:
+      ଭାଙ୍ଗ;
+    ସ୍ଥିତି CC_UPPER:
       result = isupper (c);
-      break;
-    case CC_XDIGIT:
+      ଭାଙ୍ଗ;
+    ସ୍ଥିତି CC_XDIGIT:
       result = c_isxdigit (c);
-      break;
-    case CC_NO_CLASS: default:
+      ଭାଙ୍ଗ;
+    ସ୍ଥିତି CC_NO_CLASS: ପୂର୍ବନିର୍ଦ୍ଧାରିତ:
       affirm (false);
     }
 
-  return !! result;
+  ଫେରନ୍ତୁ !! result;
 }
 
-static void
-es_free (struct E_string *es)
+ସ୍ଥିର ଶୂନ୍ୟ
+es_free (ସଂରଚନା E_string *es)
 {
-  free (es->s);
-  free (es->escaped);
+  ମୁକ୍ତ (es->s);
+  ମୁକ୍ତ (es->escaped);
 }
 
 /* Perform the first pass over each range-spec argument S, converting all
@@ -440,73 +440,73 @@ es_free (struct E_string *es)
    however, on input, S is assumed to be null-terminated, and hence
    cannot contain actual (non-escaped) zero bytes.  */
 
-static bool
-unquote (char const *s, struct E_string *es)
+ସ୍ଥିର bool
+unquote (ଅକ୍ଷର ଅଚଳ *s, ସଂରଚନା E_string *es)
 {
   size_t len = strlen (s);
 
   es->s = xmalloc (len);
-  es->escaped = xcalloc (len, sizeof es->escaped[0]);
+  es->escaped = xcalloc (len, ଆକାର es->escaped[0]);
 
-  unsigned int j = 0;
-  for (unsigned int i = 0; s[i]; i++)
+  unsigned ପୂର୍ଣ୍ଣସଂଖ୍ୟା j = 0;
+  ପାଇଁ (unsigned ପୂର୍ଣ୍ଣସଂଖ୍ୟା i = 0; s[i]; i++)
     {
-      unsigned char c;
-      int oct_digit;
+      unsigned ଅକ୍ଷର c;
+      ପୂର୍ଣ୍ଣସଂଖ୍ୟା oct_digit;
 
-      switch (s[i])
+      ବାଛ (s[i])
         {
-        case '\\':
+        ସ୍ଥିତି '\\':
           es->escaped[j] = true;
-          switch (s[i + 1])
+          ବାଛ (s[i + 1])
             {
-            case '\\':
+            ସ୍ଥିତି '\\':
               c = '\\';
-              break;
-            case 'a':
+              ଭାଙ୍ଗ;
+            ସ୍ଥିତି 'a':
               c = '\a';
-              break;
-            case 'b':
+              ଭାଙ୍ଗ;
+            ସ୍ଥିତି 'b':
               c = '\b';
-              break;
-            case 'f':
+              ଭାଙ୍ଗ;
+            ସ୍ଥିତି 'f':
               c = '\f';
-              break;
-            case 'n':
+              ଭାଙ୍ଗ;
+            ସ୍ଥିତି 'n':
               c = '\n';
-              break;
-            case 'r':
+              ଭାଙ୍ଗ;
+            ସ୍ଥିତି 'r':
               c = '\r';
-              break;
-            case 't':
+              ଭାଙ୍ଗ;
+            ସ୍ଥିତି 't':
               c = '\t';
-              break;
-            case 'v':
+              ଭାଙ୍ଗ;
+            ସ୍ଥିତି 'v':
               c = '\v';
-              break;
-            case '0':
-            case '1':
-            case '2':
-            case '3':
-            case '4':
-            case '5':
-            case '6':
-            case '7':
+              ଭାଙ୍ଗ;
+            ସ୍ଥିତି '0':
+            ସ୍ଥିତି '1':
+            ସ୍ଥିତି '2':
+            ସ୍ଥିତି '3':
+            ସ୍ଥିତି '4':
+            ସ୍ଥିତି '5':
+            ସ୍ଥିତି '6':
+            ସ୍ଥିତି '7':
               c = s[i + 1] - '0';
               oct_digit = s[i + 2] - '0';
-              if (0 <= oct_digit && oct_digit <= 7)
+              ଯଦି (0 <= oct_digit && oct_digit <= 7)
                 {
                   c = 8 * c + oct_digit;
                   ++i;
                   oct_digit = s[i + 2] - '0';
-                  if (0 <= oct_digit && oct_digit <= 7)
+                  ଯଦି (0 <= oct_digit && oct_digit <= 7)
                     {
-                      if (8 * c + oct_digit < N_CHARS)
+                      ଯଦି (8 * c + oct_digit < N_CHARS)
                         {
                           c = 8 * c + oct_digit;
                           ++i;
                         }
-                      else
+                      ଅନ୍ୟଥା
                         {
                           /* A 3-digit octal number larger than \377 won't
                              fit in 8 bits.  So we stop when adding the
@@ -523,63 +523,63 @@ unquote (char const *s, struct E_string *es)
                         }
                     }
                 }
-              break;
-            case '\0':
+              ଭାଙ୍ଗ;
+            ସ୍ଥିତି '\0':
               error (0, 0, _("warning: an unescaped backslash "
                              "at end of string is not portable"));
               /* POSIX is not clear about this.  */
               es->escaped[j] = false;
               i--;
               c = '\\';
-              break;
-            default:
+              ଭାଙ୍ଗ;
+            ପୂର୍ବନିର୍ଦ୍ଧାରିତ:
               c = s[i + 1];
-              break;
+              ଭାଙ୍ଗ;
             }
           ++i;
           es->s[j++] = c;
-          break;
-        default:
+          ଭାଙ୍ଗ;
+        ପୂର୍ବନିର୍ଦ୍ଧାରିତ:
           es->s[j++] = s[i];
-          break;
+          ଭାଙ୍ଗ;
         }
     }
   es->len = j;
-  return true;
+  ଫେରନ୍ତୁ true;
 }
 
 /* If CLASS_STR is a valid character class string, return its index
    in the global char_class_name array.  Otherwise, return CC_NO_CLASS.  */
 
 ATTRIBUTE_PURE
-static enum Char_class
-look_up_char_class (char const *class_str, size_t len)
+ସ୍ଥିର ଗଣନା Char_class
+look_up_char_class (ଅକ୍ଷର ଅଚଳ *class_str, size_t len)
 {
-  for (enum Char_class i = 0; i < countof (char_class_name); i++)
-    if (STREQ_LEN (class_str, char_class_name[i], len)
+  ପାଇଁ (ଗଣନା Char_class i = 0; i < countof (char_class_name); i++)
+    ଯଦି (STREQ_LEN (class_str, char_class_name[i], len)
         && strlen (char_class_name[i]) == len)
-      return i;
-  return CC_NO_CLASS;
+      ଫେରନ୍ତୁ i;
+  ଫେରନ୍ତୁ CC_NO_CLASS;
 }
 
 /* Return a newly allocated string with a printable version of C.
    This function is used solely for formatting error messages.  */
 
-static char *
-make_printable_char (unsigned char c)
+ସ୍ଥିର ଅକ୍ଷର *
+make_printable_char (unsigned ଅକ୍ଷର c)
 {
-  char *buf = xmalloc (5);
+  ଅକ୍ଷର *buf = xmalloc (5);
 
-  if (isprint (c))
+  ଯଦି (isprint (c))
     {
       buf[0] = c;
       buf[1] = '\0';
     }
-  else
+  ଅନ୍ୟଥା
     {
       sprintf (buf, "\\%03o", c);
     }
-  return buf;
+  ଫେରନ୍ତୁ buf;
 }
 
 /* Return a newly allocated copy of S which is suitable for printing.
@@ -589,70 +589,70 @@ make_printable_char (unsigned char c)
    where c is one of [abfnrtv] are represented by their 2-character \c
    sequences.  This function is used solely for printing error messages.  */
 
-static char *
-make_printable_str (char const *s, size_t len)
+ସ୍ଥିର ଅକ୍ଷର *
+make_printable_str (ଅକ୍ଷର ଅଚଳ *s, size_t len)
 {
   /* Worst case is that every character expands to a backslash
      followed by a 3-character octal escape sequence.  */
-  char *printable_buf = xnmalloc (len + 1, 4);
-  char *p = printable_buf;
+  ଅକ୍ଷର *printable_buf = xnmalloc (len + 1, 4);
+  ଅକ୍ଷର *p = printable_buf;
 
-  for (size_t i = 0; i < len; i++)
+  ପାଇଁ (size_t i = 0; i < len; i++)
     {
-      char buf[5];
-      char const *tmp = NULL;
-      unsigned char c = s[i];
+      ଅକ୍ଷର buf[5];
+      ଅକ୍ଷର ଅଚଳ *tmp = ଖାଲି;
+      unsigned ଅକ୍ଷର c = s[i];
 
-      switch (c)
+      ବାଛ (c)
         {
-        case '\\':
+        ସ୍ଥିତି '\\':
           tmp = "\\";
-          break;
-        case '\a':
+          ଭାଙ୍ଗ;
+        ସ୍ଥିତି '\a':
           tmp = "\\a";
-          break;
-        case '\b':
+          ଭାଙ୍ଗ;
+        ସ୍ଥିତି '\b':
           tmp = "\\b";
-          break;
-        case '\f':
+          ଭାଙ୍ଗ;
+        ସ୍ଥିତି '\f':
           tmp = "\\f";
-          break;
-        case '\n':
+          ଭାଙ୍ଗ;
+        ସ୍ଥିତି '\n':
           tmp = "\\n";
-          break;
-        case '\r':
+          ଭାଙ୍ଗ;
+        ସ୍ଥିତି '\r':
           tmp = "\\r";
-          break;
-        case '\t':
+          ଭାଙ୍ଗ;
+        ସ୍ଥିତି '\t':
           tmp = "\\t";
-          break;
-        case '\v':
+          ଭାଙ୍ଗ;
+        ସ୍ଥିତି '\v':
           tmp = "\\v";
-          break;
-        default:
-          if (isprint (c))
+          ଭାଙ୍ଗ;
+        ପୂର୍ବନିର୍ଦ୍ଧାରିତ:
+          ଯଦି (isprint (c))
             {
               buf[0] = c;
               buf[1] = '\0';
             }
-          else
+          ଅନ୍ୟଥା
             sprintf (buf, "\\%03o", c);
           tmp = buf;
-          break;
+          ଭାଙ୍ଗ;
         }
       p = stpcpy (p, tmp);
     }
-  return printable_buf;
+  ଫେରନ୍ତୁ printable_buf;
 }
 
 /* Append a newly allocated structure representing a
    character C to the specification list LIST.  */
 
-static void
-append_normal_char (struct Spec_list *list, unsigned char c)
+ସ୍ଥିର ଶୂନ୍ୟ
+append_normal_char (ସଂରଚନା Spec_list *list, unsigned ଅକ୍ଷର c)
 {
-  struct List_element *new = xmalloc (sizeof *new);
-  new->next = NULL;
+  ସଂରଚନା List_element *new = xmalloc (ଆକାର *new);
+  new->next = ଖାଲି;
   new->type = RE_NORMAL_CHAR;
   new->u.normal_char = c;
   list->tail->next = new;
@@ -664,29 +664,29 @@ append_normal_char (struct Spec_list *list, unsigned char c)
    Return false if LAST precedes FIRST in the collating sequence,
    true otherwise.  This means that '[c-c]' is acceptable.  */
 
-static bool
-append_range (struct Spec_list *list, unsigned char first, unsigned char last)
+ସ୍ଥିର bool
+append_range (ସଂରଚନା Spec_list *list, unsigned ଅକ୍ଷର first, unsigned ଅକ୍ଷର last)
 {
-  if (last < first)
+  ଯଦି (last < first)
     {
-      char *tmp1 = make_printable_char (first);
-      char *tmp2 = make_printable_char (last);
+      ଅକ୍ଷର *tmp1 = make_printable_char (first);
+      ଅକ୍ଷର *tmp2 = make_printable_char (last);
 
       error (0, 0,
        _("range-endpoints of '%s-%s' are in reverse collating sequence order"),
              tmp1, tmp2);
-      free (tmp1);
-      free (tmp2);
-      return false;
+      ମୁକ୍ତ (tmp1);
+      ମୁକ୍ତ (tmp2);
+      ଫେରନ୍ତୁ false;
     }
-  struct List_element *new = xmalloc (sizeof *new);
-  new->next = NULL;
+  ସଂରଚନା List_element *new = xmalloc (ଆକାର *new);
+  new->next = ଖାଲି;
   new->type = RE_RANGE;
   new->u.range.first_char = first;
   new->u.range.last_char = last;
   list->tail->next = new;
   list->tail = new;
-  return true;
+  ଫେରନ୍ତୁ true;
 }
 
 /* If CHAR_CLASS_STR is a valid character class string, append a
@@ -694,20 +694,20 @@ append_range (struct Spec_list *list, unsigned char first, unsigned char last)
    of the specification list LIST and return true.  If CHAR_CLASS_STR is not
    a valid string return false.  */
 
-static bool
-append_char_class (struct Spec_list *list,
-                   char const *char_class_str, size_t len)
+ସ୍ଥିର bool
+append_char_class (ସଂରଚନା Spec_list *list,
+                   ଅକ୍ଷର ଅଚଳ *char_class_str, size_t len)
 {
-  enum Char_class char_class = look_up_char_class (char_class_str, len);
-  if (char_class == CC_NO_CLASS)
-    return false;
-  struct List_element *new = xmalloc (sizeof *new);
-  new->next = NULL;
+  ଗଣନା Char_class char_class = look_up_char_class (char_class_str, len);
+  ଯଦି (char_class == CC_NO_CLASS)
+    ଫେରନ୍ତୁ false;
+  ସଂରଚନା List_element *new = xmalloc (ଆକାର *new);
+  new->next = ଖାଲି;
   new->type = RE_CHAR_CLASS;
   new->u.char_class = char_class;
   list->tail->next = new;
   list->tail = new;
-  return true;
+  ଫେରନ୍ତୁ true;
 }
 
 /* Append a newly allocated structure representing a [c*n]
@@ -715,15 +715,15 @@ append_char_class (struct Spec_list *list,
    THE_CHAR is the single character to be repeated, and REPEAT_COUNT
    is a non-negative repeat count.  */
 
-static void
-append_repeated_char (struct Spec_list *list, unsigned char the_char,
-                      count repeat_count)
+ସ୍ଥିର ଶୂନ୍ୟ
+append_repeated_char (ସଂରଚନା Spec_list *list, unsigned ଅକ୍ଷର the_char,
+                      ଗଣନା_2 repeat_ଗଣନା)
 {
-  struct List_element *new = xmalloc (sizeof *new);
-  new->next = NULL;
+  ସଂରଚନା List_element *new = xmalloc (ଆକାର *new);
+  new->next = ଖାଲି;
   new->type = RE_REPEATED_CHAR;
   new->u.repeated_char.the_repeated_char = the_char;
-  new->u.repeated_char.repeat_count = repeat_count;
+  new->u.repeated_char.repeat_ଗଣନା = repeat_ଗଣନା;
   list->tail->next = new;
   list->tail = new;
 }
@@ -734,20 +734,20 @@ append_repeated_char (struct Spec_list *list, unsigned char the_char,
    equivalence class to the specification list, LIST and return true.
    If LEN is not 1, return false.  */
 
-static bool
-append_equiv_class (struct Spec_list *list,
-                    char const *equiv_class_str, size_t len)
+ସ୍ଥିର bool
+append_equiv_class (ସଂରଚନା Spec_list *list,
+                    ଅକ୍ଷର ଅଚଳ *equiv_class_str, size_t len)
 {
-  if (len != 1)
-    return false;
+  ଯଦି (len != 1)
+    ଫେରନ୍ତୁ false;
 
-  struct List_element *new = xmalloc (sizeof *new);
-  new->next = NULL;
+  ସଂରଚନା List_element *new = xmalloc (ଆକାର *new);
+  new->next = ଖାଲି;
   new->type = RE_EQUIV_CLASS;
   new->u.equiv_code = *equiv_class_str;
   list->tail->next = new;
   list->tail = new;
-  return true;
+  ଫେରନ୍ତୁ true;
 }
 
 /* Search forward starting at START_IDX for the 2-char sequence
@@ -756,18 +756,18 @@ append_equiv_class (struct Spec_list *list,
    character and return true.  Otherwise return false.  P may contain
    zero bytes.  */
 
-static bool
-find_closing_delim (const struct E_string *es, size_t start_idx,
-                    char pre_bracket_char, size_t *result_idx)
+ସ୍ଥିର bool
+find_closing_delim (ଅଚଳ ସଂରଚନା E_string *es, size_t start_idx,
+                    ଅକ୍ଷର pre_bracket_char, size_t *result_idx)
 {
-  for (size_t i = start_idx; i < es->len - 1; i++)
-    if (es->s[i] == pre_bracket_char && es->s[i + 1] == ']'
+  ପାଇଁ (size_t i = start_idx; i < es->len - 1; i++)
+    ଯଦି (es->s[i] == pre_bracket_char && es->s[i + 1] == ']'
         && !es->escaped[i] && !es->escaped[i + 1])
       {
         *result_idx = i;
-        return true;
+        ଫେରନ୍ତୁ true;
       }
-  return false;
+  ଫେରନ୍ତୁ false;
 }
 
 /* Parse the bracketed repeat-char syntax.  If the P_LEN characters
@@ -780,52 +780,52 @@ find_closing_delim (const struct E_string *es, size_t start_idx,
    empty, an octal number, or a decimal number, print an error message
    and return -2.  */
 
-static int
-find_bracketed_repeat (const struct E_string *es, size_t start_idx,
-                       unsigned char *char_to_repeat, count *repeat_count,
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା
+find_bracketed_repeat (ଅଚଳ ସଂରଚନା E_string *es, size_t start_idx,
+                       unsigned ଅକ୍ଷର *char_to_repeat, ଗଣନା_2 *repeat_ଗଣନା,
                        size_t *closing_bracket_idx)
 {
   affirm (start_idx + 1 < es->len);
-  if (!es_match (es, start_idx + 1, '*'))
-    return -1;
+  ଯଦି (!es_match (es, start_idx + 1, '*'))
+    ଫେରନ୍ତୁ -1;
 
-  for (size_t i = start_idx + 2; i < es->len && !es->escaped[i]; i++)
+  ପାଇଁ (size_t i = start_idx + 2; i < es->len && !es->escaped[i]; i++)
     {
-      if (es->s[i] == ']')
+      ଯଦି (es->s[i] == ']')
         {
           size_t digit_str_len = i - start_idx - 2;
 
           *char_to_repeat = es->s[start_idx];
-          if (digit_str_len == 0)
+          ଯଦି (digit_str_len == 0)
             {
               /* We've matched [c*] -- no explicit repeat count.  */
-              *repeat_count = 0;
+              *repeat_ଗଣନା = 0;
             }
-          else
+          ଅନ୍ୟଥା
             {
               /* Here, we have found [c*s] where s should be a string
                  of octal (if it starts with '0') or decimal digits.  */
-              char const *digit_str = &es->s[start_idx + 2];
-              char *d_end;
-              if ((xstrtoumax (digit_str, &d_end, *digit_str == '0' ? 8 : 10,
-                               repeat_count, NULL)
+              ଅକ୍ଷର ଅଚଳ *digit_str = &es->s[start_idx + 2];
+              ଅକ୍ଷର *d_end;
+              ଯଦି ((xstrtoumax (digit_str, &d_end, *digit_str == '0' ? 8 : 10,
+                               repeat_ଗଣନା, ଖାଲି)
                    != LONGINT_OK)
-                  || REPEAT_COUNT_MAXIMUM < *repeat_count
+                  || REPEAT_ଗଣନା_MAXIMUM < *repeat_ଗଣନା
                   || digit_str + digit_str_len != d_end)
                 {
-                  char *tmp = make_printable_str (digit_str, digit_str_len);
+                  ଅକ୍ଷର *tmp = make_printable_str (digit_str, digit_str_len);
                   error (0, 0,
                          _("invalid repeat count %s in [c*n] construct"),
                          quote (tmp));
-                  free (tmp);
-                  return -2;
+                  ମୁକ୍ତ (tmp);
+                  ଫେରନ୍ତୁ -2;
                 }
             }
           *closing_bracket_idx = i;
-          return 0;
+          ଫେରନ୍ତୁ 0;
         }
     }
-  return -1;			/* No bracket found.  */
+  ଫେରନ୍ତୁ -1;			/* No bracket found.  */
 }
 
 /* Return true if the string at ES->s[IDX] matches the regular
@@ -833,16 +833,16 @@ find_bracketed_repeat (const struct E_string *es, size_t start_idx,
    match if any of its characters are escaped.  */
 
 ATTRIBUTE_PURE
-static bool
-star_digits_closebracket (const struct E_string *es, size_t idx)
+ସ୍ଥିର bool
+star_digits_closebracket (ଅଚଳ ସଂରଚନା E_string *es, size_t idx)
 {
-  if (!es_match (es, idx, '*'))
-    return false;
+  ଯଦି (!es_match (es, idx, '*'))
+    ଫେରନ୍ତୁ false;
 
-  for (size_t i = idx + 1; i < es->len; i++)
-    if (!c_isdigit (es->s[i]) || es->escaped[i])
-      return es_match (es, i, ']');
-  return false;
+  ପାଇଁ (size_t i = idx + 1; i < es->len; i++)
+    ଯଦି (!c_isdigit (es->s[i]) || es->escaped[i])
+      ଫେରନ୍ତୁ es_match (es, i, ']');
+  ଫେରନ୍ତୁ false;
 }
 
 /* Convert string UNESCAPED_STRING (which has been preprocessed to
@@ -857,10 +857,10 @@ star_digits_closebracket (const struct E_string *es, size_t idx)
           not precede the first in the current collating sequence.
       - c Any other character is interpreted as itself.  */
 
-static bool
-build_spec_list (const struct E_string *es, struct Spec_list *result)
+ସ୍ଥିର bool
+build_spec_list (ଅଚଳ ସଂରଚନା E_string *es, ସଂରଚନା Spec_list *result)
 {
-  char const *p = es->s;
+  ଅକ୍ଷର ଅଚଳ *p = es->s;
 
   /* The main for-loop below recognizes the 4 multi-character constructs.
      A character that matches (in its context) none of the multi-character
@@ -869,76 +869,76 @@ build_spec_list (const struct E_string *es, struct Spec_list *result)
      less are composed solely of normal characters.  Hence, the index of
      the outer for-loop runs only as far as LEN-2.  */
   size_t i;
-  for (i = 0; i + 2 < es->len; /* empty */)
+  ପାଇଁ (i = 0; i + 2 < es->len; /* empty */)
     {
-      if (es_match (es, i, '['))
+      ଯଦି (es_match (es, i, '['))
         {
           bool matched_multi_char_construct;
           size_t closing_bracket_idx;
-          unsigned char char_to_repeat;
-          count repeat_count;
-          int err;
+          unsigned ଅକ୍ଷର char_to_repeat;
+          ଗଣନା_2 repeat_ଗଣନା;
+          ପୂର୍ଣ୍ଣସଂଖ୍ୟା err;
 
           matched_multi_char_construct = true;
-          if (es_match (es, i + 1, ':') || es_match (es, i + 1, '='))
+          ଯଦି (es_match (es, i + 1, ':') || es_match (es, i + 1, '='))
             {
               size_t closing_delim_idx;
 
-              if (find_closing_delim (es, i + 2, p[i + 1], &closing_delim_idx))
+              ଯଦି (find_closing_delim (es, i + 2, p[i + 1], &closing_delim_idx))
                 {
                   size_t opnd_str_len = closing_delim_idx - 1 - (i + 2) + 1;
-                  char const *opnd_str = p + i + 2;
+                  ଅକ୍ଷର ଅଚଳ *opnd_str = p + i + 2;
 
-                  if (opnd_str_len == 0)
+                  ଯଦି (opnd_str_len == 0)
                     {
-                      if (p[i + 1] == ':')
+                      ଯଦି (p[i + 1] == ':')
                         error (0, 0, _("missing character class name '[::]'"));
-                      else
+                      ଅନ୍ୟଥା
                         error (0, 0,
                                _("missing equivalence class character '[==]'"));
-                      return false;
+                      ଫେରନ୍ତୁ false;
                     }
 
-                  if (p[i + 1] == ':')
+                  ଯଦି (p[i + 1] == ':')
                     {
                       /* FIXME: big comment.  */
-                      if (!append_char_class (result, opnd_str, opnd_str_len))
+                      ଯଦି (!append_char_class (result, opnd_str, opnd_str_len))
                         {
-                          if (star_digits_closebracket (es, i + 2))
-                            goto try_bracketed_repeat;
-                          else
+                          ଯଦି (star_digits_closebracket (es, i + 2))
+                            ଯାଅ try_bracketed_repeat;
+                          ଅନ୍ୟଥା
                             {
-                              char *tmp = make_printable_str (opnd_str,
+                              ଅକ୍ଷର *tmp = make_printable_str (opnd_str,
                                                               opnd_str_len);
                               error (0, 0, _("invalid character class %s"),
                                      quote (tmp));
-                              free (tmp);
-                              return false;
+                              ମୁକ୍ତ (tmp);
+                              ଫେରନ୍ତୁ false;
                             }
                         }
                     }
-                  else
+                  ଅନ୍ୟଥା
                     {
                       /* FIXME: big comment.  */
-                      if (!append_equiv_class (result, opnd_str, opnd_str_len))
+                      ଯଦି (!append_equiv_class (result, opnd_str, opnd_str_len))
                         {
-                          if (star_digits_closebracket (es, i + 2))
-                            goto try_bracketed_repeat;
-                          else
+                          ଯଦି (star_digits_closebracket (es, i + 2))
+                            ଯାଅ try_bracketed_repeat;
+                          ଅନ୍ୟଥା
                             {
-                              char *tmp = make_printable_str (opnd_str,
+                              ଅକ୍ଷର *tmp = make_printable_str (opnd_str,
                                                               opnd_str_len);
                               error (0, 0,
                _("%s: equivalence class operand must be a single character"),
                                      tmp);
-                              free (tmp);
-                              return false;
+                              ମୁକ୍ତ (tmp);
+                              ଫେରନ୍ତୁ false;
                             }
                         }
                     }
 
                   i = closing_delim_idx + 2;
-                  continue;
+                  ଜାରି;
                 }
               /* Else fall through.  This could be [:*] or [=*].  */
             }
@@ -948,26 +948,26 @@ build_spec_list (const struct E_string *es, struct Spec_list *result)
           /* Determine whether this is a bracketed repeat range
              matching the RE \[.\*(dec_or_oct_number)?].  */
           err = find_bracketed_repeat (es, i + 1, &char_to_repeat,
-                                       &repeat_count,
+                                       &repeat_ଗଣନା,
                                        &closing_bracket_idx);
-          if (err == 0)
+          ଯଦି (err == 0)
             {
-              append_repeated_char (result, char_to_repeat, repeat_count);
+              append_repeated_char (result, char_to_repeat, repeat_ଗଣନା);
               i = closing_bracket_idx + 1;
             }
-          else if (err == -1)
+          ଅନ୍ୟଥା ଯଦି (err == -1)
             {
               matched_multi_char_construct = false;
             }
-          else
+          ଅନ୍ୟଥା
             {
               /* Found a string that looked like [c*n] but the
                  numeric part was invalid.  */
-              return false;
+              ଫେରନ୍ତୁ false;
             }
 
-          if (matched_multi_char_construct)
-            continue;
+          ଯଦି (matched_multi_char_construct)
+            ଜାରି;
 
           /* We reach this point if P does not match [:str:], [=c=],
              [c*n], or [c*].  Now, see if P looks like a range '[-c'
@@ -975,13 +975,13 @@ build_spec_list (const struct E_string *es, struct Spec_list *result)
         }
 
       /* Look ahead one char for ranges like a-z.  */
-      if (es_match (es, i + 1, '-'))
+      ଯଦି (es_match (es, i + 1, '-'))
         {
-          if (!append_range (result, p[i], p[i + 2]))
-            return false;
+          ଯଦି (!append_range (result, p[i], p[i + 2]))
+            ଫେରନ୍ତୁ false;
           i += 3;
         }
-      else
+      ଅନ୍ୟଥା
         {
           append_normal_char (result, p[i]);
           ++i;
@@ -989,16 +989,16 @@ build_spec_list (const struct E_string *es, struct Spec_list *result)
     }
 
   /* Now handle the (2 or fewer) remaining characters p[i]..p[es->len - 1].  */
-  for (; i < es->len; i++)
+  ପାଇଁ (; i < es->len; i++)
     append_normal_char (result, p[i]);
 
-  return true;
+  ଫେରନ୍ତୁ true;
 }
 
 /* Advance past the current construct.
    S->tail must be non-null.  */
-static void
-skip_construct (struct Spec_list *s)
+ସ୍ଥିର ଶୂନ୍ୟ
+skip_construct (ସଂରଚନା Spec_list *s)
 {
   s->tail = s->tail->next;
   s->state = NEW_ELEMENT;
@@ -1018,84 +1018,84 @@ skip_construct (struct Spec_list *s)
    lower class constructs in the spec-strings appear in the same relative
    positions.  */
 
-static int
-get_next (struct Spec_list *s, enum Upper_Lower_class *class)
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା
+get_next (ସଂରଚନା Spec_list *s, ଗଣନା Upper_Lower_class *class)
 {
-  struct List_element *p;
-  int return_val;
-  int i;
+  ସଂରଚନା List_element *p;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା return_val;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା i;
 
-  if (class)
+  ଯଦି (class)
     *class = UL_NONE;
 
-  if (s->state == BEGIN_STATE)
+  ଯଦି (s->state == BEGIN_STATE)
     {
       s->tail = s->head->next;
       s->state = NEW_ELEMENT;
     }
 
   p = s->tail;
-  if (p == NULL)
-    return -1;
+  ଯଦି (p == ଖାଲି)
+    ଫେରନ୍ତୁ -1;
 
-  switch (p->type)
+  ବାଛ (p->type)
     {
-    case RE_NORMAL_CHAR:
+    ସ୍ଥିତି RE_NORMAL_CHAR:
       return_val = p->u.normal_char;
       s->state = NEW_ELEMENT;
       s->tail = p->next;
-      break;
+      ଭାଙ୍ଗ;
 
-    case RE_RANGE:
-      if (s->state == NEW_ELEMENT)
+    ସ୍ଥିତି RE_RANGE:
+      ଯଦି (s->state == NEW_ELEMENT)
         s->state = p->u.range.first_char;
-      else
+      ଅନ୍ୟଥା
         ++(s->state);
       return_val = s->state;
-      if (s->state == p->u.range.last_char)
+      ଯଦି (s->state == p->u.range.last_char)
         {
           s->tail = p->next;
           s->state = NEW_ELEMENT;
         }
-      break;
+      ଭାଙ୍ଗ;
 
-    case RE_CHAR_CLASS:
-      if (class)
+    ସ୍ଥିତି RE_CHAR_CLASS:
+      ଯଦି (class)
         {
-          switch (+p->u.char_class)
+          ବାଛ (+p->u.char_class)
             {
-            case CC_LOWER:
+            ସ୍ଥିତି CC_LOWER:
               *class = UL_LOWER;
-              break;
-            case CC_UPPER:
+              ଭାଙ୍ଗ;
+            ସ୍ଥିତି CC_UPPER:
               *class = UL_UPPER;
-              break;
+              ଭାଙ୍ଗ;
             }
         }
 
-      if (s->state == NEW_ELEMENT)
+      ଯଦି (s->state == NEW_ELEMENT)
         {
-          for (i = 0; i < N_CHARS; i++)
-            if (is_char_class_member (p->u.char_class, i))
-              break;
+          ପାଇଁ (i = 0; i < N_CHARS; i++)
+            ଯଦି (is_char_class_member (p->u.char_class, i))
+              ଭାଙ୍ଗ;
           affirm (i < N_CHARS);
           s->state = i;
         }
       assure (is_char_class_member (p->u.char_class, s->state));
       return_val = s->state;
-      for (i = s->state + 1; i < N_CHARS; i++)
-        if (is_char_class_member (p->u.char_class, i))
-          break;
-      if (i < N_CHARS)
+      ପାଇଁ (i = s->state + 1; i < N_CHARS; i++)
+        ଯଦି (is_char_class_member (p->u.char_class, i))
+          ଭାଙ୍ଗ;
+      ଯଦି (i < N_CHARS)
         s->state = i;
-      else
+      ଅନ୍ୟଥା
         {
           s->tail = p->next;
           s->state = NEW_ELEMENT;
         }
-      break;
+      ଭାଙ୍ଗ;
 
-    case RE_EQUIV_CLASS:
+    ସ୍ଥିତି RE_EQUIV_CLASS:
       /* FIXME: this assumes that each character is alone in its own
          equivalence class (which appears to be correct for my
          LC_COLLATE.  But I don't know of any function that allows
@@ -1104,37 +1104,37 @@ get_next (struct Spec_list *s, enum Upper_Lower_class *class)
       return_val = p->u.equiv_code;
       s->state = NEW_ELEMENT;
       s->tail = p->next;
-      break;
+      ଭାଙ୍ଗ;
 
-    case RE_REPEATED_CHAR:
+    ସ୍ଥିତି RE_REPEATED_CHAR:
       /* Here, a repeat count of n == 0 means don't repeat at all.  */
-      if (p->u.repeated_char.repeat_count == 0)
+      ଯଦି (p->u.repeated_char.repeat_ଗଣନା == 0)
         {
           s->tail = p->next;
           s->state = NEW_ELEMENT;
           return_val = get_next (s, class);
         }
-      else
+      ଅନ୍ୟଥା
         {
-          if (s->state == NEW_ELEMENT)
+          ଯଦି (s->state == NEW_ELEMENT)
             {
               s->state = 0;
             }
           ++(s->state);
           return_val = p->u.repeated_char.the_repeated_char;
-          if (s->state == p->u.repeated_char.repeat_count)
+          ଯଦି (s->state == p->u.repeated_char.repeat_ଗଣନା)
             {
               s->tail = p->next;
               s->state = NEW_ELEMENT;
             }
         }
-      break;
+      ଭାଙ୍ଗ;
 
-    default:
+    ପୂର୍ବନିର୍ଦ୍ଧାରିତ:
       unreachable ();
     }
 
-  return return_val;
+  ଫେରନ୍ତୁ return_val;
 }
 
 /* This is a minor kludge.  This function is called from
@@ -1142,20 +1142,20 @@ get_next (struct Spec_list *s, enum Upper_Lower_class *class)
    from a complemented string.  It's a kludge in that some of the
    same operations are (duplicated) performed in set_initialize.  */
 
-static int
-card_of_complement (struct Spec_list *s)
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା
+card_of_complement (ସଂରଚନା Spec_list *s)
 {
-  int c;
-  int cardinality = N_CHARS;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା c;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା cardinality = N_CHARS;
   bool in_set[N_CHARS] = {0};
 
   s->state = BEGIN_STATE;
-  while ((c = get_next (s, NULL)) != -1)
+  ଯେତେବେଳେ ((c = get_next (s, ଖାଲି)) != -1)
     {
       cardinality -= (!in_set[c]);
       in_set[c] = true;
     }
-  return cardinality;
+  ଫେରନ୍ତୁ cardinality;
 }
 
 /* Discard the lengths associated with a case conversion,
@@ -1167,49 +1167,49 @@ card_of_complement (struct Spec_list *s)
    is undefined.  Therefore we allow it (unlike Solaris)
    and treat it as a no-op.  */
 
-static void
-validate_case_classes (struct Spec_list *s1, struct Spec_list *s2)
+ସ୍ଥିର ଶୂନ୍ୟ
+validate_case_classes (ସଂରଚନା Spec_list *s1, ସଂରଚନା Spec_list *s2)
 {
   size_t n_upper = 0;
   size_t n_lower = 0;
-  int c1 = 0;
-  int c2 = 0;
-  MAYBE_UNUSED count old_s1_len = s1->length, old_s2_len = s2->length;
-  struct List_element *s1_tail = s1->tail;
-  struct List_element *s2_tail = s2->tail;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା c1 = 0;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା c2 = 0;
+  MAYBE_UNUSED ଗଣନା_2 old_s1_len = s1->length, old_s2_len = s2->length;
+  ସଂରଚନା List_element *s1_tail = s1->tail;
+  ସଂରଚନା List_element *s2_tail = s2->tail;
   bool s1_new_element = true;
   bool s2_new_element = true;
 
-  if (complement || !s2->has_char_class)
-    return;
+  ଯଦି (complement || !s2->has_char_class)
+    ଫେରନ୍ତୁ;
 
-  for (int i = 0; i < N_CHARS; i++)
+  ପାଇଁ (ପୂର୍ଣ୍ଣସଂଖ୍ୟା i = 0; i < N_CHARS; i++)
     {
-      if (isupper (i))
+      ଯଦି (isupper (i))
         n_upper++;
-      if (islower (i))
+      ଯଦି (islower (i))
         n_lower++;
     }
 
   s1->state = BEGIN_STATE;
   s2->state = BEGIN_STATE;
 
-  while (c1 != -1 && c2 != -1)
+  ଯେତେବେଳେ (c1 != -1 && c2 != -1)
     {
-      enum Upper_Lower_class class_s1, class_s2;
+      ଗଣନା Upper_Lower_class class_s1, class_s2;
 
       c1 = get_next (s1, &class_s1);
       c2 = get_next (s2, &class_s2);
 
       /* If c2 transitions to a new case class, then
          c1 must also transition at the same time.  */
-      if (s2_new_element && class_s2 != UL_NONE
+      ଯଦି (s2_new_element && class_s2 != UL_NONE
           && !(s1_new_element && class_s1 != UL_NONE))
         error (EXIT_FAILURE, 0,
                _("misaligned [:upper:] and/or [:lower:] construct"));
 
       /* If case converting, quickly skip over the elements.  */
-      if (class_s2 != UL_NONE)
+      ଯଦି (class_s2 != UL_NONE)
         {
           skip_construct (s1);
           skip_construct (s2);
@@ -1241,64 +1241,64 @@ validate_case_classes (struct Spec_list *s1, struct Spec_list *s2)
    tr a-z 'A[\n*]Z' on the second call to get_spec_stats, LEN_S1 would
    be 26 and S (representing string2) would be converted to 'A[\n*24]Z'.  */
 
-static void
-get_spec_stats (struct Spec_list *s)
+ସ୍ଥିର ଶୂନ୍ୟ
+get_spec_stats (ସଂରଚନା Spec_list *s)
 {
-  count length = 0;
+  ଗଣନା_2 length = 0;
 
   s->n_indefinite_repeats = 0;
   s->has_equiv_class = false;
   s->has_restricted_char_class = false;
   s->has_char_class = false;
-  for (struct List_element *p = s->head->next; p; p = p->next)
+  ପାଇଁ (ସଂରଚନା List_element *p = s->head->next; p; p = p->next)
     {
-      count len = 0;
+      ଗଣନା_2 len = 0;
 
-      switch (p->type)
+      ବାଛ (p->type)
         {
-        case RE_NORMAL_CHAR:
+        ସ୍ଥିତି RE_NORMAL_CHAR:
           len = 1;
-          break;
+          ଭାଙ୍ଗ;
 
-        case RE_RANGE:
+        ସ୍ଥିତି RE_RANGE:
           affirm (p->u.range.last_char >= p->u.range.first_char);
           len = p->u.range.last_char - p->u.range.first_char + 1;
-          break;
+          ଭାଙ୍ଗ;
 
-        case RE_CHAR_CLASS:
+        ସ୍ଥିତି RE_CHAR_CLASS:
           s->has_char_class = true;
-          for (int i = 0; i < N_CHARS; i++)
-            if (is_char_class_member (p->u.char_class, i))
+          ପାଇଁ (ପୂର୍ଣ୍ଣସଂଖ୍ୟା i = 0; i < N_CHARS; i++)
+            ଯଦି (is_char_class_member (p->u.char_class, i))
               ++len;
-          switch (+p->u.char_class)
+          ବାଛ (+p->u.char_class)
             {
-            case CC_UPPER:
-            case CC_LOWER:
-              break;
-            default:
+            ସ୍ଥିତି CC_UPPER:
+            ସ୍ଥିତି CC_LOWER:
+              ଭାଙ୍ଗ;
+            ପୂର୍ବନିର୍ଦ୍ଧାରିତ:
               s->has_restricted_char_class = true;
-              break;
+              ଭାଙ୍ଗ;
             }
-          break;
+          ଭାଙ୍ଗ;
 
-        case RE_EQUIV_CLASS:
-          for (int i = 0; i < N_CHARS; i++)
-            if (is_equiv_class_member (p->u.equiv_code, i))
+        ସ୍ଥିତି RE_EQUIV_CLASS:
+          ପାଇଁ (ପୂର୍ଣ୍ଣସଂଖ୍ୟା i = 0; i < N_CHARS; i++)
+            ଯଦି (is_equiv_class_member (p->u.equiv_code, i))
               ++len;
           s->has_equiv_class = true;
-          break;
+          ଭାଙ୍ଗ;
 
-        case RE_REPEATED_CHAR:
-          if (p->u.repeated_char.repeat_count > 0)
-            len = p->u.repeated_char.repeat_count;
-          else
+        ସ୍ଥିତି RE_REPEATED_CHAR:
+          ଯଦି (p->u.repeated_char.repeat_ଗଣନା > 0)
+            len = p->u.repeated_char.repeat_ଗଣନା;
+          ଅନ୍ୟଥା
             {
               s->indefinite_repeat_element = p;
               ++(s->n_indefinite_repeats);
             }
-          break;
+          ଭାଙ୍ଗ;
 
-        default:
+        ପୂର୍ବନିର୍ଦ୍ଧାରିତ:
           unreachable ();
         }
 
@@ -1306,39 +1306,39 @@ get_spec_stats (struct Spec_list *s)
          any length greater than the maximum repeat count, in case the
          length is later used to compute the repeat count for an
          indefinite element.  */
-      if (ckd_add (&length, length, len) || REPEAT_COUNT_MAXIMUM < length)
+      ଯଦି (ckd_add (&length, length, len) || REPEAT_ଗଣନା_MAXIMUM < length)
         error (EXIT_FAILURE, 0, _("too many characters in set"));
     }
 
   s->length = length;
 }
 
-static void
-get_s1_spec_stats (struct Spec_list *s1)
+ସ୍ଥିର ଶୂନ୍ୟ
+get_s1_spec_stats (ସଂରଚନା Spec_list *s1)
 {
   get_spec_stats (s1);
-  if (complement)
+  ଯଦି (complement)
     s1->length = card_of_complement (s1);
 }
 
-static void
-get_s2_spec_stats (struct Spec_list *s2, count len_s1)
+ସ୍ଥିର ଶୂନ୍ୟ
+get_s2_spec_stats (ସଂରଚନା Spec_list *s2, ଗଣନା_2 len_s1)
 {
   get_spec_stats (s2);
-  if (len_s1 >= s2->length && s2->n_indefinite_repeats == 1)
+  ଯଦି (len_s1 >= s2->length && s2->n_indefinite_repeats == 1)
     {
-      s2->indefinite_repeat_element->u.repeated_char.repeat_count =
+      s2->indefinite_repeat_element->u.repeated_char.repeat_ଗଣନା =
         len_s1 - s2->length;
       s2->length = len_s1;
     }
 }
 
-static void
-spec_init (struct Spec_list *spec_list)
+ସ୍ଥିର ଶୂନ୍ୟ
+spec_init (ସଂରଚନା Spec_list *spec_list)
 {
-  struct List_element *new = xmalloc (sizeof *new);
+  ସଂରଚନା List_element *new = xmalloc (ଆକାର *new);
   spec_list->head = spec_list->tail = new;
-  spec_list->head->next = NULL;
+  spec_list->head->next = ଖାଲି;
 }
 
 /* This function makes two passes over the argument string S.  The first
@@ -1347,13 +1347,13 @@ spec_init (struct Spec_list *spec_list)
    characters and constructs that comprise the argument string.  If either
    of these passes detects an error, this function returns false.  */
 
-static bool
-parse_str (char const *s, struct Spec_list *spec_list)
+ସ୍ଥିର bool
+parse_str (ଅକ୍ଷର ଅଚଳ *s, ସଂରଚନା Spec_list *spec_list)
 {
-  struct E_string es;
+  ସଂରଚନା E_string es;
   bool ok = unquote (s, &es) && build_spec_list (&es, spec_list);
   es_free (&es);
-  return ok;
+  ଫେରନ୍ତୁ ok;
 }
 
 /* Given two specification lists, S1 and S2, and assuming that
@@ -1365,26 +1365,26 @@ parse_str (char const *s, struct Spec_list *spec_list)
    zero-length, since in that case, there is no last character to repeat.
    So S2->length is required to be at least 1.  */
 
-static void
-string2_extend (const struct Spec_list *s1, struct Spec_list *s2)
+ସ୍ଥିର ଶୂନ୍ୟ
+string2_extend (ଅଚଳ ସଂରଚନା Spec_list *s1, ସଂରଚନା Spec_list *s2)
 {
-  struct List_element *p;
-  unsigned char char_to_repeat;
+  ସଂରଚନା List_element *p;
+  unsigned ଅକ୍ଷର char_to_repeat;
 
   affirm (translating);
   affirm (s1->length > s2->length);
   affirm (s2->length > 0);
 
   p = s2->tail;
-  switch (p->type)
+  ବାଛ (p->type)
     {
-    case RE_NORMAL_CHAR:
+    ସ୍ଥିତି RE_NORMAL_CHAR:
       char_to_repeat = p->u.normal_char;
-      break;
-    case RE_RANGE:
+      ଭାଙ୍ଗ;
+    ସ୍ଥିତି RE_RANGE:
       char_to_repeat = p->u.range.last_char;
-      break;
-    case RE_CHAR_CLASS:
+      ଭାଙ୍ଗ;
+    ସ୍ଥିତି RE_CHAR_CLASS:
       /* Note BSD allows extending of classes in string2.  For example:
            tr '[:upper:]0-9' '[:lower:]'
          That's not portable however, contradicts POSIX and is dependent
@@ -1393,11 +1393,11 @@ string2_extend (const struct Spec_list *s1, struct Spec_list *s2)
              _("when translating with string1 longer than string2,\n"
                "the latter string must not end with a character class"));
 
-    case RE_REPEATED_CHAR:
+    ସ୍ଥିତି RE_REPEATED_CHAR:
       char_to_repeat = p->u.repeated_char.the_repeated_char;
-      break;
+      ଭାଙ୍ଗ;
 
-    case RE_EQUIV_CLASS: default:
+    ସ୍ଥିତି RE_EQUIV_CLASS: ପୂର୍ବନିର୍ଦ୍ଧାରିତ:
       /* This shouldn't happen, because validate exits with an error
          if it finds an equiv class in string2 when translating.  */
       affirm (false);
@@ -1411,21 +1411,21 @@ string2_extend (const struct Spec_list *s1, struct Spec_list *s2)
    character (but potentially, many instances of it) appears.
    E.g., [X*] or xxxxxxxx.  */
 
-static bool
-homogeneous_spec_list (struct Spec_list *s)
+ସ୍ଥିର bool
+homogeneous_spec_list (ସଂରଚନା Spec_list *s)
 {
-  int b, c;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା b, c;
 
   s->state = BEGIN_STATE;
 
-  if ((b = get_next (s, NULL)) == -1)
-    return false;
+  ଯଦି ((b = get_next (s, ଖାଲି)) == -1)
+    ଫେରନ୍ତୁ false;
 
-  while ((c = get_next (s, NULL)) != -1)
-    if (c != b)
-      return false;
+  ଯେତେବେଳେ ((c = get_next (s, ଖାଲି)) != -1)
+    ଯଦି (c != b)
+      ଫେରନ୍ତୁ false;
 
-  return true;
+  ଫେରନ୍ତୁ true;
 }
 
 /* Die with an error message if S1 and S2 describe strings that
@@ -1436,30 +1436,30 @@ homogeneous_spec_list (struct Spec_list *s)
    the same token, if the --truncate-set1 option is not
    given, S2 may be extended.  */
 
-static void
-validate (struct Spec_list *s1, struct Spec_list *s2)
+ସ୍ଥିର ଶୂନ୍ୟ
+validate (ସଂରଚନା Spec_list *s1, ସଂରଚନା Spec_list *s2)
 {
   get_s1_spec_stats (s1);
-  if (s1->n_indefinite_repeats > 0)
+  ଯଦି (s1->n_indefinite_repeats > 0)
     error (EXIT_FAILURE, 0,
            _("the [c*] repeat construct may not appear in string1"));
 
-  if (s2)
+  ଯଦି (s2)
     {
       get_s2_spec_stats (s2, s1->length);
 
-      if (s2->n_indefinite_repeats > 1)
+      ଯଦି (s2->n_indefinite_repeats > 1)
         error (EXIT_FAILURE, 0,
                _("only one [c*] repeat construct may appear in string2"));
 
-      if (translating)
+      ଯଦି (translating)
         {
-          if (s2->has_equiv_class)
+          ଯଦି (s2->has_equiv_class)
             error (EXIT_FAILURE, 0,
                    _("[=c=] expressions may not appear in string2"
                      " when translating"));
 
-          if (s2->has_restricted_char_class)
+          ଯଦି (s2->has_restricted_char_class)
             error (EXIT_FAILURE, 0,
                    _("when translating, the only character classes"
                      " that may appear in\n"
@@ -1467,14 +1467,14 @@ validate (struct Spec_list *s1, struct Spec_list *s2)
 
           validate_case_classes (s1, s2);
 
-          if (s1->length > s2->length)
+          ଯଦି (s1->length > s2->length)
             {
-              if (!truncate_set1)
+              ଯଦି (!truncate_set1)
                 {
                   /* string2 must be non-empty unless --truncate-set1 is
                      given or string1 is empty.  */
 
-                  if (s2->length == 0)
+                  ଯଦି (s2->length == 0)
                     error (EXIT_FAILURE, 0,
                            _("when not truncating set1,"
                              " string2 must be non-empty"));
@@ -1482,16 +1482,16 @@ validate (struct Spec_list *s1, struct Spec_list *s2)
                 }
             }
 
-          if (complement && s1->has_char_class
+          ଯଦି (complement && s1->has_char_class
               && ! (s2->length == s1->length && homogeneous_spec_list (s2)))
             error (EXIT_FAILURE, 0,
                    _("when translating with complemented character classes,\n"
                      "string2 must map all characters in the domain to one"));
         }
-      else
+      ଅନ୍ୟଥା
         /* Not translating.  */
         {
-          if (s2->n_indefinite_repeats > 0)
+          ଯଦି (s2->n_indefinite_repeats > 0)
             error (EXIT_FAILURE, 0,
                    _("the [c*] construct may appear in string2"
                      " only when translating"));
@@ -1507,30 +1507,30 @@ validate (struct Spec_list *s1, struct Spec_list *s2)
    stream are replaced by a single occurrence of that character if the
    character is in the squeeze set.  */
 
-static void
-squeeze_filter (char *buf, size_t size, size_t (*reader) (char *, size_t))
+ସ୍ଥିର ଶୂନ୍ୟ
+squeeze_filter (ଅକ୍ଷର *buf, size_t size, size_t (*reader) (ଅକ୍ଷର *, size_t))
 {
   /* A value distinct from any character that may have been stored in a
      buffer as the result of a block-read in the function squeeze_filter.  */
-  const int NOT_A_CHAR = INT_MAX;
+  ଅଚଳ ପୂର୍ଣ୍ଣସଂଖ୍ୟା NOT_A_CHAR = INT_MAX;
 
-  int char_to_squeeze = NOT_A_CHAR;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା char_to_squeeze = NOT_A_CHAR;
   size_t i = 0;
   size_t nr = 0;
 
-  while (true)
+  ଯେତେବେଳେ (true)
     {
-      if (i >= nr)
+      ଯଦି (i >= nr)
         {
           nr = reader (buf, size);
-          if (nr == 0)
-            break;
+          ଯଦି (nr == 0)
+            ଭାଙ୍ଗ;
           i = 0;
         }
 
       size_t begin = i;
 
-      if (char_to_squeeze == NOT_A_CHAR)
+      ଯଦି (char_to_squeeze == NOT_A_CHAR)
         {
           size_t out_len;
           /* Here, by being a little tricky, we can get a significant
@@ -1544,18 +1544,18 @@ squeeze_filter (char *buf, size_t size, size_t (*reader) (char *, size_t))
              of the input is removed by squeezing repeats.  But most
              uses of this functionality seem to remove less than 20-30%
              of the input.  */
-          for (; i < nr && !in_squeeze_set[to_uchar (buf[i])]; i += 2)
-            continue;
+          ପାଇଁ (; i < nr && !in_squeeze_set[to_uchar (buf[i])]; i += 2)
+            ଜାରି;
 
           /* There is a special case when i == nr and we've just
              skipped a character (the last one in buf) that is in
              the squeeze set.  */
-          if (i == nr && in_squeeze_set[to_uchar (buf[i - 1])])
+          ଯଦି (i == nr && in_squeeze_set[to_uchar (buf[i - 1])])
             --i;
 
-          if (i >= nr)
+          ଯଦି (i >= nr)
             out_len = nr - begin;
-          else
+          ଅନ୍ୟଥା
             {
               char_to_squeeze = buf[i];
               /* We're about to output buf[begin..i].  */
@@ -1563,7 +1563,7 @@ squeeze_filter (char *buf, size_t size, size_t (*reader) (char *, size_t))
 
               /* But since we stepped by 2 in the loop above,
                  out_len may be one too large.  */
-              if (i > 0 && buf[i - 1] == char_to_squeeze)
+              ଯଦି (i > 0 && buf[i - 1] == char_to_squeeze)
                 --out_len;
 
               /* Advance i to the index of first character to be
@@ -1571,19 +1571,19 @@ squeeze_filter (char *buf, size_t size, size_t (*reader) (char *, size_t))
                  char_to_squeeze.  */
               ++i;
             }
-          if (out_len > 0
+          ଯଦି (out_len > 0
               && fwrite (&buf[begin], 1, out_len, stdout) != out_len)
             write_error ();
         }
 
-      if (char_to_squeeze != NOT_A_CHAR)
+      ଯଦି (char_to_squeeze != NOT_A_CHAR)
         {
           /* Advance i to index of first char != char_to_squeeze
              (or to nr if all the rest of the characters in this
              buffer are the same as char_to_squeeze).  */
-          for (; i < nr && buf[i] == char_to_squeeze; i++)
-            continue;
-          if (i < nr)
+          ପାଇଁ (; i < nr && buf[i] == char_to_squeeze; i++)
+            ଜାରି;
+          ଯଦି (i < nr)
             char_to_squeeze = NOT_A_CHAR;
           /* If (i >= nr) we've squeezed the last character in this buffer.
              So now we have to read a new buffer and continue comparing
@@ -1592,13 +1592,13 @@ squeeze_filter (char *buf, size_t size, size_t (*reader) (char *, size_t))
     }
 }
 
-static size_t
-plain_read (char *buf, size_t size)
+ସ୍ଥିର size_t
+plain_read (ଅକ୍ଷର *buf, size_t size)
 {
-  ssize_t nr = read (STDIN_FILENO, buf, size);
-  if (nr < 0)
+  ssize_t nr = ପଠ (STDIN_FILENO, buf, size);
+  ଯଦି (nr < 0)
     error (EXIT_FAILURE, errno, _("read error"));
-  return nr;
+  ଫେରନ୍ତୁ nr;
 }
 
 /* Read buffers of SIZE bytes from stdin until one is found that
@@ -1607,20 +1607,20 @@ plain_read (char *buf, size_t size)
    in the delete set, and return the number of characters saved
    or 0 upon EOF.  */
 
-static size_t
-read_and_delete (char *buf, size_t size)
+ସ୍ଥିର size_t
+read_and_delete (ଅକ୍ଷର *buf, size_t size)
 {
   size_t n_saved;
 
   /* This enclosing do-while loop is to make sure that
      we don't return zero (indicating EOF) when we've
      just deleted all the characters in a buffer.  */
-  do
+  କର
     {
       size_t nr = plain_read (buf, size);
 
-      if (nr == 0)
-        return 0;
+      ଯଦି (nr == 0)
+        ଫେରନ୍ତୁ 0;
 
       /* This first loop may be a waste of code, but gives much
          better performance when no characters are deleted in
@@ -1628,32 +1628,32 @@ read_and_delete (char *buf, size_t size)
          of buf[i] into buf[n_saved] when it would be a NOP.  */
 
       size_t i;
-      for (i = 0; i < nr && !in_delete_set[to_uchar (buf[i])]; i++)
-        continue;
+      ପାଇଁ (i = 0; i < nr && !in_delete_set[to_uchar (buf[i])]; i++)
+        ଜାରି;
       n_saved = i;
 
-      for (++i; i < nr; i++)
-        if (!in_delete_set[to_uchar (buf[i])])
+      ପାଇଁ (++i; i < nr; i++)
+        ଯଦି (!in_delete_set[to_uchar (buf[i])])
           buf[n_saved++] = buf[i];
     }
-  while (n_saved == 0);
+  ଯେତେବେଳେ (n_saved == 0);
 
-  return n_saved;
+  ଫେରନ୍ତୁ n_saved;
 }
 
 /* Read at most SIZE bytes from stdin into the array BUF.  Then
    perform the in-place and one-to-one mapping specified by the global
    array 'xlate'.  Return the number of characters read, or 0 upon EOF.  */
 
-static size_t
-read_and_xlate (char *buf, size_t size)
+ସ୍ଥିର size_t
+read_and_xlate (ଅକ୍ଷର *buf, size_t size)
 {
   size_t bytes_read = plain_read (buf, size);
 
-  for (size_t i = 0; i < bytes_read; i++)
+  ପାଇଁ (size_t i = 0; i < bytes_read; i++)
     buf[i] = xlate[to_uchar (buf[i])];
 
-  return bytes_read;
+  ଫେରନ୍ତୁ bytes_read;
 }
 
 /* Initialize a boolean membership set, IN_SET, with the character
@@ -1662,29 +1662,29 @@ read_and_xlate (char *buf, size_t size)
    initialized to all zeros by the caller.  If COMPLEMENT_THIS_SET
    is true the resulting set is complemented.  */
 
-static void
-set_initialize (struct Spec_list *s, bool complement_this_set, bool *in_set)
+ସ୍ଥିର ଶୂନ୍ୟ
+set_initialize (ସଂରଚନା Spec_list *s, bool complement_this_set, bool *in_set)
 {
-  int c;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା c;
 
   s->state = BEGIN_STATE;
-  while ((c = get_next (s, NULL)) != -1)
+  ଯେତେବେଳେ ((c = get_next (s, ଖାଲି)) != -1)
     in_set[c] = true;
-  if (complement_this_set)
-    for (size_t i = 0; i < N_CHARS; i++)
+  ଯଦି (complement_this_set)
+    ପାଇଁ (size_t i = 0; i < N_CHARS; i++)
       in_set[i] = (!in_set[i]);
 }
 
-int
-main (int argc, char **argv)
+ପୂର୍ଣ୍ଣସଂଖ୍ୟା
+ମୁଖ୍ୟ (ପୂର୍ଣ୍ଣସଂଖ୍ୟା argc, ଅକ୍ଷର **argv)
 {
-  int c;
-  int non_option_args;
-  int min_operands;
-  int max_operands;
-  struct Spec_list buf1, buf2;
-  struct Spec_list *s1 = &buf1;
-  struct Spec_list *s2 = &buf2;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା c;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା non_option_args;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା min_operands;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା max_operands;
+  ସଂରଚନା Spec_list buf1, buf2;
+  ସଂରଚନା Spec_list *s1 = &buf1;
+  ସଂରଚନା Spec_list *s2 = &buf2;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -1694,45 +1694,45 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((c = getopt_long (argc, argv, "+AcCdstu", long_options, NULL)) != -1)
+  ଯେତେବେଳେ ((c = getopt_long (argc, argv, "+AcCdstu", long_options, ଖାଲି)) != -1)
     {
-      switch (c)
+      ବାଛ (c)
         {
-        case 'A':
+        ସ୍ଥିତି 'A':
           /* Undocumented option, for compatibility with AIX.  */
           setlocale (LC_COLLATE, "C");
           setlocale (LC_CTYPE, "C");
-          break;
+          ଭାଙ୍ଗ;
 
-        case 'c':
-        case 'C':
+        ସ୍ଥିତି 'c':
+        ସ୍ଥିତି 'C':
           complement = true;
-          break;
+          ଭାଙ୍ଗ;
 
-        case 'd':
+        ସ୍ଥିତି 'd':
           delete = true;
-          break;
+          ଭାଙ୍ଗ;
 
-        case 's':
+        ସ୍ଥିତି 's':
           squeeze_repeats = true;
-          break;
+          ଭାଙ୍ଗ;
 
-        case 't':
+        ସ୍ଥିତି 't':
           truncate_set1 = true;
-          break;
+          ଭାଙ୍ଗ;
 
-        case 'u':
+        ସ୍ଥିତି 'u':
           /* Undocumented option, for compatibility with FreeBSD/macOS.  */
-          setvbuf (stdout, NULL, _IONBF, 0);
-          break;
+          setvbuf (stdout, ଖାଲି, _IONBF, 0);
+          ଭାଙ୍ଗ;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        ପୂର୍ବନିର୍ଦ୍ଧାରିତ:
           usage (EXIT_FAILURE);
-          break;
+          ଭାଙ୍ଗ;
         }
     }
 
@@ -1741,11 +1741,11 @@ main (int argc, char **argv)
   min_operands = 1 + (delete == squeeze_repeats);
   max_operands = 1 + (delete <= squeeze_repeats);
 
-  if (non_option_args < min_operands)
+  ଯଦି (non_option_args < min_operands)
     {
-      if (non_option_args == 0)
+      ଯଦି (non_option_args == 0)
         error (0, 0, _("missing operand"));
-      else
+      ଅନ୍ୟଥା
         {
           error (0, 0, _("missing operand after %s"), quote (argv[argc - 1]));
           fprintf (stderr, "%s\n",
@@ -1757,10 +1757,10 @@ main (int argc, char **argv)
       usage (EXIT_FAILURE);
     }
 
-  if (max_operands < non_option_args)
+  ଯଦି (max_operands < non_option_args)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind + max_operands]));
-      if (non_option_args == 2)
+      ଯଦି (non_option_args == 2)
         fprintf (stderr, "%s\n",
                  _("Only one string may be given when "
                    "deleting without squeezing repeats."));
@@ -1768,114 +1768,114 @@ main (int argc, char **argv)
     }
 
   spec_init (s1);
-  if (!parse_str (argv[optind], s1))
+  ଯଦି (!parse_str (argv[optind], s1))
     main_exit (EXIT_FAILURE);
 
-  if (non_option_args == 2)
+  ଯଦି (non_option_args == 2)
     {
       spec_init (s2);
-      if (!parse_str (argv[optind + 1], s2))
+      ଯଦି (!parse_str (argv[optind + 1], s2))
         main_exit (EXIT_FAILURE);
     }
-  else
-    s2 = NULL;
+  ଅନ୍ୟଥା
+    s2 = ଖାଲି;
 
   validate (s1, s2);
 
   /* Use binary I/O, since 'tr' is sometimes used to transliterate
      non-printable characters, or characters which are stripped away
      by text-mode reads (like CR and ^Z).  */
-  xset_binary_mode (STDIN_FILENO, O_BINARY);
-  xset_binary_mode (STDOUT_FILENO, O_BINARY);
+  xset_ଦ୍ୱିମିକ_mode (STDIN_FILENO, O_ଦ୍ୱିମିକ);
+  xset_ଦ୍ୱିମିକ_mode (STDOUT_FILENO, O_ଦ୍ୱିମିକ);
   fadvise (stdin, FADVISE_SEQUENTIAL);
 
-  if (squeeze_repeats && non_option_args == 1)
+  ଯଦି (squeeze_repeats && non_option_args == 1)
     {
       set_initialize (s1, complement, in_squeeze_set);
-      squeeze_filter (io_buf, sizeof io_buf, plain_read);
+      squeeze_filter (io_buf, ଆକାର io_buf, plain_read);
     }
-  else if (delete && non_option_args == 1)
+  ଅନ୍ୟଥା ଯଦି (delete && non_option_args == 1)
     {
       set_initialize (s1, complement, in_delete_set);
 
-      while (true)
+      ଯେତେବେଳେ (true)
         {
-          size_t nr = read_and_delete (io_buf, sizeof io_buf);
-          if (nr == 0)
-            break;
-          if (fwrite (io_buf, 1, nr, stdout) != nr)
+          size_t nr = read_and_delete (io_buf, ଆକାର io_buf);
+          ଯଦି (nr == 0)
+            ଭାଙ୍ଗ;
+          ଯଦି (fwrite (io_buf, 1, nr, stdout) != nr)
             write_error ();
         }
     }
-  else if (squeeze_repeats && delete && non_option_args == 2)
+  ଅନ୍ୟଥା ଯଦି (squeeze_repeats && delete && non_option_args == 2)
     {
       set_initialize (s1, complement, in_delete_set);
       set_initialize (s2, false, in_squeeze_set);
-      squeeze_filter (io_buf, sizeof io_buf, read_and_delete);
+      squeeze_filter (io_buf, ଆକାର io_buf, read_and_delete);
     }
-  else if (translating)
+  ଅନ୍ୟଥା ଯଦି (translating)
     {
-      if (complement)
+      ଯଦି (complement)
         {
           bool *in_s1 = in_delete_set;
 
           set_initialize (s1, false, in_s1);
           s2->state = BEGIN_STATE;
-          for (int i = 0; i < N_CHARS; i++)
+          ପାଇଁ (ପୂର୍ଣ୍ଣସଂଖ୍ୟା i = 0; i < N_CHARS; i++)
             xlate[i] = i;
-          for (int i = 0; i < N_CHARS; i++)
+          ପାଇଁ (ପୂର୍ଣ୍ଣସଂଖ୍ୟା i = 0; i < N_CHARS; i++)
             {
-              if (!in_s1[i])
+              ଯଦି (!in_s1[i])
                 {
-                  int ch = get_next (s2, NULL);
+                  ପୂର୍ଣ୍ଣସଂଖ୍ୟା ch = get_next (s2, ଖାଲି);
                   affirm (ch != -1 || truncate_set1);
-                  if (ch == -1)
+                  ଯଦି (ch == -1)
                     {
                       /* This will happen when tr is invoked like e.g.
                          tr -cs A-Za-z0-9 '\012'.  */
-                      break;
+                      ଭାଙ୍ଗ;
                     }
                   xlate[i] = ch;
                 }
             }
         }
-      else
+      ଅନ୍ୟଥା
         {
-          int c1, c2;
-          enum Upper_Lower_class class_s1;
-          enum Upper_Lower_class class_s2;
+          ପୂର୍ଣ୍ଣସଂଖ୍ୟା c1, c2;
+          ଗଣନା Upper_Lower_class class_s1;
+          ଗଣନା Upper_Lower_class class_s2;
 
-          for (int i = 0; i < N_CHARS; i++)
+          ପାଇଁ (ପୂର୍ଣ୍ଣସଂଖ୍ୟା i = 0; i < N_CHARS; i++)
             xlate[i] = i;
           s1->state = BEGIN_STATE;
           s2->state = BEGIN_STATE;
-          while (true)
+          ଯେତେବେଳେ (true)
             {
               c1 = get_next (s1, &class_s1);
               c2 = get_next (s2, &class_s2);
 
-              if (class_s1 == UL_LOWER && class_s2 == UL_UPPER)
+              ଯଦି (class_s1 == UL_LOWER && class_s2 == UL_UPPER)
                 {
-                  for (int i = 0; i < N_CHARS; i++)
-                    if (islower (i))
+                  ପାଇଁ (ପୂର୍ଣ୍ଣସଂଖ୍ୟା i = 0; i < N_CHARS; i++)
+                    ଯଦି (islower (i))
                       xlate[i] = toupper (i);
                 }
-              else if (class_s1 == UL_UPPER && class_s2 == UL_LOWER)
+              ଅନ୍ୟଥା ଯଦି (class_s1 == UL_UPPER && class_s2 == UL_LOWER)
                 {
-                  for (int i = 0; i < N_CHARS; i++)
-                    if (isupper (i))
+                  ପାଇଁ (ପୂର୍ଣ୍ଣସଂଖ୍ୟା i = 0; i < N_CHARS; i++)
+                    ଯଦି (isupper (i))
                       xlate[i] = tolower (i);
                 }
-              else
+              ଅନ୍ୟଥା
                 {
                   /* The following should have been checked by validate...  */
-                  if (c1 == -1 || c2 == -1)
-                    break;
+                  ଯଦି (c1 == -1 || c2 == -1)
+                    ଭାଙ୍ଗ;
                   xlate[c1] = c2;
                 }
 
               /* When case-converting, skip the elements as an optimization.  */
-              if (class_s2 != UL_NONE)
+              ଯଦି (class_s2 != UL_NONE)
                 {
                   skip_construct (s1);
                   skip_construct (s2);
@@ -1883,25 +1883,25 @@ main (int argc, char **argv)
             }
           affirm (c1 == -1 || truncate_set1);
         }
-      if (squeeze_repeats)
+      ଯଦି (squeeze_repeats)
         {
           set_initialize (s2, false, in_squeeze_set);
-          squeeze_filter (io_buf, sizeof io_buf, read_and_xlate);
+          squeeze_filter (io_buf, ଆକାର io_buf, read_and_xlate);
         }
-      else
+      ଅନ୍ୟଥା
         {
-          while (true)
+          ଯେତେବେଳେ (true)
             {
-              size_t bytes_read = read_and_xlate (io_buf, sizeof io_buf);
-              if (bytes_read == 0)
-                break;
-              if (fwrite (io_buf, 1, bytes_read, stdout) != bytes_read)
+              size_t bytes_read = read_and_xlate (io_buf, ଆକାର io_buf);
+              ଯଦି (bytes_read == 0)
+                ଭାଙ୍ଗ;
+              ଯଦି (fwrite (io_buf, 1, bytes_read, stdout) != bytes_read)
                 write_error ();
             }
         }
     }
 
-  if (close (STDIN_FILENO) != 0)
+  ଯଦି (close (STDIN_FILENO) != 0)
     error (EXIT_FAILURE, errno, _("standard input"));
 
   main_exit (EXIT_SUCCESS);

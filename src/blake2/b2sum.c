@@ -17,47 +17,47 @@
 # include <config.h>
 #endif
 
-#include <stdio.h>
-#include <stdlib.h>
+#ଅନ୍ତର୍ଭାଵ <stdio.h>
+#ଅନ୍ତର୍ଭାଵ <stdlib.h>
 
-#include "blake2.h"
+#ଅନ୍ତର୍ଭାଵ "blake2.h"
 
-#if 0
+#ଯଦି 0
 /* This will help compatibility with coreutils */
-int blake2s_stream( FILE *stream, void *resstream, size_t outbytes )
+ପୂର୍ଣ୍ଣସଂଖ୍ୟା blake2s_stream( FILE *stream, ଶୂନ୍ୟ *resstream, size_t outbytes )
 {
-  int ret = -1;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା ret = -1;
   size_t sum, n;
   blake2s_state S[1];
-  static const size_t buffer_length = 32768;
+  ସ୍ଥିର ଅଚଳ size_t buffer_length = 32768;
   uint8_t *buffer = ( uint8_t * )malloc( buffer_length );
 
-  if( !buffer ) return -1;
+  ଯଦି( !buffer ) ଫେରନ୍ତୁ -1;
 
   blake2s_init( S, outbytes );
 
-  while( 1 )
+  ଯେତେବେଳେ( 1 )
   {
     sum = 0;
 
-    while( 1 )
+    ଯେତେବେଳେ( 1 )
     {
       n = fread( buffer + sum, 1, buffer_length - sum, stream );
       sum += n;
 
-      if( buffer_length == sum )
-        break;
+      ଯଦି( buffer_length == sum )
+        ଭାଙ୍ଗ;
 
-      if( 0 == n )
+      ଯଦି( 0 == n )
       {
-        if( ferror( stream ) )
-          goto cleanup_buffer;
+        ଯଦି( ferror( stream ) )
+          ଯାଅ cleanup_buffer;
 
-        goto final_process;
+        ଯାଅ final_process;
       }
 
-      if( feof( stream ) )
-        goto final_process;
+      ଯଦି( feof( stream ) )
+        ଯାଅ final_process;
     }
 
     blake2s_update( S, buffer, buffer_length );
@@ -65,50 +65,50 @@ int blake2s_stream( FILE *stream, void *resstream, size_t outbytes )
 
 final_process:;
 
-  if( sum > 0 ) blake2s_update( S, buffer, sum );
+  ଯଦି( sum > 0 ) blake2s_update( S, buffer, sum );
 
   blake2s_final( S, resstream, outbytes );
   ret = 0;
 cleanup_buffer:
-  free( buffer );
-  return ret;
+  ମୁକ୍ତ( buffer );
+  ଫେରନ୍ତୁ ret;
 }
 #endif
 
-int blake2b_stream( FILE *stream, void *resstream, size_t outbytes )
+ପୂର୍ଣ୍ଣସଂଖ୍ୟା blake2b_stream( FILE *stream, ଶୂନ୍ୟ *resstream, size_t outbytes )
 {
-  int ret = -1;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା ret = -1;
   size_t sum, n;
   blake2b_state S[1];
-  static const size_t buffer_length = 32768;
+  ସ୍ଥିର ଅଚଳ size_t buffer_length = 32768;
   uint8_t *buffer = ( uint8_t * )malloc( buffer_length );
 
-  if( !buffer ) return -1;
+  ଯଦି( !buffer ) ଫେରନ୍ତୁ -1;
 
   blake2b_init( S, outbytes );
 
-  while( 1 )
+  ଯେତେବେଳେ( 1 )
   {
     sum = 0;
 
-    while( 1 )
+    ଯେତେବେଳେ( 1 )
     {
       n = fread( buffer + sum, 1, buffer_length - sum, stream );
       sum += n;
 
-      if( buffer_length == sum )
-        break;
+      ଯଦି( buffer_length == sum )
+        ଭାଙ୍ଗ;
 
-      if( 0 == n )
+      ଯଦି( 0 == n )
       {
-        if( ferror( stream ) )
-          goto cleanup_buffer;
+        ଯଦି( ferror( stream ) )
+          ଯାଅ cleanup_buffer;
 
-        goto final_process;
+        ଯାଅ final_process;
       }
 
-      if( feof( stream ) )
-        goto final_process;
+      ଯଦି( feof( stream ) )
+        ଯାଅ final_process;
     }
 
     blake2b_update( S, buffer, buffer_length );
@@ -116,56 +116,56 @@ int blake2b_stream( FILE *stream, void *resstream, size_t outbytes )
 
 final_process:;
 
-  if( sum > 0 ) blake2b_update( S, buffer, sum );
+  ଯଦି( sum > 0 ) blake2b_update( S, buffer, sum );
 
   blake2b_final( S, resstream, outbytes );
   ret = 0;
 cleanup_buffer:
-  free( buffer );
-  return ret;
+  ମୁକ୍ତ( buffer );
+  ଫେରନ୍ତୁ ret;
 }
 
-#if 0
+#ଯଦି 0
 
-#include <errno.h>
-#include <getopt.h>
-#include <string.h>
-#include <unistd.h>
+#ଅନ୍ତର୍ଭାଵ <errno.h>
+#ଅନ୍ତର୍ଭାଵ <getopt.h>
+#ଅନ୍ତର୍ଭାଵ <string.h>
+#ଅନ୍ତର୍ଭାଵ <unistd.h>
 
-int blake2sp_stream( FILE *stream, void *resstream, size_t outbytes )
+ପୂର୍ଣ୍ଣସଂଖ୍ୟା blake2sp_stream( FILE *stream, ଶୂନ୍ୟ *resstream, size_t outbytes )
 {
-  int ret = -1;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା ret = -1;
   size_t sum, n;
   blake2sp_state S[1];
-  static const size_t buffer_length = 16 * ( 1UL << 20 );
+  ସ୍ଥିର ଅଚଳ size_t buffer_length = 16 * ( 1UL << 20 );
   uint8_t *buffer = ( uint8_t * )malloc( buffer_length );
 
-  if( !buffer ) return -1;
+  ଯଦି( !buffer ) ଫେରନ୍ତୁ -1;
 
   blake2sp_init( S, outbytes );
 
-  while( 1 )
+  ଯେତେବେଳେ( 1 )
   {
     sum = 0;
 
-    while( 1 )
+    ଯେତେବେଳେ( 1 )
     {
       n = fread( buffer + sum, 1, buffer_length - sum, stream );
       sum += n;
 
-      if( buffer_length == sum )
-        break;
+      ଯଦି( buffer_length == sum )
+        ଭାଙ୍ଗ;
 
-      if( 0 == n )
+      ଯଦି( 0 == n )
       {
-        if( ferror( stream ) )
-          goto cleanup_buffer;
+        ଯଦି( ferror( stream ) )
+          ଯାଅ cleanup_buffer;
 
-        goto final_process;
+        ଯାଅ final_process;
       }
 
-      if( feof( stream ) )
-        goto final_process;
+      ଯଦି( feof( stream ) )
+        ଯାଅ final_process;
     }
 
     blake2sp_update( S, buffer, buffer_length );
@@ -173,50 +173,50 @@ int blake2sp_stream( FILE *stream, void *resstream, size_t outbytes )
 
 final_process:;
 
-  if( sum > 0 ) blake2sp_update( S, buffer, sum );
+  ଯଦି( sum > 0 ) blake2sp_update( S, buffer, sum );
 
   blake2sp_final( S, resstream, outbytes );
   ret = 0;
 cleanup_buffer:
-  free( buffer );
-  return ret;
+  ମୁକ୍ତ( buffer );
+  ଫେରନ୍ତୁ ret;
 }
 
 
-int blake2bp_stream( FILE *stream, void *resstream, size_t outbytes )
+ପୂର୍ଣ୍ଣସଂଖ୍ୟା blake2bp_stream( FILE *stream, ଶୂନ୍ୟ *resstream, size_t outbytes )
 {
-  int ret = -1;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା ret = -1;
   size_t sum, n;
   blake2bp_state S[1];
-  static const size_t buffer_length = 16 * ( 1UL << 20 );
+  ସ୍ଥିର ଅଚଳ size_t buffer_length = 16 * ( 1UL << 20 );
   uint8_t *buffer = ( uint8_t * )malloc( buffer_length );
 
-  if( !buffer ) return -1;
+  ଯଦି( !buffer ) ଫେରନ୍ତୁ -1;
 
   blake2bp_init( S, outbytes );
 
-  while( 1 )
+  ଯେତେବେଳେ( 1 )
   {
     sum = 0;
 
-    while( 1 )
+    ଯେତେବେଳେ( 1 )
     {
       n = fread( buffer + sum, 1, buffer_length - sum, stream );
       sum += n;
 
-      if( buffer_length == sum )
-        break;
+      ଯଦି( buffer_length == sum )
+        ଭାଙ୍ଗ;
 
-      if( 0 == n )
+      ଯଦି( 0 == n )
       {
-        if( ferror( stream ) )
-          goto cleanup_buffer;
+        ଯଦି( ferror( stream ) )
+          ଯାଅ cleanup_buffer;
 
-        goto final_process;
+        ଯାଅ final_process;
       }
 
-      if( feof( stream ) )
-        goto final_process;
+      ଯଦି( feof( stream ) )
+        ଯାଅ final_process;
     }
 
     blake2bp_update( S, buffer, buffer_length );
@@ -224,19 +224,19 @@ int blake2bp_stream( FILE *stream, void *resstream, size_t outbytes )
 
 final_process:;
 
-  if( sum > 0 ) blake2bp_update( S, buffer, sum );
+  ଯଦି( sum > 0 ) blake2bp_update( S, buffer, sum );
 
   blake2bp_final( S, resstream, outbytes );
   ret = 0;
 cleanup_buffer:
-  free( buffer );
-  return ret;
+  ମୁକ୍ତ( buffer );
+  ଫେରନ୍ତୁ ret;
 }
 
-typedef int ( *blake2fn )( FILE *, void *, size_t );
+ପ୍ରକାରବ୍ୟାଖ୍ୟା ପୂର୍ଣ୍ଣସଂଖ୍ୟା ( *blake2fn )( FILE *, ଶୂନ୍ୟ *, size_t );
 
 
-static void usage( char **argv, int errcode )
+ସ୍ଥିର ଶୂନ୍ୟ usage( ଅକ୍ଷର **argv, ପୂର୍ଣ୍ଣସଂଖ୍ୟା errcode )
 {
   FILE *out = errcode ? stderr : stdout;
   fprintf( out, "Usage: %s [OPTION]... [FILE]...\n", argv[0] );
@@ -253,144 +253,144 @@ static void usage( char **argv, int errcode )
 }
 
 
-int main( int argc, char **argv )
+ପୂର୍ଣ୍ଣସଂଖ୍ୟା ମୁଖ୍ୟ( ପୂର୍ଣ୍ଣସଂଖ୍ୟା argc, ଅକ୍ଷର **argv )
 {
   blake2fn blake2_stream = blake2b_stream;
   unsigned long maxbytes = BLAKE2B_OUTBYTES;
-  const char *algorithm = "BLAKE2b";
+  ଅଚଳ ଅକ୍ଷର *algorithm = "BLAKE2b";
   unsigned long outbytes = 0;
-  unsigned char hash[BLAKE2B_OUTBYTES] = {0};
+  unsigned ଅକ୍ଷର hash[BLAKE2B_OUTBYTES] = {0};
   bool bsdstyle = false;
-  int c, i;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା c, i;
   opterr = 1;
 
-  while( 1 )
+  ଯେତେବେଳେ( 1 )
   {
-    int option_index = 0;
-    char *end = NULL;
+    ପୂର୍ଣ୍ଣସଂଖ୍ୟା option_index = 0;
+    ଅକ୍ଷର *end = ଖାଲି;
     unsigned long outbits;
-    static struct option long_options[] = {
+    ସ୍ଥିର ସଂରଚନା option long_options[] = {
       { "help",  no_argument, 0,  0  },
       { "tag",   no_argument, 0,  0  },
-      { NULL, 0, NULL, 0 }
+      { ଖାଲି, 0, ଖାଲି, 0 }
     };
 
     c = getopt_long( argc, argv, "a:l:", long_options, &option_index );
-    if( c == -1 ) break;
-    switch( c )
+    ଯଦି( c == -1 ) ଭାଙ୍ଗ;
+    ବାଛ( c )
     {
-    case 'a':
-      if( 0 == strcmp( optarg, "blake2b" ) )
+    ସ୍ଥିତି 'a':
+      ଯଦି( 0 == strcmp( optarg, "blake2b" ) )
       {
         blake2_stream = blake2b_stream;
         maxbytes = BLAKE2B_OUTBYTES;
         algorithm = "BLAKE2b";
       }
-      else if ( 0 == strcmp( optarg, "blake2s" ) )
+      ଅନ୍ୟଥା ଯଦି ( 0 == strcmp( optarg, "blake2s" ) )
       {
         blake2_stream = blake2s_stream;
         maxbytes = BLAKE2S_OUTBYTES;
         algorithm = "BLAKE2s";
       }
-      else if ( 0 == strcmp( optarg, "blake2bp" ) )
+      ଅନ୍ୟଥା ଯଦି ( 0 == strcmp( optarg, "blake2bp" ) )
       {
         blake2_stream = blake2bp_stream;
         maxbytes = BLAKE2B_OUTBYTES;
         algorithm = "BLAKE2bp";
       }
-      else if ( 0 == strcmp( optarg, "blake2sp" ) )
+      ଅନ୍ୟଥା ଯଦି ( 0 == strcmp( optarg, "blake2sp" ) )
       {
         blake2_stream = blake2sp_stream;
         maxbytes = BLAKE2S_OUTBYTES;
         algorithm = "BLAKE2sp";
       }
-      else
+      ଅନ୍ୟଥା
       {
         printf( "Invalid function name: `%s'\n", optarg );
         usage( argv, 111 );
       }
 
-      break;
+      ଭାଙ୍ଗ;
 
-    case 'l':
+    ସ୍ଥିତି 'l':
       outbits = strtoul(optarg, &end, 10);
-      if( !end || *end != '\0' || outbits % 8 != 0)
+      ଯଦି( !end || *end != '\0' || outbits % 8 != 0)
       {
         printf( "Invalid length argument: `%s'\n", optarg);
         usage( argv, 111 );
       }
       outbytes = outbits / 8;
-      break;
+      ଭାଙ୍ଗ;
 
-    case 0:
-      if( 0 == strcmp( "help", long_options[option_index].name ) )
+    ସ୍ଥିତି 0:
+      ଯଦି( 0 == strcmp( "help", long_options[option_index].name ) )
         usage( argv, 0 );
-      else if( 0 == strcmp( "tag", long_options[option_index].name ) )
+      ଅନ୍ୟଥା ଯଦି( 0 == strcmp( "tag", long_options[option_index].name ) )
         bsdstyle = true;
-      break;
+      ଭାଙ୍ଗ;
 
-    case '?':
+    ସ୍ଥିତି '?':
       usage( argv, 1 );
-      break;
+      ଭାଙ୍ଗ;
     }
   }
 
-  if(outbytes > maxbytes)
+  ଯଦି(outbytes > maxbytes)
   {
     printf( "Invalid length argument: %lu\n", outbytes * 8 );
     printf( "Maximum digest length for %s is %lu\n", algorithm, maxbytes * 8 );
     usage( argv, 111 );
   }
-  else if( outbytes == 0 )
+  ଅନ୍ୟଥା ଯଦି( outbytes == 0 )
     outbytes = maxbytes;
 
-  if( optind == argc )
-    argv[argc++] = (char *) "-";
+  ଯଦି( optind == argc )
+    argv[argc++] = (ଅକ୍ଷର *) "-";
 
-  for( i = optind; i < argc; ++i )
+  ପାଇଁ( i = optind; i < argc; ++i )
   {
-    FILE *f = NULL;
-    if( argv[i][0] == '-' && argv[i][1] == '\0' )
+    FILE *f = ଖାଲି;
+    ଯଦି( argv[i][0] == '-' && argv[i][1] == '\0' )
       f = stdin;
-    else
+    ଅନ୍ୟଥା
       f = fopen( argv[i], "rb" );
 
-    if( !f )
+    ଯଦି( !f )
     {
       fprintf( stderr, "Could not open `%s': %s\n", argv[i], strerror( errno ) );
-      continue;
+      ଜାରି;
     }
 
-    if( blake2_stream( f, hash, outbytes ) < 0 )
+    ଯଦି( blake2_stream( f, hash, outbytes ) < 0 )
     {
       fprintf( stderr, "Failed to hash `%s'\n", argv[i] );
     }
-    else
+    ଅନ୍ୟଥା
     {
       size_t j;
-      if( bsdstyle )
+      ଯଦି( bsdstyle )
       {
-        if( outbytes < maxbytes )
+        ଯଦି( outbytes < maxbytes )
           printf( "%s-%lu (%s) = ", algorithm, outbytes * 8, argv[i] );
-        else
+        ଅନ୍ୟଥା
           printf( "%s (%s) = ", algorithm, argv[i] );
       }
 
-      for( j = 0; j < outbytes; ++j )
+      ପାଇଁ( j = 0; j < outbytes; ++j )
         printf( "%02x", hash[j] );
 
-      if( bsdstyle )
+      ଯଦି( bsdstyle )
         printf( "\n" );
-      else
+      ଅନ୍ୟଥା
         printf( "  %s\n", argv[i] );
     }
 
-    if( f == stdin )
+    ଯଦି( f == stdin )
       clearerr( f );
-    else if( fclose( f ) != 0 )
+    ଅନ୍ୟଥା ଯଦି( fclose( f ) != 0 )
       fprintf( stderr, "Could not close `%s': %s\n", argv[i], strerror( errno ) );
   }
 
-  return 0;
+  ଫେରନ୍ତୁ 0;
 }
 #endif

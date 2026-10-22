@@ -16,34 +16,34 @@
 
 /* Written by Collin Funk <collin.funk1@gmail.com>, 2026.  */
 
-#include <config.h>
+#ଅନ୍ତର୍ଭାଵ <config.h>
 
-#include "wc.h"
-#include "system.h"
-#include "ioblksize.h"
+#ଅନ୍ତର୍ଭାଵ "wc.h"
+#ଅନ୍ତର୍ଭାଵ "system.h"
+#ଅନ୍ତର୍ଭାଵ "ioblksize.h"
 
-#include <arm_neon.h>
+#ଅନ୍ତର୍ଭାଵ <arm_neon.h>
 
 /* Read FD and return a summary.  */
-extern struct wc_lines
-wc_lines_neon (int fd)
+ବାହ୍ୟ ସଂରଚନା wc_ଧାଡ଼ିଗୁଡ଼ିକ
+wc_ଧାଡ଼ିଗୁଡ଼ିକ_neon (ପୂର୍ଣ୍ଣସଂଖ୍ୟା fd)
 {
-  intmax_t lines = 0;
+  intmax_t ଧାଡ଼ିଗୁଡ଼ିକ = 0;
   intmax_t bytes = 0;
 
-  const uint8x16_t endlines = vdupq_n_u8 ('\n');
+  ଅଚଳ uint8x16_t endlines = vdupq_n_u8 ('\n');
 
-  while (true)
+  ଯେତେବେଳେ (true)
     {
-      unsigned char alignas (16) neon_buf[IO_BUFSIZE];
-      ssize_t bytes_read = read (fd, neon_buf, sizeof neon_buf);
-      if (bytes_read <= 0)
-        return (struct wc_lines) { bytes_read == 0 ? 0 : errno, lines, bytes };
+      unsigned ଅକ୍ଷର alignas (16) neon_buf[IO_BUFSIZE];
+      ssize_t bytes_read = ପଠ (fd, neon_buf, ଆକାର neon_buf);
+      ଯଦି (bytes_read <= 0)
+        ଫେରନ୍ତୁ (ସଂରଚନା wc_ଧାଡ଼ିଗୁଡ଼ିକ) { bytes_read == 0 ? 0 : errno, ଧାଡ଼ିଗୁଡ଼ିକ, bytes };
 
       bytes += bytes_read;
-      unsigned char *datap = neon_buf;
+      unsigned ଅକ୍ଷର *datap = neon_buf;
 
-      while (8192 <= bytes_read)
+      ଯେତେବେଳେ (8192 <= bytes_read)
         {
           /* Accumulator.  */
           int8x16_t acc0 = vdupq_n_s8 (0);
@@ -52,7 +52,7 @@ wc_lines_neon (int fd)
           int8x16_t acc3 = vdupq_n_s8 (0);
 
           /* Process all 8192 bytes in 64 byte chunks.  */
-          for (int i = 0; i < 128; ++i)
+          ପାଇଁ (ପୂର୍ଣ୍ଣସଂଖ୍ୟା i = 0; i < 128; ++i)
             {
               /* Load 64 bytes from DATAP.  */
               uint8x16_t v0 = vld1q_u8 (datap);
@@ -93,7 +93,7 @@ wc_lines_neon (int fd)
           /* Extract the lane sums.  Since each newline was counted as -1, we
              subtract the sum of them from LINES to get the total number of
              lines.  */
-          lines -= (vgetq_lane_s64 (c0, 0) + vgetq_lane_s64 (c0, 1)
+          ଧାଡ଼ିଗୁଡ଼ିକ -= (vgetq_lane_s64 (c0, 0) + vgetq_lane_s64 (c0, 1)
                     + vgetq_lane_s64 (c1, 0) + vgetq_lane_s64 (c1, 1)
                     + vgetq_lane_s64 (c2, 0) + vgetq_lane_s64 (c2, 1)
                     + vgetq_lane_s64 (c3, 0) + vgetq_lane_s64 (c3, 1));
@@ -102,8 +102,8 @@ wc_lines_neon (int fd)
         }
 
       /* Finish up any left over bytes.  */
-      unsigned char *end = (unsigned char *) datap + bytes_read;
-      for (unsigned char *p = (unsigned char *) datap; p < end; p++)
-        lines += *p == '\n';
+      unsigned ଅକ୍ଷର *end = (unsigned ଅକ୍ଷର *) datap + bytes_read;
+      ପାଇଁ (unsigned ଅକ୍ଷର *p = (unsigned ଅକ୍ଷର *) datap; p < end; p++)
+        ଧାଡ଼ିଗୁଡ଼ିକ += *p == '\n';
     }
 }

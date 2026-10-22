@@ -21,16 +21,16 @@
 
    Written by David MacKenzie <djm@gnu.ai.mit.edu>.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#ଅନ୍ତର୍ଭାଵ <config.h>
+#ଅନ୍ତର୍ଭାଵ <stdio.h>
+#ଅନ୍ତର୍ଭାଵ <getopt.h>
+#ଅନ୍ତର୍ଭାଵ <sys/types.h>
 
-#include "system.h"
-#include "quote.h"
+#ଅନ୍ତର୍ଭାଵ "system.h"
+#ଅନ୍ତର୍ଭାଵ "quote.h"
 
 /* Exit statuses.  */
-enum
+ଗଣନା
   {
     TTY_STDIN_NOTTY = 1,
     TTY_USAGE = 2,
@@ -44,32 +44,32 @@ enum
 #define AUTHORS proper_name ("David MacKenzie")
 
 /* If true, return an exit status but produce no output. */
-static bool silent;
+ସ୍ଥିର bool silent;
 
-static struct option const longopts[] =
+ସ୍ଥିର ସଂରଚନା option ଅଚଳ longopts[] =
 {
-  {"silent", no_argument, NULL, 's'},
-  {"quiet", no_argument, NULL, 's'},
+  {"silent", no_argument, ଖାଲି, 's'},
+  {"quiet", no_argument, ଖାଲି, 's'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ଖାଲି, 0, ଖାଲି, 0}
 };
 
-void
-usage (int status)
+ଶୂନ୍ୟ
+usage (ପୂର୍ଣ୍ଣସଂଖ୍ୟା status)
 {
-  if (status != EXIT_SUCCESS)
+  ଯଦି (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ଅନ୍ୟଥା
     {
       printf (_("Usage: %s [OPTION]...\n"), program_name);
       fputs (_("\
-Print the file name of the terminal connected to standard input.\n\
+Print the file name of the terminal connected to standard ନିବେଶ.\n\
 \n\
 "), stdout);
       oputs (_("\
   -s, --silent, --quiet\n\
-         print nothing, only return an exit status\n\
+         print nothing, only ଫେରନ୍ତୁ an exit status\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -78,10 +78,10 @@ Print the file name of the terminal connected to standard input.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+ପୂର୍ଣ୍ଣସଂଖ୍ୟା
+ମୁଖ୍ୟ (ପୂର୍ଣ୍ଣସଂଖ୍ୟା argc, ଅକ୍ଷର **argv)
 {
-  int optc;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା optc;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -92,46 +92,46 @@ main (int argc, char **argv)
   initialize_exit_failure (TTY_WRITE_ERROR);
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "s", longopts, NULL)) != -1)
+  ଯେତେବେଳେ ((optc = getopt_long (argc, argv, "s", longopts, ଖାଲି)) != -1)
     {
-      switch (optc)
+      ବାଛ (optc)
         {
-        case 's':
+        ସ୍ଥିତି 's':
           silent = true;
-          break;
+          ଭାଙ୍ଗ;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        ପୂର୍ବନିର୍ଦ୍ଧାରିତ:
           usage (TTY_USAGE);
         }
     }
 
-  if (optind < argc)
+  ଯଦି (optind < argc)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind]));
       usage (TTY_USAGE);
     }
 
-  if (silent)
-    return isatty (STDIN_FILENO) ? EXIT_SUCCESS : TTY_STDIN_NOTTY;
+  ଯଦି (silent)
+    ଫେରନ୍ତୁ isatty (STDIN_FILENO) ? EXIT_SUCCESS : TTY_STDIN_NOTTY;
 
-  int status;
-  char const *tty = ttyname (STDIN_FILENO);
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା status;
+  ଅକ୍ଷର ଅଚଳ *tty = ttyname (STDIN_FILENO);
 
-  if (tty)
+  ଯଦି (tty)
     status = EXIT_SUCCESS;
-  else
+  ଅନ୍ୟଥା
     {
-      int ttyname_err = errno;
-      if (isatty (STDIN_FILENO))
+      ପୂର୍ଣ୍ଣସଂଖ୍ୟା ttyname_err = errno;
+      ଯଦି (isatty (STDIN_FILENO))
         error (TTY_TTYNAME_FAILURE, ttyname_err, _("ttyname error"));
       tty = _("not a tty");
       status = TTY_STDIN_NOTTY;
     }
 
   puts (tty);
-  return status;
+  ଫେରନ୍ତୁ status;
 }

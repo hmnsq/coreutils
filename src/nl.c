@@ -17,21 +17,21 @@
 /* Written by Scott Bartram (nancy!scott@uunet.uu.net)
    Revised by David MacKenzie (djm@gnu.ai.mit.edu) */
 
-#include <config.h>
+#ଅନ୍ତର୍ଭାଵ <config.h>
 
-#include <stdio.h>
-#include <sys/types.h>
-#include <getopt.h>
+#ଅନ୍ତର୍ଭାଵ <stdio.h>
+#ଅନ୍ତର୍ଭାଵ <sys/types.h>
+#ଅନ୍ତର୍ଭାଵ <getopt.h>
 
-#include "system.h"
+#ଅନ୍ତର୍ଭାଵ "system.h"
 
-#include <regex.h>
+#ଅନ୍ତର୍ଭାଵ <regex.h>
 
-#include "fadvise.h"
-#include "linebuffer.h"
-#include "mcel.h"
-#include "quote.h"
-#include "xdectoint.h"
+#ଅନ୍ତର୍ଭାଵ "fadvise.h"
+#ଅନ୍ତର୍ଭାଵ "linebuffer.h"
+#ଅନ୍ତର୍ଭାଵ "mcel.h"
+#ଅନ୍ତର୍ଭାଵ "quote.h"
+#ଅନ୍ତର୍ଭାଵ "xdectoint.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "nl"
@@ -44,183 +44,183 @@
    value, and a string separator.  */
 
 /* Right justified, no leading zeroes.  */
-static char const FORMAT_RIGHT_NOLZ[] = "%*jd%s";
+ସ୍ଥିର ଅକ୍ଷର ଅଚଳ FORMAT_ଡାହାଣ_NOLZ[] = "%*jd%s";
 
 /* Right justified, leading zeroes.  */
-static char const FORMAT_RIGHT_LZ[] = "%0*jd%s";
+ସ୍ଥିର ଅକ୍ଷର ଅଚଳ FORMAT_ଡାହାଣ_LZ[] = "%0*jd%s";
 
 /* Left justified, no leading zeroes.  */
-static char const FORMAT_LEFT[] = "%-*jd%s";
+ସ୍ଥିର ଅକ୍ଷର ଅଚଳ FORMAT_ବାମ[] = "%-*jd%s";
 
 /* Default section delimiter characters.  */
-static char DEFAULT_SECTION_DELIMITERS[MCEL_LEN_MAX * 2 + 1] = "\\:";
+ସ୍ଥିର ଅକ୍ଷର DEFAULT_SECTION_DELIMITERS[MCEL_LEN_MAX * 2 + 1] = "\\:";
 
 /* Types of input lines: either one of the section delimiters,
    or text to output. */
-enum section
+ଗଣନା section
 {
   Header, Body, Footer, Text
 };
 
 /* Format of body lines (-b).  */
-static char const *body_type = "t";
+ସ୍ଥିର ଅକ୍ଷର ଅଚଳ *body_type = "t";
 
 /* Format of header lines (-h).  */
-static char const *header_type = "n";
+ସ୍ଥିର ଅକ୍ଷର ଅଚଳ *header_type = "n";
 
 /* Format of footer lines (-f).  */
-static char const *footer_type = "n";
+ସ୍ଥିର ଅକ୍ଷର ଅଚଳ *footer_type = "n";
 
 /* Format currently being used (body, header, or footer).  */
-static char const *current_type;
+ସ୍ଥିର ଅକ୍ଷର ଅଚଳ *current_type;
 
 /* Regex for body lines to number (-bp).  */
-static struct re_pattern_buffer body_regex;
+ସ୍ଥିର ସଂରଚନା re_pattern_buffer body_regex;
 
 /* Regex for header lines to number (-hp).  */
-static struct re_pattern_buffer header_regex;
+ସ୍ଥିର ସଂରଚନା re_pattern_buffer header_regex;
 
 /* Regex for footer lines to number (-fp).  */
-static struct re_pattern_buffer footer_regex;
+ସ୍ଥିର ସଂରଚନା re_pattern_buffer footer_regex;
 
 /* Fastmaps for the above.  */
-static char body_fastmap[UCHAR_MAX + 1];
-static char header_fastmap[UCHAR_MAX + 1];
-static char footer_fastmap[UCHAR_MAX + 1];
+ସ୍ଥିର ଅକ୍ଷର body_fastmap[UCHAR_MAX + 1];
+ସ୍ଥିର ଅକ୍ଷର header_fastmap[UCHAR_MAX + 1];
+ସ୍ଥିର ଅକ୍ଷର footer_fastmap[UCHAR_MAX + 1];
 
 /* Pointer to current regex, if any.  */
-static struct re_pattern_buffer *current_regex = NULL;
+ସ୍ଥିର ସଂରଚନା re_pattern_buffer *current_regex = ଖାଲି;
 
 /* Separator string to print after line number (-s).  */
-static char const *separator_str = "\t";
+ସ୍ଥିର ଅକ୍ଷର ଅଚଳ *separator_str = "\t";
 
 /* Input section delimiter string (-d).  */
-static char *section_del = DEFAULT_SECTION_DELIMITERS;
+ସ୍ଥିର ଅକ୍ଷର *section_del = DEFAULT_SECTION_DELIMITERS;
 
 /* Input section delimiter length.  */
-static size_t section_del_len;
+ସ୍ଥିର size_t section_del_len;
 
 /* Header delimiter string.  */
-static char *header_del = NULL;
+ସ୍ଥିର ଅକ୍ଷର *header_del = ଖାଲି;
 
 /* Header section delimiter length.  */
-static size_t header_del_len;
+ସ୍ଥିର size_t header_del_len;
 
 /* Body delimiter string.  */
-static char *body_del = NULL;
+ସ୍ଥିର ଅକ୍ଷର *body_del = ଖାଲି;
 
 /* Body section delimiter length.  */
-static size_t body_del_len;
+ସ୍ଥିର size_t body_del_len;
 
 /* Footer delimiter string.  */
-static char *footer_del = NULL;
+ସ୍ଥିର ଅକ୍ଷର *footer_del = ଖାଲି;
 
 /* Footer section delimiter length.  */
-static size_t footer_del_len;
+ସ୍ଥିର size_t footer_del_len;
 
 /* Input buffer.  */
-static struct linebuffer line_buf;
+ସ୍ଥିର ସଂରଚନା linebuffer ଧାଡ଼ି_buf;
 
 /* printf format string for unnumbered lines.  */
-static char *print_no_line_fmt = NULL;
+ସ୍ଥିର ଅକ୍ଷର *print_no_ଧାଡ଼ି_fmt = ଖାଲି;
 
 /* Starting line number on each page (-v).  */
-static intmax_t starting_line_number = 1;
+ସ୍ଥିର intmax_t starting_ଧାଡ଼ି_ସଂଖ୍ୟା = 1;
 
 /* Line number increment (-i).  */
-static intmax_t page_incr = 1;
+ସ୍ଥିର intmax_t page_incr = 1;
 
 /* If true, reset line number at start of each page (-p).  */
-static bool reset_numbers = true;
+ସ୍ଥିର bool reset_numbers = true;
 
 /* Number of blank lines to consider to be one line for numbering (-l).  */
-static intmax_t blank_join = 1;
+ସ୍ଥିର intmax_t blank_join = 1;
 
 /* Width of line numbers (-w).  */
-static int lineno_width = 6;
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା lineno_width = 6;
 
 /* Line number format (-n).  */
-static char const *lineno_format = FORMAT_RIGHT_NOLZ;
+ସ୍ଥିର ଅକ୍ଷର ଅଚଳ *lineno_format = FORMAT_ଡାହାଣ_NOLZ;
 
 /* Current print line number.  */
-static intmax_t line_no;
+ସ୍ଥିର intmax_t ଧାଡ଼ି_no;
 
 /* Whether the current line number has incremented past limits.  */
-static bool line_no_overflow;
+ସ୍ଥିର bool ଧାଡ଼ି_no_overflow;
 
 /* True if we have ever read standard input.  */
-static bool have_read_stdin;
+ସ୍ଥିର bool have_read_stdin;
 
-static struct option const longopts[] =
+ସ୍ଥିର ସଂରଚନା option ଅଚଳ longopts[] =
 {
-  {"header-numbering", required_argument, NULL, 'h'},
-  {"body-numbering", required_argument, NULL, 'b'},
-  {"footer-numbering", required_argument, NULL, 'f'},
-  {"starting-line-number", required_argument, NULL, 'v'},
-  {"line-increment", required_argument, NULL, 'i'},
-  {"no-renumber", no_argument, NULL, 'p'},
-  {"join-blank-lines", required_argument, NULL, 'l'},
-  {"number-separator", required_argument, NULL, 's'},
-  {"number-width", required_argument, NULL, 'w'},
-  {"number-format", required_argument, NULL, 'n'},
-  {"section-delimiter", required_argument, NULL, 'd'},
+  {"header-numbering", required_argument, ଖାଲି, 'h'},
+  {"body-numbering", required_argument, ଖାଲି, 'b'},
+  {"footer-numbering", required_argument, ଖାଲି, 'f'},
+  {"starting-line-number", required_argument, ଖାଲି, 'v'},
+  {"line-increment", required_argument, ଖାଲି, 'i'},
+  {"no-renumber", no_argument, ଖାଲି, 'p'},
+  {"join-blank-lines", required_argument, ଖାଲି, 'l'},
+  {"number-separator", required_argument, ଖାଲି, 's'},
+  {"number-width", required_argument, ଖାଲି, 'w'},
+  {"number-format", required_argument, ଖାଲି, 'n'},
+  {"section-delimiter", required_argument, ଖାଲି, 'd'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ଖାଲି, 0, ଖାଲି, 0}
 };
 
 /* Print a usage message and quit. */
 
-void
-usage (int status)
+ଶୂନ୍ୟ
+usage (ପୂର୍ଣ୍ଣସଂଖ୍ୟା status)
 {
-  if (status != EXIT_SUCCESS)
+  ଯଦି (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ଅନ୍ୟଥା
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE]...\n\
 "),
               program_name);
       fputs (_("\
-Write each FILE to standard output, with line numbers added.\n\
+Write each FILE to standard output, with ଧାଡ଼ି numbers added.\n\
 "), stdout);
 
       emit_stdin_note ();
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -b, --body-numbering=STYLE      use STYLE for numbering body lines\n\
+  -b, --body-numbering=STYLE      use STYLE ପାଇଁ numbering body ଧାଡ଼ିଗୁଡ଼ିକ\n\
 "));
       oputs (_("\
-  -d, --section-delimiter=CC      use CC for logical page delimiters\n\
+  -d, --section-delimiter=CC      use CC ପାଇଁ logical page delimiters\n\
 "));
       oputs (_("\
-  -f, --footer-numbering=STYLE    use STYLE for numbering footer lines\n\
+  -f, --footer-numbering=STYLE    use STYLE ପାଇଁ numbering footer ଧାଡ଼ିଗୁଡ଼ିକ\n\
 "));
       oputs (_("\
-  -h, --header-numbering=STYLE    use STYLE for numbering header lines\n\
+  -h, --header-numbering=STYLE    use STYLE ପାଇଁ numbering header ଧାଡ଼ିଗୁଡ଼ିକ\n\
 "));
       oputs (_("\
-  -i, --line-increment=NUMBER     line number increment at each line\n\
+  -i, --ଧାଡ଼ି-increment=ସଂଖ୍ୟା_2     ଧାଡ଼ି ସଂଖ୍ୟା increment at each ଧାଡ଼ି\n\
 "));
       oputs (_("\
-  -l, --join-blank-lines=NUMBER   group of NUMBER empty lines counted as one\n\
+  -l, --join-blank-ଧାଡ଼ିଗୁଡ଼ିକ=ସଂଖ୍ୟା_2   group of ସଂଖ୍ୟା_2 empty ଧାଡ଼ିଗୁଡ଼ିକ counted as one\n\
 "));
       oputs (_("\
-  -n, --number-format=FORMAT      insert line numbers according to FORMAT\n\
+  -n, --ସଂଖ୍ୟା-format=FORMAT      ଭର୍ତ୍ତି ଧାଡ଼ି numbers according to FORMAT\n\
 "));
       oputs (_("\
-  -p, --no-renumber               do not reset line numbers for each section\n\
+  -p, --no-renumber               କର not reset ଧାଡ଼ି numbers ପାଇଁ each section\n\
 "));
       oputs (_("\
-  -s, --number-separator=STRING   add STRING after (possible) line number\n\
+  -s, --ସଂଖ୍ୟା-separator=STRING   add STRING after (possible) ଧାଡ଼ି ସଂଖ୍ୟା\n\
 "));
       oputs (_("\
-  -v, --starting-line-number=NUMBER  first line number for each section\n\
+  -v, --starting-ଧାଡ଼ି-ସଂଖ୍ୟା=ସଂଖ୍ୟା_2  first ଧାଡ଼ି ସଂଖ୍ୟା ପାଇଁ each section\n\
 "));
       oputs (_("\
-  -w, --number-width=NUMBER       use NUMBER columns for line numbers\n\
+  -w, --ସଂଖ୍ୟା-width=ସଂଖ୍ୟା_2       use ସଂଖ୍ୟା_2 columns ପାଇଁ ଧାଡ଼ି numbers\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -237,19 +237,19 @@ disables section matching.\n\
 \n\
 STYLE is one of:\n\
 \n\
-  a      number all lines\n\
-  t      number only nonempty lines\n\
-  n      number no lines\n\
-  pBRE   number only lines that contain a match for the basic regular\n\
+  a      ସଂଖ୍ୟା all ଧାଡ଼ିଗୁଡ଼ିକ\n\
+  t      ସଂଖ୍ୟା only nonempty ଧାଡ଼ିଗୁଡ଼ିକ\n\
+  n      ସଂଖ୍ୟା no ଧାଡ଼ିଗୁଡ଼ିକ\n\
+  pBRE   ସଂଖ୍ୟା only ଧାଡ଼ିଗୁଡ଼ିକ that contain a match ପାଇଁ the basic regular\n\
          expression, BRE\n\
 "), stdout);
       fputs (_("\
 \n\
 FORMAT is one of:\n\
 \n\
-  ln     left justified, no leading zeros\n\
-  rn     right justified, no leading zeros\n\
-  rz     right justified, leading zeros\n\
+  ln     ବାମ justified, no leading zeros\n\
+  rn     ଡାହାଣ justified, no leading zeros\n\
+  rz     ଡାହାଣ justified, leading zeros\n\
 \n\
 "), stdout);
       emit_ancillary_info (PROGRAM_NAME);
@@ -260,67 +260,67 @@ FORMAT is one of:\n\
 /* Set the command line flag TYPEP and possibly the regex pointer REGEXP,
    according to 'optarg'.  */
 
-static bool
-build_type_arg (char const **typep,
-                struct re_pattern_buffer *regexp, char *fastmap)
+ସ୍ଥିର bool
+build_type_arg (ଅକ୍ଷର ଅଚଳ **typep,
+                ସଂରଚନା re_pattern_buffer *regexp, ଅକ୍ଷର *fastmap)
 {
-  char const *errmsg;
+  ଅକ୍ଷର ଅଚଳ *errmsg;
   bool rval = true;
 
-  switch (*optarg)
+  ବାଛ (*optarg)
     {
-    case 'a':
-    case 't':
-    case 'n':
+    ସ୍ଥିତି 'a':
+    ସ୍ଥିତି 't':
+    ସ୍ଥିତି 'n':
       *typep = optarg;
-      break;
-    case 'p':
+      ଭାଙ୍ଗ;
+    ସ୍ଥିତି 'p':
       *typep = optarg++;
-      regexp->buffer = NULL;
+      regexp->buffer = ଖାଲି;
       regexp->allocated = 0;
       regexp->fastmap = fastmap;
-      regexp->translate = NULL;
+      regexp->translate = ଖାଲି;
       re_syntax_options =
         RE_SYNTAX_POSIX_BASIC & ~RE_CONTEXT_INVALID_DUP & ~RE_NO_EMPTY_RANGES;
       errmsg = re_compile_pattern (optarg, strlen (optarg), regexp);
-      if (errmsg)
+      ଯଦି (errmsg)
         error (EXIT_FAILURE, 0, "%s", (errmsg));
-      break;
-    default:
+      ଭାଙ୍ଗ;
+    ପୂର୍ବନିର୍ଦ୍ଧାରିତ:
       rval = false;
-      break;
+      ଭାଙ୍ଗ;
     }
-  return rval;
+  ଫେରନ୍ତୁ rval;
 }
 
 /* Print the line number and separator; increment the line number. */
 
-static void
-print_lineno (void)
+ସ୍ଥିର ଶୂନ୍ୟ
+print_lineno (ଶୂନ୍ୟ)
 {
-  if (line_no_overflow)
+  ଯଦି (ଧାଡ଼ି_no_overflow)
     error (EXIT_FAILURE, 0, _("line number overflow"));
 
-  printf (lineno_format, lineno_width, line_no, separator_str);
+  printf (lineno_format, lineno_width, ଧାଡ଼ି_no, separator_str);
 
-  if (ckd_add (&line_no, line_no, page_incr))
-    line_no_overflow = true;
+  ଯଦି (ckd_add (&ଧାଡ଼ି_no, ଧାଡ଼ି_no, page_incr))
+    ଧାଡ଼ି_no_overflow = true;
 }
 
-static void
-reset_lineno (void)
+ସ୍ଥିର ଶୂନ୍ୟ
+reset_lineno (ଶୂନ୍ୟ)
 {
-  if (reset_numbers)
+  ଯଦି (reset_numbers)
     {
-      line_no = starting_line_number;
-      line_no_overflow = false;
+      ଧାଡ଼ି_no = starting_ଧାଡ଼ି_ସଂଖ୍ୟା;
+      ଧାଡ଼ି_no_overflow = false;
     }
 }
 
 /* Switch to a header section. */
 
-static void
-proc_header (void)
+ସ୍ଥିର ଶୂନ୍ୟ
+proc_header (ଶୂନ୍ୟ)
 {
   current_type = header_type;
   current_regex = &header_regex;
@@ -330,8 +330,8 @@ proc_header (void)
 
 /* Switch to a body section. */
 
-static void
-proc_body (void)
+ସ୍ଥିର ଶୂନ୍ୟ
+proc_body (ଶୂନ୍ୟ)
 {
   current_type = body_type;
   current_regex = &body_regex;
@@ -341,8 +341,8 @@ proc_body (void)
 
 /* Switch to a footer section. */
 
-static void
-proc_footer (void)
+ସ୍ଥିର ଶୂନ୍ୟ
+proc_footer (ଶୂନ୍ୟ)
 {
   current_type = footer_type;
   current_regex = &footer_regex;
@@ -352,101 +352,101 @@ proc_footer (void)
 
 /* Process a regular text line in 'line_buf'. */
 
-static void
-proc_text (void)
+ସ୍ଥିର ଶୂନ୍ୟ
+proc_text (ଶୂନ୍ୟ)
 {
-  static intmax_t blank_lines = 0;	/* Consecutive blank lines so far. */
+  ସ୍ଥିର intmax_t blank_ଧାଡ଼ିଗୁଡ଼ିକ = 0;	/* Consecutive blank lines so far. */
 
-  switch (*current_type)
+  ବାଛ (*current_type)
     {
-    case 'a':
-      if (blank_join > 1)
+    ସ୍ଥିତି 'a':
+      ଯଦି (blank_join > 1)
         {
-          if (1 < line_buf.length || ++blank_lines == blank_join)
+          ଯଦି (1 < ଧାଡ଼ି_buf.length || ++blank_ଧାଡ଼ିଗୁଡ଼ିକ == blank_join)
             {
               print_lineno ();
-              blank_lines = 0;
+              blank_ଧାଡ଼ିଗୁଡ଼ିକ = 0;
             }
-          else
-            fputs (print_no_line_fmt, stdout);
+          ଅନ୍ୟଥା
+            fputs (print_no_ଧାଡ଼ି_fmt, stdout);
         }
-      else
+      ଅନ୍ୟଥା
         print_lineno ();
-      break;
-    case 't':
-      if (1 < line_buf.length)
+      ଭାଙ୍ଗ;
+    ସ୍ଥିତି 't':
+      ଯଦି (1 < ଧାଡ଼ି_buf.length)
         print_lineno ();
-      else
-        fputs (print_no_line_fmt, stdout);
-      break;
-    case 'n':
-      fputs (print_no_line_fmt, stdout);
-      break;
-    case 'p':
-      switch (re_search (current_regex, line_buf.buffer, line_buf.length - 1,
-                         0, line_buf.length - 1, NULL))
+      ଅନ୍ୟଥା
+        fputs (print_no_ଧାଡ଼ି_fmt, stdout);
+      ଭାଙ୍ଗ;
+    ସ୍ଥିତି 'n':
+      fputs (print_no_ଧାଡ଼ି_fmt, stdout);
+      ଭାଙ୍ଗ;
+    ସ୍ଥିତି 'p':
+      ବାଛ (re_ସନ୍ଧାନ (current_regex, ଧାଡ଼ି_buf.buffer, ଧାଡ଼ି_buf.length - 1,
+                         0, ଧାଡ଼ି_buf.length - 1, ଖାଲି))
         {
-        case -2:
+        ସ୍ଥିତି -2:
           error (EXIT_FAILURE, errno, _("error in regular expression search"));
 
-        case -1:
-          fputs (print_no_line_fmt, stdout);
-          break;
+        ସ୍ଥିତି -1:
+          fputs (print_no_ଧାଡ଼ି_fmt, stdout);
+          ଭାଙ୍ଗ;
 
-        default:
+        ପୂର୍ବନିର୍ଦ୍ଧାରିତ:
           print_lineno ();
-          break;
+          ଭାଙ୍ଗ;
         }
     }
-  fwrite (line_buf.buffer, sizeof (char), line_buf.length, stdout);
+  fwrite (ଧାଡ଼ି_buf.buffer, ଆକାର (ଅକ୍ଷର), ଧାଡ଼ି_buf.length, stdout);
 }
 
 /* Return the type of line in 'line_buf'. */
 
-static enum section
-check_section (void)
+ସ୍ଥିର ଗଣନା section
+check_section (ଶୂନ୍ୟ)
 {
-  size_t len = line_buf.length - 1;
+  size_t len = ଧାଡ଼ି_buf.length - 1;
 
-  if (len < section_del_len || footer_del_len < section_del_len
-      || !memeq (line_buf.buffer, section_del, section_del_len))
-    return Text;
-  if (len == header_del_len
-      && memeq (line_buf.buffer, header_del, header_del_len))
-    return Header;
-  if (len == body_del_len
-      && memeq (line_buf.buffer, body_del, body_del_len))
-    return Body;
-  if (len == footer_del_len
-      && memeq (line_buf.buffer, footer_del, footer_del_len))
-    return Footer;
-  return Text;
+  ଯଦି (len < section_del_len || footer_del_len < section_del_len
+      || !memeq (ଧାଡ଼ି_buf.buffer, section_del, section_del_len))
+    ଫେରନ୍ତୁ Text;
+  ଯଦି (len == header_del_len
+      && memeq (ଧାଡ଼ି_buf.buffer, header_del, header_del_len))
+    ଫେରନ୍ତୁ Header;
+  ଯଦି (len == body_del_len
+      && memeq (ଧାଡ଼ି_buf.buffer, body_del, body_del_len))
+    ଫେରନ୍ତୁ Body;
+  ଯଦି (len == footer_del_len
+      && memeq (ଧାଡ଼ି_buf.buffer, footer_del, footer_del_len))
+    ଫେରନ୍ତୁ Footer;
+  ଫେରନ୍ତୁ Text;
 }
 
 /* Read and process the file pointed to by FP. */
 
-static void
+ସ୍ଥିର ଶୂନ୍ୟ
 process_file (FILE *fp)
 {
-  while (readlinebuffer (&line_buf, fp))
+  ଯେତେବେଳେ (readlinebuffer (&ଧାଡ଼ି_buf, fp))
     {
-      switch (check_section ())
+      ବାଛ (check_section ())
         {
-        case Header:
+        ସ୍ଥିତି Header:
           proc_header ();
-          break;
-        case Body:
+          ଭାଙ୍ଗ;
+        ସ୍ଥିତି Body:
           proc_body ();
-          break;
-        case Footer:
+          ଭାଙ୍ଗ;
+        ସ୍ଥିତି Footer:
           proc_footer ();
-          break;
-        case Text:
+          ଭାଙ୍ଗ;
+        ସ୍ଥିତି Text:
           proc_text ();
-          break;
+          ଭାଙ୍ଗ;
         }
 
-      if (ferror (stdout))
+      ଯଦି (ferror (stdout))
         write_error ();
     }
 }
@@ -454,24 +454,24 @@ process_file (FILE *fp)
 /* Process file FILE to standard output.
    Return true if successful.  */
 
-static bool
-nl_file (char const *file)
+ସ୍ଥିର bool
+nl_file (ଅକ୍ଷର ଅଚଳ *file)
 {
   FILE *stream;
 
-  if (streq (file, "-"))
+  ଯଦି (streq (file, "-"))
     {
       have_read_stdin = true;
       stream = stdin;
       assume (stream);  /* Pacify GCC bug#109613.  */
     }
-  else
+  ଅନ୍ୟଥା
     {
       stream = fopen (file, "r");
-      if (stream == NULL)
+      ଯଦି (stream == ଖାଲି)
         {
           error (0, errno, "%s", quotef (file));
-          return false;
+          ଫେରନ୍ତୁ false;
         }
     }
 
@@ -479,25 +479,25 @@ nl_file (char const *file)
 
   process_file (stream);
 
-  int err = errno;
-  if (!ferror (stream))
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା err = errno;
+  ଯଦି (!ferror (stream))
     err = 0;
-  if (streq (file, "-"))
+  ଯଦି (streq (file, "-"))
     clearerr (stream);		/* Also clear EOF. */
-  else if (fclose (stream) != 0 && !err)
+  ଅନ୍ୟଥା ଯଦି (fclose (stream) != 0 && !err)
     err = errno;
-  if (err)
+  ଯଦି (err)
     {
       error (0, err, "%s", quotef (file));
-      return false;
+      ଫେରନ୍ତୁ false;
     }
-  return true;
+  ଫେରନ୍ତୁ true;
 }
 
-int
-main (int argc, char **argv)
+ପୂର୍ଣ୍ଣସଂଖ୍ୟା
+ମୁଖ୍ୟ (ପୂର୍ଣ୍ଣସଂଖ୍ୟା argc, ଅକ୍ଷର **argv)
 {
-  int c;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା c;
   size_t len;
   bool ok = true;
 
@@ -509,106 +509,106 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((c = getopt_long (argc, argv, "h:b:f:v:i:pl:s:w:n:d:", longopts,
-                           NULL))
+  ଯେତେବେଳେ ((c = getopt_long (argc, argv, "h:b:f:v:i:pl:s:w:n:d:", longopts,
+                           ଖାଲି))
          != -1)
     {
-      switch (c)
+      ବାଛ (c)
         {
-        case 'h':
-          if (! build_type_arg (&header_type, &header_regex, header_fastmap))
+        ସ୍ଥିତି 'h':
+          ଯଦି (! build_type_arg (&header_type, &header_regex, header_fastmap))
             {
               error (0, 0, _("invalid header numbering style: %s"),
                      quote (optarg));
               ok = false;
             }
-          break;
-        case 'b':
-          if (! build_type_arg (&body_type, &body_regex, body_fastmap))
+          ଭାଙ୍ଗ;
+        ସ୍ଥିତି 'b':
+          ଯଦି (! build_type_arg (&body_type, &body_regex, body_fastmap))
             {
               error (0, 0, _("invalid body numbering style: %s"),
                      quote (optarg));
               ok = false;
             }
-          break;
-        case 'f':
-          if (! build_type_arg (&footer_type, &footer_regex, footer_fastmap))
+          ଭାଙ୍ଗ;
+        ସ୍ଥିତି 'f':
+          ଯଦି (! build_type_arg (&footer_type, &footer_regex, footer_fastmap))
             {
               error (0, 0, _("invalid footer numbering style: %s"),
                      quote (optarg));
               ok = false;
             }
-          break;
-        case 'v':
-          starting_line_number = xdectoimax (optarg, INTMAX_MIN, INTMAX_MAX, "",
+          ଭାଙ୍ଗ;
+        ସ୍ଥିତି 'v':
+          starting_ଧାଡ଼ି_ସଂଖ୍ୟା = xdectoimax (optarg, INTMAX_MIN, INTMAX_MAX, "",
                                              _("invalid starting line number"),
                                              0);
-          break;
-        case 'i':
+          ଭାଙ୍ଗ;
+        ସ୍ଥିତି 'i':
           page_incr = xdectoimax (optarg, INTMAX_MIN, INTMAX_MAX, "",
                                   _("invalid line number increment"), 0);
-          break;
-        case 'p':
+          ଭାଙ୍ଗ;
+        ସ୍ଥିତି 'p':
           reset_numbers = false;
-          break;
-        case 'l':
+          ଭାଙ୍ଗ;
+        ସ୍ଥିତି 'l':
           blank_join = xnumtoimax (optarg, 10, 1, INTMAX_MAX, "",
                                    _("invalid line number of blank lines"),
                                    0, XTOINT_MIN_RANGE | XTOINT_MAX_QUIET);
-          break;
-        case 's':
+          ଭାଙ୍ଗ;
+        ସ୍ଥିତି 's':
           separator_str = optarg;
-          break;
-        case 'w':
+          ଭାଙ୍ଗ;
+        ସ୍ଥିତି 'w':
           lineno_width = xnumtoimax (optarg, 10, 1, INT_MAX, "",
                                      _("invalid line number field width"),
                                      0, XTOINT_MIN_RANGE);
-          break;
-        case 'n':
-          if (streq (optarg, "ln"))
-            lineno_format = FORMAT_LEFT;
-          else if (streq (optarg, "rn"))
-            lineno_format = FORMAT_RIGHT_NOLZ;
-          else if (streq (optarg, "rz"))
-            lineno_format = FORMAT_RIGHT_LZ;
-          else
+          ଭାଙ୍ଗ;
+        ସ୍ଥିତି 'n':
+          ଯଦି (streq (optarg, "ln"))
+            lineno_format = FORMAT_ବାମ;
+          ଅନ୍ୟଥା ଯଦି (streq (optarg, "rn"))
+            lineno_format = FORMAT_ଡାହାଣ_NOLZ;
+          ଅନ୍ୟଥା ଯଦି (streq (optarg, "rz"))
+            lineno_format = FORMAT_ଡାହାଣ_LZ;
+          ଅନ୍ୟଥା
             {
               error (0, 0, _("invalid line numbering format: %s"),
                      quote (optarg));
               ok = false;
             }
-          break;
-        case 'd':
+          ଭାଙ୍ଗ;
+        ସ୍ଥିତି 'd':
           len = strlen (optarg);
-          if (1 < MB_CUR_MAX)
+          ଯଦି (1 < MB_CUR_MAX)
             {
-              char const *p = optarg;
-              char const *lim = p + len;
-              int n_chars = 0;
-              for (; p < lim && n_chars < 2; ++n_chars)
+              ଅକ୍ଷର ଅଚଳ *p = optarg;
+              ଅକ୍ଷର ଅଚଳ *lim = p + len;
+              ପୂର୍ଣ୍ଣସଂଖ୍ୟା n_chars = 0;
+              ପାଇଁ (; p < lim && n_chars < 2; ++n_chars)
                   p += mcel_scan (p, lim).len;
-              if (n_chars == 1)
-                memcpy (mempcpy (section_del, optarg, len),  ":", sizeof ":");
-              else
+              ଯଦି (n_chars == 1)
+                memcpy (mempcpy (section_del, optarg, len),  ":", ଆକାର ":");
+              ଅନ୍ୟଥା
                 section_del = optarg;
             }
-          else
+          ଅନ୍ୟଥା
             {
-              if (len == 1)
+              ଯଦି (len == 1)
                 *section_del = *optarg;
-              else
+              ଅନ୍ୟଥା
                 section_del = optarg;
             }
-          break;
+          ଭାଙ୍ଗ;
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        ପୂର୍ବନିର୍ଦ୍ଧାରିତ:
           ok = false;
-          break;
+          ଭାଙ୍ଗ;
         }
     }
 
-  if (!ok)
+  ଯଦି (!ok)
     usage (EXIT_FAILURE);
 
   /* Initialize the section delimiters.  */
@@ -625,28 +625,28 @@ main (int argc, char **argv)
   footer_del = body_del + len;
 
   /* Initialize the input buffer.  */
-  initbuffer (&line_buf);
+  initbuffer (&ଧାଡ଼ି_buf);
 
   /* Initialize the printf format for unnumbered lines. */
   len = strlen (separator_str);
-  print_no_line_fmt = xmalloc (lineno_width + len + 1);
-  memset (print_no_line_fmt, ' ', lineno_width + len);
-  print_no_line_fmt[lineno_width + len] = '\0';
+  print_no_ଧାଡ଼ି_fmt = xmalloc (lineno_width + len + 1);
+  memset (print_no_ଧାଡ଼ି_fmt, ' ', lineno_width + len);
+  print_no_ଧାଡ଼ି_fmt[lineno_width + len] = '\0';
 
-  line_no = starting_line_number;
+  ଧାଡ଼ି_no = starting_ଧାଡ଼ି_ସଂଖ୍ୟା;
   current_type = body_type;
   current_regex = &body_regex;
 
   /* Main processing. */
 
-  if (optind == argc)
+  ଯଦି (optind == argc)
     ok = nl_file ("-");
-  else
-    for (; optind < argc; optind++)
+  ଅନ୍ୟଥା
+    ପାଇଁ (; optind < argc; optind++)
       ok &= nl_file (argv[optind]);
 
-  if (have_read_stdin && fclose (stdin) == EOF)
+  ଯଦି (have_read_stdin && fclose (stdin) == EOF)
     error (EXIT_FAILURE, errno, "-");
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  ଫେରନ୍ତୁ ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

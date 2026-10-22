@@ -16,18 +16,18 @@
 
 /* Mike Parker, Richard M. Stallman, and David MacKenzie */
 
-#include <config.h>
-#include <sys/types.h>
-#include <signal.h>
-#include <getopt.h>
+#ଅନ୍ତର୍ଭାଵ <config.h>
+#ଅନ୍ତର୍ଭାଵ <sys/types.h>
+#ଅନ୍ତର୍ଭାଵ <signal.h>
+#ଅନ୍ତର୍ଭାଵ <getopt.h>
 
-#include "system.h"
-#include "argmatch.h"
-#include "fadvise.h"
-#include "fcntl--.h"
-#include "iopoll.h"
-#include "xbinary-io.h"
-#include "iopoll.h"
+#ଅନ୍ତର୍ଭାଵ "system.h"
+#ଅନ୍ତର୍ଭାଵ "argmatch.h"
+#ଅନ୍ତର୍ଭାଵ "fadvise.h"
+#ଅନ୍ତର୍ଭାଵ "fcntl--.h"
+#ଅନ୍ତର୍ଭାଵ "iopoll.h"
+#ଅନ୍ତର୍ଭାଵ "xbinary-io.h"
+#ଅନ୍ତର୍ଭାଵ "iopoll.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "tee"
@@ -37,15 +37,15 @@
   proper_name ("Richard M. Stallman"), \
   proper_name ("David MacKenzie")
 
-static bool tee_files (int nfiles, char **files, bool);
+ସ୍ଥିର bool tee_files (ପୂର୍ଣ୍ଣସଂଖ୍ୟା nfiles, ଅକ୍ଷର **files, bool);
 
 /* If true, append to output files rather than truncating them. */
-static bool append;
+ସ୍ଥିର bool append;
 
 /* If true, ignore interrupts. */
-static bool ignore_interrupts;
+ସ୍ଥିର bool ignore_interrupts;
 
-enum output_error
+ଗଣନା output_error
   {
     output_error_sigpipe,      /* traditional behavior, sigpipe enabled.  */
     output_error_warn,         /* warn on EPIPE, but continue.  */
@@ -54,44 +54,44 @@ enum output_error
     output_error_exit_nopipe   /* exit on any output error except EPIPE.  */
   };
 
-static enum output_error output_error;
+ସ୍ଥିର ଗଣନା output_error output_error;
 
-static struct option const long_options[] =
+ସ୍ଥିର ସଂରଚନା option ଅଚଳ long_options[] =
 {
-  {"append", no_argument, NULL, 'a'},
-  {"ignore-interrupts", no_argument, NULL, 'i'},
-  {"output-error", optional_argument, NULL, 'p'},
+  {"append", no_argument, ଖାଲି, 'a'},
+  {"ignore-interrupts", no_argument, ଖାଲି, 'i'},
+  {"output-error", optional_argument, ଖାଲି, 'p'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ଖାଲି, 0, ଖାଲି, 0}
 };
 
-static char const *const output_error_args[] =
+ସ୍ଥିର ଅକ୍ଷର ଅଚଳ *ଅଚଳ output_error_args[] =
 {
-  "warn", "warn-nopipe", "exit", "exit-nopipe", NULL
+  "warn", "warn-nopipe", "exit", "exit-nopipe", ଖାଲି
 };
-static enum output_error const output_error_types[] =
+ସ୍ଥିର ଗଣନା output_error ଅଚଳ output_error_types[] =
 {
   output_error_warn, output_error_warn_nopipe,
   output_error_exit, output_error_exit_nopipe
 };
 ARGMATCH_VERIFY (output_error_args, output_error_types);
 
-void
-usage (int status)
+ଶୂନ୍ୟ
+usage (ପୂର୍ଣ୍ଣସଂଖ୍ୟା status)
 {
-  if (status != EXIT_SUCCESS)
+  ଯଦି (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ଅନ୍ୟଥା
     {
       printf (_("Usage: %s [OPTION]... [FILE]...\n"), program_name);
       fputs (_("\
-Copy standard input to each FILE, and also to standard output.\n\
+Copy standard ନିବେଶ to each FILE, and also to standard output.\n\
 \n\
 "), stdout);
       oputs (_("\
   -a, --append\n\
-         append to the given FILEs, do not overwrite\n\
+         append to the given FILEs, କର not overwrite\n\
 "));
       oputs (_("\
   -i, --ignore-interrupts\n\
@@ -103,20 +103,20 @@ Copy standard input to each FILE, and also to standard output.\n\
 "));
       oputs (_("\
       --output-error[=MODE]\n\
-         set behavior on write error.  See MODE below\n\
+         set behavior on ଲିଖ error.  See MODE below\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-MODE determines behavior with write errors on the outputs:\n\
+MODE determines behavior with ଲିଖ errors on the outputs:\n\
   warn           diagnose errors writing to any output\n\
   warn-nopipe    diagnose errors writing to any output not a pipe\n\
   exit           exit on error writing to any output\n\
   exit-nopipe    exit on error writing to any output not a pipe\n\
-The default MODE for the -p option is 'warn-nopipe'.\n\
-With \"nopipe\" MODEs, exit immediately if all outputs become broken pipes.\n\
-The default operation when --output-error is not specified, is to\n\
+The ପୂର୍ବନିର୍ଦ୍ଧାରିତ MODE ପାଇଁ the -p option is 'warn-nopipe'.\n\
+With \"nopipe\" MODEs, exit immediately ଯଦି all outputs become broken pipes.\n\
+The ପୂର୍ବନିର୍ଦ୍ଧାରିତ operation when --output-error is not specified, is to\n\
 exit immediately on error writing to a pipe, and diagnose errors\n\
 writing to non pipe outputs.\n\
 "), stdout);
@@ -125,8 +125,8 @@ writing to non pipe outputs.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+ପୂର୍ଣ୍ଣସଂଖ୍ୟା
+ମୁଖ୍ୟ (ପୂର୍ଣ୍ଣସଂଖ୍ୟା argc, ଅକ୍ଷର **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -136,56 +136,56 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  int optc;
-  while ((optc = getopt_long (argc, argv, "aip", long_options, NULL)) != -1)
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା optc;
+  ଯେତେବେଳେ ((optc = getopt_long (argc, argv, "aip", long_options, ଖାଲି)) != -1)
     {
-      switch (optc)
+      ବାଛ (optc)
         {
-        case 'a':
+        ସ୍ଥିତି 'a':
           append = true;
-          break;
+          ଭାଙ୍ଗ;
 
-        case 'i':
+        ସ୍ଥିତି 'i':
           ignore_interrupts = true;
-          break;
+          ଭାଙ୍ଗ;
 
-        case 'p':
-          if (optarg)
+        ସ୍ଥିତି 'p':
+          ଯଦି (optarg)
             output_error = XARGMATCH ("--output-error", optarg,
                                       output_error_args, output_error_types);
-          else
+          ଅନ୍ୟଥା
             output_error = output_error_warn_nopipe;
-          break;
+          ଭାଙ୍ଗ;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        ପୂର୍ବନିର୍ଦ୍ଧାରିତ:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (ignore_interrupts)
-    signal (SIGINT, SIG_IGN);
+  ଯଦି (ignore_interrupts)
+    ସଙ୍କେତ (SIGINT, SIG_IGN);
 
-  if (output_error != output_error_sigpipe)
-    signal (SIGPIPE, SIG_IGN);
+  ଯଦି (output_error != output_error_sigpipe)
+    ସଙ୍କେତ (SIGPIPE, SIG_IGN);
 
   /* Whether to detect and close a broken pipe output.
      There is no need if the input is always ready for reading.  */
   bool pipe_check = ((output_error == output_error_warn_nopipe
                       || output_error == output_error_exit_nopipe)
-                     && iopoll_input_ok (STDIN_FILENO));
+                     && iopoll_ନିବେଶ_ok (STDIN_FILENO));
 
   /* Do *not* warn if tee is given no file arguments.
      POSIX requires that it work when given no arguments.  */
 
   bool ok = tee_files (argc - optind, &argv[optind], pipe_check);
-  if (close (STDIN_FILENO) != 0)
+  ଯଦି (close (STDIN_FILENO) != 0)
     error (EXIT_FAILURE, errno, "%s", _("standard input"));
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  ଫେରନ୍ତୁ ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 
@@ -193,33 +193,33 @@ main (int argc, char **argv)
    or -1 if all are null.  */
 
 ATTRIBUTE_PURE
-static int
-get_next_out (int *descriptors, int nfiles, int idx)
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା
+get_next_out (ପୂର୍ଣ୍ଣସଂଖ୍ୟା *descriptors, ପୂର୍ଣ୍ଣସଂଖ୍ୟା nfiles, ପୂର୍ଣ୍ଣସଂଖ୍ୟା idx)
 {
-  for (idx++; idx <= nfiles; idx++)
-    if (0 <= descriptors[idx])
-      return idx;
-  return -1;  /* no outputs remaining */
+  ପାଇଁ (idx++; idx <= nfiles; idx++)
+    ଯଦି (0 <= descriptors[idx])
+      ଫେରନ୍ତୁ idx;
+  ଫେରନ୍ତୁ -1;  /* no outputs remaining */
 }
 
 /* Remove descriptors[i] due to write failure or broken pipe.
    Return true if this indicates a reportable error.  */
 
-static bool
-fail_output (int *descriptors, char **files, int i)
+ସ୍ଥିର bool
+fail_output (ପୂର୍ଣ୍ଣସଂଖ୍ୟା *descriptors, ଅକ୍ଷର **files, ପୂର୍ଣ୍ଣସଂଖ୍ୟା i)
 {
-  int w_errno = errno;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା w_errno = errno;
   bool fail = errno != EPIPE
               || output_error == output_error_exit
               || output_error == output_error_warn;
-  if (fail)
+  ଯଦି (fail)
     {
       error (output_error == output_error_exit
              || output_error == output_error_exit_nopipe,
              w_errno, "%s", quotef (files[i]));
     }
   descriptors[i] = -1;
-  return fail;
+  ଫେରନ୍ତୁ fail;
 }
 
 
@@ -227,117 +227,117 @@ fail_output (int *descriptors, char **files, int i)
    and into the standard output.  As a side effect, modify FILES[-1].
    Return true if successful.  */
 
-static bool
-tee_files (int nfiles, char **files, bool pipe_check)
+ସ୍ଥିର bool
+tee_files (ପୂର୍ଣ୍ଣସଂଖ୍ୟା nfiles, ଅକ୍ଷର **files, bool pipe_check)
 {
   size_t n_outputs = 0;
-  int *descriptors;
-  bool *out_pollable IF_LINT ( = NULL);
-  char buffer[BUFSIZ];
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା *descriptors;
+  bool *out_pollable IF_LINT ( = ଖାଲି);
+  ଅକ୍ଷର buffer[BUFSIZ];
   ssize_t bytes_read = 0;
-  int first_out = 0;  /* idx of first non-null output in descriptors */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା first_out = 0;  /* idx of first non-null output in descriptors */
   bool ok = true;
-  int flags = O_WRONLY | O_CREAT | O_BINARY | (append ? O_APPEND : O_TRUNC);
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା flags = O_WRONLY | O_CREAT | O_ଦ୍ୱିମିକ | (append ? O_APPEND : O_TRUNC);
 
-  xset_binary_mode (STDIN_FILENO, O_BINARY);
-  xset_binary_mode (STDOUT_FILENO, O_BINARY);
+  xset_ଦ୍ୱିମିକ_mode (STDIN_FILENO, O_ଦ୍ୱିମିକ);
+  xset_ଦ୍ୱିମିକ_mode (STDOUT_FILENO, O_ଦ୍ୱିମିକ);
   fadvise (stdin, FADVISE_SEQUENTIAL);
 
   /* Set up FILES[0 .. NFILES] and DESCRIPTORS[0 .. NFILES].
      In both arrays, entry 0 corresponds to standard output.  */
 
-  descriptors = xnmalloc (nfiles + 1, sizeof *descriptors);
-  if (pipe_check)
-    out_pollable = xnmalloc (nfiles + 1, sizeof *out_pollable);
+  descriptors = xnmalloc (nfiles + 1, ଆକାର *descriptors);
+  ଯଦି (pipe_check)
+    out_pollable = xnmalloc (nfiles + 1, ଆକାର *out_pollable);
   files--;
   descriptors[0] = STDOUT_FILENO;
-  if (pipe_check)
+  ଯଦି (pipe_check)
     out_pollable[0] = iopoll_output_ok (descriptors[0]);
   files[0] = bad_cast (_("standard output"));
   n_outputs++;
 
-  for (int i = 1; i <= nfiles; i++)
+  ପାଇଁ (ପୂର୍ଣ୍ଣସଂଖ୍ୟା i = 1; i <= nfiles; i++)
     {
       /* Do not treat "-" specially - as mandated by POSIX.  */
       descriptors[i] = open (files[i], flags, MODE_RW_UGO);
-      if (descriptors[i] < 0)
+      ଯଦି (descriptors[i] < 0)
         {
-          if (pipe_check)
+          ଯଦି (pipe_check)
             out_pollable[i] = false;
           error (output_error == output_error_exit
                  || output_error == output_error_exit_nopipe,
                  errno, "%s", quotef (files[i]));
           ok = false;
         }
-      else
+      ଅନ୍ୟଥା
         {
-          if (pipe_check)
+          ଯଦି (pipe_check)
             out_pollable[i] = iopoll_output_ok (descriptors[i]);
           n_outputs++;
         }
     }
 
-  while (n_outputs)
+  ଯେତେବେଳେ (n_outputs)
     {
-      if (pipe_check && out_pollable[first_out])
+      ଯଦି (pipe_check && out_pollable[first_out])
         {
           /* Monitor for input, or errors on first valid output.  */
-          int err = iopoll (STDIN_FILENO, descriptors[first_out], true);
+          ପୂର୍ଣ୍ଣସଂଖ୍ୟା err = iopoll (STDIN_FILENO, descriptors[first_out], true);
 
           /* Close the output if it became a broken pipe.  */
-          if (err == IOPOLL_BROKEN_OUTPUT)
+          ଯଦି (err == IOPOLL_BROKEN_OUTPUT)
             {
               errno = EPIPE;  /* behave like write produced EPIPE */
-              if (fail_output (descriptors, files, first_out))
+              ଯଦି (fail_output (descriptors, files, first_out))
                 ok = false;
               n_outputs--;
               first_out = get_next_out (descriptors, nfiles, first_out);
-              continue;
+              ଜାରି;
             }
-          else if (err == IOPOLL_ERROR)
+          ଅନ୍ୟଥା ଯଦି (err == IOPOLL_ERROR)
             {
               error (0, errno, _("iopoll error"));
               ok = false;
             }
         }
 
-      bytes_read = read (STDIN_FILENO, buffer, sizeof buffer);
-      if (bytes_read < 0 && errno == EINTR)
-        continue;
-      if (bytes_read <= 0)
-        break;
+      bytes_read = ପଠ (STDIN_FILENO, buffer, ଆକାର buffer);
+      ଯଦି (bytes_read < 0 && errno == EINTR)
+        ଜାରି;
+      ଯଦି (bytes_read <= 0)
+        ଭାଙ୍ଗ;
 
       /* Write to all NFILES + 1 descriptors.
          Standard output is the first one.  */
-      for (int i = 0; i <= nfiles; i++)
-        if (0 <= descriptors[i]
+      ପାଇଁ (ପୂର୍ଣ୍ଣସଂଖ୍ୟା i = 0; i <= nfiles; i++)
+        ଯଦି (0 <= descriptors[i]
             && ! write_wait (descriptors[i], buffer, bytes_read))
           {
-            if (fail_output (descriptors, files, i))
+            ଯଦି (fail_output (descriptors, files, i))
               ok = false;
             n_outputs--;
-            if (i == first_out)
+            ଯଦି (i == first_out)
               first_out = get_next_out (descriptors, nfiles, first_out);
           }
     }
 
-  if (bytes_read == -1)
+  ଯଦି (bytes_read == -1)
     {
       error (0, errno, _("read error"));
       ok = false;
     }
 
   /* Close the files, but not standard output.  */
-  for (int i = 1; i <= nfiles; i++)
-    if (0 <= descriptors[i] && close (descriptors[i]) < 0)
+  ପାଇଁ (ପୂର୍ଣ୍ଣସଂଖ୍ୟା i = 1; i <= nfiles; i++)
+    ଯଦି (0 <= descriptors[i] && close (descriptors[i]) < 0)
       {
         error (0, errno, "%s", quotef (files[i]));
         ok = false;
       }
 
-  free (descriptors);
-  if (pipe_check)
-    free (out_pollable);
+  ମୁକ୍ତ (descriptors);
+  ଯଦି (pipe_check)
+    ମୁକ୍ତ (out_pollable);
 
-  return ok;
+  ଫେରନ୍ତୁ ok;
 }

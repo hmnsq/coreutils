@@ -16,65 +16,65 @@
 
 /* Written by Pádraig Brady.  */
 
-#include <config.h>
-#include <getopt.h>
-#include <stdio.h>
-#include <sys/types.h>
+#ଅନ୍ତର୍ଭାଵ <config.h>
+#ଅନ୍ତର୍ଭାଵ <getopt.h>
+#ଅନ୍ତର୍ଭାଵ <stdio.h>
+#ଅନ୍ତର୍ଭାଵ <sys/types.h>
 
-#include "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
-#include "system.h"
-#include "canonicalize.h"
-#include "relpath.h"
+#ଅନ୍ତର୍ଭାଵ "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
+#ଅନ୍ତର୍ଭାଵ "system.h"
+#ଅନ୍ତର୍ଭାଵ "canonicalize.h"
+#ଅନ୍ତର୍ଭାଵ "relpath.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "realpath"
 
 #define AUTHORS proper_name_lite ("Padraig Brady", "P\303\241draig Brady")
 
-enum
+ଗଣନା
 {
   RELATIVE_TO_OPTION = CHAR_MAX + 1,
   RELATIVE_BASE_OPTION
 };
 
-static bool verbose = true;
-static bool logical;
-static bool use_nuls;
-static bool quote_output;
-static char const *can_relative_to;
-static char const *can_relative_base;
+ସ୍ଥିର bool verbose = true;
+ସ୍ଥିର bool logical;
+ସ୍ଥିର bool use_nuls;
+ସ୍ଥିର bool quote_output;
+ସ୍ଥିର ଅକ୍ଷର ଅଚଳ *can_relative_to;
+ସ୍ଥିର ଅକ୍ଷର ଅଚଳ *can_relative_base;
 
-static struct option const longopts[] =
+ସ୍ଥିର ସଂରଚନା option ଅଚଳ longopts[] =
 {
-  {"canonicalize", no_argument, NULL, 'E'},
-  {"canonicalize-existing", no_argument, NULL, 'e'},
-  {"canonicalize-missing", no_argument, NULL, 'm'},
-  {"relative-to", required_argument, NULL, RELATIVE_TO_OPTION},
-  {"relative-base", required_argument, NULL, RELATIVE_BASE_OPTION},
-  {"quiet", no_argument, NULL, 'q'},
-  {"strip", no_argument, NULL, 's'},
-  {"no-symlinks", no_argument, NULL, 's'},
-  {"zero", no_argument, NULL, 'z'},
-  {"logical", no_argument, NULL, 'L'},
-  {"physical", no_argument, NULL, 'P'},
+  {"canonicalize", no_argument, ଖାଲି, 'E'},
+  {"canonicalize-existing", no_argument, ଖାଲି, 'e'},
+  {"canonicalize-missing", no_argument, ଖାଲି, 'm'},
+  {"relative-to", required_argument, ଖାଲି, RELATIVE_TO_OPTION},
+  {"relative-base", required_argument, ଖାଲି, RELATIVE_BASE_OPTION},
+  {"quiet", no_argument, ଖାଲି, 'q'},
+  {"strip", no_argument, ଖାଲି, 's'},
+  {"no-symlinks", no_argument, ଖାଲି, 's'},
+  {"zero", no_argument, ଖାଲି, 'z'},
+  {"logical", no_argument, ଖାଲି, 'L'},
+  {"physical", no_argument, ଖାଲି, 'P'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ଖାଲି, 0, ଖାଲି, 0}
 };
 
-void
-usage (int status)
+ଶୂନ୍ୟ
+usage (ପୂର୍ଣ୍ଣସଂଖ୍ୟା status)
 {
-  if (status != EXIT_SUCCESS)
+  ଯଦି (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ଅନ୍ୟଥା
     {
       printf (_("Usage: %s [OPTION]... FILE...\n"), program_name);
       fputs (_("\
 Print the resolved absolute file name.\n\
 "), stdout);
       oputs (_("\
-  -E, --canonicalize           all but the last component must exist (default)\
+  -E, --canonicalize           all but the last component must exist (ପୂର୍ବନିର୍ଦ୍ଧାରିତ)\
 \n\
 "));
       oputs (_("\
@@ -88,7 +88,7 @@ Print the resolved absolute file name.\n\
   -L, --logical                resolve '..' components before symlinks\n\
 "));
       oputs (_("\
-  -P, --physical               resolve symlinks as encountered (default)\n\
+  -P, --physical               resolve symlinks as encountered (ପୂର୍ବନିର୍ଦ୍ଧାରିତ)\n\
 "));
       oputs (_("\
   -q, --quiet                  suppress most error messages\n\
@@ -103,7 +103,7 @@ Print the resolved absolute file name.\n\
   -s, --strip, --no-symlinks   don't expand symlinks\n\
 "));
       oputs (_("\
-  -z, --zero                   end each output line with NUL, not newline\n\
+  -z, --zero                   end each output ଧାଡ଼ି with NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -114,24 +114,24 @@ Print the resolved absolute file name.\n\
 
 /* A wrapper around canonicalize_filename_mode(),
    to call it twice when in LOGICAL mode.  */
-static char *
-realpath_canon (char const *fname, int can_mode)
+ସ୍ଥିର ଅକ୍ଷର *
+realpath_canon (ଅକ୍ଷର ଅଚଳ *fname, ପୂର୍ଣ୍ଣସଂଖ୍ୟା can_mode)
 {
-  char *can_fname = canonicalize_filename_mode (fname, can_mode);
-  if (logical && can_fname)  /* canonicalize again to resolve symlinks.  */
+  ଅକ୍ଷର *can_fname = canonicalize_filename_mode (fname, can_mode);
+  ଯଦି (logical && can_fname)  /* canonicalize again to resolve symlinks.  */
     {
       can_mode &= ~CAN_NOLINKS;
-      char *can_fname2 = canonicalize_filename_mode (can_fname, can_mode);
-      free (can_fname);
-      return can_fname2;
+      ଅକ୍ଷର *can_fname2 = canonicalize_filename_mode (can_fname, can_mode);
+      ମୁକ୍ତ (can_fname);
+      ଫେରନ୍ତୁ can_fname2;
     }
-  return can_fname;
+  ଫେରନ୍ତୁ can_fname;
 }
 
 /* Test whether canonical prefix is parent or match of path.  */
 ATTRIBUTE_PURE
-static bool
-path_prefix (char const *prefix, char const *path)
+ସ୍ଥିର bool
+path_prefix (ଅକ୍ଷର ଅଚଳ *prefix, ଅକ୍ଷର ଅଚଳ *path)
 {
   /* We already know prefix[0] and path[0] are '/'.  */
   prefix++;
@@ -139,94 +139,94 @@ path_prefix (char const *prefix, char const *path)
 
   /* '/' is the prefix of everything except '//' (since we know '//'
      is only present after canonicalization if it is distinct).  */
-  if (!*prefix)
-    return *path != '/';
+  ଯଦି (!*prefix)
+    ଫେରନ୍ତୁ *path != '/';
 
   /* Likewise, '//' is a prefix of any double-slash path.  */
-  if (*prefix == '/' && !prefix[1])
-    return *path == '/';
+  ଯଦି (*prefix == '/' && !prefix[1])
+    ଫେରନ୍ତୁ *path == '/';
 
   /* Any other prefix has a non-slash portion.  */
-  while (*prefix && *path)
+  ଯେତେବେଳେ (*prefix && *path)
     {
-      if (*prefix != *path)
-        break;
+      ଯଦି (*prefix != *path)
+        ଭାଙ୍ଗ;
       prefix++;
       path++;
     }
-  return (!*prefix && (*path == '/' || !*path));
+  ଫେରନ୍ତୁ (!*prefix && (*path == '/' || !*path));
 }
 
-static bool
-isdir (char const *path)
+ସ୍ଥିର bool
+isdir (ଅକ୍ଷର ଅଚଳ *path)
 {
-  struct stat sb;
-  if (stat (path, &sb) != 0)
+  ସଂରଚନା stat sb;
+  ଯଦି (stat (path, &sb) != 0)
     error (EXIT_FAILURE, errno, _("cannot stat %s"), quoteaf (path));
-  return S_ISDIR (sb.st_mode);
+  ଫେରନ୍ତୁ S_ISDIR (sb.st_mode);
 }
 
-static void
-print_path (char const *path)
+ସ୍ଥିର ଶୂନ୍ୟ
+print_path (ଅକ୍ଷର ଅଚଳ *path)
 {
   fputs (quote_output ? quoteN (path) : path, stdout);
 }
 
 /* Print CAN_FNAME relative to can_relative_to, quoting the complete
    relative file name when appropriate.  */
-static bool
-print_relative_path (char const *can_fname)
+ସ୍ଥିର bool
+print_relative_path (ଅକ୍ଷର ଅଚଳ *can_fname)
 {
-  if (!quote_output)
-    return relpath (can_fname, can_relative_to, NULL, 0);
+  ଯଦି (!quote_output)
+    ଫେରନ୍ତୁ relpath (can_fname, can_relative_to, ଖାଲି, 0);
 
   size_t size;
-  if (ckd_mul (&size, strlen (can_relative_to), 2)
+  ଯଦି (ckd_mul (&size, strlen (can_relative_to), 2)
       || ckd_add (&size, size, strlen (can_fname))
       || ckd_add (&size, size, 1))
     xalloc_die ();
 
-  char *relative_path = xmalloc (size);
+  ଅକ୍ଷର *relative_path = xmalloc (size);
   bool success = relpath (can_fname, can_relative_to, relative_path, size);
-  if (success)
+  ଯଦି (success)
     print_path (relative_path);
-  free (relative_path);
-  return success;
+  ମୁକ୍ତ (relative_path);
+  ଫେରନ୍ତୁ success;
 }
 
-static bool
-process_path (char const *fname, int can_mode)
+ସ୍ଥିର bool
+process_path (ଅକ୍ଷର ଅଚଳ *fname, ପୂର୍ଣ୍ଣସଂଖ୍ୟା can_mode)
 {
-  char *can_fname = realpath_canon (fname, can_mode);
-  if (!can_fname)
+  ଅକ୍ଷର *can_fname = realpath_canon (fname, can_mode);
+  ଯଦି (!can_fname)
     {
-      if (verbose)
+      ଯଦି (verbose)
         error (0, errno, "%s", quotef (fname));
-      return false;
+      ଫେରନ୍ତୁ false;
     }
 
-  if (!can_relative_to
+  ଯଦି (!can_relative_to
       || (can_relative_base && !path_prefix (can_relative_base, can_fname))
       || (can_relative_to && !print_relative_path (can_fname)))
     print_path (can_fname);
 
   putchar (use_nuls ? '\0' : '\n');
 
-  free (can_fname);
+  ମୁକ୍ତ (can_fname);
 
-  if (ferror (stdout))
+  ଯଦି (ferror (stdout))
     write_error ();
 
-  return true;
+  ଫେରନ୍ତୁ true;
 }
 
-int
-main (int argc, char **argv)
+ପୂର୍ଣ୍ଣସଂଖ୍ୟା
+ମୁଖ୍ୟ (ପୂର୍ଣ୍ଣସଂଖ୍ୟା argc, ଅକ୍ଷର **argv)
 {
   bool ok = true;
-  int can_mode = CAN_ALL_BUT_LAST;
-  char const *relative_to = NULL;
-  char const *relative_base = NULL;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା can_mode = CAN_ALL_BUT_LAST;
+  ଅକ୍ଷର ଅଚଳ *relative_to = ଖାଲି;
+  ଅକ୍ଷର ଅଚଳ *relative_base = ଖାଲି;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -236,109 +236,109 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while (true)
+  ଯେତେବେଳେ (true)
     {
-      int c = getopt_long (argc, argv, "EeLmPqsz", longopts, NULL);
-      if (c == -1)
-        break;
-      switch (c)
+      ପୂର୍ଣ୍ଣସଂଖ୍ୟା c = getopt_long (argc, argv, "EeLmPqsz", longopts, ଖାଲି);
+      ଯଦି (c == -1)
+        ଭାଙ୍ଗ;
+      ବାଛ (c)
         {
-        case 'E':
+        ସ୍ଥିତି 'E':
           can_mode &= ~CAN_MODE_MASK;
           can_mode |= CAN_ALL_BUT_LAST;
-          break;
-        case 'e':
+          ଭାଙ୍ଗ;
+        ସ୍ଥିତି 'e':
           can_mode &= ~CAN_MODE_MASK;
           can_mode |= CAN_EXISTING;
-          break;
-        case 'm':
+          ଭାଙ୍ଗ;
+        ସ୍ଥିତି 'm':
           can_mode &= ~CAN_MODE_MASK;
           can_mode |= CAN_MISSING;
-          break;
-        case 'L':
+          ଭାଙ୍ଗ;
+        ସ୍ଥିତି 'L':
           can_mode |= CAN_NOLINKS;
           logical = true;
-          break;
-        case 's':
+          ଭାଙ୍ଗ;
+        ସ୍ଥିତି 's':
           can_mode |= CAN_NOLINKS;
           logical = false;
-          break;
-        case 'P':
+          ଭାଙ୍ଗ;
+        ସ୍ଥିତି 'P':
           can_mode &= ~CAN_NOLINKS;
           logical = false;
-          break;
-        case 'q':
+          ଭାଙ୍ଗ;
+        ସ୍ଥିତି 'q':
           verbose = false;
-          break;
-        case 'z':
+          ଭାଙ୍ଗ;
+        ସ୍ଥିତି 'z':
           use_nuls = true;
-          break;
-        case RELATIVE_TO_OPTION:
+          ଭାଙ୍ଗ;
+        ସ୍ଥିତି RELATIVE_TO_OPTION:
           relative_to = optarg;
-          break;
-        case RELATIVE_BASE_OPTION:
+          ଭାଙ୍ଗ;
+        ସ୍ଥିତି RELATIVE_BASE_OPTION:
           relative_base = optarg;
-          break;
+          ଭାଙ୍ଗ;
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        ପୂର୍ବନିର୍ଦ୍ଧାରିତ:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (optind >= argc)
+  ଯଦି (optind >= argc)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
-  if (! use_nuls && isatty (STDOUT_FILENO))
+  ଯଦି (! use_nuls && isatty (STDOUT_FILENO))
     {
-      int qs = getenv_quoting_style ();
-      if (qs < 0)
+      ପୂର୍ଣ୍ଣସଂଖ୍ୟା qs = getenv_quoting_style ();
+      ଯଦି (qs < 0)
         qs = shell_escape_quoting_style;
-      if (qs != literal_quoting_style)
+      ଯଦି (qs != literal_quoting_style)
         {
-          set_quoting_style (NULL, qs);
+          set_quoting_style (ଖାଲି, qs);
           quote_output = true;
         }
     }
 
-  if (relative_base && !relative_to)
+  ଯଦି (relative_base && !relative_to)
     relative_to = relative_base;
 
   bool need_dir = (can_mode & CAN_MODE_MASK) == CAN_EXISTING;
-  if (relative_to)
+  ଯଦି (relative_to)
     {
       can_relative_to = realpath_canon (relative_to, can_mode);
-      if (!can_relative_to)
+      ଯଦି (!can_relative_to)
         error (EXIT_FAILURE, errno, "%s", quotef (relative_to));
-      if (need_dir && !isdir (can_relative_to))
+      ଯଦି (need_dir && !isdir (can_relative_to))
         error (EXIT_FAILURE, ENOTDIR, "%s", quotef (relative_to));
     }
-  if (relative_base == relative_to)
+  ଯଦି (relative_base == relative_to)
     can_relative_base = can_relative_to;
-  else if (relative_base)
+  ଅନ୍ୟଥା ଯଦି (relative_base)
     {
-      char *base = realpath_canon (relative_base, can_mode);
-      if (!base)
+      ଅକ୍ଷର *base = realpath_canon (relative_base, can_mode);
+      ଯଦି (!base)
         error (EXIT_FAILURE, errno, "%s", quotef (relative_base));
-      if (need_dir && !isdir (base))
+      ଯଦି (need_dir && !isdir (base))
         error (EXIT_FAILURE, ENOTDIR, "%s", quotef (relative_base));
       /* --relative-to is a no-op if it does not have --relative-base
            as a prefix */
-      if (path_prefix (base, can_relative_to))
+      ଯଦି (path_prefix (base, can_relative_to))
         can_relative_base = base;
-      else
+      ଅନ୍ୟଥା
         {
-          free (base);
+          ମୁକ୍ତ (base);
           can_relative_base = can_relative_to;
-          can_relative_to = NULL;
+          can_relative_to = ଖାଲି;
         }
     }
 
-  for (; optind < argc; ++optind)
+  ପାଇଁ (; optind < argc; ++optind)
     ok &= process_path (argv[optind], can_mode);
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  ଫେରନ୍ତୁ ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

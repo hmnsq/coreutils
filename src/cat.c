@@ -21,27 +21,27 @@
 
    By tege@sics.se, Torbjörn Granlund, advised by rms, Richard Stallman.  */
 
-#include <config.h>
+#ଅନ୍ତର୍ଭାଵ <config.h>
 
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#ଅନ୍ତର୍ଭାଵ <stdio.h>
+#ଅନ୍ତର୍ଭାଵ <getopt.h>
+#ଅନ୍ତର୍ଭାଵ <sys/types.h>
 
-#if HAVE_STROPTS_H
+#ଯଦି HAVE_STROPTS_H
 # include <stropts.h>
 #endif
-#include <sys/ioctl.h>
+#ଅନ୍ତର୍ଭାଵ <sys/ioctl.h>
 
-#include "system.h"
-#include "alignalloc.h"
-#include "assure.h"
-#include "ioblksize.h"
-#include "fadvise.h"
-#include "full-write.h"
-#include "isapipe.h"
-#include "splice.h"
-#include "unistd--.h"
-#include "xbinary-io.h"
+#ଅନ୍ତର୍ଭାଵ "system.h"
+#ଅନ୍ତର୍ଭାଵ "alignalloc.h"
+#ଅନ୍ତର୍ଭାଵ "assure.h"
+#ଅନ୍ତର୍ଭାଵ "ioblksize.h"
+#ଅନ୍ତର୍ଭାଵ "fadvise.h"
+#ଅନ୍ତର୍ଭାଵ "full-write.h"
+#ଅନ୍ତର୍ଭାଵ "isapipe.h"
+#ଅନ୍ତର୍ଭାଵ "splice.h"
+#ଅନ୍ତର୍ଭାଵ "unistd--.h"
+#ଅନ୍ତର୍ଭାଵ "xbinary-io.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "cat"
@@ -51,16 +51,16 @@
   proper_name ("Richard M. Stallman")
 
 /* Name of input file.  May be "-".  */
-static char const *infile;
+ସ୍ଥିର ଅକ୍ଷର ଅଚଳ *infile;
 
 /* Descriptor on which input file is open.  */
-static int input_desc;
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା ନିବେଶ_desc;
 
 /* Buffer for line numbers.
    An 11 digit counter may overflow within an hour on a P2/466,
    an 18 digit counter needs about 1000y */
-#define LINE_COUNTER_BUF_LEN 20
-static char line_buf[LINE_COUNTER_BUF_LEN] =
+#define ଧାଡ଼ି_COUNTER_BUF_LEN 20
+ସ୍ଥିର ଅକ୍ଷର ଧାଡ଼ି_buf[ଧାଡ଼ି_COUNTER_BUF_LEN] =
   {
     ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
     ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '0',
@@ -69,26 +69,26 @@ static char line_buf[LINE_COUNTER_BUF_LEN] =
 
 /* Position in 'line_buf' where printing starts.  This will not change
    unless the number of lines is larger than 999999.  */
-static char *line_num_print = line_buf + LINE_COUNTER_BUF_LEN - 8;
+ସ୍ଥିର ଅକ୍ଷର *ଧାଡ଼ି_ଅଙ୍କ_print = ଧାଡ଼ି_buf + ଧାଡ଼ି_COUNTER_BUF_LEN - 8;
 
 /* Position of the first digit in 'line_buf'.  */
-static char *line_num_start = line_buf + LINE_COUNTER_BUF_LEN - 3;
+ସ୍ଥିର ଅକ୍ଷର *ଧାଡ଼ି_ଅଙ୍କ_start = ଧାଡ଼ି_buf + ଧାଡ଼ି_COUNTER_BUF_LEN - 3;
 
 /* Position of the last digit in 'line_buf'.  */
-static char *line_num_end = line_buf + LINE_COUNTER_BUF_LEN - 3;
+ସ୍ଥିର ଅକ୍ଷର *ଧାଡ଼ି_ଅଙ୍କ_end = ଧାଡ଼ି_buf + ଧାଡ଼ି_COUNTER_BUF_LEN - 3;
 
 /* Preserves the 'cat' function's local 'newlines' between invocations.  */
-static int newlines2 = 0;
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା newlines2 = 0;
 
 /* Whether there is a pending CR to process.  */
-static bool pending_cr = false;
+ସ୍ଥିର bool pending_cr = false;
 
-void
-usage (int status)
+ଶୂନ୍ୟ
+usage (ପୂର୍ଣ୍ଣସଂଖ୍ୟା status)
 {
-  if (status != EXIT_SUCCESS)
+  ଯଦି (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ଅନ୍ୟଥା
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE]...\n\
@@ -104,19 +104,19 @@ Concatenate FILE(s) to standard output.\n\
   -A, --show-all           equivalent to -vET\n\
 "));
       oputs (_("\
-  -b, --number-nonblank    number nonempty output lines, overrides -n\n\
+  -b, --ସଂଖ୍ୟା-nonblank    ସଂଖ୍ୟା nonempty output ଧାଡ଼ିଗୁଡ଼ିକ, overrides -n\n\
 "));
       oputs (_("\
   -e                       equivalent to -vE\n\
 "));
       oputs (_("\
-  -E, --show-ends          display $ or ^M$ at end of each line\n\
+  -E, --show-ends          display $ or ^M$ at end of each ଧାଡ଼ି\n\
 "));
       oputs (_("\
-  -n, --number             number all output lines\n\
+  -n, --ସଂଖ୍ୟା             ସଂଖ୍ୟା all output ଧାଡ଼ିଗୁଡ଼ିକ\n\
 "));
       oputs (_("\
-  -s, --squeeze-blank      suppress repeated empty output lines\n\
+  -s, --squeeze-blank      suppress repeated empty output ଧାଡ଼ିଗୁଡ଼ିକ\n\
 "));
       oputs (_("\
   -t                       equivalent to -vT\n\
@@ -128,7 +128,7 @@ Concatenate FILE(s) to standard output.\n\
   -u                       (ignored)\n\
 "));
       oputs (_("\
-  -v, --show-nonprinting   use ^ and M- notation, except for LFD and TAB\n\
+  -v, --show-nonprinting   use ^ and M- notation, except ପାଇଁ LFD and TAB\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -136,7 +136,7 @@ Concatenate FILE(s) to standard output.\n\
 \n\
 Examples:\n\
   %s f - g  Output f's contents, then standard input, then g's contents.\n\
-  %s        Copy standard input to standard output.\n\
+  %s        Copy standard ନିବେଶ to standard output.\n\
 "),
               program_name, program_name);
       emit_ancillary_info (PROGRAM_NAME);
@@ -146,54 +146,54 @@ Examples:\n\
 
 /* Compute the next line number.  */
 
-static void
-next_line_num (void)
+ସ୍ଥିର ଶୂନ୍ୟ
+next_ଧାଡ଼ି_ଅଙ୍କ (ଶୂନ୍ୟ)
 {
-  char *endp = line_num_end;
-  do
+  ଅକ୍ଷର *endp = ଧାଡ଼ି_ଅଙ୍କ_end;
+  କର
     {
-      if ((*endp)++ < '9')
-        return;
+      ଯଦି ((*endp)++ < '9')
+        ଫେରନ୍ତୁ;
       *endp-- = '0';
     }
-  while (endp >= line_num_start);
+  ଯେତେବେଳେ (endp >= ଧାଡ଼ି_ଅଙ୍କ_start);
 
-  if (line_num_start > line_buf)
-    *--line_num_start = '1';
-  else
-    *line_buf = '>';
-  if (line_num_start < line_num_print)
-    line_num_print--;
+  ଯଦି (ଧାଡ଼ି_ଅଙ୍କ_start > ଧାଡ଼ି_buf)
+    *--ଧାଡ଼ି_ଅଙ୍କ_start = '1';
+  ଅନ୍ୟଥା
+    *ଧାଡ଼ି_buf = '>';
+  ଯଦି (ଧାଡ଼ି_ଅଙ୍କ_start < ଧାଡ଼ି_ଅଙ୍କ_print)
+    ଧାଡ଼ି_ଅଙ୍କ_print--;
 }
 
 /* Plain cat.  Copy the file behind 'input_desc' to STDOUT_FILENO.
    BUF (of size BUFSIZE) is the I/O buffer, used by reads and writes.
    Return true if successful.  */
 
-static bool
-simple_cat (char *buf, idx_t bufsize)
+ସ୍ଥିର bool
+simple_cat (ଅକ୍ଷର *buf, idx_t bufsize)
 {
   /* Loop until the end of the file.  */
 
-  while (true)
+  ଯେତେବେଳେ (true)
     {
       /* Read a block of input.  */
 
-      ssize_t n_read = read (input_desc, buf, bufsize);
-      if (n_read < 0)
+      ssize_t n_read = ପଠ (ନିବେଶ_desc, buf, bufsize);
+      ଯଦି (n_read < 0)
         {
           error (0, errno, "%s", quotef (infile));
-          return false;
+          ଫେରନ୍ତୁ false;
         }
 
       /* End of this file?  */
 
-      if (n_read == 0)
-        return true;
+      ଯଦି (n_read == 0)
+        ଫେରନ୍ତୁ true;
 
       /* Write this block out.  */
 
-      if (full_write (STDOUT_FILENO, buf, n_read) != n_read)
+      ଯଦି (full_write (STDOUT_FILENO, buf, n_read) != n_read)
         write_error ();
     }
 }
@@ -202,13 +202,13 @@ simple_cat (char *buf, idx_t bufsize)
    Pending is defined to be the *BPOUT - OUTBUF bytes starting at OUTBUF.
    Then set *BPOUT to OUTPUT if it's not already that value.  */
 
-static inline void
-write_pending (char *outbuf, char **bpout)
+ସ୍ଥିର ଧାଡ଼ିଭିତରେ ଶୂନ୍ୟ
+write_pending (ଅକ୍ଷର *outbuf, ଅକ୍ଷର **bpout)
 {
   idx_t n_write = *bpout - outbuf;
-  if (0 < n_write)
+  ଯଦି (0 < n_write)
     {
-      if (full_write (STDOUT_FILENO, outbuf, n_write) != n_write)
+      ଯଦି (full_write (STDOUT_FILENO, outbuf, n_write) != n_write)
         write_error ();
       *bpout = outbuf;
     }
@@ -226,20 +226,20 @@ write_pending (char *outbuf, char **bpout)
    A newline character is always put at the end of the buffer, to make
    an explicit test for buffer end unnecessary.  */
 
-static bool
-cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
-     bool show_nonprinting, bool show_tabs, bool number, bool number_nonblank,
+ସ୍ଥିର bool
+cat (ଅକ୍ଷର *inbuf, idx_t insize, ଅକ୍ଷର *outbuf, idx_t outsize,
+     bool show_nonprinting, bool show_tabs, bool ସଂଖ୍ୟା, bool ସଂଖ୍ୟା_nonblank,
      bool show_ends, bool squeeze_blank)
 {
   /* Last character read from the input buffer.  */
-  unsigned char ch;
+  unsigned ଅକ୍ଷର ch;
 
   /* Determines how many consecutive newlines there have been in the
      input.  0 newlines makes NEWLINES -1, 1 newline makes NEWLINES 1,
      etc.  Initially 0 to indicate that we are at the beginning of a
      new line.  The "state" of the procedure is determined by
      NEWLINES.  */
-  int newlines = newlines2;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା newlines = newlines2;
 
 #ifdef FIONREAD
   /* If nonzero, use the FIONREAD ioctl, as an optimization.
@@ -252,32 +252,32 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
 
   /* Pointer to the first non-valid byte in the input buffer, i.e., the
      current end of the buffer.  */
-  char *eob = inbuf;
+  ଅକ୍ଷର *eob = inbuf;
 
   /* Pointer to the next character in the input buffer.  */
-  char *bpin = eob + 1;
+  ଅକ୍ଷର *bpin = eob + 1;
 
   /* Pointer to the position where the next character shall be written.  */
-  char *bpout = outbuf;
+  ଅକ୍ଷର *bpout = outbuf;
 
-  while (true)
+  ଯେତେବେଳେ (true)
     {
-      do
+      କର
         {
           /* Write if there are at least OUTSIZE bytes in OUTBUF.  */
 
-          if (outbuf + outsize <= bpout)
+          ଯଦି (outbuf + outsize <= bpout)
             {
-              char *wp = outbuf;
+              ଅକ୍ଷର *wp = outbuf;
               idx_t remaining_bytes;
-              do
+              କର
                 {
-                  if (full_write (STDOUT_FILENO, wp, outsize) != outsize)
+                  ଯଦି (full_write (STDOUT_FILENO, wp, outsize) != outsize)
                     write_error ();
                   wp += outsize;
                   remaining_bytes = bpout - wp;
                 }
-              while (outsize <= remaining_bytes);
+              ଯେତେବେଳେ (outsize <= remaining_bytes);
 
               /* Move the remaining bytes to the beginning of the
                  buffer.  */
@@ -288,18 +288,18 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
 
           /* Is INBUF empty?  */
 
-          if (bpin > eob)
+          ଯଦି (bpin > eob)
             {
-              bool input_pending = false;
+              bool ନିବେଶ_pending = false;
 #ifdef FIONREAD
-              int n_to_read = 0;
+              ପୂର୍ଣ୍ଣସଂଖ୍ୟା n_to_read = 0;
 
               /* Is there any input to read immediately?
                  If not, we are about to wait,
                  so write all buffered output before waiting.  */
 
-              if (use_fionread
-                  && ioctl (input_desc, FIONREAD, &n_to_read) < 0)
+              ଯଦି (use_fionread
+                  && ioctl (ନିବେଶ_desc, FIONREAD, &n_to_read) < 0)
                 {
                   /* Ultrix returns EOPNOTSUPP on NFS;
                      HP-UX returns ENOTTY on pipes.
@@ -307,40 +307,40 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
                      More/BSD returns ENODEV on special files
                      like /dev/null.
                      Irix-5 returns ENOSYS on pipes.  */
-                  if (errno == EOPNOTSUPP || errno == ENOTTY
+                  ଯଦି (errno == EOPNOTSUPP || errno == ENOTTY
                       || errno == EINVAL || errno == ENODEV
                       || errno == ENOSYS)
                     use_fionread = false;
-                  else
+                  ଅନ୍ୟଥା
                     {
                       error (0, errno, _("cannot do ioctl on %s"),
                              quoteaf (infile));
                       newlines2 = newlines;
-                      return false;
+                      ଫେରନ୍ତୁ false;
                     }
                 }
-              if (n_to_read != 0)
-                input_pending = true;
+              ଯଦି (n_to_read != 0)
+                ନିବେଶ_pending = true;
 #endif
 
-              if (!input_pending)
+              ଯଦି (!ନିବେଶ_pending)
                 write_pending (outbuf, &bpout);
 
               /* Read more input into INBUF.  */
 
-              ssize_t n_read = read (input_desc, inbuf, insize);
-              if (n_read < 0)
+              ssize_t n_read = ପଠ (ନିବେଶ_desc, inbuf, insize);
+              ଯଦି (n_read < 0)
                 {
                   error (0, errno, "%s", quotef (infile));
                   write_pending (outbuf, &bpout);
                   newlines2 = newlines;
-                  return false;
+                  ଫେରନ୍ତୁ false;
                 }
-              if (n_read == 0)
+              ଯଦି (n_read == 0)
                 {
                   write_pending (outbuf, &bpout);
                   newlines2 = newlines;
-                  return true;
+                  ଫେରନ୍ତୁ true;
                 }
 
               /* Update the pointers and insert a sentinel at the buffer
@@ -350,16 +350,16 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
               eob = bpin + n_read;
               *eob = '\n';
             }
-          else
+          ଅନ୍ୟଥା
             {
               /* It was a real (not a sentinel) newline.  */
 
               /* Was the last line empty?
                  (i.e., have two or more consecutive newlines been read?)  */
 
-              if (++newlines > 0)
+              ଯଦି (++newlines > 0)
                 {
-                  if (newlines >= 2)
+                  ଯଦି (newlines >= 2)
                     {
                       /* Limit this to 2 here.  Otherwise, with lots of
                          consecutive newlines, the counter could wrap
@@ -369,26 +369,26 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
                       /* Are multiple adjacent empty lines to be substituted
                          by single ditto (-s), and this was the second empty
                          line?  */
-                      if (squeeze_blank)
+                      ଯଦି (squeeze_blank)
                         {
                           ch = *bpin++;
-                          continue;
+                          ଜାରି;
                         }
                     }
 
                   /* Are line numbers to be written at empty lines (-n)?  */
 
-                  if (number && !number_nonblank)
+                  ଯଦି (ସଂଖ୍ୟା && !ସଂଖ୍ୟା_nonblank)
                     {
-                      next_line_num ();
-                      bpout = stpcpy (bpout, line_num_print);
+                      next_ଧାଡ଼ି_ଅଙ୍କ ();
+                      bpout = stpcpy (bpout, ଧାଡ଼ି_ଅଙ୍କ_print);
                     }
                 }
 
               /* Output a currency symbol if requested (-e).  */
-              if (show_ends)
+              ଯଦି (show_ends)
                 {
-                  if (pending_cr)
+                  ଯଦି (pending_cr)
                     {
                       *bpout++ = '^';
                       *bpout++ = 'M';
@@ -403,11 +403,11 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
             }
           ch = *bpin++;
         }
-      while (ch == '\n');
+      ଯେତେବେଳେ (ch == '\n');
 
       /* Here CH cannot contain a newline character.  */
 
-      if (pending_cr)
+      ଯଦି (pending_cr)
         {
           *bpout++ = '\r';
           pending_cr = false;
@@ -415,10 +415,10 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
 
       /* Are we at the beginning of a line, and line numbers are requested?  */
 
-      if (newlines >= 0 && number)
+      ଯଦି (newlines >= 0 && ସଂଖ୍ୟା)
         {
-          next_line_num ();
-          bpout = stpcpy (bpout, line_num_print);
+          next_ଧାଡ଼ି_ଅଙ୍କ ();
+          bpout = stpcpy (bpout, ଧାଡ଼ି_ଅଙ୍କ_print);
         }
 
       /* The loops below continue until a newline character is found,
@@ -427,48 +427,48 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
 
       /* If quoting, i.e., at least one of -v, -e, or -t specified,
          scan for chars that need conversion.  */
-      if (show_nonprinting)
+      ଯଦି (show_nonprinting)
         {
-          while (true)
+          ଯେତେବେଳେ (true)
             {
-              if (ch >= 32)
+              ଯଦି (ch >= 32)
                 {
-                  if (ch < 127)
+                  ଯଦି (ch < 127)
                     *bpout++ = ch;
-                  else if (ch == 127)
+                  ଅନ୍ୟଥା ଯଦି (ch == 127)
                     {
                       *bpout++ = '^';
                       *bpout++ = '?';
                     }
-                  else
+                  ଅନ୍ୟଥା
                     {
                       *bpout++ = 'M';
                       *bpout++ = '-';
-                      if (ch >= 128 + 32)
+                      ଯଦି (ch >= 128 + 32)
                         {
-                          if (ch < 128 + 127)
+                          ଯଦି (ch < 128 + 127)
                             *bpout++ = ch - 128;
-                          else
+                          ଅନ୍ୟଥା
                             {
                               *bpout++ = '^';
                               *bpout++ = '?';
                             }
                         }
-                      else
+                      ଅନ୍ୟଥା
                         {
                           *bpout++ = '^';
                           *bpout++ = ch - 128 + 64;
                         }
                     }
                 }
-              else if (ch == '\t' && !show_tabs)
+              ଅନ୍ୟଥା ଯଦି (ch == '\t' && !show_tabs)
                 *bpout++ = '\t';
-              else if (ch == '\n')
+              ଅନ୍ୟଥା ଯଦି (ch == '\n')
                 {
                   newlines = -1;
-                  break;
+                  ଭାଙ୍ଗ;
                 }
-              else
+              ଅନ୍ୟଥା
                 {
                   *bpout++ = '^';
                   *bpout++ = ch + 64;
@@ -477,35 +477,35 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
               ch = *bpin++;
             }
         }
-      else
+      ଅନ୍ୟଥା
         {
           /* Not quoting, neither of -v, -e, or -t specified.  */
-          while (true)
+          ଯେତେବେଳେ (true)
             {
-              if (ch == '\t' && show_tabs)
+              ଯଦି (ch == '\t' && show_tabs)
                 {
                   *bpout++ = '^';
                   *bpout++ = ch + 64;
                 }
-              else if (ch != '\n')
+              ଅନ୍ୟଥା ଯଦି (ch != '\n')
                 {
-                  if (ch == '\r' && *bpin == '\n' && show_ends)
+                  ଯଦି (ch == '\r' && *bpin == '\n' && show_ends)
                     {
-                      if (bpin == eob)
+                      ଯଦି (bpin == eob)
                         pending_cr = true;
-                      else
+                      ଅନ୍ୟଥା
                         {
                           *bpout++ = '^';
                           *bpout++ = 'M';
                         }
                     }
-                  else
+                  ଅନ୍ୟଥା
                     *bpout++ = ch;
                 }
-              else
+              ଅନ୍ୟଥା
                 {
                   newlines = -1;
-                  break;
+                  ଭାଙ୍ଗ;
                 }
 
               ch = *bpin++;
@@ -518,8 +518,8 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
    Return 1 if successful, 0 if ordinary read+write should be tried,
    -1 if a serious problem has been diagnosed.  */
 
-static int
-copy_cat (void)
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା
+copy_cat (ଶୂନ୍ୟ)
 {
   /* Copy at most COPY_MAX bytes at a time; this is min
      (SSIZE_MAX, SIZE_MAX) truncated to a value that is
@@ -532,20 +532,20 @@ copy_cat (void)
      so fall back on read+write if the copy_file_range is
      unsupported or the input file seems empty.  */
 
-  for (bool some_copied = false; ; some_copied = true)
-    switch (copy_file_range (input_desc, NULL, STDOUT_FILENO, NULL,
+  ପାଇଁ (bool some_copied = false; ; some_copied = true)
+    ବାଛ (copy_file_range (ନିବେଶ_desc, ଖାଲି, STDOUT_FILENO, ଖାଲି,
                              copy_max, 0))
       {
-      case 0:
-        return some_copied;
+      ସ୍ଥିତି 0:
+        ଫେରନ୍ତୁ some_copied;
 
-      case -1:
-        if (errno == ENOSYS || is_ENOTSUP (errno) || errno == EINVAL
+      ସ୍ଥିତି -1:
+        ଯଦି (errno == ENOSYS || is_ENOTSUP (errno) || errno == EINVAL
             || errno == EBADF || errno == EXDEV || errno == ETXTBSY
             || errno == EPERM || errno == EFBIG)
-          return 0;
+          ଫେରନ୍ତୁ 0;
         error (0, errno, "%s", quotef (infile));
-        return -1;
+        ଫେରନ୍ତୁ -1;
       }
 }
 
@@ -553,98 +553,98 @@ copy_cat (void)
    Return 1 if successful, 0 if ordinary read+write should be tried,
    -1 if a serious problem has been diagnosed.  */
 
-static int
-splice_cat (void)
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା
+splice_cat (ଶୂନ୍ୟ)
 {
   bool some_copied = false;
   bool in_ok = true;
   bool out_ok = true;
 
-#if HAVE_SPLICE
+#ଯଦି HAVE_SPLICE
 
   /* If PIPEFD[0] is a non-negative value, we have an open pipe from a
      previous call to this function.  At the start of this function the
      pipe will always be empty.  */
-  static int pipefd[2] = { -1, -1 };
+  ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା pipefd[2] = { -1, -1 };
 
   /* The size of the pipe referred to by PIPEFD.  */
-  static idx_t pipefd_pipe_size = 0;
+  ସ୍ଥିର idx_t pipefd_pipe_size = 0;
 
   /* Create an intermediate pipe if it is not already open.
      Even if both input and output are pipes,
      so that read and write errors can be distinguished.  */
-  if (pipefd[0] < 0)
+  ଯଦି (pipefd[0] < 0)
     {
-      if (pipe (pipefd) < 0)
-        return false;
+      ଯଦି (pipe (pipefd) < 0)
+        ଫେରନ୍ତୁ false;
       pipefd_pipe_size = increase_pipe_size (pipefd[1]);
     }
 
   /* Increase the size of the pipe referred to by standard output.  */
-  static int stdout_is_pipe = -1;
-  static idx_t stdout_pipe_size = 0;
-  if (stdout_is_pipe == -1)
+  ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା stdout_is_pipe = -1;
+  ସ୍ଥିର idx_t stdout_pipe_size = 0;
+  ଯଦି (stdout_is_pipe == -1)
     {
       stdout_is_pipe = 0 < isapipe (STDOUT_FILENO);
-      if (stdout_is_pipe)
+      ଯଦି (stdout_is_pipe)
         stdout_pipe_size = increase_pipe_size (STDOUT_FILENO);
     }
 
   idx_t pipe_size = MAX (pipefd_pipe_size, stdout_pipe_size);
 
-  while (true)
+  ଯେତେବେଳେ (true)
     {
-      ssize_t bytes_read = splice (input_desc, NULL, pipefd[1], NULL,
+      ssize_t bytes_read = splice (ନିବେଶ_desc, ଖାଲି, pipefd[1], ଖାଲି,
                                    pipe_size, 0);
       /* If we successfully splice'd input previously, assume that any
          subsequent error is fatal.  If not, then fall back to read
          and write.  */
       in_ok = 0 <= bytes_read || ! some_copied;
-      if (bytes_read == 0)
+      ଯଦି (bytes_read == 0)
         some_copied = true;  /* Indicate splice complete.  */
-      if (bytes_read <= 0)
-        goto done;
+      ଯଦି (bytes_read <= 0)
+        ଯାଅ done;
       /* We need to drain the intermediate pipe to standard output.  */
-      while (0 < bytes_read)
+      ଯେତେବେଳେ (0 < bytes_read)
         {
-          ssize_t bytes_written = splice (pipefd[0], NULL, STDOUT_FILENO, NULL,
+          ssize_t bytes_written = splice (pipefd[0], ଖାଲି, STDOUT_FILENO, ଖାଲି,
                                           pipe_size, 0);
           /* If we successfully splice'd output, assume any subsequent
              error is fatal.  If not, than drain the intermediate pipe and
              continue using read and write.  */
-          if (bytes_written < 0)
+          ଯଦି (bytes_written < 0)
             {
-              if (some_copied)
+              ଯଦି (some_copied)
                 out_ok = false;
-              else
+              ଅନ୍ୟଥା
                 {
-                  char buf[BUFSIZ];
-                  while (0 < bytes_read)
+                  ଅକ୍ଷର buf[BUFSIZ];
+                  ଯେତେବେଳେ (0 < bytes_read)
                     {
-                      ssize_t count = MIN (bytes_read, sizeof buf);
-                      ssize_t n_read = read (pipefd[0], buf, count);
+                      ssize_t ଗଣନା_2 = MIN (bytes_read, ଆକାର buf);
+                      ssize_t n_read = ପଠ (pipefd[0], buf, ଗଣନା_2);
                       /* Failure not associated with in or out.  */
                       in_ok = out_ok = 0 <= n_read;
-                      if (n_read <= 0)
-                        goto done;
-                      if (full_write (STDOUT_FILENO, buf, n_read) != n_read)
+                      ଯଦି (n_read <= 0)
+                        ଯାଅ done;
+                      ଯଦି (full_write (STDOUT_FILENO, buf, n_read) != n_read)
                         write_error ();
                       bytes_read -= n_read;
                     }
                 }
             }
-          if (bytes_written <= 0)
-            goto done;
+          ଯଦି (bytes_written <= 0)
+            ଯାଅ done;
           some_copied = true;
           bytes_read -= bytes_written;
         }
     }
 
  done:
-  if (! in_ok && ! out_ok)
+  ଯଦି (! in_ok && ! out_ok)
     {
       /* Recreate the pipe on internal error.  */
-      int saved_errno = errno;
+      ପୂର୍ଣ୍ଣସଂଖ୍ୟା saved_errno = errno;
       close (pipefd[0]);
       close (pipefd[1]);
       errno = saved_errno;
@@ -652,61 +652,61 @@ splice_cat (void)
       pipefd_pipe_size = 0;
       error (0, errno, "%s", _("splice error"));
     }
-  else if (! in_ok)
+  ଅନ୍ୟଥା ଯଦି (! in_ok)
     error (0, errno, "%s", quotef (infile));
-  else if (! out_ok)
+  ଅନ୍ୟଥା ଯଦି (! out_ok)
     write_error ();
 #endif
 
-  return (in_ok && out_ok) ? some_copied : -1;
+  ଫେରନ୍ତୁ (in_ok && out_ok) ? some_copied : -1;
 }
 
 /* Reuse an aligned buffer across inputs, growing it only as needed.  */
 
-static char *
-ensure_buf_size (char *buf, idx_t *buf_alloc, idx_t alignment, idx_t size)
+ସ୍ଥିର ଅକ୍ଷର *
+ensure_buf_size (ଅକ୍ଷର *buf, idx_t *buf_alloc, idx_t alignment, idx_t size)
 {
-  affirm (buf != NULL || *buf_alloc < size);
+  affirm (buf != ଖାଲି || *buf_alloc < size);
 
-  if (*buf_alloc < size)
+  ଯଦି (*buf_alloc < size)
     {
       alignfree (buf);
       buf = xalignalloc (alignment, size);
       *buf_alloc = size;
     }
 
-  return buf;
+  ଫେରନ୍ତୁ buf;
 }
 
-int
-main (int argc, char **argv)
+ପୂର୍ଣ୍ଣସଂଖ୍ୟା
+ମୁଖ୍ୟ (ପୂର୍ଣ୍ଣସଂଖ୍ୟା argc, ଅକ୍ଷର **argv)
 {
   /* Nonzero if we have ever read standard input.  */
   bool have_read_stdin = false;
 
-  struct stat ostat_buf;
+  ସଂରଚନା stat ostat_buf;
 
   /* Variables that are set according to the specified options.  */
-  bool number = false;
-  bool number_nonblank = false;
+  bool ସଂଖ୍ୟା = false;
+  bool ସଂଖ୍ୟା_nonblank = false;
   bool squeeze_blank = false;
   bool show_ends = false;
   bool show_nonprinting = false;
   bool show_tabs = false;
-  int file_open_mode = O_RDONLY;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା file_open_mode = O_RDONLY;
 
-  static struct option const long_options[] =
+  ସ୍ଥିର ସଂରଚନା option ଅଚଳ long_options[] =
   {
-    {"number-nonblank", no_argument, NULL, 'b'},
-    {"number", no_argument, NULL, 'n'},
-    {"squeeze-blank", no_argument, NULL, 's'},
-    {"show-nonprinting", no_argument, NULL, 'v'},
-    {"show-ends", no_argument, NULL, 'E'},
-    {"show-tabs", no_argument, NULL, 'T'},
-    {"show-all", no_argument, NULL, 'A'},
+    {"number-nonblank", no_argument, ଖାଲି, 'b'},
+    {"number", no_argument, ଖାଲି, 'n'},
+    {"squeeze-blank", no_argument, ଖାଲି, 's'},
+    {"show-nonprinting", no_argument, ଖାଲି, 'v'},
+    {"show-ends", no_argument, ଖାଲି, 'E'},
+    {"show-tabs", no_argument, ଖାଲି, 'T'},
+    {"show-all", no_argument, ଖାଲି, 'A'},
     {GETOPT_HELP_OPTION_DECL},
     {GETOPT_VERSION_OPTION_DECL},
-    {NULL, 0, NULL, 0}
+    {ଖାଲି, 0, ଖାଲି, 0}
   };
 
   initialize_main (&argc, &argv);
@@ -723,156 +723,156 @@ main (int argc, char **argv)
 
   /* Parse command line options.  */
 
-  int c;
-  while ((c = getopt_long (argc, argv, "benstuvAET", long_options, NULL))
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା c;
+  ଯେତେବେଳେ ((c = getopt_long (argc, argv, "benstuvAET", long_options, ଖାଲି))
          != -1)
     {
-      switch (c)
+      ବାଛ (c)
         {
-        case 'b':
-          number = true;
-          number_nonblank = true;
-          break;
+        ସ୍ଥିତି 'b':
+          ସଂଖ୍ୟା = true;
+          ସଂଖ୍ୟା_nonblank = true;
+          ଭାଙ୍ଗ;
 
-        case 'e':
+        ସ୍ଥିତି 'e':
           show_ends = true;
           show_nonprinting = true;
-          break;
+          ଭାଙ୍ଗ;
 
-        case 'n':
-          number = true;
-          break;
+        ସ୍ଥିତି 'n':
+          ସଂଖ୍ୟା = true;
+          ଭାଙ୍ଗ;
 
-        case 's':
+        ସ୍ଥିତି 's':
           squeeze_blank = true;
-          break;
+          ଭାଙ୍ଗ;
 
-        case 't':
+        ସ୍ଥିତି 't':
           show_tabs = true;
           show_nonprinting = true;
-          break;
+          ଭାଙ୍ଗ;
 
-        case 'u':
+        ସ୍ଥିତି 'u':
           /* We provide the -u feature unconditionally.  */
-          break;
+          ଭାଙ୍ଗ;
 
-        case 'v':
+        ସ୍ଥିତି 'v':
           show_nonprinting = true;
-          break;
+          ଭାଙ୍ଗ;
 
-        case 'A':
+        ସ୍ଥିତି 'A':
           show_nonprinting = true;
           show_ends = true;
           show_tabs = true;
-          break;
+          ଭାଙ୍ଗ;
 
-        case 'E':
+        ସ୍ଥିତି 'E':
           show_ends = true;
-          break;
+          ଭାଙ୍ଗ;
 
-        case 'T':
+        ସ୍ଥିତି 'T':
           show_tabs = true;
-          break;
+          ଭାଙ୍ଗ;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        ପୂର୍ବନିର୍ଦ୍ଧାରିତ:
           usage (EXIT_FAILURE);
         }
     }
 
   /* Get device, i-node number, and optimal blocksize of output.  */
 
-  if (fstat (STDOUT_FILENO, &ostat_buf) < 0)
+  ଯଦି (fstat (STDOUT_FILENO, &ostat_buf) < 0)
     error (EXIT_FAILURE, errno, _("standard output"));
 
   /* Optimal size of i/o operations of output.  */
   idx_t outsize = io_blksize (&ostat_buf);
 
   /* Device, I-node number and lazily-acquired flags of the output.  */
-  int out_flags = -2;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା out_flags = -2;
 
   /* True if the output is a regular file.  */
   bool out_isreg = S_ISREG (ostat_buf.st_mode) != 0;
 
-  if (! (number || show_ends || squeeze_blank))
+  ଯଦି (! (ସଂଖ୍ୟା || show_ends || squeeze_blank))
     {
-      file_open_mode |= O_BINARY;
-      xset_binary_mode (STDOUT_FILENO, O_BINARY);
+      file_open_mode |= O_ଦ୍ୱିମିକ;
+      xset_ଦ୍ୱିମିକ_mode (STDOUT_FILENO, O_ଦ୍ୱିମିକ);
     }
 
   /* Main loop.  */
 
   infile = "-";
-  int argind = optind;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା argind = optind;
   bool ok = true;
   idx_t page_size = getpagesize ();
-  char *inbuf = NULL;
-  char *outbuf = NULL;
+  ଅକ୍ଷର *inbuf = ଖାଲି;
+  ଅକ୍ଷର *outbuf = ଖାଲି;
   idx_t inbuf_alloc = 0;
   idx_t outbuf_alloc = 0;
 
-  do
+  କର
     {
-      if (argind < argc)
+      ଯଦି (argind < argc)
         infile = argv[argind];
 
       bool reading_stdin = streq (infile, "-");
-      if (reading_stdin)
+      ଯଦି (reading_stdin)
         {
           have_read_stdin = true;
-          input_desc = STDIN_FILENO;
-          if (file_open_mode & O_BINARY)
-            xset_binary_mode (STDIN_FILENO, O_BINARY);
+          ନିବେଶ_desc = STDIN_FILENO;
+          ଯଦି (file_open_mode & O_ଦ୍ୱିମିକ)
+            xset_ଦ୍ୱିମିକ_mode (STDIN_FILENO, O_ଦ୍ୱିମିକ);
         }
-      else
+      ଅନ୍ୟଥା
         {
-          input_desc = open (infile, file_open_mode);
-          if (input_desc < 0)
+          ନିବେଶ_desc = open (infile, file_open_mode);
+          ଯଦି (ନିବେଶ_desc < 0)
             {
               error (0, errno, "%s", quotef (infile));
               ok = false;
-              continue;
+              ଜାରି;
             }
         }
 
-      struct stat istat_buf;
-      if (fstat (input_desc, &istat_buf) < 0)
+      ସଂରଚନା stat istat_buf;
+      ଯଦି (fstat (ନିବେଶ_desc, &istat_buf) < 0)
         {
           error (0, errno, "%s", quotef (infile));
           ok = false;
-          goto contin;
+          ଯାଅ contin;
         }
 
       /* Optimal size of i/o operations of input.  */
       idx_t insize = io_blksize (&istat_buf);
 
-      fdadvise (input_desc, 0, 0, FADVISE_SEQUENTIAL);
+      fdadvise (ନିବେଶ_desc, 0, 0, FADVISE_SEQUENTIAL);
 
       /* Don't copy a file to itself if that would merely exhaust the
          output device.  It's better to catch this error earlier
          rather than later.  */
 
-      if (! (S_ISFIFO (istat_buf.st_mode) || S_ISSOCK (istat_buf.st_mode)
+      ଯଦି (! (S_ISFIFO (istat_buf.st_mode) || S_ISSOCK (istat_buf.st_mode)
              || S_TYPEISSHM (&istat_buf) || S_TYPEISTMO (&istat_buf))
           && ! (S_TYPEISSHM (&ostat_buf) || S_TYPEISTMO (&ostat_buf))
           && SAME_INODE (istat_buf, ostat_buf))
         {
-          off_t in_pos = lseek (input_desc, 0, SEEK_CUR);
-          if (0 <= in_pos)
+          off_t in_pos = lseek (ନିବେଶ_desc, 0, SEEK_CUR);
+          ଯଦି (0 <= in_pos)
             {
-              if (out_flags < -1)
+              ଯଦି (out_flags < -1)
                 out_flags = fcntl (STDOUT_FILENO, F_GETFL);
-              int whence = (0 <= out_flags && out_flags & O_APPEND
+              ପୂର୍ଣ୍ଣସଂଖ୍ୟା whence = (0 <= out_flags && out_flags & O_APPEND
                             ? SEEK_END : SEEK_CUR);
-              if (in_pos < lseek (STDOUT_FILENO, 0, whence))
+              ଯଦି (in_pos < lseek (STDOUT_FILENO, 0, whence))
                 {
                   error (0, 0, _("%s: input file is output file"),
                          quotef (infile));
                   ok = false;
-                  goto contin;
+                  ଯାଅ contin;
                 }
             }
         }
@@ -881,25 +881,25 @@ main (int argc, char **argv)
          options were given use 'cat'; if not, use 'copy_cat' if it
          works, 'simple_cat' otherwise.  */
 
-      if (! (number || show_ends || show_nonprinting
+      ଯଦି (! (ସଂଖ୍ୟା || show_ends || show_nonprinting
              || show_tabs || squeeze_blank))
         {
-          int copy_cat_status =
+          ପୂର୍ଣ୍ଣସଂଖ୍ୟା copy_cat_status =
             out_isreg && S_ISREG (istat_buf.st_mode) ? copy_cat () : 0;
-          if (copy_cat_status != 0)
+          ଯଦି (copy_cat_status != 0)
             ok &= 0 < copy_cat_status;
-          else
+          ଅନ୍ୟଥା
             {
               /* Note 32768 was determined as the limit when splice
                  starts to have a performance advantage.
                  It also excludes zero length files which may not
                  be compatible with splice in some edge cases.  */
-              int splice_cat_status = ((usable_st_size (&istat_buf)
+              ପୂର୍ଣ୍ଣସଂଖ୍ୟା splice_cat_status = ((usable_st_size (&istat_buf)
                                         && istat_buf.st_size <= 32768)
                                        ? 0 : splice_cat ());
-              if (splice_cat_status != 0)
+              ଯଦି (splice_cat_status != 0)
                 ok &= 0 < splice_cat_status;
-              else
+              ଅନ୍ୟଥା
                 {
                   insize = MAX (insize, outsize);
                   inbuf = ensure_buf_size (inbuf, &inbuf_alloc,
@@ -908,7 +908,7 @@ main (int argc, char **argv)
                 }
             }
         }
-      else
+      ଅନ୍ୟଥା
         {
           /* Allocate, with an extra byte for a newline sentinel.  */
           inbuf = ensure_buf_size (inbuf, &inbuf_alloc,
@@ -936,30 +936,30 @@ main (int argc, char **argv)
              on some paging implementations.  */
 
           idx_t bufsize;
-          if (ckd_mul (&bufsize, insize, 4)
+          ଯଦି (ckd_mul (&bufsize, insize, 4)
               || ckd_add (&bufsize, bufsize, outsize)
-              || ckd_add (&bufsize, bufsize, LINE_COUNTER_BUF_LEN - 1))
+              || ckd_add (&bufsize, bufsize, ଧାଡ଼ି_COUNTER_BUF_LEN - 1))
             xalloc_die ();
           outbuf = ensure_buf_size (outbuf, &outbuf_alloc,
                                     page_size, bufsize);
 
           ok &= cat (inbuf, insize, outbuf, outsize, show_nonprinting,
-                     show_tabs, number, number_nonblank, show_ends,
+                     show_tabs, ସଂଖ୍ୟା, ସଂଖ୍ୟା_nonblank, show_ends,
                      squeeze_blank);
         }
 
     contin:
-      if (!reading_stdin && close (input_desc) < 0)
+      ଯଦି (!reading_stdin && close (ନିବେଶ_desc) < 0)
         {
           error (0, errno, "%s", quotef (infile));
           ok = false;
         }
     }
-  while (++argind < argc);
+  ଯେତେବେଳେ (++argind < argc);
 
-  if (pending_cr)
+  ଯଦି (pending_cr)
     {
-      if (full_write (STDOUT_FILENO, "\r", 1) != 1)
+      ଯଦି (full_write (STDOUT_FILENO, "\r", 1) != 1)
         write_error ();
     }
 
@@ -968,8 +968,8 @@ main (int argc, char **argv)
   alignfree (inbuf);
 #endif
 
-  if (have_read_stdin && close (STDIN_FILENO) < 0)
+  ଯଦି (have_read_stdin && close (STDIN_FILENO) < 0)
     error (EXIT_FAILURE, errno, _("closing standard input"));
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  ଫେରନ୍ତୁ ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

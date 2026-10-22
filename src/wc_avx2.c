@@ -14,46 +14,46 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
+#ଅନ୍ତର୍ଭାଵ <config.h>
 
-#include "wc.h"
-#include "system.h"
-#include "ioblksize.h"
+#ଅନ୍ତର୍ଭାଵ "wc.h"
+#ଅନ୍ତର୍ଭାଵ "system.h"
+#ଅନ୍ତର୍ଭାଵ "ioblksize.h"
 
-#include <x86intrin.h>
+#ଅନ୍ତର୍ଭାଵ <x86intrin.h>
 
 /* Read FD and return a summary.  */
-extern struct wc_lines
-wc_lines_avx2 (int fd)
+ବାହ୍ୟ ସଂରଚନା wc_ଧାଡ଼ିଗୁଡ଼ିକ
+wc_ଧାଡ଼ିଗୁଡ଼ିକ_avx2 (ପୂର୍ଣ୍ଣସଂଖ୍ୟା fd)
 {
-  intmax_t lines = 0;
+  intmax_t ଧାଡ଼ିଗୁଡ଼ିକ = 0;
   intmax_t bytes = 0;
 
   __m256i endlines = _mm256_set1_epi8 ('\n');
 
-  while (true)
+  ଯେତେବେଳେ (true)
     {
-       __m256i avx_buf[IO_BUFSIZE / sizeof (__m256i)];
-      ssize_t bytes_read = read (fd, avx_buf, sizeof avx_buf);
-      if (bytes_read <= 0)
-        return (struct wc_lines) { bytes_read == 0 ? 0 : errno, lines, bytes };
+       __m256i avx_buf[IO_BUFSIZE / ଆକାର (__m256i)];
+      ssize_t bytes_read = ପଠ (fd, avx_buf, ଆକାର avx_buf);
+      ଯଦି (bytes_read <= 0)
+        ଫେରନ୍ତୁ (ସଂରଚନା wc_ଧାଡ଼ିଗୁଡ଼ିକ) { bytes_read == 0 ? 0 : errno, ଧାଡ଼ିଗୁଡ଼ିକ, bytes };
 
       bytes += bytes_read;
       __m256i *datap = avx_buf;
 
-      while (bytes_read >= 32)
+      ଯେତେବେଳେ (bytes_read >= 32)
         {
            __m256i to_match = _mm256_load_si256 (datap);
            __m256i matches = _mm256_cmpeq_epi8 (to_match, endlines);
-           int mask = _mm256_movemask_epi8 (matches);
-           lines += __builtin_popcount (mask);
+           ପୂର୍ଣ୍ଣସଂଖ୍ୟା mask = _mm256_movemask_epi8 (matches);
+           ଧାଡ଼ିଗୁଡ଼ିକ += __builtin_popcount (mask);
            datap += 1;
            bytes_read -= 32;
         }
 
       /* Finish up any left over bytes */
-      char *end = (char *) datap + bytes_read;
-      for (char *p = (char *) datap; p < end; p++)
-        lines += *p == '\n';
+      ଅକ୍ଷର *end = (ଅକ୍ଷର *) datap + bytes_read;
+      ପାଇଁ (ଅକ୍ଷର *p = (ଅକ୍ଷର *) datap; p < end; p++)
+        ଧାଡ଼ିଗୁଡ଼ିକ += *p == '\n';
     }
 }

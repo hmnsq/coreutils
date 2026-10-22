@@ -3,4 +3,4 @@
    pair, rewinding/truncating it upon each reuse.
 
    Note this honors $TMPDIR, unlike the standard defined tmpfile().  */
-extern bool temp_stream (FILE **fp, char **file_name);
+ବାହ୍ୟ bool temp_stream (FILE **fp, ଅକ୍ଷର **file_name);

@@ -17,20 +17,20 @@
 
    Written by Paul Eggert.  */
 
-#include <config.h>
+#ଅନ୍ତର୍ଭାଵ <config.h>
 
-#include <sys/types.h>
-#include <getopt.h>
-#include "system.h"
+#ଅନ୍ତର୍ଭାଵ <sys/types.h>
+#ଅନ୍ତର୍ଭାଵ <getopt.h>
+#ଅନ୍ତର୍ଭାଵ "system.h"
 
-#include "fadvise.h"
-#include "linebuffer.h"
-#include "quote.h"
-#include "randint.h"
-#include "randperm.h"
-#include "read-file.h"
-#include "stdio--.h"
-#include "xstrtol.h"
+#ଅନ୍ତର୍ଭାଵ "fadvise.h"
+#ଅନ୍ତର୍ଭାଵ "linebuffer.h"
+#ଅନ୍ତର୍ଭାଵ "quote.h"
+#ଅନ୍ତର୍ଭାଵ "randint.h"
+#ଅନ୍ତର୍ଭାଵ "randperm.h"
+#ଅନ୍ତର୍ଭାଵ "read-file.h"
+#ଅନ୍ତର୍ଭାଵ "stdio--.h"
+#ଅନ୍ତର୍ଭାଵ "xstrtol.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "shuf"
@@ -43,15 +43,15 @@
      $ for p in $(seq 7); do src/seq $((10**$p)) > 10p$p.in; done
      $ for p in $(seq 7); do time shuf-nores -n10 10p$p.in >/dev/null; done
      $ for p in $(seq 7); do time shuf -n10 10p$p.in >/dev/null; done  .*/
-enum { RESERVOIR_MIN_INPUT = 8192 * 1024 };
+ଗଣନା { RESERVOIR_MIN_ନିବେଶ = 8192 * 1024 };
 
 
-void
-usage (int status)
+ଶୂନ୍ୟ
+usage (ପୂର୍ଣ୍ଣସଂଖ୍ୟା status)
 {
-  if (status != EXIT_SUCCESS)
+  ଯଦି (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ଅନ୍ୟଥା
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE]\n\
@@ -60,32 +60,32 @@ Usage: %s [OPTION]... [FILE]\n\
 "),
               program_name, program_name, program_name);
       fputs (_("\
-Write a random permutation of the input lines to standard output.\n\
+Write a random permutation of the ନିବେଶ ଧାଡ଼ିଗୁଡ଼ିକ to standard output.\n\
 "), stdout);
 
       emit_stdin_note ();
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -e, --echo                treat each ARG as an input line\n\
+  -e, --echo                treat each ARG as an ନିବେଶ ଧାଡ଼ି\n\
 "));
       oputs (_("\
-  -i, --input-range=LO-HI   treat each number LO through HI as an input line\n\
+  -i, --ନିବେଶ-range=LO-HI   treat each ସଂଖ୍ୟା LO through HI as an ନିବେଶ ଧାଡ଼ି\n\
 "));
       oputs (_("\
-  -n, --head-count=COUNT    output at most COUNT lines\n\
+  -n, --head-ଗଣନା_2=ଗଣନା_3    output at most ଗଣନା_3 ଧାଡ଼ିଗୁଡ଼ିକ\n\
 "));
       oputs (_("\
-  -o, --output=FILE         write result to FILE instead of standard output\n\
+  -o, --output=FILE         ଲିଖ result to FILE instead of standard output\n\
 "));
       oputs (_("\
       --random-source=FILE  get random bytes from FILE\n\
 "));
       oputs (_("\
-  -r, --repeat              output lines can be repeated\n\
+  -r, --repeat              output ଧାଡ଼ିଗୁଡ଼ିକ can be repeated\n\
 "));
       oputs (_("\
-  -z, --zero-terminated     line delimiter is NUL, not newline\n\
+  -z, --zero-terminated     ଧାଡ଼ି delimiter is NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -97,39 +97,39 @@ Write a random permutation of the input lines to standard output.\n\
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+ଗଣନା
 {
   RANDOM_SOURCE_OPTION = CHAR_MAX + 1
 };
 
-static struct option const long_opts[] =
+ସ୍ଥିର ସଂରଚନା option ଅଚଳ long_opts[] =
 {
-  {"echo", no_argument, NULL, 'e'},
-  {"input-range", required_argument, NULL, 'i'},
-  {"head-count", required_argument, NULL, 'n'},
-  {"output", required_argument, NULL, 'o'},
-  {"random-source", required_argument, NULL, RANDOM_SOURCE_OPTION},
-  {"repeat", no_argument, NULL, 'r'},
-  {"zero-terminated", no_argument, NULL, 'z'},
+  {"echo", no_argument, ଖାଲି, 'e'},
+  {"input-range", required_argument, ଖାଲି, 'i'},
+  {"head-count", required_argument, ଖାଲି, 'n'},
+  {"output", required_argument, ଖାଲି, 'o'},
+  {"random-source", required_argument, ଖାଲି, RANDOM_SOURCE_OPTION},
+  {"repeat", no_argument, ଖାଲି, 'r'},
+  {"zero-terminated", no_argument, ଖାଲି, 'z'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0},
+  {ଖାଲି, 0, ଖାଲି, 0},
 };
 
-static void
-input_from_argv (char **operand, int n_operands, char eolbyte)
+ସ୍ଥିର ଶୂନ୍ୟ
+ନିବେଶ_from_argv (ଅକ୍ଷର **operand, ପୂର୍ଣ୍ଣସଂଖ୍ୟା n_operands, ଅକ୍ଷର eolbyte)
 {
-  char *p;
+  ଅକ୍ଷର *p;
   size_t size = n_operands;
-  int i;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା i;
 
-  for (i = 0; i < n_operands; i++)
+  ପାଇଁ (i = 0; i < n_operands; i++)
     size += strlen (operand[i]);
   p = xmalloc (size);
 
-  for (i = 0; i < n_operands; i++)
+  ପାଇଁ (i = 0; i < n_operands; i++)
     {
-      char *p1 = stpcpy (p, operand[i]);
+      ଅକ୍ଷର *p1 = stpcpy (p, operand[i]);
       operand[i] = p;
       p = p1;
       *p++ = eolbyte;
@@ -141,70 +141,70 @@ input_from_argv (char **operand, int n_operands, char eolbyte)
 /* Return the start of the next line after LINE, which is guaranteed
    to end in EOLBYTE.  */
 
-static char *
-next_line (char *line, char eolbyte)
+ସ୍ଥିର ଅକ୍ଷର *
+next_ଧାଡ଼ି (ଅକ୍ଷର *ଧାଡ଼ି, ଅକ୍ଷର eolbyte)
 {
-  char *p = rawmemchr (line, eolbyte);
-  return p + 1;
+  ଅକ୍ଷର *p = rawmemchr (ଧାଡ଼ି, eolbyte);
+  ଫେରନ୍ତୁ p + 1;
 }
 
 /* Return the size of the input if possible or OFF_T_MAX if not.  */
 
-static off_t
-input_size (void)
+ସ୍ଥିର off_t
+ନିବେଶ_size (ଶୂନ୍ୟ)
 {
   off_t file_size;
 
-  struct stat stat_buf;
-  if (fstat (STDIN_FILENO, &stat_buf) != 0)
-    return OFF_T_MAX;
-  if (usable_st_size (&stat_buf))
+  ସଂରଚନା stat stat_buf;
+  ଯଦି (fstat (STDIN_FILENO, &stat_buf) != 0)
+    ଫେରନ୍ତୁ OFF_T_MAX;
+  ଯଦି (usable_st_size (&stat_buf))
     file_size = stat_buf.st_size;
-  else
-    return OFF_T_MAX;
+  ଅନ୍ୟଥା
+    ଫେରନ୍ତୁ OFF_T_MAX;
 
-  off_t input_offset = lseek (STDIN_FILENO, 0, SEEK_CUR);
-  if (input_offset < 0)
-    return OFF_T_MAX;
+  off_t ନିବେଶ_offset = lseek (STDIN_FILENO, 0, SEEK_CUR);
+  ଯଦି (ନିବେଶ_offset < 0)
+    ଫେରନ୍ତୁ OFF_T_MAX;
 
-  file_size -= input_offset;
+  file_size -= ନିବେଶ_offset;
 
-  return file_size;
+  ଫେରନ୍ତୁ file_size;
 }
 
 /* Read all lines and store up to K permuted lines in *OUT_RSRV.
    Return the number of lines read, up to a maximum of K.  */
 
-static idx_t
-read_input_reservoir_sampling (FILE *in, char eolbyte, idx_t k,
-                               struct randint_source *s,
-                               struct linebuffer **out_rsrv)
+ସ୍ଥିର idx_t
+read_ନିବେଶ_reservoir_sampling (FILE *in, ଅକ୍ଷର eolbyte, idx_t k,
+                               ସଂରଚନା randint_source *s,
+                               ସଂରଚନା linebuffer **out_rsrv)
 {
-  randint n_lines = 0;
-  idx_t n_alloc_lines = 0;
-  struct linebuffer *line = NULL;
-  struct linebuffer *rsrv = NULL;
+  randint n_ଧାଡ଼ିଗୁଡ଼ିକ = 0;
+  idx_t n_alloc_ଧାଡ଼ିଗୁଡ଼ିକ = 0;
+  ସଂରଚନା linebuffer *ଧାଡ଼ି = ଖାଲି;
+  ସଂରଚନା linebuffer *rsrv = ଖାଲି;
 
   /* Fill the first K lines, directly into the reservoir.  */
-  for (n_lines = 0; n_lines < k; n_lines++)
+  ପାଇଁ (n_ଧାଡ଼ିଗୁଡ଼ିକ = 0; n_ଧାଡ଼ିଗୁଡ଼ିକ < k; n_ଧାଡ଼ିଗୁଡ଼ିକ++)
     {
       /* Enlarge reservoir if needed.  */
-      if (n_lines == n_alloc_lines)
+      ଯଦି (n_ଧାଡ଼ିଗୁଡ଼ିକ == n_alloc_ଧାଡ଼ିଗୁଡ଼ିକ)
         {
-          idx_t old = n_alloc_lines;
-          rsrv = xpalloc (rsrv, &n_alloc_lines, 1, k, sizeof *rsrv);
-          memset (&rsrv[n_lines], 0, (n_alloc_lines - old) * sizeof *rsrv);
+          idx_t old = n_alloc_ଧାଡ଼ିଗୁଡ଼ିକ;
+          rsrv = xpalloc (rsrv, &n_alloc_ଧାଡ଼ିଗୁଡ଼ିକ, 1, k, ଆକାର *rsrv);
+          memset (&rsrv[n_ଧାଡ଼ିଗୁଡ଼ିକ], 0, (n_alloc_ଧାଡ଼ିଗୁଡ଼ିକ - old) * ଆକାର *rsrv);
         }
 
-      line = readlinebuffer_delim (&rsrv[n_lines], in, eolbyte);
-      if (!line)
-        break;
+      ଧାଡ଼ି = readlinebuffer_delim (&rsrv[n_ଧାଡ଼ିଗୁଡ଼ିକ], in, eolbyte);
+      ଯଦି (!ଧାଡ଼ି)
+        ଭାଙ୍ଗ;
     }
 
   /* last line wasn't null - so there may be more lines to read.  */
-  if (line != NULL)
+  ଯଦି (ଧାଡ଼ି != ଖାଲି)
     {
-      struct linebuffer dummy;
+      ସଂରଚନା linebuffer dummy;
       initbuffer (&dummy);  /* space for lines not put in reservoir.  */
 
       /* Choose the fate of the next line, with decreasing probability (as
@@ -216,39 +216,39 @@ read_input_reservoir_sampling (FILE *in, char eolbyte, idx_t k,
          With 'struct linebuffer', storing into existing buffer will reduce
          re-allocations (will only re-allocate if the new line is longer than
          the currently allocated space).  */
-      do
+      କର
         {
-          randint j = randint_choose (s, n_lines + 1);  /* 0 .. n_lines.  */
-          line = (j < k) ? (&rsrv[j]) : (&dummy);
+          randint j = randint_choose (s, n_ଧାଡ଼ିଗୁଡ଼ିକ + 1);  /* 0 .. n_lines.  */
+          ଧାଡ଼ି = (j < k) ? (&rsrv[j]) : (&dummy);
         }
-      while (readlinebuffer_delim (line, in, eolbyte) != NULL && n_lines++);
+      ଯେତେବେଳେ (readlinebuffer_delim (ଧାଡ଼ି, in, eolbyte) != ଖାଲି && n_ଧାଡ଼ିଗୁଡ଼ିକ++);
 
-      if (! n_lines)
+      ଯଦି (! n_ଧାଡ଼ିଗୁଡ଼ିକ)
         error (EXIT_FAILURE, EOVERFLOW, _("too many input lines"));
 
       freebuffer (&dummy);
     }
 
   /* no more input lines, or an input error.  */
-  if (ferror (in))
+  ଯଦି (ferror (in))
     error (EXIT_FAILURE, errno, _("read error"));
 
   *out_rsrv = rsrv;
-  return MIN (k, n_lines);
+  ଫେରନ୍ତୁ MIN (k, n_ଧାଡ଼ିଗୁଡ଼ିକ);
 }
 
-static int
-write_permuted_output_reservoir (size_t n_lines, struct linebuffer *lines,
-                                 size_t const *permutation)
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା
+write_permuted_output_reservoir (size_t n_ଧାଡ଼ିଗୁଡ଼ିକ, ସଂରଚନା linebuffer *ଧାଡ଼ିଗୁଡ଼ିକ,
+                                 size_t ଅଚଳ *permutation)
 {
-  for (size_t i = 0; i < n_lines; i++)
+  ପାଇଁ (size_t i = 0; i < n_ଧାଡ଼ିଗୁଡ଼ିକ; i++)
     {
-      const struct linebuffer *p = &lines[permutation[i]];
-      if (fwrite (p->buffer, sizeof (char), p->length, stdout) != p->length)
-        return -1;
+      ଅଚଳ ସଂରଚନା linebuffer *p = &ଧାଡ଼ିଗୁଡ଼ିକ[permutation[i]];
+      ଯଦି (fwrite (p->buffer, ଆକାର (ଅକ୍ଷର), p->length, stdout) != p->length)
+        ଫେରନ୍ତୁ -1;
     }
 
-  return 0;
+  ଫେରନ୍ତୁ 0;
 }
 
 /* Read data from file IN.  Input lines are delimited by EOLBYTE;
@@ -257,15 +257,15 @@ write_permuted_output_reservoir (size_t n_lines, struct linebuffer *lines,
    Return the number of lines read.  Report an error and exit on
    failure.  */
 
-static size_t
-read_input (FILE *in, char eolbyte, char ***pline)
+ସ୍ଥିର size_t
+read_ନିବେଶ (FILE *in, ଅକ୍ଷର eolbyte, ଅକ୍ଷର ***pline)
 {
-  char *p;
-  char *buf = NULL;
+  ଅକ୍ଷର *p;
+  ଅକ୍ଷର *buf = ଖାଲି;
   size_t used;
-  char *lim;
-  char **line;
-  size_t n_lines;
+  ଅକ୍ଷର *lim;
+  ଅକ୍ଷର **ଧାଡ଼ି;
+  size_t n_ଧାଡ଼ିଗୁଡ଼ିକ;
 
   /* TODO: We should limit the amount of data read here,
      to less than RESERVOIR_MIN_INPUT.  I.e., adjust fread_file() to support
@@ -276,138 +276,138 @@ read_input (FILE *in, char eolbyte, char ***pline)
      or if none left, stdin.  Doing that would give better performance by
      avoiding the reservoir CPU overhead when reading < RESERVOIR_MIN_INPUT
      from a pipe, and allow us to dispense with the input_size() function.  */
-  if (!(buf = fread_file (in, 0, &used)))
+  ଯଦି (!(buf = fread_file (in, 0, &used)))
     error (EXIT_FAILURE, errno, _("read error"));
 
-  if (used && buf[used - 1] != eolbyte)
+  ଯଦି (used && buf[used - 1] != eolbyte)
     buf[used++] = eolbyte;
 
   lim = buf + used;
 
-  n_lines = 0;
-  for (p = buf; p < lim; p = next_line (p, eolbyte))
-    n_lines++;
+  n_ଧାଡ଼ିଗୁଡ଼ିକ = 0;
+  ପାଇଁ (p = buf; p < lim; p = next_ଧାଡ଼ି (p, eolbyte))
+    n_ଧାଡ଼ିଗୁଡ଼ିକ++;
 
-  *pline = line = xnmalloc (n_lines + 1, sizeof *line);
+  *pline = ଧାଡ଼ି = xnmalloc (n_ଧାଡ଼ିଗୁଡ଼ିକ + 1, ଆକାର *ଧାଡ଼ି);
 
-  line[0] = p = buf;
-  for (size_t i = 1; i <= n_lines; i++)
-    line[i] = p = next_line (p, eolbyte);
+  ଧାଡ଼ି[0] = p = buf;
+  ପାଇଁ (size_t i = 1; i <= n_ଧାଡ଼ିଗୁଡ଼ିକ; i++)
+    ଧାଡ଼ି[i] = p = next_ଧାଡ଼ି (p, eolbyte);
 
-  return n_lines;
+  ଫେରନ୍ତୁ n_ଧାଡ଼ିଗୁଡ଼ିକ;
 }
 
 /* Output N_LINES lines to stdout from LINE array,
    chosen by the indices in PERMUTATION.
    PERMUTATION and LINE must have at least N_LINES elements.
    Strings in LINE must include the line-terminator character.  */
-static int
-write_permuted_lines (size_t n_lines, char *const *line,
-                      size_t const *permutation)
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା
+write_permuted_ଧାଡ଼ିଗୁଡ଼ିକ (size_t n_ଧାଡ଼ିଗୁଡ଼ିକ, ଅକ୍ଷର *ଅଚଳ *ଧାଡ଼ି,
+                      size_t ଅଚଳ *permutation)
 {
-  for (size_t i = 0; i < n_lines; i++)
+  ପାଇଁ (size_t i = 0; i < n_ଧାଡ଼ିଗୁଡ଼ିକ; i++)
     {
-      char *const *p = line + permutation[i];
+      ଅକ୍ଷର *ଅଚଳ *p = ଧାଡ଼ି + permutation[i];
       size_t len = p[1] - p[0];
-      if (fwrite (p[0], sizeof *p[0], len, stdout) != len)
-        return -1;
+      ଯଦି (fwrite (p[0], ଆକାର *p[0], len, stdout) != len)
+        ଫେରନ୍ତୁ -1;
     }
 
-  return 0;
+  ଫେରନ୍ତୁ 0;
 }
 
 /* Print NUMBER followed by EOLBYTE to standard output.
    Return false on failure, true on success.  */
-static bool
-print_number (unsigned long int number, char eolbyte)
+ସ୍ଥିର bool
+print_ସଂଖ୍ୟା (unsigned long ପୂର୍ଣ୍ଣସଂଖ୍ୟା ସଂଖ୍ୟା, ଅକ୍ଷର eolbyte)
 {
-  char buf[INT_BUFSIZE_BOUND (unsigned long int)];
-  char *p = buf + INT_STRLEN_BOUND (unsigned long int);
+  ଅକ୍ଷର buf[INT_BUFSIZE_BOUND (unsigned long ପୂର୍ଣ୍ଣସଂଖ୍ୟା)];
+  ଅକ୍ଷର *p = buf + INT_STRLEN_BOUND (unsigned long ପୂର୍ଣ୍ଣସଂଖ୍ୟା);
   *p = eolbyte;
-  do
-    *--p = '0' + number % 10;
-  while ((number /= 10) != 0);
-  idx_t len = buf + sizeof buf - p;
-  return fwrite (p, 1, len, stdout) == len;
+  କର
+    *--p = '0' + ସଂଖ୍ୟା % 10;
+  ଯେତେବେଳେ ((ସଂଖ୍ୟା /= 10) != 0);
+  idx_t len = buf + ଆକାର buf - p;
+  ଫେରନ୍ତୁ fwrite (p, 1, len, stdout) == len;
 }
 
 /* Output N_LINES of numbers to stdout, from PERMUTATION array.
    PERMUTATION must have at least N_LINES elements.  */
-static int
-write_permuted_numbers (size_t n_lines, size_t lo_input,
-                        size_t const *permutation, char eolbyte)
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା
+write_permuted_numbers (size_t n_ଧାଡ଼ିଗୁଡ଼ିକ, size_t lo_ନିବେଶ,
+                        size_t ଅଚଳ *permutation, ଅକ୍ଷର eolbyte)
 {
-  for (size_t i = 0; i < n_lines; i++)
+  ପାଇଁ (size_t i = 0; i < n_ଧାଡ଼ିଗୁଡ଼ିକ; i++)
     {
-      unsigned long int n = lo_input + permutation[i];
-      if (! print_number (n, eolbyte))
-        return -1;
+      unsigned long ପୂର୍ଣ୍ଣସଂଖ୍ୟା n = lo_ନିବେଶ + permutation[i];
+      ଯଦି (! print_ସଂଖ୍ୟା (n, eolbyte))
+        ଫେରନ୍ତୁ -1;
     }
 
-  return 0;
+  ଫେରନ୍ତୁ 0;
 }
 
 /* Output COUNT numbers to stdout, chosen randomly from range
    LO_INPUT through HI_INPUT.  */
-static int
-write_random_numbers (struct randint_source *s, size_t count,
-                      size_t lo_input, size_t hi_input, char eolbyte)
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା
+write_random_numbers (ସଂରଚନା randint_source *s, size_t ଗଣନା_2,
+                      size_t lo_ନିବେଶ, size_t hi_ନିବେଶ, ଅକ୍ଷର eolbyte)
 {
-  const randint range = hi_input - lo_input + 1;
+  ଅଚଳ randint range = hi_ନିବେଶ - lo_ନିବେଶ + 1;
 
-  for (size_t i = 0; i < count; i++)
+  ପାଇଁ (size_t i = 0; i < ଗଣନା_2; i++)
     {
-      unsigned long int j = lo_input + randint_choose (s, range);
-      if (! print_number (j, eolbyte))
-        return -1;
+      unsigned long ପୂର୍ଣ୍ଣସଂଖ୍ୟା j = lo_ନିବେଶ + randint_choose (s, range);
+      ଯଦି (! print_ସଂଖ୍ୟା (j, eolbyte))
+        ଫେରନ୍ତୁ -1;
     }
 
-  return 0;
+  ଫେରନ୍ତୁ 0;
 }
 
 /* Output COUNT lines to stdout from LINES array.
    LINES must have at least N_LINES elements in it.
    Strings in LINES_ must include the line-terminator character.  */
-static int
-write_random_lines (struct randint_source *s, size_t count,
-                    char *const *lines, size_t n_lines)
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା
+write_random_ଧାଡ଼ିଗୁଡ଼ିକ (ସଂରଚନା randint_source *s, size_t ଗଣନା_2,
+                    ଅକ୍ଷର *ଅଚଳ *ଧାଡ଼ିଗୁଡ଼ିକ, size_t n_ଧାଡ଼ିଗୁଡ଼ିକ)
 {
-  for (size_t i = 0; i < count; i++)
+  ପାଇଁ (size_t i = 0; i < ଗଣନା_2; i++)
     {
-      const randint j = randint_choose (s, n_lines);
-      char *const *p = lines + j;
+      ଅଚଳ randint j = randint_choose (s, n_ଧାଡ଼ିଗୁଡ଼ିକ);
+      ଅକ୍ଷର *ଅଚଳ *p = ଧାଡ଼ିଗୁଡ଼ିକ + j;
       size_t len = p[1] - p[0];
-      if (fwrite (p[0], sizeof *p[0], len, stdout) != len)
-        return -1;
+      ଯଦି (fwrite (p[0], ଆକାର *p[0], len, stdout) != len)
+        ଫେରନ୍ତୁ -1;
     }
 
-  return 0;
+  ଫେରନ୍ତୁ 0;
 }
 
-int
-main (int argc, char **argv)
+ପୂର୍ଣ୍ଣସଂଖ୍ୟା
+ମୁଖ୍ୟ (ପୂର୍ଣ୍ଣସଂଖ୍ୟା argc, ଅକ୍ଷର **argv)
 {
   bool echo = false;
-  bool input_range = false;
-  size_t lo_input = SIZE_MAX;
-  size_t hi_input = 0;
-  idx_t head_lines = MIN (IDX_MAX, SIZE_MAX);
-  char const *outfile = NULL;
-  char *random_source = NULL;
-  char eolbyte = '\n';
-  char **input_lines = NULL;
+  bool ନିବେଶ_range = false;
+  size_t lo_ନିବେଶ = SIZE_MAX;
+  size_t hi_ନିବେଶ = 0;
+  idx_t head_ଧାଡ଼ିଗୁଡ଼ିକ = MIN (IDX_MAX, SIZE_MAX);
+  ଅକ୍ଷର ଅଚଳ *outfile = ଖାଲି;
+  ଅକ୍ଷର *random_source = ଖାଲି;
+  ଅକ୍ଷର eolbyte = '\n';
+  ଅକ୍ଷର **ନିବେଶ_ଧାଡ଼ିଗୁଡ଼ିକ = ଖାଲି;
   bool use_reservoir_sampling = false;
   bool repeat = false;
 
-  int optc;
-  int n_operands;
-  char **operand;
-  size_t n_lines;
-  char **line = NULL;
-  struct linebuffer *reservoir = NULL;
-  struct randint_source *randint_source;
-  size_t *permutation = NULL;
-  int i;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା optc;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା n_operands;
+  ଅକ୍ଷର **operand;
+  size_t n_ଧାଡ଼ିଗୁଡ଼ିକ;
+  ଅକ୍ଷର **ଧାଡ଼ି = ଖାଲି;
+  ସଂରଚନା linebuffer *reservoir = ଖାଲି;
+  ସଂରଚନା randint_source *randint_source;
+  size_t *permutation = ଖାଲି;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା i;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -417,86 +417,86 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "ei:n:o:rz", long_opts, NULL))
+  ଯେତେବେଳେ ((optc = getopt_long (argc, argv, "ei:n:o:rz", long_opts, ଖାଲି))
          != -1)
-    switch (optc)
+    ବାଛ (optc)
       {
-      case 'e':
+      ସ୍ଥିତି 'e':
         echo = true;
-        break;
+        ଭାଙ୍ଗ;
 
-      case 'i':
+      ସ୍ଥିତି 'i':
         {
-          if (input_range)
+          ଯଦି (ନିବେଶ_range)
             error (EXIT_FAILURE, 0, _("multiple -i options specified"));
-          input_range = true;
+          ନିବେଶ_range = true;
 
           uintmax_t u;
-          char *lo_end;
-          strtol_error err = xstrtoumax (optarg, &lo_end, 10, &u, NULL);
-          if (err == LONGINT_OK)
+          ଅକ୍ଷର *lo_end;
+          strtol_error err = xstrtoumax (optarg, &lo_end, 10, &u, ଖାଲି);
+          ଯଦି (err == LONGINT_OK)
             {
-              lo_input = u;
-              if (lo_input != u)
+              lo_ନିବେଶ = u;
+              ଯଦି (lo_ନିବେଶ != u)
                 err = LONGINT_OVERFLOW;
-              else if (*lo_end != '-')
+              ଅନ୍ୟଥା ଯଦି (*lo_end != '-')
                 err = LONGINT_INVALID;
-              else
+              ଅନ୍ୟଥା
                 {
-                  err = xstrtoumax (lo_end + 1, NULL, 10, &u, "");
-                  if (err == LONGINT_OK)
+                  err = xstrtoumax (lo_end + 1, ଖାଲି, 10, &u, "");
+                  ଯଦି (err == LONGINT_OK)
                     {
-                      hi_input = u;
-                      if (hi_input != u)
+                      hi_ନିବେଶ = u;
+                      ଯଦି (hi_ନିବେଶ != u)
                         err = LONGINT_OVERFLOW;
                     }
                 }
             }
 
-          n_lines = hi_input - lo_input + 1;
+          n_ଧାଡ଼ିଗୁଡ଼ିକ = hi_ନିବେଶ - lo_ନିବେଶ + 1;
 
-          if (err != LONGINT_OK || (lo_input <= hi_input) == (n_lines == 0))
+          ଯଦି (err != LONGINT_OK || (lo_ନିବେଶ <= hi_ନିବେଶ) == (n_ଧାଡ଼ିଗୁଡ଼ିକ == 0))
             error (EXIT_FAILURE, err == LONGINT_OVERFLOW ? EOVERFLOW : 0,
                    "%s: %s", _("invalid input range"), quote (optarg));
         }
-        break;
+        ଭାଙ୍ଗ;
 
-      case 'n':
+      ସ୍ଥିତି 'n':
         {
           uintmax_t argval;
-          strtol_error e = xstrtoumax (optarg, NULL, 10, &argval, "");
+          strtol_error e = xstrtoumax (optarg, ଖାଲି, 10, &argval, "");
 
-          if (e == LONGINT_OK)
-            head_lines = MIN (head_lines, argval);
-          else if (e != LONGINT_OVERFLOW)
+          ଯଦି (e == LONGINT_OK)
+            head_ଧାଡ଼ିଗୁଡ଼ିକ = MIN (head_ଧାଡ଼ିଗୁଡ଼ିକ, argval);
+          ଅନ୍ୟଥା ଯଦି (e != LONGINT_OVERFLOW)
             error (EXIT_FAILURE, 0, _("invalid line count: %s"),
                    quote (optarg));
         }
-        break;
+        ଭାଙ୍ଗ;
 
-      case 'o':
-        if (outfile && !streq (outfile, optarg))
+      ସ୍ଥିତି 'o':
+        ଯଦି (outfile && !streq (outfile, optarg))
           error (EXIT_FAILURE, 0, _("multiple output files specified"));
         outfile = optarg;
-        break;
+        ଭାଙ୍ଗ;
 
-      case RANDOM_SOURCE_OPTION:
-        if (random_source && !streq (random_source, optarg))
+      ସ୍ଥିତି RANDOM_SOURCE_OPTION:
+        ଯଦି (random_source && !streq (random_source, optarg))
           error (EXIT_FAILURE, 0, _("multiple random sources specified"));
         random_source = optarg;
-        break;
+        ଭାଙ୍ଗ;
 
-      case 'r':
+      ସ୍ଥିତି 'r':
         repeat = true;
-        break;
+        ଭାଙ୍ଗ;
 
-      case 'z':
+      ସ୍ଥିତି 'z':
         eolbyte = '\0';
-        break;
+        ଭାଙ୍ଗ;
 
       case_GETOPT_HELP_CHAR;
       case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-      default:
+      ପୂର୍ବନିର୍ଦ୍ଧାରିତ:
         usage (EXIT_FAILURE);
       }
 
@@ -504,118 +504,118 @@ main (int argc, char **argv)
   operand = argv + optind;
 
   /* Check invalid usage.  */
-  if (echo && input_range)
+  ଯଦି (echo && ନିବେଶ_range)
     {
       error (0, 0, _("cannot combine -e and -i options"));
       usage (EXIT_FAILURE);
     }
-  if (input_range ? 0 < n_operands : !echo && 1 < n_operands)
+  ଯଦି (ନିବେଶ_range ? 0 < n_operands : !echo && 1 < n_operands)
     {
-      error (0, 0, _("extra operand %s"), quote (operand[!input_range]));
+      error (0, 0, _("extra operand %s"), quote (operand[!ନିବେଶ_range]));
       usage (EXIT_FAILURE);
     }
 
   /* Prepare input.  */
-  if (head_lines == 0)
+  ଯଦି (head_ଧାଡ଼ିଗୁଡ଼ିକ == 0)
     {
-      n_lines = 0;
-      line = NULL;
+      n_ଧାଡ଼ିଗୁଡ଼ିକ = 0;
+      ଧାଡ଼ି = ଖାଲି;
     }
-  else if (echo)
+  ଅନ୍ୟଥା ଯଦି (echo)
     {
-      input_from_argv (operand, n_operands, eolbyte);
-      n_lines = n_operands;
-      line = operand;
+      ନିବେଶ_from_argv (operand, n_operands, eolbyte);
+      n_ଧାଡ଼ିଗୁଡ଼ିକ = n_operands;
+      ଧାଡ଼ି = operand;
     }
-  else if (input_range)
+  ଅନ୍ୟଥା ଯଦି (ନିବେଶ_range)
     {
-      IF_LINT (n_lines = hi_input - lo_input + 1); /* Avoid GCC 10 warning.  */
-      line = NULL;
+      IF_LINT (n_ଧାଡ଼ିଗୁଡ଼ିକ = hi_ନିବେଶ - lo_ନିବେଶ + 1); /* Avoid GCC 10 warning.  */
+      ଧାଡ଼ି = ଖାଲି;
     }
-  else
+  ଅନ୍ୟଥା
     {
       /* If an input file is specified, re-open it as stdin.  */
-      if (n_operands == 1
+      ଯଦି (n_operands == 1
           && ! (streq (operand[0], "-")
                 || freopen (operand[0], "r", stdin)))
         error (EXIT_FAILURE, errno, "%s", quotef (operand[0]));
 
       fadvise (stdin, FADVISE_SEQUENTIAL);
 
-      if (repeat || head_lines == MIN (IDX_MAX, SIZE_MAX)
-          || input_size () <= RESERVOIR_MIN_INPUT)
+      ଯଦି (repeat || head_ଧାଡ଼ିଗୁଡ଼ିକ == MIN (IDX_MAX, SIZE_MAX)
+          || ନିବେଶ_size () <= RESERVOIR_MIN_ନିବେଶ)
         {
-          n_lines = read_input (stdin, eolbyte, &input_lines);
-          line = input_lines;
+          n_ଧାଡ଼ିଗୁଡ଼ିକ = read_ନିବେଶ (stdin, eolbyte, &ନିବେଶ_ଧାଡ଼ିଗୁଡ଼ିକ);
+          ଧାଡ଼ି = ନିବେଶ_ଧାଡ଼ିଗୁଡ଼ିକ;
         }
-      else
+      ଅନ୍ୟଥା
         {
           use_reservoir_sampling = true;
-          n_lines = SIZE_MAX;   /* unknown number of input lines, for now.  */
+          n_ଧାଡ଼ିଗୁଡ଼ିକ = SIZE_MAX;   /* unknown number of input lines, for now.  */
         }
     }
 
   /* The adjusted head line count; can be less than HEAD_LINES if the
      input is small and if not repeating.  */
-  idx_t ahead_lines = repeat || head_lines < n_lines ? head_lines : n_lines;
+  idx_t ahead_ଧାଡ଼ିଗୁଡ଼ିକ = repeat || head_ଧାଡ଼ିଗୁଡ଼ିକ < n_ଧାଡ଼ିଗୁଡ଼ିକ ? head_ଧାଡ଼ିଗୁଡ଼ିକ : n_ଧାଡ଼ିଗୁଡ଼ିକ;
 
   randint_source = randint_all_new (random_source,
                                     (use_reservoir_sampling || repeat
                                      ? SIZE_MAX
-                                     : randperm_bound (ahead_lines, n_lines)));
-  if (! randint_source)
+                                     : randperm_bound (ahead_ଧାଡ଼ିଗୁଡ଼ିକ, n_ଧାଡ଼ିଗୁଡ଼ିକ)));
+  ଯଦି (! randint_source)
     error (EXIT_FAILURE, errno, "%s",
            quotef (random_source ? random_source : "getrandom"));
 
-  if (use_reservoir_sampling)
+  ଯଦି (use_reservoir_sampling)
     {
       /* Instead of reading the entire file into 'line',
          use reservoir-sampling to store just AHEAD_LINES random lines.  */
-      n_lines = read_input_reservoir_sampling (stdin, eolbyte, ahead_lines,
+      n_ଧାଡ଼ିଗୁଡ଼ିକ = read_ନିବେଶ_reservoir_sampling (stdin, eolbyte, ahead_ଧାଡ଼ିଗୁଡ଼ିକ,
                                                randint_source, &reservoir);
-      ahead_lines = n_lines;
+      ahead_ଧାଡ଼ିଗୁଡ଼ିକ = n_ଧାଡ଼ିଗୁଡ଼ିକ;
     }
 
   /* Close stdin now, rather than earlier, so that randint_all_new
      doesn't have to worry about opening something other than
      stdin.  */
-  if (! (head_lines == 0 || echo || input_range || fclose (stdin) == 0))
+  ଯଦି (! (head_ଧାଡ଼ିଗୁଡ଼ିକ == 0 || echo || ନିବେଶ_range || fclose (stdin) == 0))
     error (EXIT_FAILURE, errno, _("read error"));
 
-  if (!repeat)
-    permutation = randperm_new (randint_source, ahead_lines, n_lines);
+  ଯଦି (!repeat)
+    permutation = randperm_new (randint_source, ahead_ଧାଡ଼ିଗୁଡ଼ିକ, n_ଧାଡ଼ିଗୁଡ଼ିକ);
 
-  if (outfile && ! freopen (outfile, "w", stdout))
+  ଯଦି (outfile && ! freopen (outfile, "w", stdout))
     error (EXIT_FAILURE, errno, "%s", quotef (outfile));
 
   /* Generate output according to requested method */
-  if (repeat)
+  ଯଦି (repeat)
     {
-      if (head_lines == 0)
+      ଯଦି (head_ଧାଡ଼ିଗୁଡ଼ିକ == 0)
         i = 0;
-      else
+      ଅନ୍ୟଥା
         {
-          if (n_lines == 0)
+          ଯଦି (n_ଧାଡ଼ିଗୁଡ଼ିକ == 0)
             error (EXIT_FAILURE, 0, _("no lines to repeat"));
-          if (input_range)
-            i = write_random_numbers (randint_source, ahead_lines,
-                                      lo_input, hi_input, eolbyte);
-          else
-            i = write_random_lines (randint_source, ahead_lines, line, n_lines);
+          ଯଦି (ନିବେଶ_range)
+            i = write_random_numbers (randint_source, ahead_ଧାଡ଼ିଗୁଡ଼ିକ,
+                                      lo_ନିବେଶ, hi_ନିବେଶ, eolbyte);
+          ଅନ୍ୟଥା
+            i = write_random_ଧାଡ଼ିଗୁଡ଼ିକ (randint_source, ahead_ଧାଡ଼ିଗୁଡ଼ିକ, ଧାଡ଼ି, n_ଧାଡ଼ିଗୁଡ଼ିକ);
         }
     }
-  else
+  ଅନ୍ୟଥା
     {
-      if (use_reservoir_sampling)
-        i = write_permuted_output_reservoir (n_lines, reservoir, permutation);
-      else if (input_range)
-        i = write_permuted_numbers (ahead_lines, lo_input,
+      ଯଦି (use_reservoir_sampling)
+        i = write_permuted_output_reservoir (n_ଧାଡ଼ିଗୁଡ଼ିକ, reservoir, permutation);
+      ଅନ୍ୟଥା ଯଦି (ନିବେଶ_range)
+        i = write_permuted_numbers (ahead_ଧାଡ଼ିଗୁଡ଼ିକ, lo_ନିବେଶ,
                                     permutation, eolbyte);
-      else
-        i = write_permuted_lines (ahead_lines, line, permutation);
+      ଅନ୍ୟଥା
+        i = write_permuted_ଧାଡ଼ିଗୁଡ଼ିକ (ahead_ଧାଡ଼ିଗୁଡ଼ିକ, ଧାଡ଼ି, permutation);
     }
 
-  if (i != 0)
+  ଯଦି (i != 0)
     write_error ();
 
   IF_LINT (randint_all_free (randint_source));  /* For older valgrind.  */

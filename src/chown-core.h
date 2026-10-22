@@ -21,7 +21,7 @@
 # include "dev-ino.h"
 # include <stdlib.h>
 
-enum Change_status
+ଗଣନା Change_status
 {
   CH_NOT_APPLIED = 1,
   CH_SUCCEEDED,
@@ -29,10 +29,10 @@ enum Change_status
   CH_NO_CHANGE_REQUESTED
 };
 
-enum Verbosity
+ଗଣନା Verbosity
 {
   /* Print a message for each file that is processed.  */
-  V_high,
+  V_ଉପର,
 
   /* Print a message for each file whose attributes we change.  */
   V_changes_only,
@@ -41,17 +41,17 @@ enum Verbosity
   V_off
 };
 
-struct Chown_option
+ସଂରଚନା Chown_option
 {
   /* Level of verbosity.  */
-  enum Verbosity verbosity;
+  ଗଣନା Verbosity verbosity;
 
   /* If nonzero, change the ownership of directories recursively. */
   bool recurse;
 
   /* Pointer to the device and inode numbers of '/', when --recursive.
      Need not be freed.  Otherwise NULL.  */
-  struct dev_ino *root_dev_ino;
+  ସଂରଚନା dev_ino *ମୂଳ_dev_ino;
 
   /* This corresponds to the --dereference (opposite of -h) option.  */
   bool affect_symlink_referent;
@@ -60,33 +60,33 @@ struct Chown_option
   bool force_silent;
 
   /* The name of the user to which ownership of the files is being given. */
-  char *user_name;
+  ଅକ୍ଷର *user_name;
 
   /* The name of the group to which ownership of the files is being given. */
-  char *group_name;
+  ଅକ୍ଷର *group_name;
 };
 
-void
-chopt_init (struct Chown_option *);
+ଶୂନ୍ୟ
+chopt_init (ସଂରଚନା Chown_option *);
 
-void
-chopt_free (struct Chown_option *);
+ଶୂନ୍ୟ
+chopt_free (ସଂରଚନା Chown_option *);
 
-char *
+ଅକ୍ଷର *
 gid_to_name (gid_t)
   _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC_FREE
   _GL_ATTRIBUTE_RETURNS_NONNULL;
 
-char *
+ଅକ୍ଷର *
 uid_to_name (uid_t)
   _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC_FREE
   _GL_ATTRIBUTE_RETURNS_NONNULL;
 
 bool
-chown_files (char **files, int bit_flags,
+chown_files (ଅକ୍ଷର **files, ପୂର୍ଣ୍ଣସଂଖ୍ୟା bit_flags,
              uid_t uid, gid_t gid,
              uid_t required_uid, gid_t required_gid,
-             struct Chown_option const *chopt)
+             ସଂରଚନା Chown_option ଅଚଳ *chopt)
   _GL_ATTRIBUTE_NONNULL ();
 
 #endif /* CHOWN_CORE_H */

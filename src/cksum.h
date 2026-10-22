@@ -1,4 +1,4 @@
-enum Algorithm
+ଗଣନା Algorithm
 {
   bsd,
   sysv,
@@ -16,4 +16,4 @@ enum Algorithm
   sm3,
 };
 
-extern enum Algorithm cksum_algorithm;
+ବାହ୍ୟ ଗଣନା Algorithm cksum_algorithm;

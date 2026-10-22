@@ -16,17 +16,17 @@
 
 /* Written by Pádraig Brady  */
 
-#include <config.h>             /* sets _FILE_OFFSET_BITS=64 etc. */
-#include <signal.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <float.h>
+#ଅନ୍ତର୍ଭାଵ <config.h>             /* sets _FILE_OFFSET_BITS=64 etc. */
+#ଅନ୍ତର୍ଭାଵ <signal.h>
+#ଅନ୍ତର୍ଭାଵ <stdio.h>
+#ଅନ୍ତର୍ଭାଵ <sys/types.h>
+#ଅନ୍ତର୍ଭାଵ <float.h>
 
-#include "errno-iter.h"
-#include "ftoastr.h"
-#include "system.h"
-#include "ioblksize.h"
-#include "long-options.h"
+#ଅନ୍ତର୍ଭାଵ "errno-iter.h"
+#ଅନ୍ତର୍ଭାଵ "ftoastr.h"
+#ଅନ୍ତର୍ଭାଵ "system.h"
+#ଅନ୍ତର୍ଭାଵ "ioblksize.h"
+#ଅନ୍ତର୍ଭାଵ "long-options.h"
 
 #define PROGRAM_NAME "getlimits"
 
@@ -75,19 +75,19 @@
 #define UID_T_MIN 0
 #define GID_T_MIN 0
 
-void
-usage (int status)
+ଶୂନ୍ୟ
+usage (ପୂର୍ଣ୍ଣସଂଖ୍ୟା status)
 {
-  if (status != EXIT_SUCCESS)
+  ଯଦି (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ଅନ୍ୟଥା
     {
       printf (_("\
 Usage: %s\n\
 "), program_name);
 
       fputs (_("\
-Output platform dependent limits in a format useful for shell scripts.\n\
+Output platform dependent limits in a format useful ପାଇଁ shell scripts.\n\
 \n\
 "), stdout);
       fputs (HELP_OPTION_DESCRIPTION, stdout);
@@ -101,49 +101,49 @@ Output platform dependent limits in a format useful for shell scripts.\n\
    representation is BUF + 1.  Do this in-place, in the buffer.
    Return a pointer to the result, which is normally BUF + 1, but is
    BUF if the representation grew in size.  */
-static char const *
-decimal_absval_add_one (char *buf)
+ସ୍ଥିର ଅକ୍ଷର ଅଚଳ *
+decimal_absval_add_one (ଅକ୍ଷର *buf)
 {
   bool negative = (buf[1] == '-');
-  char *absnum = buf + 1 + negative;
-  char *p = absnum + strlen (absnum);
+  ଅକ୍ଷର *absnum = buf + 1 + negative;
+  ଅକ୍ଷର *p = absnum + strlen (absnum);
   absnum[-1] = '0';
-  while (*--p == '9')
+  ଯେତେବେଳେ (*--p == '9')
     *p = '0';
   ++*p;
-  char *result = MIN (absnum, p);
-  if (negative)
+  ଅକ୍ଷର *result = MIN (absnum, p);
+  ଯଦି (negative)
     *--result = '-';
-  return result;
+  ଫେରନ୍ତୁ result;
 }
 
 #define PRINT_FLOATTYPE(N, T, FTOASTR, BUFSIZE)                         \
-static void                                                             \
+ସ୍ଥିର ଶୂନ୍ୟ                                                             \
 N (T x)                                                                 \
 {                                                                       \
-  char buf[BUFSIZE];                                                    \
-  FTOASTR (buf, sizeof buf, FTOASTR_LEFT_JUSTIFY, 0, x);                \
+  ଅକ୍ଷର buf[BUFSIZE];                                                    \
+  FTOASTR (buf, ଆକାର buf, FTOASTR_ବାମ_JUSTIFY, 0, x);                \
   puts (buf);                                                           \
 }
 
-PRINT_FLOATTYPE (print_FLT, float, ftoastr, FLT_BUFSIZE_BOUND)
-PRINT_FLOATTYPE (print_DBL, double, dtoastr, DBL_BUFSIZE_BOUND)
-PRINT_FLOATTYPE (print_LDBL, long double, ldtoastr, LDBL_BUFSIZE_BOUND)
+PRINT_FLOATTYPE (print_FLT, ଦଶମିକ, ftoastr, FLT_BUFSIZE_BOUND)
+PRINT_FLOATTYPE (print_DBL, ଦ୍ୱିଗୁଣ, dtoastr, DBL_BUFSIZE_BOUND)
+PRINT_FLOATTYPE (print_LDBL, long ଦ୍ୱିଗୁଣ, ldtoastr, LDBL_BUFSIZE_BOUND)
 
-static int
-print_errno (void *name, int e)
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା
+print_errno (ଶୂନ୍ୟ *name, ପୂର୍ଣ୍ଣସଂଖ୍ୟା e)
 {
-  char const *err_name = name ? name : strerrorname_np (e);
-  if (err_name)
+  ଅକ୍ଷର ଅଚଳ *err_name = name ? name : strerrorname_np (e);
+  ଯଦି (err_name)
     printf ("%s=%s\n", err_name,
             quotearg_style (shell_escape_quoting_style, strerror (e)));
-  return 0;
+  ଫେରନ୍ତୁ 0;
 }
 
-int
-main (int argc, char **argv)
+ପୂର୍ଣ୍ଣସଂଖ୍ୟା
+ମୁଖ୍ୟ (ପୂର୍ଣ୍ଣସଂଖ୍ୟା argc, ଅକ୍ଷର **argv)
 {
-  char limit[1 + MAX (INT_BUFSIZE_BOUND (intmax_t),
+  ଅକ୍ଷର limit[1 + MAX (INT_BUFSIZE_BOUND (intmax_t),
                       INT_BUFSIZE_BOUND (uintmax_t))];
 
   initialize_main (&argc, &argv);
@@ -156,13 +156,13 @@ main (int argc, char **argv)
 
   parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
                                    VERSION, true, usage, AUTHORS,
-                                   (char const *) NULL);
+                                   (ଅକ୍ଷର ଅଚଳ *) ଖାଲି);
 
 #define print_int(TYPE)                                                  \
   sprintf (limit + 1, "%ju", (uintmax_t) {TYPE##_MAX});                  \
   printf (#TYPE"_MAX=%s\n", limit + 1);                                  \
   printf (#TYPE"_OFLOW=%s\n", decimal_absval_add_one (limit));           \
-  if (TYPE##_MIN)                                                        \
+  ଯଦି (TYPE##_MIN)                                                        \
     {                                                                    \
       sprintf (limit + 1, "%jd", (intmax_t) {TYPE##_MIN});               \
       printf (#TYPE"_MIN=%s\n", limit + 1);                              \
@@ -204,20 +204,20 @@ main (int argc, char **argv)
   printf ("IO_BUFSIZE=%ju\n", (uintmax_t) {IO_BUFSIZE});
 
   /* Errnos */
-  errno_iterate (print_errno, NULL);
+  errno_iterate (print_errno, ଖାଲି);
   /* Common errno aliases */
-#if defined ENOTEMPTY && ENOTEMPTY == EEXIST
-  print_errno ((char*)"ENOTEMPTY", EEXIST);
+#ଯଦି defined ENOTEMPTY && ENOTEMPTY == EEXIST
+  print_errno ((ଅକ୍ଷର*)"ENOTEMPTY", EEXIST);
 #endif
-#if defined ENOTSUP && ENOTSUP == EOPNOTSUPP
-  print_errno ((char*)"ENOTSUP", EOPNOTSUPP);
+#ଯଦି defined ENOTSUP && ENOTSUP == EOPNOTSUPP
+  print_errno ((ଅକ୍ଷର*)"ENOTSUP", EOPNOTSUPP);
 #endif
-#if defined EWOULDBLOCK && EWOULDBLOCK == EAGAIN
-  print_errno ((char*)"EWOULDBLOCK", EAGAIN);
+#ଯଦି defined EWOULDBLOCK && EWOULDBLOCK == EAGAIN
+  print_errno ((ଅକ୍ଷର*)"EWOULDBLOCK", EAGAIN);
 #endif
-#if defined EDEADLOCK && EDEADLOCK == EDEADLK
-  print_errno ((char*)"EDEADLOCK", EDEADLK);
+#ଯଦି defined EDEADLOCK && EDEADLOCK == EDEADLK
+  print_errno ((ଅକ୍ଷର*)"EDEADLOCK", EDEADLK);
 #endif
 
-  return EXIT_SUCCESS;
+  ଫେରନ୍ତୁ EXIT_SUCCESS;
 }

@@ -19,36 +19,36 @@
 #ifndef COREUTILS_SELINUX_H
 # define COREUTILS_SELINUX_H
 
-struct selabel_handle;
+ସଂରଚନା selabel_handle;
 
 /* Return true if ERR corresponds to an unsupported request,
    or if there is no context or it's inaccessible.  */
-static inline bool
-ignorable_ctx_err (int err)
+ସ୍ଥିର ଧାଡ଼ିଭିତରେ bool
+ignorable_ctx_err (ପୂର୍ଣ୍ଣସଂଖ୍ୟା err)
 {
-  return err == ENOTSUP || err == ENODATA;
+  ଫେରନ୍ତୁ err == ENOTSUP || err == ENODATA;
 }
 
-# if HAVE_SELINUX_LABEL_H
+# ଯଦି HAVE_SELINUX_LABEL_H
 
-extern bool
-restorecon (struct selabel_handle *selabel_handle,
-            char const *path, bool recurse);
-extern int
-defaultcon (struct selabel_handle *selabel_handle,
-            char const *path, mode_t mode);
+ବାହ୍ୟ bool
+restorecon (ସଂରଚନା selabel_handle *selabel_handle,
+            ଅକ୍ଷର ଅଚଳ *path, bool recurse);
+ବାହ୍ୟ ପୂର୍ଣ୍ଣସଂଖ୍ୟା
+defaultcon (ସଂରଚନା selabel_handle *selabel_handle,
+            ଅକ୍ଷର ଅଚଳ *path, mode_t mode);
 
-# else
+# ଅନ୍ୟଥା
 
-static inline bool
-restorecon (MAYBE_UNUSED struct selabel_handle *selabel_handle,
-            MAYBE_UNUSED char const *path, MAYBE_UNUSED bool recurse)
-{ errno = ENOTSUP; return false; }
+ସ୍ଥିର ଧାଡ଼ିଭିତରେ bool
+restorecon (MAYBE_UNUSED ସଂରଚନା selabel_handle *selabel_handle,
+            MAYBE_UNUSED ଅକ୍ଷର ଅଚଳ *path, MAYBE_UNUSED bool recurse)
+{ errno = ENOTSUP; ଫେରନ୍ତୁ false; }
 
-static inline int
-defaultcon (MAYBE_UNUSED struct selabel_handle *selabel_handle,
-            MAYBE_UNUSED char const *path, MAYBE_UNUSED mode_t mode)
-{ errno = ENOTSUP; return -1; }
+ସ୍ଥିର ଧାଡ଼ିଭିତରେ ପୂର୍ଣ୍ଣସଂଖ୍ୟା
+defaultcon (MAYBE_UNUSED ସଂରଚନା selabel_handle *selabel_handle,
+            MAYBE_UNUSED ଅକ୍ଷର ଅଚଳ *path, MAYBE_UNUSED mode_t mode)
+{ errno = ENOTSUP; ଫେରନ୍ତୁ -1; }
 
 # endif
 

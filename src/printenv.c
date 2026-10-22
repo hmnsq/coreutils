@@ -27,18 +27,18 @@
 
    David MacKenzie and Richard Mlynarik */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <getopt.h>
+#ଅନ୍ତର୍ଭାଵ <config.h>
+#ଅନ୍ତର୍ଭାଵ <stdio.h>
+#ଅନ୍ତର୍ଭାଵ <sys/types.h>
+#ଅନ୍ତର୍ଭାଵ <getopt.h>
 
-#include "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
-#include "system.h"
-#include "printenv.h"
-#include "xbinary-io.h"
+#ଅନ୍ତର୍ଭାଵ "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
+#ଅନ୍ତର୍ଭାଵ "system.h"
+#ଅନ୍ତର୍ଭାଵ "printenv.h"
+#ଅନ୍ତର୍ଭାଵ "xbinary-io.h"
 
 /* Exit status for syntax errors, etc.  */
-enum { PRINTENV_FAILURE = 2 };
+ଗଣନା { PRINTENV_FAILURE = 2 };
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "printenv"
@@ -49,41 +49,41 @@ enum { PRINTENV_FAILURE = 2 };
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+ଗଣନା
 {
   QUOTING_STYLE_OPTION = CHAR_MAX + 1,
 };
 
-static struct option const longopts[] =
+ସ୍ଥିର ସଂରଚନା option ଅଚଳ longopts[] =
 {
-  {"null", no_argument, NULL, '0'},
-  {"quoting-style", required_argument, NULL, QUOTING_STYLE_OPTION},
+  {"null", no_argument, ଖାଲି, '0'},
+  {"quoting-style", required_argument, ଖାଲି, QUOTING_STYLE_OPTION},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ଖାଲି, 0, ଖାଲି, 0}
 };
 
-void
-usage (int status)
+ଶୂନ୍ୟ
+usage (ପୂର୍ଣ୍ଣସଂଖ୍ୟା status)
 {
-  if (status != EXIT_SUCCESS)
+  ଯଦି (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ଅନ୍ୟଥା
     {
       printf (_("\
 Usage: %s [OPTION] [VARIABLE]...\n\
-Print the values of the specified environment VARIABLE(s).\n\
-If no VARIABLE is specified, print name and value pairs for them all.\n\
+Print the ମୂଲ୍ୟଗୁଡ଼ିକ of the specified environment VARIABLE(s).\n\
+If no VARIABLE is specified, print name and ମୂଲ୍ୟ pairs ପାଇଁ them all.\n\
 \n\
 "),
               program_name);
       oputs (_("\
   -0, --null\n\
-         end each output line with NUL, not newline\n\
+         end each output ଧାଡ଼ି with NUL, not newline\n\
 "));
       oputs (_("\
       --quoting-style=WORD\n\
-         use quoting style WORD for names and values:\n\
+         use quoting style WORD ପାଇଁ names and ମୂଲ୍ୟଗୁଡ଼ିକ:\n\
            literal, locale, shell, shell-always,\n\
            shell-escape, shell-escape-always, c, escape\n\
 "));
@@ -95,11 +95,11 @@ If no VARIABLE is specified, print name and value pairs for them all.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+ପୂର୍ଣ୍ଣସଂଖ୍ୟା
+ମୁଖ୍ୟ (ପୂର୍ଣ୍ଣସଂଖ୍ୟା argc, ଅକ୍ଷର **argv)
 {
   bool opt_nul_terminate_output = false;
-  int quoting_style_opt = -1;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା quoting_style_opt = -1;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -110,79 +110,79 @@ main (int argc, char **argv)
   initialize_exit_failure (PRINTENV_FAILURE);
   atexit (close_stdout);
 
-  int optc;
-  while ((optc = getopt_long (argc, argv, "+0", longopts, NULL)) != -1)
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା optc;
+  ଯେତେବେଳେ ((optc = getopt_long (argc, argv, "+0", longopts, ଖାଲି)) != -1)
     {
-      switch (optc)
+      ବାଛ (optc)
         {
-        case '0':
+        ସ୍ଥିତି '0':
           opt_nul_terminate_output = true;
           quoting_style_opt = literal_quoting_style;
-          break;
-        case QUOTING_STYLE_OPTION:
+          ଭାଙ୍ଗ;
+        ସ୍ଥିତି QUOTING_STYLE_OPTION:
           quoting_style_opt = XARGMATCH ("--quoting-style", optarg,
                                          quoting_style_args,
                                          quoting_style_vals);
-          break;
+          ଭାଙ୍ଗ;
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        ପୂର୍ବନିର୍ଦ୍ଧାରିତ:
           usage (PRINTENV_FAILURE);
         }
     }
 
   bool quote_output = false;
-  int qs = quoting_style_opt;
-  if (qs < 0 && isatty (STDOUT_FILENO))
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା qs = quoting_style_opt;
+  ଯଦି (qs < 0 && isatty (STDOUT_FILENO))
     {
       qs = getenv_quoting_style ();
-      if (qs < 0)
+      ଯଦି (qs < 0)
         qs = shell_escape_quoting_style;
     }
-  if (0 <= qs && qs != literal_quoting_style)
+  ଯଦି (0 <= qs && qs != literal_quoting_style)
     {
-      set_quoting_style (NULL, qs);
+      set_quoting_style (ଖାଲି, qs);
       quote_output = true;
     }
 
-  idx_t const n_args = argc - optind;
+  idx_t ଅଚଳ n_args = argc - optind;
   bool ok;
-  char const terminator = opt_nul_terminate_output ? '\0' : '\n';
+  ଅକ୍ଷର ଅଚଳ terminator = opt_nul_terminate_output ? '\0' : '\n';
 
-  if (opt_nul_terminate_output)
-    xset_binary_mode (STDOUT_FILENO, O_BINARY);
+  ଯଦି (opt_nul_terminate_output)
+    xset_ଦ୍ୱିମିକ_mode (STDOUT_FILENO, O_ଦ୍ୱିମିକ);
 
-  if (n_args <= 0)
+  ଯଦି (n_args <= 0)
     {
-      for (char **env = environ; *env != NULL; ++env)
+      ପାଇଁ (ଅକ୍ଷର **env = environ; *env != ଖାଲି; ++env)
         print_envvar (*env, terminator, quote_output);
       ok = true;
     }
-  else
+  ଅନ୍ୟଥା
     {
-      int matches = 0;
+      ପୂର୍ଣ୍ଣସଂଖ୍ୟା matches = 0;
 
-      for (int i = optind; i < argc; ++i)
+      ପାଇଁ (ପୂର୍ଣ୍ଣସଂଖ୍ୟା i = optind; i < argc; ++i)
         {
           bool matched = false;
 
           /* 'printenv a=b' is silent, even if 'a=b=c' is in environ.  */
-          if (strchr (argv[i], '='))
-            continue;
+          ଯଦି (strchr (argv[i], '='))
+            ଜାରି;
 
-          for (char **env = environ; *env; ++env)
+          ପାଇଁ (ଅକ୍ଷର **env = environ; *env; ++env)
             {
-              char const *ep = *env;
-              char const *ap = argv[i];
-              while (*ep != '\0' && *ap != '\0' && *ep++ == *ap++)
+              ଅକ୍ଷର ଅଚଳ *ep = *env;
+              ଅକ୍ଷର ଅଚଳ *ap = argv[i];
+              ଯେତେବେଳେ (*ep != '\0' && *ap != '\0' && *ep++ == *ap++)
                 {
-                  if (*ep == '=' && *ap == '\0')
+                  ଯଦି (*ep == '=' && *ap == '\0')
                     {
-                      char const *val = ep + 1;
+                      ଅକ୍ଷର ଅଚଳ *val = ep + 1;
                       fputs (quote_output ? quoteN (val) : val, stdout);
                       putchar (terminator);
                       matched = true;
-                      break;
+                      ଭାଙ୍ଗ;
                     }
                 }
             }
@@ -193,5 +193,5 @@ main (int argc, char **argv)
       ok = (matches == argc - optind);
     }
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  ଫେରନ୍ତୁ ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

@@ -20,25 +20,25 @@
 
    Simply call the system 'link' function */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
+#ଅନ୍ତର୍ଭାଵ <config.h>
+#ଅନ୍ତର୍ଭାଵ <stdio.h>
+#ଅନ୍ତର୍ଭାଵ <sys/types.h>
 
-#include "system.h"
-#include "long-options.h"
-#include "quote.h"
+#ଅନ୍ତର୍ଭାଵ "system.h"
+#ଅନ୍ତର୍ଭାଵ "long-options.h"
+#ଅନ୍ତର୍ଭାଵ "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "link"
 
 #define AUTHORS proper_name ("Michael Stone")
 
-void
-usage (int status)
+ଶୂନ୍ୟ
+usage (ପୂର୍ଣ୍ଣସଂଖ୍ୟା status)
 {
-  if (status != EXIT_SUCCESS)
+  ଯଦି (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ଅନ୍ୟଥା
     {
       printf (_("\
 Usage: %s FILE1 FILE2\n\
@@ -53,8 +53,8 @@ Usage: %s FILE1 FILE2\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+ପୂର୍ଣ୍ଣସଂଖ୍ୟା
+ମୁଖ୍ୟ (ପୂର୍ଣ୍ଣସଂଖ୍ୟା argc, ଅକ୍ଷର **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -66,26 +66,26 @@ main (int argc, char **argv)
 
   parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
                                    Version, true, usage, AUTHORS,
-                                   (char const *) NULL);
+                                   (ଅକ୍ଷର ଅଚଳ *) ଖାଲି);
 
-  if (argc < optind + 2)
+  ଯଦି (argc < optind + 2)
     {
-      if (argc < optind + 1)
+      ଯଦି (argc < optind + 1)
         error (0, 0, _("missing operand"));
-      else
+      ଅନ୍ୟଥା
         error (0, 0, _("missing operand after %s"), quote (argv[optind]));
       usage (EXIT_FAILURE);
     }
 
-  if (optind + 2 < argc)
+  ଯଦି (optind + 2 < argc)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind + 2]));
       usage (EXIT_FAILURE);
     }
 
-  if (link (argv[optind], argv[optind + 1]) != 0)
+  ଯଦି (link (argv[optind], argv[optind + 1]) != 0)
     error (EXIT_FAILURE, errno, _("cannot create link %s to %s"),
            quoteaf_n (0, argv[optind + 1]), quoteaf_n (1, argv[optind]));
 
-  return EXIT_SUCCESS;
+  ଫେରନ୍ତୁ EXIT_SUCCESS;
 }

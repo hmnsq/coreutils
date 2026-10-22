@@ -17,24 +17,24 @@
 /* Written by Stuart Kemp, cpsrk@groper.jcu.edu.au.
    Modified by David MacKenzie, djm@gnu.ai.mit.edu. */
 
-#include <config.h>
+#ଅନ୍ତର୍ଭାଵ <config.h>
 
-#include <getopt.h>
-#include <sys/types.h>
-#include <signal.h>
+#ଅନ୍ତର୍ଭାଵ <getopt.h>
+#ଅନ୍ତର୍ଭାଵ <sys/types.h>
+#ଅନ୍ତର୍ଭାଵ <signal.h>
 
-#include "system.h"
+#ଅନ୍ତର୍ଭାଵ "system.h"
 
-#include <regex.h>
+#ଅନ୍ତର୍ଭାଵ <regex.h>
 
-#include "c-ctype.h"
-#include "fd-reopen.h"
-#include "quote.h"
-#include "safe-read.h"
-#include "stdio--.h"
-#include "term-sig.h"
-#include "xdectoint.h"
-#include "xstrtol.h"
+#ଅନ୍ତର୍ଭାଵ "c-ctype.h"
+#ଅନ୍ତର୍ଭାଵ "fd-reopen.h"
+#ଅନ୍ତର୍ଭାଵ "quote.h"
+#ଅନ୍ତର୍ଭାଵ "safe-read.h"
+#ଅନ୍ତର୍ଭାଵ "stdio--.h"
+#ଅନ୍ତର୍ଭାଵ "term-sig.h"
+#ଅନ୍ତର୍ଭାଵ "xdectoint.h"
+#ଅନ୍ତର୍ଭାଵ "xstrtol.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "csplit"
@@ -47,16 +47,16 @@
 #define DEFAULT_PREFIX	"xx"
 
 /* A compiled pattern arg. */
-struct control
+ସଂରଚନା control
 {
   intmax_t offset;		/* Offset from regexp to split at. */
-  intmax_t lines_required;	/* Number of lines required. */
+  intmax_t ଧାଡ଼ିଗୁଡ଼ିକ_required;	/* Number of lines required. */
   intmax_t repeat;		/* Repeat count. */
-  int argnum;			/* ARGV index. */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା argnum;			/* ARGV index. */
   bool repeat_forever;		/* True if '*' used as a repeat count. */
   bool ignore;			/* If true, produce no output (for regexp). */
   bool regexpr;			/* True if regular expression was used. */
-  struct re_pattern_buffer re_compiled;	/* Compiled regular expression. */
+  ସଂରଚନା re_pattern_buffer re_compiled;	/* Compiled regular expression. */
 };
 
 /* Initial size of data area in buffers. */
@@ -72,138 +72,138 @@ struct control
 #endif
 
 /* A string with a length count. */
-struct cstring
+ସଂରଚନା cstring
 {
   idx_t len;
-  char *str;
+  ଅକ୍ଷର *str;
 };
 
 /* Pointers to the beginnings of lines in the buffer area.
    These structures are linked together if needed. */
-struct line
+ସଂରଚନା ଧାଡ଼ି
 {
   idx_t used;			/* Number of offsets used in this struct. */
-  idx_t insert_index;		/* Next offset to use when inserting line. */
+  idx_t ଭର୍ତ୍ତି_index;		/* Next offset to use when inserting line. */
   idx_t retrieve_index;	/* Next index to use when retrieving line. */
-  struct cstring starts[CTRL_SIZE]; /* Lines in the data area. */
-  struct line *next;		/* Next in linked list. */
+  ସଂରଚନା cstring starts[CTRL_SIZE]; /* Lines in the data area. */
+  ସଂରଚନା ଧାଡ଼ି *next;		/* Next in linked list. */
 };
 
 /* The structure to hold the input lines.
    Contains a pointer to the data area and a list containing
    pointers to the individual lines. */
-struct buffer_record
+ସଂରଚନା buffer_record
 {
   idx_t bytes_alloc;		/* Size of the buffer area. */
   idx_t bytes_used;		/* Bytes used in the buffer area. */
-  intmax_t start_line;		/* First line number in this buffer. */
+  intmax_t start_ଧାଡ଼ି;		/* First line number in this buffer. */
   intmax_t first_available;	/* First line that can be retrieved. */
-  idx_t num_lines;		/* Number of complete lines in this buffer. */
-  char *buffer COUNTED_BY (bytes_alloc);	/* Data area. */
-  struct line *line_start;	/* Head of list of pointers to lines. */
-  struct line *curr_line;	/* The line start record currently in use. */
-  struct buffer_record *next;
+  idx_t ଅଙ୍କ_ଧାଡ଼ିଗୁଡ଼ିକ;		/* Number of complete lines in this buffer. */
+  ଅକ୍ଷର *buffer COUNTED_BY (bytes_alloc);	/* Data area. */
+  ସଂରଚନା ଧାଡ଼ି *ଧାଡ଼ି_start;	/* Head of list of pointers to lines. */
+  ସଂରଚନା ଧାଡ଼ି *curr_ଧାଡ଼ି;	/* The line start record currently in use. */
+  ସଂରଚନା buffer_record *next;
 };
 
-static void close_output_file (void);
-static void create_output_file (void);
-static void delete_all_files (bool);
-static void save_line_to_file (const struct cstring *line);
+ସ୍ଥିର ଶୂନ୍ୟ close_output_file (ଶୂନ୍ୟ);
+ସ୍ଥିର ଶୂନ୍ୟ create_output_file (ଶୂନ୍ୟ);
+ସ୍ଥିର ଶୂନ୍ୟ delete_all_files (bool);
+ସ୍ଥିର ଶୂନ୍ୟ save_ଧାଡ଼ି_to_file (ଅଚଳ ସଂରଚନା cstring *ଧାଡ଼ି);
 
 /* Start of buffer list. */
-static struct buffer_record *head = NULL;
+ସ୍ଥିର ସଂରଚନା buffer_record *head = ଖାଲି;
 
 /* Partially read line. */
-static char *hold_area = NULL;
+ସ୍ଥିର ଅକ୍ଷର *hold_area = ଖାଲି;
 
 /* Number of bytes in 'hold_area'. */
-static idx_t hold_count = 0;
+ସ୍ଥିର idx_t hold_ଗଣନା = 0;
 
 /* Number of the last line in the buffers. */
-static intmax_t last_line_number = 0;
+ସ୍ଥିର intmax_t last_ଧାଡ଼ି_ସଂଖ୍ୟା = 0;
 
 /* Number of the line currently being examined. */
-static intmax_t current_line = 0;
+ସ୍ଥିର intmax_t current_ଧାଡ଼ି = 0;
 
 /* If true, we have read EOF. */
-static bool have_read_eof = false;
+ସ୍ଥିର bool have_read_eof = false;
 
 /* Name of output files. */
-static char *volatile filename_space = NULL;
+ସ୍ଥିର ଅକ୍ଷର *ଅସ୍ଥିର filename_space = ଖାଲି;
 
 /* Prefix part of output file names. */
-static char const *volatile prefix = DEFAULT_PREFIX;
+ସ୍ଥିର ଅକ୍ଷର ଅଚଳ *ଅସ୍ଥିର prefix = DEFAULT_PREFIX;
 
 /* Suffix part of output file names. */
-static char *volatile suffix = NULL;
+ସ୍ଥିର ଅକ୍ଷର *ଅସ୍ଥିର suffix = ଖାଲି;
 
 /* Number of digits to use in output file names. */
-static int volatile digits = 2;
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା ଅସ୍ଥିର digits = 2;
 
 /* Number of files created so far. */
-static int volatile files_created = 0;
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା ଅସ୍ଥିର files_created = 0;
 
 /* Number of bytes written to current file. */
-static intmax_t bytes_written;
+ସ୍ଥିର intmax_t bytes_written;
 
 /* Output file pointer. */
-static FILE *output_stream = NULL;
+ସ୍ଥିର FILE *output_stream = ଖାଲି;
 
 /* Output file name. */
-static char *output_filename = NULL;
+ସ୍ଥିର ଅକ୍ଷର *output_filename = ଖାଲି;
 
 /* Perhaps it would be cleaner to pass arg values instead of indexes. */
-static char **global_argv;
+ସ୍ଥିର ଅକ୍ଷର **global_argv;
 
 /* If true, do not print the count of bytes in each output file. */
-static bool suppress_count;
+ସ୍ଥିର bool suppress_ଗଣନା;
 
 /* If true, remove output files on error. */
-static bool volatile remove_files = true;
+ସ୍ଥିର bool ଅସ୍ଥିର remove_files = true;
 
 /* If true, remove all output files which have a zero length. */
-static bool elide_empty_files;
+ସ୍ଥିର bool elide_empty_files;
 
 /* If true, suppress the lines that match the PATTERN */
-static bool suppress_matched;
+ସ୍ଥିର bool suppress_matched;
 
 /* The compiled pattern arguments, which determine how to split
    the input file. */
-static struct control *controls;
+ସ୍ଥିର ସଂରଚନା control *controls;
 
 /* Number of elements in 'controls'. */
-static idx_t control_used;
+ସ୍ଥିର idx_t control_used;
 
 /* The set of signals that are caught.  */
-static sigset_t caught_signals;
+ସ୍ଥିର sigset_t caught_signals;
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+ଗଣନା
 {
   SUPPRESS_MATCHED_OPTION = CHAR_MAX + 1
 };
 
-static struct option const longopts[] =
+ସ୍ଥିର ସଂରଚନା option ଅଚଳ longopts[] =
 {
-  {"digits", required_argument, NULL, 'n'},
-  {"quiet", no_argument, NULL, 'q'},  /* Deprecated.  */
-  {"silent", no_argument, NULL, 's'},
-  {"keep-files", no_argument, NULL, 'k'},
-  {"elide-empty-files", no_argument, NULL, 'z'},
-  {"prefix", required_argument, NULL, 'f'},
-  {"suffix-format", required_argument, NULL, 'b'},
-  {"suppress-matched", no_argument, NULL, SUPPRESS_MATCHED_OPTION},
+  {"digits", required_argument, ଖାଲି, 'n'},
+  {"quiet", no_argument, ଖାଲି, 'q'},  /* Deprecated.  */
+  {"silent", no_argument, ଖାଲି, 's'},
+  {"keep-files", no_argument, ଖାଲି, 'k'},
+  {"elide-empty-files", no_argument, ଖାଲି, 'z'},
+  {"prefix", required_argument, ଖାଲି, 'f'},
+  {"suffix-format", required_argument, ଖାଲି, 'b'},
+  {"suppress-matched", no_argument, ଖାଲି, SUPPRESS_MATCHED_OPTION},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ଖାଲି, 0, ଖାଲି, 0}
 };
 
 /* Optionally remove files created so far; then exit.
    Called when an error detected. */
 
-static void
-cleanup (void)
+ସ୍ଥିର ଶୂନ୍ୟ
+cleanup (ଶୂନ୍ୟ)
 {
   sigset_t oldset;
 
@@ -211,117 +211,117 @@ cleanup (void)
 
   sigprocmask (SIG_BLOCK, &caught_signals, &oldset);
   delete_all_files (false);
-  sigprocmask (SIG_SETMASK, &oldset, NULL);
+  sigprocmask (SIG_SETMASK, &oldset, ଖାଲି);
 }
 
-static _Noreturn void
-cleanup_fatal (void)
+ସ୍ଥିର _Noreturn ଶୂନ୍ୟ
+cleanup_fatal (ଶୂନ୍ୟ)
 {
   cleanup ();
   exit (EXIT_FAILURE);
 }
 
-extern void
-xalloc_die (void)
+ବାହ୍ୟ ଶୂନ୍ୟ
+xalloc_die (ଶୂନ୍ୟ)
 {
   error (0, 0, "%s", _("memory exhausted"));
   cleanup_fatal ();
 }
 
-static void
-interrupt_handler (int sig)
+ସ୍ଥିର ଶୂନ୍ୟ
+interrupt_handler (ପୂର୍ଣ୍ଣସଂଖ୍ୟା sig)
 {
   delete_all_files (true);
-  signal (sig, SIG_DFL);
+  ସଙ୍କେତ (sig, SIG_DFL);
   /* The signal has been reset to SIG_DFL, but blocked during this
      handler.  Force the default action of this signal once the
      handler returns and the block is removed.  */
-  raise (sig);
+  ଉଠାଅ (sig);
 }
 
 /* Keep track of NUM bytes of a partial line in buffer START.
    These bytes will be retrieved later when another large buffer is read.  */
 
-static void
-save_to_hold_area (char *start, idx_t num)
+ସ୍ଥିର ଶୂନ୍ୟ
+save_to_hold_area (ଅକ୍ଷର *start, idx_t ଅଙ୍କ)
 {
-  free (hold_area);
+  ମୁକ୍ତ (hold_area);
   hold_area = start;
-  hold_count = num;
+  hold_ଗଣନା = ଅଙ୍କ;
 }
 
 /* Read up to MAX_N_BYTES bytes from the input stream into DEST.
    Return the number of bytes read. */
 
-static idx_t
-read_input (char *dest, idx_t max_n_bytes)
+ସ୍ଥିର idx_t
+read_ନିବେଶ (ଅକ୍ଷର *dest, idx_t max_n_bytes)
 {
-  if (max_n_bytes == 0)
-    return 0;
+  ଯଦି (max_n_bytes == 0)
+    ଫେରନ୍ତୁ 0;
 
   ptrdiff_t bytes_read = safe_read (STDIN_FILENO, dest, max_n_bytes);
 
-  if (bytes_read == 0)
+  ଯଦି (bytes_read == 0)
     have_read_eof = true;
 
-  if (bytes_read < 0)
+  ଯଦି (bytes_read < 0)
     {
       error (0, errno, _("read error"));
       cleanup_fatal ();
     }
 
-  return bytes_read;
+  ଫେରନ୍ତୁ bytes_read;
 }
 
 /* Initialize existing line record P. */
 
-static void
-clear_line_control (struct line *p)
+ସ୍ଥିର ଶୂନ୍ୟ
+clear_ଧାଡ଼ି_control (ସଂରଚନା ଧାଡ଼ି *p)
 {
   p->used = 0;
-  p->insert_index = 0;
+  p->ଭର୍ତ୍ତି_index = 0;
   p->retrieve_index = 0;
 }
 
 /* Return a new, initialized line record. */
 
-static struct line *
-new_line_control (void)
+ସ୍ଥିର ସଂରଚନା ଧାଡ଼ି *
+new_ଧାଡ଼ି_control (ଶୂନ୍ୟ)
 {
-  struct line *p = xmalloc (sizeof *p);
+  ସଂରଚନା ଧାଡ଼ି *p = xmalloc (ଆକାର *p);
 
-  p->next = NULL;
-  clear_line_control (p);
+  p->next = ଖାଲି;
+  clear_ଧାଡ଼ି_control (p);
 
-  return p;
+  ଫେରନ୍ତୁ p;
 }
 
 /* Record LINE_START, which is the address of the start of a line
    of length LINE_LEN in the large buffer, in the lines buffer of B. */
 
-static void
-keep_new_line (struct buffer_record *b, char *line_start, idx_t line_len)
+ସ୍ଥିର ଶୂନ୍ୟ
+keep_new_ଧାଡ଼ି (ସଂରଚନା buffer_record *b, ଅକ୍ଷର *ଧାଡ଼ି_start, idx_t ଧାଡ଼ି_len)
 {
-  struct line *l;
+  ସଂରଚନା ଧାଡ଼ି *l;
 
   /* If there is no existing area to keep line info, get some. */
-  if (b->line_start == NULL)
-    b->line_start = b->curr_line = new_line_control ();
+  ଯଦି (b->ଧାଡ଼ି_start == ଖାଲି)
+    b->ଧାଡ଼ି_start = b->curr_ଧାଡ଼ି = new_ଧାଡ଼ି_control ();
 
   /* If existing area for lines is full, get more. */
-  if (b->curr_line->used == CTRL_SIZE)
+  ଯଦି (b->curr_ଧାଡ଼ି->used == CTRL_SIZE)
     {
-      b->curr_line->next = new_line_control ();
-      b->curr_line = b->curr_line->next;
+      b->curr_ଧାଡ଼ି->next = new_ଧାଡ଼ି_control ();
+      b->curr_ଧାଡ଼ି = b->curr_ଧାଡ଼ି->next;
     }
 
-  l = b->curr_line;
+  l = b->curr_ଧାଡ଼ି;
 
   /* Record the start of the line, and update counters. */
-  l->starts[l->insert_index].str = line_start;
-  l->starts[l->insert_index].len = line_len;
+  l->starts[l->ଭର୍ତ୍ତି_index].str = ଧାଡ଼ି_start;
+  l->starts[l->ଭର୍ତ୍ତି_index].len = ଧାଡ଼ି_len;
   l->used++;
-  l->insert_index++;
+  l->ଭର୍ତ୍ତି_index++;
 }
 
 /* Scan the buffer in B for newline characters
@@ -332,106 +332,106 @@ keep_new_line (struct buffer_record *b, char *line_start, idx_t line_len)
    a pointer is kept to this area, which will be used when
    the next buffer is filled. */
 
-static idx_t
-record_line_starts (struct buffer_record *b)
+ସ୍ଥିର idx_t
+record_ଧାଡ଼ି_starts (ସଂରଚନା buffer_record *b)
 {
-  char *line_start;		/* Start of current line. */
-  idx_t lines;			/* Number of lines found. */
-  idx_t line_length;		/* Length of each line found. */
+  ଅକ୍ଷର *ଧାଡ଼ି_start;		/* Start of current line. */
+  idx_t ଧାଡ଼ିଗୁଡ଼ିକ;			/* Number of lines found. */
+  idx_t ଧାଡ଼ି_length;		/* Length of each line found. */
 
-  if (b->bytes_used == 0)
-    return 0;
+  ଯଦି (b->bytes_used == 0)
+    ଫେରନ୍ତୁ 0;
 
-  lines = 0;
-  line_start = b->buffer;
-  char *buffer_end = line_start + b->bytes_used;
+  ଧାଡ଼ିଗୁଡ଼ିକ = 0;
+  ଧାଡ଼ି_start = b->buffer;
+  ଅକ୍ଷର *buffer_end = ଧାଡ଼ି_start + b->bytes_used;
   *buffer_end = '\n';
 
-  while (true)
+  ଯେତେବେଳେ (true)
     {
-      char *line_end = rawmemchr (line_start, '\n');
-      if (line_end == buffer_end)
-        break;
-      line_length = line_end - line_start + 1;
-      keep_new_line (b, line_start, line_length);
-      line_start = line_end + 1;
-      lines++;
+      ଅକ୍ଷର *ଧାଡ଼ି_end = rawmemchr (ଧାଡ଼ି_start, '\n');
+      ଯଦି (ଧାଡ଼ି_end == buffer_end)
+        ଭାଙ୍ଗ;
+      ଧାଡ଼ି_length = ଧାଡ଼ି_end - ଧାଡ଼ି_start + 1;
+      keep_new_ଧାଡ଼ି (b, ଧାଡ଼ି_start, ଧାଡ଼ି_length);
+      ଧାଡ଼ି_start = ଧାଡ଼ି_end + 1;
+      ଧାଡ଼ିଗୁଡ଼ିକ++;
     }
 
   /* Check for an incomplete last line. */
-  idx_t bytes_left = buffer_end - line_start;
-  if (bytes_left)
+  idx_t bytes_ବାମ = buffer_end - ଧାଡ଼ି_start;
+  ଯଦି (bytes_ବାମ)
     {
-      if (have_read_eof)
+      ଯଦି (have_read_eof)
         {
-          keep_new_line (b, line_start, bytes_left);
-          lines++;
+          keep_new_ଧାଡ଼ି (b, ଧାଡ଼ି_start, bytes_ବାମ);
+          ଧାଡ଼ିଗୁଡ଼ିକ++;
         }
-      else
-        save_to_hold_area (ximemdup (line_start, bytes_left), bytes_left);
+      ଅନ୍ୟଥା
+        save_to_hold_area (ximemdup (ଧାଡ଼ି_start, bytes_ବାମ), bytes_ବାମ);
     }
 
-  b->num_lines = lines;
-  b->first_available = b->start_line = last_line_number + 1;
-  last_line_number += lines;
+  b->ଅଙ୍କ_ଧାଡ଼ିଗୁଡ଼ିକ = ଧାଡ଼ିଗୁଡ଼ିକ;
+  b->first_available = b->start_ଧାଡ଼ି = last_ଧାଡ଼ି_ସଂଖ୍ୟା + 1;
+  last_ଧାଡ଼ି_ସଂଖ୍ୟା += ଧାଡ଼ିଗୁଡ଼ିକ;
 
-  return lines;
+  ଫେରନ୍ତୁ ଧାଡ଼ିଗୁଡ଼ିକ;
 }
 
 /* Work around <https://gcc.gnu.org/PR109614>.  */
-#if 13 <= __GNUC__
+#ଯଦି 13 <= __GNUC__
 # pragma GCC diagnostic ignored "-Wanalyzer-mismatching-deallocation"
 # pragma GCC diagnostic ignored "-Wanalyzer-use-after-free"
 # pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value"
 #endif
 
-static void
-free_buffer (struct buffer_record *buf)
+ସ୍ଥିର ଶୂନ୍ୟ
+free_buffer (ସଂରଚନା buffer_record *buf)
 {
-  for (struct line *l = buf->line_start; l;)
+  ପାଇଁ (ସଂରଚନା ଧାଡ଼ି *l = buf->ଧାଡ଼ି_start; l;)
     {
-      struct line *n = l->next;
-      free (l);
+      ସଂରଚନା ଧାଡ଼ି *n = l->next;
+      ମୁକ୍ତ (l);
       l = n;
     }
-  free (buf->buffer);
-  free (buf);
+  ମୁକ୍ତ (buf->buffer);
+  ମୁକ୍ତ (buf);
 }
 
 /* Return a new buffer of at least MINSIZE bytes.  */
 
-static ATTRIBUTE_DEALLOC (free_buffer, 1)
-struct buffer_record *
+ସ୍ଥିର ATTRIBUTE_DEALLOC (free_buffer, 1)
+ସଂରଚନା buffer_record *
 get_new_buffer (idx_t min_size)
 {
-  struct buffer_record *new_buffer = xmalloc (sizeof *new_buffer);
+  ସଂରଚନା buffer_record *new_buffer = xmalloc (ଆକାର *new_buffer);
   new_buffer->bytes_alloc = 0;
-  new_buffer->buffer = xpalloc (NULL, &new_buffer->bytes_alloc, min_size,
+  new_buffer->buffer = xpalloc (ଖାଲି, &new_buffer->bytes_alloc, min_size,
                                 -1, 1);
   new_buffer->bytes_used = 0;
-  new_buffer->start_line = new_buffer->first_available = last_line_number + 1;
-  new_buffer->num_lines = 0;
-  new_buffer->line_start = new_buffer->curr_line = NULL;
-  new_buffer->next = NULL;
+  new_buffer->start_ଧାଡ଼ି = new_buffer->first_available = last_ଧାଡ଼ି_ସଂଖ୍ୟା + 1;
+  new_buffer->ଅଙ୍କ_ଧାଡ଼ିଗୁଡ଼ିକ = 0;
+  new_buffer->ଧାଡ଼ି_start = new_buffer->curr_ଧାଡ଼ି = ଖାଲି;
+  new_buffer->next = ଖାଲି;
 
-  return new_buffer;
+  ଫେରନ୍ତୁ new_buffer;
 }
 
 /* Append buffer BUF to the linked list of buffers that contain
    some data yet to be processed. */
 
-static void
-save_buffer (struct buffer_record *buf)
+ସ୍ଥିର ଶୂନ୍ୟ
+save_buffer (ସଂରଚନା buffer_record *buf)
 {
-  buf->next = NULL;
-  buf->curr_line = buf->line_start;
+  buf->next = ଖାଲି;
+  buf->curr_ଧାଡ଼ି = buf->ଧାଡ଼ି_start;
 
-  if (head == NULL)
+  ଯଦି (head == ଖାଲି)
     head = buf;
-  else
+  ଅନ୍ୟଥା
     {
-      struct buffer_record *p;
-      for (p = head; p->next; p = p->next)
+      ସଂରଚନା buffer_record *p;
+      ପାଇଁ (p = head; p->next; p = p->next)
         /* Do nothing. */ ;
       p->next = buf;
     }
@@ -450,45 +450,45 @@ save_buffer (struct buffer_record *buf)
    Return true if a new buffer was obtained, otherwise false
    (in which case end-of-file must have been encountered). */
 
-static bool
-load_buffer (void)
+ସ୍ଥିର bool
+load_buffer (ଶୂନ୍ୟ)
 {
-  if (have_read_eof)
-    return false;
+  ଯଦି (have_read_eof)
+    ଫେରନ୍ତୁ false;
 
   /* We must make the buffer at least as large as the amount of data
      in the partial line left over from the last call,
      plus room for a sentinel '\n'. */
-  idx_t bytes_wanted = MAX (START_SIZE, hold_count + 1);
+  idx_t bytes_wanted = MAX (START_SIZE, hold_ଗଣନା + 1);
 
-  while (true)
+  ଯେତେବେଳେ (true)
     {
-      struct buffer_record *b = get_new_buffer (bytes_wanted);
+      ସଂରଚନା buffer_record *b = get_new_buffer (bytes_wanted);
       idx_t bytes_alloc = b->bytes_alloc;
       idx_t bytes_avail = bytes_alloc;
-      char *p = b->buffer;
+      ଅକ୍ଷର *p = b->buffer;
 
       /* First check the 'holding' area for a partial line. */
-      if (hold_count)
+      ଯଦି (hold_ଗଣନା)
         {
-          p = mempcpy (p, hold_area, hold_count);
-          b->bytes_used += hold_count;
-          bytes_avail -= hold_count;
-          hold_count = 0;
+          p = mempcpy (p, hold_area, hold_ଗଣନା);
+          b->bytes_used += hold_ଗଣନା;
+          bytes_avail -= hold_ଗଣନା;
+          hold_ଗଣନା = 0;
         }
 
-      b->bytes_used += read_input (p, bytes_avail - 1);
+      b->bytes_used += read_ନିବେଶ (p, bytes_avail - 1);
 
-      if (record_line_starts (b) != 0)
+      ଯଦି (record_ଧାଡ଼ି_starts (b) != 0)
         {
           save_buffer (b);
-          return true;
+          ଫେରନ୍ତୁ true;
         }
 
       free_buffer (b);
-      if (have_read_eof)
-        return false;
-      if (ckd_add (&bytes_wanted, bytes_alloc, bytes_alloc >> 1))
+      ଯଦି (have_read_eof)
+        ଫେରନ୍ତୁ false;
+      ଯଦି (ckd_add (&bytes_wanted, bytes_alloc, bytes_alloc >> 1))
         xalloc_die ();
     }
 }
@@ -496,54 +496,54 @@ load_buffer (void)
 /* Return the line number of the first line that has not yet been retrieved.
    Return 0 if no lines available.  */
 
-static intmax_t
-get_first_line_in_buffer (void)
+ସ୍ଥିର intmax_t
+get_first_ଧାଡ଼ି_in_buffer (ଶୂନ୍ୟ)
 {
-  if (head == NULL && !load_buffer ())
-    return 0;
+  ଯଦି (head == ଖାଲି && !load_buffer ())
+    ଫେରନ୍ତୁ 0;
 
-  return head->first_available;
+  ଫେରନ୍ତୁ head->first_available;
 }
 
 /* Return a pointer to the logical first line in the buffer and make the
    next line the logical first line.
    Return NULL if there is no more input. */
 
-static struct cstring *
-remove_line (void)
+ସ୍ଥିର ସଂରଚନା cstring *
+remove_ଧାଡ଼ି (ଶୂନ୍ୟ)
 {
   /* If non-null, this is the buffer for which the previous call
      returned the final line.  So now, presuming that line has been
      processed, we can free the buffer and reset this pointer.  */
-  static struct buffer_record *prev_buf = NULL;
+  ସ୍ଥିର ସଂରଚନା buffer_record *prev_buf = ଖାଲି;
 
-  struct cstring *line;		/* Return value. */
-  struct line *l;		/* For convenience. */
+  ସଂରଚନା cstring *ଧାଡ଼ି;		/* Return value. */
+  ସଂରଚନା ଧାଡ଼ି *l;		/* For convenience. */
 
-  if (prev_buf)
+  ଯଦି (prev_buf)
     {
       free_buffer (prev_buf);
-      prev_buf = NULL;
+      prev_buf = ଖାଲି;
     }
 
-  if (head == NULL && !load_buffer ())
-    return NULL;
+  ଯଦି (head == ଖାଲି && !load_buffer ())
+    ଫେରନ୍ତୁ ଖାଲି;
 
-  if (current_line < head->first_available)
-    current_line = head->first_available;
+  ଯଦି (current_ଧାଡ଼ି < head->first_available)
+    current_ଧାଡ଼ି = head->first_available;
 
   ++(head->first_available);
 
-  l = head->curr_line;
+  l = head->curr_ଧାଡ଼ି;
 
-  line = &l->starts[l->retrieve_index];
+  ଧାଡ଼ି = &l->starts[l->retrieve_index];
 
   /* Advance index to next line. */
-  if (++l->retrieve_index == l->used)
+  ଯଦି (++l->retrieve_index == l->used)
     {
       /* Go on to the next line record. */
-      head->curr_line = l->next;
-      if (head->curr_line == NULL || head->curr_line->used == 0)
+      head->curr_ଧାଡ଼ି = l->next;
+      ଯଦି (head->curr_ଧାଡ଼ି == ଖାଲି || head->curr_ଧାଡ଼ି->used == 0)
         {
           /* Go on to the next data block.
              but first record the current one so we can free it
@@ -553,59 +553,59 @@ remove_line (void)
         }
     }
 
-  return line;
+  ଫେରନ୍ତୁ ଧାଡ଼ି;
 }
 
 /* Search the buffers for line LINENUM, reading more input if necessary.
    Return a pointer to the line, or NULL if it is not found in the file. */
 
-static struct cstring *
-find_line (intmax_t linenum)
+ସ୍ଥିର ସଂରଚନା cstring *
+find_ଧାଡ଼ି (intmax_t linenum)
 {
-  if (head == NULL && !load_buffer ())
-    return NULL;
+  ଯଦି (head == ଖାଲି && !load_buffer ())
+    ଫେରନ୍ତୁ ଖାଲି;
 
-  if (linenum < head->start_line)
-    return NULL;
+  ଯଦି (linenum < head->start_ଧାଡ଼ି)
+    ଫେରନ୍ତୁ ଖାଲି;
 
-  for (struct buffer_record *b = head;;)
+  ପାଇଁ (ସଂରଚନା buffer_record *b = head;;)
     {
-      if (linenum < b->start_line + b->num_lines)
+      ଯଦି (linenum < b->start_ଧାଡ଼ି + b->ଅଙ୍କ_ଧାଡ଼ିଗୁଡ଼ିକ)
         {
           /* The line is in this buffer. */
-          struct line *l;
+          ସଂରଚନା ଧାଡ଼ି *l;
           idx_t offset;	/* How far into the buffer the line is. */
 
-          l = b->line_start;
-          offset = linenum - b->start_line;
+          l = b->ଧାଡ଼ି_start;
+          offset = linenum - b->start_ଧାଡ଼ି;
           /* Find the control record. */
-          while (offset >= CTRL_SIZE)
+          ଯେତେବେଳେ (offset >= CTRL_SIZE)
             {
               l = l->next;
               offset -= CTRL_SIZE;
             }
-          return &l->starts[offset];
+          ଫେରନ୍ତୁ &l->starts[offset];
         }
-      if (b->next == NULL && !load_buffer ())
-        return NULL;
+      ଯଦି (b->next == ଖାଲି && !load_buffer ())
+        ଫେରନ୍ତୁ ଖାଲି;
       b = b->next;		/* Try the next data block. */
     }
 }
 
 /* Return true if at least one more line is available for input. */
 
-static bool
-no_more_lines (void)
+ସ୍ଥିର bool
+no_more_ଧାଡ଼ିଗୁଡ଼ିକ (ଶୂନ୍ୟ)
 {
-  return find_line (current_line + 1) == NULL;
+  ଫେରନ୍ତୁ find_ଧାଡ଼ି (current_ଧାଡ଼ି + 1) == ଖାଲି;
 }
 
 /* Open NAME as standard input.  */
 
-static void
-set_input_file (char const *name)
+ସ୍ଥିର ଶୂନ୍ୟ
+set_ନିବେଶ_file (ଅକ୍ଷର ଅଚଳ *name)
 {
-  if (! streq (name, "-") && fd_reopen (STDIN_FILENO, name, O_RDONLY, 0) < 0)
+  ଯଦି (! streq (name, "-") && fd_reopen (STDIN_FILENO, name, O_RDONLY, 0) < 0)
     error (EXIT_FAILURE, errno, _("cannot open %s for reading"),
            quoteaf (name));
 }
@@ -615,62 +615,62 @@ set_input_file (char const *name)
    If IGNORE is true, do not output lines selected here.
    ARGNUM is the index in ARGV of the current pattern. */
 
-static void
-write_to_file (intmax_t last_line, bool ignore, int argnum)
+ସ୍ଥିର ଶୂନ୍ୟ
+write_to_file (intmax_t last_ଧାଡ଼ି, bool ignore, ପୂର୍ଣ୍ଣସଂଖ୍ୟା argnum)
 {
-  struct cstring *line;
-  intmax_t first_line;		/* First available input line. */
-  intmax_t lines;		/* Number of lines to output. */
+  ସଂରଚନା cstring *ଧାଡ଼ି;
+  intmax_t first_ଧାଡ଼ି;		/* First available input line. */
+  intmax_t ଧାଡ଼ିଗୁଡ଼ିକ;		/* Number of lines to output. */
 
-  first_line = get_first_line_in_buffer ();
+  first_ଧାଡ଼ି = get_first_ଧାଡ଼ି_in_buffer ();
 
-  if (! first_line || first_line > last_line)
+  ଯଦି (! first_ଧାଡ଼ି || first_ଧାଡ଼ି > last_ଧାଡ଼ି)
     {
       error (0, 0, _("%s: line number out of range"),
              quote (global_argv[argnum]));
       cleanup_fatal ();
     }
 
-  lines = last_line - first_line;
+  ଧାଡ଼ିଗୁଡ଼ିକ = last_ଧାଡ଼ି - first_ଧାଡ଼ି;
 
-  for (intmax_t i = 0; i < lines; i++)
+  ପାଇଁ (intmax_t i = 0; i < ଧାଡ଼ିଗୁଡ଼ିକ; i++)
     {
-      line = remove_line ();
-      if (line == NULL)
+      ଧାଡ଼ି = remove_ଧାଡ଼ି ();
+      ଯଦି (ଧାଡ଼ି == ଖାଲି)
         {
           error (0, 0, _("%s: line number out of range"),
                  quote (global_argv[argnum]));
           cleanup_fatal ();
         }
-      if (!ignore)
-        save_line_to_file (line);
+      ଯଦି (!ignore)
+        save_ଧାଡ଼ି_to_file (ଧାଡ଼ି);
     }
 }
 
 /* Output any lines left after all regexps have been processed. */
 
-static void
-dump_rest_of_file (void)
+ସ୍ଥିର ଶୂନ୍ୟ
+dump_rest_of_file (ଶୂନ୍ୟ)
 {
-  struct cstring *line;
+  ସଂରଚନା cstring *ଧାଡ଼ି;
 
-  while ((line = remove_line ()) != NULL)
-    save_line_to_file (line);
+  ଯେତେବେଳେ ((ଧାଡ଼ି = remove_ଧାଡ଼ି ()) != ଖାଲି)
+    save_ଧାଡ଼ି_to_file (ଧାଡ଼ି);
 }
 
 /* Handle an attempt to read beyond EOF under the control of record P,
    on iteration REPETITION if nonzero. */
 
-static void
-handle_line_error (const struct control *p, intmax_t repetition)
+ସ୍ଥିର ଶୂନ୍ୟ
+handle_ଧାଡ଼ି_error (ଅଚଳ ସଂରଚନା control *p, intmax_t repetition)
 {
-  char buf[INT_BUFSIZE_BOUND (intmax_t)];
+  ଅକ୍ଷର buf[INT_BUFSIZE_BOUND (intmax_t)];
 
   fprintf (stderr, _("%s: %s: line number out of range"),
-           program_name, quote (imaxtostr (p->lines_required, buf)));
-  if (repetition)
+           program_name, quote (imaxtostr (p->ଧାଡ଼ିଗୁଡ଼ିକ_required, buf)));
+  ଯଦି (repetition)
     fprintf (stderr, _(" on repetition %jd\n"), repetition);
-  else
+  ଅନ୍ୟଥା
     fprintf (stderr, "\n");
 
   cleanup_fatal ();
@@ -681,54 +681,54 @@ handle_line_error (const struct control *p, intmax_t repetition)
    P is the control record.
    REPETITION is the repetition number. */
 
-static void
-process_line_count (const struct control *p, intmax_t repetition)
+ସ୍ଥିର ଶୂନ୍ୟ
+process_ଧାଡ଼ି_ଗଣନା (ଅଚଳ ସଂରଚନା control *p, intmax_t repetition)
 {
   intmax_t linenum;
-  intmax_t last_line_to_save = p->lines_required * (repetition + 1);
+  intmax_t last_ଧାଡ଼ି_to_save = p->ଧାଡ଼ିଗୁଡ଼ିକ_required * (repetition + 1);
 
   create_output_file ();
 
   /* Ensure that the line number specified is not 1 greater than
      the number of lines in the file.
      When suppressing matched lines, check before the loop. */
-  if (no_more_lines () && suppress_matched)
-    handle_line_error (p, repetition);
+  ଯଦି (no_more_ଧାଡ଼ିଗୁଡ଼ିକ () && suppress_matched)
+    handle_ଧାଡ଼ି_error (p, repetition);
 
-  if (!(linenum = get_first_line_in_buffer ()))
-    handle_line_error (p, repetition);
+  ଯଦି (!(linenum = get_first_ଧାଡ଼ି_in_buffer ()))
+    handle_ଧାଡ଼ି_error (p, repetition);
 
-  while (linenum++ < last_line_to_save)
+  ଯେତେବେଳେ (linenum++ < last_ଧାଡ଼ି_to_save)
     {
-      struct cstring *line = remove_line ();
-      if (line == NULL)
-        handle_line_error (p, repetition);
-      save_line_to_file (line);
+      ସଂରଚନା cstring *ଧାଡ଼ି = remove_ଧାଡ଼ି ();
+      ଯଦି (ଧାଡ଼ି == ଖାଲି)
+        handle_ଧାଡ଼ି_error (p, repetition);
+      save_ଧାଡ଼ି_to_file (ଧାଡ଼ି);
     }
 
   close_output_file ();
 
-  if (suppress_matched)
-    remove_line ();
+  ଯଦି (suppress_matched)
+    remove_ଧାଡ଼ି ();
 
   /* Ensure that the line number specified is not 1 greater than
      the number of lines in the file. */
-  if (no_more_lines () && !suppress_matched)
-    handle_line_error (p, repetition);
+  ଯଦି (no_more_ଧାଡ଼ିଗୁଡ଼ିକ () && !suppress_matched)
+    handle_ଧାଡ଼ି_error (p, repetition);
 }
 
-static void
-regexp_error (struct control *p, intmax_t repetition, bool ignore)
+ସ୍ଥିର ଶୂନ୍ୟ
+regexp_error (ସଂରଚନା control *p, intmax_t repetition, bool ignore)
 {
   fprintf (stderr, _("%s: %s: match not found"),
            program_name, quote (global_argv[p->argnum]));
 
-  if (repetition)
+  ଯଦି (repetition)
     fprintf (stderr, _(" on repetition %jd\n"), repetition);
-  else
+  ଅନ୍ୟଥା
     fprintf (stderr, "\n");
 
-  if (!ignore)
+  ଯଦି (!ignore)
     {
       dump_rest_of_file ();
       close_output_file ();
@@ -740,128 +740,128 @@ regexp_error (struct control *p, intmax_t repetition, bool ignore)
    it unless P->IGNORE is true.
    REPETITION is this repeat-count; 0 means the first time. */
 
-static void
-process_regexp (struct control *p, intmax_t repetition)
+ସ୍ଥିର ଶୂନ୍ୟ
+process_regexp (ସଂରଚନା control *p, intmax_t repetition)
 {
-  struct cstring *line;		/* From input file. */
-  idx_t line_len;		/* To make "$" in regexps work. */
-  intmax_t break_line;		/* First line number of next file. */
+  ସଂରଚନା cstring *ଧାଡ଼ି;		/* From input file. */
+  idx_t ଧାଡ଼ି_len;		/* To make "$" in regexps work. */
+  intmax_t break_ଧାଡ଼ି;		/* First line number of next file. */
   bool ignore = p->ignore;	/* If true, skip this section. */
   regoff_t ret;
 
-  if (!ignore)
+  ଯଦି (!ignore)
     create_output_file ();
 
   /* If there is no offset for the regular expression, or
      it is positive, then it is not necessary to buffer the lines. */
 
-  if (p->offset >= 0)
+  ଯଦି (p->offset >= 0)
     {
-      while (true)
+      ଯେତେବେଳେ (true)
         {
-          line = find_line (++current_line);
-          if (line == NULL)
+          ଧାଡ଼ି = find_ଧାଡ଼ି (++current_ଧାଡ଼ି);
+          ଯଦି (ଧାଡ଼ି == ଖାଲି)
             {
-              if (p->repeat_forever)
+              ଯଦି (p->repeat_forever)
                 {
-                  if (!ignore)
+                  ଯଦି (!ignore)
                     {
                       dump_rest_of_file ();
                       close_output_file ();
                     }
                   exit (EXIT_SUCCESS);
                 }
-              else
+              ଅନ୍ୟଥା
                 regexp_error (p, repetition, ignore);
             }
-          line_len = line->len;
-          if (line->str[line_len - 1] == '\n')
-            line_len--;
-          ret = re_search (&p->re_compiled, line->str, line_len,
-                           0, line_len, NULL);
-          if (ret == -2)
+          ଧାଡ଼ି_len = ଧାଡ଼ି->len;
+          ଯଦି (ଧାଡ଼ି->str[ଧାଡ଼ି_len - 1] == '\n')
+            ଧାଡ଼ି_len--;
+          ret = re_ସନ୍ଧାନ (&p->re_compiled, ଧାଡ଼ି->str, ଧାଡ଼ି_len,
+                           0, ଧାଡ଼ି_len, ଖାଲି);
+          ଯଦି (ret == -2)
             {
               error (0, 0, _("error in regular expression search"));
               cleanup_fatal ();
             }
-          if (ret == -1)
+          ଯଦି (ret == -1)
             {
-              line = remove_line ();
-              if (!ignore)
-                save_line_to_file (line);
+              ଧାଡ଼ି = remove_ଧାଡ଼ି ();
+              ଯଦି (!ignore)
+                save_ଧାଡ଼ି_to_file (ଧାଡ଼ି);
             }
-          else
-            break;
+          ଅନ୍ୟଥା
+            ଭାଙ୍ଗ;
         }
     }
-  else
+  ଅନ୍ୟଥା
     {
       /* Buffer the lines. */
-      while (true)
+      ଯେତେବେଳେ (true)
         {
-          line = find_line (++current_line);
-          if (line == NULL)
+          ଧାଡ଼ି = find_ଧାଡ଼ି (++current_ଧାଡ଼ି);
+          ଯଦି (ଧାଡ଼ି == ଖାଲି)
             {
-              if (p->repeat_forever)
+              ଯଦି (p->repeat_forever)
                 {
-                  if (!ignore)
+                  ଯଦି (!ignore)
                     {
                       dump_rest_of_file ();
                       close_output_file ();
                     }
                   exit (EXIT_SUCCESS);
                 }
-              else
+              ଅନ୍ୟଥା
                 regexp_error (p, repetition, ignore);
             }
-          line_len = line->len;
-          if (line->str[line_len - 1] == '\n')
-            line_len--;
-          ret = re_search (&p->re_compiled, line->str, line_len,
-                           0, line_len, NULL);
-          if (ret == -2)
+          ଧାଡ଼ି_len = ଧାଡ଼ି->len;
+          ଯଦି (ଧାଡ଼ି->str[ଧାଡ଼ି_len - 1] == '\n')
+            ଧାଡ଼ି_len--;
+          ret = re_ସନ୍ଧାନ (&p->re_compiled, ଧାଡ଼ି->str, ଧାଡ଼ି_len,
+                           0, ଧାଡ଼ି_len, ଖାଲି);
+          ଯଦି (ret == -2)
             {
               error (0, 0, _("error in regular expression search"));
               cleanup_fatal ();
             }
-          if (ret != -1)
-            break;
+          ଯଦି (ret != -1)
+            ଭାଙ୍ଗ;
         }
     }
 
   /* Account for any offset from this regexp. */
-  break_line = current_line + p->offset;
+  break_ଧାଡ଼ି = current_ଧାଡ଼ି + p->offset;
 
-  write_to_file (break_line, ignore, p->argnum);
+  write_to_file (break_ଧାଡ଼ି, ignore, p->argnum);
 
-  if (!ignore)
+  ଯଦି (!ignore)
     close_output_file ();
 
-  if (p->offset > 0)
-    current_line = break_line;
+  ଯଦି (p->offset > 0)
+    current_ଧାଡ଼ି = break_ଧାଡ଼ି;
 
-  if (suppress_matched)
-    remove_line ();
+  ଯଦି (suppress_matched)
+    remove_ଧାଡ଼ି ();
 }
 
 /* Split the input file according to the control records we have built. */
 
-static void
-split_file (void)
+ସ୍ଥିର ଶୂନ୍ୟ
+split_file (ଶୂନ୍ୟ)
 {
-  for (idx_t i = 0; i < control_used; i++)
+  ପାଇଁ (idx_t i = 0; i < control_used; i++)
     {
-      if (controls[i].regexpr)
+      ଯଦି (controls[i].regexpr)
         {
-          for (intmax_t j = 0; (controls[i].repeat_forever
+          ପାଇଁ (intmax_t j = 0; (controls[i].repeat_forever
                        || j <= controls[i].repeat); j++)
             process_regexp (&controls[i], j);
         }
-      else
+      ଅନ୍ୟଥା
         {
-          for (intmax_t j = 0; (controls[i].repeat_forever
+          ପାଇଁ (intmax_t j = 0; (controls[i].repeat_forever
                        || j <= controls[i].repeat); j++)
-            process_line_count (&controls[i], j);
+            process_ଧାଡ଼ି_ଗଣନା (&controls[i], j);
         }
     }
 
@@ -877,46 +877,46 @@ split_file (void)
    not guarantee this for the functions called below, but we don't
    know of any hosts where this implementation isn't safe.  */
 
-static char *
-make_filename (int num)
+ସ୍ଥିର ଅକ୍ଷର *
+make_filename (ପୂର୍ଣ୍ଣସଂଖ୍ୟା ଅଙ୍କ)
 {
   strcpy (filename_space, prefix);
-  if (suffix)
-    sprintf (filename_space + strlen (prefix), suffix, num);
-  else
-    sprintf (filename_space + strlen (prefix), "%0*d", digits, num);
-  return filename_space;
+  ଯଦି (suffix)
+    sprintf (filename_space + strlen (prefix), suffix, ଅଙ୍କ);
+  ଅନ୍ୟଥା
+    sprintf (filename_space + strlen (prefix), "%0*d", digits, ଅଙ୍କ);
+  ଫେରନ୍ତୁ filename_space;
 }
 
 /* Create the next output file. */
 
-static void
-create_output_file (void)
+ସ୍ଥିର ଶୂନ୍ୟ
+create_output_file (ଶୂନ୍ୟ)
 {
-  int nfiles = files_created;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nfiles = files_created;
   bool fopen_ok;
-  int fopen_errno;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା fopen_errno;
 
   output_filename = make_filename (nfiles);
 
-  if (nfiles == INT_MAX)
+  ଯଦି (nfiles == INT_MAX)
     {
       fopen_ok = false;
       fopen_errno = EOVERFLOW;
     }
-  else
+  ଅନ୍ୟଥା
     {
       /* Create the output file in a critical section, to avoid races.  */
       sigset_t oldset;
       sigprocmask (SIG_BLOCK, &caught_signals, &oldset);
       output_stream = fopen (output_filename, "w");
-      fopen_ok = (output_stream != NULL);
+      fopen_ok = (output_stream != ଖାଲି);
       fopen_errno = errno;
       files_created = nfiles + fopen_ok;
-      sigprocmask (SIG_SETMASK, &oldset, NULL);
+      sigprocmask (SIG_SETMASK, &oldset, ଖାଲି);
     }
 
-  if (! fopen_ok)
+  ଯଦି (! fopen_ok)
     {
       error (0, fopen_errno, "%s", quotef (output_filename));
       cleanup_fatal ();
@@ -927,16 +927,16 @@ create_output_file (void)
 /* If requested, delete all the files we have created.  This function
    must be called only from critical sections.  */
 
-static void
+ସ୍ଥିର ଶୂନ୍ୟ
 delete_all_files (bool in_signal_handler)
 {
-  if (! remove_files)
-    return;
+  ଯଦି (! remove_files)
+    ଫେରନ୍ତୁ;
 
-  for (int i = files_created; 0 <= --i; )
+  ପାଇଁ (ପୂର୍ଣ୍ଣସଂଖ୍ୟା i = files_created; 0 <= --i; )
     {
-      char const *name = make_filename (i);
-      if (unlink (name) != 0 && errno != ENOENT && !in_signal_handler)
+      ଅକ୍ଷର ଅଚଳ *name = make_filename (i);
+      ଯଦି (unlink (name) != 0 && errno != ENOENT && !in_signal_handler)
         error (0, errno, "%s", quotef (name));
     }
 
@@ -946,81 +946,81 @@ delete_all_files (bool in_signal_handler)
 /* Close the current output file and print the count
    of characters in this file. */
 
-static void
-close_output_file (void)
+ସ୍ଥିର ଶୂନ୍ୟ
+close_output_file (ଶୂନ୍ୟ)
 {
-  if (output_stream)
+  ଯଦି (output_stream)
     {
-      if (ferror (output_stream))
+      ଯଦି (ferror (output_stream))
         {
           error (0, 0, _("write error for %s"), quoteaf (output_filename));
-          output_stream = NULL;
+          output_stream = ଖାଲି;
           cleanup_fatal ();
         }
-      if (fclose (output_stream) != 0)
+      ଯଦି (fclose (output_stream) != 0)
         {
           error (0, errno, "%s", quotef (output_filename));
-          output_stream = NULL;
+          output_stream = ଖାଲି;
           cleanup_fatal ();
         }
-      if (bytes_written == 0 && elide_empty_files)
+      ଯଦି (bytes_written == 0 && elide_empty_files)
         {
           sigset_t oldset;
           bool unlink_ok;
-          int unlink_errno;
+          ପୂର୍ଣ୍ଣସଂଖ୍ୟା unlink_errno;
 
           /* Remove the output file in a critical section, to avoid races.  */
           sigprocmask (SIG_BLOCK, &caught_signals, &oldset);
           unlink_ok = (unlink (output_filename) == 0);
           unlink_errno = errno;
           files_created--;
-          sigprocmask (SIG_SETMASK, &oldset, NULL);
+          sigprocmask (SIG_SETMASK, &oldset, ଖାଲି);
 
-          if (! unlink_ok && unlink_errno != ENOENT)
+          ଯଦି (! unlink_ok && unlink_errno != ENOENT)
             error (0, unlink_errno, "%s", quotef (output_filename));
         }
-      else
+      ଅନ୍ୟଥା
         {
-          if (!suppress_count)
+          ଯଦି (!suppress_ଗଣନା)
             fprintf (stdout, "%jd\n", bytes_written);
         }
-      output_stream = NULL;
+      output_stream = ଖାଲି;
     }
 }
 
 /* Save line LINE to the output file and
    increment the character count for the current file. */
 
-static void
-save_line_to_file (const struct cstring *line)
+ସ୍ଥିର ଶୂନ୍ୟ
+save_ଧାଡ଼ି_to_file (ଅଚଳ ସଂରଚନା cstring *ଧାଡ଼ି)
 {
-  idx_t l = fwrite (line->str, sizeof (char), line->len, output_stream);
-  if (l != line->len)
+  idx_t l = fwrite (ଧାଡ଼ି->str, ଆକାର (ଅକ୍ଷର), ଧାଡ଼ି->len, output_stream);
+  ଯଦି (l != ଧାଡ଼ି->len)
     {
       error (0, errno, _("write error for %s"), quoteaf (output_filename));
-      output_stream = NULL;
+      output_stream = ଖାଲି;
       cleanup_fatal ();
     }
-  bytes_written += line->len;
+  bytes_written += ଧାଡ଼ି->len;
 }
 
 /* Return a new, initialized control record. */
 
-static struct control *
-new_control_record (void)
+ସ୍ଥିର ସଂରଚନା control *
+new_control_record (ଶୂନ୍ୟ)
 {
-  static idx_t control_allocated = 0; /* Total space allocated. */
-  struct control *p;
+  ସ୍ଥିର idx_t control_allocated = 0; /* Total space allocated. */
+  ସଂରଚନା control *p;
 
-  if (control_used == control_allocated)
-    controls = xpalloc (controls, &control_allocated, 1, -1, sizeof *controls);
+  ଯଦି (control_used == control_allocated)
+    controls = xpalloc (controls, &control_allocated, 1, -1, ଆକାର *controls);
   p = &controls[control_used++];
   p->regexpr = false;
   p->repeat = 0;
   p->repeat_forever = false;
-  p->lines_required = 0;
+  p->ଧାଡ଼ିଗୁଡ଼ିକ_required = 0;
   p->offset = 0;
-  return p;
+  ଫେରନ୍ତୁ p;
 }
 
 /* Check if there is a numeric offset after a regular expression.
@@ -1028,10 +1028,10 @@ new_control_record (void)
    P is the control record for this regular expression.
    NUM is the numeric part of STR. */
 
-static void
-check_for_offset (struct control *p, char const *str, char const *num)
+ସ୍ଥିର ଶୂନ୍ୟ
+check_for_offset (ସଂରଚନା control *p, ଅକ୍ଷର ଅଚଳ *str, ଅକ୍ଷର ଅଚଳ *ଅଙ୍କ)
 {
-  if (xstrtoimax (num, NULL, 10, &p->offset, "") != LONGINT_OK)
+  ଯଦି (xstrtoimax (ଅଙ୍କ, ଖାଲି, 10, &p->offset, "") != LONGINT_OK)
     error (EXIT_FAILURE, 0, _("%s: integer expected after delimiter"),
            quote (str));
 }
@@ -1041,23 +1041,23 @@ check_for_offset (struct control *p, char const *str, char const *num)
    and store its value in P.
    ARGNUM is the ARGV index of STR. */
 
-static void
-parse_repeat_count (int argnum, struct control *p, char *str)
+ସ୍ଥିର ଶୂନ୍ୟ
+parse_repeat_ଗଣନା (ପୂର୍ଣ୍ଣସଂଖ୍ୟା argnum, ସଂରଚନା control *p, ଅକ୍ଷର *str)
 {
-  char *end;
+  ଅକ୍ଷର *end;
 
   end = str + strlen (str) - 1;
-  if (*end != '}')
+  ଯଦି (*end != '}')
     error (EXIT_FAILURE, 0, _("%s: '}' is required in repeat count"),
            quote (str));
   *end = '\0';
 
-  if (str + 1 == end - 1 && *(str + 1) == '*')
+  ଯଦି (str + 1 == end - 1 && *(str + 1) == '*')
     p->repeat_forever = true;
-  else
+  ଅନ୍ୟଥା
     {
       uintmax_t val;
-      if (xstrtoumax (str + 1, NULL, 10, &val, "") != LONGINT_OK
+      ଯଦି (xstrtoumax (str + 1, ଖାଲି, 10, &val, "") != LONGINT_OK
           || ckd_add (&p->repeat, val, 0))
         {
           error (EXIT_FAILURE, 0,
@@ -1075,17 +1075,17 @@ parse_repeat_count (int argnum, struct control *p, char *str)
    ARGNUM is the ARGV index of STR.
    Unless IGNORE is true, mark these lines for output. */
 
-static struct control *
-extract_regexp (int argnum, bool ignore, char const *str)
+ସ୍ଥିର ସଂରଚନା control *
+extract_regexp (ପୂର୍ଣ୍ଣସଂଖ୍ୟା argnum, bool ignore, ଅକ୍ଷର ଅଚଳ *str)
 {
   idx_t len;			/* Number of bytes in this regexp. */
-  char delim = *str;
-  char const *closing_delim;
-  struct control *p;
-  char const *err;
+  ଅକ୍ଷର delim = *str;
+  ଅକ୍ଷର ଅଚଳ *closing_delim;
+  ସଂରଚନା control *p;
+  ଅକ୍ଷର ଅଚଳ *err;
 
   closing_delim = strrchr (str + 1, delim);
-  if (closing_delim == NULL)
+  ଯଦି (closing_delim == ଖାଲି)
     error (EXIT_FAILURE, 0,
            _("%s: closing delimiter '%c' missing"), str, delim);
 
@@ -1095,72 +1095,72 @@ extract_regexp (int argnum, bool ignore, char const *str)
   p->ignore = ignore;
 
   p->regexpr = true;
-  p->re_compiled.buffer = NULL;
+  p->re_compiled.buffer = ଖାଲି;
   p->re_compiled.allocated = 0;
   p->re_compiled.fastmap = xmalloc (UCHAR_MAX + 1);
-  p->re_compiled.translate = NULL;
+  p->re_compiled.translate = ଖାଲି;
   re_syntax_options =
     RE_SYNTAX_POSIX_BASIC & ~RE_CONTEXT_INVALID_DUP & ~RE_NO_EMPTY_RANGES;
   err = re_compile_pattern (str + 1, len, &p->re_compiled);
-  if (err)
+  ଯଦି (err)
     {
       error (0, 0, _("%s: invalid regular expression: %s"), quote (str), err);
       cleanup_fatal ();
     }
 
-  if (closing_delim[1])
+  ଯଦି (closing_delim[1])
     check_for_offset (p, str, closing_delim + 1);
 
-  return p;
+  ଫେରନ୍ତୁ p;
 }
 
 /* Extract the break patterns from args START through ARGC - 1 of ARGV.
    After each pattern, check if the next argument is a repeat count. */
 
-static void
-parse_patterns (int argc, int start, char **argv)
+ସ୍ଥିର ଶୂନ୍ୟ
+parse_patterns (ପୂର୍ଣ୍ଣସଂଖ୍ୟା argc, ପୂର୍ଣ୍ଣସଂଖ୍ୟା start, ଅକ୍ଷର **argv)
 {
-  struct control *p;		/* New control record created. */
-  static intmax_t last_val = 0;
+  ସଂରଚନା control *p;		/* New control record created. */
+  ସ୍ଥିର intmax_t last_val = 0;
 
-  for (int i = start; i < argc; i++)
+  ପାଇଁ (ପୂର୍ଣ୍ଣସଂଖ୍ୟା i = start; i < argc; i++)
     {
-      if (*argv[i] == '/' || *argv[i] == '%')
+      ଯଦି (*argv[i] == '/' || *argv[i] == '%')
         {
           p = extract_regexp (i, *argv[i] == '%', argv[i]);
         }
-      else
+      ଅନ୍ୟଥା
         {
           p = new_control_record ();
           p->argnum = i;
 
           uintmax_t val;
-          if (xstrtoumax (argv[i], NULL, 10, &val, "") != LONGINT_OK
+          ଯଦି (xstrtoumax (argv[i], ଖାଲି, 10, &val, "") != LONGINT_OK
               || INTMAX_MAX < val)
             error (EXIT_FAILURE, 0, _("%s: invalid pattern"), quote (argv[i]));
-          if (val == 0)
+          ଯଦି (val == 0)
             error (EXIT_FAILURE, 0,
                    _("%s: line number must be greater than zero"), argv[i]);
-          if (val < last_val)
+          ଯଦି (val < last_val)
             error (EXIT_FAILURE, 0,
                    _("line number %s is smaller than preceding line number,"
                      " %jd"), quote (argv[i]), last_val);
 
-          if (val == last_val)
+          ଯଦି (val == last_val)
             error (0, 0,
            _("warning: line number %s is the same as preceding line number"),
                    quote (argv[i]));
 
           last_val = val;
 
-          p->lines_required = val;
+          p->ଧାଡ଼ିଗୁଡ଼ିକ_required = val;
         }
 
-      if (i + 1 < argc && *argv[i + 1] == '{')
+      ଯଦି (i + 1 < argc && *argv[i + 1] == '{')
         {
           /* We have a repeat count. */
           i++;
-          parse_repeat_count (i, p, argv[i]);
+          parse_repeat_ଗଣନା (i, p, argv[i]);
         }
     }
 }
@@ -1168,34 +1168,34 @@ parse_patterns (int argc, int start, char **argv)
 
 
 /* Names for the printf format flags ' and #.  These can be ORed together.  */
-enum { FLAG_THOUSANDS = 1, FLAG_ALTERNATIVE = 2 };
+ଗଣନା { FLAG_THOUSANDS = 1, FLAG_ALTERNATIVE = 2 };
 
 /* Scan the printf format flags in FORMAT, storing info about the
    flags into *FLAGS_PTR.  Return the number of flags found.  */
-static idx_t
-get_format_flags (char const *format, int *flags_ptr)
+ସ୍ଥିର idx_t
+get_format_flags (ଅକ୍ଷର ଅଚଳ *format, ପୂର୍ଣ୍ଣସଂଖ୍ୟା *flags_ptr)
 {
-  int flags = 0;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା flags = 0;
 
-  for (idx_t count = 0; ; count++)
+  ପାଇଁ (idx_t ଗଣନା_2 = 0; ; ଗଣନା_2++)
     {
-      switch (format[count])
+      ବାଛ (format[ଗଣନା_2])
         {
-        case '-':
-        case '0':
-          break;
+        ସ୍ଥିତି '-':
+        ସ୍ଥିତି '0':
+          ଭାଙ୍ଗ;
 
-        case '\'':
+        ସ୍ଥିତି '\'':
           flags |= FLAG_THOUSANDS;
-          break;
+          ଭାଙ୍ଗ;
 
-        case '#':
+        ସ୍ଥିତି '#':
           flags |= FLAG_ALTERNATIVE;
-          break;
+          ଭାଙ୍ଗ;
 
-        default:
+        ପୂର୍ବନିର୍ଦ୍ଧାରିତ:
           *flags_ptr = flags;
-          return count;
+          ଫେରନ୍ତୁ ଗଣନା_2;
         }
     }
 }
@@ -1203,41 +1203,41 @@ get_format_flags (char const *format, int *flags_ptr)
 /* Check that the printf format conversion specifier *FORMAT is valid
    and compatible with FLAGS.  Change it to 'd' if it is 'u',
    since the format will be used with a signed value.  */
-static void
-check_format_conv_type (char *format, int flags)
+ସ୍ଥିର ଶୂନ୍ୟ
+check_format_conv_type (ଅକ୍ଷର *format, ପୂର୍ଣ୍ଣସଂଖ୍ୟା flags)
 {
-  unsigned char ch = *format;
-  int compatible_flags = FLAG_THOUSANDS;
+  unsigned ଅକ୍ଷର ch = *format;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା compatible_flags = FLAG_THOUSANDS;
 
-  switch (ch)
+  ବାଛ (ch)
     {
-    case 'd':
-    case 'i':
-      break;
+    ସ୍ଥିତି 'd':
+    ସ୍ଥିତି 'i':
+      ଭାଙ୍ଗ;
 
-    case 'u':
+    ସ୍ଥିତି 'u':
       *format = 'd';
-      break;
+      ଭାଙ୍ଗ;
 
-    case 'o':
-    case 'x':
-    case 'X':
+    ସ୍ଥିତି 'o':
+    ସ୍ଥିତି 'x':
+    ସ୍ଥିତି 'X':
       compatible_flags = FLAG_ALTERNATIVE;
-      break;
+      ଭାଙ୍ଗ;
 
-    case 0:
+    ସ୍ଥିତି 0:
       error (EXIT_FAILURE, 0, _("missing conversion specifier in suffix"));
 
-    default:
-      if (isprint (ch))
+    ପୂର୍ବନିର୍ଦ୍ଧାରିତ:
+      ଯଦି (isprint (ch))
         error (EXIT_FAILURE, 0,
                _("invalid conversion specifier in suffix: %c"), ch);
-      else
+      ଅନ୍ୟଥା
         error (EXIT_FAILURE, 0,
                _("invalid conversion specifier in suffix: \\%.3o"), ch);
     }
 
-  if (flags & ~ compatible_flags)
+  ଯଦି (flags & ~ compatible_flags)
     error (EXIT_FAILURE, 0,
            _("invalid flags in conversion specification: %%%c%c"),
            (flags & ~ compatible_flags & FLAG_ALTERNATIVE ? '#' : '\''), ch);
@@ -1246,42 +1246,42 @@ check_format_conv_type (char *format, int flags)
 /* Return the maximum number of bytes that can be generated by
    applying FORMAT to an int value.  If the format is
    invalid, diagnose the problem and exit.  */
-static idx_t
-max_out (char *format)
+ସ୍ଥିର idx_t
+max_out (ଅକ୍ଷର *format)
 {
   bool percent = false;
 
-  for (char *f = format; *f; f++)
-    if (*f == '%' && *++f != '%')
+  ପାଇଁ (ଅକ୍ଷର *f = format; *f; f++)
+    ଯଦି (*f == '%' && *++f != '%')
       {
-        if (percent)
+        ଯଦି (percent)
           error (EXIT_FAILURE, 0,
                  _("too many %% conversion specifications in suffix"));
         percent = true;
-        int flags;
+        ପୂର୍ଣ୍ଣସଂଖ୍ୟା flags;
         f += get_format_flags (f, &flags);
-        while (c_isdigit (*f))
+        ଯେତେବେଳେ (c_isdigit (*f))
           f++;
-        if (*f == '.')
-          while (c_isdigit (*++f))
-            continue;
+        ଯଦି (*f == '.')
+          ଯେତେବେଳେ (c_isdigit (*++f))
+            ଜାରି;
         check_format_conv_type (f, flags);
       }
 
-  if (! percent)
+  ଯଦି (! percent)
     error (EXIT_FAILURE, 0,
            _("missing %% conversion specification in suffix"));
 
-  int maxlen = snprintf (NULL, 0, format, INT_MAX);
-  if (! (0 <= maxlen && maxlen <= IDX_MAX))
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା maxlen = snprintf (ଖାଲି, 0, format, INT_MAX);
+  ଯଦି (! (0 <= maxlen && maxlen <= IDX_MAX))
     xalloc_die ();
-  return maxlen;
+  ଫେରନ୍ତୁ maxlen;
 }
 
-int
-main (int argc, char **argv)
+ପୂର୍ଣ୍ଣସଂଖ୍ୟା
+ମୁଖ୍ୟ (ପୂର୍ଣ୍ଣସଂଖ୍ୟା argc, ଅକ୍ଷର **argv)
 {
-  int optc;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା optc;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -1293,53 +1293,53 @@ main (int argc, char **argv)
 
   global_argv = argv;
 
-  while ((optc = getopt_long (argc, argv, "f:b:kn:sqz", longopts, NULL))
+  ଯେତେବେଳେ ((optc = getopt_long (argc, argv, "f:b:kn:sqz", longopts, ଖାଲି))
          != -1)
-    switch (optc)
+    ବାଛ (optc)
       {
-      case 'f':
+      ସ୍ଥିତି 'f':
         prefix = optarg;
-        break;
+        ଭାଙ୍ଗ;
 
-      case 'b':
+      ସ୍ଥିତି 'b':
         suffix = optarg;
-        break;
+        ଭାଙ୍ଗ;
 
-      case 'k':
+      ସ୍ଥିତି 'k':
         remove_files = false;
-        break;
+        ଭାଙ୍ଗ;
 
-      case 'n':
+      ସ୍ଥିତି 'n':
         digits = xdectoimax (optarg, 0, MIN (INT_MAX, IDX_MAX), "",
                              _("invalid number"), 0);
-        break;
+        ଭାଙ୍ଗ;
 
-      case 's':
-      case 'q':
-        suppress_count = true;
-        break;
+      ସ୍ଥିତି 's':
+      ସ୍ଥିତି 'q':
+        suppress_ଗଣନା = true;
+        ଭାଙ୍ଗ;
 
-      case 'z':
+      ସ୍ଥିତି 'z':
         elide_empty_files = true;
-        break;
+        ଭାଙ୍ଗ;
 
-      case SUPPRESS_MATCHED_OPTION:
+      ସ୍ଥିତି SUPPRESS_MATCHED_OPTION:
         suppress_matched = true;
-        break;
+        ଭାଙ୍ଗ;
 
       case_GETOPT_HELP_CHAR;
 
       case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-      default:
+      ପୂର୍ବନିର୍ଦ୍ଧାରିତ:
         usage (EXIT_FAILURE);
       }
 
-  if (argc - optind < 2)
+  ଯଦି (argc - optind < 2)
     {
-      if (argc <= optind)
+      ଯଦି (argc <= optind)
         error (0, 0, _("missing operand"));
-      else
+      ଅନ୍ୟଥା
         error (0, 0, _("missing operand after %s"), quote (argv[argc - 1]));
       usage (EXIT_FAILURE);
     }
@@ -1348,26 +1348,26 @@ main (int argc, char **argv)
   idx_t max_digit_string_len
     = (suffix
        ? max_out (suffix)
-       : MAX (INT_STRLEN_BOUND (int), digits));
+       : MAX (INT_STRLEN_BOUND (ପୂର୍ଣ୍ଣସଂଖ୍ୟା), digits));
   idx_t filename_size;
-  if (ckd_add (&filename_size, prefix_len, max_digit_string_len + 1))
+  ଯଦି (ckd_add (&filename_size, prefix_len, max_digit_string_len + 1))
     xalloc_die ();
   filename_space = ximalloc (filename_size);
 
-  set_input_file (argv[optind++]);
+  set_ନିବେଶ_file (argv[optind++]);
 
   parse_patterns (argc, optind, argv);
 
   {
-    enum { nsigs = countof (term_sig) };
+    ଗଣନା { nsigs = countof (term_sig) };
 
-    struct sigaction act;
+    ସଂରଚନା sigaction act;
 
     sigemptyset (&caught_signals);
-    for (int i = 0; i < nsigs; i++)
+    ପାଇଁ (ପୂର୍ଣ୍ଣସଂଖ୍ୟା i = 0; i < nsigs; i++)
       {
-        sigaction (term_sig[i], NULL, &act);
-        if (act.sa_handler != SIG_IGN)
+        sigaction (term_sig[i], ଖାଲି, &act);
+        ଯଦି (act.sa_handler != SIG_IGN)
           sigaddset (&caught_signals, term_sig[i]);
       }
 
@@ -1375,28 +1375,28 @@ main (int argc, char **argv)
     act.sa_mask = caught_signals;
     act.sa_flags = 0;
 
-    for (int i = 0; i < nsigs; i++)
-      if (sigismember (&caught_signals, term_sig[i]))
-        sigaction (term_sig[i], &act, NULL);
+    ପାଇଁ (ପୂର୍ଣ୍ଣସଂଖ୍ୟା i = 0; i < nsigs; i++)
+      ଯଦି (sigismember (&caught_signals, term_sig[i]))
+        sigaction (term_sig[i], &act, ଖାଲି);
   }
 
   split_file ();
 
-  if (close (STDIN_FILENO) != 0)
+  ଯଦି (close (STDIN_FILENO) != 0)
     {
       error (0, errno, _("read error"));
       cleanup_fatal ();
     }
 
-  return EXIT_SUCCESS;
+  ଫେରନ୍ତୁ EXIT_SUCCESS;
 }
 
-void
-usage (int status)
+ଶୂନ୍ୟ
+usage (ପୂର୍ଣ୍ଣସଂଖ୍ୟା status)
 {
-  if (status != EXIT_SUCCESS)
+  ଯଦି (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ଅନ୍ୟଥା
     {
       printf (_("\
 Usage: %s [OPTION]... FILE PATTERN...\n\
@@ -1408,7 +1408,7 @@ and output byte counts of each piece to standard output.\n\
 "), stdout);
        fputs (_("\
 \n\
-Read standard input if FILE is -\n\
+Read standard ନିବେଶ ଯଦି FILE is -\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
@@ -1423,19 +1423,19 @@ Read standard input if FILE is -\n\
 "));
       oputs (_("\
   -k, --keep-files\n\
-         do not remove output files on errors\n\
+         କର not remove output files on errors\n\
 "));
       oputs (_("\
       --suppress-matched\n\
-         suppress the lines matching PATTERN\n\
+         suppress the ଧାଡ଼ିଗୁଡ଼ିକ matching PATTERN\n\
 "));
       oputs (_("\
   -n, --digits=DIGITS\n\
-         use specified number of digits instead of 2\n\
+         use specified ସଂଖ୍ୟା of digits instead of 2\n\
 "));
       oputs (_("\
   -s, --quiet, --silent\n\
-         do not print counts of output file sizes\n\
+         କର not print counts of output file sizes\n\
 "));
       oputs (_("\
   -z, --elide-empty-files\n\
@@ -1446,13 +1446,13 @@ Read standard input if FILE is -\n\
       fputs (_("\
 \n\
 Each PATTERN may be:\n\
-  INTEGER            copy up to but not including specified line number\n\
-  /REGEXP/[OFFSET]   copy up to but not including a matching line\n\
-  %REGEXP%[OFFSET]   skip to, but not including a matching line\n\
-  {INTEGER}          repeat the previous pattern specified number of times\n\
+  INTEGER            copy up to but not including specified ଧାଡ଼ି ସଂଖ୍ୟା\n\
+  /REGEXP/[OFFSET]   copy up to but not including a matching ଧାଡ଼ି\n\
+  %REGEXP%[OFFSET]   skip to, but not including a matching ଧାଡ଼ି\n\
+  {INTEGER}          repeat the previous pattern specified ସଂଖ୍ୟା of times\n\
   {*}                repeat the previous pattern as many times as possible\n\
 \n\
-A line OFFSET is an integer optionally preceded by '+' or '-'\n\
+A ଧାଡ଼ି OFFSET is an integer optionally preceded by '+' or '-'\n\
 "), stdout);
       emit_ancillary_info (PROGRAM_NAME);
     }

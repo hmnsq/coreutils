@@ -20,15 +20,15 @@
    flexible wrt the size specifications and the use of long options,
    to better fit the "GNU" environment.  */
 
-#include <config.h>             /* sets _FILE_OFFSET_BITS=64 etc. */
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#ଅନ୍ତର୍ଭାଵ <config.h>             /* sets _FILE_OFFSET_BITS=64 etc. */
+#ଅନ୍ତର୍ଭାଵ <stdio.h>
+#ଅନ୍ତର୍ଭାଵ <getopt.h>
+#ଅନ୍ତର୍ଭାଵ <sys/types.h>
 
-#include "system.h"
-#include "quote.h"
-#include "stat-size.h"
-#include "xdectoint.h"
+#ଅନ୍ତର୍ଭାଵ "system.h"
+#ଅନ୍ତର୍ଭାଵ "quote.h"
+#ଅନ୍ତର୍ଭାଵ "stat-size.h"
+#ଅନ୍ତର୍ଭାଵ "xdectoint.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "truncate"
@@ -36,34 +36,34 @@
 #define AUTHORS proper_name_lite ("Padraig Brady", "P\303\241draig Brady")
 
 /* (-c) If true, don't create if not already there */
-static bool no_create;
+ସ୍ଥିର bool no_create;
 
 /* (-o) If true, --size refers to blocks not bytes */
-static bool block_mode;
+ସ୍ଥିର bool block_mode;
 
 /* (-r) Reference file to use size from */
-static char const *ref_file;
+ସ୍ଥିର ଅକ୍ଷର ଅଚଳ *ref_file;
 
-static struct option const longopts[] =
+ସ୍ଥିର ସଂରଚନା option ଅଚଳ longopts[] =
 {
-  {"no-create", no_argument, NULL, 'c'},
-  {"io-blocks", no_argument, NULL, 'o'},
-  {"reference", required_argument, NULL, 'r'},
-  {"size", required_argument, NULL, 's'},
+  {"no-create", no_argument, ଖାଲି, 'c'},
+  {"io-blocks", no_argument, ଖାଲି, 'o'},
+  {"reference", required_argument, ଖାଲି, 'r'},
+  {"size", required_argument, ଖାଲି, 's'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ଖାଲି, 0, ଖାଲି, 0}
 };
 
-typedef enum
+ପ୍ରକାରବ୍ୟାଖ୍ୟା ଗଣନା
 { rm_abs = 0, rm_rel, rm_min, rm_max, rm_rdn, rm_rup } rel_mode_t;
 
-void
-usage (int status)
+ଶୂନ୍ୟ
+usage (ପୂର୍ଣ୍ଣସଂଖ୍ୟା status)
 {
-  if (status != EXIT_SUCCESS)
+  ଯଦି (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ଅନ୍ୟଥା
     {
       printf (_("Usage: %s OPTION... FILE...\n"), program_name);
       fputs (_("\
@@ -79,10 +79,10 @@ reads as zero bytes.\n\
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -c, --no-create        do not create any files\n\
+  -c, --no-create        କର not create any files\n\
 "));
       oputs (_("\
-  -o, --io-blocks        treat SIZE as number of IO blocks instead of bytes\n\
+  -o, --io-blocks        treat SIZE as ସଂଖ୍ୟା of IO blocks instead of bytes\n\
 "));
       oputs (_("\
   -r, --reference=RFILE  base size on RFILE\n\
@@ -103,108 +103,108 @@ SIZE may also be prefixed by one of the following modifying characters:\n\
 }
 
 /* return true on success, false on error.  */
-static bool
-do_ftruncate (int fd, char const *fname, off_t ssize, off_t rsize,
+ସ୍ଥିର bool
+do_ftruncate (ପୂର୍ଣ୍ଣସଂଖ୍ୟା fd, ଅକ୍ଷର ଅଚଳ *fname, off_t ssize, off_t rsize,
               rel_mode_t rel_mode)
 {
-  struct stat sb;
+  ସଂରଚନା stat sb;
   off_t nsize;
 
-  if ((block_mode || (rel_mode && rsize < 0)) && fstat (fd, &sb) != 0)
+  ଯଦି ((block_mode || (rel_mode && rsize < 0)) && fstat (fd, &sb) != 0)
     {
       error (0, errno, _("cannot fstat %s"), quoteaf (fname));
-      return false;
+      ଫେରନ୍ତୁ false;
     }
-  if (block_mode)
+  ଯଦି (block_mode)
     {
       ptrdiff_t blksize = STP_BLKSIZE (&sb);
       intmax_t ssize0 = ssize;
-      if (ckd_mul (&ssize, ssize, blksize))
+      ଯଦି (ckd_mul (&ssize, ssize, blksize))
         {
           error (0, 0,
                  _("overflow in %jd * %td byte blocks for file %s"),
                  ssize0, blksize, quoteaf (fname));
-          return false;
+          ଫେରନ୍ତୁ false;
         }
     }
-  if (rel_mode)
+  ଯଦି (rel_mode)
     {
       off_t fsize;
 
-      if (0 <= rsize)
+      ଯଦି (0 <= rsize)
         fsize = rsize;
-      else
+      ଅନ୍ୟଥା
         {
-          if (usable_st_size (&sb))
+          ଯଦି (usable_st_size (&sb))
             {
               fsize = sb.st_size;
-              if (fsize < 0)
+              ଯଦି (fsize < 0)
                 {
                   /* Sanity check.  Overflow is the only reason I can think
                      this would ever go negative. */
                   error (0, 0, _("%s has unusable, apparently negative size"),
                          quoteaf (fname));
-                  return false;
+                  ଫେରନ୍ତୁ false;
                 }
             }
-          else
+          ଅନ୍ୟଥା
             {
               fsize = lseek (fd, 0, SEEK_END);
-              if (fsize < 0)
+              ଯଦି (fsize < 0)
                 {
                   error (0, errno, _("cannot get the size of %s"),
                          quoteaf (fname));
-                  return false;
+                  ଫେରନ୍ତୁ false;
                 }
             }
         }
 
-      if (rel_mode == rm_min)
+      ଯଦି (rel_mode == rm_min)
         nsize = MAX (fsize, ssize);
-      else if (rel_mode == rm_max)
+      ଅନ୍ୟଥା ଯଦି (rel_mode == rm_max)
         nsize = MIN (fsize, ssize);
-      else if (rel_mode == rm_rdn)
+      ଅନ୍ୟଥା ଯଦି (rel_mode == rm_rdn)
         /* 0..ssize-1 -> 0 */
         nsize = fsize - fsize % ssize;
-      else
+      ଅନ୍ୟଥା
         {
-          if (rel_mode == rm_rup)
+          ଯଦି (rel_mode == rm_rup)
             {
               /* 1..ssize -> ssize */
               off_t r = fsize % ssize;
               ssize = r == 0 ? 0 : ssize - r;
             }
-          if (ckd_add (&nsize, fsize, ssize))
+          ଯଦି (ckd_add (&nsize, fsize, ssize))
             {
               error (0, 0, _("overflow extending size of file %s"),
                      quoteaf (fname));
-              return false;
+              ଫେରନ୍ତୁ false;
             }
         }
     }
-  else
+  ଅନ୍ୟଥା
     nsize = ssize;
-  if (nsize < 0)
+  ଯଦି (nsize < 0)
     nsize = 0;
 
-  if (ftruncate (fd, nsize) != 0)
+  ଯଦି (ftruncate (fd, nsize) != 0)
     {
       error (0, errno, _("failed to truncate %s at %jd bytes"),
              quoteaf (fname), (intmax_t) {nsize});
-      return false;
+      ଫେରନ୍ତୁ false;
     }
 
-  return true;
+  ଫେରନ୍ତୁ true;
 }
 
-int
-main (int argc, char **argv)
+ପୂର୍ଣ୍ଣସଂଖ୍ୟା
+ମୁଖ୍ୟ (ପୂର୍ଣ୍ଣସଂଖ୍ୟା argc, ଅକ୍ଷର **argv)
 {
   bool got_size = false;
   off_t size IF_LINT ( = 0);
   off_t rsize = -1;
   rel_mode_t rel_mode = rm_abs;
-  int c;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା c;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -214,51 +214,51 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((c = getopt_long (argc, argv, "cor:s:", longopts, NULL)) != -1)
+  ଯେତେବେଳେ ((c = getopt_long (argc, argv, "cor:s:", longopts, ଖାଲି)) != -1)
     {
-      switch (c)
+      ବାଛ (c)
         {
-        case 'c':
+        ସ୍ଥିତି 'c':
           no_create = true;
-          break;
+          ଭାଙ୍ଗ;
 
-        case 'o':
+        ସ୍ଥିତି 'o':
           block_mode = true;
-          break;
+          ଭାଙ୍ଗ;
 
-        case 'r':
+        ସ୍ଥିତି 'r':
           ref_file = optarg;
-          break;
+          ଭାଙ୍ଗ;
 
-        case 's':
+        ସ୍ଥିତି 's':
           /* skip any whitespace */
-          while (isspace (to_uchar (*optarg)))
+          ଯେତେବେଳେ (isspace (to_uchar (*optarg)))
             optarg++;
-          switch (*optarg)
+          ବାଛ (*optarg)
             {
-            case '<':
+            ସ୍ଥିତି '<':
               rel_mode = rm_max;
               optarg++;
-              break;
-            case '>':
+              ଭାଙ୍ଗ;
+            ସ୍ଥିତି '>':
               rel_mode = rm_min;
               optarg++;
-              break;
-            case '/':
+              ଭାଙ୍ଗ;
+            ସ୍ଥିତି '/':
               rel_mode = rm_rdn;
               optarg++;
-              break;
-            case '%':
+              ଭାଙ୍ଗ;
+            ସ୍ଥିତି '%':
               rel_mode = rm_rup;
               optarg++;
-              break;
+              ଭାଙ୍ଗ;
             }
           /* skip any whitespace */
-          while (isspace (to_uchar (*optarg)))
+          ଯେତେବେଳେ (isspace (to_uchar (*optarg)))
             optarg++;
-          if (*optarg == '+' || *optarg == '-')
+          ଯଦି (*optarg == '+' || *optarg == '-')
             {
-              if (rel_mode)
+              ଯଦି (rel_mode)
                 {
                   error (0, 0, _("multiple relative modifiers specified"));
                   /* Note other combinations are flagged as invalid numbers */
@@ -271,16 +271,16 @@ main (int argc, char **argv)
           size = xdectoimax (optarg, OFF_T_MIN, OFF_T_MAX, "EgGkKmMPQRtTYZ0",
                              _("Invalid number"), 0);
           /* Rounding to multiple of 0 is nonsensical */
-          if ((rel_mode == rm_rup || rel_mode == rm_rdn) && size == 0)
+          ଯଦି ((rel_mode == rm_rup || rel_mode == rm_rdn) && size == 0)
             error (EXIT_FAILURE, 0, _("division by zero"));
           got_size = true;
-          break;
+          ଭାଙ୍ଗ;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        ପୂର୍ବନିର୍ଦ୍ଧାରିତ:
           usage (EXIT_FAILURE);
         }
     }
@@ -289,91 +289,91 @@ main (int argc, char **argv)
   argc -= optind;
 
   /* must specify either size or reference file */
-  if (!ref_file && !got_size)
+  ଯଦି (!ref_file && !got_size)
     {
       error (0, 0, _("you must specify either %s or %s"),
              quote_n (0, "--size"), quote_n (1, "--reference"));
       usage (EXIT_FAILURE);
     }
   /* must specify a relative size with a reference file */
-  if (ref_file && got_size && !rel_mode)
+  ଯଦି (ref_file && got_size && !rel_mode)
     {
       error (0, 0, _("you must specify a relative %s with %s"),
              quote_n (0, "--size"), quote_n (1, "--reference"));
       usage (EXIT_FAILURE);
     }
   /* block_mode without size is not valid */
-  if (block_mode && !got_size)
+  ଯଦି (block_mode && !got_size)
     {
       error (0, 0, _("%s was specified but %s was not"),
              quote_n (0, "--io-blocks"), quote_n (1, "--size"));
       usage (EXIT_FAILURE);
     }
   /* must specify at least 1 file */
-  if (argc < 1)
+  ଯଦି (argc < 1)
     {
       error (0, 0, _("missing file operand"));
       usage (EXIT_FAILURE);
     }
 
-  if (ref_file)
+  ଯଦି (ref_file)
     {
-      struct stat sb;
+      ସଂରଚନା stat sb;
       off_t file_size = -1;
-      if (stat (ref_file, &sb) != 0)
+      ଯଦି (stat (ref_file, &sb) != 0)
         error (EXIT_FAILURE, errno, _("cannot stat %s"), quoteaf (ref_file));
-      if (usable_st_size (&sb))
+      ଯଦି (usable_st_size (&sb))
         file_size = sb.st_size;
-      else
+      ଅନ୍ୟଥା
         {
           /* O_NONBLOCK so we do not hang forever on a FIFO with no writer.  */
-          int ref_fd = open (ref_file, O_RDONLY | O_NONBLOCK);
-          if (0 <= ref_fd)
+          ପୂର୍ଣ୍ଣସଂଖ୍ୟା ref_fd = open (ref_file, O_RDONLY | O_NONBLOCK);
+          ଯଦି (0 <= ref_fd)
             {
               off_t file_end = lseek (ref_fd, 0, SEEK_END);
-              int saved_errno = errno;
+              ପୂର୍ଣ୍ଣସଂଖ୍ୟା saved_errno = errno;
               close (ref_fd); /* ignore failure */
-              if (0 <= file_end)
+              ଯଦି (0 <= file_end)
                 file_size = file_end;
-              else
+              ଅନ୍ୟଥା
                 {
                   /* restore, in case close clobbered it. */
                   errno = saved_errno;
                 }
             }
         }
-      if (file_size < 0)
+      ଯଦି (file_size < 0)
         error (EXIT_FAILURE, errno, _("cannot get the size of %s"),
                quoteaf (ref_file));
-      if (!got_size)
+      ଯଦି (!got_size)
         size = file_size;
-      else
+      ଅନ୍ୟଥା
         rsize = file_size;
     }
 
-  int oflags = O_WRONLY | (no_create ? 0 : O_CREAT) | O_NONBLOCK;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା oflags = O_WRONLY | (no_create ? 0 : O_CREAT) | O_NONBLOCK;
   bool errors = false;
 
-  for (char const *fname; (fname = *argv); argv++)
+  ପାଇଁ (ଅକ୍ଷର ଅଚଳ *fname; (fname = *argv); argv++)
     {
-      int fd = open (fname, oflags, MODE_RW_UGO);
-      if (fd < 0)
+      ପୂର୍ଣ୍ଣସଂଖ୍ୟା fd = open (fname, oflags, MODE_RW_UGO);
+      ଯଦି (fd < 0)
         {
           /* 'truncate -s0 -c no-such-file'  shouldn't gen error
              'truncate -s0 no-such-dir/file' should gen ENOENT error
              'truncate -s0 no-such-dir/' should gen EISDIR error
              'truncate -s0 .' should gen EISDIR error */
-          if (!(no_create && errno == ENOENT))
+          ଯଦି (!(no_create && errno == ENOENT))
             {
               error (0, errno, _("cannot open %s for writing"),
                      quoteaf (fname));
               errors = true;
             }
         }
-      else
+      ଅନ୍ୟଥା
         {
           errors |= !do_ftruncate (fd, fname, size, rsize, rel_mode);
-          if (close (fd) != 0)
+          ଯଦି (close (fd) != 0)
             {
               error (0, errno, _("failed to close %s"), quoteaf (fname));
               errors = true;
@@ -381,5 +381,5 @@ main (int argc, char **argv)
         }
     }
 
-  return errors ? EXIT_FAILURE : EXIT_SUCCESS;
+  ଫେରନ୍ତୁ errors ? EXIT_FAILURE : EXIT_SUCCESS;
 }

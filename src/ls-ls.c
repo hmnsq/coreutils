@@ -1,2 +1,2 @@
-#include "ls.h"
-enum ls_modes ls_mode = LS_LS;
+#ଅନ୍ତର୍ଭାଵ "ls.h"
+ଗଣନା ls_modes ls_mode = LS_LS;

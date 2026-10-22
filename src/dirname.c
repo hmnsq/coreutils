@@ -17,13 +17,13 @@
 
 /* Written by David MacKenzie and Jim Meyering. */
 
-#include <config.h>
-#include <getopt.h>
-#include <stdio.h>
-#include <sys/types.h>
+#ଅନ୍ତର୍ଭାଵ <config.h>
+#ଅନ୍ତର୍ଭାଵ <getopt.h>
+#ଅନ୍ତର୍ଭାଵ <stdio.h>
+#ଅନ୍ତର୍ଭାଵ <sys/types.h>
 
-#include "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
-#include "system.h"
+#ଅନ୍ତର୍ଭାଵ "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
+#ଅନ୍ତର୍ଭାଵ "system.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "dirname"
@@ -32,22 +32,22 @@
   proper_name ("David MacKenzie"), \
   proper_name ("Jim Meyering")
 
-static bool quote_output;
+ସ୍ଥିର bool quote_output;
 
-static struct option const longopts[] =
+ସ୍ଥିର ସଂରଚନା option ଅଚଳ longopts[] =
 {
-  {"zero", no_argument, NULL, 'z'},
+  {"zero", no_argument, ଖାଲି, 'z'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ଖାଲି, 0, ଖାଲି, 0}
 };
 
-void
-usage (int status)
+ଶୂନ୍ୟ
+usage (ପୂର୍ଣ୍ଣସଂଖ୍ୟା status)
 {
-  if (status != EXIT_SUCCESS)
+  ଯଦି (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ଅନ୍ୟଥା
     {
       printf (_("\
 Usage: %s [OPTION] NAME...\n\
@@ -55,12 +55,12 @@ Usage: %s [OPTION] NAME...\n\
               program_name);
       fputs (_("\
 Output each NAME with its last non-slash component and trailing slashes\n\
-removed; if NAME contains no /'s, output '.' (meaning the current directory).\n\
+removed; ଯଦି NAME contains no /'s, output '.' (meaning the current directory).\n\
 \n\
 "), stdout);
       oputs (_("\
   -z, --zero\n\
-         end each output line with NUL, not newline\n\
+         end each output ଧାଡ଼ି with NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -77,8 +77,8 @@ Examples:\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+ପୂର୍ଣ୍ଣସଂଖ୍ୟା
+ମୁଖ୍ୟ (ପୂର୍ଣ୍ଣସଂଖ୍ୟା argc, ଅକ୍ଷର **argv)
 {
   bool use_nuls = false;
 
@@ -90,58 +90,58 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while (true)
+  ଯେତେବେଳେ (true)
     {
-      int c = getopt_long (argc, argv, "z", longopts, NULL);
+      ପୂର୍ଣ୍ଣସଂଖ୍ୟା c = getopt_long (argc, argv, "z", longopts, ଖାଲି);
 
-      if (c == -1)
-        break;
+      ଯଦି (c == -1)
+        ଭାଙ୍ଗ;
 
-      switch (c)
+      ବାଛ (c)
         {
-        case 'z':
+        ସ୍ଥିତି 'z':
           use_nuls = true;
-          break;
+          ଭାଙ୍ଗ;
 
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        ପୂର୍ବନିର୍ଦ୍ଧାରିତ:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (argc < optind + 1)
+  ଯଦି (argc < optind + 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
 
-  if (!use_nuls && isatty (STDOUT_FILENO))
+  ଯଦି (!use_nuls && isatty (STDOUT_FILENO))
     {
-      int qs = getenv_quoting_style ();
-      if (qs < 0)
+      ପୂର୍ଣ୍ଣସଂଖ୍ୟା qs = getenv_quoting_style ();
+      ଯଦି (qs < 0)
         qs = shell_escape_quoting_style;
-      if (qs != literal_quoting_style)
+      ଯଦି (qs != literal_quoting_style)
         {
-          set_quoting_style (NULL, qs);
+          set_quoting_style (ଖାଲି, qs);
           quote_output = true;
         }
     }
 
-  for (; optind < argc; optind++)
+  ପାଇଁ (; optind < argc; optind++)
     {
-      char const *result = argv[optind];
+      ଅକ୍ଷର ଅଚଳ *result = argv[optind];
       idx_t len = dir_len (result);
 
-      if (! len)
+      ଯଦି (! len)
         {
-          static char const dot = '.';
+          ସ୍ଥିର ଅକ୍ଷର ଅଚଳ dot = '.';
           result = &dot;
           len = 1;
         }
-      if (quote_output)
+      ଯଦି (quote_output)
         {
           result = quoteN_mem (result, len);
           len = strlen (result);
@@ -150,5 +150,5 @@ main (int argc, char **argv)
       putchar (use_nuls ? '\0' :'\n');
     }
 
-  return EXIT_SUCCESS;
+  ଫେରନ୍ତୁ EXIT_SUCCESS;
 }

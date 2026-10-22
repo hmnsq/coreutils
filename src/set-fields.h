@@ -17,20 +17,20 @@
 #ifndef SET_FIELDS_H
 # define SET_FIELDS_H
 
-struct field_range_pair
+ସଂରଚନା field_range_pair
   {
     uintmax_t lo;
     uintmax_t hi;
   };
 
 /* Array of `struct range_pair' holding all the finite ranges. */
-extern struct field_range_pair *frp;
+ବାହ୍ୟ ସଂରଚନା field_range_pair *frp;
 
 /* Number of finite ranges specified by the user. */
-extern idx_t n_frp;
+ବାହ୍ୟ idx_t n_frp;
 
 /* field list parsing options */
-enum
+ଗଣନା
 {
   SETFLD_ALLOW_DASH = 0x01,     /* allow single dash meaning 'all fields' */
   SETFLD_COMPLEMENT = 0x02,     /* complement the field list */
@@ -39,6 +39,6 @@ enum
 };
 
 /* allocates and initializes the FRP array and N_FRP count */
-extern void set_fields (char const *fieldstr, unsigned int options);
+ବାହ୍ୟ ଶୂନ୍ୟ set_fields (ଅକ୍ଷର ଅଚଳ *fieldstr, unsigned ପୂର୍ଣ୍ଣସଂଖ୍ୟା options);
 
 #endif
