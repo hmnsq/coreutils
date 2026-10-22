@@ -20,12 +20,12 @@
 #include "true.h"
 /* Ensure that the main for true is declared even if the tool is not being
    built in this single-binary. */
-int single_binary_main_true (int argc, char **argv);
-int single_binary_main_false (int argc, char **argv);
+ကိန်းပြည့် single_binary_main_true (ကိန်းပြည့် argc, var_na **argv);
+ကိန်းပြည့် single_binary_main_false (ကိန်းပြည့် argc, var_na **argv);
 
-int
-single_binary_main_false (int argc, char **argv)
+ကိန်းပြည့်
+single_binary_main_false (ကိန်းပြည့် argc, var_na **argv)
 {
   true_mode = TRUE_FALSE;
-  return single_binary_main_true (argc, argv);
+  ပြန်ပေး single_binary_main_true (argc, argv);
 }

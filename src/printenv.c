@@ -38,7 +38,7 @@
 #include "xbinary-io.h"
 
 /* Exit status for syntax errors, etc.  */
-enum { PRINTENV_FAILURE = 2 };
+ga_nanaa { PRINTENV_FAILURE = 2 };
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "printenv"
@@ -49,12 +49,12 @@ enum { PRINTENV_FAILURE = 2 };
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+ga_nanaa
 {
   QUOTING_STYLE_OPTION = CHAR_MAX + 1,
 };
 
-static struct option const longopts[] =
+static sa_nracanaa option const longopts[] =
 {
   {"null", no_argument, NULL, '0'},
   {"quoting-style", required_argument, NULL, QUOTING_STYLE_OPTION},
@@ -64,16 +64,16 @@ static struct option const longopts[] =
 };
 
 void
-usage (int status)
+usage (ကိန်းပြည့် status)
 {
-  if (status != EXIT_SUCCESS)
+  အကယ်၍ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  မဟုတ်ပါက
     {
       printf (_("\
 Usage: %s [OPTION] [VARIABLE]...\n\
 Print the values of the specified environment VARIABLE(s).\n\
-If no VARIABLE is specified, print name and value pairs for them all.\n\
+If no VARIABLE is specified, print name and value pairs အတွက် them all.\n\
 \n\
 "),
               program_name);
@@ -83,7 +83,7 @@ If no VARIABLE is specified, print name and value pairs for them all.\n\
 "));
       oputs (_("\
       --quoting-style=WORD\n\
-         use quoting style WORD for names and values:\n\
+         use quoting style WORD အတွက် names and values:\n\
            literal, locale, shell, shell-always,\n\
            shell-escape, shell-escape-always, c, escape\n\
 "));
@@ -95,11 +95,11 @@ If no VARIABLE is specified, print name and value pairs for them all.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+ကိန်းပြည့်
+main (ကိန်းပြည့် argc, var_na **argv)
 {
   bool opt_nul_terminate_output = false;
-  int quoting_style_opt = -1;
+  ကိန်းပြည့် quoting_style_opt = -1;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -110,20 +110,20 @@ main (int argc, char **argv)
   initialize_exit_failure (PRINTENV_FAILURE);
   atexit (close_stdout);
 
-  int optc;
-  while ((optc = getopt_long (argc, argv, "+0", longopts, NULL)) != -1)
+  ကိန်းပြည့် optc;
+  နေစဉ် ((optc = getopt_long (argc, argv, "+0", longopts, NULL)) != -1)
     {
       switch (optc)
         {
-        case '0':
+        pak_sa '0':
           opt_nul_terminate_output = true;
           quoting_style_opt = literal_quoting_style;
-          break;
-        case QUOTING_STYLE_OPTION:
+          bha_nga;
+        pak_sa QUOTING_STYLE_OPTION:
           quoting_style_opt = XARGMATCH ("--quoting-style", optarg,
                                          quoting_style_args,
                                          quoting_style_vals);
-          break;
+          bha_nga;
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
         default:
@@ -132,14 +132,14 @@ main (int argc, char **argv)
     }
 
   bool quote_output = false;
-  int qs = quoting_style_opt;
-  if (qs < 0 && isatty (STDOUT_FILENO))
+  ကိန်းပြည့် qs = quoting_style_opt;
+  အကယ်၍ (qs < 0 && isatty (STDOUT_FILENO))
     {
       qs = getenv_quoting_style ();
-      if (qs < 0)
+      အကယ်၍ (qs < 0)
         qs = shell_escape_quoting_style;
     }
-  if (0 <= qs && qs != literal_quoting_style)
+  အကယ်၍ (0 <= qs && qs != literal_quoting_style)
     {
       set_quoting_style (NULL, qs);
       quote_output = true;
@@ -147,42 +147,42 @@ main (int argc, char **argv)
 
   idx_t const n_args = argc - optind;
   bool ok;
-  char const terminator = opt_nul_terminate_output ? '\0' : '\n';
+  var_na const terminator = opt_nul_terminate_output ? '\0' : '\n';
 
-  if (opt_nul_terminate_output)
+  အကယ်၍ (opt_nul_terminate_output)
     xset_binary_mode (STDOUT_FILENO, O_BINARY);
 
-  if (n_args <= 0)
+  အကယ်၍ (n_args <= 0)
     {
-      for (char **env = environ; *env != NULL; ++env)
+      အတွက် (var_na **env = environ; *env != NULL; ++env)
         print_envvar (*env, terminator, quote_output);
       ok = true;
     }
-  else
+  မဟုတ်ပါက
     {
-      int matches = 0;
+      ကိန်းပြည့် matches = 0;
 
-      for (int i = optind; i < argc; ++i)
+      အတွက် (ကိန်းပြည့် i = optind; i < argc; ++i)
         {
           bool matched = false;
 
           /* 'printenv a=b' is silent, even if 'a=b=c' is in environ.  */
-          if (strchr (argv[i], '='))
+          အကယ်၍ (strchr (argv[i], '='))
             continue;
 
-          for (char **env = environ; *env; ++env)
+          အတွက် (var_na **env = environ; *env; ++env)
             {
-              char const *ep = *env;
-              char const *ap = argv[i];
-              while (*ep != '\0' && *ap != '\0' && *ep++ == *ap++)
+              var_na const *ep = *env;
+              var_na const *ap = argv[i];
+              နေစဉ် (*ep != '\0' && *ap != '\0' && *ep++ == *ap++)
                 {
-                  if (*ep == '=' && *ap == '\0')
+                  အကယ်၍ (*ep == '=' && *ap == '\0')
                     {
-                      char const *val = ep + 1;
+                      var_na const *val = ep + 1;
                       fputs (quote_output ? quoteN (val) : val, stdout);
                       putchar (terminator);
                       matched = true;
-                      break;
+                      bha_nga;
                     }
                 }
             }
@@ -193,5 +193,5 @@ main (int argc, char **argv)
       ok = (matches == argc - optind);
     }
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  ပြန်ပေး ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

@@ -34,7 +34,7 @@
 
 static bool quote_output;
 
-static struct option const longopts[] =
+static sa_nracanaa option const longopts[] =
 {
   {"zero", no_argument, NULL, 'z'},
   {GETOPT_HELP_OPTION_DECL},
@@ -43,11 +43,11 @@ static struct option const longopts[] =
 };
 
 void
-usage (int status)
+usage (ကိန်းပြည့် status)
 {
-  if (status != EXIT_SUCCESS)
+  အကယ်၍ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  မဟုတ်ပါက
     {
       printf (_("\
 Usage: %s [OPTION] NAME...\n\
@@ -55,7 +55,7 @@ Usage: %s [OPTION] NAME...\n\
               program_name);
       fputs (_("\
 Output each NAME with its last non-slash component and trailing slashes\n\
-removed; if NAME contains no /'s, output '.' (meaning the current directory).\n\
+removed; အကယ်၍ NAME contains no /'s, output '.' (meaning the current directory).\n\
 \n\
 "), stdout);
       oputs (_("\
@@ -77,8 +77,8 @@ Examples:\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+ကိန်းပြည့်
+main (ကိန်းပြည့် argc, var_na **argv)
 {
   bool use_nuls = false;
 
@@ -90,18 +90,18 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while (true)
+  နေစဉ် (true)
     {
-      int c = getopt_long (argc, argv, "z", longopts, NULL);
+      ကိန်းပြည့် c = getopt_long (argc, argv, "z", longopts, NULL);
 
-      if (c == -1)
-        break;
+      အကယ်၍ (c == -1)
+        bha_nga;
 
       switch (c)
         {
-        case 'z':
+        pak_sa 'z':
           use_nuls = true;
-          break;
+          bha_nga;
 
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
@@ -111,37 +111,37 @@ main (int argc, char **argv)
         }
     }
 
-  if (argc < optind + 1)
+  အကယ်၍ (argc < optind + 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
 
-  if (!use_nuls && isatty (STDOUT_FILENO))
+  အကယ်၍ (!use_nuls && isatty (STDOUT_FILENO))
     {
-      int qs = getenv_quoting_style ();
-      if (qs < 0)
+      ကိန်းပြည့် qs = getenv_quoting_style ();
+      အကယ်၍ (qs < 0)
         qs = shell_escape_quoting_style;
-      if (qs != literal_quoting_style)
+      အကယ်၍ (qs != literal_quoting_style)
         {
           set_quoting_style (NULL, qs);
           quote_output = true;
         }
     }
 
-  for (; optind < argc; optind++)
+  အတွက် (; optind < argc; optind++)
     {
-      char const *result = argv[optind];
+      var_na const *result = argv[optind];
       idx_t len = dir_len (result);
 
-      if (! len)
+      အကယ်၍ (! len)
         {
-          static char const dot = '.';
+          static var_na const dot = '.';
           result = &dot;
           len = 1;
         }
-      if (quote_output)
+      အကယ်၍ (quote_output)
         {
           result = quoteN_mem (result, len);
           len = strlen (result);
@@ -150,5 +150,5 @@ main (int argc, char **argv)
       putchar (use_nuls ? '\0' :'\n');
     }
 
-  return EXIT_SUCCESS;
+  ပြန်ပေး EXIT_SUCCESS;
 }

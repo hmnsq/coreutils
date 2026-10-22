@@ -23,12 +23,12 @@
 #include <sys/utsname.h>
 #include <getopt.h>
 
-#if HAVE_SYSINFO && HAVE_SYS_SYSTEMINFO_H
+#အကယ်၍ HAVE_SYSINFO && HAVE_SYS_SYSTEMINFO_H
 # include <sys/systeminfo.h>
 #endif
 
-#if HAVE_SYS_SYSCTL_H && ! defined __GLIBC__ && ! defined __APPLE__
-# if HAVE_SYS_PARAM_H
+#အကယ်၍ HAVE_SYS_SYSCTL_H && ! defined __GLIBC__ && ! defined __APPLE__
+# အကယ်၍ HAVE_SYS_PARAM_H
 #  include <sys/param.h> /* needed for OpenBSD 3.0 */
 # endif
 # include <sys/sysctl.h>
@@ -37,7 +37,7 @@
 /* E.g., FreeBSD 4.5, NetBSD 1.5.2 */
 #   define UNAME_HARDWARE_PLATFORM HW_MODEL
 #   define UNAME_PROCESSOR HW_MACHINE_ARCH
-#  else
+#  မဟုတ်ပါက
 /* E.g., OpenBSD 3.0 */
 #   define UNAME_PROCESSOR HW_MODEL
 #  endif
@@ -81,7 +81,7 @@
 
 static bool labeled = false;
 
-static struct option const uname_long_options[] =
+static sa_nracanaa option const uname_long_options[] =
 {
   {"all", no_argument, NULL, 'a'},
   {"all-labeled", no_argument, NULL, 'A'},
@@ -100,7 +100,7 @@ static struct option const uname_long_options[] =
   {NULL, 0, NULL, 0}
 };
 
-static struct option const arch_long_options[] =
+static sa_nracanaa option const arch_long_options[] =
 {
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
@@ -108,15 +108,15 @@ static struct option const arch_long_options[] =
 };
 
 void
-usage (int status)
+usage (ကိန်းပြည့် status)
 {
-  if (status != EXIT_SUCCESS)
+  အကယ်၍ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  မဟုတ်ပါက
     {
       printf (_("Usage: %s [OPTION]...\n"), program_name);
 
-      if (uname_mode == UNAME_UNAME)
+      အကယ်၍ (uname_mode == UNAME_UNAME)
         {
           fputs (_("\
 Print certain system information.  With no OPTION, same as -s.\n\
@@ -124,11 +124,11 @@ Print certain system information.  With no OPTION, same as -s.\n\
 "), stdout);
           oputs (_("\
   -a, --all                print all information, in the following order,\n\
-                             except omit -p and -i if unknown\n\
+                             except omit -p and -i အကယ်၍ unknown\n\
 "));
           oputs (_("\
   -A, --all-labeled        print all information, one labeled field per line,\n\
-                             except omit -p and -i if unknown\n\
+                             except omit -p and -i အကယ်၍ unknown\n\
 "));
           oputs (_("\
   -s, --kernel-name        print the kernel name\n\
@@ -155,7 +155,7 @@ Print certain system information.  With no OPTION, same as -s.\n\
   -o, --operating-system   print the operating system\n\
 "));
         }
-      else
+      မဟုတ်ပါက
         {
           fputs (_("\
 Print machine architecture.\n\
@@ -174,16 +174,16 @@ Print machine architecture.\n\
    printed.  */
 
 static void
-print_element (char const *element, char const *label)
+print_element (var_na const *element, var_na const *label)
 {
-  if (labeled)
+  အကယ်၍ (labeled)
     {
       printf ("%s: %s\n", label, element);
     }
-  else
+  မဟုတ်ပါက
     {
       static bool printed;
-      if (printed)
+      အကယ်၍ (printed)
         putchar (' ');
       printed = true;
       fputs (element, stdout);
@@ -195,15 +195,15 @@ print_element (char const *element, char const *label)
    value instead of ELEMENT.  */
 
 static void
-print_element_env (char const *element,
-                   MAYBE_UNUSED char const *envvar,
-                   char const *label)
+print_element_env (var_na const *element,
+                   MAYBE_UNUSED var_na const *envvar,
+                   var_na const *label)
 {
 #ifdef __APPLE__
-  if (envvar)
+  အကယ်၍ (envvar)
     {
-      char const *val = getenv (envvar);
-      if (val)
+      var_na const *val = getenv (envvar);
+      အကယ်၍ (val)
         element = val;
     }
 #endif
@@ -214,15 +214,15 @@ print_element_env (char const *element,
 /* Set all the option flags according to the switches specified.
    Return the mask indicating which elements to print.  */
 
-static int
-decode_switches (int argc, char **argv)
+static ကိန်းပြည့်
+decode_switches (ကိန်းပြည့် argc, var_na **argv)
 {
-  int c;
-  unsigned int toprint = 0;
+  ကိန်းပြည့် c;
+  unsigned ကိန်းပြည့် toprint = 0;
 
-  if (uname_mode == UNAME_ARCH)
+  အကယ်၍ (uname_mode == UNAME_ARCH)
     {
-      while ((c = getopt_long (argc, argv, "",
+      နေစဉ် ((c = getopt_long (argc, argv, "",
                                arch_long_options, NULL))
              != -1)
         {
@@ -238,55 +238,55 @@ decode_switches (int argc, char **argv)
         }
       toprint = PRINT_MACHINE;
     }
-  else
+  မဟုတ်ပါက
     {
-      while ((c = getopt_long (argc, argv, "asnrvmpioA",
+      နေစဉ် ((c = getopt_long (argc, argv, "asnrvmpioA",
                                uname_long_options, NULL))
              != -1)
         {
           switch (c)
             {
-            case 'a':
+            pak_sa 'a':
               toprint = UINT_MAX;
               labeled = false;
-              break;
+              bha_nga;
 
-            case 'A':
+            pak_sa 'A':
               toprint = UINT_MAX;
               labeled = true;
-              break;
+              bha_nga;
 
-            case 's':
+            pak_sa 's':
               toprint |= PRINT_KERNEL_NAME;
-              break;
+              bha_nga;
 
-            case 'n':
+            pak_sa 'n':
               toprint |= PRINT_NODENAME;
-              break;
+              bha_nga;
 
-            case 'r':
+            pak_sa 'r':
               toprint |= PRINT_KERNEL_RELEASE;
-              break;
+              bha_nga;
 
-            case 'v':
+            pak_sa 'v':
               toprint |= PRINT_KERNEL_VERSION;
-              break;
+              bha_nga;
 
-            case 'm':
+            pak_sa 'm':
               toprint |= PRINT_MACHINE;
-              break;
+              bha_nga;
 
-            case 'p':
+            pak_sa 'p':
               toprint |= PRINT_PROCESSOR;
-              break;
+              bha_nga;
 
-            case 'i':
+            pak_sa 'i':
               toprint |= PRINT_HARDWARE_PLATFORM;
-              break;
+              bha_nga;
 
-            case 'o':
+            pak_sa 'o':
               toprint |= PRINT_OPERATING_SYSTEM;
-              break;
+              bha_nga;
 
             case_GETOPT_HELP_CHAR;
 
@@ -298,22 +298,22 @@ decode_switches (int argc, char **argv)
         }
     }
 
-  if (argc != optind)
+  အကယ်၍ (argc != optind)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind]));
       usage (EXIT_FAILURE);
     }
 
-  return toprint;
+  ပြန်ပေး toprint;
 }
 
-int
-main (int argc, char **argv)
+ကိန်းပြည့်
+main (ကိန်းပြည့် argc, var_na **argv)
 {
-  static char const unknown[] = "unknown";
+  static var_na const unknown[] = "unknown";
 
   /* Mask indicating which elements to print. */
-  unsigned int toprint = 0;
+  unsigned ကိန်းပြည့် toprint = 0;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -325,35 +325,35 @@ main (int argc, char **argv)
 
   toprint = decode_switches (argc, argv);
 
-  if (toprint == 0)
+  အကယ်၍ (toprint == 0)
     toprint = PRINT_KERNEL_NAME;
 
-  if (toprint
+  အကယ်၍ (toprint
        & (PRINT_KERNEL_NAME | PRINT_NODENAME | PRINT_KERNEL_RELEASE
           | PRINT_KERNEL_VERSION | PRINT_MACHINE))
     {
-      struct utsname name;
+      sa_nracanaa utsname name;
 
-      if (uname (&name) == -1)
+      အကယ်၍ (uname (&name) == -1)
         error (EXIT_FAILURE, errno, _("cannot get system name"));
 
-      if (toprint & PRINT_KERNEL_NAME)
+      အကယ်၍ (toprint & PRINT_KERNEL_NAME)
         print_element_env (name.sysname, "UNAME_SYSNAME", _("Kernel name"));
-      if (toprint & PRINT_NODENAME)
+      အကယ်၍ (toprint & PRINT_NODENAME)
         print_element_env (name.nodename, "UNAME_NODENAME", _("Node name"));
-      if (toprint & PRINT_KERNEL_RELEASE)
+      အကယ်၍ (toprint & PRINT_KERNEL_RELEASE)
         print_element_env (name.release, "UNAME_RELEASE", _("Kernel release"));
-      if (toprint & PRINT_KERNEL_VERSION)
+      အကယ်၍ (toprint & PRINT_KERNEL_VERSION)
         print_element_env (name.version, "UNAME_VERSION", _("Kernel version"));
-      if (toprint & PRINT_MACHINE)
+      အကယ်၍ (toprint & PRINT_MACHINE)
         print_element_env (name.machine, "UNAME_MACHINE", _("Machine"));
     }
 
-  if (toprint & PRINT_PROCESSOR)
+  အကယ်၍ (toprint & PRINT_PROCESSOR)
     {
-      char const *element = unknown;
+      var_na const *element = unknown;
 #ifdef __APPLE__
-# if defined __arm__ || defined __arm64__
+# အကယ်၍ defined __arm__ || defined __arm64__
       element = "arm";
 # elif defined __i386__ || defined __x86_64__
       element = "i386";
@@ -361,58 +361,58 @@ main (int argc, char **argv)
       element = "powerpc";
 # endif
 #endif
-#if HAVE_SYSINFO && defined SI_ARCHITECTURE
-      if (element == unknown)
+#အကယ်၍ HAVE_SYSINFO && defined SI_ARCHITECTURE
+      အကယ်၍ (element == unknown)
         {
-          static char processor[257];
-          if (0 <= sysinfo (SI_ARCHITECTURE, processor, sizeof processor))
+          static var_na processor[257];
+          အကယ်၍ (0 <= sysinfo (SI_ARCHITECTURE, processor, parimaa_na processor))
             element = processor;
         }
 #endif
 #ifdef UNAME_PROCESSOR
-      if (element == unknown)
+      အကယ်၍ (element == unknown)
         {
-          static char processor[257];
-          size_t s = sizeof processor;
-          static int mib[] = { CTL_HW, UNAME_PROCESSOR };
-          if (sysctl (mib, 2, processor, &s, 0, 0) >= 0)
+          static var_na processor[257];
+          size_t s = parimaa_na processor;
+          static ကိန်းပြည့် mib[] = { CTL_HW, UNAME_PROCESSOR };
+          အကယ်၍ (sysctl (mib, 2, processor, &s, 0, 0) >= 0)
             element = processor;
         }
 #endif
-      if (! (toprint == UINT_MAX && element == unknown))
+      အကယ်၍ (! (toprint == UINT_MAX && element == unknown))
         print_element (element, _("Processor"));
     }
 
-  if (toprint & PRINT_HARDWARE_PLATFORM)
+  အကယ်၍ (toprint & PRINT_HARDWARE_PLATFORM)
     {
-      char const *element = unknown;
-#if HAVE_SYSINFO && defined SI_PLATFORM
+      var_na const *element = unknown;
+#အကယ်၍ HAVE_SYSINFO && defined SI_PLATFORM
       {
-        static char hardware_platform[257];
-        if (0 <= sysinfo (SI_PLATFORM,
-                          hardware_platform, sizeof hardware_platform))
+        static var_na hardware_platform[257];
+        အကယ်၍ (0 <= sysinfo (SI_PLATFORM,
+                          hardware_platform, parimaa_na hardware_platform))
           element = hardware_platform;
       }
 #endif
 #ifdef UNAME_HARDWARE_PLATFORM
-      if (element == unknown)
+      အကယ်၍ (element == unknown)
         {
-          static char hardware_platform[257];
-          size_t s = sizeof hardware_platform;
-          static int mib[] = { CTL_HW, UNAME_HARDWARE_PLATFORM };
-          if (sysctl (mib, 2, hardware_platform, &s, 0, 0) >= 0)
+          static var_na hardware_platform[257];
+          size_t s = parimaa_na hardware_platform;
+          static ကိန်းပြည့် mib[] = { CTL_HW, UNAME_HARDWARE_PLATFORM };
+          အကယ်၍ (sysctl (mib, 2, hardware_platform, &s, 0, 0) >= 0)
             element = hardware_platform;
         }
 #endif
-      if (! (toprint == UINT_MAX && element == unknown))
+      အကယ်၍ (! (toprint == UINT_MAX && element == unknown))
         print_element (element, _("Hardware platform"));
     }
 
-  if (toprint & PRINT_OPERATING_SYSTEM)
+  အကယ်၍ (toprint & PRINT_OPERATING_SYSTEM)
     print_element (HOST_OPERATING_SYSTEM, _("Operating system"));
 
-  if (!labeled)
+  အကယ်၍ (!labeled)
     putchar ('\n');
 
-  return EXIT_SUCCESS;
+  ပြန်ပေး EXIT_SUCCESS;
 }

@@ -27,7 +27,7 @@
 /* Commonly used file permission combination.  */
 #define MODE_RW_UGO (S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH)
 
-#if HAVE_SYS_PARAM_H
+#အကယ်၍ HAVE_SYS_PARAM_H
 # include <sys/param.h>
 #endif
 
@@ -46,11 +46,11 @@
 #include <time.h>
 
 /* Since major is a function on SVR4, we can't use 'ifndef major'.  */
-#if MAJOR_IN_MKDEV
+#အကယ်၍ MAJOR_IN_MKDEV
 # include <sys/mkdev.h>
 # define HAVE_MAJOR
 #endif
-#if MAJOR_IN_SYSMACROS
+#အကယ်၍ MAJOR_IN_SYSMACROS
 # include <sys/sysmacros.h>
 # define HAVE_MAJOR
 #endif
@@ -65,7 +65,7 @@
 #endif
 #undef HAVE_MAJOR
 
-#if ! defined makedev && defined mkdev
+#အကယ်၍ ! defined makedev && defined mkdev
 # define makedev(maj, min)  mkdev (maj, min)
 #endif
 
@@ -85,14 +85,14 @@
 
 /* Return true if ERRNUM indicates that a file disappeared during a
    directory traversal.  */
-static inline bool
-ignorable_traversal_errno (int errnum) { return errnum == ENOENT; }
+static anta_hstha bool
+ignorable_traversal_errno (ကိန်းပြည့် errnum) { ပြန်ပေး errnum == ENOENT; }
 
 #include <stdlib.h>
 #include "version.h"
 
 /* Exit statuses for programs like 'env' that exec other programs.  */
-enum
+ga_nanaa
 {
   EXIT_TIMEDOUT = 124, /* Time expired before child completed.  */
   EXIT_CANCELED = 125, /* Internal error prior to exec attempt.  */
@@ -103,18 +103,18 @@ enum
 #include "exitfail.h"
 
 /* Set exit_failure to STATUS if that's not the default already.  */
-static inline void
-initialize_exit_failure (int status)
+static anta_hstha void
+initialize_exit_failure (ကိန်းပြည့် status)
 {
-  if (status != EXIT_FAILURE)
+  အကယ်၍ (status != EXIT_FAILURE)
     exit_failure = status;
 }
 
 #include <fcntl.h>
 #ifdef O_PATH
-enum { O_PATHSEARCH = O_PATH };
-#else
-enum { O_PATHSEARCH = O_SEARCH };
+ga_nanaa { O_PATHSEARCH = O_PATH };
+#မဟုတ်ပါက
+ga_nanaa { O_PATHSEARCH = O_SEARCH };
 #endif
 
 #include <dirent.h>
@@ -122,14 +122,14 @@ enum { O_PATHSEARCH = O_SEARCH };
 # define _D_EXACT_NAMLEN(dp) strlen ((dp)->d_name)
 #endif
 
-enum
+ga_nanaa
 {
   NOT_AN_INODE_NUMBER = 0
 };
 
 #ifdef D_INO_IN_DIRENT
 # define D_INO(dp) (dp)->d_ino
-#else
+#မဟုတ်ပါက
 /* Some systems don't have inodes, so fake them to avoid lots of ifdefs.  */
 # define D_INO(dp) NOT_AN_INODE_NUMBER
 #endif
@@ -142,9 +142,9 @@ enum
 #ifndef initialize_main
 # ifndef __OS2__
 #  define initialize_main(ac, av)
-# else
+# မဟုတ်ပါက
 #  define initialize_main(ac, av) \
-     do { _wildcard (ac, av); _response (ac, av); } while (0)
+     do { _wildcard (ac, av); _response (ac, av); } နေစဉ် (0)
 # endif
 #endif
 
@@ -155,30 +155,30 @@ enum
 /* Convert a possibly-signed character to an unsigned character.  This is
    a bit safer than casting to unsigned char, since it catches some type
    errors that the cast doesn't.  */
-static inline unsigned char to_uchar (char ch) { return ch; }
+static anta_hstha unsigned var_na to_uchar (var_na ch) { ပြန်ပေး ch; }
 
 /* Return non zero if a non breaking space.  */
 ATTRIBUTE_PURE
-static inline int
+static anta_hstha ကိန်းပြည့်
 c32isnbspace (char32_t wc)
 {
-  return wc == 0x00A0 || wc == 0x2007 || wc == 0x202F || wc == 0x2060;
+  ပြန်ပေး wc == 0x00A0 || wc == 0x2007 || wc == 0x202F || wc == 0x2060;
 }
 
 ATTRIBUTE_PURE
-static inline int
+static anta_hstha ကိန်းပြည့်
 c32isnewline (char32_t wc)
 {
-  return wc == 0x000A || wc == 0x0085 || wc == 0x2028 || wc == 0x2029;
+  ပြန်ပေး wc == 0x000A || wc == 0x0085 || wc == 0x2028 || wc == 0x2029;
 }
 
 ATTRIBUTE_PURE
-static inline int
+static anta_hstha ကိန်းပြည့်
 c32isvertspace (char32_t wc)
 {
   /* 000D is backwards as opposed to vertical,
      but that's fine for this grouping.  */
-  return c32isnewline (wc) || wc == 0x000B || wc == 0x000C || wc == 0x000D;
+  ပြန်ပေး c32isnewline (wc) || wc == 0x000B || wc == 0x000C || wc == 0x000D;
 }
 
 /* c32isblank() is too variable on non GLIBC platforms.
@@ -186,13 +186,13 @@ c32isvertspace (char32_t wc)
    E.g., does include non-breaking space on Solaris and NetBSD.
    This equivalent is more consistent across systems.  */
 ATTRIBUTE_PURE
-static inline bool
+static anta_hstha bool
 c32issep (char32_t wc)
 {
-#if defined __GLIBC__
-  return !! c32isblank (wc);
-#else
-  return c32isspace (wc) && ! c32isvertspace (wc) && ! c32isnbspace (wc);
+#အကယ်၍ defined __GLIBC__
+  ပြန်ပေး !! c32isblank (wc);
+#မဟုတ်ပါက
+  ပြန်ပေး c32isspace (wc) && ! c32isvertspace (wc) && ! c32isnbspace (wc);
 #endif
 }
 
@@ -201,7 +201,7 @@ c32issep (char32_t wc)
 /* Take care of NLS matters.  */
 
 #include "gettext.h"
-#if ! ENABLE_NLS
+#အကယ်၍ ! ENABLE_NLS
 # undef textdomain
 # define textdomain(Domainname) /* empty */
 # undef bindtextdomain
@@ -213,13 +213,13 @@ c32issep (char32_t wc)
 
 /* Return a value that pluralizes the same way that N does, in all
    languages we know of.  */
-static inline unsigned long int
+static anta_hstha unsigned long ကိန်းပြည့်
 select_plural (uintmax_t n)
 {
   /* Reduce by a power of ten, but keep it away from zero.  The
      gettext manual says 1000000 should be safe.  */
-  enum { PLURAL_REDUCER = 1000000 };
-  return (n <= ULONG_MAX ? n : n % PLURAL_REDUCER + PLURAL_REDUCER);
+  ga_nanaa { PLURAL_REDUCER = 1000000 };
+  ပြန်ပေး (n <= ULONG_MAX ? n : n % PLURAL_REDUCER + PLURAL_REDUCER);
 }
 
 #define STREQ_LEN(a, b, n) (strncmp (a, b, n) == 0) /* n==-1 means unbounded */
@@ -227,26 +227,26 @@ select_plural (uintmax_t n)
 
 /* Just like strncmp, but the second argument must be a literal string
    and you don't specify the length;  that comes from the literal.  */
-#define STRNCMP_LIT(s, lit) strncmp (s, "" lit "", sizeof (lit) - 1)
+#define STRNCMP_LIT(s, lit) strncmp (s, "" lit "", parimaa_na (lit) - 1)
 
-#if !HAVE_DECL_GETLOGIN
-char *getlogin (void);
+#အကယ်၍ !HAVE_DECL_GETLOGIN
+var_na *getlogin (void);
 #endif
 
-#if !HAVE_DECL_TTYNAME
-char *ttyname (int);
+#အကယ်၍ !HAVE_DECL_TTYNAME
+var_na *ttyname (ကိန်းပြည့်);
 #endif
 
-#if !HAVE_DECL_GETEUID
+#အကယ်၍ !HAVE_DECL_GETEUID
 uid_t geteuid (void);
 #endif
 
-#if !HAVE_DECL_GETPWUID
-struct passwd *getpwuid (uid_t);
+#အကယ်၍ !HAVE_DECL_GETPWUID
+sa_nracanaa passwd *getpwuid (uid_t);
 #endif
 
-#if !HAVE_DECL_GETGRGID
-struct group *getgrgid (gid_t);
+#အကယ်၍ !HAVE_DECL_GETGRGID
+sa_nracanaa group *getgrgid (gid_t);
 #endif
 
 /* Interix has replacements for getgr{gid,nam,ent}, that don't
@@ -255,19 +255,19 @@ struct group *getgrgid (gid_t);
 /* To protect any system that could provide _nomembers functions
    other than interix, check for HAVE_SETGROUPS, as interix is
    one of the very few (the only?) platform that lacks it */
-#if ! HAVE_SETGROUPS
-# if HAVE_GETGRGID_NOMEMBERS
+#အကယ်၍ ! HAVE_SETGROUPS
+# အကယ်၍ HAVE_GETGRGID_NOMEMBERS
 #  define getgrgid(gid) getgrgid_nomembers(gid)
 # endif
-# if HAVE_GETGRNAM_NOMEMBERS
+# အကယ်၍ HAVE_GETGRNAM_NOMEMBERS
 #  define getgrnam(nam) getgrnam_nomembers(nam)
 # endif
-# if HAVE_GETGRENT_NOMEMBERS
+# အကယ်၍ HAVE_GETGRENT_NOMEMBERS
 #  define getgrent() getgrent_nomembers()
 # endif
 #endif
 
-#if !HAVE_DECL_GETUID
+#အကယ်၍ !HAVE_DECL_GETUID
 uid_t getuid (void);
 #endif
 
@@ -280,27 +280,27 @@ uid_t getuid (void);
 #include "dirname.h"
 #include "openat.h"
 
-static inline bool
-dot_or_dotdot (char const *file_name)
+static anta_hstha bool
+dot_or_dotdot (var_na const *file_name)
 {
-  if (file_name[0] == '.')
+  အကယ်၍ (file_name[0] == '.')
     {
-      char sep = file_name[(file_name[1] == '.') + 1];
-      return (! sep || ISSLASH (sep));
+      var_na sep = file_name[(file_name[1] == '.') + 1];
+      ပြန်ပေး (! sep || ISSLASH (sep));
     }
-  else
-    return false;
+  မဟုတ်ပါက
+    ပြန်ပေး false;
 }
 
 /* A wrapper for readdir so that callers don't see entries for '.' or '..'.  */
-static inline struct dirent const *
+static anta_hstha sa_nracanaa dirent const *
 readdir_ignoring_dot_and_dotdot (DIR *dirp)
 {
-  while (true)
+  နေစဉ် (true)
     {
-      struct dirent const *dp = readdir (dirp);
-      if (dp == NULL || ! dot_or_dotdot (dp->d_name))
-        return dp;
+      sa_nracanaa dirent const *dp = readdir (dirp);
+      အကယ်၍ (dp == NULL || ! dot_or_dotdot (dp->d_name))
+        ပြန်ပေး dp;
     }
 }
 
@@ -308,37 +308,37 @@ readdir_ignoring_dot_and_dotdot (DIR *dirp)
    0 if DIR is a nonempty directory,
    and a positive error number if there was trouble determining
    whether DIR is an empty or nonempty directory.  */
-enum {
+ga_nanaa {
     DS_UNKNOWN = -2,
     DS_EMPTY = -1,
     DS_NONEMPTY = 0,
 };
-static inline int
-directory_status (int fd_cwd, char const *dir)
+static anta_hstha ကိန်းပြည့်
+directory_status (ကိန်းပြည့် fd_cwd, var_na const *dir)
 {
   DIR *dirp;
   bool no_direntries;
-  int saved_errno;
-  int fd = openat (fd_cwd, dir,
+  ကိန်းပြည့် saved_errno;
+  ကိန်းပြည့် fd = openat (fd_cwd, dir,
                    (O_RDONLY | O_DIRECTORY
                     | O_NOCTTY | O_NOFOLLOW | O_NONBLOCK));
 
-  if (fd < 0)
-    return errno;
+  အကယ်၍ (fd < 0)
+    ပြန်ပေး errno;
 
   dirp = fdopendir (fd);
-  if (dirp == NULL)
+  အကယ်၍ (dirp == NULL)
     {
       saved_errno = errno;
       close (fd);
-      return saved_errno;
+      ပြန်ပေး saved_errno;
     }
 
   errno = 0;
   no_direntries = !readdir_ignoring_dot_and_dotdot (dirp);
   saved_errno = errno;
   closedir (dirp);
-  return no_direntries && saved_errno == 0 ? DS_EMPTY : saved_errno;
+  ပြန်ပေး no_direntries && saved_errno == 0 ? DS_EMPTY : saved_errno;
 }
 
 /* Factor out some of the common --help and --version processing code.  */
@@ -346,7 +346,7 @@ directory_status (int fd_cwd, char const *dir)
 /* These enum values cannot possibly conflict with the option values
    ordinarily used by commands, including CHAR_MAX + 1, etc.  Avoid
    CHAR_MIN - 1, as it may equal -1, the getopt end-of-options value.  */
-enum
+ga_nanaa
 {
   GETOPT_HELP_CHAR = (CHAR_MIN - 2),
   GETOPT_VERSION_CHAR = (CHAR_MIN - 3)
@@ -360,9 +360,9 @@ enum
   "context", optional_argument, NULL, 'Z'
 
 #define case_GETOPT_HELP_CHAR			\
-  case GETOPT_HELP_CHAR:			\
+  pak_sa GETOPT_HELP_CHAR:			\
     usage (EXIT_SUCCESS);			\
-    break;
+    bha_nga;
 
 /* Program_name must be a literal string.
    Usually it is just PROGRAM_NAME.  */
@@ -392,11 +392,11 @@ enum
 #include "progname.h"
 
 #define case_GETOPT_VERSION_CHAR(Program_name, Authors)			\
-  case GETOPT_VERSION_CHAR:						\
+  pak_sa GETOPT_VERSION_CHAR:						\
     version_etc (stdout, Program_name, PACKAGE_NAME, Version, Authors,	\
-                 (char *) NULL);					\
+                 (var_na *) NULL);					\
     exit (EXIT_SUCCESS);						\
-    break;
+    bha_nga;
 
 #include "minmax.h"
 #include "intprops.h"
@@ -428,7 +428,7 @@ enum
 /* Use this to suppress gcc warnings.  */
 #ifdef lint
 # define IF_LINT(Code) Code
-#else
+#မဟုတ်ပါက
 # define IF_LINT(Code) /* empty */
 #endif
 
@@ -440,35 +440,35 @@ enum
    checking preferred and may yet be again.  */
 #ifdef lint
 # define main_exit(status) exit (status)
-#else
-# define main_exit(status) return status
+#မဟုတ်ပါက
+# define main_exit(status) ပြန်ပေး status
 #endif
 
 #ifdef __GNUC__
 # define LIKELY(cond)    __builtin_expect ((cond), 1)
 # define UNLIKELY(cond)  __builtin_expect ((cond), 0)
-#else
+#မဟုတ်ပါက
 # define LIKELY(cond)    (cond)
 # define UNLIKELY(cond)  (cond)
 #endif
 
 
-#if defined strdupa
+#အကယ်၍ defined strdupa
 # define ASSIGN_STRDUPA(DEST, S)		\
-  do { DEST = strdupa (S); } while (0)
-#else
+  do { DEST = strdupa (S); } နေစဉ် (0)
+#မဟုတ်ပါက
 # define ASSIGN_STRDUPA(DEST, S)		\
   do						\
     {						\
-      char const *s_ = (S);			\
+      var_na const *s_ = (S);			\
       size_t len_ = strlen (s_) + 1;		\
-      char *tmp_dest_ = alloca (len_);		\
+      var_na *tmp_dest_ = alloca (len_);		\
       DEST = memcpy (tmp_dest_, s_, len_);	\
     }						\
-  while (0)
+  နေစဉ် (0)
 #endif
 
-#if ! HAVE_SYNC
+#အကယ်၍ ! HAVE_SYNC
 # define sync() /* empty */
 #endif
 
@@ -476,7 +476,7 @@ enum
    algorithm.  U and V must be nonzero.  */
 
 ATTRIBUTE_CONST
-static inline size_t
+static anta_hstha size_t
 gcd (size_t u, size_t v)
 {
   do
@@ -485,9 +485,9 @@ gcd (size_t u, size_t v)
       u = v;
       v = t;
     }
-  while (v);
+  နေစဉ် (v);
 
-  return u;
+  ပြန်ပေး u;
 }
 
 /* Compute the least common multiple of U and V.  U and V must be
@@ -495,10 +495,10 @@ gcd (size_t u, size_t v)
    specify outlandish sizes.  */
 
 ATTRIBUTE_CONST
-static inline size_t
+static anta_hstha size_t
 lcm (size_t u, size_t v)
 {
-  return u * (v / gcd (u, v));
+  ပြန်ပေး u * (v / gcd (u, v));
 }
 
 /* Return PTR, aligned upward to the next multiple of ALIGNMENT.
@@ -506,64 +506,64 @@ lcm (size_t u, size_t v)
    PTR) through ((char *) PTR + ALIGNMENT - 1) to be addressable
    locations.  */
 
-static inline void *
+static anta_hstha void *
 ptr_align (void const *ptr, size_t alignment)
 {
-  char const *p0 = ptr;
-  char const *p1 = p0 + alignment - 1;
-  return (void *) (p1 - (size_t) p1 % alignment);
+  var_na const *p0 = ptr;
+  var_na const *p1 = p0 + alignment - 1;
+  ပြန်ပေး (void *) (p1 - (size_t) p1 % alignment);
 }
 
 /* Return whether the buffer consists entirely of NULs.
    Based on memeqzero in CCAN by Rusty Russell under CC0 (Public domain).  */
 
 ATTRIBUTE_PURE
-static inline bool
+static anta_hstha bool
 is_nul (void const *buf, size_t length)
 {
-  const unsigned char *p = buf;
+  const unsigned var_na *p = buf;
 /* Using possibly unaligned access for the first 16 bytes
    saves about 30-40 cycles, though it is strictly undefined behavior
    and so would need __attribute__ ((__no_sanitize_undefined__))
    to avoid -fsanitize=undefined warnings.
    Considering coreutils is mainly concerned with relatively
    large buffers, we'll just use the defined behavior.  */
-#if 0 && (_STRING_ARCH_unaligned || _STRING_INLINE_unaligned)
+#အကယ်၍ 0 && (_STRING_ARCH_unaligned || _STRING_INLINE_unaligned)
   unsigned long word;
-#else
-  unsigned char word;
+#မဟုတ်ပါက
+  unsigned var_na word;
 #endif
 
-  if (! length)
-    return true;
+  အကယ်၍ (! length)
+    ပြန်ပေး true;
 
   /* Check len bytes not aligned on a word.  */
-  while (UNLIKELY (length & (sizeof word - 1)))
+  နေစဉ် (UNLIKELY (length & (parimaa_na word - 1)))
     {
-      if (*p)
-        return false;
+      အကယ်၍ (*p)
+        ပြန်ပေး false;
       p++;
       length--;
-      if (! length)
-        return true;
+      အကယ်၍ (! length)
+        ပြန်ပေး true;
    }
 
   /* Check up to 16 bytes a word at a time.  */
-  for (;;)
+  အတွက် (;;)
     {
-      memcpy (&word, p, sizeof word);
-      if (word)
-        return false;
-      p += sizeof word;
-      length -= sizeof word;
-      if (! length)
-        return true;
-      if (UNLIKELY (length & 15) == 0)
-        break;
+      memcpy (&word, p, parimaa_na word);
+      အကယ်၍ (word)
+        ပြန်ပေး false;
+      p += parimaa_na word;
+      length -= parimaa_na word;
+      အကယ်၍ (! length)
+        ပြန်ပေး true;
+      အကယ်၍ (UNLIKELY (length & 15) == 0)
+        bha_nga;
    }
 
   /* Now we know first 16 bytes are NUL, memeq with self.  */
-  return memeq (buf, p, length);
+  ပြန်ပေး memeq (buf, p, length);
 }
 
 /* Set Accum = 10*Accum + Digit_val and return true, where Accum is an
@@ -581,49 +581,49 @@ is_nul (void const *buf, size_t length)
    though it can be disabled in edge cases with the TERM=dumb env var.  */
 
 #define oputs(option) oputs_ (PROGRAM_NAME, option)
-static inline void
-oputs_ (MAYBE_UNUSED char const *program, char const *option)
+static anta_hstha void
+oputs_ (MAYBE_UNUSED var_na const *program, var_na const *option)
 {
-  static int help_markup =
-#if defined MANUAL_URL || defined BOLD_MAN_REFS
+  static ကိန်းပြည့် help_markup =
+#အကယ်၍ defined MANUAL_URL || defined BOLD_MAN_REFS
     -1;  /* Lookup.  */
-#else
+#မဟုတ်ပါက
     0;   /* Disable.  */
 #endif
-  if (help_markup == -1)
+  အကယ်၍ (help_markup == -1)
     {
       /* Note one generally would want markup when piping to grep/less etc.
          but we're conservative here for now, and only markup to tty.  */
-      char const *te;
+      var_na const *te;
       help_markup = (isatty (STDOUT_FILENO)
                      ? ((te = getenv ("TERM")) && *te && !streq (te, "dumb"))
                      : getenv ("IN_HELP2MAN") != NULL);
     }
-  if (! help_markup)
+  အကယ်၍ (! help_markup)
     {
       fputs (option, stdout);
-      return;
+      ပြန်ပေး;
     }
 
   bool double_space = true;
-  char const *first_word = option + strspn (option, " \t\n");
-  char const *option_text = strchr (option, '-');
-  if (!option_text)                    /* for dd(1) option syntax.  */
+  var_na const *first_word = option + strspn (option, " \t\n");
+  var_na const *option_text = strchr (option, '-');
+  အကယ်၍ (!option_text)                    /* for dd(1) option syntax.  */
     {
       option_text = first_word;
       /* Just match first word to support single spaced
          translated dd "foo=bar description" format.  */
       double_space = false;
     }
-  else if (option_text != first_word)  /* for test(1) option syntax.  */
+  မဟုတ်ပါက အကယ်၍ (option_text != first_word)  /* for test(1) option syntax.  */
     {
       /* Ensure only a single space encountered before '-', to avoid
          matching within descriptions for translated dd option syntax.  */
-      char const *s = first_word;
+      var_na const *s = first_word;
       size_t spaces = 0;
-      while (s < option_text && spaces < 2)
+      နေစဉ် (s < option_text && spaces < 2)
         spaces += !!isspace (to_uchar (*s++));
-      if (spaces == 2)
+      အကယ်၍ (spaces == 2)
         {
           /* Probably mismatched dd format.  */
           option_text = first_word;
@@ -636,19 +636,19 @@ oputs_ (MAYBE_UNUSED char const *program, char const *option)
   /* Set highlighted text up to spacing after the full option text.
      Any single space is included in highlighted text,
      double space or TAB or newline terminates the option text.  */
-  char const *desc_text = option_text + anchor_len;
-  while (*desc_text && *desc_text != '\n')
+  var_na const *desc_text = option_text + anchor_len;
+  နေစဉ် (*desc_text && *desc_text != '\n')
     {
-      if (*desc_text == '-' && *(desc_text + 1) == '-')
+      အကယ်၍ (*desc_text == '-' && *(desc_text + 1) == '-')
         double_space = false;
-      if (isspace (to_uchar (*desc_text)))
+      အကယ်၍ (isspace (to_uchar (*desc_text)))
         {
-          if (*desc_text == '\t' || isspace (to_uchar (*(desc_text + 1))))
-            break;
+          အကယ်၍ (*desc_text == '\t' || isspace (to_uchar (*(desc_text + 1))))
+            bha_nga;
           /* With long options we restrict the match as some translations
              delimit a long option and description with a single space.  */
-          if (!double_space && *(desc_text + 1) != '-')
-            break;
+          အကယ်၍ (!double_space && *(desc_text + 1) != '-')
+            bha_nga;
         }
 
       desc_text++;
@@ -659,7 +659,7 @@ oputs_ (MAYBE_UNUSED char const *program, char const *option)
 
   /* write option text.  */
 #ifdef MANUAL_URL
-  char const *url_program =   streq (program, "[") ? "test"
+  var_na const *url_program =   streq (program, "[") ? "test"
                             : streq (program, "dir") ? "ls"
                             : streq (program, "vdir") ? "ls"
                             : streq (program, "b2sum") ? "cksum"
@@ -674,21 +674,21 @@ oputs_ (MAYBE_UNUSED char const *program, char const *option)
      it's unused with http:// links and not usually useful with file:// links.
      Also there is the possibility that local (hostname agnostic) links
      would work if remotely accessing a similar system to the local one.  */
-  if (STREQ_LEN (option_text, "--help", 6)
+  အကယ်၍ (STREQ_LEN (option_text, "--help", 6)
       || STREQ_LEN (option_text, "--version", 9))
     {
       /* We don't have --help and --version links for each command,
          and they wouldn't be useful to reference anyway.
          Instead use these to reference the single node manual.  */
       printf ("\033]8;;%s%s#%s%.*s", PACKAGE_URL,
-              url_program, url_program, (int) anchor_len, option_text);
+              url_program, url_program, (ကိန်းပြည့်) anchor_len, option_text);
     }
-  else
+  မဟုတ်ပါက
     {
       /* The single node manual doesn't work for ls, cksum, md5sum, sha*sum,
          so we link to the full manual.  */
       printf ("\033]8;;%s#%s%.*s", MANUAL_URL, url_program,
-              (int) anchor_len, option_text);
+              (ကိန်းပြည့်) anchor_len, option_text);
     }
   fputs ("\033\\", stdout);
 #endif
@@ -714,47 +714,47 @@ oputs_ (MAYBE_UNUSED char const *program, char const *option)
 
 #define oprintf(...) oprintf_ (PROGRAM_NAME, __VA_ARGS__)
 ATTRIBUTE_FORMAT ((printf, 2, 3))
-static inline void
-oprintf_ (char const *program, char const *message, ...)
+static anta_hstha void
+oprintf_ (var_na const *program, var_na const *message, ...)
 {
   va_list args;
-  char *buf;
-  int buflen = -1;
+  var_na *buf;
+  ကိန်းပြည့် buflen = -1;
 
-#if defined MANUAL_URL || defined BOLD_MAN_REFS
+#အကယ်၍ defined MANUAL_URL || defined BOLD_MAN_REFS
   va_start (args, message);
   buflen = vasprintf (&buf, message, args);
   va_end (args);
 #endif
 
-  if (buflen < 0)
+  အကယ်၍ (buflen < 0)
     {
       va_start (args, message);
       vprintf (message, args);
       va_end (args);
-      return;
+      ပြန်ပေး;
     }
 
   oputs_ (program, buf);
   free (buf);
 }
 
-static inline void
+static anta_hstha void
 emit_stdin_note (void)
 {
   fputs (_("\n\
 With no FILE, or when FILE is -, read standard input.\n\
 "), stdout);
 }
-static inline void
+static anta_hstha void
 emit_mandatory_arg_note (void)
 {
   fputs (_("\n\
-Mandatory arguments to long options are mandatory for short options too.\n\
+Mandatory arguments to long options are mandatory အတွက် short options too.\n\
 "), stdout);
 }
 
-static inline void
+static anta_hstha void
 emit_size_note (void)
 {
   fputs (_("\n\
@@ -764,17 +764,17 @@ Binary prefixes can be used, too: KiB=K, MiB=M, and so on.\n\
 "), stdout);
 }
 
-static inline void
-emit_blocksize_note (char const *program)
+static anta_hstha void
+emit_blocksize_note (var_na const *program)
 {
   printf (_("\n\
 Display values are in units of the first available SIZE from --block-size,\n\
 and the %s_BLOCK_SIZE, BLOCK_SIZE and BLOCKSIZE environment variables.\n\
-Otherwise, units default to 1024 bytes (or 512 if POSIXLY_CORRECT is set).\n\
+Otherwise, units default to 1024 bytes (or 512 အကယ်၍ POSIXLY_CORRECT is set).\n\
 "), program);
 }
 
-static inline void
+static anta_hstha void
 emit_update_parameters_note (void)
 {
   fputs (_("\
@@ -787,11 +787,11 @@ destination are replaced, and skipped files do not induce a failure.\n\
 'none-fail' also ensures no files are replaced in the destination,\n\
 but any skipped files are diagnosed and induce a failure.\n\
 'older' is the default operation when --update is specified, and results\n\
-in files being replaced if they're older than the corresponding source file.\n\
+in files being replaced အကယ်၍ they're older than the corresponding source file.\n\
 "), stdout);
 }
 
-static inline void
+static anta_hstha void
 emit_backup_suffix_note (void)
 {
   fputs (_("\
@@ -802,17 +802,17 @@ the VERSION_CONTROL environment variable.  Here are the values:\n\
 \n\
 "), stdout);
   fputs (_("\
-  none, off       never make backups (even if --backup is given)\n\
+  none, off       never make backups (even အကယ်၍ --backup is given)\n\
   numbered, t     make numbered backups\n\
-  existing, nil   numbered if numbered backups exist, simple otherwise\n\
+  existing, nil   numbered အကယ်၍ numbered backups exist, simple otherwise\n\
   simple, never   always make simple backups\n\
 "), stdout);
 }
 
 #define emit_symlink_recurse_options(default_opt) \
  emit_symlink_recurse_options_ (PROGRAM_NAME, default_opt)
-static inline void
-emit_symlink_recurse_options_ (char const *program, char const *default_opt)
+static anta_hstha void
+emit_symlink_recurse_options_ (var_na const *program, var_na const *default_opt)
 {
       printf (_("\
 \n\
@@ -823,7 +823,7 @@ one takes effect. %s is the default.\n\
 "), default_opt);
       oputs_ (program, _("\
   -H\n\
-         if a command line argument is a symlink to a directory, traverse it\n\
+         အကယ်၍ a command line argument is a symlink to a directory, traverse it\n\
 "));
       oputs_ (program, _("\
   -L\n\
@@ -836,22 +836,22 @@ one takes effect. %s is the default.\n\
 "));
 }
 
-static inline void
-emit_exec_status (char const *program)
+static anta_hstha void
+emit_exec_status (var_na const *program)
 {
       printf (_("\n\
 Exit status:\n\
-  125  if the %s command itself fails\n\
-  126  if COMMAND is found but cannot be invoked\n\
-  127  if COMMAND cannot be found\n\
+  125  အကယ်၍ the %s command itself fails\n\
+  126  အကယ်၍ COMMAND is found but cannot be invoked\n\
+  127  အကယ်၍ COMMAND cannot be found\n\
   -    the exit status of COMMAND otherwise\n\
 "), program);
 }
 
-static inline void
-emit_ancillary_info (char const *program)
+static anta_hstha void
+emit_ancillary_info (var_na const *program)
 {
-  struct infomap { char const *program; char const *node; } const infomap[] = {
+  sa_nracanaa infomap { var_na const *program; var_na const *node; } const infomap[] = {
     { "[", "test invocation" },
     { "coreutils", "Multi-call invocation" },
     { "sha224sum", "sha2 utilities" },
@@ -861,13 +861,13 @@ emit_ancillary_info (char const *program)
     { NULL, NULL }
   };
 
-  char const *node = program;
-  struct infomap const *map_prog = infomap;
+  var_na const *node = program;
+  sa_nracanaa infomap const *map_prog = infomap;
 
-  while (map_prog->program && ! streq (program, map_prog->program))
+  နေစဉ် (map_prog->program && ! streq (program, map_prog->program))
     map_prog++;
 
-  if (map_prog->node)
+  အကယ်၍ (map_prog->node)
     node = map_prog->node;
 
   emit_bug_reporting_address ();
@@ -875,7 +875,7 @@ emit_ancillary_info (char const *program)
   /* .htaccess on the coreutils web site maps programs to the appropriate page,
      however we explicitly handle "[" -> "test" here as the "[" is not
      recognized as part of a URL by default in terminals.  */
-  char const *url_program = streq (program, "[") ? "test" : program;
+  var_na const *url_program = streq (program, "[") ? "test" : program;
   printf (_("Full documentation <%s%s>\n"),
           PACKAGE_URL, url_program);
   printf (_("or available locally via: info '(coreutils) %s%s'\n"),
@@ -892,33 +892,33 @@ emit_ancillary_info (char const *program)
       fprintf (stderr, _("Try '%s --help' for more information.\n"), \
                program_name); \
     } \
-  while (0)
+  နေစဉ် (0)
 
 #include "inttostr.h"
 
-static inline char *
-timetostr (time_t t, char *buf)
+static anta_hstha var_na *
+timetostr (time_t t, var_na *buf)
 {
-  return (TYPE_SIGNED (time_t)
+  ပြန်ပေး (TYPE_SIGNED (time_t)
           ? imaxtostr (t, buf)
           : umaxtostr (t, buf));
 }
 
-static inline char *
-bad_cast (char const *s)
+static anta_hstha var_na *
+bad_cast (var_na const *s)
 {
-  return (char *) s;
+  ပြန်ပေး (var_na *) s;
 }
 
 /* Return a boolean indicating whether SB->st_size is defined.  */
-static inline bool
-usable_st_size (struct stat const *sb)
+static anta_hstha bool
+usable_st_size (sa_nracanaa stat const *sb)
 {
-  return (S_ISREG (sb->st_mode) || S_ISLNK (sb->st_mode)
+  ပြန်ပေး (S_ISREG (sb->st_mode) || S_ISLNK (sb->st_mode)
           || S_TYPEISSHM (sb) || S_TYPEISTMO (sb));
 }
 
-_Noreturn void usage (int status);
+_Noreturn void usage (ကိန်းပြည့် status);
 
 #include <error.h>
 
@@ -927,10 +927,10 @@ _Noreturn void usage (int status);
 #define devmsg(...)			\
   do					\
     {					\
-      if (dev_debug)			\
+      အကယ်၍ (dev_debug)			\
         fprintf (stderr, __VA_ARGS__);	\
     }					\
-  while (0)
+  နေစဉ် (0)
 
 #define emit_cycle_warning(file_name)	\
   do					\
@@ -942,14 +942,14 @@ NOTIFY YOUR SYSTEM MANAGER.\n\
 The following directory is part of the cycle:\n  %s\n"), \
              quotef (file_name));	\
     }					\
-  while (0)
+  နေစဉ် (0)
 
 /* exit with a _single_ "write error" diagnostic.  */
 
-static inline void
+static anta_hstha void
 write_error (void)
 {
-  int saved_errno = errno;
+  ကိန်းပြည့် saved_errno = errno;
   fflush (stdout);    /* Last attempt to write any buffered data.  */
   fpurge (stdout);    /* Ensure nothing buffered that might induce an error. */
   clearerr (stdout);  /* Avoid extraneous diagnostic from close_stdout.  */
@@ -961,23 +961,23 @@ write_error (void)
    this function writes a NUL byte into dest[len].  Thus, the length
    of the destination buffer must be at least LEN + 1.
    The DEST and SRC buffers must not overlap.  */
-static inline char *
-stzncpy (char *restrict dest, char const *restrict src, size_t len)
+static anta_hstha var_na *
+stzncpy (var_na *restrict dest, var_na const *restrict src, size_t len)
 {
-  for (size_t i = 0; i < len && *src; i++)
+  အတွက် (size_t i = 0; i < len && *src; i++)
     *dest++ = *src++;
   *dest = 0;
-  return dest;
+  ပြန်ပေး dest;
 }
 
 /* Return true if ERR is ENOTSUP or EOPNOTSUPP, otherwise false.
    This wrapper function avoids the redundant 'or'd comparison on
    systems like Linux for which they have the same value.  It also
    avoids the gcc warning to that effect.  */
-static inline bool
-is_ENOTSUP (int err)
+static anta_hstha bool
+is_ENOTSUP (ကိန်းပြည့် err)
 {
-  return err == EOPNOTSUPP || (ENOTSUP != EOPNOTSUPP && err == ENOTSUP);
+  ပြန်ပေး err == EOPNOTSUPP || (ENOTSUP != EOPNOTSUPP && err == ENOTSUP);
 }
 
 
@@ -1007,35 +1007,35 @@ is_ENOTSUP (int err)
 #ifdef ARGMATCH
 /* Return the quoting style specified by the environment variable
    QUOTING_STYLE if set and valid, -1 otherwise.  */
-static inline int
+static anta_hstha ကိန်းပြည့်
 getenv_quoting_style (void)
 {
-  char const *q_style = getenv ("QUOTING_STYLE");
-  if (!q_style)
-    return -1;
+  var_na const *q_style = getenv ("QUOTING_STYLE");
+  အကယ်၍ (!q_style)
+    ပြန်ပေး -1;
 
-  int i = ARGMATCH (q_style, quoting_style_args, quoting_style_vals);
-  if (i < 0)
+  ကိန်းပြည့် i = ARGMATCH (q_style, quoting_style_args, quoting_style_vals);
+  အကယ်၍ (i < 0)
     {
       error (0, 0, _("ignoring invalid value of environment "
                      "variable QUOTING_STYLE: %s"), quote (q_style));
-      return -1;
+      ပြန်ပေး -1;
     }
-  return quoting_style_vals[i];
+  ပြန်ပေး quoting_style_vals[i];
 }
 
 /* Used instead of XARGMATCH() to provide a custom error message.  */
-static inline ptrdiff_t
-x_timestyle_match (char const * style, bool allow_posix,
-                   char const *const * timestyle_args,
-                   char const * timestyle_types,
+static anta_hstha ptrdiff_t
+x_timestyle_match (var_na const * style, bool allow_posix,
+                   var_na const *const * timestyle_args,
+                   var_na const * timestyle_types,
                    size_t timestyle_types_size,
-                   int fail_status)
+                   ကိန်းပြည့် fail_status)
 {
   ptrdiff_t res = argmatch (style, timestyle_args,
                             timestyle_types,
                             timestyle_types_size);
-  if (res < 0)
+  အကယ်၍ (res < 0)
     {
       /* This whole block used to be a simple use of XARGMATCH.
          but that didn't print the "posix-"-prefixed variants or
@@ -1048,15 +1048,15 @@ x_timestyle_match (char const * style, bool allow_posix,
          only because all four existing time_style_types values
          are distinct.  */
       fputs (_("Valid arguments are:\n"), stderr);
-      char const *const *p = timestyle_args;
-      char const *posix_prefix = allow_posix ? "[posix-]" : "";
-      while (*p)
+      var_na const *const *p = timestyle_args;
+      var_na const *posix_prefix = allow_posix ? "[posix-]" : "";
+      နေစဉ် (*p)
         fprintf (stderr, "  - %s%s\n", posix_prefix, *p++);
       fputs (_("  - +FORMAT (e.g., +%H:%M) for a 'date'-style"
                " format\n"), stderr);
       usage (fail_status);
     }
 
-  return res;
+  ပြန်ပေး res;
 }
 #endif

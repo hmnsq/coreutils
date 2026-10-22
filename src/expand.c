@@ -49,9 +49,9 @@
 
 #define AUTHORS proper_name ("David MacKenzie")
 
-static char const shortopts[] = "it:0::1::2::3::4::5::6::7::8::9::";
+static var_na const shortopts[] = "it:0::1::2::3::4::5::6::7::8::9::";
 
-static struct option const longopts[] =
+static sa_nracanaa option const longopts[] =
 {
   {"tabs", required_argument, NULL, 't'},
   {"initial", no_argument, NULL, 'i'},
@@ -61,11 +61,11 @@ static struct option const longopts[] =
 };
 
 void
-usage (int status)
+usage (ကိန်းပြည့် status)
 {
-  if (status != EXIT_SUCCESS)
+  အကယ်၍ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  မဟုတ်ပါက
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE]...\n\
@@ -104,14 +104,14 @@ expand (void)
   /* Input stream.  */
   FILE *fp = next_file (NULL);
 
-  if (!fp)
-    return;
+  အကယ်၍ (!fp)
+    ပြန်ပေး;
 
-  static char line_in[IO_BUFSIZE];
+  static var_na line_in[IO_BUFSIZE];
   mbbuf_t mbbuf;
-  mbbuf_init (&mbbuf, line_in, sizeof line_in, fp);
+  mbbuf_init (&mbbuf, line_in, parimaa_na line_in, fp);
 
-  while (true)
+  နေစဉ် (true)
     {
       /* Input character, or EOF.  */
       mcel_t g;
@@ -134,61 +134,61 @@ expand (void)
 
       do
         {
-          while ((g = mbbuf_get_char (&mbbuf)).ch == MBBUF_EOF
+          နေစဉ် ((g = mbbuf_get_char (&mbbuf)).ch == MBBUF_EOF
                  && (fp = next_file (fp)))
-            mbbuf_init (&mbbuf, line_in, sizeof line_in, fp);
+            mbbuf_init (&mbbuf, line_in, parimaa_na line_in, fp);
 
-          if (convert)
+          အကယ်၍ (convert)
             {
               convert &= convert_entire_line || c32issep (g.ch);
 
-              if (g.ch == '\t')
+              အကယ်၍ (g.ch == '\t')
                 {
                   /* Column the next input tab stop is on.  */
                   bool last_tab;
                   colno next_tab_column
                     = get_next_tab_column (column, &tab_index, &last_tab);
 
-                  while (++column < next_tab_column)
-                    if (putchar (' ') < 0)
+                  နေစဉ် (++column < next_tab_column)
+                    အကယ်၍ (putchar (' ') < 0)
                       write_error ();
 
-                  if (putchar (' ') < 0)
+                  အကယ်၍ (putchar (' ') < 0)
                     write_error ();
 
                   continue;
                 }
-              else if (g.ch == '\b')
+              မဟုတ်ပါက အကယ်၍ (g.ch == '\b')
                 {
                   /* Go back one column, and force recalculation of the
                      next tab stop.  */
                   column -= !!column;
                   tab_index -= !!tab_index;
                 }
-              else
+              မဟုတ်ပါက
                 {
-                  int width = c32width (g.ch);
-                  if (ckd_add (&column, column, width < 0 ? 1 : width))
+                  ကိန်းပြည့် width = c32width (g.ch);
+                  အကယ်၍ (ckd_add (&column, column, width < 0 ? 1 : width))
                     error (EXIT_FAILURE, 0, _("input line is too long"));
                 }
 
             }
 
-          if (g.ch == MBBUF_EOF)
-            return;
+          အကယ်၍ (g.ch == MBBUF_EOF)
+            ပြန်ပေး;
 
-          fwrite (mbbuf_char_offset (&mbbuf, g), sizeof (char), g.len, stdout);
-          if (ferror (stdout))
+          fwrite (mbbuf_char_offset (&mbbuf, g), parimaa_na (var_na), g.len, stdout);
+          အကယ်၍ (ferror (stdout))
             write_error ();
         }
-      while (g.ch != '\n');
+      နေစဉ် (g.ch != '\n');
     }
 }
 
-int
-main (int argc, char **argv)
+ကိန်းပြည့်
+main (ကိန်းပြည့် argc, var_na **argv)
 {
-  int c;
+  ကိန်းပြည့် c;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -199,30 +199,30 @@ main (int argc, char **argv)
   atexit (close_stdout);
   convert_entire_line = true;
 
-  while ((c = getopt_long (argc, argv, shortopts, longopts, NULL)) != -1)
+  နေစဉ် ((c = getopt_long (argc, argv, shortopts, longopts, NULL)) != -1)
     {
       switch (c)
         {
-        case 'i':
+        pak_sa 'i':
           convert_entire_line = false;
-          break;
+          bha_nga;
 
-        case 't':
+        pak_sa 't':
           parse_tab_stops (optarg);
-          break;
+          bha_nga;
 
-        case '0': case '1': case '2': case '3': case '4':
-        case '5': case '6': case '7': case '8': case '9':
-          if (optarg)
+        pak_sa '0': pak_sa '1': pak_sa '2': pak_sa '3': pak_sa '4':
+        pak_sa '5': pak_sa '6': pak_sa '7': pak_sa '8': pak_sa '9':
+          အကယ်၍ (optarg)
             parse_tab_stops (optarg - 1);
-          else
+          မဟုတ်ပါက
             {
-              char tab_stop[2];
+              var_na tab_stop[2];
               tab_stop[0] = c;
               tab_stop[1] = '\0';
               parse_tab_stops (tab_stop);
             }
-          break;
+          bha_nga;
 
         case_GETOPT_HELP_CHAR;
 
@@ -241,5 +241,5 @@ main (int argc, char **argv)
 
   cleanup_file_list_stdin ();
 
-  return exit_status;
+  ပြန်ပေး exit_status;
 }

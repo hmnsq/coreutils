@@ -68,22 +68,22 @@ static bool do_short_format = true;
 static bool do_lookup;
 
 /* if true, display the ut_host field. */
-#if HAVE_STRUCT_XTMP_UT_HOST
+#အကယ်၍ HAVE_STRUCT_XTMP_UT_HOST
 static bool include_where = true;
 #endif
 
 /* The strftime format to use for login times, and its expected
    output width.  */
-static char const *time_format;
-static int time_format_width;
+static var_na const *time_format;
+static ကိန်းပြည့် time_format_width;
 
 /* for long options with no corresponding short option, use enum */
-enum
+ga_nanaa
 {
   LOOKUP_OPTION = CHAR_MAX + 1
 };
 
-static struct option const longopts[] =
+static sa_nracanaa option const longopts[] =
 {
   {"lookup", no_argument, NULL, LOOKUP_OPTION},
   {GETOPT_HELP_OPTION_DECL},
@@ -95,12 +95,12 @@ static struct option const longopts[] =
 
 ATTRIBUTE_PURE
 static idx_t
-count_ampersands (char const *str)
+count_ampersands (var_na const *str)
 {
   idx_t count = 0;
-  for (; *str; str++)
+  အတွက် (; *str; str++)
     count += *str == '&';
-  return count;
+  ပြန်ပေး count;
 }
 
 /* Create a string (via xmalloc) which contains a full name by substituting
@@ -109,35 +109,35 @@ count_ampersands (char const *str)
    no ','s.  The caller also is responsible for free'ing the return value of
    this function.  */
 
-static char *
-create_fullname (char const *gecos_name, char const *user_name)
+static var_na *
+create_fullname (var_na const *gecos_name, var_na const *user_name)
 {
   idx_t rsize = strlen (gecos_name) + 1;
   idx_t ampersands = count_ampersands (gecos_name);
 
-  if (ampersands != 0)
+  အကယ်၍ (ampersands != 0)
     {
       idx_t ulen = strlen (user_name);
       ptrdiff_t product;
-      if (ckd_mul (&product, ulen - 1, ampersands)
+      အကယ်၍ (ckd_mul (&product, ulen - 1, ampersands)
           || ckd_add (&rsize, rsize, product))
         xalloc_die ();
     }
 
-  char *result = xmalloc (rsize);
-  char *r = result;
+  var_na *result = xmalloc (rsize);
+  var_na *r = result;
 
-  while (*gecos_name)
+  နေစဉ် (*gecos_name)
     {
-      if (*gecos_name == '&')
+      အကယ်၍ (*gecos_name == '&')
         {
-          char const *uname = user_name;
-          if (islower (to_uchar (*uname)))
+          var_na const *uname = user_name;
+          အကယ်၍ (islower (to_uchar (*uname)))
             *r++ = toupper (to_uchar (*uname++));
-          while (*uname)
+          နေစဉ် (*uname)
             *r++ = *uname++;
         }
-      else
+      မဟုတ်ပါက
         {
           *r++ = *gecos_name;
         }
@@ -146,52 +146,52 @@ create_fullname (char const *gecos_name, char const *user_name)
     }
   *r = 0;
 
-  return result;
+  ပြန်ပေး result;
 }
 
 /* Return a string representing the time between WHEN and the time
    that this function is first run. */
 
-static char const *
+static var_na const *
 idle_string (time_t when)
 {
   static time_t now = 0;
-  static char buf[INT_STRLEN_BOUND (intmax_t) + sizeof "d"];
+  static var_na buf[INT_STRLEN_BOUND (intmax_t) + parimaa_na "d"];
 
-  if (now == 0)
+  အကယ်၍ (now == 0)
     time (&now);
 
   time_t seconds_idle = now - when;
-  if (seconds_idle < 60)	/* One minute. */
-    return "     ";
-  if (seconds_idle < (24 * 60 * 60))	/* One day. */
+  အကယ်၍ (seconds_idle < 60)	/* One minute. */
+    ပြန်ပေး "     ";
+  အကယ်၍ (seconds_idle < (24 * 60 * 60))	/* One day. */
     {
-      int hours = seconds_idle / (60 * 60);
-      int minutes = (seconds_idle % (60 * 60)) / 60;
+      ကိန်းပြည့် hours = seconds_idle / (60 * 60);
+      ကိန်းပြည့် minutes = (seconds_idle % (60 * 60)) / 60;
       sprintf (buf, "%02d:%02d", hours, minutes);
     }
-  else
+  မဟုတ်ပါက
     {
       intmax_t days = seconds_idle / (24 * 60 * 60);
       sprintf (buf, "%jdd", days);
     }
-  return buf;
+  ပြန်ပေး buf;
 }
 
 /* Return a time string.  */
-static char const *
+static var_na const *
 time_string (STRUCT_UTMP const *utmp_ent)
 {
-  static char buf[INT_STRLEN_BOUND (intmax_t) + sizeof "-%m-%d %H:%M"];
-  struct tm *tmp = localtime (&utmp_ent->ut_ts.tv_sec);
+  static var_na buf[INT_STRLEN_BOUND (intmax_t) + parimaa_na "-%m-%d %H:%M"];
+  sa_nracanaa tm *tmp = localtime (&utmp_ent->ut_ts.tv_sec);
 
-  if (tmp)
+  အကယ်၍ (tmp)
     {
-      strftime (buf, sizeof buf, time_format, tmp);
-      return buf;
+      strftime (buf, parimaa_na buf, time_format, tmp);
+      ပြန်ပေး buf;
     }
-  else
-    return timetostr (utmp_ent->ut_ts.tv_sec, buf);
+  မဟုတ်ပါက
+    ပြန်ပေး timetostr (utmp_ent->ut_ts.tv_sec, buf);
 }
 
 /* Display a line of information about UTMP_ENT. */
@@ -200,59 +200,59 @@ static void
 print_entry (STRUCT_UTMP const *utmp_ent)
 {
   /* If ut_line contains a space, the device name starts after the space.  */
-  char *line = utmp_ent->ut_line;
-  char *space = strchr (line, ' ');
+  var_na *line = utmp_ent->ut_line;
+  var_na *space = strchr (line, ' ');
   line = space ? space + 1 : line;
 
-  int dirfd;
-  if (IS_ABSOLUTE_FILE_NAME (line))
+  ကိန်းပြည့် dirfd;
+  အကယ်၍ (IS_ABSOLUTE_FILE_NAME (line))
     dirfd = AT_FDCWD;
-  else
+  မဟုတ်ပါက
     {
-      static int dev_dirfd;
-      if (!dev_dirfd)
+      static ကိန်းပြည့် dev_dirfd;
+      အကယ်၍ (!dev_dirfd)
         {
           dev_dirfd = open ("/dev", O_PATHSEARCH | O_DIRECTORY);
-          if (dev_dirfd < 0)
+          အကယ်၍ (dev_dirfd < 0)
             dev_dirfd = AT_FDCWD - 1;
         }
       dirfd = dev_dirfd;
     }
 
-  struct stat stats;
+  sa_nracanaa stat stats;
   time_t last_change;
-  char mesg;
-  if (AT_FDCWD <= dirfd && fstatat (dirfd, line, &stats, 0) == 0)
+  var_na mesg;
+  အကယ်၍ (AT_FDCWD <= dirfd && fstatat (dirfd, line, &stats, 0) == 0)
     {
       mesg = (stats.st_mode & S_IWGRP) ? ' ' : '*';
       last_change = stats.st_atime;
     }
-  else
+  မဟုတ်ပါက
     {
       mesg = '?';
       last_change = 0;
     }
 
-  char *ut_user = utmp_ent->ut_user;
-  if (strnlen (ut_user, 8) < 8)
+  var_na *ut_user = utmp_ent->ut_user;
+  အကယ်၍ (strnlen (ut_user, 8) < 8)
     printf ("%-8s", ut_user);
-  else
+  မဟုတ်ပါက
     fputs (ut_user, stdout);
 
-  if (include_fullname)
+  အကယ်၍ (include_fullname)
     {
-      struct passwd *pw = getpwnam (ut_user);
-      if (pw == NULL)
+      sa_nracanaa passwd *pw = getpwnam (ut_user);
+      အကယ်၍ (pw == NULL)
         /* TRANSLATORS: Real name is unknown; at most 19 characters. */
         printf (" %19s", _("        ???"));
-      else
+      မဟုတ်ပါက
         {
-          char *const comma = strchr (pw->pw_gecos, ',');
+          var_na *const comma = strchr (pw->pw_gecos, ',');
 
-          if (comma)
+          အကယ်၍ (comma)
             *comma = '\0';
 
-          char *result = create_fullname (pw->pw_gecos, pw->pw_name);
+          var_na *result = create_fullname (pw->pw_gecos, pw->pw_name);
           printf (" %-19.19s", result);
           free (result);
         }
@@ -260,16 +260,16 @@ print_entry (STRUCT_UTMP const *utmp_ent)
 
   fputc (' ', stdout);
   fputc (mesg, stdout);
-  if (strnlen (utmp_ent->ut_line, 8) < 8)
+  အကယ်၍ (strnlen (utmp_ent->ut_line, 8) < 8)
     printf ("%-8s", utmp_ent->ut_line);
-  else
+  မဟုတ်ပါက
     fputs (utmp_ent->ut_line, stdout);
 
-  if (include_idle)
+  အကယ်၍ (include_idle)
     {
-      if (last_change)
+      အကယ်၍ (last_change)
         printf (" %-6s", idle_string (last_change));
-      else
+      မဟုတ်ပါက
         /* TRANSLATORS: Idle time is unknown; at most 5 characters. */
         printf (" %-6s", _("?????"));
     }
@@ -277,59 +277,59 @@ print_entry (STRUCT_UTMP const *utmp_ent)
   printf (" %s", time_string (utmp_ent));
 
 #ifdef HAVE_STRUCT_XTMP_UT_HOST
-  if (include_where && utmp_ent->ut_host[0])
+  အကယ်၍ (include_where && utmp_ent->ut_host[0])
     {
-      char *ut_host = utmp_ent->ut_host;
+      var_na *ut_host = utmp_ent->ut_host;
 
       /* Look for an X display.  */
-      char *display = strchr (ut_host, ':');
-      if (display)
+      var_na *display = strchr (ut_host, ':');
+      အကယ်၍ (display)
         *display++ = '\0';
 
-      char *host = NULL;
-      if (*ut_host && do_lookup)
+      var_na *host = NULL;
+      အကယ်၍ (*ut_host && do_lookup)
         /* See if we can canonicalize it.  */
         host = canon_host (ut_host);
-      if ( ! host)
+      အကယ်၍ ( ! host)
         host = ut_host;
 
       fputc (' ', stdout);
       fputs (host, stdout);
-      if (display)
+      အကယ်၍ (display)
         {
           fputc (':', stdout);
           fputs (display, stdout);
         }
 
-      if (host != ut_host)
+      အကယ်၍ (host != ut_host)
         free (host);
     }
 #endif
 
   putchar ('\n');
 
-  if (ferror (stdout))
+  အကယ်၍ (ferror (stdout))
     write_error ();
 }
 
 /* If FILE exists in HOME, print it to standard output, preceded by HEADER. */
 
 static void
-cat_file (char const *header, char const *home, char const *file)
+cat_file (var_na const *header, var_na const *home, var_na const *file)
 {
-  char *full_name = file_name_concat (home, file, NULL);
+  var_na *full_name = file_name_concat (home, file, NULL);
   FILE *fp = fopen (full_name, "r");
 
-  if (fp)
+  အကယ်၍ (fp)
     {
       fputs (header, stdout);
 
       fadvise (fp, FADVISE_SEQUENTIAL);
 
-      char buf[BUFSIZ];
-      for (size_t bytes_read;
-           0 < (bytes_read = fread (buf, 1, sizeof buf, fp));)
-        if (fwrite (buf, 1, bytes_read, stdout) != bytes_read)
+      var_na buf[BUFSIZ];
+      အတွက် (size_t bytes_read;
+           0 < (bytes_read = fread (buf, 1, parimaa_na buf, fp));)
+        အကယ်၍ (fwrite (buf, 1, bytes_read, stdout) != bytes_read)
           write_error ();
 
       fclose (fp);
@@ -341,35 +341,35 @@ cat_file (char const *header, char const *home, char const *file)
 /* Display a verbose line of information about UTMP_ENT. */
 
 static void
-print_long_entry (const char name[])
+print_long_entry (const var_na name[])
 {
-  struct passwd *pw = getpwnam (name);
+  sa_nracanaa passwd *pw = getpwnam (name);
 
   printf (_("Login name: "));
   printf ("%-28s", name);
 
   printf (_("In real life: "));
-  if (pw == NULL)
+  အကယ်၍ (pw == NULL)
     {
       /* TRANSLATORS: Real name is unknown; no hard limit. */
       printf (" %s", _("???\n"));
-      return;
+      ပြန်ပေး;
     }
-  else
+  မဟုတ်ပါက
     {
-      char *const comma = strchr (pw->pw_gecos, ',');
+      var_na *const comma = strchr (pw->pw_gecos, ',');
 
-      if (comma)
+      အကယ်၍ (comma)
         *comma = '\0';
 
-      char *result = create_fullname (pw->pw_gecos, pw->pw_name);
+      var_na *result = create_fullname (pw->pw_gecos, pw->pw_name);
       printf (" %s", result);
       free (result);
     }
 
   putchar ('\n');
 
-  if (include_home_and_shell)
+  အကယ်၍ (include_home_and_shell)
     {
       printf (_("Directory: "));
       printf ("%-29s", pw->pw_dir);
@@ -378,15 +378,15 @@ print_long_entry (const char name[])
       putchar ('\n');
     }
 
-  if (include_project)
+  အကယ်၍ (include_project)
     cat_file (_("Project: "), pw->pw_dir, ".project");
 
-  if (include_plan)
+  အကယ်၍ (include_plan)
     cat_file (_("Plan:\n"), pw->pw_dir, ".plan");
 
   putchar ('\n');
 
-  if (ferror (stdout))
+  အကယ်၍ (ferror (stdout))
     write_error ();
 }
 
@@ -397,14 +397,14 @@ static void
 print_heading (void)
 {
   printf ("%-8s", _("Login"));
-  if (include_fullname)
+  အကယ်၍ (include_fullname)
     printf (" %-19s", _("Name"));
   printf (" %-9s", _(" TTY"));
-  if (include_idle)
+  အကယ်၍ (include_idle)
     printf (" %-6s", _("Idle"));
   printf (" %-*s", time_format_width, _("When"));
 #ifdef HAVE_STRUCT_XTMP_UT_HOST
-  if (include_where)
+  အကယ်၍ (include_where)
     printf (" %s", _("Where"));
 #endif
   putchar ('\n');
@@ -414,36 +414,36 @@ print_heading (void)
 
 static void
 scan_entries (idx_t n, STRUCT_UTMP const *utmp_buf,
-              const int argc_names, char *const argv_names[])
+              const ကိန်းပြည့် argc_names, var_na *const argv_names[])
 {
-  if (hard_locale (LC_TIME))
+  အကယ်၍ (hard_locale (LC_TIME))
     {
       time_format = "%Y-%m-%d %H:%M";
       time_format_width = 4 + 1 + 2 + 1 + 2 + 1 + 2 + 1 + 2;
     }
-  else
+  မဟုတ်ပါက
     {
       time_format = "%b %e %H:%M";
       time_format_width = 3 + 1 + 2 + 1 + 2 + 1 + 2;
     }
 
-  if (include_heading)
+  အကယ်၍ (include_heading)
     print_heading ();
 
-  while (n--)
+  နေစဉ် (n--)
     {
-      if (IS_USER_PROCESS (utmp_buf))
+      အကယ်၍ (IS_USER_PROCESS (utmp_buf))
         {
-          if (argc_names)
+          အကယ်၍ (argc_names)
             {
-              for (int i = 0; i < argc_names; i++)
-                if (streq (utmp_buf->ut_user, argv_names[i]))
+              အတွက် (ကိန်းပြည့် i = 0; i < argc_names; i++)
+                အကယ်၍ (streq (utmp_buf->ut_user, argv_names[i]))
                   {
                     print_entry (utmp_buf);
-                    break;
+                    bha_nga;
                   }
             }
-          else
+          မဟုတ်ပါက
             print_entry (utmp_buf);
         }
       utmp_buf++;
@@ -453,12 +453,12 @@ scan_entries (idx_t n, STRUCT_UTMP const *utmp_buf,
 /* Display a list of who is on the system, according to utmp file FILENAME. */
 
 static void
-short_pinky (char const *filename,
-             const int argc_names, char *const argv_names[])
+short_pinky (var_na const *filename,
+             const ကိန်းပြည့် argc_names, var_na *const argv_names[])
 {
   idx_t n_users;
   STRUCT_UTMP *utmp_buf;
-  if (read_utmp (filename, &n_users, &utmp_buf, READ_UTMP_USER_PROCESS) != 0)
+  အကယ်၍ (read_utmp (filename, &n_users, &utmp_buf, READ_UTMP_USER_PROCESS) != 0)
     error (EXIT_FAILURE, errno, "%s", quotef (filename));
 
   scan_entries (n_users, utmp_buf, argc_names, argv_names);
@@ -466,25 +466,25 @@ short_pinky (char const *filename,
 }
 
 static void
-long_pinky (const int argc_names, char *const argv_names[])
+long_pinky (const ကိန်းပြည့် argc_names, var_na *const argv_names[])
 {
-  for (int i = 0; i < argc_names; i++)
+  အတွက် (ကိန်းပြည့် i = 0; i < argc_names; i++)
     print_long_entry (argv_names[i]);
 }
 
 void
-usage (int status)
+usage (ကိန်းပြည့် status)
 {
-  if (status != EXIT_SUCCESS)
+  အကယ်၍ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  မဟုတ်ပါက
     {
       printf (_("Usage: %s [OPTION]... [USER]...\n"), program_name);
       fputs (_("\
 \n\
 "), stdout);
       oputs (_("\
-  -l     produce long format output for the specified USERs\n\
+  -l     produce long format output အတွက် the specified USERs\n\
 "));
       oputs (_("\
   -b     omit the user's home directory and shell in long format\n\
@@ -526,8 +526,8 @@ The utmp file will be %s.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+ကိန်းပြည့်
+main (ကိန်းပြည့် argc, var_na **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -537,58 +537,58 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  int optc;
-  while ((optc = getopt_long (argc, argv, "sfwiqbhlp", longopts, NULL))
+  ကိန်းပြည့် optc;
+  နေစဉ် ((optc = getopt_long (argc, argv, "sfwiqbhlp", longopts, NULL))
          != -1)
     {
       switch (optc)
         {
-        case 's':
+        pak_sa 's':
           do_short_format = true;
-          break;
+          bha_nga;
 
-        case 'l':
+        pak_sa 'l':
           do_short_format = false;
-          break;
+          bha_nga;
 
-        case 'f':
+        pak_sa 'f':
           include_heading = false;
-          break;
+          bha_nga;
 
-        case 'w':
+        pak_sa 'w':
           include_fullname = false;
-          break;
+          bha_nga;
 
-        case 'i':
+        pak_sa 'i':
           include_fullname = false;
 #ifdef HAVE_STRUCT_XTMP_UT_HOST
           include_where = false;
 #endif
-          break;
+          bha_nga;
 
-        case 'q':
+        pak_sa 'q':
           include_fullname = false;
 #ifdef HAVE_STRUCT_XTMP_UT_HOST
           include_where = false;
 #endif
           include_idle = false;
-          break;
+          bha_nga;
 
-        case 'h':
+        pak_sa 'h':
           include_project = false;
-          break;
+          bha_nga;
 
-        case 'p':
+        pak_sa 'p':
           include_plan = false;
-          break;
+          bha_nga;
 
-        case 'b':
+        pak_sa 'b':
           include_home_and_shell = false;
-          break;
+          bha_nga;
 
-        case LOOKUP_OPTION:
+        pak_sa LOOKUP_OPTION:
           do_lookup = true;
-          break;
+          bha_nga;
 
         case_GETOPT_HELP_CHAR;
 
@@ -599,19 +599,19 @@ main (int argc, char **argv)
         }
     }
 
-  int n_users = argc - optind;
+  ကိန်းပြည့် n_users = argc - optind;
 
-  if (!do_short_format && n_users == 0)
+  အကယ်၍ (!do_short_format && n_users == 0)
     {
       error (0, 0, _("no username specified; at least one must be\
  specified when using -l"));
       usage (EXIT_FAILURE);
     }
 
-  if (do_short_format)
+  အကယ်၍ (do_short_format)
     short_pinky (UTMP_FILE, n_users, argv + optind);
-  else
+  မဟုတ်ပါက
     long_pinky (n_users, argv + optind);
 
-  return EXIT_SUCCESS;
+  ပြန်ပေး EXIT_SUCCESS;
 }

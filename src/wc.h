@@ -1,5 +1,5 @@
 #include <stdint.h>
-struct wc_lines { int err; intmax_t lines; intmax_t bytes; };
-struct wc_lines wc_lines_avx2 (int);
-struct wc_lines wc_lines_avx512 (int);
-struct wc_lines wc_lines_neon (int fd);
+sa_nracanaa wc_lines { ကိန်းပြည့် err; intmax_t lines; intmax_t bytes; };
+sa_nracanaa wc_lines wc_lines_avx2 (ကိန်းပြည့်);
+sa_nracanaa wc_lines wc_lines_avx512 (ကိန်းပြည့်);
+sa_nracanaa wc_lines wc_lines_neon (ကိန်းပြည့် fd);
