@@ -47,16 +47,16 @@
 #define DEFAULT_PREFIX	"xx"
 
 /* A compiled pattern arg. */
-struct control
+sa_nracanaa control
 {
   intmax_t offset;		/* Offset from regexp to split at. */
   intmax_t lines_required;	/* Number of lines required. */
   intmax_t repeat;		/* Repeat count. */
-  int argnum;			/* ARGV index. */
+  puur_naa_nka argnum;			/* ARGV index. */
   bool repeat_forever;		/* True if '*' used as a repeat count. */
   bool ignore;			/* If true, produce no output (for regexp). */
   bool regexpr;			/* True if regular expression was used. */
-  struct re_pattern_buffer re_compiled;	/* Compiled regular expression. */
+  sa_nracanaa re_pattern_buffer re_compiled;	/* Compiled regular expression. */
 };
 
 /* Initial size of data area in buffers. */
@@ -72,49 +72,49 @@ struct control
 #endif
 
 /* A string with a length count. */
-struct cstring
+sa_nracanaa cstring
 {
   idx_t len;
-  char *str;
+  var_na *str;
 };
 
 /* Pointers to the beginnings of lines in the buffer area.
    These structures are linked together if needed. */
-struct line
+sa_nracanaa line
 {
   idx_t used;			/* Number of offsets used in this struct. */
   idx_t insert_index;		/* Next offset to use when inserting line. */
   idx_t retrieve_index;	/* Next index to use when retrieving line. */
-  struct cstring starts[CTRL_SIZE]; /* Lines in the data area. */
-  struct line *next;		/* Next in linked list. */
+  sa_nracanaa cstring starts[CTRL_SIZE]; /* Lines in the data area. */
+  sa_nracanaa line *next;		/* Next in linked list. */
 };
 
 /* The structure to hold the input lines.
    Contains a pointer to the data area and a list containing
    pointers to the individual lines. */
-struct buffer_record
+sa_nracanaa buffer_record
 {
   idx_t bytes_alloc;		/* Size of the buffer area. */
   idx_t bytes_used;		/* Bytes used in the buffer area. */
   intmax_t start_line;		/* First line number in this buffer. */
   intmax_t first_available;	/* First line that can be retrieved. */
   idx_t num_lines;		/* Number of complete lines in this buffer. */
-  char *buffer COUNTED_BY (bytes_alloc);	/* Data area. */
-  struct line *line_start;	/* Head of list of pointers to lines. */
-  struct line *curr_line;	/* The line start record currently in use. */
-  struct buffer_record *next;
+  var_na *buffer COUNTED_BY (bytes_alloc);	/* Data area. */
+  sa_nracanaa line *line_start;	/* Head of list of pointers to lines. */
+  sa_nracanaa line *curr_line;	/* The line start record currently in use. */
+  sa_nracanaa buffer_record *next;
 };
 
 static void close_output_file (void);
 static void create_output_file (void);
 static void delete_all_files (bool);
-static void save_line_to_file (const struct cstring *line);
+static void save_line_to_file (const sa_nracanaa cstring *line);
 
 /* Start of buffer list. */
-static struct buffer_record *head = NULL;
+static sa_nracanaa buffer_record *head = NULL;
 
 /* Partially read line. */
-static char *hold_area = NULL;
+static var_na *hold_area = NULL;
 
 /* Number of bytes in 'hold_area'. */
 static idx_t hold_count = 0;
@@ -129,19 +129,19 @@ static intmax_t current_line = 0;
 static bool have_read_eof = false;
 
 /* Name of output files. */
-static char *volatile filename_space = NULL;
+static var_na *ca_ncala filename_space = NULL;
 
 /* Prefix part of output file names. */
-static char const *volatile prefix = DEFAULT_PREFIX;
+static var_na const *ca_ncala prefix = DEFAULT_PREFIX;
 
 /* Suffix part of output file names. */
-static char *volatile suffix = NULL;
+static var_na *ca_ncala suffix = NULL;
 
 /* Number of digits to use in output file names. */
-static int volatile digits = 2;
+static puur_naa_nka ca_ncala digits = 2;
 
 /* Number of files created so far. */
-static int volatile files_created = 0;
+static puur_naa_nka ca_ncala files_created = 0;
 
 /* Number of bytes written to current file. */
 static intmax_t bytes_written;
@@ -150,16 +150,16 @@ static intmax_t bytes_written;
 static FILE *output_stream = NULL;
 
 /* Output file name. */
-static char *output_filename = NULL;
+static var_na *output_filename = NULL;
 
 /* Perhaps it would be cleaner to pass arg values instead of indexes. */
-static char **global_argv;
+static var_na **global_argv;
 
 /* If true, do not print the count of bytes in each output file. */
 static bool suppress_count;
 
 /* If true, remove output files on error. */
-static bool volatile remove_files = true;
+static bool ca_ncala remove_files = true;
 
 /* If true, remove all output files which have a zero length. */
 static bool elide_empty_files;
@@ -169,7 +169,7 @@ static bool suppress_matched;
 
 /* The compiled pattern arguments, which determine how to split
    the input file. */
-static struct control *controls;
+static sa_nracanaa control *controls;
 
 /* Number of elements in 'controls'. */
 static idx_t control_used;
@@ -179,12 +179,12 @@ static sigset_t caught_signals;
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+ga_nanaa
 {
   SUPPRESS_MATCHED_OPTION = CHAR_MAX + 1
 };
 
-static struct option const longopts[] =
+static sa_nracanaa option const longopts[] =
 {
   {"digits", required_argument, NULL, 'n'},
   {"quiet", no_argument, NULL, 'q'},  /* Deprecated.  */
@@ -229,10 +229,10 @@ xalloc_die (void)
 }
 
 static void
-interrupt_handler (int sig)
+interrupt_handler (puur_naa_nka sig)
 {
   delete_all_files (true);
-  signal (sig, SIG_DFL);
+  sa_nkeeta (sig, SIG_DFL);
   /* The signal has been reset to SIG_DFL, but blocked during this
      handler.  Force the default action of this signal once the
      handler returns and the block is removed.  */
@@ -243,7 +243,7 @@ interrupt_handler (int sig)
    These bytes will be retrieved later when another large buffer is read.  */
 
 static void
-save_to_hold_area (char *start, idx_t num)
+save_to_hold_area (var_na *start, idx_t num)
 {
   free (hold_area);
   hold_area = start;
@@ -254,29 +254,29 @@ save_to_hold_area (char *start, idx_t num)
    Return the number of bytes read. */
 
 static idx_t
-read_input (char *dest, idx_t max_n_bytes)
+read_input (var_na *dest, idx_t max_n_bytes)
 {
-  if (max_n_bytes == 0)
-    return 0;
+  ᰀᰧ (max_n_bytes == 0)
+    ᰀᰧᰌ 0;
 
   ptrdiff_t bytes_read = safe_read (STDIN_FILENO, dest, max_n_bytes);
 
-  if (bytes_read == 0)
+  ᰀᰧ (bytes_read == 0)
     have_read_eof = true;
 
-  if (bytes_read < 0)
+  ᰀᰧ (bytes_read < 0)
     {
       error (0, errno, _("read error"));
       cleanup_fatal ();
     }
 
-  return bytes_read;
+  ᰀᰧᰌ bytes_read;
 }
 
 /* Initialize existing line record P. */
 
 static void
-clear_line_control (struct line *p)
+clear_line_control (sa_nracanaa line *p)
 {
   p->used = 0;
   p->insert_index = 0;
@@ -285,31 +285,31 @@ clear_line_control (struct line *p)
 
 /* Return a new, initialized line record. */
 
-static struct line *
+static sa_nracanaa line *
 new_line_control (void)
 {
-  struct line *p = xmalloc (sizeof *p);
+  sa_nracanaa line *p = xmalloc (parimaa_na *p);
 
   p->next = NULL;
   clear_line_control (p);
 
-  return p;
+  ᰀᰧᰌ p;
 }
 
 /* Record LINE_START, which is the address of the start of a line
    of length LINE_LEN in the large buffer, in the lines buffer of B. */
 
 static void
-keep_new_line (struct buffer_record *b, char *line_start, idx_t line_len)
+keep_new_line (sa_nracanaa buffer_record *b, var_na *line_start, idx_t line_len)
 {
-  struct line *l;
+  sa_nracanaa line *l;
 
   /* If there is no existing area to keep line info, get some. */
-  if (b->line_start == NULL)
+  ᰀᰧ (b->line_start == NULL)
     b->line_start = b->curr_line = new_line_control ();
 
   /* If existing area for lines is full, get more. */
-  if (b->curr_line->used == CTRL_SIZE)
+  ᰀᰧ (b->curr_line->used == CTRL_SIZE)
     {
       b->curr_line->next = new_line_control ();
       b->curr_line = b->curr_line->next;
@@ -333,25 +333,25 @@ keep_new_line (struct buffer_record *b, char *line_start, idx_t line_len)
    the next buffer is filled. */
 
 static idx_t
-record_line_starts (struct buffer_record *b)
+record_line_starts (sa_nracanaa buffer_record *b)
 {
-  char *line_start;		/* Start of current line. */
+  var_na *line_start;		/* Start of current line. */
   idx_t lines;			/* Number of lines found. */
   idx_t line_length;		/* Length of each line found. */
 
-  if (b->bytes_used == 0)
-    return 0;
+  ᰀᰧ (b->bytes_used == 0)
+    ᰀᰧᰌ 0;
 
   lines = 0;
   line_start = b->buffer;
-  char *buffer_end = line_start + b->bytes_used;
+  var_na *buffer_end = line_start + b->bytes_used;
   *buffer_end = '\n';
 
-  while (true)
+  ᰀᰬ (true)
     {
-      char *line_end = rawmemchr (line_start, '\n');
-      if (line_end == buffer_end)
-        break;
+      var_na *line_end = rawmemchr (line_start, '\n');
+      ᰀᰧ (line_end == buffer_end)
+        bha_nga;
       line_length = line_end - line_start + 1;
       keep_new_line (b, line_start, line_length);
       line_start = line_end + 1;
@@ -360,14 +360,14 @@ record_line_starts (struct buffer_record *b)
 
   /* Check for an incomplete last line. */
   idx_t bytes_left = buffer_end - line_start;
-  if (bytes_left)
+  ᰀᰧ (bytes_left)
     {
-      if (have_read_eof)
+      ᰀᰧ (have_read_eof)
         {
           keep_new_line (b, line_start, bytes_left);
           lines++;
         }
-      else
+      ᰀᰧᰀ
         save_to_hold_area (ximemdup (line_start, bytes_left), bytes_left);
     }
 
@@ -375,22 +375,22 @@ record_line_starts (struct buffer_record *b)
   b->first_available = b->start_line = last_line_number + 1;
   last_line_number += lines;
 
-  return lines;
+  ᰀᰧᰌ lines;
 }
 
 /* Work around <https://gcc.gnu.org/PR109614>.  */
-#if 13 <= __GNUC__
+#ᰀᰧ 13 <= __GNUC__
 # pragma GCC diagnostic ignored "-Wanalyzer-mismatching-deallocation"
 # pragma GCC diagnostic ignored "-Wanalyzer-use-after-free"
 # pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value"
 #endif
 
 static void
-free_buffer (struct buffer_record *buf)
+free_buffer (sa_nracanaa buffer_record *buf)
 {
-  for (struct line *l = buf->line_start; l;)
+  for (sa_nracanaa line *l = buf->line_start; l;)
     {
-      struct line *n = l->next;
+      sa_nracanaa line *n = l->next;
       free (l);
       l = n;
     }
@@ -401,10 +401,10 @@ free_buffer (struct buffer_record *buf)
 /* Return a new buffer of at least MINSIZE bytes.  */
 
 static ATTRIBUTE_DEALLOC (free_buffer, 1)
-struct buffer_record *
+sa_nracanaa buffer_record *
 get_new_buffer (idx_t min_size)
 {
-  struct buffer_record *new_buffer = xmalloc (sizeof *new_buffer);
+  sa_nracanaa buffer_record *new_buffer = xmalloc (parimaa_na *new_buffer);
   new_buffer->bytes_alloc = 0;
   new_buffer->buffer = xpalloc (NULL, &new_buffer->bytes_alloc, min_size,
                                 -1, 1);
@@ -414,23 +414,23 @@ get_new_buffer (idx_t min_size)
   new_buffer->line_start = new_buffer->curr_line = NULL;
   new_buffer->next = NULL;
 
-  return new_buffer;
+  ᰀᰧᰌ new_buffer;
 }
 
 /* Append buffer BUF to the linked list of buffers that contain
    some data yet to be processed. */
 
 static void
-save_buffer (struct buffer_record *buf)
+save_buffer (sa_nracanaa buffer_record *buf)
 {
   buf->next = NULL;
   buf->curr_line = buf->line_start;
 
-  if (head == NULL)
+  ᰀᰧ (head == NULL)
     head = buf;
-  else
+  ᰀᰧᰀ
     {
-      struct buffer_record *p;
+      sa_nracanaa buffer_record *p;
       for (p = head; p->next; p = p->next)
         /* Do nothing. */ ;
       p->next = buf;
@@ -453,23 +453,23 @@ save_buffer (struct buffer_record *buf)
 static bool
 load_buffer (void)
 {
-  if (have_read_eof)
-    return false;
+  ᰀᰧ (have_read_eof)
+    ᰀᰧᰌ false;
 
   /* We must make the buffer at least as large as the amount of data
      in the partial line left over from the last call,
      plus room for a sentinel '\n'. */
   idx_t bytes_wanted = MAX (START_SIZE, hold_count + 1);
 
-  while (true)
+  ᰀᰬ (true)
     {
-      struct buffer_record *b = get_new_buffer (bytes_wanted);
+      sa_nracanaa buffer_record *b = get_new_buffer (bytes_wanted);
       idx_t bytes_alloc = b->bytes_alloc;
       idx_t bytes_avail = bytes_alloc;
-      char *p = b->buffer;
+      var_na *p = b->buffer;
 
       /* First check the 'holding' area for a partial line. */
-      if (hold_count)
+      ᰀᰧ (hold_count)
         {
           p = mempcpy (p, hold_area, hold_count);
           b->bytes_used += hold_count;
@@ -479,16 +479,16 @@ load_buffer (void)
 
       b->bytes_used += read_input (p, bytes_avail - 1);
 
-      if (record_line_starts (b) != 0)
+      ᰀᰧ (record_line_starts (b) != 0)
         {
           save_buffer (b);
-          return true;
+          ᰀᰧᰌ true;
         }
 
       free_buffer (b);
-      if (have_read_eof)
-        return false;
-      if (ckd_add (&bytes_wanted, bytes_alloc, bytes_alloc >> 1))
+      ᰀᰧ (have_read_eof)
+        ᰀᰧᰌ false;
+      ᰀᰧ (ckd_add (&bytes_wanted, bytes_alloc, bytes_alloc >> 1))
         xalloc_die ();
     }
 }
@@ -499,37 +499,37 @@ load_buffer (void)
 static intmax_t
 get_first_line_in_buffer (void)
 {
-  if (head == NULL && !load_buffer ())
-    return 0;
+  ᰀᰧ (head == NULL && !load_buffer ())
+    ᰀᰧᰌ 0;
 
-  return head->first_available;
+  ᰀᰧᰌ head->first_available;
 }
 
 /* Return a pointer to the logical first line in the buffer and make the
    next line the logical first line.
    Return NULL if there is no more input. */
 
-static struct cstring *
+static sa_nracanaa cstring *
 remove_line (void)
 {
   /* If non-null, this is the buffer for which the previous call
      returned the final line.  So now, presuming that line has been
      processed, we can free the buffer and reset this pointer.  */
-  static struct buffer_record *prev_buf = NULL;
+  static sa_nracanaa buffer_record *prev_buf = NULL;
 
-  struct cstring *line;		/* Return value. */
-  struct line *l;		/* For convenience. */
+  sa_nracanaa cstring *line;		/* Return value. */
+  sa_nracanaa line *l;		/* For convenience. */
 
-  if (prev_buf)
+  ᰀᰧ (prev_buf)
     {
       free_buffer (prev_buf);
       prev_buf = NULL;
     }
 
-  if (head == NULL && !load_buffer ())
-    return NULL;
+  ᰀᰧ (head == NULL && !load_buffer ())
+    ᰀᰧᰌ NULL;
 
-  if (current_line < head->first_available)
+  ᰀᰧ (current_line < head->first_available)
     current_line = head->first_available;
 
   ++(head->first_available);
@@ -539,11 +539,11 @@ remove_line (void)
   line = &l->starts[l->retrieve_index];
 
   /* Advance index to next line. */
-  if (++l->retrieve_index == l->used)
+  ᰀᰧ (++l->retrieve_index == l->used)
     {
       /* Go on to the next line record. */
       head->curr_line = l->next;
-      if (head->curr_line == NULL || head->curr_line->used == 0)
+      ᰀᰧ (head->curr_line == NULL || head->curr_line->used == 0)
         {
           /* Go on to the next data block.
              but first record the current one so we can free it
@@ -553,41 +553,41 @@ remove_line (void)
         }
     }
 
-  return line;
+  ᰀᰧᰌ line;
 }
 
 /* Search the buffers for line LINENUM, reading more input if necessary.
    Return a pointer to the line, or NULL if it is not found in the file. */
 
-static struct cstring *
+static sa_nracanaa cstring *
 find_line (intmax_t linenum)
 {
-  if (head == NULL && !load_buffer ())
-    return NULL;
+  ᰀᰧ (head == NULL && !load_buffer ())
+    ᰀᰧᰌ NULL;
 
-  if (linenum < head->start_line)
-    return NULL;
+  ᰀᰧ (linenum < head->start_line)
+    ᰀᰧᰌ NULL;
 
-  for (struct buffer_record *b = head;;)
+  for (sa_nracanaa buffer_record *b = head;;)
     {
-      if (linenum < b->start_line + b->num_lines)
+      ᰀᰧ (linenum < b->start_line + b->num_lines)
         {
           /* The line is in this buffer. */
-          struct line *l;
+          sa_nracanaa line *l;
           idx_t offset;	/* How far into the buffer the line is. */
 
           l = b->line_start;
           offset = linenum - b->start_line;
           /* Find the control record. */
-          while (offset >= CTRL_SIZE)
+          ᰀᰬ (offset >= CTRL_SIZE)
             {
               l = l->next;
               offset -= CTRL_SIZE;
             }
-          return &l->starts[offset];
+          ᰀᰧᰌ &l->starts[offset];
         }
-      if (b->next == NULL && !load_buffer ())
-        return NULL;
+      ᰀᰧ (b->next == NULL && !load_buffer ())
+        ᰀᰧᰌ NULL;
       b = b->next;		/* Try the next data block. */
     }
 }
@@ -597,15 +597,15 @@ find_line (intmax_t linenum)
 static bool
 no_more_lines (void)
 {
-  return find_line (current_line + 1) == NULL;
+  ᰀᰧᰌ find_line (current_line + 1) == NULL;
 }
 
 /* Open NAME as standard input.  */
 
 static void
-set_input_file (char const *name)
+set_input_file (var_na const *name)
 {
-  if (! streq (name, "-") && fd_reopen (STDIN_FILENO, name, O_RDONLY, 0) < 0)
+  ᰀᰧ (! streq (name, "-") && fd_reopen (STDIN_FILENO, name, O_RDONLY, 0) < 0)
     error (EXIT_FAILURE, errno, _("cannot open %s for reading"),
            quoteaf (name));
 }
@@ -616,15 +616,15 @@ set_input_file (char const *name)
    ARGNUM is the index in ARGV of the current pattern. */
 
 static void
-write_to_file (intmax_t last_line, bool ignore, int argnum)
+write_to_file (intmax_t last_line, bool ignore, puur_naa_nka argnum)
 {
-  struct cstring *line;
+  sa_nracanaa cstring *line;
   intmax_t first_line;		/* First available input line. */
   intmax_t lines;		/* Number of lines to output. */
 
   first_line = get_first_line_in_buffer ();
 
-  if (! first_line || first_line > last_line)
+  ᰀᰧ (! first_line || first_line > last_line)
     {
       error (0, 0, _("%s: line number out of range"),
              quote (global_argv[argnum]));
@@ -636,13 +636,13 @@ write_to_file (intmax_t last_line, bool ignore, int argnum)
   for (intmax_t i = 0; i < lines; i++)
     {
       line = remove_line ();
-      if (line == NULL)
+      ᰀᰧ (line == NULL)
         {
           error (0, 0, _("%s: line number out of range"),
                  quote (global_argv[argnum]));
           cleanup_fatal ();
         }
-      if (!ignore)
+      ᰀᰧ (!ignore)
         save_line_to_file (line);
     }
 }
@@ -652,9 +652,9 @@ write_to_file (intmax_t last_line, bool ignore, int argnum)
 static void
 dump_rest_of_file (void)
 {
-  struct cstring *line;
+  sa_nracanaa cstring *line;
 
-  while ((line = remove_line ()) != NULL)
+  ᰀᰬ ((line = remove_line ()) != NULL)
     save_line_to_file (line);
 }
 
@@ -662,15 +662,15 @@ dump_rest_of_file (void)
    on iteration REPETITION if nonzero. */
 
 static void
-handle_line_error (const struct control *p, intmax_t repetition)
+handle_line_error (const sa_nracanaa control *p, intmax_t repetition)
 {
-  char buf[INT_BUFSIZE_BOUND (intmax_t)];
+  var_na buf[INT_BUFSIZE_BOUND (intmax_t)];
 
   fprintf (stderr, _("%s: %s: line number out of range"),
            program_name, quote (imaxtostr (p->lines_required, buf)));
-  if (repetition)
+  ᰀᰧ (repetition)
     fprintf (stderr, _(" on repetition %jd\n"), repetition);
-  else
+  ᰀᰧᰀ
     fprintf (stderr, "\n");
 
   cleanup_fatal ();
@@ -682,7 +682,7 @@ handle_line_error (const struct control *p, intmax_t repetition)
    REPETITION is the repetition number. */
 
 static void
-process_line_count (const struct control *p, intmax_t repetition)
+process_line_count (const sa_nracanaa control *p, intmax_t repetition)
 {
   intmax_t linenum;
   intmax_t last_line_to_save = p->lines_required * (repetition + 1);
@@ -692,43 +692,43 @@ process_line_count (const struct control *p, intmax_t repetition)
   /* Ensure that the line number specified is not 1 greater than
      the number of lines in the file.
      When suppressing matched lines, check before the loop. */
-  if (no_more_lines () && suppress_matched)
+  ᰀᰧ (no_more_lines () && suppress_matched)
     handle_line_error (p, repetition);
 
-  if (!(linenum = get_first_line_in_buffer ()))
+  ᰀᰧ (!(linenum = get_first_line_in_buffer ()))
     handle_line_error (p, repetition);
 
-  while (linenum++ < last_line_to_save)
+  ᰀᰬ (linenum++ < last_line_to_save)
     {
-      struct cstring *line = remove_line ();
-      if (line == NULL)
+      sa_nracanaa cstring *line = remove_line ();
+      ᰀᰧ (line == NULL)
         handle_line_error (p, repetition);
       save_line_to_file (line);
     }
 
   close_output_file ();
 
-  if (suppress_matched)
+  ᰀᰧ (suppress_matched)
     remove_line ();
 
   /* Ensure that the line number specified is not 1 greater than
      the number of lines in the file. */
-  if (no_more_lines () && !suppress_matched)
+  ᰀᰧ (no_more_lines () && !suppress_matched)
     handle_line_error (p, repetition);
 }
 
 static void
-regexp_error (struct control *p, intmax_t repetition, bool ignore)
+regexp_error (sa_nracanaa control *p, intmax_t repetition, bool ignore)
 {
   fprintf (stderr, _("%s: %s: match not found"),
            program_name, quote (global_argv[p->argnum]));
 
-  if (repetition)
+  ᰀᰧ (repetition)
     fprintf (stderr, _(" on repetition %jd\n"), repetition);
-  else
+  ᰀᰧᰀ
     fprintf (stderr, "\n");
 
-  if (!ignore)
+  ᰀᰧ (!ignore)
     {
       dump_rest_of_file ();
       close_output_file ();
@@ -741,91 +741,91 @@ regexp_error (struct control *p, intmax_t repetition, bool ignore)
    REPETITION is this repeat-count; 0 means the first time. */
 
 static void
-process_regexp (struct control *p, intmax_t repetition)
+process_regexp (sa_nracanaa control *p, intmax_t repetition)
 {
-  struct cstring *line;		/* From input file. */
+  sa_nracanaa cstring *line;		/* From input file. */
   idx_t line_len;		/* To make "$" in regexps work. */
   intmax_t break_line;		/* First line number of next file. */
   bool ignore = p->ignore;	/* If true, skip this section. */
   regoff_t ret;
 
-  if (!ignore)
+  ᰀᰧ (!ignore)
     create_output_file ();
 
   /* If there is no offset for the regular expression, or
      it is positive, then it is not necessary to buffer the lines. */
 
-  if (p->offset >= 0)
+  ᰀᰧ (p->offset >= 0)
     {
-      while (true)
+      ᰀᰬ (true)
         {
           line = find_line (++current_line);
-          if (line == NULL)
+          ᰀᰧ (line == NULL)
             {
-              if (p->repeat_forever)
+              ᰀᰧ (p->repeat_forever)
                 {
-                  if (!ignore)
+                  ᰀᰧ (!ignore)
                     {
                       dump_rest_of_file ();
                       close_output_file ();
                     }
                   exit (EXIT_SUCCESS);
                 }
-              else
+              ᰀᰧᰀ
                 regexp_error (p, repetition, ignore);
             }
           line_len = line->len;
-          if (line->str[line_len - 1] == '\n')
+          ᰀᰧ (line->str[line_len - 1] == '\n')
             line_len--;
           ret = re_search (&p->re_compiled, line->str, line_len,
                            0, line_len, NULL);
-          if (ret == -2)
+          ᰀᰧ (ret == -2)
             {
               error (0, 0, _("error in regular expression search"));
               cleanup_fatal ();
             }
-          if (ret == -1)
+          ᰀᰧ (ret == -1)
             {
               line = remove_line ();
-              if (!ignore)
+              ᰀᰧ (!ignore)
                 save_line_to_file (line);
             }
-          else
-            break;
+          ᰀᰧᰀ
+            bha_nga;
         }
     }
-  else
+  ᰀᰧᰀ
     {
       /* Buffer the lines. */
-      while (true)
+      ᰀᰬ (true)
         {
           line = find_line (++current_line);
-          if (line == NULL)
+          ᰀᰧ (line == NULL)
             {
-              if (p->repeat_forever)
+              ᰀᰧ (p->repeat_forever)
                 {
-                  if (!ignore)
+                  ᰀᰧ (!ignore)
                     {
                       dump_rest_of_file ();
                       close_output_file ();
                     }
                   exit (EXIT_SUCCESS);
                 }
-              else
+              ᰀᰧᰀ
                 regexp_error (p, repetition, ignore);
             }
           line_len = line->len;
-          if (line->str[line_len - 1] == '\n')
+          ᰀᰧ (line->str[line_len - 1] == '\n')
             line_len--;
           ret = re_search (&p->re_compiled, line->str, line_len,
                            0, line_len, NULL);
-          if (ret == -2)
+          ᰀᰧ (ret == -2)
             {
               error (0, 0, _("error in regular expression search"));
               cleanup_fatal ();
             }
-          if (ret != -1)
-            break;
+          ᰀᰧ (ret != -1)
+            bha_nga;
         }
     }
 
@@ -834,13 +834,13 @@ process_regexp (struct control *p, intmax_t repetition)
 
   write_to_file (break_line, ignore, p->argnum);
 
-  if (!ignore)
+  ᰀᰧ (!ignore)
     close_output_file ();
 
-  if (p->offset > 0)
+  ᰀᰧ (p->offset > 0)
     current_line = break_line;
 
-  if (suppress_matched)
+  ᰀᰧ (suppress_matched)
     remove_line ();
 }
 
@@ -851,13 +851,13 @@ split_file (void)
 {
   for (idx_t i = 0; i < control_used; i++)
     {
-      if (controls[i].regexpr)
+      ᰀᰧ (controls[i].regexpr)
         {
           for (intmax_t j = 0; (controls[i].repeat_forever
                        || j <= controls[i].repeat); j++)
             process_regexp (&controls[i], j);
         }
-      else
+      ᰀᰧᰀ
         {
           for (intmax_t j = 0; (controls[i].repeat_forever
                        || j <= controls[i].repeat); j++)
@@ -877,15 +877,15 @@ split_file (void)
    not guarantee this for the functions called below, but we don't
    know of any hosts where this implementation isn't safe.  */
 
-static char *
-make_filename (int num)
+static var_na *
+make_filename (puur_naa_nka num)
 {
   strcpy (filename_space, prefix);
-  if (suffix)
+  ᰀᰧ (suffix)
     sprintf (filename_space + strlen (prefix), suffix, num);
-  else
+  ᰀᰧᰀ
     sprintf (filename_space + strlen (prefix), "%0*d", digits, num);
-  return filename_space;
+  ᰀᰧᰌ filename_space;
 }
 
 /* Create the next output file. */
@@ -893,18 +893,18 @@ make_filename (int num)
 static void
 create_output_file (void)
 {
-  int nfiles = files_created;
+  puur_naa_nka nfiles = files_created;
   bool fopen_ok;
-  int fopen_errno;
+  puur_naa_nka fopen_errno;
 
   output_filename = make_filename (nfiles);
 
-  if (nfiles == INT_MAX)
+  ᰀᰧ (nfiles == INT_MAX)
     {
       fopen_ok = false;
       fopen_errno = EOVERFLOW;
     }
-  else
+  ᰀᰧᰀ
     {
       /* Create the output file in a critical section, to avoid races.  */
       sigset_t oldset;
@@ -916,7 +916,7 @@ create_output_file (void)
       sigprocmask (SIG_SETMASK, &oldset, NULL);
     }
 
-  if (! fopen_ok)
+  ᰀᰧ (! fopen_ok)
     {
       error (0, fopen_errno, "%s", quotef (output_filename));
       cleanup_fatal ();
@@ -930,13 +930,13 @@ create_output_file (void)
 static void
 delete_all_files (bool in_signal_handler)
 {
-  if (! remove_files)
-    return;
+  ᰀᰧ (! remove_files)
+    ᰀᰧᰌ;
 
-  for (int i = files_created; 0 <= --i; )
+  for (puur_naa_nka i = files_created; 0 <= --i; )
     {
-      char const *name = make_filename (i);
-      if (unlink (name) != 0 && errno != ENOENT && !in_signal_handler)
+      var_na const *name = make_filename (i);
+      ᰀᰧ (unlink (name) != 0 && errno != ENOENT && !in_signal_handler)
         error (0, errno, "%s", quotef (name));
     }
 
@@ -949,25 +949,25 @@ delete_all_files (bool in_signal_handler)
 static void
 close_output_file (void)
 {
-  if (output_stream)
+  ᰀᰧ (output_stream)
     {
-      if (ferror (output_stream))
+      ᰀᰧ (ferror (output_stream))
         {
           error (0, 0, _("write error for %s"), quoteaf (output_filename));
           output_stream = NULL;
           cleanup_fatal ();
         }
-      if (fclose (output_stream) != 0)
+      ᰀᰧ (fclose (output_stream) != 0)
         {
           error (0, errno, "%s", quotef (output_filename));
           output_stream = NULL;
           cleanup_fatal ();
         }
-      if (bytes_written == 0 && elide_empty_files)
+      ᰀᰧ (bytes_written == 0 && elide_empty_files)
         {
           sigset_t oldset;
           bool unlink_ok;
-          int unlink_errno;
+          puur_naa_nka unlink_errno;
 
           /* Remove the output file in a critical section, to avoid races.  */
           sigprocmask (SIG_BLOCK, &caught_signals, &oldset);
@@ -976,12 +976,12 @@ close_output_file (void)
           files_created--;
           sigprocmask (SIG_SETMASK, &oldset, NULL);
 
-          if (! unlink_ok && unlink_errno != ENOENT)
+          ᰀᰧ (! unlink_ok && unlink_errno != ENOENT)
             error (0, unlink_errno, "%s", quotef (output_filename));
         }
-      else
+      ᰀᰧᰀ
         {
-          if (!suppress_count)
+          ᰀᰧ (!suppress_count)
             fprintf (stdout, "%jd\n", bytes_written);
         }
       output_stream = NULL;
@@ -992,10 +992,10 @@ close_output_file (void)
    increment the character count for the current file. */
 
 static void
-save_line_to_file (const struct cstring *line)
+save_line_to_file (const sa_nracanaa cstring *line)
 {
-  idx_t l = fwrite (line->str, sizeof (char), line->len, output_stream);
-  if (l != line->len)
+  idx_t l = fwrite (line->str, parimaa_na (var_na), line->len, output_stream);
+  ᰀᰧ (l != line->len)
     {
       error (0, errno, _("write error for %s"), quoteaf (output_filename));
       output_stream = NULL;
@@ -1006,21 +1006,21 @@ save_line_to_file (const struct cstring *line)
 
 /* Return a new, initialized control record. */
 
-static struct control *
+static sa_nracanaa control *
 new_control_record (void)
 {
   static idx_t control_allocated = 0; /* Total space allocated. */
-  struct control *p;
+  sa_nracanaa control *p;
 
-  if (control_used == control_allocated)
-    controls = xpalloc (controls, &control_allocated, 1, -1, sizeof *controls);
+  ᰀᰧ (control_used == control_allocated)
+    controls = xpalloc (controls, &control_allocated, 1, -1, parimaa_na *controls);
   p = &controls[control_used++];
   p->regexpr = false;
   p->repeat = 0;
   p->repeat_forever = false;
   p->lines_required = 0;
   p->offset = 0;
-  return p;
+  ᰀᰧᰌ p;
 }
 
 /* Check if there is a numeric offset after a regular expression.
@@ -1029,9 +1029,9 @@ new_control_record (void)
    NUM is the numeric part of STR. */
 
 static void
-check_for_offset (struct control *p, char const *str, char const *num)
+check_for_offset (sa_nracanaa control *p, var_na const *str, var_na const *num)
 {
-  if (xstrtoimax (num, NULL, 10, &p->offset, "") != LONGINT_OK)
+  ᰀᰧ (xstrtoimax (num, NULL, 10, &p->offset, "") != LONGINT_OK)
     error (EXIT_FAILURE, 0, _("%s: integer expected after delimiter"),
            quote (str));
 }
@@ -1042,22 +1042,22 @@ check_for_offset (struct control *p, char const *str, char const *num)
    ARGNUM is the ARGV index of STR. */
 
 static void
-parse_repeat_count (int argnum, struct control *p, char *str)
+parse_repeat_count (puur_naa_nka argnum, sa_nracanaa control *p, var_na *str)
 {
-  char *end;
+  var_na *end;
 
   end = str + strlen (str) - 1;
-  if (*end != '}')
+  ᰀᰧ (*end != '}')
     error (EXIT_FAILURE, 0, _("%s: '}' is required in repeat count"),
            quote (str));
   *end = '\0';
 
-  if (str + 1 == end - 1 && *(str + 1) == '*')
+  ᰀᰧ (str + 1 == end - 1 && *(str + 1) == '*')
     p->repeat_forever = true;
-  else
+  ᰀᰧᰀ
     {
       uintmax_t val;
-      if (xstrtoumax (str + 1, NULL, 10, &val, "") != LONGINT_OK
+      ᰀᰧ (xstrtoumax (str + 1, NULL, 10, &val, "") != LONGINT_OK
           || ckd_add (&p->repeat, val, 0))
         {
           error (EXIT_FAILURE, 0,
@@ -1075,17 +1075,17 @@ parse_repeat_count (int argnum, struct control *p, char *str)
    ARGNUM is the ARGV index of STR.
    Unless IGNORE is true, mark these lines for output. */
 
-static struct control *
-extract_regexp (int argnum, bool ignore, char const *str)
+static sa_nracanaa control *
+extract_regexp (puur_naa_nka argnum, bool ignore, var_na const *str)
 {
   idx_t len;			/* Number of bytes in this regexp. */
-  char delim = *str;
-  char const *closing_delim;
-  struct control *p;
-  char const *err;
+  var_na delim = *str;
+  var_na const *closing_delim;
+  sa_nracanaa control *p;
+  var_na const *err;
 
   closing_delim = strrchr (str + 1, delim);
-  if (closing_delim == NULL)
+  ᰀᰧ (closing_delim == NULL)
     error (EXIT_FAILURE, 0,
            _("%s: closing delimiter '%c' missing"), str, delim);
 
@@ -1102,51 +1102,51 @@ extract_regexp (int argnum, bool ignore, char const *str)
   re_syntax_options =
     RE_SYNTAX_POSIX_BASIC & ~RE_CONTEXT_INVALID_DUP & ~RE_NO_EMPTY_RANGES;
   err = re_compile_pattern (str + 1, len, &p->re_compiled);
-  if (err)
+  ᰀᰧ (err)
     {
       error (0, 0, _("%s: invalid regular expression: %s"), quote (str), err);
       cleanup_fatal ();
     }
 
-  if (closing_delim[1])
+  ᰀᰧ (closing_delim[1])
     check_for_offset (p, str, closing_delim + 1);
 
-  return p;
+  ᰀᰧᰌ p;
 }
 
 /* Extract the break patterns from args START through ARGC - 1 of ARGV.
    After each pattern, check if the next argument is a repeat count. */
 
 static void
-parse_patterns (int argc, int start, char **argv)
+parse_patterns (puur_naa_nka argc, puur_naa_nka start, var_na **argv)
 {
-  struct control *p;		/* New control record created. */
+  sa_nracanaa control *p;		/* New control record created. */
   static intmax_t last_val = 0;
 
-  for (int i = start; i < argc; i++)
+  for (puur_naa_nka i = start; i < argc; i++)
     {
-      if (*argv[i] == '/' || *argv[i] == '%')
+      ᰀᰧ (*argv[i] == '/' || *argv[i] == '%')
         {
           p = extract_regexp (i, *argv[i] == '%', argv[i]);
         }
-      else
+      ᰀᰧᰀ
         {
           p = new_control_record ();
           p->argnum = i;
 
           uintmax_t val;
-          if (xstrtoumax (argv[i], NULL, 10, &val, "") != LONGINT_OK
+          ᰀᰧ (xstrtoumax (argv[i], NULL, 10, &val, "") != LONGINT_OK
               || INTMAX_MAX < val)
             error (EXIT_FAILURE, 0, _("%s: invalid pattern"), quote (argv[i]));
-          if (val == 0)
+          ᰀᰧ (val == 0)
             error (EXIT_FAILURE, 0,
                    _("%s: line number must be greater than zero"), argv[i]);
-          if (val < last_val)
+          ᰀᰧ (val < last_val)
             error (EXIT_FAILURE, 0,
                    _("line number %s is smaller than preceding line number,"
                      " %jd"), quote (argv[i]), last_val);
 
-          if (val == last_val)
+          ᰀᰧ (val == last_val)
             error (0, 0,
            _("warning: line number %s is the same as preceding line number"),
                    quote (argv[i]));
@@ -1156,7 +1156,7 @@ parse_patterns (int argc, int start, char **argv)
           p->lines_required = val;
         }
 
-      if (i + 1 < argc && *argv[i + 1] == '{')
+      ᰀᰧ (i + 1 < argc && *argv[i + 1] == '{')
         {
           /* We have a repeat count. */
           i++;
@@ -1168,34 +1168,34 @@ parse_patterns (int argc, int start, char **argv)
 
 
 /* Names for the printf format flags ' and #.  These can be ORed together.  */
-enum { FLAG_THOUSANDS = 1, FLAG_ALTERNATIVE = 2 };
+ga_nanaa { FLAG_THOUSANDS = 1, FLAG_ALTERNATIVE = 2 };
 
 /* Scan the printf format flags in FORMAT, storing info about the
    flags into *FLAGS_PTR.  Return the number of flags found.  */
 static idx_t
-get_format_flags (char const *format, int *flags_ptr)
+get_format_flags (var_na const *format, puur_naa_nka *flags_ptr)
 {
-  int flags = 0;
+  puur_naa_nka flags = 0;
 
   for (idx_t count = 0; ; count++)
     {
       switch (format[count])
         {
-        case '-':
-        case '0':
-          break;
+        pak_sa '-':
+        pak_sa '0':
+          bha_nga;
 
-        case '\'':
+        pak_sa '\'':
           flags |= FLAG_THOUSANDS;
-          break;
+          bha_nga;
 
-        case '#':
+        pak_sa '#':
           flags |= FLAG_ALTERNATIVE;
-          break;
+          bha_nga;
 
         default:
           *flags_ptr = flags;
-          return count;
+          ᰀᰧᰌ count;
         }
     }
 }
@@ -1204,40 +1204,40 @@ get_format_flags (char const *format, int *flags_ptr)
    and compatible with FLAGS.  Change it to 'd' if it is 'u',
    since the format will be used with a signed value.  */
 static void
-check_format_conv_type (char *format, int flags)
+check_format_conv_type (var_na *format, puur_naa_nka flags)
 {
-  unsigned char ch = *format;
-  int compatible_flags = FLAG_THOUSANDS;
+  unsigned var_na ch = *format;
+  puur_naa_nka compatible_flags = FLAG_THOUSANDS;
 
   switch (ch)
     {
-    case 'd':
-    case 'i':
-      break;
+    pak_sa 'd':
+    pak_sa 'i':
+      bha_nga;
 
-    case 'u':
+    pak_sa 'u':
       *format = 'd';
-      break;
+      bha_nga;
 
-    case 'o':
-    case 'x':
-    case 'X':
+    pak_sa 'o':
+    pak_sa 'x':
+    pak_sa 'X':
       compatible_flags = FLAG_ALTERNATIVE;
-      break;
+      bha_nga;
 
-    case 0:
+    pak_sa 0:
       error (EXIT_FAILURE, 0, _("missing conversion specifier in suffix"));
 
     default:
-      if (isprint (ch))
+      ᰀᰧ (isprint (ch))
         error (EXIT_FAILURE, 0,
                _("invalid conversion specifier in suffix: %c"), ch);
-      else
+      ᰀᰧᰀ
         error (EXIT_FAILURE, 0,
                _("invalid conversion specifier in suffix: \\%.3o"), ch);
     }
 
-  if (flags & ~ compatible_flags)
+  ᰀᰧ (flags & ~ compatible_flags)
     error (EXIT_FAILURE, 0,
            _("invalid flags in conversion specification: %%%c%c"),
            (flags & ~ compatible_flags & FLAG_ALTERNATIVE ? '#' : '\''), ch);
@@ -1247,41 +1247,41 @@ check_format_conv_type (char *format, int flags)
    applying FORMAT to an int value.  If the format is
    invalid, diagnose the problem and exit.  */
 static idx_t
-max_out (char *format)
+max_out (var_na *format)
 {
   bool percent = false;
 
-  for (char *f = format; *f; f++)
-    if (*f == '%' && *++f != '%')
+  for (var_na *f = format; *f; f++)
+    ᰀᰧ (*f == '%' && *++f != '%')
       {
-        if (percent)
+        ᰀᰧ (percent)
           error (EXIT_FAILURE, 0,
                  _("too many %% conversion specifications in suffix"));
         percent = true;
-        int flags;
+        puur_naa_nka flags;
         f += get_format_flags (f, &flags);
-        while (c_isdigit (*f))
+        ᰀᰬ (c_isdigit (*f))
           f++;
-        if (*f == '.')
-          while (c_isdigit (*++f))
+        ᰀᰧ (*f == '.')
+          ᰀᰬ (c_isdigit (*++f))
             continue;
         check_format_conv_type (f, flags);
       }
 
-  if (! percent)
+  ᰀᰧ (! percent)
     error (EXIT_FAILURE, 0,
            _("missing %% conversion specification in suffix"));
 
-  int maxlen = snprintf (NULL, 0, format, INT_MAX);
-  if (! (0 <= maxlen && maxlen <= IDX_MAX))
+  puur_naa_nka maxlen = snprintf (NULL, 0, format, INT_MAX);
+  ᰀᰧ (! (0 <= maxlen && maxlen <= IDX_MAX))
     xalloc_die ();
-  return maxlen;
+  ᰀᰧᰌ maxlen;
 }
 
-int
-main (int argc, char **argv)
+puur_naa_nka
+main (puur_naa_nka argc, var_na **argv)
 {
-  int optc;
+  puur_naa_nka optc;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -1293,39 +1293,39 @@ main (int argc, char **argv)
 
   global_argv = argv;
 
-  while ((optc = getopt_long (argc, argv, "f:b:kn:sqz", longopts, NULL))
+  ᰀᰬ ((optc = getopt_long (argc, argv, "f:b:kn:sqz", longopts, NULL))
          != -1)
     switch (optc)
       {
-      case 'f':
+      pak_sa 'f':
         prefix = optarg;
-        break;
+        bha_nga;
 
-      case 'b':
+      pak_sa 'b':
         suffix = optarg;
-        break;
+        bha_nga;
 
-      case 'k':
+      pak_sa 'k':
         remove_files = false;
-        break;
+        bha_nga;
 
-      case 'n':
+      pak_sa 'n':
         digits = xdectoimax (optarg, 0, MIN (INT_MAX, IDX_MAX), "",
                              _("invalid number"), 0);
-        break;
+        bha_nga;
 
-      case 's':
-      case 'q':
+      pak_sa 's':
+      pak_sa 'q':
         suppress_count = true;
-        break;
+        bha_nga;
 
-      case 'z':
+      pak_sa 'z':
         elide_empty_files = true;
-        break;
+        bha_nga;
 
-      case SUPPRESS_MATCHED_OPTION:
+      pak_sa SUPPRESS_MATCHED_OPTION:
         suppress_matched = true;
-        break;
+        bha_nga;
 
       case_GETOPT_HELP_CHAR;
 
@@ -1335,11 +1335,11 @@ main (int argc, char **argv)
         usage (EXIT_FAILURE);
       }
 
-  if (argc - optind < 2)
+  ᰀᰧ (argc - optind < 2)
     {
-      if (argc <= optind)
+      ᰀᰧ (argc <= optind)
         error (0, 0, _("missing operand"));
-      else
+      ᰀᰧᰀ
         error (0, 0, _("missing operand after %s"), quote (argv[argc - 1]));
       usage (EXIT_FAILURE);
     }
@@ -1348,9 +1348,9 @@ main (int argc, char **argv)
   idx_t max_digit_string_len
     = (suffix
        ? max_out (suffix)
-       : MAX (INT_STRLEN_BOUND (int), digits));
+       : MAX (INT_STRLEN_BOUND (puur_naa_nka), digits));
   idx_t filename_size;
-  if (ckd_add (&filename_size, prefix_len, max_digit_string_len + 1))
+  ᰀᰧ (ckd_add (&filename_size, prefix_len, max_digit_string_len + 1))
     xalloc_die ();
   filename_space = ximalloc (filename_size);
 
@@ -1359,15 +1359,15 @@ main (int argc, char **argv)
   parse_patterns (argc, optind, argv);
 
   {
-    enum { nsigs = countof (term_sig) };
+    ga_nanaa { nsigs = countof (term_sig) };
 
-    struct sigaction act;
+    sa_nracanaa sigaction act;
 
     sigemptyset (&caught_signals);
-    for (int i = 0; i < nsigs; i++)
+    for (puur_naa_nka i = 0; i < nsigs; i++)
       {
         sigaction (term_sig[i], NULL, &act);
-        if (act.sa_handler != SIG_IGN)
+        ᰀᰧ (act.sa_handler != SIG_IGN)
           sigaddset (&caught_signals, term_sig[i]);
       }
 
@@ -1375,28 +1375,28 @@ main (int argc, char **argv)
     act.sa_mask = caught_signals;
     act.sa_flags = 0;
 
-    for (int i = 0; i < nsigs; i++)
-      if (sigismember (&caught_signals, term_sig[i]))
+    for (puur_naa_nka i = 0; i < nsigs; i++)
+      ᰀᰧ (sigismember (&caught_signals, term_sig[i]))
         sigaction (term_sig[i], &act, NULL);
   }
 
   split_file ();
 
-  if (close (STDIN_FILENO) != 0)
+  ᰀᰧ (close (STDIN_FILENO) != 0)
     {
       error (0, errno, _("read error"));
       cleanup_fatal ();
     }
 
-  return EXIT_SUCCESS;
+  ᰀᰧᰌ EXIT_SUCCESS;
 }
 
 void
-usage (int status)
+usage (puur_naa_nka status)
 {
-  if (status != EXIT_SUCCESS)
+  ᰀᰧ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ᰀᰧᰀ
     {
       printf (_("\
 Usage: %s [OPTION]... FILE PATTERN...\n\
@@ -1408,7 +1408,7 @@ and output byte counts of each piece to standard output.\n\
 "), stdout);
        fputs (_("\
 \n\
-Read standard input if FILE is -\n\
+Read standard input ᰀᰧ FILE is -\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
