@@ -33,17 +33,17 @@
 
    David MacKenzie <djm@gnu.ai.mit.edu> */
 
-#include <config.h>
+#ضمن <config.h>
 
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#ضمن <stdio.h>
+#ضمن <getopt.h>
+#ضمن <sys/types.h>
 
-#include "system.h"
-#include "ioblksize.h"
-#include "mbbuf.h"
-#include "mcel.h"
-#include "expand-common.h"
+#ضمن "system.h"
+#ضمن "ioblksize.h"
+#ضمن "mbbuf.h"
+#ضمن "mcel.h"
+#ضمن "expand-common.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "unexpand"
@@ -54,27 +54,27 @@
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+تعداد
 {
   CONVERT_FIRST_ONLY_OPTION = CHAR_MAX + 1
 };
 
-static struct option const longopts[] =
+ساكن بنية option ثابت longopts[] =
 {
-  {"tabs", required_argument, NULL, 't'},
-  {"all", no_argument, NULL, 'a'},
-  {"first-only", no_argument, NULL, CONVERT_FIRST_ONLY_OPTION},
+  {"tabs", required_argument, عدم, 't'},
+  {"all", no_argument, عدم, 'a'},
+  {"first-only", no_argument, عدم, CONVERT_FIRST_ONLY_OPTION},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {عدم, 0, عدم, 0}
 };
 
-void
-usage (int status)
+فراغ
+usage (صحيح status)
 {
-  if (status != EXIT_SUCCESS)
+  אם (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  אחרת
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE]...\n\
@@ -110,30 +110,30 @@ Convert blanks in each FILE to tabs, writing to standard output.\n\
 /* Change blanks to tabs, writing to stdout.
    Read each file in 'file_list', in order.  */
 
-static void
-unexpand (void)
+ساكن فراغ
+unexpand (فراغ)
 {
   /* Input stream.  */
-  FILE *fp = next_file (NULL);
+  FILE *fp = next_file (عدم);
 
   /* The array of pending blanks.  In non-POSIX locales, blanks can
      include characters other than spaces, so the blanks must be
      stored, not merely counted.  */
-  char *pending_blank;
+  حرف *pending_blank;
 
-  if (!fp)
-    return;
+  אם (!fp)
+    החזר;
 
-  static char line_in[IO_BUFSIZE];
+  ساكن حرف line_in[IO_BUFSIZE];
   mbbuf_t mbbuf;
-  mbbuf_init (&mbbuf, line_in, sizeof line_in, fp);
+  mbbuf_init (&mbbuf, line_in, حجم line_in, fp);
 
   /* The worst case is a non-blank character, then one blank, then a
      tab stop, then MAX_COLUMN_WIDTH - 1 blanks, then a non-blank; so
      allocate MAX_COLUMN_WIDTH bytes to store the blanks.  */
   pending_blank = xinmalloc (max_column_width, MB_CUR_MAX);
 
-  while (true)
+  כלעוד (true)
     {
       /* Input character, or EOF.  */
       mcel_t g;
@@ -168,56 +168,56 @@ unexpand (void)
 
       /* Convert a line of text.  */
 
-      do
+      עשה
         {
-          while ((g = mbbuf_get_char (&mbbuf)).ch == MBBUF_EOF
+          כלעוד ((g = mbbuf_get_char (&mbbuf)).ch == MBBUF_EOF
                  && (fp = next_file (fp)))
-            mbbuf_init (&mbbuf, line_in, sizeof line_in, fp);
+            mbbuf_init (&mbbuf, line_in, حجم line_in, fp);
 
-          if (convert)
+          אם (convert)
             {
               bool blank = c32issep (g.ch);
 
-              if (blank)
+              אם (blank)
                 {
                   bool last_tab;
 
                   next_tab_column = get_next_tab_column (column, &tab_index,
                                                          &last_tab);
 
-                  if (last_tab)
+                  אם (last_tab)
                     convert = false;
 
-                  if (convert)
+                  אם (convert)
                     {
-                      if (g.ch == '\t')
+                      אם (g.ch == '\t')
                         {
                           column = next_tab_column;
 
-                          if (pending)
+                          אם (pending)
                             pending_blank[0] = '\t';
                         }
-                      else
+                      אחרת
                         {
-                          int width = c32width (g.ch);
+                          صحيح width = c32width (g.ch);
                           column += width < 0 ? 1 : width;
 
-                          if (! (prev_blank && column >= next_tab_column))
+                          אם (! (prev_blank && column >= next_tab_column))
                             {
                               /* It is not yet known whether the pending blanks
                                  will be replaced by tabs.  */
-                              if (column == next_tab_column)
+                              אם (column == next_tab_column)
                                 one_blank_before_tab_stop = true;
                               memcpy (pending_blank + pending,
                                       mbbuf_char_offset (&mbbuf, g), g.len);
                               pending += g.len;
                               prev_blank = true;
-                              continue;
+                              استمر;
                             }
 
                           /* Replace the pending blanks by a tab or two.  */
                           g.len = 0;
-                          if (putc ('\t', stdout) < 0)
+                          אם (putc ('\t', stdout) < 0)
                             write_error ();
                           pending_blank[0] = '\t';
                         }
@@ -227,7 +227,7 @@ unexpand (void)
                       pending = one_blank_before_tab_stop;
                     }
                 }
-              else if (g.ch == '\b')
+              אחרת אם (g.ch == '\b')
                 {
                   /* Go back one column, and force recalculation of the
                      next tab stop.  */
@@ -235,18 +235,18 @@ unexpand (void)
                   next_tab_column = column;
                   tab_index -= !!tab_index;
                 }
-              else
+              אחרת
                 {
-                  int width = c32width (g.ch);
-                  if (ckd_add (&column, column, width < 0 ? 1 : width))
+                  صحيح width = c32width (g.ch);
+                  אם (ckd_add (&column, column, width < 0 ? 1 : width))
                     error (EXIT_FAILURE, 0, _("input line is too long"));
                 }
 
-              if (pending)
+              אם (pending)
                 {
-                  if (pending > 1 && one_blank_before_tab_stop)
+                  אם (pending > 1 && one_blank_before_tab_stop)
                     pending_blank[0] = '\t';
-                  if (fwrite (pending_blank, 1, pending, stdout) != pending)
+                  אם (fwrite (pending_blank, 1, pending, stdout) != pending)
                     write_error ();
                   pending = 0;
                   one_blank_before_tab_stop = false;
@@ -256,26 +256,26 @@ unexpand (void)
               convert &= convert_entire_line || blank;
             }
 
-          if (g.ch == MBBUF_EOF)
+          אם (g.ch == MBBUF_EOF)
             {
-              free (pending_blank);
-              return;
+              حرر (pending_blank);
+              החזר;
             }
 
-          fwrite (mbbuf_char_offset (&mbbuf, g), sizeof (char), g.len, stdout);
-          if (ferror (stdout))
+          fwrite (mbbuf_char_offset (&mbbuf, g), حجم (حرف), g.len, stdout);
+          אם (ferror (stdout))
             write_error ();
         }
-      while (g.ch != '\n');
+      כלעוד (g.ch != '\n');
     }
 }
 
-int
-main (int argc, char **argv)
+صحيح
+main (صحيح argc, حرف **argv)
 {
   bool have_tabval = false;
   colno tabval IF_LINT ( = 0);
-  int c;
+  صحيح c;
 
   /* If true, cancel the effect of any -a (explicit or implicit in -t),
      so that only leading blanks will be considered.  */
@@ -289,55 +289,55 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((c = getopt_long (argc, argv, ",0123456789at:", longopts, NULL))
+  כלעוד ((c = getopt_long (argc, argv, ",0123456789at:", longopts, عدم))
          != -1)
     {
-      switch (c)
+      بدل (c)
         {
-        case '?':
+        حالة '?':
           usage (EXIT_FAILURE);
-        case 'a':
+        حالة 'a':
           convert_entire_line = true;
-          break;
-        case 't':
+          اكسر;
+        حالة 't':
           convert_entire_line = true;
           parse_tab_stops (optarg);
-          break;
-        case CONVERT_FIRST_ONLY_OPTION:
+          اكسر;
+        حالة CONVERT_FIRST_ONLY_OPTION:
           convert_first_only = true;
-          break;
-        case ',':
-          if (have_tabval)
+          اكسر;
+        حالة ',':
+          אם (have_tabval)
             add_tab_stop (tabval);
           have_tabval = false;
-          break;
+          اكسر;
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
-          if (!have_tabval)
+        افتراضي:
+          אם (!have_tabval)
             {
               tabval = 0;
               have_tabval = true;
             }
-          if (!DECIMAL_DIGIT_ACCUMULATE (tabval, c - '0'))
+          אם (!DECIMAL_DIGIT_ACCUMULATE (tabval, c - '0'))
             error (EXIT_FAILURE, 0, _("tab stop is too large"));
-          break;
+          اكسر;
         }
     }
 
-  if (convert_first_only)
+  אם (convert_first_only)
     convert_entire_line = false;
 
-  if (have_tabval)
+  אם (have_tabval)
     add_tab_stop (tabval);
 
   finalize_tab_stops ();
 
-  set_file_list ((optind < argc) ? &argv[optind] : NULL);
+  set_file_list ((optind < argc) ? &argv[optind] : عدم);
 
   unexpand ();
 
   cleanup_file_list_stdin ();
 
-  return exit_status;
+  החזר exit_status;
 }

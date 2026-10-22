@@ -16,18 +16,18 @@
 
 /* Written by David MacKenzie <djm@gnu.ai.mit.edu>. */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <getopt.h>
+#ضمن <config.h>
+#ضمن <stdio.h>
+#ضمن <sys/types.h>
+#ضمن <getopt.h>
 
-#include "system.h"
-#include "chown.h"
-#include "chown-core.h"
-#include "fts_.h"
-#include "quote.h"
-#include "root-dev-ino.h"
-#include "userspec.h"
+#ضمن "system.h"
+#ضمن "chown.h"
+#ضمن "chown-core.h"
+#ضمن "fts_.h"
+#ضمن "quote.h"
+#ضمن "root-dev-ino.h"
+#ضمن "userspec.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME (chown_mode == CHOWN_CHOWN ? "chown" : "chgrp")
@@ -38,11 +38,11 @@
 
 /* The argument to the --reference option.  Use the owner and group IDs
    of this file.  This file must exist.  */
-static char *reference_file;
+ساكن حرف *reference_file;
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+تعداد
 {
   DEREFERENCE_OPTION = CHAR_MAX + 1,
   FROM_OPTION,
@@ -51,30 +51,30 @@ enum
   REFERENCE_FILE_OPTION
 };
 
-static struct option const long_options[] =
+ساكن بنية option ثابت long_options[] =
 {
-  {"recursive", no_argument, NULL, 'R'},
-  {"changes", no_argument, NULL, 'c'},
-  {"dereference", no_argument, NULL, DEREFERENCE_OPTION},
-  {"from", required_argument, NULL, FROM_OPTION},
-  {"no-dereference", no_argument, NULL, 'h'},
-  {"no-preserve-root", no_argument, NULL, NO_PRESERVE_ROOT},
-  {"preserve-root", no_argument, NULL, PRESERVE_ROOT},
-  {"quiet", no_argument, NULL, 'f'},
-  {"silent", no_argument, NULL, 'f'},
-  {"reference", required_argument, NULL, REFERENCE_FILE_OPTION},
-  {"verbose", no_argument, NULL, 'v'},
+  {"recursive", no_argument, عدم, 'R'},
+  {"changes", no_argument, عدم, 'c'},
+  {"dereference", no_argument, عدم, DEREFERENCE_OPTION},
+  {"from", required_argument, عدم, FROM_OPTION},
+  {"no-dereference", no_argument, عدم, 'h'},
+  {"no-preserve-root", no_argument, عدم, NO_PRESERVE_ROOT},
+  {"preserve-root", no_argument, عدم, PRESERVE_ROOT},
+  {"quiet", no_argument, عدم, 'f'},
+  {"silent", no_argument, عدم, 'f'},
+  {"reference", required_argument, عدم, REFERENCE_FILE_OPTION},
+  {"verbose", no_argument, عدم, 'v'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {عدم, 0, عدم, 0}
 };
 
-void
-usage (int status)
+فراغ
+usage (صحيح status)
 {
-  if (status != EXIT_SUCCESS)
+  אם (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  אחרת
     {
       printf (_("\
 Usage: %s [OPTION]... %s FILE...\n\
@@ -83,13 +83,13 @@ Usage: %s [OPTION]... %s FILE...\n\
               program_name,
               chown_mode == CHOWN_CHOWN ? _("[OWNER][:[GROUP]]") : _("GROUP"),
               program_name);
-      if (chown_mode == CHOWN_CHOWN)
+      אם (chown_mode == CHOWN_CHOWN)
         fputs (_("\
 Change the owner and/or group of each FILE to OWNER and/or GROUP.\n\
 With --reference, change the owner and group of each FILE to those of RFILE.\n\
 \n\
 "), stdout);
-      else
+      אחרת
         fputs (_("\
 Change the group of each FILE to GROUP.\n\
 With --reference, change the group of each FILE to that of RFILE.\n\
@@ -105,12 +105,12 @@ With --reference, change the group of each FILE to that of RFILE.\n\
 "));
       oputs (_("\
   -v, --verbose\n\
-         output a diagnostic for every file processed\n\
+         output a diagnostic עבור every file processed\n\
 "));
       oputs (_("\
       --dereference\n\
          affect the referent of each symbolic link (this is\n\
-         the default), rather than the symbolic link itself\n\
+         the افتراضي), rather than the symbolic link itself\n\
 "));
       oputs (_("\
   -h, --no-dereference\n\
@@ -119,14 +119,14 @@ With --reference, change the group of each FILE to that of RFILE.\n\
 "));
       oputs (_("\
       --from=CURRENT_OWNER:CURRENT_GROUP\n\
-         change the ownership of each file only if its\n\
+         change the ownership of each file only אם its\n\
          current owner and/or group match those specified here.\n\
-         Either may be omitted, in which case a match\n\
-         is not required for the omitted attribute\n\
+         Either may be omitted, in which حالة a match\n\
+         is not required עבור the omitted attribute\n\
 "));
       oputs (_("\
       --no-preserve-root\n\
-         do not treat '/' specially (the default)\n\
+         עשה not treat '/' specially (the افتراضي)\n\
 "));
       oputs (_("\
       --preserve-root\n\
@@ -135,7 +135,7 @@ With --reference, change the group of each FILE to that of RFILE.\n\
       oputs (_("\
       --reference=RFILE\n\
          use RFILE's ownership rather than specifying values.\n\
-         RFILE is always dereferenced if a symbolic link.\n\
+         RFILE is always dereferenced אם a symbolic link.\n\
 "));
       oputs (_("\
   -R, --recursive\n\
@@ -144,15 +144,15 @@ With --reference, change the group of each FILE to that of RFILE.\n\
       emit_symlink_recurse_options ("-P");
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
-      if (chown_mode == CHOWN_CHOWN)
+      אם (chown_mode == CHOWN_CHOWN)
         fputs (_("\
 \n\
-Owner is unchanged if missing.  Group is unchanged if missing, but changed\n\
-to login group if implied by a ':' following a symbolic OWNER.\n\
+Owner is unchanged אם missing.  Group is unchanged אם missing, but changed\n\
+to login group אם implied by a ':' following a symbolic OWNER.\n\
 OWNER and GROUP may be numeric as well as symbolic.\n\
 "), stdout);
 
-      if (chown_mode == CHOWN_CHOWN)
+      אם (chown_mode == CHOWN_CHOWN)
         printf (_("\
 \n\
 Examples:\n\
@@ -161,7 +161,7 @@ Examples:\n\
   %s -hR root /u    Change the owner of /u and subfiles to \"root\".\n\
 "),
               program_name, program_name, program_name);
-      else
+      אחרת
         printf (_("\
 \n\
 Examples:\n\
@@ -174,8 +174,8 @@ Examples:\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+صحيح
+main (صحيح argc, حرف **argv)
 {
   bool preserve_root = false;
 
@@ -185,13 +185,13 @@ main (int argc, char **argv)
   gid_t required_gid = -1;
 
   /* Bit flags that control how fts works.  */
-  int bit_flags = FTS_PHYSICAL;
+  صحيح bit_flags = FTS_PHYSICAL;
 
   /* 1 if --dereference, 0 if --no-dereference, -1 if neither has been
      specified.  */
-  int dereference = -1;
+  صحيح dereference = -1;
 
-  struct Chown_option chopt;
+  بنية Chown_option chopt;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -203,100 +203,100 @@ main (int argc, char **argv)
 
   chopt_init (&chopt);
 
-  int optc;
-  while ((optc = getopt_long (argc, argv, "HLPRcfhv", long_options, NULL))
+  صحيح optc;
+  כלעוד ((optc = getopt_long (argc, argv, "HLPRcfhv", long_options, عدم))
          != -1)
     {
-      switch (optc)
+      بدل (optc)
         {
-        case 'H': /* Traverse command-line symlinks-to-directories.  */
+        حالة 'H': /* Traverse command-line symlinks-to-directories.  */
           bit_flags = FTS_COMFOLLOW | FTS_PHYSICAL;
-          break;
+          اكسر;
 
-        case 'L': /* Traverse all symlinks-to-directories.  */
+        حالة 'L': /* Traverse all symlinks-to-directories.  */
           bit_flags = FTS_LOGICAL;
-          break;
+          اكسر;
 
-        case 'P': /* Traverse no symlinks-to-directories.  */
+        حالة 'P': /* Traverse no symlinks-to-directories.  */
           bit_flags = FTS_PHYSICAL;
-          break;
+          اكسر;
 
-        case 'h': /* --no-dereference: affect symlinks */
+        حالة 'h': /* --no-dereference: affect symlinks */
           dereference = 0;
-          break;
+          اكسر;
 
-        case DEREFERENCE_OPTION: /* --dereference: affect the referent
+        حالة DEREFERENCE_OPTION: /* --dereference: affect the referent
                                     of each symlink */
           dereference = 1;
-          break;
+          اكسر;
 
-        case NO_PRESERVE_ROOT:
+        حالة NO_PRESERVE_ROOT:
           preserve_root = false;
-          break;
+          اكسر;
 
-        case PRESERVE_ROOT:
+        حالة PRESERVE_ROOT:
           preserve_root = true;
-          break;
+          اكسر;
 
-        case REFERENCE_FILE_OPTION:
+        حالة REFERENCE_FILE_OPTION:
           reference_file = optarg;
-          break;
+          اكسر;
 
-        case FROM_OPTION:
+        حالة FROM_OPTION:
           {
             bool warn;
-            char const *e = parse_user_spec_warn (optarg,
+            حرف ثابت *e = parse_user_spec_warn (optarg,
                                                   &required_uid, &required_gid,
-                                                  NULL, NULL, &warn);
-            if (e)
+                                                  عدم, عدم, &warn);
+            אם (e)
               error (warn ? 0 : EXIT_FAILURE, 0, "%s: %s", e, quote (optarg));
-            break;
+            اكسر;
           }
 
-        case 'R':
+        حالة 'R':
           chopt.recurse = true;
-          break;
+          اكسر;
 
-        case 'c':
+        حالة 'c':
           chopt.verbosity = V_changes_only;
-          break;
+          اكسر;
 
-        case 'f':
+        حالة 'f':
           chopt.force_silent = true;
-          break;
+          اكسر;
 
-        case 'v':
+        حالة 'v':
           chopt.verbosity = V_high;
-          break;
+          اكسر;
 
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        افتراضي:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (chopt.recurse)
+  אם (chopt.recurse)
     {
-      if (bit_flags == FTS_PHYSICAL)
+      אם (bit_flags == FTS_PHYSICAL)
         {
-          if (dereference == 1)
+          אם (dereference == 1)
             error (EXIT_FAILURE, 0,
                    _("-R --dereference requires either -H or -L"));
           dereference = 0;
         }
     }
-  else
+  אחרת
     {
       bit_flags = FTS_PHYSICAL;
     }
   chopt.affect_symlink_referent = (dereference != 0);
 
-  if (argc - optind < (reference_file ? 1 : 2))
+  אם (argc - optind < (reference_file ? 1 : 2))
     {
-      if (argc <= optind)
+      אם (argc <= optind)
         error (0, 0, _("missing operand"));
-      else
+      אחרת
         error (0, 0, _("missing operand after %s"), quote (argv[argc - 1]));
       usage (EXIT_FAILURE);
     }
@@ -304,14 +304,14 @@ main (int argc, char **argv)
   uid_t uid = -1;	/* Specified uid; -1 if not to be changed.  */
   gid_t gid = -1;	/* Specified gid; -1 if not to be changed.  */
 
-  if (reference_file)
+  אם (reference_file)
     {
-      struct stat ref_stats;
-      if (stat (reference_file, &ref_stats))
+      بنية stat ref_stats;
+      אם (stat (reference_file, &ref_stats))
         error (EXIT_FAILURE, errno, _("failed to get attributes of %s"),
                quoteaf (reference_file));
 
-      if (chown_mode == CHOWN_CHOWN)
+      אם (chown_mode == CHOWN_CHOWN)
         {
           uid = ref_stats.st_uid;
           chopt.user_name = uid_to_name (ref_stats.st_uid);
@@ -319,40 +319,40 @@ main (int argc, char **argv)
       gid = ref_stats.st_gid;
       chopt.group_name = gid_to_name (ref_stats.st_gid);
     }
-  else
+  אחרת
     {
-      char *ug = argv[optind];
-      if (chown_mode == CHOWN_CHGRP)
+      حرف *ug = argv[optind];
+      אם (chown_mode == CHOWN_CHGRP)
         {
           ug = xmalloc (1 + strlen (argv[optind]) + 1);
           stpcpy (stpcpy (ug, ":"), argv[optind]);
         }
 
       bool warn;
-      char const *e = parse_user_spec_warn (ug, &uid, &gid,
+      حرف ثابت *e = parse_user_spec_warn (ug, &uid, &gid,
                                             &chopt.user_name,
                                             &chopt.group_name, &warn);
 
-      if (ug != argv[optind])
-        free (ug);
+      אם (ug != argv[optind])
+        حرر (ug);
 
-      if (e)
+      אם (e)
         error (warn ? 0 : EXIT_FAILURE, 0, "%s: %s", e, quote (argv[optind]));
 
       /* If a group is specified but no user, set the user name to the
          empty string so that diagnostics say "ownership :GROUP"
          rather than "group GROUP".  */
-      if (chown_mode == CHOWN_CHOWN && !chopt.user_name && chopt.group_name)
+      אם (chown_mode == CHOWN_CHOWN && !chopt.user_name && chopt.group_name)
         chopt.user_name = xstrdup ("");
 
       optind++;
     }
 
-  if (chopt.recurse && preserve_root)
+  אם (chopt.recurse && preserve_root)
     {
-      static struct dev_ino dev_ino_buf;
+      ساكن بنية dev_ino dev_ino_buf;
       chopt.root_dev_ino = get_root_dev_ino (&dev_ino_buf);
-      if (chopt.root_dev_ino == NULL)
+      אם (chopt.root_dev_ino == عدم)
         error (EXIT_FAILURE, errno, _("failed to get attributes of %s"),
                quoteaf ("/"));
     }

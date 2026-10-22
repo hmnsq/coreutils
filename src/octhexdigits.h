@@ -1,16 +1,16 @@
-static inline bool _GL_ATTRIBUTE_CONST
-isoct (char c)
+ساكن مضمن bool _GL_ATTRIBUTE_CONST
+isoct (حرف c)
 {
-  return '0' <= c && c <= '7';
+  החזר '0' <= c && c <= '7';
 }
-static inline int _GL_ATTRIBUTE_CONST
-fromoct (char c)
+ساكن مضمن صحيح _GL_ATTRIBUTE_CONST
+fromoct (حرف c)
 {
-  return c - '0';
+  החזר c - '0';
 }
-static inline int _GL_ATTRIBUTE_CONST
-fromhex (char c)
+ساكن مضمن صحيح _GL_ATTRIBUTE_CONST
+fromhex (حرف c)
 {
-  return ('a' <= c && c <= 'f' ? c - 'a' + 10
+  החזר ('a' <= c && c <= 'f' ? c - 'a' + 10
           : 'A' <= c && c <= 'F' ? c - 'A' + 10 : c - '0');
 }

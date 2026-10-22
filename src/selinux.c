@@ -16,19 +16,19 @@
 
 /* Written by Daniel Walsh <dwalsh@redhat.com> */
 
-#include <config.h>
-#include <selinux/label.h>
-#include <selinux/context.h>
-#include <sys/types.h>
+#ضمن <config.h>
+#ضمن <selinux/label.h>
+#ضمن <selinux/context.h>
+#ضمن <sys/types.h>
 
-#include "system.h"
-#include "canonicalize.h"
-#include "xfts.h"
-#include "selinux.h"
+#ضمن "system.h"
+#ضمن "canonicalize.h"
+#ضمن "xfts.h"
+#ضمن "selinux.h"
 
-#if HAVE_SELINUX_LABEL_H
+#אם HAVE_SELINUX_LABEL_H
 
-# if ! HAVE_MODE_TO_SECURITY_CLASS
+# אם ! HAVE_MODE_TO_SECURITY_CLASS
 /*
   This function has been added to libselinux-2.1.12-5, but is here
   for support with older versions of SELinux
@@ -36,27 +36,27 @@
   Translates a mode into an Internal SELinux security_class definition.
   Returns 0 on failure, with errno set to EINVAL.
 */
-static security_class_t
+ساكن security_class_t
 mode_to_security_class (mode_t m)
 {
 
-  if (S_ISREG (m))
-    return string_to_security_class ("file");
-  if (S_ISDIR (m))
-    return string_to_security_class ("dir");
-  if (S_ISCHR (m))
-    return string_to_security_class ("chr_file");
-  if (S_ISBLK (m))
-    return string_to_security_class ("blk_file");
-  if (S_ISFIFO (m))
-    return string_to_security_class ("fifo_file");
-  if (S_ISLNK (m))
-    return string_to_security_class ("lnk_file");
-  if (S_ISSOCK (m))
-    return string_to_security_class ("sock_file");
+  אם (S_ISREG (m))
+    החזר string_to_security_class ("file");
+  אם (S_ISDIR (m))
+    החזר string_to_security_class ("dir");
+  אם (S_ISCHR (m))
+    החזר string_to_security_class ("chr_file");
+  אם (S_ISBLK (m))
+    החזר string_to_security_class ("blk_file");
+  אם (S_ISFIFO (m))
+    החזר string_to_security_class ("fifo_file");
+  אם (S_ISLNK (m))
+    החזר string_to_security_class ("lnk_file");
+  אם (S_ISSOCK (m))
+    החזר string_to_security_class ("sock_file");
 
   errno = EINVAL;
-  return 0;
+  החזר 0;
 }
 # endif
 
@@ -68,33 +68,33 @@ mode_to_security_class (mode_t m)
   Returns -1 on failure.  errno will be set appropriately.
 */
 
-static int
-computecon_raw (char const *path, mode_t mode, char **con)
+ساكن صحيح
+computecon_raw (حرف ثابت *path, mode_t mode, حرف **con)
 {
-  char *scon_raw = NULL;
-  char *tcon_raw = NULL;
+  حرف *scon_raw = عدم;
+  حرف *tcon_raw = عدم;
   security_class_t tclass;
-  int rc = -1;
+  صحيح rc = -1;
 
-  char *dir = dir_name (path);
-  if (!dir)
-    goto quit;
-  if (getcon_raw (&scon_raw) < 0)
-    goto quit;
-  if (getfilecon_raw (dir, &tcon_raw) < 0)
-    goto quit;
+  حرف *dir = dir_name (path);
+  אם (!dir)
+    اذهب quit;
+  אם (getcon_raw (&scon_raw) < 0)
+    اذهب quit;
+  אם (getfilecon_raw (dir, &tcon_raw) < 0)
+    اذهب quit;
   tclass = mode_to_security_class (mode);
-  if (!tclass)
-    goto quit;
+  אם (!tclass)
+    اذهب quit;
   rc = security_compute_create_raw (scon_raw, tcon_raw, tclass, con);
 
  quit:;
-  int err = errno;
-  free (dir);
+  صحيح err = errno;
+  حرر (dir);
   freecon (scon_raw);
   freecon (tcon_raw);
   errno = err;
-  return rc;
+  החזר rc;
 }
 
 /*
@@ -106,63 +106,63 @@ computecon_raw (char const *path, mode_t mode, char **con)
 
   Returns -1 on failure.  errno will be set appropriately.
 */
-int
-defaultcon (struct selabel_handle *selabel_handle,
-            char const *path, mode_t mode)
+صحيح
+defaultcon (بنية selabel_handle *selabel_handle,
+            حرف ثابت *path, mode_t mode)
 {
-  int rc = -1;
-  char *scon_raw = NULL;
-  char *tcon_raw = NULL;
-  context_t scontext = NULL, tcontext = NULL;
-  char const *contype;
-  char const *constr;
-  char *newpath = NULL;
+  صحيح rc = -1;
+  حرف *scon_raw = عدم;
+  حرف *tcon_raw = عدم;
+  context_t scontext = عدم, tcontext = عدم;
+  حرف ثابت *contype;
+  حرف ثابت *constr;
+  حرف *newpath = عدم;
 
-  if (! IS_ABSOLUTE_FILE_NAME (path))
+  אם (! IS_ABSOLUTE_FILE_NAME (path))
     {
       /* Generate absolute name as required by subsequent selabel_lookup.  */
       newpath = canonicalize_filename_mode (path, CAN_MISSING);
-      if (! newpath)
-        goto quit;
+      אם (! newpath)
+        اذهب quit;
       path = newpath;
     }
 
-  if (selabel_lookup_raw (selabel_handle, &scon_raw, path, mode) < 0)
+  אם (selabel_lookup_raw (selabel_handle, &scon_raw, path, mode) < 0)
     {
       /* "No such file or directory" is a confusing error,
          when processing files, when in fact it was the
          associated default context that was not found.
          Therefore map the error to something more appropriate
          to the context in which we're using selabel_lookup().  */
-      if (errno == ENOENT)
+      אם (errno == ENOENT)
         errno = ENODATA;
-      goto quit;
+      اذهب quit;
     }
-  if (computecon_raw (path, mode, &tcon_raw) < 0)
-    goto quit;
-  if (!(scontext = context_new (scon_raw)))
-    goto quit;
-  if (!(tcontext = context_new (tcon_raw)))
-    goto quit;
+  אם (computecon_raw (path, mode, &tcon_raw) < 0)
+    اذهب quit;
+  אם (!(scontext = context_new (scon_raw)))
+    اذهب quit;
+  אם (!(tcontext = context_new (tcon_raw)))
+    اذهب quit;
 
-  if (!(contype = context_type_get (scontext)))
-    goto quit;
-  if (context_type_set (tcontext, contype))
-    goto quit;
-  if (!(constr = context_str (tcontext)))
-    goto quit;
+  אם (!(contype = context_type_get (scontext)))
+    اذهب quit;
+  אם (context_type_set (tcontext, contype))
+    اذهب quit;
+  אם (!(constr = context_str (tcontext)))
+    اذهب quit;
 
   rc = setfscreatecon_raw (constr);
 
  quit:;
-  int err = errno;
+  صحيح err = errno;
   context_free (scontext);
   context_free (tcontext);
   freecon (scon_raw);
   freecon (tcon_raw);
-  free (newpath);
+  حرر (newpath);
   errno = err;
-  return rc;
+  החזר rc;
 }
 
 /*
@@ -174,99 +174,99 @@ defaultcon (struct selabel_handle *selabel_handle,
 
   Returns -1 on failure.  errno will be set appropriately.
 */
-static int
-restorecon_private (struct selabel_handle *selabel_handle, char const *path)
+ساكن صحيح
+restorecon_private (بنية selabel_handle *selabel_handle, حرف ثابت *path)
 {
-  int rc = -1;
-  struct stat sb;
-  char *scon_raw = NULL;
-  char *tcon_raw = NULL;
-  context_t scontext = NULL, tcontext = NULL;
-  char const *contype;
-  char const *constr;
-  int fd;
+  صحيح rc = -1;
+  بنية stat sb;
+  حرف *scon_raw = عدم;
+  حرف *tcon_raw = عدم;
+  context_t scontext = عدم, tcontext = عدم;
+  حرف ثابت *contype;
+  حرف ثابت *constr;
+  صحيح fd;
 
-  if (!selabel_handle)
+  אם (!selabel_handle)
     {
-      if (getfscreatecon_raw (&tcon_raw) < 0)
-        return rc;
-      if (!tcon_raw)
+      אם (getfscreatecon_raw (&tcon_raw) < 0)
+        החזר rc;
+      אם (!tcon_raw)
         {
           errno = ENODATA;
-          return rc;
+          החזר rc;
         }
       rc = lsetfilecon_raw (path, tcon_raw);
-      int err = errno;
+      صحيح err = errno;
       freecon (tcon_raw);
       errno = err;
-      return rc;
+      החזר rc;
     }
 
   fd = open (path, O_RDONLY | O_NOFOLLOW);
-  if (fd == -1 && (errno != ELOOP))
-    goto quit;
+  אם (fd == -1 && (errno != ELOOP))
+    اذهب quit;
 
-  if (fd != -1)
+  אם (fd != -1)
     {
-      if (fstat (fd, &sb) < 0)
-        goto quit;
+      אם (fstat (fd, &sb) < 0)
+        اذهب quit;
     }
-  else
+  אחרת
     {
-      if (lstat (path, &sb) < 0)
-        goto quit;
+      אם (lstat (path, &sb) < 0)
+        اذهب quit;
     }
 
-  if (selabel_lookup_raw (selabel_handle, &scon_raw, path, sb.st_mode) < 0)
+  אם (selabel_lookup_raw (selabel_handle, &scon_raw, path, sb.st_mode) < 0)
     {
       /* "No such file or directory" is a confusing error,
          when processing files, when in fact it was the
          associated default context that was not found.
          Therefore map the error to something more appropriate
          to the context in which we're using selabel_lookup.  */
-      if (errno == ENOENT)
+      אם (errno == ENOENT)
         errno = ENODATA;
-      goto quit;
+      اذهب quit;
     }
-  if (!(scontext = context_new (scon_raw)))
-    goto quit;
+  אם (!(scontext = context_new (scon_raw)))
+    اذهب quit;
 
-  if (fd != -1)
+  אם (fd != -1)
     {
-      if (fgetfilecon_raw (fd, &tcon_raw) < 0)
-        goto quit;
+      אם (fgetfilecon_raw (fd, &tcon_raw) < 0)
+        اذهب quit;
     }
-  else
+  אחרת
     {
-      if (lgetfilecon_raw (path, &tcon_raw) < 0)
-        goto quit;
+      אם (lgetfilecon_raw (path, &tcon_raw) < 0)
+        اذهب quit;
     }
 
-  if (!(tcontext = context_new (tcon_raw)))
-    goto quit;
+  אם (!(tcontext = context_new (tcon_raw)))
+    اذهب quit;
 
-  if (!(contype = context_type_get (scontext)))
-    goto quit;
-  if (context_type_set (tcontext, contype))
-    goto quit;
-  if (!(constr = context_str (tcontext)))
-    goto quit;
+  אם (!(contype = context_type_get (scontext)))
+    اذهب quit;
+  אם (context_type_set (tcontext, contype))
+    اذهب quit;
+  אם (!(constr = context_str (tcontext)))
+    اذهب quit;
 
-  if (fd != -1)
+  אם (fd != -1)
     rc = fsetfilecon_raw (fd, constr);
-  else
+  אחרת
     rc = lsetfilecon_raw (path, constr);
 
  quit:;
-  int err = errno;
-  if (fd != -1)
+  صحيح err = errno;
+  אם (fd != -1)
     close (fd);
   context_free (scontext);
   context_free (tcontext);
   freecon (scon_raw);
   freecon (tcon_raw);
   errno = err;
-  return rc;
+  החזר rc;
 }
 
 /*
@@ -282,46 +282,46 @@ restorecon_private (struct selabel_handle *selabel_handle, char const *path)
   Return false on failure.  errno will be set appropriately.
 */
 bool
-restorecon (struct selabel_handle *selabel_handle,
-            char const *path, bool recurse)
+restorecon (بنية selabel_handle *selabel_handle,
+            حرف ثابت *path, bool recurse)
 {
-  char *newpath = NULL;
+  حرف *newpath = عدم;
 
-  if (! IS_ABSOLUTE_FILE_NAME (path))
+  אם (! IS_ABSOLUTE_FILE_NAME (path))
     {
       /* Generate absolute name as required by subsequent selabel_lookup.
          When RECURSE, this also generates absolute names in the
          fts entries, which may be quicker to process in any case.  */
       newpath = canonicalize_filename_mode (path, CAN_MISSING);
-      if (! newpath)
-        return false;
+      אם (! newpath)
+        החזר false;
       path = newpath;
     }
 
-  if (! recurse)
+  אם (! recurse)
     {
       bool ok = restorecon_private (selabel_handle, path) != -1;
-      int err = errno;
-      free (newpath);
+      صحيح err = errno;
+      حرر (newpath);
       errno = err;
-      return ok;
+      החזר ok;
     }
 
-  char const *ftspath[2] = { path, NULL };
-  FTS *fts = xfts_open ((char *const *) ftspath, FTS_PHYSICAL, NULL);
+  حرف ثابت *ftspath[2] = { path, عدم };
+  FTS *fts = xfts_open ((حرف *ثابت *) ftspath, FTS_PHYSICAL, عدم);
 
-  int err = 0;
-  for (FTSENT *ent; (ent = fts_read (fts)); )
-    if (restorecon_private (selabel_handle, fts->fts_path) < 0)
+  صحيح err = 0;
+  עבור (FTSENT *ent; (ent = fts_read (fts)); )
+    אם (restorecon_private (selabel_handle, fts->fts_path) < 0)
       err = errno;
 
-  if (errno != 0)
+  אם (errno != 0)
     err = errno;
 
-  if (fts_close (fts) != 0)
+  אם (fts_close (fts) != 0)
     err = errno;
 
-  free (newpath);
-  return !err;
+  حرر (newpath);
+  החזר !err;
 }
 #endif
