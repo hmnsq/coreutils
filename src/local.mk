@@ -543,7 +543,7 @@ src_libstdbuf_so_CFLAGS = -fPIC $(AM_CFLAGS)
 BUILT_SOURCES += src/coreutils.h
 if SINGLE_BINARY
 # Single binary dependencies
-src_coreutils_CFLAGS = -DSINGLE_BINARY $(AM_CFLAGS)
+src_coreutils_CFLAGS = -DSINGLE_ثنائی $(AM_CFLAGS)
 #src_coreutils_LDFLAGS = $(AM_LDFLAGS)
 src_coreutils_LDADD = $(single_binary_deps) $(LDADD) $(single_binary_libs)
 EXTRA_src_coreutils_DEPENDENCIES = $(single_binary_deps)
