@@ -14,41 +14,41 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
+#ضمن <config.h>
 
-#include "cksum_crc.h"
+#ضمن "cksum_crc.h"
 
-#include <stdio.h>
-#include <sys/types.h>
-#include <arm_neon.h>
-#include "system.h"
+#ضمن <stdio.h>
+#ضمن <sys/types.h>
+#ضمن <arm_neon.h>
+#ضمن "system.h"
 
 /* Number of bytes to read at once.  */
-#define BUFLEN (1 << 16)
+#وصف_ڪريو BUFLEN (1 << 16)
 
-static uint64x2_t
-bswap_neon (uint64x2_t in)
+ساكن uint64x2_t
+bswap_neon (uint64x2_t اندريون)
 {
   uint64x2_t a =
-    vreinterpretq_u64_u8 (vrev64q_u8 (vreinterpretq_u8_u64 (in)));
-  a = vcombine_u64 (vget_high_u64 (a), vget_low_u64 (a));
-  return a;
+    vreinterpretq_u64_u8 (vrev64q_u8 (vreinterpretq_u8_u64 (اندريون)));
+  a = vcombine_u64 (vget_مٿاهون_u64 (a), vget_هيٺيون_u64 (a));
+  أرجع a;
 }
 
 /* Calculate CRC32 using VMULL CPU instruction found in ARMv8 CPUs */
 
 bool
-cksum_vmull (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
+cksum_vmull (FILE *fp, uint_fast32_t *چڪري_جاچ_ٻاهريون, intmax_t *ڊيگهائي_ٻاهريون)
 {
-  uint64x2_t buf[BUFLEN / sizeof (uint64x2_t)];
-  uint_fast32_t crc = 0;
-  intmax_t length = 0;
-  size_t bytes_read;
+  uint64x2_t buf[BUFLEN / حجم (uint64x2_t)];
+  uint_fast32_t چڪري_جاچ = 0;
+  intmax_t ڊيگهائي = 0;
+  size_t بائيٽون_read;
   poly64x2_t single_mult_constant;
   poly64x2_t four_mult_constant;
 
-  if (!fp || !crc_out || !length_out)
-    return false;
+  إذا (!fp || !چڪري_جاچ_ٻاهريون || !ڊيگهائي_ٻاهريون)
+    أرجع false;
 
   /* These constants and general algorithms are taken from the Intel whitepaper
      "Fast CRC Computation for Generic Polynomials Using PCLMULQDQ Instruction"
@@ -58,10 +58,10 @@ cksum_vmull (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
   four_mult_constant =
     vcombine_p64 (vcreate_p64 (0xE6228B11), vcreate_p64 (0x8833794C));
 
-  while ((bytes_read = fread (buf, 1, BUFLEN, fp)) > 0)
+  طالما ((بائيٽون_read = fread (buf, 1, BUFLEN, fp)) > 0)
     {
       uint64x2_t *datap;
-      uint64x2_t data;
+      uint64x2_t معلومات;
       uint64x2_t data2;
       uint64x2_t data3;
       uint64x2_t data4;
@@ -69,28 +69,28 @@ cksum_vmull (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
       uint64x2_t data6;
       uint64x2_t data7;
       uint64x2_t data8;
-      uint64x2_t fold_data;
-      uint64x2_t xor_crc;
+      uint64x2_t fold_معلومات;
+      uint64x2_t xor_چڪري_جاچ;
 
-      if (ckd_add (&length, length, bytes_read))
+      إذا (ckd_جوڙيو (&ڊيگهائي, ڊيگهائي, بائيٽون_read))
         {
           errno = EOVERFLOW;
-          return false;
+          أرجع false;
         }
 
       datap = (uint64x2_t *) buf;
 
       /* Fold in parallel eight 16-byte blocks into four 16-byte blocks */
-      if (bytes_read >= 16 * 8)
+      إذا (بائيٽون_read >= 16 * 8)
         {
-          data = vld1q_u64 ((uint64_t *) (datap));
-          data = bswap_neon (data);
+          معلومات = vld1q_u64 ((uint64_t *) (datap));
+          معلومات = bswap_neon (معلومات);
           /* XOR in initial CRC value (for us 0 so no effect), or CRC value
              calculated for previous BUFLEN buffer from fread */
-          uint64_t wcrc = crc;
-          xor_crc = vcombine_u64 (vcreate_u64 (0), vcreate_u64 (wcrc << 32));
-          crc = 0;
-          data = veorq_u64 (data, xor_crc);
+          uint64_t wcrc = چڪري_جاچ;
+          xor_چڪري_جاچ = vcombine_u64 (vcreate_u64 (0), vcreate_u64 (wcrc << 32));
+          چڪري_جاچ = 0;
+          معلومات = veorq_u64 (معلومات, xor_چڪري_جاچ);
           data3 = vld1q_u64 ((uint64_t *) (datap + 1));
           data3 = bswap_neon (data3);
           data5 = vld1q_u64 ((uint64_t *) (datap + 2));
@@ -99,7 +99,7 @@ cksum_vmull (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
           data7 = bswap_neon (data7);
 
 
-          while (bytes_read >= 16 * 8)
+          طالما (بائيٽون_read >= 16 * 8)
             {
               datap += 4;
 
@@ -107,12 +107,12 @@ cksum_vmull (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
               data2 =
                 vreinterpretq_u64_p128 (vmull_p64
                                         (vgetq_lane_p64
-                                         (vreinterpretq_p64_u64 (data), 0),
+                                         (vreinterpretq_p64_u64 (معلومات), 0),
                                          vgetq_lane_p64 (four_mult_constant,
                                                          0)));
-              data =
-                vreinterpretq_u64_p128 (vmull_high_p64
-                                        (vreinterpretq_p64_u64 (data),
+              معلومات =
+                vreinterpretq_u64_p128 (vmull_مٿاهون_p64
+                                        (vreinterpretq_p64_u64 (معلومات),
                                          four_mult_constant));
               data4 =
                 vreinterpretq_u64_p128 (vmull_p64
@@ -121,7 +121,7 @@ cksum_vmull (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
                                          vgetq_lane_p64 (four_mult_constant,
                                                          0)));
               data3 =
-                vreinterpretq_u64_p128 (vmull_high_p64
+                vreinterpretq_u64_p128 (vmull_مٿاهون_p64
                                         (vreinterpretq_p64_u64 (data3),
                                          four_mult_constant));
               data6 =
@@ -131,7 +131,7 @@ cksum_vmull (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
                                          vgetq_lane_p64 (four_mult_constant,
                                                          0)));
               data5 =
-                vreinterpretq_u64_p128 (vmull_high_p64
+                vreinterpretq_u64_p128 (vmull_مٿاهون_p64
                                         (vreinterpretq_p64_u64 (data5),
                                          four_mult_constant));
               data8 =
@@ -141,7 +141,7 @@ cksum_vmull (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
                                          vgetq_lane_p64 (four_mult_constant,
                                                          0)));
               data7 =
-                vreinterpretq_u64_p128 (vmull_high_p64
+                vreinterpretq_u64_p128 (vmull_مٿاهون_p64
                                         (vreinterpretq_p64_u64 (data7),
                                          four_mult_constant));
 
@@ -150,10 +150,10 @@ cksum_vmull (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
                  "consumes" the first four blocks from the buffer.
                  Keep xor result in variables for multiplication in next
                  round of loop. */
-              data = veorq_u64 (data, data2);
+              معلومات = veorq_u64 (معلومات, data2);
               data2 = vld1q_u64 ((uint64_t *) (datap));
               data2 = bswap_neon (data2);
-              data = veorq_u64 (data, data2);
+              معلومات = veorq_u64 (معلومات, data2);
 
               data3 = veorq_u64 (data3, data4);
               data4 = vld1q_u64 ((uint64_t *) (datap + 1));
@@ -170,12 +170,12 @@ cksum_vmull (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
               data8 = bswap_neon (data8);
               data7 = veorq_u64 (data7, data8);
 
-              bytes_read -= (16 * 4);
+              بائيٽون_read -= (16 * 4);
             }
           /* At end of loop we write out results from variables back into
              the buffer, for use in single fold loop */
-          data = bswap_neon (data);
-          vst1q_u64 ((uint64_t *) (datap), data);
+          معلومات = bswap_neon (معلومات);
+          vst1q_u64 ((uint64_t *) (datap), معلومات);
           data3 = bswap_neon (data3);
           vst1q_u64 ((uint64_t *) (datap + 1), data3);
           data5 = bswap_neon (data5);
@@ -185,48 +185,48 @@ cksum_vmull (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
         }
 
       /* Fold two 16-byte blocks into one 16-byte block */
-      if (bytes_read >= 32)
+      إذا (بائيٽون_read >= 32)
         {
-          data = vld1q_u64 ((uint64_t *) (datap));
-          data = bswap_neon (data);
-          uint64_t wcrc = crc;
-          xor_crc = vcombine_u64 (vcreate_u64 (0), vcreate_u64 (wcrc << 32));
-          crc = 0;
-          data = veorq_u64 (data, xor_crc);
-          while (bytes_read >= 32)
+          معلومات = vld1q_u64 ((uint64_t *) (datap));
+          معلومات = bswap_neon (معلومات);
+          uint64_t wcrc = چڪري_جاچ;
+          xor_چڪري_جاچ = vcombine_u64 (vcreate_u64 (0), vcreate_u64 (wcrc << 32));
+          چڪري_جاچ = 0;
+          معلومات = veorq_u64 (معلومات, xor_چڪري_جاچ);
+          طالما (بائيٽون_read >= 32)
             {
               datap++;
 
               data2 =
                 vreinterpretq_u64_p128 (vmull_p64
                                         (vgetq_lane_p64
-                                         (vreinterpretq_p64_u64 (data), 0),
+                                         (vreinterpretq_p64_u64 (معلومات), 0),
                                          vgetq_lane_p64 (single_mult_constant,
                                                          0)));
-              data =
-                vreinterpretq_u64_p128 (vmull_high_p64
-                                        (vreinterpretq_p64_u64 (data),
+              معلومات =
+                vreinterpretq_u64_p128 (vmull_مٿاهون_p64
+                                        (vreinterpretq_p64_u64 (معلومات),
                                          single_mult_constant));
-              fold_data = vld1q_u64 ((uint64_t *) (datap));
-              fold_data = bswap_neon (fold_data);
-              data = veorq_u64 (data, data2);
-              data = veorq_u64 (data, fold_data);
-              bytes_read -= 16;
+              fold_معلومات = vld1q_u64 ((uint64_t *) (datap));
+              fold_معلومات = bswap_neon (fold_معلومات);
+              معلومات = veorq_u64 (معلومات, data2);
+              معلومات = veorq_u64 (معلومات, fold_معلومات);
+              بائيٽون_read -= 16;
             }
-          data = bswap_neon (data);
-          vst1q_u64 ((uint64_t *) (datap), data);
+          معلومات = bswap_neon (معلومات);
+          vst1q_u64 ((uint64_t *) (datap), معلومات);
         }
 
       /* And finish up last 0-31 bytes in a byte by byte fashion */
-      unsigned char *cp = (unsigned char *) datap;
-      while (bytes_read--)
-        crc = (crc << 8) ^ crctab[0][((crc >> 24) ^ *cp++) & 0xFF];
-      if (feof (fp))
-        break;
+      بنانشان حرف *cp = (بنانشان حرف *) datap;
+      طالما (بائيٽون_read--)
+        چڪري_جاچ = (چڪري_جاچ << 8) ^ crctab[0][((چڪري_جاچ >> 24) ^ *cp++) & 0xFF];
+      إذا (feof (fp))
+        اكسر;
     }
 
-  *crc_out = crc;
-  *length_out = length;
+  *چڪري_جاچ_ٻاهريون = چڪري_جاچ;
+  *ڊيگهائي_ٻاهريون = ڊيگهائي;
 
-  return !ferror (fp);
+  أرجع !ferror (fp);
 }

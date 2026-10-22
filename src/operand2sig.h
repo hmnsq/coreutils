@@ -15,5 +15,5 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-extern int operand2sig (char const *operand)
+خارجي صحيح operand2sig (حرف ثابت *عمليو_2)
   _GL_ATTRIBUTE_NONNULL ();

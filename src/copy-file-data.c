@@ -16,82 +16,82 @@
 
 /* Extracted from copy.c by Paul Eggert.  */
 
-#include <config.h>
+#ضمن <config.h>
 
-#include "system.h"
+#ضمن "system.h"
 
-#include "alignalloc.h"
-#include "assure.h"
-#include "backupfile.h"
-#include "buffer-lcm.h"
-#include "copy.h"
-#include "fadvise.h"
-#include "full-write.h"
-#include "ioblksize.h"
+#ضمن "alignalloc.h"
+#ضمن "assure.h"
+#ضمن "backupfile.h"
+#ضمن "buffer-lcm.h"
+#ضمن "copy.h"
+#ضمن "fadvise.h"
+#ضمن "full-write.h"
+#ضمن "ioblksize.h"
 
 /* Result of infer_scantype when it returns LSEEK_SCANTYPE.  */
-struct scan_inference
+بنية جاچ_inference
 {
   /* The offset of the first data block, or -1 if the file has no data.  */
-  off_t ext_start;
+  off_t ext_شروعات;
 
   /* The offset of the first hole.  */
-  off_t hole_start;
+  off_t hole_شروعات;
 };
 
 /* Attempt to punch a hole to avoid any permanent
    speculative preallocation on file systems such as XFS.
    Return values as per fallocate(2) except ENOSYS etc. are ignored.  */
-static int
-punch_hole (int fd, off_t offset, off_t length)
+ساكن صحيح
+punch_hole (صحيح fd, off_t وٿي, off_t ڊيگهائي)
 {
-  int ret = 0;
+  صحيح ret = 0;
 /* +0 is to work around older <linux/fs.h> defining HAVE_FALLOCATE to empty.  */
-#if HAVE_FALLOCATE + 0
-# if defined FALLOC_FL_PUNCH_HOLE && defined FALLOC_FL_KEEP_SIZE
-  ret = fallocate (fd, FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE,
-                   offset, length);
-  if (ret < 0 && (is_ENOTSUP (errno) || errno == ENOSYS))
+#إذا HAVE_FALLOCATE + 0
+# إذا defined FALLOC_FL_PUNCH_HOLE && defined FALLOC_FL_KEEP_سائيز
+  ret = fallocate (fd, FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_سائيز,
+                   وٿي, ڊيگهائي);
+  إذا (ret < 0 && (is_ENOTSUP (errno) || errno == ENOSYS))
     ret = 0;
 # endif
-#endif
-  return ret;
+#جيڪڏهن_پورو
+  أرجع ret;
 }
 
 /* Create a hole at the end of the file with descriptor FD and name NAME.
    The hole is of size SIZE.  Assume FD is already at file end,
    and advance FD past the newly-created hole.
    Return the resulting position, or -1 on failure.  */
-static off_t
-create_hole (int fd, char const *name, off_t size)
+ساكن off_t
+create_hole (صحيح fd, حرف ثابت *name, off_t سائيز)
 {
-  off_t file_end = lseek (fd, size, SEEK_CUR);
+  off_t file_پڇاڙي = lseek (fd, سائيز, SEEK_CUR);
 
-  if (file_end < 0)
+  إذا (file_پڇاڙي < 0)
     {
       error (0, errno, _("cannot lseek %s"), quoteaf (name));
-      return -1;
+      أرجع -1;
     }
 
   /* Some file systems (like XFS) preallocate when write extending a file.
      I.e., a previous write() may have preallocated extra space
      that the seek above will not discard.  A subsequent write() could
      then make this allocation permanent.  */
-  if (punch_hole (fd, file_end - size, size) < 0)
+  إذا (punch_hole (fd, file_پڇاڙي - سائيز, سائيز) < 0)
     {
       error (0, errno, _("error deallocating %s"), quoteaf (name));
-      return -1;
+      أرجع -1;
     }
 
-  return file_end;
+  أرجع file_پڇاڙي;
 }
 
 /* Does ERR mean the copying operation is not supported or allowed for
    this file or process, even though the operation was invoked correctly?  */
-static bool
-is_CLONENOTSUP (int err)
+ساكن bool
+is_CLONENOTSUP (صحيح err)
 {
-  return err == ENOSYS || err == ENOTTY || is_ENOTSUP (err)
+  أرجع err == ENOSYS || err == ENOTTY || is_ENOTSUP (err)
          || err == EINVAL || err == EBADF
          || err == EXDEV || err == ETXTBSY
          || err == EPERM || err == EACCES;
@@ -109,43 +109,43 @@ is_CLONENOTSUP (int err)
    Read and update *DEBUG as needed.
    If successful, return the number of bytes copied,
    otherwise diagnose the failure and return -1.  */
-static intmax_t
-sparse_copy (int src_fd, int dest_fd, char **abuf, idx_t buf_size,
+ساكن intmax_t
+sparse_copy (صحيح src_fd, صحيح dest_fd, حرف **abuf, idx_t buf_سائيز,
              bool allow_reflink,
-             char const *src_name, char const *dst_name,
-             count_t max_n_read, off_t *hole_size,
-             struct copy_debug *debug)
+             حرف ثابت *src_name, حرف ثابت *dst_name,
+             ڳڻپ_t max_n_read, off_t *hole_سائيز,
+             بنية copy_debug *debug)
 {
-  count_t total_n_read = 0;
+  ڳڻپ_t ڪل_n_read = 0;
 
-  if (debug->sparse_detection == COPY_DEBUG_UNKNOWN)
-    debug->sparse_detection = hole_size ? COPY_DEBUG_YES : COPY_DEBUG_NO;
-  else if (hole_size && debug->sparse_detection == COPY_DEBUG_EXTERNAL)
-    debug->sparse_detection = COPY_DEBUG_EXTERNAL_INTERNAL;
+  إذا (debug->sparse_detection == COPY_DEBUG_UNKNOWN)
+    debug->sparse_detection = hole_سائيز ? COPY_DEBUG_YES : COPY_DEBUG_NO;
+  وإلا إذا (hole_سائيز && debug->sparse_detection == COPY_DEBUG_EXTERNAL)
+    debug->sparse_detection = COPY_DEBUG_EXTERNAL_اندروني;
 
   /* If not looking for holes, use copy_file_range if functional,
      but don't use if reflink disallowed as that may be implicit.  */
-  if (!hole_size && allow_reflink)
-    while (0 < max_n_read)
+  إذا (!hole_سائيز && allow_reflink)
+    طالما (0 < max_n_read)
       {
         /* Copy at most COPY_MAX bytes at a time; this is min
            (SSIZE_MAX, SIZE_MAX) truncated to a value that is
            surely aligned well.  */
         ssize_t copy_max = MIN (SSIZE_MAX, SIZE_MAX) >> 30 << 30;
-        ssize_t n_copied = copy_file_range (src_fd, NULL, dest_fd, NULL,
+        ssize_t n_copied = copy_file_range (src_fd, عدم, dest_fd, عدم,
                                             MIN (max_n_read, copy_max), 0);
-        if (n_copied == 0)
+        إذا (n_copied == 0)
           {
             /* copy_file_range incorrectly returns 0 when reading from
                the proc file system on the Linux kernel through at
                least 5.6.19 (2020), so fall back on 'read' if the
                input file seems empty.  */
-            if (total_n_read == 0)
-              break;
+            إذا (ڪل_n_read == 0)
+              اكسر;
             debug->offload = COPY_DEBUG_YES;
-            return total_n_read;
+            أرجع ڪل_n_read;
           }
-        if (n_copied < 0)
+        إذا (n_copied < 0)
           {
             debug->offload = errno;
 
@@ -154,8 +154,8 @@ sparse_copy (int src_fd, int dest_fd, char **abuf, idx_t buf_size,
                copy_file_range (ifd, NULL, ofd, NULL, 2146435072, 0)
                incorrectly fails with EFBIG.  Problem observed on Ubuntu 25.10
                x86-64 with Linux kernel 6.17.0-8-generic #8-Ubuntu.  */
-            if (errno == EFBIG)
-              break;
+            إذا (errno == EFBIG)
+              اكسر;
 
             /* Consider operation unsupported only if no data copied.
                For example, EPERM could occur if copy_file_range not enabled
@@ -163,101 +163,101 @@ sparse_copy (int src_fd, int dest_fd, char **abuf, idx_t buf_size,
                also occur for immutable files, but that would only be in the
                edge case where the file is made immutable after creating,
                in which case the (more accurate) error is still shown.  */
-            if (total_n_read == 0 && is_CLONENOTSUP (errno))
-              break;
+            إذا (ڪل_n_read == 0 && is_CLONENOTSUP (errno))
+              اكسر;
 
             /* ENOENT was seen sometimes across CIFS shares, resulting in
                no data being copied, but subsequent standard copies succeed.  */
-            if (total_n_read == 0 && errno == ENOENT)
-              break;
+            إذا (ڪل_n_read == 0 && errno == ENOENT)
+              اكسر;
 
-            if (errno == EINTR)
+            إذا (errno == EINTR)
               n_copied = 0;
-            else
+            وإلا
               {
                 error (0, errno, _("error copying %s to %s"),
                        quoteaf_n (0, src_name), quoteaf_n (1, dst_name));
-                return -1;
+                أرجع -1;
               }
           }
         debug->offload = COPY_DEBUG_YES;
         max_n_read -= n_copied;
-        total_n_read += n_copied;
+        ڪل_n_read += n_copied;
       }
-  else
+  وإلا
     debug->offload = COPY_DEBUG_AVOIDED;
 
 
-  off_t psize = hole_size ? *hole_size : 0;
+  off_t psize = hole_سائيز ? *hole_سائيز : 0;
   bool make_hole = !!psize;
 
-  while (0 < max_n_read)
+  طالما (0 < max_n_read)
     {
-      if (!*abuf)
-        *abuf = xalignalloc (getpagesize (), buf_size);
-      char *buf = *abuf;
-      ssize_t n_read = read (src_fd, buf, MIN (max_n_read, buf_size));
-      if (n_read < 0)
+      إذا (!*abuf)
+        *abuf = xalignalloc (getpagesize (), buf_سائيز);
+      حرف *buf = *abuf;
+      ssize_t n_read = اقرأ (src_fd, buf, MIN (max_n_read, buf_سائيز));
+      إذا (n_read < 0)
         {
-          if (errno == EINTR)
-            continue;
+          إذا (errno == EINTR)
+            استمر;
           error (0, errno, _("error reading %s"), quoteaf (src_name));
-          return -1;
+          أرجع -1;
         }
-      if (n_read == 0)
-        break;
+      إذا (n_read == 0)
+        اكسر;
       max_n_read -= n_read;
-      total_n_read += n_read;
+      ڪل_n_read += n_read;
 
       /* If looking for holes, loop over the input buffer in chunks
          corresponding to the minimum hole size.  Otherwise, scan the
          whole buffer.  struct stat does not report the minimum hole
          size for a file, so use ST_NBLOCKSIZE which should be the
          minimum for all file systems on this platform.  */
-      idx_t csize = hole_size ? ST_NBLOCKSIZE : buf_size;
-      char *cbuf = buf;
-      char *pbuf = buf;
+      idx_t csize = hole_سائيز ? ST_NBLOCKSIZE : buf_سائيز;
+      حرف *cbuf = buf;
+      حرف *pbuf = buf;
 
-      while (n_read)
+      طالما (n_read)
         {
           bool prev_hole = make_hole;
           csize = MIN (csize, n_read);
 
-          if (hole_size)
+          إذا (hole_سائيز)
             make_hole = is_nul (cbuf, csize);
 
           bool transition = (make_hole != prev_hole) && psize;
-          bool last_chunk = n_read == csize && !make_hole;
+          bool آخري_chunk = n_read == csize && !make_hole;
 
-          if (transition || last_chunk)
+          إذا (transition || آخري_chunk)
             {
-              if (! transition)
+              إذا (! transition)
                 psize += csize;
-              else if (prev_hole)
+              وإلا إذا (prev_hole)
                 {
-                  if (create_hole (dest_fd, dst_name, psize) < 0)
-                    return false;
+                  إذا (create_hole (dest_fd, dst_name, psize) < 0)
+                    أرجع false;
                   pbuf = cbuf;
                   psize = csize;
                 }
 
-              if (!prev_hole || (transition && last_chunk))
+              إذا (!prev_hole || (transition && آخري_chunk))
                 {
-                  if (full_write (dest_fd, pbuf, psize) != psize)
+                  إذا (ڀريل_write (dest_fd, pbuf, psize) != psize)
                     {
                       error (0, errno, _("error writing %s"),
                              quoteaf (dst_name));
-                      return -1;
+                      أرجع -1;
                     }
                   psize = !prev_hole && transition ? csize : 0;
                 }
             }
-          else  /* Coalesce writes/seeks.  */
+          وإلا  /* Coalesce writes/seeks.  */
             {
-              if (ckd_add (&psize, psize, csize))
+              إذا (ckd_جوڙيو (&psize, psize, csize))
                 {
                   error (0, 0, _("overflow reading %s"), quoteaf (src_name));
-                  return -1;
+                  أرجع -1;
                 }
             }
 
@@ -271,37 +271,37 @@ sparse_copy (int src_fd, int dest_fd, char **abuf, idx_t buf_size,
          certain files in /proc or /sys with linux kernels.  */
     }
 
-  if (hole_size)
-    *hole_size = make_hole ? psize : 0;
-  return total_n_read;
+  إذا (hole_سائيز)
+    *hole_سائيز = make_hole ? psize : 0;
+  أرجع ڪل_n_read;
 }
 
 /* Write to FD.  Write data consisting of N_BYTES' worth of '\0's.
    Use the buffer *ABUF of size BUF_SIZE for temporary storage,
    allocating the buffer lazily if *ABUF is null.
    Return true if successful, false (setting errno) otherwise.  */
-static bool
-write_zeros (int fd, off_t n_bytes, char **abuf, idx_t buf_size)
+ساكن bool
+write_zeros (صحيح fd, off_t n_بائيٽون, حرف **abuf, idx_t buf_سائيز)
 {
-  char *zeros = NULL;
-  while (n_bytes)
+  حرف *zeros = عدم;
+  طالما (n_بائيٽون)
     {
-      idx_t n = MIN (buf_size, n_bytes);
-      if (!zeros)
+      idx_t n = MIN (buf_سائيز, n_بائيٽون);
+      إذا (!zeros)
         {
-          if (!*abuf)
-            *abuf = xalignalloc (getpagesize (), buf_size);
+          إذا (!*abuf)
+            *abuf = xalignalloc (getpagesize (), buf_سائيز);
           zeros = memset (*abuf, 0, n);
         }
-      if (full_write (fd, zeros, n) != n)
-        return false;
-      n_bytes -= n;
+      إذا (ڀريل_write (fd, zeros, n) != n)
+        أرجع false;
+      n_بائيٽون -= n;
     }
 
-  return true;
+  أرجع true;
 }
 
-#ifdef SEEK_HOLE
+#جيڪڏهن_وصف_ٿيل SEEK_HOLE
 /* Perform an efficient extent copy, if possible.  This avoids
    the overhead of detecting holes in hole-introducing/preserving
    copy, and thus makes copying sparse files much more efficient.
@@ -324,21 +324,21 @@ write_zeros (int fd, off_t n_bytes, char **abuf, idx_t buf_size)
    If successful, return the number of bytes copied,
    otherwise diagnose the failure and return -1.  */
 
-static off_t
-lseek_copy (int src_fd, int dest_fd, char **abuf, idx_t buf_size,
-            off_t src_pos, count_t ibytes,
-            struct scan_inference const *scan_inference, off_t src_total_size,
-            enum Sparse_type sparse_mode,
+ساكن off_t
+lseek_copy (صحيح src_fd, صحيح dest_fd, حرف **abuf, idx_t buf_سائيز,
+            off_t src_pos, ڳڻپ_t ibytes,
+            بنية جاچ_inference ثابت *جاچ_inference, off_t src_ڪل_سائيز,
+            تعداد Sparse_type sparse_گهڻائي,
             bool allow_reflink,
-            char const *src_name, char const *dst_name,
-            off_t *hole_size, struct copy_debug *debug)
+            حرف ثابت *src_name, حرف ثابت *dst_name,
+            off_t *hole_سائيز, بنية copy_debug *debug)
 {
-  off_t last_ext_start = src_pos;
-  off_t last_ext_len = 0;
-  off_t max_ipos = ckd_add (&max_ipos, src_pos, ibytes) ? OFF_T_MAX : max_ipos;
+  off_t آخري_ext_شروعات = src_pos;
+  off_t آخري_ext_len = 0;
+  off_t max_ipos = ckd_جوڙيو (&max_ipos, src_pos, ibytes) ? OFF_T_MAX : max_ipos;
 
   /* From here on, SRC_TOTAL_SIZE is bounded above by MAX_IPOS.  */
-  src_total_size = MIN (src_total_size, max_ipos);
+  src_ڪل_سائيز = MIN (src_ڪل_سائيز, max_ipos);
 
   /* The input position after the most recent read of data,
      or SRC_POS if no data have been read.  */
@@ -346,118 +346,118 @@ lseek_copy (int src_fd, int dest_fd, char **abuf, idx_t buf_size,
 
   debug->sparse_detection = COPY_DEBUG_EXTERNAL;
 
-  bool used_scan_inference = false;
+  bool استعمال_ٿيل_جاچ_inference = false;
 
-  for (off_t ext_start = scan_inference->ext_start;
-       0 <= ext_start && ext_start < max_ipos; )
+  لكل (off_t ext_شروعات = جاچ_inference->ext_شروعات;
+       0 <= ext_شروعات && ext_شروعات < max_ipos; )
     {
-      off_t ext_end;
-      if (ext_start == src_pos && ! used_scan_inference)
+      off_t ext_پڇاڙي;
+      إذا (ext_شروعات == src_pos && ! استعمال_ٿيل_جاچ_inference)
         {
-          ext_end = scan_inference->hole_start;
-          used_scan_inference = true;
+          ext_پڇاڙي = جاچ_inference->hole_شروعات;
+          استعمال_ٿيل_جاچ_inference = true;
         }
-      else
-        ext_end = lseek (src_fd, ext_start, SEEK_HOLE);
-      if (0 <= ext_end)
-        ext_end = MIN (ext_end, max_ipos);
-      else
+      وإلا
+        ext_پڇاڙي = lseek (src_fd, ext_شروعات, SEEK_HOLE);
+      إذا (0 <= ext_پڇاڙي)
+        ext_پڇاڙي = MIN (ext_پڇاڙي, max_ipos);
+      وإلا
         {
-          if (errno != ENXIO)
-            goto cannot_lseek;
-          ext_end = src_total_size;
-          if (ext_end <= ext_start)
+          إذا (errno != ENXIO)
+            اذهب cannot_lseek;
+          ext_پڇاڙي = src_ڪل_سائيز;
+          إذا (ext_پڇاڙي <= ext_شروعات)
             {
               /* The input file grew; get its current size.  */
-              src_total_size = lseek (src_fd, 0, SEEK_END);
-              if (src_total_size < 0)
-                goto cannot_lseek;
-              src_total_size = MIN (src_total_size, max_ipos);
+              src_ڪل_سائيز = lseek (src_fd, 0, SEEK_END);
+              إذا (src_ڪل_سائيز < 0)
+                اذهب cannot_lseek;
+              src_ڪل_سائيز = MIN (src_ڪل_سائيز, max_ipos);
 
               /* If the input file shrank after growing, stop copying.  */
-              if (src_total_size <= ext_start)
-                break;
+              إذا (src_ڪل_سائيز <= ext_شروعات)
+                اكسر;
 
-              ext_end = src_total_size;
+              ext_پڇاڙي = src_ڪل_سائيز;
             }
         }
       /* If the input file must have grown, increase its measured size.  */
-      if (src_total_size < ext_end)
-        src_total_size = ext_end;
+      إذا (src_ڪل_سائيز < ext_پڇاڙي)
+        src_ڪل_سائيز = ext_پڇاڙي;
 
-      if (lseek (src_fd, ext_start, SEEK_SET) < 0)
-        goto cannot_lseek;
+      إذا (lseek (src_fd, ext_شروعات, SEEK_SET) < 0)
+        اذهب cannot_lseek;
 
-      off_t ext_hole_size = ext_start - last_ext_start - last_ext_len;
+      off_t ext_hole_سائيز = ext_شروعات - آخري_ext_شروعات - آخري_ext_len;
 
-      if (ext_hole_size)
+      إذا (ext_hole_سائيز)
         {
-          if (sparse_mode == SPARSE_ALWAYS)
-            *hole_size += ext_hole_size;
-          else if (sparse_mode != SPARSE_NEVER)
+          إذا (sparse_گهڻائي == SPARSE_ALWAYS)
+            *hole_سائيز += ext_hole_سائيز;
+          وإلا إذا (sparse_گهڻائي != SPARSE_NEVER)
             {
-              off_t epos = create_hole (dest_fd, dst_name, ext_hole_size);
-              if (epos < 0)
-                return epos;
+              off_t epos = create_hole (dest_fd, dst_name, ext_hole_سائيز);
+              إذا (epos < 0)
+                أرجع epos;
             }
-          else
+          وإلا
             {
               /* When not inducing holes and when there is a hole between
                  the end of the previous extent and the beginning of the
                  current one, write zeros to the destination file.  */
-              if (! write_zeros (dest_fd, ext_hole_size, abuf, buf_size))
+              إذا (! write_zeros (dest_fd, ext_hole_سائيز, abuf, buf_سائيز))
                 {
                   error (0, errno, _("%s: write failed"),
                          quotef (dst_name));
-                  return -1;
+                  أرجع -1;
                 }
             }
         }
 
-      off_t ext_len = ext_end - ext_start;
-      last_ext_start = ext_start;
-      last_ext_len = ext_len;
+      off_t ext_len = ext_پڇاڙي - ext_شروعات;
+      آخري_ext_شروعات = ext_شروعات;
+      آخري_ext_len = ext_len;
 
       /* Copy this extent, looking for further opportunities to not
          bother to write zeros if --sparse=always, since SEEK_HOLE
          is conservative and may miss some holes.  */
       off_t n_read
-        = sparse_copy (src_fd, dest_fd, abuf, buf_size,
+        = sparse_copy (src_fd, dest_fd, abuf, buf_سائيز,
                        allow_reflink, src_name, dst_name,
                        ext_len,
-                       sparse_mode == SPARSE_ALWAYS ? hole_size : NULL,
+                       sparse_گهڻائي == SPARSE_ALWAYS ? hole_سائيز : عدم,
                        debug);
-      if (n_read < 0)
-        return -1;
+      إذا (n_read < 0)
+        أرجع -1;
 
-      ipos = ext_start + n_read;
-      if (n_read < ext_len)
+      ipos = ext_شروعات + n_read;
+      إذا (n_read < ext_len)
         {
           /* The input file shrank.  */
-          src_total_size = ipos;
-          break;
+          src_ڪل_سائيز = ipos;
+          اكسر;
         }
 
-      ext_start = lseek (src_fd, ipos, SEEK_DATA);
-      if (ext_start < 0 && errno != ENXIO)
-        goto cannot_lseek;
+      ext_شروعات = lseek (src_fd, ipos, SEEK_معلومات);
+      إذا (ext_شروعات < 0 && errno != ENXIO)
+        اذهب cannot_lseek;
     }
 
-  *hole_size += src_total_size - (last_ext_start + last_ext_len);
-  return src_total_size - src_pos;
+  *hole_سائيز += src_ڪل_سائيز - (آخري_ext_شروعات + آخري_ext_len);
+  أرجع src_ڪل_سائيز - src_pos;
 
  cannot_lseek:
   error (0, errno, _("cannot lseek %s"), quoteaf (src_name));
-  return -1;
+  أرجع -1;
 }
-#endif
+#جيڪڏهن_پورو
 
-#ifndef HAVE_STRUCT_STAT_ST_BLOCKS
-# define HAVE_STRUCT_STAT_ST_BLOCKS 0
-#endif
+#جيڪڏهن_وصف_نه_ٿيل HAVE_STRUCT_STAT_ST_بلاڪون
+# define HAVE_STRUCT_STAT_ST_بلاڪون 0
+#جيڪڏهن_پورو
 
 /* Type of scan being done on the input when looking for sparseness.  */
-enum scantype
+تعداد scantype
   {
    /* An error was found when determining scantype.  */
    ERROR_SCANTYPE,
@@ -476,26 +476,26 @@ enum scantype
 /* Return how to scan a file with descriptor FD and stat buffer SB.
    The scan starts at POS.
    Set *SCAN_INFERENCE if returning LSEEK_SCANTYPE.  */
-static enum scantype
-infer_scantype (int fd, struct stat const *sb, off_t pos,
-                struct scan_inference *scan_inference)
+ساكن تعداد scantype
+infer_scantype (صحيح fd, بنية stat ثابت *sb, off_t pos,
+                بنية جاچ_inference *جاچ_inference)
 {
   /* Try SEEK_HOLE only if this heuristic
      suggests the file is sparse.  */
-  if (! (HAVE_STRUCT_STAT_ST_BLOCKS
-         && S_ISREG (sb->st_mode)
-         && STP_NBLOCKS (sb) < sb->st_size / ST_NBLOCKSIZE))
-    return PLAIN_SCANTYPE;
+  إذا (! (HAVE_STRUCT_STAT_ST_بلاڪون
+         && S_ISREG (sb->st_گهڻائي)
+         && STP_NBLOCKS (sb) < sb->st_سائيز / ST_NBLOCKSIZE))
+    أرجع PLAIN_SCANTYPE;
 
-#ifdef SEEK_HOLE
-  scan_inference->ext_start = lseek (fd, pos, SEEK_DATA);
-  if (scan_inference->ext_start == pos)
+#جيڪڏهن_وصف_ٿيل SEEK_HOLE
+  جاچ_inference->ext_شروعات = lseek (fd, pos, SEEK_معلومات);
+  إذا (جاچ_inference->ext_شروعات == pos)
     {
-      scan_inference->hole_start = lseek (fd, pos, SEEK_HOLE);
-      if (0 <= scan_inference->hole_start)
+      جاچ_inference->hole_شروعات = lseek (fd, pos, SEEK_HOLE);
+      إذا (0 <= جاچ_inference->hole_شروعات)
         {
-          if (scan_inference->hole_start < sb->st_size)
-            return LSEEK_SCANTYPE;
+          إذا (جاچ_inference->hole_شروعات < sb->st_سائيز)
+            أرجع LSEEK_SCANTYPE;
 
           /* Though the file may have holes, SEEK_DATA and SEEK_HOLE
              didn't find any.  This can happen with file systems
@@ -504,25 +504,25 @@ infer_scantype (int fd, struct stat const *sb, off_t pos,
              This can also happen due to transparent file compression,
              which can also indicate fewer than the usual number of blocks.  */
 
-          if (lseek (fd, pos, SEEK_SET) < 0)
-            return ERROR_SCANTYPE;
+          إذا (lseek (fd, pos, SEEK_SET) < 0)
+            أرجع ERROR_SCANTYPE;
 
           /* we prefer to return PLAIN_SCANTYPE here so that copy offload
              continues to be used.  Falling through to ZERO_SCANTYPE would be
              less efficient in the compressed file case.  */
-          return PLAIN_SCANTYPE;
+          أرجع PLAIN_SCANTYPE;
         }
     }
-  else if (pos < scan_inference->ext_start || errno == ENXIO)
+  وإلا إذا (pos < جاچ_inference->ext_شروعات || errno == ENXIO)
     {
-      scan_inference->hole_start = pos;  /* Pacify -Wmaybe-uninitialized.  */
-      return LSEEK_SCANTYPE;
+      جاچ_inference->hole_شروعات = pos;  /* Pacify -Wmaybe-uninitialized.  */
+      أرجع LSEEK_SCANTYPE;
     }
-  else if (errno != EINVAL && !is_ENOTSUP (errno))
-    return ERROR_SCANTYPE;
-#endif
+  وإلا إذا (errno != EINVAL && !is_ENOTSUP (errno))
+    أرجع ERROR_SCANTYPE;
+#جيڪڏهن_پورو
 
-  return ZERO_SCANTYPE;
+  أرجع ZERO_SCANTYPE;
 }
 
 /* Copy data from input file (descriptor IFD, status IST, initial file
@@ -538,27 +538,27 @@ infer_scantype (int fd, struct stat const *sb, off_t pos,
    otherwise, diagnose the error and return -1.
    If unsuccessful, the destination area's contents are unspecified.  */
 
-extern intmax_t
-copy_file_data (int ifd, struct stat const *ist, off_t ipos, char const *iname,
-                int ofd, struct stat const *ost, off_t opos, char const *oname,
-                count_t ibytes, struct cp_options const *x,
-                struct copy_debug *debug)
+خارجي intmax_t
+copy_file_معلومات (صحيح ifd, بنية stat ثابت *ist, off_t ipos, حرف ثابت *iname,
+                صحيح ofd, بنية stat ثابت *ost, off_t opos, حرف ثابت *oname,
+                ڳڻپ_t ibytes, بنية cp_options ثابت *x,
+                بنية copy_debug *debug)
 {
   /* Choose a suitable buffer size; it may be adjusted later.  */
-  idx_t buf_size = io_blksize (ost);
+  idx_t buf_سائيز = io_blksize (ost);
 
   /* Deal with sparse files.  */
-  struct scan_inference scan_inference;
-  enum scantype scantype = infer_scantype (ifd, ist, ipos, &scan_inference);
-  if (scantype == ERROR_SCANTYPE)
+  بنية جاچ_inference جاچ_inference;
+  تعداد scantype scantype = infer_scantype (ifd, ist, ipos, &جاچ_inference);
+  إذا (scantype == ERROR_SCANTYPE)
     {
       error (0, errno, _("cannot lseek %s"), quoteaf (iname));
-      return -1;
+      أرجع -1;
     }
   bool make_holes
-    = (S_ISREG (ost->st_mode)
-       && (x->sparse_mode == SPARSE_ALWAYS
-           || (x->sparse_mode == SPARSE_AUTO
+    = (S_ISREG (ost->st_گهڻائي)
+       && (x->sparse_گهڻائي == SPARSE_ALWAYS
+           || (x->sparse_گهڻائي == SPARSE_AUTO
                && scantype != PLAIN_SCANTYPE)));
 
   /* If we _know_ we're going to read data sequentially into the process,
@@ -569,13 +569,13 @@ copy_file_data (int ifd, struct stat const *ist, off_t ipos, char const *iname,
      Also we only apply this hint for the whole file (0 length)
      as OpenZFS 2.2.2 at least will otherwise synchronously
      (decompress and) populate the cache when given a specific length.  */
-  if (ipos == 0 && ibytes == COUNT_MAX
-      && (x->reflink_mode != REFLINK_AUTO || x->sparse_mode != SPARSE_AUTO))
+  إذا (ipos == 0 && ibytes == ڳڻپ_MAX
+      && (x->reflink_گهڻائي != REFLINK_AUTO || x->sparse_گهڻائي != SPARSE_AUTO))
     fdadvise (ifd, 0, 0, FADVISE_SEQUENTIAL);
 
   /* If not making a sparse file, try to use a more-efficient
      buffer size.  */
-  if (! make_holes)
+  إذا (! make_holes)
     {
       /* Compute the least common multiple of the input and output
          buffer sizes, adjusting for outlandish values.
@@ -583,65 +583,65 @@ copy_file_data (int ifd, struct stat const *ist, off_t ipos, char const *iname,
          Note we read in multiples of the reported block size
          to support (unusual) devices that have this constraint.  */
       idx_t blcm_max = MIN (MIN (IDX_MAX - 1, SSIZE_MAX), SIZE_MAX);
-      idx_t blcm = buffer_lcm (io_blksize (ist), buf_size,
+      idx_t blcm = بفر_lcm (io_blksize (ist), buf_سائيز,
                                blcm_max);
 
       /* Do not bother with a buffer larger than the input file, plus one
          byte to make sure the file has not grown while reading it.  */
-      if (S_ISREG (ist->st_mode) && 0 <= ist->st_size
-          && ist->st_size < buf_size)
-        buf_size = ist->st_size + 1;
+      إذا (S_ISREG (ist->st_گهڻائي) && 0 <= ist->st_سائيز
+          && ist->st_سائيز < buf_سائيز)
+        buf_سائيز = ist->st_سائيز + 1;
 
       /* However, stick with a block size that is a positive multiple of
          blcm, overriding the above adjustments.  Watch out for
          overflow.  */
-      buf_size = ckd_add (&buf_size, buf_size, blcm - 1) ? IDX_MAX : buf_size;
-      buf_size -= buf_size % blcm;
+      buf_سائيز = ckd_جوڙيو (&buf_سائيز, buf_سائيز, blcm - 1) ? IDX_MAX : buf_سائيز;
+      buf_سائيز -= buf_سائيز % blcm;
     }
 
-  char *buf = NULL;
-  intmax_t result;
-  off_t hole_size = 0;
+  حرف *buf = عدم;
+  intmax_t نتيجو;
+  off_t hole_سائيز = 0;
 
-  if (scantype == LSEEK_SCANTYPE)
+  إذا (scantype == LSEEK_SCANTYPE)
     {
-#ifdef SEEK_HOLE
-      result = lseek_copy (ifd, ofd, &buf, buf_size,
-                           ipos, ibytes, &scan_inference, ist->st_size,
-                           make_holes ? x->sparse_mode : SPARSE_NEVER,
-                           x->reflink_mode != REFLINK_NEVER,
-                           iname, oname, &hole_size, debug);
-#else
+#جيڪڏهن_وصف_ٿيل SEEK_HOLE
+      نتيجو = lseek_copy (ifd, ofd, &buf, buf_سائيز,
+                           ipos, ibytes, &جاچ_inference, ist->st_سائيز,
+                           make_holes ? x->sparse_گهڻائي : SPARSE_NEVER,
+                           x->reflink_گهڻائي != REFLINK_NEVER,
+                           iname, oname, &hole_سائيز, debug);
+#وإلا
       affirm (false);
-#endif
+#جيڪڏهن_پورو
     }
-  else
-    result = sparse_copy (ifd, ofd, &buf, buf_size,
-                          x->reflink_mode != REFLINK_NEVER,
+  وإلا
+    نتيجو = sparse_copy (ifd, ofd, &buf, buf_سائيز,
+                          x->reflink_گهڻائي != REFLINK_NEVER,
                           iname, oname, ibytes,
-                          make_holes ? &hole_size : NULL,
+                          make_holes ? &hole_سائيز : عدم,
                           debug);
 
-  if (0 <= result && 0 < hole_size)
+  إذا (0 <= نتيجو && 0 < hole_سائيز)
     {
       off_t oend;
-      if (ckd_add (&oend, opos, result)
+      إذا (ckd_جوڙيو (&oend, opos, نتيجو)
           ? (errno = EOVERFLOW, true)
           : make_holes
           ? ftruncate (ofd, oend) < 0
-          : !write_zeros (ofd, hole_size, &buf, buf_size))
+          : !write_zeros (ofd, hole_سائيز, &buf, buf_سائيز))
         {
           error (0, errno, _("failed to extend %s"), quoteaf (oname));
-          result = -1;
+          نتيجو = -1;
         }
-      else if (make_holes
-               && punch_hole (ofd, oend - hole_size, hole_size) < 0)
+      وإلا إذا (make_holes
+               && punch_hole (ofd, oend - hole_سائيز, hole_سائيز) < 0)
         {
           error (0, errno, _("error deallocating %s"), quoteaf (oname));
-          result = -1;
+          نتيجو = -1;
         }
     }
 
   alignfree (buf);
-  return result;
+  أرجع نتيجو;
 }

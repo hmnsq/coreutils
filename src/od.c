@@ -16,56 +16,56 @@
 
 /* Written by Jim Meyering.  */
 
-#include <config.h>
+#ضمن <config.h>
 
-#include <endian.h>
-#include <float.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
-#include "system.h"
-#include "argmatch.h"
-#include "assure.h"
-#include "c-ctype.h"
-#include "ftoastr.h"
-#include "quote.h"
-#include "stat-size.h"
-#include "xbinary-io.h"
-#include "xprintf.h"
-#include "xstrtol.h"
-#include "xstrtol-error.h"
+#ضمن <endian.h>
+#ضمن <float.h>
+#ضمن <stdio.h>
+#ضمن <getopt.h>
+#ضمن <sys/types.h>
+#ضمن "system.h"
+#ضمن "argmatch.h"
+#ضمن "assure.h"
+#ضمن "c-ctype.h"
+#ضمن "ftoastr.h"
+#ضمن "quote.h"
+#ضمن "stat-size.h"
+#ضمن "xbinary-io.h"
+#ضمن "xprintf.h"
+#ضمن "xstrtol.h"
+#ضمن "xstrtol-error.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "od"
+#وصف_ڪريو پروگرام_NAME "od"
 
-#define AUTHORS proper_name ("Jim Meyering")
+#وصف_ڪريو AUTHORS proper_name ("Jim Meyering")
 
 /* The default number of input bytes per output line.  */
-#define DEFAULT_BYTES_PER_BLOCK 16
+#وصف_ڪريو DEFAULT_بائيٽون_في_بلاڪ 16
 
-#if FLOAT16_SUPPORTED
+#إذا FLOAT16_SUPPORTED
   /* Available since clang 6 (2018), and gcc 7 (2017).  */
-  typedef _Float16 float16;
-#else
+  تعريفنوع _Float16 float16;
+#وإلا
 # define FLOAT16_SUPPORTED 0
   /* This is just a place-holder to avoid a few '#if' directives.
      In this case, the type isn't actually used.  */
-  typedef float float16;
-#endif
+  تعريفنوع عائم float16;
+#جيڪڏهن_پورو
 
-#if BF16_SUPPORTED
+#إذا BF16_SUPPORTED
   /* Available since clang 11 (2020), and gcc 13 (2023). */
-  typedef __bf16 bfloat16;
-#else
+  تعريفنوع __bf16 bfloat16;
+#وإلا
 # define BF16_SUPPORTED 0
   /* This is just a place-holder to avoid a few '#if' directives.
      In this case, the type isn't actually used.  */
-  typedef float bfloat16;
-#endif
+  تعريفنوع عائم bfloat16;
+#جيڪڏهن_پورو
 
-enum size_spec
+تعداد سائيز_spec
   {
-    NO_SIZE = 0,
+    NO_سائيز = 0,
     CHAR,
     SHORT = CHAR + (UCHAR_MAX < USHRT_MAX),
     INT = SHORT + (USHRT_MAX < UINT_MAX),
@@ -78,98 +78,98 @@ enum size_spec
                                    || FLT_MAX_EXP < DBL_MAX_EXP),
     FLOAT_LONG_DOUBLE = FLOAT_DOUBLE + (DBL_MANT_DIG < LDBL_MANT_DIG
                                         || DBL_MAX_EXP < LDBL_MAX_EXP),
-    N_SIZE_SPECS
+    N_سائيز_SPECS
   };
 
-enum output_format
+تعداد output_format
   {
     SIGNED_DECIMAL,
     UNSIGNED_DECIMAL,
     OCTAL,
     HEXADECIMAL,
-    FLOATING_POINT,
-    HFLOATING_POINT,
-    BFLOATING_POINT,
+    FLOATING_نقطو,
+    HFLOATING_نقطو,
+    BFLOATING_نقطو,
     NAMED_CHARACTER,
     CHARACTER
   };
 
-enum { MAX_INTEGRAL_TYPE_WIDTH = UINTMAX_WIDTH };
+تعداد { MAX_INTEGRAL_TYPE_ويڪر = UINTMAX_ويڪر };
 
 /* The maximum number of bytes needed for a format string, including
    the trailing nul.  Each format string expects a variable amount of
    padding (guaranteed to be at least 1 plus the field width), then an
    element that will be formatted in the field.  */
-enum
+تعداد
   {
-    FMT_BYTES_ALLOCATED =
-      sizeof "%*.%dlld" - sizeof "%d" + INT_STRLEN_BOUND (int) + 1
+    FMT_بائيٽون_ALLOCATED =
+      حجم "%*.%dlld" - حجم "%d" + INT_STRLEN_BOUND (صحيح) + 1
   };
 
 /* Ensure that our choice for FMT_BYTES_ALLOCATED is reasonable.  */
-static_assert (MAX_INTEGRAL_TYPE_WIDTH <= 3 * 99);
+static_assert (MAX_INTEGRAL_TYPE_ويڪر <= 3 * 99);
 
 /* The type of a print function.  FIELDS is the number of fields per
    line, BLANK is the number of fields to leave blank.  WIDTH is width
    of one field, excluding leading space, and PAD is total pad to
    divide among FIELDS.  PAD is at least as large as FIELDS.  */
-typedef void (*print_function_type)
-  (idx_t fields, idx_t blank, void const *data,
-   char const *fmt, int width, idx_t pad);
+تعريفنوع فراغ (*print_function_type)
+  (idx_t fields, idx_t blank, فراغ ثابت *معلومات,
+   حرف ثابت *fmt, صحيح ويڪر, idx_t pad);
 
 /* Each output format specification (from '-t spec' or from
    old-style options) is represented by one of these structures.  */
-struct tspec
+بنية tspec
   {
-    enum output_format fmt;
-    enum size_spec size; /* Type of input object.  */
+    تعداد output_format fmt;
+    تعداد سائيز_spec سائيز; /* Type of input object.  */
     print_function_type print_function;
-    char fmt_string[FMT_BYTES_ALLOCATED]; /* Of the style "%*d".  */
-    bool hexl_mode_trailer;
-    int field_width; /* Minimum width of a field, excluding leading space.  */
-    idx_t pad_width; /* Total padding to be divided among fields.  */
+    حرف fmt_string[FMT_بائيٽون_ALLOCATED]; /* Of the style "%*d".  */
+    bool hexl_گهڻائي_trailer;
+    صحيح ميدان_ويڪر; /* Minimum width of a field, excluding leading space.  */
+    idx_t pad_ويڪر; /* Total padding to be divided among fields.  */
   };
 
 /* Convert enum size_spec to the size of the named type.  */
-static const int width_bytes[] =
+ساكن ثابت صحيح ويڪر_بائيٽون[] =
 {
   -1,
-  sizeof (unsigned char),
-#if UCHAR_MAX < USHRT_MAX
-  sizeof (unsigned short int),
-#endif
-#if USHRT_MAX < UINT_MAX
-  sizeof (unsigned int),
-#endif
-#if UINT_MAX < ULONG_MAX
-  sizeof (unsigned long int),
-#endif
-#if ULONG_MAX < ULLONG_MAX
-  sizeof (unsigned long long int),
-#endif
-#if ULLONG_MAX < UINTMAX_MAX
-  sizeof (uintmax_t),
-#endif
-#if BF16_SUPPORTED
-  sizeof (bfloat16),
-#elif FLOAT16_SUPPORTED
-  sizeof (float16),
-#endif
-#if FLT_MANT_DIG < DBL_MANT_DIG || FLT_MAX_EXP < DBL_MAX_EXP
-  sizeof (float),
-#endif
-  sizeof (double),
-#if DBL_MANT_DIG < LDBL_MANT_DIG || DBL_MAX_EXP < LDBL_MAX_EXP
-  sizeof (long double),
-#endif
+  حجم (بنانشان حرف),
+#إذا UCHAR_MAX < USHRT_MAX
+  حجم (بنانشان ننڍو صحيح),
+#جيڪڏهن_پورو
+#إذا USHRT_MAX < UINT_MAX
+  حجم (بنانشان صحيح),
+#جيڪڏهن_پورو
+#إذا UINT_MAX < ULONG_MAX
+  حجم (بنانشان ڊگهو صحيح),
+#جيڪڏهن_پورو
+#إذا ULONG_MAX < ULLONG_MAX
+  حجم (بنانشان ڊگهو ڊگهو صحيح),
+#جيڪڏهن_پورو
+#إذا ULLONG_MAX < UINTMAX_MAX
+  حجم (uintmax_t),
+#جيڪڏهن_پورو
+#إذا BF16_SUPPORTED
+  حجم (bfloat16),
+#وإلاإذا FLOAT16_SUPPORTED
+  حجم (float16),
+#جيڪڏهن_پورو
+#إذا FLT_MANT_DIG < DBL_MANT_DIG || FLT_MAX_EXP < DBL_MAX_EXP
+  حجم (عائم),
+#جيڪڏهن_پورو
+  حجم (مزدوج),
+#إذا DBL_MANT_DIG < LDBL_MANT_DIG || DBL_MAX_EXP < LDBL_MAX_EXP
+  حجم (ڊگهو مزدوج),
+#جيڪڏهن_پورو
 };
 
 /* Ensure that for each member of 'enum size_spec' there is an
    initializer in the width_bytes array.  */
-static_assert (countof (width_bytes) == N_SIZE_SPECS);
+static_assert (countof (ويڪر_بائيٽون) == N_سائيز_SPECS);
 
 /* Names for some non-printing characters.  */
-static char const charname[33][4] =
+ساكن حرف ثابت charname[33][4] =
 {
   "nul", "soh", "stx", "etx", "eot", "enq", "ack", "bel",
   "bs", "ht", "nl", "vt", "ff", "cr", "so", "si",
@@ -179,82 +179,82 @@ static char const charname[33][4] =
 };
 
 /* Address base (8, 10 or 16).  */
-static int address_base = 8;
+ساكن صحيح پتو_بنياد = 8;
 
 /* The number of octal digits required to represent the largest
    address value.  */
-enum { MAX_ADDRESS_LENGTH = ((INTMAX_WIDTH - 1) / 3
-                             + ((INTMAX_WIDTH - 1) % 3 != 0)) };
+تعداد { MAX_پتو_ڊيگهائي = ((INTMAX_ويڪر - 1) / 3
+                             + ((INTMAX_ويڪر - 1) % 3 != 0)) };
 
 /* Width of a normal address.  */
-static int address_pad_len = 7;
+ساكن صحيح پتو_pad_len = 7;
 
 /* Minimum length when detecting --strings.  */
-static idx_t string_min;
+ساكن idx_t string_min;
 
 /* True when in --strings mode.  */
-static bool flag_dump_strings;
+ساكن bool flag_dump_لڙيون;
 
 /* True if we should recognize the older non-option arguments
    that specified at most one file and optional arguments specifying
    offset and pseudo-start address.  */
-static bool traditional;
+ساكن bool traditional;
 
 /* True if an old-style 'pseudo-address' was specified.  */
-static bool flag_pseudo_start;
+ساكن bool flag_pseudo_شروعات;
 
 /* The difference between the old-style pseudo starting address and
    the number of bytes to skip.  */
-static intmax_t pseudo_offset;
+ساكن intmax_t pseudo_وٿي;
 
 /* Function that accepts an address and an optional following char,
    and prints the address and char to stdout.  */
-static void format_address_std (intmax_t, char);
-static void (*format_address) (intmax_t, char) = format_address_std;
+ساكن فراغ format_پتو_std (intmax_t, حرف);
+ساكن فراغ (*format_پتو) (intmax_t, حرف) = format_پتو_std;
 
 /* The number of input bytes to skip before formatting and writing.  */
-static intmax_t n_bytes_to_skip;
+ساكن intmax_t n_بائيٽون_منزل_skip;
 
 /* The offset of the first byte after the last byte to be formatted.
    If negative, there is no limit.  */
-static intmax_t end_offset = -1;
+ساكن intmax_t پڇاڙي_وٿي = -1;
 
 /* When true and two or more consecutive blocks are equal, format
    only the first block and output an asterisk alone on the following
    line to indicate that identical blocks have been elided.  */
-static bool abbreviate_duplicate_blocks = true;
+ساكن bool abbreviate_duplicate_بلاڪون = true;
 
 /* An array of specs describing how to format each input block.  */
-static struct tspec *spec;
+ساكن بنية tspec *spec;
 
 /* The number of format specs.  */
-static idx_t n_specs;
+ساكن idx_t n_specs;
 
 /* The allocated length of SPEC.  */
-static idx_t n_specs_allocated;
+ساكن idx_t n_specs_allocated;
 
 /* The number of input bytes formatted per output line.  It must be
    a multiple of the least common multiple of the sizes associated with
    the specified output types.  It should be as large as possible, but
    no larger than 16 -- unless specified with the -w option.  */
-static idx_t bytes_per_block;
+ساكن idx_t بائيٽون_في_بلاڪ;
 
 /* Human-readable representation of *file_list (for error messages).
    It differs from file_list[-1] only when file_list[-1] is "-".  */
-static char const *input_filename;
+ساكن حرف ثابت *داخلا_filename;
 
 /* A null-terminated list of the file-arguments from the command line.  */
-static char const *const *file_list;
+ساكن حرف ثابت *ثابت *file_list;
 
 /* Initializer for file_list if no file-arguments
    were specified on the command line.  */
-static char const *const default_file_list[] = {"-", NULL};
+ساكن حرف ثابت *ثابت default_file_list[] = {"-", عدم};
 
 /* The input stream associated with the current file.  */
-static FILE *in_stream;
+ساكن FILE *اندريون_وهڪرو;
 
 /* If true, at least one of the files we read was standard input.  */
-static bool have_read_stdin;
+ساكن bool have_read_stdin;
 
 /* Map the size in bytes to a type identifier.
    When two types have the same machine layout:
@@ -262,145 +262,145 @@ static bool have_read_stdin;
      - Prefer unsigned long to higher-ranked types, as it is older.
      - Prefer uintmax_t to unsigned long long int; this wins if %lld
        does not work but %jd does (e.g., MS-Windows).  */
-static enum size_spec const integral_type_size[] =
+ساكن تعداد سائيز_spec ثابت integral_type_سائيز[] =
   {
-#if UCHAR_MAX < USHRT_MAX
-    [sizeof (unsigned char)] = CHAR,
-#endif
-#if USHRT_MAX < UINT_MAX
-    [sizeof (unsigned short int)] = SHORT,
-#endif
-    [sizeof (unsigned int)] = INT,
-#if UINT_MAX < ULONG_MAX
-    [sizeof (unsigned long int)] = LONG,
-#endif
-#if ULONG_MAX < ULLONG_MAX && ULLONG_MAX < UINTMAX_MAX
-    [sizeof (unsigned long long int)] = LONG_LONG,
-#endif
-#if ULONG_MAX < UINTMAX_MAX
-    [sizeof (uintmax_t)] = INTMAX,
-#endif
+#إذا UCHAR_MAX < USHRT_MAX
+    [حجم (بنانشان حرف)] = CHAR,
+#جيڪڏهن_پورو
+#إذا USHRT_MAX < UINT_MAX
+    [حجم (بنانشان ننڍو صحيح)] = SHORT,
+#جيڪڏهن_پورو
+    [حجم (بنانشان صحيح)] = INT,
+#إذا UINT_MAX < ULONG_MAX
+    [حجم (بنانشان ڊگهو صحيح)] = LONG,
+#جيڪڏهن_پورو
+#إذا ULONG_MAX < ULLONG_MAX && ULLONG_MAX < UINTMAX_MAX
+    [حجم (بنانشان ڊگهو ڊگهو صحيح)] = LONG_LONG,
+#جيڪڏهن_پورو
+#إذا ULONG_MAX < UINTMAX_MAX
+    [حجم (uintmax_t)] = INTMAX,
+#جيڪڏهن_پورو
   };
 
 /* Map the size in bytes to a floating type identifier.
    When two types have the same machine layout:
      - Prefer double to the other types, as its format is shorter.  */
-static enum size_spec const fp_type_size[] =
+ساكن تعداد سائيز_spec ثابت fp_type_سائيز[] =
   {
-#if FLOAT16_SUPPORTED
-    [sizeof (float16)] = FLOAT_HALF,
-#elif BF16_SUPPORTED
-    [sizeof (bfloat16)] = FLOAT_HALF,
-#endif
-#if FLT_MANT_DIG < DBL_MANT_DIG || FLT_MAX_EXP < DBL_MAX_EXP
-    [sizeof (float)] = FLOAT_SINGLE,
-#endif
-    [sizeof (double)] = FLOAT_DOUBLE,
-#if DBL_MANT_DIG < LDBL_MANT_DIG || DBL_MAX_EXP < LDBL_MAX_EXP
-    [sizeof (long double)] = FLOAT_LONG_DOUBLE,
-#endif
+#إذا FLOAT16_SUPPORTED
+    [حجم (float16)] = FLOAT_HALF,
+#وإلاإذا BF16_SUPPORTED
+    [حجم (bfloat16)] = FLOAT_HALF,
+#جيڪڏهن_پورو
+#إذا FLT_MANT_DIG < DBL_MANT_DIG || FLT_MAX_EXP < DBL_MAX_EXP
+    [حجم (عائم)] = FLOAT_SINGLE,
+#جيڪڏهن_پورو
+    [حجم (مزدوج)] = FLOAT_DOUBLE,
+#إذا DBL_MANT_DIG < LDBL_MANT_DIG || DBL_MAX_EXP < LDBL_MAX_EXP
+    [حجم (ڊگهو مزدوج)] = FLOAT_LONG_DOUBLE,
+#جيڪڏهن_پورو
   };
 
 /* Use native endianness by default.  */
-static bool input_swap;
+ساكن bool داخلا_مٽا_سٽا;
 
-static char const short_options[] = "A:aBbcDdeFfHhIij:LlN:OoS:st:vw::Xx";
+ساكن حرف ثابت short_options[] = "A:aBbcDdeFfHhIij:LlN:OoS:st:vw::Xx";
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+تعداد
 {
   TRADITIONAL_OPTION = CHAR_MAX + 1,
   ENDIAN_OPTION,
 };
 
-enum endian_type
+تعداد endian_type
 {
   endian_little,
   endian_big
 };
 
-static char const *const endian_args[] =
+ساكن حرف ثابت *ثابت endian_دليلون[] =
 {
-  "little", "big", NULL
+  "little", "big", عدم
 };
 
-static enum endian_type const endian_types[] =
+ساكن تعداد endian_type ثابت endian_types[] =
 {
   endian_little, endian_big
 };
 
-static struct option const long_options[] =
+ساكن بنية option ثابت long_options[] =
 {
-  {"skip-bytes", required_argument, NULL, 'j'},
-  {"address-radix", required_argument, NULL, 'A'},
-  {"read-bytes", required_argument, NULL, 'N'},
-  {"format", required_argument, NULL, 't'},
-  {"output-duplicates", no_argument, NULL, 'v'},
-  {"strings", optional_argument, NULL, 'S'},
-  {"traditional", no_argument, NULL, TRADITIONAL_OPTION},
-  {"width", optional_argument, NULL, 'w'},
-  {"endian", required_argument, NULL, ENDIAN_OPTION },
+  {"skip-bytes", required_دليل, عدم, 'j'},
+  {"address-radix", required_دليل, عدم, 'A'},
+  {"read-bytes", required_دليل, عدم, 'N'},
+  {"format", required_دليل, عدم, 't'},
+  {"output-duplicates", no_دليل, عدم, 'v'},
+  {"strings", optional_دليل, عدم, 'S'},
+  {"traditional", no_دليل, عدم, TRADITIONAL_OPTION},
+  {"width", optional_دليل, عدم, 'w'},
+  {"endian", required_دليل, عدم, ENDIAN_OPTION },
 
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_نسخو_OPTION_DECL},
+  {عدم, 0, عدم, 0}
 };
 
-void
-usage (int status)
+فراغ
+usage (صحيح حالت)
 {
-  if (status != EXIT_SUCCESS)
+  إذا (حالت != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  وإلا
     {
-      printf (_("\
+      لکو (_("\
 Usage: %s [OPTION]... [FILE]...\n\
-  or:  %s [-abcdfilosx]... [FILE] [[+]OFFSET[.][b]]\n\
-  or:  %s --traditional [OPTION]... [FILE] [[+]OFFSET[.][b] [+][LABEL][.][b]]\n\
+  or:  %s [-abcdfilosx]... [FILE] [[+]وٿي_2[.][b]]\n\
+  or:  %s --traditional [OPTION]... [FILE] [[+]وٿي_2[.][b] [+][LABEL][.][b]]\n\
 "),
-              program_name, program_name, program_name);
+              پروگرام_name, پروگرام_name, پروگرام_name);
       fputs (_("\n\
-Write an unambiguous representation, octal bytes by default,\n\
-of FILE to standard output.  With more than one FILE argument,\n\
-concatenate them in the listed order to form the input.\n\
+Write an unambiguous representation, octal بائيٽون by افتراضي,\n\
+جو FILE منزل standard output.  With وڌيڪ than one FILE دليل,\n\
+concatenate them اندريون the listed ترتيب منزل form the داخلا.\n\
 "), stdout);
 
       emit_stdin_note ();
 
       fputs (_("\
 \n\
-If first and second call formats both apply, the second format is assumed\n\
-if the last operand begins with + or (if there are 2 operands) a digit.\n\
-An OFFSET operand means -j OFFSET.  LABEL is the pseudo-address\n\
-at first byte printed, incremented when dump is progressing.\n\
-For OFFSET and LABEL, a 0x or 0X prefix indicates hexadecimal;\n\
-suffixes may be . for octal and b for multiply by 512.\n\
+If پهريون and ٻيو call formats both apply, the ٻيو format is assumed\n\
+إذا the آخري عمليو_2 begins with + or (إذا there are 2 operands) a digit.\n\
+An وٿي_2 عمليو_2 means -j وٿي_2.  LABEL is the pseudo-پتو\n\
+at پهريون byte printed, incremented when dump is progressing.\n\
+For وٿي_2 and LABEL, a 0x or 0X اڳياڙي indicates hexadecimal;\n\
+suffixes may be . لكل octal and b لكل multiply by 512.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -A, --address-radix=RADIX\n\
-         output format for file offsets;\n\
-         RADIX is one of [doxn], for Decimal, Octal, Hex or None\n\
+  -A, --پتو-radix=RADIX\n\
+         output format لكل file offsets;\n\
+         RADIX is one جو [doxn], لكل Decimal, Octal, Hex or None\n\
 "));
       oputs (_("\
       --endian={big|little}\n\
-         swap input bytes according the specified order\n\
+         مٽا_سٽا داخلا بائيٽون according the specified ترتيب\n\
 "));
       oputs (_("\
-  -j, --skip-bytes=BYTES\n\
-         skip BYTES input bytes first\n\
+  -j, --skip-بائيٽون=بائيٽون_2\n\
+         skip بائيٽون_2 داخلا بائيٽون پهريون\n\
 "));
       oputs (_("\
-  -N, --read-bytes=BYTES\n\
-         limit dump to BYTES input bytes\n\
+  -N, --اقرأ-بائيٽون=بائيٽون_2\n\
+         حد_بندي dump منزل بائيٽون_2 داخلا بائيٽون\n\
 "));
       oputs (_("\
-  -S BYTES, --strings[=BYTES]\n\
-         show only NUL terminated strings\n\
-         of at least BYTES (default 3) printable characters\n\
+  -S بائيٽون_2, --لڙيون[=بائيٽون_2]\n\
+         show only NUL terminated لڙيون\n\
+         جو at گهٽ_کان_گهٽ بائيٽون_2 (افتراضي 3) printable characters\n\
 "));
       oputs (_("\
   -t, --format=TYPE\n\
@@ -408,35 +408,35 @@ suffixes may be . for octal and b for multiply by 512.\n\
 "));
       oputs (_("\
   -v, --output-duplicates\n\
-         do not use * to mark line suppression\n\
+         افعل not use * منزل mark سٽ suppression\n\
 "));
       oputs (_("\
-  -w[BYTES], --width[=BYTES]\n\
-         output BYTES bytes per output line;\n\
-         32 is implied when BYTES is not specified\n\
+  -w[بائيٽون_2], --ويڪر[=بائيٽون_2]\n\
+         output بائيٽون_2 بائيٽون في output سٽ;\n\
+         32 is implied when بائيٽون_2 is not specified\n\
 "));
       oputs (_("\
       --traditional\n\
-         accept arguments in third form above\n\
+         accept arguments اندريون ٽيون form above\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (نسخو_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
 \n\
 Traditional format specifications may be intermixed; they accumulate:\n\
 "), stdout);
       oputs (_("\
-  -a   same as -t a,  select named characters, ignoring high-order bit\n\
+  -a   same as -t a,  select named characters, ignoring مٿاهون-ترتيب ٻٽو_انگ\n\
 "));
       oputs (_("\
-  -b   same as -t o1, select octal bytes\n\
+  -b   same as -t o1, select octal بائيٽون\n\
 "));
       oputs (_("\
   -c   same as -t c,  select printable characters or backslash escapes\n\
 "));
       oputs (_("\
-  -d   same as -t u2, select unsigned decimal 2-byte units\n\
+  -d   same as -t u2, select بنانشان decimal 2-byte units\n\
 "));
       oputs (_("\
   -f   same as -t fF, select floats\n\
@@ -459,235 +459,235 @@ Traditional format specifications may be intermixed; they accumulate:\n\
       fputs (_("\
 \n\
 \n\
-TYPE is made up of one or more of these specifications:\n\
-  a          named character, ignoring high-order bit\n\
+TYPE is made مٿي جو one or وڌيڪ جو these specifications:\n\
+  a          named character, ignoring مٿاهون-ترتيب ٻٽو_انگ\n\
   c          printable character or backslash escape\n\
 "), stdout);
       fputs (_("\
-  d[SIZE]    signed decimal, SIZE bytes per integer\n\
-  f[SIZE]    floating point, SIZE bytes per float\n\
-  o[SIZE]    octal, SIZE bytes per integer\n\
-  u[SIZE]    unsigned decimal, SIZE bytes per integer\n\
-  x[SIZE]    hexadecimal, SIZE bytes per integer\n\
+  d[سائيز_2]    نشانوارو decimal, سائيز_2 بائيٽون في integer\n\
+  f[سائيز_2]    floating نقطو, سائيز_2 بائيٽون في عائم\n\
+  o[سائيز_2]    octal, سائيز_2 بائيٽون في integer\n\
+  u[سائيز_2]    بنانشان decimal, سائيز_2 بائيٽون في integer\n\
+  x[سائيز_2]    hexadecimal, سائيز_2 بائيٽون في integer\n\
 "), stdout);
       fputs (_("\
 \n\
-SIZE is a number.  For TYPE in [doux], SIZE may also be C for\n\
-sizeof(char), S for sizeof(short), I for sizeof(int) or L for\n\
-sizeof(long).  If TYPE is f, SIZE may also be B for Brain 16 bit,\n\
-H for Half precision float, F for sizeof(float), D for sizeof(double),\n\
-or L for sizeof(long double).\n\
+سائيز_2 is a عدد.  For TYPE اندريون [doux], سائيز_2 may also be C لكل\n\
+حجم(حرف), S لكل حجم(ننڍو), I لكل حجم(صحيح) or L لكل\n\
+حجم(ڊگهو).  If TYPE is f, سائيز_2 may also be B لكل Brain 16 ٻٽو_انگ,\n\
+H لكل Half precision عائم, F لكل حجم(عائم), D لكل حجم(مزدوج),\n\
+or L لكل حجم(ڊگهو مزدوج).\n\
 "), stdout);
       fputs (_("\
 \n\
-Adding a z suffix to any type displays printable characters at the end of\n\
-each output line.\n\
+Adding a z suffix منزل any type displays printable characters at the پڇاڙي جو\n\
+each output سٽ.\n\
 "), stdout);
       fputs (_("\
 \n\
 \n\
-BYTES is hex with 0x or 0X prefix, and may have a multiplier suffix:\n\
+بائيٽون_2 is hex with 0x or 0X اڳياڙي, and may have a multiplier suffix:\n\
   b    512\n\
   KB   1000\n\
   K    1024\n\
   MB   1000*1000\n\
   M    1024*1024\n\
-and so on for G, T, P, E, Z, Y, R, Q.\n\
-Binary prefixes can be used, too: KiB=K, MiB=M, and so on.\n\
+and so on لكل G, T, P, E, Z, Y, R, Q.\n\
+ٻٽو_2 prefixes can be استعمال_ٿيل, too: KiB=K, MiB=M, and so on.\n\
 "), stdout);
-      emit_ancillary_info (PROGRAM_NAME);
+      emit_ancillary_info (پروگرام_NAME);
     }
-  exit (status);
+  ٻاهر_نڪرو (حالت);
 }
 
 /* Define the print functions.  */
 
 /* Print N spaces, where 0 <= N.
    Do not rely on printf ("%*s", N, "") as N may exceed INT_MAX.  */
-static void
+ساكن فراغ
 print_n_spaces (intmax_t n)
 {
-  for (; 0 < n; n--)
-    putchar (' ');
+  لكل (; 0 < n; n--)
+    اکر_لکو (' ');
 }
 
 /* If there are FIELDS fields, return the total padding up to the
    start of field I, where I < FIELDS.  PAD is the total padding for
    all fields.  The result equals (PAD * I) / FIELDS, except it does
    not suffer from internal overflow.  */
-static idx_t
+ساكن idx_t
 pad_at (idx_t fields, idx_t i, idx_t pad)
 {
   /* This implementation assumes that (FIELDS - 1)^2 does not overflow
      intmax_t, an assumption checked by pad_at_overflow.  */
   intmax_t m = pad % fields;
-  return pad / fields * i + m * i / fields;
+  أرجع pad / fields * i + m * i / fields;
 }
-static bool
-pad_at_overflow (idx_t fields)
+ساكن bool
+pad_at_حد_کان_مٿي (idx_t fields)
 {
-  intmax_t product;
-  return ckd_mul (&product, fields - 1, fields - 1);
+  intmax_t حاصل_ضرب;
+  أرجع ckd_mul (&حاصل_ضرب, fields - 1, fields - 1);
 }
 
-#define PRINT_FIELDS(N, T, FMT_STRING_DECL, ACTION)                     \
-static void                                                             \
-N (idx_t fields, idx_t blank, void const *block,			\
-   FMT_STRING_DECL, int width, idx_t pad)				\
+#وصف_ڪريو PRINT_FIELDS(N, T, FMT_STRING_DECL, ACTION)                     \
+ساكن فراغ                                                             \
+N (idx_t fields, idx_t blank, فراغ ثابت *بلاڪ,			\
+   FMT_STRING_DECL, صحيح ويڪر, idx_t pad)				\
 {                                                                       \
-  T const *p = block;                                                   \
-  idx_t pad_remaining = pad;						\
-  for (idx_t i = fields; blank < i; i--)				\
+  T ثابت *p = بلاڪ;                                                   \
+  idx_t pad_بچيل = pad;						\
+  لكل (idx_t i = fields; blank < i; i--)				\
     {                                                                   \
-      idx_t next_pad = pad_at (fields, i - 1, pad);			\
-      int adjusted_width = pad_remaining - next_pad + width;            \
+      idx_t ايندڙ_pad = pad_at (fields, i - 1, pad);			\
+      صحيح adjusted_ويڪر = pad_بچيل - ايندڙ_pad + ويڪر;            \
       T x;                                                              \
-      if (input_swap && sizeof (T) > 1)                                 \
+      إذا (داخلا_مٽا_سٽا && حجم (T) > 1)                                 \
         {                                                               \
-          union {                                                       \
+          اتحاد {                                                       \
             T x;                                                        \
-            char b[sizeof (T)];                                         \
+            حرف b[حجم (T)];                                         \
           } u;                                                          \
-          for (idx_t j = 0; j < sizeof (T); j++)			\
-            u.b[j] = ((char const *) p)[sizeof (T) - 1 - j];            \
+          لكل (idx_t j = 0; j < حجم (T); j++)			\
+            u.b[j] = ((حرف ثابت *) p)[حجم (T) - 1 - j];            \
           x = u.x;                                                      \
         }                                                               \
-      else                                                              \
+      وإلا                                                              \
         x = *p;                                                         \
       p++;                                                              \
       ACTION;                                                           \
-      pad_remaining = next_pad;                                         \
+      pad_بچيل = ايندڙ_pad;                                         \
     }                                                                   \
 }
 
-#define PRINT_TYPE(N, T)                                                \
-  PRINT_FIELDS (N, T, char const *fmt_string,                           \
-                xprintf (fmt_string, adjusted_width, x))
+#وصف_ڪريو PRINT_TYPE(N, T)                                                \
+  PRINT_FIELDS (N, T, حرف ثابت *fmt_string,                           \
+                xprintf (fmt_string, adjusted_ويڪر, x))
 
-#define PRINT_FLOATTYPE(N, T, FTOASTR, BUFSIZE)                         \
-  PRINT_FIELDS (N, T, MAYBE_UNUSED char const *fmt_string,              \
-                char buf[BUFSIZE];                                      \
-                FTOASTR (buf, sizeof buf, 0, 0, x);                     \
-                xprintf ("%*s", adjusted_width, buf))
+#وصف_ڪريو PRINT_FLOATTYPE(N, T, FTOASTR, BUFSIZE)                         \
+  PRINT_FIELDS (N, T, MAYBE_اڻ_استعمال_ٿيل حرف ثابت *fmt_string,              \
+                حرف buf[BUFSIZE];                                      \
+                FTOASTR (buf, حجم buf, 0, 0, x);                     \
+                xprintf ("%*s", adjusted_ويڪر, buf))
 
-PRINT_TYPE (print_s_char, signed char)
-PRINT_TYPE (print_char, unsigned char)
-PRINT_TYPE (print_s_short, short int)
-PRINT_TYPE (print_short, unsigned short int)
-PRINT_TYPE (print_int, unsigned int)
-PRINT_TYPE (print_long, unsigned long int)
-PRINT_TYPE (print_long_long, unsigned long long int)
+PRINT_TYPE (print_s_char, نشانوارو حرف)
+PRINT_TYPE (print_char, بنانشان حرف)
+PRINT_TYPE (print_s_short, ننڍو صحيح)
+PRINT_TYPE (print_short, بنانشان ننڍو صحيح)
+PRINT_TYPE (print_int, بنانشان صحيح)
+PRINT_TYPE (print_long, بنانشان ڊگهو صحيح)
+PRINT_TYPE (print_long_long, بنانشان ڊگهو ڊگهو صحيح)
 PRINT_TYPE (print_intmax, uintmax_t)
 
 PRINT_FLOATTYPE (print_bfloat, bfloat16, ftoastr, FLT_BUFSIZE_BOUND)
 PRINT_FLOATTYPE (print_halffloat, float16, ftoastr, FLT_BUFSIZE_BOUND)
-PRINT_FLOATTYPE (print_float, float, ftoastr, FLT_BUFSIZE_BOUND)
-PRINT_FLOATTYPE (print_double, double, dtoastr, DBL_BUFSIZE_BOUND)
-PRINT_FLOATTYPE (print_long_double, long double, ldtoastr, LDBL_BUFSIZE_BOUND)
+PRINT_FLOATTYPE (print_float, عائم, ftoastr, FLT_BUFSIZE_BOUND)
+PRINT_FLOATTYPE (print_double, مزدوج, dtoastr, DBL_BUFSIZE_BOUND)
+PRINT_FLOATTYPE (print_long_double, ڊگهو مزدوج, ldtoastr, LDBL_BUFSIZE_BOUND)
 
-#undef PRINT_TYPE
-#undef PRINT_FLOATTYPE
+#وصف_رد PRINT_TYPE
+#وصف_رد PRINT_FLOATTYPE
 
-static void
-dump_hexl_mode_trailer (idx_t n_bytes, char const *block)
+ساكن فراغ
+dump_hexl_گهڻائي_trailer (idx_t n_بائيٽون, حرف ثابت *بلاڪ)
 {
   fputs ("  >", stdout);
-  for (idx_t i = n_bytes; i > 0; i--)
+  لكل (idx_t i = n_بائيٽون; i > 0; i--)
     {
-      unsigned char c = *block++;
-      unsigned char c2 = (isprint (c) ? c : '.');
-      putchar (c2);
+      بنانشان حرف c = *بلاڪ++;
+      بنانشان حرف c2 = (isprint (c) ? c : '.');
+      اکر_لکو (c2);
     }
-  putchar ('<');
+  اکر_لکو ('<');
 }
 
-static void
-print_named_ascii (idx_t fields, idx_t blank, void const *block,
-                   MAYBE_UNUSED char const *unused_fmt_string,
-                   int width, idx_t pad)
+ساكن فراغ
+print_named_ascii (idx_t fields, idx_t blank, فراغ ثابت *بلاڪ,
+                   MAYBE_اڻ_استعمال_ٿيل حرف ثابت *اڻ_استعمال_ٿيل_fmt_string,
+                   صحيح ويڪر, idx_t pad)
 {
-  unsigned char const *p = block;
-  idx_t pad_remaining = pad;
-  for (idx_t i = fields; blank < i; i--)
+  بنانشان حرف ثابت *p = بلاڪ;
+  idx_t pad_بچيل = pad;
+  لكل (idx_t i = fields; blank < i; i--)
     {
-      int masked_c = *p++ & 0x7f;
-      char const *s;
-      char buf[2];
+      صحيح masked_c = *p++ & 0x7f;
+      حرف ثابت *s;
+      حرف buf[2];
 
-      if (masked_c == 127)
+      إذا (masked_c == 127)
         s = "del";
-      else if (masked_c <= 040)
+      وإلا إذا (masked_c <= 040)
         s = charname[masked_c];
-      else
+      وإلا
         {
           buf[0] = masked_c;
           buf[1] = 0;
           s = buf;
         }
 
-      idx_t next_pad = pad_at (fields, i - 1, pad);
-      int adjusted_width = pad_remaining - next_pad + width;
-      xprintf ("%*s", adjusted_width, s);
-      pad_remaining = next_pad;
+      idx_t ايندڙ_pad = pad_at (fields, i - 1, pad);
+      صحيح adjusted_ويڪر = pad_بچيل - ايندڙ_pad + ويڪر;
+      xprintf ("%*s", adjusted_ويڪر, s);
+      pad_بچيل = ايندڙ_pad;
     }
 }
 
-static void
-print_ascii (idx_t fields, idx_t blank, void const *block,
-             MAYBE_UNUSED char const *unused_fmt_string, int width,
+ساكن فراغ
+print_ascii (idx_t fields, idx_t blank, فراغ ثابت *بلاڪ,
+             MAYBE_اڻ_استعمال_ٿيل حرف ثابت *اڻ_استعمال_ٿيل_fmt_string, صحيح ويڪر,
              idx_t pad)
 {
-  unsigned char const *p = block;
-  idx_t pad_remaining = pad;
-  for (idx_t i = fields; blank < i; i--)
+  بنانشان حرف ثابت *p = بلاڪ;
+  idx_t pad_بچيل = pad;
+  لكل (idx_t i = fields; blank < i; i--)
     {
-      unsigned char c = *p++;
-      char const *s;
-      char buf[4];
+      بنانشان حرف c = *p++;
+      حرف ثابت *s;
+      حرف buf[4];
 
-      switch (c)
+      بدل (c)
         {
-        case '\0':
+        حالة '\0':
           s = "\\0";
-          break;
+          اكسر;
 
-        case '\a':
+        حالة '\a':
           s = "\\a";
-          break;
+          اكسر;
 
-        case '\b':
+        حالة '\b':
           s = "\\b";
-          break;
+          اكسر;
 
-        case '\f':
+        حالة '\f':
           s = "\\f";
-          break;
+          اكسر;
 
-        case '\n':
+        حالة '\n':
           s = "\\n";
-          break;
+          اكسر;
 
-        case '\r':
+        حالة '\r':
           s = "\\r";
-          break;
+          اكسر;
 
-        case '\t':
+        حالة '\t':
           s = "\\t";
-          break;
+          اكسر;
 
-        case '\v':
+        حالة '\v':
           s = "\\v";
-          break;
+          اكسر;
 
-        default:
+        افتراضي:
           sprintf (buf, (isprint (c) ? "%c" : "%03o"), c);
           s = buf;
         }
 
-      idx_t next_pad = pad_at (fields, i - 1, pad);
-      int adjusted_width = pad_remaining - next_pad + width;
-      xprintf ("%*s", adjusted_width, s);
-      pad_remaining = next_pad;
+      idx_t ايندڙ_pad = pad_at (fields, i - 1, pad);
+      صحيح adjusted_ويڪر = pad_بچيل - ايندڙ_pad + ويڪر;
+      xprintf ("%*s", adjusted_ويڪر, s);
+      pad_بچيل = ايندڙ_pad;
     }
 }
 
@@ -699,31 +699,31 @@ print_ascii (idx_t fields, idx_t blank, void const *block,
    Otherwise, advance *P to the first non-digit after S, set *VAL to
    the result of the conversion and return true.  */
 
-static bool
-simple_strtoi (char const *s, char const **p, int *val)
+ساكن bool
+simple_strtoi (حرف ثابت *s, حرف ثابت **p, صحيح *val)
 {
-  int sum;
+  صحيح جوڙ;
 
-  for (sum = 0; c_isdigit (*s); s++)
-    if (ckd_mul (&sum, sum, 10) || ckd_add (&sum, sum, *s - '0'))
-      return false;
+  لكل (جوڙ = 0; c_isdigit (*s); s++)
+    إذا (ckd_mul (&جوڙ, جوڙ, 10) || ckd_جوڙيو (&جوڙ, جوڙ, *s - '0'))
+      أرجع false;
   *p = s;
-  *val = sum;
-  return true;
+  *val = جوڙ;
+  أرجع true;
 }
 
 /* Return a printf format for SPEC, given that remaining arguments are
    formats for int, long, long long, and intmax_t, respectively.  */
-static char const *
-ispec_to_format (enum size_spec size_spec,
-                 char const *int_format,
-                 char const *long_format,
-                 char const *long_long_format,
-                 char const *intmax_format)
+ساكن حرف ثابت *
+ispec_منزل_format (تعداد سائيز_spec سائيز_spec,
+                 حرف ثابت *int_format,
+                 حرف ثابت *long_format,
+                 حرف ثابت *long_long_format,
+                 حرف ثابت *intmax_format)
 {
-  return (LONG < INTMAX && size_spec == INTMAX ? intmax_format
-          : LONG < LONG_LONG && size_spec == LONG_LONG ? long_long_format
-          : INT < LONG && size_spec == LONG ? long_format
+  أرجع (LONG < INTMAX && سائيز_spec == INTMAX ? intmax_format
+          : LONG < LONG_LONG && سائيز_spec == LONG_LONG ? long_long_format
+          : INT < LONG && سائيز_spec == LONG ? long_format
           : int_format);
 }
 
@@ -746,266 +746,266 @@ ispec_to_format (enum size_spec size_spec,
    string argument.
    */
 
-static bool ATTRIBUTE_NONNULL ()
-decode_one_format (char const *s_orig, char const *s, char const **next,
-                   struct tspec *tspec)
+ساكن bool ATTRIBUTE_NONNULL ()
+decode_one_format (حرف ثابت *s_orig, حرف ثابت *s, حرف ثابت **ايندڙ,
+                   بنية tspec *tspec)
 {
-  enum size_spec size_spec;
-  int size;
-  enum output_format fmt;
+  تعداد سائيز_spec سائيز_spec;
+  صحيح سائيز;
+  تعداد output_format fmt;
   print_function_type print_function;
-  char const *p;
-  char c;
-  int field_width;
+  حرف ثابت *p;
+  حرف c;
+  صحيح ميدان_ويڪر;
 
-  switch (*s)
+  بدل (*s)
     {
-    case 'd':
-    case 'o':
-    case 'u':
-    case 'x':
+    حالة 'd':
+    حالة 'o':
+    حالة 'u':
+    حالة 'x':
       c = *s;
       ++s;
-      switch (*s)
+      بدل (*s)
         {
-        case 'C':
+        حالة 'C':
           ++s;
-          size = sizeof (unsigned char);
-          break;
+          سائيز = حجم (بنانشان حرف);
+          اكسر;
 
-        case 'S':
+        حالة 'S':
           ++s;
-          size = sizeof (unsigned short int);
-          break;
+          سائيز = حجم (بنانشان ننڍو صحيح);
+          اكسر;
 
-        case 'I':
+        حالة 'I':
           ++s;
-          size = sizeof (unsigned int);
-          break;
+          سائيز = حجم (بنانشان صحيح);
+          اكسر;
 
-        case 'L':
+        حالة 'L':
           ++s;
-          size = sizeof (unsigned long int);
-          break;
+          سائيز = حجم (بنانشان ڊگهو صحيح);
+          اكسر;
 
-        default:
-          if (! simple_strtoi (s, &p, &size))
+        افتراضي:
+          إذا (! simple_strtoi (s, &p, &سائيز))
             {
               /* The integer at P in S would overflow an int.
                  A digit string that long is sufficiently odd looking
                  that the following diagnostic is sufficient.  */
               error (0, 0, _("invalid type string %s"), quote (s_orig));
-              return false;
+              أرجع false;
             }
-          if (p == s)
-            size = sizeof (unsigned int);
-          else
+          إذا (p == s)
+            سائيز = حجم (بنانشان صحيح);
+          وإلا
             {
-              if (countof (integral_type_size) <= size
-                  || integral_type_size[size] == NO_SIZE)
+              إذا (countof (integral_type_سائيز) <= سائيز
+                  || integral_type_سائيز[سائيز] == NO_سائيز)
                 {
                   error (0, 0, _("invalid type string %s;\nthis system"
                                  " doesn't provide a %d-byte integral type"),
-                         quote (s_orig), size);
-                  return false;
+                         quote (s_orig), سائيز);
+                  أرجع false;
                 }
               s = p;
             }
-          break;
+          اكسر;
         }
 
-      size_spec = integral_type_size[size];
+      سائيز_spec = integral_type_سائيز[سائيز];
 
-      switch (c)
+      بدل (c)
         {
-        case 'd':
+        حالة 'd':
           fmt = SIGNED_DECIMAL;
-          field_width = INT_BITS_STRLEN_BOUND (CHAR_BIT * size - 1) + 1;
+          ميدان_ويڪر = INT_بٽ_STRLEN_BOUND (CHAR_BIT * سائيز - 1) + 1;
           sprintf (tspec->fmt_string, "%%*%s",
-                   ispec_to_format (size_spec, "d", "ld", "lld", "jd"));
-          break;
+                   ispec_منزل_format (سائيز_spec, "d", "ld", "lld", "jd"));
+          اكسر;
 
-        case 'o':
+        حالة 'o':
           fmt = OCTAL;
-          field_width = (CHAR_BIT * size + 2) / 3;
-          sprintf (tspec->fmt_string, "%%*.%d%s", field_width,
-                   ispec_to_format (size_spec, "o", "lo", "llo", "jo"));
-          break;
+          ميدان_ويڪر = (CHAR_BIT * سائيز + 2) / 3;
+          sprintf (tspec->fmt_string, "%%*.%d%s", ميدان_ويڪر,
+                   ispec_منزل_format (سائيز_spec, "o", "lo", "llo", "jo"));
+          اكسر;
 
-        case 'u':
+        حالة 'u':
           fmt = UNSIGNED_DECIMAL;
-          field_width = INT_BITS_STRLEN_BOUND (CHAR_BIT * size);
+          ميدان_ويڪر = INT_بٽ_STRLEN_BOUND (CHAR_BIT * سائيز);
           sprintf (tspec->fmt_string, "%%*%s",
-                   ispec_to_format (size_spec, "u", "lu", "llu", "ju"));
-          break;
+                   ispec_منزل_format (سائيز_spec, "u", "lu", "llu", "ju"));
+          اكسر;
 
-        case 'x':
+        حالة 'x':
           fmt = HEXADECIMAL;
-          field_width = (CHAR_BIT * size + 3) / 4;
-          sprintf (tspec->fmt_string, "%%*.%d%s", field_width,
-                   ispec_to_format (size_spec, "x", "lx", "llx", "jx"));
-          break;
+          ميدان_ويڪر = (CHAR_BIT * سائيز + 3) / 4;
+          sprintf (tspec->fmt_string, "%%*.%d%s", ميدان_ويڪر,
+                   ispec_منزل_format (سائيز_spec, "x", "lx", "llx", "jx"));
+          اكسر;
 
-        default:
+        افتراضي:
           affirm (false);
         }
 
       /* Prefer INT, prefer LONG to longer types,
          and prefer INTMAX to LONG_LONG.  */
       print_function
-        = (size_spec == INT
+        = (سائيز_spec == INT
            ? print_int
-           : SHORT < INT && size_spec == SHORT
+           : SHORT < INT && سائيز_spec == SHORT
            ? (fmt == SIGNED_DECIMAL ? print_s_short : print_short)
-           : CHAR < SHORT && size_spec == CHAR
+           : CHAR < SHORT && سائيز_spec == CHAR
            ? (fmt == SIGNED_DECIMAL ? print_s_char : print_char)
-           : INT < LONG && size_spec == LONG
+           : INT < LONG && سائيز_spec == LONG
            ? print_long
-           : LONG < INTMAX && size_spec == INTMAX
+           : LONG < INTMAX && سائيز_spec == INTMAX
            ? print_intmax
-           : LONG < LONG_LONG && LONG_LONG < INTMAX && size_spec == LONG_LONG
+           : LONG < LONG_LONG && LONG_LONG < INTMAX && سائيز_spec == LONG_LONG
            ? print_long_long
-           : (affirm (false), (print_function_type) NULL));
-      break;
+           : (affirm (false), (print_function_type) عدم));
+      اكسر;
 
-    case 'f':
-      fmt = FLOATING_POINT;
+    حالة 'f':
+      fmt = FLOATING_نقطو;
       ++s;
-      switch (*s)
+      بدل (*s)
         {
-        case 'B':
+        حالة 'B':
           ++s;
-          fmt = BFLOATING_POINT;
-          size = sizeof (bfloat16);
-          break;
+          fmt = BFLOATING_نقطو;
+          سائيز = حجم (bfloat16);
+          اكسر;
 
-        case 'H':
+        حالة 'H':
           ++s;
-          fmt = HFLOATING_POINT;
-          size = sizeof (float16);
-          break;
+          fmt = HFLOATING_نقطو;
+          سائيز = حجم (float16);
+          اكسر;
 
-        case 'F':
+        حالة 'F':
           ++s;
-          size = sizeof (float);
-          break;
+          سائيز = حجم (عائم);
+          اكسر;
 
-        case 'D':
+        حالة 'D':
           ++s;
-          size = sizeof (double);
-          break;
+          سائيز = حجم (مزدوج);
+          اكسر;
 
-        case 'L':
+        حالة 'L':
           ++s;
-          size = sizeof (long double);
-          break;
+          سائيز = حجم (ڊگهو مزدوج);
+          اكسر;
 
-        default:
-          if (! simple_strtoi (s, &p, &size))
+        افتراضي:
+          إذا (! simple_strtoi (s, &p, &سائيز))
             {
               /* The integer at P in S would overflow an int.
                  A digit string that long is sufficiently odd looking
                  that the following diagnostic is sufficient.  */
               error (0, 0, _("invalid type string %s"), quote (s_orig));
-              return false;
+              أرجع false;
             }
-          if (p == s)
-            size = sizeof (double);
-          else
+          إذا (p == s)
+            سائيز = حجم (مزدوج);
+          وإلا
             {
-              if (countof (fp_type_size) <= size
-                  || fp_type_size[size] == NO_SIZE
+              إذا (countof (fp_type_سائيز) <= سائيز
+                  || fp_type_سائيز[سائيز] == NO_سائيز
                   || (! FLOAT16_SUPPORTED && BF16_SUPPORTED
-                      && size == sizeof (bfloat16)))
+                      && سائيز == حجم (bfloat16)))
                 {
                   error (0, 0,
                          _("invalid type string %s;\n"
                            "this system doesn't provide a %d-byte"
                            " floating point type"),
-                         quote (s_orig), size);
-                  return false;
+                         quote (s_orig), سائيز);
+                  أرجع false;
                 }
               s = p;
             }
-          break;
+          اكسر;
         }
-      size_spec = fp_type_size[size];
+      سائيز_spec = fp_type_سائيز[سائيز];
 
-      if ((! FLOAT16_SUPPORTED && fmt == HFLOATING_POINT)
-          || (! BF16_SUPPORTED && fmt == BFLOATING_POINT))
+      إذا ((! FLOAT16_SUPPORTED && fmt == HFLOATING_نقطو)
+          || (! BF16_SUPPORTED && fmt == BFLOATING_نقطو))
       {
         error (0, 0,
                _("this system doesn't provide a %s floating point type"),
                quote (s_orig));
-        return false;
+        أرجع false;
       }
 
       {
-        struct lconv const *locale = localeconv ();
-        idx_t decimal_point_len =
-          (locale->decimal_point[0] ? strlen (locale->decimal_point) : 1);
+        بنية lconv ثابت *locale = localeconv ();
+        idx_t decimal_نقطو_len =
+          (locale->decimal_نقطو[0] ? لڙي_ڊيگهه (locale->decimal_نقطو) : 1);
 
-        if (size_spec == FLOAT_DOUBLE)
+        إذا (سائيز_spec == FLOAT_DOUBLE)
           {
             print_function = print_double;
-            field_width = DBL_STRLEN_BOUND_L (decimal_point_len);
+            ميدان_ويڪر = DBL_STRLEN_BOUND_L (decimal_نقطو_len);
           }
-        else if (FLOAT_SINGLE < FLOAT_DOUBLE && size_spec == FLOAT_SINGLE)
+        وإلا إذا (FLOAT_SINGLE < FLOAT_DOUBLE && سائيز_spec == FLOAT_SINGLE)
           {
             print_function = print_float;
-            field_width = FLT_STRLEN_BOUND_L (decimal_point_len);
+            ميدان_ويڪر = FLT_STRLEN_BOUND_L (decimal_نقطو_len);
           }
-        else if (FLOAT_HALF < FLOAT_SINGLE && size_spec == FLOAT_HALF)
+        وإلا إذا (FLOAT_HALF < FLOAT_SINGLE && سائيز_spec == FLOAT_HALF)
           {
-            print_function = fmt == BFLOATING_POINT
+            print_function = fmt == BFLOATING_نقطو
                              ? print_bfloat : print_halffloat;
-            field_width = FLT_STRLEN_BOUND_L (decimal_point_len);
+            ميدان_ويڪر = FLT_STRLEN_BOUND_L (decimal_نقطو_len);
           }
-        else if (FLOAT_DOUBLE < FLOAT_LONG_DOUBLE
-                 && size_spec == FLOAT_LONG_DOUBLE)
+        وإلا إذا (FLOAT_DOUBLE < FLOAT_LONG_DOUBLE
+                 && سائيز_spec == FLOAT_LONG_DOUBLE)
           {
             print_function = print_long_double;
-            field_width = LDBL_STRLEN_BOUND_L (decimal_point_len);
+            ميدان_ويڪر = LDBL_STRLEN_BOUND_L (decimal_نقطو_len);
           }
-        else
+        وإلا
           affirm (false);
 
-        break;
+        اكسر;
       }
 
-    case 'a':
+    حالة 'a':
       ++s;
       fmt = NAMED_CHARACTER;
-      size_spec = CHAR;
+      سائيز_spec = CHAR;
       print_function = print_named_ascii;
-      field_width = 3;
-      break;
+      ميدان_ويڪر = 3;
+      اكسر;
 
-    case 'c':
+    حالة 'c':
       ++s;
       fmt = CHARACTER;
-      size_spec = CHAR;
+      سائيز_spec = CHAR;
       print_function = print_ascii;
-      field_width = 3;
-      break;
+      ميدان_ويڪر = 3;
+      اكسر;
 
-    default:
+    افتراضي:
       error (0, 0, _("invalid character '%c' in type string %s"),
              *s, quote (s_orig));
-      return false;
+      أرجع false;
     }
 
-  tspec->size = size_spec;
+  tspec->سائيز = سائيز_spec;
   tspec->fmt = fmt;
   tspec->print_function = print_function;
 
-  tspec->field_width = field_width;
-  tspec->hexl_mode_trailer = (*s == 'z');
-  if (tspec->hexl_mode_trailer)
+  tspec->ميدان_ويڪر = ميدان_ويڪر;
+  tspec->hexl_گهڻائي_trailer = (*s == 'z');
+  إذا (tspec->hexl_گهڻائي_trailer)
     s++;
 
-  *next = s;
-  return true;
+  *ايندڙ = s;
+  أرجع true;
 }
 
 /* Given a list of one or more input filenames FILE_LIST, set the global
@@ -1015,41 +1015,41 @@ decode_one_format (char const *s_orig, char const *s, char const **next,
    interpreted as standard input.  If any file open fails, give an error
    message and return false.  */
 
-static bool
-open_next_file (void)
+ساكن bool
+open_ايندڙ_file (فراغ)
 {
   bool ok = true;
 
-  do
+  افعل
     {
-      input_filename = *file_list;
-      if (input_filename == NULL)
-        return ok;
+      داخلا_filename = *file_list;
+      إذا (داخلا_filename == عدم)
+        أرجع ok;
       ++file_list;
 
-      if (streq (input_filename, "-"))
+      إذا (streq (داخلا_filename, "-"))
         {
-          input_filename = _("standard input");
-          in_stream = stdin;
+          داخلا_filename = _("standard input");
+          اندريون_وهڪرو = stdin;
           have_read_stdin = true;
-          xset_binary_mode (STDIN_FILENO, O_BINARY);
+          xset_ٻٽو_گهڻائي (STDIN_FILENO, O_ٻٽو);
         }
-      else
+      وإلا
         {
-          in_stream = fopen (input_filename, (O_BINARY ? "rb" : "r"));
-          if (in_stream == NULL)
+          اندريون_وهڪرو = fopen (داخلا_filename, (O_ٻٽو ? "rb" : "r"));
+          إذا (اندريون_وهڪرو == عدم)
             {
-              error (0, errno, "%s", quotef (input_filename));
+              error (0, errno, "%s", quotef (داخلا_filename));
               ok = false;
             }
         }
     }
-  while (in_stream == NULL);
+  طالما (اندريون_وهڪرو == عدم);
 
-  if (0 <= end_offset && !flag_dump_strings)
-    setvbuf (in_stream, NULL, _IONBF, 0);
+  إذا (0 <= پڇاڙي_وٿي && !flag_dump_لڙيون)
+    setvbuf (اندريون_وهڪرو, عدم, _IONBF, 0);
 
-  return ok;
+  أرجع ok;
 }
 
 /* Test whether there have been errors on in_stream, and close it if
@@ -1059,62 +1059,62 @@ open_next_file (void)
    have occurred.  IN_ERRNO, if nonzero, is the error number
    corresponding to the most recent action for IN_STREAM.  */
 
-static bool
-check_and_close (int in_errno)
+ساكن bool
+check_and_close (صحيح اندريون_errno)
 {
   bool ok = true;
 
-  if (in_stream != NULL)
+  إذا (اندريون_وهڪرو != عدم)
     {
-      if (!ferror (in_stream))
-        in_errno = 0;
-      if (streq (file_list[-1], "-"))
-        clearerr (in_stream);
-      else if (fclose (in_stream) != 0 && !in_errno)
-        in_errno = errno;
-      if (in_errno)
+      إذا (!ferror (اندريون_وهڪرو))
+        اندريون_errno = 0;
+      إذا (streq (file_list[-1], "-"))
+        clearerr (اندريون_وهڪرو);
+      وإلا إذا (fclose (اندريون_وهڪرو) != 0 && !اندريون_errno)
+        اندريون_errno = errno;
+      إذا (اندريون_errno)
         {
-          error (0, in_errno, "%s", quotef (input_filename));
+          error (0, اندريون_errno, "%s", quotef (داخلا_filename));
           ok = false;
         }
 
-      in_stream = NULL;
+      اندريون_وهڪرو = عدم;
     }
 
-  if (ferror (stdout))
+  إذا (ferror (stdout))
     {
       error (0, 0, _("write error"));
       ok = false;
     }
 
-  return ok;
+  أرجع ok;
 }
 
 /* Decode the modern od format string S.  Append the decoded
    representation to the global array SPEC, reallocating SPEC if
    necessary.  Return true if S is valid.  */
 
-static bool ATTRIBUTE_NONNULL ()
-decode_format_string (char const *s)
+ساكن bool ATTRIBUTE_NONNULL ()
+decode_format_string (حرف ثابت *s)
 {
-  char const *s_orig = s;
+  حرف ثابت *s_orig = s;
 
-  while (*s != '\0')
+  طالما (*s != '\0')
     {
-      char const *next;
+      حرف ثابت *ايندڙ;
 
-      if (n_specs_allocated <= n_specs)
-        spec = xpalloc (spec, &n_specs_allocated, 1, -1, sizeof *spec);
+      إذا (n_specs_allocated <= n_specs)
+        spec = xpalloc (spec, &n_specs_allocated, 1, -1, حجم *spec);
 
-      if (! decode_one_format (s_orig, s, &next, &spec[n_specs]))
-        return false;
+      إذا (! decode_one_format (s_orig, s, &ايندڙ, &spec[n_specs]))
+        أرجع false;
 
-      affirm (s != next);
-      s = next;
+      affirm (s != ايندڙ);
+      s = ايندڙ;
       ++n_specs;
     }
 
-  return true;
+  أرجع true;
 }
 
 /* Given a list of one or more input filenames FILE_LIST, set the global
@@ -1124,18 +1124,18 @@ decode_format_string (char const *s)
    false.  When possible, use seek rather than read operations to
    advance IN_STREAM.  */
 
-static bool
+ساكن bool
 skip (intmax_t n_skip)
 {
   bool ok = true;
-  int in_errno = 0;
+  صحيح اندريون_errno = 0;
 
-  if (n_skip == 0)
-    return true;
+  إذا (n_skip == 0)
+    أرجع true;
 
-  while (in_stream != NULL)	/* EOF.  */
+  طالما (اندريون_وهڪرو != عدم)	/* EOF.  */
     {
-      struct stat file_stats;
+      بنية stat file_stats;
 
       /* First try seeking.  For large offsets, this extra work is
          worthwhile.  If the offset is below some threshold it may be
@@ -1147,7 +1147,7 @@ skip (intmax_t n_skip)
              Try to do that by getting file's size using fstat.
              But that will work only for regular files.  */
 
-      if (fstat (fileno (in_stream), &file_stats) == 0)
+      إذا (fstat (fileno (اندريون_وهڪرو), &file_stats) == 0)
         {
           /* The st_size field is valid for regular files.
              If the number of bytes left to skip is larger than
@@ -1156,144 +1156,144 @@ skip (intmax_t n_skip)
              when st_size is no greater than the block size, because
              some kernels report nonsense small file sizes for
              proc-like file systems.  */
-          if (S_ISREG (file_stats.st_mode)
-              && STP_BLKSIZE (&file_stats) < file_stats.st_size)
+          إذا (S_ISREG (file_stats.st_گهڻائي)
+              && STP_BLKSIZE (&file_stats) < file_stats.st_سائيز)
             {
-              if (file_stats.st_size < n_skip)
-                n_skip -= file_stats.st_size;
-              else
+              إذا (file_stats.st_سائيز < n_skip)
+                n_skip -= file_stats.st_سائيز;
+              وإلا
                 {
-                  if (fseeko (in_stream, n_skip, SEEK_CUR) != 0)
+                  إذا (fseeko (اندريون_وهڪرو, n_skip, SEEK_CUR) != 0)
                     {
-                      in_errno = errno;
+                      اندريون_errno = errno;
                       ok = false;
                     }
                   n_skip = 0;
                 }
             }
 
-          else if (! (S_ISREG (file_stats.st_mode)
+          وإلا إذا (! (S_ISREG (file_stats.st_گهڻائي)
                       || S_TYPEISSHM (&file_stats)
                       || S_TYPEISTMO (&file_stats))
-                   && fseeko (in_stream, n_skip, SEEK_CUR) == 0)
+                   && fseeko (اندريون_وهڪرو, n_skip, SEEK_CUR) == 0)
             n_skip = 0;
 
           /* If it's neither a seekable file with unusable size, nor a
              regular file so large it can't be in a proc-like file system,
              position the file pointer by reading.  */
 
-          else
+          وإلا
             {
-              char buf[BUFSIZ];
-              idx_t n_bytes_read, n_bytes_to_read = BUFSIZ;
+              حرف buf[BUFSIZ];
+              idx_t n_بائيٽون_read, n_بائيٽون_منزل_read = BUFSIZ;
 
-              while (0 < n_skip)
+              طالما (0 < n_skip)
                 {
-                  if (n_skip < n_bytes_to_read)
-                    n_bytes_to_read = n_skip;
-                  n_bytes_read = fread (buf, 1, n_bytes_to_read, in_stream);
-                  n_skip -= n_bytes_read;
-                  if (n_bytes_read != n_bytes_to_read)
+                  إذا (n_skip < n_بائيٽون_منزل_read)
+                    n_بائيٽون_منزل_read = n_skip;
+                  n_بائيٽون_read = fread (buf, 1, n_بائيٽون_منزل_read, اندريون_وهڪرو);
+                  n_skip -= n_بائيٽون_read;
+                  إذا (n_بائيٽون_read != n_بائيٽون_منزل_read)
                     {
-                      if (ferror (in_stream))
+                      إذا (ferror (اندريون_وهڪرو))
                         {
-                          in_errno = errno;
+                          اندريون_errno = errno;
                           ok = false;
                           n_skip = 0;
-                          break;
+                          اكسر;
                         }
-                      if (feof (in_stream))
-                        break;
+                      إذا (feof (اندريون_وهڪرو))
+                        اكسر;
                     }
                 }
             }
 
-          if (n_skip == 0)
-            break;
+          إذا (n_skip == 0)
+            اكسر;
         }
 
-      else   /* cannot fstat() file */
+      وإلا   /* cannot fstat() file */
         {
-          error (0, errno, "%s", quotef (input_filename));
+          error (0, errno, "%s", quotef (داخلا_filename));
           ok = false;
         }
 
-      ok &= check_and_close (in_errno);
+      ok &= check_and_close (اندريون_errno);
 
-      ok &= open_next_file ();
+      ok &= open_ايندڙ_file ();
     }
 
-  if (n_skip != 0)
+  إذا (n_skip != 0)
     error (EXIT_FAILURE, 0, _("cannot skip past end of combined input"));
 
-  return ok;
+  أرجع ok;
 }
 
-static void
-format_address_none (MAYBE_UNUSED intmax_t address,
-                     MAYBE_UNUSED char c)
+ساكن فراغ
+format_پتو_none (MAYBE_اڻ_استعمال_ٿيل intmax_t پتو,
+                     MAYBE_اڻ_استعمال_ٿيل حرف c)
 {
 }
 
-static void
-format_address_std (intmax_t address, char c)
+ساكن فراغ
+format_پتو_std (intmax_t پتو, حرف c)
 {
-  char buf[MAX_ADDRESS_LENGTH + 2];
-  char *p = buf + sizeof buf;
-  char const *pbound;
+  حرف buf[MAX_پتو_ڊيگهائي + 2];
+  حرف *p = buf + حجم buf;
+  حرف ثابت *pbound;
 
   *--p = '\0';
   *--p = c;
-  pbound = p - address_pad_len;
+  pbound = p - پتو_pad_len;
 
   /* Use a special case of the code for each base.  This is measurably
      faster than generic code.  */
-  switch (address_base)
+  بدل (پتو_بنياد)
     {
-    case 8:
-      do
-        *--p = '0' + (address & 7);
-      while ((address >>= 3) != 0);
-      break;
+    حالة 8:
+      افعل
+        *--p = '0' + (پتو & 7);
+      طالما ((پتو >>= 3) != 0);
+      اكسر;
 
-    case 10:
-      do
-        *--p = '0' + (address % 10);
-      while ((address /= 10) != 0);
-      break;
+    حالة 10:
+      افعل
+        *--p = '0' + (پتو % 10);
+      طالما ((پتو /= 10) != 0);
+      اكسر;
 
-    case 16:
-      do
-        *--p = "0123456789abcdef"[address & 15];
-      while ((address >>= 4) != 0);
-      break;
+    حالة 16:
+      افعل
+        *--p = "0123456789abcdef"[پتو & 15];
+      طالما ((پتو >>= 4) != 0);
+      اكسر;
     }
 
-  while (pbound < p)
+  طالما (pbound < p)
     *--p = '0';
 
   fputs (p, stdout);
 }
 
-static void
-format_address_paren (intmax_t address, char c)
+ساكن فراغ
+format_پتو_paren (intmax_t پتو, حرف c)
 {
-  putchar ('(');
-  format_address_std (address, ')');
-  if (c)
-    putchar (c);
+  اکر_لکو ('(');
+  format_پتو_std (پتو, ')');
+  إذا (c)
+    اکر_لکو (c);
 }
 
-static void
-format_address_label (intmax_t address, char c)
+ساكن فراغ
+format_پتو_label (intmax_t پتو, حرف c)
 {
-  format_address_std (address, ' ');
+  format_پتو_std (پتو, ' ');
 
   intmax_t addr;
-  if (ckd_add (&addr, address, pseudo_offset))
+  إذا (ckd_جوڙيو (&addr, پتو, pseudo_وٿي))
     error (EXIT_FAILURE, 0, _("pseudo address too large for input"));
 
-  format_address_paren (addr, c);
+  format_پتو_paren (addr, c);
 }
 
 /* Write N_BYTES bytes from CURR_BLOCK to standard output once for each
@@ -1306,58 +1306,58 @@ format_address_label (intmax_t address, char c)
    the blocks PREV_BLOCK and CURR_BLOCK only when N_BYTES == BYTES_PER_BLOCK.
    That condition may be false only for the last input block.  */
 
-static void
-write_block (intmax_t current_offset, idx_t n_bytes,
-             char const *prev_block, char const *curr_block)
+ساكن فراغ
+write_بلاڪ (intmax_t current_وٿي, idx_t n_بائيٽون,
+             حرف ثابت *prev_بلاڪ, حرف ثابت *curr_بلاڪ)
 {
-  static bool first = true;
-  static bool prev_pair_equal = false;
+  ساكن bool پهريون = true;
+  ساكن bool prev_pair_equal = false;
 
-  if (abbreviate_duplicate_blocks
-      && !first && n_bytes == bytes_per_block
-      && memeq (prev_block, curr_block, bytes_per_block))
+  إذا (abbreviate_duplicate_بلاڪون
+      && !پهريون && n_بائيٽون == بائيٽون_في_بلاڪ
+      && memeq (prev_بلاڪ, curr_بلاڪ, بائيٽون_في_بلاڪ))
     {
-      if (prev_pair_equal)
+      إذا (prev_pair_equal)
         {
           /* The two preceding blocks were equal, and the current
              block is the same as the last one, so print nothing.  */
         }
-      else
+      وإلا
         {
-          printf ("*\n");
+          لکو ("*\n");
           prev_pair_equal = true;
         }
     }
-  else
+  وإلا
     {
       prev_pair_equal = false;
-      for (idx_t i = 0; i < n_specs; i++)
+      لكل (idx_t i = 0; i < n_specs; i++)
         {
-          int datum_width = width_bytes[spec[i].size];
-          idx_t fields_per_block = bytes_per_block / datum_width;
-          idx_t blank_fields = (bytes_per_block - n_bytes) / datum_width;
-          if (i == 0)
-            format_address (current_offset, '\0');
-          else
-            print_n_spaces (address_pad_len);
-          (*spec[i].print_function) (fields_per_block, blank_fields,
-                                     curr_block, spec[i].fmt_string,
-                                     spec[i].field_width, spec[i].pad_width);
-          if (spec[i].hexl_mode_trailer)
+          صحيح datum_ويڪر = ويڪر_بائيٽون[spec[i].سائيز];
+          idx_t fields_في_بلاڪ = بائيٽون_في_بلاڪ / datum_ويڪر;
+          idx_t blank_fields = (بائيٽون_في_بلاڪ - n_بائيٽون) / datum_ويڪر;
+          إذا (i == 0)
+            format_پتو (current_وٿي, '\0');
+          وإلا
+            print_n_spaces (پتو_pad_len);
+          (*spec[i].print_function) (fields_في_بلاڪ, blank_fields,
+                                     curr_بلاڪ, spec[i].fmt_string,
+                                     spec[i].ميدان_ويڪر, spec[i].pad_ويڪر);
+          إذا (spec[i].hexl_گهڻائي_trailer)
             {
               /* Space-pad out to full line width, then dump the trailer.  */
-              int field_width = spec[i].field_width;
-              for (idx_t f = 0; f < blank_fields; f++)
-                print_n_spaces (field_width);
-              idx_t pad_width = pad_at (fields_per_block, blank_fields,
-                                        spec[i].pad_width);
-              print_n_spaces (pad_width);
-              dump_hexl_mode_trailer (n_bytes, curr_block);
+              صحيح ميدان_ويڪر = spec[i].ميدان_ويڪر;
+              لكل (idx_t f = 0; f < blank_fields; f++)
+                print_n_spaces (ميدان_ويڪر);
+              idx_t pad_ويڪر = pad_at (fields_في_بلاڪ, blank_fields,
+                                        spec[i].pad_ويڪر);
+              print_n_spaces (pad_ويڪر);
+              dump_hexl_گهڻائي_trailer (n_بائيٽون, curr_بلاڪ);
             }
-          putchar ('\n');
+          اکر_لکو ('\n');
         }
     }
-  first = false;
+  پهريون = false;
 }
 
 /* Read a single byte into *C from the concatenation of the input files
@@ -1371,20 +1371,20 @@ write_block (intmax_t current_offset, idx_t n_bytes,
    set *C to EOF and return.  Subsequent calls do likewise.  Return
    true if successful.  */
 
-static bool
-read_char (int *c)
+ساكن bool
+read_char (صحيح *c)
 {
   bool ok = true;
 
   *c = EOF;
 
-  while (in_stream && (*c = getc (in_stream)) < 0)
+  طالما (اندريون_وهڪرو && (*c = getc (اندريون_وهڪرو)) < 0)
     {
       ok &= check_and_close (errno);
-      ok &= open_next_file ();
+      ok &= open_ايندڙ_file ();
     }
 
-  return ok;
+  أرجع ok;
 }
 
 /* Read N bytes into BLOCK from the concatenation of the input files
@@ -1401,57 +1401,57 @@ read_char (int *c)
    closed.  If there is an error, give a message but continue reading
    as usual and return false.  Otherwise return true.  */
 
-static bool
-read_block (idx_t n, char *block, idx_t *n_bytes_in_buffer)
+ساكن bool
+read_بلاڪ (idx_t n, حرف *بلاڪ, idx_t *n_بائيٽون_اندريون_بفر)
 {
   bool ok = true;
 
-  affirm (0 < n && n <= bytes_per_block);
+  affirm (0 < n && n <= بائيٽون_في_بلاڪ);
 
-  *n_bytes_in_buffer = 0;
+  *n_بائيٽون_اندريون_بفر = 0;
 
-  while (in_stream != NULL)	/* EOF.  */
+  طالما (اندريون_وهڪرو != عدم)	/* EOF.  */
     {
-      idx_t n_needed = n - *n_bytes_in_buffer;
-      idx_t n_read = fread (block + *n_bytes_in_buffer,
-                            1, n_needed, in_stream);
+      idx_t n_needed = n - *n_بائيٽون_اندريون_بفر;
+      idx_t n_read = fread (بلاڪ + *n_بائيٽون_اندريون_بفر,
+                            1, n_needed, اندريون_وهڪرو);
 
-      *n_bytes_in_buffer += n_read;
+      *n_بائيٽون_اندريون_بفر += n_read;
 
-      if (n_read == n_needed)
-        break;
+      إذا (n_read == n_needed)
+        اكسر;
 
       ok &= check_and_close (errno);
 
-      ok &= open_next_file ();
+      ok &= open_ايندڙ_file ();
     }
 
-  return ok;
+  أرجع ok;
 }
 
 /* Return the least common multiple of the sizes associated
    with the format specs.  */
 
-ATTRIBUTE_PURE
-static int
-get_lcm (void)
+ATTRIBUTE_خالص
+ساكن صحيح
+get_lcm (فراغ)
 {
-  int l_c_m = 1;
+  صحيح l_c_m = 1;
 
-  for (idx_t i = 0; i < n_specs; i++)
-    l_c_m = lcm (l_c_m, width_bytes[spec[i].size]);
-  return l_c_m;
+  لكل (idx_t i = 0; i < n_specs; i++)
+    l_c_m = lcm (l_c_m, ويڪر_بائيٽون[spec[i].سائيز]);
+  أرجع l_c_m;
 }
 
 /* Act like xstrtoimax (NPTR, NULL, BASE, VAL, VALID_SUFFIXES),
    except reject negative values, and *VAL may be set if
    LONGINT_INVALID is returned.  */
-static strtol_error
-xstr2nonneg (char const *restrict nptr, int base, intmax_t *val,
-             char const *restrict valid_suffixes)
+ساكن strtol_error
+xstr2nonneg (حرف ثابت *محدود nptr, صحيح بنياد_2, intmax_t *val,
+             حرف ثابت *محدود valid_suffixes)
 {
-  strtol_error s_err = xstrtoimax (nptr, NULL, base, val, valid_suffixes);
-  return s_err != LONGINT_INVALID && *val < 0 ? LONGINT_INVALID : s_err;
+  strtol_error s_err = xstrtoimax (nptr, عدم, بنياد_2, val, valid_suffixes);
+  أرجع s_err != LONGINT_INVALID && *val < 0 ? LONGINT_INVALID : s_err;
 }
 
 /* If STR is a valid traditional offset specification with an optional
@@ -1460,43 +1460,43 @@ xstr2nonneg (char const *restrict nptr, int base, intmax_t *val,
    represented, diagnose the problem and exit.  Otherwise return false
    and possibly set *OFFSET.  */
 
-static bool
-parse_old_offset (char *str, intmax_t *offset)
+ساكن bool
+parse_old_وٿي (حرف *str, intmax_t *وٿي)
 {
   /* Skip over any leading '+'.  */
-  char *s = str + (str[0] == '+');
+  حرف *s = str + (str[0] == '+');
 
-  if (! c_isdigit (s[0]))
-    return false;
+  إذا (! c_isdigit (s[0]))
+    أرجع false;
 
   /* Determine the radix for S.  If there is a '.', followed first by
      optional 'b' or (undocumented) 'B' and then by end of string,
      it's decimal, otherwise, if the string begins with '0X' or '0x',
      it's hexadecimal, else octal.  */
-  char *dot = strchr (s, '.');
-  if (dot && dot[(dot[1] == 'b' || dot[1] == 'B') + 1])
-    dot = NULL;
-  int radix = dot ? 10 : s[0] == '0' && (s[1] == 'x' || s[1] == 'X') ? 16 : 8;
+  حرف *dot = strchr (s, '.');
+  إذا (dot && dot[(dot[1] == 'b' || dot[1] == 'B') + 1])
+    dot = عدم;
+  صحيح radix = dot ? 10 : s[0] == '0' && (s[1] == 'x' || s[1] == 'X') ? 16 : 8;
 
-  if (dot)
+  إذا (dot)
     {
       /* Temporarily remove the '.' from the decimal string.  */
       dot[0] = dot[1];
       dot[1] = '\0';
     }
 
-  enum strtol_error s_err = xstr2nonneg (s, radix, offset, "bB");
+  تعداد strtol_error s_err = xstr2nonneg (s, radix, وٿي, "bB");
 
-  if (dot)
+  إذا (dot)
     {
       /* Restore the decimal string's original value.  */
       dot[1] = dot[0];
       dot[0] = '.';
     }
 
-  if (s_err == LONGINT_OVERFLOW)
+  إذا (s_err == LONGINT_حد_کان_مٿي)
     error (EXIT_FAILURE, ERANGE, "%s", quotef (str));
-  return s_err == LONGINT_OK;
+  أرجع s_err == LONGINT_OK;
 }
 
 /* Read a chunk of size BYTES_PER_BLOCK from the input files, write the
@@ -1511,65 +1511,65 @@ parse_old_offset (char *str, intmax_t *offset)
    check_and_close, and if any was false, return false.
    Otherwise, return true.  */
 
-static bool
-dump (void)
+ساكن bool
+dump (فراغ)
 {
-  char *block[2];
+  حرف *بلاڪ[2];
   bool idx = false;
   bool ok = true;
-  idx_t n_bytes_read;
+  idx_t n_بائيٽون_read;
 
-  block[0] = xinmalloc (1 + abbreviate_duplicate_blocks, bytes_per_block);
-  block[1] = block[0] + abbreviate_duplicate_blocks * bytes_per_block;
+  بلاڪ[0] = xinmalloc (1 + abbreviate_duplicate_بلاڪون, بائيٽون_في_بلاڪ);
+  بلاڪ[1] = بلاڪ[0] + abbreviate_duplicate_بلاڪون * بائيٽون_في_بلاڪ;
 
-  intmax_t current_offset = n_bytes_to_skip;
+  intmax_t current_وٿي = n_بائيٽون_منزل_skip;
 
-  do
+  افعل
     {
       intmax_t needed_bound
-        = end_offset < 0 ? INTMAX_MAX : end_offset - current_offset;
-      if (needed_bound <= 0)
+        = پڇاڙي_وٿي < 0 ? INTMAX_MAX : پڇاڙي_وٿي - current_وٿي;
+      إذا (needed_bound <= 0)
         {
-          n_bytes_read = 0;
-          break;
+          n_بائيٽون_read = 0;
+          اكسر;
         }
-      idx_t n_needed = MIN (bytes_per_block, needed_bound);
-      ok &= read_block (n_needed, block[idx], &n_bytes_read);
-      if (n_bytes_read < bytes_per_block)
-        break;
-      affirm (n_bytes_read == bytes_per_block);
-      write_block (current_offset, n_bytes_read,
-                   block[!idx], block[idx]);
-      if (ferror (stdout))
+      idx_t n_needed = MIN (بائيٽون_في_بلاڪ, needed_bound);
+      ok &= read_بلاڪ (n_needed, بلاڪ[idx], &n_بائيٽون_read);
+      إذا (n_بائيٽون_read < بائيٽون_في_بلاڪ)
+        اكسر;
+      affirm (n_بائيٽون_read == بائيٽون_في_بلاڪ);
+      write_بلاڪ (current_وٿي, n_بائيٽون_read,
+                   بلاڪ[!idx], بلاڪ[idx]);
+      إذا (ferror (stdout))
         ok = false;
-      current_offset += n_bytes_read;
+      current_وٿي += n_بائيٽون_read;
       idx = !idx;
     }
-  while (ok);
+  طالما (ok);
 
-  if (n_bytes_read > 0)
+  إذا (n_بائيٽون_read > 0)
     {
-      int l_c_m = get_lcm ();
+      صحيح l_c_m = get_lcm ();
 
       /* Ensure zero-byte padding up to the smallest multiple of l_c_m that
          is at least as large as n_bytes_read.  */
-      idx_t bytes_to_write = (n_bytes_read + l_c_m - 1
-                              - (n_bytes_read + l_c_m - 1) % l_c_m);
+      idx_t بائيٽون_منزل_write = (n_بائيٽون_read + l_c_m - 1
+                              - (n_بائيٽون_read + l_c_m - 1) % l_c_m);
 
-      memset (block[idx] + n_bytes_read, 0, bytes_to_write - n_bytes_read);
-      write_block (current_offset, n_bytes_read, block[!idx], block[idx]);
-      current_offset += n_bytes_read;
+      memset (بلاڪ[idx] + n_بائيٽون_read, 0, بائيٽون_منزل_write - n_بائيٽون_read);
+      write_بلاڪ (current_وٿي, n_بائيٽون_read, بلاڪ[!idx], بلاڪ[idx]);
+      current_وٿي += n_بائيٽون_read;
     }
 
-  if (ok || current_offset)
-    format_address (current_offset, '\n');
+  إذا (ok || current_وٿي)
+    format_پتو (current_وٿي, '\n');
 
-  if (0 <= end_offset && end_offset <= current_offset)
+  إذا (0 <= پڇاڙي_وٿي && پڇاڙي_وٿي <= current_وٿي)
     ok &= check_and_close (0);
 
-  free (block[0]);
+  حرر (بلاڪ[0]);
 
-  return ok;
+  أرجع ok;
 }
 
 /* STRINGS mode.  Find each "string constant" in the input.
@@ -1578,230 +1578,230 @@ dump (void)
    Based on a function written by Richard Stallman for a
    traditional version of od.  Return true if successful.  */
 
-static bool
-dump_strings (void)
+ساكن bool
+dump_لڙيون (فراغ)
 {
   idx_t bufsize = MAX (100, string_min + 1);
-  char *buf = ximalloc (bufsize);
-  intmax_t address = n_bytes_to_skip;
+  حرف *buf = ximalloc (bufsize);
+  intmax_t پتو = n_بائيٽون_منزل_skip;
   bool ok = true;
 
-  while (true)
+  طالما (true)
     {
       idx_t i = 0;
-      int c = 1;  /* Init to 1 so can distinguish if NUL read.  */
+      صحيح c = 1;  /* Init to 1 so can distinguish if NUL read.  */
 
-      if (0 <= end_offset
-          && (end_offset < string_min || end_offset - string_min < address))
-        break;
+      إذا (0 <= پڇاڙي_وٿي
+          && (پڇاڙي_وٿي < string_min || پڇاڙي_وٿي - string_min < پتو))
+        اكسر;
 
       /* Store consecutive printable characters to BUF.  */
-      while (! (0 <= end_offset && end_offset <= address))
+      طالما (! (0 <= پڇاڙي_وٿي && پڇاڙي_وٿي <= پتو))
         {
-          if (i == bufsize - 1)
-            buf = xpalloc (buf, &bufsize, 1, -1, sizeof *buf);
+          إذا (i == bufsize - 1)
+            buf = xpalloc (buf, &bufsize, 1, -1, حجم *buf);
           ok &= read_char (&c);
-          if (c < 0)
+          إذا (c < 0)
             {
-              free (buf);
-              return ok;
+              حرر (buf);
+              أرجع ok;
             }
-          address++;
+          پتو++;
           buf[i++] = c;
-          if (c == '\0')
-            break;		/* Print this string.  */
-          if (! isprint (c))
+          إذا (c == '\0')
+            اكسر;		/* Print this string.  */
+          إذا (! isprint (c))
             {
               c = -1;		/* Give up on this string.  */
-              break;
+              اكسر;
             }
         }
 
-      if (c < 0 || i - !c < string_min)
-        continue;
+      إذا (c < 0 || i - !c < string_min)
+        استمر;
 
       buf[i] = 0;
 
       /* If we get here, the string is all printable, so print it.  */
 
-      format_address (address - i, ' ');
+      format_پتو (پتو - i, ' ');
 
-      for (i = 0; (c = buf[i]); i++)
+      لكل (i = 0; (c = buf[i]); i++)
         {
-          switch (c)
+          بدل (c)
             {
-            case '\a':
+            حالة '\a':
               fputs ("\\a", stdout);
-              break;
+              اكسر;
 
-            case '\b':
+            حالة '\b':
               fputs ("\\b", stdout);
-              break;
+              اكسر;
 
-            case '\f':
+            حالة '\f':
               fputs ("\\f", stdout);
-              break;
+              اكسر;
 
-            case '\n':
+            حالة '\n':
               fputs ("\\n", stdout);
-              break;
+              اكسر;
 
-            case '\r':
+            حالة '\r':
               fputs ("\\r", stdout);
-              break;
+              اكسر;
 
-            case '\t':
+            حالة '\t':
               fputs ("\\t", stdout);
-              break;
+              اكسر;
 
-            case '\v':
+            حالة '\v':
               fputs ("\\v", stdout);
-              break;
+              اكسر;
 
-            default:
+            افتراضي:
               putc (c, stdout);
             }
         }
-      putchar ('\n');
+      اکر_لکو ('\n');
     }
 
   /* We reach this point only if we search through
      (max_bytes_to_format - string_min) bytes before reaching EOF.  */
 
-  free (buf);
+  حرر (buf);
 
   ok &= check_and_close (0);
-  return ok;
+  أرجع ok;
 }
 
-int
-main (int argc, char **argv)
+صحيح
+مکيه (صحيح argc, حرف **argv)
 {
-  int n_files;
-  int l_c_m;
-  idx_t desired_width = 0;
+  صحيح n_files;
+  صحيح l_c_m;
+  idx_t desired_ويڪر = 0;
   bool modern = false;
   bool ok = true;
-  idx_t width_per_block = 0;
-  static char const multipliers[] = "bEGKkMmPQRTYZ0";
+  idx_t ويڪر_في_بلاڪ = 0;
+  ساكن حرف ثابت multipliers[] = "bEGKkMmPQRTYZ0";
 
   /* The maximum number of bytes that will be formatted.
      If negative, there is no limit.  */
-  intmax_t max_bytes_to_format = -1;
+  intmax_t max_بائيٽون_منزل_format = -1;
 
   /* The old-style 'pseudo starting address' to be printed in parentheses
      after any true address.  */
-  intmax_t pseudo_start IF_LINT ( = 0);
+  intmax_t pseudo_شروعات IF_LINT ( = 0);
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  سيٽ_پروگرام_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while (true)
+  طالما (true)
     {
       intmax_t tmp;
-      enum strtol_error s_err;
-      int oi = -1;
-      int c = getopt_long (argc, argv, short_options, long_options, &oi);
-      if (c == -1)
-        break;
+      تعداد strtol_error s_err;
+      صحيح oi = -1;
+      صحيح c = getopt_long (argc, argv, short_options, long_options, &oi);
+      إذا (c == -1)
+        اكسر;
 
-      switch (c)
+      بدل (c)
         {
-        case 'A':
+        حالة 'A':
           modern = true;
-          switch (optarg[0])
+          بدل (optarg[0])
             {
-            case 'd':
-              format_address = format_address_std;
-              address_base = 10;
-              address_pad_len = 7;
-              break;
-            case 'o':
-              format_address = format_address_std;
-              address_base = 8;
-              address_pad_len = 7;
-              break;
-            case 'x':
-              format_address = format_address_std;
-              address_base = 16;
-              address_pad_len = 6;
-              break;
-            case 'n':
-              format_address = format_address_none;
-              address_pad_len = 0;
-              break;
-            default:
+            حالة 'd':
+              format_پتو = format_پتو_std;
+              پتو_بنياد = 10;
+              پتو_pad_len = 7;
+              اكسر;
+            حالة 'o':
+              format_پتو = format_پتو_std;
+              پتو_بنياد = 8;
+              پتو_pad_len = 7;
+              اكسر;
+            حالة 'x':
+              format_پتو = format_پتو_std;
+              پتو_بنياد = 16;
+              پتو_pad_len = 6;
+              اكسر;
+            حالة 'n':
+              format_پتو = format_پتو_none;
+              پتو_pad_len = 0;
+              اكسر;
+            افتراضي:
               error (EXIT_FAILURE, 0,
                      _("invalid output address radix '%c';"
                        " it must be one character from [doxn]"),
                      optarg[0]);
-              break;
+              اكسر;
             }
-          break;
+          اكسر;
 
-        case 'j':
+        حالة 'j':
           modern = true;
-          s_err = xstr2nonneg (optarg, 0, &n_bytes_to_skip, multipliers);
-          if (s_err != LONGINT_OK)
+          s_err = xstr2nonneg (optarg, 0, &n_بائيٽون_منزل_skip, multipliers);
+          إذا (s_err != LONGINT_OK)
             xstrtol_fatal (s_err, oi, c, long_options, optarg);
-          break;
+          اكسر;
 
-        case 'N':
+        حالة 'N':
           modern = true;
-          s_err = xstr2nonneg (optarg, 0, &max_bytes_to_format, multipliers);
-          if (s_err != LONGINT_OK)
+          s_err = xstr2nonneg (optarg, 0, &max_بائيٽون_منزل_format, multipliers);
+          إذا (s_err != LONGINT_OK)
             xstrtol_fatal (s_err, oi, c, long_options, optarg);
-          break;
+          اكسر;
 
-        case 'S':
+        حالة 'S':
           modern = true;
-          if (optarg == NULL)
+          إذا (optarg == عدم)
             string_min = 3;
-          else
+          وإلا
             {
               s_err = xstr2nonneg (optarg, 0, &tmp, multipliers);
               /* The minimum string length + 1 must fit in idx_t,
                  since we may allocate a buffer of this size + 1.  */
               idx_t i;
-              if (s_err == LONGINT_OK && ckd_add (&i, tmp, 1))
-                s_err = LONGINT_OVERFLOW;
-              if (s_err != LONGINT_OK)
+              إذا (s_err == LONGINT_OK && ckd_جوڙيو (&i, tmp, 1))
+                s_err = LONGINT_حد_کان_مٿي;
+              إذا (s_err != LONGINT_OK)
                 xstrtol_fatal (s_err, oi, c, long_options, optarg);
               string_min = tmp;
             }
-          flag_dump_strings = true;
-          break;
+          flag_dump_لڙيون = true;
+          اكسر;
 
-        case 't':
+        حالة 't':
           modern = true;
           ok &= decode_format_string (optarg);
-          break;
+          اكسر;
 
-        case 'v':
+        حالة 'v':
           modern = true;
-          abbreviate_duplicate_blocks = false;
-          break;
+          abbreviate_duplicate_بلاڪون = false;
+          اكسر;
 
-        case TRADITIONAL_OPTION:
+        حالة TRADITIONAL_OPTION:
           traditional = true;
-          break;
+          اكسر;
 
-        case ENDIAN_OPTION:
-          switch (XARGMATCH ("--endian", optarg, endian_args, endian_types))
+        حالة ENDIAN_OPTION:
+          بدل (XARGMATCH ("--endian", optarg, endian_دليلون, endian_types))
             {
-            case endian_big:
-              input_swap = BYTE_ORDER != BIG_ENDIAN;
-              break;
-            case endian_little:
-              input_swap = BYTE_ORDER != LITTLE_ENDIAN;
-              break;
+            حالة endian_big:
+              داخلا_مٽا_سٽا = BYTE_ORDER != BIG_ENDIAN;
+              اكسر;
+            حالة endian_little:
+              داخلا_مٽا_سٽا = BYTE_ORDER != LITTLE_ENDIAN;
+              اكسر;
             }
-          break;
+          اكسر;
 
           /* The next several cases map the traditional format
              specification options to the corresponding modern format
@@ -1810,69 +1810,69 @@ main (int argc, char **argv)
              The obsolescent and undocumented formats are compatible
              with FreeBSD 4.10 od.  */
 
-#define CASE_OLD_ARG(old_char,new_string)		\
-        case old_char:					\
+#وصف_ڪريو CASE_OLD_ARG(old_char,new_string)		\
+        حالة old_char:					\
           ok &= decode_format_string (new_string);	\
-          break
+          اكسر
 
           CASE_OLD_ARG ('a', "a");
           CASE_OLD_ARG ('b', "o1");
           CASE_OLD_ARG ('c', "c");
           CASE_OLD_ARG ('D', "u4"); /* obsolescent and undocumented */
           CASE_OLD_ARG ('d', "u2");
-        case 'F': /* obsolescent and undocumented alias */
+        حالة 'F': /* obsolescent and undocumented alias */
           CASE_OLD_ARG ('e', "fD"); /* obsolescent and undocumented */
           CASE_OLD_ARG ('f', "fF");
-        case 'X': /* obsolescent and undocumented alias */
+        حالة 'X': /* obsolescent and undocumented alias */
           CASE_OLD_ARG ('H', "x4"); /* obsolescent and undocumented */
           CASE_OLD_ARG ('i', "dI");
-        case 'I': case 'L': /* obsolescent and undocumented aliases */
+        حالة 'I': حالة 'L': /* obsolescent and undocumented aliases */
           CASE_OLD_ARG ('l', "dL");
           CASE_OLD_ARG ('O', "o4"); /* obsolescent and undocumented */
-        case 'B': /* obsolescent and undocumented alias */
+        حالة 'B': /* obsolescent and undocumented alias */
           CASE_OLD_ARG ('o', "o2");
           CASE_OLD_ARG ('s', "d2");
-        case 'h': /* obsolescent and undocumented alias */
+        حالة 'h': /* obsolescent and undocumented alias */
           CASE_OLD_ARG ('x', "x2");
 
-#undef CASE_OLD_ARG
+#وصف_رد CASE_OLD_ARG
 
-        case 'w':
+        حالة 'w':
           modern = true;
-          if (optarg == NULL)
+          إذا (optarg == عدم)
             {
-              desired_width = 32;
+              desired_ويڪر = 32;
             }
-          else
+          وإلا
             {
               intmax_t w_tmp;
               s_err = xstr2nonneg (optarg, 10, &w_tmp, "");
-              if (s_err == LONGINT_OK)
+              إذا (s_err == LONGINT_OK)
                 {
-                  if (ckd_add (&desired_width, w_tmp, 0))
-                    s_err = LONGINT_OVERFLOW;
-                  else if (desired_width == 0)
+                  إذا (ckd_جوڙيو (&desired_ويڪر, w_tmp, 0))
+                    s_err = LONGINT_حد_کان_مٿي;
+                  وإلا إذا (desired_ويڪر == 0)
                     s_err = LONGINT_INVALID;
                 }
-              if (s_err != LONGINT_OK)
+              إذا (s_err != LONGINT_OK)
                 xstrtol_fatal (s_err, oi, c, long_options, optarg);
             }
-          break;
+          اكسر;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_نسخو_CHAR (پروگرام_NAME, AUTHORS);
 
-        default:
+        افتراضي:
           usage (EXIT_FAILURE);
-          break;
+          اكسر;
         }
     }
 
-  if (!ok)
-    return EXIT_FAILURE;
+  إذا (!ok)
+    أرجع EXIT_FAILURE;
 
-  if (flag_dump_strings && n_specs > 0)
+  إذا (flag_dump_لڙيون && n_specs > 0)
     error (EXIT_FAILURE, 0,
            _("no type may be specified when dumping strings"));
 
@@ -1890,62 +1890,62 @@ main (int argc, char **argv)
         od [file] [[+]offset[.][b]]
   */
 
-  if (!modern || traditional)
+  إذا (!modern || traditional)
     {
       intmax_t o1;
       intmax_t o2;
 
-      switch (n_files)
+      بدل (n_files)
         {
-        case 1:
-          if ((traditional || argv[optind][0] == '+')
-              && parse_old_offset (argv[optind], &o1))
+        حالة 1:
+          إذا ((traditional || argv[optind][0] == '+')
+              && parse_old_وٿي (argv[optind], &o1))
             {
-              n_bytes_to_skip = o1;
+              n_بائيٽون_منزل_skip = o1;
               --n_files;
               ++argv;
             }
-          break;
+          اكسر;
 
-        case 2:
-          if ((traditional || argv[optind + 1][0] == '+'
+        حالة 2:
+          إذا ((traditional || argv[optind + 1][0] == '+'
                || c_isdigit (argv[optind + 1][0]))
-              && parse_old_offset (argv[optind + 1], &o2))
+              && parse_old_وٿي (argv[optind + 1], &o2))
             {
-              if (traditional && parse_old_offset (argv[optind], &o1))
+              إذا (traditional && parse_old_وٿي (argv[optind], &o1))
                 {
-                  n_bytes_to_skip = o1;
-                  flag_pseudo_start = true;
-                  pseudo_start = o2;
+                  n_بائيٽون_منزل_skip = o1;
+                  flag_pseudo_شروعات = true;
+                  pseudo_شروعات = o2;
                   argv += 2;
                   n_files -= 2;
                 }
-              else
+              وإلا
                 {
-                  n_bytes_to_skip = o2;
+                  n_بائيٽون_منزل_skip = o2;
                   --n_files;
                   argv[optind + 1] = argv[optind];
                   ++argv;
                 }
             }
-          break;
+          اكسر;
 
-        case 3:
-          if (traditional
-              && parse_old_offset (argv[optind + 1], &o1)
-              && parse_old_offset (argv[optind + 2], &o2))
+        حالة 3:
+          إذا (traditional
+              && parse_old_وٿي (argv[optind + 1], &o1)
+              && parse_old_وٿي (argv[optind + 2], &o2))
             {
-              n_bytes_to_skip = o1;
-              flag_pseudo_start = true;
-              pseudo_start = o2;
+              n_بائيٽون_منزل_skip = o1;
+              flag_pseudo_شروعات = true;
+              pseudo_شروعات = o2;
               argv[optind + 2] = argv[optind];
               argv += 2;
               n_files -= 2;
             }
-          break;
+          اكسر;
         }
 
-      if (traditional && 1 < n_files)
+      إذا (traditional && 1 < n_files)
         {
           error (0, 0, _("extra operand %s"), quote (argv[optind + 1]));
           error (0, 0, "%s",
@@ -1954,33 +1954,33 @@ main (int argc, char **argv)
         }
     }
 
-  if (flag_pseudo_start)
+  إذا (flag_pseudo_شروعات)
     {
-      if (format_address == format_address_none)
+      إذا (format_پتو == format_پتو_none)
         {
-          address_base = 8;
-          address_pad_len = 7;
-          format_address = format_address_paren;
+          پتو_بنياد = 8;
+          پتو_pad_len = 7;
+          format_پتو = format_پتو_paren;
         }
-      else
-        format_address = format_address_label;
+      وإلا
+        format_پتو = format_پتو_label;
     }
 
-  if (0 <= max_bytes_to_format
-      && ckd_add (&end_offset, n_bytes_to_skip, max_bytes_to_format))
+  إذا (0 <= max_بائيٽون_منزل_format
+      && ckd_جوڙيو (&پڇاڙي_وٿي, n_بائيٽون_منزل_skip, max_بائيٽون_منزل_format))
     error (EXIT_FAILURE, 0, _("skip-bytes + read-bytes is too large"));
 
-  if (n_specs == 0)
+  إذا (n_specs == 0)
     decode_format_string ("oS");
 
-  if (n_files > 0)
+  إذا (n_files > 0)
     {
       /* Set the global pointer FILE_LIST so that it
          references the first file-argument on the command-line.  */
 
-      file_list = (char const *const *) &argv[optind];
+      file_list = (حرف ثابت *ثابت *) &argv[optind];
     }
-  else
+  وإلا
     {
       /* No files were listed on the command line.
          Set the global pointer FILE_LIST so that it
@@ -1990,76 +1990,76 @@ main (int argc, char **argv)
     }
 
   /* open the first input file */
-  ok = open_next_file ();
-  if (in_stream == NULL)
-    goto cleanup;
+  ok = open_ايندڙ_file ();
+  إذا (اندريون_وهڪرو == عدم)
+    اذهب cleanup;
 
   /* skip over any unwanted header bytes */
-  ok &= skip (n_bytes_to_skip);
-  if (in_stream == NULL)
-    goto cleanup;
+  ok &= skip (n_بائيٽون_منزل_skip);
+  إذا (اندريون_وهڪرو == عدم)
+    اذهب cleanup;
 
-  pseudo_offset = (flag_pseudo_start ? pseudo_start - n_bytes_to_skip : 0);
+  pseudo_وٿي = (flag_pseudo_شروعات ? pseudo_شروعات - n_بائيٽون_منزل_skip : 0);
 
   /* Compute output block length.  */
   l_c_m = get_lcm ();
 
-  if (desired_width != 0)
+  إذا (desired_ويڪر != 0)
     {
-      if (desired_width % l_c_m == 0)
-        bytes_per_block = desired_width;
-      else
+      إذا (desired_ويڪر % l_c_m == 0)
+        بائيٽون_في_بلاڪ = desired_ويڪر;
+      وإلا
         {
           error (0, 0, _("warning: invalid width %td; using %d instead"),
-                 desired_width, l_c_m);
-          bytes_per_block = l_c_m;
+                 desired_ويڪر, l_c_m);
+          بائيٽون_في_بلاڪ = l_c_m;
         }
     }
-  else
+  وإلا
     {
-      if (l_c_m < DEFAULT_BYTES_PER_BLOCK)
-        bytes_per_block = (DEFAULT_BYTES_PER_BLOCK
-                           - DEFAULT_BYTES_PER_BLOCK % l_c_m);
-      else
-        bytes_per_block = l_c_m;
+      إذا (l_c_m < DEFAULT_بائيٽون_في_بلاڪ)
+        بائيٽون_في_بلاڪ = (DEFAULT_بائيٽون_في_بلاڪ
+                           - DEFAULT_بائيٽون_في_بلاڪ % l_c_m);
+      وإلا
+        بائيٽون_في_بلاڪ = l_c_m;
     }
 
   /* Compute padding necessary to align output block.  */
-  for (idx_t i = 0; i < n_specs; i++)
+  لكل (idx_t i = 0; i < n_specs; i++)
     {
-      idx_t fields_per_block = bytes_per_block / width_bytes[spec[i].size];
-      if (pad_at_overflow (fields_per_block))
-        error (EXIT_FAILURE, 0, _("%td is too large"), desired_width);
-      idx_t block_width = (spec[i].field_width + 1) * fields_per_block;
-      if (width_per_block < block_width)
-        width_per_block = block_width;
+      idx_t fields_في_بلاڪ = بائيٽون_في_بلاڪ / ويڪر_بائيٽون[spec[i].سائيز];
+      إذا (pad_at_حد_کان_مٿي (fields_في_بلاڪ))
+        error (EXIT_FAILURE, 0, _("%td is too large"), desired_ويڪر);
+      idx_t بلاڪ_ويڪر = (spec[i].ميدان_ويڪر + 1) * fields_في_بلاڪ;
+      إذا (ويڪر_في_بلاڪ < بلاڪ_ويڪر)
+        ويڪر_في_بلاڪ = بلاڪ_ويڪر;
     }
-  for (idx_t i = 0; i < n_specs; i++)
+  لكل (idx_t i = 0; i < n_specs; i++)
     {
-      idx_t fields_per_block = bytes_per_block / width_bytes[spec[i].size];
-      idx_t block_width = spec[i].field_width * fields_per_block;
-      spec[i].pad_width = width_per_block - block_width;
+      idx_t fields_في_بلاڪ = بائيٽون_في_بلاڪ / ويڪر_بائيٽون[spec[i].سائيز];
+      idx_t بلاڪ_ويڪر = spec[i].ميدان_ويڪر * fields_في_بلاڪ;
+      spec[i].pad_ويڪر = ويڪر_في_بلاڪ - بلاڪ_ويڪر;
     }
 
-#ifdef DEBUG
-  printf ("lcm=%d, width_per_block=%td\n", l_c_m, width_per_block);
-  for (idx_t i = 0; i < n_specs; i++)
+#جيڪڏهن_وصف_ٿيل DEBUG
+  لکو ("lcm=%d, width_per_block=%td\n", l_c_m, ويڪر_في_بلاڪ);
+  لكل (idx_t i = 0; i < n_specs; i++)
     {
-      idx_t fields_per_block = bytes_per_block / width_bytes[spec[i].size];
-      affirm (bytes_per_block % width_bytes[spec[i].size] == 0);
-      affirm (1 <= spec[i].pad_width / fields_per_block);
-      printf ("%td: fmt=\"%s\" in_width=%d out_width=%d pad=%td\n",
-              i, spec[i].fmt_string, width_bytes[spec[i].size],
-              spec[i].field_width, spec[i].pad_width);
+      idx_t fields_في_بلاڪ = بائيٽون_في_بلاڪ / ويڪر_بائيٽون[spec[i].سائيز];
+      affirm (بائيٽون_في_بلاڪ % ويڪر_بائيٽون[spec[i].سائيز] == 0);
+      affirm (1 <= spec[i].pad_ويڪر / fields_في_بلاڪ);
+      لکو ("%td: fmt=\"%s\" in_width=%d out_width=%d pad=%td\n",
+              i, spec[i].fmt_string, ويڪر_بائيٽون[spec[i].سائيز],
+              spec[i].ميدان_ويڪر, spec[i].pad_ويڪر);
     }
-#endif
+#جيڪڏهن_پورو
 
-  ok &= (flag_dump_strings ? dump_strings () : dump ());
+  ok &= (flag_dump_لڙيون ? dump_لڙيون () : dump ());
 
 cleanup:
 
-  if (have_read_stdin && fclose (stdin) < 0)
+  إذا (have_read_stdin && fclose (stdin) < 0)
     error (EXIT_FAILURE, errno, _("standard input"));
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  أرجع ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

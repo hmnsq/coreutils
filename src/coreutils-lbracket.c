@@ -14,18 +14,18 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include "system.h"
+#ضمن <config.h>
+#ضمن "system.h"
 
-#include "test.h"
+#ضمن "test.h"
 /* Ensure that the main for test is declared even if the tool is not being
    built in this single-binary. */
-int single_binary_main_test (int argc, char **argv);
-int single_binary_main_lbracket (int argc, char **argv);
+صحيح single_ٻٽو_main_test (صحيح argc, حرف **argv);
+صحيح single_ٻٽو_main_lbracket (صحيح argc, حرف **argv);
 
-int
-single_binary_main_lbracket (int argc, char **argv)
+صحيح
+single_ٻٽو_main_lbracket (صحيح argc, حرف **argv)
 {
-  test_mode = TEST_LBRACKET;
-  return single_binary_main_test (argc, argv);
+  test_گهڻائي = TEST_LBRACKET;
+  أرجع single_ٻٽو_main_test (argc, argv);
 }

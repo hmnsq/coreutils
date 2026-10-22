@@ -14,58 +14,58 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <wchar.h>
+#ضمن <config.h>
+#ضمن <stdio.h>
+#ضمن <sys/types.h>
+#ضمن <wchar.h>
 
-#include "system.h"
-#include "c-ctype.h"
-#include "cl-strtod.h"
-#include "octhexdigits.h"
-#include "quote.h"
-#include "unicodeio.h"
-#include "xprintf.h"
+#ضمن "system.h"
+#ضمن "c-ctype.h"
+#ضمن "cl-strtod.h"
+#ضمن "octhexdigits.h"
+#ضمن "quote.h"
+#ضمن "unicodeio.h"
+#ضمن "xprintf.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "printf"
+#وصف_ڪريو پروگرام_NAME "printf"
 
-#define AUTHORS proper_name ("David MacKenzie")
+#وصف_ڪريو AUTHORS proper_name ("David MacKenzie")
 
 /* The value to return to the calling program.  */
-static int exit_status;
+ساكن صحيح exit_حالت;
 
 /* True if the POSIXLY_CORRECT environment variable is set.  */
-static bool posixly_correct;
+ساكن bool posixly_correct;
 
 /* This message appears in N_() here rather than just in _() below because
    the sole use would have been in a #define.  */
-static char const *const cfcc_msg =
+ساكن حرف ثابت *ثابت cfcc_نياپو =
  N_("warning: %s: character(s) following character constant have been ignored");
 
-void
-usage (int status)
+فراغ
+usage (صحيح حالت)
 {
-  if (status != EXIT_SUCCESS)
+  إذا (حالت != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  وإلا
     {
-      printf (_("\
-Usage: %s FORMAT [ARGUMENT]...\n\
+      لکو (_("\
+Usage: %s FORMAT [دليل_2]...\n\
   or:  %s OPTION\n\
 "),
-              program_name, program_name);
+              پروگرام_name, پروگرام_name);
       fputs (_("\
-Print ARGUMENT(s) according to FORMAT, or execute according to OPTION:\n\
+Print دليل_2(s) according منزل FORMAT, or execute according منزل OPTION:\n\
 \n\
 "), stdout);
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (نسخو_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-FORMAT controls the output as in C printf.  Interpreted sequences are:\n\
+FORMAT controls the output as اندريون C لکو.  Interpreted sequences are:\n\
 \n\
-  \\\"      double quote\n\
+  \\\"      مزدوج quote\n\
 "), stdout);
       fputs (_("\
   \\\\      backslash\n\
@@ -74,38 +74,38 @@ FORMAT controls the output as in C printf.  Interpreted sequences are:\n\
   \\c      produce no further output\n\
   \\e      escape\n\
   \\f      form feed\n\
-  \\n      new line\n\
-  \\r      carriage return\n\
+  \\n      new سٽ\n\
+  \\r      carriage أرجع\n\
   \\t      horizontal tab\n\
   \\v      vertical tab\n\
 "), stdout);
       fputs (_("\
-  \\NNN    byte with octal value NNN (1 to 3 digits)\n\
-  \\xHH    byte with hexadecimal value HH (1 to 2 digits)\n\
-  \\uHHHH  Unicode (ISO/IEC 10646) character with hex value HHHH (4 digits)\n\
-  \\UHHHHHHHH  Unicode character with hex value HHHHHHHH (8 digits)\n\
+  \\NNN    byte with octal قدر NNN (1 منزل 3 digits)\n\
+  \\xHH    byte with hexadecimal قدر HH (1 منزل 2 digits)\n\
+  \\uHHHH  Unicode (ISO/IEC 10646) character with hex قدر HHHH (4 digits)\n\
+  \\UHHHHHHHH  Unicode character with hex قدر HHHHHHHH (8 digits)\n\
 "), stdout);
       fputs (_("\
 \n\
   %%      a single %\n\
-  %b      ARGUMENT as a string with '\\' escapes interpreted,\n\
+  %b      دليل_2 as a string with '\\' escapes interpreted,\n\
           except that octal escapes should have a leading 0 like \\0NNN\n\
-  %q      ARGUMENT is printed in a format that can be reused as shell input,\n\
+  %q      دليل_2 is printed اندريون a format that can be reused as shell داخلا,\n\
           escaping non-printable characters with the POSIX $'' syntax\
 \n\n\
-and all C printf(3) format specifications ending with one of diouxXfaAeEgGcs,\n\
-with ARGUMENTs converted to proper type first.\n\
+and all C لکو(3) format specifications ending with one جو diouxXfaAeEgGcs,\n\
+with ARGUMENTs converted منزل proper type پهريون.\n\
 "), stdout);
       fputs (_("\
-FORMAT is reused to convert all specified arguments.\n\
+FORMAT is reused منزل convert all specified arguments.\n\
 "), stdout);
       fputs (_("\
-The following table shows supported conversion specifiers,\n\
-with examples including usage of width, precision, and flags.\n\
+The following جدول shows supported conversion specifiers,\n\
+with examples including usage جو ويڪر, precision, and flags.\n\
 \n\
   CONVERSION  Shell format example        Output\n\
-  %s          '[%10s]' 'left pad'         [  left pad]\n\
-  %s          '[%-10s]' 'right pad'       [right pad ]\n\
+  %s          '[%10s]' 'left pad'         [  کاٻو pad]\n\
+  %s          '[%-10s]' 'right pad'       [ساڄو pad ]\n\
   %c %s       '%c %.3s' un unibyte        u uni\n\
 \n\
   %d %i       \"%'d ;%04i\" 1234 '-1'       1,234 ;-001\n\
@@ -120,56 +120,56 @@ with examples including usage of width, precision, and flags.\n\
   %b          '%bfoo' 'bar\\cbaz' qux      bar\n\
   %q          '%q ' 'a' \\;b $'c\\n'        a ';b' 'c'$'\\n'\n\
 "), stdout);
-      printf (USAGE_BUILTIN_WARNING, PROGRAM_NAME);
-      emit_ancillary_info (PROGRAM_NAME);
+      لکو (USAGE_BUILTIN_WARNING, پروگرام_NAME);
+      emit_ancillary_info (پروگرام_NAME);
     }
-  exit (status);
+  ٻاهر_نڪرو (حالت);
 }
 
-static void
-verify_numeric (char const *s, char const *end)
+ساكن فراغ
+verify_numeric (حرف ثابت *s, حرف ثابت *پڇاڙي)
 {
-  if (s == end)
+  إذا (s == پڇاڙي)
     {
       error (0, 0, _("%s: expected a numeric value"), quote (s));
-      exit_status = EXIT_FAILURE;
+      exit_حالت = EXIT_FAILURE;
     }
-  else if (errno)
+  وإلا إذا (errno)
     {
       error (0, errno, "%s", quote (s));
-      exit_status = EXIT_FAILURE;
+      exit_حالت = EXIT_FAILURE;
     }
-  else if (*end)
+  وإلا إذا (*پڇاڙي)
     {
       error (0, 0, _("%s: value not completely converted"), quote (s));
-      exit_status = EXIT_FAILURE;
+      exit_حالت = EXIT_FAILURE;
     }
 }
 
-#define STRTOX(TYPE, FUNC_NAME, LIB_FUNC_EXPR)				 \
-static TYPE								 \
-FUNC_NAME (char const *s)						 \
+#وصف_ڪريو STRTOX(TYPE, FUNC_NAME, LIB_FUNC_اظهار)				 \
+ساكن TYPE								 \
+FUNC_NAME (حرف ثابت *s)						 \
 {									 \
-  char *end;								 \
+  حرف *پڇاڙي;								 \
   TYPE val;								 \
                                                                          \
-  if ((*s == '\"' || *s == '\'') && *(s + 1))				 \
+  إذا ((*s == '\"' || *s == '\'') && *(s + 1))				 \
     {									 \
-      unsigned char ch = *++s;						 \
+      بنانشان حرف ch = *++s;						 \
       val = ch;								 \
                                                                          \
-      if (MB_CUR_MAX > 1 && *(s + 1))					 \
+      إذا (MB_CUR_MAX > 1 && *(s + 1))					 \
         {								 \
           mbstate_t mbstate; mbszero (&mbstate);			 \
           wchar_t wc;							 \
-          size_t slen = strlen (s);					 \
-          ssize_t bytes;						 \
+          size_t slen = لڙي_ڊيگهه (s);					 \
+          ssize_t بائيٽون;						 \
           /* Use mbrtowc not mbrtoc32, as per POSIX.  */		 \
-          bytes = mbrtowc (&wc, s, slen, &mbstate);			 \
-          if (0 < bytes)						 \
+          بائيٽون = mbrtowc (&wc, s, slen, &mbstate);			 \
+          إذا (0 < بائيٽون)						 \
             {								 \
               val = wc;							 \
-              s += bytes - 1;						 \
+              s += بائيٽون - 1;						 \
             }								 \
         }								 \
                                                                          \
@@ -177,59 +177,59 @@ FUNC_NAME (char const *s)						 \
          are characters following the character constant and that GNU	 \
          printf is ignoring those characters.  If POSIXLY_CORRECT *is*	 \
          set, then don't give the warning.  */				 \
-      if (*++s != 0 && !posixly_correct)				 \
-        error (0, 0, _(cfcc_msg), s);					 \
+      إذا (*++s != 0 && !posixly_correct)				 \
+        error (0, 0, _(cfcc_نياپو), s);					 \
     }									 \
-  else									 \
+  وإلا									 \
     {									 \
       errno = 0;							 \
-      val = (LIB_FUNC_EXPR);						 \
-      verify_numeric (s, end);						 \
+      val = (LIB_FUNC_اظهار);						 \
+      verify_numeric (s, پڇاڙي);						 \
     }									 \
-  return val;								 \
+  أرجع val;								 \
 }									 \
 
-STRTOX (intmax_t,    vstrtoimax, strtoimax (s, &end, 0))
-STRTOX (uintmax_t,   vstrtoumax, strtoumax (s, &end, 0))
-STRTOX (long double, vstrtold,   cl_strtold (s, &end))
+STRTOX (intmax_t,    vstrtoimax, strtoimax (s, &پڇاڙي, 0))
+STRTOX (uintmax_t,   vstrtoumax, strtoumax (s, &پڇاڙي, 0))
+STRTOX (ڊگهو مزدوج, vstrtold,   cl_strtold (s, &پڇاڙي))
 
 /* Output a single-character \ escape.  */
 
-static void
-print_esc_char (char c)
+ساكن فراغ
+print_esc_char (حرف c)
 {
-  switch (c)
+  بدل (c)
     {
-    case 'a':			/* Alert. */
-      putchar ('\a');
-      break;
-    case 'b':			/* Backspace. */
-      putchar ('\b');
-      break;
-    case 'c':			/* Cancel the rest of the output. */
-      exit (EXIT_SUCCESS);
-      break;
-    case 'e':			/* Escape. */
-      putchar ('\x1B');
-      break;
-    case 'f':			/* Form feed. */
-      putchar ('\f');
-      break;
-    case 'n':			/* New line. */
-      putchar ('\n');
-      break;
-    case 'r':			/* Carriage return. */
-      putchar ('\r');
-      break;
-    case 't':			/* Horizontal tab. */
-      putchar ('\t');
-      break;
-    case 'v':			/* Vertical tab. */
-      putchar ('\v');
-      break;
-    default:
-      putchar (c);
-      break;
+    حالة 'a':			/* Alert. */
+      اکر_لکو ('\a');
+      اكسر;
+    حالة 'b':			/* Backspace. */
+      اکر_لکو ('\b');
+      اكسر;
+    حالة 'c':			/* Cancel the rest of the output. */
+      ٻاهر_نڪرو (EXIT_SUCCESS);
+      اكسر;
+    حالة 'e':			/* Escape. */
+      اکر_لکو ('\x1B');
+      اكسر;
+    حالة 'f':			/* Form feed. */
+      اکر_لکو ('\f');
+      اكسر;
+    حالة 'n':			/* New line. */
+      اکر_لکو ('\n');
+      اكسر;
+    حالة 'r':			/* Carriage return. */
+      اکر_لکو ('\r');
+      اكسر;
+    حالة 't':			/* Horizontal tab. */
+      اکر_لکو ('\t');
+      اكسر;
+    حالة 'v':			/* Vertical tab. */
+      اکر_لکو ('\v');
+      اكسر;
+    افتراضي:
+      اکر_لکو (c);
+      اكسر;
     }
 }
 
@@ -239,82 +239,82 @@ print_esc_char (char c)
    If OCTAL_0 is nonzero, octal escapes are of the form \0ooo, where o
    is an octal digit; otherwise they are of the form \ooo.  */
 
-static int
-print_esc (char const *escstart, bool octal_0)
+ساكن صحيح
+print_esc (حرف ثابت *escstart, bool octal_0)
 {
-  char const *p = escstart + 1;
-  int esc_value = 0;		/* Value of \nnn escape. */
-  int esc_length;		/* Length of \nnn escape. */
+  حرف ثابت *p = escstart + 1;
+  صحيح esc_قدر = 0;		/* Value of \nnn escape. */
+  صحيح esc_ڊيگهائي;		/* Length of \nnn escape. */
 
-  if (*p == 'x')
+  إذا (*p == 'x')
     {
       /* A hexadecimal \xhh escape sequence must have 1 or 2 hex. digits.  */
-      for (esc_length = 0, ++p;
-           esc_length < 2 && c_isxdigit (*p);
-           ++esc_length, ++p)
-        esc_value = esc_value * 16 + fromhex (*p);
-      if (esc_length == 0)
+      لكل (esc_ڊيگهائي = 0, ++p;
+           esc_ڊيگهائي < 2 && c_isxdigit (*p);
+           ++esc_ڊيگهائي, ++p)
+        esc_قدر = esc_قدر * 16 + fromhex (*p);
+      إذا (esc_ڊيگهائي == 0)
         error (EXIT_FAILURE, 0, _("missing hexadecimal number in escape"));
-      putchar (esc_value);
+      اکر_لکو (esc_قدر);
     }
-  else if (isoct (*p))
+  وإلا إذا (isoct (*p))
     {
       /* Parse \0ooo (if octal_0 && *p == '0') or \ooo (otherwise).
          Allow \ooo if octal_0 && *p != '0'; this is an undocumented
          extension to POSIX that is compatible with Bash 2.05b.  */
-      for (esc_length = 0, p += octal_0 && *p == '0';
-           esc_length < 3 && isoct (*p);
-           ++esc_length, ++p)
-        esc_value = esc_value * 8 + fromoct (*p);
-      putchar (esc_value);
+      لكل (esc_ڊيگهائي = 0, p += octal_0 && *p == '0';
+           esc_ڊيگهائي < 3 && isoct (*p);
+           ++esc_ڊيگهائي, ++p)
+        esc_قدر = esc_قدر * 8 + fromoct (*p);
+      اکر_لکو (esc_قدر);
     }
-  else if (*p && strchr ("\"\\abcefnrtv", *p))
+  وإلا إذا (*p && strchr ("\"\\abcefnrtv", *p))
     print_esc_char (*p++);
-  else if (*p == 'u' || *p == 'U')
+  وإلا إذا (*p == 'u' || *p == 'U')
     {
-      char esc_char = *p;
-      unsigned int uni_value;
+      حرف esc_char = *p;
+      بنانشان صحيح uni_قدر;
 
-      uni_value = 0;
-      for (esc_length = (esc_char == 'u' ? 4 : 8), ++p;
-           esc_length > 0;
-           --esc_length, ++p)
+      uni_قدر = 0;
+      لكل (esc_ڊيگهائي = (esc_char == 'u' ? 4 : 8), ++p;
+           esc_ڊيگهائي > 0;
+           --esc_ڊيگهائي, ++p)
         {
-          if (! c_isxdigit (*p))
+          إذا (! c_isxdigit (*p))
             error (EXIT_FAILURE, 0, _("missing hexadecimal number in escape"));
-          uni_value = uni_value * 16 + fromhex (*p);
+          uni_قدر = uni_قدر * 16 + fromhex (*p);
         }
 
       /* Error for invalid code points 0000D800 through 0000DFFF inclusive.
          Note print_unicode_char() would print the literal \u.. in this case. */
-      if (uni_value >= 0xd800 && uni_value <= 0xdfff)
+      إذا (uni_قدر >= 0xd800 && uni_قدر <= 0xdfff)
         error (EXIT_FAILURE, 0, _("invalid universal character name \\%c%0*x"),
-               esc_char, (esc_char == 'u' ? 4 : 8), uni_value);
+               esc_char, (esc_char == 'u' ? 4 : 8), uni_قدر);
 
-      print_unicode_char (stdout, uni_value, 0);
+      print_unicode_char (stdout, uni_قدر, 0);
     }
-  else
+  وإلا
     {
-      putchar ('\\');
-      if (*p)
+      اکر_لکو ('\\');
+      إذا (*p)
         {
-          putchar (*p);
+          اکر_لکو (*p);
           p++;
         }
     }
-  return p - escstart - 1;
+  أرجع p - escstart - 1;
 }
 
 /* Print string STR, evaluating \ escapes. */
 
-static void
-print_esc_string (char const *str)
+ساكن فراغ
+print_esc_string (حرف ثابت *str)
 {
-  for (; *str; str++)
-    if (*str == '\\')
+  لكل (; *str; str++)
+    إذا (*str == '\\')
       str += print_esc (str, true);
-    else
-      putchar (*str);
+    وإلا
+      اکر_لکو (*str);
 }
 
 /* Evaluate a printf conversion specification.  START is the start of
@@ -323,196 +323,196 @@ print_esc_string (char const *str)
    values, if HAVE_FIELD_WIDTH and HAVE_PRECISION are true, respectively.
    ARGUMENT is the argument to be formatted.  */
 
-static void
-print_direc (char const *start, char conversion,
-             bool have_field_width, int field_width,
-             bool have_precision, int precision,
-             char const *argument)
+ساكن فراغ
+print_direc (حرف ثابت *شروعات, حرف conversion,
+             bool have_ميدان_ويڪر, صحيح ميدان_ويڪر,
+             bool have_precision, صحيح precision,
+             حرف ثابت *دليل)
 {
-  char *p;		/* Null-terminated copy of % directive. */
+  حرف *p;		/* Null-terminated copy of % directive. */
 
   /* Create a null-terminated copy of the % directive, with an
      intmax_t-wide length modifier substituted for any existing
      integer length modifier.  */
   {
-    char *q;
-    char const *length_modifier;
-    size_t length_modifier_len;
+    حرف *q;
+    حرف ثابت *ڊيگهائي_modifier;
+    size_t ڊيگهائي_modifier_len;
 
-    switch (conversion)
+    بدل (conversion)
       {
-      case 'd': case 'i': case 'o': case 'u': case 'x': case 'X':
-        length_modifier = "j";
-        length_modifier_len = 1;
-        break;
+      حالة 'd': حالة 'i': حالة 'o': حالة 'u': حالة 'x': حالة 'X':
+        ڊيگهائي_modifier = "j";
+        ڊيگهائي_modifier_len = 1;
+        اكسر;
 
-      case 'a': case 'e': case 'f': case 'g':
-      case 'A': case 'E': case 'F': case 'G':
-        length_modifier = "L";
-        length_modifier_len = 1;
-        break;
+      حالة 'a': حالة 'e': حالة 'f': حالة 'g':
+      حالة 'A': حالة 'E': حالة 'F': حالة 'G':
+        ڊيگهائي_modifier = "L";
+        ڊيگهائي_modifier_len = 1;
+        اكسر;
 
-      default:
-        length_modifier = start;  /* Any valid pointer will do.  */
-        length_modifier_len = 0;
-        break;
+      افتراضي:
+        ڊيگهائي_modifier = شروعات;  /* Any valid pointer will do.  */
+        ڊيگهائي_modifier_len = 0;
+        اكسر;
       }
 
-    size_t length = strlen (start);
-    p = xmalloc (length + length_modifier_len + 2);
-    q = mempcpy (p, start, length);
-    q = mempcpy (q, length_modifier, length_modifier_len);
+    size_t ڊيگهائي = لڙي_ڊيگهه (شروعات);
+    p = xmalloc (ڊيگهائي + ڊيگهائي_modifier_len + 2);
+    q = mempcpy (p, شروعات, ڊيگهائي);
+    q = mempcpy (q, ڊيگهائي_modifier, ڊيگهائي_modifier_len);
     *q++ = conversion;
     *q = '\0';
   }
 
-  switch (conversion)
+  بدل (conversion)
     {
-    case 'd':
-    case 'i':
+    حالة 'd':
+    حالة 'i':
       {
-        intmax_t arg = argument ? vstrtoimax (argument) : 0;
-        if (!have_field_width)
+        intmax_t arg = دليل ? vstrtoimax (دليل) : 0;
+        إذا (!have_ميدان_ويڪر)
           {
-            if (!have_precision)
+            إذا (!have_precision)
               xprintf (p, arg);
-            else
+            وإلا
               xprintf (p, precision, arg);
           }
-        else
+        وإلا
           {
-            if (!have_precision)
-              xprintf (p, field_width, arg);
-            else
-              xprintf (p, field_width, precision, arg);
+            إذا (!have_precision)
+              xprintf (p, ميدان_ويڪر, arg);
+            وإلا
+              xprintf (p, ميدان_ويڪر, precision, arg);
           }
       }
-      break;
+      اكسر;
 
-    case 'o':
-    case 'u':
-    case 'x':
-    case 'X':
+    حالة 'o':
+    حالة 'u':
+    حالة 'x':
+    حالة 'X':
       {
-        uintmax_t arg = argument ? vstrtoumax (argument) : 0;
-        if (!have_field_width)
+        uintmax_t arg = دليل ? vstrtoumax (دليل) : 0;
+        إذا (!have_ميدان_ويڪر)
           {
-            if (!have_precision)
+            إذا (!have_precision)
               xprintf (p, arg);
-            else
+            وإلا
               xprintf (p, precision, arg);
           }
-        else
+        وإلا
           {
-            if (!have_precision)
-              xprintf (p, field_width, arg);
-            else
-              xprintf (p, field_width, precision, arg);
+            إذا (!have_precision)
+              xprintf (p, ميدان_ويڪر, arg);
+            وإلا
+              xprintf (p, ميدان_ويڪر, precision, arg);
           }
       }
-      break;
+      اكسر;
 
-    case 'a':
-    case 'A':
-    case 'e':
-    case 'E':
-    case 'f':
-    case 'F':
-    case 'g':
-    case 'G':
+    حالة 'a':
+    حالة 'A':
+    حالة 'e':
+    حالة 'E':
+    حالة 'f':
+    حالة 'F':
+    حالة 'g':
+    حالة 'G':
       {
-        long double arg = argument ? vstrtold (argument) : 0;
-        if (!have_field_width)
+        ڊگهو مزدوج arg = دليل ? vstrtold (دليل) : 0;
+        إذا (!have_ميدان_ويڪر)
           {
-            if (!have_precision)
+            إذا (!have_precision)
               xprintf (p, arg);
-            else
+            وإلا
               xprintf (p, precision, arg);
           }
-        else
+        وإلا
           {
-            if (!have_precision)
-              xprintf (p, field_width, arg);
-            else
-              xprintf (p, field_width, precision, arg);
+            إذا (!have_precision)
+              xprintf (p, ميدان_ويڪر, arg);
+            وإلا
+              xprintf (p, ميدان_ويڪر, precision, arg);
           }
       }
-      break;
+      اكسر;
 
-    case 'c':
+    حالة 'c':
       {
-        char c = argument ? *argument : '\0';
-        if (!have_field_width)
+        حرف c = دليل ? *دليل : '\0';
+        إذا (!have_ميدان_ويڪر)
           xprintf (p, c);
-        else
-          xprintf (p, field_width, c);
+        وإلا
+          xprintf (p, ميدان_ويڪر, c);
       }
-      break;
+      اكسر;
 
-    case 's':
-      if (!argument)
-        argument = "";
-      if (!have_field_width)
+    حالة 's':
+      إذا (!دليل)
+        دليل = "";
+      إذا (!have_ميدان_ويڪر)
         {
-          if (!have_precision)
-            xprintf (p, argument);
-          else
-            xprintf (p, precision, argument);
+          إذا (!have_precision)
+            xprintf (p, دليل);
+          وإلا
+            xprintf (p, precision, دليل);
         }
-      else
+      وإلا
         {
-          if (!have_precision)
-            xprintf (p, field_width, argument);
-          else
-            xprintf (p, field_width, precision, argument);
+          إذا (!have_precision)
+            xprintf (p, ميدان_ويڪر, دليل);
+          وإلا
+            xprintf (p, ميدان_ويڪر, precision, دليل);
         }
-      break;
+      اكسر;
     }
 
-  free (p);
+  حرر (p);
 }
 
 /* Set curr_arg from indexed %i$ or otherwise next in sequence.
    POS can be 0,1,2,3 corresponding to
    [%][width][.precision][conversion] respectively.  */
 
-struct arg_cursor
+بنية arg_cursor
 {
-  char const *f;	/* Pointer into 'format'.  */
-  int curr_arg;		/* Current offset.  */
-  int curr_s_arg;	/* Current sequential offset.  */
-  int end_arg;		/* End arg processed.  */
-  int direc_arg;	/* Arg for main directive.  */
+  حرف ثابت *f;	/* Pointer into 'format'.  */
+  صحيح curr_arg;		/* Current offset.  */
+  صحيح curr_s_arg;	/* Current sequential offset.  */
+  صحيح پڇاڙي_arg;		/* End arg processed.  */
+  صحيح direc_arg;	/* Arg for main directive.  */
 };
-ATTRIBUTE_PURE static struct arg_cursor
-get_curr_arg (int pos, struct arg_cursor ac)
+ATTRIBUTE_خالص ساكن بنية arg_cursor
+get_curr_arg (صحيح pos, بنية arg_cursor ac)
 {
   /* Convert sequences like "123$" by hand to avoid problems with strtol,
      which might treat "$" as part of the number in some locales.  */
-  int arg = 0;
-  char const *f = ac.f;
-  if (pos < 3 && c_isdigit (*f))
+  صحيح arg = 0;
+  حرف ثابت *f = ac.f;
+  إذا (pos < 3 && c_isdigit (*f))
     {
       bool v = false;
-      int a = *f++ - '0';
-      for (; c_isdigit (*f); f++)
+      صحيح a = *f++ - '0';
+      لكل (; c_isdigit (*f); f++)
         {
           v |= ckd_mul (&a, a, 10);
-          v |= ckd_add (&a, a, *f - '0');
+          v |= ckd_جوڙيو (&a, a, *f - '0');
         }
-      if (*f == '$')
-        arg = v ? INT_MAX : a;
+      إذا (*f == '$')
+        arg = v ? وڌ_کان_وڌ_عدد : a;
     }
 
-  if (0 < arg)
+  إذا (0 < arg)
     {
       /* Process indexed %i$ format.  */
       arg--;
       ac.f = f + 1;
-      if (pos == 0)
+      إذا (pos == 0)
         ac.direc_arg = arg;
     }
-  else
+  وإلا
     {
       /* Process sequential arg.  */
       arg = (pos == 0 ? (ac.direc_arg = -1)
@@ -520,237 +520,237 @@ get_curr_arg (int pos, struct arg_cursor ac)
              : ac.direc_arg);
     }
 
-  if (0 <= arg)
+  إذا (0 <= arg)
     {
       ac.curr_arg = arg;
-      ac.end_arg = MAX (ac.end_arg, arg);
+      ac.پڇاڙي_arg = MAX (ac.پڇاڙي_arg, arg);
     }
-  return ac;
+  أرجع ac;
 }
 
 /* Print the text in FORMAT, using ARGV (with ARGC elements) for
    arguments to any '%' directives.
    Return the number of elements of ARGV used.  */
 
-static int
-print_formatted (char const *format, int argc, char **argv)
+ساكن صحيح
+print_formatted (حرف ثابت *format, صحيح argc, حرف **argv)
 {
-  struct arg_cursor ac;
-  ac.curr_arg = ac.curr_s_arg = ac.end_arg = ac.direc_arg = -1;
-  char const *direc_start;	/* Start of % directive.  */
-  char *direc;			/* Generated % directive.  */
-  char *pdirec;			/* Pointer to current end of directive.  */
-  bool have_field_width;	/* True if FIELD_WIDTH is valid.  */
-  int field_width = 0;		/* Arg to first '*'.  */
+  بنية arg_cursor ac;
+  ac.curr_arg = ac.curr_s_arg = ac.پڇاڙي_arg = ac.direc_arg = -1;
+  حرف ثابت *direc_شروعات;	/* Start of % directive.  */
+  حرف *direc;			/* Generated % directive.  */
+  حرف *pdirec;			/* Pointer to current end of directive.  */
+  bool have_ميدان_ويڪر;	/* True if FIELD_WIDTH is valid.  */
+  صحيح ميدان_ويڪر = 0;		/* Arg to first '*'.  */
   bool have_precision;		/* True if PRECISION is valid.  */
-  int precision = 0;		/* Arg to second '*'.  */
-  char ok[UCHAR_MAX + 1];	/* ok['x'] is true if %x is allowed.  */
+  صحيح precision = 0;		/* Arg to second '*'.  */
+  حرف ok[UCHAR_MAX + 1];	/* ok['x'] is true if %x is allowed.  */
 
-  direc = xmalloc (strlen (format) + 1);
+  direc = xmalloc (لڙي_ڊيگهه (format) + 1);
 
-  for (ac.f = format; *ac.f; ac.f++)
+  لكل (ac.f = format; *ac.f; ac.f++)
     {
-      switch (*ac.f)
+      بدل (*ac.f)
         {
-        case '%':
-          direc_start = ac.f;
+        حالة '%':
+          direc_شروعات = ac.f;
           pdirec = direc;
           *pdirec++ = *ac.f++;
-          have_field_width = have_precision = false;
-          if (*ac.f == '%')
+          have_ميدان_ويڪر = have_precision = false;
+          إذا (*ac.f == '%')
             {
-              putchar ('%');
-              break;
+              اکر_لکو ('%');
+              اكسر;
             }
 
           ac = get_curr_arg (0, ac);
 
-          if (*ac.f == 'b')
+          إذا (*ac.f == 'b')
             {
               /* FIXME: Field width and precision are not supported
                  for %b, even though POSIX requires it.  */
               ac = get_curr_arg (3, ac);
-              if (ac.curr_arg < argc)
+              إذا (ac.curr_arg < argc)
                 print_esc_string (argv[ac.curr_arg]);
-              break;
+              اكسر;
             }
 
-          if (*ac.f == 'q')
+          إذا (*ac.f == 'q')
             {
               ac = get_curr_arg (3, ac);
-              if (ac.curr_arg < argc)
+              إذا (ac.curr_arg < argc)
                 {
                   fputs (quotearg_style (shell_escape_quoting_style,
                                          argv[ac.curr_arg]), stdout);
                 }
-              break;
+              اكسر;
             }
 
-          memset (ok, 0, sizeof ok);
+          memset (ok, 0, حجم ok);
           ok['a'] = ok['A'] = ok['c'] = ok['d'] = ok['e'] = ok['E'] =
             ok['f'] = ok['F'] = ok['g'] = ok['G'] = ok['i'] = ok['o'] =
             ok['s'] = ok['u'] = ok['x'] = ok['X'] = 1;
 
-          for (;; ac.f++)
+          لكل (;; ac.f++)
             {
-              switch (*ac.f)
+              بدل (*ac.f)
                 {
-#if (__GLIBC__ == 2 && 2 <= __GLIBC_MINOR__) || 3 <= __GLIBC__
-                case 'I':
-#endif
-                case '\'':
+#إذا (__GLIBC__ == 2 && 2 <= __GLIBC_MINOR__) || 3 <= __GLIBC__
+                حالة 'I':
+#جيڪڏهن_پورو
+                حالة '\'':
                   ok['a'] = ok['A'] = ok['c'] = ok['e'] = ok['E'] =
                     ok['o'] = ok['s'] = ok['x'] = ok['X'] = 0;
-                  break;
-                case '-': case '+': case ' ':
-                  break;
-                case '#':
+                  اكسر;
+                حالة '-': حالة '+': حالة ' ':
+                  اكسر;
+                حالة '#':
                   ok['c'] = ok['d'] = ok['i'] = ok['s'] = ok['u'] = 0;
-                  break;
-                case '0':
+                  اكسر;
+                حالة '0':
                   ok['c'] = ok['s'] = 0;
-                  break;
-                default:
-                  goto no_more_flag_characters;
+                  اكسر;
+                افتراضي:
+                  اذهب no_وڌيڪ_flag_characters;
                 }
               *pdirec++ = *ac.f;
             }
-        no_more_flag_characters:
+        no_وڌيڪ_flag_characters:
 
-          if (*ac.f == '*')
+          إذا (*ac.f == '*')
             {
               *pdirec++ = *ac.f++;
 
               ac = get_curr_arg (1, ac);
 
-              if (ac.curr_arg < argc)
+              إذا (ac.curr_arg < argc)
                 {
-                  intmax_t width = vstrtoimax (argv[ac.curr_arg]);
-                  if (INT_MIN <= width && width <= INT_MAX)
-                    field_width = width;
-                  else
+                  intmax_t ويڪر = vstrtoimax (argv[ac.curr_arg]);
+                  إذا (INT_MIN <= ويڪر && ويڪر <= وڌ_کان_وڌ_عدد)
+                    ميدان_ويڪر = ويڪر;
+                  وإلا
                     error (EXIT_FAILURE, 0, _("invalid field width: %s"),
                            quote (argv[ac.curr_arg]));
                 }
-              else
-                field_width = 0;
-              have_field_width = true;
+              وإلا
+                ميدان_ويڪر = 0;
+              have_ميدان_ويڪر = true;
             }
-          else
-            while (c_isdigit (*ac.f))
+          وإلا
+            طالما (c_isdigit (*ac.f))
               *pdirec++ = *ac.f++;
-          if (*ac.f == '.')
+          إذا (*ac.f == '.')
             {
               *pdirec++ = *ac.f++;
               ok['c'] = 0;
-              if (*ac.f == '*')
+              إذا (*ac.f == '*')
                 {
                   *pdirec++ = *ac.f++;
 
                   ac = get_curr_arg (2, ac);
 
-                  if (ac.curr_arg < argc)
+                  إذا (ac.curr_arg < argc)
                     {
                       intmax_t prec = vstrtoimax (argv[ac.curr_arg]);
-                      if (prec < 0)
+                      إذا (prec < 0)
                         {
                           /* A negative precision is taken as if the
                              precision were omitted, so -1 is safe
                              here even if prec < INT_MIN.  */
                           precision = -1;
                         }
-                      else if (INT_MAX < prec)
+                      وإلا إذا (وڌ_کان_وڌ_عدد < prec)
                         error (EXIT_FAILURE, 0, _("invalid precision: %s"),
                                quote (argv[ac.curr_arg]));
-                      else
+                      وإلا
                         precision = prec;
                     }
-                  else
+                  وإلا
                     precision = 0;
                   have_precision = true;
                 }
-              else
-                while (c_isdigit (*ac.f))
+              وإلا
+                طالما (c_isdigit (*ac.f))
                   *pdirec++ = *ac.f++;
             }
 
           *pdirec++ = '\0';
 
-          while (*ac.f == 'l' || *ac.f == 'L' || *ac.f == 'h'
+          طالما (*ac.f == 'l' || *ac.f == 'L' || *ac.f == 'h'
                  || *ac.f == 'j' || *ac.f == 't' || *ac.f == 'z')
             ++ac.f;
 
           {
-            unsigned char conversion = *ac.f;
-            int speclen = MIN (ac.f + 1 - direc_start, INT_MAX);
-            if (! ok[conversion])
+            بنانشان حرف conversion = *ac.f;
+            صحيح speclen = MIN (ac.f + 1 - direc_شروعات, وڌ_کان_وڌ_عدد);
+            إذا (! ok[conversion])
               error (EXIT_FAILURE, 0,
                      _("%.*s: invalid conversion specification"),
-                     speclen, direc_start);
+                     speclen, direc_شروعات);
           }
 
           ac = get_curr_arg (3, ac);
 
           print_direc (direc, *ac.f,
-                       have_field_width, field_width,
+                       have_ميدان_ويڪر, ميدان_ويڪر,
                        have_precision, precision,
-                       ac.curr_arg < argc ? argv[ac.curr_arg] : NULL);
+                       ac.curr_arg < argc ? argv[ac.curr_arg] : عدم);
 
-          break;
+          اكسر;
 
-        case '\\':
+        حالة '\\':
           ac.f += print_esc (ac.f, false);
-          break;
+          اكسر;
 
-        default:
-          putchar (*ac.f);
+        افتراضي:
+          اکر_لکو (*ac.f);
         }
     }
 
-  free (direc);
-  return MIN (argc, ac.end_arg + 1);
+  حرر (direc);
+  أرجع MIN (argc, ac.پڇاڙي_arg + 1);
 }
 
-int
-main (int argc, char **argv)
+صحيح
+مکيه (صحيح argc, حرف **argv)
 {
-  char *format;
-  int args_used;
+  حرف *format;
+  صحيح دليلون_استعمال_ٿيل;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  سيٽ_پروگرام_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  posixly_correct = (getenv ("POSIXLY_CORRECT") != NULL);
+  posixly_correct = (getenv ("POSIXLY_CORRECT") != عدم);
 
   /* We directly parse options, rather than use parse_long_options, in
      order to avoid accepting abbreviations.  */
-  if (argc == 2)
+  إذا (argc == 2)
     {
-      if (streq (argv[1], "--help"))
+      إذا (streq (argv[1], "--help"))
         usage (EXIT_SUCCESS);
 
-      if (streq (argv[1], "--version"))
+      إذا (streq (argv[1], "--version"))
         {
-          version_etc (stdout, PROGRAM_NAME, PACKAGE_NAME, Version, AUTHORS,
-                       (char *) NULL);
-          return EXIT_SUCCESS;
+          نسخو_etc (stdout, پروگرام_NAME, PACKAGE_NAME, نسخو, AUTHORS,
+                       (حرف *) عدم);
+          أرجع EXIT_SUCCESS;
         }
     }
 
   /* The above handles --help and --version.
      Since there is no other invocation of getopt, handle '--' here.  */
-  if (1 < argc && streq (argv[1], "--"))
+  إذا (1 < argc && streq (argv[1], "--"))
     {
       --argc;
       ++argv;
     }
 
-  if (argc <= 1)
+  إذا (argc <= 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
@@ -760,18 +760,18 @@ main (int argc, char **argv)
   argc -= 2;
   argv += 2;
 
-  do
+  افعل
     {
-      args_used = print_formatted (format, argc, argv);
-      argc -= args_used;
-      argv += args_used;
+      دليلون_استعمال_ٿيل = print_formatted (format, argc, argv);
+      argc -= دليلون_استعمال_ٿيل;
+      argv += دليلون_استعمال_ٿيل;
     }
-  while (args_used > 0 && argc > 0);
+  طالما (دليلون_استعمال_ٿيل > 0 && argc > 0);
 
-  if (argc > 0)
+  إذا (argc > 0)
     error (0, 0,
            _("warning: ignoring excess arguments, starting with %s"),
            quote (argv[0]));
 
-  return exit_status;
+  أرجع exit_حالت;
 }

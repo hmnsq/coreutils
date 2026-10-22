@@ -13,8 +13,8 @@
    https://blake2.net.
 */
 
-int blake2b_stream (FILE *stream, void *resstream, size_t outbytes)
+صحيح blake2b_وهڪرو (FILE *وهڪرو, فراغ *resstream, size_t outbytes)
   _GL_ATTRIBUTE_NONNULL ((1));
-typedef int ( *blake2fn )( FILE *, void *, size_t );
-#define BLAKE2S_OUTBYTES 32
-#define BLAKE2B_OUTBYTES 64
+تعريفنوع صحيح ( *blake2fn )( FILE *, فراغ *, size_t );
+#وصف_ڪريو BLAKE2S_OUTBYTES 32
+#وصف_ڪريو BLAKE2B_OUTBYTES 64

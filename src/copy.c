@@ -16,216 +16,216 @@
 
 /* Extracted from cp.c and librarified by Jim Meyering.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/ioctl.h>
-#include <sys/types.h>
-#include <selinux/selinux.h>
+#ضمن <config.h>
+#ضمن <stdio.h>
+#ضمن <sys/ioctl.h>
+#ضمن <sys/types.h>
+#ضمن <selinux/selinux.h>
 
-#if HAVE_HURD_H
+#إذا HAVE_HURD_H
 # include <hurd.h>
-#endif
-#if HAVE_PRIV_H
+#جيڪڏهن_پورو
+#إذا HAVE_PRIV_H
 # include <priv.h>
-#endif
+#جيڪڏهن_پورو
 
-#include "system.h"
-#include "acl.h"
-#include "assure.h"
-#include "backupfile.h"
-#include "canonicalize.h"
-#include "copy.h"
-#include "cp-hash.h"
-#include "fcntl--.h"
-#include "file-set.h"
-#include "filemode.h"
-#include "filenamecat.h"
-#include "force-link.h"
-#include "hash.h"
-#include "hashcode-file.h"
-#include "ignore-value.h"
-#include "issymlinkat.h"
-#include "quote.h"
-#include "renameatu.h"
-#include "root-uid.h"
-#include "same.h"
-#include "savedir.h"
-#include "stat-size.h"
-#include "stat-time.h"
-#include "utimecmp.h"
-#include "utimens.h"
-#include "write-any-file.h"
-#include "areadlink.h"
-#include "yesno.h"
-#include "selinux.h"
+#ضمن "system.h"
+#ضمن "acl.h"
+#ضمن "assure.h"
+#ضمن "backupfile.h"
+#ضمن "canonicalize.h"
+#ضمن "copy.h"
+#ضمن "cp-hash.h"
+#ضمن "fcntl--.h"
+#ضمن "file-set.h"
+#ضمن "filemode.h"
+#ضمن "filenamecat.h"
+#ضمن "force-link.h"
+#ضمن "hash.h"
+#ضمن "hashcode-file.h"
+#ضمن "ignore-value.h"
+#ضمن "issymlinkat.h"
+#ضمن "quote.h"
+#ضمن "renameatu.h"
+#ضمن "root-uid.h"
+#ضمن "same.h"
+#ضمن "savedir.h"
+#ضمن "stat-size.h"
+#ضمن "stat-time.h"
+#ضمن "utimecmp.h"
+#ضمن "utimens.h"
+#ضمن "write-any-file.h"
+#ضمن "areadlink.h"
+#ضمن "yesno.h"
+#ضمن "selinux.h"
 
-#ifndef USE_XATTR
+#جيڪڏهن_وصف_نه_ٿيل USE_XATTR
 # define USE_XATTR false
-#endif
+#جيڪڏهن_پورو
 
-#if USE_XATTR
+#إذا USE_XATTR
 # include <attr/error_context.h>
 # include <attr/libattr.h>
 # include <stdarg.h>
-#endif
+#جيڪڏهن_پورو
 
-#if HAVE_LINUX_FALLOC_H
+#إذا HAVE_LINUX_FALLOC_H
 # include <linux/falloc.h>
-#endif
+#جيڪڏهن_پورو
 
 /* See HAVE_FALLOCATE workaround when including this file.  */
-#ifdef HAVE_LINUX_FS_H
+#جيڪڏهن_وصف_ٿيل HAVE_LINUX_FS_H
 # include <linux/fs.h>
-#endif
+#جيڪڏهن_پورو
 
-#if !defined FICLONE && defined __linux__
-# define FICLONE _IOW (0x94, 9, int)
-#endif
+#إذا !defined FICLONE && defined __linux__
+# define FICLONE _IOW (0x94, 9, صحيح)
+#جيڪڏهن_پورو
 
-#if HAVE_FCLONEFILEAT && !USE_XATTR
+#إذا HAVE_FCLONEFILEAT && !USE_XATTR
 # include <sys/clonefile.h>
-#endif
+#جيڪڏهن_پورو
 
-#ifndef USE_ACL
+#جيڪڏهن_وصف_نه_ٿيل USE_ACL
 # define USE_ACL 0
-#endif
+#جيڪڏهن_پورو
 
-#define SAME_OWNER(A, B) ((A).st_uid == (B).st_uid)
-#define SAME_GROUP(A, B) ((A).st_gid == (B).st_gid)
-#define SAME_OWNER_AND_GROUP(A, B) (SAME_OWNER (A, B) && SAME_GROUP (A, B))
+#وصف_ڪريو SAME_OWNER(A, B) ((A).st_uid == (B).st_uid)
+#وصف_ڪريو SAME_گروهه(A, B) ((A).st_gid == (B).st_gid)
+#وصف_ڪريو SAME_OWNER_AND_گروهه(A, B) (SAME_OWNER (A, B) && SAME_گروهه (A, B))
 
 /* LINK_FOLLOWS_SYMLINKS is tri-state; if it is -1, we don't know
    how link() behaves, so assume we can't hardlink symlinks in that case.  */
-#if (defined HAVE_LINKAT && ! LINKAT_SYMLINK_NOTSUP) || ! LINK_FOLLOWS_SYMLINKS
+#إذا (defined HAVE_LINKAT && ! LINKAT_SYMLINK_NOTSUP) || ! LINK_FOLLOWS_SYMLINKS
 # define CAN_HARDLINK_SYMLINKS 1
-#else
+#وإلا
 # define CAN_HARDLINK_SYMLINKS 0
-#endif
+#جيڪڏهن_پورو
 
-struct dir_list
+بنية dir_list
 {
-  struct dir_list *parent;
+  بنية dir_list *والد;
   ino_t st_ino;
   dev_t st_dev;
 };
 
 /* Initial size of the cp.dest_info hash table.  */
-#define DEST_INFO_INITIAL_CAPACITY 61
+#وصف_ڪريو DEST_INFO_INITIAL_صلاحيت 61
 
-static bool copy_internal (char const *src_name, char const *dst_name,
-                           int dst_dirfd, char const *dst_relname,
-                           int nonexistent_dst, struct stat const *parent,
-                           struct dir_list *ancestors,
-                           const struct cp_options *x,
-                           bool command_line_arg,
-                           bool *first_dir_created_per_command_line_arg,
+ساكن bool copy_اندروني (حرف ثابت *src_name, حرف ثابت *dst_name,
+                           صحيح dst_dirfd, حرف ثابت *dst_relname,
+                           صحيح nonexistent_dst, بنية stat ثابت *والد,
+                           بنية dir_list *ancestors,
+                           ثابت بنية cp_options *x,
+                           bool command_سٽ_arg,
+                           bool *پهريون_dir_created_في_command_سٽ_arg,
                            bool *copy_into_self,
                            bool *rename_succeeded);
-static bool owner_failure_ok (struct cp_options const *x);
+ساكن bool owner_failure_ok (بنية cp_options ثابت *x);
 
 /* Pointers to the file names:  they're used in the diagnostic that is issued
    when we detect the user is trying to copy a directory into itself.  */
-static char const *top_level_src_name;
-static char const *top_level_dst_name;
+ساكن حرف ثابت *چوٽي_level_src_name;
+ساكن حرف ثابت *چوٽي_level_dst_name;
 
 /* debug info about the last file copy.  */
-static struct copy_debug copy_debug;
+ساكن بنية copy_debug copy_debug;
 
-static char const *
-copy_debug_string (enum copy_debug_val debug_val)
+ساكن حرف ثابت *
+copy_debug_string (تعداد copy_debug_val debug_val)
 {
-  switch (debug_val)
+  بدل (debug_val)
     {
-    case COPY_DEBUG_NO: return "no";
-    case COPY_DEBUG_YES: return "yes";
-    case COPY_DEBUG_AVOIDED: return "avoided";
-    case COPY_DEBUG_UNKNOWN: return "unknown";
+    حالة COPY_DEBUG_NO: أرجع "no";
+    حالة COPY_DEBUG_YES: أرجع "yes";
+    حالة COPY_DEBUG_AVOIDED: أرجع "avoided";
+    حالة COPY_DEBUG_UNKNOWN: أرجع "unknown";
 
-    case COPY_DEBUG_EXTERNAL:
-    case COPY_DEBUG_EXTERNAL_INTERNAL:
-    case COPY_DEBUG_MAX:
-    default:
-      if (0 < debug_val)
-        return strerror (debug_val);
+    حالة COPY_DEBUG_EXTERNAL:
+    حالة COPY_DEBUG_EXTERNAL_اندروني:
+    حالة COPY_DEBUG_MAX:
+    افتراضي:
+      إذا (0 < debug_val)
+        أرجع strerror (debug_val);
       affirm (false);
     }
 }
 
-static char const *
-copy_debug_sparse_string (enum copy_debug_val debug_val)
+ساكن حرف ثابت *
+copy_debug_sparse_string (تعداد copy_debug_val debug_val)
 {
-  switch (debug_val)
+  بدل (debug_val)
     {
-    case COPY_DEBUG_NO: return "no";
-    case COPY_DEBUG_YES: return "zeros";
-    case COPY_DEBUG_EXTERNAL: return "SEEK_HOLE";
-    case COPY_DEBUG_EXTERNAL_INTERNAL: return "SEEK_HOLE + zeros";
-    case COPY_DEBUG_UNKNOWN: return "unknown";
+    حالة COPY_DEBUG_NO: أرجع "no";
+    حالة COPY_DEBUG_YES: أرجع "zeros";
+    حالة COPY_DEBUG_EXTERNAL: أرجع "SEEK_HOLE";
+    حالة COPY_DEBUG_EXTERNAL_اندروني: أرجع "SEEK_HOLE + zeros";
+    حالة COPY_DEBUG_UNKNOWN: أرجع "unknown";
 
-    case COPY_DEBUG_AVOIDED:
-    case COPY_DEBUG_MAX:
-    default: affirm (false);
+    حالة COPY_DEBUG_AVOIDED:
+    حالة COPY_DEBUG_MAX:
+    افتراضي: affirm (false);
     }
 }
 
 /* Print --debug output on standard output.  */
-static void
-emit_debug (const struct cp_options *x)
+ساكن فراغ
+emit_debug (ثابت بنية cp_options *x)
 {
-  if (! x->hard_link && ! x->symbolic_link && x->data_copy_required)
-    printf ("copy offload: %s, reflink: %s, sparse detection: %s\n",
+  إذا (! x->hard_link && ! x->symbolic_link && x->معلومات_copy_required)
+    لکو ("copy offload: %s, reflink: %s, sparse detection: %s\n",
             copy_debug_string (copy_debug.offload),
             copy_debug_string (copy_debug.reflink),
             copy_debug_sparse_string (copy_debug.sparse_detection));
 }
 
-#ifndef DEV_FD_MIGHT_BE_CHR
+#جيڪڏهن_وصف_نه_ٿيل DEV_FD_MIGHT_BE_CHR
 # define DEV_FD_MIGHT_BE_CHR false
-#endif
+#جيڪڏهن_پورو
 
 /* Act like fstat (DIRFD, FILENAME, ST, FLAGS), except when following
    symbolic links on Solaris-like systems, treat any character-special
    device like /dev/fd/0 as if it were the file it is open on.  */
-static int
-follow_fstatat (int dirfd, char const *filename, struct stat *st, int flags)
+ساكن صحيح
+follow_fstatat (صحيح dirfd, حرف ثابت *filename, بنية stat *st, صحيح flags)
 {
-  int result = fstatat (dirfd, filename, st, flags);
+  صحيح نتيجو = fstatat (dirfd, filename, st, flags);
 
-  if (DEV_FD_MIGHT_BE_CHR && result == 0 && !(flags & AT_SYMLINK_NOFOLLOW)
-      && S_ISCHR (st->st_mode))
+  إذا (DEV_FD_MIGHT_BE_CHR && نتيجو == 0 && !(flags & AT_SYMLINK_NOFOLLOW)
+      && S_ISCHR (st->st_گهڻائي))
     {
-      static dev_t stdin_rdev;
-      static signed char stdin_rdev_status;
-      if (stdin_rdev_status == 0)
+      ساكن dev_t stdin_rdev;
+      ساكن نشانوارو حرف stdin_rdev_حالت;
+      إذا (stdin_rdev_حالت == 0)
         {
-          struct stat stdin_st;
-          if (stat ("/dev/stdin", &stdin_st) == 0 && S_ISCHR (stdin_st.st_mode)
+          بنية stat stdin_st;
+          إذا (stat ("/dev/stdin", &stdin_st) == 0 && S_ISCHR (stdin_st.st_گهڻائي)
               && minor (stdin_st.st_rdev) == STDIN_FILENO)
             {
               stdin_rdev = stdin_st.st_rdev;
-              stdin_rdev_status = 1;
+              stdin_rdev_حالت = 1;
             }
-          else
-            stdin_rdev_status = -1;
+          وإلا
+            stdin_rdev_حالت = -1;
         }
-      if (0 < stdin_rdev_status && major (stdin_rdev) == major (st->st_rdev))
-        result = fstat (minor (st->st_rdev), st);
+      إذا (0 < stdin_rdev_حالت && major (stdin_rdev) == major (st->st_rdev))
+        نتيجو = fstat (minor (st->st_rdev), st);
     }
 
-  return result;
+  أرجع نتيجو;
 }
 
 /* Perform the O(1) btrfs clone operation, if possible.
    Upon success, return 0.  Otherwise, return -1 and set errno.  */
-static inline int
-clone_file (MAYBE_UNUSED int dest_fd, MAYBE_UNUSED int src_fd)
+ساكن مضمن صحيح
+clone_file (MAYBE_اڻ_استعمال_ٿيل صحيح dest_fd, MAYBE_اڻ_استعمال_ٿيل صحيح src_fd)
 {
-#ifdef FICLONE
-  return ioctl (dest_fd, FICLONE, src_fd);
-#else
+#جيڪڏهن_وصف_ٿيل FICLONE
+  أرجع ioctl (dest_fd, FICLONE, src_fd);
+#وإلا
   errno = ENOTSUP;
-  return -1;
-#endif
+  أرجع -1;
+#جيڪڏهن_پورو
 }
 
 /* FIXME: describe */
@@ -233,66 +233,66 @@ clone_file (MAYBE_UNUSED int dest_fd, MAYBE_UNUSED int src_fd)
    performance hit that's probably noticeable only on trees deeper
    than a few hundred levels.  See use of active_dir_map in remove.c  */
 
-ATTRIBUTE_PURE
-static bool
-is_ancestor (const struct stat *sb, const struct dir_list *ancestors)
+ATTRIBUTE_خالص
+ساكن bool
+is_ancestor (ثابت بنية stat *sb, ثابت بنية dir_list *ancestors)
 {
-  while (ancestors)
+  طالما (ancestors)
     {
-      if (PSAME_INODE (ancestors, sb))
-        return true;
-      ancestors = ancestors->parent;
+      إذا (PSAME_INODE (ancestors, sb))
+        أرجع true;
+      ancestors = ancestors->والد;
     }
-  return false;
+  أرجع false;
 }
 
-static bool
-errno_unsupported (int err)
+ساكن bool
+errno_unsupported (صحيح err)
 {
-  return err == ENOTSUP || err == ENODATA;
+  أرجع err == ENOTSUP || err == ENODATA;
 }
 
-#if USE_XATTR
-ATTRIBUTE_FORMAT ((printf, 2, 3))
-static void
-copy_attr_error (MAYBE_UNUSED struct error_context *ctx,
-                 char const *fmt, ...)
+#إذا USE_XATTR
+ATTRIBUTE_FORMAT ((لکو, 2, 3))
+ساكن فراغ
+copy_attr_error (MAYBE_اڻ_استعمال_ٿيل بنية error_context *ctx,
+                 حرف ثابت *fmt, ...)
 {
-  if (!errno_unsupported (errno))
+  إذا (!errno_unsupported (errno))
     {
-      int err = errno;
+      صحيح err = errno;
       va_list ap;
 
       /* use verror module to print error message */
-      va_start (ap, fmt);
+      va_شروعات (ap, fmt);
       verror (0, err, fmt, ap);
-      va_end (ap);
+      va_پڇاڙي (ap);
     }
 }
 
-ATTRIBUTE_FORMAT ((printf, 2, 3))
-static void
-copy_attr_allerror (MAYBE_UNUSED struct error_context *ctx,
-                    char const *fmt, ...)
+ATTRIBUTE_FORMAT ((لکو, 2, 3))
+ساكن فراغ
+copy_attr_allerror (MAYBE_اڻ_استعمال_ٿيل بنية error_context *ctx,
+                    حرف ثابت *fmt, ...)
 {
-  int err = errno;
+  صحيح err = errno;
   va_list ap;
 
   /* use verror module to print error message */
-  va_start (ap, fmt);
+  va_شروعات (ap, fmt);
   verror (0, err, fmt, ap);
-  va_end (ap);
+  va_پڇاڙي (ap);
 }
 
-static char const *
-copy_attr_quote (MAYBE_UNUSED struct error_context *ctx, char const *str)
+ساكن حرف ثابت *
+copy_attr_quote (MAYBE_اڻ_استعمال_ٿيل بنية error_context *ctx, حرف ثابت *str)
 {
-  return quoteaf (str);
+  أرجع quoteaf (str);
 }
 
-static void
-copy_attr_free (MAYBE_UNUSED struct error_context *ctx,
-                MAYBE_UNUSED char const *str)
+ساكن فراغ
+copy_attr_free (MAYBE_اڻ_استعمال_ٿيل بنية error_context *ctx,
+                MAYBE_اڻ_استعمال_ٿيل حرف ثابت *str)
 {
 }
 
@@ -301,59 +301,59 @@ copy_attr_free (MAYBE_UNUSED struct error_context *ctx,
    configured for exclusion in /etc/xattr.conf.
    FIXME: Should we handle POSIX ACLs similarly?
    Return zero to skip.  */
-static int
-check_selinux_attr (char const *name, struct error_context *ctx)
+ساكن صحيح
+check_selinux_attr (حرف ثابت *name, بنية error_context *ctx)
 {
-  return STRNCMP_LIT (name, "security.selinux")
+  أرجع STRNCMP_LIT (name, "security.selinux")
          && attr_copy_check_permissions (name, ctx);
 }
 
 /* If positive SRC_FD and DST_FD descriptors are passed,
    then copy by fd, otherwise copy by name.  */
 
-static bool
-copy_attr (char const *src_path, int src_fd,
-           char const *dst_path, int dst_fd, struct cp_options const *x)
+ساكن bool
+copy_attr (حرف ثابت *src_رستو, صحيح src_fd,
+           حرف ثابت *dst_رستو, صحيح dst_fd, بنية cp_options ثابت *x)
 {
-  bool all_errors = (!x->data_copy_required || x->require_preserve_xattr);
+  bool all_errors = (!x->معلومات_copy_required || x->require_preserve_xattr);
   bool some_errors = (!all_errors && !x->reduce_diagnostics);
-  int (*check) (char const *, struct error_context *)
-    = (x->preserve_security_context || x->set_security_context
-       ? check_selinux_attr : NULL);
+  صحيح (*check) (حرف ثابت *, بنية error_context *)
+    = (x->preserve_security_context || x->سيٽ_security_context
+       ? check_selinux_attr : عدم);
 
-# if 4 < __GNUC__ + (8 <= __GNUC_MINOR__)
+# إذا 4 < __GNUC__ + (8 <= __GNUC_MINOR__)
   /* Pacify gcc -Wsuggest-attribute=format through at least GCC 13.2.1.  */
-#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ڌڪو
 #  pragma GCC diagnostic ignored "-Wsuggest-attribute=format"
 # endif
-  struct error_context *ctx
+  بنية error_context *ctx
     = (all_errors || some_errors
-       ? (&(struct error_context) {
+       ? (&(بنية error_context) {
            .error = all_errors ? copy_attr_allerror : copy_attr_error,
            .quote = copy_attr_quote,
            .quote_free = copy_attr_free
          })
-       : NULL);
-# if 4 < __GNUC__ + (8 <= __GNUC_MINOR__)
-#  pragma GCC diagnostic pop
+       : عدم);
+# إذا 4 < __GNUC__ + (8 <= __GNUC_MINOR__)
+#  pragma GCC diagnostic ڪڍو
 # endif
 
-  return ! (0 <= src_fd && 0 <= dst_fd
-            ? attr_copy_fd (src_path, src_fd, dst_path, dst_fd, check, ctx)
-            : attr_copy_file (src_path, dst_path, check, ctx));
+  أرجع ! (0 <= src_fd && 0 <= dst_fd
+            ? attr_copy_fd (src_رستو, src_fd, dst_رستو, dst_fd, check, ctx)
+            : attr_copy_file (src_رستو, dst_رستو, check, ctx));
 }
-#else /* USE_XATTR */
+#وإلا /* USE_XATTR */
 
-static bool
-copy_attr (MAYBE_UNUSED char const *src_path,
-           MAYBE_UNUSED int src_fd,
-           MAYBE_UNUSED char const *dst_path,
-           MAYBE_UNUSED int dst_fd,
-           MAYBE_UNUSED struct cp_options const *x)
+ساكن bool
+copy_attr (MAYBE_اڻ_استعمال_ٿيل حرف ثابت *src_رستو,
+           MAYBE_اڻ_استعمال_ٿيل صحيح src_fd,
+           MAYBE_اڻ_استعمال_ٿيل حرف ثابت *dst_رستو,
+           MAYBE_اڻ_استعمال_ٿيل صحيح dst_fd,
+           MAYBE_اڻ_استعمال_ٿيل بنية cp_options ثابت *x)
 {
-  return true;
+  أرجع true;
 }
-#endif /* USE_XATTR */
+#جيڪڏهن_پورو /* USE_XATTR */
 
 /* Read the contents of the directory SRC_NAME_IN, and recursively
    copy the contents to DST_NAME_IN aka DST_DIRFD+DST_RELNAME_IN.
@@ -368,95 +368,95 @@ copy_attr (MAYBE_UNUSED char const *src_path,
    *FIRST_DIR_CREATED_PER_COMMAND_LINE_ARG only upon completion.
    Return true if successful.  */
 
-static bool
-copy_dir (char const *src_name_in, char const *dst_name_in,
-          int dst_dirfd, char const *dst_relname_in, bool new_dst,
-          const struct stat *src_sb, struct dir_list *ancestors,
-          const struct cp_options *x,
-          bool *first_dir_created_per_command_line_arg,
+ساكن bool
+copy_dir (حرف ثابت *src_name_اندريون, حرف ثابت *dst_name_اندريون,
+          صحيح dst_dirfd, حرف ثابت *dst_relname_اندريون, bool new_dst,
+          ثابت بنية stat *src_sb, بنية dir_list *ancestors,
+          ثابت بنية cp_options *x,
+          bool *پهريون_dir_created_في_command_سٽ_arg,
           bool *copy_into_self)
 {
-  char *name_space;
-  char *namep;
-  struct cp_options non_command_line_options = *x;
+  حرف *name_space;
+  حرف *namep;
+  بنية cp_options non_command_سٽ_options = *x;
   bool ok = true;
 
-  name_space = savedir (src_name_in, SAVEDIR_SORT_FASTREAD);
-  if (name_space == NULL)
+  name_space = savedir (src_name_اندريون, SAVEDIR_ترتيب_ڏيو_FASTREAD);
+  إذا (name_space == عدم)
     {
       /* This diagnostic is a bit vague because savedir can fail in
          several different ways.  */
-      error (0, errno, _("cannot access %s"), quoteaf (src_name_in));
-      return false;
+      error (0, errno, _("cannot access %s"), quoteaf (src_name_اندريون));
+      أرجع false;
     }
 
   /* For cp's -H option, dereference command line arguments, but do not
      dereference symlinks that are found via recursive traversal.  */
-  if (x->dereference == DEREF_COMMAND_LINE_ARGUMENTS)
-    non_command_line_options.dereference = DEREF_NEVER;
+  إذا (x->dereference == DEREF_COMMAND_سٽ_ARGUMENTS)
+    non_command_سٽ_options.dereference = DEREF_NEVER;
 
-  bool new_first_dir_created = false;
+  bool new_پهريون_dir_created = false;
   namep = name_space;
-  while (*namep != '\0')
+  طالما (*namep != '\0')
     {
       bool local_copy_into_self;
-      char *src_name = file_name_concat (src_name_in, namep, NULL);
-      char *dst_name = file_name_concat (dst_name_in, namep, NULL);
-      bool first_dir_created = *first_dir_created_per_command_line_arg;
+      حرف *src_name = file_name_concat (src_name_اندريون, namep, عدم);
+      حرف *dst_name = file_name_concat (dst_name_اندريون, namep, عدم);
+      bool پهريون_dir_created = *پهريون_dir_created_في_command_سٽ_arg;
       bool rename_succeeded;
 
-      ok &= copy_internal (src_name, dst_name, dst_dirfd,
-                           dst_name + (dst_relname_in - dst_name_in),
+      ok &= copy_اندروني (src_name, dst_name, dst_dirfd,
+                           dst_name + (dst_relname_اندريون - dst_name_اندريون),
                            new_dst, src_sb,
-                           ancestors, &non_command_line_options, false,
-                           &first_dir_created,
+                           ancestors, &non_command_سٽ_options, false,
+                           &پهريون_dir_created,
                            &local_copy_into_self, &rename_succeeded);
       *copy_into_self |= local_copy_into_self;
 
-      free (dst_name);
-      free (src_name);
+      حرر (dst_name);
+      حرر (src_name);
 
       /* If we're copying into self, there's no point in continuing,
          and in fact, that would even infloop, now that we record only
          the first created directory per command line argument.  */
-      if (local_copy_into_self)
-        break;
+      إذا (local_copy_into_self)
+        اكسر;
 
-      new_first_dir_created |= first_dir_created;
-      namep += strlen (namep) + 1;
+      new_پهريون_dir_created |= پهريون_dir_created;
+      namep += لڙي_ڊيگهه (namep) + 1;
     }
-  free (name_space);
-  *first_dir_created_per_command_line_arg = new_first_dir_created;
+  حرر (name_space);
+  *پهريون_dir_created_في_command_سٽ_arg = new_پهريون_dir_created;
 
-  return ok;
+  أرجع ok;
 }
 
 /* Change the file mode bits of the file identified by DESC or
    DIRFD+NAME to MODE.  Use DESC if DESC is valid and fchmod is
    available, DIRFD+NAME otherwise.  */
 
-static int
-fchmod_or_lchmod (int desc, int dirfd, char const *name, mode_t mode)
+ساكن صحيح
+fchmod_or_lchmod (صحيح desc, صحيح dirfd, حرف ثابت *name, mode_t گهڻائي_2)
 {
-#if HAVE_FCHMOD
-  if (0 <= desc)
-    return fchmod (desc, mode);
-#endif
-  return lchmodat (dirfd, name, mode);
+#إذا HAVE_FCHMOD
+  إذا (0 <= desc)
+    أرجع fchmod (desc, گهڻائي_2);
+#جيڪڏهن_پورو
+  أرجع lchmodat (dirfd, name, گهڻائي_2);
 }
 
 /* Change the ownership of the file identified by DESC or
    DIRFD+NAME to UID+GID.  Use DESC if DESC is valid and fchown is
    available, DIRFD+NAME otherwise.  */
 
-static int
-fchown_or_lchown (int desc, int dirfd, char const *name, uid_t uid, gid_t gid)
+ساكن صحيح
+fchown_or_lchown (صحيح desc, صحيح dirfd, حرف ثابت *name, uid_t uid, gid_t gid)
 {
-#if HAVE_FCHOWN
-  if (0 <= desc)
-    return fchown (desc, uid, gid);
-#endif
-  return lchownat (dirfd, name, uid, gid);
+#إذا HAVE_FCHOWN
+  إذا (0 <= desc)
+    أرجع fchown (desc, uid, gid);
+#جيڪڏهن_پورو
+  أرجع lchownat (dirfd, name, uid, gid);
 }
 
 /* Set the owner and owning group of DEST_DESC to the st_uid and
@@ -471,11 +471,11 @@ fchown_or_lchown (int desc, int dirfd, char const *name, uid_t uid, gid_t gid)
    Return 1 if the initial syscall succeeds, 0 if it fails but it's OK
    not to preserve ownership, -1 otherwise.  */
 
-static int
-set_owner (const struct cp_options *x, char const *dst_name,
-           int dst_dirfd, char const *dst_relname, int dest_desc,
-           struct stat const *src_sb, bool new_dst,
-           struct stat const *dst_sb)
+ساكن صحيح
+سيٽ_owner (ثابت بنية cp_options *x, حرف ثابت *dst_name,
+           صحيح dst_dirfd, حرف ثابت *dst_relname, صحيح dest_desc,
+           بنية stat ثابت *src_sb, bool new_dst,
+           بنية stat ثابت *dst_sb)
 {
   uid_t uid = src_sb->st_uid;
   gid_t gid = src_sb->st_gid;
@@ -486,43 +486,43 @@ set_owner (const struct cp_options *x, char const *dst_name,
      group.  Avoid the window by first changing to a restrictive
      temporary mode if necessary.  */
 
-  if (!new_dst && (x->preserve_mode || x->move_mode || x->set_mode))
+  إذا (!new_dst && (x->preserve_گهڻائي || x->move_گهڻائي || x->سيٽ_گهڻائي))
     {
-      mode_t old_mode = dst_sb->st_mode;
-      mode_t new_mode =
-        (x->preserve_mode || x->move_mode ? src_sb->st_mode : x->mode);
-      mode_t restrictive_temp_mode = old_mode & new_mode & S_IRWXU;
+      mode_t old_گهڻائي = dst_sb->st_گهڻائي;
+      mode_t new_گهڻائي =
+        (x->preserve_گهڻائي || x->move_گهڻائي ? src_sb->st_گهڻائي : x->گهڻائي_2);
+      mode_t restrictive_عارضي_گهڻائي = old_گهڻائي & new_گهڻائي & S_IRWXU;
 
-      if ((USE_ACL
-           || (old_mode & CHMOD_MODE_BITS
-               & (~new_mode | S_ISUID | S_ISGID | S_ISVTX)))
-          && qset_acl (dst_name, dest_desc, restrictive_temp_mode) != 0)
+      إذا ((USE_ACL
+           || (old_گهڻائي & CHMOD_گهڻائي_بٽ
+               & (~new_گهڻائي | S_ISUID | S_ISGID | S_ISVTX)))
+          && qset_acl (dst_name, dest_desc, restrictive_عارضي_گهڻائي) != 0)
         {
-          if (! owner_failure_ok (x))
+          إذا (! owner_failure_ok (x))
             error (0, errno, _("clearing permissions for %s"),
                    quoteaf (dst_name));
-          return -x->require_preserve;
+          أرجع -x->require_preserve;
         }
     }
 
-  if (fchown_or_lchown (dest_desc, dst_dirfd, dst_relname, uid, gid) == 0)
-    return 1;
+  إذا (fchown_or_lchown (dest_desc, dst_dirfd, dst_relname, uid, gid) == 0)
+    أرجع 1;
 
   /* The ownership change failed.  If the failure merely means we lack
      privileges to change owner+group, try to change just the group
      and ignore any failure of this.  Otherwise, report an error.  */
-  if (chown_failure_ok (x))
-    ignore_value (fchown_or_lchown (dest_desc, dst_dirfd, dst_relname,
+  إذا (chown_failure_ok (x))
+    ignore_قدر (fchown_or_lchown (dest_desc, dst_dirfd, dst_relname,
                                     -1, gid));
-  else
+  وإلا
     {
       error (0, errno, _("failed to preserve ownership for %s"),
              quoteaf (dst_name));
-      if (x->require_preserve)
-        return -1;
+      إذا (x->require_preserve)
+        أرجع -1;
     }
 
-  return 0;
+  أرجع 0;
 }
 
 /* Set the st_author field of DEST_DESC to the st_author field of
@@ -530,11 +530,11 @@ set_owner (const struct cp_options *x, char const *dst_name,
    of DST_NAME instead.  DEST_DESC must refer to the same file as
    DST_NAME if defined.  */
 
-static void
-set_author (MAYBE_UNUSED char const *dst_name, MAYBE_UNUSED int dest_desc,
-            MAYBE_UNUSED const struct stat *src_sb)
+ساكن فراغ
+سيٽ_author (MAYBE_اڻ_استعمال_ٿيل حرف ثابت *dst_name, MAYBE_اڻ_استعمال_ٿيل صحيح dest_desc,
+            MAYBE_اڻ_استعمال_ٿيل ثابت بنية stat *src_sb)
 {
-#if HAVE_STRUCT_STAT_ST_AUTHOR
+#إذا HAVE_STRUCT_STAT_ST_AUTHOR
   /* FIXME: Modify the following code so that it does not
      follow symbolic links.  */
 
@@ -542,17 +542,17 @@ set_author (MAYBE_UNUSED char const *dst_name, MAYBE_UNUSED int dest_desc,
   file_t file = (dest_desc < 0
                  ? file_name_lookup (dst_name, 0, 0)
                  : getdport (dest_desc));
-  if (file == MACH_PORT_NULL)
+  إذا (file == MACH_پورٽ_NULL)
     error (0, errno, _("failed to lookup file %s"), quoteaf (dst_name));
-  else
+  وإلا
     {
       error_t err = file_chauthor (file, src_sb->st_author);
-      if (err)
+      إذا (err)
         error (0, err, _("failed to preserve authorship for %s"),
                quoteaf (dst_name));
-      mach_port_deallocate (mach_task_self (), file);
+      mach_پورٽ_deallocate (mach_task_self (), file);
     }
-#endif
+#جيڪڏهن_پورو
 }
 
 /* Set the default security context for the process.  New files will
@@ -565,49 +565,49 @@ set_author (MAYBE_UNUSED char const *dst_name, MAYBE_UNUSED int dest_desc,
    Return FALSE on failure, TRUE on success.  */
 
 bool
-set_process_security_ctx (char const *src_name, char const *dst_name,
-                          mode_t mode, bool new_dst, const struct cp_options *x)
+سيٽ_process_security_ctx (حرف ثابت *src_name, حرف ثابت *dst_name,
+                          mode_t گهڻائي_2, bool new_dst, ثابت بنية cp_options *x)
 {
-  if (x->preserve_security_context)
+  إذا (x->preserve_security_context)
     {
       /* Set the default context for the process to match the source.  */
-      bool all_errors = !x->data_copy_required || x->require_preserve_context;
+      bool all_errors = !x->معلومات_copy_required || x->require_preserve_context;
       bool some_errors = !all_errors && !x->reduce_diagnostics;
-      char *con_raw;
+      حرف *con_raw;
 
-      if (0 <= lgetfilecon_raw (src_name, &con_raw))
+      إذا (0 <= lgetfilecon_raw (src_name, &con_raw))
         {
-          if (setfscreatecon_raw (con_raw) < 0)
+          إذا (setfscreatecon_raw (con_raw) < 0)
             {
-              if (all_errors || (some_errors && !errno_unsupported (errno)))
+              إذا (all_errors || (some_errors && !errno_unsupported (errno)))
                 error (0, errno,
                        _("failed to set default file creation context to %s"),
                        quote (con_raw));
-              if (x->require_preserve_context)
+              إذا (x->require_preserve_context)
                 {
                   freecon (con_raw);
-                  return false;
+                  أرجع false;
                 }
             }
           freecon (con_raw);
         }
-      else
+      وإلا
         {
-          if (all_errors || (some_errors && !errno_unsupported (errno)))
+          إذا (all_errors || (some_errors && !errno_unsupported (errno)))
             {
               error (0, errno,
                      _("failed to get security context of %s"),
                      quoteaf (src_name));
             }
-          if (x->require_preserve_context)
-            return false;
+          إذا (x->require_preserve_context)
+            أرجع false;
         }
     }
-  else if (x->set_security_context)
+  وإلا إذا (x->سيٽ_security_context)
     {
       /* With -Z, adjust the default context for the process
          to have the type component adjusted as per the destination path.  */
-      if (new_dst && defaultcon (x->set_security_context, dst_name, mode) < 0
+      إذا (new_dst && defaultcon (x->سيٽ_security_context, dst_name, گهڻائي_2) < 0
           && ! ignorable_ctx_err (errno))
         {
           error (0, errno,
@@ -616,7 +616,7 @@ set_process_security_ctx (char const *src_name, char const *dst_name,
         }
     }
 
-  return true;
+  أرجع true;
 }
 
 /* Reset the security context of DST_NAME, to that already set
@@ -627,51 +627,51 @@ set_process_security_ctx (char const *src_name, char const *dst_name,
    Return false on failure, true on success.  */
 
 bool
-set_file_security_ctx (char const *dst_name,
-                       bool recurse, const struct cp_options *x)
+سيٽ_file_security_ctx (حرف ثابت *dst_name,
+                       bool recurse, ثابت بنية cp_options *x)
 {
-  bool all_errors = (!x->data_copy_required
+  bool all_errors = (!x->معلومات_copy_required
                      || x->require_preserve_context);
   bool some_errors = !all_errors && !x->reduce_diagnostics;
 
-  if (! restorecon (x->set_security_context, dst_name, recurse))
+  إذا (! restorecon (x->سيٽ_security_context, dst_name, recurse))
     {
-      if (all_errors || (some_errors && !errno_unsupported (errno)))
+      إذا (all_errors || (some_errors && !errno_unsupported (errno)))
         error (0, errno, _("failed to set the security context of %s"),
                quoteaf_n (0, dst_name));
-      return false;
+      أرجع false;
     }
 
-  return true;
+  أرجع true;
 }
 
-#if HAVE_FCLONEFILEAT && !USE_XATTR
+#إذا HAVE_FCLONEFILEAT && !USE_XATTR
 # include <sys/acl.h>
 /* Return true if FD has a nontrivial ACL.  */
-static bool
-fd_has_acl (int fd)
+ساكن bool
+fd_has_acl (صحيح fd)
 {
   /* Every platform with fclonefileat (macOS 10.12 or later) also has
      acl_get_fd_np.  */
   bool has_acl = false;
   acl_t acl = acl_get_fd_np (fd, ACL_TYPE_EXTENDED);
-  if (acl)
+  إذا (acl)
     {
-      acl_entry_t ace;
-      has_acl = 0 <= acl_get_entry (acl, ACL_FIRST_ENTRY, &ace);
+      acl_داخلا_t ace;
+      has_acl = 0 <= acl_get_داخلا (acl, ACL_پهريون_داخلا, &ace);
       acl_free (acl);
     }
-  return has_acl;
+  أرجع has_acl;
 }
-#endif
+#جيڪڏهن_پورو
 
 /* Handle failure from FICLONE or fclonefileat.
    Return FALSE if it's a terminal failure for this file.  */
 
-static bool
-handle_clone_fail (int dst_dirfd, char const *dst_relname,
-                   char const *src_name, char const *dst_name,
-                   bool new_dst, enum Reflink_type reflink_mode)
+ساكن bool
+handle_clone_fail (صحيح dst_dirfd, حرف ثابت *dst_relname,
+                   حرف ثابت *src_name, حرف ثابت *dst_name,
+                   bool new_dst, تعداد Reflink_type reflink_گهڻائي)
 {
   /* Record errno for debugging, but diagnose the failure and return
      false only if either --reflink=always, or errno is so serious
@@ -683,8 +683,8 @@ handle_clone_fail (int dst_dirfd, char const *dst_relname,
      in 2023 <https://bugs.gnu.org/60489>.  */
 
   copy_debug.reflink = errno;
-  if (! (reflink_mode == REFLINK_ALWAYS || errno == EIO))
-    return true;
+  إذا (! (reflink_گهڻائي == REFLINK_ALWAYS || errno == EIO))
+    أرجع true;
 
   error (0, errno, _("failed to clone %s from %s"),
          quoteaf_n (0, dst_name), quoteaf_n (1, src_name));
@@ -694,11 +694,11 @@ handle_clone_fail (int dst_dirfd, char const *dst_relname,
      for removal is a Linux kernel bug, as ioctl with FICLONE is
      supposed to be atomic.  We don't know whether currently supported
      kernels have the problem, so play it safe.  */
-  if (new_dst /* currently not for fclonefileat().  */
+  إذا (new_dst /* currently not for fclonefileat().  */
       && unlinkat (dst_dirfd, dst_relname, 0) < 0 && errno != ENOENT)
     error (0, errno, _("cannot remove %s"), quoteaf (dst_name));
 
-  return false;
+  أرجع false;
 }
 
 /* Copy a regular file from SRC_NAME to DST_NAME aka DST_DIRFD+DST_RELNAME.
@@ -717,65 +717,65 @@ handle_clone_fail (int dst_dirfd, char const *dst_relname,
    it might be updated by calling fstat again on the same file,
    to give it slightly more up-to-date contents.  */
 
-static bool
-copy_reg (char const *src_name, char const *dst_name,
-          int dst_dirfd, char const *dst_relname,
-          const struct cp_options *x,
-          mode_t dst_mode, mode_t omitted_permissions, bool *new_dst,
-          struct stat *src_sb)
+ساكن bool
+copy_reg (حرف ثابت *src_name, حرف ثابت *dst_name,
+          صحيح dst_dirfd, حرف ثابت *dst_relname,
+          ثابت بنية cp_options *x,
+          mode_t dst_گهڻائي, mode_t omitted_permissions, bool *new_dst,
+          بنية stat *src_sb)
 {
-  int dest_desc;
-  int dest_errno;
-  int source_desc;
+  صحيح dest_desc;
+  صحيح dest_errno;
+  صحيح ذريعو_desc;
   mode_t extra_permissions;
-  struct stat sb;
-  struct stat src_open_sb;
+  بنية stat sb;
+  بنية stat src_open_sb;
   bool return_val = true;
-  bool data_copy_required = x->data_copy_required;
+  bool معلومات_copy_required = x->معلومات_copy_required;
   bool preserve_xattr = USE_XATTR & x->preserve_xattr;
 
   copy_debug.offload = COPY_DEBUG_UNKNOWN;
-  copy_debug.reflink = x->reflink_mode ? COPY_DEBUG_UNKNOWN : COPY_DEBUG_NO;
+  copy_debug.reflink = x->reflink_گهڻائي ? COPY_DEBUG_UNKNOWN : COPY_DEBUG_NO;
   copy_debug.sparse_detection = COPY_DEBUG_UNKNOWN;
 
-  source_desc = open (src_name,
-                      (O_RDONLY | O_BINARY
+  ذريعو_desc = open (src_name,
+                      (O_RDONLY | O_ٻٽو
                        | (x->dereference == DEREF_NEVER ? O_NOFOLLOW : 0)));
-  if (source_desc < 0)
+  إذا (ذريعو_desc < 0)
     {
       error (0, errno, _("cannot open %s for reading"), quoteaf (src_name));
-      return false;
+      أرجع false;
     }
 
-  if (fstat (source_desc, &src_open_sb) != 0)
+  إذا (fstat (ذريعو_desc, &src_open_sb) != 0)
     {
       error (0, errno, _("cannot fstat %s"), quoteaf (src_name));
       return_val = false;
-      goto close_src_desc;
+      اذهب close_src_desc;
     }
 
   /* Compare the source dev/ino from the open file to the incoming,
      saved ones obtained via a previous call to stat.  */
-  if (! psame_inode (src_sb, &src_open_sb))
+  إذا (! psame_inode (src_sb, &src_open_sb))
     {
       error (0, 0,
              _("skipping file %s, as it was replaced while being copied"),
              quoteaf (src_name));
       return_val = false;
-      goto close_src_desc;
+      اذهب close_src_desc;
     }
 
   /* Might as well tell the caller about the latest version of the
      source file status, since we have it already.  */
   *src_sb = src_open_sb;
-  mode_t src_mode = src_sb->st_mode;
+  mode_t src_گهڻائي = src_sb->st_گهڻائي;
 
   /* The semantics of the following open calls are mandated
      by the specs for both cp and mv.  */
-  if (! *new_dst)
+  إذا (! *new_dst)
     {
-      int open_flags =
-        O_WRONLY | O_BINARY | (data_copy_required ? O_TRUNC : 0);
+      صحيح open_flags =
+        O_WRONLY | O_ٻٽو | (معلومات_copy_required ? O_TRUNC : 0);
       dest_desc = openat (dst_dirfd, dst_relname, open_flags);
       dest_errno = errno;
 
@@ -786,48 +786,48 @@ copy_reg (char const *src_name, char const *dst_name,
          the existing context according to the system default for the dest.
          Note we set the context here, _after_ the file is opened, lest the
          new context disallow that.  */
-      if (0 <= dest_desc
-          && (x->set_security_context || x->preserve_security_context))
+      إذا (0 <= dest_desc
+          && (x->سيٽ_security_context || x->preserve_security_context))
         {
-          if (! set_file_security_ctx (dst_name, false, x))
+          إذا (! سيٽ_file_security_ctx (dst_name, false, x))
             {
-              if (x->require_preserve_context)
+              إذا (x->require_preserve_context)
                 {
                   return_val = false;
-                  goto close_src_and_dst_desc;
+                  اذهب close_src_and_dst_desc;
                 }
             }
         }
 
-      if (dest_desc < 0 && dest_errno != ENOENT
+      إذا (dest_desc < 0 && dest_errno != ENOENT
           && x->unlink_dest_after_failed_open)
         {
-          if (unlinkat (dst_dirfd, dst_relname, 0) == 0)
+          إذا (unlinkat (dst_dirfd, dst_relname, 0) == 0)
             {
-              if (x->verbose)
-                printf (_("removed %s\n"), quoteaf (dst_name));
+              إذا (x->verbose)
+                لکو (_("removed %s\n"), quoteaf (dst_name));
             }
-          else if (errno != ENOENT)
+          وإلا إذا (errno != ENOENT)
             {
               error (0, errno, _("cannot remove %s"), quoteaf (dst_name));
               return_val = false;
-              goto close_src_desc;
+              اذهب close_src_desc;
             }
 
           dest_errno = ENOENT;
         }
 
-      if (dest_desc < 0 && dest_errno == ENOENT)
+      إذا (dest_desc < 0 && dest_errno == ENOENT)
         {
           /* Ensure there is no race where a file may be left without
              an appropriate security context.  */
-          if (x->set_security_context)
+          إذا (x->سيٽ_security_context)
             {
-              if (! set_process_security_ctx (src_name, dst_name, dst_mode,
+              إذا (! سيٽ_process_security_ctx (src_name, dst_name, dst_گهڻائي,
                                               true, x))
                 {
                   return_val = false;
-                  goto close_src_desc;
+                  اذهب close_src_desc;
                 }
             }
 
@@ -836,9 +836,9 @@ copy_reg (char const *src_name, char const *dst_name,
         }
     }
 
-  if (*new_dst)
+  إذا (*new_dst)
     {
-#if HAVE_FCLONEFILEAT && !USE_XATTR
+#إذا HAVE_FCLONEFILEAT && !USE_XATTR
 # ifndef CLONE_ACL
 #  define CLONE_ACL 0 /* Added in macOS 12.6.  */
 # endif
@@ -850,99 +850,99 @@ copy_reg (char const *src_name, char const *dst_name,
          if writing through dangling symlinks.  Although the circa
          2023 macOS documentation doesn't say so, CLONE_NOFOLLOW
          affects the destination file too.  */
-      if (data_copy_required && x->reflink_mode
+      إذا (معلومات_copy_required && x->reflink_گهڻائي
           && (CLONE_NOOWNERCOPY || x->preserve_ownership))
         {
           /* Try fclonefileat so long as it won't create the
              destination with unwanted permissions, which could lead
              to a security race.  */
-          mode_t cloned_mode_bits = S_ISVTX | S_IRWXUGO;
-          mode_t cloned_mode = src_mode & cloned_mode_bits;
-          mode_t desired_mode
-            = (x->preserve_mode ? src_mode & CHMOD_MODE_BITS
-               : x->set_mode ? x->mode
-               : ((x->explicit_no_preserve_mode ? MODE_RW_UGO : dst_mode)
+          mode_t cloned_گهڻائي_بٽ = S_ISVTX | S_IRWXUGO;
+          mode_t cloned_گهڻائي = src_گهڻائي & cloned_گهڻائي_بٽ;
+          mode_t desired_گهڻائي
+            = (x->preserve_گهڻائي ? src_گهڻائي & CHMOD_گهڻائي_بٽ
+               : x->سيٽ_گهڻائي ? x->گهڻائي_2
+               : ((x->explicit_no_preserve_گهڻائي ? گهڻائي_RW_UGO : dst_گهڻائي)
                   & ~ cached_umask ()));
-          if (! (cloned_mode & ~desired_mode))
+          إذا (! (cloned_گهڻائي & ~desired_گهڻائي))
             {
-              int fc_flags
+              صحيح fc_flags
                 = (CLONE_NOFOLLOW
-                   | (x->preserve_mode ? CLONE_ACL : 0)
+                   | (x->preserve_گهڻائي ? CLONE_ACL : 0)
                    | (x->preserve_ownership ? 0 : CLONE_NOOWNERCOPY));
-              int s = fclonefileat (source_desc, dst_dirfd, dst_relname,
+              صحيح s = fclonefileat (ذريعو_desc, dst_dirfd, dst_relname,
                                     fc_flags);
-              if (s != 0 && (fc_flags & CLONE_ACL) && errno == EINVAL)
+              إذا (s != 0 && (fc_flags & CLONE_ACL) && errno == EINVAL)
                 {
                   fc_flags &= ~CLONE_ACL;
-                  s = fclonefileat (source_desc, dst_dirfd, dst_relname,
+                  s = fclonefileat (ذريعو_desc, dst_dirfd, dst_relname,
                                     fc_flags);
                 }
-              if (s == 0)
+              إذا (s == 0)
                 {
                   copy_debug.reflink = COPY_DEBUG_YES;
 
                   /* Update the clone's timestamps and permissions
                      as needed.  */
 
-                  if (!x->preserve_timestamps)
+                  إذا (!x->preserve_timestamps)
                     {
-                      struct timespec timespec[2];
+                      بنية timespec timespec[2];
                       timespec[0].tv_nsec = timespec[1].tv_nsec = UTIME_NOW;
-                      if (utimensat (dst_dirfd, dst_relname, timespec,
+                      إذا (utimensat (dst_dirfd, dst_relname, timespec,
                                      AT_SYMLINK_NOFOLLOW)
                           != 0)
                         {
                           error (0, errno, _("updating times for %s"),
                                  quoteaf (dst_name));
                           return_val = false;
-                          goto close_src_desc;
+                          اذهب close_src_desc;
                         }
                     }
 
-                  extra_permissions = desired_mode & ~cloned_mode;
-                  if (!extra_permissions
-                      && (!x->preserve_mode || (fc_flags & CLONE_ACL)
-                          || !fd_has_acl (source_desc)))
+                  extra_permissions = desired_گهڻائي & ~cloned_گهڻائي;
+                  إذا (!extra_permissions
+                      && (!x->preserve_گهڻائي || (fc_flags & CLONE_ACL)
+                          || !fd_has_acl (ذريعو_desc)))
                     {
-                      goto close_src_desc;
+                      اذهب close_src_desc;
                     }
 
                   /* Either some desired permissions were not cloned,
                      or ACLs were not cloned despite that being requested.  */
                   omitted_permissions = 0;
                   dest_desc = -1;
-                  goto set_dest_mode;
+                  اذهب سيٽ_dest_گهڻائي;
                 }
-              if (! handle_clone_fail (dst_dirfd, dst_relname, src_name,
+              إذا (! handle_clone_fail (dst_dirfd, dst_relname, src_name,
                                        dst_name,
                                        false /* We didn't create dst  */,
-                                       x->reflink_mode))
+                                       x->reflink_گهڻائي))
                 {
                   return_val = false;
-                  goto close_src_desc;
+                  اذهب close_src_desc;
                 }
             }
-          else
+          وإلا
             copy_debug.reflink = COPY_DEBUG_AVOIDED;
         }
-      else if (data_copy_required && x->reflink_mode)
+      وإلا إذا (معلومات_copy_required && x->reflink_گهڻائي)
         {
-          if (! CLONE_NOOWNERCOPY)
+          إذا (! CLONE_NOOWNERCOPY)
             copy_debug.reflink = COPY_DEBUG_AVOIDED;
         }
-#endif
+#جيڪڏهن_پورو
 
       /* To allow copying xattrs on read-only files, create with u+w.
          This satisfies an inode permission check done by
          xattr_permission in fs/xattr.c of the GNU/Linux kernel.  */
-      mode_t open_mode =
-        ((dst_mode & ~omitted_permissions)
+      mode_t open_گهڻائي =
+        ((dst_گهڻائي & ~omitted_permissions)
          | (preserve_xattr && !x->owner_privileges ? S_IWUSR : 0));
-      extra_permissions = open_mode & ~dst_mode; /* either 0 or S_IWUSR */
+      extra_permissions = open_گهڻائي & ~dst_گهڻائي; /* either 0 or S_IWUSR */
 
-      int open_flags = O_WRONLY | O_CREAT | O_BINARY;
+      صحيح open_flags = O_WRONLY | O_CREAT | O_ٻٽو;
       dest_desc = openat (dst_dirfd, dst_relname, open_flags | O_EXCL,
-                          open_mode);
+                          open_گهڻائي);
       dest_errno = errno;
 
       /* When trying to copy through a dangling destination symlink,
@@ -955,190 +955,190 @@ copy_reg (char const *src_name, char const *dst_name,
          call open again, but without O_EXCL (potentially dangerous).
          If not, fail with a diagnostic.  These shenanigans are necessary
          only when copying, i.e., not in move_mode.  */
-      if (dest_desc < 0 && dest_errno == EEXIST && ! x->move_mode)
+      إذا (dest_desc < 0 && dest_errno == EEXIST && ! x->move_گهڻائي)
         {
-          if (issymlinkat (dst_dirfd, dst_relname) == 1)
+          إذا (issymlinkat (dst_dirfd, dst_relname) == 1)
             {
-              if (x->open_dangling_dest_symlink)
+              إذا (x->open_dangling_dest_symlink)
                 {
                   dest_desc = openat (dst_dirfd, dst_relname,
-                                      open_flags, open_mode);
+                                      open_flags, open_گهڻائي);
                   dest_errno = errno;
                 }
-              else
+              وإلا
                 {
                   error (0, 0, _("not writing through dangling symlink %s"),
                          quoteaf (dst_name));
                   return_val = false;
-                  goto close_src_desc;
+                  اذهب close_src_desc;
                 }
             }
         }
 
       /* Improve quality of diagnostic when a nonexistent dst_name
          ends in a slash and open fails with errno == EISDIR.  */
-      if (dest_desc < 0 && dest_errno == EISDIR
-          && *dst_name && dst_name[strlen (dst_name) - 1] == '/')
+      إذا (dest_desc < 0 && dest_errno == EISDIR
+          && *dst_name && dst_name[لڙي_ڊيگهه (dst_name) - 1] == '/')
         dest_errno = ENOTDIR;
     }
-  else
+  وإلا
     {
       omitted_permissions = extra_permissions = 0;
     }
 
-  if (dest_desc < 0)
+  إذا (dest_desc < 0)
     {
       error (0, dest_errno, _("cannot create regular file %s"),
              quoteaf (dst_name));
       return_val = false;
-      goto close_src_desc;
+      اذهب close_src_desc;
     }
 
   /* --attributes-only overrides --reflink.  */
-  if (data_copy_required && x->reflink_mode)
+  إذا (معلومات_copy_required && x->reflink_گهڻائي)
     {
-      if (clone_file (dest_desc, source_desc) == 0)
+      إذا (clone_file (dest_desc, ذريعو_desc) == 0)
         {
-          data_copy_required = false;
+          معلومات_copy_required = false;
           copy_debug.reflink = COPY_DEBUG_YES;
         }
-      else
+      وإلا
         {
-          if (! handle_clone_fail (dst_dirfd, dst_relname, src_name, dst_name,
-                                   *new_dst, x->reflink_mode))
+          إذا (! handle_clone_fail (dst_dirfd, dst_relname, src_name, dst_name,
+                                   *new_dst, x->reflink_گهڻائي))
            {
              return_val = false;
-             goto close_src_and_dst_desc;
+             اذهب close_src_and_dst_desc;
            }
         }
     }
 
-  if (! (data_copy_required | x->preserve_ownership | extra_permissions))
-    sb.st_mode = 0;
-  else if (fstat (dest_desc, &sb) != 0)
+  إذا (! (معلومات_copy_required | x->preserve_ownership | extra_permissions))
+    sb.st_گهڻائي = 0;
+  وإلا إذا (fstat (dest_desc, &sb) != 0)
     {
       error (0, errno, _("cannot fstat %s"), quoteaf (dst_name));
       return_val = false;
-      goto close_src_and_dst_desc;
+      اذهب close_src_and_dst_desc;
     }
 
   /* If extra permissions needed for copy_xattr didn't happen (e.g.,
      due to umask) chmod to add them temporarily; if that fails give
      up with extra permissions, letting copy_attr fail later.  */
-  mode_t temporary_mode = sb.st_mode | extra_permissions;
-  if (temporary_mode != sb.st_mode
-      && (fchmod_or_lchmod (dest_desc, dst_dirfd, dst_relname, temporary_mode)
+  mode_t temporary_گهڻائي = sb.st_گهڻائي | extra_permissions;
+  إذا (temporary_گهڻائي != sb.st_گهڻائي
+      && (fchmod_or_lchmod (dest_desc, dst_dirfd, dst_relname, temporary_گهڻائي)
           != 0))
     extra_permissions = 0;
 
-  if (data_copy_required
-      && (copy_file_data (source_desc, &src_open_sb, 0, src_name,
+  إذا (معلومات_copy_required
+      && (copy_file_معلومات (ذريعو_desc, &src_open_sb, 0, src_name,
                           dest_desc, &sb, 0, dst_name,
-                          COUNT_MAX, x, &copy_debug)
+                          ڳڻپ_MAX, x, &copy_debug)
           < 0))
     {
       return_val = false;
-      goto close_src_and_dst_desc;
+      اذهب close_src_and_dst_desc;
     }
 
-  if (x->preserve_timestamps)
+  إذا (x->preserve_timestamps)
     {
-      struct timespec timespec[2];
+      بنية timespec timespec[2];
       timespec[0] = get_stat_atime (src_sb);
       timespec[1] = get_stat_mtime (src_sb);
 
-      if (fdutimensat (dest_desc, dst_dirfd, dst_relname, timespec, 0) != 0)
+      إذا (fdutimensat (dest_desc, dst_dirfd, dst_relname, timespec, 0) != 0)
         {
           error (0, errno, _("preserving times for %s"), quoteaf (dst_name));
-          if (x->require_preserve)
+          إذا (x->require_preserve)
             {
               return_val = false;
-              goto close_src_and_dst_desc;
+              اذهب close_src_and_dst_desc;
             }
         }
     }
 
   /* Set ownership before xattrs as changing owners will
      clear capabilities.  */
-  if (x->preserve_ownership && ! SAME_OWNER_AND_GROUP (*src_sb, sb))
+  إذا (x->preserve_ownership && ! SAME_OWNER_AND_گروهه (*src_sb, sb))
     {
-      switch (set_owner (x, dst_name, dst_dirfd, dst_relname, dest_desc,
+      بدل (سيٽ_owner (x, dst_name, dst_dirfd, dst_relname, dest_desc,
                          src_sb, *new_dst, &sb))
         {
-        case -1:
+        حالة -1:
           return_val = false;
-          goto close_src_and_dst_desc;
+          اذهب close_src_and_dst_desc;
 
-        case 0:
-          src_mode &= ~ (S_ISUID | S_ISGID | S_ISVTX);
-          break;
+        حالة 0:
+          src_گهڻائي &= ~ (S_ISUID | S_ISGID | S_ISVTX);
+          اكسر;
         }
     }
 
-  if (preserve_xattr)
+  إذا (preserve_xattr)
     {
-      if (!copy_attr (src_name, source_desc, dst_name, dest_desc, x)
-          && x->require_preserve_xattr && ! x->move_mode)
+      إذا (!copy_attr (src_name, ذريعو_desc, dst_name, dest_desc, x)
+          && x->require_preserve_xattr && ! x->move_گهڻائي)
         return_val = false;
     }
 
-  set_author (dst_name, dest_desc, src_sb);
+  سيٽ_author (dst_name, dest_desc, src_sb);
 
-#if HAVE_FCLONEFILEAT && !USE_XATTR
-set_dest_mode:
-#endif
-  if (x->preserve_mode || x->move_mode)
+#إذا HAVE_FCLONEFILEAT && !USE_XATTR
+سيٽ_dest_گهڻائي:
+#جيڪڏهن_پورو
+  إذا (x->preserve_گهڻائي || x->move_گهڻائي)
     {
-      if (xcopy_acl (src_name, source_desc, dst_name, dest_desc, src_mode) != 0
+      إذا (xcopy_acl (src_name, ذريعو_desc, dst_name, dest_desc, src_گهڻائي) != 0
           && x->require_preserve)
         return_val = false;
     }
-  else if (x->set_mode)
+  وإلا إذا (x->سيٽ_گهڻائي)
     {
-      if (xset_acl (dst_name, dest_desc, x->mode) != 0)
+      إذا (xset_acl (dst_name, dest_desc, x->گهڻائي_2) != 0)
         return_val = false;
     }
-  else if (x->explicit_no_preserve_mode && *new_dst)
+  وإلا إذا (x->explicit_no_preserve_گهڻائي && *new_dst)
     {
-      if (xset_acl (dst_name, dest_desc, MODE_RW_UGO & ~cached_umask ()) != 0)
+      إذا (xset_acl (dst_name, dest_desc, گهڻائي_RW_UGO & ~cached_umask ()) != 0)
         return_val = false;
     }
-  else if (omitted_permissions | extra_permissions)
+  وإلا إذا (omitted_permissions | extra_permissions)
     {
       omitted_permissions &= ~ cached_umask ();
-      if ((omitted_permissions | extra_permissions)
+      إذا ((omitted_permissions | extra_permissions)
           && (fchmod_or_lchmod (dest_desc, dst_dirfd, dst_relname,
-                                dst_mode & ~ cached_umask ())
+                                dst_گهڻائي & ~ cached_umask ())
               != 0))
         {
           error (0, errno, _("preserving permissions for %s"),
                  quoteaf (dst_name));
-          if (x->require_preserve)
+          إذا (x->require_preserve)
             return_val = false;
         }
     }
 
-  if (dest_desc < 0)
-    goto close_src_desc;
+  إذا (dest_desc < 0)
+    اذهب close_src_desc;
 
 close_src_and_dst_desc:
-  if (close (dest_desc) < 0)
+  إذا (close (dest_desc) < 0)
     {
       error (0, errno, _("failed to close %s"), quoteaf (dst_name));
       return_val = false;
     }
 close_src_desc:
-  if (close (source_desc) < 0)
+  إذا (close (ذريعو_desc) < 0)
     {
       error (0, errno, _("failed to close %s"), quoteaf (src_name));
       return_val = false;
     }
 
   /* Output debug info for data copying operations.  */
-  if (x->debug)
+  إذا (x->debug)
     emit_debug (x);
 
-  return return_val;
+  أرجع return_val;
 }
 
 /* Return whether it's OK that two files are the "same" by some measure.
@@ -1152,15 +1152,15 @@ close_src_desc:
    Set *RETURN_NOW if we've determined that the caller has no more
    work to do and should return successfully, right away.  */
 
-static bool
-same_file_ok (char const *src_name, struct stat const *src_sb,
-              int dst_dirfd, char const *dst_relname, struct stat const *dst_sb,
-              const struct cp_options *x, bool *return_now)
+ساكن bool
+same_file_ok (حرف ثابت *src_name, بنية stat ثابت *src_sb,
+              صحيح dst_dirfd, حرف ثابت *dst_relname, بنية stat ثابت *dst_sb,
+              ثابت بنية cp_options *x, bool *return_now)
 {
-  const struct stat *src_sb_link;
-  const struct stat *dst_sb_link;
-  struct stat tmp_dst_sb;
-  struct stat tmp_src_sb;
+  ثابت بنية stat *src_sb_link;
+  ثابت بنية stat *dst_sb_link;
+  بنية stat tmp_dst_sb;
+  بنية stat tmp_src_sb;
 
   bool same_link;
   bool same = psame_inode (src_sb, dst_sb);
@@ -1172,54 +1172,54 @@ same_file_ok (char const *src_name, struct stat const *src_sb,
      making backups.  But removing it will result in a change in behavior
      that will probably have to be documented -- and tests will have to
      be updated.  */
-  if (same && x->hard_link)
+  إذا (same && x->hard_link)
     {
       *return_now = true;
-      return true;
+      أرجع true;
     }
 
-  if (x->dereference == DEREF_NEVER)
+  إذا (x->dereference == DEREF_NEVER)
     {
       same_link = same;
 
       /* If both the source and destination files are symlinks (and we'll
          know this here IFF preserving symlinks), then it's usually ok
          when they are distinct.  */
-      if (S_ISLNK (src_sb->st_mode) && S_ISLNK (dst_sb->st_mode))
+      إذا (S_ISLNK (src_sb->st_گهڻائي) && S_ISLNK (dst_sb->st_گهڻائي))
         {
           bool sn = same_nameat (AT_FDCWD, src_name, dst_dirfd, dst_relname);
-          if ( ! sn)
+          إذا ( ! sn)
             {
               /* It's fine when we're making any type of backup.  */
-              if (x->backup_type != no_backups)
-                return true;
+              إذا (x->backup_type != no_backups)
+                أرجع true;
 
               /* Here we have two symlinks that are hard-linked together,
                  and we're not making backups.  In this unusual case, simply
                  returning true would lead to mv calling "rename(A,B)",
                  which would do nothing and return 0.  */
-              if (same_link)
+              إذا (same_link)
                 {
                   *return_now = true;
-                  return ! x->move_mode;
+                  أرجع ! x->move_گهڻائي;
                 }
             }
 
-          return ! sn;
+          أرجع ! sn;
         }
 
       src_sb_link = src_sb;
       dst_sb_link = dst_sb;
     }
-  else
+  وإلا
     {
-      if (!same)
-        return true;
+      إذا (!same)
+        أرجع true;
 
-      if (fstatat (dst_dirfd, dst_relname, &tmp_dst_sb,
+      إذا (fstatat (dst_dirfd, dst_relname, &tmp_dst_sb,
                    AT_SYMLINK_NOFOLLOW) != 0
           || lstat (src_name, &tmp_src_sb) != 0)
-        return true;
+        أرجع true;
 
       src_sb_link = &tmp_src_sb;
       dst_sb_link = &tmp_dst_sb;
@@ -1231,9 +1231,9 @@ same_file_ok (char const *src_name, struct stat const *src_sb,
          above, but with the addition of the unlink_dest_before_opening
          conjunct because otherwise, with two symlinks to the same target,
          we'd end up truncating the source file.  */
-      if (S_ISLNK (src_sb_link->st_mode) && S_ISLNK (dst_sb_link->st_mode)
+      إذا (S_ISLNK (src_sb_link->st_گهڻائي) && S_ISLNK (dst_sb_link->st_گهڻائي)
           && x->unlink_dest_before_opening)
-        return true;
+        أرجع true;
     }
 
   /* The backup code ensures there's a copy, so it's usually ok to
@@ -1241,9 +1241,9 @@ same_file_ok (char const *src_name, struct stat const *src_sb,
      source and destination are the same directory entry.  In that
      case, moving the destination file aside (in making the backup)
      would also rename the source file and result in an error.  */
-  if (x->backup_type != no_backups)
+  إذا (x->backup_type != no_backups)
     {
-      if (!same_link)
+      إذا (!same_link)
         {
           /* In copy mode when dereferencing symlinks, if the source is a
              symlink and the dest is not, then backing up the destination
@@ -1261,20 +1261,20 @@ same_file_ok (char const *src_name, struct stat const *src_sb,
              is still there.
              One solution would be to open the source file *before* moving
              aside the destination, but that'd involve a big rewrite. */
-          if ( ! x->move_mode
+          إذا ( ! x->move_گهڻائي
                && x->dereference != DEREF_NEVER
-               && S_ISLNK (src_sb_link->st_mode)
-               && ! S_ISLNK (dst_sb_link->st_mode))
-            return false;
+               && S_ISLNK (src_sb_link->st_گهڻائي)
+               && ! S_ISLNK (dst_sb_link->st_گهڻائي))
+            أرجع false;
 
-          return true;
+          أرجع true;
         }
 
       /* FIXME: What about case insensitive file systems ?  */
-      return ! same_nameat (AT_FDCWD, src_name, dst_dirfd, dst_relname);
+      أرجع ! same_nameat (AT_FDCWD, src_name, dst_dirfd, dst_relname);
     }
 
-#if 0
+#إذا 0
   /* FIXME: use or remove */
 
   /* If we're making a backup, we'll detect the problem case in
@@ -1282,44 +1282,44 @@ same_file_ok (char const *src_name, struct stat const *src_sb,
      the test to be deferred lets cp do some useful things.
      But when creating hardlinks and SRC_NAME is a symlink
      but DST_RELNAME is not we must test anyway.  */
-  if (x->hard_link
-      || !S_ISLNK (src_sb_link->st_mode)
-      || S_ISLNK (dst_sb_link->st_mode))
-    return true;
+  إذا (x->hard_link
+      || !S_ISLNK (src_sb_link->st_گهڻائي)
+      || S_ISLNK (dst_sb_link->st_گهڻائي))
+    أرجع true;
 
-  if (x->dereference != DEREF_NEVER)
-    return true;
-#endif
+  إذا (x->dereference != DEREF_NEVER)
+    أرجع true;
+#جيڪڏهن_پورو
 
-  if (x->move_mode || x->unlink_dest_before_opening)
+  إذا (x->move_گهڻائي || x->unlink_dest_before_opening)
     {
       /* They may refer to the same file if we're in move mode and the
          target is a symlink.  That is ok, since we remove any existing
          destination file before opening it -- via 'rename' if they're on
          the same file system, via unlinkat otherwise.  */
-      if (S_ISLNK (dst_sb_link->st_mode))
-        return true;
+      إذا (S_ISLNK (dst_sb_link->st_گهڻائي))
+        أرجع true;
 
       /* It's not ok if they're distinct hard links to the same file as
          this causes a race condition and we may lose data in this case.  */
-      if (same_link
+      إذا (same_link
           && 1 < dst_sb_link->st_nlink
           && ! same_nameat (AT_FDCWD, src_name, dst_dirfd, dst_relname))
-        return ! x->move_mode;
+        أرجع ! x->move_گهڻائي;
     }
 
   /* If neither is a symlink, then it's ok as long as they aren't
      hard links to the same file.  */
-  if (!S_ISLNK (src_sb_link->st_mode) && !S_ISLNK (dst_sb_link->st_mode))
+  إذا (!S_ISLNK (src_sb_link->st_گهڻائي) && !S_ISLNK (dst_sb_link->st_گهڻائي))
     {
-      if (!psame_inode (src_sb_link, dst_sb_link))
-        return true;
+      إذا (!psame_inode (src_sb_link, dst_sb_link))
+        أرجع true;
 
       /* If they are the same file, it's ok if we're making hard links.  */
-      if (x->hard_link)
+      إذا (x->hard_link)
         {
           *return_now = true;
-          return true;
+          أرجع true;
         }
     }
 
@@ -1343,111 +1343,111 @@ same_file_ok (char const *src_name, struct stat const *src_sb,
        lrwxrwxrwx. 1  1 Jan  4 22:46 s -> f
      this must fail: mv s f
      this must succeed: mv s l */
-  if (x->move_mode
-      && S_ISLNK (src_sb->st_mode)
+  إذا (x->move_گهڻائي
+      && S_ISLNK (src_sb->st_گهڻائي)
       && 1 < dst_sb_link->st_nlink)
     {
-      char *abs_src = canonicalize_file_name (src_name);
-      if (abs_src)
+      حرف *abs_src = canonicalize_file_name (src_name);
+      إذا (abs_src)
         {
-          bool result = ! same_nameat (AT_FDCWD, abs_src,
+          bool نتيجو = ! same_nameat (AT_FDCWD, abs_src,
                                        dst_dirfd, dst_relname);
-          free (abs_src);
-          return result;
+          حرر (abs_src);
+          أرجع نتيجو;
         }
     }
 
   /* It's ok to recreate a destination symlink. */
-  if (x->symbolic_link && S_ISLNK (dst_sb_link->st_mode))
-    return true;
+  إذا (x->symbolic_link && S_ISLNK (dst_sb_link->st_گهڻائي))
+    أرجع true;
 
-  if (x->dereference == DEREF_NEVER)
+  إذا (x->dereference == DEREF_NEVER)
     {
-      if ( ! S_ISLNK (src_sb_link->st_mode))
+      إذا ( ! S_ISLNK (src_sb_link->st_گهڻائي))
         tmp_src_sb = *src_sb_link;
-      else if (stat (src_name, &tmp_src_sb) != 0)
-        return true;
+      وإلا إذا (stat (src_name, &tmp_src_sb) != 0)
+        أرجع true;
 
-      if ( ! S_ISLNK (dst_sb_link->st_mode))
+      إذا ( ! S_ISLNK (dst_sb_link->st_گهڻائي))
         tmp_dst_sb = *dst_sb_link;
-      else if (fstatat (dst_dirfd, dst_relname, &tmp_dst_sb, 0) != 0)
-        return true;
+      وإلا إذا (fstatat (dst_dirfd, dst_relname, &tmp_dst_sb, 0) != 0)
+        أرجع true;
 
-      if (!psame_inode (&tmp_src_sb, &tmp_dst_sb))
-        return true;
+      إذا (!psame_inode (&tmp_src_sb, &tmp_dst_sb))
+        أرجع true;
 
-      if (x->hard_link)
+      إذا (x->hard_link)
         {
           /* It's ok to attempt to hardlink the same file,
             and return early if not replacing a symlink.
             Note we need to return early to avoid a later
             unlink() of DST (when SRC is a symlink).  */
-          *return_now = ! S_ISLNK (dst_sb_link->st_mode);
-          return true;
+          *return_now = ! S_ISLNK (dst_sb_link->st_گهڻائي);
+          أرجع true;
         }
     }
 
-  return false;
+  أرجع false;
 }
 
 /* Return whether DST_DIRFD+DST_RELNAME, with mode MODE,
    is writable in the sense of 'mv'.
    Always consider a symbolic link to be writable.  */
-static bool
-writable_destination (int dst_dirfd, char const *dst_relname, mode_t mode)
+ساكن bool
+writable_destination (صحيح dst_dirfd, حرف ثابت *dst_relname, mode_t گهڻائي_2)
 {
-  return (S_ISLNK (mode)
+  أرجع (S_ISLNK (گهڻائي_2)
           || can_write_any_file ()
           || faccessat (dst_dirfd, dst_relname, W_OK, AT_EACCESS) == 0);
 }
 
-static bool
-overwrite_ok (struct cp_options const *x, char const *dst_name,
-              int dst_dirfd, char const *dst_relname,
-              struct stat const *dst_sb)
+ساكن bool
+overwrite_ok (بنية cp_options ثابت *x, حرف ثابت *dst_name,
+              صحيح dst_dirfd, حرف ثابت *dst_relname,
+              بنية stat ثابت *dst_sb)
 {
-  if (! writable_destination (dst_dirfd, dst_relname, dst_sb->st_mode))
+  إذا (! writable_destination (dst_dirfd, dst_relname, dst_sb->st_گهڻائي))
     {
-      char perms[12];		/* "-rwxrwxrwx " ls-style modes. */
-      strmode (dst_sb->st_mode, perms);
+      حرف perms[12];		/* "-rwxrwxrwx " ls-style modes. */
+      strmode (dst_sb->st_گهڻائي, perms);
       perms[10] = '\0';
       fprintf (stderr,
-               (x->move_mode || x->unlink_dest_before_opening
+               (x->move_گهڻائي || x->unlink_dest_before_opening
                 || x->unlink_dest_after_failed_open)
                ? _("%s: replace %s, overriding mode %04lo (%s)? ")
                : _("%s: unwritable %s (mode %04lo, %s); try anyway? "),
-               program_name, quoteaf (dst_name),
-               (unsigned long int) (dst_sb->st_mode & CHMOD_MODE_BITS),
+               پروگرام_name, quoteaf (dst_name),
+               (بنانشان ڊگهو صحيح) (dst_sb->st_گهڻائي & CHMOD_گهڻائي_بٽ),
                &perms[1]);
     }
-  else
+  وإلا
     {
       fprintf (stderr, _("%s: overwrite %s? "),
-               program_name, quoteaf (dst_name));
+               پروگرام_name, quoteaf (dst_name));
     }
 
-  return yesno ();
+  أرجع yesno ();
 }
 
 /* Initialize the hash table implementing a set of F_triple entries
    corresponding to destination files.  */
-extern void
-dest_info_init (struct cp_options *x)
+خارجي فراغ
+dest_info_init (بنية cp_options *x)
 {
   x->dest_info
-    = hash_initialize (DEST_INFO_INITIAL_CAPACITY,
-                       NULL,
+    = hash_initialize (DEST_INFO_INITIAL_صلاحيت,
+                       عدم,
                        triple_hash,
                        triple_compare,
                        triple_free);
-  if (! x->dest_info)
+  إذا (! x->dest_info)
     xalloc_die ();
 }
 
 /* Initialize the hash table implementing a set of F_triple entries
    corresponding to source files listed on the command line.  */
-extern void
-src_info_init (struct cp_options *x)
+خارجي فراغ
+src_info_init (بنية cp_options *x)
 {
 
   /* Note that we use triple_hash_no_name here.
@@ -1459,12 +1459,12 @@ src_info_init (struct cp_options *x)
        cp a ./a d/
   */
   x->src_info
-    = hash_initialize (DEST_INFO_INITIAL_CAPACITY,
-                       NULL,
+    = hash_initialize (DEST_INFO_INITIAL_صلاحيت,
+                       عدم,
                        triple_hash_no_name,
                        triple_compare,
                        triple_free);
-  if (! x->src_info)
+  إذا (! x->src_info)
     xalloc_die ();
 }
 
@@ -1475,55 +1475,55 @@ src_info_init (struct cp_options *x)
    Otherwise, return false.
    Depending on options specified in X, this code may issue an
    interactive prompt asking whether it's ok to overwrite DST_NAME.  */
-static bool
-abandon_move (const struct cp_options *x,
-              char const *dst_name,
-              int dst_dirfd, char const *dst_relname,
-              struct stat const *dst_sb)
+ساكن bool
+abandon_move (ثابت بنية cp_options *x,
+              حرف ثابت *dst_name,
+              صحيح dst_dirfd, حرف ثابت *dst_relname,
+              بنية stat ثابت *dst_sb)
 {
-  affirm (x->move_mode);
-  return (x->update == UPDATE_NONE
+  affirm (x->move_گهڻائي);
+  أرجع (x->update == UPDATE_NONE
           || x->update == UPDATE_NONE_FAIL
           || ((x->interactive == I_ASK_USER
                || (x->interactive == I_UNSPECIFIED
                    && x->stdin_tty
                    && ! writable_destination (dst_dirfd, dst_relname,
-                                              dst_sb->st_mode)))
+                                              dst_sb->st_گهڻائي)))
               && ! overwrite_ok (x, dst_name, dst_dirfd, dst_relname, dst_sb)));
 }
 
 /* Print --verbose output on standard output, e.g. 'new' -> 'old'.
    If BACKUP_DST_NAME is non-null, then also indicate that it is
    the name of a backup file.  */
-static void
-emit_verbose (char const *format, char const *src, char const *dst,
-              char const *backup_dst_name)
+ساكن فراغ
+emit_verbose (حرف ثابت *format, حرف ثابت *src, حرف ثابت *dst,
+              حرف ثابت *backup_dst_name)
 {
-  printf (format, quoteaf_n (0, src), quoteaf_n (1, dst));
-  if (backup_dst_name)
-    printf (_(" (backup: %s)"), quoteaf (backup_dst_name));
-  putchar ('\n');
+  لکو (format, quoteaf_n (0, src), quoteaf_n (1, dst));
+  إذا (backup_dst_name)
+    لکو (_(" (backup: %s)"), quoteaf (backup_dst_name));
+  اکر_لکو ('\n');
 }
 
 /* A wrapper around "setfscreatecon (NULL)" that exits upon failure.  */
-static void
-restore_default_fscreatecon_or_die (void)
+ساكن فراغ
+restore_default_fscreatecon_or_die (فراغ)
 {
-  if (setfscreatecon (NULL) != 0)
+  إذا (setfscreatecon (عدم) != 0)
     error (EXIT_FAILURE, errno,
            _("failed to restore the default file creation context"));
 }
 
 /* Return a newly-allocated string that is like STR
    except replace its suffix SUFFIX with NEWSUFFIX.  */
-static char *
-subst_suffix (char const *str, char const *suffix, char const *newsuffix)
+ساكن حرف *
+subst_suffix (حرف ثابت *str, حرف ثابت *suffix, حرف ثابت *newsuffix)
 {
   idx_t prefixlen = suffix - str;
-  idx_t newsuffixsize = strlen (newsuffix) + 1;
-  char *r = ximalloc (prefixlen + newsuffixsize);
-  memcpy (r + prefixlen, newsuffix, newsuffixsize);
-  return memcpy (r, str, prefixlen);
+  idx_t newsuffixsize = لڙي_ڊيگهه (newsuffix) + 1;
+  حرف *r = ximalloc (prefixlen + newsuffixsize);
+  يادگيري_نقل (r + prefixlen, newsuffix, newsuffixsize);
+  أرجع يادگيري_نقل (r, str, prefixlen);
 }
 
 /* Create a hard link to SRC_NAME aka SRC_DIRFD+SRC_RELNAME;
@@ -1536,64 +1536,64 @@ subst_suffix (char const *str, char const *suffix, char const *newsuffix)
    be followed unless DEREFERENCE is true.
    If the system doesn't support hard links to symbolic links, then DST_NAME
    will be created as a symbolic link to SRC_NAME.  */
-static bool
-create_hard_link (char const *src_name, int src_dirfd, char const *src_relname,
-                  char const *dst_name, int dst_dirfd, char const *dst_relname,
+ساكن bool
+create_hard_link (حرف ثابت *src_name, صحيح src_dirfd, حرف ثابت *src_relname,
+                  حرف ثابت *dst_name, صحيح dst_dirfd, حرف ثابت *dst_relname,
                   bool replace, bool verbose, bool dereference)
 {
-  int err = force_linkat (src_dirfd, src_relname, dst_dirfd, dst_relname,
+  صحيح err = force_linkat (src_dirfd, src_relname, dst_dirfd, dst_relname,
                           dereference ? AT_SYMLINK_FOLLOW : 0,
                           replace, -1);
-  if (0 < err)
+  إذا (0 < err)
     {
 
-      char *a_src_name = NULL;
-      if (!src_name)
+      حرف *a_src_name = عدم;
+      إذا (!src_name)
         src_name = a_src_name = subst_suffix (dst_name, dst_relname,
                                               src_relname);
       error (0, err, _("cannot create hard link %s to %s"),
              quoteaf_n (0, dst_name), quoteaf_n (1, src_name));
-      free (a_src_name);
-      return false;
+      حرر (a_src_name);
+      أرجع false;
     }
-  if (err < 0 && verbose)
-    printf (_("removed %s\n"), quoteaf (dst_name));
-  return true;
+  إذا (err < 0 && verbose)
+    لکو (_("removed %s\n"), quoteaf (dst_name));
+  أرجع true;
 }
 
 /* Return true if the current file should be (tried to be) dereferenced:
    either for DEREF_ALWAYS or for DEREF_COMMAND_LINE_ARGUMENTS in the case
    where the current file is a COMMAND_LINE_ARG; otherwise return false.  */
-ATTRIBUTE_PURE
-static inline bool
-should_dereference (const struct cp_options *x, bool command_line_arg)
+ATTRIBUTE_خالص
+ساكن مضمن bool
+should_dereference (ثابت بنية cp_options *x, bool command_سٽ_arg)
 {
-  return x->dereference == DEREF_ALWAYS
-         || (x->dereference == DEREF_COMMAND_LINE_ARGUMENTS
-             && command_line_arg);
+  أرجع x->dereference == DEREF_ALWAYS
+         || (x->dereference == DEREF_COMMAND_سٽ_ARGUMENTS
+             && command_سٽ_arg);
 }
 
 /* Return true if the source file with basename SRCBASE and status SRC_ST
    is likely to be the simple backup file for DST_DIRFD+DST_RELNAME.  */
-static bool
-source_is_dst_backup (char const *srcbase, struct stat const *src_st,
-                      int dst_dirfd, char const *dst_relname)
+ساكن bool
+ذريعو_is_dst_backup (حرف ثابت *srcbase, بنية stat ثابت *src_st,
+                      صحيح dst_dirfd, حرف ثابت *dst_relname)
 {
-  size_t srcbaselen = strlen (srcbase);
-  char const *dstbase = last_component (dst_relname);
-  size_t dstbaselen = strlen (dstbase);
-  size_t suffixlen = strlen (simple_backup_suffix);
-  if (! (srcbaselen == dstbaselen + suffixlen
+  size_t srcbaselen = لڙي_ڊيگهه (srcbase);
+  حرف ثابت *dstbase = آخري_component (dst_relname);
+  size_t dstbaselen = لڙي_ڊيگهه (dstbase);
+  size_t suffixlen = لڙي_ڊيگهه (simple_backup_suffix);
+  إذا (! (srcbaselen == dstbaselen + suffixlen
          && memeq (srcbase, dstbase, dstbaselen)
          && streq (srcbase + dstbaselen, simple_backup_suffix)))
-    return false;
-  char *dst_back = subst_suffix (dst_relname,
-                                 dst_relname + strlen (dst_relname),
+    أرجع false;
+  حرف *dst_پٺ = subst_suffix (dst_relname,
+                                 dst_relname + لڙي_ڊيگهه (dst_relname),
                                  simple_backup_suffix);
-  struct stat dst_back_sb;
-  int dst_back_status = fstatat (dst_dirfd, dst_back, &dst_back_sb, 0);
-  free (dst_back);
-  return dst_back_status == 0 && psame_inode (src_st, &dst_back_sb);
+  بنية stat dst_پٺ_sb;
+  صحيح dst_پٺ_حالت = fstatat (dst_dirfd, dst_پٺ, &dst_پٺ_sb, 0);
+  حرر (dst_پٺ);
+  أرجع dst_پٺ_حالت == 0 && psame_inode (src_st, &dst_پٺ_sb);
 }
 
 /* Copy the file SRC_NAME to the file DST_NAME aka DST_DIRFD+DST_RELNAME.
@@ -1611,28 +1611,28 @@ source_is_dst_backup (char const *srcbase, struct stat const *src_st,
    If X->move_mode, set *RENAME_SUCCEEDED according to whether
    the source was simply renamed to the destination.
    Return true if successful.  */
-static bool
-copy_internal (char const *src_name, char const *dst_name,
-               int dst_dirfd, char const *dst_relname,
-               int nonexistent_dst,
-               struct stat const *parent,
-               struct dir_list *ancestors,
-               const struct cp_options *x,
-               bool command_line_arg,
-               bool *first_dir_created_per_command_line_arg,
+ساكن bool
+copy_اندروني (حرف ثابت *src_name, حرف ثابت *dst_name,
+               صحيح dst_dirfd, حرف ثابت *dst_relname,
+               صحيح nonexistent_dst,
+               بنية stat ثابت *والد,
+               بنية dir_list *ancestors,
+               ثابت بنية cp_options *x,
+               bool command_سٽ_arg,
+               bool *پهريون_dir_created_في_command_سٽ_arg,
                bool *copy_into_self,
                bool *rename_succeeded)
 {
-  struct stat src_sb;
-  struct stat dst_sb;
-  mode_t src_mode IF_LINT ( = 0);
-  mode_t dst_mode IF_LINT ( = 0);
-  mode_t dst_mode_bits;
+  بنية stat src_sb;
+  بنية stat dst_sb;
+  mode_t src_گهڻائي IF_LINT ( = 0);
+  mode_t dst_گهڻائي IF_LINT ( = 0);
+  mode_t dst_گهڻائي_بٽ;
   mode_t omitted_permissions;
-  bool restore_dst_mode = false;
-  char *earlier_file = NULL;
-  char *dst_backup = NULL;
-  char const *drelname = *dst_relname ? dst_relname : ".";
+  bool restore_dst_گهڻائي = false;
+  حرف *earlier_file = عدم;
+  حرف *dst_backup = عدم;
+  حرف ثابت *drelname = *dst_relname ? dst_relname : ".";
   bool delayed_ok;
   bool copied_as_regular = false;
   bool dest_is_symlink = false;
@@ -1640,70 +1640,70 @@ copy_internal (char const *src_name, char const *dst_name,
 
   *copy_into_self = false;
 
-  int rename_errno = x->rename_errno;
-  if (x->move_mode && !x->exchange)
+  صحيح rename_errno = x->rename_errno;
+  إذا (x->move_گهڻائي && !x->exchange)
     {
-      if (rename_errno < 0)
+      إذا (rename_errno < 0)
         rename_errno = (renameatu (AT_FDCWD, src_name, dst_dirfd, drelname,
                                    RENAME_NOREPLACE)
                         ? errno : 0);
       nonexistent_dst = *rename_succeeded = rename_errno == 0;
     }
 
-  if (rename_errno == 0
-      ? !x->last_file
+  إذا (rename_errno == 0
+      ? !x->آخري_file
       : rename_errno != EEXIST
         || (x->update != UPDATE_NONE && x->update != UPDATE_NONE_FAIL))
     {
-      char const *name = rename_errno == 0 ? dst_name : src_name;
-      int dirfd = rename_errno == 0 ? dst_dirfd : AT_FDCWD;
-      char const *relname = rename_errno == 0 ? drelname : src_name;
-      int fstatat_flags
+      حرف ثابت *name = rename_errno == 0 ? dst_name : src_name;
+      صحيح dirfd = rename_errno == 0 ? dst_dirfd : AT_FDCWD;
+      حرف ثابت *relname = rename_errno == 0 ? drelname : src_name;
+      صحيح fstatat_flags
         = x->dereference == DEREF_NEVER ? AT_SYMLINK_NOFOLLOW : 0;
-      if (follow_fstatat (dirfd, relname, &src_sb, fstatat_flags) != 0)
+      إذا (follow_fstatat (dirfd, relname, &src_sb, fstatat_flags) != 0)
         {
           error (0, errno, _("cannot stat %s"), quoteaf (name));
-          return false;
+          أرجع false;
         }
 
-      src_mode = src_sb.st_mode;
+      src_گهڻائي = src_sb.st_گهڻائي;
 
-      if (S_ISDIR (src_mode) && !x->recursive)
+      إذا (S_ISDIR (src_گهڻائي) && !x->recursive)
         {
-          error (0, 0, ! x->install_mode /* cp */
+          error (0, 0, ! x->install_گهڻائي /* cp */
                  ? _("-r not specified; omitting directory %s")
                  : _("omitting directory %s"),
                  quoteaf (src_name));
-          return false;
+          أرجع false;
         }
     }
-  else
+  وإلا
     {
-#if defined lint && (defined __clang__ || defined __COVERITY__)
-      affirm (x->move_mode);
-      memset (&src_sb, 0, sizeof src_sb);
-#endif
+#إذا defined lint && (defined __clang__ || defined __COVERITY__)
+      affirm (x->move_گهڻائي);
+      memset (&src_sb, 0, حجم src_sb);
+#جيڪڏهن_پورو
     }
 
   /* Detect the case in which the same source file appears more than
      once on the command line and no backup option has been selected.
      If so, simply warn and don't copy it the second time.
      This check is enabled only if x->src_info is non-null.  */
-  if (command_line_arg && x->src_info)
+  إذا (command_سٽ_arg && x->src_info)
     {
-      if ( ! S_ISDIR (src_mode)
+      إذا ( ! S_ISDIR (src_گهڻائي)
            && x->backup_type == no_backups
-           && seen_file (x->src_info, src_name, &src_sb))
+           && ڏٺل_file (x->src_info, src_name, &src_sb))
         {
           error (0, 0, _("warning: source file %s specified more than once"),
                  quoteaf (src_name));
-          return true;
+          أرجع true;
         }
 
-      record_file (x->src_info, src_name, &src_sb);
+      رڪارڊ_file (x->src_info, src_name, &src_sb);
     }
 
-  bool dereference = should_dereference (x, command_line_arg);
+  bool dereference = should_dereference (x, command_سٽ_arg);
 
   /* Whether the destination is (or was) known to be new, updated as
      more info comes in.  This may become true if the destination is a
@@ -1711,14 +1711,14 @@ copy_internal (char const *src_name, char const *dst_name,
      treated the same as nonexistent files.  */
   bool new_dst = 0 < nonexistent_dst;
 
-  if (! new_dst)
+  إذا (! new_dst)
     {
       /* Normally, fill in DST_SB or set NEW_DST so that later code
          can use DST_SB if NEW_DST is false.  However, don't bother
          doing this when rename_errno == EEXIST and not updating,
          which means that even if !NEW_DST the move will be abandoned
          without looking at DST_SB.  */
-      if (! (rename_errno == EEXIST
+      إذا (! (rename_errno == EEXIST
              && (x->update == UPDATE_NONE
                  || x->update == UPDATE_NONE_FAIL)))
         {
@@ -1729,71 +1729,71 @@ copy_internal (char const *src_name, char const *dst_name,
              first, use lstat, since a copy won't actually be made to the
              destination in that case.  */
           bool use_lstat
-            = ((! S_ISREG (src_mode)
+            = ((! S_ISREG (src_گهڻائي)
                 && (! x->copy_as_regular
-                    || (S_ISDIR (src_mode) && !x->keep_directory_symlink)
-                    || S_ISLNK (src_mode)))
-               || x->move_mode || x->symbolic_link || x->hard_link
+                    || (S_ISDIR (src_گهڻائي) && !x->keep_directory_symlink)
+                    || S_ISLNK (src_گهڻائي)))
+               || x->move_گهڻائي || x->symbolic_link || x->hard_link
                || x->backup_type != no_backups
                || x->unlink_dest_before_opening);
-          if (!use_lstat && nonexistent_dst < 0)
+          إذا (!use_lstat && nonexistent_dst < 0)
             new_dst = true;
-          else if (0 <= follow_fstatat (dst_dirfd, drelname, &dst_sb,
+          وإلا إذا (0 <= follow_fstatat (dst_dirfd, drelname, &dst_sb,
                                         use_lstat ? AT_SYMLINK_NOFOLLOW : 0))
             {
               have_dst_lstat = use_lstat;
               rename_errno = EEXIST;
             }
-          else if (errno == ENOENT)
+          وإلا إذا (errno == ENOENT)
             new_dst = true;
-          else if (errno == ELOOP && !use_lstat
+          وإلا إذا (errno == ELOOP && !use_lstat
                    && x->unlink_dest_after_failed_open)
             {
               /* cp -f's destination might be a symlink loop.
                  Leave new_dst=false so that we try to unlink later.  */
             }
-          else
+          وإلا
             {
               error (0, errno, _("cannot stat %s"), quoteaf (dst_name));
-              return false;
+              أرجع false;
             }
         }
 
-      if (rename_errno == EEXIST)
+      إذا (rename_errno == EEXIST)
         {
           bool return_now = false;
           bool return_val = true;
           bool skipped = false;
 
-          if ((x->update != UPDATE_NONE && x->update != UPDATE_NONE_FAIL)
+          إذا ((x->update != UPDATE_NONE && x->update != UPDATE_NONE_FAIL)
               && ! same_file_ok (src_name, &src_sb, dst_dirfd, drelname,
                                  &dst_sb, x, &return_now))
             {
               error (0, 0, _("%s and %s are the same file"),
                      quoteaf_n (0, src_name), quoteaf_n (1, dst_name));
-              return false;
+              أرجع false;
             }
 
-          if (x->update == UPDATE_OLDER && !S_ISDIR (src_mode))
+          إذا (x->update == UPDATE_OLDER && !S_ISDIR (src_گهڻائي))
             {
               /* When preserving timestamps (but not moving within a file
                  system), don't worry if the destination timestamp is
                  less than the source merely because of timestamp
                  truncation.  */
-              int options = ((x->preserve_timestamps
-                              && ! (x->move_mode
+              صحيح options = ((x->preserve_timestamps
+                              && ! (x->move_گهڻائي
                                     && dst_sb.st_dev == src_sb.st_dev))
-                             ? UTIMECMP_TRUNCATE_SOURCE
+                             ? UTIMECMP_TRUNCATE_ذريعو
                              : 0);
 
-              if (0 <= utimecmpat (dst_dirfd, dst_relname, &dst_sb,
+              إذا (0 <= utimecmpat (dst_dirfd, dst_relname, &dst_sb,
                                    &src_sb, options))
                 {
                   /* We're using --update and the destination is not older
                      than the source, so do not copy or move.  Pretend the
                      rename succeeded, so the caller (if it's mv) doesn't
                      end up removing the source file.  */
-                  if (rename_succeeded)
+                  إذا (rename_succeeded)
                     *rename_succeeded = true;
 
                   /* However, we still must record that we've processed
@@ -1803,21 +1803,21 @@ copy_internal (char const *src_name, char const *dst_name,
                      destination names.  */
                   earlier_file = remember_copied (dst_relname, src_sb.st_ino,
                                                   src_sb.st_dev);
-                  if (earlier_file)
+                  إذا (earlier_file)
                     {
                       /* Note we currently replace DST_NAME unconditionally,
                          even if it was a newer separate file.  */
-                      if (! create_hard_link (NULL, dst_dirfd, earlier_file,
+                      إذا (! create_hard_link (عدم, dst_dirfd, earlier_file,
                                               dst_name, dst_dirfd, dst_relname,
                                               true,
                                               x->verbose, dereference))
                         {
-                          goto un_backup;
+                          اذهب un_backup;
                         }
                     }
 
                   skipped = true;
-                  goto skip;
+                  اذهب skip;
                 }
             }
 
@@ -1828,22 +1828,22 @@ copy_internal (char const *src_name, char const *dst_name,
              use of the --no-clobber option.
 
              cp and mv treat -i and -f differently.  */
-          if (x->move_mode)
+          إذا (x->move_گهڻائي)
             {
-              if (abandon_move (x, dst_name, dst_dirfd, drelname, &dst_sb))
+              إذا (abandon_move (x, dst_name, dst_dirfd, drelname, &dst_sb))
                 {
                   /* Pretend the rename succeeded, so the caller (mv)
                      doesn't end up removing the source file.  */
-                  if (rename_succeeded)
+                  إذا (rename_succeeded)
                     *rename_succeeded = true;
 
                   skipped = true;
                   return_val = x->update == UPDATE_NONE;
                 }
             }
-          else
+          وإلا
             {
-              if (! S_ISDIR (src_mode)
+              إذا (! S_ISDIR (src_گهڻائي)
                   && (x->update == UPDATE_NONE
                       || x->update == UPDATE_NONE_FAIL
                       || (x->interactive == I_ASK_USER
@@ -1856,32 +1856,32 @@ copy_internal (char const *src_name, char const *dst_name,
             }
 
 skip:
-          if (skipped)
+          إذا (skipped)
             {
-              if (x->update == UPDATE_NONE_FAIL)
+              إذا (x->update == UPDATE_NONE_FAIL)
                 error (0, 0, _("not replacing %s"), quoteaf (dst_name));
-              else if (x->debug)
-                printf (_("skipped %s\n"), quoteaf (dst_name));
+              وإلا إذا (x->debug)
+                لکو (_("skipped %s\n"), quoteaf (dst_name));
 
               return_now = true;
             }
 
-          if (return_now)
-            return return_val;
+          إذا (return_now)
+            أرجع return_val;
 
           /* Copying a directory onto a non-directory, or vice versa,
              is ok only with --backup or --exchange.  */
-          if (!S_ISDIR (src_mode) != !S_ISDIR (dst_sb.st_mode)
+          إذا (!S_ISDIR (src_گهڻائي) != !S_ISDIR (dst_sb.st_گهڻائي)
               && x->backup_type == no_backups && !x->exchange)
             {
               error (0, 0,
-                     _(S_ISDIR (src_mode)
+                     _(S_ISDIR (src_گهڻائي)
                        ? ("cannot overwrite non-directory %s "
                           "with directory %s")
                        : ("cannot overwrite directory %s "
                           "with non-directory %s")),
                      quoteaf_n (0, dst_name), quoteaf_n (1, src_name));
-              return false;
+              أرجع false;
             }
 
           /* Don't let the user destroy their data, even if they try hard:
@@ -1891,47 +1891,47 @@ skip:
              In the case of 'cp', b/f would be lost if the user simulated
              a move using cp and rm.
              Nothing is lost if you use --backup=numbered or --exchange.  */
-          if (!S_ISDIR (dst_sb.st_mode) && command_line_arg
+          إذا (!S_ISDIR (dst_sb.st_گهڻائي) && command_سٽ_arg
               && x->backup_type != numbered_backups && !x->exchange
-              && seen_file (x->dest_info, dst_relname, &dst_sb))
+              && ڏٺل_file (x->dest_info, dst_relname, &dst_sb))
             {
               error (0, 0,
                      _("will not overwrite just-created %s with %s"),
                      quoteaf_n (0, dst_name), quoteaf_n (1, src_name));
-              return false;
+              أرجع false;
             }
 
-          char const *srcbase;
-          if (x->backup_type != no_backups
+          حرف ثابت *srcbase;
+          إذا (x->backup_type != no_backups
               /* Don't try to back up a destination if the last
                  component of src_name is "." or "..".  */
-              && ! dot_or_dotdot (srcbase = last_component (src_name))
+              && ! dot_or_dotdot (srcbase = آخري_component (src_name))
               /* Create a backup of each destination directory in move mode,
                  but not in copy mode.  FIXME: it might make sense to add an
                  option to suppress backup creation also for move mode.
                  That would let one use mv to merge new content into an
                  existing hierarchy.  */
-              && (x->move_mode || ! S_ISDIR (dst_sb.st_mode)))
+              && (x->move_گهڻائي || ! S_ISDIR (dst_sb.st_گهڻائي)))
             {
               /* Fail if creating the backup file would likely destroy
                  the source file.  Otherwise, the commands:
                  cd /tmp; rm -f a a~; : > a; echo A > a~; cp --b=simple a~ a
                  would leave two zero-length files: a and a~.  */
-              if (x->backup_type != numbered_backups
-                  && source_is_dst_backup (srcbase, &src_sb,
+              إذا (x->backup_type != numbered_backups
+                  && ذريعو_is_dst_backup (srcbase, &src_sb,
                                            dst_dirfd, dst_relname))
                 {
-                  char const *fmt;
-                  fmt = (x->move_mode
+                  حرف ثابت *fmt;
+                  fmt = (x->move_گهڻائي
                  ? _("backing up %s might destroy source;  %s not moved")
                  : _("backing up %s might destroy source;  %s not copied"));
                   error (0, 0, fmt,
                          quoteaf_n (0, dst_name),
                          quoteaf_n (1, src_name));
-                  return false;
+                  أرجع false;
                 }
 
-              char *tmp_backup = backup_file_rename (dst_dirfd, dst_relname,
+              حرف *tmp_backup = backup_file_rename (dst_dirfd, dst_relname,
                                                      x->backup_type);
 
               /* FIXME: use fts:
@@ -1939,68 +1939,68 @@ skip:
                  long is not recommended.  In fact, even forming such a name
                  should be discouraged.  Eventually, this code will be rewritten
                  to use fts, so using alloca here will be less of a problem.  */
-              if (tmp_backup)
+              إذا (tmp_backup)
                 {
                   idx_t dirlen = dst_relname - dst_name;
-                  idx_t backupsize = strlen (tmp_backup) + 1;
+                  idx_t backupsize = لڙي_ڊيگهه (tmp_backup) + 1;
                   dst_backup = alloca (dirlen + backupsize);
-                  memcpy (mempcpy (dst_backup, dst_name, dirlen),
+                  يادگيري_نقل (mempcpy (dst_backup, dst_name, dirlen),
                           tmp_backup, backupsize);
-                  free (tmp_backup);
+                  حرر (tmp_backup);
                 }
-              else if (errno != ENOENT)
+              وإلا إذا (errno != ENOENT)
                 {
                   error (0, errno, _("cannot backup %s"), quoteaf (dst_name));
-                  return false;
+                  أرجع false;
                 }
               new_dst = true;
             }
-          else if (! S_ISDIR (dst_sb.st_mode)
+          وإلا إذا (! S_ISDIR (dst_sb.st_گهڻائي)
                    /* Never unlink dst_name when in move mode.  */
-                   && ! x->move_mode
+                   && ! x->move_گهڻائي
                    && (x->unlink_dest_before_opening
-                       || (x->data_copy_required
+                       || (x->معلومات_copy_required
                            && ((x->preserve_links && 1 < dst_sb.st_nlink)
                                || (x->dereference == DEREF_NEVER
-                                   && ! S_ISREG (src_sb.st_mode))))
+                                   && ! S_ISREG (src_sb.st_گهڻائي))))
                       ))
             {
-              if (unlinkat (dst_dirfd, dst_relname, 0) != 0 && errno != ENOENT)
+              إذا (unlinkat (dst_dirfd, dst_relname, 0) != 0 && errno != ENOENT)
                 {
                   error (0, errno, _("cannot remove %s"), quoteaf (dst_name));
-                  return false;
+                  أرجع false;
                 }
               new_dst = true;
-              if (x->verbose)
-                printf (_("removed %s\n"), quoteaf (dst_name));
+              إذا (x->verbose)
+                لکو (_("removed %s\n"), quoteaf (dst_name));
             }
         }
     }
 
   /* Ensure we don't try to copy through a symlink that was
      created by a prior call to this function.  */
-  if (command_line_arg
+  إذا (command_سٽ_arg
       && x->dest_info
-      && ! x->move_mode
+      && ! x->move_گهڻائي
       && x->backup_type == no_backups)
     {
       /* If we did not follow symlinks above, good: use that data.
          Otherwise, use AT_SYMLINK_NOFOLLOW, in case dst_name is a symlink.  */
-      struct stat tmp_buf;
-      struct stat *dst_lstat_sb
+      بنية stat tmp_buf;
+      بنية stat *dst_lstat_sb
         = (have_dst_lstat ? &dst_sb
            : fstatat (dst_dirfd, drelname, &tmp_buf, AT_SYMLINK_NOFOLLOW) < 0
-           ? NULL : &tmp_buf);
+           ? عدم : &tmp_buf);
 
       /* Never copy through a symlink we've just created.  */
-      if (dst_lstat_sb
-          && S_ISLNK (dst_lstat_sb->st_mode)
-          && seen_file (x->dest_info, dst_relname, dst_lstat_sb))
+      إذا (dst_lstat_sb
+          && S_ISLNK (dst_lstat_sb->st_گهڻائي)
+          && ڏٺل_file (x->dest_info, dst_relname, dst_lstat_sb))
         {
           error (0, 0,
                  _("will not copy %s through just-created symlink %s"),
                  quoteaf_n (0, src_name), quoteaf_n (1, dst_name));
-          return false;
+          أرجع false;
         }
     }
 
@@ -2008,7 +2008,7 @@ skip:
      directory.  So --verbose should not announce anything until we're
      sure we'll create a directory.  Also don't announce yet when moving
      so we can distinguish renames versus copies.  */
-  if (x->verbose && !x->move_mode && !S_ISDIR (src_mode))
+  إذا (x->verbose && !x->move_گهڻائي && !S_ISDIR (src_گهڻائي))
     emit_verbose ("%s -> %s", src_name, dst_name, dst_backup);
 
   /* Associate the destination file name with the source device and inode
@@ -2041,25 +2041,25 @@ skip:
      Also, with --recursive, record dev/ino of each command-line directory.
      We'll use that info to detect this problem: cp -R dir dir.  */
 
-  if (rename_errno == 0 || x->exchange)
-    earlier_file = NULL;
-  else if (x->recursive && S_ISDIR (src_mode))
+  إذا (rename_errno == 0 || x->exchange)
+    earlier_file = عدم;
+  وإلا إذا (x->recursive && S_ISDIR (src_گهڻائي))
     {
-      if (command_line_arg)
+      إذا (command_سٽ_arg)
         earlier_file = remember_copied (dst_relname,
                                         src_sb.st_ino, src_sb.st_dev);
-      else
-        earlier_file = src_to_dest_lookup (src_sb.st_ino, src_sb.st_dev);
+      وإلا
+        earlier_file = src_منزل_dest_lookup (src_sb.st_ino, src_sb.st_dev);
     }
-  else if (x->move_mode && src_sb.st_nlink == 1)
+  وإلا إذا (x->move_گهڻائي && src_sb.st_nlink == 1)
     {
-      earlier_file = src_to_dest_lookup (src_sb.st_ino, src_sb.st_dev);
+      earlier_file = src_منزل_dest_lookup (src_sb.st_ino, src_sb.st_dev);
     }
-  else if (x->preserve_links
+  وإلا إذا (x->preserve_links
            && !x->hard_link
            && (1 < src_sb.st_nlink
-               || (command_line_arg
-                   && x->dereference == DEREF_COMMAND_LINE_ARGUMENTS)
+               || (command_سٽ_arg
+                   && x->dereference == DEREF_COMMAND_سٽ_ARGUMENTS)
                || x->dereference == DEREF_ALWAYS))
     {
       earlier_file = remember_copied (dst_relname,
@@ -2069,42 +2069,42 @@ skip:
   /* Did we copy this inode somewhere else (in this command line argument)
      and therefore this is a second hard link to the inode?  */
 
-  if (earlier_file)
+  إذا (earlier_file)
     {
       /* Avoid damaging the destination file system by refusing to preserve
          hard-linked directories (which are found at least in Netapp snapshot
          directories).  */
-      if (S_ISDIR (src_mode))
+      إذا (S_ISDIR (src_گهڻائي))
         {
           /* If src_name and earlier_file refer to the same directory entry,
              then warn about copying a directory into itself.  */
-          if (same_nameat (AT_FDCWD, src_name, dst_dirfd, earlier_file))
+          إذا (same_nameat (AT_FDCWD, src_name, dst_dirfd, earlier_file))
             {
               error (0, 0, _("cannot copy a directory, %s, into itself, %s"),
-                     quoteaf_n (0, top_level_src_name),
-                     quoteaf_n (1, top_level_dst_name));
+                     quoteaf_n (0, چوٽي_level_src_name),
+                     quoteaf_n (1, چوٽي_level_dst_name));
               *copy_into_self = true;
-              goto un_backup;
+              اذهب un_backup;
             }
-          else if (same_nameat (dst_dirfd, dst_relname,
+          وإلا إذا (same_nameat (dst_dirfd, dst_relname,
                                 dst_dirfd, earlier_file))
             {
               error (0, 0, _("warning: source directory %s "
                              "specified more than once"),
-                     quoteaf (top_level_src_name));
+                     quoteaf (چوٽي_level_src_name));
               /* In move mode, if a previous rename succeeded, then
                  we won't be in this path as the source is missing.  If the
                  rename previously failed, then that has been handled, so
                  pretend this attempt succeeded so the source isn't removed.  */
-              if (x->move_mode && rename_succeeded)
+              إذا (x->move_گهڻائي && rename_succeeded)
                 *rename_succeeded = true;
               /* We only do backups in move mode, and for non directories.
                  So just ignore this repeated entry.  */
-              return true;
+              أرجع true;
             }
-          else if (x->dereference == DEREF_ALWAYS
-                   || (command_line_arg
-                       && x->dereference == DEREF_COMMAND_LINE_ARGUMENTS))
+          وإلا إذا (x->dereference == DEREF_ALWAYS
+                   || (command_سٽ_arg
+                       && x->dereference == DEREF_COMMAND_سٽ_ARGUMENTS))
             {
               /* This happens when e.g., encountering a directory for the
                  second or subsequent time via symlinks when cp is invoked
@@ -2113,53 +2113,53 @@ skip:
                  cp -RL a b d
               */
             }
-          else
+          وإلا
             {
-              char *earlier = subst_suffix (dst_name, dst_relname,
+              حرف *earlier = subst_suffix (dst_name, dst_relname,
                                             earlier_file);
               error (0, 0, _("will not create hard link %s to directory %s"),
                      quoteaf_n (0, dst_name), quoteaf_n (1, earlier));
-              free (earlier);
-              goto un_backup;
+              حرر (earlier);
+              اذهب un_backup;
             }
         }
-      else
+      وإلا
         {
-          if (! create_hard_link (NULL, dst_dirfd, earlier_file,
+          إذا (! create_hard_link (عدم, dst_dirfd, earlier_file,
                                   dst_name, dst_dirfd, dst_relname,
                                   true, x->verbose, dereference))
-            goto un_backup;
+            اذهب un_backup;
 
-          return true;
+          أرجع true;
         }
     }
 
-  if (x->move_mode)
+  إذا (x->move_گهڻائي)
     {
-      if (rename_errno == EEXIST)
+      إذا (rename_errno == EEXIST)
         rename_errno = ((renameatu (AT_FDCWD, src_name, dst_dirfd, drelname,
                                     x->exchange ? RENAME_EXCHANGE : 0)
                          == 0)
                         ? 0 : errno);
 
-      if (rename_errno == 0)
+      إذا (rename_errno == 0)
         {
-          if (x->verbose)
+          إذا (x->verbose)
             emit_verbose (x->exchange
                           ? _("exchanged %s <-> %s")
                           : _("renamed %s -> %s"),
                           src_name, dst_name, dst_backup);
 
-          if (x->set_security_context)
+          إذا (x->سيٽ_security_context)
             {
               /* -Z failures are only warnings currently.  */
-              (void) set_file_security_ctx (dst_name, true, x);
+              (فراغ) سيٽ_file_security_ctx (dst_name, true, x);
             }
 
-          if (rename_succeeded)
+          إذا (rename_succeeded)
             *rename_succeeded = true;
 
-          if (command_line_arg && !x->last_file)
+          إذا (command_سٽ_arg && !x->آخري_file)
             {
               /* Record destination dev/ino/name, so that if we are asked
                  to overwrite that file again, we can detect it and fail.  */
@@ -2168,10 +2168,10 @@ skip:
                  changed those, and 'mv' always uses lstat.
                  We could limit it further by operating
                  only on non-directories when !x->exchange.  */
-              record_file (x->dest_info, dst_relname, &src_sb);
+              رڪارڊ_file (x->dest_info, dst_relname, &src_sb);
             }
 
-          return true;
+          أرجع true;
         }
 
       /* FIXME: someday, consider what to do when moving a directory into
@@ -2179,14 +2179,14 @@ skip:
 
       /* This happens when attempting to rename a directory to a
          subdirectory of itself.  */
-      if (rename_errno == EINVAL)
+      إذا (rename_errno == EINVAL)
         {
           /* FIXME: this is a little fragile in that it relies on rename(2)
              failing with a specific errno value.  Expect problems on
              non-POSIX systems.  */
           error (0, 0, _("cannot move %s to a subdirectory of itself, %s"),
-                 quoteaf_n (0, top_level_src_name),
-                 quoteaf_n (1, top_level_dst_name));
+                 quoteaf_n (0, چوٽي_level_src_name),
+                 quoteaf_n (1, چوٽي_level_dst_name));
 
           /* Note that there is no need to call forget_created here,
              (compare with the other calls in this file) since the
@@ -2196,7 +2196,7 @@ skip:
           /* FIXME-cleanup: Don't return true here; adjust mv.c accordingly.
              The only caller that uses this code (mv.c) ends up setting its
              exit status to nonzero when copy_into_self is nonzero.  */
-          return true;
+          أرجع true;
         }
 
       /* WARNING: there probably exist systems for which an inter-device
@@ -2214,7 +2214,7 @@ skip:
          where you'd replace '18' with the integer in parentheses that
          was output from the perl one-liner above.
          If necessary, of course, change '/tmp' to some other directory.  */
-      if (rename_errno != EXDEV || x->no_copy || x->exchange)
+      إذا (rename_errno != EXDEV || x->no_copy || x->exchange)
         {
           /* There are many ways this can happen due to a race condition.
              When something happens between the initial follow_fstatat and the
@@ -2226,32 +2226,32 @@ skip:
              If the permissions on the directory containing the source or
              destination file are made too restrictive, the rename will
              fail.  Etc.  */
-          char const *quoted_dst_name = quoteaf_n (1, dst_name);
-          if (x->exchange)
+          حرف ثابت *quoted_dst_name = quoteaf_n (1, dst_name);
+          إذا (x->exchange)
             error (0, rename_errno, _("cannot exchange %s and %s"),
                    quoteaf_n (0, src_name), quoted_dst_name);
-          else
-            switch (rename_errno)
+          وإلا
+            بدل (rename_errno)
               {
-              case EDQUOT: case EEXIST: case EISDIR: case EMLINK:
-              case ENOSPC: case ETXTBSY:
-#if ENOTEMPTY != EEXIST
-              case ENOTEMPTY:
-#endif
+              حالة EDQUOT: حالة EEXIST: حالة EISDIR: حالة EMLINK:
+              حالة ENOSPC: حالة ETXTBSY:
+#إذا ENOTEMPTY != EEXIST
+              حالة ENOTEMPTY:
+#جيڪڏهن_پورو
                 /* The destination must be the problem.  Don't mention
                    the source as that is more likely to confuse the user
                    than be helpful.  */
                 error (0, rename_errno, _("cannot overwrite %s"),
                        quoted_dst_name);
-                break;
+                اكسر;
 
-              default:
+              افتراضي:
                 error (0, rename_errno, _("cannot move %s to %s"),
                        quoteaf_n (0, src_name), quoted_dst_name);
-                break;
+                اكسر;
               }
           forget_created (src_sb.st_ino, src_sb.st_dev);
-          return false;
+          أرجع false;
         }
 
       /* The rename attempt has failed.  Remove any existing destination
@@ -2260,8 +2260,8 @@ skip:
          or not, and this is enforced above.  Therefore we check the src_mode
          and operate on dst_name here as a tighter constraint and also because
          src_mode is readily available here.  */
-      if ((unlinkat (dst_dirfd, drelname,
-                     S_ISDIR (src_mode) ? AT_REMOVEDIR : 0)
+      إذا ((unlinkat (dst_dirfd, drelname,
+                     S_ISDIR (src_گهڻائي) ? AT_REMOVEDIR : 0)
            != 0)
           && errno != ENOENT)
         {
@@ -2269,10 +2269,10 @@ skip:
              _("inter-device move failed: %s to %s; unable to remove target"),
                  quoteaf_n (0, src_name), quoteaf_n (1, dst_name));
           forget_created (src_sb.st_ino, src_sb.st_dev);
-          return false;
+          أرجع false;
         }
 
-      if (x->verbose && !S_ISDIR (src_mode))
+      إذا (x->verbose && !S_ISDIR (src_گهڻائي))
         emit_verbose (_("copied %s -> %s"), src_name, dst_name, dst_backup);
       new_dst = true;
     }
@@ -2281,11 +2281,11 @@ skip:
      special mode bits may change after the directory is created),
      omit some permissions at first, so unauthorized users cannot nip
      in before the file is ready.  */
-  dst_mode_bits = (x->set_mode ? x->mode : src_mode) & CHMOD_MODE_BITS;
+  dst_گهڻائي_بٽ = (x->سيٽ_گهڻائي ? x->گهڻائي_2 : src_گهڻائي) & CHMOD_گهڻائي_بٽ;
   omitted_permissions =
-    (dst_mode_bits
+    (dst_گهڻائي_بٽ
      & (x->preserve_ownership ? S_IRWXG | S_IRWXO
-        : S_ISDIR (src_mode) ? S_IWGRP | S_IWOTH
+        : S_ISDIR (src_گهڻائي) ? S_IWGRP | S_IWOTH
         : 0));
 
   delayed_ok = true;
@@ -2294,67 +2294,67 @@ skip:
      Also for existing files this is used as a reference
      when copying the context with --preserve=context.
      FIXME: Do we need to consider dst_mode_bits here?  */
-  if (! set_process_security_ctx (src_name, dst_name, src_mode, new_dst, x))
-    return false;
+  إذا (! سيٽ_process_security_ctx (src_name, dst_name, src_گهڻائي, new_dst, x))
+    أرجع false;
 
-  if (S_ISDIR (src_mode))
+  إذا (S_ISDIR (src_گهڻائي))
     {
-      struct dir_list *dir;
+      بنية dir_list *dir;
 
       /* If this directory has been copied before during the
          recursion, there is a symbolic link to an ancestor
          directory of the symbolic link.  It is impossible to
          continue to copy this, unless we've got an infinite file system.  */
 
-      if (is_ancestor (&src_sb, ancestors))
+      إذا (is_ancestor (&src_sb, ancestors))
         {
           error (0, 0, _("cannot copy cyclic symbolic link %s"),
                  quoteaf (src_name));
-          goto un_backup;
+          اذهب un_backup;
         }
 
       /* Insert the current directory in the list of parents.  */
 
-      dir = alloca (sizeof *dir);
-      dir->parent = ancestors;
+      dir = alloca (حجم *dir);
+      dir->والد = ancestors;
       dir->st_ino = src_sb.st_ino;
       dir->st_dev = src_sb.st_dev;
 
-      if (new_dst || !S_ISDIR (dst_sb.st_mode))
+      إذا (new_dst || !S_ISDIR (dst_sb.st_گهڻائي))
         {
           /* POSIX says mkdir's behavior is implementation-defined when
              (src_mode & ~S_IRWXUGO) != 0.  However, common practice is
              to ask mkdir to copy all the CHMOD_MODE_BITS, letting mkdir
              decide what to do with S_ISUID | S_ISGID | S_ISVTX.  */
-          mode_t mode = dst_mode_bits & ~omitted_permissions;
-          if (mkdirat (dst_dirfd, drelname, mode) != 0)
+          mode_t گهڻائي_2 = dst_گهڻائي_بٽ & ~omitted_permissions;
+          إذا (mkdirat (dst_dirfd, drelname, گهڻائي_2) != 0)
             {
               error (0, errno, _("cannot create directory %s"),
                      quoteaf (dst_name));
-              goto un_backup;
+              اذهب un_backup;
             }
 
           /* We need search and write permissions to the new directory
              for writing the directory's contents. Check if these
              permissions are there.  */
 
-          if (fstatat (dst_dirfd, drelname, &dst_sb, AT_SYMLINK_NOFOLLOW) != 0)
+          إذا (fstatat (dst_dirfd, drelname, &dst_sb, AT_SYMLINK_NOFOLLOW) != 0)
             {
               error (0, errno, _("cannot stat %s"), quoteaf (dst_name));
-              goto un_backup;
+              اذهب un_backup;
             }
-          else if ((dst_sb.st_mode & S_IRWXU) != S_IRWXU)
+          وإلا إذا ((dst_sb.st_گهڻائي & S_IRWXU) != S_IRWXU)
             {
               /* Make the new directory searchable and writable.  */
 
-              dst_mode = dst_sb.st_mode;
-              restore_dst_mode = true;
+              dst_گهڻائي = dst_sb.st_گهڻائي;
+              restore_dst_گهڻائي = true;
 
-              if (lchmodat (dst_dirfd, drelname, dst_mode | S_IRWXU) != 0)
+              إذا (lchmodat (dst_dirfd, drelname, dst_گهڻائي | S_IRWXU) != 0)
                 {
                   error (0, errno, _("setting permissions for %s"),
                          quoteaf (dst_name));
-                  goto un_backup;
+                  اذهب un_backup;
                 }
             }
 
@@ -2362,42 +2362,42 @@ skip:
              the search structure, so that we can avoid copying it again.
              Do this only for the first directory that is created for each
              source command line argument.  */
-          if (!*first_dir_created_per_command_line_arg)
+          إذا (!*پهريون_dir_created_في_command_سٽ_arg)
             {
               remember_copied (dst_relname, dst_sb.st_ino, dst_sb.st_dev);
-              *first_dir_created_per_command_line_arg = true;
+              *پهريون_dir_created_في_command_سٽ_arg = true;
             }
 
-          if (x->verbose)
+          إذا (x->verbose)
             {
-              if (x->move_mode)
-                printf (_("created directory %s\n"), quoteaf (dst_name));
-              else
-                emit_verbose ("%s -> %s", src_name, dst_name, NULL);
+              إذا (x->move_گهڻائي)
+                لکو (_("created directory %s\n"), quoteaf (dst_name));
+              وإلا
+                emit_verbose ("%s -> %s", src_name, dst_name, عدم);
             }
         }
-      else
+      وإلا
         {
           omitted_permissions = 0;
 
           /* For directories, the process global context could be reset for
              descendants, so use it to set the context for existing dirs here.
              This will also give earlier indication of failure to set ctx.  */
-          if (x->set_security_context || x->preserve_security_context)
-            if (! set_file_security_ctx (dst_name, false, x))
+          إذا (x->سيٽ_security_context || x->preserve_security_context)
+            إذا (! سيٽ_file_security_ctx (dst_name, false, x))
               {
-                if (x->require_preserve_context)
-                  goto un_backup;
+                إذا (x->require_preserve_context)
+                  اذهب un_backup;
               }
         }
 
       /* Decide whether to copy the contents of the directory.  */
-      if (x->one_file_system && parent && parent->st_dev != src_sb.st_dev)
+      إذا (x->one_file_system && والد && والد->st_dev != src_sb.st_dev)
         {
           /* Here, we are crossing a file system boundary and cp's -x option
              is in effect: so don't copy the contents of this directory. */
         }
-      else
+      وإلا
         {
           /* Copy the contents of the directory.  Don't just return if
              this fails -- otherwise, the failure to read a single file
@@ -2405,49 +2405,49 @@ skip:
              directory not to have owner/perms set properly.  */
           delayed_ok = copy_dir (src_name, dst_name, dst_dirfd, dst_relname,
                                  new_dst, &src_sb, dir, x,
-                                 first_dir_created_per_command_line_arg,
+                                 پهريون_dir_created_في_command_سٽ_arg,
                                  copy_into_self);
         }
     }
-  else if (x->symbolic_link)
+  وإلا إذا (x->symbolic_link)
     {
       dest_is_symlink = true;
-      if (*src_name != '/')
+      إذا (*src_name != '/')
         {
           /* Check that DST_NAME denotes a file in the current directory.  */
-          struct stat dot_sb;
-          struct stat dst_parent_sb;
-          char *dst_parent;
-          bool in_current_dir;
+          بنية stat dot_sb;
+          بنية stat dst_والد_sb;
+          حرف *dst_والد;
+          bool اندريون_current_dir;
 
-          dst_parent = dir_name (dst_relname);
+          dst_والد = dir_name (dst_relname);
 
-          in_current_dir = ((dst_dirfd == AT_FDCWD && streq (".", dst_parent))
+          اندريون_current_dir = ((dst_dirfd == AT_FDCWD && streq (".", dst_والد))
                             /* If either stat call fails, it's ok not to report
                                the failure and say dst_name is in the current
                                directory.  Other things will fail later.  */
                             || stat (".", &dot_sb) != 0
-                            || (fstatat (dst_dirfd, dst_parent, &dst_parent_sb,
+                            || (fstatat (dst_dirfd, dst_والد, &dst_والد_sb,
                                          0) != 0)
-                            || psame_inode (&dot_sb, &dst_parent_sb));
-          free (dst_parent);
+                            || psame_inode (&dot_sb, &dst_والد_sb));
+          حرر (dst_والد);
 
-          if (! in_current_dir)
+          إذا (! اندريون_current_dir)
             {
               error (0, 0,
            _("%s: can make relative symbolic links only in current directory"),
                      quotef (dst_name));
-              goto un_backup;
+              اذهب un_backup;
             }
         }
 
-      int err = force_symlinkat (src_name, dst_dirfd, dst_relname,
+      صحيح err = force_symlinkat (src_name, dst_dirfd, dst_relname,
                                  x->unlink_dest_after_failed_open, -1);
-      if (0 < err)
+      إذا (0 < err)
         {
           error (0, err, _("cannot create symbolic link %s to %s"),
                  quoteaf_n (0, dst_name), quoteaf_n (1, src_name));
-          goto un_backup;
+          اذهب un_backup;
         }
     }
 
@@ -2464,19 +2464,19 @@ skip:
      dereferenced.  However its emulation currently doesn't maintain
      timestamps or ownership so we only call it when we know the
      emulation will not be needed.  */
-  else if (x->hard_link
-           && !(! CAN_HARDLINK_SYMLINKS && S_ISLNK (src_mode)
+  وإلا إذا (x->hard_link
+           && !(! CAN_HARDLINK_SYMLINKS && S_ISLNK (src_گهڻائي)
                 && x->dereference == DEREF_NEVER))
     {
       bool replace = (x->unlink_dest_after_failed_open
                       || x->interactive == I_ASK_USER);
-      if (! create_hard_link (src_name, AT_FDCWD, src_name,
+      إذا (! create_hard_link (src_name, AT_FDCWD, src_name,
                               dst_name, dst_dirfd, dst_relname,
                               replace, false, dereference))
-        goto un_backup;
+        اذهب un_backup;
     }
-  else if (S_ISREG (src_mode)
-           || (x->copy_as_regular && !S_ISLNK (src_mode)))
+  وإلا إذا (S_ISREG (src_گهڻائي)
+           || (x->copy_as_regular && !S_ISLNK (src_گهڻائي)))
     {
       copied_as_regular = true;
       /* POSIX says the permission bits of the source file must be
@@ -2488,81 +2488,81 @@ skip:
          normally the same, and the exception (where x->set_mode) is
          used only by 'install', which POSIX does not specify and
          where DST_MODE_BITS is what's wanted.  */
-      if (! copy_reg (src_name, dst_name, dst_dirfd, dst_relname,
-                      x, dst_mode_bits & S_IRWXUGO,
+      إذا (! copy_reg (src_name, dst_name, dst_dirfd, dst_relname,
+                      x, dst_گهڻائي_بٽ & S_IRWXUGO,
                       omitted_permissions, &new_dst, &src_sb))
-        goto un_backup;
+        اذهب un_backup;
     }
-  else if (S_ISFIFO (src_mode))
+  وإلا إذا (S_ISFIFO (src_گهڻائي))
     {
       /* Use mknodat, rather than mkfifoat, because the former preserves
          the special mode bits of a fifo on Solaris 10, while mkfifoat
          does not.  But fall back on mkfifoat, because on some BSD systems,
          mknodat always fails when asked to create a FIFO.  */
-      mode_t mode = src_mode & ~omitted_permissions;
-      if (mknodat (dst_dirfd, dst_relname, mode, 0) != 0)
-        if (mkfifoat (dst_dirfd, dst_relname, mode & ~S_IFIFO) != 0)
+      mode_t گهڻائي_2 = src_گهڻائي & ~omitted_permissions;
+      إذا (mknodat (dst_dirfd, dst_relname, گهڻائي_2, 0) != 0)
+        إذا (mkfifoat (dst_dirfd, dst_relname, گهڻائي_2 & ~S_IFIFO) != 0)
           {
             error (0, errno, _("cannot create fifo %s"), quoteaf (dst_name));
-            goto un_backup;
+            اذهب un_backup;
           }
     }
-  else if (S_ISBLK (src_mode) || S_ISCHR (src_mode) || S_ISSOCK (src_mode))
+  وإلا إذا (S_ISBLK (src_گهڻائي) || S_ISCHR (src_گهڻائي) || S_ISSOCK (src_گهڻائي))
     {
-      mode_t mode = src_mode & ~omitted_permissions;
-      if (mknodat (dst_dirfd, dst_relname, mode, src_sb.st_rdev) != 0)
+      mode_t گهڻائي_2 = src_گهڻائي & ~omitted_permissions;
+      إذا (mknodat (dst_dirfd, dst_relname, گهڻائي_2, src_sb.st_rdev) != 0)
         {
           error (0, errno, _("cannot create special file %s"),
                  quoteaf (dst_name));
-          goto un_backup;
+          اذهب un_backup;
         }
     }
-  else if (S_ISLNK (src_mode))
+  وإلا إذا (S_ISLNK (src_گهڻائي))
     {
-      char *src_link_val = areadlink_with_size (src_name, src_sb.st_size);
+      حرف *src_link_val = areadlink_with_سائيز (src_name, src_sb.st_سائيز);
       dest_is_symlink = true;
-      if (src_link_val == NULL)
+      إذا (src_link_val == عدم)
         {
           error (0, errno, _("cannot read symbolic link %s"),
                  quoteaf (src_name));
-          goto un_backup;
+          اذهب un_backup;
         }
 
-      int symlink_err = force_symlinkat (src_link_val, dst_dirfd, dst_relname,
+      صحيح symlink_err = force_symlinkat (src_link_val, dst_dirfd, dst_relname,
                                          x->unlink_dest_after_failed_open, -1);
-      if (0 < symlink_err && x->update == UPDATE_OLDER
-          && !new_dst && S_ISLNK (dst_sb.st_mode)
-          && dst_sb.st_size == strlen (src_link_val))
+      إذا (0 < symlink_err && x->update == UPDATE_OLDER
+          && !new_dst && S_ISLNK (dst_sb.st_گهڻائي)
+          && dst_sb.st_سائيز == لڙي_ڊيگهه (src_link_val))
         {
           /* See if the destination is already the desired symlink.
              FIXME: This behavior isn't documented, and seems wrong
              in some cases, e.g., if the destination symlink has the
              wrong ownership, permissions, or timestamps.  */
-          char *dest_link_val =
-            areadlinkat_with_size (dst_dirfd, dst_relname, dst_sb.st_size);
-          if (dest_link_val)
+          حرف *dest_link_val =
+            areadlinkat_with_سائيز (dst_dirfd, dst_relname, dst_sb.st_سائيز);
+          إذا (dest_link_val)
             {
-              if (streq (dest_link_val, src_link_val))
+              إذا (streq (dest_link_val, src_link_val))
                 symlink_err = 0;
-              free (dest_link_val);
+              حرر (dest_link_val);
             }
         }
-      free (src_link_val);
-      if (0 < symlink_err)
+      حرر (src_link_val);
+      إذا (0 < symlink_err)
         {
           error (0, symlink_err, _("cannot create symbolic link %s"),
                  quoteaf (dst_name));
-          goto un_backup;
+          اذهب un_backup;
         }
 
-      if (x->preserve_security_context)
+      إذا (x->preserve_security_context)
         restore_default_fscreatecon_or_die ();
 
-      if (x->preserve_ownership)
+      إذا (x->preserve_ownership)
         {
           /* Preserve the owner and group of the just-'copied'
              symbolic link, if possible.  */
-          if (HAVE_LCHOWN
+          إذا (HAVE_LCHOWN
               && (lchownat (dst_dirfd, dst_relname,
                             src_sb.st_uid, src_sb.st_gid)
                   != 0)
@@ -2570,10 +2570,10 @@ skip:
             {
               error (0, errno, _("failed to preserve ownership for %s"),
                      dst_name);
-              if (x->require_preserve)
-                goto un_backup;
+              إذا (x->require_preserve)
+                اذهب un_backup;
             }
-          else
+          وإلا
             {
               /* Can't preserve ownership of symlinks.
                  FIXME: maybe give a warning or even error for symlinks
@@ -2582,42 +2582,42 @@ skip:
             }
         }
     }
-  else
+  وإلا
     {
       error (0, 0, _("%s has unknown file type"), quoteaf (src_name));
-      goto un_backup;
+      اذهب un_backup;
     }
 
   /* With -Z or --preserve=context, set the context for existing files.
      Note this is done already for copy_reg() for reasons described therein.  */
-  if (!new_dst && !x->copy_as_regular && !S_ISDIR (src_mode)
-      && (x->set_security_context || x->preserve_security_context))
+  إذا (!new_dst && !x->copy_as_regular && !S_ISDIR (src_گهڻائي)
+      && (x->سيٽ_security_context || x->preserve_security_context))
     {
-      if (! set_file_security_ctx (dst_name, false, x))
+      إذا (! سيٽ_file_security_ctx (dst_name, false, x))
         {
-           if (x->require_preserve_context)
-             goto un_backup;
+           إذا (x->require_preserve_context)
+             اذهب un_backup;
         }
     }
 
-  if (command_line_arg && x->dest_info)
+  إذا (command_سٽ_arg && x->dest_info)
     {
       /* Now that the destination file is very likely to exist,
          add its info to the set.  */
-      struct stat sb;
-      if (fstatat (dst_dirfd, drelname, &sb, AT_SYMLINK_NOFOLLOW) == 0)
-        record_file (x->dest_info, dst_relname, &sb);
+      بنية stat sb;
+      إذا (fstatat (dst_dirfd, drelname, &sb, AT_SYMLINK_NOFOLLOW) == 0)
+        رڪارڊ_file (x->dest_info, dst_relname, &sb);
     }
 
   /* If we've just created a hard-link due to cp's --link option,
      we're done.  */
-  if (x->hard_link && ! S_ISDIR (src_mode)
-      && !(! CAN_HARDLINK_SYMLINKS && S_ISLNK (src_mode)
+  إذا (x->hard_link && ! S_ISDIR (src_گهڻائي)
+      && !(! CAN_HARDLINK_SYMLINKS && S_ISLNK (src_گهڻائي)
            && x->dereference == DEREF_NEVER))
-    return delayed_ok;
+    أرجع delayed_ok;
 
-  if (copied_as_regular)
-    return delayed_ok;
+  إذا (copied_as_regular)
+    أرجع delayed_ok;
 
   /* POSIX says that 'cp -p' must restore the following:
      - permission bits
@@ -2631,76 +2631,76 @@ skip:
      chown turns off set[ug]id bits for non-root,
      so do the chmod last.  */
 
-  if (x->preserve_timestamps)
+  إذا (x->preserve_timestamps)
     {
-      struct timespec timespec[2];
+      بنية timespec timespec[2];
       timespec[0] = get_stat_atime (&src_sb);
       timespec[1] = get_stat_mtime (&src_sb);
 
-      int utimensat_flags = dest_is_symlink ? AT_SYMLINK_NOFOLLOW : 0;
-      if (utimensat (dst_dirfd, drelname, timespec, utimensat_flags) != 0)
+      صحيح utimensat_flags = dest_is_symlink ? AT_SYMLINK_NOFOLLOW : 0;
+      إذا (utimensat (dst_dirfd, drelname, timespec, utimensat_flags) != 0)
         {
           error (0, errno, _("preserving times for %s"), quoteaf (dst_name));
-          if (x->require_preserve)
-            return false;
+          إذا (x->require_preserve)
+            أرجع false;
         }
     }
 
   /* Avoid calling chown if we know it's not necessary.  */
-  if (!dest_is_symlink && x->preserve_ownership
-      && (new_dst || !SAME_OWNER_AND_GROUP (src_sb, dst_sb)))
+  إذا (!dest_is_symlink && x->preserve_ownership
+      && (new_dst || !SAME_OWNER_AND_گروهه (src_sb, dst_sb)))
     {
-      switch (set_owner (x, dst_name, dst_dirfd, drelname, -1,
+      بدل (سيٽ_owner (x, dst_name, dst_dirfd, drelname, -1,
                          &src_sb, new_dst, &dst_sb))
         {
-        case -1:
-          return false;
+        حالة -1:
+          أرجع false;
 
-        case 0:
-          src_mode &= ~ (S_ISUID | S_ISGID | S_ISVTX);
-          break;
+        حالة 0:
+          src_گهڻائي &= ~ (S_ISUID | S_ISGID | S_ISVTX);
+          اكسر;
         }
     }
 
   /* Set xattrs after ownership as changing owners will clear capabilities.  */
-  if (x->preserve_xattr && ! copy_attr (src_name, -1, dst_name, -1, x)
-      && x->require_preserve_xattr && ! x->move_mode)
-    return false;
+  إذا (x->preserve_xattr && ! copy_attr (src_name, -1, dst_name, -1, x)
+      && x->require_preserve_xattr && ! x->move_گهڻائي)
+    أرجع false;
 
   /* The operations beyond this point may dereference a symlink.  */
-  if (dest_is_symlink)
-    return delayed_ok;
+  إذا (dest_is_symlink)
+    أرجع delayed_ok;
 
-  set_author (dst_name, -1, &src_sb);
+  سيٽ_author (dst_name, -1, &src_sb);
 
-  if (x->preserve_mode || x->move_mode)
+  إذا (x->preserve_گهڻائي || x->move_گهڻائي)
     {
-      if (xcopy_acl (src_name, -1, dst_name, -1, src_mode) != 0
+      إذا (xcopy_acl (src_name, -1, dst_name, -1, src_گهڻائي) != 0
           && x->require_preserve)
-        return false;
+        أرجع false;
     }
-  else if (x->set_mode)
+  وإلا إذا (x->سيٽ_گهڻائي)
     {
-      if (xset_acl (dst_name, -1, x->mode) != 0)
-        return false;
+      إذا (xset_acl (dst_name, -1, x->گهڻائي_2) != 0)
+        أرجع false;
     }
-  else if (x->explicit_no_preserve_mode && new_dst)
+  وإلا إذا (x->explicit_no_preserve_گهڻائي && new_dst)
     {
-      int default_permissions = S_ISDIR (src_mode) || S_ISSOCK (src_mode)
-                                ? S_IRWXUGO : MODE_RW_UGO;
-      dst_mode = dst_sb.st_mode;
-      if (S_ISDIR (src_mode))  /* Keep set-group-ID for directories.  */
-        default_permissions |= (dst_mode & S_ISGID);
-      if (xset_acl (dst_name, -1, default_permissions & ~cached_umask ()) != 0)
-        return false;
+      صحيح default_permissions = S_ISDIR (src_گهڻائي) || S_ISSOCK (src_گهڻائي)
+                                ? S_IRWXUGO : گهڻائي_RW_UGO;
+      dst_گهڻائي = dst_sb.st_گهڻائي;
+      إذا (S_ISDIR (src_گهڻائي))  /* Keep set-group-ID for directories.  */
+        default_permissions |= (dst_گهڻائي & S_ISGID);
+      إذا (xset_acl (dst_name, -1, default_permissions & ~cached_umask ()) != 0)
+        أرجع false;
     }
-  else
+  وإلا
     {
-      if (omitted_permissions)
+      إذا (omitted_permissions)
         {
           omitted_permissions &= ~ cached_umask ();
 
-          if (omitted_permissions && !restore_dst_mode)
+          إذا (omitted_permissions && !restore_dst_گهڻائي)
             {
               /* Permissions were deliberately omitted when the file
                  was created due to security concerns.  See whether
@@ -2708,37 +2708,37 @@ skip:
                  the lstat, but deducing the current destination mode
                  is tricky in the presence of implementation-defined
                  rules for special mode bits.  */
-              if (new_dst && (fstatat (dst_dirfd, drelname, &dst_sb,
+              إذا (new_dst && (fstatat (dst_dirfd, drelname, &dst_sb,
                                        AT_SYMLINK_NOFOLLOW)
                               != 0))
                 {
                   error (0, errno, _("cannot stat %s"), quoteaf (dst_name));
-                  return false;
+                  أرجع false;
                 }
-              dst_mode = dst_sb.st_mode;
-              if (omitted_permissions & ~dst_mode)
-                restore_dst_mode = true;
+              dst_گهڻائي = dst_sb.st_گهڻائي;
+              إذا (omitted_permissions & ~dst_گهڻائي)
+                restore_dst_گهڻائي = true;
             }
         }
 
-      if (restore_dst_mode)
+      إذا (restore_dst_گهڻائي)
         {
-          if (lchmodat (dst_dirfd, drelname, dst_mode | omitted_permissions)
+          إذا (lchmodat (dst_dirfd, drelname, dst_گهڻائي | omitted_permissions)
               != 0)
             {
               error (0, errno, _("preserving permissions for %s"),
                      quoteaf (dst_name));
-              if (x->require_preserve)
-                return false;
+              إذا (x->require_preserve)
+                أرجع false;
             }
         }
     }
 
-  return delayed_ok;
+  أرجع delayed_ok;
 
 un_backup:
 
-  if (x->preserve_security_context)
+  إذا (x->preserve_security_context)
     restore_default_fscreatecon_or_die ();
 
   /* We have failed to create the destination file.
@@ -2747,34 +2747,34 @@ un_backup:
      remove the entry associating the source dev/ino with the
      destination file name, so we don't try to 'preserve' a link
      to a file we didn't create.  */
-  if (earlier_file == NULL)
+  إذا (earlier_file == عدم)
     forget_created (src_sb.st_ino, src_sb.st_dev);
 
-  if (dst_backup)
+  إذا (dst_backup)
     {
-      char const *dst_relbackup = &dst_backup[dst_relname - dst_name];
-      if (renameat (dst_dirfd, dst_relbackup, dst_dirfd, drelname) != 0)
+      حرف ثابت *dst_relbackup = &dst_backup[dst_relname - dst_name];
+      إذا (renameat (dst_dirfd, dst_relbackup, dst_dirfd, drelname) != 0)
         error (0, errno, _("cannot un-backup %s"), quoteaf (dst_name));
-      else
+      وإلا
         {
-          if (x->verbose)
-            printf (_("%s -> %s (unbackup)\n"),
+          إذا (x->verbose)
+            لکو (_("%s -> %s (unbackup)\n"),
                     quoteaf_n (0, dst_backup), quoteaf_n (1, dst_name));
         }
     }
-  return false;
+  أرجع false;
 }
 
-static void
-valid_options (const struct cp_options *co)
+ساكن فراغ
+valid_options (ثابت بنية cp_options *co)
 {
   affirm (VALID_BACKUP_TYPE (co->backup_type));
-  affirm (VALID_SPARSE_MODE (co->sparse_mode));
-  affirm (VALID_REFLINK_MODE (co->reflink_mode));
+  affirm (VALID_SPARSE_گهڻائي (co->sparse_گهڻائي));
+  affirm (VALID_REFLINK_گهڻائي (co->reflink_گهڻائي));
   affirm (!(co->hard_link && co->symbolic_link));
   affirm (!
-          (co->reflink_mode == REFLINK_ALWAYS
-           && co->sparse_mode != SPARSE_AUTO));
+          (co->reflink_گهڻائي == REFLINK_ALWAYS
+           && co->sparse_گهڻائي != SPARSE_AUTO));
 }
 
 /* Copy the file SRC_NAME to the file DST_NAME aka DST_DIRFD+DST_RELNAME.
@@ -2788,10 +2788,10 @@ valid_options (const struct cp_options *co)
    the source was simply renamed to the destination.
    Return true if successful.  */
 
-extern bool
-copy (char const *src_name, char const *dst_name,
-      int dst_dirfd, char const *dst_relname,
-      int nonexistent_dst, const struct cp_options *options,
+خارجي bool
+copy (حرف ثابت *src_name, حرف ثابت *dst_name,
+      صحيح dst_dirfd, حرف ثابت *dst_relname,
+      صحيح nonexistent_dst, ثابت بنية cp_options *options,
       bool *copy_into_self, bool *rename_succeeded)
 {
   valid_options (options);
@@ -2803,38 +2803,38 @@ copy (char const *src_name, char const *dst_name,
      top level source and destination directory names where they're used.
      An alternative is to use COPY_INTO_SELF and print the diagnostic
      from every caller -- but I don't want to do that.  */
-  top_level_src_name = src_name;
-  top_level_dst_name = dst_name;
+  چوٽي_level_src_name = src_name;
+  چوٽي_level_dst_name = dst_name;
 
-  bool first_dir_created_per_command_line_arg = false;
-  return copy_internal (src_name, dst_name, dst_dirfd, dst_relname,
-                        nonexistent_dst, NULL, NULL,
+  bool پهريون_dir_created_في_command_سٽ_arg = false;
+  أرجع copy_اندروني (src_name, dst_name, dst_dirfd, dst_relname,
+                        nonexistent_dst, عدم, عدم,
                         options, true,
-                        &first_dir_created_per_command_line_arg,
+                        &پهريون_dir_created_في_command_سٽ_arg,
                         copy_into_self, rename_succeeded);
 }
 
 /* Set *X to the default options for a value of type struct cp_options.  */
 
-extern void
-cp_options_default (struct cp_options *x)
+خارجي فراغ
+cp_options_default (بنية cp_options *x)
 {
-  memset (x, 0, sizeof *x);
-#ifdef PRIV_FILE_CHOWN
+  memset (x, 0, حجم *x);
+#جيڪڏهن_وصف_ٿيل PRIV_FILE_CHOWN
   {
-    priv_set_t *pset = priv_allocset ();
-    if (!pset)
+    priv_سيٽ_t *pset = priv_allocset ();
+    إذا (!pset)
       xalloc_die ();
-    if (getppriv (PRIV_EFFECTIVE, pset) == 0)
+    إذا (getppriv (PRIV_EFFECTIVE, pset) == 0)
       {
         x->chown_privileges = priv_ismember (pset, PRIV_FILE_CHOWN);
         x->owner_privileges = priv_ismember (pset, PRIV_FILE_OWNER);
       }
     priv_freeset (pset);
   }
-#else
-  x->chown_privileges = x->owner_privileges = (geteuid () == ROOT_UID);
-#endif
+#وإلا
+  x->chown_privileges = x->owner_privileges = (geteuid () == پاڙ_UID);
+#جيڪڏهن_پورو
   x->rename_errno = -1;
 }
 
@@ -2842,8 +2842,8 @@ cp_options_default (struct cp_options *x)
    the error number that chown failed with and X is the copying
    option set.  */
 
-extern bool
-chown_failure_ok (struct cp_options const *x)
+خارجي bool
+chown_failure_ok (بنية cp_options ثابت *x)
 {
   /* If non-root uses -p, it's ok if we can't preserve ownership.
      But root probably wants to know, e.g. if NFS disallows it,
@@ -2855,7 +2855,7 @@ chown_failure_ok (struct cp_options const *x)
      occur only when some other process is racing with coreutils and
      coreutils is not immune to races anyway.  */
 
-  return ((errno == EPERM || errno == EINVAL || errno == EACCES)
+  أرجع ((errno == EPERM || errno == EINVAL || errno == EACCES)
           && !x->chown_privileges);
 }
 
@@ -2863,10 +2863,10 @@ chown_failure_ok (struct cp_options const *x)
    to fail, where errno is the error number that chmod failed with and
    X is the copying option set.  */
 
-static bool
-owner_failure_ok (struct cp_options const *x)
+ساكن bool
+owner_failure_ok (بنية cp_options ثابت *x)
 {
-  return ((errno == EPERM || errno == EINVAL || errno == EACCES)
+  أرجع ((errno == EPERM || errno == EINVAL || errno == EACCES)
           && !x->owner_privileges);
 }
 
@@ -2876,16 +2876,16 @@ owner_failure_ok (struct cp_options const *x)
    some operating systems (e.g., GNU/Linux's "POSIX" ACLs) use that
    ACL's mask rather than the process umask.  Currently, the callers
    of cached_umask incorrectly assume that this situation cannot occur.  */
-extern mode_t
-cached_umask (void)
+خارجي mode_t
+cached_umask (فراغ)
 {
-  static mode_t mask;
-  static bool cached;
-  if (!cached)
+  ساكن mode_t نقاب;
+  ساكن bool cached;
+  إذا (!cached)
     {
       cached = true;
-      mask = umask (0);
-      umask (mask);
+      نقاب = umask (0);
+      umask (نقاب);
     }
-  return mask;
+  أرجع نقاب;
 }

@@ -14,24 +14,24 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include <stdarg.h>
-#include <sys/types.h>
+#ضمن <config.h>
+#ضمن <stdarg.h>
+#ضمن <sys/types.h>
 
-#include "system.h"
+#ضمن "system.h"
 
-#include "prog-fprintf.h"
+#ضمن "prog-fprintf.h"
 
 /* Display program name followed by variable list.
    Used for e.g. verbose output */
-void
-prog_fprintf (FILE *fp, char const *fmt, ...)
+فراغ
+prog_fprintf (FILE *fp, حرف ثابت *fmt, ...)
 {
   va_list ap;
-  fputs (program_name, fp);
+  fputs (پروگرام_name, fp);
   fputs (": ", fp);
-  va_start (ap, fmt);
+  va_شروعات (ap, fmt);
   vfprintf (fp, fmt, ap);
-  va_end (ap);
+  va_پڇاڙي (ap);
   fputc ('\n', fp);
 }

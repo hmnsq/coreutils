@@ -16,177 +16,177 @@
 
    David MacKenzie <djm@gnu.ai.mit.edu> */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
-#if HAVE_LANGINFO_CODESET
+#ضمن <config.h>
+#ضمن <stdio.h>
+#ضمن <getopt.h>
+#ضمن <sys/types.h>
+#إذا HAVE_LANGINFO_CODESET
 # include <langinfo.h>
-#endif
+#جيڪڏهن_پورو
 
-#include "system.h"
-#include "argmatch.h"
-#include "parse-datetime.h"
-#include "posixtm.h"
-#include "quote.h"
-#include "show-date.h"
-#include "stat-time.h"
-#include "xsetenv.h"
+#ضمن "system.h"
+#ضمن "argmatch.h"
+#ضمن "parse-datetime.h"
+#ضمن "posixtm.h"
+#ضمن "quote.h"
+#ضمن "show-date.h"
+#ضمن "stat-time.h"
+#ضمن "xsetenv.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "date"
+#وصف_ڪريو پروگرام_NAME "date"
 
-#define AUTHORS proper_name ("David MacKenzie")
+#وصف_ڪريو AUTHORS proper_name ("David MacKenzie")
 
-enum Time_spec
+تعداد وقت_spec
 {
   /* Display only the date.  */
-  TIME_SPEC_DATE,
+  وقت_SPEC_DATE,
   /* Display date, hours, minutes, and seconds.  */
-  TIME_SPEC_SECONDS,
+  وقت_SPEC_SECONDS,
   /* Similar, but display nanoseconds. */
-  TIME_SPEC_NS,
+  وقت_SPEC_NS,
 
   /* Put these last, since they aren't valid for --rfc-3339.  */
 
   /* Display date and hour.  */
-  TIME_SPEC_HOURS,
+  وقت_SPEC_HOURS,
   /* Display date, hours, and minutes.  */
-  TIME_SPEC_MINUTES
+  وقت_SPEC_MINUTES
 };
 
-static char const *const time_spec_string[] =
+ساكن حرف ثابت *ثابت وقت_spec_string[] =
 {
   /* Put "hours" and "minutes" first, since they aren't valid for
      --rfc-3339.  */
   "hours", "minutes",
-  "date", "seconds", "ns", NULL
+  "date", "seconds", "ns", عدم
 };
-static enum Time_spec const time_spec[] =
+ساكن تعداد وقت_spec ثابت وقت_spec_2[] =
 {
-  TIME_SPEC_HOURS, TIME_SPEC_MINUTES,
-  TIME_SPEC_DATE, TIME_SPEC_SECONDS, TIME_SPEC_NS
+  وقت_SPEC_HOURS, وقت_SPEC_MINUTES,
+  وقت_SPEC_DATE, وقت_SPEC_SECONDS, وقت_SPEC_NS
 };
-ARGMATCH_VERIFY (time_spec_string, time_spec);
+ARGMATCH_VERIFY (وقت_spec_string, وقت_spec_2);
 
 /* A format suitable for Internet RFCs 5322, 2822, and 822.  */
-static char const rfc_email_format[] = "%a, %d %b %Y %H:%M:%S %z";
+ساكن حرف ثابت rfc_email_format[] = "%a, %d %b %Y %H:%M:%S %z";
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+تعداد
 {
   DEBUG_DATE_PARSING_OPTION = CHAR_MAX + 1,
   RESOLUTION_OPTION,
   RFC_3339_OPTION
 };
 
-static char const short_options[] = "d:f:I::r:Rs:u";
+ساكن حرف ثابت short_options[] = "d:f:I::r:Rs:u";
 
-static struct option const long_options[] =
+ساكن بنية option ثابت long_options[] =
 {
-  {"date", required_argument, NULL, 'd'},
-  {"debug", no_argument, NULL, DEBUG_DATE_PARSING_OPTION},
-  {"file", required_argument, NULL, 'f'},
-  {"iso-8601", optional_argument, NULL, 'I'},
-  {"reference", required_argument, NULL, 'r'},
-  {"resolution", no_argument, NULL, RESOLUTION_OPTION},
-  {"rfc-email", no_argument, NULL, 'R'},
-  {"rfc-822", no_argument, NULL, 'R'},  /* Deprecated.  */
-  {"rfc-2822", no_argument, NULL, 'R'},  /* Deprecated.  */
-  {"rfc-3339", required_argument, NULL, RFC_3339_OPTION},
-  {"set", required_argument, NULL, 's'},
-  {"uct", no_argument, NULL, 'u'},  /* Deprecated.  */
-  {"utc", no_argument, NULL, 'u'},
-  {"universal", no_argument, NULL, 'u'},
+  {"date", required_دليل, عدم, 'd'},
+  {"debug", no_دليل, عدم, DEBUG_DATE_PARSING_OPTION},
+  {"file", required_دليل, عدم, 'f'},
+  {"iso-8601", optional_دليل, عدم, 'I'},
+  {"reference", required_دليل, عدم, 'r'},
+  {"resolution", no_دليل, عدم, RESOLUTION_OPTION},
+  {"rfc-email", no_دليل, عدم, 'R'},
+  {"rfc-822", no_دليل, عدم, 'R'},  /* Deprecated.  */
+  {"rfc-2822", no_دليل, عدم, 'R'},  /* Deprecated.  */
+  {"rfc-3339", required_دليل, عدم, RFC_3339_OPTION},
+  {"set", required_دليل, عدم, 's'},
+  {"uct", no_دليل, عدم, 'u'},  /* Deprecated.  */
+  {"utc", no_دليل, عدم, 'u'},
+  {"universal", no_دليل, عدم, 'u'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_نسخو_OPTION_DECL},
+  {عدم, 0, عدم, 0}
 };
 
 /* flags for parse_datetime2 */
-static unsigned int parse_datetime_flags;
+ساكن بنانشان صحيح parse_datetime_flags;
 
-#ifdef _DATE_FMT
+#جيڪڏهن_وصف_ٿيل _DATE_FMT
 # define DATE_FMT_LANGINFO() nl_langinfo (_DATE_FMT)
-#else
+#وإلا
 # define DATE_FMT_LANGINFO() ""
-#endif
+#جيڪڏهن_پورو
 
-void
-usage (int status)
+فراغ
+usage (صحيح حالت)
 {
-  if (status != EXIT_SUCCESS)
+  إذا (حالت != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  وإلا
     {
-      printf (_("\
+      لکو (_("\
 Usage: %s [OPTION]... [+FORMAT]\n\
   or:  %s [OPTION]... MMDDhhmm[[CC]YY][.ss]\n\
 "),
-              program_name, program_name);
+              پروگرام_name, پروگرام_name);
       fputs (_("\
-Display date and time in the given FORMAT.\n\
-With -s, or with MMDDhhmm[[CC]YY][.ss], set the date and time first.\n\
+Display date and وقت اندريون the given FORMAT.\n\
+With -s, or with MMDDhhmm[[CC]YY][.ss], سيٽ_2 the date and وقت پهريون.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
 
       oputs (_("\
   -d, --date=STRING\n\
-         display time described by STRING, not 'now'\n\
+         display وقت described by STRING, not 'now'\n\
 "));
       oputs (_("\
       --debug\n\
          annotate the parsed date,\n\
-         and warn about questionable usage to standard error\n\
+         and warn about questionable usage منزل standard error\n\
 "));
       oputs (_("\
   -f, --file=DATEFILE\n\
-         like --date; once for each line of DATEFILE;\n\
-         if DATEFILE is -, read names from standard input\n\
+         like --date; once لكل each سٽ جو DATEFILE;\n\
+         إذا DATEFILE is -, اقرأ نالا from standard داخلا\n\
 "));
       oputs (_("\
   -I[FMT], --iso-8601[=FMT]\n\
-         output date/time in ISO 8601 format.\n\
-         FMT='date' (default), 'hours', 'minutes', 'seconds', or 'ns'\n\
-         for date and time to the indicated precision.\n\
+         output date/وقت اندريون ISO 8601 format.\n\
+         FMT='date' (افتراضي), 'hours', 'minutes', 'seconds', or 'ns'\n\
+         لكل date and وقت منزل the indicated precision.\n\
          Example: 2006-08-14T02:34:56-06:00\n\
 "));
       oputs (_("\
       --resolution\n\
-         output the available resolution of timestamps.\n\
+         output the موجود resolution جو timestamps.\n\
          Example: 0.000000001\n\
 "));
       oputs (_("\
   -R, --rfc-email\n\
-         output date and time in RFC 5322 format.\n\
+         output date and وقت اندريون RFC 5322 format.\n\
          Example: Mon, 14 Aug 2006 02:34:56 +0000\n\
 "));
       oputs (_("\
       --rfc-3339=FMT\n\
-         output date/time in RFC 3339 format.\n\
+         output date/وقت اندريون RFC 3339 format.\n\
          FMT='date', 'seconds', or 'ns'\n\
-         for date and time to the indicated precision.\n\
+         لكل date and وقت منزل the indicated precision.\n\
          Example: 2006-08-14 02:34:56-06:00\n\
 "));
       oputs (_("\
   -r, --reference=FILE\n\
-         display the last modification time of FILE\n\
+         display the آخري modification وقت جو FILE\n\
 "));
       oputs (_("\
-  -s, --set=STRING\n\
-         set time described by STRING\n\
+  -s, --سيٽ_2=STRING\n\
+         سيٽ_2 وقت described by STRING\n\
 "));
       oputs (_("\
   -u, --utc, --universal\n\
-         print or set Coordinated Universal Time (UTC)\n\
+         print or سيٽ_2 Coordinated Universal وقت_2 (UTC)\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (نسخو_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-All options that specify the date to display are mutually exclusive.\n\
+All options that specify the date منزل display are mutually exclusive.\n\
 I.e.: --date, --file, --reference, --resolution.\n\
 "), stdout);
       fputs (_("\
@@ -211,19 +211,19 @@ FORMAT  Example    Description\n\
       fputs ("\n", stdout);
 
       fputs (_("\
-  %C    20          century; like %Y, except omit last two digits\n\
+  %C    20          century; like %Y, except omit آخري two digits\n\
 "), stdout);
       fputs (_("\
-  %y    99          year (last two digits; 00..99)\n\
+  %y    99          year (آخري two digits; 00..99)\n\
 "), stdout);
       fputs (_("\
   %Y    1999        year\n\
 "), stdout);
       fputs (_("\
-  %g    99          year of ISO week number (last 2 digits; 00-99); see %G\n\
+  %g    99          year جو ISO week عدد (آخري 2 digits; 00-99); see %G\n\
 "), stdout);
       fputs (_("\
-  %G    1999        year of ISO week number; normally useful only with %V\n\
+  %G    1999        year جو ISO week عدد; normally useful only with %V\n\
 "), stdout);
 
       fputs ("\n", stdout);
@@ -232,7 +232,7 @@ FORMAT  Example    Description\n\
   %a    Sun         locale's abbreviated weekday name\n\
 "), stdout);
       fputs (_("\
-  %A    Sunday      locale's full weekday name\n\
+  %A    Sunday      locale's ڀريل weekday name\n\
 "), stdout);
       fputs (_("\
   %b    Mar         locale's abbreviated month name\n\
@@ -241,28 +241,28 @@ FORMAT  Example    Description\n\
   %h    Mar         same as %b\n\
 "), stdout);
       fputs (_("\
-  %B    March       locale's full month name\n\
+  %B    March       locale's ڀريل month name\n\
 "), stdout);
       fputs (_("\
   %m    12          month (01..12)\n\
 "), stdout);
       fputs (_("\
-  %d    31          day of month (01..31)\n\
+  %d    31          day جو month (01..31)\n\
 "), stdout);
       fputs (_("\
-  %e     1          day of month, space padded; same as %_d\n\
+  %e     1          day جو month, space padded; same as %_d\n\
 "), stdout);
       fputs (_("\
   %D    12/31/99    date (ambiguous); same as %m/%d/%y\n\
 "), stdout);
       fputs (_("\
-  %F    1999-12-31  full date; like %+4Y-%m-%d\n\
+  %F    1999-12-31  ڀريل date; like %+4Y-%m-%d\n\
 "), stdout);
       fputs (_("\
   %x    12/31/99    locale's date (can be ambiguous)\n\
 "), stdout);
       fputs (_("\
-  %c    ...         locale's date and time (e.g., Thu Mar  3 23:05 2005)\n\
+  %c    ...         locale's date and وقت (e.g., Thu Mar  3 23:05 2005)\n\
 "), stdout);
 
       fputs ("\n", stdout);
@@ -283,7 +283,7 @@ FORMAT  Example    Description\n\
   %M    59          minute (00..59)\n\
 "), stdout);
       fputs (_("\
-  %S    60          second (00..60)\n\
+  %S    60          ٻيو (00..60)\n\
 "), stdout);
       fputs (_("\
   %N    123456789   nanoseconds (000000000..999999999)\n\
@@ -292,148 +292,148 @@ FORMAT  Example    Description\n\
   %s    1970010100  seconds since the Epoch (1970-01-01 00:00 UTC)\n\
 "), stdout);
       fputs (_("\
-  %p    PM          locale's equivalent of AM or PM; blank if not known\n\
+  %p    PM          locale's equivalent جو AM or PM; blank إذا not معلوم\n\
 "), stdout);
       fputs (_("\
-  %P    am          like %p, but lower case\n\
+  %P    am          like %p, but هيٺاهون حالة\n\
 "), stdout);
       fputs (_("\
-  %r    1:11:04 PM  locale's 12-hour clock time\n\
+  %r    1:11:04 PM  locale's 12-hour clock وقت\n\
 "), stdout);
       fputs (_("\
   %R    23:59       24-hour hour and minute; same as %H:%M\n\
 "), stdout);
       fputs (_("\
-  %T    23:59:59    time; same as %H:%M:%S\n\
+  %T    23:59:59    وقت; same as %H:%M:%S\n\
 "), stdout);
       fputs (_("\
-  %X    23:59:59    locale's time representation\n\
-"), stdout);
-
-      fputs ("\n", stdout);
-
-      fputs (_("\
-  %j    365         day of year (001..366)\n\
-"), stdout);
-      fputs (_("\
-  %q    4           quarter of year (1..4)\n\
-"), stdout);
-      fputs (_("\
-  %u    7           day of week (1..7); 1 is Monday\n\
-"), stdout);
-      fputs (_("\
-  %w    6           day of week (0..6); 0 is Sunday\n\
-"), stdout);
-      fputs (_("\
-  %U    52          week of year; Sunday as first day of week (00..53)\n\
-"), stdout);
-      fputs (_("\
-  %V    52          ISO week number; Monday as first day of week (01..53)\n\
-"), stdout);
-      fputs (_("\
-  %W    52          week of year; Monday as first day of week (00..53)\n\
+  %X    23:59:59    locale's وقت representation\n\
 "), stdout);
 
       fputs ("\n", stdout);
 
       fputs (_("\
-  %z     +0400      +hhmm numeric time zone\n\
+  %j    365         day جو year (001..366)\n\
 "), stdout);
       fputs (_("\
-  %:z    +04:00     +hh:mm numeric time zone\n\
+  %q    4           quarter جو year (1..4)\n\
 "), stdout);
       fputs (_("\
-  %::z   +04:00:00  +hh:mm:ss numeric time zone\n\
+  %u    7           day جو week (1..7); 1 is Monday\n\
 "), stdout);
       fputs (_("\
-  %:::z  +04        numeric time zone to necessary precision; with :\n\
+  %w    6           day جو week (0..6); 0 is Sunday\n\
 "), stdout);
       fputs (_("\
-  %Z     EDT        alphabetic time zone abbreviation\n\
+  %U    52          week جو year; Sunday as پهريون day جو week (00..53)\n\
+"), stdout);
+      fputs (_("\
+  %V    52          ISO week عدد; Monday as پهريون day جو week (01..53)\n\
+"), stdout);
+      fputs (_("\
+  %W    52          week جو year; Monday as پهريون day جو week (00..53)\n\
+"), stdout);
+
+      fputs ("\n", stdout);
+
+      fputs (_("\
+  %z     +0400      +hhmm numeric وقت zone\n\
+"), stdout);
+      fputs (_("\
+  %:z    +04:00     +hh:mm numeric وقت zone\n\
+"), stdout);
+      fputs (_("\
+  %::z   +04:00:00  +hh:mm:ss numeric وقت zone\n\
+"), stdout);
+      fputs (_("\
+  %:::z  +04        numeric وقت zone منزل necessary precision; with :\n\
+"), stdout);
+      fputs (_("\
+  %Z     EDT        alphabetic وقت zone abbreviation\n\
 "), stdout);
       fputs (_("\
 \n\
-By default, date pads numeric fields with zeroes.\n\
+By افتراضي, date pads numeric fields with zeroes.\n\
 "), stdout);
       fputs (_("\
 The following optional flags may follow '%':\n\
 \n\
-  -  (hyphen) do not pad the field\n\
+  -  (hyphen) افعل not pad the ميدان\n\
   _  (underscore) pad with spaces\n\
   0  (zero) pad with zeros\n\
   +  pad with zeros, and put '+' before future years with >4 digits\n\
-  ^  use upper case if possible\n\
-  #  use opposite case if possible\n\
+  ^  use مٿانهون حالة إذا possible\n\
+  #  use opposite حالة إذا possible\n\
 "), stdout);
       fputs (_("\
 \n\
-After any flags comes an optional field width, as a decimal number;\n\
+After any flags comes an optional ميدان ويڪر, as a decimal عدد;\n\
 then an optional modifier, which is either\n\
-E to use the locale's alternate representations if available, or\n\
-O to use the locale's alternate numeric symbols if available.\n\
+E منزل use the locale's alternate representations إذا موجود, or\n\
+O منزل use the locale's alternate numeric symbols إذا موجود.\n\
 "), stdout);
       fputs (_("\
 \n\
 Examples:\n\
-Convert seconds since the Epoch (1970-01-01 UTC) to a date\n\
+Convert seconds since the Epoch (1970-01-01 UTC) منزل a date\n\
   $ date --date='@2147483647'\n\
 \n\
-Show the time on the west coast of the US (use tzselect(1) to find TZ)\n\
+Show the وقت on the west coast جو the US (use tzselect(1) منزل ڳوليو TZ)\n\
   $ TZ='America/Los_Angeles' date\n\
 \n\
-Show the local time for 9AM next Friday on the west coast of the US\n\
+Show the local وقت لكل 9AM ايندڙ Friday on the west coast جو the US\n\
   $ date --date='TZ=\"America/Los_Angeles\" 09:00 next Fri'\n\
 "), stdout);
-      emit_ancillary_info (PROGRAM_NAME);
+      emit_ancillary_info (پروگرام_NAME);
     }
-  exit (status);
+  ٻاهر_نڪرو (حالت);
 }
 
 /* Yield the number of decimal digits needed to output a time with the
    nanosecond resolution RES, without losing information.  */
 
 ATTRIBUTE_CONST
-static int
-res_width (long int res)
+ساكن صحيح
+res_ويڪر (ڊگهو صحيح res)
 {
-  int i = 9;
-  for (long long int r = 1; (r *= 10) <= res; )
+  صحيح i = 9;
+  لكل (ڊگهو ڊگهو صحيح r = 1; (r *= 10) <= res; )
     i--;
-  return i;
+  أرجع i;
 }
 
 /* Return a newly allocated copy of FORMAT with each "%-N" adjusted to
    be "%9N", "%6N", or whatever other resolution is appropriate for
    the current platform.  If no "%-N" appears, return NULL.  */
 
-static char *
-adjust_resolution (char const *format)
+ساكن حرف *
+adjust_resolution (حرف ثابت *format)
 {
-  char *copy = NULL;
+  حرف *copy = عدم;
 
-  for (char const *f = format; *f; f++)
-    if (f[0] == '%')
+  لكل (حرف ثابت *f = format; *f; f++)
+    إذا (f[0] == '%')
       {
-        if (f[1] == '-' && f[2] == 'N')
+        إذا (f[1] == '-' && f[2] == 'N')
           {
-            if (!copy)
+            إذا (!copy)
               copy = xstrdup (format);
-            copy[f + 1 - format] = '0' + res_width (gettime_res ());
+            copy[f + 1 - format] = '0' + res_ويڪر (gettime_res ());
             f += 2;
           }
-        else
+        وإلا
           f += f[1] == '%';
       }
 
-  return copy;
+  أرجع copy;
 }
 
 /* Set the LC_TIME category of the current locale.
    Return the previous value of the LC_TIME category, as a freshly allocated
    string or null.  */
 
-static char *
-set_LC_TIME (char const *locale)
+ساكن حرف *
+سيٽ_LC_وقت (حرف ثابت *locale)
 {
   /* It is not sufficient to do
        setlocale (LC_TIME, locale);
@@ -441,8 +441,8 @@ set_LC_TIME (char const *locale)
      'localename-unsafe', that looks at the values of the environment variables
      (in order to distinguish the default locale from the C locale on platforms
      like macOS).  */
-  char const *all = getenv ("LC_ALL");
-  if (all != NULL && *all != '\0')
+  حرف ثابت *all = getenv ("LC_ALL");
+  إذا (all != عدم && *all != '\0')
     {
       /* Setting LC_TIME when LC_ALL is set would have no effect.  Therefore we
          have to unset LC_ALL and sets its value to all locale categories that
@@ -457,40 +457,40 @@ set_LC_TIME (char const *locale)
     }
 
   /* Set LC_TIME as an environment variable.  */
-  char const *value = getenv ("LC_TIME");
-  char *ret = (value == NULL || *value == '\0' ? NULL : xstrdup (value));
-  if (locale != NULL)
+  حرف ثابت *قدر = getenv ("LC_TIME");
+  حرف *ret = (قدر == عدم || *قدر == '\0' ? عدم : xstrdup (قدر));
+  إذا (locale != عدم)
     xsetenv ("LC_TIME", locale, 1);
-  else
+  وإلا
     unsetenv ("LC_TIME");
 
   /* Update the current locale accordingly.  */
-  setlocale (LC_TIME, "");
+  setlocale (LC_وقت, "");
 
-  return ret;
+  أرجع ret;
 }
 
-static bool
-show_date_helper (char const *format, bool use_c_locale,
-                  struct timespec when, timezone_t tz)
+ساكن bool
+show_date_helper (حرف ثابت *format, bool use_c_locale,
+                  بنية timespec when, timezone_t tz)
 {
-  if (parse_datetime_flags & PARSE_DATETIME_DEBUG)
+  إذا (parse_datetime_flags & PARSE_DATETIME_DEBUG)
     error (0, 0, _("output format: %s"), quote (format));
 
   bool ok;
-  if (use_c_locale)
+  إذا (use_c_locale)
     {
-      char *old_locale_category = set_LC_TIME ("C");
+      حرف *old_locale_category = سيٽ_LC_وقت ("C");
       ok = show_date (format, when, tz);
-      char *new_locale_category = set_LC_TIME (old_locale_category);
-      free (new_locale_category);
-      free (old_locale_category);
+      حرف *new_locale_category = سيٽ_LC_وقت (old_locale_category);
+      حرر (new_locale_category);
+      حرر (old_locale_category);
     }
-  else
+  وإلا
     ok = show_date (format, when, tz);
 
-  putchar ('\n');
-  return ok;
+  اکر_لکو ('\n');
+  أرجع ok;
 }
 
 /* Parse each line in INPUT_FILENAME as with --date and display each
@@ -498,126 +498,126 @@ show_date_helper (char const *format, bool use_c_locale,
    then exit.  Issue a diagnostic for any lines that cannot be parsed.
    Return true if successful.  */
 
-static bool
-batch_convert (char const *input_filename,
-               char const *format, bool format_in_c_locale,
-               timezone_t tz, char const *tzstring)
+ساكن bool
+batch_convert (حرف ثابت *داخلا_filename,
+               حرف ثابت *format, bool format_اندريون_c_locale,
+               timezone_t tz, حرف ثابت *tzstring)
 {
-  FILE *in_stream;
+  FILE *اندريون_وهڪرو;
 
-  if (streq (input_filename, "-"))
+  إذا (streq (داخلا_filename, "-"))
     {
-      input_filename = _("standard input");
-      in_stream = stdin;
+      داخلا_filename = _("standard input");
+      اندريون_وهڪرو = stdin;
     }
-  else
+  وإلا
     {
-      in_stream = fopen (input_filename, "r");
-      if (in_stream == NULL)
-        error (EXIT_FAILURE, errno, "%s", quotef (input_filename));
+      اندريون_وهڪرو = fopen (داخلا_filename, "r");
+      إذا (اندريون_وهڪرو == عدم)
+        error (EXIT_FAILURE, errno, "%s", quotef (داخلا_filename));
     }
 
-  char *line = NULL;
+  حرف *سٽ = عدم;
   size_t buflen = 0;
   bool ok = true;
-  while (true)
+  طالما (true)
     {
-      ssize_t line_length = getline (&line, &buflen, in_stream);
-      if (line_length < 0)
+      ssize_t سٽ_ڊيگهائي = getline (&سٽ, &buflen, اندريون_وهڪرو);
+      إذا (سٽ_ڊيگهائي < 0)
         {
-          if (ferror (in_stream))
+          إذا (ferror (اندريون_وهڪرو))
             error (EXIT_FAILURE, errno, _("%s: read error"),
-                   quotef (input_filename));
-          break;
+                   quotef (داخلا_filename));
+          اكسر;
         }
 
-      struct timespec when;
-      if (! parse_datetime2 (&when, line, NULL,
+      بنية timespec when;
+      إذا (! parse_datetime2 (&when, سٽ, عدم,
                              parse_datetime_flags, tz, tzstring))
         {
-          if (line[line_length - 1] == '\n')
-            line[line_length - 1] = '\0';
-          error (0, 0, _("invalid date %s"), quote (line));
+          إذا (سٽ[سٽ_ڊيگهائي - 1] == '\n')
+            سٽ[سٽ_ڊيگهائي - 1] = '\0';
+          error (0, 0, _("invalid date %s"), quote (سٽ));
           ok = false;
         }
-      else
+      وإلا
         {
-          ok &= show_date_helper (format, format_in_c_locale, when, tz);
+          ok &= show_date_helper (format, format_اندريون_c_locale, when, tz);
         }
 
-      if (ferror (stdout))
+      إذا (ferror (stdout))
         write_error ();
     }
 
-  if (fclose (in_stream) == EOF)
-    error (EXIT_FAILURE, errno, "%s", quotef (input_filename));
+  إذا (fclose (اندريون_وهڪرو) == EOF)
+    error (EXIT_FAILURE, errno, "%s", quotef (داخلا_filename));
 
-  free (line);
+  حرر (سٽ);
 
-  return ok;
+  أرجع ok;
 }
 
-int
-main (int argc, char **argv)
+صحيح
+مکيه (صحيح argc, حرف **argv)
 {
-  char const *datestr = NULL;
-  char const *set_datestr = NULL;
-  bool set_date = false;
-  char const *format = NULL;
-  bool format_in_c_locale = false;
+  حرف ثابت *datestr = عدم;
+  حرف ثابت *سيٽ_datestr = عدم;
+  bool سيٽ_date = false;
+  حرف ثابت *format = عدم;
+  bool format_اندريون_c_locale = false;
   bool get_resolution = false;
-  char *batch_file = NULL;
-  char *reference = NULL;
+  حرف *batch_file = عدم;
+  حرف *reference = عدم;
   bool discarded_datestr = false;
-  bool discarded_set_datestr = false;
-  char const *tzstring = NULL;
+  bool discarded_سيٽ_datestr = false;
+  حرف ثابت *tzstring = عدم;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  سيٽ_پروگرام_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  int optc;
-  while ((optc = getopt_long (argc, argv, short_options, long_options, NULL))
+  صحيح optc;
+  طالما ((optc = getopt_long (argc, argv, short_options, long_options, عدم))
          != -1)
     {
-      switch (optc)
+      بدل (optc)
         {
-        case 'd':
-          if (datestr)
+        حالة 'd':
+          إذا (datestr)
             discarded_datestr = true;
           datestr = optarg;
-          break;
-        case DEBUG_DATE_PARSING_OPTION:
+          اكسر;
+        حالة DEBUG_DATE_PARSING_OPTION:
           parse_datetime_flags |= PARSE_DATETIME_DEBUG;
-          break;
-        case 'f':
+          اكسر;
+        حالة 'f':
           batch_file = optarg;
-          break;
-        case RESOLUTION_OPTION:
+          اكسر;
+        حالة RESOLUTION_OPTION:
           get_resolution = true;
-          break;
-        case RFC_3339_OPTION:
+          اكسر;
+        حالة RFC_3339_OPTION:
           {
-            static char const rfc_3339_format[][32] =
+            ساكن حرف ثابت rfc_3339_format[][32] =
               {
                 "%Y-%m-%d",
                 "%Y-%m-%d %H:%M:%S%:z",
                 "%Y-%m-%d %H:%M:%S.%N%:z"
               };
-            enum Time_spec i =
+            تعداد وقت_spec i =
               XARGMATCH ("--rfc-3339", optarg,
-                         time_spec_string + 2, time_spec + 2);
+                         وقت_spec_string + 2, وقت_spec_2 + 2);
             format = rfc_3339_format[i];
-            format_in_c_locale = true;
-            break;
+            format_اندريون_c_locale = true;
+            اكسر;
           }
-        case 'I':
+        حالة 'I':
           {
-            static char const iso_8601_format[][32] =
+            ساكن حرف ثابت iso_8601_format[][32] =
               {
                 "%Y-%m-%d",
                 "%Y-%m-%dT%H:%M:%S%:z",
@@ -625,75 +625,75 @@ main (int argc, char **argv)
                 "%Y-%m-%dT%H%:z",
                 "%Y-%m-%dT%H:%M%:z"
               };
-            enum Time_spec i =
+            تعداد وقت_spec i =
               (optarg
-               ? XARGMATCH ("--iso-8601", optarg, time_spec_string, time_spec)
-               : TIME_SPEC_DATE);
+               ? XARGMATCH ("--iso-8601", optarg, وقت_spec_string, وقت_spec_2)
+               : وقت_SPEC_DATE);
             format = iso_8601_format[i];
-            format_in_c_locale = true;
-            break;
+            format_اندريون_c_locale = true;
+            اكسر;
           }
-        case 'r':
+        حالة 'r':
           reference = optarg;
-          break;
-        case 'R':
+          اكسر;
+        حالة 'R':
           format = rfc_email_format;
-          format_in_c_locale = true;
-          break;
-        case 's':
-          if (set_datestr)
-            discarded_set_datestr = true;
-          set_datestr = optarg;
-          set_date = true;
-          break;
-        case 'u':
+          format_اندريون_c_locale = true;
+          اكسر;
+        حالة 's':
+          إذا (سيٽ_datestr)
+            discarded_سيٽ_datestr = true;
+          سيٽ_datestr = optarg;
+          سيٽ_date = true;
+          اكسر;
+        حالة 'u':
           tzstring = "UTC0";
-          break;
+          اكسر;
         case_GETOPT_HELP_CHAR;
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        case_GETOPT_نسخو_CHAR (پروگرام_NAME, AUTHORS);
+        افتراضي:
           usage (EXIT_FAILURE);
         }
     }
 
-  int option_specified_date = (!!datestr + !!batch_file + !!reference
+  صحيح option_specified_date = (!!datestr + !!batch_file + !!reference
                                + get_resolution);
 
-  if (option_specified_date > 1)
+  إذا (option_specified_date > 1)
     {
       error (0, 0,
         _("the options to specify dates for printing are mutually exclusive"));
       usage (EXIT_FAILURE);
     }
 
-  if (set_date && option_specified_date)
+  إذا (سيٽ_date && option_specified_date)
     {
       error (0, 0,
           _("the options to print and set the time may not be used together"));
       usage (EXIT_FAILURE);
     }
 
-  if (discarded_datestr && (parse_datetime_flags & PARSE_DATETIME_DEBUG))
+  إذا (discarded_datestr && (parse_datetime_flags & PARSE_DATETIME_DEBUG))
     error (0, 0, _("only using last of multiple -d options"));
 
-  if (discarded_set_datestr && (parse_datetime_flags & PARSE_DATETIME_DEBUG))
+  إذا (discarded_سيٽ_datestr && (parse_datetime_flags & PARSE_DATETIME_DEBUG))
     error (0, 0, _("only using last of multiple -s options"));
 
-  if (optind < argc)
+  إذا (optind < argc)
     {
-      if (optind + 1 < argc)
+      إذا (optind + 1 < argc)
         {
           error (0, 0, _("extra operand %s"), quote (argv[optind + 1]));
           usage (EXIT_FAILURE);
         }
 
-      if (argv[optind][0] == '+')
+      إذا (argv[optind][0] == '+')
         {
-          if (format)
+          إذا (format)
             error (EXIT_FAILURE, 0, _("multiple output formats specified"));
           format = argv[optind++] + 1;
         }
-      else if (set_date || option_specified_date)
+      وإلا إذا (سيٽ_date || option_specified_date)
         {
           error (0, 0,
                  _("the argument %s lacks a leading '+';\n"
@@ -704,11 +704,11 @@ main (int argc, char **argv)
         }
     }
 
-  if (!format)
+  إذا (!format)
     {
-      if (get_resolution)
+      إذا (get_resolution)
         format = "%s.%N";
-      else
+      وإلا
         {
           format = DATE_FMT_LANGINFO ();
 
@@ -719,33 +719,33 @@ main (int argc, char **argv)
              written by date, which means "date" must generate output
              using the POSIX locale; but adding _() would cause "date"
              to use a Korean translation of the format.  */
-          if (! *format)
+          إذا (! *format)
             format = "%a %b %e %H:%M:%S %Z %Y";
         }
     }
 
-  char *format_copy = adjust_resolution (format);
-  char const *format_res = format_copy ? format_copy : format;
-  if (!tzstring)
+  حرف *format_copy = adjust_resolution (format);
+  حرف ثابت *format_res = format_copy ? format_copy : format;
+  إذا (!tzstring)
     tzstring = getenv ("TZ");
   timezone_t tz = tzalloc (tzstring);
 
   bool ok = true;
-  if (batch_file != NULL)
-    ok = batch_convert (batch_file, format_res, format_in_c_locale,
+  إذا (batch_file != عدم)
+    ok = batch_convert (batch_file, format_res, format_اندريون_c_locale,
                         tz, tzstring);
-  else
+  وإلا
     {
       bool valid_date = true;
-      struct timespec when;
+      بنية timespec when;
 
-      if (!option_specified_date && !set_date)
+      إذا (!option_specified_date && !سيٽ_date)
         {
-          if (optind < argc)
+          إذا (optind < argc)
             {
               /* Prepare to set system clock to the specified date/time
                  given in the POSIX-format.  */
-              set_date = true;
+              سيٽ_date = true;
               datestr = argv[optind];
               valid_date = posixtime (&when.tv_sec,
                                       datestr,
@@ -753,53 +753,53 @@ main (int argc, char **argv)
                                        | PDS_CENTURY | PDS_SECONDS));
               when.tv_nsec = 0; /* FIXME: posixtime should set this.  */
             }
-          else
+          وإلا
             {
               /* Prepare to print the current date/time.  */
               gettime (&when);
             }
         }
-      else
+      وإلا
         {
           /* (option_specified_date || set_date) */
-          if (reference != NULL)
+          إذا (reference != عدم)
             {
-              struct stat refstats;
-              if (stat (reference, &refstats) != 0)
+              بنية stat refstats;
+              إذا (stat (reference, &refstats) != 0)
                 error (EXIT_FAILURE, errno, "%s", quotef (reference));
               when = get_stat_mtime (&refstats);
             }
-          else if (get_resolution)
+          وإلا إذا (get_resolution)
             {
-              long int res = gettime_res ();
+              ڊگهو صحيح res = gettime_res ();
               when.tv_sec = res / TIMESPEC_HZ;
               when.tv_nsec = res % TIMESPEC_HZ;
             }
-          else
+          وإلا
             {
-              if (set_datestr)
-                datestr = set_datestr;
-              valid_date = parse_datetime2 (&when, datestr, NULL,
+              إذا (سيٽ_datestr)
+                datestr = سيٽ_datestr;
+              valid_date = parse_datetime2 (&when, datestr, عدم,
                                             parse_datetime_flags,
                                             tz, tzstring);
             }
         }
 
-      if (! valid_date)
+      إذا (! valid_date)
         error (EXIT_FAILURE, 0, _("invalid date %s"), quote (datestr));
 
-      if (set_date)
+      إذا (سيٽ_date)
         {
           /* Set the system clock to the specified date, then regardless of
              the success of that operation, format and print that date.  */
-          if (settime (&when) != 0)
+          إذا (settime (&when) != 0)
             {
               error (0, errno, _("cannot set date"));
               ok = false;
             }
         }
 
-      ok &= show_date_helper (format_res, format_in_c_locale, when, tz);
+      ok &= show_date_helper (format_res, format_اندريون_c_locale, when, tz);
     }
 
   main_exit (ok ? EXIT_SUCCESS : EXIT_FAILURE);
