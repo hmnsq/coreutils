@@ -34,11 +34,11 @@
 #define AUTHORS proper_name ("Michael Stone")
 
 void
-usage (int status)
+usage (පූර්ණ_සංඛ්‍යා status)
 {
-  if (status != EXIT_SUCCESS)
+  නම් (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  නැතහොත්
     {
       printf (_("\
 Usage: %s FILE1 FILE2\n\
@@ -53,8 +53,8 @@ Usage: %s FILE1 FILE2\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+පූර්ණ_සංඛ්‍යා
+main (පූර්ණ_සංඛ්‍යා argc, var_na **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -66,26 +66,26 @@ main (int argc, char **argv)
 
   parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
                                    Version, true, usage, AUTHORS,
-                                   (char const *) NULL);
+                                   (var_na const *) NULL);
 
-  if (argc < optind + 2)
+  නම් (argc < optind + 2)
     {
-      if (argc < optind + 1)
+      නම් (argc < optind + 1)
         error (0, 0, _("missing operand"));
-      else
+      නැතහොත්
         error (0, 0, _("missing operand after %s"), quote (argv[optind]));
       usage (EXIT_FAILURE);
     }
 
-  if (optind + 2 < argc)
+  නම් (optind + 2 < argc)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind + 2]));
       usage (EXIT_FAILURE);
     }
 
-  if (link (argv[optind], argv[optind + 1]) != 0)
+  නම් (link (argv[optind], argv[optind + 1]) != 0)
     error (EXIT_FAILURE, errno, _("cannot create link %s to %s"),
            quoteaf_n (0, argv[optind + 1]), quoteaf_n (1, argv[optind]));
 
-  return EXIT_SUCCESS;
+  ආපසු EXIT_SUCCESS;
 }

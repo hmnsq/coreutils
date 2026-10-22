@@ -33,22 +33,22 @@
 #define AUTHORS proper_name ("David MacKenzie")
 
 /* The value to return to the calling program.  */
-static int exit_status;
+static පූර්ණ_සංඛ්‍යා exit_status;
 
 /* True if the POSIXLY_CORRECT environment variable is set.  */
 static bool posixly_correct;
 
 /* This message appears in N_() here rather than just in _() below because
    the sole use would have been in a #define.  */
-static char const *const cfcc_msg =
+static var_na const *const cfcc_msg =
  N_("warning: %s: character(s) following character constant have been ignored");
 
 void
-usage (int status)
+usage (පූර්ණ_සංඛ්‍යා status)
 {
-  if (status != EXIT_SUCCESS)
+  නම් (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  නැතහොත්
     {
       printf (_("\
 Usage: %s FORMAT [ARGUMENT]...\n\
@@ -65,7 +65,7 @@ Print ARGUMENT(s) according to FORMAT, or execute according to OPTION:\n\
 \n\
 FORMAT controls the output as in C printf.  Interpreted sequences are:\n\
 \n\
-  \\\"      double quote\n\
+  \\\"      dviguu_na quote\n\
 "), stdout);
       fputs (_("\
   \\\\      backslash\n\
@@ -75,7 +75,7 @@ FORMAT controls the output as in C printf.  Interpreted sequences are:\n\
   \\e      escape\n\
   \\f      form feed\n\
   \\n      new line\n\
-  \\r      carriage return\n\
+  \\r      carriage ආපසු\n\
   \\t      horizontal tab\n\
   \\v      vertical tab\n\
 "), stdout);
@@ -127,19 +127,19 @@ with examples including usage of width, precision, and flags.\n\
 }
 
 static void
-verify_numeric (char const *s, char const *end)
+verify_numeric (var_na const *s, var_na const *end)
 {
-  if (s == end)
+  නම් (s == end)
     {
       error (0, 0, _("%s: expected a numeric value"), quote (s));
       exit_status = EXIT_FAILURE;
     }
-  else if (errno)
+  නැතහොත් නම් (errno)
     {
       error (0, errno, "%s", quote (s));
       exit_status = EXIT_FAILURE;
     }
-  else if (*end)
+  නැතහොත් නම් (*end)
     {
       error (0, 0, _("%s: value not completely converted"), quote (s));
       exit_status = EXIT_FAILURE;
@@ -148,17 +148,17 @@ verify_numeric (char const *s, char const *end)
 
 #define STRTOX(TYPE, FUNC_NAME, LIB_FUNC_EXPR)				 \
 static TYPE								 \
-FUNC_NAME (char const *s)						 \
+FUNC_NAME (var_na const *s)						 \
 {									 \
-  char *end;								 \
+  var_na *end;								 \
   TYPE val;								 \
                                                                          \
-  if ((*s == '\"' || *s == '\'') && *(s + 1))				 \
+  නම් ((*s == '\"' || *s == '\'') && *(s + 1))				 \
     {									 \
-      unsigned char ch = *++s;						 \
+      unsigned var_na ch = *++s;						 \
       val = ch;								 \
                                                                          \
-      if (MB_CUR_MAX > 1 && *(s + 1))					 \
+      නම් (MB_CUR_MAX > 1 && *(s + 1))					 \
         {								 \
           mbstate_t mbstate; mbszero (&mbstate);			 \
           wchar_t wc;							 \
@@ -166,7 +166,7 @@ FUNC_NAME (char const *s)						 \
           ssize_t bytes;						 \
           /* Use mbrtowc not mbrtoc32, as per POSIX.  */		 \
           bytes = mbrtowc (&wc, s, slen, &mbstate);			 \
-          if (0 < bytes)						 \
+          නම් (0 < bytes)						 \
             {								 \
               val = wc;							 \
               s += bytes - 1;						 \
@@ -177,59 +177,59 @@ FUNC_NAME (char const *s)						 \
          are characters following the character constant and that GNU	 \
          printf is ignoring those characters.  If POSIXLY_CORRECT *is*	 \
          set, then don't give the warning.  */				 \
-      if (*++s != 0 && !posixly_correct)				 \
+      නම් (*++s != 0 && !posixly_correct)				 \
         error (0, 0, _(cfcc_msg), s);					 \
     }									 \
-  else									 \
+  නැතහොත්									 \
     {									 \
       errno = 0;							 \
       val = (LIB_FUNC_EXPR);						 \
       verify_numeric (s, end);						 \
     }									 \
-  return val;								 \
+  ආපසු val;								 \
 }									 \
 
 STRTOX (intmax_t,    vstrtoimax, strtoimax (s, &end, 0))
 STRTOX (uintmax_t,   vstrtoumax, strtoumax (s, &end, 0))
-STRTOX (long double, vstrtold,   cl_strtold (s, &end))
+STRTOX (long dviguu_na, vstrtold,   cl_strtold (s, &end))
 
 /* Output a single-character \ escape.  */
 
 static void
-print_esc_char (char c)
+print_esc_char (var_na c)
 {
   switch (c)
     {
-    case 'a':			/* Alert. */
+    pak_sa 'a':			/* Alert. */
       putchar ('\a');
-      break;
-    case 'b':			/* Backspace. */
+      bha_nga;
+    pak_sa 'b':			/* Backspace. */
       putchar ('\b');
-      break;
-    case 'c':			/* Cancel the rest of the output. */
+      bha_nga;
+    pak_sa 'c':			/* Cancel the rest of the output. */
       exit (EXIT_SUCCESS);
-      break;
-    case 'e':			/* Escape. */
+      bha_nga;
+    pak_sa 'e':			/* Escape. */
       putchar ('\x1B');
-      break;
-    case 'f':			/* Form feed. */
+      bha_nga;
+    pak_sa 'f':			/* Form feed. */
       putchar ('\f');
-      break;
-    case 'n':			/* New line. */
+      bha_nga;
+    pak_sa 'n':			/* New line. */
       putchar ('\n');
-      break;
-    case 'r':			/* Carriage return. */
+      bha_nga;
+    pak_sa 'r':			/* Carriage return. */
       putchar ('\r');
-      break;
-    case 't':			/* Horizontal tab. */
+      bha_nga;
+    pak_sa 't':			/* Horizontal tab. */
       putchar ('\t');
-      break;
-    case 'v':			/* Vertical tab. */
+      bha_nga;
+    pak_sa 'v':			/* Vertical tab. */
       putchar ('\v');
-      break;
+      bha_nga;
     default:
       putchar (c);
-      break;
+      bha_nga;
     }
 }
 
@@ -239,81 +239,81 @@ print_esc_char (char c)
    If OCTAL_0 is nonzero, octal escapes are of the form \0ooo, where o
    is an octal digit; otherwise they are of the form \ooo.  */
 
-static int
-print_esc (char const *escstart, bool octal_0)
+static පූර්ණ_සංඛ්‍යා
+print_esc (var_na const *escstart, bool octal_0)
 {
-  char const *p = escstart + 1;
-  int esc_value = 0;		/* Value of \nnn escape. */
-  int esc_length;		/* Length of \nnn escape. */
+  var_na const *p = escstart + 1;
+  පූර්ණ_සංඛ්‍යා esc_value = 0;		/* Value of \nnn escape. */
+  පූර්ණ_සංඛ්‍යා esc_length;		/* Length of \nnn escape. */
 
-  if (*p == 'x')
+  නම් (*p == 'x')
     {
       /* A hexadecimal \xhh escape sequence must have 1 or 2 hex. digits.  */
-      for (esc_length = 0, ++p;
+      සඳහා (esc_length = 0, ++p;
            esc_length < 2 && c_isxdigit (*p);
            ++esc_length, ++p)
         esc_value = esc_value * 16 + fromhex (*p);
-      if (esc_length == 0)
+      නම් (esc_length == 0)
         error (EXIT_FAILURE, 0, _("missing hexadecimal number in escape"));
       putchar (esc_value);
     }
-  else if (isoct (*p))
+  නැතහොත් නම් (isoct (*p))
     {
       /* Parse \0ooo (if octal_0 && *p == '0') or \ooo (otherwise).
          Allow \ooo if octal_0 && *p != '0'; this is an undocumented
          extension to POSIX that is compatible with Bash 2.05b.  */
-      for (esc_length = 0, p += octal_0 && *p == '0';
+      සඳහා (esc_length = 0, p += octal_0 && *p == '0';
            esc_length < 3 && isoct (*p);
            ++esc_length, ++p)
         esc_value = esc_value * 8 + fromoct (*p);
       putchar (esc_value);
     }
-  else if (*p && strchr ("\"\\abcefnrtv", *p))
+  නැතහොත් නම් (*p && strchr ("\"\\abcefnrtv", *p))
     print_esc_char (*p++);
-  else if (*p == 'u' || *p == 'U')
+  නැතහොත් නම් (*p == 'u' || *p == 'U')
     {
-      char esc_char = *p;
-      unsigned int uni_value;
+      var_na esc_char = *p;
+      unsigned පූර්ණ_සංඛ්‍යා uni_value;
 
       uni_value = 0;
-      for (esc_length = (esc_char == 'u' ? 4 : 8), ++p;
+      සඳහා (esc_length = (esc_char == 'u' ? 4 : 8), ++p;
            esc_length > 0;
            --esc_length, ++p)
         {
-          if (! c_isxdigit (*p))
+          නම් (! c_isxdigit (*p))
             error (EXIT_FAILURE, 0, _("missing hexadecimal number in escape"));
           uni_value = uni_value * 16 + fromhex (*p);
         }
 
       /* Error for invalid code points 0000D800 through 0000DFFF inclusive.
          Note print_unicode_char() would print the literal \u.. in this case. */
-      if (uni_value >= 0xd800 && uni_value <= 0xdfff)
+      නම් (uni_value >= 0xd800 && uni_value <= 0xdfff)
         error (EXIT_FAILURE, 0, _("invalid universal character name \\%c%0*x"),
                esc_char, (esc_char == 'u' ? 4 : 8), uni_value);
 
       print_unicode_char (stdout, uni_value, 0);
     }
-  else
+  නැතහොත්
     {
       putchar ('\\');
-      if (*p)
+      නම් (*p)
         {
           putchar (*p);
           p++;
         }
     }
-  return p - escstart - 1;
+  ආපසු p - escstart - 1;
 }
 
 /* Print string STR, evaluating \ escapes. */
 
 static void
-print_esc_string (char const *str)
+print_esc_string (var_na const *str)
 {
-  for (; *str; str++)
-    if (*str == '\\')
+  සඳහා (; *str; str++)
+    නම් (*str == '\\')
       str += print_esc (str, true);
-    else
+    නැතහොත්
       putchar (*str);
 }
 
@@ -324,38 +324,38 @@ print_esc_string (char const *str)
    ARGUMENT is the argument to be formatted.  */
 
 static void
-print_direc (char const *start, char conversion,
-             bool have_field_width, int field_width,
-             bool have_precision, int precision,
-             char const *argument)
+print_direc (var_na const *start, var_na conversion,
+             bool have_field_width, පූර්ණ_සංඛ්‍යා field_width,
+             bool have_precision, පූර්ණ_සංඛ්‍යා precision,
+             var_na const *argument)
 {
-  char *p;		/* Null-terminated copy of % directive. */
+  var_na *p;		/* Null-terminated copy of % directive. */
 
   /* Create a null-terminated copy of the % directive, with an
      intmax_t-wide length modifier substituted for any existing
      integer length modifier.  */
   {
-    char *q;
-    char const *length_modifier;
+    var_na *q;
+    var_na const *length_modifier;
     size_t length_modifier_len;
 
     switch (conversion)
       {
-      case 'd': case 'i': case 'o': case 'u': case 'x': case 'X':
+      pak_sa 'd': pak_sa 'i': pak_sa 'o': pak_sa 'u': pak_sa 'x': pak_sa 'X':
         length_modifier = "j";
         length_modifier_len = 1;
-        break;
+        bha_nga;
 
-      case 'a': case 'e': case 'f': case 'g':
-      case 'A': case 'E': case 'F': case 'G':
+      pak_sa 'a': pak_sa 'e': pak_sa 'f': pak_sa 'g':
+      pak_sa 'A': pak_sa 'E': pak_sa 'F': pak_sa 'G':
         length_modifier = "L";
         length_modifier_len = 1;
-        break;
+        bha_nga;
 
       default:
         length_modifier = start;  /* Any valid pointer will do.  */
         length_modifier_len = 0;
-        break;
+        bha_nga;
       }
 
     size_t length = strlen (start);
@@ -368,105 +368,105 @@ print_direc (char const *start, char conversion,
 
   switch (conversion)
     {
-    case 'd':
-    case 'i':
+    pak_sa 'd':
+    pak_sa 'i':
       {
         intmax_t arg = argument ? vstrtoimax (argument) : 0;
-        if (!have_field_width)
+        නම් (!have_field_width)
           {
-            if (!have_precision)
+            නම් (!have_precision)
               xprintf (p, arg);
-            else
+            නැතහොත්
               xprintf (p, precision, arg);
           }
-        else
+        නැතහොත්
           {
-            if (!have_precision)
+            නම් (!have_precision)
               xprintf (p, field_width, arg);
-            else
+            නැතහොත්
               xprintf (p, field_width, precision, arg);
           }
       }
-      break;
+      bha_nga;
 
-    case 'o':
-    case 'u':
-    case 'x':
-    case 'X':
+    pak_sa 'o':
+    pak_sa 'u':
+    pak_sa 'x':
+    pak_sa 'X':
       {
         uintmax_t arg = argument ? vstrtoumax (argument) : 0;
-        if (!have_field_width)
+        නම් (!have_field_width)
           {
-            if (!have_precision)
+            නම් (!have_precision)
               xprintf (p, arg);
-            else
+            නැතහොත්
               xprintf (p, precision, arg);
           }
-        else
+        නැතහොත්
           {
-            if (!have_precision)
+            නම් (!have_precision)
               xprintf (p, field_width, arg);
-            else
+            නැතහොත්
               xprintf (p, field_width, precision, arg);
           }
       }
-      break;
+      bha_nga;
 
-    case 'a':
-    case 'A':
-    case 'e':
-    case 'E':
-    case 'f':
-    case 'F':
-    case 'g':
-    case 'G':
+    pak_sa 'a':
+    pak_sa 'A':
+    pak_sa 'e':
+    pak_sa 'E':
+    pak_sa 'f':
+    pak_sa 'F':
+    pak_sa 'g':
+    pak_sa 'G':
       {
-        long double arg = argument ? vstrtold (argument) : 0;
-        if (!have_field_width)
+        long dviguu_na arg = argument ? vstrtold (argument) : 0;
+        නම් (!have_field_width)
           {
-            if (!have_precision)
+            නම් (!have_precision)
               xprintf (p, arg);
-            else
+            නැතහොත්
               xprintf (p, precision, arg);
           }
-        else
+        නැතහොත්
           {
-            if (!have_precision)
+            නම් (!have_precision)
               xprintf (p, field_width, arg);
-            else
+            නැතහොත්
               xprintf (p, field_width, precision, arg);
           }
       }
-      break;
+      bha_nga;
 
-    case 'c':
+    pak_sa 'c':
       {
-        char c = argument ? *argument : '\0';
-        if (!have_field_width)
+        var_na c = argument ? *argument : '\0';
+        නම් (!have_field_width)
           xprintf (p, c);
-        else
+        නැතහොත්
           xprintf (p, field_width, c);
       }
-      break;
+      bha_nga;
 
-    case 's':
-      if (!argument)
+    pak_sa 's':
+      නම් (!argument)
         argument = "";
-      if (!have_field_width)
+      නම් (!have_field_width)
         {
-          if (!have_precision)
+          නම් (!have_precision)
             xprintf (p, argument);
-          else
+          නැතහොත්
             xprintf (p, precision, argument);
         }
-      else
+      නැතහොත්
         {
-          if (!have_precision)
+          නම් (!have_precision)
             xprintf (p, field_width, argument);
-          else
+          නැතහොත්
             xprintf (p, field_width, precision, argument);
         }
-      break;
+      bha_nga;
     }
 
   free (p);
@@ -476,43 +476,43 @@ print_direc (char const *start, char conversion,
    POS can be 0,1,2,3 corresponding to
    [%][width][.precision][conversion] respectively.  */
 
-struct arg_cursor
+sa_nracanaa arg_cursor
 {
-  char const *f;	/* Pointer into 'format'.  */
-  int curr_arg;		/* Current offset.  */
-  int curr_s_arg;	/* Current sequential offset.  */
-  int end_arg;		/* End arg processed.  */
-  int direc_arg;	/* Arg for main directive.  */
+  var_na const *f;	/* Pointer into 'format'.  */
+  පූර්ණ_සංඛ්‍යා curr_arg;		/* Current offset.  */
+  පූර්ණ_සංඛ්‍යා curr_s_arg;	/* Current sequential offset.  */
+  පූර්ණ_සංඛ්‍යා end_arg;		/* End arg processed.  */
+  පූර්ණ_සංඛ්‍යා direc_arg;	/* Arg for main directive.  */
 };
-ATTRIBUTE_PURE static struct arg_cursor
-get_curr_arg (int pos, struct arg_cursor ac)
+ATTRIBUTE_PURE static sa_nracanaa arg_cursor
+get_curr_arg (පූර්ණ_සංඛ්‍යා pos, sa_nracanaa arg_cursor ac)
 {
   /* Convert sequences like "123$" by hand to avoid problems with strtol,
      which might treat "$" as part of the number in some locales.  */
-  int arg = 0;
-  char const *f = ac.f;
-  if (pos < 3 && c_isdigit (*f))
+  පූර්ණ_සංඛ්‍යා arg = 0;
+  var_na const *f = ac.f;
+  නම් (pos < 3 && c_isdigit (*f))
     {
       bool v = false;
-      int a = *f++ - '0';
-      for (; c_isdigit (*f); f++)
+      පූර්ණ_සංඛ්‍යා a = *f++ - '0';
+      සඳහා (; c_isdigit (*f); f++)
         {
           v |= ckd_mul (&a, a, 10);
           v |= ckd_add (&a, a, *f - '0');
         }
-      if (*f == '$')
+      නම් (*f == '$')
         arg = v ? INT_MAX : a;
     }
 
-  if (0 < arg)
+  නම් (0 < arg)
     {
       /* Process indexed %i$ format.  */
       arg--;
       ac.f = f + 1;
-      if (pos == 0)
+      නම් (pos == 0)
         ac.direc_arg = arg;
     }
-  else
+  නැතහොත්
     {
       /* Process sequential arg.  */
       arg = (pos == 0 ? (ac.direc_arg = -1)
@@ -520,96 +520,96 @@ get_curr_arg (int pos, struct arg_cursor ac)
              : ac.direc_arg);
     }
 
-  if (0 <= arg)
+  නම් (0 <= arg)
     {
       ac.curr_arg = arg;
       ac.end_arg = MAX (ac.end_arg, arg);
     }
-  return ac;
+  ආපසු ac;
 }
 
 /* Print the text in FORMAT, using ARGV (with ARGC elements) for
    arguments to any '%' directives.
    Return the number of elements of ARGV used.  */
 
-static int
-print_formatted (char const *format, int argc, char **argv)
+static පූර්ණ_සංඛ්‍යා
+print_formatted (var_na const *format, පූර්ණ_සංඛ්‍යා argc, var_na **argv)
 {
-  struct arg_cursor ac;
+  sa_nracanaa arg_cursor ac;
   ac.curr_arg = ac.curr_s_arg = ac.end_arg = ac.direc_arg = -1;
-  char const *direc_start;	/* Start of % directive.  */
-  char *direc;			/* Generated % directive.  */
-  char *pdirec;			/* Pointer to current end of directive.  */
+  var_na const *direc_start;	/* Start of % directive.  */
+  var_na *direc;			/* Generated % directive.  */
+  var_na *pdirec;			/* Pointer to current end of directive.  */
   bool have_field_width;	/* True if FIELD_WIDTH is valid.  */
-  int field_width = 0;		/* Arg to first '*'.  */
+  පූර්ණ_සංඛ්‍යා field_width = 0;		/* Arg to first '*'.  */
   bool have_precision;		/* True if PRECISION is valid.  */
-  int precision = 0;		/* Arg to second '*'.  */
-  char ok[UCHAR_MAX + 1];	/* ok['x'] is true if %x is allowed.  */
+  පූර්ණ_සංඛ්‍යා precision = 0;		/* Arg to second '*'.  */
+  var_na ok[UCHAR_MAX + 1];	/* ok['x'] is true if %x is allowed.  */
 
   direc = xmalloc (strlen (format) + 1);
 
-  for (ac.f = format; *ac.f; ac.f++)
+  සඳහා (ac.f = format; *ac.f; ac.f++)
     {
       switch (*ac.f)
         {
-        case '%':
+        pak_sa '%':
           direc_start = ac.f;
           pdirec = direc;
           *pdirec++ = *ac.f++;
           have_field_width = have_precision = false;
-          if (*ac.f == '%')
+          නම් (*ac.f == '%')
             {
               putchar ('%');
-              break;
+              bha_nga;
             }
 
           ac = get_curr_arg (0, ac);
 
-          if (*ac.f == 'b')
+          නම් (*ac.f == 'b')
             {
               /* FIXME: Field width and precision are not supported
                  for %b, even though POSIX requires it.  */
               ac = get_curr_arg (3, ac);
-              if (ac.curr_arg < argc)
+              නම් (ac.curr_arg < argc)
                 print_esc_string (argv[ac.curr_arg]);
-              break;
+              bha_nga;
             }
 
-          if (*ac.f == 'q')
+          නම් (*ac.f == 'q')
             {
               ac = get_curr_arg (3, ac);
-              if (ac.curr_arg < argc)
+              නම් (ac.curr_arg < argc)
                 {
                   fputs (quotearg_style (shell_escape_quoting_style,
                                          argv[ac.curr_arg]), stdout);
                 }
-              break;
+              bha_nga;
             }
 
-          memset (ok, 0, sizeof ok);
+          memset (ok, 0, parimaa_na ok);
           ok['a'] = ok['A'] = ok['c'] = ok['d'] = ok['e'] = ok['E'] =
             ok['f'] = ok['F'] = ok['g'] = ok['G'] = ok['i'] = ok['o'] =
             ok['s'] = ok['u'] = ok['x'] = ok['X'] = 1;
 
-          for (;; ac.f++)
+          සඳහා (;; ac.f++)
             {
               switch (*ac.f)
                 {
-#if (__GLIBC__ == 2 && 2 <= __GLIBC_MINOR__) || 3 <= __GLIBC__
-                case 'I':
+#නම් (__GLIBC__ == 2 && 2 <= __GLIBC_MINOR__) || 3 <= __GLIBC__
+                pak_sa 'I':
 #endif
-                case '\'':
+                pak_sa '\'':
                   ok['a'] = ok['A'] = ok['c'] = ok['e'] = ok['E'] =
                     ok['o'] = ok['s'] = ok['x'] = ok['X'] = 0;
-                  break;
-                case '-': case '+': case ' ':
-                  break;
-                case '#':
+                  bha_nga;
+                pak_sa '-': pak_sa '+': pak_sa ' ':
+                  bha_nga;
+                pak_sa '#':
                   ok['c'] = ok['d'] = ok['i'] = ok['s'] = ok['u'] = 0;
-                  break;
-                case '0':
+                  bha_nga;
+                pak_sa '0':
                   ok['c'] = ok['s'] = 0;
-                  break;
+                  bha_nga;
                 default:
                   goto no_more_flag_characters;
                 }
@@ -617,73 +617,73 @@ print_formatted (char const *format, int argc, char **argv)
             }
         no_more_flag_characters:
 
-          if (*ac.f == '*')
+          නම් (*ac.f == '*')
             {
               *pdirec++ = *ac.f++;
 
               ac = get_curr_arg (1, ac);
 
-              if (ac.curr_arg < argc)
+              නම් (ac.curr_arg < argc)
                 {
                   intmax_t width = vstrtoimax (argv[ac.curr_arg]);
-                  if (INT_MIN <= width && width <= INT_MAX)
+                  නම් (INT_MIN <= width && width <= INT_MAX)
                     field_width = width;
-                  else
+                  නැතහොත්
                     error (EXIT_FAILURE, 0, _("invalid field width: %s"),
                            quote (argv[ac.curr_arg]));
                 }
-              else
+              නැතහොත්
                 field_width = 0;
               have_field_width = true;
             }
-          else
-            while (c_isdigit (*ac.f))
+          නැතහොත්
+            අතරතුර (c_isdigit (*ac.f))
               *pdirec++ = *ac.f++;
-          if (*ac.f == '.')
+          නම් (*ac.f == '.')
             {
               *pdirec++ = *ac.f++;
               ok['c'] = 0;
-              if (*ac.f == '*')
+              නම් (*ac.f == '*')
                 {
                   *pdirec++ = *ac.f++;
 
                   ac = get_curr_arg (2, ac);
 
-                  if (ac.curr_arg < argc)
+                  නම් (ac.curr_arg < argc)
                     {
                       intmax_t prec = vstrtoimax (argv[ac.curr_arg]);
-                      if (prec < 0)
+                      නම් (prec < 0)
                         {
                           /* A negative precision is taken as if the
                              precision were omitted, so -1 is safe
                              here even if prec < INT_MIN.  */
                           precision = -1;
                         }
-                      else if (INT_MAX < prec)
+                      නැතහොත් නම් (INT_MAX < prec)
                         error (EXIT_FAILURE, 0, _("invalid precision: %s"),
                                quote (argv[ac.curr_arg]));
-                      else
+                      නැතහොත්
                         precision = prec;
                     }
-                  else
+                  නැතහොත්
                     precision = 0;
                   have_precision = true;
                 }
-              else
-                while (c_isdigit (*ac.f))
+              නැතහොත්
+                අතරතුර (c_isdigit (*ac.f))
                   *pdirec++ = *ac.f++;
             }
 
           *pdirec++ = '\0';
 
-          while (*ac.f == 'l' || *ac.f == 'L' || *ac.f == 'h'
+          අතරතුර (*ac.f == 'l' || *ac.f == 'L' || *ac.f == 'h'
                  || *ac.f == 'j' || *ac.f == 't' || *ac.f == 'z')
             ++ac.f;
 
           {
-            unsigned char conversion = *ac.f;
-            int speclen = MIN (ac.f + 1 - direc_start, INT_MAX);
-            if (! ok[conversion])
+            unsigned var_na conversion = *ac.f;
+            පූර්ණ_සංඛ්‍යා speclen = MIN (ac.f + 1 - direc_start, INT_MAX);
+            නම් (! ok[conversion])
               error (EXIT_FAILURE, 0,
                      _("%.*s: invalid conversion specification"),
                      speclen, direc_start);
@@ -696,11 +696,11 @@ print_formatted (char const *format, int argc, char **argv)
                        have_precision, precision,
                        ac.curr_arg < argc ? argv[ac.curr_arg] : NULL);
 
-          break;
+          bha_nga;
 
-        case '\\':
+        pak_sa '\\':
           ac.f += print_esc (ac.f, false);
-          break;
+          bha_nga;
 
         default:
           putchar (*ac.f);
@@ -708,14 +708,14 @@ print_formatted (char const *format, int argc, char **argv)
     }
 
   free (direc);
-  return MIN (argc, ac.end_arg + 1);
+  ආපසු MIN (argc, ac.end_arg + 1);
 }
 
-int
-main (int argc, char **argv)
+පූර්ණ_සංඛ්‍යා
+main (පූර්ණ_සංඛ්‍යා argc, var_na **argv)
 {
-  char *format;
-  int args_used;
+  var_na *format;
+  පූර්ණ_සංඛ්‍යා args_used;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -729,28 +729,28 @@ main (int argc, char **argv)
 
   /* We directly parse options, rather than use parse_long_options, in
      order to avoid accepting abbreviations.  */
-  if (argc == 2)
+  නම් (argc == 2)
     {
-      if (streq (argv[1], "--help"))
+      නම් (streq (argv[1], "--help"))
         usage (EXIT_SUCCESS);
 
-      if (streq (argv[1], "--version"))
+      නම් (streq (argv[1], "--version"))
         {
           version_etc (stdout, PROGRAM_NAME, PACKAGE_NAME, Version, AUTHORS,
-                       (char *) NULL);
-          return EXIT_SUCCESS;
+                       (var_na *) NULL);
+          ආපසු EXIT_SUCCESS;
         }
     }
 
   /* The above handles --help and --version.
      Since there is no other invocation of getopt, handle '--' here.  */
-  if (1 < argc && streq (argv[1], "--"))
+  නම් (1 < argc && streq (argv[1], "--"))
     {
       --argc;
       ++argv;
     }
 
-  if (argc <= 1)
+  නම් (argc <= 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
@@ -766,12 +766,12 @@ main (int argc, char **argv)
       argc -= args_used;
       argv += args_used;
     }
-  while (args_used > 0 && argc > 0);
+  අතරතුර (args_used > 0 && argc > 0);
 
-  if (argc > 0)
+  නම් (argc > 0)
     error (0, 0,
            _("warning: ignoring excess arguments, starting with %s"),
            quote (argv[0]));
 
-  return exit_status;
+  ආපසු exit_status;
 }

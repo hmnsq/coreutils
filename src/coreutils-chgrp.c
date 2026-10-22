@@ -22,12 +22,12 @@
 #include "chown.h"
 /* Ensure that the main for chown is declared even if the tool is not being
    built in this single-binary. */
-int single_binary_main_chown (int argc, char **argv);
-int single_binary_main_chgrp (int argc, char **argv);
+පූර්ණ_සංඛ්‍යා single_binary_main_chown (පූර්ණ_සංඛ්‍යා argc, var_na **argv);
+පූර්ණ_සංඛ්‍යා single_binary_main_chgrp (පූර්ණ_සංඛ්‍යා argc, var_na **argv);
 
-int
-single_binary_main_chgrp (int argc, char **argv)
+පූර්ණ_සංඛ්‍යා
+single_binary_main_chgrp (පූර්ණ_සංඛ්‍යා argc, var_na **argv)
 {
   chown_mode = CHOWN_CHGRP;
-  return single_binary_main_chown (argc, argv);
+  ආපසු single_binary_main_chown (argc, argv);
 }

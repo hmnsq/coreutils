@@ -37,7 +37,7 @@
 #define obstack_chunk_alloc malloc
 #define obstack_chunk_free free
 
-enum Shell_syntax
+ga_nanaa Shell_syntax
 {
   SHELL_SYNTAX_BOURNE,
   SHELL_SYNTAX_C,
@@ -48,9 +48,9 @@ enum Shell_syntax
 
 /* Accumulate in this obstack the value for the LS_COLORS environment
    variable.  */
-static struct obstack lsc_obstack;
+static sa_nracanaa obstack lsc_obstack;
 
-static char const *const slack_codes[] =
+static var_na const *const slack_codes[] =
 {
   "NORMAL", "NORM", "FILE", "RESET", "DIR", "LNK", "LINK",
   "SYMLINK", "ORPHAN", "MISSING", "FIFO", "PIPE", "SOCK", "BLK", "BLOCK",
@@ -60,7 +60,7 @@ static char const *const slack_codes[] =
   "MULTIHARDLINK", "CLRTOEOL", NULL
 };
 
-static char const *const ls_codes[] =
+static var_na const *const ls_codes[] =
 {
   "no", "no", "fi", "rs", "di", "ln", "ln", "ln", "or", "mi", "pi", "pi",
   "so", "bd", "bd", "cd", "cd", "do", "ex", "lc", "lc", "rc", "rc", "ec", "ec",
@@ -74,12 +74,12 @@ static bool print_ls_colors;
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+ga_nanaa
 {
   PRINT_LS_COLORS_OPTION = CHAR_MAX + 1,
 };
 
-static struct option const long_options[] =
+static sa_nracanaa option const long_options[] =
   {
     {"bourne-shell", no_argument, NULL, 'b'},
     {"sh", no_argument, NULL, 'b'},
@@ -93,11 +93,11 @@ static struct option const long_options[] =
   };
 
 void
-usage (int status)
+usage (පූර්ණ_සංඛ්‍යා status)
 {
-  if (status != EXIT_SUCCESS)
+  නම් (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  නැතහොත්
     {
       printf (_("Usage: %s [OPTION]... [FILE]\n"), program_name);
       fputs (_("\
@@ -119,13 +119,13 @@ Determine format of output:\n\
 "));
       oputs (_("\
       --print-ls-colors\n\
-         output fully escaped colors for display\n\
+         output fully escaped colors සඳහා display\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-If FILE is specified, read it to determine which colors to use for which\n\
+If FILE is specified, read it to determine which colors to use සඳහා which\n\
 file types and extensions.  Otherwise, a precompiled database is used.\n\
 For details on the format of these files, run 'dircolors --print-database'.\n\
 "), stdout);
@@ -138,66 +138,66 @@ For details on the format of these files, run 'dircolors --print-database'.\n\
 /* If the SHELL environment variable is set to 'csh' or 'tcsh,'
    assume C shell.  Else Bourne shell.  */
 
-static enum Shell_syntax
+static ga_nanaa Shell_syntax
 guess_shell_syntax (void)
 {
-  char *shell;
+  var_na *shell;
 
   shell = getenv ("SHELL");
-  if (shell == NULL || *shell == '\0')
-    return SHELL_SYNTAX_UNKNOWN;
+  නම් (shell == NULL || *shell == '\0')
+    ආපසු SHELL_SYNTAX_UNKNOWN;
 
   shell = last_component (shell);
 
-  if (streq (shell, "csh") || streq (shell, "tcsh"))
-    return SHELL_SYNTAX_C;
+  නම් (streq (shell, "csh") || streq (shell, "tcsh"))
+    ආපසු SHELL_SYNTAX_C;
 
-  return SHELL_SYNTAX_BOURNE;
+  ආපසු SHELL_SYNTAX_BOURNE;
 }
 
 static void
-parse_line (char const *line, char **keyword, char **arg)
+parse_line (var_na const *line, var_na **keyword, var_na **arg)
 {
-  char const *p;
-  char const *keyword_start;
-  char const *arg_start;
+  var_na const *p;
+  var_na const *keyword_start;
+  var_na const *arg_start;
 
   *keyword = NULL;
   *arg = NULL;
 
-  for (p = line; c_isspace (*p); ++p)
+  සඳහා (p = line; c_isspace (*p); ++p)
     continue;
 
   /* Ignore blank lines and shell-style comments.  */
-  if (*p == '\0' || *p == '#')
-    return;
+  නම් (*p == '\0' || *p == '#')
+    ආපසු;
 
   keyword_start = p;
 
-  while (!c_isspace (*p) && *p != '\0')
+  අතරතුර (!c_isspace (*p) && *p != '\0')
     {
       ++p;
     }
 
   *keyword = ximemdup0 (keyword_start, p - keyword_start);
-  if (*p  == '\0')
-    return;
+  නම් (*p  == '\0')
+    ආපසු;
 
   do
     {
       ++p;
     }
-  while (c_isspace (*p));
+  අතරතුර (c_isspace (*p));
 
-  if (*p == '\0' || *p == '#')
-    return;
+  නම් (*p == '\0' || *p == '#')
+    ආපසු;
 
   arg_start = p;
 
-  while (*p != '\0' && *p != '#')
+  අතරතුර (*p != '\0' && *p != '#')
     ++p;
 
-  for (--p; c_isspace (*p); --p)
+  සඳහා (--p; c_isspace (*p); --p)
     continue;
   ++p;
 
@@ -208,36 +208,36 @@ parse_line (char const *line, char **keyword, char **arg)
    If outputting shell syntax, then escape appropriately.  */
 
 static void
-append_quoted (char const *str)
+append_quoted (var_na const *str)
 {
   bool need_backslash = true;
 
-  while (*str != '\0')
+  අතරතුර (*str != '\0')
     {
-      if (! print_ls_colors)
+      නම් (! print_ls_colors)
         switch (*str)
           {
-          case '\'':
+          pak_sa '\'':
             APPEND_CHAR ('\'');
             APPEND_CHAR ('\\');
             APPEND_CHAR ('\'');
             need_backslash = true;
-            break;
+            bha_nga;
 
-          case '\\':
-          case '^':
+          pak_sa '\\':
+          pak_sa '^':
             need_backslash = !need_backslash;
-            break;
+            bha_nga;
 
-          case ':':
-          case '=':
-            if (need_backslash)
+          pak_sa ':':
+          pak_sa '=':
+            නම් (need_backslash)
               APPEND_CHAR ('\\');
             FALLTHROUGH;
 
           default:
             need_backslash = true;
-            break;
+            bha_nga;
           }
 
       APPEND_CHAR (*str);
@@ -249,20 +249,20 @@ append_quoted (char const *str)
    Use shell syntax unless PRINT_LS_COLORS is set.  */
 
 static void
-append_entry (char prefix, char const *item, char const *arg)
+append_entry (var_na prefix, var_na const *item, var_na const *arg)
 {
-  if (print_ls_colors)
+  නම් (print_ls_colors)
     {
       append_quoted ("\x1B[");
       append_quoted (arg);
       APPEND_CHAR ('m');
     }
-  if (prefix)
+  නම් (prefix)
     APPEND_CHAR (prefix);
   append_quoted (item);
   APPEND_CHAR (print_ls_colors ? '\t' : '=');
   append_quoted (arg);
-  if (print_ls_colors)
+  නම් (print_ls_colors)
     append_quoted ("\x1B[0m");
   APPEND_CHAR (print_ls_colors ? '\n' : ':');
 }
@@ -275,65 +275,65 @@ append_entry (char prefix, char const *item, char const *arg)
    Return true if successful.  */
 
 static bool
-dc_parse_stream (FILE *fp, char const *filename)
+dc_parse_stream (FILE *fp, var_na const *filename)
 {
   idx_t line_number = 0;
-  char const *next_G_line = G_line;
-  char *input_line = NULL;
+  var_na const *next_G_line = G_line;
+  var_na *input_line = NULL;
   size_t input_line_size = 0;
-  char const *line;
-  char const *term;
-  char const *colorterm;
+  var_na const *line;
+  var_na const *term;
+  var_na const *colorterm;
   bool ok = true;
 
   /* State for the parser.  */
-  enum { ST_TERMNO, ST_TERMYES, ST_TERMSURE, ST_GLOBAL } state = ST_GLOBAL;
+  ga_nanaa { ST_TERMNO, ST_TERMYES, ST_TERMSURE, ST_GLOBAL } state = ST_GLOBAL;
 
   /* Get terminal type */
   term = getenv ("TERM");
-  if (term == NULL || *term == '\0')
+  නම් (term == NULL || *term == '\0')
     term = "none";
 
   /* Also match $COLORTERM.  */
   colorterm = getenv ("COLORTERM");
-  if (colorterm == NULL)
+  නම් (colorterm == NULL)
     colorterm = "";  /* Doesn't match default "?*"  */
 
-  while (true)
+  අතරතුර (true)
     {
-      char *keywd, *arg;
+      var_na *keywd, *arg;
       bool unrecognized;
 
       ++line_number;
 
-      if (fp)
+      නම් (fp)
         {
-          if (getline (&input_line, &input_line_size, fp) <= 0)
+          නම් (getline (&input_line, &input_line_size, fp) <= 0)
             {
-              if (ferror (fp))
+              නම් (ferror (fp))
                 {
                   error (0, errno, _("%s: read error"), quotef (filename));
                   ok = false;
                 }
               free (input_line);
-              break;
+              bha_nga;
             }
           line = input_line;
         }
-      else
+      නැතහොත්
         {
-          if (next_G_line == G_line + sizeof G_line)
-            break;
+          නම් (next_G_line == G_line + parimaa_na G_line)
+            bha_nga;
           line = next_G_line;
           next_G_line += strlen (next_G_line) + 1;
         }
 
       parse_line (line, &keywd, &arg);
 
-      if (keywd == NULL)
+      නම් (keywd == NULL)
         continue;
 
-      if (arg == NULL)
+      නම් (arg == NULL)
         {
           error (0, 0, _("%s:%td: invalid line;  missing second token"),
                  quotef (filename), line_number);
@@ -343,52 +343,52 @@ dc_parse_stream (FILE *fp, char const *filename)
         }
 
       unrecognized = false;
-      if (c_strcasecmp (keywd, "TERM") == 0)
+      නම් (c_strcasecmp (keywd, "TERM") == 0)
         {
-          if (state != ST_TERMSURE)
+          නම් (state != ST_TERMSURE)
             state = fnmatch (arg, term, 0) == 0 ? ST_TERMSURE : ST_TERMNO;
         }
-      else if (c_strcasecmp (keywd, "COLORTERM") == 0)
+      නැතහොත් නම් (c_strcasecmp (keywd, "COLORTERM") == 0)
         {
-          if (state != ST_TERMSURE)
+          නම් (state != ST_TERMSURE)
             state = fnmatch (arg, colorterm, 0) == 0 ? ST_TERMSURE : ST_TERMNO;
         }
-      else
+      නැතහොත්
         {
-          if (state == ST_TERMSURE)
+          නම් (state == ST_TERMSURE)
             state = ST_TERMYES;  /* Another {COLOR,}TERM can cancel.  */
 
-          if (state != ST_TERMNO)
+          නම් (state != ST_TERMNO)
             {
-              if (keywd[0] == '.')
+              නම් (keywd[0] == '.')
                 append_entry ('*', keywd, arg);
-              else if (keywd[0] == '*')
+              නැතහොත් නම් (keywd[0] == '*')
                 append_entry (0, keywd, arg);
-              else if (c_strcasecmp (keywd, "OPTIONS") == 0
+              නැතහොත් නම් (c_strcasecmp (keywd, "OPTIONS") == 0
                        || c_strcasecmp (keywd, "COLOR") == 0
                        || c_strcasecmp (keywd, "EIGHTBIT") == 0)
                 {
                   /* Ignore.  */
                 }
-              else
+              නැතහොත්
                 {
-                  int i;
+                  පූර්ණ_සංඛ්‍යා i;
 
-                  for (i = 0; slack_codes[i] != NULL; ++i)
-                    if (c_strcasecmp (keywd, slack_codes[i]) == 0)
-                      break;
+                  සඳහා (i = 0; slack_codes[i] != NULL; ++i)
+                    නම් (c_strcasecmp (keywd, slack_codes[i]) == 0)
+                      bha_nga;
 
-                  if (slack_codes[i] != NULL)
+                  නම් (slack_codes[i] != NULL)
                     append_entry (0, ls_codes[i], arg);
-                  else
+                  නැතහොත්
                     unrecognized = true;
                 }
             }
-          else
+          නැතහොත්
             unrecognized = true;
         }
 
-      if (unrecognized && (state == ST_TERMSURE || state == ST_TERMYES))
+      නම් (unrecognized && (state == ST_TERMSURE || state == ST_TERMYES))
         {
           error (0, 0, _("%s:%td: unrecognized keyword %s"),
                  (filename ? quotef (filename) : _("<internal>")),
@@ -400,37 +400,37 @@ dc_parse_stream (FILE *fp, char const *filename)
       free (arg);
     }
 
-  return ok;
+  ආපසු ok;
 }
 
 static bool
-dc_parse_file (char const *filename)
+dc_parse_file (var_na const *filename)
 {
   bool ok;
 
-  if (! streq (filename, "-") && freopen (filename, "r", stdin) == NULL)
+  නම් (! streq (filename, "-") && freopen (filename, "r", stdin) == NULL)
     {
       error (0, errno, "%s", quotef (filename));
-      return false;
+      ආපසු false;
     }
 
   ok = dc_parse_stream (stdin, filename);
 
-  if (fclose (stdin) != 0)
+  නම් (fclose (stdin) != 0)
     {
       error (0, errno, "%s", quotef (filename));
-      return false;
+      ආපසු false;
     }
 
-  return ok;
+  ආපසු ok;
 }
 
-int
-main (int argc, char **argv)
+පූර්ණ_සංඛ්‍යා
+main (පූර්ණ_සංඛ්‍යා argc, var_na **argv)
 {
   bool ok = true;
-  int optc;
-  enum Shell_syntax syntax = SHELL_SYNTAX_UNKNOWN;
+  පූර්ණ_සංඛ්‍යා optc;
+  ga_nanaa Shell_syntax syntax = SHELL_SYNTAX_UNKNOWN;
   bool print_database = false;
 
   initialize_main (&argc, &argv);
@@ -441,24 +441,24 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "bcp", long_options, NULL)) != -1)
+  අතරතුර ((optc = getopt_long (argc, argv, "bcp", long_options, NULL)) != -1)
     switch (optc)
       {
-      case 'b':	/* Bourne shell syntax.  */
+      pak_sa 'b':	/* Bourne shell syntax.  */
         syntax = SHELL_SYNTAX_BOURNE;
-        break;
+        bha_nga;
 
-      case 'c':	/* C shell syntax.  */
+      pak_sa 'c':	/* C shell syntax.  */
         syntax = SHELL_SYNTAX_C;
-        break;
+        bha_nga;
 
-      case 'p':
+      pak_sa 'p':
         print_database = true;
-        break;
+        bha_nga;
 
-      case PRINT_LS_COLORS_OPTION:
+      pak_sa PRINT_LS_COLORS_OPTION:
         print_ls_colors = true;
-        break;
+        bha_nga;
 
       case_GETOPT_HELP_CHAR;
 
@@ -473,7 +473,7 @@ main (int argc, char **argv)
 
   /* It doesn't make sense to use --print with either of
      --bourne or --c-shell.  */
-  if ((print_database | print_ls_colors) && syntax != SHELL_SYNTAX_UNKNOWN)
+  නම් ((print_database | print_ls_colors) && syntax != SHELL_SYNTAX_UNKNOWN)
     {
       error (0, 0,
              _("the options to output non shell syntax,\n"
@@ -481,7 +481,7 @@ main (int argc, char **argv)
       usage (EXIT_FAILURE);
     }
 
-  if (print_database && print_ls_colors)
+  නම් (print_database && print_ls_colors)
     {
       error (0, 0,
              _("options --print-database and --print-ls-colors "
@@ -489,68 +489,68 @@ main (int argc, char **argv)
       usage (EXIT_FAILURE);
     }
 
-  if ((!print_database) < argc)
+  නම් ((!print_database) < argc)
     {
       error (0, 0, _("extra operand %s"),
              quote (argv[!print_database]));
-      if (print_database)
+      නම් (print_database)
         fprintf (stderr, "%s\n",
                  _("file operands cannot be combined with "
                    "--print-database (-p)"));
       usage (EXIT_FAILURE);
     }
 
-  if (print_database)
+  නම් (print_database)
     {
-      char const *p = G_line;
-      while (p - G_line < sizeof G_line)
+      var_na const *p = G_line;
+      අතරතුර (p - G_line < parimaa_na G_line)
         {
           puts (p);
           p += strlen (p) + 1;
         }
     }
-  else
+  නැතහොත්
     {
       /* If shell syntax was not explicitly specified, try to guess it. */
-      if (syntax == SHELL_SYNTAX_UNKNOWN && ! print_ls_colors)
+      නම් (syntax == SHELL_SYNTAX_UNKNOWN && ! print_ls_colors)
         {
           syntax = guess_shell_syntax ();
-          if (syntax == SHELL_SYNTAX_UNKNOWN)
+          නම් (syntax == SHELL_SYNTAX_UNKNOWN)
             error (EXIT_FAILURE, 0,
                    _("no SHELL environment variable,"
                      " and no shell type option given"));
         }
 
       obstack_init (&lsc_obstack);
-      if (argc == 0)
+      නම් (argc == 0)
         ok = dc_parse_stream (NULL, NULL);
-      else
+      නැතහොත්
         ok = dc_parse_file (argv[0]);
 
-      if (ok)
+      නම් (ok)
         {
           size_t len = obstack_object_size (&lsc_obstack);
-          char *s = obstack_finish (&lsc_obstack);
-          char const *prefix;
-          char const *suffix;
+          var_na *s = obstack_finish (&lsc_obstack);
+          var_na const *prefix;
+          var_na const *suffix;
 
-          if (syntax == SHELL_SYNTAX_BOURNE)
+          නම් (syntax == SHELL_SYNTAX_BOURNE)
             {
               prefix = "LS_COLORS='";
               suffix = "';\nexport LS_COLORS\n";
             }
-          else
+          නැතහොත්
             {
               prefix = "setenv LS_COLORS '";
               suffix = "'\n";
             }
-          if (! print_ls_colors)
+          නම් (! print_ls_colors)
             fputs (prefix, stdout);
           fwrite (s, 1, len, stdout);
-          if (! print_ls_colors)
+          නම් (! print_ls_colors)
             fputs (suffix, stdout);
         }
     }
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  ආපසු ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

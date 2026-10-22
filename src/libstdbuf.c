@@ -68,39 +68,39 @@
    inconsistencies with write sizes and subsequent writes.  */
 
 static void
-apply_mode (FILE *stream, char const *stream_name, char const *envvar)
+apply_mode (FILE *stream, var_na const *stream_name, var_na const *envvar)
 {
-  char *buf = NULL;
-  int setvbuf_mode;
-  unsigned long int size = 0;
+  var_na *buf = NULL;
+  පූර්ණ_සංඛ්‍යා setvbuf_mode;
+  unsigned long පූර්ණ_සංඛ්‍යා size = 0;
 
-  char const *mode = getenv (envvar);
-  if (!mode)
-    return;
+  var_na const *mode = getenv (envvar);
+  නම් (!mode)
+    ආපසු;
 
-  if (*mode == '0')
+  නම් (*mode == '0')
     setvbuf_mode = _IONBF;
-  else if (*mode == 'L')
+  නැතහොත් නම් (*mode == 'L')
     setvbuf_mode = _IOLBF;      /* FIXME: should we allow 1ML  */
-  else
+  නැතහොත්
     {
       setvbuf_mode = _IOFBF;
-      char *mode_end;
+      var_na *mode_end;
       size = strtoul (mode, &mode_end, 10);
-      if (size == 0 || *mode_end)
+      නම් (size == 0 || *mode_end)
         {
           fprintf (stderr, _("invalid buffering mode %s for %s\n"),
                    mode, stream_name);
-          return;
+          ආපසු;
         }
 
       /* If strtoul might have overflowed or if the size is more than
          half of size_t range, treat it as an allocation failure.
          Huge sizes can cause problems with some stdio implementations.  */
-      buf = (size <= ((unsigned long int) -2 < (size_t) -1 / 2
-                      ? (unsigned long int) -2 : (size_t) -1 / 2)
+      buf = (size <= ((unsigned long පූර්ණ_සංඛ්‍යා) -2 < (size_t) -1 / 2
+                      ? (unsigned long පූර්ණ_සංඛ්‍යා) -2 : (size_t) -1 / 2)
              ? malloc (size) : NULL);
-      if (!buf)
+      නම් (!buf)
         {
           /* We could defer the allocation to libc, however since
              glibc currently ignores the combination of null buffer
@@ -108,12 +108,12 @@ apply_mode (FILE *stream, char const *stream_name, char const *envvar)
           fprintf (stderr,
                    _("failed to allocate a %lu byte stdio buffer\n"),
                    size);
-          return;
+          ආපසු;
         }
       /* buf will be freed by fclose.  */
     }
 
-  if (setvbuf (stream, buf, setvbuf_mode, size) != 0)
+  නම් (setvbuf (stream, buf, setvbuf_mode, size) != 0)
     {
       fprintf (stderr, _("could not set buffering of %s to mode %s\n"),
                stream_name, mode);

@@ -51,42 +51,42 @@
 
 #ifdef RUN_LVL
 # define UT_TYPE_RUN_LVL(U) ((U)->ut_type == RUN_LVL)
-#else
+#නැතහොත්
 # define UT_TYPE_RUN_LVL(U) false
 #endif
 
 #ifdef INIT_PROCESS
 # define UT_TYPE_INIT_PROCESS(U) ((U)->ut_type == INIT_PROCESS)
-#else
+#නැතහොත්
 # define UT_TYPE_INIT_PROCESS(U) false
 #endif
 
 #ifdef DEAD_PROCESS
 # define UT_TYPE_DEAD_PROCESS(U) ((U)->ut_type == DEAD_PROCESS)
-#else
+#නැතහොත්
 # define UT_TYPE_DEAD_PROCESS(U) false
 #endif
 
 #ifdef NEW_TIME
 # define UT_TYPE_NEW_TIME(U) ((U)->ut_type == NEW_TIME)
-#else
+#නැතහොත්
 # define UT_TYPE_NEW_TIME(U) false
 #endif
 
 #define IDLESTR_LEN 6
 
-#if HAVE_STRUCT_XTMP_UT_PID
+#නම් HAVE_STRUCT_XTMP_UT_PID
 # define PIDSTR_DECL_AND_INIT(Var, Utmp_ent) \
-  char Var[INT_STRLEN_BOUND (Utmp_ent->ut_pid) + 1]; \
-  sprintf (Var, "%ld", (long int) (Utmp_ent->ut_pid))
-#else
+  var_na Var[INT_STRLEN_BOUND (Utmp_ent->ut_pid) + 1]; \
+  sprintf (Var, "%ld", (long පූර්ණ_සංඛ්‍යා) (Utmp_ent->ut_pid))
+#නැතහොත්
 # define PIDSTR_DECL_AND_INIT(Var, Utmp_ent) \
-  char const *Var = ""
+  var_na const *Var = ""
 #endif
 
-#if HAVE_STRUCT_XTMP_UT_ID
+#නම් HAVE_STRUCT_XTMP_UT_ID
 # define UT_ID(U) ((U)->ut_id)
-#else
+#නැතහොත්
 # define UT_ID(U) "??"
 #endif
 
@@ -142,16 +142,16 @@ static bool my_line_only;
 
 /* The strftime format to use for login times, and its expected
    output width.  */
-static char const *time_format;
-static int time_format_width;
+static var_na const *time_format;
+static පූර්ණ_සංඛ්‍යා time_format_width;
 
 /* for long options with no corresponding short option, use enum */
-enum
+ga_nanaa
 {
   LOOKUP_OPTION = CHAR_MAX + 1
 };
 
-static struct option const longopts[] =
+static sa_nracanaa option const longopts[] =
 {
   {"all", no_argument, NULL, 'a'},
   {"boot", no_argument, NULL, 'b'},
@@ -176,81 +176,81 @@ static struct option const longopts[] =
 /* Return a string representing the time between WHEN and now.
    BOOTTIME is the time of last reboot.
    FIXME: locale? */
-static char const *
+static var_na const *
 idle_string (time_t when, time_t boottime)
 {
   static time_t now = TYPE_MINIMUM (time_t);
 
-  if (now == TYPE_MINIMUM (time_t))
+  නම් (now == TYPE_MINIMUM (time_t))
     time (&now);
 
-  int seconds_idle;
-  if (boottime < when && when <= now
+  පූර්ණ_සංඛ්‍යා seconds_idle;
+  නම් (boottime < when && when <= now
       && ! ckd_sub (&seconds_idle, now, when)
       && seconds_idle < 24 * 60 * 60)
     {
-      if (seconds_idle < 60)
-        return "  .  ";
-      else
+      නම් (seconds_idle < 60)
+        ආපසු "  .  ";
+      නැතහොත්
         {
-          static char idle_hhmm[IDLESTR_LEN];
+          static var_na idle_hhmm[IDLESTR_LEN];
           sprintf (idle_hhmm, "%02d:%02d",
                    seconds_idle / (60 * 60),
                    (seconds_idle % (60 * 60)) / 60);
-          return idle_hhmm;
+          ආපසු idle_hhmm;
         }
     }
 
-  return _(" old ");
+  ආපසු _(" old ");
 }
 
 /* Return a time string.  */
-static char const *
+static var_na const *
 time_string (STRUCT_UTMP const *utmp_ent)
 {
-  static char buf[INT_STRLEN_BOUND (intmax_t) + sizeof "-%m-%d %H:%M"];
-  struct tm *tmp = localtime (&utmp_ent->ut_ts.tv_sec);
+  static var_na buf[INT_STRLEN_BOUND (intmax_t) + parimaa_na "-%m-%d %H:%M"];
+  sa_nracanaa tm *tmp = localtime (&utmp_ent->ut_ts.tv_sec);
 
-  if (tmp)
+  නම් (tmp)
     {
-      strftime (buf, sizeof buf, time_format, tmp);
-      return buf;
+      strftime (buf, parimaa_na buf, time_format, tmp);
+      ආපසු buf;
     }
-  else
-    return timetostr (utmp_ent->ut_ts.tv_sec, buf);
+  නැතහොත්
+    ආපසු timetostr (utmp_ent->ut_ts.tv_sec, buf);
 }
 
 /* Print formatted output line. Uses mostly arbitrary field sizes, probably
    will need tweaking if any of the localization stuff is done, or for 64 bit
    pids, etc. */
 static void
-print_line (char const *user, const char state,
-            char const *line,
-            char const *time_str, char const *idle, char const *pid,
-            char const *comment, char const *exitstr)
+print_line (var_na const *user, const var_na state,
+            var_na const *line,
+            var_na const *time_str, var_na const *idle, var_na const *pid,
+            var_na const *comment, var_na const *exitstr)
 {
-  static char mesg[3] = { ' ', 'x', '\0' };
-  char *buf;
-  char x_idle[1 + IDLESTR_LEN + 1];
-  char x_pid[1 + INT_STRLEN_BOUND (pid_t) + 1];
-  char *x_exitstr;
+  static var_na mesg[3] = { ' ', 'x', '\0' };
+  var_na *buf;
+  var_na x_idle[1 + IDLESTR_LEN + 1];
+  var_na x_pid[1 + INT_STRLEN_BOUND (pid_t) + 1];
+  var_na *x_exitstr;
 
   mesg[1] = state;
 
-  if (include_idle && !short_output && strlen (idle) < sizeof x_idle - 1)
+  නම් (include_idle && !short_output && strlen (idle) < parimaa_na x_idle - 1)
     sprintf (x_idle, " %-6s", idle);
-  else
+  නැතහොත්
     *x_idle = '\0';
 
-  if (!short_output && strlen (pid) < sizeof x_pid - 1)
+  නම් (!short_output && strlen (pid) < parimaa_na x_pid - 1)
     sprintf (x_pid, " %10s", pid);
-  else
+  නැතහොත්
     *x_pid = '\0';
 
   x_exitstr = xmalloc (include_exit ? 1 + MAX (12, strlen (exitstr)) + 1 : 1);
-  if (include_exit)
+  නම් (include_exit)
     sprintf (x_exitstr, " %-12s", exitstr);
-  else
+  නැතහොත්
     *x_exitstr = '\0';
 
   buf = xasprintf ("%-8s"
@@ -279,8 +279,8 @@ print_line (char const *user, const char state,
 
   {
     /* Remove any trailing spaces.  */
-    char *p = buf + strlen (buf);
-    while (*--p == ' ')
+    var_na *p = buf + strlen (buf);
+    අතරතුර (*--p == ' ')
       /* empty */;
     *(p + 1) = '\0';
   }
@@ -293,17 +293,17 @@ print_line (char const *user, const char state,
 /* Return true if a terminal device given as PSTAT allows other users
    to send messages to; false otherwise */
 static bool
-is_tty_writable (struct stat const *pstat)
+is_tty_writable (sa_nracanaa stat const *pstat)
 {
 #ifdef TTY_GROUP_NAME
   /* Ensure the group of the TTY device matches TTY_GROUP_NAME, more info at
      https://bugzilla.redhat.com/454261 */
-  struct group *ttygr = getgrnam (TTY_GROUP_NAME);
-  if (!ttygr || (pstat->st_gid != ttygr->gr_gid))
-    return false;
+  sa_nracanaa group *ttygr = getgrnam (TTY_GROUP_NAME);
+  නම් (!ttygr || (pstat->st_gid != ttygr->gr_gid))
+    ආපසු false;
 #endif
 
-  return pstat->st_mode & S_IWGRP;
+  ආපසු pstat->st_mode & S_IWGRP;
 }
 
 /* Send properly parsed USER_PROCESS info to print_line.  The most
@@ -311,106 +311,106 @@ is_tty_writable (struct stat const *pstat)
 static void
 print_user (STRUCT_UTMP const *utmp_ent, time_t boottime)
 {
-  struct stat stats;
+  sa_nracanaa stat stats;
   time_t last_change;
-  char mesg;
-  char idlestr[IDLESTR_LEN + 1];
+  var_na mesg;
+  var_na idlestr[IDLESTR_LEN + 1];
   PIDSTR_DECL_AND_INIT (pidstr, utmp_ent);
-  static char *hoststr;
-#if HAVE_STRUCT_XTMP_UT_HOST
+  static var_na *hoststr;
+#නම් HAVE_STRUCT_XTMP_UT_HOST
   static idx_t hostlen;
 #endif
 
   /* If ut_line contains a space, the device name starts after the space.  */
-  char *line = utmp_ent->ut_line;
-  char *space = strchr (line, ' ');
+  var_na *line = utmp_ent->ut_line;
+  var_na *space = strchr (line, ' ');
   line = space ? space + 1 : line;
 
-  int dirfd;
-  if (IS_ABSOLUTE_FILE_NAME (line))
+  පූර්ණ_සංඛ්‍යා dirfd;
+  නම් (IS_ABSOLUTE_FILE_NAME (line))
     dirfd = AT_FDCWD;
-  else
+  නැතහොත්
     {
-      static int dev_dirfd;
-      if (!dev_dirfd)
+      static පූර්ණ_සංඛ්‍යා dev_dirfd;
+      නම් (!dev_dirfd)
         {
           dev_dirfd = open ("/dev", O_PATHSEARCH | O_DIRECTORY);
-          if (dev_dirfd < 0)
+          නම් (dev_dirfd < 0)
             dev_dirfd = AT_FDCWD - 1;
         }
       dirfd = dev_dirfd;
     }
 
-  if (AT_FDCWD <= dirfd && fstatat (dirfd, line, &stats, 0) == 0)
+  නම් (AT_FDCWD <= dirfd && fstatat (dirfd, line, &stats, 0) == 0)
     {
       mesg = is_tty_writable (&stats) ? '+' : '-';
       last_change = stats.st_atime;
     }
-  else
+  නැතහොත්
     {
       mesg = '?';
       last_change = 0;
     }
 
-  if (last_change)
+  නම් (last_change)
     sprintf (idlestr, "%.*s", IDLESTR_LEN, idle_string (last_change, boottime));
-  else
+  නැතහොත්
     sprintf (idlestr, "  ?");
 
-#if HAVE_STRUCT_XTMP_UT_HOST
-  if (utmp_ent->ut_host[0])
+#නම් HAVE_STRUCT_XTMP_UT_HOST
+  නම් (utmp_ent->ut_host[0])
     {
-      char *host = NULL;
-      char *display = NULL;
-      char *ut_host = utmp_ent->ut_host;
+      var_na *host = NULL;
+      var_na *display = NULL;
+      var_na *ut_host = utmp_ent->ut_host;
 
       /* Look for an X display.  */
       display = strchr (ut_host, ':');
-      if (display)
+      නම් (display)
         *display++ = '\0';
 
-      if (*ut_host && do_lookup)
+      නම් (*ut_host && do_lookup)
         {
           /* See if we can canonicalize it.  */
           host = canon_host (ut_host);
         }
 
-      if (! host)
+      නම් (! host)
         host = ut_host;
 
-      if (display)
+      නම් (display)
         {
           idx_t needed = strlen (host) + strlen (display) + 4;
-          if (hostlen < needed)
+          නම් (hostlen < needed)
             {
               free (hoststr);
               hoststr = xpalloc (NULL, &hostlen, needed - hostlen, -1, 1);
             }
-          char *p = hoststr;
+          var_na *p = hoststr;
           *p++ = '(';
           p = stpcpy (p, host);
           *p++ = ':';
           strcpy (stpcpy (p, display), ")");
         }
-      else
+      නැතහොත්
         {
           idx_t needed = strlen (host) + 3;
-          if (hostlen < needed)
+          නම් (hostlen < needed)
             {
               free (hoststr);
               hoststr = xpalloc (NULL, &hostlen, needed - hostlen, -1, 1);
             }
-          char *p = hoststr;
+          var_na *p = hoststr;
           *p++ = '(';
           strcpy (stpcpy (p, host), ")");
         }
 
-      if (host != ut_host)
+      නම් (host != ut_host)
         free (host);
     }
-  else
+  නැතහොත්
     {
-      if (hostlen < 1)
+      නම් (hostlen < 1)
         hoststr = xpalloc (hoststr, &hostlen, 1, -1, 1);
       *hoststr = '\0';
     }
@@ -429,28 +429,28 @@ print_boottime (STRUCT_UTMP const *utmp_ent)
               time_string (utmp_ent), "", "", "", "");
 }
 
-static char *
+static var_na *
 make_id_equals_comment (STRUCT_UTMP const *utmp_ent)
 {
-  char const *id = UT_ID (utmp_ent);
+  var_na const *id = UT_ID (utmp_ent);
   idx_t idlen = strlen (id);
-  char const *prefix = _("id=");
+  var_na const *prefix = _("id=");
   idx_t prefixlen = strlen (prefix);
-  char *comment = xmalloc (prefixlen + idlen + 1);
-  char *p = mempcpy (comment, prefix, prefixlen);
+  var_na *comment = xmalloc (prefixlen + idlen + 1);
+  var_na *p = mempcpy (comment, prefix, prefixlen);
   p = mempcpy (p, id, idlen);
   *p = '\0';
-  return comment;
+  ආපසු comment;
 }
 
 static void
 print_deadprocs (STRUCT_UTMP const *utmp_ent)
 {
-  static char *exitstr;
-  char *comment = make_id_equals_comment (utmp_ent);
+  static var_na *exitstr;
+  var_na *comment = make_id_equals_comment (utmp_ent);
   PIDSTR_DECL_AND_INIT (pidstr, utmp_ent);
 
-  if (!exitstr)
+  නම් (!exitstr)
     exitstr = xmalloc (strlen (_("term="))
                        + INT_STRLEN_BOUND (utmp_ent->ut_exit.e_termination) + 1
                        + strlen (_("exit="))
@@ -469,7 +469,7 @@ print_deadprocs (STRUCT_UTMP const *utmp_ent)
 static void
 print_login (STRUCT_UTMP const *utmp_ent)
 {
-  char *comment = make_id_equals_comment (utmp_ent);
+  var_na *comment = make_id_equals_comment (utmp_ent);
   PIDSTR_DECL_AND_INIT (pidstr, utmp_ent);
 
   /* FIXME: add idle time? */
@@ -482,7 +482,7 @@ print_login (STRUCT_UTMP const *utmp_ent)
 static void
 print_initspawn (STRUCT_UTMP const *utmp_ent)
 {
-  char *comment = make_id_equals_comment (utmp_ent);
+  var_na *comment = make_id_equals_comment (utmp_ent);
   PIDSTR_DECL_AND_INIT (pidstr, utmp_ent);
 
   print_line ("", ' ', utmp_ent->ut_line,
@@ -501,15 +501,15 @@ print_clockchange (STRUCT_UTMP const *utmp_ent)
 static void
 print_runlevel (STRUCT_UTMP const *utmp_ent)
 {
-  static char *runlevline, *comment;
-  unsigned char last = utmp_ent->ut_pid / 256;
-  unsigned char curr = utmp_ent->ut_pid % 256;
+  static var_na *runlevline, *comment;
+  unsigned var_na last = utmp_ent->ut_pid / 256;
+  unsigned var_na curr = utmp_ent->ut_pid % 256;
 
-  if (!runlevline)
+  නම් (!runlevline)
     runlevline = xmalloc (strlen (_("run-level")) + 3);
   sprintf (runlevline, "%s %c", _("run-level"), curr);
 
-  if (!comment)
+  නම් (!comment)
     comment = xmalloc (strlen (_("last=")) + 2);
   sprintf (comment, "%s%c", _("last="), (last == 'N') ? 'S' : last);
 
@@ -524,15 +524,15 @@ list_entries_who (idx_t n, STRUCT_UTMP const *utmp_buf)
 {
   idx_t entries = 0;
 
-  while (n--)
+  අතරතුර (n--)
     {
-      if (IS_USER_PROCESS (utmp_buf))
+      නම් (IS_USER_PROCESS (utmp_buf))
         {
-          char *trimmed_name;
+          var_na *trimmed_name;
 
           trimmed_name = extract_trimmed_name (utmp_buf);
 
-          if (entries)
+          නම් (entries)
             putchar (' ');
           fputs (trimmed_name, stdout);
           free (trimmed_name);
@@ -554,46 +554,46 @@ print_heading (void)
 static void
 scan_entries (idx_t n, STRUCT_UTMP const *utmp_buf)
 {
-  char *ttyname_b IF_LINT ( = NULL);
+  var_na *ttyname_b IF_LINT ( = NULL);
   time_t boottime = TYPE_MINIMUM (time_t);
 
-  if (include_heading)
+  නම් (include_heading)
     print_heading ();
 
-  if (my_line_only)
+  නම් (my_line_only)
     {
       ttyname_b = ttyname (STDIN_FILENO);
-      if (!ttyname_b)
-        return;
-      if (STRNCMP_LIT (ttyname_b, "/dev/") == 0)
-        ttyname_b += sizeof "/dev/" - 1;	/* Discard /dev/ prefix.  */
+      නම් (!ttyname_b)
+        ආපසු;
+      නම් (STRNCMP_LIT (ttyname_b, "/dev/") == 0)
+        ttyname_b += parimaa_na "/dev/" - 1;	/* Discard /dev/ prefix.  */
     }
 
-  while (n--)
+  අතරතුර (n--)
     {
-      if (!my_line_only
+      නම් (!my_line_only
           || str_endswith (utmp_buf->ut_line, ttyname_b))
         {
-          if (need_users && IS_USER_PROCESS (utmp_buf))
+          නම් (need_users && IS_USER_PROCESS (utmp_buf))
             print_user (utmp_buf, boottime);
-          else if (need_runlevel && UT_TYPE_RUN_LVL (utmp_buf))
+          නැතහොත් නම් (need_runlevel && UT_TYPE_RUN_LVL (utmp_buf))
             print_runlevel (utmp_buf);
-          else if (need_boottime && UT_TYPE_BOOT_TIME (utmp_buf))
+          නැතහොත් නම් (need_boottime && UT_TYPE_BOOT_TIME (utmp_buf))
             print_boottime (utmp_buf);
           /* I've never seen one of these, so I don't know what it should
              look like :^)
              FIXME: handle OLD_TIME also, perhaps show the delta? */
-          else if (need_clockchange && UT_TYPE_NEW_TIME (utmp_buf))
+          නැතහොත් නම් (need_clockchange && UT_TYPE_NEW_TIME (utmp_buf))
             print_clockchange (utmp_buf);
-          else if (need_initspawn && UT_TYPE_INIT_PROCESS (utmp_buf))
+          නැතහොත් නම් (need_initspawn && UT_TYPE_INIT_PROCESS (utmp_buf))
             print_initspawn (utmp_buf);
-          else if (need_login && UT_TYPE_LOGIN_PROCESS (utmp_buf))
+          නැතහොත් නම් (need_login && UT_TYPE_LOGIN_PROCESS (utmp_buf))
             print_login (utmp_buf);
-          else if (need_deadprocs && UT_TYPE_DEAD_PROCESS (utmp_buf))
+          නැතහොත් නම් (need_deadprocs && UT_TYPE_DEAD_PROCESS (utmp_buf))
             print_deadprocs (utmp_buf);
         }
 
-      if (UT_TYPE_BOOT_TIME (utmp_buf))
+      නම් (UT_TYPE_BOOT_TIME (utmp_buf))
         boottime = utmp_buf->ut_ts.tv_sec;
 
       utmp_buf++;
@@ -603,29 +603,29 @@ scan_entries (idx_t n, STRUCT_UTMP const *utmp_buf)
 /* Display a list of who is on the system, according to utmp file FILENAME.
    Use read_utmp OPTIONS to read the file.  */
 static void
-who (char const *filename, int options)
+who (var_na const *filename, පූර්ණ_සංඛ්‍යා options)
 {
   idx_t n_users;
   STRUCT_UTMP *utmp_buf;
-  if (short_list)
+  නම් (short_list)
     options |= READ_UTMP_USER_PROCESS;
-  if (read_utmp (filename, &n_users, &utmp_buf, options) != 0)
+  නම් (read_utmp (filename, &n_users, &utmp_buf, options) != 0)
     error (EXIT_FAILURE, errno, "%s", quotef (filename));
 
-  if (short_list)
+  නම් (short_list)
     list_entries_who (n_users, utmp_buf);
-  else
+  නැතහොත්
     scan_entries (n_users, utmp_buf);
 
   free (utmp_buf);
 }
 
 void
-usage (int status)
+usage (පූර්ණ_සංඛ්‍යා status)
 {
-  if (status != EXIT_SUCCESS)
+  නම් (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  නැතහොත්
     {
       printf (_("Usage: %s [OPTION]... [ FILE | ARG1 ARG2 ]\n"), program_name);
       fputs (_("\
@@ -694,10 +694,10 @@ If ARG1 ARG2 given, -m presumed: 'am i' or 'mom likes' are usual.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+පූර්ණ_සංඛ්‍යා
+main (පූර්ණ_සංඛ්‍යා argc, var_na **argv)
 {
-  int optc;
+  පූර්ණ_සංඛ්‍යා optc;
   bool assumptions = true;
 
   initialize_main (&argc, &argv);
@@ -708,12 +708,12 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "abdlmpqrstuwHT", longopts, NULL))
+  අතරතුර ((optc = getopt_long (argc, argv, "abdlmpqrstuwHT", longopts, NULL))
          != -1)
     {
       switch (optc)
         {
-        case 'a':
+        pak_sa 'a':
           need_boottime = true;
           need_deadprocs = true;
           need_login = true;
@@ -725,72 +725,72 @@ main (int argc, char **argv)
           include_idle = true;
           include_exit = true;
           assumptions = false;
-          break;
+          bha_nga;
 
-        case 'b':
+        pak_sa 'b':
           need_boottime = true;
           assumptions = false;
-          break;
+          bha_nga;
 
-        case 'd':
+        pak_sa 'd':
           need_deadprocs = true;
           include_idle = true;
           include_exit = true;
           assumptions = false;
-          break;
+          bha_nga;
 
-        case 'H':
+        pak_sa 'H':
           include_heading = true;
-          break;
+          bha_nga;
 
-        case 'l':
+        pak_sa 'l':
           need_login = true;
           include_idle = true;
           assumptions = false;
-          break;
+          bha_nga;
 
-        case 'm':
+        pak_sa 'm':
           my_line_only = true;
-          break;
+          bha_nga;
 
-        case 'p':
+        pak_sa 'p':
           need_initspawn = true;
           assumptions = false;
-          break;
+          bha_nga;
 
-        case 'q':
+        pak_sa 'q':
           short_list = true;
-          break;
+          bha_nga;
 
-        case 'r':
+        pak_sa 'r':
           need_runlevel = true;
           include_idle = true;
           assumptions = false;
-          break;
+          bha_nga;
 
-        case 's':
+        pak_sa 's':
           short_output = true;
-          break;
+          bha_nga;
 
-        case 't':
+        pak_sa 't':
           need_clockchange = true;
           assumptions = false;
-          break;
+          bha_nga;
 
-        case 'T':
-        case 'w':
+        pak_sa 'T':
+        pak_sa 'w':
           include_mesg = true;
-          break;
+          bha_nga;
 
-        case 'u':
+        pak_sa 'u':
           need_users = true;
           include_idle = true;
           assumptions = false;
-          break;
+          bha_nga;
 
-        case LOOKUP_OPTION:
+        pak_sa LOOKUP_OPTION:
           do_lookup = true;
-          break;
+          bha_nga;
 
         case_GETOPT_HELP_CHAR;
 
@@ -801,23 +801,23 @@ main (int argc, char **argv)
         }
     }
 
-  if (assumptions)
+  නම් (assumptions)
     {
       need_users = true;
       short_output = true;
     }
 
-  if (include_exit)
+  නම් (include_exit)
     {
       short_output = false;
     }
 
-  if (hard_locale (LC_TIME))
+  නම් (hard_locale (LC_TIME))
     {
       time_format = "%Y-%m-%d %H:%M";
       time_format_width = 4 + 1 + 2 + 1 + 2 + 1 + 2 + 1 + 2;
     }
-  else
+  නැතහොත්
     {
       time_format = "%b %e %H:%M";
       time_format_width = 3 + 1 + 2 + 1 + 2 + 1 + 2;
@@ -825,22 +825,22 @@ main (int argc, char **argv)
 
   switch (argc - optind)
     {
-    case 2:			/* who <blurf> <glop> */
+    pak_sa 2:			/* who <blurf> <glop> */
       my_line_only = true;
       FALLTHROUGH;
-    case -1:
-    case 0:			/* who */
+    pak_sa -1:
+    pak_sa 0:			/* who */
       who (UTMP_FILE, READ_UTMP_CHECK_PIDS);
-      break;
+      bha_nga;
 
-    case 1:			/* who <utmp file> */
+    pak_sa 1:			/* who <utmp file> */
       who (argv[optind], 0);
-      break;
+      bha_nga;
 
     default:			/* lose */
       error (0, 0, _("extra operand %s"), quote (argv[optind + 2]));
       usage (EXIT_FAILURE);
     }
 
-  return EXIT_SUCCESS;
+  ආපසු EXIT_SUCCESS;
 }

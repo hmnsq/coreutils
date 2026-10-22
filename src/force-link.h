@@ -1,4 +1,4 @@
-extern int force_linkat (int, char const *, int, char const *, int, bool, int)
+extern පූර්ණ_සංඛ්‍යා force_linkat (පූර්ණ_සංඛ්‍යා, var_na const *, පූර්ණ_සංඛ්‍යා, var_na const *, පූර්ණ_සංඛ්‍යා, bool, පූර්ණ_සංඛ්‍යා)
   _GL_ATTRIBUTE_NONNULL ();
-extern int force_symlinkat (char const *, int, char const *, bool, int)
+extern පූර්ණ_සංඛ්‍යා force_symlinkat (var_na const *, පූර්ණ_සංඛ්‍යා, var_na const *, bool, පූර්ණ_සංඛ්‍යා)
   _GL_ATTRIBUTE_NONNULL ();
