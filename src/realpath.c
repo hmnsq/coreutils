@@ -16,65 +16,65 @@
 
 /* Written by Pádraig Brady.  */
 
-#include <config.h>
-#include <getopt.h>
-#include <stdio.h>
-#include <sys/types.h>
+#ضمن <config.h>
+#ضمن <getopt.h>
+#ضمن <stdio.h>
+#ضمن <sys/types.h>
 
-#include "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
-#include "system.h"
-#include "canonicalize.h"
-#include "relpath.h"
+#ضمن "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
+#ضمن "system.h"
+#ضمن "canonicalize.h"
+#ضمن "relpath.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "realpath"
 
 #define AUTHORS proper_name_lite ("Padraig Brady", "P\303\241draig Brady")
 
-enum
+تعداد
 {
   RELATIVE_TO_OPTION = CHAR_MAX + 1,
   RELATIVE_BASE_OPTION
 };
 
-static bool verbose = true;
-static bool logical;
-static bool use_nuls;
-static bool quote_output;
-static char const *can_relative_to;
-static char const *can_relative_base;
+ساكن bool verbose = true;
+ساكن bool logical;
+ساكن bool use_nuls;
+ساكن bool quote_output;
+ساكن حرف ثابت *can_relative_to;
+ساكن حرف ثابت *can_relative_base;
 
-static struct option const longopts[] =
+ساكن بنية option ثابت longopts[] =
 {
-  {"canonicalize", no_argument, NULL, 'E'},
-  {"canonicalize-existing", no_argument, NULL, 'e'},
-  {"canonicalize-missing", no_argument, NULL, 'm'},
-  {"relative-to", required_argument, NULL, RELATIVE_TO_OPTION},
-  {"relative-base", required_argument, NULL, RELATIVE_BASE_OPTION},
-  {"quiet", no_argument, NULL, 'q'},
-  {"strip", no_argument, NULL, 's'},
-  {"no-symlinks", no_argument, NULL, 's'},
-  {"zero", no_argument, NULL, 'z'},
-  {"logical", no_argument, NULL, 'L'},
-  {"physical", no_argument, NULL, 'P'},
+  {"canonicalize", no_argument, عدم, 'E'},
+  {"canonicalize-existing", no_argument, عدم, 'e'},
+  {"canonicalize-missing", no_argument, عدم, 'm'},
+  {"relative-to", required_argument, عدم, RELATIVE_TO_OPTION},
+  {"relative-base", required_argument, عدم, RELATIVE_BASE_OPTION},
+  {"quiet", no_argument, عدم, 'q'},
+  {"strip", no_argument, عدم, 's'},
+  {"no-symlinks", no_argument, عدم, 's'},
+  {"zero", no_argument, عدم, 'z'},
+  {"logical", no_argument, عدم, 'L'},
+  {"physical", no_argument, عدم, 'P'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {عدم, 0, عدم, 0}
 };
 
-void
-usage (int status)
+فراغ
+usage (صحيح status)
 {
-  if (status != EXIT_SUCCESS)
+  ܐܢ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ܐܚܪܢܐ
     {
       printf (_("Usage: %s [OPTION]... FILE...\n"), program_name);
       fputs (_("\
 Print the resolved absolute file name.\n\
 "), stdout);
       oputs (_("\
-  -E, --canonicalize           all but the last component must exist (default)\
+  -E, --canonicalize           all but the last component must exist (افتراضي)\
 \n\
 "));
       oputs (_("\
@@ -88,7 +88,7 @@ Print the resolved absolute file name.\n\
   -L, --logical                resolve '..' components before symlinks\n\
 "));
       oputs (_("\
-  -P, --physical               resolve symlinks as encountered (default)\n\
+  -P, --physical               resolve symlinks as encountered (افتراضي)\n\
 "));
       oputs (_("\
   -q, --quiet                  suppress most error messages\n\
@@ -114,24 +114,24 @@ Print the resolved absolute file name.\n\
 
 /* A wrapper around canonicalize_filename_mode(),
    to call it twice when in LOGICAL mode.  */
-static char *
-realpath_canon (char const *fname, int can_mode)
+ساكن حرف *
+realpath_canon (حرف ثابت *fname, صحيح can_mode)
 {
-  char *can_fname = canonicalize_filename_mode (fname, can_mode);
-  if (logical && can_fname)  /* canonicalize again to resolve symlinks.  */
+  حرف *can_fname = canonicalize_filename_mode (fname, can_mode);
+  ܐܢ (logical && can_fname)  /* canonicalize again to resolve symlinks.  */
     {
       can_mode &= ~CAN_NOLINKS;
-      char *can_fname2 = canonicalize_filename_mode (can_fname, can_mode);
-      free (can_fname);
-      return can_fname2;
+      حرف *can_fname2 = canonicalize_filename_mode (can_fname, can_mode);
+      حرر (can_fname);
+      ܦܢܐ can_fname2;
     }
-  return can_fname;
+  ܦܢܐ can_fname;
 }
 
 /* Test whether canonical prefix is parent or match of path.  */
 ATTRIBUTE_PURE
-static bool
-path_prefix (char const *prefix, char const *path)
+ساكن bool
+path_prefix (حرف ثابت *prefix, حرف ثابت *path)
 {
   /* We already know prefix[0] and path[0] are '/'.  */
   prefix++;
@@ -139,94 +139,94 @@ path_prefix (char const *prefix, char const *path)
 
   /* '/' is the prefix of everything except '//' (since we know '//'
      is only present after canonicalization if it is distinct).  */
-  if (!*prefix)
-    return *path != '/';
+  ܐܢ (!*prefix)
+    ܦܢܐ *path != '/';
 
   /* Likewise, '//' is a prefix of any double-slash path.  */
-  if (*prefix == '/' && !prefix[1])
-    return *path == '/';
+  ܐܢ (*prefix == '/' && !prefix[1])
+    ܦܢܐ *path == '/';
 
   /* Any other prefix has a non-slash portion.  */
-  while (*prefix && *path)
+  ܟܡܐ (*prefix && *path)
     {
-      if (*prefix != *path)
-        break;
+      ܐܢ (*prefix != *path)
+        اكسر;
       prefix++;
       path++;
     }
-  return (!*prefix && (*path == '/' || !*path));
+  ܦܢܐ (!*prefix && (*path == '/' || !*path));
 }
 
-static bool
-isdir (char const *path)
+ساكن bool
+isdir (حرف ثابت *path)
 {
-  struct stat sb;
-  if (stat (path, &sb) != 0)
+  بنية stat sb;
+  ܐܢ (stat (path, &sb) != 0)
     error (EXIT_FAILURE, errno, _("cannot stat %s"), quoteaf (path));
-  return S_ISDIR (sb.st_mode);
+  ܦܢܐ S_ISDIR (sb.st_mode);
 }
 
-static void
-print_path (char const *path)
+ساكن فراغ
+print_path (حرف ثابت *path)
 {
   fputs (quote_output ? quoteN (path) : path, stdout);
 }
 
 /* Print CAN_FNAME relative to can_relative_to, quoting the complete
    relative file name when appropriate.  */
-static bool
-print_relative_path (char const *can_fname)
+ساكن bool
+print_relative_path (حرف ثابت *can_fname)
 {
-  if (!quote_output)
-    return relpath (can_fname, can_relative_to, NULL, 0);
+  ܐܢ (!quote_output)
+    ܦܢܐ relpath (can_fname, can_relative_to, عدم, 0);
 
   size_t size;
-  if (ckd_mul (&size, strlen (can_relative_to), 2)
+  ܐܢ (ckd_mul (&size, strlen (can_relative_to), 2)
       || ckd_add (&size, size, strlen (can_fname))
       || ckd_add (&size, size, 1))
     xalloc_die ();
 
-  char *relative_path = xmalloc (size);
+  حرف *relative_path = xmalloc (size);
   bool success = relpath (can_fname, can_relative_to, relative_path, size);
-  if (success)
+  ܐܢ (success)
     print_path (relative_path);
-  free (relative_path);
-  return success;
+  حرر (relative_path);
+  ܦܢܐ success;
 }
 
-static bool
-process_path (char const *fname, int can_mode)
+ساكن bool
+process_path (حرف ثابت *fname, صحيح can_mode)
 {
-  char *can_fname = realpath_canon (fname, can_mode);
-  if (!can_fname)
+  حرف *can_fname = realpath_canon (fname, can_mode);
+  ܐܢ (!can_fname)
     {
-      if (verbose)
+      ܐܢ (verbose)
         error (0, errno, "%s", quotef (fname));
-      return false;
+      ܦܢܐ false;
     }
 
-  if (!can_relative_to
+  ܐܢ (!can_relative_to
       || (can_relative_base && !path_prefix (can_relative_base, can_fname))
       || (can_relative_to && !print_relative_path (can_fname)))
     print_path (can_fname);
 
   putchar (use_nuls ? '\0' : '\n');
 
-  free (can_fname);
+  حرر (can_fname);
 
-  if (ferror (stdout))
+  ܐܢ (ferror (stdout))
     write_error ();
 
-  return true;
+  ܦܢܐ true;
 }
 
-int
-main (int argc, char **argv)
+صحيح
+main (صحيح argc, حرف **argv)
 {
   bool ok = true;
-  int can_mode = CAN_ALL_BUT_LAST;
-  char const *relative_to = NULL;
-  char const *relative_base = NULL;
+  صحيح can_mode = CAN_ALL_BUT_LAST;
+  حرف ثابت *relative_to = عدم;
+  حرف ثابت *relative_base = عدم;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -236,109 +236,109 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while (true)
+  ܟܡܐ (true)
     {
-      int c = getopt_long (argc, argv, "EeLmPqsz", longopts, NULL);
-      if (c == -1)
-        break;
-      switch (c)
+      صحيح c = getopt_long (argc, argv, "EeLmPqsz", longopts, عدم);
+      ܐܢ (c == -1)
+        اكسر;
+      بدل (c)
         {
-        case 'E':
+        حالة 'E':
           can_mode &= ~CAN_MODE_MASK;
           can_mode |= CAN_ALL_BUT_LAST;
-          break;
-        case 'e':
+          اكسر;
+        حالة 'e':
           can_mode &= ~CAN_MODE_MASK;
           can_mode |= CAN_EXISTING;
-          break;
-        case 'm':
+          اكسر;
+        حالة 'm':
           can_mode &= ~CAN_MODE_MASK;
           can_mode |= CAN_MISSING;
-          break;
-        case 'L':
+          اكسر;
+        حالة 'L':
           can_mode |= CAN_NOLINKS;
           logical = true;
-          break;
-        case 's':
+          اكسر;
+        حالة 's':
           can_mode |= CAN_NOLINKS;
           logical = false;
-          break;
-        case 'P':
+          اكسر;
+        حالة 'P':
           can_mode &= ~CAN_NOLINKS;
           logical = false;
-          break;
-        case 'q':
+          اكسر;
+        حالة 'q':
           verbose = false;
-          break;
-        case 'z':
+          اكسر;
+        حالة 'z':
           use_nuls = true;
-          break;
-        case RELATIVE_TO_OPTION:
+          اكسر;
+        حالة RELATIVE_TO_OPTION:
           relative_to = optarg;
-          break;
-        case RELATIVE_BASE_OPTION:
+          اكسر;
+        حالة RELATIVE_BASE_OPTION:
           relative_base = optarg;
-          break;
+          اكسر;
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        افتراضي:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (optind >= argc)
+  ܐܢ (optind >= argc)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
-  if (! use_nuls && isatty (STDOUT_FILENO))
+  ܐܢ (! use_nuls && isatty (STDOUT_FILENO))
     {
-      int qs = getenv_quoting_style ();
-      if (qs < 0)
+      صحيح qs = getenv_quoting_style ();
+      ܐܢ (qs < 0)
         qs = shell_escape_quoting_style;
-      if (qs != literal_quoting_style)
+      ܐܢ (qs != literal_quoting_style)
         {
-          set_quoting_style (NULL, qs);
+          set_quoting_style (عدم, qs);
           quote_output = true;
         }
     }
 
-  if (relative_base && !relative_to)
+  ܐܢ (relative_base && !relative_to)
     relative_to = relative_base;
 
   bool need_dir = (can_mode & CAN_MODE_MASK) == CAN_EXISTING;
-  if (relative_to)
+  ܐܢ (relative_to)
     {
       can_relative_to = realpath_canon (relative_to, can_mode);
-      if (!can_relative_to)
+      ܐܢ (!can_relative_to)
         error (EXIT_FAILURE, errno, "%s", quotef (relative_to));
-      if (need_dir && !isdir (can_relative_to))
+      ܐܢ (need_dir && !isdir (can_relative_to))
         error (EXIT_FAILURE, ENOTDIR, "%s", quotef (relative_to));
     }
-  if (relative_base == relative_to)
+  ܐܢ (relative_base == relative_to)
     can_relative_base = can_relative_to;
-  else if (relative_base)
+  ܐܚܪܢܐ ܐܢ (relative_base)
     {
-      char *base = realpath_canon (relative_base, can_mode);
-      if (!base)
+      حرف *base = realpath_canon (relative_base, can_mode);
+      ܐܢ (!base)
         error (EXIT_FAILURE, errno, "%s", quotef (relative_base));
-      if (need_dir && !isdir (base))
+      ܐܢ (need_dir && !isdir (base))
         error (EXIT_FAILURE, ENOTDIR, "%s", quotef (relative_base));
       /* --relative-to is a no-op if it does not have --relative-base
            as a prefix */
-      if (path_prefix (base, can_relative_to))
+      ܐܢ (path_prefix (base, can_relative_to))
         can_relative_base = base;
-      else
+      ܐܚܪܢܐ
         {
-          free (base);
+          حرر (base);
           can_relative_base = can_relative_to;
-          can_relative_to = NULL;
+          can_relative_to = عدم;
         }
     }
 
-  for (; optind < argc; ++optind)
+  لكل (; optind < argc; ++optind)
     ok &= process_path (argv[optind], can_mode);
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  ܦܢܐ ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

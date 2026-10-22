@@ -16,41 +16,41 @@
 
 /* Include this file _after_ system headers if possible.  */
 
-#include <attribute.h>
+#ضمن <attribute.h>
 
-#include <alloca.h>
+#ضمن <alloca.h>
 
-#include <ctype.h>
+#ضمن <ctype.h>
 
-#include <sys/stat.h>
+#ضمن <sys/stat.h>
 
 /* Commonly used file permission combination.  */
 #define MODE_RW_UGO (S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH)
 
-#if HAVE_SYS_PARAM_H
+#ܐܢ HAVE_SYS_PARAM_H
 # include <sys/param.h>
 #endif
 
-#include <unistd.h>
+#ضمن <unistd.h>
 
-#include <limits.h>
+#ضمن <limits.h>
 
-#include "pathmax.h"
+#ضمن "pathmax.h"
 #ifndef PATH_MAX
 # define PATH_MAX 8192
 #endif
 
-#include "configmake.h"
+#ضمن "configmake.h"
 
-#include <sys/time.h>
-#include <time.h>
+#ضمن <sys/time.h>
+#ضمن <time.h>
 
 /* Since major is a function on SVR4, we can't use 'ifndef major'.  */
-#if MAJOR_IN_MKDEV
+#ܐܢ MAJOR_IN_MKDEV
 # include <sys/mkdev.h>
 # define HAVE_MAJOR
 #endif
-#if MAJOR_IN_SYSMACROS
+#ܐܢ MAJOR_IN_SYSMACROS
 # include <sys/sysmacros.h>
 # define HAVE_MAJOR
 #endif
@@ -65,16 +65,16 @@
 #endif
 #undef HAVE_MAJOR
 
-#if ! defined makedev && defined mkdev
+#ܐܢ ! defined makedev && defined mkdev
 # define makedev(maj, min)  mkdev (maj, min)
 #endif
 
-#include <stdckdint.h>
-#include <stdcountof.h>
-#include <stddef.h>
-#include <string.h>
-#include <uchar.h>
-#include <errno.h>
+#ضمن <stdckdint.h>
+#ضمن <stdcountof.h>
+#ضمن <stddef.h>
+#ضمن <string.h>
+#ضمن <uchar.h>
+#ضمن <errno.h>
 
 /* Some systems don't define this; POSIX mentions it but says it is
    obsolete.  gnulib defines it, but only on native Windows systems,
@@ -85,14 +85,14 @@
 
 /* Return true if ERRNUM indicates that a file disappeared during a
    directory traversal.  */
-static inline bool
-ignorable_traversal_errno (int errnum) { return errnum == ENOENT; }
+ساكن مضمن bool
+ignorable_traversal_errno (صحيح errnum) { ܦܢܐ errnum == ENOENT; }
 
-#include <stdlib.h>
-#include "version.h"
+#ضمن <stdlib.h>
+#ضمن "version.h"
 
 /* Exit statuses for programs like 'env' that exec other programs.  */
-enum
+تعداد
 {
   EXIT_TIMEDOUT = 124, /* Time expired before child completed.  */
   EXIT_CANCELED = 125, /* Internal error prior to exec attempt.  */
@@ -100,85 +100,85 @@ enum
   EXIT_ENOENT = 127 /* Could not find program to exec.  */
 };
 
-#include "exitfail.h"
+#ضمن "exitfail.h"
 
 /* Set exit_failure to STATUS if that's not the default already.  */
-static inline void
-initialize_exit_failure (int status)
+ساكن مضمن فراغ
+initialize_exit_failure (صحيح status)
 {
-  if (status != EXIT_FAILURE)
+  ܐܢ (status != EXIT_FAILURE)
     exit_failure = status;
 }
 
-#include <fcntl.h>
+#ضمن <fcntl.h>
 #ifdef O_PATH
-enum { O_PATHSEARCH = O_PATH };
-#else
-enum { O_PATHSEARCH = O_SEARCH };
+تعداد { O_PATHSEARCH = O_PATH };
+#ܐܚܪܢܐ
+تعداد { O_PATHSEARCH = O_SEARCH };
 #endif
 
-#include <dirent.h>
+#ضمن <dirent.h>
 #ifndef _D_EXACT_NAMLEN
 # define _D_EXACT_NAMLEN(dp) strlen ((dp)->d_name)
 #endif
 
-enum
+تعداد
 {
   NOT_AN_INODE_NUMBER = 0
 };
 
 #ifdef D_INO_IN_DIRENT
 # define D_INO(dp) (dp)->d_ino
-#else
+#ܐܚܪܢܐ
 /* Some systems don't have inodes, so fake them to avoid lots of ifdefs.  */
 # define D_INO(dp) NOT_AN_INODE_NUMBER
 #endif
 
 /* include here for SIZE_MAX.  */
-#include <inttypes.h>
+#ضمن <inttypes.h>
 
 /* Redirection and wildcarding when done by the utility itself.
    Generally a noop, but used in particular for OS/2.  */
 #ifndef initialize_main
 # ifndef __OS2__
 #  define initialize_main(ac, av)
-# else
+# ܐܚܪܢܐ
 #  define initialize_main(ac, av) \
-     do { _wildcard (ac, av); _response (ac, av); } while (0)
+     ܥܒܕ { _wildcard (ac, av); _response (ac, av); } ܟܡܐ (0)
 # endif
 #endif
 
-#include "stat-macros.h"
+#ضمن "stat-macros.h"
 
-#include "timespec.h"
+#ضمن "timespec.h"
 
 /* Convert a possibly-signed character to an unsigned character.  This is
    a bit safer than casting to unsigned char, since it catches some type
    errors that the cast doesn't.  */
-static inline unsigned char to_uchar (char ch) { return ch; }
+ساكن مضمن unsigned حرف to_uchar (حرف ch) { ܦܢܐ ch; }
 
 /* Return non zero if a non breaking space.  */
 ATTRIBUTE_PURE
-static inline int
+ساكن مضمن صحيح
 c32isnbspace (char32_t wc)
 {
-  return wc == 0x00A0 || wc == 0x2007 || wc == 0x202F || wc == 0x2060;
+  ܦܢܐ wc == 0x00A0 || wc == 0x2007 || wc == 0x202F || wc == 0x2060;
 }
 
 ATTRIBUTE_PURE
-static inline int
+ساكن مضمن صحيح
 c32isnewline (char32_t wc)
 {
-  return wc == 0x000A || wc == 0x0085 || wc == 0x2028 || wc == 0x2029;
+  ܦܢܐ wc == 0x000A || wc == 0x0085 || wc == 0x2028 || wc == 0x2029;
 }
 
 ATTRIBUTE_PURE
-static inline int
+ساكن مضمن صحيح
 c32isvertspace (char32_t wc)
 {
   /* 000D is backwards as opposed to vertical,
      but that's fine for this grouping.  */
-  return c32isnewline (wc) || wc == 0x000B || wc == 0x000C || wc == 0x000D;
+  ܦܢܐ c32isnewline (wc) || wc == 0x000B || wc == 0x000C || wc == 0x000D;
 }
 
 /* c32isblank() is too variable on non GLIBC platforms.
@@ -186,22 +186,22 @@ c32isvertspace (char32_t wc)
    E.g., does include non-breaking space on Solaris and NetBSD.
    This equivalent is more consistent across systems.  */
 ATTRIBUTE_PURE
-static inline bool
+ساكن مضمن bool
 c32issep (char32_t wc)
 {
-#if defined __GLIBC__
-  return !! c32isblank (wc);
-#else
-  return c32isspace (wc) && ! c32isvertspace (wc) && ! c32isnbspace (wc);
+#ܐܢ defined __GLIBC__
+  ܦܢܐ !! c32isblank (wc);
+#ܐܚܪܢܐ
+  ܦܢܐ c32isspace (wc) && ! c32isvertspace (wc) && ! c32isnbspace (wc);
 #endif
 }
 
-#include <locale.h>
+#ضمن <locale.h>
 
 /* Take care of NLS matters.  */
 
-#include "gettext.h"
-#if ! ENABLE_NLS
+#ضمن "gettext.h"
+#ܐܢ ! ENABLE_NLS
 # undef textdomain
 # define textdomain(Domainname) /* empty */
 # undef bindtextdomain
@@ -213,13 +213,13 @@ c32issep (char32_t wc)
 
 /* Return a value that pluralizes the same way that N does, in all
    languages we know of.  */
-static inline unsigned long int
+ساكن مضمن unsigned long صحيح
 select_plural (uintmax_t n)
 {
   /* Reduce by a power of ten, but keep it away from zero.  The
      gettext manual says 1000000 should be safe.  */
-  enum { PLURAL_REDUCER = 1000000 };
-  return (n <= ULONG_MAX ? n : n % PLURAL_REDUCER + PLURAL_REDUCER);
+  تعداد { PLURAL_REDUCER = 1000000 };
+  ܦܢܐ (n <= ULONG_MAX ? n : n % PLURAL_REDUCER + PLURAL_REDUCER);
 }
 
 #define STREQ_LEN(a, b, n) (strncmp (a, b, n) == 0) /* n==-1 means unbounded */
@@ -227,26 +227,26 @@ select_plural (uintmax_t n)
 
 /* Just like strncmp, but the second argument must be a literal string
    and you don't specify the length;  that comes from the literal.  */
-#define STRNCMP_LIT(s, lit) strncmp (s, "" lit "", sizeof (lit) - 1)
+#define STRNCMP_LIT(s, lit) strncmp (s, "" lit "", حجم (lit) - 1)
 
-#if !HAVE_DECL_GETLOGIN
-char *getlogin (void);
+#ܐܢ !HAVE_DECL_GETLOGIN
+حرف *getlogin (فراغ);
 #endif
 
-#if !HAVE_DECL_TTYNAME
-char *ttyname (int);
+#ܐܢ !HAVE_DECL_TTYNAME
+حرف *ttyname (صحيح);
 #endif
 
-#if !HAVE_DECL_GETEUID
-uid_t geteuid (void);
+#ܐܢ !HAVE_DECL_GETEUID
+uid_t geteuid (فراغ);
 #endif
 
-#if !HAVE_DECL_GETPWUID
-struct passwd *getpwuid (uid_t);
+#ܐܢ !HAVE_DECL_GETPWUID
+بنية passwd *getpwuid (uid_t);
 #endif
 
-#if !HAVE_DECL_GETGRGID
-struct group *getgrgid (gid_t);
+#ܐܢ !HAVE_DECL_GETGRGID
+بنية group *getgrgid (gid_t);
 #endif
 
 /* Interix has replacements for getgr{gid,nam,ent}, that don't
@@ -255,52 +255,52 @@ struct group *getgrgid (gid_t);
 /* To protect any system that could provide _nomembers functions
    other than interix, check for HAVE_SETGROUPS, as interix is
    one of the very few (the only?) platform that lacks it */
-#if ! HAVE_SETGROUPS
-# if HAVE_GETGRGID_NOMEMBERS
+#ܐܢ ! HAVE_SETGROUPS
+# ܐܢ HAVE_GETGRGID_NOMEMBERS
 #  define getgrgid(gid) getgrgid_nomembers(gid)
 # endif
-# if HAVE_GETGRNAM_NOMEMBERS
+# ܐܢ HAVE_GETGRNAM_NOMEMBERS
 #  define getgrnam(nam) getgrnam_nomembers(nam)
 # endif
-# if HAVE_GETGRENT_NOMEMBERS
+# ܐܢ HAVE_GETGRENT_NOMEMBERS
 #  define getgrent() getgrent_nomembers()
 # endif
 #endif
 
-#if !HAVE_DECL_GETUID
-uid_t getuid (void);
+#ܐܢ !HAVE_DECL_GETUID
+uid_t getuid (فراغ);
 #endif
 
-#include "idx.h"
-#include "xalloc.h"
-#include "verify.h"
-#include "unlocked-io.h"
-#include "same-inode.h"
+#ضمن "idx.h"
+#ضمن "xalloc.h"
+#ضمن "verify.h"
+#ضمن "unlocked-io.h"
+#ضمن "same-inode.h"
 
-#include "dirname.h"
-#include "openat.h"
+#ضمن "dirname.h"
+#ضمن "openat.h"
 
-static inline bool
-dot_or_dotdot (char const *file_name)
+ساكن مضمن bool
+dot_or_dotdot (حرف ثابت *file_name)
 {
-  if (file_name[0] == '.')
+  ܐܢ (file_name[0] == '.')
     {
-      char sep = file_name[(file_name[1] == '.') + 1];
-      return (! sep || ISSLASH (sep));
+      حرف sep = file_name[(file_name[1] == '.') + 1];
+      ܦܢܐ (! sep || ISSLASH (sep));
     }
-  else
-    return false;
+  ܐܚܪܢܐ
+    ܦܢܐ false;
 }
 
 /* A wrapper for readdir so that callers don't see entries for '.' or '..'.  */
-static inline struct dirent const *
+ساكن مضمن بنية dirent ثابت *
 readdir_ignoring_dot_and_dotdot (DIR *dirp)
 {
-  while (true)
+  ܟܡܐ (true)
     {
-      struct dirent const *dp = readdir (dirp);
-      if (dp == NULL || ! dot_or_dotdot (dp->d_name))
-        return dp;
+      بنية dirent ثابت *dp = readdir (dirp);
+      ܐܢ (dp == عدم || ! dot_or_dotdot (dp->d_name))
+        ܦܢܐ dp;
     }
 }
 
@@ -308,37 +308,37 @@ readdir_ignoring_dot_and_dotdot (DIR *dirp)
    0 if DIR is a nonempty directory,
    and a positive error number if there was trouble determining
    whether DIR is an empty or nonempty directory.  */
-enum {
+تعداد {
     DS_UNKNOWN = -2,
     DS_EMPTY = -1,
     DS_NONEMPTY = 0,
 };
-static inline int
-directory_status (int fd_cwd, char const *dir)
+ساكن مضمن صحيح
+directory_status (صحيح fd_cwd, حرف ثابت *dir)
 {
   DIR *dirp;
   bool no_direntries;
-  int saved_errno;
-  int fd = openat (fd_cwd, dir,
+  صحيح saved_errno;
+  صحيح fd = openat (fd_cwd, dir,
                    (O_RDONLY | O_DIRECTORY
                     | O_NOCTTY | O_NOFOLLOW | O_NONBLOCK));
 
-  if (fd < 0)
-    return errno;
+  ܐܢ (fd < 0)
+    ܦܢܐ errno;
 
   dirp = fdopendir (fd);
-  if (dirp == NULL)
+  ܐܢ (dirp == عدم)
     {
       saved_errno = errno;
       close (fd);
-      return saved_errno;
+      ܦܢܐ saved_errno;
     }
 
   errno = 0;
   no_direntries = !readdir_ignoring_dot_and_dotdot (dirp);
   saved_errno = errno;
   closedir (dirp);
-  return no_direntries && saved_errno == 0 ? DS_EMPTY : saved_errno;
+  ܦܢܐ no_direntries && saved_errno == 0 ? DS_EMPTY : saved_errno;
 }
 
 /* Factor out some of the common --help and --version processing code.  */
@@ -346,23 +346,23 @@ directory_status (int fd_cwd, char const *dir)
 /* These enum values cannot possibly conflict with the option values
    ordinarily used by commands, including CHAR_MAX + 1, etc.  Avoid
    CHAR_MIN - 1, as it may equal -1, the getopt end-of-options value.  */
-enum
+تعداد
 {
   GETOPT_HELP_CHAR = (CHAR_MIN - 2),
   GETOPT_VERSION_CHAR = (CHAR_MIN - 3)
 };
 
 #define GETOPT_HELP_OPTION_DECL \
-  "help", no_argument, NULL, GETOPT_HELP_CHAR
+  "help", no_argument, عدم, GETOPT_HELP_CHAR
 #define GETOPT_VERSION_OPTION_DECL \
-  "version", no_argument, NULL, GETOPT_VERSION_CHAR
+  "version", no_argument, عدم, GETOPT_VERSION_CHAR
 #define GETOPT_SELINUX_CONTEXT_OPTION_DECL \
-  "context", optional_argument, NULL, 'Z'
+  "context", optional_argument, عدم, 'Z'
 
 #define case_GETOPT_HELP_CHAR			\
-  case GETOPT_HELP_CHAR:			\
+  حالة GETOPT_HELP_CHAR:			\
     usage (EXIT_SUCCESS);			\
-    break;
+    اكسر;
 
 /* Program_name must be a literal string.
    Usually it is just PROGRAM_NAME.  */
@@ -377,29 +377,29 @@ enum
 #define VERSION_OPTION_DESCRIPTION \
   _("      --version\n         output version information and exit\n")
 
-#include "closein.h"
-#include "closeout.h"
+#ضمن "closein.h"
+#ضمن "closeout.h"
 
-#include "version-etc.h"
+#ضمن "version-etc.h"
 
-#include "propername.h"
+#ضمن "propername.h"
 /* Define away proper_name, since it's not worth the cost of adding ~17KB to
    the x86_64 text size of every single program.  This avoids a 40%
    (almost ~2MB) increase in the file system space utilization for the set
    of the 100 binaries. */
 #define proper_name(x) proper_name_lite (x, x)
 
-#include "progname.h"
+#ضمن "progname.h"
 
 #define case_GETOPT_VERSION_CHAR(Program_name, Authors)			\
-  case GETOPT_VERSION_CHAR:						\
+  حالة GETOPT_VERSION_CHAR:						\
     version_etc (stdout, Program_name, PACKAGE_NAME, Version, Authors,	\
-                 (char *) NULL);					\
+                 (حرف *) عدم);					\
     exit (EXIT_SUCCESS);						\
-    break;
+    اكسر;
 
-#include "minmax.h"
-#include "intprops.h"
+#ضمن "minmax.h"
+#ضمن "intprops.h"
 
 #ifndef SSIZE_MAX
 # define SSIZE_MAX TYPE_MAXIMUM (ssize_t)
@@ -428,7 +428,7 @@ enum
 /* Use this to suppress gcc warnings.  */
 #ifdef lint
 # define IF_LINT(Code) Code
-#else
+#ܐܚܪܢܐ
 # define IF_LINT(Code) /* empty */
 #endif
 
@@ -440,35 +440,35 @@ enum
    checking preferred and may yet be again.  */
 #ifdef lint
 # define main_exit(status) exit (status)
-#else
-# define main_exit(status) return status
+#ܐܚܪܢܐ
+# define main_exit(status) ܦܢܐ status
 #endif
 
 #ifdef __GNUC__
 # define LIKELY(cond)    __builtin_expect ((cond), 1)
 # define UNLIKELY(cond)  __builtin_expect ((cond), 0)
-#else
+#ܐܚܪܢܐ
 # define LIKELY(cond)    (cond)
 # define UNLIKELY(cond)  (cond)
 #endif
 
 
-#if defined strdupa
+#ܐܢ defined strdupa
 # define ASSIGN_STRDUPA(DEST, S)		\
-  do { DEST = strdupa (S); } while (0)
-#else
+  ܥܒܕ { DEST = strdupa (S); } ܟܡܐ (0)
+#ܐܚܪܢܐ
 # define ASSIGN_STRDUPA(DEST, S)		\
-  do						\
+  ܥܒܕ						\
     {						\
-      char const *s_ = (S);			\
+      حرف ثابت *s_ = (S);			\
       size_t len_ = strlen (s_) + 1;		\
-      char *tmp_dest_ = alloca (len_);		\
+      حرف *tmp_dest_ = alloca (len_);		\
       DEST = memcpy (tmp_dest_, s_, len_);	\
     }						\
-  while (0)
+  ܟܡܐ (0)
 #endif
 
-#if ! HAVE_SYNC
+#ܐܢ ! HAVE_SYNC
 # define sync() /* empty */
 #endif
 
@@ -476,18 +476,18 @@ enum
    algorithm.  U and V must be nonzero.  */
 
 ATTRIBUTE_CONST
-static inline size_t
+ساكن مضمن size_t
 gcd (size_t u, size_t v)
 {
-  do
+  ܥܒܕ
     {
       size_t t = u % v;
       u = v;
       v = t;
     }
-  while (v);
+  ܟܡܐ (v);
 
-  return u;
+  ܦܢܐ u;
 }
 
 /* Compute the least common multiple of U and V.  U and V must be
@@ -495,10 +495,10 @@ gcd (size_t u, size_t v)
    specify outlandish sizes.  */
 
 ATTRIBUTE_CONST
-static inline size_t
+ساكن مضمن size_t
 lcm (size_t u, size_t v)
 {
-  return u * (v / gcd (u, v));
+  ܦܢܐ u * (v / gcd (u, v));
 }
 
 /* Return PTR, aligned upward to the next multiple of ALIGNMENT.
@@ -506,64 +506,64 @@ lcm (size_t u, size_t v)
    PTR) through ((char *) PTR + ALIGNMENT - 1) to be addressable
    locations.  */
 
-static inline void *
-ptr_align (void const *ptr, size_t alignment)
+ساكن مضمن فراغ *
+ptr_align (فراغ ثابت *ptr, size_t alignment)
 {
-  char const *p0 = ptr;
-  char const *p1 = p0 + alignment - 1;
-  return (void *) (p1 - (size_t) p1 % alignment);
+  حرف ثابت *p0 = ptr;
+  حرف ثابت *p1 = p0 + alignment - 1;
+  ܦܢܐ (فراغ *) (p1 - (size_t) p1 % alignment);
 }
 
 /* Return whether the buffer consists entirely of NULs.
    Based on memeqzero in CCAN by Rusty Russell under CC0 (Public domain).  */
 
 ATTRIBUTE_PURE
-static inline bool
-is_nul (void const *buf, size_t length)
+ساكن مضمن bool
+is_nul (فراغ ثابت *buf, size_t length)
 {
-  const unsigned char *p = buf;
+  ثابت unsigned حرف *p = buf;
 /* Using possibly unaligned access for the first 16 bytes
    saves about 30-40 cycles, though it is strictly undefined behavior
    and so would need __attribute__ ((__no_sanitize_undefined__))
    to avoid -fsanitize=undefined warnings.
    Considering coreutils is mainly concerned with relatively
    large buffers, we'll just use the defined behavior.  */
-#if 0 && (_STRING_ARCH_unaligned || _STRING_INLINE_unaligned)
+#ܐܢ 0 && (_STRING_ARCH_unaligned || _STRING_INLINE_unaligned)
   unsigned long word;
-#else
-  unsigned char word;
+#ܐܚܪܢܐ
+  unsigned حرف word;
 #endif
 
-  if (! length)
-    return true;
+  ܐܢ (! length)
+    ܦܢܐ true;
 
   /* Check len bytes not aligned on a word.  */
-  while (UNLIKELY (length & (sizeof word - 1)))
+  ܟܡܐ (UNLIKELY (length & (حجم word - 1)))
     {
-      if (*p)
-        return false;
+      ܐܢ (*p)
+        ܦܢܐ false;
       p++;
       length--;
-      if (! length)
-        return true;
+      ܐܢ (! length)
+        ܦܢܐ true;
    }
 
   /* Check up to 16 bytes a word at a time.  */
-  for (;;)
+  لكل (;;)
     {
-      memcpy (&word, p, sizeof word);
-      if (word)
-        return false;
-      p += sizeof word;
-      length -= sizeof word;
-      if (! length)
-        return true;
-      if (UNLIKELY (length & 15) == 0)
-        break;
+      memcpy (&word, p, حجم word);
+      ܐܢ (word)
+        ܦܢܐ false;
+      p += حجم word;
+      length -= حجم word;
+      ܐܢ (! length)
+        ܦܢܐ true;
+      ܐܢ (UNLIKELY (length & 15) == 0)
+        اكسر;
    }
 
   /* Now we know first 16 bytes are NUL, memeq with self.  */
-  return memeq (buf, p, length);
+  ܦܢܐ memeq (buf, p, length);
 }
 
 /* Set Accum = 10*Accum + Digit_val and return true, where Accum is an
@@ -581,49 +581,49 @@ is_nul (void const *buf, size_t length)
    though it can be disabled in edge cases with the TERM=dumb env var.  */
 
 #define oputs(option) oputs_ (PROGRAM_NAME, option)
-static inline void
-oputs_ (MAYBE_UNUSED char const *program, char const *option)
+ساكن مضمن فراغ
+oputs_ (MAYBE_UNUSED حرف ثابت *program, حرف ثابت *option)
 {
-  static int help_markup =
-#if defined MANUAL_URL || defined BOLD_MAN_REFS
+  ساكن صحيح help_markup =
+#ܐܢ defined MANUAL_URL || defined BOLD_MAN_REFS
     -1;  /* Lookup.  */
-#else
+#ܐܚܪܢܐ
     0;   /* Disable.  */
 #endif
-  if (help_markup == -1)
+  ܐܢ (help_markup == -1)
     {
       /* Note one generally would want markup when piping to grep/less etc.
          but we're conservative here for now, and only markup to tty.  */
-      char const *te;
+      حرف ثابت *te;
       help_markup = (isatty (STDOUT_FILENO)
                      ? ((te = getenv ("TERM")) && *te && !streq (te, "dumb"))
-                     : getenv ("IN_HELP2MAN") != NULL);
+                     : getenv ("IN_HELP2MAN") != عدم);
     }
-  if (! help_markup)
+  ܐܢ (! help_markup)
     {
       fputs (option, stdout);
-      return;
+      ܦܢܐ;
     }
 
   bool double_space = true;
-  char const *first_word = option + strspn (option, " \t\n");
-  char const *option_text = strchr (option, '-');
-  if (!option_text)                    /* for dd(1) option syntax.  */
+  حرف ثابت *first_word = option + strspn (option, " \t\n");
+  حرف ثابت *option_text = strchr (option, '-');
+  ܐܢ (!option_text)                    /* for dd(1) option syntax.  */
     {
       option_text = first_word;
       /* Just match first word to support single spaced
          translated dd "foo=bar description" format.  */
       double_space = false;
     }
-  else if (option_text != first_word)  /* for test(1) option syntax.  */
+  ܐܚܪܢܐ ܐܢ (option_text != first_word)  /* for test(1) option syntax.  */
     {
       /* Ensure only a single space encountered before '-', to avoid
          matching within descriptions for translated dd option syntax.  */
-      char const *s = first_word;
+      حرف ثابت *s = first_word;
       size_t spaces = 0;
-      while (s < option_text && spaces < 2)
+      ܟܡܐ (s < option_text && spaces < 2)
         spaces += !!isspace (to_uchar (*s++));
-      if (spaces == 2)
+      ܐܢ (spaces == 2)
         {
           /* Probably mismatched dd format.  */
           option_text = first_word;
@@ -636,19 +636,19 @@ oputs_ (MAYBE_UNUSED char const *program, char const *option)
   /* Set highlighted text up to spacing after the full option text.
      Any single space is included in highlighted text,
      double space or TAB or newline terminates the option text.  */
-  char const *desc_text = option_text + anchor_len;
-  while (*desc_text && *desc_text != '\n')
+  حرف ثابت *desc_text = option_text + anchor_len;
+  ܟܡܐ (*desc_text && *desc_text != '\n')
     {
-      if (*desc_text == '-' && *(desc_text + 1) == '-')
+      ܐܢ (*desc_text == '-' && *(desc_text + 1) == '-')
         double_space = false;
-      if (isspace (to_uchar (*desc_text)))
+      ܐܢ (isspace (to_uchar (*desc_text)))
         {
-          if (*desc_text == '\t' || isspace (to_uchar (*(desc_text + 1))))
-            break;
+          ܐܢ (*desc_text == '\t' || isspace (to_uchar (*(desc_text + 1))))
+            اكسر;
           /* With long options we restrict the match as some translations
              delimit a long option and description with a single space.  */
-          if (!double_space && *(desc_text + 1) != '-')
-            break;
+          ܐܢ (!double_space && *(desc_text + 1) != '-')
+            اكسر;
         }
 
       desc_text++;
@@ -659,7 +659,7 @@ oputs_ (MAYBE_UNUSED char const *program, char const *option)
 
   /* write option text.  */
 #ifdef MANUAL_URL
-  char const *url_program =   streq (program, "[") ? "test"
+  حرف ثابت *url_program =   streq (program, "[") ? "test"
                             : streq (program, "dir") ? "ls"
                             : streq (program, "vdir") ? "ls"
                             : streq (program, "b2sum") ? "cksum"
@@ -674,21 +674,21 @@ oputs_ (MAYBE_UNUSED char const *program, char const *option)
      it's unused with http:// links and not usually useful with file:// links.
      Also there is the possibility that local (hostname agnostic) links
      would work if remotely accessing a similar system to the local one.  */
-  if (STREQ_LEN (option_text, "--help", 6)
+  ܐܢ (STREQ_LEN (option_text, "--help", 6)
       || STREQ_LEN (option_text, "--version", 9))
     {
       /* We don't have --help and --version links for each command,
          and they wouldn't be useful to reference anyway.
          Instead use these to reference the single node manual.  */
       printf ("\033]8;;%s%s#%s%.*s", PACKAGE_URL,
-              url_program, url_program, (int) anchor_len, option_text);
+              url_program, url_program, (صحيح) anchor_len, option_text);
     }
-  else
+  ܐܚܪܢܐ
     {
       /* The single node manual doesn't work for ls, cksum, md5sum, sha*sum,
          so we link to the full manual.  */
       printf ("\033]8;;%s#%s%.*s", MANUAL_URL, url_program,
-              (int) anchor_len, option_text);
+              (صحيح) anchor_len, option_text);
     }
   fputs ("\033\\", stdout);
 #endif
@@ -714,48 +714,48 @@ oputs_ (MAYBE_UNUSED char const *program, char const *option)
 
 #define oprintf(...) oprintf_ (PROGRAM_NAME, __VA_ARGS__)
 ATTRIBUTE_FORMAT ((printf, 2, 3))
-static inline void
-oprintf_ (char const *program, char const *message, ...)
+ساكن مضمن فراغ
+oprintf_ (حرف ثابت *program, حرف ثابت *message, ...)
 {
   va_list args;
-  char *buf;
-  int buflen = -1;
+  حرف *buf;
+  صحيح buflen = -1;
 
-#if defined MANUAL_URL || defined BOLD_MAN_REFS
+#ܐܢ defined MANUAL_URL || defined BOLD_MAN_REFS
   va_start (args, message);
   buflen = vasprintf (&buf, message, args);
   va_end (args);
 #endif
 
-  if (buflen < 0)
+  ܐܢ (buflen < 0)
     {
       va_start (args, message);
       vprintf (message, args);
       va_end (args);
-      return;
+      ܦܢܐ;
     }
 
   oputs_ (program, buf);
-  free (buf);
+  حرر (buf);
 }
 
-static inline void
-emit_stdin_note (void)
+ساكن مضمن فراغ
+emit_stdin_note (فراغ)
 {
   fputs (_("\n\
-With no FILE, or when FILE is -, read standard input.\n\
+With no FILE, or when FILE is -, اقرأ standard input.\n\
 "), stdout);
 }
-static inline void
-emit_mandatory_arg_note (void)
+ساكن مضمن فراغ
+emit_mandatory_arg_note (فراغ)
 {
   fputs (_("\n\
-Mandatory arguments to long options are mandatory for short options too.\n\
+Mandatory arguments to long options are mandatory لكل short options too.\n\
 "), stdout);
 }
 
-static inline void
-emit_size_note (void)
+ساكن مضمن فراغ
+emit_size_note (فراغ)
 {
   fputs (_("\n\
 The SIZE argument is an integer and optional unit (example: 10K is 10*1024).\n\
@@ -764,35 +764,35 @@ Binary prefixes can be used, too: KiB=K, MiB=M, and so on.\n\
 "), stdout);
 }
 
-static inline void
-emit_blocksize_note (char const *program)
+ساكن مضمن فراغ
+emit_blocksize_note (حرف ثابت *program)
 {
   printf (_("\n\
 Display values are in units of the first available SIZE from --block-size,\n\
 and the %s_BLOCK_SIZE, BLOCK_SIZE and BLOCKSIZE environment variables.\n\
-Otherwise, units default to 1024 bytes (or 512 if POSIXLY_CORRECT is set).\n\
+Otherwise, units افتراضي to 1024 bytes (or 512 ܐܢ POSIXLY_CORRECT is set).\n\
 "), program);
 }
 
-static inline void
-emit_update_parameters_note (void)
+ساكن مضمن فراغ
+emit_update_parameters_note (فراغ)
 {
   fputs (_("\
 \n\
 UPDATE controls which existing files in the destination are replaced.\n\
-'all' is the default operation when an --update option is not specified,\n\
+'all' is the افتراضي operation when an --update option is not specified,\n\
 and results in all existing files in the destination being replaced.\n\
 'none' is like the --no-clobber option, in that no files in the\n\
-destination are replaced, and skipped files do not induce a failure.\n\
+destination are replaced, and skipped files ܥܒܕ not induce a failure.\n\
 'none-fail' also ensures no files are replaced in the destination,\n\
 but any skipped files are diagnosed and induce a failure.\n\
-'older' is the default operation when --update is specified, and results\n\
-in files being replaced if they're older than the corresponding source file.\n\
+'older' is the افتراضي operation when --update is specified, and results\n\
+in files being replaced ܐܢ they're older than the corresponding source file.\n\
 "), stdout);
 }
 
-static inline void
-emit_backup_suffix_note (void)
+ساكن مضمن فراغ
+emit_backup_suffix_note (فراغ)
 {
   fputs (_("\
 \n\
@@ -802,28 +802,28 @@ the VERSION_CONTROL environment variable.  Here are the values:\n\
 \n\
 "), stdout);
   fputs (_("\
-  none, off       never make backups (even if --backup is given)\n\
+  none, off       never make backups (even ܐܢ --backup is given)\n\
   numbered, t     make numbered backups\n\
-  existing, nil   numbered if numbered backups exist, simple otherwise\n\
+  existing, nil   numbered ܐܢ numbered backups exist, simple otherwise\n\
   simple, never   always make simple backups\n\
 "), stdout);
 }
 
 #define emit_symlink_recurse_options(default_opt) \
  emit_symlink_recurse_options_ (PROGRAM_NAME, default_opt)
-static inline void
-emit_symlink_recurse_options_ (char const *program, char const *default_opt)
+ساكن مضمن فراغ
+emit_symlink_recurse_options_ (حرف ثابت *program, حرف ثابت *default_opt)
 {
       printf (_("\
 \n\
 The following options modify how a hierarchy is traversed when the -R\n\
 option is also specified.  If more than one is specified, only the final\n\
-one takes effect. %s is the default.\n\
+one takes effect. %s is the افتراضي.\n\
 \n\
 "), default_opt);
       oputs_ (program, _("\
   -H\n\
-         if a command line argument is a symlink to a directory, traverse it\n\
+         ܐܢ a command line argument is a symlink to a directory, traverse it\n\
 "));
       oputs_ (program, _("\
   -L\n\
@@ -831,43 +831,43 @@ one takes effect. %s is the default.\n\
 "));
       oputs_ (program, _("\
   -P\n\
-         do not traverse any symbolic links\n\
+         ܥܒܕ not traverse any symbolic links\n\
 \n\
 "));
 }
 
-static inline void
-emit_exec_status (char const *program)
+ساكن مضمن فراغ
+emit_exec_status (حرف ثابت *program)
 {
       printf (_("\n\
 Exit status:\n\
-  125  if the %s command itself fails\n\
-  126  if COMMAND is found but cannot be invoked\n\
-  127  if COMMAND cannot be found\n\
+  125  ܐܢ the %s command itself fails\n\
+  126  ܐܢ COMMAND is found but cannot be invoked\n\
+  127  ܐܢ COMMAND cannot be found\n\
   -    the exit status of COMMAND otherwise\n\
 "), program);
 }
 
-static inline void
-emit_ancillary_info (char const *program)
+ساكن مضمن فراغ
+emit_ancillary_info (حرف ثابت *program)
 {
-  struct infomap { char const *program; char const *node; } const infomap[] = {
+  بنية infomap { حرف ثابت *program; حرف ثابت *node; } ثابت infomap[] = {
     { "[", "test invocation" },
     { "coreutils", "Multi-call invocation" },
     { "sha224sum", "sha2 utilities" },
     { "sha256sum", "sha2 utilities" },
     { "sha384sum", "sha2 utilities" },
     { "sha512sum", "sha2 utilities" },
-    { NULL, NULL }
+    { عدم, عدم }
   };
 
-  char const *node = program;
-  struct infomap const *map_prog = infomap;
+  حرف ثابت *node = program;
+  بنية infomap ثابت *map_prog = infomap;
 
-  while (map_prog->program && ! streq (program, map_prog->program))
+  ܟܡܐ (map_prog->program && ! streq (program, map_prog->program))
     map_prog++;
 
-  if (map_prog->node)
+  ܐܢ (map_prog->node)
     node = map_prog->node;
 
   emit_bug_reporting_address ();
@@ -875,7 +875,7 @@ emit_ancillary_info (char const *program)
   /* .htaccess on the coreutils web site maps programs to the appropriate page,
      however we explicitly handle "[" -> "test" here as the "[" is not
      recognized as part of a URL by default in terminals.  */
-  char const *url_program = streq (program, "[") ? "test" : program;
+  حرف ثابت *url_program = streq (program, "[") ? "test" : program;
   printf (_("Full documentation <%s%s>\n"),
           PACKAGE_URL, url_program);
   printf (_("or available locally via: info '(coreutils) %s%s'\n"),
@@ -887,53 +887,53 @@ emit_ancillary_info (char const *program)
    in libstdbuf.so on some systems where unused functions
    are not removed by the linker.  */
 #define emit_try_help() \
-  do \
+  ܥܒܕ \
     { \
       fprintf (stderr, _("Try '%s --help' for more information.\n"), \
                program_name); \
     } \
-  while (0)
+  ܟܡܐ (0)
 
-#include "inttostr.h"
+#ضمن "inttostr.h"
 
-static inline char *
-timetostr (time_t t, char *buf)
+ساكن مضمن حرف *
+timetostr (time_t t, حرف *buf)
 {
-  return (TYPE_SIGNED (time_t)
+  ܦܢܐ (TYPE_SIGNED (time_t)
           ? imaxtostr (t, buf)
           : umaxtostr (t, buf));
 }
 
-static inline char *
-bad_cast (char const *s)
+ساكن مضمن حرف *
+bad_cast (حرف ثابت *s)
 {
-  return (char *) s;
+  ܦܢܐ (حرف *) s;
 }
 
 /* Return a boolean indicating whether SB->st_size is defined.  */
-static inline bool
-usable_st_size (struct stat const *sb)
+ساكن مضمن bool
+usable_st_size (بنية stat ثابت *sb)
 {
-  return (S_ISREG (sb->st_mode) || S_ISLNK (sb->st_mode)
+  ܦܢܐ (S_ISREG (sb->st_mode) || S_ISLNK (sb->st_mode)
           || S_TYPEISSHM (sb) || S_TYPEISTMO (sb));
 }
 
-_Noreturn void usage (int status);
+_Noreturn فراغ usage (صحيح status);
 
-#include <error.h>
+#ضمن <error.h>
 
 /* Like error(0, 0, ...), but without an implicit newline.
    Also a noop unless the global DEV_DEBUG is set.  */
 #define devmsg(...)			\
-  do					\
+  ܥܒܕ					\
     {					\
-      if (dev_debug)			\
+      ܐܢ (dev_debug)			\
         fprintf (stderr, __VA_ARGS__);	\
     }					\
-  while (0)
+  ܟܡܐ (0)
 
 #define emit_cycle_warning(file_name)	\
-  do					\
+  ܥܒܕ					\
     {					\
       error (0, 0, _("\
 WARNING: Circular directory structure.\n\
@@ -942,14 +942,14 @@ NOTIFY YOUR SYSTEM MANAGER.\n\
 The following directory is part of the cycle:\n  %s\n"), \
              quotef (file_name));	\
     }					\
-  while (0)
+  ܟܡܐ (0)
 
 /* exit with a _single_ "write error" diagnostic.  */
 
-static inline void
-write_error (void)
+ساكن مضمن فراغ
+write_error (فراغ)
 {
-  int saved_errno = errno;
+  صحيح saved_errno = errno;
   fflush (stdout);    /* Last attempt to write any buffered data.  */
   fpurge (stdout);    /* Ensure nothing buffered that might induce an error. */
   clearerr (stdout);  /* Avoid extraneous diagnostic from close_stdout.  */
@@ -961,29 +961,29 @@ write_error (void)
    this function writes a NUL byte into dest[len].  Thus, the length
    of the destination buffer must be at least LEN + 1.
    The DEST and SRC buffers must not overlap.  */
-static inline char *
-stzncpy (char *restrict dest, char const *restrict src, size_t len)
+ساكن مضمن حرف *
+stzncpy (حرف *restrict dest, حرف ثابت *restrict src, size_t len)
 {
-  for (size_t i = 0; i < len && *src; i++)
+  لكل (size_t i = 0; i < len && *src; i++)
     *dest++ = *src++;
   *dest = 0;
-  return dest;
+  ܦܢܐ dest;
 }
 
 /* Return true if ERR is ENOTSUP or EOPNOTSUPP, otherwise false.
    This wrapper function avoids the redundant 'or'd comparison on
    systems like Linux for which they have the same value.  It also
    avoids the gcc warning to that effect.  */
-static inline bool
-is_ENOTSUP (int err)
+ساكن مضمن bool
+is_ENOTSUP (صحيح err)
 {
-  return err == EOPNOTSUPP || (ENOTSUP != EOPNOTSUPP && err == ENOTSUP);
+  ܦܢܐ err == EOPNOTSUPP || (ENOTSUP != EOPNOTSUPP && err == ENOTSUP);
 }
 
 
 /* How coreutils quotes filenames, to minimize use of outer quotes,
    but also provide better support for copy and paste when used.  */
-#include "quotearg.h"
+#ضمن "quotearg.h"
 
 /* Use these to shell quote only when necessary,
    when the quoted item is already delimited with colons.  */
@@ -1000,42 +1000,42 @@ is_ENOTSUP (int err)
   quotearg_n_style (n, shell_escape_always_quoting_style, arg)
 
 /* Equivalent to quotearg(), but explicit to avoid syntax checks.  */
-#define quoteN(x) quotearg_style (get_quoting_style (NULL), x)
+#define quoteN(x) quotearg_style (get_quoting_style (عدم), x)
 #define quoteN_mem(x, size)                                     \
-  quotearg_style_mem (get_quoting_style (NULL), x, size)
+  quotearg_style_mem (get_quoting_style (عدم), x, size)
 
 #ifdef ARGMATCH
 /* Return the quoting style specified by the environment variable
    QUOTING_STYLE if set and valid, -1 otherwise.  */
-static inline int
-getenv_quoting_style (void)
+ساكن مضمن صحيح
+getenv_quoting_style (فراغ)
 {
-  char const *q_style = getenv ("QUOTING_STYLE");
-  if (!q_style)
-    return -1;
+  حرف ثابت *q_style = getenv ("QUOTING_STYLE");
+  ܐܢ (!q_style)
+    ܦܢܐ -1;
 
-  int i = ARGMATCH (q_style, quoting_style_args, quoting_style_vals);
-  if (i < 0)
+  صحيح i = ARGMATCH (q_style, quoting_style_args, quoting_style_vals);
+  ܐܢ (i < 0)
     {
       error (0, 0, _("ignoring invalid value of environment "
                      "variable QUOTING_STYLE: %s"), quote (q_style));
-      return -1;
+      ܦܢܐ -1;
     }
-  return quoting_style_vals[i];
+  ܦܢܐ quoting_style_vals[i];
 }
 
 /* Used instead of XARGMATCH() to provide a custom error message.  */
-static inline ptrdiff_t
-x_timestyle_match (char const * style, bool allow_posix,
-                   char const *const * timestyle_args,
-                   char const * timestyle_types,
+ساكن مضمن ptrdiff_t
+x_timestyle_match (حرف ثابت * style, bool allow_posix,
+                   حرف ثابت *ثابت * timestyle_args,
+                   حرف ثابت * timestyle_types,
                    size_t timestyle_types_size,
-                   int fail_status)
+                   صحيح fail_status)
 {
   ptrdiff_t res = argmatch (style, timestyle_args,
                             timestyle_types,
                             timestyle_types_size);
-  if (res < 0)
+  ܐܢ (res < 0)
     {
       /* This whole block used to be a simple use of XARGMATCH.
          but that didn't print the "posix-"-prefixed variants or
@@ -1048,15 +1048,15 @@ x_timestyle_match (char const * style, bool allow_posix,
          only because all four existing time_style_types values
          are distinct.  */
       fputs (_("Valid arguments are:\n"), stderr);
-      char const *const *p = timestyle_args;
-      char const *posix_prefix = allow_posix ? "[posix-]" : "";
-      while (*p)
+      حرف ثابت *ثابت *p = timestyle_args;
+      حرف ثابت *posix_prefix = allow_posix ? "[posix-]" : "";
+      ܟܡܐ (*p)
         fprintf (stderr, "  - %s%s\n", posix_prefix, *p++);
       fputs (_("  - +FORMAT (e.g., +%H:%M) for a 'date'-style"
                " format\n"), stderr);
       usage (fail_status);
     }
 
-  return res;
+  ܦܢܐ res;
 }
 #endif

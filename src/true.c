@@ -14,19 +14,19 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include "system.h"
-#include "true.h"
+#ضمن <config.h>
+#ضمن <stdio.h>
+#ضمن <sys/types.h>
+#ضمن "system.h"
+#ضمن "true.h"
 
 #define EXIT_STATUS (true_mode != TRUE_TRUE)
 #define PROGRAM_NAME (true_mode == TRUE_TRUE ? "true" : "false")
 
 #define AUTHORS proper_name ("Jim Meyering")
 
-void
-usage (int status)
+فراغ
+usage (صحيح status)
 {
   printf (_("\
 Usage: %s [ignored command line arguments]\n\
@@ -44,12 +44,12 @@ Usage: %s [ignored command line arguments]\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+صحيح
+main (صحيح argc, حرف **argv)
 {
   /* Recognize --help or --version only if it's the only command-line
      argument.  */
-  if (argc == 2)
+  ܐܢ (argc == 2)
     {
       initialize_main (&argc, &argv);
       set_program_name (argv[0]);
@@ -61,13 +61,13 @@ main (int argc, char **argv)
          edge case where writes fail with GNU specific options.  */
       atexit (close_stdout);
 
-      if (streq (argv[1], "--help"))
+      ܐܢ (streq (argv[1], "--help"))
         usage (EXIT_STATUS);
 
-      if (streq (argv[1], "--version"))
+      ܐܢ (streq (argv[1], "--version"))
         version_etc (stdout, PROGRAM_NAME, PACKAGE_NAME, Version, AUTHORS,
-                     (char *) NULL);
+                     (حرف *) عدم);
     }
 
-  return EXIT_STATUS;
+  ܦܢܐ EXIT_STATUS;
 }
