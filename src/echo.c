@@ -14,62 +14,62 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include "system.h"
-#include "assure.h"
-#include "c-ctype.h"
+#అన్తర్భావ <config.h>
+#అన్తర్భావ <stdio.h>
+#అన్తర్భావ <sys/types.h>
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "assure.h"
+#అన్తర్భావ "c-ctype.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "echo"
+#నిర్వచించు కార్యక్రమం_NAME "echo"
 
-#define AUTHORS \
+#నిర్వచించు AUTHORS \
   proper_name ("Brian Fox"), \
   proper_name ("Chet Ramey")
 
 /* If true, interpret backslash escapes by default.  */
-#ifndef DEFAULT_ECHO_TO_XPG
-enum { DEFAULT_ECHO_TO_XPG = false };
-#endif
+#నిర్వచితం_కాకపోతే DEFAULT_ECHO_గమ్యం_XPG
+గణన { DEFAULT_ECHO_గమ్యం_XPG = false };
+#అయితే_ముగింపు
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
   /* STATUS should always be EXIT_SUCCESS (unlike in most other
      utilities which would call emit_try_help otherwise).  */
-  affirm (status == EXIT_SUCCESS);
+  affirm (స్థితి_2 == EXIT_SUCCESS);
 
-  printf (_("\
+  రాయి (_("\
 Usage: %s [SHORT-OPTION]... [STRING]...\n\
   or:  %s LONG-OPTION\n\
-"), program_name, program_name);
+"), కార్యక్రమం_name, కార్యక్రమం_name);
   fputs (_("\
-Echo the STRING(s) to standard output.\n\
+Echo the STRING(s) గమ్యం standard output.\n\
 \n\
 "), stdout);
   oputs (_("\
-  -n     do not output the trailing newline\n\
+  -n     చేయి not output the trailing newline\n\
 "));
-  oputs (_(DEFAULT_ECHO_TO_XPG
+  oputs (_(DEFAULT_ECHO_గమ్యం_XPG
            ? N_("\
-  -e     enable interpretation of backslash escapes (default)\n\
+  -e     enable interpretation యొక్క backslash escapes (అప్రమేయ)\n\
 ")
            : N_("\
-  -e     enable interpretation of backslash escapes\n\
+  -e     enable interpretation యొక్క backslash escapes\n\
 ")));
-  oputs (_(DEFAULT_ECHO_TO_XPG
+  oputs (_(DEFAULT_ECHO_గమ్యం_XPG
            ? N_("\
-  -E     disable interpretation of backslash escapes\n\
+  -E     disable interpretation యొక్క backslash escapes\n\
 ")
            : N_("\
-  -E     disable interpretation of backslash escapes (default)\n\
+  -E     disable interpretation యొక్క backslash escapes (అప్రమేయ)\n\
 ")));
   oputs (HELP_OPTION_DESCRIPTION);
-  oputs (VERSION_OPTION_DESCRIPTION);
+  oputs (సంస్కరణ_OPTION_DESCRIPTION);
   fputs (_("\
 \n\
-If -e is in effect, the following sequences are recognized:\n\
+If -e is లోపల effect, the following sequences are recognized:\n\
 \n\
 "), stdout);
   fputs (_("\
@@ -79,37 +79,37 @@ If -e is in effect, the following sequences are recognized:\n\
   \\c      produce no further output\n\
   \\e      escape\n\
   \\f      form feed\n\
-  \\n      new line\n\
-  \\r      carriage return\n\
+  \\n      new పంక్తి\n\
+  \\r      carriage తిరిగి\n\
   \\t      horizontal tab\n\
   \\v      vertical tab\n\
 "), stdout);
   fputs (_("\
-  \\0NNN   byte with octal value NNN (1 to 3 digits)\n\
-  \\xHH    byte with hexadecimal value HH (1 to 2 digits)\n\
+  \\0NNN   byte with octal విలువ NNN (1 గమ్యం 3 digits)\n\
+  \\xHH    byte with hexadecimal విలువ HH (1 గమ్యం 2 digits)\n\
 "), stdout);
-  printf (USAGE_BUILTIN_WARNING, PROGRAM_NAME);
+  రాయి (USAGE_BUILTIN_WARNING, కార్యక్రమం_NAME);
   fputs (_("\n\
-Consider using the printf(1) command instead,\n\
-as it avoids problems when outputting option-like strings.\n\
+Consider using the రాయి(1) command instead,\n\
+as it avoids problems when outputting option-like అక్షరశ్రేణులు.\n\
 "), stdout);
-  emit_ancillary_info (PROGRAM_NAME);
-  exit (status);
+  emit_ancillary_info (కార్యక్రమం_NAME);
+  నిష్క్రమించు (స్థితి_2);
 }
 
 /* Convert C from hexadecimal character to integer.  */
-static int
-hextobin (unsigned char c)
+స్థిర పూర్ణాంకం
+hextobin (గుర్తులేని అక్షరం c)
 {
-  switch (c)
+  ఎంపిక (c)
     {
-    default: return c - '0';
-    case 'a': case 'A': return 10;
-    case 'b': case 'B': return 11;
-    case 'c': case 'C': return 12;
-    case 'd': case 'D': return 13;
-    case 'e': case 'E': return 14;
-    case 'f': case 'F': return 15;
+    అప్రమేయ: తిరిగి c - '0';
+    స్థితి 'a': స్థితి 'A': తిరిగి 10;
+    స్థితి 'b': స్థితి 'B': తిరిగి 11;
+    స్థితి 'c': స్థితి 'C': తిరిగి 12;
+    స్థితి 'd': స్థితి 'D': తిరిగి 13;
+    స్థితి 'e': స్థితి 'E': తిరిగి 14;
+    స్థితి 'f': స్థితి 'F': తిరిగి 15;
     }
 }
 
@@ -117,22 +117,22 @@ hextobin (unsigned char c)
    '-n', then don't print a trailing newline.  We also support the
    echo syntax from Version 9 unix systems. */
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
   bool display_return = true;
   bool posixly_correct = !!getenv ("POSIXLY_CORRECT");
   bool allow_options =
     (! posixly_correct
-     || (! DEFAULT_ECHO_TO_XPG && 1 < argc && streq (argv[1], "-n")));
+     || (! DEFAULT_ECHO_గమ్యం_XPG && 1 < argc && streq (argv[1], "-n")));
 
   /* System V machines already have a /bin/sh with a v9 behavior.
      Use the identical behavior for these machines so that the
      existing system shell scripts won't barf.  */
-  bool do_v9 = DEFAULT_ECHO_TO_XPG;
+  bool do_v9 = DEFAULT_ECHO_గమ్యం_XPG;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
@@ -141,60 +141,60 @@ main (int argc, char **argv)
 
   /* We directly parse options, rather than use parse_long_options, in
      order to avoid accepting abbreviations.  */
-  if (allow_options && argc == 2)
+  ఒకవేళ (allow_options && argc == 2)
     {
-      if (streq (argv[1], "--help"))
+      ఒకవేళ (streq (argv[1], "--help"))
         usage (EXIT_SUCCESS);
 
-      if (streq (argv[1], "--version"))
+      ఒకవేళ (streq (argv[1], "--version"))
         {
-          version_etc (stdout, PROGRAM_NAME, PACKAGE_NAME, Version, AUTHORS,
-                       (char *) NULL);
-          return EXIT_SUCCESS;
+          సంస్కరణ_etc (stdout, కార్యక్రమం_NAME, PACKAGE_NAME, సంస్కరణ, AUTHORS,
+                       (అక్షరం *) ఖాళీ);
+          తిరిగి EXIT_SUCCESS;
         }
     }
 
   --argc;
   ++argv;
 
-  if (allow_options)
-    while (argc > 0 && *argv[0] == '-')
+  ఒకవేళ (allow_options)
+    అయితే (argc > 0 && *argv[0] == '-')
       {
-        char const *temp = argv[0] + 1;
+        అక్షరం స్థిరరాశి *తాత్కాలిక = argv[0] + 1;
         size_t i;
 
         /* If it appears that we are handling options, then make sure that
            all of the options specified are actually valid.  Otherwise, the
            string should just be echoed.  */
 
-        for (i = 0; temp[i]; i++)
-          switch (temp[i])
+        కొరకు (i = 0; తాత్కాలిక[i]; i++)
+          ఎంపిక (తాత్కాలిక[i])
             {
-            case 'e': case 'E': case 'n':
-              break;
-            default:
-              goto just_echo;
+            స్థితి 'e': స్థితి 'E': స్థితి 'n':
+              ఆపు;
+            అప్రమేయ:
+              వెళ్ళు just_echo;
             }
 
-        if (i == 0)
-          goto just_echo;
+        ఒకవేళ (i == 0)
+          వెళ్ళు just_echo;
 
         /* All of the options in TEMP are valid options to ECHO.
            Handle them. */
-        while (*temp)
-          switch (*temp++)
+        అయితే (*తాత్కాలిక)
+          ఎంపిక (*తాత్కాలిక++)
             {
-            case 'e':
+            స్థితి 'e':
               do_v9 = true;
-              break;
+              ఆపు;
 
-            case 'E':
+            స్థితి 'E':
               do_v9 = false;
-              break;
+              ఆపు;
 
-            case 'n':
+            స్థితి 'n':
               display_return = false;
-              break;
+              ఆపు;
             }
 
         argc--;
@@ -203,84 +203,84 @@ main (int argc, char **argv)
 
 just_echo:
 
-  if (do_v9 || posixly_correct)
+  ఒకవేళ (do_v9 || posixly_correct)
     {
-      while (argc > 0)
+      అయితే (argc > 0)
         {
-          char const *s = argv[0];
-          unsigned char c;
+          అక్షరం స్థిరరాశి *s = argv[0];
+          గుర్తులేని అక్షరం c;
 
-          while ((c = *s++))
+          అయితే ((c = *s++))
             {
-              if (c == '\\' && *s)
+              ఒకవేళ (c == '\\' && *s)
                 {
-                  switch (c = *s++)
+                  ఎంపిక (c = *s++)
                     {
-                    case 'a': c = '\a'; break;
-                    case 'b': c = '\b'; break;
-                    case 'c': return EXIT_SUCCESS;
-                    case 'e': c = '\x1B'; break;
-                    case 'f': c = '\f'; break;
-                    case 'n': c = '\n'; break;
-                    case 'r': c = '\r'; break;
-                    case 't': c = '\t'; break;
-                    case 'v': c = '\v'; break;
-                    case 'x':
+                    స్థితి 'a': c = '\a'; ఆపు;
+                    స్థితి 'b': c = '\b'; ఆపు;
+                    స్థితి 'c': తిరిగి EXIT_SUCCESS;
+                    స్థితి 'e': c = '\x1B'; ఆపు;
+                    స్థితి 'f': c = '\f'; ఆపు;
+                    స్థితి 'n': c = '\n'; ఆపు;
+                    స్థితి 'r': c = '\r'; ఆపు;
+                    స్థితి 't': c = '\t'; ఆపు;
+                    స్థితి 'v': c = '\v'; ఆపు;
+                    స్థితి 'x':
                       {
-                        unsigned char ch = *s;
-                        if (! c_isxdigit (ch))
-                          goto not_an_escape;
+                        గుర్తులేని అక్షరం ch = *s;
+                        ఒకవేళ (! c_isxdigit (ch))
+                          వెళ్ళు not_an_escape;
                         s++;
                         c = hextobin (ch);
                         ch = *s;
-                        if (c_isxdigit (ch))
+                        ఒకవేళ (c_isxdigit (ch))
                           {
                             s++;
                             c = c * 16 + hextobin (ch);
                           }
                       }
-                      break;
-                    case '0':
+                      ఆపు;
+                    స్థితి '0':
                       c = 0;
-                      if (! ('0' <= *s && *s <= '7'))
-                        break;
+                      ఒకవేళ (! ('0' <= *s && *s <= '7'))
+                        ఆపు;
                       c = *s++;
                       FALLTHROUGH;
-                    case '1': case '2': case '3':
-                    case '4': case '5': case '6': case '7':
+                    స్థితి '1': స్థితి '2': స్థితి '3':
+                    స్థితి '4': స్థితి '5': స్థితి '6': స్థితి '7':
                       c -= '0';
-                      if ('0' <= *s && *s <= '7')
+                      ఒకవేళ ('0' <= *s && *s <= '7')
                         c = c * 8 + (*s++ - '0');
-                      if ('0' <= *s && *s <= '7')
+                      ఒకవేళ ('0' <= *s && *s <= '7')
                         c = c * 8 + (*s++ - '0');
-                      break;
-                    case '\\': break;
+                      ఆపు;
+                    స్థితి '\\': ఆపు;
 
                     not_an_escape:
-                    default:  putchar ('\\'); break;
+                    అప్రమేయ:  అక్షరం_రాయి ('\\'); ఆపు;
                     }
                 }
-              putchar (c);
+              అక్షరం_రాయి (c);
             }
           argc--;
           argv++;
-          if (argc > 0)
-            putchar (' ');
+          ఒకవేళ (argc > 0)
+            అక్షరం_రాయి (' ');
         }
     }
-  else
+  లేకపోతే
     {
-      while (argc > 0)
+      అయితే (argc > 0)
         {
           fputs (argv[0], stdout);
           argc--;
           argv++;
-          if (argc > 0)
-            putchar (' ');
+          ఒకవేళ (argc > 0)
+            అక్షరం_రాయి (' ');
         }
     }
 
-  if (display_return)
-    putchar ('\n');
-  return EXIT_SUCCESS;
+  ఒకవేళ (display_return)
+    అక్షరం_రాయి ('\n');
+  తిరిగి EXIT_SUCCESS;
 }

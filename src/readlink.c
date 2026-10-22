@@ -16,76 +16,76 @@
 
 /* Written by Dmitry V. Levin */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#అన్తర్భావ <config.h>
+#అన్తర్భావ <stdio.h>
+#అన్తర్భావ <getopt.h>
+#అన్తర్భావ <sys/types.h>
 
-#include "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
-#include "system.h"
-#include "canonicalize.h"
-#include "areadlink.h"
+#అన్తర్భావ "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "canonicalize.h"
+#అన్తర్భావ "areadlink.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "readlink"
+#నిర్వచించు కార్యక్రమం_NAME "readlink"
 
-#define AUTHORS proper_name ("Dmitry V. Levin")
+#నిర్వచించు AUTHORS proper_name ("Dmitry V. Levin")
 
 /* If true, do not output the trailing newline.  */
-static bool no_newline;
+స్థిర bool no_newline;
 
 /* If true, report error messages.  */
-static bool verbose;
+స్థిర bool verbose;
 
 /* If true, quote output according to the selected quoting style.  */
-static bool quote_output;
+స్థిర bool quote_output;
 
-static struct option const longopts[] =
+స్థిర నిర్మాణం option స్థిరరాశి longopts[] =
 {
-  {"canonicalize", no_argument, NULL, 'f'},
-  {"canonicalize-existing", no_argument, NULL, 'e'},
-  {"canonicalize-missing", no_argument, NULL, 'm'},
-  {"no-newline", no_argument, NULL, 'n'},
-  {"quiet", no_argument, NULL, 'q'},
-  {"silent", no_argument, NULL, 's'},
-  {"verbose", no_argument, NULL, 'v'},
-  {"zero", no_argument, NULL, 'z'},
+  {"canonicalize", no_వాదం, ఖాళీ, 'f'},
+  {"canonicalize-existing", no_వాదం, ఖాళీ, 'e'},
+  {"canonicalize-missing", no_వాదం, ఖాళీ, 'm'},
+  {"no-newline", no_వాదం, ఖాళీ, 'n'},
+  {"quiet", no_వాదం, ఖాళీ, 'q'},
+  {"silent", no_వాదం, ఖాళీ, 's'},
+  {"verbose", no_వాదం, ఖాళీ, 'v'},
+  {"zero", no_వాదం, ఖాళీ, 'z'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_సంస్కరణ_OPTION_DECL},
+  {ఖాళీ, 0, ఖాళీ, 0}
 };
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("Usage: %s [OPTION]... FILE...\n"), program_name);
+      రాయి (_("Usage: %s [OPTION]... FILE...\n"), కార్యక్రమం_name);
       fputs (_("Print value of a symbolic link or canonical file name\n\n"),
              stdout);
       oputs (_("\
   -f, --canonicalize\n\
          canonicalize by following every symlink\n\
-         in every component of the given name recursively;\n\
-         all but the last component must exist\n\
+         లోపల every component యొక్క the given name recursively;\n\
+         all but the చివరి component must exist\n\
 "));
       oputs (_("\
   -e, --canonicalize-existing\n\
          canonicalize by following every symlink\n\
-         in every component of the given name recursively;\n\
+         లోపల every component యొక్క the given name recursively;\n\
          all components must exist\n\
 "));
       oputs (_("\
   -m, --canonicalize-missing\n\
          canonicalize by following every symlink\n\
-         in every component of the given name recursively,\n\
+         లోపల every component యొక్క the given name recursively,\n\
          without requirements on components existence\n\
 "));
       oputs (_("\
   -n, --no-newline\n\
-         do not output the trailing delimiter\n\
+         చేయి not output the trailing delimiter\n\
 "));
       oputs (_("\
   -q, --quiet\n\
@@ -93,126 +93,126 @@ usage (int status)
       oputs (_("\
   -s, --silent\n\
          suppress most error messages\n\
-         (on by default if POSIXLY_CORRECT is not set)\n\
+         (on by అప్రమేయ ఒకవేళ POSIXLY_CORRECT is not సమితి_2)\n\
 "));
       oputs (_("\
   -v, --verbose\n\
          report error messages\n\
-         (on by default if POSIXLY_CORRECT is set)\n\
+         (on by అప్రమేయ ఒకవేళ POSIXLY_CORRECT is సమితి_2)\n\
 "));
       oputs (_("\
   -z, --zero\n\
-         end each output line with NUL, not newline\n\
+         చివర each output పంక్తి with NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
   /* If not -1, use this method to canonicalize.  */
-  int can_mode = -1;
-  int status = EXIT_SUCCESS;
-  int optc;
+  పూర్ణాంకం can_బహుళకం = -1;
+  పూర్ణాంకం స్థితి_2 = EXIT_SUCCESS;
+  పూర్ణాంకం optc;
   bool use_nuls = false;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "efmnqsvz", longopts, NULL)) != -1)
+  అయితే ((optc = getopt_long (argc, argv, "efmnqsvz", longopts, ఖాళీ)) != -1)
     {
-      switch (optc)
+      ఎంపిక (optc)
         {
-        case 'e':
-          can_mode = CAN_EXISTING;
-          break;
-        case 'f':
-          can_mode = CAN_ALL_BUT_LAST;
-          break;
-        case 'm':
-          can_mode = CAN_MISSING;
-          break;
-        case 'n':
+        స్థితి 'e':
+          can_బహుళకం = CAN_EXISTING;
+          ఆపు;
+        స్థితి 'f':
+          can_బహుళకం = CAN_ALL_BUT_చివరి;
+          ఆపు;
+        స్థితి 'm':
+          can_బహుళకం = CAN_MISSING;
+          ఆపు;
+        స్థితి 'n':
           no_newline = true;
-          break;
-        case 'q':
-        case 's':
+          ఆపు;
+        స్థితి 'q':
+        స్థితి 's':
           verbose = false;
-          break;
-        case 'v':
+          ఆపు;
+        స్థితి 'v':
           verbose = true;
-          break;
-        case 'z':
+          ఆపు;
+        స్థితి 'z':
           use_nuls = true;
-          break;
+          ఆపు;
         case_GETOPT_HELP_CHAR;
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        case_GETOPT_సంస్కరణ_CHAR (కార్యక్రమం_NAME, AUTHORS);
+        అప్రమేయ:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (optind >= argc)
+  ఒకవేళ (optind >= argc)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
-  if (argc - optind > 1)
+  ఒకవేళ (argc - optind > 1)
     {
-      if (no_newline)
+      ఒకవేళ (no_newline)
         error (0, 0, _("ignoring --no-newline with multiple arguments"));
       no_newline = false;
     }
 
-  if (!use_nuls && isatty (STDOUT_FILENO))
+  ఒకవేళ (!use_nuls && isatty (STDOUT_FILENO))
     {
-      int qs = getenv_quoting_style ();
-      if (qs < 0)
+      పూర్ణాంకం qs = getenv_quoting_style ();
+      ఒకవేళ (qs < 0)
         qs = shell_escape_quoting_style;
-      if (qs != literal_quoting_style)
+      ఒకవేళ (qs != literal_quoting_style)
         {
-          set_quoting_style (NULL, qs);
+          సమితి_quoting_style (ఖాళీ, qs);
           quote_output = true;
         }
     }
 
   /* POSIX requires a diagnostic message written to standard error and a
      non-zero exit status when given a file that is not a symbolic link.  */
-  if (getenv ("POSIXLY_CORRECT") != NULL)
+  ఒకవేళ (getenv ("POSIXLY_CORRECT") != ఖాళీ)
     verbose = true;
 
-  for (; optind < argc; ++optind)
+  కొరకు (; optind < argc; ++optind)
     {
-      char const *fname = argv[optind];
-      char *value = (can_mode != -1
-                     ? canonicalize_filename_mode (fname, can_mode)
-                     : areadlink_with_size (fname, 63));
-      if (value)
+      అక్షరం స్థిరరాశి *fname = argv[optind];
+      అక్షరం *విలువ = (can_బహుళకం != -1
+                     ? canonicalize_filename_బహుళకం (fname, can_బహుళకం)
+                     : areadlink_with_కొలత (fname, 63));
+      ఒకవేళ (విలువ)
         {
-          fputs (quote_output ? quoteN (value) : value, stdout);
-          if (! no_newline)
-            putchar (use_nuls ? '\0' : '\n');
-          free (value);
-          if (ferror (stdout))
+          fputs (quote_output ? quoteN (విలువ) : విలువ, stdout);
+          ఒకవేళ (! no_newline)
+            అక్షరం_రాయి (use_nuls ? '\0' : '\n');
+          విడుదల (విలువ);
+          ఒకవేళ (ferror (stdout))
             write_error ();
         }
-      else
+      లేకపోతే
         {
-          status = EXIT_FAILURE;
-          if (verbose)
+          స్థితి_2 = EXIT_FAILURE;
+          ఒకవేళ (verbose)
             error (0, errno, "%s", quotef (fname));
         }
     }
 
-  return status;
+  తిరిగి స్థితి_2;
 }

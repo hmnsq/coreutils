@@ -1,9 +1,9 @@
-#ifndef TERM_SIG_H
-# define TERM_SIG_H
+#నిర్వచితం_కాకపోతే పదం_SIG_H
+# define పదం_SIG_H
 
 # include <signal.h>
 
-static int const term_sig[] =
+స్థిర పూర్ణాంకం స్థిరరాశి పదం_sig[] =
   {
     SIGALRM, /* our timeout.  */
     SIGINT,  /* Ctrl-C at terminal for example.  */
@@ -47,4 +47,4 @@ static int const term_sig[] =
 # endif
   };
 
-#endif
+#అయితే_ముగింపు

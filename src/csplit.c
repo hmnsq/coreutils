@@ -17,311 +17,311 @@
 /* Written by Stuart Kemp, cpsrk@groper.jcu.edu.au.
    Modified by David MacKenzie, djm@gnu.ai.mit.edu. */
 
-#include <config.h>
+#అన్తర్భావ <config.h>
 
-#include <getopt.h>
-#include <sys/types.h>
-#include <signal.h>
+#అన్తర్భావ <getopt.h>
+#అన్తర్భావ <sys/types.h>
+#అన్తర్భావ <signal.h>
 
-#include "system.h"
+#అన్తర్భావ "system.h"
 
-#include <regex.h>
+#అన్తర్భావ <regex.h>
 
-#include "c-ctype.h"
-#include "fd-reopen.h"
-#include "quote.h"
-#include "safe-read.h"
-#include "stdio--.h"
-#include "term-sig.h"
-#include "xdectoint.h"
-#include "xstrtol.h"
+#అన్తర్భావ "c-ctype.h"
+#అన్తర్భావ "fd-reopen.h"
+#అన్తర్భావ "quote.h"
+#అన్తర్భావ "safe-read.h"
+#అన్తర్భావ "stdio--.h"
+#అన్తర్భావ "term-sig.h"
+#అన్తర్భావ "xdectoint.h"
+#అన్తర్భావ "xstrtol.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "csplit"
+#నిర్వచించు కార్యక్రమం_NAME "csplit"
 
-#define AUTHORS \
+#నిర్వచించు AUTHORS \
   proper_name ("Stuart Kemp"), \
   proper_name ("David MacKenzie")
 
 /* The default prefix for output file names. */
-#define DEFAULT_PREFIX	"xx"
+#నిర్వచించు DEFAULT_ఉపసర్గ	"xx"
 
 /* A compiled pattern arg. */
-struct control
+నిర్మాణం control
 {
-  intmax_t offset;		/* Offset from regexp to split at. */
-  intmax_t lines_required;	/* Number of lines required. */
+  intmax_t స్థానభ్రంశం;		/* Offset from regexp to split at. */
+  intmax_t పంక్తులు_required;	/* Number of lines required. */
   intmax_t repeat;		/* Repeat count. */
-  int argnum;			/* ARGV index. */
+  పూర్ణాంకం argnum;			/* ARGV index. */
   bool repeat_forever;		/* True if '*' used as a repeat count. */
   bool ignore;			/* If true, produce no output (for regexp). */
   bool regexpr;			/* True if regular expression was used. */
-  struct re_pattern_buffer re_compiled;	/* Compiled regular expression. */
+  నిర్మాణం re_నమూనా_బఫరు re_compiled;	/* Compiled regular expression. */
 };
 
 /* Initial size of data area in buffers. */
-#define START_SIZE	8191
+#నిర్వచించు ప్రారంభం_కొలత	8191
 
 /* Number of lines kept in each node in line list. */
-#define CTRL_SIZE	80
+#నిర్వచించు CTRL_కొలత	80
 
-#ifdef DEBUG
+#నిర్వచితమైతే DEBUG
 /* Some small values to test the algorithms. */
-# define START_SIZE	200
-# define CTRL_SIZE	1
-#endif
+# define ప్రారంభం_కొలత	200
+# define CTRL_కొలత	1
+#అయితే_ముగింపు
 
 /* A string with a length count. */
-struct cstring
+నిర్మాణం cstring
 {
   idx_t len;
-  char *str;
+  అక్షరం *str;
 };
 
 /* Pointers to the beginnings of lines in the buffer area.
    These structures are linked together if needed. */
-struct line
+నిర్మాణం పంక్తి
 {
-  idx_t used;			/* Number of offsets used in this struct. */
-  idx_t insert_index;		/* Next offset to use when inserting line. */
-  idx_t retrieve_index;	/* Next index to use when retrieving line. */
-  struct cstring starts[CTRL_SIZE]; /* Lines in the data area. */
-  struct line *next;		/* Next in linked list. */
+  idx_t వాడిన;			/* Number of offsets used in this struct. */
+  idx_t చొప్పించు_సూచీ;		/* Next offset to use when inserting line. */
+  idx_t retrieve_సూచీ;	/* Next index to use when retrieving line. */
+  నిర్మాణం cstring starts[CTRL_కొలత]; /* Lines in the data area. */
+  నిర్మాణం పంక్తి *తదుపరి;		/* Next in linked list. */
 };
 
 /* The structure to hold the input lines.
    Contains a pointer to the data area and a list containing
    pointers to the individual lines. */
-struct buffer_record
+నిర్మాణం బఫరు_రికార్డు
 {
-  idx_t bytes_alloc;		/* Size of the buffer area. */
-  idx_t bytes_used;		/* Bytes used in the buffer area. */
-  intmax_t start_line;		/* First line number in this buffer. */
-  intmax_t first_available;	/* First line that can be retrieved. */
-  idx_t num_lines;		/* Number of complete lines in this buffer. */
-  char *buffer COUNTED_BY (bytes_alloc);	/* Data area. */
-  struct line *line_start;	/* Head of list of pointers to lines. */
-  struct line *curr_line;	/* The line start record currently in use. */
-  struct buffer_record *next;
+  idx_t బైట్లు_alloc;		/* Size of the buffer area. */
+  idx_t బైట్లు_వాడిన;		/* Bytes used in the buffer area. */
+  intmax_t ప్రారంభం_పంక్తి;		/* First line number in this buffer. */
+  intmax_t మొదటి_అందుబాటు;	/* First line that can be retrieved. */
+  idx_t అంకె_పంక్తులు;		/* Number of complete lines in this buffer. */
+  అక్షరం *బఫరు COUNTED_BY (బైట్లు_alloc);	/* Data area. */
+  నిర్మాణం పంక్తి *పంక్తి_ప్రారంభం;	/* Head of list of pointers to lines. */
+  నిర్మాణం పంక్తి *curr_పంక్తి;	/* The line start record currently in use. */
+  నిర్మాణం బఫరు_రికార్డు *తదుపరి;
 };
 
-static void close_output_file (void);
-static void create_output_file (void);
-static void delete_all_files (bool);
-static void save_line_to_file (const struct cstring *line);
+స్థిర శూన్య close_output_file (శూన్య);
+స్థిర శూన్య create_output_file (శూన్య);
+స్థిర శూన్య delete_all_files (bool);
+స్థిర శూన్య save_పంక్తి_గమ్యం_file (స్థిరరాశి నిర్మాణం cstring *పంక్తి);
 
 /* Start of buffer list. */
-static struct buffer_record *head = NULL;
+స్థిర నిర్మాణం బఫరు_రికార్డు *తల = ఖాళీ;
 
 /* Partially read line. */
-static char *hold_area = NULL;
+స్థిర అక్షరం *hold_area = ఖాళీ;
 
 /* Number of bytes in 'hold_area'. */
-static idx_t hold_count = 0;
+స్థిర idx_t hold_లెక్క = 0;
 
 /* Number of the last line in the buffers. */
-static intmax_t last_line_number = 0;
+స్థిర intmax_t చివరి_పంక్తి_సంఖ్య = 0;
 
 /* Number of the line currently being examined. */
-static intmax_t current_line = 0;
+స్థిర intmax_t current_పంక్తి = 0;
 
 /* If true, we have read EOF. */
-static bool have_read_eof = false;
+స్థిర bool have_read_eof = false;
 
 /* Name of output files. */
-static char *volatile filename_space = NULL;
+స్థిర అక్షరం *అస్థిర filename_space = ఖాళీ;
 
 /* Prefix part of output file names. */
-static char const *volatile prefix = DEFAULT_PREFIX;
+స్థిర అక్షరం స్థిరరాశి *అస్థిర ఉపసర్గ = DEFAULT_ఉపసర్గ;
 
 /* Suffix part of output file names. */
-static char *volatile suffix = NULL;
+స్థిర అక్షరం *అస్థిర suffix = ఖాళీ;
 
 /* Number of digits to use in output file names. */
-static int volatile digits = 2;
+స్థిర పూర్ణాంకం అస్థిర digits = 2;
 
 /* Number of files created so far. */
-static int volatile files_created = 0;
+స్థిర పూర్ణాంకం అస్థిర files_created = 0;
 
 /* Number of bytes written to current file. */
-static intmax_t bytes_written;
+స్థిర intmax_t బైట్లు_written;
 
 /* Output file pointer. */
-static FILE *output_stream = NULL;
+స్థిర FILE *output_ప్రవాహం = ఖాళీ;
 
 /* Output file name. */
-static char *output_filename = NULL;
+స్థిర అక్షరం *output_filename = ఖాళీ;
 
 /* Perhaps it would be cleaner to pass arg values instead of indexes. */
-static char **global_argv;
+స్థిర అక్షరం **global_argv;
 
 /* If true, do not print the count of bytes in each output file. */
-static bool suppress_count;
+స్థిర bool suppress_లెక్క;
 
 /* If true, remove output files on error. */
-static bool volatile remove_files = true;
+స్థిర bool అస్థిర remove_files = true;
 
 /* If true, remove all output files which have a zero length. */
-static bool elide_empty_files;
+స్థిర bool elide_ఖాళీలు_files;
 
 /* If true, suppress the lines that match the PATTERN */
-static bool suppress_matched;
+స్థిర bool suppress_matched;
 
 /* The compiled pattern arguments, which determine how to split
    the input file. */
-static struct control *controls;
+స్థిర నిర్మాణం control *controls;
 
 /* Number of elements in 'controls'. */
-static idx_t control_used;
+స్థిర idx_t control_వాడిన;
 
 /* The set of signals that are caught.  */
-static sigset_t caught_signals;
+స్థిర sigset_t caught_సంకేతాలు;
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+గణన
 {
   SUPPRESS_MATCHED_OPTION = CHAR_MAX + 1
 };
 
-static struct option const longopts[] =
+స్థిర నిర్మాణం option స్థిరరాశి longopts[] =
 {
-  {"digits", required_argument, NULL, 'n'},
-  {"quiet", no_argument, NULL, 'q'},  /* Deprecated.  */
-  {"silent", no_argument, NULL, 's'},
-  {"keep-files", no_argument, NULL, 'k'},
-  {"elide-empty-files", no_argument, NULL, 'z'},
-  {"prefix", required_argument, NULL, 'f'},
-  {"suffix-format", required_argument, NULL, 'b'},
-  {"suppress-matched", no_argument, NULL, SUPPRESS_MATCHED_OPTION},
+  {"digits", required_వాదం, ఖాళీ, 'n'},
+  {"quiet", no_వాదం, ఖాళీ, 'q'},  /* Deprecated.  */
+  {"silent", no_వాదం, ఖాళీ, 's'},
+  {"keep-files", no_వాదం, ఖాళీ, 'k'},
+  {"elide-empty-files", no_వాదం, ఖాళీ, 'z'},
+  {"prefix", required_వాదం, ఖాళీ, 'f'},
+  {"suffix-format", required_వాదం, ఖాళీ, 'b'},
+  {"suppress-matched", no_వాదం, ఖాళీ, SUPPRESS_MATCHED_OPTION},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_సంస్కరణ_OPTION_DECL},
+  {ఖాళీ, 0, ఖాళీ, 0}
 };
 
 /* Optionally remove files created so far; then exit.
    Called when an error detected. */
 
-static void
-cleanup (void)
+స్థిర శూన్య
+cleanup (శూన్య)
 {
   sigset_t oldset;
 
   close_output_file ();
 
-  sigprocmask (SIG_BLOCK, &caught_signals, &oldset);
+  sigprocmask (SIG_BLOCK, &caught_సంకేతాలు, &oldset);
   delete_all_files (false);
-  sigprocmask (SIG_SETMASK, &oldset, NULL);
+  sigprocmask (SIG_SETMASK, &oldset, ఖాళీ);
 }
 
-static _Noreturn void
-cleanup_fatal (void)
+స్థిర _Noreturn శూన్య
+cleanup_fatal (శూన్య)
 {
   cleanup ();
-  exit (EXIT_FAILURE);
+  నిష్క్రమించు (EXIT_FAILURE);
 }
 
-extern void
-xalloc_die (void)
+బాహ్య శూన్య
+xalloc_die (శూన్య)
 {
   error (0, 0, "%s", _("memory exhausted"));
   cleanup_fatal ();
 }
 
-static void
-interrupt_handler (int sig)
+స్థిర శూన్య
+అంతరాయం_handler (పూర్ణాంకం sig)
 {
   delete_all_files (true);
-  signal (sig, SIG_DFL);
+  సంకేతం (sig, SIG_DFL);
   /* The signal has been reset to SIG_DFL, but blocked during this
      handler.  Force the default action of this signal once the
      handler returns and the block is removed.  */
-  raise (sig);
+  లేపు (sig);
 }
 
 /* Keep track of NUM bytes of a partial line in buffer START.
    These bytes will be retrieved later when another large buffer is read.  */
 
-static void
-save_to_hold_area (char *start, idx_t num)
+స్థిర శూన్య
+save_గమ్యం_hold_area (అక్షరం *ప్రారంభం, idx_t అంకె)
 {
-  free (hold_area);
-  hold_area = start;
-  hold_count = num;
+  విడుదల (hold_area);
+  hold_area = ప్రారంభం;
+  hold_లెక్క = అంకె;
 }
 
 /* Read up to MAX_N_BYTES bytes from the input stream into DEST.
    Return the number of bytes read. */
 
-static idx_t
-read_input (char *dest, idx_t max_n_bytes)
+స్థిర idx_t
+read_ఆదానం (అక్షరం *dest, idx_t max_n_బైట్లు)
 {
-  if (max_n_bytes == 0)
-    return 0;
+  ఒకవేళ (max_n_బైట్లు == 0)
+    తిరిగి 0;
 
-  ptrdiff_t bytes_read = safe_read (STDIN_FILENO, dest, max_n_bytes);
+  ptrdiff_t బైట్లు_read = సురక్షిత_read (STDIN_FILENO, dest, max_n_బైట్లు);
 
-  if (bytes_read == 0)
+  ఒకవేళ (బైట్లు_read == 0)
     have_read_eof = true;
 
-  if (bytes_read < 0)
+  ఒకవేళ (బైట్లు_read < 0)
     {
       error (0, errno, _("read error"));
       cleanup_fatal ();
     }
 
-  return bytes_read;
+  తిరిగి బైట్లు_read;
 }
 
 /* Initialize existing line record P. */
 
-static void
-clear_line_control (struct line *p)
+స్థిర శూన్య
+clear_పంక్తి_control (నిర్మాణం పంక్తి *p)
 {
-  p->used = 0;
-  p->insert_index = 0;
-  p->retrieve_index = 0;
+  p->వాడిన = 0;
+  p->చొప్పించు_సూచీ = 0;
+  p->retrieve_సూచీ = 0;
 }
 
 /* Return a new, initialized line record. */
 
-static struct line *
-new_line_control (void)
+స్థిర నిర్మాణం పంక్తి *
+new_పంక్తి_control (శూన్య)
 {
-  struct line *p = xmalloc (sizeof *p);
+  నిర్మాణం పంక్తి *p = xmalloc (పరిమాణం *p);
 
-  p->next = NULL;
-  clear_line_control (p);
+  p->తదుపరి = ఖాళీ;
+  clear_పంక్తి_control (p);
 
-  return p;
+  తిరిగి p;
 }
 
 /* Record LINE_START, which is the address of the start of a line
    of length LINE_LEN in the large buffer, in the lines buffer of B. */
 
-static void
-keep_new_line (struct buffer_record *b, char *line_start, idx_t line_len)
+స్థిర శూన్య
+keep_new_పంక్తి (నిర్మాణం బఫరు_రికార్డు *b, అక్షరం *పంక్తి_ప్రారంభం, idx_t పంక్తి_len)
 {
-  struct line *l;
+  నిర్మాణం పంక్తి *l;
 
   /* If there is no existing area to keep line info, get some. */
-  if (b->line_start == NULL)
-    b->line_start = b->curr_line = new_line_control ();
+  ఒకవేళ (b->పంక్తి_ప్రారంభం == ఖాళీ)
+    b->పంక్తి_ప్రారంభం = b->curr_పంక్తి = new_పంక్తి_control ();
 
   /* If existing area for lines is full, get more. */
-  if (b->curr_line->used == CTRL_SIZE)
+  ఒకవేళ (b->curr_పంక్తి->వాడిన == CTRL_కొలత)
     {
-      b->curr_line->next = new_line_control ();
-      b->curr_line = b->curr_line->next;
+      b->curr_పంక్తి->తదుపరి = new_పంక్తి_control ();
+      b->curr_పంక్తి = b->curr_పంక్తి->తదుపరి;
     }
 
-  l = b->curr_line;
+  l = b->curr_పంక్తి;
 
   /* Record the start of the line, and update counters. */
-  l->starts[l->insert_index].str = line_start;
-  l->starts[l->insert_index].len = line_len;
-  l->used++;
-  l->insert_index++;
+  l->starts[l->చొప్పించు_సూచీ].str = పంక్తి_ప్రారంభం;
+  l->starts[l->చొప్పించు_సూచీ].len = పంక్తి_len;
+  l->వాడిన++;
+  l->చొప్పించు_సూచీ++;
 }
 
 /* Scan the buffer in B for newline characters
@@ -332,108 +332,108 @@ keep_new_line (struct buffer_record *b, char *line_start, idx_t line_len)
    a pointer is kept to this area, which will be used when
    the next buffer is filled. */
 
-static idx_t
-record_line_starts (struct buffer_record *b)
+స్థిర idx_t
+రికార్డు_పంక్తి_starts (నిర్మాణం బఫరు_రికార్డు *b)
 {
-  char *line_start;		/* Start of current line. */
-  idx_t lines;			/* Number of lines found. */
-  idx_t line_length;		/* Length of each line found. */
+  అక్షరం *పంక్తి_ప్రారంభం;		/* Start of current line. */
+  idx_t పంక్తులు;			/* Number of lines found. */
+  idx_t పంక్తి_నిడివి;		/* Length of each line found. */
 
-  if (b->bytes_used == 0)
-    return 0;
+  ఒకవేళ (b->బైట్లు_వాడిన == 0)
+    తిరిగి 0;
 
-  lines = 0;
-  line_start = b->buffer;
-  char *buffer_end = line_start + b->bytes_used;
-  *buffer_end = '\n';
+  పంక్తులు = 0;
+  పంక్తి_ప్రారంభం = b->బఫరు;
+  అక్షరం *బఫరు_చివర = పంక్తి_ప్రారంభం + b->బైట్లు_వాడిన;
+  *బఫరు_చివర = '\n';
 
-  while (true)
+  అయితే (true)
     {
-      char *line_end = rawmemchr (line_start, '\n');
-      if (line_end == buffer_end)
-        break;
-      line_length = line_end - line_start + 1;
-      keep_new_line (b, line_start, line_length);
-      line_start = line_end + 1;
-      lines++;
+      అక్షరం *పంక్తి_చివర = rawmemchr (పంక్తి_ప్రారంభం, '\n');
+      ఒకవేళ (పంక్తి_చివర == బఫరు_చివర)
+        ఆపు;
+      పంక్తి_నిడివి = పంక్తి_చివర - పంక్తి_ప్రారంభం + 1;
+      keep_new_పంక్తి (b, పంక్తి_ప్రారంభం, పంక్తి_నిడివి);
+      పంక్తి_ప్రారంభం = పంక్తి_చివర + 1;
+      పంక్తులు++;
     }
 
   /* Check for an incomplete last line. */
-  idx_t bytes_left = buffer_end - line_start;
-  if (bytes_left)
+  idx_t బైట్లు_ఎడమ = బఫరు_చివర - పంక్తి_ప్రారంభం;
+  ఒకవేళ (బైట్లు_ఎడమ)
     {
-      if (have_read_eof)
+      ఒకవేళ (have_read_eof)
         {
-          keep_new_line (b, line_start, bytes_left);
-          lines++;
+          keep_new_పంక్తి (b, పంక్తి_ప్రారంభం, బైట్లు_ఎడమ);
+          పంక్తులు++;
         }
-      else
-        save_to_hold_area (ximemdup (line_start, bytes_left), bytes_left);
+      లేకపోతే
+        save_గమ్యం_hold_area (ximemdup (పంక్తి_ప్రారంభం, బైట్లు_ఎడమ), బైట్లు_ఎడమ);
     }
 
-  b->num_lines = lines;
-  b->first_available = b->start_line = last_line_number + 1;
-  last_line_number += lines;
+  b->అంకె_పంక్తులు = పంక్తులు;
+  b->మొదటి_అందుబాటు = b->ప్రారంభం_పంక్తి = చివరి_పంక్తి_సంఖ్య + 1;
+  చివరి_పంక్తి_సంఖ్య += పంక్తులు;
 
-  return lines;
+  తిరిగి పంక్తులు;
 }
 
 /* Work around <https://gcc.gnu.org/PR109614>.  */
-#if 13 <= __GNUC__
+#ఒకవేళ 13 <= __GNUC__
 # pragma GCC diagnostic ignored "-Wanalyzer-mismatching-deallocation"
 # pragma GCC diagnostic ignored "-Wanalyzer-use-after-free"
 # pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value"
-#endif
+#అయితే_ముగింపు
 
-static void
-free_buffer (struct buffer_record *buf)
+స్థిర శూన్య
+free_బఫరు (నిర్మాణం బఫరు_రికార్డు *buf)
 {
-  for (struct line *l = buf->line_start; l;)
+  కొరకు (నిర్మాణం పంక్తి *l = buf->పంక్తి_ప్రారంభం; l;)
     {
-      struct line *n = l->next;
-      free (l);
+      నిర్మాణం పంక్తి *n = l->తదుపరి;
+      విడుదల (l);
       l = n;
     }
-  free (buf->buffer);
-  free (buf);
+  విడుదల (buf->బఫరు);
+  విడుదల (buf);
 }
 
 /* Return a new buffer of at least MINSIZE bytes.  */
 
-static ATTRIBUTE_DEALLOC (free_buffer, 1)
-struct buffer_record *
-get_new_buffer (idx_t min_size)
+స్థిర ATTRIBUTE_DEALLOC (free_బఫరు, 1)
+నిర్మాణం బఫరు_రికార్డు *
+get_new_బఫరు (idx_t min_కొలత)
 {
-  struct buffer_record *new_buffer = xmalloc (sizeof *new_buffer);
-  new_buffer->bytes_alloc = 0;
-  new_buffer->buffer = xpalloc (NULL, &new_buffer->bytes_alloc, min_size,
+  నిర్మాణం బఫరు_రికార్డు *new_బఫరు = xmalloc (పరిమాణం *new_బఫరు);
+  new_బఫరు->బైట్లు_alloc = 0;
+  new_బఫరు->బఫరు = xpalloc (ఖాళీ, &new_బఫరు->బైట్లు_alloc, min_కొలత,
                                 -1, 1);
-  new_buffer->bytes_used = 0;
-  new_buffer->start_line = new_buffer->first_available = last_line_number + 1;
-  new_buffer->num_lines = 0;
-  new_buffer->line_start = new_buffer->curr_line = NULL;
-  new_buffer->next = NULL;
+  new_బఫరు->బైట్లు_వాడిన = 0;
+  new_బఫరు->ప్రారంభం_పంక్తి = new_బఫరు->మొదటి_అందుబాటు = చివరి_పంక్తి_సంఖ్య + 1;
+  new_బఫరు->అంకె_పంక్తులు = 0;
+  new_బఫరు->పంక్తి_ప్రారంభం = new_బఫరు->curr_పంక్తి = ఖాళీ;
+  new_బఫరు->తదుపరి = ఖాళీ;
 
-  return new_buffer;
+  తిరిగి new_బఫరు;
 }
 
 /* Append buffer BUF to the linked list of buffers that contain
    some data yet to be processed. */
 
-static void
-save_buffer (struct buffer_record *buf)
+స్థిర శూన్య
+save_బఫరు (నిర్మాణం బఫరు_రికార్డు *buf)
 {
-  buf->next = NULL;
-  buf->curr_line = buf->line_start;
+  buf->తదుపరి = ఖాళీ;
+  buf->curr_పంక్తి = buf->పంక్తి_ప్రారంభం;
 
-  if (head == NULL)
-    head = buf;
-  else
+  ఒకవేళ (తల == ఖాళీ)
+    తల = buf;
+  లేకపోతే
     {
-      struct buffer_record *p;
-      for (p = head; p->next; p = p->next)
+      నిర్మాణం బఫరు_రికార్డు *p;
+      కొరకు (p = తల; p->తదుపరి; p = p->తదుపరి)
         /* Do nothing. */ ;
-      p->next = buf;
+      p->తదుపరి = buf;
     }
 }
 
@@ -450,45 +450,45 @@ save_buffer (struct buffer_record *buf)
    Return true if a new buffer was obtained, otherwise false
    (in which case end-of-file must have been encountered). */
 
-static bool
-load_buffer (void)
+స్థిర bool
+ఎక్కించు_బఫరు (శూన్య)
 {
-  if (have_read_eof)
-    return false;
+  ఒకవేళ (have_read_eof)
+    తిరిగి false;
 
   /* We must make the buffer at least as large as the amount of data
      in the partial line left over from the last call,
      plus room for a sentinel '\n'. */
-  idx_t bytes_wanted = MAX (START_SIZE, hold_count + 1);
+  idx_t బైట్లు_wanted = MAX (ప్రారంభం_కొలత, hold_లెక్క + 1);
 
-  while (true)
+  అయితే (true)
     {
-      struct buffer_record *b = get_new_buffer (bytes_wanted);
-      idx_t bytes_alloc = b->bytes_alloc;
-      idx_t bytes_avail = bytes_alloc;
-      char *p = b->buffer;
+      నిర్మాణం బఫరు_రికార్డు *b = get_new_బఫరు (బైట్లు_wanted);
+      idx_t బైట్లు_alloc = b->బైట్లు_alloc;
+      idx_t బైట్లు_avail = బైట్లు_alloc;
+      అక్షరం *p = b->బఫరు;
 
       /* First check the 'holding' area for a partial line. */
-      if (hold_count)
+      ఒకవేళ (hold_లెక్క)
         {
-          p = mempcpy (p, hold_area, hold_count);
-          b->bytes_used += hold_count;
-          bytes_avail -= hold_count;
-          hold_count = 0;
+          p = mempcpy (p, hold_area, hold_లెక్క);
+          b->బైట్లు_వాడిన += hold_లెక్క;
+          బైట్లు_avail -= hold_లెక్క;
+          hold_లెక్క = 0;
         }
 
-      b->bytes_used += read_input (p, bytes_avail - 1);
+      b->బైట్లు_వాడిన += read_ఆదానం (p, బైట్లు_avail - 1);
 
-      if (record_line_starts (b) != 0)
+      ఒకవేళ (రికార్డు_పంక్తి_starts (b) != 0)
         {
-          save_buffer (b);
-          return true;
+          save_బఫరు (b);
+          తిరిగి true;
         }
 
-      free_buffer (b);
-      if (have_read_eof)
-        return false;
-      if (ckd_add (&bytes_wanted, bytes_alloc, bytes_alloc >> 1))
+      free_బఫరు (b);
+      ఒకవేళ (have_read_eof)
+        తిరిగి false;
+      ఒకవేళ (ckd_కూడు (&బైట్లు_wanted, బైట్లు_alloc, బైట్లు_alloc >> 1))
         xalloc_die ();
     }
 }
@@ -496,116 +496,116 @@ load_buffer (void)
 /* Return the line number of the first line that has not yet been retrieved.
    Return 0 if no lines available.  */
 
-static intmax_t
-get_first_line_in_buffer (void)
+స్థిర intmax_t
+get_మొదటి_పంక్తి_లోపల_బఫరు (శూన్య)
 {
-  if (head == NULL && !load_buffer ())
-    return 0;
+  ఒకవేళ (తల == ఖాళీ && !ఎక్కించు_బఫరు ())
+    తిరిగి 0;
 
-  return head->first_available;
+  తిరిగి తల->మొదటి_అందుబాటు;
 }
 
 /* Return a pointer to the logical first line in the buffer and make the
    next line the logical first line.
    Return NULL if there is no more input. */
 
-static struct cstring *
-remove_line (void)
+స్థిర నిర్మాణం cstring *
+remove_పంక్తి (శూన్య)
 {
   /* If non-null, this is the buffer for which the previous call
      returned the final line.  So now, presuming that line has been
      processed, we can free the buffer and reset this pointer.  */
-  static struct buffer_record *prev_buf = NULL;
+  స్థిర నిర్మాణం బఫరు_రికార్డు *prev_buf = ఖాళీ;
 
-  struct cstring *line;		/* Return value. */
-  struct line *l;		/* For convenience. */
+  నిర్మాణం cstring *పంక్తి;		/* Return value. */
+  నిర్మాణం పంక్తి *l;		/* For convenience. */
 
-  if (prev_buf)
+  ఒకవేళ (prev_buf)
     {
-      free_buffer (prev_buf);
-      prev_buf = NULL;
+      free_బఫరు (prev_buf);
+      prev_buf = ఖాళీ;
     }
 
-  if (head == NULL && !load_buffer ())
-    return NULL;
+  ఒకవేళ (తల == ఖాళీ && !ఎక్కించు_బఫరు ())
+    తిరిగి ఖాళీ;
 
-  if (current_line < head->first_available)
-    current_line = head->first_available;
+  ఒకవేళ (current_పంక్తి < తల->మొదటి_అందుబాటు)
+    current_పంక్తి = తల->మొదటి_అందుబాటు;
 
-  ++(head->first_available);
+  ++(తల->మొదటి_అందుబాటు);
 
-  l = head->curr_line;
+  l = తల->curr_పంక్తి;
 
-  line = &l->starts[l->retrieve_index];
+  పంక్తి = &l->starts[l->retrieve_సూచీ];
 
   /* Advance index to next line. */
-  if (++l->retrieve_index == l->used)
+  ఒకవేళ (++l->retrieve_సూచీ == l->వాడిన)
     {
       /* Go on to the next line record. */
-      head->curr_line = l->next;
-      if (head->curr_line == NULL || head->curr_line->used == 0)
+      తల->curr_పంక్తి = l->తదుపరి;
+      ఒకవేళ (తల->curr_పంక్తి == ఖాళీ || తల->curr_పంక్తి->వాడిన == 0)
         {
           /* Go on to the next data block.
              but first record the current one so we can free it
              once the line we're returning has been processed.  */
-          prev_buf = head;
-          head = head->next;
+          prev_buf = తల;
+          తల = తల->తదుపరి;
         }
     }
 
-  return line;
+  తిరిగి పంక్తి;
 }
 
 /* Search the buffers for line LINENUM, reading more input if necessary.
    Return a pointer to the line, or NULL if it is not found in the file. */
 
-static struct cstring *
-find_line (intmax_t linenum)
+స్థిర నిర్మాణం cstring *
+కనుగొను_పంక్తి (intmax_t linenum)
 {
-  if (head == NULL && !load_buffer ())
-    return NULL;
+  ఒకవేళ (తల == ఖాళీ && !ఎక్కించు_బఫరు ())
+    తిరిగి ఖాళీ;
 
-  if (linenum < head->start_line)
-    return NULL;
+  ఒకవేళ (linenum < తల->ప్రారంభం_పంక్తి)
+    తిరిగి ఖాళీ;
 
-  for (struct buffer_record *b = head;;)
+  కొరకు (నిర్మాణం బఫరు_రికార్డు *b = తల;;)
     {
-      if (linenum < b->start_line + b->num_lines)
+      ఒకవేళ (linenum < b->ప్రారంభం_పంక్తి + b->అంకె_పంక్తులు)
         {
           /* The line is in this buffer. */
-          struct line *l;
-          idx_t offset;	/* How far into the buffer the line is. */
+          నిర్మాణం పంక్తి *l;
+          idx_t స్థానభ్రంశం;	/* How far into the buffer the line is. */
 
-          l = b->line_start;
-          offset = linenum - b->start_line;
+          l = b->పంక్తి_ప్రారంభం;
+          స్థానభ్రంశం = linenum - b->ప్రారంభం_పంక్తి;
           /* Find the control record. */
-          while (offset >= CTRL_SIZE)
+          అయితే (స్థానభ్రంశం >= CTRL_కొలత)
             {
-              l = l->next;
-              offset -= CTRL_SIZE;
+              l = l->తదుపరి;
+              స్థానభ్రంశం -= CTRL_కొలత;
             }
-          return &l->starts[offset];
+          తిరిగి &l->starts[స్థానభ్రంశం];
         }
-      if (b->next == NULL && !load_buffer ())
-        return NULL;
-      b = b->next;		/* Try the next data block. */
+      ఒకవేళ (b->తదుపరి == ఖాళీ && !ఎక్కించు_బఫరు ())
+        తిరిగి ఖాళీ;
+      b = b->తదుపరి;		/* Try the next data block. */
     }
 }
 
 /* Return true if at least one more line is available for input. */
 
-static bool
-no_more_lines (void)
+స్థిర bool
+no_మరిన్ని_పంక్తులు (శూన్య)
 {
-  return find_line (current_line + 1) == NULL;
+  తిరిగి కనుగొను_పంక్తి (current_పంక్తి + 1) == ఖాళీ;
 }
 
 /* Open NAME as standard input.  */
 
-static void
-set_input_file (char const *name)
+స్థిర శూన్య
+సమితి_ఆదానం_file (అక్షరం స్థిరరాశి *name)
 {
-  if (! streq (name, "-") && fd_reopen (STDIN_FILENO, name, O_RDONLY, 0) < 0)
+  ఒకవేళ (! streq (name, "-") && fd_reopen (STDIN_FILENO, name, O_RDONLY, 0) < 0)
     error (EXIT_FAILURE, errno, _("cannot open %s for reading"),
            quoteaf (name));
 }
@@ -615,62 +615,62 @@ set_input_file (char const *name)
    If IGNORE is true, do not output lines selected here.
    ARGNUM is the index in ARGV of the current pattern. */
 
-static void
-write_to_file (intmax_t last_line, bool ignore, int argnum)
+స్థిర శూన్య
+write_గమ్యం_file (intmax_t చివరి_పంక్తి, bool ignore, పూర్ణాంకం argnum)
 {
-  struct cstring *line;
-  intmax_t first_line;		/* First available input line. */
-  intmax_t lines;		/* Number of lines to output. */
+  నిర్మాణం cstring *పంక్తి;
+  intmax_t మొదటి_పంక్తి;		/* First available input line. */
+  intmax_t పంక్తులు;		/* Number of lines to output. */
 
-  first_line = get_first_line_in_buffer ();
+  మొదటి_పంక్తి = get_మొదటి_పంక్తి_లోపల_బఫరు ();
 
-  if (! first_line || first_line > last_line)
+  ఒకవేళ (! మొదటి_పంక్తి || మొదటి_పంక్తి > చివరి_పంక్తి)
     {
       error (0, 0, _("%s: line number out of range"),
              quote (global_argv[argnum]));
       cleanup_fatal ();
     }
 
-  lines = last_line - first_line;
+  పంక్తులు = చివరి_పంక్తి - మొదటి_పంక్తి;
 
-  for (intmax_t i = 0; i < lines; i++)
+  కొరకు (intmax_t i = 0; i < పంక్తులు; i++)
     {
-      line = remove_line ();
-      if (line == NULL)
+      పంక్తి = remove_పంక్తి ();
+      ఒకవేళ (పంక్తి == ఖాళీ)
         {
           error (0, 0, _("%s: line number out of range"),
                  quote (global_argv[argnum]));
           cleanup_fatal ();
         }
-      if (!ignore)
-        save_line_to_file (line);
+      ఒకవేళ (!ignore)
+        save_పంక్తి_గమ్యం_file (పంక్తి);
     }
 }
 
 /* Output any lines left after all regexps have been processed. */
 
-static void
-dump_rest_of_file (void)
+స్థిర శూన్య
+dump_rest_యొక్క_file (శూన్య)
 {
-  struct cstring *line;
+  నిర్మాణం cstring *పంక్తి;
 
-  while ((line = remove_line ()) != NULL)
-    save_line_to_file (line);
+  అయితే ((పంక్తి = remove_పంక్తి ()) != ఖాళీ)
+    save_పంక్తి_గమ్యం_file (పంక్తి);
 }
 
 /* Handle an attempt to read beyond EOF under the control of record P,
    on iteration REPETITION if nonzero. */
 
-static void
-handle_line_error (const struct control *p, intmax_t repetition)
+స్థిర శూన్య
+handle_పంక్తి_error (స్థిరరాశి నిర్మాణం control *p, intmax_t repetition)
 {
-  char buf[INT_BUFSIZE_BOUND (intmax_t)];
+  అక్షరం buf[INT_BUFSIZE_BOUND (intmax_t)];
 
   fprintf (stderr, _("%s: %s: line number out of range"),
-           program_name, quote (imaxtostr (p->lines_required, buf)));
-  if (repetition)
+           కార్యక్రమం_name, quote (imaxtostr (p->పంక్తులు_required, buf)));
+  ఒకవేళ (repetition)
     fprintf (stderr, _(" on repetition %jd\n"), repetition);
-  else
+  లేకపోతే
     fprintf (stderr, "\n");
 
   cleanup_fatal ();
@@ -681,56 +681,56 @@ handle_line_error (const struct control *p, intmax_t repetition)
    P is the control record.
    REPETITION is the repetition number. */
 
-static void
-process_line_count (const struct control *p, intmax_t repetition)
+స్థిర శూన్య
+process_పంక్తి_లెక్క (స్థిరరాశి నిర్మాణం control *p, intmax_t repetition)
 {
   intmax_t linenum;
-  intmax_t last_line_to_save = p->lines_required * (repetition + 1);
+  intmax_t చివరి_పంక్తి_గమ్యం_save = p->పంక్తులు_required * (repetition + 1);
 
   create_output_file ();
 
   /* Ensure that the line number specified is not 1 greater than
      the number of lines in the file.
      When suppressing matched lines, check before the loop. */
-  if (no_more_lines () && suppress_matched)
-    handle_line_error (p, repetition);
+  ఒకవేళ (no_మరిన్ని_పంక్తులు () && suppress_matched)
+    handle_పంక్తి_error (p, repetition);
 
-  if (!(linenum = get_first_line_in_buffer ()))
-    handle_line_error (p, repetition);
+  ఒకవేళ (!(linenum = get_మొదటి_పంక్తి_లోపల_బఫరు ()))
+    handle_పంక్తి_error (p, repetition);
 
-  while (linenum++ < last_line_to_save)
+  అయితే (linenum++ < చివరి_పంక్తి_గమ్యం_save)
     {
-      struct cstring *line = remove_line ();
-      if (line == NULL)
-        handle_line_error (p, repetition);
-      save_line_to_file (line);
+      నిర్మాణం cstring *పంక్తి = remove_పంక్తి ();
+      ఒకవేళ (పంక్తి == ఖాళీ)
+        handle_పంక్తి_error (p, repetition);
+      save_పంక్తి_గమ్యం_file (పంక్తి);
     }
 
   close_output_file ();
 
-  if (suppress_matched)
-    remove_line ();
+  ఒకవేళ (suppress_matched)
+    remove_పంక్తి ();
 
   /* Ensure that the line number specified is not 1 greater than
      the number of lines in the file. */
-  if (no_more_lines () && !suppress_matched)
-    handle_line_error (p, repetition);
+  ఒకవేళ (no_మరిన్ని_పంక్తులు () && !suppress_matched)
+    handle_పంక్తి_error (p, repetition);
 }
 
-static void
-regexp_error (struct control *p, intmax_t repetition, bool ignore)
+స్థిర శూన్య
+regexp_error (నిర్మాణం control *p, intmax_t repetition, bool ignore)
 {
   fprintf (stderr, _("%s: %s: match not found"),
-           program_name, quote (global_argv[p->argnum]));
+           కార్యక్రమం_name, quote (global_argv[p->argnum]));
 
-  if (repetition)
+  ఒకవేళ (repetition)
     fprintf (stderr, _(" on repetition %jd\n"), repetition);
-  else
+  లేకపోతే
     fprintf (stderr, "\n");
 
-  if (!ignore)
+  ఒకవేళ (!ignore)
     {
-      dump_rest_of_file ();
+      dump_rest_యొక్క_file ();
       close_output_file ();
     }
   cleanup_fatal ();
@@ -740,133 +740,133 @@ regexp_error (struct control *p, intmax_t repetition, bool ignore)
    it unless P->IGNORE is true.
    REPETITION is this repeat-count; 0 means the first time. */
 
-static void
-process_regexp (struct control *p, intmax_t repetition)
+స్థిర శూన్య
+process_regexp (నిర్మాణం control *p, intmax_t repetition)
 {
-  struct cstring *line;		/* From input file. */
-  idx_t line_len;		/* To make "$" in regexps work. */
-  intmax_t break_line;		/* First line number of next file. */
+  నిర్మాణం cstring *పంక్తి;		/* From input file. */
+  idx_t పంక్తి_len;		/* To make "$" in regexps work. */
+  intmax_t break_పంక్తి;		/* First line number of next file. */
   bool ignore = p->ignore;	/* If true, skip this section. */
   regoff_t ret;
 
-  if (!ignore)
+  ఒకవేళ (!ignore)
     create_output_file ();
 
   /* If there is no offset for the regular expression, or
      it is positive, then it is not necessary to buffer the lines. */
 
-  if (p->offset >= 0)
+  ఒకవేళ (p->స్థానభ్రంశం >= 0)
     {
-      while (true)
+      అయితే (true)
         {
-          line = find_line (++current_line);
-          if (line == NULL)
+          పంక్తి = కనుగొను_పంక్తి (++current_పంక్తి);
+          ఒకవేళ (పంక్తి == ఖాళీ)
             {
-              if (p->repeat_forever)
+              ఒకవేళ (p->repeat_forever)
                 {
-                  if (!ignore)
+                  ఒకవేళ (!ignore)
                     {
-                      dump_rest_of_file ();
+                      dump_rest_యొక్క_file ();
                       close_output_file ();
                     }
-                  exit (EXIT_SUCCESS);
+                  నిష్క్రమించు (EXIT_SUCCESS);
                 }
-              else
+              లేకపోతే
                 regexp_error (p, repetition, ignore);
             }
-          line_len = line->len;
-          if (line->str[line_len - 1] == '\n')
-            line_len--;
-          ret = re_search (&p->re_compiled, line->str, line_len,
-                           0, line_len, NULL);
-          if (ret == -2)
+          పంక్తి_len = పంక్తి->len;
+          ఒకవేళ (పంక్తి->str[పంక్తి_len - 1] == '\n')
+            పంక్తి_len--;
+          ret = re_శోధన (&p->re_compiled, పంక్తి->str, పంక్తి_len,
+                           0, పంక్తి_len, ఖాళీ);
+          ఒకవేళ (ret == -2)
             {
               error (0, 0, _("error in regular expression search"));
               cleanup_fatal ();
             }
-          if (ret == -1)
+          ఒకవేళ (ret == -1)
             {
-              line = remove_line ();
-              if (!ignore)
-                save_line_to_file (line);
+              పంక్తి = remove_పంక్తి ();
+              ఒకవేళ (!ignore)
+                save_పంక్తి_గమ్యం_file (పంక్తి);
             }
-          else
-            break;
+          లేకపోతే
+            ఆపు;
         }
     }
-  else
+  లేకపోతే
     {
       /* Buffer the lines. */
-      while (true)
+      అయితే (true)
         {
-          line = find_line (++current_line);
-          if (line == NULL)
+          పంక్తి = కనుగొను_పంక్తి (++current_పంక్తి);
+          ఒకవేళ (పంక్తి == ఖాళీ)
             {
-              if (p->repeat_forever)
+              ఒకవేళ (p->repeat_forever)
                 {
-                  if (!ignore)
+                  ఒకవేళ (!ignore)
                     {
-                      dump_rest_of_file ();
+                      dump_rest_యొక్క_file ();
                       close_output_file ();
                     }
-                  exit (EXIT_SUCCESS);
+                  నిష్క్రమించు (EXIT_SUCCESS);
                 }
-              else
+              లేకపోతే
                 regexp_error (p, repetition, ignore);
             }
-          line_len = line->len;
-          if (line->str[line_len - 1] == '\n')
-            line_len--;
-          ret = re_search (&p->re_compiled, line->str, line_len,
-                           0, line_len, NULL);
-          if (ret == -2)
+          పంక్తి_len = పంక్తి->len;
+          ఒకవేళ (పంక్తి->str[పంక్తి_len - 1] == '\n')
+            పంక్తి_len--;
+          ret = re_శోధన (&p->re_compiled, పంక్తి->str, పంక్తి_len,
+                           0, పంక్తి_len, ఖాళీ);
+          ఒకవేళ (ret == -2)
             {
               error (0, 0, _("error in regular expression search"));
               cleanup_fatal ();
             }
-          if (ret != -1)
-            break;
+          ఒకవేళ (ret != -1)
+            ఆపు;
         }
     }
 
   /* Account for any offset from this regexp. */
-  break_line = current_line + p->offset;
+  break_పంక్తి = current_పంక్తి + p->స్థానభ్రంశం;
 
-  write_to_file (break_line, ignore, p->argnum);
+  write_గమ్యం_file (break_పంక్తి, ignore, p->argnum);
 
-  if (!ignore)
+  ఒకవేళ (!ignore)
     close_output_file ();
 
-  if (p->offset > 0)
-    current_line = break_line;
+  ఒకవేళ (p->స్థానభ్రంశం > 0)
+    current_పంక్తి = break_పంక్తి;
 
-  if (suppress_matched)
-    remove_line ();
+  ఒకవేళ (suppress_matched)
+    remove_పంక్తి ();
 }
 
 /* Split the input file according to the control records we have built. */
 
-static void
-split_file (void)
+స్థిర శూన్య
+విభజించు_file (శూన్య)
 {
-  for (idx_t i = 0; i < control_used; i++)
+  కొరకు (idx_t i = 0; i < control_వాడిన; i++)
     {
-      if (controls[i].regexpr)
+      ఒకవేళ (controls[i].regexpr)
         {
-          for (intmax_t j = 0; (controls[i].repeat_forever
+          కొరకు (intmax_t j = 0; (controls[i].repeat_forever
                        || j <= controls[i].repeat); j++)
             process_regexp (&controls[i], j);
         }
-      else
+      లేకపోతే
         {
-          for (intmax_t j = 0; (controls[i].repeat_forever
+          కొరకు (intmax_t j = 0; (controls[i].repeat_forever
                        || j <= controls[i].repeat); j++)
-            process_line_count (&controls[i], j);
+            process_పంక్తి_లెక్క (&controls[i], j);
         }
     }
 
   create_output_file ();
-  dump_rest_of_file ();
+  dump_rest_యొక్క_file ();
   close_output_file ();
 }
 
@@ -877,66 +877,66 @@ split_file (void)
    not guarantee this for the functions called below, but we don't
    know of any hosts where this implementation isn't safe.  */
 
-static char *
-make_filename (int num)
+స్థిర అక్షరం *
+make_filename (పూర్ణాంకం అంకె)
 {
-  strcpy (filename_space, prefix);
-  if (suffix)
-    sprintf (filename_space + strlen (prefix), suffix, num);
-  else
-    sprintf (filename_space + strlen (prefix), "%0*d", digits, num);
-  return filename_space;
+  strcpy (filename_space, ఉపసర్గ);
+  ఒకవేళ (suffix)
+    sprintf (filename_space + అక్షరశ్రేణి_పొడవు (ఉపసర్గ), suffix, అంకె);
+  లేకపోతే
+    sprintf (filename_space + అక్షరశ్రేణి_పొడవు (ఉపసర్గ), "%0*d", digits, అంకె);
+  తిరిగి filename_space;
 }
 
 /* Create the next output file. */
 
-static void
-create_output_file (void)
+స్థిర శూన్య
+create_output_file (శూన్య)
 {
-  int nfiles = files_created;
+  పూర్ణాంకం nfiles = files_created;
   bool fopen_ok;
-  int fopen_errno;
+  పూర్ణాంకం fopen_errno;
 
   output_filename = make_filename (nfiles);
 
-  if (nfiles == INT_MAX)
+  ఒకవేళ (nfiles == గరిష్ఠ_పూర్ణాంకం)
     {
       fopen_ok = false;
       fopen_errno = EOVERFLOW;
     }
-  else
+  లేకపోతే
     {
       /* Create the output file in a critical section, to avoid races.  */
       sigset_t oldset;
-      sigprocmask (SIG_BLOCK, &caught_signals, &oldset);
-      output_stream = fopen (output_filename, "w");
-      fopen_ok = (output_stream != NULL);
+      sigprocmask (SIG_BLOCK, &caught_సంకేతాలు, &oldset);
+      output_ప్రవాహం = fopen (output_filename, "w");
+      fopen_ok = (output_ప్రవాహం != ఖాళీ);
       fopen_errno = errno;
       files_created = nfiles + fopen_ok;
-      sigprocmask (SIG_SETMASK, &oldset, NULL);
+      sigprocmask (SIG_SETMASK, &oldset, ఖాళీ);
     }
 
-  if (! fopen_ok)
+  ఒకవేళ (! fopen_ok)
     {
       error (0, fopen_errno, "%s", quotef (output_filename));
       cleanup_fatal ();
     }
-  bytes_written = 0;
+  బైట్లు_written = 0;
 }
 
 /* If requested, delete all the files we have created.  This function
    must be called only from critical sections.  */
 
-static void
-delete_all_files (bool in_signal_handler)
+స్థిర శూన్య
+delete_all_files (bool లోపల_signal_handler)
 {
-  if (! remove_files)
-    return;
+  ఒకవేళ (! remove_files)
+    తిరిగి;
 
-  for (int i = files_created; 0 <= --i; )
+  కొరకు (పూర్ణాంకం i = files_created; 0 <= --i; )
     {
-      char const *name = make_filename (i);
-      if (unlink (name) != 0 && errno != ENOENT && !in_signal_handler)
+      అక్షరం స్థిరరాశి *name = make_filename (i);
+      ఒకవేళ (unlink (name) != 0 && errno != ENOENT && !లోపల_signal_handler)
         error (0, errno, "%s", quotef (name));
     }
 
@@ -946,81 +946,81 @@ delete_all_files (bool in_signal_handler)
 /* Close the current output file and print the count
    of characters in this file. */
 
-static void
-close_output_file (void)
+స్థిర శూన్య
+close_output_file (శూన్య)
 {
-  if (output_stream)
+  ఒకవేళ (output_ప్రవాహం)
     {
-      if (ferror (output_stream))
+      ఒకవేళ (ferror (output_ప్రవాహం))
         {
           error (0, 0, _("write error for %s"), quoteaf (output_filename));
-          output_stream = NULL;
+          output_ప్రవాహం = ఖాళీ;
           cleanup_fatal ();
         }
-      if (fclose (output_stream) != 0)
+      ఒకవేళ (fclose (output_ప్రవాహం) != 0)
         {
           error (0, errno, "%s", quotef (output_filename));
-          output_stream = NULL;
+          output_ప్రవాహం = ఖాళీ;
           cleanup_fatal ();
         }
-      if (bytes_written == 0 && elide_empty_files)
+      ఒకవేళ (బైట్లు_written == 0 && elide_ఖాళీలు_files)
         {
           sigset_t oldset;
           bool unlink_ok;
-          int unlink_errno;
+          పూర్ణాంకం unlink_errno;
 
           /* Remove the output file in a critical section, to avoid races.  */
-          sigprocmask (SIG_BLOCK, &caught_signals, &oldset);
+          sigprocmask (SIG_BLOCK, &caught_సంకేతాలు, &oldset);
           unlink_ok = (unlink (output_filename) == 0);
           unlink_errno = errno;
           files_created--;
-          sigprocmask (SIG_SETMASK, &oldset, NULL);
+          sigprocmask (SIG_SETMASK, &oldset, ఖాళీ);
 
-          if (! unlink_ok && unlink_errno != ENOENT)
+          ఒకవేళ (! unlink_ok && unlink_errno != ENOENT)
             error (0, unlink_errno, "%s", quotef (output_filename));
         }
-      else
+      లేకపోతే
         {
-          if (!suppress_count)
-            fprintf (stdout, "%jd\n", bytes_written);
+          ఒకవేళ (!suppress_లెక్క)
+            fprintf (stdout, "%jd\n", బైట్లు_written);
         }
-      output_stream = NULL;
+      output_ప్రవాహం = ఖాళీ;
     }
 }
 
 /* Save line LINE to the output file and
    increment the character count for the current file. */
 
-static void
-save_line_to_file (const struct cstring *line)
+స్థిర శూన్య
+save_పంక్తి_గమ్యం_file (స్థిరరాశి నిర్మాణం cstring *పంక్తి)
 {
-  idx_t l = fwrite (line->str, sizeof (char), line->len, output_stream);
-  if (l != line->len)
+  idx_t l = fwrite (పంక్తి->str, పరిమాణం (అక్షరం), పంక్తి->len, output_ప్రవాహం);
+  ఒకవేళ (l != పంక్తి->len)
     {
       error (0, errno, _("write error for %s"), quoteaf (output_filename));
-      output_stream = NULL;
+      output_ప్రవాహం = ఖాళీ;
       cleanup_fatal ();
     }
-  bytes_written += line->len;
+  బైట్లు_written += పంక్తి->len;
 }
 
 /* Return a new, initialized control record. */
 
-static struct control *
-new_control_record (void)
+స్థిర నిర్మాణం control *
+new_control_రికార్డు (శూన్య)
 {
-  static idx_t control_allocated = 0; /* Total space allocated. */
-  struct control *p;
+  స్థిర idx_t control_allocated = 0; /* Total space allocated. */
+  నిర్మాణం control *p;
 
-  if (control_used == control_allocated)
-    controls = xpalloc (controls, &control_allocated, 1, -1, sizeof *controls);
-  p = &controls[control_used++];
+  ఒకవేళ (control_వాడిన == control_allocated)
+    controls = xpalloc (controls, &control_allocated, 1, -1, పరిమాణం *controls);
+  p = &controls[control_వాడిన++];
   p->regexpr = false;
   p->repeat = 0;
   p->repeat_forever = false;
-  p->lines_required = 0;
-  p->offset = 0;
-  return p;
+  p->పంక్తులు_required = 0;
+  p->స్థానభ్రంశం = 0;
+  తిరిగి p;
 }
 
 /* Check if there is a numeric offset after a regular expression.
@@ -1028,10 +1028,10 @@ new_control_record (void)
    P is the control record for this regular expression.
    NUM is the numeric part of STR. */
 
-static void
-check_for_offset (struct control *p, char const *str, char const *num)
+స్థిర శూన్య
+check_for_స్థానభ్రంశం (నిర్మాణం control *p, అక్షరం స్థిరరాశి *str, అక్షరం స్థిరరాశి *అంకె)
 {
-  if (xstrtoimax (num, NULL, 10, &p->offset, "") != LONGINT_OK)
+  ఒకవేళ (xstrtoimax (అంకె, ఖాళీ, 10, &p->స్థానభ్రంశం, "") != LONGINT_OK)
     error (EXIT_FAILURE, 0, _("%s: integer expected after delimiter"),
            quote (str));
 }
@@ -1041,24 +1041,24 @@ check_for_offset (struct control *p, char const *str, char const *num)
    and store its value in P.
    ARGNUM is the ARGV index of STR. */
 
-static void
-parse_repeat_count (int argnum, struct control *p, char *str)
+స్థిర శూన్య
+parse_repeat_లెక్క (పూర్ణాంకం argnum, నిర్మాణం control *p, అక్షరం *str)
 {
-  char *end;
+  అక్షరం *చివర;
 
-  end = str + strlen (str) - 1;
-  if (*end != '}')
+  చివర = str + అక్షరశ్రేణి_పొడవు (str) - 1;
+  ఒకవేళ (*చివర != '}')
     error (EXIT_FAILURE, 0, _("%s: '}' is required in repeat count"),
            quote (str));
-  *end = '\0';
+  *చివర = '\0';
 
-  if (str + 1 == end - 1 && *(str + 1) == '*')
+  ఒకవేళ (str + 1 == చివర - 1 && *(str + 1) == '*')
     p->repeat_forever = true;
-  else
+  లేకపోతే
     {
       uintmax_t val;
-      if (xstrtoumax (str + 1, NULL, 10, &val, "") != LONGINT_OK
-          || ckd_add (&p->repeat, val, 0))
+      ఒకవేళ (xstrtoumax (str + 1, ఖాళీ, 10, &val, "") != LONGINT_OK
+          || ckd_కూడు (&p->repeat, val, 0))
         {
           error (EXIT_FAILURE, 0,
                  _("%s}: integer required between '{' and '}'"),
@@ -1066,7 +1066,7 @@ parse_repeat_count (int argnum, struct control *p, char *str)
         }
     }
 
-  *end = '}';
+  *చివర = '}';
 }
 
 /* Extract the regular expression from STR and check for a numeric offset.
@@ -1075,92 +1075,92 @@ parse_repeat_count (int argnum, struct control *p, char *str)
    ARGNUM is the ARGV index of STR.
    Unless IGNORE is true, mark these lines for output. */
 
-static struct control *
-extract_regexp (int argnum, bool ignore, char const *str)
+స్థిర నిర్మాణం control *
+వెలికితీయి_regexp (పూర్ణాంకం argnum, bool ignore, అక్షరం స్థిరరాశి *str)
 {
   idx_t len;			/* Number of bytes in this regexp. */
-  char delim = *str;
-  char const *closing_delim;
-  struct control *p;
-  char const *err;
+  అక్షరం delim = *str;
+  అక్షరం స్థిరరాశి *closing_delim;
+  నిర్మాణం control *p;
+  అక్షరం స్థిరరాశి *err;
 
   closing_delim = strrchr (str + 1, delim);
-  if (closing_delim == NULL)
+  ఒకవేళ (closing_delim == ఖాళీ)
     error (EXIT_FAILURE, 0,
            _("%s: closing delimiter '%c' missing"), str, delim);
 
   len = closing_delim - str - 1;
-  p = new_control_record ();
+  p = new_control_రికార్డు ();
   p->argnum = argnum;
   p->ignore = ignore;
 
   p->regexpr = true;
-  p->re_compiled.buffer = NULL;
+  p->re_compiled.బఫరు = ఖాళీ;
   p->re_compiled.allocated = 0;
   p->re_compiled.fastmap = xmalloc (UCHAR_MAX + 1);
-  p->re_compiled.translate = NULL;
+  p->re_compiled.translate = ఖాళీ;
   re_syntax_options =
-    RE_SYNTAX_POSIX_BASIC & ~RE_CONTEXT_INVALID_DUP & ~RE_NO_EMPTY_RANGES;
-  err = re_compile_pattern (str + 1, len, &p->re_compiled);
-  if (err)
+    RE_SYNTAX_POSIX_BASIC & ~RE_CONTEXT_INVALID_DUP & ~RE_NO_ఖాళీలు_RANGES;
+  err = re_compile_నమూనా (str + 1, len, &p->re_compiled);
+  ఒకవేళ (err)
     {
       error (0, 0, _("%s: invalid regular expression: %s"), quote (str), err);
       cleanup_fatal ();
     }
 
-  if (closing_delim[1])
-    check_for_offset (p, str, closing_delim + 1);
+  ఒకవేళ (closing_delim[1])
+    check_for_స్థానభ్రంశం (p, str, closing_delim + 1);
 
-  return p;
+  తిరిగి p;
 }
 
 /* Extract the break patterns from args START through ARGC - 1 of ARGV.
    After each pattern, check if the next argument is a repeat count. */
 
-static void
-parse_patterns (int argc, int start, char **argv)
+స్థిర శూన్య
+parse_patterns (పూర్ణాంకం argc, పూర్ణాంకం ప్రారంభం, అక్షరం **argv)
 {
-  struct control *p;		/* New control record created. */
-  static intmax_t last_val = 0;
+  నిర్మాణం control *p;		/* New control record created. */
+  స్థిర intmax_t చివరి_val = 0;
 
-  for (int i = start; i < argc; i++)
+  కొరకు (పూర్ణాంకం i = ప్రారంభం; i < argc; i++)
     {
-      if (*argv[i] == '/' || *argv[i] == '%')
+      ఒకవేళ (*argv[i] == '/' || *argv[i] == '%')
         {
-          p = extract_regexp (i, *argv[i] == '%', argv[i]);
+          p = వెలికితీయి_regexp (i, *argv[i] == '%', argv[i]);
         }
-      else
+      లేకపోతే
         {
-          p = new_control_record ();
+          p = new_control_రికార్డు ();
           p->argnum = i;
 
           uintmax_t val;
-          if (xstrtoumax (argv[i], NULL, 10, &val, "") != LONGINT_OK
+          ఒకవేళ (xstrtoumax (argv[i], ఖాళీ, 10, &val, "") != LONGINT_OK
               || INTMAX_MAX < val)
             error (EXIT_FAILURE, 0, _("%s: invalid pattern"), quote (argv[i]));
-          if (val == 0)
+          ఒకవేళ (val == 0)
             error (EXIT_FAILURE, 0,
                    _("%s: line number must be greater than zero"), argv[i]);
-          if (val < last_val)
+          ఒకవేళ (val < చివరి_val)
             error (EXIT_FAILURE, 0,
                    _("line number %s is smaller than preceding line number,"
-                     " %jd"), quote (argv[i]), last_val);
+                     " %jd"), quote (argv[i]), చివరి_val);
 
-          if (val == last_val)
+          ఒకవేళ (val == చివరి_val)
             error (0, 0,
            _("warning: line number %s is the same as preceding line number"),
                    quote (argv[i]));
 
-          last_val = val;
+          చివరి_val = val;
 
-          p->lines_required = val;
+          p->పంక్తులు_required = val;
         }
 
-      if (i + 1 < argc && *argv[i + 1] == '{')
+      ఒకవేళ (i + 1 < argc && *argv[i + 1] == '{')
         {
           /* We have a repeat count. */
           i++;
-          parse_repeat_count (i, p, argv[i]);
+          parse_repeat_లెక్క (i, p, argv[i]);
         }
     }
 }
@@ -1168,34 +1168,34 @@ parse_patterns (int argc, int start, char **argv)
 
 
 /* Names for the printf format flags ' and #.  These can be ORed together.  */
-enum { FLAG_THOUSANDS = 1, FLAG_ALTERNATIVE = 2 };
+గణన { FLAG_THOUSANDS = 1, FLAG_ALTERNATIVE = 2 };
 
 /* Scan the printf format flags in FORMAT, storing info about the
    flags into *FLAGS_PTR.  Return the number of flags found.  */
-static idx_t
-get_format_flags (char const *format, int *flags_ptr)
+స్థిర idx_t
+get_format_flags (అక్షరం స్థిరరాశి *format, పూర్ణాంకం *flags_ptr)
 {
-  int flags = 0;
+  పూర్ణాంకం flags = 0;
 
-  for (idx_t count = 0; ; count++)
+  కొరకు (idx_t లెక్క = 0; ; లెక్క++)
     {
-      switch (format[count])
+      ఎంపిక (format[లెక్క])
         {
-        case '-':
-        case '0':
-          break;
+        స్థితి '-':
+        స్థితి '0':
+          ఆపు;
 
-        case '\'':
+        స్థితి '\'':
           flags |= FLAG_THOUSANDS;
-          break;
+          ఆపు;
 
-        case '#':
+        స్థితి '#':
           flags |= FLAG_ALTERNATIVE;
-          break;
+          ఆపు;
 
-        default:
+        అప్రమేయ:
           *flags_ptr = flags;
-          return count;
+          తిరిగి లెక్క;
         }
     }
 }
@@ -1203,41 +1203,41 @@ get_format_flags (char const *format, int *flags_ptr)
 /* Check that the printf format conversion specifier *FORMAT is valid
    and compatible with FLAGS.  Change it to 'd' if it is 'u',
    since the format will be used with a signed value.  */
-static void
-check_format_conv_type (char *format, int flags)
+స్థిర శూన్య
+check_format_conv_type (అక్షరం *format, పూర్ణాంకం flags)
 {
-  unsigned char ch = *format;
-  int compatible_flags = FLAG_THOUSANDS;
+  గుర్తులేని అక్షరం ch = *format;
+  పూర్ణాంకం compatible_flags = FLAG_THOUSANDS;
 
-  switch (ch)
+  ఎంపిక (ch)
     {
-    case 'd':
-    case 'i':
-      break;
+    స్థితి 'd':
+    స్థితి 'i':
+      ఆపు;
 
-    case 'u':
+    స్థితి 'u':
       *format = 'd';
-      break;
+      ఆపు;
 
-    case 'o':
-    case 'x':
-    case 'X':
+    స్థితి 'o':
+    స్థితి 'x':
+    స్థితి 'X':
       compatible_flags = FLAG_ALTERNATIVE;
-      break;
+      ఆపు;
 
-    case 0:
+    స్థితి 0:
       error (EXIT_FAILURE, 0, _("missing conversion specifier in suffix"));
 
-    default:
-      if (isprint (ch))
+    అప్రమేయ:
+      ఒకవేళ (isprint (ch))
         error (EXIT_FAILURE, 0,
                _("invalid conversion specifier in suffix: %c"), ch);
-      else
+      లేకపోతే
         error (EXIT_FAILURE, 0,
                _("invalid conversion specifier in suffix: \\%.3o"), ch);
     }
 
-  if (flags & ~ compatible_flags)
+  ఒకవేళ (flags & ~ compatible_flags)
     error (EXIT_FAILURE, 0,
            _("invalid flags in conversion specification: %%%c%c"),
            (flags & ~ compatible_flags & FLAG_ALTERNATIVE ? '#' : '\''), ch);
@@ -1246,45 +1246,45 @@ check_format_conv_type (char *format, int flags)
 /* Return the maximum number of bytes that can be generated by
    applying FORMAT to an int value.  If the format is
    invalid, diagnose the problem and exit.  */
-static idx_t
-max_out (char *format)
+స్థిర idx_t
+max_బహిర్గతం (అక్షరం *format)
 {
   bool percent = false;
 
-  for (char *f = format; *f; f++)
-    if (*f == '%' && *++f != '%')
+  కొరకు (అక్షరం *f = format; *f; f++)
+    ఒకవేళ (*f == '%' && *++f != '%')
       {
-        if (percent)
+        ఒకవేళ (percent)
           error (EXIT_FAILURE, 0,
                  _("too many %% conversion specifications in suffix"));
         percent = true;
-        int flags;
+        పూర్ణాంకం flags;
         f += get_format_flags (f, &flags);
-        while (c_isdigit (*f))
+        అయితే (c_isdigit (*f))
           f++;
-        if (*f == '.')
-          while (c_isdigit (*++f))
-            continue;
+        ఒకవేళ (*f == '.')
+          అయితే (c_isdigit (*++f))
+            కొనసాగు;
         check_format_conv_type (f, flags);
       }
 
-  if (! percent)
+  ఒకవేళ (! percent)
     error (EXIT_FAILURE, 0,
            _("missing %% conversion specification in suffix"));
 
-  int maxlen = snprintf (NULL, 0, format, INT_MAX);
-  if (! (0 <= maxlen && maxlen <= IDX_MAX))
+  పూర్ణాంకం maxlen = snprintf (ఖాళీ, 0, format, గరిష్ఠ_పూర్ణాంకం);
+  ఒకవేళ (! (0 <= maxlen && maxlen <= IDX_MAX))
     xalloc_die ();
-  return maxlen;
+  తిరిగి maxlen;
 }
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
-  int optc;
+  పూర్ణాంకం optc;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
@@ -1293,168 +1293,168 @@ main (int argc, char **argv)
 
   global_argv = argv;
 
-  while ((optc = getopt_long (argc, argv, "f:b:kn:sqz", longopts, NULL))
+  అయితే ((optc = getopt_long (argc, argv, "f:b:kn:sqz", longopts, ఖాళీ))
          != -1)
-    switch (optc)
+    ఎంపిక (optc)
       {
-      case 'f':
-        prefix = optarg;
-        break;
+      స్థితి 'f':
+        ఉపసర్గ = optarg;
+        ఆపు;
 
-      case 'b':
+      స్థితి 'b':
         suffix = optarg;
-        break;
+        ఆపు;
 
-      case 'k':
+      స్థితి 'k':
         remove_files = false;
-        break;
+        ఆపు;
 
-      case 'n':
-        digits = xdectoimax (optarg, 0, MIN (INT_MAX, IDX_MAX), "",
+      స్థితి 'n':
+        digits = xdectoimax (optarg, 0, MIN (గరిష్ఠ_పూర్ణాంకం, IDX_MAX), "",
                              _("invalid number"), 0);
-        break;
+        ఆపు;
 
-      case 's':
-      case 'q':
-        suppress_count = true;
-        break;
+      స్థితి 's':
+      స్థితి 'q':
+        suppress_లెక్క = true;
+        ఆపు;
 
-      case 'z':
-        elide_empty_files = true;
-        break;
+      స్థితి 'z':
+        elide_ఖాళీలు_files = true;
+        ఆపు;
 
-      case SUPPRESS_MATCHED_OPTION:
+      స్థితి SUPPRESS_MATCHED_OPTION:
         suppress_matched = true;
-        break;
+        ఆపు;
 
       case_GETOPT_HELP_CHAR;
 
-      case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+      case_GETOPT_సంస్కరణ_CHAR (కార్యక్రమం_NAME, AUTHORS);
 
-      default:
+      అప్రమేయ:
         usage (EXIT_FAILURE);
       }
 
-  if (argc - optind < 2)
+  ఒకవేళ (argc - optind < 2)
     {
-      if (argc <= optind)
+      ఒకవేళ (argc <= optind)
         error (0, 0, _("missing operand"));
-      else
+      లేకపోతే
         error (0, 0, _("missing operand after %s"), quote (argv[argc - 1]));
       usage (EXIT_FAILURE);
     }
 
-  idx_t prefix_len = strlen (prefix);
+  idx_t ఉపసర్గ_len = అక్షరశ్రేణి_పొడవు (ఉపసర్గ);
   idx_t max_digit_string_len
     = (suffix
-       ? max_out (suffix)
-       : MAX (INT_STRLEN_BOUND (int), digits));
-  idx_t filename_size;
-  if (ckd_add (&filename_size, prefix_len, max_digit_string_len + 1))
+       ? max_బహిర్గతం (suffix)
+       : MAX (INT_STRLEN_BOUND (పూర్ణాంకం), digits));
+  idx_t filename_కొలత;
+  ఒకవేళ (ckd_కూడు (&filename_కొలత, ఉపసర్గ_len, max_digit_string_len + 1))
     xalloc_die ();
-  filename_space = ximalloc (filename_size);
+  filename_space = ximalloc (filename_కొలత);
 
-  set_input_file (argv[optind++]);
+  సమితి_ఆదానం_file (argv[optind++]);
 
   parse_patterns (argc, optind, argv);
 
   {
-    enum { nsigs = countof (term_sig) };
+    గణన { nsigs = countof (పదం_sig) };
 
-    struct sigaction act;
+    నిర్మాణం sigaction act;
 
-    sigemptyset (&caught_signals);
-    for (int i = 0; i < nsigs; i++)
+    sigemptyset (&caught_సంకేతాలు);
+    కొరకు (పూర్ణాంకం i = 0; i < nsigs; i++)
       {
-        sigaction (term_sig[i], NULL, &act);
-        if (act.sa_handler != SIG_IGN)
-          sigaddset (&caught_signals, term_sig[i]);
+        sigaction (పదం_sig[i], ఖాళీ, &act);
+        ఒకవేళ (act.sa_handler != SIG_IGN)
+          sigaddset (&caught_సంకేతాలు, పదం_sig[i]);
       }
 
-    act.sa_handler = interrupt_handler;
-    act.sa_mask = caught_signals;
+    act.sa_handler = అంతరాయం_handler;
+    act.sa_mask = caught_సంకేతాలు;
     act.sa_flags = 0;
 
-    for (int i = 0; i < nsigs; i++)
-      if (sigismember (&caught_signals, term_sig[i]))
-        sigaction (term_sig[i], &act, NULL);
+    కొరకు (పూర్ణాంకం i = 0; i < nsigs; i++)
+      ఒకవేళ (sigismember (&caught_సంకేతాలు, పదం_sig[i]))
+        sigaction (పదం_sig[i], &act, ఖాళీ);
   }
 
-  split_file ();
+  విభజించు_file ();
 
-  if (close (STDIN_FILENO) != 0)
+  ఒకవేళ (close (STDIN_FILENO) != 0)
     {
       error (0, errno, _("read error"));
       cleanup_fatal ();
     }
 
-  return EXIT_SUCCESS;
+  తిరిగి EXIT_SUCCESS;
 }
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("\
-Usage: %s [OPTION]... FILE PATTERN...\n\
+      రాయి (_("\
+Usage: %s [OPTION]... FILE నమూనా...\n\
 "),
-              program_name);
+              కార్యక్రమం_name);
       fputs (_("\
-Output pieces of FILE separated by PATTERN(s) to files 'xx00', 'xx01', ...,\n\
-and output byte counts of each piece to standard output.\n\
+Output pieces యొక్క FILE separated by నమూనా(s) గమ్యం files 'xx00', 'xx01', ...,\n\
+and output byte counts యొక్క each piece గమ్యం standard output.\n\
 "), stdout);
        fputs (_("\
 \n\
-Read standard input if FILE is -\n\
+Read standard ఆదానం ఒకవేళ FILE is -\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
 
       oputs (_("\
   -b, --suffix-format=FORMAT\n\
-         use sprintf FORMAT instead of %02d\n\
+         use sprintf FORMAT instead యొక్క %02d\n\
 "));
       oputs (_("\
-  -f, --prefix=PREFIX\n\
-         use PREFIX instead of 'xx'\n\
+  -f, --ఉపసర్గ=ఉపసర్గ_2\n\
+         use ఉపసర్గ_2 instead యొక్క 'xx'\n\
 "));
       oputs (_("\
   -k, --keep-files\n\
-         do not remove output files on errors\n\
+         చేయి not remove output files on errors\n\
 "));
       oputs (_("\
       --suppress-matched\n\
-         suppress the lines matching PATTERN\n\
+         suppress the పంక్తులు matching నమూనా\n\
 "));
       oputs (_("\
   -n, --digits=DIGITS\n\
-         use specified number of digits instead of 2\n\
+         use specified సంఖ్య యొక్క digits instead యొక్క 2\n\
 "));
       oputs (_("\
   -s, --quiet, --silent\n\
-         do not print counts of output file sizes\n\
+         చేయి not print counts యొక్క output file sizes\n\
 "));
       oputs (_("\
-  -z, --elide-empty-files\n\
-         suppress empty output files\n\
+  -z, --elide-ఖాళీలు-files\n\
+         suppress ఖాళీలు output files\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-Each PATTERN may be:\n\
-  INTEGER            copy up to but not including specified line number\n\
-  /REGEXP/[OFFSET]   copy up to but not including a matching line\n\
-  %REGEXP%[OFFSET]   skip to, but not including a matching line\n\
-  {INTEGER}          repeat the previous pattern specified number of times\n\
-  {*}                repeat the previous pattern as many times as possible\n\
+Each నమూనా may be:\n\
+  INTEGER            copy పైకి గమ్యం but not including specified పంక్తి సంఖ్య\n\
+  /REGEXP/[స్థానభ్రంశం_2]   copy పైకి గమ్యం but not including a matching పంక్తి\n\
+  %REGEXP%[స్థానభ్రంశం_2]   skip గమ్యం, but not including a matching పంక్తి\n\
+  {INTEGER}          repeat the మునుపటి నమూనా_2 specified సంఖ్య యొక్క times\n\
+  {*}                repeat the మునుపటి నమూనా_2 as many times as possible\n\
 \n\
-A line OFFSET is an integer optionally preceded by '+' or '-'\n\
+A పంక్తి స్థానభ్రంశం_2 is an integer optionally preceded by '+' or '-'\n\
 "), stdout);
-      emit_ancillary_info (PROGRAM_NAME);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }

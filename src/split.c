@@ -19,118 +19,118 @@
    TODO:
    * support -p REGEX as in BSD's split.
    * support --suppress-matched as in csplit.  */
-#include <config.h>
+#అన్తర్భావ <config.h>
 
-#include <stdio.h>
-#include <getopt.h>
-#include <signal.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <spawn.h>
+#అన్తర్భావ <stdio.h>
+#అన్తర్భావ <getopt.h>
+#అన్తర్భావ <signal.h>
+#అన్తర్భావ <sys/types.h>
+#అన్తర్భావ <sys/wait.h>
+#అన్తర్భావ <spawn.h>
 
-#include "system.h"
-#include "alignalloc.h"
-#include "assure.h"
-#include "fadvise.h"
-#include "fd-reopen.h"
-#include "fcntl--.h"
-#include "full-write.h"
-#include "ioblksize.h"
-#include "quote.h"
-#include "sig2str.h"
-#include "sys-limits.h"
-#include "temp-stream.h"
-#include "unistd--.h"
-#include "xbinary-io.h"
-#include "xdectoint.h"
-#include "xstrtol.h"
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "alignalloc.h"
+#అన్తర్భావ "assure.h"
+#అన్తర్భావ "fadvise.h"
+#అన్తర్భావ "fd-reopen.h"
+#అన్తర్భావ "fcntl--.h"
+#అన్తర్భావ "full-write.h"
+#అన్తర్భావ "ioblksize.h"
+#అన్తర్భావ "quote.h"
+#అన్తర్భావ "sig2str.h"
+#అన్తర్భావ "sys-limits.h"
+#అన్తర్భావ "temp-stream.h"
+#అన్తర్భావ "unistd--.h"
+#అన్తర్భావ "xbinary-io.h"
+#అన్తర్భావ "xdectoint.h"
+#అన్తర్భావ "xstrtol.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "split"
+#నిర్వచించు కార్యక్రమం_NAME "split"
 
-#define AUTHORS \
+#నిర్వచించు AUTHORS \
   proper_name_lite ("Torbjorn Granlund", "Torbj\303\266rn Granlund"), \
   proper_name ("Richard M. Stallman")
 
 /* Shell command to filter through, instead of creating files.  */
-static char const *filter_command;
+స్థిర అక్షరం స్థిరరాశి *filter_command;
 
 /* Process ID of the filter.  */
-static pid_t filter_pid;
+స్థిర pid_t filter_pid;
 
-static struct
+స్థిర నిర్మాణం
 {
   /* The number of open pipes.  */
-  int n_pipes;
+  పూర్ణాంకం n_pipes;
 
   /* The number of allocated pipes.  */
   idx_t n_pipes_alloc;
 
   /* Array of open pipes.  */
-  int *pipes COUNTED_BY (n_pipes);
+  పూర్ణాంకం *pipes COUNTED_BY (n_pipes);
 } open_pipes;
 
 /* Whether SIGPIPE has the default action, when --filter is used.  */
-static bool default_SIGPIPE;
+స్థిర bool default_SIGPIPE;
 
 /* Base name of output files.  */
-static char const *outbase = "x";
+స్థిర అక్షరం స్థిరరాశి *outbase = "x";
 
 /* Name of output files.  */
-static char *outfile;
+స్థిర అక్షరం *outfile;
 
 /* Pointer to the end of the prefix in OUTFILE.
    Suffixes are inserted here.  */
-static char *outfile_mid;
+స్థిర అక్షరం *outfile_mid;
 
 /* Generate new suffix when suffixes are exhausted.  */
-static bool suffix_auto = true;
+స్థిర bool suffix_auto = true;
 
 /* Length of OUTFILE's suffix.  */
-static idx_t suffix_length;
+స్థిర idx_t suffix_నిడివి;
 
 /* Alphabet of characters to use in suffix.  */
-static char const *suffix_alphabet = "abcdefghijklmnopqrstuvwxyz";
+స్థిర అక్షరం స్థిరరాశి *suffix_alphabet = "abcdefghijklmnopqrstuvwxyz";
 
 /* Numerical suffix start value.  */
-static char const *numeric_suffix_start;
+స్థిర అక్షరం స్థిరరాశి *numeric_suffix_ప్రారంభం;
 
 /* Additional suffix to append to output file names.  */
-static char const *additional_suffix;
+స్థిర అక్షరం స్థిరరాశి *additional_suffix;
 
 /* Name of input file.  May be "-".  */
-static char const *infile = "-";
+స్థిర అక్షరం స్థిరరాశి *infile = "-";
 
 /* stat buf for input file.  */
-static struct stat in_stat_buf;
+స్థిర నిర్మాణం stat లోపల_stat_buf;
 
 /* Descriptor on which output file is open.  */
-static int output_desc = -1;
+స్థిర పూర్ణాంకం output_desc = -1;
 
 /* If true, print a diagnostic on standard error just before each
    output file is opened. */
-static bool verbose;
+స్థిర bool verbose;
 
 /* If true, don't generate zero length output files. */
-static bool elide_empty_files;
+స్థిర bool elide_ఖాళీలు_files;
 
 /* If true, in round robin mode, immediately copy
    input to output, which is much slower, so disabled by default.  */
-static bool unbuffered;
+స్థిర bool unbuffered;
 
 /* The character marking end of line.  Defaults to \n below.  */
-static int eolchar = -1;
+స్థిర పూర్ణాంకం eolchar = -1;
 
 /* The split mode to use.  */
-enum Split_type
+గణన విభజించు_type
 {
-  type_undef, type_bytes, type_byteslines, type_lines, type_digits,
-  type_chunk_bytes, type_chunk_lines, type_rr
+  type_undef, type_బైట్లు, type_byteslines, type_పంక్తులు, type_digits,
+  type_chunk_బైట్లు, type_chunk_పంక్తులు, type_rr
 };
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+గణన
 {
   VERBOSE_OPTION = CHAR_MAX + 1,
   FILTER_OPTION,
@@ -138,125 +138,125 @@ enum
   ADDITIONAL_SUFFIX_OPTION
 };
 
-static struct option const longopts[] =
+స్థిర నిర్మాణం option స్థిరరాశి longopts[] =
 {
-  {"bytes", required_argument, NULL, 'b'},
-  {"lines", required_argument, NULL, 'l'},
-  {"line-bytes", required_argument, NULL, 'C'},
-  {"number", required_argument, NULL, 'n'},
-  {"elide-empty-files", no_argument, NULL, 'e'},
-  {"unbuffered", no_argument, NULL, 'u'},
-  {"suffix-length", required_argument, NULL, 'a'},
-  {"additional-suffix", required_argument, NULL,
+  {"bytes", required_వాదం, ఖాళీ, 'b'},
+  {"lines", required_వాదం, ఖాళీ, 'l'},
+  {"line-bytes", required_వాదం, ఖాళీ, 'C'},
+  {"number", required_వాదం, ఖాళీ, 'n'},
+  {"elide-empty-files", no_వాదం, ఖాళీ, 'e'},
+  {"unbuffered", no_వాదం, ఖాళీ, 'u'},
+  {"suffix-length", required_వాదం, ఖాళీ, 'a'},
+  {"additional-suffix", required_వాదం, ఖాళీ,
    ADDITIONAL_SUFFIX_OPTION},
-  {"numeric-suffixes", optional_argument, NULL, 'd'},
-  {"hex-suffixes", optional_argument, NULL, 'x'},
-  {"filter", required_argument, NULL, FILTER_OPTION},
-  {"verbose", no_argument, NULL, VERBOSE_OPTION},
-  {"separator", required_argument, NULL, 't'},
-  {"-io-blksize", required_argument, NULL,
+  {"numeric-suffixes", optional_వాదం, ఖాళీ, 'd'},
+  {"hex-suffixes", optional_వాదం, ఖాళీ, 'x'},
+  {"filter", required_వాదం, ఖాళీ, FILTER_OPTION},
+  {"verbose", no_వాదం, ఖాళీ, VERBOSE_OPTION},
+  {"separator", required_వాదం, ఖాళీ, 't'},
+  {"-io-blksize", required_వాదం, ఖాళీ,
    IO_BLKSIZE_OPTION}, /* do not document */
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_సంస్కరణ_OPTION_DECL},
+  {ఖాళీ, 0, ఖాళీ, 0}
 };
 
 /* Return true if the errno value, ERR, is ignorable.  */
-static inline bool
-ignorable (int err)
+స్థిర అంతఃవరుస bool
+ignorable (పూర్ణాంకం err)
 {
-  return filter_command && err == EPIPE;
+  తిరిగి filter_command && err == EPIPE;
 }
 
-static void
-set_suffix_length (intmax_t n_units, enum Split_type split_type)
+స్థిర శూన్య
+సమితి_suffix_నిడివి (intmax_t n_units, గణన విభజించు_type విభజించు_type_2)
 {
-#define DEFAULT_SUFFIX_LENGTH 2
+#నిర్వచించు DEFAULT_SUFFIX_నిడివి 2
 
-  int suffix_length_needed = 0;
+  పూర్ణాంకం suffix_నిడివి_needed = 0;
 
   /* The suffix auto length feature is incompatible with
      a user specified start value as the generated suffixes
      are not all consecutive.  */
-  if (numeric_suffix_start)
+  ఒకవేళ (numeric_suffix_ప్రారంభం)
     suffix_auto = false;
 
   /* Auto-calculate the suffix length if the number of files is given.  */
-  if (split_type == type_chunk_bytes || split_type == type_chunk_lines
-      || split_type == type_rr)
+  ఒకవేళ (విభజించు_type_2 == type_chunk_బైట్లు || విభజించు_type_2 == type_chunk_పంక్తులు
+      || విభజించు_type_2 == type_rr)
     {
-      intmax_t n_units_end = n_units - 1;
-      if (numeric_suffix_start)
+      intmax_t n_units_చివర = n_units - 1;
+      ఒకవేళ (numeric_suffix_ప్రారంభం)
         {
-          intmax_t n_start;
-          strtol_error e = xstrtoimax (numeric_suffix_start, NULL, 10,
-                                       &n_start, "");
-          if (e == LONGINT_OK && n_start < n_units)
+          intmax_t n_ప్రారంభం;
+          strtol_error e = xstrtoimax (numeric_suffix_ప్రారంభం, ఖాళీ, 10,
+                                       &n_ప్రారంభం, "");
+          ఒకవేళ (e == LONGINT_OK && n_ప్రారంభం < n_units)
             {
               /* Restrict auto adjustment so we don't keep
                  incrementing a suffix size arbitrarily,
                  as that would break sort order for files
                  generated from multiple split runs.  */
-              if (ckd_add (&n_units_end, n_units_end, n_start))
-                n_units_end = INTMAX_MAX;
+              ఒకవేళ (ckd_కూడు (&n_units_చివర, n_units_చివర, n_ప్రారంభం))
+                n_units_చివర = INTMAX_MAX;
             }
 
         }
-      idx_t alphabet_len = strlen (suffix_alphabet);
-      do
-        suffix_length_needed++;
-      while (n_units_end /= alphabet_len);
+      idx_t alphabet_len = అక్షరశ్రేణి_పొడవు (suffix_alphabet);
+      చేయి
+        suffix_నిడివి_needed++;
+      అయితే (n_units_చివర /= alphabet_len);
 
       suffix_auto = false;
     }
 
-  if (suffix_length)            /* set by user */
+  ఒకవేళ (suffix_నిడివి)            /* set by user */
     {
-      if (suffix_length < suffix_length_needed)
+      ఒకవేళ (suffix_నిడివి < suffix_నిడివి_needed)
         error (EXIT_FAILURE, 0,
                _("the suffix length needs to be at least %d"),
-               suffix_length_needed);
+               suffix_నిడివి_needed);
       suffix_auto = false;
-      return;
+      తిరిగి;
     }
-  else
-    suffix_length = MAX (DEFAULT_SUFFIX_LENGTH, suffix_length_needed);
+  లేకపోతే
+    suffix_నిడివి = MAX (DEFAULT_SUFFIX_నిడివి, suffix_నిడివి_needed);
 }
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("\
-Usage: %s [OPTION]... [FILE [PREFIX]]\n\
+      రాయి (_("\
+Usage: %s [OPTION]... [FILE [ఉపసర్గ_2]]\n\
 "),
-              program_name);
+              కార్యక్రమం_name);
       fputs (_("\
-Output pieces of FILE to PREFIXaa, PREFIXab, ...;\n\
-default size is 1000 lines, and default PREFIX is 'x'.\n\
+Output pieces యొక్క FILE గమ్యం PREFIXaa, PREFIXab, ...;\n\
+అప్రమేయ కొలత is 1000 పంక్తులు, and అప్రమేయ ఉపసర్గ_2 is 'x'.\n\
 "), stdout);
 
       emit_stdin_note ();
       emit_mandatory_arg_note ();
 
       oprintf (_("\
-  -a, --suffix-length=N\n\
-         generate suffixes of length N (default %d)\n\
-"), DEFAULT_SUFFIX_LENGTH);
+  -a, --suffix-నిడివి=N\n\
+         generate suffixes యొక్క నిడివి N (అప్రమేయ %d)\n\
+"), DEFAULT_SUFFIX_నిడివి);
       oputs (_("\
       --additional-suffix=SUFFIX\n\
-         append an additional SUFFIX to file names\n\
+         append an additional SUFFIX గమ్యం file పేర్లు\n\
 "));
       oputs (_("\
-  -b, --bytes=SIZE\n\
-         put SIZE bytes per output file\n\
+  -b, --బైట్లు=కొలత_2\n\
+         put కొలత_2 బైట్లు చొప్పున output file\n\
 "));
       oputs (_("\
-  -C, --line-bytes=SIZE\n\
-         put at most SIZE bytes of records per output file\n\
+  -C, --పంక్తి-బైట్లు=కొలత_2\n\
+         put at most కొలత_2 బైట్లు యొక్క రికార్డులు చొప్పున output file\n\
 "));
       oputs (_("\
   -d\n\
@@ -264,7 +264,7 @@ default size is 1000 lines, and default PREFIX is 'x'.\n\
 "));
       oputs (_("\
       --numeric-suffixes[=FROM]\n\
-         same as -d, but allow setting the start value\n\
+         same as -d, but allow setting the ప్రారంభం విలువ\n\
 "));
       oputs (_("\
   -x\n\
@@ -272,89 +272,89 @@ default size is 1000 lines, and default PREFIX is 'x'.\n\
 "));
       oputs (_("\
       --hex-suffixes[=FROM]\n\
-         same as -x, but allow setting the start value\n\
+         same as -x, but allow setting the ప్రారంభం విలువ\n\
 "));
       oputs (_("\
-  -e, --elide-empty-files\n\
-         do not generate empty output files with '-n'\n\
+  -e, --elide-ఖాళీలు-files\n\
+         చేయి not generate ఖాళీలు output files with '-n'\n\
 "));
       oputs (_("\
       --filter=COMMAND\n\
-         write to shell COMMAND; file name is $FILE\n\
+         లిఖ గమ్యం shell COMMAND; file name is $FILE\n\
 "));
       oputs (_("\
-  -l, --lines=NUMBER\n\
-         put NUMBER lines/records per output file\n\
+  -l, --పంక్తులు=సంఖ్య_2\n\
+         put సంఖ్య_2 పంక్తులు/రికార్డులు చొప్పున output file\n\
 "));
       oputs (_("\
-  -n, --number=CHUNKS\n\
-         generate CHUNKS output files; see explanation below\n\
+  -n, --సంఖ్య=CHUNKS\n\
+         generate CHUNKS output files; see explanation క్రింద\n\
 "));
       oputs (_("\
   -t, --separator=SEP\n\
-         use SEP instead of newline as the record separator;\n\
+         use SEP instead యొక్క newline as the రికార్డు separator;\n\
          '\\0' (zero) specifies the NUL character\n\
 "));
       oputs (_("\
   -u, --unbuffered\n\
-         immediately copy input to output with '-n r/...'\n\
+         immediately copy ఆదానం గమ్యం output with '-n r/...'\n\
 "));
       oputs (_("\
       --verbose\n\
          print a diagnostic just before each output file is opened\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_size_note ();
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
+      emit_కొలత_note ();
       fputs (_("\n\
 CHUNKS may be:\n\
-  N       split into N files based on size of input\n\
-  K/N     output Kth of N to standard output\n\
-  l/N     split into N files without splitting lines/records\n\
-  l/K/N   output Kth of N to standard output without splitting lines/records\n\
-  r/N     like 'l' but use round robin distribution\n\
-  r/K/N   likewise but only output Kth of N to standard output\n\
+  N       విభజించు into N files based on కొలత యొక్క ఆదానం\n\
+  K/N     output Kth యొక్క N గమ్యం standard output\n\
+  l/N     విభజించు into N files without splitting పంక్తులు/రికార్డులు\n\
+  l/K/N   output Kth యొక్క N గమ్యం standard output without splitting పంక్తులు/రికార్డులు\n\
+  r/N     like 'l' but use విడత_2 robin distribution\n\
+  r/K/N   likewise but only output Kth యొక్క N గమ్యం standard output\n\
 "), stdout);
       fputs (_("\n\
--n (except -nr) will buffer to $TMPDIR, defaulting to /tmp,\n\
-if the input size cannot easily be determined.\n\
+-n (except -nr) will బఫరు గమ్యం $TMPDIR, defaulting గమ్యం /tmp,\n\
+ఒకవేళ the ఆదానం కొలత cannot easily be determined.\n\
 "), stdout);
-      emit_ancillary_info (PROGRAM_NAME);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
 /* Copy the data in FD to a temporary file, then make that file FD.
    Use BUF, of size BUFSIZE, to copy.  Return the number of
    bytes copied, or -1 (setting errno) on error.  */
-static off_t
-copy_to_tmpfile (int fd, char *buf, idx_t bufsize)
+స్థిర off_t
+copy_గమ్యం_tmpfile (పూర్ణాంకం fd, అక్షరం *buf, idx_t bufsize)
 {
   FILE *tmp;
-  if (!temp_stream (&tmp, NULL))
-    return -1;
+  ఒకవేళ (!తాత్కాలిక_ప్రవాహం (&tmp, ఖాళీ))
+    తిరిగి -1;
   off_t copied = 0;
   off_t r;
 
-  while (0 < (r = read (fd, buf, bufsize)))
+  అయితే (0 < (r = పఠ (fd, buf, bufsize)))
     {
-      if (fwrite (buf, 1, r, tmp) != r)
-        return -1;
-      if (ckd_add (&copied, copied, r))
+      ఒకవేళ (fwrite (buf, 1, r, tmp) != r)
+        తిరిగి -1;
+      ఒకవేళ (ckd_కూడు (&copied, copied, r))
         {
           errno = EOVERFLOW;
-          return -1;
+          తిరిగి -1;
         }
     }
 
-  if (r < 0)
-    return r;
+  ఒకవేళ (r < 0)
+    తిరిగి r;
   r = dup2 (fileno (tmp), fd);
-  if (r < 0)
-    return r;
-  if (fclose (tmp) < 0)
-    return -1;
-  return copied;
+  ఒకవేళ (r < 0)
+    తిరిగి r;
+  ఒకవేళ (fclose (tmp) < 0)
+    తిరిగి -1;
+  తిరిగి copied;
 }
 
 /* Return the number of bytes that can be read from FD with status ST.
@@ -362,154 +362,154 @@ copy_to_tmpfile (int fd, char *buf, idx_t bufsize)
    and advance the file position by the number of bytes read.  On
    input error, set errno and return -1.  */
 
-static off_t
-input_file_size (int fd, struct stat const *st, char *buf, idx_t bufsize)
+స్థిర off_t
+ఆదానం_file_కొలత (పూర్ణాంకం fd, నిర్మాణం stat స్థిరరాశి *st, అక్షరం *buf, idx_t bufsize)
 {
-  off_t size = 0;
-  do
+  off_t కొలత = 0;
+  చేయి
     {
-      ssize_t n_read = read (fd, buf + size, bufsize - size);
-      if (n_read <= 0)
-        return n_read < 0 ? n_read : size;
-      size += n_read;
+      ssize_t n_read = పఠ (fd, buf + కొలత, bufsize - కొలత);
+      ఒకవేళ (n_read <= 0)
+        తిరిగి n_read < 0 ? n_read : కొలత;
+      కొలత += n_read;
     }
-  while (size < bufsize);
+  అయితే (కొలత < bufsize);
 
-  off_t cur, end;
-  if ((usable_st_size (st) && st->st_size < size)
+  off_t cur, చివర;
+  ఒకవేళ ((usable_st_కొలత (st) && st->st_కొలత < కొలత)
       || (cur = lseek (fd, 0, SEEK_CUR)) < 0
-      || cur < size /* E.g., /dev/zero on GNU/Linux.  */
-      || (end = lseek (fd, 0, SEEK_END)) < 0)
+      || cur < కొలత /* E.g., /dev/zero on GNU/Linux.  */
+      || (చివర = lseek (fd, 0, SEEK_END)) < 0)
     {
-      char *tmpbuf = xmalloc (bufsize);
-      end = copy_to_tmpfile (fd, tmpbuf, bufsize);
-      free (tmpbuf);
-      if (end < 0)
-        return end;
+      అక్షరం *tmpbuf = xmalloc (bufsize);
+      చివర = copy_గమ్యం_tmpfile (fd, tmpbuf, bufsize);
+      విడుదల (tmpbuf);
+      ఒకవేళ (చివర < 0)
+        తిరిగి చివర;
       cur = 0;
     }
 
-  if (end == OFF_T_MAX /* E.g., /dev/zero on GNU/Hurd.  */
-      || (cur < end && ckd_add (&size, size, end - cur)))
+  ఒకవేళ (చివర == OFF_T_MAX /* E.g., /dev/zero on GNU/Hurd.  */
+      || (cur < చివర && ckd_కూడు (&కొలత, కొలత, చివర - cur)))
     {
       errno = EOVERFLOW;
-      return -1;
+      తిరిగి -1;
     }
 
-  if (cur < end)
+  ఒకవేళ (cur < చివర)
     {
       off_t r = lseek (fd, cur, SEEK_SET);
-      if (r < 0)
-        return r;
+      ఒకవేళ (r < 0)
+        తిరిగి r;
     }
 
-  return size;
+  తిరిగి కొలత;
 }
 
 /* Compute the next sequential output file name and store it into the
    string 'outfile'.  */
 
-static void
-next_file_name (void)
+స్థిర శూన్య
+తదుపరి_file_name (శూన్య)
 {
   /* Index in suffix_alphabet of each character in the suffix.  */
-  static idx_t *sufindex;
-  static idx_t outbase_length;
-  static idx_t outfile_length;
-  static idx_t addsuf_length;
+  స్థిర idx_t *sufindex;
+  స్థిర idx_t outbase_నిడివి;
+  స్థిర idx_t outfile_నిడివి;
+  స్థిర idx_t addsuf_నిడివి;
 
-  if (! outfile)
+  ఒకవేళ (! outfile)
     {
-      bool overflow, widen;
+      bool అధికప్రవాహం, widen;
 
 new_name:
-      widen = !! outfile_length;
+      widen = !! outfile_నిడివి;
 
-      if (! widen)
+      ఒకవేళ (! widen)
         {
           /* Allocate and initialize the first file name.  */
 
-          outbase_length = strlen (outbase);
-          addsuf_length = additional_suffix ? strlen (additional_suffix) : 0;
-          overflow = ckd_add (&outfile_length, outbase_length + addsuf_length,
-                              suffix_length);
+          outbase_నిడివి = అక్షరశ్రేణి_పొడవు (outbase);
+          addsuf_నిడివి = additional_suffix ? అక్షరశ్రేణి_పొడవు (additional_suffix) : 0;
+          అధికప్రవాహం = ckd_కూడు (&outfile_నిడివి, outbase_నిడివి + addsuf_నిడివి,
+                              suffix_నిడివి);
         }
-      else
+      లేకపోతే
         {
           /* Reallocate and initialize a new wider file name.
              We do this by subsuming the unchanging part of
              the generated suffix into the prefix (base), and
              reinitializing the now one longer suffix.  */
 
-          overflow = ckd_add (&outfile_length, outfile_length, 2);
-          suffix_length++;
+          అధికప్రవాహం = ckd_కూడు (&outfile_నిడివి, outfile_నిడివి, 2);
+          suffix_నిడివి++;
         }
 
-      idx_t outfile_size;
-      overflow |= ckd_add (&outfile_size, outfile_length, 1);
-      if (overflow)
+      idx_t outfile_కొలత;
+      అధికప్రవాహం |= ckd_కూడు (&outfile_కొలత, outfile_నిడివి, 1);
+      ఒకవేళ (అధికప్రవాహం)
         xalloc_die ();
-      outfile = xirealloc (outfile, outfile_size);
+      outfile = xirealloc (outfile, outfile_కొలత);
 
-      if (! widen)
-        memcpy (outfile, outbase, outbase_length);
-      else
+      ఒకవేళ (! widen)
+        జ్ఞాపకం_నకలు (outfile, outbase, outbase_నిడివి);
+      లేకపోతే
         {
           /* Append the last alphabet character to the file name prefix.  */
-          outfile[outbase_length] = suffix_alphabet[sufindex[0]];
-          outbase_length++;
+          outfile[outbase_నిడివి] = suffix_alphabet[sufindex[0]];
+          outbase_నిడివి++;
         }
 
-      outfile_mid = outfile + outbase_length;
-      memset (outfile_mid, suffix_alphabet[0], suffix_length);
-      if (additional_suffix)
-        memcpy (outfile_mid + suffix_length, additional_suffix, addsuf_length);
-      outfile[outfile_length] = 0;
+      outfile_mid = outfile + outbase_నిడివి;
+      memset (outfile_mid, suffix_alphabet[0], suffix_నిడివి);
+      ఒకవేళ (additional_suffix)
+        జ్ఞాపకం_నకలు (outfile_mid + suffix_నిడివి, additional_suffix, addsuf_నిడివి);
+      outfile[outfile_నిడివి] = 0;
 
-      free (sufindex);
-      sufindex = xicalloc (suffix_length, sizeof *sufindex);
+      విడుదల (sufindex);
+      sufindex = xicalloc (suffix_నిడివి, పరిమాణం *sufindex);
 
-      if (numeric_suffix_start)
+      ఒకవేళ (numeric_suffix_ప్రారంభం)
         {
           affirm (! widen);
 
           /* Update the output file name.  */
-          idx_t i = strlen (numeric_suffix_start);
-          memcpy (outfile_mid + suffix_length - i, numeric_suffix_start, i);
+          idx_t i = అక్షరశ్రేణి_పొడవు (numeric_suffix_ప్రారంభం);
+          జ్ఞాపకం_నకలు (outfile_mid + suffix_నిడివి - i, numeric_suffix_ప్రారంభం, i);
 
           /* Update the suffix index.  */
-          idx_t *sufindex_end = sufindex + suffix_length;
-          while (i-- != 0)
-            *--sufindex_end = numeric_suffix_start[i] - '0';
+          idx_t *sufindex_చివర = sufindex + suffix_నిడివి;
+          అయితే (i-- != 0)
+            *--sufindex_చివర = numeric_suffix_ప్రారంభం[i] - '0';
         }
 
-#if ! _POSIX_NO_TRUNC && HAVE_PATHCONF && defined _PC_NAME_MAX
+#ఒకవేళ ! _POSIX_NO_TRUNC && HAVE_PATHCONF && defined _PC_NAME_MAX
       /* POSIX requires that if the output file name is too long for
          its directory, 'split' must fail without creating any files.
          This must be checked for explicitly on operating systems that
          silently truncate file names.  */
       {
-        char *dir = dir_name (outfile);
-        long name_max = pathconf (dir, _PC_NAME_MAX);
-        if (0 <= name_max && name_max < base_len (last_component (outfile)))
+        అక్షరం *dir = dir_name (outfile);
+        దీర్ఘ name_max = pathconf (dir, _PC_NAME_MAX);
+        ఒకవేళ (0 <= name_max && name_max < పునాది_len (చివరి_component (outfile)))
           error (EXIT_FAILURE, ENAMETOOLONG, "%s", quotef (outfile));
-        free (dir);
+        విడుదల (dir);
       }
-#endif
+#అయితే_ముగింపు
     }
-  else
+  లేకపోతే
     {
       /* Increment the suffix in place, if possible.  */
 
-      idx_t i = suffix_length;
-      while (i-- != 0)
+      idx_t i = suffix_నిడివి;
+      అయితే (i-- != 0)
         {
           sufindex[i]++;
-          if (suffix_auto && i == 0 && ! suffix_alphabet[sufindex[0] + 1])
-            goto new_name;
+          ఒకవేళ (suffix_auto && i == 0 && ! suffix_alphabet[sufindex[0] + 1])
+            వెళ్ళు new_name;
           outfile_mid[i] = suffix_alphabet[sufindex[i]];
-          if (outfile_mid[i])
-            return;
+          ఒకవేళ (outfile_mid[i])
+            తిరిగి;
           sufindex[i] = 0;
           outfile_mid[i] = suffix_alphabet[sufindex[i]];
         }
@@ -519,163 +519,163 @@ new_name:
 
 /* Create or truncate a file.  */
 
-static int
-create (char const *name)
+స్థిర పూర్ణాంకం
+create (అక్షరం స్థిరరాశి *name)
 {
-  if (!filter_command)
+  ఒకవేళ (!filter_command)
     {
-      if (verbose)
+      ఒకవేళ (verbose)
         fprintf (stdout, _("creating file %s\n"), quoteaf (name));
 
-      int oflags = O_WRONLY | O_CREAT | O_BINARY;
-      int fd = open (name, oflags | O_EXCL, MODE_RW_UGO);
-      if (0 <= fd || errno != EEXIST)
-        return fd;
-      fd = open (name, oflags, MODE_RW_UGO);
-      if (fd < 0)
-        return fd;
-      struct stat out_stat_buf;
-      if (fstat (fd, &out_stat_buf) != 0)
+      పూర్ణాంకం oflags = O_WRONLY | O_CREAT | O_ద్విమాన;
+      పూర్ణాంకం fd = open (name, oflags | O_EXCL, బహుళకం_RW_UGO);
+      ఒకవేళ (0 <= fd || errno != EEXIST)
+        తిరిగి fd;
+      fd = open (name, oflags, బహుళకం_RW_UGO);
+      ఒకవేళ (fd < 0)
+        తిరిగి fd;
+      నిర్మాణం stat బహిర్గతం_stat_buf;
+      ఒకవేళ (fstat (fd, &బహిర్గతం_stat_buf) != 0)
         error (EXIT_FAILURE, errno, _("failed to stat %s"), quoteaf (name));
-      if (psame_inode (&in_stat_buf, &out_stat_buf))
+      ఒకవేళ (psame_inode (&లోపల_stat_buf, &బహిర్గతం_stat_buf))
         error (EXIT_FAILURE, 0, _("%s would overwrite input; aborting"),
                quoteaf (name));
-      if (ftruncate (fd, 0) < 0
-          && (S_ISREG (out_stat_buf.st_mode) || S_TYPEISSHM (&out_stat_buf)))
+      ఒకవేళ (ftruncate (fd, 0) < 0
+          && (S_ISREG (బహిర్గతం_stat_buf.st_బహుళకం) || S_TYPEISSHM (&బహిర్గతం_stat_buf)))
         error (EXIT_FAILURE, errno, _("%s: error truncating"), quotef (name));
 
-      return fd;
+      తిరిగి fd;
     }
-  else
+  లేకపోతే
     {
-      if (setenv ("FILE", name, 1) != 0)
+      ఒకవేళ (setenv ("FILE", name, 1) != 0)
         error (EXIT_FAILURE, errno,
                _("failed to set FILE environment variable"));
-      if (verbose)
+      ఒకవేళ (verbose)
         fprintf (stdout, _("executing with FILE=%s\n"), quotef (name));
 
-      int result;
-      int fd_pair[2];
-      pid_t child_pid;
+      పూర్ణాంకం ఫలితం;
+      పూర్ణాంకం fd_pair[2];
+      pid_t బిడ్డ_pid;
 
       posix_spawnattr_t attr;
       posix_spawn_file_actions_t actions;
 
-      sigset_t set;
-      sigemptyset (&set);
-      if (default_SIGPIPE)
-        sigaddset (&set, SIGPIPE);
+      sigset_t సమితి_2;
+      sigemptyset (&సమితి_2);
+      ఒకవేళ (default_SIGPIPE)
+        sigaddset (&సమితి_2, SIGPIPE);
 
-      if (   (result = posix_spawnattr_init (&attr))
-          || (result = posix_spawnattr_setflags (&attr,
+      ఒకవేళ (   (ఫలితం = posix_spawnattr_init (&attr))
+          || (ఫలితం = posix_spawnattr_setflags (&attr,
                                                  (POSIX_SPAWN_USEVFORK
                                                   | POSIX_SPAWN_SETSIGDEF)))
-          || (result = posix_spawnattr_setsigdefault (&attr, &set))
-          || (result = posix_spawn_file_actions_init (&actions))
+          || (ఫలితం = posix_spawnattr_setsigdefault (&attr, &సమితి_2))
+          || (ఫలితం = posix_spawn_file_actions_init (&actions))
          )
-        error (EXIT_FAILURE, result, _("posix_spawn initialization failed"));
+        error (EXIT_FAILURE, ఫలితం, _("posix_spawn initialization failed"));
 
-      if (pipe (fd_pair) != 0)
+      ఒకవేళ (pipe (fd_pair) != 0)
         error (EXIT_FAILURE, errno, _("failed to create pipe"));
 
       /* We have to close any pipes that were opened during an
          earlier call, otherwise this process will be holding a
          write-pipe that will prevent the earlier process from
          reading an EOF on the corresponding read-pipe.  */
-      for (int i = 0; i < open_pipes.n_pipes; ++i)
-        if ((result = posix_spawn_file_actions_addclose (&actions,
+      కొరకు (పూర్ణాంకం i = 0; i < open_pipes.n_pipes; ++i)
+        ఒకవేళ ((ఫలితం = posix_spawn_file_actions_addclose (&actions,
                                                          open_pipes.pipes[i])))
-          break;
+          ఆపు;
 
-      if (   result
-          || (result = posix_spawn_file_actions_addclose (&actions, fd_pair[1]))
+      ఒకవేళ (   ఫలితం
+          || (ఫలితం = posix_spawn_file_actions_addclose (&actions, fd_pair[1]))
           || (fd_pair[0] != STDIN_FILENO
-              && (   (result = posix_spawn_file_actions_adddup2 (&actions,
+              && (   (ఫలితం = posix_spawn_file_actions_adddup2 (&actions,
                                                                  fd_pair[0],
                                                                  STDIN_FILENO))
-                  || (result = posix_spawn_file_actions_addclose (&actions,
+                  || (ఫలితం = posix_spawn_file_actions_addclose (&actions,
                                                                   fd_pair[0]))))
          )
-        error (EXIT_FAILURE, result, _("posix_spawn setup failed"));
+        error (EXIT_FAILURE, ఫలితం, _("posix_spawn setup failed"));
 
 
-      char const *shell_prog = getenv ("SHELL");
-      if (shell_prog == NULL)
+      అక్షరం స్థిరరాశి *shell_prog = getenv ("SHELL");
+      ఒకవేళ (shell_prog == ఖాళీ)
         shell_prog = "/bin/sh";
-      char const *const argv[] = { last_component (shell_prog), "-c",
-                                   filter_command, NULL };
+      అక్షరం స్థిరరాశి *స్థిరరాశి argv[] = { చివరి_component (shell_prog), "-c",
+                                   filter_command, ఖాళీ };
 
-      result = posix_spawn (&child_pid, shell_prog, &actions, &attr,
-                            (char * const *) argv, environ);
-      if (result != 0)
+      ఫలితం = posix_spawn (&బిడ్డ_pid, shell_prog, &actions, &attr,
+                            (అక్షరం * స్థిరరాశి *) argv, environ);
+      ఒకవేళ (ఫలితం != 0)
         error (EXIT_FAILURE, errno, _("failed to run command: \"%s -c %s\""),
                shell_prog, filter_command);
 
       posix_spawnattr_destroy (&attr);
       posix_spawn_file_actions_destroy (&actions);
 
-      if (close (fd_pair[0]) != 0)
+      ఒకవేళ (close (fd_pair[0]) != 0)
         error (EXIT_FAILURE, errno, _("failed to close input pipe"));
-      filter_pid = child_pid;
-      if (open_pipes.n_pipes == open_pipes.n_pipes_alloc)
+      filter_pid = బిడ్డ_pid;
+      ఒకవేళ (open_pipes.n_pipes == open_pipes.n_pipes_alloc)
         open_pipes.pipes = xpalloc (open_pipes.pipes, &open_pipes.n_pipes_alloc,
-                                    1, MIN (INT_MAX, IDX_MAX),
-                                    sizeof *open_pipes.pipes);
-      idx_t const pipe_idx = open_pipes.n_pipes++;
+                                    1, MIN (గరిష్ఠ_పూర్ణాంకం, IDX_MAX),
+                                    పరిమాణం *open_pipes.pipes);
+      idx_t స్థిరరాశి pipe_idx = open_pipes.n_pipes++;
       open_pipes.pipes[pipe_idx] = fd_pair[1];
-      return fd_pair[1];
+      తిరిగి fd_pair[1];
     }
 }
 
 /* Close the output file, and do any associated cleanup.
    If FP and FD are both specified, they refer to the same open file;
    in this case FP is closed, but FD is still used in cleanup.  */
-static void
-closeout (FILE *fp, int fd, pid_t pid, char const *name)
+స్థిర శూన్య
+closeout (FILE *fp, పూర్ణాంకం fd, pid_t pid, అక్షరం స్థిరరాశి *name)
 {
-  if (fp != NULL && fclose (fp) != 0 && ! ignorable (errno))
+  ఒకవేళ (fp != ఖాళీ && fclose (fp) != 0 && ! ignorable (errno))
     error (EXIT_FAILURE, errno, "%s", quotef (name));
-  if (fd >= 0)
+  ఒకవేళ (fd >= 0)
     {
-      if (fp == NULL && close (fd) < 0)
+      ఒకవేళ (fp == ఖాళీ && close (fd) < 0)
         error (EXIT_FAILURE, errno, "%s", quotef (name));
-      for (int j = 0; j < open_pipes.n_pipes; ++j)
+      కొరకు (పూర్ణాంకం j = 0; j < open_pipes.n_pipes; ++j)
         {
-          if (open_pipes.pipes[j] == fd)
+          ఒకవేళ (open_pipes.pipes[j] == fd)
             {
-              idx_t const last_idx = open_pipes.n_pipes - 1;
-              open_pipes.pipes[j] = open_pipes.pipes[last_idx];
+              idx_t స్థిరరాశి చివరి_idx = open_pipes.n_pipes - 1;
+              open_pipes.pipes[j] = open_pipes.pipes[చివరి_idx];
               open_pipes.n_pipes--;
-              break;
+              ఆపు;
             }
         }
     }
-  if (pid > 0)
+  ఒకవేళ (pid > 0)
     {
-      int wstatus;
-      if (waitpid (pid, &wstatus, 0) < 0)
+      పూర్ణాంకం wstatus;
+      ఒకవేళ (waitpid (pid, &wstatus, 0) < 0)
         error (EXIT_FAILURE, errno, _("waiting for child process"));
-      else if (WIFSIGNALED (wstatus))
+      లేకపోతే ఒకవేళ (WIFSIGNALED (wstatus))
         {
-          int sig = WTERMSIG (wstatus);
-          if (sig != SIGPIPE)
+          పూర్ణాంకం sig = WTERMSIG (wstatus);
+          ఒకవేళ (sig != SIGPIPE)
             {
-              char signame[MAX (SIG2STR_MAX, INT_BUFSIZE_BOUND (int))];
-              if (sig2str (sig, signame) != 0)
+              అక్షరం signame[MAX (SIG2STR_MAX, INT_BUFSIZE_BOUND (పూర్ణాంకం))];
+              ఒకవేళ (sig2str (sig, signame) != 0)
                 sprintf (signame, "%d", sig);
               error (sig + 128, 0,
                      _("with FILE=%s, signal %s from command: %s"),
                      quotef (name), signame, filter_command);
             }
         }
-      else if (WIFEXITED (wstatus))
+      లేకపోతే ఒకవేళ (WIFEXITED (wstatus))
         {
-          int ex = WEXITSTATUS (wstatus);
-          if (ex != 0)
+          పూర్ణాంకం ex = WEXITSTATUS (wstatus);
+          ఒకవేళ (ex != 0)
             error (ex, 0, _("with FILE=%s, exit %d from command: %s"),
                    quotef (name), ex, filter_command);
         }
-      else
+      లేకపోతే
         {
           /* shouldn't happen.  */
           error (EXIT_FAILURE, 0,
@@ -689,27 +689,27 @@ closeout (FILE *fp, int fd, pid_t pid, char const *name)
    Otherwise add to the same output file already in use.
    Return true if successful.  */
 
-static bool
-cwrite (bool new_file_flag, char const *bp, idx_t bytes)
+స్థిర bool
+cwrite (bool new_file_flag, అక్షరం స్థిరరాశి *bp, idx_t బైట్లు)
 {
-  if (new_file_flag)
+  ఒకవేళ (new_file_flag)
     {
-      if (!bp && bytes == 0 && elide_empty_files)
-        return true;
-      closeout (NULL, output_desc, filter_pid, outfile);
-      next_file_name ();
+      ఒకవేళ (!bp && బైట్లు == 0 && elide_ఖాళీలు_files)
+        తిరిగి true;
+      closeout (ఖాళీ, output_desc, filter_pid, outfile);
+      తదుపరి_file_name ();
       output_desc = create (outfile);
-      if (output_desc < 0)
+      ఒకవేళ (output_desc < 0)
         error (EXIT_FAILURE, errno, "%s", quotef (outfile));
     }
 
-  if (full_write (output_desc, bp, bytes) == bytes)
-    return true;
-  else
+  ఒకవేళ (నిండిన_write (output_desc, bp, బైట్లు) == బైట్లు)
+    తిరిగి true;
+  లేకపోతే
     {
-      if (! ignorable (errno))
+      ఒకవేళ (! ignorable (errno))
         error (EXIT_FAILURE, errno, "%s", quotef (outfile));
-      return false;
+      తిరిగి false;
     }
 }
 
@@ -719,226 +719,226 @@ cwrite (bool new_file_flag, char const *bp, idx_t bytes)
    If INITIAL_READ is nonnegative,
    BUF contains the first INITIAL_READ input bytes.  */
 
-static void
-bytes_split (intmax_t n_bytes, intmax_t rem_bytes,
-             char *buf, idx_t bufsize, ssize_t initial_read,
+స్థిర శూన్య
+బైట్లు_విభజించు (intmax_t n_బైట్లు, intmax_t rem_బైట్లు,
+             అక్షరం *buf, idx_t bufsize, ssize_t initial_read,
              intmax_t max_files)
 {
   bool new_file_flag = true;
   bool filter_ok = true;
   intmax_t opened = 0;
-  intmax_t to_write = n_bytes + (0 < rem_bytes);
-  bool eof = ! to_write;
+  intmax_t గమ్యం_write = n_బైట్లు + (0 < rem_బైట్లు);
+  bool eof = ! గమ్యం_write;
 
-  while (! eof)
+  అయితే (! eof)
     {
       ssize_t n_read;
-      if (0 <= initial_read)
+      ఒకవేళ (0 <= initial_read)
         {
           n_read = initial_read;
           initial_read = -1;
           eof = n_read < bufsize;
         }
-      else
+      లేకపోతే
         {
-          if (! filter_ok
-              && 0 <= lseek (STDIN_FILENO, to_write, SEEK_CUR))
+          ఒకవేళ (! filter_ok
+              && 0 <= lseek (STDIN_FILENO, గమ్యం_write, SEEK_CUR))
             {
-              to_write = n_bytes + (opened + 1 < rem_bytes);
+              గమ్యం_write = n_బైట్లు + (opened + 1 < rem_బైట్లు);
               new_file_flag = true;
             }
 
-          n_read = read (STDIN_FILENO, buf, bufsize);
-          if (n_read < 0)
+          n_read = పఠ (STDIN_FILENO, buf, bufsize);
+          ఒకవేళ (n_read < 0)
             error (EXIT_FAILURE, errno, "%s", quotef (infile));
           eof = n_read == 0;
         }
-      char *bp_out = buf;
-      while (0 < to_write && to_write <= n_read)
+      అక్షరం *bp_బహిర్గతం = buf;
+      అయితే (0 < గమ్యం_write && గమ్యం_write <= n_read)
         {
-          if (filter_ok || new_file_flag)
-            filter_ok = cwrite (new_file_flag, bp_out, to_write);
+          ఒకవేళ (filter_ok || new_file_flag)
+            filter_ok = cwrite (new_file_flag, bp_బహిర్గతం, గమ్యం_write);
           opened += new_file_flag;
           new_file_flag = !max_files || (opened < max_files);
-          if (! filter_ok && ! new_file_flag)
+          ఒకవేళ (! filter_ok && ! new_file_flag)
             {
               /* If filters no longer accepting input, stop reading.  */
               n_read = 0;
               eof = true;
-              break;
+              ఆపు;
             }
-          bp_out += to_write;
-          n_read -= to_write;
-          to_write = n_bytes + (opened < rem_bytes);
+          bp_బహిర్గతం += గమ్యం_write;
+          n_read -= గమ్యం_write;
+          గమ్యం_write = n_బైట్లు + (opened < rem_బైట్లు);
         }
-      if (0 < n_read)
+      ఒకవేళ (0 < n_read)
         {
-          if (filter_ok || new_file_flag)
-            filter_ok = cwrite (new_file_flag, bp_out, n_read);
+          ఒకవేళ (filter_ok || new_file_flag)
+            filter_ok = cwrite (new_file_flag, bp_బహిర్గతం, n_read);
           opened += new_file_flag;
           new_file_flag = false;
-          if (! filter_ok && opened == max_files)
+          ఒకవేళ (! filter_ok && opened == max_files)
             {
               /* If filters no longer accepting input, stop reading.  */
-              break;
+              ఆపు;
             }
-          to_write -= n_read;
+          గమ్యం_write -= n_read;
         }
     }
 
   /* Ensure NUMBER files are created, which truncates
      any existing files or notifies any consumers on fifos.
      FIXME: Should we do this before EXIT_FAILURE?  */
-  while (opened++ < max_files)
-    cwrite (true, NULL, 0);
+  అయితే (opened++ < max_files)
+    cwrite (true, ఖాళీ, 0);
 }
 
 /* Split into pieces of exactly N_LINES lines.
    Use buffer BUF, whose size is BUFSIZE.  */
 
-static void
-lines_split (intmax_t n_lines, char *buf, idx_t bufsize)
+స్థిర శూన్య
+పంక్తులు_విభజించు (intmax_t n_పంక్తులు, అక్షరం *buf, idx_t bufsize)
 {
   ssize_t n_read;
-  char *bp, *bp_out, *eob;
+  అక్షరం *bp, *bp_బహిర్గతం, *eob;
   bool new_file_flag = true;
   intmax_t n = 0;
 
-  do
+  చేయి
     {
-      n_read = read (STDIN_FILENO, buf, bufsize);
-      if (n_read < 0)
+      n_read = పఠ (STDIN_FILENO, buf, bufsize);
+      ఒకవేళ (n_read < 0)
         error (EXIT_FAILURE, errno, "%s", quotef (infile));
-      bp = bp_out = buf;
+      bp = bp_బహిర్గతం = buf;
       eob = bp + n_read;
       *eob = eolchar;
-      while (true)
+      అయితే (true)
         {
           bp = rawmemchr (bp, eolchar);
-          if (bp == eob)
+          ఒకవేళ (bp == eob)
             {
-              if (eob != bp_out) /* do not write 0 bytes! */
+              ఒకవేళ (eob != bp_బహిర్గతం) /* do not write 0 bytes! */
                 {
-                  idx_t len = eob - bp_out;
-                  cwrite (new_file_flag, bp_out, len);
+                  idx_t len = eob - bp_బహిర్గతం;
+                  cwrite (new_file_flag, bp_బహిర్గతం, len);
                   new_file_flag = false;
                 }
-              break;
+              ఆపు;
             }
 
           ++bp;
-          if (++n >= n_lines)
+          ఒకవేళ (++n >= n_పంక్తులు)
             {
-              cwrite (new_file_flag, bp_out, bp - bp_out);
-              bp_out = bp;
+              cwrite (new_file_flag, bp_బహిర్గతం, bp - bp_బహిర్గతం);
+              bp_బహిర్గతం = bp;
               new_file_flag = true;
               n = 0;
             }
         }
     }
-  while (n_read);
+  అయితే (n_read);
 }
 
 /* Split into pieces that are as large as possible while still not more
    than N_BYTES bytes, and are split on line boundaries except
    where lines longer than N_BYTES bytes occur. */
 
-static void
-line_bytes_split (intmax_t n_bytes, char *buf, idx_t bufsize)
+స్థిర శూన్య
+పంక్తి_బైట్లు_విభజించు (intmax_t n_బైట్లు, అక్షరం *buf, idx_t bufsize)
 {
   ssize_t n_read;
-  intmax_t n_out = 0;      /* for each split.  */
+  intmax_t n_బహిర్గతం = 0;      /* for each split.  */
   idx_t n_hold = 0;
-  char *hold = NULL;        /* for lines > bufsize.  */
-  idx_t hold_size = 0;
-  bool split_line = false;  /* Whether a \n was output in a split.  */
+  అక్షరం *hold = ఖాళీ;        /* for lines > bufsize.  */
+  idx_t hold_కొలత = 0;
+  bool విభజించు_పంక్తి = false;  /* Whether a \n was output in a split.  */
 
-  do
+  చేయి
     {
-      n_read = read (STDIN_FILENO, buf, bufsize);
-      if (n_read < 0)
+      n_read = పఠ (STDIN_FILENO, buf, bufsize);
+      ఒకవేళ (n_read < 0)
         error (EXIT_FAILURE, errno, "%s", quotef (infile));
-      idx_t n_left = n_read;
-      char *sob = buf;
-      while (n_left)
+      idx_t n_ఎడమ = n_read;
+      అక్షరం *sob = buf;
+      అయితే (n_ఎడమ)
         {
-          idx_t split_rest = 0;
-          char *eoc = NULL;
-          char *eol;
+          idx_t విభజించు_rest = 0;
+          అక్షరం *eoc = ఖాళీ;
+          అక్షరం *eol;
 
           /* Determine End Of Chunk and/or End of Line,
              which are used below to select what to write or buffer.  */
-          if (n_bytes - n_out - n_hold <= n_left)
+          ఒకవేళ (n_బైట్లు - n_బహిర్గతం - n_hold <= n_ఎడమ)
             {
               /* Have enough for split.  */
-              split_rest = n_bytes - n_out - n_hold;
-              eoc = sob + split_rest - 1;
-              eol = memrchr (sob, eolchar, split_rest);
+              విభజించు_rest = n_బైట్లు - n_బహిర్గతం - n_hold;
+              eoc = sob + విభజించు_rest - 1;
+              eol = memrchr (sob, eolchar, విభజించు_rest);
             }
-          else
-            eol = memrchr (sob, eolchar, n_left);
+          లేకపోతే
+            eol = memrchr (sob, eolchar, n_ఎడమ);
 
           /* Output hold space if possible.  */
-          if (n_hold && !(!eol && n_out))
+          ఒకవేళ (n_hold && !(!eol && n_బహిర్గతం))
             {
-              cwrite (n_out == 0, hold, n_hold);
-              n_out += n_hold;
+              cwrite (n_బహిర్గతం == 0, hold, n_hold);
+              n_బహిర్గతం += n_hold;
               n_hold = 0;
             }
 
           /* Output to eol if present.  */
-          if (eol)
+          ఒకవేళ (eol)
             {
-              split_line = true;
+              విభజించు_పంక్తి = true;
               idx_t n_write = eol - sob + 1;
-              cwrite (n_out == 0, sob, n_write);
-              n_out += n_write;
-              n_left -= n_write;
+              cwrite (n_బహిర్గతం == 0, sob, n_write);
+              n_బహిర్గతం += n_write;
+              n_ఎడమ -= n_write;
               sob += n_write;
-              if (eoc)
-                split_rest -= n_write;
+              ఒకవేళ (eoc)
+                విభజించు_rest -= n_write;
             }
 
           /* Output to eoc or eob if possible.  */
-          if (n_left && !split_line)
+          ఒకవేళ (n_ఎడమ && !విభజించు_పంక్తి)
             {
-              idx_t n_write = eoc ? split_rest : n_left;
-              cwrite (n_out == 0, sob, n_write);
-              n_out += n_write;
-              n_left -= n_write;
+              idx_t n_write = eoc ? విభజించు_rest : n_ఎడమ;
+              cwrite (n_బహిర్గతం == 0, sob, n_write);
+              n_బహిర్గతం += n_write;
+              n_ఎడమ -= n_write;
               sob += n_write;
-              if (eoc)
-                split_rest -= n_write;
+              ఒకవేళ (eoc)
+                విభజించు_rest -= n_write;
             }
 
           /* Update hold if needed.  */
-          if ((eoc && split_rest) || (!eoc && n_left))
+          ఒకవేళ ((eoc && విభజించు_rest) || (!eoc && n_ఎడమ))
             {
-              idx_t n_buf = eoc ? split_rest : n_left;
-              if (hold_size - n_hold < n_buf)
-                hold = xpalloc (hold, &hold_size, n_buf - (hold_size - n_hold),
-                                -1, sizeof *hold);
-              memcpy (hold + n_hold, sob, n_buf);
+              idx_t n_buf = eoc ? విభజించు_rest : n_ఎడమ;
+              ఒకవేళ (hold_కొలత - n_hold < n_buf)
+                hold = xpalloc (hold, &hold_కొలత, n_buf - (hold_కొలత - n_hold),
+                                -1, పరిమాణం *hold);
+              జ్ఞాపకం_నకలు (hold + n_hold, sob, n_buf);
               n_hold += n_buf;
-              n_left -= n_buf;
+              n_ఎడమ -= n_buf;
               sob += n_buf;
             }
 
           /* Reset for new split.  */
-          if (eoc)
+          ఒకవేళ (eoc)
             {
-              n_out = 0;
-              split_line = false;
+              n_బహిర్గతం = 0;
+              విభజించు_పంక్తి = false;
             }
         }
     }
-  while (n_read);
+  అయితే (n_read);
 
   /* Handle no eol at end of file.  */
-  if (n_hold)
-    cwrite (n_out == 0, hold, n_hold);
+  ఒకవేళ (n_hold)
+    cwrite (n_బహిర్గతం == 0, hold, n_hold);
 
-  free (hold);
+  విడుదల (hold);
 }
 
 /* -n l/[K/]N: Write lines to files of approximately file size / N.
@@ -949,190 +949,190 @@ line_bytes_split (intmax_t n_bytes, char *buf, idx_t bufsize)
    can be larger or smaller than the partition size, and even empty
    if a line is so long as to completely overlap the partition.  */
 
-static void
-lines_chunk_split (intmax_t k, intmax_t n, char *buf, idx_t bufsize,
-                   ssize_t initial_read, off_t file_size)
+స్థిర శూన్య
+పంక్తులు_chunk_విభజించు (intmax_t k, intmax_t n, అక్షరం *buf, idx_t bufsize,
+                   ssize_t initial_read, off_t file_కొలత)
 {
   affirm (n && k <= n);
 
-  intmax_t rem_bytes = file_size % n;
-  off_t chunk_size = file_size / n;
+  intmax_t rem_బైట్లు = file_కొలత % n;
+  off_t chunk_కొలత = file_కొలత / n;
   intmax_t chunk_no = 1;
-  off_t chunk_end = chunk_size + (0 < rem_bytes);
+  off_t chunk_చివర = chunk_కొలత + (0 < rem_బైట్లు);
   off_t n_written = 0;
   bool new_file_flag = true;
   bool chunk_truncated = false;
 
-  if (k > 1 && 0 < file_size)
+  ఒకవేళ (k > 1 && 0 < file_కొలత)
     {
       /* Start reading 1 byte before kth chunk of file.  */
-      off_t start = (k - 1) * chunk_size + MIN (k - 1, rem_bytes) - 1;
-      if (start < initial_read)
+      off_t ప్రారంభం = (k - 1) * chunk_కొలత + MIN (k - 1, rem_బైట్లు) - 1;
+      ఒకవేళ (ప్రారంభం < initial_read)
         {
-          memmove (buf, buf + start, initial_read - start);
-          initial_read -= start;
+          memmove (buf, buf + ప్రారంభం, initial_read - ప్రారంభం);
+          initial_read -= ప్రారంభం;
         }
-      else
+      లేకపోతే
         {
-          if (initial_read < start
-              && lseek (STDIN_FILENO, start - initial_read, SEEK_CUR) < 0)
+          ఒకవేళ (initial_read < ప్రారంభం
+              && lseek (STDIN_FILENO, ప్రారంభం - initial_read, SEEK_CUR) < 0)
             error (EXIT_FAILURE, errno, "%s", quotef (infile));
           initial_read = -1;
         }
-      n_written = start;
+      n_written = ప్రారంభం;
       chunk_no = k - 1;
-      chunk_end = start + 1;
+      chunk_చివర = ప్రారంభం + 1;
     }
 
-  while (n_written < file_size)
+  అయితే (n_written < file_కొలత)
     {
-      char *bp = buf, *eob;
+      అక్షరం *bp = buf, *eob;
       ssize_t n_read;
-      if (0 <= initial_read)
+      ఒకవేళ (0 <= initial_read)
         {
           n_read = initial_read;
           initial_read = -1;
         }
-      else
+      లేకపోతే
         {
-          n_read = read (STDIN_FILENO, buf,
-                         MIN (bufsize, file_size - n_written));
-          if (n_read < 0)
+          n_read = పఠ (STDIN_FILENO, buf,
+                         MIN (bufsize, file_కొలత - n_written));
+          ఒకవేళ (n_read < 0)
             error (EXIT_FAILURE, errno, "%s", quotef (infile));
         }
-      if (n_read == 0)
-        break; /* eof.  */
+      ఒకవేళ (n_read == 0)
+        ఆపు; /* eof.  */
       chunk_truncated = false;
       eob = buf + n_read;
 
-      while (bp != eob)
+      అయితే (bp != eob)
         {
-          idx_t to_write;
-          bool next = false;
+          idx_t గమ్యం_write;
+          bool తదుపరి = false;
 
           /* Begin looking for '\n' at last byte of chunk.  */
-          off_t skip = MIN (n_read, MAX (0, chunk_end - 1 - n_written));
-          char *bp_out = memchr (bp + skip, eolchar, n_read - skip);
-          if (bp_out)
+          off_t skip = MIN (n_read, MAX (0, chunk_చివర - 1 - n_written));
+          అక్షరం *bp_బహిర్గతం = memchr (bp + skip, eolchar, n_read - skip);
+          ఒకవేళ (bp_బహిర్గతం)
             {
-              bp_out++;
-              next = true;
+              bp_బహిర్గతం++;
+              తదుపరి = true;
             }
-          else
-            bp_out = eob;
-          to_write = bp_out - bp;
+          లేకపోతే
+            bp_బహిర్గతం = eob;
+          గమ్యం_write = bp_బహిర్గతం - bp;
 
-          if (k == chunk_no)
+          ఒకవేళ (k == chunk_no)
             {
               /* We don't use the stdout buffer here since we're writing
                  large chunks from an existing file, so it's more efficient
                  to write out directly.  */
-              if (full_write (STDOUT_FILENO, bp, to_write) != to_write)
+              ఒకవేళ (నిండిన_write (STDOUT_FILENO, bp, గమ్యం_write) != గమ్యం_write)
                 write_error ();
             }
-          else if (! k)
-            cwrite (new_file_flag, bp, to_write);
-          n_written += to_write;
-          bp += to_write;
-          n_read -= to_write;
-          new_file_flag = next;
+          లేకపోతే ఒకవేళ (! k)
+            cwrite (new_file_flag, bp, గమ్యం_write);
+          n_written += గమ్యం_write;
+          bp += గమ్యం_write;
+          n_read -= గమ్యం_write;
+          new_file_flag = తదుపరి;
 
           /* A line could have been so long that it skipped
              entire chunks. So create empty files in that case.  */
-          while (next || chunk_end <= n_written)
+          అయితే (తదుపరి || chunk_చివర <= n_written)
             {
-              if (!next && bp == eob)
+              ఒకవేళ (!తదుపరి && bp == eob)
                 {
                   /* replenish buf, before going to next chunk.  */
                   chunk_truncated = true;
-                  break;
+                  ఆపు;
                 }
-              if (k == chunk_no)
-                return;
-              chunk_end += chunk_size + (chunk_no < rem_bytes);
+              ఒకవేళ (k == chunk_no)
+                తిరిగి;
+              chunk_చివర += chunk_కొలత + (chunk_no < rem_బైట్లు);
               chunk_no++;
-              if (chunk_end <= n_written)
+              ఒకవేళ (chunk_చివర <= n_written)
                 {
-                  if (! k)
-                    cwrite (true, NULL, 0);
+                  ఒకవేళ (! k)
+                    cwrite (true, ఖాళీ, 0);
                 }
-              else
-                next = false;
+              లేకపోతే
+                తదుపరి = false;
             }
         }
     }
 
-  if (chunk_truncated)
+  ఒకవేళ (chunk_truncated)
     chunk_no++;
 
   /* Ensure NUMBER files are created, which truncates
      any existing files or notifies any consumers on fifos.
      FIXME: Should we do this before EXIT_FAILURE?  */
-  if (!k)
-    while (chunk_no++ <= n)
-      cwrite (true, NULL, 0);
+  ఒకవేళ (!k)
+    అయితే (chunk_no++ <= n)
+      cwrite (true, ఖాళీ, 0);
 }
 
 /* -n K/N: Extract Kth of N chunks.  */
 
-static void
-bytes_chunk_extract (intmax_t k, intmax_t n, char *buf, idx_t bufsize,
-                     ssize_t initial_read, off_t file_size)
+స్థిర శూన్య
+బైట్లు_chunk_వెలికితీయి (intmax_t k, intmax_t n, అక్షరం *buf, idx_t bufsize,
+                     ssize_t initial_read, off_t file_కొలత)
 {
-  off_t start;
-  off_t end;
+  off_t ప్రారంభం;
+  off_t చివర;
 
   affirm (0 < k && k <= n);
 
-  start = (k - 1) * (file_size / n) + MIN (k - 1, file_size % n);
-  end = k == n ? file_size : k * (file_size / n) + MIN (k, file_size % n);
+  ప్రారంభం = (k - 1) * (file_కొలత / n) + MIN (k - 1, file_కొలత % n);
+  చివర = k == n ? file_కొలత : k * (file_కొలత / n) + MIN (k, file_కొలత % n);
 
-  if (start < initial_read)
+  ఒకవేళ (ప్రారంభం < initial_read)
     {
-      memmove (buf, buf + start, initial_read - start);
-      initial_read -= start;
+      memmove (buf, buf + ప్రారంభం, initial_read - ప్రారంభం);
+      initial_read -= ప్రారంభం;
     }
-  else
+  లేకపోతే
     {
-      if (initial_read < start
-          && lseek (STDIN_FILENO, start - initial_read, SEEK_CUR) < 0)
+      ఒకవేళ (initial_read < ప్రారంభం
+          && lseek (STDIN_FILENO, ప్రారంభం - initial_read, SEEK_CUR) < 0)
         error (EXIT_FAILURE, errno, "%s", quotef (infile));
       initial_read = -1;
     }
 
-  while (start < end)
+  అయితే (ప్రారంభం < చివర)
     {
       ssize_t n_read;
-      if (0 <= initial_read)
+      ఒకవేళ (0 <= initial_read)
         {
           n_read = initial_read;
           initial_read = -1;
         }
-      else
+      లేకపోతే
         {
-          n_read = read (STDIN_FILENO, buf, bufsize);
-          if (n_read < 0)
+          n_read = పఠ (STDIN_FILENO, buf, bufsize);
+          ఒకవేళ (n_read < 0)
             error (EXIT_FAILURE, errno, "%s", quotef (infile));
         }
-      if (n_read == 0)
-        break; /* eof.  */
-      n_read = MIN (n_read, end - start);
-      if (full_write (STDOUT_FILENO, buf, n_read) != n_read
+      ఒకవేళ (n_read == 0)
+        ఆపు; /* eof.  */
+      n_read = MIN (n_read, చివర - ప్రారంభం);
+      ఒకవేళ (నిండిన_write (STDOUT_FILENO, buf, n_read) != n_read
           && ! ignorable (errno))
         error (EXIT_FAILURE, errno, "%s", quotef ("-"));
-      start += n_read;
+      ప్రారంభం += n_read;
     }
 }
 
-typedef struct of_info
+రకనిర్వచనం నిర్మాణం యొక్క_info
 {
-  char *of_name;
-  int ofd;
+  అక్షరం *యొక్క_name;
+  పూర్ణాంకం ofd;
   FILE *ofile;
   pid_t opid;
-} of_t;
+} యొక్క_t;
 
-enum
+గణన
 {
   OFD_NEW = -1,
   OFD_APPEND = -2
@@ -1143,24 +1143,24 @@ enum
    Return whether we came under file resource pressure.
    If so, it's probably best to close each file when finished with it.  */
 
-static bool
-ofile_open (of_t *files, idx_t i_check, idx_t nfiles)
+స్థిర bool
+ofile_open (యొక్క_t *files, idx_t i_check, idx_t nfiles)
 {
-  bool file_limit = false;
+  bool file_హద్దు = false;
 
-  if (files[i_check].ofd <= OFD_NEW)
+  ఒకవేళ (files[i_check].ofd <= OFD_NEW)
     {
-      int fd;
+      పూర్ణాంకం fd;
       idx_t i_reopen = i_check ? i_check - 1 : nfiles - 1;
 
       /* Another process could have opened a file in between the calls to
          close and open, so we should keep trying until open succeeds or
          we've closed all of our files.  */
-      while (true)
+      అయితే (true)
         {
-          if (files[i_check].ofd == OFD_NEW)
-            fd = create (files[i_check].of_name);
-          else /* OFD_APPEND  */
+          ఒకవేళ (files[i_check].ofd == OFD_NEW)
+            fd = create (files[i_check].యొక్క_name);
+          లేకపోతే /* OFD_APPEND  */
             {
               /* Attempt to append to previously opened file.
                  We use O_NONBLOCK to support writing to fifos,
@@ -1176,44 +1176,44 @@ ofile_open (of_t *files, idx_t i_check, idx_t nfiles)
                  will exit if there are not enough files in that case.
                  I.e., we don't support restarting filters, as that would
                  put too much burden on users specifying --filter commands.  */
-              fd = open (files[i_check].of_name,
-                         O_WRONLY | O_BINARY | O_APPEND | O_NONBLOCK);
+              fd = open (files[i_check].యొక్క_name,
+                         O_WRONLY | O_ద్విమాన | O_APPEND | O_NONBLOCK);
             }
 
-          if (0 <= fd)
-            break;
+          ఒకవేళ (0 <= fd)
+            ఆపు;
 
-          if (!(errno == EMFILE || errno == ENFILE))
-            error (EXIT_FAILURE, errno, "%s", quotef (files[i_check].of_name));
+          ఒకవేళ (!(errno == EMFILE || errno == ENFILE))
+            error (EXIT_FAILURE, errno, "%s", quotef (files[i_check].యొక్క_name));
 
-          file_limit = true;
+          file_హద్దు = true;
 
           /* Search backwards for an open file to close.  */
-          while (files[i_reopen].ofd < 0)
+          అయితే (files[i_reopen].ofd < 0)
             {
               i_reopen = i_reopen ? i_reopen - 1 : nfiles - 1;
               /* No more open files to close, exit with E[NM]FILE.  */
-              if (i_reopen == i_check)
+              ఒకవేళ (i_reopen == i_check)
                 error (EXIT_FAILURE, errno, "%s",
-                       quotef (files[i_check].of_name));
+                       quotef (files[i_check].యొక్క_name));
             }
 
-          if (fclose (files[i_reopen].ofile) != 0)
-            error (EXIT_FAILURE, errno, "%s", quotef (files[i_reopen].of_name));
-          files[i_reopen].ofile = NULL;
+          ఒకవేళ (fclose (files[i_reopen].ofile) != 0)
+            error (EXIT_FAILURE, errno, "%s", quotef (files[i_reopen].యొక్క_name));
+          files[i_reopen].ofile = ఖాళీ;
           files[i_reopen].ofd = OFD_APPEND;
         }
 
       files[i_check].ofd = fd;
       FILE *ofile = fdopen (fd, "a");
-      if (!ofile)
-        error (EXIT_FAILURE, errno, "%s", quotef (files[i_check].of_name));
+      ఒకవేళ (!ofile)
+        error (EXIT_FAILURE, errno, "%s", quotef (files[i_check].యొక్క_name));
       files[i_check].ofile = ofile;
       files[i_check].opid = filter_pid;
       filter_pid = 0;
     }
 
-  return file_limit;
+  తిరిగి file_హద్దు;
 }
 
 /* -n r/[K/]N: Divide file into N chunks in round robin fashion.
@@ -1223,118 +1223,118 @@ ofile_open (of_t *files, idx_t i_check, idx_t nfiles)
    If we run out of file resources, then we revert
    to opening and closing each file for each line.  */
 
-static void
-lines_rr (intmax_t k, intmax_t n, char *buf, idx_t bufsize, of_t **filesp)
+స్థిర శూన్య
+పంక్తులు_rr (intmax_t k, intmax_t n, అక్షరం *buf, idx_t bufsize, యొక్క_t **filesp)
 {
   bool wrapped = false;
   bool wrote = false;
-  bool file_limit;
+  bool file_హద్దు;
   idx_t i_file;
-  of_t *files IF_LINT (= NULL);
-  intmax_t line_no;
+  యొక్క_t *files IF_LINT (= ఖాళీ);
+  intmax_t పంక్తి_no;
 
-  if (k)
-    line_no = 1;
-  else
+  ఒకవేళ (k)
+    పంక్తి_no = 1;
+  లేకపోతే
     {
-      if (IDX_MAX < n)
+      ఒకవేళ (IDX_MAX < n)
         xalloc_die ();
-      files = *filesp = xinmalloc (n, sizeof *files);
+      files = *filesp = xinmalloc (n, పరిమాణం *files);
 
       /* Generate output file names. */
-      for (i_file = 0; i_file < n; i_file++)
+      కొరకు (i_file = 0; i_file < n; i_file++)
         {
-          next_file_name ();
-          files[i_file].of_name = xstrdup (outfile);
+          తదుపరి_file_name ();
+          files[i_file].యొక్క_name = xstrdup (outfile);
           files[i_file].ofd = OFD_NEW;
-          files[i_file].ofile = NULL;
+          files[i_file].ofile = ఖాళీ;
           files[i_file].opid = 0;
         }
       i_file = 0;
-      file_limit = false;
+      file_హద్దు = false;
     }
 
-  while (true)
+  అయితే (true)
     {
-      char *bp = buf, *eob;
-      ssize_t n_read = read (STDIN_FILENO, buf, bufsize);
-      if (n_read < 0)
+      అక్షరం *bp = buf, *eob;
+      ssize_t n_read = పఠ (STDIN_FILENO, buf, bufsize);
+      ఒకవేళ (n_read < 0)
         error (EXIT_FAILURE, errno, "%s", quotef (infile));
-      else if (n_read == 0)
-        break; /* eof.  */
+      లేకపోతే ఒకవేళ (n_read == 0)
+        ఆపు; /* eof.  */
       eob = buf + n_read;
 
-      while (bp != eob)
+      అయితే (bp != eob)
         {
-          idx_t to_write;
-          bool next = false;
+          idx_t గమ్యం_write;
+          bool తదుపరి = false;
 
           /* Find end of line. */
-          char *bp_out = memchr (bp, eolchar, eob - bp);
-          if (bp_out)
+          అక్షరం *bp_బహిర్గతం = memchr (bp, eolchar, eob - bp);
+          ఒకవేళ (bp_బహిర్గతం)
             {
-              bp_out++;
-              next = true;
+              bp_బహిర్గతం++;
+              తదుపరి = true;
             }
-          else
-            bp_out = eob;
-          to_write = bp_out - bp;
+          లేకపోతే
+            bp_బహిర్గతం = eob;
+          గమ్యం_write = bp_బహిర్గతం - bp;
 
-          if (k)
+          ఒకవేళ (k)
             {
-              if (line_no == k && unbuffered)
+              ఒకవేళ (పంక్తి_no == k && unbuffered)
                 {
-                  if (full_write (STDOUT_FILENO, bp, to_write) != to_write)
+                  ఒకవేళ (నిండిన_write (STDOUT_FILENO, bp, గమ్యం_write) != గమ్యం_write)
                     write_error ();
                 }
-              else if (line_no == k && fwrite (bp, to_write, 1, stdout) != 1)
+              లేకపోతే ఒకవేళ (పంక్తి_no == k && fwrite (bp, గమ్యం_write, 1, stdout) != 1)
                 {
                   write_error ();
                 }
-              if (next)
-                line_no = (line_no == n) ? 1 : line_no + 1;
+              ఒకవేళ (తదుపరి)
+                పంక్తి_no = (పంక్తి_no == n) ? 1 : పంక్తి_no + 1;
             }
-          else
+          లేకపోతే
             {
               /* Secure file descriptor. */
-              file_limit |= ofile_open (files, i_file, n);
-              if (unbuffered)
+              file_హద్దు |= ofile_open (files, i_file, n);
+              ఒకవేళ (unbuffered)
                 {
                   /* Note writing to fd, rather than flushing the FILE gives
                      an 8% performance benefit, due to reduced data copying.  */
-                  if (full_write (files[i_file].ofd, bp, to_write) != to_write
+                  ఒకవేళ (నిండిన_write (files[i_file].ofd, bp, గమ్యం_write) != గమ్యం_write
                       && ! ignorable (errno))
                     error (EXIT_FAILURE, errno, "%s",
-                           quotef (files[i_file].of_name));
+                           quotef (files[i_file].యొక్క_name));
                 }
-              else if (fwrite (bp, to_write, 1, files[i_file].ofile) != 1
+              లేకపోతే ఒకవేళ (fwrite (bp, గమ్యం_write, 1, files[i_file].ofile) != 1
                        && ! ignorable (errno))
                 error (EXIT_FAILURE, errno, "%s",
-                       quotef (files[i_file].of_name));
+                       quotef (files[i_file].యొక్క_name));
 
-              if (! ignorable (errno))
+              ఒకవేళ (! ignorable (errno))
                 wrote = true;
 
-              if (file_limit)
+              ఒకవేళ (file_హద్దు)
                 {
-                  if (fclose (files[i_file].ofile) != 0)
+                  ఒకవేళ (fclose (files[i_file].ofile) != 0)
                     error (EXIT_FAILURE, errno, "%s",
-                           quotef (files[i_file].of_name));
-                  files[i_file].ofile = NULL;
+                           quotef (files[i_file].యొక్క_name));
+                  files[i_file].ofile = ఖాళీ;
                   files[i_file].ofd = OFD_APPEND;
                 }
-              if (next && ++i_file == n)
+              ఒకవేళ (తదుపరి && ++i_file == n)
                 {
                   wrapped = true;
                   /* If no filters are accepting input, stop reading.  */
-                  if (! wrote)
-                    goto no_filters;
+                  ఒకవేళ (! wrote)
+                    వెళ్ళు no_filters;
                   wrote = false;
                   i_file = 0;
                 }
             }
 
-          bp = bp_out;
+          bp = bp_బహిర్గతం;
         }
     }
 
@@ -1343,33 +1343,33 @@ no_filters:
      and to signal any waiting fifo consumers.
      Also, close any open file descriptors.
      FIXME: Should we do this before EXIT_FAILURE?  */
-  if (!k)
+  ఒకవేళ (!k)
     {
       idx_t ceiling = wrapped ? n : i_file;
-      for (i_file = 0; i_file < n; i_file++)
+      కొరకు (i_file = 0; i_file < n; i_file++)
         {
-          if (i_file >= ceiling && !elide_empty_files)
-            file_limit |= ofile_open (files, i_file, n);
-          if (files[i_file].ofd >= 0)
+          ఒకవేళ (i_file >= ceiling && !elide_ఖాళీలు_files)
+            file_హద్దు |= ofile_open (files, i_file, n);
+          ఒకవేళ (files[i_file].ofd >= 0)
             closeout (files[i_file].ofile, files[i_file].ofd,
-                      files[i_file].opid, files[i_file].of_name);
+                      files[i_file].opid, files[i_file].యొక్క_name);
           files[i_file].ofd = OFD_APPEND;
         }
     }
 }
 
-#define FAIL_ONLY_ONE_WAY()					\
-  do								\
+#నిర్వచించు FAIL_ONLY_ONE_WAY()					\
+  చేయి								\
     {								\
       error (0, 0, _("cannot split in more than one way"));	\
       usage (EXIT_FAILURE);					\
     }								\
-  while (0)
+  అయితే (0)
 
 /* Report a string-to-integer conversion failure MSGID with ARG.  */
 
-static _Noreturn void
-strtoint_die (char const *msgid, char const *arg)
+స్థిర _Noreturn శూన్య
+strtoint_die (అక్షరం స్థిరరాశి *msgid, అక్షరం స్థిరరాశి *arg)
 {
   error (EXIT_FAILURE, errno == EINVAL ? 0 : errno, "%s: %s",
          gettext (msgid), quote (arg));
@@ -1377,59 +1377,59 @@ strtoint_die (char const *msgid, char const *arg)
 
 /* Use OVERFLOW_OK when it is OK to ignore LONGINT_OVERFLOW errors, since the
    extreme value will do the right thing anyway on any practical platform.  */
-#define OVERFLOW_OK LONGINT_OVERFLOW
+#నిర్వచించు అధికప్రవాహం_OK LONGINT_అధికప్రవాహం
 
 /* Parse ARG for number of bytes or lines.  The number can be followed
    by MULTIPLIERS, and the resulting value must be positive.
    If the number cannot be parsed, diagnose with MSG.
    Return the number parsed, or an INTMAX_MAX on overflow.  */
 
-static intmax_t
-parse_n_units (char const *arg, char const *multipliers, char const *msgid)
+స్థిర intmax_t
+parse_n_units (అక్షరం స్థిరరాశి *arg, అక్షరం స్థిరరాశి *multipliers, అక్షరం స్థిరరాశి *msgid)
 {
   intmax_t n;
-  if (OVERFLOW_OK < xstrtoimax (arg, NULL, 10, &n, multipliers) || n < 1)
+  ఒకవేళ (అధికప్రవాహం_OK < xstrtoimax (arg, ఖాళీ, 10, &n, multipliers) || n < 1)
     strtoint_die (msgid, arg);
-  return n;
+  తిరిగి n;
 }
 
 /* Parse K/N syntax of chunk options.  */
 
-static void
-parse_chunk (intmax_t *k_units, intmax_t *n_units, char const *arg)
+స్థిర శూన్య
+parse_chunk (intmax_t *k_units, intmax_t *n_units, అక్షరం స్థిరరాశి *arg)
 {
-  char *argend;
+  అక్షరం *argend;
   strtol_error e = xstrtoimax (arg, &argend, 10, n_units, "");
-  if (e == LONGINT_INVALID_SUFFIX_CHAR && *argend == '/')
+  ఒకవేళ (e == LONGINT_INVALID_SUFFIX_CHAR && *argend == '/')
     {
       *k_units = *n_units;
       *n_units = parse_n_units (argend + 1, "",
                                 N_("invalid number of chunks"));
-      if (! (0 < *k_units && *k_units <= *n_units))
+      ఒకవేళ (! (0 < *k_units && *k_units <= *n_units))
         error (EXIT_FAILURE, 0, "%s: %s", _("invalid chunk number"),
                quote_mem (arg, argend - arg));
     }
-  else if (! (e <= OVERFLOW_OK && 0 < *n_units))
+  లేకపోతే ఒకవేళ (! (e <= అధికప్రవాహం_OK && 0 < *n_units))
     strtoint_die (N_("invalid number of chunks"), arg);
 }
 
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
-  enum Split_type split_type = type_undef;
-  idx_t in_blk_size = 0;	/* optimal block size of input file device */
-  idx_t page_size = getpagesize ();
+  గణన విభజించు_type విభజించు_type_2 = type_undef;
+  idx_t లోపల_blk_కొలత = 0;	/* optimal block size of input file device */
+  idx_t పుట_కొలత = getpagesize ();
   intmax_t k_units = 0;
   intmax_t n_units = 0;
 
-  static char const multipliers[] = "bEGKkMmPQRTYZ0";
-  int c;
-  int digits_optind = 0;
-  off_t file_size = OFF_T_MAX;
+  స్థిర అక్షరం స్థిరరాశి multipliers[] = "bEGKkMmPQRTYZ0";
+  పూర్ణాంకం c;
+  పూర్ణాంకం digits_optind = 0;
+  off_t file_కొలత = OFF_T_MAX;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
@@ -1438,27 +1438,27 @@ main (int argc, char **argv)
 
   /* Parse command line options.  */
 
-  while (true)
+  అయితే (true)
     {
       /* This is the argv-index of the option we will read next.  */
-      int this_optind = optind ? optind : 1;
+      పూర్ణాంకం this_optind = optind ? optind : 1;
 
       c = getopt_long (argc, argv, "0123456789C:a:b:del:n:t:ux",
-                       longopts, NULL);
-      if (c == -1)
-        break;
+                       longopts, ఖాళీ);
+      ఒకవేళ (c == -1)
+        ఆపు;
 
-      switch (c)
+      ఎంపిక (c)
         {
-        case 'a':
-          suffix_length = xdectoimax (optarg, 0, IDX_MAX,
+        స్థితి 'a':
+          suffix_నిడివి = xdectoimax (optarg, 0, IDX_MAX,
                                       "", _("invalid suffix length"), 0);
-          break;
+          ఆపు;
 
-        case ADDITIONAL_SUFFIX_OPTION:
+        స్థితి ADDITIONAL_SUFFIX_OPTION:
           {
-            int suffix_len = strlen (optarg);
-            if (last_component (optarg) != optarg
+            పూర్ణాంకం suffix_len = అక్షరశ్రేణి_పొడవు (optarg);
+            ఒకవేళ (చివరి_component (optarg) != optarg
                 || (suffix_len && ISSLASH (optarg[suffix_len - 1])))
               {
                 error (0, 0,
@@ -1468,66 +1468,66 @@ main (int argc, char **argv)
               }
           }
           additional_suffix = optarg;
-          break;
+          ఆపు;
 
-        case 'b':
-          if (split_type != type_undef)
+        స్థితి 'b':
+          ఒకవేళ (విభజించు_type_2 != type_undef)
             FAIL_ONLY_ONE_WAY ();
-          split_type = type_bytes;
+          విభజించు_type_2 = type_బైట్లు;
           n_units = parse_n_units (optarg, multipliers,
                                    N_("invalid number of bytes"));
-          break;
+          ఆపు;
 
-        case 'l':
-          if (split_type != type_undef)
+        స్థితి 'l':
+          ఒకవేళ (విభజించు_type_2 != type_undef)
             FAIL_ONLY_ONE_WAY ();
-          split_type = type_lines;
+          విభజించు_type_2 = type_పంక్తులు;
           n_units = parse_n_units (optarg, "", N_("invalid number of lines"));
-          break;
+          ఆపు;
 
-        case 'C':
-          if (split_type != type_undef)
+        స్థితి 'C':
+          ఒకవేళ (విభజించు_type_2 != type_undef)
             FAIL_ONLY_ONE_WAY ();
-          split_type = type_byteslines;
+          విభజించు_type_2 = type_byteslines;
           n_units = parse_n_units (optarg, multipliers,
                                    N_("invalid number of lines"));
-          break;
+          ఆపు;
 
-        case 'n':
-          if (split_type != type_undef)
+        స్థితి 'n':
+          ఒకవేళ (విభజించు_type_2 != type_undef)
             FAIL_ONLY_ONE_WAY ();
           /* skip any whitespace */
-          while (isspace (to_uchar (*optarg)))
+          అయితే (ఖాళీనా (గమ్యం_uchar (*optarg)))
             optarg++;
-          if (STRNCMP_LIT (optarg, "r/") == 0)
+          ఒకవేళ (STRNCMP_LIT (optarg, "r/") == 0)
             {
-              split_type = type_rr;
+              విభజించు_type_2 = type_rr;
               optarg += 2;
             }
-          else if (STRNCMP_LIT (optarg, "l/") == 0)
+          లేకపోతే ఒకవేళ (STRNCMP_LIT (optarg, "l/") == 0)
             {
-              split_type = type_chunk_lines;
+              విభజించు_type_2 = type_chunk_పంక్తులు;
               optarg += 2;
             }
-          else
-            split_type = type_chunk_bytes;
+          లేకపోతే
+            విభజించు_type_2 = type_chunk_బైట్లు;
           parse_chunk (&k_units, &n_units, optarg);
-          break;
+          ఆపు;
 
-        case 'u':
+        స్థితి 'u':
           unbuffered = true;
-          break;
+          ఆపు;
 
-        case 't':
+        స్థితి 't':
           {
-            char neweol = optarg[0];
-            if (! neweol)
+            అక్షరం neweol = optarg[0];
+            ఒకవేళ (! neweol)
               error (EXIT_FAILURE, 0, _("empty record separator"));
-            if (optarg[1])
+            ఒకవేళ (optarg[1])
               {
-                if (streq (optarg, "\\0"))
+                ఒకవేళ (streq (optarg, "\\0"))
                   neweol = '\0';
-                else
+                లేకపోతే
                   {
                     /* Provoke with 'split -txx'.  Complain about
                        "multi-character tab" instead of "multibyte tab", so
@@ -1538,7 +1538,7 @@ main (int argc, char **argv)
                   }
               }
             /* Make it explicit we don't support multiple separators.  */
-            if (0 <= eolchar && neweol != eolchar)
+            ఒకవేళ (0 <= eolchar && neweol != eolchar)
               {
                 error (EXIT_FAILURE, 0,
                        _("multiple separator characters specified"));
@@ -1546,42 +1546,42 @@ main (int argc, char **argv)
 
             eolchar = neweol;
           }
-          break;
+          ఆపు;
 
-        case '0':
-        case '1':
-        case '2':
-        case '3':
-        case '4':
-        case '5':
-        case '6':
-        case '7':
-        case '8':
-        case '9':
-          if (split_type == type_undef)
+        స్థితి '0':
+        స్థితి '1':
+        స్థితి '2':
+        స్థితి '3':
+        స్థితి '4':
+        స్థితి '5':
+        స్థితి '6':
+        స్థితి '7':
+        స్థితి '8':
+        స్థితి '9':
+          ఒకవేళ (విభజించు_type_2 == type_undef)
             {
-              split_type = type_digits;
+              విభజించు_type_2 = type_digits;
               n_units = 0;
             }
-          if (split_type != type_undef && split_type != type_digits)
+          ఒకవేళ (విభజించు_type_2 != type_undef && విభజించు_type_2 != type_digits)
             FAIL_ONLY_ONE_WAY ();
-          if (digits_optind != 0 && digits_optind != this_optind)
+          ఒకవేళ (digits_optind != 0 && digits_optind != this_optind)
             n_units = 0;	/* More than one number given; ignore other. */
           digits_optind = this_optind;
-          if (ckd_mul (&n_units, n_units, 10)
-              || ckd_add (&n_units, n_units, c - '0'))
+          ఒకవేళ (ckd_mul (&n_units, n_units, 10)
+              || ckd_కూడు (&n_units, n_units, c - '0'))
             n_units = INTMAX_MAX;
-          break;
+          ఆపు;
 
-        case 'd':
-        case 'x':
-          if (c == 'd')
+        స్థితి 'd':
+        స్థితి 'x':
+          ఒకవేళ (c == 'd')
             suffix_alphabet = "0123456789";
-          else
+          లేకపోతే
             suffix_alphabet = "0123456789abcdef";
-          if (optarg)
+          ఒకవేళ (optarg)
             {
-              if (strlen (optarg) != strspn (optarg, suffix_alphabet))
+              ఒకవేళ (అక్షరశ్రేణి_పొడవు (optarg) != strspn (optarg, suffix_alphabet))
                 {
                   error (0, 0,
                          (c == 'd') ?
@@ -1590,46 +1590,46 @@ main (int argc, char **argv)
                          quote (optarg));
                   usage (EXIT_FAILURE);
                 }
-              else
+              లేకపోతే
                 {
                   /* Skip any leading zero.  */
-                  while (*optarg == '0' && *(optarg + 1) != '\0')
+                  అయితే (*optarg == '0' && *(optarg + 1) != '\0')
                     optarg++;
-                  numeric_suffix_start = optarg;
+                  numeric_suffix_ప్రారంభం = optarg;
                 }
             }
-          break;
+          ఆపు;
 
-        case 'e':
-          elide_empty_files = true;
-          break;
+        స్థితి 'e':
+          elide_ఖాళీలు_files = true;
+          ఆపు;
 
-        case FILTER_OPTION:
+        స్థితి FILTER_OPTION:
           filter_command = optarg;
-          break;
+          ఆపు;
 
-        case IO_BLKSIZE_OPTION:
-          in_blk_size = xnumtoumax (optarg, 10, 1,
+        స్థితి IO_BLKSIZE_OPTION:
+          లోపల_blk_కొలత = xnumtoumax (optarg, 10, 1,
                                     MIN (SYS_BUFSIZE_MAX,
                                          MIN (IDX_MAX, SIZE_MAX) - 1),
                                     multipliers, _("invalid IO block size"),
                                     0, XTOINT_MIN_RANGE);
-          break;
+          ఆపు;
 
-        case VERBOSE_OPTION:
+        స్థితి VERBOSE_OPTION:
           verbose = true;
-          break;
+          ఆపు;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_సంస్కరణ_CHAR (కార్యక్రమం_NAME, AUTHORS);
 
-        default:
+        అప్రమేయ:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (k_units != 0 && filter_command)
+  ఒకవేళ (k_units != 0 && filter_command)
     {
       error (0, 0, _("--filter does not process a chunk extracted to "
                      "standard output"));
@@ -1637,32 +1637,32 @@ main (int argc, char **argv)
     }
 
   /* Handle default case.  */
-  if (split_type == type_undef)
+  ఒకవేళ (విభజించు_type_2 == type_undef)
     {
-      split_type = type_lines;
+      విభజించు_type_2 = type_పంక్తులు;
       n_units = 1000;
     }
 
-  if (n_units == 0)
+  ఒకవేళ (n_units == 0)
     {
       error (0, 0, _("invalid number of lines: %s"), quote ("0"));
       usage (EXIT_FAILURE);
     }
 
-  if (eolchar < 0)
+  ఒకవేళ (eolchar < 0)
     eolchar = '\n';
 
-  set_suffix_length (n_units, split_type);
+  సమితి_suffix_నిడివి (n_units, విభజించు_type_2);
 
   /* Get out the filename arguments.  */
 
-  if (optind < argc)
+  ఒకవేళ (optind < argc)
     infile = argv[optind++];
 
-  if (optind < argc)
+  ఒకవేళ (optind < argc)
     outbase = argv[optind++];
 
-  if (optind < argc)
+  ఒకవేళ (optind < argc)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind]));
       usage (EXIT_FAILURE);
@@ -1670,7 +1670,7 @@ main (int argc, char **argv)
 
   /* Check that the suffix length is large enough for the numerical
      suffix start value.  */
-  if (numeric_suffix_start && strlen (numeric_suffix_start) > suffix_length)
+  ఒకవేళ (numeric_suffix_ప్రారంభం && అక్షరశ్రేణి_పొడవు (numeric_suffix_ప్రారంభం) > suffix_నిడివి)
     {
       error (0, 0, _("numerical suffix start value is too large "
                      "for the suffix length"));
@@ -1678,92 +1678,92 @@ main (int argc, char **argv)
     }
 
   /* Open the input file.  */
-  if (! streq (infile, "-")
+  ఒకవేళ (! streq (infile, "-")
       && fd_reopen (STDIN_FILENO, infile, O_RDONLY, 0) < 0)
     error (EXIT_FAILURE, errno, _("cannot open %s for reading"),
            quoteaf (infile));
 
   /* Binary I/O is safer when byte counts are used.  */
-  xset_binary_mode (STDIN_FILENO, O_BINARY);
+  xset_ద్విమాన_బహుళకం (STDIN_FILENO, O_ద్విమాన);
 
   /* Advise the kernel of our access pattern.  */
   fdadvise (STDIN_FILENO, 0, 0, FADVISE_SEQUENTIAL);
 
   /* Get the optimal block size of input device and make a buffer.  */
 
-  if (fstat (STDIN_FILENO, &in_stat_buf) != 0)
+  ఒకవేళ (fstat (STDIN_FILENO, &లోపల_stat_buf) != 0)
     error (EXIT_FAILURE, errno, "%s", quotef (infile));
 
-  if (in_blk_size == 0)
+  ఒకవేళ (లోపల_blk_కొలత == 0)
     {
-      in_blk_size = io_blksize (&in_stat_buf);
-      if (SYS_BUFSIZE_MAX < in_blk_size)
-        in_blk_size = SYS_BUFSIZE_MAX;
+      లోపల_blk_కొలత = io_blksize (&లోపల_stat_buf);
+      ఒకవేళ (SYS_BUFSIZE_MAX < లోపల_blk_కొలత)
+        లోపల_blk_కొలత = SYS_BUFSIZE_MAX;
     }
 
-  char *buf = xalignalloc (page_size, in_blk_size + 1);
+  అక్షరం *buf = xalignalloc (పుట_కొలత, లోపల_blk_కొలత + 1);
   ssize_t initial_read = -1;
 
-  if (split_type == type_chunk_bytes || split_type == type_chunk_lines)
+  ఒకవేళ (విభజించు_type_2 == type_chunk_బైట్లు || విభజించు_type_2 == type_chunk_పంక్తులు)
     {
-      file_size = input_file_size (STDIN_FILENO, &in_stat_buf,
-                                   buf, in_blk_size);
-      if (file_size < 0)
+      file_కొలత = ఆదానం_file_కొలత (STDIN_FILENO, &లోపల_stat_buf,
+                                   buf, లోపల_blk_కొలత);
+      ఒకవేళ (file_కొలత < 0)
         error (EXIT_FAILURE, errno, _("%s: cannot determine file size"),
                quotef (infile));
-      initial_read = MIN (file_size, in_blk_size);
+      initial_read = MIN (file_కొలత, లోపల_blk_కొలత);
     }
 
   /* When filtering, closure of one pipe must not terminate the process,
      as there may still be other streams expecting input from us.  */
-  if (filter_command)
-    default_SIGPIPE = signal (SIGPIPE, SIG_IGN) == SIG_DFL;
+  ఒకవేళ (filter_command)
+    default_SIGPIPE = సంకేతం (SIGPIPE, SIG_IGN) == SIG_DFL;
 
-  switch (split_type)
+  ఎంపిక (విభజించు_type_2)
     {
-    case type_digits:
-    case type_lines:
-      lines_split (n_units, buf, in_blk_size);
-      break;
+    స్థితి type_digits:
+    స్థితి type_పంక్తులు:
+      పంక్తులు_విభజించు (n_units, buf, లోపల_blk_కొలత);
+      ఆపు;
 
-    case type_bytes:
-      bytes_split (n_units, 0, buf, in_blk_size, -1, 0);
-      break;
+    స్థితి type_బైట్లు:
+      బైట్లు_విభజించు (n_units, 0, buf, లోపల_blk_కొలత, -1, 0);
+      ఆపు;
 
-    case type_byteslines:
-      line_bytes_split (n_units, buf, in_blk_size);
-      break;
+    స్థితి type_byteslines:
+      పంక్తి_బైట్లు_విభజించు (n_units, buf, లోపల_blk_కొలత);
+      ఆపు;
 
-    case type_chunk_bytes:
-      if (k_units == 0)
-        bytes_split (file_size / n_units, file_size % n_units,
-                     buf, in_blk_size, initial_read, n_units);
-      else
-        bytes_chunk_extract (k_units, n_units, buf, in_blk_size, initial_read,
-                             file_size);
-      break;
+    స్థితి type_chunk_బైట్లు:
+      ఒకవేళ (k_units == 0)
+        బైట్లు_విభజించు (file_కొలత / n_units, file_కొలత % n_units,
+                     buf, లోపల_blk_కొలత, initial_read, n_units);
+      లేకపోతే
+        బైట్లు_chunk_వెలికితీయి (k_units, n_units, buf, లోపల_blk_కొలత, initial_read,
+                             file_కొలత);
+      ఆపు;
 
-    case type_chunk_lines:
-      lines_chunk_split (k_units, n_units, buf, in_blk_size, initial_read,
-                         file_size);
-      break;
+    స్థితి type_chunk_పంక్తులు:
+      పంక్తులు_chunk_విభజించు (k_units, n_units, buf, లోపల_blk_కొలత, initial_read,
+                         file_కొలత);
+      ఆపు;
 
-    case type_rr:
+    స్థితి type_rr:
       /* Note, this is like 'sed -n ${k}~${n}p' when k > 0,
          but the functionality is provided for symmetry.  */
       {
-        of_t *files;
-        lines_rr (k_units, n_units, buf, in_blk_size, &files);
+        యొక్క_t *files;
+        పంక్తులు_rr (k_units, n_units, buf, లోపల_blk_కొలత, &files);
       }
-      break;
+      ఆపు;
 
-    case type_undef: default:
+    స్థితి type_undef: అప్రమేయ:
       affirm (false);
     }
 
-  if (close (STDIN_FILENO) != 0)
+  ఒకవేళ (close (STDIN_FILENO) != 0)
     error (EXIT_FAILURE, errno, "%s", quotef (infile));
-  closeout (NULL, output_desc, filter_pid, outfile);
+  closeout (ఖాళీ, output_desc, filter_pid, outfile);
 
   main_exit (EXIT_SUCCESS);
 }

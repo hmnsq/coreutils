@@ -18,58 +18,58 @@
 /* Equivalent to 'id -un'. */
 /* Written by Richard Mlynarik. */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <pwd.h>
+#అన్తర్భావ <config.h>
+#అన్తర్భావ <stdio.h>
+#అన్తర్భావ <sys/types.h>
+#అన్తర్భావ <pwd.h>
 
-#include "system.h"
-#include "long-options.h"
-#include "quote.h"
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "long-options.h"
+#అన్తర్భావ "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "whoami"
+#నిర్వచించు కార్యక్రమం_NAME "whoami"
 
-#define AUTHORS proper_name ("Richard Mlynarik")
+#నిర్వచించు AUTHORS proper_name ("Richard Mlynarik")
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("Usage: %s [OPTION]...\n"), program_name);
+      రాయి (_("Usage: %s [OPTION]...\n"), కార్యక్రమం_name);
       fputs (_("\
 Print the user name associated with the current effective user ID.\n\
 Same as id -un.\n\
 \n\
 "), stdout);
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
   uid_t NO_UID = -1;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
-                                   Version, true, usage, AUTHORS,
-                                   (char const *) NULL);
+  parse_gnu_standard_options_only (argc, argv, కార్యక్రమం_NAME, PACKAGE_NAME,
+                                   సంస్కరణ, true, usage, AUTHORS,
+                                   (అక్షరం స్థిరరాశి *) ఖాళీ);
 
-  if (optind != argc)
+  ఒకవేళ (optind != argc)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind]));
       usage (EXIT_FAILURE);
@@ -77,10 +77,10 @@ main (int argc, char **argv)
 
   errno = 0;
   uid_t uid = geteuid ();
-  struct passwd *pw = uid == NO_UID && errno ? NULL : getpwuid (uid);
-  if (!pw)
+  నిర్మాణం passwd *pw = uid == NO_UID && errno ? ఖాళీ : getpwuid (uid);
+  ఒకవేళ (!pw)
     error (EXIT_FAILURE, errno, _("cannot find name for user ID %ju"),
            (uintmax_t) uid);
   puts (pw->pw_name);
-  return EXIT_SUCCESS;
+  తిరిగి EXIT_SUCCESS;
 }

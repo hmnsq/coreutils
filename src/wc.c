@@ -17,197 +17,197 @@
 /* Written by Paul Rubin, phr@ocf.berkeley.edu
    and David MacKenzie, djm@gnu.ai.mit.edu. */
 
-#include <config.h>
+#అన్తర్భావ <config.h>
 
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#అన్తర్భావ <stdio.h>
+#అన్తర్భావ <getopt.h>
+#అన్తర్భావ <sys/types.h>
 
-#include <argmatch.h>
-#include <argv-iter.h>
-#include <fadvise.h>
-#include <physmem.h>
-#include <readtokens0.h>
-#include <stat-size.h>
-#include <xbinary-io.h>
+#అన్తర్భావ <argmatch.h>
+#అన్తర్భావ <argv-iter.h>
+#అన్తర్భావ <fadvise.h>
+#అన్తర్భావ <physmem.h>
+#అన్తర్భావ <readtokens0.h>
+#అన్తర్భావ <stat-size.h>
+#అన్తర్భావ <xbinary-io.h>
 
-#ifdef USE_NEON_WC_LINECOUNT
+#నిర్వచితమైతే USE_NEON_WC_LINECOUNT
 # include <sys/auxv.h>
 # include <asm/hwcap.h>
-#endif
+#అయితే_ముగింపు
 
-#include "system.h"
-#include "assure.h"
-#include "cpu-supports.h"
-#include "ioblksize.h"
-#include "wc.h"
-#include "utf8.h"
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "assure.h"
+#అన్తర్భావ "cpu-supports.h"
+#అన్తర్భావ "ioblksize.h"
+#అన్తర్భావ "wc.h"
+#అన్తర్భావ "utf8.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "wc"
+#నిర్వచించు కార్యక్రమం_NAME "wc"
 
-#define AUTHORS \
+#నిర్వచించు AUTHORS \
   proper_name ("Paul Rubin"), \
   proper_name ("David MacKenzie")
 
-static bool wc_isprint[UCHAR_MAX + 1];
-static bool wc_isspace[UCHAR_MAX + 1];
+స్థిర bool wc_isprint[UCHAR_MAX + 1];
+స్థిర bool wc_isspace[UCHAR_MAX + 1];
 
-static bool debug;
+స్థిర bool debug;
 
 /* Cumulative number of lines, words, chars and bytes in all files so far.
    max_line_length is the maximum over all files processed so far.  */
-static uintmax_t total_lines;
-static uintmax_t total_words;
-static uintmax_t total_chars;
-static uintmax_t total_bytes;
-static bool total_lines_overflow;
-static bool total_words_overflow;
-static bool total_chars_overflow;
-static bool total_bytes_overflow;
-static intmax_t max_line_length;
+స్థిర uintmax_t మొత్తం_పంక్తులు;
+స్థిర uintmax_t మొత్తం_పదాలు;
+స్థిర uintmax_t మొత్తం_chars;
+స్థిర uintmax_t మొత్తం_బైట్లు;
+స్థిర bool మొత్తం_పంక్తులు_అధికప్రవాహం;
+స్థిర bool మొత్తం_పదాలు_అధికప్రవాహం;
+స్థిర bool మొత్తం_chars_అధికప్రవాహం;
+స్థిర bool మొత్తం_బైట్లు_అధికప్రవాహం;
+స్థిర intmax_t max_పంక్తి_నిడివి;
 
 /* Which counts to print. */
-static bool print_lines, print_words, print_chars, print_bytes;
-static bool print_linelength;
+స్థిర bool print_పంక్తులు, print_పదాలు, print_chars, print_బైట్లు;
+స్థిర bool print_linelength;
 
 /* The print width of each count.  */
-static int number_width;
+స్థిర పూర్ణాంకం సంఖ్య_వెడల్పు;
 
 /* True if we have ever read the standard input. */
-static bool have_read_stdin;
+స్థిర bool have_read_stdin;
 
 /* Used to determine if file size can be determined without reading.  */
-static idx_t page_size;
+స్థిర idx_t పుట_కొలత;
 
 /* Enable to _not_ treat non breaking space as a word separator.  */
-static bool posixly_correct;
+స్థిర bool posixly_correct;
 
 /* The result of calling fstat or stat on a file descriptor or file.  */
-struct fstatus
+నిర్మాణం fstatus
 {
   /* If positive, fstat or stat has not been called yet.  Otherwise,
      this is the value returned from fstat or stat.  */
-  int failed;
+  పూర్ణాంకం failed;
 
   /* If FAILED is zero, this is the file's status.  */
-  struct stat st;
+  నిర్మాణం stat st;
 };
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+గణన
 {
-  DEBUG_PROGRAM_OPTION = CHAR_MAX + 1,
+  DEBUG_కార్యక్రమం_OPTION = CHAR_MAX + 1,
   FILES0_FROM_OPTION,
-  TOTAL_OPTION,
+  మొత్తం_OPTION,
 };
 
-static struct option const longopts[] =
+స్థిర నిర్మాణం option స్థిరరాశి longopts[] =
 {
-  {"bytes", no_argument, NULL, 'c'},
-  {"chars", no_argument, NULL, 'm'},
-  {"lines", no_argument, NULL, 'l'},
-  {"words", no_argument, NULL, 'w'},
-  {"debug", no_argument, NULL, DEBUG_PROGRAM_OPTION},
-  {"files0-from", required_argument, NULL, FILES0_FROM_OPTION},
-  {"max-line-length", no_argument, NULL, 'L'},
-  {"total", required_argument, NULL, TOTAL_OPTION},
+  {"bytes", no_వాదం, ఖాళీ, 'c'},
+  {"chars", no_వాదం, ఖాళీ, 'm'},
+  {"lines", no_వాదం, ఖాళీ, 'l'},
+  {"words", no_వాదం, ఖాళీ, 'w'},
+  {"debug", no_వాదం, ఖాళీ, DEBUG_కార్యక్రమం_OPTION},
+  {"files0-from", required_వాదం, ఖాళీ, FILES0_FROM_OPTION},
+  {"max-line-length", no_వాదం, ఖాళీ, 'L'},
+  {"total", required_వాదం, ఖాళీ, మొత్తం_OPTION},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_సంస్కరణ_OPTION_DECL},
+  {ఖాళీ, 0, ఖాళీ, 0}
 };
 
-enum total_type
+గణన మొత్తం_type
   {
-    total_auto,         /* 0: default or --total=auto */
-    total_always,       /* 1: --total=always */
-    total_only,         /* 2: --total=only */
-    total_never         /* 3: --total=never */
+    మొత్తం_auto,         /* 0: default or --total=auto */
+    మొత్తం_always,       /* 1: --total=always */
+    మొత్తం_only,         /* 2: --total=only */
+    మొత్తం_never         /* 3: --total=never */
   };
-static char const *const total_args[] =
+స్థిర అక్షరం స్థిరరాశి *స్థిరరాశి మొత్తం_వాదనలు[] =
 {
-  "auto", "always", "only", "never", NULL
+  "auto", "always", "only", "never", ఖాళీ
 };
-static enum total_type const total_types[] =
+స్థిర గణన మొత్తం_type స్థిరరాశి మొత్తం_types[] =
 {
-  total_auto, total_always, total_only, total_never
+  మొత్తం_auto, మొత్తం_always, మొత్తం_only, మొత్తం_never
 };
-ARGMATCH_VERIFY (total_args, total_types);
-static enum total_type total_mode = total_auto;
+ARGMATCH_VERIFY (మొత్తం_వాదనలు, మొత్తం_types);
+స్థిర గణన మొత్తం_type మొత్తం_బహుళకం = మొత్తం_auto;
 
-#ifdef USE_AVX2_WC_LINECOUNT
-static bool
-avx2_supported (void)
+#నిర్వచితమైతే USE_AVX2_WC_LINECOUNT
+స్థిర bool
+avx2_supported (శూన్య)
 {
   bool avx2_enabled = cpu_supports ("avx2");
-  if (debug)
+  ఒకవేళ (debug)
     error (0, 0, (avx2_enabled
                   ? _("using avx2 hardware support")
                   : _("avx2 support not detected")));
 
-  return avx2_enabled;
+  తిరిగి avx2_enabled;
 }
-#endif
+#అయితే_ముగింపు
 
-#ifdef USE_AVX512_WC_LINECOUNT
-static bool
-avx512_supported (void)
+#నిర్వచితమైతే USE_AVX512_WC_LINECOUNT
+స్థిర bool
+avx512_supported (శూన్య)
 {
   bool avx512_enabled = (cpu_supports ("avx512f")
                          && cpu_supports ("avx512bw"));
 
-  if (debug)
+  ఒకవేళ (debug)
     error (0, 0, (avx512_enabled
                   ? _("using avx512 hardware support")
                   : _("avx512 support not detected")));
 
-  return avx512_enabled;
+  తిరిగి avx512_enabled;
 }
-#endif
+#అయితే_ముగింపు
 
-#ifdef USE_NEON_WC_LINECOUNT
-static bool
-neon_supported (void)
+#నిర్వచితమైతే USE_NEON_WC_LINECOUNT
+స్థిర bool
+neon_supported (శూన్య)
 {
   bool neon_enabled = (cpu_may_support ("asimd")
                        && 0 < (getauxval (AT_HWCAP) & HWCAP_ASIMD));
-  if (debug)
+  ఒకవేళ (debug)
     error (0, 0, (neon_enabled
                   ? _("using neon hardware support")
                   : _("neon support not detected")));
 
-  return neon_enabled;
+  తిరిగి neon_enabled;
 }
-#endif
+#అయితే_ముగింపు
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("\
+      రాయి (_("\
 Usage: %s [OPTION]... [FILE]...\n\
   or:  %s [OPTION]... --files0-from=F\n\
 "),
-              program_name, program_name);
+              కార్యక్రమం_name, కార్యక్రమం_name);
       fputs (_("\
-Print newline, word, and byte counts for each FILE, and a total line if\n\
-more than one FILE is specified.  A word is a nonempty sequence of non white\n\
-space delimited by white space characters or by start or end of input.\n\
+Print newline, మాట_2, and byte counts కొరకు each FILE, and a మొత్తం పంక్తి ఒకవేళ\n\
+మరిన్ని than one FILE is specified.  A మాట_2 is a nonempty sequence యొక్క non white\n\
+space delimited by white space characters or by ప్రారంభం or చివర యొక్క ఆదానం.\n\
 "), stdout);
 
       emit_stdin_note ();
 
       fputs (_("\
 \n\
-The options below may be used to select which counts are printed, always in\n\
-the following order: newline, word, character, byte, maximum line length.\n\
+The options క్రింద may be వాడిన గమ్యం select which counts are printed, always లోపల\n\
+the following క్రమం: newline, మాట_2, character, byte, గరిష్ఠ పంక్తి నిడివి.\n\
 "), stdout);
       oputs (_("\
-  -c, --bytes\n\
+  -c, --బైట్లు\n\
          print the byte counts\n\
 "));
       oputs (_("\
@@ -215,144 +215,144 @@ the following order: newline, word, character, byte, maximum line length.\n\
          print the character counts\n\
 "));
       oputs (_("\
-  -l, --lines\n\
+  -l, --పంక్తులు\n\
          print the newline counts\n\
 "));
       oputs (_("\
       --debug\n\
-         indicate what line count acceleration is used\n\
+         indicate what పంక్తి లెక్క acceleration is వాడిన\n\
 "));
       oputs (_("\
       --files0-from=F\n\
-         read input from the files specified by\n\
-         NUL-terminated names in file F;\n\
-         If F is -, read names from standard input\n\
+         పఠ ఆదానం from the files specified by\n\
+         NUL-terminated పేర్లు లోపల file F;\n\
+         If F is -, పఠ పేర్లు from standard ఆదానం\n\
 "));
       oputs (_("\
-  -L, --max-line-length\n\
-         print the maximum display width\n\
+  -L, --max-పంక్తి-నిడివి\n\
+         print the గరిష్ఠ display వెడల్పు\n\
 "));
       oputs (_("\
-  -w, --words\n\
-         print the word counts\n\
+  -w, --పదాలు\n\
+         print the మాట_2 counts\n\
 "));
       oputs (_("\
-      --total=WHEN\n\
-         when to print a line with total counts;\n\
-         WHEN can be: auto, always, only, never\n\
+      --మొత్తం=WHEN\n\
+         when గమ్యం print a పంక్తి with మొత్తం counts;\n\
+         WHEN can be: స్వయంచాలక, always, only, never\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
 /* Return non zero if POSIXLY_CORRECT is not set and WC is a non breaking
    space.  */
-ATTRIBUTE_PURE
-static int
+ATTRIBUTE_శుద్ధ
+స్థిర పూర్ణాంకం
 maybe_c32isnbspace (char32_t wc)
 {
-  return ! posixly_correct && c32isnbspace (wc);
+  తిరిగి ! posixly_correct && c32isnbspace (wc);
 }
 
 /* FILE is the name of the file (or null for standard input)
    associated with the specified counters.  */
-static void
-write_counts (uintmax_t lines,
-              uintmax_t words,
+స్థిర శూన్య
+write_counts (uintmax_t పంక్తులు,
+              uintmax_t పదాలు,
               uintmax_t chars,
-              uintmax_t bytes,
+              uintmax_t బైట్లు,
               intmax_t linelength,
-              char const *file)
+              అక్షరం స్థిరరాశి *file)
 {
-  static char const format_sp_int[] = " %*s";
-  char const *format_int = format_sp_int + 1;
-  char buf[MAX (INT_BUFSIZE_BOUND (intmax_t),
+  స్థిర అక్షరం స్థిరరాశి format_sp_int[] = " %*s";
+  అక్షరం స్థిరరాశి *format_int = format_sp_int + 1;
+  అక్షరం buf[MAX (INT_BUFSIZE_BOUND (intmax_t),
                 INT_BUFSIZE_BOUND (uintmax_t))];
 
-  if (print_lines)
+  ఒకవేళ (print_పంక్తులు)
     {
-      printf (format_int, number_width, umaxtostr (lines, buf));
+      రాయి (format_int, సంఖ్య_వెడల్పు, umaxtostr (పంక్తులు, buf));
       format_int = format_sp_int;
     }
-  if (print_words)
+  ఒకవేళ (print_పదాలు)
     {
-      printf (format_int, number_width, umaxtostr (words, buf));
+      రాయి (format_int, సంఖ్య_వెడల్పు, umaxtostr (పదాలు, buf));
       format_int = format_sp_int;
     }
-  if (print_chars)
+  ఒకవేళ (print_chars)
     {
-      printf (format_int, number_width, umaxtostr (chars, buf));
+      రాయి (format_int, సంఖ్య_వెడల్పు, umaxtostr (chars, buf));
       format_int = format_sp_int;
     }
-  if (print_bytes)
+  ఒకవేళ (print_బైట్లు)
     {
-      printf (format_int, number_width, umaxtostr (bytes, buf));
+      రాయి (format_int, సంఖ్య_వెడల్పు, umaxtostr (బైట్లు, buf));
       format_int = format_sp_int;
     }
-  if (print_linelength)
-    printf (format_int, number_width, imaxtostr (linelength, buf));
-  if (file)
-    printf (" %s", strchr (file, '\n') ? quotef (file) : file);
-  putchar ('\n');
+  ఒకవేళ (print_linelength)
+    రాయి (format_int, సంఖ్య_వెడల్పు, imaxtostr (linelength, buf));
+  ఒకవేళ (file)
+    రాయి (" %s", strchr (file, '\n') ? quotef (file) : file);
+  అక్షరం_రాయి ('\n');
 
-  if (ferror (stdout))
+  ఒకవేళ (ferror (stdout))
     write_error ();
 }
 
 /* Read FD and return a summary.  */
-static struct wc_lines
-wc_lines (int fd)
+స్థిర నిర్మాణం wc_పంక్తులు
+wc_పంక్తులు (పూర్ణాంకం fd)
 {
-#ifdef USE_AVX512_WC_LINECOUNT
-  static signed char use_avx512;
-  if (!use_avx512)
+#నిర్వచితమైతే USE_AVX512_WC_LINECOUNT
+  స్థిర గుర్తుగల అక్షరం use_avx512;
+  ఒకవేళ (!use_avx512)
     use_avx512 = avx512_supported () ? 1 : -1;
-  if (0 < use_avx512)
-    return wc_lines_avx512 (fd);
-#endif
-#ifdef USE_AVX2_WC_LINECOUNT
-  static signed char use_avx2;
-  if (!use_avx2)
+  ఒకవేళ (0 < use_avx512)
+    తిరిగి wc_పంక్తులు_avx512 (fd);
+#అయితే_ముగింపు
+#నిర్వచితమైతే USE_AVX2_WC_LINECOUNT
+  స్థిర గుర్తుగల అక్షరం use_avx2;
+  ఒకవేళ (!use_avx2)
     use_avx2 = avx2_supported () ? 1 : -1;
-  if (0 < use_avx2)
-    return wc_lines_avx2 (fd);
-#endif
-#ifdef USE_NEON_WC_LINECOUNT
-  static signed char use_neon;
-  if (!use_neon)
+  ఒకవేళ (0 < use_avx2)
+    తిరిగి wc_పంక్తులు_avx2 (fd);
+#అయితే_ముగింపు
+#నిర్వచితమైతే USE_NEON_WC_LINECOUNT
+  స్థిర గుర్తుగల అక్షరం use_neon;
+  ఒకవేళ (!use_neon)
     use_neon = neon_supported () ? 1 : -1;
-  if (0 < use_neon)
-    return wc_lines_neon (fd);
-#endif
+  ఒకవేళ (0 < use_neon)
+    తిరిగి wc_పంక్తులు_neon (fd);
+#అయితే_ముగింపు
 
-  intmax_t lines = 0, bytes = 0;
-  bool long_lines = false;
+  intmax_t పంక్తులు = 0, బైట్లు = 0;
+  bool long_పంక్తులు = false;
 
-  while (true)
+  అయితే (true)
     {
-      char buf[IO_BUFSIZE + 1];
-      ssize_t bytes_read = read (fd, buf, IO_BUFSIZE);
-      if (bytes_read <= 0)
-        return (struct wc_lines) { bytes_read == 0 ? 0 : errno, lines, bytes };
+      అక్షరం buf[IO_BUFSIZE + 1];
+      ssize_t బైట్లు_read = పఠ (fd, buf, IO_BUFSIZE);
+      ఒకవేళ (బైట్లు_read <= 0)
+        తిరిగి (నిర్మాణం wc_పంక్తులు) { బైట్లు_read == 0 ? 0 : errno, పంక్తులు, బైట్లు };
 
-      bytes += bytes_read;
-      char *end = buf + bytes_read;
+      బైట్లు += బైట్లు_read;
+      అక్షరం *చివర = buf + బైట్లు_read;
       idx_t buflines = 0;
 
-      if (! long_lines)
+      ఒకవేళ (! long_పంక్తులు)
         {
           /* Avoid function call overhead for shorter lines.  */
-          for (char *p = buf; p < end; p++)
+          కొరకు (అక్షరం *p = buf; p < చివర; p++)
             buflines += *p == '\n';
         }
-      else
+      లేకపోతే
         {
           /* rawmemchr is more efficient with longer lines.  */
-          *end = '\n';
-          for (char *p = buf; (p = rawmemchr (p, '\n')) < end; p++)
+          *చివర = '\n';
+          కొరకు (అక్షరం *p = buf; (p = rawmemchr (p, '\n')) < చివర; p++)
             buflines++;
         }
 
@@ -362,41 +362,41 @@ wc_lines (int fd)
           FIXME: This line length was determined in 2015, on both
           x86_64 and ppc64, but it's worth re-evaluating in future with
           newer compilers, CPUs, or memchr() implementations etc.  */
-      long_lines = 15 * buflines <= bytes_read;
-      lines += buflines;
+      long_పంక్తులు = 15 * buflines <= బైట్లు_read;
+      పంక్తులు += buflines;
     }
 }
 
 /* Count words.  FILE_X is the name of the file (or null for standard
    input) that is open on descriptor FD.  *FSTATUS is its status.
    Return true if successful.  */
-static bool
-wc (int fd, char const *file_x, struct fstatus *fstatus)
+స్థిర bool
+wc (పూర్ణాంకం fd, అక్షరం స్థిరరాశి *file_x, నిర్మాణం fstatus *fstatus)
 {
-  int err = 0;
-  char buf[IO_BUFSIZE + 1];
-  intmax_t lines, words, chars, bytes, linelength;
-  bool count_bytes, count_chars, count_complicated;
-  char const *file = file_x ? file_x : _("standard input");
+  పూర్ణాంకం err = 0;
+  అక్షరం buf[IO_BUFSIZE + 1];
+  intmax_t పంక్తులు, పదాలు, chars, బైట్లు, linelength;
+  bool లెక్క_బైట్లు_2, లెక్క_chars, లెక్క_complicated;
+  అక్షరం స్థిరరాశి *file = file_x ? file_x : _("standard input");
 
-  lines = words = chars = bytes = linelength = 0;
+  పంక్తులు = పదాలు = chars = బైట్లు = linelength = 0;
 
   /* If in the current locale, chars are equivalent to bytes, we prefer
      counting bytes, because that's easier.  */
-  if (MB_CUR_MAX > 1)
+  ఒకవేళ (MB_CUR_MAX > 1)
     {
-      count_bytes = print_bytes;
-      count_chars = print_chars;
+      లెక్క_బైట్లు_2 = print_బైట్లు;
+      లెక్క_chars = print_chars;
     }
-  else
+  లేకపోతే
     {
-      count_bytes = print_bytes || print_chars;
-      count_chars = false;
+      లెక్క_బైట్లు_2 = print_బైట్లు || print_chars;
+      లెక్క_chars = false;
     }
-  count_complicated = print_words || print_linelength;
+  లెక్క_complicated = print_పదాలు || print_linelength;
 
   /* Advise the kernel of our access pattern only if we will read().  */
-  if (!count_bytes || count_chars || print_lines || count_complicated)
+  ఒకవేళ (!లెక్క_బైట్లు_2 || లెక్క_chars || print_పంక్తులు || లెక్క_complicated)
     fdadvise (fd, 0, 0, FADVISE_SEQUENTIAL);
 
   /* When counting only bytes, save some line- and word-counting
@@ -409,24 +409,24 @@ wc (int fd, char const *file_x, struct fstatus *fstatus)
      '(dd ibs=99k skip=1 count=0; ./wc -c) < /etc/group'
      should make wc report '0' bytes.  */
 
-  if (count_bytes && !count_chars && !print_lines && !count_complicated)
+  ఒకవేళ (లెక్క_బైట్లు_2 && !లెక్క_chars && !print_పంక్తులు && !లెక్క_complicated)
     {
       bool skip_read = false;
 
-      if (0 < fstatus->failed)
+      ఒకవేళ (0 < fstatus->failed)
         fstatus->failed = fstat (fd, &fstatus->st);
 
       /* For sized files, seek to one st_blksize before EOF rather than to EOF.
          This works better for files in proc-like file systems where
          the size is only approximate.  */
-      if (! fstatus->failed && usable_st_size (&fstatus->st)
-          && 0 <= fstatus->st.st_size)
+      ఒకవేళ (! fstatus->failed && usable_st_కొలత (&fstatus->st)
+          && 0 <= fstatus->st.st_కొలత)
         {
-          off_t end_pos = fstatus->st.st_size;
+          off_t చివర_pos = fstatus->st.st_కొలత;
           off_t current_pos = lseek (fd, 0, SEEK_CUR);
-          if (current_pos < 0)
+          ఒకవేళ (current_pos < 0)
             ;
-          else if (end_pos % page_size)
+          లేకపోతే ఒకవేళ (చివర_pos % పుట_కొలత)
             {
               /* We need special handling of /proc and /sys files etc. only
                  when they're a multiple of PAGE_SIZE.  In the common case
@@ -436,93 +436,93 @@ wc (int fd, char const *file_x, struct fstatus *fstatus)
                  Be careful here.  The current position may actually be
                  beyond the end of the file.  As in the example above.  */
 
-              if (current_pos < end_pos)
+              ఒకవేళ (current_pos < చివర_pos)
                 {
-                  bytes = end_pos - current_pos;
+                  బైట్లు = చివర_pos - current_pos;
                   skip_read = true;
                 }
             }
-          else if (0 < end_pos)
+          లేకపోతే ఒకవేళ (0 < చివర_pos)
             {
-              off_t ep_1 = end_pos - 1;
+              off_t ep_1 = చివర_pos - 1;
               off_t hi_pos = ep_1 - ep_1 % STP_BLKSIZE (&fstatus->st);
-              if (current_pos < hi_pos)
-                bytes = hi_pos - current_pos;
+              ఒకవేళ (current_pos < hi_pos)
+                బైట్లు = hi_pos - current_pos;
             }
 
-          if (0 < bytes && lseek (fd, bytes, SEEK_CUR) < 0)
+          ఒకవేళ (0 < బైట్లు && lseek (fd, బైట్లు, SEEK_CUR) < 0)
             {
-              bytes = 0;
+              బైట్లు = 0;
               skip_read = false;
             }
         }
 
-      if (! skip_read)
+      ఒకవేళ (! skip_read)
         {
           fdadvise (fd, 0, 0, FADVISE_SEQUENTIAL);
-          for (ssize_t bytes_read;
-               (bytes_read = read (fd, buf, IO_BUFSIZE));
-               bytes += bytes_read)
-            if (bytes_read < 0)
+          కొరకు (ssize_t బైట్లు_read;
+               (బైట్లు_read = పఠ (fd, buf, IO_BUFSIZE));
+               బైట్లు += బైట్లు_read)
+            ఒకవేళ (బైట్లు_read < 0)
               {
                 err = errno;
-                break;
+                ఆపు;
               }
         }
     }
-  else if (!count_chars && !count_complicated)
+  లేకపోతే ఒకవేళ (!లెక్క_chars && !లెక్క_complicated)
     {
       /* Use a separate loop when counting only lines or lines and bytes --
          but not chars or words.  */
-      struct wc_lines w = wc_lines (fd);
+      నిర్మాణం wc_పంక్తులు w = wc_పంక్తులు (fd);
       err = w.err;
-      lines = w.lines;
-      bytes = w.bytes;
+      పంక్తులు = w.పంక్తులు;
+      బైట్లు = w.బైట్లు;
     }
-  else if (MB_CUR_MAX > 1)
+  లేకపోతే ఒకవేళ (MB_CUR_MAX > 1)
     {
-      bool in_word = false;
+      bool లోపల_మాట = false;
       intmax_t linepos = 0;
       mbstate_t state; mbszero (&state);
-      bool in_shift = false;
-      bool count_utf8 = !count_complicated && !print_lines
+      bool లోపల_జరుపు = false;
+      bool లెక్క_utf8 = !లెక్క_complicated && !print_పంక్తులు
                         && is_utf8_charset ();
       idx_t prev = 0; /* Number of bytes carried over from previous round.  */
 
-      for (ssize_t bytes_read;
-           ((bytes_read = read (fd, buf + prev, IO_BUFSIZE - prev))
+      కొరకు (ssize_t బైట్లు_read;
+           ((బైట్లు_read = పఠ (fd, buf + prev, IO_BUFSIZE - prev))
             || prev);
            )
         {
-          if (bytes_read < 0)
+          ఒకవేళ (బైట్లు_read < 0)
             {
               err = errno;
-              break;
+              ఆపు;
             }
 
-          bytes += bytes_read;
-          char const *p = buf;
-          char const *plim = p + prev + bytes_read;
-          bool try_count_utf8 = count_utf8;
-          do
+          బైట్లు += బైట్లు_read;
+          అక్షరం స్థిరరాశి *p = buf;
+          అక్షరం స్థిరరాశి *plim = p + prev + బైట్లు_read;
+          bool try_లెక్క_utf8 = లెక్క_utf8;
+          చేయి
             {
-              if (try_count_utf8 && !in_shift)
+              ఒకవేళ (try_లెక్క_utf8 && !లోపల_జరుపు)
                 {
                   /* Scan at most once per buffer, to avoid repeatedly
                      scanning ASCII after decoding errors.  */
-                  try_count_utf8 = false;
+                  try_లెక్క_utf8 = false;
                   idx_t n = plim - p;
-                  chars += u8_count (p, &n);
+                  chars += u8_లెక్క (p, &n);
                   p += n;
-                  if (p == plim)
-                    break;
+                  ఒకవేళ (p == plim)
+                    ఆపు;
                 }
 
               char32_t wide_char;
               idx_t charbytes;
               bool single_byte;
 
-              if (!in_shift && 0 <= *p && *p < 0x80)
+              ఒకవేళ (!లోపల_జరుపు && 0 <= *p && *p < 0x80)
                 {
                   /* Handle most ASCII characters quickly, without calling
                      mbrtoc32.  */
@@ -530,25 +530,25 @@ wc (int fd, char const *file_x, struct fstatus *fstatus)
                   wide_char = *p;
                   single_byte = true;
                 }
-              else
+              లేకపోతే
                 {
-                  idx_t prev_bytes = prev;
+                  idx_t prev_బైట్లు = prev;
                   idx_t scanbytes = plim - (p + prev);
                   size_t n = mbrtoc32 (&wide_char, p + prev, scanbytes, &state);
                   prev = 0;
 
-                  if (scanbytes < n)
+                  ఒకవేళ (scanbytes < n)
                     {
-                      if (n == (size_t) -2 && plim - p < IO_BUFSIZE
-                          && bytes_read)
+                      ఒకవేళ (n == (size_t) -2 && plim - p < IO_BUFSIZE
+                          && బైట్లు_read)
                         {
                           /* An incomplete character that is not ridiculously
                              long and there may be more input.  Move the bytes
                              to buffer start and prepare to read more data.  */
                           prev = plim - p;
                           memmove (buf, p, prev);
-                          in_shift = true;
-                          break;
+                          లోపల_జరుపు = true;
+                          ఆపు;
                         }
 
                       /* Remember that we read a byte, but don't complain
@@ -557,7 +557,7 @@ wc (int fd, char const *file_x, struct fstatus *fstatus)
                          character (that is, chars is not incremented).  */
                       p++;
                       mbszero (&state);
-                      in_shift = false;
+                      లోపల_జరుపు = false;
 
                       /* Treat encoding errors as non white space.
                          POSIX says a word is "a non-zero-length string of
@@ -567,182 +567,182 @@ wc (int fd, char const *file_x, struct fstatus *fstatus)
                          means when the input contains encoding errors.
                          Since encoding errors are not white space,
                          treat them that way here.  */
-                      words += !in_word;
-                      in_word = true;
-                      continue;
+                      పదాలు += !లోపల_మాట;
+                      లోపల_మాట = true;
+                      కొనసాగు;
                     }
 
                   /* Include bytes already consumed into STATE in an earlier
                      read, but still present at P in the buffer.  */
-                  charbytes = prev_bytes + n + !n;
-                  single_byte = charbytes == !in_shift;
-                  in_shift = !mbsinit (&state);
+                  charbytes = prev_బైట్లు + n + !n;
+                  single_byte = charbytes == !లోపల_జరుపు;
+                  లోపల_జరుపు = !mbsinit (&state);
                 }
 
-              switch (wide_char)
+              ఎంపిక (wide_char)
                 {
-                case '\n':
-                  lines++;
+                స్థితి '\n':
+                  పంక్తులు++;
                   FALLTHROUGH;
-                case '\r':
-                case '\f':
-                  if (linepos > linelength)
+                స్థితి '\r':
+                స్థితి '\f':
+                  ఒకవేళ (linepos > linelength)
                     linelength = linepos;
                   linepos = 0;
-                  in_word = false;
-                  break;
+                  లోపల_మాట = false;
+                  ఆపు;
 
-                case '\t':
+                స్థితి '\t':
                   linepos += 8 - (linepos % 8);
-                  in_word = false;
-                  break;
+                  లోపల_మాట = false;
+                  ఆపు;
 
-                case ' ':
+                స్థితి ' ':
                   linepos++;
                   FALLTHROUGH;
-                case '\v':
-                  in_word = false;
-                  break;
+                స్థితి '\v':
+                  లోపల_మాట = false;
+                  ఆపు;
 
-                default:;
-                  bool in_word2;
-                  if (single_byte && wide_char <= UCHAR_MAX)
+                అప్రమేయ:;
+                  bool లోపల_word2;
+                  ఒకవేళ (single_byte && wide_char <= UCHAR_MAX)
                     {
                       linepos += wc_isprint[wide_char];
-                      in_word2 = !wc_isspace[wide_char];
+                      లోపల_word2 = !wc_isspace[wide_char];
                     }
-                  else
+                  లేకపోతే
                     {
                       /* c32width can be expensive on macOS for example,
                          so avoid if not needed.  */
-                      if (print_linelength)
+                      ఒకవేళ (print_linelength)
                         {
-                          int width = c32width (wide_char);
-                          if (width > 0)
-                            linepos += width;
+                          పూర్ణాంకం వెడల్పు = c32width (wide_char);
+                          ఒకవేళ (వెడల్పు > 0)
+                            linepos += వెడల్పు;
                         }
-                      in_word2 = (! c32isspace (wide_char)
+                      లోపల_word2 = (! c32isspace (wide_char)
                                   && ! maybe_c32isnbspace (wide_char));
                     }
 
                   /* Count words by counting word starts, i.e., each
                      white space character (or the start of input)
                      followed by non white space.  */
-                  words += !in_word & in_word2;
-                  in_word = in_word2;
-                  break;
+                  పదాలు += !లోపల_మాట & లోపల_word2;
+                  లోపల_మాట = లోపల_word2;
+                  ఆపు;
                 }
 
               p += charbytes;
               chars++;
             }
-          while (p < plim);
+          అయితే (p < plim);
         }
-      if (linepos > linelength)
+      ఒకవేళ (linepos > linelength)
         linelength = linepos;
     }
-  else
+  లేకపోతే
     {
-      bool in_word = false;
+      bool లోపల_మాట = false;
       intmax_t linepos = 0;
 
-      for (ssize_t bytes_read; (bytes_read = read (fd, buf, IO_BUFSIZE)); )
+      కొరకు (ssize_t బైట్లు_read; (బైట్లు_read = పఠ (fd, buf, IO_BUFSIZE)); )
         {
-          if (bytes_read < 0)
+          ఒకవేళ (బైట్లు_read < 0)
             {
               err = errno;
-              break;
+              ఆపు;
             }
 
-          bytes += bytes_read;
-          char const *p = buf;
-          do
+          బైట్లు += బైట్లు_read;
+          అక్షరం స్థిరరాశి *p = buf;
+          చేయి
             {
-              unsigned char c = *p++;
-              switch (c)
+              గుర్తులేని అక్షరం c = *p++;
+              ఎంపిక (c)
                 {
-                case '\n':
-                  lines++;
+                స్థితి '\n':
+                  పంక్తులు++;
                   FALLTHROUGH;
-                case '\r':
-                case '\f':
-                  if (linepos > linelength)
+                స్థితి '\r':
+                స్థితి '\f':
+                  ఒకవేళ (linepos > linelength)
                     linelength = linepos;
                   linepos = 0;
-                  in_word = false;
-                  break;
+                  లోపల_మాట = false;
+                  ఆపు;
 
-                case '\t':
+                స్థితి '\t':
                   linepos += 8 - (linepos % 8);
-                  in_word = false;
-                  break;
+                  లోపల_మాట = false;
+                  ఆపు;
 
-                case ' ':
+                స్థితి ' ':
                   linepos++;
                   FALLTHROUGH;
-                case '\v':
-                  in_word = false;
-                  break;
+                స్థితి '\v':
+                  లోపల_మాట = false;
+                  ఆపు;
 
-                default:
+                అప్రమేయ:
                   linepos += wc_isprint[c];
-                  bool in_word2 = !wc_isspace[c];
-                  words += !in_word & in_word2;
-                  in_word = in_word2;
-                  break;
+                  bool లోపల_word2 = !wc_isspace[c];
+                  పదాలు += !లోపల_మాట & లోపల_word2;
+                  లోపల_మాట = లోపల_word2;
+                  ఆపు;
                 }
             }
-          while (--bytes_read);
+          అయితే (--బైట్లు_read);
         }
-      if (linepos > linelength)
+      ఒకవేళ (linepos > linelength)
         linelength = linepos;
     }
 
-  if (count_chars < print_chars)
-    chars = bytes;
+  ఒకవేళ (లెక్క_chars < print_chars)
+    chars = బైట్లు;
 
-  if (total_mode != total_only)
-    write_counts (lines, words, chars, bytes, linelength, file_x);
+  ఒకవేళ (మొత్తం_బహుళకం != మొత్తం_only)
+    write_counts (పంక్తులు, పదాలు, chars, బైట్లు, linelength, file_x);
 
-  total_lines_overflow |= ckd_add (&total_lines, total_lines, lines);
-  total_words_overflow |= ckd_add (&total_words, total_words, words);
-  total_chars_overflow |= ckd_add (&total_chars, total_chars, chars);
-  total_bytes_overflow |= ckd_add (&total_bytes, total_bytes, bytes);
+  మొత్తం_పంక్తులు_అధికప్రవాహం |= ckd_కూడు (&మొత్తం_పంక్తులు, మొత్తం_పంక్తులు, పంక్తులు);
+  మొత్తం_పదాలు_అధికప్రవాహం |= ckd_కూడు (&మొత్తం_పదాలు, మొత్తం_పదాలు, పదాలు);
+  మొత్తం_chars_అధికప్రవాహం |= ckd_కూడు (&మొత్తం_chars, మొత్తం_chars, chars);
+  మొత్తం_బైట్లు_అధికప్రవాహం |= ckd_కూడు (&మొత్తం_బైట్లు, మొత్తం_బైట్లు, బైట్లు);
 
-  if (linelength > max_line_length)
-    max_line_length = linelength;
+  ఒకవేళ (linelength > max_పంక్తి_నిడివి)
+    max_పంక్తి_నిడివి = linelength;
 
-  if (err)
+  ఒకవేళ (err)
     error (0, err, "%s", quotef (file));
-  return !err;
+  తిరిగి !err;
 }
 
-static bool
-wc_file (char const *file, struct fstatus *fstatus)
+స్థిర bool
+wc_file (అక్షరం స్థిరరాశి *file, నిర్మాణం fstatus *fstatus)
 {
-  if (! file || streq (file, "-"))
+  ఒకవేళ (! file || streq (file, "-"))
     {
       have_read_stdin = true;
-      xset_binary_mode (STDIN_FILENO, O_BINARY);
-      return wc (STDIN_FILENO, file, fstatus);
+      xset_ద్విమాన_బహుళకం (STDIN_FILENO, O_ద్విమాన);
+      తిరిగి wc (STDIN_FILENO, file, fstatus);
     }
-  else
+  లేకపోతే
     {
-      int fd = open (file, O_RDONLY | O_BINARY);
-      if (fd == -1)
+      పూర్ణాంకం fd = open (file, O_RDONLY | O_ద్విమాన);
+      ఒకవేళ (fd == -1)
         {
           error (0, errno, "%s", quotef (file));
-          return false;
+          తిరిగి false;
         }
-      else
+      లేకపోతే
         {
           bool ok = wc (fd, file, fstatus);
-          if (close (fd) != 0)
+          ఒకవేళ (close (fd) != 0)
             {
               error (0, errno, "%s", quotef (file));
-              return false;
+              తిరిగి false;
             }
-          return ok;
+          తిరిగి ok;
         }
     }
 }
@@ -753,154 +753,154 @@ wc_file (char const *file, struct fstatus *fstatus)
    to stat the file.  Handle the case of (nfiles == 0) in the same way;
    that happens when we don't know how long the list of file names will be.  */
 
-static struct fstatus *
-get_input_fstatus (idx_t nfiles, char *const *file)
+స్థిర నిర్మాణం fstatus *
+get_ఆదానం_fstatus (idx_t nfiles, అక్షరం *స్థిరరాశి *file)
 {
-  struct fstatus *fstatus = xnmalloc (nfiles ? nfiles : 1, sizeof *fstatus);
+  నిర్మాణం fstatus *fstatus = xnmalloc (nfiles ? nfiles : 1, పరిమాణం *fstatus);
 
-  if (nfiles == 0
+  ఒకవేళ (nfiles == 0
       || (nfiles == 1
-          && ((print_lines + print_words + print_chars
-               + print_bytes + print_linelength)
+          && ((print_పంక్తులు + print_పదాలు + print_chars
+               + print_బైట్లు + print_linelength)
               == 1)))
     fstatus[0].failed = 1;
-  else
+  లేకపోతే
     {
-      for (idx_t i = 0; i < nfiles; i++)
+      కొరకు (idx_t i = 0; i < nfiles; i++)
         fstatus[i].failed = (! file[i] || streq (file[i], "-")
                              ? fstat (STDIN_FILENO, &fstatus[i].st)
                              : stat (file[i], &fstatus[i].st));
     }
 
-  return fstatus;
+  తిరిగి fstatus;
 }
 
 /* Return a print width suitable for the NFILES files whose status is
    recorded in FSTATUS.  Optimize the same special case that
    get_input_fstatus optimizes.  */
 
-ATTRIBUTE_PURE
-static int
-compute_number_width (idx_t nfiles, struct fstatus const *fstatus)
+ATTRIBUTE_శుద్ధ
+స్థిర పూర్ణాంకం
+compute_సంఖ్య_వెడల్పు (idx_t nfiles, నిర్మాణం fstatus స్థిరరాశి *fstatus)
 {
-  int width = 1;
+  పూర్ణాంకం వెడల్పు = 1;
 
-  if (0 < nfiles && fstatus[0].failed <= 0)
+  ఒకవేళ (0 < nfiles && fstatus[0].failed <= 0)
     {
-      int minimum_width = 1;
-      uintmax_t regular_total = 0;
+      పూర్ణాంకం minimum_వెడల్పు = 1;
+      uintmax_t regular_మొత్తం = 0;
 
-      for (idx_t i = 0; i < nfiles; i++)
-        if (! fstatus[i].failed)
+      కొరకు (idx_t i = 0; i < nfiles; i++)
+        ఒకవేళ (! fstatus[i].failed)
           {
-            if (!S_ISREG (fstatus[i].st.st_mode))
-              minimum_width = 7;
-            else if (ckd_add (&regular_total, regular_total,
-                              fstatus[i].st.st_size))
+            ఒకవేళ (!S_ISREG (fstatus[i].st.st_బహుళకం))
+              minimum_వెడల్పు = 7;
+            లేకపోతే ఒకవేళ (ckd_కూడు (&regular_మొత్తం, regular_మొత్తం,
+                              fstatus[i].st.st_కొలత))
               {
-                regular_total = UINTMAX_MAX;
-                break;
+                regular_మొత్తం = UINTMAX_MAX;
+                ఆపు;
               }
           }
 
-      for (; 10 <= regular_total; regular_total /= 10)
-        width++;
-      if (width < minimum_width)
-        width = minimum_width;
+      కొరకు (; 10 <= regular_మొత్తం; regular_మొత్తం /= 10)
+        వెడల్పు++;
+      ఒకవేళ (వెడల్పు < minimum_వెడల్పు)
+        వెడల్పు = minimum_వెడల్పు;
     }
 
-  return width;
+  తిరిగి వెడల్పు;
 }
 
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
-  int optc;
+  పూర్ణాంకం optc;
   idx_t nfiles;
-  char **files;
-  char *files_from = NULL;
-  struct fstatus *fstatus;
-  struct Tokens tok;
+  అక్షరం **files;
+  అక్షరం *files_from = ఖాళీ;
+  నిర్మాణం fstatus *fstatus;
+  నిర్మాణం టోకెన్లు tok;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  page_size = getpagesize ();
+  పుట_కొలత = getpagesize ();
   /* Line buffer stdout to ensure lines are written atomically and immediately
      so that processes running in parallel do not intersperse their output.  */
-  setvbuf (stdout, NULL, _IOLBF, 0);
+  setvbuf (stdout, ఖాళీ, _IOLBF, 0);
 
-  posixly_correct = (getenv ("POSIXLY_CORRECT") != NULL);
+  posixly_correct = (getenv ("POSIXLY_CORRECT") != ఖాళీ);
 
-  while ((optc = getopt_long (argc, argv, "clLmw", longopts, NULL)) != -1)
-    switch (optc)
+  అయితే ((optc = getopt_long (argc, argv, "clLmw", longopts, ఖాళీ)) != -1)
+    ఎంపిక (optc)
       {
-      case 'c':
-        print_bytes = true;
-        break;
+      స్థితి 'c':
+        print_బైట్లు = true;
+        ఆపు;
 
-      case 'm':
+      స్థితి 'm':
         print_chars = true;
-        break;
+        ఆపు;
 
-      case 'l':
-        print_lines = true;
-        break;
+      స్థితి 'l':
+        print_పంక్తులు = true;
+        ఆపు;
 
-      case 'w':
-        print_words = true;
-        break;
+      స్థితి 'w':
+        print_పదాలు = true;
+        ఆపు;
 
-      case 'L':
+      స్థితి 'L':
         print_linelength = true;
-        break;
+        ఆపు;
 
-      case DEBUG_PROGRAM_OPTION:
+      స్థితి DEBUG_కార్యక్రమం_OPTION:
         debug = true;
-        break;
+        ఆపు;
 
-      case FILES0_FROM_OPTION:
+      స్థితి FILES0_FROM_OPTION:
         files_from = optarg;
-        break;
+        ఆపు;
 
-      case TOTAL_OPTION:
-        total_mode = XARGMATCH ("--total", optarg, total_args, total_types);
-        break;
+      స్థితి మొత్తం_OPTION:
+        మొత్తం_బహుళకం = XARGMATCH ("--total", optarg, మొత్తం_వాదనలు, మొత్తం_types);
+        ఆపు;
 
       case_GETOPT_HELP_CHAR;
 
-      case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+      case_GETOPT_సంస్కరణ_CHAR (కార్యక్రమం_NAME, AUTHORS);
 
-      default:
+      అప్రమేయ:
         usage (EXIT_FAILURE);
       }
 
-  if (! (print_lines || print_words || print_chars || print_bytes
+  ఒకవేళ (! (print_పంక్తులు || print_పదాలు || print_chars || print_బైట్లు
          || print_linelength))
-    print_lines = print_words = print_bytes = true;
+    print_పంక్తులు = print_పదాలు = print_బైట్లు = true;
 
-  if (print_linelength)
-    for (int i = 0; i <= UCHAR_MAX; i++)
+  ఒకవేళ (print_linelength)
+    కొరకు (పూర్ణాంకం i = 0; i <= UCHAR_MAX; i++)
       wc_isprint[i] = !!isprint (i);
-  if (print_words)
-    for (int i = 0; i <= UCHAR_MAX; i++)
-      wc_isspace[i] = isspace (i) || maybe_c32isnbspace (btoc32 (i));
+  ఒకవేళ (print_పదాలు)
+    కొరకు (పూర్ణాంకం i = 0; i <= UCHAR_MAX; i++)
+      wc_isspace[i] = ఖాళీనా (i) || maybe_c32isnbspace (btoc32 (i));
 
-  bool read_tokens = false;
-  struct argv_iterator *ai;
-  if (files_from)
+  bool read_టోకెన్లు = false;
+  నిర్మాణం argv_iterator *ai;
+  ఒకవేళ (files_from)
     {
-      FILE *stream;
+      FILE *ప్రవాహం;
 
       /* When using --files0-from=F, you may not specify any files
          on the command-line.  */
-      if (optind < argc)
+      ఒకవేళ (optind < argc)
         {
           error (0, 0, _("extra operand %s"), quoteaf (argv[optind]));
           fprintf (stderr, "%s\n",
@@ -908,63 +908,63 @@ main (int argc, char **argv)
           usage (EXIT_FAILURE);
         }
 
-      if (streq (files_from, "-"))
-        stream = stdin;
-      else
+      ఒకవేళ (streq (files_from, "-"))
+        ప్రవాహం = stdin;
+      లేకపోతే
         {
-          stream = fopen (files_from, "r");
-          if (stream == NULL)
+          ప్రవాహం = fopen (files_from, "r");
+          ఒకవేళ (ప్రవాహం == ఖాళీ)
             error (EXIT_FAILURE, errno, _("cannot open %s for reading"),
                    quoteaf (files_from));
         }
 
       /* Read the file list into RAM if we can detect its size and that
          size is reasonable.  Otherwise, we'll read a name at a time.  */
-      struct stat st;
-      if (fstat (fileno (stream), &st) == 0
-          && S_ISREG (st.st_mode)
-          && st.st_size <= MIN (10 * 1024 * 1024, physmem_available () / 2))
+      నిర్మాణం stat st;
+      ఒకవేళ (fstat (fileno (ప్రవాహం), &st) == 0
+          && S_ISREG (st.st_బహుళకం)
+          && st.st_కొలత <= MIN (10 * 1024 * 1024, physmem_అందుబాటు () / 2))
         {
-          read_tokens = true;
+          read_టోకెన్లు = true;
           readtokens0_init (&tok);
-          if (! readtokens0 (stream, &tok) || fclose (stream) != 0)
+          ఒకవేళ (! readtokens0 (ప్రవాహం, &tok) || fclose (ప్రవాహం) != 0)
             error (EXIT_FAILURE, 0, _("cannot read file names from %s"),
                    quoteaf (files_from));
           files = tok.tok;
           nfiles = tok.n_tok;
           ai = argv_iter_init_argv (files);
         }
-      else
+      లేకపోతే
         {
-          files = NULL;
+          files = ఖాళీ;
           nfiles = 0;
-          ai = argv_iter_init_stream (stream);
+          ai = argv_iter_init_ప్రవాహం (ప్రవాహం);
         }
     }
-  else
+  లేకపోతే
     {
-      static char *stdin_only[] = { NULL };
+      స్థిర అక్షరం *stdin_only[] = { ఖాళీ };
       files = (optind < argc ? argv + optind : stdin_only);
       nfiles = (optind < argc ? argc - optind : 1);
       ai = argv_iter_init_argv (files);
     }
 
-  if (!ai)
+  ఒకవేళ (!ai)
     xalloc_die ();
 
-  fstatus = get_input_fstatus (nfiles, files);
-  if (total_mode == total_only)
-    number_width = 1;  /* No extra padding, since no alignment requirement.  */
-  else
-    number_width = compute_number_width (nfiles, fstatus);
+  fstatus = get_ఆదానం_fstatus (nfiles, files);
+  ఒకవేళ (మొత్తం_బహుళకం == మొత్తం_only)
+    సంఖ్య_వెడల్పు = 1;  /* No extra padding, since no alignment requirement.  */
+  లేకపోతే
+    సంఖ్య_వెడల్పు = compute_సంఖ్య_వెడల్పు (nfiles, fstatus);
 
   bool ok = true;
-  enum argv_iter_err ai_err;
-  char *file_name;
-  for (int i = 0; (file_name = argv_iter (ai, &ai_err)); i++)
+  గణన argv_iter_err ai_err;
+  అక్షరం *file_name;
+  కొరకు (పూర్ణాంకం i = 0; (file_name = argv_iter (ai, &ai_err)); i++)
     {
       bool skip_file = false;
-      if (files_from && streq (files_from, "-") && streq (file_name, "-"))
+      ఒకవేళ (files_from && streq (files_from, "-") && streq (file_name, "-"))
         {
           /* Give a better diagnostic in an unusual case:
              printf - | wc --files0-from=- */
@@ -974,98 +974,98 @@ main (int argc, char **argv)
           skip_file = true;
         }
 
-      if (!file_name[0])
+      ఒకవేళ (!file_name[0])
         {
           /* Diagnose a zero-length file name.  When it's one
              among many, knowing the record number may help.
              FIXME: currently print the record number only with
              --files0-from=FILE.  Maybe do it for argv, too?  */
-          if (files_from == NULL)
+          ఒకవేళ (files_from == ఖాళీ)
             error (0, 0, "%s", _("invalid zero-length file name"));
-          else
+          లేకపోతే
             {
               /* Using the standard 'filename:line-number:' prefix here is
                  not totally appropriate, since NUL is the separator, not NL,
                  but it might be better than nothing.  */
               error (0, 0, "%s:%zu: %s", quotef (files_from),
-                     argv_iter_n_args (ai), _("invalid zero-length file name"));
+                     argv_iter_n_వాదనలు (ai), _("invalid zero-length file name"));
             }
           skip_file = true;
         }
 
-      if (skip_file)
+      ఒకవేళ (skip_file)
         ok = false;
-      else
+      లేకపోతే
         ok &= wc_file (file_name, &fstatus[nfiles ? i : 0]);
 
-      if (! nfiles)
+      ఒకవేళ (! nfiles)
         fstatus[0].failed = 1;
     }
-  switch (ai_err)
+  ఎంపిక (ai_err)
     {
-    case AI_ERR_EOF:
-      break;
+    స్థితి AI_ERR_EOF:
+      ఆపు;
 
-    case AI_ERR_READ:
+    స్థితి AI_ERR_READ:
       error (0, errno, _("%s: read error"), quotef (files_from));
       ok = false;
-      break;
+      ఆపు;
 
-    case AI_ERR_MEM:
+    స్థితి AI_ERR_MEM:
       xalloc_die ();
 
-    case AI_ERR_OK: default:
+    స్థితి AI_ERR_OK: అప్రమేయ:
       affirm (false);
     }
 
   /* No arguments on the command line is fine.  That means read from stdin.
      However, no arguments on the --files0-from input stream is an error
      means don't read anything.  */
-  if (ok && !files_from && argv_iter_n_args (ai) == 0)
-    ok &= wc_file (NULL, &fstatus[0]);
+  ఒకవేళ (ok && !files_from && argv_iter_n_వాదనలు (ai) == 0)
+    ok &= wc_file (ఖాళీ, &fstatus[0]);
 
-  if (read_tokens)
+  ఒకవేళ (read_టోకెన్లు)
     readtokens0_free (&tok);
 
-  if (total_mode != total_never
-      && (total_mode != total_auto || 1 < argv_iter_n_args (ai)))
+  ఒకవేళ (మొత్తం_బహుళకం != మొత్తం_never
+      && (మొత్తం_బహుళకం != మొత్తం_auto || 1 < argv_iter_n_వాదనలు (ai)))
     {
-      if (total_lines_overflow)
+      ఒకవేళ (మొత్తం_పంక్తులు_అధికప్రవాహం)
         {
-          total_lines = UINTMAX_MAX;
+          మొత్తం_పంక్తులు = UINTMAX_MAX;
           error (0, EOVERFLOW, _("total lines"));
           ok = false;
         }
-      if (total_words_overflow)
+      ఒకవేళ (మొత్తం_పదాలు_అధికప్రవాహం)
         {
-          total_words = UINTMAX_MAX;
+          మొత్తం_పదాలు = UINTMAX_MAX;
           error (0, EOVERFLOW, _("total words"));
           ok = false;
         }
-      if (total_chars_overflow)
+      ఒకవేళ (మొత్తం_chars_అధికప్రవాహం)
         {
-          total_chars = UINTMAX_MAX;
+          మొత్తం_chars = UINTMAX_MAX;
           error (0, EOVERFLOW, _("total characters"));
           ok = false;
         }
-      if (total_bytes_overflow)
+      ఒకవేళ (మొత్తం_బైట్లు_అధికప్రవాహం)
         {
-          total_bytes = UINTMAX_MAX;
+          మొత్తం_బైట్లు = UINTMAX_MAX;
           error (0, EOVERFLOW, _("total bytes"));
           ok = false;
         }
 
-      write_counts (total_lines, total_words, total_chars, total_bytes,
-                    max_line_length,
-                    total_mode != total_only ? _("total") : NULL);
+      write_counts (మొత్తం_పంక్తులు, మొత్తం_పదాలు, మొత్తం_chars, మొత్తం_బైట్లు,
+                    max_పంక్తి_నిడివి,
+                    మొత్తం_బహుళకం != మొత్తం_only ? _("total") : ఖాళీ);
     }
 
   argv_iter_free (ai);
 
-  free (fstatus);
+  విడుదల (fstatus);
 
-  if (have_read_stdin && close (STDIN_FILENO) != 0)
+  ఒకవేళ (have_read_stdin && close (STDIN_FILENO) != 0)
     error (EXIT_FAILURE, errno, "-");
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  తిరిగి ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

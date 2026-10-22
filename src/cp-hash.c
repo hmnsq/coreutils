@@ -17,113 +17,113 @@
    Written by Torbjörn Granlund, Sweden (tege@sics.se).
    Rewritten to use lib/hash.c by Jim Meyering.  */
 
-#include <config.h>
+#అన్తర్భావ <config.h>
 
-#include <sys/types.h>
-#include "system.h"
+#అన్తర్భావ <sys/types.h>
+#అన్తర్భావ "system.h"
 
-#include "hash.h"
-#include "cp-hash.h"
+#అన్తర్భావ "hash.h"
+#అన్తర్భావ "cp-hash.h"
 
 /* Use ST_DEV and ST_INO as the key, FILENAME as the value.
    These are used e.g., in copy.c to associate the destination name with
    the source device/inode pair so that if we encounter a matching dev/ino
    pair in the source tree we can arrange to create a hard link between
    the corresponding names in the destination tree.  */
-struct Src_to_dest
+నిర్మాణం Src_గమ్యం_dest
 {
   ino_t st_ino;
   dev_t st_dev;
   /* Destination file name (of non-directory or pre-existing directory)
      corresponding to the dev/ino of a copied file, or the destination file
      name corresponding to a dev/ino pair for a newly-created directory. */
-  char *name;
+  అక్షరం *name;
 };
 
 /* This table maps source dev/ino to destination file name.
    We use it to preserve hard links when copying.  */
-static Hash_table *src_to_dest;
+స్థిర Hash_పట్టిక *src_గమ్యం_dest;
 
 /* Initial size of the above hash table.  */
-#define INITIAL_TABLE_SIZE 103
+#నిర్వచించు INITIAL_పట్టిక_కొలత 103
 
-static size_t
-src_to_dest_hash (void const *x, size_t table_size)
+స్థిర size_t
+src_గమ్యం_dest_hash (శూన్య స్థిరరాశి *x, size_t పట్టిక_కొలత)
 {
-  struct Src_to_dest const *p = x;
+  నిర్మాణం Src_గమ్యం_dest స్థిరరాశి *p = x;
 
   /* Ignoring the device number here should be fine.  */
   /* The cast to uintmax_t prevents negative remainders
      if st_ino is negative.  */
-  return (uintmax_t) {p->st_ino} % table_size;
+  తిరిగి (uintmax_t) {p->st_ino} % పట్టిక_కొలత;
 }
 
 /* Compare two Src_to_dest entries.
    Return true if their keys are judged 'equal'.  */
-static bool
-src_to_dest_compare (void const *x, void const *y)
+స్థిర bool
+src_గమ్యం_dest_compare (శూన్య స్థిరరాశి *x, శూన్య స్థిరరాశి *y)
 {
-  struct Src_to_dest const *a = x;
-  struct Src_to_dest const *b = y;
-  return PSAME_INODE (a, b);
+  నిర్మాణం Src_గమ్యం_dest స్థిరరాశి *a = x;
+  నిర్మాణం Src_గమ్యం_dest స్థిరరాశి *b = y;
+  తిరిగి PSAME_INODE (a, b);
 }
 
-static void
-src_to_dest_free (void *x)
+స్థిర శూన్య
+src_గమ్యం_dest_free (శూన్య *x)
 {
-  struct Src_to_dest *a = x;
-  free (a->name);
-  free (x);
+  నిర్మాణం Src_గమ్యం_dest *a = x;
+  విడుదల (a->name);
+  విడుదల (x);
 }
 
 /* Remove the entry matching INO/DEV from the table
    that maps source ino/dev to destination file name.  */
-extern void
+బాహ్య శూన్య
 forget_created (ino_t ino, dev_t dev)
 {
-  struct Src_to_dest probe;
-  struct Src_to_dest *ent;
+  నిర్మాణం Src_గమ్యం_dest probe;
+  నిర్మాణం Src_గమ్యం_dest *ent;
 
   probe.st_ino = ino;
   probe.st_dev = dev;
-  probe.name = NULL;
+  probe.name = ఖాళీ;
 
-  ent = hash_remove (src_to_dest, &probe);
-  if (ent)
-    src_to_dest_free (ent);
+  ent = hash_remove (src_గమ్యం_dest, &probe);
+  ఒకవేళ (ent)
+    src_గమ్యం_dest_free (ent);
 }
 
 /* If INO/DEV correspond to an already-copied source file, return the
    name of the corresponding destination file.  Otherwise, return NULL.  */
 
-extern char *
-src_to_dest_lookup (ino_t ino, dev_t dev)
+బాహ్య అక్షరం *
+src_గమ్యం_dest_lookup (ino_t ino, dev_t dev)
 {
-  struct Src_to_dest ent;
-  struct Src_to_dest const *e;
+  నిర్మాణం Src_గమ్యం_dest ent;
+  నిర్మాణం Src_గమ్యం_dest స్థిరరాశి *e;
   ent.st_ino = ino;
   ent.st_dev = dev;
-  e = hash_lookup (src_to_dest, &ent);
-  return e ? e->name : NULL;
+  e = hash_lookup (src_గమ్యం_dest, &ent);
+  తిరిగి e ? e->name : ఖాళీ;
 }
 
 /* Add file NAME, copied from inode number INO and device number DEV,
    to the list of files we have copied.
    Return NULL if inserted, otherwise a non-null pointer. */
 
-extern char *
-remember_copied (char const *name, ino_t ino, dev_t dev)
+బాహ్య అక్షరం *
+remember_copied (అక్షరం స్థిరరాశి *name, ino_t ino, dev_t dev)
 {
-  struct Src_to_dest *ent;
-  struct Src_to_dest *ent_from_table;
+  నిర్మాణం Src_గమ్యం_dest *ent;
+  నిర్మాణం Src_గమ్యం_dest *ent_from_పట్టిక;
 
-  ent = xmalloc (sizeof *ent);
+  ent = xmalloc (పరిమాణం *ent);
   ent->name = xstrdup (name);
   ent->st_ino = ino;
   ent->st_dev = dev;
 
-  ent_from_table = hash_insert (src_to_dest, ent);
-  if (ent_from_table == NULL)
+  ent_from_పట్టిక = hash_చొప్పించు (src_గమ్యం_dest, ent);
+  ఒకవేళ (ent_from_పట్టిక == ఖాళీ)
     {
       /* Insertion failed due to lack of memory.  */
       xalloc_die ();
@@ -132,24 +132,24 @@ remember_copied (char const *name, ino_t ino, dev_t dev)
   /* Determine whether there was already an entry in the table
      with a matching key.  If so, free ENT (it wasn't inserted) and
      return the 'name' from the table entry.  */
-  if (ent_from_table != ent)
+  ఒకవేళ (ent_from_పట్టిక != ent)
     {
-      src_to_dest_free (ent);
-      return ent_from_table->name;
+      src_గమ్యం_dest_free (ent);
+      తిరిగి ent_from_పట్టిక->name;
     }
 
   /* New key;  insertion succeeded.  */
-  return NULL;
+  తిరిగి ఖాళీ;
 }
 
 /* Initialize the hash table.  */
-extern void
-hash_init (void)
+బాహ్య శూన్య
+hash_init (శూన్య)
 {
-  src_to_dest = hash_initialize (INITIAL_TABLE_SIZE, NULL,
-                                 src_to_dest_hash,
-                                 src_to_dest_compare,
-                                 src_to_dest_free);
-  if (src_to_dest == NULL)
+  src_గమ్యం_dest = hash_initialize (INITIAL_పట్టిక_కొలత, ఖాళీ,
+                                 src_గమ్యం_dest_hash,
+                                 src_గమ్యం_dest_compare,
+                                 src_గమ్యం_dest_free);
+  ఒకవేళ (src_గమ్యం_dest == ఖాళీ)
     xalloc_die ();
 }

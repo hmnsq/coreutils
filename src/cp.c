@@ -16,30 +16,30 @@
 
    Written by Torbjörn Granlund, David MacKenzie, and Jim Meyering. */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <getopt.h>
-#include <selinux/label.h>
+#అన్తర్భావ <config.h>
+#అన్తర్భావ <stdio.h>
+#అన్తర్భావ <sys/types.h>
+#అన్తర్భావ <getopt.h>
+#అన్తర్భావ <selinux/label.h>
 
-#include "system.h"
-#include "argmatch.h"
-#include "assure.h"
-#include "backupfile.h"
-#include "copy.h"
-#include "cp-hash.h"
-#include "filenamecat.h"
-#include "ignore-value.h"
-#include "quote.h"
-#include "stat-time.h"
-#include "targetdir.h"
-#include "utimens.h"
-#include "acl.h"
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "argmatch.h"
+#అన్తర్భావ "assure.h"
+#అన్తర్భావ "backupfile.h"
+#అన్తర్భావ "copy.h"
+#అన్తర్భావ "cp-hash.h"
+#అన్తర్భావ "filenamecat.h"
+#అన్తర్భావ "ignore-value.h"
+#అన్తర్భావ "quote.h"
+#అన్తర్భావ "stat-time.h"
+#అన్తర్భావ "targetdir.h"
+#అన్తర్భావ "utimens.h"
+#అన్తర్భావ "acl.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "cp"
+#నిర్వచించు కార్యక్రమం_NAME "cp"
 
-#define AUTHORS \
+#నిర్వచించు AUTHORS \
   proper_name_lite ("Torbjorn Granlund", "Torbj\303\266rn Granlund"), \
   proper_name ("David MacKenzie"), \
   proper_name ("Jim Meyering")
@@ -47,24 +47,24 @@
 /* Used by do_copy, make_dir_parents_private, and re_protect
    to keep a list of leading directories whose protections
    need to be fixed after copying. */
-struct dir_attr
+నిర్మాణం dir_attr
 {
-  struct stat st;
-  bool restore_mode;
-  size_t slash_offset;
-  struct dir_attr *next;
+  నిర్మాణం stat st;
+  bool restore_బహుళకం;
+  size_t slash_స్థానభ్రంశం;
+  నిర్మాణం dir_attr *తదుపరి;
 };
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+గణన
 {
-  ATTRIBUTES_ONLY_OPTION = CHAR_MAX + 1,
+  లక్షణాలు_ONLY_OPTION = CHAR_MAX + 1,
   COPY_CONTENTS_OPTION,
   DEBUG_OPTION,
-  NO_PRESERVE_ATTRIBUTES_OPTION,
+  NO_PRESERVE_లక్షణాలు_OPTION,
   PARENTS_OPTION,
-  PRESERVE_ATTRIBUTES_OPTION,
+  PRESERVE_లక్షణాలు_OPTION,
   REFLINK_OPTION,
   SPARSE_OPTION,
   STRIP_TRAILING_SLASHES_OPTION,
@@ -73,98 +73,98 @@ enum
 };
 
 /* True if the kernel is SELinux enabled.  */
-static bool selinux_enabled;
+స్థిర bool selinux_enabled;
 
 /* If true, the command "cp x/e_file e_dir" uses "e_dir/x/e_file"
    as its destination instead of the usual "e_dir/e_file." */
-static bool parents_option = false;
+స్థిర bool parents_option = false;
 
 /* Remove any trailing slashes from each SOURCE argument.  */
-static bool remove_trailing_slashes;
+స్థిర bool remove_trailing_slashes;
 
-static char const *const sparse_type_string[] =
+స్థిర అక్షరం స్థిరరాశి *స్థిరరాశి sparse_type_string[] =
 {
-  "never", "auto", "always", NULL
+  "never", "auto", "always", ఖాళీ
 };
-static enum Sparse_type const sparse_type[] =
+స్థిర గణన Sparse_type స్థిరరాశి sparse_type[] =
 {
   SPARSE_NEVER, SPARSE_AUTO, SPARSE_ALWAYS
 };
 ARGMATCH_VERIFY (sparse_type_string, sparse_type);
 
-static char const *const reflink_type_string[] =
+స్థిర అక్షరం స్థిరరాశి *స్థిరరాశి reflink_type_string[] =
 {
-  "auto", "always", "never", NULL
+  "auto", "always", "never", ఖాళీ
 };
-static enum Reflink_type const reflink_type[] =
+స్థిర గణన Reflink_type స్థిరరాశి reflink_type[] =
 {
   REFLINK_AUTO, REFLINK_ALWAYS, REFLINK_NEVER
 };
 ARGMATCH_VERIFY (reflink_type_string, reflink_type);
 
-static char const *const update_type_string[] =
+స్థిర అక్షరం స్థిరరాశి *స్థిరరాశి update_type_string[] =
 {
-  "all", "none", "none-fail", "older", NULL
+  "all", "none", "none-fail", "older", ఖాళీ
 };
-static enum Update_type const update_type[] =
+స్థిర గణన Update_type స్థిరరాశి update_type[] =
 {
   UPDATE_ALL, UPDATE_NONE, UPDATE_NONE_FAIL, UPDATE_OLDER,
 };
 ARGMATCH_VERIFY (update_type_string, update_type);
 
-static struct option const long_opts[] =
+స్థిర నిర్మాణం option స్థిరరాశి long_opts[] =
 {
-  {"archive", no_argument, NULL, 'a'},
-  {"attributes-only", no_argument, NULL, ATTRIBUTES_ONLY_OPTION},
-  {"backup", optional_argument, NULL, 'b'},
-  {"copy-contents", no_argument, NULL, COPY_CONTENTS_OPTION},
-  {"debug", no_argument, NULL, DEBUG_OPTION},
-  {"dereference", no_argument, NULL, 'L'},
-  {"force", no_argument, NULL, 'f'},
-  {"interactive", no_argument, NULL, 'i'},
-  {"link", no_argument, NULL, 'l'},
-  {"no-clobber", no_argument, NULL, 'n'},   /* Deprecated.  */
-  {"no-dereference", no_argument, NULL, 'P'},
-  {"no-preserve", required_argument, NULL, NO_PRESERVE_ATTRIBUTES_OPTION},
-  {"no-target-directory", no_argument, NULL, 'T'},
-  {"one-file-system", no_argument, NULL, 'x'},
-  {"parents", no_argument, NULL, PARENTS_OPTION},
-  {"path", no_argument, NULL, PARENTS_OPTION},   /* Deprecated.  */
-  {"preserve", optional_argument, NULL, PRESERVE_ATTRIBUTES_OPTION},
-  {"recursive", no_argument, NULL, 'R'},
-  {"remove-destination", no_argument, NULL, UNLINK_DEST_BEFORE_OPENING},
-  {"sparse", required_argument, NULL, SPARSE_OPTION},
-  {"reflink", optional_argument, NULL, REFLINK_OPTION},
-  {"strip-trailing-slashes", no_argument, NULL,
+  {"archive", no_వాదం, ఖాళీ, 'a'},
+  {"attributes-only", no_వాదం, ఖాళీ, లక్షణాలు_ONLY_OPTION},
+  {"backup", optional_వాదం, ఖాళీ, 'b'},
+  {"copy-contents", no_వాదం, ఖాళీ, COPY_CONTENTS_OPTION},
+  {"debug", no_వాదం, ఖాళీ, DEBUG_OPTION},
+  {"dereference", no_వాదం, ఖాళీ, 'L'},
+  {"force", no_వాదం, ఖాళీ, 'f'},
+  {"interactive", no_వాదం, ఖాళీ, 'i'},
+  {"link", no_వాదం, ఖాళీ, 'l'},
+  {"no-clobber", no_వాదం, ఖాళీ, 'n'},   /* Deprecated.  */
+  {"no-dereference", no_వాదం, ఖాళీ, 'P'},
+  {"no-preserve", required_వాదం, ఖాళీ, NO_PRESERVE_లక్షణాలు_OPTION},
+  {"no-target-directory", no_వాదం, ఖాళీ, 'T'},
+  {"one-file-system", no_వాదం, ఖాళీ, 'x'},
+  {"parents", no_వాదం, ఖాళీ, PARENTS_OPTION},
+  {"path", no_వాదం, ఖాళీ, PARENTS_OPTION},   /* Deprecated.  */
+  {"preserve", optional_వాదం, ఖాళీ, PRESERVE_లక్షణాలు_OPTION},
+  {"recursive", no_వాదం, ఖాళీ, 'R'},
+  {"remove-destination", no_వాదం, ఖాళీ, UNLINK_DEST_BEFORE_OPENING},
+  {"sparse", required_వాదం, ఖాళీ, SPARSE_OPTION},
+  {"reflink", optional_వాదం, ఖాళీ, REFLINK_OPTION},
+  {"strip-trailing-slashes", no_వాదం, ఖాళీ,
    STRIP_TRAILING_SLASHES_OPTION},
-  {"suffix", required_argument, NULL, 'S'},
-  {"symbolic-link", no_argument, NULL, 's'},
-  {"target-directory", required_argument, NULL, 't'},
-  {"update", optional_argument, NULL, 'u'},
-  {"verbose", no_argument, NULL, 'v'},
-  {"keep-directory-symlink", no_argument, NULL,
+  {"suffix", required_వాదం, ఖాళీ, 'S'},
+  {"symbolic-link", no_వాదం, ఖాళీ, 's'},
+  {"target-directory", required_వాదం, ఖాళీ, 't'},
+  {"update", optional_వాదం, ఖాళీ, 'u'},
+  {"verbose", no_వాదం, ఖాళీ, 'v'},
+  {"keep-directory-symlink", no_వాదం, ఖాళీ,
     KEEP_DIRECTORY_SYMLINK_OPTION},
   {GETOPT_SELINUX_CONTEXT_OPTION_DECL},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_సంస్కరణ_OPTION_DECL},
+  {ఖాళీ, 0, ఖాళీ, 0}
 };
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("\
-Usage: %s [OPTION]... [-T] SOURCE DEST\n\
-  or:  %s [OPTION]... SOURCE... DIRECTORY\n\
-  or:  %s [OPTION]... -t DIRECTORY SOURCE...\n\
+      రాయి (_("\
+Usage: %s [OPTION]... [-T] ఆధారం DEST\n\
+  or:  %s [OPTION]... ఆధారం... DIRECTORY\n\
+  or:  %s [OPTION]... -t DIRECTORY ఆధారం...\n\
 "),
-              program_name, program_name, program_name);
+              కార్యక్రమం_name, కార్యక్రమం_name, కార్యక్రమం_name);
       fputs (_("\
-Copy SOURCE to DEST, or multiple SOURCE(s) to DIRECTORY.\n\
+Copy ఆధారం గమ్యం DEST, or గుణిజం ఆధారం(s) గమ్యం DIRECTORY.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
@@ -174,20 +174,20 @@ Copy SOURCE to DEST, or multiple SOURCE(s) to DIRECTORY.\n\
          same as -dR --preserve=all\n\
 "));
       oputs (_("\
-      --attributes-only\n\
-         don't copy the file data, just the attributes\n\
+      --లక్షణాలు-only\n\
+         don't copy the file దత్తాంశం, just the లక్షణాలు\n\
 "));
       oputs (_("\
       --backup[=CONTROL]\n\
-         make a backup of each existing destination file\n\
+         make a backup యొక్క each existing destination file\n\
 "));
       oputs (_("\
   -b\n\
-         like --backup but does not accept an argument\n\
+         like --backup but does not accept an వాదం\n\
 "));
       oputs (_("\
       --copy-contents\n\
-         copy contents of special files when recursive\n\
+         copy contents యొక్క special files when recursive\n\
 "));
       oputs (_("\
   -d\n\
@@ -195,36 +195,36 @@ Copy SOURCE to DEST, or multiple SOURCE(s) to DIRECTORY.\n\
 "));
       oputs (_("\
       --debug\n\
-         explain how a file is copied.  Implies -v\n\
+         explain how a file is copied.  సూచిస్తుంది_2 -v\n\
 "));
       oputs (_("\
   -f, --force\n\
-         if an existing destination file cannot be opened, remove it and try\n\
-         again (this option is ignored when the -n option is also used)\n\
+         ఒకవేళ an existing destination file cannot be opened, remove it and try\n\
+         again (this option is ignored when the -n option is also వాడిన)\n\
 "));
       oputs (_("\
   -i, --interactive\n\
-         prompt before overwrite (overrides a previous -n option)\n\
+         prompt before overwrite (overrides a మునుపటి -n option)\n\
 "));
       oputs (_("\
   -H\n\
-         follow command-line symbolic links in SOURCE\n\
+         follow command-పంక్తి symbolic links లోపల ఆధారం\n\
 "));
       oputs (_("\
   -L, --dereference\n\
-         always follow symbolic links in SOURCE\n\
+         always follow symbolic links లోపల ఆధారం\n\
 "));
       oputs (_("\
   -P, --no-dereference\n\
-         never follow symbolic links in SOURCE\n\
+         never follow symbolic links లోపల ఆధారం\n\
 "));
       oputs (_("\
       --keep-directory-symlink\n\
-         follow existing symlinks to directories\n\
+         follow existing symlinks గమ్యం directories\n\
 "));
       oputs (_("\
   -l, --link\n\
-         hard link files instead of copying\n\
+         hard link files instead యొక్క copying\n\
 "));
       oputs (_("\
   -n, --no-clobber\n\
@@ -232,19 +232,19 @@ Copy SOURCE to DEST, or multiple SOURCE(s) to DIRECTORY.\n\
 "));
       oputs (_("\
   -p\n\
-         same as --preserve=mode,ownership,timestamps\n\
+         same as --preserve=బహుళకం_2,ownership,timestamps\n\
 "));
       oputs (_("\
       --preserve[=ATTR_LIST]\n\
-         preserve the specified attributes\n\
+         preserve the specified లక్షణాలు\n\
 "));
       oputs (_("\
       --no-preserve=ATTR_LIST\n\
-         don't preserve the specified attributes\n\
+         don't preserve the specified లక్షణాలు\n\
 "));
       oputs (_("\
       --parents\n\
-         use full source file name under DIRECTORY\n\
+         use నిండిన ఆధారం_2 file name under DIRECTORY\n\
 "));
       oputs (_("\
   -R, -r, --recursive\n\
@@ -252,49 +252,49 @@ Copy SOURCE to DEST, or multiple SOURCE(s) to DIRECTORY.\n\
 "));
       oputs (_("\
       --reflink[=WHEN]\n\
-         control clone/CoW copies. See below\n\
+         control clone/CoW copies. See క్రింద\n\
 "));
       oputs (_("\
       --remove-destination\n\
-         remove each existing destination file before attempting to open it\n\
+         remove each existing destination file before attempting గమ్యం open it\n\
          (contrast with --force)\n\
 "));
       oputs (_("\
       --sparse=WHEN\n\
-         control creation of sparse files. See below\n\
+         control creation యొక్క sparse files. See క్రింద\n\
 "));
       oputs (_("\
       --strip-trailing-slashes\n\
-         remove any trailing slashes from each SOURCE argument\n\
+         remove any trailing slashes from each ఆధారం వాదం\n\
 "));
       oputs (_("\
   -s, --symbolic-link\n\
-         make symbolic links instead of copying\n\
+         make symbolic links instead యొక్క copying\n\
 "));
       oputs (_("\
   -S, --suffix=SUFFIX\n\
          override the usual backup suffix\n\
 "));
       oputs (_("\
-  -t, --target-directory=DIRECTORY\n\
-         copy all SOURCE arguments into DIRECTORY\n\
+  -t, --లక్ష్యం-directory=DIRECTORY\n\
+         copy all ఆధారం arguments into DIRECTORY\n\
 "));
       oputs (_("\
-  -T, --no-target-directory\n\
-         treat DEST as a normal file\n\
+  -T, --no-లక్ష్యం-directory\n\
+         treat DEST as a సాధారణ file\n\
 "));
       oputs (_("\
       --update[=UPDATE]\n\
          control which existing files are updated;\n\
-         UPDATE={all,none,none-fail,older(default)}\n\
+         UPDATE={all,none,none-fail,older(అప్రమేయ)}\n\
 "));
       oputs (_("\
   -u\n\
-         equivalent to --update[=older].  See below\n\
+         equivalent గమ్యం --update[=older].  See క్రింద\n\
 "));
       oputs (_("\
   -v, --verbose\n\
-         explain what is being done\n\
+         explain what is being పూర్తి\n\
 "));
       oputs (_("\
   -x, --one-file-system\n\
@@ -302,49 +302,49 @@ Copy SOURCE to DEST, or multiple SOURCE(s) to DIRECTORY.\n\
 "));
       oputs (_("\
   -Z\n\
-         set SELinux security context of destination file to default type\n\
+         సమితి_2 SELinux security context యొక్క destination file గమ్యం అప్రమేయ type\n\
 "));
       oputs (_("\
       --context[=CTX]\n\
-         like -Z, or if CTX is specified then set the\n\
-         SELinux or SMACK security context to CTX\n\
+         like -Z, or ఒకవేళ CTX is specified then సమితి_2 the\n\
+         SELinux or SMACK security context గమ్యం CTX\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-ATTR_LIST is a comma-separated list of attributes. Attributes are 'mode' for\n\
-permissions (including any ACL and xattr permissions), 'ownership' for user\n\
-and group, 'timestamps' for file timestamps, 'links' for hard links, 'context'\
-\nfor security context, 'xattr' for extended attributes, and 'all' for all\n\
-attributes.\n\
+ATTR_LIST is a comma-separated list యొక్క లక్షణాలు. లక్షణాలు_2 are 'mode' కొరకు\n\
+permissions (including any ACL and xattr permissions), 'ownership' కొరకు user\n\
+and సమూహం, 'timestamps' కొరకు file timestamps, 'links' కొరకు hard links, 'context'\
+\nfor security context, 'xattr' కొరకు extended లక్షణాలు, and 'all' కొరకు all\n\
+లక్షణాలు.\n\
 "), stdout);
       fputs (_("\
 \n\
-By default, sparse SOURCE files are detected by a crude heuristic and the\n\
+By అప్రమేయ, sparse ఆధారం files are detected by a crude heuristic and the\n\
 corresponding DEST file is made sparse as well.  That is the behavior\n\
-selected by --sparse=auto.  Specify --sparse=always to create a sparse DEST\n\
-file whenever the SOURCE file contains a long enough sequence of zero bytes.\n\
-Use --sparse=never to inhibit creation of sparse files.\n\
+selected by --sparse=స్వయంచాలక.  Specify --sparse=always గమ్యం create a sparse DEST\n\
+file whenever the ఆధారం file కలిగియుంది a దీర్ఘ enough sequence యొక్క zero బైట్లు.\n\
+Use --sparse=never గమ్యం inhibit creation యొక్క sparse files.\n\
 "), stdout);
       emit_update_parameters_note ();
       fputs (_("\
 \n\
-By default or with --reflink=auto, cp will try a lightweight copy, where the\n\
-data blocks are copied only when modified, falling back to a standard copy\n\
-if this is not possible.  With --reflink[=always] cp will fail if CoW is not\n\
-supported, while --reflink=never ensures a standard copy is performed.\n\
+By అప్రమేయ or with --reflink=స్వయంచాలక, cp will try a lightweight copy, where the\n\
+దత్తాంశం ఖండాలు are copied only when modified, falling వెనుక గమ్యం a standard copy\n\
+ఒకవేళ this is not possible.  With --reflink[=always] cp will fail ఒకవేళ CoW is not\n\
+supported, అయితే --reflink=never ensures a standard copy is performed.\n\
 "), stdout);
       emit_backup_suffix_note ();
       fputs (_("\
 \n\
-As a special case, cp makes a backup of SOURCE when the force and backup\n\
-options are given and SOURCE and DEST are the same name for an existing,\n\
+As a special స్థితి, cp makes a backup యొక్క ఆధారం when the force and backup\n\
+options are given and ఆధారం and DEST are the same name కొరకు an existing,\n\
 regular file.\n\
 "), stdout);
-      emit_ancillary_info (PROGRAM_NAME);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
 /* Ensure that parents of CONST_DST_NAME have correct protections, for
@@ -367,78 +367,78 @@ regular file.\n\
    directories specified by ATTR_LIST have the proper permissions
    when done.  */
 
-static bool
-re_protect (char const *const_dst_name, char const *dst_src_name,
-            int dst_dirfd, char const *dst_relname,
-            struct dir_attr *attr_list, const struct cp_options *x)
+స్థిర bool
+re_protect (అక్షరం స్థిరరాశి *const_dst_name, అక్షరం స్థిరరాశి *dst_src_name,
+            పూర్ణాంకం dst_dirfd, అక్షరం స్థిరరాశి *dst_relname,
+            నిర్మాణం dir_attr *attr_list, స్థిరరాశి నిర్మాణం cp_options *x)
 {
-  char *dst_name;		/* A copy of CONST_DST_NAME we can change. */
+  అక్షరం *dst_name;		/* A copy of CONST_DST_NAME we can change. */
 
-  ASSIGN_STRDUPA (dst_name, const_dst_name);
+  కేటాయించు_STRDUPA (dst_name, const_dst_name);
 
   /* The suffix of DST_NAME that is a copy of the source file name,
      possibly truncated to name a parent directory.  */
-  char const *src_name = dst_name + (dst_src_name - const_dst_name);
+  అక్షరం స్థిరరాశి *src_name = dst_name + (dst_src_name - const_dst_name);
 
   /* Likewise, but with any leading '/'s skipped.  */
-  char const *relname = dst_name + (dst_relname - const_dst_name);
+  అక్షరం స్థిరరాశి *relname = dst_name + (dst_relname - const_dst_name);
 
-  for (struct dir_attr *p = attr_list; p; p = p->next)
+  కొరకు (నిర్మాణం dir_attr *p = attr_list; p; p = p->తదుపరి)
     {
-      dst_name[p->slash_offset] = '\0';
+      dst_name[p->slash_స్థానభ్రంశం] = '\0';
 
       /* Adjust the times (and if possible, ownership) for the copy.
          chown turns off set[ug]id bits for non-root,
          so do the chmod last.  */
 
-      if (x->preserve_timestamps)
+      ఒకవేళ (x->preserve_timestamps)
         {
-          struct timespec timespec[2] = { get_stat_atime (&p->st),
+          నిర్మాణం timespec timespec[2] = { get_stat_atime (&p->st),
                                           get_stat_mtime (&p->st) };
 
-          if (utimensat (dst_dirfd, relname, timespec, 0))
+          ఒకవేళ (utimensat (dst_dirfd, relname, timespec, 0))
             {
               error (0, errno, _("failed to preserve times for %s"),
                      quoteaf (dst_name));
-              return false;
+              తిరిగి false;
             }
         }
 
-      if (x->preserve_ownership)
+      ఒకవేళ (x->preserve_ownership)
         {
-          if (lchownat (dst_dirfd, relname, p->st.st_uid, p->st.st_gid)
+          ఒకవేళ (lchownat (dst_dirfd, relname, p->st.st_uid, p->st.st_gid)
               != 0)
             {
-              if (! chown_failure_ok (x))
+              ఒకవేళ (! chown_failure_ok (x))
                 {
                   error (0, errno, _("failed to preserve ownership for %s"),
                          quoteaf (dst_name));
-                  return false;
+                  తిరిగి false;
                 }
               /* Failing to preserve ownership is OK. Still, try to preserve
                  the group, but ignore the possible error. */
-              ignore_value (lchownat (dst_dirfd, relname, -1, p->st.st_gid));
+              ignore_విలువ (lchownat (dst_dirfd, relname, -1, p->st.st_gid));
             }
         }
 
-      if (x->preserve_mode)
+      ఒకవేళ (x->preserve_బహుళకం)
         {
-          if (xcopy_acl (src_name, -1, dst_name, -1, p->st.st_mode) != 0)
-            return false;
+          ఒకవేళ (xcopy_acl (src_name, -1, dst_name, -1, p->st.st_బహుళకం) != 0)
+            తిరిగి false;
         }
-      else if (p->restore_mode)
+      లేకపోతే ఒకవేళ (p->restore_బహుళకం)
         {
-          if (lchmodat (dst_dirfd, relname, p->st.st_mode) != 0)
+          ఒకవేళ (lchmodat (dst_dirfd, relname, p->st.st_బహుళకం) != 0)
             {
               error (0, errno, _("failed to preserve permissions for %s"),
                      quoteaf (dst_name));
-              return false;
+              తిరిగి false;
             }
         }
 
-      dst_name[p->slash_offset] = '/';
+      dst_name[p->slash_స్థానభ్రంశం] = '/';
     }
-  return true;
+  తిరిగి true;
 }
 
 /* Ensure that the parent directory of CONST_DIR exists, for
@@ -461,90 +461,90 @@ re_protect (char const *const_dst_name, char const *dst_src_name,
 
 /* FIXME: Synch this function with the one in ../lib/mkdir-p.c.  */
 
-static bool
-make_dir_parents_private (char const *const_dir, size_t src_offset,
-                          int dst_dirfd,
-                          char const *verbose_fmt_string,
-                          struct dir_attr **attr_list, bool *new_dst,
-                          const struct cp_options *x)
+స్థిర bool
+make_dir_parents_వ్యక్తిగత (అక్షరం స్థిరరాశి *const_dir, size_t src_స్థానభ్రంశం,
+                          పూర్ణాంకం dst_dirfd,
+                          అక్షరం స్థిరరాశి *verbose_fmt_string,
+                          నిర్మాణం dir_attr **attr_list, bool *new_dst,
+                          స్థిరరాశి నిర్మాణం cp_options *x)
 {
   idx_t dirlen = dir_len (const_dir);
 
-  *attr_list = NULL;
+  *attr_list = ఖాళీ;
 
   /* Succeed immediately if the parent of CONST_DIR must already exist,
      as the target directory has already been checked.  */
-  if (dirlen <= src_offset)
-    return true;
+  ఒకవేళ (dirlen <= src_స్థానభ్రంశం)
+    తిరిగి true;
 
   /* A copy of CONST_DIR we can change.  */
-  char *dir;
-  ASSIGN_STRDUPA (dir, const_dir);
+  అక్షరం *dir;
+  కేటాయించు_STRDUPA (dir, const_dir);
 
   /* Source name in DIR.  */
-  char *src = dir + src_offset;
+  అక్షరం *src = dir + src_స్థానభ్రంశం;
 
   /* Leading directory of DIR.  */
-  char *dst_dir = alloca (dirlen + 1);
-  memcpy (dst_dir, dir, dirlen);
+  అక్షరం *dst_dir = alloca (dirlen + 1);
+  జ్ఞాపకం_నకలు (dst_dir, dir, dirlen);
   dst_dir[dirlen] = '\0';
-  char const *dst_reldir = dst_dir + src_offset;
-  while (*dst_reldir == '/')
+  అక్షరం స్థిరరాశి *dst_reldir = dst_dir + src_స్థానభ్రంశం;
+  అయితే (*dst_reldir == '/')
     dst_reldir++;
 
   /* XXX: If all dirs are present at the destination,
      no permissions or security contexts will be updated.  */
-  struct stat stats;
-  if (fstatat (dst_dirfd, dst_reldir, &stats, 0) != 0)
+  నిర్మాణం stat stats;
+  ఒకవేళ (fstatat (dst_dirfd, dst_reldir, &stats, 0) != 0)
     {
       /* A parent of CONST_DIR does not exist.
          Make all missing intermediate directories. */
-      char *slash = src;
+      అక్షరం *slash = src;
 
-      while (*slash == '/')
+      అయితే (*slash == '/')
         slash++;
       dst_reldir = slash;
 
-      while ((slash = strchr (slash, '/')))
+      అయితే ((slash = strchr (slash, '/')))
         {
-          struct dir_attr *new;
+          నిర్మాణం dir_attr *new;
 
           *slash = '\0';
           bool missing_dir = fstatat (dst_dirfd, dst_reldir, &stats, 0) != 0;
 
-          if (missing_dir || x->preserve_ownership || x->preserve_mode
+          ఒకవేళ (missing_dir || x->preserve_ownership || x->preserve_బహుళకం
               || x->preserve_timestamps)
             {
               /* Add this directory to the list of directories whose
                  modes might need fixing later. */
-              struct stat src_st;
-              int src_errno = (stat (src, &src_st) != 0
+              నిర్మాణం stat src_st;
+              పూర్ణాంకం src_errno = (stat (src, &src_st) != 0
                                ? errno
-                               : S_ISDIR (src_st.st_mode)
+                               : S_ISDIR (src_st.st_బహుళకం)
                                ? 0
                                : ENOTDIR);
-              if (src_errno)
+              ఒకవేళ (src_errno)
                 {
                   error (0, src_errno, _("failed to get attributes of %s"),
                          quoteaf (src));
-                  return false;
+                  తిరిగి false;
                 }
 
-              new = xmalloc (sizeof *new);
+              new = xmalloc (పరిమాణం *new);
               new->st = src_st;
-              new->slash_offset = slash - dir;
-              new->restore_mode = false;
-              new->next = *attr_list;
+              new->slash_స్థానభ్రంశం = slash - dir;
+              new->restore_బహుళకం = false;
+              new->తదుపరి = *attr_list;
               *attr_list = new;
             }
 
           /* If required set the default context for created dirs.  */
-          if (! set_process_security_ctx (src, dir,
-                                          missing_dir ? new->st.st_mode : 0,
+          ఒకవేళ (! సమితి_process_security_ctx (src, dir,
+                                          missing_dir ? new->st.st_బహుళకం : 0,
                                           missing_dir, x))
-            return false;
+            తిరిగి false;
 
-          if (missing_dir)
+          ఒకవేళ (missing_dir)
             {
               /* This component does not exist.  We must set
                  *new_dst and new->st.st_mode inside this loop because,
@@ -552,15 +552,15 @@ make_dir_parents_private (char const *const_dir, size_t src_offset,
                  make_dir_parents_private creates only e_dir/../a if
                  ./b already exists. */
               *new_dst = true;
-              mode_t src_mode = new->st.st_mode;
+              mode_t src_బహుళకం = new->st.st_బహుళకం;
 
               /* If the ownership or special mode bits might change,
                  omit some permissions at first, so unauthorized users
                  cannot nip in before the file is ready.  */
-              mode_t omitted_permissions = (src_mode
+              mode_t omitted_permissions = (src_బహుళకం
                                             & (x->preserve_ownership
                                                ? S_IRWXG | S_IRWXO
-                                               : x->preserve_mode
+                                               : x->preserve_బహుళకం
                                                ? S_IWGRP | S_IWOTH
                                                : 0));
 
@@ -568,156 +568,156 @@ make_dir_parents_private (char const *const_dir, size_t src_offset,
                  (src_mode & ~S_IRWXUGO) != 0.  However, common practice is
                  to ask mkdir to copy all the CHMOD_MODE_BITS, letting mkdir
                  decide what to do with S_ISUID | S_ISGID | S_ISVTX.  */
-              mode_t mkdir_mode = (x->explicit_no_preserve_mode
-                                   ? S_IRWXUGO : src_mode);
-              mkdir_mode &= CHMOD_MODE_BITS & ~omitted_permissions;
-              if (mkdirat (dst_dirfd, dst_reldir, mkdir_mode) != 0)
+              mode_t mkdir_బహుళకం = (x->explicit_no_preserve_బహుళకం
+                                   ? S_IRWXUGO : src_బహుళకం);
+              mkdir_బహుళకం &= CHMOD_బహుళకం_బిట్లు & ~omitted_permissions;
+              ఒకవేళ (mkdirat (dst_dirfd, dst_reldir, mkdir_బహుళకం) != 0)
                 {
                   error (0, errno, _("cannot make directory %s"),
                          quoteaf (dir));
-                  return false;
+                  తిరిగి false;
                 }
-              else
+              లేకపోతే
                 {
-                  if (verbose_fmt_string != NULL)
-                    printf (verbose_fmt_string, src, dir);
+                  ఒకవేళ (verbose_fmt_string != ఖాళీ)
+                    రాయి (verbose_fmt_string, src, dir);
                 }
 
               /* We need search and write permissions to the new directory
                  for writing the directory's contents. Check if these
                  permissions are there.  */
 
-              if (fstatat (dst_dirfd, dst_reldir, &stats, AT_SYMLINK_NOFOLLOW))
+              ఒకవేళ (fstatat (dst_dirfd, dst_reldir, &stats, AT_SYMLINK_NOFOLLOW))
                 {
                   error (0, errno, _("failed to get attributes of %s"),
                          quoteaf (dir));
-                  return false;
+                  తిరిగి false;
                 }
 
 
-              if (! x->preserve_mode)
+              ఒకవేళ (! x->preserve_బహుళకం)
                 {
-                  if (omitted_permissions & ~stats.st_mode)
+                  ఒకవేళ (omitted_permissions & ~stats.st_బహుళకం)
                     omitted_permissions &= ~ cached_umask ();
-                  if (omitted_permissions & ~stats.st_mode
-                      || (stats.st_mode & S_IRWXU) != S_IRWXU)
+                  ఒకవేళ (omitted_permissions & ~stats.st_బహుళకం
+                      || (stats.st_బహుళకం & S_IRWXU) != S_IRWXU)
                     {
-                      new->st.st_mode = stats.st_mode | omitted_permissions;
-                      new->restore_mode = true;
+                      new->st.st_బహుళకం = stats.st_బహుళకం | omitted_permissions;
+                      new->restore_బహుళకం = true;
                     }
                 }
 
-              mode_t accessible = stats.st_mode | S_IRWXU;
-              if (stats.st_mode != accessible)
+              mode_t accessible = stats.st_బహుళకం | S_IRWXU;
+              ఒకవేళ (stats.st_బహుళకం != accessible)
                 {
                   /* Make the new directory searchable and writable.
                      The original permissions will be restored later.  */
 
-                  if (lchmodat (dst_dirfd, dst_reldir, accessible) != 0)
+                  ఒకవేళ (lchmodat (dst_dirfd, dst_reldir, accessible) != 0)
                     {
                       error (0, errno, _("setting permissions for %s"),
                              quoteaf (dir));
-                      return false;
+                      తిరిగి false;
                     }
                 }
             }
-          else if (!S_ISDIR (stats.st_mode))
+          లేకపోతే ఒకవేళ (!S_ISDIR (stats.st_బహుళకం))
             {
               error (0, 0, _("%s exists but is not a directory"),
                      quoteaf (dir));
-              return false;
+              తిరిగి false;
             }
-          else
+          లేకపోతే
             *new_dst = false;
 
           /* For existing dirs, set the security context as per that already
              set for the process global context.  */
-          if (! *new_dst
-              && (x->set_security_context || x->preserve_security_context))
+          ఒకవేళ (! *new_dst
+              && (x->సమితి_security_context || x->preserve_security_context))
             {
-              if (! set_file_security_ctx (dir, false, x)
+              ఒకవేళ (! సమితి_file_security_ctx (dir, false, x)
                   && x->require_preserve_context)
-                return false;
+                తిరిగి false;
             }
 
           *slash++ = '/';
 
           /* Avoid unnecessary calls to 'stat' when given
              file names containing multiple adjacent slashes.  */
-          while (*slash == '/')
+          అయితే (*slash == '/')
             slash++;
         }
     }
 
   /* We get here if the parent of DIR already exists.  */
 
-  else if (!S_ISDIR (stats.st_mode))
+  లేకపోతే ఒకవేళ (!S_ISDIR (stats.st_బహుళకం))
     {
       error (0, 0, _("%s exists but is not a directory"), quoteaf (dst_dir));
-      return false;
+      తిరిగి false;
     }
-  else
+  లేకపోతే
     {
       *new_dst = false;
     }
-  return true;
+  తిరిగి true;
 }
 
 /* Scan the arguments, and copy each by calling copy.
    Return true if successful.  */
 
-static bool
-do_copy (int n_files, char **file, char const *target_directory,
-         bool no_target_directory, struct cp_options *x)
+స్థిర bool
+do_copy (పూర్ణాంకం n_files, అక్షరం **file, అక్షరం స్థిరరాశి *లక్ష్యం_directory,
+         bool no_లక్ష్యం_directory, నిర్మాణం cp_options *x)
 {
-  if (n_files <= !target_directory)
+  ఒకవేళ (n_files <= !లక్ష్యం_directory)
     {
-      if (n_files <= 0)
+      ఒకవేళ (n_files <= 0)
         error (0, 0, _("missing file operand"));
-      else
+      లేకపోతే
         error (0, 0, _("missing destination file operand after %s"),
                quoteaf (file[0]));
       usage (EXIT_FAILURE);
     }
 
-  struct stat sb;
-  sb.st_mode = 0;
-  int target_dirfd = AT_FDCWD;
+  నిర్మాణం stat sb;
+  sb.st_బహుళకం = 0;
+  పూర్ణాంకం లక్ష్యం_dirfd = AT_FDCWD;
   bool new_dst = false;
   bool ok = true;
-  if (no_target_directory)
+  ఒకవేళ (no_లక్ష్యం_directory)
     {
-      if (target_directory)
+      ఒకవేళ (లక్ష్యం_directory)
         error (EXIT_FAILURE, 0,
                _("cannot combine --target-directory (-t) "
                  "and --no-target-directory (-T)"));
-      if (2 < n_files)
+      ఒకవేళ (2 < n_files)
         {
           error (0, 0, _("extra operand %s"), quoteaf (file[2]));
           usage (EXIT_FAILURE);
         }
     }
-  else if (target_directory)
+  లేకపోతే ఒకవేళ (లక్ష్యం_directory)
     {
-      target_dirfd = target_directory_operand (target_directory, &sb);
-      if (! target_dirfd_valid (target_dirfd))
+      లక్ష్యం_dirfd = లక్ష్యం_directory_నిర్వాహ్యం (లక్ష్యం_directory, &sb);
+      ఒకవేళ (! లక్ష్యం_dirfd_valid (లక్ష్యం_dirfd))
         error (EXIT_FAILURE, errno, _("target directory %s"),
-               quoteaf (target_directory));
+               quoteaf (లక్ష్యం_directory));
     }
-  else
+  లేకపోతే
     {
-      char const *lastfile = file[n_files - 1];
-      int fd = target_directory_operand (lastfile, &sb);
-      if (target_dirfd_valid (fd))
+      అక్షరం స్థిరరాశి *lastfile = file[n_files - 1];
+      పూర్ణాంకం fd = లక్ష్యం_directory_నిర్వాహ్యం (lastfile, &sb);
+      ఒకవేళ (లక్ష్యం_dirfd_valid (fd))
         {
-          target_dirfd = fd;
-          target_directory = lastfile;
+          లక్ష్యం_dirfd = fd;
+          లక్ష్యం_directory = lastfile;
           n_files--;
         }
-      else
+      లేకపోతే
         {
-          int err = errno;
-          if (err == ENOENT)
+          పూర్ణాంకం err = errno;
+          ఒకవేళ (err == ENOENT)
             new_dst = true;
 
           /* The last operand LASTFILE cannot be opened as a directory.
@@ -729,15 +729,15 @@ do_copy (int n_files, char **file, char const *target_directory,
              In this case use stat to test whether LASTFILE is a
              directory, in case opening a non-directory with (O_SEARCH
              | O_DIRECTORY) failed with EACCES not ENOTDIR.  */
-          if (2 < n_files
-              || (O_PATHSEARCH == O_SEARCH && err == EACCES
-                  && (sb.st_mode || stat (lastfile, &sb) == 0)
-                  && S_ISDIR (sb.st_mode)))
+          ఒకవేళ (2 < n_files
+              || (O_PATHSEARCH == O_శోధన && err == EACCES
+                  && (sb.st_బహుళకం || stat (lastfile, &sb) == 0)
+                  && S_ISDIR (sb.st_బహుళకం)))
             error (EXIT_FAILURE, err, _("target %s"), quoteaf (lastfile));
         }
     }
 
-  if (target_directory)
+  ఒకవేళ (లక్ష్యం_directory)
     {
       /* cp file1...filen edir
          Copy the files 'file1' through 'filen'
@@ -746,99 +746,99 @@ do_copy (int n_files, char **file, char const *target_directory,
       /* Initialize these hash tables only if we'll need them.
          The problems they're used to detect can arise only if
          there are two or more files to copy.  */
-      if (2 <= n_files)
+      ఒకవేళ (2 <= n_files)
         {
           dest_info_init (x);
           src_info_init (x);
         }
 
-      for (int i = 0; i < n_files; i++)
+      కొరకు (పూర్ణాంకం i = 0; i < n_files; i++)
         {
-          char *dst_name;
-          bool parent_exists = true;  /* True if dir_name (dst_name) exists. */
-          struct dir_attr *attr_list;
-          char *arg_in_concat;
-          char *arg = file[i];
+          అక్షరం *dst_name;
+          bool మాతృ_exists = true;  /* True if dir_name (dst_name) exists. */
+          నిర్మాణం dir_attr *attr_list;
+          అక్షరం *arg_లోపల_concat;
+          అక్షరం *arg = file[i];
 
           /* Trailing slashes are meaningful (i.e., maybe worth preserving)
              only in the source file names.  */
-          if (remove_trailing_slashes)
+          ఒకవేళ (remove_trailing_slashes)
             strip_trailing_slashes (arg);
 
-          if (parents_option)
+          ఒకవేళ (parents_option)
             {
-              char *arg_no_trailing_slash;
+              అక్షరం *arg_no_trailing_slash;
 
               /* Use 'arg' without trailing slashes in constructing destination
                  file names.  Otherwise, we can end up trying to create a
                  directory using a name with trailing slash, which fails on
                  NetBSD 1.[34] systems.  */
-              ASSIGN_STRDUPA (arg_no_trailing_slash, arg);
+              కేటాయించు_STRDUPA (arg_no_trailing_slash, arg);
               strip_trailing_slashes (arg_no_trailing_slash);
 
               /* Append all of 'arg' (minus any trailing slash) to 'dest'.  */
-              dst_name = file_name_concat (target_directory,
+              dst_name = file_name_concat (లక్ష్యం_directory,
                                            arg_no_trailing_slash,
-                                           &arg_in_concat);
+                                           &arg_లోపల_concat);
 
               /* For --parents, we have to make sure that the directory
                  dir_name (dst_name) exists.  We may have to create a few
                  leading directories. */
-              parent_exists =
-                (make_dir_parents_private
-                 (dst_name, arg_in_concat - dst_name, target_dirfd,
-                  (x->verbose ? "%s -> %s\n" : NULL),
+              మాతృ_exists =
+                (make_dir_parents_వ్యక్తిగత
+                 (dst_name, arg_లోపల_concat - dst_name, లక్ష్యం_dirfd,
+                  (x->verbose ? "%s -> %s\n" : ఖాళీ),
                   &attr_list, &new_dst, x));
             }
-          else
+          లేకపోతే
             {
-              char *arg_base;
+              అక్షరం *arg_పునాది;
               /* Append the last component of 'arg' to 'target_directory'.  */
-              ASSIGN_STRDUPA (arg_base, last_component (arg));
-              strip_trailing_slashes (arg_base);
+              కేటాయించు_STRDUPA (arg_పునాది, చివరి_component (arg));
+              strip_trailing_slashes (arg_పునాది);
               /* For 'cp -R source/.. dest', don't copy into 'dest/..'. */
-              arg_base += streq (arg_base, "..");
-              dst_name = file_name_concat (target_directory, arg_base,
-                                           &arg_in_concat);
+              arg_పునాది += streq (arg_పునాది, "..");
+              dst_name = file_name_concat (లక్ష్యం_directory, arg_పునాది,
+                                           &arg_లోపల_concat);
             }
 
-          if (!parent_exists)
+          ఒకవేళ (!మాతృ_exists)
             {
               /* make_dir_parents_private failed, so don't even
                  attempt the copy.  */
               ok = false;
             }
-          else
+          లేకపోతే
             {
-              char const *dst_relname = arg_in_concat;
-              while (*dst_relname == '/')
+              అక్షరం స్థిరరాశి *dst_relname = arg_లోపల_concat;
+              అయితే (*dst_relname == '/')
                 dst_relname++;
 
               bool copy_into_self;
-              ok &= copy (arg, dst_name, target_dirfd, dst_relname,
-                          new_dst, x, &copy_into_self, NULL);
+              ok &= copy (arg, dst_name, లక్ష్యం_dirfd, dst_relname,
+                          new_dst, x, &copy_into_self, ఖాళీ);
 
-              if (parents_option)
-                ok &= re_protect (dst_name, arg_in_concat, target_dirfd,
+              ఒకవేళ (parents_option)
+                ok &= re_protect (dst_name, arg_లోపల_concat, లక్ష్యం_dirfd,
                                   dst_relname, attr_list, x);
             }
 
-          if (parents_option)
+          ఒకవేళ (parents_option)
             {
-              while (attr_list)
+              అయితే (attr_list)
                 {
-                  struct dir_attr *p = attr_list;
-                  attr_list = attr_list->next;
-                  free (p);
+                  నిర్మాణం dir_attr *p = attr_list;
+                  attr_list = attr_list->తదుపరి;
+                  విడుదల (p);
                 }
             }
 
-          free (dst_name);
+          విడుదల (dst_name);
         }
     }
-  else /* !target_directory */
+  లేకపోతే /* !target_directory */
     {
-      if (parents_option)
+      ఒకవేళ (parents_option)
         {
           error (0, 0,
                  _("with --parents, the destination must be a directory"));
@@ -851,17 +851,17 @@ do_copy (int n_files, char **file, char const *target_directory,
          'cp --force --backup foo foo' to 'cp --force foo fooSUFFIX'
          where SUFFIX is determined by any version control options used.  */
 
-      char const *source = file[0];
-      char const *dest = file[1];
-      if (x->unlink_dest_after_failed_open
+      అక్షరం స్థిరరాశి *ఆధారం_2 = file[0];
+      అక్షరం స్థిరరాశి *dest = file[1];
+      ఒకవేళ (x->unlink_dest_after_failed_open
           && x->backup_type != no_backups
-          && streq (source, dest)
+          && streq (ఆధారం_2, dest)
           && !new_dst
-          && (sb.st_mode != 0 || stat (dest, &sb) == 0) && S_ISREG (sb.st_mode))
+          && (sb.st_బహుళకం != 0 || stat (dest, &sb) == 0) && S_ISREG (sb.st_బహుళకం))
         {
-          static struct cp_options x_tmp;
+          స్థిర నిర్మాణం cp_options x_tmp;
 
-          dest = find_backup_file_name (AT_FDCWD, dest, x->backup_type);
+          dest = కనుగొను_backup_file_name (AT_FDCWD, dest, x->backup_type);
           /* Set x->backup_type to 'no_backups' so that the normal backup
              mechanism is not used when performing the actual copy.
              backup_type must be set to 'no_backups' only *after* the above
@@ -872,15 +872,15 @@ do_copy (int n_files, char **file, char const *target_directory,
           x = &x_tmp;
         }
 
-      bool unused;
-      ok = copy (source, dest, AT_FDCWD, dest, -new_dst, x, &unused, NULL);
+      bool వాడని;
+      ok = copy (ఆధారం_2, dest, AT_FDCWD, dest, -new_dst, x, &వాడని, ఖాళీ);
     }
 
-  return ok;
+  తిరిగి ok;
 }
 
-static void
-cp_option_init (struct cp_options *x)
+స్థిర శూన్య
+cp_option_init (నిర్మాణం cp_options *x)
 {
   cp_options_default (x);
   x->copy_as_regular = true;
@@ -889,30 +889,30 @@ cp_option_init (struct cp_options *x)
   x->unlink_dest_after_failed_open = false;
   x->hard_link = false;
   x->interactive = I_UNSPECIFIED;
-  x->move_mode = false;
-  x->install_mode = false;
+  x->move_బహుళకం = false;
+  x->install_బహుళకం = false;
   x->one_file_system = false;
-  x->reflink_mode = REFLINK_AUTO;
+  x->reflink_బహుళకం = REFLINK_AUTO;
 
   x->preserve_ownership = false;
   x->preserve_links = false;
-  x->preserve_mode = false;
+  x->preserve_బహుళకం = false;
   x->preserve_timestamps = false;
-  x->explicit_no_preserve_mode = false;
+  x->explicit_no_preserve_బహుళకం = false;
   x->preserve_security_context = false; /* -a or --preserve=context.  */
   x->require_preserve_context = false;  /* --preserve=context.  */
-  x->set_security_context = NULL;       /* -Z, set sys default context. */
+  x->సమితి_security_context = ఖాళీ;       /* -Z, set sys default context. */
   x->preserve_xattr = false;
   x->reduce_diagnostics = false;
   x->require_preserve_xattr = false;
 
-  x->data_copy_required = true;
+  x->దత్తాంశం_copy_required = true;
   x->require_preserve = false;
   x->recursive = false;
-  x->sparse_mode = SPARSE_AUTO;
+  x->sparse_బహుళకం = SPARSE_AUTO;
   x->symbolic_link = false;
-  x->set_mode = false;
-  x->mode = 0;
+  x->సమితి_బహుళకం = false;
+  x->బహుళకం_2 = 0;
 
   /* Not used.  */
   x->stdin_tty = false;
@@ -925,20 +925,20 @@ cp_option_init (struct cp_options *x)
      in general one cannot do that safely, give the current semantics of
      open's O_EXCL flag, (which POSIX doesn't even allow cp to use, btw).
      But POSIX requires it.  */
-  x->open_dangling_dest_symlink = getenv ("POSIXLY_CORRECT") != NULL;
+  x->open_dangling_dest_symlink = getenv ("POSIXLY_CORRECT") != ఖాళీ;
 
-  x->dest_info = NULL;
-  x->src_info = NULL;
+  x->dest_info = ఖాళీ;
+  x->src_info = ఖాళీ;
 }
 
 /* Given a string, ARG, containing a comma-separated list of arguments
    to the --preserve option, set the appropriate fields of X to ON_OFF.  */
-static void
-decode_preserve_arg (char const *arg, struct cp_options *x, bool on_off)
+స్థిర శూన్య
+decode_preserve_arg (అక్షరం స్థిరరాశి *arg, నిర్మాణం cp_options *x, bool on_off)
 {
-  enum File_attribute
+  గణన File_attribute
     {
-      PRESERVE_MODE,
+      PRESERVE_బహుళకం,
       PRESERVE_TIMESTAMPS,
       PRESERVE_OWNERSHIP,
       PRESERVE_LINK,
@@ -946,99 +946,99 @@ decode_preserve_arg (char const *arg, struct cp_options *x, bool on_off)
       PRESERVE_XATTR,
       PRESERVE_ALL
     };
-  static enum File_attribute const preserve_vals[] =
+  స్థిర గణన File_attribute స్థిరరాశి preserve_vals[] =
     {
-      PRESERVE_MODE, PRESERVE_TIMESTAMPS,
+      PRESERVE_బహుళకం, PRESERVE_TIMESTAMPS,
       PRESERVE_OWNERSHIP, PRESERVE_LINK, PRESERVE_CONTEXT, PRESERVE_XATTR,
       PRESERVE_ALL
     };
   /* Valid arguments to the '--preserve' option. */
-  static char const *const preserve_args[] =
+  స్థిర అక్షరం స్థిరరాశి *స్థిరరాశి preserve_వాదనలు[] =
     {
       "mode", "timestamps",
-      "ownership", "links", "context", "xattr", "all", NULL
+      "ownership", "links", "context", "xattr", "all", ఖాళీ
     };
-  ARGMATCH_VERIFY (preserve_args, preserve_vals);
+  ARGMATCH_VERIFY (preserve_వాదనలు, preserve_vals);
 
-  char *arg_writable = xstrdup (arg);
-  char *s = arg_writable;
-  do
+  అక్షరం *arg_writable = xstrdup (arg);
+  అక్షరం *s = arg_writable;
+  చేయి
     {
       /* find next comma */
-      char *comma = strchr (s, ',');
-      enum File_attribute val;
+      అక్షరం *comma = strchr (s, ',');
+      గణన File_attribute val;
 
       /* If we found a comma, put a NUL in its place and advance.  */
-      if (comma)
+      ఒకవేళ (comma)
         *comma++ = 0;
 
       /* process S.  */
       val = XARGMATCH (on_off ? "--preserve" : "--no-preserve",
-                       s, preserve_args, preserve_vals);
-      switch (val)
+                       s, preserve_వాదనలు, preserve_vals);
+      ఎంపిక (val)
         {
-        case PRESERVE_MODE:
-          x->preserve_mode = on_off;
-          x->explicit_no_preserve_mode = !on_off;
-          break;
+        స్థితి PRESERVE_బహుళకం:
+          x->preserve_బహుళకం = on_off;
+          x->explicit_no_preserve_బహుళకం = !on_off;
+          ఆపు;
 
-        case PRESERVE_TIMESTAMPS:
+        స్థితి PRESERVE_TIMESTAMPS:
           x->preserve_timestamps = on_off;
-          break;
+          ఆపు;
 
-        case PRESERVE_OWNERSHIP:
+        స్థితి PRESERVE_OWNERSHIP:
           x->preserve_ownership = on_off;
-          break;
+          ఆపు;
 
-        case PRESERVE_LINK:
+        స్థితి PRESERVE_LINK:
           x->preserve_links = on_off;
-          break;
+          ఆపు;
 
-        case PRESERVE_CONTEXT:
+        స్థితి PRESERVE_CONTEXT:
           x->require_preserve_context = on_off;
           x->preserve_security_context = on_off;
-          break;
+          ఆపు;
 
-        case PRESERVE_XATTR:
+        స్థితి PRESERVE_XATTR:
           x->preserve_xattr = on_off;
           x->require_preserve_xattr = on_off;
-          break;
+          ఆపు;
 
-        case PRESERVE_ALL:
-          x->preserve_mode = on_off;
+        స్థితి PRESERVE_ALL:
+          x->preserve_బహుళకం = on_off;
           x->preserve_timestamps = on_off;
           x->preserve_ownership = on_off;
           x->preserve_links = on_off;
-          x->explicit_no_preserve_mode = !on_off;
-          if (selinux_enabled)
+          x->explicit_no_preserve_బహుళకం = !on_off;
+          ఒకవేళ (selinux_enabled)
             x->preserve_security_context = on_off;
           x->preserve_xattr = on_off;
-          break;
+          ఆపు;
 
-        default:
+        అప్రమేయ:
           affirm (false);
         }
       s = comma;
     }
-  while (s);
+  అయితే (s);
 
-  free (arg_writable);
+  విడుదల (arg_writable);
 }
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
   bool make_backups = false;
-  char const *backup_suffix = NULL;
-  char *version_control_string = NULL;
-  struct cp_options x;
+  అక్షరం స్థిరరాశి *backup_suffix = ఖాళీ;
+  అక్షరం *సంస్కరణ_control_string = ఖాళీ;
+  నిర్మాణం cp_options x;
   bool copy_contents = false;
-  char *target_directory = NULL;
-  bool no_target_directory = false;
-  char const *scontext = NULL;
+  అక్షరం *లక్ష్యం_directory = ఖాళీ;
+  bool no_లక్ష్యం_directory = false;
+  అక్షరం స్థిరరాశి *scontext = ఖాళీ;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
@@ -1048,199 +1048,199 @@ main (int argc, char **argv)
   selinux_enabled = (0 < is_selinux_enabled ());
   cp_option_init (&x);
 
-  int c;
-  while ((c = getopt_long (argc, argv, "abdfHilLnprst:uvxPRS:TZ",
-                           long_opts, NULL))
+  పూర్ణాంకం c;
+  అయితే ((c = getopt_long (argc, argv, "abdfHilLnprst:uvxPRS:TZ",
+                           long_opts, ఖాళీ))
          != -1)
     {
-      switch (c)
+      ఎంపిక (c)
         {
-        case SPARSE_OPTION:
-          x.sparse_mode = XARGMATCH ("--sparse", optarg,
+        స్థితి SPARSE_OPTION:
+          x.sparse_బహుళకం = XARGMATCH ("--sparse", optarg,
                                      sparse_type_string, sparse_type);
-          break;
+          ఆపు;
 
-        case REFLINK_OPTION:
-          if (optarg == NULL)
-            x.reflink_mode = REFLINK_ALWAYS;
-          else
-            x.reflink_mode = XARGMATCH ("--reflink", optarg,
+        స్థితి REFLINK_OPTION:
+          ఒకవేళ (optarg == ఖాళీ)
+            x.reflink_బహుళకం = REFLINK_ALWAYS;
+          లేకపోతే
+            x.reflink_బహుళకం = XARGMATCH ("--reflink", optarg,
                                        reflink_type_string, reflink_type);
-          break;
+          ఆపు;
 
-        case 'a':
+        స్థితి 'a':
           /* Like -dR --preserve=all with reduced failure diagnostics.  */
           x.dereference = DEREF_NEVER;
           x.preserve_links = true;
           x.preserve_ownership = true;
-          x.preserve_mode = true;
+          x.preserve_బహుళకం = true;
           x.preserve_timestamps = true;
           x.require_preserve = true;
-          if (selinux_enabled)
+          ఒకవేళ (selinux_enabled)
              x.preserve_security_context = true;
           x.preserve_xattr = true;
           x.reduce_diagnostics = true;
           x.recursive = true;
-          break;
+          ఆపు;
 
-        case 'b':
+        స్థితి 'b':
           make_backups = true;
-          if (optarg)
-            version_control_string = optarg;
-          break;
+          ఒకవేళ (optarg)
+            సంస్కరణ_control_string = optarg;
+          ఆపు;
 
-        case ATTRIBUTES_ONLY_OPTION:
-          x.data_copy_required = false;
-          break;
+        స్థితి లక్షణాలు_ONLY_OPTION:
+          x.దత్తాంశం_copy_required = false;
+          ఆపు;
 
-        case DEBUG_OPTION:
+        స్థితి DEBUG_OPTION:
           x.debug = x.verbose = true;
-          break;
+          ఆపు;
 
-        case COPY_CONTENTS_OPTION:
+        స్థితి COPY_CONTENTS_OPTION:
           copy_contents = true;
-          break;
+          ఆపు;
 
-        case 'd':
+        స్థితి 'd':
           x.preserve_links = true;
           x.dereference = DEREF_NEVER;
-          break;
+          ఆపు;
 
-        case 'f':
+        స్థితి 'f':
           x.unlink_dest_after_failed_open = true;
-          break;
+          ఆపు;
 
-        case 'H':
-          x.dereference = DEREF_COMMAND_LINE_ARGUMENTS;
-          break;
+        స్థితి 'H':
+          x.dereference = DEREF_COMMAND_పంక్తి_ARGUMENTS;
+          ఆపు;
 
-        case 'i':
+        స్థితి 'i':
           x.interactive = I_ASK_USER;
-          break;
+          ఆపు;
 
-        case 'l':
+        స్థితి 'l':
           x.hard_link = true;
-          break;
+          ఆపు;
 
-        case 'L':
+        స్థితి 'L':
           x.dereference = DEREF_ALWAYS;
-          break;
+          ఆపు;
 
-        case 'n':
+        స్థితి 'n':
           x.interactive = I_ALWAYS_SKIP;
-          break;
+          ఆపు;
 
-        case 'P':
+        స్థితి 'P':
           x.dereference = DEREF_NEVER;
-          break;
+          ఆపు;
 
-        case NO_PRESERVE_ATTRIBUTES_OPTION:
+        స్థితి NO_PRESERVE_లక్షణాలు_OPTION:
           decode_preserve_arg (optarg, &x, false);
-          break;
+          ఆపు;
 
-        case PRESERVE_ATTRIBUTES_OPTION:
-          if (optarg == NULL)
+        స్థితి PRESERVE_లక్షణాలు_OPTION:
+          ఒకవేళ (optarg == ఖాళీ)
             {
               /* Fall through to the case for 'p' below.  */
             }
-          else
+          లేకపోతే
             {
               decode_preserve_arg (optarg, &x, true);
               x.require_preserve = true;
-              break;
+              ఆపు;
             }
           FALLTHROUGH;
 
-        case 'p':
+        స్థితి 'p':
           x.preserve_ownership = true;
-          x.preserve_mode = true;
+          x.preserve_బహుళకం = true;
           x.preserve_timestamps = true;
           x.require_preserve = true;
-          break;
+          ఆపు;
 
-        case PARENTS_OPTION:
+        స్థితి PARENTS_OPTION:
           parents_option = true;
-          break;
+          ఆపు;
 
-        case 'r':
-        case 'R':
+        స్థితి 'r':
+        స్థితి 'R':
           x.recursive = true;
-          break;
+          ఆపు;
 
-        case UNLINK_DEST_BEFORE_OPENING:
+        స్థితి UNLINK_DEST_BEFORE_OPENING:
           x.unlink_dest_before_opening = true;
-          break;
+          ఆపు;
 
-        case STRIP_TRAILING_SLASHES_OPTION:
+        స్థితి STRIP_TRAILING_SLASHES_OPTION:
           remove_trailing_slashes = true;
-          break;
+          ఆపు;
 
-        case 's':
+        స్థితి 's':
           x.symbolic_link = true;
-          break;
+          ఆపు;
 
-        case 't':
-          if (target_directory)
+        స్థితి 't':
+          ఒకవేళ (లక్ష్యం_directory)
             error (EXIT_FAILURE, 0,
                    _("multiple target directories specified"));
-          target_directory = optarg;
-          break;
+          లక్ష్యం_directory = optarg;
+          ఆపు;
 
-        case 'T':
-          no_target_directory = true;
-          break;
+        స్థితి 'T':
+          no_లక్ష్యం_directory = true;
+          ఆపు;
 
-        case 'u':
+        స్థితి 'u':
           x.update = UPDATE_OLDER;
-          if (optarg)
+          ఒకవేళ (optarg)
             x.update = XARGMATCH ("--update", optarg,
                                   update_type_string, update_type);
-          break;
+          ఆపు;
 
-        case 'v':
+        స్థితి 'v':
           x.verbose = true;
-          break;
+          ఆపు;
 
-        case KEEP_DIRECTORY_SYMLINK_OPTION:
+        స్థితి KEEP_DIRECTORY_SYMLINK_OPTION:
           x.keep_directory_symlink = true;
-          break;
+          ఆపు;
 
-        case 'x':
+        స్థితి 'x':
           x.one_file_system = true;
-          break;
+          ఆపు;
 
-        case 'Z':
+        స్థితి 'Z':
           /* politely decline if we're not on a selinux-enabled kernel.  */
-          if (selinux_enabled)
+          ఒకవేళ (selinux_enabled)
             {
-              if (optarg)
+              ఒకవేళ (optarg)
                 scontext = optarg;
-              else
+              లేకపోతే
                 {
-                  x.set_security_context = selabel_open (SELABEL_CTX_FILE,
-                                                         NULL, 0);
-                  if (! x.set_security_context)
+                  x.సమితి_security_context = selabel_open (SELABEL_CTX_FILE,
+                                                         ఖాళీ, 0);
+                  ఒకవేళ (! x.సమితి_security_context)
                     error (0, errno, _("warning: ignoring --context"));
                 }
             }
-          else if (optarg)
+          లేకపోతే ఒకవేళ (optarg)
             {
               error (0, 0,
                      _("warning: ignoring --context; "
                        "it requires an SELinux-enabled kernel"));
             }
-          break;
+          ఆపు;
 
-        case 'S':
+        స్థితి 'S':
           make_backups = true;
           backup_suffix = optarg;
-          break;
+          ఆపు;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_సంస్కరణ_CHAR (కార్యక్రమం_NAME, AUTHORS);
 
-        default:
+        అప్రమేయ:
           usage (EXIT_FAILURE);
         }
     }
@@ -1249,19 +1249,19 @@ main (int argc, char **argv)
      This will also have the effect of disabling copy offload as that may
      propagate holes.  For e.g. FreeBSD documents that copy_file_range()
      will try to propagate holes.  */
-  if (x.reflink_mode == REFLINK_AUTO && x.sparse_mode == SPARSE_NEVER)
-    x.reflink_mode = REFLINK_NEVER;
+  ఒకవేళ (x.reflink_బహుళకం == REFLINK_AUTO && x.sparse_బహుళకం == SPARSE_NEVER)
+    x.reflink_బహుళకం = REFLINK_NEVER;
 
-  if (x.hard_link && x.symbolic_link)
+  ఒకవేళ (x.hard_link && x.symbolic_link)
     {
       error (0, 0, _("cannot make both hard and symbolic links"));
       usage (EXIT_FAILURE);
     }
 
-  if (x.interactive == I_ALWAYS_SKIP)
+  ఒకవేళ (x.interactive == I_ALWAYS_SKIP)
     x.update = UPDATE_NONE;
 
-  if (make_backups
+  ఒకవేళ (make_backups
       && (x.update == UPDATE_NONE
           || x.update == UPDATE_NONE_FAIL))
     {
@@ -1270,40 +1270,40 @@ main (int argc, char **argv)
       usage (EXIT_FAILURE);
     }
 
-  if (x.reflink_mode == REFLINK_ALWAYS && x.sparse_mode != SPARSE_AUTO)
+  ఒకవేళ (x.reflink_బహుళకం == REFLINK_ALWAYS && x.sparse_బహుళకం != SPARSE_AUTO)
     {
       error (0, 0, _("--reflink can be used only with --sparse=auto"));
       usage (EXIT_FAILURE);
     }
 
   x.backup_type = (make_backups
-                   ? xget_version (_("backup type"),
-                                   version_control_string)
+                   ? xget_సంస్కరణ (_("backup type"),
+                                   సంస్కరణ_control_string)
                    : no_backups);
-  set_simple_backup_suffix (backup_suffix);
+  సమితి_simple_backup_suffix (backup_suffix);
 
-  if (x.dereference == DEREF_UNDEFINED)
+  ఒకవేళ (x.dereference == DEREF_UNDEFINED)
     {
-      if (x.recursive && ! x.hard_link)
+      ఒకవేళ (x.recursive && ! x.hard_link)
         /* This is compatible with FreeBSD.  */
         x.dereference = DEREF_NEVER;
-      else
+      లేకపోతే
         x.dereference = DEREF_ALWAYS;
     }
 
-  if (x.recursive)
+  ఒకవేళ (x.recursive)
     x.copy_as_regular = copy_contents;
 
   /* Ensure -Z overrides -a.  */
-  if ((x.set_security_context || scontext)
+  ఒకవేళ ((x.సమితి_security_context || scontext)
       && ! x.require_preserve_context)
     x.preserve_security_context = false;
 
-  if (x.preserve_security_context && (x.set_security_context || scontext))
+  ఒకవేళ (x.preserve_security_context && (x.సమితి_security_context || scontext))
     error (EXIT_FAILURE, 0,
            _("cannot set target context and preserve it"));
 
-  if (x.require_preserve_context && ! selinux_enabled)
+  ఒకవేళ (x.require_preserve_context && ! selinux_enabled)
     error (EXIT_FAILURE, 0,
            _("cannot preserve security context "
              "without an SELinux-enabled kernel"));
@@ -1314,23 +1314,23 @@ main (int argc, char **argv)
        if (scontext && !restorecon (NULL, dst_path, 0))
           error (...);
    */
-  if (scontext && setfscreatecon (scontext) < 0)
+  ఒకవేళ (scontext && setfscreatecon (scontext) < 0)
     error (EXIT_FAILURE, errno,
            _("failed to set default file creation context to %s"),
            quote (scontext));
 
-#if !USE_XATTR
-  if (x.require_preserve_xattr)
+#ఒకవేళ !USE_XATTR
+  ఒకవేళ (x.require_preserve_xattr)
     error (EXIT_FAILURE, 0, _("cannot preserve extended attributes, cp is "
                               "built without xattr support"));
-#endif
+#అయితే_ముగింపు
 
   /* Allocate space for remembering copied and created files.  */
 
   hash_init ();
 
   bool ok = do_copy (argc - optind, argv + optind,
-                     target_directory, no_target_directory, &x);
+                     లక్ష్యం_directory, no_లక్ష్యం_directory, &x);
 
   main_exit (ok ? EXIT_SUCCESS : EXIT_FAILURE);
 }

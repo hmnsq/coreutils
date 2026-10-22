@@ -35,50 +35,50 @@
    A FILE of '-' means standard input.
    If no FILEs are given, standard input is used. */
 
-#include <config.h>
+#అన్తర్భావ <config.h>
 
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
-#include "system.h"
-#include "fadvise.h"
-#include "mcel.h"
+#అన్తర్భావ <stdio.h>
+#అన్తర్భావ <getopt.h>
+#అన్తర్భావ <sys/types.h>
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "fadvise.h"
+#అన్తర్భావ "mcel.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "paste"
+#నిర్వచించు కార్యక్రమం_NAME "paste"
 
-#define AUTHORS \
+#నిర్వచించు AUTHORS \
   proper_name ("David M. Ihnat"), \
   proper_name ("David MacKenzie")
 
 /* If nonzero, we have read standard input at some point. */
-static bool have_read_stdin;
+స్థిర bool have_read_stdin;
 
 /* If nonzero, merge subsequent lines of each file rather than
    corresponding lines from each file in parallel. */
-static bool serial_merge;
+స్థిర bool serial_విలీనం;
 
 /* The delimiters between lines of input files (used cyclically).
    This stores the raw bytes of all delimiters concatenated.  */
-static char *delims;
+స్థిర అక్షరం *delims;
 
 /* Length of each delimiter in bytes (supports multi-byte characters).
    A length of 0 indicates no delimiter at this position (from \0 escape).  */
-static size_t *delim_lens;
+స్థిర size_t *delim_lens;
 
 /* Number of delimiters.  */
-static idx_t num_delims;
+స్థిర idx_t అంకె_delims;
 
-static unsigned char line_delim = '\n';
+స్థిర గుర్తులేని అక్షరం పంక్తి_delim = '\n';
 
-static struct option const longopts[] =
+స్థిర నిర్మాణం option స్థిరరాశి longopts[] =
 {
-  {"serial", no_argument, NULL, 's'},
-  {"delimiters", required_argument, NULL, 'd'},
-  {"zero-terminated", no_argument, NULL, 'z'},
+  {"serial", no_వాదం, ఖాళీ, 's'},
+  {"delimiters", required_వాదం, ఖాళీ, 'd'},
+  {"zero-terminated", no_వాదం, ఖాళీ, 'z'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_సంస్కరణ_OPTION_DECL},
+  {ఖాళీ, 0, ఖాళీ, 0}
 };
 
 /* Set globals delims, delim_lens, and num_delims.
@@ -89,53 +89,53 @@ static struct option const longopts[] =
    If the string ends in an odd number of backslashes, ignore the
    final backslash and return nonzero.  */
 
-static int
-collapse_escapes (char const *strptr)
+స్థిర పూర్ణాంకం
+collapse_escapes (అక్షరం స్థిరరాశి *strptr)
 {
-  char *strout = xstrdup (strptr);
-  bool backslash_at_end = false;
+  అక్షరం *strout = xstrdup (strptr);
+  bool backslash_at_చివర = false;
 
   delims = strout;
-  delim_lens = xnmalloc (MAX (1, strlen (strptr)), sizeof *delim_lens);
+  delim_lens = xnmalloc (MAX (1, అక్షరశ్రేణి_పొడవు (strptr)), పరిమాణం *delim_lens);
 
-  char const *s = strptr;
+  అక్షరం స్థిరరాశి *s = strptr;
   idx_t idx = 0;
 
-  while (*s)
+  అయితే (*s)
     {
-      if (*s == '\\')
+      ఒకవేళ (*s == '\\')
         {
           s++;
-          if (*s == '\0')
+          ఒకవేళ (*s == '\0')
             {
-              backslash_at_end = true;
-              break;
+              backslash_at_చివర = true;
+              ఆపు;
             }
-          else if (*s == '0')
+          లేకపోతే ఒకవేళ (*s == '0')
             {
               /* Empty delimiter at this position.  */
               s++;
               delim_lens[idx++] = 0;
             }
-          else
+          లేకపోతే
             {
-              switch (*s)
+              ఎంపిక (*s)
                 {
-                case 'b': *strout++ = '\b'; break;
-                case 'f': *strout++ = '\f'; break;
-                case 'n': *strout++ = '\n'; break;
-                case 'r': *strout++ = '\r'; break;
-                case 't': *strout++ = '\t'; break;
-                case 'v': *strout++ = '\v'; break;
-                case '\\': *strout++ = '\\'; break;
-                default: goto copy_character;
+                స్థితి 'b': *strout++ = '\b'; ఆపు;
+                స్థితి 'f': *strout++ = '\f'; ఆపు;
+                స్థితి 'n': *strout++ = '\n'; ఆపు;
+                స్థితి 'r': *strout++ = '\r'; ఆపు;
+                స్థితి 't': *strout++ = '\t'; ఆపు;
+                స్థితి 'v': *strout++ = '\v'; ఆపు;
+                స్థితి '\\': *strout++ = '\\'; ఆపు;
+                అప్రమేయ: వెళ్ళు copy_character;
                 }
 
               s++;
               delim_lens[idx++] = 1;
             }
 
-          continue;
+          కొనసాగు;
         }
 
       copy_character:;
@@ -147,33 +147,33 @@ collapse_escapes (char const *strptr)
 
   *strout = '\0';
 
-  if (idx == 0)
+  ఒకవేళ (idx == 0)
     {
       delim_lens[0] = 0;
       idx = 1;
     }
 
-  num_delims = idx;
+  అంకె_delims = idx;
 
-  return backslash_at_end ? 1 : 0;
+  తిరిగి backslash_at_చివర ? 1 : 0;
 }
 
 /* Output a single byte, reporting any write errors.  */
 
-static inline void
-xputchar (char c)
+స్థిర అంతఃవరుస శూన్య
+xputchar (అక్షరం c)
 {
-  if (putchar (c) < 0)
+  ఒకవేళ (అక్షరం_రాయి (c) < 0)
     write_error ();
 }
 
 /* Output the delimiter at DELIMPTR with length LEN.
    If LEN is 0, nothing is output (empty delimiter from \0 escape).  */
 
-static inline void
-output_delim (char const *delimptr, size_t len)
+స్థిర అంతఃవరుస శూన్య
+output_delim (అక్షరం స్థిరరాశి *delimptr, size_t len)
 {
-  if (len > 0 && fwrite (delimptr, 1, len, stdout) != len)
+  ఒకవేళ (len > 0 && fwrite (delimptr, 1, len, stdout) != len)
     write_error ();
 }
 
@@ -181,19 +181,19 @@ output_delim (char const *delimptr, size_t len)
    Return true if successful, false if one or more files could not be
    opened or read. */
 
-static bool
-paste_parallel (size_t nfiles, char **fnamptr)
+స్థిర bool
+paste_parallel (size_t nfiles, అక్షరం **fnamptr)
 {
   bool ok = true;
   /* If all files are just ready to be closed, or will be on this
      round, the string of delimiters must be preserved.
      delbuf stores the delimiter bytes for closed files.
      Size it to hold up to (nfiles - 1) delimiters.  */
-  char *delbuf = xmalloc ((nfiles - 1) * MB_CUR_MAX + 1);
+  అక్షరం *delbuf = xmalloc ((nfiles - 1) * MB_CUR_MAX + 1);
 
   /* Streams open to the files to process; null if the corresponding
      stream is closed.  */
-  FILE **fileptr = xnmalloc (nfiles + 1, sizeof *fileptr);
+  FILE **fileptr = xnmalloc (nfiles + 1, పరిమాణం *fileptr);
 
   /* Number of files still open to process.  */
   size_t files_open;
@@ -205,32 +205,32 @@ paste_parallel (size_t nfiles, char **fnamptr)
      number of files, but at the (considerable) expense of remembering
      each file and its current offset, then opening/reading/closing.  */
 
-  for (files_open = 0; files_open < nfiles; ++files_open)
+  కొరకు (files_open = 0; files_open < nfiles; ++files_open)
     {
-      if (streq (fnamptr[files_open], "-"))
+      ఒకవేళ (streq (fnamptr[files_open], "-"))
         {
           have_read_stdin = true;
           fileptr[files_open] = stdin;
         }
-      else
+      లేకపోతే
         {
           fileptr[files_open] = fopen (fnamptr[files_open], "r");
-          if (fileptr[files_open] == NULL)
+          ఒకవేళ (fileptr[files_open] == ఖాళీ)
             error (EXIT_FAILURE, errno, "%s", quotef (fnamptr[files_open]));
-          else if (fileno (fileptr[files_open]) == STDIN_FILENO)
+          లేకపోతే ఒకవేళ (fileno (fileptr[files_open]) == STDIN_FILENO)
             opened_stdin = true;
           fadvise (fileptr[files_open], FADVISE_SEQUENTIAL);
         }
     }
 
-  if (opened_stdin && have_read_stdin)
+  ఒకవేళ (opened_stdin && have_read_stdin)
     error (EXIT_FAILURE, 0, _("standard input is closed"));
 
   /* Read a line from each file and output it to stdout separated by a
      delimiter, until we go through the loop without successfully
      reading from any of the files. */
 
-  while (files_open)
+  అయితే (files_open)
     {
       /* Set up for the next line. */
       bool somedone = false;
@@ -238,152 +238,152 @@ paste_parallel (size_t nfiles, char **fnamptr)
       idx_t delimoff = 0;              /* Current offset into delims.  */
       idx_t delims_saved = 0;          /* Bytes saved in 'delbuf'. */
 
-      for (size_t i = 0; i < nfiles && files_open; i++)
+      కొరకు (size_t i = 0; i < nfiles && files_open; i++)
         {
-          int chr;			/* Input character. */
-          int err;			/* Input errno value.  */
+          పూర్ణాంకం chr;			/* Input character. */
+          పూర్ణాంకం err;			/* Input errno value.  */
           bool sometodo = false;	/* Input chars to process.  */
 
-          if (fileptr[i])
+          ఒకవేళ (fileptr[i])
             {
               chr = getc (fileptr[i]);
               err = errno;
-              if (chr != EOF && delims_saved)
+              ఒకవేళ (chr != EOF && delims_saved)
                 {
-                  if (fwrite (delbuf, 1, delims_saved, stdout) != delims_saved)
+                  ఒకవేళ (fwrite (delbuf, 1, delims_saved, stdout) != delims_saved)
                     write_error ();
                   delims_saved = 0;
                 }
 
-              while (chr != EOF)
+              అయితే (chr != EOF)
                 {
                   sometodo = true;
-                  if (chr == line_delim)
-                    break;
+                  ఒకవేళ (chr == పంక్తి_delim)
+                    ఆపు;
                   xputchar (chr);
                   chr = getc (fileptr[i]);
                   err = errno;
                 }
             }
 
-          if (! sometodo)
+          ఒకవేళ (! sometodo)
             {
               /* EOF, read error, or closed file.
                  If an EOF or error, close the file.  */
-              if (fileptr[i])
+              ఒకవేళ (fileptr[i])
                 {
-                  if (!ferror (fileptr[i]))
+                  ఒకవేళ (!ferror (fileptr[i]))
                     err = 0;
-                  if (fileptr[i] == stdin)
+                  ఒకవేళ (fileptr[i] == stdin)
                     clearerr (fileptr[i]); /* Also clear EOF. */
-                  else if (fclose (fileptr[i]) == EOF && !err)
+                  లేకపోతే ఒకవేళ (fclose (fileptr[i]) == EOF && !err)
                     err = errno;
-                  if (err)
+                  ఒకవేళ (err)
                     {
                       error (0, err, "%s", quotef (fnamptr[i]));
                       ok = false;
                     }
 
-                  fileptr[i] = NULL;
+                  fileptr[i] = ఖాళీ;
                   files_open--;
                 }
 
-              if (i + 1 == nfiles)
+              ఒకవేళ (i + 1 == nfiles)
                 {
                   /* End of this output line.
                      Is this the end of the whole thing? */
-                  if (somedone)
+                  ఒకవేళ (somedone)
                     {
                       /* No.  Some files were not closed for this line. */
-                      if (delims_saved)
+                      ఒకవేళ (delims_saved)
                         {
-                          if (fwrite (delbuf, 1, delims_saved, stdout)
+                          ఒకవేళ (fwrite (delbuf, 1, delims_saved, stdout)
                               != delims_saved)
                             write_error ();
                           delims_saved = 0;
                         }
-                      xputchar (line_delim);
+                      xputchar (పంక్తి_delim);
                     }
-                  continue;	/* Next read of files, or exit. */
+                  కొనసాగు;	/* Next read of files, or exit. */
                 }
-              else
+              లేకపోతే
                 {
                   /* Closed file; add delimiter to 'delbuf'. */
                   size_t len = delim_lens[delimidx];
-                  if (len > 0)
+                  ఒకవేళ (len > 0)
                     {
-                      memcpy (delbuf + delims_saved, delims + delimoff, len);
+                      జ్ఞాపకం_నకలు (delbuf + delims_saved, delims + delimoff, len);
                       delims_saved += len;
                     }
                   delimoff += len;
-                  if (++delimidx == num_delims)
+                  ఒకవేళ (++delimidx == అంకె_delims)
                     {
                       delimidx = 0;
                       delimoff = 0;
                     }
                 }
             }
-          else
+          లేకపోతే
             {
               /* Some data read. */
               somedone = true;
 
               /* Except for last file, replace last newline with delim. */
-              if (i + 1 != nfiles)
+              ఒకవేళ (i + 1 != nfiles)
                 {
-                  if (chr != line_delim && chr != EOF)
+                  ఒకవేళ (chr != పంక్తి_delim && chr != EOF)
                     xputchar (chr);
                   output_delim (delims + delimoff, delim_lens[delimidx]);
                   delimoff += delim_lens[delimidx];
-                  if (++delimidx == num_delims)
+                  ఒకవేళ (++delimidx == అంకె_delims)
                     {
                       delimidx = 0;
                       delimoff = 0;
                     }
                 }
-              else
+              లేకపోతే
                 {
                   /* If the last line of the last file lacks a newline,
                      print one anyhow.  POSIX requires this.  */
-                  char c = (chr == EOF ? line_delim : chr);
+                  అక్షరం c = (chr == EOF ? పంక్తి_delim : chr);
                   xputchar (c);
                 }
             }
         }
     }
-  free (fileptr);
-  free (delbuf);
-  return ok;
+  విడుదల (fileptr);
+  విడుదల (delbuf);
+  తిరిగి ok;
 }
 
 /* Perform serial paste on the NFILES files named in FNAMPTR.
    Return true if no errors, false if one or more files could not be
    opened or read. */
 
-static bool
-paste_serial (size_t nfiles, char **fnamptr)
+స్థిర bool
+paste_serial (size_t nfiles, అక్షరం **fnamptr)
 {
   bool ok = true;	/* false if open or read errors occur. */
-  int charnew, charold; /* Current and previous char read. */
+  పూర్ణాంకం charnew, charold; /* Current and previous char read. */
   FILE *fileptr;	/* Open for reading current file. */
 
-  for (; nfiles; nfiles--, fnamptr++)
+  కొరకు (; nfiles; nfiles--, fnamptr++)
     {
-      int saved_errno;
+      పూర్ణాంకం saved_errno;
       bool is_stdin = streq (*fnamptr, "-");
-      if (is_stdin)
+      ఒకవేళ (is_stdin)
         {
           have_read_stdin = true;
           fileptr = stdin;
         }
-      else
+      లేకపోతే
         {
           fileptr = fopen (*fnamptr, "r");
-          if (fileptr == NULL)
+          ఒకవేళ (fileptr == ఖాళీ)
             {
               error (0, errno, "%s", quotef (*fnamptr));
               ok = false;
-              continue;
+              కొనసాగు;
             }
           fadvise (fileptr, FADVISE_SEQUENTIAL);
         }
@@ -393,7 +393,7 @@ paste_serial (size_t nfiles, char **fnamptr)
 
       charold = getc (fileptr);
       saved_errno = errno;
-      if (charold != EOF)
+      ఒకవేళ (charold != EOF)
         {
           /* 'charold' is set up.  Hit it!
              Keep reading characters, stashing them in 'charnew';
@@ -401,20 +401,20 @@ paste_serial (size_t nfiles, char **fnamptr)
              character if needed.  After the EOF, output 'charold'
              if it's a newline; otherwise, output it and then a newline. */
 
-          while ((charnew = getc (fileptr)) != EOF)
+          అయితే ((charnew = getc (fileptr)) != EOF)
             {
               /* Process the old character. */
-              if (charold == line_delim)
+              ఒకవేళ (charold == పంక్తి_delim)
                 {
                   output_delim (delims + delimoff, delim_lens[delimidx]);
                   delimoff += delim_lens[delimidx];
-                  if (++delimidx == num_delims)
+                  ఒకవేళ (++delimidx == అంకె_delims)
                     {
                       delimidx = 0;
                       delimoff = 0;
                     }
                 }
-              else
+              లేకపోతే
                 xputchar (charold);
 
               charold = charnew;
@@ -425,38 +425,38 @@ paste_serial (size_t nfiles, char **fnamptr)
           xputchar (charold);
         }
 
-      if (charold != line_delim)
-        xputchar (line_delim);
+      ఒకవేళ (charold != పంక్తి_delim)
+        xputchar (పంక్తి_delim);
 
-      if (!ferror (fileptr))
+      ఒకవేళ (!ferror (fileptr))
         saved_errno = 0;
-      if (is_stdin)
+      ఒకవేళ (is_stdin)
         clearerr (fileptr);	/* Also clear EOF. */
-      else if (fclose (fileptr) != 0 && !saved_errno)
+      లేకపోతే ఒకవేళ (fclose (fileptr) != 0 && !saved_errno)
         saved_errno = errno;
-      if (saved_errno)
+      ఒకవేళ (saved_errno)
         {
           error (0, saved_errno, "%s", quotef (*fnamptr));
           ok = false;
         }
     }
-  return ok;
+  తిరిగి ok;
 }
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("\
+      రాయి (_("\
 Usage: %s [OPTION]... [FILE]...\n\
 "),
-              program_name);
+              కార్యక్రమం_name);
       fputs (_("\
-Write lines consisting of corresponding lines from each file joined by TABs\n\
-to standard output.\n\
+Write పంక్తులు consisting యొక్క corresponding పంక్తులు from each file joined by TABs\n\
+గమ్యం standard output.\n\
 "), stdout);
 
       emit_stdin_note ();
@@ -464,75 +464,75 @@ to standard output.\n\
 
       oputs (_("\
   -d, --delimiters=LIST\n\
-         reuse characters from LIST instead of TABs;\n\
+         reuse characters from LIST instead యొక్క TABs;\n\
          backslash escapes are supported\n\
 "));
       oputs (_("\
   -s, --serial\n\
-         paste one file at a time instead of in parallel; the newline of\n\
-         every line except the last line in each file is replaced with a TAB\
+         paste one file at a సమయం instead యొక్క లోపల parallel; the newline యొక్క\n\
+         every పంక్తి except the చివరి పంక్తి లోపల each file is replaced with a TAB\
 \n\
 "));
       oputs (_("\
   -z, --zero-terminated\n\
-         line delimiter is NUL, not newline\n\
+         పంక్తి delimiter is NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
       /* FIXME: add a couple of examples.  */
-      emit_ancillary_info (PROGRAM_NAME);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
-  int optc;
-  char const *delim_arg = "\t";
+  పూర్ణాంకం optc;
+  అక్షరం స్థిరరాశి *delim_arg = "\t";
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "d:sz", longopts, NULL)) != -1)
+  అయితే ((optc = getopt_long (argc, argv, "d:sz", longopts, ఖాళీ)) != -1)
     {
-      switch (optc)
+      ఎంపిక (optc)
         {
-        case 'd':
+        స్థితి 'd':
           /* Delimiter character(s). */
           delim_arg = (optarg[0] == '\0' ? "\\0" : optarg);
-          break;
+          ఆపు;
 
-        case 's':
-          serial_merge = true;
-          break;
+        స్థితి 's':
+          serial_విలీనం = true;
+          ఆపు;
 
-        case 'z':
-          line_delim = '\0';
-          break;
+        స్థితి 'z':
+          పంక్తి_delim = '\0';
+          ఆపు;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_సంస్కరణ_CHAR (కార్యక్రమం_NAME, AUTHORS);
 
-        default:
+        అప్రమేయ:
           usage (EXIT_FAILURE);
         }
     }
 
-  int nfiles = argc - optind;
-  if (nfiles == 0)
+  పూర్ణాంకం nfiles = argc - optind;
+  ఒకవేళ (nfiles == 0)
     {
       argv[optind] = bad_cast ("-");
       nfiles++;
     }
 
-  if (collapse_escapes (delim_arg))
+  ఒకవేళ (collapse_escapes (delim_arg))
     {
       /* Don't use the quote() quoting style, because that would double the
          number of displayed backslashes, making the diagnostic look bogus.  */
@@ -541,13 +541,13 @@ main (int argc, char **argv)
              quotearg_n_style_colon (0, c_maybe_quoting_style, delim_arg));
     }
 
-  bool ok = ((serial_merge ? paste_serial : paste_parallel)
+  bool ok = ((serial_విలీనం ? paste_serial : paste_parallel)
              (nfiles, &argv[optind]));
 
-  free (delims);
-  free (delim_lens);
+  విడుదల (delims);
+  విడుదల (delim_lens);
 
-  if (have_read_stdin && fclose (stdin) == EOF)
+  ఒకవేళ (have_read_stdin && fclose (stdin) == EOF)
     error (EXIT_FAILURE, errno, "-");
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  తిరిగి ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

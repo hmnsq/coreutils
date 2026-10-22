@@ -14,18 +14,18 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include "system.h"
+#అన్తర్భావ <config.h>
+#అన్తర్భావ "system.h"
 
-#include "true.h"
+#అన్తర్భావ "true.h"
 /* Ensure that the main for true is declared even if the tool is not being
    built in this single-binary. */
-int single_binary_main_true (int argc, char **argv);
-int single_binary_main_false (int argc, char **argv);
+పూర్ణాంకం single_ద్విమాన_main_true (పూర్ణాంకం argc, అక్షరం **argv);
+పూర్ణాంకం single_ద్విమాన_main_false (పూర్ణాంకం argc, అక్షరం **argv);
 
-int
-single_binary_main_false (int argc, char **argv)
+పూర్ణాంకం
+single_ద్విమాన_main_false (పూర్ణాంకం argc, అక్షరం **argv)
 {
-  true_mode = TRUE_FALSE;
-  return single_binary_main_true (argc, argv);
+  true_బహుళకం = TRUE_FALSE;
+  తిరిగి single_ద్విమాన_main_true (argc, argv);
 }

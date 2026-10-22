@@ -16,107 +16,107 @@
 
 /* Written by Jim Meyering */
 
-#include <config.h>
-#include <getopt.h>
-#include <stdio.h>
-#include <sys/types.h>
+#అన్తర్భావ <config.h>
+#అన్తర్భావ <getopt.h>
+#అన్తర్భావ <stdio.h>
+#అన్తర్భావ <sys/types.h>
 
-#include "system.h"
-#include "assure.h"
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "assure.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "sync"
+#నిర్వచించు కార్యక్రమం_NAME "sync"
 
-#define AUTHORS                                 \
+#నిర్వచించు AUTHORS                                 \
   proper_name ("Jim Meyering"),                 \
   proper_name ("Giuseppe Scrivano")
 
-#ifndef HAVE_SYNCFS
+#నిర్వచితం_కాకపోతే HAVE_SYNCFS
 # define HAVE_SYNCFS 0
-#endif
+#అయితే_ముగింపు
 
-enum sync_mode
+గణన sync_బహుళకం
 {
-  MODE_FILE,
-  MODE_DATA,
-  MODE_FILE_SYSTEM,
-  MODE_SYNC
+  బహుళకం_FILE,
+  బహుళకం_దత్తాంశం,
+  బహుళకం_FILE_SYSTEM,
+  బహుళకం_SYNC
 };
 
-static struct option const long_options[] =
+స్థిర నిర్మాణం option స్థిరరాశి long_options[] =
 {
-  {"data", no_argument, NULL, 'd'},
-  {"file-system", no_argument, NULL, 'f'},
+  {"data", no_వాదం, ఖాళీ, 'd'},
+  {"file-system", no_వాదం, ఖాళీ, 'f'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_సంస్కరణ_OPTION_DECL},
+  {ఖాళీ, 0, ఖాళీ, 0}
 };
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("Usage: %s [OPTION] [FILE]...\n"), program_name);
+      రాయి (_("Usage: %s [OPTION] [FILE]...\n"), కార్యక్రమం_name);
       fputs (_("\
-Synchronize cached writes to persistent storage\n\
+Synchronize cached writes గమ్యం persistent storage\n\
 \n\
-If one or more files are specified, sync only them,\n\
+If one or మరిన్ని files are specified, sync only them,\n\
 or their containing file systems.\n\
 \n\
 "), stdout);
 
       oputs (_("\
-  -d, --data             sync only file data, no unneeded metadata\n\
+  -d, --దత్తాంశం             sync only file దత్తాంశం, no unneeded metadata\n\
 "));
       oputs (_("\
   -f, --file-system      sync the file systems that contain the files\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
 /* Sync the specified FILE, or file systems associated with FILE.
    Return 1 on success.  */
 
-static bool
-sync_arg (enum sync_mode mode, char const *file)
+స్థిర bool
+sync_arg (గణన sync_బహుళకం బహుళకం_2, అక్షరం స్థిరరాశి *file)
 {
-  int open_flags = O_RDONLY | O_NONBLOCK;
+  పూర్ణాంకం open_flags = O_RDONLY | O_NONBLOCK;
 
-#if defined _AIX || defined __CYGWIN__
+#ఒకవేళ defined _AIX || defined __CYGWIN__
   /* AIX 7.1, CYGWIN 2.9.0, fsync requires write access to file.  */
-  if (mode == MODE_FILE)
+  ఒకవేళ (బహుళకం_2 == బహుళకం_FILE)
     open_flags = O_WRONLY | O_NONBLOCK;
-#endif
+#అయితే_ముగింపు
 
   /* Note O_PATH might be supported with syncfs(),
      though as of Linux 3.18 is not.  */
-  int fd = open (file, open_flags);
-  if (fd < 0)
+  పూర్ణాంకం fd = open (file, open_flags);
+  ఒకవేళ (fd < 0)
     {
       /* Use the O_RDONLY errno, which is significant
          with directories for example.  */
-      int rd_errno = errno;
-      if (open_flags != (O_WRONLY | O_NONBLOCK))
+      పూర్ణాంకం rd_errno = errno;
+      ఒకవేళ (open_flags != (O_WRONLY | O_NONBLOCK))
         fd = open (file, O_WRONLY | O_NONBLOCK);
-      if (fd < 0)
+      ఒకవేళ (fd < 0)
         {
           error (0, rd_errno, _("error opening %s"), quoteaf (file));
-          return false;
+          తిరిగి false;
         }
     }
 
   bool ret = true;
   /* We used O_NONBLOCK above to not hang with fifos,
      so reset that here.  */
-  int fdflags = fcntl (fd, F_GETFL);
-  if (fdflags == -1
+  పూర్ణాంకం fdflags = fcntl (fd, F_GETFL);
+  ఒకవేళ (fdflags == -1
       || fcntl (fd, F_SETFL, fdflags & ~O_NONBLOCK) < 0)
     {
       error (0, errno, _("couldn't reset non-blocking mode %s"),
@@ -124,108 +124,108 @@ sync_arg (enum sync_mode mode, char const *file)
       ret = false;
     }
 
-  if (ret)
+  ఒకవేళ (ret)
     {
-      int sync_status = -1;
+      పూర్ణాంకం sync_స్థితి = -1;
 
-      switch (mode)
+      ఎంపిక (బహుళకం_2)
         {
-        case MODE_DATA:
-          sync_status = fdatasync (fd);
-          break;
+        స్థితి బహుళకం_దత్తాంశం:
+          sync_స్థితి = fdatasync (fd);
+          ఆపు;
 
-        case MODE_FILE:
-          sync_status = fsync (fd);
-          break;
+        స్థితి బహుళకం_FILE:
+          sync_స్థితి = fsync (fd);
+          ఆపు;
 
-        case MODE_FILE_SYSTEM:
-#if HAVE_SYNCFS
-          sync_status = syncfs (fd);
-          break;
-#endif
-        case MODE_SYNC: default:
+        స్థితి బహుళకం_FILE_SYSTEM:
+#ఒకవేళ HAVE_SYNCFS
+          sync_స్థితి = syncfs (fd);
+          ఆపు;
+#అయితే_ముగింపు
+        స్థితి బహుళకం_SYNC: అప్రమేయ:
           affirm (false);
         }
 
-      if (sync_status < 0)
+      ఒకవేళ (sync_స్థితి < 0)
         {
           error (0, errno, _("error syncing %s"), quoteaf (file));
           ret = false;
         }
     }
 
-  if (close (fd) < 0)
+  ఒకవేళ (close (fd) < 0)
     {
       error (0, errno, _("failed to close %s"), quoteaf (file));
       ret = false;
     }
 
-  return ret;
+  తిరిగి ret;
 }
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
-  bool arg_data = false, arg_file_system = false;
+  bool arg_దత్తాంశం = false, arg_file_system = false;
   bool ok = true;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  int c;
-  while ((c = getopt_long (argc, argv, "df", long_options, NULL))
+  పూర్ణాంకం c;
+  అయితే ((c = getopt_long (argc, argv, "df", long_options, ఖాళీ))
          != -1)
     {
-      switch (c)
+      ఎంపిక (c)
         {
-        case 'd':
-          arg_data = true;
-          break;
+        స్థితి 'd':
+          arg_దత్తాంశం = true;
+          ఆపు;
 
-        case 'f':
+        స్థితి 'f':
           arg_file_system = true;
-          break;
+          ఆపు;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_సంస్కరణ_CHAR (కార్యక్రమం_NAME, AUTHORS);
 
-        default:
+        అప్రమేయ:
           usage (EXIT_FAILURE);
         }
     }
 
-  bool args_specified = optind < argc;
+  bool వాదనలు_specified = optind < argc;
 
-  if (arg_data && arg_file_system)
+  ఒకవేళ (arg_దత్తాంశం && arg_file_system)
     error (EXIT_FAILURE, 0,
            _("cannot specify both --data and --file-system"));
 
-  if (!args_specified && arg_data)
+  ఒకవేళ (!వాదనలు_specified && arg_దత్తాంశం)
     error (EXIT_FAILURE, 0, _("--data needs at least one argument"));
 
-  enum sync_mode mode;
-  if (! args_specified || (arg_file_system && ! HAVE_SYNCFS))
-    mode = MODE_SYNC;
-  else if (arg_file_system)
-    mode = MODE_FILE_SYSTEM;
-  else if (! arg_data)
-    mode = MODE_FILE;
-  else
-    mode = MODE_DATA;
+  గణన sync_బహుళకం బహుళకం_2;
+  ఒకవేళ (! వాదనలు_specified || (arg_file_system && ! HAVE_SYNCFS))
+    బహుళకం_2 = బహుళకం_SYNC;
+  లేకపోతే ఒకవేళ (arg_file_system)
+    బహుళకం_2 = బహుళకం_FILE_SYSTEM;
+  లేకపోతే ఒకవేళ (! arg_దత్తాంశం)
+    బహుళకం_2 = బహుళకం_FILE;
+  లేకపోతే
+    బహుళకం_2 = బహుళకం_దత్తాంశం;
 
-  if (mode == MODE_SYNC)
+  ఒకవేళ (బహుళకం_2 == బహుళకం_SYNC)
     sync ();
-  else
+  లేకపోతే
     {
-      for (; optind < argc; optind++)
-        ok &= sync_arg (mode, argv[optind]);
+      కొరకు (; optind < argc; optind++)
+        ok &= sync_arg (బహుళకం_2, argv[optind]);
     }
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  తిరిగి ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

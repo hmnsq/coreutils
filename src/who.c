@@ -23,234 +23,234 @@
    idle: -u
 */
 
-#include <config.h>
-#include <getopt.h>
-#include <stdio.h>
+#అన్తర్భావ <config.h>
+#అన్తర్భావ <getopt.h>
+#అన్తర్భావ <stdio.h>
 
-#include <sys/types.h>
-#include "system.h"
+#అన్తర్భావ <sys/types.h>
+#అన్తర్భావ "system.h"
 
-#include "c-ctype.h"
-#include "canon-host.h"
-#include "readutmp.h"
-#include "hard-locale.h"
-#include "quote.h"
-#include "xvasprintf.h"
+#అన్తర్భావ "c-ctype.h"
+#అన్తర్భావ "canon-host.h"
+#అన్తర్భావ "readutmp.h"
+#అన్తర్భావ "hard-locale.h"
+#అన్తర్భావ "quote.h"
+#అన్తర్భావ "xvasprintf.h"
 
-#ifdef TTY_GROUP_NAME
+#నిర్వచితమైతే TTY_సమూహం_NAME
 # include <grp.h>
-#endif
+#అయితే_ముగింపు
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "who"
+#నిర్వచించు కార్యక్రమం_NAME "who"
 
-#define AUTHORS \
+#నిర్వచించు AUTHORS \
   proper_name ("Joseph Arceneaux"), \
   proper_name ("David MacKenzie"), \
   proper_name ("Michael Stone")
 
-#ifdef RUN_LVL
-# define UT_TYPE_RUN_LVL(U) ((U)->ut_type == RUN_LVL)
-#else
-# define UT_TYPE_RUN_LVL(U) false
-#endif
+#నిర్వచితమైతే నిరంతరం_LVL
+# define UT_TYPE_నిరంతరం_LVL(U) ((U)->ut_type == నిరంతరం_LVL)
+#లేకపోతే
+# define UT_TYPE_నిరంతరం_LVL(U) false
+#అయితే_ముగింపు
 
-#ifdef INIT_PROCESS
+#నిర్వచితమైతే INIT_PROCESS
 # define UT_TYPE_INIT_PROCESS(U) ((U)->ut_type == INIT_PROCESS)
-#else
+#లేకపోతే
 # define UT_TYPE_INIT_PROCESS(U) false
-#endif
+#అయితే_ముగింపు
 
-#ifdef DEAD_PROCESS
+#నిర్వచితమైతే DEAD_PROCESS
 # define UT_TYPE_DEAD_PROCESS(U) ((U)->ut_type == DEAD_PROCESS)
-#else
+#లేకపోతే
 # define UT_TYPE_DEAD_PROCESS(U) false
-#endif
+#అయితే_ముగింపు
 
-#ifdef NEW_TIME
-# define UT_TYPE_NEW_TIME(U) ((U)->ut_type == NEW_TIME)
-#else
-# define UT_TYPE_NEW_TIME(U) false
-#endif
+#నిర్వచితమైతే NEW_సమయం
+# define UT_TYPE_NEW_సమయం(U) ((U)->ut_type == NEW_సమయం)
+#లేకపోతే
+# define UT_TYPE_NEW_సమయం(U) false
+#అయితే_ముగింపు
 
-#define IDLESTR_LEN 6
+#నిర్వచించు IDLESTR_LEN 6
 
-#if HAVE_STRUCT_XTMP_UT_PID
+#ఒకవేళ HAVE_STRUCT_XTMP_UT_PID
 # define PIDSTR_DECL_AND_INIT(Var, Utmp_ent) \
-  char Var[INT_STRLEN_BOUND (Utmp_ent->ut_pid) + 1]; \
-  sprintf (Var, "%ld", (long int) (Utmp_ent->ut_pid))
-#else
+  అక్షరం Var[INT_STRLEN_BOUND (Utmp_ent->ut_pid) + 1]; \
+  sprintf (Var, "%ld", (దీర్ఘ పూర్ణాంకం) (Utmp_ent->ut_pid))
+#లేకపోతే
 # define PIDSTR_DECL_AND_INIT(Var, Utmp_ent) \
-  char const *Var = ""
-#endif
+  అక్షరం స్థిరరాశి *Var = ""
+#అయితే_ముగింపు
 
-#if HAVE_STRUCT_XTMP_UT_ID
+#ఒకవేళ HAVE_STRUCT_XTMP_UT_ID
 # define UT_ID(U) ((U)->ut_id)
-#else
+#లేకపోతే
 # define UT_ID(U) "??"
-#endif
+#అయితే_ముగింపు
 
 /* If true, attempt to canonicalize hostnames via a DNS lookup. */
-static bool do_lookup;
+స్థిర bool do_lookup;
 
 /* If true, display only a list of usernames and count of
    the users logged on.
    Ignored for 'who am i'.  */
-static bool short_list;
+స్థిర bool short_list;
 
 /* If true, display only name, line, and time fields.  */
-static bool short_output;
+స్థిర bool short_output;
 
 /* If true, display the hours:minutes since each user has touched
    the keyboard, or "." if within the last minute, or "old" if
    not within the last day.  */
-static bool include_idle;
+స్థిర bool include_idle;
 
 /* If true, display a line at the top describing each field.  */
-static bool include_heading;
+స్థిర bool include_heading;
 
 /* If true, display a '+' for each user if mesg y, a '-' if mesg n,
    or a '?' if their tty cannot be statted. */
-static bool include_mesg;
+స్థిర bool include_mesg;
 
 /* If true, display process termination & exit status.  */
-static bool include_exit;
+స్థిర bool include_exit;
 
 /* If true, display the last boot time.  */
-static bool need_boottime;
+స్థిర bool need_boottime;
 
 /* If true, display dead processes.  */
-static bool need_deadprocs;
+స్థిర bool need_deadprocs;
 
 /* If true, display processes waiting for user login.  */
-static bool need_login;
+స్థిర bool need_login;
 
 /* If true, display processes started by init.  */
-static bool need_initspawn;
+స్థిర bool need_initspawn;
 
 /* If true, display the last clock change.  */
-static bool need_clockchange;
+స్థిర bool need_clockchange;
 
 /* If true, display the current runlevel.  */
-static bool need_runlevel;
+స్థిర bool need_runlevel;
 
 /* If true, display user processes.  */
-static bool need_users;
+స్థిర bool need_users;
 
 /* If true, display info only for the controlling tty.  */
-static bool my_line_only;
+స్థిర bool my_పంక్తి_only;
 
 /* The strftime format to use for login times, and its expected
    output width.  */
-static char const *time_format;
-static int time_format_width;
+స్థిర అక్షరం స్థిరరాశి *సమయం_format;
+స్థిర పూర్ణాంకం సమయం_format_వెడల్పు;
 
 /* for long options with no corresponding short option, use enum */
-enum
+గణన
 {
   LOOKUP_OPTION = CHAR_MAX + 1
 };
 
-static struct option const longopts[] =
+స్థిర నిర్మాణం option స్థిరరాశి longopts[] =
 {
-  {"all", no_argument, NULL, 'a'},
-  {"boot", no_argument, NULL, 'b'},
-  {"count", no_argument, NULL, 'q'},
-  {"dead", no_argument, NULL, 'd'},
-  {"heading", no_argument, NULL, 'H'},
-  {"login", no_argument, NULL, 'l'},
-  {"lookup", no_argument, NULL, LOOKUP_OPTION},
-  {"message", no_argument, NULL, 'T'},
-  {"mesg", no_argument, NULL, 'T'},
-  {"process", no_argument, NULL, 'p'},
-  {"runlevel", no_argument, NULL, 'r'},
-  {"short", no_argument, NULL, 's'},
-  {"time", no_argument, NULL, 't'},
-  {"users", no_argument, NULL, 'u'},
-  {"writable", no_argument, NULL, 'T'},
+  {"all", no_వాదం, ఖాళీ, 'a'},
+  {"boot", no_వాదం, ఖాళీ, 'b'},
+  {"count", no_వాదం, ఖాళీ, 'q'},
+  {"dead", no_వాదం, ఖాళీ, 'd'},
+  {"heading", no_వాదం, ఖాళీ, 'H'},
+  {"login", no_వాదం, ఖాళీ, 'l'},
+  {"lookup", no_వాదం, ఖాళీ, LOOKUP_OPTION},
+  {"message", no_వాదం, ఖాళీ, 'T'},
+  {"mesg", no_వాదం, ఖాళీ, 'T'},
+  {"process", no_వాదం, ఖాళీ, 'p'},
+  {"runlevel", no_వాదం, ఖాళీ, 'r'},
+  {"short", no_వాదం, ఖాళీ, 's'},
+  {"time", no_వాదం, ఖాళీ, 't'},
+  {"users", no_వాదం, ఖాళీ, 'u'},
+  {"writable", no_వాదం, ఖాళీ, 'T'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_సంస్కరణ_OPTION_DECL},
+  {ఖాళీ, 0, ఖాళీ, 0}
 };
 
 /* Return a string representing the time between WHEN and now.
    BOOTTIME is the time of last reboot.
    FIXME: locale? */
-static char const *
+స్థిర అక్షరం స్థిరరాశి *
 idle_string (time_t when, time_t boottime)
 {
-  static time_t now = TYPE_MINIMUM (time_t);
+  స్థిర time_t now = TYPE_MINIMUM (time_t);
 
-  if (now == TYPE_MINIMUM (time_t))
-    time (&now);
+  ఒకవేళ (now == TYPE_MINIMUM (time_t))
+    సమయం (&now);
 
-  int seconds_idle;
-  if (boottime < when && when <= now
+  పూర్ణాంకం seconds_idle;
+  ఒకవేళ (boottime < when && when <= now
       && ! ckd_sub (&seconds_idle, now, when)
       && seconds_idle < 24 * 60 * 60)
     {
-      if (seconds_idle < 60)
-        return "  .  ";
-      else
+      ఒకవేళ (seconds_idle < 60)
+        తిరిగి "  .  ";
+      లేకపోతే
         {
-          static char idle_hhmm[IDLESTR_LEN];
+          స్థిర అక్షరం idle_hhmm[IDLESTR_LEN];
           sprintf (idle_hhmm, "%02d:%02d",
                    seconds_idle / (60 * 60),
                    (seconds_idle % (60 * 60)) / 60);
-          return idle_hhmm;
+          తిరిగి idle_hhmm;
         }
     }
 
-  return _(" old ");
+  తిరిగి _(" old ");
 }
 
 /* Return a time string.  */
-static char const *
-time_string (STRUCT_UTMP const *utmp_ent)
+స్థిర అక్షరం స్థిరరాశి *
+సమయం_string (STRUCT_UTMP స్థిరరాశి *utmp_ent)
 {
-  static char buf[INT_STRLEN_BOUND (intmax_t) + sizeof "-%m-%d %H:%M"];
-  struct tm *tmp = localtime (&utmp_ent->ut_ts.tv_sec);
+  స్థిర అక్షరం buf[INT_STRLEN_BOUND (intmax_t) + పరిమాణం "-%m-%d %H:%M"];
+  నిర్మాణం tm *tmp = localtime (&utmp_ent->ut_ts.tv_sec);
 
-  if (tmp)
+  ఒకవేళ (tmp)
     {
-      strftime (buf, sizeof buf, time_format, tmp);
-      return buf;
+      strftime (buf, పరిమాణం buf, సమయం_format, tmp);
+      తిరిగి buf;
     }
-  else
-    return timetostr (utmp_ent->ut_ts.tv_sec, buf);
+  లేకపోతే
+    తిరిగి timetostr (utmp_ent->ut_ts.tv_sec, buf);
 }
 
 /* Print formatted output line. Uses mostly arbitrary field sizes, probably
    will need tweaking if any of the localization stuff is done, or for 64 bit
    pids, etc. */
-static void
-print_line (char const *user, const char state,
-            char const *line,
-            char const *time_str, char const *idle, char const *pid,
-            char const *comment, char const *exitstr)
+స్థిర శూన్య
+print_పంక్తి (అక్షరం స్థిరరాశి *user, స్థిరరాశి అక్షరం state,
+            అక్షరం స్థిరరాశి *పంక్తి,
+            అక్షరం స్థిరరాశి *సమయం_str, అక్షరం స్థిరరాశి *idle, అక్షరం స్థిరరాశి *pid,
+            అక్షరం స్థిరరాశి *comment, అక్షరం స్థిరరాశి *exitstr)
 {
-  static char mesg[3] = { ' ', 'x', '\0' };
-  char *buf;
-  char x_idle[1 + IDLESTR_LEN + 1];
-  char x_pid[1 + INT_STRLEN_BOUND (pid_t) + 1];
-  char *x_exitstr;
+  స్థిర అక్షరం mesg[3] = { ' ', 'x', '\0' };
+  అక్షరం *buf;
+  అక్షరం x_idle[1 + IDLESTR_LEN + 1];
+  అక్షరం x_pid[1 + INT_STRLEN_BOUND (pid_t) + 1];
+  అక్షరం *x_exitstr;
 
   mesg[1] = state;
 
-  if (include_idle && !short_output && strlen (idle) < sizeof x_idle - 1)
+  ఒకవేళ (include_idle && !short_output && అక్షరశ్రేణి_పొడవు (idle) < పరిమాణం x_idle - 1)
     sprintf (x_idle, " %-6s", idle);
-  else
+  లేకపోతే
     *x_idle = '\0';
 
-  if (!short_output && strlen (pid) < sizeof x_pid - 1)
+  ఒకవేళ (!short_output && అక్షరశ్రేణి_పొడవు (pid) < పరిమాణం x_pid - 1)
     sprintf (x_pid, " %10s", pid);
-  else
+  లేకపోతే
     *x_pid = '\0';
 
-  x_exitstr = xmalloc (include_exit ? 1 + MAX (12, strlen (exitstr)) + 1 : 1);
-  if (include_exit)
+  x_exitstr = xmalloc (include_exit ? 1 + MAX (12, అక్షరశ్రేణి_పొడవు (exitstr)) + 1 : 1);
+  ఒకవేళ (include_exit)
     sprintf (x_exitstr, " %-12s", exitstr);
-  else
+  లేకపోతే
     *x_exitstr = '\0';
 
   buf = xasprintf ("%-8s"
@@ -264,9 +264,9 @@ print_line (char const *user, const char state,
                    ,
                    user ? user : "   .",
                    include_mesg ? mesg : "",
-                   line,
-                   time_format_width,
-                   time_str,
+                   పంక్తి,
+                   సమయం_format_వెడల్పు,
+                   సమయం_str,
                    x_idle,
                    x_pid,
                    /* FIXME: it's not really clear whether the following
@@ -279,181 +279,181 @@ print_line (char const *user, const char state,
 
   {
     /* Remove any trailing spaces.  */
-    char *p = buf + strlen (buf);
-    while (*--p == ' ')
-      /* empty */;
+    అక్షరం *p = buf + అక్షరశ్రేణి_పొడవు (buf);
+    అయితే (*--p == ' ')
+      /*ఖాళీలు*/;
     *(p + 1) = '\0';
   }
 
   puts (buf);
-  free (buf);
-  free (x_exitstr);
+  విడుదల (buf);
+  విడుదల (x_exitstr);
 }
 
 /* Return true if a terminal device given as PSTAT allows other users
    to send messages to; false otherwise */
-static bool
-is_tty_writable (struct stat const *pstat)
+స్థిర bool
+is_tty_writable (నిర్మాణం stat స్థిరరాశి *pstat)
 {
-#ifdef TTY_GROUP_NAME
+#నిర్వచితమైతే TTY_సమూహం_NAME
   /* Ensure the group of the TTY device matches TTY_GROUP_NAME, more info at
      https://bugzilla.redhat.com/454261 */
-  struct group *ttygr = getgrnam (TTY_GROUP_NAME);
-  if (!ttygr || (pstat->st_gid != ttygr->gr_gid))
-    return false;
-#endif
+  నిర్మాణం సమూహం *ttygr = getgrnam (TTY_సమూహం_NAME);
+  ఒకవేళ (!ttygr || (pstat->st_gid != ttygr->gr_gid))
+    తిరిగి false;
+#అయితే_ముగింపు
 
-  return pstat->st_mode & S_IWGRP;
+  తిరిగి pstat->st_బహుళకం & S_IWGRP;
 }
 
 /* Send properly parsed USER_PROCESS info to print_line.  The most
    recent boot time is BOOTTIME. */
-static void
-print_user (STRUCT_UTMP const *utmp_ent, time_t boottime)
+స్థిర శూన్య
+print_user (STRUCT_UTMP స్థిరరాశి *utmp_ent, time_t boottime)
 {
-  struct stat stats;
-  time_t last_change;
-  char mesg;
-  char idlestr[IDLESTR_LEN + 1];
+  నిర్మాణం stat stats;
+  time_t చివరి_change;
+  అక్షరం mesg;
+  అక్షరం idlestr[IDLESTR_LEN + 1];
   PIDSTR_DECL_AND_INIT (pidstr, utmp_ent);
-  static char *hoststr;
-#if HAVE_STRUCT_XTMP_UT_HOST
-  static idx_t hostlen;
-#endif
+  స్థిర అక్షరం *hoststr;
+#ఒకవేళ HAVE_STRUCT_XTMP_UT_HOST
+  స్థిర idx_t hostlen;
+#అయితే_ముగింపు
 
   /* If ut_line contains a space, the device name starts after the space.  */
-  char *line = utmp_ent->ut_line;
-  char *space = strchr (line, ' ');
-  line = space ? space + 1 : line;
+  అక్షరం *పంక్తి = utmp_ent->ut_పంక్తి;
+  అక్షరం *space = strchr (పంక్తి, ' ');
+  పంక్తి = space ? space + 1 : పంక్తి;
 
-  int dirfd;
-  if (IS_ABSOLUTE_FILE_NAME (line))
+  పూర్ణాంకం dirfd;
+  ఒకవేళ (IS_ABSOLUTE_FILE_NAME (పంక్తి))
     dirfd = AT_FDCWD;
-  else
+  లేకపోతే
     {
-      static int dev_dirfd;
-      if (!dev_dirfd)
+      స్థిర పూర్ణాంకం dev_dirfd;
+      ఒకవేళ (!dev_dirfd)
         {
           dev_dirfd = open ("/dev", O_PATHSEARCH | O_DIRECTORY);
-          if (dev_dirfd < 0)
+          ఒకవేళ (dev_dirfd < 0)
             dev_dirfd = AT_FDCWD - 1;
         }
       dirfd = dev_dirfd;
     }
 
-  if (AT_FDCWD <= dirfd && fstatat (dirfd, line, &stats, 0) == 0)
+  ఒకవేళ (AT_FDCWD <= dirfd && fstatat (dirfd, పంక్తి, &stats, 0) == 0)
     {
       mesg = is_tty_writable (&stats) ? '+' : '-';
-      last_change = stats.st_atime;
+      చివరి_change = stats.st_atime;
     }
-  else
+  లేకపోతే
     {
       mesg = '?';
-      last_change = 0;
+      చివరి_change = 0;
     }
 
-  if (last_change)
-    sprintf (idlestr, "%.*s", IDLESTR_LEN, idle_string (last_change, boottime));
-  else
+  ఒకవేళ (చివరి_change)
+    sprintf (idlestr, "%.*s", IDLESTR_LEN, idle_string (చివరి_change, boottime));
+  లేకపోతే
     sprintf (idlestr, "  ?");
 
-#if HAVE_STRUCT_XTMP_UT_HOST
-  if (utmp_ent->ut_host[0])
+#ఒకవేళ HAVE_STRUCT_XTMP_UT_HOST
+  ఒకవేళ (utmp_ent->ut_host[0])
     {
-      char *host = NULL;
-      char *display = NULL;
-      char *ut_host = utmp_ent->ut_host;
+      అక్షరం *host = ఖాళీ;
+      అక్షరం *display = ఖాళీ;
+      అక్షరం *ut_host = utmp_ent->ut_host;
 
       /* Look for an X display.  */
       display = strchr (ut_host, ':');
-      if (display)
+      ఒకవేళ (display)
         *display++ = '\0';
 
-      if (*ut_host && do_lookup)
+      ఒకవేళ (*ut_host && do_lookup)
         {
           /* See if we can canonicalize it.  */
           host = canon_host (ut_host);
         }
 
-      if (! host)
+      ఒకవేళ (! host)
         host = ut_host;
 
-      if (display)
+      ఒకవేళ (display)
         {
-          idx_t needed = strlen (host) + strlen (display) + 4;
-          if (hostlen < needed)
+          idx_t needed = అక్షరశ్రేణి_పొడవు (host) + అక్షరశ్రేణి_పొడవు (display) + 4;
+          ఒకవేళ (hostlen < needed)
             {
-              free (hoststr);
-              hoststr = xpalloc (NULL, &hostlen, needed - hostlen, -1, 1);
+              విడుదల (hoststr);
+              hoststr = xpalloc (ఖాళీ, &hostlen, needed - hostlen, -1, 1);
             }
-          char *p = hoststr;
+          అక్షరం *p = hoststr;
           *p++ = '(';
           p = stpcpy (p, host);
           *p++ = ':';
           strcpy (stpcpy (p, display), ")");
         }
-      else
+      లేకపోతే
         {
-          idx_t needed = strlen (host) + 3;
-          if (hostlen < needed)
+          idx_t needed = అక్షరశ్రేణి_పొడవు (host) + 3;
+          ఒకవేళ (hostlen < needed)
             {
-              free (hoststr);
-              hoststr = xpalloc (NULL, &hostlen, needed - hostlen, -1, 1);
+              విడుదల (hoststr);
+              hoststr = xpalloc (ఖాళీ, &hostlen, needed - hostlen, -1, 1);
             }
-          char *p = hoststr;
+          అక్షరం *p = hoststr;
           *p++ = '(';
           strcpy (stpcpy (p, host), ")");
         }
 
-      if (host != ut_host)
-        free (host);
+      ఒకవేళ (host != ut_host)
+        విడుదల (host);
     }
-  else
+  లేకపోతే
     {
-      if (hostlen < 1)
+      ఒకవేళ (hostlen < 1)
         hoststr = xpalloc (hoststr, &hostlen, 1, -1, 1);
       *hoststr = '\0';
     }
-#endif
+#అయితే_ముగింపు
 
-  print_line (utmp_ent->ut_user, mesg,
-              utmp_ent->ut_line,
-              time_string (utmp_ent), idlestr, pidstr,
+  print_పంక్తి (utmp_ent->ut_user, mesg,
+              utmp_ent->ut_పంక్తి,
+              సమయం_string (utmp_ent), idlestr, pidstr,
               hoststr ? hoststr : "", "");
 }
 
-static void
-print_boottime (STRUCT_UTMP const *utmp_ent)
+స్థిర శూన్య
+print_boottime (STRUCT_UTMP స్థిరరాశి *utmp_ent)
 {
-  print_line ("", ' ', _("system boot"),
-              time_string (utmp_ent), "", "", "", "");
+  print_పంక్తి ("", ' ', _("system boot"),
+              సమయం_string (utmp_ent), "", "", "", "");
 }
 
-static char *
-make_id_equals_comment (STRUCT_UTMP const *utmp_ent)
+స్థిర అక్షరం *
+make_id_equals_comment (STRUCT_UTMP స్థిరరాశి *utmp_ent)
 {
-  char const *id = UT_ID (utmp_ent);
-  idx_t idlen = strlen (id);
-  char const *prefix = _("id=");
-  idx_t prefixlen = strlen (prefix);
-  char *comment = xmalloc (prefixlen + idlen + 1);
-  char *p = mempcpy (comment, prefix, prefixlen);
+  అక్షరం స్థిరరాశి *id = UT_ID (utmp_ent);
+  idx_t idlen = అక్షరశ్రేణి_పొడవు (id);
+  అక్షరం స్థిరరాశి *ఉపసర్గ = _("id=");
+  idx_t prefixlen = అక్షరశ్రేణి_పొడవు (ఉపసర్గ);
+  అక్షరం *comment = xmalloc (prefixlen + idlen + 1);
+  అక్షరం *p = mempcpy (comment, ఉపసర్గ, prefixlen);
   p = mempcpy (p, id, idlen);
   *p = '\0';
-  return comment;
+  తిరిగి comment;
 }
 
-static void
-print_deadprocs (STRUCT_UTMP const *utmp_ent)
+స్థిర శూన్య
+print_deadprocs (STRUCT_UTMP స్థిరరాశి *utmp_ent)
 {
-  static char *exitstr;
-  char *comment = make_id_equals_comment (utmp_ent);
+  స్థిర అక్షరం *exitstr;
+  అక్షరం *comment = make_id_equals_comment (utmp_ent);
   PIDSTR_DECL_AND_INIT (pidstr, utmp_ent);
 
-  if (!exitstr)
-    exitstr = xmalloc (strlen (_("term="))
+  ఒకవేళ (!exitstr)
+    exitstr = xmalloc (అక్షరశ్రేణి_పొడవు (_("term="))
                        + INT_STRLEN_BOUND (utmp_ent->ut_exit.e_termination) + 1
-                       + strlen (_("exit="))
+                       + అక్షరశ్రేణి_పొడవు (_("exit="))
                        + INT_STRLEN_BOUND (utmp_ent->ut_exit.e_exit)
                        + 1);
   sprintf (exitstr, "%s%d %s%d", _("term="), utmp_ent->ut_exit.e_termination,
@@ -461,139 +461,139 @@ print_deadprocs (STRUCT_UTMP const *utmp_ent)
 
   /* FIXME: add idle time? */
 
-  print_line ("", ' ', utmp_ent->ut_line,
-              time_string (utmp_ent), "", pidstr, comment, exitstr);
-  free (comment);
+  print_పంక్తి ("", ' ', utmp_ent->ut_పంక్తి,
+              సమయం_string (utmp_ent), "", pidstr, comment, exitstr);
+  విడుదల (comment);
 }
 
-static void
-print_login (STRUCT_UTMP const *utmp_ent)
+స్థిర శూన్య
+print_login (STRUCT_UTMP స్థిరరాశి *utmp_ent)
 {
-  char *comment = make_id_equals_comment (utmp_ent);
+  అక్షరం *comment = make_id_equals_comment (utmp_ent);
   PIDSTR_DECL_AND_INIT (pidstr, utmp_ent);
 
   /* FIXME: add idle time? */
 
-  print_line (_("LOGIN"), ' ', utmp_ent->ut_line,
-              time_string (utmp_ent), "", pidstr, comment, "");
-  free (comment);
+  print_పంక్తి (_("LOGIN"), ' ', utmp_ent->ut_పంక్తి,
+              సమయం_string (utmp_ent), "", pidstr, comment, "");
+  విడుదల (comment);
 }
 
-static void
-print_initspawn (STRUCT_UTMP const *utmp_ent)
+స్థిర శూన్య
+print_initspawn (STRUCT_UTMP స్థిరరాశి *utmp_ent)
 {
-  char *comment = make_id_equals_comment (utmp_ent);
+  అక్షరం *comment = make_id_equals_comment (utmp_ent);
   PIDSTR_DECL_AND_INIT (pidstr, utmp_ent);
 
-  print_line ("", ' ', utmp_ent->ut_line,
-              time_string (utmp_ent), "", pidstr, comment, "");
-  free (comment);
+  print_పంక్తి ("", ' ', utmp_ent->ut_పంక్తి,
+              సమయం_string (utmp_ent), "", pidstr, comment, "");
+  విడుదల (comment);
 }
 
-static void
-print_clockchange (STRUCT_UTMP const *utmp_ent)
+స్థిర శూన్య
+print_clockchange (STRUCT_UTMP స్థిరరాశి *utmp_ent)
 {
   /* FIXME: handle NEW_TIME & OLD_TIME both */
-  print_line ("", ' ', _("clock change"),
-              time_string (utmp_ent), "", "", "", "");
+  print_పంక్తి ("", ' ', _("clock change"),
+              సమయం_string (utmp_ent), "", "", "", "");
 }
 
-static void
-print_runlevel (STRUCT_UTMP const *utmp_ent)
+స్థిర శూన్య
+print_runlevel (STRUCT_UTMP స్థిరరాశి *utmp_ent)
 {
-  static char *runlevline, *comment;
-  unsigned char last = utmp_ent->ut_pid / 256;
-  unsigned char curr = utmp_ent->ut_pid % 256;
+  స్థిర అక్షరం *runlevline, *comment;
+  గుర్తులేని అక్షరం చివరి = utmp_ent->ut_pid / 256;
+  గుర్తులేని అక్షరం curr = utmp_ent->ut_pid % 256;
 
-  if (!runlevline)
-    runlevline = xmalloc (strlen (_("run-level")) + 3);
+  ఒకవేళ (!runlevline)
+    runlevline = xmalloc (అక్షరశ్రేణి_పొడవు (_("run-level")) + 3);
   sprintf (runlevline, "%s %c", _("run-level"), curr);
 
-  if (!comment)
-    comment = xmalloc (strlen (_("last=")) + 2);
-  sprintf (comment, "%s%c", _("last="), (last == 'N') ? 'S' : last);
+  ఒకవేళ (!comment)
+    comment = xmalloc (అక్షరశ్రేణి_పొడవు (_("last=")) + 2);
+  sprintf (comment, "%s%c", _("last="), (చివరి == 'N') ? 'S' : చివరి);
 
-  print_line ("", ' ', runlevline, time_string (utmp_ent),
-              "", "", c_isprint (last) ? comment : "", "");
+  print_పంక్తి ("", ' ', runlevline, సమయం_string (utmp_ent),
+              "", "", c_isprint (చివరి) ? comment : "", "");
 }
 
 /* Print the username of each valid entry and the number of valid entries
    in UTMP_BUF, which should have N elements. */
-static void
-list_entries_who (idx_t n, STRUCT_UTMP const *utmp_buf)
+స్థిర శూన్య
+list_entries_who (idx_t n, STRUCT_UTMP స్థిరరాశి *utmp_buf)
 {
   idx_t entries = 0;
 
-  while (n--)
+  అయితే (n--)
     {
-      if (IS_USER_PROCESS (utmp_buf))
+      ఒకవేళ (IS_USER_PROCESS (utmp_buf))
         {
-          char *trimmed_name;
+          అక్షరం *trimmed_name;
 
-          trimmed_name = extract_trimmed_name (utmp_buf);
+          trimmed_name = వెలికితీయి_trimmed_name (utmp_buf);
 
-          if (entries)
-            putchar (' ');
+          ఒకవేళ (entries)
+            అక్షరం_రాయి (' ');
           fputs (trimmed_name, stdout);
-          free (trimmed_name);
+          విడుదల (trimmed_name);
           entries++;
         }
       utmp_buf++;
     }
-  printf (_("\n# users=%td\n"), entries);
+  రాయి (_("\n# users=%td\n"), entries);
 }
 
-static void
-print_heading (void)
+స్థిర శూన్య
+print_heading (శూన్య)
 {
-  print_line (_("NAME"), ' ', _("LINE"), _("TIME"), _("IDLE"),
+  print_పంక్తి (_("NAME"), ' ', _("LINE"), _("TIME"), _("IDLE"),
               _("PID"), _("COMMENT"), _("EXIT"));
 }
 
 /* Display UTMP_BUF, which should have N entries. */
-static void
-scan_entries (idx_t n, STRUCT_UTMP const *utmp_buf)
+స్థిర శూన్య
+పరిశీలన_entries (idx_t n, STRUCT_UTMP స్థిరరాశి *utmp_buf)
 {
-  char *ttyname_b IF_LINT ( = NULL);
+  అక్షరం *ttyname_b IF_LINT ( = ఖాళీ);
   time_t boottime = TYPE_MINIMUM (time_t);
 
-  if (include_heading)
+  ఒకవేళ (include_heading)
     print_heading ();
 
-  if (my_line_only)
+  ఒకవేళ (my_పంక్తి_only)
     {
       ttyname_b = ttyname (STDIN_FILENO);
-      if (!ttyname_b)
-        return;
-      if (STRNCMP_LIT (ttyname_b, "/dev/") == 0)
-        ttyname_b += sizeof "/dev/" - 1;	/* Discard /dev/ prefix.  */
+      ఒకవేళ (!ttyname_b)
+        తిరిగి;
+      ఒకవేళ (STRNCMP_LIT (ttyname_b, "/dev/") == 0)
+        ttyname_b += పరిమాణం "/dev/" - 1;	/* Discard /dev/ prefix.  */
     }
 
-  while (n--)
+  అయితే (n--)
     {
-      if (!my_line_only
-          || str_endswith (utmp_buf->ut_line, ttyname_b))
+      ఒకవేళ (!my_పంక్తి_only
+          || str_endswith (utmp_buf->ut_పంక్తి, ttyname_b))
         {
-          if (need_users && IS_USER_PROCESS (utmp_buf))
+          ఒకవేళ (need_users && IS_USER_PROCESS (utmp_buf))
             print_user (utmp_buf, boottime);
-          else if (need_runlevel && UT_TYPE_RUN_LVL (utmp_buf))
+          లేకపోతే ఒకవేళ (need_runlevel && UT_TYPE_నిరంతరం_LVL (utmp_buf))
             print_runlevel (utmp_buf);
-          else if (need_boottime && UT_TYPE_BOOT_TIME (utmp_buf))
+          లేకపోతే ఒకవేళ (need_boottime && UT_TYPE_BOOT_సమయం (utmp_buf))
             print_boottime (utmp_buf);
           /* I've never seen one of these, so I don't know what it should
              look like :^)
              FIXME: handle OLD_TIME also, perhaps show the delta? */
-          else if (need_clockchange && UT_TYPE_NEW_TIME (utmp_buf))
+          లేకపోతే ఒకవేళ (need_clockchange && UT_TYPE_NEW_సమయం (utmp_buf))
             print_clockchange (utmp_buf);
-          else if (need_initspawn && UT_TYPE_INIT_PROCESS (utmp_buf))
+          లేకపోతే ఒకవేళ (need_initspawn && UT_TYPE_INIT_PROCESS (utmp_buf))
             print_initspawn (utmp_buf);
-          else if (need_login && UT_TYPE_LOGIN_PROCESS (utmp_buf))
+          లేకపోతే ఒకవేళ (need_login && UT_TYPE_LOGIN_PROCESS (utmp_buf))
             print_login (utmp_buf);
-          else if (need_deadprocs && UT_TYPE_DEAD_PROCESS (utmp_buf))
+          లేకపోతే ఒకవేళ (need_deadprocs && UT_TYPE_DEAD_PROCESS (utmp_buf))
             print_deadprocs (utmp_buf);
         }
 
-      if (UT_TYPE_BOOT_TIME (utmp_buf))
+      ఒకవేళ (UT_TYPE_BOOT_సమయం (utmp_buf))
         boottime = utmp_buf->ut_ts.tv_sec;
 
       utmp_buf++;
@@ -602,34 +602,34 @@ scan_entries (idx_t n, STRUCT_UTMP const *utmp_buf)
 
 /* Display a list of who is on the system, according to utmp file FILENAME.
    Use read_utmp OPTIONS to read the file.  */
-static void
-who (char const *filename, int options)
+స్థిర శూన్య
+who (అక్షరం స్థిరరాశి *filename, పూర్ణాంకం options)
 {
   idx_t n_users;
   STRUCT_UTMP *utmp_buf;
-  if (short_list)
+  ఒకవేళ (short_list)
     options |= READ_UTMP_USER_PROCESS;
-  if (read_utmp (filename, &n_users, &utmp_buf, options) != 0)
+  ఒకవేళ (read_utmp (filename, &n_users, &utmp_buf, options) != 0)
     error (EXIT_FAILURE, errno, "%s", quotef (filename));
 
-  if (short_list)
+  ఒకవేళ (short_list)
     list_entries_who (n_users, utmp_buf);
-  else
-    scan_entries (n_users, utmp_buf);
+  లేకపోతే
+    పరిశీలన_entries (n_users, utmp_buf);
 
-  free (utmp_buf);
+  విడుదల (utmp_buf);
 }
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("Usage: %s [OPTION]... [ FILE | ARG1 ARG2 ]\n"), program_name);
+      రాయి (_("Usage: %s [OPTION]... [ FILE | ARG1 ARG2 ]\n"), కార్యక్రమం_name);
       fputs (_("\
-Print information about users who are currently logged in.\n\
+Print information about users who are currently logged లోపల.\n\
 "), stdout);
       fputs (_("\
 \n\
@@ -638,82 +638,82 @@ Print information about users who are currently logged in.\n\
   -a, --all         same as -b -d --login -p -r -t -T -u\n\
 "));
       oputs (_("\
-  -b, --boot        time of last system boot\n\
+  -b, --boot        సమయం యొక్క చివరి system boot\n\
 "));
       oputs (_("\
   -d, --dead        print dead processes\n\
 "));
       oputs (_("\
-  -H, --heading     print line of column headings\n\
+  -H, --heading     print పంక్తి యొక్క స్తంభం headings\n\
 "));
       oputs (_("\
   -l, --login       print system login processes\n\
 "));
       oputs (_("\
-      --lookup      attempt to canonicalize hostnames via DNS\n\
+      --lookup      attempt గమ్యం canonicalize hostnames ద్వారా DNS\n\
 "));
       oputs (_("\
-  -m                only hostname and user associated with standard input\n\
+  -m                only hostname and user associated with standard ఆదానం\n\
 "));
       oputs (_("\
-  -p, --process     print active processes spawned by init\n\
+  -p, --process     print చురుకైన processes spawned by init\n\
 "));
       oputs (_("\
-  -q, --count       all login names and number of users logged on\n\
+  -q, --లెక్క       all login పేర్లు and సంఖ్య యొక్క users logged on\n\
 "));
       oputs (_("\
   -r, --runlevel    print current runlevel\n\
 "));
       oputs (_("\
-  -s, --short       print only name, line, and time (default)\n\
+  -s, --పొట్టి       print only name, పంక్తి, and సమయం (అప్రమేయ)\n\
 "));
       oputs (_("\
-  -t, --time        print last system clock change\n\
+  -t, --సమయం        print చివరి system clock change\n\
 "));
       oputs (_("\
-  -T, -w, --mesg    add user's message status as +, - or ?\n\
+  -T, -w, --mesg    కూడు user's సందేశం_2 స్థితి_2 as +, - or ?\n\
 "));
       oputs (_("\
-  -u, --users       list users logged in, including idle time\n\
+  -u, --users       list users logged లోపల, including idle సమయం\n\
 "));
       oputs (_("\
-      --message     same as -T\n\
+      --సందేశం_2     same as -T\n\
 "));
       oputs (_("\
       --writable    same as -T\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      printf (_("\
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
+      రాయి (_("\
 \n\
 If FILE is not specified, use %s.  %s as FILE is common.\n\
 If ARG1 ARG2 given, -m presumed: 'am i' or 'mom likes' are usual.\n\
 "), UTMP_FILE, WTMP_FILE);
-      emit_ancillary_info (PROGRAM_NAME);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
-  int optc;
+  పూర్ణాంకం optc;
   bool assumptions = true;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "abdlmpqrstuwHT", longopts, NULL))
+  అయితే ((optc = getopt_long (argc, argv, "abdlmpqrstuwHT", longopts, ఖాళీ))
          != -1)
     {
-      switch (optc)
+      ఎంపిక (optc)
         {
-        case 'a':
+        స్థితి 'a':
           need_boottime = true;
           need_deadprocs = true;
           need_login = true;
@@ -725,122 +725,122 @@ main (int argc, char **argv)
           include_idle = true;
           include_exit = true;
           assumptions = false;
-          break;
+          ఆపు;
 
-        case 'b':
+        స్థితి 'b':
           need_boottime = true;
           assumptions = false;
-          break;
+          ఆపు;
 
-        case 'd':
+        స్థితి 'd':
           need_deadprocs = true;
           include_idle = true;
           include_exit = true;
           assumptions = false;
-          break;
+          ఆపు;
 
-        case 'H':
+        స్థితి 'H':
           include_heading = true;
-          break;
+          ఆపు;
 
-        case 'l':
+        స్థితి 'l':
           need_login = true;
           include_idle = true;
           assumptions = false;
-          break;
+          ఆపు;
 
-        case 'm':
-          my_line_only = true;
-          break;
+        స్థితి 'm':
+          my_పంక్తి_only = true;
+          ఆపు;
 
-        case 'p':
+        స్థితి 'p':
           need_initspawn = true;
           assumptions = false;
-          break;
+          ఆపు;
 
-        case 'q':
+        స్థితి 'q':
           short_list = true;
-          break;
+          ఆపు;
 
-        case 'r':
+        స్థితి 'r':
           need_runlevel = true;
           include_idle = true;
           assumptions = false;
-          break;
+          ఆపు;
 
-        case 's':
+        స్థితి 's':
           short_output = true;
-          break;
+          ఆపు;
 
-        case 't':
+        స్థితి 't':
           need_clockchange = true;
           assumptions = false;
-          break;
+          ఆపు;
 
-        case 'T':
-        case 'w':
+        స్థితి 'T':
+        స్థితి 'w':
           include_mesg = true;
-          break;
+          ఆపు;
 
-        case 'u':
+        స్థితి 'u':
           need_users = true;
           include_idle = true;
           assumptions = false;
-          break;
+          ఆపు;
 
-        case LOOKUP_OPTION:
+        స్థితి LOOKUP_OPTION:
           do_lookup = true;
-          break;
+          ఆపు;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_సంస్కరణ_CHAR (కార్యక్రమం_NAME, AUTHORS);
 
-        default:
+        అప్రమేయ:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (assumptions)
+  ఒకవేళ (assumptions)
     {
       need_users = true;
       short_output = true;
     }
 
-  if (include_exit)
+  ఒకవేళ (include_exit)
     {
       short_output = false;
     }
 
-  if (hard_locale (LC_TIME))
+  ఒకవేళ (hard_locale (LC_సమయం))
     {
-      time_format = "%Y-%m-%d %H:%M";
-      time_format_width = 4 + 1 + 2 + 1 + 2 + 1 + 2 + 1 + 2;
+      సమయం_format = "%Y-%m-%d %H:%M";
+      సమయం_format_వెడల్పు = 4 + 1 + 2 + 1 + 2 + 1 + 2 + 1 + 2;
     }
-  else
+  లేకపోతే
     {
-      time_format = "%b %e %H:%M";
-      time_format_width = 3 + 1 + 2 + 1 + 2 + 1 + 2;
+      సమయం_format = "%b %e %H:%M";
+      సమయం_format_వెడల్పు = 3 + 1 + 2 + 1 + 2 + 1 + 2;
     }
 
-  switch (argc - optind)
+  ఎంపిక (argc - optind)
     {
-    case 2:			/* who <blurf> <glop> */
-      my_line_only = true;
+    స్థితి 2:			/* who <blurf> <glop> */
+      my_పంక్తి_only = true;
       FALLTHROUGH;
-    case -1:
-    case 0:			/* who */
+    స్థితి -1:
+    స్థితి 0:			/* who */
       who (UTMP_FILE, READ_UTMP_CHECK_PIDS);
-      break;
+      ఆపు;
 
-    case 1:			/* who <utmp file> */
+    స్థితి 1:			/* who <utmp file> */
       who (argv[optind], 0);
-      break;
+      ఆపు;
 
-    default:			/* lose */
+    అప్రమేయ:			/* lose */
       error (0, 0, _("extra operand %s"), quote (argv[optind + 2]));
       usage (EXIT_FAILURE);
     }
 
-  return EXIT_SUCCESS;
+  తిరిగి EXIT_SUCCESS;
 }

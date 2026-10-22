@@ -17,25 +17,25 @@
 
    Written by Paul Eggert.  */
 
-#include <config.h>
+#అన్తర్భావ <config.h>
 
-#include <sys/types.h>
-#include <getopt.h>
-#include "system.h"
+#అన్తర్భావ <sys/types.h>
+#అన్తర్భావ <getopt.h>
+#అన్తర్భావ "system.h"
 
-#include "fadvise.h"
-#include "linebuffer.h"
-#include "quote.h"
-#include "randint.h"
-#include "randperm.h"
-#include "read-file.h"
-#include "stdio--.h"
-#include "xstrtol.h"
+#అన్తర్భావ "fadvise.h"
+#అన్తర్భావ "linebuffer.h"
+#అన్తర్భావ "quote.h"
+#అన్తర్భావ "randint.h"
+#అన్తర్భావ "randperm.h"
+#అన్తర్భావ "read-file.h"
+#అన్తర్భావ "stdio--.h"
+#అన్తర్భావ "xstrtol.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "shuf"
+#నిర్వచించు కార్యక్రమం_NAME "shuf"
 
-#define AUTHORS proper_name ("Paul Eggert")
+#నిర్వచించు AUTHORS proper_name ("Paul Eggert")
 
 /* reservoir-sampling introduces CPU overhead for small inputs.
    So only enable it for inputs >= this limit.
@@ -43,168 +43,168 @@
      $ for p in $(seq 7); do src/seq $((10**$p)) > 10p$p.in; done
      $ for p in $(seq 7); do time shuf-nores -n10 10p$p.in >/dev/null; done
      $ for p in $(seq 7); do time shuf -n10 10p$p.in >/dev/null; done  .*/
-enum { RESERVOIR_MIN_INPUT = 8192 * 1024 };
+గణన { RESERVOIR_MIN_ఆదానం = 8192 * 1024 };
 
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("\
+      రాయి (_("\
 Usage: %s [OPTION]... [FILE]\n\
   or:  %s -e [OPTION]... [ARG]...\n\
   or:  %s -i LO-HI [OPTION]...\n\
 "),
-              program_name, program_name, program_name);
+              కార్యక్రమం_name, కార్యక్రమం_name, కార్యక్రమం_name);
       fputs (_("\
-Write a random permutation of the input lines to standard output.\n\
+Write a random permutation యొక్క the ఆదానం పంక్తులు గమ్యం standard output.\n\
 "), stdout);
 
       emit_stdin_note ();
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -e, --echo                treat each ARG as an input line\n\
+  -e, --echo                treat each ARG as an ఆదానం పంక్తి\n\
 "));
       oputs (_("\
-  -i, --input-range=LO-HI   treat each number LO through HI as an input line\n\
+  -i, --ఆదానం-range=LO-HI   treat each సంఖ్య LO through HI as an ఆదానం పంక్తి\n\
 "));
       oputs (_("\
-  -n, --head-count=COUNT    output at most COUNT lines\n\
+  -n, --తల-లెక్క=లెక్క_2    output at most లెక్క_2 పంక్తులు\n\
 "));
       oputs (_("\
-  -o, --output=FILE         write result to FILE instead of standard output\n\
+  -o, --output=FILE         లిఖ ఫలితం గమ్యం FILE instead యొక్క standard output\n\
 "));
       oputs (_("\
-      --random-source=FILE  get random bytes from FILE\n\
+      --random-ఆధారం_2=FILE  get random బైట్లు from FILE\n\
 "));
       oputs (_("\
-  -r, --repeat              output lines can be repeated\n\
+  -r, --repeat              output పంక్తులు can be repeated\n\
 "));
       oputs (_("\
-  -z, --zero-terminated     line delimiter is NUL, not newline\n\
+  -z, --zero-terminated     పంక్తి delimiter is NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
 
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+గణన
 {
-  RANDOM_SOURCE_OPTION = CHAR_MAX + 1
+  RANDOM_ఆధారం_OPTION = CHAR_MAX + 1
 };
 
-static struct option const long_opts[] =
+స్థిర నిర్మాణం option స్థిరరాశి long_opts[] =
 {
-  {"echo", no_argument, NULL, 'e'},
-  {"input-range", required_argument, NULL, 'i'},
-  {"head-count", required_argument, NULL, 'n'},
-  {"output", required_argument, NULL, 'o'},
-  {"random-source", required_argument, NULL, RANDOM_SOURCE_OPTION},
-  {"repeat", no_argument, NULL, 'r'},
-  {"zero-terminated", no_argument, NULL, 'z'},
+  {"echo", no_వాదం, ఖాళీ, 'e'},
+  {"input-range", required_వాదం, ఖాళీ, 'i'},
+  {"head-count", required_వాదం, ఖాళీ, 'n'},
+  {"output", required_వాదం, ఖాళీ, 'o'},
+  {"random-source", required_వాదం, ఖాళీ, RANDOM_ఆధారం_OPTION},
+  {"repeat", no_వాదం, ఖాళీ, 'r'},
+  {"zero-terminated", no_వాదం, ఖాళీ, 'z'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0},
+  {GETOPT_సంస్కరణ_OPTION_DECL},
+  {ఖాళీ, 0, ఖాళీ, 0},
 };
 
-static void
-input_from_argv (char **operand, int n_operands, char eolbyte)
+స్థిర శూన్య
+ఆదానం_from_argv (అక్షరం **నిర్వాహ్యం_2, పూర్ణాంకం n_operands, అక్షరం eolbyte)
 {
-  char *p;
-  size_t size = n_operands;
-  int i;
+  అక్షరం *p;
+  size_t కొలత = n_operands;
+  పూర్ణాంకం i;
 
-  for (i = 0; i < n_operands; i++)
-    size += strlen (operand[i]);
-  p = xmalloc (size);
+  కొరకు (i = 0; i < n_operands; i++)
+    కొలత += అక్షరశ్రేణి_పొడవు (నిర్వాహ్యం_2[i]);
+  p = xmalloc (కొలత);
 
-  for (i = 0; i < n_operands; i++)
+  కొరకు (i = 0; i < n_operands; i++)
     {
-      char *p1 = stpcpy (p, operand[i]);
-      operand[i] = p;
+      అక్షరం *p1 = stpcpy (p, నిర్వాహ్యం_2[i]);
+      నిర్వాహ్యం_2[i] = p;
       p = p1;
       *p++ = eolbyte;
     }
 
-  operand[n_operands] = p;
+  నిర్వాహ్యం_2[n_operands] = p;
 }
 
 /* Return the start of the next line after LINE, which is guaranteed
    to end in EOLBYTE.  */
 
-static char *
-next_line (char *line, char eolbyte)
+స్థిర అక్షరం *
+తదుపరి_పంక్తి (అక్షరం *పంక్తి, అక్షరం eolbyte)
 {
-  char *p = rawmemchr (line, eolbyte);
-  return p + 1;
+  అక్షరం *p = rawmemchr (పంక్తి, eolbyte);
+  తిరిగి p + 1;
 }
 
 /* Return the size of the input if possible or OFF_T_MAX if not.  */
 
-static off_t
-input_size (void)
+స్థిర off_t
+ఆదానం_కొలత (శూన్య)
 {
-  off_t file_size;
+  off_t file_కొలత;
 
-  struct stat stat_buf;
-  if (fstat (STDIN_FILENO, &stat_buf) != 0)
-    return OFF_T_MAX;
-  if (usable_st_size (&stat_buf))
-    file_size = stat_buf.st_size;
-  else
-    return OFF_T_MAX;
+  నిర్మాణం stat stat_buf;
+  ఒకవేళ (fstat (STDIN_FILENO, &stat_buf) != 0)
+    తిరిగి OFF_T_MAX;
+  ఒకవేళ (usable_st_కొలత (&stat_buf))
+    file_కొలత = stat_buf.st_కొలత;
+  లేకపోతే
+    తిరిగి OFF_T_MAX;
 
-  off_t input_offset = lseek (STDIN_FILENO, 0, SEEK_CUR);
-  if (input_offset < 0)
-    return OFF_T_MAX;
+  off_t ఆదానం_స్థానభ్రంశం = lseek (STDIN_FILENO, 0, SEEK_CUR);
+  ఒకవేళ (ఆదానం_స్థానభ్రంశం < 0)
+    తిరిగి OFF_T_MAX;
 
-  file_size -= input_offset;
+  file_కొలత -= ఆదానం_స్థానభ్రంశం;
 
-  return file_size;
+  తిరిగి file_కొలత;
 }
 
 /* Read all lines and store up to K permuted lines in *OUT_RSRV.
    Return the number of lines read, up to a maximum of K.  */
 
-static idx_t
-read_input_reservoir_sampling (FILE *in, char eolbyte, idx_t k,
-                               struct randint_source *s,
-                               struct linebuffer **out_rsrv)
+స్థిర idx_t
+read_ఆదానం_reservoir_sampling (FILE *లోపల, అక్షరం eolbyte, idx_t k,
+                               నిర్మాణం randint_ఆధారం *s,
+                               నిర్మాణం linebuffer **బహిర్గతం_rsrv)
 {
-  randint n_lines = 0;
-  idx_t n_alloc_lines = 0;
-  struct linebuffer *line = NULL;
-  struct linebuffer *rsrv = NULL;
+  randint n_పంక్తులు = 0;
+  idx_t n_alloc_పంక్తులు = 0;
+  నిర్మాణం linebuffer *పంక్తి = ఖాళీ;
+  నిర్మాణం linebuffer *rsrv = ఖాళీ;
 
   /* Fill the first K lines, directly into the reservoir.  */
-  for (n_lines = 0; n_lines < k; n_lines++)
+  కొరకు (n_పంక్తులు = 0; n_పంక్తులు < k; n_పంక్తులు++)
     {
       /* Enlarge reservoir if needed.  */
-      if (n_lines == n_alloc_lines)
+      ఒకవేళ (n_పంక్తులు == n_alloc_పంక్తులు)
         {
-          idx_t old = n_alloc_lines;
-          rsrv = xpalloc (rsrv, &n_alloc_lines, 1, k, sizeof *rsrv);
-          memset (&rsrv[n_lines], 0, (n_alloc_lines - old) * sizeof *rsrv);
+          idx_t old = n_alloc_పంక్తులు;
+          rsrv = xpalloc (rsrv, &n_alloc_పంక్తులు, 1, k, పరిమాణం *rsrv);
+          memset (&rsrv[n_పంక్తులు], 0, (n_alloc_పంక్తులు - old) * పరిమాణం *rsrv);
         }
 
-      line = readlinebuffer_delim (&rsrv[n_lines], in, eolbyte);
-      if (!line)
-        break;
+      పంక్తి = readlinebuffer_delim (&rsrv[n_పంక్తులు], లోపల, eolbyte);
+      ఒకవేళ (!పంక్తి)
+        ఆపు;
     }
 
   /* last line wasn't null - so there may be more lines to read.  */
-  if (line != NULL)
+  ఒకవేళ (పంక్తి != ఖాళీ)
     {
-      struct linebuffer dummy;
+      నిర్మాణం linebuffer dummy;
       initbuffer (&dummy);  /* space for lines not put in reservoir.  */
 
       /* Choose the fate of the next line, with decreasing probability (as
@@ -216,39 +216,39 @@ read_input_reservoir_sampling (FILE *in, char eolbyte, idx_t k,
          With 'struct linebuffer', storing into existing buffer will reduce
          re-allocations (will only re-allocate if the new line is longer than
          the currently allocated space).  */
-      do
+      చేయి
         {
-          randint j = randint_choose (s, n_lines + 1);  /* 0 .. n_lines.  */
-          line = (j < k) ? (&rsrv[j]) : (&dummy);
+          randint j = randint_ఎంచుకో (s, n_పంక్తులు + 1);  /* 0 .. n_lines.  */
+          పంక్తి = (j < k) ? (&rsrv[j]) : (&dummy);
         }
-      while (readlinebuffer_delim (line, in, eolbyte) != NULL && n_lines++);
+      అయితే (readlinebuffer_delim (పంక్తి, లోపల, eolbyte) != ఖాళీ && n_పంక్తులు++);
 
-      if (! n_lines)
+      ఒకవేళ (! n_పంక్తులు)
         error (EXIT_FAILURE, EOVERFLOW, _("too many input lines"));
 
       freebuffer (&dummy);
     }
 
   /* no more input lines, or an input error.  */
-  if (ferror (in))
+  ఒకవేళ (ferror (లోపల))
     error (EXIT_FAILURE, errno, _("read error"));
 
-  *out_rsrv = rsrv;
-  return MIN (k, n_lines);
+  *బహిర్గతం_rsrv = rsrv;
+  తిరిగి MIN (k, n_పంక్తులు);
 }
 
-static int
-write_permuted_output_reservoir (size_t n_lines, struct linebuffer *lines,
-                                 size_t const *permutation)
+స్థిర పూర్ణాంకం
+write_permuted_output_reservoir (size_t n_పంక్తులు, నిర్మాణం linebuffer *పంక్తులు,
+                                 size_t స్థిరరాశి *permutation)
 {
-  for (size_t i = 0; i < n_lines; i++)
+  కొరకు (size_t i = 0; i < n_పంక్తులు; i++)
     {
-      const struct linebuffer *p = &lines[permutation[i]];
-      if (fwrite (p->buffer, sizeof (char), p->length, stdout) != p->length)
-        return -1;
+      స్థిరరాశి నిర్మాణం linebuffer *p = &పంక్తులు[permutation[i]];
+      ఒకవేళ (fwrite (p->బఫరు, పరిమాణం (అక్షరం), p->నిడివి, stdout) != p->నిడివి)
+        తిరిగి -1;
     }
 
-  return 0;
+  తిరిగి 0;
 }
 
 /* Read data from file IN.  Input lines are delimited by EOLBYTE;
@@ -257,15 +257,15 @@ write_permuted_output_reservoir (size_t n_lines, struct linebuffer *lines,
    Return the number of lines read.  Report an error and exit on
    failure.  */
 
-static size_t
-read_input (FILE *in, char eolbyte, char ***pline)
+స్థిర size_t
+read_ఆదానం (FILE *లోపల, అక్షరం eolbyte, అక్షరం ***pline)
 {
-  char *p;
-  char *buf = NULL;
-  size_t used;
-  char *lim;
-  char **line;
-  size_t n_lines;
+  అక్షరం *p;
+  అక్షరం *buf = ఖాళీ;
+  size_t వాడిన;
+  అక్షరం *lim;
+  అక్షరం **పంక్తి;
+  size_t n_పంక్తులు;
 
   /* TODO: We should limit the amount of data read here,
      to less than RESERVOIR_MIN_INPUT.  I.e., adjust fread_file() to support
@@ -276,349 +276,349 @@ read_input (FILE *in, char eolbyte, char ***pline)
      or if none left, stdin.  Doing that would give better performance by
      avoiding the reservoir CPU overhead when reading < RESERVOIR_MIN_INPUT
      from a pipe, and allow us to dispense with the input_size() function.  */
-  if (!(buf = fread_file (in, 0, &used)))
+  ఒకవేళ (!(buf = fread_file (లోపల, 0, &వాడిన)))
     error (EXIT_FAILURE, errno, _("read error"));
 
-  if (used && buf[used - 1] != eolbyte)
-    buf[used++] = eolbyte;
+  ఒకవేళ (వాడిన && buf[వాడిన - 1] != eolbyte)
+    buf[వాడిన++] = eolbyte;
 
-  lim = buf + used;
+  lim = buf + వాడిన;
 
-  n_lines = 0;
-  for (p = buf; p < lim; p = next_line (p, eolbyte))
-    n_lines++;
+  n_పంక్తులు = 0;
+  కొరకు (p = buf; p < lim; p = తదుపరి_పంక్తి (p, eolbyte))
+    n_పంక్తులు++;
 
-  *pline = line = xnmalloc (n_lines + 1, sizeof *line);
+  *pline = పంక్తి = xnmalloc (n_పంక్తులు + 1, పరిమాణం *పంక్తి);
 
-  line[0] = p = buf;
-  for (size_t i = 1; i <= n_lines; i++)
-    line[i] = p = next_line (p, eolbyte);
+  పంక్తి[0] = p = buf;
+  కొరకు (size_t i = 1; i <= n_పంక్తులు; i++)
+    పంక్తి[i] = p = తదుపరి_పంక్తి (p, eolbyte);
 
-  return n_lines;
+  తిరిగి n_పంక్తులు;
 }
 
 /* Output N_LINES lines to stdout from LINE array,
    chosen by the indices in PERMUTATION.
    PERMUTATION and LINE must have at least N_LINES elements.
    Strings in LINE must include the line-terminator character.  */
-static int
-write_permuted_lines (size_t n_lines, char *const *line,
-                      size_t const *permutation)
+స్థిర పూర్ణాంకం
+write_permuted_పంక్తులు (size_t n_పంక్తులు, అక్షరం *స్థిరరాశి *పంక్తి,
+                      size_t స్థిరరాశి *permutation)
 {
-  for (size_t i = 0; i < n_lines; i++)
+  కొరకు (size_t i = 0; i < n_పంక్తులు; i++)
     {
-      char *const *p = line + permutation[i];
+      అక్షరం *స్థిరరాశి *p = పంక్తి + permutation[i];
       size_t len = p[1] - p[0];
-      if (fwrite (p[0], sizeof *p[0], len, stdout) != len)
-        return -1;
+      ఒకవేళ (fwrite (p[0], పరిమాణం *p[0], len, stdout) != len)
+        తిరిగి -1;
     }
 
-  return 0;
+  తిరిగి 0;
 }
 
 /* Print NUMBER followed by EOLBYTE to standard output.
    Return false on failure, true on success.  */
-static bool
-print_number (unsigned long int number, char eolbyte)
+స్థిర bool
+print_సంఖ్య (గుర్తులేని దీర్ఘ పూర్ణాంకం సంఖ్య, అక్షరం eolbyte)
 {
-  char buf[INT_BUFSIZE_BOUND (unsigned long int)];
-  char *p = buf + INT_STRLEN_BOUND (unsigned long int);
+  అక్షరం buf[INT_BUFSIZE_BOUND (గుర్తులేని దీర్ఘ పూర్ణాంకం)];
+  అక్షరం *p = buf + INT_STRLEN_BOUND (గుర్తులేని దీర్ఘ పూర్ణాంకం);
   *p = eolbyte;
-  do
-    *--p = '0' + number % 10;
-  while ((number /= 10) != 0);
-  idx_t len = buf + sizeof buf - p;
-  return fwrite (p, 1, len, stdout) == len;
+  చేయి
+    *--p = '0' + సంఖ్య % 10;
+  అయితే ((సంఖ్య /= 10) != 0);
+  idx_t len = buf + పరిమాణం buf - p;
+  తిరిగి fwrite (p, 1, len, stdout) == len;
 }
 
 /* Output N_LINES of numbers to stdout, from PERMUTATION array.
    PERMUTATION must have at least N_LINES elements.  */
-static int
-write_permuted_numbers (size_t n_lines, size_t lo_input,
-                        size_t const *permutation, char eolbyte)
+స్థిర పూర్ణాంకం
+write_permuted_numbers (size_t n_పంక్తులు, size_t lo_ఆదానం,
+                        size_t స్థిరరాశి *permutation, అక్షరం eolbyte)
 {
-  for (size_t i = 0; i < n_lines; i++)
+  కొరకు (size_t i = 0; i < n_పంక్తులు; i++)
     {
-      unsigned long int n = lo_input + permutation[i];
-      if (! print_number (n, eolbyte))
-        return -1;
+      గుర్తులేని దీర్ఘ పూర్ణాంకం n = lo_ఆదానం + permutation[i];
+      ఒకవేళ (! print_సంఖ్య (n, eolbyte))
+        తిరిగి -1;
     }
 
-  return 0;
+  తిరిగి 0;
 }
 
 /* Output COUNT numbers to stdout, chosen randomly from range
    LO_INPUT through HI_INPUT.  */
-static int
-write_random_numbers (struct randint_source *s, size_t count,
-                      size_t lo_input, size_t hi_input, char eolbyte)
+స్థిర పూర్ణాంకం
+write_random_numbers (నిర్మాణం randint_ఆధారం *s, size_t లెక్క,
+                      size_t lo_ఆదానం, size_t hi_ఆదానం, అక్షరం eolbyte)
 {
-  const randint range = hi_input - lo_input + 1;
+  స్థిరరాశి randint range = hi_ఆదానం - lo_ఆదానం + 1;
 
-  for (size_t i = 0; i < count; i++)
+  కొరకు (size_t i = 0; i < లెక్క; i++)
     {
-      unsigned long int j = lo_input + randint_choose (s, range);
-      if (! print_number (j, eolbyte))
-        return -1;
+      గుర్తులేని దీర్ఘ పూర్ణాంకం j = lo_ఆదానం + randint_ఎంచుకో (s, range);
+      ఒకవేళ (! print_సంఖ్య (j, eolbyte))
+        తిరిగి -1;
     }
 
-  return 0;
+  తిరిగి 0;
 }
 
 /* Output COUNT lines to stdout from LINES array.
    LINES must have at least N_LINES elements in it.
    Strings in LINES_ must include the line-terminator character.  */
-static int
-write_random_lines (struct randint_source *s, size_t count,
-                    char *const *lines, size_t n_lines)
+స్థిర పూర్ణాంకం
+write_random_పంక్తులు (నిర్మాణం randint_ఆధారం *s, size_t లెక్క,
+                    అక్షరం *స్థిరరాశి *పంక్తులు, size_t n_పంక్తులు)
 {
-  for (size_t i = 0; i < count; i++)
+  కొరకు (size_t i = 0; i < లెక్క; i++)
     {
-      const randint j = randint_choose (s, n_lines);
-      char *const *p = lines + j;
+      స్థిరరాశి randint j = randint_ఎంచుకో (s, n_పంక్తులు);
+      అక్షరం *స్థిరరాశి *p = పంక్తులు + j;
       size_t len = p[1] - p[0];
-      if (fwrite (p[0], sizeof *p[0], len, stdout) != len)
-        return -1;
+      ఒకవేళ (fwrite (p[0], పరిమాణం *p[0], len, stdout) != len)
+        తిరిగి -1;
     }
 
-  return 0;
+  తిరిగి 0;
 }
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
   bool echo = false;
-  bool input_range = false;
-  size_t lo_input = SIZE_MAX;
-  size_t hi_input = 0;
-  idx_t head_lines = MIN (IDX_MAX, SIZE_MAX);
-  char const *outfile = NULL;
-  char *random_source = NULL;
-  char eolbyte = '\n';
-  char **input_lines = NULL;
+  bool ఆదానం_range = false;
+  size_t lo_ఆదానం = SIZE_MAX;
+  size_t hi_ఆదానం = 0;
+  idx_t తల_పంక్తులు = MIN (IDX_MAX, SIZE_MAX);
+  అక్షరం స్థిరరాశి *outfile = ఖాళీ;
+  అక్షరం *random_ఆధారం = ఖాళీ;
+  అక్షరం eolbyte = '\n';
+  అక్షరం **ఆదానం_పంక్తులు = ఖాళీ;
   bool use_reservoir_sampling = false;
   bool repeat = false;
 
-  int optc;
-  int n_operands;
-  char **operand;
-  size_t n_lines;
-  char **line = NULL;
-  struct linebuffer *reservoir = NULL;
-  struct randint_source *randint_source;
-  size_t *permutation = NULL;
-  int i;
+  పూర్ణాంకం optc;
+  పూర్ణాంకం n_operands;
+  అక్షరం **నిర్వాహ్యం_2;
+  size_t n_పంక్తులు;
+  అక్షరం **పంక్తి = ఖాళీ;
+  నిర్మాణం linebuffer *reservoir = ఖాళీ;
+  నిర్మాణం randint_ఆధారం *randint_ఆధారం;
+  size_t *permutation = ఖాళీ;
+  పూర్ణాంకం i;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "ei:n:o:rz", long_opts, NULL))
+  అయితే ((optc = getopt_long (argc, argv, "ei:n:o:rz", long_opts, ఖాళీ))
          != -1)
-    switch (optc)
+    ఎంపిక (optc)
       {
-      case 'e':
+      స్థితి 'e':
         echo = true;
-        break;
+        ఆపు;
 
-      case 'i':
+      స్థితి 'i':
         {
-          if (input_range)
+          ఒకవేళ (ఆదానం_range)
             error (EXIT_FAILURE, 0, _("multiple -i options specified"));
-          input_range = true;
+          ఆదానం_range = true;
 
           uintmax_t u;
-          char *lo_end;
-          strtol_error err = xstrtoumax (optarg, &lo_end, 10, &u, NULL);
-          if (err == LONGINT_OK)
+          అక్షరం *lo_చివర;
+          strtol_error err = xstrtoumax (optarg, &lo_చివర, 10, &u, ఖాళీ);
+          ఒకవేళ (err == LONGINT_OK)
             {
-              lo_input = u;
-              if (lo_input != u)
-                err = LONGINT_OVERFLOW;
-              else if (*lo_end != '-')
+              lo_ఆదానం = u;
+              ఒకవేళ (lo_ఆదానం != u)
+                err = LONGINT_అధికప్రవాహం;
+              లేకపోతే ఒకవేళ (*lo_చివర != '-')
                 err = LONGINT_INVALID;
-              else
+              లేకపోతే
                 {
-                  err = xstrtoumax (lo_end + 1, NULL, 10, &u, "");
-                  if (err == LONGINT_OK)
+                  err = xstrtoumax (lo_చివర + 1, ఖాళీ, 10, &u, "");
+                  ఒకవేళ (err == LONGINT_OK)
                     {
-                      hi_input = u;
-                      if (hi_input != u)
-                        err = LONGINT_OVERFLOW;
+                      hi_ఆదానం = u;
+                      ఒకవేళ (hi_ఆదానం != u)
+                        err = LONGINT_అధికప్రవాహం;
                     }
                 }
             }
 
-          n_lines = hi_input - lo_input + 1;
+          n_పంక్తులు = hi_ఆదానం - lo_ఆదానం + 1;
 
-          if (err != LONGINT_OK || (lo_input <= hi_input) == (n_lines == 0))
-            error (EXIT_FAILURE, err == LONGINT_OVERFLOW ? EOVERFLOW : 0,
+          ఒకవేళ (err != LONGINT_OK || (lo_ఆదానం <= hi_ఆదానం) == (n_పంక్తులు == 0))
+            error (EXIT_FAILURE, err == LONGINT_అధికప్రవాహం ? EOVERFLOW : 0,
                    "%s: %s", _("invalid input range"), quote (optarg));
         }
-        break;
+        ఆపు;
 
-      case 'n':
+      స్థితి 'n':
         {
           uintmax_t argval;
-          strtol_error e = xstrtoumax (optarg, NULL, 10, &argval, "");
+          strtol_error e = xstrtoumax (optarg, ఖాళీ, 10, &argval, "");
 
-          if (e == LONGINT_OK)
-            head_lines = MIN (head_lines, argval);
-          else if (e != LONGINT_OVERFLOW)
+          ఒకవేళ (e == LONGINT_OK)
+            తల_పంక్తులు = MIN (తల_పంక్తులు, argval);
+          లేకపోతే ఒకవేళ (e != LONGINT_అధికప్రవాహం)
             error (EXIT_FAILURE, 0, _("invalid line count: %s"),
                    quote (optarg));
         }
-        break;
+        ఆపు;
 
-      case 'o':
-        if (outfile && !streq (outfile, optarg))
+      స్థితి 'o':
+        ఒకవేళ (outfile && !streq (outfile, optarg))
           error (EXIT_FAILURE, 0, _("multiple output files specified"));
         outfile = optarg;
-        break;
+        ఆపు;
 
-      case RANDOM_SOURCE_OPTION:
-        if (random_source && !streq (random_source, optarg))
+      స్థితి RANDOM_ఆధారం_OPTION:
+        ఒకవేళ (random_ఆధారం && !streq (random_ఆధారం, optarg))
           error (EXIT_FAILURE, 0, _("multiple random sources specified"));
-        random_source = optarg;
-        break;
+        random_ఆధారం = optarg;
+        ఆపు;
 
-      case 'r':
+      స్థితి 'r':
         repeat = true;
-        break;
+        ఆపు;
 
-      case 'z':
+      స్థితి 'z':
         eolbyte = '\0';
-        break;
+        ఆపు;
 
       case_GETOPT_HELP_CHAR;
-      case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-      default:
+      case_GETOPT_సంస్కరణ_CHAR (కార్యక్రమం_NAME, AUTHORS);
+      అప్రమేయ:
         usage (EXIT_FAILURE);
       }
 
   n_operands = argc - optind;
-  operand = argv + optind;
+  నిర్వాహ్యం_2 = argv + optind;
 
   /* Check invalid usage.  */
-  if (echo && input_range)
+  ఒకవేళ (echo && ఆదానం_range)
     {
       error (0, 0, _("cannot combine -e and -i options"));
       usage (EXIT_FAILURE);
     }
-  if (input_range ? 0 < n_operands : !echo && 1 < n_operands)
+  ఒకవేళ (ఆదానం_range ? 0 < n_operands : !echo && 1 < n_operands)
     {
-      error (0, 0, _("extra operand %s"), quote (operand[!input_range]));
+      error (0, 0, _("extra operand %s"), quote (నిర్వాహ్యం_2[!ఆదానం_range]));
       usage (EXIT_FAILURE);
     }
 
   /* Prepare input.  */
-  if (head_lines == 0)
+  ఒకవేళ (తల_పంక్తులు == 0)
     {
-      n_lines = 0;
-      line = NULL;
+      n_పంక్తులు = 0;
+      పంక్తి = ఖాళీ;
     }
-  else if (echo)
+  లేకపోతే ఒకవేళ (echo)
     {
-      input_from_argv (operand, n_operands, eolbyte);
-      n_lines = n_operands;
-      line = operand;
+      ఆదానం_from_argv (నిర్వాహ్యం_2, n_operands, eolbyte);
+      n_పంక్తులు = n_operands;
+      పంక్తి = నిర్వాహ్యం_2;
     }
-  else if (input_range)
+  లేకపోతే ఒకవేళ (ఆదానం_range)
     {
-      IF_LINT (n_lines = hi_input - lo_input + 1); /* Avoid GCC 10 warning.  */
-      line = NULL;
+      IF_LINT (n_పంక్తులు = hi_ఆదానం - lo_ఆదానం + 1); /* Avoid GCC 10 warning.  */
+      పంక్తి = ఖాళీ;
     }
-  else
+  లేకపోతే
     {
       /* If an input file is specified, re-open it as stdin.  */
-      if (n_operands == 1
-          && ! (streq (operand[0], "-")
-                || freopen (operand[0], "r", stdin)))
-        error (EXIT_FAILURE, errno, "%s", quotef (operand[0]));
+      ఒకవేళ (n_operands == 1
+          && ! (streq (నిర్వాహ్యం_2[0], "-")
+                || freopen (నిర్వాహ్యం_2[0], "r", stdin)))
+        error (EXIT_FAILURE, errno, "%s", quotef (నిర్వాహ్యం_2[0]));
 
       fadvise (stdin, FADVISE_SEQUENTIAL);
 
-      if (repeat || head_lines == MIN (IDX_MAX, SIZE_MAX)
-          || input_size () <= RESERVOIR_MIN_INPUT)
+      ఒకవేళ (repeat || తల_పంక్తులు == MIN (IDX_MAX, SIZE_MAX)
+          || ఆదానం_కొలత () <= RESERVOIR_MIN_ఆదానం)
         {
-          n_lines = read_input (stdin, eolbyte, &input_lines);
-          line = input_lines;
+          n_పంక్తులు = read_ఆదానం (stdin, eolbyte, &ఆదానం_పంక్తులు);
+          పంక్తి = ఆదానం_పంక్తులు;
         }
-      else
+      లేకపోతే
         {
           use_reservoir_sampling = true;
-          n_lines = SIZE_MAX;   /* unknown number of input lines, for now.  */
+          n_పంక్తులు = SIZE_MAX;   /* unknown number of input lines, for now.  */
         }
     }
 
   /* The adjusted head line count; can be less than HEAD_LINES if the
      input is small and if not repeating.  */
-  idx_t ahead_lines = repeat || head_lines < n_lines ? head_lines : n_lines;
+  idx_t ahead_పంక్తులు = repeat || తల_పంక్తులు < n_పంక్తులు ? తల_పంక్తులు : n_పంక్తులు;
 
-  randint_source = randint_all_new (random_source,
+  randint_ఆధారం = randint_all_new (random_ఆధారం,
                                     (use_reservoir_sampling || repeat
                                      ? SIZE_MAX
-                                     : randperm_bound (ahead_lines, n_lines)));
-  if (! randint_source)
+                                     : randperm_bound (ahead_పంక్తులు, n_పంక్తులు)));
+  ఒకవేళ (! randint_ఆధారం)
     error (EXIT_FAILURE, errno, "%s",
-           quotef (random_source ? random_source : "getrandom"));
+           quotef (random_ఆధారం ? random_ఆధారం : "getrandom"));
 
-  if (use_reservoir_sampling)
+  ఒకవేళ (use_reservoir_sampling)
     {
       /* Instead of reading the entire file into 'line',
          use reservoir-sampling to store just AHEAD_LINES random lines.  */
-      n_lines = read_input_reservoir_sampling (stdin, eolbyte, ahead_lines,
-                                               randint_source, &reservoir);
-      ahead_lines = n_lines;
+      n_పంక్తులు = read_ఆదానం_reservoir_sampling (stdin, eolbyte, ahead_పంక్తులు,
+                                               randint_ఆధారం, &reservoir);
+      ahead_పంక్తులు = n_పంక్తులు;
     }
 
   /* Close stdin now, rather than earlier, so that randint_all_new
      doesn't have to worry about opening something other than
      stdin.  */
-  if (! (head_lines == 0 || echo || input_range || fclose (stdin) == 0))
+  ఒకవేళ (! (తల_పంక్తులు == 0 || echo || ఆదానం_range || fclose (stdin) == 0))
     error (EXIT_FAILURE, errno, _("read error"));
 
-  if (!repeat)
-    permutation = randperm_new (randint_source, ahead_lines, n_lines);
+  ఒకవేళ (!repeat)
+    permutation = randperm_new (randint_ఆధారం, ahead_పంక్తులు, n_పంక్తులు);
 
-  if (outfile && ! freopen (outfile, "w", stdout))
+  ఒకవేళ (outfile && ! freopen (outfile, "w", stdout))
     error (EXIT_FAILURE, errno, "%s", quotef (outfile));
 
   /* Generate output according to requested method */
-  if (repeat)
+  ఒకవేళ (repeat)
     {
-      if (head_lines == 0)
+      ఒకవేళ (తల_పంక్తులు == 0)
         i = 0;
-      else
+      లేకపోతే
         {
-          if (n_lines == 0)
+          ఒకవేళ (n_పంక్తులు == 0)
             error (EXIT_FAILURE, 0, _("no lines to repeat"));
-          if (input_range)
-            i = write_random_numbers (randint_source, ahead_lines,
-                                      lo_input, hi_input, eolbyte);
-          else
-            i = write_random_lines (randint_source, ahead_lines, line, n_lines);
+          ఒకవేళ (ఆదానం_range)
+            i = write_random_numbers (randint_ఆధారం, ahead_పంక్తులు,
+                                      lo_ఆదానం, hi_ఆదానం, eolbyte);
+          లేకపోతే
+            i = write_random_పంక్తులు (randint_ఆధారం, ahead_పంక్తులు, పంక్తి, n_పంక్తులు);
         }
     }
-  else
+  లేకపోతే
     {
-      if (use_reservoir_sampling)
-        i = write_permuted_output_reservoir (n_lines, reservoir, permutation);
-      else if (input_range)
-        i = write_permuted_numbers (ahead_lines, lo_input,
+      ఒకవేళ (use_reservoir_sampling)
+        i = write_permuted_output_reservoir (n_పంక్తులు, reservoir, permutation);
+      లేకపోతే ఒకవేళ (ఆదానం_range)
+        i = write_permuted_numbers (ahead_పంక్తులు, lo_ఆదానం,
                                     permutation, eolbyte);
-      else
-        i = write_permuted_lines (ahead_lines, line, permutation);
+      లేకపోతే
+        i = write_permuted_పంక్తులు (ahead_పంక్తులు, పంక్తి, permutation);
     }
 
-  if (i != 0)
+  ఒకవేళ (i != 0)
     write_error ();
 
-  IF_LINT (randint_all_free (randint_source));  /* For older valgrind.  */
+  IF_LINT (randint_all_free (randint_ఆధారం));  /* For older valgrind.  */
 
   main_exit (EXIT_SUCCESS);
 }

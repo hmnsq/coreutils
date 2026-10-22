@@ -14,12 +14,12 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#ifndef PROG_FPRINTF_H
+#నిర్వచితం_కాకపోతే PROG_FPRINTF_H
 # define PROG_FPRINTF_H
 
 # include <stdio.h>
 
-extern void prog_fprintf (FILE *fp, char const *fmt, ...)
+బాహ్య శూన్య prog_fprintf (FILE *fp, అక్షరం స్థిరరాశి *fmt, ...)
   _GL_ATTRIBUTE_FORMAT ((__printf__, 2, 3)) _GL_ATTRIBUTE_NONNULL ((1, 2));
 
-#endif
+#అయితే_ముగింపు

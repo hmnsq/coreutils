@@ -16,27 +16,27 @@
 
 /* Extracted from chown.c/chgrp.c and librarified by Jim Meyering.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <pwd.h>
-#include <grp.h>
+#అన్తర్భావ <config.h>
+#అన్తర్భావ <stdio.h>
+#అన్తర్భావ <sys/types.h>
+#అన్తర్భావ <pwd.h>
+#అన్తర్భావ <grp.h>
 
-#include "system.h"
-#include "assure.h"
-#include "chown-core.h"
-#include "fts-missing.h"
-#include "ignore-value.h"
-#include "root-dev-ino.h"
-#include "xfts.h"
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "assure.h"
+#అన్తర్భావ "chown-core.h"
+#అన్తర్భావ "fts-missing.h"
+#అన్తర్భావ "ignore-value.h"
+#అన్తర్భావ "root-dev-ino.h"
+#అన్తర్భావ "xfts.h"
 
-#define FTSENT_IS_DIRECTORY(E)	\
+#నిర్వచించు FTSENT_IS_DIRECTORY(E)	\
   ((E)->fts_info == FTS_D	\
    || (E)->fts_info == FTS_DC	\
    || (E)->fts_info == FTS_DP	\
    || (E)->fts_info == FTS_DNR)
 
-enum RCH_status
+గణన RCH_స్థితి
   {
     /* we called fchown and close, and both succeeded */
     RC_ok = 2,
@@ -45,7 +45,7 @@ enum RCH_status
     RC_excluded,
 
     /* The file was replaced by another file during the requested change.  */
-    RC_inode_changed,
+    RC_inode_మారింది,
 
     /* open/fchown isn't needed, isn't safe, or doesn't work due to
        permissions problems; fall back on chown */
@@ -55,44 +55,44 @@ enum RCH_status
     RC_error
   };
 
-extern void
-chopt_init (struct Chown_option *chopt)
+బాహ్య శూన్య
+chopt_init (నిర్మాణం Chown_option *chopt)
 {
   chopt->verbosity = V_off;
-  chopt->root_dev_ino = NULL;
+  chopt->మూలం_dev_ino = ఖాళీ;
   chopt->affect_symlink_referent = true;
   chopt->recurse = false;
   chopt->force_silent = false;
-  chopt->user_name = NULL;
-  chopt->group_name = NULL;
+  chopt->user_name = ఖాళీ;
+  chopt->సమూహం_name = ఖాళీ;
 }
 
-extern void
-chopt_free (struct Chown_option *chopt)
+బాహ్య శూన్య
+chopt_free (నిర్మాణం Chown_option *chopt)
 {
-  free (chopt->user_name);
-  free (chopt->group_name);
+  విడుదల (chopt->user_name);
+  విడుదల (chopt->సమూహం_name);
 }
 
 /* Convert the numeric user-id, UID, to a string stored in xmalloc'd memory,
    and return it.  Use the decimal representation of the ID.  */
 
-static char *
-uid_to_str (uid_t uid)
+స్థిర అక్షరం *
+uid_గమ్యం_str (uid_t uid)
 {
-  char buf[INT_BUFSIZE_BOUND (intmax_t)];
-  return xstrdup (TYPE_SIGNED (uid_t) ? imaxtostr (uid, buf)
+  అక్షరం buf[INT_BUFSIZE_BOUND (intmax_t)];
+  తిరిగి xstrdup (TYPE_SIGNED (uid_t) ? imaxtostr (uid, buf)
                   : umaxtostr (uid, buf));
 }
 
 /* Convert the numeric group-id, GID, to a string stored in xmalloc'd memory,
    and return it.  Use the decimal representation of the ID.  */
 
-static char *
-gid_to_str (gid_t gid)
+స్థిర అక్షరం *
+gid_గమ్యం_str (gid_t gid)
 {
-  char buf[INT_BUFSIZE_BOUND (intmax_t)];
-  return xstrdup (TYPE_SIGNED (gid_t) ? imaxtostr (gid, buf)
+  అక్షరం buf[INT_BUFSIZE_BOUND (intmax_t)];
+  తిరిగి xstrdup (TYPE_SIGNED (gid_t) ? imaxtostr (gid, buf)
                   : umaxtostr (gid, buf));
 }
 
@@ -100,110 +100,110 @@ gid_to_str (gid_t gid)
    and return it.  If there's no corresponding group name, use the decimal
    representation of the ID.  */
 
-extern char *
-gid_to_name (gid_t gid)
+బాహ్య అక్షరం *
+gid_గమ్యం_name (gid_t gid)
 {
-  struct group *grp = getgrgid (gid);
-  return grp ? xstrdup (grp->gr_name) : gid_to_str (gid);
+  నిర్మాణం సమూహం *grp = getgrgid (gid);
+  తిరిగి grp ? xstrdup (grp->gr_name) : gid_గమ్యం_str (gid);
 }
 
 /* Convert the numeric user-id, UID, to a string stored in xmalloc'd memory,
    and return it.  If there's no corresponding user name, use the decimal
    representation of the ID.  */
 
-extern char *
-uid_to_name (uid_t uid)
+బాహ్య అక్షరం *
+uid_గమ్యం_name (uid_t uid)
 {
-  struct passwd *pwd = getpwuid (uid);
-  return pwd ? xstrdup (pwd->pw_name) : uid_to_str (uid);
+  నిర్మాణం passwd *pwd = getpwuid (uid);
+  తిరిగి pwd ? xstrdup (pwd->pw_name) : uid_గమ్యం_str (uid);
 }
 
 /* Allocate a string representing USER and GROUP.  */
 
-static char *
-user_group_str (char const *user, char const *group)
+స్థిర అక్షరం *
+user_సమూహం_str (అక్షరం స్థిరరాశి *user, అక్షరం స్థిరరాశి *సమూహం)
 {
-  char *spec = NULL;
+  అక్షరం *spec = ఖాళీ;
 
-  if (user)
+  ఒకవేళ (user)
     {
-      if (group)
+      ఒకవేళ (సమూహం)
         {
-          spec = xmalloc (strlen (user) + 1 + strlen (group) + 1);
-          stpcpy (stpcpy (stpcpy (spec, user), ":"), group);
+          spec = xmalloc (అక్షరశ్రేణి_పొడవు (user) + 1 + అక్షరశ్రేణి_పొడవు (సమూహం) + 1);
+          stpcpy (stpcpy (stpcpy (spec, user), ":"), సమూహం);
         }
-      else
+      లేకపోతే
         {
           spec = xstrdup (user);
         }
     }
-  else if (group)
+  లేకపోతే ఒకవేళ (సమూహం)
     {
-      spec = xstrdup (group);
+      spec = xstrdup (సమూహం);
     }
 
-  return spec;
+  తిరిగి spec;
 }
 
 /* Tell the user how/if the user and group of FILE have been changed.
    If USER is null, give the group-oriented messages.
    CHANGED describes what (if anything) has happened. */
 
-static void
-describe_change (char const *file, enum Change_status changed,
-                 char const *old_user, char const *old_group,
-                 char const *user, char const *group)
+స్థిర శూన్య
+describe_change (అక్షరం స్థిరరాశి *file, గణన Change_స్థితి మారింది,
+                 అక్షరం స్థిరరాశి *old_user, అక్షరం స్థిరరాశి *old_సమూహం,
+                 అక్షరం స్థిరరాశి *user, అక్షరం స్థిరరాశి *సమూహం)
 {
-  if (changed == CH_NOT_APPLIED)
+  ఒకవేళ (మారింది == CH_NOT_APPLIED)
     {
-      printf (_("neither symbolic link %s nor referent has been changed\n"),
+      రాయి (_("neither symbolic link %s nor referent has been changed\n"),
               quoteaf (file));
-      return;
+      తిరిగి;
     }
 
-  char *spec = user_group_str (user, group);
-  char *old_spec = user_group_str (user ? old_user : NULL,
-                                   group ? old_group : NULL);
+  అక్షరం *spec = user_సమూహం_str (user, సమూహం);
+  అక్షరం *old_spec = user_సమూహం_str (user ? old_user : ఖాళీ,
+                                   సమూహం ? old_సమూహం : ఖాళీ);
 
-  char const *fmt;
-  switch (changed)
+  అక్షరం స్థిరరాశి *fmt;
+  ఎంపిక (మారింది)
     {
-    case CH_SUCCEEDED:
+    స్థితి CH_SUCCEEDED:
       fmt = (user ? _("changed ownership of %s from %s to %s\n")
-             : group ? _("changed group of %s from %s to %s\n")
+             : సమూహం ? _("changed group of %s from %s to %s\n")
              : _("no change to ownership of %s\n"));
-      break;
-    case CH_FAILED:
-      if (old_spec)
+      ఆపు;
+    స్థితి CH_FAILED:
+      ఒకవేళ (old_spec)
         {
           fmt = (user ? _("failed to change ownership of %s from %s to %s\n")
-                 : group ? _("failed to change group of %s from %s to %s\n")
+                 : సమూహం ? _("failed to change group of %s from %s to %s\n")
                  : _("failed to change ownership of %s\n"));
         }
-      else
+      లేకపోతే
         {
           fmt = (user ? _("failed to change ownership of %s to %s\n")
-                 : group ? _("failed to change group of %s to %s\n")
+                 : సమూహం ? _("failed to change group of %s to %s\n")
                  : _("failed to change ownership of %s\n"));
-          free (old_spec);
+          విడుదల (old_spec);
           old_spec = spec;
-          spec = NULL;
+          spec = ఖాళీ;
         }
-      break;
-    case CH_NO_CHANGE_REQUESTED:
+      ఆపు;
+    స్థితి CH_NO_CHANGE_REQUESTED:
       fmt = (user ? _("ownership of %s retained as %s\n")
-             : group ? _("group of %s retained as %s\n")
+             : సమూహం ? _("group of %s retained as %s\n")
              : _("ownership of %s retained\n"));
-      break;
-    case CH_NOT_APPLIED:
-    default:
+      ఆపు;
+    స్థితి CH_NOT_APPLIED:
+    అప్రమేయ:
       affirm (false);
     }
 
-  printf (fmt, quoteaf (file), old_spec, spec);
+  రాయి (fmt, quoteaf (file), old_spec, spec);
 
-  free (old_spec);
-  free (spec);
+  విడుదల (old_spec);
+  విడుదల (spec);
 }
 
 /* Change the owner and/or group of the FILE to UID and/or GID (safely)
@@ -224,50 +224,50 @@ describe_change (char const *file, enum Change_status changed,
 
    Return one of the RCH_status values.  */
 
-static enum RCH_status
-restricted_chown (int cwd_fd, char const *file,
-                  struct stat const *orig_st,
+స్థిర గణన RCH_స్థితి
+restricted_chown (పూర్ణాంకం cwd_fd, అక్షరం స్థిరరాశి *file,
+                  నిర్మాణం stat స్థిరరాశి *orig_st,
                   uid_t uid, gid_t gid,
                   uid_t required_uid, gid_t required_gid)
 {
-  if (required_uid == (uid_t) -1 && required_gid == (gid_t) -1)
-    return RC_do_ordinary_chown;
+  ఒకవేళ (required_uid == (uid_t) -1 && required_gid == (gid_t) -1)
+    తిరిగి RC_do_ordinary_chown;
 
-  int open_flags = O_NONBLOCK | O_NOCTTY;
-  if (! S_ISREG (orig_st->st_mode))
+  పూర్ణాంకం open_flags = O_NONBLOCK | O_NOCTTY;
+  ఒకవేళ (! S_ISREG (orig_st->st_బహుళకం))
     {
-      if (S_ISDIR (orig_st->st_mode))
+      ఒకవేళ (S_ISDIR (orig_st->st_బహుళకం))
         open_flags |= O_DIRECTORY;
-      else
-        return RC_do_ordinary_chown;
+      లేకపోతే
+        తిరిగి RC_do_ordinary_chown;
     }
 
-  int fd = openat (cwd_fd, file, O_RDONLY | open_flags);
-  if (! (0 <= fd
-         || (errno == EACCES && S_ISREG (orig_st->st_mode)
+  పూర్ణాంకం fd = openat (cwd_fd, file, O_RDONLY | open_flags);
+  ఒకవేళ (! (0 <= fd
+         || (errno == EACCES && S_ISREG (orig_st->st_బహుళకం)
              && 0 <= (fd = openat (cwd_fd, file, O_WRONLY | open_flags)))))
-    return (errno == EACCES ? RC_do_ordinary_chown : RC_error);
+    తిరిగి (errno == EACCES ? RC_do_ordinary_chown : RC_error);
 
-  enum RCH_status status = RC_ok;
-  struct stat st;
-  if (fstat (fd, &st) != 0)
-    status = RC_error;
-  else if (! psame_inode (orig_st, &st))
-    status = RC_inode_changed;
-  else if ((required_uid == (uid_t) -1 || required_uid == st.st_uid)
+  గణన RCH_స్థితి స్థితి_2 = RC_ok;
+  నిర్మాణం stat st;
+  ఒకవేళ (fstat (fd, &st) != 0)
+    స్థితి_2 = RC_error;
+  లేకపోతే ఒకవేళ (! psame_inode (orig_st, &st))
+    స్థితి_2 = RC_inode_మారింది;
+  లేకపోతే ఒకవేళ ((required_uid == (uid_t) -1 || required_uid == st.st_uid)
            && (required_gid == (gid_t) -1 || required_gid == st.st_gid))
     {
-#if HAVE_FCHOWN
-      if (fchown (fd, uid, gid) == 0)
-        return close (fd) < 0 ? RC_error : RC_ok;
-#endif
-      status = RC_error;
+#ఒకవేళ HAVE_FCHOWN
+      ఒకవేళ (fchown (fd, uid, gid) == 0)
+        తిరిగి close (fd) < 0 ? RC_error : RC_ok;
+#అయితే_ముగింపు
+      స్థితి_2 = RC_error;
     }
 
-  int saved_errno = errno;
+  పూర్ణాంకం saved_errno = errno;
   close (fd);
   errno = saved_errno;
-  return status;
+  తిరిగి స్థితి_2;
 }
 
 /* Change the owner and/or group of the file specified by FTS and ENT
@@ -276,46 +276,46 @@ restricted_chown (int cwd_fd, char const *file,
    If REQUIRED_GID is not -1, then skip files with any other group ID.
    CHOPT specifies additional options.
    Return true if successful.  */
-static bool
+స్థిర bool
 change_file_owner (FTS *fts, FTSENT *ent,
                    uid_t uid, gid_t gid,
                    uid_t required_uid, gid_t required_gid,
-                   struct Chown_option const *chopt)
+                   నిర్మాణం Chown_option స్థిరరాశి *chopt)
 {
-  char const *file_full_name = ent->fts_path;
-  char const *file = ent->fts_accpath;
+  అక్షరం స్థిరరాశి *file_నిండిన_name = ent->fts_మార్గం;
+  అక్షరం స్థిరరాశి *file = ent->fts_accpath;
   bool ok = true;
-  bool ignore_missing = ignore_missing_fts_entry (ent);
+  bool ignore_missing = ignore_missing_fts_నమోదు (ent);
 
-  if (ignore_missing && ignorable_fts_error (ent))
-    return true;
+  ఒకవేళ (ignore_missing && ignorable_fts_error (ent))
+    తిరిగి true;
 
-  switch (ent->fts_info)
+  ఎంపిక (ent->fts_info)
     {
-    case FTS_D:
-      if (chopt->recurse)
+    స్థితి FTS_D:
+      ఒకవేళ (chopt->recurse)
         {
-          if (ROOT_DEV_INO_CHECK (chopt->root_dev_ino, ent->fts_statp))
+          ఒకవేళ (మూలం_DEV_INO_CHECK (chopt->మూలం_dev_ino, ent->fts_statp))
             {
               /* This happens e.g., with "chown -R --preserve-root 0 /"
                  and with "chown -RH --preserve-root 0 symlink-to-root".  */
-              ROOT_DEV_INO_WARN (file_full_name);
+              మూలం_DEV_INO_WARN (file_నిండిన_name);
               /* Tell fts not to traverse into this hierarchy.  */
-              fts_set (fts, ent, FTS_SKIP);
+              fts_సమితి (fts, ent, FTS_SKIP);
               /* Ensure that we do not process "/" on the second visit.  */
-              ignore_value (fts_read (fts));
-              return false;
+              ignore_విలువ (fts_read (fts));
+              తిరిగి false;
             }
-          return true;
+          తిరిగి true;
         }
-      break;
+      ఆపు;
 
-    case FTS_DP:
-      if (! chopt->recurse)
-        return true;
-      break;
+    స్థితి FTS_DP:
+      ఒకవేళ (! chopt->recurse)
+        తిరిగి true;
+      ఆపు;
 
-    case FTS_NS:
+    స్థితి FTS_NS:
       /* For a top-level file or directory, this FTS_NS (stat failed)
          indicator is determined at the time of the initial fts_open call.
          With programs like chmod, chown, and chgrp, that modify
@@ -323,75 +323,75 @@ change_file_owner (FTS *fts, FTSENT *ent,
          accessible when control reaches this point.  So, if this is
          the first time we've seen the FTS_NS for this file, tell
          fts_read to stat it "again".  */
-      if (ent->fts_level == FTS_ROOTLEVEL && ent->fts_number == 0)
+      ఒకవేళ (ent->fts_level == FTS_ROOTLEVEL && ent->fts_సంఖ్య == 0)
         {
-          ent->fts_number = 1;
-          fts_set (fts, ent, FTS_AGAIN);
-          return true;
+          ent->fts_సంఖ్య = 1;
+          fts_సమితి (fts, ent, FTS_AGAIN);
+          తిరిగి true;
         }
-      if (! chopt->force_silent)
+      ఒకవేళ (! chopt->force_silent)
         error (0, ent->fts_errno, _("cannot access %s"),
-               quoteaf (file_full_name));
+               quoteaf (file_నిండిన_name));
       ok = false;
-      break;
+      ఆపు;
 
-    case FTS_ERR:
-      if (! chopt->force_silent)
-        error (0, ent->fts_errno, "%s", quotef (file_full_name));
+    స్థితి FTS_ERR:
+      ఒకవేళ (! chopt->force_silent)
+        error (0, ent->fts_errno, "%s", quotef (file_నిండిన_name));
       ok = false;
-      break;
+      ఆపు;
 
-    case FTS_DNR:
-      if (! chopt->force_silent)
+    స్థితి FTS_DNR:
+      ఒకవేళ (! chopt->force_silent)
         error (0, ent->fts_errno, _("cannot read directory %s"),
-               quoteaf (file_full_name));
+               quoteaf (file_నిండిన_name));
       ok = false;
-      break;
+      ఆపు;
 
-    case FTS_DC:		/* directory that causes cycles */
-      if (cycle_warning_required (fts, ent))
+    స్థితి FTS_DC:		/* directory that causes cycles */
+      ఒకవేళ (చక్రం_warning_required (fts, ent))
         {
-          emit_cycle_warning (file_full_name);
-          return false;
+          emit_చక్రం_warning (file_నిండిన_name);
+          తిరిగి false;
         }
-      break;
+      ఆపు;
 
-    default:
-      break;
+    అప్రమేయ:
+      ఆపు;
     }
 
   bool do_chown;
-  struct stat stat_buf;
-  struct stat const *file_stats;
-  if (!ok)
+  నిర్మాణం stat stat_buf;
+  నిర్మాణం stat స్థిరరాశి *file_stats;
+  ఒకవేళ (!ok)
     {
       do_chown = false;
-      file_stats = NULL;
+      file_stats = ఖాళీ;
     }
-  else if (required_uid == (uid_t) -1 && required_gid == (gid_t) -1
+  లేకపోతే ఒకవేళ (required_uid == (uid_t) -1 && required_gid == (gid_t) -1
            && chopt->verbosity == V_off
-           && ! chopt->root_dev_ino
+           && ! chopt->మూలం_dev_ino
            && ! chopt->affect_symlink_referent)
     {
       do_chown = true;
       file_stats = ent->fts_statp;
     }
-  else
+  లేకపోతే
     {
       file_stats = ent->fts_statp;
 
       /* If this is a symlink and we're dereferencing them,
          stat it to get info on the referent.  */
-      if (chopt->affect_symlink_referent && S_ISLNK (file_stats->st_mode))
+      ఒకవేళ (chopt->affect_symlink_referent && S_ISLNK (file_stats->st_బహుళకం))
         {
-          if (fstatat (fts->fts_cwd_fd, file, &stat_buf, 0) != 0)
+          ఒకవేళ (fstatat (fts->fts_cwd_fd, file, &stat_buf, 0) != 0)
             {
-              if (ignore_missing
+              ఒకవేళ (ignore_missing
                   && ignorable_traversal_errno (errno))
-                return true;
-              if (! chopt->force_silent)
+                తిరిగి true;
+              ఒకవేళ (! chopt->force_silent)
                 error (0, errno, _("cannot dereference %s"),
-                       quoteaf (file_full_name));
+                       quoteaf (file_నిండిన_name));
               ok = false;
             }
 
@@ -406,31 +406,31 @@ change_file_owner (FTS *fts, FTSENT *ent,
     }
 
   /* This happens when chown -LR --preserve-root encounters a symlink-to-/.  */
-  if (ok
+  ఒకవేళ (ok
       && FTSENT_IS_DIRECTORY (ent)
-      && ROOT_DEV_INO_CHECK (chopt->root_dev_ino, file_stats))
+      && మూలం_DEV_INO_CHECK (chopt->మూలం_dev_ino, file_stats))
     {
-      ROOT_DEV_INO_WARN (file_full_name);
-      return false;
+      మూలం_DEV_INO_WARN (file_నిండిన_name);
+      తిరిగి false;
     }
 
-  bool symlink_changed = true;
-  if (do_chown)
+  bool symlink_మారింది = true;
+  ఒకవేళ (do_chown)
     {
-      if ( ! chopt->affect_symlink_referent)
+      ఒకవేళ ( ! chopt->affect_symlink_referent)
         {
           ok = (lchownat (fts->fts_cwd_fd, file, uid, gid) == 0);
 
           /* Ignore any error due to lack of support; POSIX requires
              this behavior for top-level symbolic links with -h, and
              implies that it's required for all symbolic links.  */
-          if (!ok && is_ENOTSUP (errno))
+          ఒకవేళ (!ok && is_ENOTSUP (errno))
             {
               ok = true;
-              symlink_changed = false;
+              symlink_మారింది = false;
             }
         }
-      else
+      లేకపోతే
         {
           /* If possible, avoid a race condition with --from=O:G and without the
              (-h) --no-dereference option.  If fts's stat call determined
@@ -442,30 +442,30 @@ change_file_owner (FTS *fts, FTSENT *ent,
              chown(2) calls.  If FILE is a regular file or a directory
              that can be opened, this race condition can be avoided safely.  */
 
-          enum RCH_status err
+          గణన RCH_స్థితి err
             = restricted_chown (fts->fts_cwd_fd, file, file_stats, uid, gid,
                                 required_uid, required_gid);
-          switch (err)
+          ఎంపిక (err)
             {
-            case RC_ok:
-              break;
+            స్థితి RC_ok:
+              ఆపు;
 
-            case RC_do_ordinary_chown:
+            స్థితి RC_do_ordinary_chown:
               ok = (chownat (fts->fts_cwd_fd, file, uid, gid) == 0);
-              break;
+              ఆపు;
 
-            case RC_error:
+            స్థితి RC_error:
               ok = false;
-              break;
+              ఆపు;
 
-            case RC_inode_changed:
+            స్థితి RC_inode_మారింది:
               /* FIXME: give a diagnostic in this case?  */
-            case RC_excluded:
+            స్థితి RC_excluded:
               do_chown = false;
               ok = false;
-              break;
+              ఆపు;
 
-            default:
+            అప్రమేయ:
               unreachable ();
             }
         }
@@ -477,59 +477,59 @@ change_file_owner (FTS *fts, FTSENT *ent,
          by some other user and operating on files in a directory
          where M has write access.  */
 
-      if (do_chown && !ok)
+      ఒకవేళ (do_chown && !ok)
         {
-          if (ignore_missing
+          ఒకవేళ (ignore_missing
               && ignorable_traversal_errno (errno))
-            return true;
-          if (! chopt->force_silent)
+            తిరిగి true;
+          ఒకవేళ (! chopt->force_silent)
             error (0, errno, (uid != (uid_t) -1
                               ? _("changing ownership of %s")
                               : _("changing group of %s")),
-                   quoteaf (file_full_name));
+                   quoteaf (file_నిండిన_name));
         }
     }
 
-  if (chopt->verbosity != V_off)
+  ఒకవేళ (chopt->verbosity != V_off)
     {
-      bool changed =
-        ((do_chown && ok && symlink_changed)
+      bool మారింది =
+        ((do_chown && ok && symlink_మారింది)
          && ! ((uid == (uid_t) -1 || uid == file_stats->st_uid)
                && (gid == (gid_t) -1 || gid == file_stats->st_gid)));
 
-      if (changed || chopt->verbosity == V_high)
+      ఒకవేళ (మారింది || chopt->verbosity == V_ఎగువ)
         {
-          enum Change_status ch_status =
+          గణన Change_స్థితి ch_స్థితి =
             (!ok ? CH_FAILED
-             : !symlink_changed ? CH_NOT_APPLIED
-             : !changed ? CH_NO_CHANGE_REQUESTED
+             : !symlink_మారింది ? CH_NOT_APPLIED
+             : !మారింది ? CH_NO_CHANGE_REQUESTED
              : CH_SUCCEEDED);
-          char *old_usr = (file_stats
-                           ? uid_to_name (file_stats->st_uid) : NULL);
-          char *old_grp = (file_stats
-                           ? gid_to_name (file_stats->st_gid) : NULL);
-          char *new_usr = chopt->user_name
+          అక్షరం *old_usr = (file_stats
+                           ? uid_గమ్యం_name (file_stats->st_uid) : ఖాళీ);
+          అక్షరం *old_grp = (file_stats
+                           ? gid_గమ్యం_name (file_stats->st_gid) : ఖాళీ);
+          అక్షరం *new_usr = chopt->user_name
                           ? chopt->user_name : uid != -1
-                                               ? uid_to_str (uid) : NULL;
-          char *new_grp = chopt->group_name
-                          ? chopt->group_name : gid != -1
-                                               ? gid_to_str (gid) : NULL;
-          describe_change (file_full_name, ch_status,
+                                               ? uid_గమ్యం_str (uid) : ఖాళీ;
+          అక్షరం *new_grp = chopt->సమూహం_name
+                          ? chopt->సమూహం_name : gid != -1
+                                               ? gid_గమ్యం_str (gid) : ఖాళీ;
+          describe_change (file_నిండిన_name, ch_స్థితి,
                            old_usr, old_grp,
                            new_usr, new_grp);
-          free (old_usr);
-          free (old_grp);
-          if (new_usr != chopt->user_name)
-            free (new_usr);
-          if (new_grp != chopt->group_name)
-            free (new_grp);
+          విడుదల (old_usr);
+          విడుదల (old_grp);
+          ఒకవేళ (new_usr != chopt->user_name)
+            విడుదల (new_usr);
+          ఒకవేళ (new_grp != chopt->సమూహం_name)
+            విడుదల (new_grp);
         }
     }
 
-  if ( ! chopt->recurse)
-    fts_set (fts, ent, FTS_SKIP);
+  ఒకవేళ ( ! chopt->recurse)
+    fts_సమితి (fts, ent, FTS_SKIP);
 
-  return ok;
+  తిరిగి ok;
 }
 
 /* Change the owner and/or group of the specified FILES.
@@ -541,48 +541,48 @@ change_file_owner (FTS *fts, FTSENT *ent,
    If REQUIRED_UID and/or REQUIRED_GID is not -1, then change only
    files with user ID and group ID that match the non-(-1) value(s).
    Return true if successful.  */
-extern bool
-chown_files (char **files, int bit_flags,
+బాహ్య bool
+chown_files (అక్షరం **files, పూర్ణాంకం బిట్టు_flags,
              uid_t uid, gid_t gid,
              uid_t required_uid, gid_t required_gid,
-             struct Chown_option const *chopt)
+             నిర్మాణం Chown_option స్థిరరాశి *chopt)
 {
   bool ok = true;
 
   /* Use lstat and stat only if they're needed.  */
-  int stat_flags = ((required_uid != (uid_t) -1 || required_gid != (gid_t) -1
+  పూర్ణాంకం stat_flags = ((required_uid != (uid_t) -1 || required_gid != (gid_t) -1
                      || chopt->affect_symlink_referent
                      || chopt->verbosity != V_off)
                     ? 0
                     : FTS_NOSTAT);
 
-  FTS *fts = xfts_open (files, bit_flags | stat_flags, NULL);
+  FTS *fts = xfts_open (files, బిట్టు_flags | stat_flags, ఖాళీ);
 
-  while (true)
+  అయితే (true)
     {
       FTSENT *ent = fts_read (fts);
 
-      if (ent == NULL)
+      ఒకవేళ (ent == ఖాళీ)
         {
-          if (errno != 0)
+          ఒకవేళ (errno != 0)
             {
               /* FIXME: try to give a better message  */
-              if (! chopt->force_silent)
+              ఒకవేళ (! chopt->force_silent)
                 error (0, errno, _("fts_read failed"));
               ok = false;
             }
-          break;
+          ఆపు;
         }
 
       ok &= change_file_owner (fts, ent, uid, gid,
                                required_uid, required_gid, chopt);
     }
 
-  if (fts_close (fts) != 0)
+  ఒకవేళ (fts_close (fts) != 0)
     {
       error (0, errno, _("fts_close failed"));
       ok = false;
     }
 
-  return ok;
+  తిరిగి ok;
 }

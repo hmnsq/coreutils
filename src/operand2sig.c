@@ -21,23 +21,23 @@
 /* Convert OPERAND to a signal number.  Return the signal number, or -1 if
    unsuccessful.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/wait.h>
+#అన్తర్భావ <config.h>
+#అన్తర్భావ <stdio.h>
+#అన్తర్భావ <sys/types.h>
+#అన్తర్భావ <sys/wait.h>
 
-#include "system.h"
-#include "c-ctype.h"
-#include "quote.h"
-#include "sig2str.h"
-#include "operand2sig.h"
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "c-ctype.h"
+#అన్తర్భావ "quote.h"
+#అన్తర్భావ "sig2str.h"
+#అన్తర్భావ "operand2sig.h"
 
-extern int
-operand2sig (char const *operand)
+బాహ్య పూర్ణాంకం
+operand2sig (అక్షరం స్థిరరాశి *నిర్వాహ్యం_2)
 {
-  int signum;
+  పూర్ణాంకం signum;
 
-  if (c_isdigit (*operand))
+  ఒకవేళ (c_isdigit (*నిర్వాహ్యం_2))
     {
       /* Note we don't put a limit on the maximum value passed,
          because we're checking shell $? values here, and ksh for
@@ -50,12 +50,12 @@ operand2sig (char const *operand)
          wider exit status values as discussed at
          https://austingroupbugs.net/view.php?id=947  */
 
-      char *endp;
-      long int l = (errno = 0, strtol (operand, &endp, 10));
-      int i = l;
-      signum = (operand == endp || *endp || errno || i != l ? -1 : i);
+      అక్షరం *endp;
+      దీర్ఘ పూర్ణాంకం l = (errno = 0, strtol (నిర్వాహ్యం_2, &endp, 10));
+      పూర్ణాంకం i = l;
+      signum = (నిర్వాహ్యం_2 == endp || *endp || errno || i != l ? -1 : i);
 
-      if (signum != -1)
+      ఒకవేళ (signum != -1)
         {
           /* Note AIX uses a different bit pattern for status returned
              from shell and wait(), so we can't use WTERMSIG etc. here.
@@ -63,30 +63,30 @@ operand2sig (char const *operand)
           signum &= signum >= 0xFF ? 0xFF : 0x7F;
         }
     }
-  else
+  లేకపోతే
     {
       /* Convert signal to upper case in the C locale, not in the
          current locale.  Don't assume ASCII; it might be EBCDIC.  */
-      char *upcased = xstrdup (operand);
-      for (char *p = upcased; *p; p++)
-        if (strchr ("abcdefghijklmnopqrstuvwxyz", *p))
+      అక్షరం *upcased = xstrdup (నిర్వాహ్యం_2);
+      కొరకు (అక్షరం *p = upcased; *p; p++)
+        ఒకవేళ (strchr ("abcdefghijklmnopqrstuvwxyz", *p))
           *p += 'A' - 'a';
 
       /* Look for the signal name, possibly prefixed by "SIG",
          and possibly lowercased.  */
-      if (!(str2sig (upcased, &signum) == 0
+      ఒకవేళ (!(str2sig (upcased, &signum) == 0
             || (upcased[0] == 'S' && upcased[1] == 'I' && upcased[2] == 'G'
                 && str2sig (upcased + 3, &signum) == 0)))
         signum = -1;
 
-      free (upcased);
+      విడుదల (upcased);
     }
 
-  if (0 > signum || signum > SIGNUM_BOUND)
+  ఒకవేళ (0 > signum || signum > SIGNUM_BOUND)
     {
-      error (0, 0, _("%s: invalid signal"), quote (operand));
-      return -1;
+      error (0, 0, _("%s: invalid signal"), quote (నిర్వాహ్యం_2));
+      తిరిగి -1;
     }
 
-  return signum;
+  తిరిగి signum;
 }

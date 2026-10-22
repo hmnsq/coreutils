@@ -16,73 +16,73 @@
 
 /* Written by Jim Meyering  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <signal.h>
+#అన్తర్భావ <config.h>
+#అన్తర్భావ <stdio.h>
+#అన్తర్భావ <sys/types.h>
+#అన్తర్భావ <signal.h>
 
-#include "system.h"
+#అన్తర్భావ "system.h"
 
-#include "filenamecat.h"
-#include "fd-reopen.h"
-#include "long-options.h"
-#include "unistd--.h"
+#అన్తర్భావ "filenamecat.h"
+#అన్తర్భావ "fd-reopen.h"
+#అన్తర్భావ "long-options.h"
+#అన్తర్భావ "unistd--.h"
 
-#define PROGRAM_NAME "nohup"
+#నిర్వచించు కార్యక్రమం_NAME "nohup"
 
-#define AUTHORS proper_name ("Jim Meyering")
+#నిర్వచించు AUTHORS proper_name ("Jim Meyering")
 
 /* Exit statuses.  */
-enum
+గణన
   {
     /* 'nohup' itself failed.  */
     POSIX_NOHUP_FAILURE = 127
   };
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("\
+      రాయి (_("\
 Usage: %s COMMAND [ARG]...\n\
   or:  %s OPTION\n\
 "),
-              program_name, program_name);
+              కార్యక్రమం_name, కార్యక్రమం_name);
 
       fputs (_("\
-Run COMMAND, ignoring hangup signals.\n\
+నిరంతరం COMMAND, ignoring hangup సంకేతాలు.\n\
 \n\
 "), stdout);
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      printf (_("\n\
-If standard input is a terminal, redirect it from an unreadable file.\n\
-If standard output is a terminal, append output to 'nohup.out' if possible,\n\
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
+      రాయి (_("\n\
+If standard ఆదానం is a terminal, redirect it from an unreadable file.\n\
+If standard output is a terminal, append output గమ్యం 'nohup.out' ఒకవేళ possible,\n\
 '$HOME/nohup.out' otherwise.\n\
-If standard error is a terminal, redirect it to standard output.\n\
-To save output to FILE, use '%s COMMAND > FILE'.\n"),
-              program_name);
-      printf (USAGE_BUILTIN_WARNING, PROGRAM_NAME);
-      emit_exec_status (PROGRAM_NAME);
-      emit_ancillary_info (PROGRAM_NAME);
+If standard error is a terminal, redirect it గమ్యం standard output.\n\
+గమ్యం_2 save output గమ్యం FILE, use '%s COMMAND > FILE'.\n"),
+              కార్యక్రమం_name);
+      రాయి (USAGE_BUILTIN_WARNING, కార్యక్రమం_NAME);
+      emit_exec_స్థితి (కార్యక్రమం_NAME);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
 /* GCC 13 gets confused by the dup2 calls
    <https://gcc.gnu.org/PR109839>.  */
-#if 13 <= __GNUC__
+#ఒకవేళ 13 <= __GNUC__
 # pragma GCC diagnostic ignored "-Wanalyzer-fd-leak"
-#endif
+#అయితే_ముగింపు
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
@@ -91,22 +91,22 @@ main (int argc, char **argv)
      for env, exec, nice, time, and xargs where it requires internal
      failure give something in the range 1-125.  For consistency with
      other tools, fail with EXIT_CANCELED unless POSIXLY_CORRECT.  */
-  int exit_internal_failure = (getenv ("POSIXLY_CORRECT")
+  పూర్ణాంకం exit_అంతర్గత_failure = (getenv ("POSIXLY_CORRECT")
                                ? POSIX_NOHUP_FAILURE : EXIT_CANCELED);
-  initialize_exit_failure (exit_internal_failure);
+  initialize_exit_failure (exit_అంతర్గత_failure);
   atexit (close_stdout);
 
-  parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
-                                   Version, false, usage, AUTHORS,
-                                   (char const *) NULL);
+  parse_gnu_standard_options_only (argc, argv, కార్యక్రమం_NAME, PACKAGE_NAME,
+                                   సంస్కరణ, false, usage, AUTHORS,
+                                   (అక్షరం స్థిరరాశి *) ఖాళీ);
 
-  if (argc <= optind)
+  ఒకవేళ (argc <= optind)
     {
       error (0, 0, _("missing operand"));
-      usage (exit_internal_failure);
+      usage (exit_అంతర్గత_failure);
     }
 
-  bool ignoring_input = isatty (STDIN_FILENO);
+  bool ignoring_ఆదానం = isatty (STDIN_FILENO);
   bool redirecting_stdout = isatty (STDOUT_FILENO);
   bool stdout_is_closed = (!redirecting_stdout && errno == EBADF);
   bool redirecting_stderr = isatty (STDERR_FILENO);
@@ -114,12 +114,12 @@ main (int argc, char **argv)
   /* If standard input is a tty, replace it with /dev/null if possible.
      Note that it is deliberately opened for *writing*,
      to ensure any read evokes an error.  */
-  if (ignoring_input)
+  ఒకవేళ (ignoring_ఆదానం)
     {
-      if (fd_reopen (STDIN_FILENO, "/dev/null", O_WRONLY, 0) < 0)
-        error (exit_internal_failure, errno,
+      ఒకవేళ (fd_reopen (STDIN_FILENO, "/dev/null", O_WRONLY, 0) < 0)
+        error (exit_అంతర్గత_failure, errno,
                _("failed to render standard input unusable"));
-      if (!redirecting_stdout && !redirecting_stderr)
+      ఒకవేళ (!redirecting_stdout && !redirecting_stderr)
         error (0, 0, _("ignoring input"));
     }
 
@@ -127,53 +127,53 @@ main (int argc, char **argv)
      First try nohup.out, then $HOME/nohup.out.  If standard error is
      a tty and standard output is closed, open nohup.out or
      $HOME/nohup.out without redirecting anything.  */
-  int out_fd = STDOUT_FILENO;
-  if (redirecting_stdout || (redirecting_stderr && stdout_is_closed))
+  పూర్ణాంకం బహిర్గతం_fd = STDOUT_FILENO;
+  ఒకవేళ (redirecting_stdout || (redirecting_stderr && stdout_is_closed))
     {
-      char *in_home = NULL;
-      char const *file = "nohup.out";
-      int flags = O_CREAT | O_WRONLY | O_APPEND;
-      mode_t mode = S_IRUSR | S_IWUSR;
-      mode_t umask_value = umask (0);
-      out_fd = (redirecting_stdout
-                ? fd_reopen (STDOUT_FILENO, file, flags, mode)
-                : open (file, flags, mode));
+      అక్షరం *లోపల_home = ఖాళీ;
+      అక్షరం స్థిరరాశి *file = "nohup.out";
+      పూర్ణాంకం flags = O_CREAT | O_WRONLY | O_APPEND;
+      mode_t బహుళకం_2 = S_IRUSR | S_IWUSR;
+      mode_t umask_విలువ = umask (0);
+      బహిర్గతం_fd = (redirecting_stdout
+                ? fd_reopen (STDOUT_FILENO, file, flags, బహుళకం_2)
+                : open (file, flags, బహుళకం_2));
 
-      if (out_fd < 0)
+      ఒకవేళ (బహిర్గతం_fd < 0)
         {
-          int saved_errno = errno;
-          char const *home = getenv ("HOME");
-          if (home)
+          పూర్ణాంకం saved_errno = errno;
+          అక్షరం స్థిరరాశి *home = getenv ("HOME");
+          ఒకవేళ (home)
             {
-              in_home = file_name_concat (home, file, NULL);
-              out_fd = (redirecting_stdout
-                        ? fd_reopen (STDOUT_FILENO, in_home, flags, mode)
-                        : open (in_home, flags, mode));
+              లోపల_home = file_name_concat (home, file, ఖాళీ);
+              బహిర్గతం_fd = (redirecting_stdout
+                        ? fd_reopen (STDOUT_FILENO, లోపల_home, flags, బహుళకం_2)
+                        : open (లోపల_home, flags, బహుళకం_2));
             }
-          if (out_fd < 0)
+          ఒకవేళ (బహిర్గతం_fd < 0)
             {
-              int saved_errno2 = errno;
+              పూర్ణాంకం saved_errno2 = errno;
               error (0, saved_errno, _("failed to open %s"), quoteaf (file));
-              if (in_home)
+              ఒకవేళ (లోపల_home)
                 error (0, saved_errno2, _("failed to open %s"),
-                       quoteaf (in_home));
-              return exit_internal_failure;
+                       quoteaf (లోపల_home));
+              తిరిగి exit_అంతర్గత_failure;
             }
-          file = in_home;
+          file = లోపల_home;
         }
 
-      umask (umask_value);
+      umask (umask_విలువ);
       error (0, 0,
-             _(ignoring_input
+             _(ignoring_ఆదానం
                ? N_("ignoring input and appending output to %s")
                : N_("appending output to %s")),
              quoteaf (file));
-      free (in_home);
+      విడుదల (లోపల_home);
     }
 
   /* If standard error is a tty, redirect it.  */
-  int saved_stderr_fd = STDERR_FILENO;
-  if (redirecting_stderr)
+  పూర్ణాంకం saved_stderr_fd = STDERR_FILENO;
+  ఒకవేళ (redirecting_stderr)
     {
       /* Save a copy of stderr before redirecting, so we can use the original
          if execve fails.  It's no big deal if this dup fails.  It might
@@ -182,19 +182,19 @@ main (int argc, char **argv)
       saved_stderr_fd = fcntl (STDERR_FILENO, F_DUPFD_CLOEXEC,
                                STDERR_FILENO + 1);
 
-      if (!redirecting_stdout)
+      ఒకవేళ (!redirecting_stdout)
         error (0, 0,
-               _(ignoring_input
+               _(ignoring_ఆదానం
                  ? N_("ignoring input and redirecting standard error "
                       "to standard output")
                  : N_("redirecting standard error to standard output")));
 
-      if (dup2 (out_fd, STDERR_FILENO) < 0)
-        error (exit_internal_failure, errno,
+      ఒకవేళ (dup2 (బహిర్గతం_fd, STDERR_FILENO) < 0)
+        error (exit_అంతర్గత_failure, errno,
                _("failed to redirect standard error"));
 
-      if (stdout_is_closed)
-        close (out_fd);
+      ఒకవేళ (stdout_is_closed)
+        close (బహిర్గతం_fd);
     }
 
   /* error() flushes stderr, but does not check for write failure.
@@ -203,18 +203,18 @@ main (int argc, char **argv)
      encountered a write failure, there is no need to try calling
      error() again, particularly since we may have just changed the
      underlying fd out from under stderr.  */
-  if (ferror (stderr))
-    return exit_internal_failure;
+  ఒకవేళ (ferror (stderr))
+    తిరిగి exit_అంతర్గత_failure;
 
   /* Windows does not support SIGHUP.  */
-#ifdef SIGHUP
-  signal (SIGHUP, SIG_IGN);
-#endif
+#నిర్వచితమైతే SIGHUP
+  సంకేతం (SIGHUP, SIG_IGN);
+#అయితే_ముగింపు
 
-  char **cmd = argv + optind;
+  అక్షరం **cmd = argv + optind;
   execvp (*cmd, cmd);
-  int exit_status = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
-  int saved_errno = errno;
+  పూర్ణాంకం exit_స్థితి = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
+  పూర్ణాంకం saved_errno = errno;
 
   /* The execve failed.  Output a diagnostic to stderr only if:
      - stderr was initially redirected to a non-tty, or
@@ -222,8 +222,8 @@ main (int argc, char **argv)
      can dup2 it to point back to that same tty.
      In other words, output the diagnostic if possible, but only if
      it will go to the original stderr.  */
-  if (dup2 (saved_stderr_fd, STDERR_FILENO) == STDERR_FILENO)
+  ఒకవేళ (dup2 (saved_stderr_fd, STDERR_FILENO) == STDERR_FILENO)
     error (0, saved_errno, _("failed to run command %s"), quoteaf (*cmd));
 
-  return exit_status;
+  తిరిగి exit_స్థితి;
 }

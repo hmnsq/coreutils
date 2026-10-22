@@ -17,26 +17,26 @@
 /* Written by Paul Rubin, Arnold Robbins, Jim Kingdon, David MacKenzie,
    and Randy Smith. */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#అన్తర్భావ <config.h>
+#అన్తర్భావ <stdio.h>
+#అన్తర్భావ <getopt.h>
+#అన్తర్భావ <sys/types.h>
 
-#include "system.h"
-#include "argmatch.h"
-#include "assure.h"
-#include "fd-reopen.h"
-#include "parse-datetime.h"
-#include "posixtm.h"
-#include "posixver.h"
-#include "quote.h"
-#include "stat-time.h"
-#include "utimens.h"
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "argmatch.h"
+#అన్తర్భావ "assure.h"
+#అన్తర్భావ "fd-reopen.h"
+#అన్తర్భావ "parse-datetime.h"
+#అన్తర్భావ "posixtm.h"
+#అన్తర్భావ "posixver.h"
+#అన్తర్భావ "quote.h"
+#అన్తర్భావ "stat-time.h"
+#అన్తర్భావ "utimens.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "touch"
+#నిర్వచించు కార్యక్రమం_NAME "touch"
 
-#define AUTHORS \
+#నిర్వచించు AUTHORS \
   proper_name ("Paul Rubin"), \
   proper_name ("Arnold Robbins"), \
   proper_name ("Jim Kingdon"), \
@@ -44,137 +44,137 @@
   proper_name ("Randy Smith")
 
 /* Bitmasks for 'change_times'. */
-#define CH_ATIME 1
-#define CH_MTIME 2
+#నిర్వచించు CH_ATIME 1
+#నిర్వచించు CH_MTIME 2
 
 /* Which timestamps to change. */
-static int change_times;
+స్థిర పూర్ణాంకం change_times;
 
 /* (-c) If true, don't create if not already there.  */
-static bool no_create;
+స్థిర bool no_create;
 
 /* (-r) If true, use times from a reference file.  */
-static bool use_ref;
+స్థిర bool use_ref;
 
 /* (-h) If true, change the times of an existing symlink, if possible.  */
-static bool no_dereference;
+స్థిర bool no_dereference;
 
 /* If true, the only thing we have to do is change both the
    modification and access time to the current time, so we don't
    have to own the file, just be able to read and write it.
    On some systems, we can do this if we own the file, even though
    we have neither read nor write access to it.  */
-static bool amtime_now;
+స్థిర bool amtime_now;
 
 /* New access and modification times to use when setting time.  */
-static struct timespec newtime[2];
+స్థిర నిర్మాణం timespec newtime[2];
 
 /* File to use for -r. */
-static char *ref_file;
+స్థిర అక్షరం *ref_file;
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+గణన
 {
-  TIME_OPTION = CHAR_MAX + 1
+  సమయం_OPTION = CHAR_MAX + 1
 };
 
-static struct option const longopts[] =
+స్థిర నిర్మాణం option స్థిరరాశి longopts[] =
 {
-  {"time", required_argument, NULL, TIME_OPTION},
-  {"no-create", no_argument, NULL, 'c'},
-  {"date", required_argument, NULL, 'd'},
-  {"reference", required_argument, NULL, 'r'},
-  {"no-dereference", no_argument, NULL, 'h'},
+  {"time", required_వాదం, ఖాళీ, సమయం_OPTION},
+  {"no-create", no_వాదం, ఖాళీ, 'c'},
+  {"date", required_వాదం, ఖాళీ, 'd'},
+  {"reference", required_వాదం, ఖాళీ, 'r'},
+  {"no-dereference", no_వాదం, ఖాళీ, 'h'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_సంస్కరణ_OPTION_DECL},
+  {ఖాళీ, 0, ఖాళీ, 0}
 };
 
 /* Valid arguments to the '--time' option. */
-static char const *const time_args[] =
+స్థిర అక్షరం స్థిరరాశి *స్థిరరాశి సమయం_వాదనలు[] =
 {
-  "atime", "access", "use", "mtime", "modify", NULL
+  "atime", "access", "use", "mtime", "modify", ఖాళీ
 };
 
 /* The bits in 'change_times' that those arguments set. */
-static int const time_masks[] =
+స్థిర పూర్ణాంకం స్థిరరాశి సమయం_masks[] =
 {
   CH_ATIME, CH_ATIME, CH_ATIME, CH_MTIME, CH_MTIME
 };
 
 /* The interpretation of FLEX_DATE as a date, relative to NOW.  */
 
-static struct timespec
-date_relative (char const *flex_date, struct timespec now)
+స్థిర నిర్మాణం timespec
+date_relative (అక్షరం స్థిరరాశి *flex_date, నిర్మాణం timespec now)
 {
-  struct timespec result;
-  if (! parse_datetime (&result, flex_date, &now))
+  నిర్మాణం timespec ఫలితం;
+  ఒకవేళ (! parse_datetime (&ఫలితం, flex_date, &now))
     error (EXIT_FAILURE, 0, _("invalid date format %s"), quote (flex_date));
-  return result;
+  తిరిగి ఫలితం;
 }
 
 /* Update the time of file FILE according to the options given.
    Return true if successful.  */
 
-static bool
-touch (char const *file)
+స్థిర bool
+touch (అక్షరం స్థిరరాశి *file)
 {
-  int fd = -1;
-  int open_errno = 0;
-  struct timespec const *t = newtime;
+  పూర్ణాంకం fd = -1;
+  పూర్ణాంకం open_errno = 0;
+  నిర్మాణం timespec స్థిరరాశి *t = newtime;
 
-  if (streq (file, "-"))
+  ఒకవేళ (streq (file, "-"))
     fd = STDOUT_FILENO;
-  else if (! (no_create || no_dereference))
+  లేకపోతే ఒకవేళ (! (no_create || no_dereference))
     {
       /* Try to open FILE, creating it if necessary.  */
       fd = fd_reopen (STDIN_FILENO, file,
-                      O_WRONLY | O_CREAT | O_NONBLOCK | O_NOCTTY, MODE_RW_UGO);
-      if (fd < 0)
+                      O_WRONLY | O_CREAT | O_NONBLOCK | O_NOCTTY, బహుళకం_RW_UGO);
+      ఒకవేళ (fd < 0)
         open_errno = errno;
     }
 
-  if (change_times != (CH_ATIME | CH_MTIME))
+  ఒకవేళ (change_times != (CH_ATIME | CH_MTIME))
     {
       /* We're setting only one of the time values.  */
-      if (change_times == CH_MTIME)
+      ఒకవేళ (change_times == CH_MTIME)
         newtime[0].tv_nsec = UTIME_OMIT;
-      else
+      లేకపోతే
         {
           affirm (change_times == CH_ATIME);
           newtime[1].tv_nsec = UTIME_OMIT;
         }
     }
 
-  if (amtime_now)
+  ఒకవేళ (amtime_now)
     {
       /* Pass NULL to futimens so it will not fail if we have
          write access to the file, but don't own it.  */
-      t = NULL;
+      t = ఖాళీ;
     }
 
-  char const *file_opt = fd == STDOUT_FILENO ? NULL : file;
-  int atflag = no_dereference ? AT_SYMLINK_NOFOLLOW : 0;
-  int utime_errno = (fdutimensat (fd, AT_FDCWD, file_opt, t, atflag) == 0
+  అక్షరం స్థిరరాశి *file_opt = fd == STDOUT_FILENO ? ఖాళీ : file;
+  పూర్ణాంకం atflag = no_dereference ? AT_SYMLINK_NOFOLLOW : 0;
+  పూర్ణాంకం utime_errno = (fdutimensat (fd, AT_FDCWD, file_opt, t, atflag) == 0
                      ? 0 : errno);
 
-  if (fd == STDIN_FILENO)
+  ఒకవేళ (fd == STDIN_FILENO)
     {
-      if (close (STDIN_FILENO) != 0)
+      ఒకవేళ (close (STDIN_FILENO) != 0)
         {
           error (0, errno, _("failed to close %s"), quoteaf (file));
-          return false;
+          తిరిగి false;
         }
     }
-  else if (fd == STDOUT_FILENO)
+  లేకపోతే ఒకవేళ (fd == STDOUT_FILENO)
     {
       /* Do not diagnose "touch -c - >&-".  */
-      if (utime_errno == EBADF && no_create)
-        return true;
+      ఒకవేళ (utime_errno == EBADF && no_create)
+        తిరిగి true;
     }
 
-  if (utime_errno != 0)
+  ఒకవేళ (utime_errno != 0)
     {
       /* Don't diagnose with open_errno if FILE is a directory, as that
          would give a bogus diagnostic for e.g., 'touch /' (assuming we
@@ -182,11 +182,11 @@ touch (char const *file)
          other systems, opening a directory like "." fails with EINVAL.
          (On SunOS 4 it was EPERM but that's obsolete.)  On macOS 26
          opening "/" fails with EEXIST.  */
-      struct stat st;
-      if (open_errno
+      నిర్మాణం stat st;
+      ఒకవేళ (open_errno
           && ! (open_errno == EISDIR
                 || ((open_errno == EINVAL || open_errno == EEXIST)
-                    && stat (file, &st) == 0 && S_ISDIR (st.st_mode))))
+                    && stat (file, &st) == 0 && S_ISDIR (st.st_బహుళకం))))
         {
           /* The wording of this diagnostic should cover at least two cases:
              - the file does not exist, but the parent directory is unwritable
@@ -194,49 +194,49 @@ touch (char const *file)
              I think it's not worth trying to distinguish them.  */
           error (0, open_errno, _("cannot touch %s"), quoteaf (file));
         }
-      else
+      లేకపోతే
         {
-          if (no_create && utime_errno == ENOENT)
-            return true;
+          ఒకవేళ (no_create && utime_errno == ENOENT)
+            తిరిగి true;
           error (0, utime_errno, _("setting times of %s"), quoteaf (file));
         }
-      return false;
+      తిరిగి false;
     }
 
-  return true;
+  తిరిగి true;
 }
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("Usage: %s [OPTION]... FILE...\n"), program_name);
+      రాయి (_("Usage: %s [OPTION]... FILE...\n"), కార్యక్రమం_name);
       fputs (_("\
-Update the access and modification times of each FILE to the current time.\n\
+Update the access and modification times యొక్క each FILE గమ్యం the current సమయం.\n\
 \n\
-A FILE argument that does not exist is created empty, unless -c or -h\n\
+A FILE వాదం that does not exist is created ఖాళీలు, unless -c or -h\n\
 is supplied.\n\
 \n\
-A FILE argument string of - is handled specially and causes touch to\n\
-change the times of the file associated with standard output.\n\
+A FILE వాదం string యొక్క - is handled specially and causes touch గమ్యం\n\
+change the times యొక్క the file associated with standard output.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
 
       oputs (_("\
   -a\n\
-         change only the access time\n\
+         change only the access సమయం\n\
 "));
       oputs (_("\
   -c, --no-create\n\
-         do not create any files\n\
+         చేయి not create any files\n\
 "));
       oputs (_("\
   -d, --date=STRING\n\
-         parse STRING and use it instead of current time\n\
+         parse STRING and use it instead యొక్క current సమయం\n\
 "));
       oputs (_("\
   -f\n\
@@ -244,180 +244,180 @@ change the times of the file associated with standard output.\n\
 "));
       oputs (_("\
   -h, --no-dereference\n\
-         affect each symbolic link instead of any referenced file;\n\
-         useful only on systems that can change the timestamps of a symlink\n\
+         affect each symbolic link instead యొక్క any referenced file;\n\
+         useful only on systems that can change the timestamps యొక్క a symlink\n\
 "));
       oputs (_("\
   -m\n\
-         change only the modification time\n\
+         change only the modification సమయం\n\
 "));
       oputs (_("\
   -r, --reference=FILE\n\
-         use this file's times instead of current time\n\
+         use this file's times instead యొక్క current సమయం\n\
 "));
       oputs (_("\
   -t [[CC]YY]MMDDhhmm[.ss]\n\
-         use specified time instead of current time,\n\
-         with a date-time format that differs from -d's\n\
+         use specified సమయం instead యొక్క current సమయం,\n\
+         with a date-సమయం format that differs from -d's\n\
 "));
       oputs (_("\
-      --time=WORD\n\
-         specify which time to change:\n\
-         access time (-a): 'access', 'atime', 'use';\n\
-         modification time (-m): 'modify', 'mtime'\n\
+      --సమయం=మాట\n\
+         specify which సమయం గమ్యం change:\n\
+         access సమయం (-a): 'access', 'atime', 'use';\n\
+         modification సమయం (-m): 'modify', 'mtime'\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
-  bool date_set = false;
-  char const *flex_date = NULL;
+  bool date_సమితి = false;
+  అక్షరం స్థిరరాశి *flex_date = ఖాళీ;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  int c;
-  while ((c = getopt_long (argc, argv, "acd:fhmr:t:", longopts, NULL)) != -1)
+  పూర్ణాంకం c;
+  అయితే ((c = getopt_long (argc, argv, "acd:fhmr:t:", longopts, ఖాళీ)) != -1)
     {
-      switch (c)
+      ఎంపిక (c)
         {
-        case 'a':
+        స్థితి 'a':
           change_times |= CH_ATIME;
-          break;
+          ఆపు;
 
-        case 'c':
+        స్థితి 'c':
           no_create = true;
-          break;
+          ఆపు;
 
-        case 'd':
+        స్థితి 'd':
           flex_date = optarg;
-          break;
+          ఆపు;
 
-        case 'f':
-          break;
+        స్థితి 'f':
+          ఆపు;
 
-        case 'h':
+        స్థితి 'h':
           no_dereference = true;
-          break;
+          ఆపు;
 
-        case 'm':
+        స్థితి 'm':
           change_times |= CH_MTIME;
-          break;
+          ఆపు;
 
-        case 'r':
+        స్థితి 'r':
           use_ref = true;
           ref_file = optarg;
-          break;
+          ఆపు;
 
-        case 't':
-          if (! posixtime (&newtime[0].tv_sec, optarg,
+        స్థితి 't':
+          ఒకవేళ (! posixtime (&newtime[0].tv_sec, optarg,
                            PDS_LEADING_YEAR | PDS_CENTURY | PDS_SECONDS))
             error (EXIT_FAILURE, 0, _("invalid date format %s"),
                    quote (optarg));
           newtime[0].tv_nsec = 0;
           newtime[1] = newtime[0];
-          date_set = true;
-          break;
+          date_సమితి = true;
+          ఆపు;
 
-        case TIME_OPTION:	/* --time */
+        స్థితి సమయం_OPTION:	/* --time */
           change_times |= XARGMATCH ("--time", optarg,
-                                     time_args, time_masks);
-          break;
+                                     సమయం_వాదనలు, సమయం_masks);
+          ఆపు;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_సంస్కరణ_CHAR (కార్యక్రమం_NAME, AUTHORS);
 
-        default:
+        అప్రమేయ:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (change_times == 0)
+  ఒకవేళ (change_times == 0)
     change_times = CH_ATIME | CH_MTIME;
 
-  if (date_set && (use_ref || flex_date))
+  ఒకవేళ (date_సమితి && (use_ref || flex_date))
     {
       error (0, 0, _("cannot specify times from more than one source"));
       usage (EXIT_FAILURE);
     }
 
-  if (use_ref)
+  ఒకవేళ (use_ref)
     {
-      struct stat ref_stats;
+      నిర్మాణం stat ref_stats;
       /* Don't use (no_dereference?lstat:stat) (args), since stat
          might be an object-like macro.  */
-      if (no_dereference ? lstat (ref_file, &ref_stats)
+      ఒకవేళ (no_dereference ? lstat (ref_file, &ref_stats)
           : stat (ref_file, &ref_stats))
         error (EXIT_FAILURE, errno,
                _("failed to get attributes of %s"), quoteaf (ref_file));
       newtime[0] = get_stat_atime (&ref_stats);
       newtime[1] = get_stat_mtime (&ref_stats);
-      date_set = true;
-      if (flex_date)
+      date_సమితి = true;
+      ఒకవేళ (flex_date)
         {
-          if (change_times & CH_ATIME)
+          ఒకవేళ (change_times & CH_ATIME)
             newtime[0] = date_relative (flex_date, newtime[0]);
-          if (change_times & CH_MTIME)
+          ఒకవేళ (change_times & CH_MTIME)
             newtime[1] = date_relative (flex_date, newtime[1]);
         }
     }
-  else
+  లేకపోతే
     {
-      if (flex_date)
+      ఒకవేళ (flex_date)
         {
-          struct timespec now = current_timespec ();
+          నిర్మాణం timespec now = current_timespec ();
           newtime[1] = newtime[0] = date_relative (flex_date, now);
-          date_set = true;
+          date_సమితి = true;
 
           /* If neither -a nor -m is specified, treat "-d now" as if
              it were absent; this lets "touch" succeed more often in
              the presence of restrictive permissions.  */
-          if (change_times == (CH_ATIME | CH_MTIME)
+          ఒకవేళ (change_times == (CH_ATIME | CH_MTIME)
               && timespec_cmp (newtime[0], now) == 0)
             {
               /* Check that it really was "-d now", and not a timestamp
                  that just happens to be the current time.  */
-              struct timespec notnow, notnow1;
+              నిర్మాణం timespec notnow, notnow1;
               notnow.tv_sec = now.tv_sec ^ 1;
               notnow.tv_nsec = now.tv_nsec;
               notnow1 = date_relative (flex_date, notnow);
-              if (timespec_cmp (notnow1, notnow) == 0)
-                date_set = false;
+              ఒకవేళ (timespec_cmp (notnow1, notnow) == 0)
+                date_సమితి = false;
             }
         }
     }
 
   /* The obsolete 'MMDDhhmm[YY]' form is valid IFF there are
      two or more non-option arguments.  */
-  if (!date_set && 2 <= argc - optind && posix2_version () < 200112
+  ఒకవేళ (!date_సమితి && 2 <= argc - optind && posix2_సంస్కరణ () < 200112
       && posixtime (&newtime[0].tv_sec, argv[optind],
                     PDS_TRAILING_YEAR | PDS_PRE_2000))
     {
       newtime[0].tv_nsec = 0;
       newtime[1] = newtime[0];
-      date_set = true;
+      date_సమితి = true;
 
-      if (! getenv ("POSIXLY_CORRECT"))
+      ఒకవేళ (! getenv ("POSIXLY_CORRECT"))
         {
-          struct tm const *tm = localtime (&newtime[0].tv_sec);
+          నిర్మాణం tm స్థిరరాశి *tm = localtime (&newtime[0].tv_sec);
 
           /* Technically, it appears that even a deliberate attempt to cause
              the above localtime to return NULL will always fail because our
              posixtime implementation rejects all dates for which localtime
              would fail.  However, skip the warning if it ever fails.  */
-          if (tm)
+          ఒకవేళ (tm)
             error (0, 0,
                    _("warning: 'touch %s' is obsolete; use "
                      "'touch -t %04ld%02d%02d%02d%02d.%02d'"),
@@ -429,23 +429,23 @@ main (int argc, char **argv)
       optind++;
     }
 
-  if (!date_set)
+  ఒకవేళ (!date_సమితి)
     {
-      if (change_times == (CH_ATIME | CH_MTIME))
+      ఒకవేళ (change_times == (CH_ATIME | CH_MTIME))
         amtime_now = true;
-      else
+      లేకపోతే
         newtime[1].tv_nsec = newtime[0].tv_nsec = UTIME_NOW;
     }
 
-  if (optind == argc)
+  ఒకవేళ (optind == argc)
     {
       error (0, 0, _("missing file operand"));
       usage (EXIT_FAILURE);
     }
 
   bool ok = true;
-  for (; optind < argc; ++optind)
+  కొరకు (; optind < argc; ++optind)
     ok &= touch (argv[optind]);
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  తిరిగి ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

@@ -1,1 +1,1 @@
-bool show_date (char const *format, struct timespec when, timezone_t tz);
+bool show_date (అక్షరం స్థిరరాశి *format, నిర్మాణం timespec when, timezone_t tz);

@@ -17,54 +17,54 @@
 
 /* Written by Jim Meyering.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
+#అన్తర్భావ <config.h>
+#అన్తర్భావ <stdio.h>
+#అన్తర్భావ <sys/types.h>
 
-#include "system.h"
-#include "long-options.h"
-#include "quote.h"
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "long-options.h"
+#అన్తర్భావ "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "hostid"
+#నిర్వచించు కార్యక్రమం_NAME "hostid"
 
-#define AUTHORS proper_name ("Jim Meyering")
+#నిర్వచించు AUTHORS proper_name ("Jim Meyering")
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("\
+      రాయి (_("\
 Usage: %s [OPTION]\n\
-Print the numeric identifier (in hexadecimal) for the current host.\n\
+Print the numeric identifier (లోపల hexadecimal) కొరకు the current host.\n\
 \n\
-"), program_name);
+"), కార్యక్రమం_name);
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
-                                   Version, true, usage, AUTHORS,
-                                   (char const *) NULL);
+  parse_gnu_standard_options_only (argc, argv, కార్యక్రమం_NAME, PACKAGE_NAME,
+                                   సంస్కరణ, true, usage, AUTHORS,
+                                   (అక్షరం స్థిరరాశి *) ఖాళీ);
 
-  if (optind < argc)
+  ఒకవేళ (optind < argc)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind]));
       usage (EXIT_FAILURE);
@@ -73,9 +73,9 @@ main (int argc, char **argv)
   /* POSIX says gethostid returns a "32-bit identifier" but is silent
      whether it's sign-extended.  Turn off any sign-extension.  This
      is a no-op unless unsigned int is wider than 32 bits.  */
-  unsigned int id = gethostid () & 0xffffffff;
+  గుర్తులేని పూర్ణాంకం id = gethostid () & 0xffffffff;
 
-  printf ("%08x\n", id);
+  రాయి ("%08x\n", id);
 
-  return EXIT_SUCCESS;
+  తిరిగి EXIT_SUCCESS;
 }

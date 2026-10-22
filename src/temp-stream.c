@@ -15,26 +15,26 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
+#అన్తర్భావ <config.h>
 
-#include <stdio.h>
+#అన్తర్భావ <stdio.h>
 
-#include "stdlib--.h"  /* For mkstemp that returns safer FDs.  */
-#include "system.h"
-#include "tmpdir.h"
+#అన్తర్భావ "stdlib--.h"  /* For mkstemp that returns safer FDs.  */
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "tmpdir.h"
 
-#include "temp-stream.h"
+#అన్తర్భావ "temp-stream.h"
 
 
-#if defined __MSDOS__ || defined _WIN32
+#ఒకవేళ defined __MSDOS__ || defined _WIN32
 /* Define this to non-zero on systems for which the regular mechanism
    (of unlinking an open file and expecting to be able to write, seek
    back to the beginning, then reread it) doesn't work.  E.g., on Windows
    and DOS systems.  */
 # define DONT_UNLINK_WHILE_OPEN 1
-#endif
+#అయితే_ముగింపు
 
-#if DONT_UNLINK_WHILE_OPEN
+#ఒకవేళ DONT_UNLINK_WHILE_OPEN
 
 /* FIXME-someday: remove all of this DONT_UNLINK_WHILE_OPEN junk.
    Using atexit like this is wrong, since it can fail
@@ -42,36 +42,36 @@
    But this isn't a big deal, since the code is used only on WOE/DOS
    systems, and few people invoke tac on that many nonseekable files.  */
 
-static char const *file_to_remove;
-static FILE *fp_to_close;
+స్థిర అక్షరం స్థిరరాశి *file_గమ్యం_remove;
+స్థిర FILE *fp_గమ్యం_close;
 
-static void
-unlink_tempfile (void)
+స్థిర శూన్య
+unlink_tempfile (శూన్య)
 {
-  fclose (fp_to_close);
-  unlink (file_to_remove);
+  fclose (fp_గమ్యం_close);
+  unlink (file_గమ్యం_remove);
 }
 
-static void
-record_or_unlink_tempfile (char const *fn, FILE *fp)
+స్థిర శూన్య
+రికార్డు_or_unlink_tempfile (అక్షరం స్థిరరాశి *fn, FILE *fp)
 {
-  if (!file_to_remove)
+  ఒకవేళ (!file_గమ్యం_remove)
     {
-      file_to_remove = fn;
-      fp_to_close = fp;
+      file_గమ్యం_remove = fn;
+      fp_గమ్యం_close = fp;
       atexit (unlink_tempfile);
     }
 }
 
-#else
+#లేకపోతే
 
-static void
-record_or_unlink_tempfile (char const *fn, MAYBE_UNUSED FILE *fp)
+స్థిర శూన్య
+రికార్డు_or_unlink_tempfile (అక్షరం స్థిరరాశి *fn, MAYBE_వాడని FILE *fp)
 {
   unlink (fn);
 }
 
-#endif
+#అయితే_ముగింపు
 
 /* A wrapper around mkstemp that gives us both an open stream pointer,
    FP, and the corresponding FILE_NAME.  Always return the same FP/name
@@ -81,31 +81,31 @@ record_or_unlink_tempfile (char const *fn, MAYBE_UNUSED FILE *fp)
 
    Returns TRUE on success.  */
 bool
-temp_stream (FILE **fp, char **file_name)
+తాత్కాలిక_ప్రవాహం (FILE **fp, అక్షరం **file_name)
 {
-  static char *tempfile = NULL;
-  static FILE *tmp_fp;
-  if (tempfile == NULL)
+  స్థిర అక్షరం *tempfile = ఖాళీ;
+  స్థిర FILE *tmp_fp;
+  ఒకవేళ (tempfile == ఖాళీ)
     {
-      char *tempbuf = NULL;
+      అక్షరం *tempbuf = ఖాళీ;
       size_t tempbuf_len = 128;
 
-      while (true)
+      అయితే (true)
         {
-          if (! (tempbuf = realloc (tempbuf, tempbuf_len)))
+          ఒకవేళ (! (tempbuf = realloc (tempbuf, tempbuf_len)))
             {
               error (0, errno, _("failed to make temporary file name"));
-              return false;
+              తిరిగి false;
             }
 
-          if (path_search (tempbuf, tempbuf_len, NULL, "cutmp", true) == 0)
-            break;
+          ఒకవేళ (మార్గం_శోధన (tempbuf, tempbuf_len, ఖాళీ, "cutmp", true) == 0)
+            ఆపు;
 
-          if (errno != EINVAL || PATH_MAX / 2 < tempbuf_len)
+          ఒకవేళ (errno != EINVAL || PATH_MAX / 2 < tempbuf_len)
             {
               error (0, errno == EINVAL ? ENAMETOOLONG : errno,
                      _("failed to make temporary file name"));
-              return false;
+              తిరిగి false;
             }
 
           tempbuf_len *= 2;
@@ -122,43 +122,43 @@ temp_stream (FILE **fp, char **file_name)
          FIXME: clean up upon fatal signal.  Don't block them, in case
          $TMPDIR is a remote file system.  */
 
-      int fd = mkstemp (tempfile);
-      if (fd < 0)
+      పూర్ణాంకం fd = mkstemp (tempfile);
+      ఒకవేళ (fd < 0)
         {
           error (0, errno, _("failed to create temporary file %s"),
                  quoteaf (tempfile));
-          goto Reset;
+          వెళ్ళు Reset;
         }
 
-      tmp_fp = fdopen (fd, (O_BINARY ? "w+b" : "w+"));
-      if (! tmp_fp)
+      tmp_fp = fdopen (fd, (O_ద్విమాన ? "w+b" : "w+"));
+      ఒకవేళ (! tmp_fp)
         {
           error (0, errno, _("failed to open %s for writing"),
                  quoteaf (tempfile));
           close (fd);
           unlink (tempfile);
         Reset:
-          free (tempfile);
-          tempfile = NULL;
-          return false;
+          విడుదల (tempfile);
+          tempfile = ఖాళీ;
+          తిరిగి false;
         }
 
-      record_or_unlink_tempfile (tempfile, tmp_fp);
+      రికార్డు_or_unlink_tempfile (tempfile, tmp_fp);
     }
-  else
+  లేకపోతే
     {
       clearerr (tmp_fp);
-      if (fseeko (tmp_fp, 0, SEEK_SET) < 0
+      ఒకవేళ (fseeko (tmp_fp, 0, SEEK_SET) < 0
           || ftruncate (fileno (tmp_fp), 0) < 0)
         {
           error (0, errno, _("failed to rewind stream for %s"),
                  quoteaf (tempfile));
-          return false;
+          తిరిగి false;
         }
     }
 
   *fp = tmp_fp;
-  if (file_name)
+  ఒకవేళ (file_name)
     *file_name = tempfile;
-  return true;
+  తిరిగి true;
 }

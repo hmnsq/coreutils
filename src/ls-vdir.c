@@ -1,2 +1,2 @@
-#include "ls.h"
-enum ls_modes ls_mode = LS_LONG_FORMAT;
+#అన్తర్భావ "ls.h"
+గణన ls_modes ls_బహుళకం = LS_LONG_FORMAT;

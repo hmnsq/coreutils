@@ -14,37 +14,37 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#ifndef __CKSUM_CRC_H__
+#నిర్వచితం_కాకపోతే __CKSUM_CRC_H__
 # define __CKSUM_CRC_H__
 
 # include <stdint.h>
 # include <stdio.h>
 
-extern bool cksum_debug;
+బాహ్య bool cksum_debug;
 
-extern int
-crc_sum_stream (FILE *stream, void *resstream, intmax_t *length);
+బాహ్య పూర్ణాంకం
+చక్రీయ_తనిఖీ_కూడిక_ప్రవాహం (FILE *ప్రవాహం, శూన్య *resstream, intmax_t *నిడివి);
 
-extern int
-crc32b_sum_stream (FILE *stream, void *resstream, intmax_t *length);
+బాహ్య పూర్ణాంకం
+crc32b_కూడిక_ప్రవాహం (FILE *ప్రవాహం, శూన్య *resstream, intmax_t *నిడివి);
 
-extern void
-output_crc (char const *file, int binary_file, void const *digest, bool raw,
-            bool tagged, unsigned char delim, bool args, intmax_t length)
+బాహ్య శూన్య
+output_చక్రీయ_తనిఖీ (అక్షరం స్థిరరాశి *file, పూర్ణాంకం ద్విమాన_file, శూన్య స్థిరరాశి *digest, bool raw,
+            bool tagged, గుర్తులేని అక్షరం delim, bool వాదనలు, intmax_t నిడివి)
   _GL_ATTRIBUTE_NONNULL ((3));
 
-extern bool
-cksum_vmull (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out);
+బాహ్య bool
+cksum_vmull (FILE *fp, uint_fast32_t *చక్రీయ_తనిఖీ_బహిర్గతం, intmax_t *నిడివి_బహిర్గతం);
 
-extern bool
-cksum_pclmul (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out);
+బాహ్య bool
+cksum_pclmul (FILE *fp, uint_fast32_t *చక్రీయ_తనిఖీ_బహిర్గతం, intmax_t *నిడివి_బహిర్గతం);
 
-extern bool
-cksum_avx2 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out);
+బాహ్య bool
+cksum_avx2 (FILE *fp, uint_fast32_t *చక్రీయ_తనిఖీ_బహిర్గతం, intmax_t *నిడివి_బహిర్గతం);
 
-extern bool
-cksum_avx512 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out);
+బాహ్య bool
+cksum_avx512 (FILE *fp, uint_fast32_t *చక్రీయ_తనిఖీ_బహిర్గతం, intmax_t *నిడివి_బహిర్గతం);
 
-extern uint_fast32_t const crctab[8][256];
+బాహ్య uint_fast32_t స్థిరరాశి crctab[8][256];
 
-#endif
+#అయితే_ముగింపు

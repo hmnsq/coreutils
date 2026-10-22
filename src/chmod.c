@@ -16,32 +16,32 @@
 
 /* Written by David MacKenzie <djm@gnu.ai.mit.edu> */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#అన్తర్భావ <config.h>
+#అన్తర్భావ <stdio.h>
+#అన్తర్భావ <getopt.h>
+#అన్తర్భావ <sys/types.h>
 
-#include "system.h"
-#include "assure.h"
-#include "dev-ino.h"
-#include "filemode.h"
-#include "fts-missing.h"
-#include "ignore-value.h"
-#include "modechange.h"
-#include "quote.h"
-#include "root-dev-ino.h"
-#include "xfts.h"
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "assure.h"
+#అన్తర్భావ "dev-ino.h"
+#అన్తర్భావ "filemode.h"
+#అన్తర్భావ "fts-missing.h"
+#అన్తర్భావ "ignore-value.h"
+#అన్తర్భావ "modechange.h"
+#అన్తర్భావ "quote.h"
+#అన్తర్భావ "root-dev-ino.h"
+#అన్తర్భావ "xfts.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "chmod"
+#నిర్వచించు కార్యక్రమం_NAME "chmod"
 
-#define AUTHORS \
+#నిర్వచించు AUTHORS \
   proper_name ("David MacKenzie"), \
   proper_name ("Jim Meyering")
 
-struct change_status
+నిర్మాణం change_స్థితి
 {
-  enum
+  గణన
     {
       CH_NO_STAT,
       CH_FAILED,
@@ -49,15 +49,15 @@ struct change_status
       CH_NO_CHANGE_REQUESTED,
       CH_SUCCEEDED
     }
-    status;
-  mode_t old_mode;
-  mode_t new_mode;
+    స్థితి_2;
+  mode_t old_బహుళకం;
+  mode_t new_బహుళకం;
 };
 
-enum Verbosity
+గణన Verbosity
 {
   /* Print a message for each file that is processed.  */
-  V_high,
+  V_ఎగువ,
 
   /* Print a message for each file whose attributes we change.  */
   V_changes_only,
@@ -67,170 +67,170 @@ enum Verbosity
 };
 
 /* The desired change to the mode.  */
-static struct mode_change *change;
+స్థిర నిర్మాణం బహుళకం_change *change;
 
 /* The initial umask value, if it might be needed.  */
-static mode_t umask_value;
+స్థిర mode_t umask_విలువ;
 
 /* If true, change the modes of directories recursively. */
-static bool recurse;
+స్థిర bool recurse;
 
 /* 1 if --dereference, 0 if --no-dereference, -1 if neither has been
    specified.  */
-static int dereference = -1;
+స్థిర పూర్ణాంకం dereference = -1;
 
 /* If true, force silence (suppress most of error messages). */
-static bool force_silent;
+స్థిర bool force_silent;
 
 /* If true, diagnose surprises from naive misuses like "chmod -r file".
    POSIX allows diagnostics here, as portable code is supposed to use
    "chmod -- -r file".  */
-static bool diagnose_surprises;
+స్థిర bool diagnose_surprises;
 
 /* Level of verbosity.  */
-static enum Verbosity verbosity = V_off;
+స్థిర గణన Verbosity verbosity = V_off;
 
 /* Pointer to the device and inode numbers of '/', when --recursive.
    Otherwise NULL.  */
-static struct dev_ino *root_dev_ino;
+స్థిర నిర్మాణం dev_ino *మూలం_dev_ino;
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+గణన
 {
   DEREFERENCE_OPTION = CHAR_MAX + 1,
-  NO_PRESERVE_ROOT,
-  PRESERVE_ROOT,
+  NO_PRESERVE_మూలం,
+  PRESERVE_మూలం,
   REFERENCE_FILE_OPTION
 };
 
-static struct option const long_options[] =
+స్థిర నిర్మాణం option స్థిరరాశి long_options[] =
 {
-  {"changes", no_argument, NULL, 'c'},
-  {"dereference", no_argument, NULL, DEREFERENCE_OPTION},
-  {"recursive", no_argument, NULL, 'R'},
-  {"no-dereference", no_argument, NULL, 'h'},
-  {"no-preserve-root", no_argument, NULL, NO_PRESERVE_ROOT},
-  {"preserve-root", no_argument, NULL, PRESERVE_ROOT},
-  {"quiet", no_argument, NULL, 'f'},
-  {"reference", required_argument, NULL, REFERENCE_FILE_OPTION},
-  {"silent", no_argument, NULL, 'f'},
-  {"verbose", no_argument, NULL, 'v'},
+  {"changes", no_వాదం, ఖాళీ, 'c'},
+  {"dereference", no_వాదం, ఖాళీ, DEREFERENCE_OPTION},
+  {"recursive", no_వాదం, ఖాళీ, 'R'},
+  {"no-dereference", no_వాదం, ఖాళీ, 'h'},
+  {"no-preserve-root", no_వాదం, ఖాళీ, NO_PRESERVE_మూలం},
+  {"preserve-root", no_వాదం, ఖాళీ, PRESERVE_మూలం},
+  {"quiet", no_వాదం, ఖాళీ, 'f'},
+  {"reference", required_వాదం, ఖాళీ, REFERENCE_FILE_OPTION},
+  {"silent", no_వాదం, ఖాళీ, 'f'},
+  {"verbose", no_వాదం, ఖాళీ, 'v'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_సంస్కరణ_OPTION_DECL},
+  {ఖాళీ, 0, ఖాళీ, 0}
 };
 
 /* Return true if the chmodable permission bits of FILE changed.
    The old mode was OLD_MODE, but it was changed to NEW_MODE.  */
 
-static bool
-mode_changed (int dir_fd, char const *file, char const *file_full_name,
-              mode_t old_mode, mode_t new_mode, bool ignore_missing,
+స్థిర bool
+బహుళకం_మారింది (పూర్ణాంకం dir_fd, అక్షరం స్థిరరాశి *file, అక్షరం స్థిరరాశి *file_నిండిన_name,
+              mode_t old_బహుళకం, mode_t new_బహుళకం, bool ignore_missing,
               bool *file_missing)
 {
   *file_missing = false;
-  if (new_mode & (S_ISUID | S_ISGID | S_ISVTX))
+  ఒకవేళ (new_బహుళకం & (S_ISUID | S_ISGID | S_ISVTX))
     {
       /* The new mode contains unusual bits that the call to chmod may
          have silently cleared.  Check whether they actually changed.  */
 
-      struct stat new_stats;
+      నిర్మాణం stat new_stats;
 
-      if (fstatat (dir_fd, file, &new_stats, 0) != 0)
+      ఒకవేళ (fstatat (dir_fd, file, &new_stats, 0) != 0)
         {
           *file_missing = (ignore_missing
                            && ignorable_traversal_errno (errno));
-          if (! *file_missing && ! force_silent)
+          ఒకవేళ (! *file_missing && ! force_silent)
             error (0, errno, _("getting new attributes of %s"),
-                   quoteaf (file_full_name));
-          return false;
+                   quoteaf (file_నిండిన_name));
+          తిరిగి false;
         }
 
-      new_mode = new_stats.st_mode;
+      new_బహుళకం = new_stats.st_బహుళకం;
     }
 
-  return ((old_mode ^ new_mode) & CHMOD_MODE_BITS) != 0;
+  తిరిగి ((old_బహుళకం ^ new_బహుళకం) & CHMOD_బహుళకం_బిట్లు) != 0;
 }
 
 /* Tell the user how/if the MODE of FILE has been changed.
    CH describes what (if anything) has happened. */
 
-static void
-describe_change (char const *file, struct change_status const *ch)
+స్థిర శూన్య
+describe_change (అక్షరం స్థిరరాశి *file, నిర్మాణం change_స్థితి స్థిరరాశి *ch)
 {
-  char perms[12];		/* "-rwxrwxrwx" ls-style modes. */
-  char old_perms[12];
-  char const *fmt;
-  char const *quoted_file = quoteaf (file);
+  అక్షరం perms[12];		/* "-rwxrwxrwx" ls-style modes. */
+  అక్షరం old_perms[12];
+  అక్షరం స్థిరరాశి *fmt;
+  అక్షరం స్థిరరాశి *quoted_file = quoteaf (file);
 
-  switch (ch->status)
+  ఎంపిక (ch->స్థితి_2)
     {
-    case CH_NOT_APPLIED:
-      printf (_("neither symbolic link %s nor referent has been changed\n"),
+    స్థితి CH_NOT_APPLIED:
+      రాయి (_("neither symbolic link %s nor referent has been changed\n"),
               quoted_file);
-      return;
+      తిరిగి;
 
-    case CH_NO_STAT:
-      printf (_("%s could not be accessed\n"), quoted_file);
-      return;
+    స్థితి CH_NO_STAT:
+      రాయి (_("%s could not be accessed\n"), quoted_file);
+      తిరిగి;
 
-    case CH_FAILED: case CH_NO_CHANGE_REQUESTED: case CH_SUCCEEDED:
-      break;
+    స్థితి CH_FAILED: స్థితి CH_NO_CHANGE_REQUESTED: స్థితి CH_SUCCEEDED:
+      ఆపు;
   }
 
-  unsigned long int
-    old_m = ch->old_mode & CHMOD_MODE_BITS,
-    m = ch->new_mode & CHMOD_MODE_BITS;
+  గుర్తులేని దీర్ఘ పూర్ణాంకం
+    old_m = ch->old_బహుళకం & CHMOD_బహుళకం_బిట్లు,
+    m = ch->new_బహుళకం & CHMOD_బహుళకం_బిట్లు;
 
-  strmode (ch->new_mode, perms);
+  strmode (ch->new_బహుళకం, perms);
   perms[10] = '\0';		/* Remove trailing space.  */
 
-  strmode (ch->old_mode, old_perms);
+  strmode (ch->old_బహుళకం, old_perms);
   old_perms[10] = '\0';		/* Remove trailing space.  */
 
-  switch (ch->status)
+  ఎంపిక (ch->స్థితి_2)
     {
-    case CH_SUCCEEDED:
+    స్థితి CH_SUCCEEDED:
       fmt = _("mode of %s changed from %04lo (%s) to %04lo (%s)\n");
-      break;
-    case CH_FAILED:
+      ఆపు;
+    స్థితి CH_FAILED:
       fmt = _("failed to change mode of %s from %04lo (%s) to %04lo (%s)\n");
-      break;
-    case CH_NO_CHANGE_REQUESTED:
+      ఆపు;
+    స్థితి CH_NO_CHANGE_REQUESTED:
       fmt = _("mode of %s retained as %04lo (%s)\n");
-      printf (fmt, quoted_file, m, &perms[1]);
-      return;
-    case CH_NO_STAT: case CH_NOT_APPLIED: default:
+      రాయి (fmt, quoted_file, m, &perms[1]);
+      తిరిగి;
+    స్థితి CH_NO_STAT: స్థితి CH_NOT_APPLIED: అప్రమేయ:
       affirm (false);
     }
-  printf (fmt, quoted_file, old_m, &old_perms[1], m, &perms[1]);
+  రాయి (fmt, quoted_file, old_m, &old_perms[1], m, &perms[1]);
 }
 
 /* Change the mode of FILE.
    Return true if successful.  This function is called
    once for every file system object that fts encounters.  */
 
-static bool
+స్థిర bool
 process_file (FTS *fts, FTSENT *ent)
 {
-  char const *file_full_name = ent->fts_path;
-  char const *file = ent->fts_accpath;
-  const struct stat *file_stats = ent->fts_statp;
-  struct change_status ch = {0};
-  ch.status = CH_NO_STAT;
-  struct stat stat_buf;
-  bool ignore_missing = ignore_missing_fts_entry (ent);
+  అక్షరం స్థిరరాశి *file_నిండిన_name = ent->fts_మార్గం;
+  అక్షరం స్థిరరాశి *file = ent->fts_accpath;
+  స్థిరరాశి నిర్మాణం stat *file_stats = ent->fts_statp;
+  నిర్మాణం change_స్థితి ch = {0};
+  ch.స్థితి_2 = CH_NO_STAT;
+  నిర్మాణం stat stat_buf;
+  bool ignore_missing = ignore_missing_fts_నమోదు (ent);
 
-  if (ignore_missing && ignorable_fts_error (ent))
-    return true;
+  ఒకవేళ (ignore_missing && ignorable_fts_error (ent))
+    తిరిగి true;
 
-  switch (ent->fts_info)
+  ఎంపిక (ent->fts_info)
     {
-    case FTS_DP:
-      return true;
+    స్థితి FTS_DP:
+      తిరిగి true;
 
-    case FTS_NS:
+    స్థితి FTS_NS:
       /* For a top-level file or directory, this FTS_NS (stat failed)
          indicator is determined at the time of the initial fts_open call.
          With programs like chmod, chown, and chgrp, that modify
@@ -238,208 +238,208 @@ process_file (FTS *fts, FTSENT *ent)
          accessible when control reaches this point.  So, if this is
          the first time we've seen the FTS_NS for this file, tell
          fts_read to stat it "again".  */
-      if (ent->fts_level == FTS_ROOTLEVEL && ent->fts_number == 0)
+      ఒకవేళ (ent->fts_level == FTS_ROOTLEVEL && ent->fts_సంఖ్య == 0)
         {
-          ent->fts_number = 1;
-          fts_set (fts, ent, FTS_AGAIN);
-          return true;
+          ent->fts_సంఖ్య = 1;
+          fts_సమితి (fts, ent, FTS_AGAIN);
+          తిరిగి true;
         }
-      if (! force_silent)
+      ఒకవేళ (! force_silent)
         error (0, ent->fts_errno, _("cannot access %s"),
-               quoteaf (file_full_name));
-      break;
+               quoteaf (file_నిండిన_name));
+      ఆపు;
 
-    case FTS_ERR:
-      if (! force_silent)
-        error (0, ent->fts_errno, "%s", quotef (file_full_name));
-      break;
+    స్థితి FTS_ERR:
+      ఒకవేళ (! force_silent)
+        error (0, ent->fts_errno, "%s", quotef (file_నిండిన_name));
+      ఆపు;
 
-    case FTS_DNR:
-      if (! force_silent)
+    స్థితి FTS_DNR:
+      ఒకవేళ (! force_silent)
         error (0, ent->fts_errno, _("cannot read directory %s"),
-               quoteaf (file_full_name));
-      break;
+               quoteaf (file_నిండిన_name));
+      ఆపు;
 
-    case FTS_SLNONE:
-      if (dereference)
+    స్థితి FTS_SLNONE:
+      ఒకవేళ (dereference)
         {
-          if (! force_silent)
+          ఒకవేళ (! force_silent)
             error (0, 0, _("cannot operate on dangling symlink %s"),
-                   quoteaf (file_full_name));
-          break;
+                   quoteaf (file_నిండిన_name));
+          ఆపు;
         }
-      ch.status = CH_NOT_APPLIED;
-      break;
+      ch.స్థితి_2 = CH_NOT_APPLIED;
+      ఆపు;
 
-    case FTS_SL:
-      if (dereference == 1)
+    స్థితి FTS_SL:
+      ఒకవేళ (dereference == 1)
         {
-          if (fstatat (fts->fts_cwd_fd, file, &stat_buf, 0) != 0)
+          ఒకవేళ (fstatat (fts->fts_cwd_fd, file, &stat_buf, 0) != 0)
             {
-              if (ignore_missing
+              ఒకవేళ (ignore_missing
                   && ignorable_traversal_errno (errno))
-                return true;
-              if (! force_silent)
+                తిరిగి true;
+              ఒకవేళ (! force_silent)
                 error (0, errno, _("cannot dereference %s"),
-                       quoteaf (file_full_name));
-              break;
+                       quoteaf (file_నిండిన_name));
+              ఆపు;
             }
 
           file_stats = &stat_buf;
         }
-      ch.status = CH_NOT_APPLIED;
-      break;
+      ch.స్థితి_2 = CH_NOT_APPLIED;
+      ఆపు;
 
-    case FTS_DC:		/* directory that causes cycles */
-      if (cycle_warning_required (fts, ent))
+    స్థితి FTS_DC:		/* directory that causes cycles */
+      ఒకవేళ (చక్రం_warning_required (fts, ent))
         {
-          emit_cycle_warning (file_full_name);
-          return false;
+          emit_చక్రం_warning (file_నిండిన_name);
+          తిరిగి false;
         }
       FALLTHROUGH;
-    default:
-      ch.status = CH_NOT_APPLIED;
-      break;
+    అప్రమేయ:
+      ch.స్థితి_2 = CH_NOT_APPLIED;
+      ఆపు;
     }
 
-  if (ch.status == CH_NOT_APPLIED
-      && ROOT_DEV_INO_CHECK (root_dev_ino, file_stats))
+  ఒకవేళ (ch.స్థితి_2 == CH_NOT_APPLIED
+      && మూలం_DEV_INO_CHECK (మూలం_dev_ino, file_stats))
     {
-      ROOT_DEV_INO_WARN (file_full_name);
+      మూలం_DEV_INO_WARN (file_నిండిన_name);
       /* Tell fts not to traverse into this hierarchy.  */
-      fts_set (fts, ent, FTS_SKIP);
+      fts_సమితి (fts, ent, FTS_SKIP);
       /* Ensure that we do not process "/" on the second visit.  */
-      ignore_value (fts_read (fts));
-      return false;
+      ignore_విలువ (fts_read (fts));
+      తిరిగి false;
     }
 
-  if (ch.status == CH_NOT_APPLIED)
+  ఒకవేళ (ch.స్థితి_2 == CH_NOT_APPLIED)
     {
-      ch.old_mode = file_stats->st_mode;
-      ch.new_mode = mode_adjust (ch.old_mode, S_ISDIR (ch.old_mode) != 0,
-                                 umask_value, change, NULL);
+      ch.old_బహుళకం = file_stats->st_బహుళకం;
+      ch.new_బహుళకం = బహుళకం_adjust (ch.old_బహుళకం, S_ISDIR (ch.old_బహుళకం) != 0,
+                                 umask_విలువ, change, ఖాళీ);
       bool follow_symlink = !!dereference;
-      if (dereference == -1) /* -H with/without -R, -P without -R.  */
+      ఒకవేళ (dereference == -1) /* -H with/without -R, -P without -R.  */
         follow_symlink = ent->fts_level == FTS_ROOTLEVEL;
-      if (fchmodat (fts->fts_cwd_fd, file, ch.new_mode,
+      ఒకవేళ (fchmodat (fts->fts_cwd_fd, file, ch.new_బహుళకం,
                     follow_symlink ? 0 : AT_SYMLINK_NOFOLLOW) == 0)
-        ch.status = CH_SUCCEEDED;
-      else
+        ch.స్థితి_2 = CH_SUCCEEDED;
+      లేకపోతే
         {
-          if (ignore_missing
+          ఒకవేళ (ignore_missing
               && ignorable_traversal_errno (errno))
-            return true;
-          if (! is_ENOTSUP (errno))
+            తిరిగి true;
+          ఒకవేళ (! is_ENOTSUP (errno))
             {
-              if (! force_silent)
+              ఒకవేళ (! force_silent)
                 error (0, errno, _("changing permissions of %s"),
-                       quoteaf (file_full_name));
+                       quoteaf (file_నిండిన_name));
 
-              ch.status = CH_FAILED;
+              ch.స్థితి_2 = CH_FAILED;
             }
           /* else treat not supported as not applied.  */
         }
     }
 
-  if (verbosity != V_off)
+  ఒకవేళ (verbosity != V_off)
     {
       bool file_missing;
-      if (ch.status == CH_SUCCEEDED
-          && !mode_changed (fts->fts_cwd_fd, file, file_full_name,
-                            ch.old_mode, ch.new_mode, ignore_missing,
+      ఒకవేళ (ch.స్థితి_2 == CH_SUCCEEDED
+          && !బహుళకం_మారింది (fts->fts_cwd_fd, file, file_నిండిన_name,
+                            ch.old_బహుళకం, ch.new_బహుళకం, ignore_missing,
                             &file_missing))
         {
-          if (file_missing)
-            return true;
-          ch.status = CH_NO_CHANGE_REQUESTED;
+          ఒకవేళ (file_missing)
+            తిరిగి true;
+          ch.స్థితి_2 = CH_NO_CHANGE_REQUESTED;
         }
 
-      if (ch.status == CH_SUCCEEDED || verbosity == V_high)
-        describe_change (file_full_name, &ch);
+      ఒకవేళ (ch.స్థితి_2 == CH_SUCCEEDED || verbosity == V_ఎగువ)
+        describe_change (file_నిండిన_name, &ch);
     }
 
-  if (CH_NO_CHANGE_REQUESTED <= ch.status && diagnose_surprises)
+  ఒకవేళ (CH_NO_CHANGE_REQUESTED <= ch.స్థితి_2 && diagnose_surprises)
     {
-      mode_t naively_expected_mode =
-        mode_adjust (ch.old_mode, S_ISDIR (ch.old_mode) != 0,
-                     0, change, NULL);
-      if (ch.new_mode & ~naively_expected_mode)
+      mode_t naively_expected_బహుళకం =
+        బహుళకం_adjust (ch.old_బహుళకం, S_ISDIR (ch.old_బహుళకం) != 0,
+                     0, change, ఖాళీ);
+      ఒకవేళ (ch.new_బహుళకం & ~naively_expected_బహుళకం)
         {
-          char new_perms[12];
-          char naively_expected_perms[12];
-          strmode (ch.new_mode, new_perms);
-          strmode (naively_expected_mode, naively_expected_perms);
+          అక్షరం new_perms[12];
+          అక్షరం naively_expected_perms[12];
+          strmode (ch.new_బహుళకం, new_perms);
+          strmode (naively_expected_బహుళకం, naively_expected_perms);
           new_perms[10] = naively_expected_perms[10] = '\0';
           error (0, 0,
                  _("%s: new permissions are %s, not %s"),
-                 quotef (file_full_name),
+                 quotef (file_నిండిన_name),
                  new_perms + 1, naively_expected_perms + 1);
-          ch.status = CH_FAILED;
+          ch.స్థితి_2 = CH_FAILED;
         }
     }
 
-  if ( ! recurse)
-    fts_set (fts, ent, FTS_SKIP);
+  ఒకవేళ ( ! recurse)
+    fts_సమితి (fts, ent, FTS_SKIP);
 
-  return CH_NOT_APPLIED <= ch.status;
+  తిరిగి CH_NOT_APPLIED <= ch.స్థితి_2;
 }
 
 /* Recursively change the modes of the specified FILES (the last entry
    of which is null).  BIT_FLAGS controls how fts works.
    Return true if successful.  */
 
-static bool
-process_files (char **files, int bit_flags)
+స్థిర bool
+process_files (అక్షరం **files, పూర్ణాంకం బిట్టు_flags)
 {
   bool ok = true;
 
-  FTS *fts = xfts_open (files, bit_flags, NULL);
+  FTS *fts = xfts_open (files, బిట్టు_flags, ఖాళీ);
 
-  while (true)
+  అయితే (true)
     {
       FTSENT *ent;
 
       ent = fts_read (fts);
-      if (ent == NULL)
+      ఒకవేళ (ent == ఖాళీ)
         {
-          if (errno != 0)
+          ఒకవేళ (errno != 0)
             {
               /* FIXME: try to give a better message  */
-              if (! force_silent)
+              ఒకవేళ (! force_silent)
                 error (0, errno, _("fts_read failed"));
               ok = false;
             }
-          break;
+          ఆపు;
         }
 
       ok &= process_file (fts, ent);
     }
 
-  if (fts_close (fts) != 0)
+  ఒకవేళ (fts_close (fts) != 0)
     {
       error (0, errno, _("fts_close failed"));
       ok = false;
     }
 
-  return ok;
+  తిరిగి ok;
 }
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("\
-Usage: %s [OPTION]... MODE[,MODE]... FILE...\n\
-  or:  %s [OPTION]... OCTAL-MODE FILE...\n\
+      రాయి (_("\
+Usage: %s [OPTION]... బహుళకం[,బహుళకం]... FILE...\n\
+  or:  %s [OPTION]... OCTAL-బహుళకం FILE...\n\
   or:  %s [OPTION]... --reference=RFILE FILE...\n\
 "),
-              program_name, program_name, program_name);
+              కార్యక్రమం_name, కార్యక్రమం_name, కార్యక్రమం_name);
       fputs (_("\
-Change the mode of each FILE to MODE.\n\
-With --reference, change the mode of each FILE to that of RFILE.\n\
+Change the బహుళకం_2 యొక్క each FILE గమ్యం బహుళకం.\n\
+With --reference, change the బహుళకం_2 యొక్క each FILE గమ్యం that యొక్క RFILE.\n\
 \n\
 "), stdout);
       oputs (_("\
@@ -452,11 +452,11 @@ With --reference, change the mode of each FILE to that of RFILE.\n\
 "));
       oputs (_("\
   -v, --verbose\n\
-         output a diagnostic for every file processed\n\
+         output a diagnostic కొరకు every file processed\n\
 "));
       oputs (_("\
       --dereference\n\
-         affect the referent of each symbolic link,\n\
+         affect the referent యొక్క each symbolic link,\n\
          rather than the symbolic link itself\n\
 "));
       oputs (_("\
@@ -464,17 +464,17 @@ With --reference, change the mode of each FILE to that of RFILE.\n\
          affect each symbolic link, rather than the referent\n\
 "));
       oputs (_("\
-      --no-preserve-root\n\
-         do not treat '/' specially (the default)\n\
+      --no-preserve-మూలం\n\
+         చేయి not treat '/' specially (the అప్రమేయ)\n\
 "));
       oputs (_("\
-      --preserve-root\n\
-         fail to operate recursively on '/'\n\
+      --preserve-మూలం\n\
+         fail గమ్యం నిర్వహించు recursively on '/'\n\
 "));
       oputs (_("\
       --reference=RFILE\n\
-         use RFILE's mode instead of specifying MODE values.\n\
-         RFILE is always dereferenced if a symbolic link.\n\
+         use RFILE's బహుళకం_2 instead యొక్క specifying బహుళకం విలువలు.\n\
+         RFILE is always dereferenced ఒకవేళ a symbolic link.\n\
 "));
       oputs (_("\
   -R, --recursive\n\
@@ -482,84 +482,84 @@ With --reference, change the mode of each FILE to that of RFILE.\n\
 "));
       emit_symlink_recurse_options ("-H");
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-Each MODE is of the form '[ugoa]*([-+=]([rwxXst]*|[ugo]))+|[-+=][0-7]+'.\n\
+Each బహుళకం is యొక్క the form '[ugoa]*([-+=]([rwxXst]*|[ugo]))+|[-+=][0-7]+'.\n\
 "), stdout);
-      emit_ancillary_info (PROGRAM_NAME);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
 /* Parse the ASCII mode given on the command line into a linked list
    of 'struct mode_change' and apply that to each file argument. */
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
-  char *mode = NULL;
-  idx_t mode_len = 0;
-  idx_t mode_alloc = 0;
+  అక్షరం *బహుళకం_2 = ఖాళీ;
+  idx_t బహుళకం_len = 0;
+  idx_t బహుళకం_alloc = 0;
   bool ok;
-  bool preserve_root = false;
-  char const *reference_file = NULL;
-  int c;
-  int bit_flags = FTS_COMFOLLOW | FTS_PHYSICAL;
+  bool preserve_మూలం = false;
+  అక్షరం స్థిరరాశి *reference_file = ఖాళీ;
+  పూర్ణాంకం c;
+  పూర్ణాంకం బిట్టు_flags = FTS_COMFOLLOW | FTS_PHYSICAL;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while ((c = getopt_long (argc, argv,
+  అయితే ((c = getopt_long (argc, argv,
                            ("HLPRcfhvr::w::x::X::s::t::u::g::o::a::,::+::=::"
                             "0::1::2::3::4::5::6::7::"),
-                           long_options, NULL))
+                           long_options, ఖాళీ))
          != -1)
     {
-      switch (c)
+      ఎంపిక (c)
         {
 
-        case 'H': /* Traverse command-line symlinks-to-directories.  */
-          bit_flags = FTS_COMFOLLOW | FTS_PHYSICAL;
-          break;
+        స్థితి 'H': /* Traverse command-line symlinks-to-directories.  */
+          బిట్టు_flags = FTS_COMFOLLOW | FTS_PHYSICAL;
+          ఆపు;
 
-        case 'L': /* Traverse all symlinks-to-directories.  */
-          bit_flags = FTS_LOGICAL;
-          break;
+        స్థితి 'L': /* Traverse all symlinks-to-directories.  */
+          బిట్టు_flags = FTS_LOGICAL;
+          ఆపు;
 
-        case 'P': /* Traverse no symlinks-to-directories.  */
-          bit_flags = FTS_PHYSICAL;
-          break;
+        స్థితి 'P': /* Traverse no symlinks-to-directories.  */
+          బిట్టు_flags = FTS_PHYSICAL;
+          ఆపు;
 
-        case 'h': /* --no-dereference: affect symlinks */
+        స్థితి 'h': /* --no-dereference: affect symlinks */
           dereference = 0;
-          break;
+          ఆపు;
 
-        case DEREFERENCE_OPTION: /* --dereference: affect the referent
+        స్థితి DEREFERENCE_OPTION: /* --dereference: affect the referent
                                     of each symlink */
           dereference = 1;
-          break;
+          ఆపు;
 
-        case 'r':
-        case 'w':
-        case 'x':
-        case 'X':
-        case 's':
-        case 't':
-        case 'u':
-        case 'g':
-        case 'o':
-        case 'a':
-        case ',':
-        case '+':
-        case '=':
-        case '0': case '1': case '2': case '3':
-        case '4': case '5': case '6': case '7':
+        స్థితి 'r':
+        స్థితి 'w':
+        స్థితి 'x':
+        స్థితి 'X':
+        స్థితి 's':
+        స్థితి 't':
+        స్థితి 'u':
+        స్థితి 'g':
+        స్థితి 'o':
+        స్థితి 'a':
+        స్థితి ',':
+        స్థితి '+':
+        స్థితి '=':
+        స్థితి '0': స్థితి '1': స్థితి '2': స్థితి '3':
+        స్థితి '4': స్థితి '5': స్థితి '6': స్థితి '7':
           /* Support non-portable uses like "chmod -w", but diagnose
              surprises due to umask confusion.  Even though "--", "--r",
              etc., are valid modes, there is no "case '-'" here since
@@ -570,119 +570,119 @@ main (int argc, char **argv)
                string was given, concatenate the previous string, a
                comma, and the new string (e.g., "-s,-rwx").  */
 
-            char const *arg = argv[optind - 1];
-            idx_t arg_len = strlen (arg);
-            idx_t mode_comma_len = mode_len + !!mode_len;
-            idx_t new_mode_len = mode_comma_len + arg_len;
-            assume (0 <= new_mode_len);  /* Pacify GCC bug #109613.  */
-            if (mode_alloc <= new_mode_len)
-              mode = xpalloc (mode, &mode_alloc,
-                              new_mode_len + 1 - mode_alloc, -1, 1);
-            mode[mode_len] = ',';
-            memcpy (mode + mode_comma_len, arg, arg_len + 1);
-            mode_len = new_mode_len;
+            అక్షరం స్థిరరాశి *arg = argv[optind - 1];
+            idx_t arg_len = అక్షరశ్రేణి_పొడవు (arg);
+            idx_t బహుళకం_comma_len = బహుళకం_len + !!బహుళకం_len;
+            idx_t new_బహుళకం_len = బహుళకం_comma_len + arg_len;
+            assume (0 <= new_బహుళకం_len);  /* Pacify GCC bug #109613.  */
+            ఒకవేళ (బహుళకం_alloc <= new_బహుళకం_len)
+              బహుళకం_2 = xpalloc (బహుళకం_2, &బహుళకం_alloc,
+                              new_బహుళకం_len + 1 - బహుళకం_alloc, -1, 1);
+            బహుళకం_2[బహుళకం_len] = ',';
+            జ్ఞాపకం_నకలు (బహుళకం_2 + బహుళకం_comma_len, arg, arg_len + 1);
+            బహుళకం_len = new_బహుళకం_len;
 
             diagnose_surprises = true;
           }
-          break;
-        case NO_PRESERVE_ROOT:
-          preserve_root = false;
-          break;
-        case PRESERVE_ROOT:
-          preserve_root = true;
-          break;
-        case REFERENCE_FILE_OPTION:
+          ఆపు;
+        స్థితి NO_PRESERVE_మూలం:
+          preserve_మూలం = false;
+          ఆపు;
+        స్థితి PRESERVE_మూలం:
+          preserve_మూలం = true;
+          ఆపు;
+        స్థితి REFERENCE_FILE_OPTION:
           reference_file = optarg;
-          break;
-        case 'R':
+          ఆపు;
+        స్థితి 'R':
           recurse = true;
-          break;
-        case 'c':
+          ఆపు;
+        స్థితి 'c':
           verbosity = V_changes_only;
-          break;
-        case 'f':
+          ఆపు;
+        స్థితి 'f':
           force_silent = true;
-          break;
-        case 'v':
-          verbosity = V_high;
-          break;
+          ఆపు;
+        స్థితి 'v':
+          verbosity = V_ఎగువ;
+          ఆపు;
         case_GETOPT_HELP_CHAR;
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        case_GETOPT_సంస్కరణ_CHAR (కార్యక్రమం_NAME, AUTHORS);
+        అప్రమేయ:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (recurse)
+  ఒకవేళ (recurse)
     {
-      if (bit_flags == FTS_PHYSICAL)
+      ఒకవేళ (బిట్టు_flags == FTS_PHYSICAL)
         {
-          if (dereference == 1)
+          ఒకవేళ (dereference == 1)
             error (EXIT_FAILURE, 0,
                    _("-R --dereference requires either -H or -L"));
           dereference = 0;
         }
     }
 
-  if (dereference == -1 && bit_flags == FTS_LOGICAL)
+  ఒకవేళ (dereference == -1 && బిట్టు_flags == FTS_LOGICAL)
     dereference = 1;
 
-  if (reference_file)
+  ఒకవేళ (reference_file)
     {
-      if (mode)
+      ఒకవేళ (బహుళకం_2)
         {
           error (0, 0, _("cannot combine mode and --reference options"));
           usage (EXIT_FAILURE);
         }
     }
-  else
+  లేకపోతే
     {
-      if (!mode)
-        mode = argv[optind++];
+      ఒకవేళ (!బహుళకం_2)
+        బహుళకం_2 = argv[optind++];
     }
 
-  if (optind >= argc)
+  ఒకవేళ (optind >= argc)
     {
-      if (!mode || mode != argv[optind - 1])
+      ఒకవేళ (!బహుళకం_2 || బహుళకం_2 != argv[optind - 1])
         error (0, 0, _("missing operand"));
-      else
+      లేకపోతే
         error (0, 0, _("missing operand after %s"), quote (argv[argc - 1]));
       usage (EXIT_FAILURE);
     }
 
-  if (reference_file)
+  ఒకవేళ (reference_file)
     {
-      change = mode_create_from_ref (reference_file);
-      if (!change)
+      change = బహుళకం_create_from_ref (reference_file);
+      ఒకవేళ (!change)
         error (EXIT_FAILURE, errno, _("failed to get attributes of %s"),
                quoteaf (reference_file));
     }
-  else
+  లేకపోతే
     {
-      change = mode_compile (mode);
-      if (!change)
+      change = బహుళకం_compile (బహుళకం_2);
+      ఒకవేళ (!change)
         {
-          error (0, 0, _("invalid mode: %s"), quote (mode));
+          error (0, 0, _("invalid mode: %s"), quote (బహుళకం_2));
           usage (EXIT_FAILURE);
         }
-      umask_value = umask (0);
+      umask_విలువ = umask (0);
     }
 
-  if (recurse && preserve_root)
+  ఒకవేళ (recurse && preserve_మూలం)
     {
-      static struct dev_ino dev_ino_buf;
-      root_dev_ino = get_root_dev_ino (&dev_ino_buf);
-      if (root_dev_ino == NULL)
+      స్థిర నిర్మాణం dev_ino dev_ino_buf;
+      మూలం_dev_ino = get_మూలం_dev_ino (&dev_ino_buf);
+      ఒకవేళ (మూలం_dev_ino == ఖాళీ)
         error (EXIT_FAILURE, errno, _("failed to get attributes of %s"),
                quoteaf ("/"));
     }
-  else
+  లేకపోతే
     {
-      root_dev_ino = NULL;
+      మూలం_dev_ino = ఖాళీ;
     }
 
-  bit_flags |= FTS_DEFER_STAT;
-  ok = process_files (argv + optind, bit_flags);
+  బిట్టు_flags |= FTS_DEFER_STAT;
+  ok = process_files (argv + optind, బిట్టు_flags);
 
   main_exit (ok ? EXIT_SUCCESS : EXIT_FAILURE);
 }

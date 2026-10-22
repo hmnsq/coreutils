@@ -34,227 +34,227 @@
 tac -r -s '.\|
 ' file */
 
-#include <config.h>
+#అన్తర్భావ <config.h>
 
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
-#include "system.h"
+#అన్తర్భావ <stdio.h>
+#అన్తర్భావ <getopt.h>
+#అన్తర్భావ <sys/types.h>
+#అన్తర్భావ "system.h"
 
-#include <regex.h>
+#అన్తర్భావ <regex.h>
 
-#include "filenamecat.h"
-#include "full-read.h"
-#include "full-write.h"
-#include "temp-stream.h"
-#include "xbinary-io.h"
+#అన్తర్భావ "filenamecat.h"
+#అన్తర్భావ "full-read.h"
+#అన్తర్భావ "full-write.h"
+#అన్తర్భావ "temp-stream.h"
+#అన్తర్భావ "xbinary-io.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "tac"
+#నిర్వచించు కార్యక్రమం_NAME "tac"
 
-#define AUTHORS \
+#నిర్వచించు AUTHORS \
   proper_name ("Jay Lepreau"), \
   proper_name ("David MacKenzie")
 
 
 /* The number of bytes per atomic read. */
-#define INITIAL_READSIZE 8192
+#నిర్వచించు INITIAL_READSIZE 8192
 
 /* The number of bytes per atomic write. */
-#define WRITESIZE 8192
+#నిర్వచించు WRITESIZE 8192
 
 /* The string that separates the records of the file. */
-static char const *separator = "\n";
+స్థిర అక్షరం స్థిరరాశి *separator = "\n";
 
 /* True if we have ever read standard input.  */
-static bool have_read_stdin = false;
+స్థిర bool have_read_stdin = false;
 
 /* If true, print 'separator' along with the record preceding it
    in the file; otherwise with the record following it. */
-static bool separator_ends_record = true;
+స్థిర bool separator_చివర్లు_రికార్డు = true;
 
 /* 0 if 'separator' is to be matched as a regular expression;
    otherwise, the length of 'separator', used as a sentinel to
    stop the search. */
-static size_t sentinel_length = 1;
+స్థిర size_t sentinel_నిడివి = 1;
 
 /* The length of a match with 'separator'.  If 'sentinel_length' is 0,
    'match_length' is computed every time a match succeeds;
    otherwise, it is simply the length of 'separator'. */
-static size_t match_length;
+స్థిర size_t సరిపోలిక_నిడివి;
 
 /* The input buffer. */
-static char *G_buffer;
+స్థిర అక్షరం *G_బఫరు;
 
 /* The number of bytes to read at once into 'buffer'. */
-static size_t read_size;
+స్థిర size_t read_కొలత;
 
 /* The size of 'buffer'.  This is read_size * 2 + sentinel_length + 2.
    The extra 2 bytes allow 'past_end' to have a value beyond the
    end of 'G_buffer' and 'match_start' to run off the front of 'G_buffer'. */
-static size_t G_buffer_size;
+స్థిర size_t G_బఫరు_కొలత;
 
 /* The compiled regular expression representing 'separator'. */
-static struct re_pattern_buffer compiled_separator;
-static char compiled_separator_fastmap[UCHAR_MAX + 1];
-static struct re_registers regs;
+స్థిర నిర్మాణం re_నమూనా_బఫరు compiled_separator;
+స్థిర అక్షరం compiled_separator_fastmap[UCHAR_MAX + 1];
+స్థిర నిర్మాణం re_registers regs;
 
-static struct option const longopts[] =
+స్థిర నిర్మాణం option స్థిరరాశి longopts[] =
 {
-  {"before", no_argument, NULL, 'b'},
-  {"regex", no_argument, NULL, 'r'},
-  {"separator", required_argument, NULL, 's'},
+  {"before", no_వాదం, ఖాళీ, 'b'},
+  {"regex", no_వాదం, ఖాళీ, 'r'},
+  {"separator", required_వాదం, ఖాళీ, 's'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_సంస్కరణ_OPTION_DECL},
+  {ఖాళీ, 0, ఖాళీ, 0}
 };
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("\
+      రాయి (_("\
 Usage: %s [OPTION]... [FILE]...\n\
 "),
-              program_name);
+              కార్యక్రమం_name);
       fputs (_("\
-Write each FILE to standard output, last line first.\n\
+Write each FILE గమ్యం standard output, చివరి పంక్తి మొదటి.\n\
 "), stdout);
 
       emit_stdin_note ();
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -b, --before             attach the separator before instead of after\n\
+  -b, --before             attach the separator before instead యొక్క after\n\
 "));
       oputs (_("\
-  -r, --regex              interpret the separator as a regular expression\n\
+  -r, --regex              interpret the separator as a regular వ్యక్తీకరణ_2\n\
 "));
       oputs (_("\
-  -s, --separator=STRING   use STRING as the separator instead of newline\n\
+  -s, --separator=STRING   use STRING as the separator instead యొక్క newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
       fputs (_("\n\
-Non-seekable input is buffered to $TMPDIR, defaulting to /tmp.\n\
+Non-seekable ఆదానం is buffered గమ్యం $TMPDIR, defaulting గమ్యం /tmp.\n\
 "), stdout);
-      emit_ancillary_info (PROGRAM_NAME);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
 /* Print the characters from START to PAST_END - 1.
    If START is null, just flush the buffer. */
 
-static void
-output (char const *start, char const *past_end)
+స్థిర శూన్య
+output (అక్షరం స్థిరరాశి *ప్రారంభం, అక్షరం స్థిరరాశి *past_చివర)
 {
-  static char buffer[WRITESIZE];
-  static size_t bytes_in_buffer = 0;
-  size_t bytes_to_add = past_end - start;
-  size_t bytes_available = WRITESIZE - bytes_in_buffer;
+  స్థిర అక్షరం బఫరు[WRITESIZE];
+  స్థిర size_t బైట్లు_లోపల_బఫరు = 0;
+  size_t బైట్లు_గమ్యం_కూడు = past_చివర - ప్రారంభం;
+  size_t బైట్లు_అందుబాటు = WRITESIZE - బైట్లు_లోపల_బఫరు;
 
-  if (!start)
+  ఒకవేళ (!ప్రారంభం)
     {
-      if (full_write (STDOUT_FILENO, buffer, bytes_in_buffer)
-          != bytes_in_buffer)
+      ఒకవేళ (నిండిన_write (STDOUT_FILENO, బఫరు, బైట్లు_లోపల_బఫరు)
+          != బైట్లు_లోపల_బఫరు)
         write_error ();
-      bytes_in_buffer = 0;
-      return;
+      బైట్లు_లోపల_బఫరు = 0;
+      తిరిగి;
     }
 
   /* Write out as many full buffers as possible. */
-  while (bytes_to_add >= bytes_available)
+  అయితే (బైట్లు_గమ్యం_కూడు >= బైట్లు_అందుబాటు)
     {
-      memcpy (buffer + bytes_in_buffer, start, bytes_available);
-      bytes_to_add -= bytes_available;
-      start += bytes_available;
-      if (full_write (STDOUT_FILENO, buffer, WRITESIZE) != WRITESIZE)
+      జ్ఞాపకం_నకలు (బఫరు + బైట్లు_లోపల_బఫరు, ప్రారంభం, బైట్లు_అందుబాటు);
+      బైట్లు_గమ్యం_కూడు -= బైట్లు_అందుబాటు;
+      ప్రారంభం += బైట్లు_అందుబాటు;
+      ఒకవేళ (నిండిన_write (STDOUT_FILENO, బఫరు, WRITESIZE) != WRITESIZE)
         write_error ();
-      bytes_in_buffer = 0;
-      bytes_available = WRITESIZE;
+      బైట్లు_లోపల_బఫరు = 0;
+      బైట్లు_అందుబాటు = WRITESIZE;
     }
 
-  memcpy (buffer + bytes_in_buffer, start, bytes_to_add);
-  bytes_in_buffer += bytes_to_add;
+  జ్ఞాపకం_నకలు (బఫరు + బైట్లు_లోపల_బఫరు, ప్రారంభం, బైట్లు_గమ్యం_కూడు);
+  బైట్లు_లోపల_బఫరు += బైట్లు_గమ్యం_కూడు;
 }
 
 /* Print in reverse the file open on descriptor FD for reading FILE.
    The file is already positioned at FILE_POS, which should be near its end.
    Return true if successful.  */
 
-static bool
-tac_seekable (int input_fd, char const *file, off_t file_pos)
+స్థిర bool
+tac_seekable (పూర్ణాంకం ఆదానం_fd, అక్షరం స్థిరరాశి *file, off_t file_pos)
 {
   /* Pointer to the location in 'G_buffer' where the search for
      the next separator will begin. */
-  char *match_start;
+  అక్షరం *సరిపోలిక_ప్రారంభం;
 
   /* Pointer to one past the rightmost character in 'G_buffer' that
      has not been printed yet. */
-  char *past_end;
+  అక్షరం *past_చివర;
 
   /* Length of the record growing in 'G_buffer'. */
-  ptrdiff_t saved_record_size;
+  ptrdiff_t saved_రికార్డు_కొలత;
 
   /* True if 'output' has not been called yet for any file.
      Only used when the separator is attached to the preceding record. */
-  bool first_time = true;
-  char first_char = *separator;	/* Speed optimization, non-regexp. */
-  char const *separator1 = separator + 1; /* Speed optimization, non-regexp. */
-  size_t match_length1 = match_length - 1; /* Speed optimization, non-regexp. */
+  bool మొదటి_సమయం = true;
+  అక్షరం మొదటి_char = *separator;	/* Speed optimization, non-regexp. */
+  అక్షరం స్థిరరాశి *separator1 = separator + 1; /* Speed optimization, non-regexp. */
+  size_t సరిపోలిక_length1 = సరిపోలిక_నిడివి - 1; /* Speed optimization, non-regexp. */
 
   /* Arrange for the first read to lop off enough to leave the rest of the
      file a multiple of 'read_size'.  Since 'read_size' can change, this may
      not always hold during the program run, but since it usually will, leave
      it here for i/o efficiency (page/sector boundaries and all that).
      Note: the efficiency gain has not been verified. */
-  size_t remainder = file_pos % read_size;
-  if (remainder != 0)
+  size_t remainder = file_pos % read_కొలత;
+  ఒకవేళ (remainder != 0)
     {
       file_pos -= remainder;
-      if (lseek (input_fd, file_pos, SEEK_SET) < 0)
+      ఒకవేళ (lseek (ఆదానం_fd, file_pos, SEEK_SET) < 0)
         error (0, errno, _("%s: seek failed"), quotef (file));
     }
 
   /* Scan backward, looking for end of file.  This caters to proc-like
      file systems where the file size is just an estimate.  */
-  while ((saved_record_size = read (input_fd, G_buffer, read_size)) == 0
+  అయితే ((saved_రికార్డు_కొలత = పఠ (ఆదానం_fd, G_బఫరు, read_కొలత)) == 0
          && file_pos != 0)
     {
-      off_t rsize = read_size;
-      if (lseek (input_fd, -rsize, SEEK_CUR) < 0)
+      off_t rsize = read_కొలత;
+      ఒకవేళ (lseek (ఆదానం_fd, -rsize, SEEK_CUR) < 0)
         error (0, errno, _("%s: seek failed"), quotef (file));
-      file_pos -= read_size;
+      file_pos -= read_కొలత;
     }
 
   /* Now scan forward, looking for end of file.  */
-  while (saved_record_size == read_size)
+  అయితే (saved_రికార్డు_కొలత == read_కొలత)
     {
-      ssize_t nread = read (input_fd, G_buffer, read_size);
-      if (nread == 0)
-        break;
-      saved_record_size = nread;
-      if (saved_record_size < 0)
-        break;
+      ssize_t nread = పఠ (ఆదానం_fd, G_బఫరు, read_కొలత);
+      ఒకవేళ (nread == 0)
+        ఆపు;
+      saved_రికార్డు_కొలత = nread;
+      ఒకవేళ (saved_రికార్డు_కొలత < 0)
+        ఆపు;
       file_pos += nread;
     }
 
-  if (saved_record_size < 0)
+  ఒకవేళ (saved_రికార్డు_కొలత < 0)
     {
       error (0, errno, _("%s: read error"), quotef (file));
-      return false;
+      తిరిగి false;
     }
 
-  match_start = past_end = G_buffer + saved_record_size;
+  సరిపోలిక_ప్రారంభం = past_చివర = G_బఫరు + saved_రికార్డు_కొలత;
   /* For non-regexp search, move past impossible positions for a match. */
-  if (sentinel_length)
-    match_start -= match_length1;
+  ఒకవేళ (sentinel_నిడివి)
+    సరిపోలిక_ప్రారంభం -= సరిపోలిక_length1;
 
-  while (true)
+  అయితే (true)
     {
       /* Search backward from 'match_start' - 1 to 'G_buffer' for a match
          with 'separator'; for speed, use strncmp if 'separator' contains no
@@ -262,120 +262,120 @@ tac_seekable (int input_fd, char const *file, off_t file_pos)
          If the match succeeds, set 'match_start' to point to the start of
          the match and 'match_length' to the length of the match.
          Otherwise, make 'match_start' < 'G_buffer'. */
-      if (sentinel_length == 0)
+      ఒకవేళ (sentinel_నిడివి == 0)
         {
-          size_t i = match_start - G_buffer;
+          size_t i = సరిపోలిక_ప్రారంభం - G_బఫరు;
           regoff_t ri = i;
           regoff_t range = 1 - ri;
           regoff_t ret;
 
-          if (1 < range)
+          ఒకవేళ (1 < range)
             error (EXIT_FAILURE, 0, _("record too large"));
 
-          if (range == 1
-              || ((ret = re_search (&compiled_separator, G_buffer,
+          ఒకవేళ (range == 1
+              || ((ret = re_శోధన (&compiled_separator, G_బఫరు,
                                     i, i - 1, range, &regs))
                   == -1))
-            match_start = G_buffer - 1;
-          else if (ret == -2)
+            సరిపోలిక_ప్రారంభం = G_బఫరు - 1;
+          లేకపోతే ఒకవేళ (ret == -2)
             error (EXIT_FAILURE, 0,
                    _("error in regular expression search"));
-          else
+          లేకపోతే
             {
-              match_start = G_buffer + regs.start[0];
-              match_length = regs.end[0] - regs.start[0];
+              సరిపోలిక_ప్రారంభం = G_బఫరు + regs.ప్రారంభం[0];
+              సరిపోలిక_నిడివి = regs.చివర[0] - regs.ప్రారంభం[0];
             }
         }
-      else
+      లేకపోతే
         {
           /* 'match_length' is constant for non-regexp boundaries. */
-          while (*--match_start != first_char
-                 || (match_length1 && !STREQ_LEN (match_start + 1, separator1,
-                                                  match_length1)))
+          అయితే (*--సరిపోలిక_ప్రారంభం != మొదటి_char
+                 || (సరిపోలిక_length1 && !STREQ_LEN (సరిపోలిక_ప్రారంభం + 1, separator1,
+                                                  సరిపోలిక_length1)))
             /* Do nothing. */ ;
         }
 
       /* Check whether we backed off the front of 'G_buffer' without finding
          a match for 'separator'. */
-      if (match_start < G_buffer)
+      ఒకవేళ (సరిపోలిక_ప్రారంభం < G_బఫరు)
         {
-          if (file_pos == 0)
+          ఒకవేళ (file_pos == 0)
             {
               /* Hit the beginning of the file; print the remaining record. */
-              output (G_buffer, past_end);
-              return true;
+              output (G_బఫరు, past_చివర);
+              తిరిగి true;
             }
 
-          saved_record_size = past_end - G_buffer;
-          if (saved_record_size > read_size)
+          saved_రికార్డు_కొలత = past_చివర - G_బఫరు;
+          ఒకవేళ (saved_రికార్డు_కొలత > read_కొలత)
             {
               /* 'G_buffer_size' is about twice 'read_size', so since
                  we want to read in another 'read_size' bytes before
                  the data already in 'G_buffer', we need to increase
                  'G_buffer_size'. */
-              char *newbuffer;
-              size_t offset = sentinel_length ? sentinel_length : 1;
-              size_t old_G_buffer_size = G_buffer_size;
+              అక్షరం *newbuffer;
+              size_t స్థానభ్రంశం = sentinel_నిడివి ? sentinel_నిడివి : 1;
+              size_t old_G_బఫరు_కొలత = G_బఫరు_కొలత;
 
-              read_size *= 2;
-              G_buffer_size = read_size * 2 + sentinel_length + 2;
-              if (G_buffer_size < old_G_buffer_size)
+              read_కొలత *= 2;
+              G_బఫరు_కొలత = read_కొలత * 2 + sentinel_నిడివి + 2;
+              ఒకవేళ (G_బఫరు_కొలత < old_G_బఫరు_కొలత)
                 xalloc_die ();
-              newbuffer = xrealloc (G_buffer - offset, G_buffer_size);
-              newbuffer += offset;
-              G_buffer = newbuffer;
+              newbuffer = xrealloc (G_బఫరు - స్థానభ్రంశం, G_బఫరు_కొలత);
+              newbuffer += స్థానభ్రంశం;
+              G_బఫరు = newbuffer;
             }
 
           /* Back up to the start of the next bufferfull of the file.  */
-          if (file_pos >= read_size)
-            file_pos -= read_size;
-          else
+          ఒకవేళ (file_pos >= read_కొలత)
+            file_pos -= read_కొలత;
+          లేకపోతే
             {
-              read_size = file_pos;
+              read_కొలత = file_pos;
               file_pos = 0;
             }
-          if (lseek (input_fd, file_pos, SEEK_SET) < 0)
+          ఒకవేళ (lseek (ఆదానం_fd, file_pos, SEEK_SET) < 0)
             error (0, errno, _("%s: seek failed"), quotef (file));
 
           /* Shift the pending record data right to make room for the new.
              The source and destination regions probably overlap.  */
-          memmove (G_buffer + read_size, G_buffer, saved_record_size);
-          past_end = G_buffer + read_size + saved_record_size;
+          memmove (G_బఫరు + read_కొలత, G_బఫరు, saved_రికార్డు_కొలత);
+          past_చివర = G_బఫరు + read_కొలత + saved_రికార్డు_కొలత;
           /* For non-regexp searches, avoid unnecessary scanning. */
-          if (sentinel_length)
-            match_start = G_buffer + read_size;
-          else
-            match_start = past_end;
+          ఒకవేళ (sentinel_నిడివి)
+            సరిపోలిక_ప్రారంభం = G_బఫరు + read_కొలత;
+          లేకపోతే
+            సరిపోలిక_ప్రారంభం = past_చివర;
 
-          if (full_read (input_fd, G_buffer, read_size) != read_size)
+          ఒకవేళ (నిండిన_read (ఆదానం_fd, G_బఫరు, read_కొలత) != read_కొలత)
             {
               error (0, errno, _("%s: read error"), quotef (file));
-              return false;
+              తిరిగి false;
             }
         }
-      else
+      లేకపోతే
         {
           /* Found a match of 'separator'. */
-          if (separator_ends_record)
+          ఒకవేళ (separator_చివర్లు_రికార్డు)
             {
-              char *match_end = match_start + match_length;
+              అక్షరం *సరిపోలిక_చివర = సరిపోలిక_ప్రారంభం + సరిపోలిక_నిడివి;
 
               /* If this match of 'separator' isn't at the end of the
                  file, print the record. */
-              if (!first_time || match_end != past_end)
-                output (match_end, past_end);
-              past_end = match_end;
-              first_time = false;
+              ఒకవేళ (!మొదటి_సమయం || సరిపోలిక_చివర != past_చివర)
+                output (సరిపోలిక_చివర, past_చివర);
+              past_చివర = సరిపోలిక_చివర;
+              మొదటి_సమయం = false;
             }
-          else
+          లేకపోతే
             {
-              output (match_start, past_end);
-              past_end = match_start;
+              output (సరిపోలిక_ప్రారంభం, past_చివర);
+              past_చివర = సరిపోలిక_ప్రారంభం;
             }
 
           /* For non-regex matching, we can back up.  */
-          if (sentinel_length > 0)
-            match_start -= match_length - 1;
+          ఒకవేళ (sentinel_నిడివి > 0)
+            సరిపోలిక_ప్రారంభం -= సరిపోలిక_నిడివి - 1;
         }
     }
 }
@@ -384,205 +384,205 @@ tac_seekable (int input_fd, char const *file, off_t file_pos)
    a temporary file, and set *G_TMP and *G_TEMPFILE to the resulting stream
    and file name.  Return the number of bytes copied, or -1 on error.  */
 
-static off_t
-copy_to_temp (FILE **g_tmp, char **g_tempfile, int input_fd, char const *file)
+స్థిర off_t
+copy_గమ్యం_తాత్కాలిక (FILE **g_tmp, అక్షరం **g_tempfile, పూర్ణాంకం ఆదానం_fd, అక్షరం స్థిరరాశి *file)
 {
   FILE *fp;
-  char *file_name;
-  uintmax_t bytes_copied = 0;
-  if (!temp_stream (&fp, &file_name))
-    return -1;
+  అక్షరం *file_name;
+  uintmax_t బైట్లు_copied = 0;
+  ఒకవేళ (!తాత్కాలిక_ప్రవాహం (&fp, &file_name))
+    తిరిగి -1;
 
-  while (true)
+  అయితే (true)
     {
-      ssize_t bytes_read = read (input_fd, G_buffer, read_size);
-      if (bytes_read == 0)
-        break;
-      if (bytes_read < 0)
+      ssize_t బైట్లు_read = పఠ (ఆదానం_fd, G_బఫరు, read_కొలత);
+      ఒకవేళ (బైట్లు_read == 0)
+        ఆపు;
+      ఒకవేళ (బైట్లు_read < 0)
         {
           error (0, errno, _("%s: read error"), quotef (file));
-          return -1;
+          తిరిగి -1;
         }
 
-      if (fwrite (G_buffer, 1, bytes_read, fp) != bytes_read)
+      ఒకవేళ (fwrite (G_బఫరు, 1, బైట్లు_read, fp) != బైట్లు_read)
         {
           error (0, errno, _("%s: write error"), quotef (file_name));
-          return -1;
+          తిరిగి -1;
         }
 
       /* Implicitly <= OFF_T_MAX due to preceding fwrite(),
          but unsigned type used to avoid compiler warnings
          not aware of this fact.  */
-      bytes_copied += bytes_read;
+      బైట్లు_copied += బైట్లు_read;
     }
 
-  if (fflush (fp) != 0)
+  ఒకవేళ (fflush (fp) != 0)
     {
       error (0, errno, _("%s: write error"), quotef (file_name));
-      return -1;
+      తిరిగి -1;
     }
 
   *g_tmp = fp;
   *g_tempfile = file_name;
-  return bytes_copied;
+  తిరిగి బైట్లు_copied;
 }
 
 /* Copy INPUT_FD to a temporary, then tac that file.
    Return true if successful.  */
 
-static bool
-tac_nonseekable (int input_fd, char const *file)
+స్థిర bool
+tac_nonseekable (పూర్ణాంకం ఆదానం_fd, అక్షరం స్థిరరాశి *file)
 {
-  FILE *tmp_stream;
-  char *tmp_file;
-  off_t bytes_copied = copy_to_temp (&tmp_stream, &tmp_file, input_fd, file);
-  if (bytes_copied < 0)
-    return false;
+  FILE *tmp_ప్రవాహం;
+  అక్షరం *tmp_file;
+  off_t బైట్లు_copied = copy_గమ్యం_తాత్కాలిక (&tmp_ప్రవాహం, &tmp_file, ఆదానం_fd, file);
+  ఒకవేళ (బైట్లు_copied < 0)
+    తిరిగి false;
 
-  bool ok = tac_seekable (fileno (tmp_stream), tmp_file, bytes_copied);
-  return ok;
+  bool ok = tac_seekable (fileno (tmp_ప్రవాహం), tmp_file, బైట్లు_copied);
+  తిరిగి ok;
 }
 
 /* Print FILE in reverse, copying it to a temporary
    file first if it is not seekable.
    Return true if successful.  */
 
-static bool
-tac_file (char const *filename)
+స్థిర bool
+tac_file (అక్షరం స్థిరరాశి *filename)
 {
   bool ok;
-  off_t file_size;
-  int fd;
+  off_t file_కొలత;
+  పూర్ణాంకం fd;
   bool is_stdin = streq (filename, "-");
 
-  if (is_stdin)
+  ఒకవేళ (is_stdin)
     {
       have_read_stdin = true;
       fd = STDIN_FILENO;
       filename = _("standard input");
-      xset_binary_mode (STDIN_FILENO, O_BINARY);
+      xset_ద్విమాన_బహుళకం (STDIN_FILENO, O_ద్విమాన);
     }
-  else
+  లేకపోతే
     {
-      fd = open (filename, O_RDONLY | O_BINARY);
-      if (fd < 0)
+      fd = open (filename, O_RDONLY | O_ద్విమాన);
+      ఒకవేళ (fd < 0)
         {
           error (0, errno, _("failed to open %s for reading"),
                  quoteaf (filename));
-          return false;
+          తిరిగి false;
         }
     }
 
-  file_size = lseek (fd, 0, SEEK_END);
+  file_కొలత = lseek (fd, 0, SEEK_END);
 
-  ok = (file_size < 0 || isatty (fd)
+  ok = (file_కొలత < 0 || isatty (fd)
         ? tac_nonseekable (fd, filename)
-        : tac_seekable (fd, filename, file_size));
+        : tac_seekable (fd, filename, file_కొలత));
 
-  if (!is_stdin && close (fd) != 0)
+  ఒకవేళ (!is_stdin && close (fd) != 0)
     {
       error (0, errno, _("%s: read error"), quotef (filename));
       ok = false;
     }
-  return ok;
+  తిరిగి ok;
 }
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
-  char const *error_message;	/* Return value from re_compile_pattern. */
-  int optc;
+  అక్షరం స్థిరరాశి *error_సందేశం_2;	/* Return value from re_compile_pattern. */
+  పూర్ణాంకం optc;
   bool ok;
-  size_t half_buffer_size;
+  size_t half_బఫరు_కొలత;
 
   /* Initializer for file_list if no file-arguments
      were specified on the command line.  */
-  static char const *const default_file_list[] = {"-", NULL};
-  char const *const *file;
+  స్థిర అక్షరం స్థిరరాశి *స్థిరరాశి default_file_list[] = {"-", ఖాళీ};
+  అక్షరం స్థిరరాశి *స్థిరరాశి *file;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "brs:", longopts, NULL)) != -1)
+  అయితే ((optc = getopt_long (argc, argv, "brs:", longopts, ఖాళీ)) != -1)
     {
-      switch (optc)
+      ఎంపిక (optc)
         {
-        case 'b':
-          separator_ends_record = false;
-          break;
-        case 'r':
-          sentinel_length = 0;
-          break;
-        case 's':
+        స్థితి 'b':
+          separator_చివర్లు_రికార్డు = false;
+          ఆపు;
+        స్థితి 'r':
+          sentinel_నిడివి = 0;
+          ఆపు;
+        స్థితి 's':
           separator = optarg;
-          break;
+          ఆపు;
         case_GETOPT_HELP_CHAR;
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        case_GETOPT_సంస్కరణ_CHAR (కార్యక్రమం_NAME, AUTHORS);
+        అప్రమేయ:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (sentinel_length == 0)
+  ఒకవేళ (sentinel_నిడివి == 0)
     {
-      if (*separator == 0)
+      ఒకవేళ (*separator == 0)
         error (EXIT_FAILURE, 0, _("separator cannot be empty"));
 
-      compiled_separator.buffer = NULL;
+      compiled_separator.బఫరు = ఖాళీ;
       compiled_separator.allocated = 0;
       compiled_separator.fastmap = compiled_separator_fastmap;
-      compiled_separator.translate = NULL;
-      error_message = re_compile_pattern (separator, strlen (separator),
+      compiled_separator.translate = ఖాళీ;
+      error_సందేశం_2 = re_compile_నమూనా (separator, అక్షరశ్రేణి_పొడవు (separator),
                                           &compiled_separator);
-      if (error_message)
-        error (EXIT_FAILURE, 0, "%s", (error_message));
+      ఒకవేళ (error_సందేశం_2)
+        error (EXIT_FAILURE, 0, "%s", (error_సందేశం_2));
     }
-  else
-    match_length = sentinel_length = *separator ? strlen (separator) : 1;
+  లేకపోతే
+    సరిపోలిక_నిడివి = sentinel_నిడివి = *separator ? అక్షరశ్రేణి_పొడవు (separator) : 1;
 
-  read_size = INITIAL_READSIZE;
-  while (sentinel_length >= read_size / 2)
+  read_కొలత = INITIAL_READSIZE;
+  అయితే (sentinel_నిడివి >= read_కొలత / 2)
     {
-      if (SIZE_MAX / 2 < read_size)
+      ఒకవేళ (SIZE_MAX / 2 < read_కొలత)
         xalloc_die ();
-      read_size *= 2;
+      read_కొలత *= 2;
     }
-  half_buffer_size = read_size + sentinel_length + 1;
-  G_buffer_size = 2 * half_buffer_size;
-  if (! (read_size < half_buffer_size && half_buffer_size < G_buffer_size))
+  half_బఫరు_కొలత = read_కొలత + sentinel_నిడివి + 1;
+  G_బఫరు_కొలత = 2 * half_బఫరు_కొలత;
+  ఒకవేళ (! (read_కొలత < half_బఫరు_కొలత && half_బఫరు_కొలత < G_బఫరు_కొలత))
     xalloc_die ();
-  G_buffer = xmalloc (G_buffer_size);
-  if (sentinel_length)
+  G_బఫరు = xmalloc (G_బఫరు_కొలత);
+  ఒకవేళ (sentinel_నిడివి)
     {
-      memcpy (G_buffer, separator, sentinel_length + !!*separator);
-      G_buffer += sentinel_length;
+      జ్ఞాపకం_నకలు (G_బఫరు, separator, sentinel_నిడివి + !!*separator);
+      G_బఫరు += sentinel_నిడివి;
     }
-  else
+  లేకపోతే
     {
-      ++G_buffer;
+      ++G_బఫరు;
     }
 
   file = (optind < argc
-          ? (char const *const *) &argv[optind]
+          ? (అక్షరం స్థిరరాశి *స్థిరరాశి *) &argv[optind]
           : default_file_list);
 
-  xset_binary_mode (STDOUT_FILENO, O_BINARY);
+  xset_ద్విమాన_బహుళకం (STDOUT_FILENO, O_ద్విమాన);
 
   {
     ok = true;
-    for (size_t i = 0; file[i]; ++i)
+    కొరకు (size_t i = 0; file[i]; ++i)
       ok &= tac_file (file[i]);
   }
 
   /* Flush the output buffer. */
-  output ((char *) NULL, (char *) NULL);
+  output ((అక్షరం *) ఖాళీ, (అక్షరం *) ఖాళీ);
 
-  if (have_read_stdin && close (STDIN_FILENO) < 0)
+  ఒకవేళ (have_read_stdin && close (STDIN_FILENO) < 0)
     {
       error (0, errno, "-");
       ok = false;

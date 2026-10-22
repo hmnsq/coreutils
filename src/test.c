@@ -20,35 +20,35 @@
 /* Define TEST_STANDALONE to get the /bin/test version.  Otherwise, you get
    the shell builtin version. */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
+#అన్తర్భావ <config.h>
+#అన్తర్భావ <stdio.h>
+#అన్తర్భావ <sys/types.h>
 
-#define TEST_STANDALONE 1
+#నిర్వచించు TEST_STANDALONE 1
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME (test_mode == TEST_TEST ? "test" : "[")
+#నిర్వచించు కార్యక్రమం_NAME (test_బహుళకం == TEST_TEST ? "test" : "[")
 
-#include "system.h"
-#include "assure.h"
-#include "c-ctype.h"
-#include "issymlink.h"
-#include "quote.h"
-#include "stat-time.h"
-#include "strnumcmp.h"
-#include "test.h"
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "assure.h"
+#అన్తర్భావ "c-ctype.h"
+#అన్తర్భావ "issymlink.h"
+#అన్తర్భావ "quote.h"
+#అన్తర్భావ "stat-time.h"
+#అన్తర్భావ "strnumcmp.h"
+#అన్తర్భావ "test.h"
 
-#include <stdarg.h>
+#అన్తర్భావ <stdarg.h>
 
-#if HAVE_SYS_PARAM_H
+#ఒకవేళ HAVE_SYS_PARAM_H
 # include <sys/param.h>
-#endif
+#అయితే_ముగింపు
 
 /* Exit status for syntax errors, etc.  */
-enum { TEST_TRUE, TEST_FALSE, TEST_FAILURE };
+గణన { TEST_TRUE, TEST_FALSE, TEST_FAILURE };
 
 /* Binary operators.  */
-enum binop
+గణన binop
   {
     /* String comparisons, e.g., EQ_STRING_BINOP for = or ==.  */
     EQ_STRING_BINOP, GT_STRING_BINOP, LT_STRING_BINOP, NE_STRING_BINOP,
@@ -58,39 +58,39 @@ enum binop
     EF_BINOP, NT_BINOP, OT_BINOP
   };
 
-#if defined TEST_STANDALONE
-# define test_exit(val) exit (val)
-# define test_main_return(val) return val
-#else
-   static jmp_buf test_exit_buf;
-   static int test_error_return = 0;
+#ఒకవేళ defined TEST_STANDALONE
+# define test_exit(val) నిష్క్రమించు (val)
+# define test_main_return(val) తిరిగి val
+#లేకపోతే
+   స్థిర jmp_buf test_exit_buf;
+   స్థిర పూర్ణాంకం test_error_return = 0;
 # define test_exit(val) test_error_return = val, longjmp (test_exit_buf, 1)
 # define test_main_return(val) test_exit (val)
-#endif /* !TEST_STANDALONE */
+#అయితే_ముగింపు /* !TEST_STANDALONE */
 
-static int pos;		/* The offset of the current argument in ARGV. */
-static int argc;	/* The number of arguments present in ARGV. */
-static char **argv;	/* The argument list. */
+స్థిర పూర్ణాంకం pos;		/* The offset of the current argument in ARGV. */
+స్థిర పూర్ణాంకం argc;	/* The number of arguments present in ARGV. */
+స్థిర అక్షరం **argv;	/* The argument list. */
 
-static bool unary_operator (void);
-static bool binary_operator (bool, enum binop);
-static bool two_arguments (void);
-static bool three_arguments (void);
-static bool posixtest (int);
+స్థిర bool unary_operator (శూన్య);
+స్థిర bool ద్విమాన_operator (bool, గణన binop);
+స్థిర bool two_arguments (శూన్య);
+స్థిర bool three_arguments (శూన్య);
+స్థిర bool posixtest (పూర్ణాంకం);
 
-static bool expr (void);
-static bool term (void);
-static bool and (void);
-static bool or (void);
+స్థిర bool సమాసం (శూన్య);
+స్థిర bool పదం (శూన్య);
+స్థిర bool and (శూన్య);
+స్థిర bool or (శూన్య);
 
-static void beyond (void);
+స్థిర శూన్య beyond (శూన్య);
 
-ATTRIBUTE_FORMAT ((printf, 1, 2))
-static _Noreturn void
-test_syntax_error (char const *format, ...)
+ATTRIBUTE_FORMAT ((రాయి, 1, 2))
+స్థిర _Noreturn శూన్య
+test_syntax_error (అక్షరం స్థిరరాశి *format, ...)
 {
   va_list ap;
-  va_start (ap, format);
+  va_ప్రారంభం (ap, format);
   verror (0, 0, format, ap);
   test_exit (TEST_FAILURE);
 }
@@ -99,17 +99,17 @@ test_syntax_error (char const *format, ...)
    past the end of the argument list.  This check is suppressed if the
    argument is false.  */
 
-static void
+స్థిర శూన్య
 advance (bool f)
 {
   ++pos;
 
-  if (f && pos >= argc)
+  ఒకవేళ (f && pos >= argc)
     beyond ();
 }
 
-static void
-unary_advance (void)
+స్థిర శూన్య
+unary_advance (శూన్య)
 {
   advance (true);
   ++pos;
@@ -119,8 +119,8 @@ unary_advance (void)
  * beyond - call when we're beyond the end of the argument list (an
  *	error condition)
  */
-static _Noreturn void
-beyond (void)
+స్థిర _Noreturn శూన్య
+beyond (శూన్య)
 {
   test_syntax_error (_("missing argument after %s"), quote (argv[argc - 1]));
 }
@@ -128,34 +128,34 @@ beyond (void)
 /* If the characters pointed to by STRING constitute a valid number,
    return a pointer to the start of the number, skipping any blanks or
    leading '+'.  Otherwise, report an error and exit.  */
-static char const *
-find_int (char const *string)
+స్థిర అక్షరం స్థిరరాశి *
+కనుగొను_int (అక్షరం స్థిరరాశి *string)
 {
-  char const *p;
-  char const *number_start;
+  అక్షరం స్థిరరాశి *p;
+  అక్షరం స్థిరరాశి *సంఖ్య_ప్రారంభం;
 
-  for (p = string; isspace (to_uchar (*p)); p++)
-    continue;
+  కొరకు (p = string; ఖాళీనా (గమ్యం_uchar (*p)); p++)
+    కొనసాగు;
 
-  if (*p == '+')
+  ఒకవేళ (*p == '+')
     {
       p++;
-      number_start = p;
+      సంఖ్య_ప్రారంభం = p;
     }
-  else
+  లేకపోతే
     {
-      number_start = p;
+      సంఖ్య_ప్రారంభం = p;
       p += (*p == '-');
     }
 
-  if (c_isdigit (*p++))
+  ఒకవేళ (c_isdigit (*p++))
     {
-      while (c_isdigit (*p))
+      అయితే (c_isdigit (*p))
         p++;
-      while (isspace (to_uchar (*p)))
+      అయితే (ఖాళీనా (గమ్యం_uchar (*p)))
         p++;
-      if (!*p)
-        return number_start;
+      ఒకవేళ (!*p)
+        తిరిగి సంఖ్య_ప్రారంభం;
     }
 
   test_syntax_error (_("invalid integer %s"), quote (string));
@@ -164,21 +164,21 @@ find_int (char const *string)
 /* Return the modification time of FILENAME.
    If unsuccessful, return an invalid timestamp that is less
    than all valid timestamps.  */
-static struct timespec
-get_mtime (char const *filename)
+స్థిర నిర్మాణం timespec
+get_mtime (అక్షరం స్థిరరాశి *filename)
 {
-  struct stat finfo;
-  return (stat (filename, &finfo) < 0
+  నిర్మాణం stat finfo;
+  తిరిగి (stat (filename, &finfo) < 0
           ? make_timespec (TYPE_MINIMUM (time_t), -1)
           : get_stat_mtime (&finfo));
 }
 
 /* Return the type of S, one of the test command's binary operators.
    If S is not a binary operator, return -1.  */
-static int
-binop (char const *s)
+స్థిర పూర్ణాంకం
+binop (అక్షరం స్థిరరాశి *s)
 {
-  return (  streq (s, "="  ) ? EQ_STRING_BINOP
+  తిరిగి (  streq (s, "="  ) ? EQ_STRING_BINOP
           : streq (s, "==" ) ? EQ_STRING_BINOP /* an alias for = */
           : streq (s, "!=" ) ? NE_STRING_BINOP
           : streq (s, ">"  ) ? GT_STRING_BINOP
@@ -213,142 +213,142 @@ binop (char const *s)
  *	'-l' string
  *	positive and negative integers
  */
-static bool
-term (void)
+స్థిర bool
+పదం (శూన్య)
 {
-  bool value;
+  bool విలువ;
   bool negated = false;
-  int bop;
+  పూర్ణాంకం bop;
 
   /* Deal with leading 'not's.  */
-  while (pos < argc && argv[pos][0] == '!' && argv[pos][1] == '\0')
+  అయితే (pos < argc && argv[pos][0] == '!' && argv[pos][1] == '\0')
     {
       advance (true);
       negated = !negated;
     }
 
-  if (pos >= argc)
+  ఒకవేళ (pos >= argc)
     beyond ();
 
   /* A paren-bracketed argument. */
-  if (argv[pos][0] == '(' && argv[pos][1] == '\0')
+  ఒకవేళ (argv[pos][0] == '(' && argv[pos][1] == '\0')
     {
-      int nargs;
+      పూర్ణాంకం nargs;
 
       advance (true);
 
-      for (nargs = 1;
+      కొరకు (nargs = 1;
            pos + nargs < argc && ! streq (argv[pos + nargs], ")");
            nargs++)
-        if (nargs == 4)
+        ఒకవేళ (nargs == 4)
           {
             nargs = argc - pos;
-            break;
+            ఆపు;
           }
 
-      value = posixtest (nargs);
-      if (!argv[pos])
+      విలువ = posixtest (nargs);
+      ఒకవేళ (!argv[pos])
         test_syntax_error (_("%s expected"), quote (")"));
-      else
-        if (argv[pos][0] != ')' || argv[pos][1])
+      లేకపోతే
+        ఒకవేళ (argv[pos][0] != ')' || argv[pos][1])
           test_syntax_error (_("%s expected, found %s"),
                              quote_n (0, ")"), quote_n (1, argv[pos]));
       advance (false);
     }
 
   /* Are there enough arguments left that this could be dyadic?  */
-  else if (4 <= argc - pos && streq (argv[pos], "-l")
+  లేకపోతే ఒకవేళ (4 <= argc - pos && streq (argv[pos], "-l")
            && 0 <= (bop = binop (argv[pos + 2])))
-    value = binary_operator (true, bop);
-  else if (3 <= argc - pos
+    విలువ = ద్విమాన_operator (true, bop);
+  లేకపోతే ఒకవేళ (3 <= argc - pos
            && 0 <= (bop = binop (argv[pos + 1])))
-    value = binary_operator (false, bop);
+    విలువ = ద్విమాన_operator (false, bop);
 
   /* It might be a switch type argument.  */
-  else if (argv[pos][0] == '-' && argv[pos][1] && argv[pos][1] != 'a'
+  లేకపోతే ఒకవేళ (argv[pos][0] == '-' && argv[pos][1] && argv[pos][1] != 'a'
            && argv[pos][1] != 'o' && argv[pos][2] == '\0')
-    value = unary_operator ();
-  else
+    విలువ = unary_operator ();
+  లేకపోతే
     {
-      value = (argv[pos][0] != '\0');
+      విలువ = (argv[pos][0] != '\0');
       advance (false);
     }
 
-  return negated ^ value;
+  తిరిగి negated ^ విలువ;
 }
 
-static bool
-binary_operator (bool l_is_l, enum binop bop)
+స్థిర bool
+ద్విమాన_operator (bool l_is_l, గణన binop bop)
 {
-  int op;
+  పూర్ణాంకం op;
 
-  if (l_is_l)
+  ఒకవేళ (l_is_l)
     advance (false);
   op = pos + 1;
 
   /* Is the right integer expression of the form '-l string'? */
   bool r_is_l = op < argc - 2 && streq (argv[op + 1], "-l");
-  if (r_is_l)
+  ఒకవేళ (r_is_l)
     advance (false);
 
   pos += 3;
 
-  switch (bop)
+  ఎంపిక (bop)
     {
-    case EQ_BINOP: case GE_BINOP: case GT_BINOP:
-    case LE_BINOP: case LT_BINOP: case NE_BINOP:
+    స్థితి EQ_BINOP: స్థితి GE_BINOP: స్థితి GT_BINOP:
+    స్థితి LE_BINOP: స్థితి LT_BINOP: స్థితి NE_BINOP:
       {
-        char lbuf[INT_BUFSIZE_BOUND (uintmax_t)];
-        char rbuf[INT_BUFSIZE_BOUND (uintmax_t)];
-        char const *l = (l_is_l
-                         ? umaxtostr (strlen (argv[op - 1]), lbuf)
-                         : find_int (argv[op - 1]));
-        char const *r = (r_is_l
-                         ? umaxtostr (strlen (argv[op + 2]), rbuf)
-                         : find_int (argv[op + 1]));
-        int cmp = strintcmp (l, r);
-        switch (+bop)
+        అక్షరం lbuf[INT_BUFSIZE_BOUND (uintmax_t)];
+        అక్షరం rbuf[INT_BUFSIZE_BOUND (uintmax_t)];
+        అక్షరం స్థిరరాశి *l = (l_is_l
+                         ? umaxtostr (అక్షరశ్రేణి_పొడవు (argv[op - 1]), lbuf)
+                         : కనుగొను_int (argv[op - 1]));
+        అక్షరం స్థిరరాశి *r = (r_is_l
+                         ? umaxtostr (అక్షరశ్రేణి_పొడవు (argv[op + 2]), rbuf)
+                         : కనుగొను_int (argv[op + 1]));
+        పూర్ణాంకం cmp = strintcmp (l, r);
+        ఎంపిక (+bop)
           {
-          case EQ_BINOP: return cmp == 0;
-          case GE_BINOP: return cmp >= 0;
-          case GT_BINOP: return cmp >  0;
-          case LE_BINOP: return cmp <= 0;
-          case LT_BINOP: return cmp <  0;
-          case NE_BINOP: return cmp != 0;
+          స్థితి EQ_BINOP: తిరిగి cmp == 0;
+          స్థితి GE_BINOP: తిరిగి cmp >= 0;
+          స్థితి GT_BINOP: తిరిగి cmp >  0;
+          స్థితి LE_BINOP: తిరిగి cmp <= 0;
+          స్థితి LT_BINOP: తిరిగి cmp <  0;
+          స్థితి NE_BINOP: తిరిగి cmp != 0;
           }
         unreachable ();
       }
 
-    case NT_BINOP: case OT_BINOP:
+    స్థితి NT_BINOP: స్థితి OT_BINOP:
       {
-        if (l_is_l | r_is_l)
+        ఒకవేళ (l_is_l | r_is_l)
           test_syntax_error (_("%s does not accept -l"),
                              argv[op]);
-        int cmp = timespec_cmp (get_mtime (argv[op - 1]),
+        పూర్ణాంకం cmp = timespec_cmp (get_mtime (argv[op - 1]),
                                 get_mtime (argv[op + 1]));
-        return bop == OT_BINOP ? cmp < 0 : cmp > 0;
+        తిరిగి bop == OT_BINOP ? cmp < 0 : cmp > 0;
       }
 
-    case EF_BINOP:
-      if (l_is_l | r_is_l)
+    స్థితి EF_BINOP:
+      ఒకవేళ (l_is_l | r_is_l)
         test_syntax_error (_("-ef does not accept -l"));
-      else
+      లేకపోతే
         {
-          struct stat st[2];
-          return (stat (argv[op - 1], &st[0]) == 0
+          నిర్మాణం stat st[2];
+          తిరిగి (stat (argv[op - 1], &st[0]) == 0
                   && stat (argv[op + 1], &st[1]) == 0
                   && psame_inode (&st[0], &st[1]));
         }
 
-    case EQ_STRING_BINOP:
-    case NE_STRING_BINOP:
-      return streq (argv[op - 1], argv[op + 1]) == (bop == EQ_STRING_BINOP);
+    స్థితి EQ_STRING_BINOP:
+    స్థితి NE_STRING_BINOP:
+      తిరిగి streq (argv[op - 1], argv[op + 1]) == (bop == EQ_STRING_BINOP);
 
-    case GT_STRING_BINOP:
-    case LT_STRING_BINOP:
+    స్థితి GT_STRING_BINOP:
+    స్థితి LT_STRING_BINOP:
       {
-        int cmp = strcoll (argv[op - 1], argv[op + 1]);
-        return bop == LT_STRING_BINOP ? cmp < 0 : cmp > 0;
+        పూర్ణాంకం cmp = strcoll (argv[op - 1], argv[op + 1]);
+        తిరిగి bop == LT_STRING_BINOP ? cmp < 0 : cmp > 0;
       }
     }
 
@@ -356,14 +356,14 @@ binary_operator (bool l_is_l, enum binop bop)
   affirm (false);
 }
 
-static bool
-unary_operator (void)
+స్థిర bool
+unary_operator (శూన్య)
 {
-  struct stat stat_buf;
+  నిర్మాణం stat stat_buf;
 
-  switch (argv[pos][1])
+  ఎంపిక (argv[pos][1])
     {
-    default:
+    అప్రమేయ:
       test_syntax_error (_("%s: unary operator expected"), quote (argv[pos]));
 
       /* All of the following unary operators use unary_advance (), which
@@ -371,131 +371,131 @@ unary_operator (void)
          pos right past it.  This means that pos - 1 is the location of the
          argument. */
 
-    case 'e':			/* file exists in the file system? */
+    స్థితి 'e':			/* file exists in the file system? */
       unary_advance ();
-      return stat (argv[pos - 1], &stat_buf) == 0;
+      తిరిగి stat (argv[pos - 1], &stat_buf) == 0;
 
-    case 'r':			/* file is readable? */
+    స్థితి 'r':			/* file is readable? */
       unary_advance ();
-      return euidaccess (argv[pos - 1], R_OK) == 0;
+      తిరిగి euidaccess (argv[pos - 1], R_OK) == 0;
 
-    case 'w':			/* File is writable? */
+    స్థితి 'w':			/* File is writable? */
       unary_advance ();
-      return euidaccess (argv[pos - 1], W_OK) == 0;
+      తిరిగి euidaccess (argv[pos - 1], W_OK) == 0;
 
-    case 'x':			/* File is executable? */
+    స్థితి 'x':			/* File is executable? */
       unary_advance ();
-      return euidaccess (argv[pos - 1], X_OK) == 0;
+      తిరిగి euidaccess (argv[pos - 1], X_OK) == 0;
 
-    case 'N':  /* File exists and has been modified since it was last read? */
+    స్థితి 'N':  /* File exists and has been modified since it was last read? */
       {
         unary_advance ();
-        if (stat (argv[pos - 1], &stat_buf) != 0)
-          return false;
-        struct timespec atime = get_stat_atime (&stat_buf);
-        struct timespec mtime = get_stat_mtime (&stat_buf);
-        return (timespec_cmp (mtime, atime) > 0);
+        ఒకవేళ (stat (argv[pos - 1], &stat_buf) != 0)
+          తిరిగి false;
+        నిర్మాణం timespec atime = get_stat_atime (&stat_buf);
+        నిర్మాణం timespec mtime = get_stat_mtime (&stat_buf);
+        తిరిగి (timespec_cmp (mtime, atime) > 0);
       }
 
-    case 'O':			/* File is owned by you? */
+    స్థితి 'O':			/* File is owned by you? */
       {
         unary_advance ();
-        if (stat (argv[pos - 1], &stat_buf) != 0)
-          return false;
+        ఒకవేళ (stat (argv[pos - 1], &stat_buf) != 0)
+          తిరిగి false;
         errno = 0;
         uid_t euid = geteuid ();
         uid_t NO_UID = -1;
-        return ! (euid == NO_UID && errno) && euid == stat_buf.st_uid;
+        తిరిగి ! (euid == NO_UID && errno) && euid == stat_buf.st_uid;
       }
 
-    case 'G':			/* File is owned by your group? */
+    స్థితి 'G':			/* File is owned by your group? */
       {
         unary_advance ();
-        if (stat (argv[pos - 1], &stat_buf) != 0)
-          return false;
+        ఒకవేళ (stat (argv[pos - 1], &stat_buf) != 0)
+          తిరిగి false;
         errno = 0;
         gid_t egid = getegid ();
         gid_t NO_GID = -1;
-        return ! (egid == NO_GID && errno) && egid == stat_buf.st_gid;
+        తిరిగి ! (egid == NO_GID && errno) && egid == stat_buf.st_gid;
       }
 
-    case 'f':			/* File is a file? */
+    స్థితి 'f':			/* File is a file? */
       unary_advance ();
       /* Under POSIX, -f is true if the given file exists
          and is a regular file. */
-      return (stat (argv[pos - 1], &stat_buf) == 0
-              && S_ISREG (stat_buf.st_mode));
+      తిరిగి (stat (argv[pos - 1], &stat_buf) == 0
+              && S_ISREG (stat_buf.st_బహుళకం));
 
-    case 'd':			/* File is a directory? */
+    స్థితి 'd':			/* File is a directory? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
-              && S_ISDIR (stat_buf.st_mode));
+      తిరిగి (stat (argv[pos - 1], &stat_buf) == 0
+              && S_ISDIR (stat_buf.st_బహుళకం));
 
-    case 's':			/* File has something in it? */
+    స్థితి 's':			/* File has something in it? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
-              && 0 < stat_buf.st_size);
+      తిరిగి (stat (argv[pos - 1], &stat_buf) == 0
+              && 0 < stat_buf.st_కొలత);
 
-    case 'S':			/* File is a socket? */
+    స్థితి 'S':			/* File is a socket? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
-              && S_ISSOCK (stat_buf.st_mode));
+      తిరిగి (stat (argv[pos - 1], &stat_buf) == 0
+              && S_ISSOCK (stat_buf.st_బహుళకం));
 
-    case 'c':			/* File is character special? */
+    స్థితి 'c':			/* File is character special? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
-              && S_ISCHR (stat_buf.st_mode));
+      తిరిగి (stat (argv[pos - 1], &stat_buf) == 0
+              && S_ISCHR (stat_buf.st_బహుళకం));
 
-    case 'b':			/* File is block special? */
+    స్థితి 'b':			/* File is block special? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
-              && S_ISBLK (stat_buf.st_mode));
+      తిరిగి (stat (argv[pos - 1], &stat_buf) == 0
+              && S_ISBLK (stat_buf.st_బహుళకం));
 
-    case 'p':			/* File is a named pipe? */
+    స్థితి 'p':			/* File is a named pipe? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
-              && S_ISFIFO (stat_buf.st_mode));
+      తిరిగి (stat (argv[pos - 1], &stat_buf) == 0
+              && S_ISFIFO (stat_buf.st_బహుళకం));
 
-    case 'L':			/* Same as -h  */
+    స్థితి 'L':			/* Same as -h  */
       /*FALLTHROUGH*/
 
-    case 'h':			/* File is a symbolic link? */
+    స్థితి 'h':			/* File is a symbolic link? */
       unary_advance ();
-      return issymlink (argv[pos - 1]) == 1;
+      తిరిగి issymlink (argv[pos - 1]) == 1;
 
-    case 'u':			/* File is setuid? */
+    స్థితి 'u':			/* File is setuid? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
-              && (stat_buf.st_mode & S_ISUID));
+      తిరిగి (stat (argv[pos - 1], &stat_buf) == 0
+              && (stat_buf.st_బహుళకం & S_ISUID));
 
-    case 'g':			/* File is setgid? */
+    స్థితి 'g':			/* File is setgid? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
-              && (stat_buf.st_mode & S_ISGID));
+      తిరిగి (stat (argv[pos - 1], &stat_buf) == 0
+              && (stat_buf.st_బహుళకం & S_ISGID));
 
-    case 'k':			/* File has sticky bit set? */
+    స్థితి 'k':			/* File has sticky bit set? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
-              && (stat_buf.st_mode & S_ISVTX));
+      తిరిగి (stat (argv[pos - 1], &stat_buf) == 0
+              && (stat_buf.st_బహుళకం & S_ISVTX));
 
-    case 't':			/* File (fd) is a terminal? */
+    స్థితి 't':			/* File (fd) is a terminal? */
       {
-        long int fd;
-        char const *arg;
+        దీర్ఘ పూర్ణాంకం fd;
+        అక్షరం స్థిరరాశి *arg;
         unary_advance ();
-        arg = find_int (argv[pos - 1]);
+        arg = కనుగొను_int (argv[pos - 1]);
         errno = 0;
-        fd = strtol (arg, NULL, 10);
-        return (errno != ERANGE && 0 <= fd && fd <= INT_MAX && isatty (fd));
+        fd = strtol (arg, ఖాళీ, 10);
+        తిరిగి (errno != ERANGE && 0 <= fd && fd <= గరిష్ఠ_పూర్ణాంకం && isatty (fd));
       }
 
-    case 'n':			/* True if arg has some length. */
+    స్థితి 'n':			/* True if arg has some length. */
       unary_advance ();
-      return argv[pos - 1][0] != 0;
+      తిరిగి argv[pos - 1][0] != 0;
 
-    case 'z':			/* True if arg has no length. */
+    స్థితి 'z':			/* True if arg has no length. */
       unary_advance ();
-      return argv[pos - 1][0] == '\0';
+      తిరిగి argv[pos - 1][0] == '\0';
     }
 }
 
@@ -504,16 +504,16 @@ unary_operator (void)
  *	term
  *	term '-a' and
  */
-static bool
-and (void)
+స్థిర bool
+and (శూన్య)
 {
-  bool value = true;
+  bool విలువ = true;
 
-  while (true)
+  అయితే (true)
     {
-      value &= term ();
-      if (! (pos < argc && streq (argv[pos], "-a")))
-        return value;
+      విలువ &= పదం ();
+      ఒకవేళ (! (pos < argc && streq (argv[pos], "-a")))
+        తిరిగి విలువ;
       advance (false);
     }
 }
@@ -523,16 +523,16 @@ and (void)
  *	and
  *	and '-o' or
  */
-static bool
-or (void)
+స్థిర bool
+or (శూన్య)
 {
-  bool value = false;
+  bool విలువ = false;
 
-  while (true)
+  అయితే (true)
     {
-      value |= and ();
-      if (! (pos < argc && streq (argv[pos], "-o")))
-        return value;
+      విలువ |= and ();
+      ఒకవేళ (! (pos < argc && streq (argv[pos], "-o")))
+        తిరిగి విలువ;
       advance (false);
     }
 }
@@ -541,145 +541,145 @@ or (void)
  * expr:
  *	or
  */
-static bool
-expr (void)
+స్థిర bool
+సమాసం (శూన్య)
 {
-  if (pos >= argc)
+  ఒకవేళ (pos >= argc)
     beyond ();
 
-  return or ();		/* Same with this. */
+  తిరిగి or ();		/* Same with this. */
 }
 
-static bool
-one_argument (void)
+స్థిర bool
+one_వాదం (శూన్య)
 {
-  return argv[pos++][0] != '\0';
+  తిరిగి argv[pos++][0] != '\0';
 }
 
-static bool
-two_arguments (void)
+స్థిర bool
+two_arguments (శూన్య)
 {
-  bool value;
+  bool విలువ;
 
-  if (streq (argv[pos], "!"))
+  ఒకవేళ (streq (argv[pos], "!"))
     {
       advance (false);
-      value = ! one_argument ();
+      విలువ = ! one_వాదం ();
     }
-  else if (argv[pos][0] == '-'
+  లేకపోతే ఒకవేళ (argv[pos][0] == '-'
            && argv[pos][1] != '\0'
            && argv[pos][2] == '\0')
     {
-      value = unary_operator ();
+      విలువ = unary_operator ();
     }
-  else
+  లేకపోతే
     beyond ();
-  return (value);
+  తిరిగి (విలువ);
 }
 
-static bool
-three_arguments (void)
+స్థిర bool
+three_arguments (శూన్య)
 {
-  bool value;
-  int bop = binop (argv[pos + 1]);
+  bool విలువ;
+  పూర్ణాంకం bop = binop (argv[pos + 1]);
 
-  if (0 <= bop)
-    value = binary_operator (false, bop);
-  else if (streq (argv[pos], "!"))
+  ఒకవేళ (0 <= bop)
+    విలువ = ద్విమాన_operator (false, bop);
+  లేకపోతే ఒకవేళ (streq (argv[pos], "!"))
     {
       advance (true);
-      value = !two_arguments ();
+      విలువ = !two_arguments ();
     }
-  else if (streq (argv[pos], "(") && streq (argv[pos + 2], ")"))
+  లేకపోతే ఒకవేళ (streq (argv[pos], "(") && streq (argv[pos + 2], ")"))
     {
       advance (false);
-      value = one_argument ();
+      విలువ = one_వాదం ();
       advance (false);
     }
-  else if (streq (argv[pos + 1], "-a") || streq (argv[pos + 1], "-o")
+  లేకపోతే ఒకవేళ (streq (argv[pos + 1], "-a") || streq (argv[pos + 1], "-o")
            || streq (argv[pos + 1], ">") || streq (argv[pos + 1], "<"))
-    value = expr ();
-  else
+    విలువ = సమాసం ();
+  లేకపోతే
     test_syntax_error (_("%s: binary operator expected"),
                        quote (argv[pos + 1]));
-  return (value);
+  తిరిగి (విలువ);
 }
 
 /* This is an implementation of a Posix.2 proposal by David Korn. */
-static bool
-posixtest (int nargs)
+స్థిర bool
+posixtest (పూర్ణాంకం nargs)
 {
-  bool value;
+  bool విలువ;
 
-  switch (nargs)
+  ఎంపిక (nargs)
     {
-      case 1:
-        value = one_argument ();
-        break;
+      స్థితి 1:
+        విలువ = one_వాదం ();
+        ఆపు;
 
-      case 2:
-        value = two_arguments ();
-        break;
+      స్థితి 2:
+        విలువ = two_arguments ();
+        ఆపు;
 
-      case 3:
-        value = three_arguments ();
-        break;
+      స్థితి 3:
+        విలువ = three_arguments ();
+        ఆపు;
 
-      case 4:
-        if (streq (argv[pos], "!"))
+      స్థితి 4:
+        ఒకవేళ (streq (argv[pos], "!"))
           {
             advance (true);
-            value = !three_arguments ();
-            break;
+            విలువ = !three_arguments ();
+            ఆపు;
           }
-        if (streq (argv[pos], "(") && streq (argv[pos + 3], ")"))
+        ఒకవేళ (streq (argv[pos], "(") && streq (argv[pos + 3], ")"))
           {
             advance (false);
-            value = two_arguments ();
+            విలువ = two_arguments ();
             advance (false);
-            break;
+            ఆపు;
           }
         FALLTHROUGH;
-      case 5:
-      default:
+      స్థితి 5:
+      అప్రమేయ:
         affirm (0 < nargs);
-        value = expr ();
+        విలువ = సమాసం ();
     }
 
-  return (value);
+  తిరిగి (విలువ);
 }
 
-#if defined TEST_STANDALONE
+#ఒకవేళ defined TEST_STANDALONE
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
       fputs (_("\
-Usage: test EXPRESSION\n\
+Usage: test వ్యక్తీకరణ\n\
   or:  test\n\
-  or:  [ EXPRESSION ]\n\
+  or:  [ వ్యక్తీకరణ ]\n\
   or:  [ ]\n\
   or:  [ OPTION\n\
 "), stdout);
       fputs (_("\
-Exit with the status determined by EXPRESSION.\n\
+Exit with the స్థితి_2 determined by వ్యక్తీకరణ.\n\
 \n\
 "), stdout);
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-An omitted EXPRESSION defaults to false.  Otherwise,\n\
-EXPRESSION is true or false and sets exit status.  It is one of:\n\
+An omitted వ్యక్తీకరణ defaults గమ్యం false.  Otherwise,\n\
+వ్యక్తీకరణ is true or false and sets నిష్క్రమించు స్థితి_2.  It is one యొక్క:\n\
 "), stdout);
       fputs (_("\
 \n\
-  ( EXPRESSION )               EXPRESSION is true\n\
-  ! EXPRESSION                 EXPRESSION is false\n\
+  ( వ్యక్తీకరణ )               వ్యక్తీకరణ is true\n\
+  ! వ్యక్తీకరణ                 వ్యక్తీకరణ is false\n\
   EXPRESSION1 -a EXPRESSION2   both EXPRESSION1 and EXPRESSION2 are true\n\
   EXPRESSION1 -o EXPRESSION2   either EXPRESSION1 or EXPRESSION2 is true\n\
 "), stdout);
@@ -687,40 +687,40 @@ EXPRESSION is true or false and sets exit status.  It is one of:\n\
 \n\
 "), stdout);
       oputs (_("\
-  -n STRING            the length of STRING is nonzero\n\
+  -n STRING            the నిడివి యొక్క STRING is nonzero\n\
 "));
       fputs (_("\
-  STRING               equivalent to -n STRING\n\
+  STRING               equivalent గమ్యం -n STRING\n\
 "), stdout);
       oputs (_("\
-  -z STRING            the length of STRING is zero\n\
+  -z STRING            the నిడివి యొక్క STRING is zero\n\
 "));
       fputs (_("\
-  STRING1 = STRING2    the strings are equal\n\
-  STRING1 != STRING2   the strings are not equal\n\
-  STRING1 > STRING2    STRING1 is greater than STRING2 in the current locale\n\
-  STRING1 < STRING2    STRING1 is less than STRING2 in the current locale\n\
+  STRING1 = STRING2    the అక్షరశ్రేణులు are equal\n\
+  STRING1 != STRING2   the అక్షరశ్రేణులు are not equal\n\
+  STRING1 > STRING2    STRING1 is greater than STRING2 లోపల the current locale\n\
+  STRING1 < STRING2    STRING1 is less than STRING2 లోపల the current locale\n\
 "), stdout);
       fputs (_("\
 \n\
 "), stdout);
       oputs (_("\
-  INTEGER1 -eq INTEGER2   INTEGER1 is equal to INTEGER2\n\
+  INTEGER1 -eq INTEGER2   INTEGER1 is equal గమ్యం INTEGER2\n\
 "));
       oputs (_("\
-  INTEGER1 -ge INTEGER2   INTEGER1 is greater than or equal to INTEGER2\n\
+  INTEGER1 -ge INTEGER2   INTEGER1 is greater than or equal గమ్యం INTEGER2\n\
 "));
       oputs (_("\
   INTEGER1 -gt INTEGER2   INTEGER1 is greater than INTEGER2\n\
 "));
       oputs (_("\
-  INTEGER1 -le INTEGER2   INTEGER1 is less than or equal to INTEGER2\n\
+  INTEGER1 -le INTEGER2   INTEGER1 is less than or equal గమ్యం INTEGER2\n\
 "));
       oputs (_("\
   INTEGER1 -lt INTEGER2   INTEGER1 is less than INTEGER2\n\
 "));
       oputs (_("\
-  INTEGER1 -ne INTEGER2   INTEGER1 is not equal to INTEGER2\n\
+  INTEGER1 -ne INTEGER2   INTEGER1 is not equal గమ్యం INTEGER2\n\
 "));
       fputs (_("\
 \n\
@@ -738,7 +738,7 @@ EXPRESSION is true or false and sets exit status.  It is one of:\n\
 \n\
 "), stdout);
       oputs (_("\
-  -b FILE     FILE exists and is block special\n\
+  -b FILE     FILE exists and is ఖండం special\n\
 "));
       oputs (_("\
   -c FILE     FILE exists and is character special\n\
@@ -753,22 +753,22 @@ EXPRESSION is true or false and sets exit status.  It is one of:\n\
   -f FILE     FILE exists and is a regular file\n\
 "));
       oputs (_("\
-  -g FILE     FILE exists and its set-group-ID bit is set\n\
+  -g FILE     FILE exists and its సమితి_2-సమూహం-ID బిట్టు is సమితి_2\n\
 "));
       oputs (_("\
-  -G FILE     FILE exists and is owned by the effective group ID\n\
+  -G FILE     FILE exists and is owned by the effective సమూహం ID\n\
 "));
       oputs (_("\
   -h FILE     FILE exists and is a symbolic link (same as -L)\n\
 "));
       oputs (_("\
-  -k FILE     FILE exists and has its sticky bit set\n\
+  -k FILE     FILE exists and has its sticky బిట్టు సమితి_2\n\
 "));
       oputs (_("\
   -L FILE     FILE exists and is a symbolic link (same as -h)\n\
 "));
       oputs (_("\
-  -N FILE     FILE exists and has been modified since it was last read\n\
+  -N FILE     FILE exists and has been modified since it was చివరి పఠ\n\
 "));
       oputs (_("\
   -O FILE     FILE exists and is owned by the effective user ID\n\
@@ -777,10 +777,10 @@ EXPRESSION is true or false and sets exit status.  It is one of:\n\
   -p FILE     FILE exists and is a named pipe\n\
 "));
       oputs (_("\
-  -r FILE     FILE exists and the user has read access\n\
+  -r FILE     FILE exists and the user has పఠ access\n\
 "));
       oputs (_("\
-  -s FILE     FILE exists and has a size greater than zero\n\
+  -s FILE     FILE exists and has a కొలత greater than zero\n\
 "));
       oputs (_("\
   -S FILE     FILE exists and is a socket\n\
@@ -789,41 +789,41 @@ EXPRESSION is true or false and sets exit status.  It is one of:\n\
   -t FD       file descriptor FD is opened on a terminal\n\
 "));
       oputs (_("\
-  -u FILE     FILE exists and its set-user-ID bit is set\n\
+  -u FILE     FILE exists and its సమితి_2-user-ID బిట్టు is సమితి_2\n\
 "));
       oputs (_("\
-  -w FILE     FILE exists and the user has write access\n\
+  -w FILE     FILE exists and the user has లిఖ access\n\
 "));
       oputs (_("\
-  -x FILE     FILE exists and the user has execute (or search) access\n\
+  -x FILE     FILE exists and the user has execute (or శోధన) access\n\
 "));
       fputs (_("\
 \n\
-Except for -h and -L, all FILE-related tests dereference symbolic links.\n\
-Beware that parentheses need to be escaped (e.g., by backslashes) for shells.\n\
-INTEGER may also be -l STRING, which evaluates to the length of STRING.\n\
+Except కొరకు -h and -L, all FILE-related tests dereference symbolic links.\n\
+Beware that parentheses need గమ్యం be escaped (e.g., by backslashes) కొరకు shells.\n\
+INTEGER may also be -l STRING, which evaluates గమ్యం the నిడివి యొక్క STRING.\n\
 "), stdout);
       fputs (_("\
 \n\
-Binary -a and -o are ambiguous.  Use 'test EXPR1 && test EXPR2'\n\
+ద్విమాన_2 -a and -o are ambiguous.  Use 'test EXPR1 && test EXPR2'\n\
 or 'test EXPR1 || test EXPR2' instead.\n\
 "), stdout);
       fputs (_("\
 \n\
-'[' honors --help and --version, but 'test' treats them as STRINGs.\n\
+'[' honors --help and --సంస్కరణ_3, but 'test' treats them as అక్షరశ్రేణులు_2.\n\
 "), stdout);
-      printf (USAGE_BUILTIN_WARNING, _("test and/or ["));
-      emit_ancillary_info (PROGRAM_NAME);
+      రాయి (USAGE_BUILTIN_WARNING, _("test and/or ["));
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
-#endif /* TEST_STANDALONE */
+#అయితే_ముగింపు /* TEST_STANDALONE */
 
-#if !defined TEST_STANDALONE
-# define main test_command
-#endif
+#ఒకవేళ !defined TEST_STANDALONE
+# define ప్రధాన test_command
+#అయితే_ముగింపు
 
-#define AUTHORS \
+#నిర్వచించు AUTHORS \
   proper_name ("Kevin Braunsdorf"), \
   proper_name ("Matthew Bradburn")
 
@@ -833,32 +833,32 @@ or 'test EXPR1 || test EXPR2' instead.\n\
  * test:
  *	test expr
  */
-int
-main (int margc, char **margv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం margc, అక్షరం **margv)
 {
-  bool value;
+  bool విలువ;
 
-#if !defined TEST_STANDALONE
-  int code;
+#ఒకవేళ !defined TEST_STANDALONE
+  పూర్ణాంకం సంకేతం_2;
 
-  code = setjmp (test_exit_buf);
+  సంకేతం_2 = setjmp (test_exit_buf);
 
-  if (code)
-    return (test_error_return);
-#else /* TEST_STANDALONE */
+  ఒకవేళ (సంకేతం_2)
+    తిరిగి (test_error_return);
+#లేకపోతే /* TEST_STANDALONE */
   initialize_main (&margc, &margv);
-  set_program_name (margv[0]);
+  సమితి_కార్యక్రమం_name (margv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   initialize_exit_failure (TEST_FAILURE);
   atexit (close_stdout);
-#endif /* TEST_STANDALONE */
+#అయితే_ముగింపు /* TEST_STANDALONE */
 
   argv = margv;
 
-  if (test_mode == TEST_LBRACKET)
+  ఒకవేళ (test_బహుళకం == TEST_LBRACKET)
     {
       /* Recognize --help or --version, but only when invoked in the
          "[" form, when the last argument is not "]".  Use direct
@@ -866,19 +866,19 @@ main (int margc, char **margv)
          abbreviations.  POSIX allows "[ --help" and "[ --version" to
          have the usual GNU behavior, but it requires "test --help"
          and "test --version" to exit silently with status 0.  */
-      if (margc == 2)
+      ఒకవేళ (margc == 2)
         {
-          if (streq (margv[1], "--help"))
+          ఒకవేళ (streq (margv[1], "--help"))
             usage (EXIT_SUCCESS);
 
-          if (streq (margv[1], "--version"))
+          ఒకవేళ (streq (margv[1], "--version"))
             {
-              version_etc (stdout, PROGRAM_NAME, PACKAGE_NAME, Version, AUTHORS,
-                           (char *) NULL);
+              సంస్కరణ_etc (stdout, కార్యక్రమం_NAME, PACKAGE_NAME, సంస్కరణ, AUTHORS,
+                           (అక్షరం *) ఖాళీ);
               test_main_return (EXIT_SUCCESS);
             }
         }
-      if (margc < 2 || !streq (margv[margc - 1], "]"))
+      ఒకవేళ (margc < 2 || !streq (margv[margc - 1], "]"))
         test_syntax_error (_("missing %s"), quote ("]"));
 
       --margc;
@@ -887,13 +887,13 @@ main (int margc, char **margv)
   argc = margc;
   pos = 1;
 
-  if (pos >= argc)
+  ఒకవేళ (pos >= argc)
     test_main_return (TEST_FALSE);
 
-  value = posixtest (argc - 1);
+  విలువ = posixtest (argc - 1);
 
-  if (pos != argc)
+  ఒకవేళ (pos != argc)
     test_syntax_error (_("extra argument %s"), quote (argv[pos]));
 
-  test_main_return (value ? TEST_TRUE : TEST_FALSE);
+  test_main_return (విలువ ? TEST_TRUE : TEST_FALSE);
 }

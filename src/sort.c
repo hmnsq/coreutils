@@ -20,76 +20,76 @@
 
    Ørn E. Hansen added NLS support in 1997.  */
 
-#include <config.h>
+#అన్తర్భావ <config.h>
 
-#include <getopt.h>
-#include <pthread.h>
-#include <sys/resource.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <signal.h>
-#include <spawn.h>
-#include "system.h"
-#include "argmatch.h"
-#include "assure.h"
-#include "c-ctype.h"
-#include "fadvise.h"
-#include "filevercmp.h"
-#include "findprog.h"
-#include "flexmember.h"
-#include "hard-locale.h"
-#include "hash.h"
-#include "heap.h"
-#include "ignore-value.h"
-#include "mbswidth.h"
-#include "nproc.h"
-#include "physmem.h"
-#include "posixver.h"
-#include "quote.h"
-#include "randread.h"
-#include "readtokens0.h"
-#include "stdlib--.h"
-#include "strnumcmp.h"
-#include "term-sig.h"
-#include "unistd--.h"
-#include "xmemcoll.h"
-#include "xnanosleep.h"
-#include "xstrtol.h"
-#include "xstrtol-error.h"
+#అన్తర్భావ <getopt.h>
+#అన్తర్భావ <pthread.h>
+#అన్తర్భావ <sys/resource.h>
+#అన్తర్భావ <sys/types.h>
+#అన్తర్భావ <sys/wait.h>
+#అన్తర్భావ <signal.h>
+#అన్తర్భావ <spawn.h>
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "argmatch.h"
+#అన్తర్భావ "assure.h"
+#అన్తర్భావ "c-ctype.h"
+#అన్తర్భావ "fadvise.h"
+#అన్తర్భావ "filevercmp.h"
+#అన్తర్భావ "findprog.h"
+#అన్తర్భావ "flexmember.h"
+#అన్తర్భావ "hard-locale.h"
+#అన్తర్భావ "hash.h"
+#అన్తర్భావ "heap.h"
+#అన్తర్భావ "ignore-value.h"
+#అన్తర్భావ "mbswidth.h"
+#అన్తర్భావ "nproc.h"
+#అన్తర్భావ "physmem.h"
+#అన్తర్భావ "posixver.h"
+#అన్తర్భావ "quote.h"
+#అన్తర్భావ "randread.h"
+#అన్తర్భావ "readtokens0.h"
+#అన్తర్భావ "stdlib--.h"
+#అన్తర్భావ "strnumcmp.h"
+#అన్తర్భావ "term-sig.h"
+#అన్తర్భావ "unistd--.h"
+#అన్తర్భావ "xmemcoll.h"
+#అన్తర్భావ "xnanosleep.h"
+#అన్తర్భావ "xstrtol.h"
+#అన్తర్భావ "xstrtol-error.h"
 
-#ifndef RLIMIT_DATA
-struct rlimit { size_t rlim_cur; };
+#నిర్వచితం_కాకపోతే RLIMIT_దత్తాంశం
+నిర్మాణం rlimit { size_t rlim_cur; };
 # define getrlimit(Resource, Rlp) (-1)
-#endif
+#అయితే_ముగింపు
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "sort"
+#నిర్వచించు కార్యక్రమం_NAME "sort"
 
-#define AUTHORS \
+#నిర్వచించు AUTHORS \
   proper_name ("Mike Haertel"), \
   proper_name ("Paul Eggert")
 
-#if HAVE_LANGINFO_CODESET
+#ఒకవేళ HAVE_LANGINFO_CODESET
 # include <langinfo.h>
-#endif
+#అయితే_ముగింపు
 
-#if !defined OPEN_MAX && defined NR_OPEN
+#ఒకవేళ !defined OPEN_MAX && defined NR_OPEN
 # define OPEN_MAX NR_OPEN
-#endif
-#if !defined OPEN_MAX
+#అయితే_ముగింపు
+#ఒకవేళ !defined OPEN_MAX
 # define OPEN_MAX 20
-#endif
+#అయితే_ముగింపు
 
-#define UCHAR_LIM (UCHAR_MAX + 1)
+#నిర్వచించు UCHAR_LIM (UCHAR_MAX + 1)
 
-#ifndef DEFAULT_TMPDIR
+#నిర్వచితం_కాకపోతే DEFAULT_TMPDIR
 # define DEFAULT_TMPDIR "/tmp"
-#endif
+#అయితే_ముగింపు
 
 /* Maximum number of lines to merge every time a NODE is taken from
    the merge queue.  Node is at LEVEL in the binary merge tree,
    and is responsible for merging TOTAL lines. */
-#define MAX_MERGE(total, level) (((total) >> (2 * ((level) + 1))) + 1)
+#నిర్వచించు MAX_విలీనం(మొత్తం, level) (((మొత్తం) >> (2 * ((level) + 1))) + 1)
 
 /* Heuristic value for the number of lines for which it is worth creating
    a subthread, during an internal merge sort.  I.e., it is a small number
@@ -99,26 +99,26 @@ struct rlimit { size_t rlim_cur; };
    lines of gensort -a output is sorted slightly faster with --parallel=2
    than with --parallel=1.  By contrast, using --parallel=1 is about 10%
    faster than using --parallel=2 with a 64K-line input.  */
-enum { SUBTHREAD_LINES_HEURISTIC = 128 * 1024 };
-static_assert (4 <= SUBTHREAD_LINES_HEURISTIC);
+గణన { SUBTHREAD_పంక్తులు_HEURISTIC = 128 * 1024 };
+static_assert (4 <= SUBTHREAD_పంక్తులు_HEURISTIC);
 
 /* The number of threads after which there are
    diminishing performance gains.  */
-enum { DEFAULT_MAX_THREADS = 8 };
+గణన { DEFAULT_MAX_దారాలు = 8 };
 
 /* Exit statuses.  */
-enum
+గణన
   {
     /* POSIX says to exit with status 1 if invoked with -c and the
        input is not properly sorted.  */
-    SORT_OUT_OF_ORDER = 1,
+    క్రమీకరించు_బహిర్గతం_యొక్క_క్రమం = 1,
 
     /* POSIX says any other irregular exit must exit with a status
        code greater than 1.  */
-    SORT_FAILURE = 2
+    క్రమీకరించు_FAILURE = 2
   };
 
-enum
+గణన
   {
     /* The number of times we should try to spawn a compression process
        (we retry if the posix_spawnp call fails with EAGAIN).  We don't _need_
@@ -132,81 +132,81 @@ enum
     MAX_TRIES_DECOMPRESS = 9
   };
 
-enum
+గణన
   {
     /* Level of the end-of-merge node, one level above the root. */
-    MERGE_END = 0,
+    విలీనం_చివర = 0,
 
     /* Level of the root node in merge tree. */
-    MERGE_ROOT = 1
+    విలీనం_మూలం = 1
   };
 
 /* The representation of the decimal point in the current locale.  */
-static char decimal_point;
+స్థిర అక్షరం decimal_బిందువు;
 
 /* Thousands separator; if outside char range, there is no separator.  */
-static int thousands_sep;
+స్థిర పూర్ణాంకం thousands_sep;
 /* We currently ignore multi-byte grouping chars.  */
-static bool thousands_sep_ignored;
+స్థిర bool thousands_sep_ignored;
 
 /* Nonzero if the corresponding locales are hard.  */
-static bool hard_LC_COLLATE;
-#if HAVE_NL_LANGINFO
-static bool hard_LC_TIME;
-#endif
+స్థిర bool hard_LC_COLLATE;
+#ఒకవేళ HAVE_NL_LANGINFO
+స్థిర bool hard_LC_సమయం;
+#అయితే_ముగింపు
 
-#define NONZERO(x) ((x) != 0)
+#నిర్వచించు NONZERO(x) ((x) != 0)
 
 /* The kind of blanks for '-b' to skip in various options. */
-enum blanktype { bl_start, bl_end, bl_both };
+గణన blanktype { bl_ప్రారంభం, bl_చివర, bl_both };
 
 /* The character marking end of line. Default to \n. */
-static char eolchar = '\n';
+స్థిర అక్షరం eolchar = '\n';
 
 /* Lines are held in memory as counted strings. */
-struct line
+నిర్మాణం పంక్తి
 {
-  char *text;			/* Text of the line. */
-  size_t length;		/* Length including final newline. */
-  char *keybeg;			/* Start of first key. */
-  char *keylim;			/* Limit of first key. */
+  అక్షరం *పాఠ్యం;			/* Text of the line. */
+  size_t నిడివి;		/* Length including final newline. */
+  అక్షరం *keybeg;			/* Start of first key. */
+  అక్షరం *keylim;			/* Limit of first key. */
 };
 
 /* Input buffers. */
-struct buffer
+నిర్మాణం బఫరు
 {
-  char *buf;			/* Dynamically allocated buffer,
+  అక్షరం *buf;			/* Dynamically allocated buffer,
                                    partitioned into 3 regions:
                                    - input data;
                                    - unused area;
                                    - an array of lines, in reverse order.  */
-  size_t used;			/* Number of bytes used for input data.  */
+  size_t వాడిన;			/* Number of bytes used for input data.  */
   size_t nlines;		/* Number of lines in the line array.  */
   idx_t alloc;			/* Number of bytes allocated. */
-  size_t left;			/* Number of bytes left from previous reads. */
-  size_t line_bytes;		/* Number of bytes to reserve for each line. */
+  size_t ఎడమ;			/* Number of bytes left from previous reads. */
+  size_t పంక్తి_బైట్లు;		/* Number of bytes to reserve for each line. */
   bool eof;			/* An EOF has been read.  */
 };
 
 /* Policy for sizing the main sort buffer.  INITIAL is the allocation
    to try first.  LIMIT is the largest allocation to try while reading
    normal input; a single input line can still force a larger buffer.  */
-struct sort_buffer_policy
+నిర్మాణం క్రమీకరించు_బఫరు_policy
 {
   size_t initial;
-  size_t limit;
+  size_t హద్దు;
   bool growth_failed;
 };
 
 /* Sort key.  */
-struct keyfield
+నిర్మాణం keyfield
 {
   size_t sword;			/* Zero-origin 'word' to start at. */
   size_t schar;			/* Additional characters to skip. */
   size_t eword;			/* Zero-origin last 'word' of key. */
   size_t echar;			/* Additional characters in field. */
-  bool const *ignore;		/* Boolean array of characters to ignore. */
-  char const *translate;	/* Translation applied to characters. */
+  bool స్థిరరాశి *ignore;		/* Boolean array of characters to ignore. */
+  అక్షరం స్థిరరాశి *translate;	/* Translation applied to characters. */
   bool skipsblanks;		/* Skip leading blanks when finding start.  */
   bool skipeblanks;		/* Skip leading blanks when finding end.  */
   bool numeric;			/* Flag for numeric comparison.  Handle
@@ -218,47 +218,47 @@ struct keyfield
   bool human_numeric;		/* Flag for sorting by human readable
                                    units with either SI or IEC prefixes. */
   bool month;			/* Flag for comparison by month name. */
-  bool reverse;			/* Reverse the sense of comparison. */
-  bool version;			/* sort by version number */
-  bool traditional_used;	/* Traditional key option format is used. */
-  struct keyfield *next;	/* Next keyfield to try. */
+  bool తిరగేయి;			/* Reverse the sense of comparison. */
+  bool సంస్కరణ_3;			/* sort by version number */
+  bool traditional_వాడిన;	/* Traditional key option format is used. */
+  నిర్మాణం keyfield *తదుపరి;	/* Next keyfield to try. */
 };
 
-struct month
+నిర్మాణం month
 {
-  char const *name;
-  int val;
+  అక్షరం స్థిరరాశి *name;
+  పూర్ణాంకం val;
 };
 
 /* Binary merge tree node. */
-struct merge_node
+నిర్మాణం విలీనం_కణుపు
 {
-  struct line *lo;              /* Lines to merge from LO child node. */
-  struct line *hi;              /* Lines to merge from HI child node. */
-  struct line *end_lo;          /* End of available lines from LO. */
-  struct line *end_hi;          /* End of available lines from HI. */
-  struct line **dest;           /* Pointer to destination of merge. */
+  నిర్మాణం పంక్తి *lo;              /* Lines to merge from LO child node. */
+  నిర్మాణం పంక్తి *hi;              /* Lines to merge from HI child node. */
+  నిర్మాణం పంక్తి *చివర_lo;          /* End of available lines from LO. */
+  నిర్మాణం పంక్తి *చివర_hi;          /* End of available lines from HI. */
+  నిర్మాణం పంక్తి **dest;           /* Pointer to destination of merge. */
   size_t nlo;                   /* Total Lines remaining from LO. */
   size_t nhi;                   /* Total lines remaining from HI. */
-  struct merge_node *parent;    /* Parent node. */
-  struct merge_node *lo_child;  /* LO child node. */
-  struct merge_node *hi_child;  /* HI child node. */
-  unsigned int level;           /* Level in merge tree. */
+  నిర్మాణం విలీనం_కణుపు *మాతృ;    /* Parent node. */
+  నిర్మాణం విలీనం_కణుపు *lo_బిడ్డ;  /* LO child node. */
+  నిర్మాణం విలీనం_కణుపు *hi_బిడ్డ;  /* HI child node. */
+  గుర్తులేని పూర్ణాంకం level;           /* Level in merge tree. */
   bool queued;                  /* Node is already in heap. */
-  pthread_mutex_t lock;         /* Lock for node operations. */
+  pthread_mutex_t తాళం;         /* Lock for node operations. */
 };
 
 /* Priority queue of merge nodes. */
-struct merge_node_queue
+నిర్మాణం విలీనం_కణుపు_వరుస
 {
-  struct heap *priority_queue;  /* Priority queue of merge tree nodes. */
+  నిర్మాణం కుప్ప *ప్రాధాన్యత_వరుస;  /* Priority queue of merge tree nodes. */
   pthread_mutex_t mutex;        /* Lock for queue operations. */
   pthread_cond_t cond;          /* Conditional wait for empty queue to populate
                                    when popping. */
 };
 
 /* Used to implement --unique (-u).  */
-static struct line saved_line;
+స్థిర నిర్మాణం పంక్తి saved_పంక్తి;
 
 /* FIXME: None of these tables work with multibyte character sets.
    Also, there are many other bugs when handling multibyte characters.
@@ -267,22 +267,22 @@ static struct line saved_line;
    tricky.  */
 
 /* Table of blanks.  */
-static bool blanks[UCHAR_LIM];
+స్థిర bool blanks[UCHAR_LIM];
 
 /* Table of non-printing characters. */
-static bool nonprinting[UCHAR_LIM];
+స్థిర bool nonprinting[UCHAR_LIM];
 
 /* Table of non-dictionary characters (not letters, digits, or blanks). */
-static bool nondictionary[UCHAR_LIM];
+స్థిర bool nondictionary[UCHAR_LIM];
 
 /* Translation table folding lower case to upper.  */
-static char fold_toupper[UCHAR_LIM];
+స్థిర అక్షరం fold_toupper[UCHAR_LIM];
 
-#define MONTHS_PER_YEAR 12
+#నిర్వచించు MONTHS_చొప్పున_YEAR 12
 
 /* Table mapping month names to integers.
    Alphabetic order allows binary search. */
-static struct month monthtab[] =
+స్థిర నిర్మాణం month monthtab[] =
 {
   {"APR", 4},
   {"AUG", 8},
@@ -299,31 +299,31 @@ static struct month monthtab[] =
 };
 
 /* During the merge phase, the number of files to merge at once. */
-#define NMERGE_DEFAULT 16
+#నిర్వచించు NMERGE_DEFAULT 16
 
 /* Minimum size for a merge or check buffer.  */
-#define MIN_MERGE_BUFFER_SIZE (2 + sizeof (struct line))
+#నిర్వచించు MIN_విలీనం_బఫరు_కొలత (2 + పరిమాణం (నిర్మాణం పంక్తి))
 
 /* Minimum sort size; the code might not work with smaller sizes.  */
-#define MIN_SORT_SIZE (nmerge * MIN_MERGE_BUFFER_SIZE)
+#నిర్వచించు MIN_క్రమీకరించు_కొలత (nmerge * MIN_విలీనం_బఫరు_కొలత)
 
 /* The number of bytes needed for a merge or check buffer, which can
    function relatively efficiently even if it holds only one line.  If
    a longer line is seen, this value is increased.  */
-static size_t merge_buffer_size = MAX (MIN_MERGE_BUFFER_SIZE, 256 * 1024);
+స్థిర size_t విలీనం_బఫరు_కొలత = MAX (MIN_విలీనం_బఫరు_కొలత, 256 * 1024);
 
 /* The approximate maximum number of bytes of main memory to use, as
    specified by the user.  Zero if the user has not specified a size.  */
-static size_t sort_size;
+స్థిర size_t క్రమీకరించు_కొలత;
 
 /* The initial allocation factor for non-regular files.
    This is used, e.g., when reading from a pipe.
    Don't make it too big, since it is multiplied by ~130 to
    obtain the size of the actual buffer sort will allocate.
    Also, there may be 8 threads all doing this at the same time.  */
-#define INPUT_FILE_SIZE_GUESS (128 * 1024)
+#నిర్వచించు ఆదానం_FILE_కొలత_GUESS (128 * 1024)
 
-static struct
+స్థిర నిర్మాణం
 {
   /* Number of temporary directory names used.  */
   idx_t n_dirs;
@@ -333,114 +333,114 @@ static struct
 
   /* Array of directory names in which any temporary files are
      to be created. */
-  char const **dirs COUNTED_BY (n_dirs);
-} temp_dirs;
+  అక్షరం స్థిరరాశి **dirs COUNTED_BY (n_dirs);
+} తాత్కాలిక_dirs;
 
 
 
 /* Flag to reverse the order of all comparisons. */
-static bool reverse;
+స్థిర bool తిరగేయి;
 
 /* Flag for stable sort.  This turns off the last ditch bytewise
    comparison of lines, and instead leaves lines in the same order
    they were read if all keys compare equal.  */
-static bool stable;
+స్థిర bool stable;
 
 /* An int value outside char range.  */
-enum { NON_CHAR = CHAR_MAX + 1 };
+గణన { NON_CHAR = CHAR_MAX + 1 };
 
 /* If TAB has this value, blanks separate fields.  */
-enum { TAB_DEFAULT = CHAR_MAX + 1 };
+గణన { TAB_DEFAULT = CHAR_MAX + 1 };
 
 /* Tab character separating fields.  If TAB_DEFAULT, then fields are
    separated by the empty string between a non-blank character and a blank
    character. */
-static int tab = TAB_DEFAULT;
+స్థిర పూర్ణాంకం tab = TAB_DEFAULT;
 
 /* Flag to remove consecutive duplicate lines from the output.
    Only the last of a sequence of equal lines will be output. */
-static bool unique;
+స్థిర bool unique;
 
 /* Nonzero if any of the input files are the standard input. */
-static bool have_read_stdin;
+స్థిర bool have_read_stdin;
 
 /* List of key field comparisons to be tried.  */
-static struct keyfield *keylist;
+స్థిర నిర్మాణం keyfield *keylist;
 
 /* Program used to (de)compress temp files.  Must accept -d.  */
-static char const *compress_program;
+స్థిర అక్షరం స్థిరరాశి *compress_కార్యక్రమం;
 
 /* Annotate the output with extra info to aid the user.  */
-static bool debug;
+స్థిర bool debug;
 
 /* Maximum number of files to merge in one go.  If more than this
    number are present, temp files will be used. */
-static unsigned int nmerge = NMERGE_DEFAULT;
+స్థిర గుర్తులేని పూర్ణాంకం nmerge = NMERGE_DEFAULT;
 
 /* Whether SIGPIPE had the default disposition at startup.  */
-static bool default_SIGPIPE;
+స్థిర bool default_SIGPIPE;
 
 /* The list of temporary files. */
-struct tempnode
+నిర్మాణం tempnode
 {
-  struct tempnode *volatile next;
+  నిర్మాణం tempnode *అస్థిర తదుపరి;
   pid_t pid;     /* The subprocess PID; undefined if state == UNCOMPRESSED.  */
-  char state;
-  char name[FLEXIBLE_ARRAY_MEMBER];
+  అక్షరం state;
+  అక్షరం name[FLEXIBLE_ARRAY_MEMBER];
 };
-static struct tempnode *volatile temphead;
-static struct tempnode *volatile *temptail = &temphead;
+స్థిర నిర్మాణం tempnode *అస్థిర temphead;
+స్థిర నిర్మాణం tempnode *అస్థిర *temptail = &temphead;
 
 /* Clean up any remaining temporary files.  */
 
-static void
-cleanup (void)
+స్థిర శూన్య
+cleanup (శూన్య)
 {
-  for (struct tempnode const *node = temphead; node; node = node->next)
-    unlink (node->name);
-  temphead = NULL;
+  కొరకు (నిర్మాణం tempnode స్థిరరాశి *కణుపు = temphead; కణుపు; కణుపు = కణుపు->తదుపరి)
+    unlink (కణుపు->name);
+  temphead = ఖాళీ;
 }
 
 /* Handle interrupts and hangups. */
 
-static void
-sighandler (int sig)
+స్థిర శూన్య
+sighandler (పూర్ణాంకం sig)
 {
   cleanup ();
 
-  signal (sig, SIG_DFL);
-  raise (sig);
+  సంకేతం (sig, SIG_DFL);
+  లేపు (sig);
 }
 
 /* Report MESSAGE for FILE, then clean up and exit.
    If FILE is null, it represents standard output.  */
 
-static void
-sort_die (char const *message, char const *file)
+స్థిర శూన్య
+క్రమీకరించు_die (అక్షరం స్థిరరాశి *సందేశం_2, అక్షరం స్థిరరాశి *file)
 {
   /* If we got EPIPE writing to stdout (from a previous fwrite() or fclose()
      and SIGPIPE was originally SIG_DFL, mimic standard SIGPIPE behavior.  */
-  if (errno == EPIPE && !file && default_SIGPIPE)
+  ఒకవేళ (errno == EPIPE && !file && default_SIGPIPE)
     sighandler (SIGPIPE);
 
-  error (SORT_FAILURE, errno, "%s: %s", message,
+  error (క్రమీకరించు_FAILURE, errno, "%s: %s", సందేశం_2,
          quotef (file ? file : _("standard output")));
 }
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("\
+      రాయి (_("\
 Usage: %s [OPTION]... [FILE]...\n\
   or:  %s [OPTION]... --files0-from=F\n\
 "),
-              program_name, program_name);
+              కార్యక్రమం_name, కార్యక్రమం_name);
       fputs (_("\
-Write sorted concatenation of all FILE(s) to standard output.\n\
+Write sorted concatenation యొక్క all FILE(s) గమ్యం standard output.\n\
 "), stdout);
 
       emit_stdin_note ();
@@ -452,58 +452,58 @@ Ordering options:\n\
 "), stdout);
       oputs (_("\
   -b, --ignore-leading-blanks\n\
-         ignore leading blanks when finding sort keys in each line\n\
+         ignore leading blanks when finding క్రమీకరించు కీలకాలు లోపల each పంక్తి\n\
 "));
       oputs (_("\
-  -d, --dictionary-order\n\
+  -d, --dictionary-క్రమం\n\
          consider only blanks and alphanumeric characters\n\
 "));
       oputs (_("\
-  -f, --ignore-case\n\
-         fold lower case to upper case characters\n\
+  -f, --ignore-స్థితి\n\
+         fold క్రింది స్థితి గమ్యం పై స్థితి characters\n\
 "));
       oputs (_("\
-  -g, --general-numeric-sort\n\
-         compare according to general numerical value\n\
+  -g, --general-numeric-క్రమీకరించు\n\
+         compare according గమ్యం general numerical విలువ\n\
 "));
       oputs (_("\
   -i, --ignore-nonprinting\n\
          consider only printable characters\n\
 "));
       oputs (_("\
-  -M, --month-sort\n\
+  -M, --month-క్రమీకరించు\n\
          compare (unknown) < 'JAN' < ... < 'DEC'\n\
 "));
       oputs (_("\
-  -h, --human-numeric-sort\n\
+  -h, --human-numeric-క్రమీకరించు\n\
          compare human readable numbers (e.g., 2K 1G)\n\
 "));
       oputs (_("\
-  -n, --numeric-sort\n\
-         compare according to string numerical value;\n\
-         see full documentation for supported strings\n\
+  -n, --numeric-క్రమీకరించు\n\
+         compare according గమ్యం string numerical విలువ;\n\
+         see నిండిన documentation కొరకు supported అక్షరశ్రేణులు\n\
 "));
       oputs (_("\
-  -R, --random-sort\n\
-         shuffle, but group identical keys.  See also shuf(1)\n\
+  -R, --random-క్రమీకరించు\n\
+         shuffle, but సమూహం identical కీలకాలు.  See also shuf(1)\n\
 "));
       oputs (_("\
-      --random-source=FILE\n\
-         get random bytes from FILE\n\
+      --random-ఆధారం_2=FILE\n\
+         get random బైట్లు from FILE\n\
 "));
       oputs (_("\
-  -r, --reverse\n\
-         reverse the result of comparisons\n\
+  -r, --తిరగేయి\n\
+         తిరగేయి the ఫలితం యొక్క comparisons\n\
 "));
       oputs (_("\
-      --sort=WORD\n\
-         sort according to WORD:\n\
+      --క్రమీకరించు=మాట\n\
+         క్రమీకరించు according గమ్యం మాట:\n\
            general-numeric -g, human-numeric -h, month -M,\n\
-           numeric -n, random -R, version -V\n\
+           numeric -n, random -R, సంస్కరణ_3 -V\n\
 "));
       oputs (_("\
-  -V, --version-sort\n\
-         natural sort of (version) numbers within text\n\
+  -V, --సంస్కరణ_3-క్రమీకరించు\n\
+         natural క్రమీకరించు యొక్క (సంస్కరణ_3) numbers within పాఠ్యం\n\
 "));
       fputs (_("\
 \n\
@@ -511,173 +511,173 @@ Other options:\n\
 \n\
 "), stdout);
       oputs (_("\
-      --batch-size=NMERGE\n\
-         merge at most NMERGE inputs at once; for more use temp files\n\
+      --batch-కొలత=NMERGE\n\
+         విలీనం at most NMERGE inputs at once; కొరకు మరిన్ని use తాత్కాలిక files\n\
 "));
       oputs (_("\
-  -c, --check, --check=diagnose-first\n\
-         check for sorted input; do not sort\n\
+  -c, --check, --check=diagnose-మొదటి\n\
+         check కొరకు sorted ఆదానం; చేయి not క్రమీకరించు\n\
 "));
       oputs (_("\
   -C, --check=quiet, --check=silent\n\
-         like -c, but do not report first bad line\n\
+         like -c, but చేయి not report మొదటి bad పంక్తి\n\
 "));
       oputs (_("\
-      --compress-program=PROG\n\
+      --compress-కార్యక్రమం=PROG\n\
          compress temporaries with PROG; decompress them with PROG -d\n\
 "));
       oputs (_("\
       --debug\n\
-         annotate the part of the line used to sort,\n\
-         and warn about questionable usage to standard error\n\
+         annotate the part యొక్క the పంక్తి వాడిన గమ్యం క్రమీకరించు,\n\
+         and warn about questionable usage గమ్యం standard error\n\
 "));
       oputs (_("\
       --files0-from=F\n\
-         read input from the files specified by NUL-terminated names in file F;\
+         పఠ ఆదానం from the files specified by NUL-terminated పేర్లు లోపల file F;\
 \n\
-         If F is -, read names from standard input\n\
+         If F is -, పఠ పేర్లు from standard ఆదానం\n\
 "));
       oputs (_("\
-  -k, --key=KEYDEF\n\
-         sort via a key; KEYDEF gives location and type\n\
+  -k, --కీలకం=KEYDEF\n\
+         క్రమీకరించు ద్వారా a కీలకం; KEYDEF gives location and type\n\
 "));
       oputs (_("\
-  -m, --merge\n\
-         merge already sorted files; do not sort\n\
+  -m, --విలీనం\n\
+         విలీనం already sorted files; చేయి not క్రమీకరించు\n\
 "));
       oputs (_("\
   -o, --output=FILE\n\
-         write result to FILE instead of standard output\n\
+         లిఖ ఫలితం గమ్యం FILE instead యొక్క standard output\n\
 "));
       oputs (_("\
   -s, --stable\n\
-         stabilize sort by disabling last-resort comparison\n\
+         stabilize క్రమీకరించు by disabling చివరి-resort comparison\n\
 "));
       oputs (_("\
-  -S, --buffer-size=SIZE\n\
-         use SIZE for main memory buffer\n\
+  -S, --బఫరు-కొలత=కొలత_2\n\
+         use కొలత_2 కొరకు ప్రధాన జ్ఞాపకం బఫరు\n\
 "));
       oputs (_("\
-  -t, --field-separator=SEP\n\
-         use SEP instead of non-blank to blank transition\n\
+  -t, --క్షేత్రం-separator=SEP\n\
+         use SEP instead యొక్క non-blank గమ్యం blank transition\n\
 "));
       oprintf (_("\
   -T, --temporary-directory=DIR\n\
-         use DIR for temporaries, not $TMPDIR or %s;\n\
-         multiple options specify multiple directories\n\
+         use DIR కొరకు temporaries, not $TMPDIR or %s;\n\
+         గుణిజం options specify గుణిజం directories\n\
 "), DEFAULT_TMPDIR);
       oputs (_("\
       --parallel=N\n\
-         change the number of sorts run concurrently to N\n\
+         change the సంఖ్య యొక్క sorts నిరంతరం_2 concurrently గమ్యం N\n\
 "));
       oputs (_("\
   -u, --unique\n\
-         output only the first of lines with equal keys;\n\
-         with -c, check for strict ordering\n\
+         output only the మొదటి యొక్క పంక్తులు with equal కీలకాలు;\n\
+         with -c, check కొరకు strict ordering\n\
 "));
       oputs (_("\
   -z, --zero-terminated\n\
-         line delimiter is NUL, not newline\n\
+         పంక్తి delimiter is NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-KEYDEF is F[.C][OPTS][,F[.C][OPTS]] for start and stop position, where F is a\n\
-field number and C a character position in the field; both are origin 1, and\n\
-the stop position defaults to the line's end.  If neither -t nor -b is in\n\
-effect, characters in a field are counted from the beginning of the preceding\n\
-whitespace.  OPTS is one or more single-letter ordering options [bdfgiMhnRrV],\
+KEYDEF is F[.C][OPTS][,F[.C][OPTS]] కొరకు ప్రారంభం and stop position, where F is a\n\
+క్షేత్రం సంఖ్య and C a character position లోపల the క్షేత్రం; both are origin 1, and\n\
+the stop position defaults గమ్యం the పంక్తి's చివర.  If neither -t nor -b is లోపల\n\
+effect, characters లోపల a క్షేత్రం are counted from the beginning యొక్క the preceding\n\
+whitespace.  OPTS is one or మరిన్ని single-letter ordering options [bdfgiMhnRrV],\
 \n\
-which override global ordering options for that key.  If no key is given, use\n\
-the entire line as the key.  Use --debug to diagnose incorrect key usage.\n\
+which override global ordering options కొరకు that కీలకం.  If no కీలకం is given, use\n\
+the entire పంక్తి as the కీలకం.  Use --debug గమ్యం diagnose incorrect కీలకం usage.\n\
 \n\
-SIZE may be followed by the following multiplicative suffixes:\n\
+కొలత_2 may be followed by the following multiplicative suffixes:\n\
 "), stdout);
       fputs (_("\
-% 1% of memory, b 1, K 1024 (default), and so on for M, G, T, P, E, Z, Y, R, Q.\
+% 1% యొక్క జ్ఞాపకం, b 1, K 1024 (అప్రమేయ), and so on కొరకు M, G, T, P, E, Z, Y, R, Q.\
 \n\n\
 *** WARNING ***\n\
-The locale specified by the environment affects sort order.\n\
-Set LC_ALL=C to get the traditional sort order that uses\n\
-native byte values.\n\
+The locale specified by the environment affects క్రమీకరించు క్రమం.\n\
+సమితి_3 LC_ALL=C గమ్యం get the traditional క్రమీకరించు క్రమం that ఉపయోగిస్తుంది\n\
+native byte విలువలు.\n\
 "), stdout );
-      emit_ancillary_info (PROGRAM_NAME);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
 
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+గణన
 {
   CHECK_OPTION = CHAR_MAX + 1,
-  COMPRESS_PROGRAM_OPTION,
-  DEBUG_PROGRAM_OPTION,
+  COMPRESS_కార్యక్రమం_OPTION,
+  DEBUG_కార్యక్రమం_OPTION,
   FILES0_FROM_OPTION,
   NMERGE_OPTION,
-  RANDOM_SOURCE_OPTION,
-  SORT_OPTION,
+  RANDOM_ఆధారం_OPTION,
+  క్రమీకరించు_OPTION,
   PARALLEL_OPTION
 };
 
-static char const short_options[] = "-bcCdfghik:mMno:rRsS:t:T:uVy:z";
+స్థిర అక్షరం స్థిరరాశి short_options[] = "-bcCdfghik:mMno:rRsS:t:T:uVy:z";
 
-static struct option const long_options[] =
+స్థిర నిర్మాణం option స్థిరరాశి long_options[] =
 {
-  {"ignore-leading-blanks", no_argument, NULL, 'b'},
-  {"check", optional_argument, NULL, CHECK_OPTION},
-  {"compress-program", required_argument, NULL, COMPRESS_PROGRAM_OPTION},
-  {"debug", no_argument, NULL, DEBUG_PROGRAM_OPTION},
-  {"dictionary-order", no_argument, NULL, 'd'},
-  {"ignore-case", no_argument, NULL, 'f'},
-  {"files0-from", required_argument, NULL, FILES0_FROM_OPTION},
-  {"general-numeric-sort", no_argument, NULL, 'g'},
-  {"ignore-nonprinting", no_argument, NULL, 'i'},
-  {"key", required_argument, NULL, 'k'},
-  {"merge", no_argument, NULL, 'm'},
-  {"month-sort", no_argument, NULL, 'M'},
-  {"numeric-sort", no_argument, NULL, 'n'},
-  {"human-numeric-sort", no_argument, NULL, 'h'},
-  {"version-sort", no_argument, NULL, 'V'},
-  {"random-sort", no_argument, NULL, 'R'},
-  {"random-source", required_argument, NULL, RANDOM_SOURCE_OPTION},
-  {"sort", required_argument, NULL, SORT_OPTION},
-  {"output", required_argument, NULL, 'o'},
-  {"reverse", no_argument, NULL, 'r'},
-  {"stable", no_argument, NULL, 's'},
-  {"batch-size", required_argument, NULL, NMERGE_OPTION},
-  {"buffer-size", required_argument, NULL, 'S'},
-  {"field-separator", required_argument, NULL, 't'},
-  {"temporary-directory", required_argument, NULL, 'T'},
-  {"unique", no_argument, NULL, 'u'},
-  {"zero-terminated", no_argument, NULL, 'z'},
-  {"parallel", required_argument, NULL, PARALLEL_OPTION},
+  {"ignore-leading-blanks", no_వాదం, ఖాళీ, 'b'},
+  {"check", optional_వాదం, ఖాళీ, CHECK_OPTION},
+  {"compress-program", required_వాదం, ఖాళీ, COMPRESS_కార్యక్రమం_OPTION},
+  {"debug", no_వాదం, ఖాళీ, DEBUG_కార్యక్రమం_OPTION},
+  {"dictionary-order", no_వాదం, ఖాళీ, 'd'},
+  {"ignore-case", no_వాదం, ఖాళీ, 'f'},
+  {"files0-from", required_వాదం, ఖాళీ, FILES0_FROM_OPTION},
+  {"general-numeric-sort", no_వాదం, ఖాళీ, 'g'},
+  {"ignore-nonprinting", no_వాదం, ఖాళీ, 'i'},
+  {"key", required_వాదం, ఖాళీ, 'k'},
+  {"merge", no_వాదం, ఖాళీ, 'm'},
+  {"month-sort", no_వాదం, ఖాళీ, 'M'},
+  {"numeric-sort", no_వాదం, ఖాళీ, 'n'},
+  {"human-numeric-sort", no_వాదం, ఖాళీ, 'h'},
+  {"version-sort", no_వాదం, ఖాళీ, 'V'},
+  {"random-sort", no_వాదం, ఖాళీ, 'R'},
+  {"random-source", required_వాదం, ఖాళీ, RANDOM_ఆధారం_OPTION},
+  {"sort", required_వాదం, ఖాళీ, క్రమీకరించు_OPTION},
+  {"output", required_వాదం, ఖాళీ, 'o'},
+  {"reverse", no_వాదం, ఖాళీ, 'r'},
+  {"stable", no_వాదం, ఖాళీ, 's'},
+  {"batch-size", required_వాదం, ఖాళీ, NMERGE_OPTION},
+  {"buffer-size", required_వాదం, ఖాళీ, 'S'},
+  {"field-separator", required_వాదం, ఖాళీ, 't'},
+  {"temporary-directory", required_వాదం, ఖాళీ, 'T'},
+  {"unique", no_వాదం, ఖాళీ, 'u'},
+  {"zero-terminated", no_వాదం, ఖాళీ, 'z'},
+  {"parallel", required_వాదం, ఖాళీ, PARALLEL_OPTION},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0},
+  {GETOPT_సంస్కరణ_OPTION_DECL},
+  {ఖాళీ, 0, ఖాళీ, 0},
 };
 
-#define CHECK_TABLE \
+#నిర్వచించు CHECK_పట్టిక \
   _ct_("quiet",          'C') \
   _ct_("silent",         'C') \
   _ct_("diagnose-first", 'c')
 
-static char const *const check_args[] =
+స్థిర అక్షరం స్థిరరాశి *స్థిరరాశి check_వాదనలు[] =
 {
-#define _ct_(_s, _c) _s,
-  CHECK_TABLE NULL
-#undef  _ct_
+#నిర్వచించు _ct_(_s, _c) _s,
+  CHECK_పట్టిక ఖాళీ
+#నిర్వచనం_రద్దు  _ct_
 };
-static char const check_types[] =
+స్థిర అక్షరం స్థిరరాశి check_types[] =
 {
-#define _ct_(_s, _c) _c,
-  CHECK_TABLE
-#undef  _ct_
+#నిర్వచించు _ct_(_s, _c) _c,
+  CHECK_పట్టిక
+#నిర్వచనం_రద్దు  _ct_
 };
 
-#define SORT_TABLE \
+#నిర్వచించు క్రమీకరించు_పట్టిక \
   _st_("general-numeric", 'g') \
   _st_("human-numeric",   'h') \
   _st_("month",           'M') \
@@ -685,87 +685,87 @@ static char const check_types[] =
   _st_("random",          'R') \
   _st_("version",         'V')
 
-static char const *const sort_args[] =
+స్థిర అక్షరం స్థిరరాశి *స్థిరరాశి క్రమీకరించు_వాదనలు[] =
 {
-#define _st_(_s, _c) _s,
-  SORT_TABLE NULL
-#undef  _st_
+#నిర్వచించు _st_(_s, _c) _s,
+  క్రమీకరించు_పట్టిక ఖాళీ
+#నిర్వచనం_రద్దు  _st_
 };
-static char const sort_types[] =
+స్థిర అక్షరం స్థిరరాశి క్రమీకరించు_types[] =
 {
-#define _st_(_s, _c) _c,
-  SORT_TABLE
-#undef  _st_
+#నిర్వచించు _st_(_s, _c) _c,
+  క్రమీకరించు_పట్టిక
+#నిర్వచనం_రద్దు  _st_
 };
 
 /* The set of signals that are caught.  */
-static sigset_t caught_signals;
+స్థిర sigset_t caught_సంకేతాలు;
 
 /* Critical section status.  */
-struct cs_status
+నిర్మాణం cs_స్థితి
 {
   bool valid;
   sigset_t sigs;
 };
 
 /* Enter a critical section.  */
-static void
-cs_enter (struct cs_status *status)
+స్థిర శూన్య
+cs_enter (నిర్మాణం cs_స్థితి *స్థితి_2)
 {
-  int ret = pthread_sigmask (SIG_BLOCK, &caught_signals, &status->sigs);
-  status->valid = ret == 0;
+  పూర్ణాంకం ret = pthread_sigmask (SIG_BLOCK, &caught_సంకేతాలు, &స్థితి_2->sigs);
+  స్థితి_2->valid = ret == 0;
 }
 
 /* Leave a critical section.  */
-static void
-cs_leave (struct cs_status const *status)
+స్థిర శూన్య
+cs_leave (నిర్మాణం cs_స్థితి స్థిరరాశి *స్థితి_2)
 {
-  if (status->valid)
+  ఒకవేళ (స్థితి_2->valid)
     {
       /* Ignore failure when restoring the signal mask. */
-      pthread_sigmask (SIG_SETMASK, &status->sigs, NULL);
+      pthread_sigmask (SIG_SETMASK, &స్థితి_2->sigs, ఖాళీ);
     }
 }
 
 /* Possible states for a temp file.  If compressed, the file's status
    is unreaped or reaped, depending on whether 'sort' has waited for
    the subprocess to finish.  */
-enum { UNCOMPRESSED, UNREAPED, REAPED };
+గణన { UNCOMPRESSED, UNREAPED, REAPED };
 
 /* A file to be sorted.  */
-struct sortfile
+నిర్మాణం sortfile
 {
   /* The file's name.  */
-  char const *name;
+  అక్షరం స్థిరరాశి *name;
 
   /* Non-null if this is a temporary file, in which case NAME == TEMP->name.  */
-  struct tempnode *temp;
+  నిర్మాణం tempnode *తాత్కాలిక;
 };
 
 /* Map PIDs of unreaped subprocesses to their struct tempnode objects.  */
-static Hash_table *proctab;
+స్థిర Hash_పట్టిక *proctab;
 
-enum { INIT_PROCTAB_SIZE = 47 };
+గణన { INIT_PROCTAB_కొలత = 47 };
 
-static size_t
-proctab_hasher (void const *entry, size_t tabsize)
+స్థిర size_t
+proctab_hasher (శూన్య స్థిరరాశి *నమోదు_2, size_t tabsize)
 {
-  struct tempnode const *node = entry;
-  return node->pid % tabsize;
+  నిర్మాణం tempnode స్థిరరాశి *కణుపు = నమోదు_2;
+  తిరిగి కణుపు->pid % tabsize;
 }
 
-static bool
-proctab_comparator (void const *e1, void const *e2)
+స్థిర bool
+proctab_comparator (శూన్య స్థిరరాశి *e1, శూన్య స్థిరరాశి *e2)
 {
-  struct tempnode const *n1 = e1;
-  struct tempnode const *n2 = e2;
-  return n1->pid == n2->pid;
+  నిర్మాణం tempnode స్థిరరాశి *n1 = e1;
+  నిర్మాణం tempnode స్థిరరాశి *n2 = e2;
+  తిరిగి n1->pid == n2->pid;
 }
 
 /* The number of unreaped child processes.  */
-static pid_t nprocs;
+స్థిర pid_t nprocs;
 
-static bool delete_proc (pid_t);
+స్థిర bool delete_proc (pid_t);
 
 /* If PID is positive, wait for the child process with that PID to
    exit, and assume that PID has already been removed from the process
@@ -774,88 +774,88 @@ static bool delete_proc (pid_t);
    child's process ID.  However, if PID is 0 and no children have
    exited, return 0 without waiting.  */
 
-static pid_t
+స్థిర pid_t
 reap (pid_t pid)
 {
-  int status;
-  pid_t cpid = waitpid ((pid ? pid : -1), &status, (pid ? 0 : WNOHANG));
+  పూర్ణాంకం స్థితి_2;
+  pid_t cpid = waitpid ((pid ? pid : -1), &స్థితి_2, (pid ? 0 : WNOHANG));
 
-  if (cpid < 0)
-    error (SORT_FAILURE, errno, _("waiting for %s [-d]"),
-           quoteaf (compress_program));
-  else if (0 < cpid && (0 < pid || delete_proc (cpid)))
+  ఒకవేళ (cpid < 0)
+    error (క్రమీకరించు_FAILURE, errno, _("waiting for %s [-d]"),
+           quoteaf (compress_కార్యక్రమం));
+  లేకపోతే ఒకవేళ (0 < cpid && (0 < pid || delete_proc (cpid)))
     {
-      if (! WIFEXITED (status) || WEXITSTATUS (status))
-        error (SORT_FAILURE, 0, _("%s [-d] terminated abnormally"),
-               quoteaf (compress_program));
+      ఒకవేళ (! WIFEXITED (స్థితి_2) || WEXITSTATUS (స్థితి_2))
+        error (క్రమీకరించు_FAILURE, 0, _("%s [-d] terminated abnormally"),
+               quoteaf (compress_కార్యక్రమం));
       --nprocs;
     }
 
-  return cpid;
+  తిరిగి cpid;
 }
 
 /* TEMP represents a new process; add it to the process table.  Create
    the process table the first time it's called.  */
 
-static void
-register_proc (struct tempnode *temp)
+స్థిర శూన్య
+రిజిస్టరు_proc (నిర్మాణం tempnode *తాత్కాలిక)
 {
-  if (! proctab)
+  ఒకవేళ (! proctab)
     {
-      proctab = hash_initialize (INIT_PROCTAB_SIZE, NULL,
+      proctab = hash_initialize (INIT_PROCTAB_కొలత, ఖాళీ,
                                  proctab_hasher,
                                  proctab_comparator,
-                                 NULL);
-      if (! proctab)
+                                 ఖాళీ);
+      ఒకవేళ (! proctab)
         xalloc_die ();
     }
 
-  temp->state = UNREAPED;
+  తాత్కాలిక->state = UNREAPED;
 
-  if (! hash_insert (proctab, temp))
+  ఒకవేళ (! hash_చొప్పించు (proctab, తాత్కాలిక))
     xalloc_die ();
 }
 
 /* If PID is in the process table, remove it and return true.
    Otherwise, return false.  */
 
-static bool
+స్థిర bool
 delete_proc (pid_t pid)
 {
-  struct tempnode test;
+  నిర్మాణం tempnode test;
 
   test.pid = pid;
-  struct tempnode *node = hash_remove (proctab, &test);
-  if (! node)
-    return false;
-  node->state = REAPED;
-  return true;
+  నిర్మాణం tempnode *కణుపు = hash_remove (proctab, &test);
+  ఒకవేళ (! కణుపు)
+    తిరిగి false;
+  కణుపు->state = REAPED;
+  తిరిగి true;
 }
 
 /* Remove PID from the process table, and wait for it to exit if it
    hasn't already.  */
 
-static void
+స్థిర శూన్య
 wait_proc (pid_t pid)
 {
-  if (delete_proc (pid))
+  ఒకవేళ (delete_proc (pid))
     reap (pid);
 }
 
 /* Reap any exited children.  Do not block; reap only those that have
    already exited.  */
 
-static void
-reap_exited (void)
+స్థిర శూన్య
+reap_exited (శూన్య)
 {
-  while (0 < nprocs && reap (0))
-    continue;
+  అయితే (0 < nprocs && reap (0))
+    కొనసాగు;
 }
 
 /* Reap at least one exited child, waiting if necessary.  */
 
-static void
-reap_some (void)
+స్థిర శూన్య
+reap_some (శూన్య)
 {
   reap (-1);
   reap_exited ();
@@ -863,23 +863,23 @@ reap_some (void)
 
 /* Reap all children, waiting if necessary.  */
 
-static void
-reap_all (void)
+స్థిర శూన్య
+reap_all (శూన్య)
 {
-  while (0 < nprocs)
+  అయితే (0 < nprocs)
     reap (-1);
 }
 
 /* Cleanup actions to take when exiting.  */
 
-static void
-exit_cleanup (void)
+స్థిర శూన్య
+exit_cleanup (శూన్య)
 {
-  if (temphead)
+  ఒకవేళ (temphead)
     {
       /* Clean up any remaining temporary files in a critical section so
          that a signal handler does not try to clean them too.  */
-      struct cs_status cs;
+      నిర్మాణం cs_స్థితి cs;
       cs_enter (&cs);
       cleanup ();
       cs_leave (&cs);
@@ -894,61 +894,61 @@ exit_cleanup (void)
    failure is due to file descriptor exhaustion and
    SURVIVE_FD_EXHAUSTION; otherwise, die.  */
 
-static struct tempnode *
-create_temp_file (int *pfd, bool survive_fd_exhaustion)
+స్థిర నిర్మాణం tempnode *
+create_తాత్కాలిక_file (పూర్ణాంకం *pfd, bool survive_fd_exhaustion)
 {
-  static char const slashbase[] = "/sortXXXXXX";
-  static idx_t temp_dir_index;
-  int fd;
-  int saved_errno;
-  char const *temp_dir = temp_dirs.dirs[temp_dir_index];
-  size_t len = strlen (temp_dir);
-  struct tempnode *node =
-    xmalloc (FLEXSIZEOF (struct tempnode, name, len + sizeof slashbase));
-  char *file = node->name;
-  struct cs_status cs;
+  స్థిర అక్షరం స్థిరరాశి slashbase[] = "/sortXXXXXX";
+  స్థిర idx_t తాత్కాలిక_dir_సూచీ;
+  పూర్ణాంకం fd;
+  పూర్ణాంకం saved_errno;
+  అక్షరం స్థిరరాశి *తాత్కాలిక_dir = తాత్కాలిక_dirs.dirs[తాత్కాలిక_dir_సూచీ];
+  size_t len = అక్షరశ్రేణి_పొడవు (తాత్కాలిక_dir);
+  నిర్మాణం tempnode *కణుపు =
+    xmalloc (FLEXSIZEOF (నిర్మాణం tempnode, name, len + పరిమాణం slashbase));
+  అక్షరం *file = కణుపు->name;
+  నిర్మాణం cs_స్థితి cs;
 
-  memcpy (file, temp_dir, len);
-  memcpy (file + len, slashbase, sizeof slashbase);
-  node->next = NULL;
-  if (++temp_dir_index == temp_dirs.n_dirs)
-    temp_dir_index = 0;
+  జ్ఞాపకం_నకలు (file, తాత్కాలిక_dir, len);
+  జ్ఞాపకం_నకలు (file + len, slashbase, పరిమాణం slashbase);
+  కణుపు->తదుపరి = ఖాళీ;
+  ఒకవేళ (++తాత్కాలిక_dir_సూచీ == తాత్కాలిక_dirs.n_dirs)
+    తాత్కాలిక_dir_సూచీ = 0;
 
   /* Create the temporary file in a critical section, to avoid races.  */
   cs_enter (&cs);
   fd = mkostemp (file, O_CLOEXEC);
-  if (0 <= fd)
+  ఒకవేళ (0 <= fd)
     {
-      *temptail = node;
-      temptail = &node->next;
+      *temptail = కణుపు;
+      temptail = &కణుపు->తదుపరి;
     }
   saved_errno = errno;
   cs_leave (&cs);
   errno = saved_errno;
 
-  if (fd < 0)
+  ఒకవేళ (fd < 0)
     {
-      if (! (survive_fd_exhaustion && errno == EMFILE))
-        error (SORT_FAILURE, errno, _("cannot create temporary file in %s"),
-               quoteaf (temp_dir));
-      free (node);
-      node = NULL;
+      ఒకవేళ (! (survive_fd_exhaustion && errno == EMFILE))
+        error (క్రమీకరించు_FAILURE, errno, _("cannot create temporary file in %s"),
+               quoteaf (తాత్కాలిక_dir));
+      విడుదల (కణుపు);
+      కణుపు = ఖాళీ;
     }
 
   *pfd = fd;
-  return node;
+  తిరిగి కణుపు;
 }
 
 /* Return a pointer to stdout status, or NULL on failure.  */
 
-static struct stat *
-get_outstatus (void)
+స్థిర నిర్మాణం stat *
+get_outstatus (శూన్య)
 {
-  static int outstat_errno;
-  static struct stat outstat;
-  if (outstat_errno == 0)
+  స్థిర పూర్ణాంకం outstat_errno;
+  స్థిర నిర్మాణం stat outstat;
+  ఒకవేళ (outstat_errno == 0)
     outstat_errno = fstat (STDOUT_FILENO, &outstat) == 0 ? -1 : errno;
-  return outstat_errno < 0 ? &outstat : NULL;
+  తిరిగి outstat_errno < 0 ? &outstat : ఖాళీ;
 }
 
 /* Return a stream for FILE, opened with mode HOW.  If HOW is "w",
@@ -999,127 +999,127 @@ get_outstatus (void)
    cache immediately after processing.  This is done implicitly
    however when the files are unlinked.  */
 
-static FILE *
-stream_open (char const *file, char const *how)
+స్థిర FILE *
+ప్రవాహం_open (అక్షరం స్థిరరాశి *file, అక్షరం స్థిరరాశి *how)
 {
   FILE *fp;
 
-  if (*how == 'r')
+  ఒకవేళ (*how == 'r')
     {
-      if (streq (file, "-"))
+      ఒకవేళ (streq (file, "-"))
         {
           have_read_stdin = true;
           fp = stdin;
         }
-      else
+      లేకపోతే
         {
-          int fd = open (file, O_RDONLY | O_CLOEXEC);
-          fp = fd < 0 ? NULL : fdopen (fd, how);
+          పూర్ణాంకం fd = open (file, O_RDONLY | O_CLOEXEC);
+          fp = fd < 0 ? ఖాళీ : fdopen (fd, how);
         }
       fadvise (fp, FADVISE_SEQUENTIAL);
     }
-  else if (*how == 'w')
+  లేకపోతే ఒకవేళ (*how == 'w')
     {
-      if (file && ftruncate (STDOUT_FILENO, 0) != 0)
+      ఒకవేళ (file && ftruncate (STDOUT_FILENO, 0) != 0)
         {
-          int ftruncate_errno = errno;
-          struct stat *outst = get_outstatus ();
-          if (!outst || S_ISREG (outst->st_mode) || S_TYPEISSHM (outst))
-            error (SORT_FAILURE, ftruncate_errno, _("%s: error truncating"),
+          పూర్ణాంకం ftruncate_errno = errno;
+          నిర్మాణం stat *outst = get_outstatus ();
+          ఒకవేళ (!outst || S_ISREG (outst->st_బహుళకం) || S_TYPEISSHM (outst))
+            error (క్రమీకరించు_FAILURE, ftruncate_errno, _("%s: error truncating"),
                    quotef (file));
         }
       fp = stdout;
     }
-  else
+  లేకపోతే
     affirm (!"unexpected mode passed to stream_open");
 
-  return fp;
+  తిరిగి fp;
 }
 
 /* Same as stream_open, except always return a non-null value; die on
    failure.  */
 
-static FILE *
-xfopen (char const *file, char const *how)
+స్థిర FILE *
+xfopen (అక్షరం స్థిరరాశి *file, అక్షరం స్థిరరాశి *how)
 {
-  FILE *fp = stream_open (file, how);
-  if (!fp)
-    sort_die (_("open failed"), file);
-  return fp;
+  FILE *fp = ప్రవాహం_open (file, how);
+  ఒకవేళ (!fp)
+    క్రమీకరించు_die (_("open failed"), file);
+  తిరిగి fp;
 }
 
 /* Close FP, whose name is FILE, and report any errors.  */
 
-static void
-xfclose (FILE *fp, char const *file)
+స్థిర శూన్య
+xfclose (FILE *fp, అక్షరం స్థిరరాశి *file)
 {
-  switch (fileno (fp))
+  ఎంపిక (fileno (fp))
     {
-    case STDIN_FILENO:
+    స్థితి STDIN_FILENO:
       /* Allow reading stdin from tty more than once.  */
       clearerr (fp);
-      break;
+      ఆపు;
 
-    case STDOUT_FILENO:
+    స్థితి STDOUT_FILENO:
       /* Don't close stdout just yet.  close_stdout does that.  */
-      if (fflush (fp) != 0)
-        sort_die (_("fflush failed"), file);
-      break;
+      ఒకవేళ (fflush (fp) != 0)
+        క్రమీకరించు_die (_("fflush failed"), file);
+      ఆపు;
 
-    default:
-      if (fclose (fp) != 0)
-        sort_die (_("close failed"), file);
-      break;
+    అప్రమేయ:
+      ఒకవేళ (fclose (fp) != 0)
+        క్రమీకరించు_die (_("close failed"), file);
+      ఆపు;
     }
 }
 
 /* Move OLDFD to NEWFD.  If OLDFD != NEWFD, NEWFD is not close-on-exec.  */
 
-static void
-move_fd (int oldfd, int newfd)
+స్థిర శూన్య
+move_fd (పూర్ణాంకం oldfd, పూర్ణాంకం newfd)
 {
-  if (oldfd != newfd)
+  ఒకవేళ (oldfd != newfd)
     {
       /* These should never fail for our usage.  */
-      ignore_value (dup2 (oldfd, newfd));
-      ignore_value (close (oldfd));
+      ignore_విలువ (dup2 (oldfd, newfd));
+      ignore_విలువ (close (oldfd));
     }
 }
 
 /* Setup ACTION to move OLDFD to NEWFD.  If OLDFD != NEWFD, NEWFD is not
    close-on-exec.  Returns 0 if successful, or an error number otherwise.  */
 
-static int
+స్థిర పూర్ణాంకం
 posix_spawn_file_actions_move_fd (posix_spawn_file_actions_t *actions,
-                                  int oldfd, int newfd)
+                                  పూర్ణాంకం oldfd, పూర్ణాంకం newfd)
 {
-  int result = 0;
-  if (oldfd != newfd)
+  పూర్ణాంకం ఫలితం = 0;
+  ఒకవేళ (oldfd != newfd)
     {
-      result = posix_spawn_file_actions_adddup2 (actions, oldfd, newfd);
-      if (result == 0)
-        result = posix_spawn_file_actions_addclose (actions, oldfd);
+      ఫలితం = posix_spawn_file_actions_adddup2 (actions, oldfd, newfd);
+      ఒకవేళ (ఫలితం == 0)
+        ఫలితం = posix_spawn_file_actions_addclose (actions, oldfd);
     }
-  return result;
+  తిరిగి ఫలితం;
 }
 
 /* Look up COMPRESS_PROGRAM in $PATH, and return the resolved program name.
    Upon error, return NULL with errno set.  */
 
-static char const *
-get_resolved_compress_program (void)
+స్థిర అక్షరం స్థిరరాశి *
+get_resolved_compress_కార్యక్రమం (శూన్య)
 {
   /* Use a cache, to perform the search only once.  */
-  static char const *resolved_compress_program_cache /* = NULL */;
+  స్థిర అక్షరం స్థిరరాశి *resolved_compress_కార్యక్రమం_cache /* = NULL */;
 
-  if (resolved_compress_program_cache == NULL)
+  ఒకవేళ (resolved_compress_కార్యక్రమం_cache == ఖాళీ)
     {
-      resolved_compress_program_cache =
-        find_in_given_path (compress_program, getenv ("PATH"), NULL, false);
+      resolved_compress_కార్యక్రమం_cache =
+        కనుగొను_లోపల_given_మార్గం (compress_కార్యక్రమం, getenv ("PATH"), ఖాళీ, false);
       /* If resolved_compress_program_cache == NULL, errno is set here.  */
     }
 
-  return resolved_compress_program_cache;
+  తిరిగి resolved_compress_కార్యక్రమం_cache;
 }
 
 /* Execute COMPRESS_PROGRAM in a child process.  The child processes pid is
@@ -1127,15 +1127,15 @@ get_resolved_compress_program (void)
    a child process before giving up.  Return 0 on success, or an error number
    otherwise.  */
 
-static int
-pipe_child (pid_t *pid, int pipefds[2], int tempfd, bool decompress,
+స్థిర పూర్ణాంకం
+pipe_బిడ్డ (pid_t *pid, పూర్ణాంకం pipefds[2], పూర్ణాంకం tempfd, bool decompress,
             size_t tries)
 {
-  char const *resolved_compress_program;
-  struct tempnode *saved_temphead;
-  double wait_retry = 0.25;
-  struct cs_status cs;
-  int result;
+  అక్షరం స్థిరరాశి *resolved_compress_కార్యక్రమం;
+  నిర్మాణం tempnode *saved_temphead;
+  ద్విగుణ wait_retry = 0.25;
+  నిర్మాణం cs_స్థితి cs;
+  పూర్ణాంకం ఫలితం;
   posix_spawnattr_t attr;
   posix_spawn_file_actions_t actions;
 
@@ -1143,42 +1143,42 @@ pipe_child (pid_t *pid, int pipefds[2], int tempfd, bool decompress,
      handle access issues to COMPRESS_PROGRAM, because on some
      implementations/emulations of posix_spawn we get only a
      generic (fatal) error from the child in that case.  */
-  resolved_compress_program = get_resolved_compress_program ();
-  if (resolved_compress_program == NULL)
-    return errno;
+  resolved_compress_కార్యక్రమం = get_resolved_compress_కార్యక్రమం ();
+  ఒకవేళ (resolved_compress_కార్యక్రమం == ఖాళీ)
+    తిరిగి errno;
 
-  if ((result = posix_spawnattr_init (&attr)))
-    return result;
-  if ((result = posix_spawnattr_setflags (&attr, POSIX_SPAWN_USEVFORK))
-      || (result = posix_spawn_file_actions_init (&actions)))
+  ఒకవేళ ((ఫలితం = posix_spawnattr_init (&attr)))
+    తిరిగి ఫలితం;
+  ఒకవేళ ((ఫలితం = posix_spawnattr_setflags (&attr, POSIX_SPAWN_USEVFORK))
+      || (ఫలితం = posix_spawn_file_actions_init (&actions)))
     {
       posix_spawnattr_destroy (&attr);
-      return result;
+      తిరిగి ఫలితం;
     }
 
-  if (pipe2 (pipefds, O_CLOEXEC) < 0)
+  ఒకవేళ (pipe2 (pipefds, O_CLOEXEC) < 0)
     {
-      int saved_errno = errno;
+      పూర్ణాంకం saved_errno = errno;
       posix_spawnattr_destroy (&attr);
       posix_spawn_file_actions_destroy (&actions);
-      return saved_errno;
+      తిరిగి saved_errno;
     }
 
-  if ((result = posix_spawn_file_actions_addclose (&actions, STDIN_FILENO))
-      || (result = posix_spawn_file_actions_addclose (&actions, STDOUT_FILENO))
+  ఒకవేళ ((ఫలితం = posix_spawn_file_actions_addclose (&actions, STDIN_FILENO))
+      || (ఫలితం = posix_spawn_file_actions_addclose (&actions, STDOUT_FILENO))
       || (decompress
-          ? ((result = posix_spawn_file_actions_addclose (&actions,
+          ? ((ఫలితం = posix_spawn_file_actions_addclose (&actions,
                                                           pipefds[0]))
-             || (result = posix_spawn_file_actions_move_fd (&actions, tempfd,
+             || (ఫలితం = posix_spawn_file_actions_move_fd (&actions, tempfd,
                                                             STDIN_FILENO))
-             || (result = posix_spawn_file_actions_move_fd (&actions,
+             || (ఫలితం = posix_spawn_file_actions_move_fd (&actions,
                                                             pipefds[1],
                                                             STDOUT_FILENO)))
-          : ((result = posix_spawn_file_actions_addclose (&actions,
+          : ((ఫలితం = posix_spawn_file_actions_addclose (&actions,
                                                           pipefds[1]))
-             || (result = posix_spawn_file_actions_move_fd (&actions, tempfd,
+             || (ఫలితం = posix_spawn_file_actions_move_fd (&actions, tempfd,
                                                             STDOUT_FILENO))
-             || (result = posix_spawn_file_actions_move_fd (&actions,
+             || (ఫలితం = posix_spawn_file_actions_move_fd (&actions,
                                                             pipefds[0],
                                                             STDIN_FILENO)))))
     {
@@ -1186,14 +1186,14 @@ pipe_child (pid_t *pid, int pipefds[2], int tempfd, bool decompress,
       close (pipefds[1]);
       posix_spawnattr_destroy (&attr);
       posix_spawn_file_actions_destroy (&actions);
-      return result;
+      తిరిగి ఫలితం;
     }
 
-  char const *const argv[] =
+  అక్షరం స్థిరరాశి *స్థిరరాశి argv[] =
     {
-      resolved_compress_program,
-      decompress ? "-d" : NULL,
-      NULL
+      resolved_compress_కార్యక్రమం,
+      decompress ? "-d" : ఖాళీ,
+      ఖాళీ
     };
 
   /* At least NMERGE + 1 subprocesses are needed.  More could be created, but
@@ -1203,27 +1203,27 @@ pipe_child (pid_t *pid, int pipefds[2], int tempfd, bool decompress,
      previous merge finish (1 subprocess) in parallel with the current
      merge (NMERGE + 1 subprocesses).  */
 
-  if (nmerge + 1 < nprocs)
+  ఒకవేళ (nmerge + 1 < nprocs)
     reap_some ();
 
-  while (tries--)
+  అయితే (tries--)
     {
       /* This is so the child process won't delete our temp files
          if it receives a signal before exec-ing.  */
       cs_enter (&cs);
       saved_temphead = temphead;
-      temphead = NULL;
+      temphead = ఖాళీ;
 
-      result = posix_spawnp (pid, resolved_compress_program, &actions, &attr,
-                             (char * const *) argv, environ);
+      ఫలితం = posix_spawnp (pid, resolved_compress_కార్యక్రమం, &actions, &attr,
+                             (అక్షరం * స్థిరరాశి *) argv, environ);
 
       temphead = saved_temphead;
 
       cs_leave (&cs);
 
-      if (result != EAGAIN)
-        break;
-      else
+      ఒకవేళ (ఫలితం != EAGAIN)
+        ఆపు;
+      లేకపోతే
         {
           /* [v]fork/clone are indicating resource constraints,
              so back-off for a while and retry.  */
@@ -1236,15 +1236,15 @@ pipe_child (pid_t *pid, int pipefds[2], int tempfd, bool decompress,
   posix_spawnattr_destroy (&attr);
   posix_spawn_file_actions_destroy (&actions);
 
-  if (result)
+  ఒకవేళ (ఫలితం)
     {
       close (pipefds[0]);
       close (pipefds[1]);
     }
-  else
+  లేకపోతే
     ++nprocs;
 
-  return result;
+  తిరిగి ఫలితం;
 }
 
 /* Create a temporary file and, if asked for, start a compressor
@@ -1253,57 +1253,57 @@ pipe_child (pid_t *pid, int pipefds[2], int tempfd, bool decompress,
    fails, return NULL if the failure is due to file descriptor
    exhaustion and SURVIVE_FD_EXHAUSTION; otherwise, die.  */
 
-static struct tempnode *
-maybe_create_temp (FILE **pfp, bool survive_fd_exhaustion)
+స్థిర నిర్మాణం tempnode *
+maybe_create_తాత్కాలిక (FILE **pfp, bool survive_fd_exhaustion)
 {
-  int tempfd;
-  struct tempnode *node = create_temp_file (&tempfd, survive_fd_exhaustion);
-  if (! node)
-    return NULL;
+  పూర్ణాంకం tempfd;
+  నిర్మాణం tempnode *కణుపు = create_తాత్కాలిక_file (&tempfd, survive_fd_exhaustion);
+  ఒకవేళ (! కణుపు)
+    తిరిగి ఖాళీ;
 
-  node->state = UNCOMPRESSED;
+  కణుపు->state = UNCOMPRESSED;
 
-  if (compress_program)
+  ఒకవేళ (compress_కార్యక్రమం)
     {
-      int pipefds[2];
-      static int last_result = 0;
+      పూర్ణాంకం pipefds[2];
+      స్థిర పూర్ణాంకం చివరి_ఫలితం = 0;
 
-      int result = pipe_child (&node->pid, pipefds, tempfd, false,
+      పూర్ణాంకం ఫలితం = pipe_బిడ్డ (&కణుపు->pid, pipefds, tempfd, false,
                                MAX_TRIES_COMPRESS);
 
-      if (result)
+      ఒకవేళ (ఫలితం)
         {
-          if (result != last_result)
-            error (0, result, _("could not run compress program %s"),
-                   quoteaf (compress_program));
+          ఒకవేళ (ఫలితం != చివరి_ఫలితం)
+            error (0, ఫలితం, _("could not run compress program %s"),
+                   quoteaf (compress_కార్యక్రమం));
         }
-      else
+      లేకపోతే
         {
           close (tempfd);
           close (pipefds[0]);
           tempfd = pipefds[1];
 
-          register_proc (node);
+          రిజిస్టరు_proc (కణుపు);
         }
 
-      last_result = result;
+      చివరి_ఫలితం = ఫలితం;
     }
 
   *pfp = fdopen (tempfd, "w");
-  if (! *pfp)
-    sort_die (_("couldn't create temporary file"), node->name);
+  ఒకవేళ (! *pfp)
+    క్రమీకరించు_die (_("couldn't create temporary file"), కణుపు->name);
 
-  return node;
+  తిరిగి కణుపు;
 }
 
 /* Create a temporary file and, if asked for, start a compressor
    to that file.  Set *PFP to the file handle and return the address
    of the new temp node.  Die on failure.  */
 
-static struct tempnode *
-create_temp (FILE **pfp)
+స్థిర నిర్మాణం tempnode *
+create_తాత్కాలిక (FILE **pfp)
 {
-  return maybe_create_temp (pfp, false);
+  తిరిగి maybe_create_తాత్కాలిక (pfp, false);
 }
 
 /* Open a compressed temp file and start a decompression process through
@@ -1311,372 +1311,372 @@ create_temp (FILE **pfp)
    EMFILE) if we ran out of file descriptors, and die on any other
    kind of failure.  */
 
-static FILE *
-open_temp (struct tempnode *temp)
+స్థిర FILE *
+open_తాత్కాలిక (నిర్మాణం tempnode *తాత్కాలిక)
 {
-  int tempfd, pipefds[2];
-  FILE *fp = NULL;
+  పూర్ణాంకం tempfd, pipefds[2];
+  FILE *fp = ఖాళీ;
 
-  if (temp->state == UNREAPED)
-    wait_proc (temp->pid);
+  ఒకవేళ (తాత్కాలిక->state == UNREAPED)
+    wait_proc (తాత్కాలిక->pid);
 
-  tempfd = open (temp->name, O_RDONLY);
-  if (tempfd < 0)
-    return NULL;
+  tempfd = open (తాత్కాలిక->name, O_RDONLY);
+  ఒకవేళ (tempfd < 0)
+    తిరిగి ఖాళీ;
 
-  pid_t child;
-  int result = pipe_child (&child, pipefds, tempfd, true,
+  pid_t బిడ్డ;
+  పూర్ణాంకం ఫలితం = pipe_బిడ్డ (&బిడ్డ, pipefds, tempfd, true,
                            MAX_TRIES_DECOMPRESS);
 
-  if (result)
+  ఒకవేళ (ఫలితం)
     {
-      if (result != EMFILE)
-        error (SORT_FAILURE, result, _("could not run compress program %s -d"),
-               quoteaf (compress_program));
+      ఒకవేళ (ఫలితం != EMFILE)
+        error (క్రమీకరించు_FAILURE, ఫలితం, _("could not run compress program %s -d"),
+               quoteaf (compress_కార్యక్రమం));
       close (tempfd);
       errno = EMFILE;
     }
-  else
+  లేకపోతే
     {
-      temp->pid = child;
-      register_proc (temp);
+      తాత్కాలిక->pid = బిడ్డ;
+      రిజిస్టరు_proc (తాత్కాలిక);
       close (tempfd);
       close (pipefds[1]);
 
       fp = fdopen (pipefds[0], "r");
-      if (! fp)
+      ఒకవేళ (! fp)
         {
-          int saved_errno = errno;
+          పూర్ణాంకం saved_errno = errno;
           close (pipefds[0]);
           errno = saved_errno;
         }
     }
 
-  return fp;
+  తిరిగి fp;
 }
 
 /* Append DIR to the array of temporary directory names.  */
-static void
-add_temp_dir (char const *dir)
+స్థిర శూన్య
+కూడు_తాత్కాలిక_dir (అక్షరం స్థిరరాశి *dir)
 {
-  if (temp_dirs.n_dirs == temp_dirs.n_dirs_alloc)
-    temp_dirs.dirs = xpalloc (temp_dirs.dirs, &temp_dirs.n_dirs_alloc, 1, -1,
-                              sizeof *temp_dirs.dirs);
+  ఒకవేళ (తాత్కాలిక_dirs.n_dirs == తాత్కాలిక_dirs.n_dirs_alloc)
+    తాత్కాలిక_dirs.dirs = xpalloc (తాత్కాలిక_dirs.dirs, &తాత్కాలిక_dirs.n_dirs_alloc, 1, -1,
+                              పరిమాణం *తాత్కాలిక_dirs.dirs);
 
-  idx_t const dir_idx = temp_dirs.n_dirs++;
-  temp_dirs.dirs[dir_idx] = dir;
+  idx_t స్థిరరాశి dir_idx = తాత్కాలిక_dirs.n_dirs++;
+  తాత్కాలిక_dirs.dirs[dir_idx] = dir;
 }
 
 /* Remove NAME from the list of temporary files.  */
 
-static void
-zaptemp (char const *name)
+స్థిర శూన్య
+zaptemp (అక్షరం స్థిరరాశి *name)
 {
-  struct tempnode *volatile *pnode;
-  struct tempnode *node;
-  struct tempnode *next;
-  int unlink_status;
-  int unlink_errno = 0;
-  struct cs_status cs;
+  నిర్మాణం tempnode *అస్థిర *pnode;
+  నిర్మాణం tempnode *కణుపు;
+  నిర్మాణం tempnode *తదుపరి;
+  పూర్ణాంకం unlink_స్థితి;
+  పూర్ణాంకం unlink_errno = 0;
+  నిర్మాణం cs_స్థితి cs;
 
-  for (pnode = &temphead; (node = *pnode)->name != name; pnode = &node->next)
-    continue;
+  కొరకు (pnode = &temphead; (కణుపు = *pnode)->name != name; pnode = &కణుపు->తదుపరి)
+    కొనసాగు;
 
-  if (node->state == UNREAPED)
-    wait_proc (node->pid);
+  ఒకవేళ (కణుపు->state == UNREAPED)
+    wait_proc (కణుపు->pid);
 
   /* Unlink the temporary file in a critical section to avoid races.  */
-  next = node->next;
+  తదుపరి = కణుపు->తదుపరి;
   cs_enter (&cs);
-  unlink_status = unlink (name);
+  unlink_స్థితి = unlink (name);
   unlink_errno = errno;
-  *pnode = next;
+  *pnode = తదుపరి;
   cs_leave (&cs);
 
-  if (unlink_status != 0)
+  ఒకవేళ (unlink_స్థితి != 0)
     error (0, unlink_errno, _("warning: cannot remove: %s"), quotef (name));
-  if (! next)
+  ఒకవేళ (! తదుపరి)
     temptail = pnode;
-  free (node);
+  విడుదల (కణుపు);
 }
 
-#if HAVE_NL_LANGINFO
+#ఒకవేళ HAVE_NL_LANGINFO
 
-static int
-struct_month_cmp (void const *m1, void const *m2)
+స్థిర పూర్ణాంకం
+struct_month_cmp (శూన్య స్థిరరాశి *m1, శూన్య స్థిరరాశి *m2)
 {
-  struct month const *month1 = m1;
-  struct month const *month2 = m2;
-  return strcmp (month1->name, month2->name);
+  నిర్మాణం month స్థిరరాశి *month1 = m1;
+  నిర్మాణం month స్థిరరాశి *month2 = m2;
+  తిరిగి strcmp (month1->name, month2->name);
 }
 
-#endif
+#అయితే_ముగింపు
 
 /* Initialize the character class tables. */
 
-static void
-inittables (void)
+స్థిర శూన్య
+inittables (శూన్య)
 {
-  for (size_t i = 0; i < UCHAR_LIM; ++i)
+  కొరకు (size_t i = 0; i < UCHAR_LIM; ++i)
     {
       blanks[i] = i == '\n' || isblank (i);
-      nondictionary[i] = ! blanks[i] && ! isalnum (i);
+      nondictionary[i] = ! blanks[i] && ! అక్షరమా_అంకెనా (i);
       nonprinting[i] = ! isprint (i);
-      fold_toupper[i] = toupper (i);
+      fold_toupper[i] = పెద్ద_అక్షరం (i);
     }
 
-#if HAVE_NL_LANGINFO
+#ఒకవేళ HAVE_NL_LANGINFO
   /* If we're not in the "C" locale, read different names for months.  */
-  if (hard_LC_TIME)
+  ఒకవేళ (hard_LC_సమయం)
     {
-      for (size_t i = 0; i < MONTHS_PER_YEAR; i++)
+      కొరకు (size_t i = 0; i < MONTHS_చొప్పున_YEAR; i++)
         {
-          char const *s;
+          అక్షరం స్థిరరాశి *s;
           size_t s_len;
           size_t j, k;
-          char *name;
+          అక్షరం *name;
 
           s = nl_langinfo (ABMON_1 + i);
-          s_len = strlen (s);
+          s_len = అక్షరశ్రేణి_పొడవు (s);
           monthtab[i].name = name = xmalloc (s_len + 1);
           monthtab[i].val = i + 1;
 
-          for (j = k = 0; j < s_len; j++)
-            if (! isblank (to_uchar (s[j])))
-              name[k++] = fold_toupper[to_uchar (s[j])];
+          కొరకు (j = k = 0; j < s_len; j++)
+            ఒకవేళ (! isblank (గమ్యం_uchar (s[j])))
+              name[k++] = fold_toupper[గమ్యం_uchar (s[j])];
           name[k] = '\0';
         }
-      qsort (monthtab, MONTHS_PER_YEAR, sizeof *monthtab, struct_month_cmp);
+      qsort (monthtab, MONTHS_చొప్పున_YEAR, పరిమాణం *monthtab, struct_month_cmp);
     }
-#endif
+#అయితే_ముగింపు
 }
 
 /* Specify how many inputs may be merged at once.
    This may be set on the command-line with the
    --batch-size option. */
-static void
-specify_nmerge (int oi, char c, char const *s)
+స్థిర శూన్య
+specify_nmerge (పూర్ణాంకం oi, అక్షరం c, అక్షరం స్థిరరాశి *s)
 {
   uintmax_t n;
-  struct rlimit rlimit;
-  enum strtol_error e = xstrtoumax (s, NULL, 10, &n, "");
+  నిర్మాణం rlimit rlimit;
+  గణన strtol_error e = xstrtoumax (s, ఖాళీ, 10, &n, "");
 
   /* Try to find out how many file descriptors we'll be able
      to open.  We need at least nmerge + 3 (STDIN_FILENO,
      STDOUT_FILENO and STDERR_FILENO). */
-  unsigned int max_nmerge = ((getrlimit (RLIMIT_NOFILE, &rlimit) == 0
+  గుర్తులేని పూర్ణాంకం max_nmerge = ((getrlimit (RLIMIT_NOFILE, &rlimit) == 0
                               ? rlimit.rlim_cur
                               : OPEN_MAX)
                              - 3);
 
-  if (e == LONGINT_OK)
+  ఒకవేళ (e == LONGINT_OK)
     {
       nmerge = n;
-      if (nmerge != n)
-        e = LONGINT_OVERFLOW;
-      else
+      ఒకవేళ (nmerge != n)
+        e = LONGINT_అధికప్రవాహం;
+      లేకపోతే
         {
-          if (nmerge < 2)
+          ఒకవేళ (nmerge < 2)
             {
               error (0, 0, _("invalid --%s argument %s"),
                      long_options[oi].name, quote (s));
-              error (SORT_FAILURE, 0,
+              error (క్రమీకరించు_FAILURE, 0,
                      _("minimum --%s argument is %s"),
                      long_options[oi].name, quote ("2"));
             }
-          else if (max_nmerge < nmerge)
+          లేకపోతే ఒకవేళ (max_nmerge < nmerge)
             {
-              e = LONGINT_OVERFLOW;
+              e = LONGINT_అధికప్రవాహం;
             }
-          else
-            return;
+          లేకపోతే
+            తిరిగి;
         }
     }
 
-  if (e == LONGINT_OVERFLOW)
+  ఒకవేళ (e == LONGINT_అధికప్రవాహం)
     {
       error (0, 0, _("--%s argument %s too large"),
              long_options[oi].name, quote (s));
-      error (SORT_FAILURE, 0,
+      error (క్రమీకరించు_FAILURE, 0,
              _("maximum --%s argument with current rlimit is %u"),
              long_options[oi].name, max_nmerge);
     }
-  else
+  లేకపోతే
     xstrtol_fatal (e, oi, c, long_options, s);
 }
 
 /* Specify the amount of main memory to use when sorting.  */
-static void
-specify_sort_size (int oi, char c, char const *s)
+స్థిర శూన్య
+specify_క్రమీకరించు_కొలత (పూర్ణాంకం oi, అక్షరం c, అక్షరం స్థిరరాశి *s)
 {
   uintmax_t n;
-  char *suffix;
-  enum strtol_error e = xstrtoumax (s, &suffix, 10, &n, "EgGkKmMPQRtTYZ");
+  అక్షరం *suffix;
+  గణన strtol_error e = xstrtoumax (s, &suffix, 10, &n, "EgGkKmMPQRtTYZ");
 
   /* The default unit is KiB.  */
-  if (e == LONGINT_OK && c_isdigit (suffix[-1]) && ckd_mul (&n, n, 1024))
-    e = LONGINT_OVERFLOW;
+  ఒకవేళ (e == LONGINT_OK && c_isdigit (suffix[-1]) && ckd_mul (&n, n, 1024))
+    e = LONGINT_అధికప్రవాహం;
 
   /* A 'b' suffix means bytes; a '%' suffix means percent of memory.  */
-  if (e == LONGINT_INVALID_SUFFIX_CHAR && c_isdigit (suffix[-1]) && ! suffix[1])
-    switch (suffix[0])
+  ఒకవేళ (e == LONGINT_INVALID_SUFFIX_CHAR && c_isdigit (suffix[-1]) && ! suffix[1])
+    ఎంపిక (suffix[0])
       {
-      case 'b':
+      స్థితి 'b':
         e = LONGINT_OK;
-        break;
+        ఆపు;
 
-      case '%':
+      స్థితి '%':
         {
-          double mem = physmem_total () * n / 100;
+          ద్విగుణ mem = physmem_మొత్తం () * n / 100;
 
           /* Use "<", not "<=", to avoid problems with rounding.  */
-          if (mem < UINTMAX_MAX)
+          ఒకవేళ (mem < UINTMAX_MAX)
             {
               n = mem;
               e = LONGINT_OK;
             }
-          else
-            e = LONGINT_OVERFLOW;
+          లేకపోతే
+            e = LONGINT_అధికప్రవాహం;
         }
-        break;
+        ఆపు;
       }
 
-  if (e == LONGINT_OK)
+  ఒకవేళ (e == LONGINT_OK)
     {
       /* If multiple sort sizes are specified, take the maximum, so
          that option order does not matter.  */
-      if (n < sort_size)
-        return;
+      ఒకవేళ (n < క్రమీకరించు_కొలత)
+        తిరిగి;
 
-      sort_size = n;
-      if (sort_size == n)
+      క్రమీకరించు_కొలత = n;
+      ఒకవేళ (క్రమీకరించు_కొలత == n)
         {
-          sort_size = MAX (sort_size, MIN_SORT_SIZE);
-          return;
+          క్రమీకరించు_కొలత = MAX (క్రమీకరించు_కొలత, MIN_క్రమీకరించు_కొలత);
+          తిరిగి;
         }
 
-      e = LONGINT_OVERFLOW;
+      e = LONGINT_అధికప్రవాహం;
     }
 
   xstrtol_fatal (e, oi, c, long_options, s);
 }
 
 /* Specify the number of threads to spawn during internal sort.  */
-static size_t
-specify_nthreads (int oi, char c, char const *s)
+స్థిర size_t
+specify_nthreads (పూర్ణాంకం oi, అక్షరం c, అక్షరం స్థిరరాశి *s)
 {
   uintmax_t nthreads;
-  enum strtol_error e = xstrtoumax (s, NULL, 10, &nthreads, "");
-  if (e == LONGINT_OVERFLOW)
-    return SIZE_MAX;
-  if (e != LONGINT_OK)
+  గణన strtol_error e = xstrtoumax (s, ఖాళీ, 10, &nthreads, "");
+  ఒకవేళ (e == LONGINT_అధికప్రవాహం)
+    తిరిగి SIZE_MAX;
+  ఒకవేళ (e != LONGINT_OK)
     xstrtol_fatal (e, oi, c, long_options, s);
-  if (SIZE_MAX < nthreads)
+  ఒకవేళ (SIZE_MAX < nthreads)
     nthreads = SIZE_MAX;
-  if (nthreads == 0)
-    error (SORT_FAILURE, 0, _("number in parallel must be nonzero"));
-  return nthreads;
+  ఒకవేళ (nthreads == 0)
+    error (క్రమీకరించు_FAILURE, 0, _("number in parallel must be nonzero"));
+  తిరిగి nthreads;
 }
 
 /* Return the default sort size.  This is a growth limit, not necessarily
    the initial allocation size.  */
-static size_t
-default_sort_size (void)
+స్థిర size_t
+default_క్రమీకరించు_కొలత (శూన్య)
 {
   /* Let SIZE be MEM, but no more than the maximum object size,
      total memory, or system resource limits.  Don't bother to check
      for values like RLIM_INFINITY since in practice they are not much
      less than SIZE_MAX.  */
-  size_t size = SIZE_MAX;
-  struct rlimit rlimit;
-  if (getrlimit (RLIMIT_DATA, &rlimit) == 0 && rlimit.rlim_cur < size)
-    size = rlimit.rlim_cur;
-#ifdef RLIMIT_AS
-  if (getrlimit (RLIMIT_AS, &rlimit) == 0 && rlimit.rlim_cur < size)
-    size = rlimit.rlim_cur;
-#endif
+  size_t కొలత = SIZE_MAX;
+  నిర్మాణం rlimit rlimit;
+  ఒకవేళ (getrlimit (RLIMIT_దత్తాంశం, &rlimit) == 0 && rlimit.rlim_cur < కొలత)
+    కొలత = rlimit.rlim_cur;
+#నిర్వచితమైతే RLIMIT_AS
+  ఒకవేళ (getrlimit (RLIMIT_AS, &rlimit) == 0 && rlimit.rlim_cur < కొలత)
+    కొలత = rlimit.rlim_cur;
+#అయితే_ముగింపు
 
   /* Leave a large safety margin for the above limits, as failure can
      occur when they are exceeded.  */
-  size /= 2;
+  కొలత /= 2;
 
-#ifdef RLIMIT_RSS
+#నిర్వచితమైతే RLIMIT_RSS
   /* Leave a 1/16 margin for RSS to leave room for code, stack, etc.
      Exceeding RSS is not fatal, but can be quite slow.  */
-  if (getrlimit (RLIMIT_RSS, &rlimit) == 0 && rlimit.rlim_cur / 16 * 15 < size)
-    size = rlimit.rlim_cur / 16 * 15;
-#endif
+  ఒకవేళ (getrlimit (RLIMIT_RSS, &rlimit) == 0 && rlimit.rlim_cur / 16 * 15 < కొలత)
+    కొలత = rlimit.rlim_cur / 16 * 15;
+#అయితే_ముగింపు
 
   /* Let MEM be available memory or 1/8 of total memory, whichever
      is greater.  */
-  double avail = physmem_available ();
-  double total = physmem_total ();
-  double mem = MAX (avail, total / 8);
+  ద్విగుణ avail = physmem_అందుబాటు ();
+  ద్విగుణ మొత్తం = physmem_మొత్తం ();
+  ద్విగుణ mem = MAX (avail, మొత్తం / 8);
 
   /* Leave a 1/4 margin for physical memory.  */
-  if (total * 0.75 < size)
-    size = total * 0.75;
+  ఒకవేళ (మొత్తం * 0.75 < కొలత)
+    కొలత = మొత్తం * 0.75;
 
   /* Return the minimum of MEM and SIZE, but no less than
      MIN_SORT_SIZE.  Avoid the MIN macro here, as it is not quite
      right when only one argument is floating point.  */
-  if (mem < size)
-    size = mem;
-  return MAX (size, MIN_SORT_SIZE);
+  ఒకవేళ (mem < కొలత)
+    కొలత = mem;
+  తిరిగి MAX (కొలత, MIN_క్రమీకరించు_కొలత);
 }
 
 /* Return true if *ALLOC has been adjusted to a size suitable for a sort
    buffer.  */
 
-static bool
-line_aligned_size (size_t *alloc)
+స్థిర bool
+పంక్తి_aligned_కొలత (size_t *alloc)
 {
-  size_t size = *alloc;
-  size_t alignment = sizeof (struct line);
-  size_t padding = alignment - size % alignment;
+  size_t కొలత = *alloc;
+  size_t alignment = పరిమాణం (నిర్మాణం పంక్తి);
+  size_t padding = alignment - కొలత % alignment;
   size_t aligned;
 
-  if (ckd_add (&aligned, size, padding))
-    return false;
+  ఒకవేళ (ckd_కూడు (&aligned, కొలత, padding))
+    తిరిగి false;
 
   *alloc = aligned;
-  return true;
+  తిరిగి true;
 }
 
 /* Return the default initial allocation for a growable sort buffer.  */
 
-static size_t
-default_initial_sort_size (size_t line_bytes)
+స్థిర size_t
+default_initial_క్రమీకరించు_కొలత (size_t పంక్తి_బైట్లు)
 {
-  size_t size = line_bytes + 2;
-  size_t input_size;
+  size_t కొలత = పంక్తి_బైట్లు + 2;
+  size_t ఆదానం_కొలత;
 
-  if (ckd_mul (&input_size, INPUT_FILE_SIZE_GUESS, line_bytes + 1)
-      || ckd_add (&size, size, input_size))
-    return SIZE_MAX;
+  ఒకవేళ (ckd_mul (&ఆదానం_కొలత, ఆదానం_FILE_కొలత_GUESS, పంక్తి_బైట్లు + 1)
+      || ckd_కూడు (&కొలత, కొలత, ఆదానం_కొలత))
+    తిరిగి SIZE_MAX;
 
-  return MAX (size, MIN_SORT_SIZE);
+  తిరిగి MAX (కొలత, MIN_క్రమీకరించు_కొలత);
 }
 
 /* Store into *WORST_CASE the allocation needed for FILE_SIZE input bytes
    in the worst case, where each input byte is a line delimiter except
    for a final non-delimiter byte.  Return false on overflow.  */
 
-static bool
-input_size_buffer_bytes (uintmax_t file_size, size_t line_bytes,
+స్థిర bool
+ఆదానం_కొలత_బఫరు_బైట్లు (uintmax_t file_కొలత, size_t పంక్తి_బైట్లు,
                          size_t *worst_case)
 {
-  size_t worst_case_per_input_byte = line_bytes + 1;
+  size_t worst_case_చొప్పున_ఆదానం_byte = పంక్తి_బైట్లు + 1;
 
-  if (SIZE_MAX / worst_case_per_input_byte < file_size)
-    return false;
+  ఒకవేళ (SIZE_MAX / worst_case_చొప్పున_ఆదానం_byte < file_కొలత)
+    తిరిగి false;
 
-  size_t size = file_size * worst_case_per_input_byte;
-  if (SIZE_MAX - size < 1)
-    return false;
+  size_t కొలత = file_కొలత * worst_case_చొప్పున_ఆదానం_byte;
+  ఒకవేళ (SIZE_MAX - కొలత < 1)
+    తిరిగి false;
 
-  *worst_case = size + 1;
-  return true;
+  *worst_case = కొలత + 1;
+  తిరిగి true;
 }
 
 /* Set *POLICY to the sort buffer policy to use with the input files identified
@@ -1686,241 +1686,241 @@ input_size_buffer_bytes (uintmax_t file_size, size_t line_bytes,
    information.  Do not exceed the size bound specified by the user
    (or a default size bound, if the user does not specify one).  */
 
-static void
-sort_buffer_policy (FILE *const *fps, size_t nfps,
-                    char *const *files, size_t nfiles,
-                    size_t line_bytes,
-                    struct sort_buffer_policy *policy)
+స్థిర శూన్య
+క్రమీకరించు_బఫరు_policy (FILE *స్థిరరాశి *fps, size_t nfps,
+                    అక్షరం *స్థిరరాశి *files, size_t nfiles,
+                    size_t పంక్తి_బైట్లు,
+                    నిర్మాణం క్రమీకరించు_బఫరు_policy *policy)
 {
-  size_t size_bound = sort_size ? sort_size : default_sort_size ();
+  size_t కొలత_bound = క్రమీకరించు_కొలత ? క్రమీకరించు_కొలత : default_క్రమీకరించు_కొలత ();
   size_t initial_bound =
-    sort_size ? size_bound : default_initial_sort_size (line_bytes);
+    క్రమీకరించు_కొలత ? కొలత_bound : default_initial_క్రమీకరించు_కొలత (పంక్తి_బైట్లు);
 
   /* In the worst case, each input byte is a newline.  */
-  size_t worst_case_per_input_byte = line_bytes + 1;
+  size_t worst_case_చొప్పున_ఆదానం_byte = పంక్తి_బైట్లు + 1;
 
   /* Keep enough room for one extra input line and an extra byte.
      This extra room might be needed when preparing to read EOF.  */
-  size_t size = worst_case_per_input_byte + 1;
+  size_t కొలత = worst_case_చొప్పున_ఆదానం_byte + 1;
 
-  initial_bound = MIN (initial_bound, size_bound);
-  policy->limit = size_bound;
+  initial_bound = MIN (initial_bound, కొలత_bound);
+  policy->హద్దు = కొలత_bound;
   policy->growth_failed = false;
 
-  for (size_t i = 0; i < nfiles; i++)
+  కొరకు (size_t i = 0; i < nfiles; i++)
     {
-      struct stat st;
-      off_t file_size;
+      నిర్మాణం stat st;
+      off_t file_కొలత;
       size_t worst_case;
-      bool known_size;
+      bool తెలిసిన_కొలత;
 
-      if (size_bound <= size)
+      ఒకవేళ (కొలత_bound <= కొలత)
         {
-          policy->initial = size_bound;
-          return;
+          policy->initial = కొలత_bound;
+          తిరిగి;
         }
 
-      if ((i < nfps ? fstat (fileno (fps[i]), &st)
+      ఒకవేళ ((i < nfps ? fstat (fileno (fps[i]), &st)
            : streq (files[i], "-") ? fstat (STDIN_FILENO, &st)
            : stat (files[i], &st))
           != 0)
-        sort_die (_("stat failed"), files[i]);
+        క్రమీకరించు_die (_("stat failed"), files[i]);
 
-      known_size = usable_st_size (&st) && 0 < st.st_size;
-      if (known_size)
-        file_size = st.st_size;
-      else
+      తెలిసిన_కొలత = usable_st_కొలత (&st) && 0 < st.st_కొలత;
+      ఒకవేళ (తెలిసిన_కొలత)
+        file_కొలత = st.st_కొలత;
+      లేకపోతే
         {
           /* The file has unknown size.  If the user specified a sort
              buffer size, use that; otherwise, guess the size.  */
-          if (sort_size)
+          ఒకవేళ (క్రమీకరించు_కొలత)
             {
-              policy->initial = size_bound;
-              return;
+              policy->initial = కొలత_bound;
+              తిరిగి;
             }
-          file_size = INPUT_FILE_SIZE_GUESS;
+          file_కొలత = ఆదానం_FILE_కొలత_GUESS;
         }
 
       /* Add the amount of memory needed to represent the worst case
          where the input consists entirely of newlines followed by a
          single non-newline.  Check for overflow.  */
-      if (! input_size_buffer_bytes (file_size, line_bytes, &worst_case)
-          || size_bound - size <= worst_case)
+      ఒకవేళ (! ఆదానం_కొలత_బఫరు_బైట్లు (file_కొలత, పంక్తి_బైట్లు, &worst_case)
+          || కొలత_bound - కొలత <= worst_case)
         {
-          policy->initial = size_bound;
-          return;
+          policy->initial = కొలత_bound;
+          తిరిగి;
         }
 
-      if (! known_size && ! sort_size
-          && (initial_bound <= size || initial_bound - size <= worst_case))
+      ఒకవేళ (! తెలిసిన_కొలత && ! క్రమీకరించు_కొలత
+          && (initial_bound <= కొలత || initial_bound - కొలత <= worst_case))
         {
-          policy->initial = MAX (size, initial_bound);
-          return;
+          policy->initial = MAX (కొలత, initial_bound);
+          తిరిగి;
         }
 
-      size += worst_case;
+      కొలత += worst_case;
     }
 
-  policy->initial = MAX (size, MIN_SORT_SIZE);
+  policy->initial = MAX (కొలత, MIN_క్రమీకరించు_కొలత);
 }
 
 /* Initialize BUF.  Reserve LINE_BYTES bytes for each line; LINE_BYTES
    must be at least sizeof (struct line).  Allocate ALLOC bytes
    initially.  */
 
-static void
-initbuf (struct buffer *buf, size_t line_bytes, size_t alloc)
+స్థిర శూన్య
+initbuf (నిర్మాణం బఫరు *buf, size_t పంక్తి_బైట్లు, size_t alloc)
 {
   /* Ensure that the line array is properly aligned.  If the desired
      size cannot be allocated, repeatedly halve it until allocation
      succeeds.  The smaller allocation may hurt overall performance,
      but that's better than failing.  */
-  while (true)
+  అయితే (true)
     {
-      if (! line_aligned_size (&alloc))
-        buf->buf = NULL;
-      else
-        buf->buf = malloc (alloc);
-      if (buf->buf)
-        break;
+      ఒకవేళ (! పంక్తి_aligned_కొలత (&alloc))
+        buf->buf = ఖాళీ;
+      లేకపోతే
+        buf->buf = జ్ఞాపకం_ఇవ్వు (alloc);
+      ఒకవేళ (buf->buf)
+        ఆపు;
       alloc /= 2;
-      if (alloc <= line_bytes + 1)
+      ఒకవేళ (alloc <= పంక్తి_బైట్లు + 1)
         xalloc_die ();
     }
 
-  buf->line_bytes = line_bytes;
+  buf->పంక్తి_బైట్లు = పంక్తి_బైట్లు;
   buf->alloc = alloc;
-  buf->used = buf->left = buf->nlines = 0;
+  buf->వాడిన = buf->ఎడమ = buf->nlines = 0;
   buf->eof = false;
 }
 
 /* Return one past the limit of the line array.  */
 
-static inline struct line *
-buffer_linelim (struct buffer const *buf)
+స్థిర అంతఃవరుస నిర్మాణం పంక్తి *
+బఫరు_linelim (నిర్మాణం బఫరు స్థిరరాశి *buf)
 {
-  void *linelim = buf->buf + buf->alloc;
-  return linelim;
+  శూన్య *linelim = buf->buf + buf->alloc;
+  తిరిగి linelim;
 }
 
 /* Try to resize BUF to ALLOC bytes.  Return true if successful.  This
    preserves the input data and the line array, adjusting line pointers
    when the buffer base changes.  */
 
-static bool
-try_growbuf (struct buffer *buf, size_t alloc)
+స్థిర bool
+try_growbuf (నిర్మాణం బఫరు *buf, size_t alloc)
 {
-  if (! line_aligned_size (&alloc) || alloc <= buf->alloc)
-    return false;
+  ఒకవేళ (! పంక్తి_aligned_కొలత (&alloc) || alloc <= buf->alloc)
+    తిరిగి false;
 
-  char *newbuf = malloc (alloc);
-  if (! newbuf)
-    return false;
+  అక్షరం *newbuf = జ్ఞాపకం_ఇవ్వు (alloc);
+  ఒకవేళ (! newbuf)
+    తిరిగి false;
 
-  char *oldbuf = buf->buf;
-  struct line *old_linelim = buffer_linelim (buf);
-  struct line *old_line = old_linelim - buf->nlines;
+  అక్షరం *oldbuf = buf->buf;
+  నిర్మాణం పంక్తి *old_linelim = బఫరు_linelim (buf);
+  నిర్మాణం పంక్తి *old_పంక్తి = old_linelim - buf->nlines;
 
-  memcpy (newbuf, oldbuf, buf->used);
+  జ్ఞాపకం_నకలు (newbuf, oldbuf, buf->వాడిన);
 
-  struct line *new_linelim = (void *) (newbuf + alloc);
-  struct line *new_line = new_linelim - buf->nlines;
-  memcpy (new_line, old_line, buf->nlines * sizeof *new_line);
+  నిర్మాణం పంక్తి *new_linelim = (శూన్య *) (newbuf + alloc);
+  నిర్మాణం పంక్తి *new_పంక్తి = new_linelim - buf->nlines;
+  జ్ఞాపకం_నకలు (new_పంక్తి, old_పంక్తి, buf->nlines * పరిమాణం *new_పంక్తి);
 
-  for (struct line *line = new_line; line < new_linelim; line++)
+  కొరకు (నిర్మాణం పంక్తి *పంక్తి = new_పంక్తి; పంక్తి < new_linelim; పంక్తి++)
     {
-      line->text = newbuf + (line->text - oldbuf);
-      if (keylist)
+      పంక్తి->పాఠ్యం = newbuf + (పంక్తి->పాఠ్యం - oldbuf);
+      ఒకవేళ (keylist)
         {
-          line->keybeg = newbuf + (line->keybeg - oldbuf);
-          line->keylim = newbuf + (line->keylim - oldbuf);
+          పంక్తి->keybeg = newbuf + (పంక్తి->keybeg - oldbuf);
+          పంక్తి->keylim = newbuf + (పంక్తి->keylim - oldbuf);
         }
     }
 
-  free (oldbuf);
+  విడుదల (oldbuf);
   buf->buf = newbuf;
   buf->alloc = alloc;
-  return true;
+  తిరిగి true;
 }
 
 /* Try to grow BUF according to POLICY.  Return true if the buffer grew.  */
 
-static bool
-maybe_growbuf (struct buffer *buf, struct sort_buffer_policy *policy)
+స్థిర bool
+maybe_growbuf (నిర్మాణం బఫరు *buf, నిర్మాణం క్రమీకరించు_బఫరు_policy *policy)
 {
-  if (! policy || policy->growth_failed || policy->limit <= buf->alloc)
-    return false;
+  ఒకవేళ (! policy || policy->growth_failed || policy->హద్దు <= buf->alloc)
+    తిరిగి false;
 
   size_t alloc;
-  if (buf->alloc <= policy->limit / 3)
+  ఒకవేళ (buf->alloc <= policy->హద్దు / 3)
     alloc = buf->alloc * 3;
-  else
-    alloc = policy->limit;
+  లేకపోతే
+    alloc = policy->హద్దు;
 
-  if (try_growbuf (buf, alloc))
-    return true;
+  ఒకవేళ (try_growbuf (buf, alloc))
+    తిరిగి true;
 
   policy->growth_failed = true;
-  return false;
+  తిరిగి false;
 }
 
 /* Return a pointer to the first character of the field specified
    by KEY in LINE. */
 
-static char *
-begfield (struct line const *line, struct keyfield const *key)
+స్థిర అక్షరం *
+begfield (నిర్మాణం పంక్తి స్థిరరాశి *పంక్తి, నిర్మాణం keyfield స్థిరరాశి *కీలకం)
 {
-  char *ptr = line->text, *lim = ptr + line->length - 1;
-  size_t sword = key->sword;
-  size_t schar = key->schar;
+  అక్షరం *ptr = పంక్తి->పాఠ్యం, *lim = ptr + పంక్తి->నిడివి - 1;
+  size_t sword = కీలకం->sword;
+  size_t schar = కీలకం->schar;
 
   /* The leading field separator itself is included in a field when -t
      is absent.  */
 
-  if (tab != TAB_DEFAULT)
-    while (ptr < lim && sword--)
+  ఒకవేళ (tab != TAB_DEFAULT)
+    అయితే (ptr < lim && sword--)
       {
-        char *sep = memchr (ptr, tab, lim - ptr);
+        అక్షరం *sep = memchr (ptr, tab, lim - ptr);
         ptr = sep ? sep : lim;
-        if (ptr < lim)
+        ఒకవేళ (ptr < lim)
           ++ptr;
       }
-  else
-    while (ptr < lim && sword--)
+  లేకపోతే
+    అయితే (ptr < lim && sword--)
       {
-        while (ptr < lim && blanks[to_uchar (*ptr)])
+        అయితే (ptr < lim && blanks[గమ్యం_uchar (*ptr)])
           ++ptr;
-        while (ptr < lim && !blanks[to_uchar (*ptr)])
+        అయితే (ptr < lim && !blanks[గమ్యం_uchar (*ptr)])
           ++ptr;
       }
 
   /* If we're ignoring leading blanks when computing the Start
      of the field, skip past them here.  */
-  if (key->skipsblanks)
-    while (ptr < lim && blanks[to_uchar (*ptr)])
+  ఒకవేళ (కీలకం->skipsblanks)
+    అయితే (ptr < lim && blanks[గమ్యం_uchar (*ptr)])
       ++ptr;
 
   /* Advance PTR by SCHAR (if possible), but no further than LIM.  */
-  size_t remaining_bytes = lim - ptr;
-  if (schar < remaining_bytes)
+  size_t మిగిలిన_బైట్లు = lim - ptr;
+  ఒకవేళ (schar < మిగిలిన_బైట్లు)
     ptr += schar;
-  else
+  లేకపోతే
     ptr = lim;
 
-  return ptr;
+  తిరిగి ptr;
 }
 
 /* Return the limit of (a pointer to the first character after) the field
    in LINE specified by KEY. */
 
-ATTRIBUTE_PURE
-static char *
-limfield (struct line const *line, struct keyfield const *key)
+ATTRIBUTE_శుద్ధ
+స్థిర అక్షరం *
+limfield (నిర్మాణం పంక్తి స్థిరరాశి *పంక్తి, నిర్మాణం keyfield స్థిరరాశి *కీలకం)
 {
-  char *ptr = line->text, *lim = ptr + line->length - 1;
-  size_t eword = key->eword, echar = key->echar;
+  అక్షరం *ptr = పంక్తి->పాఠ్యం, *lim = ptr + పంక్తి->నిడివి - 1;
+  size_t eword = కీలకం->eword, echar = కీలకం->echar;
 
-  if (echar == 0)
+  ఒకవేళ (echar == 0)
     eword++; /* Skip all of end field.  */
 
   /* Move PTR past EWORD fields or to one past the last byte on LINE,
@@ -1930,24 +1930,24 @@ limfield (struct line const *line, struct keyfield const *key)
      'beginning' is the first character following the delimiting TAB.
      Otherwise, leave PTR pointing at the first 'blank' character after
      the preceding field.  */
-  if (tab != TAB_DEFAULT)
-    while (ptr < lim && eword--)
+  ఒకవేళ (tab != TAB_DEFAULT)
+    అయితే (ptr < lim && eword--)
       {
-        char *sep = memchr (ptr, tab, lim - ptr);
+        అక్షరం *sep = memchr (ptr, tab, lim - ptr);
         ptr = sep ? sep : lim;
-        if (ptr < lim && (eword || echar))
+        ఒకవేళ (ptr < lim && (eword || echar))
           ++ptr;
       }
-  else
-    while (ptr < lim && eword--)
+  లేకపోతే
+    అయితే (ptr < lim && eword--)
       {
-        while (ptr < lim && blanks[to_uchar (*ptr)])
+        అయితే (ptr < lim && blanks[గమ్యం_uchar (*ptr)])
           ++ptr;
-        while (ptr < lim && !blanks[to_uchar (*ptr)])
+        అయితే (ptr < lim && !blanks[గమ్యం_uchar (*ptr)])
           ++ptr;
       }
 
-#ifdef POSIX_UNSPECIFIED
+#నిర్వచితమైతే POSIX_UNSPECIFIED
   /* The following block of code makes GNU sort incompatible with
      standard Unix sort, so it's ifdef'd out for now.
      The POSIX spec isn't clear on how to interpret this.
@@ -1979,42 +1979,42 @@ limfield (struct line const *line, struct keyfield const *key)
      */
 
   /* Make LIM point to the end of (one byte past) the current field.  */
-  if (tab != TAB_DEFAULT)
+  ఒకవేళ (tab != TAB_DEFAULT)
     {
-      char *newlim;
+      అక్షరం *newlim;
       newlim = memchr (ptr, tab, lim - ptr);
-      if (newlim)
+      ఒకవేళ (newlim)
         lim = newlim;
     }
-  else
+  లేకపోతే
     {
-      char *newlim;
+      అక్షరం *newlim;
       newlim = ptr;
-      while (newlim < lim && blanks[to_uchar (*newlim)])
+      అయితే (newlim < lim && blanks[గమ్యం_uchar (*newlim)])
         ++newlim;
-      while (newlim < lim && !blanks[to_uchar (*newlim)])
+      అయితే (newlim < lim && !blanks[గమ్యం_uchar (*newlim)])
         ++newlim;
       lim = newlim;
     }
-#endif
+#అయితే_ముగింపు
 
-  if (echar != 0) /* We need to skip over a portion of the end field.  */
+  ఒకవేళ (echar != 0) /* We need to skip over a portion of the end field.  */
     {
       /* If we're ignoring leading blanks when computing the End
          of the field, skip past them here.  */
-      if (key->skipeblanks)
-        while (ptr < lim && blanks[to_uchar (*ptr)])
+      ఒకవేళ (కీలకం->skipeblanks)
+        అయితే (ptr < lim && blanks[గమ్యం_uchar (*ptr)])
           ++ptr;
 
       /* Advance PTR by ECHAR (if possible), but no further than LIM.  */
-      size_t remaining_bytes = lim - ptr;
-      if (echar < remaining_bytes)
+      size_t మిగిలిన_బైట్లు = lim - ptr;
+      ఒకవేళ (echar < మిగిలిన_బైట్లు)
         ptr += echar;
-      else
+      లేకపోతే
         ptr = lim;
     }
 
-  return ptr;
+  తిరిగి ptr;
 }
 
 /* Fill BUF reading from FP, moving buf->left bytes from the end
@@ -2023,127 +2023,127 @@ limfield (struct line const *line, struct keyfield const *key)
    table too.  FILE is the name of the file corresponding to FP.
    Return true if some input was read.  */
 
-static bool
-fillbuf (struct buffer *buf, FILE *fp, char const *file,
-         struct sort_buffer_policy *policy)
+స్థిర bool
+fillbuf (నిర్మాణం బఫరు *buf, FILE *fp, అక్షరం స్థిరరాశి *file,
+         నిర్మాణం క్రమీకరించు_బఫరు_policy *policy)
 {
-  struct keyfield const *key = keylist;
-  char eol = eolchar;
-  size_t line_bytes = buf->line_bytes;
-  size_t mergesize = merge_buffer_size - MIN_MERGE_BUFFER_SIZE;
+  నిర్మాణం keyfield స్థిరరాశి *కీలకం = keylist;
+  అక్షరం eol = eolchar;
+  size_t పంక్తి_బైట్లు = buf->పంక్తి_బైట్లు;
+  size_t mergesize = విలీనం_బఫరు_కొలత - MIN_విలీనం_బఫరు_కొలత;
 
-  if (buf->eof)
-    return false;
+  ఒకవేళ (buf->eof)
+    తిరిగి false;
 
-  if (buf->used != buf->left)
+  ఒకవేళ (buf->వాడిన != buf->ఎడమ)
     {
-      memmove (buf->buf, buf->buf + buf->used - buf->left, buf->left);
-      buf->used = buf->left;
+      memmove (buf->buf, buf->buf + buf->వాడిన - buf->ఎడమ, buf->ఎడమ);
+      buf->వాడిన = buf->ఎడమ;
       buf->nlines = 0;
     }
 
-  while (true)
+  అయితే (true)
     {
-      char *ptr = buf->buf + buf->used;
-      struct line *linelim = buffer_linelim (buf);
-      struct line *line = linelim - buf->nlines;
-      size_t avail = (char *) linelim - buf->nlines * line_bytes - ptr;
-      char *line_start = buf->nlines ? line->text + line->length : buf->buf;
+      అక్షరం *ptr = buf->buf + buf->వాడిన;
+      నిర్మాణం పంక్తి *linelim = బఫరు_linelim (buf);
+      నిర్మాణం పంక్తి *పంక్తి = linelim - buf->nlines;
+      size_t avail = (అక్షరం *) linelim - buf->nlines * పంక్తి_బైట్లు - ptr;
+      అక్షరం *పంక్తి_ప్రారంభం = buf->nlines ? పంక్తి->పాఠ్యం + పంక్తి->నిడివి : buf->buf;
 
-      while (line_bytes + 1 < avail)
+      అయితే (పంక్తి_బైట్లు + 1 < avail)
         {
           /* Read as many bytes as possible, but do not read so many
              bytes that there might not be enough room for the
              corresponding line array.  The worst case is when the
              rest of the input file consists entirely of newlines,
              except that the last byte is not a newline.  */
-          size_t readsize = (avail - 1) / (line_bytes + 1);
-          size_t bytes_read = fread (ptr, 1, readsize, fp);
-          char *ptrlim = ptr + bytes_read;
-          char *p;
-          avail -= bytes_read;
+          size_t readsize = (avail - 1) / (పంక్తి_బైట్లు + 1);
+          size_t బైట్లు_read = fread (ptr, 1, readsize, fp);
+          అక్షరం *ptrlim = ptr + బైట్లు_read;
+          అక్షరం *p;
+          avail -= బైట్లు_read;
 
-          if (bytes_read != readsize)
+          ఒకవేళ (బైట్లు_read != readsize)
             {
-              if (ferror (fp))
-                sort_die (_("read failed"), file);
-              if (feof (fp))
+              ఒకవేళ (ferror (fp))
+                క్రమీకరించు_die (_("read failed"), file);
+              ఒకవేళ (feof (fp))
                 {
                   buf->eof = true;
-                  if (buf->buf == ptrlim)
-                    return false;
-                  if (line_start != ptrlim && ptrlim[-1] != eol)
+                  ఒకవేళ (buf->buf == ptrlim)
+                    తిరిగి false;
+                  ఒకవేళ (పంక్తి_ప్రారంభం != ptrlim && ptrlim[-1] != eol)
                     *ptrlim++ = eol;
                 }
             }
 
           /* Find and record each line in the just-read input.  */
-          while ((p = memchr (ptr, eol, ptrlim - ptr)))
+          అయితే ((p = memchr (ptr, eol, ptrlim - ptr)))
             {
               /* Delimit the line with NUL. This eliminates the need to
                  temporarily replace the last byte with NUL when calling
                  xmemcoll, which increases performance.  */
               *p = '\0';
               ptr = p + 1;
-              line--;
-              line->text = line_start;
-              line->length = ptr - line_start;
-              mergesize = MAX (mergesize, line->length);
-              avail -= line_bytes;
+              పంక్తి--;
+              పంక్తి->పాఠ్యం = పంక్తి_ప్రారంభం;
+              పంక్తి->నిడివి = ptr - పంక్తి_ప్రారంభం;
+              mergesize = MAX (mergesize, పంక్తి->నిడివి);
+              avail -= పంక్తి_బైట్లు;
 
-              if (key)
+              ఒకవేళ (కీలకం)
                 {
                   /* Precompute the position of the first key for
                      efficiency.  */
-                  line->keylim = (key->eword == SIZE_MAX
+                  పంక్తి->keylim = (కీలకం->eword == SIZE_MAX
                                   ? p
-                                  : limfield (line, key));
+                                  : limfield (పంక్తి, కీలకం));
 
-                  if (key->sword != SIZE_MAX)
-                    line->keybeg = begfield (line, key);
-                  else
+                  ఒకవేళ (కీలకం->sword != SIZE_MAX)
+                    పంక్తి->keybeg = begfield (పంక్తి, కీలకం);
+                  లేకపోతే
                     {
-                      if (key->skipsblanks)
-                        while (blanks[to_uchar (*line_start)])
-                          line_start++;
-                      line->keybeg = line_start;
+                      ఒకవేళ (కీలకం->skipsblanks)
+                        అయితే (blanks[గమ్యం_uchar (*పంక్తి_ప్రారంభం)])
+                          పంక్తి_ప్రారంభం++;
+                      పంక్తి->keybeg = పంక్తి_ప్రారంభం;
                     }
                 }
 
-              line_start = ptr;
+              పంక్తి_ప్రారంభం = ptr;
             }
 
           ptr = ptrlim;
-          if (buf->eof)
-            break;
+          ఒకవేళ (buf->eof)
+            ఆపు;
         }
 
-      buf->used = ptr - buf->buf;
-      buf->nlines = buffer_linelim (buf) - line;
-      if (buf->nlines != 0)
+      buf->వాడిన = ptr - buf->buf;
+      buf->nlines = బఫరు_linelim (buf) - పంక్తి;
+      ఒకవేళ (buf->nlines != 0)
         {
-          if (! buf->eof && maybe_growbuf (buf, policy))
-            continue;
-          buf->left = ptr - line_start;
-          merge_buffer_size = mergesize + MIN_MERGE_BUFFER_SIZE;
-          return true;
+          ఒకవేళ (! buf->eof && maybe_growbuf (buf, policy))
+            కొనసాగు;
+          buf->ఎడమ = ptr - పంక్తి_ప్రారంభం;
+          విలీనం_బఫరు_కొలత = mergesize + MIN_విలీనం_బఫరు_కొలత;
+          తిరిగి true;
         }
 
       {
         /* The current input line is too long to fit in the buffer.
            Increase the buffer size and try again, keeping it properly
            aligned.  */
-        idx_t line_alloc = buf->alloc / sizeof (struct line);
-        buf->buf = xpalloc (buf->buf, &line_alloc, 1, -1, sizeof (struct line));
-        buf->alloc = line_alloc * sizeof (struct line);
+        idx_t పంక్తి_alloc = buf->alloc / పరిమాణం (నిర్మాణం పంక్తి);
+        buf->buf = xpalloc (buf->buf, &పంక్తి_alloc, 1, -1, పరిమాణం (నిర్మాణం పంక్తి));
+        buf->alloc = పంక్తి_alloc * పరిమాణం (నిర్మాణం పంక్తి);
       }
     }
 }
 
 /* Table that maps characters to order-of-magnitude values.  */
-static char const unit_order[UCHAR_LIM] =
+స్థిర అక్షరం స్థిరరాశి unit_క్రమం[UCHAR_LIM] =
   {
-#if ! ('K' == 75 && 'M' == 77 && 'G' == 71 && 'T' == 84 && 'P' == 80 \
+#ఒకవేళ ! ('K' == 75 && 'M' == 77 && 'G' == 71 && 'T' == 84 && 'P' == 80 \
        && 'E' == 69 && 'Z' == 90 && 'Y' == 89 && 'R' == 82 && 'Q' == 81 \
        && 'k' == 107)
     /* This initializer syntax works on all C99 hosts.  For now, use
@@ -2152,7 +2152,7 @@ static char const unit_order[UCHAR_LIM] =
     ['K']=1, ['M']=2, ['G']=3, ['T']=4, ['P']=5, ['E']=6, ['Z']=7, ['Y']=8,
     ['R']=9, ['Q']=10,
     ['k']=1,
-#else
+#లేకపోతే
     /* Generate the following table with this command:
        perl -e 'my %a=(k=>1,K=>1,M=>2,G=>3,T=>4,P=>5,E=>6,Z=>7,Y=>8,R=>9,Q=>10);
        foreach my $i (0..255) {my $c=chr($i); $a{$c} ||= 0;print "$a{$c}, "}'\
@@ -2168,20 +2168,20 @@ static char const unit_order[UCHAR_LIM] =
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-#endif
+#అయితే_ముగింపు
   };
 
 /* Traverse number given as *number consisting of digits, thousands_sep, and
    decimal_point chars only.  Returns the highest digit found in the number,
    or '\0' if no digit has been found.  Upon return *number points at the
    character that immediately follows after the given number.  */
-static char
-traverse_raw_number (char const **number)
+స్థిర అక్షరం
+traverse_raw_సంఖ్య (అక్షరం స్థిరరాశి **సంఖ్య)
 {
-  char const *p = *number;
-  char ch;
-  char max_digit = '\0';
-  bool ends_with_thousands_sep = false;
+  అక్షరం స్థిరరాశి *p = *సంఖ్య;
+  అక్షరం ch;
+  అక్షరం max_digit = '\0';
+  bool చివర్లు_with_thousands_sep = false;
 
   /* Scan to end of number.
      Decimals or separators not followed by digits stop the scan.
@@ -2189,33 +2189,33 @@ traverse_raw_number (char const **number)
      to be lacking in units.
      FIXME: add support for multibyte thousands_sep and decimal_point.  */
 
-  while (c_isdigit (ch = *p++))
+  అయితే (c_isdigit (ch = *p++))
     {
-      if (max_digit < ch)
+      ఒకవేళ (max_digit < ch)
         max_digit = ch;
 
       /* Allow to skip only one occurrence of thousands_sep to avoid finding
          the unit in the next column in case thousands_sep matches as blank
          and is used as column delimiter.  */
-      ends_with_thousands_sep = (*p == thousands_sep);
-      if (ends_with_thousands_sep)
+      చివర్లు_with_thousands_sep = (*p == thousands_sep);
+      ఒకవేళ (చివర్లు_with_thousands_sep)
         ++p;
     }
 
-  if (ends_with_thousands_sep)
+  ఒకవేళ (చివర్లు_with_thousands_sep)
     {
       /* thousands_sep not followed by digit is not allowed.  */
-      *number = p - 2;
-      return max_digit;
+      *సంఖ్య = p - 2;
+      తిరిగి max_digit;
     }
 
-  if (ch == decimal_point)
-    while (c_isdigit (ch = *p++))
-      if (max_digit < ch)
+  ఒకవేళ (ch == decimal_బిందువు)
+    అయితే (c_isdigit (ch = *p++))
+      ఒకవేళ (max_digit < ch)
         max_digit = ch;
 
-  *number = p - 1;
-  return max_digit;
+  *సంఖ్య = p - 1;
+  తిరిగి max_digit;
 }
 
 /* Return an integer that represents the order of magnitude of the
@@ -2223,85 +2223,85 @@ traverse_raw_number (char const **number)
    separators and a decimal point, but it may not contain leading blanks.
    Negative numbers get negative orders; zero numbers have a zero order.  */
 
-ATTRIBUTE_PURE
-static int
-find_unit_order (char const *number)
+ATTRIBUTE_శుద్ధ
+స్థిర పూర్ణాంకం
+కనుగొను_unit_క్రమం (అక్షరం స్థిరరాశి *సంఖ్య)
 {
-  bool minus_sign = (*number == '-');
-  char const *p = number + minus_sign;
-  char max_digit = traverse_raw_number (&p);
-  if ('0' < max_digit)
+  bool minus_sign = (*సంఖ్య == '-');
+  అక్షరం స్థిరరాశి *p = సంఖ్య + minus_sign;
+  అక్షరం max_digit = traverse_raw_సంఖ్య (&p);
+  ఒకవేళ ('0' < max_digit)
     {
-      unsigned char ch = *p;
-      int order = unit_order[ch];
-      return (minus_sign ? -order : order);
+      గుర్తులేని అక్షరం ch = *p;
+      పూర్ణాంకం క్రమం = unit_క్రమం[ch];
+      తిరిగి (minus_sign ? -క్రమం : క్రమం);
     }
-  else
-    return 0;
+  లేకపోతే
+    తిరిగి 0;
 }
 
 /* Compare numbers A and B ending in units with SI or IEC prefixes
        <none/unknown> < K/k < M < G < T < P < E < Z < Y < R < Q */
 
-ATTRIBUTE_PURE
-static int
-human_numcompare (char const *a, char const *b)
+ATTRIBUTE_శుద్ధ
+స్థిర పూర్ణాంకం
+human_numcompare (అక్షరం స్థిరరాశి *a, అక్షరం స్థిరరాశి *b)
 {
-  while (blanks[to_uchar (*a)])
+  అయితే (blanks[గమ్యం_uchar (*a)])
     a++;
-  while (blanks[to_uchar (*b)])
+  అయితే (blanks[గమ్యం_uchar (*b)])
     b++;
 
-  int diff = find_unit_order (a) - find_unit_order (b);
-  return (diff ? diff : strnumcmp (a, b, decimal_point, thousands_sep));
+  పూర్ణాంకం diff = కనుగొను_unit_క్రమం (a) - కనుగొను_unit_క్రమం (b);
+  తిరిగి (diff ? diff : strnumcmp (a, b, decimal_బిందువు, thousands_sep));
 }
 
 /* Compare strings A and B as numbers without explicitly converting them to
    machine numbers.  Comparatively slow for short strings, but asymptotically
    hideously fast. */
 
-ATTRIBUTE_PURE
-static int
-numcompare (char const *a, char const *b)
+ATTRIBUTE_శుద్ధ
+స్థిర పూర్ణాంకం
+numcompare (అక్షరం స్థిరరాశి *a, అక్షరం స్థిరరాశి *b)
 {
-  while (blanks[to_uchar (*a)])
+  అయితే (blanks[గమ్యం_uchar (*a)])
     a++;
-  while (blanks[to_uchar (*b)])
+  అయితే (blanks[గమ్యం_uchar (*b)])
     b++;
 
-  return strnumcmp (a, b, decimal_point, thousands_sep);
+  తిరిగి strnumcmp (a, b, decimal_బిందువు, thousands_sep);
 }
 
-static int
-nan_compare (long double a, long double b)
+స్థిర పూర్ణాంకం
+nan_compare (దీర్ఘ ద్విగుణ a, దీర్ఘ ద్విగుణ b)
 {
-  char buf[2][sizeof "-nan""()" + CHAR_BIT * sizeof a];
-  snprintf (buf[0], sizeof buf[0], "%Lf", a);
-  snprintf (buf[1], sizeof buf[1], "%Lf", b);
-  return strcmp (buf[0], buf[1]);
+  అక్షరం buf[2][పరిమాణం "-nan""()" + CHAR_BIT * పరిమాణం a];
+  snprintf (buf[0], పరిమాణం buf[0], "%Lf", a);
+  snprintf (buf[1], పరిమాణం buf[1], "%Lf", b);
+  తిరిగి strcmp (buf[0], buf[1]);
 }
 
-static int
-general_numcompare (char const *sa, char const *sb)
+స్థిర పూర్ణాంకం
+general_numcompare (అక్షరం స్థిరరాశి *sa, అక్షరం స్థిరరాశి *sb)
 {
   /* FIXME: maybe add option to try expensive FP conversion
      only if A and B can't be compared more cheaply/accurately.  */
 
-  char *ea;
-  char *eb;
-  long double a = strtold (sa, &ea);
-  long double b = strtold (sb, &eb);
+  అక్షరం *ea;
+  అక్షరం *eb;
+  దీర్ఘ ద్విగుణ a = strtold (sa, &ea);
+  దీర్ఘ ద్విగుణ b = strtold (sb, &eb);
 
   /* Put conversion errors at the start of the collating sequence.  */
-  if (sa == ea)
-    return sb == eb ? 0 : -1;
-  if (sb == eb)
-    return 1;
+  ఒకవేళ (sa == ea)
+    తిరిగి sb == eb ? 0 : -1;
+  ఒకవేళ (sb == eb)
+    తిరిగి 1;
 
   /* Sort numbers in the usual way, where -0 == +0.  Put NaNs after
      conversion errors but before numbers; sort them by internal
      bit-pattern, for lack of a more portable alternative.  */
-  return (a < b ? -1
+  తిరిగి (a < b ? -1
           : a > b ? 1
           : a == b ? 0
           : b == b ? -1
@@ -2312,69 +2312,69 @@ general_numcompare (char const *sa, char const *sb)
 /* Return an integer in 1..12 of the month name MONTH.
    Return 0 if the name in S is not recognized.  */
 
-static int
-getmonth (char const *month, char **ea)
+స్థిర పూర్ణాంకం
+getmonth (అక్షరం స్థిరరాశి *month, అక్షరం **ea)
 {
   size_t lo = 0;
-  size_t hi = MONTHS_PER_YEAR;
+  size_t hi = MONTHS_చొప్పున_YEAR;
 
-  while (blanks[to_uchar (*month)])
+  అయితే (blanks[గమ్యం_uchar (*month)])
     month++;
 
-  do
+  చేయి
     {
       size_t ix = (lo + hi) / 2;
-      char const *m = month;
-      char const *n = monthtab[ix].name;
+      అక్షరం స్థిరరాశి *m = month;
+      అక్షరం స్థిరరాశి *n = monthtab[ix].name;
 
-      for (;; m++, n++)
+      కొరకు (;; m++, n++)
         {
-          if (!*n)
+          ఒకవేళ (!*n)
             {
-              if (ea)
-                *ea = (char *) m;
-              return monthtab[ix].val;
+              ఒకవేళ (ea)
+                *ea = (అక్షరం *) m;
+              తిరిగి monthtab[ix].val;
             }
-          if (to_uchar (fold_toupper[to_uchar (*m)]) < to_uchar (*n))
+          ఒకవేళ (గమ్యం_uchar (fold_toupper[గమ్యం_uchar (*m)]) < గమ్యం_uchar (*n))
             {
               hi = ix;
-              break;
+              ఆపు;
             }
-          else if (to_uchar (fold_toupper[to_uchar (*m)]) > to_uchar (*n))
+          లేకపోతే ఒకవేళ (గమ్యం_uchar (fold_toupper[గమ్యం_uchar (*m)]) > గమ్యం_uchar (*n))
             {
               lo = ix + 1;
-              break;
+              ఆపు;
             }
         }
     }
-  while (lo < hi);
+  అయితే (lo < hi);
 
-  return 0;
+  తిరిగి 0;
 }
 
 /* When using the OpenSSL implementation, dynamically link only if -R.
    This saves startup time in the usual (sans -R) case.  */
 
-#if DLOPEN_LIBCRYPTO && HAVE_OPENSSL_MD5
+#ఒకవేళ DLOPEN_LIBCRYPTO && HAVE_OPENSSL_MD5
 /* In the typical case where md5.h does not #undef HAVE_OPENSSL_MD5,
    trick md5.h into declaring and using pointers to functions not functions.
    This causes the compiler's -lcrypto option to have no effect,
    as sort.o no longer uses any crypto symbols statically.  */
 
-# if 14 <= __GNUC__
-#  pragma GCC diagnostic push
+# ఒకవేళ 14 <= __GNUC__
+#  pragma GCC diagnostic నెట్టు
 #  pragma GCC diagnostic ignored "-Wmissing-variable-declarations"
 # endif
 # define MD5_Init (*ptr_MD5_Init)
 # define MD5_Update (*ptr_MD5_Update)
 # define MD5_Final (*ptr_MD5_Final)
-#endif
+#అయితే_ముగింపు
 
-#include "md5.h"
+#అన్తర్భావ "md5.h"
 
-#if DLOPEN_LIBCRYPTO && HAVE_OPENSSL_MD5
-# if 14 <= __GNUC__
-#  pragma GCC diagnostic pop
+#ఒకవేళ DLOPEN_LIBCRYPTO && HAVE_OPENSSL_MD5
+# ఒకవేళ 14 <= __GNUC__
+#  pragma GCC diagnostic తీయి
 # endif
 # include <dlfcn.h>
 
@@ -2383,109 +2383,109 @@ getmonth (char const *month, char **ea)
 # include "sd-dlopen.h"
 SD_ELF_NOTE_DLOPEN ("random-sort",
                     "Support for random sorting",
-                    SD_ELF_NOTE_DLOPEN_PRIORITY_REQUIRED,
+                    SD_ELF_NOTE_DLOPEN_ప్రాధాన్యత_REQUIRED,
                     LIBCRYPTO_SONAME);
 
 /* Diagnose a dynamic linking failure.  */
-static void
-link_failure (void)
+స్థిర శూన్య
+link_failure (శూన్య)
 {
-  error (SORT_FAILURE, 0, "%s", dlerror ());
+  error (క్రమీకరించు_FAILURE, 0, "%s", dlerror ());
 }
 
 /* Return a function pointer in HANDLE for SYMBOL.  */
-static void *
-symbol_address (void *handle, char const *symbol)
+స్థిర శూన్య *
+చిహ్నం_చిరునామా (శూన్య *handle, అక్షరం స్థిరరాశి *చిహ్నం)
 {
-  void *address = dlsym (handle, symbol);
-  if (!address)
+  శూన్య *చిరునామా = dlsym (handle, చిహ్నం);
+  ఒకవేళ (!చిరునామా)
     link_failure ();
-  return address;
+  తిరిగి చిరునామా;
 }
-#endif
+#అయితే_ముగింపు
 
 /* Dynamically link the crypto library, if it needs linking.  */
-static void
-link_libcrypto (void)
+స్థిర శూన్య
+link_libcrypto (శూన్య)
 {
-#if DLOPEN_LIBCRYPTO && HAVE_OPENSSL_MD5
-  void *handle = dlopen (LIBCRYPTO_SONAME, RTLD_LAZY | RTLD_GLOBAL);
-  if (!handle)
+#ఒకవేళ DLOPEN_LIBCRYPTO && HAVE_OPENSSL_MD5
+  శూన్య *handle = dlopen (LIBCRYPTO_SONAME, RTLD_LAZY | RTLD_GLOBAL);
+  ఒకవేళ (!handle)
     link_failure ();
-  ptr_MD5_Init = symbol_address (handle, "MD5_Init");
-  ptr_MD5_Update = symbol_address (handle, "MD5_Update");
-  ptr_MD5_Final = symbol_address (handle, "MD5_Final");
-#endif
+  ptr_MD5_Init = చిహ్నం_చిరునామా (handle, "MD5_Init");
+  ptr_MD5_Update = చిహ్నం_చిరునామా (handle, "MD5_Update");
+  ptr_MD5_Final = చిహ్నం_చిరునామా (handle, "MD5_Final");
+#అయితే_ముగింపు
 }
 
 /* A randomly chosen MD5 state, used for random comparison.  */
-static struct md5_ctx random_md5_state;
+స్థిర నిర్మాణం md5_ctx random_md5_state;
 
 /* Initialize the randomly chosen MD5 state.  */
 
-static void
-random_md5_state_init (char const *random_source)
+స్థిర శూన్య
+random_md5_state_init (అక్షరం స్థిరరాశి *random_ఆధారం)
 {
-  unsigned char buf[MD5_DIGEST_SIZE];
-  struct randread_source *r = randread_new (random_source, sizeof buf);
-  if (! r)
-    sort_die (_("open failed"), random_source ? random_source : "getrandom");
-  randread (r, buf, sizeof buf);
-  if (randread_free (r) != 0)
-    sort_die (_("close failed"), random_source);
+  గుర్తులేని అక్షరం buf[MD5_DIGEST_కొలత];
+  నిర్మాణం randread_ఆధారం *r = randread_new (random_ఆధారం, పరిమాణం buf);
+  ఒకవేళ (! r)
+    క్రమీకరించు_die (_("open failed"), random_ఆధారం ? random_ఆధారం : "getrandom");
+  randread (r, buf, పరిమాణం buf);
+  ఒకవేళ (randread_free (r) != 0)
+    క్రమీకరించు_die (_("close failed"), random_ఆధారం);
   link_libcrypto ();
   md5_init_ctx (&random_md5_state);
-  md5_process_bytes (buf, sizeof buf, &random_md5_state);
+  md5_process_బైట్లు (buf, పరిమాణం buf, &random_md5_state);
 }
 
 /* This is like strxfrm, except it reports any error and exits.  */
 
-static size_t
-xstrxfrm (char *restrict dest, char const *restrict src, size_t destsize)
+స్థిర size_t
+xstrxfrm (అక్షరం *పరిమిత dest, అక్షరం స్థిరరాశి *పరిమిత src, size_t destsize)
 {
   errno = 0;
-  size_t translated_size = strxfrm (dest, src, destsize);
+  size_t translated_కొలత = strxfrm (dest, src, destsize);
 
-  if (errno)
+  ఒకవేళ (errno)
     {
       error (0, errno, _("string transformation failed"));
       error (0, 0, _("set LC_ALL='C' to work around the problem"));
-      error (SORT_FAILURE, 0,
+      error (క్రమీకరించు_FAILURE, 0,
              _("the original string was %s"),
              quotearg_n_style (0, locale_quoting_style, src));
     }
 
-  return translated_size;
+  తిరిగి translated_కొలత;
 }
 
 /* Compare the keys TEXTA (of length LENA) and TEXTB (of length LENB)
    using one or more random hash functions.  TEXTA[LENA] and
    TEXTB[LENB] must be zero.  */
 
-static int
-compare_random (char *restrict texta, size_t lena,
-                char *restrict textb, size_t lenb)
+స్థిర పూర్ణాంకం
+compare_random (అక్షరం *పరిమిత texta, size_t lena,
+                అక్షరం *పరిమిత textb, size_t lenb)
 {
   /* XFRM_DIFF records the equivalent of memcmp on the transformed
      data.  This is used to break ties if there is a checksum
      collision, and this is good enough given the astronomically low
      probability of a collision.  */
-  int xfrm_diff = 0;
+  పూర్ణాంకం xfrm_diff = 0;
 
-  char stackbuf[4000];
-  char *buf = stackbuf;
-  size_t bufsize = sizeof stackbuf;
-  void *allocated = NULL;
-  uint32_t dig[2][MD5_DIGEST_SIZE / sizeof (uint32_t)];
-  struct md5_ctx s[2];
+  అక్షరం stackbuf[4000];
+  అక్షరం *buf = stackbuf;
+  size_t bufsize = పరిమాణం stackbuf;
+  శూన్య *allocated = ఖాళీ;
+  uint32_t dig[2][MD5_DIGEST_కొలత / పరిమాణం (uint32_t)];
+  నిర్మాణం md5_ctx s[2];
   s[0] = s[1] = random_md5_state;
 
-  if (hard_LC_COLLATE)
+  ఒకవేళ (hard_LC_COLLATE)
     {
-      char const *lima = texta + lena;
-      char const *limb = textb + lenb;
+      అక్షరం స్థిరరాశి *lima = texta + lena;
+      అక్షరం స్థిరరాశి *limb = textb + lenb;
 
-      while (true)
+      అయితే (true)
         {
           /* Transform the text into the basis of comparison, so that byte
              strings that would otherwise considered to be equal are
@@ -2503,38 +2503,38 @@ compare_random (char *restrict texta, size_t lena,
              twice on typical implementations.  Don't worry about
              size_t overflow, as the guess need not be correct.  */
           size_t guess_bufsize = 3 * (lena + lenb) + 2;
-          if (bufsize < guess_bufsize)
+          ఒకవేళ (bufsize < guess_bufsize)
             {
               bufsize = MAX (guess_bufsize, bufsize * 3 / 2);
-              free (allocated);
-              buf = allocated = malloc (bufsize);
-              if (! buf)
+              విడుదల (allocated);
+              buf = allocated = జ్ఞాపకం_ఇవ్వు (bufsize);
+              ఒకవేళ (! buf)
                 {
                   buf = stackbuf;
-                  bufsize = sizeof stackbuf;
+                  bufsize = పరిమాణం stackbuf;
                 }
             }
 
           size_t sizea =
             (texta < lima ? xstrxfrm (buf, texta, bufsize) + 1 : 0);
-          bool a_fits = sizea <= bufsize;
+          bool a_సరిపోతుంది = sizea <= bufsize;
           size_t sizeb =
             (textb < limb
-             ? (xstrxfrm ((a_fits ? buf + sizea : NULL), textb,
-                          (a_fits ? bufsize - sizea : 0))
+             ? (xstrxfrm ((a_సరిపోతుంది ? buf + sizea : ఖాళీ), textb,
+                          (a_సరిపోతుంది ? bufsize - sizea : 0))
                 + 1)
              : 0);
 
-          if (! (a_fits && sizea + sizeb <= bufsize))
+          ఒకవేళ (! (a_సరిపోతుంది && sizea + sizeb <= bufsize))
             {
               bufsize = sizea + sizeb;
-              if (bufsize < SIZE_MAX / 3)
+              ఒకవేళ (bufsize < SIZE_MAX / 3)
                 bufsize = bufsize * 3 / 2;
-              free (allocated);
+              విడుదల (allocated);
               buf = allocated = xmalloc (bufsize);
-              if (texta < lima)
+              ఒకవేళ (texta < lima)
                 strxfrm (buf, texta, sizea);
-              if (textb < limb)
+              ఒకవేళ (textb < limb)
                 strxfrm (buf + sizea, textb, sizeb);
             }
 
@@ -2542,147 +2542,147 @@ compare_random (char *restrict texta, size_t lena,
              exiting the loop if both strings are exhausted.  When
              exiting the loop, prepare to finish off the tiebreaker
              comparison properly.  */
-          if (texta < lima)
-            texta += strlen (texta) + 1;
-          if (textb < limb)
-            textb += strlen (textb) + 1;
-          if (! (texta < lima || textb < limb))
+          ఒకవేళ (texta < lima)
+            texta += అక్షరశ్రేణి_పొడవు (texta) + 1;
+          ఒకవేళ (textb < limb)
+            textb += అక్షరశ్రేణి_పొడవు (textb) + 1;
+          ఒకవేళ (! (texta < lima || textb < limb))
             {
               lena = sizea; texta = buf;
               lenb = sizeb; textb = buf + sizea;
-              break;
+              ఆపు;
             }
 
           /* Accumulate the transformed data in the corresponding
              checksums.  */
-          md5_process_bytes (buf, sizea, &s[0]);
-          md5_process_bytes (buf + sizea, sizeb, &s[1]);
+          md5_process_బైట్లు (buf, sizea, &s[0]);
+          md5_process_బైట్లు (buf + sizea, sizeb, &s[1]);
 
           /* Update the tiebreaker comparison of the transformed data.  */
-          if (! xfrm_diff)
+          ఒకవేళ (! xfrm_diff)
             {
               xfrm_diff = memcmp (buf, buf + sizea, MIN (sizea, sizeb));
-              if (! xfrm_diff)
+              ఒకవేళ (! xfrm_diff)
                 xfrm_diff = _GL_CMP (sizea, sizeb);
             }
         }
     }
 
   /* Compute and compare the checksums.  */
-  md5_process_bytes (texta, lena, &s[0]); md5_finish_ctx (&s[0], dig[0]);
-  md5_process_bytes (textb, lenb, &s[1]); md5_finish_ctx (&s[1], dig[1]);
-  int diff = memcmp (dig[0], dig[1], sizeof dig[0]);
+  md5_process_బైట్లు (texta, lena, &s[0]); md5_ముగింపు_ctx (&s[0], dig[0]);
+  md5_process_బైట్లు (textb, lenb, &s[1]); md5_ముగింపు_ctx (&s[1], dig[1]);
+  పూర్ణాంకం diff = memcmp (dig[0], dig[1], పరిమాణం dig[0]);
 
   /* Fall back on the tiebreaker if the checksums collide.  */
-  if (! diff)
+  ఒకవేళ (! diff)
     {
-      if (! xfrm_diff)
+      ఒకవేళ (! xfrm_diff)
         {
           xfrm_diff = memcmp (texta, textb, MIN (lena, lenb));
-          if (! xfrm_diff)
+          ఒకవేళ (! xfrm_diff)
             xfrm_diff = _GL_CMP (lena, lenb);
         }
 
       diff = xfrm_diff;
     }
 
-  free (allocated);
+  విడుదల (allocated);
 
-  return diff;
+  తిరిగి diff;
 }
 
 /* Return the printable width of the block of memory starting at
    TEXT and ending just before LIM, counting each tab as one byte.
    FIXME: Should we generally be counting non printable chars?  */
 
-static size_t
-debug_width (char const *text, char const *lim)
+స్థిర size_t
+debug_వెడల్పు (అక్షరం స్థిరరాశి *పాఠ్యం, అక్షరం స్థిరరాశి *lim)
 {
-  size_t width = mbsnwidth (text, lim - text, 0);
-  while (text < lim)
-    width += (*text++ == '\t');
-  return width;
+  size_t వెడల్పు = mbsnwidth (పాఠ్యం, lim - పాఠ్యం, 0);
+  అయితే (పాఠ్యం < lim)
+    వెడల్పు += (*పాఠ్యం++ == '\t');
+  తిరిగి వెడల్పు;
 }
 
 /* For debug mode, "underline" a key at the
    specified offset and screen width.  */
 
-static void
-mark_key (size_t offset, size_t width)
+స్థిర శూన్య
+mark_కీలకం (size_t స్థానభ్రంశం, size_t వెడల్పు)
 {
-  while (offset--)
-    putchar (' ');
+  అయితే (స్థానభ్రంశం--)
+    అక్షరం_రాయి (' ');
 
-  if (!width)
-    printf (_("^ no match for key\n"));
-  else
+  ఒకవేళ (!వెడల్పు)
+    రాయి (_("^ no match for key\n"));
+  లేకపోతే
     {
-      do
-        putchar ('_');
-      while (--width);
+      చేయి
+        అక్షరం_రాయి ('_');
+      అయితే (--వెడల్పు);
 
-      putchar ('\n');
+      అక్షరం_రాయి ('\n');
     }
 }
 
 /* Return true if KEY is a numeric key.  */
 
-static inline bool
-key_numeric (struct keyfield const *key)
+స్థిర అంతఃవరుస bool
+కీలకం_numeric (నిర్మాణం keyfield స్థిరరాశి *కీలకం)
 {
-  return key->numeric || key->general_numeric || key->human_numeric;
+  తిరిగి కీలకం->numeric || కీలకం->general_numeric || కీలకం->human_numeric;
 }
 
 /* For LINE, output a debugging line that underlines KEY in LINE.
    If KEY is null, underline the whole line.  */
 
-static void
-debug_key (struct line const *line, struct keyfield const *key)
+స్థిర శూన్య
+debug_కీలకం (నిర్మాణం పంక్తి స్థిరరాశి *పంక్తి, నిర్మాణం keyfield స్థిరరాశి *కీలకం)
 {
-  char *text = line->text;
-  char *beg = text;
-  char *lim = text + line->length - 1;
+  అక్షరం *పాఠ్యం = పంక్తి->పాఠ్యం;
+  అక్షరం *beg = పాఠ్యం;
+  అక్షరం *lim = పాఠ్యం + పంక్తి->నిడివి - 1;
 
-  if (key)
+  ఒకవేళ (కీలకం)
     {
-      if (key->sword != SIZE_MAX)
-        beg = begfield (line, key);
-      if (key->eword != SIZE_MAX)
+      ఒకవేళ (కీలకం->sword != SIZE_MAX)
+        beg = begfield (పంక్తి, కీలకం);
+      ఒకవేళ (కీలకం->eword != SIZE_MAX)
         {
-          lim = limfield (line, key);
+          lim = limfield (పంక్తి, కీలకం);
           /* Treat field ends before field starts as empty fields.  */
           lim = MAX (beg, lim);
         }
 
-      if ((key->skipsblanks && key->sword == SIZE_MAX)
-          || key->month || key_numeric (key))
+      ఒకవేళ ((కీలకం->skipsblanks && కీలకం->sword == SIZE_MAX)
+          || కీలకం->month || కీలకం_numeric (కీలకం))
         {
-          char saved = *lim;
+          అక్షరం saved = *lim;
           *lim = '\0';
 
-          while (blanks[to_uchar (*beg)])
+          అయితే (blanks[గమ్యం_uchar (*beg)])
             beg++;
 
-          char *tighter_lim = beg;
+          అక్షరం *tighter_lim = beg;
 
-          if (lim < beg)
+          ఒకవేళ (lim < beg)
             tighter_lim = lim;
-          else if (key->month)
+          లేకపోతే ఒకవేళ (కీలకం->month)
             getmonth (beg, &tighter_lim);
-          else if (key->general_numeric)
-            ignore_value (strtold (beg, &tighter_lim));
-          else if (key->numeric || key->human_numeric)
+          లేకపోతే ఒకవేళ (కీలకం->general_numeric)
+            ignore_విలువ (strtold (beg, &tighter_lim));
+          లేకపోతే ఒకవేళ (కీలకం->numeric || కీలకం->human_numeric)
             {
-              char const *p = beg + (beg < lim && *beg == '-');
-              char max_digit = traverse_raw_number (&p);
-              if ('0' <= max_digit)
+              అక్షరం స్థిరరాశి *p = beg + (beg < lim && *beg == '-');
+              అక్షరం max_digit = traverse_raw_సంఖ్య (&p);
+              ఒకవేళ ('0' <= max_digit)
                 {
-                  unsigned char ch = *p;
-                  tighter_lim = (char *) p
-                    + (key->human_numeric && unit_order[ch]);
+                  గుర్తులేని అక్షరం ch = *p;
+                  tighter_lim = (అక్షరం *) p
+                    + (కీలకం->human_numeric && unit_క్రమం[ch]);
                 }
             }
-          else
+          లేకపోతే
             tighter_lim = lim;
 
           *lim = saved;
@@ -2690,228 +2690,228 @@ debug_key (struct line const *line, struct keyfield const *key)
         }
     }
 
-  size_t offset = debug_width (text, beg);
-  size_t width = debug_width (beg, lim);
-  mark_key (offset, width);
+  size_t స్థానభ్రంశం = debug_వెడల్పు (పాఠ్యం, beg);
+  size_t వెడల్పు = debug_వెడల్పు (beg, lim);
+  mark_కీలకం (స్థానభ్రంశం, వెడల్పు);
 }
 
 /* Debug LINE by underlining its keys.  */
 
-static void
-debug_line (struct line const *line)
+స్థిర శూన్య
+debug_పంక్తి (నిర్మాణం పంక్తి స్థిరరాశి *పంక్తి)
 {
-  struct keyfield const *key = keylist;
+  నిర్మాణం keyfield స్థిరరాశి *కీలకం = keylist;
 
-  do
-    debug_key (line, key);
-  while (key && ((key = key->next) || ! (unique || stable)));
+  చేయి
+    debug_కీలకం (పంక్తి, కీలకం);
+  అయితే (కీలకం && ((కీలకం = కీలకం->తదుపరి) || ! (unique || stable)));
 }
 
 /* Return whether sorting options specified for key.  */
 
-static bool
-default_key_compare (struct keyfield const *key)
+స్థిర bool
+default_కీలకం_compare (నిర్మాణం keyfield స్థిరరాశి *కీలకం)
 {
-  return ! (key->ignore
-            || key->translate
-            || key->skipsblanks
-            || key->skipeblanks
-            || key_numeric (key)
-            || key->month
-            || key->version
-            || key->random
+  తిరిగి ! (కీలకం->ignore
+            || కీలకం->translate
+            || కీలకం->skipsblanks
+            || కీలకం->skipeblanks
+            || కీలకం_numeric (కీలకం)
+            || కీలకం->month
+            || కీలకం->సంస్కరణ_3
+            || కీలకం->random
             /* || key->reverse */
            );
 }
 
 /* Convert a key to the short options used to specify it.  */
 
-static void
-key_to_opts (struct keyfield const *key, char *opts)
+స్థిర శూన్య
+కీలకం_గమ్యం_opts (నిర్మాణం keyfield స్థిరరాశి *కీలకం, అక్షరం *opts)
 {
-  if (key->skipsblanks || key->skipeblanks)
+  ఒకవేళ (కీలకం->skipsblanks || కీలకం->skipeblanks)
     *opts++ = 'b';/* either disables global -b  */
-  if (key->ignore == nondictionary)
+  ఒకవేళ (కీలకం->ignore == nondictionary)
     *opts++ = 'd';
-  if (key->translate)
+  ఒకవేళ (కీలకం->translate)
     *opts++ = 'f';
-  if (key->general_numeric)
+  ఒకవేళ (కీలకం->general_numeric)
     *opts++ = 'g';
-  if (key->human_numeric)
+  ఒకవేళ (కీలకం->human_numeric)
     *opts++ = 'h';
-  if (key->ignore == nonprinting)
+  ఒకవేళ (కీలకం->ignore == nonprinting)
     *opts++ = 'i';
-  if (key->month)
+  ఒకవేళ (కీలకం->month)
     *opts++ = 'M';
-  if (key->numeric)
+  ఒకవేళ (కీలకం->numeric)
     *opts++ = 'n';
-  if (key->random)
+  ఒకవేళ (కీలకం->random)
     *opts++ = 'R';
-  if (key->reverse)
+  ఒకవేళ (కీలకం->తిరగేయి)
     *opts++ = 'r';
-  if (key->version)
+  ఒకవేళ (కీలకం->సంస్కరణ_3)
     *opts++ = 'V';
   *opts = '\0';
 }
 
 /* Output data independent key warnings to stderr.  */
 
-static void
-key_warnings (struct keyfield const *gkey, bool gkey_only)
+స్థిర శూన్య
+కీలకం_warnings (నిర్మాణం keyfield స్థిరరాశి *gkey, bool gkey_only)
 {
-  struct keyfield ugkey = *gkey;
-  unsigned long keynum = 1;
-  bool basic_numeric_field = false;
-  bool general_numeric_field = false;
-  bool basic_numeric_field_span = false;
-  bool general_numeric_field_span = false;
+  నిర్మాణం keyfield ugkey = *gkey;
+  గుర్తులేని దీర్ఘ keynum = 1;
+  bool basic_numeric_క్షేత్రం = false;
+  bool general_numeric_క్షేత్రం = false;
+  bool basic_numeric_క్షేత్రం_పరిధి = false;
+  bool general_numeric_క్షేత్రం_పరిధి = false;
 
-  for (struct keyfield *key = keylist; key; key = key->next, keynum++)
+  కొరకు (నిర్మాణం keyfield *కీలకం = keylist; కీలకం; కీలకం = కీలకం->తదుపరి, keynum++)
     {
-      if (key_numeric (key))
+      ఒకవేళ (కీలకం_numeric (కీలకం))
         {
-          if (key->general_numeric)
-            general_numeric_field = true;
-          else
-            basic_numeric_field = true;
+          ఒకవేళ (కీలకం->general_numeric)
+            general_numeric_క్షేత్రం = true;
+          లేకపోతే
+            basic_numeric_క్షేత్రం = true;
         }
 
-      if (key->traditional_used)
+      ఒకవేళ (కీలకం->traditional_వాడిన)
         {
-          size_t sword = key->sword;
-          size_t eword = key->eword;
-          char tmp[INT_BUFSIZE_BOUND (uintmax_t)];
+          size_t sword = కీలకం->sword;
+          size_t eword = కీలకం->eword;
+          అక్షరం tmp[INT_BUFSIZE_BOUND (uintmax_t)];
           /* obsolescent syntax +A.x -B.y is equivalent to:
                -k A+1.x+1,B.y   (when y = 0)
                -k A+1.x+1,B+1.y (when y > 0)  */
-          char obuf[INT_BUFSIZE_BOUND (sword) * 2 + 4]; /* +# -#  */
-          char nbuf[INT_BUFSIZE_BOUND (sword) * 2 + 5]; /* -k #,#  */
-          char *po = obuf;
-          char *pn = nbuf;
+          అక్షరం obuf[INT_BUFSIZE_BOUND (sword) * 2 + 4]; /* +# -#  */
+          అక్షరం nbuf[INT_BUFSIZE_BOUND (sword) * 2 + 5]; /* -k #,#  */
+          అక్షరం *po = obuf;
+          అక్షరం *pn = nbuf;
 
-          if (sword == SIZE_MAX)
+          ఒకవేళ (sword == SIZE_MAX)
             sword++;
 
           po = stpcpy (stpcpy (po, "+"), umaxtostr (sword, tmp));
           pn = stpcpy (stpcpy (pn, "-k "), umaxtostr (sword + 1, tmp));
-          if (key->eword != SIZE_MAX)
+          ఒకవేళ (కీలకం->eword != SIZE_MAX)
             {
               stpcpy (stpcpy (po, " -"), umaxtostr (eword + 1, tmp));
               stpcpy (stpcpy (pn, ","),
                       umaxtostr (eword + 1
-                                 + (key->echar == SIZE_MAX), tmp));
+                                 + (కీలకం->echar == SIZE_MAX), tmp));
             }
           error (0, 0, _("obsolescent key %s used; consider %s instead"),
                  quote_n (0, obuf), quote_n (1, nbuf));
         }
 
       /* Warn about field specs that will never match.  */
-      bool zero_width = key->sword != SIZE_MAX && key->eword < key->sword;
-      if (zero_width)
+      bool zero_వెడల్పు = కీలకం->sword != SIZE_MAX && కీలకం->eword < కీలకం->sword;
+      ఒకవేళ (zero_వెడల్పు)
         error (0, 0, _("key %lu has zero width and will be ignored"), keynum);
 
       /* Warn about significant leading blanks.  */
-      bool implicit_skip = key_numeric (key) || key->month;
-      bool line_offset = key->eword == 0 && key->echar != 0; /* -k1.x,1.y  */
-      if (!zero_width && !gkey_only && tab == TAB_DEFAULT && !line_offset
-          && ((!key->skipsblanks && !implicit_skip)
-              || (!key->skipsblanks && key->schar)
-              || (!key->skipeblanks && key->echar)))
+      bool implicit_skip = కీలకం_numeric (కీలకం) || కీలకం->month;
+      bool పంక్తి_స్థానభ్రంశం = కీలకం->eword == 0 && కీలకం->echar != 0; /* -k1.x,1.y  */
+      ఒకవేళ (!zero_వెడల్పు && !gkey_only && tab == TAB_DEFAULT && !పంక్తి_స్థానభ్రంశం
+          && ((!కీలకం->skipsblanks && !implicit_skip)
+              || (!కీలకం->skipsblanks && కీలకం->schar)
+              || (!కీలకం->skipeblanks && కీలకం->echar)))
         error (0, 0, _("leading blanks are significant in key %lu; "
                        "consider also specifying 'b'"), keynum);
 
       /* Warn about numeric comparisons spanning fields,
          as field delimiters could be interpreted as part
          of the number (maybe only in other locales).  */
-      if (!gkey_only && key_numeric (key))
+      ఒకవేళ (!gkey_only && కీలకం_numeric (కీలకం))
         {
-          size_t sword = key->sword + 1;
-          size_t eword = key->eword + 1;
-          if (!sword)
+          size_t sword = కీలకం->sword + 1;
+          size_t eword = కీలకం->eword + 1;
+          ఒకవేళ (!sword)
             sword++;
-          if (!eword || sword < eword)
+          ఒకవేళ (!eword || sword < eword)
             {
               error (0, 0, _("key %lu is numeric and spans multiple fields"),
                      keynum);
-              if (key->general_numeric)
-                general_numeric_field_span = true;
-              else
-                basic_numeric_field_span = true;
+              ఒకవేళ (కీలకం->general_numeric)
+                general_numeric_క్షేత్రం_పరిధి = true;
+              లేకపోతే
+                basic_numeric_క్షేత్రం_పరిధి = true;
             }
         }
 
       /* Flag global options not copied or specified in any key.  */
-      if (ugkey.ignore && (ugkey.ignore == key->ignore))
-        ugkey.ignore = NULL;
-      if (ugkey.translate && (ugkey.translate == key->translate))
-        ugkey.translate = NULL;
-      ugkey.skipsblanks &= !key->skipsblanks;
-      ugkey.skipeblanks &= !key->skipeblanks;
-      ugkey.month &= !key->month;
-      ugkey.numeric &= !key->numeric;
-      ugkey.general_numeric &= !key->general_numeric;
-      ugkey.human_numeric &= !key->human_numeric;
-      ugkey.random &= !key->random;
-      ugkey.version &= !key->version;
-      ugkey.reverse &= !key->reverse;
+      ఒకవేళ (ugkey.ignore && (ugkey.ignore == కీలకం->ignore))
+        ugkey.ignore = ఖాళీ;
+      ఒకవేళ (ugkey.translate && (ugkey.translate == కీలకం->translate))
+        ugkey.translate = ఖాళీ;
+      ugkey.skipsblanks &= !కీలకం->skipsblanks;
+      ugkey.skipeblanks &= !కీలకం->skipeblanks;
+      ugkey.month &= !కీలకం->month;
+      ugkey.numeric &= !కీలకం->numeric;
+      ugkey.general_numeric &= !కీలకం->general_numeric;
+      ugkey.human_numeric &= !కీలకం->human_numeric;
+      ugkey.random &= !కీలకం->random;
+      ugkey.సంస్కరణ_3 &= !కీలకం->సంస్కరణ_3;
+      ugkey.తిరగేయి &= !కీలకం->తిరగేయి;
     }
 
   /* Explicitly warn if field delimiters in this locale
      don't constrain numbers.  */
-  bool number_locale_warned = false;
-  if (basic_numeric_field_span)
+  bool సంఖ్య_locale_warned = false;
+  ఒకవేళ (basic_numeric_క్షేత్రం_పరిధి)
     {
-      if (tab == TAB_DEFAULT
-          ? thousands_sep != NON_CHAR && (isblank (to_uchar (thousands_sep)))
+      ఒకవేళ (tab == TAB_DEFAULT
+          ? thousands_sep != NON_CHAR && (isblank (గమ్యం_uchar (thousands_sep)))
           : tab == thousands_sep)
         {
           error (0, 0,
                  _("field separator %s is treated as a "
                    "group separator in numbers"),
-                 quote (((char []) {thousands_sep, 0})));
-          number_locale_warned = true;
+                 quote (((అక్షరం []) {thousands_sep, 0})));
+          సంఖ్య_locale_warned = true;
         }
     }
-  if (basic_numeric_field_span || general_numeric_field_span)
+  ఒకవేళ (basic_numeric_క్షేత్రం_పరిధి || general_numeric_క్షేత్రం_పరిధి)
     {
-      if (tab == TAB_DEFAULT
-          ? thousands_sep != NON_CHAR && (isblank (to_uchar (decimal_point)))
-          : tab == decimal_point)
+      ఒకవేళ (tab == TAB_DEFAULT
+          ? thousands_sep != NON_CHAR && (isblank (గమ్యం_uchar (decimal_బిందువు)))
+          : tab == decimal_బిందువు)
         {
           error (0, 0,
                  _("field separator %s is treated as a "
                    "decimal point in numbers"),
-                 quote (((char []) {decimal_point, 0})));
-          number_locale_warned = true;
+                 quote (((అక్షరం []) {decimal_బిందువు, 0})));
+          సంఖ్య_locale_warned = true;
         }
-      else if (tab == '-')
+      లేకపోతే ఒకవేళ (tab == '-')
         {
           error (0, 0,
                  _("field separator %s is treated as a "
                    "minus sign in numbers"),
-                 quote (((char []) {tab, 0})));
+                 quote (((అక్షరం []) {tab, 0})));
         }
-      else if (general_numeric_field_span && tab == '+')
+      లేకపోతే ఒకవేళ (general_numeric_క్షేత్రం_పరిధి && tab == '+')
         {
           error (0, 0,
                  _("field separator %s is treated as a "
                    "plus sign in numbers"),
-                 quote (((char []) {tab, 0})));
+                 quote (((అక్షరం []) {tab, 0})));
         }
     }
 
   /* Explicitly indicate the decimal point used in this locale,
      as it suggests that robust scripts need to consider
      setting the locale when comparing numbers.  */
-  if ((basic_numeric_field || general_numeric_field) && ! number_locale_warned)
+  ఒకవేళ ((basic_numeric_క్షేత్రం || general_numeric_క్షేత్రం) && ! సంఖ్య_locale_warned)
     {
       error (0, 0,
              _("numbers use %s as a decimal point in this locale"),
-             quote (((char []) {decimal_point, 0})));
+             quote (((అక్షరం []) {decimal_బిందువు, 0})));
 
     }
 
-  if (basic_numeric_field && thousands_sep_ignored)
+  ఒకవేళ (basic_numeric_క్షేత్రం && thousands_sep_ignored)
     {
       error (0, 0,
              _("the multi-byte number group separator "
@@ -2920,55 +2920,55 @@ key_warnings (struct keyfield const *gkey, bool gkey_only)
 
   /* Warn about ignored global options flagged above.
      This clears all flags if UGKEY is the only one in the list.  */
-  if (!default_key_compare (&ugkey)
-      || (ugkey.reverse && (stable || unique) && keylist))
+  ఒకవేళ (!default_కీలకం_compare (&ugkey)
+      || (ugkey.తిరగేయి && (stable || unique) && keylist))
     {
-      bool ugkey_reverse = ugkey.reverse;
-      if (!(stable || unique))
-        ugkey.reverse = false;
+      bool ugkey_తిరగేయి = ugkey.తిరగేయి;
+      ఒకవేళ (!(stable || unique))
+        ugkey.తిరగేయి = false;
       /* The following is too big, but guaranteed to be "big enough".  */
-      char opts[sizeof short_options];
-      key_to_opts (&ugkey, opts);
+      అక్షరం opts[పరిమాణం short_options];
+      కీలకం_గమ్యం_opts (&ugkey, opts);
       error (0, 0,
              ngettext ("option '-%s' is ignored",
                        "options '-%s' are ignored",
-                       select_plural (strlen (opts))), opts);
-      ugkey.reverse = ugkey_reverse;
+                       select_plural (అక్షరశ్రేణి_పొడవు (opts))), opts);
+      ugkey.తిరగేయి = ugkey_తిరగేయి;
     }
-  if (ugkey.reverse && !(stable || unique) && keylist)
+  ఒకవేళ (ugkey.తిరగేయి && !(stable || unique) && keylist)
     error (0, 0, _("option '-r' only applies to last-resort comparison"));
 }
 
 /* Return either the sense of DIFF or its reverse, depending on REVERSED.
    If REVERSED, do not simply negate DIFF as that can mishandle INT_MIN.  */
 
-static int
-diff_reversed (int diff, bool reversed)
+స్థిర పూర్ణాంకం
+diff_reversed (పూర్ణాంకం diff, bool reversed)
 {
-  return reversed ? _GL_CMP (0, diff) : diff;
+  తిరిగి reversed ? _GL_CMP (0, diff) : diff;
 }
 
 /* Compare two lines A and B trying every key in sequence until there
    are no more keys or a difference is found. */
 
-static int
-keycompare (struct line const *a, struct line const *b)
+స్థిర పూర్ణాంకం
+keycompare (నిర్మాణం పంక్తి స్థిరరాశి *a, నిర్మాణం పంక్తి స్థిరరాశి *b)
 {
-  struct keyfield *key = keylist;
+  నిర్మాణం keyfield *కీలకం = keylist;
 
   /* For the first iteration only, the key positions have been
      precomputed for us. */
-  char *texta = a->keybeg;
-  char *textb = b->keybeg;
-  char *lima = a->keylim;
-  char *limb = b->keylim;
+  అక్షరం *texta = a->keybeg;
+  అక్షరం *textb = b->keybeg;
+  అక్షరం *lima = a->keylim;
+  అక్షరం *limb = b->keylim;
 
-  int diff;
+  పూర్ణాంకం diff;
 
-  while (true)
+  అయితే (true)
     {
-      char const *translate = key->translate;
-      bool const *ignore = key->ignore;
+      అక్షరం స్థిరరాశి *translate = కీలకం->translate;
+      bool స్థిరరాశి *ignore = కీలకం->ignore;
 
       /* Treat field ends before field starts as empty fields.  */
       lima = MAX (texta, lima);
@@ -2978,21 +2978,21 @@ keycompare (struct line const *a, struct line const *b)
       size_t lena = lima - texta;
       size_t lenb = limb - textb;
 
-      if (hard_LC_COLLATE || key_numeric (key)
-          || key->month || key->random || key->version)
+      ఒకవేళ (hard_LC_COLLATE || కీలకం_numeric (కీలకం)
+          || కీలకం->month || కీలకం->random || కీలకం->సంస్కరణ_3)
         {
           /* Ordinarily use the keys in-place, temporarily null-terminated.  */
-          char *ta = texta;
-          char *tb = textb;
+          అక్షరం *ta = texta;
+          అక్షరం *tb = textb;
           size_t tlena = lena;
           size_t tlenb = lenb;
-          char enda = ta[tlena];
-          char endb = tb[tlenb];
+          అక్షరం enda = ta[tlena];
+          అక్షరం endb = tb[tlenb];
 
-          void *allocated = NULL;
-          char stackbuf[4000];
+          శూన్య *allocated = ఖాళీ;
+          అక్షరం stackbuf[4000];
 
-          if (ignore || translate)
+          ఒకవేళ (ignore || translate)
             {
               /* Compute with copies of the keys, which are the result of
                  translating or ignoring characters, and which need their
@@ -3001,191 +3001,191 @@ keycompare (struct line const *a, struct line const *b)
               size_t i;
 
               /* Allocate space for copies.  */
-              size_t size = lena + 1 + lenb + 1;
-              if (size <= sizeof stackbuf)
+              size_t కొలత = lena + 1 + lenb + 1;
+              ఒకవేళ (కొలత <= పరిమాణం stackbuf)
                 ta = stackbuf;
-              else
-                ta = allocated = xmalloc (size);
+              లేకపోతే
+                ta = allocated = xmalloc (కొలత);
               tb = ta + lena + 1;
 
               /* Put into each copy a version of the key in which the
                  requested characters are ignored or translated.  */
-              for (tlena = i = 0; i < lena; i++)
-                if (! (ignore && ignore[to_uchar (texta[i])]))
+              కొరకు (tlena = i = 0; i < lena; i++)
+                ఒకవేళ (! (ignore && ignore[గమ్యం_uchar (texta[i])]))
                   ta[tlena++] = (translate
-                                 ? translate[to_uchar (texta[i])]
+                                 ? translate[గమ్యం_uchar (texta[i])]
                                  : texta[i]);
 
-              for (tlenb = i = 0; i < lenb; i++)
-                if (! (ignore && ignore[to_uchar (textb[i])]))
+              కొరకు (tlenb = i = 0; i < lenb; i++)
+                ఒకవేళ (! (ignore && ignore[గమ్యం_uchar (textb[i])]))
                   tb[tlenb++] = (translate
-                                 ? translate[to_uchar (textb[i])]
+                                 ? translate[గమ్యం_uchar (textb[i])]
                                  : textb[i]);
             }
 
           ta[tlena] = '\0';
           tb[tlenb] = '\0';
 
-          if (key->numeric)
+          ఒకవేళ (కీలకం->numeric)
             diff = numcompare (ta, tb);
-          else if (key->general_numeric)
+          లేకపోతే ఒకవేళ (కీలకం->general_numeric)
             diff = general_numcompare (ta, tb);
-          else if (key->human_numeric)
+          లేకపోతే ఒకవేళ (కీలకం->human_numeric)
             diff = human_numcompare (ta, tb);
-          else if (key->month)
-            diff = getmonth (ta, NULL) - getmonth (tb, NULL);
-          else if (key->random)
+          లేకపోతే ఒకవేళ (కీలకం->month)
+            diff = getmonth (ta, ఖాళీ) - getmonth (tb, ఖాళీ);
+          లేకపోతే ఒకవేళ (కీలకం->random)
             diff = compare_random (ta, tlena, tb, tlenb);
-          else if (key->version)
+          లేకపోతే ఒకవేళ (కీలకం->సంస్కరణ_3)
             diff = filenvercmp (ta, tlena, tb, tlenb);
-          else
+          లేకపోతే
             {
               /* Locale-dependent string sorting.  This is slower than
                  C-locale sorting, which is implemented below.  */
-              if (tlena == 0)
+              ఒకవేళ (tlena == 0)
                 diff = - NONZERO (tlenb);
-              else if (tlenb == 0)
+              లేకపోతే ఒకవేళ (tlenb == 0)
                 diff = 1;
-              else
+              లేకపోతే
                 diff = xmemcoll0 (ta, tlena + 1, tb, tlenb + 1);
             }
 
           ta[tlena] = enda;
           tb[tlenb] = endb;
 
-          free (allocated);
+          విడుదల (allocated);
         }
-      else if (ignore)
+      లేకపోతే ఒకవేళ (ignore)
         {
-#define CMP_WITH_IGNORE(A, B)						\
-  do									\
+#నిర్వచించు CMP_WITH_IGNORE(A, B)						\
+  చేయి									\
     {									\
-          while (true)							\
+          అయితే (true)							\
             {								\
-              while (texta < lima && ignore[to_uchar (*texta)])		\
+              అయితే (texta < lima && ignore[గమ్యం_uchar (*texta)])		\
                 ++texta;						\
-              while (textb < limb && ignore[to_uchar (*textb)])		\
+              అయితే (textb < limb && ignore[గమ్యం_uchar (*textb)])		\
                 ++textb;						\
-              if (! (texta < lima && textb < limb))			\
+              ఒకవేళ (! (texta < lima && textb < limb))			\
                 {							\
                   diff = (texta < lima) - (textb < limb);		\
-                  break;						\
+                  ఆపు;						\
                 }							\
-              diff = to_uchar (A) - to_uchar (B);			\
-              if (diff)							\
-                break;							\
+              diff = గమ్యం_uchar (A) - గమ్యం_uchar (B);			\
+              ఒకవేళ (diff)							\
+                ఆపు;							\
               ++texta;							\
               ++textb;							\
             }								\
                                                                         \
     }									\
-  while (0)
+  అయితే (0)
 
-          if (translate)
-            CMP_WITH_IGNORE (translate[to_uchar (*texta)],
-                             translate[to_uchar (*textb)]);
-          else
+          ఒకవేళ (translate)
+            CMP_WITH_IGNORE (translate[గమ్యం_uchar (*texta)],
+                             translate[గమ్యం_uchar (*textb)]);
+          లేకపోతే
             CMP_WITH_IGNORE (*texta, *textb);
         }
-      else
+      లేకపోతే
         {
           size_t lenmin = MIN (lena, lenb);
-          if (lenmin == 0)
+          ఒకవేళ (lenmin == 0)
             diff = 0;
-          else if (translate)
+          లేకపోతే ఒకవేళ (translate)
             {
               size_t i = 0;
-              do
+              చేయి
                 {
-                  diff = (to_uchar (translate[to_uchar (texta[i])])
-                          - to_uchar (translate[to_uchar (textb[i])]));
-                  if (diff)
-                    break;
+                  diff = (గమ్యం_uchar (translate[గమ్యం_uchar (texta[i])])
+                          - గమ్యం_uchar (translate[గమ్యం_uchar (textb[i])]));
+                  ఒకవేళ (diff)
+                    ఆపు;
                   i++;
                 }
-              while (i < lenmin);
+              అయితే (i < lenmin);
             }
-          else
+          లేకపోతే
             diff = memcmp (texta, textb, lenmin);
 
-          if (! diff)
+          ఒకవేళ (! diff)
             diff = _GL_CMP (lena, lenb);
         }
 
-      if (diff)
-        break;
+      ఒకవేళ (diff)
+        ఆపు;
 
-      key = key->next;
-      if (! key)
-        return 0;
+      కీలకం = కీలకం->తదుపరి;
+      ఒకవేళ (! కీలకం)
+        తిరిగి 0;
 
       /* Find the beginning and limit of the next field.  */
-      if (key->eword != SIZE_MAX)
-        lima = limfield (a, key), limb = limfield (b, key);
-      else
-        lima = a->text + a->length - 1, limb = b->text + b->length - 1;
+      ఒకవేళ (కీలకం->eword != SIZE_MAX)
+        lima = limfield (a, కీలకం), limb = limfield (b, కీలకం);
+      లేకపోతే
+        lima = a->పాఠ్యం + a->నిడివి - 1, limb = b->పాఠ్యం + b->నిడివి - 1;
 
-      if (key->sword != SIZE_MAX)
-        texta = begfield (a, key), textb = begfield (b, key);
-      else
+      ఒకవేళ (కీలకం->sword != SIZE_MAX)
+        texta = begfield (a, కీలకం), textb = begfield (b, కీలకం);
+      లేకపోతే
         {
-          texta = a->text, textb = b->text;
-          if (key->skipsblanks)
+          texta = a->పాఠ్యం, textb = b->పాఠ్యం;
+          ఒకవేళ (కీలకం->skipsblanks)
             {
-              while (texta < lima && blanks[to_uchar (*texta)])
+              అయితే (texta < lima && blanks[గమ్యం_uchar (*texta)])
                 ++texta;
-              while (textb < limb && blanks[to_uchar (*textb)])
+              అయితే (textb < limb && blanks[గమ్యం_uchar (*textb)])
                 ++textb;
             }
         }
     }
 
-  return diff_reversed (diff, key->reverse);
+  తిరిగి diff_reversed (diff, కీలకం->తిరగేయి);
 }
 
 /* Compare two lines A and B, returning negative, zero, or positive
    depending on whether A compares less than, equal to, or greater than B. */
 
-static int
-compare (struct line const *a, struct line const *b)
+స్థిర పూర్ణాంకం
+compare (నిర్మాణం పంక్తి స్థిరరాశి *a, నిర్మాణం పంక్తి స్థిరరాశి *b)
 {
-  int diff;
+  పూర్ణాంకం diff;
   size_t alen, blen;
 
   /* First try to compare on the specified keys (if any).
      The only two cases with no key at all are unadorned sort,
      and unadorned sort -r. */
-  if (keylist)
+  ఒకవేళ (keylist)
     {
       diff = keycompare (a, b);
-      if (diff || unique || stable)
-        return diff;
+      ఒకవేళ (diff || unique || stable)
+        తిరిగి diff;
     }
 
   /* If the keys all compare equal (or no keys were specified)
      fall through to the default comparison.  */
-  alen = a->length - 1, blen = b->length - 1;
+  alen = a->నిడివి - 1, blen = b->నిడివి - 1;
 
-  if (alen == 0)
+  ఒకవేళ (alen == 0)
     diff = - NONZERO (blen);
-  else if (blen == 0)
+  లేకపోతే ఒకవేళ (blen == 0)
     diff = 1;
-  else if (hard_LC_COLLATE)
+  లేకపోతే ఒకవేళ (hard_LC_COLLATE)
     {
       /* xmemcoll0 is a performance enhancement as
          it will not unconditionally write '\0' after the
          passed in buffers, which was seen to give around
          a 3% increase in performance for short lines.  */
-      diff = xmemcoll0 (a->text, alen + 1, b->text, blen + 1);
+      diff = xmemcoll0 (a->పాఠ్యం, alen + 1, b->పాఠ్యం, blen + 1);
     }
-  else
+  లేకపోతే
     {
-      diff = memcmp (a->text, b->text, MIN (alen, blen));
-      if (!diff)
+      diff = memcmp (a->పాఠ్యం, b->పాఠ్యం, MIN (alen, blen));
+      ఒకవేళ (!diff)
         diff = _GL_CMP (alen, blen);
     }
 
-  return diff_reversed (diff, reverse);
+  తిరిగి diff_reversed (diff, తిరగేయి);
 }
 
 /* Write LINE to output stream FP; the output file's name is
@@ -3193,36 +3193,36 @@ compare (struct line const *a, struct line const *b)
    otherwise.  If debugging is enabled and FP is standard output,
    append some debugging information.  */
 
-static void
-write_line (struct line const *line, FILE *fp, char const *output_file)
+స్థిర శూన్య
+write_పంక్తి (నిర్మాణం పంక్తి స్థిరరాశి *పంక్తి, FILE *fp, అక్షరం స్థిరరాశి *output_file)
 {
-  char *buf = line->text;
-  size_t n_bytes = line->length;
-  char *ebuf = buf + n_bytes;
+  అక్షరం *buf = పంక్తి->పాఠ్యం;
+  size_t n_బైట్లు = పంక్తి->నిడివి;
+  అక్షరం *ebuf = buf + n_బైట్లు;
 
-  if (!output_file && debug)
+  ఒకవేళ (!output_file && debug)
     {
       /* Convert TAB to '>' and EOL to \n, and then output debugging info.  */
-      char const *c = buf;
+      అక్షరం స్థిరరాశి *c = buf;
 
-      while (c < ebuf)
+      అయితే (c < ebuf)
         {
-          char wc = *c++;
-          if (wc == '\t')
+          అక్షరం wc = *c++;
+          ఒకవేళ (wc == '\t')
             wc = '>';
-          else if (c == ebuf)
+          లేకపోతే ఒకవేళ (c == ebuf)
             wc = '\n';
-          if (fputc (wc, fp) == EOF)
-            sort_die (_("write failed"), output_file);
+          ఒకవేళ (fputc (wc, fp) == EOF)
+            క్రమీకరించు_die (_("write failed"), output_file);
         }
 
-      debug_line (line);
+      debug_పంక్తి (పంక్తి);
     }
-  else
+  లేకపోతే
     {
       ebuf[-1] = eolchar;
-      if (fwrite (buf, 1, n_bytes, fp) != n_bytes)
-        sort_die (_("write failed"), output_file);
+      ఒకవేళ (fwrite (buf, 1, n_బైట్లు, fp) != n_బైట్లు)
+        క్రమీకరించు_die (_("write failed"), output_file);
       ebuf[-1] = '\0';
     }
 }
@@ -3232,85 +3232,85 @@ write_line (struct line const *line, FILE *fp, char const *output_file)
    diagnostic (FILE_NAME, line number, contents of line) to stderr if
    they are not in order.  */
 
-static bool
-check (char const *file_name, char checkonly)
+స్థిర bool
+check (అక్షరం స్థిరరాశి *file_name, అక్షరం checkonly)
 {
   FILE *fp = xfopen (file_name, "r");
-  struct buffer buf;		/* Input buffer. */
-  struct line temp;		/* Copy of previous line. */
+  నిర్మాణం బఫరు buf;		/* Input buffer. */
+  నిర్మాణం పంక్తి తాత్కాలిక;		/* Copy of previous line. */
   size_t alloc = 0;
-  uintmax_t line_number = 0;
-  struct keyfield const *key = keylist;
+  uintmax_t పంక్తి_సంఖ్య = 0;
+  నిర్మాణం keyfield స్థిరరాశి *కీలకం = keylist;
   bool nonunique = ! unique;
   bool ordered = true;
 
-  initbuf (&buf, sizeof (struct line),
-           MAX (merge_buffer_size, sort_size));
-  temp.text = NULL;
+  initbuf (&buf, పరిమాణం (నిర్మాణం పంక్తి),
+           MAX (విలీనం_బఫరు_కొలత, క్రమీకరించు_కొలత));
+  తాత్కాలిక.పాఠ్యం = ఖాళీ;
 
-  while (fillbuf (&buf, fp, file_name, NULL))
+  అయితే (fillbuf (&buf, fp, file_name, ఖాళీ))
     {
-      struct line const *line = buffer_linelim (&buf);
-      struct line const *linebase = line - buf.nlines;
+      నిర్మాణం పంక్తి స్థిరరాశి *పంక్తి = బఫరు_linelim (&buf);
+      నిర్మాణం పంక్తి స్థిరరాశి *linebase = పంక్తి - buf.nlines;
 
       /* Make sure the line saved from the old buffer contents is
          less than or equal to the first line of the new buffer. */
-      if (alloc && nonunique <= compare (&temp, line - 1))
+      ఒకవేళ (alloc && nonunique <= compare (&తాత్కాలిక, పంక్తి - 1))
         {
-        found_disorder:
+        దొరికింది_disorder:
           {
-            if (checkonly == 'c')
+            ఒకవేళ (checkonly == 'c')
               {
-                struct line const *disorder_line = line - 1;
-                uintmax_t disorder_line_number =
-                  buffer_linelim (&buf) - disorder_line + line_number;
+                నిర్మాణం పంక్తి స్థిరరాశి *disorder_పంక్తి = పంక్తి - 1;
+                uintmax_t disorder_పంక్తి_సంఖ్య =
+                  బఫరు_linelim (&buf) - disorder_పంక్తి + పంక్తి_సంఖ్య;
                 fprintf (stderr, _("%s: %s:%ju: disorder: "),
-                         program_name, file_name, disorder_line_number);
-                write_line (disorder_line, stderr, _("standard error"));
+                         కార్యక్రమం_name, file_name, disorder_పంక్తి_సంఖ్య);
+                write_పంక్తి (disorder_పంక్తి, stderr, _("standard error"));
               }
 
             ordered = false;
-            break;
+            ఆపు;
           }
         }
 
       /* Compare each line in the buffer with its successor.  */
-      while (linebase < --line)
-        if (nonunique <= compare (line, line - 1))
-          goto found_disorder;
+      అయితే (linebase < --పంక్తి)
+        ఒకవేళ (nonunique <= compare (పంక్తి, పంక్తి - 1))
+          వెళ్ళు దొరికింది_disorder;
 
-      line_number += buf.nlines;
+      పంక్తి_సంఖ్య += buf.nlines;
 
       /* Save the last line of the buffer.  */
-      if (alloc < line->length)
+      ఒకవేళ (alloc < పంక్తి->నిడివి)
         {
-          do
+          చేయి
             {
               alloc *= 2;
-              if (! alloc)
+              ఒకవేళ (! alloc)
                 {
-                  alloc = line->length;
-                  break;
+                  alloc = పంక్తి->నిడివి;
+                  ఆపు;
                 }
             }
-          while (alloc < line->length);
+          అయితే (alloc < పంక్తి->నిడివి);
 
-          free (temp.text);
-          temp.text = xmalloc (alloc);
+          విడుదల (తాత్కాలిక.పాఠ్యం);
+          తాత్కాలిక.పాఠ్యం = xmalloc (alloc);
         }
-      memcpy (temp.text, line->text, line->length);
-      temp.length = line->length;
-      if (key)
+      జ్ఞాపకం_నకలు (తాత్కాలిక.పాఠ్యం, పంక్తి->పాఠ్యం, పంక్తి->నిడివి);
+      తాత్కాలిక.నిడివి = పంక్తి->నిడివి;
+      ఒకవేళ (కీలకం)
         {
-          temp.keybeg = temp.text + (line->keybeg - line->text);
-          temp.keylim = temp.text + (line->keylim - line->text);
+          తాత్కాలిక.keybeg = తాత్కాలిక.పాఠ్యం + (పంక్తి->keybeg - పంక్తి->పాఠ్యం);
+          తాత్కాలిక.keylim = తాత్కాలిక.పాఠ్యం + (పంక్తి->keylim - పంక్తి->పాఠ్యం);
         }
     }
 
   xfclose (fp, file_name);
-  free (buf.buf);
-  free (temp.text);
-  return ordered;
+  విడుదల (buf.buf);
+  విడుదల (తాత్కాలిక.పాఠ్యం);
+  తిరిగి ordered;
 }
 
 /* Open FILES (there are NFILES of them) and store the resulting array
@@ -3318,23 +3318,23 @@ check (char const *file_name, char checkonly)
    number of successfully opened files, setting errno if this value is
    less than NFILES.  */
 
-static size_t
-open_input_files (struct sortfile *files, size_t nfiles, FILE ***pfps)
+స్థిర size_t
+open_ఆదానం_files (నిర్మాణం sortfile *files, size_t nfiles, FILE ***pfps)
 {
-  FILE **fps = *pfps = xnmalloc (nfiles, sizeof *fps);
-  int i;
+  FILE **fps = *pfps = xnmalloc (nfiles, పరిమాణం *fps);
+  పూర్ణాంకం i;
 
   /* Open as many input files as we can.  */
-  for (i = 0; i < nfiles; i++)
+  కొరకు (i = 0; i < nfiles; i++)
     {
-      fps[i] = (files[i].temp && files[i].temp->state != UNCOMPRESSED
-                ? open_temp (files[i].temp)
-                : stream_open (files[i].name, "r"));
-      if (!fps[i])
-        break;
+      fps[i] = (files[i].తాత్కాలిక && files[i].తాత్కాలిక->state != UNCOMPRESSED
+                ? open_తాత్కాలిక (files[i].తాత్కాలిక)
+                : ప్రవాహం_open (files[i].name, "r"));
+      ఒకవేళ (!fps[i])
+        ఆపు;
     }
 
-  return i;
+  తిరిగి i;
 }
 
 /* Merge lines from FILES onto OFP.  NTEMPS is the number of temporary
@@ -3345,52 +3345,52 @@ open_input_files (struct sortfile *files, size_t nfiles, FILE ***pfps)
    OUTPUT_FILE gives the name of the output file.  If it is null,
    the output file is standard output.  */
 
-static void
-mergefps (struct sortfile *files, size_t ntemps, size_t nfiles,
-          FILE *ofp, char const *output_file, FILE **fps)
+స్థిర శూన్య
+mergefps (నిర్మాణం sortfile *files, size_t ntemps, size_t nfiles,
+          FILE *ofp, అక్షరం స్థిరరాశి *output_file, FILE **fps)
 {
-  struct buffer *buffer = xnmalloc (nfiles, sizeof *buffer);
+  నిర్మాణం బఫరు *బఫరు = xnmalloc (nfiles, పరిమాణం *బఫరు);
                                 /* Input buffers for each file. */
-  struct line saved;		/* Saved line storage for unique check. */
-  struct line const *savedline = NULL;
+  నిర్మాణం పంక్తి saved;		/* Saved line storage for unique check. */
+  నిర్మాణం పంక్తి స్థిరరాశి *savedline = ఖాళీ;
                                 /* &saved if there is a saved line. */
   size_t savealloc = 0;		/* Size allocated for the saved line. */
-  struct line const **cur = xnmalloc (nfiles, sizeof *cur);
+  నిర్మాణం పంక్తి స్థిరరాశి **cur = xnmalloc (nfiles, పరిమాణం *cur);
                                 /* Current line in each line table. */
-  struct line const **base = xnmalloc (nfiles, sizeof *base);
+  నిర్మాణం పంక్తి స్థిరరాశి **పునాది_2 = xnmalloc (nfiles, పరిమాణం *పునాది_2);
                                 /* Base of each line table.  */
-  size_t *ord = xnmalloc (nfiles, sizeof *ord);
+  size_t *ord = xnmalloc (nfiles, పరిమాణం *ord);
                                 /* Table representing a permutation of fps,
                                    such that cur[ord[0]] is the smallest line
                                    and will be next output. */
   size_t t;
-  struct keyfield const *key = keylist;
-  saved.text = NULL;
+  నిర్మాణం keyfield స్థిరరాశి *కీలకం = keylist;
+  saved.పాఠ్యం = ఖాళీ;
 
   /* Read initial lines from each input file. */
-  for (size_t i = 0; i < nfiles; )
+  కొరకు (size_t i = 0; i < nfiles; )
     {
-      initbuf (&buffer[i], sizeof (struct line),
-               MAX (merge_buffer_size, sort_size / nfiles));
-      if (fillbuf (&buffer[i], fps[i], files[i].name, NULL))
+      initbuf (&బఫరు[i], పరిమాణం (నిర్మాణం పంక్తి),
+               MAX (విలీనం_బఫరు_కొలత, క్రమీకరించు_కొలత / nfiles));
+      ఒకవేళ (fillbuf (&బఫరు[i], fps[i], files[i].name, ఖాళీ))
         {
-          struct line const *linelim = buffer_linelim (&buffer[i]);
+          నిర్మాణం పంక్తి స్థిరరాశి *linelim = బఫరు_linelim (&బఫరు[i]);
           cur[i] = linelim - 1;
-          base[i] = linelim - buffer[i].nlines;
+          పునాది_2[i] = linelim - బఫరు[i].nlines;
           i++;
         }
-      else
+      లేకపోతే
         {
           /* fps[i] is empty; eliminate it from future consideration.  */
           xfclose (fps[i], files[i].name);
-          if (i < ntemps)
+          ఒకవేళ (i < ntemps)
             {
               ntemps--;
               zaptemp (files[i].name);
             }
-          free (buffer[i].buf);
+          విడుదల (బఫరు[i].buf);
           --nfiles;
-          for (size_t j = i; j < nfiles; ++j)
+          కొరకు (size_t j = i; j < nfiles; ++j)
             {
               files[j] = files[j + 1];
               fps[j] = fps[j + 1];
@@ -3401,93 +3401,93 @@ mergefps (struct sortfile *files, size_t ntemps, size_t nfiles,
   /* Set up the ord table according to comparisons among input lines.
      Since this only reorders two items if one is strictly greater than
      the other, it is stable. */
-  for (size_t i = 0; i < nfiles; ++i)
+  కొరకు (size_t i = 0; i < nfiles; ++i)
     ord[i] = i;
-  for (size_t i = 1; i < nfiles; ++i)
-    if (0 < compare (cur[ord[i - 1]], cur[ord[i]]))
+  కొరకు (size_t i = 1; i < nfiles; ++i)
+    ఒకవేళ (0 < compare (cur[ord[i - 1]], cur[ord[i]]))
       t = ord[i - 1], ord[i - 1] = ord[i], ord[i] = t, i = 0;
 
   /* Repeatedly output the smallest line until no input remains. */
-  while (nfiles)
+  అయితే (nfiles)
     {
-      struct line const *smallest = cur[ord[0]];
+      నిర్మాణం పంక్తి స్థిరరాశి *అతిచిన్న = cur[ord[0]];
 
       /* If uniquified output is turned on, output only the first of
          an identical series of lines. */
-      if (unique)
+      ఒకవేళ (unique)
         {
-          if (savedline && compare (savedline, smallest))
+          ఒకవేళ (savedline && compare (savedline, అతిచిన్న))
             {
-              savedline = NULL;
-              write_line (&saved, ofp, output_file);
+              savedline = ఖాళీ;
+              write_పంక్తి (&saved, ofp, output_file);
             }
-          if (!savedline)
+          ఒకవేళ (!savedline)
             {
               savedline = &saved;
-              if (savealloc < smallest->length)
+              ఒకవేళ (savealloc < అతిచిన్న->నిడివి)
                 {
-                  do
-                    if (! savealloc)
+                  చేయి
+                    ఒకవేళ (! savealloc)
                       {
-                        savealloc = smallest->length;
-                        break;
+                        savealloc = అతిచిన్న->నిడివి;
+                        ఆపు;
                       }
-                  while ((savealloc *= 2) < smallest->length);
+                  అయితే ((savealloc *= 2) < అతిచిన్న->నిడివి);
 
-                  free (saved.text);
-                  saved.text = xmalloc (savealloc);
+                  విడుదల (saved.పాఠ్యం);
+                  saved.పాఠ్యం = xmalloc (savealloc);
                 }
-              saved.length = smallest->length;
-              memcpy (saved.text, smallest->text, saved.length);
-              if (key)
+              saved.నిడివి = అతిచిన్న->నిడివి;
+              జ్ఞాపకం_నకలు (saved.పాఠ్యం, అతిచిన్న->పాఠ్యం, saved.నిడివి);
+              ఒకవేళ (కీలకం)
                 {
                   saved.keybeg =
-                    saved.text + (smallest->keybeg - smallest->text);
+                    saved.పాఠ్యం + (అతిచిన్న->keybeg - అతిచిన్న->పాఠ్యం);
                   saved.keylim =
-                    saved.text + (smallest->keylim - smallest->text);
+                    saved.పాఠ్యం + (అతిచిన్న->keylim - అతిచిన్న->పాఠ్యం);
                 }
             }
         }
-      else
-        write_line (smallest, ofp, output_file);
+      లేకపోతే
+        write_పంక్తి (అతిచిన్న, ofp, output_file);
 
       /* Check if we need to read more lines into memory. */
-      if (base[ord[0]] < smallest)
-        cur[ord[0]] = smallest - 1;
-      else
+      ఒకవేళ (పునాది_2[ord[0]] < అతిచిన్న)
+        cur[ord[0]] = అతిచిన్న - 1;
+      లేకపోతే
         {
-          if (fillbuf (&buffer[ord[0]], fps[ord[0]], files[ord[0]].name,
-                       NULL))
+          ఒకవేళ (fillbuf (&బఫరు[ord[0]], fps[ord[0]], files[ord[0]].name,
+                       ఖాళీ))
             {
-              struct line const *linelim = buffer_linelim (&buffer[ord[0]]);
+              నిర్మాణం పంక్తి స్థిరరాశి *linelim = బఫరు_linelim (&బఫరు[ord[0]]);
               cur[ord[0]] = linelim - 1;
-              base[ord[0]] = linelim - buffer[ord[0]].nlines;
+              పునాది_2[ord[0]] = linelim - బఫరు[ord[0]].nlines;
             }
-          else
+          లేకపోతే
             {
               /* We reached EOF on fps[ord[0]].  */
-              for (size_t i = 1; i < nfiles; ++i)
-                if (ord[i] > ord[0])
+              కొరకు (size_t i = 1; i < nfiles; ++i)
+                ఒకవేళ (ord[i] > ord[0])
                   --ord[i];
               --nfiles;
               xfclose (fps[ord[0]], files[ord[0]].name);
-              if (ord[0] < ntemps)
+              ఒకవేళ (ord[0] < ntemps)
                 {
                   ntemps--;
                   zaptemp (files[ord[0]].name);
                 }
-              free (buffer[ord[0]].buf);
-              for (size_t i = ord[0]; i < nfiles; ++i)
+              విడుదల (బఫరు[ord[0]].buf);
+              కొరకు (size_t i = ord[0]; i < nfiles; ++i)
                 {
                   fps[i] = fps[i + 1];
                   files[i] = files[i + 1];
-                  buffer[i] = buffer[i + 1];
+                  బఫరు[i] = బఫరు[i + 1];
                   cur[i] = cur[i + 1];
-                  base[i] = base[i + 1];
+                  పునాది_2[i] = పునాది_2[i + 1];
                 }
-              for (size_t i = 0; i < nfiles; ++i)
+              కొరకు (size_t i = 0; i < nfiles; ++i)
                 ord[i] = ord[i + 1];
-              continue;
+              కొనసాగు;
             }
         }
 
@@ -3500,37 +3500,37 @@ mergefps (struct sortfile *files, size_t ntemps, size_t nfiles,
         size_t hi = nfiles;
         size_t probe = lo;
         size_t ord0 = ord[0];
-        size_t count_of_smaller_lines;
+        size_t లెక్క_యొక్క_smaller_పంక్తులు;
 
-        while (lo < hi)
+        అయితే (lo < hi)
           {
-            int cmp = compare (cur[ord0], cur[ord[probe]]);
-            if (cmp < 0 || (cmp == 0 && ord0 < ord[probe]))
+            పూర్ణాంకం cmp = compare (cur[ord0], cur[ord[probe]]);
+            ఒకవేళ (cmp < 0 || (cmp == 0 && ord0 < ord[probe]))
               hi = probe;
-            else
+            లేకపోతే
               lo = probe + 1;
             probe = (lo + hi) / 2;
           }
 
-        count_of_smaller_lines = lo - 1;
-        for (size_t j = 0; j < count_of_smaller_lines; j++)
+        లెక్క_యొక్క_smaller_పంక్తులు = lo - 1;
+        కొరకు (size_t j = 0; j < లెక్క_యొక్క_smaller_పంక్తులు; j++)
           ord[j] = ord[j + 1];
-        ord[count_of_smaller_lines] = ord0;
+        ord[లెక్క_యొక్క_smaller_పంక్తులు] = ord0;
       }
     }
 
-  if (unique && savedline)
+  ఒకవేళ (unique && savedline)
     {
-      write_line (&saved, ofp, output_file);
-      free (saved.text);
+      write_పంక్తి (&saved, ofp, output_file);
+      విడుదల (saved.పాఠ్యం);
     }
 
   xfclose (ofp, output_file);
-  free (fps);
-  free (buffer);
-  free (ord);
-  free (base);
-  free (cur);
+  విడుదల (fps);
+  విడుదల (బఫరు);
+  విడుదల (ord);
+  విడుదల (పునాది_2);
+  విడుదల (cur);
 }
 
 /* Merge lines from FILES onto OFP.  NTEMPS is the number of temporary
@@ -3543,16 +3543,16 @@ mergefps (struct sortfile *files, size_t ntemps, size_t nfiles,
    less than NFILES if we ran low on file descriptors, but in this
    case it is never less than 2.  */
 
-static size_t
-mergefiles (struct sortfile *files, size_t ntemps, size_t nfiles,
-            FILE *ofp, char const *output_file)
+స్థిర size_t
+mergefiles (నిర్మాణం sortfile *files, size_t ntemps, size_t nfiles,
+            FILE *ofp, అక్షరం స్థిరరాశి *output_file)
 {
   FILE **fps;
-  size_t nopened = open_input_files (files, nfiles, &fps);
-  if (nopened < nfiles && nopened < 2)
-    sort_die (_("open failed"), files[nopened].name);
+  size_t nopened = open_ఆదానం_files (files, nfiles, &fps);
+  ఒకవేళ (nopened < nfiles && nopened < 2)
+    క్రమీకరించు_die (_("open failed"), files[nopened].name);
   mergefps (files, ntemps, nopened, ofp, output_file, fps);
-  return nopened;
+  తిరిగి nopened;
 }
 
 /* Merge into T (of size NLINES) the two sorted arrays of lines
@@ -3561,35 +3561,35 @@ mergefiles (struct sortfile *files, size_t ntemps, size_t nfiles,
    T and LO point just past their respective arrays, and the arrays
    are in reverse order.  NLINES must be at least 2.  */
 
-static void
-mergelines (struct line *restrict t, size_t nlines,
-            struct line const *restrict lo)
+స్థిర శూన్య
+mergelines (నిర్మాణం పంక్తి *పరిమిత t, size_t nlines,
+            నిర్మాణం పంక్తి స్థిరరాశి *పరిమిత lo)
 {
   size_t nlo = nlines / 2;
   size_t nhi = nlines - nlo;
-  struct line *hi = t - nlo;
+  నిర్మాణం పంక్తి *hi = t - nlo;
 
-  while (true)
-    if (compare (lo - 1, hi - 1) <= 0)
+  అయితే (true)
+    ఒకవేళ (compare (lo - 1, hi - 1) <= 0)
       {
         *--t = *--lo;
-        if (! --nlo)
+        ఒకవేళ (! --nlo)
           {
             /* HI must equal T now, and there is no need to copy from
                HI to T. */
-            return;
+            తిరిగి;
           }
       }
-    else
+    లేకపోతే
       {
         *--t = *--hi;
-        if (! --nhi)
+        ఒకవేళ (! --nhi)
           {
-            do
+            చేయి
               *--t = *--lo;
-            while (--nlo);
+            అయితే (--nlo);
 
-            return;
+            తిరిగి;
           }
       }
 }
@@ -3608,96 +3608,96 @@ mergelines (struct line *restrict t, size_t nlines,
    writes that this memory optimization was originally published by
    D. A. Bell, Comp J. 1 (1958), 75.  */
 
-static void
-sequential_sort (struct line *restrict lines, size_t nlines,
-                 struct line *restrict temp, bool to_temp)
+స్థిర శూన్య
+sequential_క్రమీకరించు (నిర్మాణం పంక్తి *పరిమిత పంక్తులు, size_t nlines,
+                 నిర్మాణం పంక్తి *పరిమిత తాత్కాలిక, bool గమ్యం_తాత్కాలిక)
 {
-  if (nlines == 2)
+  ఒకవేళ (nlines == 2)
     {
       /* Declare 'swap' as int, not bool, to work around a bug
         <https://lists.gnu.org/r/bug-coreutils/2005-10/msg00086.html>
          in the IBM xlc 6.0.0.0 compiler in 64-bit mode.  */
-      int swap = (0 < compare (&lines[-1], &lines[-2]));
-      if (to_temp)
+      పూర్ణాంకం మార్పిడి = (0 < compare (&పంక్తులు[-1], &పంక్తులు[-2]));
+      ఒకవేళ (గమ్యం_తాత్కాలిక)
         {
-          temp[-1] = lines[-1 - swap];
-          temp[-2] = lines[-2 + swap];
+          తాత్కాలిక[-1] = పంక్తులు[-1 - మార్పిడి];
+          తాత్కాలిక[-2] = పంక్తులు[-2 + మార్పిడి];
         }
-      else if (swap)
+      లేకపోతే ఒకవేళ (మార్పిడి)
         {
-          temp[-1] = lines[-1];
-          lines[-1] = lines[-2];
-          lines[-2] = temp[-1];
+          తాత్కాలిక[-1] = పంక్తులు[-1];
+          పంక్తులు[-1] = పంక్తులు[-2];
+          పంక్తులు[-2] = తాత్కాలిక[-1];
         }
     }
-  else
+  లేకపోతే
     {
       size_t nlo = nlines / 2;
       size_t nhi = nlines - nlo;
-      struct line *lo = lines;
-      struct line *hi = lines - nlo;
+      నిర్మాణం పంక్తి *lo = పంక్తులు;
+      నిర్మాణం పంక్తి *hi = పంక్తులు - nlo;
 
-      sequential_sort (hi, nhi, temp - (to_temp ? nlo : 0), to_temp);
-      if (1 < nlo)
-        sequential_sort (lo, nlo, temp, !to_temp);
-      else if (!to_temp)
-        temp[-1] = lo[-1];
+      sequential_క్రమీకరించు (hi, nhi, తాత్కాలిక - (గమ్యం_తాత్కాలిక ? nlo : 0), గమ్యం_తాత్కాలిక);
+      ఒకవేళ (1 < nlo)
+        sequential_క్రమీకరించు (lo, nlo, తాత్కాలిక, !గమ్యం_తాత్కాలిక);
+      లేకపోతే ఒకవేళ (!గమ్యం_తాత్కాలిక)
+        తాత్కాలిక[-1] = lo[-1];
 
-      struct line *dest;
-      struct line const *sorted_lo;
-      if (to_temp)
+      నిర్మాణం పంక్తి *dest;
+      నిర్మాణం పంక్తి స్థిరరాశి *sorted_lo;
+      ఒకవేళ (గమ్యం_తాత్కాలిక)
         {
-          dest = temp;
-          sorted_lo = lines;
+          dest = తాత్కాలిక;
+          sorted_lo = పంక్తులు;
         }
-      else
+      లేకపోతే
         {
-          dest = lines;
-          sorted_lo = temp;
+          dest = పంక్తులు;
+          sorted_lo = తాత్కాలిక;
         }
       mergelines (dest, nlines, sorted_lo);
     }
 }
 
-static struct merge_node *init_node (struct merge_node *restrict,
-                                     struct merge_node *restrict,
-                                     struct line *, size_t, size_t, bool);
+స్థిర నిర్మాణం విలీనం_కణుపు *init_కణుపు (నిర్మాణం విలీనం_కణుపు *పరిమిత,
+                                     నిర్మాణం విలీనం_కణుపు *పరిమిత,
+                                     నిర్మాణం పంక్తి *, size_t, size_t, bool);
 
 
 /* Create and return a merge tree for NTHREADS threads, sorting NLINES
    lines, with destination DEST.  */
-static struct merge_node *
-merge_tree_init (size_t nthreads, size_t nlines, struct line *dest)
+స్థిర నిర్మాణం విలీనం_కణుపు *
+విలీనం_వృక్షం_init (size_t nthreads, size_t nlines, నిర్మాణం పంక్తి *dest)
 {
-  struct merge_node *merge_tree = xmalloc (2 * sizeof *merge_tree * nthreads);
+  నిర్మాణం విలీనం_కణుపు *విలీనం_వృక్షం = xmalloc (2 * పరిమాణం *విలీనం_వృక్షం * nthreads);
 
-  struct merge_node *root = merge_tree;
-  root->lo = root->hi = root->end_lo = root->end_hi = NULL;
-  root->dest = NULL;
-  root->nlo = root->nhi = nlines;
-  root->parent = NULL;
-  root->level = MERGE_END;
-  root->queued = false;
-  pthread_mutex_init (&root->lock, NULL);
+  నిర్మాణం విలీనం_కణుపు *మూలం = విలీనం_వృక్షం;
+  మూలం->lo = మూలం->hi = మూలం->చివర_lo = మూలం->చివర_hi = ఖాళీ;
+  మూలం->dest = ఖాళీ;
+  మూలం->nlo = మూలం->nhi = nlines;
+  మూలం->మాతృ = ఖాళీ;
+  మూలం->level = విలీనం_చివర;
+  మూలం->queued = false;
+  pthread_mutex_init (&మూలం->తాళం, ఖాళీ);
 
-  init_node (root, root + 1, dest, nthreads, nlines, false);
-  return merge_tree;
+  init_కణుపు (మూలం, మూలం + 1, dest, nthreads, nlines, false);
+  తిరిగి విలీనం_వృక్షం;
 }
 
 /* Destroy the merge tree. */
-static void
-merge_tree_destroy (size_t nthreads, struct merge_node *merge_tree)
+స్థిర శూన్య
+విలీనం_వృక్షం_destroy (size_t nthreads, నిర్మాణం విలీనం_కణుపు *విలీనం_వృక్షం)
 {
   size_t n_nodes = nthreads * 2;
-  struct merge_node *node = merge_tree;
+  నిర్మాణం విలీనం_కణుపు *కణుపు = విలీనం_వృక్షం;
 
-  while (n_nodes--)
+  అయితే (n_nodes--)
     {
-      pthread_mutex_destroy (&node->lock);
-      node++;
+      pthread_mutex_destroy (&కణుపు->తాళం);
+      కణుపు++;
     }
 
-  free (merge_tree);
+  విడుదల (విలీనం_వృక్షం);
 }
 
 /* Initialize a merge tree node and its descendants.  The node's
@@ -3707,128 +3707,128 @@ merge_tree_destroy (size_t nthreads, struct merge_node *merge_tree)
    TOTAL_LINES.  IS_LO_CHILD is true if the node is the low child of
    its parent.  */
 
-static struct merge_node *
-init_node (struct merge_node *restrict parent,
-           struct merge_node *restrict node_pool,
-           struct line *dest, size_t nthreads,
-           size_t total_lines, bool is_lo_child)
+స్థిర నిర్మాణం విలీనం_కణుపు *
+init_కణుపు (నిర్మాణం విలీనం_కణుపు *పరిమిత మాతృ,
+           నిర్మాణం విలీనం_కణుపు *పరిమిత కణుపు_pool,
+           నిర్మాణం పంక్తి *dest, size_t nthreads,
+           size_t మొత్తం_పంక్తులు, bool is_lo_బిడ్డ)
 {
-  size_t nlines = (is_lo_child ? parent->nlo : parent->nhi);
+  size_t nlines = (is_lo_బిడ్డ ? మాతృ->nlo : మాతృ->nhi);
   size_t nlo = nlines / 2;
   size_t nhi = nlines - nlo;
-  struct line *lo = dest - total_lines;
-  struct line *hi = lo - nlo;
-  struct line **parent_end = (is_lo_child ? &parent->end_lo : &parent->end_hi);
+  నిర్మాణం పంక్తి *lo = dest - మొత్తం_పంక్తులు;
+  నిర్మాణం పంక్తి *hi = lo - nlo;
+  నిర్మాణం పంక్తి **మాతృ_చివర = (is_lo_బిడ్డ ? &మాతృ->చివర_lo : &మాతృ->చివర_hi);
 
-  struct merge_node *node = node_pool++;
-  node->lo = node->end_lo = lo;
-  node->hi = node->end_hi = hi;
-  node->dest = parent_end;
-  node->nlo = nlo;
-  node->nhi = nhi;
-  node->parent = parent;
-  node->level = parent->level + 1;
-  node->queued = false;
-  pthread_mutex_init (&node->lock, NULL);
+  నిర్మాణం విలీనం_కణుపు *కణుపు = కణుపు_pool++;
+  కణుపు->lo = కణుపు->చివర_lo = lo;
+  కణుపు->hi = కణుపు->చివర_hi = hi;
+  కణుపు->dest = మాతృ_చివర;
+  కణుపు->nlo = nlo;
+  కణుపు->nhi = nhi;
+  కణుపు->మాతృ = మాతృ;
+  కణుపు->level = మాతృ->level + 1;
+  కణుపు->queued = false;
+  pthread_mutex_init (&కణుపు->తాళం, ఖాళీ);
 
-  if (nthreads > 1)
+  ఒకవేళ (nthreads > 1)
     {
-      size_t lo_threads = nthreads / 2;
-      size_t hi_threads = nthreads - lo_threads;
-      node->lo_child = node_pool;
-      node_pool = init_node (node, node_pool, lo, lo_threads,
-                             total_lines, true);
-      node->hi_child = node_pool;
-      node_pool = init_node (node, node_pool, hi, hi_threads,
-                             total_lines, false);
+      size_t lo_దారాలు = nthreads / 2;
+      size_t hi_దారాలు = nthreads - lo_దారాలు;
+      కణుపు->lo_బిడ్డ = కణుపు_pool;
+      కణుపు_pool = init_కణుపు (కణుపు, కణుపు_pool, lo, lo_దారాలు,
+                             మొత్తం_పంక్తులు, true);
+      కణుపు->hi_బిడ్డ = కణుపు_pool;
+      కణుపు_pool = init_కణుపు (కణుపు, కణుపు_pool, hi, hi_దారాలు,
+                             మొత్తం_పంక్తులు, false);
     }
-  else
+  లేకపోతే
     {
-      node->lo_child = NULL;
-      node->hi_child = NULL;
+      కణుపు->lo_బిడ్డ = ఖాళీ;
+      కణుపు->hi_బిడ్డ = ఖాళీ;
     }
-  return node_pool;
+  తిరిగి కణుపు_pool;
 }
 
 
 /* Compare two merge nodes A and B for priority.  */
 
-static int
-compare_nodes (void const *a, void const *b)
+స్థిర పూర్ణాంకం
+compare_nodes (శూన్య స్థిరరాశి *a, శూన్య స్థిరరాశి *b)
 {
-  struct merge_node const *nodea = a;
-  struct merge_node const *nodeb = b;
-  if (nodea->level == nodeb->level)
-      return (nodea->nlo + nodea->nhi) < (nodeb->nlo + nodeb->nhi);
-  return nodea->level < nodeb->level;
+  నిర్మాణం విలీనం_కణుపు స్థిరరాశి *nodea = a;
+  నిర్మాణం విలీనం_కణుపు స్థిరరాశి *nodeb = b;
+  ఒకవేళ (nodea->level == nodeb->level)
+      తిరిగి (nodea->nlo + nodea->nhi) < (nodeb->nlo + nodeb->nhi);
+  తిరిగి nodea->level < nodeb->level;
 }
 
 /* Lock a merge tree NODE.  */
 
-static inline void
-lock_node (struct merge_node *node)
+స్థిర అంతఃవరుస శూన్య
+తాళం_కణుపు (నిర్మాణం విలీనం_కణుపు *కణుపు)
 {
-  pthread_mutex_lock (&node->lock);
+  pthread_mutex_తాళం (&కణుపు->తాళం);
 }
 
 /* Unlock a merge tree NODE. */
 
-static inline void
-unlock_node (struct merge_node *node)
+స్థిర అంతఃవరుస శూన్య
+unlock_కణుపు (నిర్మాణం విలీనం_కణుపు *కణుపు)
 {
-  pthread_mutex_unlock (&node->lock);
+  pthread_mutex_unlock (&కణుపు->తాళం);
 }
 
 /* Destroy merge QUEUE. */
 
-static void
-queue_destroy (struct merge_node_queue *queue)
+స్థిర శూన్య
+వరుస_destroy (నిర్మాణం విలీనం_కణుపు_వరుస *వరుస)
 {
-  heap_free (queue->priority_queue);
-  pthread_cond_destroy (&queue->cond);
-  pthread_mutex_destroy (&queue->mutex);
+  కుప్ప_free (వరుస->ప్రాధాన్యత_వరుస);
+  pthread_cond_destroy (&వరుస->cond);
+  pthread_mutex_destroy (&వరుస->mutex);
 }
 
 /* Initialize merge QUEUE, allocating space suitable for a maximum of
    NTHREADS threads.  */
 
-static void
-queue_init (struct merge_node_queue *queue, size_t nthreads)
+స్థిర శూన్య
+వరుస_init (నిర్మాణం విలీనం_కణుపు_వరుస *వరుస, size_t nthreads)
 {
   /* Though it's highly unlikely all nodes are in the heap at the same
      time, the heap should accommodate all of them.  Counting a null
      dummy head for the heap, reserve 2 * NTHREADS nodes.  */
-  queue->priority_queue = heap_alloc (compare_nodes, 2 * nthreads);
-  pthread_mutex_init (&queue->mutex, NULL);
-  pthread_cond_init (&queue->cond, NULL);
+  వరుస->ప్రాధాన్యత_వరుస = కుప్ప_alloc (compare_nodes, 2 * nthreads);
+  pthread_mutex_init (&వరుస->mutex, ఖాళీ);
+  pthread_cond_init (&వరుస->cond, ఖాళీ);
 }
 
 /* Insert NODE into QUEUE.  The caller either holds a lock on NODE, or
    does not need to lock NODE.  */
 
-static void
-queue_insert (struct merge_node_queue *queue, struct merge_node *node)
+స్థిర శూన్య
+వరుస_చొప్పించు (నిర్మాణం విలీనం_కణుపు_వరుస *వరుస, నిర్మాణం విలీనం_కణుపు *కణుపు)
 {
-  pthread_mutex_lock (&queue->mutex);
-  heap_insert (queue->priority_queue, node);
-  node->queued = true;
-  pthread_cond_signal (&queue->cond);
-  pthread_mutex_unlock (&queue->mutex);
+  pthread_mutex_తాళం (&వరుస->mutex);
+  కుప్ప_చొప్పించు (వరుస->ప్రాధాన్యత_వరుస, కణుపు);
+  కణుపు->queued = true;
+  pthread_cond_signal (&వరుస->cond);
+  pthread_mutex_unlock (&వరుస->mutex);
 }
 
 /* Pop the top node off the priority QUEUE, lock the node, return it.  */
 
-static struct merge_node *
-queue_pop (struct merge_node_queue *queue)
+స్థిర నిర్మాణం విలీనం_కణుపు *
+వరుస_తీయి (నిర్మాణం విలీనం_కణుపు_వరుస *వరుస)
 {
-  struct merge_node *node;
-  pthread_mutex_lock (&queue->mutex);
-  while (! (node = heap_remove_top (queue->priority_queue)))
-    pthread_cond_wait (&queue->cond, &queue->mutex);
-  pthread_mutex_unlock (&queue->mutex);
-  lock_node (node);
-  node->queued = false;
-  return node;
+  నిర్మాణం విలీనం_కణుపు *కణుపు;
+  pthread_mutex_తాళం (&వరుస->mutex);
+  అయితే (! (కణుపు = కుప్ప_remove_శిఖరం (వరుస->ప్రాధాన్యత_వరుస)))
+    pthread_cond_wait (&వరుస->cond, &వరుస->mutex);
+  pthread_mutex_unlock (&వరుస->mutex);
+  తాళం_కణుపు (కణుపు);
+  కణుపు->queued = false;
+  తిరిగి కణుపు;
 }
 
 /* Output LINE to TFP, unless -u is specified and the line compares
@@ -3838,17 +3838,17 @@ queue_pop (struct merge_node_queue *queue)
    This function does not save the line for comparison later, so it is
    appropriate only for internal sort.  */
 
-static void
-write_unique (struct line const *line, FILE *tfp, char const *temp_output)
+స్థిర శూన్య
+write_unique (నిర్మాణం పంక్తి స్థిరరాశి *పంక్తి, FILE *tfp, అక్షరం స్థిరరాశి *తాత్కాలిక_output)
 {
-  if (unique)
+  ఒకవేళ (unique)
     {
-      if (saved_line.text && ! compare (line, &saved_line))
-        return;
-      saved_line = *line;
+      ఒకవేళ (saved_పంక్తి.పాఠ్యం && ! compare (పంక్తి, &saved_పంక్తి))
+        తిరిగి;
+      saved_పంక్తి = *పంక్తి;
     }
 
-  write_line (line, tfp, temp_output);
+  write_పంక్తి (పంక్తి, tfp, తాత్కాలిక_output);
 }
 
 /* Merge the lines currently available to a NODE in the binary
@@ -3858,103 +3858,103 @@ write_unique (struct line const *line, FILE *tfp, char const *temp_output)
    If merging at the top level, send output to TFP.  TEMP_OUTPUT is
    the name of TFP, or is null if TFP is standard output.  */
 
-static void
-mergelines_node (struct merge_node *restrict node, size_t total_lines,
-                 FILE *tfp, char const *temp_output)
+స్థిర శూన్య
+mergelines_కణుపు (నిర్మాణం విలీనం_కణుపు *పరిమిత కణుపు, size_t మొత్తం_పంక్తులు,
+                 FILE *tfp, అక్షరం స్థిరరాశి *తాత్కాలిక_output)
 {
-  struct line *lo_orig = node->lo;
-  struct line *hi_orig = node->hi;
-  size_t to_merge = MAX_MERGE (total_lines, node->level);
+  నిర్మాణం పంక్తి *lo_orig = కణుపు->lo;
+  నిర్మాణం పంక్తి *hi_orig = కణుపు->hi;
+  size_t గమ్యం_విలీనం = MAX_విలీనం (మొత్తం_పంక్తులు, కణుపు->level);
   size_t merged_lo;
   size_t merged_hi;
 
-  if (node->level > MERGE_ROOT)
+  ఒకవేళ (కణుపు->level > విలీనం_మూలం)
     {
       /* Merge to destination buffer. */
-      struct line *dest = *node->dest;
-      while (node->lo != node->end_lo && node->hi != node->end_hi && to_merge--)
-        if (compare (node->lo - 1, node->hi - 1) <= 0)
-          *--dest = *--node->lo;
-        else
-          *--dest = *--node->hi;
+      నిర్మాణం పంక్తి *dest = *కణుపు->dest;
+      అయితే (కణుపు->lo != కణుపు->చివర_lo && కణుపు->hi != కణుపు->చివర_hi && గమ్యం_విలీనం--)
+        ఒకవేళ (compare (కణుపు->lo - 1, కణుపు->hi - 1) <= 0)
+          *--dest = *--కణుపు->lo;
+        లేకపోతే
+          *--dest = *--కణుపు->hi;
 
-      merged_lo = lo_orig - node->lo;
-      merged_hi = hi_orig - node->hi;
+      merged_lo = lo_orig - కణుపు->lo;
+      merged_hi = hi_orig - కణుపు->hi;
 
-      if (node->nhi == merged_hi)
-        while (node->lo != node->end_lo && to_merge--)
-          *--dest = *--node->lo;
-      else if (node->nlo == merged_lo)
-        while (node->hi != node->end_hi && to_merge--)
-          *--dest = *--node->hi;
-      *node->dest = dest;
+      ఒకవేళ (కణుపు->nhi == merged_hi)
+        అయితే (కణుపు->lo != కణుపు->చివర_lo && గమ్యం_విలీనం--)
+          *--dest = *--కణుపు->lo;
+      లేకపోతే ఒకవేళ (కణుపు->nlo == merged_lo)
+        అయితే (కణుపు->hi != కణుపు->చివర_hi && గమ్యం_విలీనం--)
+          *--dest = *--కణుపు->hi;
+      *కణుపు->dest = dest;
     }
-  else
+  లేకపోతే
     {
       /* Merge directly to output. */
-      while (node->lo != node->end_lo && node->hi != node->end_hi && to_merge--)
+      అయితే (కణుపు->lo != కణుపు->చివర_lo && కణుపు->hi != కణుపు->చివర_hi && గమ్యం_విలీనం--)
         {
-          if (compare (node->lo - 1, node->hi - 1) <= 0)
-            write_unique (--node->lo, tfp, temp_output);
-          else
-            write_unique (--node->hi, tfp, temp_output);
+          ఒకవేళ (compare (కణుపు->lo - 1, కణుపు->hi - 1) <= 0)
+            write_unique (--కణుపు->lo, tfp, తాత్కాలిక_output);
+          లేకపోతే
+            write_unique (--కణుపు->hi, tfp, తాత్కాలిక_output);
         }
 
-      merged_lo = lo_orig - node->lo;
-      merged_hi = hi_orig - node->hi;
+      merged_lo = lo_orig - కణుపు->lo;
+      merged_hi = hi_orig - కణుపు->hi;
 
-      if (node->nhi == merged_hi)
+      ఒకవేళ (కణుపు->nhi == merged_hi)
         {
-          while (node->lo != node->end_lo && to_merge--)
-            write_unique (--node->lo, tfp, temp_output);
+          అయితే (కణుపు->lo != కణుపు->చివర_lo && గమ్యం_విలీనం--)
+            write_unique (--కణుపు->lo, tfp, తాత్కాలిక_output);
         }
-      else if (node->nlo == merged_lo)
+      లేకపోతే ఒకవేళ (కణుపు->nlo == merged_lo)
         {
-          while (node->hi != node->end_hi && to_merge--)
-            write_unique (--node->hi, tfp, temp_output);
+          అయితే (కణుపు->hi != కణుపు->చివర_hi && గమ్యం_విలీనం--)
+            write_unique (--కణుపు->hi, tfp, తాత్కాలిక_output);
         }
     }
 
   /* Update NODE. */
-  merged_lo = lo_orig - node->lo;
-  merged_hi = hi_orig - node->hi;
-  node->nlo -= merged_lo;
-  node->nhi -= merged_hi;
+  merged_lo = lo_orig - కణుపు->lo;
+  merged_hi = hi_orig - కణుపు->hi;
+  కణుపు->nlo -= merged_lo;
+  కణుపు->nhi -= merged_hi;
 }
 
 /* Into QUEUE, insert NODE if it is not already queued, and if one of
    NODE's children has available lines and the other either has
    available lines or has exhausted its lines.  */
 
-static void
-queue_check_insert (struct merge_node_queue *queue, struct merge_node *node)
+స్థిర శూన్య
+వరుస_check_చొప్పించు (నిర్మాణం విలీనం_కణుపు_వరుస *వరుస, నిర్మాణం విలీనం_కణుపు *కణుపు)
 {
-  if (! node->queued)
+  ఒకవేళ (! కణుపు->queued)
     {
-      bool lo_avail = (node->lo - node->end_lo) != 0;
-      bool hi_avail = (node->hi - node->end_hi) != 0;
-      if (lo_avail ? hi_avail || ! node->nhi : hi_avail && ! node->nlo)
-        queue_insert (queue, node);
+      bool lo_avail = (కణుపు->lo - కణుపు->చివర_lo) != 0;
+      bool hi_avail = (కణుపు->hi - కణుపు->చివర_hi) != 0;
+      ఒకవేళ (lo_avail ? hi_avail || ! కణుపు->nhi : hi_avail && ! కణుపు->nlo)
+        వరుస_చొప్పించు (వరుస, కణుపు);
     }
 }
 
 /* Into QUEUE, insert NODE's parent if the parent can now be worked on.  */
 
-static void
-queue_check_insert_parent (struct merge_node_queue *queue,
-                           struct merge_node *node)
+స్థిర శూన్య
+వరుస_check_చొప్పించు_మాతృ (నిర్మాణం విలీనం_కణుపు_వరుస *వరుస,
+                           నిర్మాణం విలీనం_కణుపు *కణుపు)
 {
-  if (node->level > MERGE_ROOT)
+  ఒకవేళ (కణుపు->level > విలీనం_మూలం)
     {
-      lock_node (node->parent);
-      queue_check_insert (queue, node->parent);
-      unlock_node (node->parent);
+      తాళం_కణుపు (కణుపు->మాతృ);
+      వరుస_check_చొప్పించు (వరుస, కణుపు->మాతృ);
+      unlock_కణుపు (కణుపు->మాతృ);
     }
-  else if (node->nlo + node->nhi == 0)
+  లేకపోతే ఒకవేళ (కణుపు->nlo + కణుపు->nhi == 0)
     {
       /* If the MERGE_ROOT NODE has finished merging, insert the
          MERGE_END node.  */
-      queue_insert (queue, node->parent);
+      వరుస_చొప్పించు (వరుస, కణుపు->మాతృ);
     }
 }
 
@@ -3964,72 +3964,72 @@ queue_check_insert_parent (struct merge_node_queue *queue,
    level, send output to TFP.  TEMP_OUTPUT is the name of TFP, or is
    null if TFP is standard output.  */
 
-static void
-merge_loop (struct merge_node_queue *queue,
-            size_t total_lines, FILE *tfp, char const *temp_output)
+స్థిర శూన్య
+విలీనం_loop (నిర్మాణం విలీనం_కణుపు_వరుస *వరుస,
+            size_t మొత్తం_పంక్తులు, FILE *tfp, అక్షరం స్థిరరాశి *తాత్కాలిక_output)
 {
-  while (true)
+  అయితే (true)
     {
-      struct merge_node *node = queue_pop (queue);
+      నిర్మాణం విలీనం_కణుపు *కణుపు = వరుస_తీయి (వరుస);
 
-      if (node->level == MERGE_END)
+      ఒకవేళ (కణుపు->level == విలీనం_చివర)
         {
-          unlock_node (node);
+          unlock_కణుపు (కణుపు);
           /* Reinsert so other threads can pop it. */
-          queue_insert (queue, node);
-          break;
+          వరుస_చొప్పించు (వరుస, కణుపు);
+          ఆపు;
         }
-      mergelines_node (node, total_lines, tfp, temp_output);
-      queue_check_insert (queue, node);
-      queue_check_insert_parent (queue, node);
+      mergelines_కణుపు (కణుపు, మొత్తం_పంక్తులు, tfp, తాత్కాలిక_output);
+      వరుస_check_చొప్పించు (వరుస, కణుపు);
+      వరుస_check_చొప్పించు_మాతృ (వరుస, కణుపు);
 
-      unlock_node (node);
+      unlock_కణుపు (కణుపు);
     }
 }
 
 
-static void sortlines (struct line *restrict, size_t, size_t,
-                       struct merge_node *, struct merge_node_queue *,
-                       FILE *, char const *);
+స్థిర శూన్య sortlines (నిర్మాణం పంక్తి *పరిమిత, size_t, size_t,
+                       నిర్మాణం విలీనం_కణుపు *, నిర్మాణం విలీనం_కణుపు_వరుస *,
+                       FILE *, అక్షరం స్థిరరాశి *);
 
 /* Thread arguments for sortlines_thread. */
 
-struct thread_args
+నిర్మాణం thread_వాదనలు
 {
   /* Source, i.e., the array of lines to sort.  This points just past
      the end of the array.  */
-  struct line *lines;
+  నిర్మాణం పంక్తి *పంక్తులు;
 
   /* Number of threads to use.  If 0 or 1, sort single-threaded.  */
   size_t nthreads;
 
   /* Number of lines in LINES and DEST.  */
-  size_t const total_lines;
+  size_t స్థిరరాశి మొత్తం_పంక్తులు;
 
   /* Merge node. Lines from this node and this node's sibling will merged
      to this node's parent. */
-  struct merge_node *const node;
+  నిర్మాణం విలీనం_కణుపు *స్థిరరాశి కణుపు;
 
   /* The priority queue controlling available work for the entire
      internal sort.  */
-  struct merge_node_queue *const queue;
+  నిర్మాణం విలీనం_కణుపు_వరుస *స్థిరరాశి వరుస;
 
   /* If at the top level, the file to output to, and the file's name.
      If the file is standard output, the file's name is null.  */
   FILE *tfp;
-  char const *output_temp;
+  అక్షరం స్థిరరాశి *output_తాత్కాలిక;
 };
 
 /* Like sortlines, except with a signature acceptable to pthread_create.  */
 
-static void *
-sortlines_thread (void *data)
+స్థిర శూన్య *
+sortlines_thread (శూన్య *దత్తాంశం)
 {
-  struct thread_args const *args = data;
-  sortlines (args->lines, args->nthreads, args->total_lines,
-             args->node, args->queue, args->tfp,
-             args->output_temp);
-  return NULL;
+  నిర్మాణం thread_వాదనలు స్థిరరాశి *వాదనలు = దత్తాంశం;
+  sortlines (వాదనలు->పంక్తులు, వాదనలు->nthreads, వాదనలు->మొత్తం_పంక్తులు,
+             వాదనలు->కణుపు, వాదనలు->వరుస, వాదనలు->tfp,
+             వాదనలు->output_తాత్కాలిక);
+  తిరిగి ఖాళీ;
 }
 
 /* Sort lines, possibly in parallel.  The arguments are as in struct
@@ -4056,47 +4056,47 @@ sortlines_thread (void *data)
    merge. This continues until all lines at all nodes of the merge tree
    have been merged. */
 
-static void
-sortlines (struct line *restrict lines, size_t nthreads,
-           size_t total_lines, struct merge_node *node,
-           struct merge_node_queue *queue, FILE *tfp, char const *temp_output)
+స్థిర శూన్య
+sortlines (నిర్మాణం పంక్తి *పరిమిత పంక్తులు, size_t nthreads,
+           size_t మొత్తం_పంక్తులు, నిర్మాణం విలీనం_కణుపు *కణుపు,
+           నిర్మాణం విలీనం_కణుపు_వరుస *వరుస, FILE *tfp, అక్షరం స్థిరరాశి *తాత్కాలిక_output)
 {
-  size_t nlines = node->nlo + node->nhi;
+  size_t nlines = కణుపు->nlo + కణుపు->nhi;
 
   /* Calculate thread arguments. */
-  size_t lo_threads = nthreads / 2;
-  size_t hi_threads = nthreads - lo_threads;
+  size_t lo_దారాలు = nthreads / 2;
+  size_t hi_దారాలు = nthreads - lo_దారాలు;
   pthread_t thread;
-  struct thread_args args = {lines, lo_threads, total_lines,
-                             node->lo_child, queue, tfp, temp_output};
+  నిర్మాణం thread_వాదనలు వాదనలు = {పంక్తులు, lo_దారాలు, మొత్తం_పంక్తులు,
+                             కణుపు->lo_బిడ్డ, వరుస, tfp, తాత్కాలిక_output};
 
-  if (nthreads > 1 && SUBTHREAD_LINES_HEURISTIC <= nlines
-      && pthread_create (&thread, NULL, sortlines_thread, &args) == 0)
+  ఒకవేళ (nthreads > 1 && SUBTHREAD_పంక్తులు_HEURISTIC <= nlines
+      && pthread_create (&thread, ఖాళీ, sortlines_thread, &వాదనలు) == 0)
     {
-      sortlines (lines - node->nlo, hi_threads, total_lines,
-                 node->hi_child, queue, tfp, temp_output);
-      pthread_join (thread, NULL);
+      sortlines (పంక్తులు - కణుపు->nlo, hi_దారాలు, మొత్తం_పంక్తులు,
+                 కణుపు->hi_బిడ్డ, వరుస, tfp, తాత్కాలిక_output);
+      pthread_join (thread, ఖాళీ);
     }
-  else
+  లేకపోతే
     {
       /* Nthreads = 1, this is a leaf NODE, or pthread_create failed.
          Sort with 1 thread. */
-      size_t nlo = node->nlo;
-      size_t nhi = node->nhi;
-      struct line *temp = lines - total_lines;
-      if (1 < nhi)
-        sequential_sort (lines - nlo, nhi, temp - nlo / 2, false);
-      if (1 < nlo)
-        sequential_sort (lines, nlo, temp, false);
+      size_t nlo = కణుపు->nlo;
+      size_t nhi = కణుపు->nhi;
+      నిర్మాణం పంక్తి *తాత్కాలిక = పంక్తులు - మొత్తం_పంక్తులు;
+      ఒకవేళ (1 < nhi)
+        sequential_క్రమీకరించు (పంక్తులు - nlo, nhi, తాత్కాలిక - nlo / 2, false);
+      ఒకవేళ (1 < nlo)
+        sequential_క్రమీకరించు (పంక్తులు, nlo, తాత్కాలిక, false);
 
       /* Update merge NODE. No need to lock yet. */
-      node->lo = lines;
-      node->hi = lines - nlo;
-      node->end_lo = lines - nlo;
-      node->end_hi = lines - nlo - nhi;
+      కణుపు->lo = పంక్తులు;
+      కణుపు->hi = పంక్తులు - nlo;
+      కణుపు->చివర_lo = పంక్తులు - nlo;
+      కణుపు->చివర_hi = పంక్తులు - nlo - nhi;
 
-      queue_insert (queue, node);
-      merge_loop (queue, total_lines, tfp, temp_output);
+      వరుస_చొప్పించు (వరుస, కణుపు);
+      విలీనం_loop (వరుస, మొత్తం_పంక్తులు, tfp, తాత్కాలిక_output);
     }
 }
 
@@ -4117,25 +4117,25 @@ sortlines (struct line *restrict lines, size_t nthreads,
    Catching these obscure cases would slow down performance in
    common cases.  */
 
-static void
-avoid_trashing_input (struct sortfile *files, size_t ntemps,
-                      size_t nfiles, char const *outfile)
+స్థిర శూన్య
+avoid_trashing_ఆదానం (నిర్మాణం sortfile *files, size_t ntemps,
+                      size_t nfiles, అక్షరం స్థిరరాశి *outfile)
 {
-  struct tempnode *tempcopy = NULL;
+  నిర్మాణం tempnode *tempcopy = ఖాళీ;
 
-  for (size_t i = ntemps; i < nfiles; i++)
+  కొరకు (size_t i = ntemps; i < nfiles; i++)
     {
       bool is_stdin = streq (files[i].name, "-");
       bool same;
-      struct stat instat;
+      నిర్మాణం stat instat;
 
-      if (outfile && streq (outfile, files[i].name) && !is_stdin)
+      ఒకవేళ (outfile && streq (outfile, files[i].name) && !is_stdin)
         same = true;
-      else
+      లేకపోతే
         {
-          struct stat *outst = get_outstatus ();
-          if (!outst)
-            break;
+          నిర్మాణం stat *outst = get_outstatus ();
+          ఒకవేళ (!outst)
+            ఆపు;
 
           same = (((is_stdin
                     ? fstat (STDIN_FILENO, &instat)
@@ -4144,17 +4144,17 @@ avoid_trashing_input (struct sortfile *files, size_t ntemps,
                   && psame_inode (&instat, outst));
         }
 
-      if (same)
+      ఒకవేళ (same)
         {
-          if (! tempcopy)
+          ఒకవేళ (! tempcopy)
             {
               FILE *tftp;
-              tempcopy = create_temp (&tftp);
+              tempcopy = create_తాత్కాలిక (&tftp);
               mergefiles (&files[i], 0, 1, tftp, tempcopy->name);
             }
 
           files[i].name = tempcopy->name;
-          files[i].temp = tempcopy;
+          files[i].తాత్కాలిక = tempcopy;
         }
     }
 }
@@ -4168,16 +4168,16 @@ avoid_trashing_input (struct sortfile *files, size_t ntemps,
    Catching these obscure cases could slow down performance in
    common cases.  */
 
-static void
-check_inputs (char *const *files, size_t nfiles)
+స్థిర శూన్య
+check_inputs (అక్షరం *స్థిరరాశి *files, size_t nfiles)
 {
-  for (size_t i = 0; i < nfiles; i++)
+  కొరకు (size_t i = 0; i < nfiles; i++)
     {
-      if (streq (files[i], "-"))
-        continue;
+      ఒకవేళ (streq (files[i], "-"))
+        కొనసాగు;
 
-      if (euidaccess (files[i], R_OK) != 0)
-        sort_die (_("cannot read"), files[i]);
+      ఒకవేళ (euidaccess (files[i], R_OK) != 0)
+        క్రమీకరించు_die (_("cannot read"), files[i]);
     }
 }
 
@@ -4185,15 +4185,15 @@ check_inputs (char *const *files, size_t nfiles)
    and point stdout to it.  Do not truncate the file.
    Exit with a diagnostic on failure.  */
 
-static void
-check_output (char const *outfile)
+స్థిర శూన్య
+check_output (అక్షరం స్థిరరాశి *outfile)
 {
-  if (outfile)
+  ఒకవేళ (outfile)
     {
-      int oflags = O_WRONLY | O_BINARY | O_CLOEXEC | O_CREAT;
-      int outfd = open (outfile, oflags, MODE_RW_UGO);
-      if (outfd < 0)
-        sort_die (_("open failed"), outfile);
+      పూర్ణాంకం oflags = O_WRONLY | O_ద్విమాన | O_CLOEXEC | O_CREAT;
+      పూర్ణాంకం outfd = open (outfile, oflags, బహుళకం_RW_UGO);
+      ఒకవేళ (outfd < 0)
+        క్రమీకరించు_die (_("open failed"), outfile);
       move_fd (outfd, STDOUT_FILENO);
     }
 }
@@ -4203,17 +4203,17 @@ check_output (char const *outfile)
    NFILES is the total number of files.  Put the output in
    OUTPUT_FILE; a null OUTPUT_FILE stands for standard output.  */
 
-static void
-merge (struct sortfile *files, size_t ntemps, size_t nfiles,
-       char const *output_file)
+స్థిర శూన్య
+విలీనం (నిర్మాణం sortfile *files, size_t ntemps, size_t nfiles,
+       అక్షరం స్థిరరాశి *output_file)
 {
-  while (nmerge < nfiles)
+  అయితే (nmerge < nfiles)
     {
       /* Number of input files processed so far.  */
-      size_t in;
+      size_t లోపల;
 
       /* Number of output files generated so far.  */
-      size_t out;
+      size_t బహిర్గతం;
 
       /* nfiles % NMERGE; this counts input files that are left over
          after all full-sized merges have been done.  */
@@ -4225,69 +4225,69 @@ merge (struct sortfile *files, size_t ntemps, size_t nfiles,
       /* Do as many NMERGE-size merges as possible. In the case that
          nmerge is bogus, increment by the maximum number of file
          descriptors allowed.  */
-      for (out = in = 0; nmerge <= nfiles - in; out++)
+      కొరకు (బహిర్గతం = లోపల = 0; nmerge <= nfiles - లోపల; బహిర్గతం++)
         {
           FILE *tfp;
-          struct tempnode *temp = create_temp (&tfp);
-          size_t num_merged = mergefiles (&files[in], MIN (ntemps, nmerge),
-                                          nmerge, tfp, temp->name);
-          ntemps -= MIN (ntemps, num_merged);
-          files[out].name = temp->name;
-          files[out].temp = temp;
-          in += num_merged;
+          నిర్మాణం tempnode *తాత్కాలిక = create_తాత్కాలిక (&tfp);
+          size_t అంకె_merged = mergefiles (&files[లోపల], MIN (ntemps, nmerge),
+                                          nmerge, tfp, తాత్కాలిక->name);
+          ntemps -= MIN (ntemps, అంకె_merged);
+          files[బహిర్గతం].name = తాత్కాలిక->name;
+          files[బహిర్గతం].తాత్కాలిక = తాత్కాలిక;
+          లోపల += అంకె_merged;
         }
 
-      remainder = nfiles - in;
-      cheap_slots = nmerge - out % nmerge;
+      remainder = nfiles - లోపల;
+      cheap_slots = nmerge - బహిర్గతం % nmerge;
 
-      if (cheap_slots < remainder)
+      ఒకవేళ (cheap_slots < remainder)
         {
           /* So many files remain that they can't all be put into the last
              NMERGE-sized output window.  Do one more merge.  Merge as few
              files as possible, to avoid needless I/O.  */
           size_t nshortmerge = remainder - cheap_slots + 1;
           FILE *tfp;
-          struct tempnode *temp = create_temp (&tfp);
-          size_t num_merged = mergefiles (&files[in], MIN (ntemps, nshortmerge),
-                                          nshortmerge, tfp, temp->name);
-          ntemps -= MIN (ntemps, num_merged);
-          files[out].name = temp->name;
-          files[out++].temp = temp;
-          in += num_merged;
+          నిర్మాణం tempnode *తాత్కాలిక = create_తాత్కాలిక (&tfp);
+          size_t అంకె_merged = mergefiles (&files[లోపల], MIN (ntemps, nshortmerge),
+                                          nshortmerge, tfp, తాత్కాలిక->name);
+          ntemps -= MIN (ntemps, అంకె_merged);
+          files[బహిర్గతం].name = తాత్కాలిక->name;
+          files[బహిర్గతం++].తాత్కాలిక = తాత్కాలిక;
+          లోపల += అంకె_merged;
         }
 
       /* Put the remaining input files into the last NMERGE-sized output
          window, so they will be merged in the next pass.  */
-      memmove (&files[out], &files[in], (nfiles - in) * sizeof *files);
-      ntemps += out;
-      nfiles -= in - out;
+      memmove (&files[బహిర్గతం], &files[లోపల], (nfiles - లోపల) * పరిమాణం *files);
+      ntemps += బహిర్గతం;
+      nfiles -= లోపల - బహిర్గతం;
     }
 
-  avoid_trashing_input (files, ntemps, nfiles, output_file);
+  avoid_trashing_ఆదానం (files, ntemps, nfiles, output_file);
 
   /* We aren't guaranteed that this final mergefiles will work, therefore we
      try to merge into the output, and then merge as much as we can into a
      temp file if we can't. Repeat.  */
 
-  while (true)
+  అయితే (true)
     {
       /* Merge directly into the output file if possible.  */
       FILE **fps;
-      size_t nopened = open_input_files (files, nfiles, &fps);
+      size_t nopened = open_ఆదానం_files (files, nfiles, &fps);
 
-      if (nopened == nfiles)
+      ఒకవేళ (nopened == nfiles)
         {
-          FILE *ofp = stream_open (output_file, "w");
-          if (ofp)
+          FILE *ofp = ప్రవాహం_open (output_file, "w");
+          ఒకవేళ (ofp)
             {
               mergefps (files, ntemps, nfiles, ofp, output_file, fps);
-              break;
+              ఆపు;
             }
-          if (errno != EMFILE || nopened <= 2)
-            sort_die (_("open failed"), output_file);
+          ఒకవేళ (errno != EMFILE || nopened <= 2)
+            క్రమీకరించు_die (_("open failed"), output_file);
         }
-      else if (nopened <= 2)
-        sort_die (_("open failed"), files[nopened].name);
+      లేకపోతే ఒకవేళ (nopened <= 2)
+        క్రమీకరించు_die (_("open failed"), files[nopened].name);
 
       /* We ran out of file descriptors.  Close one of the input
          files, to gain a file descriptor.  Then create a temporary
@@ -4295,23 +4295,23 @@ merge (struct sortfile *files, size_t ntemps, size_t nfiles,
          (e.g., some other process could open a file between the time
          we closed and tried to create).  */
       FILE *tfp;
-      struct tempnode *temp;
-      do
+      నిర్మాణం tempnode *తాత్కాలిక;
+      చేయి
         {
           nopened--;
           xfclose (fps[nopened], files[nopened].name);
-          temp = maybe_create_temp (&tfp, ! (nopened <= 2));
+          తాత్కాలిక = maybe_create_తాత్కాలిక (&tfp, ! (nopened <= 2));
         }
-      while (!temp);
+      అయితే (!తాత్కాలిక);
 
       /* Merge into the newly allocated temporary.  */
-      mergefps (&files[0], MIN (ntemps, nopened), nopened, tfp, temp->name,
+      mergefps (&files[0], MIN (ntemps, nopened), nopened, tfp, తాత్కాలిక->name,
                 fps);
       ntemps -= MIN (ntemps, nopened);
-      files[0].name = temp->name;
-      files[0].temp = temp;
+      files[0].name = తాత్కాలిక->name;
+      files[0].తాత్కాలిక = తాత్కాలిక;
 
-      memmove (&files[1], &files[nopened], (nfiles - nopened) * sizeof *files);
+      memmove (&files[1], &files[nopened], (nfiles - nopened) * పరిమాణం *files);
       ntemps++;
       nfiles -= nopened - 1;
     }
@@ -4319,130 +4319,130 @@ merge (struct sortfile *files, size_t ntemps, size_t nfiles,
 
 /* Sort NFILES FILES onto OUTPUT_FILE.  Use at most NTHREADS threads.  */
 
-static void
-sort (char *const *files, size_t nfiles, char const *output_file,
+స్థిర శూన్య
+క్రమీకరించు (అక్షరం *స్థిరరాశి *files, size_t nfiles, అక్షరం స్థిరరాశి *output_file,
       size_t nthreads)
 {
-  struct buffer buf;
-  struct sort_buffer_policy policy;
+  నిర్మాణం బఫరు buf;
+  నిర్మాణం క్రమీకరించు_బఫరు_policy policy;
   size_t ntemps = 0;
   bool output_file_created = false;
 
   buf.alloc = 0;
-  policy.initial = policy.limit = 0;
+  policy.initial = policy.హద్దు = 0;
   policy.growth_failed = false;
 
-  while (nfiles)
+  అయితే (nfiles)
     {
-      char const *temp_output;
-      char const *file = *files;
+      అక్షరం స్థిరరాశి *తాత్కాలిక_output;
+      అక్షరం స్థిరరాశి *file = *files;
       FILE *fp = xfopen (file, "r");
       FILE *tfp;
 
-      size_t bytes_per_line;
-      if (nthreads > 1)
+      size_t బైట్లు_చొప్పున_పంక్తి;
+      ఒకవేళ (nthreads > 1)
         {
           /* Get log P. */
           size_t tmp = 1;
           size_t mult = 1;
-          while (tmp < nthreads)
+          అయితే (tmp < nthreads)
             {
               tmp *= 2;
               mult++;
             }
-          bytes_per_line = (mult * sizeof (struct line));
+          బైట్లు_చొప్పున_పంక్తి = (mult * పరిమాణం (నిర్మాణం పంక్తి));
         }
-      else
-        bytes_per_line = sizeof (struct line) * 3 / 2;
+      లేకపోతే
+        బైట్లు_చొప్పున_పంక్తి = పరిమాణం (నిర్మాణం పంక్తి) * 3 / 2;
 
-      if (! buf.alloc)
+      ఒకవేళ (! buf.alloc)
         {
-          sort_buffer_policy (&fp, 1, files, nfiles, bytes_per_line,
+          క్రమీకరించు_బఫరు_policy (&fp, 1, files, nfiles, బైట్లు_చొప్పున_పంక్తి,
                               &policy);
-          initbuf (&buf, bytes_per_line, policy.initial);
+          initbuf (&buf, బైట్లు_చొప్పున_పంక్తి, policy.initial);
         }
       buf.eof = false;
       files++;
       nfiles--;
 
-      while (fillbuf (&buf, fp, file, &policy))
+      అయితే (fillbuf (&buf, fp, file, &policy))
         {
-          struct line *line;
+          నిర్మాణం పంక్తి *పంక్తి;
 
-          if (buf.eof && nfiles
-              && (bytes_per_line + 1
-                  < (buf.alloc - buf.used - bytes_per_line * buf.nlines)))
+          ఒకవేళ (buf.eof && nfiles
+              && (బైట్లు_చొప్పున_పంక్తి + 1
+                  < (buf.alloc - buf.వాడిన - బైట్లు_చొప్పున_పంక్తి * buf.nlines)))
             {
               /* End of file, but there is more input and buffer room.
                  Concatenate the next input file; this is faster in
                  the usual case.  */
-              buf.left = buf.used;
-              break;
+              buf.ఎడమ = buf.వాడిన;
+              ఆపు;
             }
 
-          saved_line.text = NULL;
-          line = buffer_linelim (&buf);
-          if (buf.eof && !nfiles && !ntemps && !buf.left)
+          saved_పంక్తి.పాఠ్యం = ఖాళీ;
+          పంక్తి = బఫరు_linelim (&buf);
+          ఒకవేళ (buf.eof && !nfiles && !ntemps && !buf.ఎడమ)
             {
               xfclose (fp, file);
               tfp = xfopen (output_file, "w");
-              temp_output = output_file;
+              తాత్కాలిక_output = output_file;
               output_file_created = true;
             }
-          else
+          లేకపోతే
             {
               ++ntemps;
-              temp_output = create_temp (&tfp)->name;
+              తాత్కాలిక_output = create_తాత్కాలిక (&tfp)->name;
             }
-          if (1 < buf.nlines)
+          ఒకవేళ (1 < buf.nlines)
             {
-              if (nthreads > 1)
+              ఒకవేళ (nthreads > 1)
                 {
-                  struct merge_node_queue queue;
-                  queue_init (&queue, nthreads);
-                  struct merge_node *merge_tree =
-                    merge_tree_init (nthreads, buf.nlines, line);
+                  నిర్మాణం విలీనం_కణుపు_వరుస వరుస;
+                  వరుస_init (&వరుస, nthreads);
+                  నిర్మాణం విలీనం_కణుపు *విలీనం_వృక్షం =
+                    విలీనం_వృక్షం_init (nthreads, buf.nlines, పంక్తి);
 
-                  sortlines (line, nthreads, buf.nlines, merge_tree + 1,
-                             &queue, tfp, temp_output);
+                  sortlines (పంక్తి, nthreads, buf.nlines, విలీనం_వృక్షం + 1,
+                             &వరుస, tfp, తాత్కాలిక_output);
 
-                  merge_tree_destroy (nthreads, merge_tree);
-                  queue_destroy (&queue);
+                  విలీనం_వృక్షం_destroy (nthreads, విలీనం_వృక్షం);
+                  వరుస_destroy (&వరుస);
                 }
-              else
+              లేకపోతే
                 {
-                  sequential_sort (line, buf.nlines,
-                                   line - buf.nlines, false);
-                  for (size_t i = 0; i < buf.nlines; i++)
-                    write_unique (line - i - 1, tfp, temp_output);
+                  sequential_క్రమీకరించు (పంక్తి, buf.nlines,
+                                   పంక్తి - buf.nlines, false);
+                  కొరకు (size_t i = 0; i < buf.nlines; i++)
+                    write_unique (పంక్తి - i - 1, tfp, తాత్కాలిక_output);
                 }
             }
-          else
-            write_unique (line - 1, tfp, temp_output);
+          లేకపోతే
+            write_unique (పంక్తి - 1, tfp, తాత్కాలిక_output);
 
-          xfclose (tfp, temp_output);
+          xfclose (tfp, తాత్కాలిక_output);
 
-          if (output_file_created)
-            goto finish;
+          ఒకవేళ (output_file_created)
+            వెళ్ళు ముగింపు;
         }
       xfclose (fp, file);
     }
 
- finish:
-  free (buf.buf);
+ ముగింపు:
+  విడుదల (buf.buf);
 
-  if (! output_file_created)
+  ఒకవేళ (! output_file_created)
     {
-      struct tempnode *node = temphead;
-      struct sortfile *tempfiles = xnmalloc (ntemps, sizeof *tempfiles);
-      for (size_t i = 0; node; i++)
+      నిర్మాణం tempnode *కణుపు = temphead;
+      నిర్మాణం sortfile *tempfiles = xnmalloc (ntemps, పరిమాణం *tempfiles);
+      కొరకు (size_t i = 0; కణుపు; i++)
         {
-          tempfiles[i].name = node->name;
-          tempfiles[i].temp = node;
-          node = node->next;
+          tempfiles[i].name = కణుపు->name;
+          tempfiles[i].తాత్కాలిక = కణుపు;
+          కణుపు = కణుపు->తదుపరి;
         }
-      merge (tempfiles, ntemps, ntemps, output_file);
-      free (tempfiles);
+      విలీనం (tempfiles, ntemps, ntemps, output_file);
+      విడుదల (tempfiles);
     }
 
   reap_all ();
@@ -4450,49 +4450,49 @@ sort (char *const *files, size_t nfiles, char const *output_file,
 
 /* Insert a malloc'd copy of key KEY_ARG at the end of the key list.  */
 
-static void
-insertkey (struct keyfield *key_arg)
+స్థిర శూన్య
+insertkey (నిర్మాణం keyfield *కీలకం_arg)
 {
-  struct keyfield **p;
-  struct keyfield *key = xmemdup (key_arg, sizeof *key);
+  నిర్మాణం keyfield **p;
+  నిర్మాణం keyfield *కీలకం = xmemdup (కీలకం_arg, పరిమాణం *కీలకం);
 
-  for (p = &keylist; *p; p = &(*p)->next)
-    continue;
-  *p = key;
-  key->next = NULL;
+  కొరకు (p = &keylist; *p; p = &(*p)->తదుపరి)
+    కొనసాగు;
+  *p = కీలకం;
+  కీలకం->తదుపరి = ఖాళీ;
 }
 
 /* Report a bad field specification SPEC, with extra info MSGID.  */
 
-static void
-badfieldspec (char const *spec, char const *msgid)
+స్థిర శూన్య
+badfieldspec (అక్షరం స్థిరరాశి *spec, అక్షరం స్థిరరాశి *msgid)
 {
-  error (SORT_FAILURE, 0, _("%s: invalid field specification %s"),
+  error (క్రమీకరించు_FAILURE, 0, _("%s: invalid field specification %s"),
          _(msgid), quote (spec));
 }
 
 /* Report incompatible options.  */
 
-static void
-incompatible_options (char const *opts)
+స్థిర శూన్య
+incompatible_options (అక్షరం స్థిరరాశి *opts)
 {
-  error (SORT_FAILURE, 0, _("options '-%s' are incompatible"), (opts));
+  error (క్రమీకరించు_FAILURE, 0, _("options '-%s' are incompatible"), (opts));
 }
 
 /* Check compatibility of ordering options.  */
 
-static void
-check_ordering_compatibility (void)
+స్థిర శూన్య
+check_ordering_compatibility (శూన్య)
 {
-  for (struct keyfield *key = keylist; key; key = key->next)
-    if (1 < (key->numeric + key->general_numeric + key->human_numeric
-             + key->month + (key->version | key->random | !!key->ignore)))
+  కొరకు (నిర్మాణం keyfield *కీలకం = keylist; కీలకం; కీలకం = కీలకం->తదుపరి)
+    ఒకవేళ (1 < (కీలకం->numeric + కీలకం->general_numeric + కీలకం->human_numeric
+             + కీలకం->month + (కీలకం->సంస్కరణ_3 | కీలకం->random | !!కీలకం->ignore)))
       {
         /* The following is too big, but guaranteed to be "big enough".  */
-        char opts[sizeof short_options];
+        అక్షరం opts[పరిమాణం short_options];
         /* Clear flags we're not interested in.  */
-        key->skipsblanks = key->skipeblanks = key->reverse = false;
-        key_to_opts (key, opts);
+        కీలకం->skipsblanks = కీలకం->skipeblanks = కీలకం->తిరగేయి = false;
+        కీలకం_గమ్యం_opts (కీలకం, opts);
         incompatible_options (opts);
       }
 }
@@ -4503,33 +4503,33 @@ check_ordering_compatibility (void)
    substitute SIZE_MAX.  If MSGID is null, return NULL after
    failure; otherwise, report MSGID and exit on failure.  */
 
-static char const *
-parse_field_count (char const *string, size_t *val, char const *msgid)
+స్థిర అక్షరం స్థిరరాశి *
+parse_క్షేత్రం_లెక్క (అక్షరం స్థిరరాశి *string, size_t *val, అక్షరం స్థిరరాశి *msgid)
 {
-  char *suffix;
+  అక్షరం *suffix;
   uintmax_t n;
 
-  switch (xstrtoumax (string, &suffix, 10, &n, ""))
+  ఎంపిక (xstrtoumax (string, &suffix, 10, &n, ""))
     {
-    case LONGINT_OK:
-    case LONGINT_INVALID_SUFFIX_CHAR:
+    స్థితి LONGINT_OK:
+    స్థితి LONGINT_INVALID_SUFFIX_CHAR:
       *val = n;
-      if (*val == n)
-        break;
+      ఒకవేళ (*val == n)
+        ఆపు;
       FALLTHROUGH;
-    case LONGINT_OVERFLOW:
-    case LONGINT_OVERFLOW | LONGINT_INVALID_SUFFIX_CHAR:
+    స్థితి LONGINT_అధికప్రవాహం:
+    స్థితి LONGINT_అధికప్రవాహం | LONGINT_INVALID_SUFFIX_CHAR:
       *val = SIZE_MAX;
-      break;
+      ఆపు;
 
-    case LONGINT_INVALID:
-      if (msgid)
-        error (SORT_FAILURE, 0, _("%s: invalid count at start of %s"),
+    స్థితి LONGINT_INVALID:
+      ఒకవేళ (msgid)
+        error (క్రమీకరించు_FAILURE, 0, _("%s: invalid count at start of %s"),
                _(msgid), quote (string));
-      return NULL;
+      తిరిగి ఖాళీ;
     }
 
-  return suffix;
+  తిరిగి suffix;
 }
 
 /* Set the ordering options for KEY specified in S.
@@ -4537,174 +4537,174 @@ parse_field_count (char const *string, size_t *val, char const *msgid)
    is not a valid ordering option.
    BLANKTYPE is the kind of blanks that 'b' should skip. */
 
-static char *
-set_ordering (char const *s, struct keyfield *key, enum blanktype blanktype)
+స్థిర అక్షరం *
+సమితి_ordering (అక్షరం స్థిరరాశి *s, నిర్మాణం keyfield *కీలకం, గణన blanktype blanktype)
 {
-  while (*s)
+  అయితే (*s)
     {
-      switch (*s)
+      ఎంపిక (*s)
         {
-        case 'b':
-          if (blanktype == bl_start || blanktype == bl_both)
-            key->skipsblanks = true;
-          if (blanktype == bl_end || blanktype == bl_both)
-            key->skipeblanks = true;
-          break;
-        case 'd':
-          key->ignore = nondictionary;
-          break;
-        case 'f':
-          key->translate = fold_toupper;
-          break;
-        case 'g':
-          key->general_numeric = true;
-          break;
-        case 'h':
-          key->human_numeric = true;
-          break;
-        case 'i':
+        స్థితి 'b':
+          ఒకవేళ (blanktype == bl_ప్రారంభం || blanktype == bl_both)
+            కీలకం->skipsblanks = true;
+          ఒకవేళ (blanktype == bl_చివర || blanktype == bl_both)
+            కీలకం->skipeblanks = true;
+          ఆపు;
+        స్థితి 'd':
+          కీలకం->ignore = nondictionary;
+          ఆపు;
+        స్థితి 'f':
+          కీలకం->translate = fold_toupper;
+          ఆపు;
+        స్థితి 'g':
+          కీలకం->general_numeric = true;
+          ఆపు;
+        స్థితి 'h':
+          కీలకం->human_numeric = true;
+          ఆపు;
+        స్థితి 'i':
           /* Option order should not matter, so don't let -i override
              -d.  -d implies -i, but -i does not imply -d.  */
-          if (! key->ignore)
-            key->ignore = nonprinting;
-          break;
-        case 'M':
-          key->month = true;
-          break;
-        case 'n':
-          key->numeric = true;
-          break;
-        case 'R':
-          key->random = true;
-          break;
-        case 'r':
-          key->reverse = true;
-          break;
-        case 'V':
-          key->version = true;
-          break;
-        default:
-          return (char *) s;
+          ఒకవేళ (! కీలకం->ignore)
+            కీలకం->ignore = nonprinting;
+          ఆపు;
+        స్థితి 'M':
+          కీలకం->month = true;
+          ఆపు;
+        స్థితి 'n':
+          కీలకం->numeric = true;
+          ఆపు;
+        స్థితి 'R':
+          కీలకం->random = true;
+          ఆపు;
+        స్థితి 'r':
+          కీలకం->తిరగేయి = true;
+          ఆపు;
+        స్థితి 'V':
+          కీలకం->సంస్కరణ_3 = true;
+          ఆపు;
+        అప్రమేయ:
+          తిరిగి (అక్షరం *) s;
         }
       ++s;
     }
-  return (char *) s;
+  తిరిగి (అక్షరం *) s;
 }
 
 /* Initialize KEY.  */
 
-static struct keyfield *
-key_init (struct keyfield *key)
+స్థిర నిర్మాణం keyfield *
+కీలకం_init (నిర్మాణం keyfield *కీలకం)
 {
-  memset (key, 0, sizeof *key);
-  key->eword = SIZE_MAX;
-  return key;
+  memset (కీలకం, 0, పరిమాణం *కీలకం);
+  కీలకం->eword = SIZE_MAX;
+  తిరిగి కీలకం;
 }
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
-  struct keyfield *key;
-  struct keyfield key_buf;
-  struct keyfield gkey;
+  నిర్మాణం keyfield *కీలకం;
+  నిర్మాణం keyfield కీలకం_buf;
+  నిర్మాణం keyfield gkey;
   bool gkey_only = false;
-  char const *s;
-  int c = 0;
-  char checkonly = 0;
+  అక్షరం స్థిరరాశి *s;
+  పూర్ణాంకం c = 0;
+  అక్షరం checkonly = 0;
   bool mergeonly = false;
-  char *random_source = NULL;
+  అక్షరం *random_ఆధారం = ఖాళీ;
   bool need_random = false;
   size_t nthreads = 0;
   size_t nfiles = 0;
-  bool posixly_correct = (getenv ("POSIXLY_CORRECT") != NULL);
-  int posix_ver = posix2_version ();
+  bool posixly_correct = (getenv ("POSIXLY_CORRECT") != ఖాళీ);
+  పూర్ణాంకం posix_ver = posix2_సంస్కరణ ();
   bool traditional_usage = ! (200112 <= posix_ver && posix_ver < 200809);
-  char **files;
-  char *files_from = NULL;
-  struct Tokens tok;
-  char const *outfile = NULL;
+  అక్షరం **files;
+  అక్షరం *files_from = ఖాళీ;
+  నిర్మాణం టోకెన్లు tok;
+  అక్షరం స్థిరరాశి *outfile = ఖాళీ;
   bool locale_ok;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   locale_ok = !! setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
-  initialize_exit_failure (SORT_FAILURE);
+  initialize_exit_failure (క్రమీకరించు_FAILURE);
 
   hard_LC_COLLATE = hard_locale (LC_COLLATE);
-#if HAVE_NL_LANGINFO
-  hard_LC_TIME = hard_locale (LC_TIME);
-#endif
+#ఒకవేళ HAVE_NL_LANGINFO
+  hard_LC_సమయం = hard_locale (LC_సమయం);
+#అయితే_ముగింపు
 
   /* Get locale's representation of the decimal point.  */
   {
-    struct lconv const *locale = localeconv ();
+    నిర్మాణం lconv స్థిరరాశి *locale = localeconv ();
 
     /* If the locale doesn't define a decimal point, or if the decimal
        point is multibyte, use the C locale's decimal point.  FIXME:
        add support for multibyte decimal points.  */
-    decimal_point = locale->decimal_point[0];
-    if (! decimal_point || locale->decimal_point[1])
-      decimal_point = '.';
+    decimal_బిందువు = locale->decimal_బిందువు[0];
+    ఒకవేళ (! decimal_బిందువు || locale->decimal_బిందువు[1])
+      decimal_బిందువు = '.';
 
     /* FIXME: add support for multibyte thousands separators.  */
     thousands_sep = locale->thousands_sep[0];
-    if (thousands_sep && locale->thousands_sep[1])
+    ఒకవేళ (thousands_sep && locale->thousands_sep[1])
       thousands_sep_ignored = true;
-    if (! thousands_sep || locale->thousands_sep[1])
+    ఒకవేళ (! thousands_sep || locale->thousands_sep[1])
       thousands_sep = NON_CHAR;
   }
 
   inittables ();
 
   {
-    enum { nsigs = countof (term_sig) };
+    గణన { nsigs = countof (పదం_sig) };
 
-    struct sigaction act;
+    నిర్మాణం sigaction act;
 
-    sigemptyset (&caught_signals);
-    for (size_t i = 0; i < nsigs; i++)
+    sigemptyset (&caught_సంకేతాలు);
+    కొరకు (size_t i = 0; i < nsigs; i++)
       {
-        if (term_sig[i] == SIGPIPE)
-          continue;  /* Handled below.  */
-        sigaction (term_sig[i], NULL, &act);
-        if (act.sa_handler != SIG_IGN)
-          sigaddset (&caught_signals, term_sig[i]);
+        ఒకవేళ (పదం_sig[i] == SIGPIPE)
+          కొనసాగు;  /* Handled below.  */
+        sigaction (పదం_sig[i], ఖాళీ, &act);
+        ఒకవేళ (act.sa_handler != SIG_IGN)
+          sigaddset (&caught_సంకేతాలు, పదం_sig[i]);
       }
 
     act.sa_handler = sighandler;
-    act.sa_mask = caught_signals;
+    act.sa_mask = caught_సంకేతాలు;
     act.sa_flags = 0;
 
-    for (size_t i = 0; i < nsigs; i++)
+    కొరకు (size_t i = 0; i < nsigs; i++)
       {
-        if (term_sig[i] == SIGPIPE)
-          continue;  /* Handled below.  */
-        if (sigismember (&caught_signals, term_sig[i]))
-          sigaction (term_sig[i], &act, NULL);
+        ఒకవేళ (పదం_sig[i] == SIGPIPE)
+          కొనసాగు;  /* Handled below.  */
+        ఒకవేళ (sigismember (&caught_సంకేతాలు, పదం_sig[i]))
+          sigaction (పదం_sig[i], &act, ఖాళీ);
       }
   }
-  signal (SIGCHLD, SIG_DFL); /* Don't inherit CHLD handling from parent.  */
+  సంకేతం (SIGCHLD, SIG_DFL); /* Don't inherit CHLD handling from parent.  */
 
   /* The signal mask is known, so it is safe to invoke exit_cleanup.  */
   atexit (exit_cleanup);
 
-  key_init (&gkey);
+  కీలకం_init (&gkey);
   gkey.sword = SIZE_MAX;
 
-  files = xnmalloc (argc, sizeof *files);
+  files = xnmalloc (argc, పరిమాణం *files);
 
-  while (true)
+  అయితే (true)
     {
       /* Parse an operand as a file after "--" was seen; or if
          pedantic and a file was seen, unless the POSIX version
          is not 1003.1-2001 and -c was not seen and the operand is
          "-o FILE" or "-oFILE".  */
-      int oi = -1;
+      పూర్ణాంకం oi = -1;
 
-      if (c == -1
+      ఒకవేళ (c == -1
           || (posixly_correct && nfiles != 0
               && ! (traditional_usage
                     && ! checkonly
@@ -4715,42 +4715,42 @@ main (int argc, char **argv)
                                 long_options, &oi))
               == -1))
         {
-          if (argc <= optind)
-            break;
+          ఒకవేళ (argc <= optind)
+            ఆపు;
           files[nfiles++] = argv[optind++];
         }
-      else switch (c)
+      లేకపోతే ఎంపిక (c)
         {
-        case 1:
-          key = NULL;
-          if (optarg[0] == '+')
+        స్థితి 1:
+          కీలకం = ఖాళీ;
+          ఒకవేళ (optarg[0] == '+')
             {
               bool minus_pos_usage = (optind != argc && argv[optind][0] == '-'
                                       && c_isdigit (argv[optind][1]));
               traditional_usage |= minus_pos_usage && !posixly_correct;
-              if (traditional_usage)
+              ఒకవేళ (traditional_usage)
                 {
                   /* Treat +POS1 [-POS2] as a key if possible; but silently
                      treat an operand as a file if it is not a valid +POS1.  */
-                  key = key_init (&key_buf);
-                  s = parse_field_count (optarg + 1, &key->sword, NULL);
-                  if (s && *s == '.')
-                    s = parse_field_count (s + 1, &key->schar, NULL);
-                  if (! (key->sword || key->schar))
-                    key->sword = SIZE_MAX;
-                  if (! s || *set_ordering (s, key, bl_start))
-                    key = NULL;
-                  else
+                  కీలకం = కీలకం_init (&కీలకం_buf);
+                  s = parse_క్షేత్రం_లెక్క (optarg + 1, &కీలకం->sword, ఖాళీ);
+                  ఒకవేళ (s && *s == '.')
+                    s = parse_క్షేత్రం_లెక్క (s + 1, &కీలకం->schar, ఖాళీ);
+                  ఒకవేళ (! (కీలకం->sword || కీలకం->schar))
+                    కీలకం->sword = SIZE_MAX;
+                  ఒకవేళ (! s || *సమితి_ordering (s, కీలకం, bl_ప్రారంభం))
+                    కీలకం = ఖాళీ;
+                  లేకపోతే
                     {
-                      if (minus_pos_usage)
+                      ఒకవేళ (minus_pos_usage)
                         {
-                          char const *optarg1 = argv[optind++];
-                          s = parse_field_count (optarg1 + 1, &key->eword,
+                          అక్షరం స్థిరరాశి *optarg1 = argv[optind++];
+                          s = parse_క్షేత్రం_లెక్క (optarg1 + 1, &కీలకం->eword,
                                              N_("invalid number after '-'"));
-                          if (*s == '.')
-                            s = parse_field_count (s + 1, &key->echar,
+                          ఒకవేళ (*s == '.')
+                            s = parse_క్షేత్రం_లెక్క (s + 1, &కీలకం->echar,
                                                N_("invalid number after '.'"));
-                          if (!key->echar && key->eword)
+                          ఒకవేళ (!కీలకం->echar && కీలకం->eword)
                             {
                               /* obsolescent syntax +A.x -B.y is equivalent to:
                                    -k A+1.x+1,B.y   (when y = 0)
@@ -4758,186 +4758,186 @@ main (int argc, char **argv)
                                  So eword is decremented as in the -k case
                                  only when the end field (B) is specified and
                                  echar (y) is 0.  */
-                              key->eword--;
+                              కీలకం->eword--;
                             }
-                          if (*set_ordering (s, key, bl_end))
+                          ఒకవేళ (*సమితి_ordering (s, కీలకం, bl_చివర))
                             badfieldspec (optarg1,
                                       N_("stray character in field spec"));
                         }
-                      key->traditional_used = true;
-                      insertkey (key);
+                      కీలకం->traditional_వాడిన = true;
+                      insertkey (కీలకం);
                     }
                 }
             }
-          if (! key)
+          ఒకవేళ (! కీలకం)
             files[nfiles++] = optarg;
-          break;
+          ఆపు;
 
-        case SORT_OPTION:
-          c = XARGMATCH ("--sort", optarg, sort_args, sort_types);
+        స్థితి క్రమీకరించు_OPTION:
+          c = XARGMATCH ("--sort", optarg, క్రమీకరించు_వాదనలు, క్రమీకరించు_types);
           FALLTHROUGH;
-        case 'b':
-        case 'd':
-        case 'f':
-        case 'g':
-        case 'h':
-        case 'i':
-        case 'M':
-        case 'n':
-        case 'r':
-        case 'R':
-        case 'V':
+        స్థితి 'b':
+        స్థితి 'd':
+        స్థితి 'f':
+        స్థితి 'g':
+        స్థితి 'h':
+        స్థితి 'i':
+        స్థితి 'M':
+        స్థితి 'n':
+        స్థితి 'r':
+        స్థితి 'R':
+        స్థితి 'V':
           {
-            char str[2];
+            అక్షరం str[2];
             str[0] = c;
             str[1] = '\0';
-            set_ordering (str, &gkey, bl_both);
+            సమితి_ordering (str, &gkey, bl_both);
           }
-          break;
+          ఆపు;
 
-        case CHECK_OPTION:
+        స్థితి CHECK_OPTION:
           c = (optarg
-               ? XARGMATCH ("--check", optarg, check_args, check_types)
+               ? XARGMATCH ("--check", optarg, check_వాదనలు, check_types)
                : 'c');
           FALLTHROUGH;
-        case 'c':
-        case 'C':
-          if (checkonly && checkonly != c)
+        స్థితి 'c':
+        స్థితి 'C':
+          ఒకవేళ (checkonly && checkonly != c)
             incompatible_options ("cC");
           checkonly = c;
-          break;
+          ఆపు;
 
-        case COMPRESS_PROGRAM_OPTION:
-          if (compress_program && !streq (compress_program, optarg))
-            error (SORT_FAILURE, 0, _("multiple compress programs specified"));
-          compress_program = optarg;
-          break;
+        స్థితి COMPRESS_కార్యక్రమం_OPTION:
+          ఒకవేళ (compress_కార్యక్రమం && !streq (compress_కార్యక్రమం, optarg))
+            error (క్రమీకరించు_FAILURE, 0, _("multiple compress programs specified"));
+          compress_కార్యక్రమం = optarg;
+          ఆపు;
 
-        case DEBUG_PROGRAM_OPTION:
+        స్థితి DEBUG_కార్యక్రమం_OPTION:
           debug = true;
-          break;
+          ఆపు;
 
-        case FILES0_FROM_OPTION:
+        స్థితి FILES0_FROM_OPTION:
           files_from = optarg;
-          break;
+          ఆపు;
 
-        case 'k':
-          key = key_init (&key_buf);
+        స్థితి 'k':
+          కీలకం = కీలకం_init (&కీలకం_buf);
 
           /* Get POS1. */
-          s = parse_field_count (optarg, &key->sword,
+          s = parse_క్షేత్రం_లెక్క (optarg, &కీలకం->sword,
                                  N_("invalid number at field start"));
-          if (! key->sword--)
+          ఒకవేళ (! కీలకం->sword--)
             {
               /* Provoke with 'sort -k0' */
               badfieldspec (optarg, N_("field number is zero"));
             }
-          if (*s == '.')
+          ఒకవేళ (*s == '.')
             {
-              s = parse_field_count (s + 1, &key->schar,
+              s = parse_క్షేత్రం_లెక్క (s + 1, &కీలకం->schar,
                                      N_("invalid number after '.'"));
-              if (! key->schar--)
+              ఒకవేళ (! కీలకం->schar--)
                 {
                   /* Provoke with 'sort -k1.0' */
                   badfieldspec (optarg, N_("character offset is zero"));
                 }
             }
-          if (! (key->sword || key->schar))
-            key->sword = SIZE_MAX;
-          s = set_ordering (s, key, bl_start);
-          if (*s != ',')
+          ఒకవేళ (! (కీలకం->sword || కీలకం->schar))
+            కీలకం->sword = SIZE_MAX;
+          s = సమితి_ordering (s, కీలకం, bl_ప్రారంభం);
+          ఒకవేళ (*s != ',')
             {
-              key->eword = SIZE_MAX;
-              key->echar = 0;
+              కీలకం->eword = SIZE_MAX;
+              కీలకం->echar = 0;
             }
-          else
+          లేకపోతే
             {
               /* Get POS2. */
-              s = parse_field_count (s + 1, &key->eword,
+              s = parse_క్షేత్రం_లెక్క (s + 1, &కీలకం->eword,
                                      N_("invalid number after ','"));
-              if (! key->eword--)
+              ఒకవేళ (! కీలకం->eword--)
                 {
                   /* Provoke with 'sort -k1,0' */
                   badfieldspec (optarg, N_("field number is zero"));
                 }
-              if (*s == '.')
+              ఒకవేళ (*s == '.')
                 {
-                  s = parse_field_count (s + 1, &key->echar,
+                  s = parse_క్షేత్రం_లెక్క (s + 1, &కీలకం->echar,
                                          N_("invalid number after '.'"));
                 }
-              s = set_ordering (s, key, bl_end);
+              s = సమితి_ordering (s, కీలకం, bl_చివర);
             }
-          if (*s)
+          ఒకవేళ (*s)
             badfieldspec (optarg, N_("stray character in field spec"));
-          insertkey (key);
-          break;
+          insertkey (కీలకం);
+          ఆపు;
 
-        case 'm':
+        స్థితి 'm':
           mergeonly = true;
-          break;
+          ఆపు;
 
-        case NMERGE_OPTION:
+        స్థితి NMERGE_OPTION:
           specify_nmerge (oi, c, optarg);
-          break;
+          ఆపు;
 
-        case 'o':
-          if (outfile && !streq (outfile, optarg))
-            error (SORT_FAILURE, 0, _("multiple output files specified"));
+        స్థితి 'o':
+          ఒకవేళ (outfile && !streq (outfile, optarg))
+            error (క్రమీకరించు_FAILURE, 0, _("multiple output files specified"));
           outfile = optarg;
-          break;
+          ఆపు;
 
-        case RANDOM_SOURCE_OPTION:
-          if (random_source && !streq (random_source, optarg))
-            error (SORT_FAILURE, 0, _("multiple random sources specified"));
-          random_source = optarg;
-          break;
+        స్థితి RANDOM_ఆధారం_OPTION:
+          ఒకవేళ (random_ఆధారం && !streq (random_ఆధారం, optarg))
+            error (క్రమీకరించు_FAILURE, 0, _("multiple random sources specified"));
+          random_ఆధారం = optarg;
+          ఆపు;
 
-        case 's':
+        స్థితి 's':
           stable = true;
-          break;
+          ఆపు;
 
-        case 'S':
-          specify_sort_size (oi, c, optarg);
-          break;
+        స్థితి 'S':
+          specify_క్రమీకరించు_కొలత (oi, c, optarg);
+          ఆపు;
 
-        case 't':
+        స్థితి 't':
           {
-            char newtab = optarg[0];
-            if (! newtab)
-              error (SORT_FAILURE, 0, _("empty tab"));
-            if (optarg[1])
+            అక్షరం newtab = optarg[0];
+            ఒకవేళ (! newtab)
+              error (క్రమీకరించు_FAILURE, 0, _("empty tab"));
+            ఒకవేళ (optarg[1])
               {
-                if (streq (optarg, "\\0"))
+                ఒకవేళ (streq (optarg, "\\0"))
                   newtab = '\0';
-                else
+                లేకపోతే
                   {
                     /* Provoke with 'sort -txx'.  Complain about
                        "multi-character tab" instead of "multibyte tab", so
                        that the diagnostic's wording does not need to be
                        changed once multibyte characters are supported.  */
-                    error (SORT_FAILURE, 0, _("multi-character tab %s"),
+                    error (క్రమీకరించు_FAILURE, 0, _("multi-character tab %s"),
                            quote (optarg));
                   }
               }
-            if (tab != TAB_DEFAULT && tab != newtab)
-              error (SORT_FAILURE, 0, _("incompatible tabs"));
+            ఒకవేళ (tab != TAB_DEFAULT && tab != newtab)
+              error (క్రమీకరించు_FAILURE, 0, _("incompatible tabs"));
             tab = newtab;
           }
-          break;
+          ఆపు;
 
-        case 'T':
-          add_temp_dir (optarg);
-          break;
+        స్థితి 'T':
+          కూడు_తాత్కాలిక_dir (optarg);
+          ఆపు;
 
-        case PARALLEL_OPTION:
+        స్థితి PARALLEL_OPTION:
           nthreads = specify_nthreads (oi, c, optarg);
-          break;
+          ఆపు;
 
-        case 'u':
+        స్థితి 'u':
           unique = true;
-          break;
+          ఆపు;
 
-        case 'y':
+        స్థితి 'y':
           /* Accept and ignore e.g. -y0 for compatibility with Solaris 2.x
              through Solaris 7.  It is also accepted by many non-Solaris
              "sort" implementations, e.g., AIX 5.2, HP-UX 11i v2, IRIX 6.5.
@@ -4948,105 +4948,105 @@ main (int argc, char **argv)
              emulate Solaris 8 and 9 "sort -y 100" which ignores the "100",
              and which in general ignores the argument after "-y" if it
              consists entirely of digits (it can even be empty).  */
-          if (optarg == argv[optind - 1])
+          ఒకవేళ (optarg == argv[optind - 1])
             {
-              char const *p;
-              for (p = optarg; c_isdigit (*p); p++)
-                continue;
+              అక్షరం స్థిరరాశి *p;
+              కొరకు (p = optarg; c_isdigit (*p); p++)
+                కొనసాగు;
               optind -= (*p != '\0');
             }
-          break;
+          ఆపు;
 
-        case 'z':
+        స్థితి 'z':
           eolchar = 0;
-          break;
+          ఆపు;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_సంస్కరణ_CHAR (కార్యక్రమం_NAME, AUTHORS);
 
-        default:
-          usage (SORT_FAILURE);
+        అప్రమేయ:
+          usage (క్రమీకరించు_FAILURE);
         }
     }
 
   /* Ignore SIGPIPE so write failures are reported via EPIPE errno.
      For stdout, sort_die() will reraise SIGPIPE if it was originally SIG_DFL.
      For compression pipes, sort_die() will exit with SORT_FAILURE.  */
-  default_SIGPIPE = (signal (SIGPIPE, SIG_IGN) == SIG_DFL);
+  default_SIGPIPE = (సంకేతం (SIGPIPE, SIG_IGN) == SIG_DFL);
 
-  if (files_from)
+  ఒకవేళ (files_from)
     {
       /* When using --files0-from=F, you may not specify any files
          on the command-line.  */
-      if (nfiles)
+      ఒకవేళ (nfiles)
         {
           error (0, 0, _("extra operand %s"), quoteaf (files[0]));
           fprintf (stderr, "%s\n",
                    _("file operands cannot be combined with --files0-from"));
-          usage (SORT_FAILURE);
+          usage (క్రమీకరించు_FAILURE);
         }
 
-      FILE *stream = xfopen (files_from, "r");
+      FILE *ప్రవాహం = xfopen (files_from, "r");
 
       readtokens0_init (&tok);
 
-      if (! readtokens0 (stream, &tok))
-        error (SORT_FAILURE, 0, _("cannot read file names from %s"),
+      ఒకవేళ (! readtokens0 (ప్రవాహం, &tok))
+        error (క్రమీకరించు_FAILURE, 0, _("cannot read file names from %s"),
                quoteaf (files_from));
-      xfclose (stream, files_from);
+      xfclose (ప్రవాహం, files_from);
 
-      if (tok.n_tok)
+      ఒకవేళ (tok.n_tok)
         {
-          free (files);
+          విడుదల (files);
           files = tok.tok;
           nfiles = tok.n_tok;
-          for (size_t i = 0; i < nfiles; i++)
+          కొరకు (size_t i = 0; i < nfiles; i++)
             {
-              if (streq (files[i], "-"))
-                error (SORT_FAILURE, 0, _("when reading file names from "
+              ఒకవేళ (streq (files[i], "-"))
+                error (క్రమీకరించు_FAILURE, 0, _("when reading file names from "
                                           "standard input, "
                                           "no file name of %s allowed"),
                        quoteaf (files[i]));
-              else if (files[i][0] == '\0')
+              లేకపోతే ఒకవేళ (files[i][0] == '\0')
                 {
                   /* Using the standard 'filename:line-number:' prefix here is
                      not totally appropriate, since NUL is the separator,
                      not NL, but it might be better than nothing.  */
-                  unsigned long int file_number = i + 1;
-                  error (SORT_FAILURE, 0,
+                  గుర్తులేని దీర్ఘ పూర్ణాంకం file_సంఖ్య = i + 1;
+                  error (క్రమీకరించు_FAILURE, 0,
                          _("%s:%lu: invalid zero-length file name"),
-                         quotef (files_from), file_number);
+                         quotef (files_from), file_సంఖ్య);
                 }
             }
         }
-      else
-        error (SORT_FAILURE, 0, _("no input from %s"),
+      లేకపోతే
+        error (క్రమీకరించు_FAILURE, 0, _("no input from %s"),
                quoteaf (files_from));
     }
 
   /* Inheritance of global options to individual keys. */
-  for (key = keylist; key; key = key->next)
+  కొరకు (కీలకం = keylist; కీలకం; కీలకం = కీలకం->తదుపరి)
     {
-      if (default_key_compare (key) && !key->reverse)
+      ఒకవేళ (default_కీలకం_compare (కీలకం) && !కీలకం->తిరగేయి)
         {
-          key->ignore = gkey.ignore;
-          key->translate = gkey.translate;
-          key->skipsblanks = gkey.skipsblanks;
-          key->skipeblanks = gkey.skipeblanks;
-          key->month = gkey.month;
-          key->numeric = gkey.numeric;
-          key->general_numeric = gkey.general_numeric;
-          key->human_numeric = gkey.human_numeric;
-          key->version = gkey.version;
-          key->random = gkey.random;
-          key->reverse = gkey.reverse;
+          కీలకం->ignore = gkey.ignore;
+          కీలకం->translate = gkey.translate;
+          కీలకం->skipsblanks = gkey.skipsblanks;
+          కీలకం->skipeblanks = gkey.skipeblanks;
+          కీలకం->month = gkey.month;
+          కీలకం->numeric = gkey.numeric;
+          కీలకం->general_numeric = gkey.general_numeric;
+          కీలకం->human_numeric = gkey.human_numeric;
+          కీలకం->సంస్కరణ_3 = gkey.సంస్కరణ_3;
+          కీలకం->random = gkey.random;
+          కీలకం->తిరగేయి = gkey.తిరగేయి;
         }
 
-      need_random |= key->random;
+      need_random |= కీలకం->random;
     }
 
-  if (!keylist && !default_key_compare (&gkey))
+  ఒకవేళ (!keylist && !default_కీలకం_compare (&gkey))
     {
       gkey_only = true;
       insertkey (&gkey);
@@ -5055,11 +5055,11 @@ main (int argc, char **argv)
 
   check_ordering_compatibility ();
 
-  if (debug)
+  ఒకవేళ (debug)
     {
-      if (checkonly || outfile)
+      ఒకవేళ (checkonly || outfile)
         {
-          static char opts[] = "X --debug";
+          స్థిర అక్షరం opts[] = "X --debug";
           opts[0] = (checkonly ? checkonly : 'o');
           incompatible_options (opts);
         }
@@ -5069,60 +5069,60 @@ main (int argc, char **argv)
 
       /* OpenBSD can only set some categories with LC_ALL above,
          so set LC_COLLATE explicitly to flag errors.  */
-      if (locale_ok)
+      ఒకవేళ (locale_ok)
         locale_ok = !! setlocale (LC_COLLATE, "");
-      if (! locale_ok)
+      ఒకవేళ (! locale_ok)
           error (0, 0, "%s", _("failed to set locale"));
-      if (hard_LC_COLLATE)
+      ఒకవేళ (hard_LC_COLLATE)
         error (0, 0, _("text ordering performed using %s sorting rules"),
-               quote (setlocale (LC_COLLATE, NULL)));
-      else
+               quote (setlocale (LC_COLLATE, ఖాళీ)));
+      లేకపోతే
         error (0, 0, "%s",
                _("text ordering performed using simple byte comparison"));
 
-      key_warnings (&gkey, gkey_only);
+      కీలకం_warnings (&gkey, gkey_only);
     }
 
-  reverse = gkey.reverse;
+  తిరగేయి = gkey.తిరగేయి;
 
-  if (need_random)
-    random_md5_state_init (random_source);
+  ఒకవేళ (need_random)
+    random_md5_state_init (random_ఆధారం);
 
-  if (temp_dirs.n_dirs == 0)
+  ఒకవేళ (తాత్కాలిక_dirs.n_dirs == 0)
     {
-      char const *tmp_dir = getenv ("TMPDIR");
-      add_temp_dir (tmp_dir ? tmp_dir : DEFAULT_TMPDIR);
+      అక్షరం స్థిరరాశి *tmp_dir = getenv ("TMPDIR");
+      కూడు_తాత్కాలిక_dir (tmp_dir ? tmp_dir : DEFAULT_TMPDIR);
     }
 
-  if (nfiles == 0)
+  ఒకవేళ (nfiles == 0)
     {
       nfiles = 1;
-      free (files);
-      files = xmalloc (sizeof *files);
-      *files = (char *) "-";
+      విడుదల (files);
+      files = xmalloc (పరిమాణం *files);
+      *files = (అక్షరం *) "-";
     }
 
   /* Need to re-check that we meet the minimum requirement for memory
      usage with the final value for NMERGE. */
-  if (0 < sort_size)
-    sort_size = MAX (sort_size, MIN_SORT_SIZE);
+  ఒకవేళ (0 < క్రమీకరించు_కొలత)
+    క్రమీకరించు_కొలత = MAX (క్రమీకరించు_కొలత, MIN_క్రమీకరించు_కొలత);
 
-  if (checkonly)
+  ఒకవేళ (checkonly)
     {
-      if (nfiles > 1)
-        error (SORT_FAILURE, 0, _("extra operand %s not allowed with -%c"),
+      ఒకవేళ (nfiles > 1)
+        error (క్రమీకరించు_FAILURE, 0, _("extra operand %s not allowed with -%c"),
                quoteaf (files[1]), checkonly);
 
-      if (outfile)
+      ఒకవేళ (outfile)
         {
-          static char opts[] = {0, 'o', 0};
+          స్థిర అక్షరం opts[] = {0, 'o', 0};
           opts[0] = checkonly;
           incompatible_options (opts);
         }
 
       /* POSIX requires that sort return 1 IFF invoked with -c or -C and the
          input is not properly sorted.  */
-      exit (check (files[0], checkonly) ? EXIT_SUCCESS : SORT_OUT_OF_ORDER);
+      నిష్క్రమించు (check (files[0], checkonly) ? EXIT_SUCCESS : క్రమీకరించు_బహిర్గతం_యొక్క_క్రమం);
     }
 
   /* Check all inputs are accessible, or exit immediately.  */
@@ -5131,32 +5131,32 @@ main (int argc, char **argv)
   /* Check output is writable, or exit immediately.  */
   check_output (outfile);
 
-  if (mergeonly)
+  ఒకవేళ (mergeonly)
     {
-      struct sortfile *sortfiles = xcalloc (nfiles, sizeof *sortfiles);
+      నిర్మాణం sortfile *sortfiles = xcalloc (nfiles, పరిమాణం *sortfiles);
 
-      for (size_t i = 0; i < nfiles; ++i)
+      కొరకు (size_t i = 0; i < nfiles; ++i)
         sortfiles[i].name = files[i];
 
-      merge (sortfiles, 0, nfiles, outfile);
+      విలీనం (sortfiles, 0, nfiles, outfile);
     }
-  else
+  లేకపోతే
     {
-      if (!nthreads)
+      ఒకవేళ (!nthreads)
         {
-          unsigned long int np = num_processors (NPROC_CURRENT_OVERRIDABLE);
-          nthreads = MIN (np, DEFAULT_MAX_THREADS);
+          గుర్తులేని దీర్ఘ పూర్ణాంకం np = అంకె_processors (NPROC_CURRENT_OVERRIDABLE);
+          nthreads = MIN (np, DEFAULT_MAX_దారాలు);
         }
 
       /* Avoid integer overflow later.  */
-      size_t nthreads_max = SIZE_MAX / (2 * sizeof (struct merge_node));
+      size_t nthreads_max = SIZE_MAX / (2 * పరిమాణం (నిర్మాణం విలీనం_కణుపు));
       nthreads = MIN (nthreads, nthreads_max);
 
-      sort (files, nfiles, outfile, nthreads);
+      క్రమీకరించు (files, nfiles, outfile, nthreads);
     }
 
-  if (have_read_stdin && fclose (stdin) == EOF)
-    sort_die (_("close failed"), "-");
+  ఒకవేళ (have_read_stdin && fclose (stdin) == EOF)
+    క్రమీకరించు_die (_("close failed"), "-");
 
   main_exit (EXIT_SUCCESS);
 }

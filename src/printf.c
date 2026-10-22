@@ -14,58 +14,58 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <wchar.h>
+#అన్తర్భావ <config.h>
+#అన్తర్భావ <stdio.h>
+#అన్తర్భావ <sys/types.h>
+#అన్తర్భావ <wchar.h>
 
-#include "system.h"
-#include "c-ctype.h"
-#include "cl-strtod.h"
-#include "octhexdigits.h"
-#include "quote.h"
-#include "unicodeio.h"
-#include "xprintf.h"
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "c-ctype.h"
+#అన్తర్భావ "cl-strtod.h"
+#అన్తర్భావ "octhexdigits.h"
+#అన్తర్భావ "quote.h"
+#అన్తర్భావ "unicodeio.h"
+#అన్తర్భావ "xprintf.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "printf"
+#నిర్వచించు కార్యక్రమం_NAME "printf"
 
-#define AUTHORS proper_name ("David MacKenzie")
+#నిర్వచించు AUTHORS proper_name ("David MacKenzie")
 
 /* The value to return to the calling program.  */
-static int exit_status;
+స్థిర పూర్ణాంకం exit_స్థితి;
 
 /* True if the POSIXLY_CORRECT environment variable is set.  */
-static bool posixly_correct;
+స్థిర bool posixly_correct;
 
 /* This message appears in N_() here rather than just in _() below because
    the sole use would have been in a #define.  */
-static char const *const cfcc_msg =
+స్థిర అక్షరం స్థిరరాశి *స్థిరరాశి cfcc_సందేశం =
  N_("warning: %s: character(s) following character constant have been ignored");
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("\
-Usage: %s FORMAT [ARGUMENT]...\n\
+      రాయి (_("\
+Usage: %s FORMAT [వాదం_2]...\n\
   or:  %s OPTION\n\
 "),
-              program_name, program_name);
+              కార్యక్రమం_name, కార్యక్రమం_name);
       fputs (_("\
-Print ARGUMENT(s) according to FORMAT, or execute according to OPTION:\n\
+Print వాదం_2(s) according గమ్యం FORMAT, or execute according గమ్యం OPTION:\n\
 \n\
 "), stdout);
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-FORMAT controls the output as in C printf.  Interpreted sequences are:\n\
+FORMAT controls the output as లోపల C రాయి.  Interpreted sequences are:\n\
 \n\
-  \\\"      double quote\n\
+  \\\"      ద్విగుణ quote\n\
 "), stdout);
       fputs (_("\
   \\\\      backslash\n\
@@ -74,38 +74,38 @@ FORMAT controls the output as in C printf.  Interpreted sequences are:\n\
   \\c      produce no further output\n\
   \\e      escape\n\
   \\f      form feed\n\
-  \\n      new line\n\
-  \\r      carriage return\n\
+  \\n      new పంక్తి\n\
+  \\r      carriage తిరిగి\n\
   \\t      horizontal tab\n\
   \\v      vertical tab\n\
 "), stdout);
       fputs (_("\
-  \\NNN    byte with octal value NNN (1 to 3 digits)\n\
-  \\xHH    byte with hexadecimal value HH (1 to 2 digits)\n\
-  \\uHHHH  Unicode (ISO/IEC 10646) character with hex value HHHH (4 digits)\n\
-  \\UHHHHHHHH  Unicode character with hex value HHHHHHHH (8 digits)\n\
+  \\NNN    byte with octal విలువ NNN (1 గమ్యం 3 digits)\n\
+  \\xHH    byte with hexadecimal విలువ HH (1 గమ్యం 2 digits)\n\
+  \\uHHHH  Unicode (ISO/IEC 10646) character with hex విలువ HHHH (4 digits)\n\
+  \\UHHHHHHHH  Unicode character with hex విలువ HHHHHHHH (8 digits)\n\
 "), stdout);
       fputs (_("\
 \n\
   %%      a single %\n\
-  %b      ARGUMENT as a string with '\\' escapes interpreted,\n\
+  %b      వాదం_2 as a string with '\\' escapes interpreted,\n\
           except that octal escapes should have a leading 0 like \\0NNN\n\
-  %q      ARGUMENT is printed in a format that can be reused as shell input,\n\
+  %q      వాదం_2 is printed లోపల a format that can be reused as shell ఆదానం,\n\
           escaping non-printable characters with the POSIX $'' syntax\
 \n\n\
-and all C printf(3) format specifications ending with one of diouxXfaAeEgGcs,\n\
-with ARGUMENTs converted to proper type first.\n\
+and all C రాయి(3) format specifications ending with one యొక్క diouxXfaAeEgGcs,\n\
+with ARGUMENTs converted గమ్యం proper type మొదటి.\n\
 "), stdout);
       fputs (_("\
-FORMAT is reused to convert all specified arguments.\n\
+FORMAT is reused గమ్యం convert all specified arguments.\n\
 "), stdout);
       fputs (_("\
-The following table shows supported conversion specifiers,\n\
-with examples including usage of width, precision, and flags.\n\
+The following పట్టిక shows supported conversion specifiers,\n\
+with examples including usage యొక్క వెడల్పు, precision, and flags.\n\
 \n\
   CONVERSION  Shell format example        Output\n\
-  %s          '[%10s]' 'left pad'         [  left pad]\n\
-  %s          '[%-10s]' 'right pad'       [right pad ]\n\
+  %s          '[%10s]' 'left pad'         [  ఎడమ pad]\n\
+  %s          '[%-10s]' 'right pad'       [కుడి pad ]\n\
   %c %s       '%c %.3s' un unibyte        u uni\n\
 \n\
   %d %i       \"%'d ;%04i\" 1234 '-1'       1,234 ;-001\n\
@@ -120,56 +120,56 @@ with examples including usage of width, precision, and flags.\n\
   %b          '%bfoo' 'bar\\cbaz' qux      bar\n\
   %q          '%q ' 'a' \\;b $'c\\n'        a ';b' 'c'$'\\n'\n\
 "), stdout);
-      printf (USAGE_BUILTIN_WARNING, PROGRAM_NAME);
-      emit_ancillary_info (PROGRAM_NAME);
+      రాయి (USAGE_BUILTIN_WARNING, కార్యక్రమం_NAME);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
-static void
-verify_numeric (char const *s, char const *end)
+స్థిర శూన్య
+verify_numeric (అక్షరం స్థిరరాశి *s, అక్షరం స్థిరరాశి *చివర)
 {
-  if (s == end)
+  ఒకవేళ (s == చివర)
     {
       error (0, 0, _("%s: expected a numeric value"), quote (s));
-      exit_status = EXIT_FAILURE;
+      exit_స్థితి = EXIT_FAILURE;
     }
-  else if (errno)
+  లేకపోతే ఒకవేళ (errno)
     {
       error (0, errno, "%s", quote (s));
-      exit_status = EXIT_FAILURE;
+      exit_స్థితి = EXIT_FAILURE;
     }
-  else if (*end)
+  లేకపోతే ఒకవేళ (*చివర)
     {
       error (0, 0, _("%s: value not completely converted"), quote (s));
-      exit_status = EXIT_FAILURE;
+      exit_స్థితి = EXIT_FAILURE;
     }
 }
 
-#define STRTOX(TYPE, FUNC_NAME, LIB_FUNC_EXPR)				 \
-static TYPE								 \
-FUNC_NAME (char const *s)						 \
+#నిర్వచించు STRTOX(TYPE, FUNC_NAME, LIB_FUNC_సమాసం)				 \
+స్థిర TYPE								 \
+FUNC_NAME (అక్షరం స్థిరరాశి *s)						 \
 {									 \
-  char *end;								 \
+  అక్షరం *చివర;								 \
   TYPE val;								 \
                                                                          \
-  if ((*s == '\"' || *s == '\'') && *(s + 1))				 \
+  ఒకవేళ ((*s == '\"' || *s == '\'') && *(s + 1))				 \
     {									 \
-      unsigned char ch = *++s;						 \
+      గుర్తులేని అక్షరం ch = *++s;						 \
       val = ch;								 \
                                                                          \
-      if (MB_CUR_MAX > 1 && *(s + 1))					 \
+      ఒకవేళ (MB_CUR_MAX > 1 && *(s + 1))					 \
         {								 \
           mbstate_t mbstate; mbszero (&mbstate);			 \
           wchar_t wc;							 \
-          size_t slen = strlen (s);					 \
-          ssize_t bytes;						 \
+          size_t slen = అక్షరశ్రేణి_పొడవు (s);					 \
+          ssize_t బైట్లు;						 \
           /* Use mbrtowc not mbrtoc32, as per POSIX.  */		 \
-          bytes = mbrtowc (&wc, s, slen, &mbstate);			 \
-          if (0 < bytes)						 \
+          బైట్లు = mbrtowc (&wc, s, slen, &mbstate);			 \
+          ఒకవేళ (0 < బైట్లు)						 \
             {								 \
               val = wc;							 \
-              s += bytes - 1;						 \
+              s += బైట్లు - 1;						 \
             }								 \
         }								 \
                                                                          \
@@ -177,59 +177,59 @@ FUNC_NAME (char const *s)						 \
          are characters following the character constant and that GNU	 \
          printf is ignoring those characters.  If POSIXLY_CORRECT *is*	 \
          set, then don't give the warning.  */				 \
-      if (*++s != 0 && !posixly_correct)				 \
-        error (0, 0, _(cfcc_msg), s);					 \
+      ఒకవేళ (*++s != 0 && !posixly_correct)				 \
+        error (0, 0, _(cfcc_సందేశం), s);					 \
     }									 \
-  else									 \
+  లేకపోతే									 \
     {									 \
       errno = 0;							 \
-      val = (LIB_FUNC_EXPR);						 \
-      verify_numeric (s, end);						 \
+      val = (LIB_FUNC_సమాసం);						 \
+      verify_numeric (s, చివర);						 \
     }									 \
-  return val;								 \
+  తిరిగి val;								 \
 }									 \
 
-STRTOX (intmax_t,    vstrtoimax, strtoimax (s, &end, 0))
-STRTOX (uintmax_t,   vstrtoumax, strtoumax (s, &end, 0))
-STRTOX (long double, vstrtold,   cl_strtold (s, &end))
+STRTOX (intmax_t,    vstrtoimax, strtoimax (s, &చివర, 0))
+STRTOX (uintmax_t,   vstrtoumax, strtoumax (s, &చివర, 0))
+STRTOX (దీర్ఘ ద్విగుణ, vstrtold,   cl_strtold (s, &చివర))
 
 /* Output a single-character \ escape.  */
 
-static void
-print_esc_char (char c)
+స్థిర శూన్య
+print_esc_char (అక్షరం c)
 {
-  switch (c)
+  ఎంపిక (c)
     {
-    case 'a':			/* Alert. */
-      putchar ('\a');
-      break;
-    case 'b':			/* Backspace. */
-      putchar ('\b');
-      break;
-    case 'c':			/* Cancel the rest of the output. */
-      exit (EXIT_SUCCESS);
-      break;
-    case 'e':			/* Escape. */
-      putchar ('\x1B');
-      break;
-    case 'f':			/* Form feed. */
-      putchar ('\f');
-      break;
-    case 'n':			/* New line. */
-      putchar ('\n');
-      break;
-    case 'r':			/* Carriage return. */
-      putchar ('\r');
-      break;
-    case 't':			/* Horizontal tab. */
-      putchar ('\t');
-      break;
-    case 'v':			/* Vertical tab. */
-      putchar ('\v');
-      break;
-    default:
-      putchar (c);
-      break;
+    స్థితి 'a':			/* Alert. */
+      అక్షరం_రాయి ('\a');
+      ఆపు;
+    స్థితి 'b':			/* Backspace. */
+      అక్షరం_రాయి ('\b');
+      ఆపు;
+    స్థితి 'c':			/* Cancel the rest of the output. */
+      నిష్క్రమించు (EXIT_SUCCESS);
+      ఆపు;
+    స్థితి 'e':			/* Escape. */
+      అక్షరం_రాయి ('\x1B');
+      ఆపు;
+    స్థితి 'f':			/* Form feed. */
+      అక్షరం_రాయి ('\f');
+      ఆపు;
+    స్థితి 'n':			/* New line. */
+      అక్షరం_రాయి ('\n');
+      ఆపు;
+    స్థితి 'r':			/* Carriage return. */
+      అక్షరం_రాయి ('\r');
+      ఆపు;
+    స్థితి 't':			/* Horizontal tab. */
+      అక్షరం_రాయి ('\t');
+      ఆపు;
+    స్థితి 'v':			/* Vertical tab. */
+      అక్షరం_రాయి ('\v');
+      ఆపు;
+    అప్రమేయ:
+      అక్షరం_రాయి (c);
+      ఆపు;
     }
 }
 
@@ -239,82 +239,82 @@ print_esc_char (char c)
    If OCTAL_0 is nonzero, octal escapes are of the form \0ooo, where o
    is an octal digit; otherwise they are of the form \ooo.  */
 
-static int
-print_esc (char const *escstart, bool octal_0)
+స్థిర పూర్ణాంకం
+print_esc (అక్షరం స్థిరరాశి *escstart, bool octal_0)
 {
-  char const *p = escstart + 1;
-  int esc_value = 0;		/* Value of \nnn escape. */
-  int esc_length;		/* Length of \nnn escape. */
+  అక్షరం స్థిరరాశి *p = escstart + 1;
+  పూర్ణాంకం esc_విలువ = 0;		/* Value of \nnn escape. */
+  పూర్ణాంకం esc_నిడివి;		/* Length of \nnn escape. */
 
-  if (*p == 'x')
+  ఒకవేళ (*p == 'x')
     {
       /* A hexadecimal \xhh escape sequence must have 1 or 2 hex. digits.  */
-      for (esc_length = 0, ++p;
-           esc_length < 2 && c_isxdigit (*p);
-           ++esc_length, ++p)
-        esc_value = esc_value * 16 + fromhex (*p);
-      if (esc_length == 0)
+      కొరకు (esc_నిడివి = 0, ++p;
+           esc_నిడివి < 2 && c_isxdigit (*p);
+           ++esc_నిడివి, ++p)
+        esc_విలువ = esc_విలువ * 16 + fromhex (*p);
+      ఒకవేళ (esc_నిడివి == 0)
         error (EXIT_FAILURE, 0, _("missing hexadecimal number in escape"));
-      putchar (esc_value);
+      అక్షరం_రాయి (esc_విలువ);
     }
-  else if (isoct (*p))
+  లేకపోతే ఒకవేళ (isoct (*p))
     {
       /* Parse \0ooo (if octal_0 && *p == '0') or \ooo (otherwise).
          Allow \ooo if octal_0 && *p != '0'; this is an undocumented
          extension to POSIX that is compatible with Bash 2.05b.  */
-      for (esc_length = 0, p += octal_0 && *p == '0';
-           esc_length < 3 && isoct (*p);
-           ++esc_length, ++p)
-        esc_value = esc_value * 8 + fromoct (*p);
-      putchar (esc_value);
+      కొరకు (esc_నిడివి = 0, p += octal_0 && *p == '0';
+           esc_నిడివి < 3 && isoct (*p);
+           ++esc_నిడివి, ++p)
+        esc_విలువ = esc_విలువ * 8 + fromoct (*p);
+      అక్షరం_రాయి (esc_విలువ);
     }
-  else if (*p && strchr ("\"\\abcefnrtv", *p))
+  లేకపోతే ఒకవేళ (*p && strchr ("\"\\abcefnrtv", *p))
     print_esc_char (*p++);
-  else if (*p == 'u' || *p == 'U')
+  లేకపోతే ఒకవేళ (*p == 'u' || *p == 'U')
     {
-      char esc_char = *p;
-      unsigned int uni_value;
+      అక్షరం esc_char = *p;
+      గుర్తులేని పూర్ణాంకం uni_విలువ;
 
-      uni_value = 0;
-      for (esc_length = (esc_char == 'u' ? 4 : 8), ++p;
-           esc_length > 0;
-           --esc_length, ++p)
+      uni_విలువ = 0;
+      కొరకు (esc_నిడివి = (esc_char == 'u' ? 4 : 8), ++p;
+           esc_నిడివి > 0;
+           --esc_నిడివి, ++p)
         {
-          if (! c_isxdigit (*p))
+          ఒకవేళ (! c_isxdigit (*p))
             error (EXIT_FAILURE, 0, _("missing hexadecimal number in escape"));
-          uni_value = uni_value * 16 + fromhex (*p);
+          uni_విలువ = uni_విలువ * 16 + fromhex (*p);
         }
 
       /* Error for invalid code points 0000D800 through 0000DFFF inclusive.
          Note print_unicode_char() would print the literal \u.. in this case. */
-      if (uni_value >= 0xd800 && uni_value <= 0xdfff)
+      ఒకవేళ (uni_విలువ >= 0xd800 && uni_విలువ <= 0xdfff)
         error (EXIT_FAILURE, 0, _("invalid universal character name \\%c%0*x"),
-               esc_char, (esc_char == 'u' ? 4 : 8), uni_value);
+               esc_char, (esc_char == 'u' ? 4 : 8), uni_విలువ);
 
-      print_unicode_char (stdout, uni_value, 0);
+      print_unicode_char (stdout, uni_విలువ, 0);
     }
-  else
+  లేకపోతే
     {
-      putchar ('\\');
-      if (*p)
+      అక్షరం_రాయి ('\\');
+      ఒకవేళ (*p)
         {
-          putchar (*p);
+          అక్షరం_రాయి (*p);
           p++;
         }
     }
-  return p - escstart - 1;
+  తిరిగి p - escstart - 1;
 }
 
 /* Print string STR, evaluating \ escapes. */
 
-static void
-print_esc_string (char const *str)
+స్థిర శూన్య
+print_esc_string (అక్షరం స్థిరరాశి *str)
 {
-  for (; *str; str++)
-    if (*str == '\\')
+  కొరకు (; *str; str++)
+    ఒకవేళ (*str == '\\')
       str += print_esc (str, true);
-    else
-      putchar (*str);
+    లేకపోతే
+      అక్షరం_రాయి (*str);
 }
 
 /* Evaluate a printf conversion specification.  START is the start of
@@ -323,196 +323,196 @@ print_esc_string (char const *str)
    values, if HAVE_FIELD_WIDTH and HAVE_PRECISION are true, respectively.
    ARGUMENT is the argument to be formatted.  */
 
-static void
-print_direc (char const *start, char conversion,
-             bool have_field_width, int field_width,
-             bool have_precision, int precision,
-             char const *argument)
+స్థిర శూన్య
+print_direc (అక్షరం స్థిరరాశి *ప్రారంభం, అక్షరం conversion,
+             bool have_క్షేత్రం_వెడల్పు, పూర్ణాంకం క్షేత్రం_వెడల్పు,
+             bool have_precision, పూర్ణాంకం precision,
+             అక్షరం స్థిరరాశి *వాదం)
 {
-  char *p;		/* Null-terminated copy of % directive. */
+  అక్షరం *p;		/* Null-terminated copy of % directive. */
 
   /* Create a null-terminated copy of the % directive, with an
      intmax_t-wide length modifier substituted for any existing
      integer length modifier.  */
   {
-    char *q;
-    char const *length_modifier;
-    size_t length_modifier_len;
+    అక్షరం *q;
+    అక్షరం స్థిరరాశి *నిడివి_modifier;
+    size_t నిడివి_modifier_len;
 
-    switch (conversion)
+    ఎంపిక (conversion)
       {
-      case 'd': case 'i': case 'o': case 'u': case 'x': case 'X':
-        length_modifier = "j";
-        length_modifier_len = 1;
-        break;
+      స్థితి 'd': స్థితి 'i': స్థితి 'o': స్థితి 'u': స్థితి 'x': స్థితి 'X':
+        నిడివి_modifier = "j";
+        నిడివి_modifier_len = 1;
+        ఆపు;
 
-      case 'a': case 'e': case 'f': case 'g':
-      case 'A': case 'E': case 'F': case 'G':
-        length_modifier = "L";
-        length_modifier_len = 1;
-        break;
+      స్థితి 'a': స్థితి 'e': స్థితి 'f': స్థితి 'g':
+      స్థితి 'A': స్థితి 'E': స్థితి 'F': స్థితి 'G':
+        నిడివి_modifier = "L";
+        నిడివి_modifier_len = 1;
+        ఆపు;
 
-      default:
-        length_modifier = start;  /* Any valid pointer will do.  */
-        length_modifier_len = 0;
-        break;
+      అప్రమేయ:
+        నిడివి_modifier = ప్రారంభం;  /* Any valid pointer will do.  */
+        నిడివి_modifier_len = 0;
+        ఆపు;
       }
 
-    size_t length = strlen (start);
-    p = xmalloc (length + length_modifier_len + 2);
-    q = mempcpy (p, start, length);
-    q = mempcpy (q, length_modifier, length_modifier_len);
+    size_t నిడివి = అక్షరశ్రేణి_పొడవు (ప్రారంభం);
+    p = xmalloc (నిడివి + నిడివి_modifier_len + 2);
+    q = mempcpy (p, ప్రారంభం, నిడివి);
+    q = mempcpy (q, నిడివి_modifier, నిడివి_modifier_len);
     *q++ = conversion;
     *q = '\0';
   }
 
-  switch (conversion)
+  ఎంపిక (conversion)
     {
-    case 'd':
-    case 'i':
+    స్థితి 'd':
+    స్థితి 'i':
       {
-        intmax_t arg = argument ? vstrtoimax (argument) : 0;
-        if (!have_field_width)
+        intmax_t arg = వాదం ? vstrtoimax (వాదం) : 0;
+        ఒకవేళ (!have_క్షేత్రం_వెడల్పు)
           {
-            if (!have_precision)
+            ఒకవేళ (!have_precision)
               xprintf (p, arg);
-            else
+            లేకపోతే
               xprintf (p, precision, arg);
           }
-        else
+        లేకపోతే
           {
-            if (!have_precision)
-              xprintf (p, field_width, arg);
-            else
-              xprintf (p, field_width, precision, arg);
+            ఒకవేళ (!have_precision)
+              xprintf (p, క్షేత్రం_వెడల్పు, arg);
+            లేకపోతే
+              xprintf (p, క్షేత్రం_వెడల్పు, precision, arg);
           }
       }
-      break;
+      ఆపు;
 
-    case 'o':
-    case 'u':
-    case 'x':
-    case 'X':
+    స్థితి 'o':
+    స్థితి 'u':
+    స్థితి 'x':
+    స్థితి 'X':
       {
-        uintmax_t arg = argument ? vstrtoumax (argument) : 0;
-        if (!have_field_width)
+        uintmax_t arg = వాదం ? vstrtoumax (వాదం) : 0;
+        ఒకవేళ (!have_క్షేత్రం_వెడల్పు)
           {
-            if (!have_precision)
+            ఒకవేళ (!have_precision)
               xprintf (p, arg);
-            else
+            లేకపోతే
               xprintf (p, precision, arg);
           }
-        else
+        లేకపోతే
           {
-            if (!have_precision)
-              xprintf (p, field_width, arg);
-            else
-              xprintf (p, field_width, precision, arg);
+            ఒకవేళ (!have_precision)
+              xprintf (p, క్షేత్రం_వెడల్పు, arg);
+            లేకపోతే
+              xprintf (p, క్షేత్రం_వెడల్పు, precision, arg);
           }
       }
-      break;
+      ఆపు;
 
-    case 'a':
-    case 'A':
-    case 'e':
-    case 'E':
-    case 'f':
-    case 'F':
-    case 'g':
-    case 'G':
+    స్థితి 'a':
+    స్థితి 'A':
+    స్థితి 'e':
+    స్థితి 'E':
+    స్థితి 'f':
+    స్థితి 'F':
+    స్థితి 'g':
+    స్థితి 'G':
       {
-        long double arg = argument ? vstrtold (argument) : 0;
-        if (!have_field_width)
+        దీర్ఘ ద్విగుణ arg = వాదం ? vstrtold (వాదం) : 0;
+        ఒకవేళ (!have_క్షేత్రం_వెడల్పు)
           {
-            if (!have_precision)
+            ఒకవేళ (!have_precision)
               xprintf (p, arg);
-            else
+            లేకపోతే
               xprintf (p, precision, arg);
           }
-        else
+        లేకపోతే
           {
-            if (!have_precision)
-              xprintf (p, field_width, arg);
-            else
-              xprintf (p, field_width, precision, arg);
+            ఒకవేళ (!have_precision)
+              xprintf (p, క్షేత్రం_వెడల్పు, arg);
+            లేకపోతే
+              xprintf (p, క్షేత్రం_వెడల్పు, precision, arg);
           }
       }
-      break;
+      ఆపు;
 
-    case 'c':
+    స్థితి 'c':
       {
-        char c = argument ? *argument : '\0';
-        if (!have_field_width)
+        అక్షరం c = వాదం ? *వాదం : '\0';
+        ఒకవేళ (!have_క్షేత్రం_వెడల్పు)
           xprintf (p, c);
-        else
-          xprintf (p, field_width, c);
+        లేకపోతే
+          xprintf (p, క్షేత్రం_వెడల్పు, c);
       }
-      break;
+      ఆపు;
 
-    case 's':
-      if (!argument)
-        argument = "";
-      if (!have_field_width)
+    స్థితి 's':
+      ఒకవేళ (!వాదం)
+        వాదం = "";
+      ఒకవేళ (!have_క్షేత్రం_వెడల్పు)
         {
-          if (!have_precision)
-            xprintf (p, argument);
-          else
-            xprintf (p, precision, argument);
+          ఒకవేళ (!have_precision)
+            xprintf (p, వాదం);
+          లేకపోతే
+            xprintf (p, precision, వాదం);
         }
-      else
+      లేకపోతే
         {
-          if (!have_precision)
-            xprintf (p, field_width, argument);
-          else
-            xprintf (p, field_width, precision, argument);
+          ఒకవేళ (!have_precision)
+            xprintf (p, క్షేత్రం_వెడల్పు, వాదం);
+          లేకపోతే
+            xprintf (p, క్షేత్రం_వెడల్పు, precision, వాదం);
         }
-      break;
+      ఆపు;
     }
 
-  free (p);
+  విడుదల (p);
 }
 
 /* Set curr_arg from indexed %i$ or otherwise next in sequence.
    POS can be 0,1,2,3 corresponding to
    [%][width][.precision][conversion] respectively.  */
 
-struct arg_cursor
+నిర్మాణం arg_cursor
 {
-  char const *f;	/* Pointer into 'format'.  */
-  int curr_arg;		/* Current offset.  */
-  int curr_s_arg;	/* Current sequential offset.  */
-  int end_arg;		/* End arg processed.  */
-  int direc_arg;	/* Arg for main directive.  */
+  అక్షరం స్థిరరాశి *f;	/* Pointer into 'format'.  */
+  పూర్ణాంకం curr_arg;		/* Current offset.  */
+  పూర్ణాంకం curr_s_arg;	/* Current sequential offset.  */
+  పూర్ణాంకం చివర_arg;		/* End arg processed.  */
+  పూర్ణాంకం direc_arg;	/* Arg for main directive.  */
 };
-ATTRIBUTE_PURE static struct arg_cursor
-get_curr_arg (int pos, struct arg_cursor ac)
+ATTRIBUTE_శుద్ధ స్థిర నిర్మాణం arg_cursor
+get_curr_arg (పూర్ణాంకం pos, నిర్మాణం arg_cursor ac)
 {
   /* Convert sequences like "123$" by hand to avoid problems with strtol,
      which might treat "$" as part of the number in some locales.  */
-  int arg = 0;
-  char const *f = ac.f;
-  if (pos < 3 && c_isdigit (*f))
+  పూర్ణాంకం arg = 0;
+  అక్షరం స్థిరరాశి *f = ac.f;
+  ఒకవేళ (pos < 3 && c_isdigit (*f))
     {
       bool v = false;
-      int a = *f++ - '0';
-      for (; c_isdigit (*f); f++)
+      పూర్ణాంకం a = *f++ - '0';
+      కొరకు (; c_isdigit (*f); f++)
         {
           v |= ckd_mul (&a, a, 10);
-          v |= ckd_add (&a, a, *f - '0');
+          v |= ckd_కూడు (&a, a, *f - '0');
         }
-      if (*f == '$')
-        arg = v ? INT_MAX : a;
+      ఒకవేళ (*f == '$')
+        arg = v ? గరిష్ఠ_పూర్ణాంకం : a;
     }
 
-  if (0 < arg)
+  ఒకవేళ (0 < arg)
     {
       /* Process indexed %i$ format.  */
       arg--;
       ac.f = f + 1;
-      if (pos == 0)
+      ఒకవేళ (pos == 0)
         ac.direc_arg = arg;
     }
-  else
+  లేకపోతే
     {
       /* Process sequential arg.  */
       arg = (pos == 0 ? (ac.direc_arg = -1)
@@ -520,237 +520,237 @@ get_curr_arg (int pos, struct arg_cursor ac)
              : ac.direc_arg);
     }
 
-  if (0 <= arg)
+  ఒకవేళ (0 <= arg)
     {
       ac.curr_arg = arg;
-      ac.end_arg = MAX (ac.end_arg, arg);
+      ac.చివర_arg = MAX (ac.చివర_arg, arg);
     }
-  return ac;
+  తిరిగి ac;
 }
 
 /* Print the text in FORMAT, using ARGV (with ARGC elements) for
    arguments to any '%' directives.
    Return the number of elements of ARGV used.  */
 
-static int
-print_formatted (char const *format, int argc, char **argv)
+స్థిర పూర్ణాంకం
+print_formatted (అక్షరం స్థిరరాశి *format, పూర్ణాంకం argc, అక్షరం **argv)
 {
-  struct arg_cursor ac;
-  ac.curr_arg = ac.curr_s_arg = ac.end_arg = ac.direc_arg = -1;
-  char const *direc_start;	/* Start of % directive.  */
-  char *direc;			/* Generated % directive.  */
-  char *pdirec;			/* Pointer to current end of directive.  */
-  bool have_field_width;	/* True if FIELD_WIDTH is valid.  */
-  int field_width = 0;		/* Arg to first '*'.  */
+  నిర్మాణం arg_cursor ac;
+  ac.curr_arg = ac.curr_s_arg = ac.చివర_arg = ac.direc_arg = -1;
+  అక్షరం స్థిరరాశి *direc_ప్రారంభం;	/* Start of % directive.  */
+  అక్షరం *direc;			/* Generated % directive.  */
+  అక్షరం *pdirec;			/* Pointer to current end of directive.  */
+  bool have_క్షేత్రం_వెడల్పు;	/* True if FIELD_WIDTH is valid.  */
+  పూర్ణాంకం క్షేత్రం_వెడల్పు = 0;		/* Arg to first '*'.  */
   bool have_precision;		/* True if PRECISION is valid.  */
-  int precision = 0;		/* Arg to second '*'.  */
-  char ok[UCHAR_MAX + 1];	/* ok['x'] is true if %x is allowed.  */
+  పూర్ణాంకం precision = 0;		/* Arg to second '*'.  */
+  అక్షరం ok[UCHAR_MAX + 1];	/* ok['x'] is true if %x is allowed.  */
 
-  direc = xmalloc (strlen (format) + 1);
+  direc = xmalloc (అక్షరశ్రేణి_పొడవు (format) + 1);
 
-  for (ac.f = format; *ac.f; ac.f++)
+  కొరకు (ac.f = format; *ac.f; ac.f++)
     {
-      switch (*ac.f)
+      ఎంపిక (*ac.f)
         {
-        case '%':
-          direc_start = ac.f;
+        స్థితి '%':
+          direc_ప్రారంభం = ac.f;
           pdirec = direc;
           *pdirec++ = *ac.f++;
-          have_field_width = have_precision = false;
-          if (*ac.f == '%')
+          have_క్షేత్రం_వెడల్పు = have_precision = false;
+          ఒకవేళ (*ac.f == '%')
             {
-              putchar ('%');
-              break;
+              అక్షరం_రాయి ('%');
+              ఆపు;
             }
 
           ac = get_curr_arg (0, ac);
 
-          if (*ac.f == 'b')
+          ఒకవేళ (*ac.f == 'b')
             {
               /* FIXME: Field width and precision are not supported
                  for %b, even though POSIX requires it.  */
               ac = get_curr_arg (3, ac);
-              if (ac.curr_arg < argc)
+              ఒకవేళ (ac.curr_arg < argc)
                 print_esc_string (argv[ac.curr_arg]);
-              break;
+              ఆపు;
             }
 
-          if (*ac.f == 'q')
+          ఒకవేళ (*ac.f == 'q')
             {
               ac = get_curr_arg (3, ac);
-              if (ac.curr_arg < argc)
+              ఒకవేళ (ac.curr_arg < argc)
                 {
                   fputs (quotearg_style (shell_escape_quoting_style,
                                          argv[ac.curr_arg]), stdout);
                 }
-              break;
+              ఆపు;
             }
 
-          memset (ok, 0, sizeof ok);
+          memset (ok, 0, పరిమాణం ok);
           ok['a'] = ok['A'] = ok['c'] = ok['d'] = ok['e'] = ok['E'] =
             ok['f'] = ok['F'] = ok['g'] = ok['G'] = ok['i'] = ok['o'] =
             ok['s'] = ok['u'] = ok['x'] = ok['X'] = 1;
 
-          for (;; ac.f++)
+          కొరకు (;; ac.f++)
             {
-              switch (*ac.f)
+              ఎంపిక (*ac.f)
                 {
-#if (__GLIBC__ == 2 && 2 <= __GLIBC_MINOR__) || 3 <= __GLIBC__
-                case 'I':
-#endif
-                case '\'':
+#ఒకవేళ (__GLIBC__ == 2 && 2 <= __GLIBC_MINOR__) || 3 <= __GLIBC__
+                స్థితి 'I':
+#అయితే_ముగింపు
+                స్థితి '\'':
                   ok['a'] = ok['A'] = ok['c'] = ok['e'] = ok['E'] =
                     ok['o'] = ok['s'] = ok['x'] = ok['X'] = 0;
-                  break;
-                case '-': case '+': case ' ':
-                  break;
-                case '#':
+                  ఆపు;
+                స్థితి '-': స్థితి '+': స్థితి ' ':
+                  ఆపు;
+                స్థితి '#':
                   ok['c'] = ok['d'] = ok['i'] = ok['s'] = ok['u'] = 0;
-                  break;
-                case '0':
+                  ఆపు;
+                స్థితి '0':
                   ok['c'] = ok['s'] = 0;
-                  break;
-                default:
-                  goto no_more_flag_characters;
+                  ఆపు;
+                అప్రమేయ:
+                  వెళ్ళు no_మరిన్ని_flag_characters;
                 }
               *pdirec++ = *ac.f;
             }
-        no_more_flag_characters:
+        no_మరిన్ని_flag_characters:
 
-          if (*ac.f == '*')
+          ఒకవేళ (*ac.f == '*')
             {
               *pdirec++ = *ac.f++;
 
               ac = get_curr_arg (1, ac);
 
-              if (ac.curr_arg < argc)
+              ఒకవేళ (ac.curr_arg < argc)
                 {
-                  intmax_t width = vstrtoimax (argv[ac.curr_arg]);
-                  if (INT_MIN <= width && width <= INT_MAX)
-                    field_width = width;
-                  else
+                  intmax_t వెడల్పు = vstrtoimax (argv[ac.curr_arg]);
+                  ఒకవేళ (INT_MIN <= వెడల్పు && వెడల్పు <= గరిష్ఠ_పూర్ణాంకం)
+                    క్షేత్రం_వెడల్పు = వెడల్పు;
+                  లేకపోతే
                     error (EXIT_FAILURE, 0, _("invalid field width: %s"),
                            quote (argv[ac.curr_arg]));
                 }
-              else
-                field_width = 0;
-              have_field_width = true;
+              లేకపోతే
+                క్షేత్రం_వెడల్పు = 0;
+              have_క్షేత్రం_వెడల్పు = true;
             }
-          else
-            while (c_isdigit (*ac.f))
+          లేకపోతే
+            అయితే (c_isdigit (*ac.f))
               *pdirec++ = *ac.f++;
-          if (*ac.f == '.')
+          ఒకవేళ (*ac.f == '.')
             {
               *pdirec++ = *ac.f++;
               ok['c'] = 0;
-              if (*ac.f == '*')
+              ఒకవేళ (*ac.f == '*')
                 {
                   *pdirec++ = *ac.f++;
 
                   ac = get_curr_arg (2, ac);
 
-                  if (ac.curr_arg < argc)
+                  ఒకవేళ (ac.curr_arg < argc)
                     {
                       intmax_t prec = vstrtoimax (argv[ac.curr_arg]);
-                      if (prec < 0)
+                      ఒకవేళ (prec < 0)
                         {
                           /* A negative precision is taken as if the
                              precision were omitted, so -1 is safe
                              here even if prec < INT_MIN.  */
                           precision = -1;
                         }
-                      else if (INT_MAX < prec)
+                      లేకపోతే ఒకవేళ (గరిష్ఠ_పూర్ణాంకం < prec)
                         error (EXIT_FAILURE, 0, _("invalid precision: %s"),
                                quote (argv[ac.curr_arg]));
-                      else
+                      లేకపోతే
                         precision = prec;
                     }
-                  else
+                  లేకపోతే
                     precision = 0;
                   have_precision = true;
                 }
-              else
-                while (c_isdigit (*ac.f))
+              లేకపోతే
+                అయితే (c_isdigit (*ac.f))
                   *pdirec++ = *ac.f++;
             }
 
           *pdirec++ = '\0';
 
-          while (*ac.f == 'l' || *ac.f == 'L' || *ac.f == 'h'
+          అయితే (*ac.f == 'l' || *ac.f == 'L' || *ac.f == 'h'
                  || *ac.f == 'j' || *ac.f == 't' || *ac.f == 'z')
             ++ac.f;
 
           {
-            unsigned char conversion = *ac.f;
-            int speclen = MIN (ac.f + 1 - direc_start, INT_MAX);
-            if (! ok[conversion])
+            గుర్తులేని అక్షరం conversion = *ac.f;
+            పూర్ణాంకం speclen = MIN (ac.f + 1 - direc_ప్రారంభం, గరిష్ఠ_పూర్ణాంకం);
+            ఒకవేళ (! ok[conversion])
               error (EXIT_FAILURE, 0,
                      _("%.*s: invalid conversion specification"),
-                     speclen, direc_start);
+                     speclen, direc_ప్రారంభం);
           }
 
           ac = get_curr_arg (3, ac);
 
           print_direc (direc, *ac.f,
-                       have_field_width, field_width,
+                       have_క్షేత్రం_వెడల్పు, క్షేత్రం_వెడల్పు,
                        have_precision, precision,
-                       ac.curr_arg < argc ? argv[ac.curr_arg] : NULL);
+                       ac.curr_arg < argc ? argv[ac.curr_arg] : ఖాళీ);
 
-          break;
+          ఆపు;
 
-        case '\\':
+        స్థితి '\\':
           ac.f += print_esc (ac.f, false);
-          break;
+          ఆపు;
 
-        default:
-          putchar (*ac.f);
+        అప్రమేయ:
+          అక్షరం_రాయి (*ac.f);
         }
     }
 
-  free (direc);
-  return MIN (argc, ac.end_arg + 1);
+  విడుదల (direc);
+  తిరిగి MIN (argc, ac.చివర_arg + 1);
 }
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
-  char *format;
-  int args_used;
+  అక్షరం *format;
+  పూర్ణాంకం వాదనలు_వాడిన;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  posixly_correct = (getenv ("POSIXLY_CORRECT") != NULL);
+  posixly_correct = (getenv ("POSIXLY_CORRECT") != ఖాళీ);
 
   /* We directly parse options, rather than use parse_long_options, in
      order to avoid accepting abbreviations.  */
-  if (argc == 2)
+  ఒకవేళ (argc == 2)
     {
-      if (streq (argv[1], "--help"))
+      ఒకవేళ (streq (argv[1], "--help"))
         usage (EXIT_SUCCESS);
 
-      if (streq (argv[1], "--version"))
+      ఒకవేళ (streq (argv[1], "--version"))
         {
-          version_etc (stdout, PROGRAM_NAME, PACKAGE_NAME, Version, AUTHORS,
-                       (char *) NULL);
-          return EXIT_SUCCESS;
+          సంస్కరణ_etc (stdout, కార్యక్రమం_NAME, PACKAGE_NAME, సంస్కరణ, AUTHORS,
+                       (అక్షరం *) ఖాళీ);
+          తిరిగి EXIT_SUCCESS;
         }
     }
 
   /* The above handles --help and --version.
      Since there is no other invocation of getopt, handle '--' here.  */
-  if (1 < argc && streq (argv[1], "--"))
+  ఒకవేళ (1 < argc && streq (argv[1], "--"))
     {
       --argc;
       ++argv;
     }
 
-  if (argc <= 1)
+  ఒకవేళ (argc <= 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
@@ -760,18 +760,18 @@ main (int argc, char **argv)
   argc -= 2;
   argv += 2;
 
-  do
+  చేయి
     {
-      args_used = print_formatted (format, argc, argv);
-      argc -= args_used;
-      argv += args_used;
+      వాదనలు_వాడిన = print_formatted (format, argc, argv);
+      argc -= వాదనలు_వాడిన;
+      argv += వాదనలు_వాడిన;
     }
-  while (args_used > 0 && argc > 0);
+  అయితే (వాదనలు_వాడిన > 0 && argc > 0);
 
-  if (argc > 0)
+  ఒకవేళ (argc > 0)
     error (0, 0,
            _("warning: ignoring excess arguments, starting with %s"),
            quote (argv[0]));
 
-  return exit_status;
+  తిరిగి exit_స్థితి;
 }

@@ -15,5 +15,5 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-extern int operand2sig (char const *operand)
+బాహ్య పూర్ణాంకం operand2sig (అక్షరం స్థిరరాశి *నిర్వాహ్యం_2)
   _GL_ATTRIBUTE_NONNULL ();

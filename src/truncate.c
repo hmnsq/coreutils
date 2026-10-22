@@ -20,267 +20,267 @@
    flexible wrt the size specifications and the use of long options,
    to better fit the "GNU" environment.  */
 
-#include <config.h>             /* sets _FILE_OFFSET_BITS=64 etc. */
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#అన్తర్భావ <config.h>             /* sets _FILE_OFFSET_BITS=64 etc. */
+#అన్తర్భావ <stdio.h>
+#అన్తర్భావ <getopt.h>
+#అన్తర్భావ <sys/types.h>
 
-#include "system.h"
-#include "quote.h"
-#include "stat-size.h"
-#include "xdectoint.h"
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "quote.h"
+#అన్తర్భావ "stat-size.h"
+#అన్తర్భావ "xdectoint.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "truncate"
+#నిర్వచించు కార్యక్రమం_NAME "truncate"
 
-#define AUTHORS proper_name_lite ("Padraig Brady", "P\303\241draig Brady")
+#నిర్వచించు AUTHORS proper_name_lite ("Padraig Brady", "P\303\241draig Brady")
 
 /* (-c) If true, don't create if not already there */
-static bool no_create;
+స్థిర bool no_create;
 
 /* (-o) If true, --size refers to blocks not bytes */
-static bool block_mode;
+స్థిర bool ఖండం_బహుళకం;
 
 /* (-r) Reference file to use size from */
-static char const *ref_file;
+స్థిర అక్షరం స్థిరరాశి *ref_file;
 
-static struct option const longopts[] =
+స్థిర నిర్మాణం option స్థిరరాశి longopts[] =
 {
-  {"no-create", no_argument, NULL, 'c'},
-  {"io-blocks", no_argument, NULL, 'o'},
-  {"reference", required_argument, NULL, 'r'},
-  {"size", required_argument, NULL, 's'},
+  {"no-create", no_వాదం, ఖాళీ, 'c'},
+  {"io-blocks", no_వాదం, ఖాళీ, 'o'},
+  {"reference", required_వాదం, ఖాళీ, 'r'},
+  {"size", required_వాదం, ఖాళీ, 's'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_సంస్కరణ_OPTION_DECL},
+  {ఖాళీ, 0, ఖాళీ, 0}
 };
 
-typedef enum
-{ rm_abs = 0, rm_rel, rm_min, rm_max, rm_rdn, rm_rup } rel_mode_t;
+రకనిర్వచనం గణన
+{ rm_abs = 0, rm_rel, rm_min, rm_max, rm_rdn, rm_rup } rel_బహుళకం_t;
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("Usage: %s OPTION... FILE...\n"), program_name);
+      రాయి (_("Usage: %s OPTION... FILE...\n"), కార్యక్రమం_name);
       fputs (_("\
-Shrink or extend the size of each FILE to the specified size\n\
+Shrink or extend the కొలత యొక్క each FILE గమ్యం the specified కొలత\n\
 \n\
-A FILE argument that does not exist is created.\n\
+A FILE వాదం that does not exist is created.\n\
 \n\
-If a FILE is larger than the specified size, the extra data is lost.\n\
+If a FILE is larger than the specified కొలత, the extra దత్తాంశం is కోల్పోయిన.\n\
 If a FILE is shorter, it is extended and the sparse extended part (hole)\n\
-reads as zero bytes.\n\
+reads as zero బైట్లు.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -c, --no-create        do not create any files\n\
+  -c, --no-create        చేయి not create any files\n\
 "));
       oputs (_("\
-  -o, --io-blocks        treat SIZE as number of IO blocks instead of bytes\n\
+  -o, --io-ఖండాలు        treat కొలత_2 as సంఖ్య యొక్క IO ఖండాలు instead యొక్క బైట్లు\n\
 "));
       oputs (_("\
-  -r, --reference=RFILE  base size on RFILE\n\
+  -r, --reference=RFILE  పునాది_2 కొలత on RFILE\n\
 "));
       oputs (_("\
-  -s, --size=SIZE        set or adjust the file size by SIZE bytes\n\
+  -s, --కొలత=కొలత_2        సమితి_2 or adjust the file కొలత by కొలత_2 బైట్లు\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_size_note ();
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
+      emit_కొలత_note ();
       fputs (_("\n\
-SIZE may also be prefixed by one of the following modifying characters:\n\
-'+' extend by, '-' reduce by, '<' at most, '>' at least,\n\
-'/' round down to multiple of, '%' round up to multiple of.\n"), stdout);
-      emit_ancillary_info (PROGRAM_NAME);
+కొలత_2 may also be prefixed by one యొక్క the following modifying characters:\n\
+'+' extend by, '-' reduce by, '<' at most, '>' at కనిష్ఠ,\n\
+'/' విడత_2 కిందికి గమ్యం గుణిజం యొక్క, '%' విడత_2 పైకి గమ్యం గుణిజం యొక్క.\n"), stdout);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
 /* return true on success, false on error.  */
-static bool
-do_ftruncate (int fd, char const *fname, off_t ssize, off_t rsize,
-              rel_mode_t rel_mode)
+స్థిర bool
+do_ftruncate (పూర్ణాంకం fd, అక్షరం స్థిరరాశి *fname, off_t ssize, off_t rsize,
+              rel_బహుళకం_t rel_బహుళకం)
 {
-  struct stat sb;
+  నిర్మాణం stat sb;
   off_t nsize;
 
-  if ((block_mode || (rel_mode && rsize < 0)) && fstat (fd, &sb) != 0)
+  ఒకవేళ ((ఖండం_బహుళకం || (rel_బహుళకం && rsize < 0)) && fstat (fd, &sb) != 0)
     {
       error (0, errno, _("cannot fstat %s"), quoteaf (fname));
-      return false;
+      తిరిగి false;
     }
-  if (block_mode)
+  ఒకవేళ (ఖండం_బహుళకం)
     {
       ptrdiff_t blksize = STP_BLKSIZE (&sb);
       intmax_t ssize0 = ssize;
-      if (ckd_mul (&ssize, ssize, blksize))
+      ఒకవేళ (ckd_mul (&ssize, ssize, blksize))
         {
           error (0, 0,
                  _("overflow in %jd * %td byte blocks for file %s"),
                  ssize0, blksize, quoteaf (fname));
-          return false;
+          తిరిగి false;
         }
     }
-  if (rel_mode)
+  ఒకవేళ (rel_బహుళకం)
     {
       off_t fsize;
 
-      if (0 <= rsize)
+      ఒకవేళ (0 <= rsize)
         fsize = rsize;
-      else
+      లేకపోతే
         {
-          if (usable_st_size (&sb))
+          ఒకవేళ (usable_st_కొలత (&sb))
             {
-              fsize = sb.st_size;
-              if (fsize < 0)
+              fsize = sb.st_కొలత;
+              ఒకవేళ (fsize < 0)
                 {
                   /* Sanity check.  Overflow is the only reason I can think
                      this would ever go negative. */
                   error (0, 0, _("%s has unusable, apparently negative size"),
                          quoteaf (fname));
-                  return false;
+                  తిరిగి false;
                 }
             }
-          else
+          లేకపోతే
             {
               fsize = lseek (fd, 0, SEEK_END);
-              if (fsize < 0)
+              ఒకవేళ (fsize < 0)
                 {
                   error (0, errno, _("cannot get the size of %s"),
                          quoteaf (fname));
-                  return false;
+                  తిరిగి false;
                 }
             }
         }
 
-      if (rel_mode == rm_min)
+      ఒకవేళ (rel_బహుళకం == rm_min)
         nsize = MAX (fsize, ssize);
-      else if (rel_mode == rm_max)
+      లేకపోతే ఒకవేళ (rel_బహుళకం == rm_max)
         nsize = MIN (fsize, ssize);
-      else if (rel_mode == rm_rdn)
+      లేకపోతే ఒకవేళ (rel_బహుళకం == rm_rdn)
         /* 0..ssize-1 -> 0 */
         nsize = fsize - fsize % ssize;
-      else
+      లేకపోతే
         {
-          if (rel_mode == rm_rup)
+          ఒకవేళ (rel_బహుళకం == rm_rup)
             {
               /* 1..ssize -> ssize */
               off_t r = fsize % ssize;
               ssize = r == 0 ? 0 : ssize - r;
             }
-          if (ckd_add (&nsize, fsize, ssize))
+          ఒకవేళ (ckd_కూడు (&nsize, fsize, ssize))
             {
               error (0, 0, _("overflow extending size of file %s"),
                      quoteaf (fname));
-              return false;
+              తిరిగి false;
             }
         }
     }
-  else
+  లేకపోతే
     nsize = ssize;
-  if (nsize < 0)
+  ఒకవేళ (nsize < 0)
     nsize = 0;
 
-  if (ftruncate (fd, nsize) != 0)
+  ఒకవేళ (ftruncate (fd, nsize) != 0)
     {
       error (0, errno, _("failed to truncate %s at %jd bytes"),
              quoteaf (fname), (intmax_t) {nsize});
-      return false;
+      తిరిగి false;
     }
 
-  return true;
+  తిరిగి true;
 }
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
-  bool got_size = false;
-  off_t size IF_LINT ( = 0);
+  bool got_కొలత = false;
+  off_t కొలత IF_LINT ( = 0);
   off_t rsize = -1;
-  rel_mode_t rel_mode = rm_abs;
-  int c;
+  rel_బహుళకం_t rel_బహుళకం = rm_abs;
+  పూర్ణాంకం c;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while ((c = getopt_long (argc, argv, "cor:s:", longopts, NULL)) != -1)
+  అయితే ((c = getopt_long (argc, argv, "cor:s:", longopts, ఖాళీ)) != -1)
     {
-      switch (c)
+      ఎంపిక (c)
         {
-        case 'c':
+        స్థితి 'c':
           no_create = true;
-          break;
+          ఆపు;
 
-        case 'o':
-          block_mode = true;
-          break;
+        స్థితి 'o':
+          ఖండం_బహుళకం = true;
+          ఆపు;
 
-        case 'r':
+        స్థితి 'r':
           ref_file = optarg;
-          break;
+          ఆపు;
 
-        case 's':
+        స్థితి 's':
           /* skip any whitespace */
-          while (isspace (to_uchar (*optarg)))
+          అయితే (ఖాళీనా (గమ్యం_uchar (*optarg)))
             optarg++;
-          switch (*optarg)
+          ఎంపిక (*optarg)
             {
-            case '<':
-              rel_mode = rm_max;
+            స్థితి '<':
+              rel_బహుళకం = rm_max;
               optarg++;
-              break;
-            case '>':
-              rel_mode = rm_min;
+              ఆపు;
+            స్థితి '>':
+              rel_బహుళకం = rm_min;
               optarg++;
-              break;
-            case '/':
-              rel_mode = rm_rdn;
+              ఆపు;
+            స్థితి '/':
+              rel_బహుళకం = rm_rdn;
               optarg++;
-              break;
-            case '%':
-              rel_mode = rm_rup;
+              ఆపు;
+            స్థితి '%':
+              rel_బహుళకం = rm_rup;
               optarg++;
-              break;
+              ఆపు;
             }
           /* skip any whitespace */
-          while (isspace (to_uchar (*optarg)))
+          అయితే (ఖాళీనా (గమ్యం_uchar (*optarg)))
             optarg++;
-          if (*optarg == '+' || *optarg == '-')
+          ఒకవేళ (*optarg == '+' || *optarg == '-')
             {
-              if (rel_mode)
+              ఒకవేళ (rel_బహుళకం)
                 {
                   error (0, 0, _("multiple relative modifiers specified"));
                   /* Note other combinations are flagged as invalid numbers */
                   usage (EXIT_FAILURE);
                 }
-              rel_mode = rm_rel;
+              rel_బహుళకం = rm_rel;
             }
           /* Support dd BLOCK size suffixes + lowercase g,t,m for bsd compat.
              Note we don't support dd's b=512, c=1, w=2 or 21x512MiB formats. */
-          size = xdectoimax (optarg, OFF_T_MIN, OFF_T_MAX, "EgGkKmMPQRtTYZ0",
+          కొలత = xdectoimax (optarg, OFF_T_MIN, OFF_T_MAX, "EgGkKmMPQRtTYZ0",
                              _("Invalid number"), 0);
           /* Rounding to multiple of 0 is nonsensical */
-          if ((rel_mode == rm_rup || rel_mode == rm_rdn) && size == 0)
+          ఒకవేళ ((rel_బహుళకం == rm_rup || rel_బహుళకం == rm_rdn) && కొలత == 0)
             error (EXIT_FAILURE, 0, _("division by zero"));
-          got_size = true;
-          break;
+          got_కొలత = true;
+          ఆపు;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_సంస్కరణ_CHAR (కార్యక్రమం_NAME, AUTHORS);
 
-        default:
+        అప్రమేయ:
           usage (EXIT_FAILURE);
         }
     }
@@ -289,91 +289,91 @@ main (int argc, char **argv)
   argc -= optind;
 
   /* must specify either size or reference file */
-  if (!ref_file && !got_size)
+  ఒకవేళ (!ref_file && !got_కొలత)
     {
       error (0, 0, _("you must specify either %s or %s"),
              quote_n (0, "--size"), quote_n (1, "--reference"));
       usage (EXIT_FAILURE);
     }
   /* must specify a relative size with a reference file */
-  if (ref_file && got_size && !rel_mode)
+  ఒకవేళ (ref_file && got_కొలత && !rel_బహుళకం)
     {
       error (0, 0, _("you must specify a relative %s with %s"),
              quote_n (0, "--size"), quote_n (1, "--reference"));
       usage (EXIT_FAILURE);
     }
   /* block_mode without size is not valid */
-  if (block_mode && !got_size)
+  ఒకవేళ (ఖండం_బహుళకం && !got_కొలత)
     {
       error (0, 0, _("%s was specified but %s was not"),
              quote_n (0, "--io-blocks"), quote_n (1, "--size"));
       usage (EXIT_FAILURE);
     }
   /* must specify at least 1 file */
-  if (argc < 1)
+  ఒకవేళ (argc < 1)
     {
       error (0, 0, _("missing file operand"));
       usage (EXIT_FAILURE);
     }
 
-  if (ref_file)
+  ఒకవేళ (ref_file)
     {
-      struct stat sb;
-      off_t file_size = -1;
-      if (stat (ref_file, &sb) != 0)
+      నిర్మాణం stat sb;
+      off_t file_కొలత = -1;
+      ఒకవేళ (stat (ref_file, &sb) != 0)
         error (EXIT_FAILURE, errno, _("cannot stat %s"), quoteaf (ref_file));
-      if (usable_st_size (&sb))
-        file_size = sb.st_size;
-      else
+      ఒకవేళ (usable_st_కొలత (&sb))
+        file_కొలత = sb.st_కొలత;
+      లేకపోతే
         {
           /* O_NONBLOCK so we do not hang forever on a FIFO with no writer.  */
-          int ref_fd = open (ref_file, O_RDONLY | O_NONBLOCK);
-          if (0 <= ref_fd)
+          పూర్ణాంకం ref_fd = open (ref_file, O_RDONLY | O_NONBLOCK);
+          ఒకవేళ (0 <= ref_fd)
             {
-              off_t file_end = lseek (ref_fd, 0, SEEK_END);
-              int saved_errno = errno;
+              off_t file_చివర = lseek (ref_fd, 0, SEEK_END);
+              పూర్ణాంకం saved_errno = errno;
               close (ref_fd); /* ignore failure */
-              if (0 <= file_end)
-                file_size = file_end;
-              else
+              ఒకవేళ (0 <= file_చివర)
+                file_కొలత = file_చివర;
+              లేకపోతే
                 {
                   /* restore, in case close clobbered it. */
                   errno = saved_errno;
                 }
             }
         }
-      if (file_size < 0)
+      ఒకవేళ (file_కొలత < 0)
         error (EXIT_FAILURE, errno, _("cannot get the size of %s"),
                quoteaf (ref_file));
-      if (!got_size)
-        size = file_size;
-      else
-        rsize = file_size;
+      ఒకవేళ (!got_కొలత)
+        కొలత = file_కొలత;
+      లేకపోతే
+        rsize = file_కొలత;
     }
 
-  int oflags = O_WRONLY | (no_create ? 0 : O_CREAT) | O_NONBLOCK;
+  పూర్ణాంకం oflags = O_WRONLY | (no_create ? 0 : O_CREAT) | O_NONBLOCK;
   bool errors = false;
 
-  for (char const *fname; (fname = *argv); argv++)
+  కొరకు (అక్షరం స్థిరరాశి *fname; (fname = *argv); argv++)
     {
-      int fd = open (fname, oflags, MODE_RW_UGO);
-      if (fd < 0)
+      పూర్ణాంకం fd = open (fname, oflags, బహుళకం_RW_UGO);
+      ఒకవేళ (fd < 0)
         {
           /* 'truncate -s0 -c no-such-file'  shouldn't gen error
              'truncate -s0 no-such-dir/file' should gen ENOENT error
              'truncate -s0 no-such-dir/' should gen EISDIR error
              'truncate -s0 .' should gen EISDIR error */
-          if (!(no_create && errno == ENOENT))
+          ఒకవేళ (!(no_create && errno == ENOENT))
             {
               error (0, errno, _("cannot open %s for writing"),
                      quoteaf (fname));
               errors = true;
             }
         }
-      else
+      లేకపోతే
         {
-          errors |= !do_ftruncate (fd, fname, size, rsize, rel_mode);
-          if (close (fd) != 0)
+          errors |= !do_ftruncate (fd, fname, కొలత, rsize, rel_బహుళకం);
+          ఒకవేళ (close (fd) != 0)
             {
               error (0, errno, _("failed to close %s"), quoteaf (fname));
               errors = true;
@@ -381,5 +381,5 @@ main (int argc, char **argv)
         }
     }
 
-  return errors ? EXIT_FAILURE : EXIT_SUCCESS;
+  తిరిగి errors ? EXIT_FAILURE : EXIT_SUCCESS;
 }

@@ -14,45 +14,45 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include "system.h"
-#include "true.h"
+#అన్తర్భావ <config.h>
+#అన్తర్భావ <stdio.h>
+#అన్తర్భావ <sys/types.h>
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "true.h"
 
-#define EXIT_STATUS (true_mode != TRUE_TRUE)
-#define PROGRAM_NAME (true_mode == TRUE_TRUE ? "true" : "false")
+#నిర్వచించు EXIT_స్థితి (true_బహుళకం != TRUE_TRUE)
+#నిర్వచించు కార్యక్రమం_NAME (true_బహుళకం == TRUE_TRUE ? "true" : "false")
 
-#define AUTHORS proper_name ("Jim Meyering")
+#నిర్వచించు AUTHORS proper_name ("Jim Meyering")
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  printf (_("\
-Usage: %s [ignored command line arguments]\n\
+  రాయి (_("\
+Usage: %s [ignored command పంక్తి arguments]\n\
   or:  %s OPTION\n\
 "),
-          program_name, program_name);
-  printf ("%s\n\n",
-          _(EXIT_STATUS == EXIT_SUCCESS
+          కార్యక్రమం_name, కార్యక్రమం_name);
+  రాయి ("%s\n\n",
+          _(EXIT_స్థితి == EXIT_SUCCESS
             ? N_("Exit with a status code indicating success.")
             : N_("Exit with a status code indicating failure.")));
   oputs (HELP_OPTION_DESCRIPTION);
-  oputs (VERSION_OPTION_DESCRIPTION);
-  printf (USAGE_BUILTIN_WARNING, PROGRAM_NAME);
-  emit_ancillary_info (PROGRAM_NAME);
-  exit (status);
+  oputs (సంస్కరణ_OPTION_DESCRIPTION);
+  రాయి (USAGE_BUILTIN_WARNING, కార్యక్రమం_NAME);
+  emit_ancillary_info (కార్యక్రమం_NAME);
+  నిష్క్రమించు (స్థితి_2);
 }
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
   /* Recognize --help or --version only if it's the only command-line
      argument.  */
-  if (argc == 2)
+  ఒకవేళ (argc == 2)
     {
       initialize_main (&argc, &argv);
-      set_program_name (argv[0]);
+      సమితి_కార్యక్రమం_name (argv[0]);
       setlocale (LC_ALL, "");
       bindtextdomain (PACKAGE, LOCALEDIR);
       textdomain (PACKAGE);
@@ -61,13 +61,13 @@ main (int argc, char **argv)
          edge case where writes fail with GNU specific options.  */
       atexit (close_stdout);
 
-      if (streq (argv[1], "--help"))
-        usage (EXIT_STATUS);
+      ఒకవేళ (streq (argv[1], "--help"))
+        usage (EXIT_స్థితి);
 
-      if (streq (argv[1], "--version"))
-        version_etc (stdout, PROGRAM_NAME, PACKAGE_NAME, Version, AUTHORS,
-                     (char *) NULL);
+      ఒకవేళ (streq (argv[1], "--version"))
+        సంస్కరణ_etc (stdout, కార్యక్రమం_NAME, PACKAGE_NAME, సంస్కరణ, AUTHORS,
+                     (అక్షరం *) ఖాళీ);
     }
 
-  return EXIT_STATUS;
+  తిరిగి EXIT_స్థితి;
 }

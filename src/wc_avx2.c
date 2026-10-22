@@ -14,46 +14,46 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
+#అన్తర్భావ <config.h>
 
-#include "wc.h"
-#include "system.h"
-#include "ioblksize.h"
+#అన్తర్భావ "wc.h"
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "ioblksize.h"
 
-#include <x86intrin.h>
+#అన్తర్భావ <x86intrin.h>
 
 /* Read FD and return a summary.  */
-extern struct wc_lines
-wc_lines_avx2 (int fd)
+బాహ్య నిర్మాణం wc_పంక్తులు
+wc_పంక్తులు_avx2 (పూర్ణాంకం fd)
 {
-  intmax_t lines = 0;
-  intmax_t bytes = 0;
+  intmax_t పంక్తులు = 0;
+  intmax_t బైట్లు = 0;
 
   __m256i endlines = _mm256_set1_epi8 ('\n');
 
-  while (true)
+  అయితే (true)
     {
-       __m256i avx_buf[IO_BUFSIZE / sizeof (__m256i)];
-      ssize_t bytes_read = read (fd, avx_buf, sizeof avx_buf);
-      if (bytes_read <= 0)
-        return (struct wc_lines) { bytes_read == 0 ? 0 : errno, lines, bytes };
+       __m256i avx_buf[IO_BUFSIZE / పరిమాణం (__m256i)];
+      ssize_t బైట్లు_read = పఠ (fd, avx_buf, పరిమాణం avx_buf);
+      ఒకవేళ (బైట్లు_read <= 0)
+        తిరిగి (నిర్మాణం wc_పంక్తులు) { బైట్లు_read == 0 ? 0 : errno, పంక్తులు, బైట్లు };
 
-      bytes += bytes_read;
+      బైట్లు += బైట్లు_read;
       __m256i *datap = avx_buf;
 
-      while (bytes_read >= 32)
+      అయితే (బైట్లు_read >= 32)
         {
-           __m256i to_match = _mm256_load_si256 (datap);
-           __m256i matches = _mm256_cmpeq_epi8 (to_match, endlines);
-           int mask = _mm256_movemask_epi8 (matches);
-           lines += __builtin_popcount (mask);
+           __m256i గమ్యం_సరిపోలిక = mm256_ఎక్కించు_si256 (datap);
+           __m256i matches = _mm256_cmpeq_epi8 (గమ్యం_సరిపోలిక, endlines);
+           పూర్ణాంకం ముసుగు = _mm256_movemask_epi8 (matches);
+           పంక్తులు += __builtin_popcount (ముసుగు);
            datap += 1;
-           bytes_read -= 32;
+           బైట్లు_read -= 32;
         }
 
       /* Finish up any left over bytes */
-      char *end = (char *) datap + bytes_read;
-      for (char *p = (char *) datap; p < end; p++)
-        lines += *p == '\n';
+      అక్షరం *చివర = (అక్షరం *) datap + బైట్లు_read;
+      కొరకు (అక్షరం *p = (అక్షరం *) datap; p < చివర; p++)
+        పంక్తులు += *p == '\n';
     }
 }

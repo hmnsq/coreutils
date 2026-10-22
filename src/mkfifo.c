@@ -16,173 +16,173 @@
 
 /* David MacKenzie <djm@ai.mit.edu>  */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
-#include <selinux/label.h>
+#అన్తర్భావ <config.h>
+#అన్తర్భావ <stdio.h>
+#అన్తర్భావ <getopt.h>
+#అన్తర్భావ <sys/types.h>
+#అన్తర్భావ <selinux/label.h>
 
-#include "system.h"
-#include "modechange.h"
-#include "quote.h"
-#include "selinux.h"
-#include "smack.h"
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "modechange.h"
+#అన్తర్భావ "quote.h"
+#అన్తర్భావ "selinux.h"
+#అన్తర్భావ "smack.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "mkfifo"
+#నిర్వచించు కార్యక్రమం_NAME "mkfifo"
 
-#define AUTHORS proper_name ("David MacKenzie")
+#నిర్వచించు AUTHORS proper_name ("David MacKenzie")
 
-static struct option const longopts[] =
+స్థిర నిర్మాణం option స్థిరరాశి longopts[] =
 {
   {GETOPT_SELINUX_CONTEXT_OPTION_DECL},
-  {"mode", required_argument, NULL, 'm'},
+  {"mode", required_వాదం, ఖాళీ, 'm'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_సంస్కరణ_OPTION_DECL},
+  {ఖాళీ, 0, ఖాళీ, 0}
 };
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("Usage: %s [OPTION]... NAME...\n"), program_name);
+      రాయి (_("Usage: %s [OPTION]... NAME...\n"), కార్యక్రమం_name);
       fputs (_("\
-Create named pipes (FIFOs) with the given NAMEs.\n\
+Create named pipes (FIFOs) with the given పేర్లు_2.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -m, --mode=MODE\n\
-         set file permission bits to MODE, not a=rw - umask\n\
+  -m, --బహుళకం_2=బహుళకం\n\
+         సమితి_2 file permission బిట్లు_2 గమ్యం బహుళకం, not a=rw - umask\n\
 "));
       oputs (_("\
   -Z\n\
-         set the SELinux security context to default type\n\
+         సమితి_2 the SELinux security context గమ్యం అప్రమేయ type\n\
 "));
       oputs (_("\
       --context[=CTX]\n\
-         like -Z, or if CTX is specified then set the\n\
-         SELinux or SMACK security context to CTX\n\
+         like -Z, or ఒకవేళ CTX is specified then సమితి_2 the\n\
+         SELinux or SMACK security context గమ్యం CTX\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
-  char const *specified_mode = NULL;
-  char const *scontext = NULL;
-  struct selabel_handle *set_security_context = NULL;
+  అక్షరం స్థిరరాశి *specified_బహుళకం = ఖాళీ;
+  అక్షరం స్థిరరాశి *scontext = ఖాళీ;
+  నిర్మాణం selabel_handle *సమితి_security_context = ఖాళీ;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  int optc;
-  while ((optc = getopt_long (argc, argv, "m:Z", longopts, NULL)) != -1)
+  పూర్ణాంకం optc;
+  అయితే ((optc = getopt_long (argc, argv, "m:Z", longopts, ఖాళీ)) != -1)
     {
-      switch (optc)
+      ఎంపిక (optc)
         {
-        case 'm':
-          specified_mode = optarg;
-          break;
-        case 'Z':
-          if (is_smack_enabled ())
+        స్థితి 'm':
+          specified_బహుళకం = optarg;
+          ఆపు;
+        స్థితి 'Z':
+          ఒకవేళ (is_smack_enabled ())
             {
               /* We don't yet support -Z to restore context with SMACK.  */
               scontext = optarg;
             }
-          else if (is_selinux_enabled () > 0)
+          లేకపోతే ఒకవేళ (is_selinux_enabled () > 0)
             {
-              if (optarg)
+              ఒకవేళ (optarg)
                 scontext = optarg;
-              else
+              లేకపోతే
                 {
-                  set_security_context = selabel_open (SELABEL_CTX_FILE,
-                                                       NULL, 0);
-                  if (! set_security_context)
+                  సమితి_security_context = selabel_open (SELABEL_CTX_FILE,
+                                                       ఖాళీ, 0);
+                  ఒకవేళ (! సమితి_security_context)
                     error (0, errno, _("warning: ignoring --context"));
                 }
             }
-          else if (optarg)
+          లేకపోతే ఒకవేళ (optarg)
             {
               error (0, 0,
                      _("warning: ignoring --context; "
                        "it requires an SELinux/SMACK-enabled kernel"));
             }
-          break;
+          ఆపు;
         case_GETOPT_HELP_CHAR;
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        case_GETOPT_సంస్కరణ_CHAR (కార్యక్రమం_NAME, AUTHORS);
+        అప్రమేయ:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (optind == argc)
+  ఒకవేళ (optind == argc)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
-  if (scontext)
+  ఒకవేళ (scontext)
     {
-      int ret = 0;
-      if (is_smack_enabled ())
-        ret = smack_set_label_for_self (scontext);
-      else
+      పూర్ణాంకం ret = 0;
+      ఒకవేళ (is_smack_enabled ())
+        ret = smack_సమితి_label_for_self (scontext);
+      లేకపోతే
         ret = setfscreatecon (scontext);
 
-      if (ret < 0)
+      ఒకవేళ (ret < 0)
         error (EXIT_FAILURE, errno,
                _("failed to set default file creation context to %s"),
                quote (scontext));
     }
 
-  mode_t newmode = MODE_RW_UGO;
-  if (specified_mode)
+  mode_t newmode = బహుళకం_RW_UGO;
+  ఒకవేళ (specified_బహుళకం)
     {
-      struct mode_change *change = mode_compile (specified_mode);
-      if (!change)
+      నిర్మాణం బహుళకం_change *change = బహుళకం_compile (specified_బహుళకం);
+      ఒకవేళ (!change)
         error (EXIT_FAILURE, 0, _("invalid mode"));
-      mode_t umask_value = umask (0);
-      umask (umask_value);
-      newmode = mode_adjust (newmode, false, umask_value, change, NULL);
-      free (change);
-      if (newmode & ~S_IRWXUGO)
+      mode_t umask_విలువ = umask (0);
+      umask (umask_విలువ);
+      newmode = బహుళకం_adjust (newmode, false, umask_విలువ, change, ఖాళీ);
+      విడుదల (change);
+      ఒకవేళ (newmode & ~S_IRWXUGO)
         error (EXIT_FAILURE, 0,
                _("mode must specify only file permission bits"));
     }
 
-  int exit_status = EXIT_SUCCESS;
-  for (; optind < argc; ++optind)
+  పూర్ణాంకం exit_స్థితి = EXIT_SUCCESS;
+  కొరకు (; optind < argc; ++optind)
     {
-      if (set_security_context)
-        defaultcon (set_security_context, argv[optind], S_IFIFO);
-      if (mkfifo (argv[optind], newmode) != 0)
+      ఒకవేళ (సమితి_security_context)
+        defaultcon (సమితి_security_context, argv[optind], S_IFIFO);
+      ఒకవేళ (mkfifo (argv[optind], newmode) != 0)
         {
           error (0, errno, _("cannot create fifo %s"), quoteaf (argv[optind]));
-          exit_status = EXIT_FAILURE;
+          exit_స్థితి = EXIT_FAILURE;
         }
-      else if (specified_mode && lchmod (argv[optind], newmode) != 0)
+      లేకపోతే ఒకవేళ (specified_బహుళకం && lchmod (argv[optind], newmode) != 0)
         {
           error (0, errno, _("cannot set permissions of %s"),
                  quoteaf (argv[optind]));
-          exit_status = EXIT_FAILURE;
+          exit_స్థితి = EXIT_FAILURE;
         }
     }
 
-  return exit_status;
+  తిరిగి exit_స్థితి;
 }

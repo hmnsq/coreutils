@@ -22,49 +22,49 @@
 
    Rewrite cut_fields and cut_bytes -- Jim Meyering.  */
 
-#include <config.h>
+#అన్తర్భావ <config.h>
 
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
-#include "system.h"
+#అన్తర్భావ <stdio.h>
+#అన్తర్భావ <getopt.h>
+#అన్తర్భావ <sys/types.h>
+#అన్తర్భావ "system.h"
 
-#include "argmatch.h"
-#include "assure.h"
-#include "c-ctype.h"
-#include "fadvise.h"
-#include "ioblksize.h"
-#include "mbbuf.h"
-#include "memchr2.h"
+#అన్తర్భావ "argmatch.h"
+#అన్తర్భావ "assure.h"
+#అన్తర్భావ "c-ctype.h"
+#అన్తర్భావ "fadvise.h"
+#అన్తర్భావ "ioblksize.h"
+#అన్తర్భావ "mbbuf.h"
+#అన్తర్భావ "memchr2.h"
 
-#include "set-fields.h"
-#include "utf8.h"
+#అన్తర్భావ "set-fields.h"
+#అన్తర్భావ "utf8.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "cut"
+#నిర్వచించు కార్యక్రమం_NAME "cut"
 
-#define AUTHORS \
+#నిర్వచించు AUTHORS \
   proper_name ("David M. Ihnat"), \
   proper_name ("David MacKenzie"), \
   proper_name ("Jim Meyering")
 
-#define FATAL_ERROR(Message)						\
-  do									\
+#నిర్వచించు FATAL_ERROR(సందేశం)						\
+  చేయి									\
     {									\
-      error (0, 0, (Message));						\
+      error (0, 0, (సందేశం));						\
       usage (EXIT_FAILURE);						\
     }									\
-  while (0)
+  అయితే (0)
 
 /* Above this function call overhead becomes less of a concern.
    At this and below we avoid fwrite(), memchr() etc.  */
-#define SMALL_BYTE_THRESHOLD 3
+#నిర్వచించు SMALL_BYTE_పరిమితి 3
 
 /* Pointer inside RP.  When checking if a -b,-c,-f is selected
    by a finite range, we check if it is between CURRENT_RP.LO
    and CURRENT_RP.HI.  If the index is greater than
    CURRENT_RP.HI then we make CURRENT_RP to point to the next range pair.  */
-static struct field_range_pair *current_rp;
+స్థిర నిర్మాణం క్షేత్రం_range_pair *current_rp;
 
 /* This buffer is used to support the semantics of the -s option
    (or lack of same) when the specified field list includes (does
@@ -73,125 +73,125 @@ static struct field_range_pair *current_rp;
    is followed by a delimiter or a newline before any of it may be
    output.  Otherwise, cut_fields can do the job without using this
    buffer.  */
-static char *field_1_buffer;
+స్థిర అక్షరం *క్షేత్రం_1_బఫరు;
 
 /* The number of bytes allocated for FIELD_1_BUFFER.  */
-static idx_t field_1_bufsize;
+స్థిర idx_t క్షేత్రం_1_bufsize;
 
 /* If true, do not output lines containing no delimiter characters.
    Otherwise, all such lines are printed.  This option is valid only
    with field mode.  */
-static bool suppress_non_delimited;
+స్థిర bool suppress_non_delimited;
 
 /* If true, print all bytes, characters, or fields _except_
    those that were specified.  */
-static bool complement;
+స్థిర bool complement;
 
 /* The delimiter character for multibyte field mode.  */
-static mcel_t delim_mcel;
+స్థిర mcel_t delim_mcel;
 
 /* The delimiter bytes
    (to be NUL terminated for strstr() optimization).  */
-static char delim_bytes[MCEL_LEN_MAX + 1];
+స్థిర అక్షరం delim_బైట్లు[MCEL_LEN_MAX + 1];
 
 /* The delimiter for each line/record.  */
-static unsigned char line_delim = '\n';
+స్థిర గుర్తులేని అక్షరం పంక్తి_delim = '\n';
 
 /* The length of output_delimiter_string.  */
-static size_t output_delimiter_length;
+స్థిర size_t output_delimiter_నిడివి;
 
 /* The output field separator string.  Defaults to the 1-character
    string consisting of the input delimiter.  */
-static char *output_delimiter_string;
+స్థిర అక్షరం *output_delimiter_string;
 
 /* The output delimiter string contents, if the default.  */
-static char output_delimiter_default[MCEL_LEN_MAX];
+స్థిర అక్షరం output_delimiter_default[MCEL_LEN_MAX];
 
 /* True if we have ever read standard input.  */
-static bool have_read_stdin;
+స్థిర bool have_read_stdin;
 
 /* If true, don't split multibyte characters in byte mode.  */
-static bool no_split;
+స్థిర bool no_విభజించు;
 
 /* If true, interpret each run of whitespace as one field delimiter.  */
-static bool whitespace_delimited;
+స్థిర bool whitespace_delimited;
 
 /* If true, ignore leading and trailing whitespace in -w mode.  */
-static bool trim_outer_whitespace;
+స్థిర bool trim_outer_whitespace;
 
 /* If true, default the output delimiter to a single space.  */
-static bool space_output_delimiter_default;
+స్థిర bool space_output_delimiter_default;
 
-enum whitespace_option
+గణన whitespace_option
 {
   WHITESPACE_OPTION_TRIMMED
 };
 
-static char const *const whitespace_option_args[] =
+స్థిర అక్షరం స్థిరరాశి *స్థిరరాశి whitespace_option_వాదనలు[] =
 {
-  "trimmed", NULL
+  "trimmed", ఖాళీ
 };
 
-static enum whitespace_option const whitespace_option_types[] =
+స్థిర గణన whitespace_option స్థిరరాశి whitespace_option_types[] =
 {
   WHITESPACE_OPTION_TRIMMED
 };
 
-ARGMATCH_VERIFY (whitespace_option_args, whitespace_option_types);
+ARGMATCH_VERIFY (whitespace_option_వాదనలు, whitespace_option_types);
 
 /* Whether to cut bytes, characters, or fields.  */
-static enum
+స్థిర గణన
 {
-  CUT_MODE_NONE,
-  CUT_MODE_BYTES,
-  CUT_MODE_CHARACTERS,
-  CUT_MODE_FIELDS
-} cut_mode = CUT_MODE_NONE;
+  CUT_బహుళకం_NONE,
+  CUT_బహుళకం_బైట్లు,
+  CUT_బహుళకం_CHARACTERS,
+  CUT_బహుళకం_FIELDS
+} cut_బహుళకం = CUT_బహుళకం_NONE;
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+గణన
 {
   COMPLEMENT_OPTION = CHAR_MAX + 1
 };
 
-static struct option const longopts[] =
+స్థిర నిర్మాణం option స్థిరరాశి longopts[] =
 {
-  {"bytes", required_argument, NULL, 'b'},
-  {"characters", required_argument, NULL, 'c'},
-  {"fields", required_argument, NULL, 'f'},
-  {"delimiter", required_argument, NULL, 'd'},
-  {"no-partial", no_argument, NULL, 'n'},
-  {"whitespace-delimited", optional_argument, NULL, 'w'},
-  {"only-delimited", no_argument, NULL, 's'},
-  {"output-delimiter", required_argument, NULL, 'O'},
-  {"complement", no_argument, NULL, COMPLEMENT_OPTION},
-  {"zero-terminated", no_argument, NULL, 'z'},
+  {"bytes", required_వాదం, ఖాళీ, 'b'},
+  {"characters", required_వాదం, ఖాళీ, 'c'},
+  {"fields", required_వాదం, ఖాళీ, 'f'},
+  {"delimiter", required_వాదం, ఖాళీ, 'd'},
+  {"no-partial", no_వాదం, ఖాళీ, 'n'},
+  {"whitespace-delimited", optional_వాదం, ఖాళీ, 'w'},
+  {"only-delimited", no_వాదం, ఖాళీ, 's'},
+  {"output-delimiter", required_వాదం, ఖాళీ, 'O'},
+  {"complement", no_వాదం, ఖాళీ, COMPLEMENT_OPTION},
+  {"zero-terminated", no_వాదం, ఖాళీ, 'z'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_సంస్కరణ_OPTION_DECL},
+  {ఖాళీ, 0, ఖాళీ, 0}
 };
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("\
+      రాయి (_("\
 Usage: %s OPTION... [FILE]...\n\
 "),
-              program_name);
+              కార్యక్రమం_name);
       fputs (_("\
-Print selected parts of lines from each FILE to standard output.\n\
+Print selected parts యొక్క పంక్తులు from each FILE గమ్యం standard output.\n\
 "), stdout);
 
       emit_stdin_note ();
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -b, --bytes=LIST\n\
+  -b, --బైట్లు=LIST\n\
          select only these byte positions\n\
 "));
       oputs (_("\
@@ -200,20 +200,20 @@ Print selected parts of lines from each FILE to standard output.\n\
 "));
       oputs (_("\
       --complement\n\
-         complement the set of selected bytes, characters or fields\n\
+         complement the సమితి_2 యొక్క selected బైట్లు, characters or fields\n\
 "));
       oputs (_("\
   -d, --delimiter=DELIM\n\
-         use DELIM instead of TAB for field delimiter\n\
+         use DELIM instead యొక్క TAB కొరకు క్షేత్రం delimiter\n\
 "));
       oputs (_("\
   -f, --fields=LIST\n\
-         select only these fields;  also print any line that contains\n\
+         select only these fields;  also print any పంక్తి that కలిగియుంది\n\
          no delimiter character, unless the -s option is specified\n\
 "));
       oputs (_("\
   -F LIST\n\
-         like -f, but also implies -w and -O ' '\n\
+         like -f, but also సూచిస్తుంది -w and -O ' '\n\
 "));
       oputs (_("\
   -n, --no-partial\n\
@@ -222,94 +222,94 @@ Print selected parts of lines from each FILE to standard output.\n\
       oputs (_("\
   -O, --output-delimiter=STRING\n\
          use STRING as the output delimiter;\n\
-         the default is to use the input delimiter\n\
+         the అప్రమేయ is గమ్యం use the ఆదానం delimiter\n\
 "));
       oputs (_("\
   -s, --only-delimited\n\
-         do not print lines not containing delimiters\n\
+         చేయి not print పంక్తులు not containing delimiters\n\
 "));
       oputs (_("\
   -w, --whitespace-delimited[=trimmed]\n\
-         use a run of blank characters as the field delimiter;\n\
+         use a నిరంతరం_2 యొక్క blank characters as the క్షేత్రం delimiter;\n\
          with 'trimmed', ignore leading and trailing blanks\n\
 "));
       oputs (_("\
   -z, --zero-terminated\n\
-         line delimiter is NUL, not newline\n\
+         పంక్తి delimiter is NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-Use one, and only one of -b, -c, -f or -F.  Each LIST is made up of one\n\
-range, or many ranges separated by commas.  Selected input is written\n\
-in the same order that it is read, and is written exactly once.\n\
+Use one, and only one యొక్క -b, -c, -f or -F.  Each LIST is made పైకి యొక్క one\n\
+range, or many ranges separated by commas.  Selected ఆదానం is written\n\
+లోపల the same క్రమం that it is పఠ, and is written exactly once.\n\
 "), stdout);
       fputs (_("\
-Each range is one of:\n\
+Each range is one యొక్క:\n\
 \n\
-  N     N'th byte, character or field, counted from 1\n\
-  N-    from N'th byte, character or field, to end of line\n\
-  N-M   from N'th to M'th (included) byte, character or field\n\
-  -M    from first to M'th (included) byte, character or field\n\
+  N     N'th byte, character or క్షేత్రం, counted from 1\n\
+  N-    from N'th byte, character or క్షేత్రం, గమ్యం చివర యొక్క పంక్తి\n\
+  N-M   from N'th to M'th (included) byte, character or క్షేత్రం\n\
+  -M    from మొదటి గమ్యం M'th (included) byte, character or క్షేత్రం\n\
 "), stdout);
-      emit_ancillary_info (PROGRAM_NAME);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
 
 /* Increment *ITEM_IDX (i.e., a field or byte index),
    and if required CURRENT_RP.  */
 
-static inline void
-next_item (uintmax_t *item_idx)
+స్థిర అంతఃవరుస శూన్య
+తదుపరి_అంశం (uintmax_t *అంశం_idx)
 {
-  (*item_idx)++;
-  if ((*item_idx) > current_rp->hi)
+  (*అంశం_idx)++;
+  ఒకవేళ ((*అంశం_idx) > current_rp->hi)
     current_rp++;
 }
 
 /* Return nonzero if the K'th field or byte is printable.  */
 
-static inline bool
+స్థిర అంతఃవరుస bool
 print_kth (uintmax_t k)
 {
-  return current_rp->lo <= k;
+  తిరిగి current_rp->lo <= k;
 }
 
 /* Return nonzero if K'th byte is the beginning of a range.  */
 
-static inline bool
-is_range_start_index (uintmax_t k)
+స్థిర అంతఃవరుస bool
+is_range_ప్రారంభం_సూచీ (uintmax_t k)
 {
-  return k == current_rp->lo;
+  తిరిగి k == current_rp->lo;
 }
 
-static inline bool
-field_delim_is_line_delim (void)
+స్థిర అంతఃవరుస bool
+క్షేత్రం_delim_is_పంక్తి_delim (శూన్య)
 {
-  return delim_mcel.len == 1 && delim_bytes[0] == line_delim;
+  తిరిగి delim_mcel.len == 1 && delim_బైట్లు[0] == పంక్తి_delim;
 }
 
 /* This is equivalent to but faster than calling c32issep directly.
    It assumes all unibyte locales match c_isblank.  */
 
-static bool
+స్థిర bool
 mcel_isblank (mcel_t g)
 {
-  return (g.len == 1 && c_isblank (g.ch)) || (g.len > 1 && c32issep (g.ch));
+  తిరిగి (g.len == 1 && c_isblank (g.ch)) || (g.len > 1 && c32issep (g.ch));
 }
 
 /* Return TRUE if it's valid to do a simple byte search
    for the delimiter bytes.  */
 
-static inline bool
-bytesearch_field_delim_ok (void)
+స్థిర అంతఃవరుస bool
+bytesearch_క్షేత్రం_delim_ok (శూన్య)
 {
-  unsigned char delim_0 = delim_bytes[0];
+  గుర్తులేని అక్షరం delim_0 = delim_బైట్లు[0];
 
-  return (delim_mcel.len == 1
+  తిరిగి (delim_mcel.len == 1
           ? (MB_CUR_MAX <= 1
              || (is_utf8_charset ()
                  ? (delim_0 < 0x80 || delim_0 > 0xF4) : delim_0 < 0x30))
@@ -317,292 +317,292 @@ bytesearch_field_delim_ok (void)
 }
 
 
-enum field_terminator
+గణన క్షేత్రం_terminator
 {
-  FIELD_DATA,
-  FIELD_DELIMITER,
-  FIELD_LINE_DELIMITER,
-  FIELD_EOF
+  క్షేత్రం_దత్తాంశం,
+  క్షేత్రం_DELIMITER,
+  క్షేత్రం_పంక్తి_DELIMITER,
+  క్షేత్రం_EOF
 };
 
-enum bytesearch_mode
+గణన bytesearch_బహుళకం
 {
   BYTESEARCH_FIELDS,
-  BYTESEARCH_LINE_ONLY
+  BYTESEARCH_పంక్తి_ONLY
 };
 
-struct bytesearch_context
+నిర్మాణం bytesearch_context
 {
-  enum bytesearch_mode mode;
+  గణన bytesearch_బహుళకం బహుళకం_2;
   bool blank_delimited;
   bool at_eof;
-  char *line_end;
-  bool line_end_known;
+  అక్షరం *పంక్తి_చివర;
+  bool పంక్తి_చివర_తెలిసిన;
 };
 
-static inline void
-bytesearch_context_reset (struct bytesearch_context *ctx)
+స్థిర అంతఃవరుస శూన్య
+bytesearch_context_reset (నిర్మాణం bytesearch_context *ctx)
 {
-  ctx->mode = BYTESEARCH_FIELDS;
-  ctx->line_end = NULL;
-  ctx->line_end_known = false;
+  ctx->బహుళకం_2 = BYTESEARCH_FIELDS;
+  ctx->పంక్తి_చివర = ఖాళీ;
+  ctx->పంక్తి_చివర_తెలిసిన = false;
 }
 
-struct mbfield_parser
+నిర్మాణం mbfield_parser
 {
   bool whitespace_delimited;
   bool trim_outer_whitespace;
-  bool at_line_start;
+  bool at_పంక్తి_ప్రారంభం;
   bool have_saved;
   mcel_t saved_g;
 };
 
-static inline mcel_t
+స్థిర అంతఃవరుస mcel_t
 mbbuf_get_saved_char (mbbuf_t *mbbuf, bool *have_saved, mcel_t *saved_g)
 {
-  if (*have_saved)
+  ఒకవేళ (*have_saved)
     {
       *have_saved = false;
-      return *saved_g;
+      తిరిగి *saved_g;
     }
-  return mbbuf_get_char (mbbuf);
+  తిరిగి mbbuf_get_char (mbbuf);
 }
 
-static inline enum field_terminator
-skip_whitespace_run (mbbuf_t *mbuf, struct mbfield_parser *parser,
-                     bool *have_pending_line,
+స్థిర అంతఃవరుస గణన క్షేత్రం_terminator
+skip_whitespace_నిరంతరం (mbbuf_t *mbuf, నిర్మాణం mbfield_parser *parser,
+                     bool *have_pending_పంక్తి,
                      bool have_initial_whitespace)
 {
   mcel_t g;
 
-  do
+  చేయి
     {
       g = mbbuf_get_char (mbuf);
-      if (g.ch != MBBUF_EOF)
-        *have_pending_line = true;
+      ఒకవేళ (g.ch != MBBUF_EOF)
+        *have_pending_పంక్తి = true;
     }
-  while (g.ch != MBBUF_EOF && g.ch != line_delim && mcel_isblank (g));
+  అయితే (g.ch != MBBUF_EOF && g.ch != పంక్తి_delim && mcel_isblank (g));
 
-  bool trim_start = parser->trim_outer_whitespace && parser->at_line_start;
+  bool trim_ప్రారంభం = parser->trim_outer_whitespace && parser->at_పంక్తి_ప్రారంభం;
 
-  if (parser->trim_outer_whitespace
-      && (g.ch == MBBUF_EOF || g.ch == line_delim))
+  ఒకవేళ (parser->trim_outer_whitespace
+      && (g.ch == MBBUF_EOF || g.ch == పంక్తి_delim))
     {
-      return g.ch == MBBUF_EOF ? FIELD_EOF : FIELD_LINE_DELIMITER;
+      తిరిగి g.ch == MBBUF_EOF ? క్షేత్రం_EOF : క్షేత్రం_పంక్తి_DELIMITER;
     }
 
   parser->saved_g = g;
   parser->have_saved = true;
-  return trim_start && !have_initial_whitespace ? FIELD_DATA : FIELD_DELIMITER;
+  తిరిగి trim_ప్రారంభం && !have_initial_whitespace ? క్షేత్రం_దత్తాంశం : క్షేత్రం_DELIMITER;
 }
 
 /* Like fwrite, but avoid a function call for smaller amounts,
    and exit immediately upon error.  */
 
-static void
-write_bytes (char const *buf, size_t n_bytes)
+స్థిర శూన్య
+write_బైట్లు (అక్షరం స్థిరరాశి *buf, size_t n_బైట్లు)
 {
-  if (n_bytes <= SMALL_BYTE_THRESHOLD)
+  ఒకవేళ (n_బైట్లు <= SMALL_BYTE_పరిమితి)
     {
-      for (size_t i = 0; i < n_bytes; i++)
-        if (putchar (buf[i]) < 0)
+      కొరకు (size_t i = 0; i < n_బైట్లు; i++)
+        ఒకవేళ (అక్షరం_రాయి (buf[i]) < 0)
           write_error ();
-      return;
+      తిరిగి;
     }
 
-  if (fwrite (buf, sizeof (char), n_bytes, stdout) != n_bytes)
+  ఒకవేళ (fwrite (buf, పరిమాణం (అక్షరం), n_బైట్లు, stdout) != n_బైట్లు)
     write_error ();
 }
 
 /* Like memcpy, but avoid a function call for smaller amounts.  */
 
-static inline void
-copy_bytes (char *dst, char const *src, size_t n_bytes)
+స్థిర అంతఃవరుస శూన్య
+copy_బైట్లు (అక్షరం *dst, అక్షరం స్థిరరాశి *src, size_t n_బైట్లు)
 {
-  if (n_bytes <= SMALL_BYTE_THRESHOLD)
+  ఒకవేళ (n_బైట్లు <= SMALL_BYTE_పరిమితి)
     {
-      for (size_t i = 0; i < n_bytes; i++)
+      కొరకు (size_t i = 0; i < n_బైట్లు; i++)
         dst[i] = src[i];
-      return;
+      తిరిగి;
     }
 
-  memcpy (dst, src, n_bytes);
+  జ్ఞాపకం_నకలు (dst, src, n_బైట్లు);
 }
 
 /* Like memchr, but avoid a function call for smaller amounts.  */
 
-static inline void*
-search_bytes (char const *buf, int c, size_t n_bytes)
+స్థిర అంతఃవరుస శూన్య*
+శోధన_బైట్లు (అక్షరం స్థిరరాశి *buf, పూర్ణాంకం c, size_t n_బైట్లు)
 {
-  if (n_bytes != 0 && to_uchar (buf[0]) == c)
-    return (char *) buf;
-  if (1 < n_bytes && to_uchar (buf[1]) == c)
-    return (char *) buf + 1;
+  ఒకవేళ (n_బైట్లు != 0 && గమ్యం_uchar (buf[0]) == c)
+    తిరిగి (అక్షరం *) buf;
+  ఒకవేళ (1 < n_బైట్లు && గమ్యం_uchar (buf[1]) == c)
+    తిరిగి (అక్షరం *) buf + 1;
 
-  return 2 < n_bytes ? (char *) memchr (buf + 2, c, n_bytes - 2) : NULL;
+  తిరిగి 2 < n_బైట్లు ? (అక్షరం *) memchr (buf + 2, c, n_బైట్లు - 2) : ఖాళీ;
 }
 
-static inline void
-write_line_delim (void)
+స్థిర అంతఃవరుస శూన్య
+write_పంక్తి_delim (శూన్య)
 {
-  if (putchar (line_delim) < 0)
+  ఒకవేళ (అక్షరం_రాయి (పంక్తి_delim) < 0)
     write_error ();
 }
 
-static inline void
-reset_item_line (uintmax_t *item_idx, bool *print_delimiter)
+స్థిర అంతఃవరుస శూన్య
+reset_అంశం_పంక్తి (uintmax_t *అంశం_idx, bool *print_delimiter)
 {
-  write_line_delim ();
-  *item_idx = 0;
+  write_పంక్తి_delim ();
+  *అంశం_idx = 0;
   *print_delimiter = false;
   current_rp = frp;
 }
 
-static inline void
-write_pending_line_delim (uintmax_t item_idx)
+స్థిర అంతఃవరుస శూన్య
+write_pending_పంక్తి_delim (uintmax_t అంశం_idx)
 {
-  if (item_idx > 0)
-    write_line_delim ();
+  ఒకవేళ (అంశం_idx > 0)
+    write_పంక్తి_delim ();
 }
 
-static inline void
-write_selected_item (bool *print_delimiter, bool range_start,
-                     char const *buf, size_t n_bytes)
+స్థిర అంతఃవరుస శూన్య
+write_selected_అంశం (bool *print_delimiter, bool range_ప్రారంభం,
+                     అక్షరం స్థిరరాశి *buf, size_t n_బైట్లు)
 {
-  if (output_delimiter_string != output_delimiter_default)
+  ఒకవేళ (output_delimiter_string != output_delimiter_default)
     {
-      if (*print_delimiter && range_start)
-        write_bytes (output_delimiter_string, output_delimiter_length);
+      ఒకవేళ (*print_delimiter && range_ప్రారంభం)
+        write_బైట్లు (output_delimiter_string, output_delimiter_నిడివి);
       *print_delimiter = true;
     }
 
-  write_bytes (buf, n_bytes);
+  write_బైట్లు (buf, n_బైట్లు);
 }
 
-static inline void
-append_field_1_chunk (char const *buf, idx_t len, idx_t *n_bytes)
+స్థిర అంతఃవరుస శూన్య
+append_క్షేత్రం_1_chunk (అక్షరం స్థిరరాశి *buf, idx_t len, idx_t *n_బైట్లు)
 {
-  if (field_1_bufsize - *n_bytes < len)
+  ఒకవేళ (క్షేత్రం_1_bufsize - *n_బైట్లు < len)
     {
-      field_1_buffer = xpalloc (field_1_buffer, &field_1_bufsize,
-                                len, -1, sizeof *field_1_buffer);
+      క్షేత్రం_1_బఫరు = xpalloc (క్షేత్రం_1_బఫరు, &క్షేత్రం_1_bufsize,
+                                len, -1, పరిమాణం *క్షేత్రం_1_బఫరు);
     }
 
-  copy_bytes (field_1_buffer + *n_bytes, buf, len);
-  *n_bytes += len;
+  copy_బైట్లు (క్షేత్రం_1_బఫరు + *n_బైట్లు, buf, len);
+  *n_బైట్లు += len;
 }
 
-static inline void
-append_field_1_bytes (mbbuf_t *mbbuf, mcel_t g, idx_t *n_bytes)
+స్థిర అంతఃవరుస శూన్య
+append_క్షేత్రం_1_బైట్లు (mbbuf_t *mbbuf, mcel_t g, idx_t *n_బైట్లు)
 {
-  append_field_1_chunk (mbbuf_char_offset (mbbuf, g), g.len, n_bytes);
+  append_క్షేత్రం_1_chunk (mbbuf_char_స్థానభ్రంశం (mbbuf, g), g.len, n_బైట్లు);
 }
 
-static inline enum field_terminator
-scan_mb_blank_field (mbbuf_t *mbbuf, struct mbfield_parser *parser,
-                     bool *have_pending_line, bool write_field,
-                     idx_t *n_bytes)
+స్థిర అంతఃవరుస గణన క్షేత్రం_terminator
+పరిశీలన_mb_blank_క్షేత్రం (mbbuf_t *mbbuf, నిర్మాణం mbfield_parser *parser,
+                     bool *have_pending_పంక్తి, bool write_క్షేత్రం,
+                     idx_t *n_బైట్లు)
 {
-  if (parser->trim_outer_whitespace && parser->at_line_start)
+  ఒకవేళ (parser->trim_outer_whitespace && parser->at_పంక్తి_ప్రారంభం)
     {
-      enum field_terminator terminator
-        = skip_whitespace_run (mbbuf, parser, have_pending_line, false);
-      if (terminator != FIELD_DATA)
-        return terminator;
+      గణన క్షేత్రం_terminator terminator
+        = skip_whitespace_నిరంతరం (mbbuf, parser, have_pending_పంక్తి, false);
+      ఒకవేళ (terminator != క్షేత్రం_దత్తాంశం)
+        తిరిగి terminator;
     }
 
-  parser->at_line_start = false;
+  parser->at_పంక్తి_ప్రారంభం = false;
 
-  while (true)
+  అయితే (true)
     {
       mcel_t g = mbbuf_get_saved_char (mbbuf, &parser->have_saved,
                                       &parser->saved_g);
-      if (g.ch == MBBUF_EOF)
-        return FIELD_EOF;
+      ఒకవేళ (g.ch == MBBUF_EOF)
+        తిరిగి క్షేత్రం_EOF;
 
-      *have_pending_line = true;
+      *have_pending_పంక్తి = true;
 
-      if (g.ch == line_delim)
-        return FIELD_LINE_DELIMITER;
+      ఒకవేళ (g.ch == పంక్తి_delim)
+        తిరిగి క్షేత్రం_పంక్తి_DELIMITER;
 
-      if (mcel_isblank (g))
-        return skip_whitespace_run (mbbuf, parser, have_pending_line, true);
+      ఒకవేళ (mcel_isblank (g))
+        తిరిగి skip_whitespace_నిరంతరం (mbbuf, parser, have_pending_పంక్తి, true);
 
-      if (n_bytes)
-        append_field_1_bytes (mbbuf, g, n_bytes);
-      else if (write_field)
-        write_bytes (mbbuf_char_offset (mbbuf, g), g.len);
+      ఒకవేళ (n_బైట్లు)
+        append_క్షేత్రం_1_బైట్లు (mbbuf, g, n_బైట్లు);
+      లేకపోతే ఒకవేళ (write_క్షేత్రం)
+        write_బైట్లు (mbbuf_char_స్థానభ్రంశం (mbbuf, g), g.len);
     }
 }
 
-static inline enum field_terminator
-scan_mb_delim_field (mbbuf_t *mbbuf, bool *have_pending_line,
-                     bool write_field, idx_t *n_bytes)
+స్థిర అంతఃవరుస గణన క్షేత్రం_terminator
+పరిశీలన_mb_delim_క్షేత్రం (mbbuf_t *mbbuf, bool *have_pending_పంక్తి,
+                     bool write_క్షేత్రం, idx_t *n_బైట్లు)
 {
-  while (true)
+  అయితే (true)
     {
       mcel_t g = mbbuf_get_char (mbbuf);
-      if (g.ch == MBBUF_EOF)
-        return FIELD_EOF;
+      ఒకవేళ (g.ch == MBBUF_EOF)
+        తిరిగి క్షేత్రం_EOF;
 
-      *have_pending_line = true;
+      *have_pending_పంక్తి = true;
 
-      if (g.ch == line_delim)
-        return FIELD_LINE_DELIMITER;
+      ఒకవేళ (g.ch == పంక్తి_delim)
+        తిరిగి క్షేత్రం_పంక్తి_DELIMITER;
 
-      if (delim_mcel.err ? g.err == delim_mcel.err : mcel_eq (g, delim_mcel))
-        return FIELD_DELIMITER;
+      ఒకవేళ (delim_mcel.err ? g.err == delim_mcel.err : mcel_eq (g, delim_mcel))
+        తిరిగి క్షేత్రం_DELIMITER;
 
-      if (n_bytes)
-        append_field_1_bytes (mbbuf, g, n_bytes);
-      else if (write_field)
-        write_bytes (mbbuf_char_offset (mbbuf, g), g.len);
+      ఒకవేళ (n_బైట్లు)
+        append_క్షేత్రం_1_బైట్లు (mbbuf, g, n_బైట్లు);
+      లేకపోతే ఒకవేళ (write_క్షేత్రం)
+        write_బైట్లు (mbbuf_char_స్థానభ్రంశం (mbbuf, g), g.len);
     }
 }
 
-static inline enum field_terminator
-scan_mb_field (mbbuf_t *mbbuf, struct mbfield_parser *parser,
-               bool *have_pending_line, bool write_field, idx_t *n_bytes)
+స్థిర అంతఃవరుస గణన క్షేత్రం_terminator
+పరిశీలన_mb_క్షేత్రం (mbbuf_t *mbbuf, నిర్మాణం mbfield_parser *parser,
+               bool *have_pending_పంక్తి, bool write_క్షేత్రం, idx_t *n_బైట్లు)
 {
-  return (parser->whitespace_delimited
-          ? scan_mb_blank_field (mbbuf, parser, have_pending_line,
-                                 write_field, n_bytes)
-          : scan_mb_delim_field (mbbuf, have_pending_line, write_field,
-                                 n_bytes));
+  తిరిగి (parser->whitespace_delimited
+          ? పరిశీలన_mb_blank_క్షేత్రం (mbbuf, parser, have_pending_పంక్తి,
+                                 write_క్షేత్రం, n_బైట్లు)
+          : పరిశీలన_mb_delim_క్షేత్రం (mbbuf, have_pending_పంక్తి, write_క్షేత్రం,
+                                 n_బైట్లు));
 }
 
 /* Skip input through the next line delimiter without decoding characters.
    PARSER may have saved a character beyond a whitespace delimiter.  */
 
-static enum field_terminator
-scan_mb_line_end (mbbuf_t *mbbuf, struct mbfield_parser *parser,
-                  bool *have_pending_line)
+స్థిర గణన క్షేత్రం_terminator
+పరిశీలన_mb_పంక్తి_చివర (mbbuf_t *mbbuf, నిర్మాణం mbfield_parser *parser,
+                  bool *have_pending_పంక్తి)
 {
-  if (parser->have_saved)
+  ఒకవేళ (parser->have_saved)
     {
       parser->have_saved = false;
-      if (parser->saved_g.ch == MBBUF_EOF)
-        return FIELD_EOF;
+      ఒకవేళ (parser->saved_g.ch == MBBUF_EOF)
+        తిరిగి క్షేత్రం_EOF;
 
-      *have_pending_line = true;
-      if (parser->saved_g.ch == line_delim)
-        return FIELD_LINE_DELIMITER;
+      *have_pending_పంక్తి = true;
+      ఒకవేళ (parser->saved_g.ch == పంక్తి_delim)
+        తిరిగి క్షేత్రం_పంక్తి_DELIMITER;
     }
 
-  while (true)
+  అయితే (true)
     {
-      idx_t available = mbbuf_topup (mbbuf);
-      if (available == 0)
-        return FIELD_EOF;
+      idx_t అందుబాటు = mbbuf_topup (mbbuf);
+      ఒకవేళ (అందుబాటు == 0)
+        తిరిగి క్షేత్రం_EOF;
 
-      char *buffer = mbbuf->buffer + mbbuf->offset;
-      char *line_end = search_bytes (buffer, line_delim, available);
-      idx_t n = line_end ? line_end - buffer + 1 : available;
+      అక్షరం *బఫరు = mbbuf->బఫరు + mbbuf->స్థానభ్రంశం;
+      అక్షరం *పంక్తి_చివర = శోధన_బైట్లు (బఫరు, పంక్తి_delim, అందుబాటు);
+      idx_t n = పంక్తి_చివర ? పంక్తి_చివర - బఫరు + 1 : అందుబాటు;
       mbbuf_advance (mbbuf, n);
-      *have_pending_line = true;
+      *have_pending_పంక్తి = true;
 
-      if (line_end)
-        return FIELD_LINE_DELIMITER;
+      ఒకవేళ (పంక్తి_చివర)
+        తిరిగి క్షేత్రం_పంక్తి_DELIMITER;
     }
 }
 
@@ -611,42 +611,42 @@ scan_mb_line_end (mbbuf_t *mbbuf, struct mbfield_parser *parser,
    represent a valid UTF-8 character.  BUF can contain invalid/NUL bytes,
    and must have room for a trailing NUL byte at BUF[LEN].  */
 
-ATTRIBUTE_PURE
-static char *
-find_field_delim (char *buf, size_t len)
+ATTRIBUTE_శుద్ధ
+స్థిర అక్షరం *
+కనుగొను_క్షేత్రం_delim (అక్షరం *buf, size_t len)
 {
-  if (len < delim_mcel.len)
-    return NULL;
+  ఒకవేళ (len < delim_mcel.len)
+    తిరిగి ఖాళీ;
 
-#if ! __GLIBC__  /* Only S390 has optimized memmem on glibc-2.42  */
-  return memmem (buf, len, delim_bytes, delim_mcel.len);
-#else
-  if (delim_mcel.len == 1)
-    return memchr (buf, delim_bytes[0], len);
+#ఒకవేళ ! __GLIBC__  /* Only S390 has optimized memmem on glibc-2.42  */
+  తిరిగి memmem (buf, len, delim_బైట్లు, delim_mcel.len);
+#లేకపోతే
+  ఒకవేళ (delim_mcel.len == 1)
+    తిరిగి memchr (buf, delim_బైట్లు[0], len);
 
-  char const *p = buf;
-  char const *end = buf + len;
+  అక్షరం స్థిరరాశి *p = buf;
+  అక్షరం స్థిరరాశి *చివర = buf + len;
 
-  char saved = buf[len];
+  అక్షరం saved = buf[len];
   buf[len] = '\0'; /* for strstr.  */
 
-  while (p < end)
+  అయితే (p < చివర)
     {
-      char const *nul = memchr (p, '\0', end - p);
-      if (!nul)
+      అక్షరం స్థిరరాశి *nul = memchr (p, '\0', చివర - p);
+      ఒకవేళ (!nul)
         {
-          char const *match = strstr (p, delim_bytes);
+          అక్షరం స్థిరరాశి *సరిపోలిక = అక్షరశ్రేణి_శోధన (p, delim_బైట్లు);
           buf[len] = saved;
-          return (char *) match;
+          తిరిగి (అక్షరం *) సరిపోలిక;
         }
 
-      if (p < nul)
+      ఒకవేళ (p < nul)
         {
-          char const *match = strstr (p, delim_bytes);
-          if (match)
+          అక్షరం స్థిరరాశి *సరిపోలిక = అక్షరశ్రేణి_శోధన (p, delim_బైట్లు);
+          ఒకవేళ (సరిపోలిక)
             {
               buf[len] = saved;
-              return (char *) match;
+              తిరిగి (అక్షరం *) సరిపోలిక;
             }
         }
 
@@ -654,256 +654,256 @@ find_field_delim (char *buf, size_t len)
     }
 
   buf[len] = saved;
-  return NULL;
-#endif
+  తిరిగి ఖాళీ;
+#అయితే_ముగింపు
 }
 
 /* Return a pointer to the next TAB or SPACE in BUF, searching LEN bytes.
    Return NULL if none is found.
    It works for all unibyte locales, i.e., assumes they match c_isblank.  */
 
-ATTRIBUTE_PURE
-static char *
-find_c_blank (char *buf, size_t len)
+ATTRIBUTE_శుద్ధ
+స్థిర అక్షరం *
+కనుగొను_c_blank (అక్షరం *buf, size_t len)
 {
   /* Avoid memchr2 setup for short fields.  */
   idx_t n = MIN (len, 16);
-  for (idx_t i = 0; i < n; i++)
-    if (c_isblank (buf[i]))
-      return buf + i;
+  కొరకు (idx_t i = 0; i < n; i++)
+    ఒకవేళ (c_isblank (buf[i]))
+      తిరిగి buf + i;
 
-  return memchr2 (buf + n, ' ', '\t', len - n);
+  తిరిగి memchr2 (buf + n, ' ', '\t', len - n);
 }
 
 /* Return the number of trailing bytes in BUF that could be the initial
    bytes of a delimiter split across buffers.  */
 
-ATTRIBUTE_PURE
-static idx_t
-field_delim_overlap (char const *buf, idx_t len)
+ATTRIBUTE_శుద్ధ
+స్థిర idx_t
+క్షేత్రం_delim_overlap (అక్షరం స్థిరరాశి *buf, idx_t len)
 {
   idx_t overlap = MIN (len, delim_mcel.len - 1);
 
-  while (0 < overlap)
+  అయితే (0 < overlap)
     {
-      if (memeq (buf + len - overlap, delim_bytes, overlap))
-        return overlap;
+      ఒకవేళ (memeq (buf + len - overlap, delim_బైట్లు, overlap))
+        తిరిగి overlap;
       overlap--;
     }
 
-  return 0;
+  తిరిగి 0;
 }
 
 /* Byte search for line end or delimiter in BUF,
    returning results in CTX.  */
 
-static inline enum field_terminator
-find_field_terminator (char *buf, idx_t len,
-                       struct bytesearch_context *ctx, char **terminator)
+స్థిర అంతఃవరుస గణన క్షేత్రం_terminator
+కనుగొను_క్షేత్రం_terminator (అక్షరం *buf, idx_t len,
+                       నిర్మాణం bytesearch_context *ctx, అక్షరం **terminator)
 {
-  if (ctx->mode == BYTESEARCH_LINE_ONLY)
+  ఒకవేళ (ctx->బహుళకం_2 == BYTESEARCH_పంక్తి_ONLY)
     {
-      if (!ctx->line_end_known)
+      ఒకవేళ (!ctx->పంక్తి_చివర_తెలిసిన)
         {
-          ctx->line_end = memchr (buf, line_delim, len);
-          ctx->line_end_known = true;
+          ctx->పంక్తి_చివర = memchr (buf, పంక్తి_delim, len);
+          ctx->పంక్తి_చివర_తెలిసిన = true;
         }
 
-      *terminator = ctx->line_end;
-      return *terminator ? FIELD_LINE_DELIMITER : FIELD_DATA;
+      *terminator = ctx->పంక్తి_చివర;
+      తిరిగి *terminator ? క్షేత్రం_పంక్తి_DELIMITER : క్షేత్రం_దత్తాంశం;
     }
 
-  if (field_delim_is_line_delim ())
+  ఒకవేళ (క్షేత్రం_delim_is_పంక్తి_delim ())
     {
-      *terminator = memchr (buf, line_delim, len);
-      return *terminator ? FIELD_DELIMITER : FIELD_DATA;
+      *terminator = memchr (buf, పంక్తి_delim, len);
+      తిరిగి *terminator ? క్షేత్రం_DELIMITER : క్షేత్రం_దత్తాంశం;
     }
 
-  if (!ctx->line_end_known)
+  ఒకవేళ (!ctx->పంక్తి_చివర_తెలిసిన)
     {
-      ctx->line_end = memchr (buf, line_delim, len);
-      ctx->line_end_known = true;
+      ctx->పంక్తి_చివర = memchr (buf, పంక్తి_delim, len);
+      ctx->పంక్తి_చివర_తెలిసిన = true;
     }
 
-  idx_t field_len = ctx->line_end ? ctx->line_end - buf : len;
+  idx_t క్షేత్రం_len = ctx->పంక్తి_చివర ? ctx->పంక్తి_చివర - buf : len;
 
-  char *field_end = (ctx->blank_delimited
-                     ? find_c_blank (buf, field_len)
-                     : find_field_delim (buf, field_len));
+  అక్షరం *క్షేత్రం_చివర = (ctx->blank_delimited
+                     ? కనుగొను_c_blank (buf, క్షేత్రం_len)
+                     : కనుగొను_క్షేత్రం_delim (buf, క్షేత్రం_len));
 
-  if (field_end)
+  ఒకవేళ (క్షేత్రం_చివర)
     {
-      *terminator = field_end;
-      return FIELD_DELIMITER;
+      *terminator = క్షేత్రం_చివర;
+      తిరిగి క్షేత్రం_DELIMITER;
     }
 
-  *terminator = ctx->line_end;
-  return ctx->line_end ? FIELD_LINE_DELIMITER : FIELD_DATA;
+  *terminator = ctx->పంక్తి_చివర;
+  తిరిగి ctx->పంక్తి_చివర ? క్షేత్రం_పంక్తి_DELIMITER : క్షేత్రం_దత్తాంశం;
 }
 
 /* Write the end-of-line delimiter if appropriate for the current line.  */
 
-static inline void
-maybe_write_line_delim (bool found_any_selected_field, uintmax_t field_idx)
+స్థిర అంతఃవరుస శూన్య
+maybe_write_పంక్తి_delim (bool దొరికింది_any_selected_క్షేత్రం, uintmax_t క్షేత్రం_idx)
 {
-  if (found_any_selected_field
-      || !(suppress_non_delimited && field_idx == 1))
-    write_line_delim ();
+  ఒకవేళ (దొరికింది_any_selected_క్షేత్రం
+      || !(suppress_non_delimited && క్షేత్రం_idx == 1))
+    write_పంక్తి_delim ();
 }
 
 /* Return TRUE if FIELD_IDX is selected,
    and write the output delimiter if appropriate.  */
 
-static inline bool
-begin_field_output (uintmax_t field_idx, bool buffer_first_field,
-                    bool *found_any_selected_field)
+స్థిర అంతఃవరుస bool
+begin_క్షేత్రం_output (uintmax_t క్షేత్రం_idx, bool బఫరు_మొదటి_క్షేత్రం,
+                    bool *దొరికింది_any_selected_క్షేత్రం)
 {
-  bool write_field = print_kth (field_idx);
+  bool write_క్షేత్రం = print_kth (క్షేత్రం_idx);
 
-  if (write_field && ! (field_idx == 1 && buffer_first_field))
+  ఒకవేళ (write_క్షేత్రం && ! (క్షేత్రం_idx == 1 && బఫరు_మొదటి_క్షేత్రం))
     {
-      if (*found_any_selected_field)
-        write_bytes (output_delimiter_string, output_delimiter_length);
-      *found_any_selected_field = true;
+      ఒకవేళ (*దొరికింది_any_selected_క్షేత్రం)
+        write_బైట్లు (output_delimiter_string, output_delimiter_నిడివి);
+      *దొరికింది_any_selected_క్షేత్రం = true;
     }
 
-  return write_field;
+  తిరిగి write_క్షేత్రం;
 }
 
-static inline bool
-handle_field_1 (uintmax_t field_idx, bool buffer_first_field,
-                idx_t *field_1_n_bytes)
+స్థిర అంతఃవరుస bool
+handle_క్షేత్రం_1 (uintmax_t క్షేత్రం_idx, bool బఫరు_మొదటి_క్షేత్రం,
+                idx_t *క్షేత్రం_1_n_బైట్లు)
 {
-  bool field_1_selected = false;
+  bool క్షేత్రం_1_selected = false;
 
-  if (field_idx == 1 && buffer_first_field)
+  ఒకవేళ (క్షేత్రం_idx == 1 && బఫరు_మొదటి_క్షేత్రం)
     {
-      if ((field_1_selected = print_kth (1)))
-        write_bytes (field_1_buffer, *field_1_n_bytes);
-      *field_1_n_bytes = 0;
+      ఒకవేళ ((క్షేత్రం_1_selected = print_kth (1)))
+        write_బైట్లు (క్షేత్రం_1_బఫరు, *క్షేత్రం_1_n_బైట్లు);
+      *క్షేత్రం_1_n_బైట్లు = 0;
     }
 
-  return field_1_selected;
+  తిరిగి క్షేత్రం_1_selected;
 }
 
-static inline void
-handle_field_delimiter (uintmax_t *field_idx, bool buffer_first_field,
-                        idx_t *field_1_n_bytes,
-                        bool *found_any_selected_field, bool *write_field)
+స్థిర అంతఃవరుస శూన్య
+handle_క్షేత్రం_delimiter (uintmax_t *క్షేత్రం_idx, bool బఫరు_మొదటి_క్షేత్రం,
+                        idx_t *క్షేత్రం_1_n_బైట్లు,
+                        bool *దొరికింది_any_selected_క్షేత్రం, bool *write_క్షేత్రం)
 {
-  if (handle_field_1 (*field_idx, buffer_first_field, field_1_n_bytes))
-    *found_any_selected_field = true;
+  ఒకవేళ (handle_క్షేత్రం_1 (*క్షేత్రం_idx, బఫరు_మొదటి_క్షేత్రం, క్షేత్రం_1_n_బైట్లు))
+    *దొరికింది_any_selected_క్షేత్రం = true;
 
-  next_item (field_idx);
-  *write_field = begin_field_output (*field_idx, buffer_first_field,
-                                     found_any_selected_field);
+  తదుపరి_అంశం (క్షేత్రం_idx);
+  *write_క్షేత్రం = begin_క్షేత్రం_output (*క్షేత్రం_idx, బఫరు_మొదటి_క్షేత్రం,
+                                     దొరికింది_any_selected_క్షేత్రం);
 }
 
-static inline bool
-field_selection_exhausted (uintmax_t field_idx)
+స్థిర అంతఃవరుస bool
+క్షేత్రం_selection_exhausted (uintmax_t క్షేత్రం_idx)
 {
-  return !print_kth (field_idx) && current_rp->lo == UINTMAX_MAX;
+  తిరిగి !print_kth (క్షేత్రం_idx) && current_rp->lo == UINTMAX_MAX;
 }
 
-static inline void
-finish_current_line (uintmax_t field_idx, bool buffer_first_field,
-                     idx_t *field_1_n_bytes,
-                     bool found_any_selected_field, bool line_terminated)
+స్థిర అంతఃవరుస శూన్య
+ముగింపు_current_పంక్తి (uintmax_t క్షేత్రం_idx, bool బఫరు_మొదటి_క్షేత్రం,
+                     idx_t *క్షేత్రం_1_n_బైట్లు,
+                     bool దొరికింది_any_selected_క్షేత్రం, bool పంక్తి_terminated)
 {
-  if (field_idx == 1 && buffer_first_field)
+  ఒకవేళ (క్షేత్రం_idx == 1 && బఫరు_మొదటి_క్షేత్రం)
     {
-      if (!suppress_non_delimited
-          && (line_terminated || *field_1_n_bytes != 0))
+      ఒకవేళ (!suppress_non_delimited
+          && (పంక్తి_terminated || *క్షేత్రం_1_n_బైట్లు != 0))
         {
-          write_bytes (field_1_buffer, *field_1_n_bytes);
-          write_line_delim ();
+          write_బైట్లు (క్షేత్రం_1_బఫరు, *క్షేత్రం_1_n_బైట్లు);
+          write_పంక్తి_delim ();
         }
-      *field_1_n_bytes = 0;
+      *క్షేత్రం_1_n_బైట్లు = 0;
     }
-  else
-    maybe_write_line_delim (found_any_selected_field, field_idx);
+  లేకపోతే
+    maybe_write_పంక్తి_delim (దొరికింది_any_selected_క్షేత్రం, క్షేత్రం_idx);
 }
 
-static inline void
+స్థిర అంతఃవరుస శూన్య
 sync_byte_selection (uintmax_t byte_idx)
 {
-  while (current_rp->hi <= byte_idx)
+  అయితే (current_rp->hi <= byte_idx)
     current_rp++;
 }
 
-static inline void
-reset_field_line (uintmax_t *field_idx, bool *found_any_selected_field,
-                  bool *have_pending_line, struct mbfield_parser *parser)
+స్థిర అంతఃవరుస శూన్య
+reset_క్షేత్రం_పంక్తి (uintmax_t *క్షేత్రం_idx, bool *దొరికింది_any_selected_క్షేత్రం,
+                  bool *have_pending_పంక్తి, నిర్మాణం mbfield_parser *parser)
 {
-  *field_idx = 1;
+  *క్షేత్రం_idx = 1;
   current_rp = frp;
-  *found_any_selected_field = false;
-  *have_pending_line = false;
+  *దొరికింది_any_selected_క్షేత్రం = false;
+  *have_pending_పంక్తి = false;
   parser->have_saved = false;
-  parser->at_line_start = true;
+  parser->at_పంక్తి_ప్రారంభం = true;
 }
 
 /* Read from STREAM using buffered block reads, printing selected bytes.
    BYTE_IDX and PRINT_DELIMITER track the current line state and allow
    callers to hand off mid-line.  */
 
-static void
-cut_bytes (FILE *stream)
+స్థిర శూన్య
+cut_బైట్లు (FILE *ప్రవాహం)
 {
-  static char bytes_in[IO_BUFSIZE];
+  స్థిర అక్షరం బైట్లు_లోపల[IO_BUFSIZE];
   uintmax_t byte_idx = 0;
   bool print_delimiter = false;
-  int fd = fileno (stream);
+  పూర్ణాంకం fd = fileno (ప్రవాహం);
 
   current_rp = frp;
 
-  while (true)
+  అయితే (true)
     {
-      idx_t available = read (fd, bytes_in, sizeof bytes_in);
-      if (available <= 0)
+      idx_t అందుబాటు = పఠ (fd, బైట్లు_లోపల, పరిమాణం బైట్లు_లోపల);
+      ఒకవేళ (అందుబాటు <= 0)
         {
-          if (available < 0)
-            fseterr (stream);
-          write_pending_line_delim (byte_idx);
-          break;
+          ఒకవేళ (అందుబాటు < 0)
+            fseterr (ప్రవాహం);
+          write_pending_పంక్తి_delim (byte_idx);
+          ఆపు;
         }
 
       idx_t processed = 0;
 
-      while (processed < available)
+      అయితే (processed < అందుబాటు)
         {
-          char *line = bytes_in + processed;
-          idx_t to_process = available - processed;
-          char *line_end = search_bytes (line, line_delim, to_process);
-          char *end = line + (line_end ? line_end - line : to_process);
-          char *p = line;
+          అక్షరం *పంక్తి = బైట్లు_లోపల + processed;
+          idx_t గమ్యం_process = అందుబాటు - processed;
+          అక్షరం *పంక్తి_చివర = శోధన_బైట్లు (పంక్తి, పంక్తి_delim, గమ్యం_process);
+          అక్షరం *చివర = పంక్తి + (పంక్తి_చివర ? పంక్తి_చివర - పంక్తి : గమ్యం_process);
+          అక్షరం *p = పంక్తి;
 
-          while (0 < end - p)
+          అయితే (0 < చివర - p)
             {
               sync_byte_selection (byte_idx);
 
-              if (byte_idx + 1 < current_rp->lo)
+              ఒకవేళ (byte_idx + 1 < current_rp->lo)
                 {
-                  idx_t skip = MIN (end - p, current_rp->lo - (byte_idx + 1));
+                  idx_t skip = MIN (చివర - p, current_rp->lo - (byte_idx + 1));
                   p += skip;
                   byte_idx += skip;
                 }
-              else
+              లేకపోతే
                 {
-                  idx_t n = MIN (end - p, current_rp->hi - byte_idx);
-                  write_selected_item (&print_delimiter,
-                                       is_range_start_index (byte_idx + 1),
+                  idx_t n = MIN (చివర - p, current_rp->hi - byte_idx);
+                  write_selected_అంశం (&print_delimiter,
+                                       is_range_ప్రారంభం_సూచీ (byte_idx + 1),
                                        p, n);
                   p += n;
                   byte_idx += n;
                 }
             }
 
-          processed += end - line;
-          if (line_end)
+          processed += చివర - పంక్తి;
+          ఒకవేళ (పంక్తి_చివర)
             {
               processed++;
-              reset_item_line (&byte_idx, &print_delimiter);
+              reset_అంశం_పంక్తి (&byte_idx, &print_delimiter);
             }
         }
     }
@@ -912,613 +912,613 @@ cut_bytes (FILE *stream)
 /* Read from STREAM, printing selected bytes without splitting
    multibyte characters.  */
 
-static void
-cut_characters_mode (FILE *stream, bool byte_mode)
+స్థిర శూన్య
+cut_characters_బహుళకం (FILE *ప్రవాహం, bool byte_బహుళకం)
 {
   bool utf8 = is_utf8_charset ();
   uintmax_t idx = 0;
   bool print_delimiter = false;
-  static char bytes_in[IO_BUFSIZE];
+  స్థిర అక్షరం బైట్లు_లోపల[IO_BUFSIZE];
   mbbuf_t mbbuf;
 
   current_rp = frp;
-  mbbuf_init (&mbbuf, bytes_in, sizeof bytes_in, stream);
+  mbbuf_init (&mbbuf, బైట్లు_లోపల, పరిమాణం బైట్లు_లోపల, ప్రవాహం);
 
-  while (true)
+  అయితే (true)
     {
       /* Skip unselected line suffixes without decoding each character.  */
-      if (idx && field_selection_exhausted (idx))
+      ఒకవేళ (idx && క్షేత్రం_selection_exhausted (idx))
         {
-          idx_t available = mbbuf_topup (&mbbuf);
-          char *p = mbbuf.buffer + mbbuf.offset;
-          char *end = search_bytes (p, line_delim, available);
-          mbbuf_advance (&mbbuf, end ? end - p : available);
-          if (!end && available)
-            continue;
+          idx_t అందుబాటు = mbbuf_topup (&mbbuf);
+          అక్షరం *p = mbbuf.బఫరు + mbbuf.స్థానభ్రంశం;
+          అక్షరం *చివర = శోధన_బైట్లు (p, పంక్తి_delim, అందుబాటు);
+          mbbuf_advance (&mbbuf, చివర ? చివర - p : అందుబాటు);
+          ఒకవేళ (!చివర && అందుబాటు)
+            కొనసాగు;
         }
 
       /* Count unselected ASCII/UTF-8 characters directly, for efficiency.  */
-      if (!byte_mode && utf8 && idx + 1 < current_rp->lo)
+      ఒకవేళ (!byte_బహుళకం && utf8 && idx + 1 < current_rp->lo)
         {
-          char const *p = mbbuf.buffer + mbbuf.offset;
+          అక్షరం స్థిరరాశి *p = mbbuf.బఫరు + mbbuf.స్థానభ్రంశం;
           idx_t n = MIN (mbbuf_avail (&mbbuf), current_rp->lo - idx - 1);
-          char const *end = search_bytes (p, line_delim, n);
-          if (end)
+          అక్షరం స్థిరరాశి *చివర = శోధన_బైట్లు (p, పంక్తి_delim, n);
+          ఒకవేళ (చివర)
             {
               /* Even with ASCII, this cannot reach the next selection.  */
-              mbbuf_advance (&mbbuf, end - p + 1);
-              reset_item_line (&idx, &print_delimiter);
-              continue;
+              mbbuf_advance (&mbbuf, చివర - p + 1);
+              reset_అంశం_పంక్తి (&idx, &print_delimiter);
+              కొనసాగు;
             }
 
-          idx += u8_count (p, &n);
+          idx += u8_లెక్క (p, &n);
           mbbuf_advance (&mbbuf, n);
         }
 
       mcel_t g = mbbuf_get_char (&mbbuf);
 
-      if (g.ch == line_delim)
-        reset_item_line (&idx, &print_delimiter);
-      else if (g.ch == MBBUF_EOF)
+      ఒకవేళ (g.ch == పంక్తి_delim)
+        reset_అంశం_పంక్తి (&idx, &print_delimiter);
+      లేకపోతే ఒకవేళ (g.ch == MBBUF_EOF)
         {
-          write_pending_line_delim (idx);
-          break;
+          write_pending_పంక్తి_delim (idx);
+          ఆపు;
         }
-      else if (byte_mode)
+      లేకపోతే ఒకవేళ (byte_బహుళకం)
         {
-          bool first_selected_is_range_start = false;
-          bool seen_selected = false;
+          bool మొదటి_selected_is_range_ప్రారంభం = false;
+          bool చూసిన_selected = false;
           bool suffix_selected = true;
 
-          for (idx_t i = 0; i < g.len; i++)
+          కొరకు (idx_t i = 0; i < g.len; i++)
             {
-              next_item (&idx);
-              if (print_kth (idx))
+              తదుపరి_అంశం (&idx);
+              ఒకవేళ (print_kth (idx))
                 {
-                  if (!seen_selected)
+                  ఒకవేళ (!చూసిన_selected)
                     {
-                      seen_selected = true;
-                      first_selected_is_range_start
-                        = is_range_start_index (idx);
+                      చూసిన_selected = true;
+                      మొదటి_selected_is_range_ప్రారంభం
+                        = is_range_ప్రారంభం_సూచీ (idx);
                     }
                 }
-              else if (seen_selected)
+              లేకపోతే ఒకవేళ (చూసిన_selected)
                 suffix_selected = false;
             }
 
-          if (seen_selected && suffix_selected)
-            write_selected_item (&print_delimiter,first_selected_is_range_start,
-                                 mbbuf_char_offset (&mbbuf, g), g.len);
+          ఒకవేళ (చూసిన_selected && suffix_selected)
+            write_selected_అంశం (&print_delimiter,మొదటి_selected_is_range_ప్రారంభం,
+                                 mbbuf_char_స్థానభ్రంశం (&mbbuf, g), g.len);
         }
-      else
+      లేకపోతే
         {
-          next_item (&idx);
-          if (print_kth (idx))
-            write_selected_item (&print_delimiter,
-                                 is_range_start_index (idx),
-                                 mbbuf_char_offset (&mbbuf, g), g.len);
+          తదుపరి_అంశం (&idx);
+          ఒకవేళ (print_kth (idx))
+            write_selected_అంశం (&print_delimiter,
+                                 is_range_ప్రారంభం_సూచీ (idx),
+                                 mbbuf_char_స్థానభ్రంశం (&mbbuf, g), g.len);
         }
     }
 }
 
-static void
-cut_bytes_no_split (FILE *stream)
+స్థిర శూన్య
+cut_బైట్లు_no_విభజించు (FILE *ప్రవాహం)
 {
-  cut_characters_mode (stream, true);
+  cut_characters_బహుళకం (ప్రవాహం, true);
 }
 
-static void
-cut_characters (FILE *stream)
+స్థిర శూన్య
+cut_characters (FILE *ప్రవాహం)
 {
-  cut_characters_mode (stream, false);
+  cut_characters_బహుళకం (ప్రవాహం, false);
 }
 
 /* Read from STREAM, printing to standard output any selected fields,
    using a multibyte-aware field delimiter parser.  */
 
-static void
-cut_fields_mb_any (FILE *stream, bool whitespace_mode)
+స్థిర శూన్య
+cut_fields_mb_any (FILE *ప్రవాహం, bool whitespace_బహుళకం)
 {
-  static char bytes_in[IO_BUFSIZE];
+  స్థిర అక్షరం బైట్లు_లోపల[IO_BUFSIZE];
   mbbuf_t mbbuf;
-  struct mbfield_parser parser =
+  నిర్మాణం mbfield_parser parser =
     {
-      .whitespace_delimited = whitespace_mode,
+      .whitespace_delimited = whitespace_బహుళకం,
       .trim_outer_whitespace = trim_outer_whitespace,
-      .at_line_start = true,
+      .at_పంక్తి_ప్రారంభం = true,
       .saved_g = { .ch = MBBUF_EOF }
     };
-  uintmax_t field_idx = 1;
-  bool found_any_selected_field = false;
-  bool buffer_first_field;
-  bool have_pending_line = false;
-  bool write_field;
-  idx_t field_1_n_bytes = 0;
+  uintmax_t క్షేత్రం_idx = 1;
+  bool దొరికింది_any_selected_క్షేత్రం = false;
+  bool బఫరు_మొదటి_క్షేత్రం;
+  bool have_pending_పంక్తి = false;
+  bool write_క్షేత్రం;
+  idx_t క్షేత్రం_1_n_బైట్లు = 0;
 
   current_rp = frp;
-  mbbuf_init (&mbbuf, bytes_in, sizeof bytes_in, stream);
+  mbbuf_init (&mbbuf, బైట్లు_లోపల, పరిమాణం బైట్లు_లోపల, ప్రవాహం);
 
-  buffer_first_field = (suppress_non_delimited ^ !print_kth (1));
-  write_field = begin_field_output (field_idx, buffer_first_field,
-                                    &found_any_selected_field);
+  బఫరు_మొదటి_క్షేత్రం = (suppress_non_delimited ^ !print_kth (1));
+  write_క్షేత్రం = begin_క్షేత్రం_output (క్షేత్రం_idx, బఫరు_మొదటి_క్షేత్రం,
+                                    &దొరికింది_any_selected_క్షేత్రం);
 
-  while (true)
+  అయితే (true)
     {
-      enum field_terminator terminator;
-      if (!buffer_first_field || field_idx != 1)
-        terminator = scan_mb_field (&mbbuf, &parser, &have_pending_line,
-                                    write_field, NULL);
-      else
-        terminator = scan_mb_field (&mbbuf, &parser, &have_pending_line,
-                                    false, &field_1_n_bytes);
+      గణన క్షేత్రం_terminator terminator;
+      ఒకవేళ (!బఫరు_మొదటి_క్షేత్రం || క్షేత్రం_idx != 1)
+        terminator = పరిశీలన_mb_క్షేత్రం (&mbbuf, &parser, &have_pending_పంక్తి,
+                                    write_క్షేత్రం, ఖాళీ);
+      లేకపోతే
+        terminator = పరిశీలన_mb_క్షేత్రం (&mbbuf, &parser, &have_pending_పంక్తి,
+                                    false, &క్షేత్రం_1_n_బైట్లు);
 
-      if (terminator == FIELD_DELIMITER)
+      ఒకవేళ (terminator == క్షేత్రం_DELIMITER)
         {
-          handle_field_delimiter (&field_idx, buffer_first_field,
-                                  &field_1_n_bytes,
-                                  &found_any_selected_field, &write_field);
-          if (! field_selection_exhausted (field_idx))
-            continue;
+          handle_క్షేత్రం_delimiter (&క్షేత్రం_idx, బఫరు_మొదటి_క్షేత్రం,
+                                  &క్షేత్రం_1_n_బైట్లు,
+                                  &దొరికింది_any_selected_క్షేత్రం, &write_క్షేత్రం);
+          ఒకవేళ (! క్షేత్రం_selection_exhausted (క్షేత్రం_idx))
+            కొనసాగు;
 
-          terminator = scan_mb_line_end (&mbbuf, &parser,
-                                         &have_pending_line);
+          terminator = పరిశీలన_mb_పంక్తి_చివర (&mbbuf, &parser,
+                                         &have_pending_పంక్తి);
         }
 
-      if (terminator == FIELD_EOF && !have_pending_line)
-        break;
+      ఒకవేళ (terminator == క్షేత్రం_EOF && !have_pending_పంక్తి)
+        ఆపు;
 
-      finish_current_line (field_idx, buffer_first_field,
-                           &field_1_n_bytes, found_any_selected_field,
-                           terminator == FIELD_LINE_DELIMITER);
-      if (terminator == FIELD_EOF)
-        break;
+      ముగింపు_current_పంక్తి (క్షేత్రం_idx, బఫరు_మొదటి_క్షేత్రం,
+                           &క్షేత్రం_1_n_బైట్లు, దొరికింది_any_selected_క్షేత్రం,
+                           terminator == క్షేత్రం_పంక్తి_DELIMITER);
+      ఒకవేళ (terminator == క్షేత్రం_EOF)
+        ఆపు;
 
-      reset_field_line (&field_idx, &found_any_selected_field,
-                        &have_pending_line, &parser);
-      write_field = begin_field_output (field_idx, buffer_first_field,
-                                        &found_any_selected_field);
+      reset_క్షేత్రం_పంక్తి (&క్షేత్రం_idx, &దొరికింది_any_selected_క్షేత్రం,
+                        &have_pending_పంక్తి, &parser);
+      write_క్షేత్రం = begin_క్షేత్రం_output (క్షేత్రం_idx, బఫరు_మొదటి_క్షేత్రం,
+                                        &దొరికింది_any_selected_క్షేత్రం);
     }
 }
 
 /* Read from STREAM, printing to standard output any selected fields,
    using a multibyte field delimiter.  */
 
-static void
-cut_fields_mb (FILE *stream)
+స్థిర శూన్య
+cut_fields_mb (FILE *ప్రవాహం)
 {
-  cut_fields_mb_any (stream, false);
+  cut_fields_mb_any (ప్రవాహం, false);
 }
 
 /* Read from STREAM, printing to standard output any selected fields,
    using byte searches for a single-byte or valid UTF-8 field delimiter.  */
 
-static void
-cut_fields_bytesearch (FILE *stream)
+స్థిర శూన్య
+cut_fields_bytesearch (FILE *ప్రవాహం)
 {
   /* Leave 1 byte unused so space to NUL terminate (for strstr).  */
-  static char bytes_in[IO_BUFSIZE+1];
+  స్థిర అక్షరం బైట్లు_లోపల[IO_BUFSIZE+1];
   mbbuf_t mbbuf;
-  uintmax_t field_idx = 1;
-  bool found_any_selected_field = false;
-  bool have_pending_line = false;
-  bool skip_blank_run = false;
-  bool pending_line_delim_field = false;
-  bool write_field;
-  idx_t field_1_n_bytes = 0;
+  uintmax_t క్షేత్రం_idx = 1;
+  bool దొరికింది_any_selected_క్షేత్రం = false;
+  bool have_pending_పంక్తి = false;
+  bool skip_blank_నిరంతరం = false;
+  bool pending_పంక్తి_delim_క్షేత్రం = false;
+  bool write_క్షేత్రం;
+  idx_t క్షేత్రం_1_n_బైట్లు = 0;
 
   current_rp = frp;
-  bool buffer_first_field = suppress_non_delimited ^ !print_kth (1);
-  mbbuf_init (&mbbuf, bytes_in, sizeof bytes_in - 1, stream);
-  write_field = begin_field_output (field_idx, buffer_first_field,
-                                    &found_any_selected_field);
+  bool బఫరు_మొదటి_క్షేత్రం = suppress_non_delimited ^ !print_kth (1);
+  mbbuf_init (&mbbuf, బైట్లు_లోపల, పరిమాణం బైట్లు_లోపల - 1, ప్రవాహం);
+  write_క్షేత్రం = begin_క్షేత్రం_output (క్షేత్రం_idx, బఫరు_మొదటి_క్షేత్రం,
+                                    &దొరికింది_any_selected_క్షేత్రం);
 
-  struct bytesearch_context search = { .blank_delimited = whitespace_delimited};
-  bytesearch_context_reset (&search);
+  నిర్మాణం bytesearch_context శోధన = { .blank_delimited = whitespace_delimited};
+  bytesearch_context_reset (&శోధన);
 
-  while (true)
+  అయితే (true)
     {
       idx_t n_avail = mbbuf_topup (&mbbuf);
-      search.at_eof = mbbuf.eof;
-      search.line_end_known = false;
+      శోధన.at_eof = mbbuf.eof;
+      శోధన.పంక్తి_చివర_తెలిసిన = false;
 
-      if (pending_line_delim_field)
+      ఒకవేళ (pending_పంక్తి_delim_క్షేత్రం)
         {
-          pending_line_delim_field = false;
+          pending_పంక్తి_delim_క్షేత్రం = false;
 
-          if (n_avail == 0)
+          ఒకవేళ (n_avail == 0)
             {
-              if (handle_field_1 (field_idx, buffer_first_field,
-                                  &field_1_n_bytes))
-                next_item (&field_idx);
-              maybe_write_line_delim (found_any_selected_field, field_idx);
-              return;
+              ఒకవేళ (handle_క్షేత్రం_1 (క్షేత్రం_idx, బఫరు_మొదటి_క్షేత్రం,
+                                  &క్షేత్రం_1_n_బైట్లు))
+                తదుపరి_అంశం (&క్షేత్రం_idx);
+              maybe_write_పంక్తి_delim (దొరికింది_any_selected_క్షేత్రం, క్షేత్రం_idx);
+              తిరిగి;
             }
 
-          handle_field_delimiter (&field_idx, buffer_first_field,
-                                  &field_1_n_bytes,
-                                  &found_any_selected_field, &write_field);
-          if (whitespace_delimited)
-            skip_blank_run = true;
+          handle_క్షేత్రం_delimiter (&క్షేత్రం_idx, బఫరు_మొదటి_క్షేత్రం,
+                                  &క్షేత్రం_1_n_బైట్లు,
+                                  &దొరికింది_any_selected_క్షేత్రం, &write_క్షేత్రం);
+          ఒకవేళ (whitespace_delimited)
+            skip_blank_నిరంతరం = true;
         }
 
-      if (n_avail == 0)
-        break;
+      ఒకవేళ (n_avail == 0)
+        ఆపు;
 
-      char *chunk = mbbuf.buffer + mbbuf.offset;
+      అక్షరం *chunk = mbbuf.బఫరు + mbbuf.స్థానభ్రంశం;
       idx_t processed = 0;
 
       /* Fast path: no field delimiter in chunk — output or skip lines.  */
-      if (field_idx == 1
-          && (!whitespace_delimited || !field_selection_exhausted (field_idx))
-          && !field_delim_is_line_delim ()
+      ఒకవేళ (క్షేత్రం_idx == 1
+          && (!whitespace_delimited || !క్షేత్రం_selection_exhausted (క్షేత్రం_idx))
+          && !క్షేత్రం_delim_is_పంక్తి_delim ()
           && !(whitespace_delimited
-               ? find_c_blank (chunk, n_avail)
-               : find_field_delim (chunk, n_avail)))
+               ? కనుగొను_c_blank (chunk, n_avail)
+               : కనుగొను_క్షేత్రం_delim (chunk, n_avail)))
         {
-          char *last_line_delim = search.at_eof
+          అక్షరం *చివరి_పంక్తి_delim = శోధన.at_eof
                                   ? chunk + n_avail - 1
-                                  : memrchr (chunk, line_delim, n_avail);
-          if (last_line_delim)
+                                  : memrchr (chunk, పంక్తి_delim, n_avail);
+          ఒకవేళ (చివరి_పంక్తి_delim)
             {
-              idx_t n = last_line_delim - chunk + 1;
-              if (! suppress_non_delimited)
+              idx_t n = చివరి_పంక్తి_delim - chunk + 1;
+              ఒకవేళ (! suppress_non_delimited)
                 {
-                  write_bytes (field_1_buffer, field_1_n_bytes);
-                  write_bytes (chunk, n);
-                  if (search.at_eof && chunk[n - 1] != line_delim)
-                    write_line_delim ();
+                  write_బైట్లు (క్షేత్రం_1_బఫరు, క్షేత్రం_1_n_బైట్లు);
+                  write_బైట్లు (chunk, n);
+                  ఒకవేళ (శోధన.at_eof && chunk[n - 1] != పంక్తి_delim)
+                    write_పంక్తి_delim ();
                 }
-              field_1_n_bytes = 0;
+              క్షేత్రం_1_n_బైట్లు = 0;
               mbbuf_advance (&mbbuf, n);
-              have_pending_line = false;
-              if (search.at_eof)
-                return;
-              continue;
+              have_pending_పంక్తి = false;
+              ఒకవేళ (శోధన.at_eof)
+                తిరిగి;
+              కొనసాగు;
             }
         }
 
-      while (processed < n_avail)
+      అయితే (processed < n_avail)
         {
-          char *terminator = NULL;
+          అక్షరం *terminator = ఖాళీ;
 
-          if (skip_blank_run)
+          ఒకవేళ (skip_blank_నిరంతరం)
             {
-              while (processed < n_avail && c_isblank (chunk[processed]))
+              అయితే (processed < n_avail && c_isblank (chunk[processed]))
                 processed++;
-              if (processed == n_avail)
-                break;
-              skip_blank_run = false;
+              ఒకవేళ (processed == n_avail)
+                ఆపు;
+              skip_blank_నిరంతరం = false;
             }
 
-          if (field_selection_exhausted (field_idx))
+          ఒకవేళ (క్షేత్రం_selection_exhausted (క్షేత్రం_idx))
             {
-              if (field_delim_is_line_delim ())
+              ఒకవేళ (క్షేత్రం_delim_is_పంక్తి_delim ())
                 {
-                  maybe_write_line_delim (found_any_selected_field,
-                                          field_idx);
+                  maybe_write_పంక్తి_delim (దొరికింది_any_selected_క్షేత్రం,
+                                          క్షేత్రం_idx);
                   mbbuf_advance (&mbbuf, processed);
-                  return;
+                  తిరిగి;
                 }
-              search.mode = BYTESEARCH_LINE_ONLY;
-              enum field_terminator terminator_kind
-                = find_field_terminator (chunk + processed, n_avail - processed,
-                                         &search, &terminator);
-              if (terminator_kind == FIELD_LINE_DELIMITER)
+              శోధన.బహుళకం_2 = BYTESEARCH_పంక్తి_ONLY;
+              గణన క్షేత్రం_terminator terminator_రకం
+                = కనుగొను_క్షేత్రం_terminator (chunk + processed, n_avail - processed,
+                                         &శోధన, &terminator);
+              ఒకవేళ (terminator_రకం == క్షేత్రం_పంక్తి_DELIMITER)
                 {
                   processed = terminator - chunk + 1;
-                  maybe_write_line_delim (found_any_selected_field,
-                                          field_idx);
-                  goto reset_line;
+                  maybe_write_పంక్తి_delim (దొరికింది_any_selected_క్షేత్రం,
+                                          క్షేత్రం_idx);
+                  వెళ్ళు reset_పంక్తి;
                 }
               processed = n_avail;
-              break;
+              ఆపు;
             }
 
-          enum field_terminator terminator_kind
-            = find_field_terminator (chunk + processed, n_avail - processed,
-                                     &search, &terminator);
-          idx_t field_len = terminator ? terminator - (chunk + processed)
+          గణన క్షేత్రం_terminator terminator_రకం
+            = కనుగొను_క్షేత్రం_terminator (chunk + processed, n_avail - processed,
+                                     &శోధన, &terminator);
+          idx_t క్షేత్రం_len = terminator ? terminator - (chunk + processed)
                                        : n_avail - processed;
 
-          if (terminator_kind == FIELD_DATA
-              && !search.at_eof
+          ఒకవేళ (terminator_రకం == క్షేత్రం_దత్తాంశం
+              && !శోధన.at_eof
               && !whitespace_delimited
-              && !field_delim_is_line_delim ())
-            field_len -= field_delim_overlap (chunk + processed, field_len);
+              && !క్షేత్రం_delim_is_పంక్తి_delim ())
+            క్షేత్రం_len -= క్షేత్రం_delim_overlap (chunk + processed, క్షేత్రం_len);
 
-          if (field_len || terminator)
-            have_pending_line = true;
+          ఒకవేళ (క్షేత్రం_len || terminator)
+            have_pending_పంక్తి = true;
 
           /* Output field content.  */
-          if (field_idx == 1 && buffer_first_field)
-            append_field_1_chunk (chunk + processed, field_len,
-                                  &field_1_n_bytes);
-          else if (write_field)
-            write_bytes (chunk + processed, field_len);
-          processed += field_len;
+          ఒకవేళ (క్షేత్రం_idx == 1 && బఫరు_మొదటి_క్షేత్రం)
+            append_క్షేత్రం_1_chunk (chunk + processed, క్షేత్రం_len,
+                                  &క్షేత్రం_1_n_బైట్లు);
+          లేకపోతే ఒకవేళ (write_క్షేత్రం)
+            write_బైట్లు (chunk + processed, క్షేత్రం_len);
+          processed += క్షేత్రం_len;
 
-          if (terminator_kind == FIELD_DATA)
-            break;
+          ఒకవేళ (terminator_రకం == క్షేత్రం_దత్తాంశం)
+            ఆపు;
 
-          if (terminator_kind == FIELD_DELIMITER)
+          ఒకవేళ (terminator_రకం == క్షేత్రం_DELIMITER)
             {
-              if (field_delim_is_line_delim () && processed + 1 == n_avail)
+              ఒకవేళ (క్షేత్రం_delim_is_పంక్తి_delim () && processed + 1 == n_avail)
                 {
                   processed++;
-                  pending_line_delim_field = true;
-                  break;
+                  pending_పంక్తి_delim_క్షేత్రం = true;
+                  ఆపు;
                 }
 
               processed += whitespace_delimited ? 1 : delim_mcel.len;
-              handle_field_delimiter (&field_idx, buffer_first_field,
-                                      &field_1_n_bytes,
-                                      &found_any_selected_field, &write_field);
-              if (whitespace_delimited)
-                skip_blank_run = true;
+              handle_క్షేత్రం_delimiter (&క్షేత్రం_idx, బఫరు_మొదటి_క్షేత్రం,
+                                      &క్షేత్రం_1_n_బైట్లు,
+                                      &దొరికింది_any_selected_క్షేత్రం, &write_క్షేత్రం);
+              ఒకవేళ (whitespace_delimited)
+                skip_blank_నిరంతరం = true;
             }
-          else
+          లేకపోతే
             {
-              affirm (terminator_kind == FIELD_LINE_DELIMITER);
+              affirm (terminator_రకం == క్షేత్రం_పంక్తి_DELIMITER);
               processed++;
-              finish_current_line (field_idx, buffer_first_field,
-                                   &field_1_n_bytes,
-                                   found_any_selected_field, true);
+              ముగింపు_current_పంక్తి (క్షేత్రం_idx, బఫరు_మొదటి_క్షేత్రం,
+                                   &క్షేత్రం_1_n_బైట్లు,
+                                   దొరికింది_any_selected_క్షేత్రం, true);
 
-            reset_line:
-              field_idx = 1;
+            reset_పంక్తి:
+              క్షేత్రం_idx = 1;
               current_rp = frp;
-              found_any_selected_field = false;
-              have_pending_line = false;
-              bytesearch_context_reset (&search);
-              write_field = begin_field_output (field_idx, buffer_first_field,
-                                                &found_any_selected_field);
+              దొరికింది_any_selected_క్షేత్రం = false;
+              have_pending_పంక్తి = false;
+              bytesearch_context_reset (&శోధన);
+              write_క్షేత్రం = begin_క్షేత్రం_output (క్షేత్రం_idx, బఫరు_మొదటి_క్షేత్రం,
+                                                &దొరికింది_any_selected_క్షేత్రం);
             }
         }
 
       mbbuf_advance (&mbbuf, processed);
     }
 
-  if (!have_pending_line)
-    return;
+  ఒకవేళ (!have_pending_పంక్తి)
+    తిరిగి;
 
-  finish_current_line (field_idx, buffer_first_field, &field_1_n_bytes,
-                       found_any_selected_field, false);
+  ముగింపు_current_పంక్తి (క్షేత్రం_idx, బఫరు_మొదటి_క్షేత్రం, &క్షేత్రం_1_n_బైట్లు,
+                       దొరికింది_any_selected_క్షేత్రం, false);
 }
 
 /* Read from STREAM, printing to standard output any selected fields,
    using runs of whitespace as the field delimiter.  */
 
-static void
-cut_fields_ws (FILE *stream)
+స్థిర శూన్య
+cut_fields_ws (FILE *ప్రవాహం)
 {
-  if (MB_CUR_MAX <= 1 && !trim_outer_whitespace)
-    cut_fields_bytesearch (stream);
-  else
-    cut_fields_mb_any (stream, true);
+  ఒకవేళ (MB_CUR_MAX <= 1 && !trim_outer_whitespace)
+    cut_fields_bytesearch (ప్రవాహం);
+  లేకపోతే
+    cut_fields_mb_any (ప్రవాహం, true);
 }
 
 /* Process file FILE to standard output, using CUT_STREAM.
    Return true if successful.  */
 
-static bool
-cut_file (char const *file, void (*cut_stream) (FILE *))
+స్థిర bool
+cut_file (అక్షరం స్థిరరాశి *file, శూన్య (*cut_ప్రవాహం) (FILE *))
 {
-  FILE *stream;
+  FILE *ప్రవాహం;
 
-  if (streq (file, "-"))
+  ఒకవేళ (streq (file, "-"))
     {
       have_read_stdin = true;
-      stream = stdin;
-      assume (stream);  /* Pacify GCC bug#109613.  */
+      ప్రవాహం = stdin;
+      assume (ప్రవాహం);  /* Pacify GCC bug#109613.  */
     }
-  else
+  లేకపోతే
     {
-      stream = fopen (file, "r");
-      if (stream == NULL)
+      ప్రవాహం = fopen (file, "r");
+      ఒకవేళ (ప్రవాహం == ఖాళీ)
         {
           error (0, errno, "%s", quotef (file));
-          return false;
+          తిరిగి false;
         }
     }
 
-  fadvise (stream, FADVISE_SEQUENTIAL);
+  fadvise (ప్రవాహం, FADVISE_SEQUENTIAL);
 
-  cut_stream (stream);
+  cut_ప్రవాహం (ప్రవాహం);
 
-  int err = errno;
-  if (!ferror (stream))
+  పూర్ణాంకం err = errno;
+  ఒకవేళ (!ferror (ప్రవాహం))
     err = 0;
-  if (streq (file, "-"))
-    clearerr (stream);		/* Also clear EOF.  */
-  else if (fclose (stream) == EOF)
+  ఒకవేళ (streq (file, "-"))
+    clearerr (ప్రవాహం);		/* Also clear EOF.  */
+  లేకపోతే ఒకవేళ (fclose (ప్రవాహం) == EOF)
     err = errno;
-  if (err)
+  ఒకవేళ (err)
     {
       error (0, err, "%s", quotef (file));
-      return false;
+      తిరిగి false;
     }
-  return true;
+  తిరిగి true;
 }
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
-  int optc;
+  పూర్ణాంకం optc;
   bool ok;
   bool delim_specified = false;
   bool whitespace_delimited_specified = false;
-  char *spec_list_string = NULL;
+  అక్షరం *spec_list_string = ఖాళీ;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "b:c:d:f:F:nO:szw", longopts, NULL))
+  అయితే ((optc = getopt_long (argc, argv, "b:c:d:f:F:nO:szw", longopts, ఖాళీ))
          != -1)
     {
-      switch (optc)
+      ఎంపిక (optc)
         {
-        case 'b':
-          cut_mode = CUT_MODE_BYTES;
+        స్థితి 'b':
+          cut_బహుళకం = CUT_బహుళకం_బైట్లు;
           FALLTHROUGH;
-        case 'c':
-          if (optc == 'c')
-            cut_mode = CUT_MODE_CHARACTERS;
+        స్థితి 'c':
+          ఒకవేళ (optc == 'c')
+            cut_బహుళకం = CUT_బహుళకం_CHARACTERS;
           FALLTHROUGH;
-        case 'f':
-        case 'F':
-          if (optc == 'f' || optc == 'F')
-            cut_mode = CUT_MODE_FIELDS;
-          if (optc == 'F')
+        స్థితి 'f':
+        స్థితి 'F':
+          ఒకవేళ (optc == 'f' || optc == 'F')
+            cut_బహుళకం = CUT_బహుళకం_FIELDS;
+          ఒకవేళ (optc == 'F')
             {
               whitespace_delimited = true;
               space_output_delimiter_default = true;
             }
-          if (spec_list_string)
+          ఒకవేళ (spec_list_string)
             FATAL_ERROR (_("only one list may be specified"));
           spec_list_string = optarg;
-          break;
+          ఆపు;
 
-        case 'd':
+        స్థితి 'd':
           {
             /* New delimiter.  */
             /* Interpret -d '' to mean 'use the NUL byte as the delimiter.'  */
             mcel_t g = delim_mcel = mcel_scanz (optarg);
-            if (optarg[0] && optarg[g.len])
+            ఒకవేళ (optarg[0] && optarg[g.len])
               FATAL_ERROR (_("the delimiter must be a single character"));
             /* Note NUL is copied for use with strstr.  */
-            copy_bytes (delim_bytes, optarg, g.len + 1);
+            copy_బైట్లు (delim_బైట్లు, optarg, g.len + 1);
             delim_specified = true;
-            break;
+            ఆపు;
           }
 
-        case 'w':
+        స్థితి 'w':
           whitespace_delimited = true;
           whitespace_delimited_specified = true;
           trim_outer_whitespace
             = (optarg
                && XARGMATCH ("--whitespace-delimited", optarg,
-                             whitespace_option_args,
+                             whitespace_option_వాదనలు,
                              whitespace_option_types)
                   == WHITESPACE_OPTION_TRIMMED);
-          break;
+          ఆపు;
 
-        case 'O':
+        స్థితి 'O':
           /* Interpret --output-delimiter='' to mean
              'use the NUL byte as the delimiter.'  */
-          output_delimiter_length = (optarg[0] == '\0'
-                                     ? 1 : strlen (optarg));
+          output_delimiter_నిడివి = (optarg[0] == '\0'
+                                     ? 1 : అక్షరశ్రేణి_పొడవు (optarg));
           output_delimiter_string = optarg;
-          break;
+          ఆపు;
 
-        case 'n':
-          no_split = true;
-          break;
+        స్థితి 'n':
+          no_విభజించు = true;
+          ఆపు;
 
-        case 's':
+        స్థితి 's':
           suppress_non_delimited = true;
-          break;
+          ఆపు;
 
-        case 'z':
-          line_delim = '\0';
-          break;
+        స్థితి 'z':
+          పంక్తి_delim = '\0';
+          ఆపు;
 
-        case COMPLEMENT_OPTION:
+        స్థితి COMPLEMENT_OPTION:
           complement = true;
-          break;
+          ఆపు;
 
         case_GETOPT_HELP_CHAR;
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        case_GETOPT_సంస్కరణ_CHAR (కార్యక్రమం_NAME, AUTHORS);
+        అప్రమేయ:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (!spec_list_string)
+  ఒకవేళ (!spec_list_string)
     FATAL_ERROR (_("you must specify a list of bytes, characters, or fields"));
 
-  if (cut_mode == CUT_MODE_BYTES || cut_mode == CUT_MODE_CHARACTERS)
+  ఒకవేళ (cut_బహుళకం == CUT_బహుళకం_బైట్లు || cut_బహుళకం == CUT_బహుళకం_CHARACTERS)
     {
-      if (delim_specified || whitespace_delimited)
-        FATAL_ERROR (_("an input delimiter makes sense\n\
+      ఒకవేళ (delim_specified || whitespace_delimited)
+        FATAL_ERROR (_("an ఆదానం delimiter makes sense\n\
 \tonly when operating on fields"));
 
-      if (suppress_non_delimited)
-        FATAL_ERROR (_("suppressing non-delimited lines makes sense\n\
+      ఒకవేళ (suppress_non_delimited)
+        FATAL_ERROR (_("suppressing non-delimited పంక్తులు makes sense\n\
 \tonly when operating on fields"));
     }
 
-  if (delim_specified && whitespace_delimited_specified)
+  ఒకవేళ (delim_specified && whitespace_delimited_specified)
     FATAL_ERROR (_("-d and -w are mutually exclusive"));
 
-  if (delim_specified && !whitespace_delimited_specified)
+  ఒకవేళ (delim_specified && !whitespace_delimited_specified)
     whitespace_delimited = false;
 
-  set_fields (spec_list_string,
-              (((cut_mode == CUT_MODE_BYTES
-                 || cut_mode == CUT_MODE_CHARACTERS)
+  సమితి_fields (spec_list_string,
+              (((cut_బహుళకం == CUT_బహుళకం_బైట్లు
+                 || cut_బహుళకం == CUT_బహుళకం_CHARACTERS)
                 ? SETFLD_ERRMSG_USE_POS : 0)
                | (complement ? SETFLD_COMPLEMENT : 0)));
 
-  if (!delim_specified)
+  ఒకవేళ (!delim_specified)
     {
-      delim_bytes[0] = '\t';
+      delim_బైట్లు[0] = '\t';
       delim_mcel = mcel_ch ('\t', 1);
     }
 
-  if (output_delimiter_string == NULL)
+  ఒకవేళ (output_delimiter_string == ఖాళీ)
     {
       output_delimiter_string = output_delimiter_default;
-      if (space_output_delimiter_default)
+      ఒకవేళ (space_output_delimiter_default)
         {
           output_delimiter_default[0] = ' ';
-          output_delimiter_length = 1;
+          output_delimiter_నిడివి = 1;
         }
-      else
+      లేకపోతే
         {
-          copy_bytes (output_delimiter_default, delim_bytes, delim_mcel.len);
-          output_delimiter_length = delim_mcel.len;
+          copy_బైట్లు (output_delimiter_default, delim_బైట్లు, delim_mcel.len);
+          output_delimiter_నిడివి = delim_mcel.len;
         }
     }
 
-  void (*cut_stream) (FILE *) = NULL;
-  switch (cut_mode)
+  శూన్య (*cut_ప్రవాహం) (FILE *) = ఖాళీ;
+  ఎంపిక (cut_బహుళకం)
     {
-    case CUT_MODE_BYTES:
-      cut_stream = MB_CUR_MAX <= 1 || !no_split
-                   ? cut_bytes : cut_bytes_no_split;
-      break;
+    స్థితి CUT_బహుళకం_బైట్లు:
+      cut_ప్రవాహం = MB_CUR_MAX <= 1 || !no_విభజించు
+                   ? cut_బైట్లు : cut_బైట్లు_no_విభజించు;
+      ఆపు;
 
-    case CUT_MODE_CHARACTERS:
-      cut_stream = MB_CUR_MAX <= 1 ? cut_bytes : cut_characters;
-      break;
+    స్థితి CUT_బహుళకం_CHARACTERS:
+      cut_ప్రవాహం = MB_CUR_MAX <= 1 ? cut_బైట్లు : cut_characters;
+      ఆపు;
 
-    case CUT_MODE_FIELDS:
-      cut_stream = whitespace_delimited ? cut_fields_ws
-                   : bytesearch_field_delim_ok () ? cut_fields_bytesearch
+    స్థితి CUT_బహుళకం_FIELDS:
+      cut_ప్రవాహం = whitespace_delimited ? cut_fields_ws
+                   : bytesearch_క్షేత్రం_delim_ok () ? cut_fields_bytesearch
                    : cut_fields_mb;
-      break;
+      ఆపు;
 
-    case CUT_MODE_NONE:
+    స్థితి CUT_బహుళకం_NONE:
       affirm (false);
     }
-  affirm (cut_stream);
-  if (optind == argc)
-    ok = cut_file ("-", cut_stream);
-  else
-    for (ok = true; optind < argc; optind++)
-      ok &= cut_file (argv[optind], cut_stream);
+  affirm (cut_ప్రవాహం);
+  ఒకవేళ (optind == argc)
+    ok = cut_file ("-", cut_ప్రవాహం);
+  లేకపోతే
+    కొరకు (ok = true; optind < argc; optind++)
+      ok &= cut_file (argv[optind], cut_ప్రవాహం);
 
 
-  if (have_read_stdin && fclose (stdin) == EOF)
+  ఒకవేళ (have_read_stdin && fclose (stdin) == EOF)
     {
       error (0, errno, "-");
       ok = false;
     }
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  తిరిగి ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

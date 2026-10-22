@@ -20,72 +20,72 @@
 
    Simply call the system 'link' function */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
+#అన్తర్భావ <config.h>
+#అన్తర్భావ <stdio.h>
+#అన్తర్భావ <sys/types.h>
 
-#include "system.h"
-#include "long-options.h"
-#include "quote.h"
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "long-options.h"
+#అన్తర్భావ "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "link"
+#నిర్వచించు కార్యక్రమం_NAME "link"
 
-#define AUTHORS proper_name ("Michael Stone")
+#నిర్వచించు AUTHORS proper_name ("Michael Stone")
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("\
+      రాయి (_("\
 Usage: %s FILE1 FILE2\n\
-  or:  %s OPTION\n"), program_name, program_name);
-      fputs (_("Call the link function to create a link named FILE2\
- to an existing FILE1.\n\n"),
+  or:  %s OPTION\n"), కార్యక్రమం_name, కార్యక్రమం_name);
+      fputs (_("Call the link function గమ్యం create a link named FILE2\
+ గమ్యం an existing FILE1.\n\n"),
              stdout);
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
-                                   Version, true, usage, AUTHORS,
-                                   (char const *) NULL);
+  parse_gnu_standard_options_only (argc, argv, కార్యక్రమం_NAME, PACKAGE_NAME,
+                                   సంస్కరణ, true, usage, AUTHORS,
+                                   (అక్షరం స్థిరరాశి *) ఖాళీ);
 
-  if (argc < optind + 2)
+  ఒకవేళ (argc < optind + 2)
     {
-      if (argc < optind + 1)
+      ఒకవేళ (argc < optind + 1)
         error (0, 0, _("missing operand"));
-      else
+      లేకపోతే
         error (0, 0, _("missing operand after %s"), quote (argv[optind]));
       usage (EXIT_FAILURE);
     }
 
-  if (optind + 2 < argc)
+  ఒకవేళ (optind + 2 < argc)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind + 2]));
       usage (EXIT_FAILURE);
     }
 
-  if (link (argv[optind], argv[optind + 1]) != 0)
+  ఒకవేళ (link (argv[optind], argv[optind + 1]) != 0)
     error (EXIT_FAILURE, errno, _("cannot create link %s to %s"),
            quoteaf_n (0, argv[optind + 1]), quoteaf_n (1, argv[optind]));
 
-  return EXIT_SUCCESS;
+  తిరిగి EXIT_SUCCESS;
 }

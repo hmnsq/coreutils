@@ -16,44 +16,44 @@
 
 /* Written by jla; revised by djm */
 
-#include <config.h>
-#include <stdio.h>
+#అన్తర్భావ <config.h>
+#అన్తర్భావ <stdio.h>
 
-#include <sys/types.h>
-#include "system.h"
+#అన్తర్భావ <sys/types.h>
+#అన్తర్భావ "system.h"
 
-#include "long-options.h"
-#include "quote.h"
-#include "readutmp.h"
+#అన్తర్భావ "long-options.h"
+#అన్తర్భావ "quote.h"
+#అన్తర్భావ "readutmp.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "users"
+#నిర్వచించు కార్యక్రమం_NAME "users"
 
-#define AUTHORS \
+#నిర్వచించు AUTHORS \
   proper_name ("Joseph Arceneaux"), \
   proper_name ("David MacKenzie")
 
-static int
-userid_compare (const void *v_a, const void *v_b)
+స్థిర పూర్ణాంకం
+userid_compare (స్థిరరాశి శూన్య *v_a, స్థిరరాశి శూన్య *v_b)
 {
-  char **a = (char **) v_a;
-  char **b = (char **) v_b;
-  return strcmp (*a, *b);
+  అక్షరం **a = (అక్షరం **) v_a;
+  అక్షరం **b = (అక్షరం **) v_b;
+  తిరిగి strcmp (*a, *b);
 }
 
-static void
-list_entries_users (idx_t n, STRUCT_UTMP const *this)
+స్థిర శూన్య
+list_entries_users (idx_t n, STRUCT_UTMP స్థిరరాశి *this)
 {
-  char **u = xinmalloc (n, sizeof *u);
+  అక్షరం **u = xinmalloc (n, పరిమాణం *u);
   idx_t n_entries = 0;
 
-  while (n--)
+  అయితే (n--)
     {
-      if (IS_USER_PROCESS (this))
+      ఒకవేళ (IS_USER_PROCESS (this))
         {
-          char *trimmed_name;
+          అక్షరం *trimmed_name;
 
-          trimmed_name = extract_trimmed_name (this);
+          trimmed_name = వెలికితీయి_trimmed_name (this);
 
           u[n_entries] = trimmed_name;
           ++n_entries;
@@ -61,87 +61,87 @@ list_entries_users (idx_t n, STRUCT_UTMP const *this)
       this++;
     }
 
-  qsort (u, n_entries, sizeof (u[0]), userid_compare);
+  qsort (u, n_entries, పరిమాణం (u[0]), userid_compare);
 
-  for (idx_t i = 0; i < n_entries; i++)
+  కొరకు (idx_t i = 0; i < n_entries; i++)
     {
-      char c = (i < n_entries - 1 ? ' ' : '\n');
+      అక్షరం c = (i < n_entries - 1 ? ' ' : '\n');
       fputs (u[i], stdout);
-      putchar (c);
+      అక్షరం_రాయి (c);
     }
 
-  for (idx_t i = 0; i < n_entries; i++)
-    free (u[i]);
-  free (u);
+  కొరకు (idx_t i = 0; i < n_entries; i++)
+    విడుదల (u[i]);
+  విడుదల (u);
 }
 
 /* Display a list of users on the system, according to utmp file FILENAME.
    Use read_utmp OPTIONS to read FILENAME.  */
 
-static void
-users (char const *filename, int options)
+స్థిర శూన్య
+users (అక్షరం స్థిరరాశి *filename, పూర్ణాంకం options)
 {
   idx_t n_users;
   STRUCT_UTMP *utmp_buf;
   options |= READ_UTMP_USER_PROCESS;
-  if (read_utmp (filename, &n_users, &utmp_buf, options) != 0)
+  ఒకవేళ (read_utmp (filename, &n_users, &utmp_buf, options) != 0)
     error (EXIT_FAILURE, errno, "%s", quotef (filename));
 
   list_entries_users (n_users, utmp_buf);
 
-  free (utmp_buf);
+  విడుదల (utmp_buf);
 }
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("Usage: %s [OPTION]... [FILE]\n"), program_name);
-      printf (_("\
-Output who is currently logged in according to FILE.\n\
+      రాయి (_("Usage: %s [OPTION]... [FILE]\n"), కార్యక్రమం_name);
+      రాయి (_("\
+Output who is currently logged లోపల according గమ్యం FILE.\n\
 If FILE is not specified, use %s.  %s as FILE is common.\n\
 \n\
 "),
               UTMP_FILE, WTMP_FILE);
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
-                                   Version, true, usage, AUTHORS,
-                                   (char const *) NULL);
+  parse_gnu_standard_options_only (argc, argv, కార్యక్రమం_NAME, PACKAGE_NAME,
+                                   సంస్కరణ, true, usage, AUTHORS,
+                                   (అక్షరం స్థిరరాశి *) ఖాళీ);
 
-  switch (argc - optind)
+  ఎంపిక (argc - optind)
     {
-    case 0:			/* users */
+    స్థితి 0:			/* users */
       users (UTMP_FILE, READ_UTMP_CHECK_PIDS);
-      break;
+      ఆపు;
 
-    case 1:			/* users <utmp file> */
+    స్థితి 1:			/* users <utmp file> */
       users (argv[optind], 0);
-      break;
+      ఆపు;
 
-    default:			/* lose */
+    అప్రమేయ:			/* lose */
       error (0, 0, _("extra operand %s"), quote (argv[optind + 1]));
       usage (EXIT_FAILURE);
     }
 
-  return EXIT_SUCCESS;
+  తిరిగి EXIT_SUCCESS;
 }

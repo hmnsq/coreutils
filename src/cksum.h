@@ -1,8 +1,8 @@
-enum Algorithm
+గణన Algorithm
 {
   bsd,
   sysv,
-  crc,
+  చక్రీయ_తనిఖీ,
   crc32b,
   md5,
   sha1,
@@ -16,4 +16,4 @@ enum Algorithm
   sm3,
 };
 
-extern enum Algorithm cksum_algorithm;
+బాహ్య గణన Algorithm cksum_algorithm;

@@ -40,45 +40,45 @@
  *     4            N         error
  */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <selinux/selinux.h>
-#include <selinux/context.h>
-#include <sys/types.h>
-#include "system.h"
-#include "quote.h"
+#అన్తర్భావ <config.h>
+#అన్తర్భావ <stdio.h>
+#అన్తర్భావ <getopt.h>
+#అన్తర్భావ <selinux/selinux.h>
+#అన్తర్భావ <selinux/context.h>
+#అన్తర్భావ <sys/types.h>
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "runcon"
+#నిర్వచించు కార్యక్రమం_NAME "runcon"
 
-#define AUTHORS proper_name ("Russell Coker")
+#నిర్వచించు AUTHORS proper_name ("Russell Coker")
 
-static struct option const long_options[] =
+స్థిర నిర్మాణం option స్థిరరాశి long_options[] =
 {
-  {"role", required_argument, NULL, 'r'},
-  {"type", required_argument, NULL, 't'},
-  {"user", required_argument, NULL, 'u'},
-  {"range", required_argument, NULL, 'l'},
-  {"compute", no_argument, NULL, 'c'},
+  {"role", required_వాదం, ఖాళీ, 'r'},
+  {"type", required_వాదం, ఖాళీ, 't'},
+  {"user", required_వాదం, ఖాళీ, 'u'},
+  {"range", required_వాదం, ఖాళీ, 'l'},
+  {"compute", no_వాదం, ఖాళీ, 'c'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_సంస్కరణ_OPTION_DECL},
+  {ఖాళీ, 0, ఖాళీ, 0}
 };
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("\
+      రాయి (_("\
 Usage: %s [CONTEXT COMMAND [ARG]...]\n\
   or:  %s [-c] [-u USER] [-r ROLE] [-t TYPE] [-l RANGE] COMMAND [ARG]...\n\
-"), program_name, program_name);
+"), కార్యక్రమం_name, కార్యక్రమం_name);
       fputs (_("\
-Run a program in a different SELinux security context.\n\
+నిరంతరం a కార్యక్రమం లోపల a different SELinux security context.\n\
 With neither CONTEXT nor COMMAND, print the current security context.\n\
 "), stdout);
 
@@ -91,10 +91,10 @@ With neither CONTEXT nor COMMAND, print the current security context.\n\
   -c, --compute      compute process transition context before modifying\n\
 "));
       oputs (_("\
-  -t, --type=TYPE    type (for same role as parent)\n\
+  -t, --type=TYPE    type (కొరకు same role as మాతృ)\n\
 "));
       oputs (_("\
-  -u, --user=USER    user identity\n\
+  -u, --user=USER    user తటస్థం\n\
 "));
       oputs (_("\
   -r, --role=ROLE    role\n\
@@ -103,30 +103,30 @@ With neither CONTEXT nor COMMAND, print the current security context.\n\
   -l, --range=RANGE  levelrange\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_exec_status (PROGRAM_NAME);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
+      emit_exec_స్థితి (కార్యక్రమం_NAME);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
-  char *role = NULL;
-  char *range = NULL;
-  char *user = NULL;
-  char *type = NULL;
-  char *context = NULL;
-  char *cur_context = NULL;
-  char *file_context = NULL;
-  char *new_context = NULL;
+  అక్షరం *role = ఖాళీ;
+  అక్షరం *range = ఖాళీ;
+  అక్షరం *user = ఖాళీ;
+  అక్షరం *type = ఖాళీ;
+  అక్షరం *context = ఖాళీ;
+  అక్షరం *cur_context = ఖాళీ;
+  అక్షరం *file_context = ఖాళీ;
+  అక్షరం *new_context = ఖాళీ;
   bool compute_trans = false;
 
   context_t con;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
@@ -134,59 +134,59 @@ main (int argc, char **argv)
   initialize_exit_failure (EXIT_CANCELED);
   atexit (close_stdout);
 
-  while (true)
+  అయితే (true)
     {
-      int option_index = 0;
-      int c = getopt_long (argc, argv, "+r:t:u:l:c", long_options,
-                           &option_index);
-      if (c == -1)
-        break;
-      switch (c)
+      పూర్ణాంకం option_సూచీ = 0;
+      పూర్ణాంకం c = getopt_long (argc, argv, "+r:t:u:l:c", long_options,
+                           &option_సూచీ);
+      ఒకవేళ (c == -1)
+        ఆపు;
+      ఎంపిక (c)
         {
-        case 'r':
-          if (role)
+        స్థితి 'r':
+          ఒకవేళ (role)
             error (EXIT_CANCELED, 0, _("multiple roles"));
           role = optarg;
-          break;
-        case 't':
-          if (type)
+          ఆపు;
+        స్థితి 't':
+          ఒకవేళ (type)
             error (EXIT_CANCELED, 0, _("multiple types"));
           type = optarg;
-          break;
-        case 'u':
-          if (user)
+          ఆపు;
+        స్థితి 'u':
+          ఒకవేళ (user)
             error (EXIT_CANCELED, 0, _("multiple users"));
           user = optarg;
-          break;
-        case 'l':
-          if (range)
+          ఆపు;
+        స్థితి 'l':
+          ఒకవేళ (range)
             error (EXIT_CANCELED, 0, _("multiple levelranges"));
           range = optarg;
-          break;
-        case 'c':
+          ఆపు;
+        స్థితి 'c':
           compute_trans = true;
-          break;
+          ఆపు;
 
         case_GETOPT_HELP_CHAR;
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        case_GETOPT_సంస్కరణ_CHAR (కార్యక్రమం_NAME, AUTHORS);
+        అప్రమేయ:
           usage (EXIT_CANCELED);
-          break;
+          ఆపు;
         }
     }
 
-  if (argc - optind == 0)
+  ఒకవేళ (argc - optind == 0)
     {
-      if (getcon (&cur_context) < 0)
+      ఒకవేళ (getcon (&cur_context) < 0)
         error (EXIT_CANCELED, errno, _("failed to get current context"));
       fputs (cur_context, stdout);
       fputc ('\n', stdout);
-      return EXIT_SUCCESS;
+      తిరిగి EXIT_SUCCESS;
     }
 
-  if (!(user || role || type || range || compute_trans))
+  ఒకవేళ (!(user || role || type || range || compute_trans))
     {
-      if (optind >= argc)
+      ఒకవేళ (optind >= argc)
         {
           error (0, 0, _("you must specify -c, -t, -u, -l, -r, or context"));
           usage (EXIT_CANCELED);
@@ -194,39 +194,39 @@ main (int argc, char **argv)
       context = argv[optind++];
     }
 
-  if (optind >= argc)
+  ఒకవేళ (optind >= argc)
     {
       error (0, 0, _("no command specified"));
       usage (EXIT_CANCELED);
     }
 
-  if (is_selinux_enabled () != 1)
+  ఒకవేళ (is_selinux_enabled () != 1)
     error (EXIT_CANCELED, 0, _("%s may be used only on a SELinux kernel"),
-           program_name);
+           కార్యక్రమం_name);
 
-  if (context)
+  ఒకవేళ (context)
     {
       con = context_new (context);
-      if (!con)
+      ఒకవేళ (!con)
         error (EXIT_CANCELED, errno, _("failed to create security context: %s"),
                quote (context));
     }
-  else
+  లేకపోతే
     {
-      if (getcon (&cur_context) < 0)
+      ఒకవేళ (getcon (&cur_context) < 0)
         error (EXIT_CANCELED, errno, _("failed to get current context"));
 
       /* We will generate context based on process transition */
-      if (compute_trans)
+      ఒకవేళ (compute_trans)
         {
           /* Get context of file to be executed */
-          if (getfilecon (argv[optind], &file_context) == -1)
+          ఒకవేళ (getfilecon (argv[optind], &file_context) == -1)
             error (EXIT_CANCELED, errno,
                    _("failed to get security context of %s"),
                    quoteaf (argv[optind]));
           /* compute result of process transition */
-          if (security_compute_create (cur_context, file_context,
-                                       string_to_security_class ("process"),
+          ఒకవేళ (security_compute_create (cur_context, file_context,
+                                       string_గమ్యం_security_class ("process"),
                                        &new_context) != 0)
             error (EXIT_CANCELED, errno, _("failed to compute a new context"));
           /* free contexts */
@@ -238,36 +238,36 @@ main (int argc, char **argv)
         }
 
       con = context_new (cur_context);
-      if (!con)
+      ఒకవేళ (!con)
         error (EXIT_CANCELED, errno, _("failed to create security context: %s"),
                quote (cur_context));
-      if (user && context_user_set (con, user))
+      ఒకవేళ (user && context_user_సమితి (con, user))
         error (EXIT_CANCELED, errno, _("failed to set new user: %s"),
                quote (user));
-      if (type && context_type_set (con, type))
+      ఒకవేళ (type && context_type_సమితి (con, type))
         error (EXIT_CANCELED, errno, _("failed to set new type: %s"),
                quote (type));
-      if (range && context_range_set (con, range))
+      ఒకవేళ (range && context_range_సమితి (con, range))
         error (EXIT_CANCELED, errno, _("failed to set new range: %s"),
                quote (range));
-      if (role && context_role_set (con, role))
+      ఒకవేళ (role && context_role_సమితి (con, role))
         error (EXIT_CANCELED, errno, _("failed to set new role: %s"),
                quote (role));
     }
 
-  if (security_check_context (context_str (con)) < 0)
+  ఒకవేళ (security_check_context (context_str (con)) < 0)
     error (EXIT_CANCELED, errno, _("invalid context: %s"),
            quote (context_str (con)));
 
-  if (setexeccon (context_str (con)) != 0)
+  ఒకవేళ (setexeccon (context_str (con)) != 0)
     error (EXIT_CANCELED, errno, _("unable to set security context %s"),
            quote (context_str (con)));
-  if (cur_context != NULL)
+  ఒకవేళ (cur_context != ఖాళీ)
     freecon (cur_context);
 
   (compute_trans ? execv : execvp) (argv[optind], argv + optind);
 
-  int exit_status = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
+  పూర్ణాంకం exit_స్థితి = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
   error (0, errno, "%s", quote (argv[optind]));
-  return exit_status;
+  తిరిగి exit_స్థితి;
 }

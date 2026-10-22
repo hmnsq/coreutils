@@ -1,18 +1,18 @@
-extern int
-bsd_sum_stream (FILE *stream, void *resstream, intmax_t *length);
+బాహ్య పూర్ణాంకం
+bsd_కూడిక_ప్రవాహం (FILE *ప్రవాహం, శూన్య *resstream, intmax_t *నిడివి);
 
-extern int
-sysv_sum_stream (FILE *stream, void *resstream, intmax_t *length);
+బాహ్య పూర్ణాంకం
+sysv_కూడిక_ప్రవాహం (FILE *ప్రవాహం, శూన్య *resstream, intmax_t *నిడివి);
 
-typedef int (*sumfn)(FILE *, void *, intmax_t *);
+రకనిర్వచనం పూర్ణాంకం (*sumfn)(FILE *, శూన్య *, intmax_t *);
 
 
-extern void
-output_bsd (char const *file, int binary_file, void const *digest,
-            bool raw, bool tagged, unsigned char delim, bool args,
-            intmax_t length);
+బాహ్య శూన్య
+output_bsd (అక్షరం స్థిరరాశి *file, పూర్ణాంకం ద్విమాన_file, శూన్య స్థిరరాశి *digest,
+            bool raw, bool tagged, గుర్తులేని అక్షరం delim, bool వాదనలు,
+            intmax_t నిడివి);
 
-extern void
-output_sysv (char const *file, int binary_file, void const *digest,
-             bool raw, bool tagged, unsigned char delim, bool args,
-             intmax_t length);
+బాహ్య శూన్య
+output_sysv (అక్షరం స్థిరరాశి *file, పూర్ణాంకం ద్విమాన_file, శూన్య స్థిరరాశి *digest,
+             bool raw, bool tagged, గుర్తులేని అక్షరం delim, bool వాదనలు,
+             intmax_t నిడివి);

@@ -14,128 +14,128 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include <getopt.h>
-#include <stdio.h>
-#include <sys/types.h>
+#అన్తర్భావ <config.h>
+#అన్తర్భావ <getopt.h>
+#అన్తర్భావ <stdio.h>
+#అన్తర్భావ <sys/types.h>
 
-#include "system.h"
-#include "quote.h"
-#include "root-dev-ino.h"
-#include "xgetcwd.h"
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "quote.h"
+#అన్తర్భావ "root-dev-ino.h"
+#అన్తర్భావ "xgetcwd.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "pwd"
+#నిర్వచించు కార్యక్రమం_NAME "pwd"
 
-#define AUTHORS proper_name ("Jim Meyering")
+#నిర్వచించు AUTHORS proper_name ("Jim Meyering")
 
-struct file_name
+నిర్మాణం file_name
 {
   idx_t n_alloc;
-  char *buf COUNTED_BY (n_alloc);
-  char *start;
+  అక్షరం *buf COUNTED_BY (n_alloc);
+  అక్షరం *ప్రారంభం;
 };
 
-static struct option const longopts[] =
+స్థిర నిర్మాణం option స్థిరరాశి longopts[] =
 {
-  {"logical", no_argument, NULL, 'L'},
-  {"physical", no_argument, NULL, 'P'},
+  {"logical", no_వాదం, ఖాళీ, 'L'},
+  {"physical", no_వాదం, ఖాళీ, 'P'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_సంస్కరణ_OPTION_DECL},
+  {ఖాళీ, 0, ఖాళీ, 0}
 };
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("Usage: %s [OPTION]...\n"), program_name);
+      రాయి (_("Usage: %s [OPTION]...\n"), కార్యక్రమం_name);
       fputs (_("\
-Print the full filename of the current working directory.\n\
+Print the నిండిన filename యొక్క the current working directory.\n\
 \n\
 "), stdout);
       oputs (_("\
   -L, --logical\n\
-         use PWD from environment, even if it contains symlinks\n\
+         use PWD from environment, even ఒకవేళ it కలిగియుంది symlinks\n\
 "));
       oputs (_("\
   -P, --physical\n\
          resolve all symlinks\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
       fputs (_("\n\
 If no option is specified, -P is assumed.\n\
 "), stdout);
-      printf (USAGE_BUILTIN_WARNING, PROGRAM_NAME);
-      emit_ancillary_info (PROGRAM_NAME);
+      రాయి (USAGE_BUILTIN_WARNING, కార్యక్రమం_NAME);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
-static void
-file_name_free (struct file_name *p)
+స్థిర శూన్య
+file_name_free (నిర్మాణం file_name *p)
 {
-  free (p->buf);
-  free (p);
+  విడుదల (p->buf);
+  విడుదల (p);
 }
 
-static struct file_name *
-file_name_init (void)
+స్థిర నిర్మాణం file_name *
+file_name_init (శూన్య)
 {
-  struct file_name *p = xmalloc (sizeof *p);
+  నిర్మాణం file_name *p = xmalloc (పరిమాణం *p);
 
   /* Start with a buffer larger than likely file names, but beware of systems
      on which PATH_MAX is very large -- e.g., INT_MAX.  */
-  int init_alloc = 2 * MIN (PATH_MAX, 16 * 1024);
+  పూర్ణాంకం init_alloc = 2 * MIN (PATH_MAX, 16 * 1024);
   p->n_alloc = init_alloc;
 
   p->buf = xmalloc (init_alloc);
-  p->start = p->buf + init_alloc - 1;
-  p->start[0] = '\0';
-  return p;
+  p->ప్రారంభం = p->buf + init_alloc - 1;
+  p->ప్రారంభం[0] = '\0';
+  తిరిగి p;
 }
 
 /* Prepend the name S of length S_LEN, to the growing file_name, P.  */
-static void
-file_name_prepend (struct file_name *p, char const *s, size_t s_len)
+స్థిర శూన్య
+file_name_prepend (నిర్మాణం file_name *p, అక్షరం స్థిరరాశి *s, size_t s_len)
 {
-  idx_t n_free = p->start - p->buf;
-  if (n_free < 1 + s_len)
+  idx_t n_free = p->ప్రారంభం - p->buf;
+  ఒకవేళ (n_free < 1 + s_len)
     {
       /* Call xpalloc with NULL not p->buf, since with the latter
          we'd end up copying the data twice: once via realloc, then again
          to align it with the end of the new buffer.  By passing NULL we
          copy it only once.  */
-      idx_t n_used = p->n_alloc - n_free;
-      char *buf = xpalloc (NULL, &p->n_alloc, 1 + s_len - n_free, -1, 1);
-      p->start = memcpy (buf + p->n_alloc - n_used, p->start, n_used);
-      free (p->buf);
+      idx_t n_వాడిన = p->n_alloc - n_free;
+      అక్షరం *buf = xpalloc (ఖాళీ, &p->n_alloc, 1 + s_len - n_free, -1, 1);
+      p->ప్రారంభం = జ్ఞాపకం_నకలు (buf + p->n_alloc - n_వాడిన, p->ప్రారంభం, n_వాడిన);
+      విడుదల (p->buf);
       p->buf = buf;
     }
 
-  p->start -= 1 + s_len;
-  p->start[0] = '/';
-  memcpy (p->start + 1, s, s_len);
+  p->ప్రారంభం -= 1 + s_len;
+  p->ప్రారంభం[0] = '/';
+  జ్ఞాపకం_నకలు (p->ప్రారంభం + 1, s, s_len);
 }
 
 /* Return a string (malloc'd) consisting of N '/'-separated ".." components.  */
-static char *
-nth_parent (size_t n)
+స్థిర అక్షరం *
+nth_మాతృ (size_t n)
 {
-  char *buf = xnmalloc (3, n);
-  char *p = buf;
+  అక్షరం *buf = xnmalloc (3, n);
+  అక్షరం *p = buf;
 
-  for (size_t i = 0; i < n; i++)
+  కొరకు (size_t i = 0; i < n; i++)
     {
-      memcpy (p, "../", 3);
+      జ్ఞాపకం_నకలు (p, "../", 3);
       p += 3;
     }
   p[-1] = '\0';
-  return buf;
+  తిరిగి buf;
 }
 
 /* Determine the basename of the current directory, where DOT_SB is the
@@ -149,90 +149,90 @@ nth_parent (size_t n)
    PARENT_HEIGHT is 1.  This is solely for diagnostics.
    Exit nonzero upon error.  */
 
-static void
-find_dir_entry (struct stat *dot_sb, struct file_name *file_name,
-                size_t parent_height)
+స్థిర శూన్య
+కనుగొను_dir_నమోదు (నిర్మాణం stat *dot_sb, నిర్మాణం file_name *file_name,
+                size_t మాతృ_ఎత్తు)
 {
   DIR *dirp = opendir ("..");
-  if (dirp == NULL)
+  ఒకవేళ (dirp == ఖాళీ)
     error (EXIT_FAILURE, errno, _("cannot open directory %s"),
-           quote (nth_parent (parent_height)));
+           quote (nth_మాతృ (మాతృ_ఎత్తు)));
 
-  int fd = dirfd (dirp);
-  if ((0 <= fd ? fchdir (fd) : chdir ("..")) < 0)
+  పూర్ణాంకం fd = dirfd (dirp);
+  ఒకవేళ ((0 <= fd ? fchdir (fd) : chdir ("..")) < 0)
     error (EXIT_FAILURE, errno, _("failed to chdir to %s"),
-           quote (nth_parent (parent_height)));
+           quote (nth_మాతృ (మాతృ_ఎత్తు)));
 
-  struct stat parent_sb;
-  if ((0 <= fd ? fstat (fd, &parent_sb) : stat (".", &parent_sb)) < 0)
+  నిర్మాణం stat మాతృ_sb;
+  ఒకవేళ ((0 <= fd ? fstat (fd, &మాతృ_sb) : stat (".", &మాతృ_sb)) < 0)
     error (EXIT_FAILURE, errno, _("failed to stat %s"),
-           quote (nth_parent (parent_height)));
+           quote (nth_మాతృ (మాతృ_ఎత్తు)));
 
   /* If parent and child directory are on different devices, then we
      can't rely on d_ino for useful i-node numbers; use lstat instead.  */
-  bool use_lstat = (parent_sb.st_dev != dot_sb->st_dev);
+  bool use_lstat = (మాతృ_sb.st_dev != dot_sb->st_dev);
 
-  bool found = false;
-  while (true)
+  bool దొరికింది = false;
+  అయితే (true)
     {
-      struct dirent const *dp;
+      నిర్మాణం dirent స్థిరరాశి *dp;
 
       errno = 0;
-      if ((dp = readdir_ignoring_dot_and_dotdot (dirp)) == NULL)
+      ఒకవేళ ((dp = readdir_ignoring_dot_and_dotdot (dirp)) == ఖాళీ)
         {
-          if (errno)
+          ఒకవేళ (errno)
             {
               /* Save/restore errno across closedir call.  */
-              int e = errno;
+              పూర్ణాంకం e = errno;
               closedir (dirp);
               errno = e;
 
               /* Arrange to give a diagnostic after exiting this loop.  */
-              dirp = NULL;
+              dirp = ఖాళీ;
             }
-          break;
+          ఆపు;
         }
 
       ino_t ino = D_INO (dp);
 
-      struct stat ent_sb;
-      if (ino == NOT_AN_INODE_NUMBER || use_lstat)
+      నిర్మాణం stat ent_sb;
+      ఒకవేళ (ino == NOT_AN_INODE_సంఖ్య || use_lstat)
         {
-          if (lstat (dp->d_name, &ent_sb) < 0)
+          ఒకవేళ (lstat (dp->d_name, &ent_sb) < 0)
             {
               /* Skip any entry we can't stat.  */
-              continue;
+              కొనసాగు;
             }
           ino = ent_sb.st_ino;
         }
 
-      if (ino != dot_sb->st_ino)
-        continue;
+      ఒకవేళ (ino != dot_sb->st_ino)
+        కొనసాగు;
 
       /* If we're not crossing a device boundary, then a simple i-node
          match is enough.  */
-      if ( ! use_lstat || ent_sb.st_dev == dot_sb->st_dev)
+      ఒకవేళ ( ! use_lstat || ent_sb.st_dev == dot_sb->st_dev)
         {
           file_name_prepend (file_name, dp->d_name, _D_EXACT_NAMLEN (dp));
-          found = true;
-          break;
+          దొరికింది = true;
+          ఆపు;
         }
     }
 
-  if (dirp == NULL || closedir (dirp) != 0)
+  ఒకవేళ (dirp == ఖాళీ || closedir (dirp) != 0)
     {
       /* Note that this diagnostic serves for both readdir
          and closedir failures.  */
       error (EXIT_FAILURE, errno, _("reading directory %s"),
-             quote (nth_parent (parent_height)));
+             quote (nth_మాతృ (మాతృ_ఎత్తు)));
     }
 
-  if ( ! found)
+  ఒకవేళ ( ! దొరికింది)
     error (EXIT_FAILURE, 0,
            _("couldn't find directory entry in %s with matching i-node"),
-           quote (nth_parent (parent_height)));
+           quote (nth_మాతృ (మాతృ_ఎత్తు)));
 
-  *dot_sb = parent_sb;
+  *dot_sb = మాతృ_sb;
 }
 
 /* Construct the full, absolute name of the current working
@@ -258,129 +258,129 @@ find_dir_entry (struct stat *dot_sb, struct file_name *file_name,
    in case the unreadable directory is close enough to the root that
    getcwd works from there.  */
 
-static void
-robust_getcwd (struct file_name *file_name)
+స్థిర శూన్య
+robust_getcwd (నిర్మాణం file_name *file_name)
 {
-  size_t height = 1;
-  struct dev_ino dev_ino_buf;
-  struct dev_ino *root_dev_ino = get_root_dev_ino (&dev_ino_buf);
+  size_t ఎత్తు = 1;
+  నిర్మాణం dev_ino dev_ino_buf;
+  నిర్మాణం dev_ino *మూలం_dev_ino = get_మూలం_dev_ino (&dev_ino_buf);
 
-  if (root_dev_ino == NULL)
+  ఒకవేళ (మూలం_dev_ino == ఖాళీ)
     error (EXIT_FAILURE, errno, _("failed to get attributes of %s"),
            quoteaf ("/"));
 
-  struct stat dot_sb;
-  if (stat (".", &dot_sb) < 0)
+  నిర్మాణం stat dot_sb;
+  ఒకవేళ (stat (".", &dot_sb) < 0)
     error (EXIT_FAILURE, errno, _("failed to stat %s"), quoteaf ("."));
 
-  while (true)
+  అయితే (true)
     {
       /* If we've reached the root, we're done.  */
-      if (PSAME_INODE (&dot_sb, root_dev_ino))
-        break;
+      ఒకవేళ (PSAME_INODE (&dot_sb, మూలం_dev_ino))
+        ఆపు;
 
-      find_dir_entry (&dot_sb, file_name, height++);
+      కనుగొను_dir_నమోదు (&dot_sb, file_name, ఎత్తు++);
     }
 
   /* See if a leading slash is needed; file_name_prepend adds one.  */
-  if (file_name->start[0] == '\0')
+  ఒకవేళ (file_name->ప్రారంభం[0] == '\0')
     file_name_prepend (file_name, "", 0);
 }
 
 
 /* Return PWD from the environment if it is acceptable for 'pwd -L'
    output, otherwise NULL.  */
-static char const *
-logical_getcwd (void)
+స్థిర అక్షరం స్థిరరాశి *
+logical_getcwd (శూన్య)
 {
-  char const *wd = getenv ("PWD");
+  అక్షరం స్థిరరాశి *wd = getenv ("PWD");
 
   /* Textual validation first.  */
-  if (!wd || wd[0] != '/')
-    return NULL;
-  char const *p = wd;
-  while ((p = strstr (p, "/.")))
+  ఒకవేళ (!wd || wd[0] != '/')
+    తిరిగి ఖాళీ;
+  అక్షరం స్థిరరాశి *p = wd;
+  అయితే ((p = అక్షరశ్రేణి_శోధన (p, "/.")))
     {
-      if (!p[2] || p[2] == '/'
+      ఒకవేళ (!p[2] || p[2] == '/'
           || (p[2] == '.' && (!p[3] || p[3] == '/')))
-        return NULL;
+        తిరిగి ఖాళీ;
       p++;
     }
 
   /* System call validation.  */
-  struct stat st1;
-  struct stat st2;
-  if (stat (wd, &st1) == 0 && stat (".", &st2) == 0 && psame_inode (&st1, &st2))
-    return wd;
-  return NULL;
+  నిర్మాణం stat st1;
+  నిర్మాణం stat st2;
+  ఒకవేళ (stat (wd, &st1) == 0 && stat (".", &st2) == 0 && psame_inode (&st1, &st2))
+    తిరిగి wd;
+  తిరిగి ఖాళీ;
 }
 
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
   /* POSIX requires a default of -L, but most scripts expect -P.
      Currently shells default to -L, while stand-alone
      pwd implementations default to -P.  */
-  bool logical = (getenv ("POSIXLY_CORRECT") != NULL);
+  bool logical = (getenv ("POSIXLY_CORRECT") != ఖాళీ);
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while (true)
+  అయితే (true)
     {
-      int c = getopt_long (argc, argv, "LP", longopts, NULL);
-      if (c == -1)
-        break;
-      switch (c)
+      పూర్ణాంకం c = getopt_long (argc, argv, "LP", longopts, ఖాళీ);
+      ఒకవేళ (c == -1)
+        ఆపు;
+      ఎంపిక (c)
         {
-        case 'L':
+        స్థితి 'L':
           logical = true;
-          break;
-        case 'P':
+          ఆపు;
+        స్థితి 'P':
           logical = false;
-          break;
+          ఆపు;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_సంస్కరణ_CHAR (కార్యక్రమం_NAME, AUTHORS);
 
-        default:
+        అప్రమేయ:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (optind < argc)
+  ఒకవేళ (optind < argc)
     error (0, 0, _("ignoring non-option arguments"));
 
-  if (logical)
+  ఒకవేళ (logical)
     {
-      char const *wd = logical_getcwd ();
-      if (wd)
+      అక్షరం స్థిరరాశి *wd = logical_getcwd ();
+      ఒకవేళ (wd)
         {
           puts (wd);
-          return EXIT_SUCCESS;
+          తిరిగి EXIT_SUCCESS;
         }
     }
 
-  char *wd = xgetcwd ();
-  if (wd != NULL)
+  అక్షరం *wd = xgetcwd ();
+  ఒకవేళ (wd != ఖాళీ)
     {
       puts (wd);
-      free (wd);
+      విడుదల (wd);
     }
-  else
+  లేకపోతే
     {
-      struct file_name *file_name = file_name_init ();
+      నిర్మాణం file_name *file_name = file_name_init ();
       robust_getcwd (file_name);
-      puts (file_name->start);
+      puts (file_name->ప్రారంభం);
       file_name_free (file_name);
     }
 
-  return EXIT_SUCCESS;
+  తిరిగి EXIT_SUCCESS;
 }

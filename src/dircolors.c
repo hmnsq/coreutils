@@ -15,103 +15,103 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
+#అన్తర్భావ <config.h>
 
-#include <sys/types.h>
-#include <fnmatch.h>
-#include <getopt.h>
+#అన్తర్భావ <sys/types.h>
+#అన్తర్భావ <fnmatch.h>
+#అన్తర్భావ <getopt.h>
 
-#include "system.h"
-#include "dircolors.h"
-#include "c-ctype.h"
-#include "c-strcase.h"
-#include "obstack.h"
-#include "quote.h"
-#include "stdio--.h"
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "dircolors.h"
+#అన్తర్భావ "c-ctype.h"
+#అన్తర్భావ "c-strcase.h"
+#అన్తర్భావ "obstack.h"
+#అన్తర్భావ "quote.h"
+#అన్తర్భావ "stdio--.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "dircolors"
+#నిర్వచించు కార్యక్రమం_NAME "dircolors"
 
-#define AUTHORS proper_name ("H. Peter Anvin")
+#నిర్వచించు AUTHORS proper_name ("H. Peter Anvin")
 
-#define obstack_chunk_alloc malloc
-#define obstack_chunk_free free
+#నిర్వచించు obstack_chunk_alloc జ్ఞాపకం_ఇవ్వు
+#నిర్వచించు obstack_chunk_free విడుదల
 
-enum Shell_syntax
+గణన Shell_syntax
 {
   SHELL_SYNTAX_BOURNE,
   SHELL_SYNTAX_C,
   SHELL_SYNTAX_UNKNOWN
 };
 
-#define APPEND_CHAR(C) obstack_1grow (&lsc_obstack, C)
+#నిర్వచించు APPEND_CHAR(C) obstack_1grow (&lsc_obstack, C)
 
 /* Accumulate in this obstack the value for the LS_COLORS environment
    variable.  */
-static struct obstack lsc_obstack;
+స్థిర నిర్మాణం obstack lsc_obstack;
 
-static char const *const slack_codes[] =
+స్థిర అక్షరం స్థిరరాశి *స్థిరరాశి slack_codes[] =
 {
   "NORMAL", "NORM", "FILE", "RESET", "DIR", "LNK", "LINK",
   "SYMLINK", "ORPHAN", "MISSING", "FIFO", "PIPE", "SOCK", "BLK", "BLOCK",
   "CHR", "CHAR", "DOOR", "EXEC", "LEFT", "LEFTCODE", "RIGHT", "RIGHTCODE",
   "END", "ENDCODE", "SUID", "SETUID", "SGID", "SETGID", "STICKY",
   "OTHER_WRITABLE", "OWR", "STICKY_OTHER_WRITABLE", "OWT", "CAPABILITY",
-  "MULTIHARDLINK", "CLRTOEOL", NULL
+  "MULTIHARDLINK", "CLRTOEOL", ఖాళీ
 };
 
-static char const *const ls_codes[] =
+స్థిర అక్షరం స్థిరరాశి *స్థిరరాశి ls_codes[] =
 {
   "no", "no", "fi", "rs", "di", "ln", "ln", "ln", "or", "mi", "pi", "pi",
   "so", "bd", "bd", "cd", "cd", "do", "ex", "lc", "lc", "rc", "rc", "ec", "ec",
   "su", "su", "sg", "sg", "st", "ow", "ow", "tw", "tw", "ca", "mh", "cl",
-  NULL
+  ఖాళీ
 };
 static_assert (countof (slack_codes) == countof (ls_codes));
 
 /* Whether to output escaped ls color codes for display.  */
-static bool print_ls_colors;
+స్థిర bool print_ls_colors;
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+గణన
 {
   PRINT_LS_COLORS_OPTION = CHAR_MAX + 1,
 };
 
-static struct option const long_options[] =
+స్థిర నిర్మాణం option స్థిరరాశి long_options[] =
   {
-    {"bourne-shell", no_argument, NULL, 'b'},
-    {"sh", no_argument, NULL, 'b'},
-    {"csh", no_argument, NULL, 'c'},
-    {"c-shell", no_argument, NULL, 'c'},
-    {"print-database", no_argument, NULL, 'p'},
-    {"print-ls-colors", no_argument, NULL, PRINT_LS_COLORS_OPTION},
+    {"bourne-shell", no_వాదం, ఖాళీ, 'b'},
+    {"sh", no_వాదం, ఖాళీ, 'b'},
+    {"csh", no_వాదం, ఖాళీ, 'c'},
+    {"c-shell", no_వాదం, ఖాళీ, 'c'},
+    {"print-database", no_వాదం, ఖాళీ, 'p'},
+    {"print-ls-colors", no_వాదం, ఖాళీ, PRINT_LS_COLORS_OPTION},
     {GETOPT_HELP_OPTION_DECL},
-    {GETOPT_VERSION_OPTION_DECL},
-    {NULL, 0, NULL, 0}
+    {GETOPT_సంస్కరణ_OPTION_DECL},
+    {ఖాళీ, 0, ఖాళీ, 0}
   };
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("Usage: %s [OPTION]... [FILE]\n"), program_name);
+      రాయి (_("Usage: %s [OPTION]... [FILE]\n"), కార్యక్రమం_name);
       fputs (_("\
-Output commands to set the LS_COLORS environment variable.\n\
+Output commands గమ్యం సమితి_2 the LS_COLORS environment variable.\n\
 \n\
-Determine format of output:\n\
+Determine format యొక్క output:\n\
 "), stdout);
       oputs (_("\
   -b, --sh, --bourne-shell\n\
-         output Bourne shell code to set LS_COLORS\n\
+         output Bourne shell సంకేతం_2 గమ్యం సమితి_2 LS_COLORS\n\
 "));
       oputs (_("\
   -c, --csh, --c-shell\n\
-         output C shell code to set LS_COLORS\n\
+         output C shell సంకేతం_2 గమ్యం సమితి_2 LS_COLORS\n\
 "));
       oputs (_("\
   -p, --print-database\n\
@@ -119,125 +119,125 @@ Determine format of output:\n\
 "));
       oputs (_("\
       --print-ls-colors\n\
-         output fully escaped colors for display\n\
+         output fully escaped colors కొరకు display\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-If FILE is specified, read it to determine which colors to use for which\n\
-file types and extensions.  Otherwise, a precompiled database is used.\n\
-For details on the format of these files, run 'dircolors --print-database'.\n\
+If FILE is specified, పఠ it గమ్యం determine which colors గమ్యం use కొరకు which\n\
+file types and extensions.  Otherwise, a precompiled database is వాడిన.\n\
+For details on the format యొక్క these files, నిరంతరం_2 'dircolors --print-database'.\n\
 "), stdout);
-      emit_ancillary_info (PROGRAM_NAME);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
 
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
 /* If the SHELL environment variable is set to 'csh' or 'tcsh,'
    assume C shell.  Else Bourne shell.  */
 
-static enum Shell_syntax
-guess_shell_syntax (void)
+స్థిర గణన Shell_syntax
+guess_shell_syntax (శూన్య)
 {
-  char *shell;
+  అక్షరం *shell;
 
   shell = getenv ("SHELL");
-  if (shell == NULL || *shell == '\0')
-    return SHELL_SYNTAX_UNKNOWN;
+  ఒకవేళ (shell == ఖాళీ || *shell == '\0')
+    తిరిగి SHELL_SYNTAX_UNKNOWN;
 
-  shell = last_component (shell);
+  shell = చివరి_component (shell);
 
-  if (streq (shell, "csh") || streq (shell, "tcsh"))
-    return SHELL_SYNTAX_C;
+  ఒకవేళ (streq (shell, "csh") || streq (shell, "tcsh"))
+    తిరిగి SHELL_SYNTAX_C;
 
-  return SHELL_SYNTAX_BOURNE;
+  తిరిగి SHELL_SYNTAX_BOURNE;
 }
 
-static void
-parse_line (char const *line, char **keyword, char **arg)
+స్థిర శూన్య
+parse_పంక్తి (అక్షరం స్థిరరాశి *పంక్తి, అక్షరం **keyword, అక్షరం **arg)
 {
-  char const *p;
-  char const *keyword_start;
-  char const *arg_start;
+  అక్షరం స్థిరరాశి *p;
+  అక్షరం స్థిరరాశి *keyword_ప్రారంభం;
+  అక్షరం స్థిరరాశి *arg_ప్రారంభం;
 
-  *keyword = NULL;
-  *arg = NULL;
+  *keyword = ఖాళీ;
+  *arg = ఖాళీ;
 
-  for (p = line; c_isspace (*p); ++p)
-    continue;
+  కొరకు (p = పంక్తి; c_isspace (*p); ++p)
+    కొనసాగు;
 
   /* Ignore blank lines and shell-style comments.  */
-  if (*p == '\0' || *p == '#')
-    return;
+  ఒకవేళ (*p == '\0' || *p == '#')
+    తిరిగి;
 
-  keyword_start = p;
+  keyword_ప్రారంభం = p;
 
-  while (!c_isspace (*p) && *p != '\0')
+  అయితే (!c_isspace (*p) && *p != '\0')
     {
       ++p;
     }
 
-  *keyword = ximemdup0 (keyword_start, p - keyword_start);
-  if (*p  == '\0')
-    return;
+  *keyword = ximemdup0 (keyword_ప్రారంభం, p - keyword_ప్రారంభం);
+  ఒకవేళ (*p  == '\0')
+    తిరిగి;
 
-  do
+  చేయి
     {
       ++p;
     }
-  while (c_isspace (*p));
+  అయితే (c_isspace (*p));
 
-  if (*p == '\0' || *p == '#')
-    return;
+  ఒకవేళ (*p == '\0' || *p == '#')
+    తిరిగి;
 
-  arg_start = p;
+  arg_ప్రారంభం = p;
 
-  while (*p != '\0' && *p != '#')
+  అయితే (*p != '\0' && *p != '#')
     ++p;
 
-  for (--p; c_isspace (*p); --p)
-    continue;
+  కొరకు (--p; c_isspace (*p); --p)
+    కొనసాగు;
   ++p;
 
-  *arg = ximemdup0 (arg_start, p - arg_start);
+  *arg = ximemdup0 (arg_ప్రారంభం, p - arg_ప్రారంభం);
 }
 
 /* Accumulate STR to LS_COLORS data.
    If outputting shell syntax, then escape appropriately.  */
 
-static void
-append_quoted (char const *str)
+స్థిర శూన్య
+append_quoted (అక్షరం స్థిరరాశి *str)
 {
   bool need_backslash = true;
 
-  while (*str != '\0')
+  అయితే (*str != '\0')
     {
-      if (! print_ls_colors)
-        switch (*str)
+      ఒకవేళ (! print_ls_colors)
+        ఎంపిక (*str)
           {
-          case '\'':
+          స్థితి '\'':
             APPEND_CHAR ('\'');
             APPEND_CHAR ('\\');
             APPEND_CHAR ('\'');
             need_backslash = true;
-            break;
+            ఆపు;
 
-          case '\\':
-          case '^':
+          స్థితి '\\':
+          స్థితి '^':
             need_backslash = !need_backslash;
-            break;
+            ఆపు;
 
-          case ':':
-          case '=':
-            if (need_backslash)
+          స్థితి ':':
+          స్థితి '=':
+            ఒకవేళ (need_backslash)
               APPEND_CHAR ('\\');
             FALLTHROUGH;
 
-          default:
+          అప్రమేయ:
             need_backslash = true;
-            break;
+            ఆపు;
           }
 
       APPEND_CHAR (*str);
@@ -248,21 +248,21 @@ append_quoted (char const *str)
 /* Accumulate entry to LS_COLORS data.
    Use shell syntax unless PRINT_LS_COLORS is set.  */
 
-static void
-append_entry (char prefix, char const *item, char const *arg)
+స్థిర శూన్య
+append_నమోదు (అక్షరం ఉపసర్గ, అక్షరం స్థిరరాశి *అంశం, అక్షరం స్థిరరాశి *arg)
 {
-  if (print_ls_colors)
+  ఒకవేళ (print_ls_colors)
     {
       append_quoted ("\x1B[");
       append_quoted (arg);
       APPEND_CHAR ('m');
     }
-  if (prefix)
-    APPEND_CHAR (prefix);
-  append_quoted (item);
+  ఒకవేళ (ఉపసర్గ)
+    APPEND_CHAR (ఉపసర్గ);
+  append_quoted (అంశం);
   APPEND_CHAR (print_ls_colors ? '\t' : '=');
   append_quoted (arg);
-  if (print_ls_colors)
+  ఒకవేళ (print_ls_colors)
     append_quoted ("\x1B[0m");
   APPEND_CHAR (print_ls_colors ? '\n' : ':');
 }
@@ -274,197 +274,197 @@ append_entry (char prefix, char const *item, char const *arg)
    upon failure (unrecognized keyword is the only way to fail here).
    Return true if successful.  */
 
-static bool
-dc_parse_stream (FILE *fp, char const *filename)
+స్థిర bool
+dc_parse_ప్రవాహం (FILE *fp, అక్షరం స్థిరరాశి *filename)
 {
-  idx_t line_number = 0;
-  char const *next_G_line = G_line;
-  char *input_line = NULL;
-  size_t input_line_size = 0;
-  char const *line;
-  char const *term;
-  char const *colorterm;
+  idx_t పంక్తి_సంఖ్య = 0;
+  అక్షరం స్థిరరాశి *తదుపరి_G_పంక్తి = G_పంక్తి;
+  అక్షరం *ఆదానం_పంక్తి = ఖాళీ;
+  size_t ఆదానం_పంక్తి_కొలత = 0;
+  అక్షరం స్థిరరాశి *పంక్తి;
+  అక్షరం స్థిరరాశి *పదం;
+  అక్షరం స్థిరరాశి *colorterm;
   bool ok = true;
 
   /* State for the parser.  */
-  enum { ST_TERMNO, ST_TERMYES, ST_TERMSURE, ST_GLOBAL } state = ST_GLOBAL;
+  గణన { ST_TERMNO, ST_TERMYES, ST_TERMSURE, ST_GLOBAL } state = ST_GLOBAL;
 
   /* Get terminal type */
-  term = getenv ("TERM");
-  if (term == NULL || *term == '\0')
-    term = "none";
+  పదం = getenv ("TERM");
+  ఒకవేళ (పదం == ఖాళీ || *పదం == '\0')
+    పదం = "none";
 
   /* Also match $COLORTERM.  */
   colorterm = getenv ("COLORTERM");
-  if (colorterm == NULL)
+  ఒకవేళ (colorterm == ఖాళీ)
     colorterm = "";  /* Doesn't match default "?*"  */
 
-  while (true)
+  అయితే (true)
     {
-      char *keywd, *arg;
+      అక్షరం *keywd, *arg;
       bool unrecognized;
 
-      ++line_number;
+      ++పంక్తి_సంఖ్య;
 
-      if (fp)
+      ఒకవేళ (fp)
         {
-          if (getline (&input_line, &input_line_size, fp) <= 0)
+          ఒకవేళ (getline (&ఆదానం_పంక్తి, &ఆదానం_పంక్తి_కొలత, fp) <= 0)
             {
-              if (ferror (fp))
+              ఒకవేళ (ferror (fp))
                 {
                   error (0, errno, _("%s: read error"), quotef (filename));
                   ok = false;
                 }
-              free (input_line);
-              break;
+              విడుదల (ఆదానం_పంక్తి);
+              ఆపు;
             }
-          line = input_line;
+          పంక్తి = ఆదానం_పంక్తి;
         }
-      else
+      లేకపోతే
         {
-          if (next_G_line == G_line + sizeof G_line)
-            break;
-          line = next_G_line;
-          next_G_line += strlen (next_G_line) + 1;
+          ఒకవేళ (తదుపరి_G_పంక్తి == G_పంక్తి + పరిమాణం G_పంక్తి)
+            ఆపు;
+          పంక్తి = తదుపరి_G_పంక్తి;
+          తదుపరి_G_పంక్తి += అక్షరశ్రేణి_పొడవు (తదుపరి_G_పంక్తి) + 1;
         }
 
-      parse_line (line, &keywd, &arg);
+      parse_పంక్తి (పంక్తి, &keywd, &arg);
 
-      if (keywd == NULL)
-        continue;
+      ఒకవేళ (keywd == ఖాళీ)
+        కొనసాగు;
 
-      if (arg == NULL)
+      ఒకవేళ (arg == ఖాళీ)
         {
           error (0, 0, _("%s:%td: invalid line;  missing second token"),
-                 quotef (filename), line_number);
+                 quotef (filename), పంక్తి_సంఖ్య);
           ok = false;
-          free (keywd);
-          continue;
+          విడుదల (keywd);
+          కొనసాగు;
         }
 
       unrecognized = false;
-      if (c_strcasecmp (keywd, "TERM") == 0)
+      ఒకవేళ (c_strcasecmp (keywd, "TERM") == 0)
         {
-          if (state != ST_TERMSURE)
-            state = fnmatch (arg, term, 0) == 0 ? ST_TERMSURE : ST_TERMNO;
+          ఒకవేళ (state != ST_TERMSURE)
+            state = fnmatch (arg, పదం, 0) == 0 ? ST_TERMSURE : ST_TERMNO;
         }
-      else if (c_strcasecmp (keywd, "COLORTERM") == 0)
+      లేకపోతే ఒకవేళ (c_strcasecmp (keywd, "COLORTERM") == 0)
         {
-          if (state != ST_TERMSURE)
+          ఒకవేళ (state != ST_TERMSURE)
             state = fnmatch (arg, colorterm, 0) == 0 ? ST_TERMSURE : ST_TERMNO;
         }
-      else
+      లేకపోతే
         {
-          if (state == ST_TERMSURE)
+          ఒకవేళ (state == ST_TERMSURE)
             state = ST_TERMYES;  /* Another {COLOR,}TERM can cancel.  */
 
-          if (state != ST_TERMNO)
+          ఒకవేళ (state != ST_TERMNO)
             {
-              if (keywd[0] == '.')
-                append_entry ('*', keywd, arg);
-              else if (keywd[0] == '*')
-                append_entry (0, keywd, arg);
-              else if (c_strcasecmp (keywd, "OPTIONS") == 0
+              ఒకవేళ (keywd[0] == '.')
+                append_నమోదు ('*', keywd, arg);
+              లేకపోతే ఒకవేళ (keywd[0] == '*')
+                append_నమోదు (0, keywd, arg);
+              లేకపోతే ఒకవేళ (c_strcasecmp (keywd, "OPTIONS") == 0
                        || c_strcasecmp (keywd, "COLOR") == 0
                        || c_strcasecmp (keywd, "EIGHTBIT") == 0)
                 {
                   /* Ignore.  */
                 }
-              else
+              లేకపోతే
                 {
-                  int i;
+                  పూర్ణాంకం i;
 
-                  for (i = 0; slack_codes[i] != NULL; ++i)
-                    if (c_strcasecmp (keywd, slack_codes[i]) == 0)
-                      break;
+                  కొరకు (i = 0; slack_codes[i] != ఖాళీ; ++i)
+                    ఒకవేళ (c_strcasecmp (keywd, slack_codes[i]) == 0)
+                      ఆపు;
 
-                  if (slack_codes[i] != NULL)
-                    append_entry (0, ls_codes[i], arg);
-                  else
+                  ఒకవేళ (slack_codes[i] != ఖాళీ)
+                    append_నమోదు (0, ls_codes[i], arg);
+                  లేకపోతే
                     unrecognized = true;
                 }
             }
-          else
+          లేకపోతే
             unrecognized = true;
         }
 
-      if (unrecognized && (state == ST_TERMSURE || state == ST_TERMYES))
+      ఒకవేళ (unrecognized && (state == ST_TERMSURE || state == ST_TERMYES))
         {
           error (0, 0, _("%s:%td: unrecognized keyword %s"),
                  (filename ? quotef (filename) : _("<internal>")),
-                 line_number, keywd);
+                 పంక్తి_సంఖ్య, keywd);
           ok = false;
         }
 
-      free (keywd);
-      free (arg);
+      విడుదల (keywd);
+      విడుదల (arg);
     }
 
-  return ok;
+  తిరిగి ok;
 }
 
-static bool
-dc_parse_file (char const *filename)
+స్థిర bool
+dc_parse_file (అక్షరం స్థిరరాశి *filename)
 {
   bool ok;
 
-  if (! streq (filename, "-") && freopen (filename, "r", stdin) == NULL)
+  ఒకవేళ (! streq (filename, "-") && freopen (filename, "r", stdin) == ఖాళీ)
     {
       error (0, errno, "%s", quotef (filename));
-      return false;
+      తిరిగి false;
     }
 
-  ok = dc_parse_stream (stdin, filename);
+  ok = dc_parse_ప్రవాహం (stdin, filename);
 
-  if (fclose (stdin) != 0)
+  ఒకవేళ (fclose (stdin) != 0)
     {
       error (0, errno, "%s", quotef (filename));
-      return false;
+      తిరిగి false;
     }
 
-  return ok;
+  తిరిగి ok;
 }
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
   bool ok = true;
-  int optc;
-  enum Shell_syntax syntax = SHELL_SYNTAX_UNKNOWN;
+  పూర్ణాంకం optc;
+  గణన Shell_syntax syntax = SHELL_SYNTAX_UNKNOWN;
   bool print_database = false;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "bcp", long_options, NULL)) != -1)
-    switch (optc)
+  అయితే ((optc = getopt_long (argc, argv, "bcp", long_options, ఖాళీ)) != -1)
+    ఎంపిక (optc)
       {
-      case 'b':	/* Bourne shell syntax.  */
+      స్థితి 'b':	/* Bourne shell syntax.  */
         syntax = SHELL_SYNTAX_BOURNE;
-        break;
+        ఆపు;
 
-      case 'c':	/* C shell syntax.  */
+      స్థితి 'c':	/* C shell syntax.  */
         syntax = SHELL_SYNTAX_C;
-        break;
+        ఆపు;
 
-      case 'p':
+      స్థితి 'p':
         print_database = true;
-        break;
+        ఆపు;
 
-      case PRINT_LS_COLORS_OPTION:
+      స్థితి PRINT_LS_COLORS_OPTION:
         print_ls_colors = true;
-        break;
+        ఆపు;
 
       case_GETOPT_HELP_CHAR;
 
-      case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+      case_GETOPT_సంస్కరణ_CHAR (కార్యక్రమం_NAME, AUTHORS);
 
-      default:
+      అప్రమేయ:
         usage (EXIT_FAILURE);
       }
 
@@ -473,7 +473,7 @@ main (int argc, char **argv)
 
   /* It doesn't make sense to use --print with either of
      --bourne or --c-shell.  */
-  if ((print_database | print_ls_colors) && syntax != SHELL_SYNTAX_UNKNOWN)
+  ఒకవేళ ((print_database | print_ls_colors) && syntax != SHELL_SYNTAX_UNKNOWN)
     {
       error (0, 0,
              _("the options to output non shell syntax,\n"
@@ -481,7 +481,7 @@ main (int argc, char **argv)
       usage (EXIT_FAILURE);
     }
 
-  if (print_database && print_ls_colors)
+  ఒకవేళ (print_database && print_ls_colors)
     {
       error (0, 0,
              _("options --print-database and --print-ls-colors "
@@ -489,68 +489,68 @@ main (int argc, char **argv)
       usage (EXIT_FAILURE);
     }
 
-  if ((!print_database) < argc)
+  ఒకవేళ ((!print_database) < argc)
     {
       error (0, 0, _("extra operand %s"),
              quote (argv[!print_database]));
-      if (print_database)
+      ఒకవేళ (print_database)
         fprintf (stderr, "%s\n",
                  _("file operands cannot be combined with "
                    "--print-database (-p)"));
       usage (EXIT_FAILURE);
     }
 
-  if (print_database)
+  ఒకవేళ (print_database)
     {
-      char const *p = G_line;
-      while (p - G_line < sizeof G_line)
+      అక్షరం స్థిరరాశి *p = G_పంక్తి;
+      అయితే (p - G_పంక్తి < పరిమాణం G_పంక్తి)
         {
           puts (p);
-          p += strlen (p) + 1;
+          p += అక్షరశ్రేణి_పొడవు (p) + 1;
         }
     }
-  else
+  లేకపోతే
     {
       /* If shell syntax was not explicitly specified, try to guess it. */
-      if (syntax == SHELL_SYNTAX_UNKNOWN && ! print_ls_colors)
+      ఒకవేళ (syntax == SHELL_SYNTAX_UNKNOWN && ! print_ls_colors)
         {
           syntax = guess_shell_syntax ();
-          if (syntax == SHELL_SYNTAX_UNKNOWN)
+          ఒకవేళ (syntax == SHELL_SYNTAX_UNKNOWN)
             error (EXIT_FAILURE, 0,
                    _("no SHELL environment variable,"
                      " and no shell type option given"));
         }
 
       obstack_init (&lsc_obstack);
-      if (argc == 0)
-        ok = dc_parse_stream (NULL, NULL);
-      else
+      ఒకవేళ (argc == 0)
+        ok = dc_parse_ప్రవాహం (ఖాళీ, ఖాళీ);
+      లేకపోతే
         ok = dc_parse_file (argv[0]);
 
-      if (ok)
+      ఒకవేళ (ok)
         {
-          size_t len = obstack_object_size (&lsc_obstack);
-          char *s = obstack_finish (&lsc_obstack);
-          char const *prefix;
-          char const *suffix;
+          size_t len = obstack_object_కొలత (&lsc_obstack);
+          అక్షరం *s = obstack_ముగింపు (&lsc_obstack);
+          అక్షరం స్థిరరాశి *ఉపసర్గ;
+          అక్షరం స్థిరరాశి *suffix;
 
-          if (syntax == SHELL_SYNTAX_BOURNE)
+          ఒకవేళ (syntax == SHELL_SYNTAX_BOURNE)
             {
-              prefix = "LS_COLORS='";
+              ఉపసర్గ = "LS_COLORS='";
               suffix = "';\nexport LS_COLORS\n";
             }
-          else
+          లేకపోతే
             {
-              prefix = "setenv LS_COLORS '";
+              ఉపసర్గ = "setenv LS_COLORS '";
               suffix = "'\n";
             }
-          if (! print_ls_colors)
-            fputs (prefix, stdout);
+          ఒకవేళ (! print_ls_colors)
+            fputs (ఉపసర్గ, stdout);
           fwrite (s, 1, len, stdout);
-          if (! print_ls_colors)
+          ఒకవేళ (! print_ls_colors)
             fputs (suffix, stdout);
         }
     }
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  తిరిగి ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

@@ -16,63 +16,63 @@
 
 /* Written by Richard M. Stallman and David MacKenzie. */
 
-#include <config.h>
+#అన్తర్భావ <config.h>
 
-#include <getopt.h>
-#include <sys/types.h>
+#అన్తర్భావ <getopt.h>
+#అన్తర్భావ <sys/types.h>
 
-#include "system.h"
-#include "argmatch.h"
-#include "assure.h"
-#include "linebuffer.h"
-#include "fadvise.h"
-#include "mcel.h"
-#include "posixver.h"
-#include "skipchars.h"
-#include "stdio--.h"
-#include "xstrtol.h"
-#include "memcasecmp.h"
-#include "quote.h"
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "argmatch.h"
+#అన్తర్భావ "assure.h"
+#అన్తర్భావ "linebuffer.h"
+#అన్తర్భావ "fadvise.h"
+#అన్తర్భావ "mcel.h"
+#అన్తర్భావ "posixver.h"
+#అన్తర్భావ "skipchars.h"
+#అన్తర్భావ "stdio--.h"
+#అన్తర్భావ "xstrtol.h"
+#అన్తర్భావ "memcasecmp.h"
+#అన్తర్భావ "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "uniq"
+#నిర్వచించు కార్యక్రమం_NAME "uniq"
 
-#define AUTHORS \
+#నిర్వచించు AUTHORS \
   proper_name ("Richard M. Stallman"), \
   proper_name ("David MacKenzie")
 
-static void
-swap_lines (struct linebuffer **a, struct linebuffer **b)
+స్థిర శూన్య
+మార్పిడి_పంక్తులు (నిర్మాణం linebuffer **a, నిర్మాణం linebuffer **b)
 {
-  struct linebuffer *tmp = *a;
+  నిర్మాణం linebuffer *tmp = *a;
   *a = *b;
   *b = tmp;
 }
 
 /* Number of fields to skip on each line when doing comparisons. */
-static idx_t skip_fields = false;
+స్థిర idx_t skip_fields = false;
 
 /* Number of chars to skip after skipping any fields. */
-static idx_t skip_chars = false;
+స్థిర idx_t skip_chars = false;
 
 /* Number of chars to compare. */
-static idx_t check_chars = IDX_MAX;
+స్థిర idx_t check_chars = IDX_MAX;
 
 /* Whether to precede the output lines with a count of the number of
    times they occurred in the input. */
-static bool count_occurrences = false;
+స్థిర bool లెక్క_occurrences = false;
 
 /* Which lines to output: unique lines, the first of a group of
    repeated lines, and the second and subsequent of a group of
    repeated lines.  */
-static bool output_unique = true;
-static bool output_first_repeated = true;
-static bool output_later_repeated = false;
+స్థిర bool output_unique = true;
+స్థిర bool output_మొదటి_repeated = true;
+స్థిర bool output_later_repeated = false;
 
 /* If true, ignore case when comparing.  */
-static bool ignore_case;
+స్థిర bool ignore_case;
 
-enum delimit_method
+గణన delimit_పద్ధతి
 {
   /* No delimiters output.  --all-repeated[=none] */
   DM_NONE,
@@ -84,20 +84,20 @@ enum delimit_method
   DM_SEPARATE
 };
 
-static char const *const delimit_method_string[] =
+స్థిర అక్షరం స్థిరరాశి *స్థిరరాశి delimit_పద్ధతి_string[] =
 {
-  "none", "prepend", "separate", NULL
+  "none", "prepend", "separate", ఖాళీ
 };
 
-static enum delimit_method const delimit_method_map[] =
+స్థిర గణన delimit_పద్ధతి స్థిరరాశి delimit_పద్ధతి_map[] =
 {
   DM_NONE, DM_PREPEND, DM_SEPARATE
 };
 
 /* Select whether/how to delimit groups of duplicate lines.  */
-static enum delimit_method delimit_groups = DM_NONE;
+స్థిర గణన delimit_పద్ధతి delimit_groups = DM_NONE;
 
-enum grouping_method
+గణన grouping_పద్ధతి
 {
   /* No grouping, when "--group" isn't used */
   GM_NONE,
@@ -115,184 +115,184 @@ enum grouping_method
   GM_BOTH
 };
 
-static char const *const grouping_method_string[] =
+స్థిర అక్షరం స్థిరరాశి *స్థిరరాశి grouping_పద్ధతి_string[] =
 {
-  "prepend", "append", "separate", "both", NULL
+  "prepend", "append", "separate", "both", ఖాళీ
 };
 
-static enum grouping_method const grouping_method_map[] =
+స్థిర గణన grouping_పద్ధతి స్థిరరాశి grouping_పద్ధతి_map[] =
 {
   GM_PREPEND, GM_APPEND, GM_SEPARATE, GM_BOTH
 };
 
-static enum grouping_method grouping = GM_NONE;
+స్థిర గణన grouping_పద్ధతి grouping = GM_NONE;
 
-enum
+గణన
 {
-  GROUP_OPTION = CHAR_MAX + 1
+  సమూహం_OPTION = CHAR_MAX + 1
 };
 
-static struct option const longopts[] =
+స్థిర నిర్మాణం option స్థిరరాశి longopts[] =
 {
-  {"count", no_argument, NULL, 'c'},
-  {"repeated", no_argument, NULL, 'd'},
-  {"all-repeated", optional_argument, NULL, 'D'},
-  {"group", optional_argument, NULL, GROUP_OPTION},
-  {"ignore-case", no_argument, NULL, 'i'},
-  {"unique", no_argument, NULL, 'u'},
-  {"skip-fields", required_argument, NULL, 'f'},
-  {"skip-chars", required_argument, NULL, 's'},
-  {"check-chars", required_argument, NULL, 'w'},
-  {"zero-terminated", no_argument, NULL, 'z'},
+  {"count", no_వాదం, ఖాళీ, 'c'},
+  {"repeated", no_వాదం, ఖాళీ, 'd'},
+  {"all-repeated", optional_వాదం, ఖాళీ, 'D'},
+  {"group", optional_వాదం, ఖాళీ, సమూహం_OPTION},
+  {"ignore-case", no_వాదం, ఖాళీ, 'i'},
+  {"unique", no_వాదం, ఖాళీ, 'u'},
+  {"skip-fields", required_వాదం, ఖాళీ, 'f'},
+  {"skip-chars", required_వాదం, ఖాళీ, 's'},
+  {"check-chars", required_వాదం, ఖాళీ, 'w'},
+  {"zero-terminated", no_వాదం, ఖాళీ, 'z'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_సంస్కరణ_OPTION_DECL},
+  {ఖాళీ, 0, ఖాళీ, 0}
 };
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("\
-Usage: %s [OPTION]... [INPUT [OUTPUT]]\n\
+      రాయి (_("\
+Usage: %s [OPTION]... [ఆదానం_2 [OUTPUT]]\n\
 "),
-              program_name);
+              కార్యక్రమం_name);
       fputs (_("\
-Filter adjacent matching lines from INPUT (or standard input),\n\
-writing to OUTPUT (or standard output).\n\
+Filter adjacent matching పంక్తులు from ఆదానం_2 (or standard ఆదానం),\n\
+writing గమ్యం OUTPUT (or standard output).\n\
 \n\
-With no options, matching lines are merged to the first occurrence.\n\
+With no options, matching పంక్తులు are merged గమ్యం the మొదటి occurrence.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
 
      oputs (_("\
-  -c, --count\n\
-         prefix lines by the number of occurrences\n\
+  -c, --లెక్క\n\
+         ఉపసర్గ పంక్తులు by the సంఖ్య యొక్క occurrences\n\
 "));
      oputs (_("\
   -d, --repeated\n\
-         only print duplicate lines, one for each group\n\
+         only print duplicate పంక్తులు, one కొరకు each సమూహం\n\
 "));
      oputs (_("\
   -D\n\
-         print all duplicate lines\n\
+         print all duplicate పంక్తులు\n\
 "));
      oputs (_("\
-      --all-repeated[=METHOD]\n\
-         like -D, but allow separating groups with an empty line;\n\
-         METHOD={none(default),prepend,separate}\n\
+      --all-repeated[=పద్ధతి]\n\
+         like -D, but allow separating groups with an ఖాళీలు పంక్తి;\n\
+         పద్ధతి={none(అప్రమేయ),prepend,separate}\n\
 "));
      oputs (_("\
   -f, --skip-fields=N\n\
-         avoid comparing the first N fields\n\
+         avoid comparing the మొదటి N fields\n\
 "));
      oputs (_("\
-      --group[=METHOD]\n\
-         show all items, separating groups with an empty line;\n\
-         METHOD={separate(default),prepend,append,both}\n\
+      --సమూహం[=పద్ధతి]\n\
+         show all వస్తువులు, separating groups with an ఖాళీలు పంక్తి;\n\
+         పద్ధతి={separate(అప్రమేయ),prepend,append,both}\n\
 "));
      oputs (_("\
-  -i, --ignore-case\n\
-         ignore differences in case when comparing\n\
+  -i, --ignore-స్థితి\n\
+         ignore differences లోపల స్థితి when comparing\n\
 "));
      oputs (_("\
   -s, --skip-chars=N\n\
-         avoid comparing the first N characters\n\
+         avoid comparing the మొదటి N characters\n\
 "));
      oputs (_("\
   -u, --unique\n\
-         only print unique lines\n\
+         only print unique పంక్తులు\n\
 "));
      oputs (_("\
   -z, --zero-terminated\n\
-         line delimiter is NUL, not newline\n\
+         పంక్తి delimiter is NUL, not newline\n\
 "));
      oputs (_("\
   -w, --check-chars=N\n\
-         compare no more than N characters in lines\n\
+         compare no మరిన్ని than N characters లోపల పంక్తులు\n\
 "));
      oputs (HELP_OPTION_DESCRIPTION);
-     oputs (VERSION_OPTION_DESCRIPTION);
+     oputs (సంస్కరణ_OPTION_DESCRIPTION);
      fputs (_("\
 \n\
-A field is a run of blanks (usually spaces and/or TABs), then non-blank\n\
+A క్షేత్రం is a నిరంతరం_2 యొక్క blanks (usually spaces and/or TABs), then non-blank\n\
 characters.  Fields are skipped before chars.\n\
 "), stdout);
      fputs (_("\
 \n\
-'uniq' does not detect repeated lines unless they are adjacent.\n\
-You may want to sort the input first, or use 'sort -u' without 'uniq'.\n\
+'uniq' does not detect repeated పంక్తులు unless they are adjacent.\n\
+You may want గమ్యం క్రమీకరించు the ఆదానం మొదటి, or use 'sort -u' without 'uniq'.\n\
 "), stdout);
-      emit_ancillary_info (PROGRAM_NAME);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
-static bool
-strict_posix2 (void)
+స్థిర bool
+strict_posix2 (శూన్య)
 {
-  int posix_ver = posix2_version ();
-  return 200112 <= posix_ver && posix_ver < 200809;
+  పూర్ణాంకం posix_ver = posix2_సంస్కరణ ();
+  తిరిగి 200112 <= posix_ver && posix_ver < 200809;
 }
 
 /* Convert OPT to idx_t, reporting an error using MSGID if OPT is
    invalid.  Silently convert too-large values to IDX_MAX.  */
 
-static idx_t
-size_opt (char const *opt, char const *msgid)
+స్థిర idx_t
+కొలత_opt (అక్షరం స్థిరరాశి *opt, అక్షరం స్థిరరాశి *msgid)
 {
-  intmax_t size;
-  if (LONGINT_OVERFLOW < xstrtoimax (opt, NULL, 10, &size, "")
-      || size < 0)
+  intmax_t కొలత;
+  ఒకవేళ (LONGINT_అధికప్రవాహం < xstrtoimax (opt, ఖాళీ, 10, &కొలత, "")
+      || కొలత < 0)
     error (EXIT_FAILURE, 0, "%s: %s", opt, _(msgid));
-  return MIN (size, IDX_MAX);
+  తిరిగి MIN (కొలత, IDX_MAX);
 }
 
-static bool
+స్థిర bool
 newline_or_blank (mcel_t g)
 {
-  return g.ch == '\n' || c32issep (g.ch);
+  తిరిగి g.ch == '\n' || c32issep (g.ch);
 }
 
 /* Given a linebuffer LINE,
    return a pointer to the beginning of the line's field to be compared.
    Store into *PLEN the length in bytes of FIELD.  */
 
-static char *
-find_field (struct linebuffer const *line, idx_t *plen)
+స్థిర అక్షరం *
+కనుగొను_క్షేత్రం (నిర్మాణం linebuffer స్థిరరాశి *పంక్తి, idx_t *plen)
 {
-  char *lp = line->buffer;
-  char const *lim = lp + line->length - 1;
+  అక్షరం *lp = పంక్తి->బఫరు;
+  అక్షరం స్థిరరాశి *lim = lp + పంక్తి->నిడివి - 1;
 
-  for (idx_t i = skip_fields; 0 < i && lp < lim; i--)
+  కొరకు (idx_t i = skip_fields; 0 < i && lp < lim; i--)
     {
       lp = skip_buf_matching (lp, lim, newline_or_blank, true);
       lp = skip_buf_matching (lp, lim, newline_or_blank, false);
     }
 
-  for (idx_t i = skip_chars; 0 < i && lp < lim; i--)
-    lp += mcel_scan (lp, lim).len;
+  కొరకు (idx_t i = skip_chars; 0 < i && lp < lim; i--)
+    lp += mcel_పరిశీలన (lp, lim).len;
 
   /* Compute the length in bytes cheaply if possible; otherwise, scan.  */
   idx_t len;
-  if (lim - lp <= check_chars)
+  ఒకవేళ (lim - lp <= check_chars)
     len = lim - lp;
-  else if (MB_CUR_MAX <= 1)
+  లేకపోతే ఒకవేళ (MB_CUR_MAX <= 1)
     len = check_chars;
-  else
+  లేకపోతే
     {
-      char *ep = lp;
-      for (idx_t i = check_chars; 0 < i && ep < lim; i--)
-        ep += mcel_scan (ep, lim).len;
+      అక్షరం *ep = lp;
+      కొరకు (idx_t i = check_chars; 0 < i && ep < lim; i--)
+        ep += mcel_పరిశీలన (ep, lim).len;
       len = ep - lp;
     }
 
   *plen = len;
-  return lp;
+  తిరిగి lp;
 }
 
 /* Return false if two strings OLD and NEW match, true if not.
@@ -300,13 +300,13 @@ find_field (struct linebuffer const *line, idx_t *plen)
    but rather to the beginnings of the fields to compare.
    OLDLEN and NEWLEN are their lengths. */
 
-static bool
-different (char *old, char *new, idx_t oldlen, idx_t newlen)
+స్థిర bool
+different (అక్షరం *old, అక్షరం *new, idx_t oldlen, idx_t newlen)
 {
-  if (ignore_case)
-    return oldlen != newlen || memcasecmp (old, new, oldlen);
-  else
-    return oldlen != newlen || memcmp (old, new, oldlen);
+  ఒకవేళ (ignore_case)
+    తిరిగి oldlen != newlen || memcasecmp (old, new, oldlen);
+  లేకపోతే
+    తిరిగి oldlen != newlen || memcmp (old, new, oldlen);
 }
 
 /* Output the line in linebuffer LINE to standard output
@@ -315,51 +315,51 @@ different (char *old, char *new, idx_t oldlen, idx_t newlen)
    If requested, print the number of times it occurred, as well;
    LINECOUNT + 1 is the number of times that the line occurred. */
 
-static void
-writeline (struct linebuffer const *line,
-           bool match, intmax_t linecount)
+స్థిర శూన్య
+writeline (నిర్మాణం linebuffer స్థిరరాశి *పంక్తి,
+           bool సరిపోలిక, intmax_t linecount)
 {
-  if (! (linecount == 0 ? output_unique
-         : !match ? output_first_repeated
+  ఒకవేళ (! (linecount == 0 ? output_unique
+         : !సరిపోలిక ? output_మొదటి_repeated
          : output_later_repeated))
-    return;
+    తిరిగి;
 
-  if (count_occurrences)
+  ఒకవేళ (లెక్క_occurrences)
     {
-      char buf[7 + INT_BUFSIZE_BOUND (intmax_t)];
-      char *end = buf + sizeof buf;
-      char *p = end;
+      అక్షరం buf[7 + INT_BUFSIZE_BOUND (intmax_t)];
+      అక్షరం *చివర = buf + పరిమాణం buf;
+      అక్షరం *p = చివర;
       *--p = ' ';
       intmax_t i = linecount + 1;
       affirm (0 < i);
-      do
+      చేయి
         *--p = '0' + i % 10;
-      while ((i /= 10));
+      అయితే ((i /= 10));
       /* 7 characters, padded with spaces if LINECOUNT + 1 is too small.  */
-      while (end - p < 8)
+      అయితే (చివర - p < 8)
         *--p = ' ';
-      const idx_t nbytes = end - p;
-      if (fwrite (p, sizeof (char), nbytes, stdout) != nbytes)
+      స్థిరరాశి idx_t nbytes = చివర - p;
+      ఒకవేళ (fwrite (p, పరిమాణం (అక్షరం), nbytes, stdout) != nbytes)
         write_error ();
     }
 
-  if (fwrite (line->buffer, sizeof (char), line->length, stdout)
-      != line->length)
+  ఒకవేళ (fwrite (పంక్తి->బఫరు, పరిమాణం (అక్షరం), పంక్తి->నిడివి, stdout)
+      != పంక్తి->నిడివి)
     write_error ();
 }
 
 /* Process input file INFILE with output to OUTFILE.
    If either is "-", use the standard I/O stream for it instead. */
 
-static void
-check_file (char const *infile, char const *outfile, char delimiter)
+స్థిర శూన్య
+check_file (అక్షరం స్థిరరాశి *infile, అక్షరం స్థిరరాశి *outfile, అక్షరం delimiter)
 {
-  struct linebuffer lb1, lb2;
-  struct linebuffer *thisline, *prevline;
+  నిర్మాణం linebuffer lb1, lb2;
+  నిర్మాణం linebuffer *thisline, *prevline;
 
-  if (! (streq (infile, "-") || freopen (infile, "r", stdin)))
+  ఒకవేళ (! (streq (infile, "-") || freopen (infile, "r", stdin)))
     error (EXIT_FAILURE, errno, "%s", quotef (infile));
-  if (! (streq (outfile, "-") || freopen (outfile, "w", stdout)))
+  ఒకవేళ (! (streq (outfile, "-") || freopen (outfile, "w", stdout)))
     error (EXIT_FAILURE, errno, "%s", quotef (outfile));
 
   fadvise (stdin, FADVISE_SEQUENTIAL);
@@ -385,267 +385,267 @@ check_file (char const *infile, char const *outfile, char delimiter)
 
      3. All other cases.
   */
-  if (output_unique && output_first_repeated && !count_occurrences)
+  ఒకవేళ (output_unique && output_మొదటి_repeated && !లెక్క_occurrences)
     {
-      char *prevfield = NULL;
+      అక్షరం *prevfield = ఖాళీ;
       idx_t prevlen;
-      bool first_group_printed = false;
+      bool మొదటి_సమూహం_printed = false;
 
-      while (!feof (stdin)
+      అయితే (!feof (stdin)
              && readlinebuffer_delim (thisline, stdin, delimiter))
         {
           idx_t thislen;
-          char *thisfield = find_field (thisline, &thislen);
-          bool new_group = (!prevfield
+          అక్షరం *thisfield = కనుగొను_క్షేత్రం (thisline, &thislen);
+          bool new_సమూహం = (!prevfield
                             || different (thisfield, prevfield,
                                           thislen, prevlen));
 
-          if (new_group && grouping != GM_NONE
+          ఒకవేళ (new_సమూహం && grouping != GM_NONE
               && (grouping == GM_PREPEND || grouping == GM_BOTH
-                  || (first_group_printed && (grouping == GM_APPEND
+                  || (మొదటి_సమూహం_printed && (grouping == GM_APPEND
                                               || grouping == GM_SEPARATE))))
-            putchar (delimiter);
+            అక్షరం_రాయి (delimiter);
 
-          if (new_group || grouping != GM_NONE)
+          ఒకవేళ (new_సమూహం || grouping != GM_NONE)
             {
-              if (fwrite (thisline->buffer, sizeof (char), thisline->length,
-                  stdout) != thisline->length)
+              ఒకవేళ (fwrite (thisline->బఫరు, పరిమాణం (అక్షరం), thisline->నిడివి,
+                  stdout) != thisline->నిడివి)
                 write_error ();
 
-              swap_lines (&prevline, &thisline);
+              మార్పిడి_పంక్తులు (&prevline, &thisline);
               prevfield = thisfield;
               prevlen = thislen;
-              first_group_printed = true;
+              మొదటి_సమూహం_printed = true;
             }
         }
-      if ((grouping == GM_BOTH || grouping == GM_APPEND) && first_group_printed)
-        putchar (delimiter);
+      ఒకవేళ ((grouping == GM_BOTH || grouping == GM_APPEND) && మొదటి_సమూహం_printed)
+        అక్షరం_రాయి (delimiter);
     }
-  else
+  లేకపోతే
     {
-      if (!readlinebuffer_delim (prevline, stdin, delimiter))
-        goto closefiles;
+      ఒకవేళ (!readlinebuffer_delim (prevline, stdin, delimiter))
+        వెళ్ళు closefiles;
 
       idx_t prevlen;
-      char *prevfield = find_field (prevline, &prevlen);
-      intmax_t match_count = 0;
-      bool first_delimiter = true;
+      అక్షరం *prevfield = కనుగొను_క్షేత్రం (prevline, &prevlen);
+      intmax_t సరిపోలిక_లెక్క = 0;
+      bool మొదటి_delimiter = true;
 
-      while (!feof (stdin))
+      అయితే (!feof (stdin))
         {
-          if (!readlinebuffer_delim (thisline, stdin, delimiter))
+          ఒకవేళ (!readlinebuffer_delim (thisline, stdin, delimiter))
             {
-              if (ferror (stdin))
-                goto closefiles;
-              break;
+              ఒకవేళ (ferror (stdin))
+                వెళ్ళు closefiles;
+              ఆపు;
             }
           idx_t thislen;
-          char *thisfield = find_field (thisline, &thislen);
-          bool match = !different (thisfield, prevfield, thislen, prevlen);
-          match_count += match;
+          అక్షరం *thisfield = కనుగొను_క్షేత్రం (thisline, &thislen);
+          bool సరిపోలిక = !different (thisfield, prevfield, thislen, prevlen);
+          సరిపోలిక_లెక్క += సరిపోలిక;
 
-          if (match_count == INTMAX_MAX)
+          ఒకవేళ (సరిపోలిక_లెక్క == INTMAX_MAX)
             {
-              if (count_occurrences)
+              ఒకవేళ (లెక్క_occurrences)
                 error (EXIT_FAILURE, 0, _("too many repeated lines"));
-              match_count--;
+              సరిపోలిక_లెక్క--;
             }
 
-          if (delimit_groups != DM_NONE)
+          ఒకవేళ (delimit_groups != DM_NONE)
             {
-              if (!match)
+              ఒకవేళ (!సరిపోలిక)
                 {
-                  if (match_count) /* a previous match */
-                    first_delimiter = false; /* Only used when DM_SEPARATE */
+                  ఒకవేళ (సరిపోలిక_లెక్క) /* a previous match */
+                    మొదటి_delimiter = false; /* Only used when DM_SEPARATE */
                 }
-              else if (match_count == 1)
+              లేకపోతే ఒకవేళ (సరిపోలిక_లెక్క == 1)
                 {
-                  if ((delimit_groups == DM_PREPEND)
+                  ఒకవేళ ((delimit_groups == DM_PREPEND)
                       || (delimit_groups == DM_SEPARATE
-                          && !first_delimiter))
-                    putchar (delimiter);
+                          && !మొదటి_delimiter))
+                    అక్షరం_రాయి (delimiter);
                 }
             }
 
-          if (!match || output_later_repeated)
+          ఒకవేళ (!సరిపోలిక || output_later_repeated)
             {
-              writeline (prevline, match, match_count);
-              swap_lines (&prevline, &thisline);
+              writeline (prevline, సరిపోలిక, సరిపోలిక_లెక్క);
+              మార్పిడి_పంక్తులు (&prevline, &thisline);
               prevfield = thisfield;
               prevlen = thislen;
-              if (!match)
-                match_count = 0;
+              ఒకవేళ (!సరిపోలిక)
+                సరిపోలిక_లెక్క = 0;
             }
         }
 
-      writeline (prevline, false, match_count);
+      writeline (prevline, false, సరిపోలిక_లెక్క);
     }
 
  closefiles:
-  if (ferror (stdin) || fclose (stdin) != 0)
+  ఒకవేళ (ferror (stdin) || fclose (stdin) != 0)
     error (EXIT_FAILURE, errno, _("error reading %s"), quoteaf (infile));
 
   /* stdout is handled via the atexit-invoked close_stdout function.  */
 
-  free (lb1.buffer);
-  free (lb2.buffer);
+  విడుదల (lb1.బఫరు);
+  విడుదల (lb2.బఫరు);
 }
 
-enum Skip_field_option_type
+గణన Skip_క్షేత్రం_option_type
   {
     SFO_NONE,
     SFO_OBSOLETE,
     SFO_NEW
   };
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
-  int optc = 0;
-  bool posixly_correct = (getenv ("POSIXLY_CORRECT") != NULL);
-  enum Skip_field_option_type skip_field_option_type = SFO_NONE;
-  int nfiles = 0;
-  char const *file[2];
-  char delimiter = '\n';	/* change with --zero-terminated, -z */
-  bool output_option_used = false;   /* if true, one of -u/-d/-D/-c was used */
+  పూర్ణాంకం optc = 0;
+  bool posixly_correct = (getenv ("POSIXLY_CORRECT") != ఖాళీ);
+  గణన Skip_క్షేత్రం_option_type skip_క్షేత్రం_option_type = SFO_NONE;
+  పూర్ణాంకం nfiles = 0;
+  అక్షరం స్థిరరాశి *file[2];
+  అక్షరం delimiter = '\n';	/* change with --zero-terminated, -z */
+  bool output_option_వాడిన = false;   /* if true, one of -u/-d/-D/-c was used */
 
   file[0] = file[1] = "-";
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while (true)
+  అయితే (true)
     {
       /* Parse an operand with leading "+" as a file after "--" was
          seen; or if pedantic and a file was seen; or if not
          obsolete.  */
 
-      if (optc == -1
+      ఒకవేళ (optc == -1
           || (posixly_correct && nfiles != 0)
           || ((optc = getopt_long (argc, argv,
                                    "-0123456789Dcdf:is:uw:z",
-                                   longopts, NULL))
+                                   longopts, ఖాళీ))
               == -1))
         {
-          if (argc <= optind)
-            break;
-          if (nfiles == 2)
+          ఒకవేళ (argc <= optind)
+            ఆపు;
+          ఒకవేళ (nfiles == 2)
             {
               error (0, 0, _("extra operand %s"), quote (argv[optind]));
               usage (EXIT_FAILURE);
             }
           file[nfiles++] = argv[optind++];
         }
-      else switch (optc)
+      లేకపోతే ఎంపిక (optc)
         {
-        case 1:
+        స్థితి 1:
           {
-            intmax_t size;
-            if (optarg[0] == '+'
+            intmax_t కొలత;
+            ఒకవేళ (optarg[0] == '+'
                 && ! strict_posix2 ()
-                && (xstrtoimax (optarg, NULL, 10, &size, "")
-                    <= LONGINT_OVERFLOW))
-              skip_chars = MIN (size, IDX_MAX);
-            else if (nfiles == 2)
+                && (xstrtoimax (optarg, ఖాళీ, 10, &కొలత, "")
+                    <= LONGINT_అధికప్రవాహం))
+              skip_chars = MIN (కొలత, IDX_MAX);
+            లేకపోతే ఒకవేళ (nfiles == 2)
               {
                 error (0, 0, _("extra operand %s"), quote (optarg));
                 usage (EXIT_FAILURE);
               }
-            else
+            లేకపోతే
               file[nfiles++] = optarg;
           }
-          break;
+          ఆపు;
 
-        case '0':
-        case '1':
-        case '2':
-        case '3':
-        case '4':
-        case '5':
-        case '6':
-        case '7':
-        case '8':
-        case '9':
+        స్థితి '0':
+        స్థితి '1':
+        స్థితి '2':
+        స్థితి '3':
+        స్థితి '4':
+        స్థితి '5':
+        స్థితి '6':
+        స్థితి '7':
+        స్థితి '8':
+        స్థితి '9':
           {
-            if (skip_field_option_type == SFO_NEW)
+            ఒకవేళ (skip_క్షేత్రం_option_type == SFO_NEW)
               skip_fields = 0;
 
-            if (!DECIMAL_DIGIT_ACCUMULATE (skip_fields, optc - '0'))
+            ఒకవేళ (!DECIMAL_DIGIT_ACCUMULATE (skip_fields, optc - '0'))
               skip_fields = IDX_MAX;
 
-            skip_field_option_type = SFO_OBSOLETE;
+            skip_క్షేత్రం_option_type = SFO_OBSOLETE;
           }
-          break;
+          ఆపు;
 
-        case 'c':
-          count_occurrences = true;
-          output_option_used = true;
-          break;
+        స్థితి 'c':
+          లెక్క_occurrences = true;
+          output_option_వాడిన = true;
+          ఆపు;
 
-        case 'd':
+        స్థితి 'd':
           output_unique = false;
-          output_option_used = true;
-          break;
+          output_option_వాడిన = true;
+          ఆపు;
 
-        case 'D':
+        స్థితి 'D':
           output_unique = false;
           output_later_repeated = true;
-          if (optarg == NULL)
+          ఒకవేళ (optarg == ఖాళీ)
             delimit_groups = DM_NONE;
-          else
+          లేకపోతే
             delimit_groups = XARGMATCH ("--all-repeated", optarg,
-                                        delimit_method_string,
-                                        delimit_method_map);
-          output_option_used = true;
-          break;
+                                        delimit_పద్ధతి_string,
+                                        delimit_పద్ధతి_map);
+          output_option_వాడిన = true;
+          ఆపు;
 
-        case GROUP_OPTION:
-          if (optarg == NULL)
+        స్థితి సమూహం_OPTION:
+          ఒకవేళ (optarg == ఖాళీ)
             grouping = GM_SEPARATE;
-          else
+          లేకపోతే
             grouping = XARGMATCH ("--group", optarg,
-                                  grouping_method_string,
-                                  grouping_method_map);
-          break;
+                                  grouping_పద్ధతి_string,
+                                  grouping_పద్ధతి_map);
+          ఆపు;
 
-        case 'f':
-          skip_field_option_type = SFO_NEW;
-          skip_fields = size_opt (optarg,
+        స్థితి 'f':
+          skip_క్షేత్రం_option_type = SFO_NEW;
+          skip_fields = కొలత_opt (optarg,
                                   N_("invalid number of fields to skip"));
-          break;
+          ఆపు;
 
-        case 'i':
+        స్థితి 'i':
           ignore_case = true;
-          break;
+          ఆపు;
 
-        case 's':
-          skip_chars = size_opt (optarg,
+        స్థితి 's':
+          skip_chars = కొలత_opt (optarg,
                                  N_("invalid number of bytes to skip"));
-          break;
+          ఆపు;
 
-        case 'u':
-          output_first_repeated = false;
-          output_option_used = true;
-          break;
+        స్థితి 'u':
+          output_మొదటి_repeated = false;
+          output_option_వాడిన = true;
+          ఆపు;
 
-        case 'w':
-          check_chars = size_opt (optarg,
+        స్థితి 'w':
+          check_chars = కొలత_opt (optarg,
                                   N_("invalid number of bytes to compare"));
-          break;
+          ఆపు;
 
-        case 'z':
+        స్థితి 'z':
           delimiter = '\0';
-          break;
+          ఆపు;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_సంస్కరణ_CHAR (కార్యక్రమం_NAME, AUTHORS);
 
-        default:
+        అప్రమేయ:
           usage (EXIT_FAILURE);
         }
     }
@@ -654,20 +654,20 @@ main (int argc, char **argv)
      avoid the need to specify a grouping method to --all-repeated.
      It was thought best to avoid deprecating those parameters though
      and keep --group separate to other options.  */
-  if (grouping != GM_NONE && output_option_used)
+  ఒకవేళ (grouping != GM_NONE && output_option_వాడిన)
     {
       error (0, 0, _("--group is mutually exclusive with -c/-d/-D/-u"));
       usage (EXIT_FAILURE);
     }
 
-  if (grouping != GM_NONE && count_occurrences)
+  ఒకవేళ (grouping != GM_NONE && లెక్క_occurrences)
     {
       error (0, 0,
            _("grouping and printing repeat counts is meaningless"));
       usage (EXIT_FAILURE);
     }
 
-  if (count_occurrences && output_later_repeated)
+  ఒకవేళ (లెక్క_occurrences && output_later_repeated)
     {
       error (0, 0,
            _("printing all duplicated lines and repeat counts is meaningless"));
@@ -676,5 +676,5 @@ main (int argc, char **argv)
 
   check_file (file[0], file[1], delimiter);
 
-  return EXIT_SUCCESS;
+  తిరిగి EXIT_SUCCESS;
 }

@@ -16,342 +16,342 @@
 
    Written by Mike Haertel, mike@gnu.ai.mit.edu.  */
 
-#include <config.h>
+#అన్తర్భావ <config.h>
 
-#include <sys/types.h>
-#include <getopt.h>
+#అన్తర్భావ <sys/types.h>
+#అన్తర్భావ <getopt.h>
 
-#include "system.h"
-#include "assure.h"
-#include "fadvise.h"
-#include "hard-locale.h"
-#include "linebuffer.h"
-#include "mcel.h"
-#include "memcasecmp.h"
-#include "quote.h"
-#include "skipchars.h"
-#include "stdio--.h"
-#include "xmemcoll.h"
-#include "xstrtol.h"
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "assure.h"
+#అన్తర్భావ "fadvise.h"
+#అన్తర్భావ "hard-locale.h"
+#అన్తర్భావ "linebuffer.h"
+#అన్తర్భావ "mcel.h"
+#అన్తర్భావ "memcasecmp.h"
+#అన్తర్భావ "quote.h"
+#అన్తర్భావ "skipchars.h"
+#అన్తర్భావ "stdio--.h"
+#అన్తర్భావ "xmemcoll.h"
+#అన్తర్భావ "xstrtol.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "join"
+#నిర్వచించు కార్యక్రమం_NAME "join"
 
-#define AUTHORS proper_name ("Mike Haertel")
+#నిర్వచించు AUTHORS proper_name ("Mike Haertel")
 
-#define join system_join
+#నిర్వచించు join system_join
 
-#define SWAPLINES(a, b) do { \
-  struct line *tmp = a; \
+#నిర్వచించు SWAPLINES(a, b) చేయి { \
+  నిర్మాణం పంక్తి *tmp = a; \
   a = b; \
   b = tmp; \
-} while (0);
+} అయితే (0);
 
 /* An element of the list identifying which fields to print for each
    output line.  */
-struct outlist
+నిర్మాణం outlist
   {
     /* File number: 0, 1, or 2.  0 means use the join field.
        1 means use the first file argument, 2 the second.  */
-    int file;
+    పూర్ణాంకం file;
 
     /* Field index (zero-based), specified only when FILE is 1 or 2.  */
-    idx_t field;
+    idx_t క్షేత్రం;
 
-    struct outlist *next;
+    నిర్మాణం outlist *తదుపరి;
   };
 
 /* A field of a line.  */
-struct field
+నిర్మాణం క్షేత్రం
   {
-    char *beg;			/* First character in field.  */
+    అక్షరం *beg;			/* First character in field.  */
     idx_t len;			/* The length of the field.  */
   };
 
 /* A line read from an input file.  */
-struct line
+నిర్మాణం పంక్తి
   {
-    struct linebuffer buf;	/* The line itself.  */
+    నిర్మాణం linebuffer buf;	/* The line itself.  */
     idx_t nfields;		/* Number of elements in 'fields'.  */
     idx_t nfields_allocated;	/* Number of elements allocated for 'fields'. */
-    struct field *fields COUNTED_BY (nfields);
+    నిర్మాణం క్షేత్రం *fields COUNTED_BY (nfields);
   };
 
 /* One or more consecutive lines read from a file that all have the
    same join field value.  */
-struct seq
+నిర్మాణం seq
   {
-    idx_t count;		/* Elements used in 'lines'.  */
+    idx_t లెక్క;		/* Elements used in 'lines'.  */
     idx_t alloc;		/* Elements allocated in 'lines'.  */
-    struct line **lines COUNTED_BY (alloc);
+    నిర్మాణం పంక్తి **పంక్తులు COUNTED_BY (alloc);
   };
 
 /* The previous line read from each file.  */
-static struct line *prevline[2] = {NULL, NULL};
+స్థిర నిర్మాణం పంక్తి *prevline[2] = {ఖాళీ, ఖాళీ};
 
 /* The number of lines read from each file.  */
-static uintmax_t line_no[2] = {0, 0};
+స్థిర uintmax_t పంక్తి_no[2] = {0, 0};
 
 /* The input file names.  */
-static char *g_names[2];
+స్థిర అక్షరం *g_పేర్లు[2];
 
 /* This provides an extra line buffer for each file.  We need these if we
    try to read two consecutive lines into the same buffer, since we don't
    want to overwrite the previous buffer before we check order. */
-static struct line *spareline[2] = {NULL, NULL};
+స్థిర నిర్మాణం పంక్తి *spareline[2] = {ఖాళీ, ఖాళీ};
 
 /* True if the LC_COLLATE locale is hard.  */
-static bool hard_LC_COLLATE;
+స్థిర bool hard_LC_COLLATE;
 
 /* If nonzero, print unpairable lines in file 1 or 2.  */
-static bool print_unpairables_1, print_unpairables_2;
+స్థిర bool print_unpairables_1, print_unpairables_2;
 
 /* If nonzero, print pairable lines.  */
-static bool print_pairables = true;
+స్థిర bool print_pairables = true;
 
 /* If nonzero, we have seen at least one unpairable line. */
-static bool seen_unpairable;
+స్థిర bool చూసిన_unpairable;
 
 /* If nonzero, we have warned about disorder in that file. */
-static bool issued_disorder_warning[2];
+స్థిర bool issued_disorder_warning[2];
 
 /* Empty output field filler.  */
-static char const *empty_filler;
+స్థిర అక్షరం స్థిరరాశి *ఖాళీలు_filler;
 
 /* Whether to ensure the same number of fields are output from each line.  */
-static bool autoformat;
+స్థిర bool autoformat;
 /* The number of fields to output for each line.
    Only significant when autoformat is true.  */
-static idx_t autocount_1;
-static idx_t autocount_2;
+స్థిర idx_t autocount_1;
+స్థిర idx_t autocount_2;
 
 /* Field to join on; -1 means they haven't been determined yet.  */
-static ptrdiff_t join_field_1 = -1;
-static ptrdiff_t join_field_2 = -1;
+స్థిర ptrdiff_t join_క్షేత్రం_1 = -1;
+స్థిర ptrdiff_t join_క్షేత్రం_2 = -1;
 
 /* List of fields to print.  */
-static struct outlist outlist_head;
+స్థిర నిర్మాణం outlist outlist_తల;
 
 /* Last element in 'outlist', where a new element can be added.  */
-static struct outlist *outlist_end = &outlist_head;
+స్థిర నిర్మాణం outlist *outlist_చివర = &outlist_తల;
 
 /* Tab character (or encoding error) separating fields.  If TAB.len == 0,
    fields are separated by any nonempty string of blanks, otherwise by
    exactly one tab character (or encoding error) equal to TAB.  */
-static mcel_t tab;
+స్థిర mcel_t tab;
 
 /* The output separator to use, and its length in bytes.  */
-static char const *output_separator = " ";
-static idx_t output_seplen = 1;
+స్థిర అక్షరం స్థిరరాశి *output_separator = " ";
+స్థిర idx_t output_seplen = 1;
 
 /* If nonzero, check that the input is correctly ordered. */
-static enum
+స్థిర గణన
   {
-    CHECK_ORDER_DEFAULT,
-    CHECK_ORDER_ENABLED,
-    CHECK_ORDER_DISABLED
-  } check_input_order;
+    CHECK_క్రమం_DEFAULT,
+    CHECK_క్రమం_ENABLED,
+    CHECK_క్రమం_DISABLED
+  } check_ఆదానం_క్రమం;
 
-enum
+గణన
 {
-  CHECK_ORDER_OPTION = CHAR_MAX + 1,
-  NOCHECK_ORDER_OPTION,
-  HEADER_LINE_OPTION
+  CHECK_క్రమం_OPTION = CHAR_MAX + 1,
+  NOCHECK_క్రమం_OPTION,
+  శీర్షిక_పంక్తి_OPTION
 };
 
 
-static struct option const longopts[] =
+స్థిర నిర్మాణం option స్థిరరాశి longopts[] =
 {
-  {"ignore-case", no_argument, NULL, 'i'},
-  {"check-order", no_argument, NULL, CHECK_ORDER_OPTION},
-  {"nocheck-order", no_argument, NULL, NOCHECK_ORDER_OPTION},
-  {"zero-terminated", no_argument, NULL, 'z'},
-  {"header", no_argument, NULL, HEADER_LINE_OPTION},
+  {"ignore-case", no_వాదం, ఖాళీ, 'i'},
+  {"check-order", no_వాదం, ఖాళీ, CHECK_క్రమం_OPTION},
+  {"nocheck-order", no_వాదం, ఖాళీ, NOCHECK_క్రమం_OPTION},
+  {"zero-terminated", no_వాదం, ఖాళీ, 'z'},
+  {"header", no_వాదం, ఖాళీ, శీర్షిక_పంక్తి_OPTION},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_సంస్కరణ_OPTION_DECL},
+  {ఖాళీ, 0, ఖాళీ, 0}
 };
 
 /* Used to print non-joining lines */
-static struct line uni_blank;
+స్థిర నిర్మాణం పంక్తి uni_blank;
 
 /* If nonzero, ignore case when comparing join fields.  */
-static bool ignore_case;
+స్థిర bool ignore_case;
 
 /* If nonzero, treat the first line of each file as column headers --
    join them without checking for ordering */
-static bool join_header_lines;
+స్థిర bool join_శీర్షిక_పంక్తులు;
 
 /* The character marking end of line. Default to \n. */
-static char eolchar = '\n';
+స్థిర అక్షరం eolchar = '\n';
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("\
+      రాయి (_("\
 Usage: %s [OPTION]... FILE1 FILE2\n\
 "),
-              program_name);
+              కార్యక్రమం_name);
       fputs (_("\
-For each pair of input lines with identical join fields, write a line to\n\
-standard output.  The default join field is the first, delimited by blanks.\
+For each pair యొక్క ఆదానం పంక్తులు with identical join fields, లిఖ a పంక్తి గమ్యం\n\
+standard output.  The అప్రమేయ join క్షేత్రం is the మొదటి, delimited by blanks.\
 \n\
 "), stdout);
       fputs (_("\
 \n\
-When FILE1 or FILE2 (not both) is -, read standard input.\n\
+When FILE1 or FILE2 (not both) is -, పఠ standard ఆదానం.\n\
 "), stdout);
 
       oputs (_("\
   -a FILENUM\n\
-         also print unpairable lines from file FILENUM,\n\
-         where FILENUM is 1 or 2, corresponding to FILE1 or FILE2\n\
+         also print unpairable పంక్తులు from file FILENUM,\n\
+         where FILENUM is 1 or 2, corresponding గమ్యం FILE1 or FILE2\n\
 "));
       oputs (_("\
   -e STRING\n\
-         replace missing (empty) input fields with STRING;\n\
+         replace missing (ఖాళీలు) ఆదానం fields with STRING;\n\
          I.e., missing fields specified with '-12jo' options\n\
 "));
       oputs (_("\
-  -i, --ignore-case\n\
-         ignore differences in case when comparing fields\n\
+  -i, --ignore-స్థితి\n\
+         ignore differences లోపల స్థితి when comparing fields\n\
 "));
       oputs (_("\
-  -j FIELD\n\
-         equivalent to '-1 FIELD -2 FIELD'\n\
+  -j క్షేత్రం_2\n\
+         equivalent గమ్యం '-1 FIELD -2 FIELD'\n\
 "));
       oputs (_("\
   -o FORMAT\n\
-         obey FORMAT while constructing output line\n\
+         obey FORMAT అయితే constructing output పంక్తి\n\
 "));
       oputs (_("\
   -t CHAR\n\
-         use CHAR as input and output field separator\n\
+         use CHAR as ఆదానం and output క్షేత్రం separator\n\
 "));
       oputs (_("\
   -v FILENUM\n\
-         like -a FILENUM, but suppress joined output lines\n\
+         like -a FILENUM, but suppress joined output పంక్తులు\n\
 "));
       oputs (_("\
-  -1 FIELD\n\
-         join on this FIELD of file 1\n\
+  -1 క్షేత్రం_2\n\
+         join on this క్షేత్రం_2 యొక్క file 1\n\
 "));
       oputs (_("\
-  -2 FIELD\n\
-         join on this FIELD of file 2\n\
+  -2 క్షేత్రం_2\n\
+         join on this క్షేత్రం_2 యొక్క file 2\n\
 "));
       oputs (_("\
-      --check-order\n\
-         check that the input is correctly sorted, even\n\
-         if all input lines are pairable\n\
+      --check-క్రమం\n\
+         check that the ఆదానం is correctly sorted, even\n\
+         ఒకవేళ all ఆదానం పంక్తులు are pairable\n\
 "));
       oputs (_("\
-      --nocheck-order\n\
-         do not check that the input is correctly sorted\n\
+      --nocheck-క్రమం\n\
+         చేయి not check that the ఆదానం is correctly sorted\n\
 "));
       oputs (_("\
-      --header\n\
-         treat the first line in each file as field headers,\n\
-         print them without trying to pair them\n\
+      --శీర్షిక\n\
+         treat the మొదటి పంక్తి లోపల each file as క్షేత్రం శీర్షికలు,\n\
+         print them without trying గమ్యం pair them\n\
 "));
       oputs (_("\
   -z, --zero-terminated\n\
-         line delimiter is NUL, not newline\n\
+         పంక్తి delimiter is NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
 Unless -t CHAR is given, leading blanks separate fields and are ignored,\n\
-else fields are separated by CHAR.  Any FIELD is a field number counted\n\
-from 1.  FORMAT is one or more comma or blank separated specifications,\n\
-each being 'FILENUM.FIELD' or '0'.  Default FORMAT outputs the join field,\n\
-the remaining fields from FILE1, the remaining fields from FILE2, all\n\
-separated by CHAR.  If FORMAT is the keyword 'auto', then the first\n\
-line of each file determines the number of fields output for each line.\n\
+లేకపోతే fields are separated by CHAR.  Any క్షేత్రం_2 is a క్షేత్రం సంఖ్య counted\n\
+from 1.  FORMAT is one or మరిన్ని comma or blank separated specifications,\n\
+each being 'FILENUM.FIELD' or '0'.  Default FORMAT outputs the join క్షేత్రం,\n\
+the మిగిలిన fields from FILE1, the మిగిలిన fields from FILE2, all\n\
+separated by CHAR.  If FORMAT is the keyword 'auto', then the మొదటి\n\
+పంక్తి యొక్క each file determines the సంఖ్య యొక్క fields output కొరకు each పంక్తి.\n\
 \n\
 Important: FILE1 and FILE2 must be sorted on the join fields.\n\
-E.g., use \"sort -k 1b,1\" if 'join' has no options,\n\
-or use \"join -t ''\" if 'sort' has no options.\n\
-Comparisons honor the rules specified by 'LC_COLLATE'.\n\
-If the input is not sorted and some lines cannot be joined, a\n\
-warning message will be given.\n\
+E.g., use \"క్రమీకరించు -k 1b,1\" ఒకవేళ 'join' has no options,\n\
+or use \"join -t ''\" ఒకవేళ 'sort' has no options.\n\
+Comparisons honor the నియమాలు specified by 'LC_COLLATE'.\n\
+If the ఆదానం is not sorted and some పంక్తులు cannot be joined, a\n\
+warning సందేశం_2 will be given.\n\
 "), stdout);
-      emit_ancillary_info (PROGRAM_NAME);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
 /* Record a field in LINE, with location FIELD and size LEN.  */
 
-static void
-extract_field (struct line *line, char *field, idx_t len)
+స్థిర శూన్య
+వెలికితీయి_క్షేత్రం (నిర్మాణం పంక్తి *పంక్తి, అక్షరం *క్షేత్రం, idx_t len)
 {
-  if (line->nfields >= line->nfields_allocated)
-    line->fields = xpalloc (line->fields, &line->nfields_allocated, 1,
-                            -1, sizeof *line->fields);
-  idx_t const field_index = line->nfields++;
-  line->fields[field_index].beg = field;
-  line->fields[field_index].len = len;
+  ఒకవేళ (పంక్తి->nfields >= పంక్తి->nfields_allocated)
+    పంక్తి->fields = xpalloc (పంక్తి->fields, &పంక్తి->nfields_allocated, 1,
+                            -1, పరిమాణం *పంక్తి->fields);
+  idx_t స్థిరరాశి క్షేత్రం_సూచీ = పంక్తి->nfields++;
+  పంక్తి->fields[క్షేత్రం_సూచీ].beg = క్షేత్రం;
+  పంక్తి->fields[క్షేత్రం_సూచీ].len = len;
 }
 
-static bool
+స్థిర bool
 eq_tab (mcel_t g)
 {
-  return mcel_eq (g, tab);
+  తిరిగి mcel_eq (g, tab);
 }
 
-static bool
+స్థిర bool
 newline_or_blank (mcel_t g)
 {
-  return g.ch == '\n' || c32issep (g.ch);
+  తిరిగి g.ch == '\n' || c32issep (g.ch);
 }
 
 /* Fill in the 'fields' structure in LINE.  */
 
-static void
-xfields (struct line *line)
+స్థిర శూన్య
+xfields (నిర్మాణం పంక్తి *పంక్తి)
 {
-  char *ptr = line->buf.buffer;
-  char const *lim = ptr + line->buf.length - 1;
+  అక్షరం *ptr = పంక్తి->buf.బఫరు;
+  అక్షరం స్థిరరాశి *lim = ptr + పంక్తి->buf.నిడివి - 1;
 
-  if (ptr == lim)
-    return;
+  ఒకవేళ (ptr == lim)
+    తిరిగి;
 
-  if (!tab.len)
-    while ((ptr = skip_buf_matching (ptr, lim, newline_or_blank, true)) < lim)
+  ఒకవేళ (!tab.len)
+    అయితే ((ptr = skip_buf_matching (ptr, lim, newline_or_blank, true)) < lim)
       {
-        char *sep = skip_buf_matching (ptr, lim, newline_or_blank, false);
-        extract_field (line, ptr, sep - ptr);
+        అక్షరం *sep = skip_buf_matching (ptr, lim, newline_or_blank, false);
+        వెలికితీయి_క్షేత్రం (పంక్తి, ptr, sep - ptr);
         ptr = sep;
       }
-  else
+  లేకపోతే
     {
-      if (tab.ch != '\n')
-        for (char *sep;
+      ఒకవేళ (tab.ch != '\n')
+        కొరకు (అక్షరం *sep;
              (sep = skip_buf_matching (ptr, lim, eq_tab, false)) < lim;
-             ptr = sep + mcel_scan (sep, lim).len)
-          extract_field (line, ptr, sep - ptr);
+             ptr = sep + mcel_పరిశీలన (sep, lim).len)
+          వెలికితీయి_క్షేత్రం (పంక్తి, ptr, sep - ptr);
 
-      extract_field (line, ptr, lim - ptr);
+      వెలికితీయి_క్షేత్రం (పంక్తి, ptr, lim - ptr);
     }
 }
 
-static void
-freeline (struct line *line)
+స్థిర శూన్య
+freeline (నిర్మాణం పంక్తి *పంక్తి)
 {
-  if (line == NULL)
-    return;
-  free (line->fields);
-  line->fields = NULL;
-  line->nfields_allocated = 0;
-  free (line->buf.buffer);
-  line->buf.buffer = NULL;
-  line->buf.size = 0;
+  ఒకవేళ (పంక్తి == ఖాళీ)
+    తిరిగి;
+  విడుదల (పంక్తి->fields);
+  పంక్తి->fields = ఖాళీ;
+  పంక్తి->nfields_allocated = 0;
+  విడుదల (పంక్తి->buf.బఫరు);
+  పంక్తి->buf.బఫరు = ఖాళీ;
+  పంక్తి->buf.కొలత = 0;
 }
 
 /* Return <0 if the join field in LINE1 compares less than the one in LINE2;
@@ -359,61 +359,61 @@ freeline (struct line *line)
    Report an error and exit if the comparison fails.
    Use join fields JF_1 and JF_2 respectively.  */
 
-static int
-keycmp (struct line const *line1, struct line const *line2,
+స్థిర పూర్ణాంకం
+keycmp (నిర్మాణం పంక్తి స్థిరరాశి *line1, నిర్మాణం పంక్తి స్థిరరాశి *line2,
         idx_t jf_1, idx_t jf_2)
 {
   /* Start of field to compare in each file.  */
-  char *beg1;
-  char *beg2;
+  అక్షరం *beg1;
+  అక్షరం *beg2;
 
   idx_t len1;
   idx_t len2;		/* Length of fields to compare.  */
-  int diff;
+  పూర్ణాంకం diff;
 
-  if (jf_1 < line1->nfields)
+  ఒకవేళ (jf_1 < line1->nfields)
     {
       beg1 = line1->fields[jf_1].beg;
       len1 = line1->fields[jf_1].len;
     }
-  else
+  లేకపోతే
     {
-      beg1 = NULL;
+      beg1 = ఖాళీ;
       len1 = 0;
     }
 
-  if (jf_2 < line2->nfields)
+  ఒకవేళ (jf_2 < line2->nfields)
     {
       beg2 = line2->fields[jf_2].beg;
       len2 = line2->fields[jf_2].len;
     }
-  else
+  లేకపోతే
     {
-      beg2 = NULL;
+      beg2 = ఖాళీ;
       len2 = 0;
     }
 
-  if (len1 == 0)
-    return len2 == 0 ? 0 : -1;
-  if (len2 == 0)
-    return 1;
+  ఒకవేళ (len1 == 0)
+    తిరిగి len2 == 0 ? 0 : -1;
+  ఒకవేళ (len2 == 0)
+    తిరిగి 1;
 
-  if (ignore_case)
+  ఒకవేళ (ignore_case)
     {
       /* FIXME: ignore_case does not work with NLS (in particular,
          with multibyte chars).  */
       diff = memcasecmp (beg1, beg2, MIN (len1, len2));
     }
-  else
+  లేకపోతే
     {
-      if (hard_LC_COLLATE)
-        return xmemcoll (beg1, len1, beg2, len2);
+      ఒకవేళ (hard_LC_COLLATE)
+        తిరిగి xmemcoll (beg1, len1, beg2, len2);
       diff = memcmp (beg1, beg2, MIN (len1, len2));
     }
 
-  if (diff)
-    return diff;
-  return _GL_CMP (len1, len2);
+  ఒకవేళ (diff)
+    తిరిగి diff;
+  తిరిగి _GL_CMP (len1, len2);
 }
 
 /* Check that successive input lines PREV and CURRENT from input file
@@ -427,33 +427,33 @@ keycmp (struct line const *line1, struct line const *line2,
 
    A message is printed at most once per input file. */
 
-static void
-check_order (const struct line *prev,
-             const struct line *current,
-             int whatfile)
+స్థిర శూన్య
+check_క్రమం (స్థిరరాశి నిర్మాణం పంక్తి *prev,
+             స్థిరరాశి నిర్మాణం పంక్తి *current,
+             పూర్ణాంకం whatfile)
 {
-  if (check_input_order != CHECK_ORDER_DISABLED
-      && ((check_input_order == CHECK_ORDER_ENABLED) || seen_unpairable))
+  ఒకవేళ (check_ఆదానం_క్రమం != CHECK_క్రమం_DISABLED
+      && ((check_ఆదానం_క్రమం == CHECK_క్రమం_ENABLED) || చూసిన_unpairable))
     {
-      if (!issued_disorder_warning[whatfile - 1])
+      ఒకవేళ (!issued_disorder_warning[whatfile - 1])
         {
-          idx_t join_field = whatfile == 1 ? join_field_1 : join_field_2;
-          if (keycmp (prev, current, join_field, join_field) > 0)
+          idx_t join_క్షేత్రం = whatfile == 1 ? join_క్షేత్రం_1 : join_క్షేత్రం_2;
+          ఒకవేళ (keycmp (prev, current, join_క్షేత్రం, join_క్షేత్రం) > 0)
             {
               /* Exclude any trailing newline. */
-              idx_t len = current->buf.length;
-              if (0 < len && current->buf.buffer[len - 1] == '\n')
+              idx_t len = current->buf.నిడివి;
+              ఒకవేళ (0 < len && current->buf.బఫరు[len - 1] == '\n')
                 --len;
 
               /* If the offending line is longer than INT_MAX, output
                  only the first INT_MAX bytes in this diagnostic.  */
-              len = MIN (INT_MAX, len);
+              len = MIN (గరిష్ఠ_పూర్ణాంకం, len);
 
-              error ((check_input_order == CHECK_ORDER_ENABLED
+              error ((check_ఆదానం_క్రమం == CHECK_క్రమం_ENABLED
                       ? EXIT_FAILURE : 0),
                      0, _("%s:%ju: is not sorted: %.*s"),
-                     g_names[whatfile - 1], line_no[whatfile - 1],
-                     (int) len, current->buf.buffer);
+                     g_పేర్లు[whatfile - 1], పంక్తి_no[whatfile - 1],
+                     (పూర్ణాంకం) len, current->buf.బఫరు);
 
               /* If we get to here, the message was merely a warning.
                  Arrange to issue it only once per file.  */
@@ -463,235 +463,235 @@ check_order (const struct line *prev,
     }
 }
 
-static inline void
-reset_line (struct line *line)
+స్థిర అంతఃవరుస శూన్య
+reset_పంక్తి (నిర్మాణం పంక్తి *పంక్తి)
 {
-  line->nfields = 0;
+  పంక్తి->nfields = 0;
 }
 
-static struct line *
-init_linep (struct line **linep)
+స్థిర నిర్మాణం పంక్తి *
+init_linep (నిర్మాణం పంక్తి **linep)
 {
-  struct line *line = xzalloc (sizeof *line);
-  *linep = line;
-  return line;
+  నిర్మాణం పంక్తి *పంక్తి = xzalloc (పరిమాణం *పంక్తి);
+  *linep = పంక్తి;
+  తిరిగి పంక్తి;
 }
 
 /* Read a line from FP into LINE and split it into fields.
    Return true if successful.  */
 
-static bool
-get_line (FILE *fp, struct line **linep, int which)
+స్థిర bool
+get_పంక్తి (FILE *fp, నిర్మాణం పంక్తి **linep, పూర్ణాంకం which)
 {
-  struct line *line = *linep;
+  నిర్మాణం పంక్తి *పంక్తి = *linep;
 
-  if (line == prevline[which - 1])
+  ఒకవేళ (పంక్తి == prevline[which - 1])
     {
-      SWAPLINES (line, spareline[which - 1]);
-      *linep = line;
+      SWAPLINES (పంక్తి, spareline[which - 1]);
+      *linep = పంక్తి;
     }
 
-  if (line)
-    reset_line (line);
-  else
-    line = init_linep (linep);
+  ఒకవేళ (పంక్తి)
+    reset_పంక్తి (పంక్తి);
+  లేకపోతే
+    పంక్తి = init_linep (linep);
 
-  if (! readlinebuffer_delim (&line->buf, fp, eolchar))
+  ఒకవేళ (! readlinebuffer_delim (&పంక్తి->buf, fp, eolchar))
     {
-      if (ferror (fp))
+      ఒకవేళ (ferror (fp))
         error (EXIT_FAILURE, errno, _("read error"));
-      freeline (line);
-      return false;
+      freeline (పంక్తి);
+      తిరిగి false;
     }
-  ++line_no[which - 1];
+  ++పంక్తి_no[which - 1];
 
-  xfields (line);
+  xfields (పంక్తి);
 
-  if (prevline[which - 1])
-    check_order (prevline[which - 1], line, which);
+  ఒకవేళ (prevline[which - 1])
+    check_క్రమం (prevline[which - 1], పంక్తి, which);
 
-  prevline[which - 1] = line;
-  return true;
+  prevline[which - 1] = పంక్తి;
+  తిరిగి true;
 }
 
-static void
-free_spareline (void)
+స్థిర శూన్య
+free_spareline (శూన్య)
 {
-  for (idx_t i = 0; i < countof (spareline); i++)
+  కొరకు (idx_t i = 0; i < countof (spareline); i++)
     {
-      if (spareline[i])
+      ఒకవేళ (spareline[i])
         {
           freeline (spareline[i]);
-          free (spareline[i]);
+          విడుదల (spareline[i]);
         }
     }
 }
 
-static void
-initseq (struct seq *seq)
+స్థిర శూన్య
+initseq (నిర్మాణం seq *seq)
 {
-  seq->count = 0;
+  seq->లెక్క = 0;
   seq->alloc = 0;
-  seq->lines = NULL;
+  seq->పంక్తులు = ఖాళీ;
 }
 
 /* Read a line from FP and add it to SEQ.  Return true if successful.  */
 
-static bool
-getseq (FILE *fp, struct seq *seq, int whichfile)
+స్థిర bool
+getseq (FILE *fp, నిర్మాణం seq *seq, పూర్ణాంకం whichfile)
 {
-  if (seq->count == seq->alloc)
+  ఒకవేళ (seq->లెక్క == seq->alloc)
     {
-      seq->lines = xpalloc (seq->lines, &seq->alloc, 1, -1, sizeof *seq->lines);
-      for (idx_t i = seq->count; i < seq->alloc; i++)
-        seq->lines[i] = NULL;
+      seq->పంక్తులు = xpalloc (seq->పంక్తులు, &seq->alloc, 1, -1, పరిమాణం *seq->పంక్తులు);
+      కొరకు (idx_t i = seq->లెక్క; i < seq->alloc; i++)
+        seq->పంక్తులు[i] = ఖాళీ;
     }
 
-  if (get_line (fp, &seq->lines[seq->count], whichfile))
+  ఒకవేళ (get_పంక్తి (fp, &seq->పంక్తులు[seq->లెక్క], whichfile))
     {
-      ++seq->count;
-      return true;
+      ++seq->లెక్క;
+      తిరిగి true;
     }
-  return false;
+  తిరిగి false;
 }
 
 /* Read a line from FP and add it to SEQ, as the first item if FIRST is
    true, else as the next.  */
-static bool
-advance_seq (FILE *fp, struct seq *seq, bool first, int whichfile)
+స్థిర bool
+advance_seq (FILE *fp, నిర్మాణం seq *seq, bool మొదటి, పూర్ణాంకం whichfile)
 {
-  if (first)
-    seq->count = 0;
+  ఒకవేళ (మొదటి)
+    seq->లెక్క = 0;
 
-  return getseq (fp, seq, whichfile);
+  తిరిగి getseq (fp, seq, whichfile);
 }
 
-static void
-delseq (struct seq *seq)
+స్థిర శూన్య
+delseq (నిర్మాణం seq *seq)
 {
-  for (idx_t i = 0; i < seq->alloc; i++)
+  కొరకు (idx_t i = 0; i < seq->alloc; i++)
     {
-      freeline (seq->lines[i]);
-      free (seq->lines[i]);
+      freeline (seq->పంక్తులు[i]);
+      విడుదల (seq->పంక్తులు[i]);
     }
-  free (seq->lines);
+  విడుదల (seq->పంక్తులు);
 }
 
 
 /* Print field N of LINE if it exists and is nonempty, otherwise
    'empty_filler' if it is nonempty.  */
 
-static void
-prfield (idx_t n, struct line const *line)
+స్థిర శూన్య
+prfield (idx_t n, నిర్మాణం పంక్తి స్థిరరాశి *పంక్తి)
 {
-  if (n < line->nfields)
+  ఒకవేళ (n < పంక్తి->nfields)
     {
-      idx_t len = line->fields[n].len;
-      if (len)
-        fwrite (line->fields[n].beg, 1, len, stdout);
-      else if (empty_filler)
-        fputs (empty_filler, stdout);
+      idx_t len = పంక్తి->fields[n].len;
+      ఒకవేళ (len)
+        fwrite (పంక్తి->fields[n].beg, 1, len, stdout);
+      లేకపోతే ఒకవేళ (ఖాళీలు_filler)
+        fputs (ఖాళీలు_filler, stdout);
     }
-  else if (empty_filler)
-    fputs (empty_filler, stdout);
+  లేకపోతే ఒకవేళ (ఖాళీలు_filler)
+    fputs (ఖాళీలు_filler, stdout);
 }
 
 /* Output all the fields in line, other than the join field.  */
 
-static void
-prfields (struct line const *line, idx_t join_field, idx_t autocount)
+స్థిర శూన్య
+prfields (నిర్మాణం పంక్తి స్థిరరాశి *పంక్తి, idx_t join_క్షేత్రం, idx_t autocount)
 {
-  idx_t nfields = autoformat ? autocount : line->nfields;
+  idx_t nfields = autoformat ? autocount : పంక్తి->nfields;
 
-  for (idx_t i = 0; i < join_field && i < nfields; ++i)
+  కొరకు (idx_t i = 0; i < join_క్షేత్రం && i < nfields; ++i)
     {
       fwrite (output_separator, 1, output_seplen, stdout);
-      prfield (i, line);
+      prfield (i, పంక్తి);
     }
-  for (idx_t i = join_field + 1; i < nfields; ++i)
+  కొరకు (idx_t i = join_క్షేత్రం + 1; i < nfields; ++i)
     {
       fwrite (output_separator, 1, output_seplen, stdout);
-      prfield (i, line);
+      prfield (i, పంక్తి);
     }
 }
 
 /* Print the join of LINE1 and LINE2.  */
 
-static void
-prjoin (struct line const *line1, struct line const *line2)
+స్థిర శూన్య
+prjoin (నిర్మాణం పంక్తి స్థిరరాశి *line1, నిర్మాణం పంక్తి స్థిరరాశి *line2)
 {
-  const struct outlist *outlist;
-  idx_t field;
-  struct line const *line;
+  స్థిరరాశి నిర్మాణం outlist *outlist;
+  idx_t క్షేత్రం;
+  నిర్మాణం పంక్తి స్థిరరాశి *పంక్తి;
 
-  outlist = outlist_head.next;
-  if (outlist)
+  outlist = outlist_తల.తదుపరి;
+  ఒకవేళ (outlist)
     {
-      const struct outlist *o;
+      స్థిరరాశి నిర్మాణం outlist *o;
 
       o = outlist;
-      while (true)
+      అయితే (true)
         {
-          if (o->file == 0)
+          ఒకవేళ (o->file == 0)
             {
-              if (line1 == &uni_blank)
+              ఒకవేళ (line1 == &uni_blank)
                 {
-                  line = line2;
-                  field = join_field_2;
+                  పంక్తి = line2;
+                  క్షేత్రం = join_క్షేత్రం_2;
                 }
-              else
+              లేకపోతే
                 {
-                  line = line1;
-                  field = join_field_1;
+                  పంక్తి = line1;
+                  క్షేత్రం = join_క్షేత్రం_1;
                 }
             }
-          else
+          లేకపోతే
             {
-              line = (o->file == 1 ? line1 : line2);
-              field = o->field;
+              పంక్తి = (o->file == 1 ? line1 : line2);
+              క్షేత్రం = o->క్షేత్రం;
             }
-          prfield (field, line);
-          o = o->next;
-          if (o == NULL)
-            break;
+          prfield (క్షేత్రం, పంక్తి);
+          o = o->తదుపరి;
+          ఒకవేళ (o == ఖాళీ)
+            ఆపు;
           fwrite (output_separator, 1, output_seplen, stdout);
         }
-      putchar (eolchar);
+      అక్షరం_రాయి (eolchar);
     }
-  else
+  లేకపోతే
     {
-      if (line1 == &uni_blank)
+      ఒకవేళ (line1 == &uni_blank)
         {
-          line = line2;
-          field = join_field_2;
+          పంక్తి = line2;
+          క్షేత్రం = join_క్షేత్రం_2;
         }
-      else
+      లేకపోతే
         {
-          line = line1;
-          field = join_field_1;
+          పంక్తి = line1;
+          క్షేత్రం = join_క్షేత్రం_1;
         }
 
       /* Output the join field.  */
-      prfield (field, line);
+      prfield (క్షేత్రం, పంక్తి);
 
       /* Output other fields.  */
-      prfields (line1, join_field_1, autocount_1);
-      prfields (line2, join_field_2, autocount_2);
+      prfields (line1, join_క్షేత్రం_1, autocount_1);
+      prfields (line2, join_క్షేత్రం_2, autocount_2);
 
-      putchar (eolchar);
+      అక్షరం_రాయి (eolchar);
     }
 
-  if (ferror (stdout))
+  ఒకవేళ (ferror (stdout))
     write_error ();
 }
 
 /* Print the join of the files in FP1 and FP2.  */
 
-static void
+స్థిర శూన్య
 join (FILE *fp1, FILE *fp2)
 {
-  struct seq seq1, seq2;
-  int diff;
+  నిర్మాణం seq seq1, seq2;
+  పూర్ణాంకం diff;
   bool eof1, eof2;
 
   fadvise (fp1, FADVISE_SEQUENTIAL);
@@ -703,141 +703,141 @@ join (FILE *fp1, FILE *fp2)
   initseq (&seq2);
   getseq (fp2, &seq2, 2);
 
-  if (autoformat)
+  ఒకవేళ (autoformat)
     {
-      autocount_1 = seq1.count ? seq1.lines[0]->nfields : 0;
-      autocount_2 = seq2.count ? seq2.lines[0]->nfields : 0;
+      autocount_1 = seq1.లెక్క ? seq1.పంక్తులు[0]->nfields : 0;
+      autocount_2 = seq2.లెక్క ? seq2.పంక్తులు[0]->nfields : 0;
     }
 
-  if (join_header_lines && (seq1.count || seq2.count))
+  ఒకవేళ (join_శీర్షిక_పంక్తులు && (seq1.లెక్క || seq2.లెక్క))
     {
-      struct line const *hline1 = seq1.count ? seq1.lines[0] : &uni_blank;
-      struct line const *hline2 = seq2.count ? seq2.lines[0] : &uni_blank;
+      నిర్మాణం పంక్తి స్థిరరాశి *hline1 = seq1.లెక్క ? seq1.పంక్తులు[0] : &uni_blank;
+      నిర్మాణం పంక్తి స్థిరరాశి *hline2 = seq2.లెక్క ? seq2.పంక్తులు[0] : &uni_blank;
       prjoin (hline1, hline2);
-      prevline[0] = NULL;
-      prevline[1] = NULL;
-      if (seq1.count)
+      prevline[0] = ఖాళీ;
+      prevline[1] = ఖాళీ;
+      ఒకవేళ (seq1.లెక్క)
         advance_seq (fp1, &seq1, true, 1);
-      if (seq2.count)
+      ఒకవేళ (seq2.లెక్క)
         advance_seq (fp2, &seq2, true, 2);
     }
 
-  while (seq1.count && seq2.count)
+  అయితే (seq1.లెక్క && seq2.లెక్క)
     {
-      diff = keycmp (seq1.lines[0], seq2.lines[0],
-                     join_field_1, join_field_2);
-      if (diff < 0)
+      diff = keycmp (seq1.పంక్తులు[0], seq2.పంక్తులు[0],
+                     join_క్షేత్రం_1, join_క్షేత్రం_2);
+      ఒకవేళ (diff < 0)
         {
-          if (print_unpairables_1)
-            prjoin (seq1.lines[0], &uni_blank);
+          ఒకవేళ (print_unpairables_1)
+            prjoin (seq1.పంక్తులు[0], &uni_blank);
           advance_seq (fp1, &seq1, true, 1);
-          seen_unpairable = true;
-          continue;
+          చూసిన_unpairable = true;
+          కొనసాగు;
         }
-      if (diff > 0)
+      ఒకవేళ (diff > 0)
         {
-          if (print_unpairables_2)
-            prjoin (&uni_blank, seq2.lines[0]);
+          ఒకవేళ (print_unpairables_2)
+            prjoin (&uni_blank, seq2.పంక్తులు[0]);
           advance_seq (fp2, &seq2, true, 2);
-          seen_unpairable = true;
-          continue;
+          చూసిన_unpairable = true;
+          కొనసాగు;
         }
 
       /* Keep reading lines from file1 as long as they continue to
          match the current line from file2.  */
       eof1 = false;
-      do
-        if (!advance_seq (fp1, &seq1, false, 1))
+      చేయి
+        ఒకవేళ (!advance_seq (fp1, &seq1, false, 1))
           {
             eof1 = true;
-            ++seq1.count;
-            break;
+            ++seq1.లెక్క;
+            ఆపు;
           }
-      while (!keycmp (seq1.lines[seq1.count - 1], seq2.lines[0],
-                      join_field_1, join_field_2));
+      అయితే (!keycmp (seq1.పంక్తులు[seq1.లెక్క - 1], seq2.పంక్తులు[0],
+                      join_క్షేత్రం_1, join_క్షేత్రం_2));
 
       /* Keep reading lines from file2 as long as they continue to
          match the current line from file1.  */
       eof2 = false;
-      do
-        if (!advance_seq (fp2, &seq2, false, 2))
+      చేయి
+        ఒకవేళ (!advance_seq (fp2, &seq2, false, 2))
           {
             eof2 = true;
-            ++seq2.count;
-            break;
+            ++seq2.లెక్క;
+            ఆపు;
           }
-      while (!keycmp (seq1.lines[0], seq2.lines[seq2.count - 1],
-                      join_field_1, join_field_2));
+      అయితే (!keycmp (seq1.పంక్తులు[0], seq2.పంక్తులు[seq2.లెక్క - 1],
+                      join_క్షేత్రం_1, join_క్షేత్రం_2));
 
-      if (print_pairables)
+      ఒకవేళ (print_pairables)
         {
-          for (idx_t i = 0; i < seq1.count - 1; ++i)
+          కొరకు (idx_t i = 0; i < seq1.లెక్క - 1; ++i)
             {
-              for (idx_t j = 0; j < seq2.count - 1; ++j)
-                prjoin (seq1.lines[i], seq2.lines[j]);
+              కొరకు (idx_t j = 0; j < seq2.లెక్క - 1; ++j)
+                prjoin (seq1.పంక్తులు[i], seq2.పంక్తులు[j]);
             }
         }
 
-      if (!eof1)
+      ఒకవేళ (!eof1)
         {
-          SWAPLINES (seq1.lines[0], seq1.lines[seq1.count - 1]);
-          seq1.count = 1;
+          SWAPLINES (seq1.పంక్తులు[0], seq1.పంక్తులు[seq1.లెక్క - 1]);
+          seq1.లెక్క = 1;
         }
-      else
-        seq1.count = 0;
+      లేకపోతే
+        seq1.లెక్క = 0;
 
-      if (!eof2)
+      ఒకవేళ (!eof2)
         {
-          SWAPLINES (seq2.lines[0], seq2.lines[seq2.count - 1]);
-          seq2.count = 1;
+          SWAPLINES (seq2.పంక్తులు[0], seq2.పంక్తులు[seq2.లెక్క - 1]);
+          seq2.లెక్క = 1;
         }
-      else
-        seq2.count = 0;
+      లేకపోతే
+        seq2.లెక్క = 0;
     }
 
   /* If the user did not specify --nocheck-order, then we read the
      tail ends of both inputs to verify that they are in order.  We
      skip the rest of the tail once we have issued a warning for that
      file, unless we actually need to print the unpairable lines.  */
-  struct line *line = NULL;
+  నిర్మాణం పంక్తి *పంక్తి = ఖాళీ;
   bool checktail = false;
 
-  if (check_input_order != CHECK_ORDER_DISABLED
+  ఒకవేళ (check_ఆదానం_క్రమం != CHECK_క్రమం_DISABLED
       && !(issued_disorder_warning[0] && issued_disorder_warning[1]))
     checktail = true;
 
-  if ((print_unpairables_1 || checktail) && seq1.count)
+  ఒకవేళ ((print_unpairables_1 || checktail) && seq1.లెక్క)
     {
-      if (print_unpairables_1)
-        prjoin (seq1.lines[0], &uni_blank);
-      if (seq2.count)
-        seen_unpairable = true;
-      while (get_line (fp1, &line, 1))
+      ఒకవేళ (print_unpairables_1)
+        prjoin (seq1.పంక్తులు[0], &uni_blank);
+      ఒకవేళ (seq2.లెక్క)
+        చూసిన_unpairable = true;
+      అయితే (get_పంక్తి (fp1, &పంక్తి, 1))
         {
-          if (print_unpairables_1)
-            prjoin (line, &uni_blank);
-          if (issued_disorder_warning[0] && !print_unpairables_1)
-            break;
+          ఒకవేళ (print_unpairables_1)
+            prjoin (పంక్తి, &uni_blank);
+          ఒకవేళ (issued_disorder_warning[0] && !print_unpairables_1)
+            ఆపు;
         }
     }
 
-  if ((print_unpairables_2 || checktail) && seq2.count)
+  ఒకవేళ ((print_unpairables_2 || checktail) && seq2.లెక్క)
     {
-      if (print_unpairables_2)
-        prjoin (&uni_blank, seq2.lines[0]);
-      if (seq1.count)
-        seen_unpairable = true;
-      while (get_line (fp2, &line, 2))
+      ఒకవేళ (print_unpairables_2)
+        prjoin (&uni_blank, seq2.పంక్తులు[0]);
+      ఒకవేళ (seq1.లెక్క)
+        చూసిన_unpairable = true;
+      అయితే (get_పంక్తి (fp2, &పంక్తి, 2))
         {
-          if (print_unpairables_2)
-            prjoin (&uni_blank, line);
-          if (issued_disorder_warning[1] && !print_unpairables_2)
-            break;
+          ఒకవేళ (print_unpairables_2)
+            prjoin (&uni_blank, పంక్తి);
+          ఒకవేళ (issued_disorder_warning[1] && !print_unpairables_2)
+            ఆపు;
         }
     }
 
-  freeline (line);
-  free (line);
+  freeline (పంక్తి);
+  విడుదల (పంక్తి);
 
   delseq (&seq1);
   delseq (&seq2);
@@ -845,22 +845,22 @@ join (FILE *fp1, FILE *fp2)
 
 /* Add a field spec for field FIELD of file FILE to 'outlist'.  */
 
-static void
-add_field (int file, idx_t field)
+స్థిర శూన్య
+కూడు_క్షేత్రం (పూర్ణాంకం file, idx_t క్షేత్రం)
 {
-  struct outlist *o;
+  నిర్మాణం outlist *o;
 
   affirm (file == 0 || file == 1 || file == 2);
-  affirm (file != 0 || field == 0);
+  affirm (file != 0 || క్షేత్రం == 0);
 
-  o = xmalloc (sizeof *o);
+  o = xmalloc (పరిమాణం *o);
   o->file = file;
-  o->field = field;
-  o->next = NULL;
+  o->క్షేత్రం = క్షేత్రం;
+  o->తదుపరి = ఖాళీ;
 
   /* Add to the end of the list so the fields are in the right order.  */
-  outlist_end->next = o;
-  outlist_end = o;
+  outlist_చివర->తదుపరి = o;
+  outlist_చివర = o;
 }
 
 /* Convert a string of decimal digits, STR (the 1-based join field number),
@@ -869,92 +869,92 @@ add_field (int file, idx_t field)
    to PTRDIFF_MAX.  Otherwise, if a value cannot be converted, give a
    diagnostic and exit.  */
 
-static idx_t
-string_to_join_field (char const *str)
+స్థిర idx_t
+string_గమ్యం_join_క్షేత్రం (అక్షరం స్థిరరాశి *str)
 {
   intmax_t val;
 
-  strtol_error s_err = xstrtoimax (str, NULL, 10, &val, "");
-  if (s_err == LONGINT_OVERFLOW || (s_err == LONGINT_OK && PTRDIFF_MAX < val))
+  strtol_error s_err = xstrtoimax (str, ఖాళీ, 10, &val, "");
+  ఒకవేళ (s_err == LONGINT_అధికప్రవాహం || (s_err == LONGINT_OK && PTRDIFF_MAX < val))
     val = PTRDIFF_MAX;
-  else if (s_err != LONGINT_OK || val <= 0)
+  లేకపోతే ఒకవేళ (s_err != LONGINT_OK || val <= 0)
     error (EXIT_FAILURE, 0, _("invalid field number: %s"), quote (str));
 
-  return val - 1;
+  తిరిగి val - 1;
 }
 
 /* Convert a single field specifier string, S, to a *FILE_INDEX, *FIELD_INDEX
    pair.  In S, the field index string is 1-based; *FIELD_INDEX is zero-based.
    If S is valid, return true.  Otherwise, give a diagnostic and exit.  */
 
-static void
-decode_field_spec (char const *s, int *file_index, idx_t *field_index)
+స్థిర శూన్య
+decode_క్షేత్రం_spec (అక్షరం స్థిరరాశి *s, పూర్ణాంకం *file_సూచీ, idx_t *క్షేత్రం_సూచీ)
 {
   /* The first character must be 0, 1, or 2.  */
-  switch (s[0])
+  ఎంపిక (s[0])
     {
-    case '0':
-      if (s[1])
+    స్థితి '0':
+      ఒకవేళ (s[1])
         {
           /* '0' must be all alone -- no '.FIELD'.  */
           error (EXIT_FAILURE, 0, _("invalid field specifier: %s"), quote (s));
         }
-      *file_index = 0;
-      *field_index = 0;
-      break;
+      *file_సూచీ = 0;
+      *క్షేత్రం_సూచీ = 0;
+      ఆపు;
 
-    case '1':
-    case '2':
-      if (s[1] != '.')
+    స్థితి '1':
+    స్థితి '2':
+      ఒకవేళ (s[1] != '.')
         error (EXIT_FAILURE, 0, _("invalid field specifier: %s"), quote (s));
-      *file_index = s[0] - '0';
-      *field_index = string_to_join_field (s + 2);
-      break;
+      *file_సూచీ = s[0] - '0';
+      *క్షేత్రం_సూచీ = string_గమ్యం_join_క్షేత్రం (s + 2);
+      ఆపు;
 
-    default:
+    అప్రమేయ:
       error (EXIT_FAILURE, 0,
              _("invalid file number in field spec: %s"), quote (s));
     }
 }
 
-static bool
+స్థిర bool
 comma_or_blank (mcel_t g)
 {
-  return g.ch == ',' || c32issep (g.ch);
+  తిరిగి g.ch == ',' || c32issep (g.ch);
 }
 
 /* Add the comma or blank separated field spec(s) in STR to 'outlist'.  */
 
-static void
-add_field_list (char *str)
+స్థిర శూన్య
+కూడు_క్షేత్రం_list (అక్షరం *str)
 {
-  char *p = str;
+  అక్షరం *p = str;
 
-  do
+  చేయి
     {
-      int file_index;
-      idx_t field_index;
-      char const *spec_item = p;
-      p = skip_str_matching (spec_item, comma_or_blank, false);
-      if (*p)
+      పూర్ణాంకం file_సూచీ;
+      idx_t క్షేత్రం_సూచీ;
+      అక్షరం స్థిరరాశి *spec_అంశం = p;
+      p = skip_str_matching (spec_అంశం, comma_or_blank, false);
+      ఒకవేళ (*p)
         {
           mcel_t g = mcel_scanz (p);
           *p = '\0';
           p += g.len;
         }
-      decode_field_spec (spec_item, &file_index, &field_index);
-      add_field (file_index, field_index);
+      decode_క్షేత్రం_spec (spec_అంశం, &file_సూచీ, &క్షేత్రం_సూచీ);
+      కూడు_క్షేత్రం (file_సూచీ, క్షేత్రం_సూచీ);
     }
-  while (*p);
+  అయితే (*p);
 }
 
 /* Set the join field *VAR to VAL, but report an error if *VAR is set
    more than once to incompatible values.  */
 
-static void
-set_join_field (ptrdiff_t *var, idx_t val)
+స్థిర శూన్య
+సమితి_join_క్షేత్రం (ptrdiff_t *var, idx_t val)
 {
-  if (0 <= *var && *var != val)
+  ఒకవేళ (0 <= *var && *var != val)
     error (EXIT_FAILURE, 0,
            _("incompatible join fields %td, %td"), *var, val);
   *var = val;
@@ -962,11 +962,11 @@ set_join_field (ptrdiff_t *var, idx_t val)
 
 /* Status of command-line arguments.  */
 
-enum operand_status
+గణన నిర్వాహ్యం_స్థితి
   {
     /* This argument must be an operand, i.e., one of the files to be
        joined.  */
-    MUST_BE_OPERAND,
+    MUST_BE_నిర్వాహ్యం,
 
     /* This might be the argument of the preceding -j1 or -j2 option,
        or it might be an operand.  */
@@ -981,65 +981,65 @@ enum operand_status
 /* Add NAME to the array of input file NAMES with operand statuses
    OPERAND_STATUS; currently there are NFILES names in the list.  */
 
-static void
-add_file_name (char *name, char *names[2],
-               int operand_status[2], int joption_count[2], int *nfiles,
-               int *prev_optc_status, int *optc_status)
+స్థిర శూన్య
+కూడు_file_name (అక్షరం *name, అక్షరం *పేర్లు[2],
+               పూర్ణాంకం నిర్వాహ్యం_స్థితి[2], పూర్ణాంకం joption_లెక్క[2], పూర్ణాంకం *nfiles,
+               పూర్ణాంకం *prev_optc_స్థితి, పూర్ణాంకం *optc_స్థితి)
 {
-  int n = *nfiles;
+  పూర్ణాంకం n = *nfiles;
 
-  if (n == 2)
+  ఒకవేళ (n == 2)
     {
-      bool op0 = (operand_status[0] == MUST_BE_OPERAND);
-      char *arg = names[op0];
-      switch (operand_status[op0])
+      bool op0 = (నిర్వాహ్యం_స్థితి[0] == MUST_BE_నిర్వాహ్యం);
+      అక్షరం *arg = పేర్లు[op0];
+      ఎంపిక (నిర్వాహ్యం_స్థితి[op0])
         {
-        case MUST_BE_OPERAND:
+        స్థితి MUST_BE_నిర్వాహ్యం:
           error (0, 0, _("extra operand %s"), quoteaf (name));
           usage (EXIT_FAILURE);
 
-        case MIGHT_BE_J1_ARG:
-          joption_count[0]--;
-          set_join_field (&join_field_1, string_to_join_field (arg));
-          break;
+        స్థితి MIGHT_BE_J1_ARG:
+          joption_లెక్క[0]--;
+          సమితి_join_క్షేత్రం (&join_క్షేత్రం_1, string_గమ్యం_join_క్షేత్రం (arg));
+          ఆపు;
 
-        case MIGHT_BE_J2_ARG:
-          joption_count[1]--;
-          set_join_field (&join_field_2, string_to_join_field (arg));
-          break;
+        స్థితి MIGHT_BE_J2_ARG:
+          joption_లెక్క[1]--;
+          సమితి_join_క్షేత్రం (&join_క్షేత్రం_2, string_గమ్యం_join_క్షేత్రం (arg));
+          ఆపు;
 
-        case MIGHT_BE_O_ARG:
-          add_field_list (arg);
-          break;
+        స్థితి MIGHT_BE_O_ARG:
+          కూడు_క్షేత్రం_list (arg);
+          ఆపు;
         }
-      if (!op0)
+      ఒకవేళ (!op0)
         {
-          operand_status[0] = operand_status[1];
-          names[0] = names[1];
+          నిర్వాహ్యం_స్థితి[0] = నిర్వాహ్యం_స్థితి[1];
+          పేర్లు[0] = పేర్లు[1];
         }
       n = 1;
     }
 
-  operand_status[n] = *prev_optc_status;
-  names[n] = name;
+  నిర్వాహ్యం_స్థితి[n] = *prev_optc_స్థితి;
+  పేర్లు[n] = name;
   *nfiles = n + 1;
-  if (*prev_optc_status == MIGHT_BE_O_ARG)
-    *optc_status = MIGHT_BE_O_ARG;
+  ఒకవేళ (*prev_optc_స్థితి == MIGHT_BE_O_ARG)
+    *optc_స్థితి = MIGHT_BE_O_ARG;
 }
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
-  int optc_status;
-  int prev_optc_status = MUST_BE_OPERAND;
-  int operand_status[2];
-  int joption_count[2] = { 0, 0 };
+  పూర్ణాంకం optc_స్థితి;
+  పూర్ణాంకం prev_optc_స్థితి = MUST_BE_నిర్వాహ్యం;
+  పూర్ణాంకం నిర్వాహ్యం_స్థితి[2];
+  పూర్ణాంకం joption_లెక్క[2] = { 0, 0 };
   FILE *fp1, *fp2;
-  int optc;
-  int nfiles = 0;
+  పూర్ణాంకం optc;
+  పూర్ణాంకం nfiles = 0;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
@@ -1048,184 +1048,184 @@ main (int argc, char **argv)
   atexit (close_stdout);
   atexit (free_spareline);
 
-  while ((optc = getopt_long (argc, argv, "-a:e:i1:2:j:o:t:v:z",
-                              longopts, NULL))
+  అయితే ((optc = getopt_long (argc, argv, "-a:e:i1:2:j:o:t:v:z",
+                              longopts, ఖాళీ))
          != -1)
     {
-      optc_status = MUST_BE_OPERAND;
+      optc_స్థితి = MUST_BE_నిర్వాహ్యం;
 
-      switch (optc)
+      ఎంపిక (optc)
         {
-        case 'v':
+        స్థితి 'v':
             print_pairables = false;
             FALLTHROUGH;
 
-        case 'a':
+        స్థితి 'a':
           {
-            long int val;
-            if (xstrtol (optarg, NULL, 10, &val, "") != LONGINT_OK
+            దీర్ఘ పూర్ణాంకం val;
+            ఒకవేళ (xstrtol (optarg, ఖాళీ, 10, &val, "") != LONGINT_OK
                 || (val != 1 && val != 2))
               error (EXIT_FAILURE, 0,
                      _("invalid file number: %s"), quote (optarg));
-            if (val == 1)
+            ఒకవేళ (val == 1)
               print_unpairables_1 = true;
-            else
+            లేకపోతే
               print_unpairables_2 = true;
           }
-          break;
+          ఆపు;
 
-        case 'e':
-          if (empty_filler && ! streq (empty_filler, optarg))
+        స్థితి 'e':
+          ఒకవేళ (ఖాళీలు_filler && ! streq (ఖాళీలు_filler, optarg))
             error (EXIT_FAILURE, 0,
                    _("conflicting empty-field replacement strings"));
-          empty_filler = optarg;
-          break;
+          ఖాళీలు_filler = optarg;
+          ఆపు;
 
-        case 'i':
+        స్థితి 'i':
           ignore_case = true;
-          break;
+          ఆపు;
 
-        case '1':
-          set_join_field (&join_field_1, string_to_join_field (optarg));
-          break;
+        స్థితి '1':
+          సమితి_join_క్షేత్రం (&join_క్షేత్రం_1, string_గమ్యం_join_క్షేత్రం (optarg));
+          ఆపు;
 
-        case '2':
-          set_join_field (&join_field_2, string_to_join_field (optarg));
-          break;
+        స్థితి '2':
+          సమితి_join_క్షేత్రం (&join_క్షేత్రం_2, string_గమ్యం_join_క్షేత్రం (optarg));
+          ఆపు;
 
-        case 'j':
-          if ((optarg[0] == '1' || optarg[0] == '2') && !optarg[1]
+        స్థితి 'j':
+          ఒకవేళ ((optarg[0] == '1' || optarg[0] == '2') && !optarg[1]
               && optarg == argv[optind - 1] + 2)
             {
               /* The argument was either "-j1" or "-j2".  */
               bool is_j2 = (optarg[0] == '2');
-              joption_count[is_j2]++;
-              optc_status = MIGHT_BE_J1_ARG + is_j2;
+              joption_లెక్క[is_j2]++;
+              optc_స్థితి = MIGHT_BE_J1_ARG + is_j2;
             }
-          else
+          లేకపోతే
             {
-              set_join_field (&join_field_1, string_to_join_field (optarg));
-              set_join_field (&join_field_2, join_field_1);
+              సమితి_join_క్షేత్రం (&join_క్షేత్రం_1, string_గమ్యం_join_క్షేత్రం (optarg));
+              సమితి_join_క్షేత్రం (&join_క్షేత్రం_2, join_క్షేత్రం_1);
             }
-          break;
+          ఆపు;
 
-        case 'o':
-          if (streq (optarg, "auto"))
+        స్థితి 'o':
+          ఒకవేళ (streq (optarg, "auto"))
             autoformat = true;
-          else
+          లేకపోతే
             {
-              add_field_list (optarg);
-              optc_status = MIGHT_BE_O_ARG;
+              కూడు_క్షేత్రం_list (optarg);
+              optc_స్థితి = MIGHT_BE_O_ARG;
             }
-          break;
+          ఆపు;
 
-        case 't':
+        స్థితి 't':
           {
             mcel_t newtab;
-            if (!*optarg)
+            ఒకవేళ (!*optarg)
               {
                 /* '' => process the whole line.  */
                 newtab = mcel_ch ('\n', 1);
                 /* output_separator does not matter.  */
               }
-            else if (streq (optarg, "\\0"))
+            లేకపోతే ఒకవేళ (streq (optarg, "\\0"))
               {
                 newtab = mcel_ch ('\0', 1);
                 output_separator = "";
               }
-            else
+            లేకపోతే
               {
                 newtab = mcel_scanz (optarg);
-                if (optarg[newtab.len])
+                ఒకవేళ (optarg[newtab.len])
                   error (EXIT_FAILURE, 0, _("multi-character tab %s"),
                          quote (optarg));
                 output_separator = optarg;
               }
-            if (tab.len && ! mcel_eq (tab, newtab))
+            ఒకవేళ (tab.len && ! mcel_eq (tab, newtab))
               error (EXIT_FAILURE, 0, _("incompatible tabs"));
             tab = newtab;
             output_seplen = newtab.len;
           }
-          break;
+          ఆపు;
 
-        case 'z':
+        స్థితి 'z':
           eolchar = 0;
-          break;
+          ఆపు;
 
-        case NOCHECK_ORDER_OPTION:
-          check_input_order = CHECK_ORDER_DISABLED;
-          break;
+        స్థితి NOCHECK_క్రమం_OPTION:
+          check_ఆదానం_క్రమం = CHECK_క్రమం_DISABLED;
+          ఆపు;
 
-        case CHECK_ORDER_OPTION:
-          check_input_order = CHECK_ORDER_ENABLED;
-          break;
+        స్థితి CHECK_క్రమం_OPTION:
+          check_ఆదానం_క్రమం = CHECK_క్రమం_ENABLED;
+          ఆపు;
 
-        case 1:		/* Non-option argument.  */
-          add_file_name (optarg, g_names, operand_status, joption_count,
-                         &nfiles, &prev_optc_status, &optc_status);
-          break;
+        స్థితి 1:		/* Non-option argument.  */
+          కూడు_file_name (optarg, g_పేర్లు, నిర్వాహ్యం_స్థితి, joption_లెక్క,
+                         &nfiles, &prev_optc_స్థితి, &optc_స్థితి);
+          ఆపు;
 
-        case HEADER_LINE_OPTION:
-          join_header_lines = true;
-          break;
+        స్థితి శీర్షిక_పంక్తి_OPTION:
+          join_శీర్షిక_పంక్తులు = true;
+          ఆపు;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_సంస్కరణ_CHAR (కార్యక్రమం_NAME, AUTHORS);
 
-        default:
+        అప్రమేయ:
           usage (EXIT_FAILURE);
         }
 
-      prev_optc_status = optc_status;
+      prev_optc_స్థితి = optc_స్థితి;
     }
 
   /* Process any operands after "--".  */
-  prev_optc_status = MUST_BE_OPERAND;
-  while (optind < argc)
-    add_file_name (argv[optind++], g_names, operand_status, joption_count,
-                   &nfiles, &prev_optc_status, &optc_status);
+  prev_optc_స్థితి = MUST_BE_నిర్వాహ్యం;
+  అయితే (optind < argc)
+    కూడు_file_name (argv[optind++], g_పేర్లు, నిర్వాహ్యం_స్థితి, joption_లెక్క,
+                   &nfiles, &prev_optc_స్థితి, &optc_స్థితి);
 
-  if (nfiles != 2)
+  ఒకవేళ (nfiles != 2)
     {
-      if (nfiles == 0)
+      ఒకవేళ (nfiles == 0)
         error (0, 0, _("missing operand"));
-      else
+      లేకపోతే
         error (0, 0, _("missing operand after %s"), quote (argv[argc - 1]));
       usage (EXIT_FAILURE);
     }
 
   /* If "-j1" was specified and it turns out not to have had an argument,
      treat it as "-j 1".  Likewise for -j2.  */
-  for (int i = 0; i < 2; i++)
-    if (joption_count[i] != 0)
+  కొరకు (పూర్ణాంకం i = 0; i < 2; i++)
+    ఒకవేళ (joption_లెక్క[i] != 0)
       {
-        set_join_field (&join_field_1, i);
-        set_join_field (&join_field_2, i);
+        సమితి_join_క్షేత్రం (&join_క్షేత్రం_1, i);
+        సమితి_join_క్షేత్రం (&join_క్షేత్రం_2, i);
       }
 
-  if (join_field_1 < 0)
-    join_field_1 = 0;
-  if (join_field_2 < 0)
-    join_field_2 = 0;
+  ఒకవేళ (join_క్షేత్రం_1 < 0)
+    join_క్షేత్రం_1 = 0;
+  ఒకవేళ (join_క్షేత్రం_2 < 0)
+    join_క్షేత్రం_2 = 0;
 
-  fp1 = streq (g_names[0], "-") ? stdin : fopen (g_names[0], "r");
-  if (!fp1)
-    error (EXIT_FAILURE, errno, "%s", quotef (g_names[0]));
-  fp2 = streq (g_names[1], "-") ? stdin : fopen (g_names[1], "r");
-  if (!fp2)
-    error (EXIT_FAILURE, errno, "%s", quotef (g_names[1]));
-  if (fp1 == fp2)
+  fp1 = streq (g_పేర్లు[0], "-") ? stdin : fopen (g_పేర్లు[0], "r");
+  ఒకవేళ (!fp1)
+    error (EXIT_FAILURE, errno, "%s", quotef (g_పేర్లు[0]));
+  fp2 = streq (g_పేర్లు[1], "-") ? stdin : fopen (g_పేర్లు[1], "r");
+  ఒకవేళ (!fp2)
+    error (EXIT_FAILURE, errno, "%s", quotef (g_పేర్లు[1]));
+  ఒకవేళ (fp1 == fp2)
     error (EXIT_FAILURE, errno, _("both files cannot be standard input"));
   join (fp1, fp2);
 
-  if (fclose (fp1) != 0)
-    error (EXIT_FAILURE, errno, "%s", quotef (g_names[0]));
-  if (fclose (fp2) != 0)
-    error (EXIT_FAILURE, errno, "%s", quotef (g_names[1]));
+  ఒకవేళ (fclose (fp1) != 0)
+    error (EXIT_FAILURE, errno, "%s", quotef (g_పేర్లు[0]));
+  ఒకవేళ (fclose (fp2) != 0)
+    error (EXIT_FAILURE, errno, "%s", quotef (g_పేర్లు[1]));
 
-  if (issued_disorder_warning[0] || issued_disorder_warning[1])
+  ఒకవేళ (issued_disorder_warning[0] || issued_disorder_warning[1])
     error (EXIT_FAILURE, 0, _("input is not in sorted order"));
-  else
-    return EXIT_SUCCESS;
+  లేకపోతే
+    తిరిగి EXIT_SUCCESS;
 }

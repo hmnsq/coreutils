@@ -14,165 +14,165 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
+#అన్తర్భావ <config.h>
 
-#include <stdio.h>
-#include <sys/types.h>
-#include "system.h"
-#include "c-ctype.h"
-#include "fadvise.h"
-#include "quote.h"
+#అన్తర్భావ <stdio.h>
+#అన్తర్భావ <sys/types.h>
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "c-ctype.h"
+#అన్తర్భావ "fadvise.h"
+#అన్తర్భావ "quote.h"
 
-#include "expand-common.h"
+#అన్తర్భావ "expand-common.h"
 
 /* If true, convert blanks even after nonblank characters have been
    read on the line.  */
-bool convert_entire_line = false;
+bool convert_entire_పంక్తి = false;
 
 /* If nonzero, the size of all tab stops.  If zero, use 'tab_list' instead.  */
-static colno tab_size = 0;
+స్థిర colno tab_కొలత = 0;
 
 /* If nonzero, the size of all tab stops after the last specified.  */
-static colno extend_size = 0;
+స్థిర colno extend_కొలత = 0;
 
 /* If nonzero, an increment for additional tab stops after the last specified.*/
-static colno increment_size = 0;
+స్థిర colno increment_కొలత = 0;
 
 /* The maximum distance between tab stops.  */
-idx_t max_column_width;
+idx_t max_స్తంభం_వెడల్పు;
 
 /* Array of the explicit column numbers of the tab stops;
    after 'tab_list' is exhausted, each additional tab is replaced
    by a space.  The first column is column 0.  */
-static colno *tab_list = NULL;
+స్థిర colno *tab_list = ఖాళీ;
 
 /* The number of allocated entries in 'tab_list'.  */
-static idx_t n_tabs_allocated = 0;
+స్థిర idx_t n_tabs_allocated = 0;
 
 /* The index of the first invalid element of 'tab_list',
    where the next element can be added.  */
-static idx_t first_free_tab = 0;
+స్థిర idx_t మొదటి_free_tab = 0;
 
 /* Null-terminated array of input filenames.  */
-static char **file_list = NULL;
+స్థిర అక్షరం **file_list = ఖాళీ;
 
 /* Default for 'file_list' if no files are given on the command line.  */
-static char *stdin_argv[] =
+స్థిర అక్షరం *stdin_argv[] =
 {
-  (char *) "-", NULL
+  (అక్షరం *) "-", ఖాళీ
 };
 
 /* True if we have ever read standard input.  */
-static bool have_read_stdin = false;
+స్థిర bool have_read_stdin = false;
 
 /* The desired exit status.  */
-int exit_status = EXIT_SUCCESS;
+పూర్ణాంకం exit_స్థితి = EXIT_SUCCESS;
 
 
-static void
-set_max_column_width (colno width)
+స్థిర శూన్య
+సమితి_max_స్తంభం_వెడల్పు (colno వెడల్పు)
 {
-  if (max_column_width < width)
+  ఒకవేళ (max_స్తంభం_వెడల్పు < వెడల్పు)
     {
-      if (ckd_add (&max_column_width, width, 0))
+      ఒకవేళ (ckd_కూడు (&max_స్తంభం_వెడల్పు, వెడల్పు, 0))
         error (EXIT_FAILURE, 0, _("tabs are too far apart"));
     }
 }
 
 /* Add tab stop TABVAL to the end of 'tab_list'.  */
-extern void
-add_tab_stop (colno tabval)
+బాహ్య శూన్య
+కూడు_tab_stop (colno tabval)
 {
-  colno prev_column = first_free_tab ? tab_list[first_free_tab - 1] : 0;
-  colno column_width = prev_column <= tabval ? tabval - prev_column : 0;
+  colno prev_స్తంభం = మొదటి_free_tab ? tab_list[మొదటి_free_tab - 1] : 0;
+  colno స్తంభం_వెడల్పు = prev_స్తంభం <= tabval ? tabval - prev_స్తంభం : 0;
 
-  if (first_free_tab == n_tabs_allocated)
-    tab_list = xpalloc (tab_list, &n_tabs_allocated, 1, -1, sizeof *tab_list);
-  tab_list[first_free_tab++] = tabval;
+  ఒకవేళ (మొదటి_free_tab == n_tabs_allocated)
+    tab_list = xpalloc (tab_list, &n_tabs_allocated, 1, -1, పరిమాణం *tab_list);
+  tab_list[మొదటి_free_tab++] = tabval;
 
-  set_max_column_width (column_width);
+  సమితి_max_స్తంభం_వెడల్పు (స్తంభం_వెడల్పు);
 }
 
-static bool
-set_extend_size (colno tabval)
+స్థిర bool
+సమితి_extend_కొలత (colno tabval)
 {
   bool ok = true;
 
-  if (extend_size)
+  ఒకవేళ (extend_కొలత)
     {
       error (0, 0,
              _("'/' specifier only allowed"
                " with the last value"));
       ok = false;
     }
-  extend_size = tabval;
+  extend_కొలత = tabval;
 
-  set_max_column_width (extend_size);
+  సమితి_max_స్తంభం_వెడల్పు (extend_కొలత);
 
-  return ok;
+  తిరిగి ok;
 }
 
-static bool
-set_increment_size (colno tabval)
+స్థిర bool
+సమితి_increment_కొలత (colno tabval)
 {
   bool ok = true;
 
-  if (increment_size)
+  ఒకవేళ (increment_కొలత)
     {
       error (0,0,
              _("'+' specifier only allowed"
                " with the last value"));
       ok = false;
     }
-  increment_size = tabval;
+  increment_కొలత = tabval;
 
-  set_max_column_width (increment_size);
+  సమితి_max_స్తంభం_వెడల్పు (increment_కొలత);
 
-  return ok;
+  తిరిగి ok;
 }
 
 /* Add the comma or blank separated list of tab stops STOPS
    to the list of tab stops.  */
-extern void
-parse_tab_stops (char const *stops)
+బాహ్య శూన్య
+parse_tab_stops (అక్షరం స్థిరరాశి *stops)
 {
   bool have_tabval = false;
   colno tabval = 0;
   bool extend_tabval = false;
   bool increment_tabval = false;
-  char const *num_start = NULL;
+  అక్షరం స్థిరరాశి *అంకె_ప్రారంభం = ఖాళీ;
   bool ok = true;
 
-  for (; *stops; stops++)
+  కొరకు (; *stops; stops++)
     {
-      if (*stops == ',' || isblank (to_uchar (*stops)))
+      ఒకవేళ (*stops == ',' || isblank (గమ్యం_uchar (*stops)))
         {
-          if (have_tabval)
+          ఒకవేళ (have_tabval)
             {
-              if (extend_tabval)
+              ఒకవేళ (extend_tabval)
                 {
-                  if (! set_extend_size (tabval))
+                  ఒకవేళ (! సమితి_extend_కొలత (tabval))
                     {
                       ok = false;
-                      break;
+                      ఆపు;
                     }
                 }
-              else if (increment_tabval)
+              లేకపోతే ఒకవేళ (increment_tabval)
                 {
-                  if (! set_increment_size (tabval))
+                  ఒకవేళ (! సమితి_increment_కొలత (tabval))
                     {
                       ok = false;
-                      break;
+                      ఆపు;
                     }
                 }
-              else
-                add_tab_stop (tabval);
+              లేకపోతే
+                కూడు_tab_stop (tabval);
             }
           have_tabval = false;
         }
-      else if (*stops == '/')
+      లేకపోతే ఒకవేళ (*stops == '/')
         {
-          if (have_tabval)
+          ఒకవేళ (have_tabval)
             {
               error (0, 0, _("'/' specifier not at start of number: %s"),
                      quote (stops));
@@ -181,9 +181,9 @@ parse_tab_stops (char const *stops)
           extend_tabval = true;
           increment_tabval = false;
         }
-      else if (*stops == '+')
+      లేకపోతే ఒకవేళ (*stops == '+')
         {
-          if (have_tabval)
+          ఒకవేళ (have_tabval)
             {
               error (0, 0, _("'+' specifier not at start of number: %s"),
                      quote (stops));
@@ -192,67 +192,67 @@ parse_tab_stops (char const *stops)
           increment_tabval = true;
           extend_tabval = false;
         }
-      else if (c_isdigit (*stops))
+      లేకపోతే ఒకవేళ (c_isdigit (*stops))
         {
-          if (!have_tabval)
+          ఒకవేళ (!have_tabval)
             {
               tabval = 0;
               have_tabval = true;
-              num_start = stops;
+              అంకె_ప్రారంభం = stops;
             }
 
           /* Detect overflow.  */
-          if (!DECIMAL_DIGIT_ACCUMULATE (tabval, *stops - '0'))
+          ఒకవేళ (!DECIMAL_DIGIT_ACCUMULATE (tabval, *stops - '0'))
             {
-              idx_t len = strspn (num_start, "0123456789");
-              char *bad_num = ximemdup0 (num_start, len);
-              error (0, 0, _("tab stop is too large %s"), quote (bad_num));
-              free (bad_num);
+              idx_t len = strspn (అంకె_ప్రారంభం, "0123456789");
+              అక్షరం *bad_అంకె = ximemdup0 (అంకె_ప్రారంభం, len);
+              error (0, 0, _("tab stop is too large %s"), quote (bad_అంకె));
+              విడుదల (bad_అంకె);
               ok = false;
-              stops = num_start + len - 1;
+              stops = అంకె_ప్రారంభం + len - 1;
             }
         }
-      else
+      లేకపోతే
         {
           error (0, 0, _("tab size contains invalid character(s): %s"),
                  quote (stops));
           ok = false;
-          break;
+          ఆపు;
         }
     }
 
-  if (ok && have_tabval)
+  ఒకవేళ (ok && have_tabval)
     {
-      if (extend_tabval)
-        ok &= set_extend_size (tabval);
-      else if (increment_tabval)
-        ok &= set_increment_size (tabval);
-      else
-        add_tab_stop (tabval);
+      ఒకవేళ (extend_tabval)
+        ok &= సమితి_extend_కొలత (tabval);
+      లేకపోతే ఒకవేళ (increment_tabval)
+        ok &= సమితి_increment_కొలత (tabval);
+      లేకపోతే
+        కూడు_tab_stop (tabval);
     }
 
-  if (! ok)
-    exit (EXIT_FAILURE);
+  ఒకవేళ (! ok)
+    నిష్క్రమించు (EXIT_FAILURE);
 }
 
 /* Check that the list of tab stops TABS, with ENTRIES entries,
    contains only nonzero, ascending values.  */
 
-static void
-validate_tab_stops (colno const *tabs, idx_t entries)
+స్థిర శూన్య
+validate_tab_stops (colno స్థిరరాశి *tabs, idx_t entries)
 {
   colno prev_tab = 0;
 
-  for (idx_t i = 0; i < entries; i++)
+  కొరకు (idx_t i = 0; i < entries; i++)
     {
-      if (tabs[i] == 0)
+      ఒకవేళ (tabs[i] == 0)
         error (EXIT_FAILURE, 0, _("tab size cannot be 0"));
-      if (tabs[i] <= prev_tab)
+      ఒకవేళ (tabs[i] <= prev_tab)
         error (EXIT_FAILURE, 0, _("tab sizes must be ascending"));
       prev_tab = tabs[i];
     }
 
-  if (increment_size && extend_size)
+  ఒకవేళ (increment_కొలత && extend_కొలత)
     error (EXIT_FAILURE, 0, _("'/' specifier is mutually exclusive with '+'"));
 }
 
@@ -264,19 +264,19 @@ validate_tab_stops (colno const *tabs, idx_t entries)
    tab-stops = N (if value N specified as the only value).
    tab-stops = distinct values given on command line (if multiple values given).
 */
-extern void
-finalize_tab_stops (void)
+బాహ్య శూన్య
+finalize_tab_stops (శూన్య)
 {
-  validate_tab_stops (tab_list, first_free_tab);
+  validate_tab_stops (tab_list, మొదటి_free_tab);
 
-  if (first_free_tab == 0)
-    tab_size = max_column_width = extend_size
-                                  ? extend_size : increment_size
-                                                  ? increment_size : 8;
-  else if (first_free_tab == 1 && ! extend_size && ! increment_size)
-    tab_size = tab_list[0];
-  else
-    tab_size = 0;
+  ఒకవేళ (మొదటి_free_tab == 0)
+    tab_కొలత = max_స్తంభం_వెడల్పు = extend_కొలత
+                                  ? extend_కొలత : increment_కొలత
+                                                  ? increment_కొలత : 8;
+  లేకపోతే ఒకవేళ (మొదటి_free_tab == 1 && ! extend_కొలత && ! increment_కొలత)
+    tab_కొలత = tab_list[0];
+  లేకపోతే
+    tab_కొలత = 0;
 }
 
 
@@ -284,59 +284,59 @@ finalize_tab_stops (void)
    many multiple tab-sizes.  Set *LAST_TAB depending on whether we are
    returning COLUMN + 1 merely because we're past the last tab.
    If the number would overflow, diagnose this and exit.  */
-extern colno
-get_next_tab_column (colno column, idx_t *tab_index, bool *last_tab)
+బాహ్య colno
+get_తదుపరి_tab_స్తంభం (colno స్తంభం, idx_t *tab_సూచీ, bool *చివరి_tab)
 {
-  *last_tab = false;
-  colno tab_distance;
+  *చివరి_tab = false;
+  colno tab_దూరం;
 
   /* single tab-size - return multiples of it */
-  if (tab_size)
-    tab_distance = tab_size - column % tab_size;
-  else
+  ఒకవేళ (tab_కొలత)
+    tab_దూరం = tab_కొలత - స్తంభం % tab_కొలత;
+  లేకపోతే
     {
       /* multiple tab-sizes - iterate them until the tab position is beyond
          the current input column. */
-      for ( ; *tab_index < first_free_tab ; (*tab_index)++ )
+      కొరకు ( ; *tab_సూచీ < మొదటి_free_tab ; (*tab_సూచీ)++ )
         {
-          colno tab = tab_list[*tab_index];
-          if (column < tab)
-            return tab;
+          colno tab = tab_list[*tab_సూచీ];
+          ఒకవేళ (స్తంభం < tab)
+            తిరిగి tab;
         }
 
       /* relative last tab - return multiples of it */
-      if (extend_size)
-        tab_distance = extend_size - column % extend_size;
-      else if (increment_size)
+      ఒకవేళ (extend_కొలత)
+        tab_దూరం = extend_కొలత - స్తంభం % extend_కొలత;
+      లేకపోతే ఒకవేళ (increment_కొలత)
         {
           /* incremental last tab - add increment_size to the previous
              tab stop */
-          colno end_tab = tab_list[first_free_tab - 1];
-          tab_distance = increment_size - ((column - end_tab) % increment_size);
+          colno చివర_tab = tab_list[మొదటి_free_tab - 1];
+          tab_దూరం = increment_కొలత - ((స్తంభం - చివర_tab) % increment_కొలత);
         }
-      else
+      లేకపోతే
         {
-          *last_tab = true;
-          tab_distance = 1;
+          *చివరి_tab = true;
+          tab_దూరం = 1;
         }
     }
 
   colno tab_stop;
-  if (ckd_add (&tab_stop, column, tab_distance))
+  ఒకవేళ (ckd_కూడు (&tab_stop, స్తంభం, tab_దూరం))
     error (EXIT_FAILURE, 0, _("input line is too long"));
-  return tab_stop;
+  తిరిగి tab_stop;
 }
 
 
 /* Sets new file-list */
-extern void
-set_file_list (char **list)
+బాహ్య శూన్య
+సమితి_file_list (అక్షరం **list)
 {
   have_read_stdin = false;
 
-  if (!list)
+  ఒకవేళ (!list)
     file_list = stdin_argv;
-  else
+  లేకపోతే
     file_list = list;
 }
 
@@ -345,72 +345,72 @@ set_file_list (char **list)
    Open a filename of '-' as the standard input.
    Return NULL if there are no more input files.  */
 
-extern FILE *
-next_file (FILE *fp)
+బాహ్య FILE *
+తదుపరి_file (FILE *fp)
 {
-  static char *prev_file;
-  char *file;
+  స్థిర అక్షరం *prev_file;
+  అక్షరం *file;
 
-  if (fp)
+  ఒకవేళ (fp)
     {
-      int err = errno;
-      if (!ferror (fp))
+      పూర్ణాంకం err = errno;
+      ఒకవేళ (!ferror (fp))
         err = 0;
-      if (streq (prev_file, "-"))
+      ఒకవేళ (streq (prev_file, "-"))
         clearerr (fp);		/* Also clear EOF.  */
-      else if (fclose (fp) != 0)
+      లేకపోతే ఒకవేళ (fclose (fp) != 0)
         err = errno;
-      if (err)
+      ఒకవేళ (err)
         {
           error (0, err, "%s", quotef (prev_file));
-          exit_status = EXIT_FAILURE;
+          exit_స్థితి = EXIT_FAILURE;
         }
     }
 
-  while ((file = *file_list++) != NULL)
+  అయితే ((file = *file_list++) != ఖాళీ)
     {
-      if (streq (file, "-"))
+      ఒకవేళ (streq (file, "-"))
         {
           have_read_stdin = true;
           fp = stdin;
         }
-      else
+      లేకపోతే
         fp = fopen (file, "r");
-      if (fp)
+      ఒకవేళ (fp)
         {
           prev_file = file;
           fadvise (fp, FADVISE_SEQUENTIAL);
-          return fp;
+          తిరిగి fp;
         }
       error (0, errno, "%s", quotef (file));
-      exit_status = EXIT_FAILURE;
+      exit_స్థితి = EXIT_FAILURE;
     }
-  return NULL;
+  తిరిగి ఖాళీ;
 }
 
 /* Close standard input if we have read from it.  */
-extern void
-cleanup_file_list_stdin (void)
+బాహ్య శూన్య
+cleanup_file_list_stdin (శూన్య)
 {
-    if (have_read_stdin && fclose (stdin) != 0)
+    ఒకవేళ (have_read_stdin && fclose (stdin) != 0)
       error (EXIT_FAILURE, errno, "-");
 }
 
 /* Emit the --help output for --tabs=LIST option accepted by expand and
    unexpand.  */
-extern void
-emit_tab_list_info (char const *program)
+బాహ్య శూన్య
+emit_tab_list_info (అక్షరం స్థిరరాశి *కార్యక్రమం)
 {
   /* suppress syntax check for emit_mandatory_arg_note() */
-  oputs_ (program, _("\
+  oputs_ (కార్యక్రమం, _("\
   -t, --tabs=LIST\n\
-         use comma separated list of tab positions.\n\
+         use comma separated list యొక్క tab positions.\n\
 "));
   fputs (_("\
-         The last specified position can be prefixed with '/'\n\
-         to specify a tab size to use after the last\n\
-         explicitly specified tab stop.  Also a prefix of '+'\n\
-         can be used to align remaining tab stops relative to\n\
-         the last specified tab stop instead of the first column\n\
+         The చివరి specified position can be prefixed with '/'\n\
+         గమ్యం specify a tab కొలత గమ్యం use after the చివరి\n\
+         explicitly specified tab stop.  Also a ఉపసర్గ యొక్క '+'\n\
+         can be వాడిన గమ్యం align మిగిలిన tab stops relative గమ్యం\n\
+         the చివరి specified tab stop instead యొక్క the మొదటి స్తంభం\n\
 "), stdout);
 }

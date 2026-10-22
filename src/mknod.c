@@ -16,148 +16,148 @@
 
 /* Written by David MacKenzie <djm@ai.mit.edu>  */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
-#include <selinux/label.h>
+#అన్తర్భావ <config.h>
+#అన్తర్భావ <stdio.h>
+#అన్తర్భావ <getopt.h>
+#అన్తర్భావ <sys/types.h>
+#అన్తర్భావ <selinux/label.h>
 
-#include "system.h"
-#include "modechange.h"
-#include "quote.h"
-#include "selinux.h"
-#include "smack.h"
-#include "xstrtol.h"
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "modechange.h"
+#అన్తర్భావ "quote.h"
+#అన్తర్భావ "selinux.h"
+#అన్తర్భావ "smack.h"
+#అన్తర్భావ "xstrtol.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "mknod"
+#నిర్వచించు కార్యక్రమం_NAME "mknod"
 
-#define AUTHORS proper_name ("David MacKenzie")
+#నిర్వచించు AUTHORS proper_name ("David MacKenzie")
 
-static struct option const longopts[] =
+స్థిర నిర్మాణం option స్థిరరాశి longopts[] =
 {
   {GETOPT_SELINUX_CONTEXT_OPTION_DECL},
-  {"mode", required_argument, NULL, 'm'},
+  {"mode", required_వాదం, ఖాళీ, 'm'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_సంస్కరణ_OPTION_DECL},
+  {ఖాళీ, 0, ఖాళీ, 0}
 };
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("Usage: %s [OPTION]... NAME TYPE [MAJOR MINOR]\n"),
-              program_name);
+      రాయి (_("Usage: %s [OPTION]... NAME TYPE [MAJOR MINOR]\n"),
+              కార్యక్రమం_name);
       fputs (_("\
-Create the special file NAME of the given TYPE.\n\
+Create the special file NAME యొక్క the given TYPE.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -m, --mode=MODE\n\
-         set file permission bits to MODE, not a=rw - umask\n\
+  -m, --బహుళకం_2=బహుళకం\n\
+         సమితి_2 file permission బిట్లు_2 గమ్యం బహుళకం, not a=rw - umask\n\
 "));
       oputs (_("\
   -Z\n\
-         set the SELinux security context to default type\n\
+         సమితి_2 the SELinux security context గమ్యం అప్రమేయ type\n\
 "));
       oputs (_("\
       --context[=CTX]\n\
-         like -Z, or if CTX is specified then set the\n\
-         SELinux or SMACK security context to CTX\n\
+         like -Z, or ఒకవేళ CTX is specified then సమితి_2 the\n\
+         SELinux or SMACK security context గమ్యం CTX\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
 Both MAJOR and MINOR must be specified when TYPE is b, c, or u, and they\n\
 must be omitted when TYPE is p.  If MAJOR or MINOR begins with 0x or 0X,\n\
-it is interpreted as hexadecimal; otherwise, if it begins with 0, as octal;\n\
+it is interpreted as hexadecimal; otherwise, ఒకవేళ it begins with 0, as octal;\n\
 otherwise, as decimal.  TYPE may be:\n\
 "), stdout);
       fputs (_("\
 \n\
-  b      create a block (buffered) special file\n\
+  b      create a ఖండం (buffered) special file\n\
   c, u   create a character (unbuffered) special file\n\
   p      create a FIFO\n\
 "), stdout);
-      printf (USAGE_BUILTIN_WARNING, PROGRAM_NAME);
-      emit_ancillary_info (PROGRAM_NAME);
+      రాయి (USAGE_BUILTIN_WARNING, కార్యక్రమం_NAME);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
-  char const *specified_mode = NULL;
-  char const *scontext = NULL;
-  struct selabel_handle *set_security_context = NULL;
+  అక్షరం స్థిరరాశి *specified_బహుళకం = ఖాళీ;
+  అక్షరం స్థిరరాశి *scontext = ఖాళీ;
+  నిర్మాణం selabel_handle *సమితి_security_context = ఖాళీ;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  int optc;
-  while ((optc = getopt_long (argc, argv, "m:Z", longopts, NULL)) != -1)
+  పూర్ణాంకం optc;
+  అయితే ((optc = getopt_long (argc, argv, "m:Z", longopts, ఖాళీ)) != -1)
     {
-      switch (optc)
+      ఎంపిక (optc)
         {
-        case 'm':
-          specified_mode = optarg;
-          break;
-        case 'Z':
-          if (is_smack_enabled ())
+        స్థితి 'm':
+          specified_బహుళకం = optarg;
+          ఆపు;
+        స్థితి 'Z':
+          ఒకవేళ (is_smack_enabled ())
             {
               /* We don't yet support -Z to restore context with SMACK.  */
               scontext = optarg;
             }
-          else if (is_selinux_enabled () > 0)
+          లేకపోతే ఒకవేళ (is_selinux_enabled () > 0)
             {
-              if (optarg)
+              ఒకవేళ (optarg)
                 scontext = optarg;
-              else
+              లేకపోతే
                 {
-                  set_security_context = selabel_open (SELABEL_CTX_FILE,
-                                                       NULL, 0);
-                  if (! set_security_context)
+                  సమితి_security_context = selabel_open (SELABEL_CTX_FILE,
+                                                       ఖాళీ, 0);
+                  ఒకవేళ (! సమితి_security_context)
                     error (0, errno, _("warning: ignoring --context"));
                 }
             }
-          else if (optarg)
+          లేకపోతే ఒకవేళ (optarg)
             {
               error (0, 0,
                      _("warning: ignoring --context; "
                        "it requires an SELinux/SMACK-enabled kernel"));
             }
-          break;
+          ఆపు;
         case_GETOPT_HELP_CHAR;
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        case_GETOPT_సంస్కరణ_CHAR (కార్యక్రమం_NAME, AUTHORS);
+        అప్రమేయ:
           usage (EXIT_FAILURE);
         }
     }
 
-  mode_t newmode = MODE_RW_UGO;
-  if (specified_mode)
+  mode_t newmode = బహుళకం_RW_UGO;
+  ఒకవేళ (specified_బహుళకం)
     {
-      struct mode_change *change = mode_compile (specified_mode);
-      if (!change)
+      నిర్మాణం బహుళకం_change *change = బహుళకం_compile (specified_బహుళకం);
+      ఒకవేళ (!change)
         error (EXIT_FAILURE, 0, _("invalid mode"));
-      mode_t umask_value = umask (0);
-      umask (umask_value);
-      newmode = mode_adjust (newmode, false, umask_value, change, NULL);
-      free (change);
-      if (newmode & ~S_IRWXUGO)
+      mode_t umask_విలువ = umask (0);
+      umask (umask_విలువ);
+      newmode = బహుళకం_adjust (newmode, false, umask_విలువ, change, ఖాళీ);
+      విడుదల (change);
+      ఒకవేళ (newmode & ~S_IRWXUGO)
         error (EXIT_FAILURE, 0,
                _("mode must specify only file permission bits"));
     }
@@ -165,41 +165,41 @@ main (int argc, char **argv)
   /* If the number of arguments is 0 or 1,
      or (if it's 2 or more and the second one starts with 'p'), then there
      must be exactly two operands.  Otherwise, there must be four.  */
-  int expected_operands = (argc <= optind
+  పూర్ణాంకం expected_operands = (argc <= optind
                            || (optind + 1 < argc && argv[optind + 1][0] == 'p')
                            ? 2 : 4);
 
-  if (argc - optind < expected_operands)
+  ఒకవేళ (argc - optind < expected_operands)
     {
-      if (argc <= optind)
+      ఒకవేళ (argc <= optind)
         error (0, 0, _("missing operand"));
-      else
+      లేకపోతే
         error (0, 0, _("missing operand after %s"), quote (argv[argc - 1]));
-      if (expected_operands == 4 && argc - optind == 2)
+      ఒకవేళ (expected_operands == 4 && argc - optind == 2)
         fprintf (stderr, "%s\n",
                  _("Special files require major and minor device numbers."));
       usage (EXIT_FAILURE);
     }
 
-  if (expected_operands < argc - optind)
+  ఒకవేళ (expected_operands < argc - optind)
     {
       error (0, 0, _("extra operand %s"),
              quote (argv[optind + expected_operands]));
-      if (expected_operands == 2 && argc - optind == 4)
+      ఒకవేళ (expected_operands == 2 && argc - optind == 4)
         fprintf (stderr, "%s\n",
                  _("Fifos do not have major and minor device numbers."));
       usage (EXIT_FAILURE);
     }
 
-  if (scontext)
+  ఒకవేళ (scontext)
     {
-      int ret = 0;
-      if (is_smack_enabled ())
-        ret = smack_set_label_for_self (scontext);
-      else
+      పూర్ణాంకం ret = 0;
+      ఒకవేళ (is_smack_enabled ())
+        ret = smack_సమితి_label_for_self (scontext);
+      లేకపోతే
         ret = setfscreatecon (scontext);
 
-      if (ret < 0)
+      ఒకవేళ (ret < 0)
         error (EXIT_FAILURE, errno,
                _("failed to set default file creation context to %s"),
                quote (scontext));
@@ -208,72 +208,72 @@ main (int argc, char **argv)
   /* Only check the first character, to allow mnemonic usage like
      'mknod /dev/rst0 character 18 0'. */
 
-  mode_t node_type;
-  switch (argv[optind + 1][0])
+  mode_t కణుపు_type;
+  ఎంపిక (argv[optind + 1][0])
     {
-    case 'b':			/* 'block' or 'buffered' */
-#ifndef S_IFBLK
+    స్థితి 'b':			/* 'block' or 'buffered' */
+#నిర్వచితం_కాకపోతే S_IFBLK
       error (EXIT_FAILURE, 0, _("block special files not supported"));
-#else
-      node_type = S_IFBLK;
-#endif
-      goto block_or_character;
+#లేకపోతే
+      కణుపు_type = S_IFBLK;
+#అయితే_ముగింపు
+      వెళ్ళు ఖండం_or_character;
 
-    case 'c':			/* 'character' */
-    case 'u':			/* 'unbuffered' */
-#ifndef S_IFCHR
+    స్థితి 'c':			/* 'character' */
+    స్థితి 'u':			/* 'unbuffered' */
+#నిర్వచితం_కాకపోతే S_IFCHR
       error (EXIT_FAILURE, 0, _("character special files not supported"));
-#else
-      node_type = S_IFCHR;
-#endif
-      goto block_or_character;
+#లేకపోతే
+      కణుపు_type = S_IFCHR;
+#అయితే_ముగింపు
+      వెళ్ళు ఖండం_or_character;
 
-    block_or_character:
+    ఖండం_or_character:
       {
-        char const *s_major = argv[optind + 2];
+        అక్షరం స్థిరరాశి *s_major = argv[optind + 2];
         uintmax_t i_major;
-        if (xstrtoumax (s_major, NULL, 0, &i_major, "") != LONGINT_OK
+        ఒకవేళ (xstrtoumax (s_major, ఖాళీ, 0, &i_major, "") != LONGINT_OK
             || i_major != (major_t) i_major)
           error (EXIT_FAILURE, 0,
                  _("invalid major device number %s"), quote (s_major));
 
-        char const *s_minor = argv[optind + 3];
+        అక్షరం స్థిరరాశి *s_minor = argv[optind + 3];
         uintmax_t i_minor;
-        if (xstrtoumax (s_minor, NULL, 0, &i_minor, "") != LONGINT_OK
+        ఒకవేళ (xstrtoumax (s_minor, ఖాళీ, 0, &i_minor, "") != LONGINT_OK
             || i_minor != (minor_t) i_minor)
           error (EXIT_FAILURE, 0,
                  _("invalid minor device number %s"), quote (s_minor));
 
         dev_t device = makedev (i_major, i_minor);
-#ifdef NODEV
-        if (device == NODEV)
+#నిర్వచితమైతే NODEV
+        ఒకవేళ (device == NODEV)
           error (EXIT_FAILURE, 0, _("invalid device %s %s"),
                  s_major, s_minor);
-#endif
+#అయితే_ముగింపు
 
-        if (set_security_context)
-          defaultcon (set_security_context, argv[optind], node_type);
+        ఒకవేళ (సమితి_security_context)
+          defaultcon (సమితి_security_context, argv[optind], కణుపు_type);
 
-        if (mknod (argv[optind], newmode | node_type, device) != 0)
+        ఒకవేళ (mknod (argv[optind], newmode | కణుపు_type, device) != 0)
           error (EXIT_FAILURE, errno, "%s", quotef (argv[optind]));
       }
-      break;
+      ఆపు;
 
-    case 'p':			/* 'pipe' */
-      if (set_security_context)
-        defaultcon (set_security_context, argv[optind], S_IFIFO);
-      if (mkfifo (argv[optind], newmode) != 0)
+    స్థితి 'p':			/* 'pipe' */
+      ఒకవేళ (సమితి_security_context)
+        defaultcon (సమితి_security_context, argv[optind], S_IFIFO);
+      ఒకవేళ (mkfifo (argv[optind], newmode) != 0)
         error (EXIT_FAILURE, errno, "%s", quotef (argv[optind]));
-      break;
+      ఆపు;
 
-    default:
+    అప్రమేయ:
       error (0, 0, _("invalid device type %s"), quote (argv[optind + 1]));
       usage (EXIT_FAILURE);
     }
 
-  if (specified_mode && lchmod (argv[optind], newmode) != 0)
+  ఒకవేళ (specified_బహుళకం && lchmod (argv[optind], newmode) != 0)
     error (EXIT_FAILURE, errno, _("cannot set permissions of %s"),
            quoteaf (argv[optind]));
 
-  return EXIT_SUCCESS;
+  తిరిగి EXIT_SUCCESS;
 }

@@ -23,32 +23,32 @@
    Variable blocks added by lm@sgi.com and eggert@twinsun.com.
    Rewritten to use nftw, then to use fts by Jim Meyering.  */
 
-#include <config.h>
-#include <getopt.h>
-#include <sys/types.h>
-#include "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
-#include "system.h"
-#include "argv-iter.h"
-#include "assure.h"
-#include "di-set.h"
-#include "exclude.h"
-#include "fts-missing.h"
-#include "human.h"
-#include "mountlist.h"
-#include "quote.h"
-#include "show-date.h"
-#include "stat-size.h"
-#include "stat-time.h"
-#include "stdio--.h"
-#include "xfts.h"
-#include "xmemdup0.h"
-#include "xstrtol.h"
-#include "xstrtol-error.h"
+#అన్తర్భావ <config.h>
+#అన్తర్భావ <getopt.h>
+#అన్తర్భావ <sys/types.h>
+#అన్తర్భావ "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "argv-iter.h"
+#అన్తర్భావ "assure.h"
+#అన్తర్భావ "di-set.h"
+#అన్తర్భావ "exclude.h"
+#అన్తర్భావ "fts-missing.h"
+#అన్తర్భావ "human.h"
+#అన్తర్భావ "mountlist.h"
+#అన్తర్భావ "quote.h"
+#అన్తర్భావ "show-date.h"
+#అన్తర్భావ "stat-size.h"
+#అన్తర్భావ "stat-time.h"
+#అన్తర్భావ "stdio--.h"
+#అన్తర్భావ "xfts.h"
+#అన్తర్భావ "xmemdup0.h"
+#అన్తర్భావ "xstrtol.h"
+#అన్తర్భావ "xstrtol-error.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "du"
+#నిర్వచించు కార్యక్రమం_NAME "du"
 
-#define AUTHORS \
+#నిర్వచించు AUTHORS \
   proper_name_lite ("Torbjorn Granlund", "Torbj\303\266rn Granlund"), \
   proper_name ("David MacKenzie"), \
   proper_name ("Paul Eggert"), \
@@ -56,441 +56,441 @@
 
 /* A set of dev/ino pairs to help identify files and directories
    whose sizes have already been counted.  */
-static struct di_set *di_files;
+స్థిర నిర్మాణం di_సమితి *di_files;
 
 /* A set containing a dev/ino pair for each local mount point directory.  */
-static struct di_set *di_mnt;
+స్థిర నిర్మాణం di_సమితి *di_mnt;
 
 /* Keep track of the preceding "level" (depth in hierarchy)
    from one call of process_file to the next.  */
-static idx_t prev_level;
+స్థిర idx_t prev_level;
 
 /* Define a class for collecting directory information. */
-struct duinfo
+నిర్మాణం duinfo
 {
   /* Size of files in directory.  */
-  uintmax_t size;
+  uintmax_t కొలత;
 
   /* Number of inodes in directory.  */
   uintmax_t inodes;
 
   /* Latest timestamp found.  If tmax.tv_sec == TYPE_MINIMUM (time_t)
      && tmax.tv_nsec < 0, no timestamp has been found.  */
-  struct timespec tmax;
+  నిర్మాణం timespec tmax;
 };
 
 /* Initialize directory data.  */
-static inline void
-duinfo_init (struct duinfo *a)
+స్థిర అంతఃవరుస శూన్య
+duinfo_init (నిర్మాణం duinfo *a)
 {
-  a->size = 0;
+  a->కొలత = 0;
   a->inodes = 0;
   a->tmax.tv_sec = TYPE_MINIMUM (time_t);
   a->tmax.tv_nsec = -1;
 }
 
 /* Set directory data.  */
-static inline void
-duinfo_set (struct duinfo *a, uintmax_t size, struct timespec tmax)
+స్థిర అంతఃవరుస శూన్య
+duinfo_సమితి (నిర్మాణం duinfo *a, uintmax_t కొలత, నిర్మాణం timespec tmax)
 {
-  a->size = size;
+  a->కొలత = కొలత;
   a->inodes = 1;
   a->tmax = tmax;
 }
 
 /* Accumulate directory data.  */
-static inline void
-duinfo_add (struct duinfo *a, struct duinfo const *b)
+స్థిర అంతఃవరుస శూన్య
+duinfo_కూడు (నిర్మాణం duinfo *a, నిర్మాణం duinfo స్థిరరాశి *b)
 {
-  uintmax_t sum = a->size + b->size;
-  a->size = a->size <= sum ? sum : UINTMAX_MAX;
+  uintmax_t కూడిక = a->కొలత + b->కొలత;
+  a->కొలత = a->కొలత <= కూడిక ? కూడిక : UINTMAX_MAX;
   a->inodes = a->inodes + b->inodes;
-  if (timespec_cmp (a->tmax, b->tmax) < 0)
+  ఒకవేళ (timespec_cmp (a->tmax, b->tmax) < 0)
     a->tmax = b->tmax;
 }
 
 /* A structure for per-directory level information.  */
-struct dulevel
+నిర్మాణం dulevel
 {
   /* Entries in this directory.  */
-  struct duinfo ent;
+  నిర్మాణం duinfo ent;
 
   /* Total for subdirectories.  */
-  struct duinfo subdir;
+  నిర్మాణం duinfo subdir;
 };
 
 /* If true, display counts for all files, not just directories.  */
-static bool opt_all = false;
+స్థిర bool opt_all = false;
 
 /* If true, rather than using the device usage of each file,
    use the apparent size (stat.st_size if usable, 0 otherwise).  */
-static bool apparent_size = false;
+స్థిర bool apparent_కొలత = false;
 
 /* If true, count each hard link of files with multiple links.  */
-static bool opt_count_all = false;
+స్థిర bool opt_లెక్క_all = false;
 
 /* If true, hash all files to look for hard links.  */
-static bool hash_all;
+స్థిర bool hash_all;
 
 /* If true, output the NUL byte instead of a newline at the end of each line. */
-static bool opt_nul_terminate_output = false;
+స్థిర bool opt_nul_terminate_output = false;
 
 /* If true, quote output pathnames according to the selected quoting style.  */
-static bool quote_output;
+స్థిర bool quote_output;
 
 /* If true, print a grand total at the end.  */
-static bool print_grand_total = false;
+స్థిర bool print_grand_మొత్తం = false;
 
 /* If nonzero, do not add sizes of subdirectories.  */
-static bool opt_separate_dirs = false;
+స్థిర bool opt_separate_dirs = false;
 
 /* Show the total for each directory (and file if --all) that is at
    most MAX_DEPTH levels down from the root of the hierarchy.  The root
    is at level 0, so 'du --max-depth=0' is equivalent to 'du -s'.  */
-static idx_t max_depth = IDX_MAX;
+స్థిర idx_t max_లోతు = IDX_MAX;
 
 /* Only output entries with at least this SIZE if positive,
    or at most if negative.  See --threshold option.  */
-static intmax_t opt_threshold = 0;
+స్థిర intmax_t opt_పరిమితి = 0;
 
 /* Human-readable options for output.  */
-static int human_output_opts;
+స్థిర పూర్ణాంకం human_output_opts;
 
 /* Output inodes count instead of blocks used.  */
-static bool opt_inodes = false;
+స్థిర bool opt_inodes = false;
 
 /* If true, print most recently modified date, using the specified format.  */
-static bool opt_time = false;
+స్థిర bool opt_సమయం = false;
 
 /* Type of time to display. controlled by --time.  */
 
-enum time_type
+గణన సమయం_type
   {
-    time_mtime,			/* default */
-    time_ctime,
-    time_atime
+    సమయం_mtime,			/* default */
+    సమయం_ctime,
+    సమయం_atime
   };
 
-static enum time_type time_type = time_mtime;
+స్థిర గణన సమయం_type సమయం_type = సమయం_mtime;
 
 /* User specified date / time style */
-static char const *time_style = NULL;
+స్థిర అక్షరం స్థిరరాశి *సమయం_style = ఖాళీ;
 
 /* Format used to display date / time. Controlled by --time-style */
-static char const *time_format = NULL;
+స్థిర అక్షరం స్థిరరాశి *సమయం_format = ఖాళీ;
 
 /* The local time zone rules, as per the TZ environment variable.  */
-static timezone_t localtz;
+స్థిర timezone_t localtz;
 
 /* The units to use when printing sizes.  */
-static uintmax_t output_block_size;
+స్థిర uintmax_t output_ఖండం_కొలత;
 
 /* File name patterns to exclude.  */
-static struct exclude *exclude;
+స్థిర నిర్మాణం exclude *exclude;
 
 /* Grand total size of all args, in bytes. Also latest modified date. */
-static struct duinfo tot_dui;
+స్థిర నిర్మాణం duinfo tot_dui;
 
-#define IS_DIR_TYPE(Type)	\
+#నిర్వచించు IS_DIR_TYPE(Type)	\
   ((Type) == FTS_DP		\
    || (Type) == FTS_DNR)
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+గణన
 {
   EXCLUDE_OPTION = CHAR_MAX + 1,
   FILES0_FROM_OPTION,
   HUMAN_SI_OPTION,
-#if GNULIB_FTS_DEBUG
+#ఒకవేళ GNULIB_FTS_DEBUG
   FTS_DEBUG,
-#endif
-  TIME_OPTION,
-  TIME_STYLE_OPTION,
+#అయితే_ముగింపు
+  సమయం_OPTION,
+  సమయం_STYLE_OPTION,
   INODES_OPTION
 };
 
-static struct option const long_options[] =
+స్థిర నిర్మాణం option స్థిరరాశి long_options[] =
 {
-  {"all", no_argument, NULL, 'a'},
-  {"apparent-size", no_argument, NULL, 'A'},
-  {"block-size", required_argument, NULL, 'B'},
-  {"bytes", no_argument, NULL, 'b'},
-  {"count-links", no_argument, NULL, 'l'},
-#if GNULIB_FTS_DEBUG
-  {"-debug", no_argument, NULL, FTS_DEBUG},
-#endif
-  {"dereference", no_argument, NULL, 'L'},
-  {"dereference-args", no_argument, NULL, 'D'},
-  {"exclude", required_argument, NULL, EXCLUDE_OPTION},
-  {"exclude-from", required_argument, NULL, 'X'},
-  {"files0-from", required_argument, NULL, FILES0_FROM_OPTION},
-  {"human-readable", no_argument, NULL, 'h'},
-  {"inodes", no_argument, NULL, INODES_OPTION},
-  {"si", no_argument, NULL, HUMAN_SI_OPTION},
-  {"max-depth", required_argument, NULL, 'd'},
-  {"null", no_argument, NULL, '0'},
-  {"no-dereference", no_argument, NULL, 'P'},
-  {"one-file-system", no_argument, NULL, 'x'},
-  {"separate-dirs", no_argument, NULL, 'S'},
-  {"summarize", no_argument, NULL, 's'},
-  {"total", no_argument, NULL, 'c'},
-  {"threshold", required_argument, NULL, 't'},
-  {"time", optional_argument, NULL, TIME_OPTION},
-  {"time-style", required_argument, NULL, TIME_STYLE_OPTION},
+  {"all", no_వాదం, ఖాళీ, 'a'},
+  {"apparent-size", no_వాదం, ఖాళీ, 'A'},
+  {"block-size", required_వాదం, ఖాళీ, 'B'},
+  {"bytes", no_వాదం, ఖాళీ, 'b'},
+  {"count-links", no_వాదం, ఖాళీ, 'l'},
+#ఒకవేళ GNULIB_FTS_DEBUG
+  {"-debug", no_వాదం, ఖాళీ, FTS_DEBUG},
+#అయితే_ముగింపు
+  {"dereference", no_వాదం, ఖాళీ, 'L'},
+  {"dereference-args", no_వాదం, ఖాళీ, 'D'},
+  {"exclude", required_వాదం, ఖాళీ, EXCLUDE_OPTION},
+  {"exclude-from", required_వాదం, ఖాళీ, 'X'},
+  {"files0-from", required_వాదం, ఖాళీ, FILES0_FROM_OPTION},
+  {"human-readable", no_వాదం, ఖాళీ, 'h'},
+  {"inodes", no_వాదం, ఖాళీ, INODES_OPTION},
+  {"si", no_వాదం, ఖాళీ, HUMAN_SI_OPTION},
+  {"max-depth", required_వాదం, ఖాళీ, 'd'},
+  {"null", no_వాదం, ఖాళీ, '0'},
+  {"no-dereference", no_వాదం, ఖాళీ, 'P'},
+  {"one-file-system", no_వాదం, ఖాళీ, 'x'},
+  {"separate-dirs", no_వాదం, ఖాళీ, 'S'},
+  {"summarize", no_వాదం, ఖాళీ, 's'},
+  {"total", no_వాదం, ఖాళీ, 'c'},
+  {"threshold", required_వాదం, ఖాళీ, 't'},
+  {"time", optional_వాదం, ఖాళీ, సమయం_OPTION},
+  {"time-style", required_వాదం, ఖాళీ, సమయం_STYLE_OPTION},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_సంస్కరణ_OPTION_DECL},
+  {ఖాళీ, 0, ఖాళీ, 0}
 };
 
-static char const *const time_args[] =
+స్థిర అక్షరం స్థిరరాశి *స్థిరరాశి సమయం_వాదనలు[] =
 {
-  "atime", "access", "use", "ctime", "status", NULL
+  "atime", "access", "use", "ctime", "status", ఖాళీ
 };
-static enum time_type const time_types[] =
+స్థిర గణన సమయం_type స్థిరరాశి సమయం_types[] =
 {
-  time_atime, time_atime, time_atime, time_ctime, time_ctime
+  సమయం_atime, సమయం_atime, సమయం_atime, సమయం_ctime, సమయం_ctime
 };
-ARGMATCH_VERIFY (time_args, time_types);
+ARGMATCH_VERIFY (సమయం_వాదనలు, సమయం_types);
 
 /* 'full-iso' uses full ISO-style dates and times.  'long-iso' uses longer
    ISO-style timestamps, though shorter than 'full-iso'.  'iso' uses shorter
    ISO-style timestamps.  */
-enum time_style
+గణన సమయం_style
   {
-    full_iso_time_style,       /* --time-style=full-iso */
-    long_iso_time_style,       /* --time-style=long-iso */
-    iso_time_style	       /* --time-style=iso */
+    నిండిన_iso_సమయం_style,       /* --time-style=full-iso */
+    long_iso_సమయం_style,       /* --time-style=long-iso */
+    iso_సమయం_style	       /* --time-style=iso */
   };
 
-static char const *const time_style_args[] =
+స్థిర అక్షరం స్థిరరాశి *స్థిరరాశి సమయం_style_వాదనలు[] =
 {
-  "full-iso", "long-iso", "iso", NULL
+  "full-iso", "long-iso", "iso", ఖాళీ
 };
-static enum time_style const time_style_types[] =
+స్థిర గణన సమయం_style స్థిరరాశి సమయం_style_types[] =
 {
-  full_iso_time_style, long_iso_time_style, iso_time_style
+  నిండిన_iso_సమయం_style, long_iso_సమయం_style, iso_సమయం_style
 };
-ARGMATCH_VERIFY (time_style_args, time_style_types);
+ARGMATCH_VERIFY (సమయం_style_వాదనలు, సమయం_style_types);
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("\
+      రాయి (_("\
 Usage: %s [OPTION]... [FILE]...\n\
   or:  %s [OPTION]... --files0-from=F\n\
-"), program_name, program_name);
+"), కార్యక్రమం_name, కార్యక్రమం_name);
       fputs (_("\
-Summarize device usage of the set of FILEs, recursively for directories.\n\
+Summarize device usage యొక్క the సమితి_2 యొక్క FILEs, recursively కొరకు directories.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
 
       oputs (_("\
   -0, --null\n\
-         end each output line with NUL, not newline\n\
+         చివర each output పంక్తి with NUL, not newline\n\
 "));
       oputs (_("\
   -a, --all\n\
-         write counts for all files, not just directories\n\
+         లిఖ counts కొరకు all files, not just directories\n\
 "));
       oputs (_("\
-  -A, --apparent-size\n\
+  -A, --apparent-కొలత\n\
          print apparent sizes rather than device usage;\n\
-         although the apparent size is usually smaller, it may be\n\
-         larger due to holes in ('sparse') files,\n\
-         internal fragmentation, indirect blocks, etc.\n\
+         although the apparent కొలత is usually smaller, it may be\n\
+         larger due గమ్యం holes లోపల ('sparse') files,\n\
+         అంతర్గత fragmentation, పరోక్ష ఖండాలు, etc.\n\
 "));
       oputs (_("\
-  -B, --block-size=SIZE\n\
-         scale sizes by SIZE before printing them; See SIZE format below;\n\
-         E.g., '-BM' prints sizes in units of 1,048,576 bytes\n\
+  -B, --ఖండం-కొలత=కొలత_2\n\
+         scale sizes by కొలత_2 before printing them; See కొలత_2 format క్రింద;\n\
+         E.g., '-BM' prints sizes లోపల units యొక్క 1,048,576 బైట్లు\n\
 "));
       oputs (_("\
-  -b, --bytes\n\
-         equivalent to '--apparent-size --block-size=1'\n\
+  -b, --బైట్లు\n\
+         equivalent గమ్యం '--apparent-size --block-size=1'\n\
 "));
       oputs (_("\
-  -c, --total\n\
-         produce a grand total\n\
+  -c, --మొత్తం\n\
+         produce a grand మొత్తం\n\
 "));
       oputs (_("\
-  -D, --dereference-args\n\
-         dereference only symlinks that are listed on the command line\n\
+  -D, --dereference-వాదనలు\n\
+         dereference only symlinks that are listed on the command పంక్తి\n\
 "));
       oputs (_("\
-  -d, --max-depth=N\n\
-         print the total for a directory (or file, with --all)\n\
-         only if it is N or fewer levels below the command\n\
-         line argument;  --max-depth=0 is the same as --summarize\n\
+  -d, --max-లోతు=N\n\
+         print the మొత్తం కొరకు a directory (or file, with --all)\n\
+         only ఒకవేళ it is N or fewer స్థాయిలు క్రింద the command\n\
+         పంక్తి వాదం;  --max-లోతు=0 is the same as --summarize\n\
 "));
       oputs (_("\
       --files0-from=F\n\
-         summarize device usage of the NUL-terminated file names\n\
-         specified in file F;  if F is -, read names from standard input\n\
+         summarize device usage యొక్క the NUL-terminated file పేర్లు\n\
+         specified లోపల file F;  ఒకవేళ F is -, పఠ పేర్లు from standard ఆదానం\n\
 "));
       oputs (_("\
   -H\n\
-         equivalent to --dereference-args (-D)\n\
+         equivalent గమ్యం --dereference-వాదనలు (-D)\n\
 "));
       oputs (_("\
   -h, --human-readable\n\
-         print sizes in human readable format (e.g., 1K 234M 2G)\n\
+         print sizes లోపల human readable format (e.g., 1K 234M 2G)\n\
 "));
       oputs (_("\
       --inodes\n\
-         list inode usage information instead of block usage\n\
+         list inode usage information instead యొక్క ఖండం usage\n\
 "));
       oputs (_("\
   -k\n\
-         like --block-size=1K\n\
+         like --ఖండం-కొలత=1K\n\
 "));
       oputs (_("\
   -L, --dereference\n\
          dereference all symbolic links\n\
 "));
       oputs (_("\
-  -l, --count-links\n\
-         count sizes many times if hard linked\n\
+  -l, --లెక్క-links\n\
+         లెక్క sizes many times ఒకవేళ hard linked\n\
 "));
       oputs (_("\
   -m\n\
-         like --block-size=1M\n\
+         like --ఖండం-కొలత=1M\n\
 "));
       oputs (_("\
   -P, --no-dereference\n\
-         don't follow any symbolic links (this is the default)\n\
+         don't follow any symbolic links (this is the అప్రమేయ)\n\
 "));
       oputs (_("\
   -S, --separate-dirs\n\
-         for directories do not include size of subdirectories\n\
+         కొరకు directories చేయి not include కొలత యొక్క subdirectories\n\
 "));
       oputs (_("\
       --si\n\
-         like -h, but use powers of 1000 not 1024\n\
+         like -h, but use powers యొక్క 1000 not 1024\n\
 "));
       oputs (_("\
   -s, --summarize\n\
-         display only a total for each argument\n\
+         display only a మొత్తం కొరకు each వాదం\n\
 "));
       oputs (_("\
-  -t, --threshold=SIZE\n\
-         exclude entries smaller than SIZE if positive,\n\
-         or entries greater than SIZE if negative\n\
+  -t, --పరిమితి=కొలత_2\n\
+         exclude entries smaller than కొలత_2 ఒకవేళ ధనాత్మక,\n\
+         or entries greater than కొలత_2 ఒకవేళ negative\n\
 "));
       oputs (_("\
-      --time\n\
-         show time of the last modification of any file in the directory,\n\
-         or any of its subdirectories\n\
+      --సమయం\n\
+         show సమయం యొక్క the చివరి modification యొక్క any file లోపల the directory,\n\
+         or any యొక్క its subdirectories\n\
 "));
       oputs (_("\
-      --time=WORD\n\
-         show time as WORD instead of modification time:\n\
-         atime, access, use, ctime or status\n\
+      --సమయం=మాట\n\
+         show సమయం as మాట instead యొక్క modification సమయం:\n\
+         atime, access, use, ctime or స్థితి_2\n\
 "));
       oputs (_("\
-      --time-style=STYLE\n\
-         time/date format with --time; see TIME_STYLE below\n\
+      --సమయం-style=STYLE\n\
+         సమయం/date format with --సమయం; see సమయం_STYLE క్రింద\n\
 "));
       oputs (_("\
   -X, --exclude-from=FILE\n\
-         exclude files that match any pattern in FILE\n\
+         exclude files that సరిపోలిక any నమూనా_2 లోపల FILE\n\
 "));
       oputs (_("\
-      --exclude=PATTERN\n\
-         exclude files that match PATTERN\n\
+      --exclude=నమూనా\n\
+         exclude files that సరిపోలిక నమూనా\n\
 "));
       oputs (_("\
   -x, --one-file-system\n\
          skip directories on different file systems\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
       emit_blocksize_note ("DU");
-      emit_size_note ();
+      emit_కొలత_note ();
       fputs (_("\
 \n\
-The --time-style STYLE argument can be full-iso, long-iso, iso, or +FORMAT.\n\
-FORMAT is interpreted like in date(1).\n\
-Also the TIME_STYLE environment variable sets the default style to use.\n\
+The --సమయం-style STYLE వాదం can be నిండిన-iso, దీర్ఘ-iso, iso, or +FORMAT.\n\
+FORMAT is interpreted like లోపల date(1).\n\
+Also the సమయం_STYLE environment variable sets the అప్రమేయ style గమ్యం use.\n\
 "), stdout);
-      emit_ancillary_info (PROGRAM_NAME);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
 /* Try to insert the INO/DEV pair into DI_SET.
    Return true if the pair is successfully inserted,
    false if the pair was already there.  */
-static bool
-hash_ins (struct di_set *di_set, ino_t ino, dev_t dev)
+స్థిర bool
+hash_ins (నిర్మాణం di_సమితి *di_సమితి, ino_t ino, dev_t dev)
 {
-  int inserted = di_set_insert (di_set, dev, ino);
-  if (inserted < 0)
+  పూర్ణాంకం inserted = di_సమితి_చొప్పించు (di_సమితి, dev, ino);
+  ఒకవేళ (inserted < 0)
     xalloc_die ();
-  return inserted;
+  తిరిగి inserted;
 }
 
 /* Print N_BYTES.  Convert it to a readable value before printing.  */
 
-static void
-print_only_size (uintmax_t n_bytes)
+స్థిర శూన్య
+print_only_కొలత (uintmax_t n_బైట్లు)
 {
-  char buf[LONGEST_HUMAN_READABLE + 1];
-  fputs ((n_bytes == UINTMAX_MAX
+  అక్షరం buf[LONGEST_HUMAN_READABLE + 1];
+  fputs ((n_బైట్లు == UINTMAX_MAX
           ? _("Infinity")
-          : human_readable (n_bytes, buf, human_output_opts,
-                            1, output_block_size)),
+          : human_readable (n_బైట్లు, buf, human_output_opts,
+                            1, output_ఖండం_కొలత)),
          stdout);
 }
 
 /* Print size (and optionally time) indicated by *PDUI, followed by STRING,
    quoting STRING if QUOTE is true.  */
 
-static void
-print_size (const struct duinfo *pdui, char const *string, bool quote)
+స్థిర శూన్య
+print_కొలత (స్థిరరాశి నిర్మాణం duinfo *pdui, అక్షరం స్థిరరాశి *string, bool quote)
 {
-  print_only_size (opt_inodes
+  print_only_కొలత (opt_inodes
                    ? pdui->inodes
-                   : pdui->size);
+                   : pdui->కొలత);
 
-  if (opt_time)
+  ఒకవేళ (opt_సమయం)
     {
-      putchar ('\t');
-      bool ok = show_date (time_format, pdui->tmax, localtz);
-      if (!ok)
+      అక్షరం_రాయి ('\t');
+      bool ok = show_date (సమయం_format, pdui->tmax, localtz);
+      ఒకవేళ (!ok)
         {
           /* If failed to format date, print raw seconds instead.  */
-          char buf[INT_BUFSIZE_BOUND (intmax_t)];
+          అక్షరం buf[INT_BUFSIZE_BOUND (intmax_t)];
           fputs (timetostr (pdui->tmax.tv_sec, buf), stdout);
         }
     }
-  putchar ('\t');
+  అక్షరం_రాయి ('\t');
   fputs (quote ? quoteN (string) : string, stdout);
-  putchar (opt_nul_terminate_output ? '\0' : '\n');
-  if (fflush (stdout) < 0)
+  అక్షరం_రాయి (opt_nul_terminate_output ? '\0' : '\n');
+  ఒకవేళ (fflush (stdout) < 0)
     write_error ();
 }
 
 /* Fill the di_mnt set with local mount point dev/ino pairs.  */
 
-static void
-fill_mount_table (void)
+స్థిర శూన్య
+fill_mount_పట్టిక (శూన్య)
 {
-  struct mount_entry *mnt_ent = read_file_system_list (false);
-  while (mnt_ent)
+  నిర్మాణం mount_నమోదు *mnt_ent = read_file_system_list (false);
+  అయితే (mnt_ent)
     {
-      struct mount_entry *mnt_free;
-      if (!mnt_ent->me_remote && !mnt_ent->me_dummy)
+      నిర్మాణం mount_నమోదు *mnt_free;
+      ఒకవేళ (!mnt_ent->me_remote && !mnt_ent->me_dummy)
         {
-          struct stat buf;
-          if (!stat (mnt_ent->me_mountdir, &buf))
+          నిర్మాణం stat buf;
+          ఒకవేళ (!stat (mnt_ent->me_mountdir, &buf))
             hash_ins (di_mnt, buf.st_ino, buf.st_dev);
-          else
+          లేకపోతే
             {
               /* Ignore stat failure.  False positives are too common.
                  E.g., "Permission denied" on /run/user/<name>/gvfs.  */
@@ -498,40 +498,40 @@ fill_mount_table (void)
         }
 
       mnt_free = mnt_ent;
-      mnt_ent = mnt_ent->me_next;
-      free_mount_entry (mnt_free);
+      mnt_ent = mnt_ent->me_తదుపరి;
+      free_mount_నమోదు (mnt_free);
     }
 }
 
 /* This function checks whether any of the directories in the cycle that
    fts detected is a mount point.  */
 
-static bool
-mount_point_in_fts_cycle (FTSENT const *ent)
+స్థిర bool
+mount_బిందువు_లోపల_fts_చక్రం (FTSENT స్థిరరాశి *ent)
 {
-  FTSENT const *cycle_ent = ent->fts_cycle;
+  FTSENT స్థిరరాశి *చక్రం_ent = ent->fts_చక్రం;
 
-  if (!di_mnt)
+  ఒకవేళ (!di_mnt)
     {
       /* Initialize the set of dev,inode pairs.  */
-      di_mnt = di_set_alloc ();
-      if (!di_mnt)
+      di_mnt = di_సమితి_alloc ();
+      ఒకవేళ (!di_mnt)
         xalloc_die ();
 
-      fill_mount_table ();
+      fill_mount_పట్టిక ();
     }
 
-  while (ent && ent != cycle_ent)
+  అయితే (ent && ent != చక్రం_ent)
     {
-      if (di_set_lookup (di_mnt, ent->fts_statp->st_dev,
+      ఒకవేళ (di_సమితి_lookup (di_mnt, ent->fts_statp->st_dev,
                          ent->fts_statp->st_ino) > 0)
         {
-          return true;
+          తిరిగి true;
         }
-      ent = ent->fts_parent;
+      ent = ent->fts_మాతృ;
     }
 
-  return false;
+  తిరిగి false;
 }
 
 /* This function is called once for every file system object that fts
@@ -539,13 +539,13 @@ mount_point_in_fts_cycle (FTSENT const *ent)
    that and accumulates per-directory totals based on changes in
    the depth of the current entry.  It returns true on success.  */
 
-static bool
+స్థిర bool
 process_file (FTS *fts, FTSENT *ent)
 {
   bool ok = true;
-  struct duinfo dui;
-  struct duinfo dui_to_print;
-  static idx_t n_alloc;
+  నిర్మాణం duinfo dui;
+  నిర్మాణం duinfo dui_గమ్యం_print;
+  స్థిర idx_t n_alloc;
   /* First element of the structure contains:
      The sum of the sizes of all entries in the single directory
      at the corresponding level.  Although this does include the sizes
@@ -554,44 +554,44 @@ process_file (FTS *fts, FTSENT *ent)
      Second element of the structure contains:
      The sum of the sizes of all entries in the hierarchy at or below the
      directory at the specified level.  */
-  static struct dulevel *dulvl;
+  స్థిర నిర్మాణం dulevel *dulvl;
 
-  char const *file = ent->fts_path;
-  const struct stat *sb = ent->fts_statp;
-  int info = ent->fts_info;
-  bool ignore_missing = ignore_missing_fts_entry (ent);
+  అక్షరం స్థిరరాశి *file = ent->fts_మార్గం;
+  స్థిరరాశి నిర్మాణం stat *sb = ent->fts_statp;
+  పూర్ణాంకం info = ent->fts_info;
+  bool ignore_missing = ignore_missing_fts_నమోదు (ent);
 
-  if (ignore_missing && ignorable_fts_error (ent))
-    return true;
+  ఒకవేళ (ignore_missing && ignorable_fts_error (ent))
+    తిరిగి true;
 
-  if (info == FTS_DNR)
+  ఒకవేళ (info == FTS_DNR)
     {
       /* An error occurred, but the size is known, so count it.  */
       error (0, ent->fts_errno, _("cannot read directory %s"), quoteaf (file));
       ok = false;
     }
-  else if (info != FTS_DP)
+  లేకపోతే ఒకవేళ (info != FTS_DP)
     {
       bool excluded = excluded_file_name (exclude, file);
-      if (! excluded)
+      ఒకవేళ (! excluded)
         {
           /* Make the stat buffer *SB valid, or fail noisily.  */
 
-          if (info == FTS_NSOK)
+          ఒకవేళ (info == FTS_NSOK)
             {
-              fts_set (fts, ent, FTS_AGAIN);
-              MAYBE_UNUSED FTSENT const *e = fts_read (fts);
+              fts_సమితి (fts, ent, FTS_AGAIN);
+              MAYBE_వాడని FTSENT స్థిరరాశి *e = fts_read (fts);
               affirm (e == ent);
               info = ent->fts_info;
 
-              if (ignore_missing && ignorable_fts_error (ent))
-                return true;
+              ఒకవేళ (ignore_missing && ignorable_fts_error (ent))
+                తిరిగి true;
             }
 
-          if (info == FTS_NS || info == FTS_SLNONE)
+          ఒకవేళ (info == FTS_NS || info == FTS_SLNONE)
             {
               error (0, ent->fts_errno, _("cannot access %s"), quoteaf (file));
-              return false;
+              తిరిగి false;
             }
 
           /* The --one-file-system (-x) option cannot exclude anything
@@ -599,93 +599,93 @@ process_file (FTS *fts, FTSENT *ent)
              a file or directory only when its device number is different
              from that of its just-processed parent directory, and du does
              not process the parent of a command-line argument.  */
-          if (fts->fts_options & FTS_XDEV
+          ఒకవేళ (fts->fts_options & FTS_XDEV
               && FTS_ROOTLEVEL < ent->fts_level
               && fts->fts_dev != sb->st_dev)
             excluded = true;
         }
 
-      if (excluded
-          || (! opt_count_all
-              && (hash_all || (! S_ISDIR (sb->st_mode) && 1 < sb->st_nlink))
+      ఒకవేళ (excluded
+          || (! opt_లెక్క_all
+              && (hash_all || (! S_ISDIR (sb->st_బహుళకం) && 1 < sb->st_nlink))
               && ! hash_ins (di_files, sb->st_ino, sb->st_dev)))
         {
           /* If ignoring a directory in preorder, skip its children.
              Ignore the next fts_read output too, as it's a postorder
              visit to the same directory.  */
-          if (info == FTS_D)
+          ఒకవేళ (info == FTS_D)
             {
-              fts_set (fts, ent, FTS_SKIP);
-              MAYBE_UNUSED FTSENT const *e = fts_read (fts);
+              fts_సమితి (fts, ent, FTS_SKIP);
+              MAYBE_వాడని FTSENT స్థిరరాశి *e = fts_read (fts);
               affirm (e == ent);
             }
 
-          return true;
+          తిరిగి true;
         }
 
-      switch (info)
+      ఎంపిక (info)
         {
-        case FTS_D:
-          return true;
+        స్థితి FTS_D:
+          తిరిగి true;
 
-        case FTS_ERR:
+        స్థితి FTS_ERR:
           /* An error occurred, but the size is known, so count it.  */
           error (0, ent->fts_errno, "%s", quotef (file));
           ok = false;
-          break;
+          ఆపు;
 
-        case FTS_DC:
+        స్థితి FTS_DC:
           /* If not following symlinks and not a (bind) mount point.  */
-          if (cycle_warning_required (fts, ent)
-              && ! mount_point_in_fts_cycle (ent))
+          ఒకవేళ (చక్రం_warning_required (fts, ent)
+              && ! mount_బిందువు_లోపల_fts_చక్రం (ent))
             {
-              emit_cycle_warning (file);
-              return false;
+              emit_చక్రం_warning (file);
+              తిరిగి false;
             }
-          return true;
+          తిరిగి true;
         }
     }
 
-  duinfo_set (&dui,
-              (apparent_size
-               ? (usable_st_size (sb) ? MAX (0, sb->st_size) : 0)
+  duinfo_సమితి (&dui,
+              (apparent_కొలత
+               ? (usable_st_కొలత (sb) ? MAX (0, sb->st_కొలత) : 0)
                : (uintmax_t) STP_NBLOCKS (sb) * ST_NBLOCKSIZE),
-              (time_type == time_mtime ? get_stat_mtime (sb)
-               : time_type == time_atime ? get_stat_atime (sb)
+              (సమయం_type == సమయం_mtime ? get_stat_mtime (sb)
+               : సమయం_type == సమయం_atime ? get_stat_atime (sb)
                : get_stat_ctime (sb)));
 
   idx_t level = ent->fts_level;
-  dui_to_print = dui;
+  dui_గమ్యం_print = dui;
 
-  if (n_alloc == 0)
+  ఒకవేళ (n_alloc == 0)
     {
       n_alloc = level + 10;
-      dulvl = xcalloc (n_alloc, sizeof *dulvl);
+      dulvl = xcalloc (n_alloc, పరిమాణం *dulvl);
     }
-  else
+  లేకపోతే
     {
-      if (level == prev_level)
+      ఒకవేళ (level == prev_level)
         {
           /* This is usually the most common case.  Do nothing.  */
         }
-      else if (level > prev_level)
+      లేకపోతే ఒకవేళ (level > prev_level)
         {
           /* Descending the hierarchy.
              Clear the accumulators for *all* levels between prev_level
              and the current one.  The depth may change dramatically,
              e.g., from 1 to 10.  */
 
-          if (n_alloc <= level)
+          ఒకవేళ (n_alloc <= level)
             dulvl = xpalloc (dulvl, &n_alloc, level - n_alloc + 1, -1,
-                             sizeof *dulvl);
+                             పరిమాణం *dulvl);
 
-          for (idx_t i = prev_level + 1; i <= level; i++)
+          కొరకు (idx_t i = prev_level + 1; i <= level; i++)
             {
               duinfo_init (&dulvl[i].ent);
               duinfo_init (&dulvl[i].subdir);
             }
         }
-      else /* level < prev_level */
+      లేకపోతే /* level < prev_level */
         {
           /* Ascending the hierarchy.
              Process a directory only after all entries in that
@@ -694,11 +694,11 @@ process_file (FTS *fts, FTSENT *ent)
              Here, the current level is always one smaller than the
              previous one.  */
           affirm (level == prev_level - 1);
-          duinfo_add (&dui_to_print, &dulvl[prev_level].ent);
-          if (!opt_separate_dirs)
-            duinfo_add (&dui_to_print, &dulvl[prev_level].subdir);
-          duinfo_add (&dulvl[level].subdir, &dulvl[prev_level].ent);
-          duinfo_add (&dulvl[level].subdir, &dulvl[prev_level].subdir);
+          duinfo_కూడు (&dui_గమ్యం_print, &dulvl[prev_level].ent);
+          ఒకవేళ (!opt_separate_dirs)
+            duinfo_కూడు (&dui_గమ్యం_print, &dulvl[prev_level].subdir);
+          duinfo_కూడు (&dulvl[level].subdir, &dulvl[prev_level].ent);
+          duinfo_కూడు (&dulvl[level].subdir, &dulvl[prev_level].subdir);
         }
     }
 
@@ -706,26 +706,26 @@ process_file (FTS *fts, FTSENT *ent)
 
   /* Let the size of a directory entry contribute to the total for the
      containing directory, unless --separate-dirs (-S) is specified.  */
-  if (! (opt_separate_dirs && IS_DIR_TYPE (info)))
-    duinfo_add (&dulvl[level].ent, &dui);
+  ఒకవేళ (! (opt_separate_dirs && IS_DIR_TYPE (info)))
+    duinfo_కూడు (&dulvl[level].ent, &dui);
 
   /* Even if this directory is unreadable or we can't chdir into it,
      do let its size contribute to the total. */
-  duinfo_add (&tot_dui, &dui);
+  duinfo_కూడు (&tot_dui, &dui);
 
-  if ((IS_DIR_TYPE (info) && level <= max_depth)
-      || (opt_all && level <= max_depth)
+  ఒకవేళ ((IS_DIR_TYPE (info) && level <= max_లోతు)
+      || (opt_all && level <= max_లోతు)
       || level == 0)
     {
       /* Print or elide this entry according to the --threshold option.  */
-      uintmax_t v = opt_inodes ? dui_to_print.inodes : dui_to_print.size;
-      if (opt_threshold < 0
-          ? v <= -opt_threshold
-          : v >= opt_threshold)
-        print_size (&dui_to_print, file, quote_output);
+      uintmax_t v = opt_inodes ? dui_గమ్యం_print.inodes : dui_గమ్యం_print.కొలత;
+      ఒకవేళ (opt_పరిమితి < 0
+          ? v <= -opt_పరిమితి
+          : v >= opt_పరిమితి)
+        print_కొలత (&dui_గమ్యం_print, file, quote_output);
     }
 
-  return ok;
+  తిరిగి ok;
 }
 
 /* Recursively print the sizes of the directories (and, if selected, files)
@@ -733,26 +733,26 @@ process_file (FTS *fts, FTSENT *ent)
    BIT_FLAGS controls how fts works.
    Return true if successful.  */
 
-static bool
-du_files (char **files, int bit_flags)
+స్థిర bool
+du_files (అక్షరం **files, పూర్ణాంకం బిట్టు_flags)
 {
   bool ok = true;
 
-  if (*files)
+  ఒకవేళ (*files)
     {
-      FTS *fts = xfts_open (files, bit_flags, NULL);
+      FTS *fts = xfts_open (files, బిట్టు_flags, ఖాళీ);
 
-      while (true)
+      అయితే (true)
         {
           FTSENT *ent;
 
           ent = fts_read (fts);
-          if (ent == NULL)
+          ఒకవేళ (ent == ఖాళీ)
             {
-              if (errno != 0)
+              ఒకవేళ (errno != 0)
                 {
                   error (0, errno, _("fts_read failed: %s"),
-                         quotef (fts->fts_path));
+                         quotef (fts->fts_మార్గం));
                   ok = false;
                 }
 
@@ -760,50 +760,50 @@ du_files (char **files, int bit_flags)
                  global, prev_level, used in process_file.  Otherwise, its
                  (level == prev_level - 1) assertion could fail.  */
               prev_level = 0;
-              break;
+              ఆపు;
             }
 
-#if GNULIB_FTS_DEBUG
-          if (fts_debug)
+#ఒకవేళ GNULIB_FTS_DEBUG
+          ఒకవేళ (fts_debug)
             fts_cross_check (fts);
-#endif
+#అయితే_ముగింపు
 
           ok &= process_file (fts, ent);
         }
 
-      if (fts_close (fts) != 0)
+      ఒకవేళ (fts_close (fts) != 0)
         {
           error (0, errno, _("fts_close failed"));
           ok = false;
         }
     }
 
-  return ok;
+  తిరిగి ok;
 }
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
-  char *cwd_only[2];
-  bool max_depth_specified = false;
+  అక్షరం *cwd_only[2];
+  bool max_లోతు_specified = false;
   bool ok = true;
-  char *files_from = NULL;
+  అక్షరం *files_from = ఖాళీ;
 
   /* Bit flags that control how fts works.  */
-  int bit_flags = FTS_NOSTAT;
+  పూర్ణాంకం బిట్టు_flags = FTS_NOSTAT;
 
   /* Select one of the three FTS_ options that control if/when
      to follow a symlink.  */
-  int symlink_deref_bits = FTS_PHYSICAL;
+  పూర్ణాంకం symlink_deref_బిట్లు = FTS_PHYSICAL;
 
   /* If true, display only a total for each argument. */
   bool opt_summarize_only = false;
 
   cwd_only[0] = bad_cast (".");
-  cwd_only[1] = NULL;
+  cwd_only[1] = ఖాళీ;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
@@ -813,282 +813,282 @@ main (int argc, char **argv)
   exclude = new_exclude ();
 
   human_options (getenv ("DU_BLOCK_SIZE"),
-                 &human_output_opts, &output_block_size);
+                 &human_output_opts, &output_ఖండం_కొలత);
 
-  while (true)
+  అయితే (true)
     {
-      int oi = -1;
-      int c = getopt_long (argc, argv, "0aAbd:chHklmst:xB:DLPSX:",
+      పూర్ణాంకం oi = -1;
+      పూర్ణాంకం c = getopt_long (argc, argv, "0aAbd:chHklmst:xB:DLPSX:",
                            long_options, &oi);
-      if (c == -1)
-        break;
+      ఒకవేళ (c == -1)
+        ఆపు;
 
-      switch (c)
+      ఎంపిక (c)
         {
-#if GNULIB_FTS_DEBUG
-        case FTS_DEBUG:
+#ఒకవేళ GNULIB_FTS_DEBUG
+        స్థితి FTS_DEBUG:
           fts_debug = true;
-          break;
-#endif
+          ఆపు;
+#అయితే_ముగింపు
 
-        case '0':
+        స్థితి '0':
           opt_nul_terminate_output = true;
-          break;
+          ఆపు;
 
-        case 'a':
+        స్థితి 'a':
           opt_all = true;
-          break;
+          ఆపు;
 
-        case 'A':
-          apparent_size = true;
-          break;
+        స్థితి 'A':
+          apparent_కొలత = true;
+          ఆపు;
 
-        case 'b':
-          apparent_size = true;
+        స్థితి 'b':
+          apparent_కొలత = true;
           human_output_opts = 0;
-          output_block_size = 1;
-          break;
+          output_ఖండం_కొలత = 1;
+          ఆపు;
 
-        case 'c':
-          print_grand_total = true;
-          break;
+        స్థితి 'c':
+          print_grand_మొత్తం = true;
+          ఆపు;
 
-        case 'h':
-          human_output_opts = human_autoscale | human_SI | human_base_1024;
-          output_block_size = 1;
-          break;
+        స్థితి 'h':
+          human_output_opts = human_autoscale | human_SI | human_పునాది_1024;
+          output_ఖండం_కొలత = 1;
+          ఆపు;
 
-        case HUMAN_SI_OPTION:
+        స్థితి HUMAN_SI_OPTION:
           human_output_opts = human_autoscale | human_SI;
-          output_block_size = 1;
-          break;
+          output_ఖండం_కొలత = 1;
+          ఆపు;
 
-        case 'k':
+        స్థితి 'k':
           human_output_opts = 0;
-          output_block_size = 1024;
-          break;
+          output_ఖండం_కొలత = 1024;
+          ఆపు;
 
-        case 'd':		/* --max-depth=N */
+        స్థితి 'd':		/* --max-depth=N */
           {
             intmax_t tmp;
-            if (xstrtoimax (optarg, NULL, 0, &tmp, "") == LONGINT_OK
-                && ! ckd_add (&max_depth, tmp, 0) && 0 <= max_depth)
-              max_depth_specified = true;
-            else
+            ఒకవేళ (xstrtoimax (optarg, ఖాళీ, 0, &tmp, "") == LONGINT_OK
+                && ! ckd_కూడు (&max_లోతు, tmp, 0) && 0 <= max_లోతు)
+              max_లోతు_specified = true;
+            లేకపోతే
               {
                 error (0, 0, _("invalid maximum depth %s"),
                        quote (optarg));
                 ok = false;
               }
           }
-          break;
+          ఆపు;
 
-        case 'm':
+        స్థితి 'm':
           human_output_opts = 0;
-          output_block_size = 1024 * 1024;
-          break;
+          output_ఖండం_కొలత = 1024 * 1024;
+          ఆపు;
 
-        case 'l':
-          opt_count_all = true;
-          break;
+        స్థితి 'l':
+          opt_లెక్క_all = true;
+          ఆపు;
 
-        case 's':
+        స్థితి 's':
           opt_summarize_only = true;
-          break;
+          ఆపు;
 
-        case 't':
+        స్థితి 't':
           {
-            enum strtol_error e;
-            e = xstrtoimax (optarg, NULL, 0, &opt_threshold,
+            గణన strtol_error e;
+            e = xstrtoimax (optarg, ఖాళీ, 0, &opt_పరిమితి,
                             "kKmMGTPEZYRQ0");
-            if (e != LONGINT_OK)
+            ఒకవేళ (e != LONGINT_OK)
               xstrtol_fatal (e, oi, c, long_options, optarg);
-            if (opt_threshold == 0 && *optarg == '-')
+            ఒకవేళ (opt_పరిమితి == 0 && *optarg == '-')
               {
                 /* Do not allow -0, as this wouldn't make sense anyway.  */
                 error (EXIT_FAILURE, 0, _("invalid --threshold argument '-0'"));
               }
           }
-          break;
+          ఆపు;
 
-        case 'x':
-          bit_flags |= FTS_XDEV;
-          break;
+        స్థితి 'x':
+          బిట్టు_flags |= FTS_XDEV;
+          ఆపు;
 
-        case 'B':
+        స్థితి 'B':
           {
-            enum strtol_error e = human_options (optarg, &human_output_opts,
-                                                 &output_block_size);
-            if (e != LONGINT_OK)
+            గణన strtol_error e = human_options (optarg, &human_output_opts,
+                                                 &output_ఖండం_కొలత);
+            ఒకవేళ (e != LONGINT_OK)
               xstrtol_fatal (e, oi, c, long_options, optarg);
           }
-          break;
+          ఆపు;
 
-        case 'H':  /* NOTE: before 2008-12, -H was equivalent to --si.  */
-        case 'D':
-          symlink_deref_bits = FTS_COMFOLLOW | FTS_PHYSICAL;
-          break;
+        స్థితి 'H':  /* NOTE: before 2008-12, -H was equivalent to --si.  */
+        స్థితి 'D':
+          symlink_deref_బిట్లు = FTS_COMFOLLOW | FTS_PHYSICAL;
+          ఆపు;
 
-        case 'L': /* --dereference */
-          symlink_deref_bits = FTS_LOGICAL;
-          break;
+        స్థితి 'L': /* --dereference */
+          symlink_deref_బిట్లు = FTS_LOGICAL;
+          ఆపు;
 
-        case 'P': /* --no-dereference */
-          symlink_deref_bits = FTS_PHYSICAL;
-          break;
+        స్థితి 'P': /* --no-dereference */
+          symlink_deref_బిట్లు = FTS_PHYSICAL;
+          ఆపు;
 
-        case 'S':
+        స్థితి 'S':
           opt_separate_dirs = true;
-          break;
+          ఆపు;
 
-        case 'X':
-          if (add_exclude_file (add_exclude, exclude, optarg,
+        స్థితి 'X':
+          ఒకవేళ (కూడు_exclude_file (కూడు_exclude, exclude, optarg,
                                 EXCLUDE_WILDCARDS, '\n'))
             {
               error (0, errno, "%s", quotef (optarg));
               ok = false;
             }
-          break;
+          ఆపు;
 
-        case FILES0_FROM_OPTION:
+        స్థితి FILES0_FROM_OPTION:
           files_from = optarg;
-          break;
+          ఆపు;
 
-        case EXCLUDE_OPTION:
-          add_exclude (exclude, optarg, EXCLUDE_WILDCARDS);
-          break;
+        స్థితి EXCLUDE_OPTION:
+          కూడు_exclude (exclude, optarg, EXCLUDE_WILDCARDS);
+          ఆపు;
 
-        case INODES_OPTION:
+        స్థితి INODES_OPTION:
           opt_inodes = true;
-          break;
+          ఆపు;
 
-        case TIME_OPTION:
-          opt_time = true;
-          time_type =
+        స్థితి సమయం_OPTION:
+          opt_సమయం = true;
+          సమయం_type =
             (optarg
-             ? XARGMATCH ("--time", optarg, time_args, time_types)
-             : time_mtime);
+             ? XARGMATCH ("--time", optarg, సమయం_వాదనలు, సమయం_types)
+             : సమయం_mtime);
           localtz = tzalloc (getenv ("TZ"));
-          break;
+          ఆపు;
 
-        case TIME_STYLE_OPTION:
-          time_style = optarg;
-          break;
+        స్థితి సమయం_STYLE_OPTION:
+          సమయం_style = optarg;
+          ఆపు;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_సంస్కరణ_CHAR (కార్యక్రమం_NAME, AUTHORS);
 
-        default:
+        అప్రమేయ:
           ok = false;
         }
     }
 
-  if (!ok)
+  ఒకవేళ (!ok)
     usage (EXIT_FAILURE);
 
-  if (!opt_nul_terminate_output && isatty (STDOUT_FILENO))
+  ఒకవేళ (!opt_nul_terminate_output && isatty (STDOUT_FILENO))
     {
-      int qs = getenv_quoting_style ();
-      if (qs < 0)
+      పూర్ణాంకం qs = getenv_quoting_style ();
+      ఒకవేళ (qs < 0)
         qs = shell_escape_quoting_style;
-      if (qs != literal_quoting_style)
+      ఒకవేళ (qs != literal_quoting_style)
         {
-          set_quoting_style (NULL, qs);
+          సమితి_quoting_style (ఖాళీ, qs);
           quote_output = true;
         }
     }
 
-  if (opt_all && opt_summarize_only)
+  ఒకవేళ (opt_all && opt_summarize_only)
     {
       error (0, 0, _("cannot both summarize and show all entries"));
       usage (EXIT_FAILURE);
     }
 
-  if (opt_summarize_only && max_depth_specified && max_depth == 0)
+  ఒకవేళ (opt_summarize_only && max_లోతు_specified && max_లోతు == 0)
     {
       error (0, 0,
              _("warning: summarizing is the same as using --max-depth=0"));
     }
 
-  if (opt_summarize_only && max_depth_specified && max_depth != 0)
+  ఒకవేళ (opt_summarize_only && max_లోతు_specified && max_లోతు != 0)
     {
       error (0, 0, _("warning: summarizing conflicts with --max-depth=%td"),
-             max_depth);
+             max_లోతు);
       usage (EXIT_FAILURE);
     }
 
-  if (opt_summarize_only)
-    max_depth = 0;
+  ఒకవేళ (opt_summarize_only)
+    max_లోతు = 0;
 
-  if (opt_inodes)
+  ఒకవేళ (opt_inodes)
     {
-      if (apparent_size)
+      ఒకవేళ (apparent_కొలత)
         {
           error (0, 0, _("warning: options --apparent-size and -b are "
                          "ineffective with --inodes"));
         }
-      output_block_size = 1;
+      output_ఖండం_కొలత = 1;
     }
 
   /* Process time style if printing last times.  */
-  if (opt_time)
+  ఒకవేళ (opt_సమయం)
     {
-      if (! time_style)
+      ఒకవేళ (! సమయం_style)
         {
-          time_style = getenv ("TIME_STYLE");
+          సమయం_style = getenv ("TIME_STYLE");
 
           /* Ignore TIMESTYLE="locale", for compatibility with ls.  */
-          if (! time_style || streq (time_style, "locale"))
-            time_style = "long-iso";
-          else if (*time_style == '+')
+          ఒకవేళ (! సమయం_style || streq (సమయం_style, "locale"))
+            సమయం_style = "long-iso";
+          లేకపోతే ఒకవేళ (*సమయం_style == '+')
             {
               /* Ignore anything after a newline, for compatibility
                  with ls.  */
-              char const *p = strchr (time_style, '\n');
-              if (p)
-                time_style = xmemdup0 (time_style, p - time_style);
+              అక్షరం స్థిరరాశి *p = strchr (సమయం_style, '\n');
+              ఒకవేళ (p)
+                సమయం_style = xmemdup0 (సమయం_style, p - సమయం_style);
             }
-          else
+          లేకపోతే
             {
               /* Ignore "posix-" prefix, for compatibility with ls.  */
-              static char const posix_prefix[] = "posix-";
-              static const size_t prefix_len = sizeof posix_prefix - 1;
-              while (STREQ_LEN (time_style, posix_prefix, prefix_len))
-                time_style += prefix_len;
+              స్థిర అక్షరం స్థిరరాశి posix_ఉపసర్గ[] = "posix-";
+              స్థిర స్థిరరాశి size_t ఉపసర్గ_len = పరిమాణం posix_ఉపసర్గ - 1;
+              అయితే (STREQ_LEN (సమయం_style, posix_ఉపసర్గ, ఉపసర్గ_len))
+                సమయం_style += ఉపసర్గ_len;
             }
         }
 
-      if (*time_style == '+')
-        time_format = time_style + 1;
-      else
+      ఒకవేళ (*సమయం_style == '+')
+        సమయం_format = సమయం_style + 1;
+      లేకపోతే
         {
-          switch (x_timestyle_match (time_style, /*allow_posix=*/ false,
-                                     time_style_args,
-                                     (char const *) time_style_types,
-                                     sizeof (*time_style_types), EXIT_FAILURE))
+          ఎంపిక (x_timestyle_సరిపోలిక (సమయం_style, /*allow_posix=*/ false,
+                                     సమయం_style_వాదనలు,
+                                     (అక్షరం స్థిరరాశి *) సమయం_style_types,
+                                     పరిమాణం (*సమయం_style_types), EXIT_FAILURE))
             {
-            case full_iso_time_style:
-              time_format = "%Y-%m-%d %H:%M:%S.%N %z";
-              break;
+            స్థితి నిండిన_iso_సమయం_style:
+              సమయం_format = "%Y-%m-%d %H:%M:%S.%N %z";
+              ఆపు;
 
-            case long_iso_time_style:
-              time_format = "%Y-%m-%d %H:%M";
-              break;
+            స్థితి long_iso_సమయం_style:
+              సమయం_format = "%Y-%m-%d %H:%M";
+              ఆపు;
 
-            case iso_time_style:
-              time_format = "%Y-%m-%d";
-              break;
+            స్థితి iso_సమయం_style:
+              సమయం_format = "%Y-%m-%d";
+              ఆపు;
             }
         }
     }
 
-  struct argv_iterator *ai;
-  if (files_from)
+  నిర్మాణం argv_iterator *ai;
+  ఒకవేళ (files_from)
     {
       /* When using --files0-from=F, you may not specify any files
          on the command-line.  */
-      if (optind < argc)
+      ఒకవేళ (optind < argc)
         {
           error (0, 0, _("extra operand %s"), quote (argv[optind]));
           fprintf (stderr, "%s\n",
@@ -1096,66 +1096,66 @@ main (int argc, char **argv)
           usage (EXIT_FAILURE);
         }
 
-      if (! (streq (files_from, "-") || freopen (files_from, "r", stdin)))
+      ఒకవేళ (! (streq (files_from, "-") || freopen (files_from, "r", stdin)))
         error (EXIT_FAILURE, errno, _("cannot open %s for reading"),
                quoteaf (files_from));
 
-      ai = argv_iter_init_stream (stdin);
+      ai = argv_iter_init_ప్రవాహం (stdin);
 
       /* It's not easy here to count the arguments, so assume the
          worst.  */
       hash_all = true;
     }
-  else
+  లేకపోతే
     {
-      char **files = (optind < argc ? argv + optind : cwd_only);
+      అక్షరం **files = (optind < argc ? argv + optind : cwd_only);
       ai = argv_iter_init_argv (files);
 
       /* Hash all dev,ino pairs if there are multiple arguments, or if
          following non-command-line symlinks, because in either case a
          file with just one hard link might be seen more than once.  */
-      hash_all = (optind + 1 < argc || symlink_deref_bits == FTS_LOGICAL);
+      hash_all = (optind + 1 < argc || symlink_deref_బిట్లు == FTS_LOGICAL);
     }
 
-  if (!ai)
+  ఒకవేళ (!ai)
     xalloc_die ();
 
   /* Initialize the set of dev,inode pairs.  */
-  di_files = di_set_alloc ();
-  if (!di_files)
+  di_files = di_సమితి_alloc ();
+  ఒకవేళ (!di_files)
     xalloc_die ();
 
   /* If not hashing everything, process_file won't find cycles on its
      own, so ask fts_read to check for them accurately.  */
-  if (opt_count_all || ! hash_all)
-    bit_flags |= FTS_TIGHT_CYCLE_CHECK;
+  ఒకవేళ (opt_లెక్క_all || ! hash_all)
+    బిట్టు_flags |= FTS_TIGHT_చక్రం_CHECK;
 
-  bit_flags |= symlink_deref_bits;
-  static char *temp_argv[] = { NULL, NULL };
+  బిట్టు_flags |= symlink_deref_బిట్లు;
+  స్థిర అక్షరం *తాత్కాలిక_argv[] = { ఖాళీ, ఖాళీ };
 
-  while (true)
+  అయితే (true)
     {
       bool skip_file = false;
-      enum argv_iter_err ai_err;
-      char *file_name = argv_iter (ai, &ai_err);
-      if (!file_name)
+      గణన argv_iter_err ai_err;
+      అక్షరం *file_name = argv_iter (ai, &ai_err);
+      ఒకవేళ (!file_name)
         {
-          switch (ai_err)
+          ఎంపిక (ai_err)
             {
-            case AI_ERR_EOF:
-              goto argv_iter_done;
-            case AI_ERR_READ:
+            స్థితి AI_ERR_EOF:
+              వెళ్ళు argv_iter_పూర్తి;
+            స్థితి AI_ERR_READ:
               error (0, errno, _("%s: read error"),
                      quotef (files_from));
               ok = false;
-              goto argv_iter_done;
-            case AI_ERR_MEM:
+              వెళ్ళు argv_iter_పూర్తి;
+            స్థితి AI_ERR_MEM:
               xalloc_die ();
-            case AI_ERR_OK: default:
+            స్థితి AI_ERR_OK: అప్రమేయ:
               affirm (!"unexpected error code from argv_iter");
             }
         }
-      if (files_from && streq (files_from, "-") && streq (file_name, "-"))
+      ఒకవేళ (files_from && streq (files_from, "-") && streq (file_name, "-"))
         {
           /* Give a better diagnostic in an unusual case:
              printf - | du --files0-from=- */
@@ -1169,46 +1169,46 @@ main (int argc, char **argv)
          This works around a glitch in fts, which fails immediately
          (without looking at the other file names) when given an empty
          file name.  */
-      if (!file_name[0])
+      ఒకవేళ (!file_name[0])
         {
           /* Diagnose a zero-length file name.  When it's one
              among many, knowing the record number may help.
              FIXME: currently print the record number only with
              --files0-from=FILE.  Maybe do it for argv, too?  */
-          if (files_from == NULL)
+          ఒకవేళ (files_from == ఖాళీ)
             error (0, 0, "%s", _("invalid zero-length file name"));
-          else
+          లేకపోతే
             {
               /* Using the standard 'filename:line-number:' prefix here is
                  not totally appropriate, since NUL is the separator, not NL,
                  but it might be better than nothing.  */
-              idx_t file_number = argv_iter_n_args (ai);
+              idx_t file_సంఖ్య = argv_iter_n_వాదనలు (ai);
               error (0, 0, "%s:%td: %s", quotef (files_from),
-                     file_number, _("invalid zero-length file name"));
+                     file_సంఖ్య, _("invalid zero-length file name"));
             }
           skip_file = true;
         }
 
-      if (skip_file)
+      ఒకవేళ (skip_file)
         ok = false;
-      else
+      లేకపోతే
         {
-          temp_argv[0] = file_name;
-          ok &= du_files (temp_argv, bit_flags);
+          తాత్కాలిక_argv[0] = file_name;
+          ok &= du_files (తాత్కాలిక_argv, బిట్టు_flags);
         }
     }
- argv_iter_done:
+ argv_iter_పూర్తి:
 
   argv_iter_free (ai);
-  di_set_free (di_files);
-  if (di_mnt)
-    di_set_free (di_mnt);
+  di_సమితి_free (di_files);
+  ఒకవేళ (di_mnt)
+    di_సమితి_free (di_mnt);
 
-  if (files_from && (ferror (stdin) || fclose (stdin) != 0) && ok)
+  ఒకవేళ (files_from && (ferror (stdin) || fclose (stdin) != 0) && ok)
     error (EXIT_FAILURE, 0, _("error reading %s"), quoteaf (files_from));
 
-  if (print_grand_total)
-    print_size (&tot_dui, _("total"), false);
+  ఒకవేళ (print_grand_మొత్తం)
+    print_కొలత (&tot_dui, _("total"), false);
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  తిరిగి ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

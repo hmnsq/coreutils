@@ -21,16 +21,16 @@
 
    Written by David MacKenzie <djm@gnu.ai.mit.edu>.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#అన్తర్భావ <config.h>
+#అన్తర్భావ <stdio.h>
+#అన్తర్భావ <getopt.h>
+#అన్తర్భావ <sys/types.h>
 
-#include "system.h"
-#include "quote.h"
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "quote.h"
 
 /* Exit statuses.  */
-enum
+గణన
   {
     TTY_STDIN_NOTTY = 1,
     TTY_USAGE = 2,
@@ -39,52 +39,52 @@ enum
   };
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "tty"
+#నిర్వచించు కార్యక్రమం_NAME "tty"
 
-#define AUTHORS proper_name ("David MacKenzie")
+#నిర్వచించు AUTHORS proper_name ("David MacKenzie")
 
 /* If true, return an exit status but produce no output. */
-static bool silent;
+స్థిర bool silent;
 
-static struct option const longopts[] =
+స్థిర నిర్మాణం option స్థిరరాశి longopts[] =
 {
-  {"silent", no_argument, NULL, 's'},
-  {"quiet", no_argument, NULL, 's'},
+  {"silent", no_వాదం, ఖాళీ, 's'},
+  {"quiet", no_వాదం, ఖాళీ, 's'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_సంస్కరణ_OPTION_DECL},
+  {ఖాళీ, 0, ఖాళీ, 0}
 };
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("Usage: %s [OPTION]...\n"), program_name);
+      రాయి (_("Usage: %s [OPTION]...\n"), కార్యక్రమం_name);
       fputs (_("\
-Print the file name of the terminal connected to standard input.\n\
+Print the file name యొక్క the terminal connected గమ్యం standard ఆదానం.\n\
 \n\
 "), stdout);
       oputs (_("\
   -s, --silent, --quiet\n\
-         print nothing, only return an exit status\n\
+         print nothing, only తిరిగి an నిష్క్రమించు స్థితి_2\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
-  int optc;
+  పూర్ణాంకం optc;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
@@ -92,46 +92,46 @@ main (int argc, char **argv)
   initialize_exit_failure (TTY_WRITE_ERROR);
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "s", longopts, NULL)) != -1)
+  అయితే ((optc = getopt_long (argc, argv, "s", longopts, ఖాళీ)) != -1)
     {
-      switch (optc)
+      ఎంపిక (optc)
         {
-        case 's':
+        స్థితి 's':
           silent = true;
-          break;
+          ఆపు;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_సంస్కరణ_CHAR (కార్యక్రమం_NAME, AUTHORS);
 
-        default:
+        అప్రమేయ:
           usage (TTY_USAGE);
         }
     }
 
-  if (optind < argc)
+  ఒకవేళ (optind < argc)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind]));
       usage (TTY_USAGE);
     }
 
-  if (silent)
-    return isatty (STDIN_FILENO) ? EXIT_SUCCESS : TTY_STDIN_NOTTY;
+  ఒకవేళ (silent)
+    తిరిగి isatty (STDIN_FILENO) ? EXIT_SUCCESS : TTY_STDIN_NOTTY;
 
-  int status;
-  char const *tty = ttyname (STDIN_FILENO);
+  పూర్ణాంకం స్థితి_2;
+  అక్షరం స్థిరరాశి *tty = ttyname (STDIN_FILENO);
 
-  if (tty)
-    status = EXIT_SUCCESS;
-  else
+  ఒకవేళ (tty)
+    స్థితి_2 = EXIT_SUCCESS;
+  లేకపోతే
     {
-      int ttyname_err = errno;
-      if (isatty (STDIN_FILENO))
+      పూర్ణాంకం ttyname_err = errno;
+      ఒకవేళ (isatty (STDIN_FILENO))
         error (TTY_TTYNAME_FAILURE, ttyname_err, _("ttyname error"));
       tty = _("not a tty");
-      status = TTY_STDIN_NOTTY;
+      స్థితి_2 = TTY_STDIN_NOTTY;
     }
 
   puts (tty);
-  return status;
+  తిరిగి స్థితి_2;
 }

@@ -14,48 +14,48 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
+#అన్తర్భావ <config.h>
 
-#include "cksum_crc.h"
+#అన్తర్భావ "cksum_crc.h"
 
-#include <stdio.h>
-#include <sys/types.h>
-#include <x86intrin.h>
-#include "system.h"
+#అన్తర్భావ <stdio.h>
+#అన్తర్భావ <sys/types.h>
+#అన్తర్భావ <x86intrin.h>
+#అన్తర్భావ "system.h"
 
 /* Number of bytes to read at once.  */
-#define BUFLEN (1 << 16)
+#నిర్వచించు BUFLEN (1 << 16)
 
 bool
-cksum_avx2 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
+cksum_avx2 (FILE *fp, uint_fast32_t *చక్రీయ_తనిఖీ_బహిర్గతం, intmax_t *నిడివి_బహిర్గతం)
 {
-  __m256i buf[BUFLEN / sizeof (__m256i)];
-  uint_fast32_t crc = 0;
-  intmax_t length = 0;
-  size_t bytes_read;
+  __m256i buf[BUFLEN / పరిమాణం (__m256i)];
+  uint_fast32_t చక్రీయ_తనిఖీ = 0;
+  intmax_t నిడివి = 0;
+  size_t బైట్లు_read;
   __m256i single_mult_constant;
   __m256i four_mult_constant;
   __m256i shuffle_constant;
 
-  if (!fp || !crc_out || !length_out)
-    return false;
+  ఒకవేళ (!fp || !చక్రీయ_తనిఖీ_బహిర్గతం || !నిడివి_బహిర్గతం)
+    తిరిగి false;
 
   /* These constants and general algorithms are taken from the Intel whitepaper
      "Fast CRC Computation for Generic Polynomials Using PCLMULQDQ Instruction"
   */
-  single_mult_constant = _mm256_set_epi64x (0x569700E5, 0x75BE46B7,
+  single_mult_constant = mm256_సమితి_epi64x (0x569700E5, 0x75BE46B7,
                                             0x569700E5, 0x75BE46B7);
-  four_mult_constant = _mm256_set_epi64x (0x10BD4D7C, 0x567FDDEB,
+  four_mult_constant = mm256_సమితి_epi64x (0x10BD4D7C, 0x567FDDEB,
                                             0x10BD4D7C, 0x567FDDEB);
 
   /* Constant to byteswap a full AVX2 register */
-  shuffle_constant = _mm256_set_epi8 (0, 1, 2, 3, 4, 5, 6, 7, 8,
+  shuffle_constant = mm256_సమితి_epi8 (0, 1, 2, 3, 4, 5, 6, 7, 8,
                                       9, 10, 11, 12, 13, 14, 15,
                                       0, 1, 2, 3, 4, 5, 6, 7, 8,
                                       9, 10, 11, 12, 13, 14, 15);
-  while ((bytes_read = fread (buf, 1, BUFLEN, fp)) > 0)
+  అయితే ((బైట్లు_read = fread (buf, 1, BUFLEN, fp)) > 0)
     {
-      __m256i data;
+      __m256i దత్తాంశం;
       __m256i data2;
       __m256i data3;
       __m256i data4;
@@ -63,29 +63,29 @@ cksum_avx2 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
       __m256i data6;
       __m256i data7;
       __m256i data8;
-      __m256i fold_data;
-      __m256i xor_crc;
+      __m256i fold_దత్తాంశం;
+      __m256i xor_చక్రీయ_తనిఖీ;
 
       __m256i *datap;
 
-      if (ckd_add (&length, length, bytes_read))
+      ఒకవేళ (ckd_కూడు (&నిడివి, నిడివి, బైట్లు_read))
         {
           errno = EOVERFLOW;
-          return false;
+          తిరిగి false;
         }
 
       datap = buf;
 
       /* Fold in parallel 16x 16-byte blocks into 8x 16-byte blocks */
-      if (bytes_read >= 16 * 8 * 2)
+      ఒకవేళ (బైట్లు_read >= 16 * 8 * 2)
         {
-          data = _mm256_loadu_si256 (datap);
-          data = _mm256_shuffle_epi8 (data, shuffle_constant);
+          దత్తాంశం = _mm256_loadu_si256 (datap);
+          దత్తాంశం = _mm256_shuffle_epi8 (దత్తాంశం, shuffle_constant);
           /* XOR in initial CRC value (for us 0 so no effect), or CRC value
              calculated for previous BUFLEN buffer from fread */
-          xor_crc = _mm256_set_epi32 (0, 0, 0, 0, crc, 0, 0, 0);
-          crc = 0;
-          data = _mm256_xor_si256 (data, xor_crc);
+          xor_చక్రీయ_తనిఖీ = mm256_సమితి_epi32 (0, 0, 0, 0, చక్రీయ_తనిఖీ, 0, 0, 0);
+          చక్రీయ_తనిఖీ = 0;
+          దత్తాంశం = _mm256_xor_si256 (దత్తాంశం, xor_చక్రీయ_తనిఖీ);
           data3 = _mm256_loadu_si256 (datap + 1);
           data3 = _mm256_shuffle_epi8 (data3, shuffle_constant);
           data5 = _mm256_loadu_si256 (datap + 2);
@@ -93,14 +93,14 @@ cksum_avx2 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
           data7 = _mm256_loadu_si256 (datap + 3);
           data7 = _mm256_shuffle_epi8 (data7, shuffle_constant);
 
-          while (bytes_read >= 16 * 8 * 2)
+          అయితే (బైట్లు_read >= 16 * 8 * 2)
             {
               datap += 4;
 
               /* Do multiplication here for 8x consecutive 16 byte blocks */
-              data2 = _mm256_clmulepi64_epi128 (data, four_mult_constant,
+              data2 = _mm256_clmulepi64_epi128 (దత్తాంశం, four_mult_constant,
                                                 0x00);
-              data = _mm256_clmulepi64_epi128 (data, four_mult_constant,
+              దత్తాంశం = _mm256_clmulepi64_epi128 (దత్తాంశం, four_mult_constant,
                                                0x11);
               data4 = _mm256_clmulepi64_epi128 (data3, four_mult_constant,
                                                 0x00);
@@ -120,10 +120,10 @@ cksum_avx2 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
                  "consumes" the first 8x blocks from the buffer.
                  Keep xor result in variables for multiplication in next
                  round of loop. */
-              data = _mm256_xor_si256 (data, data2);
+              దత్తాంశం = _mm256_xor_si256 (దత్తాంశం, data2);
               data2 = _mm256_loadu_si256 (datap);
               data2 = _mm256_shuffle_epi8 (data2, shuffle_constant);
-              data = _mm256_xor_si256 (data, data2);
+              దత్తాంశం = _mm256_xor_si256 (దత్తాంశం, data2);
 
               data3 = _mm256_xor_si256 (data3, data4);
               data4 = _mm256_loadu_si256 (datap + 1);
@@ -140,12 +140,12 @@ cksum_avx2 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
               data8 = _mm256_shuffle_epi8 (data8, shuffle_constant);
               data7 = _mm256_xor_si256 (data7, data8);
 
-              bytes_read -= (16 * 4 * 2);
+              బైట్లు_read -= (16 * 4 * 2);
             }
           /* At end of loop we write out results from variables back into
              the buffer, for use in single fold loop */
-          data = _mm256_shuffle_epi8 (data, shuffle_constant);
-          _mm256_storeu_si256 (datap, data);
+          దత్తాంశం = _mm256_shuffle_epi8 (దత్తాంశం, shuffle_constant);
+          _mm256_storeu_si256 (datap, దత్తాంశం);
           data3 = _mm256_shuffle_epi8 (data3, shuffle_constant);
           _mm256_storeu_si256 (datap + 1, data3);
           data5 = _mm256_shuffle_epi8 (data5, shuffle_constant);
@@ -155,41 +155,41 @@ cksum_avx2 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
         }
 
       /* Fold two 32-byte blocks into one 32-byte block */
-      if (bytes_read >= 64)
+      ఒకవేళ (బైట్లు_read >= 64)
         {
-          data = _mm256_loadu_si256 (datap);
-          data = _mm256_shuffle_epi8 (data, shuffle_constant);
-          xor_crc = _mm256_set_epi32 (0, 0, 0, 0, crc, 0, 0, 0);
-          crc = 0;
-          data = _mm256_xor_si256 (data, xor_crc);
-          while (bytes_read >= 64)
+          దత్తాంశం = _mm256_loadu_si256 (datap);
+          దత్తాంశం = _mm256_shuffle_epi8 (దత్తాంశం, shuffle_constant);
+          xor_చక్రీయ_తనిఖీ = mm256_సమితి_epi32 (0, 0, 0, 0, చక్రీయ_తనిఖీ, 0, 0, 0);
+          చక్రీయ_తనిఖీ = 0;
+          దత్తాంశం = _mm256_xor_si256 (దత్తాంశం, xor_చక్రీయ_తనిఖీ);
+          అయితే (బైట్లు_read >= 64)
             {
               datap++;
 
-              data2 = _mm256_clmulepi64_epi128 (data, single_mult_constant,
+              data2 = _mm256_clmulepi64_epi128 (దత్తాంశం, single_mult_constant,
                                                 0x00);
-              data = _mm256_clmulepi64_epi128 (data, single_mult_constant,
+              దత్తాంశం = _mm256_clmulepi64_epi128 (దత్తాంశం, single_mult_constant,
                                                0x11);
-              fold_data = _mm256_loadu_si256 (datap);
-              fold_data = _mm256_shuffle_epi8 (fold_data, shuffle_constant);
-              data = _mm256_xor_si256 (data, data2);
-              data = _mm256_xor_si256 (data, fold_data);
-              bytes_read -= 32;
+              fold_దత్తాంశం = _mm256_loadu_si256 (datap);
+              fold_దత్తాంశం = _mm256_shuffle_epi8 (fold_దత్తాంశం, shuffle_constant);
+              దత్తాంశం = _mm256_xor_si256 (దత్తాంశం, data2);
+              దత్తాంశం = _mm256_xor_si256 (దత్తాంశం, fold_దత్తాంశం);
+              బైట్లు_read -= 32;
             }
-          data = _mm256_shuffle_epi8 (data, shuffle_constant);
-          _mm256_storeu_si256 (datap, data);
+          దత్తాంశం = _mm256_shuffle_epi8 (దత్తాంశం, shuffle_constant);
+          _mm256_storeu_si256 (datap, దత్తాంశం);
         }
 
       /* And finish up last 0-63 bytes in a byte by byte fashion */
-      unsigned char *cp = (unsigned char *)datap;
-      while (bytes_read--)
-        crc = (crc << 8) ^ crctab[0][((crc >> 24) ^ *cp++) & 0xFF];
-      if (feof (fp))
-        break;
+      గుర్తులేని అక్షరం *cp = (గుర్తులేని అక్షరం *)datap;
+      అయితే (బైట్లు_read--)
+        చక్రీయ_తనిఖీ = (చక్రీయ_తనిఖీ << 8) ^ crctab[0][((చక్రీయ_తనిఖీ >> 24) ^ *cp++) & 0xFF];
+      ఒకవేళ (feof (fp))
+        ఆపు;
     }
 
-  *crc_out = crc;
-  *length_out = length;
+  *చక్రీయ_తనిఖీ_బహిర్గతం = చక్రీయ_తనిఖీ;
+  *నిడివి_బహిర్గతం = నిడివి;
 
-  return !ferror (fp);
+  తిరిగి !ferror (fp);
 }

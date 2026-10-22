@@ -17,18 +17,18 @@
 
 /* Written by David MacKenzie <djm@gnu.ai.mit.edu> */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/utsname.h>
-#include <getopt.h>
+#అన్తర్భావ <config.h>
+#అన్తర్భావ <stdio.h>
+#అన్తర్భావ <sys/types.h>
+#అన్తర్భావ <sys/utsname.h>
+#అన్తర్భావ <getopt.h>
 
-#if HAVE_SYSINFO && HAVE_SYS_SYSTEMINFO_H
+#ఒకవేళ HAVE_SYSINFO && HAVE_SYS_SYSTEMINFO_H
 # include <sys/systeminfo.h>
-#endif
+#అయితే_ముగింపు
 
-#if HAVE_SYS_SYSCTL_H && ! defined __GLIBC__ && ! defined __APPLE__
-# if HAVE_SYS_PARAM_H
+#ఒకవేళ HAVE_SYS_SYSCTL_H && ! defined __GLIBC__ && ! defined __APPLE__
+# ఒకవేళ HAVE_SYS_PARAM_H
 #  include <sys/param.h> /* needed for OpenBSD 3.0 */
 # endif
 # include <sys/sysctl.h>
@@ -37,110 +37,110 @@
 /* E.g., FreeBSD 4.5, NetBSD 1.5.2 */
 #   define UNAME_HARDWARE_PLATFORM HW_MODEL
 #   define UNAME_PROCESSOR HW_MACHINE_ARCH
-#  else
+#  లేకపోతే
 /* E.g., OpenBSD 3.0 */
 #   define UNAME_PROCESSOR HW_MODEL
 #  endif
 # endif
-#endif
+#అయితే_ముగింపు
 
-#include "system.h"
-#include "quote.h"
-#include "uname.h"
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "quote.h"
+#అన్తర్భావ "uname.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME (uname_mode == UNAME_UNAME ? "uname" : "arch")
+#నిర్వచించు కార్యక్రమం_NAME (uname_బహుళకం == UNAME_UNAME ? "uname" : "arch")
 
-#define AUTHORS proper_name ("David MacKenzie")
-#define ARCH_AUTHORS "David MacKenzie", "Karel Zak"
+#నిర్వచించు AUTHORS proper_name ("David MacKenzie")
+#నిర్వచించు ARCH_AUTHORS "David MacKenzie", "Karel Zak"
 
 /* Values that are bitwise or'd into 'toprint'. */
 /* Kernel name. */
-#define PRINT_KERNEL_NAME 1
+#నిర్వచించు PRINT_KERNEL_NAME 1
 
 /* Node name on a communications network. */
-#define PRINT_NODENAME 2
+#నిర్వచించు PRINT_NODENAME 2
 
 /* Kernel release. */
-#define PRINT_KERNEL_RELEASE 4
+#నిర్వచించు PRINT_KERNEL_RELEASE 4
 
 /* Kernel version. */
-#define PRINT_KERNEL_VERSION 8
+#నిర్వచించు PRINT_KERNEL_సంస్కరణ 8
 
 /* Machine hardware name. */
-#define PRINT_MACHINE 16
+#నిర్వచించు PRINT_MACHINE 16
 
 /* Processor type. */
-#define PRINT_PROCESSOR 32
+#నిర్వచించు PRINT_PROCESSOR 32
 
 /* Hardware platform.  */
-#define PRINT_HARDWARE_PLATFORM 64
+#నిర్వచించు PRINT_HARDWARE_PLATFORM 64
 
 /* Operating system.  */
-#define PRINT_OPERATING_SYSTEM 128
+#నిర్వచించు PRINT_OPERATING_SYSTEM 128
 
-static bool labeled = false;
+స్థిర bool labeled = false;
 
-static struct option const uname_long_options[] =
+స్థిర నిర్మాణం option స్థిరరాశి uname_long_options[] =
 {
-  {"all", no_argument, NULL, 'a'},
-  {"all-labeled", no_argument, NULL, 'A'},
-  {"kernel-name", no_argument, NULL, 's'},
-  {"sysname", no_argument, NULL, 's'},	/* Obsolescent.  */
-  {"nodename", no_argument, NULL, 'n'},
-  {"kernel-release", no_argument, NULL, 'r'},
-  {"release", no_argument, NULL, 'r'},  /* Obsolescent.  */
-  {"kernel-version", no_argument, NULL, 'v'},
-  {"machine", no_argument, NULL, 'm'},
-  {"processor", no_argument, NULL, 'p'},
-  {"hardware-platform", no_argument, NULL, 'i'},
-  {"operating-system", no_argument, NULL, 'o'},
+  {"all", no_వాదం, ఖాళీ, 'a'},
+  {"all-labeled", no_వాదం, ఖాళీ, 'A'},
+  {"kernel-name", no_వాదం, ఖాళీ, 's'},
+  {"sysname", no_వాదం, ఖాళీ, 's'},	/* Obsolescent.  */
+  {"nodename", no_వాదం, ఖాళీ, 'n'},
+  {"kernel-release", no_వాదం, ఖాళీ, 'r'},
+  {"release", no_వాదం, ఖాళీ, 'r'},  /* Obsolescent.  */
+  {"kernel-version", no_వాదం, ఖాళీ, 'v'},
+  {"machine", no_వాదం, ఖాళీ, 'm'},
+  {"processor", no_వాదం, ఖాళీ, 'p'},
+  {"hardware-platform", no_వాదం, ఖాళీ, 'i'},
+  {"operating-system", no_వాదం, ఖాళీ, 'o'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_సంస్కరణ_OPTION_DECL},
+  {ఖాళీ, 0, ఖాళీ, 0}
 };
 
-static struct option const arch_long_options[] =
+స్థిర నిర్మాణం option స్థిరరాశి arch_long_options[] =
 {
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_సంస్కరణ_OPTION_DECL},
+  {ఖాళీ, 0, ఖాళీ, 0}
 };
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("Usage: %s [OPTION]...\n"), program_name);
+      రాయి (_("Usage: %s [OPTION]...\n"), కార్యక్రమం_name);
 
-      if (uname_mode == UNAME_UNAME)
+      ఒకవేళ (uname_బహుళకం == UNAME_UNAME)
         {
           fputs (_("\
 Print certain system information.  With no OPTION, same as -s.\n\
 \n\
 "), stdout);
           oputs (_("\
-  -a, --all                print all information, in the following order,\n\
-                             except omit -p and -i if unknown\n\
+  -a, --all                print all information, లోపల the following క్రమం,\n\
+                             except omit -p and -i ఒకవేళ unknown\n\
 "));
           oputs (_("\
-  -A, --all-labeled        print all information, one labeled field per line,\n\
-                             except omit -p and -i if unknown\n\
+  -A, --all-labeled        print all information, one labeled క్షేత్రం చొప్పున పంక్తి,\n\
+                             except omit -p and -i ఒకవేళ unknown\n\
 "));
           oputs (_("\
   -s, --kernel-name        print the kernel name\n\
 "));
           oputs (_("\
-  -n, --nodename           print the network node hostname\n\
+  -n, --nodename           print the జాలం కణుపు hostname\n\
 "));
           oputs (_("\
   -r, --kernel-release     print the kernel release\n\
 "));
           oputs (_("\
-  -v, --kernel-version     print the kernel version\n\
+  -v, --kernel-సంస్కరణ_3     print the kernel సంస్కరణ_3\n\
 "));
           oputs (_("\
   -m, --machine            print the machine hardware name\n\
@@ -155,7 +155,7 @@ Print certain system information.  With no OPTION, same as -s.\n\
   -o, --operating-system   print the operating system\n\
 "));
         }
-      else
+      లేకపోతే
         {
           fputs (_("\
 Print machine architecture.\n\
@@ -164,27 +164,27 @@ Print machine architecture.\n\
         }
 
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
 /* Print ELEMENT, preceded by a space if something has already been
    printed.  */
 
-static void
-print_element (char const *element, char const *label)
+స్థిర శూన్య
+print_element (అక్షరం స్థిరరాశి *element, అక్షరం స్థిరరాశి *label)
 {
-  if (labeled)
+  ఒకవేళ (labeled)
     {
-      printf ("%s: %s\n", label, element);
+      రాయి ("%s: %s\n", label, element);
     }
-  else
+  లేకపోతే
     {
-      static bool printed;
-      if (printed)
-        putchar (' ');
+      స్థిర bool printed;
+      ఒకవేళ (printed)
+        అక్షరం_రాయి (' ');
       printed = true;
       fputs (element, stdout);
     }
@@ -194,19 +194,19 @@ print_element (char const *element, char const *label)
    printed.  But if the environment variable ENVVAR is set, print its
    value instead of ELEMENT.  */
 
-static void
-print_element_env (char const *element,
-                   MAYBE_UNUSED char const *envvar,
-                   char const *label)
+స్థిర శూన్య
+print_element_env (అక్షరం స్థిరరాశి *element,
+                   MAYBE_వాడని అక్షరం స్థిరరాశి *envvar,
+                   అక్షరం స్థిరరాశి *label)
 {
-#ifdef __APPLE__
-  if (envvar)
+#నిర్వచితమైతే __APPLE__
+  ఒకవేళ (envvar)
     {
-      char const *val = getenv (envvar);
-      if (val)
+      అక్షరం స్థిరరాశి *val = getenv (envvar);
+      ఒకవేళ (val)
         element = val;
     }
-#endif
+#అయితే_ముగింపు
   print_element (element, label);
 }
 
@@ -214,109 +214,109 @@ print_element_env (char const *element,
 /* Set all the option flags according to the switches specified.
    Return the mask indicating which elements to print.  */
 
-static int
-decode_switches (int argc, char **argv)
+స్థిర పూర్ణాంకం
+decode_switches (పూర్ణాంకం argc, అక్షరం **argv)
 {
-  int c;
-  unsigned int toprint = 0;
+  పూర్ణాంకం c;
+  గుర్తులేని పూర్ణాంకం toprint = 0;
 
-  if (uname_mode == UNAME_ARCH)
+  ఒకవేళ (uname_బహుళకం == UNAME_ARCH)
     {
-      while ((c = getopt_long (argc, argv, "",
-                               arch_long_options, NULL))
+      అయితే ((c = getopt_long (argc, argv, "",
+                               arch_long_options, ఖాళీ))
              != -1)
         {
-          switch (c)
+          ఎంపిక (c)
             {
             case_GETOPT_HELP_CHAR;
 
-            case_GETOPT_VERSION_CHAR (PROGRAM_NAME, ARCH_AUTHORS);
+            case_GETOPT_సంస్కరణ_CHAR (కార్యక్రమం_NAME, ARCH_AUTHORS);
 
-            default:
+            అప్రమేయ:
               usage (EXIT_FAILURE);
             }
         }
       toprint = PRINT_MACHINE;
     }
-  else
+  లేకపోతే
     {
-      while ((c = getopt_long (argc, argv, "asnrvmpioA",
-                               uname_long_options, NULL))
+      అయితే ((c = getopt_long (argc, argv, "asnrvmpioA",
+                               uname_long_options, ఖాళీ))
              != -1)
         {
-          switch (c)
+          ఎంపిక (c)
             {
-            case 'a':
+            స్థితి 'a':
               toprint = UINT_MAX;
               labeled = false;
-              break;
+              ఆపు;
 
-            case 'A':
+            స్థితి 'A':
               toprint = UINT_MAX;
               labeled = true;
-              break;
+              ఆపు;
 
-            case 's':
+            స్థితి 's':
               toprint |= PRINT_KERNEL_NAME;
-              break;
+              ఆపు;
 
-            case 'n':
+            స్థితి 'n':
               toprint |= PRINT_NODENAME;
-              break;
+              ఆపు;
 
-            case 'r':
+            స్థితి 'r':
               toprint |= PRINT_KERNEL_RELEASE;
-              break;
+              ఆపు;
 
-            case 'v':
-              toprint |= PRINT_KERNEL_VERSION;
-              break;
+            స్థితి 'v':
+              toprint |= PRINT_KERNEL_సంస్కరణ;
+              ఆపు;
 
-            case 'm':
+            స్థితి 'm':
               toprint |= PRINT_MACHINE;
-              break;
+              ఆపు;
 
-            case 'p':
+            స్థితి 'p':
               toprint |= PRINT_PROCESSOR;
-              break;
+              ఆపు;
 
-            case 'i':
+            స్థితి 'i':
               toprint |= PRINT_HARDWARE_PLATFORM;
-              break;
+              ఆపు;
 
-            case 'o':
+            స్థితి 'o':
               toprint |= PRINT_OPERATING_SYSTEM;
-              break;
+              ఆపు;
 
             case_GETOPT_HELP_CHAR;
 
-            case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+            case_GETOPT_సంస్కరణ_CHAR (కార్యక్రమం_NAME, AUTHORS);
 
-            default:
+            అప్రమేయ:
               usage (EXIT_FAILURE);
             }
         }
     }
 
-  if (argc != optind)
+  ఒకవేళ (argc != optind)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind]));
       usage (EXIT_FAILURE);
     }
 
-  return toprint;
+  తిరిగి toprint;
 }
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
-  static char const unknown[] = "unknown";
+  స్థిర అక్షరం స్థిరరాశి unknown[] = "unknown";
 
   /* Mask indicating which elements to print. */
-  unsigned int toprint = 0;
+  గుర్తులేని పూర్ణాంకం toprint = 0;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
@@ -325,94 +325,94 @@ main (int argc, char **argv)
 
   toprint = decode_switches (argc, argv);
 
-  if (toprint == 0)
+  ఒకవేళ (toprint == 0)
     toprint = PRINT_KERNEL_NAME;
 
-  if (toprint
+  ఒకవేళ (toprint
        & (PRINT_KERNEL_NAME | PRINT_NODENAME | PRINT_KERNEL_RELEASE
-          | PRINT_KERNEL_VERSION | PRINT_MACHINE))
+          | PRINT_KERNEL_సంస్కరణ | PRINT_MACHINE))
     {
-      struct utsname name;
+      నిర్మాణం utsname name;
 
-      if (uname (&name) == -1)
+      ఒకవేళ (uname (&name) == -1)
         error (EXIT_FAILURE, errno, _("cannot get system name"));
 
-      if (toprint & PRINT_KERNEL_NAME)
+      ఒకవేళ (toprint & PRINT_KERNEL_NAME)
         print_element_env (name.sysname, "UNAME_SYSNAME", _("Kernel name"));
-      if (toprint & PRINT_NODENAME)
+      ఒకవేళ (toprint & PRINT_NODENAME)
         print_element_env (name.nodename, "UNAME_NODENAME", _("Node name"));
-      if (toprint & PRINT_KERNEL_RELEASE)
+      ఒకవేళ (toprint & PRINT_KERNEL_RELEASE)
         print_element_env (name.release, "UNAME_RELEASE", _("Kernel release"));
-      if (toprint & PRINT_KERNEL_VERSION)
-        print_element_env (name.version, "UNAME_VERSION", _("Kernel version"));
-      if (toprint & PRINT_MACHINE)
+      ఒకవేళ (toprint & PRINT_KERNEL_సంస్కరణ)
+        print_element_env (name.సంస్కరణ_3, "UNAME_VERSION", _("Kernel version"));
+      ఒకవేళ (toprint & PRINT_MACHINE)
         print_element_env (name.machine, "UNAME_MACHINE", _("Machine"));
     }
 
-  if (toprint & PRINT_PROCESSOR)
+  ఒకవేళ (toprint & PRINT_PROCESSOR)
     {
-      char const *element = unknown;
-#ifdef __APPLE__
-# if defined __arm__ || defined __arm64__
+      అక్షరం స్థిరరాశి *element = unknown;
+#నిర్వచితమైతే __APPLE__
+# ఒకవేళ defined __arm__ || defined __arm64__
       element = "arm";
 # elif defined __i386__ || defined __x86_64__
       element = "i386";
 # elif defined __ppc__ || defined __ppc64__
       element = "powerpc";
 # endif
-#endif
-#if HAVE_SYSINFO && defined SI_ARCHITECTURE
-      if (element == unknown)
+#అయితే_ముగింపు
+#ఒకవేళ HAVE_SYSINFO && defined SI_ARCHITECTURE
+      ఒకవేళ (element == unknown)
         {
-          static char processor[257];
-          if (0 <= sysinfo (SI_ARCHITECTURE, processor, sizeof processor))
+          స్థిర అక్షరం processor[257];
+          ఒకవేళ (0 <= sysinfo (SI_ARCHITECTURE, processor, పరిమాణం processor))
             element = processor;
         }
-#endif
-#ifdef UNAME_PROCESSOR
-      if (element == unknown)
+#అయితే_ముగింపు
+#నిర్వచితమైతే UNAME_PROCESSOR
+      ఒకవేళ (element == unknown)
         {
-          static char processor[257];
-          size_t s = sizeof processor;
-          static int mib[] = { CTL_HW, UNAME_PROCESSOR };
-          if (sysctl (mib, 2, processor, &s, 0, 0) >= 0)
+          స్థిర అక్షరం processor[257];
+          size_t s = పరిమాణం processor;
+          స్థిర పూర్ణాంకం mib[] = { CTL_HW, UNAME_PROCESSOR };
+          ఒకవేళ (sysctl (mib, 2, processor, &s, 0, 0) >= 0)
             element = processor;
         }
-#endif
-      if (! (toprint == UINT_MAX && element == unknown))
+#అయితే_ముగింపు
+      ఒకవేళ (! (toprint == UINT_MAX && element == unknown))
         print_element (element, _("Processor"));
     }
 
-  if (toprint & PRINT_HARDWARE_PLATFORM)
+  ఒకవేళ (toprint & PRINT_HARDWARE_PLATFORM)
     {
-      char const *element = unknown;
-#if HAVE_SYSINFO && defined SI_PLATFORM
+      అక్షరం స్థిరరాశి *element = unknown;
+#ఒకవేళ HAVE_SYSINFO && defined SI_PLATFORM
       {
-        static char hardware_platform[257];
-        if (0 <= sysinfo (SI_PLATFORM,
-                          hardware_platform, sizeof hardware_platform))
+        స్థిర అక్షరం hardware_platform[257];
+        ఒకవేళ (0 <= sysinfo (SI_PLATFORM,
+                          hardware_platform, పరిమాణం hardware_platform))
           element = hardware_platform;
       }
-#endif
-#ifdef UNAME_HARDWARE_PLATFORM
-      if (element == unknown)
+#అయితే_ముగింపు
+#నిర్వచితమైతే UNAME_HARDWARE_PLATFORM
+      ఒకవేళ (element == unknown)
         {
-          static char hardware_platform[257];
-          size_t s = sizeof hardware_platform;
-          static int mib[] = { CTL_HW, UNAME_HARDWARE_PLATFORM };
-          if (sysctl (mib, 2, hardware_platform, &s, 0, 0) >= 0)
+          స్థిర అక్షరం hardware_platform[257];
+          size_t s = పరిమాణం hardware_platform;
+          స్థిర పూర్ణాంకం mib[] = { CTL_HW, UNAME_HARDWARE_PLATFORM };
+          ఒకవేళ (sysctl (mib, 2, hardware_platform, &s, 0, 0) >= 0)
             element = hardware_platform;
         }
-#endif
-      if (! (toprint == UINT_MAX && element == unknown))
+#అయితే_ముగింపు
+      ఒకవేళ (! (toprint == UINT_MAX && element == unknown))
         print_element (element, _("Hardware platform"));
     }
 
-  if (toprint & PRINT_OPERATING_SYSTEM)
+  ఒకవేళ (toprint & PRINT_OPERATING_SYSTEM)
     print_element (HOST_OPERATING_SYSTEM, _("Operating system"));
 
-  if (!labeled)
-    putchar ('\n');
+  ఒకవేళ (!labeled)
+    అక్షరం_రాయి ('\n');
 
-  return EXIT_SUCCESS;
+  తిరిగి EXIT_SUCCESS;
 }

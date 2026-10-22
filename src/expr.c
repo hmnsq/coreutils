@@ -28,70 +28,70 @@
 
    Define EVAL_TRACE to print an evaluation trace.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include "system.h"
+#అన్తర్భావ <config.h>
+#అన్తర్భావ <stdio.h>
+#అన్తర్భావ <sys/types.h>
+#అన్తర్భావ "system.h"
 
-#include <gmp.h>
-#include <regex.h>
-#include "c-ctype.h"
-#include "long-options.h"
-#include "mcel.h"
-#include "strnumcmp.h"
+#అన్తర్భావ <gmp.h>
+#అన్తర్భావ <regex.h>
+#అన్తర్భావ "c-ctype.h"
+#అన్తర్భావ "long-options.h"
+#అన్తర్భావ "mcel.h"
+#అన్తర్భావ "strnumcmp.h"
 
 /* Various parts of this code assume size_t fits into unsigned long
    int, the widest unsigned type that GMP supports.  */
 static_assert (SIZE_MAX <= ULONG_MAX);
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "expr"
+#నిర్వచించు కార్యక్రమం_NAME "expr"
 
-#define AUTHORS \
+#నిర్వచించు AUTHORS \
   proper_name ("Mike Parker"), \
   proper_name ("James Youngman"), \
   proper_name ("Paul Eggert")
 
 /* Exit statuses.  */
-enum
+గణన
   {
     /* Invalid expression: e.g., its form does not conform to the
        grammar for expressions.  Our grammar is an extension of the
        POSIX grammar.  */
-    EXPR_INVALID = 2,
+    సమాసం_INVALID = 2,
 
     /* An internal error occurred, e.g., arithmetic overflow, storage
        exhaustion.  */
-    EXPR_FAILURE
+    సమాసం_FAILURE
   };
 
 /* The kinds of value we can have.  */
-enum valtype
+గణన valtype
 {
   integer,
   string
 };
-typedef enum valtype TYPE;
+రకనిర్వచనం గణన valtype TYPE;
 
 /* A value is.... */
-struct valinfo
+నిర్మాణం valinfo
 {
   TYPE type;			/* Which kind. */
-  union
+  సంఘం
   {				/* The value itself. */
     mpz_t i;
-    char *s;
+    అక్షరం *s;
   } u;
 };
-typedef struct valinfo VALUE;
+రకనిర్వచనం నిర్మాణం valinfo విలువ_2;
 
 /* The arguments given to the program, minus the program name.  */
-static char **args;
+స్థిర అక్షరం **వాదనలు;
 
-static VALUE *eval (bool);
-static bool nomoreargs (void);
-static bool null (VALUE *v);
-static void printv (VALUE *v);
+స్థిర విలువ_2 *eval (bool);
+స్థిర bool nomoreargs (శూన్య);
+స్థిర bool null (విలువ_2 *v);
+స్థిర శూన్య printv (విలువ_2 *v);
 
 
 /*
@@ -111,47 +111,47 @@ static void printv (VALUE *v);
    In UTF-8 \xCE\xB1 is a single character (greek alpha):
      mbs_logical_cspn ('\xCE\xB1bc','\xCE\xB1') => 1
      mbs_logical_cspn ('\xCE\xB1bc','c') => 3 */
-static size_t
-mbs_logical_cspn (char const *s, char const *accept)
+స్థిర size_t
+mbs_logical_cspn (అక్షరం స్థిరరాశి *s, అక్షరం స్థిరరాశి *accept)
 {
-  if (accept[0] == '\0')
-    return 0;
+  ఒకవేళ (accept[0] == '\0')
+    తిరిగి 0;
 
   /* General case.  */
-  if (MB_CUR_MAX > 1)
+  ఒకవేళ (MB_CUR_MAX > 1)
     {
       size_t idx = 0;
-      for (char const *p = s; *p; )
+      కొరకు (అక్షరం స్థిరరాశి *p = s; *p; )
         {
           ++idx;
           mcel_t g = mcel_scanz (p);
-          if (g.len == 1)
+          ఒకవేళ (g.len == 1)
             {
-              if (mbschr (accept, *p))
-                return idx;
+              ఒకవేళ (mbschr (accept, *p))
+                తిరిగి idx;
             }
-          else
-            for (char const *a = accept; *a; )
+          లేకపోతే
+            కొరకు (అక్షరం స్థిరరాశి *a = accept; *a; )
               {
                 mcel_t h = mcel_scanz (a);
-                if (mcel_eq (g, h))
-                  return idx;
+                ఒకవేళ (mcel_eq (g, h))
+                  తిరిగి idx;
                 a += h.len;
               }
           p += g.len;
         }
     }
-  else
+  లేకపోతే
     {
       /* single-byte locale,
          convert returned byte offset to 1-based index or zero if not found. */
       size_t i = strcspn (s, accept);
-      if (s[i])
-        return i + 1;
+      ఒకవేళ (s[i])
+        తిరిగి i + 1;
     }
 
   /* not found */
-  return 0;
+  తిరిగి 0;
 }
 
 /* Extract the substring of S, from logical character
@@ -161,46 +161,46 @@ mbs_logical_cspn (char const *s, char const *accept)
 
    Upon exit, sets v->s to the new string.
    The new string might be empty if POS/LEN are invalid. */
-static char *
-mbs_logical_substr (char const *s, size_t pos, size_t len)
+స్థిర అక్షరం *
+mbs_logical_substr (అక్షరం స్థిరరాశి *s, size_t pos, size_t len)
 {
   size_t mb_cur_max = MB_CUR_MAX;
-  idx_t llen = mb_cur_max <= 1 ? strlen (s) : mbslen (s); /* logical length */
+  idx_t llen = mb_cur_max <= 1 ? అక్షరశ్రేణి_పొడవు (s) : mbslen (s); /* logical length */
 
   /* characters to copy */
   size_t vlen = MIN (len, pos <= llen ? llen - pos + 1 : 0);
 
-  char const *substart = s;
+  అక్షరం స్థిరరాశి *substart = s;
   idx_t sublen = 0;
-  if (pos == 0 || len == SIZE_MAX)
+  ఒకవేళ (pos == 0 || len == SIZE_MAX)
     {
       /* The request is invalid.  Silently yield an empty string.  */
     }
-  else if (mb_cur_max <= 1)
+  లేకపోతే ఒకవేళ (mb_cur_max <= 1)
     {
       substart += pos - 1;
       sublen = vlen;
     }
-  else
-    for (idx_t idx = 1; *s && vlen; idx++)
+  లేకపోతే
+    కొరకు (idx_t idx = 1; *s && vlen; idx++)
       {
-        idx_t char_bytes = mcel_scanz (s).len;
+        idx_t char_బైట్లు = mcel_scanz (s).len;
 
         /* Skip until we reach the starting position.  */
-        if (pos <= idx)
+        ఒకవేళ (pos <= idx)
           {
-            if (pos == idx)
+            ఒకవేళ (pos == idx)
               substart = s;
 
             /* Add one character's length in bytes.  */
             vlen--;
-            sublen += char_bytes;
+            sublen += char_బైట్లు;
           }
 
-        s += char_bytes;
+        s += char_బైట్లు;
       }
 
-  return ximemdup0 (substart, sublen);
+  తిరిగి ximemdup0 (substart, sublen);
 }
 
 /* Return the number of logical characters (possibly multibyte)
@@ -211,131 +211,131 @@ mbs_logical_substr (char const *s, size_t pos, size_t len)
    In the string below, there are only two characters
    up to the first 4 bytes (The U+2767 which occupies 3 bytes and 'x'):
       mbs_count_to_offset ("\xE2\x9D\xA7xyz", 4) => 2  */
-static size_t
-mbs_offset_to_chars (char const *s, size_t ofs)
+స్థిర size_t
+mbs_స్థానభ్రంశం_గమ్యం_chars (అక్షరం స్థిరరాశి *s, size_t ofs)
 {
   size_t c = 0;
-  for (size_t d = 0; d < ofs && s[d]; d += mcel_scanz (s + d).len)
+  కొరకు (size_t d = 0; d < ofs && s[d]; d += mcel_scanz (s + d).len)
     c++;
-  return c;
+  తిరిగి c;
 }
 
 
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("\
-Usage: %s EXPRESSION\n\
+      రాయి (_("\
+Usage: %s వ్యక్తీకరణ\n\
   or:  %s OPTION\n\
 "),
-              program_name, program_name);
-      putchar ('\n');
+              కార్యక్రమం_name, కార్యక్రమం_name);
+      అక్షరం_రాయి ('\n');
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-Print the value of EXPRESSION to standard output.  A blank line below\n\
-separates increasing precedence groups.  EXPRESSION may be:\n\
+Print the విలువ యొక్క వ్యక్తీకరణ గమ్యం standard output.  A blank పంక్తి క్రింద\n\
+separates increasing precedence groups.  వ్యక్తీకరణ may be:\n\
 \n\
-  ARG1 | ARG2       ARG1 if it is neither null nor 0, otherwise ARG2\n\
+  ARG1 | ARG2       ARG1 ఒకవేళ it is neither null nor 0, otherwise ARG2\n\
 \n\
-  ARG1 & ARG2       ARG1 if neither argument is null or 0, otherwise 0\n\
+  ARG1 & ARG2       ARG1 ఒకవేళ neither వాదం is null or 0, otherwise 0\n\
 "), stdout);
       fputs (_("\
 \n\
   ARG1 < ARG2       ARG1 is less than ARG2\n\
-  ARG1 <= ARG2      ARG1 is less than or equal to ARG2\n\
-  ARG1 = ARG2       ARG1 is equal to ARG2\n\
-  ARG1 != ARG2      ARG1 is unequal to ARG2\n\
-  ARG1 >= ARG2      ARG1 is greater than or equal to ARG2\n\
+  ARG1 <= ARG2      ARG1 is less than or equal గమ్యం ARG2\n\
+  ARG1 = ARG2       ARG1 is equal గమ్యం ARG2\n\
+  ARG1 != ARG2      ARG1 is unequal గమ్యం ARG2\n\
+  ARG1 >= ARG2      ARG1 is greater than or equal గమ్యం ARG2\n\
   ARG1 > ARG2       ARG1 is greater than ARG2\n\
 "), stdout);
       fputs (_("\
 \n\
-  ARG1 + ARG2       arithmetic sum of ARG1 and ARG2\n\
-  ARG1 - ARG2       arithmetic difference of ARG1 and ARG2\n\
+  ARG1 + ARG2       arithmetic కూడిక యొక్క ARG1 and ARG2\n\
+  ARG1 - ARG2       arithmetic difference యొక్క ARG1 and ARG2\n\
 "), stdout);
       /* Tell xgettext that the "% A" below is not a printf-style
          format string:  xgettext:no-c-format */
       fputs (_("\
 \n\
-  ARG1 * ARG2       arithmetic product of ARG1 and ARG2\n\
-  ARG1 / ARG2       arithmetic quotient of ARG1 divided by ARG2\n\
-  ARG1 % ARG2       arithmetic remainder of ARG1 divided by ARG2\n\
+  ARG1 * ARG2       arithmetic లబ్ధం యొక్క ARG1 and ARG2\n\
+  ARG1 / ARG2       arithmetic quotient యొక్క ARG1 divided by ARG2\n\
+  ARG1 % ARG2       arithmetic remainder యొక్క ARG1 divided by ARG2\n\
 "), stdout);
       fputs (_("\
 \n\
-  STRING : REGEXP   anchored pattern match of REGEXP in STRING\n\
+  STRING : REGEXP   anchored నమూనా_2 సరిపోలిక యొక్క REGEXP లోపల STRING\n\
 \n\
-  match STRING REGEXP        same as STRING : REGEXP\n\
-  substr STRING POS LENGTH   substring of STRING, POS counted from 1\n\
-  index STRING CHARS         index in STRING where any CHARS is found, or 0\n\
-  length STRING              length of STRING\n\
+  సరిపోలిక STRING REGEXP        same as STRING : REGEXP\n\
+  substr STRING POS నిడివి_2   substring యొక్క STRING, POS counted from 1\n\
+  index STRING CHARS         index లోపల STRING where any CHARS is దొరికింది, or 0\n\
+  నిడివి STRING              నిడివి యొక్క STRING\n\
 "), stdout);
       fputs (_("\
-  + TOKEN                    interpret TOKEN as a string, even if it is a\n\
-                               keyword like 'match' or an operator like '/'\n\
+  + TOKEN                    interpret TOKEN as a string, even ఒకవేళ it is a\n\
+                               keyword like 'match' or an క్రియాకారకం like '/'\n\
 \n\
-  ( EXPRESSION )             value of EXPRESSION\n\
-"), stdout);
-      fputs (_("\
-\n\
-Beware that many operators need to be escaped or quoted for shells.\n\
-Comparisons are arithmetic if both ARGs are numbers, else lexicographical.\n\
-Pattern matches return the string matched between \\( and \\) or null; if\n\
-\\( and \\) are not used, they return the number of characters matched or 0.\n\
+  ( వ్యక్తీకరణ )             విలువ యొక్క వ్యక్తీకరణ\n\
 "), stdout);
       fputs (_("\
 \n\
-Exit status is 0 if EXPRESSION is neither null nor 0, 1 if EXPRESSION is null\n\
-or 0, 2 if EXPRESSION is syntactically invalid, and 3 if an error occurred.\n\
+Beware that many operators need గమ్యం be escaped or quoted కొరకు shells.\n\
+Comparisons are arithmetic ఒకవేళ both వాదనలు_2 are numbers, లేకపోతే lexicographical.\n\
+నమూనా_3 matches తిరిగి the string matched between \\( and \\) or null; ఒకవేళ\n\
+\\( and \\) are not వాడిన, they తిరిగి the సంఖ్య యొక్క characters matched or 0.\n\
 "), stdout);
-      emit_ancillary_info (PROGRAM_NAME);
+      fputs (_("\
+\n\
+Exit స్థితి_2 is 0 ఒకవేళ వ్యక్తీకరణ is neither null nor 0, 1 ఒకవేళ వ్యక్తీకరణ is null\n\
+or 0, 2 ఒకవేళ వ్యక్తీకరణ is syntactically invalid, and 3 ఒకవేళ an error occurred.\n\
+"), stdout);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
-  initialize_exit_failure (EXPR_FAILURE);
+  initialize_exit_failure (సమాసం_FAILURE);
   atexit (close_stdout);
 
-  parse_long_options (argc, argv, PROGRAM_NAME, PACKAGE_NAME, VERSION,
-                      usage, AUTHORS, (char const *) NULL);
+  parse_long_options (argc, argv, కార్యక్రమం_NAME, PACKAGE_NAME, సంస్కరణ_2,
+                      usage, AUTHORS, (అక్షరం స్థిరరాశి *) ఖాళీ);
 
   /* The above handles --help and --version.
      Since there is no other invocation of getopt, handle '--' here.  */
-  if (1 < argc && streq (argv[1], "--"))
+  ఒకవేళ (1 < argc && streq (argv[1], "--"))
     {
       --argc;
       ++argv;
     }
 
-  if (argc <= 1)
+  ఒకవేళ (argc <= 1)
     {
       error (0, 0, _("missing operand"));
-      usage (EXPR_INVALID);
+      usage (సమాసం_INVALID);
     }
 
-  args = argv + 1;
+  వాదనలు = argv + 1;
 
-  VALUE *v = eval (true);
-  if (!nomoreargs ())
-    error (EXPR_INVALID, 0, _("syntax error: unexpected argument %s"),
-           quotearg_n_style (0, locale_quoting_style, *args));
+  విలువ_2 *v = eval (true);
+  ఒకవేళ (!nomoreargs ())
+    error (సమాసం_INVALID, 0, _("syntax error: unexpected argument %s"),
+           quotearg_n_style (0, locale_quoting_style, *వాదనలు));
 
   printv (v);
 
@@ -344,149 +344,149 @@ main (int argc, char **argv)
 
 /* Return a VALUE for I.  */
 
-static VALUE *
-int_value (unsigned long int i)
+స్థిర విలువ_2 *
+int_విలువ (గుర్తులేని దీర్ఘ పూర్ణాంకం i)
 {
-  VALUE *v = xmalloc (sizeof *v);
+  విలువ_2 *v = xmalloc (పరిమాణం *v);
   v->type = integer;
-  mpz_init_set_ui (v->u.i, i);
-  return v;
+  mpz_init_సమితి_ui (v->u.i, i);
+  తిరిగి v;
 }
 
 /* Return a VALUE for S.  */
 
-static VALUE *
-str_value (char const *s)
+స్థిర విలువ_2 *
+str_విలువ (అక్షరం స్థిరరాశి *s)
 {
-  VALUE *v = xmalloc (sizeof *v);
+  విలువ_2 *v = xmalloc (పరిమాణం *v);
   v->type = string;
   v->u.s = xstrdup (s);
-  return v;
+  తిరిగి v;
 }
 
 /* Free VALUE V, including structure components.  */
 
-static void
-freev (VALUE *v)
+స్థిర శూన్య
+freev (విలువ_2 *v)
 {
-  if (v->type == string)
-    free (v->u.s);
-  else
+  ఒకవేళ (v->type == string)
+    విడుదల (v->u.s);
+  లేకపోతే
     mpz_clear (v->u.i);
-  free (v);
+  విడుదల (v);
 }
 
 /* Print VALUE V.  */
 
-static void
-printv (VALUE *v)
+స్థిర శూన్య
+printv (విలువ_2 *v)
 {
-  switch (v->type)
+  ఎంపిక (v->type)
     {
-    case integer:
-      mpz_out_str (stdout, 10, v->u.i);
-      putchar ('\n');
-      break;
-    case string:
+    స్థితి integer:
+      mpz_బహిర్గతం_str (stdout, 10, v->u.i);
+      అక్షరం_రాయి ('\n');
+      ఆపు;
+    స్థితి string:
       puts (v->u.s);
-      break;
-    default:
+      ఆపు;
+    అప్రమేయ:
       unreachable ();
     }
 }
 
 /* Return true if V is a null-string or zero-number.  */
 
-ATTRIBUTE_PURE
-static bool
-null (VALUE *v)
+ATTRIBUTE_శుద్ధ
+స్థిర bool
+null (విలువ_2 *v)
 {
-  switch (v->type)
+  ఎంపిక (v->type)
     {
-    case integer:
-      return mpz_sgn (v->u.i) == 0;
-    case string:
+    స్థితి integer:
+      తిరిగి mpz_sgn (v->u.i) == 0;
+    స్థితి string:
       {
-        char const *cp = v->u.s;
-        if (*cp == '\0')
-          return true;
+        అక్షరం స్థిరరాశి *cp = v->u.s;
+        ఒకవేళ (*cp == '\0')
+          తిరిగి true;
 
         cp += (*cp == '-');
 
-        do
+        చేయి
           {
-            if (*cp != '0')
-              return false;
+            ఒకవేళ (*cp != '0')
+              తిరిగి false;
           }
-        while (*++cp);
+        అయితే (*++cp);
 
-        return true;
+        తిరిగి true;
       }
-    default:
+    అప్రమేయ:
       unreachable ();
     }
 }
 
 /* Return true if CP takes the form of an integer.  */
 
-ATTRIBUTE_PURE
-static bool
-looks_like_integer (char const *cp)
+ATTRIBUTE_శుద్ధ
+స్థిర bool
+looks_like_integer (అక్షరం స్థిరరాశి *cp)
 {
   cp += (*cp == '-');
 
-  do
-    if (! c_isdigit (*cp))
-      return false;
-  while (*++cp);
+  చేయి
+    ఒకవేళ (! c_isdigit (*cp))
+      తిరిగి false;
+  అయితే (*++cp);
 
-  return true;
+  తిరిగి true;
 }
 
 /* Coerce V to a string value (can't fail).  */
 
-static void
-tostring (VALUE *v)
+స్థిర శూన్య
+tostring (విలువ_2 *v)
 {
-  switch (v->type)
+  ఎంపిక (v->type)
     {
-    case integer:
+    స్థితి integer:
       {
-        char *s = mpz_get_str (NULL, 10, v->u.i);
+        అక్షరం *s = mpz_get_str (ఖాళీ, 10, v->u.i);
         mpz_clear (v->u.i);
         v->u.s = s;
         v->type = string;
       }
-      break;
-    case string:
-      break;
-    default:
+      ఆపు;
+    స్థితి string:
+      ఆపు;
+    అప్రమేయ:
       unreachable ();
     }
 }
 
 /* Coerce V to an integer value.  Return true on success, false on failure.  */
 
-static bool
-toarith (VALUE *v)
+స్థిర bool
+toarith (విలువ_2 *v)
 {
-  switch (v->type)
+  ఎంపిక (v->type)
     {
-    case integer:
-      return true;
-    case string:
+    స్థితి integer:
+      తిరిగి true;
+    స్థితి string:
       {
-        char *s = v->u.s;
+        అక్షరం *s = v->u.s;
 
-        if (! looks_like_integer (s))
-          return false;
-        if (mpz_init_set_str (v->u.i, s, 10) != 0)
-          error (EXPR_FAILURE, ERANGE, "%s", (s));
-        free (s);
+        ఒకవేళ (! looks_like_integer (s))
+          తిరిగి false;
+        ఒకవేళ (mpz_init_సమితి_str (v->u.i, s, 10) != 0)
+          error (సమాసం_FAILURE, ERANGE, "%s", (s));
+        విడుదల (s);
         v->type = integer;
-        return true;
+        తిరిగి true;
       }
-    default:
+    అప్రమేయ:
       unreachable ();
     }
 }
@@ -494,307 +494,307 @@ toarith (VALUE *v)
 /* Extract a size_t value from an integer value I.
    If the value is negative, return SIZE_MAX.
    If the value is too large, return SIZE_MAX - 1.  */
-static size_t
+స్థిర size_t
 getsize (mpz_t i)
 {
-  if (mpz_sgn (i) < 0)
-    return SIZE_MAX;
-  if (mpz_fits_ulong_p (i))
+  ఒకవేళ (mpz_sgn (i) < 0)
+    తిరిగి SIZE_MAX;
+  ఒకవేళ (mpz_సరిపోతుంది_ulong_p (i))
     {
-      unsigned long int ul = mpz_get_ui (i);
-      if (ul < SIZE_MAX)
-        return ul;
+      గుర్తులేని దీర్ఘ పూర్ణాంకం ul = mpz_get_ui (i);
+      ఒకవేళ (ul < SIZE_MAX)
+        తిరిగి ul;
     }
-  return SIZE_MAX - 1;
+  తిరిగి SIZE_MAX - 1;
 }
 
 /* Return true and advance if the next token matches STR exactly.
    STR must not be null.  */
 
-static bool
-nextarg (char const *str)
+స్థిర bool
+nextarg (అక్షరం స్థిరరాశి *str)
 {
-  if (*args == NULL)
-    return false;
-  else
+  ఒకవేళ (*వాదనలు == ఖాళీ)
+    తిరిగి false;
+  లేకపోతే
     {
-      bool r = streq (*args, str);
-      args += r;
-      return r;
+      bool r = streq (*వాదనలు, str);
+      వాదనలు += r;
+      తిరిగి r;
     }
 }
 
 /* Return true if there no more tokens.  */
 
-static bool
-nomoreargs (void)
+స్థిర bool
+nomoreargs (శూన్య)
 {
-  return !*args;
+  తిరిగి !*వాదనలు;
 }
 
 /* Report missing operand.
    There is an implicit assumption that there was a previous argument,
    and (args-1) is valid. */
-static void
-require_more_args (void)
+స్థిర శూన్య
+require_మరిన్ని_వాదనలు (శూన్య)
 {
-  if (nomoreargs ())
-    error (EXPR_INVALID, 0, _("syntax error: missing argument after %s"),
-           quotearg_n_style (0, locale_quoting_style, *(args - 1)));
+  ఒకవేళ (nomoreargs ())
+    error (సమాసం_INVALID, 0, _("syntax error: missing argument after %s"),
+           quotearg_n_style (0, locale_quoting_style, *(వాదనలు - 1)));
 }
 
 
-#ifdef EVAL_TRACE
+#నిర్వచితమైతే EVAL_TRACE
 /* Print evaluation trace and args remaining.  */
 
-static void
-trace (char const *fxn)
+స్థిర శూన్య
+trace (అక్షరం స్థిరరాశి *fxn)
 {
-  printf ("%s:", fxn);
-  for (char **a = args; *a; a++)
-    printf (" %s", *a);
-  putchar ('\n');
+  రాయి ("%s:", fxn);
+  కొరకు (అక్షరం **a = వాదనలు; *a; a++)
+    రాయి (" %s", *a);
+  అక్షరం_రాయి ('\n');
 }
-#endif
+#అయితే_ముగింపు
 
 /* Do the : operator.
    SV is the VALUE for the lhs (the string),
    PV is the VALUE for the rhs (the pattern).  */
 
-static VALUE *
-docolon (VALUE *sv, VALUE *pv)
+స్థిర విలువ_2 *
+docolon (విలువ_2 *sv, విలువ_2 *pv)
 {
   tostring (sv);
   tostring (pv);
 
-  struct re_registers re_regs;
-  re_regs.num_regs = 0;
-  re_regs.start = NULL;
-  re_regs.end = NULL;
+  నిర్మాణం re_registers re_regs;
+  re_regs.అంకె_regs = 0;
+  re_regs.ప్రారంభం = ఖాళీ;
+  re_regs.చివర = ఖాళీ;
 
-  struct re_pattern_buffer re_buffer;
-  char fastmap[UCHAR_MAX + 1];
-  re_buffer.buffer = NULL;
-  re_buffer.allocated = 0;
-  re_buffer.fastmap = fastmap;
-  re_buffer.translate = NULL;
+  నిర్మాణం re_నమూనా_బఫరు re_బఫరు;
+  అక్షరం fastmap[UCHAR_MAX + 1];
+  re_బఫరు.బఫరు = ఖాళీ;
+  re_బఫరు.allocated = 0;
+  re_బఫరు.fastmap = fastmap;
+  re_బఫరు.translate = ఖాళీ;
   re_syntax_options = (RE_SYNTAX_POSIX_BASIC & ~RE_CONTEXT_INVALID_DUP
-                       & ~RE_NO_EMPTY_RANGES);
-  char const *errmsg = re_compile_pattern (pv->u.s, strlen (pv->u.s),
-                                           &re_buffer);
-  if (errmsg)
-    error (EXPR_INVALID, 0, "%s", (errmsg));
-  re_buffer.newline_anchor = 0;
+                       & ~RE_NO_ఖాళీలు_RANGES);
+  అక్షరం స్థిరరాశి *errmsg = re_compile_నమూనా (pv->u.s, అక్షరశ్రేణి_పొడవు (pv->u.s),
+                                           &re_బఫరు);
+  ఒకవేళ (errmsg)
+    error (సమాసం_INVALID, 0, "%s", (errmsg));
+  re_బఫరు.newline_anchor = 0;
 
-  VALUE *v;
-  regoff_t matchlen = re_match (&re_buffer, sv->u.s, strlen (sv->u.s), 0,
+  విలువ_2 *v;
+  regoff_t matchlen = re_సరిపోలిక (&re_బఫరు, sv->u.s, అక్షరశ్రేణి_పొడవు (sv->u.s), 0,
                                 &re_regs);
-  if (0 <= matchlen)
+  ఒకవేళ (0 <= matchlen)
     {
       /* Were \(...\) used? */
-      if (re_buffer.re_nsub > 0)
+      ఒకవేళ (re_బఫరు.re_nsub > 0)
         {
-          if (re_regs.end[1] < 0)
-            v = str_value ("");
-          else
+          ఒకవేళ (re_regs.చివర[1] < 0)
+            v = str_విలువ ("");
+          లేకపోతే
             {
-              sv->u.s[re_regs.end[1]] = '\0';
-              v = str_value (sv->u.s + re_regs.start[1]);
+              sv->u.s[re_regs.చివర[1]] = '\0';
+              v = str_విలువ (sv->u.s + re_regs.ప్రారంభం[1]);
             }
         }
-      else
+      లేకపోతే
         {
           /* In multibyte locales, convert the matched offset (=number of bytes)
              to the number of matched characters. */
           size_t i = (MB_CUR_MAX == 1
                       ? matchlen
-                      : mbs_offset_to_chars (sv->u.s, matchlen));
-          v = int_value (i);
+                      : mbs_స్థానభ్రంశం_గమ్యం_chars (sv->u.s, matchlen));
+          v = int_విలువ (i);
         }
     }
-  else if (matchlen == -1)
+  లేకపోతే ఒకవేళ (matchlen == -1)
     {
       /* Match failed -- return the right kind of null.  */
-      if (re_buffer.re_nsub > 0)
-        v = str_value ("");
-      else
-        v = int_value (0);
+      ఒకవేళ (re_బఫరు.re_nsub > 0)
+        v = str_విలువ ("");
+      లేకపోతే
+        v = int_విలువ (0);
     }
-  else
-    error (EXPR_FAILURE,
+  లేకపోతే
+    error (సమాసం_FAILURE,
            matchlen == -2 ? errno : EOVERFLOW,
            _("error in regular expression matcher"));
 
-  if (0 < re_regs.num_regs)
+  ఒకవేళ (0 < re_regs.అంకె_regs)
     {
-      free (re_regs.start);
-      free (re_regs.end);
+      విడుదల (re_regs.ప్రారంభం);
+      విడుదల (re_regs.చివర);
     }
-  re_buffer.fastmap = NULL;
-  regfree (&re_buffer);
-  return v;
+  re_బఫరు.fastmap = ఖాళీ;
+  regfree (&re_బఫరు);
+  తిరిగి v;
 }
 
 /* Handle bare operands and ( expr ) syntax.  */
 
-static VALUE *
+స్థిర విలువ_2 *
 eval7 (bool evaluate)
 {
-#ifdef EVAL_TRACE
+#నిర్వచితమైతే EVAL_TRACE
   trace ("eval7");
-#endif
-  require_more_args ();
+#అయితే_ముగింపు
+  require_మరిన్ని_వాదనలు ();
 
-  if (nextarg ("("))
+  ఒకవేళ (nextarg ("("))
     {
-      VALUE *v = eval (evaluate);
-      if (nomoreargs ())
-        error (EXPR_INVALID, 0, _("syntax error: expecting ')' after %s"),
-               quotearg_n_style (0, locale_quoting_style, *(args - 1)));
-      if (!nextarg (")"))
-        error (EXPR_INVALID, 0, _("syntax error: expecting ')' instead of %s"),
-               quotearg_n_style (0, locale_quoting_style, *args));
-      return v;
+      విలువ_2 *v = eval (evaluate);
+      ఒకవేళ (nomoreargs ())
+        error (సమాసం_INVALID, 0, _("syntax error: expecting ')' after %s"),
+               quotearg_n_style (0, locale_quoting_style, *(వాదనలు - 1)));
+      ఒకవేళ (!nextarg (")"))
+        error (సమాసం_INVALID, 0, _("syntax error: expecting ')' instead of %s"),
+               quotearg_n_style (0, locale_quoting_style, *వాదనలు));
+      తిరిగి v;
     }
 
-  if (nextarg (")"))
-    error (EXPR_INVALID, 0, _("syntax error: unexpected ')'"));
+  ఒకవేళ (nextarg (")"))
+    error (సమాసం_INVALID, 0, _("syntax error: unexpected ')'"));
 
-  return str_value (*args++);
+  తిరిగి str_విలువ (*వాదనలు++);
 }
 
 /* Handle match, substr, index, and length keywords, and quoting "+".  */
 
-static VALUE *
+స్థిర విలువ_2 *
 eval6 (bool evaluate)
 {
-#ifdef EVAL_TRACE
+#నిర్వచితమైతే EVAL_TRACE
   trace ("eval6");
-#endif
-  if (nextarg ("+"))
+#అయితే_ముగింపు
+  ఒకవేళ (nextarg ("+"))
     {
-      require_more_args ();
-      return str_value (*args++);
+      require_మరిన్ని_వాదనలు ();
+      తిరిగి str_విలువ (*వాదనలు++);
     }
-  else if (nextarg ("length"))
+  లేకపోతే ఒకవేళ (nextarg ("length"))
     {
-      VALUE *r = eval6 (evaluate);
+      విలువ_2 *r = eval6 (evaluate);
       tostring (r);
-      VALUE *v = int_value (mbslen (r->u.s));
+      విలువ_2 *v = int_విలువ (mbslen (r->u.s));
       freev (r);
-      return v;
+      తిరిగి v;
     }
-  else if (nextarg ("match"))
+  లేకపోతే ఒకవేళ (nextarg ("match"))
     {
-      VALUE *l = eval6 (evaluate);
-      VALUE *r = eval6 (evaluate);
-      VALUE *v;
-      if (evaluate)
+      విలువ_2 *l = eval6 (evaluate);
+      విలువ_2 *r = eval6 (evaluate);
+      విలువ_2 *v;
+      ఒకవేళ (evaluate)
         {
           v = docolon (l, r);
           freev (l);
         }
-      else
+      లేకపోతే
         v = l;
       freev (r);
-      return v;
+      తిరిగి v;
     }
-  else if (nextarg ("index"))
+  లేకపోతే ఒకవేళ (nextarg ("index"))
     {
-      VALUE *l = eval6 (evaluate);
-      VALUE *r = eval6 (evaluate);
+      విలువ_2 *l = eval6 (evaluate);
+      విలువ_2 *r = eval6 (evaluate);
       tostring (l);
       tostring (r);
       size_t pos = mbs_logical_cspn (l->u.s, r->u.s);
-      VALUE *v = int_value (pos);
+      విలువ_2 *v = int_విలువ (pos);
       freev (l);
       freev (r);
-      return v;
+      తిరిగి v;
     }
-  else if (nextarg ("substr"))
+  లేకపోతే ఒకవేళ (nextarg ("substr"))
     {
-      VALUE *l = eval6 (evaluate);
-      VALUE *i1 = eval6 (evaluate);
-      VALUE *i2 = eval6 (evaluate);
+      విలువ_2 *l = eval6 (evaluate);
+      విలువ_2 *i1 = eval6 (evaluate);
+      విలువ_2 *i2 = eval6 (evaluate);
       tostring (l);
 
-      VALUE *v;
-      if (!toarith (i1) || !toarith (i2))
-        v = str_value ("");
-      else
+      విలువ_2 *v;
+      ఒకవేళ (!toarith (i1) || !toarith (i2))
+        v = str_విలువ ("");
+      లేకపోతే
         {
           size_t pos = getsize (i1->u.i);
           size_t len = getsize (i2->u.i);
 
-          char *s = mbs_logical_substr (l->u.s, pos, len);
-          v = str_value (s);
-          free (s);
+          అక్షరం *s = mbs_logical_substr (l->u.s, pos, len);
+          v = str_విలువ (s);
+          విడుదల (s);
         }
       freev (l);
       freev (i1);
       freev (i2);
-      return v;
+      తిరిగి v;
     }
-  else
-    return eval7 (evaluate);
+  లేకపోతే
+    తిరిగి eval7 (evaluate);
 }
 
 /* Handle : operator (pattern matching).
    Calls docolon to do the real work.  */
 
-static VALUE *
+స్థిర విలువ_2 *
 eval5 (bool evaluate)
 {
-#ifdef EVAL_TRACE
+#నిర్వచితమైతే EVAL_TRACE
   trace ("eval5");
-#endif
-  VALUE *l = eval6 (evaluate);
-  while (true)
+#అయితే_ముగింపు
+  విలువ_2 *l = eval6 (evaluate);
+  అయితే (true)
     {
-      if (nextarg (":"))
+      ఒకవేళ (nextarg (":"))
         {
-          VALUE *r = eval6 (evaluate);
-          if (evaluate)
+          విలువ_2 *r = eval6 (evaluate);
+          ఒకవేళ (evaluate)
             {
-              VALUE *v = docolon (l, r);
+              విలువ_2 *v = docolon (l, r);
               freev (l);
               l = v;
             }
           freev (r);
         }
-      else
-        return l;
+      లేకపోతే
+        తిరిగి l;
     }
 }
 
 /* Handle *, /, % operators.  */
 
-static VALUE *
+స్థిర విలువ_2 *
 eval4 (bool evaluate)
 {
-#ifdef EVAL_TRACE
+#నిర్వచితమైతే EVAL_TRACE
   trace ("eval4");
-#endif
-  VALUE *l = eval5 (evaluate);
-  while (true)
+#అయితే_ముగింపు
+  విలువ_2 *l = eval5 (evaluate);
+  అయితే (true)
     {
-      enum { multiply, divide, mod } fxn;
+      గణన { multiply, divide, mod } fxn;
 
-      if (nextarg ("*"))
+      ఒకవేళ (nextarg ("*"))
         fxn = multiply;
-      else if (nextarg ("/"))
+      లేకపోతే ఒకవేళ (nextarg ("/"))
         fxn = divide;
-      else if (nextarg ("%"))
+      లేకపోతే ఒకవేళ (nextarg ("%"))
         fxn = mod;
-      else
-        return l;
-      VALUE *r = eval5 (evaluate);
-      if (evaluate)
+      లేకపోతే
+        తిరిగి l;
+      విలువ_2 *r = eval5 (evaluate);
+      ఒకవేళ (evaluate)
         {
-          if (!toarith (l) || !toarith (r))
-            error (EXPR_INVALID, 0, _("non-integer argument"));
-          if (fxn != multiply && mpz_sgn (r->u.i) == 0)
-            error (EXPR_INVALID, 0, _("division by zero"));
+          ఒకవేళ (!toarith (l) || !toarith (r))
+            error (సమాసం_INVALID, 0, _("non-integer argument"));
+          ఒకవేళ (fxn != multiply && mpz_sgn (r->u.i) == 0)
+            error (సమాసం_INVALID, 0, _("division by zero"));
           ((fxn == multiply ? mpz_mul
             : fxn == divide ? mpz_tdiv_q
             : mpz_tdiv_r)
@@ -806,29 +806,29 @@ eval4 (bool evaluate)
 
 /* Handle +, - operators.  */
 
-static VALUE *
+స్థిర విలువ_2 *
 eval3 (bool evaluate)
 {
-#ifdef EVAL_TRACE
+#నిర్వచితమైతే EVAL_TRACE
   trace ("eval3");
-#endif
-  VALUE *l = eval4 (evaluate);
-  while (true)
+#అయితే_ముగింపు
+  విలువ_2 *l = eval4 (evaluate);
+  అయితే (true)
     {
-      enum { plus, minus } fxn;
+      గణన { plus, minus } fxn;
 
-      if (nextarg ("+"))
+      ఒకవేళ (nextarg ("+"))
         fxn = plus;
-      else if (nextarg ("-"))
+      లేకపోతే ఒకవేళ (nextarg ("-"))
         fxn = minus;
-      else
-        return l;
-      VALUE *r = eval4 (evaluate);
-      if (evaluate)
+      లేకపోతే
+        తిరిగి l;
+      విలువ_2 *r = eval4 (evaluate);
+      ఒకవేళ (evaluate)
         {
-          if (!toarith (l) || !toarith (r))
-            error (EXPR_INVALID, 0, _("non-integer argument"));
-          (fxn == plus ? mpz_add : mpz_sub) (l->u.i, l->u.i, r->u.i);
+          ఒకవేళ (!toarith (l) || !toarith (r))
+            error (సమాసం_INVALID, 0, _("non-integer argument"));
+          (fxn == plus ? mpz_కూడు : mpz_sub) (l->u.i, l->u.i, r->u.i);
         }
       freev (r);
     }
@@ -836,135 +836,135 @@ eval3 (bool evaluate)
 
 /* Handle comparisons.  */
 
-static VALUE *
+స్థిర విలువ_2 *
 eval2 (bool evaluate)
 {
-#ifdef EVAL_TRACE
+#నిర్వచితమైతే EVAL_TRACE
   trace ("eval2");
-#endif
-  VALUE *l = eval3 (evaluate);
-  while (true)
+#అయితే_ముగింపు
+  విలువ_2 *l = eval3 (evaluate);
+  అయితే (true)
     {
-      enum
+      గణన
         {
           less_than, less_equal, equal, not_equal, greater_equal, greater_than
         } fxn;
 
-      if (nextarg ("<"))
+      ఒకవేళ (nextarg ("<"))
         fxn = less_than;
-      else if (nextarg ("<="))
+      లేకపోతే ఒకవేళ (nextarg ("<="))
         fxn = less_equal;
-      else if (nextarg ("=") || nextarg ("=="))
+      లేకపోతే ఒకవేళ (nextarg ("=") || nextarg ("=="))
         fxn = equal;
-      else if (nextarg ("!="))
+      లేకపోతే ఒకవేళ (nextarg ("!="))
         fxn = not_equal;
-      else if (nextarg (">="))
+      లేకపోతే ఒకవేళ (nextarg (">="))
         fxn = greater_equal;
-      else if (nextarg (">"))
+      లేకపోతే ఒకవేళ (nextarg (">"))
         fxn = greater_than;
-      else
-        return l;
-      VALUE *r = eval3 (evaluate);
+      లేకపోతే
+        తిరిగి l;
+      విలువ_2 *r = eval3 (evaluate);
 
       bool val = false;
-      if (evaluate)
+      ఒకవేళ (evaluate)
         {
           tostring (l);
           tostring (r);
 
-          int cmp;
-          if (looks_like_integer (l->u.s) && looks_like_integer (r->u.s))
+          పూర్ణాంకం cmp;
+          ఒకవేళ (looks_like_integer (l->u.s) && looks_like_integer (r->u.s))
             cmp = strintcmp (l->u.s, r->u.s);
-          else
+          లేకపోతే
             {
               errno = 0;
               cmp = strcoll (l->u.s, r->u.s);
 
-              if (errno)
+              ఒకవేళ (errno)
                 {
                   error (0, errno, _("string comparison failed"));
                   error (0, 0, _("set LC_ALL='C' to work around the problem"));
-                  error (EXPR_INVALID, 0,
+                  error (సమాసం_INVALID, 0,
                          _("the strings compared were %s and %s"),
                          quotearg_n_style (0, locale_quoting_style, l->u.s),
                          quotearg_n_style (1, locale_quoting_style, r->u.s));
                 }
             }
 
-          switch (fxn)
+          ఎంపిక (fxn)
             {
-            case less_than:     val = (cmp <  0); break;
-            case less_equal:    val = (cmp <= 0); break;
-            case equal:         val = (cmp == 0); break;
-            case not_equal:     val = (cmp != 0); break;
-            case greater_equal: val = (cmp >= 0); break;
-            case greater_than:  val = (cmp >  0); break;
-            default: unreachable ();
+            స్థితి less_than:     val = (cmp <  0); ఆపు;
+            స్థితి less_equal:    val = (cmp <= 0); ఆపు;
+            స్థితి equal:         val = (cmp == 0); ఆపు;
+            స్థితి not_equal:     val = (cmp != 0); ఆపు;
+            స్థితి greater_equal: val = (cmp >= 0); ఆపు;
+            స్థితి greater_than:  val = (cmp >  0); ఆపు;
+            అప్రమేయ: unreachable ();
             }
         }
 
       freev (l);
       freev (r);
-      l = int_value (val);
+      l = int_విలువ (val);
     }
 }
 
 /* Handle &.  */
 
-static VALUE *
+స్థిర విలువ_2 *
 eval1 (bool evaluate)
 {
-#ifdef EVAL_TRACE
+#నిర్వచితమైతే EVAL_TRACE
   trace ("eval1");
-#endif
-  VALUE *l = eval2 (evaluate);
-  while (true)
+#అయితే_ముగింపు
+  విలువ_2 *l = eval2 (evaluate);
+  అయితే (true)
     {
-      if (nextarg ("&"))
+      ఒకవేళ (nextarg ("&"))
         {
-          VALUE *r = eval2 (evaluate && !null (l));
-          if (null (l) || null (r))
+          విలువ_2 *r = eval2 (evaluate && !null (l));
+          ఒకవేళ (null (l) || null (r))
             {
               freev (l);
               freev (r);
-              l = int_value (0);
+              l = int_విలువ (0);
             }
-          else
+          లేకపోతే
             freev (r);
         }
-      else
-        return l;
+      లేకపోతే
+        తిరిగి l;
     }
 }
 
 /* Handle |.  */
 
-static VALUE *
+స్థిర విలువ_2 *
 eval (bool evaluate)
 {
-#ifdef EVAL_TRACE
+#నిర్వచితమైతే EVAL_TRACE
   trace ("eval");
-#endif
-  VALUE *l = eval1 (evaluate);
-  while (true)
+#అయితే_ముగింపు
+  విలువ_2 *l = eval1 (evaluate);
+  అయితే (true)
     {
-      if (nextarg ("|"))
+      ఒకవేళ (nextarg ("|"))
         {
-          VALUE *r = eval1 (evaluate && null (l));
-          if (null (l))
+          విలువ_2 *r = eval1 (evaluate && null (l));
+          ఒకవేళ (null (l))
             {
               freev (l);
               l = r;
-              if (null (l))
+              ఒకవేళ (null (l))
                 {
                   freev (l);
-                  l = int_value (0);
+                  l = int_విలువ (0);
                 }
             }
-          else
+          లేకపోతే
             freev (r);
         }
-      else
-        return l;
+      లేకపోతే
+        తిరిగి l;
     }
 }

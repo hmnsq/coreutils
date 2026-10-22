@@ -1,8 +1,8 @@
-#define IOPOLL_BROKEN_OUTPUT -2
-#define IOPOLL_ERROR         -3
+#నిర్వచించు IOPOLL_BROKEN_OUTPUT -2
+#నిర్వచించు IOPOLL_ERROR         -3
 
-int iopoll (int fdin, int fdout, bool block);
-bool iopoll_input_ok (int fdin);
-bool iopoll_output_ok (int fdout);
+పూర్ణాంకం iopoll (పూర్ణాంకం fdin, పూర్ణాంకం fdout, bool ఖండం);
+bool iopoll_ఆదానం_ok (పూర్ణాంకం fdin);
+bool iopoll_output_ok (పూర్ణాంకం fdout);
 
-bool write_wait (int fd, void const *buffer, size_t size);
+bool write_wait (పూర్ణాంకం fd, శూన్య స్థిరరాశి *బఫరు, size_t కొలత);

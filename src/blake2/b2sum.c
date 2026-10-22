@@ -13,384 +13,384 @@
    https://blake2.net.
 */
 
-#ifdef HAVE_CONFIG_H
+#నిర్వచితమైతే HAVE_CONFIG_H
 # include <config.h>
-#endif
+#అయితే_ముగింపు
 
-#include <stdio.h>
-#include <stdlib.h>
+#అన్తర్భావ <stdio.h>
+#అన్తర్భావ <stdlib.h>
 
-#include "blake2.h"
+#అన్తర్భావ "blake2.h"
 
-#if 0
+#ఒకవేళ 0
 /* This will help compatibility with coreutils */
-int blake2s_stream( FILE *stream, void *resstream, size_t outbytes )
+పూర్ణాంకం blake2s_ప్రవాహం( FILE *ప్రవాహం, శూన్య *resstream, size_t outbytes )
 {
-  int ret = -1;
-  size_t sum, n;
+  పూర్ణాంకం ret = -1;
+  size_t కూడిక, n;
   blake2s_state S[1];
-  static const size_t buffer_length = 32768;
-  uint8_t *buffer = ( uint8_t * )malloc( buffer_length );
+  స్థిర స్థిరరాశి size_t బఫరు_నిడివి = 32768;
+  uint8_t *బఫరు = ( uint8_t * )జ్ఞాపకం_ఇవ్వు( బఫరు_నిడివి );
 
-  if( !buffer ) return -1;
+  ఒకవేళ( !బఫరు ) తిరిగి -1;
 
   blake2s_init( S, outbytes );
 
-  while( 1 )
+  అయితే( 1 )
   {
-    sum = 0;
+    కూడిక = 0;
 
-    while( 1 )
+    అయితే( 1 )
     {
-      n = fread( buffer + sum, 1, buffer_length - sum, stream );
-      sum += n;
+      n = fread( బఫరు + కూడిక, 1, బఫరు_నిడివి - కూడిక, ప్రవాహం );
+      కూడిక += n;
 
-      if( buffer_length == sum )
-        break;
+      ఒకవేళ( బఫరు_నిడివి == కూడిక )
+        ఆపు;
 
-      if( 0 == n )
+      ఒకవేళ( 0 == n )
       {
-        if( ferror( stream ) )
-          goto cleanup_buffer;
+        ఒకవేళ( ferror( ప్రవాహం ) )
+          వెళ్ళు cleanup_బఫరు;
 
-        goto final_process;
+        వెళ్ళు final_process;
       }
 
-      if( feof( stream ) )
-        goto final_process;
+      ఒకవేళ( feof( ప్రవాహం ) )
+        వెళ్ళు final_process;
     }
 
-    blake2s_update( S, buffer, buffer_length );
+    blake2s_update( S, బఫరు, బఫరు_నిడివి );
   }
 
 final_process:;
 
-  if( sum > 0 ) blake2s_update( S, buffer, sum );
+  ఒకవేళ( కూడిక > 0 ) blake2s_update( S, బఫరు, కూడిక );
 
   blake2s_final( S, resstream, outbytes );
   ret = 0;
-cleanup_buffer:
-  free( buffer );
-  return ret;
+cleanup_బఫరు:
+  విడుదల( బఫరు );
+  తిరిగి ret;
 }
-#endif
+#అయితే_ముగింపు
 
-int blake2b_stream( FILE *stream, void *resstream, size_t outbytes )
+పూర్ణాంకం blake2b_ప్రవాహం( FILE *ప్రవాహం, శూన్య *resstream, size_t outbytes )
 {
-  int ret = -1;
-  size_t sum, n;
+  పూర్ణాంకం ret = -1;
+  size_t కూడిక, n;
   blake2b_state S[1];
-  static const size_t buffer_length = 32768;
-  uint8_t *buffer = ( uint8_t * )malloc( buffer_length );
+  స్థిర స్థిరరాశి size_t బఫరు_నిడివి = 32768;
+  uint8_t *బఫరు = ( uint8_t * )జ్ఞాపకం_ఇవ్వు( బఫరు_నిడివి );
 
-  if( !buffer ) return -1;
+  ఒకవేళ( !బఫరు ) తిరిగి -1;
 
   blake2b_init( S, outbytes );
 
-  while( 1 )
+  అయితే( 1 )
   {
-    sum = 0;
+    కూడిక = 0;
 
-    while( 1 )
+    అయితే( 1 )
     {
-      n = fread( buffer + sum, 1, buffer_length - sum, stream );
-      sum += n;
+      n = fread( బఫరు + కూడిక, 1, బఫరు_నిడివి - కూడిక, ప్రవాహం );
+      కూడిక += n;
 
-      if( buffer_length == sum )
-        break;
+      ఒకవేళ( బఫరు_నిడివి == కూడిక )
+        ఆపు;
 
-      if( 0 == n )
+      ఒకవేళ( 0 == n )
       {
-        if( ferror( stream ) )
-          goto cleanup_buffer;
+        ఒకవేళ( ferror( ప్రవాహం ) )
+          వెళ్ళు cleanup_బఫరు;
 
-        goto final_process;
+        వెళ్ళు final_process;
       }
 
-      if( feof( stream ) )
-        goto final_process;
+      ఒకవేళ( feof( ప్రవాహం ) )
+        వెళ్ళు final_process;
     }
 
-    blake2b_update( S, buffer, buffer_length );
+    blake2b_update( S, బఫరు, బఫరు_నిడివి );
   }
 
 final_process:;
 
-  if( sum > 0 ) blake2b_update( S, buffer, sum );
+  ఒకవేళ( కూడిక > 0 ) blake2b_update( S, బఫరు, కూడిక );
 
   blake2b_final( S, resstream, outbytes );
   ret = 0;
-cleanup_buffer:
-  free( buffer );
-  return ret;
+cleanup_బఫరు:
+  విడుదల( బఫరు );
+  తిరిగి ret;
 }
 
-#if 0
+#ఒకవేళ 0
 
-#include <errno.h>
-#include <getopt.h>
-#include <string.h>
-#include <unistd.h>
+#అన్తర్భావ <errno.h>
+#అన్తర్భావ <getopt.h>
+#అన్తర్భావ <string.h>
+#అన్తర్భావ <unistd.h>
 
-int blake2sp_stream( FILE *stream, void *resstream, size_t outbytes )
+పూర్ణాంకం blake2sp_ప్రవాహం( FILE *ప్రవాహం, శూన్య *resstream, size_t outbytes )
 {
-  int ret = -1;
-  size_t sum, n;
+  పూర్ణాంకం ret = -1;
+  size_t కూడిక, n;
   blake2sp_state S[1];
-  static const size_t buffer_length = 16 * ( 1UL << 20 );
-  uint8_t *buffer = ( uint8_t * )malloc( buffer_length );
+  స్థిర స్థిరరాశి size_t బఫరు_నిడివి = 16 * ( 1UL << 20 );
+  uint8_t *బఫరు = ( uint8_t * )జ్ఞాపకం_ఇవ్వు( బఫరు_నిడివి );
 
-  if( !buffer ) return -1;
+  ఒకవేళ( !బఫరు ) తిరిగి -1;
 
   blake2sp_init( S, outbytes );
 
-  while( 1 )
+  అయితే( 1 )
   {
-    sum = 0;
+    కూడిక = 0;
 
-    while( 1 )
+    అయితే( 1 )
     {
-      n = fread( buffer + sum, 1, buffer_length - sum, stream );
-      sum += n;
+      n = fread( బఫరు + కూడిక, 1, బఫరు_నిడివి - కూడిక, ప్రవాహం );
+      కూడిక += n;
 
-      if( buffer_length == sum )
-        break;
+      ఒకవేళ( బఫరు_నిడివి == కూడిక )
+        ఆపు;
 
-      if( 0 == n )
+      ఒకవేళ( 0 == n )
       {
-        if( ferror( stream ) )
-          goto cleanup_buffer;
+        ఒకవేళ( ferror( ప్రవాహం ) )
+          వెళ్ళు cleanup_బఫరు;
 
-        goto final_process;
+        వెళ్ళు final_process;
       }
 
-      if( feof( stream ) )
-        goto final_process;
+      ఒకవేళ( feof( ప్రవాహం ) )
+        వెళ్ళు final_process;
     }
 
-    blake2sp_update( S, buffer, buffer_length );
+    blake2sp_update( S, బఫరు, బఫరు_నిడివి );
   }
 
 final_process:;
 
-  if( sum > 0 ) blake2sp_update( S, buffer, sum );
+  ఒకవేళ( కూడిక > 0 ) blake2sp_update( S, బఫరు, కూడిక );
 
   blake2sp_final( S, resstream, outbytes );
   ret = 0;
-cleanup_buffer:
-  free( buffer );
-  return ret;
+cleanup_బఫరు:
+  విడుదల( బఫరు );
+  తిరిగి ret;
 }
 
 
-int blake2bp_stream( FILE *stream, void *resstream, size_t outbytes )
+పూర్ణాంకం blake2bp_ప్రవాహం( FILE *ప్రవాహం, శూన్య *resstream, size_t outbytes )
 {
-  int ret = -1;
-  size_t sum, n;
+  పూర్ణాంకం ret = -1;
+  size_t కూడిక, n;
   blake2bp_state S[1];
-  static const size_t buffer_length = 16 * ( 1UL << 20 );
-  uint8_t *buffer = ( uint8_t * )malloc( buffer_length );
+  స్థిర స్థిరరాశి size_t బఫరు_నిడివి = 16 * ( 1UL << 20 );
+  uint8_t *బఫరు = ( uint8_t * )జ్ఞాపకం_ఇవ్వు( బఫరు_నిడివి );
 
-  if( !buffer ) return -1;
+  ఒకవేళ( !బఫరు ) తిరిగి -1;
 
   blake2bp_init( S, outbytes );
 
-  while( 1 )
+  అయితే( 1 )
   {
-    sum = 0;
+    కూడిక = 0;
 
-    while( 1 )
+    అయితే( 1 )
     {
-      n = fread( buffer + sum, 1, buffer_length - sum, stream );
-      sum += n;
+      n = fread( బఫరు + కూడిక, 1, బఫరు_నిడివి - కూడిక, ప్రవాహం );
+      కూడిక += n;
 
-      if( buffer_length == sum )
-        break;
+      ఒకవేళ( బఫరు_నిడివి == కూడిక )
+        ఆపు;
 
-      if( 0 == n )
+      ఒకవేళ( 0 == n )
       {
-        if( ferror( stream ) )
-          goto cleanup_buffer;
+        ఒకవేళ( ferror( ప్రవాహం ) )
+          వెళ్ళు cleanup_బఫరు;
 
-        goto final_process;
+        వెళ్ళు final_process;
       }
 
-      if( feof( stream ) )
-        goto final_process;
+      ఒకవేళ( feof( ప్రవాహం ) )
+        వెళ్ళు final_process;
     }
 
-    blake2bp_update( S, buffer, buffer_length );
+    blake2bp_update( S, బఫరు, బఫరు_నిడివి );
   }
 
 final_process:;
 
-  if( sum > 0 ) blake2bp_update( S, buffer, sum );
+  ఒకవేళ( కూడిక > 0 ) blake2bp_update( S, బఫరు, కూడిక );
 
   blake2bp_final( S, resstream, outbytes );
   ret = 0;
-cleanup_buffer:
-  free( buffer );
-  return ret;
+cleanup_బఫరు:
+  విడుదల( బఫరు );
+  తిరిగి ret;
 }
 
-typedef int ( *blake2fn )( FILE *, void *, size_t );
+రకనిర్వచనం పూర్ణాంకం ( *blake2fn )( FILE *, శూన్య *, size_t );
 
 
-static void usage( char **argv, int errcode )
+స్థిర శూన్య usage( అక్షరం **argv, పూర్ణాంకం errcode )
 {
-  FILE *out = errcode ? stderr : stdout;
-  fprintf( out, "Usage: %s [OPTION]... [FILE]...\n", argv[0] );
-  fprintf( out, "\n" );
-  fprintf( out, "With no FILE, or when FILE is -, read standard input.\n" );
-  fprintf( out, "\n" );
-  fprintf( out, "  -a <algo>    hash algorithm (blake2b is default): \n"
+  FILE *బహిర్గతం = errcode ? stderr : stdout;
+  fprintf( బహిర్గతం, "Usage: %s [OPTION]... [FILE]...\n", argv[0] );
+  fprintf( బహిర్గతం, "\n" );
+  fprintf( బహిర్గతం, "With no FILE, or when FILE is -, read standard input.\n" );
+  fprintf( బహిర్గతం, "\n" );
+  fprintf( బహిర్గతం, "  -a <algo>    hash algorithm (blake2b is default): \n"
                 "               [blake2b|blake2s|blake2bp|blake2sp]\n" );
-  fprintf( out, "  -l <length>  digest length in bits, must not exceed the maximum for\n"
+  fprintf( బహిర్గతం, "  -l <length>  digest length in bits, must not exceed the maximum for\n"
                 "               the selected algorithm and must be a multiple of 8\n" );
-  fprintf( out, "  --tag        create a BSD-style checksum\n" );
-  fprintf( out, "  --help       display this help and exit\n" );
-  exit( errcode );
+  fprintf( బహిర్గతం, "  --tag        create a BSD-style checksum\n" );
+  fprintf( బహిర్గతం, "  --help       display this help and exit\n" );
+  నిష్క్రమించు( errcode );
 }
 
 
-int main( int argc, char **argv )
+పూర్ణాంకం ప్రధాన( పూర్ణాంకం argc, అక్షరం **argv )
 {
-  blake2fn blake2_stream = blake2b_stream;
-  unsigned long maxbytes = BLAKE2B_OUTBYTES;
-  const char *algorithm = "BLAKE2b";
-  unsigned long outbytes = 0;
-  unsigned char hash[BLAKE2B_OUTBYTES] = {0};
+  blake2fn blake2_ప్రవాహం = blake2b_ప్రవాహం;
+  గుర్తులేని దీర్ఘ maxbytes = BLAKE2B_OUTBYTES;
+  స్థిరరాశి అక్షరం *algorithm = "BLAKE2b";
+  గుర్తులేని దీర్ఘ outbytes = 0;
+  గుర్తులేని అక్షరం hash[BLAKE2B_OUTBYTES] = {0};
   bool bsdstyle = false;
-  int c, i;
+  పూర్ణాంకం c, i;
   opterr = 1;
 
-  while( 1 )
+  అయితే( 1 )
   {
-    int option_index = 0;
-    char *end = NULL;
-    unsigned long outbits;
-    static struct option long_options[] = {
-      { "help",  no_argument, 0,  0  },
-      { "tag",   no_argument, 0,  0  },
-      { NULL, 0, NULL, 0 }
+    పూర్ణాంకం option_సూచీ = 0;
+    అక్షరం *చివర = ఖాళీ;
+    గుర్తులేని దీర్ఘ outbits;
+    స్థిర నిర్మాణం option long_options[] = {
+      { "help",  no_వాదం, 0,  0  },
+      { "tag",   no_వాదం, 0,  0  },
+      { ఖాళీ, 0, ఖాళీ, 0 }
     };
 
-    c = getopt_long( argc, argv, "a:l:", long_options, &option_index );
-    if( c == -1 ) break;
-    switch( c )
+    c = getopt_long( argc, argv, "a:l:", long_options, &option_సూచీ );
+    ఒకవేళ( c == -1 ) ఆపు;
+    ఎంపిక( c )
     {
-    case 'a':
-      if( 0 == strcmp( optarg, "blake2b" ) )
+    స్థితి 'a':
+      ఒకవేళ( 0 == strcmp( optarg, "blake2b" ) )
       {
-        blake2_stream = blake2b_stream;
+        blake2_ప్రవాహం = blake2b_ప్రవాహం;
         maxbytes = BLAKE2B_OUTBYTES;
         algorithm = "BLAKE2b";
       }
-      else if ( 0 == strcmp( optarg, "blake2s" ) )
+      లేకపోతే ఒకవేళ ( 0 == strcmp( optarg, "blake2s" ) )
       {
-        blake2_stream = blake2s_stream;
+        blake2_ప్రవాహం = blake2s_ప్రవాహం;
         maxbytes = BLAKE2S_OUTBYTES;
         algorithm = "BLAKE2s";
       }
-      else if ( 0 == strcmp( optarg, "blake2bp" ) )
+      లేకపోతే ఒకవేళ ( 0 == strcmp( optarg, "blake2bp" ) )
       {
-        blake2_stream = blake2bp_stream;
+        blake2_ప్రవాహం = blake2bp_ప్రవాహం;
         maxbytes = BLAKE2B_OUTBYTES;
         algorithm = "BLAKE2bp";
       }
-      else if ( 0 == strcmp( optarg, "blake2sp" ) )
+      లేకపోతే ఒకవేళ ( 0 == strcmp( optarg, "blake2sp" ) )
       {
-        blake2_stream = blake2sp_stream;
+        blake2_ప్రవాహం = blake2sp_ప్రవాహం;
         maxbytes = BLAKE2S_OUTBYTES;
         algorithm = "BLAKE2sp";
       }
-      else
+      లేకపోతే
       {
-        printf( "Invalid function name: `%s'\n", optarg );
+        రాయి( "Invalid function name: `%s'\n", optarg );
         usage( argv, 111 );
       }
 
-      break;
+      ఆపు;
 
-    case 'l':
-      outbits = strtoul(optarg, &end, 10);
-      if( !end || *end != '\0' || outbits % 8 != 0)
+    స్థితి 'l':
+      outbits = strtoul(optarg, &చివర, 10);
+      ఒకవేళ( !చివర || *చివర != '\0' || outbits % 8 != 0)
       {
-        printf( "Invalid length argument: `%s'\n", optarg);
+        రాయి( "Invalid length argument: `%s'\n", optarg);
         usage( argv, 111 );
       }
       outbytes = outbits / 8;
-      break;
+      ఆపు;
 
-    case 0:
-      if( 0 == strcmp( "help", long_options[option_index].name ) )
+    స్థితి 0:
+      ఒకవేళ( 0 == strcmp( "help", long_options[option_సూచీ].name ) )
         usage( argv, 0 );
-      else if( 0 == strcmp( "tag", long_options[option_index].name ) )
+      లేకపోతే ఒకవేళ( 0 == strcmp( "tag", long_options[option_సూచీ].name ) )
         bsdstyle = true;
-      break;
+      ఆపు;
 
-    case '?':
+    స్థితి '?':
       usage( argv, 1 );
-      break;
+      ఆపు;
     }
   }
 
-  if(outbytes > maxbytes)
+  ఒకవేళ(outbytes > maxbytes)
   {
-    printf( "Invalid length argument: %lu\n", outbytes * 8 );
-    printf( "Maximum digest length for %s is %lu\n", algorithm, maxbytes * 8 );
+    రాయి( "Invalid length argument: %lu\n", outbytes * 8 );
+    రాయి( "Maximum digest length for %s is %lu\n", algorithm, maxbytes * 8 );
     usage( argv, 111 );
   }
-  else if( outbytes == 0 )
+  లేకపోతే ఒకవేళ( outbytes == 0 )
     outbytes = maxbytes;
 
-  if( optind == argc )
-    argv[argc++] = (char *) "-";
+  ఒకవేళ( optind == argc )
+    argv[argc++] = (అక్షరం *) "-";
 
-  for( i = optind; i < argc; ++i )
+  కొరకు( i = optind; i < argc; ++i )
   {
-    FILE *f = NULL;
-    if( argv[i][0] == '-' && argv[i][1] == '\0' )
+    FILE *f = ఖాళీ;
+    ఒకవేళ( argv[i][0] == '-' && argv[i][1] == '\0' )
       f = stdin;
-    else
+    లేకపోతే
       f = fopen( argv[i], "rb" );
 
-    if( !f )
+    ఒకవేళ( !f )
     {
       fprintf( stderr, "Could not open `%s': %s\n", argv[i], strerror( errno ) );
-      continue;
+      కొనసాగు;
     }
 
-    if( blake2_stream( f, hash, outbytes ) < 0 )
+    ఒకవేళ( blake2_ప్రవాహం( f, hash, outbytes ) < 0 )
     {
       fprintf( stderr, "Failed to hash `%s'\n", argv[i] );
     }
-    else
+    లేకపోతే
     {
       size_t j;
-      if( bsdstyle )
+      ఒకవేళ( bsdstyle )
       {
-        if( outbytes < maxbytes )
-          printf( "%s-%lu (%s) = ", algorithm, outbytes * 8, argv[i] );
-        else
-          printf( "%s (%s) = ", algorithm, argv[i] );
+        ఒకవేళ( outbytes < maxbytes )
+          రాయి( "%s-%lu (%s) = ", algorithm, outbytes * 8, argv[i] );
+        లేకపోతే
+          రాయి( "%s (%s) = ", algorithm, argv[i] );
       }
 
-      for( j = 0; j < outbytes; ++j )
-        printf( "%02x", hash[j] );
+      కొరకు( j = 0; j < outbytes; ++j )
+        రాయి( "%02x", hash[j] );
 
-      if( bsdstyle )
-        printf( "\n" );
-      else
-        printf( "  %s\n", argv[i] );
+      ఒకవేళ( bsdstyle )
+        రాయి( "\n" );
+      లేకపోతే
+        రాయి( "  %s\n", argv[i] );
     }
 
-    if( f == stdin )
+    ఒకవేళ( f == stdin )
       clearerr( f );
-    else if( fclose( f ) != 0 )
+    లేకపోతే ఒకవేళ( fclose( f ) != 0 )
       fprintf( stderr, "Could not close `%s': %s\n", argv[i], strerror( errno ) );
   }
 
-  return 0;
+  తిరిగి 0;
 }
-#endif
+#అయితే_ముగింపు

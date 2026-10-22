@@ -23,72 +23,72 @@
    tail -f for multiple files by Ian Lance Taylor <ian@airs.com>.
    inotify back-end by Giuseppe Scrivano <gscrivano@gnu.org>.  */
 
-#include <config.h>
+#అన్తర్భావ <config.h>
 
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
-#include <signal.h>
+#అన్తర్భావ <stdio.h>
+#అన్తర్భావ <getopt.h>
+#అన్తర్భావ <sys/types.h>
+#అన్తర్భావ <signal.h>
 
-#include "system.h"
-#include "argmatch.h"
-#include "assure.h"
-#include "c-ctype.h"
-#include "cl-strtod.h"
-#include "dtimespec-bound.h"
-#include "fcntl--.h"
-#include "iopoll.h"
-#include "isapipe.h"
-#include "issymlink.h"
-#include "posixver.h"
-#include "quote.h"
-#include "stat-size.h"
-#include "stat-time.h"
-#include "xbinary-io.h"
-#include "xdectoint.h"
-#include "xnanosleep.h"
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "argmatch.h"
+#అన్తర్భావ "assure.h"
+#అన్తర్భావ "c-ctype.h"
+#అన్తర్భావ "cl-strtod.h"
+#అన్తర్భావ "dtimespec-bound.h"
+#అన్తర్భావ "fcntl--.h"
+#అన్తర్భావ "iopoll.h"
+#అన్తర్భావ "isapipe.h"
+#అన్తర్భావ "issymlink.h"
+#అన్తర్భావ "posixver.h"
+#అన్తర్భావ "quote.h"
+#అన్తర్భావ "stat-size.h"
+#అన్తర్భావ "stat-time.h"
+#అన్తర్భావ "xbinary-io.h"
+#అన్తర్భావ "xdectoint.h"
+#అన్తర్భావ "xnanosleep.h"
 
-#if HAVE_INOTIFY
+#ఒకవేళ HAVE_INOTIFY
 # include "hash.h"
 # include <poll.h>
 # include <sys/inotify.h>
-#endif
+#అయితే_ముగింపు
 
 /* Linux can optimize the handling of local files.  */
-#if defined __linux__ || defined __ANDROID__
+#ఒకవేళ defined __linux__ || defined __ANDROID__
 # include "fs.h"
 # include "fs-is-local.h"
-# if HAVE_SYS_STATFS_H
+# ఒకవేళ HAVE_SYS_STATFS_H
 #  include <sys/statfs.h>
 # elif HAVE_SYS_VFS_H
 #  include <sys/vfs.h>
 # endif
-#endif
+#అయితే_ముగింపు
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "tail"
+#నిర్వచించు కార్యక్రమం_NAME "tail"
 
-#define AUTHORS \
+#నిర్వచించు AUTHORS \
   proper_name ("Paul Rubin"), \
   proper_name ("David MacKenzie"), \
   proper_name ("Ian Lance Taylor"), \
   proper_name ("Jim Meyering")
 
 /* Number of items to tail.  */
-#define DEFAULT_N_LINES 10
+#నిర్వచించు DEFAULT_N_పంక్తులు 10
 
 /* Special values for dump_remainder's N_BYTES parameter.  */
-enum { COPY_TO_EOF = -1, COPY_A_BUFFER = -2 };
+గణన { COPY_గమ్యం_EOF = -1, COPY_A_బఫరు = -2 };
 
 /* The type of a large counter.  Although it is always nonnegative,
    it is signed to help signed overflow checking catch any bugs.  */
-typedef intmax_t count_t;
-#define COUNT_MAX INTMAX_MAX
+రకనిర్వచనం intmax_t లెక్క_t;
+#నిర్వచించు లెక్క_MAX INTMAX_MAX
 
 /* FIXME: make Follow_name the default?  */
-#define DEFAULT_FOLLOW_MODE Follow_descriptor
+#నిర్వచించు DEFAULT_FOLLOW_బహుళకం Follow_descriptor
 
-enum Follow_mode
+గణన Follow_బహుళకం
 {
   /* Follow the name of each file: if the file is renamed, try to reopen
      that name and track the end of the new file if/when it's recreated.
@@ -102,32 +102,32 @@ enum Follow_mode
 };
 
 /* The types of files for which tail works.  */
-#define IS_TAILABLE_FILE_TYPE(Mode) \
-  (S_ISREG (Mode) || S_ISFIFO (Mode) || S_ISSOCK (Mode) || S_ISCHR (Mode))
+#నిర్వచించు IS_TAILABLE_FILE_TYPE(బహుళకం_3) \
+  (S_ISREG (బహుళకం_3) || S_ISFIFO (బహుళకం_3) || S_ISSOCK (బహుళకం_3) || S_ISCHR (బహుళకం_3))
 
-static char const *const follow_mode_string[] =
+స్థిర అక్షరం స్థిరరాశి *స్థిరరాశి follow_బహుళకం_string[] =
 {
-  "descriptor", "name", NULL
+  "descriptor", "name", ఖాళీ
 };
 
-static enum Follow_mode const follow_mode_map[] =
+స్థిర గణన Follow_బహుళకం స్థిరరాశి follow_బహుళకం_map[] =
 {
   Follow_descriptor, Follow_name,
 };
 
-struct File_spec
+నిర్మాణం File_spec
 {
   /* The actual file name, or "-" for stdin.  */
-  char *name;
+  అక్షరం *name;
 
   /* The prettified name; the same as NAME unless NAME is "-".  */
-  char const *prettyname;
+  అక్షరం స్థిరరాశి *prettyname;
 
   /* Attributes of the file the last time we checked.  */
-  struct timespec mtime;
+  నిర్మాణం timespec mtime;
   dev_t st_dev;
   ino_t st_ino;
-  mode_t mode;
+  mode_t బహుళకం_2;
 
   /* If a regular file, the file's read position the last time we
      checked.  For non-regular files, the value is unspecified.  */
@@ -146,62 +146,62 @@ struct File_spec
   bool tailable;
 
   /* File descriptor on which the file is open; -1 if it's not open.  */
-  int fd;
+  పూర్ణాంకం fd;
 
   /* 0 if the file's last op succeeded, otherwise the op's errno if
      applicable, otherwise -1.  */
-  int errnum;
+  పూర్ణాంకం errnum;
 
   /* 1 if O_NONBLOCK is clear, 0 if set, -1 if not known.  */
-  int blocking;
+  పూర్ణాంకం blocking;
 
-#if HAVE_INOTIFY
+#ఒకవేళ HAVE_INOTIFY
   /* The watch descriptor used by inotify.  */
-  int wd;
+  పూర్ణాంకం wd;
 
   /* The parent directory watch descriptor.  It is used only
    * when Follow_name is used.  */
-  int parent_wd;
+  పూర్ణాంకం మాతృ_wd;
 
   /* Offset in NAME of the basename part.  */
-  idx_t basename_start;
-#endif
+  idx_t basename_ప్రారంభం;
+#అయితే_ముగింపు
 
   /* See description of DEFAULT_MAX_N_... below.  */
-  count_t n_unchanged_stats;
+  లెక్క_t n_unchanged_stats;
 };
 
 /* Keep trying to open a file even if it is inaccessible when tail starts
    or if it becomes inaccessible later -- useful only with -f.  */
-static bool reopen_inaccessible_files;
+స్థిర bool reopen_inaccessible_files;
 
 /* If true, interpret the numeric argument as the number of lines.
    Otherwise, interpret it as the number of bytes.  */
-static bool count_lines = true;
+స్థిర bool లెక్క_పంక్తులు = true;
 
 /* Whether we follow the name of each file or the file descriptor
    that is initially associated with each name.  */
-static enum Follow_mode follow_mode = Follow_descriptor;
+స్థిర గణన Follow_బహుళకం follow_బహుళకం = Follow_descriptor;
 
 /* If true, read from the ends of all specified files until killed.  */
-static bool forever;
+స్థిర bool forever;
 
 /* If true, monitor output so we exit if pipe reader terminates.  */
-static bool monitor_output;
+స్థిర bool monitor_output;
 
 /* If true, count from start of file instead of end.  */
-static bool from_start;
+స్థిర bool from_ప్రారంభం;
 
 /* If true, print filename headers.  */
-static bool print_headers;
+స్థిర bool print_శీర్షికలు;
 
 /* Character to split lines by. */
-static char line_end = '\n';
+స్థిర అక్షరం పంక్తి_చివర = '\n';
 
 /* When to print the filename banners.  */
-enum header_mode
+గణన శీర్షిక_బహుళకం
 {
-  multiple_files, always, never
+  గుణిజం_files, always, never
 };
 
 /* When tailing a file by name, if there have been this many consecutive
@@ -209,196 +209,196 @@ enum header_mode
    the file to determine if that file name is still associated with the
    same device/inode-number pair as before.  This option is meaningful only
    when following by name.  --max-unchanged-stats=N  */
-enum { DEFAULT_MAX_N_UNCHANGED_STATS_BETWEEN_OPENS = 5 };
-static count_t max_n_unchanged_stats_between_opens =
+గణన { DEFAULT_MAX_N_UNCHANGED_STATS_BETWEEN_OPENS = 5 };
+స్థిర లెక్క_t max_n_unchanged_stats_between_opens =
   DEFAULT_MAX_N_UNCHANGED_STATS_BETWEEN_OPENS;
 
 /* The process IDs of the processes to watch (those writing the followed
    files, or perhaps other processes the user cares about).  */
-static int nbpids = 0;
-static pid_t * pids = NULL;
-static idx_t pids_alloc;
+స్థిర పూర్ణాంకం nbpids = 0;
+స్థిర pid_t * pids = ఖాళీ;
+స్థిర idx_t pids_alloc;
 
 /* Used to determine the buffer size when scanning backwards in a file.  */
-static idx_t page_size;
+స్థిర idx_t పుట_కొలత;
 
 /* True if we have ever read standard input.  */
-static bool have_read_stdin;
+స్థిర bool have_read_stdin;
 
 /* If nonzero, skip the is-regular-file test used to determine whether
    to use the lseek optimization.  Instead, use the more general (and
    more expensive) code unconditionally. Intended solely for testing.  */
-static bool presume_input_pipe;
+స్థిర bool presume_ఆదానం_pipe;
 
 /* If nonzero then don't use inotify even if available.  */
-static bool disable_inotify;
+స్థిర bool disable_inotify;
 
 /* Annotate the output with extra info to aid the user.  */
-static bool debug;
+స్థిర bool debug;
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+గణన
 {
   RETRY_OPTION = CHAR_MAX + 1,
   MAX_UNCHANGED_STATS_OPTION,
   PID_OPTION,
-  PRESUME_INPUT_PIPE_OPTION,
+  PRESUME_ఆదానం_PIPE_OPTION,
   LONG_FOLLOW_OPTION,
   DISABLE_INOTIFY_OPTION,
-  DEBUG_PROGRAM_OPTION,
+  DEBUG_కార్యక్రమం_OPTION,
 };
 
-static struct option const long_options[] =
+స్థిర నిర్మాణం option స్థిరరాశి long_options[] =
 {
-  {"bytes", required_argument, NULL, 'c'},
-  {"debug", no_argument, NULL, DEBUG_PROGRAM_OPTION},
-  {"follow", optional_argument, NULL, LONG_FOLLOW_OPTION},
-  {"lines", required_argument, NULL, 'n'},
-  {"max-unchanged-stats", required_argument, NULL,
+  {"bytes", required_వాదం, ఖాళీ, 'c'},
+  {"debug", no_వాదం, ఖాళీ, DEBUG_కార్యక్రమం_OPTION},
+  {"follow", optional_వాదం, ఖాళీ, LONG_FOLLOW_OPTION},
+  {"lines", required_వాదం, ఖాళీ, 'n'},
+  {"max-unchanged-stats", required_వాదం, ఖాళీ,
    MAX_UNCHANGED_STATS_OPTION},
-  {"-disable-inotify", no_argument, NULL,
+  {"-disable-inotify", no_వాదం, ఖాళీ,
    DISABLE_INOTIFY_OPTION}, /* do not document */
-  {"pid", required_argument, NULL, PID_OPTION},
-  {"-presume-input-pipe", no_argument, NULL,
-   PRESUME_INPUT_PIPE_OPTION}, /* do not document */
-  {"quiet", no_argument, NULL, 'q'},
-  {"retry", no_argument, NULL, RETRY_OPTION},
-  {"silent", no_argument, NULL, 'q'},
-  {"sleep-interval", required_argument, NULL, 's'},
-  {"verbose", no_argument, NULL, 'v'},
-  {"zero-terminated", no_argument, NULL, 'z'},
+  {"pid", required_వాదం, ఖాళీ, PID_OPTION},
+  {"-presume-input-pipe", no_వాదం, ఖాళీ,
+   PRESUME_ఆదానం_PIPE_OPTION}, /* do not document */
+  {"quiet", no_వాదం, ఖాళీ, 'q'},
+  {"retry", no_వాదం, ఖాళీ, RETRY_OPTION},
+  {"silent", no_వాదం, ఖాళీ, 'q'},
+  {"sleep-interval", required_వాదం, ఖాళీ, 's'},
+  {"verbose", no_వాదం, ఖాళీ, 'v'},
+  {"zero-terminated", no_వాదం, ఖాళీ, 'z'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_సంస్కరణ_OPTION_DECL},
+  {ఖాళీ, 0, ఖాళీ, 0}
 };
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("\
+      రాయి (_("\
 Usage: %s [OPTION]... [FILE]...\n\
 "),
-              program_name);
-      printf (_("\
-Print the last %d lines of each FILE to standard output.\n\
-With more than one FILE, precede each with a header giving the file name.\n\
-"), DEFAULT_N_LINES);
+              కార్యక్రమం_name);
+      రాయి (_("\
+Print the చివరి %d పంక్తులు యొక్క each FILE గమ్యం standard output.\n\
+With మరిన్ని than one FILE, precede each with a శీర్షిక giving the file name.\n\
+"), DEFAULT_N_పంక్తులు);
 
       emit_stdin_note ();
       emit_mandatory_arg_note ();
 
      oputs (_("\
-  -c, --bytes=[+]NUM\n\
-         output the last NUM bytes;\n\
-         or use -c +NUM to output starting with byte NUM of each file\n\
+  -c, --బైట్లు=[+]అంకె_2\n\
+         output the చివరి అంకె_2 బైట్లు;\n\
+         or use -c +అంకె_2 గమ్యం output starting with byte అంకె_2 యొక్క each file\n\
 "));
      oputs (_("\
       --debug\n\
-         indicate which --follow implementation is used\n\
+         indicate which --follow implementation is వాడిన\n\
 "));
      oputs (_("\
   -f, --follow[={name|descriptor}]\n\
-         output appended data as the file grows;\n\
-         an absent option argument means 'descriptor'\n\
+         output appended దత్తాంశం as the file grows;\n\
+         an absent option వాదం means 'descriptor'\n\
 "));
      oputs (_("\
   -F\n\
          same as --follow=name --retry\n\
 "));
      oprintf (_("\
-  -n, --lines=[+]NUM\n\
-         output the last NUM lines, instead of the last %d;\n\
-         or use -n +NUM to skip NUM-1 lines at the start\n\
-"), DEFAULT_N_LINES);
+  -n, --పంక్తులు=[+]అంకె_2\n\
+         output the చివరి అంకె_2 పంక్తులు, instead యొక్క the చివరి %d;\n\
+         or use -n +అంకె_2 గమ్యం skip అంకె_2-1 పంక్తులు at the ప్రారంభం\n\
+"), DEFAULT_N_పంక్తులు);
      oprintf (_("\
       --max-unchanged-stats=N\n\
          with --follow=name, reopen a FILE which has not\n\
-         changed size after N (default %d) iterations\n\
-         to see if it has been unlinked or renamed\n\
-         (this is the usual case of rotated log files);\n\
+         మారింది కొలత after N (అప్రమేయ %d) iterations\n\
+         గమ్యం see ఒకవేళ it has been unlinked or renamed\n\
+         (this is the usual స్థితి యొక్క rotated సంవర్గమానం files);\n\
          with inotify, this option is rarely useful\n\
 "), DEFAULT_MAX_N_UNCHANGED_STATS_BETWEEN_OPENS);
      oputs (_("\
       --pid=PID\n\
-         with -f, exit after PID no longer exists;\n\
-         can be repeated to watch multiple processes\n\
+         with -f, నిష్క్రమించు after PID no longer exists;\n\
+         can be repeated గమ్యం watch గుణిజం processes\n\
 "));
      oputs (_("\
   -q, --quiet, --silent\n\
-         never output headers giving file names\n\
+         never output శీర్షికలు giving file పేర్లు\n\
 "));
      oputs (_("\
       --retry\n\
-         keep trying to open a file if it is inaccessible\n\
+         keep trying గమ్యం open a file ఒకవేళ it is inaccessible\n\
 "));
      oputs (_("\
   -s, --sleep-interval=N\n\
-         with -f, sleep for approximately N seconds\n\
-         (default 1.0) between iterations;\n\
+         with -f, sleep కొరకు approximately N seconds\n\
+         (అప్రమేయ 1.0) between iterations;\n\
          with inotify and --pid=P,\n\
-         check process P at least once every N seconds\n\
+         check process P at కనిష్ఠ once every N seconds\n\
 "));
      oputs (_("\
   -v, --verbose\n\
-         always output headers giving file names\n\
+         always output శీర్షికలు giving file పేర్లు\n\
 "));
      oputs (_("\
   -z, --zero-terminated\n\
-         line delimiter is NUL, not newline\n\
+         పంక్తి delimiter is NUL, not newline\n\
 "));
      oputs (HELP_OPTION_DESCRIPTION);
-     oputs (VERSION_OPTION_DESCRIPTION);
+     oputs (సంస్కరణ_OPTION_DESCRIPTION);
      fputs (_("\
 \n\
-NUM may have a multiplier suffix:\n\
+అంకె_2 may have a multiplier suffix:\n\
 b 512, kB 1000, K 1024, MB 1000*1000, M 1024*1024,\n\
-GB 1000*1000*1000, G 1024*1024*1024, and so on for T, P, E, Z, Y, R, Q.\n\
-Binary prefixes can be used, too: KiB=K, MiB=M, and so on.\n\
+GB 1000*1000*1000, G 1024*1024*1024, and so on కొరకు T, P, E, Z, Y, R, Q.\n\
+ద్విమాన_2 prefixes can be వాడిన, too: KiB=K, MiB=M, and so on.\n\
 \n\
 "), stdout);
      fputs (_("\
-With --follow (-f), tail defaults to following the file descriptor, which\n\
-means that even if a tail'ed file is renamed, tail will continue to track\n\
-its end.  This default behavior is not desirable when you really want to\n\
-track the actual name of the file, not the file descriptor (e.g., log\n\
-rotation).  Use --follow=name in that case.  That causes tail to track the\n\
-named file in a way that accommodates renaming, removal and creation.\n\
+With --follow (-f), తోక defaults గమ్యం following the file descriptor, which\n\
+means that even ఒకవేళ a తోక'ed file is renamed, తోక will కొనసాగు గమ్యం track\n\
+its చివర.  This అప్రమేయ behavior is not desirable when you really want గమ్యం\n\
+track the actual name యొక్క the file, not the file descriptor (e.g., సంవర్గమానం\n\
+rotation).  Use --follow=name లోపల that స్థితి.  That causes తోక గమ్యం track the\n\
+named file లోపల a way that accommodates renaming, removal and creation.\n\
 "), stdout);
-      emit_ancillary_info (PROGRAM_NAME);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
 /* Ensure exit, either with SIGPIPE or EXIT_FAILURE status.  */
-static void
-die_pipe (void)
+స్థిర శూన్య
+die_pipe (శూన్య)
 {
-  raise (SIGPIPE);
-  exit (EXIT_FAILURE);
+  లేపు (SIGPIPE);
+  నిష్క్రమించు (EXIT_FAILURE);
 }
 
 /* If the output has gone away, then terminate
    as we would if we had written to this output.  */
-static void
-check_output_alive (void)
+స్థిర శూన్య
+check_output_alive (శూన్య)
 {
-  if (! monitor_output)
-    return;
+  ఒకవేళ (! monitor_output)
+    తిరిగి;
 
-  if (iopoll (-1, STDOUT_FILENO, false) == IOPOLL_BROKEN_OUTPUT)
+  ఒకవేళ (iopoll (-1, STDOUT_FILENO, false) == IOPOLL_BROKEN_OUTPUT)
     die_pipe ();
 }
 
-MAYBE_UNUSED static bool
-valid_file_spec (struct File_spec const *f)
+MAYBE_వాడని స్థిర bool
+valid_file_spec (నిర్మాణం File_spec స్థిరరాశి *f)
 {
   /* Exactly one of the following subexpressions must be true. */
-  return (f->fd < 0) ^ (f->errnum == 0);
+  తిరిగి (f->fd < 0) ^ (f->errnum == 0);
 }
 
 /* Call lseek with the specified arguments FD, OFFSET, WHENCE.
@@ -406,20 +406,20 @@ valid_file_spec (struct File_spec const *f)
    Give a diagnostic and exit nonzero if lseek fails.
    Otherwise, return the resulting offset.  */
 
-static off_t
-xlseek (int fd, off_t offset, int whence, char const *prettyname)
+స్థిర off_t
+xlseek (పూర్ణాంకం fd, off_t స్థానభ్రంశం, పూర్ణాంకం whence, అక్షరం స్థిరరాశి *prettyname)
 {
-  off_t new_offset = lseek (fd, offset, whence);
+  off_t new_స్థానభ్రంశం = lseek (fd, స్థానభ్రంశం, whence);
 
-  if (0 <= new_offset)
-    return new_offset;
+  ఒకవేళ (0 <= new_స్థానభ్రంశం)
+    తిరిగి new_స్థానభ్రంశం;
 
-  static char const *whence_msgid[] = {
+  స్థిర అక్షరం స్థిరరాశి *whence_msgid[] = {
     [SEEK_SET] = N_("%s: cannot seek to offset %jd"),
     [SEEK_CUR] = N_("%s: cannot seek to relative offset %jd"),
     [SEEK_END] = N_("%s: cannot seek to end-relative offset %jd")
   };
-  intmax_t joffset = offset;
+  intmax_t joffset = స్థానభ్రంశం;
   error (EXIT_FAILURE, errno, gettext (whence_msgid[whence]),
          quotef (prettyname), joffset);
 }
@@ -428,17 +428,17 @@ xlseek (int fd, off_t offset, int whence, char const *prettyname)
    and blocking status BLOCKING.  READ_POS matters only for regular files,
    and READ_POS < 0 means the position is unknown.  */
 
-static void
-record_open_fd (struct File_spec *f, int fd,
-                off_t read_pos, struct stat const *st,
-                int blocking)
+స్థిర శూన్య
+రికార్డు_open_fd (నిర్మాణం File_spec *f, పూర్ణాంకం fd,
+                off_t read_pos, నిర్మాణం stat స్థిరరాశి *st,
+                పూర్ణాంకం blocking)
 {
   f->fd = fd;
   f->mtime = get_stat_mtime (st);
   f->st_dev = st->st_dev;
   f->st_ino = st->st_ino;
-  f->mode = st->st_mode;
-  if (S_ISREG (st->st_mode))
+  f->బహుళకం_2 = st->st_బహుళకం;
+  ఒకవేళ (S_ISREG (st->st_బహుళకం))
     f->read_pos = (read_pos < 0
                    ? xlseek (fd, 0, SEEK_CUR, f->prettyname)
                    : read_pos);
@@ -449,29 +449,29 @@ record_open_fd (struct File_spec *f, int fd,
 
 /* Close the file with descriptor FD and spec F.  */
 
-static void
-close_fd (int fd, struct File_spec const *f)
+స్థిర శూన్య
+close_fd (పూర్ణాంకం fd, నిర్మాణం File_spec స్థిరరాశి *f)
 {
-  if (STDIN_FILENO < fd && close (fd) < 0)
+  ఒకవేళ (STDIN_FILENO < fd && close (fd) < 0)
     error (0, errno, _("closing %s (fd=%d)"), quoteaf (f->prettyname), fd);
 }
 
-static void
-write_header (char const *prettyname)
+స్థిర శూన్య
+write_శీర్షిక (అక్షరం స్థిరరాశి *prettyname)
 {
-  static bool first_file = true;
+  స్థిర bool మొదటి_file = true;
 
-  printf ("%s==> %s <==\n", first_file ? "" : "\n", quotef (prettyname));
-  first_file = false;
+  రాయి ("%s==> %s <==\n", మొదటి_file ? "" : "\n", quotef (prettyname));
+  మొదటి_file = false;
 }
 
 /* Write N_BYTES from BUFFER to stdout.
    Exit immediately on error with a single diagnostic.  */
 
-static void
-xwrite_stdout (char const *buffer, idx_t n_bytes)
+స్థిర శూన్య
+xwrite_stdout (అక్షరం స్థిరరాశి *బఫరు, idx_t n_బైట్లు)
 {
-  if (n_bytes > 0 && fwrite (buffer, 1, n_bytes, stdout) < n_bytes)
+  ఒకవేళ (n_బైట్లు > 0 && fwrite (బఫరు, 1, n_బైట్లు, stdout) < n_బైట్లు)
     {
       clearerr (stdout); /* To avoid redundant close_stdout diagnostic.  */
       error (EXIT_FAILURE, errno, _("error writing %s"),
@@ -487,44 +487,44 @@ xwrite_stdout (char const *buffer, idx_t n_bytes)
    If N_BYTES is COPY_A_BUFFER, copy at most one buffer's worth.
    Return the number of bytes read from the file.  */
 
-static count_t
-dump_remainder (bool want_header, char const *prettyname, int fd,
-                count_t n_bytes)
+స్థిర లెక్క_t
+dump_remainder (bool want_శీర్షిక, అక్షరం స్థిరరాశి *prettyname, పూర్ణాంకం fd,
+                లెక్క_t n_బైట్లు)
 {
-  count_t n_read = 0;
-  count_t n_remaining = n_bytes;
+  లెక్క_t n_read = 0;
+  లెక్క_t n_మిగిలిన = n_బైట్లు;
 
-  do
+  చేయి
     {
-      char buffer[BUFSIZ];
-      idx_t n = n_bytes < 0 || BUFSIZ < n_remaining ? BUFSIZ : n_remaining;
-      ssize_t bytes_read = read (fd, buffer, n);
-      if (bytes_read < 0)
+      అక్షరం బఫరు[BUFSIZ];
+      idx_t n = n_బైట్లు < 0 || BUFSIZ < n_మిగిలిన ? BUFSIZ : n_మిగిలిన;
+      ssize_t బైట్లు_read = పఠ (fd, బఫరు, n);
+      ఒకవేళ (బైట్లు_read < 0)
         {
-          if (errno != EAGAIN)
+          ఒకవేళ (errno != EAGAIN)
             error (EXIT_FAILURE, errno, _("error reading %s"),
                    quoteaf (prettyname));
-          break;
+          ఆపు;
         }
-      if (bytes_read == 0)
-        break;
-      n_read += bytes_read;
+      ఒకవేళ (బైట్లు_read == 0)
+        ఆపు;
+      n_read += బైట్లు_read;
 
-      if (want_header)
+      ఒకవేళ (want_శీర్షిక)
         {
-          write_header (prettyname);
-          want_header = false;
+          write_శీర్షిక (prettyname);
+          want_శీర్షిక = false;
         }
-      xwrite_stdout (buffer, bytes_read);
-      if (n_bytes == COPY_A_BUFFER)
-        break;
+      xwrite_stdout (బఫరు, బైట్లు_read);
+      ఒకవేళ (n_బైట్లు == COPY_A_బఫరు)
+        ఆపు;
 
-      n_remaining -= bytes_read;
+      n_మిగిలిన -= బైట్లు_read;
       /* n_remaining < 0 if n_bytes == COPY_TO_EOF.  */
     }
-  while (n_remaining != 0);
+  అయితే (n_మిగిలిన != 0);
 
-  return n_read;
+  తిరిగి n_read;
 }
 
 /* Print the last N_LINES lines from the end of file FD.
@@ -538,16 +538,16 @@ dump_remainder (bool want_header, char const *prettyname, int fd,
    Return (-1 - errno) on failure, otherwise the resulting file offset,
    which can be less than READ_POS if the file shrank.  */
 
-static off_t
-file_lines (char const *prettyname, int fd, struct stat const *sb,
-            count_t n_lines, off_t start_pos, off_t end_pos)
+స్థిర off_t
+file_పంక్తులు (అక్షరం స్థిరరాశి *prettyname, పూర్ణాంకం fd, నిర్మాణం stat స్థిరరాశి *sb,
+            లెక్క_t n_పంక్తులు, off_t ప్రారంభం_pos, off_t చివర_pos)
 {
-  char *buffer;
+  అక్షరం *బఫరు;
   idx_t bufsize = BUFSIZ;
-  off_t pos = end_pos;
+  off_t pos = చివర_pos;
 
-  if (n_lines == 0)
-    return pos;
+  ఒకవేళ (n_పంక్తులు == 0)
+    తిరిగి pos;
 
   /* Be careful with files with sizes that are a multiple of the page size,
      as on /proc or /sys file systems these files accept seeking to within
@@ -558,80 +558,80 @@ file_lines (char const *prettyname, int fd, struct stat const *sb,
      however this would be less efficient in the common case, as it would
      generally pick a larger buffer size, resulting in reading more data
      from the end of the file.  */
-  affirm (S_ISREG (sb->st_mode));
-  if (sb->st_size % page_size == 0)
-    bufsize = MAX (BUFSIZ, page_size);
+  affirm (S_ISREG (sb->st_బహుళకం));
+  ఒకవేళ (sb->st_కొలత % పుట_కొలత == 0)
+    bufsize = MAX (BUFSIZ, పుట_కొలత);
 
-  buffer = ximalloc (bufsize);
+  బఫరు = ximalloc (bufsize);
 
   /* Set 'bytes_read' to the size of the last, probably partial, buffer;
      0 < 'bytes_read' <= 'bufsize'.  */
-  idx_t bytes_to_read = (pos - start_pos) % bufsize;
-  if (bytes_to_read == 0)
-    bytes_to_read = bufsize;
+  idx_t బైట్లు_గమ్యం_read = (pos - ప్రారంభం_pos) % bufsize;
+  ఒకవేళ (బైట్లు_గమ్యం_read == 0)
+    బైట్లు_గమ్యం_read = bufsize;
   /* Make 'pos' a multiple of 'bufsize' (0 if the file is short), so that all
      reads will be on block boundaries, which might increase efficiency.  */
-  pos = xlseek (fd, -bytes_to_read, SEEK_CUR, prettyname);
-  ssize_t bytes_read = read (fd, buffer, bytes_to_read);
-  if (bytes_read < 0)
+  pos = xlseek (fd, -బైట్లు_గమ్యం_read, SEEK_CUR, prettyname);
+  ssize_t బైట్లు_read = పఠ (fd, బఫరు, బైట్లు_గమ్యం_read);
+  ఒకవేళ (బైట్లు_read < 0)
     {
       pos = -1 - errno;
       error (0, errno, _("error reading %s"), quoteaf (prettyname));
-      goto free_buffer;
+      వెళ్ళు free_బఫరు;
     }
 
   /* Count the incomplete line on files that don't end with a newline.  */
-  if (bytes_read && buffer[bytes_read - 1] != line_end)
-    --n_lines;
+  ఒకవేళ (బైట్లు_read && బఫరు[బైట్లు_read - 1] != పంక్తి_చివర)
+    --n_పంక్తులు;
 
-  do
+  చేయి
     {
-      pos += bytes_read;
+      pos += బైట్లు_read;
 
       /* Scan backward, counting the newlines in this bufferfull.  */
 
-      idx_t n = bytes_read;
-      while (n)
+      idx_t n = బైట్లు_read;
+      అయితే (n)
         {
-          char const *nl;
-          nl = memrchr (buffer, line_end, n);
-          if (nl == NULL)
-            break;
-          n = nl - buffer;
-          if (n_lines-- == 0)
+          అక్షరం స్థిరరాశి *nl;
+          nl = memrchr (బఫరు, పంక్తి_చివర, n);
+          ఒకవేళ (nl == ఖాళీ)
+            ఆపు;
+          n = nl - బఫరు;
+          ఒకవేళ (n_పంక్తులు-- == 0)
             {
               /* If this newline isn't the last character in the buffer,
                  output the part that is after it.  */
-              xwrite_stdout (nl + 1, bytes_read - (n + 1));
-              pos += dump_remainder (false, prettyname, fd, end_pos - pos);
-              goto free_buffer;
+              xwrite_stdout (nl + 1, బైట్లు_read - (n + 1));
+              pos += dump_remainder (false, prettyname, fd, చివర_pos - pos);
+              వెళ్ళు free_బఫరు;
             }
         }
 
       /* Not enough newlines in that bufferfull.  */
-      if (pos - bytes_read == start_pos)
+      ఒకవేళ (pos - బైట్లు_read == ప్రారంభం_pos)
         {
           /* Not enough lines in the file; print everything from
              start_pos to the end.  */
-          xwrite_stdout (buffer, bytes_read);
-          dump_remainder (false, prettyname, fd, end_pos - pos);
-          goto free_buffer;
+          xwrite_stdout (బఫరు, బైట్లు_read);
+          dump_remainder (false, prettyname, fd, చివర_pos - pos);
+          వెళ్ళు free_బఫరు;
         }
 
-      pos = xlseek (fd, -(bufsize + bytes_read), SEEK_CUR, prettyname);
-      bytes_read = read (fd, buffer, bufsize);
-      if (bytes_read < 0)
+      pos = xlseek (fd, -(bufsize + బైట్లు_read), SEEK_CUR, prettyname);
+      బైట్లు_read = పఠ (fd, బఫరు, bufsize);
+      ఒకవేళ (బైట్లు_read < 0)
         {
           pos = -1 - errno;
           error (0, errno, _("error reading %s"), quoteaf (prettyname));
-          goto free_buffer;
+          వెళ్ళు free_బఫరు;
         }
     }
-  while (bytes_read > 0);
+  అయితే (బైట్లు_read > 0);
 
-free_buffer:
-  free (buffer);
-  return pos;
+free_బఫరు:
+  విడుదల (బఫరు);
+  తిరిగి pos;
 }
 
 /* Print the last N_LINES lines from the end of the standard input,
@@ -639,135 +639,135 @@ free_buffer:
    Buffer the text as a linked list of LBUFFERs, adding them as needed.
    Return -1 if successful, (-1 - errno) otherwise.  */
 
-static int
-pipe_lines (char const *prettyname, int fd, count_t n_lines)
+స్థిర పూర్ణాంకం
+pipe_పంక్తులు (అక్షరం స్థిరరాశి *prettyname, పూర్ణాంకం fd, లెక్క_t n_పంక్తులు)
 {
-  struct linebuffer
+  నిర్మాణం linebuffer
   {
-    char buffer[BUFSIZ];
+    అక్షరం బఫరు[BUFSIZ];
     idx_t nbytes;
     idx_t nlines;
-    struct linebuffer *next;
+    నిర్మాణం linebuffer *తదుపరి;
   };
-  typedef struct linebuffer LBUFFER;
-  LBUFFER *first, *last, *tmp;
-  idx_t total_lines = 0;	/* Total number of newlines in all buffers.  */
-  int ret = -1;
+  రకనిర్వచనం నిర్మాణం linebuffer LBUFFER;
+  LBUFFER *మొదటి, *చివరి, *tmp;
+  idx_t మొత్తం_పంక్తులు = 0;	/* Total number of newlines in all buffers.  */
+  పూర్ణాంకం ret = -1;
   ssize_t n_read;		/* Size in bytes of most recent read */
 
-  first = last = xmalloc (sizeof (LBUFFER));
-  first->nbytes = first->nlines = 0;
-  first->next = NULL;
-  tmp = xmalloc (sizeof (LBUFFER));
+  మొదటి = చివరి = xmalloc (పరిమాణం (LBUFFER));
+  మొదటి->nbytes = మొదటి->nlines = 0;
+  మొదటి->తదుపరి = ఖాళీ;
+  tmp = xmalloc (పరిమాణం (LBUFFER));
 
   /* Input is always read into a fresh buffer.  */
-  while (true)
+  అయితే (true)
     {
-      n_read = read (fd, tmp->buffer, BUFSIZ);
-      if (n_read <= 0)
-        break;
+      n_read = పఠ (fd, tmp->బఫరు, BUFSIZ);
+      ఒకవేళ (n_read <= 0)
+        ఆపు;
       tmp->nbytes = n_read;
       tmp->nlines = 0;
-      tmp->next = NULL;
+      tmp->తదుపరి = ఖాళీ;
 
       /* Count the number of newlines just read.  */
       {
-        char const *buffer_end = tmp->buffer + n_read;
-        char const *p = tmp->buffer;
-        while ((p = memchr (p, line_end, buffer_end - p)))
+        అక్షరం స్థిరరాశి *బఫరు_చివర = tmp->బఫరు + n_read;
+        అక్షరం స్థిరరాశి *p = tmp->బఫరు;
+        అయితే ((p = memchr (p, పంక్తి_చివర, బఫరు_చివర - p)))
           {
             ++p;
             ++tmp->nlines;
           }
       }
-      total_lines += tmp->nlines;
+      మొత్తం_పంక్తులు += tmp->nlines;
 
       /* If there is enough room in the last buffer read, just append the new
          one to it.  This is because when reading from a pipe, 'n_read' can
          often be very small.  */
-      if (tmp->nbytes + last->nbytes < BUFSIZ)
+      ఒకవేళ (tmp->nbytes + చివరి->nbytes < BUFSIZ)
         {
-          memcpy (&last->buffer[last->nbytes], tmp->buffer, tmp->nbytes);
-          last->nbytes += tmp->nbytes;
-          last->nlines += tmp->nlines;
+          జ్ఞాపకం_నకలు (&చివరి->బఫరు[చివరి->nbytes], tmp->బఫరు, tmp->nbytes);
+          చివరి->nbytes += tmp->nbytes;
+          చివరి->nlines += tmp->nlines;
         }
-      else
+      లేకపోతే
         {
           /* If there's not enough room, link the new buffer onto the end of
              the list, then either free up the oldest buffer for the next
              read if that would leave enough lines, or else malloc a new one.
              Some compaction mechanism is possible but probably not
              worthwhile.  */
-          last = last->next = tmp;
-          if (total_lines - first->nlines > n_lines)
+          చివరి = చివరి->తదుపరి = tmp;
+          ఒకవేళ (మొత్తం_పంక్తులు - మొదటి->nlines > n_పంక్తులు)
             {
-              tmp = first;
-              total_lines -= first->nlines;
-              first = first->next;
+              tmp = మొదటి;
+              మొత్తం_పంక్తులు -= మొదటి->nlines;
+              మొదటి = మొదటి->తదుపరి;
             }
-          else
-            tmp = xmalloc (sizeof (LBUFFER));
+          లేకపోతే
+            tmp = xmalloc (పరిమాణం (LBUFFER));
         }
     }
 
-  free (tmp);
+  విడుదల (tmp);
 
-  if (n_read < 0 && errno != EAGAIN)
+  ఒకవేళ (n_read < 0 && errno != EAGAIN)
     {
       ret = -1 - errno;
       error (0, errno, _("error reading %s"), quoteaf (prettyname));
-      goto free_lbuffers;
+      వెళ్ళు free_lbuffers;
     }
 
   /* If the file is empty, then bail out.  */
-  if (last->nbytes == 0)
-    goto free_lbuffers;
+  ఒకవేళ (చివరి->nbytes == 0)
+    వెళ్ళు free_lbuffers;
 
   /* This prevents a core dump when the pipe contains no newlines.  */
-  if (n_lines == 0)
-    goto free_lbuffers;
+  ఒకవేళ (n_పంక్తులు == 0)
+    వెళ్ళు free_lbuffers;
 
   /* Count the incomplete line on files that don't end with a newline.  */
-  if (last->buffer[last->nbytes - 1] != line_end)
+  ఒకవేళ (చివరి->బఫరు[చివరి->nbytes - 1] != పంక్తి_చివర)
     {
-      ++last->nlines;
-      ++total_lines;
+      ++చివరి->nlines;
+      ++మొత్తం_పంక్తులు;
     }
 
   /* Run through the list, printing lines.  First, skip over unneeded
      buffers.  */
-  for (tmp = first; total_lines - tmp->nlines > n_lines; tmp = tmp->next)
-    total_lines -= tmp->nlines;
+  కొరకు (tmp = మొదటి; మొత్తం_పంక్తులు - tmp->nlines > n_పంక్తులు; tmp = tmp->తదుపరి)
+    మొత్తం_పంక్తులు -= tmp->nlines;
 
   /* Find the correct beginning, then print the rest of the file.  */
   {
-    char const *beg = tmp->buffer;
-    char const *buffer_end = tmp->buffer + tmp->nbytes;
-    if (total_lines > n_lines)
+    అక్షరం స్థిరరాశి *beg = tmp->బఫరు;
+    అక్షరం స్థిరరాశి *బఫరు_చివర = tmp->బఫరు + tmp->nbytes;
+    ఒకవేళ (మొత్తం_పంక్తులు > n_పంక్తులు)
       {
         /* Skip 'total_lines' - 'n_lines' newlines.  We made sure that
            'total_lines' - 'n_lines' <= 'tmp->nlines'.  */
-        for (idx_t j = total_lines - n_lines; j; --j)
+        కొరకు (idx_t j = మొత్తం_పంక్తులు - n_పంక్తులు; j; --j)
           {
-            beg = rawmemchr (beg, line_end);
+            beg = rawmemchr (beg, పంక్తి_చివర);
             ++beg;
           }
       }
 
-    xwrite_stdout (beg, buffer_end - beg);
+    xwrite_stdout (beg, బఫరు_చివర - beg);
   }
 
-  for (tmp = tmp->next; tmp; tmp = tmp->next)
-    xwrite_stdout (tmp->buffer, tmp->nbytes);
+  కొరకు (tmp = tmp->తదుపరి; tmp; tmp = tmp->తదుపరి)
+    xwrite_stdout (tmp->బఫరు, tmp->nbytes);
 
 free_lbuffers:
-  while (first)
+  అయితే (మొదటి)
     {
-      tmp = first->next;
-      free (first);
-      first = tmp;
+      tmp = మొదటి->తదుపరి;
+      విడుదల (మొదటి);
+      మొదటి = tmp;
     }
-  return ret;
+  తిరిగి ret;
 }
 
 /* Print the last N_BYTES characters from the end of FD.
@@ -777,173 +777,173 @@ free_lbuffers:
    Return (-1 - errno) on failure, otherwise the resulting file offset
    if known, otherwise -1.  */
 
-static off_t
-pipe_bytes (char const *prettyname, int fd, count_t n_bytes,
+స్థిర off_t
+pipe_బైట్లు (అక్షరం స్థిరరాశి *prettyname, పూర్ణాంకం fd, లెక్క_t n_బైట్లు,
             off_t read_pos)
 {
-  struct charbuffer
+  నిర్మాణం charbuffer
   {
-    char buffer[BUFSIZ];
+    అక్షరం బఫరు[BUFSIZ];
     idx_t nbytes;
-    struct charbuffer *next;
+    నిర్మాణం charbuffer *తదుపరి;
   };
-  typedef struct charbuffer CBUFFER;
-  CBUFFER *first, *last, *tmp;
+  రకనిర్వచనం నిర్మాణం charbuffer CBUFFER;
+  CBUFFER *మొదటి, *చివరి, *tmp;
   idx_t i;			/* Index into buffers.  */
-  intmax_t total_bytes = 0;	/* Total characters in all buffers.  */
+  intmax_t మొత్తం_బైట్లు = 0;	/* Total characters in all buffers.  */
   ssize_t n_read;
 
-  if (read_pos < 0)
+  ఒకవేళ (read_pos < 0)
     read_pos = TYPE_MINIMUM (off_t);
 
-  first = last = xmalloc (sizeof (CBUFFER));
-  first->nbytes = 0;
-  first->next = NULL;
-  tmp = xmalloc (sizeof (CBUFFER));
+  మొదటి = చివరి = xmalloc (పరిమాణం (CBUFFER));
+  మొదటి->nbytes = 0;
+  మొదటి->తదుపరి = ఖాళీ;
+  tmp = xmalloc (పరిమాణం (CBUFFER));
 
   /* Input is always read into a fresh buffer.  */
-  while (true)
+  అయితే (true)
     {
-      n_read = read (fd, tmp->buffer, BUFSIZ);
-      if (n_read <= 0)
-        break;
+      n_read = పఠ (fd, tmp->బఫరు, BUFSIZ);
+      ఒకవేళ (n_read <= 0)
+        ఆపు;
       read_pos += n_read;
       tmp->nbytes = n_read;
-      tmp->next = NULL;
+      tmp->తదుపరి = ఖాళీ;
 
-      total_bytes += tmp->nbytes;
+      మొత్తం_బైట్లు += tmp->nbytes;
       /* If there is enough room in the last buffer read, just append the new
          one to it.  This is because when reading from a pipe, 'nbytes' can
          often be very small.  */
-      if (tmp->nbytes + last->nbytes < BUFSIZ)
+      ఒకవేళ (tmp->nbytes + చివరి->nbytes < BUFSIZ)
         {
-          memcpy (&last->buffer[last->nbytes], tmp->buffer, tmp->nbytes);
-          last->nbytes += tmp->nbytes;
+          జ్ఞాపకం_నకలు (&చివరి->బఫరు[చివరి->nbytes], tmp->బఫరు, tmp->nbytes);
+          చివరి->nbytes += tmp->nbytes;
         }
-      else
+      లేకపోతే
         {
           /* If there's not enough room, link the new buffer onto the end of
              the list, then either free up the oldest buffer for the next
              read if that would leave enough characters, or else malloc a new
              one.  Some compaction mechanism is possible but probably not
              worthwhile.  */
-          last = last->next = tmp;
-          if (total_bytes - first->nbytes > n_bytes)
+          చివరి = చివరి->తదుపరి = tmp;
+          ఒకవేళ (మొత్తం_బైట్లు - మొదటి->nbytes > n_బైట్లు)
             {
-              tmp = first;
-              total_bytes -= first->nbytes;
-              first = first->next;
+              tmp = మొదటి;
+              మొత్తం_బైట్లు -= మొదటి->nbytes;
+              మొదటి = మొదటి->తదుపరి;
             }
-          else
+          లేకపోతే
             {
-              tmp = xmalloc (sizeof (CBUFFER));
+              tmp = xmalloc (పరిమాణం (CBUFFER));
             }
         }
     }
 
-  free (tmp);
+  విడుదల (tmp);
 
-  if (n_read < 0 && errno != EAGAIN)
+  ఒకవేళ (n_read < 0 && errno != EAGAIN)
     {
       read_pos = -1 - errno;
       error (0, errno, _("error reading %s"), quoteaf (prettyname));
-      goto free_cbuffers;
+      వెళ్ళు free_cbuffers;
     }
 
   /* Run through the list, printing characters.  First, skip over unneeded
      buffers.  */
-  for (tmp = first; total_bytes - tmp->nbytes > n_bytes; tmp = tmp->next)
-    total_bytes -= tmp->nbytes;
+  కొరకు (tmp = మొదటి; మొత్తం_బైట్లు - tmp->nbytes > n_బైట్లు; tmp = tmp->తదుపరి)
+    మొత్తం_బైట్లు -= tmp->nbytes;
 
   /* Find the correct beginning, then print the rest of the file.
      We made sure that 'total_bytes' - 'n_bytes' <= 'tmp->nbytes'.  */
-  if (total_bytes > n_bytes)
-    i = total_bytes - n_bytes;
-  else
+  ఒకవేళ (మొత్తం_బైట్లు > n_బైట్లు)
+    i = మొత్తం_బైట్లు - n_బైట్లు;
+  లేకపోతే
     i = 0;
-  xwrite_stdout (&tmp->buffer[i], tmp->nbytes - i);
+  xwrite_stdout (&tmp->బఫరు[i], tmp->nbytes - i);
 
-  for (tmp = tmp->next; tmp; tmp = tmp->next)
-    xwrite_stdout (tmp->buffer, tmp->nbytes);
+  కొరకు (tmp = tmp->తదుపరి; tmp; tmp = tmp->తదుపరి)
+    xwrite_stdout (tmp->బఫరు, tmp->nbytes);
 
-  if (read_pos < 0)
+  ఒకవేళ (read_pos < 0)
     read_pos = -1;
 
 free_cbuffers:
-  while (first)
+  అయితే (మొదటి)
     {
-      tmp = first->next;
-      free (first);
-      first = tmp;
+      tmp = మొదటి->తదుపరి;
+      విడుదల (మొదటి);
+      మొదటి = tmp;
     }
-  return read_pos;
+  తిరిగి read_pos;
 }
 
 /* Skip N_BYTES characters from the start of pipe FD, and print
    any extra characters that were read beyond that.
    Return (-1 - errno) on failure, -1 if EOF, 0 otherwise.  */
 
-static int
-start_bytes (char const *prettyname, int fd, count_t n_bytes)
+స్థిర పూర్ణాంకం
+ప్రారంభం_బైట్లు (అక్షరం స్థిరరాశి *prettyname, పూర్ణాంకం fd, లెక్క_t n_బైట్లు)
 {
-  char buffer[BUFSIZ];
+  అక్షరం బఫరు[BUFSIZ];
 
-  while (0 < n_bytes)
+  అయితే (0 < n_బైట్లు)
     {
-      ssize_t bytes_read = read (fd, buffer, BUFSIZ);
-      if (bytes_read == 0)
-        return -1;
-      if (bytes_read < 0)
+      ssize_t బైట్లు_read = పఠ (fd, బఫరు, BUFSIZ);
+      ఒకవేళ (బైట్లు_read == 0)
+        తిరిగి -1;
+      ఒకవేళ (బైట్లు_read < 0)
         {
-          int ret = -1 - errno;
+          పూర్ణాంకం ret = -1 - errno;
           error (0, errno, _("error reading %s"), quoteaf (prettyname));
-          return ret;
+          తిరిగి ret;
         }
-      if (bytes_read <= n_bytes)
-        n_bytes -= bytes_read;
-      else
+      ఒకవేళ (బైట్లు_read <= n_బైట్లు)
+        n_బైట్లు -= బైట్లు_read;
+      లేకపోతే
         {
-          xwrite_stdout (&buffer[n_bytes], bytes_read - n_bytes);
-          break;
+          xwrite_stdout (&బఫరు[n_బైట్లు], బైట్లు_read - n_బైట్లు);
+          ఆపు;
         }
     }
 
-  return 0;
+  తిరిగి 0;
 }
 
 /* Skip N_LINES lines at the start of file or pipe FD, and print
    any extra bytes that were read beyond that.
    Return (-1 - errno) on failure, -1 if EOF, 0 otherwise.  */
 
-static int
-start_lines (char const *prettyname, int fd, count_t n_lines)
+స్థిర పూర్ణాంకం
+ప్రారంభం_పంక్తులు (అక్షరం స్థిరరాశి *prettyname, పూర్ణాంకం fd, లెక్క_t n_పంక్తులు)
 {
-  if (n_lines == 0)
-    return 0;
+  ఒకవేళ (n_పంక్తులు == 0)
+    తిరిగి 0;
 
-  while (true)
+  అయితే (true)
     {
-      char buffer[BUFSIZ];
-      ssize_t bytes_read = read (fd, buffer, BUFSIZ);
-      if (bytes_read == 0) /* EOF */
-        return -1;
-      if (bytes_read < 0) /* error */
+      అక్షరం బఫరు[BUFSIZ];
+      ssize_t బైట్లు_read = పఠ (fd, బఫరు, BUFSIZ);
+      ఒకవేళ (బైట్లు_read == 0) /* EOF */
+        తిరిగి -1;
+      ఒకవేళ (బైట్లు_read < 0) /* error */
         {
-          int ret = -1 - errno;
+          పూర్ణాంకం ret = -1 - errno;
           error (0, errno, _("error reading %s"), quoteaf (prettyname));
-          return ret;
+          తిరిగి ret;
         }
 
-      char *buffer_end = buffer + bytes_read;
-      char *p = buffer;
-      while ((p = memchr (p, line_end, buffer_end - p)))
+      అక్షరం *బఫరు_చివర = బఫరు + బైట్లు_read;
+      అక్షరం *p = బఫరు;
+      అయితే ((p = memchr (p, పంక్తి_చివర, బఫరు_చివర - p)))
         {
           ++p;
-          if (--n_lines == 0)
+          ఒకవేళ (--n_పంక్తులు == 0)
             {
-              if (p < buffer_end)
-                xwrite_stdout (p, buffer_end - p);
-              return 0;
+              ఒకవేళ (p < బఫరు_చివర)
+                xwrite_stdout (p, బఫరు_చివర - p);
+              తిరిగి 0;
             }
         }
     }
@@ -953,52 +953,52 @@ start_lines (char const *prettyname, int fd, count_t n_lines)
    false if FD is known to be local.  F is the file's spec.
    If fstatfs fails, give a diagnostic and return true.
    If fstatfs cannot be called, return true.  */
-static bool
-fremote (int fd, struct File_spec const *f)
+స్థిర bool
+fremote (పూర్ణాంకం fd, నిర్మాణం File_spec స్థిరరాశి *f)
 {
   bool remote = true;           /* be conservative (poll by default).  */
 
-#if HAVE_FSTATFS && HAVE_STRUCT_STATFS_F_TYPE \
+#ఒకవేళ HAVE_FSTATFS && HAVE_STRUCT_STATFS_F_TYPE \
  && (defined __linux__ || defined __ANDROID__)
-  struct statfs buf;
-  int err = fstatfs (fd, &buf);
-  if (err != 0)
+  నిర్మాణం statfs buf;
+  పూర్ణాంకం err = fstatfs (fd, &buf);
+  ఒకవేళ (err != 0)
     {
       /* On at least linux-2.6.38, fstatfs fails with ENOSYS when FD
          is open on a pipe.  Treat that like a remote file.  */
-      if (errno != ENOSYS)
+      ఒకవేళ (errno != ENOSYS)
         error (0, errno, _("cannot determine location of %s. "
                            "reverting to polling"), quoteaf (f->prettyname));
     }
-  else
+  లేకపోతే
     {
       /* Treat unrecognized file systems as "remote", so caller polls.
          Note README-release has instructions for syncing the internal
          list with the latest Linux kernel file system constants.  */
       remote = is_local_fs_type (buf.f_type) <= 0;
     }
-#endif
+#అయితే_ముగింపు
 
-  return remote;
+  తిరిగి remote;
 }
 
 /* open/fstat F->name and handle changes.  */
-static void
-recheck (struct File_spec *f, bool blocking)
+స్థిర శూన్య
+recheck (నిర్మాణం File_spec *f, bool blocking)
 {
-  struct stat new_stats;
+  నిర్మాణం stat new_stats;
   bool ok = false;
   bool is_stdin = (streq (f->name, "-"));
-  int prev_errnum = f->errnum;
+  పూర్ణాంకం prev_errnum = f->errnum;
   bool new_file;
-  int fd = (is_stdin
+  పూర్ణాంకం fd = (is_stdin
             ? STDIN_FILENO
             : open (f->name, O_RDONLY | (blocking ? 0 : O_NONBLOCK)));
-  int open_errno = fd < 0 ? errno : 0;
+  పూర్ణాంకం open_errno = fd < 0 ? errno : 0;
 
   affirm (valid_file_spec (f));
 
-  if (! disable_inotify && issymlink (f->name) == 1)
+  ఒకవేళ (! disable_inotify && issymlink (f->name) == 1)
     {
       /* Diagnose the edge case where a regular file is changed
          to a symlink.  We avoid inotify with symlinks since
@@ -1009,12 +1009,12 @@ recheck (struct File_spec *f, bool blocking)
       error (0, 0, _("%s has been replaced with an untailable symbolic link"),
              quoteaf (f->prettyname));
     }
-  else if (fd < 0 || fstat (fd, &new_stats) < 0)
+  లేకపోతే ఒకవేళ (fd < 0 || fstat (fd, &new_stats) < 0)
     {
       f->errnum = fd < 0 ? open_errno : errno;
-      if (fd < 0)
+      ఒకవేళ (fd < 0)
         {
-          if (f->tailable)
+          ఒకవేళ (f->tailable)
             {
               /* FIXME-maybe: detect the case in which the file first becomes
                  unreadable (perms), and later becomes readable again and can
@@ -1023,31 +1023,31 @@ recheck (struct File_spec *f, bool blocking)
               error (0, f->errnum, _("%s has become inaccessible"),
                      quoteaf (f->prettyname));
             }
-          else
+          లేకపోతే
             {
               /* say nothing... it's still not tailable */
             }
         }
-      else if (prev_errnum != f->errnum)
+      లేకపోతే ఒకవేళ (prev_errnum != f->errnum)
         error (0, f->errnum, "%s", quotef (f->prettyname));
     }
-  else if (!IS_TAILABLE_FILE_TYPE (new_stats.st_mode))
+  లేకపోతే ఒకవేళ (!IS_TAILABLE_FILE_TYPE (new_stats.st_బహుళకం))
     {
       f->errnum = -1;
-      f->ignore = ! (reopen_inaccessible_files && follow_mode == Follow_name);
-      if (f->tailable || ! (prev_errnum < 0 || prev_errnum == EISDIR))
+      f->ignore = ! (reopen_inaccessible_files && follow_బహుళకం == Follow_name);
+      ఒకవేళ (f->tailable || ! (prev_errnum < 0 || prev_errnum == EISDIR))
         error (0, 0, _("%s has been replaced with an untailable file%s"),
                quoteaf (f->prettyname),
                f->ignore ? _("; giving up on this name") : "");
     }
-  else if ((f->remote = fremote (fd, f)) && ! disable_inotify)
+  లేకపోతే ఒకవేళ ((f->remote = fremote (fd, f)) && ! disable_inotify)
     {
       f->errnum = -1;
       error (0, 0, _("%s has been replaced with an untailable remote file"),
              quoteaf (f->prettyname));
       f->ignore = true;
     }
-  else
+  లేకపోతే
     {
       ok = true;
       f->errnum = 0;
@@ -1056,19 +1056,19 @@ recheck (struct File_spec *f, bool blocking)
   f->tailable = ok;
 
   new_file = false;
-  if (!ok)
+  ఒకవేళ (!ok)
     {
       close_fd (fd, f);
       close_fd (f->fd, f);
       f->fd = -1;
     }
-  else if (prev_errnum && prev_errnum != ENOENT)
+  లేకపోతే ఒకవేళ (prev_errnum && prev_errnum != ENOENT)
     {
       new_file = true;
       affirm (f->fd < 0);
       error (0, 0, _("%s has become accessible"), quoteaf (f->prettyname));
     }
-  else if (f->fd < 0)
+  లేకపోతే ఒకవేళ (f->fd < 0)
     {
       /* A new file even when inodes haven't changed as <dev,inode>
          pairs can be reused, and we know the file was missing
@@ -1081,7 +1081,7 @@ recheck (struct File_spec *f, bool blocking)
              _("%s has appeared;  following new file"),
              quoteaf (f->prettyname));
     }
-  else if (!SAME_INODE (*f, new_stats))
+  లేకపోతే ఒకవేళ (!SAME_INODE (*f, new_stats))
     {
       /* File has been replaced (e.g., via log rotation) --
         tail the new one.  */
@@ -1094,7 +1094,7 @@ recheck (struct File_spec *f, bool blocking)
       /* Close the old one.  */
       close_fd (f->fd, f);
     }
-  else
+  లేకపోతే
     {
       /* No changes detected, so close new fd.  */
       close_fd (fd, f);
@@ -1106,10 +1106,10 @@ recheck (struct File_spec *f, bool blocking)
      being written to the old file.  Perhaps we should keep
      the older file open and continue to monitor it until
      data is written to a new file.  */
-  if (new_file)
+  ఒకవేళ (new_file)
     {
       /* Start at the file's current position, normally the beginning.  */
-      record_open_fd (f, fd, -1, &new_stats, is_stdin ? -1 : blocking);
+      రికార్డు_open_fd (f, fd, -1, &new_stats, is_stdin ? -1 : blocking);
     }
 }
 
@@ -1118,49 +1118,49 @@ recheck (struct File_spec *f, bool blocking)
    When following descriptors, checking should only continue when any
    of the files is not yet ignored.  */
 
-static bool
-any_live_files (const struct File_spec *f, int n_files)
+స్థిర bool
+any_సజీవ_files (స్థిరరాశి నిర్మాణం File_spec *f, పూర్ణాంకం n_files)
 {
   /* In inotify mode, ignore may be set for files
      which may later be replaced with new files.
      So always consider files live in -F mode.  */
-  if (reopen_inaccessible_files && follow_mode == Follow_name)
-    return true;
+  ఒకవేళ (reopen_inaccessible_files && follow_బహుళకం == Follow_name)
+    తిరిగి true;
 
-  for (int i = 0; i < n_files; i++)
+  కొరకు (పూర్ణాంకం i = 0; i < n_files; i++)
     {
-      if (0 <= f[i].fd)
-        return true;
-      else
+      ఒకవేళ (0 <= f[i].fd)
+        తిరిగి true;
+      లేకపోతే
         {
-          if (! f[i].ignore && reopen_inaccessible_files)
-            return true;
+          ఒకవేళ (! f[i].ignore && reopen_inaccessible_files)
+            తిరిగి true;
         }
     }
 
-  return false;
+  తిరిగి false;
 }
 
 /* Return true if any writers exist, even as zombies.  */
 
-static bool
-some_writers_exist (void)
+స్థిర bool
+some_writers_exist (శూన్య)
 {
   /* To avoid some (though not all) races if the kernel reuses PIDs,
      check all PIDs instead of returning merely because one PID exists.  */
-  for (idx_t i = 0; i < nbpids; )
+  కొరకు (idx_t i = 0; i < nbpids; )
     {
-      if (kill (pids[i], 0) < 0 && errno == ESRCH)
+      ఒకవేళ (kill (pids[i], 0) < 0 && errno == ESRCH)
         {
           nbpids--;
-          memmove (&pids[i], &pids[i + 1], (nbpids - i) * sizeof pids[i]);
+          memmove (&pids[i], &pids[i + 1], (nbpids - i) * పరిమాణం pids[i]);
         }
-      else
+      లేకపోతే
         i++;
     }
 
 
-  return 0 < nbpids;
+  తిరిగి 0 < nbpids;
 }
 
 /* Tail N_FILES files forever, or until killed.
@@ -1170,24 +1170,24 @@ some_writers_exist (void)
    If none of them have changed size in one iteration, sleep for a
    while and try again.  Continue until the user interrupts us.  */
 
-static void
-tail_forever (struct File_spec *f, int n_files, double sleep_interval)
+స్థిర శూన్య
+తోక_forever (నిర్మాణం File_spec *f, పూర్ణాంకం n_files, ద్విగుణ sleep_interval)
 {
-  int last = n_files - 1;
+  పూర్ణాంకం చివరి = n_files - 1;
 
-  static bool debugged;
+  స్థిర bool debugged;
 
   /* Flush initial output, in case reading blocks below.  */
-  if (fflush (stdout) < 0)
+  ఒకవేళ (fflush (stdout) < 0)
     write_error ();
 
-  while (true)
+  అయితే (true)
     {
       /* Use blocking I/O as an optimization, when it's easy.  */
-      bool blocking = (!nbpids && follow_mode == Follow_descriptor
-                       && n_files == 1 && 0 <= f[0].fd && !S_ISREG (f[0].mode));
+      bool blocking = (!nbpids && follow_బహుళకం == Follow_descriptor
+                       && n_files == 1 && 0 <= f[0].fd && !S_ISREG (f[0].బహుళకం_2));
 
-      if (debug && !debugged)
+      ఒకవేళ (debug && !debugged)
         {
           debugged = true;
           error (0, 0, "%s", blocking
@@ -1195,75 +1195,75 @@ tail_forever (struct File_spec *f, int n_files, double sleep_interval)
                              : _("using polling mode"));
         }
 
-      bool any_input = false;
+      bool any_ఆదానం = false;
 
-      for (int i = 0; i < n_files; i++)
+      కొరకు (పూర్ణాంకం i = 0; i < n_files; i++)
         {
-          struct stat stats;
+          నిర్మాణం stat stats;
 
-          if (f[i].ignore)
-            continue;
+          ఒకవేళ (f[i].ignore)
+            కొనసాగు;
 
-          int fd = f[i].fd;
-          if (fd < 0)
+          పూర్ణాంకం fd = f[i].fd;
+          ఒకవేళ (fd < 0)
             {
               recheck (&f[i], blocking);
-              continue;
+              కొనసాగు;
             }
 
-          char const *prettyname = f[i].prettyname;
-          mode_t mode = f[i].mode;
+          అక్షరం స్థిరరాశి *prettyname = f[i].prettyname;
+          mode_t బహుళకం_2 = f[i].బహుళకం_2;
 
-          if (f[i].blocking != blocking)
+          ఒకవేళ (f[i].blocking != blocking)
             {
-              int old_flags = fcntl (fd, F_GETFL);
-              int new_flags = old_flags | (blocking ? 0 : O_NONBLOCK);
-              if (old_flags < 0
+              పూర్ణాంకం old_flags = fcntl (fd, F_GETFL);
+              పూర్ణాంకం new_flags = old_flags | (blocking ? 0 : O_NONBLOCK);
+              ఒకవేళ (old_flags < 0
                   || (new_flags != old_flags
                       && fcntl (fd, F_SETFL, new_flags) < 0))
                 {
                   /* Don't update f[i].blocking if fcntl fails.  */
-                  if (S_ISREG (f[i].mode) && errno == EPERM)
+                  ఒకవేళ (S_ISREG (f[i].బహుళకం_2) && errno == EPERM)
                     {
                       /* This happens when using tail -f on a file with
                          the append-only attribute.  */
                     }
-                  else
+                  లేకపోతే
                     error (EXIT_FAILURE, errno,
                            _("%s: cannot change nonblocking mode"),
                            quotef (prettyname));
                 }
-              else
+              లేకపోతే
                 f[i].blocking = blocking;
             }
 
           bool read_unchanged = false;
-          if (!f[i].blocking)
+          ఒకవేళ (!f[i].blocking)
             {
-              if (fstat (fd, &stats) < 0)
+              ఒకవేళ (fstat (fd, &stats) < 0)
                 {
                   f[i].fd = -1;
                   f[i].errnum = errno;
                   error (0, errno, "%s", quotef (prettyname));
                   close (fd); /* ignore failure */
-                  continue;
+                  కొనసాగు;
                 }
 
-              if (f[i].mode == stats.st_mode
-                  && (! S_ISREG (stats.st_mode)
-                      || f[i].read_pos == stats.st_size)
+              ఒకవేళ (f[i].బహుళకం_2 == stats.st_బహుళకం
+                  && (! S_ISREG (stats.st_బహుళకం)
+                      || f[i].read_pos == stats.st_కొలత)
                   && timespec_cmp (f[i].mtime, get_stat_mtime (&stats)) == 0)
                 {
-                  if ((max_n_unchanged_stats_between_opens
+                  ఒకవేళ ((max_n_unchanged_stats_between_opens
                        <= f[i].n_unchanged_stats++)
-                      && follow_mode == Follow_name)
+                      && follow_బహుళకం == Follow_name)
                     {
                       recheck (&f[i], f[i].blocking);
                       f[i].n_unchanged_stats = 0;
                     }
-                  if (fd != f[i].fd || S_ISREG (stats.st_mode) || 1 < n_files)
-                    continue;
-                  else
+                  ఒకవేళ (fd != f[i].fd || S_ISREG (stats.st_బహుళకం) || 1 < n_files)
+                    కొనసాగు;
+                  లేకపోతే
                     read_unchanged = true;
                 }
 
@@ -1273,16 +1273,16 @@ tail_forever (struct File_spec *f, int n_files, double sleep_interval)
                  then keep looping.  */
 
               f[i].mtime = get_stat_mtime (&stats);
-              f[i].mode = stats.st_mode;
+              f[i].బహుళకం_2 = stats.st_బహుళకం;
 
               /* reset counter */
-              if (! read_unchanged)
+              ఒకవేళ (! read_unchanged)
                 f[i].n_unchanged_stats = 0;
 
               /* XXX: This is only a heuristic, as the file may have also
                  been truncated and written to if st_size >= size
                  (in which case we ignore new data <= size).  */
-              if (S_ISREG (mode) && stats.st_size < f[i].read_pos)
+              ఒకవేళ (S_ISREG (బహుళకం_2) && stats.st_కొలత < f[i].read_pos)
                 {
                   error (0, 0, _("%s: file truncated"),
                          quotef (prettyname));
@@ -1291,90 +1291,90 @@ tail_forever (struct File_spec *f, int n_files, double sleep_interval)
                   f[i].read_pos = xlseek (fd, 0, SEEK_SET, prettyname);
                 }
 
-              if (i != last)
+              ఒకవేళ (i != చివరి)
                 {
-                  if (print_headers)
-                    write_header (prettyname);
-                  last = i;
+                  ఒకవేళ (print_శీర్షికలు)
+                    write_శీర్షిక (prettyname);
+                  చివరి = i;
                 }
             }
 
           /* Don't read more than st_size on networked file systems
              because it was seen on glusterfs at least, that st_size
              may be smaller than the data read on a _subsequent_ stat call.  */
-          count_t bytes_to_read;
-          if (f[i].blocking)
-            bytes_to_read = COPY_A_BUFFER;
-          else if (S_ISREG (mode) && f[i].remote)
-            bytes_to_read = stats.st_size - f[i].read_pos;
-          else
-            bytes_to_read = COPY_TO_EOF;
+          లెక్క_t బైట్లు_గమ్యం_read;
+          ఒకవేళ (f[i].blocking)
+            బైట్లు_గమ్యం_read = COPY_A_బఫరు;
+          లేకపోతే ఒకవేళ (S_ISREG (బహుళకం_2) && f[i].remote)
+            బైట్లు_గమ్యం_read = stats.st_కొలత - f[i].read_pos;
+          లేకపోతే
+            బైట్లు_గమ్యం_read = COPY_గమ్యం_EOF;
 
-          count_t nr = dump_remainder (false, prettyname, fd, bytes_to_read);
-          if (0 < nr)
+          లెక్క_t nr = dump_remainder (false, prettyname, fd, బైట్లు_గమ్యం_read);
+          ఒకవేళ (0 < nr)
             {
-              if (S_ISREG (mode))
+              ఒకవేళ (S_ISREG (బహుళకం_2))
                 f[i].read_pos += nr;
-              if (read_unchanged)
+              ఒకవేళ (read_unchanged)
                 f[i].n_unchanged_stats = 0;
-              any_input = true;
+              any_ఆదానం = true;
             }
         }
 
-      if (! any_live_files (f, n_files))
+      ఒకవేళ (! any_సజీవ_files (f, n_files))
         {
           error (EXIT_FAILURE, 0, _("no files remaining"));
-          break;
+          ఆపు;
         }
 
-      if ((!any_input || blocking) && fflush (stdout) < 0)
+      ఒకవేళ ((!any_ఆదానం || blocking) && fflush (stdout) < 0)
         write_error ();
 
       check_output_alive ();
 
-      if (!any_input)
+      ఒకవేళ (!any_ఆదానం)
         {
-          if (pids)
+          ఒకవేళ (pids)
             {
               /* Exit loop if it was already known that no writers exist.
                  Otherwise, to avoid a race, loop one more time
                  without sleeping if no writers exist now.  */
-              if (!nbpids)
-                break;
-              if (!some_writers_exist ())
-                continue;
+              ఒకవేళ (!nbpids)
+                ఆపు;
+              ఒకవేళ (!some_writers_exist ())
+                కొనసాగు;
             }
 
-          if (xnanosleep (sleep_interval))
+          ఒకవేళ (xnanosleep (sleep_interval))
             error (EXIT_FAILURE, errno, _("cannot read realtime clock"));
         }
     }
 }
 
-#if HAVE_INOTIFY
+#ఒకవేళ HAVE_INOTIFY
 
 /* Return true if any of the N_FILES files in F is remote, i.e., has
    an open file descriptor and is on a network file system.  */
 
-static bool
-any_remote_file (const struct File_spec *f, int n_files)
+స్థిర bool
+any_remote_file (స్థిరరాశి నిర్మాణం File_spec *f, పూర్ణాంకం n_files)
 {
-  for (int i = 0; i < n_files; i++)
-    if (0 <= f[i].fd && f[i].remote)
-      return true;
-  return false;
+  కొరకు (పూర్ణాంకం i = 0; i < n_files; i++)
+    ఒకవేళ (0 <= f[i].fd && f[i].remote)
+      తిరిగి true;
+  తిరిగి false;
 }
 
 /* Return true if any of the N_FILES files in F is non remote, i.e., has
    an open file descriptor and is not on a network file system.  */
 
-static bool
-any_non_remote_file (const struct File_spec *f, int n_files)
+స్థిర bool
+any_non_remote_file (స్థిరరాశి నిర్మాణం File_spec *f, పూర్ణాంకం n_files)
 {
-  for (int i = 0; i < n_files; i++)
-    if (0 <= f[i].fd && ! f[i].remote)
-      return true;
-  return false;
+  కొరకు (పూర్ణాంకం i = 0; i < n_files; i++)
+    ఒకవేళ (0 <= f[i].fd && ! f[i].remote)
+      తిరిగి true;
+  తిరిగి false;
 }
 
 /* Return true if any of the N_FILES files in F is a symlink.
@@ -1382,13 +1382,13 @@ any_non_remote_file (const struct File_spec *f, int n_files)
    since that will have the same consequences for inotify,
    which is the only context this function is currently used.  */
 
-static bool
-any_symlinks (const struct File_spec *f, int n_files)
+స్థిర bool
+any_symlinks (స్థిరరాశి నిర్మాణం File_spec *f, పూర్ణాంకం n_files)
 {
-  for (int i = 0; i < n_files; i++)
-    if (issymlink (f[i].name) == 1)
-      return true;
-  return false;
+  కొరకు (పూర్ణాంకం i = 0; i < n_files; i++)
+    ఒకవేళ (issymlink (f[i].name) == 1)
+      తిరిగి true;
+  తిరిగి false;
 }
 
 /* Return true if any of the N_FILES files in F is not
@@ -1396,107 +1396,107 @@ any_symlinks (const struct File_spec *f, int n_files)
    watches on a device file for example, which inotify
    will accept, but not give any events for.  */
 
-static bool
-any_non_regular_fifo (const struct File_spec *f, int n_files)
+స్థిర bool
+any_non_regular_fifo (స్థిరరాశి నిర్మాణం File_spec *f, పూర్ణాంకం n_files)
 {
-  for (int i = 0; i < n_files; i++)
-    if (0 <= f[i].fd && ! S_ISREG (f[i].mode) && ! S_ISFIFO (f[i].mode))
-      return true;
-  return false;
+  కొరకు (పూర్ణాంకం i = 0; i < n_files; i++)
+    ఒకవేళ (0 <= f[i].fd && ! S_ISREG (f[i].బహుళకం_2) && ! S_ISFIFO (f[i].బహుళకం_2))
+      తిరిగి true;
+  తిరిగి false;
 }
 
 /* Return true if any of the N_FILES files in F represents
    stdin and is not ignored.  */
 
-static bool
-tailable_stdin (const struct File_spec *f, int n_files)
+స్థిర bool
+tailable_stdin (స్థిరరాశి నిర్మాణం File_spec *f, పూర్ణాంకం n_files)
 {
-  for (int i = 0; i < n_files; i++)
-    if (!f[i].ignore && streq (f[i].name, "-"))
-      return true;
-  return false;
+  కొరకు (పూర్ణాంకం i = 0; i < n_files; i++)
+    ఒకవేళ (!f[i].ignore && streq (f[i].name, "-"))
+      తిరిగి true;
+  తిరిగి false;
 }
 
-static size_t
-wd_hasher (const void *entry, size_t tabsize)
+స్థిర size_t
+wd_hasher (స్థిరరాశి శూన్య *నమోదు_2, size_t tabsize)
 {
-  const struct File_spec *spec = entry;
-  return spec->wd % tabsize;
+  స్థిరరాశి నిర్మాణం File_spec *spec = నమోదు_2;
+  తిరిగి spec->wd % tabsize;
 }
 
-static bool
-wd_comparator (const void *e1, const void *e2)
+స్థిర bool
+wd_comparator (స్థిరరాశి శూన్య *e1, స్థిరరాశి శూన్య *e2)
 {
-  const struct File_spec *spec1 = e1;
-  const struct File_spec *spec2 = e2;
-  return spec1->wd == spec2->wd;
+  స్థిరరాశి నిర్మాణం File_spec *spec1 = e1;
+  స్థిరరాశి నిర్మాణం File_spec *spec2 = e2;
+  తిరిగి spec1->wd == spec2->wd;
 }
 
 /* Hash Follow_name watches by parent directory wd + basename so directory
    inotify events can be matched in expected O(1) instead of scanning all
    files.  */
-static size_t
-parent_name_hasher (const void *entry, size_t tabsize)
+స్థిర size_t
+మాతృ_name_hasher (స్థిరరాశి శూన్య *నమోదు_2, size_t tabsize)
 {
-  const struct File_spec *spec = entry;
-  char const *name = spec->name + spec->basename_start;
+  స్థిరరాశి నిర్మాణం File_spec *spec = నమోదు_2;
+  అక్షరం స్థిరరాశి *name = spec->name + spec->basename_ప్రారంభం;
   /* hash_string already reduces modulo TABSIZE; mix in parent_wd so the
      same basename under different directories does not collide by design.  */
-  return (hash_string (name, tabsize) + (size_t) spec->parent_wd) % tabsize;
+  తిరిగి (hash_string (name, tabsize) + (size_t) spec->మాతృ_wd) % tabsize;
 }
 
-static bool
-parent_name_comparator (const void *e1, const void *e2)
+స్థిర bool
+మాతృ_name_comparator (స్థిరరాశి శూన్య *e1, స్థిరరాశి శూన్య *e2)
 {
-  const struct File_spec *a = e1;
-  const struct File_spec *b = e2;
-  return (a->parent_wd == b->parent_wd
-          && streq (a->name + a->basename_start,
-                    b->name + b->basename_start));
+  స్థిరరాశి నిర్మాణం File_spec *a = e1;
+  స్థిరరాశి నిర్మాణం File_spec *b = e2;
+  తిరిగి (a->మాతృ_wd == b->మాతృ_wd
+          && streq (a->name + a->basename_ప్రారంభం,
+                    b->name + b->basename_ప్రారంభం));
 }
 
 /* Output (new) data for FSPEC->fd.
    PREV_FSPEC records the last File_spec for which we output.  */
-static void
-check_fspec (struct File_spec *fspec, struct File_spec **prev_fspec)
+స్థిర శూన్య
+check_fspec (నిర్మాణం File_spec *fspec, నిర్మాణం File_spec **prev_fspec)
 {
-  if (fspec->fd < 0)
-    return;
+  ఒకవేళ (fspec->fd < 0)
+    తిరిగి;
 
-  struct stat stats;
-  if (fstat (fspec->fd, &stats) < 0)
+  నిర్మాణం stat stats;
+  ఒకవేళ (fstat (fspec->fd, &stats) < 0)
     {
       fspec->errnum = errno;
       close_fd (fspec->fd, fspec);
       fspec->fd = -1;
-      return;
+      తిరిగి;
     }
 
-  char const *prettyname = fspec->prettyname;
+  అక్షరం స్థిరరాశి *prettyname = fspec->prettyname;
 
   /* XXX: This is only a heuristic, as the file may have also
      been truncated and written to if st_size >= size
      (in which case we ignore new data <= size).
      Though in the inotify case it's more likely we'll get
      separate events for truncate() and write().  */
-  if (S_ISREG (fspec->mode) && stats.st_size < fspec->read_pos)
+  ఒకవేళ (S_ISREG (fspec->బహుళకం_2) && stats.st_కొలత < fspec->read_pos)
     {
       error (0, 0, _("%s: file truncated"), quotef (prettyname));
       fspec->read_pos = xlseek (fspec->fd, 0, SEEK_SET, prettyname);
     }
-  else if (S_ISREG (fspec->mode) && stats.st_size == fspec->read_pos
+  లేకపోతే ఒకవేళ (S_ISREG (fspec->బహుళకం_2) && stats.st_కొలత == fspec->read_pos
            && timespec_cmp (fspec->mtime, get_stat_mtime (&stats)) == 0)
-    return;
+    తిరిగి;
 
-  bool want_header = print_headers && (fspec != *prev_fspec);
+  bool want_శీర్షిక = print_శీర్షికలు && (fspec != *prev_fspec);
 
-  count_t nr = dump_remainder (want_header, prettyname, fspec->fd, COPY_TO_EOF);
-  if (0 < nr)
+  లెక్క_t nr = dump_remainder (want_శీర్షిక, prettyname, fspec->fd, COPY_గమ్యం_EOF);
+  ఒకవేళ (0 < nr)
     {
-      if (S_ISREG (fspec->mode))
+      ఒకవేళ (S_ISREG (fspec->బహుళకం_2))
         fspec->read_pos += nr;
       *prev_fspec = fspec;
-      if (fflush (stdout) < 0)
+      ఒకవేళ (fflush (stdout) < 0)
         write_error ();
     }
 }
@@ -1510,126 +1510,126 @@ check_fspec (struct File_spec *fspec, struct File_spec **prev_fspec)
    only when follow_mode == Follow_name; otherwise it is set to NULL.
    Like WD_TO_NAME, PARENT_BY_NAME is owned by the caller so return
    paths need not free it (and must not call hash_free (NULL)).  */
-static void
-tail_forever_inotify (int wd, struct File_spec *f, int n_files,
-                      double sleep_interval, Hash_table **wd_to_namep,
-                      Hash_table **parent_by_namep)
+స్థిర శూన్య
+తోక_forever_inotify (పూర్ణాంకం wd, నిర్మాణం File_spec *f, పూర్ణాంకం n_files,
+                      ద్విగుణ sleep_interval, Hash_పట్టిక **wd_గమ్యం_namep,
+                      Hash_పట్టిక **మాతృ_by_namep)
 {
-# if TAIL_TEST_SLEEP
+# ఒకవేళ తోక_TEST_SLEEP
   /* Delay between open() and inotify_add_watch()
      to help trigger different cases.  */
   xnanosleep (1000000);
 # endif
-  int max_realloc = 3;
+  పూర్ణాంకం max_realloc = 3;
 
   /* Map an inotify watch descriptor to the name of the file it's watching.  */
-  Hash_table *wd_to_name;
+  Hash_పట్టిక *wd_గమ్యం_name;
 
   /* Map (parent_wd, basename) to File_spec for Follow_name
      directory events.  */
-  Hash_table *parent_by_name = NULL;
+  Hash_పట్టిక *మాతృ_by_name = ఖాళీ;
 
-  bool found_watchable_file = false;
+  bool దొరికింది_watchable_file = false;
   bool tailed_but_unwatchable = false;
-  bool found_unwatchable_dir = false;
+  bool దొరికింది_unwatchable_dir = false;
   bool no_inotify_resources = false;
-  struct File_spec *prev_fspec;
+  నిర్మాణం File_spec *prev_fspec;
   idx_t evlen = 0;
-  char *evbuf;
+  అక్షరం *evbuf;
   idx_t evbuf_off = 0;
 
-  *parent_by_namep = NULL;
+  *మాతృ_by_namep = ఖాళీ;
 
-  wd_to_name = hash_initialize (n_files, NULL, wd_hasher, wd_comparator,
-                                NULL);
-  if (! wd_to_name)
+  wd_గమ్యం_name = hash_initialize (n_files, ఖాళీ, wd_hasher, wd_comparator,
+                                ఖాళీ);
+  ఒకవేళ (! wd_గమ్యం_name)
     xalloc_die ();
-  *wd_to_namep = wd_to_name;
+  *wd_గమ్యం_namep = wd_గమ్యం_name;
 
-  if (follow_mode == Follow_name)
+  ఒకవేళ (follow_బహుళకం == Follow_name)
     {
-      parent_by_name = hash_initialize (n_files, NULL, parent_name_hasher,
-                                        parent_name_comparator, NULL);
-      if (! parent_by_name)
+      మాతృ_by_name = hash_initialize (n_files, ఖాళీ, మాతృ_name_hasher,
+                                        మాతృ_name_comparator, ఖాళీ);
+      ఒకవేళ (! మాతృ_by_name)
         xalloc_die ();
-      *parent_by_namep = parent_by_name;
+      *మాతృ_by_namep = మాతృ_by_name;
     }
 
   /* The events mask used with inotify on files (not directories).  */
-  uint32_t inotify_wd_mask = IN_MODIFY;
+  uint32_t inotify_wd_ముసుగు = లోపల_MODIFY;
   /* TODO: Perhaps monitor these events in Follow_descriptor mode also,
      to tag reported file names with "deleted", "moved" etc.  */
-  if (follow_mode == Follow_name)
-    inotify_wd_mask |= (IN_ATTRIB | IN_DELETE_SELF | IN_MOVE_SELF);
+  ఒకవేళ (follow_బహుళకం == Follow_name)
+    inotify_wd_ముసుగు |= (లోపల_ATTRIB | లోపల_DELETE_SELF | లోపల_MOVE_SELF);
 
   /* Add an inotify watch for each watched file.  If -F is specified then watch
      its parent directory too, in this way when they re-appear we can add them
      again to the watch list.  */
-  for (int i = 0; i < n_files; i++)
+  కొరకు (పూర్ణాంకం i = 0; i < n_files; i++)
     {
-      if (!f[i].ignore)
+      ఒకవేళ (!f[i].ignore)
         {
-          idx_t fnlen = strlen (f[i].name);
-          if (evlen < fnlen)
+          idx_t fnlen = అక్షరశ్రేణి_పొడవు (f[i].name);
+          ఒకవేళ (evlen < fnlen)
             evlen = fnlen;
 
           f[i].wd = -1;
 
-          if (follow_mode == Follow_name)
+          ఒకవేళ (follow_బహుళకం == Follow_name)
             {
               idx_t dirlen = dir_len (f[i].name);
-              char prev = f[i].name[dirlen];
-              f[i].basename_start = last_component (f[i].name) - f[i].name;
+              అక్షరం prev = f[i].name[dirlen];
+              f[i].basename_ప్రారంభం = చివరి_component (f[i].name) - f[i].name;
 
               f[i].name[dirlen] = '\0';
 
                /* It's fine to add the same directory more than once.
                   In that case the same watch descriptor is returned.  */
-              f[i].parent_wd = inotify_add_watch (wd, dirlen ? f[i].name : ".",
-                                                  (IN_CREATE | IN_DELETE
-                                                   | IN_MOVED_TO | IN_ATTRIB
-                                                   | IN_DELETE_SELF));
+              f[i].మాతృ_wd = inotify_కూడు_watch (wd, dirlen ? f[i].name : ".",
+                                                  (లోపల_CREATE | లోపల_DELETE
+                                                   | లోపల_MOVED_గమ్యం | లోపల_ATTRIB
+                                                   | లోపల_DELETE_SELF));
 
               f[i].name[dirlen] = prev;
 
-              if (f[i].parent_wd < 0)
+              ఒకవేళ (f[i].మాతృ_wd < 0)
                 {
-                  if (errno != ENOSPC) /* suppress confusing error.  */
+                  ఒకవేళ (errno != ENOSPC) /* suppress confusing error.  */
                     error (0, errno, _("cannot watch parent directory of %s"),
                            quoteaf (f[i].name));
-                  else
+                  లేకపోతే
                     error (0, 0, _("inotify resources exhausted"));
-                  found_unwatchable_dir = true;
+                  దొరికింది_unwatchable_dir = true;
                   /* We revert to polling below.  Note invalid uses
                      of the inotify API will still be diagnosed.  */
-                  break;
+                  ఆపు;
                 }
 
-              if (hash_insert (parent_by_name, &(f[i])) == NULL)
+              ఒకవేళ (hash_చొప్పించు (మాతృ_by_name, &(f[i])) == ఖాళీ)
                 xalloc_die ();
             }
 
-          f[i].wd = inotify_add_watch (wd, f[i].name, inotify_wd_mask);
+          f[i].wd = inotify_కూడు_watch (wd, f[i].name, inotify_wd_ముసుగు);
 
-          if (f[i].wd < 0)
+          ఒకవేళ (f[i].wd < 0)
             {
-              if (0 <= f[i].fd)  /* already tailed.  */
+              ఒకవేళ (0 <= f[i].fd)  /* already tailed.  */
                 tailed_but_unwatchable = true;
-              if (errno == ENOSPC || errno == ENOMEM)
+              ఒకవేళ (errno == ENOSPC || errno == ENOMEM)
                 {
                   no_inotify_resources = true;
                   error (0, 0, _("inotify resources exhausted"));
-                  break;
+                  ఆపు;
                 }
-              else if (errno != f[i].errnum)
+              లేకపోతే ఒకవేళ (errno != f[i].errnum)
                 error (0, errno, _("cannot watch %s"), quoteaf (f[i].name));
-              continue;
+              కొనసాగు;
             }
 
-          if (hash_insert (wd_to_name, &(f[i])) == NULL)
+          ఒకవేళ (hash_చొప్పించు (wd_గమ్యం_name, &(f[i])) == ఖాళీ)
             xalloc_die ();
 
-          found_watchable_file = true;
+          దొరికింది_watchable_file = true;
         }
     }
 
@@ -1638,37 +1638,37 @@ tail_forever_inotify (int wd, struct File_spec *f, int n_files,
      when there are no inotify resources.  Also a specified directory may not
      be currently present or accessible, so revert to polling.  Also an already
      tailed but unwatchable due rename/unlink race, should also revert.  */
-  if (no_inotify_resources || found_unwatchable_dir
-      || (follow_mode == Follow_descriptor && tailed_but_unwatchable))
-    return;
-  if (follow_mode == Follow_descriptor && !found_watchable_file)
-    exit (EXIT_FAILURE);
+  ఒకవేళ (no_inotify_resources || దొరికింది_unwatchable_dir
+      || (follow_బహుళకం == Follow_descriptor && tailed_but_unwatchable))
+    తిరిగి;
+  ఒకవేళ (follow_బహుళకం == Follow_descriptor && !దొరికింది_watchable_file)
+    నిష్క్రమించు (EXIT_FAILURE);
 
   prev_fspec = &(f[n_files - 1]);
 
   /* Check files again.  New files or data can be available since last time we
      checked and before they are watched by inotify.  */
-  for (int i = 0; i < n_files; i++)
+  కొరకు (పూర్ణాంకం i = 0; i < n_files; i++)
     {
-      if (! f[i].ignore)
+      ఒకవేళ (! f[i].ignore)
         {
           /* check for new files.  */
-          if (follow_mode == Follow_name)
+          ఒకవేళ (follow_బహుళకం == Follow_name)
             recheck (&(f[i]), false);
-          else if (0 <= f[i].fd)
+          లేకపోతే ఒకవేళ (0 <= f[i].fd)
             {
               /* If the file was replaced in the small window since we tailed,
                  then assume the watch is on the wrong item (different to
                  that we've already produced output for), and so revert to
                  polling the original descriptor.  */
-              struct stat stats;
+              నిర్మాణం stat stats;
 
-              if (! (stat (f[i].name, &stats) < 0
+              ఒకవేళ (! (stat (f[i].name, &stats) < 0
                      || SAME_INODE (f[i], stats)))
                 {
                   error (0, errno, _("%s was replaced"),
                          quoteaf (f[i].prettyname));
-                  return;
+                  తిరిగి;
                 }
             }
 
@@ -1677,10 +1677,10 @@ tail_forever_inotify (int wd, struct File_spec *f, int n_files,
         }
     }
 
-  if (debug)
+  ఒకవేళ (debug)
     error (0, 0, "%s", _("using notification mode"));
 
-  evlen += sizeof (struct inotify_event) + 1;
+  evlen += పరిమాణం (నిర్మాణం inotify_event) + 1;
   evbuf = ximalloc (evlen);
 
   /* Wait for inotify events and handle them.  Events on directories
@@ -1688,43 +1688,43 @@ tail_forever_inotify (int wd, struct File_spec *f, int n_files,
      This loop blocks on the 'read' call until a new event is notified.
      But when --pid=P is specified, tail usually waits via poll.  */
   ptrdiff_t len = 0;
-  while (true)
+  అయితే (true)
     {
-      struct File_spec *fspec;
-      struct inotify_event *ev;
-      void *void_ev;
+      నిర్మాణం File_spec *fspec;
+      నిర్మాణం inotify_event *ev;
+      శూన్య *void_ev;
 
       /* When following by name without --retry, and the last file has
          been unlinked or renamed-away, diagnose it and return.  */
-      if (follow_mode == Follow_name
+      ఒకవేళ (follow_బహుళకం == Follow_name
           && ! reopen_inaccessible_files
-          && hash_get_n_entries (wd_to_name) == 0)
+          && hash_get_n_entries (wd_గమ్యం_name) == 0)
         error (EXIT_FAILURE, 0, _("no files remaining"));
 
-      if (len <= evbuf_off)
+      ఒకవేళ (len <= evbuf_off)
         {
           /* Poll for inotify events.  When watching a PID, ensure
              that a read from WD will not block indefinitely.
              If MONITOR_OUTPUT, also poll for a broken output pipe.  */
 
-          int file_change;
-          struct pollfd pfd[2];
-          do
+          పూర్ణాంకం file_change;
+          నిర్మాణం pollfd pfd[2];
+          చేయి
             {
               /* How many ms to wait for changes.  -1 means wait forever.  */
-              int delay = -1;
+              పూర్ణాంకం delay = -1;
 
-              if (pids)
+              ఒకవేళ (pids)
                 {
-                  if (!nbpids)
-                    exit (EXIT_SUCCESS);
+                  ఒకవేళ (!nbpids)
+                    నిష్క్రమించు (EXIT_SUCCESS);
 
-                  if (!some_writers_exist () || sleep_interval <= 0)
+                  ఒకవేళ (!some_writers_exist () || sleep_interval <= 0)
                     delay = 0;
-                  else if (sleep_interval < INT_MAX / 1000 - 1)
+                  లేకపోతే ఒకవేళ (sleep_interval < గరిష్ఠ_పూర్ణాంకం / 1000 - 1)
                     {
                       /* delay = ceil (sleep_interval * 1000), sans libm.  */
-                      double ddelay = sleep_interval * 1000;
+                      ద్విగుణ ddelay = sleep_interval * 1000;
                       delay = ddelay;
                       delay += delay < ddelay;
                     }
@@ -1736,86 +1736,86 @@ tail_forever_inotify (int wd, struct File_spec *f, int n_files,
               pfd[1].events = pfd[1].revents = 0;
               file_change = poll (pfd, monitor_output + 1, delay);
             }
-          while (file_change == 0 || (file_change < 0 && errno == EINTR));
+          అయితే (file_change == 0 || (file_change < 0 && errno == EINTR));
 
-          if (file_change < 0)
+          ఒకవేళ (file_change < 0)
             error (EXIT_FAILURE, errno,
                    _("error waiting for inotify and output events"));
-          if (pfd[1].revents)
+          ఒకవేళ (pfd[1].revents)
             die_pipe ();
 
-          len = read (wd, evbuf, evlen);
+          len = పఠ (wd, evbuf, evlen);
           evbuf_off = 0;
 
           /* For kernels prior to 2.6.21, read returns 0 when the buffer
              is too small.  */
-          if ((len == 0 || (len < 0 && errno == EINVAL))
+          ఒకవేళ ((len == 0 || (len < 0 && errno == EINVAL))
               && max_realloc--)
             {
               len = 0;
               evlen *= 2;
               evbuf = xirealloc (evbuf, evlen);
-              continue;
+              కొనసాగు;
             }
 
-          if (len <= 0)
+          ఒకవేళ (len <= 0)
             error (EXIT_FAILURE, errno, _("error reading inotify event"));
         }
 
       void_ev = evbuf + evbuf_off;
       ev = void_ev;
-      evbuf_off += sizeof (*ev) + ev->len;
+      evbuf_off += పరిమాణం (*ev) + ev->len;
 
       /* If a directory is deleted, IN_DELETE_SELF is emitted
          with ev->name of length 0.
          We need to catch it, otherwise it would wait forever,
          as wd for directory becomes inactive. Revert to polling now.   */
-      if ((ev->mask & IN_DELETE_SELF) && ! ev->len)
+      ఒకవేళ ((ev->ముసుగు & లోపల_DELETE_SELF) && ! ev->len)
         {
-          for (int i = 0; i < n_files; i++)
+          కొరకు (పూర్ణాంకం i = 0; i < n_files; i++)
             {
-              if (ev->wd == f[i].parent_wd)
+              ఒకవేళ (ev->wd == f[i].మాతృ_wd)
                 {
                   error (0, 0,
                       _("directory containing watched file was removed"));
-                  return;
+                  తిరిగి;
                 }
             }
         }
 
-      if (ev->len) /* event on ev->name in watched directory.  */
+      ఒకవేళ (ev->len) /* event on ev->name in watched directory.  */
         {
-          struct File_spec key;
-          if (! parent_by_name)
-            continue;
+          నిర్మాణం File_spec కీలకం;
+          ఒకవేళ (! మాతృ_by_name)
+            కొనసాగు;
 
           /* Probe key: basename is the whole string at KEY.NAME.  */
-          key.parent_wd = ev->wd;
-          key.name = ev->name;
-          key.basename_start = 0;
-          fspec = hash_lookup (parent_by_name, &key);
+          కీలకం.మాతృ_wd = ev->wd;
+          కీలకం.name = ev->name;
+          కీలకం.basename_ప్రారంభం = 0;
+          fspec = hash_lookup (మాతృ_by_name, &కీలకం);
 
           /* It is not a watched file.  */
-          if (! fspec)
-            continue;
+          ఒకవేళ (! fspec)
+            కొనసాగు;
 
-          int new_wd = -1;
-          bool deleting = !! (ev->mask & IN_DELETE);
+          పూర్ణాంకం new_wd = -1;
+          bool deleting = !! (ev->ముసుగు & లోపల_DELETE);
 
-          if (! deleting)
+          ఒకవేళ (! deleting)
             {
               /* Adding the same inode again will look up any existing wd.  */
-              new_wd = inotify_add_watch (wd, fspec->name, inotify_wd_mask);
+              new_wd = inotify_కూడు_watch (wd, fspec->name, inotify_wd_ముసుగు);
             }
 
-          if (! deleting && new_wd < 0)
+          ఒకవేళ (! deleting && new_wd < 0)
             {
-              if (errno == ENOSPC || errno == ENOMEM)
+              ఒకవేళ (errno == ENOSPC || errno == ENOMEM)
                 {
                   error (0, 0, _("inotify resources exhausted"));
-                  return; /* revert to polling.  */
+                  తిరిగి; /* revert to polling.  */
                 }
-              else
+              లేకపోతే
                 {
                   /* Can get ENOENT for a dangling symlink for example.  */
                   error (0, errno, _("cannot watch %s"), quoteaf (fspec->name));
@@ -1827,59 +1827,59 @@ tail_forever_inotify (int wd, struct File_spec *f, int n_files,
           bool new_watch;
           new_watch = (! deleting) && (fspec->wd < 0 || new_wd != fspec->wd);
 
-          if (new_watch)
+          ఒకవేళ (new_watch)
             {
-              if (0 <= fspec->wd)
+              ఒకవేళ (0 <= fspec->wd)
                 {
                   inotify_rm_watch (wd, fspec->wd);
-                  hash_remove (wd_to_name, fspec);
+                  hash_remove (wd_గమ్యం_name, fspec);
                 }
 
               fspec->wd = new_wd;
 
-              if (new_wd < 0)
-                continue;
+              ఒకవేళ (new_wd < 0)
+                కొనసాగు;
 
               /* If the file was moved then inotify will use the source file wd
                 for the destination file.  Make sure the key is not present in
                 the table.  */
-              struct File_spec *prev = hash_remove (wd_to_name, fspec);
-              if (prev && prev != fspec)
+              నిర్మాణం File_spec *prev = hash_remove (wd_గమ్యం_name, fspec);
+              ఒకవేళ (prev && prev != fspec)
                 {
-                  if (follow_mode == Follow_name)
+                  ఒకవేళ (follow_బహుళకం == Follow_name)
                     recheck (prev, false);
                   prev->wd = -1;
                   close_fd (prev->fd, prev);
                 }
 
-              if (hash_insert (wd_to_name, fspec) == NULL)
+              ఒకవేళ (hash_చొప్పించు (wd_గమ్యం_name, fspec) == ఖాళీ)
                 xalloc_die ();
             }
 
-          if (follow_mode == Follow_name)
+          ఒకవేళ (follow_బహుళకం == Follow_name)
             recheck (fspec, false);
         }
-      else
+      లేకపోతే
         {
-          struct File_spec key;
-          key.wd = ev->wd;
-          fspec = hash_lookup (wd_to_name, &key);
+          నిర్మాణం File_spec కీలకం;
+          కీలకం.wd = ev->wd;
+          fspec = hash_lookup (wd_గమ్యం_name, &కీలకం);
         }
 
-      if (! fspec)
-        continue;
+      ఒకవేళ (! fspec)
+        కొనసాగు;
 
-      if (ev->mask & (IN_ATTRIB | IN_DELETE | IN_DELETE_SELF | IN_MOVE_SELF))
+      ఒకవేళ (ev->ముసుగు & (లోపల_ATTRIB | లోపల_DELETE | లోపల_DELETE_SELF | లోపల_MOVE_SELF))
         {
           /* Note for IN_MOVE_SELF (the file we're watching has
              been clobbered via a rename) without --retry we leave the watch
              in place since it may still be part of the set
              of watched names.  */
-          if (ev->mask & IN_DELETE_SELF
-              || (!reopen_inaccessible_files && (ev->mask & IN_MOVE_SELF)))
+          ఒకవేళ (ev->ముసుగు & లోపల_DELETE_SELF
+              || (!reopen_inaccessible_files && (ev->ముసుగు & లోపల_MOVE_SELF)))
             {
               inotify_rm_watch (wd, fspec->wd);
-              hash_remove (wd_to_name, fspec);
+              hash_remove (wd_గమ్యం_name, fspec);
             }
 
           /* Note we get IN_ATTRIB for unlink() as st_nlink decrements.
@@ -1892,74 +1892,74 @@ tail_forever_inotify (int wd, struct File_spec *f, int n_files,
 
           recheck (fspec, false);
 
-          continue;
+          కొనసాగు;
         }
       check_fspec (fspec, &prev_fspec);
     }
 }
-#endif
+#అయితే_ముగింపు
 
 /* Output the last bytes of the file PRETTYNAME open for reading
    in FD and with status ST.  Output the last N_BYTES bytes.
    Return (-1 - errno) on failure, otherwise the resulting file offset
    if known, otherwise -1.  */
 
-static off_t
-tail_bytes (char const *prettyname, int fd, struct stat const *st,
-            count_t n_bytes)
+స్థిర off_t
+తోక_బైట్లు (అక్షరం స్థిరరాశి *prettyname, పూర్ణాంకం fd, నిర్మాణం stat స్థిరరాశి *st,
+            లెక్క_t n_బైట్లు)
 {
   off_t current_pos
-    = (presume_input_pipe
+    = (presume_ఆదానం_pipe
        ? -1
-       : lseek (fd, from_start ? MIN (n_bytes, OFF_T_MAX) : 0, SEEK_CUR));
+       : lseek (fd, from_ప్రారంభం ? MIN (n_బైట్లు, OFF_T_MAX) : 0, SEEK_CUR));
 
-  if (from_start)
+  ఒకవేళ (from_ప్రారంభం)
     {
-      if (current_pos < 0)
+      ఒకవేళ (current_pos < 0)
         {
-          int t = start_bytes (prettyname, fd, n_bytes);
-          if (t < 0)
-            return t;
+          పూర్ణాంకం t = ప్రారంభం_బైట్లు (prettyname, fd, n_బైట్లు);
+          ఒకవేళ (t < 0)
+            తిరిగి t;
         }
-      n_bytes = COPY_TO_EOF;
+      n_బైట్లు = COPY_గమ్యం_EOF;
     }
-  else
+  లేకపోతే
     {
       off_t initial_pos = current_pos;
-      off_t end_pos = -1;
+      off_t చివర_pos = -1;
 
-      if (0 <= current_pos)
+      ఒకవేళ (0 <= current_pos)
         {
-          if (usable_st_size (st))
+          ఒకవేళ (usable_st_కొలత (st))
             {
               /* Use st_size only if it's so large that this is
                  probably not a /proc or similar file, where st_size
                  is notional.  */
-              off_t smallish_size = STP_BLKSIZE (st);
-              if (smallish_size < st->st_size)
-                end_pos = st->st_size;
+              off_t smallish_కొలత = STP_BLKSIZE (st);
+              ఒకవేళ (smallish_కొలత < st->st_కొలత)
+                చివర_pos = st->st_కొలత;
             }
-          else
+          లేకపోతే
             {
               off_t minus_n;
-              if (ckd_sub (&minus_n, 0, n_bytes))
-                end_pos = 0;
-              else
+              ఒకవేళ (ckd_sub (&minus_n, 0, n_బైట్లు))
+                చివర_pos = 0;
+              లేకపోతే
                 {
                   off_t e_n_pos = lseek (fd, minus_n, SEEK_END);
-                  if (0 <= e_n_pos)
+                  ఒకవేళ (0 <= e_n_pos)
                     {
                       current_pos = e_n_pos;
-                      end_pos = e_n_pos + n_bytes;
+                      చివర_pos = e_n_pos + n_బైట్లు;
                     }
-                  else
+                  లేకపోతే
                     {
                       /* POSIX says errno is unreliable here.
                          Perhaps the file is smaller than N_BYTES.
                          Try again at file end.  */
                       off_t e_pos = lseek (fd, 0, SEEK_END);
-                      if (0 <= e_pos)
-                        current_pos = end_pos = e_pos;
+                      ఒకవేళ (0 <= e_pos)
+                        current_pos = చివర_pos = e_pos;
                     }
                }
             }
@@ -1968,18 +1968,18 @@ tail_bytes (char const *prettyname, int fd, struct stat const *st,
       /* If the end is known and more than N_BYTES after the initial
          position, go to N_BYTES before the end; otherwise go back to
          the initial position.  But do not lseek if lseek already failed.  */
-      off_t pos = (initial_pos < end_pos && n_bytes < end_pos - initial_pos
-                   ? end_pos - n_bytes
+      off_t pos = (initial_pos < చివర_pos && n_బైట్లు < చివర_pos - initial_pos
+                   ? చివర_pos - n_బైట్లు
                    : initial_pos);
-      if (pos != current_pos)
+      ఒకవేళ (pos != current_pos)
         current_pos = xlseek (fd, pos, SEEK_SET, prettyname);
 
-      if (end_pos < 0)
-        return pipe_bytes (prettyname, fd, n_bytes, current_pos);
+      ఒకవేళ (చివర_pos < 0)
+        తిరిగి pipe_బైట్లు (prettyname, fd, n_బైట్లు, current_pos);
     }
 
-  count_t nr = dump_remainder (false, prettyname, fd, n_bytes);
-  return current_pos < 0 ? -1 : current_pos + nr;
+  లెక్క_t nr = dump_remainder (false, prettyname, fd, n_బైట్లు);
+  తిరిగి current_pos < 0 ? -1 : current_pos + nr;
 }
 
 /* Output the last lines of the file PRETTYNAME open for reading
@@ -1987,43 +1987,43 @@ tail_bytes (char const *prettyname, int fd, struct stat const *st,
    Return (-1 - errno) on failure, otherwise the resulting file offset
    if known, otherwise -1.  */
 
-static off_t
-tail_lines (char const *prettyname, int fd, struct stat const *st,
-            count_t n_lines)
+స్థిర off_t
+తోక_పంక్తులు (అక్షరం స్థిరరాశి *prettyname, పూర్ణాంకం fd, నిర్మాణం stat స్థిరరాశి *st,
+            లెక్క_t n_పంక్తులు)
 {
-  if (from_start)
+  ఒకవేళ (from_ప్రారంభం)
     {
       /* If skipping all input use lseek if possible, for speed.  */
-      if (OFF_T_MAX <= n_lines)
+      ఒకవేళ (OFF_T_MAX <= n_పంక్తులు)
         {
           off_t e = lseek (fd, 0, SEEK_END);
-          if (0 <= e)
-            return e;
+          ఒకవేళ (0 <= e)
+            తిరిగి e;
         }
 
-      int t = start_lines (prettyname, fd, n_lines);
-      if (t < 0)
-        return t;
-      dump_remainder (false, prettyname, fd, COPY_TO_EOF);
-      return -1;
+      పూర్ణాంకం t = ప్రారంభం_పంక్తులు (prettyname, fd, n_పంక్తులు);
+      ఒకవేళ (t < 0)
+        తిరిగి t;
+      dump_remainder (false, prettyname, fd, COPY_గమ్యం_EOF);
+      తిరిగి -1;
     }
-  else
+  లేకపోతే
     {
       /* Use file_lines only if FD is a regular file and SEEK_END
          reports more data.  */
-      off_t start_pos = (!presume_input_pipe && S_ISREG (st->st_mode)
+      off_t ప్రారంభం_pos = (!presume_ఆదానం_pipe && S_ISREG (st->st_బహుళకం)
                          ? lseek (fd, 0, SEEK_CUR)
                          : -1);
-      off_t end_pos = start_pos < 0 ? -1 : lseek (fd, 0, SEEK_END);
-      return (end_pos < 0
-              ? pipe_lines (prettyname, fd, n_lines)
-              : start_pos < end_pos
-              ? file_lines (prettyname, fd, st, n_lines, start_pos, end_pos)
-              : start_pos != end_pos
+      off_t చివర_pos = ప్రారంభం_pos < 0 ? -1 : lseek (fd, 0, SEEK_END);
+      తిరిగి (చివర_pos < 0
+              ? pipe_పంక్తులు (prettyname, fd, n_పంక్తులు)
+              : ప్రారంభం_pos < చివర_pos
+              ? file_పంక్తులు (prettyname, fd, st, n_పంక్తులు, ప్రారంభం_pos, చివర_pos)
+              : ప్రారంభం_pos != చివర_pos
               ? (/* Do not read from before the start offset,
                     even if the input file shrank.  */
-                 xlseek (fd, start_pos, SEEK_SET, prettyname))
-              : start_pos);
+                 xlseek (fd, ప్రారంభం_pos, SEEK_SET, prettyname))
+              : ప్రారంభం_pos);
     }
 }
 
@@ -2032,19 +2032,19 @@ tail_lines (char const *prettyname, int fd, struct stat const *st,
    Return (-1 - errno) on failure, otherwise the resulting file offset
    if known, otherwise -1.  */
 
-static off_t
-tail (char const *filename, int fd, struct stat const *st, count_t n_units)
+స్థిర off_t
+తోక (అక్షరం స్థిరరాశి *filename, పూర్ణాంకం fd, నిర్మాణం stat స్థిరరాశి *st, లెక్క_t n_units)
 {
-  return (count_lines ? tail_lines : tail_bytes) (filename, fd, st, n_units);
+  తిరిగి (లెక్క_పంక్తులు ? తోక_పంక్తులు : తోక_బైట్లు) (filename, fd, st, n_units);
 }
 
 /* Display the last N_UNITS units of the file described by F.
    Return true if successful.  */
 
-static bool
-tail_file (struct File_spec *f, count_t n_files, count_t n_units)
+స్థిర bool
+తోక_file (నిర్మాణం File_spec *f, లెక్క_t n_files, లెక్క_t n_units)
 {
-  int fd;
+  పూర్ణాంకం fd;
   bool ok;
 
   /* Avoid blocking if we may need to process asynchronously.  */
@@ -2052,20 +2052,20 @@ tail_file (struct File_spec *f, count_t n_files, count_t n_units)
 
   bool is_stdin = (streq (f->name, "-"));
 
-  if (is_stdin)
+  ఒకవేళ (is_stdin)
     {
       have_read_stdin = true;
       fd = STDIN_FILENO;
-      xset_binary_mode (STDIN_FILENO, O_BINARY);
+      xset_ద్విమాన_బహుళకం (STDIN_FILENO, O_ద్విమాన);
     }
-  else
-    fd = open (f->name, O_RDONLY | O_BINARY | (nonblocking ? O_NONBLOCK : 0));
+  లేకపోతే
+    fd = open (f->name, O_RDONLY | O_ద్విమాన | (nonblocking ? O_NONBLOCK : 0));
 
   f->tailable = false;
 
-  if (fd < 0)
+  ఒకవేళ (fd < 0)
     {
-      if (forever)
+      ఒకవేళ (forever)
         {
           f->fd = -1;
           f->errnum = errno;
@@ -2077,28 +2077,28 @@ tail_file (struct File_spec *f, count_t n_files, count_t n_units)
              quoteaf (f->prettyname));
       ok = false;
     }
-  else
+  లేకపోతే
     {
-      if (print_headers)
-        write_header (f->prettyname);
+      ఒకవేళ (print_శీర్షికలు)
+        write_శీర్షిక (f->prettyname);
 
       off_t read_pos;
-      struct stat stats;
+      నిర్మాణం stat stats;
       ok = 0 <= fstat (fd, &stats);
-      if (!ok)
+      ఒకవేళ (!ok)
         {
           f->errnum = errno;
           error (0, f->errnum, _("cannot fstat %s"), quoteaf (f->prettyname));
         }
-      else
+      లేకపోతే
         {
-          read_pos = tail (f->prettyname, fd, &stats, n_units);
+          read_pos = తోక (f->prettyname, fd, &stats, n_units);
           ok = -1 <= read_pos;
           f->errnum = ok ? 0 : -1 - read_pos;
 
-          if (IS_TAILABLE_FILE_TYPE (stats.st_mode))
+          ఒకవేళ (IS_TAILABLE_FILE_TYPE (stats.st_బహుళకం))
             f->tailable = true;
-          else if (forever)
+          లేకపోతే ఒకవేళ (forever)
             {
               ok = false;
               f->errnum = -1;
@@ -2109,23 +2109,23 @@ tail_file (struct File_spec *f, count_t n_files, count_t n_units)
             }
         }
 
-      if (forever)
+      ఒకవేళ (forever)
         {
-          if (!ok)
+          ఒకవేళ (!ok)
             {
               f->ignore = ! reopen_inaccessible_files;
               close_fd (fd, f);
               f->fd = -1;
             }
-          else
+          లేకపోతే
             {
-              record_open_fd (f, fd, read_pos, &stats, (is_stdin ? -1 : 1));
+              రికార్డు_open_fd (f, fd, read_pos, &stats, (is_stdin ? -1 : 1));
               f->remote = fremote (fd, f);
             }
         }
-      else
+      లేకపోతే
         {
-          if (!is_stdin && close (fd) < 0)
+          ఒకవేళ (!is_stdin && close (fd) < 0)
             {
               error (0, errno, _("error reading %s"),
                      quoteaf (f->prettyname));
@@ -2134,7 +2134,7 @@ tail_file (struct File_spec *f, count_t n_files, count_t n_units)
         }
     }
 
-  return ok;
+  తిరిగి ok;
 }
 
 /* If obsolete usage is allowed, and the command line arguments are of
@@ -2146,225 +2146,225 @@ tail_file (struct File_spec *f, count_t n_files, count_t n_units)
    Otherwise, return false and don't modify any parameter or global
    variable.  */
 
-static bool
-parse_obsolete_option (int argc, char * const *argv, count_t *n_units)
+స్థిర bool
+parse_obsolete_option (పూర్ణాంకం argc, అక్షరం * స్థిరరాశి *argv, లెక్క_t *n_units)
 {
-  bool t_from_start;
-  bool t_count_lines = true;
+  bool t_from_ప్రారంభం;
+  bool t_లెక్క_పంక్తులు = true;
   bool t_forever = false;
 
   /* With the obsolete form, there is one option string and at most
      one file argument.  Watch out for "-" and "--", though.  */
-  if (! (argc == 2
+  ఒకవేళ (! (argc == 2
          || (argc == 3 && ! (argv[2][0] == '-' && argv[2][1]))
          || (3 <= argc && argc <= 4 && streq (argv[2], "--"))))
-    return false;
+    తిరిగి false;
 
-  int posix_ver = posix2_version ();
+  పూర్ణాంకం posix_ver = posix2_సంస్కరణ ();
   bool obsolete_usage = posix_ver < 200112;
   bool traditional_usage = obsolete_usage || 200809 <= posix_ver;
-  char const *p = argv[1];
+  అక్షరం స్థిరరాశి *p = argv[1];
 
-  switch (*p++)
+  ఎంపిక (*p++)
     {
-    default:
-      return false;
+    అప్రమేయ:
+      తిరిగి false;
 
-    case '+':
+    స్థితి '+':
       /* Leading "+" is a file name in the standard form.  */
-      if (!traditional_usage)
-        return false;
+      ఒకవేళ (!traditional_usage)
+        తిరిగి false;
 
-      t_from_start = true;
-      break;
+      t_from_ప్రారంభం = true;
+      ఆపు;
 
-    case '-':
+    స్థితి '-':
       /* In the non-obsolete form, "-" is standard input and "-c"
          requires an option-argument.  The obsolete multidigit options
          are supported as a GNU extension even when conforming to
          POSIX 1003.1-2001 or later, so don't complain about them.  */
-      if (!obsolete_usage && !p[p[0] == 'c'])
-        return false;
+      ఒకవేళ (!obsolete_usage && !p[p[0] == 'c'])
+        తిరిగి false;
 
-      t_from_start = false;
-      break;
+      t_from_ప్రారంభం = false;
+      ఆపు;
     }
 
-  count_t n;
-  if (!c_isdigit (*p))
-    n = DEFAULT_N_LINES;
-  else
-    for (n = 0; c_isdigit (*p); p++)
-      n = ckd_mul (&n, n, 10) || ckd_add (&n, n, *p - '0') ? COUNT_MAX : n;
+  లెక్క_t n;
+  ఒకవేళ (!c_isdigit (*p))
+    n = DEFAULT_N_పంక్తులు;
+  లేకపోతే
+    కొరకు (n = 0; c_isdigit (*p); p++)
+      n = ckd_mul (&n, n, 10) || ckd_కూడు (&n, n, *p - '0') ? లెక్క_MAX : n;
 
-  switch (*p)
+  ఎంపిక (*p)
     {
-    case 'b': n = ckd_mul (&n, n, 512) ? COUNT_MAX : n; FALLTHROUGH;
-    case 'c': t_count_lines = false; FALLTHROUGH;
-    case 'l': p++; break;
+    స్థితి 'b': n = ckd_mul (&n, n, 512) ? లెక్క_MAX : n; FALLTHROUGH;
+    స్థితి 'c': t_లెక్క_పంక్తులు = false; FALLTHROUGH;
+    స్థితి 'l': p++; ఆపు;
     }
 
-  if (*p == 'f')
+  ఒకవేళ (*p == 'f')
     {
       t_forever = true;
       ++p;
     }
 
-  if (*p)
-    return false;
+  ఒకవేళ (*p)
+    తిరిగి false;
 
   *n_units = n;
 
   /* Set globals.  */
-  from_start = t_from_start;
-  count_lines = t_count_lines;
+  from_ప్రారంభం = t_from_ప్రారంభం;
+  లెక్క_పంక్తులు = t_లెక్క_పంక్తులు;
   forever = t_forever;
 
-  return true;
+  తిరిగి true;
 }
 
-static void
-parse_options (int argc, char **argv,
-               count_t *n_units, enum header_mode *header_mode,
-               double *sleep_interval)
+స్థిర శూన్య
+parse_options (పూర్ణాంకం argc, అక్షరం **argv,
+               లెక్క_t *n_units, గణన శీర్షిక_బహుళకం *శీర్షిక_బహుళకం,
+               ద్విగుణ *sleep_interval)
 {
-  int c;
+  పూర్ణాంకం c;
 
-  while ((c = getopt_long (argc, argv, "c:n:fFqs:vz0123456789",
-                           long_options, NULL))
+  అయితే ((c = getopt_long (argc, argv, "c:n:fFqs:vz0123456789",
+                           long_options, ఖాళీ))
          != -1)
     {
-      switch (c)
+      ఎంపిక (c)
         {
-        case 'F':
+        స్థితి 'F':
           forever = true;
-          follow_mode = Follow_name;
+          follow_బహుళకం = Follow_name;
           reopen_inaccessible_files = true;
-          break;
+          ఆపు;
 
-        case 'c':
-        case 'n':
-          count_lines = (c == 'n');
-          if (*optarg == '+')
-            from_start = true;
-          else if (*optarg == '-')
+        స్థితి 'c':
+        స్థితి 'n':
+          లెక్క_పంక్తులు = (c == 'n');
+          ఒకవేళ (*optarg == '+')
+            from_ప్రారంభం = true;
+          లేకపోతే ఒకవేళ (*optarg == '-')
             ++optarg;
 
-          *n_units = xnumtoimax (optarg, 10, 0, COUNT_MAX, "bkKmMGTPEZYRQ0",
-                                 (count_lines
+          *n_units = xnumtoimax (optarg, 10, 0, లెక్క_MAX, "bkKmMGTPEZYRQ0",
+                                 (లెక్క_పంక్తులు
                                   ? _("invalid number of lines")
                                   : _("invalid number of bytes"))
                                  , 0, XTOINT_MAX_QUIET);
-          break;
+          ఆపు;
 
-        case 'f':
-        case LONG_FOLLOW_OPTION:
+        స్థితి 'f':
+        స్థితి LONG_FOLLOW_OPTION:
           forever = true;
-          if (optarg == NULL)
-            follow_mode = DEFAULT_FOLLOW_MODE;
-          else
-            follow_mode = XARGMATCH ("--follow", optarg,
-                                     follow_mode_string, follow_mode_map);
-          break;
+          ఒకవేళ (optarg == ఖాళీ)
+            follow_బహుళకం = DEFAULT_FOLLOW_బహుళకం;
+          లేకపోతే
+            follow_బహుళకం = XARGMATCH ("--follow", optarg,
+                                     follow_బహుళకం_string, follow_బహుళకం_map);
+          ఆపు;
 
-        case RETRY_OPTION:
+        స్థితి RETRY_OPTION:
           reopen_inaccessible_files = true;
-          break;
+          ఆపు;
 
-        case MAX_UNCHANGED_STATS_OPTION:
+        స్థితి MAX_UNCHANGED_STATS_OPTION:
           /* --max-unchanged-stats=N */
           max_n_unchanged_stats_between_opens =
-            xnumtoimax (optarg, 10, 0, COUNT_MAX, "",
+            xnumtoimax (optarg, 10, 0, లెక్క_MAX, "",
                         _("invalid maximum number of unchanged stats"
                           " between opens"),
                         0, XTOINT_MAX_QUIET);
-          break;
+          ఆపు;
 
-        case DEBUG_PROGRAM_OPTION:
+        స్థితి DEBUG_కార్యక్రమం_OPTION:
           debug = true;
-          break;
+          ఆపు;
 
-        case DISABLE_INOTIFY_OPTION:
+        స్థితి DISABLE_INOTIFY_OPTION:
           disable_inotify = true;
-          break;
+          ఆపు;
 
-        case PID_OPTION:
-          if (nbpids == pids_alloc)
+        స్థితి PID_OPTION:
+          ఒకవేళ (nbpids == pids_alloc)
             pids = xpalloc (pids, &pids_alloc, 1,
-                            MIN (INT_MAX, IDX_MAX), sizeof *pids);
+                            MIN (గరిష్ఠ_పూర్ణాంకం, IDX_MAX), పరిమాణం *pids);
           pids[nbpids++] = xdectoumax (optarg, 0, PID_T_MAX, "",
                                        _("invalid PID"), 0);
-          break;
+          ఆపు;
 
-        case PRESUME_INPUT_PIPE_OPTION:
-          presume_input_pipe = true;
-          break;
+        స్థితి PRESUME_ఆదానం_PIPE_OPTION:
+          presume_ఆదానం_pipe = true;
+          ఆపు;
 
-        case 'q':
-          *header_mode = never;
-          break;
+        స్థితి 'q':
+          *శీర్షిక_బహుళకం = never;
+          ఆపు;
 
-        case 's':
+        స్థితి 's':
           {
-            char *ep;
+            అక్షరం *ep;
             errno = 0;
-            double s = cl_strtod (optarg, &ep);
-            if (optarg == ep || *ep || ! (0 <= s))
+            ద్విగుణ s = cl_strtod (optarg, &ep);
+            ఒకవేళ (optarg == ep || *ep || ! (0 <= s))
               error (EXIT_FAILURE, 0,
                      _("invalid number of seconds: %s"), quote (optarg));
             *sleep_interval = dtimespec_bound (s, errno);
           }
-          break;
+          ఆపు;
 
-        case 'v':
-          *header_mode = always;
-          break;
+        స్థితి 'v':
+          *శీర్షిక_బహుళకం = always;
+          ఆపు;
 
-        case 'z':
-          line_end = '\0';
-          break;
+        స్థితి 'z':
+          పంక్తి_చివర = '\0';
+          ఆపు;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_సంస్కరణ_CHAR (కార్యక్రమం_NAME, AUTHORS);
 
-        case '0': case '1': case '2': case '3': case '4':
-        case '5': case '6': case '7': case '8': case '9':
+        స్థితి '0': స్థితి '1': స్థితి '2': స్థితి '3': స్థితి '4':
+        స్థితి '5': స్థితి '6': స్థితి '7': స్థితి '8': స్థితి '9':
           error (EXIT_FAILURE, 0, _("option used in invalid context -- %c"), c);
 
-        default:
+        అప్రమేయ:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (reopen_inaccessible_files)
+  ఒకవేళ (reopen_inaccessible_files)
     {
-      if (!forever)
+      ఒకవేళ (!forever)
         {
           reopen_inaccessible_files = false;
           error (0, 0, _("warning: --retry ignored; --retry is useful"
                          " only when following"));
         }
-      else if (follow_mode == Follow_descriptor)
+      లేకపోతే ఒకవేళ (follow_బహుళకం == Follow_descriptor)
         error (0, 0, _("warning: --retry only effective for the initial open"));
     }
 
-  if (pids && (!forever || (kill (pids[0], 0) < 0 && errno == ENOSYS)))
+  ఒకవేళ (pids && (!forever || (kill (pids[0], 0) < 0 && errno == ENOSYS)))
     {
       error (0, 0,
              _(forever
                ? "warning: --pid=PID is not supported on this system"
                : ("warning: PID ignored;"
                   " --pid=PID is useful only when following")));
-      free (pids);
-      pids = NULL;
+      విడుదల (pids);
+      pids = ఖాళీ;
     }
 }
 
 /* Mark as '.ignore'd each member of F that corresponds to a
    pipe or fifo, and return true if any are not marked.  */
-static bool
-ignore_fifo_and_pipe (struct File_spec *f, int n_files)
+స్థిర bool
+ignore_fifo_and_pipe (నిర్మాణం File_spec *f, పూర్ణాంకం n_files)
 {
   /* When there is no FILE operand and stdin is a pipe or FIFO
      POSIX requires that tail ignore the -f option.
@@ -2372,47 +2372,47 @@ ignore_fifo_and_pipe (struct File_spec *f, int n_files)
      ignore any "-" operand that corresponds to a pipe or FIFO.  */
   bool some_viable = false;
 
-  for (int i = 0; i < n_files; i++)
+  కొరకు (పూర్ణాంకం i = 0; i < n_files; i++)
     {
       bool is_a_fifo_or_pipe =
         (streq (f[i].name, "-")
          && !f[i].ignore
          && 0 <= f[i].fd
-         && (S_ISFIFO (f[i].mode)
+         && (S_ISFIFO (f[i].బహుళకం_2)
              || (HAVE_FIFO_PIPES != 1 && isapipe (f[i].fd))));
-      if (is_a_fifo_or_pipe)
+      ఒకవేళ (is_a_fifo_or_pipe)
         {
           f[i].fd = -1;
           f[i].errnum = -1;
           f[i].ignore = true;
         }
-      else
+      లేకపోతే
         some_viable = true;
     }
 
-  return some_viable;
+  తిరిగి some_viable;
 }
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
-  enum header_mode header_mode = multiple_files;
+  గణన శీర్షిక_బహుళకం శీర్షిక_బహుళకం = గుణిజం_files;
   bool ok = true;
   /* If from_start, the number of items to skip before printing; otherwise,
      the number of items at the end of the file to print.  */
-  count_t n_units = DEFAULT_N_LINES;
-  int n_files;
-  char **file;
-  struct File_spec *F;
+  లెక్క_t n_units = DEFAULT_N_పంక్తులు;
+  పూర్ణాంకం n_files;
+  అక్షరం **file;
+  నిర్మాణం File_spec *F;
   bool obsolete_option;
 
   /* The number of seconds to sleep between iterations.
      During one iteration, every file name or descriptor is checked to
      see if it has changed.  */
-  double sleep_interval = 1.0;
+  ద్విగుణ sleep_interval = 1.0;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
@@ -2420,96 +2420,96 @@ main (int argc, char **argv)
   atexit (close_stdout);
 
   {
-    int p = getpagesize ();
-    if (IDX_MAX < p)
+    పూర్ణాంకం p = getpagesize ();
+    ఒకవేళ (IDX_MAX < p)
       xalloc_die ();
-    page_size = p;
+    పుట_కొలత = p;
   }
 
   obsolete_option = parse_obsolete_option (argc, argv, &n_units);
   argc -= obsolete_option;
   argv += obsolete_option;
-  parse_options (argc, argv, &n_units, &header_mode, &sleep_interval);
+  parse_options (argc, argv, &n_units, &శీర్షిక_బహుళకం, &sleep_interval);
 
   /* To start printing with item N_UNITS from the start of the file, skip
      N_UNITS - 1 items.  'tail -n +0' is actually meaningless, but for Unix
      compatibility it's treated the same as 'tail -n +1'.  */
-  n_units -= from_start && 0 < n_units && n_units < COUNT_MAX;
+  n_units -= from_ప్రారంభం && 0 < n_units && n_units < లెక్క_MAX;
 
-  if (optind < argc)
+  ఒకవేళ (optind < argc)
     {
       n_files = argc - optind;
       file = argv + optind;
     }
-  else
+  లేకపోతే
     {
-      static char *dummy_stdin = (char *) "-";
+      స్థిర అక్షరం *dummy_stdin = (అక్షరం *) "-";
       n_files = 1;
       file = &dummy_stdin;
     }
 
   {
-    bool found_hyphen = false;
+    bool దొరికింది_hyphen = false;
 
-    for (int i = 0; i < n_files; i++)
-      if (streq (file[i], "-"))
-        found_hyphen = true;
+    కొరకు (పూర్ణాంకం i = 0; i < n_files; i++)
+      ఒకవేళ (streq (file[i], "-"))
+        దొరికింది_hyphen = true;
 
     /* When following by name, there must be a name.  */
-    if (found_hyphen && follow_mode == Follow_name)
+    ఒకవేళ (దొరికింది_hyphen && follow_బహుళకం == Follow_name)
       error (EXIT_FAILURE, 0, _("cannot follow %s by name"), quoteaf ("-"));
 
     /* When following forever, and not using simple blocking, warn if
        any file is '-' as the stats() used to check for input are ineffective.
        This is only a warning, since tail's output (before a failing seek,
        and that from any non-stdin files) might still be useful.  */
-    if (forever && found_hyphen)
+    ఒకవేళ (forever && దొరికింది_hyphen)
       {
-        struct stat in_stat;
+        నిర్మాణం stat లోపల_stat;
         bool blocking_stdin;
-        blocking_stdin = (!nbpids && follow_mode == Follow_descriptor
-                          && n_files == 1 && ! fstat (STDIN_FILENO, &in_stat)
-                          && ! S_ISREG (in_stat.st_mode));
+        blocking_stdin = (!nbpids && follow_బహుళకం == Follow_descriptor
+                          && n_files == 1 && ! fstat (STDIN_FILENO, &లోపల_stat)
+                          && ! S_ISREG (లోపల_stat.st_బహుళకం));
 
-        if (! blocking_stdin && isatty (STDIN_FILENO))
+        ఒకవేళ (! blocking_stdin && isatty (STDIN_FILENO))
           error (0, 0, _("warning: following standard input"
                          " indefinitely is ineffective"));
       }
   }
 
   /* Don't read anything if we'll never output anything.  */
-  if (! forever && n_units == (from_start ? COUNT_MAX : 0))
-    return EXIT_SUCCESS;
+  ఒకవేళ (! forever && n_units == (from_ప్రారంభం ? లెక్క_MAX : 0))
+    తిరిగి EXIT_SUCCESS;
 
-  if (IDX_MAX < n_files)
+  ఒకవేళ (IDX_MAX < n_files)
     xalloc_die ();
-  F = xinmalloc (n_files, sizeof *F);
-  for (int i = 0; i < n_files; i++)
+  F = xinmalloc (n_files, పరిమాణం *F);
+  కొరకు (పూర్ణాంకం i = 0; i < n_files; i++)
     {
       F[i].name = file[i];
       F[i].prettyname = streq (file[i], "-") ? _("standard input") : file[i];
     }
 
-  if (header_mode == always
-      || (header_mode == multiple_files && n_files > 1))
-    print_headers = true;
+  ఒకవేళ (శీర్షిక_బహుళకం == always
+      || (శీర్షిక_బహుళకం == గుణిజం_files && n_files > 1))
+    print_శీర్షికలు = true;
 
-  xset_binary_mode (STDOUT_FILENO, O_BINARY);
+  xset_ద్విమాన_బహుళకం (STDOUT_FILENO, O_ద్విమాన);
 
-  for (int i = 0; i < n_files; i++)
-    ok &= tail_file (&F[i], n_files, n_units);
+  కొరకు (పూర్ణాంకం i = 0; i < n_files; i++)
+    ok &= తోక_file (&F[i], n_files, n_units);
 
-  if (forever && ignore_fifo_and_pipe (F, n_files))
+  ఒకవేళ (forever && ignore_fifo_and_pipe (F, n_files))
     {
       /* If stdout is a fifo or pipe, then monitor it
          so that we exit if the reader goes away.  */
-      struct stat out_stat;
-      if (fstat (STDOUT_FILENO, &out_stat) < 0)
+      నిర్మాణం stat బహిర్గతం_stat;
+      ఒకవేళ (fstat (STDOUT_FILENO, &బహిర్గతం_stat) < 0)
         error (EXIT_FAILURE, errno, _("standard output"));
-      monitor_output = (S_ISFIFO (out_stat.st_mode)
+      monitor_output = (S_ISFIFO (బహిర్గతం_stat.st_బహుళకం)
                         || (HAVE_FIFO_PIPES != 1 && isapipe (STDOUT_FILENO)));
 
-#if HAVE_INOTIFY
+#ఒకవేళ HAVE_INOTIFY
       /* tailable_stdin() checks if the user specifies stdin via  "-",
          or implicitly by providing no arguments. If so, we won't use inotify.
          Technically, on systems with a working /dev/stdin, we *could*,
@@ -2547,43 +2547,43 @@ main (int argc, char **argv)
          our current hash implementation will only --follow data for one
          of the names when multiple hardlinked files are specified, or
          for one name when a name is specified multiple times.  */
-      if (!disable_inotify && (tailable_stdin (F, n_files)
+      ఒకవేళ (!disable_inotify && (tailable_stdin (F, n_files)
                                || any_remote_file (F, n_files)
                                || ! any_non_remote_file (F, n_files)
                                || any_symlinks (F, n_files)
                                || any_non_regular_fifo (F, n_files)
-                               || (!ok && follow_mode == Follow_descriptor)))
+                               || (!ok && follow_బహుళకం == Follow_descriptor)))
         disable_inotify = true;
 
-      if (!disable_inotify)
+      ఒకవేళ (!disable_inotify)
         {
-          int wd = inotify_init ();
-          if (0 <= wd)
+          పూర్ణాంకం wd = inotify_init ();
+          ఒకవేళ (0 <= wd)
             {
               /* Flush any output from tail_file, now, since
                  tail_forever_inotify flushes only after writing,
                  not before reading.  */
-              if (fflush (stdout) < 0)
+              ఒకవేళ (fflush (stdout) < 0)
                 write_error ();
 
-              Hash_table *ht;
-              Hash_table *parent_ht = NULL;
-              tail_forever_inotify (wd, F, n_files, sleep_interval,
-                                    &ht, &parent_ht);
+              Hash_పట్టిక *ht;
+              Hash_పట్టిక *మాతృ_ht = ఖాళీ;
+              తోక_forever_inotify (wd, F, n_files, sleep_interval,
+                                    &ht, &మాతృ_ht);
               hash_free (ht);
-              if (parent_ht)
-                hash_free (parent_ht);
+              ఒకవేళ (మాతృ_ht)
+                hash_free (మాతృ_ht);
               close (wd);
               errno = 0;
             }
           error (0, errno, _("inotify cannot be used, reverting to polling"));
         }
-#endif
+#అయితే_ముగింపు
       disable_inotify = true;
-      tail_forever (F, n_files, sleep_interval);
+      తోక_forever (F, n_files, sleep_interval);
     }
 
-  if (have_read_stdin && close (STDIN_FILENO) < 0)
+  ఒకవేళ (have_read_stdin && close (STDIN_FILENO) < 0)
     error (EXIT_FAILURE, errno, "-");
   main_exit (ok ? EXIT_SUCCESS : EXIT_FAILURE);
 }

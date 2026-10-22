@@ -14,58 +14,58 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include <float.h>
-#include <getopt.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <langinfo.h>
+#అన్తర్భావ <config.h>
+#అన్తర్భావ <float.h>
+#అన్తర్భావ <getopt.h>
+#అన్తర్భావ <stdio.h>
+#అన్తర్భావ <sys/types.h>
+#అన్తర్భావ <langinfo.h>
 
-#include "argmatch.h"
-#include "assure.h"
-#include "c-ctype.h"
-#include "mbswidth.h"
-#include "mcel.h"
-#include "quote.h"
-#include "skipchars.h"
-#include "system.h"
-#include "utf8.h"
-#include "xstrtol.h"
+#అన్తర్భావ "argmatch.h"
+#అన్తర్భావ "assure.h"
+#అన్తర్భావ "c-ctype.h"
+#అన్తర్భావ "mbswidth.h"
+#అన్తర్భావ "mcel.h"
+#అన్తర్భావ "quote.h"
+#అన్తర్భావ "skipchars.h"
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "utf8.h"
+#అన్తర్భావ "xstrtol.h"
 
-#include "set-fields.h"
+#అన్తర్భావ "set-fields.h"
 
-#if HAVE_FPSETPREC
+#ఒకవేళ HAVE_FPSETPREC
 # include <ieeefp.h>
-#endif
+#అయితే_ముగింపు
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "numfmt"
+#నిర్వచించు కార్యక్రమం_NAME "numfmt"
 
-#define AUTHORS proper_name ("Assaf Gordon")
+#నిర్వచించు AUTHORS proper_name ("Assaf Gordon")
 
 /* Exit code when some numbers fail to convert.  */
-enum { EXIT_CONVERSION_WARNINGS = 2 };
+గణన { EXIT_CONVERSION_WARNINGS = 2 };
 
-enum
+గణన
 {
   FROM_OPTION = CHAR_MAX + 1,
   FROM_UNIT_OPTION,
-  TO_OPTION,
-  TO_UNIT_OPTION,
-  ROUND_OPTION,
+  గమ్యం_OPTION,
+  గమ్యం_UNIT_OPTION,
+  విడత_OPTION,
   SUFFIX_OPTION,
   GROUPING_OPTION,
   PADDING_OPTION,
-  FIELD_OPTION,
+  క్షేత్రం_OPTION,
   DEBUG_OPTION,
   DEV_DEBUG_OPTION,
-  HEADER_OPTION,
+  శీర్షిక_OPTION,
   FORMAT_OPTION,
   INVALID_OPTION,
   UNIT_SEPARATOR_OPTION
 };
 
-enum scale_type
+గణన scale_type
 {
   scale_none,                   /* the default: no scaling.  */
   scale_auto,                   /* --from only.  */
@@ -74,48 +74,48 @@ enum scale_type
   scale_IEC_I                   /* 'i' suffix is required.  */
 };
 
-static char const *const scale_from_args[] =
+స్థిర అక్షరం స్థిరరాశి *స్థిరరాశి scale_from_వాదనలు[] =
 {
-  "none", "auto", "si", "iec", "iec-i", NULL
+  "none", "auto", "si", "iec", "iec-i", ఖాళీ
 };
 
-static enum scale_type const scale_from_types[] =
+స్థిర గణన scale_type స్థిరరాశి scale_from_types[] =
 {
   scale_none, scale_auto, scale_SI, scale_IEC, scale_IEC_I
 };
 
-static char const *const scale_to_args[] =
+స్థిర అక్షరం స్థిరరాశి *స్థిరరాశి scale_గమ్యం_వాదనలు[] =
 {
-  "none", "si", "iec", "iec-i", NULL
+  "none", "si", "iec", "iec-i", ఖాళీ
 };
 
-static enum scale_type const scale_to_types[] =
+స్థిర గణన scale_type స్థిరరాశి scale_గమ్యం_types[] =
 {
   scale_none, scale_SI, scale_IEC, scale_IEC_I
 };
 
 
-enum round_type
+గణన విడత_type
 {
-  round_ceiling,
-  round_floor,
-  round_from_zero,
-  round_to_zero,
-  round_nearest,
+  విడత_ceiling,
+  విడత_floor,
+  విడత_from_zero,
+  విడత_గమ్యం_zero,
+  విడత_సమీప,
 };
 
-static char const *const round_args[] =
+స్థిర అక్షరం స్థిరరాశి *స్థిరరాశి విడత_వాదనలు[] =
 {
-  "up", "down", "from-zero", "towards-zero", "nearest", NULL
+  "up", "down", "from-zero", "towards-zero", "nearest", ఖాళీ
 };
 
-static enum round_type const round_types[] =
+స్థిర గణన విడత_type స్థిరరాశి విడత_types[] =
 {
-  round_ceiling, round_floor, round_from_zero, round_to_zero, round_nearest
+  విడత_ceiling, విడత_floor, విడత_from_zero, విడత_గమ్యం_zero, విడత_సమీప
 };
 
 
-enum inval_type
+గణన inval_type
 {
   inval_abort,
   inval_fail,
@@ -123,345 +123,345 @@ enum inval_type
   inval_ignore
 };
 
-static char const *const inval_args[] =
+స్థిర అక్షరం స్థిరరాశి *స్థిరరాశి inval_వాదనలు[] =
 {
-  "abort", "fail", "warn", "ignore", NULL
+  "abort", "fail", "warn", "ignore", ఖాళీ
 };
 
-static enum inval_type const inval_types[] =
+స్థిర గణన inval_type స్థిరరాశి inval_types[] =
 {
   inval_abort, inval_fail, inval_warn, inval_ignore
 };
 
-static struct option const longopts[] =
+స్థిర నిర్మాణం option స్థిరరాశి longopts[] =
 {
-  {"from", required_argument, NULL, FROM_OPTION},
-  {"from-unit", required_argument, NULL, FROM_UNIT_OPTION},
-  {"to", required_argument, NULL, TO_OPTION},
-  {"to-unit", required_argument, NULL, TO_UNIT_OPTION},
-  {"round", required_argument, NULL, ROUND_OPTION},
-  {"padding", required_argument, NULL, PADDING_OPTION},
-  {"suffix", required_argument, NULL, SUFFIX_OPTION},
-  {"unit-separator", required_argument, NULL, UNIT_SEPARATOR_OPTION},
-  {"grouping", no_argument, NULL, GROUPING_OPTION},
-  {"delimiter", required_argument, NULL, 'd'},
-  {"field", required_argument, NULL, FIELD_OPTION},
-  {"debug", no_argument, NULL, DEBUG_OPTION},
-  {"-debug", no_argument, NULL, DEV_DEBUG_OPTION},
-  {"header", optional_argument, NULL, HEADER_OPTION},
-  {"format", required_argument, NULL, FORMAT_OPTION},
-  {"invalid", required_argument, NULL, INVALID_OPTION},
-  {"zero-terminated", no_argument, NULL, 'z'},
+  {"from", required_వాదం, ఖాళీ, FROM_OPTION},
+  {"from-unit", required_వాదం, ఖాళీ, FROM_UNIT_OPTION},
+  {"to", required_వాదం, ఖాళీ, గమ్యం_OPTION},
+  {"to-unit", required_వాదం, ఖాళీ, గమ్యం_UNIT_OPTION},
+  {"round", required_వాదం, ఖాళీ, విడత_OPTION},
+  {"padding", required_వాదం, ఖాళీ, PADDING_OPTION},
+  {"suffix", required_వాదం, ఖాళీ, SUFFIX_OPTION},
+  {"unit-separator", required_వాదం, ఖాళీ, UNIT_SEPARATOR_OPTION},
+  {"grouping", no_వాదం, ఖాళీ, GROUPING_OPTION},
+  {"delimiter", required_వాదం, ఖాళీ, 'd'},
+  {"field", required_వాదం, ఖాళీ, క్షేత్రం_OPTION},
+  {"debug", no_వాదం, ఖాళీ, DEBUG_OPTION},
+  {"-debug", no_వాదం, ఖాళీ, DEV_DEBUG_OPTION},
+  {"header", optional_వాదం, ఖాళీ, శీర్షిక_OPTION},
+  {"format", required_వాదం, ఖాళీ, FORMAT_OPTION},
+  {"invalid", required_వాదం, ఖాళీ, INVALID_OPTION},
+  {"zero-terminated", no_వాదం, ఖాళీ, 'z'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_సంస్కరణ_OPTION_DECL},
+  {ఖాళీ, 0, ఖాళీ, 0}
 };
 
 /* Maximum number of digits we can safely handle
    without precision loss, if scaling is 'none'.  */
-enum { MAX_UNSCALED_DIGITS = LDBL_DIG };
+గణన { MAX_UNSCALED_DIGITS = LDBL_DIG };
 
 /* Maximum number of digits we can work with.
    This is equivalent to 999Q.
    NOTE: 'long double' can handle more than that, but there's
          no official suffix assigned beyond Quetta (1000^10).  */
-enum { MAX_ACCEPTABLE_DIGITS = 33 };
+గణన { MAX_ACCEPTABLE_DIGITS = 33 };
 
-static enum scale_type scale_from = scale_none;
-static enum scale_type scale_to = scale_none;
-static enum round_type round_style = round_from_zero;
-static enum inval_type inval_style = inval_abort;
-static char const *suffix = NULL;
-static char const *unit_separator = NULL;
-static uintmax_t from_unit_size = 1;
-static uintmax_t to_unit_size = 1;
-static int grouping = 0;
-static char *padding_buffer = NULL;
-static idx_t padding_buffer_size = 0;
-static intmax_t padding_width = 0;
-static int zero_padding_width = 0;
-static long int user_precision = -1;
-static char const *format_str = NULL;
-static char *format_str_prefix = NULL;
-static char *format_str_suffix = NULL;
+స్థిర గణన scale_type scale_from = scale_none;
+స్థిర గణన scale_type scale_గమ్యం = scale_none;
+స్థిర గణన విడత_type విడత_style = విడత_from_zero;
+స్థిర గణన inval_type inval_style = inval_abort;
+స్థిర అక్షరం స్థిరరాశి *suffix = ఖాళీ;
+స్థిర అక్షరం స్థిరరాశి *unit_separator = ఖాళీ;
+స్థిర uintmax_t from_unit_కొలత = 1;
+స్థిర uintmax_t గమ్యం_unit_కొలత = 1;
+స్థిర పూర్ణాంకం grouping = 0;
+స్థిర అక్షరం *padding_బఫరు = ఖాళీ;
+స్థిర idx_t padding_బఫరు_కొలత = 0;
+స్థిర intmax_t padding_వెడల్పు = 0;
+స్థిర పూర్ణాంకం zero_padding_వెడల్పు = 0;
+స్థిర దీర్ఘ పూర్ణాంకం user_precision = -1;
+స్థిర అక్షరం స్థిరరాశి *format_str = ఖాళీ;
+స్థిర అక్షరం *format_str_ఉపసర్గ = ఖాళీ;
+స్థిర అక్షరం *format_str_suffix = ఖాళీ;
 
 /* By default, any conversion error will terminate the program.  */
-static int conv_exit_code = EXIT_CONVERSION_WARNINGS;
+స్థిర పూర్ణాంకం conv_exit_సంకేతం = EXIT_CONVERSION_WARNINGS;
 
 
 /* auto-pad each line based on skipped whitespace.  */
-static int auto_padding = 0;
+స్థిర పూర్ణాంకం auto_padding = 0;
 
 /* field delimiter - if NULL, blanks separate fields.  */
-static char const *delimiter = NULL;
+స్థిర అక్షరం స్థిరరాశి *delimiter = ఖాళీ;
 
 /* line delimiter.  */
-static unsigned char line_delim = '\n';
+స్థిర గుర్తులేని అక్షరం పంక్తి_delim = '\n';
 
 /* if non-zero, the first 'header' lines from STDIN are skipped.  */
-static uintmax_t header = 0;
+స్థిర uintmax_t శీర్షిక = 0;
 
 /* Debug for users: print warnings to STDERR about possible
    error (similar to sort's debug).  */
-static bool debug;
+స్థిర bool debug;
 
 /* will be set according to the current locale.  */
-static char const *decimal_point;
-static int decimal_point_length;
-static char const *thousands_sep;
-static int thousands_sep_length;
+స్థిర అక్షరం స్థిరరాశి *decimal_బిందువు;
+స్థిర పూర్ణాంకం decimal_బిందువు_నిడివి;
+స్థిర అక్షరం స్థిరరాశి *thousands_sep;
+స్థిర పూర్ణాంకం thousands_sep_నిడివి;
 
 /* debugging for developers.  Enables devmsg().  */
-static bool dev_debug = false;
+స్థిర bool dev_debug = false;
 
-static bool
+స్థిర bool
 newline_or_blank (mcel_t g)
 {
-  return g.ch == '\n' || c32issep (g.ch);
+  తిరిగి g.ch == '\n' || c32issep (g.ch);
 }
 
-static inline int
-default_scale_base (enum scale_type scale)
+స్థిర అంతఃవరుస పూర్ణాంకం
+default_scale_పునాది (గణన scale_type scale)
 {
-  switch (scale)
+  ఎంపిక (scale)
     {
-    case scale_IEC:
-    case scale_IEC_I:
-      return 1024;
+    స్థితి scale_IEC:
+    స్థితి scale_IEC_I:
+      తిరిగి 1024;
 
-    case scale_none:
-    case scale_auto:
-    case scale_SI:
-    default:
-      return 1000;
+    స్థితి scale_none:
+    స్థితి scale_auto:
+    స్థితి scale_SI:
+    అప్రమేయ:
+      తిరిగి 1000;
     }
 }
 
-static char const zero_and_valid_suffixes[] = "0KkMGTPEZYRQ";
-static char const *valid_suffixes = 1 + zero_and_valid_suffixes;
+స్థిర అక్షరం స్థిరరాశి zero_and_valid_suffixes[] = "0KkMGTPEZYRQ";
+స్థిర అక్షరం స్థిరరాశి *valid_suffixes = 1 + zero_and_valid_suffixes;
 
-static inline bool
-valid_suffix (const char suf)
+స్థిర అంతఃవరుస bool
+valid_suffix (స్థిరరాశి అక్షరం suf)
 {
-  return strchr (valid_suffixes, suf) != NULL;
+  తిరిగి strchr (valid_suffixes, suf) != ఖాళీ;
 }
 
-static inline int
-suffix_power (const char suf)
+స్థిర అంతఃవరుస పూర్ణాంకం
+suffix_power (స్థిరరాశి అక్షరం suf)
 {
-  switch (suf)
+  ఎంపిక (suf)
     {
-    case 'k':                  /* kilo.  */
-    case 'K':                  /* kilo or kibi.  */
-      return 1;
+    స్థితి 'k':                  /* kilo.  */
+    స్థితి 'K':                  /* kilo or kibi.  */
+      తిరిగి 1;
 
-    case 'M':                  /* mega or mebi.  */
-      return 2;
+    స్థితి 'M':                  /* mega or mebi.  */
+      తిరిగి 2;
 
-    case 'G':                  /* giga or gibi.  */
-      return 3;
+    స్థితి 'G':                  /* giga or gibi.  */
+      తిరిగి 3;
 
-    case 'T':                  /* tera or tebi.  */
-      return 4;
+    స్థితి 'T':                  /* tera or tebi.  */
+      తిరిగి 4;
 
-    case 'P':                  /* peta or pebi.  */
-      return 5;
+    స్థితి 'P':                  /* peta or pebi.  */
+      తిరిగి 5;
 
-    case 'E':                  /* exa or exbi.  */
-      return 6;
+    స్థితి 'E':                  /* exa or exbi.  */
+      తిరిగి 6;
 
-    case 'Z':                  /* zetta or 2**70.  */
-      return 7;
+    స్థితి 'Z':                  /* zetta or 2**70.  */
+      తిరిగి 7;
 
-    case 'Y':                  /* yotta or 2**80.  */
-      return 8;
+    స్థితి 'Y':                  /* yotta or 2**80.  */
+      తిరిగి 8;
 
-    case 'R':                  /* ronna or 2**90.  */
-      return 9;
+    స్థితి 'R':                  /* ronna or 2**90.  */
+      తిరిగి 9;
 
-    case 'Q':                  /* quetta or 2**100.  */
-      return 10;
+    స్థితి 'Q':                  /* quetta or 2**100.  */
+      తిరిగి 10;
 
-    default:                   /* should never happen. assert?  */
-      return 0;
+    అప్రమేయ:                   /* should never happen. assert?  */
+      తిరిగి 0;
     }
 }
 
-static inline char const *
-suffix_power_char (int power)
+స్థిర అంతఃవరుస అక్షరం స్థిరరాశి *
+suffix_power_char (పూర్ణాంకం power)
 {
-  switch (power)
+  ఎంపిక (power)
     {
-    case 0:
-      return "";
+    స్థితి 0:
+      తిరిగి "";
 
-    case 1:
-      return "K";
+    స్థితి 1:
+      తిరిగి "K";
 
-    case 2:
-      return "M";
+    స్థితి 2:
+      తిరిగి "M";
 
-    case 3:
-      return "G";
+    స్థితి 3:
+      తిరిగి "G";
 
-    case 4:
-      return "T";
+    స్థితి 4:
+      తిరిగి "T";
 
-    case 5:
-      return "P";
+    స్థితి 5:
+      తిరిగి "P";
 
-    case 6:
-      return "E";
+    స్థితి 6:
+      తిరిగి "E";
 
-    case 7:
-      return "Z";
+    స్థితి 7:
+      తిరిగి "Z";
 
-    case 8:
-      return "Y";
+    స్థితి 8:
+      తిరిగి "Y";
 
-    case 9:
-      return "R";
+    స్థితి 9:
+      తిరిగి "R";
 
-    case 10:
-      return "Q";
+    స్థితి 10:
+      తిరిగి "Q";
 
-    default:
-      return "(error)";
+    అప్రమేయ:
+      తిరిగి "(error)";
     }
 }
 
 /* Similar to 'powl(3)' but without requiring 'libm'.  */
-static long double
-powerld (long double base, ptrdiff_t x)
+స్థిర దీర్ఘ ద్విగుణ
+powerld (దీర్ఘ ద్విగుణ పునాది_2, ptrdiff_t x)
 {
-  long double result = base;
-  if (x == 0)
-    return 1;                   /* note for test coverage: this is never
+  దీర్ఘ ద్విగుణ ఫలితం = పునాది_2;
+  ఒకవేళ (x == 0)
+    తిరిగి 1;                   /* note for test coverage: this is never
                                    reached, as 'powerld' won't be called if
                                    there's no suffix, hence, no "power".  */
 
   /* TODO: check for overflow, inf?  */
-  while (--x)
-    result *= base;
-  return result;
+  అయితే (--x)
+    ఫలితం *= పునాది_2;
+  తిరిగి ఫలితం;
 }
 
 /* Similar to 'fabs(3)' but without requiring 'libm'.  */
-static inline long double
-absld (long double val)
+స్థిర అంతఃవరుస దీర్ఘ ద్విగుణ
+absld (దీర్ఘ ద్విగుణ val)
 {
-  return val < 0 ? -val : val;
+  తిరిగి val < 0 ? -val : val;
 }
 
 /* Scale down 'val', returns 'updated val' and 'x', such that
      val*base^X = original val
      Similar to "frexpl(3)" but without requiring 'libm',
      allowing only integer scale, limited functionality and error checking.  */
-static long double
-expld (long double val, int base, int /*output */ *x)
+స్థిర దీర్ఘ ద్విగుణ
+expld (దీర్ఘ ద్విగుణ val, పూర్ణాంకం పునాది_2, పూర్ణాంకం /*output */ *x)
 {
-  int power = 0;
+  పూర్ణాంకం power = 0;
 
-  if (val >= -LDBL_MAX && val <= LDBL_MAX)
+  ఒకవేళ (val >= -LDBL_MAX && val <= LDBL_MAX)
     {
-      while (absld (val) >= base)
+      అయితే (absld (val) >= పునాది_2)
         {
           ++power;
-          val /= base;
+          val /= పునాది_2;
         }
     }
-  if (x)
+  ఒకవేళ (x)
     *x = power;
-  return val;
+  తిరిగి val;
 }
 
 /* EXTREMELY limited 'ceil' - without 'libm'.
    Assumes values that fit in intmax_t.  */
-static inline intmax_t
-simple_round_ceiling (long double val)
+స్థిర అంతఃవరుస intmax_t
+simple_విడత_ceiling (దీర్ఘ ద్విగుణ val)
 {
   intmax_t intval = val;
-  if (intval < val)
+  ఒకవేళ (intval < val)
     intval++;
-  return intval;
+  తిరిగి intval;
 }
 
 /* EXTREMELY limited 'floor' - without 'libm'.
    Assumes values that fit in intmax_t.  */
-static inline intmax_t
-simple_round_floor (long double val)
+స్థిర అంతఃవరుస intmax_t
+simple_విడత_floor (దీర్ఘ ద్విగుణ val)
 {
-  return -simple_round_ceiling (-val);
+  తిరిగి -simple_విడత_ceiling (-val);
 }
 
 /* EXTREMELY limited 'round away from zero'.
    Assumes values that fit in intmax_t.  */
-static inline intmax_t
-simple_round_from_zero (long double val)
+స్థిర అంతఃవరుస intmax_t
+simple_విడత_from_zero (దీర్ఘ ద్విగుణ val)
 {
-  return val < 0 ? simple_round_floor (val) : simple_round_ceiling (val);
+  తిరిగి val < 0 ? simple_విడత_floor (val) : simple_విడత_ceiling (val);
 }
 
 /* EXTREMELY limited 'round away to zero'.
    Assumes values that fit in intmax_t.  */
-static inline intmax_t
-simple_round_to_zero (long double val)
+స్థిర అంతఃవరుస intmax_t
+simple_విడత_గమ్యం_zero (దీర్ఘ ద్విగుణ val)
 {
-  return val;
+  తిరిగి val;
 }
 
 /* EXTREMELY limited 'round' - without 'libm'.
    Assumes values that fit in intmax_t.  */
-static inline intmax_t
-simple_round_nearest (long double val)
+స్థిర అంతఃవరుస intmax_t
+simple_విడత_సమీప (దీర్ఘ ద్విగుణ val)
 {
-  return val < 0 ? val - 0.5 : val + 0.5;
+  తిరిగి val < 0 ? val - 0.5 : val + 0.5;
 }
 
 ATTRIBUTE_CONST
-static inline long double
-simple_round (long double val, enum round_type t)
+స్థిర అంతఃవరుస దీర్ఘ ద్విగుణ
+simple_విడత (దీర్ఘ ద్విగుణ val, గణన విడత_type t)
 {
   intmax_t rval;
   intmax_t intmax_mul = val / INTMAX_MAX;
-  val -= (long double) INTMAX_MAX * intmax_mul;
+  val -= (దీర్ఘ ద్విగుణ) INTMAX_MAX * intmax_mul;
 
-  switch (t)
+  ఎంపిక (t)
     {
-    case round_ceiling:
-      rval = simple_round_ceiling (val);
-      break;
+    స్థితి విడత_ceiling:
+      rval = simple_విడత_ceiling (val);
+      ఆపు;
 
-    case round_floor:
-      rval = simple_round_floor (val);
-      break;
+    స్థితి విడత_floor:
+      rval = simple_విడత_floor (val);
+      ఆపు;
 
-    case round_from_zero:
-      rval = simple_round_from_zero (val);
-      break;
+    స్థితి విడత_from_zero:
+      rval = simple_విడత_from_zero (val);
+      ఆపు;
 
-    case round_to_zero:
-      rval = simple_round_to_zero (val);
-      break;
+    స్థితి విడత_గమ్యం_zero:
+      rval = simple_విడత_గమ్యం_zero (val);
+      ఆపు;
 
-    case round_nearest:
-      rval = simple_round_nearest (val);
-      break;
+    స్థితి విడత_సమీప:
+      rval = simple_విడత_సమీప (val);
+      ఆపు;
 
-    default:
+    అప్రమేయ:
       /* to silence the compiler - this should never happen.  */
-      return 0;
+      తిరిగి 0;
     }
 
-  return (long double) INTMAX_MAX * intmax_mul + rval;
+  తిరిగి (దీర్ఘ ద్విగుణ) INTMAX_MAX * intmax_mul + rval;
 }
 
-enum simple_strtod_error
+గణన simple_strtod_error
 {
   SSE_OK = 0,
   SSE_OK_PRECISION_LOSS,
-  SSE_OVERFLOW,
-  SSE_INVALID_NUMBER,
+  SSE_అధికప్రవాహం,
+  SSE_INVALID_సంఖ్య,
 
   /* the following are returned by 'simple_strtod_human'.  */
   SSE_VALID_BUT_FORBIDDEN_SUFFIX,
@@ -485,60 +485,60 @@ enum simple_strtod_error
       SSE_OK_PRECISION_LOSS - if more than 18 digits were used.
       SSE_OVERFLOW          - if more than 33 digits (999Q) were used.
       SSE_INVALID_NUMBER    - if no digits were found.  */
-static enum simple_strtod_error
-simple_strtod_int (char const *input_str,
-                   char **endptr, long double *value, bool *negative)
+స్థిర గణన simple_strtod_error
+simple_strtod_int (అక్షరం స్థిరరాశి *ఆదానం_str,
+                   అక్షరం **endptr, దీర్ఘ ద్విగుణ *విలువ, bool *negative)
 {
-  enum simple_strtod_error e = SSE_OK;
+  గణన simple_strtod_error e = SSE_OK;
 
-  long double val = 0;
-  int digits = 0;
-  bool found_digit = false;
+  దీర్ఘ ద్విగుణ val = 0;
+  పూర్ణాంకం digits = 0;
+  bool దొరికింది_digit = false;
 
-  if (*input_str == '-')
+  ఒకవేళ (*ఆదానం_str == '-')
     {
-      input_str++;
+      ఆదానం_str++;
       *negative = true;
     }
-  else
+  లేకపోతే
     *negative = false;
 
-  *endptr = (char *) input_str;
-  while (c_isdigit (**endptr))
+  *endptr = (అక్షరం *) ఆదానం_str;
+  అయితే (c_isdigit (**endptr))
     {
-      int digit = (**endptr) - '0';
+      పూర్ణాంకం digit = (**endptr) - '0';
 
-      found_digit = true;
+      దొరికింది_digit = true;
 
-      if (val || digit)
+      ఒకవేళ (val || digit)
         digits++;
 
-      if (digits > MAX_UNSCALED_DIGITS)
+      ఒకవేళ (digits > MAX_UNSCALED_DIGITS)
         e = SSE_OK_PRECISION_LOSS;
 
-      if (digits > MAX_ACCEPTABLE_DIGITS)
-        return SSE_OVERFLOW;
+      ఒకవేళ (digits > MAX_ACCEPTABLE_DIGITS)
+        తిరిగి SSE_అధికప్రవాహం;
 
       val *= 10;
       val += digit;
 
       ++(*endptr);
 
-      if (thousands_sep_length > 0
-          && STREQ_LEN (*endptr, thousands_sep, thousands_sep_length)
-          && c_isdigit ((*endptr)[thousands_sep_length]))
-        (*endptr) += thousands_sep_length;
+      ఒకవేళ (thousands_sep_నిడివి > 0
+          && STREQ_LEN (*endptr, thousands_sep, thousands_sep_నిడివి)
+          && c_isdigit ((*endptr)[thousands_sep_నిడివి]))
+        (*endptr) += thousands_sep_నిడివి;
     }
-  if (! found_digit
-      && ! STREQ_LEN (*endptr, decimal_point, decimal_point_length))
-    return SSE_INVALID_NUMBER;
-  if (*negative)
+  ఒకవేళ (! దొరికింది_digit
+      && ! STREQ_LEN (*endptr, decimal_బిందువు, decimal_బిందువు_నిడివి))
+    తిరిగి SSE_INVALID_సంఖ్య;
+  ఒకవేళ (*negative)
     val = -val;
 
-  if (value)
-    *value = val;
+  ఒకవేళ (విలువ)
+    *విలువ = val;
 
-  return e;
+  తిరిగి e;
 }
 
 /* Read a floating-point INPUT_STR represented as "NNNN[.NNNNN]",
@@ -555,39 +555,39 @@ simple_strtod_int (char const *input_str,
       SSE_OK_PRECISION_LOSS - if more than 18 digits were used.
       SSE_OVERFLOW          - if more than 33 digits (999Q) were used.
       SSE_INVALID_NUMBER    - if no digits were found.  */
-static enum simple_strtod_error
-simple_strtod_float (char const *input_str,
-                     char **endptr,
-                     long double *value,
+స్థిర గణన simple_strtod_error
+simple_strtod_float (అక్షరం స్థిరరాశి *ఆదానం_str,
+                     అక్షరం **endptr,
+                     దీర్ఘ ద్విగుణ *విలువ,
                      size_t *precision)
 {
   bool negative;
-  enum simple_strtod_error e = SSE_OK;
+  గణన simple_strtod_error e = SSE_OK;
 
-  if (precision)
+  ఒకవేళ (precision)
     *precision = 0;
 
   /* TODO: accept locale'd grouped values for the integral part.  */
-  e = simple_strtod_int (input_str, endptr, value, &negative);
-  if (e != SSE_OK && e != SSE_OK_PRECISION_LOSS)
-    return e;
+  e = simple_strtod_int (ఆదానం_str, endptr, విలువ, &negative);
+  ఒకవేళ (e != SSE_OK && e != SSE_OK_PRECISION_LOSS)
+    తిరిగి e;
 
   /* optional decimal point + fraction.  */
-  if (STREQ_LEN (*endptr, decimal_point, decimal_point_length))
+  ఒకవేళ (STREQ_LEN (*endptr, decimal_బిందువు, decimal_బిందువు_నిడివి))
     {
-      char *ptr2;
-      long double val_frac = 0;
+      అక్షరం *ptr2;
+      దీర్ఘ ద్విగుణ val_frac = 0;
       bool neg_frac;
 
-      (*endptr) += decimal_point_length;
-      enum simple_strtod_error e2 =
+      (*endptr) += decimal_బిందువు_నిడివి;
+      గణన simple_strtod_error e2 =
         simple_strtod_int (*endptr, &ptr2, &val_frac, &neg_frac);
-      if (e2 != SSE_OK && e2 != SSE_OK_PRECISION_LOSS)
-        return e2;
-      if (e2 == SSE_OK_PRECISION_LOSS)
+      ఒకవేళ (e2 != SSE_OK && e2 != SSE_OK_PRECISION_LOSS)
+        తిరిగి e2;
+      ఒకవేళ (e2 == SSE_OK_PRECISION_LOSS)
         e = e2;                       /* propagate warning.  */
-      if (neg_frac)
-        return SSE_INVALID_NUMBER;
+      ఒకవేళ (neg_frac)
+        తిరిగి SSE_INVALID_సంఖ్య;
 
       /* number of digits in the fractions.  */
       ptrdiff_t exponent = ptr2 - *endptr;
@@ -596,20 +596,20 @@ simple_strtod_float (char const *input_str,
 
       /* TODO: detect loss of precision (only really 18 digits
          of precision across all digits (before and after '.')).  */
-      if (value)
+      ఒకవేళ (విలువ)
         {
-          if (negative)
-            *value -= val_frac;
-          else
-            *value += val_frac;
+          ఒకవేళ (negative)
+            *విలువ -= val_frac;
+          లేకపోతే
+            *విలువ += val_frac;
         }
 
-      if (precision)
+      ఒకవేళ (precision)
         *precision = exponent;
 
       *endptr = ptr2;
     }
-  return e;
+  తిరిగి e;
 }
 
 /* Read a 'human' INPUT_STR represented as "NNNN[.NNNNN] + suffix",
@@ -631,87 +631,87 @@ simple_strtod_float (char const *input_str,
       SSE_VALID_BUT_FORBIDDEN_SUFFIX
       SSE_INVALID_SUFFIX
       SSE_MISSING_I_SUFFIX  */
-static enum simple_strtod_error
-simple_strtod_human (char const *input_str,
-                     char **endptr, long double *value, size_t *precision,
-                     enum scale_type allowed_scaling)
+స్థిర గణన simple_strtod_error
+simple_strtod_human (అక్షరం స్థిరరాశి *ఆదానం_str,
+                     అక్షరం **endptr, దీర్ఘ ద్విగుణ *విలువ, size_t *precision,
+                     గణన scale_type allowed_scaling)
 {
-  int power = 0;
+  పూర్ణాంకం power = 0;
   /* 'scale_auto' is checked below.  */
-  int scale_base = default_scale_base (allowed_scaling);
+  పూర్ణాంకం scale_పునాది = default_scale_పునాది (allowed_scaling);
 
   devmsg ("simple_strtod_human:\n  input string: %s\n"
           "  locale decimal-point: %s\n"
           "  MAX_UNSCALED_DIGITS: %d\n",
-          quote_n (0, input_str),
-          quote_n (1, decimal_point),
+          quote_n (0, ఆదానం_str),
+          quote_n (1, decimal_బిందువు),
           MAX_UNSCALED_DIGITS);
 
-  enum simple_strtod_error e =
-    simple_strtod_float (input_str, endptr, value, precision);
-  if (e != SSE_OK && e != SSE_OK_PRECISION_LOSS)
-    return e;
+  గణన simple_strtod_error e =
+    simple_strtod_float (ఆదానం_str, endptr, విలువ, precision);
+  ఒకవేళ (e != SSE_OK && e != SSE_OK_PRECISION_LOSS)
+    తిరిగి e;
 
   devmsg ("  parsed numeric value: %Lf\n"
-          "  input precision = %d\n", *value, (int)*precision);
+          "  input precision = %d\n", *విలువ, (పూర్ణాంకం)*precision);
 
-  while (**endptr)
+  అయితే (**endptr)
     {
       /* process suffix.  */
 
       /* Skip a single blank, NBSP or specified unit separator.
          Note an explicit empty --unit-sep should disable blank matching. */
       bool matched_unit_sep = false;
-      if (unit_separator)
+      ఒకవేళ (unit_separator)
         {
-          size_t sep_len = strlen (unit_separator);
-          if (STREQ_LEN (*endptr, unit_separator, sep_len))
+          size_t sep_len = అక్షరశ్రేణి_పొడవు (unit_separator);
+          ఒకవేళ (STREQ_LEN (*endptr, unit_separator, sep_len))
             {
               matched_unit_sep = true;
               (*endptr) += sep_len;
             }
         }
-      if (!matched_unit_sep)
+      ఒకవేళ (!matched_unit_sep)
         {
           mcel_t g = mcel_scanz (*endptr);
-          if (c32issep (g.ch) || c32isnbspace (g.ch))
+          ఒకవేళ (c32issep (g.ch) || c32isnbspace (g.ch))
             (*endptr) += g.len;
         }
 
-      if (**endptr == '\0')
-        break;  /* Treat as no suffix.  */
+      ఒకవేళ (**endptr == '\0')
+        ఆపు;  /* Treat as no suffix.  */
 
-      if (!valid_suffix (**endptr))
+      ఒకవేళ (!valid_suffix (**endptr))
         {
           /* Trailing blanks are allowed.  */
           *endptr = skip_str_matching (*endptr, newline_or_blank, true);
-          if (**endptr == '\0')
-            break;
+          ఒకవేళ (**endptr == '\0')
+            ఆపు;
 
-          return SSE_INVALID_SUFFIX;
+          తిరిగి SSE_INVALID_SUFFIX;
         }
 
-      if (allowed_scaling == scale_none)
-        return SSE_VALID_BUT_FORBIDDEN_SUFFIX;
+      ఒకవేళ (allowed_scaling == scale_none)
+        తిరిగి SSE_VALID_BUT_FORBIDDEN_SUFFIX;
 
       power = suffix_power (**endptr);
       (*endptr)++;                     /* skip first suffix character.  */
 
-      if (allowed_scaling == scale_auto && **endptr == 'i')
+      ఒకవేళ (allowed_scaling == scale_auto && **endptr == 'i')
         {
           /* auto-scaling enabled, and the first suffix character
              is followed by an 'i' (e.g. Ki, Mi, Gi).  */
-          scale_base = 1024;
+          scale_పునాది = 1024;
           (*endptr)++;              /* skip 'i' in suffix.  */
           devmsg ("  Auto-scaling, found 'i', switching to base %d\n",
-                  scale_base);
+                  scale_పునాది);
         }
-      else if (allowed_scaling == scale_IEC_I)
+      లేకపోతే ఒకవేళ (allowed_scaling == scale_IEC_I)
         {
-          if (**endptr == 'i')
+          ఒకవేళ (**endptr == 'i')
             (*endptr)++;
-          else
-            return SSE_MISSING_I_SUFFIX;
+          లేకపోతే
+            తిరిగి SSE_MISSING_I_SUFFIX;
         }
 
       *precision = 0;  /* Reset, to select precision based on scale.  */
@@ -719,57 +719,57 @@ simple_strtod_human (char const *input_str,
       /* Trailing blanks are allowed.  */
       *endptr = skip_str_matching (*endptr, newline_or_blank, true);
 
-      break;
+      ఆపు;
     }
 
-  long double multiplier = powerld (scale_base, power);
+  దీర్ఘ ద్విగుణ multiplier = powerld (scale_పునాది, power);
 
-  devmsg ("  suffix power=%d^%d = %Lf\n", scale_base, power, multiplier);
+  devmsg ("  suffix power=%d^%d = %Lf\n", scale_పునాది, power, multiplier);
 
   /* TODO: detect loss of precision and overflows.  */
-  (*value) = (*value) * multiplier;
+  (*విలువ) = (*విలువ) * multiplier;
 
-  devmsg ("  returning value: %Lf (%LG)\n", *value, *value);
+  devmsg ("  returning value: %Lf (%LG)\n", *విలువ, *విలువ);
 
-  return e;
+  తిరిగి e;
 }
 
 
-static void
-simple_strtod_fatal (enum simple_strtod_error err, char const *input_str)
+స్థిర శూన్య
+simple_strtod_fatal (గణన simple_strtod_error err, అక్షరం స్థిరరాశి *ఆదానం_str)
 {
-  char const *msgid = NULL;
+  అక్షరం స్థిరరాశి *msgid = ఖాళీ;
 
-  switch (err)
+  ఎంపిక (err)
     {
-    case SSE_OVERFLOW:
+    స్థితి SSE_అధికప్రవాహం:
       msgid = N_("value too large to be converted: %s");
-      break;
+      ఆపు;
 
-    case SSE_INVALID_NUMBER:
+    స్థితి SSE_INVALID_సంఖ్య:
       msgid = N_("invalid number: %s");
-      break;
+      ఆపు;
 
-    case SSE_VALID_BUT_FORBIDDEN_SUFFIX:
+    స్థితి SSE_VALID_BUT_FORBIDDEN_SUFFIX:
       msgid = N_("rejecting suffix in input: %s (consider using --from)");
-      break;
+      ఆపు;
 
-    case SSE_INVALID_SUFFIX:
+    స్థితి SSE_INVALID_SUFFIX:
       msgid = N_("invalid suffix in input: %s");
-      break;
+      ఆపు;
 
-    case SSE_MISSING_I_SUFFIX:
+    స్థితి SSE_MISSING_I_SUFFIX:
       msgid = N_("missing 'i' suffix in input: %s (e.g Ki/Mi/Gi)");
-      break;
+      ఆపు;
 
-    case SSE_OK_PRECISION_LOSS:
-    case SSE_OK:
+    స్థితి SSE_OK_PRECISION_LOSS:
+    స్థితి SSE_OK:
       /* should never happen - this function isn't called when OK.  */
       affirm (false);
     }
 
-  if (inval_style != inval_ignore)
-    error (conv_exit_code, 0, gettext (msgid), quote (input_str));
+  ఒకవేళ (inval_style != inval_ignore)
+    error (conv_exit_సంకేతం, 0, gettext (msgid), quote (ఆదానం_str));
 }
 
 /* Convert VAL to a human format string using PRECISION in BUF of size
@@ -777,52 +777,52 @@ simple_strtod_fatal (enum simple_strtod_error err, char const *input_str)
    the number of bytes needed to represent VAL.  If this number is not
    less than BUF_SIZE, the buffer is too small; if it is negative, the
    formatting failed for some reason.  */
-static int
-double_to_human (long double val, int precision,
-                 char *buf, idx_t buf_size,
-                 enum scale_type scale, int group, enum round_type round)
+స్థిర పూర్ణాంకం
+double_గమ్యం_human (దీర్ఘ ద్విగుణ val, పూర్ణాంకం precision,
+                 అక్షరం *buf, idx_t buf_కొలత,
+                 గణన scale_type scale, పూర్ణాంకం సమూహం, గణన విడత_type విడత_2)
 {
-  char fmt[sizeof "%'0.*Lfi%s%s%s%s" + INT_STRLEN_BOUND (zero_padding_width)];
-  char *pfmt = fmt;
+  అక్షరం fmt[పరిమాణం "%'0.*Lfi%s%s%s%s" + INT_STRLEN_BOUND (zero_padding_వెడల్పు)];
+  అక్షరం *pfmt = fmt;
   *pfmt++ = '%';
 
-  if (group)
+  ఒకవేళ (సమూహం)
     *pfmt++ = '\'';
 
-  if (zero_padding_width)
-    pfmt += sprintf (pfmt, "0%d", zero_padding_width);
+  ఒకవేళ (zero_padding_వెడల్పు)
+    pfmt += sprintf (pfmt, "0%d", zero_padding_వెడల్పు);
 
   devmsg ("double_to_human:\n");
 
-  if (scale == scale_none)
+  ఒకవేళ (scale == scale_none)
     {
       val *= powerld (10, precision);
-      val = simple_round (val, round);
+      val = simple_విడత (val, విడత_2);
       val /= powerld (10, precision);
 
-      devmsg ((group) ?
+      devmsg ((సమూహం) ?
               "  no scaling, returning (grouped) value: %'.*Lf\n" :
               "  no scaling, returning value: %.*Lf\n", precision, val);
 
       strcpy (pfmt, ".*Lf%s");
 
-      return snprintf (buf, buf_size, fmt, precision, val,
+      తిరిగి snprintf (buf, buf_కొలత, fmt, precision, val,
                        suffix ? suffix : "");
     }
 
   /* Scaling requested by user. */
-  double scale_base = default_scale_base (scale);
+  ద్విగుణ scale_పునాది = default_scale_పునాది (scale);
 
   /* Normalize val to scale. */
-  int power = 0;
-  val = expld (val, scale_base, &power);
-  devmsg ("  scaled value to %Lf * %0.f ^ %d\n", val, scale_base, power);
+  పూర్ణాంకం power = 0;
+  val = expld (val, scale_పునాది, &power);
+  devmsg ("  scaled value to %Lf * %0.f ^ %d\n", val, scale_పునాది, power);
 
   /* Perform rounding. */
-  int power_adjust = 0;
-  if (user_precision != -1)
+  పూర్ణాంకం power_adjust = 0;
+  ఒకవేళ (user_precision != -1)
     power_adjust = MIN (power * 3, user_precision);
-  else if (absld (val) < 10)
+  లేకపోతే ఒకవేళ (absld (val) < 10)
     {
       /* for values less than 10, we allow one decimal-point digit,
          so adjust before rounding. */
@@ -830,30 +830,30 @@ double_to_human (long double val, int precision,
     }
 
   val *= powerld (10, power_adjust);
-  val = simple_round (val, round);
+  val = simple_విడత (val, విడత_2);
   val /= powerld (10, power_adjust);
 
   /* two special cases after rounding:
      1. a "999.99" can turn into 1000 - so scale down
      2. a "9.99" can turn into 10 - so don't display decimal-point.  */
-  if (absld (val) >= scale_base)
+  ఒకవేళ (absld (val) >= scale_పునాది)
     {
-      val /= scale_base;
+      val /= scale_పునాది;
       power++;
     }
 
   /* should "7.0" be printed as "7" ?
      if removing the ".0" is preferred, enable the fourth condition.  */
-  int show_decimal_point = (val != 0) && (absld (val) < 10) && (power > 0);
+  పూర్ణాంకం show_decimal_బిందువు = (val != 0) && (absld (val) < 10) && (power > 0);
   /* && (absld (val) > simple_round_floor (val))) */
 
-  devmsg ("  after rounding, value=%Lf * %0.f ^ %d\n", val, scale_base, power);
+  devmsg ("  after rounding, value=%Lf * %0.f ^ %d\n", val, scale_పునాది, power);
 
   strcpy (pfmt, ".*Lf%s%s%s%s");
 
-  int prec = user_precision == -1 ? show_decimal_point : user_precision;
+  పూర్ణాంకం prec = user_precision == -1 ? show_decimal_బిందువు : user_precision;
 
-  return snprintf (buf, buf_size, fmt, prec, val,
+  తిరిగి snprintf (buf, buf_కొలత, fmt, prec, val,
                    (power > 0 && unit_separator) ? unit_separator : "",
                    power == 1 && scale == scale_SI
                    ? "k" : suffix_power_char (power),
@@ -865,150 +865,150 @@ double_to_human (long double val, int precision,
    to an integral value.  Suffixes are handled as with --from=auto.
    Upon successful conversion, return that value.
    If it cannot be converted, give a diagnostic and exit.  */
-static uintmax_t
-unit_to_umax (char const *n_string)
+స్థిర uintmax_t
+unit_గమ్యం_umax (అక్షరం స్థిరరాశి *n_string)
 {
   strtol_error s_err;
-  char const *c_string = n_string;
-  char *t_string = NULL;
-  size_t n_len = strlen (n_string);
-  char *end = NULL;
+  అక్షరం స్థిరరాశి *c_string = n_string;
+  అక్షరం *t_string = ఖాళీ;
+  size_t n_len = అక్షరశ్రేణి_పొడవు (n_string);
+  అక్షరం *చివర = ఖాళీ;
   uintmax_t n;
-  char const *suffixes = valid_suffixes;
+  అక్షరం స్థిరరాశి *suffixes = valid_suffixes;
 
   /* Adjust suffixes so K=1000, Ki=1024, KiB=invalid.  */
-  if (n_len && ! c_isdigit (n_string[n_len - 1]))
+  ఒకవేళ (n_len && ! c_isdigit (n_string[n_len - 1]))
     {
       t_string = xmalloc (n_len + 2);
-      end = t_string + n_len - 1;
-      memcpy (t_string, n_string, n_len);
+      చివర = t_string + n_len - 1;
+      జ్ఞాపకం_నకలు (t_string, n_string, n_len);
 
-      if (*end == 'i' && 2 <= n_len && ! c_isdigit (*(end - 1)))
-        *end = '\0';
-      else
+      ఒకవేళ (*చివర == 'i' && 2 <= n_len && ! c_isdigit (*(చివర - 1)))
+        *చివర = '\0';
+      లేకపోతే
         {
-          *++end = 'B';
-          *++end = '\0';
+          *++చివర = 'B';
+          *++చివర = '\0';
           suffixes = zero_and_valid_suffixes;
         }
 
       c_string = t_string;
     }
 
-  s_err = xstrtoumax (c_string, &end, 10, &n, suffixes);
+  s_err = xstrtoumax (c_string, &చివర, 10, &n, suffixes);
 
-  if (s_err != LONGINT_OK || *end || n == 0)
+  ఒకవేళ (s_err != LONGINT_OK || *చివర || n == 0)
     {
-      free (t_string);
+      విడుదల (t_string);
       error (EXIT_FAILURE, 0, _("invalid unit size: %s"), quote (n_string));
     }
 
-  free (t_string);
+  విడుదల (t_string);
 
-  return n;
+  తిరిగి n;
 }
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("\
-Usage: %s [OPTION]... [NUMBER]...\n\
-"), program_name);
+      రాయి (_("\
+Usage: %s [OPTION]... [సంఖ్య_2]...\n\
+"), కార్యక్రమం_name);
       fputs (_("\
-Reformat NUMBER(s), or the numbers from standard input if none are specified.\n\
+Reformat సంఖ్య_2(s), or the numbers from standard ఆదానం ఒకవేళ none are specified.\n\
 "), stdout);
       emit_mandatory_arg_note ();
       oputs (_("\
       --debug\n\
-         print warnings about invalid input\n\
+         print warnings about invalid ఆదానం\n\
 "));
       oputs (_("\
   -d, --delimiter=X\n\
-         use X instead of whitespace for field delimiter\n\
+         use X instead యొక్క whitespace కొరకు క్షేత్రం delimiter\n\
 "));
       oputs (_("\
-      --field=FIELDS\n\
-         replace the numbers in these input fields (default=1);\n\
-         see FIELDS below for details\n\
+      --క్షేత్రం=FIELDS\n\
+         replace the numbers లోపల these ఆదానం fields (అప్రమేయ=1);\n\
+         see FIELDS క్రింద కొరకు details\n\
 "));
       oputs (_("\
       --format=FORMAT\n\
-         use printf style floating-point FORMAT;\n\
-         see FORMAT below for details\n\
+         use రాయి style floating-బిందువు FORMAT;\n\
+         see FORMAT క్రింద కొరకు details\n\
 "));
       oputs (_("\
       --from=UNIT\n\
-         auto-scale input numbers to UNITs; default is 'none';\n\
-         see UNIT below for details\n\
+         స్వయంచాలక-scale ఆదానం numbers గమ్యం UNITs; అప్రమేయ is 'none';\n\
+         see UNIT క్రింద కొరకు details\n\
 "));
       oputs (_("\
       --from-unit=N\n\
-         specify the input unit size (instead of the default 1)\n\
+         specify the ఆదానం unit కొలత (instead యొక్క the అప్రమేయ 1)\n\
 "));
       oputs (_("\
       --grouping\n\
-         use locale-defined grouping of digits, e.g. 1,000,000.\n\
-         This has no effect in the C/POSIX locale\n\
+         use locale-defined grouping యొక్క digits, e.g. 1,000,000.\n\
+         This has no effect లోపల the C/POSIX locale\n\
 "));
       oputs (_("\
-      --header[=N]\n\
-         print (without converting) the first N header lines;\n\
-         N defaults to 1 if not specified\n\
+      --శీర్షిక[=N]\n\
+         print (without converting) the మొదటి N శీర్షిక పంక్తులు;\n\
+         N defaults గమ్యం 1 ఒకవేళ not specified\n\
 "));
       oputs (_("\
-      --invalid=MODE\n\
-         failure mode for invalid numbers;\n\
-         MODE can be: abort (default), fail, warn, ignore\n\
+      --invalid=బహుళకం\n\
+         failure బహుళకం_2 కొరకు invalid numbers;\n\
+         బహుళకం can be: abort (అప్రమేయ), fail, warn, ignore\n\
 "));
       oputs (_("\
       --padding=N\n\
-         pad the output to N characters;\n\
-         positive N will right-align, negative N will left-align;\n\
-         padding is ignored if the output is wider than N;\n\
-         the default is to automatically pad if a whitespace is found\n\
+         pad the output గమ్యం N characters;\n\
+         ధనాత్మక N will కుడి-align, negative N will ఎడమ-align;\n\
+         padding is ignored ఒకవేళ the output is wider than N;\n\
+         the అప్రమేయ is గమ్యం automatically pad ఒకవేళ a whitespace is దొరికింది\n\
 "));
       oputs (_("\
-      --round=METHOD\n\
-         use METHOD for rounding when scaling; METHOD can be:\n\
-         up, down, from-zero (default), towards-zero, nearest\n\
+      --విడత_2=పద్ధతి\n\
+         use పద్ధతి కొరకు rounding when scaling; పద్ధతి can be:\n\
+         పైకి, కిందికి, from-zero (అప్రమేయ), towards-zero, సమీప\n\
 "));
       oputs (_("\
       --suffix=SUFFIX\n\
-         add SUFFIX to output numbers,\n\
-         and accept an optional SUFFIX in input numbers\n\
+         కూడు SUFFIX గమ్యం output numbers,\n\
+         and accept an optional SUFFIX లోపల ఆదానం numbers\n\
 "));
       oputs (_("\
       --unit-separator=SEP\n\
-         insert SEP between number and unit on output,\n\
-         and accept an optional SEP in input numbers\n\
+         చొప్పించు SEP between సంఖ్య and unit on output,\n\
+         and accept an optional SEP లోపల ఆదానం numbers\n\
 "));
       oputs (_("\
-      --to=UNIT\n\
-         auto-scale output numbers to UNITs; see UNIT below\n\
+      --గమ్యం=UNIT\n\
+         స్వయంచాలక-scale output numbers గమ్యం UNITs; see UNIT క్రింద\n\
 "));
       oputs (_("\
-      --to-unit=N\n\
-         the output unit size (instead of the default 1)\n\
+      --గమ్యం-unit=N\n\
+         the output unit కొలత (instead యొక్క the అప్రమేయ 1)\n\
 "));
       oputs (_("\
   -z, --zero-terminated\n\
-         line delimiter is NUL, not newline\n\
+         పంక్తి delimiter is NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
 
       fputs (_("\
 \n\
 UNIT options:\n"), stdout);
       fputs (_("\
-  none       no auto-scaling is done; suffixes will trigger an error\n\
+  none       no స్వయంచాలక-scaling is పూర్తి; suffixes will trigger an error\n\
 "), stdout);
       fputs (_("\
-  auto       accept optional single/two letter suffix:\n\
+  స్వయంచాలక       accept optional single/two letter suffix:\n\
                1K = 1000, 1k = 1000,\n\
                1Ki = 1024,\n\
                1M = 1000000,\n\
@@ -1030,54 +1030,54 @@ UNIT options:\n"), stdout);
                ...\n"), stdout);
 
       fputs (_("\n\
-FIELDS supports cut(1) style field ranges:\n\
-  N    N'th field, counted from 1\n\
-  N-   from N'th field, to end of line\n\
-  N-M  from N'th to M'th field (inclusive)\n\
-  -M   from first to M'th field (inclusive)\n\
+FIELDS supports cut(1) style క్షేత్రం ranges:\n\
+  N    N'th క్షేత్రం, counted from 1\n\
+  N-   from N'th క్షేత్రం, గమ్యం చివర యొక్క పంక్తి\n\
+  N-M  from N'th to M'th క్షేత్రం (inclusive)\n\
+  -M   from మొదటి గమ్యం M'th క్షేత్రం (inclusive)\n\
   -    all fields\n\
-Multiple fields/ranges can be separated with commas\n\
+గుణిజం_2 fields/ranges can be separated with commas\n\
 "), stdout);
 
       fputs (_("\n\
-FORMAT must be suitable for printing one floating-point argument '%f'.\n\
-Optional quote (%'f) will enable --grouping (if supported by current locale).\n\
-Optional width value (%10f) will pad output. Optional zero (%010f) width\n\
-will zero pad the number. Optional negative values (%-10f) will left align.\n\
-Optional precision (%.1f) will override the input determined precision.\n\
+FORMAT must be suitable కొరకు printing one floating-బిందువు వాదం '%f'.\n\
+Optional quote (%'f) will enable --grouping (ఒకవేళ supported by current locale).\n\
+Optional వెడల్పు విలువ (%10f) will pad output. Optional zero (%010f) వెడల్పు\n\
+will zero pad the సంఖ్య. Optional negative విలువలు (%-10f) will ఎడమ align.\n\
+Optional precision (%.1f) will override the ఆదానం determined precision.\n\
 "), stdout);
 
-      printf (_("\n\
-Exit status is 0 if all input numbers were successfully converted.\n\
-By default, %s will stop at the first conversion error with exit status 2.\n\
-With --invalid='fail' a warning is printed for each conversion error\n\
-and the exit status is 2.  With --invalid='warn' each conversion error is\n\
-diagnosed, but the exit status is 0.  With --invalid='ignore' conversion\n\
-errors are not diagnosed and the exit status is 0.\n\
-"), program_name);
+      రాయి (_("\n\
+Exit స్థితి_2 is 0 ఒకవేళ all ఆదానం numbers were successfully converted.\n\
+By అప్రమేయ, %s will stop at the మొదటి conversion error with నిష్క్రమించు స్థితి_2 2.\n\
+With --invalid='fail' a warning is printed కొరకు each conversion error\n\
+and the నిష్క్రమించు స్థితి_2 is 2.  With --invalid='warn' each conversion error is\n\
+diagnosed, but the నిష్క్రమించు స్థితి_2 is 0.  With --invalid='ignore' conversion\n\
+errors are not diagnosed and the నిష్క్రమించు స్థితి_2 is 0.\n\
+"), కార్యక్రమం_name);
 
-      printf (_("\n\
+      రాయి (_("\n\
 Examples:\n\
-  $ %s --to=si 1000\n\
+  $ %s --గమ్యం=si 1000\n\
             -> \"1.0k\"\n\
-  $ %s --to=iec 2048\n\
+  $ %s --గమ్యం=iec 2048\n\
            -> \"2.0K\"\n\
-  $ %s --to=iec-i 4096\n\
+  $ %s --గమ్యం=iec-i 4096\n\
            -> \"4.0Ki\"\n\
   $ echo 1K | %s --from=si\n\
            -> \"1000\"\n\
   $ echo 1K | %s --from=iec\n\
            -> \"1024\"\n\
-  $ df -B1 | %s --header --field 2-4 --to=si\n\
-  $ ls -l  | %s --header --field 5 --to=iec\n\
-  $ ls -lh | %s --header --field 5 --from=iec --padding=10\n\
-  $ ls -lh | %s --header --field 5 --from=iec --format %%10f\n"),
-              program_name, program_name, program_name,
-              program_name, program_name, program_name,
-              program_name, program_name, program_name);
-      emit_ancillary_info (PROGRAM_NAME);
+  $ df -B1 | %s --శీర్షిక --క్షేత్రం 2-4 --గమ్యం=si\n\
+  $ ls -l  | %s --శీర్షిక --క్షేత్రం 5 --గమ్యం=iec\n\
+  $ ls -lh | %s --శీర్షిక --క్షేత్రం 5 --from=iec --padding=10\n\
+  $ ls -lh | %s --శీర్షిక --క్షేత్రం 5 --from=iec --format %%10f\n"),
+              కార్యక్రమం_name, కార్యక్రమం_name, కార్యక్రమం_name,
+              కార్యక్రమం_name, కార్యక్రమం_name, కార్యక్రమం_name,
+              కార్యక్రమం_name, కార్యక్రమం_name, కార్యక్రమం_name);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
 /* Given 'fmt' (a printf(3) compatible format string), extracts the following:
@@ -1095,73 +1095,73 @@ Examples:\n\
        padding_width, grouping,
        format_str_prefix, format_str_suffix
    2. The function aborts on any errors.  */
-static void
-parse_format_string (char const *fmt)
+స్థిర శూన్య
+parse_format_string (అక్షరం స్థిరరాశి *fmt)
 {
   size_t i;
-  size_t prefix_len = 0;
+  size_t ఉపసర్గ_len = 0;
   size_t suffix_pos;
-  char *endptr = NULL;
+  అక్షరం *endptr = ఖాళీ;
   bool zero_padding = false;
 
-  for (i = 0; !(fmt[i] == '%' && fmt[i + 1] != '%'); i += (fmt[i] == '%') + 1)
+  కొరకు (i = 0; !(fmt[i] == '%' && fmt[i + 1] != '%'); i += (fmt[i] == '%') + 1)
     {
-      if (!fmt[i])
+      ఒకవేళ (!fmt[i])
         error (EXIT_FAILURE, 0,
                _("format %s has no %% directive"), quote (fmt));
-      prefix_len++;
+      ఉపసర్గ_len++;
     }
 
   i++;
-  while (true)
+  అయితే (true)
     {
       size_t skip = strspn (fmt + i, " ");
       i += skip;
-      if (fmt[i] == '\'')
+      ఒకవేళ (fmt[i] == '\'')
         {
           grouping = 1;
           i++;
         }
-      else if (fmt[i] == '0')
+      లేకపోతే ఒకవేళ (fmt[i] == '0')
         {
           zero_padding = true;
           i++;
         }
-      else if (! skip)
-        break;
+      లేకపోతే ఒకవేళ (! skip)
+        ఆపు;
     }
 
   intmax_t pad = strtoimax (fmt + i, &endptr, 10);
 
-  if (pad != 0)
+  ఒకవేళ (pad != 0)
     {
-      if (debug && padding_width && !(zero_padding && pad > 0))
+      ఒకవేళ (debug && padding_వెడల్పు && !(zero_padding && pad > 0))
         error (0, 0, _("--format padding overriding --padding"));
 
       /* Set padding width and alignment.  On overflow, set widths to
          large values that cause later code to avoid undefined behavior
          and fail at a reasonable point.  */
-      if (pad < 0)
-        padding_width = pad;
-      else
+      ఒకవేళ (pad < 0)
+        padding_వెడల్పు = pad;
+      లేకపోతే
         {
-          if (zero_padding)
-            zero_padding_width = MIN (pad, INT_MAX);
-          else
-            padding_width = pad;
+          ఒకవేళ (zero_padding)
+            zero_padding_వెడల్పు = MIN (pad, గరిష్ఠ_పూర్ణాంకం);
+          లేకపోతే
+            padding_వెడల్పు = pad;
         }
     }
   i = endptr - fmt;
 
-  if (fmt[i] == '\0')
+  ఒకవేళ (fmt[i] == '\0')
     error (EXIT_FAILURE, 0, _("format %s ends in %%"), quote (fmt));
 
-  if (fmt[i] == '.')
+  ఒకవేళ (fmt[i] == '.')
     {
       i++;
       errno = 0;
       user_precision = strtol (fmt + i, &endptr, 10);
-      if (errno == ERANGE || user_precision < 0 || SIZE_MAX < user_precision
+      ఒకవేళ (errno == ERANGE || user_precision < 0 || SIZE_MAX < user_precision
           || c_isblank (fmt[i]) || fmt[i] == '+')
         {
           /* Note we disallow negative user_precision to be
@@ -1175,29 +1175,29 @@ parse_format_string (char const *fmt)
       i = endptr - fmt;
     }
 
-  if (fmt[i] != 'f')
+  ఒకవేళ (fmt[i] != 'f')
     error (EXIT_FAILURE, 0, _("invalid format %s,"
                               " directive must be %%[0]['][-][N][.][N]f"),
          quote (fmt));
   i++;
   suffix_pos = i;
 
-  for (; fmt[i] != '\0'; i += (fmt[i] == '%') + 1)
-    if (fmt[i] == '%' && fmt[i + 1] != '%')
+  కొరకు (; fmt[i] != '\0'; i += (fmt[i] == '%') + 1)
+    ఒకవేళ (fmt[i] == '%' && fmt[i + 1] != '%')
       error (EXIT_FAILURE, 0, _("format %s has too many %% directives"),
              quote (fmt));
 
-  if (prefix_len)
-    format_str_prefix = ximemdup0 (fmt, prefix_len);
-  if (fmt[suffix_pos] != '\0')
+  ఒకవేళ (ఉపసర్గ_len)
+    format_str_ఉపసర్గ = ximemdup0 (fmt, ఉపసర్గ_len);
+  ఒకవేళ (fmt[suffix_pos] != '\0')
     format_str_suffix = xstrdup (fmt + suffix_pos);
 
   devmsg ("format String:\n  input: %s\n  grouping: %s\n"
                    "  padding width: %jd\n"
                    "  prefix: %s\n  suffix: %s\n",
           quote_n (0, fmt), (grouping) ? "yes" : "no",
-          padding_width,
-          quote_n (1, format_str_prefix ? format_str_prefix : ""),
+          padding_వెడల్పు,
+          quote_n (1, format_str_ఉపసర్గ ? format_str_ఉపసర్గ : ""),
           quote_n (2, format_str_suffix ? format_str_suffix : ""));
 }
 
@@ -1209,546 +1209,546 @@ parse_format_string (char const *fmt)
 
    If there are any trailing characters after the number
    (besides a valid suffix) - exits with an error.  */
-static enum simple_strtod_error
-parse_human_number (char const *str, long double /*output */ *value,
+స్థిర గణన simple_strtod_error
+parse_human_సంఖ్య (అక్షరం స్థిరరాశి *str, దీర్ఘ ద్విగుణ /*output */ *విలువ,
                     size_t *precision)
 {
-  char *ptr = NULL;
+  అక్షరం *ptr = ఖాళీ;
 
-  enum simple_strtod_error e =
-    simple_strtod_human (str, &ptr, value, precision, scale_from);
-  if (e != SSE_OK && e != SSE_OK_PRECISION_LOSS)
+  గణన simple_strtod_error e =
+    simple_strtod_human (str, &ptr, విలువ, precision, scale_from);
+  ఒకవేళ (e != SSE_OK && e != SSE_OK_PRECISION_LOSS)
     {
       simple_strtod_fatal (e, str);
-      return e;
+      తిరిగి e;
     }
 
-  if (ptr && *ptr != '\0')
+  ఒకవేళ (ptr && *ptr != '\0')
     {
-      if (inval_style != inval_ignore)
-        error (conv_exit_code, 0, _("invalid suffix in input %s: %s"),
+      ఒకవేళ (inval_style != inval_ignore)
+        error (conv_exit_సంకేతం, 0, _("invalid suffix in input %s: %s"),
                quote_n (0, str), quote_n (1, ptr));
       e = SSE_INVALID_SUFFIX;
     }
-  return e;
+  తిరిగి e;
 }
 
 
 /* Print the given VAL, using the requested representation.
    The number is printed to STDOUT, with padding and alignment.  */
-static bool
-prepare_padded_number (const long double val, size_t precision,
+స్థిర bool
+prepare_padded_సంఖ్య (స్థిరరాశి దీర్ఘ ద్విగుణ val, size_t precision,
                        intmax_t *padding)
 {
   /* Generate Output. */
-  size_t precision_used = user_precision == -1 ? precision : user_precision;
+  size_t precision_వాడిన = user_precision == -1 ? precision : user_precision;
 
   /* Can't reliably print too-large values without auto-scaling. */
-  int x;
+  పూర్ణాంకం x;
   expld (val, 10, &x);
 
-  if (scale_to == scale_none
-      && x + precision_used > MAX_UNSCALED_DIGITS)
+  ఒకవేళ (scale_గమ్యం == scale_none
+      && x + precision_వాడిన > MAX_UNSCALED_DIGITS)
     {
-      if (inval_style != inval_ignore)
+      ఒకవేళ (inval_style != inval_ignore)
         {
-          if (precision_used)
-            error (conv_exit_code, 0,
+          ఒకవేళ (precision_వాడిన)
+            error (conv_exit_సంకేతం, 0,
                    _("value/precision too large to be printed: '%Lg/%zu'"
-                     " (consider using --to)"), val, precision_used);
-          else
-            error (conv_exit_code, 0,
+                     " (consider using --to)"), val, precision_వాడిన);
+          లేకపోతే
+            error (conv_exit_సంకేతం, 0,
                    _("value too large to be printed: '%Lg'"
                      " (consider using --to)"), val);
         }
-      return false;
+      తిరిగి false;
     }
 
-  if (x > MAX_ACCEPTABLE_DIGITS - 1)
+  ఒకవేళ (x > MAX_ACCEPTABLE_DIGITS - 1)
     {
-      if (inval_style != inval_ignore)
-        error (conv_exit_code, 0, _("value too large to be printed: '%Lg'"
+      ఒకవేళ (inval_style != inval_ignore)
+        error (conv_exit_సంకేతం, 0, _("value too large to be printed: '%Lg'"
                                     " (cannot handle values > 999Q)"), val);
-      return false;
+      తిరిగి false;
     }
 
-  while (true)
+  అయితే (true)
     {
-      int numlen = double_to_human (val, precision_used,
-                                    padding_buffer, padding_buffer_size,
-                                    scale_to, grouping, round_style);
+      పూర్ణాంకం numlen = double_గమ్యం_human (val, precision_వాడిన,
+                                    padding_బఫరు, padding_బఫరు_కొలత,
+                                    scale_గమ్యం, grouping, విడత_style);
       ptrdiff_t growth;
-      if (numlen < 0 || ckd_sub (&growth, numlen, padding_buffer_size - 1))
+      ఒకవేళ (numlen < 0 || ckd_sub (&growth, numlen, padding_బఫరు_కొలత - 1))
         error (EXIT_FAILURE, 0,
                _("failed to prepare value '%Lf' for printing"), val);
-      if (growth <= 0)
-        break;
-      padding_buffer = xpalloc (padding_buffer, &padding_buffer_size,
+      ఒకవేళ (growth <= 0)
+        ఆపు;
+      padding_బఫరు = xpalloc (padding_బఫరు, &padding_బఫరు_కొలత,
                                 growth, -1, 1);
     }
 
   devmsg ("formatting output:\n  value: %Lf\n  humanized: %s\n",
-          val, quote (padding_buffer));
+          val, quote (padding_బఫరు));
 
   intmax_t pad = 0;
-  if (padding_width)
+  ఒకవేళ (padding_వెడల్పు)
     {
-      int buf_width = mbswidth (padding_buffer,
+      పూర్ణాంకం buf_వెడల్పు = mbswidth (padding_బఫరు,
                                 MBSW_REJECT_INVALID | MBSW_REJECT_UNPRINTABLE);
-      if (0 <= buf_width)
+      ఒకవేళ (0 <= buf_వెడల్పు)
         {
-          if (padding_width < 0)
+          ఒకవేళ (padding_వెడల్పు < 0)
             {
-              if (padding_width < -buf_width)
-                pad = padding_width + buf_width;
+              ఒకవేళ (padding_వెడల్పు < -buf_వెడల్పు)
+                pad = padding_వెడల్పు + buf_వెడల్పు;
             }
-          else
+          లేకపోతే
             {
-              if (buf_width < padding_width)
-                pad = padding_width - buf_width;
+              ఒకవేళ (buf_వెడల్పు < padding_వెడల్పు)
+                pad = padding_వెడల్పు - buf_వెడల్పు;
             }
         }
     }
 
   *padding = pad;
-  return true;
+  తిరిగి true;
 }
 
-static void
-print_padded_number (intmax_t padding)
+స్థిర శూన్య
+print_padded_సంఖ్య (intmax_t padding)
 {
-  if (format_str_prefix)
-    fputs (format_str_prefix, stdout);
+  ఒకవేళ (format_str_ఉపసర్గ)
+    fputs (format_str_ఉపసర్గ, stdout);
 
-  for (intmax_t p = padding; 0 < p; p--)
-    putchar (' ');
+  కొరకు (intmax_t p = padding; 0 < p; p--)
+    అక్షరం_రాయి (' ');
 
-  fputs (padding_buffer, stdout);
+  fputs (padding_బఫరు, stdout);
 
-  for (intmax_t p = padding; p < 0; p++)
-    putchar (' ');
+  కొరకు (intmax_t p = padding; p < 0; p++)
+    అక్షరం_రాయి (' ');
 
-  if (format_str_suffix)
+  ఒకవేళ (format_str_suffix)
     fputs (format_str_suffix, stdout);
 }
 
 /* Converts the TEXT number string to the requested representation,
    and handles automatic suffix addition.  */
-static bool
-process_suffixed_number (char *text, long double *result,
-                         size_t *precision, long int field)
+స్థిర bool
+process_suffixed_సంఖ్య (అక్షరం *పాఠ్యం, దీర్ఘ ద్విగుణ *ఫలితం,
+                         size_t *precision, దీర్ఘ పూర్ణాంకం క్షేత్రం)
 {
-  char saved_suffix = '\0';
+  అక్షరం saved_suffix = '\0';
 
-  if (suffix)
+  ఒకవేళ (suffix)
     {
-      if (mbs_endswith (text, suffix))
+      ఒకవేళ (mbs_endswith (పాఠ్యం, suffix))
         {
-          saved_suffix = *(text + strlen (text) - strlen (suffix));
-          *(text + strlen (text) - strlen (suffix)) = '\0';
+          saved_suffix = *(పాఠ్యం + అక్షరశ్రేణి_పొడవు (పాఠ్యం) - అక్షరశ్రేణి_పొడవు (suffix));
+          *(పాఠ్యం + అక్షరశ్రేణి_పొడవు (పాఠ్యం) - అక్షరశ్రేణి_పొడవు (suffix)) = '\0';
           devmsg ("trimming suffix %s\n", quote (suffix));
         }
-      else
+      లేకపోతే
         devmsg ("no valid suffix found\n");
     }
 
   /* Skip blanks - always.  */
-  char *p = skip_str_matching (text, newline_or_blank, true);
+  అక్షరం *p = skip_str_matching (పాఠ్యం, newline_or_blank, true);
 
   /* setup auto-padding.  */
-  if (auto_padding)
+  ఒకవేళ (auto_padding)
     {
-      padding_width = text < p || 1 < field
-                      ? mbswidth (text,
+      padding_వెడల్పు = పాఠ్యం < p || 1 < క్షేత్రం
+                      ? mbswidth (పాఠ్యం,
                                   MBSW_REJECT_INVALID | MBSW_REJECT_UNPRINTABLE)
                       : 0;
-      if (padding_width < 0)
-        padding_width = strlen (text);
-      devmsg ("setting Auto-Padding to %jd characters\n", padding_width);
+      ఒకవేళ (padding_వెడల్పు < 0)
+        padding_వెడల్పు = అక్షరశ్రేణి_పొడవు (పాఠ్యం);
+      devmsg ("setting Auto-Padding to %jd characters\n", padding_వెడల్పు);
     }
 
-  long double val = 0;
-  enum simple_strtod_error e = parse_human_number (p, &val, precision);
-  if (e == SSE_OK_PRECISION_LOSS && debug)
+  దీర్ఘ ద్విగుణ val = 0;
+  గణన simple_strtod_error e = parse_human_సంఖ్య (p, &val, precision);
+  ఒకవేళ (e == SSE_OK_PRECISION_LOSS && debug)
     error (0, 0, _("large input value %s: possible precision loss"),
            quote (p));
 
-  if (from_unit_size != 1 || to_unit_size != 1)
-    val = (val * from_unit_size) / to_unit_size;
+  ఒకవేళ (from_unit_కొలత != 1 || గమ్యం_unit_కొలత != 1)
+    val = (val * from_unit_కొలత) / గమ్యం_unit_కొలత;
 
-  *result = val;
+  *ఫలితం = val;
 
-  if (e == SSE_OK || e == SSE_OK_PRECISION_LOSS)
-    return true;
-  else
+  ఒకవేళ (e == SSE_OK || e == SSE_OK_PRECISION_LOSS)
+    తిరిగి true;
+  లేకపోతే
     {
-      if (saved_suffix)
-        *(text + strlen (text)) = saved_suffix;
-      return false;
+      ఒకవేళ (saved_suffix)
+        *(పాఠ్యం + అక్షరశ్రేణి_పొడవు (పాఠ్యం)) = saved_suffix;
+      తిరిగి false;
     }
 }
 
 /* Search for multi-byte character C in multi-byte string S.
    Return a pointer to the character, or NULL if not found.  */
-ATTRIBUTE_PURE
-static char *
-mbsmbchr (char const *s, char const *c)
+ATTRIBUTE_శుద్ధ
+స్థిర అక్షరం *
+mbsmbchr (అక్షరం స్థిరరాశి *s, అక్షరం స్థిరరాశి *c)
 {
-  unsigned char uc = *c;
+  గుర్తులేని అక్షరం uc = *c;
    /* GB18030 is the most restrictive for the 0x30 optimization below.  */
-  if (uc < 0x30 || MB_CUR_MAX == 1)
-    return (char *) strchr (s, uc);
-  else if (is_utf8_charset ())
-    return (char *) (uc < 0x80 ? strchr (s, uc) : strstr (s, c));
-  else
-    return *(c + 1) == '\0' ? mbschr (s, uc) : (char *) mbsstr (s, c);
+  ఒకవేళ (uc < 0x30 || MB_CUR_MAX == 1)
+    తిరిగి (అక్షరం *) strchr (s, uc);
+  లేకపోతే ఒకవేళ (is_utf8_charset ())
+    తిరిగి (అక్షరం *) (uc < 0x80 ? strchr (s, uc) : అక్షరశ్రేణి_శోధన (s, c));
+  లేకపోతే
+    తిరిగి *(c + 1) == '\0' ? mbschr (s, uc) : (అక్షరం *) mbsstr (s, c);
 }
 
 /* Return a pointer to the beginning of the next field in line.
    The line pointer is moved to the end of the next field. */
-static char *
-next_field (char **line)
+స్థిర అక్షరం *
+తదుపరి_క్షేత్రం (అక్షరం **పంక్తి)
 {
-  char *field_start = *line;
-  char *field_end   = field_start;
+  అక్షరం *క్షేత్రం_ప్రారంభం = *పంక్తి;
+  అక్షరం *క్షేత్రం_చివర   = క్షేత్రం_ప్రారంభం;
 
-  if (delimiter)
+  ఒకవేళ (delimiter)
     {
-      if (! (field_end = mbsmbchr (field_start, delimiter)))
-        field_end = strchr (field_start, '\0');
+      ఒకవేళ (! (క్షేత్రం_చివర = mbsmbchr (క్షేత్రం_ప్రారంభం, delimiter)))
+        క్షేత్రం_చివర = strchr (క్షేత్రం_ప్రారంభం, '\0');
     }
-  else
+  లేకపోతే
     {
       /* keep any space prefix in the returned field */
-      field_end = skip_str_matching (field_end, newline_or_blank, true);
-      field_end = skip_str_matching (field_end, newline_or_blank, false);
+      క్షేత్రం_చివర = skip_str_matching (క్షేత్రం_చివర, newline_or_blank, true);
+      క్షేత్రం_చివర = skip_str_matching (క్షేత్రం_చివర, newline_or_blank, false);
     }
 
-  *line = field_end;
-  return field_start;
+  *పంక్తి = క్షేత్రం_చివర;
+  తిరిగి క్షేత్రం_ప్రారంభం;
 }
 
-ATTRIBUTE_PURE
-static bool
-include_field (uintmax_t field)
+ATTRIBUTE_శుద్ధ
+స్థిర bool
+include_క్షేత్రం (uintmax_t క్షేత్రం)
 {
-  struct field_range_pair *p = frp;
-  if (!p)
-    return field == 1;
+  నిర్మాణం క్షేత్రం_range_pair *p = frp;
+  ఒకవేళ (!p)
+    తిరిగి క్షేత్రం == 1;
 
-  while (p->lo != UINTMAX_MAX)
+  అయితే (p->lo != UINTMAX_MAX)
     {
-      if (p->lo <= field && p->hi >= field)
-        return true;
+      ఒకవేళ (p->lo <= క్షేత్రం && p->hi >= క్షేత్రం)
+        తిరిగి true;
       ++p;
     }
-  return false;
+  తిరిగి false;
 }
 
 /* Convert and output the given field. If it is not included in the set
    of fields to process just output the original */
-static bool
-process_field (char *text, uintmax_t field)
+స్థిర bool
+process_క్షేత్రం (అక్షరం *పాఠ్యం, uintmax_t క్షేత్రం)
 {
-  long double val = 0;
+  దీర్ఘ ద్విగుణ val = 0;
   size_t precision = 0;
-  bool valid_number = true;
+  bool valid_సంఖ్య = true;
 
-  if (include_field (field))
+  ఒకవేళ (include_క్షేత్రం (క్షేత్రం))
     {
-      valid_number =
-        process_suffixed_number (text, &val, &precision, field);
+      valid_సంఖ్య =
+        process_suffixed_సంఖ్య (పాఠ్యం, &val, &precision, క్షేత్రం);
 
       intmax_t padding;
-      if (valid_number)
-        valid_number = prepare_padded_number (val, precision, &padding);
+      ఒకవేళ (valid_సంఖ్య)
+        valid_సంఖ్య = prepare_padded_సంఖ్య (val, precision, &padding);
 
-      if (valid_number)
-        print_padded_number (padding);
-      else
-        fputs (text, stdout);
+      ఒకవేళ (valid_సంఖ్య)
+        print_padded_సంఖ్య (padding);
+      లేకపోతే
+        fputs (పాఠ్యం, stdout);
     }
-  else
-    fputs (text, stdout);
+  లేకపోతే
+    fputs (పాఠ్యం, stdout);
 
-  return valid_number;
+  తిరిగి valid_సంఖ్య;
 }
 
 /* Convert number in a given line of text.
    NEWLINE specifies whether to output a '\n' for this "line".  */
-static int
-process_line (char *line, bool newline)
+స్థిర పూర్ణాంకం
+process_పంక్తి (అక్షరం *పంక్తి, bool newline)
 {
-  char *next;
-  uintmax_t field = 0;
-  bool valid_number = true;
+  అక్షరం *తదుపరి;
+  uintmax_t క్షేత్రం = 0;
+  bool valid_సంఖ్య = true;
 
-  while (true) {
-    ++field;
-    next = next_field (&line);
+  అయితే (true) {
+    ++క్షేత్రం;
+    తదుపరి = తదుపరి_క్షేత్రం (&పంక్తి);
 
-    if (*line != '\0')
+    ఒకవేళ (*పంక్తి != '\0')
       {
         /* NUL terminate the current field string and process */
-        char end_field = *line;
-        *line = '\0';
+        అక్షరం చివర_క్షేత్రం = *పంక్తి;
+        *పంక్తి = '\0';
 
-        if (! process_field (next, field))
-          valid_number = false;
+        ఒకవేళ (! process_క్షేత్రం (తదుపరి, క్షేత్రం))
+          valid_సంఖ్య = false;
 
-        if (delimiter != NULL)
+        ఒకవేళ (delimiter != ఖాళీ)
           fputs (delimiter, stdout);
-        else
+        లేకపోతే
           fputc (' ', stdout);
 
-        if (delimiter)
-          line += MAX (strlen (delimiter), 1);
-        else
+        ఒకవేళ (delimiter)
+          పంక్తి += MAX (అక్షరశ్రేణి_పొడవు (delimiter), 1);
+        లేకపోతే
           {
-            *line = end_field;
-            mcel_t g = mcel_scanz (line);
-            line += g.len;
+            *పంక్తి = చివర_క్షేత్రం;
+            mcel_t g = mcel_scanz (పంక్తి);
+            పంక్తి += g.len;
           }
       }
-    else
+    లేకపోతే
       {
         /* end of the line, process the last field and finish */
-        if (! process_field (next, field))
-          valid_number = false;
+        ఒకవేళ (! process_క్షేత్రం (తదుపరి, క్షేత్రం))
+          valid_సంఖ్య = false;
 
-        break;
+        ఆపు;
       }
   }
 
-  if (newline)
-    putchar (line_delim);
+  ఒకవేళ (newline)
+    అక్షరం_రాయి (పంక్తి_delim);
 
- if (ferror (stdout))
+ ఒకవేళ (ferror (stdout))
    write_error ();
 
-  return valid_number;
+  తిరిగి valid_సంఖ్య;
 }
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
-  int valid_numbers = 1;
+  పూర్ణాంకం valid_numbers = 1;
   bool locale_ok;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   locale_ok = !!setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
-#if HAVE_FPSETPREC
+#ఒకవేళ HAVE_FPSETPREC
   /* Enabled extended precision if needed.  */
   fpsetprec (FP_PE);
-#endif
+#అయితే_ముగింపు
 
-  decimal_point = nl_langinfo (RADIXCHAR);
-  if (decimal_point == NULL || strlen (decimal_point) == 0)
-    decimal_point = ".";
-  decimal_point_length = strlen (decimal_point);
+  decimal_బిందువు = nl_langinfo (RADIXCHAR);
+  ఒకవేళ (decimal_బిందువు == ఖాళీ || అక్షరశ్రేణి_పొడవు (decimal_బిందువు) == 0)
+    decimal_బిందువు = ".";
+  decimal_బిందువు_నిడివి = అక్షరశ్రేణి_పొడవు (decimal_బిందువు);
 
   thousands_sep = nl_langinfo (THOUSEP);
-  if (thousands_sep == NULL)
+  ఒకవేళ (thousands_sep == ఖాళీ)
     thousands_sep = "";
-  thousands_sep_length = strlen (thousands_sep);
+  thousands_sep_నిడివి = అక్షరశ్రేణి_పొడవు (thousands_sep);
 
   atexit (close_stdout);
 
-  while (true)
+  అయితే (true)
     {
-      int c = getopt_long (argc, argv, "d:z", longopts, NULL);
+      పూర్ణాంకం c = getopt_long (argc, argv, "d:z", longopts, ఖాళీ);
 
-      if (c == -1)
-        break;
+      ఒకవేళ (c == -1)
+        ఆపు;
 
-      switch (c)
+      ఎంపిక (c)
         {
-        case FROM_OPTION:
+        స్థితి FROM_OPTION:
           scale_from = XARGMATCH ("--from", optarg,
-                                  scale_from_args, scale_from_types);
-          break;
+                                  scale_from_వాదనలు, scale_from_types);
+          ఆపు;
 
-        case FROM_UNIT_OPTION:
-          from_unit_size = unit_to_umax (optarg);
-          break;
+        స్థితి FROM_UNIT_OPTION:
+          from_unit_కొలత = unit_గమ్యం_umax (optarg);
+          ఆపు;
 
-        case TO_OPTION:
-          scale_to =
-            XARGMATCH ("--to", optarg, scale_to_args, scale_to_types);
-          break;
+        స్థితి గమ్యం_OPTION:
+          scale_గమ్యం =
+            XARGMATCH ("--to", optarg, scale_గమ్యం_వాదనలు, scale_గమ్యం_types);
+          ఆపు;
 
-        case TO_UNIT_OPTION:
-          to_unit_size = unit_to_umax (optarg);
-          break;
+        స్థితి గమ్యం_UNIT_OPTION:
+          గమ్యం_unit_కొలత = unit_గమ్యం_umax (optarg);
+          ఆపు;
 
-        case ROUND_OPTION:
-          round_style = XARGMATCH ("--round", optarg, round_args, round_types);
-          break;
+        స్థితి విడత_OPTION:
+          విడత_style = XARGMATCH ("--round", optarg, విడత_వాదనలు, విడత_types);
+          ఆపు;
 
-        case GROUPING_OPTION:
+        స్థితి GROUPING_OPTION:
           grouping = 1;
-          break;
+          ఆపు;
 
-        case PADDING_OPTION:
-          if (((xstrtoimax (optarg, NULL, 10, &padding_width, "")
-                & ~LONGINT_OVERFLOW)
+        స్థితి PADDING_OPTION:
+          ఒకవేళ (((xstrtoimax (optarg, ఖాళీ, 10, &padding_వెడల్పు, "")
+                & ~LONGINT_అధికప్రవాహం)
                != LONGINT_OK)
-              || padding_width == 0)
+              || padding_వెడల్పు == 0)
             error (EXIT_FAILURE, 0, _("invalid padding value %s"),
                    quote (optarg));
           /* TODO: We probably want to apply a specific --padding
              to --header lines too.  */
-          break;
+          ఆపు;
 
-        case FIELD_OPTION:
-          if (n_frp)
+        స్థితి క్షేత్రం_OPTION:
+          ఒకవేళ (n_frp)
             error (EXIT_FAILURE, 0, _("multiple field specifications"));
-          set_fields (optarg, SETFLD_ALLOW_DASH);
-          break;
+          సమితి_fields (optarg, SETFLD_ALLOW_DASH);
+          ఆపు;
 
-        case 'd':
+        స్థితి 'd':
           /* Interpret -d '' to mean 'use the NUL byte as the delimiter.'  */
-          if (optarg[0] != '\0')
+          ఒకవేళ (optarg[0] != '\0')
             {
               mcel_t g = mcel_scanz (optarg);
               /* Note we always allow single bytes, especially since mcel
                  explicitly does not avoid https://sourceware.org/PR29511
                  I.e., we ignore g.err, and rely on g.len==1 with g.err.  */
-              if (optarg[g.len] != '\0')
+              ఒకవేళ (optarg[g.len] != '\0')
                 error (EXIT_FAILURE, 0,
                        _("the delimiter must be a single character"));
             }
           delimiter = optarg;
-          break;
+          ఆపు;
 
-        case 'z':
-          line_delim = '\0';
-          break;
+        స్థితి 'z':
+          పంక్తి_delim = '\0';
+          ఆపు;
 
-        case SUFFIX_OPTION:
+        స్థితి SUFFIX_OPTION:
           suffix = optarg;
-          break;
+          ఆపు;
 
-        case UNIT_SEPARATOR_OPTION:
+        స్థితి UNIT_SEPARATOR_OPTION:
           unit_separator = optarg;
-          break;
+          ఆపు;
 
-        case DEBUG_OPTION:
+        స్థితి DEBUG_OPTION:
           debug = true;
-          break;
+          ఆపు;
 
-        case DEV_DEBUG_OPTION:
+        స్థితి DEV_DEBUG_OPTION:
           dev_debug = true;
           debug = true;
-          break;
+          ఆపు;
 
-        case HEADER_OPTION:
-          if (optarg)
+        స్థితి శీర్షిక_OPTION:
+          ఒకవేళ (optarg)
             {
-              if (xstrtoumax (optarg, NULL, 10, &header, "") != LONGINT_OK
-                  || header == 0)
+              ఒకవేళ (xstrtoumax (optarg, ఖాళీ, 10, &శీర్షిక, "") != LONGINT_OK
+                  || శీర్షిక == 0)
                 error (EXIT_FAILURE, 0, _("invalid header value %s"),
                        quote (optarg));
             }
-          else
+          లేకపోతే
             {
-              header = 1;
+              శీర్షిక = 1;
             }
-          break;
+          ఆపు;
 
-        case FORMAT_OPTION:
+        స్థితి FORMAT_OPTION:
           format_str = optarg;
-          break;
+          ఆపు;
 
-        case INVALID_OPTION:
+        స్థితి INVALID_OPTION:
           inval_style = XARGMATCH ("--invalid", optarg,
-                                   inval_args, inval_types);
-          break;
+                                   inval_వాదనలు, inval_types);
+          ఆపు;
 
           case_GETOPT_HELP_CHAR;
-          case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+          case_GETOPT_సంస్కరణ_CHAR (కార్యక్రమం_NAME, AUTHORS);
 
-        default:
+        అప్రమేయ:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (format_str != NULL && grouping)
+  ఒకవేళ (format_str != ఖాళీ && grouping)
     error (EXIT_FAILURE, 0, _("--grouping cannot be combined with --format"));
 
-  if (debug && ! locale_ok)
+  ఒకవేళ (debug && ! locale_ok)
     error (0, 0, _("failed to set locale"));
 
   /* Warn about no-op.  */
-  if (debug && scale_from == scale_none && scale_to == scale_none
-      && !grouping && (padding_width == 0) && (format_str == NULL))
+  ఒకవేళ (debug && scale_from == scale_none && scale_గమ్యం == scale_none
+      && !grouping && (padding_వెడల్పు == 0) && (format_str == ఖాళీ))
     error (0, 0, _("no conversion option specified"));
 
-  if (debug && unit_separator && delimiter == NULL)
+  ఒకవేళ (debug && unit_separator && delimiter == ఖాళీ)
     error (0, 0,
            _("field delimiters have higher precedence than unit separators"));
 
-  if (format_str)
+  ఒకవేళ (format_str)
     parse_format_string (format_str);
 
-  if (grouping)
+  ఒకవేళ (grouping)
     {
-      if (scale_to != scale_none)
+      ఒకవేళ (scale_గమ్యం != scale_none)
         error (EXIT_FAILURE, 0, _("grouping cannot be combined with --to"));
-      if (debug && thousands_sep_length == 0)
+      ఒకవేళ (debug && thousands_sep_నిడివి == 0)
         error (0, 0, _("grouping has no effect in this locale"));
     }
 
-  auto_padding = (padding_width == 0 && delimiter == NULL);
+  auto_padding = (padding_వెడల్పు == 0 && delimiter == ఖాళీ);
 
-  if (inval_style != inval_abort)
-    conv_exit_code = 0;
+  ఒకవేళ (inval_style != inval_abort)
+    conv_exit_సంకేతం = 0;
 
-  if (argc > optind)
+  ఒకవేళ (argc > optind)
     {
-      if (debug && header)
+      ఒకవేళ (debug && శీర్షిక)
         error (0, 0, _("--header ignored with command-line input"));
 
-      for (; optind < argc; optind++)
-        valid_numbers &= process_line (argv[optind], true);
+      కొరకు (; optind < argc; optind++)
+        valid_numbers &= process_పంక్తి (argv[optind], true);
     }
-  else
+  లేకపోతే
     {
-      char *line = NULL;
-      size_t line_allocated = 0;
+      అక్షరం *పంక్తి = ఖాళీ;
+      size_t పంక్తి_allocated = 0;
       ssize_t len;
 
-      while (header-- && getdelim (&line, &line_allocated,
-                                   line_delim, stdin) > 0)
+      అయితే (శీర్షిక-- && getdelim (&పంక్తి, &పంక్తి_allocated,
+                                   పంక్తి_delim, stdin) > 0)
         {
-          if (fputs (line, stdout) == EOF)
+          ఒకవేళ (fputs (పంక్తి, stdout) == EOF)
             write_error ();
         }
 
-      while ((len = getdelim (&line, &line_allocated,
-                              line_delim, stdin)) > 0)
+      అయితే ((len = getdelim (&పంక్తి, &పంక్తి_allocated,
+                              పంక్తి_delim, stdin)) > 0)
         {
-          bool newline = line[len - 1] == line_delim;
-          if (newline)
-            line[len - 1] = '\0';
-          valid_numbers &= process_line (line, newline);
+          bool newline = పంక్తి[len - 1] == పంక్తి_delim;
+          ఒకవేళ (newline)
+            పంక్తి[len - 1] = '\0';
+          valid_numbers &= process_పంక్తి (పంక్తి, newline);
         }
 
-      if (ferror (stdin))
+      ఒకవేళ (ferror (stdin))
         error (EXIT_FAILURE, errno, _("error reading input"));
     }
 
-  if (debug && !valid_numbers)
+  ఒకవేళ (debug && !valid_numbers)
     error (0, 0, _("failed to convert some of the input numbers"));
 
-  int exit_status = EXIT_SUCCESS;
-  if (!valid_numbers
+  పూర్ణాంకం exit_స్థితి = EXIT_SUCCESS;
+  ఒకవేళ (!valid_numbers
       && inval_style != inval_warn && inval_style != inval_ignore)
-    exit_status = EXIT_CONVERSION_WARNINGS;
+    exit_స్థితి = EXIT_CONVERSION_WARNINGS;
 
-  main_exit (exit_status);
+  main_exit (exit_స్థితి);
 }

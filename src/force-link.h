@@ -1,4 +1,4 @@
-extern int force_linkat (int, char const *, int, char const *, int, bool, int)
+బాహ్య పూర్ణాంకం force_linkat (పూర్ణాంకం, అక్షరం స్థిరరాశి *, పూర్ణాంకం, అక్షరం స్థిరరాశి *, పూర్ణాంకం, bool, పూర్ణాంకం)
   _GL_ATTRIBUTE_NONNULL ();
-extern int force_symlinkat (char const *, int, char const *, bool, int)
+బాహ్య పూర్ణాంకం force_symlinkat (అక్షరం స్థిరరాశి *, పూర్ణాంకం, అక్షరం స్థిరరాశి *, bool, పూర్ణాంకం)
   _GL_ATTRIBUTE_NONNULL ();

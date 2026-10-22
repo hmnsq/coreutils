@@ -14,45 +14,45 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
+#అన్తర్భావ <config.h>
+#అన్తర్భావ <stdio.h>
+#అన్తర్భావ <sys/types.h>
 
-#include "system.h"
-#include "cl-strtod.h"
-#include "dtimespec-bound.h"
-#include "long-options.h"
-#include "quote.h"
-#include "xnanosleep.h"
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "cl-strtod.h"
+#అన్తర్భావ "dtimespec-bound.h"
+#అన్తర్భావ "long-options.h"
+#అన్తర్భావ "quote.h"
+#అన్తర్భావ "xnanosleep.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "sleep"
+#నిర్వచించు కార్యక్రమం_NAME "sleep"
 
-#define AUTHORS \
+#నిర్వచించు AUTHORS \
   proper_name ("Jim Meyering"), \
   proper_name ("Paul Eggert")
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("\
-Usage: %s NUMBER[SUFFIX]...\n\
+      రాయి (_("\
+Usage: %s సంఖ్య_2[SUFFIX]...\n\
   or:  %s OPTION\n\
-Pause for NUMBER seconds, where NUMBER is an integer or floating-point.\n\
-SUFFIX may be 's','m','h', or 'd', for seconds, minutes, hours, days.\n\
-With multiple arguments, pause for the sum of their values.\n\
+Pause కొరకు సంఖ్య_2 seconds, where సంఖ్య_2 is an integer or floating-బిందువు.\n\
+SUFFIX may be 's','m','h', or 'd', కొరకు seconds, minutes, hours, days.\n\
+With గుణిజం arguments, pause కొరకు the కూడిక యొక్క their విలువలు.\n\
 \n\
 "),
-              program_name, program_name);
+              కార్యక్రమం_name, కార్యక్రమం_name);
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
 /* Given a floating point value *X, and a suffix character, SUFFIX_CHAR,
@@ -61,66 +61,66 @@ With multiple arguments, pause for the sum of their values.\n\
    hours, or 'd' for days.  If SUFFIX_CHAR is invalid, don't modify *X
    and return false.  Otherwise return true.  */
 
-static bool
-apply_suffix (double *x, char suffix_char)
+స్థిర bool
+apply_suffix (ద్విగుణ *x, అక్షరం suffix_char)
 {
-  int multiplier;
+  పూర్ణాంకం multiplier;
 
-  switch (suffix_char)
+  ఎంపిక (suffix_char)
     {
-    case 0:
-    case 's':
+    స్థితి 0:
+    స్థితి 's':
       multiplier = 1;
-      break;
-    case 'm':
+      ఆపు;
+    స్థితి 'm':
       multiplier = 60;
-      break;
-    case 'h':
+      ఆపు;
+    స్థితి 'h':
       multiplier = 60 * 60;
-      break;
-    case 'd':
+      ఆపు;
+    స్థితి 'd':
       multiplier = 60 * 60 * 24;
-      break;
-    default:
-      return false;
+      ఆపు;
+    అప్రమేయ:
+      తిరిగి false;
     }
 
   *x = dtimespec_bound (*x * multiplier, 0);
 
-  return true;
+  తిరిగి true;
 }
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
-  double seconds = 0.0;
+  ద్విగుణ seconds = 0.0;
   bool ok = true;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
-                                   Version, true, usage, AUTHORS,
-                                   (char const *) NULL);
+  parse_gnu_standard_options_only (argc, argv, కార్యక్రమం_NAME, PACKAGE_NAME,
+                                   సంస్కరణ, true, usage, AUTHORS,
+                                   (అక్షరం స్థిరరాశి *) ఖాళీ);
 
-  if (argc == 1)
+  ఒకవేళ (argc == 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
-  for (int i = optind; i < argc; i++)
+  కొరకు (పూర్ణాంకం i = optind; i < argc; i++)
     {
-      char *p;
+      అక్షరం *p;
       errno = 0;
-      double duration = cl_strtod (argv[i], &p);
-      double s = dtimespec_bound (duration, errno);
-      if (argv[i] == p
+      ద్విగుణ duration = cl_strtod (argv[i], &p);
+      ద్విగుణ s = dtimespec_bound (duration, errno);
+      ఒకవేళ (argv[i] == p
           /* Nonnegative interval.  */
           || ! (0 <= s)
           /* No extra chars after the number and an optional s,m,h,d char.  */
@@ -135,11 +135,11 @@ main (int argc, char **argv)
       seconds = dtimespec_bound (seconds + s, 0);
     }
 
-  if (!ok)
+  ఒకవేళ (!ok)
     usage (EXIT_FAILURE);
 
-  if (xnanosleep (seconds))
+  ఒకవేళ (xnanosleep (seconds))
     error (EXIT_FAILURE, errno, _("cannot read realtime clock"));
 
-  return EXIT_SUCCESS;
+  తిరిగి EXIT_SUCCESS;
 }

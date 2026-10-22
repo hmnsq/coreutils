@@ -21,46 +21,46 @@
 
    By tege@sics.se, Torbjörn Granlund, advised by rms, Richard Stallman.  */
 
-#include <config.h>
+#అన్తర్భావ <config.h>
 
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#అన్తర్భావ <stdio.h>
+#అన్తర్భావ <getopt.h>
+#అన్తర్భావ <sys/types.h>
 
-#if HAVE_STROPTS_H
+#ఒకవేళ HAVE_STROPTS_H
 # include <stropts.h>
-#endif
-#include <sys/ioctl.h>
+#అయితే_ముగింపు
+#అన్తర్భావ <sys/ioctl.h>
 
-#include "system.h"
-#include "alignalloc.h"
-#include "assure.h"
-#include "ioblksize.h"
-#include "fadvise.h"
-#include "full-write.h"
-#include "isapipe.h"
-#include "splice.h"
-#include "unistd--.h"
-#include "xbinary-io.h"
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "alignalloc.h"
+#అన్తర్భావ "assure.h"
+#అన్తర్భావ "ioblksize.h"
+#అన్తర్భావ "fadvise.h"
+#అన్తర్భావ "full-write.h"
+#అన్తర్భావ "isapipe.h"
+#అన్తర్భావ "splice.h"
+#అన్తర్భావ "unistd--.h"
+#అన్తర్భావ "xbinary-io.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "cat"
+#నిర్వచించు కార్యక్రమం_NAME "cat"
 
-#define AUTHORS \
+#నిర్వచించు AUTHORS \
   proper_name_lite ("Torbjorn Granlund", "Torbj\303\266rn Granlund"), \
   proper_name ("Richard M. Stallman")
 
 /* Name of input file.  May be "-".  */
-static char const *infile;
+స్థిర అక్షరం స్థిరరాశి *infile;
 
 /* Descriptor on which input file is open.  */
-static int input_desc;
+స్థిర పూర్ణాంకం ఆదానం_desc;
 
 /* Buffer for line numbers.
    An 11 digit counter may overflow within an hour on a P2/466,
    an 18 digit counter needs about 1000y */
-#define LINE_COUNTER_BUF_LEN 20
-static char line_buf[LINE_COUNTER_BUF_LEN] =
+#నిర్వచించు పంక్తి_COUNTER_BUF_LEN 20
+స్థిర అక్షరం పంక్తి_buf[పంక్తి_COUNTER_BUF_LEN] =
   {
     ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
     ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '0',
@@ -69,57 +69,57 @@ static char line_buf[LINE_COUNTER_BUF_LEN] =
 
 /* Position in 'line_buf' where printing starts.  This will not change
    unless the number of lines is larger than 999999.  */
-static char *line_num_print = line_buf + LINE_COUNTER_BUF_LEN - 8;
+స్థిర అక్షరం *పంక్తి_అంకె_print = పంక్తి_buf + పంక్తి_COUNTER_BUF_LEN - 8;
 
 /* Position of the first digit in 'line_buf'.  */
-static char *line_num_start = line_buf + LINE_COUNTER_BUF_LEN - 3;
+స్థిర అక్షరం *పంక్తి_అంకె_ప్రారంభం = పంక్తి_buf + పంక్తి_COUNTER_BUF_LEN - 3;
 
 /* Position of the last digit in 'line_buf'.  */
-static char *line_num_end = line_buf + LINE_COUNTER_BUF_LEN - 3;
+స్థిర అక్షరం *పంక్తి_అంకె_చివర = పంక్తి_buf + పంక్తి_COUNTER_BUF_LEN - 3;
 
 /* Preserves the 'cat' function's local 'newlines' between invocations.  */
-static int newlines2 = 0;
+స్థిర పూర్ణాంకం newlines2 = 0;
 
 /* Whether there is a pending CR to process.  */
-static bool pending_cr = false;
+స్థిర bool pending_cr = false;
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("\
+      రాయి (_("\
 Usage: %s [OPTION]... [FILE]...\n\
 "),
-              program_name);
+              కార్యక్రమం_name);
       fputs (_("\
-Concatenate FILE(s) to standard output.\n\
+Concatenate FILE(s) గమ్యం standard output.\n\
 "), stdout);
 
       emit_stdin_note ();
 
       oputs (_("\
-  -A, --show-all           equivalent to -vET\n\
+  -A, --show-all           equivalent గమ్యం -vET\n\
 "));
       oputs (_("\
-  -b, --number-nonblank    number nonempty output lines, overrides -n\n\
+  -b, --సంఖ్య-nonblank    సంఖ్య nonempty output పంక్తులు, overrides -n\n\
 "));
       oputs (_("\
-  -e                       equivalent to -vE\n\
+  -e                       equivalent గమ్యం -vE\n\
 "));
       oputs (_("\
-  -E, --show-ends          display $ or ^M$ at end of each line\n\
+  -E, --show-చివర్లు          display $ or ^M$ at చివర యొక్క each పంక్తి\n\
 "));
       oputs (_("\
-  -n, --number             number all output lines\n\
+  -n, --సంఖ్య             సంఖ్య all output పంక్తులు\n\
 "));
       oputs (_("\
-  -s, --squeeze-blank      suppress repeated empty output lines\n\
+  -s, --squeeze-blank      suppress repeated ఖాళీలు output పంక్తులు\n\
 "));
       oputs (_("\
-  -t                       equivalent to -vT\n\
+  -t                       equivalent గమ్యం -vT\n\
 "));
       oputs (_("\
   -T, --show-tabs          display TAB characters as ^I\n\
@@ -128,72 +128,72 @@ Concatenate FILE(s) to standard output.\n\
   -u                       (ignored)\n\
 "));
       oputs (_("\
-  -v, --show-nonprinting   use ^ and M- notation, except for LFD and TAB\n\
+  -v, --show-nonprinting   use ^ and M- notation, except కొరకు LFD and TAB\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      printf (_("\
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
+      రాయి (_("\
 \n\
 Examples:\n\
   %s f - g  Output f's contents, then standard input, then g's contents.\n\
-  %s        Copy standard input to standard output.\n\
+  %s        Copy standard ఆదానం గమ్యం standard output.\n\
 "),
-              program_name, program_name);
-      emit_ancillary_info (PROGRAM_NAME);
+              కార్యక్రమం_name, కార్యక్రమం_name);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
 /* Compute the next line number.  */
 
-static void
-next_line_num (void)
+స్థిర శూన్య
+తదుపరి_పంక్తి_అంకె (శూన్య)
 {
-  char *endp = line_num_end;
-  do
+  అక్షరం *endp = పంక్తి_అంకె_చివర;
+  చేయి
     {
-      if ((*endp)++ < '9')
-        return;
+      ఒకవేళ ((*endp)++ < '9')
+        తిరిగి;
       *endp-- = '0';
     }
-  while (endp >= line_num_start);
+  అయితే (endp >= పంక్తి_అంకె_ప్రారంభం);
 
-  if (line_num_start > line_buf)
-    *--line_num_start = '1';
-  else
-    *line_buf = '>';
-  if (line_num_start < line_num_print)
-    line_num_print--;
+  ఒకవేళ (పంక్తి_అంకె_ప్రారంభం > పంక్తి_buf)
+    *--పంక్తి_అంకె_ప్రారంభం = '1';
+  లేకపోతే
+    *పంక్తి_buf = '>';
+  ఒకవేళ (పంక్తి_అంకె_ప్రారంభం < పంక్తి_అంకె_print)
+    పంక్తి_అంకె_print--;
 }
 
 /* Plain cat.  Copy the file behind 'input_desc' to STDOUT_FILENO.
    BUF (of size BUFSIZE) is the I/O buffer, used by reads and writes.
    Return true if successful.  */
 
-static bool
-simple_cat (char *buf, idx_t bufsize)
+స్థిర bool
+simple_cat (అక్షరం *buf, idx_t bufsize)
 {
   /* Loop until the end of the file.  */
 
-  while (true)
+  అయితే (true)
     {
       /* Read a block of input.  */
 
-      ssize_t n_read = read (input_desc, buf, bufsize);
-      if (n_read < 0)
+      ssize_t n_read = పఠ (ఆదానం_desc, buf, bufsize);
+      ఒకవేళ (n_read < 0)
         {
           error (0, errno, "%s", quotef (infile));
-          return false;
+          తిరిగి false;
         }
 
       /* End of this file?  */
 
-      if (n_read == 0)
-        return true;
+      ఒకవేళ (n_read == 0)
+        తిరిగి true;
 
       /* Write this block out.  */
 
-      if (full_write (STDOUT_FILENO, buf, n_read) != n_read)
+      ఒకవేళ (నిండిన_write (STDOUT_FILENO, buf, n_read) != n_read)
         write_error ();
     }
 }
@@ -202,13 +202,13 @@ simple_cat (char *buf, idx_t bufsize)
    Pending is defined to be the *BPOUT - OUTBUF bytes starting at OUTBUF.
    Then set *BPOUT to OUTPUT if it's not already that value.  */
 
-static inline void
-write_pending (char *outbuf, char **bpout)
+స్థిర అంతఃవరుస శూన్య
+write_pending (అక్షరం *outbuf, అక్షరం **bpout)
 {
   idx_t n_write = *bpout - outbuf;
-  if (0 < n_write)
+  ఒకవేళ (0 < n_write)
     {
-      if (full_write (STDOUT_FILENO, outbuf, n_write) != n_write)
+      ఒకవేళ (నిండిన_write (STDOUT_FILENO, outbuf, n_write) != n_write)
         write_error ();
       *bpout = outbuf;
     }
@@ -226,80 +226,80 @@ write_pending (char *outbuf, char **bpout)
    A newline character is always put at the end of the buffer, to make
    an explicit test for buffer end unnecessary.  */
 
-static bool
-cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
-     bool show_nonprinting, bool show_tabs, bool number, bool number_nonblank,
-     bool show_ends, bool squeeze_blank)
+స్థిర bool
+cat (అక్షరం *inbuf, idx_t insize, అక్షరం *outbuf, idx_t outsize,
+     bool show_nonprinting, bool show_tabs, bool సంఖ్య, bool సంఖ్య_nonblank,
+     bool show_చివర్లు, bool squeeze_blank)
 {
   /* Last character read from the input buffer.  */
-  unsigned char ch;
+  గుర్తులేని అక్షరం ch;
 
   /* Determines how many consecutive newlines there have been in the
      input.  0 newlines makes NEWLINES -1, 1 newline makes NEWLINES 1,
      etc.  Initially 0 to indicate that we are at the beginning of a
      new line.  The "state" of the procedure is determined by
      NEWLINES.  */
-  int newlines = newlines2;
+  పూర్ణాంకం newlines = newlines2;
 
-#ifdef FIONREAD
+#నిర్వచితమైతే FIONREAD
   /* If nonzero, use the FIONREAD ioctl, as an optimization.
      (On Ultrix, it is not supported on NFS file systems.)  */
   bool use_fionread = true;
-#endif
+#అయితే_ముగింపు
 
   /* The inbuf pointers are initialized so that BPIN > EOB, and thereby input
      is read immediately.  */
 
   /* Pointer to the first non-valid byte in the input buffer, i.e., the
      current end of the buffer.  */
-  char *eob = inbuf;
+  అక్షరం *eob = inbuf;
 
   /* Pointer to the next character in the input buffer.  */
-  char *bpin = eob + 1;
+  అక్షరం *bpin = eob + 1;
 
   /* Pointer to the position where the next character shall be written.  */
-  char *bpout = outbuf;
+  అక్షరం *bpout = outbuf;
 
-  while (true)
+  అయితే (true)
     {
-      do
+      చేయి
         {
           /* Write if there are at least OUTSIZE bytes in OUTBUF.  */
 
-          if (outbuf + outsize <= bpout)
+          ఒకవేళ (outbuf + outsize <= bpout)
             {
-              char *wp = outbuf;
-              idx_t remaining_bytes;
-              do
+              అక్షరం *wp = outbuf;
+              idx_t మిగిలిన_బైట్లు;
+              చేయి
                 {
-                  if (full_write (STDOUT_FILENO, wp, outsize) != outsize)
+                  ఒకవేళ (నిండిన_write (STDOUT_FILENO, wp, outsize) != outsize)
                     write_error ();
                   wp += outsize;
-                  remaining_bytes = bpout - wp;
+                  మిగిలిన_బైట్లు = bpout - wp;
                 }
-              while (outsize <= remaining_bytes);
+              అయితే (outsize <= మిగిలిన_బైట్లు);
 
               /* Move the remaining bytes to the beginning of the
                  buffer.  */
 
-              memmove (outbuf, wp, remaining_bytes);
-              bpout = outbuf + remaining_bytes;
+              memmove (outbuf, wp, మిగిలిన_బైట్లు);
+              bpout = outbuf + మిగిలిన_బైట్లు;
             }
 
           /* Is INBUF empty?  */
 
-          if (bpin > eob)
+          ఒకవేళ (bpin > eob)
             {
-              bool input_pending = false;
-#ifdef FIONREAD
-              int n_to_read = 0;
+              bool ఆదానం_pending = false;
+#నిర్వచితమైతే FIONREAD
+              పూర్ణాంకం n_గమ్యం_read = 0;
 
               /* Is there any input to read immediately?
                  If not, we are about to wait,
                  so write all buffered output before waiting.  */
 
-              if (use_fionread
-                  && ioctl (input_desc, FIONREAD, &n_to_read) < 0)
+              ఒకవేళ (use_fionread
+                  && ioctl (ఆదానం_desc, FIONREAD, &n_గమ్యం_read) < 0)
                 {
                   /* Ultrix returns EOPNOTSUPP on NFS;
                      HP-UX returns ENOTTY on pipes.
@@ -307,40 +307,40 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
                      More/BSD returns ENODEV on special files
                      like /dev/null.
                      Irix-5 returns ENOSYS on pipes.  */
-                  if (errno == EOPNOTSUPP || errno == ENOTTY
+                  ఒకవేళ (errno == EOPNOTSUPP || errno == ENOTTY
                       || errno == EINVAL || errno == ENODEV
                       || errno == ENOSYS)
                     use_fionread = false;
-                  else
+                  లేకపోతే
                     {
                       error (0, errno, _("cannot do ioctl on %s"),
                              quoteaf (infile));
                       newlines2 = newlines;
-                      return false;
+                      తిరిగి false;
                     }
                 }
-              if (n_to_read != 0)
-                input_pending = true;
-#endif
+              ఒకవేళ (n_గమ్యం_read != 0)
+                ఆదానం_pending = true;
+#అయితే_ముగింపు
 
-              if (!input_pending)
+              ఒకవేళ (!ఆదానం_pending)
                 write_pending (outbuf, &bpout);
 
               /* Read more input into INBUF.  */
 
-              ssize_t n_read = read (input_desc, inbuf, insize);
-              if (n_read < 0)
+              ssize_t n_read = పఠ (ఆదానం_desc, inbuf, insize);
+              ఒకవేళ (n_read < 0)
                 {
                   error (0, errno, "%s", quotef (infile));
                   write_pending (outbuf, &bpout);
                   newlines2 = newlines;
-                  return false;
+                  తిరిగి false;
                 }
-              if (n_read == 0)
+              ఒకవేళ (n_read == 0)
                 {
                   write_pending (outbuf, &bpout);
                   newlines2 = newlines;
-                  return true;
+                  తిరిగి true;
                 }
 
               /* Update the pointers and insert a sentinel at the buffer
@@ -350,16 +350,16 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
               eob = bpin + n_read;
               *eob = '\n';
             }
-          else
+          లేకపోతే
             {
               /* It was a real (not a sentinel) newline.  */
 
               /* Was the last line empty?
                  (i.e., have two or more consecutive newlines been read?)  */
 
-              if (++newlines > 0)
+              ఒకవేళ (++newlines > 0)
                 {
-                  if (newlines >= 2)
+                  ఒకవేళ (newlines >= 2)
                     {
                       /* Limit this to 2 here.  Otherwise, with lots of
                          consecutive newlines, the counter could wrap
@@ -369,26 +369,26 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
                       /* Are multiple adjacent empty lines to be substituted
                          by single ditto (-s), and this was the second empty
                          line?  */
-                      if (squeeze_blank)
+                      ఒకవేళ (squeeze_blank)
                         {
                           ch = *bpin++;
-                          continue;
+                          కొనసాగు;
                         }
                     }
 
                   /* Are line numbers to be written at empty lines (-n)?  */
 
-                  if (number && !number_nonblank)
+                  ఒకవేళ (సంఖ్య && !సంఖ్య_nonblank)
                     {
-                      next_line_num ();
-                      bpout = stpcpy (bpout, line_num_print);
+                      తదుపరి_పంక్తి_అంకె ();
+                      bpout = stpcpy (bpout, పంక్తి_అంకె_print);
                     }
                 }
 
               /* Output a currency symbol if requested (-e).  */
-              if (show_ends)
+              ఒకవేళ (show_చివర్లు)
                 {
-                  if (pending_cr)
+                  ఒకవేళ (pending_cr)
                     {
                       *bpout++ = '^';
                       *bpout++ = 'M';
@@ -403,11 +403,11 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
             }
           ch = *bpin++;
         }
-      while (ch == '\n');
+      అయితే (ch == '\n');
 
       /* Here CH cannot contain a newline character.  */
 
-      if (pending_cr)
+      ఒకవేళ (pending_cr)
         {
           *bpout++ = '\r';
           pending_cr = false;
@@ -415,10 +415,10 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
 
       /* Are we at the beginning of a line, and line numbers are requested?  */
 
-      if (newlines >= 0 && number)
+      ఒకవేళ (newlines >= 0 && సంఖ్య)
         {
-          next_line_num ();
-          bpout = stpcpy (bpout, line_num_print);
+          తదుపరి_పంక్తి_అంకె ();
+          bpout = stpcpy (bpout, పంక్తి_అంకె_print);
         }
 
       /* The loops below continue until a newline character is found,
@@ -427,48 +427,48 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
 
       /* If quoting, i.e., at least one of -v, -e, or -t specified,
          scan for chars that need conversion.  */
-      if (show_nonprinting)
+      ఒకవేళ (show_nonprinting)
         {
-          while (true)
+          అయితే (true)
             {
-              if (ch >= 32)
+              ఒకవేళ (ch >= 32)
                 {
-                  if (ch < 127)
+                  ఒకవేళ (ch < 127)
                     *bpout++ = ch;
-                  else if (ch == 127)
+                  లేకపోతే ఒకవేళ (ch == 127)
                     {
                       *bpout++ = '^';
                       *bpout++ = '?';
                     }
-                  else
+                  లేకపోతే
                     {
                       *bpout++ = 'M';
                       *bpout++ = '-';
-                      if (ch >= 128 + 32)
+                      ఒకవేళ (ch >= 128 + 32)
                         {
-                          if (ch < 128 + 127)
+                          ఒకవేళ (ch < 128 + 127)
                             *bpout++ = ch - 128;
-                          else
+                          లేకపోతే
                             {
                               *bpout++ = '^';
                               *bpout++ = '?';
                             }
                         }
-                      else
+                      లేకపోతే
                         {
                           *bpout++ = '^';
                           *bpout++ = ch - 128 + 64;
                         }
                     }
                 }
-              else if (ch == '\t' && !show_tabs)
+              లేకపోతే ఒకవేళ (ch == '\t' && !show_tabs)
                 *bpout++ = '\t';
-              else if (ch == '\n')
+              లేకపోతే ఒకవేళ (ch == '\n')
                 {
                   newlines = -1;
-                  break;
+                  ఆపు;
                 }
-              else
+              లేకపోతే
                 {
                   *bpout++ = '^';
                   *bpout++ = ch + 64;
@@ -477,35 +477,35 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
               ch = *bpin++;
             }
         }
-      else
+      లేకపోతే
         {
           /* Not quoting, neither of -v, -e, or -t specified.  */
-          while (true)
+          అయితే (true)
             {
-              if (ch == '\t' && show_tabs)
+              ఒకవేళ (ch == '\t' && show_tabs)
                 {
                   *bpout++ = '^';
                   *bpout++ = ch + 64;
                 }
-              else if (ch != '\n')
+              లేకపోతే ఒకవేళ (ch != '\n')
                 {
-                  if (ch == '\r' && *bpin == '\n' && show_ends)
+                  ఒకవేళ (ch == '\r' && *bpin == '\n' && show_చివర్లు)
                     {
-                      if (bpin == eob)
+                      ఒకవేళ (bpin == eob)
                         pending_cr = true;
-                      else
+                      లేకపోతే
                         {
                           *bpout++ = '^';
                           *bpout++ = 'M';
                         }
                     }
-                  else
+                  లేకపోతే
                     *bpout++ = ch;
                 }
-              else
+              లేకపోతే
                 {
                   newlines = -1;
-                  break;
+                  ఆపు;
                 }
 
               ch = *bpin++;
@@ -518,8 +518,8 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
    Return 1 if successful, 0 if ordinary read+write should be tried,
    -1 if a serious problem has been diagnosed.  */
 
-static int
-copy_cat (void)
+స్థిర పూర్ణాంకం
+copy_cat (శూన్య)
 {
   /* Copy at most COPY_MAX bytes at a time; this is min
      (SSIZE_MAX, SIZE_MAX) truncated to a value that is
@@ -532,20 +532,20 @@ copy_cat (void)
      so fall back on read+write if the copy_file_range is
      unsupported or the input file seems empty.  */
 
-  for (bool some_copied = false; ; some_copied = true)
-    switch (copy_file_range (input_desc, NULL, STDOUT_FILENO, NULL,
+  కొరకు (bool some_copied = false; ; some_copied = true)
+    ఎంపిక (copy_file_range (ఆదానం_desc, ఖాళీ, STDOUT_FILENO, ఖాళీ,
                              copy_max, 0))
       {
-      case 0:
-        return some_copied;
+      స్థితి 0:
+        తిరిగి some_copied;
 
-      case -1:
-        if (errno == ENOSYS || is_ENOTSUP (errno) || errno == EINVAL
+      స్థితి -1:
+        ఒకవేళ (errno == ENOSYS || is_ENOTSUP (errno) || errno == EINVAL
             || errno == EBADF || errno == EXDEV || errno == ETXTBSY
             || errno == EPERM || errno == EFBIG)
-          return 0;
+          తిరిగి 0;
         error (0, errno, "%s", quotef (infile));
-        return -1;
+        తిరిగి -1;
       }
 }
 
@@ -553,164 +553,164 @@ copy_cat (void)
    Return 1 if successful, 0 if ordinary read+write should be tried,
    -1 if a serious problem has been diagnosed.  */
 
-static int
-splice_cat (void)
+స్థిర పూర్ణాంకం
+splice_cat (శూన్య)
 {
   bool some_copied = false;
-  bool in_ok = true;
-  bool out_ok = true;
+  bool లోపల_ok = true;
+  bool బహిర్గతం_ok = true;
 
-#if HAVE_SPLICE
+#ఒకవేళ HAVE_SPLICE
 
   /* If PIPEFD[0] is a non-negative value, we have an open pipe from a
      previous call to this function.  At the start of this function the
      pipe will always be empty.  */
-  static int pipefd[2] = { -1, -1 };
+  స్థిర పూర్ణాంకం pipefd[2] = { -1, -1 };
 
   /* The size of the pipe referred to by PIPEFD.  */
-  static idx_t pipefd_pipe_size = 0;
+  స్థిర idx_t pipefd_pipe_కొలత = 0;
 
   /* Create an intermediate pipe if it is not already open.
      Even if both input and output are pipes,
      so that read and write errors can be distinguished.  */
-  if (pipefd[0] < 0)
+  ఒకవేళ (pipefd[0] < 0)
     {
-      if (pipe (pipefd) < 0)
-        return false;
-      pipefd_pipe_size = increase_pipe_size (pipefd[1]);
+      ఒకవేళ (pipe (pipefd) < 0)
+        తిరిగి false;
+      pipefd_pipe_కొలత = increase_pipe_కొలత (pipefd[1]);
     }
 
   /* Increase the size of the pipe referred to by standard output.  */
-  static int stdout_is_pipe = -1;
-  static idx_t stdout_pipe_size = 0;
-  if (stdout_is_pipe == -1)
+  స్థిర పూర్ణాంకం stdout_is_pipe = -1;
+  స్థిర idx_t stdout_pipe_కొలత = 0;
+  ఒకవేళ (stdout_is_pipe == -1)
     {
       stdout_is_pipe = 0 < isapipe (STDOUT_FILENO);
-      if (stdout_is_pipe)
-        stdout_pipe_size = increase_pipe_size (STDOUT_FILENO);
+      ఒకవేళ (stdout_is_pipe)
+        stdout_pipe_కొలత = increase_pipe_కొలత (STDOUT_FILENO);
     }
 
-  idx_t pipe_size = MAX (pipefd_pipe_size, stdout_pipe_size);
+  idx_t pipe_కొలత = MAX (pipefd_pipe_కొలత, stdout_pipe_కొలత);
 
-  while (true)
+  అయితే (true)
     {
-      ssize_t bytes_read = splice (input_desc, NULL, pipefd[1], NULL,
-                                   pipe_size, 0);
+      ssize_t బైట్లు_read = splice (ఆదానం_desc, ఖాళీ, pipefd[1], ఖాళీ,
+                                   pipe_కొలత, 0);
       /* If we successfully splice'd input previously, assume that any
          subsequent error is fatal.  If not, then fall back to read
          and write.  */
-      in_ok = 0 <= bytes_read || ! some_copied;
-      if (bytes_read == 0)
+      లోపల_ok = 0 <= బైట్లు_read || ! some_copied;
+      ఒకవేళ (బైట్లు_read == 0)
         some_copied = true;  /* Indicate splice complete.  */
-      if (bytes_read <= 0)
-        goto done;
+      ఒకవేళ (బైట్లు_read <= 0)
+        వెళ్ళు పూర్తి;
       /* We need to drain the intermediate pipe to standard output.  */
-      while (0 < bytes_read)
+      అయితే (0 < బైట్లు_read)
         {
-          ssize_t bytes_written = splice (pipefd[0], NULL, STDOUT_FILENO, NULL,
-                                          pipe_size, 0);
+          ssize_t బైట్లు_written = splice (pipefd[0], ఖాళీ, STDOUT_FILENO, ఖాళీ,
+                                          pipe_కొలత, 0);
           /* If we successfully splice'd output, assume any subsequent
              error is fatal.  If not, than drain the intermediate pipe and
              continue using read and write.  */
-          if (bytes_written < 0)
+          ఒకవేళ (బైట్లు_written < 0)
             {
-              if (some_copied)
-                out_ok = false;
-              else
+              ఒకవేళ (some_copied)
+                బహిర్గతం_ok = false;
+              లేకపోతే
                 {
-                  char buf[BUFSIZ];
-                  while (0 < bytes_read)
+                  అక్షరం buf[BUFSIZ];
+                  అయితే (0 < బైట్లు_read)
                     {
-                      ssize_t count = MIN (bytes_read, sizeof buf);
-                      ssize_t n_read = read (pipefd[0], buf, count);
+                      ssize_t లెక్క = MIN (బైట్లు_read, పరిమాణం buf);
+                      ssize_t n_read = పఠ (pipefd[0], buf, లెక్క);
                       /* Failure not associated with in or out.  */
-                      in_ok = out_ok = 0 <= n_read;
-                      if (n_read <= 0)
-                        goto done;
-                      if (full_write (STDOUT_FILENO, buf, n_read) != n_read)
+                      లోపల_ok = బహిర్గతం_ok = 0 <= n_read;
+                      ఒకవేళ (n_read <= 0)
+                        వెళ్ళు పూర్తి;
+                      ఒకవేళ (నిండిన_write (STDOUT_FILENO, buf, n_read) != n_read)
                         write_error ();
-                      bytes_read -= n_read;
+                      బైట్లు_read -= n_read;
                     }
                 }
             }
-          if (bytes_written <= 0)
-            goto done;
+          ఒకవేళ (బైట్లు_written <= 0)
+            వెళ్ళు పూర్తి;
           some_copied = true;
-          bytes_read -= bytes_written;
+          బైట్లు_read -= బైట్లు_written;
         }
     }
 
- done:
-  if (! in_ok && ! out_ok)
+ పూర్తి:
+  ఒకవేళ (! లోపల_ok && ! బహిర్గతం_ok)
     {
       /* Recreate the pipe on internal error.  */
-      int saved_errno = errno;
+      పూర్ణాంకం saved_errno = errno;
       close (pipefd[0]);
       close (pipefd[1]);
       errno = saved_errno;
       pipefd[0] = pipefd[1] = -1;
-      pipefd_pipe_size = 0;
+      pipefd_pipe_కొలత = 0;
       error (0, errno, "%s", _("splice error"));
     }
-  else if (! in_ok)
+  లేకపోతే ఒకవేళ (! లోపల_ok)
     error (0, errno, "%s", quotef (infile));
-  else if (! out_ok)
+  లేకపోతే ఒకవేళ (! బహిర్గతం_ok)
     write_error ();
-#endif
+#అయితే_ముగింపు
 
-  return (in_ok && out_ok) ? some_copied : -1;
+  తిరిగి (లోపల_ok && బహిర్గతం_ok) ? some_copied : -1;
 }
 
 /* Reuse an aligned buffer across inputs, growing it only as needed.  */
 
-static char *
-ensure_buf_size (char *buf, idx_t *buf_alloc, idx_t alignment, idx_t size)
+స్థిర అక్షరం *
+ensure_buf_కొలత (అక్షరం *buf, idx_t *buf_alloc, idx_t alignment, idx_t కొలత)
 {
-  affirm (buf != NULL || *buf_alloc < size);
+  affirm (buf != ఖాళీ || *buf_alloc < కొలత);
 
-  if (*buf_alloc < size)
+  ఒకవేళ (*buf_alloc < కొలత)
     {
       alignfree (buf);
-      buf = xalignalloc (alignment, size);
-      *buf_alloc = size;
+      buf = xalignalloc (alignment, కొలత);
+      *buf_alloc = కొలత;
     }
 
-  return buf;
+  తిరిగి buf;
 }
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
   /* Nonzero if we have ever read standard input.  */
   bool have_read_stdin = false;
 
-  struct stat ostat_buf;
+  నిర్మాణం stat ostat_buf;
 
   /* Variables that are set according to the specified options.  */
-  bool number = false;
-  bool number_nonblank = false;
+  bool సంఖ్య = false;
+  bool సంఖ్య_nonblank = false;
   bool squeeze_blank = false;
-  bool show_ends = false;
+  bool show_చివర్లు = false;
   bool show_nonprinting = false;
   bool show_tabs = false;
-  int file_open_mode = O_RDONLY;
+  పూర్ణాంకం file_open_బహుళకం = O_RDONLY;
 
-  static struct option const long_options[] =
+  స్థిర నిర్మాణం option స్థిరరాశి long_options[] =
   {
-    {"number-nonblank", no_argument, NULL, 'b'},
-    {"number", no_argument, NULL, 'n'},
-    {"squeeze-blank", no_argument, NULL, 's'},
-    {"show-nonprinting", no_argument, NULL, 'v'},
-    {"show-ends", no_argument, NULL, 'E'},
-    {"show-tabs", no_argument, NULL, 'T'},
-    {"show-all", no_argument, NULL, 'A'},
+    {"number-nonblank", no_వాదం, ఖాళీ, 'b'},
+    {"number", no_వాదం, ఖాళీ, 'n'},
+    {"squeeze-blank", no_వాదం, ఖాళీ, 's'},
+    {"show-nonprinting", no_వాదం, ఖాళీ, 'v'},
+    {"show-ends", no_వాదం, ఖాళీ, 'E'},
+    {"show-tabs", no_వాదం, ఖాళీ, 'T'},
+    {"show-all", no_వాదం, ఖాళీ, 'A'},
     {GETOPT_HELP_OPTION_DECL},
-    {GETOPT_VERSION_OPTION_DECL},
-    {NULL, 0, NULL, 0}
+    {GETOPT_సంస్కరణ_OPTION_DECL},
+    {ఖాళీ, 0, ఖాళీ, 0}
   };
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
@@ -723,156 +723,156 @@ main (int argc, char **argv)
 
   /* Parse command line options.  */
 
-  int c;
-  while ((c = getopt_long (argc, argv, "benstuvAET", long_options, NULL))
+  పూర్ణాంకం c;
+  అయితే ((c = getopt_long (argc, argv, "benstuvAET", long_options, ఖాళీ))
          != -1)
     {
-      switch (c)
+      ఎంపిక (c)
         {
-        case 'b':
-          number = true;
-          number_nonblank = true;
-          break;
+        స్థితి 'b':
+          సంఖ్య = true;
+          సంఖ్య_nonblank = true;
+          ఆపు;
 
-        case 'e':
-          show_ends = true;
+        స్థితి 'e':
+          show_చివర్లు = true;
           show_nonprinting = true;
-          break;
+          ఆపు;
 
-        case 'n':
-          number = true;
-          break;
+        స్థితి 'n':
+          సంఖ్య = true;
+          ఆపు;
 
-        case 's':
+        స్థితి 's':
           squeeze_blank = true;
-          break;
+          ఆపు;
 
-        case 't':
+        స్థితి 't':
           show_tabs = true;
           show_nonprinting = true;
-          break;
+          ఆపు;
 
-        case 'u':
+        స్థితి 'u':
           /* We provide the -u feature unconditionally.  */
-          break;
+          ఆపు;
 
-        case 'v':
+        స్థితి 'v':
           show_nonprinting = true;
-          break;
+          ఆపు;
 
-        case 'A':
+        స్థితి 'A':
           show_nonprinting = true;
-          show_ends = true;
+          show_చివర్లు = true;
           show_tabs = true;
-          break;
+          ఆపు;
 
-        case 'E':
-          show_ends = true;
-          break;
+        స్థితి 'E':
+          show_చివర్లు = true;
+          ఆపు;
 
-        case 'T':
+        స్థితి 'T':
           show_tabs = true;
-          break;
+          ఆపు;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_సంస్కరణ_CHAR (కార్యక్రమం_NAME, AUTHORS);
 
-        default:
+        అప్రమేయ:
           usage (EXIT_FAILURE);
         }
     }
 
   /* Get device, i-node number, and optimal blocksize of output.  */
 
-  if (fstat (STDOUT_FILENO, &ostat_buf) < 0)
+  ఒకవేళ (fstat (STDOUT_FILENO, &ostat_buf) < 0)
     error (EXIT_FAILURE, errno, _("standard output"));
 
   /* Optimal size of i/o operations of output.  */
   idx_t outsize = io_blksize (&ostat_buf);
 
   /* Device, I-node number and lazily-acquired flags of the output.  */
-  int out_flags = -2;
+  పూర్ణాంకం బహిర్గతం_flags = -2;
 
   /* True if the output is a regular file.  */
-  bool out_isreg = S_ISREG (ostat_buf.st_mode) != 0;
+  bool బహిర్గతం_isreg = S_ISREG (ostat_buf.st_బహుళకం) != 0;
 
-  if (! (number || show_ends || squeeze_blank))
+  ఒకవేళ (! (సంఖ్య || show_చివర్లు || squeeze_blank))
     {
-      file_open_mode |= O_BINARY;
-      xset_binary_mode (STDOUT_FILENO, O_BINARY);
+      file_open_బహుళకం |= O_ద్విమాన;
+      xset_ద్విమాన_బహుళకం (STDOUT_FILENO, O_ద్విమాన);
     }
 
   /* Main loop.  */
 
   infile = "-";
-  int argind = optind;
+  పూర్ణాంకం argind = optind;
   bool ok = true;
-  idx_t page_size = getpagesize ();
-  char *inbuf = NULL;
-  char *outbuf = NULL;
+  idx_t పుట_కొలత = getpagesize ();
+  అక్షరం *inbuf = ఖాళీ;
+  అక్షరం *outbuf = ఖాళీ;
   idx_t inbuf_alloc = 0;
   idx_t outbuf_alloc = 0;
 
-  do
+  చేయి
     {
-      if (argind < argc)
+      ఒకవేళ (argind < argc)
         infile = argv[argind];
 
       bool reading_stdin = streq (infile, "-");
-      if (reading_stdin)
+      ఒకవేళ (reading_stdin)
         {
           have_read_stdin = true;
-          input_desc = STDIN_FILENO;
-          if (file_open_mode & O_BINARY)
-            xset_binary_mode (STDIN_FILENO, O_BINARY);
+          ఆదానం_desc = STDIN_FILENO;
+          ఒకవేళ (file_open_బహుళకం & O_ద్విమాన)
+            xset_ద్విమాన_బహుళకం (STDIN_FILENO, O_ద్విమాన);
         }
-      else
+      లేకపోతే
         {
-          input_desc = open (infile, file_open_mode);
-          if (input_desc < 0)
+          ఆదానం_desc = open (infile, file_open_బహుళకం);
+          ఒకవేళ (ఆదానం_desc < 0)
             {
               error (0, errno, "%s", quotef (infile));
               ok = false;
-              continue;
+              కొనసాగు;
             }
         }
 
-      struct stat istat_buf;
-      if (fstat (input_desc, &istat_buf) < 0)
+      నిర్మాణం stat istat_buf;
+      ఒకవేళ (fstat (ఆదానం_desc, &istat_buf) < 0)
         {
           error (0, errno, "%s", quotef (infile));
           ok = false;
-          goto contin;
+          వెళ్ళు contin;
         }
 
       /* Optimal size of i/o operations of input.  */
       idx_t insize = io_blksize (&istat_buf);
 
-      fdadvise (input_desc, 0, 0, FADVISE_SEQUENTIAL);
+      fdadvise (ఆదానం_desc, 0, 0, FADVISE_SEQUENTIAL);
 
       /* Don't copy a file to itself if that would merely exhaust the
          output device.  It's better to catch this error earlier
          rather than later.  */
 
-      if (! (S_ISFIFO (istat_buf.st_mode) || S_ISSOCK (istat_buf.st_mode)
+      ఒకవేళ (! (S_ISFIFO (istat_buf.st_బహుళకం) || S_ISSOCK (istat_buf.st_బహుళకం)
              || S_TYPEISSHM (&istat_buf) || S_TYPEISTMO (&istat_buf))
           && ! (S_TYPEISSHM (&ostat_buf) || S_TYPEISTMO (&ostat_buf))
           && SAME_INODE (istat_buf, ostat_buf))
         {
-          off_t in_pos = lseek (input_desc, 0, SEEK_CUR);
-          if (0 <= in_pos)
+          off_t లోపల_pos = lseek (ఆదానం_desc, 0, SEEK_CUR);
+          ఒకవేళ (0 <= లోపల_pos)
             {
-              if (out_flags < -1)
-                out_flags = fcntl (STDOUT_FILENO, F_GETFL);
-              int whence = (0 <= out_flags && out_flags & O_APPEND
+              ఒకవేళ (బహిర్గతం_flags < -1)
+                బహిర్గతం_flags = fcntl (STDOUT_FILENO, F_GETFL);
+              పూర్ణాంకం whence = (0 <= బహిర్గతం_flags && బహిర్గతం_flags & O_APPEND
                             ? SEEK_END : SEEK_CUR);
-              if (in_pos < lseek (STDOUT_FILENO, 0, whence))
+              ఒకవేళ (లోపల_pos < lseek (STDOUT_FILENO, 0, whence))
                 {
                   error (0, 0, _("%s: input file is output file"),
                          quotef (infile));
                   ok = false;
-                  goto contin;
+                  వెళ్ళు contin;
                 }
             }
         }
@@ -881,38 +881,38 @@ main (int argc, char **argv)
          options were given use 'cat'; if not, use 'copy_cat' if it
          works, 'simple_cat' otherwise.  */
 
-      if (! (number || show_ends || show_nonprinting
+      ఒకవేళ (! (సంఖ్య || show_చివర్లు || show_nonprinting
              || show_tabs || squeeze_blank))
         {
-          int copy_cat_status =
-            out_isreg && S_ISREG (istat_buf.st_mode) ? copy_cat () : 0;
-          if (copy_cat_status != 0)
-            ok &= 0 < copy_cat_status;
-          else
+          పూర్ణాంకం copy_cat_స్థితి =
+            బహిర్గతం_isreg && S_ISREG (istat_buf.st_బహుళకం) ? copy_cat () : 0;
+          ఒకవేళ (copy_cat_స్థితి != 0)
+            ok &= 0 < copy_cat_స్థితి;
+          లేకపోతే
             {
               /* Note 32768 was determined as the limit when splice
                  starts to have a performance advantage.
                  It also excludes zero length files which may not
                  be compatible with splice in some edge cases.  */
-              int splice_cat_status = ((usable_st_size (&istat_buf)
-                                        && istat_buf.st_size <= 32768)
+              పూర్ణాంకం splice_cat_స్థితి = ((usable_st_కొలత (&istat_buf)
+                                        && istat_buf.st_కొలత <= 32768)
                                        ? 0 : splice_cat ());
-              if (splice_cat_status != 0)
-                ok &= 0 < splice_cat_status;
-              else
+              ఒకవేళ (splice_cat_స్థితి != 0)
+                ok &= 0 < splice_cat_స్థితి;
+              లేకపోతే
                 {
                   insize = MAX (insize, outsize);
-                  inbuf = ensure_buf_size (inbuf, &inbuf_alloc,
-                                           page_size, insize);
+                  inbuf = ensure_buf_కొలత (inbuf, &inbuf_alloc,
+                                           పుట_కొలత, insize);
                   ok &= simple_cat (inbuf, insize);
                 }
             }
         }
-      else
+      లేకపోతే
         {
           /* Allocate, with an extra byte for a newline sentinel.  */
-          inbuf = ensure_buf_size (inbuf, &inbuf_alloc,
-                                   page_size, insize + 1);
+          inbuf = ensure_buf_కొలత (inbuf, &inbuf_alloc,
+                                   పుట_కొలత, insize + 1);
 
           /* Why are
              (OUTSIZE - 1 + INSIZE * 4 + LINE_COUNTER_BUF_LEN)
@@ -936,40 +936,40 @@ main (int argc, char **argv)
              on some paging implementations.  */
 
           idx_t bufsize;
-          if (ckd_mul (&bufsize, insize, 4)
-              || ckd_add (&bufsize, bufsize, outsize)
-              || ckd_add (&bufsize, bufsize, LINE_COUNTER_BUF_LEN - 1))
+          ఒకవేళ (ckd_mul (&bufsize, insize, 4)
+              || ckd_కూడు (&bufsize, bufsize, outsize)
+              || ckd_కూడు (&bufsize, bufsize, పంక్తి_COUNTER_BUF_LEN - 1))
             xalloc_die ();
-          outbuf = ensure_buf_size (outbuf, &outbuf_alloc,
-                                    page_size, bufsize);
+          outbuf = ensure_buf_కొలత (outbuf, &outbuf_alloc,
+                                    పుట_కొలత, bufsize);
 
           ok &= cat (inbuf, insize, outbuf, outsize, show_nonprinting,
-                     show_tabs, number, number_nonblank, show_ends,
+                     show_tabs, సంఖ్య, సంఖ్య_nonblank, show_చివర్లు,
                      squeeze_blank);
         }
 
     contin:
-      if (!reading_stdin && close (input_desc) < 0)
+      ఒకవేళ (!reading_stdin && close (ఆదానం_desc) < 0)
         {
           error (0, errno, "%s", quotef (infile));
           ok = false;
         }
     }
-  while (++argind < argc);
+  అయితే (++argind < argc);
 
-  if (pending_cr)
+  ఒకవేళ (pending_cr)
     {
-      if (full_write (STDOUT_FILENO, "\r", 1) != 1)
+      ఒకవేళ (నిండిన_write (STDOUT_FILENO, "\r", 1) != 1)
         write_error ();
     }
 
-#ifdef lint
+#నిర్వచితమైతే lint
   alignfree (outbuf);
   alignfree (inbuf);
-#endif
+#అయితే_ముగింపు
 
-  if (have_read_stdin && close (STDIN_FILENO) < 0)
+  ఒకవేళ (have_read_stdin && close (STDIN_FILENO) < 0)
     error (EXIT_FAILURE, errno, _("closing standard input"));
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  తిరిగి ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

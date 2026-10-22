@@ -16,162 +16,162 @@
 
 /* Written by Pádraig Brady  */
 
-#include <config.h>             /* sets _FILE_OFFSET_BITS=64 etc. */
-#include <signal.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <float.h>
+#అన్తర్భావ <config.h>             /* sets _FILE_OFFSET_BITS=64 etc. */
+#అన్తర్భావ <signal.h>
+#అన్తర్భావ <stdio.h>
+#అన్తర్భావ <sys/types.h>
+#అన్తర్భావ <float.h>
 
-#include "errno-iter.h"
-#include "ftoastr.h"
-#include "system.h"
-#include "ioblksize.h"
-#include "long-options.h"
+#అన్తర్భావ "errno-iter.h"
+#అన్తర్భావ "ftoastr.h"
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "ioblksize.h"
+#అన్తర్భావ "long-options.h"
 
-#define PROGRAM_NAME "getlimits"
+#నిర్వచించు కార్యక్రమం_NAME "getlimits"
 
-#define AUTHORS proper_name_lite ("Padraig Brady", "P\303\241draig Brady")
+#నిర్వచించు AUTHORS proper_name_lite ("Padraig Brady", "P\303\241draig Brady")
 
-#ifndef TIME_T_MAX
-# define TIME_T_MAX TYPE_MAXIMUM (time_t)
-#endif
+#నిర్వచితం_కాకపోతే సమయం_T_MAX
+# define సమయం_T_MAX TYPE_గరిష్ఠ (time_t)
+#అయితే_ముగింపు
 
-#ifndef TIME_T_MIN
-# define TIME_T_MIN TYPE_MINIMUM (time_t)
-#endif
+#నిర్వచితం_కాకపోతే సమయం_T_MIN
+# define సమయం_T_MIN TYPE_MINIMUM (time_t)
+#అయితే_ముగింపు
 
-#ifndef SSIZE_MIN
+#నిర్వచితం_కాకపోతే SSIZE_MIN
 # define SSIZE_MIN TYPE_MINIMUM (ssize_t)
-#endif
+#అయితే_ముగింపు
 
-#ifndef PID_T_MIN
+#నిర్వచితం_కాకపోతే PID_T_MIN
 # define PID_T_MIN TYPE_MINIMUM (pid_t)
-#endif
+#అయితే_ముగింపు
 
-#ifndef OFF64_T_MAX
-# define OFF64_T_MAX TYPE_MAXIMUM (off64_t)
-#endif
+#నిర్వచితం_కాకపోతే OFF64_T_MAX
+# define OFF64_T_MAX TYPE_గరిష్ఠ (off64_t)
+#అయితే_ముగింపు
 
-#ifndef OFF64_T_MIN
+#నిర్వచితం_కాకపోతే OFF64_T_MIN
 # define OFF64_T_MIN TYPE_MINIMUM (off64_t)
-#endif
+#అయితే_ముగింపు
 
-#ifndef SIGRTMIN
+#నిర్వచితం_కాకపోతే SIGRTMIN
 # define SIGRTMIN 0
 # undef SIGRTMAX
-#endif
-#ifndef SIGRTMAX
+#అయితే_ముగింపు
+#నిర్వచితం_కాకపోతే SIGRTMAX
 # define SIGRTMAX (SIGRTMIN - 1)
-#endif
+#అయితే_ముగింపు
 
 /* These are not interesting to print.
  * Instead of these defines it would be nice to be able to do
  * #ifdef (TYPE##_MIN) in function macro below.  */
-#define SIZE_MIN 0
-#define UCHAR_MIN 0
-#define UINT_MIN 0
-#define ULONG_MIN 0
-#define UINTMAX_MIN 0
-#define UID_T_MIN 0
-#define GID_T_MIN 0
+#నిర్వచించు కొలత_MIN 0
+#నిర్వచించు UCHAR_MIN 0
+#నిర్వచించు UINT_MIN 0
+#నిర్వచించు ULONG_MIN 0
+#నిర్వచించు UINTMAX_MIN 0
+#నిర్వచించు UID_T_MIN 0
+#నిర్వచించు GID_T_MIN 0
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("\
+      రాయి (_("\
 Usage: %s\n\
-"), program_name);
+"), కార్యక్రమం_name);
 
       fputs (_("\
-Output platform dependent limits in a format useful for shell scripts.\n\
+Output platform dependent limits లోపల a format useful కొరకు shell scripts.\n\
 \n\
 "), stdout);
       fputs (HELP_OPTION_DESCRIPTION, stdout);
-      fputs (VERSION_OPTION_DESCRIPTION, stdout);
-      emit_ancillary_info (PROGRAM_NAME);
+      fputs (సంస్కరణ_OPTION_DESCRIPTION, stdout);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
 /* Add one to the absolute value of the number whose textual
    representation is BUF + 1.  Do this in-place, in the buffer.
    Return a pointer to the result, which is normally BUF + 1, but is
    BUF if the representation grew in size.  */
-static char const *
-decimal_absval_add_one (char *buf)
+స్థిర అక్షరం స్థిరరాశి *
+decimal_absval_కూడు_one (అక్షరం *buf)
 {
   bool negative = (buf[1] == '-');
-  char *absnum = buf + 1 + negative;
-  char *p = absnum + strlen (absnum);
+  అక్షరం *absnum = buf + 1 + negative;
+  అక్షరం *p = absnum + అక్షరశ్రేణి_పొడవు (absnum);
   absnum[-1] = '0';
-  while (*--p == '9')
+  అయితే (*--p == '9')
     *p = '0';
   ++*p;
-  char *result = MIN (absnum, p);
-  if (negative)
-    *--result = '-';
-  return result;
+  అక్షరం *ఫలితం = MIN (absnum, p);
+  ఒకవేళ (negative)
+    *--ఫలితం = '-';
+  తిరిగి ఫలితం;
 }
 
-#define PRINT_FLOATTYPE(N, T, FTOASTR, BUFSIZE)                         \
-static void                                                             \
+#నిర్వచించు PRINT_FLOATTYPE(N, T, FTOASTR, BUFSIZE)                         \
+స్థిర శూన్య                                                             \
 N (T x)                                                                 \
 {                                                                       \
-  char buf[BUFSIZE];                                                    \
-  FTOASTR (buf, sizeof buf, FTOASTR_LEFT_JUSTIFY, 0, x);                \
+  అక్షరం buf[BUFSIZE];                                                    \
+  FTOASTR (buf, పరిమాణం buf, FTOASTR_ఎడమ_JUSTIFY, 0, x);                \
   puts (buf);                                                           \
 }
 
-PRINT_FLOATTYPE (print_FLT, float, ftoastr, FLT_BUFSIZE_BOUND)
-PRINT_FLOATTYPE (print_DBL, double, dtoastr, DBL_BUFSIZE_BOUND)
-PRINT_FLOATTYPE (print_LDBL, long double, ldtoastr, LDBL_BUFSIZE_BOUND)
+PRINT_FLOATTYPE (print_FLT, దశాంశం, ftoastr, FLT_BUFSIZE_BOUND)
+PRINT_FLOATTYPE (print_DBL, ద్విగుణ, dtoastr, DBL_BUFSIZE_BOUND)
+PRINT_FLOATTYPE (print_LDBL, దీర్ఘ ద్విగుణ, ldtoastr, LDBL_BUFSIZE_BOUND)
 
-static int
-print_errno (void *name, int e)
+స్థిర పూర్ణాంకం
+print_errno (శూన్య *name, పూర్ణాంకం e)
 {
-  char const *err_name = name ? name : strerrorname_np (e);
-  if (err_name)
-    printf ("%s=%s\n", err_name,
+  అక్షరం స్థిరరాశి *err_name = name ? name : strerrorname_np (e);
+  ఒకవేళ (err_name)
+    రాయి ("%s=%s\n", err_name,
             quotearg_style (shell_escape_quoting_style, strerror (e)));
-  return 0;
+  తిరిగి 0;
 }
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
-  char limit[1 + MAX (INT_BUFSIZE_BOUND (intmax_t),
+  అక్షరం హద్దు[1 + MAX (INT_BUFSIZE_BOUND (intmax_t),
                       INT_BUFSIZE_BOUND (uintmax_t))];
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
-                                   VERSION, true, usage, AUTHORS,
-                                   (char const *) NULL);
+  parse_gnu_standard_options_only (argc, argv, కార్యక్రమం_NAME, PACKAGE_NAME,
+                                   సంస్కరణ_2, true, usage, AUTHORS,
+                                   (అక్షరం స్థిరరాశి *) ఖాళీ);
 
-#define print_int(TYPE)                                                  \
-  sprintf (limit + 1, "%ju", (uintmax_t) {TYPE##_MAX});                  \
-  printf (#TYPE"_MAX=%s\n", limit + 1);                                  \
-  printf (#TYPE"_OFLOW=%s\n", decimal_absval_add_one (limit));           \
-  if (TYPE##_MIN)                                                        \
+#నిర్వచించు print_int(TYPE)                                                  \
+  sprintf (హద్దు + 1, "%ju", (uintmax_t) {TYPE##_MAX});                  \
+  రాయి (#TYPE"_MAX=%s\n", హద్దు + 1);                                  \
+  రాయి (#TYPE"_OFLOW=%s\n", decimal_absval_కూడు_one (హద్దు));           \
+  ఒకవేళ (TYPE##_MIN)                                                        \
     {                                                                    \
-      sprintf (limit + 1, "%jd", (intmax_t) {TYPE##_MIN});               \
-      printf (#TYPE"_MIN=%s\n", limit + 1);                              \
-      printf (#TYPE"_UFLOW=%s\n", decimal_absval_add_one (limit));       \
+      sprintf (హద్దు + 1, "%jd", (intmax_t) {TYPE##_MIN});               \
+      రాయి (#TYPE"_MIN=%s\n", హద్దు + 1);                              \
+      రాయి (#TYPE"_UFLOW=%s\n", decimal_absval_కూడు_one (హద్దు));       \
     }
 
-#define print_float(TYPE)                                                \
-  printf (#TYPE"_MIN="); print_##TYPE (TYPE##_MIN);                      \
-  printf (#TYPE"_MAX="); print_##TYPE (TYPE##_MAX);
+#నిర్వచించు print_float(TYPE)                                                \
+  రాయి (#TYPE"_MIN="); print_##TYPE (TYPE##_MIN);                      \
+  రాయి (#TYPE"_MAX="); print_##TYPE (TYPE##_MAX);
 
   /* Variable sized ints */
   print_int (CHAR);
@@ -182,9 +182,9 @@ main (int argc, char **argv)
   print_int (UINT);
   print_int (LONG);
   print_int (ULONG);
-  print_int (SIZE);
+  print_int (కొలత_2);
   print_int (SSIZE);
-  print_int (TIME_T);
+  print_int (సమయం_T);
   print_int (UID_T);
   print_int (GID_T);
   print_int (PID_T);
@@ -199,25 +199,25 @@ main (int argc, char **argv)
   print_float (LDBL);
 
   /* Other useful constants */
-  printf ("SIGRTMIN=%jd\n", (intmax_t) {SIGRTMIN});
-  printf ("SIGRTMAX=%jd\n", (intmax_t) {SIGRTMAX});
-  printf ("IO_BUFSIZE=%ju\n", (uintmax_t) {IO_BUFSIZE});
+  రాయి ("SIGRTMIN=%jd\n", (intmax_t) {SIGRTMIN});
+  రాయి ("SIGRTMAX=%jd\n", (intmax_t) {SIGRTMAX});
+  రాయి ("IO_BUFSIZE=%ju\n", (uintmax_t) {IO_BUFSIZE});
 
   /* Errnos */
-  errno_iterate (print_errno, NULL);
+  errno_iterate (print_errno, ఖాళీ);
   /* Common errno aliases */
-#if defined ENOTEMPTY && ENOTEMPTY == EEXIST
-  print_errno ((char*)"ENOTEMPTY", EEXIST);
-#endif
-#if defined ENOTSUP && ENOTSUP == EOPNOTSUPP
-  print_errno ((char*)"ENOTSUP", EOPNOTSUPP);
-#endif
-#if defined EWOULDBLOCK && EWOULDBLOCK == EAGAIN
-  print_errno ((char*)"EWOULDBLOCK", EAGAIN);
-#endif
-#if defined EDEADLOCK && EDEADLOCK == EDEADLK
-  print_errno ((char*)"EDEADLOCK", EDEADLK);
-#endif
+#ఒకవేళ defined ENOTEMPTY && ENOTEMPTY == EEXIST
+  print_errno ((అక్షరం*)"ENOTEMPTY", EEXIST);
+#అయితే_ముగింపు
+#ఒకవేళ defined ENOTSUP && ENOTSUP == EOPNOTSUPP
+  print_errno ((అక్షరం*)"ENOTSUP", EOPNOTSUPP);
+#అయితే_ముగింపు
+#ఒకవేళ defined EWOULDBLOCK && EWOULDBLOCK == EAGAIN
+  print_errno ((అక్షరం*)"EWOULDBLOCK", EAGAIN);
+#అయితే_ముగింపు
+#ఒకవేళ defined EDEADLOCK && EDEADLOCK == EDEADLK
+  print_errno ((అక్షరం*)"EDEADLOCK", EDEADLK);
+#అయితే_ముగింపు
 
-  return EXIT_SUCCESS;
+  తిరిగి EXIT_SUCCESS;
 }

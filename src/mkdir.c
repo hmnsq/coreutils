@@ -16,87 +16,87 @@
 
 /* David MacKenzie <djm@ai.mit.edu>  */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
-#include <selinux/label.h>
+#అన్తర్భావ <config.h>
+#అన్తర్భావ <stdio.h>
+#అన్తర్భావ <getopt.h>
+#అన్తర్భావ <sys/types.h>
+#అన్తర్భావ <selinux/label.h>
 
-#include "system.h"
-#include "mkdir-p.h"
-#include "modechange.h"
-#include "prog-fprintf.h"
-#include "quote.h"
-#include "savewd.h"
-#include "selinux.h"
-#include "smack.h"
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "mkdir-p.h"
+#అన్తర్భావ "modechange.h"
+#అన్తర్భావ "prog-fprintf.h"
+#అన్తర్భావ "quote.h"
+#అన్తర్భావ "savewd.h"
+#అన్తర్భావ "selinux.h"
+#అన్తర్భావ "smack.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "mkdir"
+#నిర్వచించు కార్యక్రమం_NAME "mkdir"
 
-#define AUTHORS proper_name ("David MacKenzie")
+#నిర్వచించు AUTHORS proper_name ("David MacKenzie")
 
-static struct option const longopts[] =
+స్థిర నిర్మాణం option స్థిరరాశి longopts[] =
 {
   {GETOPT_SELINUX_CONTEXT_OPTION_DECL},
-  {"mode", required_argument, NULL, 'm'},
-  {"parents", no_argument, NULL, 'p'},
-  {"verbose", no_argument, NULL, 'v'},
+  {"mode", required_వాదం, ఖాళీ, 'm'},
+  {"parents", no_వాదం, ఖాళీ, 'p'},
+  {"verbose", no_వాదం, ఖాళీ, 'v'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_సంస్కరణ_OPTION_DECL},
+  {ఖాళీ, 0, ఖాళీ, 0}
 };
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("Usage: %s [OPTION]... DIRECTORY...\n"), program_name);
+      రాయి (_("Usage: %s [OPTION]... DIRECTORY...\n"), కార్యక్రమం_name);
       fputs (_("\
-Create the DIRECTORY(ies), if they do not already exist.\n\
+Create the DIRECTORY(ies), ఒకవేళ they చేయి not already exist.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -m, --mode=MODE\n\
-         set file mode (as in chmod), not a=rwx - umask\n\
+  -m, --బహుళకం_2=బహుళకం\n\
+         సమితి_2 file బహుళకం_2 (as లోపల chmod), not a=rwx - umask\n\
 "));
       oputs (_("\
   -p, --parents\n\
-         no error if existing, make parent directories as needed,\n\
+         no error ఒకవేళ existing, make మాతృ directories as needed,\n\
          with their file modes unaffected by any -m option\n\
 "));
       oputs (_("\
   -v, --verbose\n\
-         print a message for each created directory\n\
+         print a సందేశం_2 కొరకు each created directory\n\
 "));
       oputs (_("\
   -Z\n\
-         set SELinux security context of each created directory\n\
-         to the default type\n\
+         సమితి_2 SELinux security context యొక్క each created directory\n\
+         గమ్యం the అప్రమేయ type\n\
 "));
       oputs (_("\
       --context[=CTX]\n\
-         like -Z, or if CTX is specified then set the\n\
-         SELinux or SMACK security context to CTX\n\
+         like -Z, or ఒకవేళ CTX is specified then సమితి_2 the\n\
+         SELinux or SMACK security context గమ్యం CTX\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
 /* Options passed to subsidiary functions.  */
-struct mkdir_options
+నిర్మాణం mkdir_options
 {
   /* Function to make an ancestor, or NULL if ancestors should not be
      made.  */
-  int (*make_ancestor_function) (char const *, char const *, void *);
+  పూర్ణాంకం (*make_ancestor_function) (అక్షరం స్థిరరాశి *, అక్షరం స్థిరరాశి *, శూన్య *);
 
   /* Umask value for when making an ancestor.  */
   mode_t umask_ancestor;
@@ -105,24 +105,24 @@ struct mkdir_options
   mode_t umask_self;
 
   /* Mode for directory itself.  */
-  mode_t mode;
+  mode_t బహుళకం_2;
 
   /* File mode bits affected by MODE.  */
-  mode_t mode_bits;
+  mode_t బహుళకం_బిట్లు;
 
   /* Set the SELinux File Context.  */
-  struct selabel_handle *set_security_context;
+  నిర్మాణం selabel_handle *సమితి_security_context;
 
   /* If not null, format to use when reporting newly made directories.  */
-  char const *created_directory_format;
+  అక్షరం స్థిరరాశి *created_directory_format;
 };
 
 /* Report that directory DIR was made, if OPTIONS requests this.  */
-static void
-announce_mkdir (char const *dir, void *options)
+స్థిర శూన్య
+announce_mkdir (అక్షరం స్థిరరాశి *dir, శూన్య *options)
 {
-  struct mkdir_options const *o = options;
-  if (o->created_directory_format)
+  నిర్మాణం mkdir_options స్థిరరాశి *o = options;
+  ఒకవేళ (o->created_directory_format)
     prog_fprintf (stdout, o->created_directory_format, quoteaf (dir));
 }
 
@@ -131,53 +131,53 @@ announce_mkdir (char const *dir, void *options)
    parent.  Return 0 if successful and the resulting directory is
    readable, 1 if successful but the resulting directory is not
    readable, -1 (setting errno) otherwise.  */
-static int
-make_ancestor (char const *dir, char const *component, void *options)
+స్థిర పూర్ణాంకం
+make_ancestor (అక్షరం స్థిరరాశి *dir, అక్షరం స్థిరరాశి *component, శూన్య *options)
 {
-  struct mkdir_options const *o = options;
+  నిర్మాణం mkdir_options స్థిరరాశి *o = options;
 
-  if (o->set_security_context
-      && defaultcon (o->set_security_context, component, S_IFDIR) < 0
+  ఒకవేళ (o->సమితి_security_context
+      && defaultcon (o->సమితి_security_context, component, S_IFDIR) < 0
       && ! ignorable_ctx_err (errno))
     error (0, errno, _("failed to set default creation context for %s"),
            quoteaf (dir));
 
-  if (o->umask_ancestor != o->umask_self)
+  ఒకవేళ (o->umask_ancestor != o->umask_self)
     umask (o->umask_ancestor);
-  int r = mkdir (component, S_IRWXUGO);
-  if (o->umask_ancestor != o->umask_self)
+  పూర్ణాంకం r = mkdir (component, S_IRWXUGO);
+  ఒకవేళ (o->umask_ancestor != o->umask_self)
     {
-      int mkdir_errno = errno;
+      పూర్ణాంకం mkdir_errno = errno;
       umask (o->umask_self);
       errno = mkdir_errno;
     }
-  if (r == 0)
+  ఒకవేళ (r == 0)
     {
       r = (o->umask_ancestor & S_IRUSR) != 0;
       announce_mkdir (dir, options);
     }
-  return r;
+  తిరిగి r;
 }
 
 /* Process a command-line file name.  */
-static int
-process_dir (char *dir, struct savewd *wd, void *options)
+స్థిర పూర్ణాంకం
+process_dir (అక్షరం *dir, నిర్మాణం savewd *wd, శూన్య *options)
 {
-  struct mkdir_options const *o = options;
+  నిర్మాణం mkdir_options స్థిరరాశి *o = options;
 
   /* If possible set context before DIR created.  */
-  if (o->set_security_context)
+  ఒకవేళ (o->సమితి_security_context)
     {
-      if (! o->make_ancestor_function
-          && defaultcon (o->set_security_context, dir, S_IFDIR) < 0
+      ఒకవేళ (! o->make_ancestor_function
+          && defaultcon (o->సమితి_security_context, dir, S_IFDIR) < 0
           && ! ignorable_ctx_err (errno))
         error (0, errno, _("failed to set default creation context for %s"),
                quoteaf (dir));
     }
 
-  int ret = (make_dir_parents (dir, wd, o->make_ancestor_function, options,
-                               o->mode, announce_mkdir,
-                               o->mode_bits, (uid_t) -1, (gid_t) -1, true)
+  పూర్ణాంకం ret = (make_dir_parents (dir, wd, o->make_ancestor_function, options,
+                               o->బహుళకం_2, announce_mkdir,
+                               o->బహుళకం_బిట్లు, (uid_t) -1, (gid_t) -1, true)
              ? EXIT_SUCCESS
              : EXIT_FAILURE);
 
@@ -186,86 +186,86 @@ process_dir (char *dir, struct savewd *wd, void *options)
      final component of DIR is created.  So for now, create the
      final component with the context from previous component
      and here we set the context for the final component. */
-  if (ret == EXIT_SUCCESS && o->set_security_context
+  ఒకవేళ (ret == EXIT_SUCCESS && o->సమితి_security_context
       && o->make_ancestor_function)
     {
-      if (! restorecon (o->set_security_context, last_component (dir), false)
+      ఒకవేళ (! restorecon (o->సమితి_security_context, చివరి_component (dir), false)
           && ! ignorable_ctx_err (errno))
         error (0, errno, _("failed to restore context for %s"),
                quoteaf (dir));
     }
 
-  return ret;
+  తిరిగి ret;
 }
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
-  char const *specified_mode = NULL;
-  int optc;
-  char const *scontext = NULL;
-  struct mkdir_options options;
+  అక్షరం స్థిరరాశి *specified_బహుళకం = ఖాళీ;
+  పూర్ణాంకం optc;
+  అక్షరం స్థిరరాశి *scontext = ఖాళీ;
+  నిర్మాణం mkdir_options options;
 
-  options.make_ancestor_function = NULL;
-  options.mode = S_IRWXUGO;
-  options.mode_bits = 0;
-  options.created_directory_format = NULL;
-  options.set_security_context = NULL;
+  options.make_ancestor_function = ఖాళీ;
+  options.బహుళకం_2 = S_IRWXUGO;
+  options.బహుళకం_బిట్లు = 0;
+  options.created_directory_format = ఖాళీ;
+  options.సమితి_security_context = ఖాళీ;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "pm:vZ", longopts, NULL)) != -1)
+  అయితే ((optc = getopt_long (argc, argv, "pm:vZ", longopts, ఖాళీ)) != -1)
     {
-      switch (optc)
+      ఎంపిక (optc)
         {
-        case 'p':
+        స్థితి 'p':
           options.make_ancestor_function = make_ancestor;
-          break;
-        case 'm':
-          specified_mode = optarg;
-          break;
-        case 'v': /* --verbose  */
+          ఆపు;
+        స్థితి 'm':
+          specified_బహుళకం = optarg;
+          ఆపు;
+        స్థితి 'v': /* --verbose  */
           options.created_directory_format = _("created directory %s");
-          break;
-        case 'Z':
-          if (is_smack_enabled ())
+          ఆపు;
+        స్థితి 'Z':
+          ఒకవేళ (is_smack_enabled ())
             {
               /* We don't yet support -Z to restore context with SMACK.  */
               scontext = optarg;
             }
-          else if (is_selinux_enabled () > 0)
+          లేకపోతే ఒకవేళ (is_selinux_enabled () > 0)
             {
-              if (optarg)
+              ఒకవేళ (optarg)
                 scontext = optarg;
-              else
+              లేకపోతే
                 {
-                  options.set_security_context = selabel_open (SELABEL_CTX_FILE,
-                                                               NULL, 0);
-                  if (! options.set_security_context)
+                  options.సమితి_security_context = selabel_open (SELABEL_CTX_FILE,
+                                                               ఖాళీ, 0);
+                  ఒకవేళ (! options.సమితి_security_context)
                     error (0, errno, _("warning: ignoring --context"));
                 }
             }
-          else if (optarg)
+          లేకపోతే ఒకవేళ (optarg)
             {
               error (0, 0,
                      _("warning: ignoring --context; "
                        "it requires an SELinux/SMACK-enabled kernel"));
             }
-          break;
+          ఆపు;
         case_GETOPT_HELP_CHAR;
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        case_GETOPT_సంస్కరణ_CHAR (కార్యక్రమం_NAME, AUTHORS);
+        అప్రమేయ:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (optind == argc)
+  ఒకవేళ (optind == argc)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
@@ -274,46 +274,46 @@ main (int argc, char **argv)
   /* FIXME: This assumes mkdir() is done in the same process.
      If that's not always the case we would need to call this
      like we do when options.set_security_context.  */
-  if (scontext)
+  ఒకవేళ (scontext)
     {
-      int ret = 0;
-      if (is_smack_enabled ())
-        ret = smack_set_label_for_self (scontext);
-      else
+      పూర్ణాంకం ret = 0;
+      ఒకవేళ (is_smack_enabled ())
+        ret = smack_సమితి_label_for_self (scontext);
+      లేకపోతే
         ret = setfscreatecon (scontext);
 
-      if (ret < 0)
+      ఒకవేళ (ret < 0)
         error (EXIT_FAILURE, errno,
                _("failed to set default file creation context to %s"),
                quote (scontext));
     }
 
 
-  if (options.make_ancestor_function || specified_mode)
+  ఒకవేళ (options.make_ancestor_function || specified_బహుళకం)
     {
-      mode_t umask_value = umask (0);
-      options.umask_ancestor = umask_value & ~(S_IWUSR | S_IXUSR);
+      mode_t umask_విలువ = umask (0);
+      options.umask_ancestor = umask_విలువ & ~(S_IWUSR | S_IXUSR);
 
-      if (specified_mode)
+      ఒకవేళ (specified_బహుళకం)
         {
-          struct mode_change *change = mode_compile (specified_mode);
-          if (!change)
+          నిర్మాణం బహుళకం_change *change = బహుళకం_compile (specified_బహుళకం);
+          ఒకవేళ (!change)
             error (EXIT_FAILURE, 0, _("invalid mode %s"),
-                   quote (specified_mode));
-          options.mode = mode_adjust (S_IRWXUGO, true, umask_value, change,
-                                      &options.mode_bits);
-          options.umask_self = umask_value & ~options.mode;
-          free (change);
+                   quote (specified_బహుళకం));
+          options.బహుళకం_2 = బహుళకం_adjust (S_IRWXUGO, true, umask_విలువ, change,
+                                      &options.బహుళకం_బిట్లు);
+          options.umask_self = umask_విలువ & ~options.బహుళకం_2;
+          విడుదల (change);
         }
-      else
+      లేకపోతే
         {
-          options.mode = S_IRWXUGO;
-          options.umask_self = umask_value;
+          options.బహుళకం_2 = S_IRWXUGO;
+          options.umask_self = umask_విలువ;
         }
 
       umask (options.umask_self);
     }
 
-  return savewd_process_files (argc - optind, argv + optind,
+  తిరిగి savewd_process_files (argc - optind, argv + optind,
                                process_dir, &options);
 }

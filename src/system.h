@@ -16,83 +16,83 @@
 
 /* Include this file _after_ system headers if possible.  */
 
-#include <attribute.h>
+#అన్తర్భావ <attribute.h>
 
-#include <alloca.h>
+#అన్తర్భావ <alloca.h>
 
-#include <ctype.h>
+#అన్తర్భావ <ctype.h>
 
-#include <sys/stat.h>
+#అన్తర్భావ <sys/stat.h>
 
 /* Commonly used file permission combination.  */
-#define MODE_RW_UGO (S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH)
+#నిర్వచించు బహుళకం_RW_UGO (S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH)
 
-#if HAVE_SYS_PARAM_H
+#ఒకవేళ HAVE_SYS_PARAM_H
 # include <sys/param.h>
-#endif
+#అయితే_ముగింపు
 
-#include <unistd.h>
+#అన్తర్భావ <unistd.h>
 
-#include <limits.h>
+#అన్తర్భావ <limits.h>
 
-#include "pathmax.h"
-#ifndef PATH_MAX
+#అన్తర్భావ "pathmax.h"
+#నిర్వచితం_కాకపోతే PATH_MAX
 # define PATH_MAX 8192
-#endif
+#అయితే_ముగింపు
 
-#include "configmake.h"
+#అన్తర్భావ "configmake.h"
 
-#include <sys/time.h>
-#include <time.h>
+#అన్తర్భావ <sys/time.h>
+#అన్తర్భావ <time.h>
 
 /* Since major is a function on SVR4, we can't use 'ifndef major'.  */
-#if MAJOR_IN_MKDEV
+#ఒకవేళ MAJOR_లోపల_MKDEV
 # include <sys/mkdev.h>
 # define HAVE_MAJOR
-#endif
-#if MAJOR_IN_SYSMACROS
+#అయితే_ముగింపు
+#ఒకవేళ MAJOR_లోపల_SYSMACROS
 # include <sys/sysmacros.h>
 # define HAVE_MAJOR
-#endif
-#ifdef major			/* Might be defined in sys/types.h.  */
+#అయితే_ముగింపు
+#నిర్వచితమైతే major			/* Might be defined in sys/types.h.  */
 # define HAVE_MAJOR
-#endif
+#అయితే_ముగింపు
 
-#ifndef HAVE_MAJOR
+#నిర్వచితం_కాకపోతే HAVE_MAJOR
 # define major(dev)  (((dev) >> 8) & 0xff)
 # define minor(dev)  ((dev) & 0xff)
 # define makedev(maj, min)  (((maj) << 8) | (min))
-#endif
-#undef HAVE_MAJOR
+#అయితే_ముగింపు
+#నిర్వచనం_రద్దు HAVE_MAJOR
 
-#if ! defined makedev && defined mkdev
+#ఒకవేళ ! defined makedev && defined mkdev
 # define makedev(maj, min)  mkdev (maj, min)
-#endif
+#అయితే_ముగింపు
 
-#include <stdckdint.h>
-#include <stdcountof.h>
-#include <stddef.h>
-#include <string.h>
-#include <uchar.h>
-#include <errno.h>
+#అన్తర్భావ <stdckdint.h>
+#అన్తర్భావ <stdcountof.h>
+#అన్తర్భావ <stddef.h>
+#అన్తర్భావ <string.h>
+#అన్తర్భావ <uchar.h>
+#అన్తర్భావ <errno.h>
 
 /* Some systems don't define this; POSIX mentions it but says it is
    obsolete.  gnulib defines it, but only on native Windows systems,
    and there only because MSVC 10 does.  */
-#ifndef ENODATA
+#నిర్వచితం_కాకపోతే ENODATA
 # define ENODATA (-1)
-#endif
+#అయితే_ముగింపు
 
 /* Return true if ERRNUM indicates that a file disappeared during a
    directory traversal.  */
-static inline bool
-ignorable_traversal_errno (int errnum) { return errnum == ENOENT; }
+స్థిర అంతఃవరుస bool
+ignorable_traversal_errno (పూర్ణాంకం errnum) { తిరిగి errnum == ENOENT; }
 
-#include <stdlib.h>
-#include "version.h"
+#అన్తర్భావ <stdlib.h>
+#అన్తర్భావ "version.h"
 
 /* Exit statuses for programs like 'env' that exec other programs.  */
-enum
+గణన
 {
   EXIT_TIMEDOUT = 124, /* Time expired before child completed.  */
   EXIT_CANCELED = 125, /* Internal error prior to exec attempt.  */
@@ -100,154 +100,154 @@ enum
   EXIT_ENOENT = 127 /* Could not find program to exec.  */
 };
 
-#include "exitfail.h"
+#అన్తర్భావ "exitfail.h"
 
 /* Set exit_failure to STATUS if that's not the default already.  */
-static inline void
-initialize_exit_failure (int status)
+స్థిర అంతఃవరుస శూన్య
+initialize_exit_failure (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_FAILURE)
-    exit_failure = status;
+  ఒకవేళ (స్థితి_2 != EXIT_FAILURE)
+    exit_failure = స్థితి_2;
 }
 
-#include <fcntl.h>
-#ifdef O_PATH
-enum { O_PATHSEARCH = O_PATH };
-#else
-enum { O_PATHSEARCH = O_SEARCH };
-#endif
+#అన్తర్భావ <fcntl.h>
+#నిర్వచితమైతే O_మార్గం
+గణన { O_PATHSEARCH = O_మార్గం };
+#లేకపోతే
+గణన { O_PATHSEARCH = O_శోధన };
+#అయితే_ముగింపు
 
-#include <dirent.h>
-#ifndef _D_EXACT_NAMLEN
-# define _D_EXACT_NAMLEN(dp) strlen ((dp)->d_name)
-#endif
+#అన్తర్భావ <dirent.h>
+#నిర్వచితం_కాకపోతే _D_EXACT_NAMLEN
+# define _D_EXACT_NAMLEN(dp) అక్షరశ్రేణి_పొడవు ((dp)->d_name)
+#అయితే_ముగింపు
 
-enum
+గణన
 {
-  NOT_AN_INODE_NUMBER = 0
+  NOT_AN_INODE_సంఖ్య = 0
 };
 
-#ifdef D_INO_IN_DIRENT
+#నిర్వచితమైతే D_INO_లోపల_DIRENT
 # define D_INO(dp) (dp)->d_ino
-#else
+#లేకపోతే
 /* Some systems don't have inodes, so fake them to avoid lots of ifdefs.  */
-# define D_INO(dp) NOT_AN_INODE_NUMBER
-#endif
+# define D_INO(dp) NOT_AN_INODE_సంఖ్య
+#అయితే_ముగింపు
 
 /* include here for SIZE_MAX.  */
-#include <inttypes.h>
+#అన్తర్భావ <inttypes.h>
 
 /* Redirection and wildcarding when done by the utility itself.
    Generally a noop, but used in particular for OS/2.  */
-#ifndef initialize_main
+#నిర్వచితం_కాకపోతే initialize_main
 # ifndef __OS2__
 #  define initialize_main(ac, av)
-# else
+# లేకపోతే
 #  define initialize_main(ac, av) \
-     do { _wildcard (ac, av); _response (ac, av); } while (0)
+     చేయి { _wildcard (ac, av); _response (ac, av); } అయితే (0)
 # endif
-#endif
+#అయితే_ముగింపు
 
-#include "stat-macros.h"
+#అన్తర్భావ "stat-macros.h"
 
-#include "timespec.h"
+#అన్తర్భావ "timespec.h"
 
 /* Convert a possibly-signed character to an unsigned character.  This is
    a bit safer than casting to unsigned char, since it catches some type
    errors that the cast doesn't.  */
-static inline unsigned char to_uchar (char ch) { return ch; }
+స్థిర అంతఃవరుస గుర్తులేని అక్షరం గమ్యం_uchar (అక్షరం ch) { తిరిగి ch; }
 
 /* Return non zero if a non breaking space.  */
-ATTRIBUTE_PURE
-static inline int
+ATTRIBUTE_శుద్ధ
+స్థిర అంతఃవరుస పూర్ణాంకం
 c32isnbspace (char32_t wc)
 {
-  return wc == 0x00A0 || wc == 0x2007 || wc == 0x202F || wc == 0x2060;
+  తిరిగి wc == 0x00A0 || wc == 0x2007 || wc == 0x202F || wc == 0x2060;
 }
 
-ATTRIBUTE_PURE
-static inline int
+ATTRIBUTE_శుద్ధ
+స్థిర అంతఃవరుస పూర్ణాంకం
 c32isnewline (char32_t wc)
 {
-  return wc == 0x000A || wc == 0x0085 || wc == 0x2028 || wc == 0x2029;
+  తిరిగి wc == 0x000A || wc == 0x0085 || wc == 0x2028 || wc == 0x2029;
 }
 
-ATTRIBUTE_PURE
-static inline int
+ATTRIBUTE_శుద్ధ
+స్థిర అంతఃవరుస పూర్ణాంకం
 c32isvertspace (char32_t wc)
 {
   /* 000D is backwards as opposed to vertical,
      but that's fine for this grouping.  */
-  return c32isnewline (wc) || wc == 0x000B || wc == 0x000C || wc == 0x000D;
+  తిరిగి c32isnewline (wc) || wc == 0x000B || wc == 0x000C || wc == 0x000D;
 }
 
 /* c32isblank() is too variable on non GLIBC platforms.
    E.g., does not include \u3000 ideographic space on musl.
    E.g., does include non-breaking space on Solaris and NetBSD.
    This equivalent is more consistent across systems.  */
-ATTRIBUTE_PURE
-static inline bool
+ATTRIBUTE_శుద్ధ
+స్థిర అంతఃవరుస bool
 c32issep (char32_t wc)
 {
-#if defined __GLIBC__
-  return !! c32isblank (wc);
-#else
-  return c32isspace (wc) && ! c32isvertspace (wc) && ! c32isnbspace (wc);
-#endif
+#ఒకవేళ defined __GLIBC__
+  తిరిగి !! c32isblank (wc);
+#లేకపోతే
+  తిరిగి c32isspace (wc) && ! c32isvertspace (wc) && ! c32isnbspace (wc);
+#అయితే_ముగింపు
 }
 
-#include <locale.h>
+#అన్తర్భావ <locale.h>
 
 /* Take care of NLS matters.  */
 
-#include "gettext.h"
-#if ! ENABLE_NLS
+#అన్తర్భావ "gettext.h"
+#ఒకవేళ ! ENABLE_NLS
 # undef textdomain
-# define textdomain(Domainname) /* empty */
+# define textdomain(Domainname) /*ఖాళీలు*/
 # undef bindtextdomain
-# define bindtextdomain(Domainname, Dirname) /* empty */
-#endif
+# define bindtextdomain(Domainname, Dirname) /*ఖాళీలు*/
+#అయితే_ముగింపు
 
-#define _(msgid) gettext (msgid)
-#define N_(msgid) msgid
+#నిర్వచించు _(msgid) gettext (msgid)
+#నిర్వచించు N_(msgid) msgid
 
 /* Return a value that pluralizes the same way that N does, in all
    languages we know of.  */
-static inline unsigned long int
+స్థిర అంతఃవరుస గుర్తులేని దీర్ఘ పూర్ణాంకం
 select_plural (uintmax_t n)
 {
   /* Reduce by a power of ten, but keep it away from zero.  The
      gettext manual says 1000000 should be safe.  */
-  enum { PLURAL_REDUCER = 1000000 };
-  return (n <= ULONG_MAX ? n : n % PLURAL_REDUCER + PLURAL_REDUCER);
+  గణన { PLURAL_REDUCER = 1000000 };
+  తిరిగి (n <= ULONG_MAX ? n : n % PLURAL_REDUCER + PLURAL_REDUCER);
 }
 
-#define STREQ_LEN(a, b, n) (strncmp (a, b, n) == 0) /* n==-1 means unbounded */
-#define STRPREFIX(a, b) (strncmp (a, b, strlen (b)) == 0)
+#నిర్వచించు STREQ_LEN(a, b, n) (అక్షరశ్రేణి_పోలిక (a, b, n) == 0) /* n==-1 means unbounded */
+#నిర్వచించు STRPREFIX(a, b) (అక్షరశ్రేణి_పోలిక (a, b, అక్షరశ్రేణి_పొడవు (b)) == 0)
 
 /* Just like strncmp, but the second argument must be a literal string
    and you don't specify the length;  that comes from the literal.  */
-#define STRNCMP_LIT(s, lit) strncmp (s, "" lit "", sizeof (lit) - 1)
+#నిర్వచించు STRNCMP_LIT(s, lit) అక్షరశ్రేణి_పోలిక (s, "" lit "", పరిమాణం (lit) - 1)
 
-#if !HAVE_DECL_GETLOGIN
-char *getlogin (void);
-#endif
+#ఒకవేళ !HAVE_DECL_GETLOGIN
+అక్షరం *getlogin (శూన్య);
+#అయితే_ముగింపు
 
-#if !HAVE_DECL_TTYNAME
-char *ttyname (int);
-#endif
+#ఒకవేళ !HAVE_DECL_TTYNAME
+అక్షరం *ttyname (పూర్ణాంకం);
+#అయితే_ముగింపు
 
-#if !HAVE_DECL_GETEUID
-uid_t geteuid (void);
-#endif
+#ఒకవేళ !HAVE_DECL_GETEUID
+uid_t geteuid (శూన్య);
+#అయితే_ముగింపు
 
-#if !HAVE_DECL_GETPWUID
-struct passwd *getpwuid (uid_t);
-#endif
+#ఒకవేళ !HAVE_DECL_GETPWUID
+నిర్మాణం passwd *getpwuid (uid_t);
+#అయితే_ముగింపు
 
-#if !HAVE_DECL_GETGRGID
-struct group *getgrgid (gid_t);
-#endif
+#ఒకవేళ !HAVE_DECL_GETGRGID
+నిర్మాణం సమూహం *getgrgid (gid_t);
+#అయితే_ముగింపు
 
 /* Interix has replacements for getgr{gid,nam,ent}, that don't
    query the domain controller for group members when not required.
@@ -255,52 +255,52 @@ struct group *getgrgid (gid_t);
 /* To protect any system that could provide _nomembers functions
    other than interix, check for HAVE_SETGROUPS, as interix is
    one of the very few (the only?) platform that lacks it */
-#if ! HAVE_SETGROUPS
-# if HAVE_GETGRGID_NOMEMBERS
+#ఒకవేళ ! HAVE_SETGROUPS
+# ఒకవేళ HAVE_GETGRGID_NOMEMBERS
 #  define getgrgid(gid) getgrgid_nomembers(gid)
 # endif
-# if HAVE_GETGRNAM_NOMEMBERS
+# ఒకవేళ HAVE_GETGRNAM_NOMEMBERS
 #  define getgrnam(nam) getgrnam_nomembers(nam)
 # endif
-# if HAVE_GETGRENT_NOMEMBERS
+# ఒకవేళ HAVE_GETGRENT_NOMEMBERS
 #  define getgrent() getgrent_nomembers()
 # endif
-#endif
+#అయితే_ముగింపు
 
-#if !HAVE_DECL_GETUID
-uid_t getuid (void);
-#endif
+#ఒకవేళ !HAVE_DECL_GETUID
+uid_t getuid (శూన్య);
+#అయితే_ముగింపు
 
-#include "idx.h"
-#include "xalloc.h"
-#include "verify.h"
-#include "unlocked-io.h"
-#include "same-inode.h"
+#అన్తర్భావ "idx.h"
+#అన్తర్భావ "xalloc.h"
+#అన్తర్భావ "verify.h"
+#అన్తర్భావ "unlocked-io.h"
+#అన్తర్భావ "same-inode.h"
 
-#include "dirname.h"
-#include "openat.h"
+#అన్తర్భావ "dirname.h"
+#అన్తర్భావ "openat.h"
 
-static inline bool
-dot_or_dotdot (char const *file_name)
+స్థిర అంతఃవరుస bool
+dot_or_dotdot (అక్షరం స్థిరరాశి *file_name)
 {
-  if (file_name[0] == '.')
+  ఒకవేళ (file_name[0] == '.')
     {
-      char sep = file_name[(file_name[1] == '.') + 1];
-      return (! sep || ISSLASH (sep));
+      అక్షరం sep = file_name[(file_name[1] == '.') + 1];
+      తిరిగి (! sep || ISSLASH (sep));
     }
-  else
-    return false;
+  లేకపోతే
+    తిరిగి false;
 }
 
 /* A wrapper for readdir so that callers don't see entries for '.' or '..'.  */
-static inline struct dirent const *
+స్థిర అంతఃవరుస నిర్మాణం dirent స్థిరరాశి *
 readdir_ignoring_dot_and_dotdot (DIR *dirp)
 {
-  while (true)
+  అయితే (true)
     {
-      struct dirent const *dp = readdir (dirp);
-      if (dp == NULL || ! dot_or_dotdot (dp->d_name))
-        return dp;
+      నిర్మాణం dirent స్థిరరాశి *dp = readdir (dirp);
+      ఒకవేళ (dp == ఖాళీ || ! dot_or_dotdot (dp->d_name))
+        తిరిగి dp;
     }
 }
 
@@ -308,37 +308,37 @@ readdir_ignoring_dot_and_dotdot (DIR *dirp)
    0 if DIR is a nonempty directory,
    and a positive error number if there was trouble determining
    whether DIR is an empty or nonempty directory.  */
-enum {
+గణన {
     DS_UNKNOWN = -2,
-    DS_EMPTY = -1,
+    DS_ఖాళీలు = -1,
     DS_NONEMPTY = 0,
 };
-static inline int
-directory_status (int fd_cwd, char const *dir)
+స్థిర అంతఃవరుస పూర్ణాంకం
+directory_స్థితి (పూర్ణాంకం fd_cwd, అక్షరం స్థిరరాశి *dir)
 {
   DIR *dirp;
   bool no_direntries;
-  int saved_errno;
-  int fd = openat (fd_cwd, dir,
+  పూర్ణాంకం saved_errno;
+  పూర్ణాంకం fd = openat (fd_cwd, dir,
                    (O_RDONLY | O_DIRECTORY
                     | O_NOCTTY | O_NOFOLLOW | O_NONBLOCK));
 
-  if (fd < 0)
-    return errno;
+  ఒకవేళ (fd < 0)
+    తిరిగి errno;
 
   dirp = fdopendir (fd);
-  if (dirp == NULL)
+  ఒకవేళ (dirp == ఖాళీ)
     {
       saved_errno = errno;
       close (fd);
-      return saved_errno;
+      తిరిగి saved_errno;
     }
 
   errno = 0;
   no_direntries = !readdir_ignoring_dot_and_dotdot (dirp);
   saved_errno = errno;
   closedir (dirp);
-  return no_direntries && saved_errno == 0 ? DS_EMPTY : saved_errno;
+  తిరిగి no_direntries && saved_errno == 0 ? DS_ఖాళీలు : saved_errno;
 }
 
 /* Factor out some of the common --help and --version processing code.  */
@@ -346,91 +346,91 @@ directory_status (int fd_cwd, char const *dir)
 /* These enum values cannot possibly conflict with the option values
    ordinarily used by commands, including CHAR_MAX + 1, etc.  Avoid
    CHAR_MIN - 1, as it may equal -1, the getopt end-of-options value.  */
-enum
+గణన
 {
   GETOPT_HELP_CHAR = (CHAR_MIN - 2),
-  GETOPT_VERSION_CHAR = (CHAR_MIN - 3)
+  GETOPT_సంస్కరణ_CHAR = (CHAR_MIN - 3)
 };
 
-#define GETOPT_HELP_OPTION_DECL \
-  "help", no_argument, NULL, GETOPT_HELP_CHAR
-#define GETOPT_VERSION_OPTION_DECL \
-  "version", no_argument, NULL, GETOPT_VERSION_CHAR
-#define GETOPT_SELINUX_CONTEXT_OPTION_DECL \
-  "context", optional_argument, NULL, 'Z'
+#నిర్వచించు GETOPT_HELP_OPTION_DECL \
+  "help", no_వాదం, ఖాళీ, GETOPT_HELP_CHAR
+#నిర్వచించు GETOPT_సంస్కరణ_OPTION_DECL \
+  "version", no_వాదం, ఖాళీ, GETOPT_సంస్కరణ_CHAR
+#నిర్వచించు GETOPT_SELINUX_CONTEXT_OPTION_DECL \
+  "context", optional_వాదం, ఖాళీ, 'Z'
 
-#define case_GETOPT_HELP_CHAR			\
-  case GETOPT_HELP_CHAR:			\
+#నిర్వచించు case_GETOPT_HELP_CHAR			\
+  స్థితి GETOPT_HELP_CHAR:			\
     usage (EXIT_SUCCESS);			\
-    break;
+    ఆపు;
 
 /* Program_name must be a literal string.
    Usually it is just PROGRAM_NAME.  */
-#define USAGE_BUILTIN_WARNING \
+#నిర్వచించు USAGE_BUILTIN_WARNING \
   _("\n" \
 "Your shell may have its own version of %s, which usually supersedes\n" \
 "the version described here.  Please refer to your shell's documentation\n" \
 "for details about the options it supports.\n")
 
-#define HELP_OPTION_DESCRIPTION \
+#నిర్వచించు HELP_OPTION_DESCRIPTION \
   _("      --help\n         display this help and exit\n")
-#define VERSION_OPTION_DESCRIPTION \
+#నిర్వచించు సంస్కరణ_OPTION_DESCRIPTION \
   _("      --version\n         output version information and exit\n")
 
-#include "closein.h"
-#include "closeout.h"
+#అన్తర్భావ "closein.h"
+#అన్తర్భావ "closeout.h"
 
-#include "version-etc.h"
+#అన్తర్భావ "version-etc.h"
 
-#include "propername.h"
+#అన్తర్భావ "propername.h"
 /* Define away proper_name, since it's not worth the cost of adding ~17KB to
    the x86_64 text size of every single program.  This avoids a 40%
    (almost ~2MB) increase in the file system space utilization for the set
    of the 100 binaries. */
-#define proper_name(x) proper_name_lite (x, x)
+#నిర్వచించు proper_name(x) proper_name_lite (x, x)
 
-#include "progname.h"
+#అన్తర్భావ "progname.h"
 
-#define case_GETOPT_VERSION_CHAR(Program_name, Authors)			\
-  case GETOPT_VERSION_CHAR:						\
-    version_etc (stdout, Program_name, PACKAGE_NAME, Version, Authors,	\
-                 (char *) NULL);					\
-    exit (EXIT_SUCCESS);						\
-    break;
+#నిర్వచించు case_GETOPT_సంస్కరణ_CHAR(కార్యక్రమం_name_2, Authors)			\
+  స్థితి GETOPT_సంస్కరణ_CHAR:						\
+    సంస్కరణ_etc (stdout, కార్యక్రమం_name_2, PACKAGE_NAME, సంస్కరణ, Authors,	\
+                 (అక్షరం *) ఖాళీ);					\
+    నిష్క్రమించు (EXIT_SUCCESS);						\
+    ఆపు;
 
-#include "minmax.h"
-#include "intprops.h"
+#అన్తర్భావ "minmax.h"
+#అన్తర్భావ "intprops.h"
 
-#ifndef SSIZE_MAX
-# define SSIZE_MAX TYPE_MAXIMUM (ssize_t)
-#endif
+#నిర్వచితం_కాకపోతే SSIZE_MAX
+# define SSIZE_MAX TYPE_గరిష్ఠ (ssize_t)
+#అయితే_ముగింపు
 
-#ifndef OFF_T_MIN
+#నిర్వచితం_కాకపోతే OFF_T_MIN
 # define OFF_T_MIN TYPE_MINIMUM (off_t)
-#endif
+#అయితే_ముగింపు
 
-#ifndef OFF_T_MAX
-# define OFF_T_MAX TYPE_MAXIMUM (off_t)
-#endif
+#నిర్వచితం_కాకపోతే OFF_T_MAX
+# define OFF_T_MAX TYPE_గరిష్ఠ (off_t)
+#అయితే_ముగింపు
 
-#ifndef UID_T_MAX
-# define UID_T_MAX TYPE_MAXIMUM (uid_t)
-#endif
+#నిర్వచితం_కాకపోతే UID_T_MAX
+# define UID_T_MAX TYPE_గరిష్ఠ (uid_t)
+#అయితే_ముగింపు
 
-#ifndef GID_T_MAX
-# define GID_T_MAX TYPE_MAXIMUM (gid_t)
-#endif
+#నిర్వచితం_కాకపోతే GID_T_MAX
+# define GID_T_MAX TYPE_గరిష్ఠ (gid_t)
+#అయితే_ముగింపు
 
-#ifndef PID_T_MAX
-# define PID_T_MAX TYPE_MAXIMUM (pid_t)
-#endif
+#నిర్వచితం_కాకపోతే PID_T_MAX
+# define PID_T_MAX TYPE_గరిష్ఠ (pid_t)
+#అయితే_ముగింపు
 
 /* Use this to suppress gcc warnings.  */
-#ifdef lint
-# define IF_LINT(Code) Code
-#else
-# define IF_LINT(Code) /* empty */
-#endif
+#నిర్వచితమైతే lint
+# define IF_LINT(సంకేతం_3) సంకేతం_3
+#లేకపోతే
+# define IF_LINT(సంకేతం_3) /*ఖాళీలు*/
+#అయితే_ముగింపు
 
 /* main_exit should be called only from the main function.  It is
    equivalent to 'exit'.  When checking for lint it calls 'exit', to
@@ -438,56 +438,56 @@ enum
    for pointers in the main function's activation record.  Otherwise
    it simply returns from 'main'; this used to be what gcc's static
    checking preferred and may yet be again.  */
-#ifdef lint
-# define main_exit(status) exit (status)
-#else
-# define main_exit(status) return status
-#endif
+#నిర్వచితమైతే lint
+# define main_exit(స్థితి_2) నిష్క్రమించు (స్థితి_2)
+#లేకపోతే
+# define main_exit(స్థితి_2) తిరిగి స్థితి_2
+#అయితే_ముగింపు
 
-#ifdef __GNUC__
+#నిర్వచితమైతే __GNUC__
 # define LIKELY(cond)    __builtin_expect ((cond), 1)
 # define UNLIKELY(cond)  __builtin_expect ((cond), 0)
-#else
+#లేకపోతే
 # define LIKELY(cond)    (cond)
 # define UNLIKELY(cond)  (cond)
-#endif
+#అయితే_ముగింపు
 
 
-#if defined strdupa
-# define ASSIGN_STRDUPA(DEST, S)		\
-  do { DEST = strdupa (S); } while (0)
-#else
-# define ASSIGN_STRDUPA(DEST, S)		\
-  do						\
+#ఒకవేళ defined strdupa
+# define కేటాయించు_STRDUPA(DEST, S)		\
+  చేయి { DEST = strdupa (S); } అయితే (0)
+#లేకపోతే
+# define కేటాయించు_STRDUPA(DEST, S)		\
+  చేయి						\
     {						\
-      char const *s_ = (S);			\
-      size_t len_ = strlen (s_) + 1;		\
-      char *tmp_dest_ = alloca (len_);		\
-      DEST = memcpy (tmp_dest_, s_, len_);	\
+      అక్షరం స్థిరరాశి *s_ = (S);			\
+      size_t len_ = అక్షరశ్రేణి_పొడవు (s_) + 1;		\
+      అక్షరం *tmp_dest_ = alloca (len_);		\
+      DEST = జ్ఞాపకం_నకలు (tmp_dest_, s_, len_);	\
     }						\
-  while (0)
-#endif
+  అయితే (0)
+#అయితే_ముగింపు
 
-#if ! HAVE_SYNC
-# define sync() /* empty */
-#endif
+#ఒకవేళ ! HAVE_SYNC
+# define sync() /*ఖాళీలు*/
+#అయితే_ముగింపు
 
 /* Compute the greatest common divisor of U and V using Euclid's
    algorithm.  U and V must be nonzero.  */
 
 ATTRIBUTE_CONST
-static inline size_t
-gcd (size_t u, size_t v)
+స్థిర అంతఃవరుస size_t
+గరిష్ఠ_సామాన్య_భాజకం (size_t u, size_t v)
 {
-  do
+  చేయి
     {
       size_t t = u % v;
       u = v;
       v = t;
     }
-  while (v);
+  అయితే (v);
 
-  return u;
+  తిరిగి u;
 }
 
 /* Compute the least common multiple of U and V.  U and V must be
@@ -495,10 +495,10 @@ gcd (size_t u, size_t v)
    specify outlandish sizes.  */
 
 ATTRIBUTE_CONST
-static inline size_t
+స్థిర అంతఃవరుస size_t
 lcm (size_t u, size_t v)
 {
-  return u * (v / gcd (u, v));
+  తిరిగి u * (v / గరిష్ఠ_సామాన్య_భాజకం (u, v));
 }
 
 /* Return PTR, aligned upward to the next multiple of ALIGNMENT.
@@ -506,64 +506,64 @@ lcm (size_t u, size_t v)
    PTR) through ((char *) PTR + ALIGNMENT - 1) to be addressable
    locations.  */
 
-static inline void *
-ptr_align (void const *ptr, size_t alignment)
+స్థిర అంతఃవరుస శూన్య *
+ptr_align (శూన్య స్థిరరాశి *ptr, size_t alignment)
 {
-  char const *p0 = ptr;
-  char const *p1 = p0 + alignment - 1;
-  return (void *) (p1 - (size_t) p1 % alignment);
+  అక్షరం స్థిరరాశి *p0 = ptr;
+  అక్షరం స్థిరరాశి *p1 = p0 + alignment - 1;
+  తిరిగి (శూన్య *) (p1 - (size_t) p1 % alignment);
 }
 
 /* Return whether the buffer consists entirely of NULs.
    Based on memeqzero in CCAN by Rusty Russell under CC0 (Public domain).  */
 
-ATTRIBUTE_PURE
-static inline bool
-is_nul (void const *buf, size_t length)
+ATTRIBUTE_శుద్ధ
+స్థిర అంతఃవరుస bool
+is_nul (శూన్య స్థిరరాశి *buf, size_t నిడివి)
 {
-  const unsigned char *p = buf;
+  స్థిరరాశి గుర్తులేని అక్షరం *p = buf;
 /* Using possibly unaligned access for the first 16 bytes
    saves about 30-40 cycles, though it is strictly undefined behavior
    and so would need __attribute__ ((__no_sanitize_undefined__))
    to avoid -fsanitize=undefined warnings.
    Considering coreutils is mainly concerned with relatively
    large buffers, we'll just use the defined behavior.  */
-#if 0 && (_STRING_ARCH_unaligned || _STRING_INLINE_unaligned)
-  unsigned long word;
-#else
-  unsigned char word;
-#endif
+#ఒకవేళ 0 && (_STRING_ARCH_unaligned || _STRING_INLINE_unaligned)
+  గుర్తులేని దీర్ఘ మాట_2;
+#లేకపోతే
+  గుర్తులేని అక్షరం మాట_2;
+#అయితే_ముగింపు
 
-  if (! length)
-    return true;
+  ఒకవేళ (! నిడివి)
+    తిరిగి true;
 
   /* Check len bytes not aligned on a word.  */
-  while (UNLIKELY (length & (sizeof word - 1)))
+  అయితే (UNLIKELY (నిడివి & (పరిమాణం మాట_2 - 1)))
     {
-      if (*p)
-        return false;
+      ఒకవేళ (*p)
+        తిరిగి false;
       p++;
-      length--;
-      if (! length)
-        return true;
+      నిడివి--;
+      ఒకవేళ (! నిడివి)
+        తిరిగి true;
    }
 
   /* Check up to 16 bytes a word at a time.  */
-  for (;;)
+  కొరకు (;;)
     {
-      memcpy (&word, p, sizeof word);
-      if (word)
-        return false;
-      p += sizeof word;
-      length -= sizeof word;
-      if (! length)
-        return true;
-      if (UNLIKELY (length & 15) == 0)
-        break;
+      జ్ఞాపకం_నకలు (&మాట_2, p, పరిమాణం మాట_2);
+      ఒకవేళ (మాట_2)
+        తిరిగి false;
+      p += పరిమాణం మాట_2;
+      నిడివి -= పరిమాణం మాట_2;
+      ఒకవేళ (! నిడివి)
+        తిరిగి true;
+      ఒకవేళ (UNLIKELY (నిడివి & 15) == 0)
+        ఆపు;
    }
 
   /* Now we know first 16 bytes are NUL, memeq with self.  */
-  return memeq (buf, p, length);
+  తిరిగి memeq (buf, p, నిడివి);
 }
 
 /* Set Accum = 10*Accum + Digit_val and return true, where Accum is an
@@ -571,8 +571,8 @@ is_nul (void const *buf, size_t length)
    the result overflows, set Accum to an unspecified value and return
    false.  Accum and Digit_val may be evaluated multiple times.  */
 
-#define DECIMAL_DIGIT_ACCUMULATE(Accum, Digit_val)			\
-  (!ckd_mul (&(Accum), Accum, 10) && !ckd_add (&(Accum), Accum, Digit_val))
+#నిర్వచించు DECIMAL_DIGIT_ACCUMULATE(Accum, Digit_val)			\
+  (!ckd_mul (&(Accum), Accum, 10) && !ckd_కూడు (&(Accum), Accum, Digit_val))
 
 
 /* Output --option descriptions;
@@ -580,376 +580,376 @@ is_nul (void const *buf, size_t length)
    Any postprocessors like help2man etc. are expected to handle this,
    though it can be disabled in edge cases with the TERM=dumb env var.  */
 
-#define oputs(option) oputs_ (PROGRAM_NAME, option)
-static inline void
-oputs_ (MAYBE_UNUSED char const *program, char const *option)
+#నిర్వచించు oputs(option) oputs_ (కార్యక్రమం_NAME, option)
+స్థిర అంతఃవరుస శూన్య
+oputs_ (MAYBE_వాడని అక్షరం స్థిరరాశి *కార్యక్రమం, అక్షరం స్థిరరాశి *option)
 {
-  static int help_markup =
-#if defined MANUAL_URL || defined BOLD_MAN_REFS
+  స్థిర పూర్ణాంకం help_markup =
+#ఒకవేళ defined MANUAL_URL || defined BOLD_MAN_REFS
     -1;  /* Lookup.  */
-#else
+#లేకపోతే
     0;   /* Disable.  */
-#endif
-  if (help_markup == -1)
+#అయితే_ముగింపు
+  ఒకవేళ (help_markup == -1)
     {
       /* Note one generally would want markup when piping to grep/less etc.
          but we're conservative here for now, and only markup to tty.  */
-      char const *te;
+      అక్షరం స్థిరరాశి *te;
       help_markup = (isatty (STDOUT_FILENO)
                      ? ((te = getenv ("TERM")) && *te && !streq (te, "dumb"))
-                     : getenv ("IN_HELP2MAN") != NULL);
+                     : getenv ("IN_HELP2MAN") != ఖాళీ);
     }
-  if (! help_markup)
+  ఒకవేళ (! help_markup)
     {
       fputs (option, stdout);
-      return;
+      తిరిగి;
     }
 
   bool double_space = true;
-  char const *first_word = option + strspn (option, " \t\n");
-  char const *option_text = strchr (option, '-');
-  if (!option_text)                    /* for dd(1) option syntax.  */
+  అక్షరం స్థిరరాశి *మొదటి_మాట = option + strspn (option, " \t\n");
+  అక్షరం స్థిరరాశి *option_పాఠ్యం = strchr (option, '-');
+  ఒకవేళ (!option_పాఠ్యం)                    /* for dd(1) option syntax.  */
     {
-      option_text = first_word;
+      option_పాఠ్యం = మొదటి_మాట;
       /* Just match first word to support single spaced
          translated dd "foo=bar description" format.  */
       double_space = false;
     }
-  else if (option_text != first_word)  /* for test(1) option syntax.  */
+  లేకపోతే ఒకవేళ (option_పాఠ్యం != మొదటి_మాట)  /* for test(1) option syntax.  */
     {
       /* Ensure only a single space encountered before '-', to avoid
          matching within descriptions for translated dd option syntax.  */
-      char const *s = first_word;
+      అక్షరం స్థిరరాశి *s = మొదటి_మాట;
       size_t spaces = 0;
-      while (s < option_text && spaces < 2)
-        spaces += !!isspace (to_uchar (*s++));
-      if (spaces == 2)
+      అయితే (s < option_పాఠ్యం && spaces < 2)
+        spaces += !!ఖాళీనా (గమ్యం_uchar (*s++));
+      ఒకవేళ (spaces == 2)
         {
           /* Probably mismatched dd format.  */
-          option_text = first_word;
+          option_పాఠ్యం = మొదటి_మాట;
           double_space = false;
         }
     }
 
-  size_t anchor_len = strcspn (option_text, ",=[ \n");
+  size_t anchor_len = strcspn (option_పాఠ్యం, ",=[ \n");
 
   /* Set highlighted text up to spacing after the full option text.
      Any single space is included in highlighted text,
      double space or TAB or newline terminates the option text.  */
-  char const *desc_text = option_text + anchor_len;
-  while (*desc_text && *desc_text != '\n')
+  అక్షరం స్థిరరాశి *desc_పాఠ్యం = option_పాఠ్యం + anchor_len;
+  అయితే (*desc_పాఠ్యం && *desc_పాఠ్యం != '\n')
     {
-      if (*desc_text == '-' && *(desc_text + 1) == '-')
+      ఒకవేళ (*desc_పాఠ్యం == '-' && *(desc_పాఠ్యం + 1) == '-')
         double_space = false;
-      if (isspace (to_uchar (*desc_text)))
+      ఒకవేళ (ఖాళీనా (గమ్యం_uchar (*desc_పాఠ్యం)))
         {
-          if (*desc_text == '\t' || isspace (to_uchar (*(desc_text + 1))))
-            break;
+          ఒకవేళ (*desc_పాఠ్యం == '\t' || ఖాళీనా (గమ్యం_uchar (*(desc_పాఠ్యం + 1))))
+            ఆపు;
           /* With long options we restrict the match as some translations
              delimit a long option and description with a single space.  */
-          if (!double_space && *(desc_text + 1) != '-')
-            break;
+          ఒకవేళ (!double_space && *(desc_పాఠ్యం + 1) != '-')
+            ఆపు;
         }
 
-      desc_text++;
+      desc_పాఠ్యం++;
     }
 
   /* write spaces before option text. */
-  fwrite (option, 1, first_word - option, stdout);
+  fwrite (option, 1, మొదటి_మాట - option, stdout);
 
   /* write option text.  */
-#ifdef MANUAL_URL
-  char const *url_program =   streq (program, "[") ? "test"
-                            : streq (program, "dir") ? "ls"
-                            : streq (program, "vdir") ? "ls"
-                            : streq (program, "b2sum") ? "cksum"
-                            : streq (program, "md5sum") ? "cksum"
-                            : streq (program, "sha1sum") ? "cksum"
-                            : streq (program, "sha224sum") ? "cksum"
-                            : streq (program, "sha256sum") ? "cksum"
-                            : streq (program, "sha384sum") ? "cksum"
-                            : streq (program, "sha512sum") ? "cksum"
-                            : program;
+#నిర్వచితమైతే MANUAL_URL
+  అక్షరం స్థిరరాశి *url_కార్యక్రమం =   streq (కార్యక్రమం, "[") ? "test"
+                            : streq (కార్యక్రమం, "dir") ? "ls"
+                            : streq (కార్యక్రమం, "vdir") ? "ls"
+                            : streq (కార్యక్రమం, "b2sum") ? "cksum"
+                            : streq (కార్యక్రమం, "md5sum") ? "cksum"
+                            : streq (కార్యక్రమం, "sha1sum") ? "cksum"
+                            : streq (కార్యక్రమం, "sha224sum") ? "cksum"
+                            : streq (కార్యక్రమం, "sha256sum") ? "cksum"
+                            : streq (కార్యక్రమం, "sha384sum") ? "cksum"
+                            : streq (కార్యక్రమం, "sha512sum") ? "cksum"
+                            : కార్యక్రమం;
   /* Note we don't add the hostname to the links below, because
      it's unused with http:// links and not usually useful with file:// links.
      Also there is the possibility that local (hostname agnostic) links
      would work if remotely accessing a similar system to the local one.  */
-  if (STREQ_LEN (option_text, "--help", 6)
-      || STREQ_LEN (option_text, "--version", 9))
+  ఒకవేళ (STREQ_LEN (option_పాఠ్యం, "--help", 6)
+      || STREQ_LEN (option_పాఠ్యం, "--version", 9))
     {
       /* We don't have --help and --version links for each command,
          and they wouldn't be useful to reference anyway.
          Instead use these to reference the single node manual.  */
-      printf ("\033]8;;%s%s#%s%.*s", PACKAGE_URL,
-              url_program, url_program, (int) anchor_len, option_text);
+      రాయి ("\033]8;;%s%s#%s%.*s", PACKAGE_URL,
+              url_కార్యక్రమం, url_కార్యక్రమం, (పూర్ణాంకం) anchor_len, option_పాఠ్యం);
     }
-  else
+  లేకపోతే
     {
       /* The single node manual doesn't work for ls, cksum, md5sum, sha*sum,
          so we link to the full manual.  */
-      printf ("\033]8;;%s#%s%.*s", MANUAL_URL, url_program,
-              (int) anchor_len, option_text);
+      రాయి ("\033]8;;%s#%s%.*s", MANUAL_URL, url_కార్యక్రమం,
+              (పూర్ణాంకం) anchor_len, option_పాఠ్యం);
     }
   fputs ("\033\\", stdout);
-#endif
-#ifdef BOLD_MAN_REFS
+#అయితే_ముగింపు
+#నిర్వచితమైతే BOLD_MAN_REFS
   /* Note help2man strips this and will reinstate with --bold-refs.  */
   fputs ("\033[1m", stdout);
-#endif
+#అయితే_ముగింపు
   /* first_word != option_text for test(1).  */
-  fwrite (first_word, 1, desc_text - first_word, stdout);
-#ifdef BOLD_MAN_REFS
+  fwrite (మొదటి_మాట, 1, desc_పాఠ్యం - మొదటి_మాట, stdout);
+#నిర్వచితమైతే BOLD_MAN_REFS
   fputs ("\033[0m", stdout);
-#endif
-#ifdef MANUAL_URL
+#అయితే_ముగింపు
+#నిర్వచితమైతే MANUAL_URL
   fputs ("\033]8;;\033\\", stdout);
-#endif
+#అయితే_ముగింపు
 
   /* write description.  */
-  fputs (desc_text, stdout);
+  fputs (desc_పాఠ్యం, stdout);
 }
 
 /* If required and possible,
    call oputs with printf formatted message.  */
 
-#define oprintf(...) oprintf_ (PROGRAM_NAME, __VA_ARGS__)
-ATTRIBUTE_FORMAT ((printf, 2, 3))
-static inline void
-oprintf_ (char const *program, char const *message, ...)
+#నిర్వచించు oprintf(...) oprintf_ (కార్యక్రమం_NAME, __VA_ARGS__)
+ATTRIBUTE_FORMAT ((రాయి, 2, 3))
+స్థిర అంతఃవరుస శూన్య
+oprintf_ (అక్షరం స్థిరరాశి *కార్యక్రమం, అక్షరం స్థిరరాశి *సందేశం_2, ...)
 {
-  va_list args;
-  char *buf;
-  int buflen = -1;
+  va_list వాదనలు;
+  అక్షరం *buf;
+  పూర్ణాంకం buflen = -1;
 
-#if defined MANUAL_URL || defined BOLD_MAN_REFS
-  va_start (args, message);
-  buflen = vasprintf (&buf, message, args);
-  va_end (args);
-#endif
+#ఒకవేళ defined MANUAL_URL || defined BOLD_MAN_REFS
+  va_ప్రారంభం (వాదనలు, సందేశం_2);
+  buflen = vasprintf (&buf, సందేశం_2, వాదనలు);
+  va_చివర (వాదనలు);
+#అయితే_ముగింపు
 
-  if (buflen < 0)
+  ఒకవేళ (buflen < 0)
     {
-      va_start (args, message);
-      vprintf (message, args);
-      va_end (args);
-      return;
+      va_ప్రారంభం (వాదనలు, సందేశం_2);
+      vprintf (సందేశం_2, వాదనలు);
+      va_చివర (వాదనలు);
+      తిరిగి;
     }
 
-  oputs_ (program, buf);
-  free (buf);
+  oputs_ (కార్యక్రమం, buf);
+  విడుదల (buf);
 }
 
-static inline void
-emit_stdin_note (void)
+స్థిర అంతఃవరుస శూన్య
+emit_stdin_note (శూన్య)
 {
   fputs (_("\n\
-With no FILE, or when FILE is -, read standard input.\n\
+With no FILE, or when FILE is -, పఠ standard ఆదానం.\n\
 "), stdout);
 }
-static inline void
-emit_mandatory_arg_note (void)
+స్థిర అంతఃవరుస శూన్య
+emit_mandatory_arg_note (శూన్య)
 {
   fputs (_("\n\
-Mandatory arguments to long options are mandatory for short options too.\n\
-"), stdout);
-}
-
-static inline void
-emit_size_note (void)
-{
-  fputs (_("\n\
-The SIZE argument is an integer and optional unit (example: 10K is 10*1024).\n\
-Units are K,M,G,T,P,E,Z,Y,R,Q (powers of 1024) or KB,MB,... (powers of 1000).\n\
-Binary prefixes can be used, too: KiB=K, MiB=M, and so on.\n\
+Mandatory arguments గమ్యం దీర్ఘ options are mandatory కొరకు పొట్టి options too.\n\
 "), stdout);
 }
 
-static inline void
-emit_blocksize_note (char const *program)
+స్థిర అంతఃవరుస శూన్య
+emit_కొలత_note (శూన్య)
 {
-  printf (_("\n\
-Display values are in units of the first available SIZE from --block-size,\n\
-and the %s_BLOCK_SIZE, BLOCK_SIZE and BLOCKSIZE environment variables.\n\
-Otherwise, units default to 1024 bytes (or 512 if POSIXLY_CORRECT is set).\n\
-"), program);
+  fputs (_("\n\
+The కొలత_2 వాదం is an integer and optional unit (example: 10K is 10*1024).\n\
+Units are K,M,G,T,P,E,Z,Y,R,Q (powers యొక్క 1024) or KB,MB,... (powers యొక్క 1000).\n\
+ద్విమాన_2 prefixes can be వాడిన, too: KiB=K, MiB=M, and so on.\n\
+"), stdout);
 }
 
-static inline void
-emit_update_parameters_note (void)
+స్థిర అంతఃవరుస శూన్య
+emit_blocksize_note (అక్షరం స్థిరరాశి *కార్యక్రమం)
+{
+  రాయి (_("\n\
+Display విలువలు are లోపల units యొక్క the మొదటి అందుబాటు కొలత_2 from --ఖండం-కొలత,\n\
+and the %s_ఖండం_కొలత, ఖండం_కొలత_2 and BLOCKSIZE environment variables.\n\
+Otherwise, units అప్రమేయ గమ్యం 1024 బైట్లు (or 512 ఒకవేళ POSIXLY_CORRECT is సమితి_2).\n\
+"), కార్యక్రమం);
+}
+
+స్థిర అంతఃవరుస శూన్య
+emit_update_parameters_note (శూన్య)
 {
   fputs (_("\
 \n\
-UPDATE controls which existing files in the destination are replaced.\n\
-'all' is the default operation when an --update option is not specified,\n\
-and results in all existing files in the destination being replaced.\n\
-'none' is like the --no-clobber option, in that no files in the\n\
-destination are replaced, and skipped files do not induce a failure.\n\
-'none-fail' also ensures no files are replaced in the destination,\n\
+UPDATE controls which existing files లోపల the destination are replaced.\n\
+'all' is the అప్రమేయ operation when an --update option is not specified,\n\
+and results లోపల all existing files లోపల the destination being replaced.\n\
+'none' is like the --no-clobber option, లోపల that no files లోపల the\n\
+destination are replaced, and skipped files చేయి not induce a failure.\n\
+'none-fail' also ensures no files are replaced లోపల the destination,\n\
 but any skipped files are diagnosed and induce a failure.\n\
-'older' is the default operation when --update is specified, and results\n\
-in files being replaced if they're older than the corresponding source file.\n\
+'older' is the అప్రమేయ operation when --update is specified, and results\n\
+లోపల files being replaced ఒకవేళ they're older than the corresponding ఆధారం_2 file.\n\
 "), stdout);
 }
 
-static inline void
-emit_backup_suffix_note (void)
+స్థిర అంతఃవరుస శూన్య
+emit_backup_suffix_note (శూన్య)
 {
   fputs (_("\
 \n\
-The backup suffix is '~', unless set with --suffix or SIMPLE_BACKUP_SUFFIX.\n\
-The version control method may be selected via the --backup option or through\n\
-the VERSION_CONTROL environment variable.  Here are the values:\n\
+The backup suffix is '~', unless సమితి_2 with --suffix or SIMPLE_BACKUP_SUFFIX.\n\
+The సంస్కరణ_3 control పద్ధతి_2 may be selected ద్వారా the --backup option or through\n\
+the సంస్కరణ_CONTROL environment variable.  ఇక్కడ_2 are the విలువలు:\n\
 \n\
 "), stdout);
   fputs (_("\
-  none, off       never make backups (even if --backup is given)\n\
+  none, off       never make backups (even ఒకవేళ --backup is given)\n\
   numbered, t     make numbered backups\n\
-  existing, nil   numbered if numbered backups exist, simple otherwise\n\
+  existing, nil   numbered ఒకవేళ numbered backups exist, simple otherwise\n\
   simple, never   always make simple backups\n\
 "), stdout);
 }
 
-#define emit_symlink_recurse_options(default_opt) \
- emit_symlink_recurse_options_ (PROGRAM_NAME, default_opt)
-static inline void
-emit_symlink_recurse_options_ (char const *program, char const *default_opt)
+#నిర్వచించు emit_symlink_recurse_options(default_opt) \
+ emit_symlink_recurse_options_ (కార్యక్రమం_NAME, default_opt)
+స్థిర అంతఃవరుస శూన్య
+emit_symlink_recurse_options_ (అక్షరం స్థిరరాశి *కార్యక్రమం, అక్షరం స్థిరరాశి *default_opt)
 {
-      printf (_("\
+      రాయి (_("\
 \n\
 The following options modify how a hierarchy is traversed when the -R\n\
-option is also specified.  If more than one is specified, only the final\n\
-one takes effect. %s is the default.\n\
+option is also specified.  If మరిన్ని than one is specified, only the final\n\
+one takes effect. %s is the అప్రమేయ.\n\
 \n\
 "), default_opt);
-      oputs_ (program, _("\
+      oputs_ (కార్యక్రమం, _("\
   -H\n\
-         if a command line argument is a symlink to a directory, traverse it\n\
+         ఒకవేళ a command పంక్తి వాదం is a symlink గమ్యం a directory, traverse it\n\
 "));
-      oputs_ (program, _("\
+      oputs_ (కార్యక్రమం, _("\
   -L\n\
-         traverse every symbolic link to a directory encountered\n\
+         traverse every symbolic link గమ్యం a directory encountered\n\
 "));
-      oputs_ (program, _("\
+      oputs_ (కార్యక్రమం, _("\
   -P\n\
-         do not traverse any symbolic links\n\
+         చేయి not traverse any symbolic links\n\
 \n\
 "));
 }
 
-static inline void
-emit_exec_status (char const *program)
+స్థిర అంతఃవరుస శూన్య
+emit_exec_స్థితి (అక్షరం స్థిరరాశి *కార్యక్రమం)
 {
-      printf (_("\n\
-Exit status:\n\
-  125  if the %s command itself fails\n\
-  126  if COMMAND is found but cannot be invoked\n\
-  127  if COMMAND cannot be found\n\
-  -    the exit status of COMMAND otherwise\n\
-"), program);
+      రాయి (_("\n\
+Exit స్థితి_2:\n\
+  125  ఒకవేళ the %s command itself fails\n\
+  126  ఒకవేళ COMMAND is దొరికింది but cannot be invoked\n\
+  127  ఒకవేళ COMMAND cannot be దొరికింది\n\
+  -    the నిష్క్రమించు స్థితి_2 యొక్క COMMAND otherwise\n\
+"), కార్యక్రమం);
 }
 
-static inline void
-emit_ancillary_info (char const *program)
+స్థిర అంతఃవరుస శూన్య
+emit_ancillary_info (అక్షరం స్థిరరాశి *కార్యక్రమం)
 {
-  struct infomap { char const *program; char const *node; } const infomap[] = {
+  నిర్మాణం infomap { అక్షరం స్థిరరాశి *కార్యక్రమం; అక్షరం స్థిరరాశి *కణుపు; } స్థిరరాశి infomap[] = {
     { "[", "test invocation" },
     { "coreutils", "Multi-call invocation" },
     { "sha224sum", "sha2 utilities" },
     { "sha256sum", "sha2 utilities" },
     { "sha384sum", "sha2 utilities" },
     { "sha512sum", "sha2 utilities" },
-    { NULL, NULL }
+    { ఖాళీ, ఖాళీ }
   };
 
-  char const *node = program;
-  struct infomap const *map_prog = infomap;
+  అక్షరం స్థిరరాశి *కణుపు = కార్యక్రమం;
+  నిర్మాణం infomap స్థిరరాశి *map_prog = infomap;
 
-  while (map_prog->program && ! streq (program, map_prog->program))
+  అయితే (map_prog->కార్యక్రమం && ! streq (కార్యక్రమం, map_prog->కార్యక్రమం))
     map_prog++;
 
-  if (map_prog->node)
-    node = map_prog->node;
+  ఒకవేళ (map_prog->కణుపు)
+    కణుపు = map_prog->కణుపు;
 
-  emit_bug_reporting_address ();
+  emit_bug_reporting_చిరునామా ();
 
   /* .htaccess on the coreutils web site maps programs to the appropriate page,
      however we explicitly handle "[" -> "test" here as the "[" is not
      recognized as part of a URL by default in terminals.  */
-  char const *url_program = streq (program, "[") ? "test" : program;
-  printf (_("Full documentation <%s%s>\n"),
-          PACKAGE_URL, url_program);
-  printf (_("or available locally via: info '(coreutils) %s%s'\n"),
-          node, node == program ? " invocation" : "");
+  అక్షరం స్థిరరాశి *url_కార్యక్రమం = streq (కార్యక్రమం, "[") ? "test" : కార్యక్రమం;
+  రాయి (_("Full documentation <%s%s>\n"),
+          PACKAGE_URL, url_కార్యక్రమం);
+  రాయి (_("or available locally via: info '(coreutils) %s%s'\n"),
+          కణుపు, కణుపు == కార్యక్రమం ? " invocation" : "");
 }
 
 /* Use a macro rather than an inline function, as this references
    the global program_name, which causes dynamic linking issues
    in libstdbuf.so on some systems where unused functions
    are not removed by the linker.  */
-#define emit_try_help() \
-  do \
+#నిర్వచించు emit_try_help() \
+  చేయి \
     { \
       fprintf (stderr, _("Try '%s --help' for more information.\n"), \
-               program_name); \
+               కార్యక్రమం_name); \
     } \
-  while (0)
+  అయితే (0)
 
-#include "inttostr.h"
+#అన్తర్భావ "inttostr.h"
 
-static inline char *
-timetostr (time_t t, char *buf)
+స్థిర అంతఃవరుస అక్షరం *
+timetostr (time_t t, అక్షరం *buf)
 {
-  return (TYPE_SIGNED (time_t)
+  తిరిగి (TYPE_SIGNED (time_t)
           ? imaxtostr (t, buf)
           : umaxtostr (t, buf));
 }
 
-static inline char *
-bad_cast (char const *s)
+స్థిర అంతఃవరుస అక్షరం *
+bad_cast (అక్షరం స్థిరరాశి *s)
 {
-  return (char *) s;
+  తిరిగి (అక్షరం *) s;
 }
 
 /* Return a boolean indicating whether SB->st_size is defined.  */
-static inline bool
-usable_st_size (struct stat const *sb)
+స్థిర అంతఃవరుస bool
+usable_st_కొలత (నిర్మాణం stat స్థిరరాశి *sb)
 {
-  return (S_ISREG (sb->st_mode) || S_ISLNK (sb->st_mode)
+  తిరిగి (S_ISREG (sb->st_బహుళకం) || S_ISLNK (sb->st_బహుళకం)
           || S_TYPEISSHM (sb) || S_TYPEISTMO (sb));
 }
 
-_Noreturn void usage (int status);
+_Noreturn శూన్య usage (పూర్ణాంకం స్థితి_2);
 
-#include <error.h>
+#అన్తర్భావ <error.h>
 
 /* Like error(0, 0, ...), but without an implicit newline.
    Also a noop unless the global DEV_DEBUG is set.  */
-#define devmsg(...)			\
-  do					\
+#నిర్వచించు devmsg(...)			\
+  చేయి					\
     {					\
-      if (dev_debug)			\
+      ఒకవేళ (dev_debug)			\
         fprintf (stderr, __VA_ARGS__);	\
     }					\
-  while (0)
+  అయితే (0)
 
-#define emit_cycle_warning(file_name)	\
-  do					\
+#నిర్వచించు emit_చక్రం_warning(file_name)	\
+  చేయి					\
     {					\
       error (0, 0, _("\
 WARNING: Circular directory structure.\n\
 This almost certainly means that you have a corrupted file system.\n\
 NOTIFY YOUR SYSTEM MANAGER.\n\
-The following directory is part of the cycle:\n  %s\n"), \
+The following directory is part యొక్క the చక్రం:\n  %s\n"), \
              quotef (file_name));	\
     }					\
-  while (0)
+  అయితే (0)
 
 /* exit with a _single_ "write error" diagnostic.  */
 
-static inline void
-write_error (void)
+స్థిర అంతఃవరుస శూన్య
+write_error (శూన్య)
 {
-  int saved_errno = errno;
+  పూర్ణాంకం saved_errno = errno;
   fflush (stdout);    /* Last attempt to write any buffered data.  */
   fpurge (stdout);    /* Ensure nothing buffered that might induce an error. */
   clearerr (stdout);  /* Avoid extraneous diagnostic from close_stdout.  */
@@ -961,81 +961,81 @@ write_error (void)
    this function writes a NUL byte into dest[len].  Thus, the length
    of the destination buffer must be at least LEN + 1.
    The DEST and SRC buffers must not overlap.  */
-static inline char *
-stzncpy (char *restrict dest, char const *restrict src, size_t len)
+స్థిర అంతఃవరుస అక్షరం *
+stzncpy (అక్షరం *పరిమిత dest, అక్షరం స్థిరరాశి *పరిమిత src, size_t len)
 {
-  for (size_t i = 0; i < len && *src; i++)
+  కొరకు (size_t i = 0; i < len && *src; i++)
     *dest++ = *src++;
   *dest = 0;
-  return dest;
+  తిరిగి dest;
 }
 
 /* Return true if ERR is ENOTSUP or EOPNOTSUPP, otherwise false.
    This wrapper function avoids the redundant 'or'd comparison on
    systems like Linux for which they have the same value.  It also
    avoids the gcc warning to that effect.  */
-static inline bool
-is_ENOTSUP (int err)
+స్థిర అంతఃవరుస bool
+is_ENOTSUP (పూర్ణాంకం err)
 {
-  return err == EOPNOTSUPP || (ENOTSUP != EOPNOTSUPP && err == ENOTSUP);
+  తిరిగి err == EOPNOTSUPP || (ENOTSUP != EOPNOTSUPP && err == ENOTSUP);
 }
 
 
 /* How coreutils quotes filenames, to minimize use of outer quotes,
    but also provide better support for copy and paste when used.  */
-#include "quotearg.h"
+#అన్తర్భావ "quotearg.h"
 
 /* Use these to shell quote only when necessary,
    when the quoted item is already delimited with colons.  */
-#define quotef(arg) \
+#నిర్వచించు quotef(arg) \
   quotearg_n_style_colon (0, shell_escape_quoting_style, arg)
-#define quotef_n(n, arg) \
+#నిర్వచించు quotef_n(n, arg) \
   quotearg_n_style_colon (n, shell_escape_quoting_style, arg)
 
 /* Use these when there are spaces around the file name,
    in the error message.  */
-#define quoteaf(arg) \
+#నిర్వచించు quoteaf(arg) \
   quotearg_style (shell_escape_always_quoting_style, arg)
-#define quoteaf_n(n, arg) \
+#నిర్వచించు quoteaf_n(n, arg) \
   quotearg_n_style (n, shell_escape_always_quoting_style, arg)
 
 /* Equivalent to quotearg(), but explicit to avoid syntax checks.  */
-#define quoteN(x) quotearg_style (get_quoting_style (NULL), x)
-#define quoteN_mem(x, size)                                     \
-  quotearg_style_mem (get_quoting_style (NULL), x, size)
+#నిర్వచించు quoteN(x) quotearg_style (get_quoting_style (ఖాళీ), x)
+#నిర్వచించు quoteN_mem(x, కొలత)                                     \
+  quotearg_style_mem (get_quoting_style (ఖాళీ), x, కొలత)
 
-#ifdef ARGMATCH
+#నిర్వచితమైతే ARGMATCH
 /* Return the quoting style specified by the environment variable
    QUOTING_STYLE if set and valid, -1 otherwise.  */
-static inline int
-getenv_quoting_style (void)
+స్థిర అంతఃవరుస పూర్ణాంకం
+getenv_quoting_style (శూన్య)
 {
-  char const *q_style = getenv ("QUOTING_STYLE");
-  if (!q_style)
-    return -1;
+  అక్షరం స్థిరరాశి *q_style = getenv ("QUOTING_STYLE");
+  ఒకవేళ (!q_style)
+    తిరిగి -1;
 
-  int i = ARGMATCH (q_style, quoting_style_args, quoting_style_vals);
-  if (i < 0)
+  పూర్ణాంకం i = ARGMATCH (q_style, quoting_style_వాదనలు, quoting_style_vals);
+  ఒకవేళ (i < 0)
     {
       error (0, 0, _("ignoring invalid value of environment "
                      "variable QUOTING_STYLE: %s"), quote (q_style));
-      return -1;
+      తిరిగి -1;
     }
-  return quoting_style_vals[i];
+  తిరిగి quoting_style_vals[i];
 }
 
 /* Used instead of XARGMATCH() to provide a custom error message.  */
-static inline ptrdiff_t
-x_timestyle_match (char const * style, bool allow_posix,
-                   char const *const * timestyle_args,
-                   char const * timestyle_types,
-                   size_t timestyle_types_size,
-                   int fail_status)
+స్థిర అంతఃవరుస ptrdiff_t
+x_timestyle_సరిపోలిక (అక్షరం స్థిరరాశి * style, bool allow_posix,
+                   అక్షరం స్థిరరాశి *స్థిరరాశి * timestyle_వాదనలు,
+                   అక్షరం స్థిరరాశి * timestyle_types,
+                   size_t timestyle_types_కొలత,
+                   పూర్ణాంకం fail_స్థితి)
 {
-  ptrdiff_t res = argmatch (style, timestyle_args,
+  ptrdiff_t res = argmatch (style, timestyle_వాదనలు,
                             timestyle_types,
-                            timestyle_types_size);
-  if (res < 0)
+                            timestyle_types_కొలత);
+  ఒకవేళ (res < 0)
     {
       /* This whole block used to be a simple use of XARGMATCH.
          but that didn't print the "posix-"-prefixed variants or
@@ -1048,15 +1048,15 @@ x_timestyle_match (char const * style, bool allow_posix,
          only because all four existing time_style_types values
          are distinct.  */
       fputs (_("Valid arguments are:\n"), stderr);
-      char const *const *p = timestyle_args;
-      char const *posix_prefix = allow_posix ? "[posix-]" : "";
-      while (*p)
-        fprintf (stderr, "  - %s%s\n", posix_prefix, *p++);
+      అక్షరం స్థిరరాశి *స్థిరరాశి *p = timestyle_వాదనలు;
+      అక్షరం స్థిరరాశి *posix_ఉపసర్గ = allow_posix ? "[posix-]" : "";
+      అయితే (*p)
+        fprintf (stderr, "  - %s%s\n", posix_ఉపసర్గ, *p++);
       fputs (_("  - +FORMAT (e.g., +%H:%M) for a 'date'-style"
                " format\n"), stderr);
-      usage (fail_status);
+      usage (fail_స్థితి);
     }
 
-  return res;
+  తిరిగి res;
 }
-#endif
+#అయితే_ముగింపు

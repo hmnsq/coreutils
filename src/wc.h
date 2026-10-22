@@ -1,5 +1,5 @@
-#include <stdint.h>
-struct wc_lines { int err; intmax_t lines; intmax_t bytes; };
-struct wc_lines wc_lines_avx2 (int);
-struct wc_lines wc_lines_avx512 (int);
-struct wc_lines wc_lines_neon (int fd);
+#అన్తర్భావ <stdint.h>
+నిర్మాణం wc_పంక్తులు { పూర్ణాంకం err; intmax_t పంక్తులు; intmax_t బైట్లు; };
+నిర్మాణం wc_పంక్తులు wc_పంక్తులు_avx2 (పూర్ణాంకం);
+నిర్మాణం wc_పంక్తులు wc_పంక్తులు_avx512 (పూర్ణాంకం);
+నిర్మాణం wc_పంక్తులు wc_పంక్తులు_neon (పూర్ణాంకం fd);

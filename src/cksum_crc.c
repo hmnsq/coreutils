@@ -27,16 +27,16 @@
 
 /* This include must be at the top of the file to satisfy
    sc_require_config_h_first.  */
-#ifndef CRCTAB
+#నిర్వచితం_కాకపోతే CRCTAB
 # include <config.h>
-#endif
+#అయితే_ముగింపు
 
-#ifdef CRCTAB
+#నిర్వచితమైతే CRCTAB
 
 # include <stdio.h>
 
-# define BIT(x)	(1u << (x))
-# define SBIT	BIT (31)
+# define బిట్టు_2(x)	(1u << (x))
+# define SBIT	బిట్టు_2 (31)
 
 /* The generating polynomial is
 
@@ -45,41 +45,41 @@
 
   The i bit in GEN is set if X^i is a summand of G(X) except X^32.  */
 
-# define GEN	(BIT (26) | BIT (23) | BIT (22) | BIT (16) | BIT (12) \
-                 | BIT (11) | BIT (10) | BIT (8) | BIT (7) | BIT (5) \
-                 | BIT (4) | BIT (2) | BIT (1) | BIT (0))
+# define GEN	(బిట్టు_2 (26) | బిట్టు_2 (23) | బిట్టు_2 (22) | బిట్టు_2 (16) | బిట్టు_2 (12) \
+                 | బిట్టు_2 (11) | బిట్టు_2 (10) | బిట్టు_2 (8) | బిట్టు_2 (7) | బిట్టు_2 (5) \
+                 | బిట్టు_2 (4) | బిట్టు_2 (2) | బిట్టు_2 (1) | బిట్టు_2 (0))
 
-static unsigned int r[8];
+స్థిర గుర్తులేని పూర్ణాంకం r[8];
 
-static void
-fill_r (void)
+స్థిర శూన్య
+fill_r (శూన్య)
 {
   r[0] = GEN;
-  for (int i = 1; i < 8; i++)
+  కొరకు (పూర్ణాంకం i = 1; i < 8; i++)
     r[i] = (r[i - 1] << 1) ^ ((r[i - 1] & SBIT) ? GEN : 0);
 }
 
-static unsigned int
-crc_remainder (int m)
+స్థిర గుర్తులేని పూర్ణాంకం
+చక్రీయ_తనిఖీ_remainder (పూర్ణాంకం m)
 {
-  unsigned int rem = 0;
+  గుర్తులేని పూర్ణాంకం rem = 0;
 
-  for (int i = 0; i < 8; i++)
-    if (BIT (i) & m)
+  కొరకు (పూర్ణాంకం i = 0; i < 8; i++)
+    ఒకవేళ (బిట్టు_2 (i) & m)
       rem ^= r[i];
 
-  return rem & 0xFFFFFFFF;	/* Make it run on 64-bit machine.  */
+  తిరిగి rem & 0xFFFFFFFF;	/* Make it run on 64-bit machine.  */
 }
 
-int
-main (void)
+పూర్ణాంకం
+ప్రధాన (శూన్య)
 {
-  static unsigned int crctab[8][256];
+  స్థిర గుర్తులేని పూర్ణాంకం crctab[8][256];
 
   fill_r ();
 
-  for (int i = 0; i < 256; i++)
-    crctab[0][i] = crc_remainder (i);
+  కొరకు (పూర్ణాంకం i = 0; i < 256; i++)
+    crctab[0][i] = చక్రీయ_తనిఖీ_remainder (i);
 
   /* CRC(0x11 0x22 0x33 0x44)
      is equal to
@@ -88,45 +88,45 @@ main (void)
      We precompute the CRC values for the offset values into
      separate CRC tables. We can then use them to speed up
      CRC calculation by processing multiple bytes at the time. */
-  for (int i = 0; i < 256; i++)
+  కొరకు (పూర్ణాంకం i = 0; i < 256; i++)
     {
-      unsigned int crc = 0;
+      గుర్తులేని పూర్ణాంకం చక్రీయ_తనిఖీ = 0;
 
-      crc = (crc << 8) ^ crctab[0][((crc >> 24) ^ i) & 0xFF];
-      for (int offset = 1; offset < 8; offset++)
+      చక్రీయ_తనిఖీ = (చక్రీయ_తనిఖీ << 8) ^ crctab[0][((చక్రీయ_తనిఖీ >> 24) ^ i) & 0xFF];
+      కొరకు (పూర్ణాంకం స్థానభ్రంశం = 1; స్థానభ్రంశం < 8; స్థానభ్రంశం++)
         {
-          crc = (crc << 8) ^ crctab[0][((crc >> 24) ^ 0) & 0xFF];
-          crctab[offset][i] = crc & 0xFFFFFFFF;
+          చక్రీయ_తనిఖీ = (చక్రీయ_తనిఖీ << 8) ^ crctab[0][((చక్రీయ_తనిఖీ >> 24) ^ 0) & 0xFF];
+          crctab[స్థానభ్రంశం][i] = చక్రీయ_తనిఖీ & 0xFFFFFFFF;
         }
     }
 
-  printf ("#include <config.h>\n");
-  printf ("#include \"cksum_crc.h\"\n");
-  printf ("\n");
-  printf ("uint_fast32_t const crctab[8][256] = {\n");
-  for (int y = 0; y < 8; y++)
+  రాయి ("#include <config.h>\n");
+  రాయి ("#include \"cksum_crc.h\"\n");
+  రాయి ("\n");
+  రాయి ("uint_fast32_t const crctab[8][256] = {\n");
+  కొరకు (పూర్ణాంకం y = 0; y < 8; y++)
     {
-      printf ("{\n  0x%08x", crctab[y][0]);
-      for (int i = 0; i < 51; i++)
+      రాయి ("{\n  0x%08x", crctab[y][0]);
+      కొరకు (పూర్ణాంకం i = 0; i < 51; i++)
         {
-          printf (",\n  0x%08x, 0x%08x, 0x%08x, 0x%08x, 0x%08x",
+          రాయి (",\n  0x%08x, 0x%08x, 0x%08x, 0x%08x, 0x%08x",
                   crctab[y][i * 5 + 1], crctab[y][i * 5 + 2],
                   crctab[y][i * 5 + 3], crctab[y][i * 5 + 4],
                   crctab[y][i * 5 + 5]);
         }
-        printf ("\n},\n");
+        రాయి ("\n},\n");
     }
-  printf ("};\n");
+  రాయి ("};\n");
 }
 
-#else /* !CRCTAB */
+#లేకపోతే /* !CRCTAB */
 
 # include "cksum_crc.h"
 # include <sys/types.h>
 # include <endian.h>
 # include "system.h"
 
-# ifdef USE_VMULL_CRC32
+# ifdef USE_VMULL_చక్రీయ_తనిఖీ_32
 #  include <sys/auxv.h>
 #  include <asm/hwcap.h>
 # endif
@@ -137,241 +137,241 @@ main (void)
 /* Number of bytes to read at once.  */
 # define BUFLEN (1 << 16)
 
-typedef bool (*cksum_fp_t) (FILE *, uint_fast32_t *, intmax_t *);
+రకనిర్వచనం bool (*cksum_fp_t) (FILE *, uint_fast32_t *, intmax_t *);
 
-static cksum_fp_t
-pclmul_supported (void)
+స్థిర cksum_fp_t
+pclmul_supported (శూన్య)
 {
-# if USE_PCLMUL_CRC32 || GL_CRC_X86_64_PCLMUL
+# ఒకవేళ USE_PCLMUL_చక్రీయ_తనిఖీ_32 || GL_చక్రీయ_తనిఖీ_X86_64_PCLMUL
   bool pclmul_enabled = (cpu_supports ("avx")
                          && cpu_supports ("pclmul"));
-  if (cksum_debug)
+  ఒకవేళ (cksum_debug)
     error (0, 0, "%s",
            (pclmul_enabled
             ? _("using pclmul hardware support")
             : _("pclmul support not detected")));
-#  if USE_PCLMUL_CRC32
-  if (pclmul_enabled)
-    return cksum_pclmul;
+#  ఒకవేళ USE_PCLMUL_చక్రీయ_తనిఖీ_32
+  ఒకవేళ (pclmul_enabled)
+    తిరిగి cksum_pclmul;
 #  endif
 # endif
 
-  return NULL;
+  తిరిగి ఖాళీ;
 }
 
-static cksum_fp_t
-avx2_supported (void)
+స్థిర cksum_fp_t
+avx2_supported (శూన్య)
 {
   /* AVX512 processors will not set vpclmulqdq unless they support
      the avx512 version, but it implies that the avx2 version
      is supported  */
-# if USE_AVX2_CRC32
+# ఒకవేళ USE_AVX2_చక్రీయ_తనిఖీ_32
   bool avx2_enabled = (cpu_supports ("avx2")
                        && cpu_supports ("vpclmulqdq"));
-  if (cksum_debug)
+  ఒకవేళ (cksum_debug)
     error (0, 0, "%s",
            (avx2_enabled
             ? _("using avx2 hardware support")
             : _("avx2 support not detected")));
-  if (avx2_enabled)
-    return cksum_avx2;
+  ఒకవేళ (avx2_enabled)
+    తిరిగి cksum_avx2;
 # endif
 
-  return NULL;
+  తిరిగి ఖాళీ;
 }
 
-static cksum_fp_t
-avx512_supported (void)
+స్థిర cksum_fp_t
+avx512_supported (శూన్య)
 {
   /* vpclmulqdq for multiplication
      mavx512f for most of the avx512 functions we're using
      mavx512bw for byte swapping  */
-# if USE_AVX512_CRC32
+# ఒకవేళ USE_AVX512_చక్రీయ_తనిఖీ_32
   bool avx512_enabled = (cpu_supports ("avx512f")
                          && cpu_supports ("avx512bw")
                          && cpu_supports ("vpclmulqdq"));
 
-  if (cksum_debug)
+  ఒకవేళ (cksum_debug)
     error (0, 0, "%s",
            (avx512_enabled
             ? _("using avx512 hardware support")
             : _("avx512 support not detected")));
-  if (avx512_enabled)
-    return cksum_avx512;
+  ఒకవేళ (avx512_enabled)
+    తిరిగి cksum_avx512;
 # endif
 
-  return NULL;
+  తిరిగి ఖాళీ;
 }
 
-static cksum_fp_t
-vmull_supported (void)
+స్థిర cksum_fp_t
+vmull_supported (శూన్య)
 {
   /* vmull for multiplication  */
-# if USE_VMULL_CRC32
+# ఒకవేళ USE_VMULL_చక్రీయ_తనిఖీ_32
   bool vmull_enabled = (cpu_may_support ("pmull")
                         && (getauxval (AT_HWCAP) & HWCAP_PMULL) > 0);
-  if (cksum_debug)
+  ఒకవేళ (cksum_debug)
     error (0, 0, "%s",
            (vmull_enabled
             ? _("using vmull hardware support")
             : _("vmull support not detected")));
-  if (vmull_enabled)
-    return cksum_vmull;
+  ఒకవేళ (vmull_enabled)
+    తిరిగి cksum_vmull;
 # endif
 
-  return NULL;
+  తిరిగి ఖాళీ;
 }
 
-static bool
-cksum_slice8 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
+స్థిర bool
+cksum_slice8 (FILE *fp, uint_fast32_t *చక్రీయ_తనిఖీ_బహిర్గతం, intmax_t *నిడివి_బహిర్గతం)
 {
-  uint32_t buf[BUFLEN / sizeof (uint32_t)];
-  uint_fast32_t crc = 0;
-  intmax_t length = 0;
-  size_t bytes_read;
+  uint32_t buf[BUFLEN / పరిమాణం (uint32_t)];
+  uint_fast32_t చక్రీయ_తనిఖీ = 0;
+  intmax_t నిడివి = 0;
+  size_t బైట్లు_read;
 
-  if (!fp || !crc_out || !length_out)
-    return false;
+  ఒకవేళ (!fp || !చక్రీయ_తనిఖీ_బహిర్గతం || !నిడివి_బహిర్గతం)
+    తిరిగి false;
 
-  while ((bytes_read = fread (buf, 1, BUFLEN, fp)) > 0)
+  అయితే ((బైట్లు_read = fread (buf, 1, BUFLEN, fp)) > 0)
     {
       uint32_t *datap;
 
-      if (ckd_add (&length, length, bytes_read))
+      ఒకవేళ (ckd_కూడు (&నిడివి, నిడివి, బైట్లు_read))
         {
           errno = EOVERFLOW;
-          return false;
+          తిరిగి false;
         }
 
       /* Process multiples of 8 bytes */
       datap = buf;
-      while (bytes_read >= 8)
+      అయితే (బైట్లు_read >= 8)
         {
-          uint32_t first = *datap++, second = *datap++;
-          crc ^= htobe32 (first);
-          second = htobe32 (second);
-          crc = (crctab[7][(crc >> 24) & 0xFF]
-                 ^ crctab[6][(crc >> 16) & 0xFF]
-                 ^ crctab[5][(crc >> 8) & 0xFF]
-                 ^ crctab[4][(crc) & 0xFF]
-                 ^ crctab[3][(second >> 24) & 0xFF]
-                 ^ crctab[2][(second >> 16) & 0xFF]
-                 ^ crctab[1][(second >> 8) & 0xFF]
-                 ^ crctab[0][(second) & 0xFF]);
-          bytes_read -= 8;
+          uint32_t మొదటి = *datap++, రెండవ = *datap++;
+          చక్రీయ_తనిఖీ ^= htobe32 (మొదటి);
+          రెండవ = htobe32 (రెండవ);
+          చక్రీయ_తనిఖీ = (crctab[7][(చక్రీయ_తనిఖీ >> 24) & 0xFF]
+                 ^ crctab[6][(చక్రీయ_తనిఖీ >> 16) & 0xFF]
+                 ^ crctab[5][(చక్రీయ_తనిఖీ >> 8) & 0xFF]
+                 ^ crctab[4][(చక్రీయ_తనిఖీ) & 0xFF]
+                 ^ crctab[3][(రెండవ >> 24) & 0xFF]
+                 ^ crctab[2][(రెండవ >> 16) & 0xFF]
+                 ^ crctab[1][(రెండవ >> 8) & 0xFF]
+                 ^ crctab[0][(రెండవ) & 0xFF]);
+          బైట్లు_read -= 8;
         }
 
       /* And finish up last 0-7 bytes in a byte by byte fashion */
-      unsigned char *cp = (unsigned char *)datap;
-      while (bytes_read--)
-        crc = (crc << 8) ^ crctab[0][((crc >> 24) ^ *cp++) & 0xFF];
-      if (feof (fp))
-        break;
+      గుర్తులేని అక్షరం *cp = (గుర్తులేని అక్షరం *)datap;
+      అయితే (బైట్లు_read--)
+        చక్రీయ_తనిఖీ = (చక్రీయ_తనిఖీ << 8) ^ crctab[0][((చక్రీయ_తనిఖీ >> 24) ^ *cp++) & 0xFF];
+      ఒకవేళ (feof (fp))
+        ఆపు;
     }
 
-  *crc_out = crc;
-  *length_out = length;
+  *చక్రీయ_తనిఖీ_బహిర్గతం = చక్రీయ_తనిఖీ;
+  *నిడివి_బహిర్గతం = నిడివి;
 
-  return !ferror (fp);
+  తిరిగి !ferror (fp);
 }
 
 /* Calculate the checksum and length in bytes of stream STREAM.
    Return -1 on error, 0 on success.  */
 
-int
-crc_sum_stream (FILE *stream, void *resstream, intmax_t *length)
+పూర్ణాంకం
+చక్రీయ_తనిఖీ_కూడిక_ప్రవాహం (FILE *ప్రవాహం, శూన్య *resstream, intmax_t *నిడివి)
 {
-  intmax_t total_bytes = 0;
-  uint_fast32_t crc = 0;
+  intmax_t మొత్తం_బైట్లు = 0;
+  uint_fast32_t చక్రీయ_తనిఖీ = 0;
 
-  static cksum_fp_t cksum_fp;
-  if (! cksum_fp)
+  స్థిర cksum_fp_t cksum_fp;
+  ఒకవేళ (! cksum_fp)
     cksum_fp = avx512_supported ();
-  if (! cksum_fp)
+  ఒకవేళ (! cksum_fp)
     cksum_fp = avx2_supported ();
-  if (! cksum_fp)
+  ఒకవేళ (! cksum_fp)
     cksum_fp = pclmul_supported ();
-  if (! cksum_fp)
+  ఒకవేళ (! cksum_fp)
     cksum_fp = vmull_supported ();
-  if (! cksum_fp)
+  ఒకవేళ (! cksum_fp)
     cksum_fp = cksum_slice8;
 
-  if (! cksum_fp (stream, &crc, &total_bytes))
-    return -1;
+  ఒకవేళ (! cksum_fp (ప్రవాహం, &చక్రీయ_తనిఖీ, &మొత్తం_బైట్లు))
+    తిరిగి -1;
 
-  *length = total_bytes;
+  *నిడివి = మొత్తం_బైట్లు;
 
-  for (; total_bytes; total_bytes >>= 8)
-    crc = (crc << 8) ^ crctab[0][((crc >> 24) ^ total_bytes) & 0xFF];
-  crc = ~crc & 0xFFFFFFFF;
+  కొరకు (; మొత్తం_బైట్లు; మొత్తం_బైట్లు >>= 8)
+    చక్రీయ_తనిఖీ = (చక్రీయ_తనిఖీ << 8) ^ crctab[0][((చక్రీయ_తనిఖీ >> 24) ^ మొత్తం_బైట్లు) & 0xFF];
+  చక్రీయ_తనిఖీ = ~చక్రీయ_తనిఖీ & 0xFFFFFFFF;
 
-  unsigned int crc_out = crc;
-  memcpy (resstream, &crc_out, sizeof crc_out);
+  గుర్తులేని పూర్ణాంకం చక్రీయ_తనిఖీ_బహిర్గతం = చక్రీయ_తనిఖీ;
+  జ్ఞాపకం_నకలు (resstream, &చక్రీయ_తనిఖీ_బహిర్గతం, పరిమాణం చక్రీయ_తనిఖీ_బహిర్గతం);
 
-  return 0;
+  తిరిగి 0;
 }
 
 /* Calculate the crc32b checksum and length in bytes of stream STREAM.
    Return -1 on error, 0 on success.  */
 
-int
-crc32b_sum_stream (FILE *stream, void *resstream, intmax_t *reslen)
+పూర్ణాంకం
+crc32b_కూడిక_ప్రవాహం (FILE *ప్రవాహం, శూన్య *resstream, intmax_t *reslen)
 {
-  uint32_t buf[BUFLEN / sizeof (uint32_t)];
-  uint32_t crc = 0;
+  uint32_t buf[BUFLEN / పరిమాణం (uint32_t)];
+  uint32_t చక్రీయ_తనిఖీ = 0;
   intmax_t len = 0;
-  size_t bytes_read;
+  size_t బైట్లు_read;
 
-  if (!stream || !resstream || !reslen)
-    return -1;
+  ఒకవేళ (!ప్రవాహం || !resstream || !reslen)
+    తిరిగి -1;
 
-# if GL_CRC_X86_64_PCLMUL
-  if (cksum_debug)
-    (void) pclmul_supported ();
+# ఒకవేళ GL_చక్రీయ_తనిఖీ_X86_64_PCLMUL
+  ఒకవేళ (cksum_debug)
+    (శూన్య) pclmul_supported ();
 # endif
 
-  while ((bytes_read = fread (buf, 1, BUFLEN, stream)) > 0)
+  అయితే ((బైట్లు_read = fread (buf, 1, BUFLEN, ప్రవాహం)) > 0)
     {
-      if (ckd_add (&len, len, bytes_read))
+      ఒకవేళ (ckd_కూడు (&len, len, బైట్లు_read))
         {
           errno = EOVERFLOW;
-          return -1;
+          తిరిగి -1;
         }
 
-      crc = crc32_update (crc, (char const *)buf, bytes_read);
+      చక్రీయ_తనిఖీ = చక్రీయ_తనిఖీ_32_update (చక్రీయ_తనిఖీ, (అక్షరం స్థిరరాశి *)buf, బైట్లు_read);
 
-      if (feof (stream))
-        break;
+      ఒకవేళ (feof (ప్రవాహం))
+        ఆపు;
     }
 
-  unsigned int crc_out = crc;
-  memcpy (resstream, &crc_out, sizeof crc_out);
+  గుర్తులేని పూర్ణాంకం చక్రీయ_తనిఖీ_బహిర్గతం = చక్రీయ_తనిఖీ;
+  జ్ఞాపకం_నకలు (resstream, &చక్రీయ_తనిఖీ_బహిర్గతం, పరిమాణం చక్రీయ_తనిఖీ_బహిర్గతం);
 
   *reslen = len;
 
-  return ferror (stream) ? -1 : 0;
+  తిరిగి ferror (ప్రవాహం) ? -1 : 0;
 }
 
 /* Print the checksum and size to stdout.
    If ARGS is true, also print the FILE name.  */
 
-void
-output_crc (char const *file, MAYBE_UNUSED int binary_file,
-            void const *digest, bool raw, MAYBE_UNUSED bool tagged,
-            unsigned char delim, bool args, intmax_t length)
+శూన్య
+output_చక్రీయ_తనిఖీ (అక్షరం స్థిరరాశి *file, MAYBE_వాడని పూర్ణాంకం ద్విమాన_file,
+            శూన్య స్థిరరాశి *digest, bool raw, MAYBE_వాడని bool tagged,
+            గుర్తులేని అక్షరం delim, bool వాదనలు, intmax_t నిడివి)
 {
-  if (raw)
+  ఒకవేళ (raw)
     {
       /* Output in network byte order (big endian).  */
-      uint32_t out_int = htobe32 (*(uint32_t *)digest);
-      fwrite (&out_int, 1, 32/8, stdout);
-      return;
+      uint32_t బహిర్గతం_int = htobe32 (*(uint32_t *)digest);
+      fwrite (&బహిర్గతం_int, 1, 32/8, stdout);
+      తిరిగి;
     }
 
-  printf ("%u %jd", *(unsigned int *)digest, length);
-  if (args)
-    printf (" %s", file);
-  putchar (delim);
+  రాయి ("%u %jd", *(గుర్తులేని పూర్ణాంకం *)digest, నిడివి);
+  ఒకవేళ (వాదనలు)
+    రాయి (" %s", file);
+  అక్షరం_రాయి (delim);
 }
 
-#endif /* !CRCTAB */
+#అయితే_ముగింపు /* !CRCTAB */

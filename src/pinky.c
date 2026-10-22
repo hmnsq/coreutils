@@ -16,26 +16,26 @@
 
 /* Created by hacking who.c by Kaveh Ghazi ghazi@caip.rutgers.edu */
 
-#include <config.h>
-#include <getopt.h>
-#include <pwd.h>
-#include <stdio.h>
+#అన్తర్భావ <config.h>
+#అన్తర్భావ <getopt.h>
+#అన్తర్భావ <pwd.h>
+#అన్తర్భావ <stdio.h>
 
-#include <sys/types.h>
-#include "system.h"
+#అన్తర్భావ <sys/types.h>
+#అన్తర్భావ "system.h"
 
-#include "canon-host.h"
-#include "fadvise.h"
-#include "filenamecat.h"
-#include "full-write.h"
-#include "hard-locale.h"
-#include "ioblksize.h"
-#include "readutmp.h"
+#అన్తర్భావ "canon-host.h"
+#అన్తర్భావ "fadvise.h"
+#అన్తర్భావ "filenamecat.h"
+#అన్తర్భావ "full-write.h"
+#అన్తర్భావ "hard-locale.h"
+#అన్తర్భావ "ioblksize.h"
+#అన్తర్భావ "readutmp.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "pinky"
+#నిర్వచించు కార్యక్రమం_NAME "pinky"
 
-#define AUTHORS \
+#నిర్వచించు AUTHORS \
   proper_name ("Joseph Arceneaux"), \
   proper_name ("David MacKenzie"), \
   proper_name ("Kaveh Ghazi")
@@ -43,64 +43,64 @@
 /* If true, display the hours:minutes since each user has touched
    the keyboard, or blank if within the last minute, or days followed
    by a 'd' if not within the last day. */
-static bool include_idle = true;
+స్థిర bool include_idle = true;
 
 /* If true, display a line at the top describing each field. */
-static bool include_heading = true;
+స్థిర bool include_heading = true;
 
 /* if true, display the user's full name from pw_gecos. */
-static bool include_fullname = true;
+స్థిర bool include_fullname = true;
 
 /* if true, display the user's ~/.project file when doing long format. */
-static bool include_project = true;
+స్థిర bool include_project = true;
 
 /* if true, display the user's ~/.plan file when doing long format. */
-static bool include_plan = true;
+స్థిర bool include_plan = true;
 
 /* if true, display the user's home directory and shell
    when doing long format. */
-static bool include_home_and_shell = true;
+స్థిర bool include_home_and_shell = true;
 
 /* if true, use the "short" output format. */
-static bool do_short_format = true;
+స్థిర bool do_short_format = true;
 
 /* If true, attempt to canonicalize hostnames via a DNS lookup. */
-static bool do_lookup;
+స్థిర bool do_lookup;
 
 /* if true, display the ut_host field. */
-#if HAVE_STRUCT_XTMP_UT_HOST
-static bool include_where = true;
-#endif
+#ఒకవేళ HAVE_STRUCT_XTMP_UT_HOST
+స్థిర bool include_where = true;
+#అయితే_ముగింపు
 
 /* The strftime format to use for login times, and its expected
    output width.  */
-static char const *time_format;
-static int time_format_width;
+స్థిర అక్షరం స్థిరరాశి *సమయం_format;
+స్థిర పూర్ణాంకం సమయం_format_వెడల్పు;
 
 /* for long options with no corresponding short option, use enum */
-enum
+గణన
 {
   LOOKUP_OPTION = CHAR_MAX + 1
 };
 
-static struct option const longopts[] =
+స్థిర నిర్మాణం option స్థిరరాశి longopts[] =
 {
-  {"lookup", no_argument, NULL, LOOKUP_OPTION},
+  {"lookup", no_వాదం, ఖాళీ, LOOKUP_OPTION},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_సంస్కరణ_OPTION_DECL},
+  {ఖాళీ, 0, ఖాళీ, 0}
 };
 
 /* Count and return the number of ampersands in STR.  */
 
-ATTRIBUTE_PURE
-static idx_t
-count_ampersands (char const *str)
+ATTRIBUTE_శుద్ధ
+స్థిర idx_t
+లెక్క_ampersands (అక్షరం స్థిరరాశి *str)
 {
-  idx_t count = 0;
-  for (; *str; str++)
-    count += *str == '&';
-  return count;
+  idx_t లెక్క = 0;
+  కొరకు (; *str; str++)
+    లెక్క += *str == '&';
+  తిరిగి లెక్క;
 }
 
 /* Create a string (via xmalloc) which contains a full name by substituting
@@ -109,35 +109,35 @@ count_ampersands (char const *str)
    no ','s.  The caller also is responsible for free'ing the return value of
    this function.  */
 
-static char *
-create_fullname (char const *gecos_name, char const *user_name)
+స్థిర అక్షరం *
+create_fullname (అక్షరం స్థిరరాశి *gecos_name, అక్షరం స్థిరరాశి *user_name)
 {
-  idx_t rsize = strlen (gecos_name) + 1;
-  idx_t ampersands = count_ampersands (gecos_name);
+  idx_t rsize = అక్షరశ్రేణి_పొడవు (gecos_name) + 1;
+  idx_t ampersands = లెక్క_ampersands (gecos_name);
 
-  if (ampersands != 0)
+  ఒకవేళ (ampersands != 0)
     {
-      idx_t ulen = strlen (user_name);
-      ptrdiff_t product;
-      if (ckd_mul (&product, ulen - 1, ampersands)
-          || ckd_add (&rsize, rsize, product))
+      idx_t ulen = అక్షరశ్రేణి_పొడవు (user_name);
+      ptrdiff_t లబ్ధం;
+      ఒకవేళ (ckd_mul (&లబ్ధం, ulen - 1, ampersands)
+          || ckd_కూడు (&rsize, rsize, లబ్ధం))
         xalloc_die ();
     }
 
-  char *result = xmalloc (rsize);
-  char *r = result;
+  అక్షరం *ఫలితం = xmalloc (rsize);
+  అక్షరం *r = ఫలితం;
 
-  while (*gecos_name)
+  అయితే (*gecos_name)
     {
-      if (*gecos_name == '&')
+      ఒకవేళ (*gecos_name == '&')
         {
-          char const *uname = user_name;
-          if (islower (to_uchar (*uname)))
-            *r++ = toupper (to_uchar (*uname++));
-          while (*uname)
+          అక్షరం స్థిరరాశి *uname = user_name;
+          ఒకవేళ (islower (గమ్యం_uchar (*uname)))
+            *r++ = పెద్ద_అక్షరం (గమ్యం_uchar (*uname++));
+          అయితే (*uname)
             *r++ = *uname++;
         }
-      else
+      లేకపోతే
         {
           *r++ = *gecos_name;
         }
@@ -146,305 +146,305 @@ create_fullname (char const *gecos_name, char const *user_name)
     }
   *r = 0;
 
-  return result;
+  తిరిగి ఫలితం;
 }
 
 /* Return a string representing the time between WHEN and the time
    that this function is first run. */
 
-static char const *
+స్థిర అక్షరం స్థిరరాశి *
 idle_string (time_t when)
 {
-  static time_t now = 0;
-  static char buf[INT_STRLEN_BOUND (intmax_t) + sizeof "d"];
+  స్థిర time_t now = 0;
+  స్థిర అక్షరం buf[INT_STRLEN_BOUND (intmax_t) + పరిమాణం "d"];
 
-  if (now == 0)
-    time (&now);
+  ఒకవేళ (now == 0)
+    సమయం (&now);
 
   time_t seconds_idle = now - when;
-  if (seconds_idle < 60)	/* One minute. */
-    return "     ";
-  if (seconds_idle < (24 * 60 * 60))	/* One day. */
+  ఒకవేళ (seconds_idle < 60)	/* One minute. */
+    తిరిగి "     ";
+  ఒకవేళ (seconds_idle < (24 * 60 * 60))	/* One day. */
     {
-      int hours = seconds_idle / (60 * 60);
-      int minutes = (seconds_idle % (60 * 60)) / 60;
+      పూర్ణాంకం hours = seconds_idle / (60 * 60);
+      పూర్ణాంకం minutes = (seconds_idle % (60 * 60)) / 60;
       sprintf (buf, "%02d:%02d", hours, minutes);
     }
-  else
+  లేకపోతే
     {
       intmax_t days = seconds_idle / (24 * 60 * 60);
       sprintf (buf, "%jdd", days);
     }
-  return buf;
+  తిరిగి buf;
 }
 
 /* Return a time string.  */
-static char const *
-time_string (STRUCT_UTMP const *utmp_ent)
+స్థిర అక్షరం స్థిరరాశి *
+సమయం_string (STRUCT_UTMP స్థిరరాశి *utmp_ent)
 {
-  static char buf[INT_STRLEN_BOUND (intmax_t) + sizeof "-%m-%d %H:%M"];
-  struct tm *tmp = localtime (&utmp_ent->ut_ts.tv_sec);
+  స్థిర అక్షరం buf[INT_STRLEN_BOUND (intmax_t) + పరిమాణం "-%m-%d %H:%M"];
+  నిర్మాణం tm *tmp = localtime (&utmp_ent->ut_ts.tv_sec);
 
-  if (tmp)
+  ఒకవేళ (tmp)
     {
-      strftime (buf, sizeof buf, time_format, tmp);
-      return buf;
+      strftime (buf, పరిమాణం buf, సమయం_format, tmp);
+      తిరిగి buf;
     }
-  else
-    return timetostr (utmp_ent->ut_ts.tv_sec, buf);
+  లేకపోతే
+    తిరిగి timetostr (utmp_ent->ut_ts.tv_sec, buf);
 }
 
 /* Display a line of information about UTMP_ENT. */
 
-static void
-print_entry (STRUCT_UTMP const *utmp_ent)
+స్థిర శూన్య
+print_నమోదు (STRUCT_UTMP స్థిరరాశి *utmp_ent)
 {
   /* If ut_line contains a space, the device name starts after the space.  */
-  char *line = utmp_ent->ut_line;
-  char *space = strchr (line, ' ');
-  line = space ? space + 1 : line;
+  అక్షరం *పంక్తి = utmp_ent->ut_పంక్తి;
+  అక్షరం *space = strchr (పంక్తి, ' ');
+  పంక్తి = space ? space + 1 : పంక్తి;
 
-  int dirfd;
-  if (IS_ABSOLUTE_FILE_NAME (line))
+  పూర్ణాంకం dirfd;
+  ఒకవేళ (IS_ABSOLUTE_FILE_NAME (పంక్తి))
     dirfd = AT_FDCWD;
-  else
+  లేకపోతే
     {
-      static int dev_dirfd;
-      if (!dev_dirfd)
+      స్థిర పూర్ణాంకం dev_dirfd;
+      ఒకవేళ (!dev_dirfd)
         {
           dev_dirfd = open ("/dev", O_PATHSEARCH | O_DIRECTORY);
-          if (dev_dirfd < 0)
+          ఒకవేళ (dev_dirfd < 0)
             dev_dirfd = AT_FDCWD - 1;
         }
       dirfd = dev_dirfd;
     }
 
-  struct stat stats;
-  time_t last_change;
-  char mesg;
-  if (AT_FDCWD <= dirfd && fstatat (dirfd, line, &stats, 0) == 0)
+  నిర్మాణం stat stats;
+  time_t చివరి_change;
+  అక్షరం mesg;
+  ఒకవేళ (AT_FDCWD <= dirfd && fstatat (dirfd, పంక్తి, &stats, 0) == 0)
     {
-      mesg = (stats.st_mode & S_IWGRP) ? ' ' : '*';
-      last_change = stats.st_atime;
+      mesg = (stats.st_బహుళకం & S_IWGRP) ? ' ' : '*';
+      చివరి_change = stats.st_atime;
     }
-  else
+  లేకపోతే
     {
       mesg = '?';
-      last_change = 0;
+      చివరి_change = 0;
     }
 
-  char *ut_user = utmp_ent->ut_user;
-  if (strnlen (ut_user, 8) < 8)
-    printf ("%-8s", ut_user);
-  else
+  అక్షరం *ut_user = utmp_ent->ut_user;
+  ఒకవేళ (strnlen (ut_user, 8) < 8)
+    రాయి ("%-8s", ut_user);
+  లేకపోతే
     fputs (ut_user, stdout);
 
-  if (include_fullname)
+  ఒకవేళ (include_fullname)
     {
-      struct passwd *pw = getpwnam (ut_user);
-      if (pw == NULL)
+      నిర్మాణం passwd *pw = getpwnam (ut_user);
+      ఒకవేళ (pw == ఖాళీ)
         /* TRANSLATORS: Real name is unknown; at most 19 characters. */
-        printf (" %19s", _("        ???"));
-      else
+        రాయి (" %19s", _("        ???"));
+      లేకపోతే
         {
-          char *const comma = strchr (pw->pw_gecos, ',');
+          అక్షరం *స్థిరరాశి comma = strchr (pw->pw_gecos, ',');
 
-          if (comma)
+          ఒకవేళ (comma)
             *comma = '\0';
 
-          char *result = create_fullname (pw->pw_gecos, pw->pw_name);
-          printf (" %-19.19s", result);
-          free (result);
+          అక్షరం *ఫలితం = create_fullname (pw->pw_gecos, pw->pw_name);
+          రాయి (" %-19.19s", ఫలితం);
+          విడుదల (ఫలితం);
         }
     }
 
   fputc (' ', stdout);
   fputc (mesg, stdout);
-  if (strnlen (utmp_ent->ut_line, 8) < 8)
-    printf ("%-8s", utmp_ent->ut_line);
-  else
-    fputs (utmp_ent->ut_line, stdout);
+  ఒకవేళ (strnlen (utmp_ent->ut_పంక్తి, 8) < 8)
+    రాయి ("%-8s", utmp_ent->ut_పంక్తి);
+  లేకపోతే
+    fputs (utmp_ent->ut_పంక్తి, stdout);
 
-  if (include_idle)
+  ఒకవేళ (include_idle)
     {
-      if (last_change)
-        printf (" %-6s", idle_string (last_change));
-      else
+      ఒకవేళ (చివరి_change)
+        రాయి (" %-6s", idle_string (చివరి_change));
+      లేకపోతే
         /* TRANSLATORS: Idle time is unknown; at most 5 characters. */
-        printf (" %-6s", _("?????"));
+        రాయి (" %-6s", _("?????"));
     }
 
-  printf (" %s", time_string (utmp_ent));
+  రాయి (" %s", సమయం_string (utmp_ent));
 
-#ifdef HAVE_STRUCT_XTMP_UT_HOST
-  if (include_where && utmp_ent->ut_host[0])
+#నిర్వచితమైతే HAVE_STRUCT_XTMP_UT_HOST
+  ఒకవేళ (include_where && utmp_ent->ut_host[0])
     {
-      char *ut_host = utmp_ent->ut_host;
+      అక్షరం *ut_host = utmp_ent->ut_host;
 
       /* Look for an X display.  */
-      char *display = strchr (ut_host, ':');
-      if (display)
+      అక్షరం *display = strchr (ut_host, ':');
+      ఒకవేళ (display)
         *display++ = '\0';
 
-      char *host = NULL;
-      if (*ut_host && do_lookup)
+      అక్షరం *host = ఖాళీ;
+      ఒకవేళ (*ut_host && do_lookup)
         /* See if we can canonicalize it.  */
         host = canon_host (ut_host);
-      if ( ! host)
+      ఒకవేళ ( ! host)
         host = ut_host;
 
       fputc (' ', stdout);
       fputs (host, stdout);
-      if (display)
+      ఒకవేళ (display)
         {
           fputc (':', stdout);
           fputs (display, stdout);
         }
 
-      if (host != ut_host)
-        free (host);
+      ఒకవేళ (host != ut_host)
+        విడుదల (host);
     }
-#endif
+#అయితే_ముగింపు
 
-  putchar ('\n');
+  అక్షరం_రాయి ('\n');
 
-  if (ferror (stdout))
+  ఒకవేళ (ferror (stdout))
     write_error ();
 }
 
 /* If FILE exists in HOME, print it to standard output, preceded by HEADER. */
 
-static void
-cat_file (char const *header, char const *home, char const *file)
+స్థిర శూన్య
+cat_file (అక్షరం స్థిరరాశి *శీర్షిక, అక్షరం స్థిరరాశి *home, అక్షరం స్థిరరాశి *file)
 {
-  char *full_name = file_name_concat (home, file, NULL);
-  FILE *fp = fopen (full_name, "r");
+  అక్షరం *నిండిన_name = file_name_concat (home, file, ఖాళీ);
+  FILE *fp = fopen (నిండిన_name, "r");
 
-  if (fp)
+  ఒకవేళ (fp)
     {
-      fputs (header, stdout);
+      fputs (శీర్షిక, stdout);
 
       fadvise (fp, FADVISE_SEQUENTIAL);
 
-      char buf[BUFSIZ];
-      for (size_t bytes_read;
-           0 < (bytes_read = fread (buf, 1, sizeof buf, fp));)
-        if (fwrite (buf, 1, bytes_read, stdout) != bytes_read)
+      అక్షరం buf[BUFSIZ];
+      కొరకు (size_t బైట్లు_read;
+           0 < (బైట్లు_read = fread (buf, 1, పరిమాణం buf, fp));)
+        ఒకవేళ (fwrite (buf, 1, బైట్లు_read, stdout) != బైట్లు_read)
           write_error ();
 
       fclose (fp);
     }
 
-  free (full_name);
+  విడుదల (నిండిన_name);
 }
 
 /* Display a verbose line of information about UTMP_ENT. */
 
-static void
-print_long_entry (const char name[])
+స్థిర శూన్య
+print_long_నమోదు (స్థిరరాశి అక్షరం name[])
 {
-  struct passwd *pw = getpwnam (name);
+  నిర్మాణం passwd *pw = getpwnam (name);
 
-  printf (_("Login name: "));
-  printf ("%-28s", name);
+  రాయి (_("Login name: "));
+  రాయి ("%-28s", name);
 
-  printf (_("In real life: "));
-  if (pw == NULL)
+  రాయి (_("In real life: "));
+  ఒకవేళ (pw == ఖాళీ)
     {
       /* TRANSLATORS: Real name is unknown; no hard limit. */
-      printf (" %s", _("???\n"));
-      return;
+      రాయి (" %s", _("???\n"));
+      తిరిగి;
     }
-  else
+  లేకపోతే
     {
-      char *const comma = strchr (pw->pw_gecos, ',');
+      అక్షరం *స్థిరరాశి comma = strchr (pw->pw_gecos, ',');
 
-      if (comma)
+      ఒకవేళ (comma)
         *comma = '\0';
 
-      char *result = create_fullname (pw->pw_gecos, pw->pw_name);
-      printf (" %s", result);
-      free (result);
+      అక్షరం *ఫలితం = create_fullname (pw->pw_gecos, pw->pw_name);
+      రాయి (" %s", ఫలితం);
+      విడుదల (ఫలితం);
     }
 
-  putchar ('\n');
+  అక్షరం_రాయి ('\n');
 
-  if (include_home_and_shell)
+  ఒకవేళ (include_home_and_shell)
     {
-      printf (_("Directory: "));
-      printf ("%-29s", pw->pw_dir);
-      printf (_("Shell: "));
-      printf (" %s", pw->pw_shell);
-      putchar ('\n');
+      రాయి (_("Directory: "));
+      రాయి ("%-29s", pw->pw_dir);
+      రాయి (_("Shell: "));
+      రాయి (" %s", pw->pw_shell);
+      అక్షరం_రాయి ('\n');
     }
 
-  if (include_project)
+  ఒకవేళ (include_project)
     cat_file (_("Project: "), pw->pw_dir, ".project");
 
-  if (include_plan)
+  ఒకవేళ (include_plan)
     cat_file (_("Plan:\n"), pw->pw_dir, ".plan");
 
-  putchar ('\n');
+  అక్షరం_రాయి ('\n');
 
-  if (ferror (stdout))
+  ఒకవేళ (ferror (stdout))
     write_error ();
 }
 
 /* Print the username of each valid entry and the number of valid entries
    in UTMP_BUF, which should have N elements. */
 
-static void
-print_heading (void)
+స్థిర శూన్య
+print_heading (శూన్య)
 {
-  printf ("%-8s", _("Login"));
-  if (include_fullname)
-    printf (" %-19s", _("Name"));
-  printf (" %-9s", _(" TTY"));
-  if (include_idle)
-    printf (" %-6s", _("Idle"));
-  printf (" %-*s", time_format_width, _("When"));
-#ifdef HAVE_STRUCT_XTMP_UT_HOST
-  if (include_where)
-    printf (" %s", _("Where"));
-#endif
-  putchar ('\n');
+  రాయి ("%-8s", _("Login"));
+  ఒకవేళ (include_fullname)
+    రాయి (" %-19s", _("Name"));
+  రాయి (" %-9s", _(" TTY"));
+  ఒకవేళ (include_idle)
+    రాయి (" %-6s", _("Idle"));
+  రాయి (" %-*s", సమయం_format_వెడల్పు, _("When"));
+#నిర్వచితమైతే HAVE_STRUCT_XTMP_UT_HOST
+  ఒకవేళ (include_where)
+    రాయి (" %s", _("Where"));
+#అయితే_ముగింపు
+  అక్షరం_రాయి ('\n');
 }
 
 /* Display UTMP_BUF, which should have N entries. */
 
-static void
-scan_entries (idx_t n, STRUCT_UTMP const *utmp_buf,
-              const int argc_names, char *const argv_names[])
+స్థిర శూన్య
+పరిశీలన_entries (idx_t n, STRUCT_UTMP స్థిరరాశి *utmp_buf,
+              స్థిరరాశి పూర్ణాంకం argc_పేర్లు, అక్షరం *స్థిరరాశి argv_పేర్లు[])
 {
-  if (hard_locale (LC_TIME))
+  ఒకవేళ (hard_locale (LC_సమయం))
     {
-      time_format = "%Y-%m-%d %H:%M";
-      time_format_width = 4 + 1 + 2 + 1 + 2 + 1 + 2 + 1 + 2;
+      సమయం_format = "%Y-%m-%d %H:%M";
+      సమయం_format_వెడల్పు = 4 + 1 + 2 + 1 + 2 + 1 + 2 + 1 + 2;
     }
-  else
+  లేకపోతే
     {
-      time_format = "%b %e %H:%M";
-      time_format_width = 3 + 1 + 2 + 1 + 2 + 1 + 2;
+      సమయం_format = "%b %e %H:%M";
+      సమయం_format_వెడల్పు = 3 + 1 + 2 + 1 + 2 + 1 + 2;
     }
 
-  if (include_heading)
+  ఒకవేళ (include_heading)
     print_heading ();
 
-  while (n--)
+  అయితే (n--)
     {
-      if (IS_USER_PROCESS (utmp_buf))
+      ఒకవేళ (IS_USER_PROCESS (utmp_buf))
         {
-          if (argc_names)
+          ఒకవేళ (argc_పేర్లు)
             {
-              for (int i = 0; i < argc_names; i++)
-                if (streq (utmp_buf->ut_user, argv_names[i]))
+              కొరకు (పూర్ణాంకం i = 0; i < argc_పేర్లు; i++)
+                ఒకవేళ (streq (utmp_buf->ut_user, argv_పేర్లు[i]))
                   {
-                    print_entry (utmp_buf);
-                    break;
+                    print_నమోదు (utmp_buf);
+                    ఆపు;
                   }
             }
-          else
-            print_entry (utmp_buf);
+          లేకపోతే
+            print_నమోదు (utmp_buf);
         }
       utmp_buf++;
     }
@@ -452,166 +452,166 @@ scan_entries (idx_t n, STRUCT_UTMP const *utmp_buf,
 
 /* Display a list of who is on the system, according to utmp file FILENAME. */
 
-static void
-short_pinky (char const *filename,
-             const int argc_names, char *const argv_names[])
+స్థిర శూన్య
+short_pinky (అక్షరం స్థిరరాశి *filename,
+             స్థిరరాశి పూర్ణాంకం argc_పేర్లు, అక్షరం *స్థిరరాశి argv_పేర్లు[])
 {
   idx_t n_users;
   STRUCT_UTMP *utmp_buf;
-  if (read_utmp (filename, &n_users, &utmp_buf, READ_UTMP_USER_PROCESS) != 0)
+  ఒకవేళ (read_utmp (filename, &n_users, &utmp_buf, READ_UTMP_USER_PROCESS) != 0)
     error (EXIT_FAILURE, errno, "%s", quotef (filename));
 
-  scan_entries (n_users, utmp_buf, argc_names, argv_names);
-  exit (EXIT_SUCCESS);
+  పరిశీలన_entries (n_users, utmp_buf, argc_పేర్లు, argv_పేర్లు);
+  నిష్క్రమించు (EXIT_SUCCESS);
 }
 
-static void
-long_pinky (const int argc_names, char *const argv_names[])
+స్థిర శూన్య
+long_pinky (స్థిరరాశి పూర్ణాంకం argc_పేర్లు, అక్షరం *స్థిరరాశి argv_పేర్లు[])
 {
-  for (int i = 0; i < argc_names; i++)
-    print_long_entry (argv_names[i]);
+  కొరకు (పూర్ణాంకం i = 0; i < argc_పేర్లు; i++)
+    print_long_నమోదు (argv_పేర్లు[i]);
 }
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("Usage: %s [OPTION]... [USER]...\n"), program_name);
+      రాయి (_("Usage: %s [OPTION]... [USER]...\n"), కార్యక్రమం_name);
       fputs (_("\
 \n\
 "), stdout);
       oputs (_("\
-  -l     produce long format output for the specified USERs\n\
+  -l     produce దీర్ఘ format output కొరకు the specified USERs\n\
 "));
       oputs (_("\
-  -b     omit the user's home directory and shell in long format\n\
+  -b     omit the user's home directory and shell లోపల దీర్ఘ format\n\
 "));
       oputs (_("\
-  -h     omit the user's project file in long format\n\
+  -h     omit the user's project file లోపల దీర్ఘ format\n\
 "));
       oputs (_("\
-  -p     omit the user's plan file in long format\n\
+  -p     omit the user's plan file లోపల దీర్ఘ format\n\
 "));
       oputs (_("\
-  -s     do short format output, this is the default\n\
+  -s     చేయి పొట్టి format output, this is the అప్రమేయ\n\
 "));
       oputs (_("\
-  -f     omit the line of column headings in short format\n\
+  -f     omit the పంక్తి యొక్క స్తంభం headings లోపల పొట్టి format\n\
 "));
       oputs (_("\
-  -w     omit the user's full name in short format\n\
+  -w     omit the user's నిండిన name లోపల పొట్టి format\n\
 "));
       oputs (_("\
-  -i     omit the user's full name and remote host in short format\n\
+  -i     omit the user's నిండిన name and remote host లోపల పొట్టి format\n\
 "));
       oputs (_("\
-  -q     omit the user's full name, remote host and idle time in short format\n\
+  -q     omit the user's నిండిన name, remote host and idle సమయం లోపల పొట్టి format\n\
 "));
       oputs (_("\
       --lookup\n\
-         attempt to canonicalize hostnames via DNS\n\
+         attempt గమ్యం canonicalize hostnames ద్వారా DNS\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      printf (_("\
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
+      రాయి (_("\
 \n\
-A lightweight 'finger' program;  print user information.\n\
+A lightweight 'finger' కార్యక్రమం;  print user information.\n\
 The utmp file will be %s.\n\
 "), UTMP_FILE);
-      emit_ancillary_info (PROGRAM_NAME);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  int optc;
-  while ((optc = getopt_long (argc, argv, "sfwiqbhlp", longopts, NULL))
+  పూర్ణాంకం optc;
+  అయితే ((optc = getopt_long (argc, argv, "sfwiqbhlp", longopts, ఖాళీ))
          != -1)
     {
-      switch (optc)
+      ఎంపిక (optc)
         {
-        case 's':
+        స్థితి 's':
           do_short_format = true;
-          break;
+          ఆపు;
 
-        case 'l':
+        స్థితి 'l':
           do_short_format = false;
-          break;
+          ఆపు;
 
-        case 'f':
+        స్థితి 'f':
           include_heading = false;
-          break;
+          ఆపు;
 
-        case 'w':
+        స్థితి 'w':
           include_fullname = false;
-          break;
+          ఆపు;
 
-        case 'i':
+        స్థితి 'i':
           include_fullname = false;
-#ifdef HAVE_STRUCT_XTMP_UT_HOST
+#నిర్వచితమైతే HAVE_STRUCT_XTMP_UT_HOST
           include_where = false;
-#endif
-          break;
+#అయితే_ముగింపు
+          ఆపు;
 
-        case 'q':
+        స్థితి 'q':
           include_fullname = false;
-#ifdef HAVE_STRUCT_XTMP_UT_HOST
+#నిర్వచితమైతే HAVE_STRUCT_XTMP_UT_HOST
           include_where = false;
-#endif
+#అయితే_ముగింపు
           include_idle = false;
-          break;
+          ఆపు;
 
-        case 'h':
+        స్థితి 'h':
           include_project = false;
-          break;
+          ఆపు;
 
-        case 'p':
+        స్థితి 'p':
           include_plan = false;
-          break;
+          ఆపు;
 
-        case 'b':
+        స్థితి 'b':
           include_home_and_shell = false;
-          break;
+          ఆపు;
 
-        case LOOKUP_OPTION:
+        స్థితి LOOKUP_OPTION:
           do_lookup = true;
-          break;
+          ఆపు;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_సంస్కరణ_CHAR (కార్యక్రమం_NAME, AUTHORS);
 
-        default:
+        అప్రమేయ:
           usage (EXIT_FAILURE);
         }
     }
 
-  int n_users = argc - optind;
+  పూర్ణాంకం n_users = argc - optind;
 
-  if (!do_short_format && n_users == 0)
+  ఒకవేళ (!do_short_format && n_users == 0)
     {
-      error (0, 0, _("no username specified; at least one must be\
+      error (0, 0, _("no username specified; at కనిష్ఠ one must be\
  specified when using -l"));
       usage (EXIT_FAILURE);
     }
 
-  if (do_short_format)
+  ఒకవేళ (do_short_format)
     short_pinky (UTMP_FILE, n_users, argv + optind);
-  else
+  లేకపోతే
     long_pinky (n_users, argv + optind);
 
-  return EXIT_SUCCESS;
+  తిరిగి EXIT_SUCCESS;
 }

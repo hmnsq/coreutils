@@ -1,12 +1,12 @@
-#include <config.h>
-#include <stdio.h>
+#అన్తర్భావ <config.h>
+#అన్తర్భావ <stdio.h>
 
-#include "system.h"
-#include "fprintftime.h"
-#include "parse-datetime.h"
-#include "quote.h"
-#include "show-date.h"
-#include "stat-time.h"
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "fprintftime.h"
+#అన్తర్భావ "parse-datetime.h"
+#అన్తర్భావ "quote.h"
+#అన్తర్భావ "show-date.h"
+#అన్తర్భావ "stat-time.h"
 
 /* Display the date and/or time in WHEN according to the format specified
    in FORMAT, followed by a newline.
@@ -16,25 +16,25 @@
    If unsuccessful and ON_ERROR_PRINT_UNFORMATTED, also prints WHEN.TV_SEC
    to STDOUT.  */
 
-extern bool
-show_date (char const *format, struct timespec when, timezone_t tz)
+బాహ్య bool
+show_date (అక్షరం స్థిరరాశి *format, నిర్మాణం timespec when, timezone_t tz)
 {
-  struct tm tm;
+  నిర్మాణం tm tm;
 
-  if (!localtime_rz (tz, &when.tv_sec, &tm))
+  ఒకవేళ (!localtime_rz (tz, &when.tv_sec, &tm))
     {
-      char buf[INT_BUFSIZE_BOUND (intmax_t)];
+      అక్షరం buf[INT_BUFSIZE_BOUND (intmax_t)];
       error (0, 0, _("time %s is out of range"),
              quote (timetostr (when.tv_sec, buf)));
-      return false;
+      తిరిగి false;
     }
 
-  if (fprintftime (stdout, format, &tm, tz, when.tv_nsec) < 0)
+  ఒకవేళ (fprintftime (stdout, format, &tm, tz, when.tv_nsec) < 0)
     {
-      if (! ferror (stdout))  /* otherwise it will be diagnosed later.  */
+      ఒకవేళ (! ferror (stdout))  /* otherwise it will be diagnosed later.  */
         error (0, errno, _("fprintftime error"));
-      return false;
+      తిరిగి false;
     }
 
-  return true;
+  తిరిగి true;
 }

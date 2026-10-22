@@ -17,38 +17,38 @@
 
    François Pinard <pinard@iro.umontreal.ca> */
 
-#include <config.h>
+#అన్తర్భావ <config.h>
 
-#include <getopt.h>
-#include <sys/types.h>
-#include "system.h"
-#include <regex.h>
-#include "argmatch.h"
-#include "c-ctype.h"
-#include "fadvise.h"
-#include "octhexdigits.h"
-#include "quote.h"
-#include "read-file.h"
-#include "stdio--.h"
-#include "xstrtol.h"
+#అన్తర్భావ <getopt.h>
+#అన్తర్భావ <sys/types.h>
+#అన్తర్భావ "system.h"
+#అన్తర్భావ <regex.h>
+#అన్తర్భావ "argmatch.h"
+#అన్తర్భావ "c-ctype.h"
+#అన్తర్భావ "fadvise.h"
+#అన్తర్భావ "octhexdigits.h"
+#అన్తర్భావ "quote.h"
+#అన్తర్భావ "read-file.h"
+#అన్తర్భావ "stdio--.h"
+#అన్తర్భావ "xstrtol.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "ptx"
+#నిర్వచించు కార్యక్రమం_NAME "ptx"
 
 /* TRANSLATORS: Please translate "F. Pinard" to "François Pinard"
    if "ç" (c-with-cedilla) is available in the translation's character
    set and encoding.  */
-#define AUTHORS proper_name_lite ("F. Pinard", "Fran\xc3\xa7ois Pinard")
+#నిర్వచించు AUTHORS proper_name_lite ("F. Pinard", "Fran\xc3\xa7ois Pinard")
 
 /* Number of possible characters in a byte.  */
-#define CHAR_SET_SIZE 256
+#నిర్వచించు CHAR_సమితి_కొలత 256
 
 /* Debugging the memory allocator.  */
 
-#if WITH_DMALLOC
+#ఒకవేళ WITH_DMALLOC
 # define MALLOC_FUNC_CHECK 1
 # include <dmalloc.h>
-#endif
+#అయితే_ముగింపు
 
 /* Global definitions.  */
 
@@ -59,7 +59,7 @@
 
 /* Program options.  */
 
-enum Format
+గణన Format
 {
   UNKNOWN_FORMAT,		/* output format still unknown */
   DUMB_FORMAT,			/* output for a dumb terminal */
@@ -67,132 +67,132 @@ enum Format
   TEX_FORMAT			/* output for 'TeX' or 'LaTeX' */
 };
 
-static bool gnu_extensions = true;	/* trigger all GNU extensions */
-static bool auto_reference = false;	/* refs are 'file_name:line_number:' */
-static bool input_reference = false;	/* refs at beginning of input lines */
-static bool right_reference = false;	/* output refs after right context  */
-static idx_t line_width = -1;		/* output line width in characters */
-static idx_t gap_size = 3;	/* number of spaces between output fields */
-static char const *truncation_string = "/";
+స్థిర bool gnu_extensions = true;	/* trigger all GNU extensions */
+స్థిర bool auto_reference = false;	/* refs are 'file_name:line_number:' */
+స్థిర bool ఆదానం_reference = false;	/* refs at beginning of input lines */
+స్థిర bool కుడి_reference = false;	/* output refs after right context  */
+స్థిర idx_t పంక్తి_వెడల్పు = -1;		/* output line width in characters */
+స్థిర idx_t gap_కొలత = 3;	/* number of spaces between output fields */
+స్థిర అక్షరం స్థిరరాశి *truncation_string = "/";
                                 /* string used to mark line truncations */
-static char const *macro_name = "xx";	/* macro name for roff or TeX output */
-static enum Format output_format = UNKNOWN_FORMAT;
+స్థిర అక్షరం స్థిరరాశి *macro_name = "xx";	/* macro name for roff or TeX output */
+స్థిర గణన Format output_format = UNKNOWN_FORMAT;
                                 /* output format */
 
-static bool ignore_case = false;	/* fold lower to upper for sorting */
-static char const *break_file = NULL; /* name of the 'Break chars' file */
-static char const *only_file = NULL;	/* name of the 'Only words' file */
-static char const *ignore_file = NULL; /* name of the 'Ignore words' file */
+స్థిర bool ignore_case = false;	/* fold lower to upper for sorting */
+స్థిర అక్షరం స్థిరరాశి *break_file = ఖాళీ; /* name of the 'Break chars' file */
+స్థిర అక్షరం స్థిరరాశి *only_file = ఖాళీ;	/* name of the 'Only words' file */
+స్థిర అక్షరం స్థిరరాశి *ignore_file = ఖాళీ; /* name of the 'Ignore words' file */
 
 /* Options that use regular expressions.  */
-struct regex_data
+నిర్మాణం regex_దత్తాంశం
 {
   /* The original regular expression, as a string.  */
-  char const *string;
+  అక్షరం స్థిరరాశి *string;
 
   /* The compiled regular expression, and its fastmap.  */
-  struct re_pattern_buffer pattern;
-  char fastmap[UCHAR_MAX + 1];
+  నిర్మాణం re_నమూనా_బఫరు నమూనా_2;
+  అక్షరం fastmap[UCHAR_MAX + 1];
 };
 
-static struct regex_data context_regex;	/* end of context */
-static struct regex_data word_regex;	/* keyword */
+స్థిర నిర్మాణం regex_దత్తాంశం context_regex;	/* end of context */
+స్థిర నిర్మాణం regex_దత్తాంశం మాట_regex;	/* keyword */
 
 /* A BLOCK delimit a region in memory of arbitrary size, like the copy of a
    whole file.  A WORD is similar, except it is intended for smaller regions.
    A WORD_TABLE may contain several WORDs.  */
 
-typedef struct
+రకనిర్వచనం నిర్మాణం
   {
-    char *start;		/* pointer to beginning of region */
-    char *end;			/* pointer to end + 1 of region */
+    అక్షరం *ప్రారంభం;		/* pointer to beginning of region */
+    అక్షరం *చివర;			/* pointer to end + 1 of region */
   }
-BLOCK;
+ఖండం_2;
 
-typedef struct
+రకనిర్వచనం నిర్మాణం
   {
-    char *start;		/* pointer to beginning of region */
-    idx_t size;			/* length of the region */
+    అక్షరం *ప్రారంభం;		/* pointer to beginning of region */
+    idx_t కొలత;			/* length of the region */
   }
-WORD;
+మాట;
 
-typedef struct
+రకనిర్వచనం నిర్మాణం
   {
     idx_t alloc;		/* allocated length */
-    idx_t length;		/* number of used entries */
-    WORD *start COUNTED_BY (length);	/* array of WORDs */
+    idx_t నిడివి;		/* number of used entries */
+    మాట *ప్రారంభం COUNTED_BY (నిడివి);	/* array of WORDs */
   }
-WORD_TABLE;
+మాట_పట్టిక;
 
 /* Pattern description tables.  */
 
 /* For each character, provide its folded equivalent.  */
-static unsigned char folded_chars[CHAR_SET_SIZE];
+స్థిర గుర్తులేని అక్షరం folded_chars[CHAR_సమితి_కొలత];
 
 /* End of context pattern register indices.  */
-static struct re_registers context_regs;
+స్థిర నిర్మాణం re_registers context_regs;
 
 /* Keyword pattern register indices.  */
-static struct re_registers word_regs;
+స్థిర నిర్మాణం re_registers మాట_regs;
 
 /* A word characters fastmap is used only when no word regexp has been
    provided.  A word is then made up of a sequence of one or more characters
    allowed by the fastmap.  Contains !0 if character allowed in word.  Not
    only this is faster in most cases, but it simplifies the implementation
    of the Break files.  */
-static char word_fastmap[CHAR_SET_SIZE];
+స్థిర అక్షరం మాట_fastmap[CHAR_సమితి_కొలత];
 
 /* Maximum length of any word read.  */
-static idx_t maximum_word_length;
+స్థిర idx_t గరిష్ఠ_మాట_నిడివి;
 
 /* Maximum width of any reference used.  */
-static idx_t reference_max_width;
+స్థిర idx_t reference_max_వెడల్పు;
 
 /* Ignore and Only word tables.  */
 
-static WORD_TABLE ignore_table;	/* table of words to ignore */
-static WORD_TABLE only_table;		/* table of words to select */
+స్థిర మాట_పట్టిక ignore_పట్టిక;	/* table of words to ignore */
+స్థిర మాట_పట్టిక only_పట్టిక;		/* table of words to select */
 
 /* Source text table, and scanning macros.  */
 
-static int number_input_files;	/* number of text input files */
-static intmax_t total_line_count;	/* total number of lines seen so far */
-static char const **input_file_name;	/* array of text input file names */
-static intmax_t *file_line_count;	/* array of line count values at end */
+స్థిర పూర్ణాంకం సంఖ్య_ఆదానం_files;	/* number of text input files */
+స్థిర intmax_t మొత్తం_పంక్తి_లెక్క;	/* total number of lines seen so far */
+స్థిర అక్షరం స్థిరరాశి **ఆదానం_file_name;	/* array of text input file names */
+స్థిర intmax_t *file_పంక్తి_లెక్క;	/* array of line count values at end */
 
-static BLOCK *text_buffers;	/* files to study */
+స్థిర ఖండం_2 *పాఠ్యం_buffers;	/* files to study */
 
 /* SKIP_NON_WHITE used only for getting or skipping the reference.  */
 
-#define SKIP_NON_WHITE(cursor, limit) \
-  while (cursor < limit && ! isspace (to_uchar (*cursor)))		\
+#నిర్వచించు SKIP_NON_WHITE(cursor, హద్దు) \
+  అయితే (cursor < హద్దు && ! ఖాళీనా (గమ్యం_uchar (*cursor)))		\
     cursor++
 
-#define SKIP_WHITE(cursor, limit) \
-  while (cursor < limit && isspace (to_uchar (*cursor)))		\
+#నిర్వచించు SKIP_WHITE(cursor, హద్దు) \
+  అయితే (cursor < హద్దు && ఖాళీనా (గమ్యం_uchar (*cursor)))		\
     cursor++
 
-#define SKIP_WHITE_BACKWARDS(cursor, start) \
-  while (cursor > start && isspace (to_uchar (cursor[-1])))		\
+#నిర్వచించు SKIP_WHITE_BACKWARDS(cursor, ప్రారంభం) \
+  అయితే (cursor > ప్రారంభం && ఖాళీనా (గమ్యం_uchar (cursor[-1])))		\
     cursor--
 
 /* Always advance by at least one byte, lest a nullable word regexp
    such as 'a*' match the empty string and loop forever.  */
 
-#define SKIP_SOMETHING(cursor, limit) \
-  if (word_regex.string)						\
+#నిర్వచించు SKIP_SOMETHING(cursor, హద్దు) \
+  ఒకవేళ (మాట_regex.string)						\
     {									\
-      regoff_t count;							\
-      count = re_match (&word_regex.pattern, cursor, limit - cursor,	\
-                        0, NULL);					\
-      if (count == -2)							\
+      regoff_t లెక్క;							\
+      లెక్క = re_సరిపోలిక (&మాట_regex.నమూనా_2, cursor, హద్దు - cursor,	\
+                        0, ఖాళీ);					\
+      ఒకవేళ (లెక్క == -2)							\
         matcher_error ();						\
-      cursor += count <= 0 ? 1 : count;					\
+      cursor += లెక్క <= 0 ? 1 : లెక్క;					\
     }									\
-  else if (word_fastmap[to_uchar (*cursor)])				\
-    while (cursor < limit && word_fastmap[to_uchar (*cursor)])		\
+  లేకపోతే ఒకవేళ (మాట_fastmap[గమ్యం_uchar (*cursor)])				\
+    అయితే (cursor < హద్దు && మాట_fastmap[గమ్యం_uchar (*cursor)])		\
       cursor++;								\
-  else									\
+  లేకపోతే									\
     cursor++
 
 /* Occurrences table.
@@ -222,42 +222,42 @@ static BLOCK *text_buffers;	/* files to study */
    start of the reference field, and it fits in ptrdiff_t and is usually
    negative.  */
 
-typedef struct
+రకనిర్వచనం నిర్మాణం
   {
-    WORD key;			/* description of the keyword */
-    ptrdiff_t left;		/* distance to left context start */
-    ptrdiff_t right;		/* distance to right context end */
+    మాట కీలకం;			/* description of the keyword */
+    ptrdiff_t ఎడమ;		/* distance to left context start */
+    ptrdiff_t కుడి;		/* distance to right context end */
     intmax_t reference;		/* reference descriptor */
-    int file_index;		/* corresponding file  */
+    పూర్ణాంకం file_సూచీ;		/* corresponding file  */
   }
 OCCURS;
 
 /* The various OCCURS tables are indexed by the language.  But the time
    being, there is no such multiple language support.  */
 
-static OCCURS *occurs_table[1];	/* all words retained from the read text */
-static idx_t occurs_alloc[1];	/* allocated size of occurs_table */
-static idx_t number_of_occurs[1]; /* number of used slots in occurs_table */
+స్థిర OCCURS *occurs_పట్టిక[1];	/* all words retained from the read text */
+స్థిర idx_t occurs_alloc[1];	/* allocated size of occurs_table */
+స్థిర idx_t సంఖ్య_యొక్క_occurs[1]; /* number of used slots in occurs_table */
 
 
 /* Communication among output routines.  */
 
 /* Indicate if special output processing is requested for each character.  */
-static char edited_flag[CHAR_SET_SIZE];
+స్థిర అక్షరం edited_flag[CHAR_సమితి_కొలత];
 
 /* Half of line width, reference excluded.  */
-static idx_t half_line_width;
+స్థిర idx_t half_పంక్తి_వెడల్పు;
 
 /* Maximum width of before field.
    FIXME: Is this nonnegative?  That is, should this be idx_t?  */
-static ptrdiff_t before_max_width;
+స్థిర ptrdiff_t before_max_వెడల్పు;
 
 /* Maximum width of keyword-and-after field.
    FIXME: Is this nonnegative?  That is, should this be idx_t?  */
-static ptrdiff_t keyafter_max_width;
+స్థిర ptrdiff_t keyafter_max_వెడల్పు;
 
 /* Length of string that flags truncation.  */
-static idx_t truncation_string_length;
+స్థిర idx_t truncation_string_నిడివి;
 
 /* When context is limited by lines, wraparound may happen on final output:
    the 'head' pointer gives access to some supplementary left context which
@@ -265,123 +265,123 @@ static idx_t truncation_string_length;
    access to some supplementary right context which will be seen at the
    beginning of the output line. */
 
-static BLOCK tail;		/* tail field */
-static bool tail_truncation;	/* flag truncation after the tail field */
+స్థిర ఖండం_2 తోక;		/* tail field */
+స్థిర bool తోక_truncation;	/* flag truncation after the tail field */
 
-static BLOCK before;		/* before field */
-static bool before_truncation;	/* flag truncation before the before field */
+స్థిర ఖండం_2 before;		/* before field */
+స్థిర bool before_truncation;	/* flag truncation before the before field */
 
-static BLOCK keyafter;		/* keyword-and-after field */
-static bool keyafter_truncation; /* flag truncation after the keyafter field */
+స్థిర ఖండం_2 keyafter;		/* keyword-and-after field */
+స్థిర bool keyafter_truncation; /* flag truncation after the keyafter field */
 
-static BLOCK head;		/* head field */
-static bool head_truncation;	/* flag truncation before the head field */
+స్థిర ఖండం_2 తల;		/* head field */
+స్థిర bool తల_truncation;	/* flag truncation before the head field */
 
-static BLOCK reference;		/* reference field for input reference mode */
+స్థిర ఖండం_2 reference;		/* reference field for input reference mode */
 
 /* Miscellaneous routines.  */
 
 /* Diagnose an error in the regular expression matcher.  Then exit.  */
 
-static _Noreturn void
-matcher_error (void)
+స్థిర _Noreturn శూన్య
+matcher_error (శూన్య)
 {
   error (EXIT_FAILURE, errno, _("error in regular expression matcher"));
 }
 
 /* Unescape STRING in-place.  */
 
-static void
-unescape_string (char *string)
+స్థిర శూన్య
+unescape_string (అక్షరం *string)
 {
-  char *cursor;			/* cursor in result */
-  int value;			/* value of \nnn escape */
-  int length;			/* length of \nnn escape */
+  అక్షరం *cursor;			/* cursor in result */
+  పూర్ణాంకం విలువ;			/* value of \nnn escape */
+  పూర్ణాంకం నిడివి;			/* length of \nnn escape */
 
   cursor = string;
 
-  while (*string)
+  అయితే (*string)
     {
-      if (*string == '\\')
+      ఒకవేళ (*string == '\\')
         {
           string++;
-          switch (*string)
+          ఎంపిక (*string)
             {
-            case 'x':		/* \xhhh escape, 3 chars maximum */
-              value = 0;
-              for (length = 0, string++;
-                   length < 3 && c_isxdigit (*string);
-                   length++, string++)
-                value = value * 16 + fromhex (*string);
-              if (length == 0)
+            స్థితి 'x':		/* \xhhh escape, 3 chars maximum */
+              విలువ = 0;
+              కొరకు (నిడివి = 0, string++;
+                   నిడివి < 3 && c_isxdigit (*string);
+                   నిడివి++, string++)
+                విలువ = విలువ * 16 + fromhex (*string);
+              ఒకవేళ (నిడివి == 0)
                 {
                   *cursor++ = '\\';
                   *cursor++ = 'x';
                 }
-              else
-                *cursor++ = value;
-              break;
+              లేకపోతే
+                *cursor++ = విలువ;
+              ఆపు;
 
-            case '0':		/* \0ooo escape, 3 chars maximum */
-              value = 0;
-              for (length = 0, string++;
-                   length < 3 && isoct (*string);
-                   length++, string++)
-                value = value * 8 + fromoct (*string);
-              *cursor++ = value;
-              break;
+            స్థితి '0':		/* \0ooo escape, 3 chars maximum */
+              విలువ = 0;
+              కొరకు (నిడివి = 0, string++;
+                   నిడివి < 3 && isoct (*string);
+                   నిడివి++, string++)
+                విలువ = విలువ * 8 + fromoct (*string);
+              *cursor++ = విలువ;
+              ఆపు;
 
-            case 'a':		/* alert */
+            స్థితి 'a':		/* alert */
               *cursor++ = '\a';
               string++;
-              break;
+              ఆపు;
 
-            case 'b':		/* backspace */
+            స్థితి 'b':		/* backspace */
               *cursor++ = '\b';
               string++;
-              break;
+              ఆపు;
 
-            case 'c':		/* cancel the rest of the output */
-              while (*string)
+            స్థితి 'c':		/* cancel the rest of the output */
+              అయితే (*string)
                 string++;
-              break;
+              ఆపు;
 
-            case 'f':		/* form feed */
+            స్థితి 'f':		/* form feed */
               *cursor++ = '\f';
               string++;
-              break;
+              ఆపు;
 
-            case 'n':		/* new line */
+            స్థితి 'n':		/* new line */
               *cursor++ = '\n';
               string++;
-              break;
+              ఆపు;
 
-            case 'r':		/* carriage return */
+            స్థితి 'r':		/* carriage return */
               *cursor++ = '\r';
               string++;
-              break;
+              ఆపు;
 
-            case 't':		/* horizontal tab */
+            స్థితి 't':		/* horizontal tab */
               *cursor++ = '\t';
               string++;
-              break;
+              ఆపు;
 
-            case 'v':		/* vertical tab */
+            స్థితి 'v':		/* vertical tab */
               *cursor++ = '\v';
               string++;
-              break;
+              ఆపు;
 
-            case '\0':		/* lone backslash at end of string */
+            స్థితి '\0':		/* lone backslash at end of string */
               /* ignore it */
-              break;
+              ఆపు;
 
-            default:
+            అప్రమేయ:
               *cursor++ = '\\';
               *cursor++ = *string++;
-              break;
+              ఆపు;
             }
         }
-      else
+      లేకపోతే
         *cursor++ = *string++;
     }
 
@@ -392,27 +392,27 @@ unescape_string (char *string)
 | Compile the regex represented by REGEX, diagnose and abort if any error.  |
 `--------------------------------------------------------------------------*/
 
-static void
-compile_regex (struct regex_data *regex)
+స్థిర శూన్య
+compile_regex (నిర్మాణం regex_దత్తాంశం *regex)
 {
-  struct re_pattern_buffer *pattern = &regex->pattern;
-  char const *string = regex->string;
-  char const *message;
+  నిర్మాణం re_నమూనా_బఫరు *నమూనా_2 = &regex->నమూనా_2;
+  అక్షరం స్థిరరాశి *string = regex->string;
+  అక్షరం స్థిరరాశి *సందేశం_2;
 
-  pattern->buffer = NULL;
-  pattern->allocated = 0;
-  pattern->fastmap = regex->fastmap;
-  pattern->translate = ignore_case ? folded_chars : NULL;
+  నమూనా_2->బఫరు = ఖాళీ;
+  నమూనా_2->allocated = 0;
+  నమూనా_2->fastmap = regex->fastmap;
+  నమూనా_2->translate = ignore_case ? folded_chars : ఖాళీ;
 
-  message = re_compile_pattern (string, strlen (string), pattern);
-  if (message)
-    error (EXIT_FAILURE, 0, _("%s (for regexp %s)"), message, quote (string));
+  సందేశం_2 = re_compile_నమూనా (string, అక్షరశ్రేణి_పొడవు (string), నమూనా_2);
+  ఒకవేళ (సందేశం_2)
+    error (EXIT_FAILURE, 0, _("%s (for regexp %s)"), సందేశం_2, quote (string));
 
   /* The fastmap should be compiled before 're_match'.  The following
      call is not mandatory, because 're_search' is always called sooner,
      and it compiles the fastmap if this has not been done yet.  */
 
-  re_compile_fastmap (pattern);
+  re_compile_fastmap (నమూనా_2);
 }
 
 /*------------------------------------------------------------------------.
@@ -420,14 +420,14 @@ compile_regex (struct regex_data *regex)
 | regexps.								  |
 `------------------------------------------------------------------------*/
 
-static void
-initialize_regex (void)
+స్థిర శూన్య
+initialize_regex (శూన్య)
 {
   /* Initialize the case folding table.  */
 
-  if (ignore_case)
-    for (int character = 0; character < CHAR_SET_SIZE; character++)
-      folded_chars[character] = toupper (character);
+  ఒకవేళ (ignore_case)
+    కొరకు (పూర్ణాంకం character = 0; character < CHAR_సమితి_కొలత; character++)
+      folded_chars[character] = పెద్ద_అక్షరం (character);
 
   /* Unless the user already provided a description of the end of line or
      end of sentence sequence, select an end of line sequence to compile.
@@ -436,17 +436,17 @@ initialize_regex (void)
      extensions are enabled, use end of sentence like in GNU emacs.  If
      disabled, use end of lines.  */
 
-  if (context_regex.string)
+  ఒకవేళ (context_regex.string)
     {
-      if (!*context_regex.string)
-        context_regex.string = NULL;
+      ఒకవేళ (!*context_regex.string)
+        context_regex.string = ఖాళీ;
     }
-  else if (gnu_extensions && !input_reference)
+  లేకపోతే ఒకవేళ (gnu_extensions && !ఆదానం_reference)
     context_regex.string = "[.?!][]\"')}]*\\($\\|\t\\|  \\)[ \t\n]*";
-  else
+  లేకపోతే
     context_regex.string = "\n";
 
-  if (context_regex.string)
+  ఒకవేళ (context_regex.string)
     compile_regex (&context_regex);
 
   /* If the user has already provided a non-empty regexp to describe
@@ -457,27 +457,27 @@ initialize_regex (void)
      include almost everything, even punctuation; stop only on white
      space.  */
 
-  if (word_regex.string)
-    compile_regex (&word_regex);
-  else if (!break_file)
+  ఒకవేళ (మాట_regex.string)
+    compile_regex (&మాట_regex);
+  లేకపోతే ఒకవేళ (!break_file)
     {
-      if (gnu_extensions)
+      ఒకవేళ (gnu_extensions)
         {
 
           /* Simulate \w+.  */
 
-          for (int character = 0; character < CHAR_SET_SIZE; character++)
-            word_fastmap[character] = !! isalpha (character);
+          కొరకు (పూర్ణాంకం character = 0; character < CHAR_సమితి_కొలత; character++)
+            మాట_fastmap[character] = !! అక్షరమా (character);
         }
-      else
+      లేకపోతే
         {
 
           /* Simulate [^ \t\n]+.  */
 
-          memset (word_fastmap, 1, CHAR_SET_SIZE);
-          word_fastmap[' '] = 0;
-          word_fastmap['\t'] = 0;
-          word_fastmap['\n'] = 0;
+          memset (మాట_fastmap, 1, CHAR_సమితి_కొలత);
+          మాట_fastmap[' '] = 0;
+          మాట_fastmap['\t'] = 0;
+          మాట_fastmap['\n'] = 0;
         }
     }
 }
@@ -493,27 +493,27 @@ initialize_regex (void)
 | compression is ever reinstated, it should be in output routines.	  |
 `------------------------------------------------------------------------*/
 
-static void
-swallow_file_in_memory (char const *file_name, BLOCK *block)
+స్థిర శూన్య
+swallow_file_లోపల_జ్ఞాపకం (అక్షరం స్థిరరాశి *file_name, ఖండం_2 *ఖండం)
 {
-  size_t used_length;		/* used length in memory buffer */
+  size_t వాడిన_నిడివి;		/* used length in memory buffer */
 
   /* As special cases, a file name which is null or "-" indicates standard
      input, which is already opened.  In all other cases, open the file from
      its name.  */
   bool using_stdin = !file_name || !*file_name || streq (file_name, "-");
-  if (using_stdin)
-    block->start = fread_file (stdin, 0, &used_length);
-  else
-    block->start = read_file (file_name, 0, &used_length);
+  ఒకవేళ (using_stdin)
+    ఖండం->ప్రారంభం = fread_file (stdin, 0, &వాడిన_నిడివి);
+  లేకపోతే
+    ఖండం->ప్రారంభం = read_file (file_name, 0, &వాడిన_నిడివి);
 
-  if (!block->start)
+  ఒకవేళ (!ఖండం->ప్రారంభం)
     error (EXIT_FAILURE, errno, "%s", quotef (using_stdin ? "-" : file_name));
 
-  if (using_stdin)
+  ఒకవేళ (using_stdin)
     clearerr (stdin);
 
-  block->end = block->start + used_length;
+  ఖండం->చివర = ఖండం->ప్రారంభం + వాడిన_నిడివి;
 }
 
 /* Sort and search routines.  */
@@ -526,35 +526,35 @@ swallow_file_in_memory (char const *file_name, BLOCK *block)
 | If a word is indeed a prefix of the other, the shorter should go first.   |
 `--------------------------------------------------------------------------*/
 
-static int
-compare_words (const void *void_first, const void *void_second)
+స్థిర పూర్ణాంకం
+compare_పదాలు (స్థిరరాశి శూన్య *void_మొదటి, స్థిరరాశి శూన్య *void_రెండవ)
 {
-  WORD const *first = void_first;
-  WORD const *second = void_second;
-  idx_t length = MIN (first->size, second->size);
+  మాట స్థిరరాశి *మొదటి = void_మొదటి;
+  మాట స్థిరరాశి *రెండవ = void_రెండవ;
+  idx_t నిడివి = MIN (మొదటి->కొలత, రెండవ->కొలత);
 
-  if (ignore_case)
+  ఒకవేళ (ignore_case)
     {
-      for (idx_t counter = 0; counter < length; counter++)
+      కొరకు (idx_t counter = 0; counter < నిడివి; counter++)
         {
-          int value = (folded_chars[to_uchar (first->start[counter])]
-                       - folded_chars[to_uchar (second->start[counter])]);
-          if (value != 0)
-            return value;
+          పూర్ణాంకం విలువ = (folded_chars[గమ్యం_uchar (మొదటి->ప్రారంభం[counter])]
+                       - folded_chars[గమ్యం_uchar (రెండవ->ప్రారంభం[counter])]);
+          ఒకవేళ (విలువ != 0)
+            తిరిగి విలువ;
         }
     }
-  else
+  లేకపోతే
     {
-      for (idx_t counter = 0; counter < length; counter++)
+      కొరకు (idx_t counter = 0; counter < నిడివి; counter++)
         {
-          int value = (to_uchar (first->start[counter])
-                       - to_uchar (second->start[counter]));
-          if (value != 0)
-            return value;
+          పూర్ణాంకం విలువ = (గమ్యం_uchar (మొదటి->ప్రారంభం[counter])
+                       - గమ్యం_uchar (రెండవ->ప్రారంభం[counter]));
+          ఒకవేళ (విలువ != 0)
+            తిరిగి విలువ;
         }
     }
 
-  return _GL_CMP (first->size, second->size);
+  తిరిగి _GL_CMP (మొదటి->కొలత, రెండవ->కొలత);
 }
 
 /*-----------------------------------------------------------------------.
@@ -563,40 +563,40 @@ compare_words (const void *void_first, const void *void_second)
 | pointer comparison.							 |
 `-----------------------------------------------------------------------*/
 
-static int
-compare_occurs (const void *void_first, const void *void_second)
+స్థిర పూర్ణాంకం
+compare_occurs (స్థిరరాశి శూన్య *void_మొదటి, స్థిరరాశి శూన్య *void_రెండవ)
 {
-#define first ((const OCCURS *) void_first)
-#define second ((const OCCURS *) void_second)
-  int value;
+#నిర్వచించు మొదటి ((స్థిరరాశి OCCURS *) void_మొదటి)
+#నిర్వచించు రెండవ ((స్థిరరాశి OCCURS *) void_రెండవ)
+  పూర్ణాంకం విలువ;
 
-  value = compare_words (&first->key, &second->key);
-  return (value ? value
-          : _GL_CMP (first->key.start, second->key.start));
-#undef first
-#undef second
+  విలువ = compare_పదాలు (&మొదటి->కీలకం, &రెండవ->కీలకం);
+  తిరిగి (విలువ ? విలువ
+          : _GL_CMP (మొదటి->కీలకం.ప్రారంభం, రెండవ->కీలకం.ప్రారంభం));
+#నిర్వచనం_రద్దు మొదటి
+#నిర్వచనం_రద్దు రెండవ
 }
 
 /* True if WORD appears in TABLE.  Uses a binary search.  */
 
-ATTRIBUTE_PURE
-static bool
-search_table (WORD *word, WORD_TABLE *table)
+ATTRIBUTE_శుద్ధ
+స్థిర bool
+శోధన_పట్టిక (మాట *మాట_2, మాట_పట్టిక *పట్టిక)
 {
   idx_t lo = 0;
-  idx_t hi = table->length;
-  while (lo < hi)
+  idx_t hi = పట్టిక->నిడివి;
+  అయితే (lo < hi)
     {
-      idx_t middle = (lo >> 1) + (hi >> 1) + (lo & hi & 1);
-      int value = compare_words (word, table->start + middle);
-      if (value < 0)
-        hi = middle;
-      else if (value > 0)
-        lo = middle + 1;
-      else
-        return true;
+      idx_t మధ్య = (lo >> 1) + (hi >> 1) + (lo & hi & 1);
+      పూర్ణాంకం విలువ = compare_పదాలు (మాట_2, పట్టిక->ప్రారంభం + మధ్య);
+      ఒకవేళ (విలువ < 0)
+        hi = మధ్య;
+      లేకపోతే ఒకవేళ (విలువ > 0)
+        lo = మధ్య + 1;
+      లేకపోతే
+        తిరిగి true;
     }
-  return false;
+  తిరిగి false;
 }
 
 /*---------------------------------------------------------------------.
@@ -605,13 +605,13 @@ search_table (WORD *word, WORD_TABLE *table)
 | stabilized throughout the comparison routine.			       |
 `---------------------------------------------------------------------*/
 
-static void
-sort_found_occurs (void)
+స్థిర శూన్య
+క్రమీకరించు_దొరికింది_occurs (శూన్య)
 {
 
   /* Only one language for the time being.  */
-  if (number_of_occurs[0])
-    qsort (occurs_table[0], number_of_occurs[0], sizeof **occurs_table,
+  ఒకవేళ (సంఖ్య_యొక్క_occurs[0])
+    qsort (occurs_పట్టిక[0], సంఖ్య_యొక్క_occurs[0], పరిమాణం **occurs_పట్టిక,
            compare_occurs);
 }
 
@@ -623,21 +623,21 @@ sort_found_occurs (void)
 | allowed except those found in the file.  Characters may be repeated.  |
 `----------------------------------------------------------------------*/
 
-static void
-digest_break_file (char const *file_name)
+స్థిర శూన్య
+digest_break_file (అక్షరం స్థిరరాశి *file_name)
 {
-  BLOCK file_contents;		/* to receive a copy of the file */
+  ఖండం_2 file_contents;		/* to receive a copy of the file */
 
-  swallow_file_in_memory (file_name, &file_contents);
+  swallow_file_లోపల_జ్ఞాపకం (file_name, &file_contents);
 
   /* Make the fastmap and record the file contents in it.  */
 
-  memset (word_fastmap, 1, CHAR_SET_SIZE);
-  for (char *cursor = file_contents.start; cursor < file_contents.end;
+  memset (మాట_fastmap, 1, CHAR_సమితి_కొలత);
+  కొరకు (అక్షరం *cursor = file_contents.ప్రారంభం; cursor < file_contents.చివర;
        cursor++)
-    word_fastmap[to_uchar (*cursor)] = 0;
+    మాట_fastmap[గమ్యం_uchar (*cursor)] = 0;
 
-  if (!gnu_extensions)
+  ఒకవేళ (!gnu_extensions)
     {
 
       /* If GNU extensions are enabled, the only way to avoid newline as
@@ -646,14 +646,14 @@ digest_break_file (char const *file_name)
          If disabled, spaces, tabs and newlines are always considered as
          break characters even if not included in the break file.  */
 
-      word_fastmap[' '] = 0;
-      word_fastmap['\t'] = 0;
-      word_fastmap['\n'] = 0;
+      మాట_fastmap[' '] = 0;
+      మాట_fastmap['\t'] = 0;
+      మాట_fastmap['\n'] = 0;
     }
 
   /* Return the space of the file, which is no more required.  */
 
-  free (file_contents.start);
+  విడుదల (file_contents.ప్రారంభం);
 }
 
 /*-----------------------------------------------------------------------.
@@ -663,52 +663,52 @@ digest_break_file (char const *file_name)
 | needed for newlines, which are useless; however, the reading is fast.	 |
 `-----------------------------------------------------------------------*/
 
-static void
-digest_word_file (char const *file_name, WORD_TABLE *table)
+స్థిర శూన్య
+digest_మాట_file (అక్షరం స్థిరరాశి *file_name, మాట_పట్టిక *పట్టిక)
 {
-  BLOCK file_contents;		/* to receive a copy of the file */
-  char *cursor;			/* cursor in file copy */
-  char *word_start;		/* start of the current word */
+  ఖండం_2 file_contents;		/* to receive a copy of the file */
+  అక్షరం *cursor;			/* cursor in file copy */
+  అక్షరం *మాట_ప్రారంభం;		/* start of the current word */
 
-  swallow_file_in_memory (file_name, &file_contents);
+  swallow_file_లోపల_జ్ఞాపకం (file_name, &file_contents);
 
-  table->start = NULL;
-  table->alloc = 0;
-  table->length = 0;
+  పట్టిక->ప్రారంభం = ఖాళీ;
+  పట్టిక->alloc = 0;
+  పట్టిక->నిడివి = 0;
 
   /* Read the whole file.  */
 
-  cursor = file_contents.start;
-  while (cursor < file_contents.end)
+  cursor = file_contents.ప్రారంభం;
+  అయితే (cursor < file_contents.చివర)
     {
 
       /* Read one line, and save the word in contains.  */
 
-      word_start = cursor;
-      while (cursor < file_contents.end && *cursor != '\n')
+      మాట_ప్రారంభం = cursor;
+      అయితే (cursor < file_contents.చివర && *cursor != '\n')
         cursor++;
 
       /* Record the word in table if it is not empty.  */
 
-      if (cursor > word_start)
+      ఒకవేళ (cursor > మాట_ప్రారంభం)
         {
-          if (table->length == table->alloc)
-            table->start = xpalloc (table->start, &table->alloc, 1, -1,
-                                    sizeof *table->start);
-          idx_t const table_idx = table->length++;
-          table->start[table_idx].start = word_start;
-          table->start[table_idx].size = cursor - word_start;
+          ఒకవేళ (పట్టిక->నిడివి == పట్టిక->alloc)
+            పట్టిక->ప్రారంభం = xpalloc (పట్టిక->ప్రారంభం, &పట్టిక->alloc, 1, -1,
+                                    పరిమాణం *పట్టిక->ప్రారంభం);
+          idx_t స్థిరరాశి పట్టిక_idx = పట్టిక->నిడివి++;
+          పట్టిక->ప్రారంభం[పట్టిక_idx].ప్రారంభం = మాట_ప్రారంభం;
+          పట్టిక->ప్రారంభం[పట్టిక_idx].కొలత = cursor - మాట_ప్రారంభం;
         }
 
       /* This test allows for an incomplete line at end of file.  */
 
-      if (cursor < file_contents.end)
+      ఒకవేళ (cursor < file_contents.చివర)
         cursor++;
     }
 
   /* Finally, sort all the words read.  */
 
-  qsort (table->start, table->length, sizeof table->start[0], compare_words);
+  qsort (పట్టిక->ప్రారంభం, పట్టిక->నిడివి, పరిమాణం పట్టిక->ప్రారంభం[0], compare_పదాలు);
 }
 
 /* Keyword recognition and selection.  */
@@ -717,29 +717,29 @@ digest_word_file (char const *file_name, WORD_TABLE *table)
 | For each keyword in the source text, constructs an OCCURS structure.  |
 `----------------------------------------------------------------------*/
 
-static void
-find_occurs_in_text (int file_index)
+స్థిర శూన్య
+కనుగొను_occurs_లోపల_పాఠ్యం (పూర్ణాంకం file_సూచీ)
 {
-  char *scan;			/* for scanning the source text */
-  char *line_start;		/* start of the current input line */
-  char *line_scan;		/* newlines scanned until this point */
-  idx_t reference_length;	/* length of reference in input mode */
-  WORD possible_key;		/* possible key, to ease searches */
+  అక్షరం *పరిశీలన;			/* for scanning the source text */
+  అక్షరం *పంక్తి_ప్రారంభం;		/* start of the current input line */
+  అక్షరం *పంక్తి_పరిశీలన;		/* newlines scanned until this point */
+  idx_t reference_నిడివి;	/* length of reference in input mode */
+  మాట possible_కీలకం;		/* possible key, to ease searches */
   OCCURS *occurs_cursor;	/* current OCCURS under construction */
 
-  char *context_start;		/* start of left context */
-  char *context_end;		/* end of right context */
-  char *word_start;		/* start of word */
-  char *word_end;		/* end of word */
-  char *next_context_start;	/* next start of left context */
+  అక్షరం *context_ప్రారంభం;		/* start of left context */
+  అక్షరం *context_చివర;		/* end of right context */
+  అక్షరం *మాట_ప్రారంభం;		/* start of word */
+  అక్షరం *మాట_చివర;		/* end of word */
+  అక్షరం *తదుపరి_context_ప్రారంభం;	/* next start of left context */
 
-  const BLOCK *text_buffer = &text_buffers[file_index];
+  స్థిరరాశి ఖండం_2 *పాఠ్యం_బఫరు = &పాఠ్యం_buffers[file_సూచీ];
 
   /* reference_length is always used within 'if (input_reference)'.
      However, GNU C diagnoses that it may be used uninitialized.  The
      following assignment is merely to shut it up.  */
 
-  reference_length = 0;
+  reference_నిడివి = 0;
 
   /* Tracking where lines start is helpful for reference processing.  In
      auto reference mode, this allows counting lines.  In input reference
@@ -750,27 +750,27 @@ find_occurs_in_text (int file_index)
      found inside it.  Also, unconditionally assigning these variable has
      the happy effect of shutting up lint.  */
 
-  line_start = text_buffer->start;
-  line_scan = line_start;
-  if (input_reference)
+  పంక్తి_ప్రారంభం = పాఠ్యం_బఫరు->ప్రారంభం;
+  పంక్తి_పరిశీలన = పంక్తి_ప్రారంభం;
+  ఒకవేళ (ఆదానం_reference)
     {
-      SKIP_NON_WHITE (line_scan, text_buffer->end);
-      reference_length = line_scan - line_start;
-      SKIP_WHITE (line_scan, text_buffer->end);
+      SKIP_NON_WHITE (పంక్తి_పరిశీలన, పాఠ్యం_బఫరు->చివర);
+      reference_నిడివి = పంక్తి_పరిశీలన - పంక్తి_ప్రారంభం;
+      SKIP_WHITE (పంక్తి_పరిశీలన, పాఠ్యం_బఫరు->చివర);
     }
 
   /* Process the whole buffer, one line or one sentence at a time.  */
 
-  for (char *cursor = text_buffer->start;
-       cursor < text_buffer->end;
-       cursor = next_context_start)
+  కొరకు (అక్షరం *cursor = పాఠ్యం_బఫరు->ప్రారంభం;
+       cursor < పాఠ్యం_బఫరు->చివర;
+       cursor = తదుపరి_context_ప్రారంభం)
     {
 
       /* 'context_start' gets initialized before the processing of each
          line, or once for the whole buffer if no end of line or sentence
          sequence separator.  */
 
-      context_start = cursor;
+      context_ప్రారంభం = cursor;
 
       /* If an end of line or end of sentence sequence is defined and
          non-empty, 'next_context_start' will be recomputed to be the end of
@@ -780,93 +780,93 @@ find_occurs_in_text (int file_index)
          This test also accounts for the case of an incomplete line or
          sentence at the end of the buffer.  */
 
-      next_context_start = text_buffer->end;
-      if (context_regex.string)
-        switch (re_search (&context_regex.pattern, cursor,
-                           text_buffer->end - cursor,
-                           0, text_buffer->end - cursor, &context_regs))
+      తదుపరి_context_ప్రారంభం = పాఠ్యం_బఫరు->చివర;
+      ఒకవేళ (context_regex.string)
+        ఎంపిక (re_శోధన (&context_regex.నమూనా_2, cursor,
+                           పాఠ్యం_బఫరు->చివర - cursor,
+                           0, పాఠ్యం_బఫరు->చివర - cursor, &context_regs))
           {
-          case -2:
+          స్థితి -2:
             matcher_error ();
 
-          case -1:
-            break;
+          స్థితి -1:
+            ఆపు;
 
-          case 0:
+          స్థితి 0:
             error (EXIT_FAILURE, 0,
                    _("error: regular expression has a match of length zero:"
                      " %s"),
                    quote (context_regex.string));
 
-          default:
-            next_context_start = cursor + context_regs.end[0];
-            break;
+          అప్రమేయ:
+            తదుపరి_context_ప్రారంభం = cursor + context_regs.చివర[0];
+            ఆపు;
           }
 
       /* Include the separator into the right context, but not any suffix
          white space in this separator; this insures it will be seen in
          output and will not take more space than necessary.  */
 
-      context_end = next_context_start;
-      SKIP_WHITE_BACKWARDS (context_end, context_start);
+      context_చివర = తదుపరి_context_ప్రారంభం;
+      SKIP_WHITE_BACKWARDS (context_చివర, context_ప్రారంభం);
 
       /* Read and process a single input line or sentence, one word at a
          time.  */
 
-      while (true)
+      అయితే (true)
         {
-          if (word_regex.string)
+          ఒకవేళ (మాట_regex.string)
 
             /* If a word regexp has been compiled, use it to skip at the
                beginning of the next word.  If there is no such word, exit
                the loop.  */
 
             {
-              regoff_t r = re_search (&word_regex.pattern, cursor,
-                                      context_end - cursor,
-                                      0, context_end - cursor, &word_regs);
-              if (r == -2)
+              regoff_t r = re_శోధన (&మాట_regex.నమూనా_2, cursor,
+                                      context_చివర - cursor,
+                                      0, context_చివర - cursor, &మాట_regs);
+              ఒకవేళ (r == -2)
                 matcher_error ();
-              if (r == -1)
-                break;
-              word_start = cursor + word_regs.start[0];
-              word_end = cursor + word_regs.end[0];
+              ఒకవేళ (r == -1)
+                ఆపు;
+              మాట_ప్రారంభం = cursor + మాట_regs.ప్రారంభం[0];
+              మాట_చివర = cursor + మాట_regs.చివర[0];
             }
-          else
+          లేకపోతే
 
             /* Avoid re_search and use the fastmap to skip to the
                beginning of the next word.  If there is no more word in
                the buffer, exit the loop.  */
 
             {
-              scan = cursor;
-              while (scan < context_end
-                     && !word_fastmap[to_uchar (*scan)])
-                scan++;
+              పరిశీలన = cursor;
+              అయితే (పరిశీలన < context_చివర
+                     && !మాట_fastmap[గమ్యం_uchar (*పరిశీలన)])
+                పరిశీలన++;
 
-              if (scan == context_end)
-                break;
+              ఒకవేళ (పరిశీలన == context_చివర)
+                ఆపు;
 
-              word_start = scan;
+              మాట_ప్రారంభం = పరిశీలన;
 
-              while (scan < context_end
-                     && word_fastmap[to_uchar (*scan)])
-                scan++;
+              అయితే (పరిశీలన < context_చివర
+                     && మాట_fastmap[గమ్యం_uchar (*పరిశీలన)])
+                పరిశీలన++;
 
-              word_end = scan;
+              మాట_చివర = పరిశీలన;
             }
 
           /* Skip right to the beginning of the found word.  */
 
-          cursor = word_start;
+          cursor = మాట_ప్రారంభం;
 
           /* Skip any zero length word.  Just advance a single position,
              then go fetch the next word.  */
 
-          if (word_end == word_start)
+          ఒకవేళ (మాట_చివర == మాట_ప్రారంభం)
             {
               cursor++;
-              continue;
+              కొనసాగు;
             }
 
           /* This is a genuine, non empty word, so save it as a possible
@@ -876,33 +876,33 @@ find_occurs_in_text (int file_index)
              are actually kept or rejected, because backward jumps at output
              generation time may fall in *any* word.  */
 
-          possible_key.start = cursor;
-          possible_key.size = word_end - word_start;
-          cursor += possible_key.size;
+          possible_కీలకం.ప్రారంభం = cursor;
+          possible_కీలకం.కొలత = మాట_చివర - మాట_ప్రారంభం;
+          cursor += possible_కీలకం.కొలత;
 
-          if (possible_key.size > maximum_word_length)
-            maximum_word_length = possible_key.size;
+          ఒకవేళ (possible_కీలకం.కొలత > గరిష్ఠ_మాట_నిడివి)
+            గరిష్ఠ_మాట_నిడివి = possible_కీలకం.కొలత;
 
           /* In input reference mode, update 'line_start' from its previous
              value.  Count the lines just in case auto reference mode is
              also selected. If it happens that the word just matched is
              indeed part of a reference; just ignore it.  */
 
-          if (input_reference)
+          ఒకవేళ (ఆదానం_reference)
             {
-              while (line_scan < possible_key.start)
-                if (*line_scan == '\n')
+              అయితే (పంక్తి_పరిశీలన < possible_కీలకం.ప్రారంభం)
+                ఒకవేళ (*పంక్తి_పరిశీలన == '\n')
                   {
-                    total_line_count++;
-                    line_scan++;
-                    line_start = line_scan;
-                    SKIP_NON_WHITE (line_scan, text_buffer->end);
-                    reference_length = line_scan - line_start;
+                    మొత్తం_పంక్తి_లెక్క++;
+                    పంక్తి_పరిశీలన++;
+                    పంక్తి_ప్రారంభం = పంక్తి_పరిశీలన;
+                    SKIP_NON_WHITE (పంక్తి_పరిశీలన, పాఠ్యం_బఫరు->చివర);
+                    reference_నిడివి = పంక్తి_పరిశీలన - పంక్తి_ప్రారంభం;
                   }
-                else
-                  line_scan++;
-              if (line_scan > possible_key.start)
-                continue;
+                లేకపోతే
+                  పంక్తి_పరిశీలన++;
+              ఒకవేళ (పంక్తి_పరిశీలన > possible_కీలకం.ప్రారంభం)
+                కొనసాగు;
             }
 
           /* Ignore the word if an 'Ignore words' table exists and if it is
@@ -915,23 +915,23 @@ find_occurs_in_text (int file_index)
              tables, the Ignore table could then reject words that would
              have been previously accepted by the Only table.  */
 
-          if (ignore_file && search_table (&possible_key, &ignore_table))
-            continue;
-          if (only_file && !search_table (&possible_key, &only_table))
-            continue;
+          ఒకవేళ (ignore_file && శోధన_పట్టిక (&possible_కీలకం, &ignore_పట్టిక))
+            కొనసాగు;
+          ఒకవేళ (only_file && !శోధన_పట్టిక (&possible_కీలకం, &only_పట్టిక))
+            కొనసాగు;
 
           /* A non-empty word has been found.  First of all, insure
              proper allocation of the next OCCURS, and make a pointer to
              where it will be constructed.  */
 
-          if (number_of_occurs[0] == occurs_alloc[0])
-            occurs_table[0] = xpalloc (occurs_table[0], &occurs_alloc[0],
-                                       1, -1, sizeof *occurs_table[0]);
-          occurs_cursor = occurs_table[0] + number_of_occurs[0];
+          ఒకవేళ (సంఖ్య_యొక్క_occurs[0] == occurs_alloc[0])
+            occurs_పట్టిక[0] = xpalloc (occurs_పట్టిక[0], &occurs_alloc[0],
+                                       1, -1, పరిమాణం *occurs_పట్టిక[0]);
+          occurs_cursor = occurs_పట్టిక[0] + సంఖ్య_యొక్క_occurs[0];
 
           /* Define the reference field, if any.  */
 
-          if (auto_reference)
+          ఒకవేళ (auto_reference)
             {
 
               /* While auto referencing, update 'line_start' from its
@@ -940,20 +940,20 @@ find_occurs_in_text (int file_index)
                  advanced earlier, and the following loop is never really
                  executed.  */
 
-              while (line_scan < possible_key.start)
-                if (*line_scan == '\n')
+              అయితే (పంక్తి_పరిశీలన < possible_కీలకం.ప్రారంభం)
+                ఒకవేళ (*పంక్తి_పరిశీలన == '\n')
                   {
-                    total_line_count++;
-                    line_scan++;
-                    line_start = line_scan;
-                    SKIP_NON_WHITE (line_scan, text_buffer->end);
+                    మొత్తం_పంక్తి_లెక్క++;
+                    పంక్తి_పరిశీలన++;
+                    పంక్తి_ప్రారంభం = పంక్తి_పరిశీలన;
+                    SKIP_NON_WHITE (పంక్తి_పరిశీలన, పాఠ్యం_బఫరు->చివర);
                   }
-                else
-                  line_scan++;
+                లేకపోతే
+                  పంక్తి_పరిశీలన++;
 
-              occurs_cursor->reference = total_line_count;
+              occurs_cursor->reference = మొత్తం_పంక్తి_లెక్క;
             }
-          else if (input_reference)
+          లేకపోతే ఒకవేళ (ఆదానం_reference)
             {
 
               /* If only input referencing, 'line_start' has been computed
@@ -961,27 +961,27 @@ find_occurs_in_text (int file_index)
                  of the reference.  The reference position is simply the
                  value of 'line_start'.  */
 
-              occurs_cursor->reference = line_start - possible_key.start;
-              if (reference_length > reference_max_width)
-                reference_max_width = reference_length;
+              occurs_cursor->reference = పంక్తి_ప్రారంభం - possible_కీలకం.ప్రారంభం;
+              ఒకవేళ (reference_నిడివి > reference_max_వెడల్పు)
+                reference_max_వెడల్పు = reference_నిడివి;
             }
 
           /* Exclude the reference from the context in simple cases.  */
 
-          if (input_reference && line_start == context_start)
+          ఒకవేళ (ఆదానం_reference && పంక్తి_ప్రారంభం == context_ప్రారంభం)
             {
-              SKIP_NON_WHITE (context_start, context_end);
-              SKIP_WHITE (context_start, context_end);
+              SKIP_NON_WHITE (context_ప్రారంభం, context_చివర);
+              SKIP_WHITE (context_ప్రారంభం, context_చివర);
             }
 
           /* Completes the OCCURS structure.  */
 
-          occurs_cursor->key = possible_key;
-          occurs_cursor->left = context_start - possible_key.start;
-          occurs_cursor->right = context_end - possible_key.start;
-          occurs_cursor->file_index = file_index;
+          occurs_cursor->కీలకం = possible_కీలకం;
+          occurs_cursor->ఎడమ = context_ప్రారంభం - possible_కీలకం.ప్రారంభం;
+          occurs_cursor->కుడి = context_చివర - possible_కీలకం.ప్రారంభం;
+          occurs_cursor->file_సూచీ = file_సూచీ;
 
-          number_of_occurs[0]++;
+          సంఖ్య_యొక్క_occurs[0]++;
         }
     }
 }
@@ -992,69 +992,69 @@ find_occurs_in_text (int file_index)
 | Prints some NUMBER of spaces on stdout.  |
 `-----------------------------------------*/
 
-static void
-print_spaces (ptrdiff_t number)
+స్థిర శూన్య
+print_spaces (ptrdiff_t సంఖ్య)
 {
-  for (ptrdiff_t counter = number; counter > 0; counter--)
-    putchar (' ');
+  కొరకు (ptrdiff_t counter = సంఖ్య; counter > 0; counter--)
+    అక్షరం_రాయి (' ');
 }
 
 /*-------------------------------------.
 | Prints the field provided by FIELD.  |
 `-------------------------------------*/
 
-static void
-print_field (BLOCK field)
+స్థిర శూన్య
+print_క్షేత్రం (ఖండం_2 క్షేత్రం)
 {
   /* Whitespace is not really compressed.  Instead, each white space
      character (tab, vt, ht etc.) is printed as one single space.  */
 
-  for (char *cursor = field.start; cursor < field.end; cursor++)
+  కొరకు (అక్షరం *cursor = క్షేత్రం.ప్రారంభం; cursor < క్షేత్రం.చివర; cursor++)
     {
-      unsigned char character = *cursor;
-      if (edited_flag[character])
+      గుర్తులేని అక్షరం character = *cursor;
+      ఒకవేళ (edited_flag[character])
         {
           /* Handle cases which are specific to 'roff' or TeX.  All
              white space processing is done as the default case of
              this switch.  */
 
-          switch (character)
+          ఎంపిక (character)
             {
-            case '"':
+            స్థితి '"':
               /* In roff output format, double any quote.  */
-              putchar ('"');
-              putchar ('"');
-              break;
+              అక్షరం_రాయి ('"');
+              అక్షరం_రాయి ('"');
+              ఆపు;
 
-            case '$':
-            case '%':
-            case '&':
-            case '#':
-            case '_':
+            స్థితి '$':
+            స్థితి '%':
+            స్థితి '&':
+            స్థితి '#':
+            స్థితి '_':
               /* In TeX output format, precede these with a backslash.  */
-              putchar ('\\');
-              putchar (character);
-              break;
+              అక్షరం_రాయి ('\\');
+              అక్షరం_రాయి (character);
+              ఆపు;
 
-            case '{':
-            case '}':
+            స్థితి '{':
+            స్థితి '}':
               /* In TeX output format, precede these with a backslash and
                  force mathematical mode.  */
-              printf ("$\\%c$", character);
-              break;
+              రాయి ("$\\%c$", character);
+              ఆపు;
 
-            case '\\':
+            స్థితి '\\':
               /* In TeX output mode, request production of a backslash.  */
               fputs ("\\backslash{}", stdout);
-              break;
+              ఆపు;
 
-            default:
+            అప్రమేయ:
               /* Any other flagged character produces a single space.  */
-              putchar (' ');
+              అక్షరం_రాయి (' ');
             }
         }
-      else
-        putchar (*cursor);
+      లేకపోతే
+        అక్షరం_రాయి (*cursor);
     }
 }
 
@@ -1065,37 +1065,37 @@ print_field (BLOCK field)
 | readings, compute and fix some output parameter values.	      |
 `--------------------------------------------------------------------*/
 
-static void
-fix_output_parameters (void)
+స్థిర శూన్య
+fix_output_parameters (శూన్య)
 {
   /* In auto reference mode, the maximum width of this field is
      precomputed and subtracted from the overall line width.  Add one for
      the column which separate the file name from the line number.  */
 
-  if (auto_reference)
+  ఒకవేళ (auto_reference)
     {
-      reference_max_width = 0;
-      for (int file_index = 0; file_index < number_input_files; file_index++)
+      reference_max_వెడల్పు = 0;
+      కొరకు (పూర్ణాంకం file_సూచీ = 0; file_సూచీ < సంఖ్య_ఆదానం_files; file_సూచీ++)
         {
-          intmax_t line_ordinal = file_line_count[file_index] + 1;
-          if (file_index > 0)
-            line_ordinal -= file_line_count[file_index - 1];
-          char ordinal_string[INT_BUFSIZE_BOUND (intmax_t)];
-          idx_t reference_width = sprintf (ordinal_string, "%jd", line_ordinal);
-          if (input_file_name[file_index])
-            reference_width += strlen (input_file_name[file_index]);
-          if (reference_width > reference_max_width)
-            reference_max_width = reference_width;
+          intmax_t పంక్తి_ordinal = file_పంక్తి_లెక్క[file_సూచీ] + 1;
+          ఒకవేళ (file_సూచీ > 0)
+            పంక్తి_ordinal -= file_పంక్తి_లెక్క[file_సూచీ - 1];
+          అక్షరం ordinal_string[INT_BUFSIZE_BOUND (intmax_t)];
+          idx_t reference_వెడల్పు = sprintf (ordinal_string, "%jd", పంక్తి_ordinal);
+          ఒకవేళ (ఆదానం_file_name[file_సూచీ])
+            reference_వెడల్పు += అక్షరశ్రేణి_పొడవు (ఆదానం_file_name[file_సూచీ]);
+          ఒకవేళ (reference_వెడల్పు > reference_max_వెడల్పు)
+            reference_max_వెడల్పు = reference_వెడల్పు;
         }
-      reference_max_width++;
-      reference.start = xmalloc (reference_max_width + 1);
+      reference_max_వెడల్పు++;
+      reference.ప్రారంభం = xmalloc (reference_max_వెడల్పు + 1);
     }
 
   /* If the reference appears to the left of the output line, reserve some
      space for it right away, including one gap size.  */
 
-  if ((auto_reference || input_reference) && !right_reference)
-    line_width = MAX (0, line_width - (reference_max_width + gap_size));
+  ఒకవేళ ((auto_reference || ఆదానం_reference) && !కుడి_reference)
+    పంక్తి_వెడల్పు = MAX (0, పంక్తి_వెడల్పు - (reference_max_వెడల్పు + gap_కొలత));
 
   /* The output lines, minimally, will contain from left to right a left
      context, a gap, and a keyword followed by the right context with no
@@ -1109,20 +1109,20 @@ fix_output_parameters (void)
      on a case by case basis.  It is worth noting that it cannot happen that
      both the tail and head fields are used at once.  */
 
-  half_line_width = line_width >> 1;
-  before_max_width = half_line_width - gap_size;
-  keyafter_max_width = half_line_width;
+  half_పంక్తి_వెడల్పు = పంక్తి_వెడల్పు >> 1;
+  before_max_వెడల్పు = half_పంక్తి_వెడల్పు - gap_కొలత;
+  keyafter_max_వెడల్పు = half_పంక్తి_వెడల్పు;
 
   /* If truncation_string is the empty string, make it null to speed up
      tests.  In this case, truncation_string_length will never get used, so
      there is no need to set it.  */
 
-  if (truncation_string && *truncation_string)
-    truncation_string_length = strlen (truncation_string);
-  else
-    truncation_string = NULL;
+  ఒకవేళ (truncation_string && *truncation_string)
+    truncation_string_నిడివి = అక్షరశ్రేణి_పొడవు (truncation_string);
+  లేకపోతే
+    truncation_string = ఖాళీ;
 
-  if (gnu_extensions)
+  ఒకవేళ (gnu_extensions)
     {
 
       /* When flagging truncation at the left of the keyword, the
@@ -1147,10 +1147,10 @@ fix_output_parameters (void)
          on the left side of the center of the output line, both on the
          right side, or one on either side.  */
 
-      before_max_width -= 2 * truncation_string_length;
-      keyafter_max_width -= 2 * truncation_string_length;
+      before_max_వెడల్పు -= 2 * truncation_string_నిడివి;
+      keyafter_max_వెడల్పు -= 2 * truncation_string_నిడివి;
     }
-  else
+  లేకపోతే
     {
 
       /* I never figured out exactly how UNIX' ptx plans the output width
@@ -1159,46 +1159,46 @@ fix_output_parameters (void)
          following formula, which does not completely imitate UNIX' ptx,
          but almost.  */
 
-      keyafter_max_width -= 2 * truncation_string_length + 1;
+      keyafter_max_వెడల్పు -= 2 * truncation_string_నిడివి + 1;
     }
 
-  if (before_max_width < 0)
-    before_max_width = 0;
+  ఒకవేళ (before_max_వెడల్పు < 0)
+    before_max_వెడల్పు = 0;
 
   /* Compute which characters need special output processing.  Initialize
      by flagging any white space character.  Some systems do not consider
      form feed as a space character, but we do.  */
 
-  for (int character = 0; character < CHAR_SET_SIZE; character++)
-    edited_flag[character] = !! isspace (character);
+  కొరకు (పూర్ణాంకం character = 0; character < CHAR_సమితి_కొలత; character++)
+    edited_flag[character] = !! ఖాళీనా (character);
   edited_flag['\f'] = 1;
 
   /* Complete the special character flagging according to selected output
      format.  */
 
-  switch (output_format)
+  ఎంపిక (output_format)
     {
-    case UNKNOWN_FORMAT:
+    స్థితి UNKNOWN_FORMAT:
       /* Should never happen.  */
 
-    case DUMB_FORMAT:
-      break;
+    స్థితి DUMB_FORMAT:
+      ఆపు;
 
-    case ROFF_FORMAT:
+    స్థితి ROFF_FORMAT:
 
       /* 'Quote' characters should be doubled.  */
 
       edited_flag['"'] = 1;
-      break;
+      ఆపు;
 
-    case TEX_FORMAT:
+    స్థితి TEX_FORMAT:
 
       /* Various characters need special processing.  */
 
-      for (char const *cursor = "$%&#_{}\\"; *cursor; cursor++)
-        edited_flag[to_uchar (*cursor)] = 1;
+      కొరకు (అక్షరం స్థిరరాశి *cursor = "$%&#_{}\\"; *cursor; cursor++)
+        edited_flag[గమ్యం_uchar (*cursor)] = 1;
 
-      break;
+      ఆపు;
     }
 }
 
@@ -1207,19 +1207,19 @@ fix_output_parameters (void)
 | pointer to some OCCURS.					    |
 `------------------------------------------------------------------*/
 
-static void
+స్థిర శూన్య
 define_all_fields (OCCURS *occurs)
 {
-  ptrdiff_t tail_max_width;	/* allowable width of tail field */
-  ptrdiff_t head_max_width;	/* allowable width of head field */
-  char *cursor;			/* running cursor in source text */
-  char *left_context_start;	/* start of left context */
-  char *right_context_end;	/* end of right context */
-  char *left_field_start;	/* conservative start for 'head'/'before' */
-  char const *file_name;	/* file name for reference */
-  intmax_t line_ordinal;	/* line ordinal for reference */
-  char const *buffer_start;	/* start of buffered file for this occurs */
-  char const *buffer_end;	/* end of buffered file for this occurs */
+  ptrdiff_t తోక_max_వెడల్పు;	/* allowable width of tail field */
+  ptrdiff_t తల_max_వెడల్పు;	/* allowable width of head field */
+  అక్షరం *cursor;			/* running cursor in source text */
+  అక్షరం *ఎడమ_context_ప్రారంభం;	/* start of left context */
+  అక్షరం *కుడి_context_చివర;	/* end of right context */
+  అక్షరం *ఎడమ_క్షేత్రం_ప్రారంభం;	/* conservative start for 'head'/'before' */
+  అక్షరం స్థిరరాశి *file_name;	/* file name for reference */
+  intmax_t పంక్తి_ordinal;	/* line ordinal for reference */
+  అక్షరం స్థిరరాశి *బఫరు_ప్రారంభం;	/* start of buffered file for this occurs */
+  అక్షరం స్థిరరాశి *బఫరు_చివర;	/* end of buffered file for this occurs */
 
   /* Define 'keyafter', start of left context and end of right context.
      'keyafter' starts at the saved position for keyword and extend to the
@@ -1227,27 +1227,27 @@ define_all_fields (OCCURS *occurs)
      not beyond maximum allowed width for 'keyafter' field or limit for the
      right context.  Suffix spaces will be removed afterwards.  */
 
-  keyafter.start = occurs->key.start;
-  keyafter.end = keyafter.start + occurs->key.size;
-  left_context_start = keyafter.start + occurs->left;
-  right_context_end = keyafter.start + occurs->right;
+  keyafter.ప్రారంభం = occurs->కీలకం.ప్రారంభం;
+  keyafter.చివర = keyafter.ప్రారంభం + occurs->కీలకం.కొలత;
+  ఎడమ_context_ప్రారంభం = keyafter.ప్రారంభం + occurs->ఎడమ;
+  కుడి_context_చివర = keyafter.ప్రారంభం + occurs->కుడి;
 
-  buffer_start = text_buffers[occurs->file_index].start;
-  buffer_end = text_buffers[occurs->file_index].end;
+  బఫరు_ప్రారంభం = పాఠ్యం_buffers[occurs->file_సూచీ].ప్రారంభం;
+  బఫరు_చివర = పాఠ్యం_buffers[occurs->file_సూచీ].చివర;
 
-  cursor = keyafter.end;
-  while (cursor < right_context_end
-         && cursor <= keyafter.start + keyafter_max_width)
+  cursor = keyafter.చివర;
+  అయితే (cursor < కుడి_context_చివర
+         && cursor <= keyafter.ప్రారంభం + keyafter_max_వెడల్పు)
     {
-      keyafter.end = cursor;
-      SKIP_SOMETHING (cursor, right_context_end);
+      keyafter.చివర = cursor;
+      SKIP_SOMETHING (cursor, కుడి_context_చివర);
     }
-  if (cursor <= keyafter.start + keyafter_max_width)
-    keyafter.end = cursor;
+  ఒకవేళ (cursor <= keyafter.ప్రారంభం + keyafter_max_వెడల్పు)
+    keyafter.చివర = cursor;
 
-  keyafter_truncation = truncation_string && keyafter.end < right_context_end;
+  keyafter_truncation = truncation_string && keyafter.చివర < కుడి_context_చివర;
 
-  SKIP_WHITE_BACKWARDS (keyafter.end, keyafter.start);
+  SKIP_WHITE_BACKWARDS (keyafter.చివర, keyafter.ప్రారంభం);
 
   /* When the left context is wide, it might take some time to catch up from
      the left context boundary to the beginning of the 'head' or 'before'
@@ -1261,14 +1261,14 @@ define_all_fields (OCCURS *occurs)
      beginning of 'head' or 'before' fields, we will skip forward words or
      delimiters until we get sufficiently near.  */
 
-  if (-occurs->left > half_line_width + maximum_word_length)
+  ఒకవేళ (-occurs->ఎడమ > half_పంక్తి_వెడల్పు + గరిష్ఠ_మాట_నిడివి)
     {
-      left_field_start
-        = keyafter.start - (half_line_width + maximum_word_length);
-      SKIP_SOMETHING (left_field_start, keyafter.start);
+      ఎడమ_క్షేత్రం_ప్రారంభం
+        = keyafter.ప్రారంభం - (half_పంక్తి_వెడల్పు + గరిష్ఠ_మాట_నిడివి);
+      SKIP_SOMETHING (ఎడమ_క్షేత్రం_ప్రారంభం, keyafter.ప్రారంభం);
     }
-  else
-    left_field_start = keyafter.start + occurs->left;
+  లేకపోతే
+    ఎడమ_క్షేత్రం_ప్రారంభం = keyafter.ప్రారంభం + occurs->ఎడమ;
 
   /* 'before' certainly ends at the keyword, but not including separating
      spaces.  It starts after than the saved value for the left context, by
@@ -1276,23 +1276,23 @@ define_all_fields (OCCURS *occurs)
      before field.  There will be no prefix spaces either.  'before' only
      advances by skipping single separators or whole words. */
 
-  before.start = left_field_start;
-  before.end = keyafter.start;
-  SKIP_WHITE_BACKWARDS (before.end, before.start);
+  before.ప్రారంభం = ఎడమ_క్షేత్రం_ప్రారంభం;
+  before.చివర = keyafter.ప్రారంభం;
+  SKIP_WHITE_BACKWARDS (before.చివర, before.ప్రారంభం);
 
-  while (before.start + before_max_width < before.end)
-    SKIP_SOMETHING (before.start, before.end);
+  అయితే (before.ప్రారంభం + before_max_వెడల్పు < before.చివర)
+    SKIP_SOMETHING (before.ప్రారంభం, before.చివర);
 
-  if (truncation_string)
+  ఒకవేళ (truncation_string)
     {
-      cursor = before.start;
-      SKIP_WHITE_BACKWARDS (cursor, buffer_start);
-      before_truncation = cursor > left_context_start;
+      cursor = before.ప్రారంభం;
+      SKIP_WHITE_BACKWARDS (cursor, బఫరు_ప్రారంభం);
+      before_truncation = cursor > ఎడమ_context_ప్రారంభం;
     }
-  else
+  లేకపోతే
     before_truncation = false;
 
-  SKIP_WHITE (before.start, buffer_end);
+  SKIP_WHITE (before.ప్రారంభం, బఫరు_చివర);
 
   /* The tail could not take more columns than what has been left in the
      left context field, and a gap is mandatory.  It starts after the
@@ -1301,44 +1301,44 @@ define_all_fields (OCCURS *occurs)
      whichever comes first.  It cannot contain only part of a word, and
      has no suffixed spaces.  */
 
-  tail_max_width
-    = before_max_width - (before.end - before.start) - gap_size;
+  తోక_max_వెడల్పు
+    = before_max_వెడల్పు - (before.చివర - before.ప్రారంభం) - gap_కొలత;
 
-  if (tail_max_width > 0)
+  ఒకవేళ (తోక_max_వెడల్పు > 0)
     {
-      tail.start = keyafter.end;
-      SKIP_WHITE (tail.start, buffer_end);
+      తోక.ప్రారంభం = keyafter.చివర;
+      SKIP_WHITE (తోక.ప్రారంభం, బఫరు_చివర);
 
-      tail.end = tail.start;
-      cursor = tail.end;
-      while (cursor < right_context_end
-             && cursor < tail.start + tail_max_width)
+      తోక.చివర = తోక.ప్రారంభం;
+      cursor = తోక.చివర;
+      అయితే (cursor < కుడి_context_చివర
+             && cursor < తోక.ప్రారంభం + తోక_max_వెడల్పు)
         {
-          tail.end = cursor;
-          SKIP_SOMETHING (cursor, right_context_end);
+          తోక.చివర = cursor;
+          SKIP_SOMETHING (cursor, కుడి_context_చివర);
         }
 
-      if (cursor < tail.start + tail_max_width)
-        tail.end = cursor;
+      ఒకవేళ (cursor < తోక.ప్రారంభం + తోక_max_వెడల్పు)
+        తోక.చివర = cursor;
 
-      if (tail.end > tail.start)
+      ఒకవేళ (తోక.చివర > తోక.ప్రారంభం)
         {
           keyafter_truncation = false;
-          tail_truncation = truncation_string && tail.end < right_context_end;
+          తోక_truncation = truncation_string && తోక.చివర < కుడి_context_చివర;
         }
-      else
-        tail_truncation = false;
+      లేకపోతే
+        తోక_truncation = false;
 
-      SKIP_WHITE_BACKWARDS (tail.end, tail.start);
+      SKIP_WHITE_BACKWARDS (తోక.చివర, తోక.ప్రారంభం);
     }
-  else
+  లేకపోతే
     {
 
       /* No place left for a tail field.  */
 
-      tail.start = NULL;
-      tail.end = NULL;
-      tail_truncation = false;
+      తోక.ప్రారంభం = ఖాళీ;
+      తోక.చివర = ఖాళీ;
+      తోక_truncation = false;
     }
 
   /* 'head' could not take more columns than what has been left in the right
@@ -1347,66 +1347,66 @@ define_all_fields (OCCURS *occurs)
      until the head field has shrunk to its allowed width.  It cannot
      contain only part of a word, and has no suffixed spaces.  */
 
-  head_max_width
-    = keyafter_max_width - (keyafter.end - keyafter.start) - gap_size;
+  తల_max_వెడల్పు
+    = keyafter_max_వెడల్పు - (keyafter.చివర - keyafter.ప్రారంభం) - gap_కొలత;
 
-  if (head_max_width > 0)
+  ఒకవేళ (తల_max_వెడల్పు > 0)
     {
-      head.end = before.start;
-      SKIP_WHITE_BACKWARDS (head.end, buffer_start);
+      తల.చివర = before.ప్రారంభం;
+      SKIP_WHITE_BACKWARDS (తల.చివర, బఫరు_ప్రారంభం);
 
-      head.start = left_field_start;
-      while (head.start + head_max_width < head.end)
-        SKIP_SOMETHING (head.start, head.end);
+      తల.ప్రారంభం = ఎడమ_క్షేత్రం_ప్రారంభం;
+      అయితే (తల.ప్రారంభం + తల_max_వెడల్పు < తల.చివర)
+        SKIP_SOMETHING (తల.ప్రారంభం, తల.చివర);
 
-      if (head.end > head.start)
+      ఒకవేళ (తల.చివర > తల.ప్రారంభం)
         {
           before_truncation = false;
-          head_truncation = (truncation_string
-                             && head.start > left_context_start);
+          తల_truncation = (truncation_string
+                             && తల.ప్రారంభం > ఎడమ_context_ప్రారంభం);
         }
-      else
-        head_truncation = false;
+      లేకపోతే
+        తల_truncation = false;
 
-      SKIP_WHITE (head.start, head.end);
+      SKIP_WHITE (తల.ప్రారంభం, తల.చివర);
     }
-  else
+  లేకపోతే
     {
 
       /* No place left for a head field.  */
 
-      head.start = NULL;
-      head.end = NULL;
-      head_truncation = false;
+      తల.ప్రారంభం = ఖాళీ;
+      తల.చివర = ఖాళీ;
+      తల_truncation = false;
     }
 
-  if (auto_reference)
+  ఒకవేళ (auto_reference)
     {
 
       /* Construct the reference text in preallocated space from the file
          name and the line number.  Standard input yields an empty file name.
          Ensure line numbers are 1 based, even if they are computed 0 based.  */
 
-      file_name = input_file_name[occurs->file_index];
-      if (!file_name)
+      file_name = ఆదానం_file_name[occurs->file_సూచీ];
+      ఒకవేళ (!file_name)
         file_name = "";
 
-      line_ordinal = occurs->reference + 1;
-      if (occurs->file_index > 0)
-        line_ordinal -= file_line_count[occurs->file_index - 1];
+      పంక్తి_ordinal = occurs->reference + 1;
+      ఒకవేళ (occurs->file_సూచీ > 0)
+        పంక్తి_ordinal -= file_పంక్తి_లెక్క[occurs->file_సూచీ - 1];
 
-      char *file_end = stpcpy (reference.start, file_name);
-      reference.end = file_end + sprintf (file_end, ":%jd", line_ordinal);
+      అక్షరం *file_చివర = stpcpy (reference.ప్రారంభం, file_name);
+      reference.చివర = file_చివర + sprintf (file_చివర, ":%jd", పంక్తి_ordinal);
     }
-  else if (input_reference)
+  లేకపోతే ఒకవేళ (ఆదానం_reference)
     {
 
       /* Reference starts at saved position for reference and extends right
          until some white space is met.  */
 
-      reference.start = keyafter.start + occurs->reference;
-      reference.end = reference.start;
-      SKIP_NON_WHITE (reference.end, right_context_end);
+      reference.ప్రారంభం = keyafter.ప్రారంభం + occurs->reference;
+      reference.చివర = reference.ప్రారంభం;
+      SKIP_NON_WHITE (reference.చివర, కుడి_context_చివర);
     }
 }
 
@@ -1416,188 +1416,188 @@ define_all_fields (OCCURS *occurs)
 | Output the current output fields as one line for 'troff' or 'nroff'.  |
 `----------------------------------------------------------------------*/
 
-static void
-output_one_roff_line (void)
+స్థిర శూన్య
+output_one_roff_పంక్తి (శూన్య)
 {
   /* Output the 'tail' field.  */
 
-  printf (".%s \"", macro_name);
-  print_field (tail);
-  if (tail_truncation)
+  రాయి (".%s \"", macro_name);
+  print_క్షేత్రం (తోక);
+  ఒకవేళ (తోక_truncation)
     fputs (truncation_string, stdout);
-  putchar ('"');
+  అక్షరం_రాయి ('"');
 
   /* Output the 'before' field.  */
 
   fputs (" \"", stdout);
-  if (before_truncation)
+  ఒకవేళ (before_truncation)
     fputs (truncation_string, stdout);
-  print_field (before);
-  putchar ('"');
+  print_క్షేత్రం (before);
+  అక్షరం_రాయి ('"');
 
   /* Output the 'keyafter' field.  */
 
   fputs (" \"", stdout);
-  print_field (keyafter);
-  if (keyafter_truncation)
+  print_క్షేత్రం (keyafter);
+  ఒకవేళ (keyafter_truncation)
     fputs (truncation_string, stdout);
-  putchar ('"');
+  అక్షరం_రాయి ('"');
 
   /* Output the 'head' field.  */
 
   fputs (" \"", stdout);
-  if (head_truncation)
+  ఒకవేళ (తల_truncation)
     fputs (truncation_string, stdout);
-  print_field (head);
-  putchar ('"');
+  print_క్షేత్రం (తల);
+  అక్షరం_రాయి ('"');
 
   /* Conditionally output the 'reference' field.  */
 
-  if (auto_reference || input_reference)
+  ఒకవేళ (auto_reference || ఆదానం_reference)
     {
       fputs (" \"", stdout);
-      print_field (reference);
-      putchar ('"');
+      print_క్షేత్రం (reference);
+      అక్షరం_రాయి ('"');
     }
 
-  putchar ('\n');
+  అక్షరం_రాయి ('\n');
 }
 
 /*---------------------------------------------------------.
 | Output the current output fields as one line for 'TeX'.  |
 `---------------------------------------------------------*/
 
-static void
-output_one_tex_line (void)
+స్థిర శూన్య
+output_one_tex_పంక్తి (శూన్య)
 {
-  BLOCK key;			/* key field, isolated */
-  BLOCK after;			/* after field, isolated */
-  char *cursor;			/* running cursor in source text */
+  ఖండం_2 కీలకం;			/* key field, isolated */
+  ఖండం_2 after;			/* after field, isolated */
+  అక్షరం *cursor;			/* running cursor in source text */
 
-  printf ("\\%s ", macro_name);
-  putchar ('{');
-  print_field (tail);
+  రాయి ("\\%s ", macro_name);
+  అక్షరం_రాయి ('{');
+  print_క్షేత్రం (తోక);
   fputs ("}{", stdout);
-  print_field (before);
+  print_క్షేత్రం (before);
   fputs ("}{", stdout);
-  key.start = keyafter.start;
-  after.end = keyafter.end;
-  cursor = keyafter.start;
-  SKIP_SOMETHING (cursor, keyafter.end);
-  key.end = cursor;
-  after.start = cursor;
-  print_field (key);
+  కీలకం.ప్రారంభం = keyafter.ప్రారంభం;
+  after.చివర = keyafter.చివర;
+  cursor = keyafter.ప్రారంభం;
+  SKIP_SOMETHING (cursor, keyafter.చివర);
+  కీలకం.చివర = cursor;
+  after.ప్రారంభం = cursor;
+  print_క్షేత్రం (కీలకం);
   fputs ("}{", stdout);
-  print_field (after);
+  print_క్షేత్రం (after);
   fputs ("}{", stdout);
-  print_field (head);
-  putchar ('}');
-  if (auto_reference || input_reference)
+  print_క్షేత్రం (తల);
+  అక్షరం_రాయి ('}');
+  ఒకవేళ (auto_reference || ఆదానం_reference)
     {
-      putchar ('{');
-      print_field (reference);
-      putchar ('}');
+      అక్షరం_రాయి ('{');
+      print_క్షేత్రం (reference);
+      అక్షరం_రాయి ('}');
     }
-  putchar ('\n');
+  అక్షరం_రాయి ('\n');
 }
 
 /*-------------------------------------------------------------------.
 | Output the current output fields as one line for a dumb terminal.  |
 `-------------------------------------------------------------------*/
 
-static void
-output_one_dumb_line (void)
+స్థిర శూన్య
+output_one_dumb_పంక్తి (శూన్య)
 {
-  if (!right_reference)
+  ఒకవేళ (!కుడి_reference)
     {
-      if (auto_reference)
+      ఒకవేళ (auto_reference)
         {
 
           /* Output the 'reference' field, in such a way that GNU emacs
              next-error will handle it.  The ending colon is taken from the
              gap which follows.  */
 
-          print_field (reference);
-          putchar (':');
-          print_spaces (reference_max_width
-                        + gap_size
-                        - (reference.end - reference.start)
+          print_క్షేత్రం (reference);
+          అక్షరం_రాయి (':');
+          print_spaces (reference_max_వెడల్పు
+                        + gap_కొలత
+                        - (reference.చివర - reference.ప్రారంభం)
                         - 1);
         }
-      else
+      లేకపోతే
         {
 
           /* Output the 'reference' field and its following gap.  */
 
-          print_field (reference);
-          print_spaces (reference_max_width
-                        + gap_size
-                        - (reference.end - reference.start));
+          print_క్షేత్రం (reference);
+          print_spaces (reference_max_వెడల్పు
+                        + gap_కొలత
+                        - (reference.చివర - reference.ప్రారంభం));
         }
     }
 
-  if (tail.start < tail.end)
+  ఒకవేళ (తోక.ప్రారంభం < తోక.చివర)
     {
       /* Output the 'tail' field.  */
 
-      print_field (tail);
-      if (tail_truncation)
+      print_క్షేత్రం (తోక);
+      ఒకవేళ (తోక_truncation)
         fputs (truncation_string, stdout);
 
-      print_spaces (half_line_width - gap_size
-                    - (before.end - before.start)
-                    - (before_truncation ? truncation_string_length : 0)
-                    - (tail.end - tail.start)
-                    - (tail_truncation ? truncation_string_length : 0));
+      print_spaces (half_పంక్తి_వెడల్పు - gap_కొలత
+                    - (before.చివర - before.ప్రారంభం)
+                    - (before_truncation ? truncation_string_నిడివి : 0)
+                    - (తోక.చివర - తోక.ప్రారంభం)
+                    - (తోక_truncation ? truncation_string_నిడివి : 0));
     }
-  else
-    print_spaces (half_line_width - gap_size
-                  - (before.end - before.start)
-                  - (before_truncation ? truncation_string_length : 0));
+  లేకపోతే
+    print_spaces (half_పంక్తి_వెడల్పు - gap_కొలత
+                  - (before.చివర - before.ప్రారంభం)
+                  - (before_truncation ? truncation_string_నిడివి : 0));
 
   /* Output the 'before' field.  */
 
-  if (before_truncation)
+  ఒకవేళ (before_truncation)
     fputs (truncation_string, stdout);
-  print_field (before);
+  print_క్షేత్రం (before);
 
-  print_spaces (gap_size);
+  print_spaces (gap_కొలత);
 
   /* Output the 'keyafter' field.  */
 
-  print_field (keyafter);
-  if (keyafter_truncation)
+  print_క్షేత్రం (keyafter);
+  ఒకవేళ (keyafter_truncation)
     fputs (truncation_string, stdout);
 
-  if (head.start < head.end)
+  ఒకవేళ (తల.ప్రారంభం < తల.చివర)
     {
       /* Output the 'head' field.  */
 
-      print_spaces (half_line_width
-                    - (keyafter.end - keyafter.start)
-                    - (keyafter_truncation ? truncation_string_length : 0)
-                    - (head.end - head.start)
-                    - (head_truncation ? truncation_string_length : 0));
-      if (head_truncation)
+      print_spaces (half_పంక్తి_వెడల్పు
+                    - (keyafter.చివర - keyafter.ప్రారంభం)
+                    - (keyafter_truncation ? truncation_string_నిడివి : 0)
+                    - (తల.చివర - తల.ప్రారంభం)
+                    - (తల_truncation ? truncation_string_నిడివి : 0));
+      ఒకవేళ (తల_truncation)
         fputs (truncation_string, stdout);
-      print_field (head);
+      print_క్షేత్రం (తల);
     }
-  else
+  లేకపోతే
 
-    if ((auto_reference || input_reference) && right_reference)
-      print_spaces (half_line_width
-                    - (keyafter.end - keyafter.start)
-                    - (keyafter_truncation ? truncation_string_length : 0));
+    ఒకవేళ ((auto_reference || ఆదానం_reference) && కుడి_reference)
+      print_spaces (half_పంక్తి_వెడల్పు
+                    - (keyafter.చివర - keyafter.ప్రారంభం)
+                    - (keyafter_truncation ? truncation_string_నిడివి : 0));
 
-  if ((auto_reference || input_reference) && right_reference)
+  ఒకవేళ ((auto_reference || ఆదానం_reference) && కుడి_reference)
     {
       /* Output the 'reference' field.  */
 
-      print_spaces (gap_size);
-      print_field (reference);
+      print_spaces (gap_కొలత);
+      print_క్షేత్రం (reference);
     }
 
-  putchar ('\n');
+  అక్షరం_రాయి ('\n');
 }
 
 /*------------------------------------------------------------------------.
@@ -1605,8 +1605,8 @@ output_one_dumb_line (void)
 | appropriate format.							  |
 `------------------------------------------------------------------------*/
 
-static void
-generate_all_output (void)
+స్థిర శూన్య
+generate_all_output (శూన్య)
 {
   OCCURS *occurs_cursor;	/* current keyword entry being processed */
 
@@ -1614,20 +1614,20 @@ generate_all_output (void)
      line contexts or references are not used, in which case these variables
      would never be computed.  */
 
-  tail.start = NULL;
-  tail.end = NULL;
-  tail_truncation = false;
+  తోక.ప్రారంభం = ఖాళీ;
+  తోక.చివర = ఖాళీ;
+  తోక_truncation = false;
 
-  head.start = NULL;
-  head.end = NULL;
-  head_truncation = false;
+  తల.ప్రారంభం = ఖాళీ;
+  తల.చివర = ఖాళీ;
+  తల_truncation = false;
 
   /* Loop over all keyword occurrences.  */
 
-  occurs_cursor = occurs_table[0];
+  occurs_cursor = occurs_పట్టిక[0];
 
-  for (idx_t occurs_index = 0; occurs_index < number_of_occurs[0];
-       occurs_index++)
+  కొరకు (idx_t occurs_సూచీ = 0; occurs_సూచీ < సంఖ్య_యొక్క_occurs[0];
+       occurs_సూచీ++)
     {
       /* Compute the exact size of every field and whenever truncation flags
          are present or not.  */
@@ -1636,22 +1636,22 @@ generate_all_output (void)
 
       /* Produce one output line according to selected format.  */
 
-      switch (output_format)
+      ఎంపిక (output_format)
         {
-        case UNKNOWN_FORMAT:
+        స్థితి UNKNOWN_FORMAT:
           /* Should never happen.  */
 
-        case DUMB_FORMAT:
-          output_one_dumb_line ();
-          break;
+        స్థితి DUMB_FORMAT:
+          output_one_dumb_పంక్తి ();
+          ఆపు;
 
-        case ROFF_FORMAT:
-          output_one_roff_line ();
-          break;
+        స్థితి ROFF_FORMAT:
+          output_one_roff_పంక్తి ();
+          ఆపు;
 
-        case TEX_FORMAT:
-          output_one_tex_line ();
-          break;
+        స్థితి TEX_FORMAT:
+          output_one_tex_పంక్తి ();
+          ఆపు;
         }
 
       /* Advance the cursor into the occurs table.  */
@@ -1666,81 +1666,81 @@ generate_all_output (void)
 | Print program identification and options, then exit.  |
 `------------------------------------------------------*/
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("\
-Usage: %s [OPTION]... [INPUT]...   (without -G)\n\
-  or:  %s -G [OPTION]... [INPUT [OUTPUT]]\n"),
-              program_name, program_name);
+      రాయి (_("\
+Usage: %s [OPTION]... [ఆదానం_2]...   (without -G)\n\
+  or:  %s -G [OPTION]... [ఆదానం_2 [OUTPUT]]\n"),
+              కార్యక్రమం_name, కార్యక్రమం_name);
       fputs (_("\
-Output a permuted index, including context, of the words in the input files.\n\
+Output a permuted index, including context, యొక్క the పదాలు లోపల the ఆదానం files.\n\
 "), stdout);
 
       emit_stdin_note ();
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -A, --auto-reference           output automatically generated references\n\
+  -A, --స్వయంచాలక-reference           output automatically generated references\n\
 "));
       oputs (_("\
-  -G, --traditional              behave more like System V 'ptx'\n\
+  -G, --traditional              behave మరిన్ని like System V 'ptx'\n\
 "));
       oputs (_("\
-  -F, --flag-truncation=STRING   use STRING for flagging line truncations.\n\
-                                 The default is '/'\n\
+  -F, --flag-truncation=STRING   use STRING కొరకు flagging పంక్తి truncations.\n\
+                                 The అప్రమేయ is '/'\n\
 "));
       oputs (_("\
-  -M, --macro-name=STRING        macro name to use instead of 'xx'\n\
+  -M, --macro-name=STRING        macro name గమ్యం use instead యొక్క 'xx'\n\
 "));
       oputs (_("\
   -O, --format=roff              generate output as roff directives\n\
 "));
       oputs (_("\
-  -R, --right-side-refs          put references at right, not counted in -w\n\
+  -R, --కుడి-side-refs          put references at కుడి, not counted లోపల -w\n\
 "));
       oputs (_("\
-  -S, --sentence-regexp=REGEXP   for end of lines or end of sentences\n\
+  -S, --sentence-regexp=REGEXP   కొరకు చివర యొక్క పంక్తులు or చివర యొక్క sentences\n\
 "));
       oputs (_("\
   -T, --format=tex               generate output as TeX directives\n\
 "));
       oputs (_("\
-  -W, --word-regexp=REGEXP       use REGEXP to match each keyword\n\
+  -W, --మాట_2-regexp=REGEXP       use REGEXP గమ్యం సరిపోలిక each keyword\n\
 "));
       oputs (_("\
-  -b, --break-file=FILE          word break characters in this FILE\n\
+  -b, --ఆపు-file=FILE          మాట_2 ఆపు characters లోపల this FILE\n\
 "));
       oputs (_("\
-  -f, --ignore-case              fold lower case to upper case for sorting\n\
+  -f, --ignore-స్థితి              fold క్రింది స్థితి గమ్యం పై స్థితి కొరకు క్రమీకరణ\n\
 "));
       oputs (_("\
-  -g, --gap-size=NUMBER          gap size in columns between output fields\n\
+  -g, --gap-కొలత=సంఖ్య_2          gap కొలత లోపల columns between output fields\n\
 "));
       oputs (_("\
-  -i, --ignore-file=FILE         read ignore word list from FILE\n\
+  -i, --ignore-file=FILE         పఠ ignore మాట_2 list from FILE\n\
 "));
       oputs (_("\
-  -o, --only-file=FILE           read only word list from this FILE\n\
+  -o, --only-file=FILE           పఠ only మాట_2 list from this FILE\n\
 "));
       oputs (_("\
-  -r, --references               first field of each line is a reference\n\
+  -r, --references               మొదటి క్షేత్రం యొక్క each పంక్తి is a reference\n\
 "));
       oputs (_("\
-  -t, --typeset-mode             change the default width from 72 to 100\n\
+  -t, --typeset-బహుళకం_2             change the అప్రమేయ వెడల్పు from 72 గమ్యం 100\n\
 "));
       oputs (_("\
-  -w, --width=NUMBER             output width in columns, reference excluded\n\
+  -w, --వెడల్పు=సంఖ్య_2             output వెడల్పు లోపల columns, reference excluded\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
 /*----------------------------------------------------------------------.
@@ -1750,230 +1750,230 @@ Output a permuted index, including context, of the words in the input files.\n\
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+గణన
 {
   FORMAT_OPTION = CHAR_MAX + 1
 };
 
 /* Long options equivalences.  */
-static struct option const long_options[] =
+స్థిర నిర్మాణం option స్థిరరాశి long_options[] =
 {
-  {"auto-reference", no_argument, NULL, 'A'},
-  {"break-file", required_argument, NULL, 'b'},
-  {"flag-truncation", required_argument, NULL, 'F'},
-  {"ignore-case", no_argument, NULL, 'f'},
-  {"gap-size", required_argument, NULL, 'g'},
-  {"ignore-file", required_argument, NULL, 'i'},
-  {"macro-name", required_argument, NULL, 'M'},
-  {"only-file", required_argument, NULL, 'o'},
-  {"references", no_argument, NULL, 'r'},
-  {"right-side-refs", no_argument, NULL, 'R'},
-  {"format", required_argument, NULL, FORMAT_OPTION},
-  {"sentence-regexp", required_argument, NULL, 'S'},
-  {"traditional", no_argument, NULL, 'G'},
-  {"typeset-mode", no_argument, NULL, 't'},
-  {"width", required_argument, NULL, 'w'},
-  {"word-regexp", required_argument, NULL, 'W'},
+  {"auto-reference", no_వాదం, ఖాళీ, 'A'},
+  {"break-file", required_వాదం, ఖాళీ, 'b'},
+  {"flag-truncation", required_వాదం, ఖాళీ, 'F'},
+  {"ignore-case", no_వాదం, ఖాళీ, 'f'},
+  {"gap-size", required_వాదం, ఖాళీ, 'g'},
+  {"ignore-file", required_వాదం, ఖాళీ, 'i'},
+  {"macro-name", required_వాదం, ఖాళీ, 'M'},
+  {"only-file", required_వాదం, ఖాళీ, 'o'},
+  {"references", no_వాదం, ఖాళీ, 'r'},
+  {"right-side-refs", no_వాదం, ఖాళీ, 'R'},
+  {"format", required_వాదం, ఖాళీ, FORMAT_OPTION},
+  {"sentence-regexp", required_వాదం, ఖాళీ, 'S'},
+  {"traditional", no_వాదం, ఖాళీ, 'G'},
+  {"typeset-mode", no_వాదం, ఖాళీ, 't'},
+  {"width", required_వాదం, ఖాళీ, 'w'},
+  {"word-regexp", required_వాదం, ఖాళీ, 'W'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0},
+  {GETOPT_సంస్కరణ_OPTION_DECL},
+  {ఖాళీ, 0, ఖాళీ, 0},
 };
 
-static char const *const format_args[] =
+స్థిర అక్షరం స్థిరరాశి *స్థిరరాశి format_వాదనలు[] =
 {
-  "roff", "tex", NULL
+  "roff", "tex", ఖాళీ
 };
 
-static enum Format const format_vals[] =
+స్థిర గణన Format స్థిరరాశి format_vals[] =
 {
   ROFF_FORMAT, TEX_FORMAT
 };
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
-  int optchar;			/* argument character */
-  int file_index;		/* index in text input file arrays */
+  పూర్ణాంకం optchar;			/* argument character */
+  పూర్ణాంకం file_సూచీ;		/* index in text input file arrays */
 
   /* Decode program options.  */
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while (optchar = getopt_long (argc, argv, "AF:GM:ORS:TW:b:i:fg:o:trw:",
-                                long_options, NULL),
+  అయితే (optchar = getopt_long (argc, argv, "AF:GM:ORS:TW:b:i:fg:o:trw:",
+                                long_options, ఖాళీ),
          optchar != EOF)
     {
-      switch (optchar)
+      ఎంపిక (optchar)
         {
-        default:
+        అప్రమేయ:
           usage (EXIT_FAILURE);
 
-        case 'G':
+        స్థితి 'G':
           gnu_extensions = false;
-          break;
+          ఆపు;
 
-        case 'b':
+        స్థితి 'b':
           break_file = optarg;
-          break;
+          ఆపు;
 
-        case 'f':
+        స్థితి 'f':
           ignore_case = true;
-          break;
+          ఆపు;
 
-        case 'g':
+        స్థితి 'g':
           {
             intmax_t tmp;
-            if (! (xstrtoimax (optarg, NULL, 0, &tmp, "") == LONGINT_OK
+            ఒకవేళ (! (xstrtoimax (optarg, ఖాళీ, 0, &tmp, "") == LONGINT_OK
                    && 0 < tmp && tmp <= IDX_MAX))
               error (EXIT_FAILURE, 0, _("invalid gap width: %s"),
                      quote (optarg));
-            gap_size = tmp;
-            break;
+            gap_కొలత = tmp;
+            ఆపు;
           }
 
-        case 'i':
+        స్థితి 'i':
           ignore_file = optarg;
-          break;
+          ఆపు;
 
-        case 'o':
+        స్థితి 'o':
           only_file = optarg;
-          break;
+          ఆపు;
 
-        case 'r':
-          input_reference = true;
-          break;
+        స్థితి 'r':
+          ఆదానం_reference = true;
+          ఆపు;
 
-        case 't':
-          if (line_width < 0)
-            line_width = 100;
-          break;
+        స్థితి 't':
+          ఒకవేళ (పంక్తి_వెడల్పు < 0)
+            పంక్తి_వెడల్పు = 100;
+          ఆపు;
 
-        case 'w':
+        స్థితి 'w':
           {
             intmax_t tmp;
-            if (! (xstrtoimax (optarg, NULL, 0, &tmp, "") == LONGINT_OK
+            ఒకవేళ (! (xstrtoimax (optarg, ఖాళీ, 0, &tmp, "") == LONGINT_OK
                    && 0 < tmp && tmp <= IDX_MAX))
               error (EXIT_FAILURE, 0, _("invalid line width: %s"),
                      quote (optarg));
-            line_width = tmp;
-            break;
+            పంక్తి_వెడల్పు = tmp;
+            ఆపు;
           }
 
-        case 'A':
+        స్థితి 'A':
           auto_reference = true;
-          break;
+          ఆపు;
 
-        case 'F':
+        స్థితి 'F':
           truncation_string = optarg;
           unescape_string (optarg);
-          break;
+          ఆపు;
 
-        case 'M':
+        స్థితి 'M':
           macro_name = optarg;
-          break;
+          ఆపు;
 
-        case 'O':
+        స్థితి 'O':
           output_format = ROFF_FORMAT;
-          break;
+          ఆపు;
 
-        case 'R':
-          right_reference = true;
-          break;
+        స్థితి 'R':
+          కుడి_reference = true;
+          ఆపు;
 
-        case 'S':
+        స్థితి 'S':
           context_regex.string = optarg;
           unescape_string (optarg);
-          break;
+          ఆపు;
 
-        case 'T':
+        స్థితి 'T':
           output_format = TEX_FORMAT;
-          break;
+          ఆపు;
 
-        case 'W':
-          word_regex.string = optarg;
+        స్థితి 'W':
+          మాట_regex.string = optarg;
           unescape_string (optarg);
-          if (!*word_regex.string)
-            word_regex.string = NULL;
-          break;
+          ఒకవేళ (!*మాట_regex.string)
+            మాట_regex.string = ఖాళీ;
+          ఆపు;
 
-        case FORMAT_OPTION:
+        స్థితి FORMAT_OPTION:
           output_format = XARGMATCH ("--format", optarg,
-                                     format_args, format_vals);
-          break;
+                                     format_వాదనలు, format_vals);
+          ఆపు;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_సంస్కరణ_CHAR (కార్యక్రమం_NAME, AUTHORS);
         }
     }
 
-  if (line_width < 0)
-    line_width = 72;
+  ఒకవేళ (పంక్తి_వెడల్పు < 0)
+    పంక్తి_వెడల్పు = 72;
 
   /* Process remaining arguments.  If GNU extensions are enabled, process
      all arguments as input parameters.  If disabled, accept at most two
      arguments, the second of which is an output parameter.  */
 
-  if (optind == argc)
+  ఒకవేళ (optind == argc)
     {
 
       /* No more argument simply means: read standard input.  */
 
-      input_file_name = xmalloc (sizeof *input_file_name);
-      file_line_count = xmalloc (sizeof *file_line_count);
-      text_buffers =    xmalloc (sizeof *text_buffers);
-      number_input_files = 1;
-      input_file_name[0] = NULL;
+      ఆదానం_file_name = xmalloc (పరిమాణం *ఆదానం_file_name);
+      file_పంక్తి_లెక్క = xmalloc (పరిమాణం *file_పంక్తి_లెక్క);
+      పాఠ్యం_buffers =    xmalloc (పరిమాణం *పాఠ్యం_buffers);
+      సంఖ్య_ఆదానం_files = 1;
+      ఆదానం_file_name[0] = ఖాళీ;
     }
-  else if (gnu_extensions)
+  లేకపోతే ఒకవేళ (gnu_extensions)
     {
-      number_input_files = argc - optind;
-      input_file_name = xnmalloc (number_input_files, sizeof *input_file_name);
-      file_line_count = xnmalloc (number_input_files, sizeof *file_line_count);
-      text_buffers    = xnmalloc (number_input_files, sizeof *text_buffers);
+      సంఖ్య_ఆదానం_files = argc - optind;
+      ఆదానం_file_name = xnmalloc (సంఖ్య_ఆదానం_files, పరిమాణం *ఆదానం_file_name);
+      file_పంక్తి_లెక్క = xnmalloc (సంఖ్య_ఆదానం_files, పరిమాణం *file_పంక్తి_లెక్క);
+      పాఠ్యం_buffers    = xnmalloc (సంఖ్య_ఆదానం_files, పరిమాణం *పాఠ్యం_buffers);
 
-      for (file_index = 0; file_index < number_input_files; file_index++)
+      కొరకు (file_సూచీ = 0; file_సూచీ < సంఖ్య_ఆదానం_files; file_సూచీ++)
         {
-          if (!*argv[optind] || streq (argv[optind], "-"))
-            input_file_name[file_index] = NULL;
-          else
-            input_file_name[file_index] = argv[optind];
+          ఒకవేళ (!*argv[optind] || streq (argv[optind], "-"))
+            ఆదానం_file_name[file_సూచీ] = ఖాళీ;
+          లేకపోతే
+            ఆదానం_file_name[file_సూచీ] = argv[optind];
           optind++;
         }
     }
-  else
+  లేకపోతే
     {
 
       /* There is one necessary input file.  */
 
-      number_input_files = 1;
-      input_file_name = xmalloc (sizeof *input_file_name);
-      file_line_count = xmalloc (sizeof *file_line_count);
-      text_buffers    = xmalloc (sizeof *text_buffers);
-      if (!*argv[optind] || streq (argv[optind], "-"))
-        input_file_name[0] = NULL;
-      else
-        input_file_name[0] = argv[optind];
+      సంఖ్య_ఆదానం_files = 1;
+      ఆదానం_file_name = xmalloc (పరిమాణం *ఆదానం_file_name);
+      file_పంక్తి_లెక్క = xmalloc (పరిమాణం *file_పంక్తి_లెక్క);
+      పాఠ్యం_buffers    = xmalloc (పరిమాణం *పాఠ్యం_buffers);
+      ఒకవేళ (!*argv[optind] || streq (argv[optind], "-"))
+        ఆదానం_file_name[0] = ఖాళీ;
+      లేకపోతే
+        ఆదానం_file_name[0] = argv[optind];
       optind++;
 
       /* Redirect standard output, only if requested.  */
 
-      if (optind < argc)
+      ఒకవేళ (optind < argc)
         {
-          if (! freopen (argv[optind], "w", stdout))
+          ఒకవేళ (! freopen (argv[optind], "w", stdout))
             error (EXIT_FAILURE, errno, "%s", quotef (argv[optind]));
           optind++;
         }
 
       /* Diagnose any other argument as an error.  */
 
-      if (optind < argc)
+      ఒకవేళ (optind < argc)
         {
           error (0, 0, _("extra operand %s"), quote (argv[optind]));
           usage (EXIT_FAILURE);
@@ -1983,7 +1983,7 @@ main (int argc, char **argv)
   /* If the output format has not been explicitly selected, choose dumb
      terminal format if GNU extensions are enabled, else 'roff' format.  */
 
-  if (output_format == UNKNOWN_FORMAT)
+  ఒకవేళ (output_format == UNKNOWN_FORMAT)
     output_format = gnu_extensions ? DUMB_FORMAT : ROFF_FORMAT;
 
   /* Initialize the main tables.  */
@@ -1992,58 +1992,58 @@ main (int argc, char **argv)
 
   /* Read 'Break character' file, if any.  */
 
-  if (break_file)
+  ఒకవేళ (break_file)
     digest_break_file (break_file);
 
   /* Read 'Ignore words' file and 'Only words' files, if any.  If any of
      these files is empty, reset the name of the file to null, to avoid
      unnecessary calls to search_table. */
 
-  if (ignore_file)
+  ఒకవేళ (ignore_file)
     {
-      digest_word_file (ignore_file, &ignore_table);
-      if (ignore_table.length == 0)
-        ignore_file = NULL;
+      digest_మాట_file (ignore_file, &ignore_పట్టిక);
+      ఒకవేళ (ignore_పట్టిక.నిడివి == 0)
+        ignore_file = ఖాళీ;
     }
 
-  if (only_file)
+  ఒకవేళ (only_file)
     {
-      digest_word_file (only_file, &only_table);
-      if (only_table.length == 0)
-        only_file = NULL;
+      digest_మాట_file (only_file, &only_పట్టిక);
+      ఒకవేళ (only_పట్టిక.నిడివి == 0)
+        only_file = ఖాళీ;
     }
 
   /* Prepare to study all the input files.  */
 
-  number_of_occurs[0] = 0;
-  total_line_count = 0;
-  maximum_word_length = 0;
-  reference_max_width = 0;
+  సంఖ్య_యొక్క_occurs[0] = 0;
+  మొత్తం_పంక్తి_లెక్క = 0;
+  గరిష్ఠ_మాట_నిడివి = 0;
+  reference_max_వెడల్పు = 0;
 
-  for (file_index = 0; file_index < number_input_files; file_index++)
+  కొరకు (file_సూచీ = 0; file_సూచీ < సంఖ్య_ఆదానం_files; file_సూచీ++)
     {
-      BLOCK *text_buffer = text_buffers + file_index;
+      ఖండం_2 *పాఠ్యం_బఫరు = పాఠ్యం_buffers + file_సూచీ;
 
       /* Read the file contents into memory, then study it.  */
 
-      swallow_file_in_memory (input_file_name[file_index], text_buffer);
-      find_occurs_in_text (file_index);
+      swallow_file_లోపల_జ్ఞాపకం (ఆదానం_file_name[file_సూచీ], పాఠ్యం_బఫరు);
+      కనుగొను_occurs_లోపల_పాఠ్యం (file_సూచీ);
 
       /* Maintain for each file how many lines has been read so far when its
          end is reached.  Incrementing the count first is a simple kludge to
          handle a possible incomplete line at end of file.  */
 
-      total_line_count++;
-      file_line_count[file_index] = total_line_count;
+      మొత్తం_పంక్తి_లెక్క++;
+      file_పంక్తి_లెక్క[file_సూచీ] = మొత్తం_పంక్తి_లెక్క;
     }
 
   /* Do the output process phase.  */
 
-  sort_found_occurs ();
+  క్రమీకరించు_దొరికింది_occurs ();
   fix_output_parameters ();
   generate_all_output ();
 
   /* All done.  */
 
-  return EXIT_SUCCESS;
+  తిరిగి EXIT_SUCCESS;
 }

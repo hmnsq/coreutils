@@ -32,47 +32,47 @@
 
    David MacKenzie <djm@gnu.ai.mit.edu> */
 
-#include <config.h>
+#అన్తర్భావ <config.h>
 
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#అన్తర్భావ <stdio.h>
+#అన్తర్భావ <getopt.h>
+#అన్తర్భావ <sys/types.h>
 
-#include "system.h"
-#include "ioblksize.h"
-#include "mcel.h"
-#include "mbbuf.h"
-#include "expand-common.h"
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "ioblksize.h"
+#అన్తర్భావ "mcel.h"
+#అన్తర్భావ "mbbuf.h"
+#అన్తర్భావ "expand-common.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "expand"
+#నిర్వచించు కార్యక్రమం_NAME "expand"
 
-#define AUTHORS proper_name ("David MacKenzie")
+#నిర్వచించు AUTHORS proper_name ("David MacKenzie")
 
-static char const shortopts[] = "it:0::1::2::3::4::5::6::7::8::9::";
+స్థిర అక్షరం స్థిరరాశి shortopts[] = "it:0::1::2::3::4::5::6::7::8::9::";
 
-static struct option const longopts[] =
+స్థిర నిర్మాణం option స్థిరరాశి longopts[] =
 {
-  {"tabs", required_argument, NULL, 't'},
-  {"initial", no_argument, NULL, 'i'},
+  {"tabs", required_వాదం, ఖాళీ, 't'},
+  {"initial", no_వాదం, ఖాళీ, 'i'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_సంస్కరణ_OPTION_DECL},
+  {ఖాళీ, 0, ఖాళీ, 0}
 };
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("\
+      రాయి (_("\
 Usage: %s [OPTION]... [FILE]...\n\
 "),
-              program_name);
+              కార్యక్రమం_name);
       fputs (_("\
-Convert tabs in each FILE to spaces, writing to standard output.\n\
+Convert tabs లోపల each FILE గమ్యం spaces, writing గమ్యం standard output.\n\
 "), stdout);
 
       emit_stdin_note ();
@@ -80,38 +80,38 @@ Convert tabs in each FILE to spaces, writing to standard output.\n\
 
       oputs (_("\
   -i, --initial\n\
-         do not convert tabs after non blanks\n\
+         చేయి not convert tabs after non blanks\n\
 "));
       oputs (_("\
   -t, --tabs=N\n\
          have tabs N characters apart, not 8\n\
 "));
-      emit_tab_list_info (PROGRAM_NAME);
+      emit_tab_list_info (కార్యక్రమం_NAME);
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
 
 /* Change tabs to spaces, writing to stdout.
    Read each file in 'file_list', in order.  */
 
-static void
-expand (void)
+స్థిర శూన్య
+expand (శూన్య)
 {
   /* Input stream.  */
-  FILE *fp = next_file (NULL);
+  FILE *fp = తదుపరి_file (ఖాళీ);
 
-  if (!fp)
-    return;
+  ఒకవేళ (!fp)
+    తిరిగి;
 
-  static char line_in[IO_BUFSIZE];
+  స్థిర అక్షరం పంక్తి_లోపల[IO_BUFSIZE];
   mbbuf_t mbbuf;
-  mbbuf_init (&mbbuf, line_in, sizeof line_in, fp);
+  mbbuf_init (&mbbuf, పంక్తి_లోపల, పరిమాణం పంక్తి_లోపల, fp);
 
-  while (true)
+  అయితే (true)
     {
       /* Input character, or EOF.  */
       mcel_t g;
@@ -124,122 +124,122 @@ expand (void)
          is true:  */
 
       /* Column of next input character.  */
-      colno column = 0;
+      colno స్తంభం = 0;
 
       /* Index in TAB_LIST of next tab stop to examine.  */
-      idx_t tab_index = 0;
+      idx_t tab_సూచీ = 0;
 
 
       /* Convert a line of text.  */
 
-      do
+      చేయి
         {
-          while ((g = mbbuf_get_char (&mbbuf)).ch == MBBUF_EOF
-                 && (fp = next_file (fp)))
-            mbbuf_init (&mbbuf, line_in, sizeof line_in, fp);
+          అయితే ((g = mbbuf_get_char (&mbbuf)).ch == MBBUF_EOF
+                 && (fp = తదుపరి_file (fp)))
+            mbbuf_init (&mbbuf, పంక్తి_లోపల, పరిమాణం పంక్తి_లోపల, fp);
 
-          if (convert)
+          ఒకవేళ (convert)
             {
-              convert &= convert_entire_line || c32issep (g.ch);
+              convert &= convert_entire_పంక్తి || c32issep (g.ch);
 
-              if (g.ch == '\t')
+              ఒకవేళ (g.ch == '\t')
                 {
                   /* Column the next input tab stop is on.  */
-                  bool last_tab;
-                  colno next_tab_column
-                    = get_next_tab_column (column, &tab_index, &last_tab);
+                  bool చివరి_tab;
+                  colno తదుపరి_tab_స్తంభం
+                    = get_తదుపరి_tab_స్తంభం (స్తంభం, &tab_సూచీ, &చివరి_tab);
 
-                  while (++column < next_tab_column)
-                    if (putchar (' ') < 0)
+                  అయితే (++స్తంభం < తదుపరి_tab_స్తంభం)
+                    ఒకవేళ (అక్షరం_రాయి (' ') < 0)
                       write_error ();
 
-                  if (putchar (' ') < 0)
+                  ఒకవేళ (అక్షరం_రాయి (' ') < 0)
                     write_error ();
 
-                  continue;
+                  కొనసాగు;
                 }
-              else if (g.ch == '\b')
+              లేకపోతే ఒకవేళ (g.ch == '\b')
                 {
                   /* Go back one column, and force recalculation of the
                      next tab stop.  */
-                  column -= !!column;
-                  tab_index -= !!tab_index;
+                  స్తంభం -= !!స్తంభం;
+                  tab_సూచీ -= !!tab_సూచీ;
                 }
-              else
+              లేకపోతే
                 {
-                  int width = c32width (g.ch);
-                  if (ckd_add (&column, column, width < 0 ? 1 : width))
+                  పూర్ణాంకం వెడల్పు = c32width (g.ch);
+                  ఒకవేళ (ckd_కూడు (&స్తంభం, స్తంభం, వెడల్పు < 0 ? 1 : వెడల్పు))
                     error (EXIT_FAILURE, 0, _("input line is too long"));
                 }
 
             }
 
-          if (g.ch == MBBUF_EOF)
-            return;
+          ఒకవేళ (g.ch == MBBUF_EOF)
+            తిరిగి;
 
-          fwrite (mbbuf_char_offset (&mbbuf, g), sizeof (char), g.len, stdout);
-          if (ferror (stdout))
+          fwrite (mbbuf_char_స్థానభ్రంశం (&mbbuf, g), పరిమాణం (అక్షరం), g.len, stdout);
+          ఒకవేళ (ferror (stdout))
             write_error ();
         }
-      while (g.ch != '\n');
+      అయితే (g.ch != '\n');
     }
 }
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
-  int c;
+  పూర్ణాంకం c;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
-  convert_entire_line = true;
+  convert_entire_పంక్తి = true;
 
-  while ((c = getopt_long (argc, argv, shortopts, longopts, NULL)) != -1)
+  అయితే ((c = getopt_long (argc, argv, shortopts, longopts, ఖాళీ)) != -1)
     {
-      switch (c)
+      ఎంపిక (c)
         {
-        case 'i':
-          convert_entire_line = false;
-          break;
+        స్థితి 'i':
+          convert_entire_పంక్తి = false;
+          ఆపు;
 
-        case 't':
+        స్థితి 't':
           parse_tab_stops (optarg);
-          break;
+          ఆపు;
 
-        case '0': case '1': case '2': case '3': case '4':
-        case '5': case '6': case '7': case '8': case '9':
-          if (optarg)
+        స్థితి '0': స్థితి '1': స్థితి '2': స్థితి '3': స్థితి '4':
+        స్థితి '5': స్థితి '6': స్థితి '7': స్థితి '8': స్థితి '9':
+          ఒకవేళ (optarg)
             parse_tab_stops (optarg - 1);
-          else
+          లేకపోతే
             {
-              char tab_stop[2];
+              అక్షరం tab_stop[2];
               tab_stop[0] = c;
               tab_stop[1] = '\0';
               parse_tab_stops (tab_stop);
             }
-          break;
+          ఆపు;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_సంస్కరణ_CHAR (కార్యక్రమం_NAME, AUTHORS);
 
-        default:
+        అప్రమేయ:
           usage (EXIT_FAILURE);
         }
     }
 
   finalize_tab_stops ();
 
-  set_file_list (optind < argc ? &argv[optind] : NULL);
+  సమితి_file_list (optind < argc ? &argv[optind] : ఖాళీ);
 
   expand ();
 
   cleanup_file_list_stdin ();
 
-  return exit_status;
+  తిరిగి exit_స్థితి;
 }

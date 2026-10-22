@@ -16,19 +16,19 @@
 
 /* Written by Daniel Walsh <dwalsh@redhat.com> */
 
-#include <config.h>
-#include <selinux/label.h>
-#include <selinux/context.h>
-#include <sys/types.h>
+#అన్తర్భావ <config.h>
+#అన్తర్భావ <selinux/label.h>
+#అన్తర్భావ <selinux/context.h>
+#అన్తర్భావ <sys/types.h>
 
-#include "system.h"
-#include "canonicalize.h"
-#include "xfts.h"
-#include "selinux.h"
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "canonicalize.h"
+#అన్తర్భావ "xfts.h"
+#అన్తర్భావ "selinux.h"
 
-#if HAVE_SELINUX_LABEL_H
+#ఒకవేళ HAVE_SELINUX_LABEL_H
 
-# if ! HAVE_MODE_TO_SECURITY_CLASS
+# ఒకవేళ ! HAVE_బహుళకం_గమ్యం_SECURITY_CLASS
 /*
   This function has been added to libselinux-2.1.12-5, but is here
   for support with older versions of SELinux
@@ -36,27 +36,27 @@
   Translates a mode into an Internal SELinux security_class definition.
   Returns 0 on failure, with errno set to EINVAL.
 */
-static security_class_t
-mode_to_security_class (mode_t m)
+స్థిర security_class_t
+బహుళకం_గమ్యం_security_class (mode_t m)
 {
 
-  if (S_ISREG (m))
-    return string_to_security_class ("file");
-  if (S_ISDIR (m))
-    return string_to_security_class ("dir");
-  if (S_ISCHR (m))
-    return string_to_security_class ("chr_file");
-  if (S_ISBLK (m))
-    return string_to_security_class ("blk_file");
-  if (S_ISFIFO (m))
-    return string_to_security_class ("fifo_file");
-  if (S_ISLNK (m))
-    return string_to_security_class ("lnk_file");
-  if (S_ISSOCK (m))
-    return string_to_security_class ("sock_file");
+  ఒకవేళ (S_ISREG (m))
+    తిరిగి string_గమ్యం_security_class ("file");
+  ఒకవేళ (S_ISDIR (m))
+    తిరిగి string_గమ్యం_security_class ("dir");
+  ఒకవేళ (S_ISCHR (m))
+    తిరిగి string_గమ్యం_security_class ("chr_file");
+  ఒకవేళ (S_ISBLK (m))
+    తిరిగి string_గమ్యం_security_class ("blk_file");
+  ఒకవేళ (S_ISFIFO (m))
+    తిరిగి string_గమ్యం_security_class ("fifo_file");
+  ఒకవేళ (S_ISLNK (m))
+    తిరిగి string_గమ్యం_security_class ("lnk_file");
+  ఒకవేళ (S_ISSOCK (m))
+    తిరిగి string_గమ్యం_security_class ("sock_file");
 
   errno = EINVAL;
-  return 0;
+  తిరిగి 0;
 }
 # endif
 
@@ -68,33 +68,33 @@ mode_to_security_class (mode_t m)
   Returns -1 on failure.  errno will be set appropriately.
 */
 
-static int
-computecon_raw (char const *path, mode_t mode, char **con)
+స్థిర పూర్ణాంకం
+computecon_raw (అక్షరం స్థిరరాశి *మార్గం, mode_t బహుళకం_2, అక్షరం **con)
 {
-  char *scon_raw = NULL;
-  char *tcon_raw = NULL;
+  అక్షరం *scon_raw = ఖాళీ;
+  అక్షరం *tcon_raw = ఖాళీ;
   security_class_t tclass;
-  int rc = -1;
+  పూర్ణాంకం rc = -1;
 
-  char *dir = dir_name (path);
-  if (!dir)
-    goto quit;
-  if (getcon_raw (&scon_raw) < 0)
-    goto quit;
-  if (getfilecon_raw (dir, &tcon_raw) < 0)
-    goto quit;
-  tclass = mode_to_security_class (mode);
-  if (!tclass)
-    goto quit;
+  అక్షరం *dir = dir_name (మార్గం);
+  ఒకవేళ (!dir)
+    వెళ్ళు quit;
+  ఒకవేళ (getcon_raw (&scon_raw) < 0)
+    వెళ్ళు quit;
+  ఒకవేళ (getfilecon_raw (dir, &tcon_raw) < 0)
+    వెళ్ళు quit;
+  tclass = బహుళకం_గమ్యం_security_class (బహుళకం_2);
+  ఒకవేళ (!tclass)
+    వెళ్ళు quit;
   rc = security_compute_create_raw (scon_raw, tcon_raw, tclass, con);
 
  quit:;
-  int err = errno;
-  free (dir);
+  పూర్ణాంకం err = errno;
+  విడుదల (dir);
   freecon (scon_raw);
   freecon (tcon_raw);
   errno = err;
-  return rc;
+  తిరిగి rc;
 }
 
 /*
@@ -106,63 +106,63 @@ computecon_raw (char const *path, mode_t mode, char **con)
 
   Returns -1 on failure.  errno will be set appropriately.
 */
-int
-defaultcon (struct selabel_handle *selabel_handle,
-            char const *path, mode_t mode)
+పూర్ణాంకం
+defaultcon (నిర్మాణం selabel_handle *selabel_handle,
+            అక్షరం స్థిరరాశి *మార్గం, mode_t బహుళకం_2)
 {
-  int rc = -1;
-  char *scon_raw = NULL;
-  char *tcon_raw = NULL;
-  context_t scontext = NULL, tcontext = NULL;
-  char const *contype;
-  char const *constr;
-  char *newpath = NULL;
+  పూర్ణాంకం rc = -1;
+  అక్షరం *scon_raw = ఖాళీ;
+  అక్షరం *tcon_raw = ఖాళీ;
+  context_t scontext = ఖాళీ, tcontext = ఖాళీ;
+  అక్షరం స్థిరరాశి *contype;
+  అక్షరం స్థిరరాశి *constr;
+  అక్షరం *newpath = ఖాళీ;
 
-  if (! IS_ABSOLUTE_FILE_NAME (path))
+  ఒకవేళ (! IS_ABSOLUTE_FILE_NAME (మార్గం))
     {
       /* Generate absolute name as required by subsequent selabel_lookup.  */
-      newpath = canonicalize_filename_mode (path, CAN_MISSING);
-      if (! newpath)
-        goto quit;
-      path = newpath;
+      newpath = canonicalize_filename_బహుళకం (మార్గం, CAN_MISSING);
+      ఒకవేళ (! newpath)
+        వెళ్ళు quit;
+      మార్గం = newpath;
     }
 
-  if (selabel_lookup_raw (selabel_handle, &scon_raw, path, mode) < 0)
+  ఒకవేళ (selabel_lookup_raw (selabel_handle, &scon_raw, మార్గం, బహుళకం_2) < 0)
     {
       /* "No such file or directory" is a confusing error,
          when processing files, when in fact it was the
          associated default context that was not found.
          Therefore map the error to something more appropriate
          to the context in which we're using selabel_lookup().  */
-      if (errno == ENOENT)
+      ఒకవేళ (errno == ENOENT)
         errno = ENODATA;
-      goto quit;
+      వెళ్ళు quit;
     }
-  if (computecon_raw (path, mode, &tcon_raw) < 0)
-    goto quit;
-  if (!(scontext = context_new (scon_raw)))
-    goto quit;
-  if (!(tcontext = context_new (tcon_raw)))
-    goto quit;
+  ఒకవేళ (computecon_raw (మార్గం, బహుళకం_2, &tcon_raw) < 0)
+    వెళ్ళు quit;
+  ఒకవేళ (!(scontext = context_new (scon_raw)))
+    వెళ్ళు quit;
+  ఒకవేళ (!(tcontext = context_new (tcon_raw)))
+    వెళ్ళు quit;
 
-  if (!(contype = context_type_get (scontext)))
-    goto quit;
-  if (context_type_set (tcontext, contype))
-    goto quit;
-  if (!(constr = context_str (tcontext)))
-    goto quit;
+  ఒకవేళ (!(contype = context_type_get (scontext)))
+    వెళ్ళు quit;
+  ఒకవేళ (context_type_సమితి (tcontext, contype))
+    వెళ్ళు quit;
+  ఒకవేళ (!(constr = context_str (tcontext)))
+    వెళ్ళు quit;
 
   rc = setfscreatecon_raw (constr);
 
  quit:;
-  int err = errno;
+  పూర్ణాంకం err = errno;
   context_free (scontext);
   context_free (tcontext);
   freecon (scon_raw);
   freecon (tcon_raw);
-  free (newpath);
+  విడుదల (newpath);
   errno = err;
-  return rc;
+  తిరిగి rc;
 }
 
 /*
@@ -174,99 +174,99 @@ defaultcon (struct selabel_handle *selabel_handle,
 
   Returns -1 on failure.  errno will be set appropriately.
 */
-static int
-restorecon_private (struct selabel_handle *selabel_handle, char const *path)
+స్థిర పూర్ణాంకం
+restorecon_వ్యక్తిగత (నిర్మాణం selabel_handle *selabel_handle, అక్షరం స్థిరరాశి *మార్గం)
 {
-  int rc = -1;
-  struct stat sb;
-  char *scon_raw = NULL;
-  char *tcon_raw = NULL;
-  context_t scontext = NULL, tcontext = NULL;
-  char const *contype;
-  char const *constr;
-  int fd;
+  పూర్ణాంకం rc = -1;
+  నిర్మాణం stat sb;
+  అక్షరం *scon_raw = ఖాళీ;
+  అక్షరం *tcon_raw = ఖాళీ;
+  context_t scontext = ఖాళీ, tcontext = ఖాళీ;
+  అక్షరం స్థిరరాశి *contype;
+  అక్షరం స్థిరరాశి *constr;
+  పూర్ణాంకం fd;
 
-  if (!selabel_handle)
+  ఒకవేళ (!selabel_handle)
     {
-      if (getfscreatecon_raw (&tcon_raw) < 0)
-        return rc;
-      if (!tcon_raw)
+      ఒకవేళ (getfscreatecon_raw (&tcon_raw) < 0)
+        తిరిగి rc;
+      ఒకవేళ (!tcon_raw)
         {
           errno = ENODATA;
-          return rc;
+          తిరిగి rc;
         }
-      rc = lsetfilecon_raw (path, tcon_raw);
-      int err = errno;
+      rc = lsetfilecon_raw (మార్గం, tcon_raw);
+      పూర్ణాంకం err = errno;
       freecon (tcon_raw);
       errno = err;
-      return rc;
+      తిరిగి rc;
     }
 
-  fd = open (path, O_RDONLY | O_NOFOLLOW);
-  if (fd == -1 && (errno != ELOOP))
-    goto quit;
+  fd = open (మార్గం, O_RDONLY | O_NOFOLLOW);
+  ఒకవేళ (fd == -1 && (errno != ELOOP))
+    వెళ్ళు quit;
 
-  if (fd != -1)
+  ఒకవేళ (fd != -1)
     {
-      if (fstat (fd, &sb) < 0)
-        goto quit;
+      ఒకవేళ (fstat (fd, &sb) < 0)
+        వెళ్ళు quit;
     }
-  else
+  లేకపోతే
     {
-      if (lstat (path, &sb) < 0)
-        goto quit;
+      ఒకవేళ (lstat (మార్గం, &sb) < 0)
+        వెళ్ళు quit;
     }
 
-  if (selabel_lookup_raw (selabel_handle, &scon_raw, path, sb.st_mode) < 0)
+  ఒకవేళ (selabel_lookup_raw (selabel_handle, &scon_raw, మార్గం, sb.st_బహుళకం) < 0)
     {
       /* "No such file or directory" is a confusing error,
          when processing files, when in fact it was the
          associated default context that was not found.
          Therefore map the error to something more appropriate
          to the context in which we're using selabel_lookup.  */
-      if (errno == ENOENT)
+      ఒకవేళ (errno == ENOENT)
         errno = ENODATA;
-      goto quit;
+      వెళ్ళు quit;
     }
-  if (!(scontext = context_new (scon_raw)))
-    goto quit;
+  ఒకవేళ (!(scontext = context_new (scon_raw)))
+    వెళ్ళు quit;
 
-  if (fd != -1)
+  ఒకవేళ (fd != -1)
     {
-      if (fgetfilecon_raw (fd, &tcon_raw) < 0)
-        goto quit;
+      ఒకవేళ (fgetfilecon_raw (fd, &tcon_raw) < 0)
+        వెళ్ళు quit;
     }
-  else
+  లేకపోతే
     {
-      if (lgetfilecon_raw (path, &tcon_raw) < 0)
-        goto quit;
+      ఒకవేళ (lgetfilecon_raw (మార్గం, &tcon_raw) < 0)
+        వెళ్ళు quit;
     }
 
-  if (!(tcontext = context_new (tcon_raw)))
-    goto quit;
+  ఒకవేళ (!(tcontext = context_new (tcon_raw)))
+    వెళ్ళు quit;
 
-  if (!(contype = context_type_get (scontext)))
-    goto quit;
-  if (context_type_set (tcontext, contype))
-    goto quit;
-  if (!(constr = context_str (tcontext)))
-    goto quit;
+  ఒకవేళ (!(contype = context_type_get (scontext)))
+    వెళ్ళు quit;
+  ఒకవేళ (context_type_సమితి (tcontext, contype))
+    వెళ్ళు quit;
+  ఒకవేళ (!(constr = context_str (tcontext)))
+    వెళ్ళు quit;
 
-  if (fd != -1)
+  ఒకవేళ (fd != -1)
     rc = fsetfilecon_raw (fd, constr);
-  else
-    rc = lsetfilecon_raw (path, constr);
+  లేకపోతే
+    rc = lsetfilecon_raw (మార్గం, constr);
 
  quit:;
-  int err = errno;
-  if (fd != -1)
+  పూర్ణాంకం err = errno;
+  ఒకవేళ (fd != -1)
     close (fd);
   context_free (scontext);
   context_free (tcontext);
   freecon (scon_raw);
   freecon (tcon_raw);
   errno = err;
-  return rc;
+  తిరిగి rc;
 }
 
 /*
@@ -282,46 +282,46 @@ restorecon_private (struct selabel_handle *selabel_handle, char const *path)
   Return false on failure.  errno will be set appropriately.
 */
 bool
-restorecon (struct selabel_handle *selabel_handle,
-            char const *path, bool recurse)
+restorecon (నిర్మాణం selabel_handle *selabel_handle,
+            అక్షరం స్థిరరాశి *మార్గం, bool recurse)
 {
-  char *newpath = NULL;
+  అక్షరం *newpath = ఖాళీ;
 
-  if (! IS_ABSOLUTE_FILE_NAME (path))
+  ఒకవేళ (! IS_ABSOLUTE_FILE_NAME (మార్గం))
     {
       /* Generate absolute name as required by subsequent selabel_lookup.
          When RECURSE, this also generates absolute names in the
          fts entries, which may be quicker to process in any case.  */
-      newpath = canonicalize_filename_mode (path, CAN_MISSING);
-      if (! newpath)
-        return false;
-      path = newpath;
+      newpath = canonicalize_filename_బహుళకం (మార్గం, CAN_MISSING);
+      ఒకవేళ (! newpath)
+        తిరిగి false;
+      మార్గం = newpath;
     }
 
-  if (! recurse)
+  ఒకవేళ (! recurse)
     {
-      bool ok = restorecon_private (selabel_handle, path) != -1;
-      int err = errno;
-      free (newpath);
+      bool ok = restorecon_వ్యక్తిగత (selabel_handle, మార్గం) != -1;
+      పూర్ణాంకం err = errno;
+      విడుదల (newpath);
       errno = err;
-      return ok;
+      తిరిగి ok;
     }
 
-  char const *ftspath[2] = { path, NULL };
-  FTS *fts = xfts_open ((char *const *) ftspath, FTS_PHYSICAL, NULL);
+  అక్షరం స్థిరరాశి *ftspath[2] = { మార్గం, ఖాళీ };
+  FTS *fts = xfts_open ((అక్షరం *స్థిరరాశి *) ftspath, FTS_PHYSICAL, ఖాళీ);
 
-  int err = 0;
-  for (FTSENT *ent; (ent = fts_read (fts)); )
-    if (restorecon_private (selabel_handle, fts->fts_path) < 0)
+  పూర్ణాంకం err = 0;
+  కొరకు (FTSENT *ent; (ent = fts_read (fts)); )
+    ఒకవేళ (restorecon_వ్యక్తిగత (selabel_handle, fts->fts_మార్గం) < 0)
       err = errno;
 
-  if (errno != 0)
+  ఒకవేళ (errno != 0)
     err = errno;
 
-  if (fts_close (fts) != 0)
+  ఒకవేళ (fts_close (fts) != 0)
     err = errno;
 
-  free (newpath);
-  return !err;
+  విడుదల (newpath);
+  తిరిగి !err;
 }
-#endif
+#అయితే_ముగింపు

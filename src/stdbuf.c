@@ -16,43 +16,43 @@
 
 /* Written by Pádraig Brady.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#అన్తర్భావ <config.h>
+#అన్తర్భావ <stdio.h>
+#అన్తర్భావ <getopt.h>
+#అన్తర్భావ <sys/types.h>
 
-#include "system.h"
-#include "assure.h"
-#include "filenamecat.h"
-#include "quote.h"
-#include "xreadlink.h"
-#include "xstrtol-error.h"
-#include "xstrtol.h"
-#include "c-ctype.h"
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "assure.h"
+#అన్తర్భావ "filenamecat.h"
+#అన్తర్భావ "quote.h"
+#అన్తర్భావ "xreadlink.h"
+#అన్తర్భావ "xstrtol-error.h"
+#అన్తర్భావ "xstrtol.h"
+#అన్తర్భావ "c-ctype.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "stdbuf"
-#define LIB_NAME "libstdbuf.so" /* FIXME: don't hardcode  */
+#నిర్వచించు కార్యక్రమం_NAME "stdbuf"
+#నిర్వచించు LIB_NAME "libstdbuf.so" /* FIXME: don't hardcode  */
 
-#define AUTHORS proper_name_lite ("Padraig Brady", "P\303\241draig Brady")
+#నిర్వచించు AUTHORS proper_name_lite ("Padraig Brady", "P\303\241draig Brady")
 
-static char *program_path;
+స్థిర అక్షరం *కార్యక్రమం_మార్గం;
 
-static struct
+స్థిర నిర్మాణం
 {
-  size_t size;
-  int optc;
-  char *optarg;
+  size_t కొలత;
+  పూర్ణాంకం optc;
+  అక్షరం *optarg;
 } stdbuf[3];
 
-static struct option const longopts[] =
+స్థిర నిర్మాణం option స్థిరరాశి longopts[] =
 {
-  {"input", required_argument, NULL, 'i'},
-  {"output", required_argument, NULL, 'o'},
-  {"error", required_argument, NULL, 'e'},
+  {"input", required_వాదం, ఖాళీ, 'i'},
+  {"output", required_వాదం, ఖాళీ, 'o'},
+  {"error", required_వాదం, ఖాళీ, 'e'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_సంస్కరణ_OPTION_DECL},
+  {ఖాళీ, 0, ఖాళీ, 0}
 };
 
 /* Set size to the value of STR, interpreted as a decimal integer,
@@ -62,65 +62,65 @@ static struct option const longopts[] =
 
    This supports dd BLOCK size suffixes.
    Note we don't support dd's b=512, c=1, w=2 or 21x512MiB formats.  */
-static enum strtol_error
-parse_size (char const *str, size_t *size)
+స్థిర గణన strtol_error
+parse_కొలత (అక్షరం స్థిరరాశి *str, size_t *కొలత)
 {
-  uintmax_t tmp_size;
-  enum strtol_error e = xstrtoumax (str, NULL, 10,
-                                    &tmp_size, "EGkKMPQRTYZ0");
-  if (e == LONGINT_OK && ckd_add (size, tmp_size, 0))
-    e = LONGINT_OVERFLOW;
-  return e;
+  uintmax_t tmp_కొలత;
+  గణన strtol_error e = xstrtoumax (str, ఖాళీ, 10,
+                                    &tmp_కొలత, "EGkKMPQRTYZ0");
+  ఒకవేళ (e == LONGINT_OK && ckd_కూడు (కొలత, tmp_కొలత, 0))
+    e = LONGINT_అధికప్రవాహం;
+  తిరిగి e;
 }
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("Usage: %s OPTION... COMMAND\n"), program_name);
+      రాయి (_("Usage: %s OPTION... COMMAND\n"), కార్యక్రమం_name);
       fputs (_("\
-Run COMMAND, with modified buffering operations for its standard streams.\n\
+నిరంతరం COMMAND, with modified buffering operations కొరకు its standard streams.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -i, --input=MODE   adjust standard input stream buffering\n\
+  -i, --ఆదానం=బహుళకం   adjust standard ఆదానం ప్రవాహం buffering\n\
 "));
       oputs (_("\
-  -o, --output=MODE  adjust standard output stream buffering\n\
+  -o, --output=బహుళకం  adjust standard output ప్రవాహం buffering\n\
 "));
       oputs (_("\
-  -e, --error=MODE   adjust standard error stream buffering\n\
+  -e, --error=బహుళకం   adjust standard error ప్రవాహం buffering\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
       fputs (_("\n\
-If MODE is 'L' the corresponding stream will be line buffered.\n\
-This option is invalid with standard input.\n"), stdout);
+If బహుళకం is 'L' the corresponding ప్రవాహం will be పంక్తి buffered.\n\
+This option is invalid with standard ఆదానం.\n"), stdout);
       fputs (_("\n\
-If MODE is '0' the corresponding stream will be unbuffered.\n\
+If బహుళకం is '0' the corresponding ప్రవాహం will be unbuffered.\n\
 "), stdout);
       fputs (_("\n\
-Otherwise MODE is a number which may be followed by one of the following:\n\
-KB 1000, K 1024, MB 1000*1000, M 1024*1024, and so on for G,T,P,E,Z,Y,R,Q.\n\
-Binary prefixes can be used, too: KiB=K, MiB=M, and so on.\n\
-In this case the corresponding stream will be fully buffered with the buffer\n\
-size set to MODE bytes.\n\
+Otherwise బహుళకం is a సంఖ్య which may be followed by one యొక్క the following:\n\
+KB 1000, K 1024, MB 1000*1000, M 1024*1024, and so on కొరకు G,T,P,E,Z,Y,R,Q.\n\
+ద్విమాన_2 prefixes can be వాడిన, too: KiB=K, MiB=M, and so on.\n\
+లోపల_2 this స్థితి the corresponding ప్రవాహం will be fully buffered with the బఫరు\n\
+కొలత సమితి_2 గమ్యం బహుళకం బైట్లు.\n\
 "), stdout);
       fputs (_("\n\
-NOTE: If COMMAND adjusts the buffering of its standard streams ('tee' does\n\
-for example) then that will override corresponding changes by 'stdbuf'.\n\
-Also some filters (like 'dd' and 'cat' etc.) don't use streams for I/O,\n\
+NOTE: If COMMAND adjusts the buffering యొక్క its standard streams ('tee' does\n\
+కొరకు example) then that will override corresponding changes by 'stdbuf'.\n\
+Also some filters (like 'dd' and 'cat' etc.) don't use streams కొరకు I/O,\n\
 and are thus unaffected by 'stdbuf' settings.\n\
 "), stdout);
-      emit_exec_status (PROGRAM_NAME);
-      emit_ancillary_info (PROGRAM_NAME);
+      emit_exec_స్థితి (కార్యక్రమం_NAME);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
 /* argv[0] can be anything really, but generally it contains
@@ -129,75 +129,75 @@ and are thus unaffected by 'stdbuf' settings.\n\
    search getenv("PATH"), readlink("/prof/self/exe"), getenv("_"),
    dladdr(), pstat_getpathname(), etc.  */
 
-static void
-set_program_path (char const *arg)
+స్థిర శూన్య
+సమితి_కార్యక్రమం_మార్గం (అక్షరం స్థిరరాశి *arg)
 {
-  if (strchr (arg, '/'))        /* Use absolute or relative paths directly.  */
+  ఒకవేళ (strchr (arg, '/'))        /* Use absolute or relative paths directly.  */
     {
-      program_path = dir_name (arg);
+      కార్యక్రమం_మార్గం = dir_name (arg);
     }
-  else
+  లేకపోతే
     {
-      char *path = xreadlink ("/proc/self/exe");
-      if (path)
-        program_path = dir_name (path);
-      else if ((path = getenv ("PATH")))
+      అక్షరం *మార్గం = xreadlink ("/proc/self/exe");
+      ఒకవేళ (మార్గం)
+        కార్యక్రమం_మార్గం = dir_name (మార్గం);
+      లేకపోతే ఒకవేళ ((మార్గం = getenv ("PATH")))
         {
-          path = xstrdup (path);
-          for (char *dir = strtok (path, ":"); dir != NULL;
-               dir = strtok (NULL, ":"))
+          మార్గం = xstrdup (మార్గం);
+          కొరకు (అక్షరం *dir = strtok (మార్గం, ":"); dir != ఖాళీ;
+               dir = strtok (ఖాళీ, ":"))
             {
-              char *candidate = file_name_concat (dir, arg, NULL);
-              if (access (candidate, X_OK) == 0)
+              అక్షరం *candidate = file_name_concat (dir, arg, ఖాళీ);
+              ఒకవేళ (access (candidate, X_OK) == 0)
                 {
-                  program_path = dir_name (candidate);
-                  free (candidate);
-                  break;
+                  కార్యక్రమం_మార్గం = dir_name (candidate);
+                  విడుదల (candidate);
+                  ఆపు;
                 }
-              free (candidate);
+              విడుదల (candidate);
             }
         }
-      free (path);
+      విడుదల (మార్గం);
     }
 }
 
-static int
-optc_to_fileno (int c)
+స్థిర పూర్ణాంకం
+optc_గమ్యం_fileno (పూర్ణాంకం c)
 {
-  int ret = -1;
+  పూర్ణాంకం ret = -1;
 
-  switch (c)
+  ఎంపిక (c)
     {
-    case 'e':
+    స్థితి 'e':
       ret = STDERR_FILENO;
-      break;
-    case 'i':
+      ఆపు;
+    స్థితి 'i':
       ret = STDIN_FILENO;
-      break;
-    case 'o':
+      ఆపు;
+    స్థితి 'o':
       ret = STDOUT_FILENO;
-      break;
-    default:
+      ఆపు;
+    అప్రమేయ:
       affirm (false);
     }
 
-  return ret;
+  తిరిగి ret;
 }
 
-static void
-set_LD_PRELOAD (void)
+స్థిర శూన్య
+సమితి_LD_PRELOAD (శూన్య)
 {
-  int ret;
-#ifdef __APPLE__
-  char const *preload_env = "DYLD_INSERT_LIBRARIES";
-#elif defined _AIX
-  char const *preload_env = (sizeof (void *) < 8
+  పూర్ణాంకం ret;
+#నిర్వచితమైతే __APPLE__
+  అక్షరం స్థిరరాశి *preload_env = "DYLD_INSERT_LIBRARIES";
+#లేదావేళ defined _AIX
+  అక్షరం స్థిరరాశి *preload_env = (పరిమాణం (శూన్య *) < 8
                              ? "LDR_PRELOAD" : "LDR_PRELOAD64");
-#else
-  char const *preload_env = "LD_PRELOAD";
-#endif
-  char *old_libs = getenv (preload_env);
-  char *LD_PRELOAD;
+#లేకపోతే
+  అక్షరం స్థిరరాశి *preload_env = "LD_PRELOAD";
+#అయితే_ముగింపు
+  అక్షరం *old_libs = getenv (preload_env);
+  అక్షరం *LD_PRELOAD;
 
   /* Note this would auto add the appropriate search path for "libstdbuf.so":
      gcc stdbuf.c -Wl,-rpath,'$ORIGIN' -Wl,-rpath,$PKGLIBEXECDIR
@@ -215,55 +215,55 @@ set_LD_PRELOAD (void)
      not supported due to the unusual need for controlling the stdio buffering
      of programs that are a different architecture to the default on the
      system (and that of stdbuf itself).  */
-  char const *const search_path[] = {
-    program_path,
+  అక్షరం స్థిరరాశి *స్థిరరాశి శోధన_మార్గం[] = {
+    కార్యక్రమం_మార్గం,
     PKGLIBEXECDIR,
-    NULL
+    ఖాళీ
   };
 
-  char const *const *path = search_path;
-  char *libstdbuf;
+  అక్షరం స్థిరరాశి *స్థిరరాశి *మార్గం = శోధన_మార్గం;
+  అక్షరం *libstdbuf;
 
-  while (true)
+  అయితే (true)
     {
-      struct stat sb;
+      నిర్మాణం stat sb;
 
-      if (!**path)              /* system default  */
+      ఒకవేళ (!**మార్గం)              /* system default  */
         {
           libstdbuf = xstrdup (LIB_NAME);
-          break;
+          ఆపు;
         }
-      ret = asprintf (&libstdbuf, "%s/%s", *path, LIB_NAME);
-      if (ret < 0)
+      ret = asprintf (&libstdbuf, "%s/%s", *మార్గం, LIB_NAME);
+      ఒకవేళ (ret < 0)
         xalloc_die ();
-      if (stat (libstdbuf, &sb) == 0)   /* file_exists  */
-        break;
-      free (libstdbuf);
+      ఒకవేళ (stat (libstdbuf, &sb) == 0)   /* file_exists  */
+        ఆపు;
+      విడుదల (libstdbuf);
 
-      ++path;
-      if ( ! *path)
+      ++మార్గం;
+      ఒకవేళ ( ! *మార్గం)
         error (EXIT_CANCELED, 0, _("failed to find %s"), quote (LIB_NAME));
     }
 
   /* FIXME: Do we need to support libstdbuf.dll, c:, '\' separators etc?  */
 
-  if (old_libs)
+  ఒకవేళ (old_libs)
     ret = asprintf (&LD_PRELOAD, "%s=%s:%s", preload_env, old_libs, libstdbuf);
-  else
+  లేకపోతే
     ret = asprintf (&LD_PRELOAD, "%s=%s", preload_env, libstdbuf);
 
-  if (ret < 0)
+  ఒకవేళ (ret < 0)
     xalloc_die ();
 
-  free (libstdbuf);
+  విడుదల (libstdbuf);
 
   ret = putenv (LD_PRELOAD);
-#ifdef __APPLE__
-  if (ret == 0)
+#నిర్వచితమైతే __APPLE__
+  ఒకవేళ (ret == 0)
     ret = setenv ("DYLD_FORCE_FLAT_NAMESPACE", "y", 1);
-#endif
+#అయితే_ముగింపు
 
-  if (ret != 0)
+  ఒకవేళ (ret != 0)
     error (EXIT_CANCELED, errno,
            _("failed to update the environment with %s"),
            quote (LD_PRELOAD));
@@ -272,47 +272,47 @@ set_LD_PRELOAD (void)
 /* Populate environ with _STDBUF_I=$MODE _STDBUF_O=$MODE _STDBUF_E=$MODE.
    Return TRUE if any environment variables set.   */
 
-static bool
-set_libstdbuf_options (void)
+స్థిర bool
+సమితి_libstdbuf_options (శూన్య)
 {
-  bool env_set = false;
+  bool env_సమితి = false;
 
-  for (size_t i = 0; i < countof (stdbuf); i++)
+  కొరకు (size_t i = 0; i < countof (stdbuf); i++)
     {
-      if (stdbuf[i].optarg)
+      ఒకవేళ (stdbuf[i].optarg)
         {
-          char *var;
-          int ret;
+          అక్షరం *var;
+          పూర్ణాంకం ret;
 
-          if (*stdbuf[i].optarg == 'L')
+          ఒకవేళ (*stdbuf[i].optarg == 'L')
             ret = asprintf (&var, "%s%c=L", "_STDBUF_",
                             c_toupper (stdbuf[i].optc));
-          else
+          లేకపోతే
             ret = asprintf (&var, "%s%c=%zu", "_STDBUF_",
                             c_toupper (stdbuf[i].optc),
-                            stdbuf[i].size);
-          if (ret < 0)
+                            stdbuf[i].కొలత);
+          ఒకవేళ (ret < 0)
             xalloc_die ();
 
-          if (putenv (var) != 0)
+          ఒకవేళ (putenv (var) != 0)
             error (EXIT_CANCELED, errno,
                    _("failed to update the environment with %s"),
                    quote (var));
 
-          env_set = true;
+          env_సమితి = true;
         }
     }
 
-  return env_set;
+  తిరిగి env_సమితి;
 }
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
-  int c;
+  పూర్ణాంకం c;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
@@ -320,24 +320,24 @@ main (int argc, char **argv)
   initialize_exit_failure (EXIT_CANCELED);
   atexit (close_stdout);
 
-  while ((c = getopt_long (argc, argv, "+i:o:e:", longopts, NULL)) != -1)
+  అయితే ((c = getopt_long (argc, argv, "+i:o:e:", longopts, ఖాళీ)) != -1)
     {
-      int const oi = -1;
-      int opt_fileno;
+      పూర్ణాంకం స్థిరరాశి oi = -1;
+      పూర్ణాంకం opt_fileno;
 
-      switch (c)
+      ఎంపిక (c)
         {
         /* Old McDonald had a farm ei...  */
-        case 'e':
-        case 'i':
-        case 'o':
-          opt_fileno = optc_to_fileno (c);
+        స్థితి 'e':
+        స్థితి 'i':
+        స్థితి 'o':
+          opt_fileno = optc_గమ్యం_fileno (c);
           affirm (0 <= opt_fileno && opt_fileno < countof (stdbuf));
           stdbuf[opt_fileno].optc = c;
-          while (c_isspace (*optarg))
+          అయితే (c_isspace (*optarg))
             optarg++;
           stdbuf[opt_fileno].optarg = optarg;
-          if (c == 'i' && *optarg == 'L')
+          ఒకవేళ (c == 'i' && *optarg == 'L')
             {
               /* -oL will be by far the most common use of this utility,
                  but one could easily think -iL might have the same affect,
@@ -346,21 +346,21 @@ main (int argc, char **argv)
               usage (EXIT_CANCELED);
             }
 
-          if (!streq (optarg, "L"))
+          ఒకవేళ (!streq (optarg, "L"))
             {
-              enum strtol_error e = parse_size (optarg,
-                                                &stdbuf[opt_fileno].size);
-              if (e != LONGINT_OK)
+              గణన strtol_error e = parse_కొలత (optarg,
+                                                &stdbuf[opt_fileno].కొలత);
+              ఒకవేళ (e != LONGINT_OK)
                 xstrtol_fatal (e, oi, c, longopts, optarg);
             }
 
-          break;
+          ఆపు;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_సంస్కరణ_CHAR (కార్యక్రమం_NAME, AUTHORS);
 
-        default:
+        అప్రమేయ:
           usage (EXIT_CANCELED);
         }
     }
@@ -369,13 +369,13 @@ main (int argc, char **argv)
   argc -= optind;
 
   /* must specify at least 1 command.  */
-  if (argc < 1)
+  ఒకవేళ (argc < 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_CANCELED);
     }
 
-  if (! set_libstdbuf_options ())
+  ఒకవేళ (! సమితి_libstdbuf_options ())
     {
       error (0, 0, _("you must specify a buffering mode option"));
       usage (EXIT_CANCELED);
@@ -383,15 +383,15 @@ main (int argc, char **argv)
 
   /* Try to preload libstdbuf first from the same path as
      stdbuf is running from.  */
-  set_program_path (program_name);
-  if (!program_path)
-    program_path = xstrdup (PKGLIBDIR);  /* Need to init to non-null.  */
-  set_LD_PRELOAD ();
-  free (program_path);
+  సమితి_కార్యక్రమం_మార్గం (కార్యక్రమం_name);
+  ఒకవేళ (!కార్యక్రమం_మార్గం)
+    కార్యక్రమం_మార్గం = xstrdup (PKGLIBDIR);  /* Need to init to non-null.  */
+  సమితి_LD_PRELOAD ();
+  విడుదల (కార్యక్రమం_మార్గం);
 
   execvp (*argv, argv);
 
-  int exit_status = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
+  పూర్ణాంకం exit_స్థితి = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
   error (0, errno, _("failed to run command %s"), quote (argv[0]));
-  return exit_status;
+  తిరిగి exit_స్థితి;
 }

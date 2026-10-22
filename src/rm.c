@@ -18,23 +18,23 @@
    Reworked to use chdir and avoid recursion, and later, rewritten
    once again, to use fts, by Jim Meyering.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#అన్తర్భావ <config.h>
+#అన్తర్భావ <stdio.h>
+#అన్తర్భావ <getopt.h>
+#అన్తర్భావ <sys/types.h>
 
-#include "system.h"
-#include "argmatch.h"
-#include "assure.h"
-#include "remove.h"
-#include "root-dev-ino.h"
-#include "yesno.h"
-#include "priv-set.h"
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "argmatch.h"
+#అన్తర్భావ "assure.h"
+#అన్తర్భావ "remove.h"
+#అన్తర్భావ "root-dev-ino.h"
+#అన్తర్భావ "yesno.h"
+#అన్తర్భావ "priv-set.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "rm"
+#నిర్వచించు కార్యక్రమం_NAME "rm"
 
-#define AUTHORS \
+#నిర్వచించు AUTHORS \
   proper_name ("Paul Rubin"), \
   proper_name ("David MacKenzie"), \
   proper_name ("Richard M. Stallman"), \
@@ -42,93 +42,93 @@
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+గణన
 {
   INTERACTIVE_OPTION = CHAR_MAX + 1,
   ONE_FILE_SYSTEM,
-  NO_PRESERVE_ROOT,
-  PRESERVE_ROOT,
-  PRESUME_INPUT_TTY_OPTION
+  NO_PRESERVE_మూలం,
+  PRESERVE_మూలం,
+  PRESUME_ఆదానం_TTY_OPTION
 };
 
-enum interactive_type
+గణన interactive_type
   {
     interactive_never,		/* 0: no option or --interactive=never */
     interactive_once,		/* 1: -I or --interactive=once */
     interactive_always		/* 2: default, -i or --interactive=always */
   };
 
-static struct option const long_opts[] =
+స్థిర నిర్మాణం option స్థిరరాశి long_opts[] =
 {
-  {"force", no_argument, NULL, 'f'},
-  {"interactive", optional_argument, NULL, INTERACTIVE_OPTION},
+  {"force", no_వాదం, ఖాళీ, 'f'},
+  {"interactive", optional_వాదం, ఖాళీ, INTERACTIVE_OPTION},
 
-  {"one-file-system", no_argument, NULL, ONE_FILE_SYSTEM},
-  {"no-preserve-root", no_argument, NULL, NO_PRESERVE_ROOT},
-  {"preserve-root", optional_argument, NULL, PRESERVE_ROOT},
+  {"one-file-system", no_వాదం, ఖాళీ, ONE_FILE_SYSTEM},
+  {"no-preserve-root", no_వాదం, ఖాళీ, NO_PRESERVE_మూలం},
+  {"preserve-root", optional_వాదం, ఖాళీ, PRESERVE_మూలం},
 
   /* This is solely for testing.  Do not document.  */
   /* It is relatively difficult to ensure that there is a tty on stdin.
      Since rm acts differently depending on that, without this option,
      it'd be harder to test the parts of rm that depend on that setting.  */
-  {"-presume-input-tty", no_argument, NULL, PRESUME_INPUT_TTY_OPTION},
+  {"-presume-input-tty", no_వాదం, ఖాళీ, PRESUME_ఆదానం_TTY_OPTION},
 
-  {"recursive", no_argument, NULL, 'r'},
-  {"dir", no_argument, NULL, 'd'},
-  {"verbose", no_argument, NULL, 'v'},
+  {"recursive", no_వాదం, ఖాళీ, 'r'},
+  {"dir", no_వాదం, ఖాళీ, 'd'},
+  {"verbose", no_వాదం, ఖాళీ, 'v'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_సంస్కరణ_OPTION_DECL},
+  {ఖాళీ, 0, ఖాళీ, 0}
 };
 
-static char const *const interactive_args[] =
+స్థిర అక్షరం స్థిరరాశి *స్థిరరాశి interactive_వాదనలు[] =
 {
   "never", "no", "none",
   "once",
-  "always", "yes", NULL
+  "always", "yes", ఖాళీ
 };
-static enum interactive_type const interactive_types[] =
+స్థిర గణన interactive_type స్థిరరాశి interactive_types[] =
 {
   interactive_never, interactive_never, interactive_never,
   interactive_once,
   interactive_always, interactive_always
 };
-ARGMATCH_VERIFY (interactive_args, interactive_types);
+ARGMATCH_VERIFY (interactive_వాదనలు, interactive_types);
 
 /* Advise the user about invalid usages like "rm -foo" if the file
    "-foo" exists, assuming ARGC and ARGV are as with 'main'.  */
 
-static void
-diagnose_leading_hyphen (int argc, char **argv)
+స్థిర శూన్య
+diagnose_leading_hyphen (పూర్ణాంకం argc, అక్షరం **argv)
 {
   /* OPTIND is unreliable, so iterate through the arguments looking
      for a file name that looks like an option.  */
 
-  for (int i = 1; i < argc; i++)
+  కొరకు (పూర్ణాంకం i = 1; i < argc; i++)
     {
-      char const *arg = argv[i];
-      struct stat st;
+      అక్షరం స్థిరరాశి *arg = argv[i];
+      నిర్మాణం stat st;
 
-      if (arg[0] == '-' && arg[1] && lstat (arg, &st) == 0)
+      ఒకవేళ (arg[0] == '-' && arg[1] && lstat (arg, &st) == 0)
         {
           fprintf (stderr,
                    _("Try '%s ./%s' to remove the file %s.\n"),
                    argv[0],
                    quotearg_n_style (1, shell_escape_quoting_style, arg),
                    quoteaf (arg));
-          break;
+          ఆపు;
         }
     }
 }
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("Usage: %s [OPTION]... [FILE]...\n"), program_name);
+      రాయి (_("Usage: %s [OPTION]... [FILE]...\n"), కార్యక్రమం_name);
       fputs (_("\
 Remove (unlink) the FILE(s).\n\
 \n\
@@ -143,30 +143,30 @@ Remove (unlink) the FILE(s).\n\
 "));
       oputs (_("\
   -I\n\
-         prompt once before removing more than three files,\n\
+         prompt once before removing మరిన్ని than three files,\n\
          or when removing recursively; less intrusive than -i,\n\
-         while still giving protection against most mistakes\n\
+         అయితే still giving protection against most mistakes\n\
 "));
       oputs (_("\
       --interactive[=WHEN]\n\
-         prompt according to WHEN: never, once (-I), or always (-i);\n\
+         prompt according గమ్యం WHEN: never, once (-I), or always (-i);\n\
          without WHEN, prompt always\n\
 "));
       oputs (_("\
       --one-file-system\n\
          when removing a hierarchy recursively,\n\
          skip any directory that is on a file system different\n\
-         from that of the corresponding command line argument\n\
+         from that యొక్క the corresponding command పంక్తి వాదం\n\
 "));
       oputs (_("\
-      --no-preserve-root\n\
-         do not treat '/' specially\n\
+      --no-preserve-మూలం\n\
+         చేయి not treat '/' specially\n\
 "));
       oputs (_("\
-      --preserve-root[=all]\n\
-         do not remove '/' (default);\n\
-         with 'all', reject any command line argument\n\
-         on a separate device from its parent\n\
+      --preserve-మూలం[=all]\n\
+         చేయి not remove '/' (అప్రమేయ);\n\
+         with 'all', reject any command పంక్తి వాదం\n\
+         on a separate device from its మాతృ\n\
 "));
       oputs (_("\
   -r, -R, --recursive\n\
@@ -174,54 +174,54 @@ Remove (unlink) the FILE(s).\n\
 "));
       oputs (_("\
   -d, --dir\n\
-         remove empty directories\n\
+         remove ఖాళీలు directories\n\
 "));
       oputs (_("\
   -v, --verbose\n\
-         explain what is being done\n\
+         explain what is being పూర్తి\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-By default, rm does not remove directories.  Use the --recursive (-r or -R)\n\
-option to remove each listed directory, too, along with all of its contents.\n\
+By అప్రమేయ, rm does not remove directories.  Use the --recursive (-r or -R)\n\
+option గమ్యం remove each listed directory, too, along with all యొక్క its contents.\n\
 "), stdout);
       fputs (_("\
 \n\
-Any attempt to remove a file whose last file name component is '.' or '..'\n\
+Any attempt గమ్యం remove a file whose చివరి file name component is '.' or '..'\n\
 is rejected with a diagnostic.\n\
 "), stdout);
-      printf (_("\
+      రాయి (_("\
 \n\
-To remove a file whose name starts with a '-', for example '-foo',\n\
-use one of these commands:\n\
+గమ్యం_2 remove a file whose name starts with a '-', కొరకు example '-foo',\n\
+use one యొక్క these commands:\n\
   %s -- -foo\n\
 \n\
   %s ./-foo\n\
 "),
-              program_name, program_name);
+              కార్యక్రమం_name, కార్యక్రమం_name);
       fputs (_("\
 \n\
-If you use rm to remove a file, it might be possible to recover\n\
-some of its contents, given sufficient expertise and/or time.  For greater\n\
+If you use rm గమ్యం remove a file, it might be possible గమ్యం recover\n\
+some యొక్క its contents, given sufficient expertise and/or సమయం.  For greater\n\
 assurance that the contents are unrecoverable, consider using shred(1).\n\
 "), stdout);
-      emit_ancillary_info (PROGRAM_NAME);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
-static void
-rm_option_init (struct rm_options *x)
+స్థిర శూన్య
+rm_option_init (నిర్మాణం rm_options *x)
 {
   x->ignore_missing_files = false;
   x->interactive = RMI_SOMETIMES;
   x->one_file_system = false;
-  x->remove_empty_directories = false;
+  x->remove_ఖాళీలు_directories = false;
   x->recursive = false;
-  x->root_dev_ino = NULL;
-  x->preserve_all_root = false;
+  x->మూలం_dev_ino = ఖాళీ;
+  x->preserve_all_మూలం = false;
   x->stdin_tty = isatty (STDIN_FILENO);
   x->verbose = false;
 
@@ -230,16 +230,16 @@ rm_option_init (struct rm_options *x)
   x->require_restore_cwd = false;
 }
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
-  bool preserve_root = true;
-  struct rm_options x;
+  bool preserve_మూలం = true;
+  నిర్మాణం rm_options x;
   bool prompt_once = false;
-  int c;
+  పూర్ణాంకం c;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
@@ -249,133 +249,133 @@ main (int argc, char **argv)
   rm_option_init (&x);
 
   /* Try to disable the ability to unlink a directory.  */
-  priv_set_remove_linkdir ();
+  priv_సమితి_remove_linkdir ();
 
-  while ((c = getopt_long (argc, argv, "dfirvIR", long_opts, NULL)) != -1)
+  అయితే ((c = getopt_long (argc, argv, "dfirvIR", long_opts, ఖాళీ)) != -1)
     {
-      switch (c)
+      ఎంపిక (c)
         {
-        case 'd':
-          x.remove_empty_directories = true;
-          break;
+        స్థితి 'd':
+          x.remove_ఖాళీలు_directories = true;
+          ఆపు;
 
-        case 'f':
+        స్థితి 'f':
           x.interactive = RMI_NEVER;
           x.ignore_missing_files = true;
           prompt_once = false;
-          break;
+          ఆపు;
 
-        case 'i':
+        స్థితి 'i':
           x.interactive = RMI_ALWAYS;
           x.ignore_missing_files = false;
           prompt_once = false;
-          break;
+          ఆపు;
 
-        case 'I':
+        స్థితి 'I':
           x.interactive = RMI_SOMETIMES;
           x.ignore_missing_files = false;
           prompt_once = true;
-          break;
+          ఆపు;
 
-        case 'r':
-        case 'R':
+        స్థితి 'r':
+        స్థితి 'R':
           x.recursive = true;
-          break;
+          ఆపు;
 
-        case INTERACTIVE_OPTION:
+        స్థితి INTERACTIVE_OPTION:
           {
-            int i;
-            if (optarg)
-              i = XARGMATCH ("--interactive", optarg, interactive_args,
+            పూర్ణాంకం i;
+            ఒకవేళ (optarg)
+              i = XARGMATCH ("--interactive", optarg, interactive_వాదనలు,
                              interactive_types);
-            else
+            లేకపోతే
               i = interactive_always;
-            switch (i)
+            ఎంపిక (i)
               {
-              case interactive_never:
+              స్థితి interactive_never:
                 x.interactive = RMI_NEVER;
                 prompt_once = false;
-                break;
+                ఆపు;
 
-              case interactive_once:
+              స్థితి interactive_once:
                 x.interactive = RMI_SOMETIMES;
                 x.ignore_missing_files = false;
                 prompt_once = true;
-                break;
+                ఆపు;
 
-              case interactive_always:
+              స్థితి interactive_always:
                 x.interactive = RMI_ALWAYS;
                 x.ignore_missing_files = false;
                 prompt_once = false;
-                break;
+                ఆపు;
               }
-            break;
+            ఆపు;
           }
 
-        case ONE_FILE_SYSTEM:
+        స్థితి ONE_FILE_SYSTEM:
           x.one_file_system = true;
-          break;
+          ఆపు;
 
-        case NO_PRESERVE_ROOT:
-          if (! streq (argv[optind - 1], "--no-preserve-root"))
+        స్థితి NO_PRESERVE_మూలం:
+          ఒకవేళ (! streq (argv[optind - 1], "--no-preserve-root"))
             error (EXIT_FAILURE, 0,
                    _("you may not abbreviate the --no-preserve-root option"));
-          preserve_root = false;
-          break;
+          preserve_మూలం = false;
+          ఆపు;
 
-        case PRESERVE_ROOT:
-          if (optarg)
+        స్థితి PRESERVE_మూలం:
+          ఒకవేళ (optarg)
             {
-              if (streq (optarg, "all"))
-                x.preserve_all_root = true;
-              else
+              ఒకవేళ (streq (optarg, "all"))
+                x.preserve_all_మూలం = true;
+              లేకపోతే
                 error (EXIT_FAILURE, 0,
                        _("unrecognized --preserve-root argument: %s"),
                        quoteaf (optarg));
             }
-          preserve_root = true;
-          break;
+          preserve_మూలం = true;
+          ఆపు;
 
-        case PRESUME_INPUT_TTY_OPTION:
+        స్థితి PRESUME_ఆదానం_TTY_OPTION:
           x.stdin_tty = true;
-          break;
+          ఆపు;
 
-        case 'v':
+        స్థితి 'v':
           x.verbose = true;
-          break;
+          ఆపు;
 
         case_GETOPT_HELP_CHAR;
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        case_GETOPT_సంస్కరణ_CHAR (కార్యక్రమం_NAME, AUTHORS);
+        అప్రమేయ:
           diagnose_leading_hyphen (argc, argv);
           usage (EXIT_FAILURE);
         }
     }
 
-  if (argc <= optind)
+  ఒకవేళ (argc <= optind)
     {
-      if (x.ignore_missing_files)
-        return EXIT_SUCCESS;
-      else
+      ఒకవేళ (x.ignore_missing_files)
+        తిరిగి EXIT_SUCCESS;
+      లేకపోతే
         {
           error (0, 0, _("missing operand"));
           usage (EXIT_FAILURE);
         }
     }
 
-  if (x.recursive && preserve_root)
+  ఒకవేళ (x.recursive && preserve_మూలం)
     {
-      static struct dev_ino dev_ino_buf;
-      x.root_dev_ino = get_root_dev_ino (&dev_ino_buf);
-      if (x.root_dev_ino == NULL)
+      స్థిర నిర్మాణం dev_ino dev_ino_buf;
+      x.మూలం_dev_ino = get_మూలం_dev_ino (&dev_ino_buf);
+      ఒకవేళ (x.మూలం_dev_ino == ఖాళీ)
         error (EXIT_FAILURE, errno, _("failed to get attributes of %s"),
                quoteaf ("/"));
     }
 
   uintmax_t n_files = argc - optind;
-  char **file =  argv + optind;
+  అక్షరం **file =  argv + optind;
 
-  if (prompt_once && (x.recursive || 3 < n_files))
+  ఒకవేళ (prompt_once && (x.recursive || 3 < n_files))
     {
       fprintf (stderr,
                (x.recursive
@@ -385,12 +385,12 @@ main (int argc, char **argv)
                 : ngettext ("%s: remove %ju argument? ",
                             "%s: remove %ju arguments? ",
                             select_plural (n_files))),
-               program_name, n_files);
-      if (!yesno ())
-        return EXIT_SUCCESS;
+               కార్యక్రమం_name, n_files);
+      ఒకవేళ (!yesno ())
+        తిరిగి EXIT_SUCCESS;
     }
 
-  enum RM_status status = rm (file, &x);
-  affirm (VALID_STATUS (status));
-  return status == RM_ERROR ? EXIT_FAILURE : EXIT_SUCCESS;
+  గణన RM_స్థితి స్థితి_2 = rm (file, &x);
+  affirm (VALID_స్థితి (స్థితి_2));
+  తిరిగి స్థితి_2 == RM_ERROR ? EXIT_FAILURE : EXIT_SUCCESS;
 }

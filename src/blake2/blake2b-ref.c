@@ -13,18 +13,18 @@
    https://blake2.net.
 */
 
-#ifdef HAVE_CONFIG_H
+#నిర్వచితమైతే HAVE_CONFIG_H
 # include <config.h>
-#endif
+#అయితే_ముగింపు
 
-#include <stdint.h>
-#include <string.h>
-#include <stdio.h>
+#అన్తర్భావ <stdint.h>
+#అన్తర్భావ <string.h>
+#అన్తర్భావ <stdio.h>
 
-#include "blake2.h"
-#include "blake2-impl.h"
+#అన్తర్భావ "blake2.h"
+#అన్తర్భావ "blake2-impl.h"
 
-static const uint64_t blake2b_IV[8] =
+స్థిర స్థిరరాశి uint64_t blake2b_IV[8] =
 {
   0x6a09e667f3bcc908ULL, 0xbb67ae8584caa73bULL,
   0x3c6ef372fe94f82bULL, 0xa54ff53a5f1d36f1ULL,
@@ -32,7 +32,7 @@ static const uint64_t blake2b_IV[8] =
   0x1f83d9abfb41bd6bULL, 0x5be0cd19137e2179ULL
 };
 
-static const uint8_t blake2b_sigma[12][16] =
+స్థిర స్థిరరాశి uint8_t blake2b_sigma[12][16] =
 {
   {  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15 } ,
   { 14, 10,  4,  8,  9, 15, 13,  6,  1, 12,  0,  2, 11,  7,  5,  3 } ,
@@ -49,113 +49,113 @@ static const uint8_t blake2b_sigma[12][16] =
 };
 
 
-static void blake2b_set_lastnode( blake2b_state *S )
+స్థిర శూన్య blake2b_సమితి_lastnode( blake2b_state *S )
 {
   S->f[1] = (uint64_t)-1;
 }
 
 /* Some helper functions, not necessarily useful */
-static int blake2b_is_lastblock( const blake2b_state *S )
+స్థిర పూర్ణాంకం blake2b_is_lastblock( స్థిరరాశి blake2b_state *S )
 {
-  return S->f[0] != 0;
+  తిరిగి S->f[0] != 0;
 }
 
-static void blake2b_set_lastblock( blake2b_state *S )
+స్థిర శూన్య blake2b_సమితి_lastblock( blake2b_state *S )
 {
-  if( S->last_node ) blake2b_set_lastnode( S );
+  ఒకవేళ( S->చివరి_కణుపు ) blake2b_సమితి_lastnode( S );
 
   S->f[0] = (uint64_t)-1;
 }
 
-static void blake2b_increment_counter( blake2b_state *S, const uint64_t inc )
+స్థిర శూన్య blake2b_increment_counter( blake2b_state *S, స్థిరరాశి uint64_t inc )
 {
   S->t[0] += inc;
   S->t[1] += ( S->t[0] < inc );
 }
 
-static void blake2b_init0( blake2b_state *S )
+స్థిర శూన్య blake2b_init0( blake2b_state *S )
 {
   size_t i;
-  memset( S, 0, sizeof( blake2b_state ) );
+  memset( S, 0, పరిమాణం( blake2b_state ) );
 
-  for( i = 0; i < 8; ++i ) S->h[i] = blake2b_IV[i];
+  కొరకు( i = 0; i < 8; ++i ) S->h[i] = blake2b_IV[i];
 }
 
 /* init xors IV with input parameter block */
-int blake2b_init_param( blake2b_state *S, const blake2b_param *P )
+పూర్ణాంకం blake2b_init_param( blake2b_state *S, స్థిరరాశి blake2b_param *P )
 {
-  const uint8_t *p = ( const uint8_t * )( P );
+  స్థిరరాశి uint8_t *p = ( స్థిరరాశి uint8_t * )( P );
   size_t i;
 
   blake2b_init0( S );
 
   /* IV XOR ParamBlock */
-  for( i = 0; i < 8; ++i )
-    S->h[i] ^= load64( p + sizeof( S->h[i] ) * i );
+  కొరకు( i = 0; i < 8; ++i )
+    S->h[i] ^= load64( p + పరిమాణం( S->h[i] ) * i );
 
-  S->outlen = P->digest_length;
-  return 0;
+  S->outlen = P->digest_నిడివి;
+  తిరిగి 0;
 }
 
 
 
-int blake2b_init( blake2b_state *S, size_t outlen )
+పూర్ణాంకం blake2b_init( blake2b_state *S, size_t outlen )
 {
   blake2b_param P[1];
 
-  if ( ( !outlen ) || ( outlen > BLAKE2B_OUTBYTES ) ) return -1;
+  ఒకవేళ ( ( !outlen ) || ( outlen > BLAKE2B_OUTBYTES ) ) తిరిగి -1;
 
-  P->digest_length = (uint8_t)outlen;
-  P->key_length    = 0;
+  P->digest_నిడివి = (uint8_t)outlen;
+  P->కీలకం_నిడివి    = 0;
   P->fanout        = 1;
-  P->depth         = 1;
-  store32( &P->leaf_length, 0 );
-  store32( &P->node_offset, 0 );
-  store32( &P->xof_length, 0 );
-  P->node_depth    = 0;
-  P->inner_length  = 0;
-  memset( P->reserved, 0, sizeof( P->reserved ) );
-  memset( P->salt,     0, sizeof( P->salt ) );
-  memset( P->personal, 0, sizeof( P->personal ) );
-  return blake2b_init_param( S, P );
+  P->లోతు         = 1;
+  store32( &P->ఆకు_నిడివి, 0 );
+  store32( &P->కణుపు_స్థానభ్రంశం, 0 );
+  store32( &P->xof_నిడివి, 0 );
+  P->కణుపు_లోతు    = 0;
+  P->inner_నిడివి  = 0;
+  memset( P->reserved, 0, పరిమాణం( P->reserved ) );
+  memset( P->salt,     0, పరిమాణం( P->salt ) );
+  memset( P->personal, 0, పరిమాణం( P->personal ) );
+  తిరిగి blake2b_init_param( S, P );
 }
 
 
-int blake2b_init_key( blake2b_state *S, size_t outlen, const void *key, size_t keylen )
+పూర్ణాంకం blake2b_init_కీలకం( blake2b_state *S, size_t outlen, స్థిరరాశి శూన్య *కీలకం, size_t keylen )
 {
   blake2b_param P[1];
 
-  if ( ( !outlen ) || ( outlen > BLAKE2B_OUTBYTES ) ) return -1;
+  ఒకవేళ ( ( !outlen ) || ( outlen > BLAKE2B_OUTBYTES ) ) తిరిగి -1;
 
-  if ( !key || !keylen || keylen > BLAKE2B_KEYBYTES ) return -1;
+  ఒకవేళ ( !కీలకం || !keylen || keylen > BLAKE2B_KEYBYTES ) తిరిగి -1;
 
-  P->digest_length = (uint8_t)outlen;
-  P->key_length    = (uint8_t)keylen;
+  P->digest_నిడివి = (uint8_t)outlen;
+  P->కీలకం_నిడివి    = (uint8_t)keylen;
   P->fanout        = 1;
-  P->depth         = 1;
-  store32( &P->leaf_length, 0 );
-  store32( &P->node_offset, 0 );
-  store32( &P->xof_length, 0 );
-  P->node_depth    = 0;
-  P->inner_length  = 0;
-  memset( P->reserved, 0, sizeof( P->reserved ) );
-  memset( P->salt,     0, sizeof( P->salt ) );
-  memset( P->personal, 0, sizeof( P->personal ) );
+  P->లోతు         = 1;
+  store32( &P->ఆకు_నిడివి, 0 );
+  store32( &P->కణుపు_స్థానభ్రంశం, 0 );
+  store32( &P->xof_నిడివి, 0 );
+  P->కణుపు_లోతు    = 0;
+  P->inner_నిడివి  = 0;
+  memset( P->reserved, 0, పరిమాణం( P->reserved ) );
+  memset( P->salt,     0, పరిమాణం( P->salt ) );
+  memset( P->personal, 0, పరిమాణం( P->personal ) );
 
-  if( blake2b_init_param( S, P ) < 0 ) return -1;
+  ఒకవేళ( blake2b_init_param( S, P ) < 0 ) తిరిగి -1;
 
   {
-    uint8_t block[BLAKE2B_BLOCKBYTES];
-    memset( block, 0, BLAKE2B_BLOCKBYTES );
-    memcpy( block, key, keylen );
-    blake2b_update( S, block, BLAKE2B_BLOCKBYTES );
-    secure_zero_memory( block, BLAKE2B_BLOCKBYTES ); /* Burn the key from stack */
+    uint8_t ఖండం[BLAKE2B_BLOCKBYTES];
+    memset( ఖండం, 0, BLAKE2B_BLOCKBYTES );
+    జ్ఞాపకం_నకలు( ఖండం, కీలకం, keylen );
+    blake2b_update( S, ఖండం, BLAKE2B_BLOCKBYTES );
+    secure_zero_జ్ఞాపకం( ఖండం, BLAKE2B_BLOCKBYTES ); /* Burn the key from stack */
   }
-  return 0;
+  తిరిగి 0;
 }
 
-#define G(r,i,a,b,c,d)                      \
-  do {                                      \
+#నిర్వచించు G(r,i,a,b,c,d)                      \
+  చేయి {                                      \
     a = a + b + m[blake2b_sigma[r][2 * i + 0]]; \
     d = rotr64(d ^ a, 32);                  \
     c = c + d;                              \
@@ -164,10 +164,10 @@ int blake2b_init_key( blake2b_state *S, size_t outlen, const void *key, size_t k
     d = rotr64(d ^ a, 16);                  \
     c = c + d;                              \
     b = rotr64(b ^ c, 63);                  \
-  } while(0)
+  } అయితే(0)
 
-#define ROUND(r)                    \
-  do {                              \
+#నిర్వచించు విడత(r)                    \
+  చేయి {                              \
     G(r,0,v[ 0],v[ 4],v[ 8],v[12]); \
     G(r,1,v[ 1],v[ 5],v[ 9],v[13]); \
     G(r,2,v[ 2],v[ 6],v[10],v[14]); \
@@ -176,19 +176,19 @@ int blake2b_init_key( blake2b_state *S, size_t outlen, const void *key, size_t k
     G(r,5,v[ 1],v[ 6],v[11],v[12]); \
     G(r,6,v[ 2],v[ 7],v[ 8],v[13]); \
     G(r,7,v[ 3],v[ 4],v[ 9],v[14]); \
-  } while(0)
+  } అయితే(0)
 
-static void blake2b_compress( blake2b_state *S, const uint8_t block[BLAKE2B_BLOCKBYTES] )
+స్థిర శూన్య blake2b_compress( blake2b_state *S, స్థిరరాశి uint8_t ఖండం[BLAKE2B_BLOCKBYTES] )
 {
   uint64_t m[16];
   uint64_t v[16];
   size_t i;
 
-  for( i = 0; i < 16; ++i ) {
-    m[i] = load64( block + i * sizeof( m[i] ) );
+  కొరకు( i = 0; i < 16; ++i ) {
+    m[i] = load64( ఖండం + i * పరిమాణం( m[i] ) );
   }
 
-  for( i = 0; i < 8; ++i ) {
+  కొరకు( i = 0; i < 8; ++i ) {
     v[i] = S->h[i];
   }
 
@@ -201,183 +201,183 @@ static void blake2b_compress( blake2b_state *S, const uint8_t block[BLAKE2B_BLOC
   v[14] = blake2b_IV[6] ^ S->f[0];
   v[15] = blake2b_IV[7] ^ S->f[1];
 
-  ROUND( 0 );
-  ROUND( 1 );
-  ROUND( 2 );
-  ROUND( 3 );
-  ROUND( 4 );
-  ROUND( 5 );
-  ROUND( 6 );
-  ROUND( 7 );
-  ROUND( 8 );
-  ROUND( 9 );
-  ROUND( 10 );
-  ROUND( 11 );
+  విడత( 0 );
+  విడత( 1 );
+  విడత( 2 );
+  విడత( 3 );
+  విడత( 4 );
+  విడత( 5 );
+  విడత( 6 );
+  విడత( 7 );
+  విడత( 8 );
+  విడత( 9 );
+  విడత( 10 );
+  విడత( 11 );
 
-  for( i = 0; i < 8; ++i ) {
+  కొరకు( i = 0; i < 8; ++i ) {
     S->h[i] = S->h[i] ^ v[i] ^ v[i + 8];
   }
 }
 
-#undef G
-#undef ROUND
+#నిర్వచనం_రద్దు G
+#నిర్వచనం_రద్దు విడత
 
-int blake2b_update( blake2b_state *S, const void *pin, size_t inlen )
+పూర్ణాంకం blake2b_update( blake2b_state *S, స్థిరరాశి శూన్య *pin, size_t inlen )
 {
-  const unsigned char * in = (const unsigned char *)pin;
-  if( inlen > 0 )
+  స్థిరరాశి గుర్తులేని అక్షరం * లోపల = (స్థిరరాశి గుర్తులేని అక్షరం *)pin;
+  ఒకవేళ( inlen > 0 )
   {
-    size_t left = S->buflen;
-    size_t fill = BLAKE2B_BLOCKBYTES - left;
-    if( inlen > fill )
+    size_t ఎడమ = S->buflen;
+    size_t fill = BLAKE2B_BLOCKBYTES - ఎడమ;
+    ఒకవేళ( inlen > fill )
     {
       S->buflen = 0;
-      memcpy( S->buf + left, in, fill ); /* Fill buffer */
+      జ్ఞాపకం_నకలు( S->buf + ఎడమ, లోపల, fill ); /* Fill buffer */
       blake2b_increment_counter( S, BLAKE2B_BLOCKBYTES );
       blake2b_compress( S, S->buf ); /* Compress */
-      in += fill; inlen -= fill;
-      while(inlen > BLAKE2B_BLOCKBYTES) {
+      లోపల += fill; inlen -= fill;
+      అయితే(inlen > BLAKE2B_BLOCKBYTES) {
         blake2b_increment_counter(S, BLAKE2B_BLOCKBYTES);
-        blake2b_compress( S, in );
-        in += BLAKE2B_BLOCKBYTES;
+        blake2b_compress( S, లోపల );
+        లోపల += BLAKE2B_BLOCKBYTES;
         inlen -= BLAKE2B_BLOCKBYTES;
       }
     }
-    memcpy( S->buf + S->buflen, in, inlen );
+    జ్ఞాపకం_నకలు( S->buf + S->buflen, లోపల, inlen );
     S->buflen += inlen;
   }
-  return 0;
+  తిరిగి 0;
 }
 
-int blake2b_final( blake2b_state *S, void *out, size_t outlen )
+పూర్ణాంకం blake2b_final( blake2b_state *S, శూన్య *బహిర్గతం, size_t outlen )
 {
-  uint8_t buffer[BLAKE2B_OUTBYTES] = {0};
+  uint8_t బఫరు[BLAKE2B_OUTBYTES] = {0};
   size_t i;
 
-  if( out == NULL || outlen < S->outlen )
-    return -1;
+  ఒకవేళ( బహిర్గతం == ఖాళీ || outlen < S->outlen )
+    తిరిగి -1;
 
-  if( blake2b_is_lastblock( S ) )
-    return -1;
+  ఒకవేళ( blake2b_is_lastblock( S ) )
+    తిరిగి -1;
 
   blake2b_increment_counter( S, S->buflen );
-  blake2b_set_lastblock( S );
+  blake2b_సమితి_lastblock( S );
   memset( S->buf + S->buflen, 0, BLAKE2B_BLOCKBYTES - S->buflen ); /* Padding */
   blake2b_compress( S, S->buf );
 
-  for( i = 0; i < 8; ++i ) /* Output full hash to temp buffer */
-    store64( buffer + sizeof( S->h[i] ) * i, S->h[i] );
+  కొరకు( i = 0; i < 8; ++i ) /* Output full hash to temp buffer */
+    store64( బఫరు + పరిమాణం( S->h[i] ) * i, S->h[i] );
 
-  memcpy( out, buffer, S->outlen );
-  secure_zero_memory(buffer, sizeof(buffer));
-  return 0;
+  జ్ఞాపకం_నకలు( బహిర్గతం, బఫరు, S->outlen );
+  secure_zero_జ్ఞాపకం(బఫరు, పరిమాణం(బఫరు));
+  తిరిగి 0;
 }
 
 /* inlen, at least, should be uint64_t. Others can be size_t. */
-int blake2b( void *out, size_t outlen, const void *in, size_t inlen, const void *key, size_t keylen )
+పూర్ణాంకం blake2b( శూన్య *బహిర్గతం, size_t outlen, స్థిరరాశి శూన్య *లోపల, size_t inlen, స్థిరరాశి శూన్య *కీలకం, size_t keylen )
 {
   blake2b_state S[1];
 
   /* Verify parameters */
-  if ( NULL == in && inlen > 0 ) return -1;
+  ఒకవేళ ( ఖాళీ == లోపల && inlen > 0 ) తిరిగి -1;
 
-  if ( NULL == out ) return -1;
+  ఒకవేళ ( ఖాళీ == బహిర్గతం ) తిరిగి -1;
 
-  if( NULL == key && keylen > 0 ) return -1;
+  ఒకవేళ( ఖాళీ == కీలకం && keylen > 0 ) తిరిగి -1;
 
-  if( !outlen || outlen > BLAKE2B_OUTBYTES ) return -1;
+  ఒకవేళ( !outlen || outlen > BLAKE2B_OUTBYTES ) తిరిగి -1;
 
-  if( keylen > BLAKE2B_KEYBYTES ) return -1;
+  ఒకవేళ( keylen > BLAKE2B_KEYBYTES ) తిరిగి -1;
 
-  if( keylen > 0 )
+  ఒకవేళ( keylen > 0 )
   {
-    if( blake2b_init_key( S, outlen, key, keylen ) < 0 ) return -1;
+    ఒకవేళ( blake2b_init_కీలకం( S, outlen, కీలకం, keylen ) < 0 ) తిరిగి -1;
   }
-  else
+  లేకపోతే
   {
-    if( blake2b_init( S, outlen ) < 0 ) return -1;
+    ఒకవేళ( blake2b_init( S, outlen ) < 0 ) తిరిగి -1;
   }
 
-  blake2b_update( S, ( const uint8_t * )in, inlen );
-  blake2b_final( S, out, outlen );
-  return 0;
+  blake2b_update( S, ( స్థిరరాశి uint8_t * )లోపల, inlen );
+  blake2b_final( S, బహిర్గతం, outlen );
+  తిరిగి 0;
 }
 
-int blake2( void *out, size_t outlen, const void *in, size_t inlen, const void *key, size_t keylen ) {
-  return blake2b(out, outlen, in, inlen, key, keylen);
+పూర్ణాంకం blake2( శూన్య *బహిర్గతం, size_t outlen, స్థిరరాశి శూన్య *లోపల, size_t inlen, స్థిరరాశి శూన్య *కీలకం, size_t keylen ) {
+  తిరిగి blake2b(బహిర్గతం, outlen, లోపల, inlen, కీలకం, keylen);
 }
 
-#if defined(SUPERCOP)
-int crypto_hash( unsigned char *out, unsigned char *in, unsigned long long inlen )
+#ఒకవేళ defined(SUPERCOP)
+పూర్ణాంకం crypto_hash( గుర్తులేని అక్షరం *బహిర్గతం, గుర్తులేని అక్షరం *లోపల, గుర్తులేని దీర్ఘ దీర్ఘ inlen )
 {
-  return blake2b( out, BLAKE2B_OUTBYTES, in, inlen, NULL, 0 );
+  తిరిగి blake2b( బహిర్గతం, BLAKE2B_OUTBYTES, లోపల, inlen, ఖాళీ, 0 );
 }
-#endif
+#అయితే_ముగింపు
 
-#if defined(BLAKE2B_SELFTEST)
-#include <string.h>
-#include "blake2-kat.h"
-int main( void )
+#ఒకవేళ defined(BLAKE2B_SELFTEST)
+#అన్తర్భావ <string.h>
+#అన్తర్భావ "blake2-kat.h"
+పూర్ణాంకం ప్రధాన( శూన్య )
 {
-  uint8_t key[BLAKE2B_KEYBYTES];
-  uint8_t buf[BLAKE2_KAT_LENGTH];
-  size_t i, step;
+  uint8_t కీలకం[BLAKE2B_KEYBYTES];
+  uint8_t buf[BLAKE2_KAT_నిడివి];
+  size_t i, అడుగు;
 
-  for( i = 0; i < BLAKE2B_KEYBYTES; ++i )
-    key[i] = ( uint8_t )i;
+  కొరకు( i = 0; i < BLAKE2B_KEYBYTES; ++i )
+    కీలకం[i] = ( uint8_t )i;
 
-  for( i = 0; i < BLAKE2_KAT_LENGTH; ++i )
+  కొరకు( i = 0; i < BLAKE2_KAT_నిడివి; ++i )
     buf[i] = ( uint8_t )i;
 
   /* Test simple API */
-  for( i = 0; i < BLAKE2_KAT_LENGTH; ++i )
+  కొరకు( i = 0; i < BLAKE2_KAT_నిడివి; ++i )
   {
     uint8_t hash[BLAKE2B_OUTBYTES];
-    blake2b( hash, BLAKE2B_OUTBYTES, buf, i, key, BLAKE2B_KEYBYTES );
+    blake2b( hash, BLAKE2B_OUTBYTES, buf, i, కీలకం, BLAKE2B_KEYBYTES );
 
-    if( 0 != memcmp( hash, blake2b_keyed_kat[i], BLAKE2B_OUTBYTES ) )
+    ఒకవేళ( 0 != memcmp( hash, blake2b_keyed_kat[i], BLAKE2B_OUTBYTES ) )
     {
-      goto fail;
+      వెళ్ళు fail;
     }
   }
 
   /* Test streaming API */
-  for(step = 1; step < BLAKE2B_BLOCKBYTES; ++step) {
-    for (i = 0; i < BLAKE2_KAT_LENGTH; ++i) {
+  కొరకు(అడుగు = 1; అడుగు < BLAKE2B_BLOCKBYTES; ++అడుగు) {
+    కొరకు (i = 0; i < BLAKE2_KAT_నిడివి; ++i) {
       uint8_t hash[BLAKE2B_OUTBYTES];
       blake2b_state S;
       uint8_t * p = buf;
       size_t mlen = i;
-      int err = 0;
+      పూర్ణాంకం err = 0;
 
-      if( (err = blake2b_init_key(&S, BLAKE2B_OUTBYTES, key, BLAKE2B_KEYBYTES)) < 0 ) {
-        goto fail;
+      ఒకవేళ( (err = blake2b_init_కీలకం(&S, BLAKE2B_OUTBYTES, కీలకం, BLAKE2B_KEYBYTES)) < 0 ) {
+        వెళ్ళు fail;
       }
 
-      while (mlen >= step) {
-        if ( (err = blake2b_update(&S, p, step)) < 0 ) {
-          goto fail;
+      అయితే (mlen >= అడుగు) {
+        ఒకవేళ ( (err = blake2b_update(&S, p, అడుగు)) < 0 ) {
+          వెళ్ళు fail;
         }
-        mlen -= step;
-        p += step;
+        mlen -= అడుగు;
+        p += అడుగు;
       }
-      if ( (err = blake2b_update(&S, p, mlen)) < 0) {
-        goto fail;
+      ఒకవేళ ( (err = blake2b_update(&S, p, mlen)) < 0) {
+        వెళ్ళు fail;
       }
-      if ( (err = blake2b_final(&S, hash, BLAKE2B_OUTBYTES)) < 0) {
-        goto fail;
+      ఒకవేళ ( (err = blake2b_final(&S, hash, BLAKE2B_OUTBYTES)) < 0) {
+        వెళ్ళు fail;
       }
 
-      if (0 != memcmp(hash, blake2b_keyed_kat[i], BLAKE2B_OUTBYTES)) {
-        goto fail;
+      ఒకవేళ (0 != memcmp(hash, blake2b_keyed_kat[i], BLAKE2B_OUTBYTES)) {
+        వెళ్ళు fail;
       }
     }
   }
 
   puts( "ok" );
-  return 0;
+  తిరిగి 0;
 fail:
   puts("error");
-  return -1;
+  తిరిగి -1;
 }
-#endif
+#అయితే_ముగింపు

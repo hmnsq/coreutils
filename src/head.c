@@ -23,53 +23,53 @@
 
    David MacKenzie <djm@gnu.ai.mit.edu> */
 
-#include <config.h>
+#అన్తర్భావ <config.h>
 
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#అన్తర్భావ <stdio.h>
+#అన్తర్భావ <getopt.h>
+#అన్తర్భావ <sys/types.h>
 
-#include "system.h"
+#అన్తర్భావ "system.h"
 
-#include "assure.h"
-#include "c-ctype.h"
-#include "full-read.h"
-#include "stat-size.h"
-#include "xbinary-io.h"
-#include "xdectoint.h"
+#అన్తర్భావ "assure.h"
+#అన్తర్భావ "c-ctype.h"
+#అన్తర్భావ "full-read.h"
+#అన్తర్భావ "stat-size.h"
+#అన్తర్భావ "xbinary-io.h"
+#అన్తర్భావ "xdectoint.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "head"
+#నిర్వచించు కార్యక్రమం_NAME "head"
 
-#define AUTHORS \
+#నిర్వచించు AUTHORS \
   proper_name ("David MacKenzie"), \
   proper_name ("Jim Meyering")
 
 /* Number of lines/chars/blocks to head. */
-#define DEFAULT_NUMBER 10
+#నిర్వచించు DEFAULT_సంఖ్య 10
 
 /* Useful only when eliding tail bytes or lines.
    If true, skip the is-regular-file test used to determine whether
    to use the lseek optimization.  Instead, use the more general (and
    more expensive) code unconditionally. Intended solely for testing.  */
-static bool presume_input_pipe;
+స్థిర bool presume_ఆదానం_pipe;
 
 /* If true, print filename headers. */
-static bool print_headers;
+స్థిర bool print_శీర్షికలు;
 
 /* Character to split lines by. */
-static char line_end = '\n';
+స్థిర అక్షరం పంక్తి_చివర = '\n';
 
 /* When to print the filename banners. */
-enum header_mode
+గణన శీర్షిక_బహుళకం
 {
-  multiple_files, always, never
+  గుణిజం_files, always, never
 };
 
 /* Have we ever read standard input?  */
-static bool have_read_stdin;
+స్థిర bool have_read_stdin;
 
-enum Copy_fd_status
+గణన Copy_fd_స్థితి
   {
     COPY_FD_OK = 0,
     COPY_FD_READ_ERROR,
@@ -78,119 +78,119 @@ enum Copy_fd_status
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+గణన
 {
-  PRESUME_INPUT_PIPE_OPTION = CHAR_MAX + 1
+  PRESUME_ఆదానం_PIPE_OPTION = CHAR_MAX + 1
 };
 
-static struct option const long_options[] =
+స్థిర నిర్మాణం option స్థిరరాశి long_options[] =
 {
-  {"bytes", required_argument, NULL, 'c'},
-  {"lines", required_argument, NULL, 'n'},
-  {"-presume-input-pipe", no_argument, NULL,
-   PRESUME_INPUT_PIPE_OPTION}, /* do not document */
-  {"quiet", no_argument, NULL, 'q'},
-  {"silent", no_argument, NULL, 'q'},
-  {"verbose", no_argument, NULL, 'v'},
-  {"zero-terminated", no_argument, NULL, 'z'},
+  {"bytes", required_వాదం, ఖాళీ, 'c'},
+  {"lines", required_వాదం, ఖాళీ, 'n'},
+  {"-presume-input-pipe", no_వాదం, ఖాళీ,
+   PRESUME_ఆదానం_PIPE_OPTION}, /* do not document */
+  {"quiet", no_వాదం, ఖాళీ, 'q'},
+  {"silent", no_వాదం, ఖాళీ, 'q'},
+  {"verbose", no_వాదం, ఖాళీ, 'v'},
+  {"zero-terminated", no_వాదం, ఖాళీ, 'z'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_సంస్కరణ_OPTION_DECL},
+  {ఖాళీ, 0, ఖాళీ, 0}
 };
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("\
+      రాయి (_("\
 Usage: %s [OPTION]... [FILE]...\n\
 "),
-              program_name);
-      printf (_("\
-Print the first %d lines of each FILE to standard output.\n\
-With more than one FILE, precede each with a header giving the file name.\n\
-"), DEFAULT_NUMBER);
+              కార్యక్రమం_name);
+      రాయి (_("\
+Print the మొదటి %d పంక్తులు యొక్క each FILE గమ్యం standard output.\n\
+With మరిన్ని than one FILE, precede each with a శీర్షిక giving the file name.\n\
+"), DEFAULT_సంఖ్య);
 
       emit_stdin_note ();
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -c, --bytes=[-]NUM\n\
-         print the first NUM bytes of each file;\n\
-         with the leading '-', print all but the last NUM bytes of each file\n\
+  -c, --బైట్లు=[-]అంకె_2\n\
+         print the మొదటి అంకె_2 బైట్లు యొక్క each file;\n\
+         with the leading '-', print all but the చివరి అంకె_2 బైట్లు యొక్క each file\n\
 "));
       oprintf (_("\
-  -n, --lines=[-]NUM\n\
-         print the first NUM lines instead of the first %d;\n\
-         with the leading '-', print all but the last NUM lines of each file\n\
-"), DEFAULT_NUMBER);
+  -n, --పంక్తులు=[-]అంకె_2\n\
+         print the మొదటి అంకె_2 పంక్తులు instead యొక్క the మొదటి %d;\n\
+         with the leading '-', print all but the చివరి అంకె_2 పంక్తులు యొక్క each file\n\
+"), DEFAULT_సంఖ్య);
       oputs (_("\
   -q, --quiet, --silent\n\
-         never print headers giving file names\n\
+         never print శీర్షికలు giving file పేర్లు\n\
 "));
       oputs (_("\
   -v, --verbose\n\
-         always print headers giving file names\n\
+         always print శీర్షికలు giving file పేర్లు\n\
 "));
       oputs (_("\
   -z, --zero-terminated\n\
-         line delimiter is NUL, not newline\n\
+         పంక్తి delimiter is NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-NUM may have a multiplier suffix:\n\
+అంకె_2 may have a multiplier suffix:\n\
 b 512, kB 1000, K 1024, MB 1000*1000, M 1024*1024,\n\
-GB 1000*1000*1000, G 1024*1024*1024, and so on for T, P, E, Z, Y, R, Q.\n\
-Binary prefixes can be used, too: KiB=K, MiB=M, and so on.\n\
+GB 1000*1000*1000, G 1024*1024*1024, and so on కొరకు T, P, E, Z, Y, R, Q.\n\
+ద్విమాన_2 prefixes can be వాడిన, too: KiB=K, MiB=M, and so on.\n\
 "), stdout);
-      emit_ancillary_info (PROGRAM_NAME);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
-static void
-diagnose_read_failure (char const *filename)
+స్థిర శూన్య
+diagnose_read_failure (అక్షరం స్థిరరాశి *filename)
 {
   error (0, errno, _("error reading %s"), quoteaf (filename));
 }
 
-static void
-diagnose_copy_fd_failure (enum Copy_fd_status err, char const *filename)
+స్థిర శూన్య
+diagnose_copy_fd_failure (గణన Copy_fd_స్థితి err, అక్షరం స్థిరరాశి *filename)
 {
-  switch (err)
+  ఎంపిక (err)
     {
-    case COPY_FD_READ_ERROR:
+    స్థితి COPY_FD_READ_ERROR:
       diagnose_read_failure (filename);
-      break;
-    case COPY_FD_UNEXPECTED_EOF:
+      ఆపు;
+    స్థితి COPY_FD_UNEXPECTED_EOF:
       error (0, errno, _("%s: file has shrunk too much"), quotef (filename));
-      break;
-    case COPY_FD_OK: default:
+      ఆపు;
+    స్థితి COPY_FD_OK: అప్రమేయ:
       affirm (false);
     }
 }
 
-static void
-write_header (char const *filename)
+స్థిర శూన్య
+write_శీర్షిక (అక్షరం స్థిరరాశి *filename)
 {
-  static bool first_file = true;
+  స్థిర bool మొదటి_file = true;
 
-  printf ("%s==> %s <==\n", (first_file ? "" : "\n"), quotef (filename));
-  first_file = false;
+  రాయి ("%s==> %s <==\n", (మొదటి_file ? "" : "\n"), quotef (filename));
+  మొదటి_file = false;
 }
 
 /* Write N_BYTES from BUFFER to stdout.
    Exit immediately on error with a single diagnostic.  */
 
-static void
-xwrite_stdout (char const *buffer, size_t n_bytes)
+స్థిర శూన్య
+xwrite_stdout (అక్షరం స్థిరరాశి *బఫరు, size_t n_బైట్లు)
 {
-  if (n_bytes > 0 && fwrite (buffer, 1, n_bytes, stdout) < n_bytes)
+  ఒకవేళ (n_బైట్లు > 0 && fwrite (బఫరు, 1, n_బైట్లు, stdout) < n_బైట్లు)
     {
       clearerr (stdout); /* To avoid redundant close_stdout diagnostic.  */
       fpurge (stdout);
@@ -202,35 +202,35 @@ xwrite_stdout (char const *buffer, size_t n_bytes)
 /* Copy no more than N_BYTES from file descriptor SRC_FD to stdout.
    Return an appropriate indication of success or read failure.  */
 
-static enum Copy_fd_status
-copy_fd (int src_fd, uintmax_t n_bytes)
+స్థిర గణన Copy_fd_స్థితి
+copy_fd (పూర్ణాంకం src_fd, uintmax_t n_బైట్లు)
 {
-  char buf[BUFSIZ];
+  అక్షరం buf[BUFSIZ];
 
   /* Copy the file contents.  */
-  while (0 < n_bytes)
+  అయితే (0 < n_బైట్లు)
     {
-      idx_t n_to_read = MIN (n_bytes, sizeof buf);
-      ssize_t n_read = read (src_fd, buf, n_to_read);
-      if (n_read < 0)
-        return COPY_FD_READ_ERROR;
+      idx_t n_గమ్యం_read = MIN (n_బైట్లు, పరిమాణం buf);
+      ssize_t n_read = పఠ (src_fd, buf, n_గమ్యం_read);
+      ఒకవేళ (n_read < 0)
+        తిరిగి COPY_FD_READ_ERROR;
 
-      n_bytes -= n_read;
+      n_బైట్లు -= n_read;
 
-      if (n_read == 0 && n_bytes != 0)
-        return COPY_FD_UNEXPECTED_EOF;
+      ఒకవేళ (n_read == 0 && n_బైట్లు != 0)
+        తిరిగి COPY_FD_UNEXPECTED_EOF;
 
       xwrite_stdout (buf, n_read);
     }
 
-  return COPY_FD_OK;
+  తిరిగి COPY_FD_OK;
 }
 
 /* Report an lseek failure at OFFSET compared to WHENCE, for FILENAME.  */
-static void
-elseek_diagnostic (off_t offset, int whence, char const *filename)
+స్థిర శూన్య
+elseek_diagnostic (off_t స్థానభ్రంశం, పూర్ణాంకం whence, అక్షరం స్థిరరాశి *filename)
 {
-  intmax_t off = offset;
+  intmax_t off = స్థానభ్రంశం;
   error (0, errno,
          _(whence == SEEK_SET
            ? N_("%s: cannot seek to offset %jd")
@@ -243,15 +243,15 @@ elseek_diagnostic (off_t offset, int whence, char const *filename)
    SEEK_CUR.  Return the resulting offset.  Give a diagnostic and
    return -1 if lseek fails.  */
 
-static off_t
-elseek (int fd, off_t offset, int whence, char const *filename)
+స్థిర off_t
+elseek (పూర్ణాంకం fd, off_t స్థానభ్రంశం, పూర్ణాంకం whence, అక్షరం స్థిరరాశి *filename)
 {
-  off_t new_offset = lseek (fd, offset, whence);
+  off_t new_స్థానభ్రంశం = lseek (fd, స్థానభ్రంశం, whence);
 
-  if (new_offset < 0)
-    elseek_diagnostic (offset, whence, filename);
+  ఒకవేళ (new_స్థానభ్రంశం < 0)
+    elseek_diagnostic (స్థానభ్రంశం, whence, filename);
 
-  return new_offset;
+  తిరిగి new_స్థానభ్రంశం;
 }
 
 /* For an input file with name FILENAME and descriptor FD,
@@ -261,29 +261,29 @@ elseek (int fd, off_t offset, int whence, char const *filename)
    just before the elided bytes before returning.
    Return true upon success.
    Give a diagnostic and return false upon error.  */
-static bool
-elide_tail_bytes_pipe (char const *filename, int fd, uintmax_t n_elide,
+స్థిర bool
+elide_తోక_బైట్లు_pipe (అక్షరం స్థిరరాశి *filename, పూర్ణాంకం fd, uintmax_t n_elide,
                        off_t current_pos)
 {
   uintmax_t desired_pos = current_pos;
   bool ok = true;
 
-#ifndef HEAD_TAIL_PIPE_READ_BUFSIZE
-# define HEAD_TAIL_PIPE_READ_BUFSIZE BUFSIZ
-#endif
-#define READ_BUFSIZE HEAD_TAIL_PIPE_READ_BUFSIZE
+#నిర్వచితం_కాకపోతే తల_తోక_PIPE_READ_BUFSIZE
+# define తల_తోక_PIPE_READ_BUFSIZE BUFSIZ
+#అయితే_ముగింపు
+#నిర్వచించు READ_BUFSIZE తల_తోక_PIPE_READ_BUFSIZE
 
   /* If we're eliding no more than this many bytes, then it's ok to allocate
      more memory in order to use a more time-efficient algorithm.
      FIXME: use a fraction of available memory instead, as in sort.
      FIXME: is this even worthwhile?  */
-#ifndef HEAD_TAIL_PIPE_BYTECOUNT_THRESHOLD
-# define HEAD_TAIL_PIPE_BYTECOUNT_THRESHOLD 1024 * 1024
-#endif
+#నిర్వచితం_కాకపోతే తల_తోక_PIPE_BYTECOUNT_పరిమితి
+# define తల_తోక_PIPE_BYTECOUNT_పరిమితి 1024 * 1024
+#అయితే_ముగింపు
 
-#if HEAD_TAIL_PIPE_BYTECOUNT_THRESHOLD < 2 * READ_BUFSIZE
+#ఒకవేళ తల_తోక_PIPE_BYTECOUNT_పరిమితి < 2 * READ_BUFSIZE
 # error "HEAD_TAIL_PIPE_BYTECOUNT_THRESHOLD must be at least 2 * READ_BUFSIZE"
-#endif
+#అయితే_ముగింపు
 
   /* Two cases to consider...
      1) n_elide is small enough that we can afford to double-buffer:
@@ -297,42 +297,42 @@ elide_tail_bytes_pipe (char const *filename, int fd, uintmax_t n_elide,
      a ridiculous amount, but when given only a small input.  */
 
   static_assert (READ_BUFSIZE <= IDX_MAX);
-  static_assert (HEAD_TAIL_PIPE_BYTECOUNT_THRESHOLD <= IDX_MAX - READ_BUFSIZE);
-  if (n_elide <= HEAD_TAIL_PIPE_BYTECOUNT_THRESHOLD)
+  static_assert (తల_తోక_PIPE_BYTECOUNT_పరిమితి <= IDX_MAX - READ_BUFSIZE);
+  ఒకవేళ (n_elide <= తల_తోక_PIPE_BYTECOUNT_పరిమితి)
     {
-      idx_t in_elide = n_elide;
-      bool first = true;
+      idx_t లోపల_elide = n_elide;
+      bool మొదటి = true;
       bool eof = false;
-      idx_t n_to_read = READ_BUFSIZE + n_elide;
-      char *b[2];
-      b[0] = xnmalloc (2, n_to_read);
-      b[1] = b[0] + n_to_read;
+      idx_t n_గమ్యం_read = READ_BUFSIZE + n_elide;
+      అక్షరం *b[2];
+      b[0] = xnmalloc (2, n_గమ్యం_read);
+      b[1] = b[0] + n_గమ్యం_read;
 
-      for (bool i = false; ! eof ; i = !i)
+      కొరకు (bool i = false; ! eof ; i = !i)
         {
-          idx_t n_read = full_read (fd, b[i], n_to_read);
+          idx_t n_read = నిండిన_read (fd, b[i], n_గమ్యం_read);
           idx_t delta = 0;
-          if (n_read < n_to_read)
+          ఒకవేళ (n_read < n_గమ్యం_read)
             {
-              if (errno != 0)
+              ఒకవేళ (errno != 0)
                 {
                   diagnose_read_failure (filename);
                   ok = false;
-                  break;
+                  ఆపు;
                 }
 
               /* reached EOF */
-              if (n_read <= in_elide)
+              ఒకవేళ (n_read <= లోపల_elide)
                 {
-                  if (first)
+                  ఒకవేళ (మొదటి)
                     {
                       /* The input is no larger than the number of bytes
                          to elide.  So there's nothing to output, and
                          we're done.  */
                     }
-                  else
+                  లేకపోతే
                     {
-                      delta = in_elide - n_read;
+                      delta = లోపల_elide - n_read;
                     }
                 }
               eof = true;
@@ -340,30 +340,30 @@ elide_tail_bytes_pipe (char const *filename, int fd, uintmax_t n_elide,
 
           /* Output any (but maybe just part of the) elided data from
              the previous round.  */
-          if (! first)
+          ఒకవేళ (! మొదటి)
             {
-              desired_pos += in_elide - delta;
-              xwrite_stdout (b[!i] + READ_BUFSIZE, in_elide - delta);
+              desired_pos += లోపల_elide - delta;
+              xwrite_stdout (b[!i] + READ_BUFSIZE, లోపల_elide - delta);
             }
-          first = false;
+          మొదటి = false;
 
-          if (in_elide < n_read)
+          ఒకవేళ (లోపల_elide < n_read)
             {
-              desired_pos += n_read - in_elide;
-              xwrite_stdout (b[i], n_read - in_elide);
+              desired_pos += n_read - లోపల_elide;
+              xwrite_stdout (b[i], n_read - లోపల_elide);
             }
         }
 
-      free (b[0]);
+      విడుదల (b[0]);
     }
-  else
+  లేకపోతే
     {
       /* Read blocks of size READ_BUFSIZE, until we've read at least n_elide
          bytes.  Then, for each new buffer we read, also write an old one.  */
 
       bool eof = false;
       idx_t n_read;
-      char **b = NULL;
+      అక్షరం **b = ఖాళీ;
 
       idx_t remainder = n_elide % READ_BUFSIZE;
       /* The number of buffers needed to hold n_elide bytes plus one
@@ -374,57 +374,57 @@ elide_tail_bytes_pipe (char const *filename, int fd, uintmax_t n_elide,
       idx_t n_array_alloc = 0;
 
       bool buffered_enough = false;
-      idx_t i, i_next;
-      for (i = 0, i_next = 1; !eof; i = i_next, i_next = (i_next + 1) % n_bufs)
+      idx_t i, i_తదుపరి;
+      కొరకు (i = 0, i_తదుపరి = 1; !eof; i = i_తదుపరి, i_తదుపరి = (i_తదుపరి + 1) % n_bufs)
         {
-          if (n_array_alloc == i)
+          ఒకవేళ (n_array_alloc == i)
             b = xpalloc (b, &n_array_alloc, 1, MIN (n_bufs, PTRDIFF_MAX),
-                         sizeof *b);
+                         పరిమాణం *b);
 
-          if (! buffered_enough)
+          ఒకవేళ (! buffered_enough)
             {
               b[i] = xmalloc (READ_BUFSIZE);
               n_alloc = i + 1;
             }
-          n_read = full_read (fd, b[i], READ_BUFSIZE);
-          if (n_read < READ_BUFSIZE)
+          n_read = నిండిన_read (fd, b[i], READ_BUFSIZE);
+          ఒకవేళ (n_read < READ_BUFSIZE)
             {
-              if (errno != 0)
+              ఒకవేళ (errno != 0)
                 {
                   diagnose_read_failure (filename);
                   ok = false;
-                  goto free_mem;
+                  వెళ్ళు free_mem;
                 }
               eof = true;
             }
 
-          if (i + 1 == n_bufs)
+          ఒకవేళ (i + 1 == n_bufs)
             buffered_enough = true;
 
-          if (buffered_enough)
+          ఒకవేళ (buffered_enough)
             {
               desired_pos += n_read;
-              xwrite_stdout (b[i_next], n_read);
+              xwrite_stdout (b[i_తదుపరి], n_read);
             }
         }
 
       /* Output the remainder: rem bytes from b[i] + n_read.  */
       idx_t rem = READ_BUFSIZE - remainder;
-      if (buffered_enough)
+      ఒకవేళ (buffered_enough)
         {
-          idx_t n_bytes_left_in_b_i = READ_BUFSIZE - n_read;
+          idx_t n_బైట్లు_ఎడమ_లోపల_b_i = READ_BUFSIZE - n_read;
           desired_pos += rem;
-          if (rem < n_bytes_left_in_b_i)
+          ఒకవేళ (rem < n_బైట్లు_ఎడమ_లోపల_b_i)
             {
               xwrite_stdout (b[i] + n_read, rem);
             }
-          else
+          లేకపోతే
             {
-              xwrite_stdout (b[i] + n_read, n_bytes_left_in_b_i);
-              xwrite_stdout (b[i_next], rem - n_bytes_left_in_b_i);
+              xwrite_stdout (b[i] + n_read, n_బైట్లు_ఎడమ_లోపల_b_i);
+              xwrite_stdout (b[i_తదుపరి], rem - n_బైట్లు_ఎడమ_లోపల_b_i);
             }
         }
-      else if (i + 1 == n_bufs)
+      లేకపోతే ఒకవేళ (i + 1 == n_bufs)
         {
           /* This happens when
              n_elide < file_size < (n_bufs - 1) * READ_BUFSIZE.
@@ -442,18 +442,18 @@ elide_tail_bytes_pipe (char const *filename, int fd, uintmax_t n_elide,
           idx_t y = READ_BUFSIZE - rem;
           idx_t x = n_read - y;
           desired_pos += x;
-          xwrite_stdout (b[i_next], x);
+          xwrite_stdout (b[i_తదుపరి], x);
         }
 
     free_mem:
-      for (i = 0; i < n_alloc; i++)
-        free (b[i]);
-      free (b);
+      కొరకు (i = 0; i < n_alloc; i++)
+        విడుదల (b[i]);
+      విడుదల (b);
     }
 
-  if (0 <= current_pos && elseek (fd, desired_pos, SEEK_SET, filename) < 0)
+  ఒకవేళ (0 <= current_pos && elseek (fd, desired_pos, SEEK_SET, filename) < 0)
     ok = false;
-  return ok;
+  తిరిగి ok;
 }
 
 /* For the file FILENAME with descriptor FD, output all but the last N_ELIDE
@@ -464,29 +464,29 @@ elide_tail_bytes_pipe (char const *filename, int fd, uintmax_t n_elide,
 /* NOTE: if the input file shrinks by more than N_ELIDE bytes between
    the length determination and the actual reading, then head fails.  */
 
-static bool
-elide_tail_bytes_file (char const *filename, int fd, uintmax_t n_elide,
-                       struct stat const *st, off_t current_pos)
+స్థిర bool
+elide_తోక_బైట్లు_file (అక్షరం స్థిరరాశి *filename, పూర్ణాంకం fd, uintmax_t n_elide,
+                       నిర్మాణం stat స్థిరరాశి *st, off_t current_pos)
 {
-  off_t size = st->st_size;
-  if (current_pos < 0 || size <= STP_BLKSIZE (st))
-    return elide_tail_bytes_pipe (filename, fd, n_elide, current_pos);
-  else
+  off_t కొలత = st->st_కొలత;
+  ఒకవేళ (current_pos < 0 || కొలత <= STP_BLKSIZE (st))
+    తిరిగి elide_తోక_బైట్లు_pipe (filename, fd, n_elide, current_pos);
+  లేకపోతే
     {
       /* Be careful here.  The current position may actually be
          beyond the end of the file.  */
-      off_t diff = size - current_pos;
-      off_t bytes_remaining = diff < 0 ? 0 : diff;
+      off_t diff = కొలత - current_pos;
+      off_t బైట్లు_మిగిలిన = diff < 0 ? 0 : diff;
 
-      if (bytes_remaining <= n_elide)
-        return true;
+      ఒకవేళ (బైట్లు_మిగిలిన <= n_elide)
+        తిరిగి true;
 
-      enum Copy_fd_status err = copy_fd (fd, bytes_remaining - n_elide);
-      if (err == COPY_FD_OK)
-        return true;
+      గణన Copy_fd_స్థితి err = copy_fd (fd, బైట్లు_మిగిలిన - n_elide);
+      ఒకవేళ (err == COPY_FD_OK)
+        తిరిగి true;
 
       diagnose_copy_fd_failure (err, filename);
-      return false;
+      తిరిగి false;
     }
 }
 
@@ -497,143 +497,143 @@ elide_tail_bytes_file (char const *filename, int fd, uintmax_t n_elide,
    Buffer the specified number of lines as a linked list of LBUFFERs,
    adding them as needed.  Return true if successful.  */
 
-static bool
-elide_tail_lines_pipe (char const *filename, int fd, uintmax_t n_elide,
+స్థిర bool
+elide_తోక_పంక్తులు_pipe (అక్షరం స్థిరరాశి *filename, పూర్ణాంకం fd, uintmax_t n_elide,
                        off_t current_pos)
 {
-  struct linebuffer
+  నిర్మాణం linebuffer
   {
-    char buffer[BUFSIZ + 1];
+    అక్షరం బఫరు[BUFSIZ + 1];
     size_t nbytes;
     size_t nlines;
-    struct linebuffer *next;
+    నిర్మాణం linebuffer *తదుపరి;
   };
   off_t desired_pos = current_pos;
-  typedef struct linebuffer LBUFFER;
-  LBUFFER *first, *last, *tmp;
-  size_t total_lines = 0;	/* Total number of newlines in all buffers.  */
+  రకనిర్వచనం నిర్మాణం linebuffer LBUFFER;
+  LBUFFER *మొదటి, *చివరి, *tmp;
+  size_t మొత్తం_పంక్తులు = 0;	/* Total number of newlines in all buffers.  */
   bool ok = true;
   ssize_t n_read;		/* Size in bytes of most recent read */
 
-  first = last = xmalloc (sizeof (LBUFFER));
-  first->nbytes = first->nlines = 0;
-  first->next = NULL;
-  tmp = xmalloc (sizeof (LBUFFER));
+  మొదటి = చివరి = xmalloc (పరిమాణం (LBUFFER));
+  మొదటి->nbytes = మొదటి->nlines = 0;
+  మొదటి->తదుపరి = ఖాళీ;
+  tmp = xmalloc (పరిమాణం (LBUFFER));
 
   /* Always read into a fresh buffer.
      Read, (producing no output) until we've accumulated at least
      n_elide newlines, or until EOF, whichever comes first.  */
-  while (true)
+  అయితే (true)
     {
-      n_read = read (fd, tmp->buffer, BUFSIZ);
-      if (n_read <= 0)
-        break;
+      n_read = పఠ (fd, tmp->బఫరు, BUFSIZ);
+      ఒకవేళ (n_read <= 0)
+        ఆపు;
 
-      if (! n_elide)
+      ఒకవేళ (! n_elide)
         {
           desired_pos += n_read;
-          xwrite_stdout (tmp->buffer, n_read);
-          continue;
+          xwrite_stdout (tmp->బఫరు, n_read);
+          కొనసాగు;
         }
 
       tmp->nbytes = n_read;
       tmp->nlines = 0;
-      tmp->next = NULL;
+      tmp->తదుపరి = ఖాళీ;
 
       /* Count the number of newlines just read.  */
       {
-        char *buffer_end = tmp->buffer + n_read;
-        *buffer_end = line_end;
-        char const *p = tmp->buffer;
-        while ((p = rawmemchr (p, line_end)) < buffer_end)
+        అక్షరం *బఫరు_చివర = tmp->బఫరు + n_read;
+        *బఫరు_చివర = పంక్తి_చివర;
+        అక్షరం స్థిరరాశి *p = tmp->బఫరు;
+        అయితే ((p = rawmemchr (p, పంక్తి_చివర)) < బఫరు_చివర)
           {
             ++p;
             ++tmp->nlines;
           }
       }
-      total_lines += tmp->nlines;
+      మొత్తం_పంక్తులు += tmp->nlines;
 
       /* If there is enough room in the last buffer read, just append the new
          one to it.  This is because when reading from a pipe, 'n_read' can
          often be very small.  */
-      if (tmp->nbytes + last->nbytes < BUFSIZ)
+      ఒకవేళ (tmp->nbytes + చివరి->nbytes < BUFSIZ)
         {
-          memcpy (&last->buffer[last->nbytes], tmp->buffer, tmp->nbytes);
-          last->nbytes += tmp->nbytes;
-          last->nlines += tmp->nlines;
+          జ్ఞాపకం_నకలు (&చివరి->బఫరు[చివరి->nbytes], tmp->బఫరు, tmp->nbytes);
+          చివరి->nbytes += tmp->nbytes;
+          చివరి->nlines += tmp->nlines;
         }
-      else
+      లేకపోతే
         {
           /* If there's not enough room, link the new buffer onto the end of
              the list, then either free up the oldest buffer for the next
              read if that would leave enough lines, or else malloc a new one.
              Some compaction mechanism is possible but probably not
              worthwhile.  */
-          last = last->next = tmp;
-          if (n_elide < total_lines - first->nlines)
+          చివరి = చివరి->తదుపరి = tmp;
+          ఒకవేళ (n_elide < మొత్తం_పంక్తులు - మొదటి->nlines)
             {
-              desired_pos += first->nbytes;
-              xwrite_stdout (first->buffer, first->nbytes);
-              tmp = first;
-              total_lines -= first->nlines;
-              first = first->next;
+              desired_pos += మొదటి->nbytes;
+              xwrite_stdout (మొదటి->బఫరు, మొదటి->nbytes);
+              tmp = మొదటి;
+              మొత్తం_పంక్తులు -= మొదటి->nlines;
+              మొదటి = మొదటి->తదుపరి;
             }
-          else
-            tmp = xmalloc (sizeof (LBUFFER));
+          లేకపోతే
+            tmp = xmalloc (పరిమాణం (LBUFFER));
         }
     }
 
-  free (tmp);
+  విడుదల (tmp);
 
-  if (n_read < 0)
+  ఒకవేళ (n_read < 0)
     {
       diagnose_read_failure (filename);
       ok = false;
-      goto free_lbuffers;
+      వెళ్ళు free_lbuffers;
     }
 
   /* If we read any bytes at all, count the incomplete line
      on files that don't end with a newline.  */
-  if (last->nbytes && last->buffer[last->nbytes - 1] != line_end)
+  ఒకవేళ (చివరి->nbytes && చివరి->బఫరు[చివరి->nbytes - 1] != పంక్తి_చివర)
     {
-      ++last->nlines;
-      ++total_lines;
+      ++చివరి->nlines;
+      ++మొత్తం_పంక్తులు;
     }
 
-  for (tmp = first; n_elide < total_lines - tmp->nlines; tmp = tmp->next)
+  కొరకు (tmp = మొదటి; n_elide < మొత్తం_పంక్తులు - tmp->nlines; tmp = tmp->తదుపరి)
     {
       desired_pos += tmp->nbytes;
-      xwrite_stdout (tmp->buffer, tmp->nbytes);
-      total_lines -= tmp->nlines;
+      xwrite_stdout (tmp->బఫరు, tmp->nbytes);
+      మొత్తం_పంక్తులు -= tmp->nlines;
     }
 
   /* Print the first 'total_lines - n_elide' lines of tmp->buffer.  */
-  if (n_elide < total_lines)
+  ఒకవేళ (n_elide < మొత్తం_పంక్తులు)
     {
-      size_t n = total_lines - n_elide;
-      char const *buffer_end = tmp->buffer + tmp->nbytes;
-      char const *p = tmp->buffer;
-      while (n && (p = memchr (p, line_end, buffer_end - p)))
+      size_t n = మొత్తం_పంక్తులు - n_elide;
+      అక్షరం స్థిరరాశి *బఫరు_చివర = tmp->బఫరు + tmp->nbytes;
+      అక్షరం స్థిరరాశి *p = tmp->బఫరు;
+      అయితే (n && (p = memchr (p, పంక్తి_చివర, బఫరు_చివర - p)))
         {
           ++p;
           ++tmp->nlines;
           --n;
         }
-      desired_pos += p - tmp->buffer;
-      xwrite_stdout (tmp->buffer, p - tmp->buffer);
+      desired_pos += p - tmp->బఫరు;
+      xwrite_stdout (tmp->బఫరు, p - tmp->బఫరు);
     }
 
 free_lbuffers:
-  while (first)
+  అయితే (మొదటి)
     {
-      tmp = first->next;
-      free (first);
-      first = tmp;
+      tmp = మొదటి->తదుపరి;
+      విడుదల (మొదటి);
+      మొదటి = tmp;
     }
 
-  if (0 <= current_pos && elseek (fd, desired_pos, SEEK_SET, filename) < 0)
+  ఒకవేళ (0 <= current_pos && elseek (fd, desired_pos, SEEK_SET, filename) < 0)
     ok = false;
-  return ok;
+  తిరిగి ok;
 }
 
 /* Output all but the last N_LINES lines of the input stream defined by
@@ -647,105 +647,105 @@ free_lbuffers:
    NOTE: this code is very similar to that of tail.c's file_lines function.
    Unfortunately, factoring out some common core looks like it'd result
    in a less efficient implementation or a messy interface.  */
-static bool
-elide_tail_lines_seekable (char const *pretty_filename, int fd,
-                           uintmax_t n_lines,
-                           off_t start_pos, off_t size)
+స్థిర bool
+elide_తోక_పంక్తులు_seekable (అక్షరం స్థిరరాశి *pretty_filename, పూర్ణాంకం fd,
+                           uintmax_t n_పంక్తులు,
+                           off_t ప్రారంభం_pos, off_t కొలత)
 {
-  char buffer[BUFSIZ];
-  ssize_t bytes_read;
-  off_t pos = size;
+  అక్షరం బఫరు[BUFSIZ];
+  ssize_t బైట్లు_read;
+  off_t pos = కొలత;
 
   /* Set 'bytes_read' to the size of the last, probably partial, buffer;
      0 < 'bytes_read' <= 'BUFSIZ'.  */
-  bytes_read = (pos - start_pos) % BUFSIZ;
-  if (bytes_read == 0)
-    bytes_read = BUFSIZ;
+  బైట్లు_read = (pos - ప్రారంభం_pos) % BUFSIZ;
+  ఒకవేళ (బైట్లు_read == 0)
+    బైట్లు_read = BUFSIZ;
   /* Make 'pos' a multiple of 'BUFSIZ' (0 if the file is short), so that all
      reads will be on block boundaries, which might increase efficiency.  */
-  pos -= bytes_read;
-  if (elseek (fd, pos, SEEK_SET, pretty_filename) < 0)
-    return false;
-  bytes_read = read (fd, buffer, bytes_read);
-  if (bytes_read < 0)
+  pos -= బైట్లు_read;
+  ఒకవేళ (elseek (fd, pos, SEEK_SET, pretty_filename) < 0)
+    తిరిగి false;
+  బైట్లు_read = పఠ (fd, బఫరు, బైట్లు_read);
+  ఒకవేళ (బైట్లు_read < 0)
     {
       diagnose_read_failure (pretty_filename);
-      return false;
+      తిరిగి false;
     }
 
   /* n_lines == 0 case needs special treatment. */
-  const bool all_lines = !n_lines;
+  స్థిరరాశి bool all_పంక్తులు = !n_పంక్తులు;
 
   /* Count the incomplete line on files that don't end with a newline.  */
-  if (n_lines && bytes_read && buffer[bytes_read - 1] != line_end)
-    --n_lines;
+  ఒకవేళ (n_పంక్తులు && బైట్లు_read && బఫరు[బైట్లు_read - 1] != పంక్తి_చివర)
+    --n_పంక్తులు;
 
-  while (true)
+  అయితే (true)
     {
       /* Scan backward, counting the newlines in this bufferfull.  */
 
-      idx_t n = bytes_read;
-      while (n)
+      idx_t n = బైట్లు_read;
+      అయితే (n)
         {
-          if (all_lines)
+          ఒకవేళ (all_పంక్తులు)
             n -= 1;
-          else
+          లేకపోతే
             {
-              char const *nl;
-              nl = memrchr (buffer, line_end, n);
-              if (nl == NULL)
-                break;
-              n = nl - buffer;
+              అక్షరం స్థిరరాశి *nl;
+              nl = memrchr (బఫరు, పంక్తి_చివర, n);
+              ఒకవేళ (nl == ఖాళీ)
+                ఆపు;
+              n = nl - బఫరు;
             }
-          if (n_lines-- == 0)
+          ఒకవేళ (n_పంక్తులు-- == 0)
             {
               /* Found it.  */
               /* If necessary, restore the file pointer and copy
                  input to output up to position, POS.  */
-              if (start_pos < pos)
+              ఒకవేళ (ప్రారంభం_pos < pos)
                 {
-                  enum Copy_fd_status err;
-                  if (elseek (fd, start_pos, SEEK_SET, pretty_filename) < 0)
-                    return false;
+                  గణన Copy_fd_స్థితి err;
+                  ఒకవేళ (elseek (fd, ప్రారంభం_pos, SEEK_SET, pretty_filename) < 0)
+                    తిరిగి false;
 
-                  err = copy_fd (fd, pos - start_pos);
-                  if (err != COPY_FD_OK)
+                  err = copy_fd (fd, pos - ప్రారంభం_pos);
+                  ఒకవేళ (err != COPY_FD_OK)
                     {
                       diagnose_copy_fd_failure (err, pretty_filename);
-                      return false;
+                      తిరిగి false;
                     }
                 }
 
               /* Output the initial portion of the buffer
                  in which we found the desired newline byte.  */
-              xwrite_stdout (buffer, n + 1);
+              xwrite_stdout (బఫరు, n + 1);
 
               /* Set file pointer to the byte after what we've output.  */
-              return 0 <= elseek (fd, pos + n + 1, SEEK_SET, pretty_filename);
+              తిరిగి 0 <= elseek (fd, pos + n + 1, SEEK_SET, pretty_filename);
             }
         }
 
       /* Not enough newlines in that bufferfull.  */
-      if (pos == start_pos)
+      ఒకవేళ (pos == ప్రారంభం_pos)
         {
           /* Not enough lines in the file.  */
-          return true;
+          తిరిగి true;
         }
       pos -= BUFSIZ;
-      if (elseek (fd, pos, SEEK_SET, pretty_filename) < 0)
-        return false;
+      ఒకవేళ (elseek (fd, pos, SEEK_SET, pretty_filename) < 0)
+        తిరిగి false;
 
-      bytes_read = read (fd, buffer, BUFSIZ);
-      if (bytes_read < 0)
+      బైట్లు_read = పఠ (fd, బఫరు, BUFSIZ);
+      ఒకవేళ (బైట్లు_read < 0)
         {
           diagnose_read_failure (pretty_filename);
-          return false;
+          తిరిగి false;
         }
 
       /* FIXME: is this dead code?
          Consider the test, pos == start_pos, above. */
-      if (bytes_read == 0)
-        return true;
+      ఒకవేళ (బైట్లు_read == 0)
+        తిరిగి true;
     }
 }
 
@@ -754,144 +754,144 @@ elide_tail_lines_seekable (char const *pretty_filename, int fd,
    at CURRENT_POS.  The file's status is ST.  Return true on success.
    Give a diagnostic and return false upon error.  */
 
-static bool
-elide_tail_lines_file (char const *filename, int fd, uintmax_t n_elide,
-                       struct stat const *st, off_t current_pos)
+స్థిర bool
+elide_తోక_పంక్తులు_file (అక్షరం స్థిరరాశి *filename, పూర్ణాంకం fd, uintmax_t n_elide,
+                       నిర్మాణం stat స్థిరరాశి *st, off_t current_pos)
 {
-  off_t size = st->st_size;
-  if (current_pos < 0 || size <= STP_BLKSIZE (st))
-    return elide_tail_lines_pipe (filename, fd, n_elide, current_pos);
-  else
+  off_t కొలత = st->st_కొలత;
+  ఒకవేళ (current_pos < 0 || కొలత <= STP_BLKSIZE (st))
+    తిరిగి elide_తోక_పంక్తులు_pipe (filename, fd, n_elide, current_pos);
+  లేకపోతే
     {
       /* Find the offset, OFF, of the Nth newline from the end,
          but not counting the last byte of the file.
          If found, write from current position to OFF, inclusive.
          Otherwise, just return true.  */
 
-      return (size <= current_pos
-              || elide_tail_lines_seekable (filename, fd, n_elide,
-                                            current_pos, size));
+      తిరిగి (కొలత <= current_pos
+              || elide_తోక_పంక్తులు_seekable (filename, fd, n_elide,
+                                            current_pos, కొలత));
     }
 }
 
-static bool
-head_bytes (char const *filename, int fd, uintmax_t bytes_to_write)
+స్థిర bool
+తల_బైట్లు (అక్షరం స్థిరరాశి *filename, పూర్ణాంకం fd, uintmax_t బైట్లు_గమ్యం_write)
 {
-  if (copy_fd (fd, bytes_to_write) == COPY_FD_READ_ERROR)
+  ఒకవేళ (copy_fd (fd, బైట్లు_గమ్యం_write) == COPY_FD_READ_ERROR)
     {
       diagnose_read_failure (filename);
-      return false;
+      తిరిగి false;
     }
-  return true;
+  తిరిగి true;
 }
 
-static bool
-head_lines (char const *filename, int fd, uintmax_t lines_to_write)
+స్థిర bool
+తల_పంక్తులు (అక్షరం స్థిరరాశి *filename, పూర్ణాంకం fd, uintmax_t పంక్తులు_గమ్యం_write)
 {
-  char buffer[BUFSIZ];
+  అక్షరం బఫరు[BUFSIZ];
 
-  while (lines_to_write)
+  అయితే (పంక్తులు_గమ్యం_write)
     {
-      ssize_t bytes_read = read (fd, buffer, BUFSIZ);
-      idx_t bytes_to_write = 0;
+      ssize_t బైట్లు_read = పఠ (fd, బఫరు, BUFSIZ);
+      idx_t బైట్లు_గమ్యం_write = 0;
 
-      if (bytes_read < 0)
+      ఒకవేళ (బైట్లు_read < 0)
         {
           diagnose_read_failure (filename);
-          return false;
+          తిరిగి false;
         }
-      if (bytes_read == 0)
-        break;
-      while (bytes_to_write < bytes_read)
-        if (buffer[bytes_to_write++] == line_end && --lines_to_write == 0)
+      ఒకవేళ (బైట్లు_read == 0)
+        ఆపు;
+      అయితే (బైట్లు_గమ్యం_write < బైట్లు_read)
+        ఒకవేళ (బఫరు[బైట్లు_గమ్యం_write++] == పంక్తి_చివర && --పంక్తులు_గమ్యం_write == 0)
           {
-            off_t n_bytes_past_EOL = bytes_read - bytes_to_write;
+            off_t n_బైట్లు_past_EOL = బైట్లు_read - బైట్లు_గమ్యం_write;
             /* If we have read more data than that on the specified number
                of lines, try to seek back to the position we would have
                gotten to had we been reading one byte at a time.  */
-            if (lseek (fd, -n_bytes_past_EOL, SEEK_CUR) < 0)
+            ఒకవేళ (lseek (fd, -n_బైట్లు_past_EOL, SEEK_CUR) < 0)
               {
-                struct stat st;
-                if (fstat (fd, &st) != 0 || S_ISREG (st.st_mode))
-                  elseek_diagnostic (-n_bytes_past_EOL, SEEK_CUR, filename);
+                నిర్మాణం stat st;
+                ఒకవేళ (fstat (fd, &st) != 0 || S_ISREG (st.st_బహుళకం))
+                  elseek_diagnostic (-n_బైట్లు_past_EOL, SEEK_CUR, filename);
               }
-            break;
+            ఆపు;
           }
-      xwrite_stdout (buffer, bytes_to_write);
+      xwrite_stdout (బఫరు, బైట్లు_గమ్యం_write);
     }
-  return true;
+  తిరిగి true;
 }
 
-static bool
-head (char const *filename, int fd, uintmax_t n_units, bool count_lines,
-      bool elide_from_end)
+స్థిర bool
+తల (అక్షరం స్థిరరాశి *filename, పూర్ణాంకం fd, uintmax_t n_units, bool లెక్క_పంక్తులు,
+      bool elide_from_చివర)
 {
-  if (print_headers)
-    write_header (filename);
+  ఒకవేళ (print_శీర్షికలు)
+    write_శీర్షిక (filename);
 
-  if (elide_from_end)
+  ఒకవేళ (elide_from_చివర)
     {
       /* Optimize for "infinite" elisions.  */
-      if (n_units == UINTMAX_MAX)
-        return true;
+      ఒకవేళ (n_units == UINTMAX_MAX)
+        తిరిగి true;
 
       off_t current_pos = -1;
-      struct stat st;
-      if (fstat (fd, &st) != 0)
+      నిర్మాణం stat st;
+      ఒకవేళ (fstat (fd, &st) != 0)
         {
           error (0, errno, _("cannot fstat %s"),
                  quoteaf (filename));
-          return false;
+          తిరిగి false;
         }
-      if (! presume_input_pipe && S_ISREG (st.st_mode))
+      ఒకవేళ (! presume_ఆదానం_pipe && S_ISREG (st.st_బహుళకం))
         {
           current_pos = elseek (fd, 0, SEEK_CUR, filename);
-          if (current_pos < 0)
-            return false;
+          ఒకవేళ (current_pos < 0)
+            తిరిగి false;
         }
-      if (count_lines)
-        return elide_tail_lines_file (filename, fd, n_units, &st, current_pos);
-      else
-        return elide_tail_bytes_file (filename, fd, n_units, &st, current_pos);
+      ఒకవేళ (లెక్క_పంక్తులు)
+        తిరిగి elide_తోక_పంక్తులు_file (filename, fd, n_units, &st, current_pos);
+      లేకపోతే
+        తిరిగి elide_తోక_బైట్లు_file (filename, fd, n_units, &st, current_pos);
     }
-  if (count_lines)
-    return head_lines (filename, fd, n_units);
-  else
-    return head_bytes (filename, fd, n_units);
+  ఒకవేళ (లెక్క_పంక్తులు)
+    తిరిగి తల_పంక్తులు (filename, fd, n_units);
+  లేకపోతే
+    తిరిగి తల_బైట్లు (filename, fd, n_units);
 }
 
-static bool
-head_file (char const *filename, uintmax_t n_units, bool count_lines,
-           bool elide_from_end)
+స్థిర bool
+తల_file (అక్షరం స్థిరరాశి *filename, uintmax_t n_units, bool లెక్క_పంక్తులు,
+           bool elide_from_చివర)
 {
-  int fd;
+  పూర్ణాంకం fd;
   bool ok;
   bool is_stdin = streq (filename, "-");
 
-  if (is_stdin)
+  ఒకవేళ (is_stdin)
     {
       have_read_stdin = true;
       fd = STDIN_FILENO;
       filename = _("standard input");
-      xset_binary_mode (STDIN_FILENO, O_BINARY);
+      xset_ద్విమాన_బహుళకం (STDIN_FILENO, O_ద్విమాన);
     }
-  else
+  లేకపోతే
     {
-      fd = open (filename, O_RDONLY | O_BINARY);
-      if (fd < 0)
+      fd = open (filename, O_RDONLY | O_ద్విమాన);
+      ఒకవేళ (fd < 0)
         {
           error (0, errno, _("cannot open %s for reading"), quoteaf (filename));
-          return false;
+          తిరిగి false;
         }
     }
 
-  ok = head (filename, fd, n_units, count_lines, elide_from_end);
-  if (!is_stdin && close (fd) != 0)
+  ok = తల (filename, fd, n_units, లెక్క_పంక్తులు, elide_from_చివర);
+  ఒకవేళ (!is_stdin && close (fd) != 0)
     {
       error (0, errno, _("failed to close %s"), quoteaf (filename));
-      return false;
+      తిరిగి false;
     }
-  return ok;
+  తిరిగి ok;
 }
 
 /* Convert a string of decimal digits, N_STRING, with an optional suffix
@@ -901,97 +901,97 @@ head_file (char const *filename, uintmax_t n_units, bool count_lines,
    COUNT_LINES indicates whether N_STRING is a number of bytes or a number
    of lines.  It is used solely to give a more specific diagnostic.  */
 
-static uintmax_t
-string_to_integer (bool count_lines, char const *n_string)
+స్థిర uintmax_t
+string_గమ్యం_integer (bool లెక్క_పంక్తులు, అక్షరం స్థిరరాశి *n_string)
 {
-  return xnumtoumax (n_string, 10, 0, UINTMAX_MAX, "bkKmMGTPEZYRQ0",
-                     (count_lines
+  తిరిగి xnumtoumax (n_string, 10, 0, UINTMAX_MAX, "bkKmMGTPEZYRQ0",
+                     (లెక్క_పంక్తులు
                       ? _("invalid number of lines")
                       : _("invalid number of bytes")),
                      0, XTOINT_MAX_QUIET);
 }
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
-  enum header_mode header_mode = multiple_files;
+  గణన శీర్షిక_బహుళకం శీర్షిక_బహుళకం = గుణిజం_files;
   bool ok = true;
-  int c;
+  పూర్ణాంకం c;
 
   /* Number of items to output, or to elide from the end.
      UINTMAX_MAX stands for an essentially unlimited number.  */
-  uintmax_t n_units = DEFAULT_NUMBER;
+  uintmax_t n_units = DEFAULT_సంఖ్య;
 
   /* If true, interpret the numeric argument as the number of lines.
      Otherwise, interpret it as the number of bytes.  */
-  bool count_lines = true;
+  bool లెక్క_పంక్తులు = true;
 
   /* Elide the specified number of lines or bytes, counting from
      the end of the file.  */
-  bool elide_from_end = false;
+  bool elide_from_చివర = false;
 
   /* Initializer for file_list if no file-arguments
      were specified on the command line.  */
-  static char const *const default_file_list[] = {"-", NULL};
-  char const *const *file_list;
+  స్థిర అక్షరం స్థిరరాశి *స్థిరరాశి default_file_list[] = {"-", ఖాళీ};
+  అక్షరం స్థిరరాశి *స్థిరరాశి *file_list;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  if (1 < argc && argv[1][0] == '-' && c_isdigit (argv[1][1]))
+  ఒకవేళ (1 < argc && argv[1][0] == '-' && c_isdigit (argv[1][1]))
     {
-      char *a = argv[1];
-      char *n_string = ++a;
-      char *end_n_string;
-      char multiplier_char = 0;
+      అక్షరం *a = argv[1];
+      అక్షరం *n_string = ++a;
+      అక్షరం *చివర_n_string;
+      అక్షరం multiplier_char = 0;
 
       /* Old option syntax; a dash, one or more digits, and one or
          more option letters.  Move past the number. */
-      do ++a;
-      while (c_isdigit (*a));
+      చేయి ++a;
+      అయితే (c_isdigit (*a));
 
       /* Pointer to the byte after the last digit.  */
-      end_n_string = a;
+      చివర_n_string = a;
 
       /* Parse any appended option letters. */
-      for (; *a; a++)
+      కొరకు (; *a; a++)
         {
-          switch (*a)
+          ఎంపిక (*a)
             {
-            case 'c':
-              count_lines = false;
+            స్థితి 'c':
+              లెక్క_పంక్తులు = false;
               multiplier_char = 0;
-              break;
+              ఆపు;
 
-            case 'b':
-            case 'k':
-            case 'm':
-              count_lines = false;
+            స్థితి 'b':
+            స్థితి 'k':
+            స్థితి 'm':
+              లెక్క_పంక్తులు = false;
               multiplier_char = *a;
-              break;
+              ఆపు;
 
-            case 'l':
-              count_lines = true;
-              break;
+            స్థితి 'l':
+              లెక్క_పంక్తులు = true;
+              ఆపు;
 
-            case 'q':
-              header_mode = never;
-              break;
+            స్థితి 'q':
+              శీర్షిక_బహుళకం = never;
+              ఆపు;
 
-            case 'v':
-              header_mode = always;
-              break;
+            స్థితి 'v':
+              శీర్షిక_బహుళకం = always;
+              ఆపు;
 
-            case 'z':
-              line_end = '\0';
-              break;
+            స్థితి 'z':
+              పంక్తి_చివర = '\0';
+              ఆపు;
 
-            default:
+            అప్రమేయ:
               error (0, 0, _("invalid trailing option -- %c"), *a);
               usage (EXIT_FAILURE);
             }
@@ -999,11 +999,11 @@ main (int argc, char **argv)
 
       /* Append the multiplier character (if any) onto the end of
          the digit string.  Then add NUL byte if necessary.  */
-      *end_n_string = multiplier_char;
-      if (multiplier_char)
-        *(++end_n_string) = 0;
+      *చివర_n_string = multiplier_char;
+      ఒకవేళ (multiplier_char)
+        *(++చివర_n_string) = 0;
 
-      n_units = string_to_integer (count_lines, n_string);
+      n_units = string_గమ్యం_integer (లెక్క_పంక్తులు, n_string);
 
       /* Make the options we just parsed invisible to getopt. */
       argv[1] = argv[0];
@@ -1011,70 +1011,70 @@ main (int argc, char **argv)
       argc--;
     }
 
-  while ((c = getopt_long (argc, argv, "c:n:qvz0123456789",
-                           long_options, NULL))
+  అయితే ((c = getopt_long (argc, argv, "c:n:qvz0123456789",
+                           long_options, ఖాళీ))
          != -1)
     {
-      switch (c)
+      ఎంపిక (c)
         {
-        case PRESUME_INPUT_PIPE_OPTION:
-          presume_input_pipe = true;
-          break;
+        స్థితి PRESUME_ఆదానం_PIPE_OPTION:
+          presume_ఆదానం_pipe = true;
+          ఆపు;
 
-        case 'c':
-          count_lines = false;
-          elide_from_end = (*optarg == '-');
-          if (elide_from_end)
+        స్థితి 'c':
+          లెక్క_పంక్తులు = false;
+          elide_from_చివర = (*optarg == '-');
+          ఒకవేళ (elide_from_చివర)
             ++optarg;
-          n_units = string_to_integer (count_lines, optarg);
-          break;
+          n_units = string_గమ్యం_integer (లెక్క_పంక్తులు, optarg);
+          ఆపు;
 
-        case 'n':
-          count_lines = true;
-          elide_from_end = (*optarg == '-');
-          if (elide_from_end)
+        స్థితి 'n':
+          లెక్క_పంక్తులు = true;
+          elide_from_చివర = (*optarg == '-');
+          ఒకవేళ (elide_from_చివర)
             ++optarg;
-          n_units = string_to_integer (count_lines, optarg);
-          break;
+          n_units = string_గమ్యం_integer (లెక్క_పంక్తులు, optarg);
+          ఆపు;
 
-        case 'q':
-          header_mode = never;
-          break;
+        స్థితి 'q':
+          శీర్షిక_బహుళకం = never;
+          ఆపు;
 
-        case 'v':
-          header_mode = always;
-          break;
+        స్థితి 'v':
+          శీర్షిక_బహుళకం = always;
+          ఆపు;
 
-        case 'z':
-          line_end = '\0';
-          break;
+        స్థితి 'z':
+          పంక్తి_చివర = '\0';
+          ఆపు;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_సంస్కరణ_CHAR (కార్యక్రమం_NAME, AUTHORS);
 
-        default:
-          if (c_isdigit (c))
+        అప్రమేయ:
+          ఒకవేళ (c_isdigit (c))
             error (0, 0, _("invalid trailing option -- %c"), c);
           usage (EXIT_FAILURE);
         }
     }
 
-  if (header_mode == always
-      || (header_mode == multiple_files && optind < argc - 1))
-    print_headers = true;
+  ఒకవేళ (శీర్షిక_బహుళకం == always
+      || (శీర్షిక_బహుళకం == గుణిజం_files && optind < argc - 1))
+    print_శీర్షికలు = true;
 
   file_list = (optind < argc
-               ? (char const *const *) &argv[optind]
+               ? (అక్షరం స్థిరరాశి *స్థిరరాశి *) &argv[optind]
                : default_file_list);
 
-  xset_binary_mode (STDOUT_FILENO, O_BINARY);
+  xset_ద్విమాన_బహుళకం (STDOUT_FILENO, O_ద్విమాన);
 
-  for (size_t i = 0; file_list[i]; ++i)
-    ok &= head_file (file_list[i], n_units, count_lines, elide_from_end);
+  కొరకు (size_t i = 0; file_list[i]; ++i)
+    ok &= తల_file (file_list[i], n_units, లెక్క_పంక్తులు, elide_from_చివర);
 
-  if (have_read_stdin && close (STDIN_FILENO) < 0)
+  ఒకవేళ (have_read_stdin && close (STDIN_FILENO) < 0)
     error (EXIT_FAILURE, errno, "-");
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  తిరిగి ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

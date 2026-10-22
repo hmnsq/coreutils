@@ -16,329 +16,329 @@
 
 /* Written by Pádraig Brady.  */
 
-#include <config.h>
-#include <getopt.h>
-#include <stdio.h>
-#include <sys/types.h>
+#అన్తర్భావ <config.h>
+#అన్తర్భావ <getopt.h>
+#అన్తర్భావ <stdio.h>
+#అన్తర్భావ <sys/types.h>
 
-#include "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
-#include "system.h"
-#include "canonicalize.h"
-#include "relpath.h"
+#అన్తర్భావ "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "canonicalize.h"
+#అన్తర్భావ "relpath.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "realpath"
+#నిర్వచించు కార్యక్రమం_NAME "realpath"
 
-#define AUTHORS proper_name_lite ("Padraig Brady", "P\303\241draig Brady")
+#నిర్వచించు AUTHORS proper_name_lite ("Padraig Brady", "P\303\241draig Brady")
 
-enum
+గణన
 {
-  RELATIVE_TO_OPTION = CHAR_MAX + 1,
-  RELATIVE_BASE_OPTION
+  RELATIVE_గమ్యం_OPTION = CHAR_MAX + 1,
+  RELATIVE_పునాది_OPTION
 };
 
-static bool verbose = true;
-static bool logical;
-static bool use_nuls;
-static bool quote_output;
-static char const *can_relative_to;
-static char const *can_relative_base;
+స్థిర bool verbose = true;
+స్థిర bool logical;
+స్థిర bool use_nuls;
+స్థిర bool quote_output;
+స్థిర అక్షరం స్థిరరాశి *can_relative_గమ్యం;
+స్థిర అక్షరం స్థిరరాశి *can_relative_పునాది;
 
-static struct option const longopts[] =
+స్థిర నిర్మాణం option స్థిరరాశి longopts[] =
 {
-  {"canonicalize", no_argument, NULL, 'E'},
-  {"canonicalize-existing", no_argument, NULL, 'e'},
-  {"canonicalize-missing", no_argument, NULL, 'm'},
-  {"relative-to", required_argument, NULL, RELATIVE_TO_OPTION},
-  {"relative-base", required_argument, NULL, RELATIVE_BASE_OPTION},
-  {"quiet", no_argument, NULL, 'q'},
-  {"strip", no_argument, NULL, 's'},
-  {"no-symlinks", no_argument, NULL, 's'},
-  {"zero", no_argument, NULL, 'z'},
-  {"logical", no_argument, NULL, 'L'},
-  {"physical", no_argument, NULL, 'P'},
+  {"canonicalize", no_వాదం, ఖాళీ, 'E'},
+  {"canonicalize-existing", no_వాదం, ఖాళీ, 'e'},
+  {"canonicalize-missing", no_వాదం, ఖాళీ, 'm'},
+  {"relative-to", required_వాదం, ఖాళీ, RELATIVE_గమ్యం_OPTION},
+  {"relative-base", required_వాదం, ఖాళీ, RELATIVE_పునాది_OPTION},
+  {"quiet", no_వాదం, ఖాళీ, 'q'},
+  {"strip", no_వాదం, ఖాళీ, 's'},
+  {"no-symlinks", no_వాదం, ఖాళీ, 's'},
+  {"zero", no_వాదం, ఖాళీ, 'z'},
+  {"logical", no_వాదం, ఖాళీ, 'L'},
+  {"physical", no_వాదం, ఖాళీ, 'P'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_సంస్కరణ_OPTION_DECL},
+  {ఖాళీ, 0, ఖాళీ, 0}
 };
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("Usage: %s [OPTION]... FILE...\n"), program_name);
+      రాయి (_("Usage: %s [OPTION]... FILE...\n"), కార్యక్రమం_name);
       fputs (_("\
 Print the resolved absolute file name.\n\
 "), stdout);
       oputs (_("\
-  -E, --canonicalize           all but the last component must exist (default)\
+  -E, --canonicalize           all but the చివరి component must exist (అప్రమేయ)\
 \n\
 "));
       oputs (_("\
-  -e, --canonicalize-existing  all components of the path must exist\n\
+  -e, --canonicalize-existing  all components యొక్క the మార్గం must exist\n\
 "));
       oputs (_("\
-  -m, --canonicalize-missing   no path components need exist or be a directory\
+  -m, --canonicalize-missing   no మార్గం components need exist or be a directory\
 \n\
 "));
       oputs (_("\
   -L, --logical                resolve '..' components before symlinks\n\
 "));
       oputs (_("\
-  -P, --physical               resolve symlinks as encountered (default)\n\
+  -P, --physical               resolve symlinks as encountered (అప్రమేయ)\n\
 "));
       oputs (_("\
   -q, --quiet                  suppress most error messages\n\
 "));
       oputs (_("\
-      --relative-to=DIR        print the resolved path relative to DIR\n\
+      --relative-గమ్యం=DIR        print the resolved మార్గం relative గమ్యం DIR\n\
 "));
       oputs (_("\
-      --relative-base=DIR      print absolute paths unless paths below DIR\n\
+      --relative-పునాది_2=DIR      print absolute paths unless paths క్రింద DIR\n\
 "));
       oputs (_("\
   -s, --strip, --no-symlinks   don't expand symlinks\n\
 "));
       oputs (_("\
-  -z, --zero                   end each output line with NUL, not newline\n\
+  -z, --zero                   చివర each output పంక్తి with NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
 /* A wrapper around canonicalize_filename_mode(),
    to call it twice when in LOGICAL mode.  */
-static char *
-realpath_canon (char const *fname, int can_mode)
+స్థిర అక్షరం *
+realpath_canon (అక్షరం స్థిరరాశి *fname, పూర్ణాంకం can_బహుళకం)
 {
-  char *can_fname = canonicalize_filename_mode (fname, can_mode);
-  if (logical && can_fname)  /* canonicalize again to resolve symlinks.  */
+  అక్షరం *can_fname = canonicalize_filename_బహుళకం (fname, can_బహుళకం);
+  ఒకవేళ (logical && can_fname)  /* canonicalize again to resolve symlinks.  */
     {
-      can_mode &= ~CAN_NOLINKS;
-      char *can_fname2 = canonicalize_filename_mode (can_fname, can_mode);
-      free (can_fname);
-      return can_fname2;
+      can_బహుళకం &= ~CAN_NOLINKS;
+      అక్షరం *can_fname2 = canonicalize_filename_బహుళకం (can_fname, can_బహుళకం);
+      విడుదల (can_fname);
+      తిరిగి can_fname2;
     }
-  return can_fname;
+  తిరిగి can_fname;
 }
 
 /* Test whether canonical prefix is parent or match of path.  */
-ATTRIBUTE_PURE
-static bool
-path_prefix (char const *prefix, char const *path)
+ATTRIBUTE_శుద్ధ
+స్థిర bool
+మార్గం_ఉపసర్గ (అక్షరం స్థిరరాశి *ఉపసర్గ, అక్షరం స్థిరరాశి *మార్గం)
 {
   /* We already know prefix[0] and path[0] are '/'.  */
-  prefix++;
-  path++;
+  ఉపసర్గ++;
+  మార్గం++;
 
   /* '/' is the prefix of everything except '//' (since we know '//'
      is only present after canonicalization if it is distinct).  */
-  if (!*prefix)
-    return *path != '/';
+  ఒకవేళ (!*ఉపసర్గ)
+    తిరిగి *మార్గం != '/';
 
   /* Likewise, '//' is a prefix of any double-slash path.  */
-  if (*prefix == '/' && !prefix[1])
-    return *path == '/';
+  ఒకవేళ (*ఉపసర్గ == '/' && !ఉపసర్గ[1])
+    తిరిగి *మార్గం == '/';
 
   /* Any other prefix has a non-slash portion.  */
-  while (*prefix && *path)
+  అయితే (*ఉపసర్గ && *మార్గం)
     {
-      if (*prefix != *path)
-        break;
-      prefix++;
-      path++;
+      ఒకవేళ (*ఉపసర్గ != *మార్గం)
+        ఆపు;
+      ఉపసర్గ++;
+      మార్గం++;
     }
-  return (!*prefix && (*path == '/' || !*path));
+  తిరిగి (!*ఉపసర్గ && (*మార్గం == '/' || !*మార్గం));
 }
 
-static bool
-isdir (char const *path)
+స్థిర bool
+isdir (అక్షరం స్థిరరాశి *మార్గం)
 {
-  struct stat sb;
-  if (stat (path, &sb) != 0)
-    error (EXIT_FAILURE, errno, _("cannot stat %s"), quoteaf (path));
-  return S_ISDIR (sb.st_mode);
+  నిర్మాణం stat sb;
+  ఒకవేళ (stat (మార్గం, &sb) != 0)
+    error (EXIT_FAILURE, errno, _("cannot stat %s"), quoteaf (మార్గం));
+  తిరిగి S_ISDIR (sb.st_బహుళకం);
 }
 
-static void
-print_path (char const *path)
+స్థిర శూన్య
+print_మార్గం (అక్షరం స్థిరరాశి *మార్గం)
 {
-  fputs (quote_output ? quoteN (path) : path, stdout);
+  fputs (quote_output ? quoteN (మార్గం) : మార్గం, stdout);
 }
 
 /* Print CAN_FNAME relative to can_relative_to, quoting the complete
    relative file name when appropriate.  */
-static bool
-print_relative_path (char const *can_fname)
+స్థిర bool
+print_relative_మార్గం (అక్షరం స్థిరరాశి *can_fname)
 {
-  if (!quote_output)
-    return relpath (can_fname, can_relative_to, NULL, 0);
+  ఒకవేళ (!quote_output)
+    తిరిగి relpath (can_fname, can_relative_గమ్యం, ఖాళీ, 0);
 
-  size_t size;
-  if (ckd_mul (&size, strlen (can_relative_to), 2)
-      || ckd_add (&size, size, strlen (can_fname))
-      || ckd_add (&size, size, 1))
+  size_t కొలత;
+  ఒకవేళ (ckd_mul (&కొలత, అక్షరశ్రేణి_పొడవు (can_relative_గమ్యం), 2)
+      || ckd_కూడు (&కొలత, కొలత, అక్షరశ్రేణి_పొడవు (can_fname))
+      || ckd_కూడు (&కొలత, కొలత, 1))
     xalloc_die ();
 
-  char *relative_path = xmalloc (size);
-  bool success = relpath (can_fname, can_relative_to, relative_path, size);
-  if (success)
-    print_path (relative_path);
-  free (relative_path);
-  return success;
+  అక్షరం *relative_మార్గం = xmalloc (కొలత);
+  bool success = relpath (can_fname, can_relative_గమ్యం, relative_మార్గం, కొలత);
+  ఒకవేళ (success)
+    print_మార్గం (relative_మార్గం);
+  విడుదల (relative_మార్గం);
+  తిరిగి success;
 }
 
-static bool
-process_path (char const *fname, int can_mode)
+స్థిర bool
+process_మార్గం (అక్షరం స్థిరరాశి *fname, పూర్ణాంకం can_బహుళకం)
 {
-  char *can_fname = realpath_canon (fname, can_mode);
-  if (!can_fname)
+  అక్షరం *can_fname = realpath_canon (fname, can_బహుళకం);
+  ఒకవేళ (!can_fname)
     {
-      if (verbose)
+      ఒకవేళ (verbose)
         error (0, errno, "%s", quotef (fname));
-      return false;
+      తిరిగి false;
     }
 
-  if (!can_relative_to
-      || (can_relative_base && !path_prefix (can_relative_base, can_fname))
-      || (can_relative_to && !print_relative_path (can_fname)))
-    print_path (can_fname);
+  ఒకవేళ (!can_relative_గమ్యం
+      || (can_relative_పునాది && !మార్గం_ఉపసర్గ (can_relative_పునాది, can_fname))
+      || (can_relative_గమ్యం && !print_relative_మార్గం (can_fname)))
+    print_మార్గం (can_fname);
 
-  putchar (use_nuls ? '\0' : '\n');
+  అక్షరం_రాయి (use_nuls ? '\0' : '\n');
 
-  free (can_fname);
+  విడుదల (can_fname);
 
-  if (ferror (stdout))
+  ఒకవేళ (ferror (stdout))
     write_error ();
 
-  return true;
+  తిరిగి true;
 }
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
   bool ok = true;
-  int can_mode = CAN_ALL_BUT_LAST;
-  char const *relative_to = NULL;
-  char const *relative_base = NULL;
+  పూర్ణాంకం can_బహుళకం = CAN_ALL_BUT_చివరి;
+  అక్షరం స్థిరరాశి *relative_గమ్యం = ఖాళీ;
+  అక్షరం స్థిరరాశి *relative_పునాది = ఖాళీ;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while (true)
+  అయితే (true)
     {
-      int c = getopt_long (argc, argv, "EeLmPqsz", longopts, NULL);
-      if (c == -1)
-        break;
-      switch (c)
+      పూర్ణాంకం c = getopt_long (argc, argv, "EeLmPqsz", longopts, ఖాళీ);
+      ఒకవేళ (c == -1)
+        ఆపు;
+      ఎంపిక (c)
         {
-        case 'E':
-          can_mode &= ~CAN_MODE_MASK;
-          can_mode |= CAN_ALL_BUT_LAST;
-          break;
-        case 'e':
-          can_mode &= ~CAN_MODE_MASK;
-          can_mode |= CAN_EXISTING;
-          break;
-        case 'm':
-          can_mode &= ~CAN_MODE_MASK;
-          can_mode |= CAN_MISSING;
-          break;
-        case 'L':
-          can_mode |= CAN_NOLINKS;
+        స్థితి 'E':
+          can_బహుళకం &= ~CAN_బహుళకం_ముసుగు;
+          can_బహుళకం |= CAN_ALL_BUT_చివరి;
+          ఆపు;
+        స్థితి 'e':
+          can_బహుళకం &= ~CAN_బహుళకం_ముసుగు;
+          can_బహుళకం |= CAN_EXISTING;
+          ఆపు;
+        స్థితి 'm':
+          can_బహుళకం &= ~CAN_బహుళకం_ముసుగు;
+          can_బహుళకం |= CAN_MISSING;
+          ఆపు;
+        స్థితి 'L':
+          can_బహుళకం |= CAN_NOLINKS;
           logical = true;
-          break;
-        case 's':
-          can_mode |= CAN_NOLINKS;
+          ఆపు;
+        స్థితి 's':
+          can_బహుళకం |= CAN_NOLINKS;
           logical = false;
-          break;
-        case 'P':
-          can_mode &= ~CAN_NOLINKS;
+          ఆపు;
+        స్థితి 'P':
+          can_బహుళకం &= ~CAN_NOLINKS;
           logical = false;
-          break;
-        case 'q':
+          ఆపు;
+        స్థితి 'q':
           verbose = false;
-          break;
-        case 'z':
+          ఆపు;
+        స్థితి 'z':
           use_nuls = true;
-          break;
-        case RELATIVE_TO_OPTION:
-          relative_to = optarg;
-          break;
-        case RELATIVE_BASE_OPTION:
-          relative_base = optarg;
-          break;
+          ఆపు;
+        స్థితి RELATIVE_గమ్యం_OPTION:
+          relative_గమ్యం = optarg;
+          ఆపు;
+        స్థితి RELATIVE_పునాది_OPTION:
+          relative_పునాది = optarg;
+          ఆపు;
         case_GETOPT_HELP_CHAR;
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        case_GETOPT_సంస్కరణ_CHAR (కార్యక్రమం_NAME, AUTHORS);
+        అప్రమేయ:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (optind >= argc)
+  ఒకవేళ (optind >= argc)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
-  if (! use_nuls && isatty (STDOUT_FILENO))
+  ఒకవేళ (! use_nuls && isatty (STDOUT_FILENO))
     {
-      int qs = getenv_quoting_style ();
-      if (qs < 0)
+      పూర్ణాంకం qs = getenv_quoting_style ();
+      ఒకవేళ (qs < 0)
         qs = shell_escape_quoting_style;
-      if (qs != literal_quoting_style)
+      ఒకవేళ (qs != literal_quoting_style)
         {
-          set_quoting_style (NULL, qs);
+          సమితి_quoting_style (ఖాళీ, qs);
           quote_output = true;
         }
     }
 
-  if (relative_base && !relative_to)
-    relative_to = relative_base;
+  ఒకవేళ (relative_పునాది && !relative_గమ్యం)
+    relative_గమ్యం = relative_పునాది;
 
-  bool need_dir = (can_mode & CAN_MODE_MASK) == CAN_EXISTING;
-  if (relative_to)
+  bool need_dir = (can_బహుళకం & CAN_బహుళకం_ముసుగు) == CAN_EXISTING;
+  ఒకవేళ (relative_గమ్యం)
     {
-      can_relative_to = realpath_canon (relative_to, can_mode);
-      if (!can_relative_to)
-        error (EXIT_FAILURE, errno, "%s", quotef (relative_to));
-      if (need_dir && !isdir (can_relative_to))
-        error (EXIT_FAILURE, ENOTDIR, "%s", quotef (relative_to));
+      can_relative_గమ్యం = realpath_canon (relative_గమ్యం, can_బహుళకం);
+      ఒకవేళ (!can_relative_గమ్యం)
+        error (EXIT_FAILURE, errno, "%s", quotef (relative_గమ్యం));
+      ఒకవేళ (need_dir && !isdir (can_relative_గమ్యం))
+        error (EXIT_FAILURE, ENOTDIR, "%s", quotef (relative_గమ్యం));
     }
-  if (relative_base == relative_to)
-    can_relative_base = can_relative_to;
-  else if (relative_base)
+  ఒకవేళ (relative_పునాది == relative_గమ్యం)
+    can_relative_పునాది = can_relative_గమ్యం;
+  లేకపోతే ఒకవేళ (relative_పునాది)
     {
-      char *base = realpath_canon (relative_base, can_mode);
-      if (!base)
-        error (EXIT_FAILURE, errno, "%s", quotef (relative_base));
-      if (need_dir && !isdir (base))
-        error (EXIT_FAILURE, ENOTDIR, "%s", quotef (relative_base));
+      అక్షరం *పునాది_2 = realpath_canon (relative_పునాది, can_బహుళకం);
+      ఒకవేళ (!పునాది_2)
+        error (EXIT_FAILURE, errno, "%s", quotef (relative_పునాది));
+      ఒకవేళ (need_dir && !isdir (పునాది_2))
+        error (EXIT_FAILURE, ENOTDIR, "%s", quotef (relative_పునాది));
       /* --relative-to is a no-op if it does not have --relative-base
            as a prefix */
-      if (path_prefix (base, can_relative_to))
-        can_relative_base = base;
-      else
+      ఒకవేళ (మార్గం_ఉపసర్గ (పునాది_2, can_relative_గమ్యం))
+        can_relative_పునాది = పునాది_2;
+      లేకపోతే
         {
-          free (base);
-          can_relative_base = can_relative_to;
-          can_relative_to = NULL;
+          విడుదల (పునాది_2);
+          can_relative_పునాది = can_relative_గమ్యం;
+          can_relative_గమ్యం = ఖాళీ;
         }
     }
 
-  for (; optind < argc; ++optind)
-    ok &= process_path (argv[optind], can_mode);
+  కొరకు (; optind < argc; ++optind)
+    ok &= process_మార్గం (argv[optind], can_బహుళకం);
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  తిరిగి ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

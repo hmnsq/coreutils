@@ -15,25 +15,25 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#ifndef FTS_MISSING_H
+#నిర్వచితం_కాకపోతే FTS_MISSING_H
 # define FTS_MISSING_H
 
 # include "fts_.h"
 
-static inline bool
-ignore_missing_fts_entry (FTSENT const *ent)
+స్థిర అంతఃవరుస bool
+ignore_missing_fts_నమోదు (FTSENT స్థిరరాశి *ent)
 {
-  return (FTS_ROOTLEVEL < ent->fts_level
+  తిరిగి (FTS_ROOTLEVEL < ent->fts_level
           && ent->fts_info != FTS_SL
           && ent->fts_info != FTS_SLNONE);
 }
 
-static inline bool
-ignorable_fts_error (FTSENT const *ent)
+స్థిర అంతఃవరుస bool
+ignorable_fts_error (FTSENT స్థిరరాశి *ent)
 {
-  return (ignorable_traversal_errno (ent->fts_errno)
+  తిరిగి (ignorable_traversal_errno (ent->fts_errno)
           && (ent->fts_info == FTS_NS || ent->fts_info == FTS_ERR
               || ent->fts_info == FTS_DNR));
 }
 
-#endif /* FTS_MISSING_H */
+#అయితే_ముగింపు /* FTS_MISSING_H */

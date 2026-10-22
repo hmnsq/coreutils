@@ -16,127 +16,127 @@
 
 /* Written by David MacKenzie, djm@gnu.ai.mit.edu. */
 
-#include <config.h>
+#అన్తర్భావ <config.h>
 
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#అన్తర్భావ <stdio.h>
+#అన్తర్భావ <getopt.h>
+#అన్తర్భావ <sys/types.h>
 
-#include "system.h"
-#include "fadvise.h"
-#include "ioblksize.h"
-#include "mcel.h"
-#include "mbbuf.h"
-#include "xdectoint.h"
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "fadvise.h"
+#అన్తర్భావ "ioblksize.h"
+#అన్తర్భావ "mcel.h"
+#అన్తర్భావ "mbbuf.h"
+#అన్తర్భావ "xdectoint.h"
 
-#define TAB_WIDTH 8
+#నిర్వచించు TAB_వెడల్పు 8
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "fold"
+#నిర్వచించు కార్యక్రమం_NAME "fold"
 
-#define AUTHORS proper_name ("David MacKenzie")
+#నిర్వచించు AUTHORS proper_name ("David MacKenzie")
 
 /* If nonzero, try to break on whitespace. */
-static bool break_spaces;
+స్థిర bool break_spaces;
 
 /* Mode to operate in.  */
-static enum
+స్థిర గణన
   {
-    COUNT_COLUMNS,
-    COUNT_BYTES,
-    COUNT_CHARACTERS
-  } counting_mode = COUNT_COLUMNS;
+    లెక్క_COLUMNS,
+    లెక్క_బైట్లు,
+    లెక్క_CHARACTERS
+  } counting_బహుళకం = లెక్క_COLUMNS;
 
 /* If nonzero, at least one of the files we read was standard input. */
-static bool have_read_stdin;
+స్థిర bool have_read_stdin;
 
-static char const shortopts[] = "bcsw:0::1::2::3::4::5::6::7::8::9::";
+స్థిర అక్షరం స్థిరరాశి shortopts[] = "bcsw:0::1::2::3::4::5::6::7::8::9::";
 
-static struct option const longopts[] =
+స్థిర నిర్మాణం option స్థిరరాశి longopts[] =
 {
-  {"bytes", no_argument, NULL, 'b'},
-  {"characters", no_argument, NULL, 'c'},
-  {"spaces", no_argument, NULL, 's'},
-  {"width", required_argument, NULL, 'w'},
+  {"bytes", no_వాదం, ఖాళీ, 'b'},
+  {"characters", no_వాదం, ఖాళీ, 'c'},
+  {"spaces", no_వాదం, ఖాళీ, 's'},
+  {"width", required_వాదం, ఖాళీ, 'w'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_సంస్కరణ_OPTION_DECL},
+  {ఖాళీ, 0, ఖాళీ, 0}
 };
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("\
+      రాయి (_("\
 Usage: %s [OPTION]... [FILE]...\n\
 "),
-              program_name);
+              కార్యక్రమం_name);
       fputs (_("\
-Wrap input lines in each FILE, writing to standard output.\n\
+Wrap ఆదానం పంక్తులు లోపల each FILE, writing గమ్యం standard output.\n\
 "), stdout);
 
       emit_stdin_note ();
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -b, --bytes\n\
-         count bytes rather than columns\n\
+  -b, --బైట్లు\n\
+         లెక్క బైట్లు rather than columns\n\
 "));
       oputs (_("\
   -c, --characters\n\
-         count characters rather than columns\n\
+         లెక్క characters rather than columns\n\
 "));
       oputs (_("\
   -s, --spaces\n\
-         break after blanks, or in words greater than WIDTH\n\
+         ఆపు after blanks, or లోపల పదాలు greater than వెడల్పు_2\n\
 "));
       oputs (_("\
-  -w, --width=WIDTH\n\
-         use WIDTH columns instead of 80\n\
+  -w, --వెడల్పు=వెడల్పు_2\n\
+         use వెడల్పు_2 columns instead యొక్క 80\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
 /* Assuming the current column is COLUMN, return the column that
    printing C will move the cursor to.
    The first column is 0. */
 
-static size_t
-adjust_column (size_t column, mcel_t g)
+స్థిర size_t
+adjust_స్తంభం (size_t స్తంభం, mcel_t g)
 {
-  if (counting_mode != COUNT_BYTES)
+  ఒకవేళ (counting_బహుళకం != లెక్క_బైట్లు)
     {
-      if (g.ch == '\b')
-        column -= !!column;
-      else if (g.ch == '\r')
-        column = 0;
-      else if (g.ch == '\t')
-        column += TAB_WIDTH - column % TAB_WIDTH;
-      else
+      ఒకవేళ (g.ch == '\b')
+        స్తంభం -= !!స్తంభం;
+      లేకపోతే ఒకవేళ (g.ch == '\r')
+        స్తంభం = 0;
+      లేకపోతే ఒకవేళ (g.ch == '\t')
+        స్తంభం += TAB_వెడల్పు - స్తంభం % TAB_వెడల్పు;
+      లేకపోతే
         {
-          int width = (counting_mode == COUNT_CHARACTERS
+          పూర్ణాంకం వెడల్పు = (counting_బహుళకం == లెక్క_CHARACTERS
                        ? 1 : c32width (g.ch));
           /* Default to a width of 1 if there is an invalid character.  */
-          column += width < 0 ? 1 : width;
+          స్తంభం += వెడల్పు < 0 ? 1 : వెడల్పు;
         }
     }
-  else
-    column += g.len;
-  return column;
+  లేకపోతే
+    స్తంభం += g.len;
+  తిరిగి స్తంభం;
 }
 
-static void
-write_out (char const *line, size_t line_len, bool newline)
+స్థిర శూన్య
+write_బహిర్గతం (అక్షరం స్థిరరాశి *పంక్తి, size_t పంక్తి_len, bool newline)
 {
-  if (fwrite (line, sizeof (char), line_len, stdout) != line_len
-      || (newline && putchar ('\n') < 0))
+  ఒకవేళ (fwrite (పంక్తి, పరిమాణం (అక్షరం), పంక్తి_len, stdout) != పంక్తి_len
+      || (newline && అక్షరం_రాయి ('\n') < 0))
     write_error ();
 }
 
@@ -144,206 +144,206 @@ write_out (char const *line, size_t line_len, bool newline)
    to stdout, with maximum line length WIDTH.
    Return true if successful.  */
 
-static bool
-fold_file (char const *filename, size_t width)
+స్థిర bool
+fold_file (అక్షరం స్థిరరాశి *filename, size_t వెడల్పు)
 {
   FILE *istream;
-  size_t column = 0;		/* Screen column where next char will go. */
-  idx_t offset_out = 0;		/* Index in 'line_out' for next char. */
-  static char line_out[IO_BUFSIZE];
-  static char line_in[IO_BUFSIZE];
+  size_t స్తంభం = 0;		/* Screen column where next char will go. */
+  idx_t స్థానభ్రంశం_బహిర్గతం = 0;		/* Index in 'line_out' for next char. */
+  స్థిర అక్షరం పంక్తి_బహిర్గతం[IO_BUFSIZE];
+  స్థిర అక్షరం పంక్తి_లోపల[IO_BUFSIZE];
   mbbuf_t mbbuf;
-  int saved_errno;
+  పూర్ణాంకం saved_errno;
 
-  if (streq (filename, "-"))
+  ఒకవేళ (streq (filename, "-"))
     {
       istream = stdin;
       have_read_stdin = true;
     }
-  else
+  లేకపోతే
     istream = fopen (filename, "r");
 
-  if (istream == NULL)
+  ఒకవేళ (istream == ఖాళీ)
     {
       error (0, errno, "%s", quotef (filename));
-      return false;
+      తిరిగి false;
     }
 
   fadvise (istream, FADVISE_SEQUENTIAL);
-  mbbuf_init (&mbbuf, line_in, sizeof line_in, istream);
+  mbbuf_init (&mbbuf, పంక్తి_లోపల, పరిమాణం పంక్తి_లోపల, istream);
 
   mcel_t g;
-  while ((g = mbbuf_get_char (&mbbuf)).ch != MBBUF_EOF)
+  అయితే ((g = mbbuf_get_char (&mbbuf)).ch != MBBUF_EOF)
     {
-      if (g.ch == '\n')
+      ఒకవేళ (g.ch == '\n')
         {
-          write_out (line_out, offset_out, /*newline=*/ true);
-          column = offset_out = 0;
-          continue;
+          write_బహిర్గతం (పంక్తి_బహిర్గతం, స్థానభ్రంశం_బహిర్గతం, /*newline=*/ true);
+          స్తంభం = స్థానభ్రంశం_బహిర్గతం = 0;
+          కొనసాగు;
         }
     rescan:
-      column = adjust_column (column, g);
+      స్తంభం = adjust_స్తంభం (స్తంభం, g);
 
-      if (column > width)
+      ఒకవేళ (స్తంభం > వెడల్పు)
         {
           /* This character would make the line too long.
              Print the line plus a newline, and make this character
              start the next line. */
-          if (break_spaces)
+          ఒకవేళ (break_spaces)
             {
-              int space_length = 0;
-              idx_t logical_end = offset_out;
-              char *logical_p = line_out;
-              char *logical_lim = logical_p + logical_end;
+              పూర్ణాంకం space_నిడివి = 0;
+              idx_t logical_చివర = స్థానభ్రంశం_బహిర్గతం;
+              అక్షరం *logical_p = పంక్తి_బహిర్గతం;
+              అక్షరం *logical_lim = logical_p + logical_చివర;
 
-              for (mcel_t g2; logical_p < logical_lim; logical_p += g2.len)
+              కొరకు (mcel_t g2; logical_p < logical_lim; logical_p += g2.len)
                 {
-                  g2 = mcel_scan (logical_p, logical_lim);
-                  if (c32issep (g2.ch))
+                  g2 = mcel_పరిశీలన (logical_p, logical_lim);
+                  ఒకవేళ (c32issep (g2.ch))
                     {
-                      space_length = g2.len;
-                      logical_end = logical_p - line_out;
+                      space_నిడివి = g2.len;
+                      logical_చివర = logical_p - పంక్తి_బహిర్గతం;
                     }
                 }
 
-              if (space_length)
+              ఒకవేళ (space_నిడివి)
                 {
-                  logical_end += space_length;
+                  logical_చివర += space_నిడివి;
                   /* Found a blank.  Don't output the part after it. */
-                  write_out (line_out, logical_end, /*newline=*/ true);
+                  write_బహిర్గతం (పంక్తి_బహిర్గతం, logical_చివర, /*newline=*/ true);
                   /* Move the remainder to the beginning of the next line.
                      The areas being copied here might overlap. */
-                  memmove (line_out, line_out + logical_end,
-                           offset_out - logical_end);
-                  offset_out -= logical_end;
-                  column = 0;
-                  char *printed_p = line_out;
-                  char *printed_lim = printed_p + offset_out;
-                  for (mcel_t g2; printed_p < printed_lim;
+                  memmove (పంక్తి_బహిర్గతం, పంక్తి_బహిర్గతం + logical_చివర,
+                           స్థానభ్రంశం_బహిర్గతం - logical_చివర);
+                  స్థానభ్రంశం_బహిర్గతం -= logical_చివర;
+                  స్తంభం = 0;
+                  అక్షరం *printed_p = పంక్తి_బహిర్గతం;
+                  అక్షరం *printed_lim = printed_p + స్థానభ్రంశం_బహిర్గతం;
+                  కొరకు (mcel_t g2; printed_p < printed_lim;
                        printed_p += g2.len)
                     {
-                      g2 = mcel_scan (printed_p, printed_lim);
-                      column = adjust_column (column, g2);
+                      g2 = mcel_పరిశీలన (printed_p, printed_lim);
+                      స్తంభం = adjust_స్తంభం (స్తంభం, g2);
                     }
-                  goto rescan;
+                  వెళ్ళు rescan;
                 }
             }
 
-          if (offset_out == 0)
+          ఒకవేళ (స్థానభ్రంశం_బహిర్గతం == 0)
             {
-              memcpy (line_out, mbbuf_char_offset (&mbbuf, g), g.len);
-              offset_out += g.len;
-              continue;
+              జ్ఞాపకం_నకలు (పంక్తి_బహిర్గతం, mbbuf_char_స్థానభ్రంశం (&mbbuf, g), g.len);
+              స్థానభ్రంశం_బహిర్గతం += g.len;
+              కొనసాగు;
             }
 
-          write_out (line_out, offset_out, /*newline=*/ true);
-          column = offset_out = 0;
-          goto rescan;
+          write_బహిర్గతం (పంక్తి_బహిర్గతం, స్థానభ్రంశం_బహిర్గతం, /*newline=*/ true);
+          స్తంభం = స్థానభ్రంశం_బహిర్గతం = 0;
+          వెళ్ళు rescan;
         }
 
       /* This can occur if we have read characters with a width of
          zero.  */
-      if (sizeof line_out <= offset_out + g.len)
+      ఒకవేళ (పరిమాణం పంక్తి_బహిర్గతం <= స్థానభ్రంశం_బహిర్గతం + g.len)
         {
-          write_out (line_out, offset_out, /*newline=*/ false);
-          offset_out = 0;
+          write_బహిర్గతం (పంక్తి_బహిర్గతం, స్థానభ్రంశం_బహిర్గతం, /*newline=*/ false);
+          స్థానభ్రంశం_బహిర్గతం = 0;
         }
 
-      memcpy (line_out + offset_out, mbbuf_char_offset (&mbbuf, g), g.len);
-      offset_out += g.len;
+      జ్ఞాపకం_నకలు (పంక్తి_బహిర్గతం + స్థానభ్రంశం_బహిర్గతం, mbbuf_char_స్థానభ్రంశం (&mbbuf, g), g.len);
+      స్థానభ్రంశం_బహిర్గతం += g.len;
     }
 
   saved_errno = errno;
-  if (!ferror (istream))
+  ఒకవేళ (!ferror (istream))
     saved_errno = 0;
 
-  if (offset_out)
-    write_out (line_out, offset_out, /*newline=*/ false);
+  ఒకవేళ (స్థానభ్రంశం_బహిర్గతం)
+    write_బహిర్గతం (పంక్తి_బహిర్గతం, స్థానభ్రంశం_బహిర్గతం, /*newline=*/ false);
 
-  if (streq (filename, "-"))
+  ఒకవేళ (streq (filename, "-"))
     clearerr (istream);
-  else if (fclose (istream) != 0 && !saved_errno)
+  లేకపోతే ఒకవేళ (fclose (istream) != 0 && !saved_errno)
     saved_errno = errno;
 
-  if (saved_errno)
+  ఒకవేళ (saved_errno)
     {
       error (0, saved_errno, "%s", quotef (filename));
-      return false;
+      తిరిగి false;
     }
 
-  return true;
+  తిరిగి true;
 }
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
-  size_t width = 80;
-  int optc;
+  size_t వెడల్పు = 80;
+  పూర్ణాంకం optc;
   bool ok;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, shortopts, longopts, NULL)) != -1)
+  అయితే ((optc = getopt_long (argc, argv, shortopts, longopts, ఖాళీ)) != -1)
     {
-      char optargbuf[2];
+      అక్షరం optargbuf[2];
 
-      switch (optc)
+      ఎంపిక (optc)
         {
-        case 'b':		/* Count bytes rather than columns. */
-          counting_mode = COUNT_BYTES;
-          break;
+        స్థితి 'b':		/* Count bytes rather than columns. */
+          counting_బహుళకం = లెక్క_బైట్లు;
+          ఆపు;
 
-        case 'c':               /* Count characters rather than columns. */
-          counting_mode = COUNT_CHARACTERS;
-          break;
+        స్థితి 'c':               /* Count characters rather than columns. */
+          counting_బహుళకం = లెక్క_CHARACTERS;
+          ఆపు;
 
-        case 's':		/* Break at word boundaries. */
+        స్థితి 's':		/* Break at word boundaries. */
           break_spaces = true;
-          break;
+          ఆపు;
 
-        case '0': case '1': case '2': case '3': case '4':
-        case '5': case '6': case '7': case '8': case '9':
-          if (optarg)
+        స్థితి '0': స్థితి '1': స్థితి '2': స్థితి '3': స్థితి '4':
+        స్థితి '5': స్థితి '6': స్థితి '7': స్థితి '8': స్థితి '9':
+          ఒకవేళ (optarg)
             optarg--;
-          else
+          లేకపోతే
             {
               optargbuf[0] = optc;
               optargbuf[1] = '\0';
               optarg = optargbuf;
             }
           FALLTHROUGH;
-        case 'w':		/* Line width. */
-          width = xnumtoumax (optarg, 10, 1, SIZE_MAX - TAB_WIDTH - 1, "",
+        స్థితి 'w':		/* Line width. */
+          వెడల్పు = xnumtoumax (optarg, 10, 1, SIZE_MAX - TAB_వెడల్పు - 1, "",
                               _("invalid number of columns"), 0,
                               XTOINT_MIN_RANGE | XTOINT_MAX_RANGE);
-          break;
+          ఆపు;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_సంస్కరణ_CHAR (కార్యక్రమం_NAME, AUTHORS);
 
-        default:
+        అప్రమేయ:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (argc == optind)
-    ok = fold_file ("-", width);
-  else
+  ఒకవేళ (argc == optind)
+    ok = fold_file ("-", వెడల్పు);
+  లేకపోతే
     {
       ok = true;
-      for (int i = optind; i < argc; i++)
-        ok &= fold_file (argv[i], width);
+      కొరకు (పూర్ణాంకం i = optind; i < argc; i++)
+        ok &= fold_file (argv[i], వెడల్పు);
     }
 
-  if (have_read_stdin && fclose (stdin) == EOF)
+  ఒకవేళ (have_read_stdin && fclose (stdin) == EOF)
     error (EXIT_FAILURE, errno, "-");
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  తిరిగి ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

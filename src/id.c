@@ -17,109 +17,109 @@
 /* Written by Arnold Robbins.
    Major rewrite by David MacKenzie, djm@gnu.ai.mit.edu. */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <pwd.h>
-#include <grp.h>
-#include <getopt.h>
-#include <selinux/selinux.h>
+#అన్తర్భావ <config.h>
+#అన్తర్భావ <stdio.h>
+#అన్తర్భావ <sys/types.h>
+#అన్తర్భావ <pwd.h>
+#అన్తర్భావ <grp.h>
+#అన్తర్భావ <getopt.h>
+#అన్తర్భావ <selinux/selinux.h>
 
-#include "system.h"
-#include "mgetgroups.h"
-#include "quote.h"
-#include "group-list.h"
-#include "smack.h"
-#include "userspec.h"
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "mgetgroups.h"
+#అన్తర్భావ "quote.h"
+#అన్తర్భావ "group-list.h"
+#అన్తర్భావ "smack.h"
+#అన్తర్భావ "userspec.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "id"
+#నిర్వచించు కార్యక్రమం_NAME "id"
 
-#define AUTHORS \
+#నిర్వచించు AUTHORS \
   proper_name ("Arnold Robbins"), \
   proper_name ("David MacKenzie")
 
 /* If nonzero, output only the SELinux context.  */
-static bool just_context = 0;
+స్థిర bool just_context = 0;
 /* If true, delimit entries with NUL characters, not whitespace */
-static bool opt_zero = false;
+స్థిర bool opt_zero = false;
 /* If true, output the list of all group IDs. -G */
-static bool just_group_list = false;
+స్థిర bool just_సమూహం_list = false;
 /* If true, output only the group ID(s). -g */
-static bool just_group = false;
+స్థిర bool just_సమూహం = false;
 /* If true, output real UID/GID instead of default effective UID/GID. -r */
-static bool use_real = false;
+స్థిర bool use_real = false;
 /* If true, output only the user ID(s). -u */
-static bool just_user = false;
+స్థిర bool just_user = false;
 /* True unless errors have been encountered.  */
-static bool ok = true;
+స్థిర bool ok = true;
 /* If true, we are using multiple users. Terminate -G with double NUL. */
-static bool multiple_users = false;
+స్థిర bool గుణిజం_users = false;
 /* If true, output user/group name instead of ID number. -n */
-static bool use_name = false;
+స్థిర bool use_name = false;
 
 /* The real and effective IDs of the user to print. */
-static uid_t ruid, euid;
-static gid_t rgid, egid;
+స్థిర uid_t ruid, euid;
+స్థిర gid_t rgid, egid;
 
 /* The SELinux context.  Start with a known invalid value so print_full_info
    knows when 'context' has not been set to a meaningful value.  */
-static char *context = NULL;
+స్థిర అక్షరం *context = ఖాళీ;
 
-static void print_user (uid_t uid);
-static void print_full_info (char const *username);
-static void print_stuff (char const *pw_name);
+స్థిర శూన్య print_user (uid_t uid);
+స్థిర శూన్య print_నిండిన_info (అక్షరం స్థిరరాశి *username);
+స్థిర శూన్య print_stuff (అక్షరం స్థిరరాశి *pw_name);
 
-static struct option const longopts[] =
+స్థిర నిర్మాణం option స్థిరరాశి longopts[] =
 {
-  {"context", no_argument, NULL, 'Z'},
-  {"group", no_argument, NULL, 'g'},
-  {"groups", no_argument, NULL, 'G'},
-  {"name", no_argument, NULL, 'n'},
-  {"real", no_argument, NULL, 'r'},
-  {"user", no_argument, NULL, 'u'},
-  {"zero", no_argument, NULL, 'z'},
+  {"context", no_వాదం, ఖాళీ, 'Z'},
+  {"group", no_వాదం, ఖాళీ, 'g'},
+  {"groups", no_వాదం, ఖాళీ, 'G'},
+  {"name", no_వాదం, ఖాళీ, 'n'},
+  {"real", no_వాదం, ఖాళీ, 'r'},
+  {"user", no_వాదం, ఖాళీ, 'u'},
+  {"zero", no_వాదం, ఖాళీ, 'z'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_సంస్కరణ_OPTION_DECL},
+  {ఖాళీ, 0, ఖాళీ, 0}
 };
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("Usage: %s [OPTION]... [USER]...\n"), program_name);
+      రాయి (_("Usage: %s [OPTION]... [USER]...\n"), కార్యక్రమం_name);
       fputs (_("\
-Print user and group information for each specified USER,\n\
-or (when USER omitted) for the current process.\n\
+Print user and సమూహం information కొరకు each specified USER,\n\
+or (when USER omitted) కొరకు the current process.\n\
 \n"),
              stdout);
       oputs (_("\
   -a\n\
-         ignore, for compatibility with other versions\n\
+         ignore, కొరకు compatibility with other versions\n\
 "));
       oputs (_("\
   -Z, --context\n\
-         print only the security context of the process\n\
+         print only the security context యొక్క the process\n\
 "));
       oputs (_("\
-  -g, --group\n\
-         print only the effective group ID\n\
+  -g, --సమూహం\n\
+         print only the effective సమూహం ID\n\
 "));
       oputs (_("\
   -G, --groups\n\
-         print all group IDs\n\
+         print all సమూహం IDs\n\
 "));
       oputs (_("\
   -n, --name\n\
-         print a name instead of a number, for -u, -g, -G\n\
+         print a name instead యొక్క a సంఖ్య, కొరకు -u, -g, -G\n\
 "));
       oputs (_("\
   -r, --real\n\
-         print the real ID instead of the effective ID, with -u, -g, -G\n\
+         print the real ID instead యొక్క the effective ID, with -u, -g, -G\n\
 "));
       oputs (_("\
   -u, --user\n\
@@ -128,102 +128,102 @@ or (when USER omitted) for the current process.\n\
       oputs (_("\
   -z, --zero\n\
          delimit entries with NUL characters, not whitespace;\n\
-         not permitted in default format\n\
+         not permitted లోపల అప్రమేయ format\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-Without any OPTION, print some useful set of identified information.\n\
+Without any OPTION, print some useful సమితి_2 యొక్క identified information.\n\
 "), stdout);
-      emit_ancillary_info (PROGRAM_NAME);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
-  int optc;
-  int selinux_enabled = (is_selinux_enabled () > 0);
+  పూర్ణాంకం optc;
+  పూర్ణాంకం selinux_enabled = (is_selinux_enabled () > 0);
   bool smack_enabled = is_smack_enabled ();
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "agnruzGZ", longopts, NULL)) != -1)
+  అయితే ((optc = getopt_long (argc, argv, "agnruzGZ", longopts, ఖాళీ)) != -1)
     {
-      switch (optc)
+      ఎంపిక (optc)
         {
-        case 'a':
+        స్థితి 'a':
           /* Ignore -a, for compatibility with SVR4.  */
-          break;
+          ఆపు;
 
-        case 'Z':
+        స్థితి 'Z':
           /* politely decline if we're not on a SELinux/SMACK-enabled kernel.
              Keep require_selinux_ in tests in sync with these messages.  */
-#ifdef HAVE_SMACK
-          if (!selinux_enabled && !smack_enabled)
+#నిర్వచితమైతే HAVE_SMACK
+          ఒకవేళ (!selinux_enabled && !smack_enabled)
             error (EXIT_FAILURE, 0,
                    _("--context (-Z) works only on "
                      "an SELinux/SMACK-enabled kernel"));
-#else
-          if (!selinux_enabled)
+#లేకపోతే
+          ఒకవేళ (!selinux_enabled)
             error (EXIT_FAILURE, 0,
                    _("--context (-Z) works only on an SELinux-enabled kernel"));
-#endif
+#అయితే_ముగింపు
           just_context = true;
-          break;
+          ఆపు;
 
-        case 'g':
-          just_group = true;
-          break;
-        case 'n':
+        స్థితి 'g':
+          just_సమూహం = true;
+          ఆపు;
+        స్థితి 'n':
           use_name = true;
-          break;
-        case 'r':
+          ఆపు;
+        స్థితి 'r':
           use_real = true;
-          break;
-        case 'u':
+          ఆపు;
+        స్థితి 'u':
           just_user = true;
-          break;
-        case 'z':
+          ఆపు;
+        స్థితి 'z':
           opt_zero = true;
-          break;
-        case 'G':
-          just_group_list = true;
-          break;
+          ఆపు;
+        స్థితి 'G':
+          just_సమూహం_list = true;
+          ఆపు;
         case_GETOPT_HELP_CHAR;
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        case_GETOPT_సంస్కరణ_CHAR (కార్యక్రమం_NAME, AUTHORS);
+        అప్రమేయ:
           usage (EXIT_FAILURE);
         }
     }
 
   size_t n_ids = argc - optind;
 
-  if (n_ids && just_context)
+  ఒకవేళ (n_ids && just_context)
     error (EXIT_FAILURE, 0,
            _("cannot print security context when user specified"));
 
-  if (just_user + just_group + just_group_list + just_context > 1)
+  ఒకవేళ (just_user + just_సమూహం + just_సమూహం_list + just_context > 1)
     error (EXIT_FAILURE, 0, _("cannot print \"only\" of more than one choice"));
 
   bool default_format = ! (just_user
-                           || just_group
-                           || just_group_list
+                           || just_సమూహం
+                           || just_సమూహం_list
                            || just_context);
 
-  if (default_format && (use_real || use_name))
+  ఒకవేళ (default_format && (use_real || use_name))
     error (EXIT_FAILURE, 0,
            _("printing only names or real IDs requires -u, -g, or -G"));
 
-  if (default_format && opt_zero)
+  ఒకవేళ (default_format && opt_zero)
     error (EXIT_FAILURE, 0,
            _("option --zero not permitted in default format"));
 
@@ -232,59 +232,59 @@ main (int argc, char **argv)
      and we're not in POSIXLY_CORRECT mode, get our context.  Otherwise,
      leave the context variable alone - it has been initialized to an
      invalid value that will be not displayed in print_full_info().  */
-  if (n_ids == 0
+  ఒకవేళ (n_ids == 0
       && (just_context
           || (default_format && ! getenv ("POSIXLY_CORRECT"))))
     {
       /* Report failure only if --context (-Z) was explicitly requested.  */
-      if ((selinux_enabled && getcon (&context) && just_context)
+      ఒకవేళ ((selinux_enabled && getcon (&context) && just_context)
           || (smack_enabled
               && smack_new_label_from_self (&context) < 0
               && just_context))
         error (EXIT_FAILURE, 0, _("can't get process context"));
     }
 
-  if (n_ids >= 1)
+  ఒకవేళ (n_ids >= 1)
     {
-      multiple_users = n_ids > 1 ? true : false;
+      గుణిజం_users = n_ids > 1 ? true : false;
       /* Changing the value of n_ids to the last index in the array where we
          have the last possible user id. This helps us because we don't have
          to declare a different variable to keep a track of where the
          last username lies in argv[].  */
       n_ids += optind;
       /* For each username/userid to get its pw_name field */
-      for (; optind < n_ids; optind++)
+      కొరకు (; optind < n_ids; optind++)
         {
-          char *pw_name = NULL;
-          struct passwd *pwd = NULL;
-          char const *spec = argv[optind];
+          అక్షరం *pw_name = ఖాళీ;
+          నిర్మాణం passwd *pwd = ఖాళీ;
+          అక్షరం స్థిరరాశి *spec = argv[optind];
           /* Disallow an empty spec here as parse_user_spec() doesn't
              give an error for that as it seems it's a valid way to
              specify a noop or "reset special bits" depending on the system.  */
-          if (*spec)
+          ఒకవేళ (*spec)
             {
-              if (! parse_user_spec (spec, &euid, NULL, &pw_name, NULL))
+              ఒకవేళ (! parse_user_spec (spec, &euid, ఖాళీ, &pw_name, ఖాళీ))
                 pwd = pw_name ? getpwnam (pw_name) : getpwuid (euid);
             }
-          if (pwd == NULL)
+          ఒకవేళ (pwd == ఖాళీ)
             {
               error (0, errno, _("%s: no such user"), quote (spec));
               ok &= false;
             }
-          else
+          లేకపోతే
             {
-              if (!pw_name)
+              ఒకవేళ (!pw_name)
                 pw_name = xstrdup (pwd->pw_name);
               ruid = euid = pwd->pw_uid;
               rgid = egid = pwd->pw_gid;
               print_stuff (pw_name);
-              if (ferror (stdout))
+              ఒకవేళ (ferror (stdout))
                 write_error ();
             }
-          free (pw_name);
+          విడుదల (pw_name);
         }
     }
-  else
+  లేకపోతే
     {
       /* POSIX says identification functions (getuid, getgid, and
          others) cannot fail, but they can fail under GNU/Hurd and a
@@ -292,146 +292,146 @@ main (int argc, char **argv)
       uid_t NO_UID = -1;
       gid_t NO_GID = -1;
 
-      if (just_user ? !use_real
-          : !just_group && !just_group_list && !just_context)
+      ఒకవేళ (just_user ? !use_real
+          : !just_సమూహం && !just_సమూహం_list && !just_context)
         {
           errno = 0;
           euid = geteuid ();
-          if (euid == NO_UID && errno)
+          ఒకవేళ (euid == NO_UID && errno)
             error (EXIT_FAILURE, errno, _("cannot get effective UID"));
         }
 
-      if (just_user ? use_real
-          : !just_group && (just_group_list || !just_context))
+      ఒకవేళ (just_user ? use_real
+          : !just_సమూహం && (just_సమూహం_list || !just_context))
         {
           errno = 0;
           ruid = getuid ();
-          if (ruid == NO_UID && errno)
+          ఒకవేళ (ruid == NO_UID && errno)
             error (EXIT_FAILURE, errno, _("cannot get real UID"));
         }
 
-      if (!just_user && (just_group || just_group_list || !just_context))
+      ఒకవేళ (!just_user && (just_సమూహం || just_సమూహం_list || !just_context))
         {
           errno = 0;
           egid = getegid ();
-          if (egid == NO_GID && errno)
+          ఒకవేళ (egid == NO_GID && errno)
             error (EXIT_FAILURE, errno, _("cannot get effective GID"));
 
           errno = 0;
           rgid = getgid ();
-          if (rgid == NO_GID && errno)
+          ఒకవేళ (rgid == NO_GID && errno)
             error (EXIT_FAILURE, errno, _("cannot get real GID"));
         }
-        print_stuff (NULL);
+        print_stuff (ఖాళీ);
     }
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  తిరిగి ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 /* Print the name or value of user ID UID. */
 
-static void
+స్థిర శూన్య
 print_user (uid_t uid)
 {
-  struct passwd *pwd = NULL;
+  నిర్మాణం passwd *pwd = ఖాళీ;
 
-  if (use_name)
+  ఒకవేళ (use_name)
     {
       pwd = getpwuid (uid);
-      if (pwd == NULL)
+      ఒకవేళ (pwd == ఖాళీ)
         {
           error (0, 0, _("cannot find name for user ID %ju"), (uintmax_t) uid);
           ok &= false;
         }
     }
 
-  if (pwd)
-    printf ("%s", pwd->pw_name);
-  else
-    printf ("%ju", (uintmax_t) uid);
+  ఒకవేళ (pwd)
+    రాయి ("%s", pwd->pw_name);
+  లేకపోతే
+    రాయి ("%ju", (uintmax_t) uid);
 }
 
 /* Print all of the info about the user's user and group IDs. */
 
-static void
-print_full_info (char const *username)
+స్థిర శూన్య
+print_నిండిన_info (అక్షరం స్థిరరాశి *username)
 {
-  struct passwd *pwd;
-  struct group *grp;
+  నిర్మాణం passwd *pwd;
+  నిర్మాణం సమూహం *grp;
 
-  printf (_("uid=%ju"), (uintmax_t) ruid);
+  రాయి (_("uid=%ju"), (uintmax_t) ruid);
   pwd = getpwuid (ruid);
-  if (pwd)
-    printf ("(%s)", pwd->pw_name);
+  ఒకవేళ (pwd)
+    రాయి ("(%s)", pwd->pw_name);
 
-  printf (_(" gid=%ju"), (uintmax_t) rgid);
+  రాయి (_(" gid=%ju"), (uintmax_t) rgid);
   grp = getgrgid (rgid);
-  if (grp)
-    printf ("(%s)", grp->gr_name);
+  ఒకవేళ (grp)
+    రాయి ("(%s)", grp->gr_name);
 
-  if (euid != ruid)
+  ఒకవేళ (euid != ruid)
     {
-      printf (_(" euid=%ju"), (uintmax_t) euid);
+      రాయి (_(" euid=%ju"), (uintmax_t) euid);
       pwd = getpwuid (euid);
-      if (pwd)
-        printf ("(%s)", pwd->pw_name);
+      ఒకవేళ (pwd)
+        రాయి ("(%s)", pwd->pw_name);
     }
 
-  if (egid != rgid)
+  ఒకవేళ (egid != rgid)
     {
-      printf (_(" egid=%ju"), (uintmax_t) egid);
+      రాయి (_(" egid=%ju"), (uintmax_t) egid);
       grp = getgrgid (egid);
-      if (grp)
-        printf ("(%s)", grp->gr_name);
+      ఒకవేళ (grp)
+        రాయి ("(%s)", grp->gr_name);
     }
 
   {
     gid_t *groups;
 
-    gid_t primary_group;
-    if (username)
-      primary_group = pwd ? pwd->pw_gid : -1;
-    else
-      primary_group = egid;
+    gid_t primary_సమూహం;
+    ఒకవేళ (username)
+      primary_సమూహం = pwd ? pwd->pw_gid : -1;
+    లేకపోతే
+      primary_సమూహం = egid;
 
-    int n_groups = xgetgroups (username, primary_group, &groups);
-    if (n_groups < 0)
+    పూర్ణాంకం n_groups = xgetgroups (username, primary_సమూహం, &groups);
+    ఒకవేళ (n_groups < 0)
       {
-        if (username)
+        ఒకవేళ (username)
           error (0, errno, _("failed to get groups for user %s"),
                  quote (username));
-        else
+        లేకపోతే
           error (0, errno, _("failed to get groups for the current process"));
         ok &= false;
-        return;
+        తిరిగి;
       }
 
-    if (n_groups > 0)
+    ఒకవేళ (n_groups > 0)
       fputs (_(" groups="), stdout);
-    for (int i = 0; i < n_groups; i++)
+    కొరకు (పూర్ణాంకం i = 0; i < n_groups; i++)
       {
-        if (i > 0)
-          putchar (',');
-        printf ("%ju", (uintmax_t) groups[i]);
+        ఒకవేళ (i > 0)
+          అక్షరం_రాయి (',');
+        రాయి ("%ju", (uintmax_t) groups[i]);
         grp = getgrgid (groups[i]);
-        if (grp)
-          printf ("(%s)", grp->gr_name);
+        ఒకవేళ (grp)
+          రాయి ("(%s)", grp->gr_name);
       }
-    free (groups);
+    విడుదల (groups);
   }
 
   /* POSIX mandates the precise output format, and that it not include
      any context=... part, so skip that if POSIXLY_CORRECT is set.  */
-  if (context)
-    printf (_(" context=%s"), context);
+  ఒకవేళ (context)
+    రాయి (_(" context=%s"), context);
 }
 
 /* Print information about the user based on the arguments passed. */
 
-static void
-print_stuff (char const *pw_name)
+స్థిర శూన్య
+print_stuff (అక్షరం స్థిరరాశి *pw_name)
 {
-  if (just_user)
+  ఒకవేళ (just_user)
       print_user (use_real ? ruid : euid);
 
   /* print_group and print_group_list return true on successful
@@ -439,26 +439,26 @@ print_stuff (char const *pw_name)
      the current value of 'ok' because we want to know if one of the previous
      users faced a problem in these functions. This value of 'ok' is later used
      to understand what status program should exit with. */
-  else if (just_group)
-    ok &= print_group (use_real ? rgid : egid, use_name);
-  else if (just_group_list)
-    ok &= print_group_list (pw_name, ruid, rgid, egid,
+  లేకపోతే ఒకవేళ (just_సమూహం)
+    ok &= print_సమూహం (use_real ? rgid : egid, use_name);
+  లేకపోతే ఒకవేళ (just_సమూహం_list)
+    ok &= print_సమూహం_list (pw_name, ruid, rgid, egid,
                             use_name, opt_zero ? '\0' : ' ');
-  else if (just_context)
+  లేకపోతే ఒకవేళ (just_context)
     fputs (context, stdout);
-  else
-    print_full_info (pw_name);
+  లేకపోతే
+    print_నిండిన_info (pw_name);
 
   /* When printing records for more than 1 user, at the end of groups
      of each user terminate the record with two consequent NUL characters
      to make parsing and distinguishing between two records possible. */
-  if (opt_zero && just_group_list && multiple_users)
+  ఒకవేళ (opt_zero && just_సమూహం_list && గుణిజం_users)
     {
-      putchar ('\0');
-      putchar ('\0');
+      అక్షరం_రాయి ('\0');
+      అక్షరం_రాయి ('\0');
     }
-  else
+  లేకపోతే
     {
-      putchar (opt_zero ? '\0' : '\n');
+      అక్షరం_రాయి (opt_zero ? '\0' : '\n');
     }
 }

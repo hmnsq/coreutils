@@ -16,38 +16,38 @@
 
 /* Extracted from cut.c by Assaf Gordon */
 
-#include <config.h>
+#అన్తర్భావ <config.h>
 
-#include "system.h"
-#include "c-ctype.h"
-#include "quote.h"
-#include "set-fields.h"
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "c-ctype.h"
+#అన్తర్భావ "quote.h"
+#అన్తర్భావ "set-fields.h"
 
 /* Array of `struct field_range_pair' holding all the finite ranges. */
-struct field_range_pair *frp;
+నిర్మాణం క్షేత్రం_range_pair *frp;
 
 /* Number of finite ranges specified by the user. */
 idx_t n_frp;
 
 /* Number of `struct field_range_pair's allocated. */
-static idx_t n_frp_allocated;
+స్థిర idx_t n_frp_allocated;
 
-#define FATAL_ERROR(Message)                                            \
-  do                                                                    \
+#నిర్వచించు FATAL_ERROR(సందేశం)                                            \
+  చేయి                                                                    \
     {                                                                   \
-      error (0, 0, (Message));                                          \
+      error (0, 0, (సందేశం));                                          \
       usage (EXIT_FAILURE);                                             \
     }                                                                   \
-  while (0)
+  అయితే (0)
 
 /* Append LOW, HIGH to the list RP of range pairs, allocating additional
    space if necessary.  Update global variable N_FRP.  When allocating,
    update global variable N_FRP_ALLOCATED.  */
-static void
-add_range_pair (uintmax_t lo, uintmax_t hi)
+స్థిర శూన్య
+కూడు_range_pair (uintmax_t lo, uintmax_t hi)
 {
-  if (n_frp == n_frp_allocated)
-    frp = xpalloc (frp, &n_frp_allocated, 1, -1, sizeof *frp);
+  ఒకవేళ (n_frp == n_frp_allocated)
+    frp = xpalloc (frp, &n_frp_allocated, 1, -1, పరిమాణం *frp);
   frp[n_frp].lo = lo;
   frp[n_frp].hi = hi;
   ++n_frp;
@@ -56,41 +56,41 @@ add_range_pair (uintmax_t lo, uintmax_t hi)
 
 /* Comparison function for qsort to order the list of
    struct field_range_pairs.  */
-static int
-compare_ranges (const void *a, const void *b)
+స్థిర పూర్ణాంకం
+compare_ranges (స్థిరరాశి శూన్య *a, స్థిరరాశి శూన్య *b)
 {
-  struct field_range_pair const *ap = a, *bp = b;
-  return _GL_CMP (ap->lo, bp->lo);
+  నిర్మాణం క్షేత్రం_range_pair స్థిరరాశి *ap = a, *bp = b;
+  తిరిగి _GL_CMP (ap->lo, bp->lo);
 }
 
 /* Reallocate Range Pair entries, with corresponding
    entries outside the range of each specified entry.  */
 
-static void
-complement_rp (void)
+స్థిర శూన్య
+complement_rp (శూన్య)
 {
-  struct field_range_pair *c = frp;
+  నిర్మాణం క్షేత్రం_range_pair *c = frp;
   idx_t n = n_frp;
 
-  frp = NULL;
+  frp = ఖాళీ;
   n_frp = 0;
   n_frp_allocated = 0;
 
-  if (c[0].lo > 1)
-    add_range_pair (1, c[0].lo - 1);
+  ఒకవేళ (c[0].lo > 1)
+    కూడు_range_pair (1, c[0].lo - 1);
 
-  for (idx_t i = 1; i < n; ++i)
+  కొరకు (idx_t i = 1; i < n; ++i)
     {
-      if (c[i - 1].hi + 1 == c[i].lo)
-        continue;
+      ఒకవేళ (c[i - 1].hi + 1 == c[i].lo)
+        కొనసాగు;
 
-      add_range_pair (c[i - 1].hi + 1, c[i].lo - 1);
+      కూడు_range_pair (c[i - 1].hi + 1, c[i].lo - 1);
     }
 
-  if (c[n - 1].hi < UINTMAX_MAX)
-    add_range_pair (c[n - 1].hi + 1, UINTMAX_MAX);
+  ఒకవేళ (c[n - 1].hi < UINTMAX_MAX)
+    కూడు_range_pair (c[n - 1].hi + 1, UINTMAX_MAX);
 
-  free (c);
+  విడుదల (c);
 }
 
 /* Given the list of field or byte range specifications FIELDSTR,
@@ -132,137 +132,137 @@ complement_rp (void)
    given '3-',    frp = [ { .lo = 3,           .hi = UINTMAX_MAX },
                           { .lo = UINTMAX_MAX, .hi = UINTMAX_MAX } ];
 */
-void
-set_fields (char const *fieldstr, unsigned int options)
+శూన్య
+సమితి_fields (అక్షరం స్థిరరాశి *fieldstr, గుర్తులేని పూర్ణాంకం options)
 {
   uintmax_t initial = 1;	/* Value of first number in a range.  */
-  uintmax_t value = 0;		/* If nonzero, a number being accumulated.  */
+  uintmax_t విలువ = 0;		/* If nonzero, a number being accumulated.  */
   bool lhs_specified = false;
   bool rhs_specified = false;
-  bool dash_found = false;	/* True if a '-' is found in this field.  */
+  bool dash_దొరికింది = false;	/* True if a '-' is found in this field.  */
 
-  bool in_digits = false;
+  bool లోపల_digits = false;
 
   /* Collect and store in RP the range end points. */
 
   /* Special case: '--field=-' means all fields, emulate '--field=1-' . */
-  if ((options & SETFLD_ALLOW_DASH) && streq (fieldstr,"-"))
+  ఒకవేళ ((options & SETFLD_ALLOW_DASH) && streq (fieldstr,"-"))
     {
-      value = 1;
+      విలువ = 1;
       lhs_specified = true;
-      dash_found = true;
+      dash_దొరికింది = true;
       fieldstr++;
     }
 
-  while (true)
+  అయితే (true)
     {
-      if (*fieldstr == '-')
+      ఒకవేళ (*fieldstr == '-')
         {
-          in_digits = false;
+          లోపల_digits = false;
           /* Starting a range. */
-          if (dash_found)
+          ఒకవేళ (dash_దొరికింది)
             FATAL_ERROR ((options & SETFLD_ERRMSG_USE_POS)
                          ? _("invalid byte or character range")
                          : _("invalid field range"));
 
-          dash_found = true;
+          dash_దొరికింది = true;
           fieldstr++;
 
-          if (lhs_specified && !value)
+          ఒకవేళ (lhs_specified && !విలువ)
             FATAL_ERROR ((options & SETFLD_ERRMSG_USE_POS)
                          ? _("byte/character positions are numbered from 1")
                          : _("fields are numbered from 1"));
 
-          initial = (lhs_specified ? value : 1);
-          value = 0;
+          initial = (lhs_specified ? విలువ : 1);
+          విలువ = 0;
         }
-      else if (*fieldstr == ','
-               || isblank (to_uchar (*fieldstr)) || *fieldstr == '\0')
+      లేకపోతే ఒకవేళ (*fieldstr == ','
+               || isblank (గమ్యం_uchar (*fieldstr)) || *fieldstr == '\0')
         {
-          in_digits = false;
+          లోపల_digits = false;
           /* Ending the string, or this field/byte sublist. */
-          if (dash_found)
+          ఒకవేళ (dash_దొరికింది)
             {
-              dash_found = false;
+              dash_దొరికింది = false;
 
-              if (!lhs_specified && !rhs_specified)
+              ఒకవేళ (!lhs_specified && !rhs_specified)
                 {
                   /* if a lone dash is allowed, emulate '1-' for all fields */
-                  if (options & SETFLD_ALLOW_DASH)
+                  ఒకవేళ (options & SETFLD_ALLOW_DASH)
                     initial = 1;
-                  else
+                  లేకపోతే
                     FATAL_ERROR (_("invalid range with no endpoint: -"));
                 }
 
               /* A range.  Possibilities: -n, m-n, n-.
                  In any case, 'initial' contains the start of the range. */
-              if (!rhs_specified)
+              ఒకవేళ (!rhs_specified)
                 {
                   /* 'n-'.  From 'initial' to end of line. */
-                  add_range_pair (initial, UINTMAX_MAX);
+                  కూడు_range_pair (initial, UINTMAX_MAX);
                 }
-              else
+              లేకపోతే
                 {
                   /* 'm-n' or '-n' (1-n). */
-                  if (value < initial)
+                  ఒకవేళ (విలువ < initial)
                     FATAL_ERROR (_("invalid decreasing range"));
 
-                  add_range_pair (initial, value);
+                  కూడు_range_pair (initial, విలువ);
                 }
-              value = 0;
+              విలువ = 0;
             }
-          else
+          లేకపోతే
             {
               /* A simple field number, not a range. */
-              if (value == 0)
+              ఒకవేళ (విలువ == 0)
                 FATAL_ERROR ((options & SETFLD_ERRMSG_USE_POS)
                              ? _("byte/character positions are numbered from 1")
                              : _("fields are numbered from 1"));
 
-              add_range_pair (value, value);
-              value = 0;
+              కూడు_range_pair (విలువ, విలువ);
+              విలువ = 0;
             }
 
-          if (*fieldstr == '\0')
-            break;
+          ఒకవేళ (*fieldstr == '\0')
+            ఆపు;
 
           fieldstr++;
           lhs_specified = false;
           rhs_specified = false;
         }
-      else if (c_isdigit (*fieldstr))
+      లేకపోతే ఒకవేళ (c_isdigit (*fieldstr))
         {
           /* Record beginning of digit string, in case we have to
              complain about it.  */
-          static char const *num_start;
-          if (!in_digits || !num_start)
-            num_start = fieldstr;
-          in_digits = true;
+          స్థిర అక్షరం స్థిరరాశి *అంకె_ప్రారంభం;
+          ఒకవేళ (!లోపల_digits || !అంకె_ప్రారంభం)
+            అంకె_ప్రారంభం = fieldstr;
+          లోపల_digits = true;
 
-          if (dash_found)
+          ఒకవేళ (dash_దొరికింది)
             rhs_specified = 1;
-          else
+          లేకపోతే
             lhs_specified = 1;
 
           /* Detect overflow.  */
-          if (!DECIMAL_DIGIT_ACCUMULATE (value, *fieldstr - '0')
-              || value == UINTMAX_MAX)
+          ఒకవేళ (!DECIMAL_DIGIT_ACCUMULATE (విలువ, *fieldstr - '0')
+              || విలువ == UINTMAX_MAX)
             {
               /* In case the user specified -c$(echo 2^64|bc),22,
                  complain only about the first number.  */
-              char *bad_num = ximemdup0 (num_start,
-                                         strspn (num_start, "0123456789"));
+              అక్షరం *bad_అంకె = ximemdup0 (అంకె_ప్రారంభం,
+                                         strspn (అంకె_ప్రారంభం, "0123456789"));
               error (0, 0, (options & SETFLD_ERRMSG_USE_POS)
                            ?_("byte/character offset %s is too large")
                            :_("field number %s is too large"),
-                           quote (bad_num));
-              free (bad_num);
+                           quote (bad_అంకె));
+              విడుదల (bad_అంకె);
               usage (EXIT_FAILURE);
             }
 
           fieldstr++;
         }
-      else
+      లేకపోతే
         {
           error (0, 0, (options & SETFLD_ERRMSG_USE_POS)
                        ?_("invalid byte/character position %s")
@@ -272,37 +272,37 @@ set_fields (char const *fieldstr, unsigned int options)
         }
     }
 
-  if (!n_frp)
+  ఒకవేళ (!n_frp)
     FATAL_ERROR ((options&SETFLD_ERRMSG_USE_POS)
                  ? _("missing list of byte/character positions")
                  : _("missing list of fields"));
 
-  qsort (frp, n_frp, sizeof (frp[0]), compare_ranges);
+  qsort (frp, n_frp, పరిమాణం (frp[0]), compare_ranges);
 
   /* Merge range pairs (e.g. `2-5,3-4' becomes `2-5'). */
-  for (idx_t i = 0; i < n_frp; ++i)
+  కొరకు (idx_t i = 0; i < n_frp; ++i)
     {
-      for (idx_t j = i + 1; j < n_frp; ++j)
+      కొరకు (idx_t j = i + 1; j < n_frp; ++j)
         {
-          if (frp[j].lo <= frp[i].hi)
+          ఒకవేళ (frp[j].lo <= frp[i].hi)
             {
               frp[i].hi = MAX (frp[j].hi, frp[i].hi);
-              memmove (frp + j, frp + j + 1, (n_frp - j - 1) * sizeof *frp);
+              memmove (frp + j, frp + j + 1, (n_frp - j - 1) * పరిమాణం *frp);
               n_frp--;
               j--;
             }
-          else
-            break;
+          లేకపోతే
+            ఆపు;
         }
     }
 
-  if (options & SETFLD_COMPLEMENT)
+  ఒకవేళ (options & SETFLD_COMPLEMENT)
     complement_rp ();
 
   /* After merging, reallocate RP so we release memory to the system.
      Also add a sentinel at the end of RP, to avoid out of bounds access
      and for performance reasons.  */
   ++n_frp;
-  frp = xreallocarray (frp, n_frp, sizeof (struct field_range_pair));
+  frp = xreallocarray (frp, n_frp, పరిమాణం (నిర్మాణం క్షేత్రం_range_pair));
   frp[n_frp - 1].lo = frp[n_frp - 1].hi = UINTMAX_MAX;
 }

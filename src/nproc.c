@@ -16,122 +16,122 @@
 
 /* Written by Giuseppe Scrivano.  */
 
-#include <config.h>
-#include <getopt.h>
-#include <stdio.h>
-#include <sys/types.h>
+#అన్తర్భావ <config.h>
+#అన్తర్భావ <getopt.h>
+#అన్తర్భావ <stdio.h>
+#అన్తర్భావ <sys/types.h>
 
-#include "system.h"
-#include "nproc.h"
-#include "quote.h"
-#include "xdectoint.h"
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "nproc.h"
+#అన్తర్భావ "quote.h"
+#అన్తర్భావ "xdectoint.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "nproc"
+#నిర్వచించు కార్యక్రమం_NAME "nproc"
 
-#define AUTHORS proper_name ("Giuseppe Scrivano")
+#నిర్వచించు AUTHORS proper_name ("Giuseppe Scrivano")
 
-enum
+గణన
 {
   ALL_OPTION = CHAR_MAX + 1,
   IGNORE_OPTION
 };
 
-static struct option const longopts[] =
+స్థిర నిర్మాణం option స్థిరరాశి longopts[] =
 {
-  {"all", no_argument, NULL, ALL_OPTION},
-  {"ignore", required_argument, NULL, IGNORE_OPTION},
+  {"all", no_వాదం, ఖాళీ, ALL_OPTION},
+  {"ignore", required_వాదం, ఖాళీ, IGNORE_OPTION},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_సంస్కరణ_OPTION_DECL},
+  {ఖాళీ, 0, ఖాళీ, 0}
 };
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("Usage: %s [OPTION]...\n"), program_name);
+      రాయి (_("Usage: %s [OPTION]...\n"), కార్యక్రమం_name);
       fputs (_("\
-Print the number of processing units available to the current process,\n\
-which may be less than the number of online processors.\n\
-If the 'OMP_NUM_THREADS' or 'OMP_THREAD_LIMIT' environment variables are set,\n\
-then they will determine the minimum and maximum returned value respectively.\n\
+Print the సంఖ్య యొక్క processing units అందుబాటు గమ్యం the current process,\n\
+which may be less than the సంఖ్య యొక్క online processors.\n\
+If the 'OMP_NUM_THREADS' or 'OMP_THREAD_LIMIT' environment variables are సమితి_2,\n\
+then they will determine the minimum and గరిష్ఠ returned విలువ respectively.\n\
 \n\
 "), stdout);
       oputs (_("\
       --all\n\
-         print the number of installed processors,\n\
+         print the సంఖ్య యొక్క installed processors,\n\
          disregarding any OpenMP environment variables, or CPU quotas.\n\
 "));
       oputs (_("\
       --ignore=N\n\
-         if possible, exclude N processing units.\n\
-         The result is guaranteed to be at least 1.\n\
+         ఒకవేళ possible, exclude N processing units.\n\
+         The ఫలితం is guaranteed గమ్యం be at కనిష్ఠ 1.\n\
 "));
 
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
-  unsigned long ignore = 0;
+  గుర్తులేని దీర్ఘ ignore = 0;
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  enum nproc_query mode = NPROC_CURRENT_OVERRIDABLE;
+  గణన nproc_query బహుళకం_2 = NPROC_CURRENT_OVERRIDABLE;
 
-  while (true)
+  అయితే (true)
     {
-      int c = getopt_long (argc, argv, "", longopts, NULL);
-      if (c == -1)
-        break;
-      switch (c)
+      పూర్ణాంకం c = getopt_long (argc, argv, "", longopts, ఖాళీ);
+      ఒకవేళ (c == -1)
+        ఆపు;
+      ఎంపిక (c)
         {
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_సంస్కరణ_CHAR (కార్యక్రమం_NAME, AUTHORS);
 
-        case ALL_OPTION:
-          mode = NPROC_ALL;
-          break;
+        స్థితి ALL_OPTION:
+          బహుళకం_2 = NPROC_ALL;
+          ఆపు;
 
-        case IGNORE_OPTION:
+        స్థితి IGNORE_OPTION:
           ignore = xnumtoumax (optarg, 10, 0, ULONG_MAX, "",
                                _("invalid number"), 0, XTOINT_MAX_QUIET);
-          break;
+          ఆపు;
 
-        default:
+        అప్రమేయ:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (argc != optind)
+  ఒకవేళ (argc != optind)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind]));
       usage (EXIT_FAILURE);
     }
 
-  unsigned long nproc = num_processors (mode);
+  గుర్తులేని దీర్ఘ nproc = అంకె_processors (బహుళకం_2);
 
-  if (ignore < nproc)
+  ఒకవేళ (ignore < nproc)
     nproc -= ignore;
-  else
+  లేకపోతే
     nproc = 1;
 
-  printf ("%lu\n", nproc);
+  రాయి ("%lu\n", nproc);
 
-  return EXIT_SUCCESS;
+  తిరిగి EXIT_SUCCESS;
 }

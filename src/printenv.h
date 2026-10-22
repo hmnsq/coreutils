@@ -14,35 +14,35 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#ifndef PRINTENV_H
+#నిర్వచితం_కాకపోతే PRINTENV_H
 # define PRINTENV_H 1
 
-static inline void
-print_envvar (char const *entry, char terminator, bool quoted)
+స్థిర అంతఃవరుస శూన్య
+print_envvar (అక్షరం స్థిరరాశి *నమోదు_2, అక్షరం terminator, bool quoted)
 {
-  if (! quoted)
-    fputs (entry, stdout);
-  else
+  ఒకవేళ (! quoted)
+    fputs (నమోదు_2, stdout);
+  లేకపోతే
     {
-      idx_t const entry_len = strlen (entry);
-      char const *equal = memchr (entry, '=', entry_len);
+      idx_t స్థిరరాశి నమోదు_len = అక్షరశ్రేణి_పొడవు (నమోదు_2);
+      అక్షరం స్థిరరాశి *equal = memchr (నమోదు_2, '=', నమోదు_len);
 
       /* If the parent process manipulates ENVIRON directly, it is possible
          that an entry does not contain an equal sign.  */
-      idx_t const var_len = equal ? equal - entry : entry_len;
-      fputs (quoteN_mem (entry, var_len), stdout);
+      idx_t స్థిరరాశి var_len = equal ? equal - నమోదు_2 : నమోదు_len;
+      fputs (quoteN_mem (నమోదు_2, var_len), stdout);
 
-      if (equal)
+      ఒకవేళ (equal)
         {
-          putchar ('=');
-          char const *val = equal + 1;
-          idx_t const val_len = entry_len - (val - entry);
+          అక్షరం_రాయి ('=');
+          అక్షరం స్థిరరాశి *val = equal + 1;
+          idx_t స్థిరరాశి val_len = నమోదు_len - (val - నమోదు_2);
           /* Prefer "VAR=" over "VAR=''".  */
-          if (0 < val_len)
+          ఒకవేళ (0 < val_len)
             fputs (quoteN_mem (val, val_len), stdout);
         }
     }
-  putchar (terminator);
+  అక్షరం_రాయి (terminator);
 }
 
-#endif
+#అయితే_ముగింపు

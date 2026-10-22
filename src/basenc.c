@@ -16,48 +16,48 @@
 
 /* Written by Simon Josefsson <simon@josefsson.org>.  */
 
-#include <config.h>
+#అన్తర్భావ <config.h>
 
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
-#include <gmp.h>
+#అన్తర్భావ <stdio.h>
+#అన్తర్భావ <getopt.h>
+#అన్తర్భావ <sys/types.h>
+#అన్తర్భావ <gmp.h>
 
-#include "system.h"
-#include "assure.h"
-#include "c-ctype.h"
-#include "fadvise.h"
-#include "quote.h"
-#include "xstrtol.h"
-#include "xbinary-io.h"
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "assure.h"
+#అన్తర్భావ "c-ctype.h"
+#అన్తర్భావ "fadvise.h"
+#అన్తర్భావ "quote.h"
+#అన్తర్భావ "xstrtol.h"
+#అన్తర్భావ "xbinary-io.h"
 
-#if BASE_TYPE == 42
+#ఒకవేళ పునాది_TYPE == 42
 # define AUTHORS \
   proper_name ("Simon Josefsson"), \
   proper_name ("Assaf Gordon")
-#else
+#లేకపోతే
 # define AUTHORS proper_name ("Simon Josefsson")
-#endif
+#అయితే_ముగింపు
 
-#if BASE_TYPE == 32
+#ఒకవేళ పునాది_TYPE == 32
 # include "base32.h"
-# define PROGRAM_NAME "base32"
-#elif BASE_TYPE == 64
+# define కార్యక్రమం_NAME "base32"
+#లేదావేళ పునాది_TYPE == 64
 # include "base64.h"
-# define PROGRAM_NAME "base64"
-#elif BASE_TYPE == 42
+# define కార్యక్రమం_NAME "base64"
+#లేదావేళ పునాది_TYPE == 42
 # include "base32.h"
 # include "base64.h"
 # include "assure.h"
-# define PROGRAM_NAME "basenc"
-#else
-# error missing/invalid BASE_TYPE definition
-#endif
+# define కార్యక్రమం_NAME "basenc"
+#లేకపోతే
+# error missing/invalid పునాది_TYPE definition
+#అయితే_ముగింపు
 
 
 
-#if BASE_TYPE == 42
-enum
+#ఒకవేళ పునాది_TYPE == 42
+గణన
 {
   BASE64_OPTION = CHAR_MAX + 1,
   BASE64URL_OPTION,
@@ -69,60 +69,60 @@ enum
   BASE2LSBF_OPTION,
   Z85_OPTION
 };
-#endif
+#అయితే_ముగింపు
 
-static struct option const long_options[] =
+స్థిర నిర్మాణం option స్థిరరాశి long_options[] =
 {
-  {"decode", no_argument, NULL, 'd'},
-  {"wrap", required_argument, NULL, 'w'},
-  {"ignore-garbage", no_argument, NULL, 'i'},
-#if BASE_TYPE == 42
-  {"base64",    no_argument, NULL, BASE64_OPTION},
-  {"base64url", no_argument, NULL, BASE64URL_OPTION},
-  {"base58",    no_argument, NULL, BASE58_OPTION},
-  {"base32",    no_argument, NULL, BASE32_OPTION},
-  {"base32hex", no_argument, NULL, BASE32HEX_OPTION},
-  {"base16",    no_argument, NULL, BASE16_OPTION},
-  {"base2msbf", no_argument, NULL, BASE2MSBF_OPTION},
-  {"base2lsbf", no_argument, NULL, BASE2LSBF_OPTION},
-  {"z85",       no_argument, NULL, Z85_OPTION},
-#endif
+  {"decode", no_వాదం, ఖాళీ, 'd'},
+  {"wrap", required_వాదం, ఖాళీ, 'w'},
+  {"ignore-garbage", no_వాదం, ఖాళీ, 'i'},
+#ఒకవేళ పునాది_TYPE == 42
+  {"base64",    no_వాదం, ఖాళీ, BASE64_OPTION},
+  {"base64url", no_వాదం, ఖాళీ, BASE64URL_OPTION},
+  {"base58",    no_వాదం, ఖాళీ, BASE58_OPTION},
+  {"base32",    no_వాదం, ఖాళీ, BASE32_OPTION},
+  {"base32hex", no_వాదం, ఖాళీ, BASE32HEX_OPTION},
+  {"base16",    no_వాదం, ఖాళీ, BASE16_OPTION},
+  {"base2msbf", no_వాదం, ఖాళీ, BASE2MSBF_OPTION},
+  {"base2lsbf", no_వాదం, ఖాళీ, BASE2LSBF_OPTION},
+  {"z85",       no_వాదం, ఖాళీ, Z85_OPTION},
+#అయితే_ముగింపు
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_సంస్కరణ_OPTION_DECL},
+  {ఖాళీ, 0, ఖాళీ, 0}
 };
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("\
+      రాయి (_("\
 Usage: %s [OPTION]... [FILE]\n\
-"), program_name);
+"), కార్యక్రమం_name);
 
-#if BASE_TYPE == 42
+#ఒకవేళ పునాది_TYPE == 42
       fputs (_("\
-basenc encode or decode FILE, or standard input, to standard output.\n\
+basenc encode or decode FILE, or standard ఆదానం, గమ్యం standard output.\n\
 "), stdout);
-#else
-      printf (_("\
-Base%d encode or decode FILE, or standard input, to standard output.\n\
-"), BASE_TYPE);
-#endif
+#లేకపోతే
+      రాయి (_("\
+పునాది%d encode or decode FILE, or standard ఆదానం, గమ్యం standard output.\n\
+"), పునాది_TYPE);
+#అయితే_ముగింపు
 
       emit_stdin_note ();
       emit_mandatory_arg_note ();
-#if BASE_TYPE == 42
+#ఒకవేళ పునాది_TYPE == 42
       oputs (_("\
       --base64\n\
-         same as base64(1) program (RFC4648 section 4)\n\
+         same as base64(1) కార్యక్రమం (RFC4648 section 4)\n\
 "));
       oputs (_("\
       --base64url\n\
-         file- and url-safe base64 (RFC4648 section 5)\n\
+         file- and url-సురక్షిత base64 (RFC4648 section 5)\n\
 "));
       oputs (_("\
       --base58\n\
@@ -130,7 +130,7 @@ Base%d encode or decode FILE, or standard input, to standard output.\n\
 "));
       oputs (_("\
       --base32\n\
-         same as base32(1) program (RFC4648 section 6)\n\
+         same as base32(1) కార్యక్రమం (RFC4648 section 6)\n\
 "));
       oputs (_("\
       --base32hex\n\
@@ -142,88 +142,88 @@ Base%d encode or decode FILE, or standard input, to standard output.\n\
 "));
       oputs (_("\
       --base2msbf\n\
-         bit string with most significant bit (msb) first\n\
+         బిట్టు string with most significant బిట్టు (msb) మొదటి\n\
 "));
       oputs (_("\
       --base2lsbf\n\
-         bit string with least significant bit (lsb) first\n\
+         బిట్టు string with కనిష్ఠ significant బిట్టు (lsb) మొదటి\n\
 "));
-#endif
+#అయితే_ముగింపు
       oputs (_("\
   -d, --decode\n\
-         decode data\n\
+         decode దత్తాంశం\n\
 "));
       oputs (_("\
   -i, --ignore-garbage\n\
          when decoding, ignore non-alphabet characters\n\
 "));
       oputs (_("\
-  -w, --wrap=COLS\n\
-         wrap encoded lines after COLS character (default 76).\n\
-         Use 0 to disable line wrapping\n\
+  -w, --wrap=నిలువుల_సంఖ్య\n\
+         wrap encoded పంక్తులు after నిలువుల_సంఖ్య character (అప్రమేయ 76).\n\
+         Use 0 గమ్యం disable పంక్తి wrapping\n\
 "));
-#if BASE_TYPE == 42
+#ఒకవేళ పునాది_TYPE == 42
       oputs (_("\
       --z85\n\
          ascii85-like encoding (ZeroMQ spec:32/Z85);\n\
-         when encoding, input length must be a multiple of 4;\n\
-         when decoding, input length must be a multiple of 5\n\
+         when encoding, ఆదానం నిడివి must be a గుణిజం యొక్క 4;\n\
+         when decoding, ఆదానం నిడివి must be a గుణిజం యొక్క 5\n\
 "));
-#endif
+#అయితే_ముగింపు
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-#if BASE_TYPE == 42
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
+#ఒకవేళ పునాది_TYPE == 42
       fputs (_("\
 \n\
-When decoding, the input may contain newlines in addition to the bytes of\n\
-the formal alphabet.  Use --ignore-garbage to attempt to recover\n\
-from any other non-alphabet bytes in the encoded stream.\n\
+When decoding, the ఆదానం may contain newlines లోపల addition గమ్యం the బైట్లు యొక్క\n\
+the formal alphabet.  Use --ignore-garbage గమ్యం attempt గమ్యం recover\n\
+from any other non-alphabet బైట్లు లోపల the encoded ప్రవాహం.\n\
 "), stdout);
-#else
-      printf (_("\
+#లేకపోతే
+      రాయి (_("\
 \n\
-The data are encoded as described for the %s alphabet in RFC 4648.\n\
-When decoding, the input may contain newlines in addition to the bytes of\n\
-the formal %s alphabet.  Use --ignore-garbage to attempt to recover\n\
-from any other non-alphabet bytes in the encoded stream.\n"),
-              PROGRAM_NAME, PROGRAM_NAME);
-#endif
-      emit_ancillary_info (PROGRAM_NAME);
+The దత్తాంశం are encoded as described కొరకు the %s alphabet లోపల RFC 4648.\n\
+When decoding, the ఆదానం may contain newlines లోపల addition గమ్యం the బైట్లు యొక్క\n\
+the formal %s alphabet.  Use --ignore-garbage గమ్యం attempt గమ్యం recover\n\
+from any other non-alphabet బైట్లు లోపల the encoded ప్రవాహం.\n"),
+              కార్యక్రమం_NAME, కార్యక్రమం_NAME);
+#అయితే_ముగింపు
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
 
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
-#if BASE_TYPE != 64
-static int
-base32_required_padding (int len)
+#ఒకవేళ పునాది_TYPE != 64
+స్థిర పూర్ణాంకం
+base32_required_padding (పూర్ణాంకం len)
 {
-  int partial = len % 8;
-  return partial ? 8 - partial : 0;
+  పూర్ణాంకం partial = len % 8;
+  తిరిగి partial ? 8 - partial : 0;
 }
-#endif
+#అయితే_ముగింపు
 
-#if BASE_TYPE != 32
-static int
-base64_required_padding (int len)
+#ఒకవేళ పునాది_TYPE != 32
+స్థిర పూర్ణాంకం
+base64_required_padding (పూర్ణాంకం len)
 {
-  int partial = len % 4;
-  return partial ? 4 - partial : 0;
+  పూర్ణాంకం partial = len % 4;
+  తిరిగి partial ? 4 - partial : 0;
 }
-#endif
+#అయితే_ముగింపు
 
-#if BASE_TYPE == 42
-static int
-no_required_padding (MAYBE_UNUSED int len)
+#ఒకవేళ పునాది_TYPE == 42
+స్థిర పూర్ణాంకం
+no_required_padding (MAYBE_వాడని పూర్ణాంకం len)
 {
-  return 0;
+  తిరిగి 0;
 }
-#endif
+#అయితే_ముగింపు
 
-#define ENC_BLOCKSIZE (1024 * 3 * 10)
+#నిర్వచించు ENC_BLOCKSIZE (1024 * 3 * 10)
 
-#if BASE_TYPE == 32
-# define BASE_LENGTH BASE32_LENGTH
+#ఒకవేళ పునాది_TYPE == 32
+# define పునాది_నిడివి BASE32_నిడివి
 # define REQUIRED_PADDING base32_required_padding
 /* Note that increasing this may decrease performance if --ignore-garbage
    is used, because of the memmove operation below.  */
@@ -233,14 +233,14 @@ no_required_padding (MAYBE_UNUSED int len)
 static_assert (ENC_BLOCKSIZE % 40 == 0); /* Padding chars only on last block. */
 static_assert (DEC_BLOCKSIZE % 40 == 0); /* Complete encoded blocks are used. */
 
-# define base_encode base32_encode
-# define base_decode_context base32_decode_context
-# define base_decode_ctx_init base32_decode_ctx_init
-# define base_decode_ctx base32_decode_ctx
-# define base_decode_ctx_finalize decode_ctx_finalize
+# define పునాది_encode base32_encode
+# define పునాది_decode_context base32_decode_context
+# define పునాది_decode_ctx_init base32_decode_ctx_init
+# define పునాది_decode_ctx base32_decode_ctx
+# define పునాది_decode_ctx_finalize decode_ctx_finalize
 # define isubase isubase32
-#elif BASE_TYPE == 64
-# define BASE_LENGTH BASE64_LENGTH
+#లేదావేళ పునాది_TYPE == 64
+# define పునాది_నిడివి BASE64_నిడివి
 # define REQUIRED_PADDING base64_required_padding
 /* Note that increasing this may decrease performance if --ignore-garbage
    is used, because of the memmove operation below.  */
@@ -250,16 +250,16 @@ static_assert (DEC_BLOCKSIZE % 40 == 0); /* Complete encoded blocks are used. */
 static_assert (ENC_BLOCKSIZE % 12 == 0); /* Padding chars only on last block. */
 static_assert (DEC_BLOCKSIZE % 12 == 0); /* Complete encoded blocks are used. */
 
-# define base_encode base64_encode
-# define base_decode_context base64_decode_context
-# define base_decode_ctx_init base64_decode_ctx_init
-# define base_decode_ctx base64_decode_ctx
-# define base_decode_ctx_finalize decode_ctx_finalize
+# define పునాది_encode base64_encode
+# define పునాది_decode_context base64_decode_context
+# define పునాది_decode_ctx_init base64_decode_ctx_init
+# define పునాది_decode_ctx base64_decode_ctx
+# define పునాది_decode_ctx_finalize decode_ctx_finalize
 # define isubase isubase64
-#elif BASE_TYPE == 42
+#లేదావేళ పునాది_TYPE == 42
 
 
-# define BASE_LENGTH base_length
+# define పునాది_నిడివి పునాది_నిడివి_2
 # define REQUIRED_PADDING required_padding
 
 /* Note that increasing this may decrease performance if --ignore-garbage
@@ -268,303 +268,303 @@ static_assert (DEC_BLOCKSIZE % 12 == 0); /* Complete encoded blocks are used. */
 static_assert (DEC_BLOCKSIZE % 40 == 0); /* complete encoded blocks for base32*/
 static_assert (DEC_BLOCKSIZE % 12 == 0); /* complete encoded blocks for base64*/
 
-static idx_t (*base_length) (idx_t len);
-static int (*required_padding) (int i);
-static bool (*isubase) (unsigned char ch);
-static void (*base_encode) (char const *restrict in, idx_t inlen,
-                            char *restrict out, idx_t outlen);
+స్థిర idx_t (*పునాది_నిడివి_2) (idx_t len);
+స్థిర పూర్ణాంకం (*required_padding) (పూర్ణాంకం i);
+స్థిర bool (*isubase) (గుర్తులేని అక్షరం ch);
+స్థిర శూన్య (*పునాది_encode) (అక్షరం స్థిరరాశి *పరిమిత లోపల, idx_t inlen,
+                            అక్షరం *పరిమిత బహిర్గతం, idx_t outlen);
 
-struct base16_decode_context
+నిర్మాణం base16_decode_context
 {
   /* Either a 4-bit nibble, or negative if we have no nibble.  */
-  signed char nibble;
+  గుర్తుగల అక్షరం nibble;
 };
 
-struct z85_decode_context
+నిర్మాణం z85_decode_context
 {
-  int i;
-  unsigned char octets[5];
+  పూర్ణాంకం i;
+  గుర్తులేని అక్షరం octets[5];
 };
 
-struct base58_context
+నిర్మాణం base58_context
 {
-  idx_t size;
-  idx_t capacity;
-  unsigned char *buf COUNTED_BY (capacity);
+  idx_t కొలత;
+  idx_t సామర్థ్యం;
+  గుర్తులేని అక్షరం *buf COUNTED_BY (సామర్థ్యం);
 };
 
-struct base2_decode_context
+నిర్మాణం base2_decode_context
 {
-  unsigned char octet;
-  int bit_pos;
+  గుర్తులేని అక్షరం octet;
+  పూర్ణాంకం బిట్టు_pos;
 };
 
-struct base_decode_context
+నిర్మాణం పునాది_decode_context
 {
-  union {
-    struct base64_decode_context base64;
-    struct base32_decode_context base32;
-    struct base16_decode_context base16;
-    struct base2_decode_context base2;
-    struct z85_decode_context z85;
-    struct base58_context base58;
+  సంఘం {
+    నిర్మాణం base64_decode_context base64;
+    నిర్మాణం base32_decode_context base32;
+    నిర్మాణం base16_decode_context base16;
+    నిర్మాణం base2_decode_context base2;
+    నిర్మాణం z85_decode_context z85;
+    నిర్మాణం base58_context base58;
   } ctx;
-  char *inbuf;
+  అక్షరం *inbuf;
   idx_t bufsize;
 };
-static void (*base_decode_ctx_init) (struct base_decode_context *ctx);
-static bool (*base_decode_ctx) (struct base_decode_context *ctx,
-                                char const *restrict in, idx_t inlen,
-                                char *restrict out, idx_t *outlen);
-static bool (*base_decode_ctx_finalize) (struct base_decode_context *ctx,
-                                         char *restrict *out, idx_t *outlen);
+స్థిర శూన్య (*పునాది_decode_ctx_init) (నిర్మాణం పునాది_decode_context *ctx);
+స్థిర bool (*పునాది_decode_ctx) (నిర్మాణం పునాది_decode_context *ctx,
+                                అక్షరం స్థిరరాశి *పరిమిత లోపల, idx_t inlen,
+                                అక్షరం *పరిమిత బహిర్గతం, idx_t *outlen);
+స్థిర bool (*పునాది_decode_ctx_finalize) (నిర్మాణం పునాది_decode_context *ctx,
+                                         అక్షరం *పరిమిత *బహిర్గతం, idx_t *outlen);
 
-struct base_encode_context
+నిర్మాణం పునాది_encode_context
 {
-  union {
-    struct base58_context base58;
+  సంఘం {
+    నిర్మాణం base58_context base58;
   } ctx;
 };
 
-static void (*base_encode_ctx_init) (struct base_encode_context *ctx);
-static bool (*base_encode_ctx) (struct base_encode_context *ctx,
-                                char const *restrict in, idx_t inlen,
-                                char *restrict out, idx_t *outlen);
-static bool (*base_encode_ctx_finalize) (struct base_encode_context *ctx,
-                                         char *restrict *out, idx_t *outlen);
+స్థిర శూన్య (*పునాది_encode_ctx_init) (నిర్మాణం పునాది_encode_context *ctx);
+స్థిర bool (*పునాది_encode_ctx) (నిర్మాణం పునాది_encode_context *ctx,
+                                అక్షరం స్థిరరాశి *పరిమిత లోపల, idx_t inlen,
+                                అక్షరం *పరిమిత బహిర్గతం, idx_t *outlen);
+స్థిర bool (*పునాది_encode_ctx_finalize) (నిర్మాణం పునాది_encode_context *ctx,
+                                         అక్షరం *పరిమిత *బహిర్గతం, idx_t *outlen);
 
-static bool
-no_padding (MAYBE_UNUSED struct base_decode_context *ctx)
+స్థిర bool
+no_padding (MAYBE_వాడని నిర్మాణం పునాది_decode_context *ctx)
 {
-  return false;
+  తిరిగి false;
 }
 
-static int
-no_pending_length (MAYBE_UNUSED struct base_decode_context *ctx)
+స్థిర పూర్ణాంకం
+no_pending_నిడివి (MAYBE_వాడని నిర్మాణం పునాది_decode_context *ctx)
 {
-  return 0;
+  తిరిగి 0;
 }
-#endif
+#అయితే_ముగింపు
 
-#if BASE_TYPE == 42
-static bool (*has_padding) (struct base_decode_context *ctx);
-static int (*get_pending_length) (struct base_decode_context *ctx);
+#ఒకవేళ పునాది_TYPE == 42
+స్థిర bool (*has_padding) (నిర్మాణం పునాది_decode_context *ctx);
+స్థిర పూర్ణాంకం (*get_pending_నిడివి) (నిర్మాణం పునాది_decode_context *ctx);
 
-static bool
-base64_ctx_has_padding (struct base_decode_context *ctx)
+స్థిర bool
+base64_ctx_has_padding (నిర్మాణం పునాది_decode_context *ctx)
 {
-  return ctx->ctx.base64.i && ctx->ctx.base64.buf[ctx->ctx.base64.i - 1] == '=';
-}
-
-static bool
-base32_ctx_has_padding (struct base_decode_context *ctx)
-{
-  return ctx->ctx.base32.i && ctx->ctx.base32.buf[ctx->ctx.base32.i - 1] == '=';
+  తిరిగి ctx->ctx.base64.i && ctx->ctx.base64.buf[ctx->ctx.base64.i - 1] == '=';
 }
 
-static int
-base64_ctx_get_pending_length (struct base_decode_context *ctx)
+స్థిర bool
+base32_ctx_has_padding (నిర్మాణం పునాది_decode_context *ctx)
 {
-  return ctx->ctx.base64.i;
+  తిరిగి ctx->ctx.base32.i && ctx->ctx.base32.buf[ctx->ctx.base32.i - 1] == '=';
 }
 
-static int
-base32_ctx_get_pending_length (struct base_decode_context *ctx)
+స్థిర పూర్ణాంకం
+base64_ctx_get_pending_నిడివి (నిర్మాణం పునాది_decode_context *ctx)
 {
-  return ctx->ctx.base32.i;
+  తిరిగి ctx->ctx.base64.i;
 }
 
-static int
-base16_ctx_get_pending_length (MAYBE_UNUSED struct base_decode_context *ctx)
+స్థిర పూర్ణాంకం
+base32_ctx_get_pending_నిడివి (నిర్మాణం పునాది_decode_context *ctx)
 {
-  return 1; /* Always check nibble state.  */
+  తిరిగి ctx->ctx.base32.i;
 }
 
-static int
-z85_ctx_get_pending_length (struct base_decode_context *ctx)
+స్థిర పూర్ణాంకం
+base16_ctx_get_pending_నిడివి (MAYBE_వాడని నిర్మాణం పునాది_decode_context *ctx)
 {
-  return ctx->ctx.z85.i;
+  తిరిగి 1; /* Always check nibble state.  */
 }
 
-static int
-base2_ctx_get_pending_length (struct base_decode_context *ctx)
+స్థిర పూర్ణాంకం
+z85_ctx_get_pending_నిడివి (నిర్మాణం పునాది_decode_context *ctx)
 {
-  return ctx->ctx.base2.bit_pos;
-}
-#else
-static bool
-has_padding (struct base_decode_context *ctx)
-{
-  return ctx->i && ctx->buf[ctx->i - 1] == '=';
+  తిరిగి ctx->ctx.z85.i;
 }
 
-static int
-get_pending_length (struct base_decode_context *ctx)
+స్థిర పూర్ణాంకం
+base2_ctx_get_pending_నిడివి (నిర్మాణం పునాది_decode_context *ctx)
 {
-  return ctx->i;
+  తిరిగి ctx->ctx.base2.బిట్టు_pos;
 }
-#endif
+#లేకపోతే
+స్థిర bool
+has_padding (నిర్మాణం పునాది_decode_context *ctx)
+{
+  తిరిగి ctx->i && ctx->buf[ctx->i - 1] == '=';
+}
+
+స్థిర పూర్ణాంకం
+get_pending_నిడివి (నిర్మాణం పునాది_decode_context *ctx)
+{
+  తిరిగి ctx->i;
+}
+#అయితే_ముగింపు
 
 
 /* Process any pending data in CTX, while auto padding if appropriate.
    Return TRUE on success, FALSE on failure.  */
 
-static bool
-decode_ctx_finalize (struct base_decode_context *ctx,
-                     char *restrict *out, idx_t *outlen)
+స్థిర bool
+decode_ctx_finalize (నిర్మాణం పునాది_decode_context *ctx,
+                     అక్షరం *పరిమిత *బహిర్గతం, idx_t *outlen)
 {
-  if (get_pending_length (ctx) == 0)
+  ఒకవేళ (get_pending_నిడివి (ctx) == 0)
     {
       *outlen = 0;
-      return true;
+      తిరిగి true;
     }
 
   /* Auto-pad input and flush the context */
-  char padbuf[8] ATTRIBUTE_NONSTRING = "========";
-  idx_t pending_len = get_pending_length (ctx);
+  అక్షరం padbuf[8] ATTRIBUTE_NONSTRING = "========";
+  idx_t pending_len = get_pending_నిడివి (ctx);
   idx_t auto_padding = REQUIRED_PADDING (pending_len);
   idx_t n = *outlen;
-  bool result;
+  bool ఫలితం;
 
-  if (auto_padding && ! has_padding (ctx))
+  ఒకవేళ (auto_padding && ! has_padding (ctx))
     {
-      affirm (auto_padding <= sizeof (padbuf));
-      result = base_decode_ctx (ctx, padbuf, auto_padding, *out, &n);
+      affirm (auto_padding <= పరిమాణం (padbuf));
+      ఫలితం = పునాది_decode_ctx (ctx, padbuf, auto_padding, *బహిర్గతం, &n);
     }
-  else
+  లేకపోతే
     {
-      result = base_decode_ctx (ctx, "", 0, *out, &n);
+      ఫలితం = పునాది_decode_ctx (ctx, "", 0, *బహిర్గతం, &n);
     }
 
   *outlen = n;
-  return result;
+  తిరిగి ఫలితం;
 }
 
-#if BASE_TYPE == 42
+#ఒకవేళ పునాది_TYPE == 42
 
-static idx_t
-base64_length_wrapper (idx_t len)
+స్థిర idx_t
+base64_నిడివి_wrapper (idx_t len)
 {
-  return BASE64_LENGTH (len);
+  తిరిగి BASE64_నిడివి (len);
 }
 
-static void
-base64_decode_ctx_init_wrapper (struct base_decode_context *ctx)
+స్థిర శూన్య
+base64_decode_ctx_init_wrapper (నిర్మాణం పునాది_decode_context *ctx)
 {
   base64_decode_ctx_init (&ctx->ctx.base64);
 }
 
-static bool
-base64_decode_ctx_wrapper (struct base_decode_context *ctx,
-                           char const *restrict in, idx_t inlen,
-                           char *restrict out, idx_t *outlen)
+స్థిర bool
+base64_decode_ctx_wrapper (నిర్మాణం పునాది_decode_context *ctx,
+                           అక్షరం స్థిరరాశి *పరిమిత లోపల, idx_t inlen,
+                           అక్షరం *పరిమిత బహిర్గతం, idx_t *outlen)
 {
-  return base64_decode_ctx (&ctx->ctx.base64, in, inlen, out, outlen);
+  తిరిగి base64_decode_ctx (&ctx->ctx.base64, లోపల, inlen, బహిర్గతం, outlen);
 }
 
-static void
-init_inbuf (struct base_decode_context *ctx)
+స్థిర శూన్య
+init_inbuf (నిర్మాణం పునాది_decode_context *ctx)
 {
   ctx->bufsize = DEC_BLOCKSIZE;
   ctx->inbuf = xcharalloc (ctx->bufsize);
 }
 
-static void
-prepare_inbuf (struct base_decode_context *ctx, idx_t inlen)
+స్థిర శూన్య
+prepare_inbuf (నిర్మాణం పునాది_decode_context *ctx, idx_t inlen)
 {
-  if (ctx->bufsize < inlen)
+  ఒకవేళ (ctx->bufsize < inlen)
     ctx->inbuf = xpalloc (ctx->inbuf, &ctx->bufsize,
-                          inlen - ctx->bufsize, -1, sizeof *ctx->inbuf);
+                          inlen - ctx->bufsize, -1, పరిమాణం *ctx->inbuf);
 }
 
 
-static void
-base64url_encode (char const *restrict in, idx_t inlen,
-                  char *restrict out, idx_t outlen)
+స్థిర శూన్య
+base64url_encode (అక్షరం స్థిరరాశి *పరిమిత లోపల, idx_t inlen,
+                  అక్షరం *పరిమిత బహిర్గతం, idx_t outlen)
 {
-  base64_encode (in, inlen, out, outlen);
+  base64_encode (లోపల, inlen, బహిర్గతం, outlen);
   /* translate 62nd and 63rd characters */
-  char *p = out;
-  while (outlen--)
+  అక్షరం *p = బహిర్గతం;
+  అయితే (outlen--)
     {
-      if (*p == '+')
+      ఒకవేళ (*p == '+')
         *p = '-';
-      else if (*p == '/')
+      లేకపోతే ఒకవేళ (*p == '/')
         *p = '_';
       ++p;
     }
 }
 
-static bool
-isubase64url (unsigned char ch)
+స్థిర bool
+isubase64url (గుర్తులేని అక్షరం ch)
 {
-  return (ch == '-' || ch == '_'
+  తిరిగి (ch == '-' || ch == '_'
           || (ch != '+' && ch != '/' && isubase64 (ch)));
 }
 
-static void
-base64url_decode_ctx_init_wrapper (struct base_decode_context *ctx)
+స్థిర శూన్య
+base64url_decode_ctx_init_wrapper (నిర్మాణం పునాది_decode_context *ctx)
 {
   base64_decode_ctx_init (&ctx->ctx.base64);
   init_inbuf (ctx);
 }
 
 
-static bool
-base64url_decode_ctx_wrapper (struct base_decode_context *ctx,
-                              char const *restrict in, idx_t inlen,
-                              char *restrict out, idx_t *outlen)
+స్థిర bool
+base64url_decode_ctx_wrapper (నిర్మాణం పునాది_decode_context *ctx,
+                              అక్షరం స్థిరరాశి *పరిమిత లోపల, idx_t inlen,
+                              అక్షరం *పరిమిత బహిర్గతం, idx_t *outlen)
 {
   prepare_inbuf (ctx, inlen);
-  memcpy (ctx->inbuf, in, inlen);
+  జ్ఞాపకం_నకలు (ctx->inbuf, లోపల, inlen);
 
   /* translate 62nd and 63rd characters */
   idx_t i = inlen;
-  char *p = ctx->inbuf;
-  while (i--)
+  అక్షరం *p = ctx->inbuf;
+  అయితే (i--)
     {
-      if (*p == '+' || *p == '/')
+      ఒకవేళ (*p == '+' || *p == '/')
         {
           *outlen = 0;
-          return false; /* reject base64 input */
+          తిరిగి false; /* reject base64 input */
         }
-      else if (*p == '-')
+      లేకపోతే ఒకవేళ (*p == '-')
         *p = '+';
-      else if (*p == '_')
+      లేకపోతే ఒకవేళ (*p == '_')
         *p = '/';
       ++p;
     }
 
-  return base64_decode_ctx (&ctx->ctx.base64, ctx->inbuf, inlen,
-                            out, outlen);
+  తిరిగి base64_decode_ctx (&ctx->ctx.base64, ctx->inbuf, inlen,
+                            బహిర్గతం, outlen);
 }
 
 
 
-static idx_t
-base32_length_wrapper (idx_t len)
+స్థిర idx_t
+base32_నిడివి_wrapper (idx_t len)
 {
-  return BASE32_LENGTH (len);
+  తిరిగి BASE32_నిడివి (len);
 }
 
-static void
-base32_decode_ctx_init_wrapper (struct base_decode_context *ctx)
+స్థిర శూన్య
+base32_decode_ctx_init_wrapper (నిర్మాణం పునాది_decode_context *ctx)
 {
   base32_decode_ctx_init (&ctx->ctx.base32);
 }
 
-static bool
-base32_decode_ctx_wrapper (struct base_decode_context *ctx,
-                           char const *restrict in, idx_t inlen,
-                           char *restrict out, idx_t *outlen)
+స్థిర bool
+base32_decode_ctx_wrapper (నిర్మాణం పునాది_decode_context *ctx,
+                           అక్షరం స్థిరరాశి *పరిమిత లోపల, idx_t inlen,
+                           అక్షరం *పరిమిత బహిర్గతం, idx_t *outlen)
 {
-  return base32_decode_ctx (&ctx->ctx.base32, in, inlen, out, outlen);
+  తిరిగి base32_decode_ctx (&ctx->ctx.base32, లోపల, inlen, బహిర్గతం, outlen);
 }
 
 /* ABCDEFGHIJKLMNOPQRSTUVWXYZ234567
-     to
+గమ్యం
    0123456789ABCDEFGHIJKLMNOPQRSTUV */
-static const char base32_norm_to_hex[32 + 9] = {
+స్థిర స్థిరరాశి అక్షరం base32_norm_గమ్యం_hex[32 + 9] = {
 /*0x32, 0x33, 0x34, 0x35, 0x36, 0x37, */
   'Q',  'R',  'S',  'T',  'U',  'V',
 
@@ -584,9 +584,9 @@ static const char base32_norm_to_hex[32 + 9] = {
 };
 
 /* 0123456789ABCDEFGHIJKLMNOPQRSTUV
-     to
+గమ్యం
    ABCDEFGHIJKLMNOPQRSTUVWXYZ234567 */
-static const char base32_hex_to_norm[32 + 9] = {
+స్థిర స్థిరరాశి అక్షరం base32_hex_గమ్యం_norm[32 + 9] = {
   /* from: 0x30 .. 0x39 ('0' to '9') */
   /* to:*/ 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
 
@@ -603,56 +603,56 @@ static const char base32_hex_to_norm[32 + 9] = {
 };
 
 
-inline static bool
-isubase32hex (unsigned char ch)
+అంతఃవరుస స్థిర bool
+isubase32hex (గుర్తులేని అక్షరం ch)
 {
-  return ('0' <= ch && ch <= '9') || ('A' <= ch && ch <= 'V');
+  తిరిగి ('0' <= ch && ch <= '9') || ('A' <= ch && ch <= 'V');
 }
 
 
-static void
-base32hex_encode (char const *restrict in, idx_t inlen,
-                  char *restrict out, idx_t outlen)
+స్థిర శూన్య
+base32hex_encode (అక్షరం స్థిరరాశి *పరిమిత లోపల, idx_t inlen,
+                  అక్షరం *పరిమిత బహిర్గతం, idx_t outlen)
 {
-  base32_encode (in, inlen, out, outlen);
+  base32_encode (లోపల, inlen, బహిర్గతం, outlen);
 
-  for (char *p = out; outlen--; p++)
+  కొరకు (అక్షరం *p = బహిర్గతం; outlen--; p++)
     {
       affirm (0x32 <= *p && *p <= 0x5a);          /* LCOV_EXCL_LINE */
-      *p = base32_norm_to_hex[*p - 0x32];
+      *p = base32_norm_గమ్యం_hex[*p - 0x32];
     }
 }
 
 
-static void
-base32hex_decode_ctx_init_wrapper (struct base_decode_context *ctx)
+స్థిర శూన్య
+base32hex_decode_ctx_init_wrapper (నిర్మాణం పునాది_decode_context *ctx)
 {
   base32_decode_ctx_init (&ctx->ctx.base32);
   init_inbuf (ctx);
 }
 
 
-static bool
-base32hex_decode_ctx_wrapper (struct base_decode_context *ctx,
-                              char const *restrict in, idx_t inlen,
-                              char *restrict out, idx_t *outlen)
+స్థిర bool
+base32hex_decode_ctx_wrapper (నిర్మాణం పునాది_decode_context *ctx,
+                              అక్షరం స్థిరరాశి *పరిమిత లోపల, idx_t inlen,
+                              అక్షరం *పరిమిత బహిర్గతం, idx_t *outlen)
 {
   prepare_inbuf (ctx, inlen);
 
   idx_t i = inlen;
-  char *p = ctx->inbuf;
-  while (i--)
+  అక్షరం *p = ctx->inbuf;
+  అయితే (i--)
     {
-      if (isubase32hex (*in))
-        *p = base32_hex_to_norm[*in - 0x30];
-      else
-        *p = *in;
+      ఒకవేళ (isubase32hex (*లోపల))
+        *p = base32_hex_గమ్యం_norm[*లోపల - 0x30];
+      లేకపోతే
+        *p = *లోపల;
       ++p;
-      ++in;
+      ++లోపల;
     }
 
-  return base32_decode_ctx (&ctx->ctx.base32, ctx->inbuf, inlen,
-                            out, outlen);
+  తిరిగి base32_decode_ctx (&ctx->ctx.base32, ctx->inbuf, inlen,
+                            బహిర్గతం, outlen);
 }
 /* With this approach this file works independent of the charset used
    (think EBCDIC).  However, it does assume that the characters in the
@@ -682,7 +682,7 @@ base32hex_decode_ctx_wrapper (struct base_decode_context *ctx,
    : (_) == 'F' || (_) == 'f' ? 15              \
    : -1)
 
-static signed char const base16_to_int[256] = {
+స్థిర గుర్తుగల అక్షరం స్థిరరాశి base16_గమ్యం_int[256] = {
   B16 (0), B16 (1), B16 (2), B16 (3),
   B16 (4), B16 (5), B16 (6), B16 (7),
   B16 (8), B16 (9), B16 (10), B16 (11),
@@ -749,181 +749,181 @@ static signed char const base16_to_int[256] = {
   B16 (252), B16 (253), B16 (254), B16 (255)
 };
 
-static bool
-isubase16 (unsigned char ch)
+స్థిర bool
+isubase16 (గుర్తులేని అక్షరం ch)
 {
-  return ch < sizeof base16_to_int && 0 <= base16_to_int[ch];
+  తిరిగి ch < పరిమాణం base16_గమ్యం_int && 0 <= base16_గమ్యం_int[ch];
 }
 
-static idx_t
-base16_length (idx_t len)
+స్థిర idx_t
+base16_నిడివి (idx_t len)
 {
-  return len * 2;
+  తిరిగి len * 2;
 }
 
 
-static void
-base16_encode (char const *restrict in, idx_t inlen,
-               char *restrict out, idx_t outlen)
+స్థిర శూన్య
+base16_encode (అక్షరం స్థిరరాశి *పరిమిత లోపల, idx_t inlen,
+               అక్షరం *పరిమిత బహిర్గతం, idx_t outlen)
 {
-  static const char base16[16] ATTRIBUTE_NONSTRING = "0123456789ABCDEF";
+  స్థిర స్థిరరాశి అక్షరం base16[16] ATTRIBUTE_NONSTRING = "0123456789ABCDEF";
 
-  while (inlen && outlen)
+  అయితే (inlen && outlen)
     {
-      unsigned char c = *in;
-      *out++ = base16[c >> 4];
-      *out++ = base16[c & 0x0F];
-      ++in;
+      గుర్తులేని అక్షరం c = *లోపల;
+      *బహిర్గతం++ = base16[c >> 4];
+      *బహిర్గతం++ = base16[c & 0x0F];
+      ++లోపల;
       inlen--;
       outlen -= 2;
     }
 }
 
 
-static void
-base16_decode_ctx_init (struct base_decode_context *ctx)
+స్థిర శూన్య
+base16_decode_ctx_init (నిర్మాణం పునాది_decode_context *ctx)
 {
   init_inbuf (ctx);
   ctx->ctx.base16.nibble = -1;
 }
 
 
-static bool
-base16_decode_ctx (struct base_decode_context *ctx,
-                   char const *restrict in, idx_t inlen,
-                   char *restrict out, idx_t *outlen)
+స్థిర bool
+base16_decode_ctx (నిర్మాణం పునాది_decode_context *ctx,
+                   అక్షరం స్థిరరాశి *పరిమిత లోపల, idx_t inlen,
+                   అక్షరం *పరిమిత బహిర్గతం, idx_t *outlen)
 {
-  bool ignore_lines = true;  /* for now, always ignore them */
-  char *out0 = out;
-  signed char nibble = ctx->ctx.base16.nibble;
+  bool ignore_పంక్తులు = true;  /* for now, always ignore them */
+  అక్షరం *out0 = బహిర్గతం;
+  గుర్తుగల అక్షరం nibble = ctx->ctx.base16.nibble;
 
   /* inlen==0 is request to flush output.
      if there is a dangling high nibble - we are missing the low nibble,
      so return false - indicating an invalid input.  */
-  if (inlen == 0)
+  ఒకవేళ (inlen == 0)
     {
       *outlen = 0;
-      return nibble < 0;
+      తిరిగి nibble < 0;
     }
 
-  while (inlen--)
+  అయితే (inlen--)
     {
-      unsigned char c = *in++;
-      if (ignore_lines && c == '\n')
-        continue;
+      గుర్తులేని అక్షరం c = *లోపల++;
+      ఒకవేళ (ignore_పంక్తులు && c == '\n')
+        కొనసాగు;
 
-      if (sizeof base16_to_int <= c || base16_to_int[c] < 0)
+      ఒకవేళ (పరిమాణం base16_గమ్యం_int <= c || base16_గమ్యం_int[c] < 0)
         {
-          *outlen = out - out0;
-          return false; /* garbage - return false */
+          *outlen = బహిర్గతం - out0;
+          తిరిగి false; /* garbage - return false */
         }
 
-      if (nibble < 0)
-        nibble = base16_to_int[c];
-      else
+      ఒకవేళ (nibble < 0)
+        nibble = base16_గమ్యం_int[c];
+      లేకపోతే
         {
           /* have both nibbles, write octet */
-          *out++ = (nibble << 4) + base16_to_int[c];
+          *బహిర్గతం++ = (nibble << 4) + base16_గమ్యం_int[c];
           nibble = -1;
         }
     }
 
   ctx->ctx.base16.nibble = nibble;
-  *outlen = out - out0;
-  return true;
+  *outlen = బహిర్గతం - out0;
+  తిరిగి true;
 }
 
 
 
-ATTRIBUTE_PURE
-static idx_t
-z85_length (idx_t len)
+ATTRIBUTE_శుద్ధ
+స్థిర idx_t
+z85_నిడివి (idx_t len)
 {
   /* Z85 does not allow padding, so no need to round to highest integer.  */
   idx_t z85_len = (len * 5) / 4;
   affirm (0 <= z85_len);
-  return z85_len;
+  తిరిగి z85_len;
 }
 
-static bool
-isuz85 (unsigned char ch)
+స్థిర bool
+isuz85 (గుర్తులేని అక్షరం ch)
 {
-  return c_isalnum (ch) || strchr (".-:+=^!/*?&<>()[]{}@%$#", ch) != NULL;
+  తిరిగి c_isalnum (ch) || strchr (".-:+=^!/*?&<>()[]{}@%$#", ch) != ఖాళీ;
 }
 
-static char const z85_encoding[85] ATTRIBUTE_NONSTRING =
+స్థిర అక్షరం స్థిరరాశి z85_encoding[85] ATTRIBUTE_NONSTRING =
   "0123456789"
   "abcdefghijklmnopqrstuvwxyz"
   "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
   ".-:+=^!/*?&<>()[]{}@%$#";
 
-static void
-z85_encode (char const *restrict in, idx_t inlen,
-            char *restrict out, idx_t outlen)
+స్థిర శూన్య
+z85_encode (అక్షరం స్థిరరాశి *పరిమిత లోపల, idx_t inlen,
+            అక్షరం *పరిమిత బహిర్గతం, idx_t outlen)
 {
-  int i = 0;
-  unsigned char quad[4];
+  పూర్ణాంకం i = 0;
+  గుర్తులేని అక్షరం quad[4];
   idx_t outidx = 0;
 
-  while (true)
+  అయితే (true)
     {
-      if (inlen == 0)
+      ఒకవేళ (inlen == 0)
         {
           /* no more input, exactly on 4 octet boundary. */
-          if (i == 0)
-            return;
+          ఒకవేళ (i == 0)
+            తిరిగి;
 
           /* currently, there's no way to return an error in encoding.  */
           error (EXIT_FAILURE, 0,
                  _("invalid input (length must be multiple of 4 characters)"));
         }
-      else
+      లేకపోతే
         {
-          quad[i++] = *in++;
+          quad[i++] = *లోపల++;
           --inlen;
         }
 
       /* Got a quad, encode it */
-      if (i == 4)
+      ఒకవేళ (i == 4)
         {
           int_fast64_t val = quad[0];
           val = (val << 24) + (quad[1] << 16) + (quad[2] << 8) + quad[3];
 
-          for (int j = 4; j >= 0; --j)
+          కొరకు (పూర్ణాంకం j = 4; j >= 0; --j)
             {
-              int c = val % 85;
+              పూర్ణాంకం c = val % 85;
               val /= 85;
 
               /* NOTE: if there is padding (which is trimmed by z85
                  before outputting the result), the output buffer 'out'
                  might not include enough allocated bytes for the padding,
                  so don't store them. */
-              if (outidx + j < outlen)
-                out[j] = z85_encoding[c];
+              ఒకవేళ (outidx + j < outlen)
+                బహిర్గతం[j] = z85_encoding[c];
             }
-          out += 5;
+          బహిర్గతం += 5;
           outidx += 5;
           i = 0;
         }
     }
 }
 
-static void
-z85_decode_ctx_init (struct base_decode_context *ctx)
+స్థిర శూన్య
+z85_decode_ctx_init (నిర్మాణం పునాది_decode_context *ctx)
 {
   init_inbuf (ctx);
   ctx->ctx.z85.i = 0;
 }
 
 
-# define Z85_LO_CTX_TO_32BIT_VAL(ctx) \
+# define Z85_LO_CTX_గమ్యం_32_బిట్టు_VAL(ctx) \
   (((ctx)->ctx.z85.octets[1] * 85 * 85 * 85) +      \
    ((ctx)->ctx.z85.octets[2] * 85 * 85) +	    \
    ((ctx)->ctx.z85.octets[3] * 85) +		    \
    ((ctx)->ctx.z85.octets[4]))
 
 
-# define Z85_HI_CTX_TO_32BIT_VAL(ctx) \
+# define Z85_HI_CTX_గమ్యం_32_బిట్టు_VAL(ctx) \
   ((int_fast64_t) (ctx)->ctx.z85.octets[0] * 85 * 85 * 85 * 85 )
 
 /*
@@ -937,7 +937,7 @@ z85_decode_ctx_init (struct base_decode_context *ctx)
  70 - 79:  * ? & < > ( ) [ ] {
  80 - 84:  } @ % $ #
 */
-static signed char const z85_decoding[93] = {
+స్థిర గుర్తుగల అక్షరం స్థిరరాశి z85_decoding[93] = {
   68, -1,  84,  83, 82,  72, -1,               /* ! " # $ % & ' */
   75, 76,  70,  65, -1,  63, 62, 69,           /* ( ) * + , - . / */
   0,  1,   2,   3,  4,   5,  6,   7,  8,  9,   /* '0' to '9' */
@@ -952,232 +952,232 @@ static signed char const z85_decoding[93] = {
   79, -1,  80                                  /* { | } */
 };
 
-static bool
-z85_decode_ctx (struct base_decode_context *ctx,
-                char const *restrict in, idx_t inlen,
-                char *restrict out, idx_t *outlen)
+స్థిర bool
+z85_decode_ctx (నిర్మాణం పునాది_decode_context *ctx,
+                అక్షరం స్థిరరాశి *పరిమిత లోపల, idx_t inlen,
+                అక్షరం *పరిమిత బహిర్గతం, idx_t *outlen)
 {
-  bool ignore_lines = true;  /* for now, always ignore them */
+  bool ignore_పంక్తులు = true;  /* for now, always ignore them */
 
   *outlen = 0;
 
   /* inlen==0 is request to flush output.
      if there are dangling values - we are missing entries,
      so return false - indicating an invalid input.  */
-  if (inlen == 0)
+  ఒకవేళ (inlen == 0)
     {
-      if (ctx->ctx.z85.i > 0)
+      ఒకవేళ (ctx->ctx.z85.i > 0)
         {
           /* Z85 variant does not allow padding - input must
              be a multiple of 5 - so return error.  */
-          return false;
+          తిరిగి false;
         }
-      return true;
+      తిరిగి true;
     }
 
-  while (inlen--)
+  అయితే (inlen--)
     {
-      if (ignore_lines && *in == '\n')
+      ఒకవేళ (ignore_పంక్తులు && *లోపల == '\n')
         {
-          ++in;
-          continue;
+          ++లోపల;
+          కొనసాగు;
         }
 
       /* z85 decoding */
-      unsigned char c = *in;
+      గుర్తులేని అక్షరం c = *లోపల;
 
-      if (c >= 33 && c <= 125)
+      ఒకవేళ (c >= 33 && c <= 125)
         {
-          signed char ch = z85_decoding[c - 33];
-          if (ch < 0)
-            return false; /* garbage - return false */
+          గుర్తుగల అక్షరం ch = z85_decoding[c - 33];
+          ఒకవేళ (ch < 0)
+            తిరిగి false; /* garbage - return false */
           c = ch;
         }
-      else
-        return false; /* garbage - return false */
+      లేకపోతే
+        తిరిగి false; /* garbage - return false */
 
-      ++in;
+      ++లోపల;
 
       ctx->ctx.z85.octets[ctx->ctx.z85.i++] = c;
-      if (ctx->ctx.z85.i == 5)
+      ఒకవేళ (ctx->ctx.z85.i == 5)
         {
           /* decode the lowest 4 octets, then check for overflows.  */
-          int_fast64_t val = Z85_LO_CTX_TO_32BIT_VAL (ctx);
+          int_fast64_t val = Z85_LO_CTX_గమ్యం_32_బిట్టు_VAL (ctx);
 
           /* The Z85 spec and the reference implementation say nothing
              about overflows. To be on the safe side, reject them.  */
 
-          val += Z85_HI_CTX_TO_32BIT_VAL (ctx);
-          if ((val >> 24) & ~0xFF)
-            return false;
+          val += Z85_HI_CTX_గమ్యం_32_బిట్టు_VAL (ctx);
+          ఒకవేళ ((val >> 24) & ~0xFF)
+            తిరిగి false;
 
-          *out++ = val >> 24;
-          *out++ = (val >> 16) & 0xFF;
-          *out++ = (val >> 8) & 0xFF;
-          *out++ = val & 0xFF;
+          *బహిర్గతం++ = val >> 24;
+          *బహిర్గతం++ = (val >> 16) & 0xFF;
+          *బహిర్గతం++ = (val >> 8) & 0xFF;
+          *బహిర్గతం++ = val & 0xFF;
 
           *outlen += 4;
 
           ctx->ctx.z85.i = 0;
         }
     }
-  return true;
+  తిరిగి true;
 }
 
 
-inline static bool
-isubase2 (unsigned char ch)
+అంతఃవరుస స్థిర bool
+isubase2 (గుర్తులేని అక్షరం ch)
 {
-  return ch == '0' || ch == '1';
+  తిరిగి ch == '0' || ch == '1';
 }
 
-static idx_t
-base2_length (idx_t len)
+స్థిర idx_t
+base2_నిడివి (idx_t len)
 {
-  return len * 8;
+  తిరిగి len * 8;
 }
 
 
-inline static void
-base2msbf_encode (char const *restrict in, idx_t inlen,
-                  char *restrict out, idx_t outlen)
+అంతఃవరుస స్థిర శూన్య
+base2msbf_encode (అక్షరం స్థిరరాశి *పరిమిత లోపల, idx_t inlen,
+                  అక్షరం *పరిమిత బహిర్గతం, idx_t outlen)
 {
-  while (inlen && outlen)
+  అయితే (inlen && outlen)
     {
-      unsigned char c = *in;
-      for (int i = 0; i < 8; i++)
+      గుర్తులేని అక్షరం c = *లోపల;
+      కొరకు (పూర్ణాంకం i = 0; i < 8; i++)
         {
-          *out++ = c & 0x80 ? '1' : '0';
+          *బహిర్గతం++ = c & 0x80 ? '1' : '0';
           c <<= 1;
         }
       inlen--;
       outlen -= 8;
-      ++in;
+      ++లోపల;
     }
 }
 
-inline static void
-base2lsbf_encode (char const *restrict in, idx_t inlen,
-                  char *restrict out, idx_t outlen)
+అంతఃవరుస స్థిర శూన్య
+base2lsbf_encode (అక్షరం స్థిరరాశి *పరిమిత లోపల, idx_t inlen,
+                  అక్షరం *పరిమిత బహిర్గతం, idx_t outlen)
 {
-  while (inlen && outlen)
+  అయితే (inlen && outlen)
     {
-      unsigned char c = *in;
-      for (int i = 0; i < 8; i++)
+      గుర్తులేని అక్షరం c = *లోపల;
+      కొరకు (పూర్ణాంకం i = 0; i < 8; i++)
         {
-          *out++ = c & 0x01 ? '1' : '0';
+          *బహిర్గతం++ = c & 0x01 ? '1' : '0';
           c >>= 1;
         }
       inlen--;
       outlen -= 8;
-      ++in;
+      ++లోపల;
     }
 }
 
 
-static void
-base2_decode_ctx_init (struct base_decode_context *ctx)
+స్థిర శూన్య
+base2_decode_ctx_init (నిర్మాణం పునాది_decode_context *ctx)
 {
   init_inbuf (ctx);
   ctx->ctx.base2.octet = 0;
-  ctx->ctx.base2.bit_pos = 0;
+  ctx->ctx.base2.బిట్టు_pos = 0;
 }
 
 
-static bool
-base2lsbf_decode_ctx (struct base_decode_context *ctx,
-                      char const *restrict in, idx_t inlen,
-                      char *restrict out, idx_t *outlen)
+స్థిర bool
+base2lsbf_decode_ctx (నిర్మాణం పునాది_decode_context *ctx,
+                      అక్షరం స్థిరరాశి *పరిమిత లోపల, idx_t inlen,
+                      అక్షరం *పరిమిత బహిర్గతం, idx_t *outlen)
 {
-  bool ignore_lines = true;  /* for now, always ignore them */
+  bool ignore_పంక్తులు = true;  /* for now, always ignore them */
 
   *outlen = 0;
 
   /* inlen==0 is request to flush output.
      if there is a dangling bit - we are missing some bits,
      so return false - indicating an invalid input.  */
-  if (inlen == 0)
-    return ctx->ctx.base2.bit_pos == 0;
+  ఒకవేళ (inlen == 0)
+    తిరిగి ctx->ctx.base2.బిట్టు_pos == 0;
 
-  while (inlen--)
+  అయితే (inlen--)
     {
-      if (ignore_lines && *in == '\n')
+      ఒకవేళ (ignore_పంక్తులు && *లోపల == '\n')
         {
-          ++in;
-          continue;
+          ++లోపల;
+          కొనసాగు;
         }
 
-      if (!isubase2 (*in))
-        return false;
+      ఒకవేళ (!isubase2 (*లోపల))
+        తిరిగి false;
 
-      bool bit = (*in == '1');
-      ctx->ctx.base2.octet |= bit << ctx->ctx.base2.bit_pos;
-      ++ctx->ctx.base2.bit_pos;
+      bool బిట్టు = (*లోపల == '1');
+      ctx->ctx.base2.octet |= బిట్టు << ctx->ctx.base2.బిట్టు_pos;
+      ++ctx->ctx.base2.బిట్టు_pos;
 
-      if (ctx->ctx.base2.bit_pos == 8)
+      ఒకవేళ (ctx->ctx.base2.బిట్టు_pos == 8)
         {
-          *out++ = ctx->ctx.base2.octet;
+          *బహిర్గతం++ = ctx->ctx.base2.octet;
           ctx->ctx.base2.octet = 0;
           ++*outlen;
-          ctx->ctx.base2.bit_pos = 0;
+          ctx->ctx.base2.బిట్టు_pos = 0;
         }
 
-      ++in;
+      ++లోపల;
     }
 
-  return true;
+  తిరిగి true;
 }
 
-static bool
-base2msbf_decode_ctx (struct base_decode_context *ctx,
-                      char const *restrict in, idx_t inlen,
-                      char *restrict out, idx_t *outlen)
+స్థిర bool
+base2msbf_decode_ctx (నిర్మాణం పునాది_decode_context *ctx,
+                      అక్షరం స్థిరరాశి *పరిమిత లోపల, idx_t inlen,
+                      అక్షరం *పరిమిత బహిర్గతం, idx_t *outlen)
 {
-  bool ignore_lines = true;  /* for now, always ignore them */
+  bool ignore_పంక్తులు = true;  /* for now, always ignore them */
 
   *outlen = 0;
 
   /* inlen==0 is request to flush output.
      if there is a dangling bit - we are missing some bits,
      so return false - indicating an invalid input.  */
-  if (inlen == 0)
-    return ctx->ctx.base2.bit_pos == 0;
+  ఒకవేళ (inlen == 0)
+    తిరిగి ctx->ctx.base2.బిట్టు_pos == 0;
 
-  while (inlen--)
+  అయితే (inlen--)
     {
-      if (ignore_lines && *in == '\n')
+      ఒకవేళ (ignore_పంక్తులు && *లోపల == '\n')
         {
-          ++in;
-          continue;
+          ++లోపల;
+          కొనసాగు;
         }
 
-      if (!isubase2 (*in))
-        return false;
+      ఒకవేళ (!isubase2 (*లోపల))
+        తిరిగి false;
 
-      bool bit = (*in == '1');
-      if (ctx->ctx.base2.bit_pos == 0)
-        ctx->ctx.base2.bit_pos = 8;
-      --ctx->ctx.base2.bit_pos;
-      ctx->ctx.base2.octet |= bit << ctx->ctx.base2.bit_pos;
+      bool బిట్టు = (*లోపల == '1');
+      ఒకవేళ (ctx->ctx.base2.బిట్టు_pos == 0)
+        ctx->ctx.base2.బిట్టు_pos = 8;
+      --ctx->ctx.base2.బిట్టు_pos;
+      ctx->ctx.base2.octet |= బిట్టు << ctx->ctx.base2.బిట్టు_pos;
 
-      if (ctx->ctx.base2.bit_pos == 0)
+      ఒకవేళ (ctx->ctx.base2.బిట్టు_pos == 0)
         {
-          *out++ = ctx->ctx.base2.octet;
+          *బహిర్గతం++ = ctx->ctx.base2.octet;
           ctx->ctx.base2.octet = 0;
           ++*outlen;
         }
 
-      ++in;
+      ++లోపల;
     }
 
-  return true;
+  తిరిగి true;
 }
 
 /* Map from GMP (up to base 62):
    "0123456789 ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuv";
    to base 58:
    "123456789A BCDEFGHJKLMNPQRSTUVWXYZabc defghijkmnopqrstuvwxyz";  */
-static signed char const gmp_to_base58[256] = {
+స్థిర గుర్తుగల అక్షరం స్థిరరాశి gmp_గమ్యం_base58[256] = {
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -1196,7 +1196,7 @@ static signed char const gmp_to_base58[256] = {
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1
 };
 
-static signed char const base58_to_gmp[256] = {
+స్థిర గుర్తుగల అక్షరం స్థిరరాశి base58_గమ్యం_gmp[256] = {
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -1215,16 +1215,16 @@ static signed char const base58_to_gmp[256] = {
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1
 };
 
-static bool
-isubase58 (unsigned char ch)
+స్థిర bool
+isubase58 (గుర్తులేని అక్షరం ch)
 {
-  return ch < sizeof base58_to_gmp && 0 <= base58_to_gmp[ch];
+  తిరిగి ch < పరిమాణం base58_గమ్యం_gmp && 0 <= base58_గమ్యం_gmp[ch];
 }
 
 
-ATTRIBUTE_PURE
-static idx_t
-base58_length (idx_t len)
+ATTRIBUTE_శుద్ధ
+స్థిర idx_t
+base58_నిడివి (idx_t len)
 {
   /* Base58 output length is approximately log(256)/log(58),
      which is approximately len * 138 / 100,
@@ -1232,605 +1232,605 @@ base58_length (idx_t len)
      +1 to ensure we've enough place for NUL  */
   idx_t base58_len = ((len + 99) / 100) * 138 + 1;
   affirm (0 < base58_len);
-  return base58_len;
+  తిరిగి base58_len;
 }
 
 
-static void
-base58_encode_ctx_init (struct base_encode_context *ctx)
+స్థిర శూన్య
+base58_encode_ctx_init (నిర్మాణం పునాది_encode_context *ctx)
 {
-  ctx->ctx.base58.buf = NULL;
-  ctx->ctx.base58.size = 0;
-  ctx->ctx.base58.capacity = 0;
+  ctx->ctx.base58.buf = ఖాళీ;
+  ctx->ctx.base58.కొలత = 0;
+  ctx->ctx.base58.సామర్థ్యం = 0;
 }
 
 
-static bool
-base58_encode_ctx (struct base_encode_context *ctx,
-                   char const *restrict in, idx_t inlen,
-                   MAYBE_UNUSED char *restrict out, idx_t *outlen)
+స్థిర bool
+base58_encode_ctx (నిర్మాణం పునాది_encode_context *ctx,
+                   అక్షరం స్థిరరాశి *పరిమిత లోపల, idx_t inlen,
+                   MAYBE_వాడని అక్షరం *పరిమిత బహిర్గతం, idx_t *outlen)
 {
   *outlen = 0;   /* Only accumulate input in this function.  */
 
-  if (inlen == 0)
-    return true;
+  ఒకవేళ (inlen == 0)
+    తిరిగి true;
 
-  idx_t free_space = ctx->ctx.base58.capacity - ctx->ctx.base58.size;
-  if (free_space < inlen)
+  idx_t free_space = ctx->ctx.base58.సామర్థ్యం - ctx->ctx.base58.కొలత;
+  ఒకవేళ (free_space < inlen)
     {
       ctx->ctx.base58.buf = xpalloc (ctx->ctx.base58.buf,
-                                     &ctx->ctx.base58.capacity,
+                                     &ctx->ctx.base58.సామర్థ్యం,
                                      inlen - free_space,
-                                     -1, sizeof *ctx->ctx.base58.buf);
+                                     -1, పరిమాణం *ctx->ctx.base58.buf);
     }
 
-  memcpy (ctx->ctx.base58.buf + ctx->ctx.base58.size, in, inlen);
-  ctx->ctx.base58.size += inlen;
+  జ్ఞాపకం_నకలు (ctx->ctx.base58.buf + ctx->ctx.base58.కొలత, లోపల, inlen);
+  ctx->ctx.base58.కొలత += inlen;
 
-  return true;
+  తిరిగి true;
 }
 
-static void
-base58_encode (char const *data, size_t data_len,
-               char *out, idx_t *outlen)
+స్థిర శూన్య
+base58_encode (అక్షరం స్థిరరాశి *దత్తాంశం, size_t దత్తాంశం_len,
+               అక్షరం *బహిర్గతం, idx_t *outlen)
 {
-  affirm (base_length (data_len) <= *outlen);
+  affirm (పునాది_నిడివి_2 (దత్తాంశం_len) <= *outlen);
 
   size_t zeros = 0;
-  while (zeros < data_len && data[zeros] == 0)
+  అయితే (zeros < దత్తాంశం_len && దత్తాంశం[zeros] == 0)
     zeros++;
 
-  memset (out, '1', zeros);
-  char *p = out + zeros;
+  memset (బహిర్గతం, '1', zeros);
+  అక్షరం *p = బహిర్గతం + zeros;
 
   /* Use GMP to convert from base 256 to base 58.  */
-  mpz_t num;
-  mpz_init (num);
-  if (data_len - zeros)
+  mpz_t అంకె;
+  mpz_init (అంకె);
+  ఒకవేళ (దత్తాంశం_len - zeros)
     {
-      mpz_import (num, data_len - zeros, 1, 1, 0, 0, data + zeros);
-      for (p = mpz_get_str (p, 58, num); *p; p++)
-        *p = gmp_to_base58[to_uchar (*p)];
+      mpz_import (అంకె, దత్తాంశం_len - zeros, 1, 1, 0, 0, దత్తాంశం + zeros);
+      కొరకు (p = mpz_get_str (p, 58, అంకె); *p; p++)
+        *p = gmp_గమ్యం_base58[గమ్యం_uchar (*p)];
     }
-  mpz_clear (num);
+  mpz_clear (అంకె);
 
-  *outlen = p - out;
+  *outlen = p - బహిర్గతం;
 }
 
 
-static bool
-base58_encode_ctx_finalize (struct base_encode_context *ctx,
-                            char *restrict *out, idx_t *outlen)
+స్థిర bool
+base58_encode_ctx_finalize (నిర్మాణం పునాది_encode_context *ctx,
+                            అక్షరం *పరిమిత *బహిర్గతం, idx_t *outlen)
 {
   /* Ensure output buffer is large enough.  */
-  idx_t max_outlen = base_length (ctx->ctx.base58.size);
-  if (max_outlen > *outlen)
+  idx_t max_outlen = పునాది_నిడివి_2 (ctx->ctx.base58.కొలత);
+  ఒకవేళ (max_outlen > *outlen)
     {
-      *out = xrealloc (*out, max_outlen);
+      *బహిర్గతం = xrealloc (*బహిర్గతం, max_outlen);
       *outlen = max_outlen;
     }
 
-  base58_encode ((char *)ctx->ctx.base58.buf, ctx->ctx.base58.size,
-                 *out, outlen);
+  base58_encode ((అక్షరం *)ctx->ctx.base58.buf, ctx->ctx.base58.కొలత,
+                 *బహిర్గతం, outlen);
 
-  free (ctx->ctx.base58.buf);
-  ctx->ctx.base58.buf = NULL;
-  ctx->ctx.base58.size = 0;
-  ctx->ctx.base58.capacity = 0;
+  విడుదల (ctx->ctx.base58.buf);
+  ctx->ctx.base58.buf = ఖాళీ;
+  ctx->ctx.base58.కొలత = 0;
+  ctx->ctx.base58.సామర్థ్యం = 0;
 
-  return true;
+  తిరిగి true;
 }
 
 
-static void
-base58_decode_ctx_init (struct base_decode_context *ctx)
+స్థిర శూన్య
+base58_decode_ctx_init (నిర్మాణం పునాది_decode_context *ctx)
 {
-  ctx->ctx.base58.size = 0;
-  ctx->ctx.base58.capacity = 0;
-  ctx->ctx.base58.buf = NULL;
+  ctx->ctx.base58.కొలత = 0;
+  ctx->ctx.base58.సామర్థ్యం = 0;
+  ctx->ctx.base58.buf = ఖాళీ;
 }
 
-static bool
-base58_decode_ctx (struct base_decode_context *ctx,
-                   char const *restrict in, idx_t inlen,
-                   MAYBE_UNUSED char *restrict out, idx_t *outlen)
+స్థిర bool
+base58_decode_ctx (నిర్మాణం పునాది_decode_context *ctx,
+                   అక్షరం స్థిరరాశి *పరిమిత లోపల, idx_t inlen,
+                   MAYBE_వాడని అక్షరం *పరిమిత బహిర్గతం, idx_t *outlen)
 {
-  bool ignore_lines = true;  /* for now, always ignore them */
+  bool ignore_పంక్తులు = true;  /* for now, always ignore them */
 
   *outlen = 0;   /* Only accumulate input in this function.  */
 
-  if (inlen == 0)
-    return true;
+  ఒకవేళ (inlen == 0)
+    తిరిగి true;
 
-  idx_t free_space = ctx->ctx.base58.capacity - ctx->ctx.base58.size;
+  idx_t free_space = ctx->ctx.base58.సామర్థ్యం - ctx->ctx.base58.కొలత;
   free_space -= 1;  /* Ensure we leave space for NUL (for mpz_set_str).  */
-  if (free_space < inlen)
+  ఒకవేళ (free_space < inlen)
     {
       ctx->ctx.base58.buf = xpalloc (ctx->ctx.base58.buf,
-                                     &ctx->ctx.base58.capacity,
+                                     &ctx->ctx.base58.సామర్థ్యం,
                                      inlen - free_space,
-                                     -1, sizeof *ctx->ctx.base58.buf);
+                                     -1, పరిమాణం *ctx->ctx.base58.buf);
     }
 
   /* Accumulate all valid input characters in our buffer.
      Note we don't rely on mpz_set_str() for validation
      as that allows (skips) all whitespace.  */
-  for (idx_t i = 0; i < inlen; i++)
+  కొరకు (idx_t i = 0; i < inlen; i++)
     {
-      unsigned char c = in[i];
+      గుర్తులేని అక్షరం c = లోపల[i];
 
-      if (ignore_lines && c == '\n')
-        continue;
+      ఒకవేళ (ignore_పంక్తులు && c == '\n')
+        కొనసాగు;
 
-      if (!isubase58 (c))
-        return false;
+      ఒకవేళ (!isubase58 (c))
+        తిరిగి false;
 
-      ctx->ctx.base58.buf[ctx->ctx.base58.size++] = base58_to_gmp[to_uchar (c)];
+      ctx->ctx.base58.buf[ctx->ctx.base58.కొలత++] = base58_గమ్యం_gmp[గమ్యం_uchar (c)];
     }
 
-  return true;
+  తిరిగి true;
 }
 
 
-static bool
-base58_decode (char const *data, size_t data_len,
-               char *restrict out, idx_t *outlen)
+స్థిర bool
+base58_decode (అక్షరం స్థిరరాశి *దత్తాంశం, size_t దత్తాంశం_len,
+               అక్షరం *పరిమిత బహిర్గతం, idx_t *outlen)
 {
-  affirm (data_len <= *outlen);
+  affirm (దత్తాంశం_len <= *outlen);
 
   size_t ones = 0;
-  while (ones < data_len && data[ones] == base58_to_gmp['1'])
+  అయితే (ones < దత్తాంశం_len && దత్తాంశం[ones] == base58_గమ్యం_gmp['1'])
     ones++;
 
-  memset (out, 0, ones);
+  memset (బహిర్గతం, 0, ones);
 
   /* Use GMP to convert from base 58 to base 256.  */
-  mpz_t num;
-  mpz_init (num);
+  mpz_t అంకె;
+  mpz_init (అంకె);
 
-  if ((data_len - ones) && mpz_set_str (num, data + ones, 58) != 0)
+  ఒకవేళ ((దత్తాంశం_len - ones) && mpz_సమితి_str (అంకె, దత్తాంశం + ones, 58) != 0)
     {
-      mpz_clear (num);
+      mpz_clear (అంకె);
       *outlen = 0;
-      return false;
+      తిరిగి false;
     }
 
-  size_t exported_size = 0;
-  if (data_len - ones)
+  size_t exported_కొలత = 0;
+  ఒకవేళ (దత్తాంశం_len - ones)
     {
-      size_t binary_size = (mpz_sizeinbase (num, 2) + 7) / 8;
-      affirm (*outlen - ones >= binary_size);
-      mpz_export (out + ones, &exported_size, 1, 1, 0, 0, num);
+      size_t ద్విమాన_కొలత = (mpz_sizeinbase (అంకె, 2) + 7) / 8;
+      affirm (*outlen - ones >= ద్విమాన_కొలత);
+      mpz_export (బహిర్గతం + ones, &exported_కొలత, 1, 1, 0, 0, అంకె);
     }
 
-  mpz_clear (num);
-  *outlen = ones + exported_size;
-  return true;
+  mpz_clear (అంకె);
+  *outlen = ones + exported_కొలత;
+  తిరిగి true;
 }
 
 
-static bool
-base58_decode_ctx_finalize (struct base_decode_context *ctx,
-                            char *restrict *out, idx_t *outlen)
+స్థిర bool
+base58_decode_ctx_finalize (నిర్మాణం పునాది_decode_context *ctx,
+                            అక్షరం *పరిమిత *బహిర్గతం, idx_t *outlen)
 {
   /* Ensure output buffer is large enough.
      Worst case is input is all '1's.  */
-  idx_t max_outlen = ctx->ctx.base58.size;
-  if (max_outlen > *outlen)
+  idx_t max_outlen = ctx->ctx.base58.కొలత;
+  ఒకవేళ (max_outlen > *outlen)
     {
-      *out = xrealloc (*out, max_outlen);
+      *బహిర్గతం = xrealloc (*బహిర్గతం, max_outlen);
       *outlen = max_outlen;
     }
 
   /* Ensure input buffer is NUL terminated (for mpz_get_str).  */
-  if (ctx->ctx.base58.size)
-    ctx->ctx.base58.buf[ctx->ctx.base58.size] = '\0';
+  ఒకవేళ (ctx->ctx.base58.కొలత)
+    ctx->ctx.base58.buf[ctx->ctx.base58.కొలత] = '\0';
 
-  bool ret = base58_decode ((char *)ctx->ctx.base58.buf, ctx->ctx.base58.size,
-                            *out, outlen);
+  bool ret = base58_decode ((అక్షరం *)ctx->ctx.base58.buf, ctx->ctx.base58.కొలత,
+                            *బహిర్గతం, outlen);
 
-  free (ctx->ctx.base58.buf);
-  ctx->ctx.base58.buf = NULL;
-  ctx->ctx.base58.size = 0;
-  ctx->ctx.base58.capacity = 0;
+  విడుదల (ctx->ctx.base58.buf);
+  ctx->ctx.base58.buf = ఖాళీ;
+  ctx->ctx.base58.కొలత = 0;
+  ctx->ctx.base58.సామర్థ్యం = 0;
 
-  return ret;
+  తిరిగి ret;
 }
 
-#endif /* BASE_TYPE == 42, i.e., "basenc"*/
+#అయితే_ముగింపు /* BASE_TYPE == 42, i.e., "basenc"*/
 
 
 
-static void
-wrap_write (char const *buffer, idx_t len,
-            idx_t wrap_column, idx_t *current_column, FILE *out)
+స్థిర శూన్య
+wrap_write (అక్షరం స్థిరరాశి *బఫరు, idx_t len,
+            idx_t wrap_స్తంభం, idx_t *current_స్తంభం, FILE *బహిర్గతం)
 {
-  if (wrap_column == 0)
+  ఒకవేళ (wrap_స్తంభం == 0)
     {
       /* Simple write. */
-      if (fwrite (buffer, 1, len, stdout) < len)
+      ఒకవేళ (fwrite (బఫరు, 1, len, stdout) < len)
         write_error ();
     }
-  else
-    for (idx_t written = 0; written < len; )
+  లేకపోతే
+    కొరకు (idx_t written = 0; written < len; )
       {
-        idx_t to_write = MIN (wrap_column - *current_column, len - written);
+        idx_t గమ్యం_write = MIN (wrap_స్తంభం - *current_స్తంభం, len - written);
 
-        if (to_write == 0)
+        ఒకవేళ (గమ్యం_write == 0)
           {
-            if (fputc ('\n', out) == EOF)
+            ఒకవేళ (fputc ('\n', బహిర్గతం) == EOF)
               write_error ();
-            *current_column = 0;
+            *current_స్తంభం = 0;
           }
-        else
+        లేకపోతే
           {
-            if (fwrite (buffer + written, 1, to_write, stdout) < to_write)
+            ఒకవేళ (fwrite (బఫరు + written, 1, గమ్యం_write, stdout) < గమ్యం_write)
               write_error ();
-            *current_column += to_write;
-            written += to_write;
+            *current_స్తంభం += గమ్యం_write;
+            written += గమ్యం_write;
           }
       }
 }
 
-static _Noreturn void
-finish_and_exit (FILE *in, char const *infile)
+స్థిర _Noreturn శూన్య
+ముగింపు_and_exit (FILE *లోపల, అక్షరం స్థిరరాశి *infile)
 {
-  if (fclose (in) != 0)
+  ఒకవేళ (fclose (లోపల) != 0)
     {
-      if (streq (infile, "-"))
+      ఒకవేళ (streq (infile, "-"))
         error (EXIT_FAILURE, errno, _("closing standard input"));
-      else
+      లేకపోతే
         error (EXIT_FAILURE, errno, "%s", quotef (infile));
     }
 
-  exit (EXIT_SUCCESS);
+  నిష్క్రమించు (EXIT_SUCCESS);
 }
 
-static _Noreturn void
-do_encode (FILE *in, char const *infile, FILE *out, idx_t wrap_column)
+స్థిర _Noreturn శూన్య
+do_encode (FILE *లోపల, అక్షరం స్థిరరాశి *infile, FILE *బహిర్గతం, idx_t wrap_స్తంభం)
 {
-  idx_t current_column = 0;
-  char *inbuf, *outbuf;
-  idx_t sum;
+  idx_t current_స్తంభం = 0;
+  అక్షరం *inbuf, *outbuf;
+  idx_t కూడిక;
 
   inbuf = xmalloc (ENC_BLOCKSIZE);
-  outbuf = xmalloc (BASE_LENGTH (ENC_BLOCKSIZE));
+  outbuf = xmalloc (పునాది_నిడివి (ENC_BLOCKSIZE));
 
-#if BASE_TYPE == 42
+#ఒకవేళ పునాది_TYPE == 42
   /* Initialize encoding context if needed (for base58) */
-  struct base_encode_context encode_ctx;
-  bool use_ctx = (base_encode_ctx_init != NULL);
-  if (use_ctx)
-    base_encode_ctx_init (&encode_ctx);
-#endif
+  నిర్మాణం పునాది_encode_context encode_ctx;
+  bool use_ctx = (పునాది_encode_ctx_init != ఖాళీ);
+  ఒకవేళ (use_ctx)
+    పునాది_encode_ctx_init (&encode_ctx);
+#అయితే_ముగింపు
 
-  do
+  చేయి
     {
       idx_t n;
 
-      sum = 0;
-      do
+      కూడిక = 0;
+      చేయి
         {
-          n = fread (inbuf + sum, 1, ENC_BLOCKSIZE - sum, in);
-          sum += n;
+          n = fread (inbuf + కూడిక, 1, ENC_BLOCKSIZE - కూడిక, లోపల);
+          కూడిక += n;
         }
-      while (!feof (in) && !ferror (in) && sum < ENC_BLOCKSIZE);
+      అయితే (!feof (లోపల) && !ferror (లోపల) && కూడిక < ENC_BLOCKSIZE);
 
-      if (sum > 0)
+      ఒకవేళ (కూడిక > 0)
         {
-#if BASE_TYPE == 42
-          if (use_ctx)
+#ఒకవేళ పునాది_TYPE == 42
+          ఒకవేళ (use_ctx)
             {
               idx_t outlen = 0;
-              base_encode_ctx (&encode_ctx, inbuf, sum, outbuf, &outlen);
+              పునాది_encode_ctx (&encode_ctx, inbuf, కూడిక, outbuf, &outlen);
 
-              wrap_write (outbuf, outlen, wrap_column, &current_column, out);
+              wrap_write (outbuf, outlen, wrap_స్తంభం, &current_స్తంభం, బహిర్గతం);
             }
-          else
-#endif
+          లేకపోతే
+#అయితే_ముగింపు
             {
               /* Process input one block at a time.  Note that ENC_BLOCKSIZE
                  is sized so that no pad chars will appear in output. */
-              base_encode (inbuf, sum, outbuf, BASE_LENGTH (sum));
+              పునాది_encode (inbuf, కూడిక, outbuf, పునాది_నిడివి (కూడిక));
 
-              wrap_write (outbuf, BASE_LENGTH (sum), wrap_column,
-                          &current_column, out);
+              wrap_write (outbuf, పునాది_నిడివి (కూడిక), wrap_స్తంభం,
+                          &current_స్తంభం, బహిర్గతం);
             }
         }
     }
-  while (!feof (in) && !ferror (in) && sum == ENC_BLOCKSIZE);
+  అయితే (!feof (లోపల) && !ferror (లోపల) && కూడిక == ENC_BLOCKSIZE);
 
-#if BASE_TYPE == 42
-  if (use_ctx && base_encode_ctx_finalize)
+#ఒకవేళ పునాది_TYPE == 42
+  ఒకవేళ (use_ctx && పునాది_encode_ctx_finalize)
     {
-      idx_t outlen = BASE_LENGTH (ENC_BLOCKSIZE);
-      base_encode_ctx_finalize (&encode_ctx, &outbuf, &outlen);
+      idx_t outlen = పునాది_నిడివి (ENC_BLOCKSIZE);
+      పునాది_encode_ctx_finalize (&encode_ctx, &outbuf, &outlen);
 
-      wrap_write (outbuf, outlen, wrap_column, &current_column, out);
+      wrap_write (outbuf, outlen, wrap_స్తంభం, &current_స్తంభం, బహిర్గతం);
     }
-#endif
+#అయితే_ముగింపు
 
   /* When wrapping, terminate last line. */
-  if (wrap_column && current_column > 0 && fputc ('\n', out) == EOF)
+  ఒకవేళ (wrap_స్తంభం && current_స్తంభం > 0 && fputc ('\n', బహిర్గతం) == EOF)
     write_error ();
 
-  if (ferror (in))
+  ఒకవేళ (ferror (లోపల))
     error (EXIT_FAILURE, errno, _("read error"));
 
-  finish_and_exit (in, infile);
+  ముగింపు_and_exit (లోపల, infile);
 }
 
-static _Noreturn void
-do_decode (FILE *in, char const *infile, FILE *out, bool ignore_garbage)
+స్థిర _Noreturn శూన్య
+do_decode (FILE *లోపల, అక్షరం స్థిరరాశి *infile, FILE *బహిర్గతం, bool ignore_garbage)
 {
-  char *inbuf, *outbuf;
-  idx_t sum;
-  struct base_decode_context ctx;
+  అక్షరం *inbuf, *outbuf;
+  idx_t కూడిక;
+  నిర్మాణం పునాది_decode_context ctx;
 
-  inbuf = xmalloc (BASE_LENGTH (DEC_BLOCKSIZE));
+  inbuf = xmalloc (పునాది_నిడివి (DEC_BLOCKSIZE));
   outbuf = xmalloc (DEC_BLOCKSIZE);
 
-#if BASE_TYPE == 42
-  ctx.inbuf = NULL;
-#endif
-  base_decode_ctx_init (&ctx);
+#ఒకవేళ పునాది_TYPE == 42
+  ctx.inbuf = ఖాళీ;
+#అయితే_ముగింపు
+  పునాది_decode_ctx_init (&ctx);
 
-  do
+  చేయి
     {
       bool ok;
 
-      sum = 0;
-      do
+      కూడిక = 0;
+      చేయి
         {
-          idx_t n = fread (inbuf + sum,
-                           1, BASE_LENGTH (DEC_BLOCKSIZE) - sum, in);
+          idx_t n = fread (inbuf + కూడిక,
+                           1, పునాది_నిడివి (DEC_BLOCKSIZE) - కూడిక, లోపల);
 
-          if (ignore_garbage)
+          ఒకవేళ (ignore_garbage)
             {
-              for (idx_t i = 0; n > 0 && i < n;)
+              కొరకు (idx_t i = 0; n > 0 && i < n;)
                 {
-                  if (isubase (inbuf[sum + i])
-                      || (REQUIRED_PADDING (1) && inbuf[sum + i] == '='))
+                  ఒకవేళ (isubase (inbuf[కూడిక + i])
+                      || (REQUIRED_PADDING (1) && inbuf[కూడిక + i] == '='))
                     i++;
-                  else
-                    memmove (inbuf + sum + i, inbuf + sum + i + 1, --n - i);
+                  లేకపోతే
+                    memmove (inbuf + కూడిక + i, inbuf + కూడిక + i + 1, --n - i);
                 }
             }
 
-          sum += n;
+          కూడిక += n;
 
-          if (ferror (in))
+          ఒకవేళ (ferror (లోపల))
             error (EXIT_FAILURE, errno, _("read error"));
         }
-      while (sum < BASE_LENGTH (DEC_BLOCKSIZE) && !feof (in));
+      అయితే (కూడిక < పునాది_నిడివి (DEC_BLOCKSIZE) && !feof (లోపల));
 
-      while (sum || feof (in))
+      అయితే (కూడిక || feof (లోపల))
         {
           idx_t n = DEC_BLOCKSIZE;
-          if (sum)
-            ok = base_decode_ctx (&ctx, inbuf, sum, outbuf, &n);
-          else
-            ok = base_decode_ctx_finalize (&ctx, &outbuf, &n);
+          ఒకవేళ (కూడిక)
+            ok = పునాది_decode_ctx (&ctx, inbuf, కూడిక, outbuf, &n);
+          లేకపోతే
+            ok = పునాది_decode_ctx_finalize (&ctx, &outbuf, &n);
 
-          if (fwrite (outbuf, 1, n, out) < n)
+          ఒకవేళ (fwrite (outbuf, 1, n, బహిర్గతం) < n)
             write_error ();
 
-          if (! ok)
+          ఒకవేళ (! ok)
             error (EXIT_FAILURE, 0, _("invalid input"));
 
-          if (sum == 0)
-            break;
-          sum = 0;
+          ఒకవేళ (కూడిక == 0)
+            ఆపు;
+          కూడిక = 0;
         }
     }
-  while (!feof (in));
+  అయితే (!feof (లోపల));
 
-  finish_and_exit (in, infile);
+  ముగింపు_and_exit (లోపల, infile);
 }
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
-  int opt;
-  FILE *input_fh;
-  char const *infile;
+  పూర్ణాంకం opt;
+  FILE *ఆదానం_fh;
+  అక్షరం స్థిరరాశి *infile;
 
   /* True if --decode has been given and we should decode data. */
   bool decode = false;
   /* True if we should ignore non-base-alphabetic characters. */
   bool ignore_garbage = false;
   /* Wrap encoded data around the 76th column, by default. */
-  idx_t wrap_column = 76;
+  idx_t wrap_స్తంభం = 76;
 
-#if BASE_TYPE == 42
-  int base_type = 0;
-#endif
+#ఒకవేళ పునాది_TYPE == 42
+  పూర్ణాంకం పునాది_type = 0;
+#అయితే_ముగింపు
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while ((opt = getopt_long (argc, argv, "diw:", long_options, NULL)) != -1)
-    switch (opt)
+  అయితే ((opt = getopt_long (argc, argv, "diw:", long_options, ఖాళీ)) != -1)
+    ఎంపిక (opt)
       {
-      case 'd':
+      స్థితి 'd':
         decode = true;
-        break;
+        ఆపు;
 
-      case 'w':
+      స్థితి 'w':
         {
           intmax_t w;
-          strtol_error s_err = xstrtoimax (optarg, NULL, 10, &w, "");
-          if (LONGINT_OVERFLOW < s_err || w < 0)
+          strtol_error s_err = xstrtoimax (optarg, ఖాళీ, 10, &w, "");
+          ఒకవేళ (LONGINT_అధికప్రవాహం < s_err || w < 0)
             error (EXIT_FAILURE, 0, "%s: %s",
                    _("invalid wrap size"), quote (optarg));
-          wrap_column = s_err == LONGINT_OVERFLOW || IDX_MAX < w ? 0 : w;
+          wrap_స్తంభం = s_err == LONGINT_అధికప్రవాహం || IDX_MAX < w ? 0 : w;
         }
-        break;
+        ఆపు;
 
-      case 'i':
+      స్థితి 'i':
         ignore_garbage = true;
-        break;
+        ఆపు;
 
-#if BASE_TYPE == 42
-      case BASE64_OPTION:
-      case BASE64URL_OPTION:
-      case BASE32_OPTION:
-      case BASE32HEX_OPTION:
-      case BASE16_OPTION:
-      case BASE2MSBF_OPTION:
-      case BASE2LSBF_OPTION:
-      case Z85_OPTION:
-      case BASE58_OPTION:
-        base_type = opt;
-        break;
-#endif
+#ఒకవేళ పునాది_TYPE == 42
+      స్థితి BASE64_OPTION:
+      స్థితి BASE64URL_OPTION:
+      స్థితి BASE32_OPTION:
+      స్థితి BASE32HEX_OPTION:
+      స్థితి BASE16_OPTION:
+      స్థితి BASE2MSBF_OPTION:
+      స్థితి BASE2LSBF_OPTION:
+      స్థితి Z85_OPTION:
+      స్థితి BASE58_OPTION:
+        పునాది_type = opt;
+        ఆపు;
+#అయితే_ముగింపు
 
       case_GETOPT_HELP_CHAR;
 
-      case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+      case_GETOPT_సంస్కరణ_CHAR (కార్యక్రమం_NAME, AUTHORS);
 
-      default:
+      అప్రమేయ:
         usage (EXIT_FAILURE);
-        break;
+        ఆపు;
       }
 
-#if BASE_TYPE == 42
+#ఒకవేళ పునాది_TYPE == 42
   required_padding = no_required_padding;
   has_padding = no_padding;
-  get_pending_length = no_pending_length;
-  base_decode_ctx_finalize = decode_ctx_finalize;
+  get_pending_నిడివి = no_pending_నిడివి;
+  పునాది_decode_ctx_finalize = decode_ctx_finalize;
 
-  switch (base_type)
+  ఎంపిక (పునాది_type)
     {
-    case BASE64_OPTION:
-      base_length = base64_length_wrapper;
+    స్థితి BASE64_OPTION:
+      పునాది_నిడివి_2 = base64_నిడివి_wrapper;
       required_padding = base64_required_padding;
       has_padding = base64_ctx_has_padding;
-      get_pending_length = base64_ctx_get_pending_length;
+      get_pending_నిడివి = base64_ctx_get_pending_నిడివి;
       isubase = isubase64;
-      base_encode = base64_encode;
-      base_decode_ctx_init = base64_decode_ctx_init_wrapper;
-      base_decode_ctx = base64_decode_ctx_wrapper;
-      break;
+      పునాది_encode = base64_encode;
+      పునాది_decode_ctx_init = base64_decode_ctx_init_wrapper;
+      పునాది_decode_ctx = base64_decode_ctx_wrapper;
+      ఆపు;
 
-    case BASE64URL_OPTION:
-      base_length = base64_length_wrapper;
+    స్థితి BASE64URL_OPTION:
+      పునాది_నిడివి_2 = base64_నిడివి_wrapper;
       required_padding = base64_required_padding;
       has_padding = base64_ctx_has_padding;
-      get_pending_length = base64_ctx_get_pending_length;
+      get_pending_నిడివి = base64_ctx_get_pending_నిడివి;
       isubase = isubase64url;
-      base_encode = base64url_encode;
-      base_decode_ctx_init = base64url_decode_ctx_init_wrapper;
-      base_decode_ctx = base64url_decode_ctx_wrapper;
-      break;
+      పునాది_encode = base64url_encode;
+      పునాది_decode_ctx_init = base64url_decode_ctx_init_wrapper;
+      పునాది_decode_ctx = base64url_decode_ctx_wrapper;
+      ఆపు;
 
-    case BASE32_OPTION:
-      base_length = base32_length_wrapper;
+    స్థితి BASE32_OPTION:
+      పునాది_నిడివి_2 = base32_నిడివి_wrapper;
       required_padding = base32_required_padding;
       has_padding = base32_ctx_has_padding;
-      get_pending_length = base32_ctx_get_pending_length;
+      get_pending_నిడివి = base32_ctx_get_pending_నిడివి;
       isubase = isubase32;
-      base_encode = base32_encode;
-      base_decode_ctx_init = base32_decode_ctx_init_wrapper;
-      base_decode_ctx = base32_decode_ctx_wrapper;
-      break;
+      పునాది_encode = base32_encode;
+      పునాది_decode_ctx_init = base32_decode_ctx_init_wrapper;
+      పునాది_decode_ctx = base32_decode_ctx_wrapper;
+      ఆపు;
 
-    case BASE32HEX_OPTION:
-      base_length = base32_length_wrapper;
+    స్థితి BASE32HEX_OPTION:
+      పునాది_నిడివి_2 = base32_నిడివి_wrapper;
       required_padding = base32_required_padding;
       has_padding = base32_ctx_has_padding;
-      get_pending_length = base32_ctx_get_pending_length;
+      get_pending_నిడివి = base32_ctx_get_pending_నిడివి;
       isubase = isubase32hex;
-      base_encode = base32hex_encode;
-      base_decode_ctx_init = base32hex_decode_ctx_init_wrapper;
-      base_decode_ctx = base32hex_decode_ctx_wrapper;
-      break;
+      పునాది_encode = base32hex_encode;
+      పునాది_decode_ctx_init = base32hex_decode_ctx_init_wrapper;
+      పునాది_decode_ctx = base32hex_decode_ctx_wrapper;
+      ఆపు;
 
-    case BASE16_OPTION:
-      base_length = base16_length;
-      get_pending_length = base16_ctx_get_pending_length;
+    స్థితి BASE16_OPTION:
+      పునాది_నిడివి_2 = base16_నిడివి;
+      get_pending_నిడివి = base16_ctx_get_pending_నిడివి;
       isubase = isubase16;
-      base_encode = base16_encode;
-      base_decode_ctx_init = base16_decode_ctx_init;
-      base_decode_ctx = base16_decode_ctx;
-      break;
+      పునాది_encode = base16_encode;
+      పునాది_decode_ctx_init = base16_decode_ctx_init;
+      పునాది_decode_ctx = base16_decode_ctx;
+      ఆపు;
 
-    case BASE2MSBF_OPTION:
-      base_length = base2_length;
-      get_pending_length = base2_ctx_get_pending_length;
+    స్థితి BASE2MSBF_OPTION:
+      పునాది_నిడివి_2 = base2_నిడివి;
+      get_pending_నిడివి = base2_ctx_get_pending_నిడివి;
       isubase = isubase2;
-      base_encode = base2msbf_encode;
-      base_decode_ctx_init = base2_decode_ctx_init;
-      base_decode_ctx = base2msbf_decode_ctx;
-      break;
+      పునాది_encode = base2msbf_encode;
+      పునాది_decode_ctx_init = base2_decode_ctx_init;
+      పునాది_decode_ctx = base2msbf_decode_ctx;
+      ఆపు;
 
-    case BASE2LSBF_OPTION:
-      base_length = base2_length;
-      get_pending_length = base2_ctx_get_pending_length;
+    స్థితి BASE2LSBF_OPTION:
+      పునాది_నిడివి_2 = base2_నిడివి;
+      get_pending_నిడివి = base2_ctx_get_pending_నిడివి;
       isubase = isubase2;
-      base_encode = base2lsbf_encode;
-      base_decode_ctx_init = base2_decode_ctx_init;
-      base_decode_ctx = base2lsbf_decode_ctx;
-      break;
+      పునాది_encode = base2lsbf_encode;
+      పునాది_decode_ctx_init = base2_decode_ctx_init;
+      పునాది_decode_ctx = base2lsbf_decode_ctx;
+      ఆపు;
 
-    case Z85_OPTION:
-      base_length = z85_length;
-      get_pending_length = z85_ctx_get_pending_length;
+    స్థితి Z85_OPTION:
+      పునాది_నిడివి_2 = z85_నిడివి;
+      get_pending_నిడివి = z85_ctx_get_pending_నిడివి;
       isubase = isuz85;
-      base_encode = z85_encode;
-      base_decode_ctx_init = z85_decode_ctx_init;
-      base_decode_ctx = z85_decode_ctx;
-      break;
+      పునాది_encode = z85_encode;
+      పునాది_decode_ctx_init = z85_decode_ctx_init;
+      పునాది_decode_ctx = z85_decode_ctx;
+      ఆపు;
 
-    case BASE58_OPTION:
-      base_length = base58_length;
+    స్థితి BASE58_OPTION:
+      పునాది_నిడివి_2 = base58_నిడివి;
       isubase = isubase58;
-      base_encode_ctx_init = base58_encode_ctx_init;
-      base_encode_ctx = base58_encode_ctx;
-      base_encode_ctx_finalize = base58_encode_ctx_finalize;
-      base_decode_ctx_init = base58_decode_ctx_init;
-      base_decode_ctx = base58_decode_ctx;
-      base_decode_ctx_finalize = base58_decode_ctx_finalize;
-      break;
+      పునాది_encode_ctx_init = base58_encode_ctx_init;
+      పునాది_encode_ctx = base58_encode_ctx;
+      పునాది_encode_ctx_finalize = base58_encode_ctx_finalize;
+      పునాది_decode_ctx_init = base58_decode_ctx_init;
+      పునాది_decode_ctx = base58_decode_ctx;
+      పునాది_decode_ctx_finalize = base58_decode_ctx_finalize;
+      ఆపు;
 
-    default:
+    అప్రమేయ:
       error (0, 0, _("missing encoding type"));
       usage (EXIT_FAILURE);
     }
-#endif
+#అయితే_ముగింపు
 
-  if (argc - optind > 1)
+  ఒకవేళ (argc - optind > 1)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind + 1]));
       usage (EXIT_FAILURE);
     }
 
-  if (optind < argc)
+  ఒకవేళ (optind < argc)
     infile = argv[optind];
-  else
+  లేకపోతే
     infile = "-";
 
-  if (streq (infile, "-"))
+  ఒకవేళ (streq (infile, "-"))
     {
-      xset_binary_mode (STDIN_FILENO, O_BINARY);
-      input_fh = stdin;
+      xset_ద్విమాన_బహుళకం (STDIN_FILENO, O_ద్విమాన);
+      ఆదానం_fh = stdin;
     }
-  else
+  లేకపోతే
     {
-      input_fh = fopen (infile, "rb");
-      if (input_fh == NULL)
+      ఆదానం_fh = fopen (infile, "rb");
+      ఒకవేళ (ఆదానం_fh == ఖాళీ)
         error (EXIT_FAILURE, errno, "%s", quotef (infile));
     }
 
-  fadvise (input_fh, FADVISE_SEQUENTIAL);
+  fadvise (ఆదానం_fh, FADVISE_SEQUENTIAL);
 
-  if (decode)
-    do_decode (input_fh, infile, stdout, ignore_garbage);
-  else
-    do_encode (input_fh, infile, stdout, wrap_column);
+  ఒకవేళ (decode)
+    do_decode (ఆదానం_fh, infile, stdout, ignore_garbage);
+  లేకపోతే
+    do_encode (ఆదానం_fh, infile, stdout, wrap_స్తంభం);
 }

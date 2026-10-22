@@ -33,55 +33,55 @@
 
    David MacKenzie <djm@gnu.ai.mit.edu> */
 
-#include <config.h>
+#అన్తర్భావ <config.h>
 
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#అన్తర్భావ <stdio.h>
+#అన్తర్భావ <getopt.h>
+#అన్తర్భావ <sys/types.h>
 
-#include "system.h"
-#include "ioblksize.h"
-#include "mbbuf.h"
-#include "mcel.h"
-#include "expand-common.h"
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "ioblksize.h"
+#అన్తర్భావ "mbbuf.h"
+#అన్తర్భావ "mcel.h"
+#అన్తర్భావ "expand-common.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "unexpand"
+#నిర్వచించు కార్యక్రమం_NAME "unexpand"
 
-#define AUTHORS proper_name ("David MacKenzie")
+#నిర్వచించు AUTHORS proper_name ("David MacKenzie")
 
 
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+గణన
 {
-  CONVERT_FIRST_ONLY_OPTION = CHAR_MAX + 1
+  CONVERT_మొదటి_ONLY_OPTION = CHAR_MAX + 1
 };
 
-static struct option const longopts[] =
+స్థిర నిర్మాణం option స్థిరరాశి longopts[] =
 {
-  {"tabs", required_argument, NULL, 't'},
-  {"all", no_argument, NULL, 'a'},
-  {"first-only", no_argument, NULL, CONVERT_FIRST_ONLY_OPTION},
+  {"tabs", required_వాదం, ఖాళీ, 't'},
+  {"all", no_వాదం, ఖాళీ, 'a'},
+  {"first-only", no_వాదం, ఖాళీ, CONVERT_మొదటి_ONLY_OPTION},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_సంస్కరణ_OPTION_DECL},
+  {ఖాళీ, 0, ఖాళీ, 0}
 };
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("\
+      రాయి (_("\
 Usage: %s [OPTION]... [FILE]...\n\
 "),
-              program_name);
+              కార్యక్రమం_name);
       fputs (_("\
-Convert blanks in each FILE to tabs, writing to standard output.\n\
+Convert blanks లోపల each FILE గమ్యం tabs, writing గమ్యం standard output.\n\
 "), stdout);
 
       emit_stdin_note ();
@@ -89,51 +89,51 @@ Convert blanks in each FILE to tabs, writing to standard output.\n\
 
       oputs (_("\
   -a, --all\n\
-         convert all blanks, instead of just initial blanks\n\
+         convert all blanks, instead యొక్క just initial blanks\n\
 "));
       oputs (_("\
-      --first-only\n\
-         convert only leading sequences of blanks (overrides -a)\n\
+      --మొదటి-only\n\
+         convert only leading sequences యొక్క blanks (overrides -a)\n\
 "));
       oputs (_("\
   -t, --tabs=N\n\
-         have tabs N characters apart instead of 8 (enables -a)\n\
+         have tabs N characters apart instead యొక్క 8 (enables -a)\n\
 "));
-      emit_tab_list_info (PROGRAM_NAME);
+      emit_tab_list_info (కార్యక్రమం_NAME);
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
 /* Change blanks to tabs, writing to stdout.
    Read each file in 'file_list', in order.  */
 
-static void
-unexpand (void)
+స్థిర శూన్య
+unexpand (శూన్య)
 {
   /* Input stream.  */
-  FILE *fp = next_file (NULL);
+  FILE *fp = తదుపరి_file (ఖాళీ);
 
   /* The array of pending blanks.  In non-POSIX locales, blanks can
      include characters other than spaces, so the blanks must be
      stored, not merely counted.  */
-  char *pending_blank;
+  అక్షరం *pending_blank;
 
-  if (!fp)
-    return;
+  ఒకవేళ (!fp)
+    తిరిగి;
 
-  static char line_in[IO_BUFSIZE];
+  స్థిర అక్షరం పంక్తి_లోపల[IO_BUFSIZE];
   mbbuf_t mbbuf;
-  mbbuf_init (&mbbuf, line_in, sizeof line_in, fp);
+  mbbuf_init (&mbbuf, పంక్తి_లోపల, పరిమాణం పంక్తి_లోపల, fp);
 
   /* The worst case is a non-blank character, then one blank, then a
      tab stop, then MAX_COLUMN_WIDTH - 1 blanks, then a non-blank; so
      allocate MAX_COLUMN_WIDTH bytes to store the blanks.  */
-  pending_blank = xinmalloc (max_column_width, MB_CUR_MAX);
+  pending_blank = xinmalloc (max_స్తంభం_వెడల్పు, MB_CUR_MAX);
 
-  while (true)
+  అయితే (true)
     {
       /* Input character, or EOF.  */
       mcel_t g;
@@ -146,13 +146,13 @@ unexpand (void)
          is true:  */
 
       /* Column of next input character.  */
-      colno column = 0;
+      colno స్తంభం = 0;
 
       /* Column the next input tab stop is on.  */
-      colno next_tab_column = 0;
+      colno తదుపరి_tab_స్తంభం = 0;
 
       /* Index in TAB_LIST of next tab stop to examine.  */
-      idx_t tab_index = 0;
+      idx_t tab_సూచీ = 0;
 
       /* If true, the first pending blank came just before a tab stop.  */
       bool one_blank_before_tab_stop = false;
@@ -168,56 +168,56 @@ unexpand (void)
 
       /* Convert a line of text.  */
 
-      do
+      చేయి
         {
-          while ((g = mbbuf_get_char (&mbbuf)).ch == MBBUF_EOF
-                 && (fp = next_file (fp)))
-            mbbuf_init (&mbbuf, line_in, sizeof line_in, fp);
+          అయితే ((g = mbbuf_get_char (&mbbuf)).ch == MBBUF_EOF
+                 && (fp = తదుపరి_file (fp)))
+            mbbuf_init (&mbbuf, పంక్తి_లోపల, పరిమాణం పంక్తి_లోపల, fp);
 
-          if (convert)
+          ఒకవేళ (convert)
             {
               bool blank = c32issep (g.ch);
 
-              if (blank)
+              ఒకవేళ (blank)
                 {
-                  bool last_tab;
+                  bool చివరి_tab;
 
-                  next_tab_column = get_next_tab_column (column, &tab_index,
-                                                         &last_tab);
+                  తదుపరి_tab_స్తంభం = get_తదుపరి_tab_స్తంభం (స్తంభం, &tab_సూచీ,
+                                                         &చివరి_tab);
 
-                  if (last_tab)
+                  ఒకవేళ (చివరి_tab)
                     convert = false;
 
-                  if (convert)
+                  ఒకవేళ (convert)
                     {
-                      if (g.ch == '\t')
+                      ఒకవేళ (g.ch == '\t')
                         {
-                          column = next_tab_column;
+                          స్తంభం = తదుపరి_tab_స్తంభం;
 
-                          if (pending)
+                          ఒకవేళ (pending)
                             pending_blank[0] = '\t';
                         }
-                      else
+                      లేకపోతే
                         {
-                          int width = c32width (g.ch);
-                          column += width < 0 ? 1 : width;
+                          పూర్ణాంకం వెడల్పు = c32width (g.ch);
+                          స్తంభం += వెడల్పు < 0 ? 1 : వెడల్పు;
 
-                          if (! (prev_blank && column >= next_tab_column))
+                          ఒకవేళ (! (prev_blank && స్తంభం >= తదుపరి_tab_స్తంభం))
                             {
                               /* It is not yet known whether the pending blanks
                                  will be replaced by tabs.  */
-                              if (column == next_tab_column)
+                              ఒకవేళ (స్తంభం == తదుపరి_tab_స్తంభం)
                                 one_blank_before_tab_stop = true;
-                              memcpy (pending_blank + pending,
-                                      mbbuf_char_offset (&mbbuf, g), g.len);
+                              జ్ఞాపకం_నకలు (pending_blank + pending,
+                                      mbbuf_char_స్థానభ్రంశం (&mbbuf, g), g.len);
                               pending += g.len;
                               prev_blank = true;
-                              continue;
+                              కొనసాగు;
                             }
 
                           /* Replace the pending blanks by a tab or two.  */
                           g.len = 0;
-                          if (putc ('\t', stdout) < 0)
+                          ఒకవేళ (putc ('\t', stdout) < 0)
                             write_error ();
                           pending_blank[0] = '\t';
                         }
@@ -227,117 +227,117 @@ unexpand (void)
                       pending = one_blank_before_tab_stop;
                     }
                 }
-              else if (g.ch == '\b')
+              లేకపోతే ఒకవేళ (g.ch == '\b')
                 {
                   /* Go back one column, and force recalculation of the
                      next tab stop.  */
-                  column -= !!column;
-                  next_tab_column = column;
-                  tab_index -= !!tab_index;
+                  స్తంభం -= !!స్తంభం;
+                  తదుపరి_tab_స్తంభం = స్తంభం;
+                  tab_సూచీ -= !!tab_సూచీ;
                 }
-              else
+              లేకపోతే
                 {
-                  int width = c32width (g.ch);
-                  if (ckd_add (&column, column, width < 0 ? 1 : width))
+                  పూర్ణాంకం వెడల్పు = c32width (g.ch);
+                  ఒకవేళ (ckd_కూడు (&స్తంభం, స్తంభం, వెడల్పు < 0 ? 1 : వెడల్పు))
                     error (EXIT_FAILURE, 0, _("input line is too long"));
                 }
 
-              if (pending)
+              ఒకవేళ (pending)
                 {
-                  if (pending > 1 && one_blank_before_tab_stop)
+                  ఒకవేళ (pending > 1 && one_blank_before_tab_stop)
                     pending_blank[0] = '\t';
-                  if (fwrite (pending_blank, 1, pending, stdout) != pending)
+                  ఒకవేళ (fwrite (pending_blank, 1, pending, stdout) != pending)
                     write_error ();
                   pending = 0;
                   one_blank_before_tab_stop = false;
                 }
 
               prev_blank = blank;
-              convert &= convert_entire_line || blank;
+              convert &= convert_entire_పంక్తి || blank;
             }
 
-          if (g.ch == MBBUF_EOF)
+          ఒకవేళ (g.ch == MBBUF_EOF)
             {
-              free (pending_blank);
-              return;
+              విడుదల (pending_blank);
+              తిరిగి;
             }
 
-          fwrite (mbbuf_char_offset (&mbbuf, g), sizeof (char), g.len, stdout);
-          if (ferror (stdout))
+          fwrite (mbbuf_char_స్థానభ్రంశం (&mbbuf, g), పరిమాణం (అక్షరం), g.len, stdout);
+          ఒకవేళ (ferror (stdout))
             write_error ();
         }
-      while (g.ch != '\n');
+      అయితే (g.ch != '\n');
     }
 }
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
   bool have_tabval = false;
   colno tabval IF_LINT ( = 0);
-  int c;
+  పూర్ణాంకం c;
 
   /* If true, cancel the effect of any -a (explicit or implicit in -t),
      so that only leading blanks will be considered.  */
-  bool convert_first_only = false;
+  bool convert_మొదటి_only = false;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while ((c = getopt_long (argc, argv, ",0123456789at:", longopts, NULL))
+  అయితే ((c = getopt_long (argc, argv, ",0123456789at:", longopts, ఖాళీ))
          != -1)
     {
-      switch (c)
+      ఎంపిక (c)
         {
-        case '?':
+        స్థితి '?':
           usage (EXIT_FAILURE);
-        case 'a':
-          convert_entire_line = true;
-          break;
-        case 't':
-          convert_entire_line = true;
+        స్థితి 'a':
+          convert_entire_పంక్తి = true;
+          ఆపు;
+        స్థితి 't':
+          convert_entire_పంక్తి = true;
           parse_tab_stops (optarg);
-          break;
-        case CONVERT_FIRST_ONLY_OPTION:
-          convert_first_only = true;
-          break;
-        case ',':
-          if (have_tabval)
-            add_tab_stop (tabval);
+          ఆపు;
+        స్థితి CONVERT_మొదటి_ONLY_OPTION:
+          convert_మొదటి_only = true;
+          ఆపు;
+        స్థితి ',':
+          ఒకవేళ (have_tabval)
+            కూడు_tab_stop (tabval);
           have_tabval = false;
-          break;
+          ఆపు;
         case_GETOPT_HELP_CHAR;
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
-          if (!have_tabval)
+        case_GETOPT_సంస్కరణ_CHAR (కార్యక్రమం_NAME, AUTHORS);
+        అప్రమేయ:
+          ఒకవేళ (!have_tabval)
             {
               tabval = 0;
               have_tabval = true;
             }
-          if (!DECIMAL_DIGIT_ACCUMULATE (tabval, c - '0'))
+          ఒకవేళ (!DECIMAL_DIGIT_ACCUMULATE (tabval, c - '0'))
             error (EXIT_FAILURE, 0, _("tab stop is too large"));
-          break;
+          ఆపు;
         }
     }
 
-  if (convert_first_only)
-    convert_entire_line = false;
+  ఒకవేళ (convert_మొదటి_only)
+    convert_entire_పంక్తి = false;
 
-  if (have_tabval)
-    add_tab_stop (tabval);
+  ఒకవేళ (have_tabval)
+    కూడు_tab_stop (tabval);
 
   finalize_tab_stops ();
 
-  set_file_list ((optind < argc) ? &argv[optind] : NULL);
+  సమితి_file_list ((optind < argc) ? &argv[optind] : ఖాళీ);
 
   unexpand ();
 
   cleanup_file_list_stdin ();
 
-  return exit_status;
+  తిరిగి exit_స్థితి;
 }

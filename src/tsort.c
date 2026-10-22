@@ -20,68 +20,68 @@
    sort) in Donald E. Knuth, The Art of Computer Programming, Volume
    1/Fundamental Algorithms, page 262.  */
 
-#include <config.h>
+#అన్తర్భావ <config.h>
 
-#include <getopt.h>
-#include <sys/types.h>
+#అన్తర్భావ <getopt.h>
+#అన్తర్భావ <sys/types.h>
 
-#include "system.h"
-#include "assure.h"
-#include "fadvise.h"
-#include "readtokens.h"
-#include "stdio--.h"
-#include "quote.h"
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "assure.h"
+#అన్తర్భావ "fadvise.h"
+#అన్తర్భావ "readtokens.h"
+#అన్తర్భావ "stdio--.h"
+#అన్తర్భావ "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "tsort"
+#నిర్వచించు కార్యక్రమం_NAME "tsort"
 
-#define AUTHORS proper_name ("Mark Kettenis")
+#నిర్వచించు AUTHORS proper_name ("Mark Kettenis")
 
 /* Token delimiters when reading from a file.  */
-#define DELIM " \t\n"
+#నిర్వచించు DELIM " \t\n"
 
 /* Members of the list of successors.  */
-struct successor
+నిర్మాణం successor
 {
-  struct item *suc;
-  struct successor *next;
+  నిర్మాణం అంశం *suc;
+  నిర్మాణం successor *తదుపరి;
 };
 
 /* Each string is held in memory as the head of a list of successors.  */
-struct item
+నిర్మాణం అంశం
 {
-  char const *str;
-  struct item *left, *right;
-  signed char balance; /* -1, 0, or +1 */
+  అక్షరం స్థిరరాశి *str;
+  నిర్మాణం అంశం *ఎడమ, *కుడి;
+  గుర్తుగల అక్షరం balance; /* -1, 0, or +1 */
   bool printed;
-  size_t count;
-  struct item *qlink;
-  struct successor *top;
+  size_t లెక్క;
+  నిర్మాణం అంశం *qlink;
+  నిర్మాణం successor *శిఖరం;
 };
 
 /* The head of the sorted list.  */
-static struct item *head = NULL;
+స్థిర నిర్మాణం అంశం *తల = ఖాళీ;
 
 /* The tail of the list of 'zeros', strings that have no predecessors.  */
-static struct item *zeros = NULL;
+స్థిర నిర్మాణం అంశం *zeros = ఖాళీ;
 
 /* Used for loop detection.  */
-static struct item *loop = NULL;
+స్థిర నిర్మాణం అంశం *loop = ఖాళీ;
 
 /* The number of strings to sort.  */
-static size_t n_strings = 0;
+స్థిర size_t n_అక్షరశ్రేణులు = 0;
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("\
+      రాయి (_("\
 Usage: %s [OPTION] [FILE]\n\
-Write totally ordered list consistent with the partial ordering in FILE.\n\
-"), program_name);
+Write totally ordered list consistent with the partial ordering లోపల FILE.\n\
+"), కార్యక్రమం_name);
 
       emit_stdin_note ();
 
@@ -89,22 +89,22 @@ Write totally ordered list consistent with the partial ordering in FILE.\n\
 \n\
 "), stdout);
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
 
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
 /* Create a new item/node for STR.  */
-static struct item *
-new_item (char const *str)
+స్థిర నిర్మాణం అంశం *
+new_అంశం (అక్షరం స్థిరరాశి *str)
 {
   /* T1. Initialize (COUNT[k] <- 0 and TOP[k] <- ^).  */
-  struct item *k = xzalloc (sizeof *k);
-  if (str)
+  నిర్మాణం అంశం *k = xzalloc (పరిమాణం *k);
+  ఒకవేళ (str)
     k->str = xstrdup (str);
-  return k;
+  తిరిగి k;
 }
 
 /* Search binary tree rooted at *ROOT for STR.  Allocate a new tree if
@@ -115,138 +115,138 @@ new_item (char const *str)
    insertion) in Donald E. Knuth, The Art of Computer Programming,
    Volume 3/Searching and Sorting, pages 455--457.  */
 
-static struct item *
-search_item (struct item *root, char const *str)
+స్థిర నిర్మాణం అంశం *
+శోధన_అంశం (నిర్మాణం అంశం *మూలం, అక్షరం స్థిరరాశి *str)
 {
-  struct item *p, *q, *r, *s, *t;
-  int a;
+  నిర్మాణం అంశం *p, *q, *r, *s, *t;
+  పూర్ణాంకం a;
 
   /* Make sure the tree is not empty, since that is what the algorithm
      below expects.  */
-  if (root->right == NULL)
-    return (root->right = new_item (str));
+  ఒకవేళ (మూలం->కుడి == ఖాళీ)
+    తిరిగి (మూలం->కుడి = new_అంశం (str));
 
   /* A1. Initialize.  */
-  t = root;
-  s = p = root->right;
+  t = మూలం;
+  s = p = మూలం->కుడి;
 
-  while (true)
+  అయితే (true)
     {
       /* A2. Compare.  */
       a = strcmp (str, p->str);
-      if (a == 0)
-        return p;
+      ఒకవేళ (a == 0)
+        తిరిగి p;
 
       /* A3 & A4.  Move left & right.  */
-      if (a < 0)
-        q = p->left;
-      else
-        q = p->right;
+      ఒకవేళ (a < 0)
+        q = p->ఎడమ;
+      లేకపోతే
+        q = p->కుడి;
 
-      if (q == NULL)
+      ఒకవేళ (q == ఖాళీ)
         {
           /* A5. Insert.  */
-          q = new_item (str);
+          q = new_అంశం (str);
 
           /* A3 & A4.  (continued).  */
-          if (a < 0)
-            p->left = q;
-          else
-            p->right = q;
+          ఒకవేళ (a < 0)
+            p->ఎడమ = q;
+          లేకపోతే
+            p->కుడి = q;
 
           /* A6. Adjust balance factors.  */
           a = strcmp (str, s->str);
-          if (a < 0)
+          ఒకవేళ (a < 0)
             {
-              r = p = s->left;
+              r = p = s->ఎడమ;
               a = -1;
             }
-          else
+          లేకపోతే
             {
               affirm (0 < a);
-              r = p = s->right;
+              r = p = s->కుడి;
               a = 1;
             }
 
-          while (p != q)
+          అయితే (p != q)
             {
-              int cmp = strcmp (str, p->str);
-              if (cmp < 0)
+              పూర్ణాంకం cmp = strcmp (str, p->str);
+              ఒకవేళ (cmp < 0)
                 {
                   p->balance = -1;
-                  p = p->left;
+                  p = p->ఎడమ;
                 }
-              else
+              లేకపోతే
                 {
                   affirm (0 < cmp);
                   p->balance = 1;
-                  p = p->right;
+                  p = p->కుడి;
                 }
             }
 
           /* A7. Balancing act.  */
-          if (s->balance == 0 || s->balance == -a)
+          ఒకవేళ (s->balance == 0 || s->balance == -a)
             {
               s->balance += a;
-              return q;
+              తిరిగి q;
             }
 
-          if (r->balance == a)
+          ఒకవేళ (r->balance == a)
             {
               /* A8. Single Rotation.  */
               p = r;
-              if (a < 0)
+              ఒకవేళ (a < 0)
                 {
-                  s->left = r->right;
-                  r->right = s;
+                  s->ఎడమ = r->కుడి;
+                  r->కుడి = s;
                 }
-              else
+              లేకపోతే
                 {
-                  s->right = r->left;
-                  r->left = s;
+                  s->కుడి = r->ఎడమ;
+                  r->ఎడమ = s;
                 }
               s->balance = r->balance = 0;
             }
-          else
+          లేకపోతే
             {
               /* A9. Double rotation.  */
-              if (a < 0)
+              ఒకవేళ (a < 0)
                 {
-                  p = r->right;
-                  r->right = p->left;
-                  p->left = r;
-                  s->left = p->right;
-                  p->right = s;
+                  p = r->కుడి;
+                  r->కుడి = p->ఎడమ;
+                  p->ఎడమ = r;
+                  s->ఎడమ = p->కుడి;
+                  p->కుడి = s;
                 }
-              else
+              లేకపోతే
                 {
-                  p = r->left;
-                  r->left = p->right;
-                  p->right = r;
-                  s->right = p->left;
-                  p->left = s;
+                  p = r->ఎడమ;
+                  r->ఎడమ = p->కుడి;
+                  p->కుడి = r;
+                  s->కుడి = p->ఎడమ;
+                  p->ఎడమ = s;
                 }
 
               s->balance = 0;
               r->balance = 0;
-              if (p->balance == a)
+              ఒకవేళ (p->balance == a)
                 s->balance = -a;
-              else if (p->balance == -a)
+              లేకపోతే ఒకవేళ (p->balance == -a)
                 r->balance = a;
               p->balance = 0;
             }
 
           /* A10. Finishing touch.  */
-          if (s == t->right)
-            t->right = p;
-          else
-            t->left = p;
+          ఒకవేళ (s == t->కుడి)
+            t->కుడి = p;
+          లేకపోతే
+            t->ఎడమ = p;
 
-          return q;
+          తిరిగి q;
         }
 
       /* A3 & A4.  (continued).  */
-      if (q->balance)
+      ఒకవేళ (q->balance)
         {
           t = p;
           s = q;
@@ -260,43 +260,43 @@ search_item (struct item *root, char const *str)
 
 /* Record the fact that J precedes K.  */
 
-static void
-record_relation (struct item *j, struct item *k)
+స్థిర శూన్య
+రికార్డు_సంబంధం (నిర్మాణం అంశం *j, నిర్మాణం అంశం *k)
 {
-  struct successor *p;
+  నిర్మాణం successor *p;
 
-  if (!streq (j->str, k->str))
+  ఒకవేళ (!streq (j->str, k->str))
     {
-      k->count++;
-      p = xmalloc (sizeof *p);
+      k->లెక్క++;
+      p = xmalloc (పరిమాణం *p);
       p->suc = k;
-      p->next = j->top;
-      j->top = p;
+      p->తదుపరి = j->శిఖరం;
+      j->శిఖరం = p;
     }
 }
 
-static bool
-count_items (MAYBE_UNUSED struct item *unused)
+స్థిర bool
+లెక్క_వస్తువులు (MAYBE_వాడని నిర్మాణం అంశం *వాడని)
 {
-  n_strings++;
-  return false;
+  n_అక్షరశ్రేణులు++;
+  తిరిగి false;
 }
 
-static bool
-scan_zeros (struct item *k)
+స్థిర bool
+పరిశీలన_zeros (నిర్మాణం అంశం *k)
 {
   /* Ignore strings that have already been printed.  */
-  if (k->count == 0 && !k->printed)
+  ఒకవేళ (k->లెక్క == 0 && !k->printed)
     {
-      if (head == NULL)
-        head = k;
-      else
+      ఒకవేళ (తల == ఖాళీ)
+        తల = k;
+      లేకపోతే
         zeros->qlink = k;
 
       zeros = k;
     }
 
-  return false;
+  తిరిగి false;
 }
 
 /* Try to detect the loop.  If we have detected that K is part of a
@@ -317,255 +317,255 @@ scan_zeros (struct item *k)
    loop has completely been constructed.  If the loop was found, the
    global variable LOOP will be null.  */
 
-static bool
-detect_loop (struct item *k)
+స్థిర bool
+detect_loop (నిర్మాణం అంశం *k)
 {
-  if (k->count > 0)
+  ఒకవేళ (k->లెక్క > 0)
     {
       /* K does not have to be part of a cycle.  It is however part of
          a graph that contains a cycle.  */
 
-      if (loop == NULL)
+      ఒకవేళ (loop == ఖాళీ)
         /* Start traversing the graph at K.  */
         loop = k;
-      else
+      లేకపోతే
         {
-          struct successor **p = &k->top;
+          నిర్మాణం successor **p = &k->శిఖరం;
 
-          while (*p)
+          అయితే (*p)
             {
-              if ((*p)->suc == loop)
+              ఒకవేళ ((*p)->suc == loop)
                 {
-                  if (k->qlink)
+                  ఒకవేళ (k->qlink)
                     {
                       /* We have found a loop.  Retrace our steps.  */
-                      while (loop)
+                      అయితే (loop)
                         {
-                          struct item *tmp = loop->qlink;
+                          నిర్మాణం అంశం *tmp = loop->qlink;
 
                           error (0, 0, "%s", (loop->str));
 
                           /* Until we encounter K again.  */
-                          if (loop == k)
+                          ఒకవేళ (loop == k)
                             {
                               /* Remove relation.  */
-                              struct successor *s = *p;
-                              s->suc->count--;
-                              *p = s->next;
-                              IF_LINT (free (s));
-                              break;
+                              నిర్మాణం successor *s = *p;
+                              s->suc->లెక్క--;
+                              *p = s->తదుపరి;
+                              IF_LINT (విడుదల (s));
+                              ఆపు;
                             }
 
                           /* Tidy things up since we might have to
                              detect another loop.  */
-                          loop->qlink = NULL;
+                          loop->qlink = ఖాళీ;
                           loop = tmp;
                         }
 
-                      while (loop)
+                      అయితే (loop)
                         {
-                          struct item *tmp = loop->qlink;
+                          నిర్మాణం అంశం *tmp = loop->qlink;
 
-                          loop->qlink = NULL;
+                          loop->qlink = ఖాళీ;
                           loop = tmp;
                         }
 
                       /* Since we have found the loop, stop walking
                          the tree.  */
-                      return true;
+                      తిరిగి true;
                     }
-                  else
+                  లేకపోతే
                     {
                       k->qlink = loop;
                       loop = k;
-                      break;
+                      ఆపు;
                     }
                 }
 
-              p = &(*p)->next;
+              p = &(*p)->తదుపరి;
             }
         }
     }
 
-  return false;
+  తిరిగి false;
 }
 
 /* Recurse (sub)tree rooted at ROOT, calling ACTION for each node.
    Stop when ACTION returns true.  */
 
-static bool
-recurse_tree (struct item *root, bool (*action) (struct item *))
+స్థిర bool
+recurse_వృక్షం (నిర్మాణం అంశం *మూలం, bool (*action) (నిర్మాణం అంశం *))
 {
-  if (root->left == NULL && root->right == NULL)
-    return (*action) (root);
-  else
+  ఒకవేళ (మూలం->ఎడమ == ఖాళీ && మూలం->కుడి == ఖాళీ)
+    తిరిగి (*action) (మూలం);
+  లేకపోతే
     {
-      if (root->left != NULL)
-        if (recurse_tree (root->left, action))
-          return true;
-      if ((*action) (root))
-        return true;
-      if (root->right != NULL)
-        if (recurse_tree (root->right, action))
-          return true;
+      ఒకవేళ (మూలం->ఎడమ != ఖాళీ)
+        ఒకవేళ (recurse_వృక్షం (మూలం->ఎడమ, action))
+          తిరిగి true;
+      ఒకవేళ ((*action) (మూలం))
+        తిరిగి true;
+      ఒకవేళ (మూలం->కుడి != ఖాళీ)
+        ఒకవేళ (recurse_వృక్షం (మూలం->కుడి, action))
+          తిరిగి true;
     }
 
-  return false;
+  తిరిగి false;
 }
 
 /* Walk the tree specified by the head ROOT, calling ACTION for
    each node.  */
 
-static void
-walk_tree (struct item *root, bool (*action) (struct item *))
+స్థిర శూన్య
+walk_వృక్షం (నిర్మాణం అంశం *మూలం, bool (*action) (నిర్మాణం అంశం *))
 {
-  if (root->right)
-    recurse_tree (root->right, action);
+  ఒకవేళ (మూలం->కుడి)
+    recurse_వృక్షం (మూలం->కుడి, action);
 }
 
 /* Do a topological sort on FILE.  Exit with appropriate exit status.  */
 
-static _Noreturn void
-tsort (char const *file)
+స్థిర _Noreturn శూన్య
+tsort (అక్షరం స్థిరరాశి *file)
 {
   bool ok = true;
-  struct item *j = NULL;
-  struct item *k = NULL;
-  token_buffer tokenbuffer;
+  నిర్మాణం అంశం *j = ఖాళీ;
+  నిర్మాణం అంశం *k = ఖాళీ;
+  token_బఫరు tokenbuffer;
   bool is_stdin = streq (file, "-");
 
   /* Initialize the head of the tree holding the strings we're sorting.  */
-  struct item *root = new_item (NULL);
+  నిర్మాణం అంశం *మూలం = new_అంశం (ఖాళీ);
 
-  if (!is_stdin && ! freopen (file, "r", stdin))
+  ఒకవేళ (!is_stdin && ! freopen (file, "r", stdin))
     error (EXIT_FAILURE, errno, "%s", quotef (file));
 
   fadvise (stdin, FADVISE_SEQUENTIAL);
 
   init_tokenbuffer (&tokenbuffer);
 
-  while (true)
+  అయితే (true)
     {
       /* T2. Next Relation.  */
-      size_t len = readtoken (stdin, DELIM, sizeof (DELIM) - 1, &tokenbuffer);
-      if (len == (size_t) -1)
+      size_t len = readtoken (stdin, DELIM, పరిమాణం (DELIM) - 1, &tokenbuffer);
+      ఒకవేళ (len == (size_t) -1)
         {
-          if (ferror (stdin))
+          ఒకవేళ (ferror (stdin))
             error (EXIT_FAILURE, errno, _("%s: read error"), quotef (file));
-          break;
+          ఆపు;
         }
 
       affirm (len != 0);
 
-      k = search_item (root, tokenbuffer.buffer);
-      if (j)
+      k = శోధన_అంశం (మూలం, tokenbuffer.బఫరు);
+      ఒకవేళ (j)
         {
           /* T3. Record the relation.  */
-          record_relation (j, k);
-          k = NULL;
+          రికార్డు_సంబంధం (j, k);
+          k = ఖాళీ;
         }
 
       j = k;
     }
 
-  if (k != NULL)
+  ఒకవేళ (k != ఖాళీ)
     error (EXIT_FAILURE, 0, _("%s: input contains an odd number of tokens"),
            quotef (file));
 
   /* T1. Initialize (N <- n).  */
-  walk_tree (root, count_items);
+  walk_వృక్షం (మూలం, లెక్క_వస్తువులు);
 
-  while (n_strings > 0)
+  అయితే (n_అక్షరశ్రేణులు > 0)
     {
       /* T4. Scan for zeros.  */
-      walk_tree (root, scan_zeros);
+      walk_వృక్షం (మూలం, పరిశీలన_zeros);
 
-      while (head)
+      అయితే (తల)
         {
-          struct successor *p = head->top;
+          నిర్మాణం successor *p = తల->శిఖరం;
 
           /* T5. Output front of queue.  */
-          puts (head->str);
-          head->printed = true;
-          n_strings--;
+          puts (తల->str);
+          తల->printed = true;
+          n_అక్షరశ్రేణులు--;
 
           /* T6. Erase relations.  */
-          while (p)
+          అయితే (p)
             {
-              p->suc->count--;
-              if (p->suc->count == 0)
+              p->suc->లెక్క--;
+              ఒకవేళ (p->suc->లెక్క == 0)
                 {
                   zeros->qlink = p->suc;
                   zeros = p->suc;
                 }
 
-              p = p->next;
+              p = p->తదుపరి;
             }
 
           /* T7. Remove from queue.  */
-          head = head->qlink;
+          తల = తల->qlink;
         }
 
       /* T8.  End of process.  */
-      if (n_strings > 0)
+      ఒకవేళ (n_అక్షరశ్రేణులు > 0)
         {
           /* The input contains a loop.  */
           error (0, 0, _("%s: input contains a loop:"), quotef (file));
           ok = false;
 
           /* Print the loop and remove a relation to break it.  */
-          do
-            walk_tree (root, detect_loop);
-          while (loop);
+          చేయి
+            walk_వృక్షం (మూలం, detect_loop);
+          అయితే (loop);
         }
     }
 
-  if (fclose (stdin) != 0)
+  ఒకవేళ (fclose (stdin) != 0)
     error (EXIT_FAILURE, errno, "%s",
            is_stdin ? _("standard input") : quotef (file));
 
-  exit (ok ? EXIT_SUCCESS : EXIT_FAILURE);
+  నిష్క్రమించు (ok ? EXIT_SUCCESS : EXIT_FAILURE);
 }
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while (true)
+  అయితే (true)
     {
-      static struct option const long_options[] =
+      స్థిర నిర్మాణం option స్థిరరాశి long_options[] =
         {
           {GETOPT_HELP_OPTION_DECL},
-          {GETOPT_VERSION_OPTION_DECL},
-          {NULL, 0, NULL, 0}
+          {GETOPT_సంస్కరణ_OPTION_DECL},
+          {ఖాళీ, 0, ఖాళీ, 0}
         };
-      int c = getopt_long (argc, argv, "w", long_options, NULL);
+      పూర్ణాంకం c = getopt_long (argc, argv, "w", long_options, ఖాళీ);
 
-      if (c == -1)
-        break;
+      ఒకవేళ (c == -1)
+        ఆపు;
 
-      switch (c)
+      ఎంపిక (c)
         {
-        case 'w':
-          break;
+        స్థితి 'w':
+          ఆపు;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_సంస్కరణ_CHAR (కార్యక్రమం_NAME, AUTHORS);
 
-        default:
+        అప్రమేయ:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (1 < argc - optind)
+  ఒకవేళ (1 < argc - optind)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind + 1]));
       usage (EXIT_FAILURE);

@@ -16,93 +16,93 @@
 
 /* Written by Paul Eggert.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
-#include <signal.h>
+#అన్తర్భావ <config.h>
+#అన్తర్భావ <stdio.h>
+#అన్తర్భావ <getopt.h>
+#అన్తర్భావ <sys/types.h>
+#అన్తర్భావ <signal.h>
 
-#include "system.h"
-#include "c-ctype.h"
-#include "sig2str.h"
-#include "operand2sig.h"
-#include "quote.h"
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "c-ctype.h"
+#అన్తర్భావ "sig2str.h"
+#అన్తర్భావ "operand2sig.h"
+#అన్తర్భావ "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "kill"
+#నిర్వచించు కార్యక్రమం_NAME "kill"
 
-#define AUTHORS proper_name ("Paul Eggert")
+#నిర్వచించు AUTHORS proper_name ("Paul Eggert")
 
-static char const short_options[] =
+స్థిర అక్షరం స్థిరరాశి short_options[] =
   "0::1::2::3::4::5::6::7::8::9::"
   "A::B::C::D::E::F::G::H::I::J::K::M::"
   "N::O::P::Q::R::S::T::U::V::W::X::Y::Z::"
   "Lln:s:t";
 
-static struct option const long_options[] =
+స్థిర నిర్మాణం option స్థిరరాశి long_options[] =
 {
-  {"list", no_argument, NULL, 'l'},
-  {"signal", required_argument, NULL, 's'},
-  {"table", no_argument, NULL, 't'},
+  {"list", no_వాదం, ఖాళీ, 'l'},
+  {"signal", required_వాదం, ఖాళీ, 's'},
+  {"table", no_వాదం, ఖాళీ, 't'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_సంస్కరణ_OPTION_DECL},
+  {ఖాళీ, 0, ఖాళీ, 0}
 };
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("\
+      రాయి (_("\
 Usage: %s [-s SIGNAL | -SIGNAL] PID...\n\
   or:  %s -l [SIGNAL]...\n\
   or:  %s -t [SIGNAL]...\n\
 "),
-              program_name, program_name, program_name);
+              కార్యక్రమం_name, కార్యక్రమం_name, కార్యక్రమం_name);
       fputs (_("\
-Send signals to processes, or list signals.\n\
+Send సంకేతాలు గమ్యం processes, or list సంకేతాలు.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -s, --signal=SIGNAL, -SIGNAL\n\
-         specify the name or number of the signal to be sent\n\
+  -s, --సంకేతం=SIGNAL, -SIGNAL\n\
+         specify the name or సంఖ్య యొక్క the సంకేతం గమ్యం be పంపిన\n\
 "));
       oputs (_("\
   -l, --list\n\
-         list signal names, or convert signal names to/from numbers\n\
+         list సంకేతం పేర్లు, or convert సంకేతం పేర్లు గమ్యం/from numbers\n\
 "));
       oputs (_("\
-  -t, --table\n\
-         print a table of signal information\n\
+  -t, --పట్టిక\n\
+         print a పట్టిక యొక్క సంకేతం information\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
       fputs (_("\n\
-SIGNAL may be a signal name like 'HUP', or a signal number like '1',\n\
-or the exit status of a process terminated by a signal.\n\
-PID is an integer; if negative it identifies a process group.\n\
+SIGNAL may be a సంకేతం name like 'HUP', or a సంకేతం సంఖ్య like '1',\n\
+or the నిష్క్రమించు స్థితి_2 యొక్క a process terminated by a సంకేతం.\n\
+PID is an integer; ఒకవేళ negative it identifies a process సమూహం.\n\
 "), stdout);
-      printf (USAGE_BUILTIN_WARNING, PROGRAM_NAME);
-      emit_ancillary_info (PROGRAM_NAME);
+      రాయి (USAGE_BUILTIN_WARNING, కార్యక్రమం_NAME);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
 /* Print a row of 'kill -t' output.  NUM_WIDTH is the maximum signal
    number width, and SIGNUM is the signal number to print.  The
    maximum name width is NAME_WIDTH, and SIGNAME is the name to print.  */
 
-static void
-print_table_row (int num_width, int signum,
-                 int name_width, char const *signame)
+స్థిర శూన్య
+print_పట్టిక_అడ్డువరుస (పూర్ణాంకం అంకె_వెడల్పు, పూర్ణాంకం signum,
+                 పూర్ణాంకం name_వెడల్పు, అక్షరం స్థిరరాశి *signame)
 {
-  char const *description = strsignal (signum);
-  printf ("%*d %-*s %s\n", num_width, signum, name_width, signame,
+  అక్షరం స్థిరరాశి *description = strsignal (signum);
+  రాయి ("%*d %-*s %s\n", అంకె_వెడల్పు, signum, name_వెడల్పు, signame,
           description ? description : "?");
 }
 
@@ -110,201 +110,201 @@ print_table_row (int num_width, int signum,
    Print the names specified by ARGV if nonzero; otherwise,
    print all known names.  Return a suitable exit status.  */
 
-static int
-list_signals (bool table, char *const *argv)
+స్థిర పూర్ణాంకం
+list_సంకేతాలు (bool పట్టిక, అక్షరం *స్థిరరాశి *argv)
 {
-  int status = EXIT_SUCCESS;
-  char signame[SIG2STR_MAX];
+  పూర్ణాంకం స్థితి_2 = EXIT_SUCCESS;
+  అక్షరం signame[SIG2STR_MAX];
 
-  if (table)
+  ఒకవేళ (పట్టిక)
     {
-      int name_width = 0;
+      పూర్ణాంకం name_వెడల్పు = 0;
 
       /* Compute the maximum width of a signal number.  */
-      int num_width = 1;
-      for (int signum = 1; signum <= SIGNUM_BOUND / 10; signum *= 10)
-        num_width++;
+      పూర్ణాంకం అంకె_వెడల్పు = 1;
+      కొరకు (పూర్ణాంకం signum = 1; signum <= SIGNUM_BOUND / 10; signum *= 10)
+        అంకె_వెడల్పు++;
 
       /* Compute the maximum width of a signal name.  */
-      for (int signum = 0; signum <= SIGNUM_BOUND; signum++)
-        if (sig2str (signum, signame) == 0)
+      కొరకు (పూర్ణాంకం signum = 0; signum <= SIGNUM_BOUND; signum++)
+        ఒకవేళ (sig2str (signum, signame) == 0)
           {
-            idx_t len = strlen (signame);
-            if (name_width < len)
-              name_width = len;
+            idx_t len = అక్షరశ్రేణి_పొడవు (signame);
+            ఒకవేళ (name_వెడల్పు < len)
+              name_వెడల్పు = len;
           }
 
-      if (argv)
-        for (; *argv; argv++)
+      ఒకవేళ (argv)
+        కొరకు (; *argv; argv++)
           {
-            int signum = operand2sig (*argv);
-            if (signum < 0)
-              status = EXIT_FAILURE;
-            else
+            పూర్ణాంకం signum = operand2sig (*argv);
+            ఒకవేళ (signum < 0)
+              స్థితి_2 = EXIT_FAILURE;
+            లేకపోతే
               {
-                if (sig2str (signum, signame) != 0)
-                  snprintf (signame, sizeof signame, "SIG%d", signum);
-                print_table_row (num_width, signum, name_width, signame);
+                ఒకవేళ (sig2str (signum, signame) != 0)
+                  snprintf (signame, పరిమాణం signame, "SIG%d", signum);
+                print_పట్టిక_అడ్డువరుస (అంకె_వెడల్పు, signum, name_వెడల్పు, signame);
               }
           }
-      else
-        for (int signum = 0; signum <= SIGNUM_BOUND; signum++)
-          if (sig2str (signum, signame) == 0)
-            print_table_row (num_width, signum, name_width, signame);
+      లేకపోతే
+        కొరకు (పూర్ణాంకం signum = 0; signum <= SIGNUM_BOUND; signum++)
+          ఒకవేళ (sig2str (signum, signame) == 0)
+            print_పట్టిక_అడ్డువరుస (అంకె_వెడల్పు, signum, name_వెడల్పు, signame);
     }
-  else
+  లేకపోతే
     {
-      if (argv)
-        for (; *argv; argv++)
+      ఒకవేళ (argv)
+        కొరకు (; *argv; argv++)
           {
-            int signum = operand2sig (*argv);
-            if (signum < 0)
-              status = EXIT_FAILURE;
-            else if (c_isdigit (**argv))
+            పూర్ణాంకం signum = operand2sig (*argv);
+            ఒకవేళ (signum < 0)
+              స్థితి_2 = EXIT_FAILURE;
+            లేకపోతే ఒకవేళ (c_isdigit (**argv))
               {
-                if (sig2str (signum, signame) == 0)
+                ఒకవేళ (sig2str (signum, signame) == 0)
                   puts (signame);
-                else
-                  printf ("%d\n", signum);
+                లేకపోతే
+                  రాయి ("%d\n", signum);
               }
-            else
-              printf ("%d\n", signum);
+            లేకపోతే
+              రాయి ("%d\n", signum);
           }
-      else
-        for (int signum = 0; signum <= SIGNUM_BOUND; signum++)
-          if (sig2str (signum, signame) == 0)
+      లేకపోతే
+        కొరకు (పూర్ణాంకం signum = 0; signum <= SIGNUM_BOUND; signum++)
+          ఒకవేళ (sig2str (signum, signame) == 0)
             puts (signame);
     }
 
-  return status;
+  తిరిగి స్థితి_2;
 }
 
 /* Send signal SIGNUM to all the processes or process groups specified
    by ARGV.  Return a suitable exit status.  */
 
-static int
-send_signals (int signum, char *const *argv)
+స్థిర పూర్ణాంకం
+send_సంకేతాలు (పూర్ణాంకం signum, అక్షరం *స్థిరరాశి *argv)
 {
-  int status = EXIT_SUCCESS;
-  char const *arg = *argv;
+  పూర్ణాంకం స్థితి_2 = EXIT_SUCCESS;
+  అక్షరం స్థిరరాశి *arg = *argv;
 
-  do
+  చేయి
     {
-      char *endp;
+      అక్షరం *endp;
       intmax_t n = (errno = 0, strtoimax (arg, &endp, 10));
       pid_t pid;
 
-      if (errno == ERANGE || ckd_add (&pid, n, 0)
+      ఒకవేళ (errno == ERANGE || ckd_కూడు (&pid, n, 0)
           || arg == endp || *endp)
         {
           error (0, 0, _("%s: invalid process id"), quote (arg));
-          status = EXIT_FAILURE;
+          స్థితి_2 = EXIT_FAILURE;
         }
-      else if (kill (pid, signum) != 0)
+      లేకపోతే ఒకవేళ (kill (pid, signum) != 0)
         {
-          if (errno == EINVAL)
+          ఒకవేళ (errno == EINVAL)
             error (0, errno, "%d", signum);
-          else
+          లేకపోతే
             error (0, errno, "%s", quote (arg));
-          status = EXIT_FAILURE;
+          స్థితి_2 = EXIT_FAILURE;
         }
     }
-  while ((arg = *++argv));
+  అయితే ((arg = *++argv));
 
-  return status;
+  తిరిగి స్థితి_2;
 }
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
-  int optc;
+  పూర్ణాంకం optc;
   bool list = false;
-  bool table = false;
-  int signum = -1;
+  bool పట్టిక = false;
+  పూర్ణాంకం signum = -1;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, short_options, long_options, NULL))
+  అయితే ((optc = getopt_long (argc, argv, short_options, long_options, ఖాళీ))
          != -1)
-    switch (optc)
+    ఎంపిక (optc)
       {
-      case '0': case '1': case '2': case '3': case '4':
-      case '5': case '6': case '7': case '8': case '9':
-        if (optind != 2)
+      స్థితి '0': స్థితి '1': స్థితి '2': స్థితి '3': స్థితి '4':
+      స్థితి '5': స్థితి '6': స్థితి '7': స్థితి '8': స్థితి '9':
+        ఒకవేళ (optind != 2)
           {
             /* This option is actually a process-id.  */
             optind--;
-            goto no_more_options;
+            వెళ్ళు no_మరిన్ని_options;
           }
         FALLTHROUGH;
-      case 'A': case 'B': case 'C': case 'D': case 'E':
-      case 'F': case 'G': case 'H': case 'I': case 'J':
-      case 'K': /*case 'L':*/ case 'M': case 'N': case 'O':
-      case 'P': case 'Q': case 'R': case 'S': case 'T':
-      case 'U': case 'V': case 'W': case 'X': case 'Y':
-      case 'Z':
-        if (! optarg)
-          optarg = argv[optind - 1] + strlen (argv[optind - 1]);
-        if (optarg != argv[optind - 1] + 2)
+      స్థితి 'A': స్థితి 'B': స్థితి 'C': స్థితి 'D': స్థితి 'E':
+      స్థితి 'F': స్థితి 'G': స్థితి 'H': స్థితి 'I': స్థితి 'J':
+      స్థితి 'K': /*case 'L':*/ స్థితి 'M': స్థితి 'N': స్థితి 'O':
+      స్థితి 'P': స్థితి 'Q': స్థితి 'R': స్థితి 'S': స్థితి 'T':
+      స్థితి 'U': స్థితి 'V': స్థితి 'W': స్థితి 'X': స్థితి 'Y':
+      స్థితి 'Z':
+        ఒకవేళ (! optarg)
+          optarg = argv[optind - 1] + అక్షరశ్రేణి_పొడవు (argv[optind - 1]);
+        ఒకవేళ (optarg != argv[optind - 1] + 2)
           {
             error (0, 0, _("invalid option -- %c"), optc);
             usage (EXIT_FAILURE);
           }
         optarg--;
         FALLTHROUGH;
-      case 'n': /* -n is not documented, but is for Bash compatibility.  */
-      case 's':
-        if (0 <= signum)
+      స్థితి 'n': /* -n is not documented, but is for Bash compatibility.  */
+      స్థితి 's':
+        ఒకవేళ (0 <= signum)
           {
             error (0, 0, _("%s: multiple signals specified"), quote (optarg));
             usage (EXIT_FAILURE);
           }
         signum = operand2sig (optarg);
-        if (signum < 0)
+        ఒకవేళ (signum < 0)
           usage (EXIT_FAILURE);
-        break;
+        ఆపు;
 
-      case 'L': /* -L is not documented, but is for procps compatibility.  */
-      case 't':
-        table = true;
+      స్థితి 'L': /* -L is not documented, but is for procps compatibility.  */
+      స్థితి 't':
+        పట్టిక = true;
         FALLTHROUGH;
-      case 'l':
-        if (list)
+      స్థితి 'l':
+        ఒకవేళ (list)
           {
             error (0, 0, _("multiple -l or -t options specified"));
             usage (EXIT_FAILURE);
           }
         list = true;
-        break;
+        ఆపు;
 
       case_GETOPT_HELP_CHAR;
-      case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-      default:
+      case_GETOPT_సంస్కరణ_CHAR (కార్యక్రమం_NAME, AUTHORS);
+      అప్రమేయ:
         usage (EXIT_FAILURE);
       }
- no_more_options:
+ no_మరిన్ని_options:
 
-  if (signum < 0)
+  ఒకవేళ (signum < 0)
     signum = SIGTERM;
-  else if (list)
+  లేకపోతే ఒకవేళ (list)
     {
       error (0, 0, _("cannot combine signal with -l or -t"));
       usage (EXIT_FAILURE);
     }
 
-  if ( ! list && argc <= optind)
+  ఒకవేళ ( ! list && argc <= optind)
     {
       error (0, 0, _("no process ID specified"));
       usage (EXIT_FAILURE);
     }
 
-  return (list
-          ? list_signals (table, optind < argc ? argv + optind : NULL)
-          : send_signals (signum, argv + optind));
+  తిరిగి (list
+          ? list_సంకేతాలు (పట్టిక, optind < argc ? argv + optind : ఖాళీ)
+          : send_సంకేతాలు (signum, argv + optind));
 }

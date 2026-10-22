@@ -17,26 +17,26 @@
 /* Written by Scott Bartram (nancy!scott@uunet.uu.net)
    Revised by David MacKenzie (djm@gnu.ai.mit.edu) */
 
-#include <config.h>
+#అన్తర్భావ <config.h>
 
-#include <stdio.h>
-#include <sys/types.h>
-#include <getopt.h>
+#అన్తర్భావ <stdio.h>
+#అన్తర్భావ <sys/types.h>
+#అన్తర్భావ <getopt.h>
 
-#include "system.h"
+#అన్తర్భావ "system.h"
 
-#include <regex.h>
+#అన్తర్భావ <regex.h>
 
-#include "fadvise.h"
-#include "linebuffer.h"
-#include "mcel.h"
-#include "quote.h"
-#include "xdectoint.h"
+#అన్తర్భావ "fadvise.h"
+#అన్తర్భావ "linebuffer.h"
+#అన్తర్భావ "mcel.h"
+#అన్తర్భావ "quote.h"
+#అన్తర్భావ "xdectoint.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "nl"
+#నిర్వచించు కార్యక్రమం_NAME "nl"
 
-#define AUTHORS \
+#నిర్వచించు AUTHORS \
   proper_name ("Scott Bartram"), \
   proper_name ("David MacKenzie")
 
@@ -44,409 +44,409 @@
    value, and a string separator.  */
 
 /* Right justified, no leading zeroes.  */
-static char const FORMAT_RIGHT_NOLZ[] = "%*jd%s";
+స్థిర అక్షరం స్థిరరాశి FORMAT_కుడి_NOLZ[] = "%*jd%s";
 
 /* Right justified, leading zeroes.  */
-static char const FORMAT_RIGHT_LZ[] = "%0*jd%s";
+స్థిర అక్షరం స్థిరరాశి FORMAT_కుడి_LZ[] = "%0*jd%s";
 
 /* Left justified, no leading zeroes.  */
-static char const FORMAT_LEFT[] = "%-*jd%s";
+స్థిర అక్షరం స్థిరరాశి FORMAT_ఎడమ[] = "%-*jd%s";
 
 /* Default section delimiter characters.  */
-static char DEFAULT_SECTION_DELIMITERS[MCEL_LEN_MAX * 2 + 1] = "\\:";
+స్థిర అక్షరం DEFAULT_SECTION_DELIMITERS[MCEL_LEN_MAX * 2 + 1] = "\\:";
 
 /* Types of input lines: either one of the section delimiters,
    or text to output. */
-enum section
+గణన section
 {
-  Header, Body, Footer, Text
+  శీర్షిక_2, Body, Footer, పాఠ్యం_2
 };
 
 /* Format of body lines (-b).  */
-static char const *body_type = "t";
+స్థిర అక్షరం స్థిరరాశి *body_type = "t";
 
 /* Format of header lines (-h).  */
-static char const *header_type = "n";
+స్థిర అక్షరం స్థిరరాశి *శీర్షిక_type = "n";
 
 /* Format of footer lines (-f).  */
-static char const *footer_type = "n";
+స్థిర అక్షరం స్థిరరాశి *footer_type = "n";
 
 /* Format currently being used (body, header, or footer).  */
-static char const *current_type;
+స్థిర అక్షరం స్థిరరాశి *current_type;
 
 /* Regex for body lines to number (-bp).  */
-static struct re_pattern_buffer body_regex;
+స్థిర నిర్మాణం re_నమూనా_బఫరు body_regex;
 
 /* Regex for header lines to number (-hp).  */
-static struct re_pattern_buffer header_regex;
+స్థిర నిర్మాణం re_నమూనా_బఫరు శీర్షిక_regex;
 
 /* Regex for footer lines to number (-fp).  */
-static struct re_pattern_buffer footer_regex;
+స్థిర నిర్మాణం re_నమూనా_బఫరు footer_regex;
 
 /* Fastmaps for the above.  */
-static char body_fastmap[UCHAR_MAX + 1];
-static char header_fastmap[UCHAR_MAX + 1];
-static char footer_fastmap[UCHAR_MAX + 1];
+స్థిర అక్షరం body_fastmap[UCHAR_MAX + 1];
+స్థిర అక్షరం శీర్షిక_fastmap[UCHAR_MAX + 1];
+స్థిర అక్షరం footer_fastmap[UCHAR_MAX + 1];
 
 /* Pointer to current regex, if any.  */
-static struct re_pattern_buffer *current_regex = NULL;
+స్థిర నిర్మాణం re_నమూనా_బఫరు *current_regex = ఖాళీ;
 
 /* Separator string to print after line number (-s).  */
-static char const *separator_str = "\t";
+స్థిర అక్షరం స్థిరరాశి *separator_str = "\t";
 
 /* Input section delimiter string (-d).  */
-static char *section_del = DEFAULT_SECTION_DELIMITERS;
+స్థిర అక్షరం *section_del = DEFAULT_SECTION_DELIMITERS;
 
 /* Input section delimiter length.  */
-static size_t section_del_len;
+స్థిర size_t section_del_len;
 
 /* Header delimiter string.  */
-static char *header_del = NULL;
+స్థిర అక్షరం *శీర్షిక_del = ఖాళీ;
 
 /* Header section delimiter length.  */
-static size_t header_del_len;
+స్థిర size_t శీర్షిక_del_len;
 
 /* Body delimiter string.  */
-static char *body_del = NULL;
+స్థిర అక్షరం *body_del = ఖాళీ;
 
 /* Body section delimiter length.  */
-static size_t body_del_len;
+స్థిర size_t body_del_len;
 
 /* Footer delimiter string.  */
-static char *footer_del = NULL;
+స్థిర అక్షరం *footer_del = ఖాళీ;
 
 /* Footer section delimiter length.  */
-static size_t footer_del_len;
+స్థిర size_t footer_del_len;
 
 /* Input buffer.  */
-static struct linebuffer line_buf;
+స్థిర నిర్మాణం linebuffer పంక్తి_buf;
 
 /* printf format string for unnumbered lines.  */
-static char *print_no_line_fmt = NULL;
+స్థిర అక్షరం *print_no_పంక్తి_fmt = ఖాళీ;
 
 /* Starting line number on each page (-v).  */
-static intmax_t starting_line_number = 1;
+స్థిర intmax_t starting_పంక్తి_సంఖ్య = 1;
 
 /* Line number increment (-i).  */
-static intmax_t page_incr = 1;
+స్థిర intmax_t పుట_incr = 1;
 
 /* If true, reset line number at start of each page (-p).  */
-static bool reset_numbers = true;
+స్థిర bool reset_numbers = true;
 
 /* Number of blank lines to consider to be one line for numbering (-l).  */
-static intmax_t blank_join = 1;
+స్థిర intmax_t blank_join = 1;
 
 /* Width of line numbers (-w).  */
-static int lineno_width = 6;
+స్థిర పూర్ణాంకం lineno_వెడల్పు = 6;
 
 /* Line number format (-n).  */
-static char const *lineno_format = FORMAT_RIGHT_NOLZ;
+స్థిర అక్షరం స్థిరరాశి *lineno_format = FORMAT_కుడి_NOLZ;
 
 /* Current print line number.  */
-static intmax_t line_no;
+స్థిర intmax_t పంక్తి_no;
 
 /* Whether the current line number has incremented past limits.  */
-static bool line_no_overflow;
+స్థిర bool పంక్తి_no_అధికప్రవాహం;
 
 /* True if we have ever read standard input.  */
-static bool have_read_stdin;
+స్థిర bool have_read_stdin;
 
-static struct option const longopts[] =
+స్థిర నిర్మాణం option స్థిరరాశి longopts[] =
 {
-  {"header-numbering", required_argument, NULL, 'h'},
-  {"body-numbering", required_argument, NULL, 'b'},
-  {"footer-numbering", required_argument, NULL, 'f'},
-  {"starting-line-number", required_argument, NULL, 'v'},
-  {"line-increment", required_argument, NULL, 'i'},
-  {"no-renumber", no_argument, NULL, 'p'},
-  {"join-blank-lines", required_argument, NULL, 'l'},
-  {"number-separator", required_argument, NULL, 's'},
-  {"number-width", required_argument, NULL, 'w'},
-  {"number-format", required_argument, NULL, 'n'},
-  {"section-delimiter", required_argument, NULL, 'd'},
+  {"header-numbering", required_వాదం, ఖాళీ, 'h'},
+  {"body-numbering", required_వాదం, ఖాళీ, 'b'},
+  {"footer-numbering", required_వాదం, ఖాళీ, 'f'},
+  {"starting-line-number", required_వాదం, ఖాళీ, 'v'},
+  {"line-increment", required_వాదం, ఖాళీ, 'i'},
+  {"no-renumber", no_వాదం, ఖాళీ, 'p'},
+  {"join-blank-lines", required_వాదం, ఖాళీ, 'l'},
+  {"number-separator", required_వాదం, ఖాళీ, 's'},
+  {"number-width", required_వాదం, ఖాళీ, 'w'},
+  {"number-format", required_వాదం, ఖాళీ, 'n'},
+  {"section-delimiter", required_వాదం, ఖాళీ, 'd'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_సంస్కరణ_OPTION_DECL},
+  {ఖాళీ, 0, ఖాళీ, 0}
 };
 
 /* Print a usage message and quit. */
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("\
+      రాయి (_("\
 Usage: %s [OPTION]... [FILE]...\n\
 "),
-              program_name);
+              కార్యక్రమం_name);
       fputs (_("\
-Write each FILE to standard output, with line numbers added.\n\
+Write each FILE గమ్యం standard output, with పంక్తి numbers added.\n\
 "), stdout);
 
       emit_stdin_note ();
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -b, --body-numbering=STYLE      use STYLE for numbering body lines\n\
+  -b, --body-numbering=STYLE      use STYLE కొరకు numbering body పంక్తులు\n\
 "));
       oputs (_("\
-  -d, --section-delimiter=CC      use CC for logical page delimiters\n\
+  -d, --section-delimiter=CC      use CC కొరకు logical పుట delimiters\n\
 "));
       oputs (_("\
-  -f, --footer-numbering=STYLE    use STYLE for numbering footer lines\n\
+  -f, --footer-numbering=STYLE    use STYLE కొరకు numbering footer పంక్తులు\n\
 "));
       oputs (_("\
-  -h, --header-numbering=STYLE    use STYLE for numbering header lines\n\
+  -h, --శీర్షిక-numbering=STYLE    use STYLE కొరకు numbering శీర్షిక పంక్తులు\n\
 "));
       oputs (_("\
-  -i, --line-increment=NUMBER     line number increment at each line\n\
+  -i, --పంక్తి-increment=సంఖ్య_2     పంక్తి సంఖ్య increment at each పంక్తి\n\
 "));
       oputs (_("\
-  -l, --join-blank-lines=NUMBER   group of NUMBER empty lines counted as one\n\
+  -l, --join-blank-పంక్తులు=సంఖ్య_2   సమూహం యొక్క సంఖ్య_2 ఖాళీలు పంక్తులు counted as one\n\
 "));
       oputs (_("\
-  -n, --number-format=FORMAT      insert line numbers according to FORMAT\n\
+  -n, --సంఖ్య-format=FORMAT      చొప్పించు పంక్తి numbers according గమ్యం FORMAT\n\
 "));
       oputs (_("\
-  -p, --no-renumber               do not reset line numbers for each section\n\
+  -p, --no-renumber               చేయి not reset పంక్తి numbers కొరకు each section\n\
 "));
       oputs (_("\
-  -s, --number-separator=STRING   add STRING after (possible) line number\n\
+  -s, --సంఖ్య-separator=STRING   కూడు STRING after (possible) పంక్తి సంఖ్య\n\
 "));
       oputs (_("\
-  -v, --starting-line-number=NUMBER  first line number for each section\n\
+  -v, --starting-పంక్తి-సంఖ్య=సంఖ్య_2  మొదటి పంక్తి సంఖ్య కొరకు each section\n\
 "));
       oputs (_("\
-  -w, --number-width=NUMBER       use NUMBER columns for line numbers\n\
+  -w, --సంఖ్య-వెడల్పు=సంఖ్య_2       use సంఖ్య_2 columns కొరకు పంక్తి numbers\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
 Default options are: -bt -d'\\:' -fn -hn -i1 -l1 -n'rn' -s<TAB> -v1 -w6\n\
 \n\
-CC are two delimiter characters used to construct logical page delimiters;\n\
-a missing second character implies ':'.  As a GNU extension one can specify\n\
-more than two characters, and also specifying the empty string (-d '')\n\
+CC are two delimiter characters వాడిన గమ్యం construct logical పుట delimiters;\n\
+a missing రెండవ character సూచిస్తుంది ':'.  As a GNU extension one can specify\n\
+మరిన్ని than two characters, and also specifying the ఖాళీలు string (-d '')\n\
 disables section matching.\n\
 "), stdout);
       fputs (_("\
 \n\
-STYLE is one of:\n\
+STYLE is one యొక్క:\n\
 \n\
-  a      number all lines\n\
-  t      number only nonempty lines\n\
-  n      number no lines\n\
-  pBRE   number only lines that contain a match for the basic regular\n\
-         expression, BRE\n\
+  a      సంఖ్య all పంక్తులు\n\
+  t      సంఖ్య only nonempty పంక్తులు\n\
+  n      సంఖ్య no పంక్తులు\n\
+  pBRE   సంఖ్య only పంక్తులు that contain a సరిపోలిక కొరకు the basic regular\n\
+         వ్యక్తీకరణ_2, BRE\n\
 "), stdout);
       fputs (_("\
 \n\
-FORMAT is one of:\n\
+FORMAT is one యొక్క:\n\
 \n\
-  ln     left justified, no leading zeros\n\
-  rn     right justified, no leading zeros\n\
-  rz     right justified, leading zeros\n\
+  ln     ఎడమ justified, no leading zeros\n\
+  rn     కుడి justified, no leading zeros\n\
+  rz     కుడి justified, leading zeros\n\
 \n\
 "), stdout);
-      emit_ancillary_info (PROGRAM_NAME);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
 /* Set the command line flag TYPEP and possibly the regex pointer REGEXP,
    according to 'optarg'.  */
 
-static bool
-build_type_arg (char const **typep,
-                struct re_pattern_buffer *regexp, char *fastmap)
+స్థిర bool
+build_type_arg (అక్షరం స్థిరరాశి **typep,
+                నిర్మాణం re_నమూనా_బఫరు *regexp, అక్షరం *fastmap)
 {
-  char const *errmsg;
+  అక్షరం స్థిరరాశి *errmsg;
   bool rval = true;
 
-  switch (*optarg)
+  ఎంపిక (*optarg)
     {
-    case 'a':
-    case 't':
-    case 'n':
+    స్థితి 'a':
+    స్థితి 't':
+    స్థితి 'n':
       *typep = optarg;
-      break;
-    case 'p':
+      ఆపు;
+    స్థితి 'p':
       *typep = optarg++;
-      regexp->buffer = NULL;
+      regexp->బఫరు = ఖాళీ;
       regexp->allocated = 0;
       regexp->fastmap = fastmap;
-      regexp->translate = NULL;
+      regexp->translate = ఖాళీ;
       re_syntax_options =
-        RE_SYNTAX_POSIX_BASIC & ~RE_CONTEXT_INVALID_DUP & ~RE_NO_EMPTY_RANGES;
-      errmsg = re_compile_pattern (optarg, strlen (optarg), regexp);
-      if (errmsg)
+        RE_SYNTAX_POSIX_BASIC & ~RE_CONTEXT_INVALID_DUP & ~RE_NO_ఖాళీలు_RANGES;
+      errmsg = re_compile_నమూనా (optarg, అక్షరశ్రేణి_పొడవు (optarg), regexp);
+      ఒకవేళ (errmsg)
         error (EXIT_FAILURE, 0, "%s", (errmsg));
-      break;
-    default:
+      ఆపు;
+    అప్రమేయ:
       rval = false;
-      break;
+      ఆపు;
     }
-  return rval;
+  తిరిగి rval;
 }
 
 /* Print the line number and separator; increment the line number. */
 
-static void
-print_lineno (void)
+స్థిర శూన్య
+print_lineno (శూన్య)
 {
-  if (line_no_overflow)
+  ఒకవేళ (పంక్తి_no_అధికప్రవాహం)
     error (EXIT_FAILURE, 0, _("line number overflow"));
 
-  printf (lineno_format, lineno_width, line_no, separator_str);
+  రాయి (lineno_format, lineno_వెడల్పు, పంక్తి_no, separator_str);
 
-  if (ckd_add (&line_no, line_no, page_incr))
-    line_no_overflow = true;
+  ఒకవేళ (ckd_కూడు (&పంక్తి_no, పంక్తి_no, పుట_incr))
+    పంక్తి_no_అధికప్రవాహం = true;
 }
 
-static void
-reset_lineno (void)
+స్థిర శూన్య
+reset_lineno (శూన్య)
 {
-  if (reset_numbers)
+  ఒకవేళ (reset_numbers)
     {
-      line_no = starting_line_number;
-      line_no_overflow = false;
+      పంక్తి_no = starting_పంక్తి_సంఖ్య;
+      పంక్తి_no_అధికప్రవాహం = false;
     }
 }
 
 /* Switch to a header section. */
 
-static void
-proc_header (void)
+స్థిర శూన్య
+proc_శీర్షిక (శూన్య)
 {
-  current_type = header_type;
-  current_regex = &header_regex;
+  current_type = శీర్షిక_type;
+  current_regex = &శీర్షిక_regex;
   reset_lineno ();
-  putchar ('\n');
+  అక్షరం_రాయి ('\n');
 }
 
 /* Switch to a body section. */
 
-static void
-proc_body (void)
+స్థిర శూన్య
+proc_body (శూన్య)
 {
   current_type = body_type;
   current_regex = &body_regex;
   reset_lineno ();
-  putchar ('\n');
+  అక్షరం_రాయి ('\n');
 }
 
 /* Switch to a footer section. */
 
-static void
-proc_footer (void)
+స్థిర శూన్య
+proc_footer (శూన్య)
 {
   current_type = footer_type;
   current_regex = &footer_regex;
   reset_lineno ();
-  putchar ('\n');
+  అక్షరం_రాయి ('\n');
 }
 
 /* Process a regular text line in 'line_buf'. */
 
-static void
-proc_text (void)
+స్థిర శూన్య
+proc_పాఠ్యం (శూన్య)
 {
-  static intmax_t blank_lines = 0;	/* Consecutive blank lines so far. */
+  స్థిర intmax_t blank_పంక్తులు = 0;	/* Consecutive blank lines so far. */
 
-  switch (*current_type)
+  ఎంపిక (*current_type)
     {
-    case 'a':
-      if (blank_join > 1)
+    స్థితి 'a':
+      ఒకవేళ (blank_join > 1)
         {
-          if (1 < line_buf.length || ++blank_lines == blank_join)
+          ఒకవేళ (1 < పంక్తి_buf.నిడివి || ++blank_పంక్తులు == blank_join)
             {
               print_lineno ();
-              blank_lines = 0;
+              blank_పంక్తులు = 0;
             }
-          else
-            fputs (print_no_line_fmt, stdout);
+          లేకపోతే
+            fputs (print_no_పంక్తి_fmt, stdout);
         }
-      else
+      లేకపోతే
         print_lineno ();
-      break;
-    case 't':
-      if (1 < line_buf.length)
+      ఆపు;
+    స్థితి 't':
+      ఒకవేళ (1 < పంక్తి_buf.నిడివి)
         print_lineno ();
-      else
-        fputs (print_no_line_fmt, stdout);
-      break;
-    case 'n':
-      fputs (print_no_line_fmt, stdout);
-      break;
-    case 'p':
-      switch (re_search (current_regex, line_buf.buffer, line_buf.length - 1,
-                         0, line_buf.length - 1, NULL))
+      లేకపోతే
+        fputs (print_no_పంక్తి_fmt, stdout);
+      ఆపు;
+    స్థితి 'n':
+      fputs (print_no_పంక్తి_fmt, stdout);
+      ఆపు;
+    స్థితి 'p':
+      ఎంపిక (re_శోధన (current_regex, పంక్తి_buf.బఫరు, పంక్తి_buf.నిడివి - 1,
+                         0, పంక్తి_buf.నిడివి - 1, ఖాళీ))
         {
-        case -2:
+        స్థితి -2:
           error (EXIT_FAILURE, errno, _("error in regular expression search"));
 
-        case -1:
-          fputs (print_no_line_fmt, stdout);
-          break;
+        స్థితి -1:
+          fputs (print_no_పంక్తి_fmt, stdout);
+          ఆపు;
 
-        default:
+        అప్రమేయ:
           print_lineno ();
-          break;
+          ఆపు;
         }
     }
-  fwrite (line_buf.buffer, sizeof (char), line_buf.length, stdout);
+  fwrite (పంక్తి_buf.బఫరు, పరిమాణం (అక్షరం), పంక్తి_buf.నిడివి, stdout);
 }
 
 /* Return the type of line in 'line_buf'. */
 
-static enum section
-check_section (void)
+స్థిర గణన section
+check_section (శూన్య)
 {
-  size_t len = line_buf.length - 1;
+  size_t len = పంక్తి_buf.నిడివి - 1;
 
-  if (len < section_del_len || footer_del_len < section_del_len
-      || !memeq (line_buf.buffer, section_del, section_del_len))
-    return Text;
-  if (len == header_del_len
-      && memeq (line_buf.buffer, header_del, header_del_len))
-    return Header;
-  if (len == body_del_len
-      && memeq (line_buf.buffer, body_del, body_del_len))
-    return Body;
-  if (len == footer_del_len
-      && memeq (line_buf.buffer, footer_del, footer_del_len))
-    return Footer;
-  return Text;
+  ఒకవేళ (len < section_del_len || footer_del_len < section_del_len
+      || !memeq (పంక్తి_buf.బఫరు, section_del, section_del_len))
+    తిరిగి పాఠ్యం_2;
+  ఒకవేళ (len == శీర్షిక_del_len
+      && memeq (పంక్తి_buf.బఫరు, శీర్షిక_del, శీర్షిక_del_len))
+    తిరిగి శీర్షిక_2;
+  ఒకవేళ (len == body_del_len
+      && memeq (పంక్తి_buf.బఫరు, body_del, body_del_len))
+    తిరిగి Body;
+  ఒకవేళ (len == footer_del_len
+      && memeq (పంక్తి_buf.బఫరు, footer_del, footer_del_len))
+    తిరిగి Footer;
+  తిరిగి పాఠ్యం_2;
 }
 
 /* Read and process the file pointed to by FP. */
 
-static void
+స్థిర శూన్య
 process_file (FILE *fp)
 {
-  while (readlinebuffer (&line_buf, fp))
+  అయితే (readlinebuffer (&పంక్తి_buf, fp))
     {
-      switch (check_section ())
+      ఎంపిక (check_section ())
         {
-        case Header:
-          proc_header ();
-          break;
-        case Body:
+        స్థితి శీర్షిక_2:
+          proc_శీర్షిక ();
+          ఆపు;
+        స్థితి Body:
           proc_body ();
-          break;
-        case Footer:
+          ఆపు;
+        స్థితి Footer:
           proc_footer ();
-          break;
-        case Text:
-          proc_text ();
-          break;
+          ఆపు;
+        స్థితి పాఠ్యం_2:
+          proc_పాఠ్యం ();
+          ఆపు;
         }
 
-      if (ferror (stdout))
+      ఒకవేళ (ferror (stdout))
         write_error ();
     }
 }
@@ -454,199 +454,199 @@ process_file (FILE *fp)
 /* Process file FILE to standard output.
    Return true if successful.  */
 
-static bool
-nl_file (char const *file)
+స్థిర bool
+nl_file (అక్షరం స్థిరరాశి *file)
 {
-  FILE *stream;
+  FILE *ప్రవాహం;
 
-  if (streq (file, "-"))
+  ఒకవేళ (streq (file, "-"))
     {
       have_read_stdin = true;
-      stream = stdin;
-      assume (stream);  /* Pacify GCC bug#109613.  */
+      ప్రవాహం = stdin;
+      assume (ప్రవాహం);  /* Pacify GCC bug#109613.  */
     }
-  else
+  లేకపోతే
     {
-      stream = fopen (file, "r");
-      if (stream == NULL)
+      ప్రవాహం = fopen (file, "r");
+      ఒకవేళ (ప్రవాహం == ఖాళీ)
         {
           error (0, errno, "%s", quotef (file));
-          return false;
+          తిరిగి false;
         }
     }
 
-  fadvise (stream, FADVISE_SEQUENTIAL);
+  fadvise (ప్రవాహం, FADVISE_SEQUENTIAL);
 
-  process_file (stream);
+  process_file (ప్రవాహం);
 
-  int err = errno;
-  if (!ferror (stream))
+  పూర్ణాంకం err = errno;
+  ఒకవేళ (!ferror (ప్రవాహం))
     err = 0;
-  if (streq (file, "-"))
-    clearerr (stream);		/* Also clear EOF. */
-  else if (fclose (stream) != 0 && !err)
+  ఒకవేళ (streq (file, "-"))
+    clearerr (ప్రవాహం);		/* Also clear EOF. */
+  లేకపోతే ఒకవేళ (fclose (ప్రవాహం) != 0 && !err)
     err = errno;
-  if (err)
+  ఒకవేళ (err)
     {
       error (0, err, "%s", quotef (file));
-      return false;
+      తిరిగి false;
     }
-  return true;
+  తిరిగి true;
 }
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
-  int c;
+  పూర్ణాంకం c;
   size_t len;
   bool ok = true;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while ((c = getopt_long (argc, argv, "h:b:f:v:i:pl:s:w:n:d:", longopts,
-                           NULL))
+  అయితే ((c = getopt_long (argc, argv, "h:b:f:v:i:pl:s:w:n:d:", longopts,
+                           ఖాళీ))
          != -1)
     {
-      switch (c)
+      ఎంపిక (c)
         {
-        case 'h':
-          if (! build_type_arg (&header_type, &header_regex, header_fastmap))
+        స్థితి 'h':
+          ఒకవేళ (! build_type_arg (&శీర్షిక_type, &శీర్షిక_regex, శీర్షిక_fastmap))
             {
               error (0, 0, _("invalid header numbering style: %s"),
                      quote (optarg));
               ok = false;
             }
-          break;
-        case 'b':
-          if (! build_type_arg (&body_type, &body_regex, body_fastmap))
+          ఆపు;
+        స్థితి 'b':
+          ఒకవేళ (! build_type_arg (&body_type, &body_regex, body_fastmap))
             {
               error (0, 0, _("invalid body numbering style: %s"),
                      quote (optarg));
               ok = false;
             }
-          break;
-        case 'f':
-          if (! build_type_arg (&footer_type, &footer_regex, footer_fastmap))
+          ఆపు;
+        స్థితి 'f':
+          ఒకవేళ (! build_type_arg (&footer_type, &footer_regex, footer_fastmap))
             {
               error (0, 0, _("invalid footer numbering style: %s"),
                      quote (optarg));
               ok = false;
             }
-          break;
-        case 'v':
-          starting_line_number = xdectoimax (optarg, INTMAX_MIN, INTMAX_MAX, "",
+          ఆపు;
+        స్థితి 'v':
+          starting_పంక్తి_సంఖ్య = xdectoimax (optarg, INTMAX_MIN, INTMAX_MAX, "",
                                              _("invalid starting line number"),
                                              0);
-          break;
-        case 'i':
-          page_incr = xdectoimax (optarg, INTMAX_MIN, INTMAX_MAX, "",
+          ఆపు;
+        స్థితి 'i':
+          పుట_incr = xdectoimax (optarg, INTMAX_MIN, INTMAX_MAX, "",
                                   _("invalid line number increment"), 0);
-          break;
-        case 'p':
+          ఆపు;
+        స్థితి 'p':
           reset_numbers = false;
-          break;
-        case 'l':
+          ఆపు;
+        స్థితి 'l':
           blank_join = xnumtoimax (optarg, 10, 1, INTMAX_MAX, "",
                                    _("invalid line number of blank lines"),
                                    0, XTOINT_MIN_RANGE | XTOINT_MAX_QUIET);
-          break;
-        case 's':
+          ఆపు;
+        స్థితి 's':
           separator_str = optarg;
-          break;
-        case 'w':
-          lineno_width = xnumtoimax (optarg, 10, 1, INT_MAX, "",
+          ఆపు;
+        స్థితి 'w':
+          lineno_వెడల్పు = xnumtoimax (optarg, 10, 1, గరిష్ఠ_పూర్ణాంకం, "",
                                      _("invalid line number field width"),
                                      0, XTOINT_MIN_RANGE);
-          break;
-        case 'n':
-          if (streq (optarg, "ln"))
-            lineno_format = FORMAT_LEFT;
-          else if (streq (optarg, "rn"))
-            lineno_format = FORMAT_RIGHT_NOLZ;
-          else if (streq (optarg, "rz"))
-            lineno_format = FORMAT_RIGHT_LZ;
-          else
+          ఆపు;
+        స్థితి 'n':
+          ఒకవేళ (streq (optarg, "ln"))
+            lineno_format = FORMAT_ఎడమ;
+          లేకపోతే ఒకవేళ (streq (optarg, "rn"))
+            lineno_format = FORMAT_కుడి_NOLZ;
+          లేకపోతే ఒకవేళ (streq (optarg, "rz"))
+            lineno_format = FORMAT_కుడి_LZ;
+          లేకపోతే
             {
               error (0, 0, _("invalid line numbering format: %s"),
                      quote (optarg));
               ok = false;
             }
-          break;
-        case 'd':
-          len = strlen (optarg);
-          if (1 < MB_CUR_MAX)
+          ఆపు;
+        స్థితి 'd':
+          len = అక్షరశ్రేణి_పొడవు (optarg);
+          ఒకవేళ (1 < MB_CUR_MAX)
             {
-              char const *p = optarg;
-              char const *lim = p + len;
-              int n_chars = 0;
-              for (; p < lim && n_chars < 2; ++n_chars)
-                  p += mcel_scan (p, lim).len;
-              if (n_chars == 1)
-                memcpy (mempcpy (section_del, optarg, len),  ":", sizeof ":");
-              else
+              అక్షరం స్థిరరాశి *p = optarg;
+              అక్షరం స్థిరరాశి *lim = p + len;
+              పూర్ణాంకం n_chars = 0;
+              కొరకు (; p < lim && n_chars < 2; ++n_chars)
+                  p += mcel_పరిశీలన (p, lim).len;
+              ఒకవేళ (n_chars == 1)
+                జ్ఞాపకం_నకలు (mempcpy (section_del, optarg, len),  ":", పరిమాణం ":");
+              లేకపోతే
                 section_del = optarg;
             }
-          else
+          లేకపోతే
             {
-              if (len == 1)
+              ఒకవేళ (len == 1)
                 *section_del = *optarg;
-              else
+              లేకపోతే
                 section_del = optarg;
             }
-          break;
+          ఆపు;
         case_GETOPT_HELP_CHAR;
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        case_GETOPT_సంస్కరణ_CHAR (కార్యక్రమం_NAME, AUTHORS);
+        అప్రమేయ:
           ok = false;
-          break;
+          ఆపు;
         }
     }
 
-  if (!ok)
+  ఒకవేళ (!ok)
     usage (EXIT_FAILURE);
 
   /* Initialize the section delimiters.  */
-  section_del_len = len = strlen (section_del);
+  section_del_len = len = అక్షరశ్రేణి_పొడవు (section_del);
 
-  header_del_len = len * 3;
-  header_del = xmalloc (header_del_len + 1);
-  stpcpy (stpcpy (stpcpy (header_del, section_del), section_del), section_del);
+  శీర్షిక_del_len = len * 3;
+  శీర్షిక_del = xmalloc (శీర్షిక_del_len + 1);
+  stpcpy (stpcpy (stpcpy (శీర్షిక_del, section_del), section_del), section_del);
 
   body_del_len = len * 2;
-  body_del = header_del + len;
+  body_del = శీర్షిక_del + len;
 
   footer_del_len = len;
   footer_del = body_del + len;
 
   /* Initialize the input buffer.  */
-  initbuffer (&line_buf);
+  initbuffer (&పంక్తి_buf);
 
   /* Initialize the printf format for unnumbered lines. */
-  len = strlen (separator_str);
-  print_no_line_fmt = xmalloc (lineno_width + len + 1);
-  memset (print_no_line_fmt, ' ', lineno_width + len);
-  print_no_line_fmt[lineno_width + len] = '\0';
+  len = అక్షరశ్రేణి_పొడవు (separator_str);
+  print_no_పంక్తి_fmt = xmalloc (lineno_వెడల్పు + len + 1);
+  memset (print_no_పంక్తి_fmt, ' ', lineno_వెడల్పు + len);
+  print_no_పంక్తి_fmt[lineno_వెడల్పు + len] = '\0';
 
-  line_no = starting_line_number;
+  పంక్తి_no = starting_పంక్తి_సంఖ్య;
   current_type = body_type;
   current_regex = &body_regex;
 
   /* Main processing. */
 
-  if (optind == argc)
+  ఒకవేళ (optind == argc)
     ok = nl_file ("-");
-  else
-    for (; optind < argc; optind++)
+  లేకపోతే
+    కొరకు (; optind < argc; optind++)
       ok &= nl_file (argv[optind]);
 
-  if (have_read_stdin && fclose (stdin) == EOF)
+  ఒకవేళ (have_read_stdin && fclose (stdin) == EOF)
     error (EXIT_FAILURE, errno, "-");
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  తిరిగి ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

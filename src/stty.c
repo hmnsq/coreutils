@@ -27,186 +27,186 @@
 
    David MacKenzie <djm@gnu.ai.mit.edu> */
 
-#include <config.h>
+#అన్తర్భావ <config.h>
 
-#ifdef TERMIOS_NEEDS_XOPEN_SOURCE
-# define _XOPEN_SOURCE
-#endif
+#నిర్వచితమైతే TERMIOS_NEEDS_XOPEN_ఆధారం
+# define XOPEN_ఆధారం
+#అయితే_ముగింపు
 
-#include <stdio.h>
-#include <sys/types.h>
+#అన్తర్భావ <stdio.h>
+#అన్తర్భావ <sys/types.h>
 
-#include <termios.h>
-#if HAVE_STROPTS_H
+#అన్తర్భావ <termios.h>
+#ఒకవేళ HAVE_STROPTS_H
 # include <stropts.h>
-#endif
-#include <sys/ioctl.h>
+#అయితే_ముగింపు
+#అన్తర్భావ <sys/ioctl.h>
 
-#ifdef WINSIZE_IN_PTEM
+#నిర్వచితమైతే WINSIZE_లోపల_PTEM
 # include <sys/stream.h>
 # include <sys/ptem.h>
-#endif
-#ifdef GWINSZ_IN_SYS_PTY
+#అయితే_ముగింపు
+#నిర్వచితమైతే GWINSZ_లోపల_SYS_PTY
 # include <sys/tty.h>
 # include <sys/pty.h>
-#endif
-#include <getopt.h>
-#include <stdarg.h>
+#అయితే_ముగింపు
+#అన్తర్భావ <getopt.h>
+#అన్తర్భావ <stdarg.h>
 
-#include "system.h"
-#include "assure.h"
-#include "c-ctype.h"
-#include "fd-reopen.h"
-#include "quote.h"
-#include "xdectoint.h"
-#include "xstrtol.h"
+#అన్తర్భావ "system.h"
+#అన్తర్భావ "assure.h"
+#అన్తర్భావ "c-ctype.h"
+#అన్తర్భావ "fd-reopen.h"
+#అన్తర్భావ "quote.h"
+#అన్తర్భావ "xdectoint.h"
+#అన్తర్భావ "xstrtol.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "stty"
+#నిర్వచించు కార్యక్రమం_NAME "stty"
 
-#define AUTHORS proper_name ("David MacKenzie")
+#నిర్వచించు AUTHORS proper_name ("David MacKenzie")
 
-#ifndef _POSIX_VDISABLE
+#నిర్వచితం_కాకపోతే _POSIX_VDISABLE
 # define _POSIX_VDISABLE 0
-#endif
+#అయితే_ముగింపు
 
-#define Control(c) ((c) & 0x1f)
+#నిర్వచించు Control(c) ((c) & 0x1f)
 /* Canonical values for control characters. */
-#ifndef CINTR
+#నిర్వచితం_కాకపోతే CINTR
 # define CINTR Control ('c')
-#endif
-#ifndef CQUIT
+#అయితే_ముగింపు
+#నిర్వచితం_కాకపోతే CQUIT
 # define CQUIT 28
-#endif
-#ifndef CERASE
+#అయితే_ముగింపు
+#నిర్వచితం_కాకపోతే CERASE
 # define CERASE 127
-#endif
-#ifndef CKILL
+#అయితే_ముగింపు
+#నిర్వచితం_కాకపోతే CKILL
 # define CKILL Control ('u')
-#endif
-#ifndef CEOF
+#అయితే_ముగింపు
+#నిర్వచితం_కాకపోతే CEOF
 # define CEOF Control ('d')
-#endif
-#ifndef CEOL
+#అయితే_ముగింపు
+#నిర్వచితం_కాకపోతే CEOL
 # define CEOL _POSIX_VDISABLE
-#endif
-#ifndef CSTART
+#అయితే_ముగింపు
+#నిర్వచితం_కాకపోతే CSTART
 # define CSTART Control ('q')
-#endif
-#ifndef CSTOP
+#అయితే_ముగింపు
+#నిర్వచితం_కాకపోతే CSTOP
 # define CSTOP Control ('s')
-#endif
-#ifndef CSUSP
+#అయితే_ముగింపు
+#నిర్వచితం_కాకపోతే CSUSP
 # define CSUSP Control ('z')
-#endif
-#if defined VEOL2 && !defined CEOL2
+#అయితే_ముగింపు
+#ఒకవేళ defined VEOL2 && !defined CEOL2
 # define CEOL2 _POSIX_VDISABLE
-#endif
+#అయితే_ముగింపు
 /* Some platforms have VSWTC, others VSWTCH.  In both cases, this control
    character is initialized by CSWTCH, if present.  */
-#if defined VSWTC && !defined VSWTCH
+#ఒకవేళ defined VSWTC && !defined VSWTCH
 # define VSWTCH VSWTC
-#endif
+#అయితే_ముగింపు
 /* ISC renamed swtch to susp for termios, but we'll accept either name.  */
-#if defined VSUSP && !defined VSWTCH
+#ఒకవేళ defined VSUSP && !defined VSWTCH
 # define VSWTCH VSUSP
-# if defined CSUSP && !defined CSWTCH
+# ఒకవేళ defined CSUSP && !defined CSWTCH
 #  define CSWTCH CSUSP
 # endif
-#endif
-#if defined VSWTCH && !defined CSWTCH
+#అయితే_ముగింపు
+#ఒకవేళ defined VSWTCH && !defined CSWTCH
 # define CSWTCH _POSIX_VDISABLE
-#endif
+#అయితే_ముగింపు
 
 /* SunOS >= 5.3 loses (^Z doesn't work) if 'swtch' is the same as 'susp'.
    So the default is to disable 'swtch.'  */
-#if defined __sun
+#ఒకవేళ defined __sun
 # undef CSWTCH
 # define CSWTCH _POSIX_VDISABLE
-#endif
+#అయితే_ముగింపు
 
-#if defined VWERSE && !defined VWERASE	/* AIX-3.2.5 */
+#ఒకవేళ defined VWERSE && !defined VWERASE	/* AIX-3.2.5 */
 # define VWERASE VWERSE
-#endif
-#if defined VDSUSP && !defined CDSUSP
+#అయితే_ముగింపు
+#ఒకవేళ defined VDSUSP && !defined CDSUSP
 # define CDSUSP Control ('y')
-#endif
-#if defined VREPRINT && !defined CRPRNT
+#అయితే_ముగింపు
+#ఒకవేళ defined VREPRINT && !defined CRPRNT
 # define CRPRNT Control ('r')
-#endif
-#if defined CREPRINT && !defined CRPRNT
+#అయితే_ముగింపు
+#ఒకవేళ defined CREPRINT && !defined CRPRNT
 # define CRPRNT Control ('r')
-#endif
-#if defined VWERASE && !defined CWERASE
+#అయితే_ముగింపు
+#ఒకవేళ defined VWERASE && !defined CWERASE
 # define CWERASE Control ('w')
-#endif
-#if defined VLNEXT && !defined CLNEXT
+#అయితే_ముగింపు
+#ఒకవేళ defined VLNEXT && !defined CLNEXT
 # define CLNEXT Control ('v')
-#endif
-#if defined VDISCARD && !defined VFLUSHO
+#అయితే_ముగింపు
+#ఒకవేళ defined VDISCARD && !defined VFLUSHO
 # define VFLUSHO VDISCARD
-#endif
-#if defined VFLUSH && !defined VFLUSHO	/* Ultrix 4.2 */
+#అయితే_ముగింపు
+#ఒకవేళ defined VFLUSH && !defined VFLUSHO	/* Ultrix 4.2 */
 # define VFLUSHO VFLUSH
-#endif
-#if defined CTLECH && !defined ECHOCTL	/* Ultrix 4.3 */
+#అయితే_ముగింపు
+#ఒకవేళ defined CTLECH && !defined ECHOCTL	/* Ultrix 4.3 */
 # define ECHOCTL CTLECH
-#endif
-#if defined TCTLECH && !defined ECHOCTL	/* Ultrix 4.2 */
+#అయితే_ముగింపు
+#ఒకవేళ defined TCTLECH && !defined ECHOCTL	/* Ultrix 4.2 */
 # define ECHOCTL TCTLECH
-#endif
-#if defined CRTKIL && !defined ECHOKE	/* Ultrix 4.2 and 4.3 */
+#అయితే_ముగింపు
+#ఒకవేళ defined CRTKIL && !defined ECHOKE	/* Ultrix 4.2 and 4.3 */
 # define ECHOKE CRTKIL
-#endif
-#if defined VFLUSHO && !defined CFLUSHO
+#అయితే_ముగింపు
+#ఒకవేళ defined VFLUSHO && !defined CFLUSHO
 # define CFLUSHO Control ('o')
-#endif
-#if defined VSTATUS && !defined CSTATUS
+#అయితే_ముగింపు
+#ఒకవేళ defined VSTATUS && !defined CSTATUS
 # define CSTATUS Control ('t')
-#endif
+#అయితే_ముగింపు
 
 /* Which speeds to set.  */
-enum speed_setting
+గణన వేగం_setting
   {
-    input_speed, output_speed, both_speeds
+    ఆదానం_వేగం, output_వేగం, both_speeds
   };
 
 /* What to output and how.  */
-enum output_type
+గణన output_type
   {
-    changed, all, recoverable	/* Default, -a, -g.  */
+    మారింది, all, recoverable	/* Default, -a, -g.  */
   };
 
 /* Which member(s) of 'struct termios' a mode uses.  */
-enum mode_type
+గణన బహుళకం_type
   {
-    control, input, output, local, combination
+    control, ఆదానం, output, local, combination
   };
 
 /* Flags for 'struct mode_info'. */
-#define SANE_SET 1		/* Set in 'sane' mode. */
-#define SANE_UNSET 2		/* Unset in 'sane' mode. */
-#define REV 4			/* Can be turned off by prepending '-'. */
-#define OMIT 8			/* Don't display value. */
-#define NO_SETATTR 16		/* tcsetattr not used to set mode bits.  */
+#నిర్వచించు SANE_సమితి 1		/* Set in 'sane' mode. */
+#నిర్వచించు SANE_UNSET 2		/* Unset in 'sane' mode. */
+#నిర్వచించు REV 4			/* Can be turned off by prepending '-'. */
+#నిర్వచించు OMIT 8			/* Don't display value. */
+#నిర్వచించు NO_SETATTR 16		/* tcsetattr not used to set mode bits.  */
 
 /* Each mode.  */
-struct mode_info
+నిర్మాణం బహుళకం_info
   {
-    char const *name;		/* Name given on command line.  */
-    enum mode_type type;	/* Which structure element to change. */
-    char flags;			/* Setting and display options.  */
-    unsigned long bits;		/* Bits to set for this mode.  */
-    unsigned long mask;		/* Other bits to turn off for this mode.  */
+    అక్షరం స్థిరరాశి *name;		/* Name given on command line.  */
+    గణన బహుళకం_type type;	/* Which structure element to change. */
+    అక్షరం flags;			/* Setting and display options.  */
+    గుర్తులేని దీర్ఘ బిట్లు_2;		/* Bits to set for this mode.  */
+    గుర్తులేని దీర్ఘ ముసుగు;		/* Other bits to turn off for this mode.  */
   };
 
-static struct mode_info const mode_info[] =
+స్థిర నిర్మాణం బహుళకం_info స్థిరరాశి బహుళకం_info[] =
 {
   {"parenb", control, REV, PARENB, 0},
   {"parodd", control, REV, PARODD, 0},
-#ifdef CMSPAR
+#నిర్వచితమైతే CMSPAR
   {"cmspar", control, REV, CMSPAR, 0},
-#endif
+#అయితే_ముగింపు
   {"cs5", control, 0, CS5, CSIZE},
   {"cs6", control, 0, CS6, CSIZE},
   {"cs7", control, 0, CS7, CSIZE},
@@ -214,73 +214,73 @@ static struct mode_info const mode_info[] =
   {"hupcl", control, REV, HUPCL, 0},
   {"hup", control, REV | OMIT, HUPCL, 0},
   {"cstopb", control, REV, CSTOPB, 0},
-  {"cread", control, SANE_SET | REV, CREAD, 0},
+  {"cread", control, SANE_సమితి | REV, CREAD, 0},
   {"clocal", control, REV, CLOCAL, 0},
-#ifdef CRTSCTS
+#నిర్వచితమైతే CRTSCTS
   {"crtscts", control, REV, CRTSCTS, 0},
-#endif
-#ifdef CDTRDSR
+#అయితే_ముగింపు
+#నిర్వచితమైతే CDTRDSR
   {"cdtrdsr", control, REV, CDTRDSR, 0},
-#endif
+#అయితే_ముగింపు
 
-  {"ignbrk", input, SANE_UNSET | REV, IGNBRK, 0},
-  {"brkint", input, SANE_SET | REV, BRKINT, 0},
-  {"ignpar", input, REV, IGNPAR, 0},
-  {"parmrk", input, REV, PARMRK, 0},
-  {"inpck", input, REV, INPCK, 0},
-  {"istrip", input, REV, ISTRIP, 0},
-  {"inlcr", input, SANE_UNSET | REV, INLCR, 0},
-  {"igncr", input, SANE_UNSET | REV, IGNCR, 0},
-  {"icrnl", input, SANE_SET | REV, ICRNL, 0},
-  {"ixon", input, REV, IXON, 0},
-  {"ixoff", input, SANE_UNSET | REV, IXOFF, 0},
-  {"tandem", input, REV | OMIT, IXOFF, 0},
-#ifdef IUCLC
-  {"iuclc", input, SANE_UNSET | REV, IUCLC, 0},
-#endif
-#ifdef IXANY
-  {"ixany", input, SANE_UNSET | REV, IXANY, 0},
-#endif
-#ifdef IMAXBEL
-  {"imaxbel", input, SANE_SET | REV, IMAXBEL, 0},
-#endif
-#ifdef IUTF8
-  {"iutf8", input, SANE_UNSET | REV, IUTF8, 0},
-#endif
+  {"ignbrk", ఆదానం, SANE_UNSET | REV, IGNBRK, 0},
+  {"brkint", ఆదానం, SANE_సమితి | REV, BRKINT, 0},
+  {"ignpar", ఆదానం, REV, IGNPAR, 0},
+  {"parmrk", ఆదానం, REV, PARMRK, 0},
+  {"inpck", ఆదానం, REV, INPCK, 0},
+  {"istrip", ఆదానం, REV, ISTRIP, 0},
+  {"inlcr", ఆదానం, SANE_UNSET | REV, INLCR, 0},
+  {"igncr", ఆదానం, SANE_UNSET | REV, IGNCR, 0},
+  {"icrnl", ఆదానం, SANE_సమితి | REV, ICRNL, 0},
+  {"ixon", ఆదానం, REV, IXON, 0},
+  {"ixoff", ఆదానం, SANE_UNSET | REV, IXOFF, 0},
+  {"tandem", ఆదానం, REV | OMIT, IXOFF, 0},
+#నిర్వచితమైతే IUCLC
+  {"iuclc", ఆదానం, SANE_UNSET | REV, IUCLC, 0},
+#అయితే_ముగింపు
+#నిర్వచితమైతే IXANY
+  {"ixany", ఆదానం, SANE_UNSET | REV, IXANY, 0},
+#అయితే_ముగింపు
+#నిర్వచితమైతే IMAXBEL
+  {"imaxbel", ఆదానం, SANE_సమితి | REV, IMAXBEL, 0},
+#అయితే_ముగింపు
+#నిర్వచితమైతే IUTF8
+  {"iutf8", ఆదానం, SANE_UNSET | REV, IUTF8, 0},
+#అయితే_ముగింపు
 
-  {"opost", output, SANE_SET | REV, OPOST, 0},
-#ifdef OLCUC
+  {"opost", output, SANE_సమితి | REV, OPOST, 0},
+#నిర్వచితమైతే OLCUC
   {"olcuc", output, SANE_UNSET | REV, OLCUC, 0},
-#endif
-#ifdef OCRNL
+#అయితే_ముగింపు
+#నిర్వచితమైతే OCRNL
   {"ocrnl", output, SANE_UNSET | REV, OCRNL, 0},
-#endif
-#ifdef ONLCR
-  {"onlcr", output, SANE_SET | REV, ONLCR, 0},
-#endif
-#ifdef ONOCR
+#అయితే_ముగింపు
+#నిర్వచితమైతే ONLCR
+  {"onlcr", output, SANE_సమితి | REV, ONLCR, 0},
+#అయితే_ముగింపు
+#నిర్వచితమైతే ONOCR
   {"onocr", output, SANE_UNSET | REV, ONOCR, 0},
-#endif
-#ifdef ONLRET
+#అయితే_ముగింపు
+#నిర్వచితమైతే ONLRET
   {"onlret", output, SANE_UNSET | REV, ONLRET, 0},
-#endif
-#ifdef OFILL
+#అయితే_ముగింపు
+#నిర్వచితమైతే OFILL
   {"ofill", output, SANE_UNSET | REV, OFILL, 0},
-#endif
-#ifdef OFDEL
+#అయితే_ముగింపు
+#నిర్వచితమైతే OFDEL
   {"ofdel", output, SANE_UNSET | REV, OFDEL, 0},
-#endif
-#ifdef NLDLY
+#అయితే_ముగింపు
+#నిర్వచితమైతే NLDLY
   {"nl1", output, SANE_UNSET, NL1, NLDLY},
-  {"nl0", output, SANE_SET, NL0, NLDLY},
-#endif
-#ifdef CRDLY
+  {"nl0", output, SANE_సమితి, NL0, NLDLY},
+#అయితే_ముగింపు
+#నిర్వచితమైతే CRDLY
   {"cr3", output, SANE_UNSET, CR3, CRDLY},
   {"cr2", output, SANE_UNSET, CR2, CRDLY},
   {"cr1", output, SANE_UNSET, CR1, CRDLY},
-  {"cr0", output, SANE_SET, CR0, CRDLY},
-#endif
-#ifdef TABDLY
+  {"cr0", output, SANE_సమితి, CR0, CRDLY},
+#అయితే_ముగింపు
+#నిర్వచితమైతే TABDLY
 # ifdef TAB3
   {"tab3", output, SANE_UNSET, TAB3, TABDLY},
 # endif
@@ -291,63 +291,63 @@ static struct mode_info const mode_info[] =
   {"tab1", output, SANE_UNSET, TAB1, TABDLY},
 # endif
 # ifdef TAB0
-  {"tab0", output, SANE_SET, TAB0, TABDLY},
+  {"tab0", output, SANE_సమితి, TAB0, TABDLY},
 # endif
-#else
+#లేకపోతే
 # ifdef OXTABS
   {"tab3", output, SANE_UNSET, OXTABS, 0},
 # endif
-#endif
-#ifdef BSDLY
+#అయితే_ముగింపు
+#నిర్వచితమైతే BSDLY
   {"bs1", output, SANE_UNSET, BS1, BSDLY},
-  {"bs0", output, SANE_SET, BS0, BSDLY},
-#endif
-#ifdef VTDLY
+  {"bs0", output, SANE_సమితి, BS0, BSDLY},
+#అయితే_ముగింపు
+#నిర్వచితమైతే VTDLY
   {"vt1", output, SANE_UNSET, VT1, VTDLY},
-  {"vt0", output, SANE_SET, VT0, VTDLY},
-#endif
-#ifdef FFDLY
+  {"vt0", output, SANE_సమితి, VT0, VTDLY},
+#అయితే_ముగింపు
+#నిర్వచితమైతే FFDLY
   {"ff1", output, SANE_UNSET, FF1, FFDLY},
-  {"ff0", output, SANE_SET, FF0, FFDLY},
-#endif
+  {"ff0", output, SANE_సమితి, FF0, FFDLY},
+#అయితే_ముగింపు
 
-  {"isig", local, SANE_SET | REV, ISIG, 0},
-  {"icanon", local, SANE_SET | REV, ICANON, 0},
-#ifdef IEXTEN
-  {"iexten", local, SANE_SET | REV, IEXTEN, 0},
-#endif
-  {"echo", local, SANE_SET | REV, ECHO, 0},
-  {"echoe", local, SANE_SET | REV, ECHOE, 0},
+  {"isig", local, SANE_సమితి | REV, ISIG, 0},
+  {"icanon", local, SANE_సమితి | REV, ICANON, 0},
+#నిర్వచితమైతే IEXTEN
+  {"iexten", local, SANE_సమితి | REV, IEXTEN, 0},
+#అయితే_ముగింపు
+  {"echo", local, SANE_సమితి | REV, ECHO, 0},
+  {"echoe", local, SANE_సమితి | REV, ECHOE, 0},
   {"crterase", local, REV | OMIT, ECHOE, 0},
-  {"echok", local, SANE_SET | REV, ECHOK, 0},
+  {"echok", local, SANE_సమితి | REV, ECHOK, 0},
   {"echonl", local, SANE_UNSET | REV, ECHONL, 0},
   {"noflsh", local, SANE_UNSET | REV, NOFLSH, 0},
-#ifdef XCASE
+#నిర్వచితమైతే XCASE
   {"xcase", local, SANE_UNSET | REV, XCASE, 0},
-#endif
-#ifdef TOSTOP
+#అయితే_ముగింపు
+#నిర్వచితమైతే TOSTOP
   {"tostop", local, SANE_UNSET | REV, TOSTOP, 0},
-#endif
-#ifdef ECHOPRT
+#అయితే_ముగింపు
+#నిర్వచితమైతే ECHOPRT
   {"echoprt", local, SANE_UNSET | REV, ECHOPRT, 0},
   {"prterase", local, REV | OMIT, ECHOPRT, 0},
-#endif
-#ifdef ECHOCTL
-  {"echoctl", local, SANE_SET | REV, ECHOCTL, 0},
+#అయితే_ముగింపు
+#నిర్వచితమైతే ECHOCTL
+  {"echoctl", local, SANE_సమితి | REV, ECHOCTL, 0},
   {"ctlecho", local, REV | OMIT, ECHOCTL, 0},
-#endif
-#ifdef ECHOKE
-  {"echoke", local, SANE_SET | REV, ECHOKE, 0},
+#అయితే_ముగింపు
+#నిర్వచితమైతే ECHOKE
+  {"echoke", local, SANE_సమితి | REV, ECHOKE, 0},
   {"crtkill", local, REV | OMIT, ECHOKE, 0},
-#endif
-#ifdef FLUSHO
+#అయితే_ముగింపు
+#నిర్వచితమైతే FLUSHO
   {"flusho", local, SANE_UNSET | REV, FLUSHO, 0},
-#endif
-#if defined TIOCEXT
+#అయితే_ముగింపు
+#ఒకవేళ defined TIOCEXT
   {"extproc", local, SANE_UNSET | REV | NO_SETATTR, EXTPROC, 0},
-#elif defined EXTPROC
+#లేదావేళ defined EXTPROC
   {"extproc", local, SANE_UNSET | REV, EXTPROC, 0},
-#endif
+#అయితే_ముగింపు
 
   {"evenp", combination, REV | OMIT, 0, 0},
   {"parity", combination, REV | OMIT, 0, 0},
@@ -360,33 +360,33 @@ static struct mode_info const mode_info[] =
   {"pass8", combination, REV | OMIT, 0, 0},
   {"litout", combination, REV | OMIT, 0, 0},
   {"cbreak", combination, REV | OMIT, 0, 0},
-#ifdef IXANY
+#నిర్వచితమైతే IXANY
   {"decctlq", combination, REV | OMIT, 0, 0},
-#endif
-#if defined TABDLY || defined OXTABS
+#అయితే_ముగింపు
+#ఒకవేళ defined TABDLY || defined OXTABS
   {"tabs", combination, REV | OMIT, 0, 0},
-#endif
-#if defined XCASE && defined IUCLC && defined OLCUC
+#అయితే_ముగింపు
+#ఒకవేళ defined XCASE && defined IUCLC && defined OLCUC
   {"lcase", combination, REV | OMIT, 0, 0},
   {"LCASE", combination, REV | OMIT, 0, 0},
-#endif
+#అయితే_ముగింపు
   {"crt", combination, OMIT, 0, 0},
   {"dec", combination, OMIT, 0, 0},
 
-  {NULL, control, 0, 0, 0}
+  {ఖాళీ, control, 0, 0, 0}
 };
 
 /* Control character settings.  */
-struct control_info
+నిర్మాణం control_info
   {
-    char const *name;		/* Name given on command line.  */
+    అక్షరం స్థిరరాశి *name;		/* Name given on command line.  */
     cc_t saneval;		/* Value to set for 'stty sane'.  */
-    size_t offset;		/* Offset in c_cc.  */
+    size_t స్థానభ్రంశం;		/* Offset in c_cc.  */
   };
 
 /* Control characters. */
 
-static struct control_info const control_info[] =
+స్థిర నిర్మాణం control_info స్థిరరాశి control_info[] =
 {
   {"intr", CINTR, VINTR},
   {"quit", CQUIT, VQUIT},
@@ -394,173 +394,173 @@ static struct control_info const control_info[] =
   {"kill", CKILL, VKILL},
   {"eof", CEOF, VEOF},
   {"eol", CEOL, VEOL},
-#ifdef VEOL2
+#నిర్వచితమైతే VEOL2
   {"eol2", CEOL2, VEOL2},
-#endif
-#ifdef VSWTCH
+#అయితే_ముగింపు
+#నిర్వచితమైతే VSWTCH
   {"swtch", CSWTCH, VSWTCH},
-#endif
+#అయితే_ముగింపు
   {"start", CSTART, VSTART},
   {"stop", CSTOP, VSTOP},
   {"susp", CSUSP, VSUSP},
-#ifdef VDSUSP
+#నిర్వచితమైతే VDSUSP
   {"dsusp", CDSUSP, VDSUSP},
-#endif
-#ifdef VREPRINT
+#అయితే_ముగింపు
+#నిర్వచితమైతే VREPRINT
   {"rprnt", CRPRNT, VREPRINT},
-#else
+#లేకపోతే
 # ifdef CREPRINT /* HPUX 10.20 needs this */
   {"rprnt", CRPRNT, CREPRINT},
 # endif
-#endif
-#ifdef VWERASE
+#అయితే_ముగింపు
+#నిర్వచితమైతే VWERASE
   {"werase", CWERASE, VWERASE},
-#endif
-#ifdef VLNEXT
+#అయితే_ముగింపు
+#నిర్వచితమైతే VLNEXT
   {"lnext", CLNEXT, VLNEXT},
-#endif
-#ifdef VFLUSHO
+#అయితే_ముగింపు
+#నిర్వచితమైతే VFLUSHO
   {"flush", CFLUSHO, VFLUSHO},   /* deprecated compat option.  */
   {"discard", CFLUSHO, VFLUSHO},
-#endif
-#ifdef VSTATUS
+#అయితే_ముగింపు
+#నిర్వచితమైతే VSTATUS
   {"status", CSTATUS, VSTATUS},
-#endif
+#అయితే_ముగింపు
 
   /* These must be last because of the display routines. */
   {"min", 1, VMIN},
   {"time", 0, VTIME},
-  {NULL, 0, 0}
+  {ఖాళీ, 0, 0}
 };
 
 /* This struct is needed because some systems, e.g., GNU/Linux,
    support baud rates equal to (speed_t) -1.  */
-struct speed_desc
+నిర్మాణం వేగం_desc
 {
   /* The baud rate.  */
-  speed_t baud;
+  వేగం_t baud;
 
   /* True if the baud member is valid and did not overflow.  */
   bool valid;
 };
 
-static char const *visible (cc_t ch);
-static unsigned long int baud_to_value (speed_t speed);
-static bool recover_mode (char const *arg, struct termios *mode);
-static int screen_columns (void);
-static bool set_mode (struct mode_info const *info, bool reversed,
-                      struct termios *mode);
-static bool eq_mode (struct termios const *mode1,
-                     struct termios const *mode2);
-static bool speed_matches (struct termios const *mode1,
-                           struct termios const *mode2);
-static uintmax_t integer_arg (char const *s, uintmax_t max);
-static struct speed_desc string_to_baud (char const *arg);
-static tcflag_t *mode_type_flag (enum mode_type type, struct termios *mode);
-static void display_all (struct termios *mode, char const *device_name);
-static void display_changed (struct termios *mode);
-static void display_recoverable (struct termios *mode);
-static void display_settings (enum output_type output_type,
-                              struct termios *mode,
-                              char const *device_name);
-static void check_speed (struct termios *mode);
-static void display_speed (struct termios *mode, bool fancy);
-static void display_window_size (bool fancy, char const *device_name);
-static void sane_mode (struct termios *mode);
-static void set_control_char (struct control_info const *info,
-                              char const *arg,
-                              struct termios *mode);
-static void set_speed (enum speed_setting type, char const *arg,
-                       struct speed_desc const speed, struct termios *mode);
-static void set_window_size (int rows, int cols, char const *device_name);
+స్థిర అక్షరం స్థిరరాశి *visible (cc_t ch);
+స్థిర గుర్తులేని దీర్ఘ పూర్ణాంకం baud_గమ్యం_విలువ (వేగం_t వేగం);
+స్థిర bool recover_బహుళకం (అక్షరం స్థిరరాశి *arg, నిర్మాణం termios *బహుళకం_2);
+స్థిర పూర్ణాంకం screen_columns (శూన్య);
+స్థిర bool సమితి_బహుళకం (నిర్మాణం బహుళకం_info స్థిరరాశి *info, bool reversed,
+                      నిర్మాణం termios *బహుళకం_2);
+స్థిర bool eq_బహుళకం (నిర్మాణం termios స్థిరరాశి *mode1,
+                     నిర్మాణం termios స్థిరరాశి *mode2);
+స్థిర bool వేగం_matches (నిర్మాణం termios స్థిరరాశి *mode1,
+                           నిర్మాణం termios స్థిరరాశి *mode2);
+స్థిర uintmax_t integer_arg (అక్షరం స్థిరరాశి *s, uintmax_t max);
+స్థిర నిర్మాణం వేగం_desc string_గమ్యం_baud (అక్షరం స్థిరరాశి *arg);
+స్థిర tcflag_t *బహుళకం_type_flag (గణన బహుళకం_type type, నిర్మాణం termios *బహుళకం_2);
+స్థిర శూన్య display_all (నిర్మాణం termios *బహుళకం_2, అక్షరం స్థిరరాశి *device_name);
+స్థిర శూన్య display_మారింది (నిర్మాణం termios *బహుళకం_2);
+స్థిర శూన్య display_recoverable (నిర్మాణం termios *బహుళకం_2);
+స్థిర శూన్య display_settings (గణన output_type output_type,
+                              నిర్మాణం termios *బహుళకం_2,
+                              అక్షరం స్థిరరాశి *device_name);
+స్థిర శూన్య check_వేగం (నిర్మాణం termios *బహుళకం_2);
+స్థిర శూన్య display_వేగం (నిర్మాణం termios *బహుళకం_2, bool fancy);
+స్థిర శూన్య display_కిటికీ_కొలత (bool fancy, అక్షరం స్థిరరాశి *device_name);
+స్థిర శూన్య sane_బహుళకం (నిర్మాణం termios *బహుళకం_2);
+స్థిర శూన్య సమితి_control_char (నిర్మాణం control_info స్థిరరాశి *info,
+                              అక్షరం స్థిరరాశి *arg,
+                              నిర్మాణం termios *బహుళకం_2);
+స్థిర శూన్య సమితి_వేగం (గణన వేగం_setting type, అక్షరం స్థిరరాశి *arg,
+                       నిర్మాణం వేగం_desc స్థిరరాశి వేగం, నిర్మాణం termios *బహుళకం_2);
+స్థిర శూన్య సమితి_కిటికీ_కొలత (పూర్ణాంకం అడ్డువరుసలు, పూర్ణాంకం నిలువుల_సంఖ్య_2, అక్షరం స్థిరరాశి *device_name);
 
 /* The width of the screen, for output wrapping. */
-static int max_col;
+స్థిర పూర్ణాంకం max_నిలువు;
 
 /* Current position, to know when to wrap. */
-static int current_col;
+స్థిర పూర్ణాంకం current_నిలువు;
 
 /* Default "drain" mode for tcsetattr.  */
-static int tcsetattr_options = TCSADRAIN;
+స్థిర పూర్ణాంకం tcsetattr_options = TCSADRAIN;
 
 /* Extra info to aid stty development.  */
-static bool dev_debug;
+స్థిర bool dev_debug;
 
 /* Record last speed set for correlation.  */
-static struct speed_desc last_ibaud =
-  { .baud = (speed_t) -1, .valid = false };
-static struct speed_desc last_obaud =
-  { .baud = (speed_t) -1, .valid = false };
+స్థిర నిర్మాణం వేగం_desc చివరి_ibaud =
+  { .baud = (వేగం_t) -1, .valid = false };
+స్థిర నిర్మాణం వేగం_desc చివరి_obaud =
+  { .baud = (వేగం_t) -1, .valid = false };
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+గణన
 {
   DEV_DEBUG_OPTION = CHAR_MAX + 1,
 };
 
-static struct option const longopts[] =
+స్థిర నిర్మాణం option స్థిరరాశి longopts[] =
 {
-  {"all", no_argument, NULL, 'a'},
-  {"save", no_argument, NULL, 'g'},
-  {"file", required_argument, NULL, 'F'},
-  {"-debug", no_argument, NULL, DEV_DEBUG_OPTION},
+  {"all", no_వాదం, ఖాళీ, 'a'},
+  {"save", no_వాదం, ఖాళీ, 'g'},
+  {"file", required_వాదం, ఖాళీ, 'F'},
+  {"-debug", no_వాదం, ఖాళీ, DEV_DEBUG_OPTION},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_సంస్కరణ_OPTION_DECL},
+  {ఖాళీ, 0, ఖాళీ, 0}
 };
 
 /* Print format string MESSAGE and optional args.
    Wrap to next line first if it won't fit.
    Print a space first unless MESSAGE will start a new line. */
 
-ATTRIBUTE_FORMAT ((printf, 1, 2))
-static void
-wrapf (char const *message,...)
+ATTRIBUTE_FORMAT ((రాయి, 1, 2))
+స్థిర శూన్య
+wrapf (అక్షరం స్థిరరాశి *సందేశం_2,...)
 {
-  va_list args;
-  char *buf;
-  int buflen;
+  va_list వాదనలు;
+  అక్షరం *buf;
+  పూర్ణాంకం buflen;
 
-  va_start (args, message);
-  buflen = vasprintf (&buf, message, args);
-  va_end (args);
+  va_ప్రారంభం (వాదనలు, సందేశం_2);
+  buflen = vasprintf (&buf, సందేశం_2, వాదనలు);
+  va_చివర (వాదనలు);
 
-  if (buflen < 0)
+  ఒకవేళ (buflen < 0)
     xalloc_die ();
 
-  if (0 < current_col)
+  ఒకవేళ (0 < current_నిలువు)
     {
-      if (max_col - current_col <= buflen)
+      ఒకవేళ (max_నిలువు - current_నిలువు <= buflen)
         {
-          putchar ('\n');
-          current_col = 0;
+          అక్షరం_రాయి ('\n');
+          current_నిలువు = 0;
         }
-      else
+      లేకపోతే
         {
-          putchar (' ');
-          current_col++;
+          అక్షరం_రాయి (' ');
+          current_నిలువు++;
         }
     }
 
   fputs (buf, stdout);
-  free (buf);
-  current_col += buflen;
+  విడుదల (buf);
+  current_నిలువు += buflen;
 }
 
-void
-usage (int status)
+శూన్య
+usage (పూర్ణాంకం స్థితి_2)
 {
-  if (status != EXIT_SUCCESS)
+  ఒకవేళ (స్థితి_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  లేకపోతే
     {
-      printf (_("\
+      రాయి (_("\
 Usage: %s [-F DEVICE | --file=DEVICE] [SETTING]...\n\
   or:  %s [-F DEVICE | --file=DEVICE] [-a|--all]\n\
   or:  %s [-F DEVICE | --file=DEVICE] [-g|--save]\n\
 "),
-              program_name, program_name, program_name);
+              కార్యక్రమం_name, కార్యక్రమం_name, కార్యక్రమం_name);
       fputs (_("\
 Print or change terminal characteristics.\n\
 "), stdout);
@@ -568,184 +568,184 @@ Print or change terminal characteristics.\n\
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -a, --all          print all current settings in human-readable form\n\
+  -a, --all          print all current settings లోపల human-readable form\n\
 "));
       oputs (_("\
-  -g, --save         print all current settings in a stty-readable form\n\
+  -g, --save         print all current settings లోపల a stty-readable form\n\
 "));
       oputs (_("\
-  -F, --file=DEVICE  open and use DEVICE instead of standard input\n\
+  -F, --file=DEVICE  open and use DEVICE instead యొక్క standard ఆదానం\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (సంస్కరణ_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
 Optional - before SETTING indicates negation.  An * marks non-POSIX\n\
-settings.  The underlying system defines which settings are available.\n\
+settings.  The underlying system నిర్వచిస్తుంది which settings are అందుబాటు.\n\
 "), stdout);
       fputs (_("\
 \n\
 Special characters:\n"), stdout);
-#ifdef VFLUSHO
+#నిర్వచితమైతే VFLUSHO
       fputs (_("\
- * discard CHAR  CHAR will toggle discarding of output\n\
+ * discard CHAR  CHAR will toggle discarding యొక్క output\n\
 "), stdout);
-#endif
-#ifdef VDSUSP
+#అయితే_ముగింపు
+#నిర్వచితమైతే VDSUSP
       fputs (_("\
- * dsusp CHAR    CHAR will send a terminal stop signal once input flushed\n\
+ * dsusp CHAR    CHAR will send a terminal stop సంకేతం once ఆదానం flushed\n\
 "), stdout);
-#endif
+#అయితే_ముగింపు
       fputs (_("\
-   eof CHAR      CHAR will send an end of file (terminate the input)\n\
-   eol CHAR      CHAR will end the line\n\
+   eof CHAR      CHAR will send an చివర యొక్క file (terminate the ఆదానం)\n\
+   eol CHAR      CHAR will చివర the పంక్తి\n\
 "), stdout);
-#ifdef VEOL2
+#నిర్వచితమైతే VEOL2
       fputs (_("\
- * eol2 CHAR     alternate CHAR for ending the line\n\
+ * eol2 CHAR     alternate CHAR కొరకు ending the పంక్తి\n\
 "), stdout);
-#endif
+#అయితే_ముగింపు
       fputs (_("\
-   erase CHAR    CHAR will erase the last character typed\n\
-   intr CHAR     CHAR will send an interrupt signal\n\
-   kill CHAR     CHAR will erase the current line\n\
+   erase CHAR    CHAR will erase the చివరి character typed\n\
+   intr CHAR     CHAR will send an అంతరాయం సంకేతం\n\
+   kill CHAR     CHAR will erase the current పంక్తి\n\
 "), stdout);
-#ifdef VLNEXT
+#నిర్వచితమైతే VLNEXT
       fputs (_("\
- * lnext CHAR    CHAR will enter the next character quoted\n\
+ * lnext CHAR    CHAR will enter the తదుపరి character quoted\n\
 "), stdout);
-#endif
-#ifdef VSTATUS
+#అయితే_ముగింపు
+#నిర్వచితమైతే VSTATUS
       fputs (_("\
- * status CHAR   CHAR will send an info signal\n\
+ * స్థితి_2 CHAR   CHAR will send an info సంకేతం\n\
 "), stdout);
-#endif
+#అయితే_ముగింపు
       fputs (_("\
-   quit CHAR     CHAR will send a quit signal\n\
+   quit CHAR     CHAR will send a quit సంకేతం\n\
 "), stdout);
-#if defined CREPRINT || defined VREPRINT
+#ఒకవేళ defined CREPRINT || defined VREPRINT
       fputs (_("\
- * rprnt CHAR    CHAR will redraw the current line\n\
+ * rprnt CHAR    CHAR will redraw the current పంక్తి\n\
 "), stdout);
-#endif
+#అయితే_ముగింపు
       fputs (_("\
-   start CHAR    CHAR will restart the output after stopping it\n\
+   ప్రారంభం CHAR    CHAR will restart the output after stopping it\n\
    stop CHAR     CHAR will stop the output\n\
-   susp CHAR     CHAR will send a terminal stop signal\n\
+   susp CHAR     CHAR will send a terminal stop సంకేతం\n\
 "), stdout);
-#ifdef VSWTCH
+#నిర్వచితమైతే VSWTCH
       fputs (_("\
- * swtch CHAR    CHAR will switch to a different shell layer\n\
+ * swtch CHAR    CHAR will ఎంపిక గమ్యం a different shell layer\n\
 "), stdout);
-#endif
-#ifdef VWERASE
+#అయితే_ముగింపు
+#నిర్వచితమైతే VWERASE
       fputs (_("\
- * werase CHAR   CHAR will erase the last word typed\n\
+ * werase CHAR   CHAR will erase the చివరి మాట_2 typed\n\
 "), stdout);
-#endif
+#అయితే_ముగింపు
       fputs (_("\
 \n\
 Special settings:\n\
-   N             set the input and output speeds to N bauds\n\
+   N             సమితి_2 the ఆదానం and output speeds గమ్యం N bauds\n\
 "), stdout);
-#ifdef TIOCGWINSZ
+#నిర్వచితమైతే TIOCGWINSZ
       fputs (_("\
-   cols N        tell the kernel that the terminal has N columns\n\
- * columns N     same as cols N\n\
+   నిలువుల_సంఖ్య_2 N        tell the kernel that the terminal has N columns\n\
+ * columns N     same as నిలువుల_సంఖ్య_2 N\n\
 "), stdout);
-#endif
-      printf (_("\
- * [-]drain      wait for transmission before applying settings (%s by default)\
+#అయితే_ముగింపు
+      రాయి (_("\
+ * [-]drain      wait కొరకు సంప్రేషణ before applying settings (%s by అప్రమేయ)\
 \n"), tcsetattr_options == TCSADRAIN ? _("on") : _("off"));
       fputs (_("\
-   ispeed N      set the input speed to N\n\
+   ispeed N      సమితి_2 the ఆదానం వేగం గమ్యం N\n\
 "), stdout);
-#ifdef HAVE_C_LINE
+#నిర్వచితమైతే HAVE_C_పంక్తి
       fputs (_("\
- * line N        use line discipline N\n\
+ * పంక్తి N        use పంక్తి discipline N\n\
 "), stdout);
-#endif
+#అయితే_ముగింపు
       fputs (_("\
-   min N         with -icanon, set N characters minimum for a completed read\n\
-   ospeed N      set the output speed to N\n\
+   min N         with -icanon, సమితి_2 N characters minimum కొరకు a completed పఠ\n\
+   ospeed N      సమితి_2 the output వేగం గమ్యం N\n\
 "), stdout);
-#ifdef TIOCGWINSZ
+#నిర్వచితమైతే TIOCGWINSZ
       fputs (_("\
-   rows N        tell the kernel that the terminal has N rows\n\
-   size          print the number of rows and columns according to the kernel\n\
+   అడ్డువరుసలు N        tell the kernel that the terminal has N అడ్డువరుసలు\n\
+   కొలత          print the సంఖ్య యొక్క అడ్డువరుసలు and columns according గమ్యం the kernel\n\
 "), stdout);
-#endif
+#అయితే_ముగింపు
       fputs (_("\
-   speed         print the terminal speed\n\
-   time N        with -icanon, set read timeout of N tenths of a second\n\
+   వేగం         print the terminal వేగం\n\
+   సమయం N        with -icanon, సమితి_2 పఠ timeout యొక్క N tenths యొక్క a రెండవ\n\
 "), stdout);
       fputs (_("\
 \n\
 Control settings:\n\
-   [-]clocal     disable modem control signals\n\
-   [-]cread      allow input to be received\n\
+   [-]clocal     disable modem control సంకేతాలు\n\
+   [-]cread      allow ఆదానం గమ్యం be received\n\
 "), stdout);
-#ifdef CRTSCTS
+#నిర్వచితమైతే CRTSCTS
       fputs (_("\
  * [-]crtscts    enable RTS/CTS handshaking\n\
 "), stdout);
-#endif
-#ifdef CDTRDSR
+#అయితే_ముగింపు
+#నిర్వచితమైతే CDTRDSR
       fputs (_("\
  * [-]cdtrdsr    enable DTR/DSR handshaking\n\
 "), stdout);
-#endif
+#అయితే_ముగింపు
       fputs (_("\
-   csN           set character size to N bits, N in [5..8]\n\
+   csN           సమితి_2 character కొలత గమ్యం N బిట్లు_2, N లోపల [5..8]\n\
 "), stdout);
       fputs (_("\
-   [-]cstopb     use two stop bits per character (one with '-')\n\
-   [-]hup        send a hangup signal when the last process closes the tty\n\
+   [-]cstopb     use two stop బిట్లు_2 చొప్పున character (one with '-')\n\
+   [-]hup        send a hangup సంకేతం when the చివరి process closes the tty\n\
    [-]hupcl      same as [-]hup\n\
-   [-]parenb     generate parity bit in output and expect parity bit in input\n\
-   [-]parodd     set odd parity (or even parity with '-')\n\
+   [-]parenb     generate parity బిట్టు లోపల output and expect parity బిట్టు లోపల ఆదానం\n\
+   [-]parodd     సమితి_2 odd parity (or even parity with '-')\n\
 "), stdout);
-#ifdef CMSPAR
+#నిర్వచితమైతే CMSPAR
       fputs (_("\
  * [-]cmspar     use \"stick\" (mark/space) parity\n\
 "), stdout);
-#endif
+#అయితే_ముగింపు
       fputs (_("\
 \n\
-Input settings:\n\
-   [-]brkint     breaks cause an interrupt signal\n\
-   [-]icrnl      translate carriage return to newline\n\
-   [-]ignbrk     ignore break characters\n\
-   [-]igncr      ignore carriage return\n\
+ఆదానం_3 settings:\n\
+   [-]brkint     breaks cause an అంతరాయం సంకేతం\n\
+   [-]icrnl      translate carriage తిరిగి గమ్యం newline\n\
+   [-]ignbrk     ignore ఆపు characters\n\
+   [-]igncr      ignore carriage తిరిగి\n\
    [-]ignpar     ignore characters with parity errors\n\
 "), stdout);
-#ifdef IMAXBEL
+#నిర్వచితమైతే IMAXBEL
       fputs (_("\
- * [-]imaxbel    beep and do not flush a full input buffer on a character\n\
+ * [-]imaxbel    beep and చేయి not flush a నిండిన ఆదానం బఫరు on a character\n\
 "), stdout);
-#endif
+#అయితే_ముగింపు
       fputs (_("\
-   [-]inlcr      translate newline to carriage return\n\
-   [-]inpck      enable input parity checking\n\
-   [-]istrip     clear high (8th) bit of input characters\n\
+   [-]inlcr      translate newline గమ్యం carriage తిరిగి\n\
+   [-]inpck      enable ఆదానం parity checking\n\
+   [-]istrip     clear ఎగువ (8th) బిట్టు యొక్క ఆదానం characters\n\
 "), stdout);
-#ifdef IUTF8
+#నిర్వచితమైతే IUTF8
       fputs (_("\
- * [-]iutf8      assume input characters are UTF-8 encoded\n\
+ * [-]iutf8      assume ఆదానం characters are UTF-8 encoded\n\
 "), stdout);
-#endif
-#ifdef IUCLC
+#అయితే_ముగింపు
+#నిర్వచితమైతే IUCLC
       fputs (_("\
- * [-]iuclc      translate uppercase characters to lowercase\n\
+ * [-]iuclc      translate uppercase characters గమ్యం lowercase\n\
 "), stdout);
-#endif
-#ifdef IXANY
+#అయితే_ముగింపు
+#నిర్వచితమైతే IXANY
       fputs (_("\
- * [-]ixany      let any character restart output, not only start character\n\
+ * [-]ixany      let any character restart output, not only ప్రారంభం character\n\
 "), stdout);
-#endif
+#అయితే_ముగింపు
       fputs (_("\
-   [-]ixoff      enable sending of start/stop characters\n\
+   [-]ixoff      enable sending యొక్క ప్రారంభం/stop characters\n\
    [-]ixon       enable XON/XOFF flow control\n\
    [-]parmrk     mark parity errors (with a 255-0-character sequence)\n\
    [-]tandem     same as [-]ixoff\n\
@@ -754,235 +754,235 @@ Input settings:\n\
 \n\
 Output settings:\n\
 "), stdout);
-#ifdef BSDLY
+#నిర్వచితమైతే BSDLY
       fputs (_("\
- * bsN           backspace delay style, N in [0..1]\n\
+ * bsN           backspace delay style, N లోపల [0..1]\n\
 "), stdout);
-#endif
-#ifdef CRDLY
+#అయితే_ముగింపు
+#నిర్వచితమైతే CRDLY
       fputs (_("\
- * crN           carriage return delay style, N in [0..3]\n\
+ * crN           carriage తిరిగి delay style, N లోపల [0..3]\n\
 "), stdout);
-#endif
-#ifdef FFDLY
+#అయితే_ముగింపు
+#నిర్వచితమైతే FFDLY
       fputs (_("\
- * ffN           form feed delay style, N in [0..1]\n\
+ * ffN           form feed delay style, N లోపల [0..1]\n\
 "), stdout);
-#endif
-#ifdef NLDLY
+#అయితే_ముగింపు
+#నిర్వచితమైతే NLDLY
       fputs (_("\
- * nlN           newline delay style, N in [0..1]\n\
+ * nlN           newline delay style, N లోపల [0..1]\n\
 "), stdout);
-#endif
-#ifdef OCRNL
+#అయితే_ముగింపు
+#నిర్వచితమైతే OCRNL
       fputs (_("\
- * [-]ocrnl      translate carriage return to newline\n\
+ * [-]ocrnl      translate carriage తిరిగి గమ్యం newline\n\
 "), stdout);
-#endif
-#ifdef OFDEL
+#అయితే_ముగింపు
+#నిర్వచితమైతే OFDEL
       fputs (_("\
- * [-]ofdel      use delete characters for fill instead of NUL characters\n\
+ * [-]ofdel      use delete characters కొరకు fill instead యొక్క NUL characters\n\
 "), stdout);
-#endif
-#ifdef OFILL
+#అయితే_ముగింపు
+#నిర్వచితమైతే OFILL
       fputs (_("\
- * [-]ofill      use fill (padding) characters instead of timing for delays\n\
+ * [-]ofill      use fill (padding) characters instead యొక్క timing కొరకు delays\n\
 "), stdout);
-#endif
-#ifdef OLCUC
+#అయితే_ముగింపు
+#నిర్వచితమైతే OLCUC
       fputs (_("\
- * [-]olcuc      translate lowercase characters to uppercase\n\
+ * [-]olcuc      translate lowercase characters గమ్యం uppercase\n\
 "), stdout);
-#endif
-#ifdef ONLCR
+#అయితే_ముగింపు
+#నిర్వచితమైతే ONLCR
       fputs (_("\
- * [-]onlcr      translate newline to carriage return-newline\n\
+ * [-]onlcr      translate newline గమ్యం carriage తిరిగి-newline\n\
 "), stdout);
-#endif
-#ifdef ONLRET
+#అయితే_ముగింపు
+#నిర్వచితమైతే ONLRET
       fputs (_("\
- * [-]onlret     newline performs a carriage return\n\
+ * [-]onlret     newline performs a carriage తిరిగి\n\
 "), stdout);
-#endif
-#ifdef ONOCR
+#అయితే_ముగింపు
+#నిర్వచితమైతే ONOCR
       fputs (_("\
- * [-]onocr      do not print carriage returns in the first column\n\
+ * [-]onocr      చేయి not print carriage returns లోపల the మొదటి స్తంభం\n\
 "), stdout);
-#endif
+#అయితే_ముగింపు
       fputs (_("\
    [-]opost      postprocess output\n\
 "), stdout);
-#if defined TABDLY || defined OXTABS
+#ఒకవేళ defined TABDLY || defined OXTABS
       fputs (_("\
- * tabN          horizontal tab delay style, N in [0..3]\n\
+ * tabN          horizontal tab delay style, N లోపల [0..3]\n\
  * tabs          same as tab0\n\
  * -tabs         same as tab3\n\
 "), stdout);
-#endif
-#ifdef VTDLY
+#అయితే_ముగింపు
+#నిర్వచితమైతే VTDLY
       fputs (_("\
- * vtN           vertical tab delay style, N in [0..1]\n\
+ * vtN           vertical tab delay style, N లోపల [0..1]\n\
 "), stdout);
-#endif
+#అయితే_ముగింపు
       fputs (_("\
 \n\
 Local settings:\n\
    [-]crterase   echo erase characters as backspace-space-backspace\n\
 "), stdout);
-#ifdef ECHOKE
+#నిర్వచితమైతే ECHOKE
       fputs (_("\
- * crtkill       kill all line by obeying the echoprt and echoe settings\n\
- * -crtkill      kill all line by obeying the echoctl and echok settings\n\
+ * crtkill       kill all పంక్తి by obeying the echoprt and echoe settings\n\
+ * -crtkill      kill all పంక్తి by obeying the echoctl and echok settings\n\
 "), stdout);
-#endif
-#ifdef ECHOCTL
+#అయితే_ముగింపు
+#నిర్వచితమైతే ECHOCTL
       fputs (_("\
- * [-]ctlecho    echo control characters in hat notation ('^c')\n\
+ * [-]ctlecho    echo control characters లోపల hat notation ('^c')\n\
 "), stdout);
-#endif
+#అయితే_ముగింపు
       fputs (_("\
-   [-]echo       echo input characters\n\
+   [-]echo       echo ఆదానం characters\n\
 "), stdout);
-#ifdef ECHOCTL
+#నిర్వచితమైతే ECHOCTL
       fputs (_("\
  * [-]echoctl    same as [-]ctlecho\n\
 "), stdout);
-#endif
+#అయితే_ముగింపు
       fputs (_("\
    [-]echoe      same as [-]crterase\n\
    [-]echok      echo a newline after a kill character\n\
 "), stdout);
-#ifdef ECHOKE
+#నిర్వచితమైతే ECHOKE
       fputs (_("\
  * [-]echoke     same as [-]crtkill\n\
 "), stdout);
-#endif
+#అయితే_ముగింపు
       fputs (_("\
-   [-]echonl     echo newline even if not echoing other characters\n\
+   [-]echonl     echo newline even ఒకవేళ not echoing other characters\n\
 "), stdout);
-#ifdef ECHOPRT
+#నిర్వచితమైతే ECHOPRT
       fputs (_("\
  * [-]echoprt    echo erased characters backward, between '\\' and '/'\n\
 "), stdout);
-#endif
-#if defined EXTPROC || defined TIOCEXT
+#అయితే_ముగింపు
+#ఒకవేళ defined EXTPROC || defined TIOCEXT
       fputs (_("\
- * [-]extproc    enable \"LINEMODE\"; useful with high latency links\n\
+ * [-]extproc    enable \"LINEMODE\"; useful with ఎగువ latency links\n\
 "), stdout);
-#endif
-#if defined FLUSHO
+#అయితే_ముగింపు
+#ఒకవేళ defined FLUSHO
       fputs (_("\
  * [-]flusho     discard output\n\
 "), stdout);
-#endif
-      printf (_("\
+#అయితే_ముగింపు
+      రాయి (_("\
    [-]icanon     enable special characters: %s\n\
    [-]iexten     enable non-POSIX special characters\n\
 "), "erase, kill"
-#ifdef VWERASE
+#నిర్వచితమైతే VWERASE
     ", werase"
-#endif
-#if defined CREPRINT || defined VREPRINT
+#అయితే_ముగింపు
+#ఒకవేళ defined CREPRINT || defined VREPRINT
     ", rprnt"
-#endif
+#అయితే_ముగింపు
 );
       fputs (_("\
-   [-]isig       enable interrupt, quit, and suspend special characters\n\
-   [-]noflsh     disable flushing after interrupt and quit special characters\n\
+   [-]isig       enable అంతరాయం, quit, and suspend special characters\n\
+   [-]noflsh     disable flushing after అంతరాయం and quit special characters\n\
 "), stdout);
-#ifdef ECHOPRT
+#నిర్వచితమైతే ECHOPRT
       fputs (_("\
  * [-]prterase   same as [-]echoprt\n\
 "), stdout);
-#endif
-#ifdef TOSTOP
+#అయితే_ముగింపు
+#నిర్వచితమైతే TOSTOP
       fputs (_("\
- * [-]tostop     stop background jobs that try to write to the terminal\n\
+ * [-]tostop     stop background jobs that try గమ్యం లిఖ గమ్యం the terminal\n\
 "), stdout);
-#endif
-#ifdef XCASE
+#అయితే_ముగింపు
+#నిర్వచితమైతే XCASE
       fputs (_("\
- * [-]xcase      with icanon, escape with '\\' for uppercase characters\n\
+ * [-]xcase      with icanon, escape with '\\' కొరకు uppercase characters\n\
 "), stdout);
-#endif
+#అయితే_ముగింపు
       fputs (_("\
 \n\
 Combination settings:\n\
 "), stdout);
-#if defined XCASE && defined IUCLC && defined OLCUC
+#ఒకవేళ defined XCASE && defined IUCLC && defined OLCUC
       fputs (_("\
  * [-]LCASE      same as [-]lcase\n\
 "), stdout);
-#endif
+#అయితే_ముగింపు
       fputs (_("\
    cbreak        same as -icanon\n\
    -cbreak       same as icanon\n\
 "), stdout);
       fputs (_("\
    cooked        same as brkint ignpar istrip icrnl ixon opost isig\n\
-                 icanon, eof and eol characters to their default values\n\
+                 icanon, eof and eol characters గమ్యం their అప్రమేయ విలువలు\n\
    -cooked       same as raw\n\
 "), stdout);
-      printf (_("\
+      రాయి (_("\
    crt           same as %s\n\
 "), "echoe"
-#ifdef ECHOCTL
+#నిర్వచితమైతే ECHOCTL
     " echoctl"
-#endif
-#ifdef ECHOKE
+#అయితే_ముగింపు
+#నిర్వచితమైతే ECHOKE
     " echoke"
-#endif
+#అయితే_ముగింపు
 );
-      printf (_("\
+      రాయి (_("\
    dec           same as %s intr ^c erase 0177\n\
                  kill ^u\n\
 "), "echoe"
-#ifdef ECHOCTL
+#నిర్వచితమైతే ECHOCTL
     " echoctl"
-#endif
-#ifdef ECHOKE
+#అయితే_ముగింపు
+#నిర్వచితమైతే ECHOKE
     " echoke"
-#endif
-#ifdef IXANY
+#అయితే_ముగింపు
+#నిర్వచితమైతే IXANY
     " -ixany"
-#endif
+#అయితే_ముగింపు
 );
-#ifdef IXANY
+#నిర్వచితమైతే IXANY
       fputs (_("\
  * [-]decctlq    same as [-]ixany\n\
 "), stdout);
-#endif
+#అయితే_ముగింపు
       fputs (_("\
-   ek            erase and kill characters to their default values\n\
+   ek            erase and kill characters గమ్యం their అప్రమేయ విలువలు\n\
    evenp         same as parenb -parodd cs7\n\
    -evenp        same as -parenb cs8\n\
 "), stdout);
-#if defined XCASE && defined IUCLC && defined OLCUC
+#ఒకవేళ defined XCASE && defined IUCLC && defined OLCUC
       fputs (_("\
  * [-]lcase      same as xcase iuclc olcuc\n\
 "), stdout);
-#endif
+#అయితే_ముగింపు
       fputs (_("\
    litout        same as -parenb -istrip -opost cs8\n\
    -litout       same as parenb istrip opost cs7\n\
 "), stdout);
-      printf (_("\
+      రాయి (_("\
    nl            same as %s\n\
    -nl           same as %s\n\
 "), "-icrnl"
-#ifdef ONLCR
+#నిర్వచితమైతే ONLCR
    " -onlcr"
-#endif
+#అయితే_ముగింపు
   , "icrnl -inlcr -igncr"
-#ifdef ONLCR
+#నిర్వచితమైతే ONLCR
    " onlcr"
-#endif
-#ifdef OCRNL
+#అయితే_ముగింపు
+#నిర్వచితమైతే OCRNL
    " -ocrnl"
-#endif
-#ifdef ONLRET
+#అయితే_ముగింపు
+#నిర్వచితమైతే ONLRET
    " -onlret"
-#endif
+#అయితే_ముగింపు
 );
       fputs (_("\
    oddp          same as parenb parodd cs7\n\
@@ -991,121 +991,121 @@ Combination settings:\n\
    pass8         same as -parenb -istrip cs8\n\
    -pass8        same as parenb istrip cs7\n\
 "), stdout);
-      printf (_("\
+      రాయి (_("\
    raw           same as -ignbrk -brkint -ignpar -parmrk -inpck -istrip\n\
                  -inlcr -igncr -icrnl -ixon -ixoff -icanon -opost\n\
-                 -isig%s min 1 time 0\n\
+                 -isig%s min 1 సమయం 0\n\
    -raw          same as cooked\n\
 "),
-#ifdef IUCLC
+#నిర్వచితమైతే IUCLC
    " -iuclc"
-#endif
-#ifdef IXANY
+#అయితే_ముగింపు
+#నిర్వచితమైతే IXANY
    " -ixany"
-#endif
-#ifdef IMAXBEL
+#అయితే_ముగింపు
+#నిర్వచితమైతే IMAXBEL
    " -imaxbel"
-#endif
-#ifdef XCASE
+#అయితే_ముగింపు
+#నిర్వచితమైతే XCASE
    " -xcase"
-#endif
+#అయితే_ముగింపు
 );
-      printf (_("\
+      రాయి (_("\
    sane          same as cread -ignbrk brkint -inlcr -igncr icrnl\n\
                  icanon iexten echo echoe echok -echonl -noflsh\n\
                  %s\n\
                  %s\n\
                  %s,\n\
-                 all special characters to their default values\n\
+                 all special characters గమ్యం their అప్రమేయ విలువలు\n\
 "),
    "-ixoff"
-#ifdef IUTF8
+#నిర్వచితమైతే IUTF8
    " -iutf8"
-#endif
-#ifdef IUCLC
+#అయితే_ముగింపు
+#నిర్వచితమైతే IUCLC
    " -iuclc"
-#endif
-#ifdef IXANY
+#అయితే_ముగింపు
+#నిర్వచితమైతే IXANY
    " -ixany"
-#endif
-#ifdef IMAXBEL
+#అయితే_ముగింపు
+#నిర్వచితమైతే IMAXBEL
    " imaxbel"
-#endif
-#ifdef XCASE
+#అయితే_ముగింపు
+#నిర్వచితమైతే XCASE
    " -xcase"
-#endif
-#ifdef OLCUC
+#అయితే_ముగింపు
+#నిర్వచితమైతే OLCUC
    " -olcuc"
-#endif
-#ifdef OCRNL
+#అయితే_ముగింపు
+#నిర్వచితమైతే OCRNL
    " -ocrnl"
-#endif
+#అయితే_ముగింపు
 
  , "opost"
-#ifdef OFILL
+#నిర్వచితమైతే OFILL
    " -ofill"
-#endif
-#ifdef ONLCR
+#అయితే_ముగింపు
+#నిర్వచితమైతే ONLCR
    " onlcr"
-#endif
-#ifdef ONOCR
+#అయితే_ముగింపు
+#నిర్వచితమైతే ONOCR
    " -onocr"
-#endif
-#ifdef ONLRET
+#అయితే_ముగింపు
+#నిర్వచితమైతే ONLRET
    " -onlret"
-#endif
-#ifdef NLDLY
+#అయితే_ముగింపు
+#నిర్వచితమైతే NLDLY
    " nl0"
-#endif
-#ifdef CRDLY
+#అయితే_ముగింపు
+#నిర్వచితమైతే CRDLY
    " cr0"
-#endif
-#ifdef TAB0
+#అయితే_ముగింపు
+#నిర్వచితమైతే TAB0
    " tab0"
-#endif
-#ifdef BSDLY
+#అయితే_ముగింపు
+#నిర్వచితమైతే BSDLY
    " bs0"
-#endif
-#ifdef VTDLY
+#అయితే_ముగింపు
+#నిర్వచితమైతే VTDLY
    " vt0"
-#endif
-#ifdef FFDLY
+#అయితే_ముగింపు
+#నిర్వచితమైతే FFDLY
    " ff0"
-#endif
+#అయితే_ముగింపు
 
  , "isig"
-#ifdef TOSTOP
+#నిర్వచితమైతే TOSTOP
    " -tostop"
-#endif
-#ifdef OFDEL
+#అయితే_ముగింపు
+#నిర్వచితమైతే OFDEL
    " -ofdel"
-#endif
-#ifdef ECHOPRT
+#అయితే_ముగింపు
+#నిర్వచితమైతే ECHOPRT
    " -echoprt"
-#endif
-#ifdef ECHOCTL
+#అయితే_ముగింపు
+#నిర్వచితమైతే ECHOCTL
    " echoctl"
-#endif
-#ifdef ECHOKE
+#అయితే_ముగింపు
+#నిర్వచితమైతే ECHOKE
    " echoke"
-#endif
-#ifdef EXTPROC
+#అయితే_ముగింపు
+#నిర్వచితమైతే EXTPROC
    " -extproc"
-#endif
-#ifdef FLUSHO
+#అయితే_ముగింపు
+#నిర్వచితమైతే FLUSHO
    " -flusho"
-#endif
+#అయితే_ముగింపు
 );
       fputs (_("\
 \n\
-Handle the tty line connected to standard input.  Without arguments,\n\
-prints baud rate, line discipline, and deviations from stty sane.  In\n\
-settings, CHAR is taken literally, or coded as in ^c, 0x37, 0177 or\n\
-127; special values ^- or undef used to disable special characters.\n\
+Handle the tty పంక్తి connected గమ్యం standard ఆదానం.  Without arguments,\n\
+prints baud రేటు, పంక్తి discipline, and deviations from stty sane.  లోపల_2\n\
+settings, CHAR is తీసుకున్న literally, or coded as లోపల ^c, 0x37, 0177 or\n\
+127; special విలువలు ^- or undef వాడిన గమ్యం disable special characters.\n\
 "), stdout);
-      emit_ancillary_info (PROGRAM_NAME);
+      emit_ancillary_info (కార్యక్రమం_NAME);
     }
-  exit (status);
+  నిష్క్రమించు (స్థితి_2);
 }
 
 
@@ -1113,225 +1113,225 @@ settings, CHAR is taken literally, or coded as in ^c, 0x37, 0177 or\n\
    If CHECKING is true, this function doesn't interact
    with a device, and only validates specified settings.  */
 
-static void
-apply_settings (bool checking, char const *device_name,
-                char * const *settings, int n_settings,
-                struct termios *mode, bool *require_set_attr)
+స్థిర శూన్య
+apply_settings (bool checking, అక్షరం స్థిరరాశి *device_name,
+                అక్షరం * స్థిరరాశి *settings, పూర్ణాంకం n_settings,
+                నిర్మాణం termios *బహుళకం_2, bool *require_సమితి_attr)
 {
-#define check_argument(arg)						\
-  do									\
+#నిర్వచించు check_వాదం(arg)						\
+  చేయి									\
     {									\
-      if (k == n_settings - 1 || ! settings[k + 1])			\
+      ఒకవేళ (k == n_settings - 1 || ! settings[k + 1])			\
         {								\
           error (0, 0, _("missing argument to %s"), quote (arg));	\
           usage (EXIT_FAILURE);						\
         }								\
     }									\
-  while (0)
+  అయితే (0)
 
-  for (int k = 1; k < n_settings; k++)
+  కొరకు (పూర్ణాంకం k = 1; k < n_settings; k++)
     {
-      char const *arg = settings[k];
-      bool match_found = false;
-      bool not_set_attr = false;
+      అక్షరం స్థిరరాశి *arg = settings[k];
+      bool సరిపోలిక_దొరికింది = false;
+      bool not_సమితి_attr = false;
       bool reversed = false;
 
-      if (! arg)
-        continue;
+      ఒకవేళ (! arg)
+        కొనసాగు;
 
-      if (arg[0] == '-')
+      ఒకవేళ (arg[0] == '-')
         {
           ++arg;
           reversed = true;
         }
-      if (streq (arg, "drain"))
+      ఒకవేళ (streq (arg, "drain"))
         {
           tcsetattr_options = reversed ? TCSANOW : TCSADRAIN;
-          continue;
+          కొనసాగు;
         }
-      for (int i = 0; mode_info[i].name != NULL; ++i)
+      కొరకు (పూర్ణాంకం i = 0; బహుళకం_info[i].name != ఖాళీ; ++i)
         {
-          if (streq (arg, mode_info[i].name))
+          ఒకవేళ (streq (arg, బహుళకం_info[i].name))
             {
-              if ((mode_info[i].flags & NO_SETATTR) == 0)
+              ఒకవేళ ((బహుళకం_info[i].flags & NO_SETATTR) == 0)
                 {
-                  match_found = set_mode (&mode_info[i], reversed, mode);
-                  *require_set_attr = true;
+                  సరిపోలిక_దొరికింది = సమితి_బహుళకం (&బహుళకం_info[i], reversed, బహుళకం_2);
+                  *require_సమితి_attr = true;
                 }
-              else
-                match_found = not_set_attr = true;
-              break;
+              లేకపోతే
+                సరిపోలిక_దొరికింది = not_సమితి_attr = true;
+              ఆపు;
             }
         }
-      if (!match_found && reversed)
+      ఒకవేళ (!సరిపోలిక_దొరికింది && reversed)
         {
           error (0, 0, _("invalid argument %s"), quote (arg - 1));
           usage (EXIT_FAILURE);
         }
-      if (!match_found)
+      ఒకవేళ (!సరిపోలిక_దొరికింది)
         {
-          for (int i = 0; control_info[i].name != NULL; ++i)
+          కొరకు (పూర్ణాంకం i = 0; control_info[i].name != ఖాళీ; ++i)
             {
-              if (streq (arg, control_info[i].name))
+              ఒకవేళ (streq (arg, control_info[i].name))
                 {
-                  check_argument (arg);
-                  match_found = true;
+                  check_వాదం (arg);
+                  సరిపోలిక_దొరికింది = true;
                   ++k;
-                  set_control_char (&control_info[i], settings[k], mode);
-                  *require_set_attr = true;
-                  break;
+                  సమితి_control_char (&control_info[i], settings[k], బహుళకం_2);
+                  *require_సమితి_attr = true;
+                  ఆపు;
                 }
             }
         }
-      if (!match_found || not_set_attr)
+      ఒకవేళ (!సరిపోలిక_దొరికింది || not_సమితి_attr)
         {
-          if (streq (arg, "ispeed"))
+          ఒకవేళ (streq (arg, "ispeed"))
             {
-              check_argument (arg);
+              check_వాదం (arg);
               ++k;
-              struct speed_desc const ispeed = string_to_baud (settings[k]);
-              if (! ispeed.valid)
+              నిర్మాణం వేగం_desc స్థిరరాశి ispeed = string_గమ్యం_baud (settings[k]);
+              ఒకవేళ (! ispeed.valid)
                 {
                   error (0, 0, _("invalid ispeed %s"), quote (settings[k]));
                   usage (EXIT_FAILURE);
                 }
-              set_speed (input_speed, settings[k], ispeed, mode);
-              if (checking)
-                continue;
-              *require_set_attr = true;
+              సమితి_వేగం (ఆదానం_వేగం, settings[k], ispeed, బహుళకం_2);
+              ఒకవేళ (checking)
+                కొనసాగు;
+              *require_సమితి_attr = true;
             }
-          else if (streq (arg, "ospeed"))
+          లేకపోతే ఒకవేళ (streq (arg, "ospeed"))
             {
-              check_argument (arg);
+              check_వాదం (arg);
               ++k;
-              struct speed_desc const ospeed = string_to_baud (settings[k]);
-              if (! ospeed.valid)
+              నిర్మాణం వేగం_desc స్థిరరాశి ospeed = string_గమ్యం_baud (settings[k]);
+              ఒకవేళ (! ospeed.valid)
                 {
                   error (0, 0, _("invalid ospeed %s"), quote (settings[k]));
                   usage (EXIT_FAILURE);
                 }
-              set_speed (output_speed, settings[k], ospeed, mode);
-              if (checking)
-                continue;
-              *require_set_attr = true;
+              సమితి_వేగం (output_వేగం, settings[k], ospeed, బహుళకం_2);
+              ఒకవేళ (checking)
+                కొనసాగు;
+              *require_సమితి_attr = true;
             }
-#ifdef TIOCEXT
+#నిర్వచితమైతే TIOCEXT
           /* This is the BSD interface to "extproc".
             Even though it's an lflag, an ioctl is used to set it.  */
-          else if (streq (arg, "extproc"))
+          లేకపోతే ఒకవేళ (streq (arg, "extproc"))
             {
-              int val = ! reversed;
+              పూర్ణాంకం val = ! reversed;
 
-              if (checking)
-                continue;
+              ఒకవేళ (checking)
+                కొనసాగు;
 
-              if (ioctl (STDIN_FILENO, TIOCEXT, &val) != 0)
+              ఒకవేళ (ioctl (STDIN_FILENO, TIOCEXT, &val) != 0)
                 error (EXIT_FAILURE, errno, _("%s: error setting %s"),
                        quotef_n (0, device_name), quote_n (1, arg));
             }
-#endif
-#ifdef TIOCGWINSZ
-          else if (streq (arg, "rows"))
+#అయితే_ముగింపు
+#నిర్వచితమైతే TIOCGWINSZ
+          లేకపోతే ఒకవేళ (streq (arg, "rows"))
             {
-              check_argument (arg);
+              check_వాదం (arg);
               ++k;
-              if (checking)
-                continue;
-              set_window_size (integer_arg (settings[k], INT_MAX), -1,
+              ఒకవేళ (checking)
+                కొనసాగు;
+              సమితి_కిటికీ_కొలత (integer_arg (settings[k], గరిష్ఠ_పూర్ణాంకం), -1,
                                device_name);
             }
-          else if (streq (arg, "cols")
+          లేకపోతే ఒకవేళ (streq (arg, "cols")
                    || streq (arg, "columns"))
             {
-              check_argument (arg);
+              check_వాదం (arg);
               ++k;
-              if (checking)
-                continue;
-              set_window_size (-1, integer_arg (settings[k], INT_MAX),
+              ఒకవేళ (checking)
+                కొనసాగు;
+              సమితి_కిటికీ_కొలత (-1, integer_arg (settings[k], గరిష్ఠ_పూర్ణాంకం),
                                device_name);
             }
-          else if (streq (arg, "size"))
+          లేకపోతే ఒకవేళ (streq (arg, "size"))
             {
-              if (checking)
-                continue;
-              max_col = screen_columns ();
-              current_col = 0;
-              display_window_size (false, device_name);
+              ఒకవేళ (checking)
+                కొనసాగు;
+              max_నిలువు = screen_columns ();
+              current_నిలువు = 0;
+              display_కిటికీ_కొలత (false, device_name);
             }
-#endif
-#ifdef HAVE_C_LINE
-          else if (streq (arg, "line"))
+#అయితే_ముగింపు
+#నిర్వచితమైతే HAVE_C_పంక్తి
+          లేకపోతే ఒకవేళ (streq (arg, "line"))
             {
-              check_argument (arg);
+              check_వాదం (arg);
               ++k;
-              uintmax_t value = integer_arg (settings[k], UINTMAX_MAX);
-              if (ckd_add (&mode->c_line, value, 0))
+              uintmax_t విలువ = integer_arg (settings[k], UINTMAX_MAX);
+              ఒకవేళ (ckd_కూడు (&బహుళకం_2->c_పంక్తి, విలువ, 0))
                 error (0, EOVERFLOW, _("invalid line discipline %s"),
                        quote (settings[k]));
-              *require_set_attr = true;
+              *require_సమితి_attr = true;
             }
-#endif
-          else if (streq (arg, "speed"))
+#అయితే_ముగింపు
+          లేకపోతే ఒకవేళ (streq (arg, "speed"))
             {
-              if (checking)
-                continue;
-              max_col = screen_columns ();
-              display_speed (mode, false);
+              ఒకవేళ (checking)
+                కొనసాగు;
+              max_నిలువు = screen_columns ();
+              display_వేగం (బహుళకం_2, false);
             }
-          else
+          లేకపోతే
             {
-              struct speed_desc const speed = string_to_baud (arg);
-              if (speed.valid)
+              నిర్మాణం వేగం_desc స్థిరరాశి వేగం = string_గమ్యం_baud (arg);
+              ఒకవేళ (వేగం.valid)
                 {
-                  set_speed (both_speeds, arg, speed, mode);
-                  if (checking)
-                    continue;
-                  *require_set_attr = true;
+                  సమితి_వేగం (both_speeds, arg, వేగం, బహుళకం_2);
+                  ఒకవేళ (checking)
+                    కొనసాగు;
+                  *require_సమితి_attr = true;
                 }
-              else
+              లేకపోతే
                 {
-                  if (! recover_mode (arg, mode))
+                  ఒకవేళ (! recover_బహుళకం (arg, బహుళకం_2))
                     {
                       error (0, 0, _("invalid argument %s"), quote (arg));
                       usage (EXIT_FAILURE);
                     }
-                  *require_set_attr = true;
+                  *require_సమితి_attr = true;
                 }
             }
         }
     }
 
-  if (checking)
-    check_speed (mode);
+  ఒకవేళ (checking)
+    check_వేగం (బహుళకం_2);
 }
 
-int
-main (int argc, char **argv)
+పూర్ణాంకం
+ప్రధాన (పూర్ణాంకం argc, అక్షరం **argv)
 {
   /* Initialize to all zeroes so there is no risk memeq will report a
      spurious difference in an uninitialized portion of the structure.  */
-  static struct termios mode;
+  స్థిర నిర్మాణం termios బహుళకం_2;
 
-  enum output_type output_type;
-  int optc;
-  int argi = 0;
-  int opti = 1;
-  bool require_set_attr;
+  గణన output_type output_type;
+  పూర్ణాంకం optc;
+  పూర్ణాంకం argi = 0;
+  పూర్ణాంకం opti = 1;
+  bool require_సమితి_attr;
   bool verbose_output;
   bool recoverable_output;
   bool noargs = true;
-  char *file_name = NULL;
-  char const *device_name;
+  అక్షరం *file_name = ఖాళీ;
+  అక్షరం స్థిరరాశి *device_name;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  సమితి_కార్యక్రమం_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  output_type = changed;
+  output_type = మారింది;
   verbose_output = false;
   recoverable_output = false;
 
@@ -1345,40 +1345,40 @@ main (int argc, char **argv)
      stty parses options, be sure it still works with combinations of
      short and long options, --, POSIXLY_CORRECT, etc.  */
 
-  while ((optc = getopt_long (argc - argi, argv + argi, "-agF:",
-                              longopts, NULL))
+  అయితే ((optc = getopt_long (argc - argi, argv + argi, "-agF:",
+                              longopts, ఖాళీ))
          != -1)
     {
-      switch (optc)
+      ఎంపిక (optc)
         {
-        case 'a':
+        స్థితి 'a':
           verbose_output = true;
           output_type = all;
-          break;
+          ఆపు;
 
-        case 'g':
+        స్థితి 'g':
           recoverable_output = true;
           output_type = recoverable;
-          break;
+          ఆపు;
 
-        case 'F':
-          if (file_name)
+        స్థితి 'F':
+          ఒకవేళ (file_name)
             error (EXIT_FAILURE, 0, _("only one device may be specified"));
           file_name = optarg;
-          break;
+          ఆపు;
 
-        case DEV_DEBUG_OPTION:
+        స్థితి DEV_DEBUG_OPTION:
           dev_debug = true;
-          break;
+          ఆపు;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_సంస్కరణ_CHAR (కార్యక్రమం_NAME, AUTHORS);
 
-        default:
+        అప్రమేయ:
           /* Consider "drain" as an option rather than a setting,
              to support: alias stty='stty -drain'  etc.  */
-          if (! streq (argv[argi + opti], "-drain")
+          ఒకవేళ (! streq (argv[argi + opti], "-drain")
               && ! streq (argv[argi + opti], "drain"))
             noargs = false;
 
@@ -1390,67 +1390,67 @@ main (int argc, char **argv)
           opti = 1;
           optind = 0;
 
-          break;
+          ఆపు;
         }
 
       /* Clear fully-parsed arguments, so they don't confuse the 2nd pass.  */
-      while (opti < optind)
-        argv[argi + opti++] = NULL;
+      అయితే (opti < optind)
+        argv[argi + opti++] = ఖాళీ;
     }
 
   /* Specifying both -a and -g gets an error.  */
-  if (verbose_output && recoverable_output)
+  ఒకవేళ (verbose_output && recoverable_output)
     error (EXIT_FAILURE, 0,
            _("the options for verbose and stty-readable output styles are\n"
              "mutually exclusive"));
 
   /* Specifying any other arguments with -a or -g gets an error.  */
-  if (!noargs && (verbose_output || recoverable_output))
+  ఒకవేళ (!noargs && (verbose_output || recoverable_output))
     error (EXIT_FAILURE, 0,
            _("when specifying an output style, modes may not be set"));
 
   device_name = file_name ? file_name : _("standard input");
 
-  if (!noargs && !verbose_output && !recoverable_output)
+  ఒకవేళ (!noargs && !verbose_output && !recoverable_output)
     {
-      static struct termios check_mode;
+      స్థిర నిర్మాణం termios check_బహుళకం;
       apply_settings (/* checking= */ true, device_name, argv, argc,
-                      &check_mode, &require_set_attr);
+                      &check_బహుళకం, &require_సమితి_attr);
     }
 
-  if (file_name)
+  ఒకవేళ (file_name)
     {
-      int fdflags;
-      if (fd_reopen (STDIN_FILENO, device_name, O_RDONLY | O_NONBLOCK, 0) < 0)
+      పూర్ణాంకం fdflags;
+      ఒకవేళ (fd_reopen (STDIN_FILENO, device_name, O_RDONLY | O_NONBLOCK, 0) < 0)
         error (EXIT_FAILURE, errno, "%s", quotef (device_name));
-      if ((fdflags = fcntl (STDIN_FILENO, F_GETFL)) == -1
+      ఒకవేళ ((fdflags = fcntl (STDIN_FILENO, F_GETFL)) == -1
           || fcntl (STDIN_FILENO, F_SETFL, fdflags & ~O_NONBLOCK) < 0)
         error (EXIT_FAILURE, errno, _("%s: couldn't reset non-blocking mode"),
                quotef (device_name));
     }
 
-  if (tcgetattr (STDIN_FILENO, &mode))
+  ఒకవేళ (tcgetattr (STDIN_FILENO, &బహుళకం_2))
     error (EXIT_FAILURE, errno, "%s", quotef (device_name));
 
-  if (verbose_output || recoverable_output || noargs)
+  ఒకవేళ (verbose_output || recoverable_output || noargs)
     {
-      max_col = screen_columns ();
-      current_col = 0;
-      display_settings (output_type, &mode, device_name);
-      return EXIT_SUCCESS;
+      max_నిలువు = screen_columns ();
+      current_నిలువు = 0;
+      display_settings (output_type, &బహుళకం_2, device_name);
+      తిరిగి EXIT_SUCCESS;
     }
 
-  require_set_attr = false;
+  require_సమితి_attr = false;
   apply_settings (/* checking= */ false, device_name, argv, argc,
-                  &mode, &require_set_attr);
+                  &బహుళకం_2, &require_సమితి_attr);
 
-  if (require_set_attr)
+  ఒకవేళ (require_సమితి_attr)
     {
       /* Initialize to all zeroes so there is no risk memeq will report a
          spurious difference in an uninitialized portion of the structure.  */
-      static struct termios new_mode;
+      స్థిర నిర్మాణం termios new_బహుళకం;
 
-      if (tcsetattr (STDIN_FILENO, tcsetattr_options, &mode))
+      ఒకవేళ (tcsetattr (STDIN_FILENO, tcsetattr_options, &బహుళకం_2))
         error (EXIT_FAILURE, errno, "%s", quotef (device_name));
 
       /* POSIX (according to Zlotnick's book) tcsetattr returns zero if
@@ -1460,18 +1460,18 @@ main (int argc, char **argv)
          this partial failure, get the current terminal attributes and
          compare them to the requested ones.  */
 
-      if (tcgetattr (STDIN_FILENO, &new_mode))
+      ఒకవేళ (tcgetattr (STDIN_FILENO, &new_బహుళకం))
         error (EXIT_FAILURE, errno, "%s", quotef (device_name));
 
-      if (! eq_mode (&mode, &new_mode))
+      ఒకవేళ (! eq_బహుళకం (&బహుళకం_2, &new_బహుళకం))
         {
-          if (dev_debug)
+          ఒకవేళ (dev_debug)
             {
               error (0, 0, _("indx: mode: actual mode"));
-              for (unsigned int i = 0; i < sizeof (new_mode); i++)
+              కొరకు (గుర్తులేని పూర్ణాంకం i = 0; i < పరిమాణం (new_బహుళకం); i++)
                 {
-                  unsigned int newc = *(((unsigned char *) &new_mode) + i);
-                  unsigned int oldc = *(((unsigned char *) &mode) + i);
+                  గుర్తులేని పూర్ణాంకం newc = *(((గుర్తులేని అక్షరం *) &new_బహుళకం) + i);
+                  గుర్తులేని పూర్ణాంకం oldc = *(((గుర్తులేని అక్షరం *) &బహుళకం_2) + i);
                   error (0, 0, "0x%02x, 0x%02x: 0x%02x%s", i, oldc, newc,
                           newc == oldc ? "" : " *");
                 }
@@ -1483,7 +1483,7 @@ main (int argc, char **argv)
         }
     }
 
-  return EXIT_SUCCESS;
+  తిరిగి EXIT_SUCCESS;
 }
 
 /* Return true if modes are equivalent.
@@ -1500,315 +1500,315 @@ main (int argc, char **argv)
 
    3. An input speed of zero may be retained or normalized to the output
       speed across tcsetattr () ... tcgetattr ().  */
-static bool
-eq_mode (struct termios const *mode1, struct termios const *mode2)
+స్థిర bool
+eq_బహుళకం (నిర్మాణం termios స్థిరరాశి *mode1, నిర్మాణం termios స్థిరరాశి *mode2)
 {
-  if (mode1->c_iflag != mode2->c_iflag
+  ఒకవేళ (mode1->c_iflag != mode2->c_iflag
       || mode1->c_oflag != mode2->c_oflag
       || mode1->c_lflag != mode2->c_lflag
-#ifdef HAVE_C_LINE
-      || mode1->c_line != mode2->c_line
-#endif
-      || !memeq (mode1->c_cc, mode2->c_cc, sizeof (mode1->c_cc)))
-    return false;
+#నిర్వచితమైతే HAVE_C_పంక్తి
+      || mode1->c_పంక్తి != mode2->c_పంక్తి
+#అయితే_ముగింపు
+      || !memeq (mode1->c_cc, mode2->c_cc, పరిమాణం (mode1->c_cc)))
+    తిరిగి false;
 
   /* Strip known baud-related flags from c_cflag before comparison.  */
-  tcflag_t cflag_mask = ~(tcflag_t) 0;
-#ifdef CBAUD
-  cflag_mask &= ~(tcflag_t) CBAUD;
-#endif
-#ifdef CIBAUD
-  cflag_mask &= ~(tcflag_t) CIBAUD;
-#endif
+  tcflag_t cflag_ముసుగు = ~(tcflag_t) 0;
+#నిర్వచితమైతే CBAUD
+  cflag_ముసుగు &= ~(tcflag_t) CBAUD;
+#అయితే_ముగింపు
+#నిర్వచితమైతే CIBAUD
+  cflag_ముసుగు &= ~(tcflag_t) CIBAUD;
+#అయితే_ముగింపు
 
-  if ((mode1->c_cflag ^ mode2->c_cflag) & cflag_mask)
-    return false;
+  ఒకవేళ ((mode1->c_cflag ^ mode2->c_cflag) & cflag_ముసుగు)
+    తిరిగి false;
 
-  return speed_matches (mode1, mode2);
+  తిరిగి వేగం_matches (mode1, mode2);
 }
 
 /* Return false if not applied because not reversible; otherwise
    return true.  */
 
-static bool
-set_mode (struct mode_info const *info, bool reversed, struct termios *mode)
+స్థిర bool
+సమితి_బహుళకం (నిర్మాణం బహుళకం_info స్థిరరాశి *info, bool reversed, నిర్మాణం termios *బహుళకం_2)
 {
   tcflag_t *bitsp;
 
-  if (reversed && (info->flags & REV) == 0)
-    return false;
+  ఒకవేళ (reversed && (info->flags & REV) == 0)
+    తిరిగి false;
 
-  bitsp = mode_type_flag (info->type, mode);
+  bitsp = బహుళకం_type_flag (info->type, బహుళకం_2);
 
-  if (bitsp == NULL)
+  ఒకవేళ (bitsp == ఖాళీ)
     {
       /* Combination mode. */
-      if (streq (info->name, "evenp") || streq (info->name, "parity"))
+      ఒకవేళ (streq (info->name, "evenp") || streq (info->name, "parity"))
         {
-          if (reversed)
-            mode->c_cflag = (mode->c_cflag & ~PARENB & ~CSIZE) | CS8;
-          else
-            mode->c_cflag = (mode->c_cflag & ~PARODD & ~CSIZE) | PARENB | CS7;
+          ఒకవేళ (reversed)
+            బహుళకం_2->c_cflag = (బహుళకం_2->c_cflag & ~PARENB & ~CSIZE) | CS8;
+          లేకపోతే
+            బహుళకం_2->c_cflag = (బహుళకం_2->c_cflag & ~PARODD & ~CSIZE) | PARENB | CS7;
         }
-      else if (streq (info->name, "oddp"))
+      లేకపోతే ఒకవేళ (streq (info->name, "oddp"))
         {
-          if (reversed)
-            mode->c_cflag = (mode->c_cflag & ~PARENB & ~CSIZE) | CS8;
-          else
-            mode->c_cflag = (mode->c_cflag & ~CSIZE) | CS7 | PARODD | PARENB;
+          ఒకవేళ (reversed)
+            బహుళకం_2->c_cflag = (బహుళకం_2->c_cflag & ~PARENB & ~CSIZE) | CS8;
+          లేకపోతే
+            బహుళకం_2->c_cflag = (బహుళకం_2->c_cflag & ~CSIZE) | CS7 | PARODD | PARENB;
         }
-      else if (streq (info->name, "nl"))
+      లేకపోతే ఒకవేళ (streq (info->name, "nl"))
         {
-          if (reversed)
+          ఒకవేళ (reversed)
             {
-              mode->c_iflag = (mode->c_iflag | ICRNL) & ~INLCR & ~IGNCR;
-              mode->c_oflag = (mode->c_oflag
-#ifdef ONLCR
+              బహుళకం_2->c_iflag = (బహుళకం_2->c_iflag | ICRNL) & ~INLCR & ~IGNCR;
+              బహుళకం_2->c_oflag = (బహుళకం_2->c_oflag
+#నిర్వచితమైతే ONLCR
                                | ONLCR
-#endif
+#అయితే_ముగింపు
                 )
-#ifdef OCRNL
+#నిర్వచితమైతే OCRNL
                 & ~OCRNL
-#endif
-#ifdef ONLRET
+#అయితే_ముగింపు
+#నిర్వచితమైతే ONLRET
                 & ~ONLRET
-#endif
+#అయితే_ముగింపు
                 ;
             }
-          else
+          లేకపోతే
             {
-              mode->c_iflag = mode->c_iflag & ~ICRNL;
-#ifdef ONLCR
-              mode->c_oflag = mode->c_oflag & ~ONLCR;
-#endif
+              బహుళకం_2->c_iflag = బహుళకం_2->c_iflag & ~ICRNL;
+#నిర్వచితమైతే ONLCR
+              బహుళకం_2->c_oflag = బహుళకం_2->c_oflag & ~ONLCR;
+#అయితే_ముగింపు
             }
         }
-      else if (streq (info->name, "ek"))
+      లేకపోతే ఒకవేళ (streq (info->name, "ek"))
         {
-          mode->c_cc[VERASE] = CERASE;
-          mode->c_cc[VKILL] = CKILL;
+          బహుళకం_2->c_cc[VERASE] = CERASE;
+          బహుళకం_2->c_cc[VKILL] = CKILL;
         }
-      else if (streq (info->name, "sane"))
-        sane_mode (mode);
-      else if (streq (info->name, "cbreak"))
+      లేకపోతే ఒకవేళ (streq (info->name, "sane"))
+        sane_బహుళకం (బహుళకం_2);
+      లేకపోతే ఒకవేళ (streq (info->name, "cbreak"))
         {
-          if (reversed)
-            mode->c_lflag |= ICANON;
-          else
-            mode->c_lflag &= ~ICANON;
+          ఒకవేళ (reversed)
+            బహుళకం_2->c_lflag |= ICANON;
+          లేకపోతే
+            బహుళకం_2->c_lflag &= ~ICANON;
         }
-      else if (streq (info->name, "pass8"))
+      లేకపోతే ఒకవేళ (streq (info->name, "pass8"))
         {
-          if (reversed)
+          ఒకవేళ (reversed)
             {
-              mode->c_cflag = (mode->c_cflag & ~CSIZE) | CS7 | PARENB;
-              mode->c_iflag |= ISTRIP;
+              బహుళకం_2->c_cflag = (బహుళకం_2->c_cflag & ~CSIZE) | CS7 | PARENB;
+              బహుళకం_2->c_iflag |= ISTRIP;
             }
-          else
+          లేకపోతే
             {
-              mode->c_cflag = (mode->c_cflag & ~PARENB & ~CSIZE) | CS8;
-              mode->c_iflag &= ~ISTRIP;
-            }
-        }
-      else if (streq (info->name, "litout"))
-        {
-          if (reversed)
-            {
-              mode->c_cflag = (mode->c_cflag & ~CSIZE) | CS7 | PARENB;
-              mode->c_iflag |= ISTRIP;
-              mode->c_oflag |= OPOST;
-            }
-          else
-            {
-              mode->c_cflag = (mode->c_cflag & ~PARENB & ~CSIZE) | CS8;
-              mode->c_iflag &= ~ISTRIP;
-              mode->c_oflag &= ~OPOST;
+              బహుళకం_2->c_cflag = (బహుళకం_2->c_cflag & ~PARENB & ~CSIZE) | CS8;
+              బహుళకం_2->c_iflag &= ~ISTRIP;
             }
         }
-      else if (streq (info->name, "raw") || streq (info->name, "cooked"))
+      లేకపోతే ఒకవేళ (streq (info->name, "litout"))
         {
-          if ((info->name[0] == 'r' && reversed)
+          ఒకవేళ (reversed)
+            {
+              బహుళకం_2->c_cflag = (బహుళకం_2->c_cflag & ~CSIZE) | CS7 | PARENB;
+              బహుళకం_2->c_iflag |= ISTRIP;
+              బహుళకం_2->c_oflag |= OPOST;
+            }
+          లేకపోతే
+            {
+              బహుళకం_2->c_cflag = (బహుళకం_2->c_cflag & ~PARENB & ~CSIZE) | CS8;
+              బహుళకం_2->c_iflag &= ~ISTRIP;
+              బహుళకం_2->c_oflag &= ~OPOST;
+            }
+        }
+      లేకపోతే ఒకవేళ (streq (info->name, "raw") || streq (info->name, "cooked"))
+        {
+          ఒకవేళ ((info->name[0] == 'r' && reversed)
               || (info->name[0] == 'c' && !reversed))
             {
               /* Cooked mode. */
-              mode->c_iflag |= BRKINT | IGNPAR | ISTRIP | ICRNL | IXON;
-              mode->c_oflag |= OPOST;
-              mode->c_lflag |= ISIG | ICANON;
-#if VMIN == VEOF
-              mode->c_cc[VEOF] = CEOF;
-#endif
-#if VTIME == VEOL
-              mode->c_cc[VEOL] = CEOL;
-#endif
+              బహుళకం_2->c_iflag |= BRKINT | IGNPAR | ISTRIP | ICRNL | IXON;
+              బహుళకం_2->c_oflag |= OPOST;
+              బహుళకం_2->c_lflag |= ISIG | ICANON;
+#ఒకవేళ VMIN == VEOF
+              బహుళకం_2->c_cc[VEOF] = CEOF;
+#అయితే_ముగింపు
+#ఒకవేళ VTIME == VEOL
+              బహుళకం_2->c_cc[VEOL] = CEOL;
+#అయితే_ముగింపు
             }
-          else
+          లేకపోతే
             {
               /* Raw mode. */
-              mode->c_iflag = 0;
-              mode->c_oflag &= ~OPOST;
-              mode->c_lflag &= ~(ISIG | ICANON
-#ifdef XCASE
+              బహుళకం_2->c_iflag = 0;
+              బహుళకం_2->c_oflag &= ~OPOST;
+              బహుళకం_2->c_lflag &= ~(ISIG | ICANON
+#నిర్వచితమైతే XCASE
                                  | XCASE
-#endif
+#అయితే_ముగింపు
                 );
-              mode->c_cc[VMIN] = 1;
-              mode->c_cc[VTIME] = 0;
+              బహుళకం_2->c_cc[VMIN] = 1;
+              బహుళకం_2->c_cc[VTIME] = 0;
             }
         }
-#ifdef IXANY
-      else if (streq (info->name, "decctlq"))
+#నిర్వచితమైతే IXANY
+      లేకపోతే ఒకవేళ (streq (info->name, "decctlq"))
         {
-          if (reversed)
-            mode->c_iflag |= IXANY;
-          else
-            mode->c_iflag &= ~IXANY;
+          ఒకవేళ (reversed)
+            బహుళకం_2->c_iflag |= IXANY;
+          లేకపోతే
+            బహుళకం_2->c_iflag &= ~IXANY;
         }
-#endif
-#ifdef TABDLY
-      else if (streq (info->name, "tabs"))
+#అయితే_ముగింపు
+#నిర్వచితమైతే TABDLY
+      లేకపోతే ఒకవేళ (streq (info->name, "tabs"))
         {
-          if (reversed)
-            mode->c_oflag = (mode->c_oflag & ~TABDLY) | TAB3;
-          else
-            mode->c_oflag = (mode->c_oflag & ~TABDLY) | TAB0;
+          ఒకవేళ (reversed)
+            బహుళకం_2->c_oflag = (బహుళకం_2->c_oflag & ~TABDLY) | TAB3;
+          లేకపోతే
+            బహుళకం_2->c_oflag = (బహుళకం_2->c_oflag & ~TABDLY) | TAB0;
         }
-#else
+#లేకపోతే
 # ifdef OXTABS
-      else if (streq (info->name, "tabs"))
+      లేకపోతే ఒకవేళ (streq (info->name, "tabs"))
         {
-          if (reversed)
-            mode->c_oflag = mode->c_oflag | OXTABS;
-          else
-            mode->c_oflag = mode->c_oflag & ~OXTABS;
+          ఒకవేళ (reversed)
+            బహుళకం_2->c_oflag = బహుళకం_2->c_oflag | OXTABS;
+          లేకపోతే
+            బహుళకం_2->c_oflag = బహుళకం_2->c_oflag & ~OXTABS;
         }
 # endif
-#endif
-#if defined XCASE && defined IUCLC && defined OLCUC
-      else if (streq (info->name, "lcase")
+#అయితే_ముగింపు
+#ఒకవేళ defined XCASE && defined IUCLC && defined OLCUC
+      లేకపోతే ఒకవేళ (streq (info->name, "lcase")
                || streq (info->name, "LCASE"))
         {
-          if (reversed)
+          ఒకవేళ (reversed)
             {
-              mode->c_lflag &= ~XCASE;
-              mode->c_iflag &= ~IUCLC;
-              mode->c_oflag &= ~OLCUC;
+              బహుళకం_2->c_lflag &= ~XCASE;
+              బహుళకం_2->c_iflag &= ~IUCLC;
+              బహుళకం_2->c_oflag &= ~OLCUC;
             }
-          else
+          లేకపోతే
             {
-              mode->c_lflag |= XCASE;
-              mode->c_iflag |= IUCLC;
-              mode->c_oflag |= OLCUC;
+              బహుళకం_2->c_lflag |= XCASE;
+              బహుళకం_2->c_iflag |= IUCLC;
+              బహుళకం_2->c_oflag |= OLCUC;
             }
         }
-#endif
-      else if (streq (info->name, "crt"))
-        mode->c_lflag |= ECHOE
-#ifdef ECHOCTL
+#అయితే_ముగింపు
+      లేకపోతే ఒకవేళ (streq (info->name, "crt"))
+        బహుళకం_2->c_lflag |= ECHOE
+#నిర్వచితమైతే ECHOCTL
           | ECHOCTL
-#endif
-#ifdef ECHOKE
+#అయితే_ముగింపు
+#నిర్వచితమైతే ECHOKE
           | ECHOKE
-#endif
+#అయితే_ముగింపు
           ;
-      else if (streq (info->name, "dec"))
+      లేకపోతే ఒకవేళ (streq (info->name, "dec"))
         {
-          mode->c_cc[VINTR] = 3;	/* ^C */
-          mode->c_cc[VERASE] = 127;	/* DEL */
-          mode->c_cc[VKILL] = 21;	/* ^U */
-          mode->c_lflag |= ECHOE
-#ifdef ECHOCTL
+          బహుళకం_2->c_cc[VINTR] = 3;	/* ^C */
+          బహుళకం_2->c_cc[VERASE] = 127;	/* DEL */
+          బహుళకం_2->c_cc[VKILL] = 21;	/* ^U */
+          బహుళకం_2->c_lflag |= ECHOE
+#నిర్వచితమైతే ECHOCTL
             | ECHOCTL
-#endif
-#ifdef ECHOKE
+#అయితే_ముగింపు
+#నిర్వచితమైతే ECHOKE
             | ECHOKE
-#endif
+#అయితే_ముగింపు
             ;
-#ifdef IXANY
-          mode->c_iflag &= ~IXANY;
-#endif
+#నిర్వచితమైతే IXANY
+          బహుళకం_2->c_iflag &= ~IXANY;
+#అయితే_ముగింపు
         }
     }
-  else if (reversed)
-    *bitsp = *bitsp & ~info->mask & ~info->bits;
-  else
-    *bitsp = (*bitsp & ~info->mask) | info->bits;
+  లేకపోతే ఒకవేళ (reversed)
+    *bitsp = *bitsp & ~info->ముసుగు & ~info->బిట్లు_2;
+  లేకపోతే
+    *bitsp = (*bitsp & ~info->ముసుగు) | info->బిట్లు_2;
 
-  return true;
+  తిరిగి true;
 }
 
-static void
-set_control_char (struct control_info const *info, char const *arg,
-                  struct termios *mode)
+స్థిర శూన్య
+సమితి_control_char (నిర్మాణం control_info స్థిరరాశి *info, అక్షరం స్థిరరాశి *arg,
+                  నిర్మాణం termios *బహుళకం_2)
 {
-  unsigned long int value;
+  గుర్తులేని దీర్ఘ పూర్ణాంకం విలువ;
 
-  if (streq (info->name, "min") || streq (info->name, "time"))
-    value = integer_arg (arg, TYPE_MAXIMUM (cc_t));
-  else if (arg[0] == '\0' || arg[1] == '\0')
-    value = to_uchar (arg[0]);
-  else if (streq (arg, "^-") || streq (arg, "undef"))
-    value = _POSIX_VDISABLE;
-  else if (arg[0] == '^' && arg[1] != '\0')	/* Ignore any trailing junk. */
+  ఒకవేళ (streq (info->name, "min") || streq (info->name, "time"))
+    విలువ = integer_arg (arg, TYPE_గరిష్ఠ (cc_t));
+  లేకపోతే ఒకవేళ (arg[0] == '\0' || arg[1] == '\0')
+    విలువ = గమ్యం_uchar (arg[0]);
+  లేకపోతే ఒకవేళ (streq (arg, "^-") || streq (arg, "undef"))
+    విలువ = _POSIX_VDISABLE;
+  లేకపోతే ఒకవేళ (arg[0] == '^' && arg[1] != '\0')	/* Ignore any trailing junk. */
     {
-      if (arg[1] == '?')
-        value = 127;
-      else
-        value = to_uchar (arg[1]) & ~0140; /* Non-letters get weird results. */
+      ఒకవేళ (arg[1] == '?')
+        విలువ = 127;
+      లేకపోతే
+        విలువ = గమ్యం_uchar (arg[1]) & ~0140; /* Non-letters get weird results. */
     }
-  else
-    value = integer_arg (arg, TYPE_MAXIMUM (cc_t));
-  mode->c_cc[info->offset] = value;
+  లేకపోతే
+    విలువ = integer_arg (arg, TYPE_గరిష్ఠ (cc_t));
+  బహుళకం_2->c_cc[info->స్థానభ్రంశం] = విలువ;
 }
 
-static void
-set_speed (enum speed_setting type, char const *arg,
-           struct speed_desc const speed, struct termios *mode)
+స్థిర శూన్య
+సమితి_వేగం (గణన వేగం_setting type, అక్షరం స్థిరరాశి *arg,
+           నిర్మాణం వేగం_desc స్థిరరాశి వేగం, నిర్మాణం termios *బహుళకం_2)
 {
   /* Note cfset[io]speed(), do not check with the device,
      and only check whether the system logic supports the specified speed.
      Therefore we don't report the device name in any errors.  */
 
-  affirm (speed.valid);
+  affirm (వేగం.valid);
 
-  if (type == input_speed || type == both_speeds)
+  ఒకవేళ (type == ఆదానం_వేగం || type == both_speeds)
     {
-      last_ibaud = speed;
-      if (cfsetispeed (mode, speed.baud))
+      చివరి_ibaud = వేగం;
+      ఒకవేళ (cfsetispeed (బహుళకం_2, వేగం.baud))
         error (EXIT_FAILURE, 0, _("unsupported ispeed %s"), quoteaf (arg));
     }
-  if (type == output_speed || type == both_speeds)
+  ఒకవేళ (type == output_వేగం || type == both_speeds)
     {
-      last_obaud = speed;
-      if (cfsetospeed (mode, speed.baud))
+      చివరి_obaud = వేగం;
+      ఒకవేళ (cfsetospeed (బహుళకం_2, వేగం.baud))
         error (EXIT_FAILURE, 0, _("unsupported ospeed %s"), quoteaf (arg));
     }
 }
 
-#ifdef TIOCGWINSZ
+#నిర్వచితమైతే TIOCGWINSZ
 
-static int
-get_win_size (int fd, struct winsize *win)
+స్థిర పూర్ణాంకం
+get_win_కొలత (పూర్ణాంకం fd, నిర్మాణం winsize *win)
 {
-  int err = ioctl (fd, TIOCGWINSZ, (char *) win);
-  return err;
+  పూర్ణాంకం err = ioctl (fd, TIOCGWINSZ, (అక్షరం *) win);
+  తిరిగి err;
 }
 
-static void
-set_window_size (int rows, int cols, char const *device_name)
+స్థిర శూన్య
+సమితి_కిటికీ_కొలత (పూర్ణాంకం అడ్డువరుసలు, పూర్ణాంకం నిలువుల_సంఖ్య_2, అక్షరం స్థిరరాశి *device_name)
 {
-  struct winsize win;
+  నిర్మాణం winsize win;
 
-  if (get_win_size (STDIN_FILENO, &win))
+  ఒకవేళ (get_win_కొలత (STDIN_FILENO, &win))
     {
-      if (errno != EINVAL)
+      ఒకవేళ (errno != EINVAL)
         error (EXIT_FAILURE, errno, "%s", quotef (device_name));
-      memset (&win, 0, sizeof (win));
+      memset (&win, 0, పరిమాణం (win));
     }
 
-  if (rows >= 0)
-    win.ws_row = rows;
-  if (cols >= 0)
-    win.ws_col = cols;
+  ఒకవేళ (అడ్డువరుసలు >= 0)
+    win.ws_అడ్డువరుస = అడ్డువరుసలు;
+  ఒకవేళ (నిలువుల_సంఖ్య_2 >= 0)
+    win.ws_నిలువు = నిలువుల_సంఖ్య_2;
 
 # ifdef TIOCSSIZE
   /* Alexander Dupuy <dupuy@cs.columbia.edu> wrote:
@@ -1832,58 +1832,58 @@ set_window_size (int rows, int cols, char const *device_name)
      The workaround is to do the ioctl once with row and col = 1 to set the
      pixel info, and then do it again using a TIOCSSIZE to set rows/cols.  */
 
-  if (win.ws_row == 0 || win.ws_col == 0)
+  ఒకవేళ (win.ws_అడ్డువరుస == 0 || win.ws_నిలువు == 0)
     {
-      struct ttysize ttysz;
+      నిర్మాణం ttysize ttysz;
 
-      ttysz.ts_lines = win.ws_row;
-      ttysz.ts_cols = win.ws_col;
+      ttysz.ts_పంక్తులు = win.ws_అడ్డువరుస;
+      ttysz.ts_నిలువుల_సంఖ్య = win.ws_నిలువు;
 
-      win.ws_row = 1;
-      win.ws_col = 1;
+      win.ws_అడ్డువరుస = 1;
+      win.ws_నిలువు = 1;
 
-      if (ioctl (STDIN_FILENO, TIOCSWINSZ, (char *) &win))
+      ఒకవేళ (ioctl (STDIN_FILENO, TIOCSWINSZ, (అక్షరం *) &win))
         error (EXIT_FAILURE, errno, "%s", quotef (device_name));
 
-      if (ioctl (STDIN_FILENO, TIOCSSIZE, (char *) &ttysz))
+      ఒకవేళ (ioctl (STDIN_FILENO, TIOCSSIZE, (అక్షరం *) &ttysz))
         error (EXIT_FAILURE, errno, "%s", quotef (device_name));
-      return;
+      తిరిగి;
     }
 # endif
 
-  if (ioctl (STDIN_FILENO, TIOCSWINSZ, (char *) &win))
+  ఒకవేళ (ioctl (STDIN_FILENO, TIOCSWINSZ, (అక్షరం *) &win))
     error (EXIT_FAILURE, errno, "%s", quotef (device_name));
 }
 
-static void
-display_window_size (bool fancy, char const *device_name)
+స్థిర శూన్య
+display_కిటికీ_కొలత (bool fancy, అక్షరం స్థిరరాశి *device_name)
 {
-  struct winsize win;
+  నిర్మాణం winsize win;
 
-  if (get_win_size (STDIN_FILENO, &win))
+  ఒకవేళ (get_win_కొలత (STDIN_FILENO, &win))
     {
-      if (errno != EINVAL)
+      ఒకవేళ (errno != EINVAL)
         error (EXIT_FAILURE, errno, "%s", quotef (device_name));
-      if (!fancy)
+      ఒకవేళ (!fancy)
         error (EXIT_FAILURE, 0,
                _("%s: no size information for this device"),
                quotef (device_name));
     }
-  else
+  లేకపోతే
     {
       wrapf (fancy ? "rows %d; columns %d;" : "%d %d\n",
-             win.ws_row, win.ws_col);
-      if (!fancy)
-        current_col = 0;
+             win.ws_అడ్డువరుస, win.ws_నిలువు);
+      ఒకవేళ (!fancy)
+        current_నిలువు = 0;
     }
 }
-#endif
+#అయితే_ముగింపు
 
-static int
-screen_columns (void)
+స్థిర పూర్ణాంకం
+screen_columns (శూన్య)
 {
-#ifdef TIOCGWINSZ
-  struct winsize win;
+#నిర్వచితమైతే TIOCGWINSZ
+  నిర్మాణం winsize win;
 
   /* With Solaris 2.[123], this ioctl fails and errno is set to
      EINVAL for telnet (but not rlogin) sessions.
@@ -1891,532 +1891,532 @@ screen_columns (void)
      (but it works for ptys).
      It can also fail on any system when stdout isn't a tty.
      In case of any failure, just use the default.  */
-  if (get_win_size (STDOUT_FILENO, &win) == 0 && 0 < win.ws_col)
-    return win.ws_col;
-#endif
+  ఒకవేళ (get_win_కొలత (STDOUT_FILENO, &win) == 0 && 0 < win.ws_నిలువు)
+    తిరిగి win.ws_నిలువు;
+#అయితే_ముగింపు
   {
     /* Use $COLUMNS if it's in [1..INT_MAX].  */
-    char *col_string = getenv ("COLUMNS");
-    long int n_columns;
-    if (!(col_string != NULL
-          && xstrtol (col_string, NULL, 0, &n_columns, "") == LONGINT_OK
+    అక్షరం *నిలువు_string = getenv ("COLUMNS");
+    దీర్ఘ పూర్ణాంకం n_columns;
+    ఒకవేళ (!(నిలువు_string != ఖాళీ
+          && xstrtol (నిలువు_string, ఖాళీ, 0, &n_columns, "") == LONGINT_OK
           && 0 < n_columns
-          && n_columns <= INT_MAX))
+          && n_columns <= గరిష్ఠ_పూర్ణాంకం))
       n_columns = 80;
-    return n_columns;
+    తిరిగి n_columns;
   }
 }
 
-ATTRIBUTE_PURE
-static tcflag_t *
-mode_type_flag (enum mode_type type, struct termios *mode)
+ATTRIBUTE_శుద్ధ
+స్థిర tcflag_t *
+బహుళకం_type_flag (గణన బహుళకం_type type, నిర్మాణం termios *బహుళకం_2)
 {
-  switch (type)
+  ఎంపిక (type)
     {
-    case control:
-      return &mode->c_cflag;
+    స్థితి control:
+      తిరిగి &బహుళకం_2->c_cflag;
 
-    case input:
-      return &mode->c_iflag;
+    స్థితి ఆదానం:
+      తిరిగి &బహుళకం_2->c_iflag;
 
-    case output:
-      return &mode->c_oflag;
+    స్థితి output:
+      తిరిగి &బహుళకం_2->c_oflag;
 
-    case local:
-      return &mode->c_lflag;
+    స్థితి local:
+      తిరిగి &బహుళకం_2->c_lflag;
 
-    case combination:
-      return NULL;
+    స్థితి combination:
+      తిరిగి ఖాళీ;
 
-    default:
+    అప్రమేయ:
       unreachable ();
     }
 }
 
-static void
-display_settings (enum output_type output_type, struct termios *mode,
-                  char const *device_name)
+స్థిర శూన్య
+display_settings (గణన output_type output_type, నిర్మాణం termios *బహుళకం_2,
+                  అక్షరం స్థిరరాశి *device_name)
 {
-  switch (output_type)
+  ఎంపిక (output_type)
     {
-    case changed:
-      display_changed (mode);
-      break;
+    స్థితి మారింది:
+      display_మారింది (బహుళకం_2);
+      ఆపు;
 
-    case all:
-      display_all (mode, device_name);
-      break;
+    స్థితి all:
+      display_all (బహుళకం_2, device_name);
+      ఆపు;
 
-    case recoverable:
-      display_recoverable (mode);
-      break;
+    స్థితి recoverable:
+      display_recoverable (బహుళకం_2);
+      ఆపు;
     }
 }
 
-static void
-display_changed (struct termios *mode)
+స్థిర శూన్య
+display_మారింది (నిర్మాణం termios *బహుళకం_2)
 {
-  bool empty_line;
+  bool ఖాళీలు_పంక్తి;
   tcflag_t *bitsp;
-  unsigned long mask;
-  enum mode_type prev_type = control;
+  గుర్తులేని దీర్ఘ ముసుగు;
+  గణన బహుళకం_type prev_type = control;
 
-  display_speed (mode, true);
-#ifdef HAVE_C_LINE
-  wrapf ("line = %d;", mode->c_line);
-#endif
-  putchar ('\n');
-  current_col = 0;
+  display_వేగం (బహుళకం_2, true);
+#నిర్వచితమైతే HAVE_C_పంక్తి
+  wrapf ("line = %d;", బహుళకం_2->c_పంక్తి);
+#అయితే_ముగింపు
+  అక్షరం_రాయి ('\n');
+  current_నిలువు = 0;
 
-  empty_line = true;
-  for (int i = 0; !streq (control_info[i].name, "min"); ++i)
+  ఖాళీలు_పంక్తి = true;
+  కొరకు (పూర్ణాంకం i = 0; !streq (control_info[i].name, "min"); ++i)
     {
-      if (mode->c_cc[control_info[i].offset] == control_info[i].saneval)
-        continue;
+      ఒకవేళ (బహుళకం_2->c_cc[control_info[i].స్థానభ్రంశం] == control_info[i].saneval)
+        కొనసాగు;
 
-#ifdef VFLUSHO
+#నిర్వచితమైతే VFLUSHO
       /* 'flush' is the deprecated equivalent of 'discard'.  */
-      if (streq (control_info[i].name, "flush"))
-        continue;
-#endif
+      ఒకవేళ (streq (control_info[i].name, "flush"))
+        కొనసాగు;
+#అయితే_ముగింపు
       /* If swtch is the same as susp, don't print both.  */
-#if VSWTCH == VSUSP
-      if (streq (control_info[i].name, "swtch"))
-        continue;
-#endif
+#ఒకవేళ VSWTCH == VSUSP
+      ఒకవేళ (streq (control_info[i].name, "swtch"))
+        కొనసాగు;
+#అయితే_ముగింపు
       /* If eof uses the same slot as min, only print whichever applies.  */
-#if VEOF == VMIN
-      if ((mode->c_lflag & ICANON) == 0
+#ఒకవేళ VEOF == VMIN
+      ఒకవేళ ((బహుళకం_2->c_lflag & ICANON) == 0
           && (streq (control_info[i].name, "eof")
               || streq (control_info[i].name, "eol")))
-        continue;
-#endif
+        కొనసాగు;
+#అయితే_ముగింపు
 
-      empty_line = false;
+      ఖాళీలు_పంక్తి = false;
       wrapf ("%s = %s;", control_info[i].name,
-             visible (mode->c_cc[control_info[i].offset]));
+             visible (బహుళకం_2->c_cc[control_info[i].స్థానభ్రంశం]));
     }
-  if ((mode->c_lflag & ICANON) == 0)
+  ఒకవేళ ((బహుళకం_2->c_lflag & ICANON) == 0)
     {
       wrapf ("min = %lu; time = %lu;\n",
-             (unsigned long int) mode->c_cc[VMIN],
-             (unsigned long int) mode->c_cc[VTIME]);
+             (గుర్తులేని దీర్ఘ పూర్ణాంకం) బహుళకం_2->c_cc[VMIN],
+             (గుర్తులేని దీర్ఘ పూర్ణాంకం) బహుళకం_2->c_cc[VTIME]);
     }
-  else if (!empty_line)
-    putchar ('\n');
-  current_col = 0;
+  లేకపోతే ఒకవేళ (!ఖాళీలు_పంక్తి)
+    అక్షరం_రాయి ('\n');
+  current_నిలువు = 0;
 
-  empty_line = true;
-  for (int i = 0; mode_info[i].name != NULL; ++i)
+  ఖాళీలు_పంక్తి = true;
+  కొరకు (పూర్ణాంకం i = 0; బహుళకం_info[i].name != ఖాళీ; ++i)
     {
-      if (mode_info[i].flags & OMIT)
-        continue;
-      if (mode_info[i].type != prev_type)
+      ఒకవేళ (బహుళకం_info[i].flags & OMIT)
+        కొనసాగు;
+      ఒకవేళ (బహుళకం_info[i].type != prev_type)
         {
-          if (!empty_line)
+          ఒకవేళ (!ఖాళీలు_పంక్తి)
             {
-              putchar ('\n');
-              current_col = 0;
-              empty_line = true;
+              అక్షరం_రాయి ('\n');
+              current_నిలువు = 0;
+              ఖాళీలు_పంక్తి = true;
             }
-          prev_type = mode_info[i].type;
+          prev_type = బహుళకం_info[i].type;
         }
 
-      bitsp = mode_type_flag (mode_info[i].type, mode);
-      mask = mode_info[i].mask ? mode_info[i].mask : mode_info[i].bits;
-      if ((*bitsp & mask) == mode_info[i].bits)
+      bitsp = బహుళకం_type_flag (బహుళకం_info[i].type, బహుళకం_2);
+      ముసుగు = బహుళకం_info[i].ముసుగు ? బహుళకం_info[i].ముసుగు : బహుళకం_info[i].బిట్లు_2;
+      ఒకవేళ ((*bitsp & ముసుగు) == బహుళకం_info[i].బిట్లు_2)
         {
-          if (mode_info[i].flags & SANE_UNSET)
+          ఒకవేళ (బహుళకం_info[i].flags & SANE_UNSET)
             {
-              wrapf ("%s", mode_info[i].name);
-              empty_line = false;
+              wrapf ("%s", బహుళకం_info[i].name);
+              ఖాళీలు_పంక్తి = false;
             }
         }
-      else if ((mode_info[i].flags & (SANE_SET | REV)) == (SANE_SET | REV))
+      లేకపోతే ఒకవేళ ((బహుళకం_info[i].flags & (SANE_సమితి | REV)) == (SANE_సమితి | REV))
         {
-          wrapf ("-%s", mode_info[i].name);
-          empty_line = false;
+          wrapf ("-%s", బహుళకం_info[i].name);
+          ఖాళీలు_పంక్తి = false;
         }
     }
-  if (!empty_line)
-    putchar ('\n');
-  current_col = 0;
+  ఒకవేళ (!ఖాళీలు_పంక్తి)
+    అక్షరం_రాయి ('\n');
+  current_నిలువు = 0;
 }
 
-static void
-display_all (struct termios *mode, char const *device_name)
+స్థిర శూన్య
+display_all (నిర్మాణం termios *బహుళకం_2, అక్షరం స్థిరరాశి *device_name)
 {
   tcflag_t *bitsp;
-  unsigned long mask;
-  enum mode_type prev_type = control;
+  గుర్తులేని దీర్ఘ ముసుగు;
+  గణన బహుళకం_type prev_type = control;
 
-  display_speed (mode, true);
-#ifdef TIOCGWINSZ
-  display_window_size (true, device_name);
-#endif
-#ifdef HAVE_C_LINE
-  wrapf ("line = %d;", mode->c_line);
-#endif
-  putchar ('\n');
-  current_col = 0;
+  display_వేగం (బహుళకం_2, true);
+#నిర్వచితమైతే TIOCGWINSZ
+  display_కిటికీ_కొలత (true, device_name);
+#అయితే_ముగింపు
+#నిర్వచితమైతే HAVE_C_పంక్తి
+  wrapf ("line = %d;", బహుళకం_2->c_పంక్తి);
+#అయితే_ముగింపు
+  అక్షరం_రాయి ('\n');
+  current_నిలువు = 0;
 
-  for (int i = 0; ! streq (control_info[i].name, "min"); ++i)
+  కొరకు (పూర్ణాంకం i = 0; ! streq (control_info[i].name, "min"); ++i)
     {
-#ifdef VFLUSHO
+#నిర్వచితమైతే VFLUSHO
       /* 'flush' is the deprecated equivalent of 'discard'.  */
-      if (streq (control_info[i].name, "flush"))
-        continue;
-#endif
+      ఒకవేళ (streq (control_info[i].name, "flush"))
+        కొనసాగు;
+#అయితే_ముగింపు
       /* If swtch is the same as susp, don't print both.  */
-#if VSWTCH == VSUSP
-      if (streq (control_info[i].name, "swtch"))
-        continue;
-#endif
+#ఒకవేళ VSWTCH == VSUSP
+      ఒకవేళ (streq (control_info[i].name, "swtch"))
+        కొనసాగు;
+#అయితే_ముగింపు
       /* If eof uses the same slot as min, only print whichever applies.  */
-#if VEOF == VMIN
-      if ((mode->c_lflag & ICANON) == 0
+#ఒకవేళ VEOF == VMIN
+      ఒకవేళ ((బహుళకం_2->c_lflag & ICANON) == 0
           && (streq (control_info[i].name, "eof")
               || streq (control_info[i].name, "eol")))
-        continue;
-#endif
+        కొనసాగు;
+#అయితే_ముగింపు
       wrapf ("%s = %s;", control_info[i].name,
-             visible (mode->c_cc[control_info[i].offset]));
+             visible (బహుళకం_2->c_cc[control_info[i].స్థానభ్రంశం]));
     }
-#if VEOF == VMIN
-  if ((mode->c_lflag & ICANON) == 0)
-#endif
+#ఒకవేళ VEOF == VMIN
+  ఒకవేళ ((బహుళకం_2->c_lflag & ICANON) == 0)
+#అయితే_ముగింపు
     wrapf ("min = %lu; time = %lu;",
-           (unsigned long int) mode->c_cc[VMIN],
-           (unsigned long int) mode->c_cc[VTIME]);
-  if (current_col != 0)
-    putchar ('\n');
-  current_col = 0;
+           (గుర్తులేని దీర్ఘ పూర్ణాంకం) బహుళకం_2->c_cc[VMIN],
+           (గుర్తులేని దీర్ఘ పూర్ణాంకం) బహుళకం_2->c_cc[VTIME]);
+  ఒకవేళ (current_నిలువు != 0)
+    అక్షరం_రాయి ('\n');
+  current_నిలువు = 0;
 
-  for (int i = 0; mode_info[i].name != NULL; ++i)
+  కొరకు (పూర్ణాంకం i = 0; బహుళకం_info[i].name != ఖాళీ; ++i)
     {
-      if (mode_info[i].flags & OMIT)
-        continue;
-      if (mode_info[i].type != prev_type)
+      ఒకవేళ (బహుళకం_info[i].flags & OMIT)
+        కొనసాగు;
+      ఒకవేళ (బహుళకం_info[i].type != prev_type)
         {
-          putchar ('\n');
-          current_col = 0;
-          prev_type = mode_info[i].type;
+          అక్షరం_రాయి ('\n');
+          current_నిలువు = 0;
+          prev_type = బహుళకం_info[i].type;
         }
 
-      bitsp = mode_type_flag (mode_info[i].type, mode);
-      mask = mode_info[i].mask ? mode_info[i].mask : mode_info[i].bits;
-      if ((*bitsp & mask) == mode_info[i].bits)
-        wrapf ("%s", mode_info[i].name);
-      else if (mode_info[i].flags & REV)
-        wrapf ("-%s", mode_info[i].name);
+      bitsp = బహుళకం_type_flag (బహుళకం_info[i].type, బహుళకం_2);
+      ముసుగు = బహుళకం_info[i].ముసుగు ? బహుళకం_info[i].ముసుగు : బహుళకం_info[i].బిట్లు_2;
+      ఒకవేళ ((*bitsp & ముసుగు) == బహుళకం_info[i].బిట్లు_2)
+        wrapf ("%s", బహుళకం_info[i].name);
+      లేకపోతే ఒకవేళ (బహుళకం_info[i].flags & REV)
+        wrapf ("-%s", బహుళకం_info[i].name);
     }
-  putchar ('\n');
-  current_col = 0;
+  అక్షరం_రాయి ('\n');
+  current_నిలువు = 0;
 }
 
 /* Verify requested asymmetric speeds are supported.
    Note we don't flag the case where only ispeed or
    ospeed is set, when that would set both.  */
 
-static void
-check_speed (struct termios *mode)
+స్థిర శూన్య
+check_వేగం (నిర్మాణం termios *బహుళకం_2)
 {
-  if (last_ibaud.valid && last_obaud.valid)
+  ఒకవేళ (చివరి_ibaud.valid && చివరి_obaud.valid)
     {
-      if (cfgetispeed (mode) != last_ibaud.baud
-          || cfgetospeed (mode) != last_obaud.baud)
+      ఒకవేళ (cfgetispeed (బహుళకం_2) != చివరి_ibaud.baud
+          || cfgetospeed (బహుళకం_2) != చివరి_obaud.baud)
         error (EXIT_FAILURE, 0,
                _("asymmetric input (%lu), output (%lu) speeds not supported"),
-               baud_to_value (last_ibaud.baud),
-               baud_to_value (last_obaud.baud));
+               baud_గమ్యం_విలువ (చివరి_ibaud.baud),
+               baud_గమ్యం_విలువ (చివరి_obaud.baud));
     }
 }
 
-static void
-display_speed (struct termios *mode, bool fancy)
+స్థిర శూన్య
+display_వేగం (నిర్మాణం termios *బహుళకం_2, bool fancy)
 {
-  if (cfgetispeed (mode) == 0 || cfgetispeed (mode) == cfgetospeed (mode))
+  ఒకవేళ (cfgetispeed (బహుళకం_2) == 0 || cfgetispeed (బహుళకం_2) == cfgetospeed (బహుళకం_2))
     wrapf (fancy ? "speed %lu baud;" : "%lu\n",
-           baud_to_value (cfgetospeed (mode)));
-  else
+           baud_గమ్యం_విలువ (cfgetospeed (బహుళకం_2)));
+  లేకపోతే
     wrapf (fancy ? "ispeed %lu baud; ospeed %lu baud;" : "%lu %lu\n",
-           baud_to_value (cfgetispeed (mode)),
-           baud_to_value (cfgetospeed (mode)));
-  if (!fancy)
-    current_col = 0;
+           baud_గమ్యం_విలువ (cfgetispeed (బహుళకం_2)),
+           baud_గమ్యం_విలువ (cfgetospeed (బహుళకం_2)));
+  ఒకవేళ (!fancy)
+    current_నిలువు = 0;
 }
 
-static void
-display_recoverable (struct termios *mode)
+స్థిర శూన్య
+display_recoverable (నిర్మాణం termios *బహుళకం_2)
 {
-  printf ("%lx:%lx:%lx:%lx",
-          (unsigned long int) mode->c_iflag,
-          (unsigned long int) mode->c_oflag,
-          (unsigned long int) mode->c_cflag,
-          (unsigned long int) mode->c_lflag);
-  for (size_t i = 0; i < NCCS; ++i)
-    printf (":%lx", (unsigned long int) mode->c_cc[i]);
+  రాయి ("%lx:%lx:%lx:%lx",
+          (గుర్తులేని దీర్ఘ పూర్ణాంకం) బహుళకం_2->c_iflag,
+          (గుర్తులేని దీర్ఘ పూర్ణాంకం) బహుళకం_2->c_oflag,
+          (గుర్తులేని దీర్ఘ పూర్ణాంకం) బహుళకం_2->c_cflag,
+          (గుర్తులేని దీర్ఘ పూర్ణాంకం) బహుళకం_2->c_lflag);
+  కొరకు (size_t i = 0; i < NCCS; ++i)
+    రాయి (":%lx", (గుర్తులేని దీర్ఘ పూర్ణాంకం) బహుళకం_2->c_cc[i]);
 
   /* Without CBAUD, speeds are stored separately from c_cflag (e.g.,
      on BSD).  Otherwise preserve the old format unless BOTHER is used.  */
   bool separate_speeds = true;
-#ifdef CBAUD
+#నిర్వచితమైతే CBAUD
   separate_speeds = false;
 # ifdef BOTHER
-  separate_speeds = (mode->c_cflag & CBAUD) == BOTHER;
-#  if defined CIBAUD && defined IBSHIFT
-  separate_speeds |= ((mode->c_cflag & CIBAUD) >> IBSHIFT) == BOTHER;
+  separate_speeds = (బహుళకం_2->c_cflag & CBAUD) == BOTHER;
+#  ఒకవేళ defined CIBAUD && defined IBSHIFT
+  separate_speeds |= ((బహుళకం_2->c_cflag & CIBAUD) >> IBSHIFT) == BOTHER;
 #  endif
 # endif
-#endif
-  if (separate_speeds)
-    printf (":%lx:%lx", (unsigned long int) cfgetispeed (mode),
-            (unsigned long int) cfgetospeed (mode));
+#అయితే_ముగింపు
+  ఒకవేళ (separate_speeds)
+    రాయి (":%lx:%lx", (గుర్తులేని దీర్ఘ పూర్ణాంకం) cfgetispeed (బహుళకం_2),
+            (గుర్తులేని దీర్ఘ పూర్ణాంకం) cfgetospeed (బహుళకం_2));
 
-  putchar ('\n');
+  అక్షరం_రాయి ('\n');
 }
 
 /* Define a strtoul wrapper that checks the delimiter and result range.  */
-#define STRTOUL_TYPE(TYPE)                                               \
-  static int                                                             \
-  strtoul_##TYPE (char const *s, int base, char **p, TYPE *result,       \
-                  char delim)                                            \
+#నిర్వచించు STRTOUL_TYPE(TYPE)                                               \
+  స్థిర పూర్ణాంకం                                                             \
+  strtoul_##TYPE (అక్షరం స్థిరరాశి *s, పూర్ణాంకం పునాది_2, అక్షరం **p, TYPE *ఫలితం,       \
+                  అక్షరం delim)                                            \
   {                                                                      \
-    unsigned long ul;                                                    \
+    గుర్తులేని దీర్ఘ ul;                                                    \
     errno = 0;                                                           \
-    ul = strtoul (s, p, base);                                           \
-    if (errno || **p != delim || *p == s || (TYPE) ul != ul)             \
-      return -1;                                                         \
-    *result = ul;                                                        \
-    return 0;                                                            \
+    ul = strtoul (s, p, పునాది_2);                                           \
+    ఒకవేళ (errno || **p != delim || *p == s || (TYPE) ul != ul)             \
+      తిరిగి -1;                                                         \
+    *ఫలితం = ul;                                                        \
+    తిరిగి 0;                                                            \
   }
 
 STRTOUL_TYPE (tcflag_t)
 STRTOUL_TYPE (cc_t)
-STRTOUL_TYPE (speed_t)
-#undef STRTOUL_TYPE
+STRTOUL_TYPE (వేగం_t)
+#నిర్వచనం_రద్దు STRTOUL_TYPE
 
 /* Autogenerated conversion functions to/from speed_t */
-#include "speedlist.h"
+#అన్తర్భావ "speedlist.h"
 
 /* Parse the output of display_recoverable.
    Return false if any part of it is invalid.  */
-static bool
-recover_mode (char const *arg, struct termios *mode)
+స్థిర bool
+recover_బహుళకం (అక్షరం స్థిరరాశి *arg, నిర్మాణం termios *బహుళకం_2)
 {
   tcflag_t flag[4];
-  char const *s = arg;
-  for (size_t i = 0; i < 4; i++)
+  అక్షరం స్థిరరాశి *s = arg;
+  కొరకు (size_t i = 0; i < 4; i++)
     {
-      char *p;
-      if (strtoul_tcflag_t (s, 16, &p, flag + i, ':') != 0)
-        return false;
+      అక్షరం *p;
+      ఒకవేళ (strtoul_tcflag_t (s, 16, &p, flag + i, ':') != 0)
+        తిరిగి false;
       s = p + 1;
     }
-  mode->c_iflag = flag[0];
-  mode->c_oflag = flag[1];
-  mode->c_cflag = flag[2];
-  mode->c_lflag = flag[3];
+  బహుళకం_2->c_iflag = flag[0];
+  బహుళకం_2->c_oflag = flag[1];
+  బహుళకం_2->c_cflag = flag[2];
+  బహుళకం_2->c_lflag = flag[3];
 
-  for (size_t i = 0; i < NCCS; ++i)
+  కొరకు (size_t i = 0; i < NCCS; ++i)
     {
-      char *p;
-      char delim = i < NCCS - 1 || strchr (s, ':') ? ':' : '\0';
-      if (strtoul_cc_t (s, 16, &p, mode->c_cc + i, delim) != 0)
-        return false;
+      అక్షరం *p;
+      అక్షరం delim = i < NCCS - 1 || strchr (s, ':') ? ':' : '\0';
+      ఒకవేళ (strtoul_cc_t (s, 16, &p, బహుళకం_2->c_cc + i, delim) != 0)
+        తిరిగి false;
       /* Accept the old format, which has no separate speed fields.  */
-      if (! *p)
+      ఒకవేళ (! *p)
         {
-#ifdef CBAUD
+#నిర్వచితమైతే CBAUD
           /* Some systems keep numeric speeds separately even when the
              control flags encode them.  Ensure those speeds are sync'd
              after restoring the flags.  */
-# ifdef TERMIOS_SPEED_T_SANE
-          struct speed_desc ospeed = cbaud_to_speed (mode->c_cflag & CBAUD);
-          if (ospeed.valid && cfsetospeed (mode, ospeed.baud) != 0)
-            return false;
-#  if defined CIBAUD && defined IBSHIFT
-          struct speed_desc ispeed =
-            cbaud_to_speed ((mode->c_cflag & CIBAUD) >> IBSHIFT);
-          if (ispeed.valid && cfsetispeed (mode, ispeed.baud) != 0)
-            return false;
+# ifdef TERMIOS_వేగం_T_SANE
+          నిర్మాణం వేగం_desc ospeed = cbaud_గమ్యం_వేగం (బహుళకం_2->c_cflag & CBAUD);
+          ఒకవేళ (ospeed.valid && cfsetospeed (బహుళకం_2, ospeed.baud) != 0)
+            తిరిగి false;
+#  ఒకవేళ defined CIBAUD && defined IBSHIFT
+          నిర్మాణం వేగం_desc ispeed =
+            cbaud_గమ్యం_వేగం ((బహుళకం_2->c_cflag & CIBAUD) >> IBSHIFT);
+          ఒకవేళ (ispeed.valid && cfsetispeed (బహుళకం_2, ispeed.baud) != 0)
+            తిరిగి false;
 #  endif
 # endif
-          last_ibaud.baud = cfgetispeed (mode);
-          last_obaud.baud = cfgetospeed (mode);
-#endif
-          return true;
+          చివరి_ibaud.baud = cfgetispeed (బహుళకం_2);
+          చివరి_obaud.baud = cfgetospeed (బహుళకం_2);
+#అయితే_ముగింపు
+          తిరిగి true;
         }
       s = p + 1;
     }
 
-  speed_t speed[2];
-  for (size_t i = 0; i < 2; i++)
+  వేగం_t వేగం[2];
+  కొరకు (size_t i = 0; i < 2; i++)
     {
-      char *p;
-      char delim = i == 0 ? ':' : '\0';
-      if (strtoul_speed_t (s, 16, &p, speed + i, delim) != 0)
-        return false;
+      అక్షరం *p;
+      అక్షరం delim = i == 0 ? ':' : '\0';
+      ఒకవేళ (strtoul_వేగం_t (s, 16, &p, వేగం + i, delim) != 0)
+        తిరిగి false;
       s = p + (i == 0);
     }
 
   /* Set output first, since an input speed of zero can mean to use
      the output speed.  */
-  if (cfsetospeed (mode, speed[1]) != 0
-      || cfsetispeed (mode, speed[0]) != 0)
-    return false;
+  ఒకవేళ (cfsetospeed (బహుళకం_2, వేగం[1]) != 0
+      || cfsetispeed (బహుళకం_2, వేగం[0]) != 0)
+    తిరిగి false;
 
-  last_ibaud.baud = speed[0] == 0 ? cfgetispeed (mode) : speed[0];
-  last_obaud.baud = speed[1];
-  return true;
+  చివరి_ibaud.baud = వేగం[0] == 0 ? cfgetispeed (బహుళకం_2) : వేగం[0];
+  చివరి_obaud.baud = వేగం[1];
+  తిరిగి true;
 }
 
 /* Return true if MODE1 and MODE2 have equivalent speeds.  */
-static bool
-speed_matches (struct termios const *mode1, struct termios const *mode2)
+స్థిర bool
+వేగం_matches (నిర్మాణం termios స్థిరరాశి *mode1, నిర్మాణం termios స్థిరరాశి *mode2)
 {
-  speed_t speed1[2] = { cfgetospeed (mode1), cfgetispeed (mode1) };
-  speed_t speed2[2] = { cfgetospeed (mode2), cfgetispeed (mode2) };
-  if (speed1[1] == 0)
+  వేగం_t speed1[2] = { cfgetospeed (mode1), cfgetispeed (mode1) };
+  వేగం_t speed2[2] = { cfgetospeed (mode2), cfgetispeed (mode2) };
+  ఒకవేళ (speed1[1] == 0)
     speed1[1] = speed1[0];
-  if (speed2[1] == 0)
+  ఒకవేళ (speed2[1] == 0)
     speed2[1] = speed2[0];
 
-  unsigned int bits = 2;  /* Start and stop bits.  */
-  bits += !!(mode1->c_cflag & CSTOPB);  /* Extra stop bit.  */
-  bits += !!(mode1->c_cflag & PARENB);  /* Parity bit.  */
+  గుర్తులేని పూర్ణాంకం బిట్లు_2 = 2;  /* Start and stop bits.  */
+  బిట్లు_2 += !!(mode1->c_cflag & CSTOPB);  /* Extra stop bit.  */
+  బిట్లు_2 += !!(mode1->c_cflag & PARENB);  /* Parity bit.  */
   /* Data bits.  */
-  switch (mode1->c_cflag & CSIZE)
+  ఎంపిక (mode1->c_cflag & CSIZE)
     {
-      case CS5: bits += 5; break;
-      case CS6: bits += 6; break;
-      case CS7: bits += 7; break;
-      default: bits += 8; break;
+      స్థితి CS5: బిట్లు_2 += 5; ఆపు;
+      స్థితి CS6: బిట్లు_2 += 6; ఆపు;
+      స్థితి CS7: బిట్లు_2 += 7; ఆపు;
+      అప్రమేయ: బిట్లు_2 += 8; ఆపు;
     }
 
-  for (int i = 0; i < 2; i++)
+  కొరకు (పూర్ణాంకం i = 0; i < 2; i++)
     {
-      unsigned long int value1;
-      unsigned long int value2;
-      unsigned long int delta;
+      గుర్తులేని దీర్ఘ పూర్ణాంకం value1;
+      గుర్తులేని దీర్ఘ పూర్ణాంకం value2;
+      గుర్తులేని దీర్ఘ పూర్ణాంకం delta;
 
-      if (speed1[i] == speed2[i])
-        continue;
+      ఒకవేళ (speed1[i] == speed2[i])
+        కొనసాగు;
 
-      value1 = baud_to_value (speed1[i]);
-      value2 = baud_to_value (speed2[i]);
+      value1 = baud_గమ్యం_విలువ (speed1[i]);
+      value2 = baud_గమ్యం_విలువ (speed2[i]);
 
-#ifndef TERMIOS_SPEED_T_SANE
+#నిర్వచితం_కాకపోతే TERMIOS_వేగం_T_SANE
       /* baud_to_value uses ULONG_MAX for an unrecognized encoding.  */
-      if (value1 == ULONG_MAX || value2 == ULONG_MAX)
-        return false;
-#endif
+      ఒకవేళ (value1 == ULONG_MAX || value2 == ULONG_MAX)
+        తిరిగి false;
+#అయితే_ముగింపు
 
       /* Accept a value that's within a 1/4 bit per character.
          E.g., for 8N1, within 2.5% of the requested speed.  */
       delta = value1 < value2 ? value2 - value1 : value1 - value2;
-      if (delta > value1 / (bits * 4))
-        return false;
+      ఒకవేళ (delta > value1 / (బిట్లు_2 * 4))
+        తిరిగి false;
     }
 
-  return true;
+  తిరిగి true;
 }
 
-ATTRIBUTE_PURE
-static struct speed_desc
-string_to_baud (char const *arg)
+ATTRIBUTE_శుద్ధ
+స్థిర నిర్మాణం వేగం_desc
+string_గమ్యం_baud (అక్షరం స్థిరరాశి *arg)
 {
-  char *ep;
-  unsigned long value;
-  unsigned char c;
+  అక్షరం *ep;
+  గుర్తులేని దీర్ఘ విలువ;
+  గుర్తులేని అక్షరం c;
 
   /* Explicitly disallow negative numbers.  */
-  while (c_isspace (*arg))
+  అయితే (c_isspace (*arg))
     arg++;
-  if (*arg == '-')
-    goto invalid;
+  ఒకవేళ (*arg == '-')
+    వెళ్ళు invalid;
 
   /* Empty does not mean 0.  */
-  if (! *arg)
-    goto invalid;
+  ఒకవేళ (! *arg)
+    వెళ్ళు invalid;
 
-  value = strtoul (arg, &ep, 10);
+  విలువ = strtoul (arg, &ep, 10);
 
   c = *ep++;
-  if (c == '.')
+  ఒకవేళ (c == '.')
     {
       /* Number includes a fraction. Round it to nearest-even.
          Note in particular that 134.5 must round to 134! */
       c = *ep++;
-      if (c)
+      ఒకవేళ (c)
         {
-          unsigned char d = c - '0';
-          if (d > 5)
-            value++;
-          else if (d == 5)
+          గుర్తులేని అక్షరం d = c - '0';
+          ఒకవేళ (d > 5)
+            విలువ++;
+          లేకపోతే ఒకవేళ (d == 5)
             {
-              while ((c = *ep++) == '0'); /* Skip zeroes after .5 */
+              అయితే ((c = *ep++) == '0'); /* Skip zeroes after .5 */
 
-              if (c)
-                value++;                /* Nonzero, round up */
-              else
-                value += (value & 1);   /* Exactly in the middle, round even */
+              ఒకవేళ (c)
+                విలువ++;                /* Nonzero, round up */
+              లేకపోతే
+                విలువ += (విలువ & 1);   /* Exactly in the middle, round even */
             }
 
-          while (c_isdigit (c)) /* Skip remaining digits.  */
+          అయితే (c_isdigit (c)) /* Skip remaining digits.  */
             c = *ep++;
 
-          if (c)
-            goto invalid; /* Garbage after otherwise valid number */
+          ఒకవేళ (c)
+            వెళ్ళు invalid; /* Garbage after otherwise valid number */
         }
     }
-  else if (c)
+  లేకపోతే ఒకవేళ (c)
     {
       /* Not a valid number; check for legacy aliases "exta" and "extb" */
-      if (streq (arg, "exta"))
-        return (struct speed_desc) { .baud = B19200, .valid = true };
-      else if (streq (arg, "extb"))
-        return (struct speed_desc) { .baud = B38400, .valid = true };
-      else
-        goto invalid;
+      ఒకవేళ (streq (arg, "exta"))
+        తిరిగి (నిర్మాణం వేగం_desc) { .baud = B19200, .valid = true };
+      లేకపోతే ఒకవేళ (streq (arg, "extb"))
+        తిరిగి (నిర్మాణం వేగం_desc) { .baud = B38400, .valid = true };
+      లేకపోతే
+        వెళ్ళు invalid;
     }
 
-  return value_to_baud (value);
+  తిరిగి విలువ_గమ్యం_baud (విలువ);
 
  invalid:
-  return (struct speed_desc) { .baud = (speed_t) -1, .valid = false };
+  తిరిగి (నిర్మాణం వేగం_desc) { .baud = (వేగం_t) -1, .valid = false };
 }
 
-static void
-sane_mode (struct termios *mode)
+స్థిర శూన్య
+sane_బహుళకం (నిర్మాణం termios *బహుళకం_2)
 {
   tcflag_t *bitsp;
 
-  for (int i = 0; control_info[i].name; ++i)
+  కొరకు (పూర్ణాంకం i = 0; control_info[i].name; ++i)
     {
-#if VMIN == VEOF
-      if (streq (control_info[i].name, "min"))
-        break;
-#endif
-      mode->c_cc[control_info[i].offset] = control_info[i].saneval;
+#ఒకవేళ VMIN == VEOF
+      ఒకవేళ (streq (control_info[i].name, "min"))
+        ఆపు;
+#అయితే_ముగింపు
+      బహుళకం_2->c_cc[control_info[i].స్థానభ్రంశం] = control_info[i].saneval;
     }
 
-  for (int i = 0; mode_info[i].name != NULL; ++i)
+  కొరకు (పూర్ణాంకం i = 0; బహుళకం_info[i].name != ఖాళీ; ++i)
     {
-      if (mode_info[i].flags & NO_SETATTR)
-        continue;
+      ఒకవేళ (బహుళకం_info[i].flags & NO_SETATTR)
+        కొనసాగు;
 
-      if (mode_info[i].flags & SANE_SET)
+      ఒకవేళ (బహుళకం_info[i].flags & SANE_సమితి)
         {
-          bitsp = mode_type_flag (mode_info[i].type, mode);
+          bitsp = బహుళకం_type_flag (బహుళకం_info[i].type, బహుళకం_2);
           assume (bitsp); /* combination modes will not have SANE_SET.  */
-          *bitsp = (*bitsp & ~mode_info[i].mask) | mode_info[i].bits;
+          *bitsp = (*bitsp & ~బహుళకం_info[i].ముసుగు) | బహుళకం_info[i].బిట్లు_2;
         }
-      else if (mode_info[i].flags & SANE_UNSET)
+      లేకపోతే ఒకవేళ (బహుళకం_info[i].flags & SANE_UNSET)
         {
-          bitsp = mode_type_flag (mode_info[i].type, mode);
+          bitsp = బహుళకం_type_flag (బహుళకం_info[i].type, బహుళకం_2);
           assume (bitsp); /* combination modes will not have SANE_UNSET.  */
-          *bitsp = *bitsp & ~mode_info[i].mask & ~mode_info[i].bits;
+          *bitsp = *bitsp & ~బహుళకం_info[i].ముసుగు & ~బహుళకం_info[i].బిట్లు_2;
         }
     }
 }
@@ -2424,61 +2424,61 @@ sane_mode (struct termios *mode)
 /* Return a string that is the printable representation of character CH.  */
 /* Adapted from 'cat' by Torbjörn Granlund.  */
 
-static char const *
+స్థిర అక్షరం స్థిరరాశి *
 visible (cc_t ch)
 {
-  static char buf[10];
-  char *bpout = buf;
+  స్థిర అక్షరం buf[10];
+  అక్షరం *bpout = buf;
 
-  if (ch == _POSIX_VDISABLE)
-    return "<undef>";
+  ఒకవేళ (ch == _POSIX_VDISABLE)
+    తిరిగి "<undef>";
 
-  if (ch >= 32)
+  ఒకవేళ (ch >= 32)
     {
-      if (ch < 127)
+      ఒకవేళ (ch < 127)
         *bpout++ = ch;
-      else if (ch == 127)
+      లేకపోతే ఒకవేళ (ch == 127)
         {
           *bpout++ = '^';
           *bpout++ = '?';
         }
-      else
+      లేకపోతే
         {
           *bpout++ = 'M';
           *bpout++ = '-';
-          if (ch >= 128 + 32)
+          ఒకవేళ (ch >= 128 + 32)
             {
-              if (ch < 128 + 127)
+              ఒకవేళ (ch < 128 + 127)
                 *bpout++ = ch - 128;
-              else
+              లేకపోతే
                 {
                   *bpout++ = '^';
                   *bpout++ = '?';
                 }
             }
-          else
+          లేకపోతే
             {
               *bpout++ = '^';
               *bpout++ = ch - 128 + 64;
             }
         }
     }
-  else
+  లేకపోతే
     {
       *bpout++ = '^';
       *bpout++ = ch + 64;
     }
   *bpout = '\0';
-  return (char const *) buf;
+  తిరిగి (అక్షరం స్థిరరాశి *) buf;
 }
 
 /* Parse string S as an integer, using decimal radix by default,
    but allowing octal and hex numbers as in C.  Reject values
    larger than MAXVAL.  */
 
-static uintmax_t
-integer_arg (char const *s, uintmax_t maxval)
+స్థిర uintmax_t
+integer_arg (అక్షరం స్థిరరాశి *s, uintmax_t maxval)
 {
-  return xnumtoumax (s, 0, 0, maxval, "bB", _("invalid integer argument"),
+  తిరిగి xnumtoumax (s, 0, 0, maxval, "bB", _("invalid integer argument"),
                      0, 0);
 }
