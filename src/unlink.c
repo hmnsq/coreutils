@@ -20,25 +20,25 @@
 
    Simply call the system 'unlink' function */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
+#অন্তর্ভাব <config.h>
+#অন্তর্ভাব <stdio.h>
+#অন্তর্ভাব <sys/types.h>
 
-#include "system.h"
-#include "long-options.h"
-#include "quote.h"
+#অন্তর্ভাব "system.h"
+#অন্তর্ভাব "long-options.h"
+#অন্তর্ভাব "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "unlink"
 
 #define AUTHORS proper_name ("Michael Stone")
 
-void
-usage (int status)
+শূন্য
+usage (পূর্ণাঙ্ক status)
 {
-  if (status != EXIT_SUCCESS)
+  যদি (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  অন্যথা
     {
       printf (_("\
 Usage: %s FILE\n\
@@ -52,8 +52,8 @@ Usage: %s FILE\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+পূর্ণাঙ্ক
+main (পূর্ণাঙ্ক argc, বর্ণ **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -65,22 +65,22 @@ main (int argc, char **argv)
 
   parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
                                    Version, true, usage, AUTHORS,
-                                   (char const *) NULL);
+                                   (বর্ণ ধ্রুব *) রিক্ত);
 
-  if (argc < optind + 1)
+  যদি (argc < optind + 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
-  if (optind + 1 < argc)
+  যদি (optind + 1 < argc)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind + 1]));
       usage (EXIT_FAILURE);
     }
 
-  if (unlink (argv[optind]) != 0)
+  যদি (unlink (argv[optind]) != 0)
     error (EXIT_FAILURE, errno, _("cannot unlink %s"), quoteaf (argv[optind]));
 
-  return EXIT_SUCCESS;
+  প্রত্যাগম EXIT_SUCCESS;
 }

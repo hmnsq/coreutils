@@ -14,7 +14,7 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <stdlib.h>
+#অন্তর্ভাব <stdlib.h>
 
-extern char *find_mount_point (char const *, struct stat const *)
+বাহ্য বর্ণ *find_mount_point (বর্ণ ধ্রুব *, সংরচনা stat ধ্রুব *)
   _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC_FREE _GL_ATTRIBUTE_NONNULL ();

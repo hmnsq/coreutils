@@ -18,92 +18,92 @@
    Major rewrite by David MacKenzie, djm@gnu.ai.mit.edu.
    Extracted from id.c by James Youngman. */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <pwd.h>
-#include <grp.h>
+#অন্তর্ভাব <config.h>
+#অন্তর্ভাব <stdio.h>
+#অন্তর্ভাব <sys/types.h>
+#অন্তর্ভাব <pwd.h>
+#অন্তর্ভাব <grp.h>
 
-#include "system.h"
-#include "mgetgroups.h"
-#include "quote.h"
-#include "group-list.h"
+#অন্তর্ভাব "system.h"
+#অন্তর্ভাব "mgetgroups.h"
+#অন্তর্ভাব "quote.h"
+#অন্তর্ভাব "group-list.h"
 
 
 /* Print all of the distinct groups the user is in. */
-extern bool
-print_group_list (char const *username,
+বাহ্য bool
+print_group_list (বর্ণ ধ্রুব *username,
                   uid_t ruid, gid_t rgid, gid_t egid,
-                  bool use_names, char delim)
+                  bool use_names, বর্ণ delim)
 {
   bool ok = true;
-  struct passwd *pwd = NULL;
+  সংরচনা passwd *pwd = রিক্ত;
 
-  if (username)
+  যদি (username)
     {
       pwd = getpwuid (ruid);
-      if (pwd == NULL)
+      যদি (pwd == রিক্ত)
         ok = false;
     }
 
-  if (!print_group (rgid, use_names))
+  যদি (!print_group (rgid, use_names))
     ok = false;
 
-  if (egid != rgid)
+  যদি (egid != rgid)
     {
       putchar (delim);
-      if (!print_group (egid, use_names))
+      যদি (!print_group (egid, use_names))
         ok = false;
     }
 
   {
     gid_t *groups;
 
-    int n_groups = xgetgroups (username, (pwd ? pwd->pw_gid : egid), &groups);
-    if (n_groups < 0)
+    পূর্ণাঙ্ক n_groups = xgetgroups (username, (pwd ? pwd->pw_gid : egid), &groups);
+    যদি (n_groups < 0)
       {
-        if (username)
+        যদি (username)
           {
             error (0, errno, _("failed to get groups for user %s"),
                    quote (username));
           }
-        else
+        অন্যথা
           {
             error (0, errno, _("failed to get groups for the current process"));
           }
-        return false;
+        প্রত্যাগম false;
       }
 
-    for (int i = 0; i < n_groups; i++)
-      if (groups[i] != rgid && groups[i] != egid)
+    প্রতি (পূর্ণাঙ্ক i = 0; i < n_groups; i++)
+      যদি (groups[i] != rgid && groups[i] != egid)
         {
           putchar (delim);
-          if (!print_group (groups[i], use_names))
+          যদি (!print_group (groups[i], use_names))
             ok = false;
         }
-    free (groups);
+    মুক্ত (groups);
   }
-  return ok;
+  প্রত্যাগম ok;
 }
 
 /* Print the name or value of group ID GID. */
-extern bool
+বাহ্য bool
 print_group (gid_t gid, bool use_name)
 {
-  struct group *grp = NULL;
+  সংরচনা group *grp = রিক্ত;
   bool ok = true;
 
-  if (use_name)
+  যদি (use_name)
     {
       grp = getgrgid (gid);
-      if (grp == NULL)
+      যদি (grp == রিক্ত)
         {
-          if (TYPE_SIGNED (gid_t))
+          যদি (TYPE_SIGNED (gid_t))
             {
               intmax_t g = gid;
               error (0, 0, _("cannot find name for group ID %jd"), g);
             }
-          else
+          অন্যথা
             {
               uintmax_t g = gid;
               error (0, 0, _("cannot find name for group ID %ju"), g);
@@ -112,9 +112,9 @@ print_group (gid_t gid, bool use_name)
         }
     }
 
-  if (grp)
+  যদি (grp)
     printf ("%s", grp->gr_name);
-  else
+  অন্যথা
     printf ("%ju", (uintmax_t) gid);
-  return ok;
+  প্রত্যাগম ok;
 }

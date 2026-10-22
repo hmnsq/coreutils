@@ -1,4 +1,4 @@
-extern int force_linkat (int, char const *, int, char const *, int, bool, int)
+বাহ্য পূর্ণাঙ্ক force_linkat (পূর্ণাঙ্ক, বর্ণ ধ্রুব *, পূর্ণাঙ্ক, বর্ণ ধ্রুব *, পূর্ণাঙ্ক, bool, পূর্ণাঙ্ক)
   _GL_ATTRIBUTE_NONNULL ();
-extern int force_symlinkat (char const *, int, char const *, bool, int)
+বাহ্য পূর্ণাঙ্ক force_symlinkat (বর্ণ ধ্রুব *, পূর্ণাঙ্ক, বর্ণ ধ্রুব *, bool, পূর্ণাঙ্ক)
   _GL_ATTRIBUTE_NONNULL ();

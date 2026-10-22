@@ -21,23 +21,23 @@
 /* Convert OPERAND to a signal number.  Return the signal number, or -1 if
    unsuccessful.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/wait.h>
+#অন্তর্ভাব <config.h>
+#অন্তর্ভাব <stdio.h>
+#অন্তর্ভাব <sys/types.h>
+#অন্তর্ভাব <sys/wait.h>
 
-#include "system.h"
-#include "c-ctype.h"
-#include "quote.h"
-#include "sig2str.h"
-#include "operand2sig.h"
+#অন্তর্ভাব "system.h"
+#অন্তর্ভাব "c-ctype.h"
+#অন্তর্ভাব "quote.h"
+#অন্তর্ভাব "sig2str.h"
+#অন্তর্ভাব "operand2sig.h"
 
-extern int
-operand2sig (char const *operand)
+বাহ্য পূর্ণাঙ্ক
+operand2sig (বর্ণ ধ্রুব *operand)
 {
-  int signum;
+  পূর্ণাঙ্ক signum;
 
-  if (c_isdigit (*operand))
+  যদি (c_isdigit (*operand))
     {
       /* Note we don't put a limit on the maximum value passed,
          because we're checking shell $? values here, and ksh for
@@ -50,12 +50,12 @@ operand2sig (char const *operand)
          wider exit status values as discussed at
          https://austingroupbugs.net/view.php?id=947  */
 
-      char *endp;
-      long int l = (errno = 0, strtol (operand, &endp, 10));
-      int i = l;
+      বর্ণ *endp;
+      long পূর্ণাঙ্ক l = (errno = 0, strtol (operand, &endp, 10));
+      পূর্ণাঙ্ক i = l;
       signum = (operand == endp || *endp || errno || i != l ? -1 : i);
 
-      if (signum != -1)
+      যদি (signum != -1)
         {
           /* Note AIX uses a different bit pattern for status returned
              from shell and wait(), so we can't use WTERMSIG etc. here.
@@ -63,30 +63,30 @@ operand2sig (char const *operand)
           signum &= signum >= 0xFF ? 0xFF : 0x7F;
         }
     }
-  else
+  অন্যথা
     {
       /* Convert signal to upper case in the C locale, not in the
          current locale.  Don't assume ASCII; it might be EBCDIC.  */
-      char *upcased = xstrdup (operand);
-      for (char *p = upcased; *p; p++)
-        if (strchr ("abcdefghijklmnopqrstuvwxyz", *p))
+      বর্ণ *upcased = xstrdup (operand);
+      প্রতি (বর্ণ *p = upcased; *p; p++)
+        যদি (strchr ("abcdefghijklmnopqrstuvwxyz", *p))
           *p += 'A' - 'a';
 
       /* Look for the signal name, possibly prefixed by "SIG",
          and possibly lowercased.  */
-      if (!(str2sig (upcased, &signum) == 0
+      যদি (!(str2sig (upcased, &signum) == 0
             || (upcased[0] == 'S' && upcased[1] == 'I' && upcased[2] == 'G'
                 && str2sig (upcased + 3, &signum) == 0)))
         signum = -1;
 
-      free (upcased);
+      মুক্ত (upcased);
     }
 
-  if (0 > signum || signum > SIGNUM_BOUND)
+  যদি (0 > signum || signum > SIGNUM_BOUND)
     {
       error (0, 0, _("%s: invalid signal"), quote (operand));
-      return -1;
+      প্রত্যাগম -1;
     }
 
-  return signum;
+  প্রত্যাগম signum;
 }

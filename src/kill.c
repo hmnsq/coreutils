@@ -16,45 +16,45 @@
 
 /* Written by Paul Eggert.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
-#include <signal.h>
+#অন্তর্ভাব <config.h>
+#অন্তর্ভাব <stdio.h>
+#অন্তর্ভাব <getopt.h>
+#অন্তর্ভাব <sys/types.h>
+#অন্তর্ভাব <signal.h>
 
-#include "system.h"
-#include "c-ctype.h"
-#include "sig2str.h"
-#include "operand2sig.h"
-#include "quote.h"
+#অন্তর্ভাব "system.h"
+#অন্তর্ভাব "c-ctype.h"
+#অন্তর্ভাব "sig2str.h"
+#অন্তর্ভাব "operand2sig.h"
+#অন্তর্ভাব "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "kill"
 
 #define AUTHORS proper_name ("Paul Eggert")
 
-static char const short_options[] =
+স্থির বর্ণ ধ্রুব short_options[] =
   "0::1::2::3::4::5::6::7::8::9::"
   "A::B::C::D::E::F::G::H::I::J::K::M::"
   "N::O::P::Q::R::S::T::U::V::W::X::Y::Z::"
   "Lln:s:t";
 
-static struct option const long_options[] =
+স্থির সংরচনা option ধ্রুব long_options[] =
 {
-  {"list", no_argument, NULL, 'l'},
-  {"signal", required_argument, NULL, 's'},
-  {"table", no_argument, NULL, 't'},
+  {"list", no_argument, রিক্ত, 'l'},
+  {"signal", required_argument, রিক্ত, 's'},
+  {"table", no_argument, রিক্ত, 't'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {রিক্ত, 0, রিক্ত, 0}
 };
 
-void
-usage (int status)
+শূন্য
+usage (পূর্ণাঙ্ক status)
 {
-  if (status != EXIT_SUCCESS)
+  যদি (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  অন্যথা
     {
       printf (_("\
 Usage: %s [-s SIGNAL | -SIGNAL] PID...\n\
@@ -69,23 +69,23 @@ Send signals to processes, or list signals.\n\
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -s, --signal=SIGNAL, -SIGNAL\n\
-         specify the name or number of the signal to be sent\n\
+  -s, --সঙ্কেত=SIGNAL, -SIGNAL\n\
+         specify the name or সংখ্যা of the সঙ্কেত to be sent\n\
 "));
       oputs (_("\
   -l, --list\n\
-         list signal names, or convert signal names to/from numbers\n\
+         list সঙ্কেত names, or convert সঙ্কেত names to/from numbers\n\
 "));
       oputs (_("\
   -t, --table\n\
-         print a table of signal information\n\
+         print a table of সঙ্কেত information\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
       fputs (_("\n\
-SIGNAL may be a signal name like 'HUP', or a signal number like '1',\n\
-or the exit status of a process terminated by a signal.\n\
-PID is an integer; if negative it identifies a process group.\n\
+SIGNAL may be a সঙ্কেত name like 'HUP', or a সঙ্কেত সংখ্যা like '1',\n\
+or the exit status of a process terminated by a সঙ্কেত.\n\
+PID is an integer; যদি negative it identifies a process group.\n\
 "), stdout);
       printf (USAGE_BUILTIN_WARNING, PROGRAM_NAME);
       emit_ancillary_info (PROGRAM_NAME);
@@ -97,12 +97,12 @@ PID is an integer; if negative it identifies a process group.\n\
    number width, and SIGNUM is the signal number to print.  The
    maximum name width is NAME_WIDTH, and SIGNAME is the name to print.  */
 
-static void
-print_table_row (int num_width, int signum,
-                 int name_width, char const *signame)
+স্থির শূন্য
+print_table_row (পূর্ণাঙ্ক অঙ্ক_width, পূর্ণাঙ্ক signum,
+                 পূর্ণাঙ্ক name_width, বর্ণ ধ্রুব *signame)
 {
-  char const *description = strsignal (signum);
-  printf ("%*d %-*s %s\n", num_width, signum, name_width, signame,
+  বর্ণ ধ্রুব *description = strsignal (signum);
+  printf ("%*d %-*s %s\n", অঙ্ক_width, signum, name_width, signame,
           description ? description : "?");
 }
 
@@ -110,117 +110,117 @@ print_table_row (int num_width, int signum,
    Print the names specified by ARGV if nonzero; otherwise,
    print all known names.  Return a suitable exit status.  */
 
-static int
-list_signals (bool table, char *const *argv)
+স্থির পূর্ণাঙ্ক
+list_signals (bool table, বর্ণ *ধ্রুব *argv)
 {
-  int status = EXIT_SUCCESS;
-  char signame[SIG2STR_MAX];
+  পূর্ণাঙ্ক status = EXIT_SUCCESS;
+  বর্ণ signame[SIG2STR_MAX];
 
-  if (table)
+  যদি (table)
     {
-      int name_width = 0;
+      পূর্ণাঙ্ক name_width = 0;
 
       /* Compute the maximum width of a signal number.  */
-      int num_width = 1;
-      for (int signum = 1; signum <= SIGNUM_BOUND / 10; signum *= 10)
-        num_width++;
+      পূর্ণাঙ্ক অঙ্ক_width = 1;
+      প্রতি (পূর্ণাঙ্ক signum = 1; signum <= SIGNUM_BOUND / 10; signum *= 10)
+        অঙ্ক_width++;
 
       /* Compute the maximum width of a signal name.  */
-      for (int signum = 0; signum <= SIGNUM_BOUND; signum++)
-        if (sig2str (signum, signame) == 0)
+      প্রতি (পূর্ণাঙ্ক signum = 0; signum <= SIGNUM_BOUND; signum++)
+        যদি (sig2str (signum, signame) == 0)
           {
             idx_t len = strlen (signame);
-            if (name_width < len)
+            যদি (name_width < len)
               name_width = len;
           }
 
-      if (argv)
-        for (; *argv; argv++)
+      যদি (argv)
+        প্রতি (; *argv; argv++)
           {
-            int signum = operand2sig (*argv);
-            if (signum < 0)
+            পূর্ণাঙ্ক signum = operand2sig (*argv);
+            যদি (signum < 0)
               status = EXIT_FAILURE;
-            else
+            অন্যথা
               {
-                if (sig2str (signum, signame) != 0)
-                  snprintf (signame, sizeof signame, "SIG%d", signum);
-                print_table_row (num_width, signum, name_width, signame);
+                যদি (sig2str (signum, signame) != 0)
+                  snprintf (signame, পরিমাণ signame, "SIG%d", signum);
+                print_table_row (অঙ্ক_width, signum, name_width, signame);
               }
           }
-      else
-        for (int signum = 0; signum <= SIGNUM_BOUND; signum++)
-          if (sig2str (signum, signame) == 0)
-            print_table_row (num_width, signum, name_width, signame);
+      অন্যথা
+        প্রতি (পূর্ণাঙ্ক signum = 0; signum <= SIGNUM_BOUND; signum++)
+          যদি (sig2str (signum, signame) == 0)
+            print_table_row (অঙ্ক_width, signum, name_width, signame);
     }
-  else
+  অন্যথা
     {
-      if (argv)
-        for (; *argv; argv++)
+      যদি (argv)
+        প্রতি (; *argv; argv++)
           {
-            int signum = operand2sig (*argv);
-            if (signum < 0)
+            পূর্ণাঙ্ক signum = operand2sig (*argv);
+            যদি (signum < 0)
               status = EXIT_FAILURE;
-            else if (c_isdigit (**argv))
+            অন্যথা যদি (c_isdigit (**argv))
               {
-                if (sig2str (signum, signame) == 0)
+                যদি (sig2str (signum, signame) == 0)
                   puts (signame);
-                else
+                অন্যথা
                   printf ("%d\n", signum);
               }
-            else
+            অন্যথা
               printf ("%d\n", signum);
           }
-      else
-        for (int signum = 0; signum <= SIGNUM_BOUND; signum++)
-          if (sig2str (signum, signame) == 0)
+      অন্যথা
+        প্রতি (পূর্ণাঙ্ক signum = 0; signum <= SIGNUM_BOUND; signum++)
+          যদি (sig2str (signum, signame) == 0)
             puts (signame);
     }
 
-  return status;
+  প্রত্যাগম status;
 }
 
 /* Send signal SIGNUM to all the processes or process groups specified
    by ARGV.  Return a suitable exit status.  */
 
-static int
-send_signals (int signum, char *const *argv)
+স্থির পূর্ণাঙ্ক
+send_signals (পূর্ণাঙ্ক signum, বর্ণ *ধ্রুব *argv)
 {
-  int status = EXIT_SUCCESS;
-  char const *arg = *argv;
+  পূর্ণাঙ্ক status = EXIT_SUCCESS;
+  বর্ণ ধ্রুব *arg = *argv;
 
-  do
+  কুরু
     {
-      char *endp;
+      বর্ণ *endp;
       intmax_t n = (errno = 0, strtoimax (arg, &endp, 10));
       pid_t pid;
 
-      if (errno == ERANGE || ckd_add (&pid, n, 0)
+      যদি (errno == ERANGE || ckd_add (&pid, n, 0)
           || arg == endp || *endp)
         {
           error (0, 0, _("%s: invalid process id"), quote (arg));
           status = EXIT_FAILURE;
         }
-      else if (kill (pid, signum) != 0)
+      অন্যথা যদি (kill (pid, signum) != 0)
         {
-          if (errno == EINVAL)
+          যদি (errno == EINVAL)
             error (0, errno, "%d", signum);
-          else
+          অন্যথা
             error (0, errno, "%s", quote (arg));
           status = EXIT_FAILURE;
         }
     }
-  while ((arg = *++argv));
+  যাবত্ ((arg = *++argv));
 
-  return status;
+  প্রত্যাগম status;
 }
 
-int
-main (int argc, char **argv)
+পূর্ণাঙ্ক
+main (পূর্ণাঙ্ক argc, বর্ণ **argv)
 {
-  int optc;
+  পূর্ণাঙ্ক optc;
   bool list = false;
   bool table = false;
-  int signum = -1;
+  পূর্ণাঙ্ক signum = -1;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -230,81 +230,81 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, short_options, long_options, NULL))
+  যাবত্ ((optc = getopt_long (argc, argv, short_options, long_options, রিক্ত))
          != -1)
-    switch (optc)
+    বিকল্প (optc)
       {
-      case '0': case '1': case '2': case '3': case '4':
-      case '5': case '6': case '7': case '8': case '9':
-        if (optind != 2)
+      পক্ষ '0': পক্ষ '1': পক্ষ '2': পক্ষ '3': পক্ষ '4':
+      পক্ষ '5': পক্ষ '6': পক্ষ '7': পক্ষ '8': পক্ষ '9':
+        যদি (optind != 2)
           {
             /* This option is actually a process-id.  */
             optind--;
-            goto no_more_options;
+            গচ্ছ no_more_options;
           }
         FALLTHROUGH;
-      case 'A': case 'B': case 'C': case 'D': case 'E':
-      case 'F': case 'G': case 'H': case 'I': case 'J':
-      case 'K': /*case 'L':*/ case 'M': case 'N': case 'O':
-      case 'P': case 'Q': case 'R': case 'S': case 'T':
-      case 'U': case 'V': case 'W': case 'X': case 'Y':
-      case 'Z':
-        if (! optarg)
+      পক্ষ 'A': পক্ষ 'B': পক্ষ 'C': পক্ষ 'D': পক্ষ 'E':
+      পক্ষ 'F': পক্ষ 'G': পক্ষ 'H': পক্ষ 'I': পক্ষ 'J':
+      পক্ষ 'K': /*case 'L':*/ পক্ষ 'M': পক্ষ 'N': পক্ষ 'O':
+      পক্ষ 'P': পক্ষ 'Q': পক্ষ 'R': পক্ষ 'S': পক্ষ 'T':
+      পক্ষ 'U': পক্ষ 'V': পক্ষ 'W': পক্ষ 'X': পক্ষ 'Y':
+      পক্ষ 'Z':
+        যদি (! optarg)
           optarg = argv[optind - 1] + strlen (argv[optind - 1]);
-        if (optarg != argv[optind - 1] + 2)
+        যদি (optarg != argv[optind - 1] + 2)
           {
             error (0, 0, _("invalid option -- %c"), optc);
             usage (EXIT_FAILURE);
           }
         optarg--;
         FALLTHROUGH;
-      case 'n': /* -n is not documented, but is for Bash compatibility.  */
-      case 's':
-        if (0 <= signum)
+      পক্ষ 'n': /* -n is not documented, but is for Bash compatibility.  */
+      পক্ষ 's':
+        যদি (0 <= signum)
           {
             error (0, 0, _("%s: multiple signals specified"), quote (optarg));
             usage (EXIT_FAILURE);
           }
         signum = operand2sig (optarg);
-        if (signum < 0)
+        যদি (signum < 0)
           usage (EXIT_FAILURE);
-        break;
+        ভঙ্গ;
 
-      case 'L': /* -L is not documented, but is for procps compatibility.  */
-      case 't':
+      পক্ষ 'L': /* -L is not documented, but is for procps compatibility.  */
+      পক্ষ 't':
         table = true;
         FALLTHROUGH;
-      case 'l':
-        if (list)
+      পক্ষ 'l':
+        যদি (list)
           {
             error (0, 0, _("multiple -l or -t options specified"));
             usage (EXIT_FAILURE);
           }
         list = true;
-        break;
+        ভঙ্গ;
 
       case_GETOPT_HELP_CHAR;
       case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-      default:
+      স্বভাব:
         usage (EXIT_FAILURE);
       }
  no_more_options:
 
-  if (signum < 0)
+  যদি (signum < 0)
     signum = SIGTERM;
-  else if (list)
+  অন্যথা যদি (list)
     {
       error (0, 0, _("cannot combine signal with -l or -t"));
       usage (EXIT_FAILURE);
     }
 
-  if ( ! list && argc <= optind)
+  যদি ( ! list && argc <= optind)
     {
       error (0, 0, _("no process ID specified"));
       usage (EXIT_FAILURE);
     }
 
-  return (list
-          ? list_signals (table, optind < argc ? argv + optind : NULL)
+  প্রত্যাগম (list
+          ? list_signals (table, optind < argc ? argv + optind : রিক্ত)
           : send_signals (signum, argv + optind));
 }

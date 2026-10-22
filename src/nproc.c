@@ -16,59 +16,59 @@
 
 /* Written by Giuseppe Scrivano.  */
 
-#include <config.h>
-#include <getopt.h>
-#include <stdio.h>
-#include <sys/types.h>
+#অন্তর্ভাব <config.h>
+#অন্তর্ভাব <getopt.h>
+#অন্তর্ভাব <stdio.h>
+#অন্তর্ভাব <sys/types.h>
 
-#include "system.h"
-#include "nproc.h"
-#include "quote.h"
-#include "xdectoint.h"
+#অন্তর্ভাব "system.h"
+#অন্তর্ভাব "nproc.h"
+#অন্তর্ভাব "quote.h"
+#অন্তর্ভাব "xdectoint.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "nproc"
 
 #define AUTHORS proper_name ("Giuseppe Scrivano")
 
-enum
+গণনা
 {
   ALL_OPTION = CHAR_MAX + 1,
   IGNORE_OPTION
 };
 
-static struct option const longopts[] =
+স্থির সংরচনা option ধ্রুব longopts[] =
 {
-  {"all", no_argument, NULL, ALL_OPTION},
-  {"ignore", required_argument, NULL, IGNORE_OPTION},
+  {"all", no_argument, রিক্ত, ALL_OPTION},
+  {"ignore", required_argument, রিক্ত, IGNORE_OPTION},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {রিক্ত, 0, রিক্ত, 0}
 };
 
-void
-usage (int status)
+শূন্য
+usage (পূর্ণাঙ্ক status)
 {
-  if (status != EXIT_SUCCESS)
+  যদি (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  অন্যথা
     {
       printf (_("Usage: %s [OPTION]...\n"), program_name);
       fputs (_("\
-Print the number of processing units available to the current process,\n\
-which may be less than the number of online processors.\n\
+Print the সংখ্যা of processing units available to the current process,\n\
+which may be less than the সংখ্যা of online processors.\n\
 If the 'OMP_NUM_THREADS' or 'OMP_THREAD_LIMIT' environment variables are set,\n\
-then they will determine the minimum and maximum returned value respectively.\n\
+then they will determine the minimum and maximum returned মান respectively.\n\
 \n\
 "), stdout);
       oputs (_("\
       --all\n\
-         print the number of installed processors,\n\
+         print the সংখ্যা of installed processors,\n\
          disregarding any OpenMP environment variables, or CPU quotas.\n\
 "));
       oputs (_("\
       --ignore=N\n\
-         if possible, exclude N processing units.\n\
+         যদি possible, exclude N processing units.\n\
          The result is guaranteed to be at least 1.\n\
 "));
 
@@ -79,8 +79,8 @@ then they will determine the minimum and maximum returned value respectively.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+পূর্ণাঙ্ক
+main (পূর্ণাঙ্ক argc, বর্ণ **argv)
 {
   unsigned long ignore = 0;
   initialize_main (&argc, &argv);
@@ -91,47 +91,47 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  enum nproc_query mode = NPROC_CURRENT_OVERRIDABLE;
+  গণনা nproc_query mode = NPROC_CURRENT_OVERRIDABLE;
 
-  while (true)
+  যাবত্ (true)
     {
-      int c = getopt_long (argc, argv, "", longopts, NULL);
-      if (c == -1)
-        break;
-      switch (c)
+      পূর্ণাঙ্ক c = getopt_long (argc, argv, "", longopts, রিক্ত);
+      যদি (c == -1)
+        ভঙ্গ;
+      বিকল্প (c)
         {
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        case ALL_OPTION:
+        পক্ষ ALL_OPTION:
           mode = NPROC_ALL;
-          break;
+          ভঙ্গ;
 
-        case IGNORE_OPTION:
+        পক্ষ IGNORE_OPTION:
           ignore = xnumtoumax (optarg, 10, 0, ULONG_MAX, "",
                                _("invalid number"), 0, XTOINT_MAX_QUIET);
-          break;
+          ভঙ্গ;
 
-        default:
+        স্বভাব:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (argc != optind)
+  যদি (argc != optind)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind]));
       usage (EXIT_FAILURE);
     }
 
-  unsigned long nproc = num_processors (mode);
+  unsigned long nproc = অঙ্ক_processors (mode);
 
-  if (ignore < nproc)
+  যদি (ignore < nproc)
     nproc -= ignore;
-  else
+  অন্যথা
     nproc = 1;
 
   printf ("%lu\n", nproc);
 
-  return EXIT_SUCCESS;
+  প্রত্যাগম EXIT_SUCCESS;
 }

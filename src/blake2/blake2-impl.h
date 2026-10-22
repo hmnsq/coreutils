@@ -15,50 +15,50 @@
 #ifndef BLAKE2_IMPL_H
 #define BLAKE2_IMPL_H
 
-#include <endian.h>
-#if BYTE_ORDER == LITTLE_ENDIAN
+#অন্তর্ভাব <endian.h>
+#যদি BYTE_ORDER == LITTLE_ENDIAN
 # define NATIVE_LITTLE_ENDIAN 1
 #endif
 
-#include <stdint.h>
-#include <string.h>
+#অন্তর্ভাব <stdint.h>
+#অন্তর্ভাব <string.h>
 
-#if !defined(__cplusplus) && (!defined(__STDC_VERSION__) || __STDC_VERSION__ < 199901L)
-  #if   defined(_MSC_VER)
+#যদি !defined(__cplusplus) && (!defined(__STDC_VERSION__) || __STDC_VERSION__ < 199901L)
+  #যদি   defined(_MSC_VER)
     #define BLAKE2_INLINE __inline
-  #elif defined(__GNUC__)
+  #নোচেদ্যদি defined(__GNUC__)
     #define BLAKE2_INLINE __inline__
-  #else
+  #অন্যথা
     #define BLAKE2_INLINE
   #endif
-#else
-  #define BLAKE2_INLINE inline
+#অন্যথা
+  #define BLAKE2_INLINE অন্তঃস্থ
 #endif
 
-static BLAKE2_INLINE uint32_t load32( const void *src )
+স্থির BLAKE2_INLINE uint32_t load32( ধ্রুব শূন্য *src )
 {
-#if defined(NATIVE_LITTLE_ENDIAN)
+#যদি defined(NATIVE_LITTLE_ENDIAN)
   uint32_t w;
-  memcpy(&w, src, sizeof w);
-  return w;
-#else
-  const uint8_t *p = ( const uint8_t * )src;
-  return (( uint32_t )( p[0] ) <<  0) |
+  memcpy(&w, src, পরিমাণ w);
+  প্রত্যাগম w;
+#অন্যথা
+  ধ্রুব uint8_t *p = ( ধ্রুব uint8_t * )src;
+  প্রত্যাগম (( uint32_t )( p[0] ) <<  0) |
          (( uint32_t )( p[1] ) <<  8) |
          (( uint32_t )( p[2] ) << 16) |
          (( uint32_t )( p[3] ) << 24) ;
 #endif
 }
 
-static BLAKE2_INLINE uint64_t load64( const void *src )
+স্থির BLAKE2_INLINE uint64_t load64( ধ্রুব শূন্য *src )
 {
-#if defined(NATIVE_LITTLE_ENDIAN)
+#যদি defined(NATIVE_LITTLE_ENDIAN)
   uint64_t w;
-  memcpy(&w, src, sizeof w);
-  return w;
-#else
-  const uint8_t *p = ( const uint8_t * )src;
-  return (( uint64_t )( p[0] ) <<  0) |
+  memcpy(&w, src, পরিমাণ w);
+  প্রত্যাগম w;
+#অন্যথা
+  ধ্রুব uint8_t *p = ( ধ্রুব uint8_t * )src;
+  প্রত্যাগম (( uint64_t )( p[0] ) <<  0) |
          (( uint64_t )( p[1] ) <<  8) |
          (( uint64_t )( p[2] ) << 16) |
          (( uint64_t )( p[3] ) << 24) |
@@ -69,35 +69,35 @@ static BLAKE2_INLINE uint64_t load64( const void *src )
 #endif
 }
 
-static BLAKE2_INLINE uint16_t load16( const void *src )
+স্থির BLAKE2_INLINE uint16_t load16( ধ্রুব শূন্য *src )
 {
-#if defined(NATIVE_LITTLE_ENDIAN)
+#যদি defined(NATIVE_LITTLE_ENDIAN)
   uint16_t w;
-  memcpy(&w, src, sizeof w);
-  return w;
-#else
-  const uint8_t *p = ( const uint8_t * )src;
-  return ( uint16_t )((( uint32_t )( p[0] ) <<  0) |
+  memcpy(&w, src, পরিমাণ w);
+  প্রত্যাগম w;
+#অন্যথা
+  ধ্রুব uint8_t *p = ( ধ্রুব uint8_t * )src;
+  প্রত্যাগম ( uint16_t )((( uint32_t )( p[0] ) <<  0) |
                       (( uint32_t )( p[1] ) <<  8));
 #endif
 }
 
-static BLAKE2_INLINE void store16( void *dst, uint16_t w )
+স্থির BLAKE2_INLINE শূন্য store16( শূন্য *dst, uint16_t w )
 {
-#if defined(NATIVE_LITTLE_ENDIAN)
-  memcpy(dst, &w, sizeof w);
-#else
+#যদি defined(NATIVE_LITTLE_ENDIAN)
+  memcpy(dst, &w, পরিমাণ w);
+#অন্যথা
   uint8_t *p = ( uint8_t * )dst;
   *p++ = ( uint8_t )w; w >>= 8;
   *p++ = ( uint8_t )w;
 #endif
 }
 
-static BLAKE2_INLINE void store32( void *dst, uint32_t w )
+স্থির BLAKE2_INLINE শূন্য store32( শূন্য *dst, uint32_t w )
 {
-#if defined(NATIVE_LITTLE_ENDIAN)
-  memcpy(dst, &w, sizeof w);
-#else
+#যদি defined(NATIVE_LITTLE_ENDIAN)
+  memcpy(dst, &w, পরিমাণ w);
+#অন্যথা
   uint8_t *p = ( uint8_t * )dst;
   p[0] = (uint8_t)(w >>  0);
   p[1] = (uint8_t)(w >>  8);
@@ -106,11 +106,11 @@ static BLAKE2_INLINE void store32( void *dst, uint32_t w )
 #endif
 }
 
-static BLAKE2_INLINE void store64( void *dst, uint64_t w )
+স্থির BLAKE2_INLINE শূন্য store64( শূন্য *dst, uint64_t w )
 {
-#if defined(NATIVE_LITTLE_ENDIAN)
-  memcpy(dst, &w, sizeof w);
-#else
+#যদি defined(NATIVE_LITTLE_ENDIAN)
+  memcpy(dst, &w, পরিমাণ w);
+#অন্যথা
   uint8_t *p = ( uint8_t * )dst;
   p[0] = (uint8_t)(w >>  0);
   p[1] = (uint8_t)(w >>  8);
@@ -123,10 +123,10 @@ static BLAKE2_INLINE void store64( void *dst, uint64_t w )
 #endif
 }
 
-static BLAKE2_INLINE uint64_t load48( const void *src )
+স্থির BLAKE2_INLINE uint64_t load48( ধ্রুব শূন্য *src )
 {
-  const uint8_t *p = ( const uint8_t * )src;
-  return (( uint64_t )( p[0] ) <<  0) |
+  ধ্রুব uint8_t *p = ( ধ্রুব uint8_t * )src;
+  প্রত্যাগম (( uint64_t )( p[0] ) <<  0) |
          (( uint64_t )( p[1] ) <<  8) |
          (( uint64_t )( p[2] ) << 16) |
          (( uint64_t )( p[3] ) << 24) |
@@ -134,7 +134,7 @@ static BLAKE2_INLINE uint64_t load48( const void *src )
          (( uint64_t )( p[5] ) << 40) ;
 }
 
-static BLAKE2_INLINE void store48( void *dst, uint64_t w )
+স্থির BLAKE2_INLINE শূন্য store48( শূন্য *dst, uint64_t w )
 {
   uint8_t *p = ( uint8_t * )dst;
   p[0] = (uint8_t)(w >>  0);
@@ -145,20 +145,20 @@ static BLAKE2_INLINE void store48( void *dst, uint64_t w )
   p[5] = (uint8_t)(w >> 40);
 }
 
-static BLAKE2_INLINE uint32_t rotr32( const uint32_t w, const unsigned c )
+স্থির BLAKE2_INLINE uint32_t rotr32( ধ্রুব uint32_t w, ধ্রুব unsigned c )
 {
-  return ( w >> c ) | ( w << ( 32 - c ) );
+  প্রত্যাগম ( w >> c ) | ( w << ( 32 - c ) );
 }
 
-static BLAKE2_INLINE uint64_t rotr64( const uint64_t w, const unsigned c )
+স্থির BLAKE2_INLINE uint64_t rotr64( ধ্রুব uint64_t w, ধ্রুব unsigned c )
 {
-  return ( w >> c ) | ( w << ( 64 - c ) );
+  প্রত্যাগম ( w >> c ) | ( w << ( 64 - c ) );
 }
 
 /* prevents compiler optimizing out memset() */
-static BLAKE2_INLINE void secure_zero_memory(void *v, size_t n)
+স্থির BLAKE2_INLINE শূন্য secure_zero_memory(শূন্য *v, size_t n)
 {
-  static void *(*const volatile memset_v)(void *, int, size_t) = &memset;
+  স্থির শূন্য *(*ধ্রুব চঞ্চল memset_v)(শূন্য *, পূর্ণাঙ্ক, size_t) = &memset;
   memset_v(v, 0, n);
 }
 

@@ -16,15 +16,15 @@
 
 /* Written by jla; revised by djm */
 
-#include <config.h>
-#include <stdio.h>
+#অন্তর্ভাব <config.h>
+#অন্তর্ভাব <stdio.h>
 
-#include <sys/types.h>
-#include "system.h"
+#অন্তর্ভাব <sys/types.h>
+#অন্তর্ভাব "system.h"
 
-#include "long-options.h"
-#include "quote.h"
-#include "readutmp.h"
+#অন্তর্ভাব "long-options.h"
+#অন্তর্ভাব "quote.h"
+#অন্তর্ভাব "readutmp.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "users"
@@ -33,25 +33,25 @@
   proper_name ("Joseph Arceneaux"), \
   proper_name ("David MacKenzie")
 
-static int
-userid_compare (const void *v_a, const void *v_b)
+স্থির পূর্ণাঙ্ক
+userid_compare (ধ্রুব শূন্য *v_a, ধ্রুব শূন্য *v_b)
 {
-  char **a = (char **) v_a;
-  char **b = (char **) v_b;
-  return strcmp (*a, *b);
+  বর্ণ **a = (বর্ণ **) v_a;
+  বর্ণ **b = (বর্ণ **) v_b;
+  প্রত্যাগম strcmp (*a, *b);
 }
 
-static void
-list_entries_users (idx_t n, STRUCT_UTMP const *this)
+স্থির শূন্য
+list_entries_users (idx_t n, STRUCT_UTMP ধ্রুব *this)
 {
-  char **u = xinmalloc (n, sizeof *u);
+  বর্ণ **u = xinmalloc (n, পরিমাণ *u);
   idx_t n_entries = 0;
 
-  while (n--)
+  যাবত্ (n--)
     {
-      if (IS_USER_PROCESS (this))
+      যদি (IS_USER_PROCESS (this))
         {
-          char *trimmed_name;
+          বর্ণ *trimmed_name;
 
           trimmed_name = extract_trimmed_name (this);
 
@@ -61,43 +61,43 @@ list_entries_users (idx_t n, STRUCT_UTMP const *this)
       this++;
     }
 
-  qsort (u, n_entries, sizeof (u[0]), userid_compare);
+  qsort (u, n_entries, পরিমাণ (u[0]), userid_compare);
 
-  for (idx_t i = 0; i < n_entries; i++)
+  প্রতি (idx_t i = 0; i < n_entries; i++)
     {
-      char c = (i < n_entries - 1 ? ' ' : '\n');
+      বর্ণ c = (i < n_entries - 1 ? ' ' : '\n');
       fputs (u[i], stdout);
       putchar (c);
     }
 
-  for (idx_t i = 0; i < n_entries; i++)
-    free (u[i]);
-  free (u);
+  প্রতি (idx_t i = 0; i < n_entries; i++)
+    মুক্ত (u[i]);
+  মুক্ত (u);
 }
 
 /* Display a list of users on the system, according to utmp file FILENAME.
    Use read_utmp OPTIONS to read FILENAME.  */
 
-static void
-users (char const *filename, int options)
+স্থির শূন্য
+users (বর্ণ ধ্রুব *filename, পূর্ণাঙ্ক options)
 {
   idx_t n_users;
   STRUCT_UTMP *utmp_buf;
   options |= READ_UTMP_USER_PROCESS;
-  if (read_utmp (filename, &n_users, &utmp_buf, options) != 0)
+  যদি (read_utmp (filename, &n_users, &utmp_buf, options) != 0)
     error (EXIT_FAILURE, errno, "%s", quotef (filename));
 
   list_entries_users (n_users, utmp_buf);
 
-  free (utmp_buf);
+  মুক্ত (utmp_buf);
 }
 
-void
-usage (int status)
+শূন্য
+usage (পূর্ণাঙ্ক status)
 {
-  if (status != EXIT_SUCCESS)
+  যদি (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  অন্যথা
     {
       printf (_("Usage: %s [OPTION]... [FILE]\n"), program_name);
       printf (_("\
@@ -113,8 +113,8 @@ If FILE is not specified, use %s.  %s as FILE is common.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+পূর্ণাঙ্ক
+main (পূর্ণাঙ্ক argc, বর্ণ **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -126,22 +126,22 @@ main (int argc, char **argv)
 
   parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
                                    Version, true, usage, AUTHORS,
-                                   (char const *) NULL);
+                                   (বর্ণ ধ্রুব *) রিক্ত);
 
-  switch (argc - optind)
+  বিকল্প (argc - optind)
     {
-    case 0:			/* users */
+    পক্ষ 0:			/* users */
       users (UTMP_FILE, READ_UTMP_CHECK_PIDS);
-      break;
+      ভঙ্গ;
 
-    case 1:			/* users <utmp file> */
+    পক্ষ 1:			/* users <utmp file> */
       users (argv[optind], 0);
-      break;
+      ভঙ্গ;
 
-    default:			/* lose */
+    স্বভাব:			/* lose */
       error (0, 0, _("extra operand %s"), quote (argv[optind + 1]));
       usage (EXIT_FAILURE);
     }
 
-  return EXIT_SUCCESS;
+  প্রত্যাগম EXIT_SUCCESS;
 }
