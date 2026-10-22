@@ -191,7 +191,7 @@ struct E_string
 static inline bool
 es_match (struct E_string const *es, size_t i, char c)
 {
-  return es->s[i] == c && !es->escaped[i];
+  trả_về es->s[i] == c && !es->escaped[i];
 }
 
 /* When true, each sequence in the input of a repeated character
@@ -276,11 +276,11 @@ static struct option const long_options[] =
 };
 
 void
-usage (int status)
+usage (số_nguyên status)
 {
-  if (status != EXIT_SUCCESS)
+  nếu (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  không_thì
     {
       printf (_("\
 Usage: %s [OPTION]... STRING1 [STRING2]\n\
@@ -323,14 +323,14 @@ Interpreted sequences are:\n\
   \\b              backspace\n\
   \\f              form feed\n\
   \\n              new line\n\
-  \\r              return\n\
+  \\r              trả_về\n\
   \\t              horizontal tab\n\
 "), stdout);
      fputs (_("\
   \\v              vertical tab\n\
   CHAR1-CHAR2     all characters from CHAR1 to CHAR2 in ascending order\n\
   [CHAR*]         in ARRAY2, copies of CHAR until length of ARRAY1\n\
-  [CHAR*REPEAT]   REPEAT copies of CHAR, REPEAT octal if starting with 0\n\
+  [CHAR*REPEAT]   REPEAT copies of CHAR, REPEAT octal nếu starting with 0\n\
   [:alnum:]       all letters and digits\n\
   [:alpha:]       all letters\n\
   [:blank:]       all horizontal whitespace\n\
@@ -349,11 +349,11 @@ Interpreted sequences are:\n\
 "), stdout);
      fputs (_("\
 \n\
-Translation occurs if -d is not given and both STRING1 and STRING2 appear.\n\
+Translation occurs nếu -d is not given and both STRING1 and STRING2 appear.\n\
 -t is only significant when translating.  ARRAY2 is extended to length of\n\
 ARRAY1 by repeating its last character as necessary.  Excess characters\n\
 of ARRAY2 are ignored.  Character classes expand in unspecified order;\n\
-while translating, '[:lower:]' and '[:upper:]' may be used in pairs to\n\
+trong_khi translating, '[:lower:]' and '[:upper:]' may be used in pairs to\n\
 specify case conversion.  Squeezing occurs after translation or deletion.\n\
 Arguments like '[...]' should be quoted, to avoid potential shell globbing.\n\
 "), stdout);
@@ -368,7 +368,7 @@ Arguments like '[...]' should be quoted, to avoid potential shell globbing.\n\
 static inline bool
 is_equiv_class_member (unsigned char equiv_class, unsigned char c)
 {
-  return (equiv_class == c);
+  trả_về (equiv_class == c);
 }
 
 /* Return true if the character C is a member of the
@@ -378,7 +378,7 @@ ATTRIBUTE_PURE
 static bool
 is_char_class_member (enum Char_class char_class, unsigned char c)
 {
-  int result;
+  số_nguyên result;
 
   switch (char_class)
     {
@@ -422,7 +422,7 @@ is_char_class_member (enum Char_class char_class, unsigned char c)
       affirm (false);
     }
 
-  return !! result;
+  trả_về !! result;
 }
 
 static void
@@ -448,11 +448,11 @@ unquote (char const *s, struct E_string *es)
   es->s = xmalloc (len);
   es->escaped = xcalloc (len, sizeof es->escaped[0]);
 
-  unsigned int j = 0;
-  for (unsigned int i = 0; s[i]; i++)
+  unsigned số_nguyên j = 0;
+  cho (unsigned số_nguyên i = 0; s[i]; i++)
     {
       unsigned char c;
-      int oct_digit;
+      số_nguyên oct_digit;
 
       switch (s[i])
         {
@@ -494,19 +494,19 @@ unquote (char const *s, struct E_string *es)
             case '7':
               c = s[i + 1] - '0';
               oct_digit = s[i + 2] - '0';
-              if (0 <= oct_digit && oct_digit <= 7)
+              nếu (0 <= oct_digit && oct_digit <= 7)
                 {
                   c = 8 * c + oct_digit;
                   ++i;
                   oct_digit = s[i + 2] - '0';
-                  if (0 <= oct_digit && oct_digit <= 7)
+                  nếu (0 <= oct_digit && oct_digit <= 7)
                     {
-                      if (8 * c + oct_digit < N_CHARS)
+                      nếu (8 * c + oct_digit < N_CHARS)
                         {
                           c = 8 * c + oct_digit;
                           ++i;
                         }
-                      else
+                      không_thì
                         {
                           /* A 3-digit octal number larger than \377 won't
                              fit in 8 bits.  So we stop when adding the
@@ -545,7 +545,7 @@ unquote (char const *s, struct E_string *es)
         }
     }
   es->len = j;
-  return true;
+  trả_về true;
 }
 
 /* If CLASS_STR is a valid character class string, return its index
@@ -555,11 +555,11 @@ ATTRIBUTE_PURE
 static enum Char_class
 look_up_char_class (char const *class_str, size_t len)
 {
-  for (enum Char_class i = 0; i < countof (char_class_name); i++)
-    if (STREQ_LEN (class_str, char_class_name[i], len)
+  cho (enum Char_class i = 0; i < countof (char_class_name); i++)
+    nếu (STREQ_LEN (class_str, char_class_name[i], len)
         && strlen (char_class_name[i]) == len)
-      return i;
-  return CC_NO_CLASS;
+      trả_về i;
+  trả_về CC_NO_CLASS;
 }
 
 /* Return a newly allocated string with a printable version of C.
@@ -570,16 +570,16 @@ make_printable_char (unsigned char c)
 {
   char *buf = xmalloc (5);
 
-  if (isprint (c))
+  nếu (isprint (c))
     {
       buf[0] = c;
       buf[1] = '\0';
     }
-  else
+  không_thì
     {
       sprintf (buf, "\\%03o", c);
     }
-  return buf;
+  trả_về buf;
 }
 
 /* Return a newly allocated copy of S which is suitable for printing.
@@ -597,7 +597,7 @@ make_printable_str (char const *s, size_t len)
   char *printable_buf = xnmalloc (len + 1, 4);
   char *p = printable_buf;
 
-  for (size_t i = 0; i < len; i++)
+  cho (size_t i = 0; i < len; i++)
     {
       char buf[5];
       char const *tmp = NULL;
@@ -630,19 +630,19 @@ make_printable_str (char const *s, size_t len)
           tmp = "\\v";
           break;
         default:
-          if (isprint (c))
+          nếu (isprint (c))
             {
               buf[0] = c;
               buf[1] = '\0';
             }
-          else
+          không_thì
             sprintf (buf, "\\%03o", c);
           tmp = buf;
           break;
         }
       p = stpcpy (p, tmp);
     }
-  return printable_buf;
+  trả_về printable_buf;
 }
 
 /* Append a newly allocated structure representing a
@@ -667,7 +667,7 @@ append_normal_char (struct Spec_list *list, unsigned char c)
 static bool
 append_range (struct Spec_list *list, unsigned char first, unsigned char last)
 {
-  if (last < first)
+  nếu (last < first)
     {
       char *tmp1 = make_printable_char (first);
       char *tmp2 = make_printable_char (last);
@@ -677,7 +677,7 @@ append_range (struct Spec_list *list, unsigned char first, unsigned char last)
              tmp1, tmp2);
       free (tmp1);
       free (tmp2);
-      return false;
+      trả_về false;
     }
   struct List_element *new = xmalloc (sizeof *new);
   new->next = NULL;
@@ -686,7 +686,7 @@ append_range (struct Spec_list *list, unsigned char first, unsigned char last)
   new->u.range.last_char = last;
   list->tail->next = new;
   list->tail = new;
-  return true;
+  trả_về true;
 }
 
 /* If CHAR_CLASS_STR is a valid character class string, append a
@@ -699,15 +699,15 @@ append_char_class (struct Spec_list *list,
                    char const *char_class_str, size_t len)
 {
   enum Char_class char_class = look_up_char_class (char_class_str, len);
-  if (char_class == CC_NO_CLASS)
-    return false;
+  nếu (char_class == CC_NO_CLASS)
+    trả_về false;
   struct List_element *new = xmalloc (sizeof *new);
   new->next = NULL;
   new->type = RE_CHAR_CLASS;
   new->u.char_class = char_class;
   list->tail->next = new;
   list->tail = new;
-  return true;
+  trả_về true;
 }
 
 /* Append a newly allocated structure representing a [c*n]
@@ -738,8 +738,8 @@ static bool
 append_equiv_class (struct Spec_list *list,
                     char const *equiv_class_str, size_t len)
 {
-  if (len != 1)
-    return false;
+  nếu (len != 1)
+    trả_về false;
 
   struct List_element *new = xmalloc (sizeof *new);
   new->next = NULL;
@@ -747,7 +747,7 @@ append_equiv_class (struct Spec_list *list,
   new->u.equiv_code = *equiv_class_str;
   list->tail->next = new;
   list->tail = new;
-  return true;
+  trả_về true;
 }
 
 /* Search forward starting at START_IDX for the 2-char sequence
@@ -760,14 +760,14 @@ static bool
 find_closing_delim (const struct E_string *es, size_t start_idx,
                     char pre_bracket_char, size_t *result_idx)
 {
-  for (size_t i = start_idx; i < es->len - 1; i++)
-    if (es->s[i] == pre_bracket_char && es->s[i + 1] == ']'
+  cho (size_t i = start_idx; i < es->len - 1; i++)
+    nếu (es->s[i] == pre_bracket_char && es->s[i + 1] == ']'
         && !es->escaped[i] && !es->escaped[i + 1])
       {
         *result_idx = i;
-        return true;
+        trả_về true;
       }
-  return false;
+  trả_về false;
 }
 
 /* Parse the bracketed repeat-char syntax.  If the P_LEN characters
@@ -780,34 +780,34 @@ find_closing_delim (const struct E_string *es, size_t start_idx,
    empty, an octal number, or a decimal number, print an error message
    and return -2.  */
 
-static int
+static số_nguyên
 find_bracketed_repeat (const struct E_string *es, size_t start_idx,
                        unsigned char *char_to_repeat, count *repeat_count,
                        size_t *closing_bracket_idx)
 {
   affirm (start_idx + 1 < es->len);
-  if (!es_match (es, start_idx + 1, '*'))
-    return -1;
+  nếu (!es_match (es, start_idx + 1, '*'))
+    trả_về -1;
 
-  for (size_t i = start_idx + 2; i < es->len && !es->escaped[i]; i++)
+  cho (size_t i = start_idx + 2; i < es->len && !es->escaped[i]; i++)
     {
-      if (es->s[i] == ']')
+      nếu (es->s[i] == ']')
         {
           size_t digit_str_len = i - start_idx - 2;
 
           *char_to_repeat = es->s[start_idx];
-          if (digit_str_len == 0)
+          nếu (digit_str_len == 0)
             {
               /* We've matched [c*] -- no explicit repeat count.  */
               *repeat_count = 0;
             }
-          else
+          không_thì
             {
               /* Here, we have found [c*s] where s should be a string
                  of octal (if it starts with '0') or decimal digits.  */
               char const *digit_str = &es->s[start_idx + 2];
               char *d_end;
-              if ((xstrtoumax (digit_str, &d_end, *digit_str == '0' ? 8 : 10,
+              nếu ((xstrtoumax (digit_str, &d_end, *digit_str == '0' ? 8 : 10,
                                repeat_count, NULL)
                    != LONGINT_OK)
                   || REPEAT_COUNT_MAXIMUM < *repeat_count
@@ -818,14 +818,14 @@ find_bracketed_repeat (const struct E_string *es, size_t start_idx,
                          _("invalid repeat count %s in [c*n] construct"),
                          quote (tmp));
                   free (tmp);
-                  return -2;
+                  trả_về -2;
                 }
             }
           *closing_bracket_idx = i;
-          return 0;
+          trả_về 0;
         }
     }
-  return -1;			/* No bracket found.  */
+  trả_về -1;			/* No bracket found.  */
 }
 
 /* Return true if the string at ES->s[IDX] matches the regular
@@ -836,13 +836,13 @@ ATTRIBUTE_PURE
 static bool
 star_digits_closebracket (const struct E_string *es, size_t idx)
 {
-  if (!es_match (es, idx, '*'))
-    return false;
+  nếu (!es_match (es, idx, '*'))
+    trả_về false;
 
-  for (size_t i = idx + 1; i < es->len; i++)
-    if (!c_isdigit (es->s[i]) || es->escaped[i])
-      return es_match (es, i, ']');
-  return false;
+  cho (size_t i = idx + 1; i < es->len; i++)
+    nếu (!c_isdigit (es->s[i]) || es->escaped[i])
+      trả_về es_match (es, i, ']');
+  trả_về false;
 }
 
 /* Convert string UNESCAPED_STRING (which has been preprocessed to
@@ -869,62 +869,62 @@ build_spec_list (const struct E_string *es, struct Spec_list *result)
      less are composed solely of normal characters.  Hence, the index of
      the outer for-loop runs only as far as LEN-2.  */
   size_t i;
-  for (i = 0; i + 2 < es->len; /* empty */)
+  cho (i = 0; i + 2 < es->len; /* empty */)
     {
-      if (es_match (es, i, '['))
+      nếu (es_match (es, i, '['))
         {
           bool matched_multi_char_construct;
           size_t closing_bracket_idx;
           unsigned char char_to_repeat;
           count repeat_count;
-          int err;
+          số_nguyên err;
 
           matched_multi_char_construct = true;
-          if (es_match (es, i + 1, ':') || es_match (es, i + 1, '='))
+          nếu (es_match (es, i + 1, ':') || es_match (es, i + 1, '='))
             {
               size_t closing_delim_idx;
 
-              if (find_closing_delim (es, i + 2, p[i + 1], &closing_delim_idx))
+              nếu (find_closing_delim (es, i + 2, p[i + 1], &closing_delim_idx))
                 {
                   size_t opnd_str_len = closing_delim_idx - 1 - (i + 2) + 1;
                   char const *opnd_str = p + i + 2;
 
-                  if (opnd_str_len == 0)
+                  nếu (opnd_str_len == 0)
                     {
-                      if (p[i + 1] == ':')
+                      nếu (p[i + 1] == ':')
                         error (0, 0, _("missing character class name '[::]'"));
-                      else
+                      không_thì
                         error (0, 0,
                                _("missing equivalence class character '[==]'"));
-                      return false;
+                      trả_về false;
                     }
 
-                  if (p[i + 1] == ':')
+                  nếu (p[i + 1] == ':')
                     {
                       /* FIXME: big comment.  */
-                      if (!append_char_class (result, opnd_str, opnd_str_len))
+                      nếu (!append_char_class (result, opnd_str, opnd_str_len))
                         {
-                          if (star_digits_closebracket (es, i + 2))
+                          nếu (star_digits_closebracket (es, i + 2))
                             goto try_bracketed_repeat;
-                          else
+                          không_thì
                             {
                               char *tmp = make_printable_str (opnd_str,
                                                               opnd_str_len);
                               error (0, 0, _("invalid character class %s"),
                                      quote (tmp));
                               free (tmp);
-                              return false;
+                              trả_về false;
                             }
                         }
                     }
-                  else
+                  không_thì
                     {
                       /* FIXME: big comment.  */
-                      if (!append_equiv_class (result, opnd_str, opnd_str_len))
+                      nếu (!append_equiv_class (result, opnd_str, opnd_str_len))
                         {
-                          if (star_digits_closebracket (es, i + 2))
+                          nếu (star_digits_closebracket (es, i + 2))
                             goto try_bracketed_repeat;
-                          else
+                          không_thì
                             {
                               char *tmp = make_printable_str (opnd_str,
                                                               opnd_str_len);
@@ -932,7 +932,7 @@ build_spec_list (const struct E_string *es, struct Spec_list *result)
                _("%s: equivalence class operand must be a single character"),
                                      tmp);
                               free (tmp);
-                              return false;
+                              trả_về false;
                             }
                         }
                     }
@@ -950,23 +950,23 @@ build_spec_list (const struct E_string *es, struct Spec_list *result)
           err = find_bracketed_repeat (es, i + 1, &char_to_repeat,
                                        &repeat_count,
                                        &closing_bracket_idx);
-          if (err == 0)
+          nếu (err == 0)
             {
               append_repeated_char (result, char_to_repeat, repeat_count);
               i = closing_bracket_idx + 1;
             }
-          else if (err == -1)
+          không_thì nếu (err == -1)
             {
               matched_multi_char_construct = false;
             }
-          else
+          không_thì
             {
               /* Found a string that looked like [c*n] but the
                  numeric part was invalid.  */
-              return false;
+              trả_về false;
             }
 
-          if (matched_multi_char_construct)
+          nếu (matched_multi_char_construct)
             continue;
 
           /* We reach this point if P does not match [:str:], [=c=],
@@ -975,13 +975,13 @@ build_spec_list (const struct E_string *es, struct Spec_list *result)
         }
 
       /* Look ahead one char for ranges like a-z.  */
-      if (es_match (es, i + 1, '-'))
+      nếu (es_match (es, i + 1, '-'))
         {
-          if (!append_range (result, p[i], p[i + 2]))
-            return false;
+          nếu (!append_range (result, p[i], p[i + 2]))
+            trả_về false;
           i += 3;
         }
-      else
+      không_thì
         {
           append_normal_char (result, p[i]);
           ++i;
@@ -989,10 +989,10 @@ build_spec_list (const struct E_string *es, struct Spec_list *result)
     }
 
   /* Now handle the (2 or fewer) remaining characters p[i]..p[es->len - 1].  */
-  for (; i < es->len; i++)
+  cho (; i < es->len; i++)
     append_normal_char (result, p[i]);
 
-  return true;
+  trả_về true;
 }
 
 /* Advance past the current construct.
@@ -1018,25 +1018,25 @@ skip_construct (struct Spec_list *s)
    lower class constructs in the spec-strings appear in the same relative
    positions.  */
 
-static int
+static số_nguyên
 get_next (struct Spec_list *s, enum Upper_Lower_class *class)
 {
   struct List_element *p;
-  int return_val;
-  int i;
+  số_nguyên return_val;
+  số_nguyên i;
 
-  if (class)
+  nếu (class)
     *class = UL_NONE;
 
-  if (s->state == BEGIN_STATE)
+  nếu (s->state == BEGIN_STATE)
     {
       s->tail = s->head->next;
       s->state = NEW_ELEMENT;
     }
 
   p = s->tail;
-  if (p == NULL)
-    return -1;
+  nếu (p == NULL)
+    trả_về -1;
 
   switch (p->type)
     {
@@ -1047,12 +1047,12 @@ get_next (struct Spec_list *s, enum Upper_Lower_class *class)
       break;
 
     case RE_RANGE:
-      if (s->state == NEW_ELEMENT)
+      nếu (s->state == NEW_ELEMENT)
         s->state = p->u.range.first_char;
-      else
+      không_thì
         ++(s->state);
       return_val = s->state;
-      if (s->state == p->u.range.last_char)
+      nếu (s->state == p->u.range.last_char)
         {
           s->tail = p->next;
           s->state = NEW_ELEMENT;
@@ -1060,7 +1060,7 @@ get_next (struct Spec_list *s, enum Upper_Lower_class *class)
       break;
 
     case RE_CHAR_CLASS:
-      if (class)
+      nếu (class)
         {
           switch (+p->u.char_class)
             {
@@ -1073,22 +1073,22 @@ get_next (struct Spec_list *s, enum Upper_Lower_class *class)
             }
         }
 
-      if (s->state == NEW_ELEMENT)
+      nếu (s->state == NEW_ELEMENT)
         {
-          for (i = 0; i < N_CHARS; i++)
-            if (is_char_class_member (p->u.char_class, i))
+          cho (i = 0; i < N_CHARS; i++)
+            nếu (is_char_class_member (p->u.char_class, i))
               break;
           affirm (i < N_CHARS);
           s->state = i;
         }
       assure (is_char_class_member (p->u.char_class, s->state));
       return_val = s->state;
-      for (i = s->state + 1; i < N_CHARS; i++)
-        if (is_char_class_member (p->u.char_class, i))
+      cho (i = s->state + 1; i < N_CHARS; i++)
+        nếu (is_char_class_member (p->u.char_class, i))
           break;
-      if (i < N_CHARS)
+      nếu (i < N_CHARS)
         s->state = i;
-      else
+      không_thì
         {
           s->tail = p->next;
           s->state = NEW_ELEMENT;
@@ -1108,21 +1108,21 @@ get_next (struct Spec_list *s, enum Upper_Lower_class *class)
 
     case RE_REPEATED_CHAR:
       /* Here, a repeat count of n == 0 means don't repeat at all.  */
-      if (p->u.repeated_char.repeat_count == 0)
+      nếu (p->u.repeated_char.repeat_count == 0)
         {
           s->tail = p->next;
           s->state = NEW_ELEMENT;
           return_val = get_next (s, class);
         }
-      else
+      không_thì
         {
-          if (s->state == NEW_ELEMENT)
+          nếu (s->state == NEW_ELEMENT)
             {
               s->state = 0;
             }
           ++(s->state);
           return_val = p->u.repeated_char.the_repeated_char;
-          if (s->state == p->u.repeated_char.repeat_count)
+          nếu (s->state == p->u.repeated_char.repeat_count)
             {
               s->tail = p->next;
               s->state = NEW_ELEMENT;
@@ -1134,7 +1134,7 @@ get_next (struct Spec_list *s, enum Upper_Lower_class *class)
       unreachable ();
     }
 
-  return return_val;
+  trả_về return_val;
 }
 
 /* This is a minor kludge.  This function is called from
@@ -1142,20 +1142,20 @@ get_next (struct Spec_list *s, enum Upper_Lower_class *class)
    from a complemented string.  It's a kludge in that some of the
    same operations are (duplicated) performed in set_initialize.  */
 
-static int
+static số_nguyên
 card_of_complement (struct Spec_list *s)
 {
-  int c;
-  int cardinality = N_CHARS;
+  số_nguyên c;
+  số_nguyên cardinality = N_CHARS;
   bool in_set[N_CHARS] = {0};
 
   s->state = BEGIN_STATE;
-  while ((c = get_next (s, NULL)) != -1)
+  trong_khi ((c = get_next (s, NULL)) != -1)
     {
       cardinality -= (!in_set[c]);
       in_set[c] = true;
     }
-  return cardinality;
+  trả_về cardinality;
 }
 
 /* Discard the lengths associated with a case conversion,
@@ -1172,29 +1172,29 @@ validate_case_classes (struct Spec_list *s1, struct Spec_list *s2)
 {
   size_t n_upper = 0;
   size_t n_lower = 0;
-  int c1 = 0;
-  int c2 = 0;
+  số_nguyên c1 = 0;
+  số_nguyên c2 = 0;
   MAYBE_UNUSED count old_s1_len = s1->length, old_s2_len = s2->length;
   struct List_element *s1_tail = s1->tail;
   struct List_element *s2_tail = s2->tail;
   bool s1_new_element = true;
   bool s2_new_element = true;
 
-  if (complement || !s2->has_char_class)
-    return;
+  nếu (complement || !s2->has_char_class)
+    trả_về;
 
-  for (int i = 0; i < N_CHARS; i++)
+  cho (số_nguyên i = 0; i < N_CHARS; i++)
     {
-      if (isupper (i))
+      nếu (isupper (i))
         n_upper++;
-      if (islower (i))
+      nếu (islower (i))
         n_lower++;
     }
 
   s1->state = BEGIN_STATE;
   s2->state = BEGIN_STATE;
 
-  while (c1 != -1 && c2 != -1)
+  trong_khi (c1 != -1 && c2 != -1)
     {
       enum Upper_Lower_class class_s1, class_s2;
 
@@ -1203,13 +1203,13 @@ validate_case_classes (struct Spec_list *s1, struct Spec_list *s2)
 
       /* If c2 transitions to a new case class, then
          c1 must also transition at the same time.  */
-      if (s2_new_element && class_s2 != UL_NONE
+      nếu (s2_new_element && class_s2 != UL_NONE
           && !(s1_new_element && class_s1 != UL_NONE))
         error (EXIT_FAILURE, 0,
                _("misaligned [:upper:] and/or [:lower:] construct"));
 
       /* If case converting, quickly skip over the elements.  */
-      if (class_s2 != UL_NONE)
+      nếu (class_s2 != UL_NONE)
         {
           skip_construct (s1);
           skip_construct (s2);
@@ -1250,7 +1250,7 @@ get_spec_stats (struct Spec_list *s)
   s->has_equiv_class = false;
   s->has_restricted_char_class = false;
   s->has_char_class = false;
-  for (struct List_element *p = s->head->next; p; p = p->next)
+  cho (struct List_element *p = s->head->next; p; p = p->next)
     {
       count len = 0;
 
@@ -1267,8 +1267,8 @@ get_spec_stats (struct Spec_list *s)
 
         case RE_CHAR_CLASS:
           s->has_char_class = true;
-          for (int i = 0; i < N_CHARS; i++)
-            if (is_char_class_member (p->u.char_class, i))
+          cho (số_nguyên i = 0; i < N_CHARS; i++)
+            nếu (is_char_class_member (p->u.char_class, i))
               ++len;
           switch (+p->u.char_class)
             {
@@ -1282,16 +1282,16 @@ get_spec_stats (struct Spec_list *s)
           break;
 
         case RE_EQUIV_CLASS:
-          for (int i = 0; i < N_CHARS; i++)
-            if (is_equiv_class_member (p->u.equiv_code, i))
+          cho (số_nguyên i = 0; i < N_CHARS; i++)
+            nếu (is_equiv_class_member (p->u.equiv_code, i))
               ++len;
           s->has_equiv_class = true;
           break;
 
         case RE_REPEATED_CHAR:
-          if (p->u.repeated_char.repeat_count > 0)
+          nếu (p->u.repeated_char.repeat_count > 0)
             len = p->u.repeated_char.repeat_count;
-          else
+          không_thì
             {
               s->indefinite_repeat_element = p;
               ++(s->n_indefinite_repeats);
@@ -1306,7 +1306,7 @@ get_spec_stats (struct Spec_list *s)
          any length greater than the maximum repeat count, in case the
          length is later used to compute the repeat count for an
          indefinite element.  */
-      if (ckd_add (&length, length, len) || REPEAT_COUNT_MAXIMUM < length)
+      nếu (ckd_add (&length, length, len) || REPEAT_COUNT_MAXIMUM < length)
         error (EXIT_FAILURE, 0, _("too many characters in set"));
     }
 
@@ -1317,7 +1317,7 @@ static void
 get_s1_spec_stats (struct Spec_list *s1)
 {
   get_spec_stats (s1);
-  if (complement)
+  nếu (complement)
     s1->length = card_of_complement (s1);
 }
 
@@ -1325,7 +1325,7 @@ static void
 get_s2_spec_stats (struct Spec_list *s2, count len_s1)
 {
   get_spec_stats (s2);
-  if (len_s1 >= s2->length && s2->n_indefinite_repeats == 1)
+  nếu (len_s1 >= s2->length && s2->n_indefinite_repeats == 1)
     {
       s2->indefinite_repeat_element->u.repeated_char.repeat_count =
         len_s1 - s2->length;
@@ -1353,7 +1353,7 @@ parse_str (char const *s, struct Spec_list *spec_list)
   struct E_string es;
   bool ok = unquote (s, &es) && build_spec_list (&es, spec_list);
   es_free (&es);
-  return ok;
+  trả_về ok;
 }
 
 /* Given two specification lists, S1 and S2, and assuming that
@@ -1414,18 +1414,18 @@ string2_extend (const struct Spec_list *s1, struct Spec_list *s2)
 static bool
 homogeneous_spec_list (struct Spec_list *s)
 {
-  int b, c;
+  số_nguyên b, c;
 
   s->state = BEGIN_STATE;
 
-  if ((b = get_next (s, NULL)) == -1)
-    return false;
+  nếu ((b = get_next (s, NULL)) == -1)
+    trả_về false;
 
-  while ((c = get_next (s, NULL)) != -1)
-    if (c != b)
-      return false;
+  trong_khi ((c = get_next (s, NULL)) != -1)
+    nếu (c != b)
+      trả_về false;
 
-  return true;
+  trả_về true;
 }
 
 /* Die with an error message if S1 and S2 describe strings that
@@ -1440,26 +1440,26 @@ static void
 validate (struct Spec_list *s1, struct Spec_list *s2)
 {
   get_s1_spec_stats (s1);
-  if (s1->n_indefinite_repeats > 0)
+  nếu (s1->n_indefinite_repeats > 0)
     error (EXIT_FAILURE, 0,
            _("the [c*] repeat construct may not appear in string1"));
 
-  if (s2)
+  nếu (s2)
     {
       get_s2_spec_stats (s2, s1->length);
 
-      if (s2->n_indefinite_repeats > 1)
+      nếu (s2->n_indefinite_repeats > 1)
         error (EXIT_FAILURE, 0,
                _("only one [c*] repeat construct may appear in string2"));
 
-      if (translating)
+      nếu (translating)
         {
-          if (s2->has_equiv_class)
+          nếu (s2->has_equiv_class)
             error (EXIT_FAILURE, 0,
                    _("[=c=] expressions may not appear in string2"
                      " when translating"));
 
-          if (s2->has_restricted_char_class)
+          nếu (s2->has_restricted_char_class)
             error (EXIT_FAILURE, 0,
                    _("when translating, the only character classes"
                      " that may appear in\n"
@@ -1467,14 +1467,14 @@ validate (struct Spec_list *s1, struct Spec_list *s2)
 
           validate_case_classes (s1, s2);
 
-          if (s1->length > s2->length)
+          nếu (s1->length > s2->length)
             {
-              if (!truncate_set1)
+              nếu (!truncate_set1)
                 {
                   /* string2 must be non-empty unless --truncate-set1 is
                      given or string1 is empty.  */
 
-                  if (s2->length == 0)
+                  nếu (s2->length == 0)
                     error (EXIT_FAILURE, 0,
                            _("when not truncating set1,"
                              " string2 must be non-empty"));
@@ -1482,16 +1482,16 @@ validate (struct Spec_list *s1, struct Spec_list *s2)
                 }
             }
 
-          if (complement && s1->has_char_class
+          nếu (complement && s1->has_char_class
               && ! (s2->length == s1->length && homogeneous_spec_list (s2)))
             error (EXIT_FAILURE, 0,
                    _("when translating with complemented character classes,\n"
                      "string2 must map all characters in the domain to one"));
         }
-      else
+      không_thì
         /* Not translating.  */
         {
-          if (s2->n_indefinite_repeats > 0)
+          nếu (s2->n_indefinite_repeats > 0)
             error (EXIT_FAILURE, 0,
                    _("the [c*] construct may appear in string2"
                      " only when translating"));
@@ -1512,25 +1512,25 @@ squeeze_filter (char *buf, size_t size, size_t (*reader) (char *, size_t))
 {
   /* A value distinct from any character that may have been stored in a
      buffer as the result of a block-read in the function squeeze_filter.  */
-  const int NOT_A_CHAR = INT_MAX;
+  const số_nguyên NOT_A_CHAR = INT_MAX;
 
-  int char_to_squeeze = NOT_A_CHAR;
+  số_nguyên char_to_squeeze = NOT_A_CHAR;
   size_t i = 0;
   size_t nr = 0;
 
-  while (true)
+  trong_khi (true)
     {
-      if (i >= nr)
+      nếu (i >= nr)
         {
           nr = reader (buf, size);
-          if (nr == 0)
+          nếu (nr == 0)
             break;
           i = 0;
         }
 
       size_t begin = i;
 
-      if (char_to_squeeze == NOT_A_CHAR)
+      nếu (char_to_squeeze == NOT_A_CHAR)
         {
           size_t out_len;
           /* Here, by being a little tricky, we can get a significant
@@ -1544,18 +1544,18 @@ squeeze_filter (char *buf, size_t size, size_t (*reader) (char *, size_t))
              of the input is removed by squeezing repeats.  But most
              uses of this functionality seem to remove less than 20-30%
              of the input.  */
-          for (; i < nr && !in_squeeze_set[to_uchar (buf[i])]; i += 2)
+          cho (; i < nr && !in_squeeze_set[to_uchar (buf[i])]; i += 2)
             continue;
 
           /* There is a special case when i == nr and we've just
              skipped a character (the last one in buf) that is in
              the squeeze set.  */
-          if (i == nr && in_squeeze_set[to_uchar (buf[i - 1])])
+          nếu (i == nr && in_squeeze_set[to_uchar (buf[i - 1])])
             --i;
 
-          if (i >= nr)
+          nếu (i >= nr)
             out_len = nr - begin;
-          else
+          không_thì
             {
               char_to_squeeze = buf[i];
               /* We're about to output buf[begin..i].  */
@@ -1563,7 +1563,7 @@ squeeze_filter (char *buf, size_t size, size_t (*reader) (char *, size_t))
 
               /* But since we stepped by 2 in the loop above,
                  out_len may be one too large.  */
-              if (i > 0 && buf[i - 1] == char_to_squeeze)
+              nếu (i > 0 && buf[i - 1] == char_to_squeeze)
                 --out_len;
 
               /* Advance i to the index of first character to be
@@ -1571,19 +1571,19 @@ squeeze_filter (char *buf, size_t size, size_t (*reader) (char *, size_t))
                  char_to_squeeze.  */
               ++i;
             }
-          if (out_len > 0
+          nếu (out_len > 0
               && fwrite (&buf[begin], 1, out_len, stdout) != out_len)
             write_error ();
         }
 
-      if (char_to_squeeze != NOT_A_CHAR)
+      nếu (char_to_squeeze != NOT_A_CHAR)
         {
           /* Advance i to index of first char != char_to_squeeze
              (or to nr if all the rest of the characters in this
              buffer are the same as char_to_squeeze).  */
-          for (; i < nr && buf[i] == char_to_squeeze; i++)
+          cho (; i < nr && buf[i] == char_to_squeeze; i++)
             continue;
-          if (i < nr)
+          nếu (i < nr)
             char_to_squeeze = NOT_A_CHAR;
           /* If (i >= nr) we've squeezed the last character in this buffer.
              So now we have to read a new buffer and continue comparing
@@ -1596,9 +1596,9 @@ static size_t
 plain_read (char *buf, size_t size)
 {
   ssize_t nr = read (STDIN_FILENO, buf, size);
-  if (nr < 0)
+  nếu (nr < 0)
     error (EXIT_FAILURE, errno, _("read error"));
-  return nr;
+  trả_về nr;
 }
 
 /* Read buffers of SIZE bytes from stdin until one is found that
@@ -1619,8 +1619,8 @@ read_and_delete (char *buf, size_t size)
     {
       size_t nr = plain_read (buf, size);
 
-      if (nr == 0)
-        return 0;
+      nếu (nr == 0)
+        trả_về 0;
 
       /* This first loop may be a waste of code, but gives much
          better performance when no characters are deleted in
@@ -1628,17 +1628,17 @@ read_and_delete (char *buf, size_t size)
          of buf[i] into buf[n_saved] when it would be a NOP.  */
 
       size_t i;
-      for (i = 0; i < nr && !in_delete_set[to_uchar (buf[i])]; i++)
+      cho (i = 0; i < nr && !in_delete_set[to_uchar (buf[i])]; i++)
         continue;
       n_saved = i;
 
-      for (++i; i < nr; i++)
-        if (!in_delete_set[to_uchar (buf[i])])
+      cho (++i; i < nr; i++)
+        nếu (!in_delete_set[to_uchar (buf[i])])
           buf[n_saved++] = buf[i];
     }
-  while (n_saved == 0);
+  trong_khi (n_saved == 0);
 
-  return n_saved;
+  trả_về n_saved;
 }
 
 /* Read at most SIZE bytes from stdin into the array BUF.  Then
@@ -1650,10 +1650,10 @@ read_and_xlate (char *buf, size_t size)
 {
   size_t bytes_read = plain_read (buf, size);
 
-  for (size_t i = 0; i < bytes_read; i++)
+  cho (size_t i = 0; i < bytes_read; i++)
     buf[i] = xlate[to_uchar (buf[i])];
 
-  return bytes_read;
+  trả_về bytes_read;
 }
 
 /* Initialize a boolean membership set, IN_SET, with the character
@@ -1665,23 +1665,23 @@ read_and_xlate (char *buf, size_t size)
 static void
 set_initialize (struct Spec_list *s, bool complement_this_set, bool *in_set)
 {
-  int c;
+  số_nguyên c;
 
   s->state = BEGIN_STATE;
-  while ((c = get_next (s, NULL)) != -1)
+  trong_khi ((c = get_next (s, NULL)) != -1)
     in_set[c] = true;
-  if (complement_this_set)
-    for (size_t i = 0; i < N_CHARS; i++)
+  nếu (complement_this_set)
+    cho (size_t i = 0; i < N_CHARS; i++)
       in_set[i] = (!in_set[i]);
 }
 
-int
-main (int argc, char **argv)
+số_nguyên
+main (số_nguyên argc, char **argv)
 {
-  int c;
-  int non_option_args;
-  int min_operands;
-  int max_operands;
+  số_nguyên c;
+  số_nguyên non_option_args;
+  số_nguyên min_operands;
+  số_nguyên max_operands;
   struct Spec_list buf1, buf2;
   struct Spec_list *s1 = &buf1;
   struct Spec_list *s2 = &buf2;
@@ -1694,7 +1694,7 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((c = getopt_long (argc, argv, "+AcCdstu", long_options, NULL)) != -1)
+  trong_khi ((c = getopt_long (argc, argv, "+AcCdstu", long_options, NULL)) != -1)
     {
       switch (c)
         {
@@ -1741,11 +1741,11 @@ main (int argc, char **argv)
   min_operands = 1 + (delete == squeeze_repeats);
   max_operands = 1 + (delete <= squeeze_repeats);
 
-  if (non_option_args < min_operands)
+  nếu (non_option_args < min_operands)
     {
-      if (non_option_args == 0)
+      nếu (non_option_args == 0)
         error (0, 0, _("missing operand"));
-      else
+      không_thì
         {
           error (0, 0, _("missing operand after %s"), quote (argv[argc - 1]));
           fprintf (stderr, "%s\n",
@@ -1757,10 +1757,10 @@ main (int argc, char **argv)
       usage (EXIT_FAILURE);
     }
 
-  if (max_operands < non_option_args)
+  nếu (max_operands < non_option_args)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind + max_operands]));
-      if (non_option_args == 2)
+      nếu (non_option_args == 2)
         fprintf (stderr, "%s\n",
                  _("Only one string may be given when "
                    "deleting without squeezing repeats."));
@@ -1768,16 +1768,16 @@ main (int argc, char **argv)
     }
 
   spec_init (s1);
-  if (!parse_str (argv[optind], s1))
+  nếu (!parse_str (argv[optind], s1))
     main_exit (EXIT_FAILURE);
 
-  if (non_option_args == 2)
+  nếu (non_option_args == 2)
     {
       spec_init (s2);
-      if (!parse_str (argv[optind + 1], s2))
+      nếu (!parse_str (argv[optind + 1], s2))
         main_exit (EXIT_FAILURE);
     }
-  else
+  không_thì
     s2 = NULL;
 
   validate (s1, s2);
@@ -1789,47 +1789,47 @@ main (int argc, char **argv)
   xset_binary_mode (STDOUT_FILENO, O_BINARY);
   fadvise (stdin, FADVISE_SEQUENTIAL);
 
-  if (squeeze_repeats && non_option_args == 1)
+  nếu (squeeze_repeats && non_option_args == 1)
     {
       set_initialize (s1, complement, in_squeeze_set);
       squeeze_filter (io_buf, sizeof io_buf, plain_read);
     }
-  else if (delete && non_option_args == 1)
+  không_thì nếu (delete && non_option_args == 1)
     {
       set_initialize (s1, complement, in_delete_set);
 
-      while (true)
+      trong_khi (true)
         {
           size_t nr = read_and_delete (io_buf, sizeof io_buf);
-          if (nr == 0)
+          nếu (nr == 0)
             break;
-          if (fwrite (io_buf, 1, nr, stdout) != nr)
+          nếu (fwrite (io_buf, 1, nr, stdout) != nr)
             write_error ();
         }
     }
-  else if (squeeze_repeats && delete && non_option_args == 2)
+  không_thì nếu (squeeze_repeats && delete && non_option_args == 2)
     {
       set_initialize (s1, complement, in_delete_set);
       set_initialize (s2, false, in_squeeze_set);
       squeeze_filter (io_buf, sizeof io_buf, read_and_delete);
     }
-  else if (translating)
+  không_thì nếu (translating)
     {
-      if (complement)
+      nếu (complement)
         {
           bool *in_s1 = in_delete_set;
 
           set_initialize (s1, false, in_s1);
           s2->state = BEGIN_STATE;
-          for (int i = 0; i < N_CHARS; i++)
+          cho (số_nguyên i = 0; i < N_CHARS; i++)
             xlate[i] = i;
-          for (int i = 0; i < N_CHARS; i++)
+          cho (số_nguyên i = 0; i < N_CHARS; i++)
             {
-              if (!in_s1[i])
+              nếu (!in_s1[i])
                 {
-                  int ch = get_next (s2, NULL);
+                  số_nguyên ch = get_next (s2, NULL);
                   affirm (ch != -1 || truncate_set1);
-                  if (ch == -1)
+                  nếu (ch == -1)
                     {
                       /* This will happen when tr is invoked like e.g.
                          tr -cs A-Za-z0-9 '\012'.  */
@@ -1839,43 +1839,43 @@ main (int argc, char **argv)
                 }
             }
         }
-      else
+      không_thì
         {
-          int c1, c2;
+          số_nguyên c1, c2;
           enum Upper_Lower_class class_s1;
           enum Upper_Lower_class class_s2;
 
-          for (int i = 0; i < N_CHARS; i++)
+          cho (số_nguyên i = 0; i < N_CHARS; i++)
             xlate[i] = i;
           s1->state = BEGIN_STATE;
           s2->state = BEGIN_STATE;
-          while (true)
+          trong_khi (true)
             {
               c1 = get_next (s1, &class_s1);
               c2 = get_next (s2, &class_s2);
 
-              if (class_s1 == UL_LOWER && class_s2 == UL_UPPER)
+              nếu (class_s1 == UL_LOWER && class_s2 == UL_UPPER)
                 {
-                  for (int i = 0; i < N_CHARS; i++)
-                    if (islower (i))
+                  cho (số_nguyên i = 0; i < N_CHARS; i++)
+                    nếu (islower (i))
                       xlate[i] = toupper (i);
                 }
-              else if (class_s1 == UL_UPPER && class_s2 == UL_LOWER)
+              không_thì nếu (class_s1 == UL_UPPER && class_s2 == UL_LOWER)
                 {
-                  for (int i = 0; i < N_CHARS; i++)
-                    if (isupper (i))
+                  cho (số_nguyên i = 0; i < N_CHARS; i++)
+                    nếu (isupper (i))
                       xlate[i] = tolower (i);
                 }
-              else
+              không_thì
                 {
                   /* The following should have been checked by validate...  */
-                  if (c1 == -1 || c2 == -1)
+                  nếu (c1 == -1 || c2 == -1)
                     break;
                   xlate[c1] = c2;
                 }
 
               /* When case-converting, skip the elements as an optimization.  */
-              if (class_s2 != UL_NONE)
+              nếu (class_s2 != UL_NONE)
                 {
                   skip_construct (s1);
                   skip_construct (s2);
@@ -1883,25 +1883,25 @@ main (int argc, char **argv)
             }
           affirm (c1 == -1 || truncate_set1);
         }
-      if (squeeze_repeats)
+      nếu (squeeze_repeats)
         {
           set_initialize (s2, false, in_squeeze_set);
           squeeze_filter (io_buf, sizeof io_buf, read_and_xlate);
         }
-      else
+      không_thì
         {
-          while (true)
+          trong_khi (true)
             {
               size_t bytes_read = read_and_xlate (io_buf, sizeof io_buf);
-              if (bytes_read == 0)
+              nếu (bytes_read == 0)
                 break;
-              if (fwrite (io_buf, 1, bytes_read, stdout) != bytes_read)
+              nếu (fwrite (io_buf, 1, bytes_read, stdout) != bytes_read)
                 write_error ();
             }
         }
     }
 
-  if (close (STDIN_FILENO) != 0)
+  nếu (close (STDIN_FILENO) != 0)
     error (EXIT_FAILURE, errno, _("standard input"));
 
   main_exit (EXIT_SUCCESS);

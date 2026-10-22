@@ -28,11 +28,11 @@
 #define AUTHORS proper_name ("David MacKenzie")
 
 void
-usage (int status)
+usage (số_nguyên status)
 {
-  if (status != EXIT_SUCCESS)
+  nếu (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  không_thì
     {
       printf (_("Usage: %s [OPTION]\n"), program_name);
       fputs (_("\
@@ -46,8 +46,8 @@ Print the user's login name.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+số_nguyên
+main (số_nguyên argc, char **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -61,7 +61,7 @@ main (int argc, char **argv)
                                    Version, true, usage, AUTHORS,
                                    (char const *) NULL);
 
-  if (optind < argc)
+  nếu (optind < argc)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind]));
       usage (EXIT_FAILURE);
@@ -70,9 +70,9 @@ main (int argc, char **argv)
   /* POSIX requires using getlogin (or equivalent code) and prohibits
      using a fallback technique.  */
   char const *cp = getlogin ();
-  if (! cp)
+  nếu (! cp)
     error (EXIT_FAILURE, 0, _("no login name"));
 
   puts (cp);
-  return EXIT_SUCCESS;
+  trả_về EXIT_SUCCESS;
 }

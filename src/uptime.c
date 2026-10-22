@@ -36,25 +36,25 @@
   proper_name ("David MacKenzie"), \
   proper_name ("Kaveh Ghazi")
 
-static int
+static số_nguyên
 print_uptime (idx_t n, STRUCT_UTMP const *utmp_buf)
 {
-  int status = EXIT_SUCCESS;
+  số_nguyên status = EXIT_SUCCESS;
   time_t boot_time = 0;
 
   /* Loop through all the utmp entries we just read and count up the valid
      ones, also in the process possibly gleaning boottime. */
   idx_t entries = 0;
-  for (idx_t i = 0; i < n; i++)
+  cho (idx_t i = 0; i < n; i++)
     {
       STRUCT_UTMP const *this = &utmp_buf[i];
       entries += IS_USER_PROCESS (this);
-      if (UT_TYPE_BOOT_TIME (this))
+      nếu (UT_TYPE_BOOT_TIME (this))
         boot_time = this->ut_ts.tv_sec;
     }
   /* The gnulib module 'readutmp' is supposed to provide a BOOT_TIME entry
      on all platforms.  */
-  if (boot_time == 0)
+  nếu (boot_time == 0)
     {
       error (0, errno, _("couldn't get boot time"));
       status = EXIT_FAILURE;
@@ -64,33 +64,33 @@ print_uptime (idx_t n, STRUCT_UTMP const *utmp_buf)
   struct tm *tmn = time_now == (time_t) -1 ? NULL : localtime (&time_now);
   /* procps' version of uptime also prints the seconds field, but
      previous versions of coreutils don't. */
-  if (tmn)
+  nếu (tmn)
     /* TRANSLATORS: This prints the current clock time. */
     fprintftime (stdout, _(" %H:%M:%S  "), tmn, (timezone_t) 0, 0);
-  else
+  không_thì
     {
       printf (_(" ??:????  "));
       status = EXIT_FAILURE;
     }
 
   intmax_t uptime;
-  if (time_now == (time_t) -1 || boot_time == 0
+  nếu (time_now == (time_t) -1 || boot_time == 0
       || ckd_sub (&uptime, time_now, boot_time) || uptime < 0)
     {
       printf (_("up ???? days ??:??,  "));
       status = EXIT_FAILURE;
     }
-  else
+  không_thì
     {
       intmax_t updays = uptime / 86400;
-      int uphours = uptime % 86400 / 3600;
-      int upmins = uptime % 86400 % 3600 / 60;
-      if (0 < updays)
+      số_nguyên uphours = uptime % 86400 / 3600;
+      số_nguyên upmins = uptime % 86400 % 3600 / 60;
+      nếu (0 < updays)
         printf (ngettext ("up %jd day %2d:%02d,  ",
                           "up %jd days %2d:%02d,  ",
                           select_plural (updays)),
                 updays, uphours, upmins);
-      else
+      không_thì
         printf (_("up %2d:%02d,  "), uphours, upmins);
     }
 
@@ -98,23 +98,23 @@ print_uptime (idx_t n, STRUCT_UTMP const *utmp_buf)
           entries);
 
   double avg[3];
-  int loads = getloadavg (avg, 3);
+  số_nguyên loads = getloadavg (avg, 3);
 
-  if (loads == -1)
+  nếu (loads == -1)
     putchar ('\n');
-  else
+  không_thì
     {
-      if (loads > 0)
+      nếu (loads > 0)
         printf (_(",  load average: %.2f"), avg[0]);
-      if (loads > 1)
+      nếu (loads > 1)
         printf (", %.2f", avg[1]);
-      if (loads > 2)
+      nếu (loads > 2)
         printf (", %.2f", avg[2]);
-      if (loads > 0)
+      nếu (loads > 0)
         putchar ('\n');
     }
 
-  return status;
+  trả_về status;
 }
 
 /* Display the system uptime and the number of users on the system,
@@ -122,29 +122,29 @@ print_uptime (idx_t n, STRUCT_UTMP const *utmp_buf)
    utmp file.  */
 
 static _Noreturn void
-uptime (char const *filename, int options)
+uptime (char const *filename, số_nguyên options)
 {
   idx_t n_users;
   STRUCT_UTMP *utmp_buf;
-  int read_utmp_status = (read_utmp (filename, &n_users, &utmp_buf, options) < 0
+  số_nguyên read_utmp_status = (read_utmp (filename, &n_users, &utmp_buf, options) < 0
                           ? EXIT_FAILURE : EXIT_SUCCESS);
-  if (read_utmp_status != EXIT_SUCCESS)
+  nếu (read_utmp_status != EXIT_SUCCESS)
     {
       error (0, errno, "%s", quotef (filename));
       n_users = 0;
       utmp_buf = NULL;
     }
 
-  int print_uptime_status = print_uptime (n_users, utmp_buf);
+  số_nguyên print_uptime_status = print_uptime (n_users, utmp_buf);
   exit (MAX (read_utmp_status, print_uptime_status));
 }
 
 void
-usage (int status)
+usage (số_nguyên status)
 {
-  if (status != EXIT_SUCCESS)
+  nếu (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  không_thì
     {
       printf (_("Usage: %s [OPTION]... [FILE]\n"), program_name);
       printf (_("\
@@ -159,7 +159,7 @@ in the run queue over the last 1, 5 and 15 minutes."));
       printf (_("  \
 Processes in\n\
 an uninterruptible sleep state also contribute to the load average.\n"));
-#else
+#không_thì
       printf (_("\n"));
 #endif
       printf (_("\
@@ -173,8 +173,8 @@ If FILE is not specified, use %s.  %s as FILE is common.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+số_nguyên
+main (số_nguyên argc, char **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);

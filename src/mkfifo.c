@@ -43,11 +43,11 @@ static struct option const longopts[] =
 };
 
 void
-usage (int status)
+usage (số_nguyên status)
 {
-  if (status != EXIT_SUCCESS)
+  nếu (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  không_thì
     {
       printf (_("Usage: %s [OPTION]... NAME...\n"), program_name);
       fputs (_("\
@@ -66,7 +66,7 @@ Create named pipes (FIFOs) with the given NAMEs.\n\
 "));
       oputs (_("\
       --context[=CTX]\n\
-         like -Z, or if CTX is specified then set the\n\
+         like -Z, or nếu CTX is specified then set the\n\
          SELinux or SMACK security context to CTX\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
@@ -76,8 +76,8 @@ Create named pipes (FIFOs) with the given NAMEs.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+số_nguyên
+main (số_nguyên argc, char **argv)
 {
   char const *specified_mode = NULL;
   char const *scontext = NULL;
@@ -91,8 +91,8 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  int optc;
-  while ((optc = getopt_long (argc, argv, "m:Z", longopts, NULL)) != -1)
+  số_nguyên optc;
+  trong_khi ((optc = getopt_long (argc, argv, "m:Z", longopts, NULL)) != -1)
     {
       switch (optc)
         {
@@ -100,24 +100,24 @@ main (int argc, char **argv)
           specified_mode = optarg;
           break;
         case 'Z':
-          if (is_smack_enabled ())
+          nếu (is_smack_enabled ())
             {
               /* We don't yet support -Z to restore context with SMACK.  */
               scontext = optarg;
             }
-          else if (is_selinux_enabled () > 0)
+          không_thì nếu (is_selinux_enabled () > 0)
             {
-              if (optarg)
+              nếu (optarg)
                 scontext = optarg;
-              else
+              không_thì
                 {
                   set_security_context = selabel_open (SELABEL_CTX_FILE,
                                                        NULL, 0);
-                  if (! set_security_context)
+                  nếu (! set_security_context)
                     error (0, errno, _("warning: ignoring --context"));
                 }
             }
-          else if (optarg)
+          không_thì nếu (optarg)
             {
               error (0, 0,
                      _("warning: ignoring --context; "
@@ -131,52 +131,52 @@ main (int argc, char **argv)
         }
     }
 
-  if (optind == argc)
+  nếu (optind == argc)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
-  if (scontext)
+  nếu (scontext)
     {
-      int ret = 0;
-      if (is_smack_enabled ())
+      số_nguyên ret = 0;
+      nếu (is_smack_enabled ())
         ret = smack_set_label_for_self (scontext);
-      else
+      không_thì
         ret = setfscreatecon (scontext);
 
-      if (ret < 0)
+      nếu (ret < 0)
         error (EXIT_FAILURE, errno,
                _("failed to set default file creation context to %s"),
                quote (scontext));
     }
 
   mode_t newmode = MODE_RW_UGO;
-  if (specified_mode)
+  nếu (specified_mode)
     {
       struct mode_change *change = mode_compile (specified_mode);
-      if (!change)
+      nếu (!change)
         error (EXIT_FAILURE, 0, _("invalid mode"));
       mode_t umask_value = umask (0);
       umask (umask_value);
       newmode = mode_adjust (newmode, false, umask_value, change, NULL);
       free (change);
-      if (newmode & ~S_IRWXUGO)
+      nếu (newmode & ~S_IRWXUGO)
         error (EXIT_FAILURE, 0,
                _("mode must specify only file permission bits"));
     }
 
-  int exit_status = EXIT_SUCCESS;
-  for (; optind < argc; ++optind)
+  số_nguyên exit_status = EXIT_SUCCESS;
+  cho (; optind < argc; ++optind)
     {
-      if (set_security_context)
+      nếu (set_security_context)
         defaultcon (set_security_context, argv[optind], S_IFIFO);
-      if (mkfifo (argv[optind], newmode) != 0)
+      nếu (mkfifo (argv[optind], newmode) != 0)
         {
           error (0, errno, _("cannot create fifo %s"), quoteaf (argv[optind]));
           exit_status = EXIT_FAILURE;
         }
-      else if (specified_mode && lchmod (argv[optind], newmode) != 0)
+      không_thì nếu (specified_mode && lchmod (argv[optind], newmode) != 0)
         {
           error (0, errno, _("cannot set permissions of %s"),
                  quoteaf (argv[optind]));
@@ -184,5 +184,5 @@ main (int argc, char **argv)
         }
     }
 
-  return exit_status;
+  trả_về exit_status;
 }

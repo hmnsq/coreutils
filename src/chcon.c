@@ -90,22 +90,22 @@ static struct option const long_options[] =
 /* Given a security context, CONTEXT, derive a context_t (*RET),
    setting any portions selected via the global variables, specified_user,
    specified_role, etc.  */
-static int
+static số_nguyên
 compute_context_from_mask (char const *context, context_t *ret)
 {
   bool ok = true;
   context_t new_context = context_new (context);
-  if (!new_context)
+  nếu (!new_context)
     {
       error (0, errno, _("failed to create security context: %s"),
              quote (context));
-      return 1;
+      trả_về 1;
     }
 
 #define SET_COMPONENT(C, comp)						\
    do									\
      {									\
-       if (specified_ ## comp						\
+       nếu (specified_ ## comp						\
            && context_ ## comp ## _set ((C), specified_ ## comp))	\
          {								\
             error (0, errno,						\
@@ -114,84 +114,84 @@ compute_context_from_mask (char const *context, context_t *ret)
            ok = false;							\
          }								\
      }									\
-   while (0)
+   trong_khi (0)
 
   SET_COMPONENT (new_context, user);
   SET_COMPONENT (new_context, range);
   SET_COMPONENT (new_context, role);
   SET_COMPONENT (new_context, type);
 
-  if (!ok)
+  nếu (!ok)
     {
-      int saved_errno = errno;
+      số_nguyên saved_errno = errno;
       context_free (new_context);
       errno = saved_errno;
-      return 1;
+      trả_về 1;
     }
 
   *ret = new_context;
-  return 0;
+  trả_về 0;
 }
 
 /* Change the context of FILE, using specified components.
    If it is a directory and -R is given, recurse.
    Return 0 if successful, 1 if errors occurred. */
 
-static int
-change_file_context (int fd, char const *file, bool ignore_missing)
+static số_nguyên
+change_file_context (số_nguyên fd, char const *file, bool ignore_missing)
 {
   char *file_context = NULL;
   context_t context IF_LINT (= NULL);
   char const * context_string;
-  int errors = 0;
+  số_nguyên errors = 0;
 
-  if (specified_context == NULL)
+  nếu (specified_context == NULL)
     {
-      int status = (affect_symlink_referent
+      số_nguyên status = (affect_symlink_referent
                     ? getfileconat (fd, file, &file_context)
                     : lgetfileconat (fd, file, &file_context));
 
-      if (status < 0 && errno != ENODATA)
+      nếu (status < 0 && errno != ENODATA)
         {
-          if (ignore_missing && ignorable_traversal_errno (errno))
-            return 0;
+          nếu (ignore_missing && ignorable_traversal_errno (errno))
+            trả_về 0;
           error (0, errno, _("failed to get security context of %s"),
                  quoteaf (file));
-          return 1;
+          trả_về 1;
         }
 
       /* If the file doesn't have a context, and we're not setting all of
          the context components, there isn't really an obvious default.
          Thus, we just give up. */
-      if (file_context == NULL)
+      nếu (file_context == NULL)
         {
           error (0, 0, _("can't apply partial context to unlabeled file %s"),
                  quoteaf (file));
-          return 1;
+          trả_về 1;
         }
 
-      if (compute_context_from_mask (file_context, &context))
+      nếu (compute_context_from_mask (file_context, &context))
         {
           freecon (file_context);
-          return 1;
+          trả_về 1;
         }
 
       context_string = context_str (context);
     }
-  else
+  không_thì
     {
       context_string = specified_context;
     }
 
-  if (file_context == NULL || ! streq (context_string, file_context))
+  nếu (file_context == NULL || ! streq (context_string, file_context))
     {
-      int fail = (affect_symlink_referent
+      số_nguyên fail = (affect_symlink_referent
                   ?  setfileconat (fd, file, context_string)
                   : lsetfileconat (fd, file, context_string));
 
-      if (fail)
+      nếu (fail)
         {
-          if (! (ignore_missing && ignorable_traversal_errno (errno)))
+          nếu (! (ignore_missing && ignorable_traversal_errno (errno)))
             {
               errors = 1;
               error (0, errno, _("failed to change context of %s to %s"),
@@ -200,13 +200,13 @@ change_file_context (int fd, char const *file, bool ignore_missing)
         }
     }
 
-  if (specified_context == NULL)
+  nếu (specified_context == NULL)
     {
       context_free (context);
       freecon (file_context);
     }
 
-  return errors;
+  trả_về errors;
 }
 
 /* Change the context of FILE.
@@ -222,15 +222,15 @@ process_file (FTS *fts, FTSENT *ent)
   bool ok = true;
   bool ignore_missing = ignore_missing_fts_entry (ent);
 
-  if (ignore_missing && ignorable_fts_error (ent))
-    return true;
+  nếu (ignore_missing && ignorable_fts_error (ent))
+    trả_về true;
 
   switch (ent->fts_info)
     {
     case FTS_D:
-      if (recurse)
+      nếu (recurse)
         {
-          if (ROOT_DEV_INO_CHECK (root_dev_ino, ent->fts_statp))
+          nếu (ROOT_DEV_INO_CHECK (root_dev_ino, ent->fts_statp))
             {
               /* This happens e.g., with "chcon -R --preserve-root ... /"
                  and with "chcon -RH --preserve-root ... symlink-to-root".  */
@@ -239,15 +239,15 @@ process_file (FTS *fts, FTSENT *ent)
               fts_set (fts, ent, FTS_SKIP);
               /* Ensure that we do not process "/" on the second visit.  */
               ignore_value (fts_read (fts));
-              return false;
+              trả_về false;
             }
-          return true;
+          trả_về true;
         }
       break;
 
     case FTS_DP:
-      if (! recurse)
-        return true;
+      nếu (! recurse)
+        trả_về true;
       break;
 
     case FTS_NS:
@@ -258,11 +258,11 @@ process_file (FTS *fts, FTSENT *ent)
          accessible when control reaches this point.  So, if this is
          the first time we've seen the FTS_NS for this file, tell
          fts_read to stat it "again".  */
-      if (ent->fts_level == FTS_ROOTLEVEL && ent->fts_number == 0)
+      nếu (ent->fts_level == FTS_ROOTLEVEL && ent->fts_number == 0)
         {
           ent->fts_number = 1;
           fts_set (fts, ent, FTS_AGAIN);
-          return true;
+          trả_về true;
         }
       error (0, ent->fts_errno, _("cannot access %s"),
              quoteaf (file_full_name));
@@ -281,10 +281,10 @@ process_file (FTS *fts, FTSENT *ent)
       break;
 
     case FTS_DC:		/* directory that causes cycles */
-      if (cycle_warning_required (fts, ent))
+      nếu (cycle_warning_required (fts, ent))
         {
           emit_cycle_warning (file_full_name);
-          return false;
+          trả_về false;
         }
       break;
 
@@ -292,27 +292,27 @@ process_file (FTS *fts, FTSENT *ent)
       break;
     }
 
-  if (ent->fts_info == FTS_DP
+  nếu (ent->fts_info == FTS_DP
       && ok && ROOT_DEV_INO_CHECK (root_dev_ino, file_stats))
     {
       ROOT_DEV_INO_WARN (file_full_name);
       ok = false;
     }
 
-  if (ok)
+  nếu (ok)
     {
-      if (verbose)
+      nếu (verbose)
         printf (_("changing security context of %s\n"),
                 quoteaf (file_full_name));
 
-      if (change_file_context (fts->fts_cwd_fd, file, ignore_missing) != 0)
+      nếu (change_file_context (fts->fts_cwd_fd, file, ignore_missing) != 0)
         ok = false;
     }
 
-  if ( ! recurse)
+  nếu ( ! recurse)
     fts_set (fts, ent, FTS_SKIP);
 
-  return ok;
+  trả_về ok;
 }
 
 /* Recursively operate on the specified FILES (the last entry
@@ -320,20 +320,20 @@ process_file (FTS *fts, FTSENT *ent)
    Return true if successful.  */
 
 static bool
-process_files (char **files, int bit_flags)
+process_files (char **files, số_nguyên bit_flags)
 {
   bool ok = true;
 
   FTS *fts = xfts_open (files, bit_flags, NULL);
 
-  while (true)
+  trong_khi (true)
     {
       FTSENT *ent;
 
       ent = fts_read (fts);
-      if (ent == NULL)
+      nếu (ent == NULL)
         {
-          if (errno != 0)
+          nếu (errno != 0)
             {
               /* FIXME: try to give a better message  */
               error (0, errno, _("fts_read failed"));
@@ -345,21 +345,21 @@ process_files (char **files, int bit_flags)
       ok &= process_file (fts, ent);
     }
 
-  if (fts_close (fts) != 0)
+  nếu (fts_close (fts) != 0)
     {
       error (0, errno, _("fts_close failed"));
       ok = false;
     }
 
-  return ok;
+  trả_về ok;
 }
 
 void
-usage (int status)
+usage (số_nguyên status)
 {
-  if (status != EXIT_SUCCESS)
+  nếu (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  không_thì
     {
       printf (_("\
 Usage: %s [OPTION]... CONTEXT FILE...\n\
@@ -417,7 +417,7 @@ With --reference, change the security context of each FILE to that of RFILE.\n\
 "));
       oputs (_("\
   -v, --verbose\n\
-         output a diagnostic for every file processed\n\
+         output a diagnostic cho every file processed\n\
 "));
       emit_symlink_recurse_options ("-P");
       oputs (HELP_OPTION_DESCRIPTION);
@@ -427,21 +427,21 @@ With --reference, change the security context of each FILE to that of RFILE.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+số_nguyên
+main (số_nguyên argc, char **argv)
 {
   /* Bit flags that control how fts works.  */
-  int bit_flags = FTS_PHYSICAL;
+  số_nguyên bit_flags = FTS_PHYSICAL;
 
   /* 1 if --dereference, 0 if --no-dereference, -1 if neither has been
      specified.  */
-  int dereference = -1;
+  số_nguyên dereference = -1;
 
   bool ok;
   bool preserve_root = false;
   bool component_specified = false;
   char *reference_file = NULL;
-  int optc;
+  số_nguyên optc;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -451,7 +451,7 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "HLPRhvu:r:t:l:",
+  trong_khi ((optc = getopt_long (argc, argv, "HLPRhvu:r:t:l:",
                               long_options, NULL))
          != -1)
     {
@@ -529,81 +529,81 @@ main (int argc, char **argv)
         }
     }
 
-  if (recurse)
+  nếu (recurse)
     {
-      if (bit_flags == FTS_PHYSICAL)
+      nếu (bit_flags == FTS_PHYSICAL)
         {
-          if (dereference == 1)
+          nếu (dereference == 1)
             error (EXIT_FAILURE, 0,
                    _("-R --dereference requires either -H or -L"));
           affect_symlink_referent = false;
         }
-      else
+      không_thì
         {
-          if (dereference == 0)
+          nếu (dereference == 0)
             error (EXIT_FAILURE, 0, _("-R -h requires -P"));
           affect_symlink_referent = true;
         }
     }
-  else
+  không_thì
     {
       bit_flags = FTS_PHYSICAL;
       affect_symlink_referent = (dereference != 0);
     }
 
-  if (argc - optind < (reference_file || component_specified ? 1 : 2))
+  nếu (argc - optind < (reference_file || component_specified ? 1 : 2))
     {
-      if (argc <= optind)
+      nếu (argc <= optind)
         error (0, 0, _("missing operand"));
-      else
+      không_thì
         error (0, 0, _("missing operand after %s"), quote (argv[argc - 1]));
       usage (EXIT_FAILURE);
     }
 
-  if (reference_file)
+  nếu (reference_file)
     {
       char *ref_context = NULL;
 
-      if (getfilecon (reference_file, &ref_context) < 0)
+      nếu (getfilecon (reference_file, &ref_context) < 0)
         error (EXIT_FAILURE, errno, _("failed to get security context of %s"),
                quoteaf (reference_file));
 
       specified_context = ref_context;
     }
-  else if (component_specified)
+  không_thì nếu (component_specified)
     {
       /* FIXME: it's already null, so this is a no-op. */
       specified_context = NULL;
     }
-  else
+  không_thì
     {
       specified_context = argv[optind++];
-      if (0 < is_selinux_enabled ()
+      nếu (0 < is_selinux_enabled ()
           && security_check_context (specified_context) < 0)
         error (EXIT_FAILURE, errno, _("invalid context: %s"),
                quote (specified_context));
     }
 
-  if (reference_file && component_specified)
+  nếu (reference_file && component_specified)
     {
       error (0, 0, _("conflicting security context specifiers given"));
       usage (EXIT_FAILURE);
     }
 
-  if (recurse && preserve_root)
+  nếu (recurse && preserve_root)
     {
       static struct dev_ino dev_ino_buf;
       root_dev_ino = get_root_dev_ino (&dev_ino_buf);
-      if (root_dev_ino == NULL)
+      nếu (root_dev_ino == NULL)
         error (EXIT_FAILURE, errno, _("failed to get attributes of %s"),
                quoteaf ("/"));
     }
-  else
+  không_thì
     {
       root_dev_ino = NULL;
     }
 
   ok = process_files (argv + optind, bit_flags | FTS_NOSTAT);
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  trả_về ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

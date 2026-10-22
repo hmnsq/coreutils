@@ -23,12 +23,12 @@
 #include <sys/utsname.h>
 #include <getopt.h>
 
-#if HAVE_SYSINFO && HAVE_SYS_SYSTEMINFO_H
+#nếu HAVE_SYSINFO && HAVE_SYS_SYSTEMINFO_H
 # include <sys/systeminfo.h>
 #endif
 
-#if HAVE_SYS_SYSCTL_H && ! defined __GLIBC__ && ! defined __APPLE__
-# if HAVE_SYS_PARAM_H
+#nếu HAVE_SYS_SYSCTL_H && ! defined __GLIBC__ && ! defined __APPLE__
+# nếu HAVE_SYS_PARAM_H
 #  include <sys/param.h> /* needed for OpenBSD 3.0 */
 # endif
 # include <sys/sysctl.h>
@@ -37,7 +37,7 @@
 /* E.g., FreeBSD 4.5, NetBSD 1.5.2 */
 #   define UNAME_HARDWARE_PLATFORM HW_MODEL
 #   define UNAME_PROCESSOR HW_MACHINE_ARCH
-#  else
+#  không_thì
 /* E.g., OpenBSD 3.0 */
 #   define UNAME_PROCESSOR HW_MODEL
 #  endif
@@ -108,15 +108,15 @@ static struct option const arch_long_options[] =
 };
 
 void
-usage (int status)
+usage (số_nguyên status)
 {
-  if (status != EXIT_SUCCESS)
+  nếu (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  không_thì
     {
       printf (_("Usage: %s [OPTION]...\n"), program_name);
 
-      if (uname_mode == UNAME_UNAME)
+      nếu (uname_mode == UNAME_UNAME)
         {
           fputs (_("\
 Print certain system information.  With no OPTION, same as -s.\n\
@@ -124,11 +124,11 @@ Print certain system information.  With no OPTION, same as -s.\n\
 "), stdout);
           oputs (_("\
   -a, --all                print all information, in the following order,\n\
-                             except omit -p and -i if unknown\n\
+                             except omit -p and -i nếu unknown\n\
 "));
           oputs (_("\
   -A, --all-labeled        print all information, one labeled field per line,\n\
-                             except omit -p and -i if unknown\n\
+                             except omit -p and -i nếu unknown\n\
 "));
           oputs (_("\
   -s, --kernel-name        print the kernel name\n\
@@ -155,7 +155,7 @@ Print certain system information.  With no OPTION, same as -s.\n\
   -o, --operating-system   print the operating system\n\
 "));
         }
-      else
+      không_thì
         {
           fputs (_("\
 Print machine architecture.\n\
@@ -176,14 +176,14 @@ Print machine architecture.\n\
 static void
 print_element (char const *element, char const *label)
 {
-  if (labeled)
+  nếu (labeled)
     {
       printf ("%s: %s\n", label, element);
     }
-  else
+  không_thì
     {
       static bool printed;
-      if (printed)
+      nếu (printed)
         putchar (' ');
       printed = true;
       fputs (element, stdout);
@@ -200,10 +200,10 @@ print_element_env (char const *element,
                    char const *label)
 {
 #ifdef __APPLE__
-  if (envvar)
+  nếu (envvar)
     {
       char const *val = getenv (envvar);
-      if (val)
+      nếu (val)
         element = val;
     }
 #endif
@@ -214,15 +214,15 @@ print_element_env (char const *element,
 /* Set all the option flags according to the switches specified.
    Return the mask indicating which elements to print.  */
 
-static int
-decode_switches (int argc, char **argv)
+static số_nguyên
+decode_switches (số_nguyên argc, char **argv)
 {
-  int c;
-  unsigned int toprint = 0;
+  số_nguyên c;
+  unsigned số_nguyên toprint = 0;
 
-  if (uname_mode == UNAME_ARCH)
+  nếu (uname_mode == UNAME_ARCH)
     {
-      while ((c = getopt_long (argc, argv, "",
+      trong_khi ((c = getopt_long (argc, argv, "",
                                arch_long_options, NULL))
              != -1)
         {
@@ -238,9 +238,9 @@ decode_switches (int argc, char **argv)
         }
       toprint = PRINT_MACHINE;
     }
-  else
+  không_thì
     {
-      while ((c = getopt_long (argc, argv, "asnrvmpioA",
+      trong_khi ((c = getopt_long (argc, argv, "asnrvmpioA",
                                uname_long_options, NULL))
              != -1)
         {
@@ -298,22 +298,22 @@ decode_switches (int argc, char **argv)
         }
     }
 
-  if (argc != optind)
+  nếu (argc != optind)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind]));
       usage (EXIT_FAILURE);
     }
 
-  return toprint;
+  trả_về toprint;
 }
 
-int
-main (int argc, char **argv)
+số_nguyên
+main (số_nguyên argc, char **argv)
 {
   static char const unknown[] = "unknown";
 
   /* Mask indicating which elements to print. */
-  unsigned int toprint = 0;
+  unsigned số_nguyên toprint = 0;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -325,35 +325,35 @@ main (int argc, char **argv)
 
   toprint = decode_switches (argc, argv);
 
-  if (toprint == 0)
+  nếu (toprint == 0)
     toprint = PRINT_KERNEL_NAME;
 
-  if (toprint
+  nếu (toprint
        & (PRINT_KERNEL_NAME | PRINT_NODENAME | PRINT_KERNEL_RELEASE
           | PRINT_KERNEL_VERSION | PRINT_MACHINE))
     {
       struct utsname name;
 
-      if (uname (&name) == -1)
+      nếu (uname (&name) == -1)
         error (EXIT_FAILURE, errno, _("cannot get system name"));
 
-      if (toprint & PRINT_KERNEL_NAME)
+      nếu (toprint & PRINT_KERNEL_NAME)
         print_element_env (name.sysname, "UNAME_SYSNAME", _("Kernel name"));
-      if (toprint & PRINT_NODENAME)
+      nếu (toprint & PRINT_NODENAME)
         print_element_env (name.nodename, "UNAME_NODENAME", _("Node name"));
-      if (toprint & PRINT_KERNEL_RELEASE)
+      nếu (toprint & PRINT_KERNEL_RELEASE)
         print_element_env (name.release, "UNAME_RELEASE", _("Kernel release"));
-      if (toprint & PRINT_KERNEL_VERSION)
+      nếu (toprint & PRINT_KERNEL_VERSION)
         print_element_env (name.version, "UNAME_VERSION", _("Kernel version"));
-      if (toprint & PRINT_MACHINE)
+      nếu (toprint & PRINT_MACHINE)
         print_element_env (name.machine, "UNAME_MACHINE", _("Machine"));
     }
 
-  if (toprint & PRINT_PROCESSOR)
+  nếu (toprint & PRINT_PROCESSOR)
     {
       char const *element = unknown;
 #ifdef __APPLE__
-# if defined __arm__ || defined __arm64__
+# nếu defined __arm__ || defined __arm64__
       element = "arm";
 # elif defined __i386__ || defined __x86_64__
       element = "i386";
@@ -361,58 +361,58 @@ main (int argc, char **argv)
       element = "powerpc";
 # endif
 #endif
-#if HAVE_SYSINFO && defined SI_ARCHITECTURE
-      if (element == unknown)
+#nếu HAVE_SYSINFO && defined SI_ARCHITECTURE
+      nếu (element == unknown)
         {
           static char processor[257];
-          if (0 <= sysinfo (SI_ARCHITECTURE, processor, sizeof processor))
+          nếu (0 <= sysinfo (SI_ARCHITECTURE, processor, sizeof processor))
             element = processor;
         }
 #endif
 #ifdef UNAME_PROCESSOR
-      if (element == unknown)
+      nếu (element == unknown)
         {
           static char processor[257];
           size_t s = sizeof processor;
-          static int mib[] = { CTL_HW, UNAME_PROCESSOR };
-          if (sysctl (mib, 2, processor, &s, 0, 0) >= 0)
+          static số_nguyên mib[] = { CTL_HW, UNAME_PROCESSOR };
+          nếu (sysctl (mib, 2, processor, &s, 0, 0) >= 0)
             element = processor;
         }
 #endif
-      if (! (toprint == UINT_MAX && element == unknown))
+      nếu (! (toprint == UINT_MAX && element == unknown))
         print_element (element, _("Processor"));
     }
 
-  if (toprint & PRINT_HARDWARE_PLATFORM)
+  nếu (toprint & PRINT_HARDWARE_PLATFORM)
     {
       char const *element = unknown;
-#if HAVE_SYSINFO && defined SI_PLATFORM
+#nếu HAVE_SYSINFO && defined SI_PLATFORM
       {
         static char hardware_platform[257];
-        if (0 <= sysinfo (SI_PLATFORM,
+        nếu (0 <= sysinfo (SI_PLATFORM,
                           hardware_platform, sizeof hardware_platform))
           element = hardware_platform;
       }
 #endif
 #ifdef UNAME_HARDWARE_PLATFORM
-      if (element == unknown)
+      nếu (element == unknown)
         {
           static char hardware_platform[257];
           size_t s = sizeof hardware_platform;
-          static int mib[] = { CTL_HW, UNAME_HARDWARE_PLATFORM };
-          if (sysctl (mib, 2, hardware_platform, &s, 0, 0) >= 0)
+          static số_nguyên mib[] = { CTL_HW, UNAME_HARDWARE_PLATFORM };
+          nếu (sysctl (mib, 2, hardware_platform, &s, 0, 0) >= 0)
             element = hardware_platform;
         }
 #endif
-      if (! (toprint == UINT_MAX && element == unknown))
+      nếu (! (toprint == UINT_MAX && element == unknown))
         print_element (element, _("Hardware platform"));
     }
 
-  if (toprint & PRINT_OPERATING_SYSTEM)
+  nếu (toprint & PRINT_OPERATING_SYSTEM)
     print_element (HOST_OPERATING_SYSTEM, _("Operating system"));
 
-  if (!labeled)
+  nếu (!labeled)
     putchar ('\n');
 
-  return EXIT_SUCCESS;
+  trả_về EXIT_SUCCESS;
 }

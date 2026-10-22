@@ -39,7 +39,7 @@
 #include <sys/types.h>
 
 #include <termios.h>
-#if HAVE_STROPTS_H
+#nếu HAVE_STROPTS_H
 # include <stropts.h>
 #endif
 #include <sys/ioctl.h>
@@ -55,7 +55,7 @@
 #include <getopt.h>
 #include <signal.h>
 
-#if HAVE_LANGINFO_CODESET
+#nếu HAVE_LANGINFO_CODESET
 # include <langinfo.h>
 #endif
 
@@ -112,7 +112,7 @@
 # include <sys/capability.h>
 #endif
 
-#if HAVE_LINUX_XATTR_H
+#nếu HAVE_LINUX_XATTR_H
 # include <linux/xattr.h>
 # ifndef XATTR_NAME_CAPS
 #  define XATTR_NAME_CAPS "security.capability"
@@ -144,13 +144,13 @@
 # define READDIR_LIES_ABOUT_MOUNTPOINT_D_INO 1
 #endif
 
-#if READDIR_LIES_ABOUT_MOUNTPOINT_D_INO
+#nếu READDIR_LIES_ABOUT_MOUNTPOINT_D_INO
 # define RELIABLE_D_INO(dp) NOT_AN_INODE_NUMBER
-#else
+#không_thì
 # define RELIABLE_D_INO(dp) D_INO (dp)
 #endif
 
-#if ! HAVE_STRUCT_STAT_ST_AUTHOR
+#nếu ! HAVE_STRUCT_STAT_ST_AUTHOR
 # define st_author st_uid
 #endif
 
@@ -235,7 +235,7 @@ struct fileinfo
     bool has_capability;
 
     /* Whether file name needs quoting. tri-state with -1 == unknown.  */
-    int quoted;
+    số_nguyên quoted;
 
     /* Cached screen width (including quoting).  */
     size_t width;
@@ -251,21 +251,21 @@ struct bin_str
     char const *string;		/* Pointer to the same */
   };
 
-#if ! HAVE_TCGETPGRP
+#nếu ! HAVE_TCGETPGRP
 # define tcgetpgrp(Fd) 0
 #endif
 
 static size_t quote_name (char const *name,
                           struct quoting_options const *options,
-                          int needs_general_quoting,
+                          số_nguyên needs_general_quoting,
                           const struct bin_str *color,
                           bool allow_pad, struct obstack *stack,
                           char const *absolute_name);
 static size_t quote_name_buf (char **inbuf, size_t bufsize, char *name,
                               struct quoting_options const *options,
-                              int needs_general_quoting, size_t *width,
+                              số_nguyên needs_general_quoting, size_t *width,
                               bool *pad);
-static int decode_switches (int argc, char **argv);
+static số_nguyên decode_switches (số_nguyên argc, char **argv);
 static bool file_ignored (char const *name);
 static uintmax_t gobble_file (char const *name, enum filetype type,
                               ino_t inode, bool command_line_arg,
@@ -289,8 +289,8 @@ static void print_dir (char const *name, char const *realname,
 static size_t print_file_name_and_frills (const struct fileinfo *f,
                                           size_t start_col);
 static void print_horizontal (void);
-static int format_user_width (uid_t u);
-static int format_group_width (gid_t g);
+static số_nguyên format_user_width (uid_t u);
+static số_nguyên format_group_width (gid_t g);
 static void print_long_format (const struct fileinfo *f);
 static void print_many_per_line (void);
 static size_t print_name_with_quoting (const struct fileinfo *f,
@@ -308,7 +308,7 @@ static void parse_ls_color (void);
 
 static size_t quote_name_width (char const *name,
                                 struct quoting_options const *options,
-                                int needs_general_quoting);
+                                số_nguyên needs_general_quoting);
 
 /* Initial size of hash table.
    Most hierarchies are likely to be shallower than this.  */
@@ -365,7 +365,7 @@ static char const *hostname;
 static mode_t
 file_or_link_mode (struct fileinfo const *file)
 {
-  return (color_symlink_as_referent && file->linkok
+  trả_về (color_symlink_as_referent && file->linkok
           ? file->linkmode : file->stat.st_mode);
 }
 
@@ -402,16 +402,16 @@ static bool any_has_acl;
    block sizes, link counts, owners, groups, authors, major device
    numbers, minor device numbers, and file sizes, respectively.  */
 
-static int inode_number_width;
-static int block_size_width;
-static int nlink_width;
-static int scontext_width;
-static int owner_width;
-static int group_width;
-static int author_width;
-static int major_device_number_width;
-static int minor_device_number_width;
-static int file_size_width;
+static số_nguyên inode_number_width;
+static số_nguyên block_size_width;
+static số_nguyên nlink_width;
+static số_nguyên scontext_width;
+static số_nguyên owner_width;
+static số_nguyên group_width;
+static số_nguyên author_width;
+static số_nguyên major_device_number_width;
+static số_nguyên minor_device_number_width;
+static số_nguyên file_size_width;
 
 /* Option flags */
 
@@ -521,13 +521,13 @@ static bool numeric_ids;
 static bool print_block_size;
 
 /* Human-readable options for output, when printing block counts.  */
-static int human_output_opts;
+static số_nguyên human_output_opts;
 
 /* The units to use when printing block counts.  */
 static uintmax_t output_block_size;
 
 /* Likewise, but for file sizes.  */
-static int file_human_output_opts;
+static số_nguyên file_human_output_opts;
 static uintmax_t file_output_block_size = 1;
 
 /* Follow the output with a special string.  Using this format,
@@ -835,7 +835,7 @@ static sig_atomic_t volatile stop_signal_count;
 
 /* Desired exit status.  */
 
-static int exit_status;
+static số_nguyên exit_status;
 
 /* Exit statuses.  */
 enum
@@ -1032,7 +1032,7 @@ dired_outstring (char const *s)
 static void
 dired_indent (void)
 {
-  if (dired)
+  nếu (dired)
     dired_outstring ("  ");
 }
 
@@ -1050,7 +1050,7 @@ static struct obstack subdired_obstack;
 static void
 push_current_dired_pos (struct obstack *obs)
 {
-  if (dired)
+  nếu (dired)
     obstack_grow (obs, &dired_pos, sizeof dired_pos);
 }
 
@@ -1065,7 +1065,7 @@ dev_ino_push (dev_t dev, ino_t ino)
 {
   void *vdi;
   struct dev_ino *di;
-  int dev_ino_size = sizeof *di;
+  số_nguyên dev_ino_size = sizeof *di;
   obstack_blank (&dev_ino_obstack, dev_ino_size);
   vdi = obstack_next_free (&dev_ino_obstack);
   di = vdi;
@@ -1081,12 +1081,12 @@ dev_ino_pop (void)
 {
   void *vdi;
   struct dev_ino *di;
-  int dev_ino_size = sizeof *di;
+  số_nguyên dev_ino_size = sizeof *di;
   affirm (dev_ino_size <= obstack_object_size (&dev_ino_obstack));
   obstack_blank_fast (&dev_ino_obstack, -dev_ino_size);
   vdi = obstack_next_free (&dev_ino_obstack);
   di = vdi;
-  return *di;
+  trả_về *di;
 }
 
 static void
@@ -1109,11 +1109,11 @@ dired_dump_obstack (char const *prefix, struct obstack *os)
   size_t n_pos;
 
   n_pos = obstack_object_size (os) / sizeof (dired_pos);
-  if (n_pos > 0)
+  nếu (n_pos > 0)
     {
       off_t *pos = obstack_finish (os);
       fputs (prefix, stdout);
-      for (size_t i = 0; i < n_pos; i++)
+      cho (size_t i = 0; i < n_pos; i++)
         {
           intmax_t p = pos[i];
           printf (" %jd", p);
@@ -1131,53 +1131,53 @@ get_stat_btime (struct stat const *st)
 {
   struct timespec btimespec;
 
-#if HAVE_STATX && defined STATX_INO
+#nếu HAVE_STATX && defined STATX_INO
   btimespec = get_stat_mtime (st);
-#else
+#không_thì
   btimespec = get_stat_birthtime (st);
 #endif
 
-  return btimespec;
+  trả_về btimespec;
 }
 
-#if HAVE_STATX && defined STATX_INO
+#nếu HAVE_STATX && defined STATX_INO
 ATTRIBUTE_PURE
-static unsigned int
+static unsigned số_nguyên
 time_type_to_statx (void)
 {
   switch (time_type)
     {
     case time_ctime:
-      return STATX_CTIME;
+      trả_về STATX_CTIME;
     case time_mtime:
-      return STATX_MTIME;
+      trả_về STATX_MTIME;
     case time_atime:
-      return STATX_ATIME;
+      trả_về STATX_ATIME;
     case time_btime:
-      return STATX_BTIME;
+      trả_về STATX_BTIME;
     case time_numtypes: default:
       unreachable ();
     }
-    return 0;
+    trả_về 0;
 }
 
 ATTRIBUTE_PURE
-static unsigned int
+static unsigned số_nguyên
 calc_req_mask (void)
 {
-  unsigned int mask = STATX_MODE;
+  unsigned số_nguyên mask = STATX_MODE;
 
-  if (print_inode)
+  nếu (print_inode)
     mask |= STATX_INO;
 
-  if (print_block_size)
+  nếu (print_block_size)
     mask |= STATX_BLOCKS;
 
-  if (format == long_format) {
+  nếu (format == long_format) {
     mask |= STATX_NLINK | STATX_SIZE | time_type_to_statx ();
-    if (print_owner || print_author)
+    nếu (print_owner || print_author)
       mask |= STATX_UID;
-    if (print_group)
+    nếu (print_group)
       mask |= STATX_GID;
   }
 
@@ -1199,92 +1199,92 @@ calc_req_mask (void)
       unreachable ();
     }
 
-  return mask;
+  trả_về mask;
 }
 
-static int
-do_statx (int fd, char const *name, struct stat *st, int flags,
-          unsigned int mask)
+static số_nguyên
+do_statx (số_nguyên fd, char const *name, struct stat *st, số_nguyên flags,
+          unsigned số_nguyên mask)
 {
   struct statx stx;
   bool want_btime = mask & STATX_BTIME;
-  int ret = statx (fd, name, flags | AT_NO_AUTOMOUNT, mask, &stx);
-  if (ret >= 0)
+  số_nguyên ret = statx (fd, name, flags | AT_NO_AUTOMOUNT, mask, &stx);
+  nếu (ret >= 0)
     {
       statx_to_stat (&stx, st);
       /* Since we only need one timestamp type,
          store birth time in st_mtim.  */
-      if (want_btime)
+      nếu (want_btime)
         {
-          if (stx.stx_mask & STATX_BTIME)
+          nếu (stx.stx_mask & STATX_BTIME)
             st->st_mtim = statx_timestamp_to_timespec (stx.stx_btime);
-          else
+          không_thì
             st->st_mtim.tv_sec = st->st_mtim.tv_nsec = -1;
         }
     }
 
-  return ret;
+  trả_về ret;
 }
 
-static int
+static số_nguyên
 do_stat (char const *name, struct stat *st)
 {
-  return do_statx (AT_FDCWD, name, st, 0, calc_req_mask ());
+  trả_về do_statx (AT_FDCWD, name, st, 0, calc_req_mask ());
 }
 
-static int
+static số_nguyên
 do_lstat (char const *name, struct stat *st)
 {
-  return do_statx (AT_FDCWD, name, st, AT_SYMLINK_NOFOLLOW, calc_req_mask ());
+  trả_về do_statx (AT_FDCWD, name, st, AT_SYMLINK_NOFOLLOW, calc_req_mask ());
 }
 
-static int
+static số_nguyên
 stat_for_mode (char const *name, struct stat *st)
 {
-  return do_statx (AT_FDCWD, name, st, 0, STATX_MODE);
+  trả_về do_statx (AT_FDCWD, name, st, 0, STATX_MODE);
 }
 
 /* dev+ino should be static, so no need to sync with backing store */
-static int
+static số_nguyên
 stat_for_ino (char const *name, struct stat *st)
 {
-  return do_statx (AT_FDCWD, name, st, 0, STATX_INO);
+  trả_về do_statx (AT_FDCWD, name, st, 0, STATX_INO);
 }
 
-static int
-fstat_for_ino (int fd, struct stat *st)
+static số_nguyên
+fstat_for_ino (số_nguyên fd, struct stat *st)
 {
-  return do_statx (fd, "", st, AT_EMPTY_PATH, STATX_INO);
+  trả_về do_statx (fd, "", st, AT_EMPTY_PATH, STATX_INO);
 }
-#else
-static int
+#không_thì
+static số_nguyên
 do_stat (char const *name, struct stat *st)
 {
-  return stat (name, st);
+  trả_về stat (name, st);
 }
 
-static int
+static số_nguyên
 do_lstat (char const *name, struct stat *st)
 {
-  return lstat (name, st);
+  trả_về lstat (name, st);
 }
 
-static int
+static số_nguyên
 stat_for_mode (char const *name, struct stat *st)
 {
-  return stat (name, st);
+  trả_về stat (name, st);
 }
 
-static int
+static số_nguyên
 stat_for_ino (char const *name, struct stat *st)
 {
-  return stat (name, st);
+  trả_về stat (name, st);
 }
 
-static int
-fstat_for_ino (int fd, struct stat *st)
+static số_nguyên
+fstat_for_ino (số_nguyên fd, struct stat *st)
 {
-  return fstat (fd, st);
+  trả_về fstat (fd, st);
 }
 #endif
 
@@ -1296,21 +1296,21 @@ ATTRIBUTE_PURE
 static char const *
 first_percent_b (char const *fmt)
 {
-  for (; *fmt; fmt++)
-    if (fmt[0] == '%')
+  cho (; *fmt; fmt++)
+    nếu (fmt[0] == '%')
       switch (fmt[1])
         {
-        case 'b': return fmt;
+        case 'b': trả_về fmt;
         case '%': fmt++; break;
         }
-  return NULL;
+  trả_về NULL;
 }
 
 static char RFC3986[256];
 static void
 file_escape_init (void)
 {
-  for (int i = 0; i < 256; i++)
+  cho (số_nguyên i = 0; i < 256; i++)
     RFC3986[i] |= c_isalnum (i) || i == '~' || i == '-' || i == '.' || i == '_';
 }
 
@@ -1340,36 +1340,36 @@ static bool
 abmon_init (char abmon[12][ABFORMAT_SIZE])
 {
 #ifndef HAVE_NL_LANGINFO
-  return false;
-#else
-  int max_mon_width = 0;
-  int mon_width[12];
-  int mon_len[12];
+  trả_về false;
+#không_thì
+  số_nguyên max_mon_width = 0;
+  số_nguyên mon_width[12];
+  số_nguyên mon_len[12];
 
-  for (int i = 0; i < 12; i++)
+  cho (số_nguyên i = 0; i < 12; i++)
     {
       char const *abbr = nl_langinfo (ABMON_1 + i);
       mon_len[i] = strnlen (abbr, ABFORMAT_SIZE);
-      if (mon_len[i] == ABFORMAT_SIZE)
-        return false;
-      if (strchr (abbr, '%'))
-        return false;
+      nếu (mon_len[i] == ABFORMAT_SIZE)
+        trả_về false;
+      nếu (strchr (abbr, '%'))
+        trả_về false;
       mon_width[i] = mbswidth (strcpy (abmon[i], abbr), MBSWIDTH_FLAGS);
-      if (mon_width[i] < 0)
-        return false;
+      nếu (mon_width[i] < 0)
+        trả_về false;
       max_mon_width = MAX (max_mon_width, mon_width[i]);
     }
 
-  for (int i = 0; i < 12; i++)
+  cho (số_nguyên i = 0; i < 12; i++)
     {
-      int fill = max_mon_width - mon_width[i];
-      if (ABFORMAT_SIZE - mon_len[i] <= fill)
-        return false;
+      số_nguyên fill = max_mon_width - mon_width[i];
+      nếu (ABFORMAT_SIZE - mon_len[i] <= fill)
+        trả_về false;
       bool align_left = !c_isdigit (abmon[i][0]);
-      int fill_offset;
-      if (align_left)
+      số_nguyên fill_offset;
+      nếu (align_left)
         fill_offset = mon_len[i];
-      else
+      không_thì
         {
           memmove (abmon[i] + fill, abmon[i], mon_len[i]);
           fill_offset = 0;
@@ -1378,7 +1378,7 @@ abmon_init (char abmon[12][ABFORMAT_SIZE])
       abmon[i][mon_len[i] + fill] = '\0';
     }
 
-  return true;
+  trả_về true;
 #endif
 }
 
@@ -1388,36 +1388,36 @@ static void
 abformat_init (void)
 {
   char const *pb[2];
-  for (int recent = 0; recent < 2; recent++)
+  cho (số_nguyên recent = 0; recent < 2; recent++)
     pb[recent] = first_percent_b (long_time_format[recent]);
-  if (! (pb[0] || pb[1]))
-    return;
+  nếu (! (pb[0] || pb[1]))
+    trả_về;
 
   char abmon[12][ABFORMAT_SIZE];
-  if (! abmon_init (abmon))
-    return;
+  nếu (! abmon_init (abmon))
+    trả_về;
 
-  for (int recent = 0; recent < 2; recent++)
+  cho (số_nguyên recent = 0; recent < 2; recent++)
     {
       char const *fmt = long_time_format[recent];
-      for (int i = 0; i < 12; i++)
+      cho (số_nguyên i = 0; i < 12; i++)
         {
           char *nfmt = abformat[recent][i];
-          int nbytes;
+          số_nguyên nbytes;
 
-          if (! pb[recent])
+          nếu (! pb[recent])
             nbytes = snprintf (nfmt, ABFORMAT_SIZE, "%s", fmt);
-          else
+          không_thì
             {
-              if (! (pb[recent] - fmt <= MIN (ABFORMAT_SIZE, INT_MAX)))
-                return;
-              int prefix_len = pb[recent] - fmt;
+              nếu (! (pb[recent] - fmt <= MIN (ABFORMAT_SIZE, INT_MAX)))
+                trả_về;
+              số_nguyên prefix_len = pb[recent] - fmt;
               nbytes = snprintf (nfmt, ABFORMAT_SIZE, "%.*s%s%s",
                                  prefix_len, fmt, abmon[i], pb[recent] + 2);
             }
 
-          if (! (0 <= nbytes && nbytes < ABFORMAT_SIZE))
-            return;
+          nếu (! (0 <= nbytes && nbytes < ABFORMAT_SIZE))
+            trả_về;
         }
     }
 
@@ -1428,7 +1428,7 @@ static size_t
 dev_ino_hash (void const *x, size_t table_size)
 {
   struct dev_ino const *p = x;
-  return (uintmax_t) {p->st_ino} % table_size;
+  trả_về (uintmax_t) {p->st_ino} % table_size;
 }
 
 static bool
@@ -1436,7 +1436,7 @@ dev_ino_compare (void const *x, void const *y)
 {
   struct dev_ino const *a = x;
   struct dev_ino const *b = y;
-  return PSAME_INODE (a, b);
+  trả_về PSAME_INODE (a, b);
 }
 
 static void
@@ -1463,7 +1463,7 @@ visit_dir (dev_t dev, ino_t ino)
   /* Attempt to insert this entry into the table.  */
   ent_from_table = hash_insert (active_dir_set, ent);
 
-  if (ent_from_table == NULL)
+  nếu (ent_from_table == NULL)
     {
       /* Insertion failed due to lack of memory.  */
       xalloc_die ();
@@ -1471,13 +1471,13 @@ visit_dir (dev_t dev, ino_t ino)
 
   found_match = (ent_from_table != ent);
 
-  if (found_match)
+  nếu (found_match)
     {
       /* ent was not inserted, so free it.  */
       free (ent);
     }
 
-  return found_match;
+  trả_về found_match;
 }
 
 static void
@@ -1493,12 +1493,12 @@ is_colored (enum indicator_no type)
 {
   /* Return true unless the string is "", "0" or "00"; try to be efficient.  */
   size_t len = color_indicator[type].len;
-  if (len == 0)
-    return false;
-  if (2 < len)
-    return true;
+  nếu (len == 0)
+    trả_về false;
+  nếu (2 < len)
+    trả_về true;
   char const *s = color_indicator[type].string;
-  return (s[0] != '0') | (s[len - 1] != '0');
+  trả_về (s[0] != '0') | (s[len - 1] != '0');
 }
 
 static void
@@ -1511,7 +1511,7 @@ restore_default_color (void)
 static void
 set_normal_color (void)
 {
-  if (print_with_color && is_colored (C_NORM))
+  nếu (print_with_color && is_colored (C_NORM))
     {
       put_indicator (&color_indicator[C_LEFT]);
       put_indicator (&color_indicator[C_NORM]);
@@ -1522,18 +1522,18 @@ set_normal_color (void)
 /* An ordinary signal was received; arrange for the program to exit.  */
 
 static void
-sighandler (int sig)
+sighandler (số_nguyên sig)
 {
-  if (! interrupt_signal)
+  nếu (! interrupt_signal)
     interrupt_signal = sig;
 }
 
 /* A SIGTSTP was received; arrange for the program to suspend itself.  */
 
 static void
-stophandler (MAYBE_UNUSED int sig)
+stophandler (MAYBE_UNUSED số_nguyên sig)
 {
-  if (! interrupt_signal)
+  nếu (! interrupt_signal)
     stop_signal_count++;
 }
 
@@ -1546,13 +1546,13 @@ stophandler (MAYBE_UNUSED int sig)
 static void
 process_signals (void)
 {
-  while (interrupt_signal || stop_signal_count)
+  trong_khi (interrupt_signal || stop_signal_count)
     {
-      int sig;
-      int stops;
+      số_nguyên sig;
+      số_nguyên stops;
       sigset_t oldset;
 
-      if (used_color)
+      nếu (used_color)
         restore_default_color ();
       fflush (stdout);
 
@@ -1566,12 +1566,12 @@ process_signals (void)
       /* SIGTSTP is special, since the application can receive that signal
          more than once.  In this case, don't set the signal handler to the
          default.  Instead, just raise the uncatchable SIGSTOP.  */
-      if (stops)
+      nếu (stops)
         {
           stop_signal_count = stops - 1;
           sig = SIGSTOP;
         }
-      else
+      không_thì
         signal (sig, SIG_DFL);
 
       /* Exit or suspend the program.  */
@@ -1590,7 +1590,7 @@ static void
 signal_setup (bool init)
 {
   /* The signals that are trapped, and the number of such signals.  */
-  static int const stop_sig[] =
+  static số_nguyên const stop_sig[] =
     {
       /* This one is handled specially.  */
       SIGTSTP,
@@ -1598,38 +1598,38 @@ signal_setup (bool init)
 
   enum { nsigs = countof (term_sig), nstop = countof (stop_sig) };
 
-  if (init)
+  nếu (init)
     {
       struct sigaction act;
 
       sigemptyset (&caught_signals);
-      for (int j = 0; j < nsigs + nstop; j++)
+      cho (số_nguyên j = 0; j < nsigs + nstop; j++)
         {
-          int sig = j < nsigs ? term_sig[j]: stop_sig[j - nsigs];
+          số_nguyên sig = j < nsigs ? term_sig[j]: stop_sig[j - nsigs];
           sigaction (sig, NULL, &act);
-          if (act.sa_handler != SIG_IGN)
+          nếu (act.sa_handler != SIG_IGN)
             sigaddset (&caught_signals, sig);
         }
 
       act.sa_mask = caught_signals;
       act.sa_flags = SA_RESTART;
 
-      for (int j = 0; j < nsigs + nstop; j++)
+      cho (số_nguyên j = 0; j < nsigs + nstop; j++)
         {
-          int sig = j < nsigs ? term_sig[j]: stop_sig[j - nsigs];
-          if (sigismember (&caught_signals, sig))
+          số_nguyên sig = j < nsigs ? term_sig[j]: stop_sig[j - nsigs];
+          nếu (sigismember (&caught_signals, sig))
             {
               act.sa_handler = j < nsigs ? sighandler : stophandler;
               sigaction (sig, &act, NULL);
             }
         }
     }
-  else /* restore.  */
+  không_thì /* restore.  */
     {
-      for (int j = 0; j < nsigs + nstop; j++)
+      cho (số_nguyên j = 0; j < nsigs + nstop; j++)
         {
-          int sig = j < nsigs ? term_sig[j]: stop_sig[j - nsigs];
-          if (sigismember (&caught_signals, sig))
+          số_nguyên sig = j < nsigs ? term_sig[j]: stop_sig[j - nsigs];
+          nếu (sigismember (&caught_signals, sig))
             signal (sig, SIG_DFL);
         }
     }
@@ -1647,12 +1647,12 @@ signal_restore (void)
   signal_setup (false);
 }
 
-int
-main (int argc, char **argv)
+số_nguyên
+main (số_nguyên argc, char **argv)
 {
-  int i;
+  số_nguyên i;
   struct pending *thispend;
-  int n_files;
+  số_nguyên n_files;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -1674,13 +1674,13 @@ main (int argc, char **argv)
 
   i = decode_switches (argc, argv);
 
-  if (print_with_color)
+  nếu (print_with_color)
     parse_ls_color ();
 
   /* Test print_with_color again, because the call to parse_ls_color
      may have just reset it -- e.g., if LS_COLORS is invalid.  */
 
-  if (print_with_color)
+  nếu (print_with_color)
     {
       /* Don't use TAB characters in output.  Some terminal
          emulators can't handle the combination of tabs and
@@ -1688,18 +1688,18 @@ main (int argc, char **argv)
       tabsize = 0;
     }
 
-  if (directories_first)
+  nếu (directories_first)
     check_symlink_mode = true;
-  else if (print_with_color)
+  không_thì nếu (print_with_color)
     {
       /* Avoid following symbolic links when possible.  */
-      if (is_colored (C_ORPHAN)
+      nếu (is_colored (C_ORPHAN)
           || (is_colored (C_EXEC) && color_symlink_as_referent)
           || (is_colored (C_MISSING) && format == long_format))
         check_symlink_mode = true;
     }
 
-  if (dereference == DEREF_UNDEFINED)
+  nếu (dereference == DEREF_UNDEFINED)
     dereference = ((immediate_dirs
                     || indicator_style == classify
                     || format == long_format)
@@ -1708,13 +1708,13 @@ main (int argc, char **argv)
 
   /* When using -R, initialize a data structure we'll use to
      detect any directory cycles.  */
-  if (recursive)
+  nếu (recursive)
     {
       active_dir_set = hash_initialize (INITIAL_TABLE_SIZE, NULL,
                                         dev_ino_hash,
                                         dev_ino_compare,
                                         dev_ino_free);
-      if (active_dir_set == NULL)
+      nếu (active_dir_set == NULL)
         xalloc_die ();
 
       obstack_init (&dev_ino_obstack);
@@ -1731,20 +1731,20 @@ main (int argc, char **argv)
                           | (indicator_style != none)));
   format_needs_capability = print_with_color && is_colored (C_CAP);
 
-  if (dired)
+  nếu (dired)
     {
       obstack_init (&dired_obstack);
       obstack_init (&subdired_obstack);
     }
 
-  if (print_hyperlink)
+  nếu (print_hyperlink)
     {
       file_escape_init ();
 
       hostname = xgethostname ();
       /* The hostname is generally ignored,
          so ignore failures obtaining it.  */
-      if (! hostname)
+      nếu (! hostname)
         hostname = "";
     }
 
@@ -1756,22 +1756,22 @@ main (int argc, char **argv)
 
   n_files = argc - i;
 
-  if (n_files <= 0)
+  nếu (n_files <= 0)
     {
-      if (immediate_dirs)
+      nếu (immediate_dirs)
         gobble_file (".", directory, NOT_AN_INODE_NUMBER, true, NULL);
-      else
+      không_thì
         queue_directory (".", NULL, true);
     }
-  else
+  không_thì
     do
       gobble_file (argv[i++], unknown, NOT_AN_INODE_NUMBER, true, NULL);
-    while (i < argc);
+    trong_khi (i < argc);
 
-  if (cwd_n_used)
+  nếu (cwd_n_used)
     {
       sort_files ();
-      if (!immediate_dirs)
+      nếu (!immediate_dirs)
         extract_dirs_from_files (NULL, true);
       /* 'cwd_n_used' might be zero now.  */
     }
@@ -1780,23 +1780,23 @@ main (int argc, char **argv)
      (and not pending_dirs->name) because there may be no markers in the queue
      at this point.  A marker may be enqueued when extract_dirs_from_files is
      called with a non-empty string or via print_dir.  */
-  if (cwd_n_used)
+  nếu (cwd_n_used)
     {
       print_current_files ();
-      if (pending_dirs)
+      nếu (pending_dirs)
         dired_outbyte ('\n');
     }
-  else if (n_files <= 1 && pending_dirs && !pending_dirs->next)
+  không_thì nếu (n_files <= 1 && pending_dirs && !pending_dirs->next)
     print_dir_name = false;
 
-  while (pending_dirs)
+  trong_khi (pending_dirs)
     {
       thispend = pending_dirs;
       pending_dirs = pending_dirs->next;
 
-      if (LOOP_DETECT)
+      nếu (LOOP_DETECT)
         {
-          if (thispend->name == NULL)
+          nếu (thispend->name == NULL)
             {
               /* thispend->name == NULL means this is a marker entry
                  indicating we've finished processing the directory.
@@ -1804,7 +1804,7 @@ main (int argc, char **argv)
                  entry from the active_dir_set hash table.  */
               struct dev_ino di = dev_ino_pop ();
               struct dev_ino *found = hash_remove (active_dir_set, &di);
-              if (false)
+              nếu (false)
                 assert_matching_dev_ino (thispend->realname, di);
               affirm (found);
               dev_ino_free (found);
@@ -1820,12 +1820,12 @@ main (int argc, char **argv)
       print_dir_name = true;
     }
 
-  if (print_with_color && used_color)
+  nếu (print_with_color && used_color)
     {
 
       /* Skip the restore when it would be a no-op, i.e.,
          when left is "\033[" and right is "m".  */
-      if (!(color_indicator[C_LEFT].len == 2
+      nếu (!(color_indicator[C_LEFT].len == 2
             && memeq (color_indicator[C_LEFT].string, "\033[", 2)
             && color_indicator[C_RIGHT].len == 1
             && color_indicator[C_RIGHT].string[0] == 'm'))
@@ -1839,14 +1839,14 @@ main (int argc, char **argv)
          This can process signals out of order, but there doesn't seem to
          be an easy way to do them in order, and the order isn't that
          important anyway.  */
-      for (int j = stop_signal_count; j; j--)
+      cho (số_nguyên j = stop_signal_count; j; j--)
         raise (SIGSTOP);
-      int j = interrupt_signal;
-      if (j)
+      số_nguyên j = interrupt_signal;
+      nếu (j)
         raise (j);
     }
 
-  if (dired)
+  nếu (dired)
     {
       /* No need to free these since we're about to exit.  */
       dired_dump_obstack ("//DIRED//", &dired_obstack);
@@ -1855,13 +1855,13 @@ main (int argc, char **argv)
               quoting_style_args[get_quoting_style (filename_quoting_options)]);
     }
 
-  if (LOOP_DETECT)
+  nếu (LOOP_DETECT)
     {
       assure (hash_get_n_entries (active_dir_set) == 0);
       hash_free (active_dir_set);
     }
 
-  return exit_status;
+  trả_về exit_status;
 }
 
 /* Return the line length indicated by the value given by SPEC, or -1
@@ -1877,15 +1877,15 @@ decode_line_length (char const *spec)
   switch (xstrtoumax (spec, NULL, 0, &val, ""))
     {
     case LONGINT_OK:
-      return val <= MIN (PTRDIFF_MAX, SIZE_MAX) ? val : 0;
+      trả_về val <= MIN (PTRDIFF_MAX, SIZE_MAX) ? val : 0;
 
     case LONGINT_OVERFLOW:
-      return 0;
+      trả_về 0;
 
     case LONGINT_INVALID:
     case LONGINT_INVALID_SUFFIX_CHAR:
     case LONGINT_INVALID_SUFFIX_CHAR_WITH_OVERFLOW:
-      return -1;
+      trả_về -1;
 
     default:
       unreachable ();
@@ -1898,36 +1898,36 @@ static bool
 stdout_isatty (void)
 {
   static signed char out_tty = -1;
-  if (out_tty < 0)
+  nếu (out_tty < 0)
     out_tty = isatty (STDOUT_FILENO);
   assume (out_tty == 0 || out_tty == 1);
-  return out_tty;
+  trả_về out_tty;
 }
 
 /* Set all the option flags according to the switches specified.
    Return the index of the first non-option argument.  */
 
-static int
-decode_switches (int argc, char **argv)
+static số_nguyên
+decode_switches (số_nguyên argc, char **argv)
 {
   char *time_style_option = NULL;
 
   /* These variables are false or -1 unless a switch says otherwise.  */
   bool kibibytes_specified = false;
-  int format_opt = -1;
-  int hide_control_chars_opt = -1;
-  int quoting_style_opt = -1;
-  int sort_opt = -1;
+  số_nguyên format_opt = -1;
+  số_nguyên hide_control_chars_opt = -1;
+  số_nguyên quoting_style_opt = -1;
+  số_nguyên sort_opt = -1;
   ptrdiff_t tabsize_opt = -1;
   ptrdiff_t width_opt = -1;
 
-  while (true)
+  trong_khi (true)
     {
-      int oi = -1;
-      int c = getopt_long (argc, argv,
+      số_nguyên oi = -1;
+      số_nguyên c = getopt_long (argc, argv,
                            "abcdfghiklmnopqrstuvw:xABCDFGHI:LNQRST:UXZ1",
                            long_options, &oi);
-      if (c == -1)
+      nếu (c == -1)
         break;
 
       switch (c)
@@ -2026,7 +2026,7 @@ decode_switches (int argc, char **argv)
 
         case 'w':
           width_opt = decode_line_length (optarg);
-          if (width_opt < 0)
+          nếu (width_opt < 0)
             error (LS_FAILURE, 0, "%s: %s", _("invalid line width"),
                    quote (optarg));
           break;
@@ -2056,15 +2056,15 @@ decode_switches (int argc, char **argv)
 
         case 'F':
           {
-            int i;
-            if (optarg)
+            số_nguyên i;
+            nếu (optarg)
               i = XARGMATCH ("--classify", optarg, when_args, when_types);
-            else
+            không_thì
               /* Using --classify with no argument is equivalent to using
                  --classify=always.  */
               i = when_always;
 
-            if (i == when_always || (i == when_if_tty && stdout_isatty ()))
+            nếu (i == when_always || (i == when_if_tty && stdout_isatty ()))
               indicator_style = classify;
             break;
           }
@@ -2120,7 +2120,7 @@ decode_switches (int argc, char **argv)
 
         case '1':
           /* -1 has no effect after -l.  */
-          if (format_opt != long_format)
+          nếu (format_opt != long_format)
             format_opt = one_per_line;
           break;
 
@@ -2162,10 +2162,10 @@ decode_switches (int argc, char **argv)
 
         case COLOR_OPTION:
           {
-            int i;
-            if (optarg)
+            số_nguyên i;
+            nếu (optarg)
               i = XARGMATCH ("--color", optarg, when_args, when_types);
-            else
+            không_thì
               /* Using --color with no argument is equivalent to using
                  --color=always.  */
               i = when_always;
@@ -2177,10 +2177,10 @@ decode_switches (int argc, char **argv)
 
         case HYPERLINK_OPTION:
           {
-            int i;
-            if (optarg)
+            số_nguyên i;
+            nếu (optarg)
               i = XARGMATCH ("--hyperlink", optarg, when_args, when_types);
-            else
+            không_thì
               /* Using --hyperlink with no argument is equivalent to using
                  --hyperlink=always.  */
               i = when_always;
@@ -2214,7 +2214,7 @@ decode_switches (int argc, char **argv)
           {
             enum strtol_error e = human_options (optarg, &human_output_opts,
                                                  &output_block_size);
-            if (e != LONGINT_OK)
+            nếu (e != LONGINT_OK)
               xstrtol_fatal (e, oi, 0, long_options, optarg);
             file_human_output_opts = human_output_opts;
             file_output_block_size = output_block_size;
@@ -2234,7 +2234,7 @@ decode_switches (int argc, char **argv)
         case ZERO_OPTION:
           eolbyte = 0;
           hide_control_chars_opt = false;
-          if (format_opt != long_format)
+          nếu (format_opt != long_format)
             format_opt = one_per_line;
           print_with_color = false;
           quoting_style_opt = literal_quoting_style;
@@ -2249,17 +2249,17 @@ decode_switches (int argc, char **argv)
         }
     }
 
-  if (! output_block_size)
+  nếu (! output_block_size)
     {
       char const *ls_block_size = getenv ("LS_BLOCK_SIZE");
       human_options (ls_block_size,
                      &human_output_opts, &output_block_size);
-      if (ls_block_size || getenv ("BLOCK_SIZE"))
+      nếu (ls_block_size || getenv ("BLOCK_SIZE"))
         {
           file_human_output_opts = human_output_opts;
           file_output_block_size = output_block_size;
         }
-      if (kibibytes_specified)
+      nếu (kibibytes_specified)
         {
           human_output_opts = 0;
           output_block_size = 1024;
@@ -2275,26 +2275,26 @@ decode_switches (int argc, char **argv)
   /* If the line length was not set by a switch but is needed to determine
      output, go to the work of obtaining it from the environment.  */
   ptrdiff_t linelen = width_opt;
-  if (format == many_per_line || format == horizontal || format == with_commas
+  nếu (format == many_per_line || format == horizontal || format == with_commas
       || print_with_color)
     {
 #ifdef TIOCGWINSZ
-      if (linelen < 0)
+      nếu (linelen < 0)
         {
           struct winsize ws;
-          if (stdout_isatty ()
+          nếu (stdout_isatty ()
               && 0 <= ioctl (STDOUT_FILENO, TIOCGWINSZ, &ws)
               && 0 < ws.ws_col)
             linelen = ws.ws_col <= MIN (PTRDIFF_MAX, SIZE_MAX) ? ws.ws_col : 0;
         }
 #endif
-      if (linelen < 0)
+      nếu (linelen < 0)
         {
           char const *p = getenv ("COLUMNS");
-          if (p && *p)
+          nếu (p && *p)
             {
               linelen = decode_line_length (p);
-              if (linelen < 0)
+              nếu (linelen < 0)
                 error (0, 0,
                        _("ignoring invalid width"
                          " in environment variable COLUMNS: %s"),
@@ -2311,21 +2311,21 @@ decode_switches (int argc, char **argv)
      or line_lengths shorter than MIN_COLUMN_WIDTH.  */
   max_idx += line_length % MIN_COLUMN_WIDTH != 0;
 
-  if (format == many_per_line || format == horizontal || format == with_commas)
+  nếu (format == many_per_line || format == horizontal || format == with_commas)
     {
-      if (0 <= tabsize_opt)
+      nếu (0 <= tabsize_opt)
         tabsize = tabsize_opt;
-      else
+      không_thì
         {
           tabsize = 8;
           char const *p = getenv ("TABSIZE");
-          if (p)
+          nếu (p)
             {
               uintmax_t tmp;
-              if (xstrtoumax (p, NULL, 0, &tmp, "") == LONGINT_OK
+              nếu (xstrtoumax (p, NULL, 0, &tmp, "") == LONGINT_OK
                   && tmp <= SIZE_MAX)
                 tabsize = tmp;
-              else
+              không_thì
                 error (0, 0,
                        _("ignoring invalid tab size"
                          " in environment variable TABSIZE: %s"),
@@ -2344,14 +2344,14 @@ decode_switches (int argc, char **argv)
                            || format == many_per_line || format == horizontal))
                       || format == one_per_line || format == long_format);
 
-  int qs = quoting_style_opt;
-  if (qs < 0)
+  số_nguyên qs = quoting_style_opt;
+  nếu (qs < 0)
     qs = getenv_quoting_style ();
-  if (qs < 0)
+  nếu (qs < 0)
     qs = (ls_mode == LS_LS
           ? (stdout_isatty () ? shell_escape_quoting_style : -1)
           : escape_quoting_style);
-  if (0 <= qs)
+  nếu (0 <= qs)
     set_quoting_style (NULL, qs);
   qs = get_quoting_style (NULL);
   align_variable_outer_quotes
@@ -2361,14 +2361,14 @@ decode_switches (int argc, char **argv)
            || qs == shell_escape_quoting_style
            || qs == c_maybe_quoting_style));
   filename_quoting_options = clone_quoting_options (NULL);
-  if (qs == escape_quoting_style)
+  nếu (qs == escape_quoting_style)
     set_char_quoting (filename_quoting_options, ' ', 1);
-  if (file_type <= indicator_style)
+  nếu (file_type <= indicator_style)
     {
-      for (char const *p = &"*=>@|"[indicator_style - file_type]; *p; p++)
+      cho (char const *p = &"*=>@|"[indicator_style - file_type]; *p; p++)
         set_char_quoting (filename_quoting_options, *p, 1);
     }
-  if (format == with_commas
+  nếu (format == with_commas
       && (qs == shell_quoting_style
           || qs == shell_escape_quoting_style
           || qs == c_maybe_quoting_style
@@ -2382,7 +2382,7 @@ decode_switches (int argc, char **argv)
      So ignore it if those overridden.  */
   dired &= (format == long_format) & !print_hyperlink;
 
-  if (eolbyte < dired)
+  nếu (eolbyte < dired)
     error (LS_FAILURE, 0, _("--dired and --zero are incompatible"));
 
   /* If a time type is explicitly specified (with -c, -u, or --time=)
@@ -2393,46 +2393,46 @@ decode_switches (int argc, char **argv)
                : (format != long_format && explicit_time)
                ? sort_time : sort_name);
 
-  if (format == long_format)
+  nếu (format == long_format)
     {
       char *envstyle = NULL;
       char *style = time_style_option;
-      if (! style)
+      nếu (! style)
         style = envstyle = getenv ("TIME_STYLE");
 
-      if (! style)
+      nếu (! style)
         style = (char *) "locale";
-      else
+      không_thì
         {
           static char const posix_prefix[] = "posix-";
-          while (STREQ_LEN (style, posix_prefix, sizeof posix_prefix - 1))
+          trong_khi (STREQ_LEN (style, posix_prefix, sizeof posix_prefix - 1))
             {
-              if (! hard_locale (LC_TIME))
-                return optind;
+              nếu (! hard_locale (LC_TIME))
+                trả_về optind;
               style += sizeof posix_prefix - 1;
             }
         }
 
-      if (*style == '+')
+      nếu (*style == '+')
         {
           char *p0 = style + 1;
           char *p0nl = strchr (p0, '\n');
           char const *p1 = p0;
-          if (p0nl)
+          nếu (p0nl)
             {
               p1 = p0nl + 1;
-              if (strchr (p1, '\n'))
+              nếu (strchr (p1, '\n'))
                 error (LS_FAILURE, 0, _("invalid time style format %s"),
                        quote (p0));
-              if (envstyle)
+              nếu (envstyle)
                 p0 = xmemdup0 (p0, p0nl - p0);
-              else
+              không_thì
                 *p0nl = '\0';
             }
           long_time_format[0] = p0;
           long_time_format[1] = p1;
         }
-      else
+      không_thì
         {
           switch (x_timestyle_match (style, /*allow_posix=*/ true,
                                      time_style_args,
@@ -2454,9 +2454,9 @@ decode_switches (int argc, char **argv)
               break;
 
             case locale_time_style:
-              if (hard_locale (LC_TIME))
+              nếu (hard_locale (LC_TIME))
                 {
-                  for (int i = 0; i < 2; i++)
+                  cho (số_nguyên i = 0; i < 2; i++)
                     long_time_format[i] =
                       dcgettext (NULL, long_time_format[i], LC_TIME);
                 }
@@ -2466,7 +2466,7 @@ decode_switches (int argc, char **argv)
       abformat_init ();
     }
 
-  return optind;
+  trả_về optind;
 }
 
 /* Parse a string as part of the LS_COLORS variable; this may involve
@@ -2501,7 +2501,7 @@ get_funky_string (char **dest, char const **src, bool equals_end,
   num = 0;
 
   state = ST_GND;		/* Start in ground state.  */
-  while (state < ST_END)
+  trong_khi (state < ST_END)
     {
       switch (state)
         {
@@ -2521,7 +2521,7 @@ get_funky_string (char **dest, char const **src, bool equals_end,
               ++p;
               break;
             case '=':
-              if (equals_end)
+              nếu (equals_end)
                 {
                   state = ST_END; /* End */
                   break;
@@ -2590,7 +2590,7 @@ get_funky_string (char **dest, char const **src, bool equals_end,
               num = *p;
               break;
             }
-          if (state == ST_BACKSLASH)
+          nếu (state == ST_BACKSLASH)
             {
               *(q++) = num;
               ++count;
@@ -2600,13 +2600,13 @@ get_funky_string (char **dest, char const **src, bool equals_end,
           break;
 
         case ST_OCTAL:		/* Octal sequence */
-          if (*p < '0' || *p > '7')
+          nếu (*p < '0' || *p > '7')
             {
               *(q++) = num;
               ++count;
               state = ST_GND;
             }
-          else
+          không_thì
             num = (num << 3) + (*(p++) - '0');
           break;
 
@@ -2651,17 +2651,17 @@ get_funky_string (char **dest, char const **src, bool equals_end,
 
         case ST_CARET:		/* Caret escape */
           state = ST_GND;	/* Should be the next state... */
-          if (*p >= '@' && *p <= '~')
+          nếu (*p >= '@' && *p <= '~')
             {
               *(q++) = *(p++) & 037;
               ++count;
             }
-          else if (*p == '?')
+          không_thì nếu (*p == '?')
             {
               *(q++) = 127;
               ++count;
             }
-          else
+          không_thì
             state = ST_ERROR;
           break;
 
@@ -2674,7 +2674,7 @@ get_funky_string (char **dest, char const **src, bool equals_end,
   *src = p;
   *output_count = count;
 
-  return state != ST_ERROR;
+  trả_về state != ST_ERROR;
 }
 
 enum parse_state
@@ -2694,21 +2694,21 @@ static bool
 known_term_type (void)
 {
   char const *term = getenv ("TERM");
-  if (! term || ! *term)
-    return false;
+  nếu (! term || ! *term)
+    trả_về false;
 
   char const *line = G_line;
-  while (line - G_line < sizeof (G_line))
+  trong_khi (line - G_line < sizeof (G_line))
     {
-      if (STRNCMP_LIT (line, "TERM ") == 0)
+      nếu (STRNCMP_LIT (line, "TERM ") == 0)
         {
-          if (fnmatch (line + 5, term, 0) == 0)
-            return true;
+          nếu (fnmatch (line + 5, term, 0) == 0)
+            trả_về true;
         }
       line += strlen (line) + 1;
     }
 
-  return false;
+  trả_về false;
 }
 
 static void
@@ -2719,16 +2719,16 @@ parse_ls_color (void)
   char label0, label1;		/* Indicator label */
   struct color_ext_type *ext;	/* Extension we are working on */
 
-  if ((p = getenv ("LS_COLORS")) == NULL || *p == '\0')
+  nếu ((p = getenv ("LS_COLORS")) == NULL || *p == '\0')
     {
       /* LS_COLORS takes precedence, but if that's not set then
          honor the COLORTERM and TERM env variables so that
          we only go with the internal ANSI color codes if the
          former is non empty or the latter is set to a known value.  */
       char const *colorterm = getenv ("COLORTERM");
-      if (! (colorterm && *colorterm) && ! known_term_type ())
+      nếu (! (colorterm && *colorterm) && ! known_term_type ())
         print_with_color = false;
-      return;
+      trả_về;
     }
 
   ext = NULL;
@@ -2740,7 +2740,7 @@ parse_ls_color (void)
   buf = color_buf = xstrdup (p);
 
   enum parse_state state = PS_START;
-  while (true)
+  trong_khi (true)
     {
       switch (state)
         {
@@ -2781,22 +2781,22 @@ parse_ls_color (void)
           break;
 
         case PS_2:		/* Second label character */
-          if (*p)
+          nếu (*p)
             {
               label1 = *p++;
               state = PS_3;
             }
-          else
+          không_thì
             state = PS_FAIL;	/* Error */
           break;
 
         case PS_3:		/* Equal sign after indicator label */
           state = PS_FAIL;	/* Assume failure...  */
-          if (*(p++) == '=')/* It *should* be...  */
+          nếu (*(p++) == '=')/* It *should* be...  */
             {
-              for (int i = 0; i < countof (indicator_name); i++)
+              cho (số_nguyên i = 0; i < countof (indicator_name); i++)
                 {
-                  if ((label0 == indicator_name[i][0])
+                  nếu ((label0 == indicator_name[i][0])
                       && (label1 == indicator_name[i][1]))
                     {
                       color_indicator[i].string = buf;
@@ -2806,20 +2806,20 @@ parse_ls_color (void)
                       break;
                     }
                 }
-              if (state == PS_FAIL)
+              nếu (state == PS_FAIL)
                 error (0, 0, _("unrecognized prefix: %s"),
                        quote ((char []) {label0, label1, '\0'}));
             }
           break;
 
         case PS_4:		/* Equal sign after *.ext */
-          if (*(p++) == '=')
+          nếu (*(p++) == '=')
             {
               ext->seq.string = buf;
               state = (get_funky_string (&buf, &p, false, &ext->seq.len)
                        ? PS_START : PS_FAIL);
             }
-          else
+          không_thì
             state = PS_FAIL;
           break;
 
@@ -2832,12 +2832,12 @@ parse_ls_color (void)
     }
  done:
 
-  if (state == PS_FAIL)
+  nếu (state == PS_FAIL)
     {
       error (0, 0,
              _("unparsable value for LS_COLORS environment variable"));
       free (color_buf);
-      for (struct color_ext_type *e = color_ext_list; e != NULL;
+      cho (struct color_ext_type *e = color_ext_list; e != NULL;
            /* empty */)
         {
           struct color_ext_type *e2 = e;
@@ -2845,41 +2845,41 @@ parse_ls_color (void)
           free (e2);
         }
       print_with_color = false;
-      return;
+      trả_về;
     }
-  else
+  không_thì
     {
       /* Postprocess list to set EXACT_MATCH on entries where there are
          different cased extensions with separate sequences defined.
          Also set ext.len to SIZE_MAX on any entries that can't
          match due to precedence, to avoid redundant string compares.  */
-      for (struct color_ext_type *e1 = color_ext_list; e1 != NULL;
+      cho (struct color_ext_type *e1 = color_ext_list; e1 != NULL;
            e1 = e1->next)
         {
           bool case_ignored = false;
 
-          for (struct color_ext_type *e2 = e1->next; e2 != NULL;
+          cho (struct color_ext_type *e2 = e1->next; e2 != NULL;
                e2 = e2->next)
             {
-              if (e2->ext.len < SIZE_MAX && e1->ext.len == e2->ext.len)
+              nếu (e2->ext.len < SIZE_MAX && e1->ext.len == e2->ext.len)
                 {
-                  if (memeq (e1->ext.string, e2->ext.string, e1->ext.len))
+                  nếu (memeq (e1->ext.string, e2->ext.string, e1->ext.len))
                     e2->ext.len = SIZE_MAX; /* Ignore */
-                  else if (c_strncasecmp (e1->ext.string, e2->ext.string,
+                  không_thì nếu (c_strncasecmp (e1->ext.string, e2->ext.string,
                                           e1->ext.len) == 0)
                     {
-                      if (case_ignored)
+                      nếu (case_ignored)
                         {
                           e2->ext.len = SIZE_MAX; /* Ignore */
                         }
-                      else if (e1->seq.len == e2->seq.len
+                      không_thì nếu (e1->seq.len == e2->seq.len
                                && memeq (e1->seq.string, e2->seq.string,
                                          e1->seq.len))
                         {
                           e2->ext.len = SIZE_MAX; /* Ignore */
                           case_ignored = true;    /* Ignore all subsequent */
                         }
-                      else
+                      không_thì
                         {
                           e1->exact_match = true;
                           e2->exact_match = true;
@@ -2890,7 +2890,7 @@ parse_ls_color (void)
         }
     }
 
-  if (color_indicator[C_LINK].len == 6
+  nếu (color_indicator[C_LINK].len == 6
       && !STRNCMP_LIT (color_indicator[C_LINK].string, "target"))
     color_symlink_as_referent = true;
 }
@@ -2901,9 +2901,9 @@ parse_ls_color (void)
 static void
 set_exit_status (bool serious)
 {
-  if (serious)
+  nếu (serious)
     exit_status = LS_FAILURE;
-  else if (exit_status == EXIT_SUCCESS)
+  không_thì nếu (exit_status == EXIT_SUCCESS)
     exit_status = LS_MINOR_PROBLEM;
 }
 
@@ -2954,39 +2954,39 @@ print_dir (char const *name, char const *realname, bool command_line_arg)
 
   errno = 0;
   dirp = opendir (name);
-  if (!dirp)
+  nếu (!dirp)
     {
-      if (command_line_arg || ! ignorable_traversal_errno (errno))
+      nếu (command_line_arg || ! ignorable_traversal_errno (errno))
         file_failure (command_line_arg, _("cannot open directory %s"), name);
-      return;
+      trả_về;
     }
 
-  if (LOOP_DETECT)
+  nếu (LOOP_DETECT)
     {
       struct stat dir_stat;
-      int fd = dirfd (dirp);
+      số_nguyên fd = dirfd (dirp);
 
       /* If dirfd failed, endure the overhead of stat'ing by path  */
-      if ((0 <= fd
+      nếu ((0 <= fd
            ? fstat_for_ino (fd, &dir_stat)
            : stat_for_ino (name, &dir_stat)) < 0)
         {
-          if (! ignorable_traversal_errno (errno))
+          nếu (! ignorable_traversal_errno (errno))
             file_failure (command_line_arg,
                           _("cannot determine device and inode of %s"), name);
           closedir (dirp);
-          return;
+          trả_về;
         }
 
       /* If we've already visited this dev/inode pair, warn that
          we've found a loop, and do not process this directory.  */
-      if (visit_dir (dir_stat.st_dev, dir_stat.st_ino))
+      nếu (visit_dir (dir_stat.st_dev, dir_stat.st_ino))
         {
           error (0, 0, _("%s: not listing already-listed directory"),
                  quotef (name));
           closedir (dirp);
           set_exit_status (true);
-          return;
+          trả_về;
         }
 
       dev_ino_push (dir_stat.st_dev, dir_stat.st_ino);
@@ -2994,18 +2994,18 @@ print_dir (char const *name, char const *realname, bool command_line_arg)
 
   clear_files ();
 
-  if (recursive || print_dir_name)
+  nếu (recursive || print_dir_name)
     {
-      if (!first)
+      nếu (!first)
         dired_outbyte ('\n');
       first = false;
       dired_indent ();
 
       char *absolute_name = NULL;
-      if (print_hyperlink)
+      nếu (print_hyperlink)
         {
           absolute_name = canonicalize_filename_mode (name, CAN_MISSING);
-          if (! absolute_name
+          nếu (! absolute_name
               && ! ignorable_traversal_errno (errno))
             file_failure (command_line_arg,
                           _("error canonicalizing %s"), name);
@@ -3021,20 +3021,20 @@ print_dir (char const *name, char const *realname, bool command_line_arg)
   /* Read the directory entries, and insert the subfiles into the 'cwd_file'
      table.  */
 
-  while (true)
+  trong_khi (true)
     {
       /* Set errno to zero so we can distinguish between a readdir failure
          and when readdir simply finds that there are no more entries.  */
       errno = 0;
       next = readdir (dirp);
-      if (next)
+      nếu (next)
         {
-          if (! file_ignored (next->d_name))
+          nếu (! file_ignored (next->d_name))
             {
               enum filetype type;
-#if HAVE_STRUCT_DIRENT_D_TYPE
+#nếu HAVE_STRUCT_DIRENT_D_TYPE
               type = d_type_filetype[next->d_type];
-#else
+#không_thì
               type = unknown;
 #endif
               total_blocks += gobble_file (next->d_name, type,
@@ -3045,7 +3045,7 @@ print_dir (char const *name, char const *realname, bool command_line_arg)
                  ls uses constant memory while processing the entries of
                  this directory.  Useful when there are many (millions)
                  of entries in a directory.  */
-              if (format == one_per_line && sort_type == sort_none
+              nếu (format == one_per_line && sort_type == sort_none
                       && !print_block_size && !recursive)
                 {
                   /* We must call sort_files in spite of
@@ -3057,16 +3057,16 @@ print_dir (char const *name, char const *realname, bool command_line_arg)
                 }
             }
         }
-      else
+      không_thì
         {
-          int err = errno;
-          if (err == 0)
+          số_nguyên err = errno;
+          nếu (err == 0)
             break;
           /* Ignore errors indicating that the directory was removed.  */
-          if (ignorable_traversal_errno (err))
+          nếu (ignorable_traversal_errno (err))
             break;
           file_failure (command_line_arg, _("reading directory %s"), name);
-          if (err != EOVERFLOW)
+          nếu (err != EOVERFLOW)
             break;
         }
 
@@ -3076,7 +3076,7 @@ print_dir (char const *name, char const *realname, bool command_line_arg)
       process_signals ();
     }
 
-  if (closedir (dirp) != 0)
+  nếu (closedir (dirp) != 0)
     {
       file_failure (command_line_arg, _("closing directory %s"), name);
       /* Don't return; print whatever we got.  */
@@ -3088,10 +3088,10 @@ print_dir (char const *name, char const *realname, bool command_line_arg)
   /* If any member files are subdirectories, perhaps they should have their
      contents listed rather than being mentioned here as files.  */
 
-  if (recursive)
+  nếu (recursive)
     extract_dirs_from_files (name, false);
 
-  if (format == long_format || print_block_size)
+  nếu (format == long_format || print_block_size)
     {
       char buf[LONGEST_HUMAN_READABLE + 3];
       char *p = human_readable (total_blocks, buf + 1, human_output_opts,
@@ -3104,7 +3104,7 @@ print_dir (char const *name, char const *realname, bool command_line_arg)
       dired_outbuf (p, pend - p);
     }
 
-  if (cwd_n_used)
+  nếu (cwd_n_used)
     print_current_files ();
 }
 
@@ -3128,10 +3128,10 @@ add_ignore_pattern (char const *pattern)
 static bool
 patterns_match (struct ignore_pattern const *patterns, char const *file)
 {
-  for (struct ignore_pattern const *p = patterns; p; p = p->next)
-    if (fnmatch (p->pattern, file, FNM_PERIOD) == 0)
-      return true;
-  return false;
+  cho (struct ignore_pattern const *p = patterns; p; p = p->next)
+    nếu (fnmatch (p->pattern, file, FNM_PERIOD) == 0)
+      trả_về true;
+  trả_về false;
 }
 
 /* Return true if FILE should be ignored.  */
@@ -3139,7 +3139,7 @@ patterns_match (struct ignore_pattern const *patterns, char const *file)
 static bool
 file_ignored (char const *name)
 {
-  return ((ignore_mode != IGNORE_MINIMAL
+  trả_về ((ignore_mode != IGNORE_MINIMAL
            && name[0] == '.'
            && (ignore_mode == IGNORE_DEFAULT || ! name[1 + (name[1] == '.')]))
           || (ignore_mode == IGNORE_DEFAULT
@@ -3154,7 +3154,7 @@ file_ignored (char const *name)
 static uintmax_t
 unsigned_file_size (off_t size)
 {
-  return size + (size < 0) * ((uintmax_t) OFF_T_MAX - OFF_T_MIN + 1);
+  trả_về size + (size < 0) * ((uintmax_t) OFF_T_MAX - OFF_T_MIN + 1);
 }
 
 #ifdef HAVE_CAP
@@ -3166,26 +3166,26 @@ has_capability (char const *name)
   bool has_cap;
 
   cap_t cap_d = cap_get_file (name);
-  if (cap_d == NULL)
-    return false;
+  nếu (cap_d == NULL)
+    trả_về false;
 
   result = cap_to_text (cap_d, NULL);
   cap_free (cap_d);
-  if (!result)
-    return false;
+  nếu (!result)
+    trả_về false;
 
   /* check if human-readable capability string is empty */
   has_cap = !!*result;
 
   cap_free (result);
-  return has_cap;
+  trả_về has_cap;
 }
-#else
+#không_thì
 static bool
 has_capability (MAYBE_UNUSED char const *name)
 {
   errno = ENOTSUP;
-  return false;
+  trả_về false;
 }
 #endif
 
@@ -3197,7 +3197,7 @@ free_ent (struct fileinfo *f)
   free (f->name);
   free (f->linkname);
   free (f->absolute_name);
-  if (f->scontext != UNKNOWN_SECURITY_CONTEXT)
+  nếu (f->scontext != UNKNOWN_SECURITY_CONTEXT)
     aclinfo_scontext_free (f->scontext);
 }
 
@@ -3205,7 +3205,7 @@ free_ent (struct fileinfo *f)
 static void
 clear_files (void)
 {
-  for (idx_t i = 0; i < cwd_n_used; i++)
+  cho (idx_t i = 0; i < cwd_n_used; i++)
     {
       struct fileinfo *f = sorted_file[i];
       free_ent (f);
@@ -3229,19 +3229,19 @@ clear_files (void)
 /* Cache file_has_aclinfo failure, when it's trivial to do.
    Like file_has_aclinfo, but when F's st_dev says it's on a file
    system lacking ACL support, return 0 with ENOTSUP immediately.  */
-static int
+static số_nguyên
 file_has_aclinfo_cache (char const *file, struct fileinfo *f,
-                        struct aclinfo *ai, int flags)
+                        struct aclinfo *ai, số_nguyên flags)
 {
   /* If UNSUPPORTED_SCONTEXT, these variables hold the
      st_dev and associated info for the most recently processed device
      for which file_has_aclinfo failed indicating lack of support.  */
-  static int unsupported_return;
+  static số_nguyên unsupported_return;
   static char *unsupported_scontext;
-  static int unsupported_scontext_err;
+  static số_nguyên unsupported_scontext_err;
   static dev_t unsupported_device;
 
-  if (f->stat_ok && unsupported_scontext
+  nếu (f->stat_ok && unsupported_scontext
       && f->stat.st_dev == unsupported_device)
     {
       ai->buf = ai->u._gl_acl_ch;
@@ -3249,18 +3249,18 @@ file_has_aclinfo_cache (char const *file, struct fileinfo *f,
       ai->scontext = unsupported_scontext;
       ai->scontext_err = unsupported_scontext_err;
       errno = ENOTSUP;
-      return unsupported_return;
+      trả_về unsupported_return;
     }
 
   errno = 0;
-  int n = file_has_aclinfo (file, ai, flags);
-  int err = errno;
-  if (!USE_ACL)
+  số_nguyên n = file_has_aclinfo (file, ai, flags);
+  số_nguyên err = errno;
+  nếu (!USE_ACL)
     n = 0;
   /* A security-context error does not imply that ACLs are unsupported.
      Require an unsupported attribute listing too if ACLs or capability
      colors are needed.  */
-  if (f->stat_ok && n <= 0 && !acl_errno_valid (err)
+  nếu (f->stat_ok && n <= 0 && !acl_errno_valid (err)
       && ((!USE_ACL && !format_needs_capability)
           || (ai->size < 0 && !acl_errno_valid (ai->u.err)))
       && (!(flags & ACL_GET_SCONTEXT) || !acl_errno_valid (ai->scontext_err)))
@@ -3272,7 +3272,7 @@ file_has_aclinfo_cache (char const *file, struct fileinfo *f,
       unsupported_scontext_err = ai->scontext_err;
       unsupported_device = f->stat.st_dev;
     }
-  return n;
+  trả_về n;
 }
 
 /* Cache has_capability failure, when it's trivial to do.
@@ -3287,19 +3287,19 @@ has_capability_cache (char const *file, struct fileinfo *f)
   static bool unsupported_cached;
   static dev_t unsupported_device;
 
-  if (f->stat_ok && unsupported_cached && f->stat.st_dev == unsupported_device)
+  nếu (f->stat_ok && unsupported_cached && f->stat.st_dev == unsupported_device)
     {
       errno = ENOTSUP;
-      return 0;
+      trả_về 0;
     }
 
   bool b = has_capability (file);
-  if (f->stat_ok && !b && !acl_errno_valid (errno))
+  nếu (f->stat_ok && !b && !acl_errno_valid (errno))
     {
       unsupported_cached = true;
       unsupported_device = f->stat.st_dev;
     }
-  return b;
+  trả_về b;
 }
 
 /* Get the ACL, security context, and capability information needed for F.
@@ -3315,21 +3315,21 @@ get_extended_info (char const *full_name, struct fileinfo *f, bool do_deref)
   enum filetype type = f->filetype;
   bool check_acl = USE_ACL && format == long_format;
   bool get_scontext = false;
-#if HAVE_SMACK || USE_SELINUX_SELINUX_H
+#nếu HAVE_SMACK || USE_SELINUX_SELINUX_H
   get_scontext = (format == long_format) | print_scontext;
 #endif
   bool check_capability = format_needs_capability & (type == normal);
 
-  if (type != arg_directory && (check_acl | get_scontext | check_capability))
+  nếu (type != arg_directory && (check_acl | get_scontext | check_capability))
     {
       struct aclinfo ai;
       /* Without ACL support, request contexts to obtain the attribute
          names needed for capability coloring too.  */
-      int aclinfo_flags = ((do_deref ? ACL_SYMLINK_FOLLOW : 0)
+      số_nguyên aclinfo_flags = ((do_deref ? ACL_SYMLINK_FOLLOW : 0)
                            | (get_scontext || (!USE_ACL && check_capability)
                               ? ACL_GET_SCONTEXT : 0)
                            | filetype_d_type[type]);
-      int n = file_has_aclinfo_cache (full_name, f, &ai, aclinfo_flags);
+      số_nguyên n = file_has_aclinfo_cache (full_name, f, &ai, aclinfo_flags);
       bool have_acl = 0 < n;
       bool have_scontext = !ai.scontext_err;
 
@@ -3352,15 +3352,15 @@ get_extended_info (char const *full_name, struct fileinfo *f, bool do_deref)
                         : ACL_T_YES));
       any_has_acl |= f->acl_type != ACL_T_NONE;
 
-      if (format == long_format && n < 0 && !cannot_access_acl)
+      nếu (format == long_format && n < 0 && !cannot_access_acl)
         error (0, errno, "%s", quotef (full_name));
-      else
+      không_thì
         {
           /* When requesting security context information, don't make
              ls fail just because the file (even a command line argument)
              isn't on the right type of file system.  I.e., a getfilecon
              failure isn't in the same class as a stat failure.  */
-          if (print_scontext && ai.scontext_err
+          nếu (print_scontext && ai.scontext_err
               && ! ignorable_traversal_errno (ai.scontext_err)
               && (! (is_ENOTSUP (ai.scontext_err)
                      || ai.scontext_err == ENODATA)))
@@ -3370,7 +3370,7 @@ get_extended_info (char const *full_name, struct fileinfo *f, bool do_deref)
       /* has_capability adds around 30% runtime to 'ls --color',
          so call it only if really needed.  Note capability coloring
          is disabled in the default color config.  */
-      if (check_capability && aclinfo_has_xattr (&ai, XATTR_NAME_CAPS))
+      nếu (check_capability && aclinfo_has_xattr (&ai, XATTR_NAME_CAPS))
         f->has_capability = has_capability_cache (full_name, f);
 
       f->scontext = ai.scontext;
@@ -3385,7 +3385,7 @@ needs_quoting (char const *name)
   char test[2];
   size_t len = quotearg_buffer (test, sizeof test , name, -1,
                                 filename_quoting_options);
-  return *name != *test || strlen (name) != len;
+  trả_về *name != *test || strlen (name) != len;
 }
 
 /* Add a file to the current table of files.
@@ -3402,7 +3402,7 @@ gobble_file (char const *name, enum filetype type, ino_t inode,
      which is not used for command line arguments.  */
   affirm (! command_line_arg || inode == NOT_AN_INODE_NUMBER);
 
-  if (cwd_n_used == cwd_n_alloc)
+  nếu (cwd_n_used == cwd_n_alloc)
     cwd_file = xpalloc (cwd_file, &cwd_n_alloc, 1, -1, sizeof *cwd_file);
 
   f = &cwd_file[cwd_n_used];
@@ -3412,11 +3412,11 @@ gobble_file (char const *name, enum filetype type, ino_t inode,
   f->scontext = UNKNOWN_SECURITY_CONTEXT;
 
   f->quoted = -1;
-  if ((! cwd_some_quoted) && align_variable_outer_quotes)
+  nếu ((! cwd_some_quoted) && align_variable_outer_quotes)
     {
       /* Determine if any quoted for padding purposes.  */
       f->quoted = needs_quoting (name);
-      if (f->quoted)
+      nếu (f->quoted)
         cwd_some_quoted = 1;
     }
 
@@ -3452,7 +3452,7 @@ gobble_file (char const *name, enum filetype type, ino_t inode,
 
   /* Absolute name of this file, if needed.  */
   char const *full_name = name;
-  if (check_stat | print_scontext | format_needs_capability
+  nếu (check_stat | print_scontext | format_needs_capability
       && name[0] != '/' && dirname)
     {
       char *p = alloca (strlen (name) + strlen (dirname) + 2);
@@ -3462,17 +3462,17 @@ gobble_file (char const *name, enum filetype type, ino_t inode,
 
   bool do_deref;
 
-  if (!check_stat)
+  nếu (!check_stat)
     do_deref = dereference == DEREF_ALWAYS;
-  else
+  không_thì
     {
-      int err;
+      số_nguyên err;
 
-      if (print_hyperlink)
+      nếu (print_hyperlink)
         {
           f->absolute_name = canonicalize_filename_mode (full_name,
                                                          CAN_MISSING);
-          if (! f->absolute_name
+          nếu (! f->absolute_name
               && (command_line_arg
                   || ! ignorable_traversal_errno (errno)))
             file_failure (command_line_arg,
@@ -3488,19 +3488,19 @@ gobble_file (char const *name, enum filetype type, ino_t inode,
 
         case DEREF_COMMAND_LINE_ARGUMENTS:
         case DEREF_COMMAND_LINE_SYMLINK_TO_DIR:
-          if (command_line_arg)
+          nếu (command_line_arg)
             {
               bool need_lstat;
               err = do_stat (full_name, &f->stat);
               do_deref = true;
 
-              if (dereference == DEREF_COMMAND_LINE_ARGUMENTS)
+              nếu (dereference == DEREF_COMMAND_LINE_ARGUMENTS)
                 break;
 
               need_lstat = (err < 0
                             ? (errno == ENOENT || errno == ELOOP)
                             : ! S_ISDIR (f->stat.st_mode));
-              if (!need_lstat)
+              nếu (!need_lstat)
                 break;
 
               /* stat failed because of ENOENT || ELOOP, maybe indicating a
@@ -3520,21 +3520,21 @@ gobble_file (char const *name, enum filetype type, ino_t inode,
           affirm (false);
         }
 
-      if (err != 0)
+      nếu (err != 0)
         {
-          if (! command_line_arg && ignorable_traversal_errno (errno))
+          nếu (! command_line_arg && ignorable_traversal_errno (errno))
             {
-              int stat_errno = errno;
+              số_nguyên stat_errno = errno;
               struct stat linkstat;
               bool dangling_link = (do_deref
                                     && (type == symbolic_link
                                         || type == unknown)
                                     && do_lstat (full_name, &linkstat) == 0);
               errno = stat_errno;
-              if (! dangling_link)
+              nếu (! dangling_link)
                 {
                   free_ent (f);
-                  return 0;
+                  trả_về 0;
                 }
             }
 
@@ -3544,46 +3544,46 @@ gobble_file (char const *name, enum filetype type, ino_t inode,
           file_failure (command_line_arg,
                         _("cannot access %s"), full_name);
 
-          if (command_line_arg)
+          nếu (command_line_arg)
             {
               free_ent (f);
-              return 0;
+              trả_về 0;
             }
 
           f->name = xstrdup (name);
           cwd_n_used++;
 
-          return 0;
+          trả_về 0;
         }
 
       f->stat_ok = true;
       f->filetype = type = d_type_filetype[IFTODT (f->stat.st_mode)];
     }
 
-  if (type == directory && command_line_arg && !immediate_dirs)
+  nếu (type == directory && command_line_arg && !immediate_dirs)
     f->filetype = type = arg_directory;
 
   get_extended_info (full_name, f, do_deref);
 
-  if ((type == symbolic_link)
+  nếu ((type == symbolic_link)
       & ((format == long_format) | check_symlink_mode))
     {
       struct stat linkstats;
 
-      if (! get_link_name (full_name, f, command_line_arg))
+      nếu (! get_link_name (full_name, f, command_line_arg))
         {
           free_ent (f);
-          return 0;
+          trả_về 0;
         }
 
       /* Use the slower quoting path for this entry, though
          don't update CWD_SOME_QUOTED since alignment not affected.  */
-      if (f->linkname && f->quoted == 0 && needs_quoting (f->linkname))
+      nếu (f->linkname && f->quoted == 0 && needs_quoting (f->linkname))
         f->quoted = -1;
 
       /* Avoid following symbolic links when possible, i.e., when
          they won't be traced and when no indicator is needed.  */
-      if (f->linkname
+      nếu (f->linkname
           && (file_type <= indicator_style || check_symlink_mode)
           && stat_for_mode (full_name, &linkstats) == 0)
         {
@@ -3593,106 +3593,106 @@ gobble_file (char const *name, enum filetype type, ino_t inode,
     }
 
   blocks = STP_NBLOCKS (&f->stat);
-  if (format == long_format || print_block_size)
+  nếu (format == long_format || print_block_size)
     {
       char buf[LONGEST_HUMAN_READABLE + 1];
-      int len = mbswidth (human_readable (blocks, buf, human_output_opts,
+      số_nguyên len = mbswidth (human_readable (blocks, buf, human_output_opts,
                                           ST_NBLOCKSIZE, output_block_size),
                           MBSWIDTH_FLAGS);
-      if (block_size_width < len)
+      nếu (block_size_width < len)
         block_size_width = len;
     }
 
-  if (format == long_format)
+  nếu (format == long_format)
     {
-      if (print_owner)
+      nếu (print_owner)
         {
-          int len = format_user_width (f->stat.st_uid);
-          if (owner_width < len)
+          số_nguyên len = format_user_width (f->stat.st_uid);
+          nếu (owner_width < len)
             owner_width = len;
         }
 
-      if (print_group)
+      nếu (print_group)
         {
-          int len = format_group_width (f->stat.st_gid);
-          if (group_width < len)
+          số_nguyên len = format_group_width (f->stat.st_gid);
+          nếu (group_width < len)
             group_width = len;
         }
 
-      if (print_author)
+      nếu (print_author)
         {
-          int len = format_user_width (f->stat.st_author);
-          if (author_width < len)
+          số_nguyên len = format_user_width (f->stat.st_author);
+          nếu (author_width < len)
             author_width = len;
         }
     }
 
-  if (print_scontext)
+  nếu (print_scontext)
     {
-      int len = strlen (f->scontext);
-      if (scontext_width < len)
+      số_nguyên len = strlen (f->scontext);
+      nếu (scontext_width < len)
         scontext_width = len;
     }
 
-  if (format == long_format)
+  nếu (format == long_format)
     {
       char b[INT_BUFSIZE_BOUND (uintmax_t)];
-      int b_len = strlen (umaxtostr (f->stat.st_nlink, b));
-      if (nlink_width < b_len)
+      số_nguyên b_len = strlen (umaxtostr (f->stat.st_nlink, b));
+      nếu (nlink_width < b_len)
         nlink_width = b_len;
 
-      if ((type == chardev) | (type == blockdev))
+      nếu ((type == chardev) | (type == blockdev))
         {
           char buf[INT_BUFSIZE_BOUND (uintmax_t)];
-          int len = strlen (umaxtostr (major (f->stat.st_rdev), buf));
-          if (major_device_number_width < len)
+          số_nguyên len = strlen (umaxtostr (major (f->stat.st_rdev), buf));
+          nếu (major_device_number_width < len)
             major_device_number_width = len;
           len = strlen (umaxtostr (minor (f->stat.st_rdev), buf));
-          if (minor_device_number_width < len)
+          nếu (minor_device_number_width < len)
             minor_device_number_width = len;
           len = major_device_number_width + 2 + minor_device_number_width;
-          if (file_size_width < len)
+          nếu (file_size_width < len)
             file_size_width = len;
         }
-      else
+      không_thì
         {
           char buf[LONGEST_HUMAN_READABLE + 1];
           uintmax_t size = unsigned_file_size (f->stat.st_size);
-          int len = mbswidth (human_readable (size, buf,
+          số_nguyên len = mbswidth (human_readable (size, buf,
                                               file_human_output_opts,
                                               1, file_output_block_size),
                               MBSWIDTH_FLAGS);
-          if (file_size_width < len)
+          nếu (file_size_width < len)
             file_size_width = len;
         }
     }
 
-  if (print_inode)
+  nếu (print_inode)
     {
       char buf[INT_BUFSIZE_BOUND (uintmax_t)];
-      int len = strlen (umaxtostr (f->stat.st_ino, buf));
-      if (inode_number_width < len)
+      số_nguyên len = strlen (umaxtostr (f->stat.st_ino, buf));
+      nếu (inode_number_width < len)
         inode_number_width = len;
     }
 
   f->name = xstrdup (name);
   cwd_n_used++;
 
-  return blocks;
+  trả_về blocks;
 }
 
 /* Return true if F refers to a directory.  */
 static bool
 is_directory (const struct fileinfo *f)
 {
-  return f->filetype == directory || f->filetype == arg_directory;
+  trả_về f->filetype == directory || f->filetype == arg_directory;
 }
 
 /* Return true if F refers to a (symlinked) directory.  */
 static bool
 is_linked_directory (const struct fileinfo *f)
 {
-  return f->filetype == directory || f->filetype == arg_directory
+  trả_về f->filetype == directory || f->filetype == arg_directory
          || S_ISDIR (f->linkmode);
 }
 
@@ -3704,15 +3704,15 @@ static bool
 get_link_name (char const *filename, struct fileinfo *f, bool command_line_arg)
 {
   f->linkname = areadlink_with_size (filename, f->stat.st_size);
-  if (f->linkname == NULL)
+  nếu (f->linkname == NULL)
     {
-      if (! command_line_arg
+      nếu (! command_line_arg
           && ignorable_traversal_errno (errno))
-        return false;
+        trả_về false;
       file_failure (command_line_arg, _("cannot read symbolic link %s"),
                     filename);
     }
-  return true;
+  trả_về true;
 }
 
 /* Return true if the last component of NAME is '.' or '..'
@@ -3722,7 +3722,7 @@ static bool
 basename_is_dot_or_dotdot (char const *name)
 {
   char const *base = last_component (name);
-  return dot_or_dotdot (base);
+  trả_về dot_or_dotdot (base);
 }
 
 /* Remove any entries from CWD_FILE that are for directories,
@@ -3739,7 +3739,7 @@ extract_dirs_from_files (char const *dirname, bool command_line_arg)
   idx_t i, j;
   bool ignore_dot_and_dot_dot = (dirname != NULL);
 
-  if (dirname && LOOP_DETECT)
+  nếu (dirname && LOOP_DETECT)
     {
       /* Insert a marker entry first.  When we dequeue this marker entry,
          we'll know that DIRNAME has been processed and may be removed
@@ -3749,24 +3749,24 @@ extract_dirs_from_files (char const *dirname, bool command_line_arg)
 
   /* Queue the directories last one first, because queueing reverses the
      order.  */
-  for (i = cwd_n_used; 0 < i; )
+  cho (i = cwd_n_used; 0 < i; )
     {
       i--;
       struct fileinfo *f = sorted_file[i];
 
-      if (is_directory (f)
+      nếu (is_directory (f)
           && (! ignore_dot_and_dot_dot
               || ! basename_is_dot_or_dotdot (f->name)))
         {
-          if (!dirname || f->name[0] == '/')
+          nếu (!dirname || f->name[0] == '/')
             queue_directory (f->name, f->linkname, command_line_arg);
-          else
+          không_thì
             {
               char *name = file_name_concat (dirname, f->name, NULL);
               queue_directory (name, f->linkname, command_line_arg);
               free (name);
             }
-          if (f->filetype == arg_directory)
+          nếu (f->filetype == arg_directory)
             free_ent (f);
         }
     }
@@ -3774,7 +3774,7 @@ extract_dirs_from_files (char const *dirname, bool command_line_arg)
   /* Now delete the directories from the table, compacting all the remaining
      entries.  */
 
-  for (i = 0, j = 0; i < cwd_n_used; i++)
+  cho (i = 0, j = 0; i < cwd_n_used; i++)
     {
       struct fileinfo *f = sorted_file[i];
       sorted_file[j] = f;
@@ -3788,34 +3788,34 @@ extract_dirs_from_files (char const *dirname, bool command_line_arg)
 
 static jmp_buf failed_strcoll;
 
-static int
+static số_nguyên
 xstrcoll (char const *a, char const *b)
 {
-  int diff;
+  số_nguyên diff;
   errno = 0;
   diff = strcoll (a, b);
-  if (errno)
+  nếu (errno)
     {
       error (0, errno, _("cannot compare file names %s and %s"),
              quote_n (0, a), quote_n (1, b));
       set_exit_status (false);
       longjmp (failed_strcoll, 1);
     }
-  return diff;
+  trả_về diff;
 }
 
 /* Comparison routines for sorting the files.  */
 
 typedef void const *V;
-typedef int (*qsortFunc)(V a, V b);
+typedef số_nguyên (*qsortFunc)(V a, V b);
 
 /* Used below in DEFINE_SORT_FUNCTIONS for _df_ sort function variants.  */
-static int
+static số_nguyên
 dirfirst_check (struct fileinfo const *a, struct fileinfo const *b,
-                int (*cmp) (V, V))
+                số_nguyên (*cmp) (V, V))
 {
-  int diff = is_linked_directory (b) - is_linked_directory (a);
-  return diff ? diff : cmp (a, b);
+  số_nguyên diff = is_linked_directory (b) - is_linked_directory (a);
+  trả_về diff ? diff : cmp (a, b);
 }
 
 /* Define the 8 different sort function variants required for each sortkey.
@@ -3825,97 +3825,97 @@ dirfirst_check (struct fileinfo const *a, struct fileinfo const *b,
    '[rev_][x]str{cmp|coll}[_df]_', to create each function name.  */
 #define DEFINE_SORT_FUNCTIONS(key_name, key_cmp_func)			\
   /* direct, non-dirfirst versions */					\
-  static int xstrcoll_##key_name (V a, V b)				\
-  { return key_cmp_func (a, b, xstrcoll); }				\
-  ATTRIBUTE_PURE static int strcmp_##key_name (V a, V b)		\
-  { return key_cmp_func (a, b, strcmp); }				\
+  static số_nguyên xstrcoll_##key_name (V a, V b)				\
+  { trả_về key_cmp_func (a, b, xstrcoll); }				\
+  ATTRIBUTE_PURE static số_nguyên strcmp_##key_name (V a, V b)		\
+  { trả_về key_cmp_func (a, b, strcmp); }				\
                                                                         \
   /* reverse, non-dirfirst versions */					\
-  static int rev_xstrcoll_##key_name (V a, V b)				\
-  { return key_cmp_func (b, a, xstrcoll); }				\
-  ATTRIBUTE_PURE static int rev_strcmp_##key_name (V a, V b)	\
-  { return key_cmp_func (b, a, strcmp); }				\
+  static số_nguyên rev_xstrcoll_##key_name (V a, V b)				\
+  { trả_về key_cmp_func (b, a, xstrcoll); }				\
+  ATTRIBUTE_PURE static số_nguyên rev_strcmp_##key_name (V a, V b)	\
+  { trả_về key_cmp_func (b, a, strcmp); }				\
                                                                         \
   /* direct, dirfirst versions */					\
-  static int xstrcoll_df_##key_name (V a, V b)				\
-  { return dirfirst_check (a, b, xstrcoll_##key_name); }		\
-  ATTRIBUTE_PURE static int strcmp_df_##key_name (V a, V b)		\
-  { return dirfirst_check (a, b, strcmp_##key_name); }			\
+  static số_nguyên xstrcoll_df_##key_name (V a, V b)				\
+  { trả_về dirfirst_check (a, b, xstrcoll_##key_name); }		\
+  ATTRIBUTE_PURE static số_nguyên strcmp_df_##key_name (V a, V b)		\
+  { trả_về dirfirst_check (a, b, strcmp_##key_name); }			\
                                                                         \
   /* reverse, dirfirst versions */					\
-  static int rev_xstrcoll_df_##key_name (V a, V b)			\
-  { return dirfirst_check (a, b, rev_xstrcoll_##key_name); }		\
-  ATTRIBUTE_PURE static int rev_strcmp_df_##key_name (V a, V b)	\
-  { return dirfirst_check (a, b, rev_strcmp_##key_name); }
+  static số_nguyên rev_xstrcoll_df_##key_name (V a, V b)			\
+  { trả_về dirfirst_check (a, b, rev_xstrcoll_##key_name); }		\
+  ATTRIBUTE_PURE static số_nguyên rev_strcmp_df_##key_name (V a, V b)	\
+  { trả_về dirfirst_check (a, b, rev_strcmp_##key_name); }
 
-static int
+static số_nguyên
 cmp_ctime (struct fileinfo const *a, struct fileinfo const *b,
-           int (*cmp) (char const *, char const *))
+           số_nguyên (*cmp) (char const *, char const *))
 {
-  int diff = timespec_cmp (get_stat_ctime (&b->stat),
+  số_nguyên diff = timespec_cmp (get_stat_ctime (&b->stat),
                            get_stat_ctime (&a->stat));
-  return diff ? diff : cmp (a->name, b->name);
+  trả_về diff ? diff : cmp (a->name, b->name);
 }
 
-static int
+static số_nguyên
 cmp_mtime (struct fileinfo const *a, struct fileinfo const *b,
-           int (*cmp) (char const *, char const *))
+           số_nguyên (*cmp) (char const *, char const *))
 {
-  int diff = timespec_cmp (get_stat_mtime (&b->stat),
+  số_nguyên diff = timespec_cmp (get_stat_mtime (&b->stat),
                            get_stat_mtime (&a->stat));
-  return diff ? diff : cmp (a->name, b->name);
+  trả_về diff ? diff : cmp (a->name, b->name);
 }
 
-static int
+static số_nguyên
 cmp_atime (struct fileinfo const *a, struct fileinfo const *b,
-           int (*cmp) (char const *, char const *))
+           số_nguyên (*cmp) (char const *, char const *))
 {
-  int diff = timespec_cmp (get_stat_atime (&b->stat),
+  số_nguyên diff = timespec_cmp (get_stat_atime (&b->stat),
                            get_stat_atime (&a->stat));
-  return diff ? diff : cmp (a->name, b->name);
+  trả_về diff ? diff : cmp (a->name, b->name);
 }
 
-static int
+static số_nguyên
 cmp_btime (struct fileinfo const *a, struct fileinfo const *b,
-           int (*cmp) (char const *, char const *))
+           số_nguyên (*cmp) (char const *, char const *))
 {
-  int diff = timespec_cmp (get_stat_btime (&b->stat),
+  số_nguyên diff = timespec_cmp (get_stat_btime (&b->stat),
                            get_stat_btime (&a->stat));
-  return diff ? diff : cmp (a->name, b->name);
+  trả_về diff ? diff : cmp (a->name, b->name);
 }
 
-static int
+static số_nguyên
 off_cmp (off_t a, off_t b)
 {
-  return _GL_CMP (a, b);
+  trả_về _GL_CMP (a, b);
 }
 
-static int
+static số_nguyên
 cmp_size (struct fileinfo const *a, struct fileinfo const *b,
-          int (*cmp) (char const *, char const *))
+          số_nguyên (*cmp) (char const *, char const *))
 {
-  int diff = off_cmp (b->stat.st_size, a->stat.st_size);
-  return diff ? diff : cmp (a->name, b->name);
+  số_nguyên diff = off_cmp (b->stat.st_size, a->stat.st_size);
+  trả_về diff ? diff : cmp (a->name, b->name);
 }
 
-static int
+static số_nguyên
 cmp_name (struct fileinfo const *a, struct fileinfo const *b,
-          int (*cmp) (char const *, char const *))
+          số_nguyên (*cmp) (char const *, char const *))
 {
-  return cmp (a->name, b->name);
+  trả_về cmp (a->name, b->name);
 }
 
 /* Compare file extensions.  Files with no extension are 'smallest'.
    If extensions are the same, compare by file names instead.  */
 
-static int
+static số_nguyên
 cmp_extension (struct fileinfo const *a, struct fileinfo const *b,
-               int (*cmp) (char const *, char const *))
+               số_nguyên (*cmp) (char const *, char const *))
 {
   char const *base1 = strrchr (a->name, '.');
   char const *base2 = strrchr (b->name, '.');
-  int diff = cmp (base1 ? base1 : "", base2 ? base2 : "");
-  return diff ? diff : cmp (a->name, b->name);
+  số_nguyên diff = cmp (base1 ? base1 : "", base2 ? base2 : "");
+  trả_về diff ? diff : cmp (a->name, b->name);
 }
 
 /* Return the (cached) screen width,
@@ -3924,17 +3924,17 @@ cmp_extension (struct fileinfo const *a, struct fileinfo const *b,
 static size_t
 fileinfo_name_width (struct fileinfo const *f)
 {
-  return f->width
+  trả_về f->width
          ? f->width
          : quote_name_width (f->name, filename_quoting_options, f->quoted);
 }
 
-static int
+static số_nguyên
 cmp_width (struct fileinfo const *a, struct fileinfo const *b,
-          int (*cmp) (char const *, char const *))
+          số_nguyên (*cmp) (char const *, char const *))
 {
-  int diff = fileinfo_name_width (a) - fileinfo_name_width (b);
-  return diff ? diff : cmp (a->name, b->name);
+  số_nguyên diff = fileinfo_name_width (a) - fileinfo_name_width (b);
+  trả_về diff ? diff : cmp (a->name, b->name);
 }
 
 DEFINE_SORT_FUNCTIONS (ctime, cmp_ctime)
@@ -3956,32 +3956,32 @@ DEFINE_SORT_FUNCTIONS (width, cmp_width)
    because they all use xstrcoll (either as the primary or secondary
    sort key), and xstrcoll has the ability to do a longjmp if strcoll fails for
    locale reasons.  */
-static int
+static số_nguyên
 cmp_version (struct fileinfo const *a, struct fileinfo const *b)
 {
-  int diff = filevercmp (a->name, b->name);
-  return diff ? diff : strcmp (a->name, b->name);
+  số_nguyên diff = filevercmp (a->name, b->name);
+  trả_về diff ? diff : strcmp (a->name, b->name);
 }
 
-static int
+static số_nguyên
 xstrcoll_version (V a, V b)
 {
-  return cmp_version (a, b);
+  trả_về cmp_version (a, b);
 }
-static int
+static số_nguyên
 rev_xstrcoll_version (V a, V b)
 {
-  return cmp_version (b, a);
+  trả_về cmp_version (b, a);
 }
-static int
+static số_nguyên
 xstrcoll_df_version (V a, V b)
 {
-  return dirfirst_check (a, b, xstrcoll_version);
+  trả_về dirfirst_check (a, b, xstrcoll_version);
 }
-static int
+static số_nguyên
 rev_xstrcoll_df_version (V a, V b)
 {
-  return dirfirst_check (a, b, rev_xstrcoll_version);
+  trả_về dirfirst_check (a, b, rev_xstrcoll_version);
 }
 
 
@@ -4053,7 +4053,7 @@ static_assert (countof (sort_functions) == sort_numtypes - 2 + time_numtypes);
 static void
 initialize_ordering_vector (void)
 {
-  for (idx_t i = 0; i < cwd_n_used; i++)
+  cho (idx_t i = 0; i < cwd_n_used; i++)
     sorted_file[i] = &cwd_file[i];
 }
 
@@ -4063,10 +4063,10 @@ static void
 update_current_files_info (void)
 {
   /* Cache screen width of name, if needed multiple times.  */
-  if (sort_type == sort_width
+  nếu (sort_type == sort_width
       || (line_length && (format == many_per_line || format == horizontal)))
     {
-      for (idx_t i = 0; i < cwd_n_used; i++)
+      cho (idx_t i = 0; i < cwd_n_used; i++)
         {
           struct fileinfo *f = sorted_file[i];
           f->width = fileinfo_name_width (f);
@@ -4081,7 +4081,7 @@ sort_files (void)
 {
   bool use_strcmp;
 
-  if (sorted_file_alloc < cwd_n_used + (cwd_n_used >> 1))
+  nếu (sorted_file_alloc < cwd_n_used + (cwd_n_used >> 1))
     {
       free (sorted_file);
       sorted_file = xinmalloc (cwd_n_used, 3 * sizeof *sorted_file);
@@ -4092,17 +4092,17 @@ sort_files (void)
 
   update_current_files_info ();
 
-  if (sort_type == sort_none)
-    return;
+  nếu (sort_type == sort_none)
+    trả_về;
 
   /* Try strcoll.  If it fails, fall back on strcmp.  We can't safely
      ignore strcoll failures, as a failing strcoll might be a
      comparison function that is not a total order, and if we ignored
      the failure this might cause qsort to dump core.  */
 
-  if (! setjmp (failed_strcoll))
+  nếu (! setjmp (failed_strcoll))
     use_strcmp = false;      /* strcoll() succeeded */
-  else
+  không_thì
     {
       use_strcmp = true;
       affirm (sort_type != sort_version);
@@ -4124,7 +4124,7 @@ print_current_files (void)
   switch (format)
     {
     case one_per_line:
-      for (idx_t i = 0; i < cwd_n_used; i++)
+      cho (idx_t i = 0; i < cwd_n_used; i++)
         {
           print_file_name_and_frills (sorted_file[i], 0);
           putchar (eolbyte);
@@ -4132,16 +4132,16 @@ print_current_files (void)
       break;
 
     case many_per_line:
-      if (! line_length)
+      nếu (! line_length)
         print_with_separator (' ');
-      else
+      không_thì
         print_many_per_line ();
       break;
 
     case horizontal:
-      if (! line_length)
+      nếu (! line_length)
         print_with_separator (' ');
-      else
+      không_thì
         print_horizontal ();
       break;
 
@@ -4150,7 +4150,7 @@ print_current_files (void)
       break;
 
     case long_format:
-      for (idx_t i = 0; i < cwd_n_used; i++)
+      cho (idx_t i = 0; i < cwd_n_used; i++)
         {
           set_normal_color ();
           print_long_format (sorted_file[i]);
@@ -4166,23 +4166,23 @@ print_current_files (void)
 
 static ptrdiff_t
 align_nstrftime (char *buf, size_t size, bool recent, struct tm const *tm,
-                 timezone_t tz, int ns)
+                 timezone_t tz, số_nguyên ns)
 {
   char const *nfmt = (use_abformat
                       ? abformat[recent][tm->tm_mon]
                       : long_time_format[recent]);
-  return nstrftime (buf, size, nfmt, tm, tz, ns);
+  trả_về nstrftime (buf, size, nfmt, tm, tz, ns);
 }
 
 /* Return the expected number of columns in a long-format timestamp,
    or zero if it cannot be calculated.  */
 
-static int
+static số_nguyên
 long_time_expected_width (void)
 {
-  static int width = -1;
+  static số_nguyên width = -1;
 
-  if (width < 0)
+  nếu (width < 0)
     {
       time_t epoch = 0;
       struct tm tm;
@@ -4195,39 +4195,39 @@ long_time_expected_width (void)
          a 64-bit system that blindly accepts e.g., TZ=UTC+20000000000000.
          However, this is not possible with Solaris 10 or glibc-2.3.5, since
          their implementations limit the offset to 167:59 and 24:00, resp.  */
-      if (localtime_rz (localtz, &epoch, &tm))
+      nếu (localtime_rz (localtz, &epoch, &tm))
         {
           ptrdiff_t len = align_nstrftime (buf, sizeof buf, false,
                                            &tm, localtz, 0);
-          if (len > 0)
+          nếu (len > 0)
             width = mbsnwidth (buf, len, MBSWIDTH_FLAGS);
         }
 
-      if (width < 0)
+      nếu (width < 0)
         width = 0;
     }
 
-  return width;
+  trả_về width;
 }
 
 /* Print the user or group name NAME, with numeric id ID, using a
    print width of WIDTH columns.  */
 
 static void
-format_user_or_group (char const *name, uintmax_t id, int width)
+format_user_or_group (char const *name, uintmax_t id, số_nguyên width)
 {
-  if (name)
+  nếu (name)
     {
-      int name_width = mbswidth (name, MBSWIDTH_FLAGS);
-      int width_gap = name_width < 0 ? 0 : width - name_width;
-      int pad = MAX (0, width_gap);
+      số_nguyên name_width = mbswidth (name, MBSWIDTH_FLAGS);
+      số_nguyên width_gap = name_width < 0 ? 0 : width - name_width;
+      số_nguyên pad = MAX (0, width_gap);
       dired_outstring (name);
 
       do
         dired_outbyte (' ');
-      while (pad--);
+      trong_khi (pad--);
     }
-  else
+  không_thì
     dired_pos += printf ("%*ju ", width, id);
 }
 
@@ -4235,7 +4235,7 @@ format_user_or_group (char const *name, uintmax_t id, int width)
    WIDTH.  */
 
 static void
-format_user (uid_t u, int width, bool stat_ok)
+format_user (uid_t u, số_nguyên width, bool stat_ok)
 {
   format_user_or_group (! stat_ok ? "?" :
                         (numeric_ids ? NULL : getuser (u)), u, width);
@@ -4244,7 +4244,7 @@ format_user (uid_t u, int width, bool stat_ok)
 /* Likewise, for groups.  */
 
 static void
-format_group (gid_t g, int width, bool stat_ok)
+format_group (gid_t g, số_nguyên width, bool stat_ok)
 {
   format_user_or_group (! stat_ok ? "?" :
                         (numeric_ids ? NULL : getgroup (g)), g, width);
@@ -4253,10 +4253,10 @@ format_group (gid_t g, int width, bool stat_ok)
 /* Return the number of columns that format_user_or_group will print,
    or -1 if unknown.  */
 
-static int
+static số_nguyên
 format_user_or_group_width (char const *name, uintmax_t id)
 {
-  return (name
+  trả_về (name
           ? mbswidth (name, MBSWIDTH_FLAGS)
           : snprintf (NULL, 0, "%ju", id));
 }
@@ -4264,18 +4264,18 @@ format_user_or_group_width (char const *name, uintmax_t id)
 /* Return the number of columns that format_user will print,
    or -1 if unknown.  */
 
-static int
+static số_nguyên
 format_user_width (uid_t u)
 {
-  return format_user_or_group_width (numeric_ids ? NULL : getuser (u), u);
+  trả_về format_user_or_group_width (numeric_ids ? NULL : getuser (u), u);
 }
 
 /* Likewise, for groups.  */
 
-static int
+static số_nguyên
 format_group_width (gid_t g)
 {
-  return format_user_or_group_width (numeric_ids ? NULL : getgroup (g), g);
+  trả_về format_user_or_group_width (numeric_ids ? NULL : getgroup (g), g);
 }
 
 /* Return a pointer to a formatted version of F->stat.st_ino,
@@ -4285,7 +4285,7 @@ static char *
 format_inode (char buf[INT_BUFSIZE_BOUND (uintmax_t)],
               const struct fileinfo *f)
 {
-  return (f->stat_ok && f->stat.st_ino != NOT_AN_INODE_NUMBER
+  trả_về (f->stat_ok && f->stat.st_ino != NOT_AN_INODE_NUMBER
           ? umaxtostr (f->stat.st_ino, buf)
           : (char *) "?");
 }
@@ -4312,21 +4312,21 @@ print_long_format (const struct fileinfo *f)
 
   /* Compute the mode string, except remove the trailing space if no
      file in this directory has an ACL or security context.  */
-  if (f->stat_ok)
+  nếu (f->stat_ok)
     filemodestring (&f->stat, modebuf);
-  else
+  không_thì
     {
       modebuf[0] = filetype_letter[f->filetype];
       memset (modebuf + 1, '?', 10);
       modebuf[11] = '\0';
     }
-  if (! any_has_acl)
+  nếu (! any_has_acl)
     modebuf[10] = '\0';
-  else if (f->acl_type == ACL_T_LSM_CONTEXT_ONLY)
+  không_thì nếu (f->acl_type == ACL_T_LSM_CONTEXT_ONLY)
     modebuf[10] = '.';
-  else if (f->acl_type == ACL_T_YES)
+  không_thì nếu (f->acl_type == ACL_T_YES)
     modebuf[10] = '+';
-  else if (f->acl_type == ACL_T_UNKNOWN)
+  không_thì nếu (f->acl_type == ACL_T_UNKNOWN)
     modebuf[10] = '?';
 
   switch (time_type)
@@ -4342,7 +4342,7 @@ print_long_format (const struct fileinfo *f)
       break;
     case time_btime:
       when_timespec = get_stat_btime (&f->stat);
-      if (when_timespec.tv_sec == -1 && when_timespec.tv_nsec == -1)
+      nếu (when_timespec.tv_sec == -1 && when_timespec.tv_nsec == -1)
         btime_ok = false;
       break;
     case time_numtypes: default:
@@ -4351,13 +4351,13 @@ print_long_format (const struct fileinfo *f)
 
   p = buf;
 
-  if (print_inode)
+  nếu (print_inode)
     {
       char hbuf[INT_BUFSIZE_BOUND (uintmax_t)];
       p += sprintf (p, "%*s ", inode_number_width, format_inode (hbuf, f));
     }
 
-  if (print_block_size)
+  nếu (print_block_size)
     {
       char hbuf[LONGEST_HUMAN_READABLE + 1];
       char const *blocks =
@@ -4365,11 +4365,11 @@ print_long_format (const struct fileinfo *f)
          ? "?"
          : human_readable (STP_NBLOCKS (&f->stat), hbuf, human_output_opts,
                            ST_NBLOCKSIZE, output_block_size));
-      int blocks_width = mbswidth (blocks, MBSWIDTH_FLAGS);
-      for (int pad = blocks_width < 0 ? 0 : block_size_width - blocks_width;
+      số_nguyên blocks_width = mbswidth (blocks, MBSWIDTH_FLAGS);
+      cho (số_nguyên pad = blocks_width < 0 ? 0 : block_size_width - blocks_width;
            0 < pad; pad--)
         *p++ = ' ';
-      while ((*p++ = *blocks++))
+      trong_khi ((*p++ = *blocks++))
         continue;
       p[-1] = ' ';
     }
@@ -4384,29 +4384,29 @@ print_long_format (const struct fileinfo *f)
 
   dired_indent ();
 
-  if (print_owner || print_group || print_author || print_scontext)
+  nếu (print_owner || print_group || print_author || print_scontext)
     {
       dired_outbuf (buf, p - buf);
 
-      if (print_owner)
+      nếu (print_owner)
         format_user (f->stat.st_uid, owner_width, f->stat_ok);
 
-      if (print_group)
+      nếu (print_group)
         format_group (f->stat.st_gid, group_width, f->stat_ok);
 
-      if (print_author)
+      nếu (print_author)
         format_user (f->stat.st_author, author_width, f->stat_ok);
 
-      if (print_scontext)
+      nếu (print_scontext)
         format_user_or_group (f->scontext, 0, scontext_width);
 
       p = buf;
     }
 
-  if (f->stat_ok
+  nếu (f->stat_ok
       && (S_ISCHR (f->stat.st_mode) || S_ISBLK (f->stat.st_mode)))
     {
-      int blanks_width = (file_size_width
+      số_nguyên blanks_width = (file_size_width
                           - (major_device_number_width + 2
                              + minor_device_number_width));
       p += sprintf (p, "%*ju, %*ju ",
@@ -4415,7 +4415,7 @@ print_long_format (const struct fileinfo *f)
                     minor_device_number_width,
                     (uintmax_t) minor (f->stat.st_rdev));
     }
-  else
+  không_thì
     {
       char hbuf[LONGEST_HUMAN_READABLE + 1];
       char const *size =
@@ -4424,18 +4424,18 @@ print_long_format (const struct fileinfo *f)
          : human_readable (unsigned_file_size (f->stat.st_size),
                            hbuf, file_human_output_opts, 1,
                            file_output_block_size));
-      int size_width = mbswidth (size, MBSWIDTH_FLAGS);
-      for (int pad = size_width < 0 ? 0 : file_size_width - size_width;
+      số_nguyên size_width = mbswidth (size, MBSWIDTH_FLAGS);
+      cho (số_nguyên pad = size_width < 0 ? 0 : file_size_width - size_width;
            0 < pad; pad--)
         *p++ = ' ';
-      while ((*p++ = *size++))
+      trong_khi ((*p++ = *size++))
         continue;
       p[-1] = ' ';
     }
 
   s = -1;
 
-  if (f->stat_ok && btime_ok
+  nếu (f->stat_ok && btime_ok
       && localtime_rz (localtz, &when_timespec.tv_sec, &when_local))
     {
       struct timespec six_months_ago;
@@ -4444,7 +4444,7 @@ print_long_format (const struct fileinfo *f)
       /* If the file appears to be in the future, update the current
          time, in case the file happens to have been modified since
          the last time we checked the clock.  */
-      if (timespec_cmp (current_time, when_timespec) < 0)
+      nếu (timespec_cmp (current_time, when_timespec) < 0)
         gettime (&current_time);
 
       /* Consider a time to be recent if it is within the past six months.
@@ -4463,12 +4463,12 @@ print_long_format (const struct fileinfo *f)
                            &when_local, localtz, when_timespec.tv_nsec);
     }
 
-  if (0 <= s)
+  nếu (0 <= s)
     {
       p += s;
       *p++ = ' ';
     }
-  else
+  không_thì
     {
       /* The time cannot be converted using the desired format, so
          print it as a huge integer number of seconds.  */
@@ -4483,17 +4483,17 @@ print_long_format (const struct fileinfo *f)
   dired_outbuf (buf, p - buf);
   size_t w = print_name_with_quoting (f, false, &dired_obstack, p - buf);
 
-  if (f->filetype == symbolic_link)
+  nếu (f->filetype == symbolic_link)
     {
-      if (f->linkname)
+      nếu (f->linkname)
         {
           dired_outstring (" -> ");
           print_name_with_quoting (f, true, NULL, (p - buf) + w + 4);
-          if (indicator_style != none)
+          nếu (indicator_style != none)
             print_type_indicator (true, f->linkmode, unknown);
         }
     }
-  else if (indicator_style != none)
+  không_thì nếu (indicator_style != none)
     print_type_indicator (f->stat_ok, f->stat.st_mode, f->filetype);
 }
 
@@ -4509,7 +4509,7 @@ print_long_format (const struct fileinfo *f)
 static size_t
 quote_name_buf (char **inbuf, size_t bufsize, char *name,
                 struct quoting_options const *options,
-                int needs_general_quoting, size_t *width, bool *pad)
+                số_nguyên needs_general_quoting, size_t *width, bool *pad)
 {
   char *buf = *inbuf;
   size_t displayed_width IF_LINT ( = 0);
@@ -4533,10 +4533,10 @@ quote_name_buf (char **inbuf, size_t bufsize, char *name,
                                    && qmark_newline && partial_quoting
                                    && !dired && strchr (name, '\n'));
 
-  if (needs_general_quoting != 0)
+  nếu (needs_general_quoting != 0)
     {
       len = quotearg_buffer (buf, bufsize, name, -1, options);
-      if (bufsize <= len)
+      nếu (bufsize <= len)
         {
           buf = xmalloc (len + 1);
           quotearg_buffer (buf, len + 1, name, -1, options);
@@ -4544,16 +4544,16 @@ quote_name_buf (char **inbuf, size_t bufsize, char *name,
 
       quoted = (*name != *buf) || strlen (name) != len;
     }
-  else if (needs_further_quoting || extra_newline_protection)
+  không_thì nếu (needs_further_quoting || extra_newline_protection)
     {
       len = strlen (name);
-      if (bufsize <= len)
+      nếu (bufsize <= len)
         buf = xmalloc (len + 1);
       memcpy (buf, name, len + 1);
 
       quoted = false;
     }
-  else
+  không_thì
     {
       len = strlen (name);
       buf = name;
@@ -4562,21 +4562,21 @@ quote_name_buf (char **inbuf, size_t bufsize, char *name,
 
   /* It's safe to replace newlines without multi-byte iteration, as newlines
      do not appear as part of any multi-byte encoded character.  */
-  if (extra_newline_protection)
-    for (char *p = buf; p < buf + len; p++)
-      if (eolbyte && *p == '\n')
+  nếu (extra_newline_protection)
+    cho (char *p = buf; p < buf + len; p++)
+      nếu (eolbyte && *p == '\n')
         *p = '?';
 
-  if (needs_further_quoting)
+  nếu (needs_further_quoting)
     {
-      if (MB_CUR_MAX > 1)
+      nếu (MB_CUR_MAX > 1)
         {
           char const *p = buf;
           char const *plimit = buf + len;
           char *q = buf;
           displayed_width = 0;
 
-          while (p < plimit)
+          trong_khi (p < plimit)
             switch (*p)
               {
                 case ' ': case '!': case '"': case '#': case '%':
@@ -4613,11 +4613,11 @@ quote_name_buf (char **inbuf, size_t bufsize, char *name,
                       {
                         char32_t wc;
                         size_t bytes;
-                        int w;
+                        số_nguyên w;
 
                         bytes = mbrtoc32 (&wc, p, plimit - p, &mbstate);
 
-                        if (bytes == (size_t) -1)
+                        nếu (bytes == (size_t) -1)
                           {
                             /* An invalid multibyte sequence was
                                encountered.  Skip one input byte, and
@@ -4628,7 +4628,7 @@ quote_name_buf (char **inbuf, size_t bufsize, char *name,
                             break;
                           }
 
-                        if (bytes == (size_t) -2)
+                        nếu (bytes == (size_t) -2)
                           {
                             /* An incomplete multibyte character
                                at the end.  Replace it entirely with
@@ -4639,20 +4639,20 @@ quote_name_buf (char **inbuf, size_t bufsize, char *name,
                             break;
                           }
 
-                        if (bytes == 0)
+                        nếu (bytes == 0)
                           /* A null wide character was encountered.  */
                           bytes = 1;
 
                         w = c32width (wc);
-                        if (w >= 0)
+                        nếu (w >= 0)
                           {
                             /* A printable multibyte character.
                                Keep it.  */
-                            for (; bytes > 0; --bytes)
+                            cho (; bytes > 0; --bytes)
                               *q++ = *p++;
                             displayed_width += w;
                           }
-                        else
+                        không_thì
                           {
                             /* An nonprintable multibyte character.
                                Replace it entirely with a question
@@ -4662,7 +4662,7 @@ quote_name_buf (char **inbuf, size_t bufsize, char *name,
                             displayed_width += 1;
                           }
                       }
-                    while (! mbsinit (&mbstate));
+                    trong_khi (! mbsinit (&mbstate));
                   }
                   break;
               }
@@ -4670,36 +4670,36 @@ quote_name_buf (char **inbuf, size_t bufsize, char *name,
           /* The buffer may have shrunk.  */
           len = q - buf;
         }
-      else
+      không_thì
         {
           char *p = buf;
           char const *plimit = buf + len;
 
-          while (p < plimit)
+          trong_khi (p < plimit)
             {
-              if (! isprint (to_uchar (*p)))
+              nếu (! isprint (to_uchar (*p)))
                 *p = '?';
               p++;
             }
           displayed_width = len;
         }
     }
-  else if (width != NULL)
+  không_thì nếu (width != NULL)
     {
-      if (MB_CUR_MAX > 1)
+      nếu (MB_CUR_MAX > 1)
         {
           displayed_width = mbsnwidth (buf, len, MBSWIDTH_FLAGS);
           displayed_width = MAX (0, displayed_width);
         }
-      else
+      không_thì
         {
           char const *p = buf;
           char const *plimit = buf + len;
 
           displayed_width = 0;
-          while (p < plimit)
+          trong_khi (p < plimit)
             {
-              if (isprint (to_uchar (*p)))
+              nếu (isprint (to_uchar (*p)))
                 displayed_width++;
               p++;
             }
@@ -4711,17 +4711,17 @@ quote_name_buf (char **inbuf, size_t bufsize, char *name,
      not actually part of the name.  */
   *pad = (align_variable_outer_quotes && cwd_some_quoted && ! quoted);
 
-  if (width != NULL)
+  nếu (width != NULL)
     *width = displayed_width;
 
   *inbuf = buf;
 
-  return len;
+  trả_về len;
 }
 
 static size_t
 quote_name_width (char const *name, struct quoting_options const *options,
-                  int needs_general_quoting)
+                  số_nguyên needs_general_quoting)
 {
   char smallbuf[BUFSIZ];
   char *buf = smallbuf;
@@ -4731,12 +4731,12 @@ quote_name_width (char const *name, struct quoting_options const *options,
   quote_name_buf (&buf, sizeof smallbuf, (char *) name, options,
                   needs_general_quoting, &width, &pad);
 
-  if (buf != smallbuf && buf != name)
+  nếu (buf != smallbuf && buf != name)
     free (buf);
 
   width += pad;
 
-  return width;
+  trả_về width;
 }
 
 /* %XX escape any input out of range as defined in RFC3986,
@@ -4746,25 +4746,25 @@ file_escape (char const *str, bool path)
 {
   char *esc = xnmalloc (3, strlen (str) + 1);
   char *p = esc;
-  while (*str)
+  trong_khi (*str)
     {
-      if (path && ISSLASH (*str))
+      nếu (path && ISSLASH (*str))
         {
           *p++ = '/';
           str++;
         }
-      else if (RFC3986[to_uchar (*str)])
+      không_thì nếu (RFC3986[to_uchar (*str)])
         *p++ = *str++;
-      else
+      không_thì
         p += sprintf (p, "%%%02x", to_uchar (*str++));
     }
   *p = '\0';
-  return esc;
+  trả_về esc;
 }
 
 static size_t
 quote_name (char const *name, struct quoting_options const *options,
-            int needs_general_quoting, const struct bin_str *color,
+            số_nguyên needs_general_quoting, const struct bin_str *color,
             bool allow_pad, struct obstack *stack, char const *absolute_name)
 {
   char smallbuf[BUFSIZ];
@@ -4775,19 +4775,19 @@ quote_name (char const *name, struct quoting_options const *options,
   len = quote_name_buf (&buf, sizeof smallbuf, (char *) name, options,
                         needs_general_quoting, NULL, &pad);
 
-  if (pad && allow_pad)
+  nếu (pad && allow_pad)
     dired_outbyte (' ');
 
-  if (color)
+  nếu (color)
     print_color_indicator (color);
 
   /* If we're padding, then don't include the outer quotes in
      the --hyperlink, to improve the alignment of those links.  */
   bool skip_quotes = false;
 
-  if (absolute_name)
+  nếu (absolute_name)
     {
-      if (align_variable_outer_quotes && cwd_some_quoted && ! pad)
+      nếu (align_variable_outer_quotes && cwd_some_quoted && ! pad)
         {
           skip_quotes = true;
           putchar (*buf);
@@ -4804,27 +4804,27 @@ quote_name (char const *name, struct quoting_options const *options,
       free (n);
     }
 
-  if (stack)
+  nếu (stack)
     push_current_dired_pos (stack);
 
   fwrite (buf + skip_quotes, 1, len - (skip_quotes * 2), stdout);
 
   dired_pos += len;
 
-  if (stack)
+  nếu (stack)
     push_current_dired_pos (stack);
 
-  if (absolute_name)
+  nếu (absolute_name)
     {
       fputs ("\033]8;;\033\\", stdout);
-      if (skip_quotes)
+      nếu (skip_quotes)
         putchar (*(buf + len - 1));
     }
 
-  if (buf != smallbuf && buf != name)
+  nếu (buf != smallbuf && buf != name)
     free (buf);
 
-  return len + pad;
+  trả_về len + pad;
 }
 
 static size_t
@@ -4845,7 +4845,7 @@ print_name_with_quoting (const struct fileinfo *f,
                            color, !symlink_target, stack, f->absolute_name);
 
   process_signals ();
-  if (used_color_this_time)
+  nếu (used_color_this_time)
     {
       prep_non_filename_text ();
 
@@ -4855,20 +4855,20 @@ print_name_with_quoting (const struct fileinfo *f,
          _might_ wrap to the next line.  This may output a sequence
          unnecessarily in multi-byte locales for example,
          but in that case it's inconsequential to the output.  */
-      if (line_length
+      nếu (line_length
           && (start_col / line_length != (start_col + len - 1) / line_length))
         put_indicator (&color_indicator[C_CLR_TO_EOL]);
     }
 
-  return len;
+  trả_về len;
 }
 
 static void
 prep_non_filename_text (void)
 {
-  if (color_indicator[C_END].string != NULL)
+  nếu (color_indicator[C_END].string != NULL)
     put_indicator (&color_indicator[C_END]);
-  else
+  không_thì
     {
       put_indicator (&color_indicator[C_LEFT]);
       put_indicator (&color_indicator[C_RESET]);
@@ -4887,33 +4887,33 @@ print_file_name_and_frills (const struct fileinfo *f, size_t start_col)
 
   set_normal_color ();
 
-  if (print_inode)
+  nếu (print_inode)
     printf ("%*s ", format == with_commas ? 0 : inode_number_width,
             format_inode (buf, f));
 
-  if (print_block_size)
+  nếu (print_block_size)
     {
       char const *blocks =
         (! f->stat_ok
          ? "?"
          : human_readable (STP_NBLOCKS (&f->stat), buf, human_output_opts,
                            ST_NBLOCKSIZE, output_block_size));
-      int blocks_width = mbswidth (blocks, MBSWIDTH_FLAGS);
-      int pad = 0;
-      if (0 <= blocks_width && block_size_width && format != with_commas)
+      số_nguyên blocks_width = mbswidth (blocks, MBSWIDTH_FLAGS);
+      số_nguyên pad = 0;
+      nếu (0 <= blocks_width && block_size_width && format != with_commas)
         pad = block_size_width - blocks_width;
       printf ("%*s%s ", pad, "", blocks);
     }
 
-  if (print_scontext)
+  nếu (print_scontext)
     printf ("%*s ", format == with_commas ? 0 : scontext_width, f->scontext);
 
   size_t width = print_name_with_quoting (f, false, NULL, start_col);
 
-  if (indicator_style != none)
+  nếu (indicator_style != none)
     width += print_type_indicator (f->stat_ok, f->stat.st_mode, f->filetype);
 
-  return width;
+  trả_về width;
 }
 
 /* Given these arguments describing a file, return the single-byte
@@ -4923,57 +4923,57 @@ get_type_indicator (bool stat_ok, mode_t mode, enum filetype type)
 {
   char c;
 
-  if (stat_ok ? S_ISREG (mode) : type == normal)
+  nếu (stat_ok ? S_ISREG (mode) : type == normal)
     {
-      if (stat_ok && indicator_style == classify && (mode & S_IXUGO))
+      nếu (stat_ok && indicator_style == classify && (mode & S_IXUGO))
         c = '*';
-      else
+      không_thì
         c = 0;
     }
-  else
+  không_thì
     {
-      if (stat_ok ? S_ISDIR (mode) : type == directory || type == arg_directory)
+      nếu (stat_ok ? S_ISDIR (mode) : type == directory || type == arg_directory)
         c = '/';
-      else if (indicator_style == slash)
+      không_thì nếu (indicator_style == slash)
         c = 0;
-      else if (stat_ok ? S_ISLNK (mode) : type == symbolic_link)
+      không_thì nếu (stat_ok ? S_ISLNK (mode) : type == symbolic_link)
         c = '@';
-      else if (stat_ok ? S_ISFIFO (mode) : type == fifo)
+      không_thì nếu (stat_ok ? S_ISFIFO (mode) : type == fifo)
         c = '|';
-      else if (stat_ok ? S_ISSOCK (mode) : type == sock)
+      không_thì nếu (stat_ok ? S_ISSOCK (mode) : type == sock)
         c = '=';
-      else if (stat_ok && S_ISDOOR (mode))
+      không_thì nếu (stat_ok && S_ISDOOR (mode))
         c = '>';
-      else
+      không_thì
         c = 0;
     }
-  return c;
+  trả_về c;
 }
 
 static bool
 print_type_indicator (bool stat_ok, mode_t mode, enum filetype type)
 {
   char c = get_type_indicator (stat_ok, mode, type);
-  if (c)
+  nếu (c)
     dired_outbyte (c);
-  return !!c;
+  trả_về !!c;
 }
 
 /* Returns if color sequence was printed.  */
 static bool
 print_color_indicator (const struct bin_str *ind)
 {
-  if (ind)
+  nếu (ind)
     {
       /* Need to reset so not dealing with attribute combinations */
-      if (is_colored (C_NORM))
+      nếu (is_colored (C_NORM))
         restore_default_color ();
       put_indicator (&color_indicator[C_LEFT]);
       put_indicator (ind);
       put_indicator (&color_indicator[C_RIGHT]);
     }
 
-  return ind != NULL;
+  trả_về ind != NULL;
 }
 
 /* Returns color indicator or NULL if none.  */
@@ -4987,14 +4987,14 @@ get_color_indicator (const struct fileinfo *f, bool symlink_target)
 
   char const *name;
   mode_t mode;
-  int linkok;
-  if (symlink_target)
+  số_nguyên linkok;
+  nếu (symlink_target)
     {
       name = f->linkname;
       mode = f->linkmode;
       linkok = f->linkok ? 0 : -1;
     }
-  else
+  không_thì
     {
       name = f->name;
       mode = file_or_link_mode (f);
@@ -5003,9 +5003,9 @@ get_color_indicator (const struct fileinfo *f, bool symlink_target)
 
   /* Is this a nonexistent file?  If so, linkok == -1.  */
 
-  if (linkok == -1 && is_colored (C_MISSING))
+  nếu (linkok == -1 && is_colored (C_MISSING))
     type = C_MISSING;
-  else if (!f->stat_ok)
+  không_thì nếu (!f->stat_ok)
     {
       static enum indicator_no const filetype_indicator[] =
         {
@@ -5015,48 +5015,48 @@ get_color_indicator (const struct fileinfo *f, bool symlink_target)
       static_assert (countof (filetype_indicator) == filetype_cardinality);
       type = filetype_indicator[f->filetype];
     }
-  else
+  không_thì
     {
-      if (S_ISREG (mode))
+      nếu (S_ISREG (mode))
         {
           type = C_FILE;
 
-          if ((mode & S_ISUID) != 0 && is_colored (C_SETUID))
+          nếu ((mode & S_ISUID) != 0 && is_colored (C_SETUID))
             type = C_SETUID;
-          else if ((mode & S_ISGID) != 0 && is_colored (C_SETGID))
+          không_thì nếu ((mode & S_ISGID) != 0 && is_colored (C_SETGID))
             type = C_SETGID;
-          else if (f->has_capability)
+          không_thì nếu (f->has_capability)
             type = C_CAP;
-          else if ((mode & S_IXUGO) != 0 && is_colored (C_EXEC))
+          không_thì nếu ((mode & S_IXUGO) != 0 && is_colored (C_EXEC))
             type = C_EXEC;
-          else if ((1 < f->stat.st_nlink) && is_colored (C_MULTIHARDLINK))
+          không_thì nếu ((1 < f->stat.st_nlink) && is_colored (C_MULTIHARDLINK))
             type = C_MULTIHARDLINK;
         }
-      else if (S_ISDIR (mode))
+      không_thì nếu (S_ISDIR (mode))
         {
           type = C_DIR;
 
-          if ((mode & S_ISVTX) && (mode & S_IWOTH)
+          nếu ((mode & S_ISVTX) && (mode & S_IWOTH)
               && is_colored (C_STICKY_OTHER_WRITABLE))
             type = C_STICKY_OTHER_WRITABLE;
-          else if ((mode & S_IWOTH) != 0 && is_colored (C_OTHER_WRITABLE))
+          không_thì nếu ((mode & S_IWOTH) != 0 && is_colored (C_OTHER_WRITABLE))
             type = C_OTHER_WRITABLE;
-          else if ((mode & S_ISVTX) != 0 && is_colored (C_STICKY))
+          không_thì nếu ((mode & S_ISVTX) != 0 && is_colored (C_STICKY))
             type = C_STICKY;
         }
-      else if (S_ISLNK (mode))
+      không_thì nếu (S_ISLNK (mode))
         type = C_LINK;
-      else if (S_ISFIFO (mode))
+      không_thì nếu (S_ISFIFO (mode))
         type = C_FIFO;
-      else if (S_ISSOCK (mode))
+      không_thì nếu (S_ISSOCK (mode))
         type = C_SOCK;
-      else if (S_ISBLK (mode))
+      không_thì nếu (S_ISBLK (mode))
         type = C_BLK;
-      else if (S_ISCHR (mode))
+      không_thì nếu (S_ISCHR (mode))
         type = C_CHR;
-      else if (S_ISDOOR (mode))
+      không_thì nếu (S_ISDOOR (mode))
         type = C_DOOR;
-      else
+      không_thì
         {
           /* Classify a file of some other type as C_ORPHAN.  */
           type = C_ORPHAN;
@@ -5065,25 +5065,25 @@ get_color_indicator (const struct fileinfo *f, bool symlink_target)
 
   /* Check the file's suffix only if still classified as C_FILE.  */
   ext = NULL;
-  if (type == C_FILE)
+  nếu (type == C_FILE)
     {
       /* Test if NAME has a recognized suffix.  */
 
       len = strlen (name);
       name += len;		/* Pointer to final \0.  */
-      for (ext = color_ext_list; ext != NULL; ext = ext->next)
+      cho (ext = color_ext_list; ext != NULL; ext = ext->next)
         {
-          if (ext->ext.len <= len)
+          nếu (ext->ext.len <= len)
             {
-              if (ext->exact_match)
+              nếu (ext->exact_match)
                 {
-                  if (STREQ_LEN (name - ext->ext.len, ext->ext.string,
+                  nếu (STREQ_LEN (name - ext->ext.len, ext->ext.string,
                                  ext->ext.len))
                     break;
                 }
-              else
+              không_thì
                 {
-                  if (c_strncasecmp (name - ext->ext.len, ext->ext.string,
+                  nếu (c_strncasecmp (name - ext->ext.len, ext->ext.string,
                                      ext->ext.len) == 0)
                     break;
                 }
@@ -5092,16 +5092,16 @@ get_color_indicator (const struct fileinfo *f, bool symlink_target)
     }
 
   /* Adjust the color for orphaned symlinks.  */
-  if (type == C_LINK && !linkok)
+  nếu (type == C_LINK && !linkok)
     {
-      if (color_symlink_as_referent || is_colored (C_ORPHAN))
+      nếu (color_symlink_as_referent || is_colored (C_ORPHAN))
         type = C_ORPHAN;
     }
 
   const struct bin_str *const s
     = ext ? &(ext->seq) : &color_indicator[type];
 
-  return s->string ? s : NULL;
+  trả_về s->string ? s : NULL;
 }
 
 /* Output a color indicator (which may contain nulls).
@@ -5110,7 +5110,7 @@ get_color_indicator (const struct fileinfo *f, bool symlink_target)
 static void
 put_indicator (const struct bin_str *ind)
 {
-  if (! used_color)
+  nếu (! used_color)
     {
       used_color = true;
 
@@ -5118,7 +5118,7 @@ put_indicator (const struct bin_str *ind)
          for signals, so that the colors can be restored to the
          default state if "ls" is suspended or interrupted.  */
 
-      if (0 <= tcgetpgrp (STDOUT_FILENO))
+      nếu (0 <= tcgetpgrp (STDOUT_FILENO))
         signal_init ();
 
       prep_non_filename_text ();
@@ -5133,12 +5133,12 @@ length_of_file_name_and_frills (const struct fileinfo *f)
   size_t len = 0;
   char buf[MAX (LONGEST_HUMAN_READABLE + 1, INT_BUFSIZE_BOUND (uintmax_t))];
 
-  if (print_inode)
+  nếu (print_inode)
     len += 1 + (format == with_commas
                 ? strlen (umaxtostr (f->stat.st_ino, buf))
                 : inode_number_width);
 
-  if (print_block_size)
+  nếu (print_block_size)
     len += 1 + (format == with_commas
                 ? strlen (! f->stat_ok ? "?"
                           : human_readable (STP_NBLOCKS (&f->stat), buf,
@@ -5146,18 +5146,18 @@ length_of_file_name_and_frills (const struct fileinfo *f)
                                             output_block_size))
                 : block_size_width);
 
-  if (print_scontext)
+  nếu (print_scontext)
     len += 1 + (format == with_commas ? strlen (f->scontext) : scontext_width);
 
   len += fileinfo_name_width (f);
 
-  if (indicator_style != none)
+  nếu (indicator_style != none)
     {
       char c = get_type_indicator (f->stat_ok, f->stat.st_mode, f->filetype);
       len += (c != 0);
     }
 
-  return len;
+  trả_về len;
 }
 
 static void
@@ -5170,21 +5170,21 @@ print_many_per_line (void)
      for a short column on the right.  */
   idx_t rows = cwd_n_used / cols + (cwd_n_used % cols != 0);
 
-  for (idx_t row = 0; row < rows; row++)
+  cho (idx_t row = 0; row < rows; row++)
     {
       size_t col = 0;
       idx_t filesno = row;
       size_t pos = 0;
 
       /* Print the next row.  */
-      while (true)
+      trong_khi (true)
         {
           struct fileinfo const *f = sorted_file[filesno];
           size_t name_length = length_of_file_name_and_frills (f);
           size_t max_name_length = line_fmt->col_arr[col++];
           print_file_name_and_frills (f, pos);
 
-          if (cwd_n_used - rows <= filesno)
+          nếu (cwd_n_used - rows <= filesno)
             break;
           filesno += rows;
 
@@ -5209,16 +5209,16 @@ print_horizontal (void)
   print_file_name_and_frills (f, 0);
 
   /* Now the rest.  */
-  for (idx_t filesno = 1; filesno < cwd_n_used; filesno++)
+  cho (idx_t filesno = 1; filesno < cwd_n_used; filesno++)
     {
       idx_t col = filesno % cols;
 
-      if (col == 0)
+      nếu (col == 0)
         {
           putchar (eolbyte);
           pos = 0;
         }
-      else
+      không_thì
         {
           indent (pos + name_length, pos + max_name_length);
           pos += max_name_length;
@@ -5240,17 +5240,17 @@ print_with_separator (char sep)
 {
   size_t pos = 0;
 
-  for (idx_t filesno = 0; filesno < cwd_n_used; filesno++)
+  cho (idx_t filesno = 0; filesno < cwd_n_used; filesno++)
     {
       struct fileinfo const *f = sorted_file[filesno];
       size_t len = line_length ? length_of_file_name_and_frills (f) : 0;
 
-      if (filesno != 0)
+      nếu (filesno != 0)
         {
           char separator;
           size_t next_pos = 2 + (sep == ',' && filesno < cwd_n_used - 1);
 
-          if (! line_length
+          nếu (! line_length
               || (! ckd_add (&next_pos, next_pos, pos)
                   && ! ckd_add (&next_pos, next_pos, len)
                   && next_pos <= line_length))
@@ -5258,7 +5258,7 @@ print_with_separator (char sep)
               pos += 2;
               separator = ' ';
             }
-          else
+          không_thì
             {
               pos = 0;
               separator = eolbyte;
@@ -5280,14 +5280,14 @@ print_with_separator (char sep)
 static void
 indent (size_t from, size_t to)
 {
-  while (from < to)
+  trong_khi (from < to)
     {
-      if (tabsize != 0 && to / tabsize > (from + 1) / tabsize)
+      nếu (tabsize != 0 && to / tabsize > (from + 1) / tabsize)
         {
           putchar ('\t');
           from += tabsize - from % tabsize;
         }
-      else
+      không_thì
         {
           putchar (' ');
           from++;
@@ -5305,15 +5305,15 @@ attach (char *dest, char const *dirname, char const *name)
   char const *dirnamep = dirname;
 
   /* Copy dirname if it is not ".".  */
-  if (dirname[0] != '.' || dirname[1] != 0)
+  nếu (dirname[0] != '.' || dirname[1] != 0)
     {
-      while (*dirnamep)
+      trong_khi (*dirnamep)
         *dest++ = *dirnamep++;
       /* Add '/' if 'dirname' doesn't already end with it.  */
-      if (dirnamep > dirname && dirnamep[-1] != '/')
+      nếu (dirnamep > dirname && dirnamep[-1] != '/')
         *dest++ = '/';
     }
-  while (*name)
+  trong_khi (*name)
     *dest++ = *name++;
   *dest = 0;
 }
@@ -5328,7 +5328,7 @@ init_column_info (idx_t max_cols)
   /* Currently allocated columns in column_info.  */
   static idx_t column_info_alloc;
 
-  if (column_info_alloc < max_cols)
+  nếu (column_info_alloc < max_cols)
     {
       idx_t old_column_info_alloc = column_info_alloc;
       column_info = xpalloc (column_info, &column_info_alloc,
@@ -5340,24 +5340,24 @@ init_column_info (idx_t max_cols)
          allocate the part of the triangle that we've already
          allocated.  Check for address arithmetic overflow.  */
       idx_t column_info_growth = column_info_alloc - old_column_info_alloc, s;
-      if (ckd_add (&s, old_column_info_alloc + 1, column_info_alloc)
+      nếu (ckd_add (&s, old_column_info_alloc + 1, column_info_alloc)
           || ckd_mul (&s, s, column_info_growth))
         xalloc_die ();
       size_t *p = xinmalloc (s >> 1, sizeof *p);
 
       /* Grow the triangle by parceling out the cells just allocated.  */
-      for (idx_t i = old_column_info_alloc; i < column_info_alloc; i++)
+      cho (idx_t i = old_column_info_alloc; i < column_info_alloc; i++)
         {
           column_info[i].col_arr = p;
           p += i + 1;
         }
     }
 
-  for (idx_t i = 0; i < max_cols; ++i)
+  cho (idx_t i = 0; i < max_cols; ++i)
     {
       column_info[i].valid_len = true;
       column_info[i].line_len = i * MIN_COLUMN_WIDTH + 1;
-      for (idx_t j = 0; j < i; ++j)
+      cho (idx_t j = 0; j < i; ++j)
         column_info[i].col_arr[j] = MIN_COLUMN_WIDTH;
       column_info[i].col_arr[i] = 1;
     }
@@ -5377,21 +5377,21 @@ calculate_columns (bool by_columns)
   init_column_info (max_cols);
 
   /* Compute the maximum number of possible columns.  */
-  for (idx_t filesno = 0; filesno < cwd_n_used; ++filesno)
+  cho (idx_t filesno = 0; filesno < cwd_n_used; ++filesno)
     {
       struct fileinfo const *f = sorted_file[filesno];
       size_t name_length = length_of_file_name_and_frills (f);
 
-      for (idx_t i = 0; i < max_cols; ++i)
+      cho (idx_t i = 0; i < max_cols; ++i)
         {
-          if (column_info[i].valid_len)
+          nếu (column_info[i].valid_len)
             {
               idx_t idx = (by_columns
                            ? filesno / ((cwd_n_used + i) / (i + 1))
                            : filesno % (i + 1));
               size_t real_length = name_length + (idx == i ? 0 : 2);
 
-              if (column_info[i].col_arr[idx] < real_length)
+              nếu (column_info[i].col_arr[idx] < real_length)
                 {
                   column_info[i].line_len += (real_length
                                               - column_info[i].col_arr[idx]);
@@ -5405,26 +5405,26 @@ calculate_columns (bool by_columns)
 
   /* Find maximum allowed columns.  */
   idx_t cols;
-  for (cols = max_cols; 1 < cols; --cols)
+  cho (cols = max_cols; 1 < cols; --cols)
     {
-      if (column_info[cols - 1].valid_len)
+      nếu (column_info[cols - 1].valid_len)
         break;
     }
 
-  return cols;
+  trả_về cols;
 }
 
 void
-usage (int status)
+usage (số_nguyên status)
 {
-  if (status != EXIT_SUCCESS)
+  nếu (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  không_thì
     {
       printf (_("Usage: %s [OPTION]... [FILE]...\n"), program_name);
       fputs (_("\
 List information about the FILEs (the current directory by default).\n\
-Sort entries alphabetically if none of -cftuvSUX nor --sort is specified.\n\
+Sort entries alphabetically nếu none of -cftuvSUX nor --sort is specified.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
@@ -5443,7 +5443,7 @@ Sort entries alphabetically if none of -cftuvSUX nor --sort is specified.\n\
 "));
       oputs (_("\
   -b, --escape\n\
-         print C-style escapes for nongraphic characters\n\
+         print C-style escapes cho nongraphic characters\n\
 "));
       oputs (_("\
       --block-size=SIZE\n\
@@ -5475,7 +5475,7 @@ Sort entries alphabetically if none of -cftuvSUX nor --sort is specified.\n\
 "));
       oputs (_("\
   -D, --dired\n\
-         generate output designed for Emacs' dired mode\n\
+         generate output designed cho Emacs' dired mode\n\
 "));
       oputs (_("\
   -f\n\
@@ -5550,7 +5550,7 @@ Sort entries alphabetically if none of -cftuvSUX nor --sort is specified.\n\
 "));
       oputs (_("\
   -k, --kibibytes\n\
-         default to 1024-byte blocks for file system usage;\n\
+         default to 1024-byte blocks cho file system usage;\n\
          used only with -s and per directory totals\n\
 "));
       oputs (_("\
@@ -5559,9 +5559,9 @@ Sort entries alphabetically if none of -cftuvSUX nor --sort is specified.\n\
 "));
       oputs (_("\
   -L, --dereference\n\
-         when showing file information for a symbolic link,\n\
-         show information for the file the link references\n\
-         rather than for the link itself\n\
+         when showing file information cho a symbolic link,\n\
+         show information cho the file the link references\n\
+         rather than cho the link itself\n\
 "));
       oputs (_("\
   -m\n\
@@ -5598,14 +5598,14 @@ Sort entries alphabetically if none of -cftuvSUX nor --sort is specified.\n\
 "));
       oputs (_("\
       --quoting-style=WORD\n\
-         use quoting style WORD for entry names:\n\
+         use quoting style WORD cho entry names:\n\
            literal, locale, shell, shell-always,\n\
            shell-escape, shell-escape-always, c, escape\n\
          (overrides QUOTING_STYLE environment variable)\n\
 "));
       oputs (_("\
   -r, --reverse\n\
-         reverse order while sorting\n\
+         reverse order trong_khi sorting\n\
 "));
       oputs (_("\
   -R, --recursive\n\
@@ -5710,9 +5710,9 @@ variable can change the settings.  Use the dircolors(1) command to set it.\n\
       fputs (_("\
 \n\
 Exit status:\n\
- 0  if OK,\n\
- 1  if minor problems (e.g., cannot access subdirectory),\n\
- 2  if serious trouble (e.g., cannot access command-line argument).\n\
+ 0  nếu OK,\n\
+ 1  nếu minor problems (e.g., cannot access subdirectory),\n\
+ 2  nếu serious trouble (e.g., cannot access command-line argument).\n\
 "), stdout);
       emit_ancillary_info (PROGRAM_NAME);
     }

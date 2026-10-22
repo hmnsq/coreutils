@@ -26,7 +26,7 @@
 #include "temp-stream.h"
 
 
-#if defined __MSDOS__ || defined _WIN32
+#nếu defined __MSDOS__ || defined _WIN32
 /* Define this to non-zero on systems for which the regular mechanism
    (of unlinking an open file and expecting to be able to write, seek
    back to the beginning, then reread it) doesn't work.  E.g., on Windows
@@ -34,7 +34,7 @@
 # define DONT_UNLINK_WHILE_OPEN 1
 #endif
 
-#if DONT_UNLINK_WHILE_OPEN
+#nếu DONT_UNLINK_WHILE_OPEN
 
 /* FIXME-someday: remove all of this DONT_UNLINK_WHILE_OPEN junk.
    Using atexit like this is wrong, since it can fail
@@ -55,7 +55,7 @@ unlink_tempfile (void)
 static void
 record_or_unlink_tempfile (char const *fn, FILE *fp)
 {
-  if (!file_to_remove)
+  nếu (!file_to_remove)
     {
       file_to_remove = fn;
       fp_to_close = fp;
@@ -63,7 +63,7 @@ record_or_unlink_tempfile (char const *fn, FILE *fp)
     }
 }
 
-#else
+#không_thì
 
 static void
 record_or_unlink_tempfile (char const *fn, MAYBE_UNUSED FILE *fp)
@@ -85,27 +85,27 @@ temp_stream (FILE **fp, char **file_name)
 {
   static char *tempfile = NULL;
   static FILE *tmp_fp;
-  if (tempfile == NULL)
+  nếu (tempfile == NULL)
     {
       char *tempbuf = NULL;
       size_t tempbuf_len = 128;
 
-      while (true)
+      trong_khi (true)
         {
-          if (! (tempbuf = realloc (tempbuf, tempbuf_len)))
+          nếu (! (tempbuf = realloc (tempbuf, tempbuf_len)))
             {
               error (0, errno, _("failed to make temporary file name"));
-              return false;
+              trả_về false;
             }
 
-          if (path_search (tempbuf, tempbuf_len, NULL, "cutmp", true) == 0)
+          nếu (path_search (tempbuf, tempbuf_len, NULL, "cutmp", true) == 0)
             break;
 
-          if (errno != EINVAL || PATH_MAX / 2 < tempbuf_len)
+          nếu (errno != EINVAL || PATH_MAX / 2 < tempbuf_len)
             {
               error (0, errno == EINVAL ? ENAMETOOLONG : errno,
                      _("failed to make temporary file name"));
-              return false;
+              trả_về false;
             }
 
           tempbuf_len *= 2;
@@ -122,8 +122,8 @@ temp_stream (FILE **fp, char **file_name)
          FIXME: clean up upon fatal signal.  Don't block them, in case
          $TMPDIR is a remote file system.  */
 
-      int fd = mkstemp (tempfile);
-      if (fd < 0)
+      số_nguyên fd = mkstemp (tempfile);
+      nếu (fd < 0)
         {
           error (0, errno, _("failed to create temporary file %s"),
                  quoteaf (tempfile));
@@ -131,7 +131,7 @@ temp_stream (FILE **fp, char **file_name)
         }
 
       tmp_fp = fdopen (fd, (O_BINARY ? "w+b" : "w+"));
-      if (! tmp_fp)
+      nếu (! tmp_fp)
         {
           error (0, errno, _("failed to open %s for writing"),
                  quoteaf (tempfile));
@@ -140,25 +140,25 @@ temp_stream (FILE **fp, char **file_name)
         Reset:
           free (tempfile);
           tempfile = NULL;
-          return false;
+          trả_về false;
         }
 
       record_or_unlink_tempfile (tempfile, tmp_fp);
     }
-  else
+  không_thì
     {
       clearerr (tmp_fp);
-      if (fseeko (tmp_fp, 0, SEEK_SET) < 0
+      nếu (fseeko (tmp_fp, 0, SEEK_SET) < 0
           || ftruncate (fileno (tmp_fp), 0) < 0)
         {
           error (0, errno, _("failed to rewind stream for %s"),
                  quoteaf (tempfile));
-          return false;
+          trả_về false;
         }
     }
 
   *fp = tmp_fp;
-  if (file_name)
+  nếu (file_name)
     *file_name = tempfile;
-  return true;
+  trả_về true;
 }

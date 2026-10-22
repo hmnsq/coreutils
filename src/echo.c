@@ -34,7 +34,7 @@ enum { DEFAULT_ECHO_TO_XPG = false };
 #endif
 
 void
-usage (int status)
+usage (số_nguyên status)
 {
   /* STATUS should always be EXIT_SUCCESS (unlike in most other
      utilities which would call emit_try_help otherwise).  */
@@ -80,7 +80,7 @@ If -e is in effect, the following sequences are recognized:\n\
   \\e      escape\n\
   \\f      form feed\n\
   \\n      new line\n\
-  \\r      carriage return\n\
+  \\r      carriage trả_về\n\
   \\t      horizontal tab\n\
   \\v      vertical tab\n\
 "), stdout);
@@ -98,18 +98,18 @@ as it avoids problems when outputting option-like strings.\n\
 }
 
 /* Convert C from hexadecimal character to integer.  */
-static int
+static số_nguyên
 hextobin (unsigned char c)
 {
   switch (c)
     {
-    default: return c - '0';
-    case 'a': case 'A': return 10;
-    case 'b': case 'B': return 11;
-    case 'c': case 'C': return 12;
-    case 'd': case 'D': return 13;
-    case 'e': case 'E': return 14;
-    case 'f': case 'F': return 15;
+    default: trả_về c - '0';
+    case 'a': case 'A': trả_về 10;
+    case 'b': case 'B': trả_về 11;
+    case 'c': case 'C': trả_về 12;
+    case 'd': case 'D': trả_về 13;
+    case 'e': case 'E': trả_về 14;
+    case 'f': case 'F': trả_về 15;
     }
 }
 
@@ -117,8 +117,8 @@ hextobin (unsigned char c)
    '-n', then don't print a trailing newline.  We also support the
    echo syntax from Version 9 unix systems. */
 
-int
-main (int argc, char **argv)
+số_nguyên
+main (số_nguyên argc, char **argv)
 {
   bool display_return = true;
   bool posixly_correct = !!getenv ("POSIXLY_CORRECT");
@@ -141,24 +141,24 @@ main (int argc, char **argv)
 
   /* We directly parse options, rather than use parse_long_options, in
      order to avoid accepting abbreviations.  */
-  if (allow_options && argc == 2)
+  nếu (allow_options && argc == 2)
     {
-      if (streq (argv[1], "--help"))
+      nếu (streq (argv[1], "--help"))
         usage (EXIT_SUCCESS);
 
-      if (streq (argv[1], "--version"))
+      nếu (streq (argv[1], "--version"))
         {
           version_etc (stdout, PROGRAM_NAME, PACKAGE_NAME, Version, AUTHORS,
                        (char *) NULL);
-          return EXIT_SUCCESS;
+          trả_về EXIT_SUCCESS;
         }
     }
 
   --argc;
   ++argv;
 
-  if (allow_options)
-    while (argc > 0 && *argv[0] == '-')
+  nếu (allow_options)
+    trong_khi (argc > 0 && *argv[0] == '-')
       {
         char const *temp = argv[0] + 1;
         size_t i;
@@ -167,7 +167,7 @@ main (int argc, char **argv)
            all of the options specified are actually valid.  Otherwise, the
            string should just be echoed.  */
 
-        for (i = 0; temp[i]; i++)
+        cho (i = 0; temp[i]; i++)
           switch (temp[i])
             {
             case 'e': case 'E': case 'n':
@@ -176,12 +176,12 @@ main (int argc, char **argv)
               goto just_echo;
             }
 
-        if (i == 0)
+        nếu (i == 0)
           goto just_echo;
 
         /* All of the options in TEMP are valid options to ECHO.
            Handle them. */
-        while (*temp)
+        trong_khi (*temp)
           switch (*temp++)
             {
             case 'e':
@@ -203,22 +203,22 @@ main (int argc, char **argv)
 
 just_echo:
 
-  if (do_v9 || posixly_correct)
+  nếu (do_v9 || posixly_correct)
     {
-      while (argc > 0)
+      trong_khi (argc > 0)
         {
           char const *s = argv[0];
           unsigned char c;
 
-          while ((c = *s++))
+          trong_khi ((c = *s++))
             {
-              if (c == '\\' && *s)
+              nếu (c == '\\' && *s)
                 {
                   switch (c = *s++)
                     {
                     case 'a': c = '\a'; break;
                     case 'b': c = '\b'; break;
-                    case 'c': return EXIT_SUCCESS;
+                    case 'c': trả_về EXIT_SUCCESS;
                     case 'e': c = '\x1B'; break;
                     case 'f': c = '\f'; break;
                     case 'n': c = '\n'; break;
@@ -228,12 +228,12 @@ just_echo:
                     case 'x':
                       {
                         unsigned char ch = *s;
-                        if (! c_isxdigit (ch))
+                        nếu (! c_isxdigit (ch))
                           goto not_an_escape;
                         s++;
                         c = hextobin (ch);
                         ch = *s;
-                        if (c_isxdigit (ch))
+                        nếu (c_isxdigit (ch))
                           {
                             s++;
                             c = c * 16 + hextobin (ch);
@@ -242,16 +242,16 @@ just_echo:
                       break;
                     case '0':
                       c = 0;
-                      if (! ('0' <= *s && *s <= '7'))
+                      nếu (! ('0' <= *s && *s <= '7'))
                         break;
                       c = *s++;
                       FALLTHROUGH;
                     case '1': case '2': case '3':
                     case '4': case '5': case '6': case '7':
                       c -= '0';
-                      if ('0' <= *s && *s <= '7')
+                      nếu ('0' <= *s && *s <= '7')
                         c = c * 8 + (*s++ - '0');
-                      if ('0' <= *s && *s <= '7')
+                      nếu ('0' <= *s && *s <= '7')
                         c = c * 8 + (*s++ - '0');
                       break;
                     case '\\': break;
@@ -264,23 +264,23 @@ just_echo:
             }
           argc--;
           argv++;
-          if (argc > 0)
+          nếu (argc > 0)
             putchar (' ');
         }
     }
-  else
+  không_thì
     {
-      while (argc > 0)
+      trong_khi (argc > 0)
         {
           fputs (argv[0], stdout);
           argc--;
           argv++;
-          if (argc > 0)
+          nếu (argc > 0)
             putchar (' ');
         }
     }
 
-  if (display_return)
+  nếu (display_return)
     putchar ('\n');
-  return EXIT_SUCCESS;
+  trả_về EXIT_SUCCESS;
 }

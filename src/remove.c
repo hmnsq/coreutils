@@ -43,7 +43,7 @@ enum Prompt_action
 
 /* D_TYPE(D) is the type of directory entry D if known, DT_UNKNOWN
    otherwise.  */
-#if ! HAVE_STRUCT_DIRENT_D_TYPE
+#nếu ! HAVE_STRUCT_DIRENT_D_TYPE
 /* Any int values will do here, so long as they're distinct.
    Undef any existing macros out of the way.  */
 # undef DT_UNKNOWN
@@ -55,26 +55,26 @@ enum Prompt_action
 #endif
 
 /* Like fstatat, but cache on POSIX-compatible systems.  */
-static int
-cache_fstatat (int fd, char const *file, struct stat *st, int flag)
+static số_nguyên
+cache_fstatat (số_nguyên fd, char const *file, struct stat *st, số_nguyên flag)
 {
-#if HAVE_STRUCT_STAT_ST_ATIM_TV_NSEC
+#nếu HAVE_STRUCT_STAT_ST_ATIM_TV_NSEC
   /* If ST->st_atim.tv_nsec is -1, the status has not been gotten yet.
      If less than -1, fstatat failed with errno == ST->st_ino.
      Otherwise, the status has already been gotten, so return 0.  */
-  if (0 <= st->st_atim.tv_nsec)
-    return 0;
-  if (st->st_atim.tv_nsec == -1)
+  nếu (0 <= st->st_atim.tv_nsec)
+    trả_về 0;
+  nếu (st->st_atim.tv_nsec == -1)
     {
-      if (fstatat (fd, file, st, flag) == 0)
-        return 0;
+      nếu (fstatat (fd, file, st, flag) == 0)
+        trả_về 0;
       st->st_atim.tv_nsec = -2;
       st->st_ino = errno;
     }
   errno = st->st_ino;
-  return -1;
-#else
-  return fstatat (fd, file, st, flag);
+  trả_về -1;
+#không_thì
+  trả_về fstatat (fd, file, st, flag);
 #endif
 }
 
@@ -82,27 +82,27 @@ cache_fstatat (int fd, char const *file, struct stat *st, int flag)
 static inline struct stat *
 cache_stat_init (struct stat *st)
 {
-#if HAVE_STRUCT_STAT_ST_ATIM_TV_NSEC
+#nếu HAVE_STRUCT_STAT_ST_ATIM_TV_NSEC
   st->st_atim.tv_nsec = -1;
 #endif
-  return st;
+  trả_về st;
 }
 
 /* Return 1 if FILE is an unwritable non-symlink,
    0 if it is writable or some other type of file,
    -1 and set errno if there is some problem in determining the answer.
    Set *BUF to the file status.  */
-static int
-write_protected_non_symlink (int fd_cwd,
+static số_nguyên
+write_protected_non_symlink (số_nguyên fd_cwd,
                              char const *file,
                              struct stat *buf)
 {
-  if (can_write_any_file ())
-    return 0;
-  if (cache_fstatat (fd_cwd, file, buf, AT_SYMLINK_NOFOLLOW) != 0)
-    return -1;
-  if (S_ISLNK (buf->st_mode))
-    return 0;
+  nếu (can_write_any_file ())
+    trả_về 0;
+  nếu (cache_fstatat (fd_cwd, file, buf, AT_SYMLINK_NOFOLLOW) != 0)
+    trả_về -1;
+  nếu (S_ISLNK (buf->st_mode))
+    trả_về 0;
   /* Here, we know FILE is not a symbolic link.  */
 
   /* In order to be reentrant -- i.e., to avoid changing the working
@@ -152,10 +152,10 @@ write_protected_non_symlink (int fd_cwd,
         mess up with long file names). */
 
   {
-    if (faccessat (fd_cwd, file, W_OK, AT_EACCESS) == 0)
-      return 0;
+    nếu (faccessat (fd_cwd, file, W_OK, AT_EACCESS) == 0)
+      trả_về 0;
 
-    return errno == EACCES ? 1 : -1;
+    trả_về errno == EACCES ? 1 : -1;
   }
 }
 
@@ -164,12 +164,12 @@ write_protected_non_symlink (int fd_cwd,
    and a positive error number if there was trouble determining the status,
    e.g., it is not a directory, or permissions problems, or I/O errors.
    Use *DIR_STATUS as a cache for the status.  */
-static int
-get_dir_status (FTS const *fts, FTSENT const *ent, int *dir_status)
+static số_nguyên
+get_dir_status (FTS const *fts, FTSENT const *ent, số_nguyên *dir_status)
 {
-  if (*dir_status == DS_UNKNOWN)
+  nếu (*dir_status == DS_UNKNOWN)
     *dir_status = directory_status (fts->fts_cwd_fd, ent->fts_accpath);
-  return *dir_status;
+  trả_về *dir_status;
 }
 
 /* Prompt whether to remove FILENAME, if required via a combination of
@@ -188,29 +188,29 @@ get_dir_status (FTS const *fts, FTSENT const *ent, int *dir_status)
 static enum RM_status
 prompt (FTS const *fts, FTSENT const *ent, bool is_dir,
         struct rm_options const *x, enum Prompt_action mode,
-        int *dir_status)
+        số_nguyên *dir_status)
 {
-  int fd_cwd = fts->fts_cwd_fd;
+  số_nguyên fd_cwd = fts->fts_cwd_fd;
   char const *full_name = ent->fts_path;
   char const *filename = ent->fts_accpath;
   struct stat st;
   struct stat *sbuf = &st;
   cache_stat_init (sbuf);
 
-  int dirent_type = is_dir ? DT_DIR : DT_UNKNOWN;
-  int write_protected = 0;
+  số_nguyên dirent_type = is_dir ? DT_DIR : DT_UNKNOWN;
+  số_nguyên write_protected = 0;
 
   /* When nonzero, this indicates that we failed to remove a child entry,
      either because the user declined an interactive prompt, or due to
      some other failure, like permissions.  */
-  if (ent->fts_number)
-    return RM_USER_DECLINED;
+  nếu (ent->fts_number)
+    trả_về RM_USER_DECLINED;
 
-  if (x->interactive == RMI_NEVER)
-    return RM_OK;
+  nếu (x->interactive == RMI_NEVER)
+    trả_về RM_OK;
 
-  int wp_errno = 0;
-  if (!x->ignore_missing_files
+  số_nguyên wp_errno = 0;
+  nếu (!x->ignore_missing_files
       && (x->interactive == RMI_ALWAYS || x->stdin_tty)
       && dirent_type != DT_LNK)
     {
@@ -218,19 +218,19 @@ prompt (FTS const *fts, FTSENT const *ent, bool is_dir,
       wp_errno = errno;
     }
 
-  if (write_protected || x->interactive == RMI_ALWAYS)
+  nếu (write_protected || x->interactive == RMI_ALWAYS)
     {
-      if (0 <= write_protected && dirent_type == DT_UNKNOWN)
+      nếu (0 <= write_protected && dirent_type == DT_UNKNOWN)
         {
-          if (cache_fstatat (fd_cwd, filename, sbuf, AT_SYMLINK_NOFOLLOW) == 0)
+          nếu (cache_fstatat (fd_cwd, filename, sbuf, AT_SYMLINK_NOFOLLOW) == 0)
             {
-              if (S_ISLNK (sbuf->st_mode))
+              nếu (S_ISLNK (sbuf->st_mode))
                 dirent_type = DT_LNK;
-              else if (S_ISDIR (sbuf->st_mode))
+              không_thì nếu (S_ISDIR (sbuf->st_mode))
                 dirent_type = DT_DIR;
               /* Otherwise it doesn't matter, so leave it DT_UNKNOWN.  */
             }
-          else
+          không_thì
             {
               /* This happens, e.g., with 'rm '''.  */
               write_protected = -1;
@@ -238,20 +238,20 @@ prompt (FTS const *fts, FTSENT const *ent, bool is_dir,
             }
         }
 
-      if (0 <= write_protected)
+      nếu (0 <= write_protected)
         switch (dirent_type)
           {
           case DT_LNK:
             /* Using permissions doesn't make sense for symlinks.  */
-            if (x->interactive != RMI_ALWAYS)
-              return RM_OK;
+            nếu (x->interactive != RMI_ALWAYS)
+              trả_về RM_OK;
             break;
 
           case DT_DIR:
              /* Unless we're either deleting directories or deleting
                 recursively, we want to raise an EISDIR error rather than
                 prompting the user  */
-            if ( ! (x->recursive
+            nếu ( ! (x->recursive
                     || (x->remove_empty_directories
                         && get_dir_status (fts, ent, dir_status) != 0)))
               {
@@ -263,14 +263,14 @@ prompt (FTS const *fts, FTSENT const *ent, bool is_dir,
 
       char const *quoted_name = quoteaf (full_name);
 
-      if (write_protected < 0)
+      nếu (write_protected < 0)
         {
           error (0, wp_errno, _("cannot remove %s"), quoted_name);
-          return RM_ERROR;
+          trả_về RM_ERROR;
         }
 
       /* Issue the prompt.  */
-      if (dirent_type == DT_DIR
+      nếu (dirent_type == DT_DIR
           && mode == PA_DESCEND_INTO_DIR
           && get_dir_status (fts, ent, dir_status) == DS_NONEMPTY)
         fprintf (stderr,
@@ -278,12 +278,12 @@ prompt (FTS const *fts, FTSENT const *ent, bool is_dir,
                   ? _("%s: descend into write-protected directory %s? ")
                   : _("%s: descend into directory %s? ")),
                  program_name, quoted_name);
-      else if (0 < *dir_status)
+      không_thì nếu (0 < *dir_status)
         {
-          if ( ! (x->remove_empty_directories && *dir_status == EACCES))
+          nếu ( ! (x->remove_empty_directories && *dir_status == EACCES))
             {
               error (0, *dir_status, _("cannot remove %s"), quoted_name);
-              return RM_ERROR;
+              trả_về RM_ERROR;
             }
 
           /* The following code can lead to a successful deletion only with
@@ -291,19 +291,19 @@ prompt (FTS const *fts, FTSENT const *ent, bool is_dir,
              inaccessible directory. In the first prompt call for a directory,
              we'd normally ask whether to descend into it, but in this case
              (it's inaccessible), that is not possible, so don't prompt.  */
-          if (mode == PA_DESCEND_INTO_DIR)
-            return RM_OK;
+          nếu (mode == PA_DESCEND_INTO_DIR)
+            trả_về RM_OK;
 
           fprintf (stderr,
                _("%s: attempt removal of inaccessible directory %s? "),
                    program_name, quoted_name);
         }
-      else
+      không_thì
         {
-          if (cache_fstatat (fd_cwd, filename, sbuf, AT_SYMLINK_NOFOLLOW) != 0)
+          nếu (cache_fstatat (fd_cwd, filename, sbuf, AT_SYMLINK_NOFOLLOW) != 0)
             {
               error (0, errno, _("cannot remove %s"), quoted_name);
-              return RM_ERROR;
+              trả_về RM_ERROR;
             }
 
           fprintf (stderr,
@@ -318,16 +318,16 @@ prompt (FTS const *fts, FTSENT const *ent, bool is_dir,
                    program_name, file_type (sbuf), quoted_name);
         }
 
-      return yesno () ? RM_USER_ACCEPTED : RM_USER_DECLINED;
+      trả_về yesno () ? RM_USER_ACCEPTED : RM_USER_DECLINED;
     }
-  return RM_OK;
+  trả_về RM_OK;
 }
 
 /* When a function like unlink, rmdir, or fstatat fails with an errno
    value of ERRNUM, return true if the specified file system object
    is guaranteed not to exist;  otherwise, return false.  */
 static inline bool
-nonexistent_file_errno (int errnum)
+nonexistent_file_errno (số_nguyên errnum)
 {
   /* Do not include ELOOP here, since the specified file may indeed
      exist, but be (in)accessible only via too long a symlink chain.
@@ -347,17 +347,17 @@ nonexistent_file_errno (int errnum)
     case EINVAL:
     case ENOENT:
     case ENOTDIR:
-      return true;
+      trả_về true;
     default:
-      return false;
+      trả_về false;
     }
 }
 
 /* Encapsulate the test for whether the errno value, ERRNUM, is ignorable.  */
 static inline bool
-ignorable_missing (struct rm_options const *x, int errnum)
+ignorable_missing (struct rm_options const *x, số_nguyên errnum)
 {
-  return x->ignore_missing_files && nonexistent_file_errno (errnum);
+  trả_về x->ignore_missing_files && nonexistent_file_errno (errnum);
 }
 
 /* Tell fts not to traverse into the hierarchy at ENT.  */
@@ -375,10 +375,10 @@ fts_skip_tree (FTS *fts, FTSENT *ent)
 static void
 mark_ancestor_dirs (FTSENT *ent)
 {
-  for (FTSENT *p = ent->fts_parent; FTS_ROOTLEVEL <= p->fts_level;
+  cho (FTSENT *p = ent->fts_parent; FTS_ROOTLEVEL <= p->fts_level;
        p = p->fts_parent)
     {
-      if (p->fts_number)
+      nếu (p->fts_number)
         break;
       p->fts_number = 1;
     }
@@ -390,46 +390,46 @@ mark_ancestor_dirs (FTSENT *ent)
 static enum RM_status
 excise (FTS *fts, FTSENT *ent, struct rm_options const *x, bool is_dir)
 {
-  int flag = is_dir ? AT_REMOVEDIR : 0;
-  if (unlinkat (fts->fts_cwd_fd, ent->fts_accpath, flag) == 0)
+  số_nguyên flag = is_dir ? AT_REMOVEDIR : 0;
+  nếu (unlinkat (fts->fts_cwd_fd, ent->fts_accpath, flag) == 0)
     {
-      if (x->verbose)
+      nếu (x->verbose)
         {
           printf ((is_dir
                    ? _("removed directory %s\n")
                    : _("removed %s\n")), quoteaf (ent->fts_path));
         }
-      return RM_OK;
+      trả_về RM_OK;
     }
 
   /* The unlinkat from kernels like linux-2.6.32 reports EROFS even for
      nonexistent files.  When the file is indeed missing, map that to ENOENT,
      so that rm -f ignores it, as required.  Even without -f, this is useful
      because it makes rm print the more precise diagnostic.  */
-  if (errno == EROFS)
+  nếu (errno == EROFS)
     {
       struct stat st;
-      if ( ! (fstatat (fts->fts_cwd_fd, ent->fts_accpath, &st,
+      nếu ( ! (fstatat (fts->fts_cwd_fd, ent->fts_accpath, &st,
                        AT_SYMLINK_NOFOLLOW)
               && errno == ENOENT))
         errno = EROFS;
     }
 
-  if (ignorable_missing (x, errno))
-    return RM_OK;
+  nếu (ignorable_missing (x, errno))
+    trả_về RM_OK;
 
   /* When failing to rmdir an unreadable directory, we see errno values
      like EISDIR or ENOTDIR (or, on Solaris 10, EEXIST), but they would be
      meaningless in a diagnostic.  When that happens, use the earlier, more
      descriptive errno value.  */
-  if (ent->fts_info == FTS_DNR
+  nếu (ent->fts_info == FTS_DNR
       && (errno == ENOTEMPTY || errno == EISDIR || errno == ENOTDIR
           || errno == EEXIST)
       && ent->fts_errno != 0)
     errno = ent->fts_errno;
   error (0, errno, _("cannot remove %s"), quoteaf (ent->fts_path));
   mark_ancestor_dirs (ent);
-  return RM_ERROR;
+  trả_về RM_ERROR;
 }
 
 /* This function is called once for every file system object that fts
@@ -441,59 +441,59 @@ excise (FTS *fts, FTSENT *ent, struct rm_options const *x, bool is_dir)
 static enum RM_status
 rm_fts (FTS *fts, FTSENT *ent, struct rm_options const *x)
 {
-  int dir_status = DS_UNKNOWN;
+  số_nguyên dir_status = DS_UNKNOWN;
 
   switch (ent->fts_info)
     {
     case FTS_D:			/* preorder directory */
-      if (!x->recursive)
+      nếu (!x->recursive)
         {
           /* Not recursive, so skip contents, and fail now unless
              removing empty directories.  */
           fts_set (fts, ent, FTS_SKIP);
-          if (x->remove_empty_directories)
-            return RM_OK;
+          nếu (x->remove_empty_directories)
+            trả_về RM_OK;
           error (0, EISDIR, _("cannot remove %s"), quoteaf (ent->fts_path));
           ignore_value (fts_read (fts));
-          return RM_ERROR;
+          trả_về RM_ERROR;
         }
 
       /* Perform checks that can apply only for command-line arguments.  */
-      if (ent->fts_level == FTS_ROOTLEVEL)
+      nếu (ent->fts_level == FTS_ROOTLEVEL)
         {
           /* POSIX says:
              If the basename of a command line argument is "." or "..",
              diagnose it and do nothing more with that argument.  */
-          if (dot_or_dotdot (last_component (ent->fts_accpath)))
+          nếu (dot_or_dotdot (last_component (ent->fts_accpath)))
             {
               error (0, 0,
                      _("refusing to remove %s or %s directory: skipping %s"),
                      quoteaf_n (0, "."), quoteaf_n (1, ".."),
                      quoteaf_n (2, ent->fts_path));
               fts_skip_tree (fts, ent);
-              return RM_ERROR;
+              trả_về RM_ERROR;
             }
 
           /* POSIX also says:
              If a command line argument resolves to "/" (and --preserve-root
              is in effect -- default) diagnose and skip it.  */
-          if (ROOT_DEV_INO_CHECK (x->root_dev_ino, ent->fts_statp))
+          nếu (ROOT_DEV_INO_CHECK (x->root_dev_ino, ent->fts_statp))
             {
               ROOT_DEV_INO_WARN (ent->fts_path);
               fts_skip_tree (fts, ent);
-              return RM_ERROR;
+              trả_về RM_ERROR;
             }
 
           /* If a command line argument is a mount point and
              --preserve-root=all is in effect, diagnose and skip it.
              This doesn't handle "/", but that's handled above.  */
-          if (x->preserve_all_root)
+          nếu (x->preserve_all_root)
             {
               bool failed = false;
               char *parent = file_name_concat (ent->fts_accpath, "..", NULL);
               struct stat statbuf;
 
-              if (!parent || lstat (parent, &statbuf))
+              nếu (!parent || lstat (parent, &statbuf))
                 {
                   error (0, 0,
                          _("failed to stat %s: skipping %s"),
@@ -504,9 +504,9 @@ rm_fts (FTS *fts, FTSENT *ent, struct rm_options const *x)
 
               free (parent);
 
-              if (failed || fts->fts_dev != statbuf.st_dev)
+              nếu (failed || fts->fts_dev != statbuf.st_dev)
                 {
-                  if (! failed)
+                  nếu (! failed)
                     {
                       error (0, 0,
                              _("skipping %s, since it's on a different device"),
@@ -514,7 +514,7 @@ rm_fts (FTS *fts, FTSENT *ent, struct rm_options const *x)
                       error (0, 0, _("and --preserve-root=all is in effect"));
                     }
                   fts_skip_tree (fts, ent);
-                  return RM_ERROR;
+                  trả_về RM_ERROR;
                 }
             }
         }
@@ -523,22 +523,22 @@ rm_fts (FTS *fts, FTSENT *ent, struct rm_options const *x)
         enum RM_status s = prompt (fts, ent, true /*is_dir*/, x,
                                    PA_DESCEND_INTO_DIR, &dir_status);
 
-        if (s == RM_USER_ACCEPTED && dir_status == DS_EMPTY)
+        nếu (s == RM_USER_ACCEPTED && dir_status == DS_EMPTY)
           {
             /* When we know (from prompt when in interactive mode)
                that this is an empty directory, don't prompt twice.  */
             s = excise (fts, ent, x, true);
-            if (s == RM_OK)
+            nếu (s == RM_OK)
               fts_skip_tree (fts, ent);
           }
 
-        if (! (s == RM_OK || s == RM_USER_ACCEPTED))
+        nếu (! (s == RM_OK || s == RM_USER_ACCEPTED))
           {
             mark_ancestor_dirs (ent);
             fts_skip_tree (fts, ent);
           }
 
-        return s;
+        trả_về s;
       }
 
     case FTS_F:			/* regular file */
@@ -553,7 +553,7 @@ rm_fts (FTS *fts, FTSENT *ent, struct rm_options const *x)
         /* With --one-file-system, do not attempt to remove a mount point.
            fts' FTS_XDEV ensures that we don't process any entries under
            the mount point.  */
-        if (ent->fts_info == FTS_DP
+        nếu (ent->fts_info == FTS_DP
             && x->one_file_system
             && FTS_ROOTLEVEL < ent->fts_level
             && ent->fts_statp->st_dev != fts->fts_dev)
@@ -561,21 +561,21 @@ rm_fts (FTS *fts, FTSENT *ent, struct rm_options const *x)
             mark_ancestor_dirs (ent);
             error (0, 0, _("skipping %s, since it's on a different device"),
                    quoteaf (ent->fts_path));
-            return RM_ERROR;
+            trả_về RM_ERROR;
           }
 
         bool is_dir = ent->fts_info == FTS_DP || ent->fts_info == FTS_DNR;
         enum RM_status s = prompt (fts, ent, is_dir, x, PA_REMOVE_DIR,
                                    &dir_status);
-        if (! (s == RM_OK || s == RM_USER_ACCEPTED))
-          return s;
-        return excise (fts, ent, x, is_dir);
+        nếu (! (s == RM_OK || s == RM_USER_ACCEPTED))
+          trả_về s;
+        trả_về excise (fts, ent, x, is_dir);
       }
 
     case FTS_DC:		/* directory that causes cycles */
       emit_cycle_warning (ent->fts_path);
       fts_skip_tree (fts, ent);
-      return RM_ERROR;
+      trả_về RM_ERROR;
 
     case FTS_ERR:
       /* Various failures, from opendir to ENOMEM, to failure to "return"
@@ -583,7 +583,7 @@ rm_fts (FTS *fts, FTSENT *ent, struct rm_options const *x)
       error (0, ent->fts_errno, _("traversal failed: %s"),
              quotef (ent->fts_path));
       fts_skip_tree (fts, ent);
-      return RM_ERROR;
+      trả_về RM_ERROR;
 
     default:
       error (0, 0, _("unexpected failure: fts_info=%d: %s\n"
@@ -602,25 +602,25 @@ rm (char *const *file, struct rm_options const *x)
 {
   enum RM_status rm_status = RM_OK;
 
-  if (*file)
+  nếu (*file)
     {
-      int bit_flags = (FTS_CWDFD
+      số_nguyên bit_flags = (FTS_CWDFD
                        | FTS_NOSTAT
                        | FTS_PHYSICAL);
 
-      if (x->one_file_system)
+      nếu (x->one_file_system)
         bit_flags |= FTS_XDEV;
 
       FTS *fts = xfts_open (file, bit_flags, NULL);
 
-      while (true)
+      trong_khi (true)
         {
           FTSENT *ent;
 
           ent = fts_read (fts);
-          if (ent == NULL)
+          nếu (ent == NULL)
             {
-              if (errno != 0)
+              nếu (errno != 0)
                 {
                   error (0, errno, _("fts_read failed"));
                   rm_status = RM_ERROR;
@@ -634,12 +634,12 @@ rm (char *const *file, struct rm_options const *x)
           UPDATE_STATUS (rm_status, s);
         }
 
-      if (fts_close (fts) != 0)
+      nếu (fts_close (fts) != 0)
         {
           error (0, errno, _("fts_close failed"));
           rm_status = RM_ERROR;
         }
     }
 
-  return rm_status;
+  trả_về rm_status;
 }

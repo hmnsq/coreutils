@@ -33,18 +33,18 @@
   proper_name ("Paul Eggert")
 
 void
-usage (int status)
+usage (số_nguyên status)
 {
-  if (status != EXIT_SUCCESS)
+  nếu (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  không_thì
     {
       printf (_("\
 Usage: %s NUMBER[SUFFIX]...\n\
   or:  %s OPTION\n\
-Pause for NUMBER seconds, where NUMBER is an integer or floating-point.\n\
-SUFFIX may be 's','m','h', or 'd', for seconds, minutes, hours, days.\n\
-With multiple arguments, pause for the sum of their values.\n\
+Pause cho NUMBER seconds, where NUMBER is an integer or floating-point.\n\
+SUFFIX may be 's','m','h', or 'd', cho seconds, minutes, hours, days.\n\
+With multiple arguments, pause cho the sum of their values.\n\
 \n\
 "),
               program_name, program_name);
@@ -64,7 +64,7 @@ With multiple arguments, pause for the sum of their values.\n\
 static bool
 apply_suffix (double *x, char suffix_char)
 {
-  int multiplier;
+  số_nguyên multiplier;
 
   switch (suffix_char)
     {
@@ -82,16 +82,16 @@ apply_suffix (double *x, char suffix_char)
       multiplier = 60 * 60 * 24;
       break;
     default:
-      return false;
+      trả_về false;
     }
 
   *x = dtimespec_bound (*x * multiplier, 0);
 
-  return true;
+  trả_về true;
 }
 
-int
-main (int argc, char **argv)
+số_nguyên
+main (số_nguyên argc, char **argv)
 {
   double seconds = 0.0;
   bool ok = true;
@@ -108,19 +108,19 @@ main (int argc, char **argv)
                                    Version, true, usage, AUTHORS,
                                    (char const *) NULL);
 
-  if (argc == 1)
+  nếu (argc == 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
-  for (int i = optind; i < argc; i++)
+  cho (số_nguyên i = optind; i < argc; i++)
     {
       char *p;
       errno = 0;
       double duration = cl_strtod (argv[i], &p);
       double s = dtimespec_bound (duration, errno);
-      if (argv[i] == p
+      nếu (argv[i] == p
           /* Nonnegative interval.  */
           || ! (0 <= s)
           /* No extra chars after the number and an optional s,m,h,d char.  */
@@ -135,11 +135,11 @@ main (int argc, char **argv)
       seconds = dtimespec_bound (seconds + s, 0);
     }
 
-  if (!ok)
+  nếu (!ok)
     usage (EXIT_FAILURE);
 
-  if (xnanosleep (seconds))
+  nếu (xnanosleep (seconds))
     error (EXIT_FAILURE, errno, _("cannot read realtime clock"));
 
-  return EXIT_SUCCESS;
+  trả_về EXIT_SUCCESS;
 }

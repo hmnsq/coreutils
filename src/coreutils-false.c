@@ -20,12 +20,12 @@
 #include "true.h"
 /* Ensure that the main for true is declared even if the tool is not being
    built in this single-binary. */
-int single_binary_main_true (int argc, char **argv);
-int single_binary_main_false (int argc, char **argv);
+số_nguyên single_binary_main_true (số_nguyên argc, char **argv);
+số_nguyên single_binary_main_false (số_nguyên argc, char **argv);
 
-int
-single_binary_main_false (int argc, char **argv)
+số_nguyên
+single_binary_main_false (số_nguyên argc, char **argv)
 {
   true_mode = TRUE_FALSE;
-  return single_binary_main_true (argc, argv);
+  trả_về single_binary_main_true (argc, argv);
 }

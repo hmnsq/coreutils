@@ -49,36 +49,36 @@
                  | BIT (11) | BIT (10) | BIT (8) | BIT (7) | BIT (5) \
                  | BIT (4) | BIT (2) | BIT (1) | BIT (0))
 
-static unsigned int r[8];
+static unsigned số_nguyên r[8];
 
 static void
 fill_r (void)
 {
   r[0] = GEN;
-  for (int i = 1; i < 8; i++)
+  cho (số_nguyên i = 1; i < 8; i++)
     r[i] = (r[i - 1] << 1) ^ ((r[i - 1] & SBIT) ? GEN : 0);
 }
 
-static unsigned int
-crc_remainder (int m)
+static unsigned số_nguyên
+crc_remainder (số_nguyên m)
 {
-  unsigned int rem = 0;
+  unsigned số_nguyên rem = 0;
 
-  for (int i = 0; i < 8; i++)
-    if (BIT (i) & m)
+  cho (số_nguyên i = 0; i < 8; i++)
+    nếu (BIT (i) & m)
       rem ^= r[i];
 
-  return rem & 0xFFFFFFFF;	/* Make it run on 64-bit machine.  */
+  trả_về rem & 0xFFFFFFFF;	/* Make it run on 64-bit machine.  */
 }
 
-int
+số_nguyên
 main (void)
 {
-  static unsigned int crctab[8][256];
+  static unsigned số_nguyên crctab[8][256];
 
   fill_r ();
 
-  for (int i = 0; i < 256; i++)
+  cho (số_nguyên i = 0; i < 256; i++)
     crctab[0][i] = crc_remainder (i);
 
   /* CRC(0x11 0x22 0x33 0x44)
@@ -88,12 +88,12 @@ main (void)
      We precompute the CRC values for the offset values into
      separate CRC tables. We can then use them to speed up
      CRC calculation by processing multiple bytes at the time. */
-  for (int i = 0; i < 256; i++)
+  cho (số_nguyên i = 0; i < 256; i++)
     {
-      unsigned int crc = 0;
+      unsigned số_nguyên crc = 0;
 
       crc = (crc << 8) ^ crctab[0][((crc >> 24) ^ i) & 0xFF];
-      for (int offset = 1; offset < 8; offset++)
+      cho (số_nguyên offset = 1; offset < 8; offset++)
         {
           crc = (crc << 8) ^ crctab[0][((crc >> 24) ^ 0) & 0xFF];
           crctab[offset][i] = crc & 0xFFFFFFFF;
@@ -104,10 +104,10 @@ main (void)
   printf ("#include \"cksum_crc.h\"\n");
   printf ("\n");
   printf ("uint_fast32_t const crctab[8][256] = {\n");
-  for (int y = 0; y < 8; y++)
+  cho (số_nguyên y = 0; y < 8; y++)
     {
       printf ("{\n  0x%08x", crctab[y][0]);
-      for (int i = 0; i < 51; i++)
+      cho (số_nguyên i = 0; i < 51; i++)
         {
           printf (",\n  0x%08x, 0x%08x, 0x%08x, 0x%08x, 0x%08x",
                   crctab[y][i * 5 + 1], crctab[y][i * 5 + 2],
@@ -119,7 +119,7 @@ main (void)
   printf ("};\n");
 }
 
-#else /* !CRCTAB */
+#không_thì /* !CRCTAB */
 
 # include "cksum_crc.h"
 # include <sys/types.h>
@@ -142,21 +142,21 @@ typedef bool (*cksum_fp_t) (FILE *, uint_fast32_t *, intmax_t *);
 static cksum_fp_t
 pclmul_supported (void)
 {
-# if USE_PCLMUL_CRC32 || GL_CRC_X86_64_PCLMUL
+# nếu USE_PCLMUL_CRC32 || GL_CRC_X86_64_PCLMUL
   bool pclmul_enabled = (cpu_supports ("avx")
                          && cpu_supports ("pclmul"));
-  if (cksum_debug)
+  nếu (cksum_debug)
     error (0, 0, "%s",
            (pclmul_enabled
             ? _("using pclmul hardware support")
             : _("pclmul support not detected")));
-#  if USE_PCLMUL_CRC32
-  if (pclmul_enabled)
-    return cksum_pclmul;
+#  nếu USE_PCLMUL_CRC32
+  nếu (pclmul_enabled)
+    trả_về cksum_pclmul;
 #  endif
 # endif
 
-  return NULL;
+  trả_về NULL;
 }
 
 static cksum_fp_t
@@ -165,19 +165,19 @@ avx2_supported (void)
   /* AVX512 processors will not set vpclmulqdq unless they support
      the avx512 version, but it implies that the avx2 version
      is supported  */
-# if USE_AVX2_CRC32
+# nếu USE_AVX2_CRC32
   bool avx2_enabled = (cpu_supports ("avx2")
                        && cpu_supports ("vpclmulqdq"));
-  if (cksum_debug)
+  nếu (cksum_debug)
     error (0, 0, "%s",
            (avx2_enabled
             ? _("using avx2 hardware support")
             : _("avx2 support not detected")));
-  if (avx2_enabled)
-    return cksum_avx2;
+  nếu (avx2_enabled)
+    trả_về cksum_avx2;
 # endif
 
-  return NULL;
+  trả_về NULL;
 }
 
 static cksum_fp_t
@@ -186,40 +186,40 @@ avx512_supported (void)
   /* vpclmulqdq for multiplication
      mavx512f for most of the avx512 functions we're using
      mavx512bw for byte swapping  */
-# if USE_AVX512_CRC32
+# nếu USE_AVX512_CRC32
   bool avx512_enabled = (cpu_supports ("avx512f")
                          && cpu_supports ("avx512bw")
                          && cpu_supports ("vpclmulqdq"));
 
-  if (cksum_debug)
+  nếu (cksum_debug)
     error (0, 0, "%s",
            (avx512_enabled
             ? _("using avx512 hardware support")
             : _("avx512 support not detected")));
-  if (avx512_enabled)
-    return cksum_avx512;
+  nếu (avx512_enabled)
+    trả_về cksum_avx512;
 # endif
 
-  return NULL;
+  trả_về NULL;
 }
 
 static cksum_fp_t
 vmull_supported (void)
 {
   /* vmull for multiplication  */
-# if USE_VMULL_CRC32
+# nếu USE_VMULL_CRC32
   bool vmull_enabled = (cpu_may_support ("pmull")
                         && (getauxval (AT_HWCAP) & HWCAP_PMULL) > 0);
-  if (cksum_debug)
+  nếu (cksum_debug)
     error (0, 0, "%s",
            (vmull_enabled
             ? _("using vmull hardware support")
             : _("vmull support not detected")));
-  if (vmull_enabled)
-    return cksum_vmull;
+  nếu (vmull_enabled)
+    trả_về cksum_vmull;
 # endif
 
-  return NULL;
+  trả_về NULL;
 }
 
 static bool
@@ -230,22 +230,22 @@ cksum_slice8 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
   intmax_t length = 0;
   size_t bytes_read;
 
-  if (!fp || !crc_out || !length_out)
-    return false;
+  nếu (!fp || !crc_out || !length_out)
+    trả_về false;
 
-  while ((bytes_read = fread (buf, 1, BUFLEN, fp)) > 0)
+  trong_khi ((bytes_read = fread (buf, 1, BUFLEN, fp)) > 0)
     {
       uint32_t *datap;
 
-      if (ckd_add (&length, length, bytes_read))
+      nếu (ckd_add (&length, length, bytes_read))
         {
           errno = EOVERFLOW;
-          return false;
+          trả_về false;
         }
 
       /* Process multiples of 8 bytes */
       datap = buf;
-      while (bytes_read >= 8)
+      trong_khi (bytes_read >= 8)
         {
           uint32_t first = *datap++, second = *datap++;
           crc ^= htobe32 (first);
@@ -263,58 +263,58 @@ cksum_slice8 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
 
       /* And finish up last 0-7 bytes in a byte by byte fashion */
       unsigned char *cp = (unsigned char *)datap;
-      while (bytes_read--)
+      trong_khi (bytes_read--)
         crc = (crc << 8) ^ crctab[0][((crc >> 24) ^ *cp++) & 0xFF];
-      if (feof (fp))
+      nếu (feof (fp))
         break;
     }
 
   *crc_out = crc;
   *length_out = length;
 
-  return !ferror (fp);
+  trả_về !ferror (fp);
 }
 
 /* Calculate the checksum and length in bytes of stream STREAM.
    Return -1 on error, 0 on success.  */
 
-int
+số_nguyên
 crc_sum_stream (FILE *stream, void *resstream, intmax_t *length)
 {
   intmax_t total_bytes = 0;
   uint_fast32_t crc = 0;
 
   static cksum_fp_t cksum_fp;
-  if (! cksum_fp)
+  nếu (! cksum_fp)
     cksum_fp = avx512_supported ();
-  if (! cksum_fp)
+  nếu (! cksum_fp)
     cksum_fp = avx2_supported ();
-  if (! cksum_fp)
+  nếu (! cksum_fp)
     cksum_fp = pclmul_supported ();
-  if (! cksum_fp)
+  nếu (! cksum_fp)
     cksum_fp = vmull_supported ();
-  if (! cksum_fp)
+  nếu (! cksum_fp)
     cksum_fp = cksum_slice8;
 
-  if (! cksum_fp (stream, &crc, &total_bytes))
-    return -1;
+  nếu (! cksum_fp (stream, &crc, &total_bytes))
+    trả_về -1;
 
   *length = total_bytes;
 
-  for (; total_bytes; total_bytes >>= 8)
+  cho (; total_bytes; total_bytes >>= 8)
     crc = (crc << 8) ^ crctab[0][((crc >> 24) ^ total_bytes) & 0xFF];
   crc = ~crc & 0xFFFFFFFF;
 
-  unsigned int crc_out = crc;
+  unsigned số_nguyên crc_out = crc;
   memcpy (resstream, &crc_out, sizeof crc_out);
 
-  return 0;
+  trả_về 0;
 }
 
 /* Calculate the crc32b checksum and length in bytes of stream STREAM.
    Return -1 on error, 0 on success.  */
 
-int
+số_nguyên
 crc32b_sum_stream (FILE *stream, void *resstream, intmax_t *reslen)
 {
   uint32_t buf[BUFLEN / sizeof (uint32_t)];
@@ -322,54 +322,54 @@ crc32b_sum_stream (FILE *stream, void *resstream, intmax_t *reslen)
   intmax_t len = 0;
   size_t bytes_read;
 
-  if (!stream || !resstream || !reslen)
-    return -1;
+  nếu (!stream || !resstream || !reslen)
+    trả_về -1;
 
-# if GL_CRC_X86_64_PCLMUL
-  if (cksum_debug)
+# nếu GL_CRC_X86_64_PCLMUL
+  nếu (cksum_debug)
     (void) pclmul_supported ();
 # endif
 
-  while ((bytes_read = fread (buf, 1, BUFLEN, stream)) > 0)
+  trong_khi ((bytes_read = fread (buf, 1, BUFLEN, stream)) > 0)
     {
-      if (ckd_add (&len, len, bytes_read))
+      nếu (ckd_add (&len, len, bytes_read))
         {
           errno = EOVERFLOW;
-          return -1;
+          trả_về -1;
         }
 
       crc = crc32_update (crc, (char const *)buf, bytes_read);
 
-      if (feof (stream))
+      nếu (feof (stream))
         break;
     }
 
-  unsigned int crc_out = crc;
+  unsigned số_nguyên crc_out = crc;
   memcpy (resstream, &crc_out, sizeof crc_out);
 
   *reslen = len;
 
-  return ferror (stream) ? -1 : 0;
+  trả_về ferror (stream) ? -1 : 0;
 }
 
 /* Print the checksum and size to stdout.
    If ARGS is true, also print the FILE name.  */
 
 void
-output_crc (char const *file, MAYBE_UNUSED int binary_file,
+output_crc (char const *file, MAYBE_UNUSED số_nguyên binary_file,
             void const *digest, bool raw, MAYBE_UNUSED bool tagged,
             unsigned char delim, bool args, intmax_t length)
 {
-  if (raw)
+  nếu (raw)
     {
       /* Output in network byte order (big endian).  */
       uint32_t out_int = htobe32 (*(uint32_t *)digest);
       fwrite (&out_int, 1, 32/8, stdout);
-      return;
+      trả_về;
     }
 
-  printf ("%u %jd", *(unsigned int *)digest, length);
-  if (args)
+  printf ("%u %jd", *(unsigned số_nguyên *)digest, length);
+  nếu (args)
     printf (" %s", file);
   putchar (delim);
 }

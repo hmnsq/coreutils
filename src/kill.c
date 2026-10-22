@@ -50,11 +50,11 @@ static struct option const long_options[] =
 };
 
 void
-usage (int status)
+usage (số_nguyên status)
 {
-  if (status != EXIT_SUCCESS)
+  nếu (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  không_thì
     {
       printf (_("\
 Usage: %s [-s SIGNAL | -SIGNAL] PID...\n\
@@ -85,7 +85,7 @@ Send signals to processes, or list signals.\n\
       fputs (_("\n\
 SIGNAL may be a signal name like 'HUP', or a signal number like '1',\n\
 or the exit status of a process terminated by a signal.\n\
-PID is an integer; if negative it identifies a process group.\n\
+PID is an integer; nếu negative it identifies a process group.\n\
 "), stdout);
       printf (USAGE_BUILTIN_WARNING, PROGRAM_NAME);
       emit_ancillary_info (PROGRAM_NAME);
@@ -98,8 +98,8 @@ PID is an integer; if negative it identifies a process group.\n\
    maximum name width is NAME_WIDTH, and SIGNAME is the name to print.  */
 
 static void
-print_table_row (int num_width, int signum,
-                 int name_width, char const *signame)
+print_table_row (số_nguyên num_width, số_nguyên signum,
+                 số_nguyên name_width, char const *signame)
 {
   char const *description = strsignal (signum);
   printf ("%*d %-*s %s\n", num_width, signum, name_width, signame,
@@ -110,82 +110,82 @@ print_table_row (int num_width, int signum,
    Print the names specified by ARGV if nonzero; otherwise,
    print all known names.  Return a suitable exit status.  */
 
-static int
+static số_nguyên
 list_signals (bool table, char *const *argv)
 {
-  int status = EXIT_SUCCESS;
+  số_nguyên status = EXIT_SUCCESS;
   char signame[SIG2STR_MAX];
 
-  if (table)
+  nếu (table)
     {
-      int name_width = 0;
+      số_nguyên name_width = 0;
 
       /* Compute the maximum width of a signal number.  */
-      int num_width = 1;
-      for (int signum = 1; signum <= SIGNUM_BOUND / 10; signum *= 10)
+      số_nguyên num_width = 1;
+      cho (số_nguyên signum = 1; signum <= SIGNUM_BOUND / 10; signum *= 10)
         num_width++;
 
       /* Compute the maximum width of a signal name.  */
-      for (int signum = 0; signum <= SIGNUM_BOUND; signum++)
-        if (sig2str (signum, signame) == 0)
+      cho (số_nguyên signum = 0; signum <= SIGNUM_BOUND; signum++)
+        nếu (sig2str (signum, signame) == 0)
           {
             idx_t len = strlen (signame);
-            if (name_width < len)
+            nếu (name_width < len)
               name_width = len;
           }
 
-      if (argv)
-        for (; *argv; argv++)
+      nếu (argv)
+        cho (; *argv; argv++)
           {
-            int signum = operand2sig (*argv);
-            if (signum < 0)
+            số_nguyên signum = operand2sig (*argv);
+            nếu (signum < 0)
               status = EXIT_FAILURE;
-            else
+            không_thì
               {
-                if (sig2str (signum, signame) != 0)
+                nếu (sig2str (signum, signame) != 0)
                   snprintf (signame, sizeof signame, "SIG%d", signum);
                 print_table_row (num_width, signum, name_width, signame);
               }
           }
-      else
-        for (int signum = 0; signum <= SIGNUM_BOUND; signum++)
-          if (sig2str (signum, signame) == 0)
+      không_thì
+        cho (số_nguyên signum = 0; signum <= SIGNUM_BOUND; signum++)
+          nếu (sig2str (signum, signame) == 0)
             print_table_row (num_width, signum, name_width, signame);
     }
-  else
+  không_thì
     {
-      if (argv)
-        for (; *argv; argv++)
+      nếu (argv)
+        cho (; *argv; argv++)
           {
-            int signum = operand2sig (*argv);
-            if (signum < 0)
+            số_nguyên signum = operand2sig (*argv);
+            nếu (signum < 0)
               status = EXIT_FAILURE;
-            else if (c_isdigit (**argv))
+            không_thì nếu (c_isdigit (**argv))
               {
-                if (sig2str (signum, signame) == 0)
+                nếu (sig2str (signum, signame) == 0)
                   puts (signame);
-                else
+                không_thì
                   printf ("%d\n", signum);
               }
-            else
+            không_thì
               printf ("%d\n", signum);
           }
-      else
-        for (int signum = 0; signum <= SIGNUM_BOUND; signum++)
-          if (sig2str (signum, signame) == 0)
+      không_thì
+        cho (số_nguyên signum = 0; signum <= SIGNUM_BOUND; signum++)
+          nếu (sig2str (signum, signame) == 0)
             puts (signame);
     }
 
-  return status;
+  trả_về status;
 }
 
 /* Send signal SIGNUM to all the processes or process groups specified
    by ARGV.  Return a suitable exit status.  */
 
-static int
-send_signals (int signum, char *const *argv)
+static số_nguyên
+send_signals (số_nguyên signum, char *const *argv)
 {
-  int status = EXIT_SUCCESS;
+  số_nguyên status = EXIT_SUCCESS;
   char const *arg = *argv;
 
   do
@@ -194,33 +194,33 @@ send_signals (int signum, char *const *argv)
       intmax_t n = (errno = 0, strtoimax (arg, &endp, 10));
       pid_t pid;
 
-      if (errno == ERANGE || ckd_add (&pid, n, 0)
+      nếu (errno == ERANGE || ckd_add (&pid, n, 0)
           || arg == endp || *endp)
         {
           error (0, 0, _("%s: invalid process id"), quote (arg));
           status = EXIT_FAILURE;
         }
-      else if (kill (pid, signum) != 0)
+      không_thì nếu (kill (pid, signum) != 0)
         {
-          if (errno == EINVAL)
+          nếu (errno == EINVAL)
             error (0, errno, "%d", signum);
-          else
+          không_thì
             error (0, errno, "%s", quote (arg));
           status = EXIT_FAILURE;
         }
     }
-  while ((arg = *++argv));
+  trong_khi ((arg = *++argv));
 
-  return status;
+  trả_về status;
 }
 
-int
-main (int argc, char **argv)
+số_nguyên
+main (số_nguyên argc, char **argv)
 {
-  int optc;
+  số_nguyên optc;
   bool list = false;
   bool table = false;
-  int signum = -1;
+  số_nguyên signum = -1;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -230,13 +230,13 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, short_options, long_options, NULL))
+  trong_khi ((optc = getopt_long (argc, argv, short_options, long_options, NULL))
          != -1)
     switch (optc)
       {
       case '0': case '1': case '2': case '3': case '4':
       case '5': case '6': case '7': case '8': case '9':
-        if (optind != 2)
+        nếu (optind != 2)
           {
             /* This option is actually a process-id.  */
             optind--;
@@ -249,9 +249,9 @@ main (int argc, char **argv)
       case 'P': case 'Q': case 'R': case 'S': case 'T':
       case 'U': case 'V': case 'W': case 'X': case 'Y':
       case 'Z':
-        if (! optarg)
+        nếu (! optarg)
           optarg = argv[optind - 1] + strlen (argv[optind - 1]);
-        if (optarg != argv[optind - 1] + 2)
+        nếu (optarg != argv[optind - 1] + 2)
           {
             error (0, 0, _("invalid option -- %c"), optc);
             usage (EXIT_FAILURE);
@@ -260,13 +260,13 @@ main (int argc, char **argv)
         FALLTHROUGH;
       case 'n': /* -n is not documented, but is for Bash compatibility.  */
       case 's':
-        if (0 <= signum)
+        nếu (0 <= signum)
           {
             error (0, 0, _("%s: multiple signals specified"), quote (optarg));
             usage (EXIT_FAILURE);
           }
         signum = operand2sig (optarg);
-        if (signum < 0)
+        nếu (signum < 0)
           usage (EXIT_FAILURE);
         break;
 
@@ -275,7 +275,7 @@ main (int argc, char **argv)
         table = true;
         FALLTHROUGH;
       case 'l':
-        if (list)
+        nếu (list)
           {
             error (0, 0, _("multiple -l or -t options specified"));
             usage (EXIT_FAILURE);
@@ -290,21 +290,21 @@ main (int argc, char **argv)
       }
  no_more_options:
 
-  if (signum < 0)
+  nếu (signum < 0)
     signum = SIGTERM;
-  else if (list)
+  không_thì nếu (list)
     {
       error (0, 0, _("cannot combine signal with -l or -t"));
       usage (EXIT_FAILURE);
     }
 
-  if ( ! list && argc <= optind)
+  nếu ( ! list && argc <= optind)
     {
       error (0, 0, _("no process ID specified"));
       usage (EXIT_FAILURE);
     }
 
-  return (list
+  trả_về (list
           ? list_signals (table, optind < argc ? argv + optind : NULL)
           : send_signals (signum, argv + optind));
 }

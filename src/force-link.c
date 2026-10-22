@@ -53,16 +53,16 @@ samedir_template (char const *dstname, char buf[smallsize])
   ptrdiff_t dstdirlen = last_component (dstname) - dstname;
   size_t dsttmpsize = dstdirlen + sizeof simple_pattern;
   char *dsttmp;
-  if (dsttmpsize <= smallsize)
+  nếu (dsttmpsize <= smallsize)
     dsttmp = buf;
-  else
+  không_thì
     {
       dsttmp = malloc (dsttmpsize);
-      if (!dsttmp)
-        return dsttmp;
+      nếu (!dsttmp)
+        trả_về dsttmp;
     }
   strcpy (mempcpy (dsttmp, dstname, dstdirlen), simple_pattern);
-  return dsttmp;
+  trả_về dsttmp;
 }
 
 
@@ -70,17 +70,17 @@ samedir_template (char const *dstname, char buf[smallsize])
 
 struct link_arg
 {
-  int srcdir;
+  số_nguyên srcdir;
   char const *srcname;
-  int dstdir;
-  int flags;
+  số_nguyên dstdir;
+  số_nguyên flags;
 };
 
-static int
+static số_nguyên
 try_link (char *dest, void *arg)
 {
   struct link_arg *a = arg;
-  return linkat (a->srcdir, a->srcname, a->dstdir, dest, a->flags);
+  trả_về linkat (a->srcdir, a->srcname, a->dstdir, dest, a->flags);
 }
 
 /* Hard-link directory SRCDIR's file SRCNAME to directory DSTDIR's
@@ -91,27 +91,27 @@ try_link (char *dest, void *arg)
    -1 if successful and DSTNAME already existed,
    0 if successful and DSTNAME did not already exist, and
    a positive errno value on failure.  */
-extern int
-force_linkat (int srcdir, char const *srcname,
-              int dstdir, char const *dstname, int flags, bool force,
-              int linkat_errno)
+extern số_nguyên
+force_linkat (số_nguyên srcdir, char const *srcname,
+              số_nguyên dstdir, char const *dstname, số_nguyên flags, bool force,
+              số_nguyên linkat_errno)
 {
-  if (linkat_errno < 0)
+  nếu (linkat_errno < 0)
     linkat_errno = (linkat (srcdir, srcname, dstdir, dstname, flags) == 0
                     ? 0 : errno);
-  if (!force || linkat_errno != EEXIST)
-    return linkat_errno;
+  nếu (!force || linkat_errno != EEXIST)
+    trả_về linkat_errno;
 
   char buf[smallsize];
   char *dsttmp = samedir_template (dstname, buf);
-  if (! dsttmp)
-    return errno;
+  nếu (! dsttmp)
+    trả_về errno;
   struct link_arg arg = { srcdir, srcname, dstdir, flags };
-  int err;
+  số_nguyên err;
 
-  if (try_tempname_len (dsttmp, 0, &arg, try_link, x_suffix_len) != 0)
+  nếu (try_tempname_len (dsttmp, 0, &arg, try_link, x_suffix_len) != 0)
     err = errno;
-  else
+  không_thì
     {
       err = renameat (dstdir, dsttmp, dstdir, dstname) == 0 ? -1 : errno;
       /* Unlink DSTTMP even if renameat succeeded, in case DSTTMP
@@ -120,9 +120,9 @@ force_linkat (int srcdir, char const *srcname,
       unlinkat (dstdir, dsttmp, 0);
     }
 
-  if (dsttmp != buf)
+  nếu (dsttmp != buf)
     free (dsttmp);
-  return err;
+  trả_về err;
 }
 
 
@@ -131,14 +131,14 @@ force_linkat (int srcdir, char const *srcname,
 struct symlink_arg
 {
   char const *srcname;
-  int dstdir;
+  số_nguyên dstdir;
 };
 
-static int
+static số_nguyên
 try_symlink (char *dest, void *arg)
 {
   struct symlink_arg *a = arg;
-  return symlinkat (a->srcname, a->dstdir, dest);
+  trả_về symlinkat (a->srcname, a->dstdir, dest);
 }
 
 /* Create a symlink containing SRCNAME in directory DSTDIR's file DSTNAME.
@@ -148,37 +148,37 @@ try_symlink (char *dest, void *arg)
    -1 if successful and DSTNAME already existed,
    0 if successful and DSTNAME did not already exist, and
    a positive errno value on failure.  */
-extern int
-force_symlinkat (char const *srcname, int dstdir, char const *dstname,
-                 bool force, int symlinkat_errno)
+extern số_nguyên
+force_symlinkat (char const *srcname, số_nguyên dstdir, char const *dstname,
+                 bool force, số_nguyên symlinkat_errno)
 {
-  if (symlinkat_errno < 0)
+  nếu (symlinkat_errno < 0)
     symlinkat_errno = symlinkat (srcname, dstdir, dstname) == 0 ? 0 : errno;
-  if (!force || symlinkat_errno != EEXIST)
-    return symlinkat_errno;
+  nếu (!force || symlinkat_errno != EEXIST)
+    trả_về symlinkat_errno;
 
   char buf[smallsize];
   char *dsttmp = samedir_template (dstname, buf);
-  if (!dsttmp)
-    return errno;
+  nếu (!dsttmp)
+    trả_về errno;
   struct symlink_arg arg = { srcname, dstdir };
-  int err;
+  số_nguyên err;
 
-  if (try_tempname_len (dsttmp, 0, &arg, try_symlink, x_suffix_len) != 0)
+  nếu (try_tempname_len (dsttmp, 0, &arg, try_symlink, x_suffix_len) != 0)
     err = errno;
-  else if (renameat (dstdir, dsttmp, dstdir, dstname) != 0)
+  không_thì nếu (renameat (dstdir, dsttmp, dstdir, dstname) != 0)
     {
       err = errno;
       unlinkat (dstdir, dsttmp, 0);
     }
-  else
+  không_thì
     {
       /* Don't worry about renameat being a no-op, since DSTTMP is
          newly created.  */
       err = -1;
     }
 
-  if (dsttmp != buf)
+  nếu (dsttmp != buf)
     free (dsttmp);
-  return err;
+  trả_về err;
 }

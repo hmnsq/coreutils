@@ -47,11 +47,11 @@ static struct option const longopts[] =
 };
 
 void
-usage (int status)
+usage (số_nguyên status)
 {
-  if (status != EXIT_SUCCESS)
+  nếu (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  không_thì
     {
       printf (_("Usage: %s [OPTION]...\n"), program_name);
       fputs (_("\
@@ -68,7 +68,7 @@ then they will determine the minimum and maximum returned value respectively.\n\
 "));
       oputs (_("\
       --ignore=N\n\
-         if possible, exclude N processing units.\n\
+         nếu possible, exclude N processing units.\n\
          The result is guaranteed to be at least 1.\n\
 "));
 
@@ -79,8 +79,8 @@ then they will determine the minimum and maximum returned value respectively.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+số_nguyên
+main (số_nguyên argc, char **argv)
 {
   unsigned long ignore = 0;
   initialize_main (&argc, &argv);
@@ -93,10 +93,10 @@ main (int argc, char **argv)
 
   enum nproc_query mode = NPROC_CURRENT_OVERRIDABLE;
 
-  while (true)
+  trong_khi (true)
     {
-      int c = getopt_long (argc, argv, "", longopts, NULL);
-      if (c == -1)
+      số_nguyên c = getopt_long (argc, argv, "", longopts, NULL);
+      nếu (c == -1)
         break;
       switch (c)
         {
@@ -118,7 +118,7 @@ main (int argc, char **argv)
         }
     }
 
-  if (argc != optind)
+  nếu (argc != optind)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind]));
       usage (EXIT_FAILURE);
@@ -126,12 +126,12 @@ main (int argc, char **argv)
 
   unsigned long nproc = num_processors (mode);
 
-  if (ignore < nproc)
+  nếu (ignore < nproc)
     nproc -= ignore;
-  else
+  không_thì
     nproc = 1;
 
   printf ("%lu\n", nproc);
 
-  return EXIT_SUCCESS;
+  trả_về EXIT_SUCCESS;
 }

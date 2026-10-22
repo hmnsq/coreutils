@@ -137,7 +137,7 @@ static bool reset_numbers = true;
 static intmax_t blank_join = 1;
 
 /* Width of line numbers (-w).  */
-static int lineno_width = 6;
+static số_nguyên lineno_width = 6;
 
 /* Line number format (-n).  */
 static char const *lineno_format = FORMAT_RIGHT_NOLZ;
@@ -172,11 +172,11 @@ static struct option const longopts[] =
 /* Print a usage message and quit. */
 
 void
-usage (int status)
+usage (số_nguyên status)
 {
-  if (status != EXIT_SUCCESS)
+  nếu (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  không_thì
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE]...\n\
@@ -190,16 +190,16 @@ Write each FILE to standard output, with line numbers added.\n\
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -b, --body-numbering=STYLE      use STYLE for numbering body lines\n\
+  -b, --body-numbering=STYLE      use STYLE cho numbering body lines\n\
 "));
       oputs (_("\
-  -d, --section-delimiter=CC      use CC for logical page delimiters\n\
+  -d, --section-delimiter=CC      use CC cho logical page delimiters\n\
 "));
       oputs (_("\
-  -f, --footer-numbering=STYLE    use STYLE for numbering footer lines\n\
+  -f, --footer-numbering=STYLE    use STYLE cho numbering footer lines\n\
 "));
       oputs (_("\
-  -h, --header-numbering=STYLE    use STYLE for numbering header lines\n\
+  -h, --header-numbering=STYLE    use STYLE cho numbering header lines\n\
 "));
       oputs (_("\
   -i, --line-increment=NUMBER     line number increment at each line\n\
@@ -211,16 +211,16 @@ Write each FILE to standard output, with line numbers added.\n\
   -n, --number-format=FORMAT      insert line numbers according to FORMAT\n\
 "));
       oputs (_("\
-  -p, --no-renumber               do not reset line numbers for each section\n\
+  -p, --no-renumber               do not reset line numbers cho each section\n\
 "));
       oputs (_("\
   -s, --number-separator=STRING   add STRING after (possible) line number\n\
 "));
       oputs (_("\
-  -v, --starting-line-number=NUMBER  first line number for each section\n\
+  -v, --starting-line-number=NUMBER  first line number cho each section\n\
 "));
       oputs (_("\
-  -w, --number-width=NUMBER       use NUMBER columns for line numbers\n\
+  -w, --number-width=NUMBER       use NUMBER columns cho line numbers\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -240,7 +240,7 @@ STYLE is one of:\n\
   a      number all lines\n\
   t      number only nonempty lines\n\
   n      number no lines\n\
-  pBRE   number only lines that contain a match for the basic regular\n\
+  pBRE   number only lines that contain a match cho the basic regular\n\
          expression, BRE\n\
 "), stdout);
       fputs (_("\
@@ -283,14 +283,14 @@ build_type_arg (char const **typep,
       re_syntax_options =
         RE_SYNTAX_POSIX_BASIC & ~RE_CONTEXT_INVALID_DUP & ~RE_NO_EMPTY_RANGES;
       errmsg = re_compile_pattern (optarg, strlen (optarg), regexp);
-      if (errmsg)
+      nếu (errmsg)
         error (EXIT_FAILURE, 0, "%s", (errmsg));
       break;
     default:
       rval = false;
       break;
     }
-  return rval;
+  trả_về rval;
 }
 
 /* Print the line number and separator; increment the line number. */
@@ -298,19 +298,19 @@ build_type_arg (char const **typep,
 static void
 print_lineno (void)
 {
-  if (line_no_overflow)
+  nếu (line_no_overflow)
     error (EXIT_FAILURE, 0, _("line number overflow"));
 
   printf (lineno_format, lineno_width, line_no, separator_str);
 
-  if (ckd_add (&line_no, line_no, page_incr))
+  nếu (ckd_add (&line_no, line_no, page_incr))
     line_no_overflow = true;
 }
 
 static void
 reset_lineno (void)
 {
-  if (reset_numbers)
+  nếu (reset_numbers)
     {
       line_no = starting_line_number;
       line_no_overflow = false;
@@ -360,23 +360,23 @@ proc_text (void)
   switch (*current_type)
     {
     case 'a':
-      if (blank_join > 1)
+      nếu (blank_join > 1)
         {
-          if (1 < line_buf.length || ++blank_lines == blank_join)
+          nếu (1 < line_buf.length || ++blank_lines == blank_join)
             {
               print_lineno ();
               blank_lines = 0;
             }
-          else
+          không_thì
             fputs (print_no_line_fmt, stdout);
         }
-      else
+      không_thì
         print_lineno ();
       break;
     case 't':
-      if (1 < line_buf.length)
+      nếu (1 < line_buf.length)
         print_lineno ();
-      else
+      không_thì
         fputs (print_no_line_fmt, stdout);
       break;
     case 'n':
@@ -408,19 +408,19 @@ check_section (void)
 {
   size_t len = line_buf.length - 1;
 
-  if (len < section_del_len || footer_del_len < section_del_len
+  nếu (len < section_del_len || footer_del_len < section_del_len
       || !memeq (line_buf.buffer, section_del, section_del_len))
-    return Text;
-  if (len == header_del_len
+    trả_về Text;
+  nếu (len == header_del_len
       && memeq (line_buf.buffer, header_del, header_del_len))
-    return Header;
-  if (len == body_del_len
+    trả_về Header;
+  nếu (len == body_del_len
       && memeq (line_buf.buffer, body_del, body_del_len))
-    return Body;
-  if (len == footer_del_len
+    trả_về Body;
+  nếu (len == footer_del_len
       && memeq (line_buf.buffer, footer_del, footer_del_len))
-    return Footer;
-  return Text;
+    trả_về Footer;
+  trả_về Text;
 }
 
 /* Read and process the file pointed to by FP. */
@@ -428,7 +428,7 @@ check_section (void)
 static void
 process_file (FILE *fp)
 {
-  while (readlinebuffer (&line_buf, fp))
+  trong_khi (readlinebuffer (&line_buf, fp))
     {
       switch (check_section ())
         {
@@ -446,7 +446,7 @@ process_file (FILE *fp)
           break;
         }
 
-      if (ferror (stdout))
+      nếu (ferror (stdout))
         write_error ();
     }
 }
@@ -459,19 +459,19 @@ nl_file (char const *file)
 {
   FILE *stream;
 
-  if (streq (file, "-"))
+  nếu (streq (file, "-"))
     {
       have_read_stdin = true;
       stream = stdin;
       assume (stream);  /* Pacify GCC bug#109613.  */
     }
-  else
+  không_thì
     {
       stream = fopen (file, "r");
-      if (stream == NULL)
+      nếu (stream == NULL)
         {
           error (0, errno, "%s", quotef (file));
-          return false;
+          trả_về false;
         }
     }
 
@@ -479,25 +479,25 @@ nl_file (char const *file)
 
   process_file (stream);
 
-  int err = errno;
-  if (!ferror (stream))
+  số_nguyên err = errno;
+  nếu (!ferror (stream))
     err = 0;
-  if (streq (file, "-"))
+  nếu (streq (file, "-"))
     clearerr (stream);		/* Also clear EOF. */
-  else if (fclose (stream) != 0 && !err)
+  không_thì nếu (fclose (stream) != 0 && !err)
     err = errno;
-  if (err)
+  nếu (err)
     {
       error (0, err, "%s", quotef (file));
-      return false;
+      trả_về false;
     }
-  return true;
+  trả_về true;
 }
 
-int
-main (int argc, char **argv)
+số_nguyên
+main (số_nguyên argc, char **argv)
 {
-  int c;
+  số_nguyên c;
   size_t len;
   bool ok = true;
 
@@ -509,14 +509,14 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((c = getopt_long (argc, argv, "h:b:f:v:i:pl:s:w:n:d:", longopts,
+  trong_khi ((c = getopt_long (argc, argv, "h:b:f:v:i:pl:s:w:n:d:", longopts,
                            NULL))
          != -1)
     {
       switch (c)
         {
         case 'h':
-          if (! build_type_arg (&header_type, &header_regex, header_fastmap))
+          nếu (! build_type_arg (&header_type, &header_regex, header_fastmap))
             {
               error (0, 0, _("invalid header numbering style: %s"),
                      quote (optarg));
@@ -524,7 +524,7 @@ main (int argc, char **argv)
             }
           break;
         case 'b':
-          if (! build_type_arg (&body_type, &body_regex, body_fastmap))
+          nếu (! build_type_arg (&body_type, &body_regex, body_fastmap))
             {
               error (0, 0, _("invalid body numbering style: %s"),
                      quote (optarg));
@@ -532,7 +532,7 @@ main (int argc, char **argv)
             }
           break;
         case 'f':
-          if (! build_type_arg (&footer_type, &footer_regex, footer_fastmap))
+          nếu (! build_type_arg (&footer_type, &footer_regex, footer_fastmap))
             {
               error (0, 0, _("invalid footer numbering style: %s"),
                      quote (optarg));
@@ -565,13 +565,13 @@ main (int argc, char **argv)
                                      0, XTOINT_MIN_RANGE);
           break;
         case 'n':
-          if (streq (optarg, "ln"))
+          nếu (streq (optarg, "ln"))
             lineno_format = FORMAT_LEFT;
-          else if (streq (optarg, "rn"))
+          không_thì nếu (streq (optarg, "rn"))
             lineno_format = FORMAT_RIGHT_NOLZ;
-          else if (streq (optarg, "rz"))
+          không_thì nếu (streq (optarg, "rz"))
             lineno_format = FORMAT_RIGHT_LZ;
-          else
+          không_thì
             {
               error (0, 0, _("invalid line numbering format: %s"),
                      quote (optarg));
@@ -580,23 +580,23 @@ main (int argc, char **argv)
           break;
         case 'd':
           len = strlen (optarg);
-          if (1 < MB_CUR_MAX)
+          nếu (1 < MB_CUR_MAX)
             {
               char const *p = optarg;
               char const *lim = p + len;
-              int n_chars = 0;
-              for (; p < lim && n_chars < 2; ++n_chars)
+              số_nguyên n_chars = 0;
+              cho (; p < lim && n_chars < 2; ++n_chars)
                   p += mcel_scan (p, lim).len;
-              if (n_chars == 1)
+              nếu (n_chars == 1)
                 memcpy (mempcpy (section_del, optarg, len),  ":", sizeof ":");
-              else
+              không_thì
                 section_del = optarg;
             }
-          else
+          không_thì
             {
-              if (len == 1)
+              nếu (len == 1)
                 *section_del = *optarg;
-              else
+              không_thì
                 section_del = optarg;
             }
           break;
@@ -608,7 +608,7 @@ main (int argc, char **argv)
         }
     }
 
-  if (!ok)
+  nếu (!ok)
     usage (EXIT_FAILURE);
 
   /* Initialize the section delimiters.  */
@@ -639,14 +639,14 @@ main (int argc, char **argv)
 
   /* Main processing. */
 
-  if (optind == argc)
+  nếu (optind == argc)
     ok = nl_file ("-");
-  else
-    for (; optind < argc; optind++)
+  không_thì
+    cho (; optind < argc; optind++)
       ok &= nl_file (argv[optind]);
 
-  if (have_read_stdin && fclose (stdin) == EOF)
+  nếu (have_read_stdin && fclose (stdin) == EOF)
     error (EXIT_FAILURE, errno, "-");
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  trả_về ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

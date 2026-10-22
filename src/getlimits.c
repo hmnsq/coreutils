@@ -76,18 +76,18 @@
 #define GID_T_MIN 0
 
 void
-usage (int status)
+usage (số_nguyên status)
 {
-  if (status != EXIT_SUCCESS)
+  nếu (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  không_thì
     {
       printf (_("\
 Usage: %s\n\
 "), program_name);
 
       fputs (_("\
-Output platform dependent limits in a format useful for shell scripts.\n\
+Output platform dependent limits in a format useful cho shell scripts.\n\
 \n\
 "), stdout);
       fputs (HELP_OPTION_DESCRIPTION, stdout);
@@ -108,13 +108,13 @@ decimal_absval_add_one (char *buf)
   char *absnum = buf + 1 + negative;
   char *p = absnum + strlen (absnum);
   absnum[-1] = '0';
-  while (*--p == '9')
+  trong_khi (*--p == '9')
     *p = '0';
   ++*p;
   char *result = MIN (absnum, p);
-  if (negative)
+  nếu (negative)
     *--result = '-';
-  return result;
+  trả_về result;
 }
 
 #define PRINT_FLOATTYPE(N, T, FTOASTR, BUFSIZE)                         \
@@ -130,18 +130,18 @@ PRINT_FLOATTYPE (print_FLT, float, ftoastr, FLT_BUFSIZE_BOUND)
 PRINT_FLOATTYPE (print_DBL, double, dtoastr, DBL_BUFSIZE_BOUND)
 PRINT_FLOATTYPE (print_LDBL, long double, ldtoastr, LDBL_BUFSIZE_BOUND)
 
-static int
-print_errno (void *name, int e)
+static số_nguyên
+print_errno (void *name, số_nguyên e)
 {
   char const *err_name = name ? name : strerrorname_np (e);
-  if (err_name)
+  nếu (err_name)
     printf ("%s=%s\n", err_name,
             quotearg_style (shell_escape_quoting_style, strerror (e)));
-  return 0;
+  trả_về 0;
 }
 
-int
-main (int argc, char **argv)
+số_nguyên
+main (số_nguyên argc, char **argv)
 {
   char limit[1 + MAX (INT_BUFSIZE_BOUND (intmax_t),
                       INT_BUFSIZE_BOUND (uintmax_t))];
@@ -162,7 +162,7 @@ main (int argc, char **argv)
   sprintf (limit + 1, "%ju", (uintmax_t) {TYPE##_MAX});                  \
   printf (#TYPE"_MAX=%s\n", limit + 1);                                  \
   printf (#TYPE"_OFLOW=%s\n", decimal_absval_add_one (limit));           \
-  if (TYPE##_MIN)                                                        \
+  nếu (TYPE##_MIN)                                                        \
     {                                                                    \
       sprintf (limit + 1, "%jd", (intmax_t) {TYPE##_MIN});               \
       printf (#TYPE"_MIN=%s\n", limit + 1);                              \
@@ -206,18 +206,18 @@ main (int argc, char **argv)
   /* Errnos */
   errno_iterate (print_errno, NULL);
   /* Common errno aliases */
-#if defined ENOTEMPTY && ENOTEMPTY == EEXIST
+#nếu defined ENOTEMPTY && ENOTEMPTY == EEXIST
   print_errno ((char*)"ENOTEMPTY", EEXIST);
 #endif
-#if defined ENOTSUP && ENOTSUP == EOPNOTSUPP
+#nếu defined ENOTSUP && ENOTSUP == EOPNOTSUPP
   print_errno ((char*)"ENOTSUP", EOPNOTSUPP);
 #endif
-#if defined EWOULDBLOCK && EWOULDBLOCK == EAGAIN
+#nếu defined EWOULDBLOCK && EWOULDBLOCK == EAGAIN
   print_errno ((char*)"EWOULDBLOCK", EAGAIN);
 #endif
-#if defined EDEADLOCK && EDEADLOCK == EDEADLK
+#nếu defined EDEADLOCK && EDEADLOCK == EDEADLK
   print_errno ((char*)"EDEADLOCK", EDEADLK);
 #endif
 
-  return EXIT_SUCCESS;
+  trả_về EXIT_SUCCESS;
 }

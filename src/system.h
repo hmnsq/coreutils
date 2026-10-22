@@ -27,7 +27,7 @@
 /* Commonly used file permission combination.  */
 #define MODE_RW_UGO (S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH)
 
-#if HAVE_SYS_PARAM_H
+#nếu HAVE_SYS_PARAM_H
 # include <sys/param.h>
 #endif
 
@@ -46,11 +46,11 @@
 #include <time.h>
 
 /* Since major is a function on SVR4, we can't use 'ifndef major'.  */
-#if MAJOR_IN_MKDEV
+#nếu MAJOR_IN_MKDEV
 # include <sys/mkdev.h>
 # define HAVE_MAJOR
 #endif
-#if MAJOR_IN_SYSMACROS
+#nếu MAJOR_IN_SYSMACROS
 # include <sys/sysmacros.h>
 # define HAVE_MAJOR
 #endif
@@ -65,7 +65,7 @@
 #endif
 #undef HAVE_MAJOR
 
-#if ! defined makedev && defined mkdev
+#nếu ! defined makedev && defined mkdev
 # define makedev(maj, min)  mkdev (maj, min)
 #endif
 
@@ -86,7 +86,7 @@
 /* Return true if ERRNUM indicates that a file disappeared during a
    directory traversal.  */
 static inline bool
-ignorable_traversal_errno (int errnum) { return errnum == ENOENT; }
+ignorable_traversal_errno (số_nguyên errnum) { trả_về errnum == ENOENT; }
 
 #include <stdlib.h>
 #include "version.h"
@@ -104,16 +104,16 @@ enum
 
 /* Set exit_failure to STATUS if that's not the default already.  */
 static inline void
-initialize_exit_failure (int status)
+initialize_exit_failure (số_nguyên status)
 {
-  if (status != EXIT_FAILURE)
+  nếu (status != EXIT_FAILURE)
     exit_failure = status;
 }
 
 #include <fcntl.h>
 #ifdef O_PATH
 enum { O_PATHSEARCH = O_PATH };
-#else
+#không_thì
 enum { O_PATHSEARCH = O_SEARCH };
 #endif
 
@@ -129,7 +129,7 @@ enum
 
 #ifdef D_INO_IN_DIRENT
 # define D_INO(dp) (dp)->d_ino
-#else
+#không_thì
 /* Some systems don't have inodes, so fake them to avoid lots of ifdefs.  */
 # define D_INO(dp) NOT_AN_INODE_NUMBER
 #endif
@@ -142,9 +142,9 @@ enum
 #ifndef initialize_main
 # ifndef __OS2__
 #  define initialize_main(ac, av)
-# else
+# không_thì
 #  define initialize_main(ac, av) \
-     do { _wildcard (ac, av); _response (ac, av); } while (0)
+     do { _wildcard (ac, av); _response (ac, av); } trong_khi (0)
 # endif
 #endif
 
@@ -155,30 +155,30 @@ enum
 /* Convert a possibly-signed character to an unsigned character.  This is
    a bit safer than casting to unsigned char, since it catches some type
    errors that the cast doesn't.  */
-static inline unsigned char to_uchar (char ch) { return ch; }
+static inline unsigned char to_uchar (char ch) { trả_về ch; }
 
 /* Return non zero if a non breaking space.  */
 ATTRIBUTE_PURE
-static inline int
+static inline số_nguyên
 c32isnbspace (char32_t wc)
 {
-  return wc == 0x00A0 || wc == 0x2007 || wc == 0x202F || wc == 0x2060;
+  trả_về wc == 0x00A0 || wc == 0x2007 || wc == 0x202F || wc == 0x2060;
 }
 
 ATTRIBUTE_PURE
-static inline int
+static inline số_nguyên
 c32isnewline (char32_t wc)
 {
-  return wc == 0x000A || wc == 0x0085 || wc == 0x2028 || wc == 0x2029;
+  trả_về wc == 0x000A || wc == 0x0085 || wc == 0x2028 || wc == 0x2029;
 }
 
 ATTRIBUTE_PURE
-static inline int
+static inline số_nguyên
 c32isvertspace (char32_t wc)
 {
   /* 000D is backwards as opposed to vertical,
      but that's fine for this grouping.  */
-  return c32isnewline (wc) || wc == 0x000B || wc == 0x000C || wc == 0x000D;
+  trả_về c32isnewline (wc) || wc == 0x000B || wc == 0x000C || wc == 0x000D;
 }
 
 /* c32isblank() is too variable on non GLIBC platforms.
@@ -189,10 +189,10 @@ ATTRIBUTE_PURE
 static inline bool
 c32issep (char32_t wc)
 {
-#if defined __GLIBC__
-  return !! c32isblank (wc);
-#else
-  return c32isspace (wc) && ! c32isvertspace (wc) && ! c32isnbspace (wc);
+#nếu defined __GLIBC__
+  trả_về !! c32isblank (wc);
+#không_thì
+  trả_về c32isspace (wc) && ! c32isvertspace (wc) && ! c32isnbspace (wc);
 #endif
 }
 
@@ -201,7 +201,7 @@ c32issep (char32_t wc)
 /* Take care of NLS matters.  */
 
 #include "gettext.h"
-#if ! ENABLE_NLS
+#nếu ! ENABLE_NLS
 # undef textdomain
 # define textdomain(Domainname) /* empty */
 # undef bindtextdomain
@@ -213,13 +213,13 @@ c32issep (char32_t wc)
 
 /* Return a value that pluralizes the same way that N does, in all
    languages we know of.  */
-static inline unsigned long int
+static inline unsigned long số_nguyên
 select_plural (uintmax_t n)
 {
   /* Reduce by a power of ten, but keep it away from zero.  The
      gettext manual says 1000000 should be safe.  */
   enum { PLURAL_REDUCER = 1000000 };
-  return (n <= ULONG_MAX ? n : n % PLURAL_REDUCER + PLURAL_REDUCER);
+  trả_về (n <= ULONG_MAX ? n : n % PLURAL_REDUCER + PLURAL_REDUCER);
 }
 
 #define STREQ_LEN(a, b, n) (strncmp (a, b, n) == 0) /* n==-1 means unbounded */
@@ -229,23 +229,23 @@ select_plural (uintmax_t n)
    and you don't specify the length;  that comes from the literal.  */
 #define STRNCMP_LIT(s, lit) strncmp (s, "" lit "", sizeof (lit) - 1)
 
-#if !HAVE_DECL_GETLOGIN
+#nếu !HAVE_DECL_GETLOGIN
 char *getlogin (void);
 #endif
 
-#if !HAVE_DECL_TTYNAME
-char *ttyname (int);
+#nếu !HAVE_DECL_TTYNAME
+char *ttyname (số_nguyên);
 #endif
 
-#if !HAVE_DECL_GETEUID
+#nếu !HAVE_DECL_GETEUID
 uid_t geteuid (void);
 #endif
 
-#if !HAVE_DECL_GETPWUID
+#nếu !HAVE_DECL_GETPWUID
 struct passwd *getpwuid (uid_t);
 #endif
 
-#if !HAVE_DECL_GETGRGID
+#nếu !HAVE_DECL_GETGRGID
 struct group *getgrgid (gid_t);
 #endif
 
@@ -255,19 +255,19 @@ struct group *getgrgid (gid_t);
 /* To protect any system that could provide _nomembers functions
    other than interix, check for HAVE_SETGROUPS, as interix is
    one of the very few (the only?) platform that lacks it */
-#if ! HAVE_SETGROUPS
-# if HAVE_GETGRGID_NOMEMBERS
+#nếu ! HAVE_SETGROUPS
+# nếu HAVE_GETGRGID_NOMEMBERS
 #  define getgrgid(gid) getgrgid_nomembers(gid)
 # endif
-# if HAVE_GETGRNAM_NOMEMBERS
+# nếu HAVE_GETGRNAM_NOMEMBERS
 #  define getgrnam(nam) getgrnam_nomembers(nam)
 # endif
-# if HAVE_GETGRENT_NOMEMBERS
+# nếu HAVE_GETGRENT_NOMEMBERS
 #  define getgrent() getgrent_nomembers()
 # endif
 #endif
 
-#if !HAVE_DECL_GETUID
+#nếu !HAVE_DECL_GETUID
 uid_t getuid (void);
 #endif
 
@@ -283,24 +283,24 @@ uid_t getuid (void);
 static inline bool
 dot_or_dotdot (char const *file_name)
 {
-  if (file_name[0] == '.')
+  nếu (file_name[0] == '.')
     {
       char sep = file_name[(file_name[1] == '.') + 1];
-      return (! sep || ISSLASH (sep));
+      trả_về (! sep || ISSLASH (sep));
     }
-  else
-    return false;
+  không_thì
+    trả_về false;
 }
 
 /* A wrapper for readdir so that callers don't see entries for '.' or '..'.  */
 static inline struct dirent const *
 readdir_ignoring_dot_and_dotdot (DIR *dirp)
 {
-  while (true)
+  trong_khi (true)
     {
       struct dirent const *dp = readdir (dirp);
-      if (dp == NULL || ! dot_or_dotdot (dp->d_name))
-        return dp;
+      nếu (dp == NULL || ! dot_or_dotdot (dp->d_name))
+        trả_về dp;
     }
 }
 
@@ -313,32 +313,32 @@ enum {
     DS_EMPTY = -1,
     DS_NONEMPTY = 0,
 };
-static inline int
-directory_status (int fd_cwd, char const *dir)
+static inline số_nguyên
+directory_status (số_nguyên fd_cwd, char const *dir)
 {
   DIR *dirp;
   bool no_direntries;
-  int saved_errno;
-  int fd = openat (fd_cwd, dir,
+  số_nguyên saved_errno;
+  số_nguyên fd = openat (fd_cwd, dir,
                    (O_RDONLY | O_DIRECTORY
                     | O_NOCTTY | O_NOFOLLOW | O_NONBLOCK));
 
-  if (fd < 0)
-    return errno;
+  nếu (fd < 0)
+    trả_về errno;
 
   dirp = fdopendir (fd);
-  if (dirp == NULL)
+  nếu (dirp == NULL)
     {
       saved_errno = errno;
       close (fd);
-      return saved_errno;
+      trả_về saved_errno;
     }
 
   errno = 0;
   no_direntries = !readdir_ignoring_dot_and_dotdot (dirp);
   saved_errno = errno;
   closedir (dirp);
-  return no_direntries && saved_errno == 0 ? DS_EMPTY : saved_errno;
+  trả_về no_direntries && saved_errno == 0 ? DS_EMPTY : saved_errno;
 }
 
 /* Factor out some of the common --help and --version processing code.  */
@@ -428,7 +428,7 @@ enum
 /* Use this to suppress gcc warnings.  */
 #ifdef lint
 # define IF_LINT(Code) Code
-#else
+#không_thì
 # define IF_LINT(Code) /* empty */
 #endif
 
@@ -440,23 +440,23 @@ enum
    checking preferred and may yet be again.  */
 #ifdef lint
 # define main_exit(status) exit (status)
-#else
-# define main_exit(status) return status
+#không_thì
+# define main_exit(status) trả_về status
 #endif
 
 #ifdef __GNUC__
 # define LIKELY(cond)    __builtin_expect ((cond), 1)
 # define UNLIKELY(cond)  __builtin_expect ((cond), 0)
-#else
+#không_thì
 # define LIKELY(cond)    (cond)
 # define UNLIKELY(cond)  (cond)
 #endif
 
 
-#if defined strdupa
+#nếu defined strdupa
 # define ASSIGN_STRDUPA(DEST, S)		\
-  do { DEST = strdupa (S); } while (0)
-#else
+  do { DEST = strdupa (S); } trong_khi (0)
+#không_thì
 # define ASSIGN_STRDUPA(DEST, S)		\
   do						\
     {						\
@@ -465,10 +465,10 @@ enum
       char *tmp_dest_ = alloca (len_);		\
       DEST = memcpy (tmp_dest_, s_, len_);	\
     }						\
-  while (0)
+  trong_khi (0)
 #endif
 
-#if ! HAVE_SYNC
+#nếu ! HAVE_SYNC
 # define sync() /* empty */
 #endif
 
@@ -485,9 +485,9 @@ gcd (size_t u, size_t v)
       u = v;
       v = t;
     }
-  while (v);
+  trong_khi (v);
 
-  return u;
+  trả_về u;
 }
 
 /* Compute the least common multiple of U and V.  U and V must be
@@ -498,7 +498,7 @@ ATTRIBUTE_CONST
 static inline size_t
 lcm (size_t u, size_t v)
 {
-  return u * (v / gcd (u, v));
+  trả_về u * (v / gcd (u, v));
 }
 
 /* Return PTR, aligned upward to the next multiple of ALIGNMENT.
@@ -511,7 +511,7 @@ ptr_align (void const *ptr, size_t alignment)
 {
   char const *p0 = ptr;
   char const *p1 = p0 + alignment - 1;
-  return (void *) (p1 - (size_t) p1 % alignment);
+  trả_về (void *) (p1 - (size_t) p1 % alignment);
 }
 
 /* Return whether the buffer consists entirely of NULs.
@@ -528,42 +528,42 @@ is_nul (void const *buf, size_t length)
    to avoid -fsanitize=undefined warnings.
    Considering coreutils is mainly concerned with relatively
    large buffers, we'll just use the defined behavior.  */
-#if 0 && (_STRING_ARCH_unaligned || _STRING_INLINE_unaligned)
+#nếu 0 && (_STRING_ARCH_unaligned || _STRING_INLINE_unaligned)
   unsigned long word;
-#else
+#không_thì
   unsigned char word;
 #endif
 
-  if (! length)
-    return true;
+  nếu (! length)
+    trả_về true;
 
   /* Check len bytes not aligned on a word.  */
-  while (UNLIKELY (length & (sizeof word - 1)))
+  trong_khi (UNLIKELY (length & (sizeof word - 1)))
     {
-      if (*p)
-        return false;
+      nếu (*p)
+        trả_về false;
       p++;
       length--;
-      if (! length)
-        return true;
+      nếu (! length)
+        trả_về true;
    }
 
   /* Check up to 16 bytes a word at a time.  */
-  for (;;)
+  cho (;;)
     {
       memcpy (&word, p, sizeof word);
-      if (word)
-        return false;
+      nếu (word)
+        trả_về false;
       p += sizeof word;
       length -= sizeof word;
-      if (! length)
-        return true;
-      if (UNLIKELY (length & 15) == 0)
+      nếu (! length)
+        trả_về true;
+      nếu (UNLIKELY (length & 15) == 0)
         break;
    }
 
   /* Now we know first 16 bytes are NUL, memeq with self.  */
-  return memeq (buf, p, length);
+  trả_về memeq (buf, p, length);
 }
 
 /* Set Accum = 10*Accum + Digit_val and return true, where Accum is an
@@ -584,13 +584,13 @@ is_nul (void const *buf, size_t length)
 static inline void
 oputs_ (MAYBE_UNUSED char const *program, char const *option)
 {
-  static int help_markup =
-#if defined MANUAL_URL || defined BOLD_MAN_REFS
+  static số_nguyên help_markup =
+#nếu defined MANUAL_URL || defined BOLD_MAN_REFS
     -1;  /* Lookup.  */
-#else
+#không_thì
     0;   /* Disable.  */
 #endif
-  if (help_markup == -1)
+  nếu (help_markup == -1)
     {
       /* Note one generally would want markup when piping to grep/less etc.
          but we're conservative here for now, and only markup to tty.  */
@@ -599,31 +599,31 @@ oputs_ (MAYBE_UNUSED char const *program, char const *option)
                      ? ((te = getenv ("TERM")) && *te && !streq (te, "dumb"))
                      : getenv ("IN_HELP2MAN") != NULL);
     }
-  if (! help_markup)
+  nếu (! help_markup)
     {
       fputs (option, stdout);
-      return;
+      trả_về;
     }
 
   bool double_space = true;
   char const *first_word = option + strspn (option, " \t\n");
   char const *option_text = strchr (option, '-');
-  if (!option_text)                    /* for dd(1) option syntax.  */
+  nếu (!option_text)                    /* for dd(1) option syntax.  */
     {
       option_text = first_word;
       /* Just match first word to support single spaced
          translated dd "foo=bar description" format.  */
       double_space = false;
     }
-  else if (option_text != first_word)  /* for test(1) option syntax.  */
+  không_thì nếu (option_text != first_word)  /* for test(1) option syntax.  */
     {
       /* Ensure only a single space encountered before '-', to avoid
          matching within descriptions for translated dd option syntax.  */
       char const *s = first_word;
       size_t spaces = 0;
-      while (s < option_text && spaces < 2)
+      trong_khi (s < option_text && spaces < 2)
         spaces += !!isspace (to_uchar (*s++));
-      if (spaces == 2)
+      nếu (spaces == 2)
         {
           /* Probably mismatched dd format.  */
           option_text = first_word;
@@ -637,17 +637,17 @@ oputs_ (MAYBE_UNUSED char const *program, char const *option)
      Any single space is included in highlighted text,
      double space or TAB or newline terminates the option text.  */
   char const *desc_text = option_text + anchor_len;
-  while (*desc_text && *desc_text != '\n')
+  trong_khi (*desc_text && *desc_text != '\n')
     {
-      if (*desc_text == '-' && *(desc_text + 1) == '-')
+      nếu (*desc_text == '-' && *(desc_text + 1) == '-')
         double_space = false;
-      if (isspace (to_uchar (*desc_text)))
+      nếu (isspace (to_uchar (*desc_text)))
         {
-          if (*desc_text == '\t' || isspace (to_uchar (*(desc_text + 1))))
+          nếu (*desc_text == '\t' || isspace (to_uchar (*(desc_text + 1))))
             break;
           /* With long options we restrict the match as some translations
              delimit a long option and description with a single space.  */
-          if (!double_space && *(desc_text + 1) != '-')
+          nếu (!double_space && *(desc_text + 1) != '-')
             break;
         }
 
@@ -674,21 +674,21 @@ oputs_ (MAYBE_UNUSED char const *program, char const *option)
      it's unused with http:// links and not usually useful with file:// links.
      Also there is the possibility that local (hostname agnostic) links
      would work if remotely accessing a similar system to the local one.  */
-  if (STREQ_LEN (option_text, "--help", 6)
+  nếu (STREQ_LEN (option_text, "--help", 6)
       || STREQ_LEN (option_text, "--version", 9))
     {
       /* We don't have --help and --version links for each command,
          and they wouldn't be useful to reference anyway.
          Instead use these to reference the single node manual.  */
       printf ("\033]8;;%s%s#%s%.*s", PACKAGE_URL,
-              url_program, url_program, (int) anchor_len, option_text);
+              url_program, url_program, (số_nguyên) anchor_len, option_text);
     }
-  else
+  không_thì
     {
       /* The single node manual doesn't work for ls, cksum, md5sum, sha*sum,
          so we link to the full manual.  */
       printf ("\033]8;;%s#%s%.*s", MANUAL_URL, url_program,
-              (int) anchor_len, option_text);
+              (số_nguyên) anchor_len, option_text);
     }
   fputs ("\033\\", stdout);
 #endif
@@ -719,20 +719,20 @@ oprintf_ (char const *program, char const *message, ...)
 {
   va_list args;
   char *buf;
-  int buflen = -1;
+  số_nguyên buflen = -1;
 
-#if defined MANUAL_URL || defined BOLD_MAN_REFS
+#nếu defined MANUAL_URL || defined BOLD_MAN_REFS
   va_start (args, message);
   buflen = vasprintf (&buf, message, args);
   va_end (args);
 #endif
 
-  if (buflen < 0)
+  nếu (buflen < 0)
     {
       va_start (args, message);
       vprintf (message, args);
       va_end (args);
-      return;
+      trả_về;
     }
 
   oputs_ (program, buf);
@@ -750,7 +750,7 @@ static inline void
 emit_mandatory_arg_note (void)
 {
   fputs (_("\n\
-Mandatory arguments to long options are mandatory for short options too.\n\
+Mandatory arguments to long options are mandatory cho short options too.\n\
 "), stdout);
 }
 
@@ -770,7 +770,7 @@ emit_blocksize_note (char const *program)
   printf (_("\n\
 Display values are in units of the first available SIZE from --block-size,\n\
 and the %s_BLOCK_SIZE, BLOCK_SIZE and BLOCKSIZE environment variables.\n\
-Otherwise, units default to 1024 bytes (or 512 if POSIXLY_CORRECT is set).\n\
+Otherwise, units default to 1024 bytes (or 512 nếu POSIXLY_CORRECT is set).\n\
 "), program);
 }
 
@@ -787,7 +787,7 @@ destination are replaced, and skipped files do not induce a failure.\n\
 'none-fail' also ensures no files are replaced in the destination,\n\
 but any skipped files are diagnosed and induce a failure.\n\
 'older' is the default operation when --update is specified, and results\n\
-in files being replaced if they're older than the corresponding source file.\n\
+in files being replaced nếu they're older than the corresponding source file.\n\
 "), stdout);
 }
 
@@ -802,9 +802,9 @@ the VERSION_CONTROL environment variable.  Here are the values:\n\
 \n\
 "), stdout);
   fputs (_("\
-  none, off       never make backups (even if --backup is given)\n\
+  none, off       never make backups (even nếu --backup is given)\n\
   numbered, t     make numbered backups\n\
-  existing, nil   numbered if numbered backups exist, simple otherwise\n\
+  existing, nil   numbered nếu numbered backups exist, simple otherwise\n\
   simple, never   always make simple backups\n\
 "), stdout);
 }
@@ -823,7 +823,7 @@ one takes effect. %s is the default.\n\
 "), default_opt);
       oputs_ (program, _("\
   -H\n\
-         if a command line argument is a symlink to a directory, traverse it\n\
+         nếu a command line argument is a symlink to a directory, traverse it\n\
 "));
       oputs_ (program, _("\
   -L\n\
@@ -841,9 +841,9 @@ emit_exec_status (char const *program)
 {
       printf (_("\n\
 Exit status:\n\
-  125  if the %s command itself fails\n\
-  126  if COMMAND is found but cannot be invoked\n\
-  127  if COMMAND cannot be found\n\
+  125  nếu the %s command itself fails\n\
+  126  nếu COMMAND is found but cannot be invoked\n\
+  127  nếu COMMAND cannot be found\n\
   -    the exit status of COMMAND otherwise\n\
 "), program);
 }
@@ -864,10 +864,10 @@ emit_ancillary_info (char const *program)
   char const *node = program;
   struct infomap const *map_prog = infomap;
 
-  while (map_prog->program && ! streq (program, map_prog->program))
+  trong_khi (map_prog->program && ! streq (program, map_prog->program))
     map_prog++;
 
-  if (map_prog->node)
+  nếu (map_prog->node)
     node = map_prog->node;
 
   emit_bug_reporting_address ();
@@ -892,14 +892,14 @@ emit_ancillary_info (char const *program)
       fprintf (stderr, _("Try '%s --help' for more information.\n"), \
                program_name); \
     } \
-  while (0)
+  trong_khi (0)
 
 #include "inttostr.h"
 
 static inline char *
 timetostr (time_t t, char *buf)
 {
-  return (TYPE_SIGNED (time_t)
+  trả_về (TYPE_SIGNED (time_t)
           ? imaxtostr (t, buf)
           : umaxtostr (t, buf));
 }
@@ -907,18 +907,18 @@ timetostr (time_t t, char *buf)
 static inline char *
 bad_cast (char const *s)
 {
-  return (char *) s;
+  trả_về (char *) s;
 }
 
 /* Return a boolean indicating whether SB->st_size is defined.  */
 static inline bool
 usable_st_size (struct stat const *sb)
 {
-  return (S_ISREG (sb->st_mode) || S_ISLNK (sb->st_mode)
+  trả_về (S_ISREG (sb->st_mode) || S_ISLNK (sb->st_mode)
           || S_TYPEISSHM (sb) || S_TYPEISTMO (sb));
 }
 
-_Noreturn void usage (int status);
+_Noreturn void usage (số_nguyên status);
 
 #include <error.h>
 
@@ -927,10 +927,10 @@ _Noreturn void usage (int status);
 #define devmsg(...)			\
   do					\
     {					\
-      if (dev_debug)			\
+      nếu (dev_debug)			\
         fprintf (stderr, __VA_ARGS__);	\
     }					\
-  while (0)
+  trong_khi (0)
 
 #define emit_cycle_warning(file_name)	\
   do					\
@@ -942,14 +942,14 @@ NOTIFY YOUR SYSTEM MANAGER.\n\
 The following directory is part of the cycle:\n  %s\n"), \
              quotef (file_name));	\
     }					\
-  while (0)
+  trong_khi (0)
 
 /* exit with a _single_ "write error" diagnostic.  */
 
 static inline void
 write_error (void)
 {
-  int saved_errno = errno;
+  số_nguyên saved_errno = errno;
   fflush (stdout);    /* Last attempt to write any buffered data.  */
   fpurge (stdout);    /* Ensure nothing buffered that might induce an error. */
   clearerr (stdout);  /* Avoid extraneous diagnostic from close_stdout.  */
@@ -964,10 +964,10 @@ write_error (void)
 static inline char *
 stzncpy (char *restrict dest, char const *restrict src, size_t len)
 {
-  for (size_t i = 0; i < len && *src; i++)
+  cho (size_t i = 0; i < len && *src; i++)
     *dest++ = *src++;
   *dest = 0;
-  return dest;
+  trả_về dest;
 }
 
 /* Return true if ERR is ENOTSUP or EOPNOTSUPP, otherwise false.
@@ -975,9 +975,9 @@ stzncpy (char *restrict dest, char const *restrict src, size_t len)
    systems like Linux for which they have the same value.  It also
    avoids the gcc warning to that effect.  */
 static inline bool
-is_ENOTSUP (int err)
+is_ENOTSUP (số_nguyên err)
 {
-  return err == EOPNOTSUPP || (ENOTSUP != EOPNOTSUPP && err == ENOTSUP);
+  trả_về err == EOPNOTSUPP || (ENOTSUP != EOPNOTSUPP && err == ENOTSUP);
 }
 
 
@@ -1007,21 +1007,21 @@ is_ENOTSUP (int err)
 #ifdef ARGMATCH
 /* Return the quoting style specified by the environment variable
    QUOTING_STYLE if set and valid, -1 otherwise.  */
-static inline int
+static inline số_nguyên
 getenv_quoting_style (void)
 {
   char const *q_style = getenv ("QUOTING_STYLE");
-  if (!q_style)
-    return -1;
+  nếu (!q_style)
+    trả_về -1;
 
-  int i = ARGMATCH (q_style, quoting_style_args, quoting_style_vals);
-  if (i < 0)
+  số_nguyên i = ARGMATCH (q_style, quoting_style_args, quoting_style_vals);
+  nếu (i < 0)
     {
       error (0, 0, _("ignoring invalid value of environment "
                      "variable QUOTING_STYLE: %s"), quote (q_style));
-      return -1;
+      trả_về -1;
     }
-  return quoting_style_vals[i];
+  trả_về quoting_style_vals[i];
 }
 
 /* Used instead of XARGMATCH() to provide a custom error message.  */
@@ -1030,12 +1030,12 @@ x_timestyle_match (char const * style, bool allow_posix,
                    char const *const * timestyle_args,
                    char const * timestyle_types,
                    size_t timestyle_types_size,
-                   int fail_status)
+                   số_nguyên fail_status)
 {
   ptrdiff_t res = argmatch (style, timestyle_args,
                             timestyle_types,
                             timestyle_types_size);
-  if (res < 0)
+  nếu (res < 0)
     {
       /* This whole block used to be a simple use of XARGMATCH.
          but that didn't print the "posix-"-prefixed variants or
@@ -1050,13 +1050,13 @@ x_timestyle_match (char const * style, bool allow_posix,
       fputs (_("Valid arguments are:\n"), stderr);
       char const *const *p = timestyle_args;
       char const *posix_prefix = allow_posix ? "[posix-]" : "";
-      while (*p)
+      trong_khi (*p)
         fprintf (stderr, "  - %s%s\n", posix_prefix, *p++);
       fputs (_("  - +FORMAT (e.g., +%H:%M) for a 'date'-style"
                " format\n"), stderr);
       usage (fail_status);
     }
 
-  return res;
+  trả_về res;
 }
 #endif

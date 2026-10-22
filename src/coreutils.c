@@ -22,7 +22,7 @@
 #include <config.h>
 #include <getopt.h>
 #include <stdio.h>
-#if HAVE_PRCTL
+#nếu HAVE_PRCTL
 # include <sys/prctl.h>
 #endif
 
@@ -34,7 +34,7 @@
    needs to match the one passed as CFLAGS on single-binary.mk (generated
    by gen-single-binary.sh). */
 # define SINGLE_BINARY_PROGRAM(prog_name_str, main_name) \
-  int single_binary_main_##main_name (int, char **);
+  số_nguyên single_binary_main_##main_name (số_nguyên, char **);
 # include "coreutils.h"
 # undef SINGLE_BINARY_PROGRAM
 #endif
@@ -54,11 +54,11 @@ static struct option const long_options[] =
 
 
 void
-usage (int status)
+usage (số_nguyên status)
 {
-  if (status != EXIT_SUCCESS)
+  nếu (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  không_thì
     {
       printf (_("\
 Usage: %s --coreutils-prog=PROGRAM_NAME [PARAMETERS]... \n"),
@@ -83,7 +83,7 @@ Built-in programs:\n\
 
       printf (_("\
 \n\
-Use: '%s --coreutils-prog=PROGRAM_NAME --help' for individual program help.\n"),
+Use: '%s --coreutils-prog=PROGRAM_NAME --help' cho individual program help.\n"),
               program_name);
       emit_ancillary_info (PROGRAM_NAME);
     }
@@ -91,32 +91,32 @@ Use: '%s --coreutils-prog=PROGRAM_NAME --help' for individual program help.\n"),
 }
 
 static void
-launch_program (char const *prog_name, int prog_argc, char **prog_argv)
+launch_program (char const *prog_name, số_nguyên prog_argc, char **prog_argv)
 {
-  int (*prog_main) (int, char **) = NULL;
+  số_nguyên (*prog_main) (số_nguyên, char **) = NULL;
 
   /* Ensure that at least one parameter was passed.  */
-  if (!prog_argc || !prog_argv || !prog_argv[0] || !prog_name)
-    return;
+  nếu (!prog_argc || !prog_argv || !prog_argv[0] || !prog_name)
+    trả_về;
 
 #ifdef SINGLE_BINARY
-  if (false);
+  nếu (false);
   /* Look up the right main program.  */
 # define SINGLE_BINARY_PROGRAM(prog_name_str, main_name) \
-  else if (streq (prog_name_str, prog_name)) \
+  không_thì nếu (streq (prog_name_str, prog_name)) \
     prog_main = single_binary_main_##main_name;
 # include "coreutils.h"
 # undef SINGLE_BINARY_PROGRAM
 #endif
 
-  if (! prog_main)
-    return;
+  nếu (! prog_main)
+    trả_về;
 
-#if HAVE_PRCTL && defined PR_SET_NAME
+#nếu HAVE_PRCTL && defined PR_SET_NAME
   /* Not being able to set the program name is not a fatal error.  */
   prctl (PR_SET_NAME, last_component (prog_argv[0]));
 #endif
-#if HAVE_PRCTL && defined PR_SET_MM_ARG_START
+#nếu HAVE_PRCTL && defined PR_SET_MM_ARG_START
   /* Shift the beginning of the command line to prog_argv[0] (if set) so
      /proc/$pid/cmdline reflects a more specific value.  Note one needs
      CAP_SYS_RESOURCE or root privileges for this to succeed.  */
@@ -126,15 +126,15 @@ launch_program (char const *prog_name, int prog_argc, char **prog_argv)
   exit (prog_main (prog_argc, prog_argv));
 }
 
-int
-main (int argc, char **argv)
+số_nguyên
+main (số_nguyên argc, char **argv)
 {
   char *prog_name = last_component (argv[0]);
-  int optc;
+  số_nguyên optc;
 
   /* Map external name to internal name.  */
   char ginstall[] = "ginstall";
-  if (streq (prog_name, "install"))
+  nếu (streq (prog_name, "install"))
     prog_name = ginstall;
 
   /* If this program is called directly as "coreutils" or if the value of
@@ -149,28 +149,28 @@ main (int argc, char **argv)
      The third argument is what the program will see as argv[0].  */
 
   size_t nskip = 0;
-  if (argc >= 2)
+  nếu (argc >= 2)
     {
       char *arg_name = NULL;
 
       /* If calling coreutils directly, the "script" name isn't passed.
          Distinguish the two cases with a -shebang suffix.  */
-      if (STRPREFIX (argv[1], "--coreutils-prog="))
+      nếu (STRPREFIX (argv[1], "--coreutils-prog="))
         {
           nskip = 1;
           arg_name = prog_name = argv[1] + strlen ("--coreutils-prog=");
         }
-      else if (STRPREFIX (argv[1], "--coreutils-prog-shebang="))
+      không_thì nếu (STRPREFIX (argv[1], "--coreutils-prog-shebang="))
         {
           nskip = 2;
           prog_name = argv[1] + strlen ("--coreutils-prog-shebang=");
-          if (argc >= 3)
+          nếu (argc >= 3)
             arg_name = last_component (argv[2]);
-          else
+          không_thì
             arg_name = prog_name;
         }
 
-      if (nskip)
+      nếu (nskip)
         {
           argv[nskip] = arg_name; /* XXX: Discards any specified path.  */
           launch_program (prog_name, argc - nskip, argv + nskip);
@@ -179,7 +179,7 @@ main (int argc, char **argv)
 
   /* Only process options if calling multi-call binary directly,
      otherwise `foo --version` would succeed.  */
-  if (nskip || (prog_name && !str_endswith (prog_name, "coreutils")))
+  nếu (nskip || (prog_name && !str_endswith (prog_name, "coreutils")))
     {
       fprintf (stderr, _("%s: unknown program %s\n"),
                PROGRAM_NAME, quote (prog_name));
@@ -194,7 +194,7 @@ main (int argc, char **argv)
   textdomain (PACKAGE);
   atexit (close_stdout);
 
-  if ((optc = getopt_long (argc, argv, "", long_options, NULL)) != -1)
+  nếu ((optc = getopt_long (argc, argv, "", long_options, NULL)) != -1)
     switch (optc)
       {
       case_GETOPT_HELP_CHAR;

@@ -281,7 +281,7 @@ struct cp_options
   /* Zero if the source has already been renamed to the destination; a
      positive errno number if this failed with the given errno; -1 if
      no attempt has been made to rename.  Always -1, except for mv.  */
-  int rename_errno;
+  số_nguyên rename_errno;
 
   /* Control creation of COW files.  */
   enum Reflink_type reflink_mode;
@@ -336,14 +336,14 @@ typedef intmax_t count_t;
 # define COUNT_MAX INTMAX_MAX
 
 bool copy (char const *src_name, char const *dst_name,
-           int dst_dirfd, char const *dst_relname,
-           int nonexistent_dst, const struct cp_options *options,
+           số_nguyên dst_dirfd, char const *dst_relname,
+           số_nguyên nonexistent_dst, const struct cp_options *options,
            bool *copy_into_self, bool *rename_succeeded)
   _GL_ATTRIBUTE_NONNULL ((1, 2, 4, 6, 7));
 
-intmax_t copy_file_data (int ifd, struct stat const *ist, off_t ipos,
+intmax_t copy_file_data (số_nguyên ifd, struct stat const *ist, off_t ipos,
                          char const *iname,
-                         int ofd, struct stat const *ost, off_t opos,
+                         số_nguyên ofd, struct stat const *ost, off_t opos,
                          char const *oname,
                          count_t ibytes, struct cp_options const *x,
                          struct copy_debug *copy_debug)

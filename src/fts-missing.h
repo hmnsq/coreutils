@@ -23,7 +23,7 @@
 static inline bool
 ignore_missing_fts_entry (FTSENT const *ent)
 {
-  return (FTS_ROOTLEVEL < ent->fts_level
+  trả_về (FTS_ROOTLEVEL < ent->fts_level
           && ent->fts_info != FTS_SL
           && ent->fts_info != FTS_SLNONE);
 }
@@ -31,7 +31,7 @@ ignore_missing_fts_entry (FTSENT const *ent)
 static inline bool
 ignorable_fts_error (FTSENT const *ent)
 {
-  return (ignorable_traversal_errno (ent->fts_errno)
+  trả_về (ignorable_traversal_errno (ent->fts_errno)
           && (ent->fts_info == FTS_NS || ent->fts_info == FTS_ERR
               || ent->fts_info == FTS_DNR));
 }

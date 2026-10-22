@@ -401,10 +401,10 @@ struct COLUMN
     /* Func to print/store chars in this col. */
     void (*char_func) (char);
 
-    int current_line;		/* Index of current place in line_vector. */
-    int lines_stored;		/* Number of lines stored in buff. */
-    int lines_to_print;		/* No. lines stored or space left on page. */
-    int start_position;		/* Horizontal position of first char. */
+    số_nguyên current_line;		/* Index of current place in line_vector. */
+    số_nguyên lines_stored;		/* Number of lines stored in buff. */
+    số_nguyên lines_to_print;		/* No. lines stored or space left on page. */
+    số_nguyên start_position;		/* Horizontal position of first char. */
     bool numbered;
     bool full_page_printed;	/* True means printed without a FF found. */
 
@@ -416,30 +416,30 @@ struct COLUMN
 
 typedef struct COLUMN COLUMN;
 
-static int char_to_clump (char c);
+static số_nguyên char_to_clump (char c);
 static bool read_line (COLUMN *p);
 static bool print_page (void);
 static bool print_stored (COLUMN *p);
 static bool open_file (char *name, COLUMN *p);
 static bool skip_to_page (uintmax_t page);
 static void print_header (void);
-static void pad_across_to (int position);
+static void pad_across_to (số_nguyên position);
 static void add_line_number (COLUMN *p);
-static int getoptnum (char const *n_str, int min, char const *errfmt);
+static số_nguyên getoptnum (char const *n_str, số_nguyên min, char const *errfmt);
 static void getoptarg (char *arg, char switch_char, char *character,
-                       int *number);
-static void print_files (int number_of_files, char **av);
-static void init_parameters (int number_of_files);
-static void init_header (char const *filename, int desc);
-static bool init_fps (int number_of_files, char **av);
+                       số_nguyên *number);
+static void print_files (số_nguyên number_of_files, char **av);
+static void init_parameters (số_nguyên number_of_files);
+static void init_header (char const *filename, số_nguyên desc);
+static bool init_fps (số_nguyên number_of_files, char **av);
 static void init_funcs (void);
 static void init_store_cols (void);
 static void store_columns (void);
-static void balance (int total_stored);
+static void balance (số_nguyên total_stored);
 static void store_char (char c);
-static void pad_down (unsigned int lines);
+static void pad_down (unsigned số_nguyên lines);
 static void read_rest_of_line (COLUMN *p);
-static void skip_read (COLUMN *p, int column_number);
+static void skip_read (COLUMN *p, số_nguyên column_number);
 static void print_char (char c);
 static void cleanup (void);
 static void print_sep_string (void);
@@ -456,7 +456,7 @@ static char *buff;
 
 /* Index of the position in buff where the next character
    will be stored. */
-static unsigned int buff_current;
+static unsigned số_nguyên buff_current;
 
 /* The number of characters in buff.
    Used for allocation of buff and to detect overflow of buff. */
@@ -466,14 +466,14 @@ static idx_t buff_allocated;
    Each entry is an index of the first character of a line.
    This is used when storing lines to facilitate shuffling when
    we do column balancing on the last page. */
-static int *line_vector;
+static số_nguyên *line_vector;
 
 /* Array of horizontal positions.
    For each line in line_vector, end_vector[line] is the horizontal
    position we are in after printing that line.  We keep track of this
    so that we know how much we need to pad to prepare for the next
    column. */
-static int *end_vector;
+static số_nguyên *end_vector;
 
 /* (-m) True means we're printing multiple files in parallel. */
 static bool parallel_files = false;
@@ -529,17 +529,17 @@ static bool storing_columns = true;
 static bool balance_columns = false;
 
 /* (-l) Number of lines on a page, including header and footer lines. */
-static int lines_per_page = 66;
+static số_nguyên lines_per_page = 66;
 
 /* Number of lines in the header and footer can be reset to 0 using
    the -t flag. */
 enum { lines_per_header = 5 };
-static int lines_per_body;
+static số_nguyên lines_per_body;
 enum { lines_per_footer = 5 };
 
 /* (-w|-W) Width in characters of the page.  Does not include the width of
    the margin. */
-static int chars_per_line = 72;
+static số_nguyên chars_per_line = 72;
 
 /* (-w|W) True means we truncate lines longer than chars_per_column. */
 static bool truncate_lines = false;
@@ -550,7 +550,7 @@ static bool join_lines = false;
 
 /* Number of characters in a column.  Based on col_sep_length and
    page width. */
-static int chars_per_column;
+static số_nguyên chars_per_column;
 
 /* (-e) True means convert tabs to spaces on input. */
 static bool untabify_input = false;
@@ -560,7 +560,7 @@ static char input_tab_char = '\t';
 
 /* (-e) Tabstops are at chars_per_tab, 2*chars_per_tab, 3*chars_per_tab, ...
    where the leftmost column is 1. */
-static int chars_per_input_tab = 8;
+static số_nguyên chars_per_input_tab = 8;
 
 /* (-i) True means convert spaces to tabs on output. */
 static bool tabify_output = false;
@@ -569,27 +569,27 @@ static bool tabify_output = false;
 static char output_tab_char = '\t';
 
 /* (-i) The width of the output tab. */
-static int chars_per_output_tab = 8;
+static số_nguyên chars_per_output_tab = 8;
 
 /* Keeps track of pending white space.  When we hit a nonspace
    character after some whitespace, we print whitespace, tabbing
    if necessary to get to output_position + spaces_not_printed. */
-static int spaces_not_printed;
+static số_nguyên spaces_not_printed;
 
 /* (-o) Number of spaces in the left margin (tabs used when possible). */
-static int chars_per_margin = 0;
+static số_nguyên chars_per_margin = 0;
 
 /* Position where the next character will fall.
    Leftmost position is 0 + chars_per_margin.
    Rightmost position is chars_per_margin + chars_per_line - 1.
    This is important for converting spaces to tabs on output. */
-static int output_position;
+static số_nguyên output_position;
 
 /* Horizontal position relative to the current file.
    (output_position depends on where we are on the page;
    input_position depends on where we are in the file.)
    Important for converting tabs to spaces on input. */
-static int input_position;
+static số_nguyên input_position;
 
 /* True if there were any failed opens so we can exit with nonzero
    status.  */
@@ -604,7 +604,7 @@ static bool failed_opens = false;
 #define POS_AFTER_TAB(c_, h_) ((h_) + TAB_WIDTH (c_, h_))
 
 /* (-NNN) Number of columns of text to print. */
-static int columns = 1;
+static số_nguyên columns = 1;
 
 /* (+NNN:MMM) Page numbers on which to begin and stop printing.
    first_page_number = 0  will be used to check input only. */
@@ -612,7 +612,7 @@ static uintmax_t first_page_number = 0;
 static uintmax_t last_page_number = UINTMAX_MAX;
 
 /* Number of files open (not closed, not on hold). */
-static int files_ready_to_read = 0;
+static số_nguyên files_ready_to_read = 0;
 
 /* Current page number.  Displayed in header. */
 static uintmax_t page_number;
@@ -630,7 +630,7 @@ static uintmax_t page_number;
    Otherwise, line numbering is as follows:
    1    foo     3       goo     5       too
    2    moo     4       hoo     6       zoo */
-static int line_number;
+static số_nguyên line_number;
 
 /* (-n) True means lines should be preceded by numbers. */
 static bool numbered_lines = false;
@@ -640,7 +640,7 @@ static char number_separator = '\t';
 
 /* (-n) line counting starts with 1st line of input file (not with 1st
    line of 1st page printed). */
-static int line_count = 1;
+static số_nguyên line_count = 1;
 
 /* (-n) True means counting of skipped lines starts with 1st line of
    input file. False means -N option is used in addition, counting of
@@ -649,15 +649,15 @@ static bool skip_count = true;
 
 /* (-N) Counting starts with start_line_number = NUMBER at 1st line of
    first page printed, usually not 1st page of input file. */
-static int start_line_num = 1;
+static số_nguyên start_line_num = 1;
 
 /* (-n) Width in characters of a line number. */
-static int chars_per_number = 5;
+static số_nguyên chars_per_number = 5;
 
 /* Used when widening the first column to accommodate numbers -- only
    needed when printing files in parallel.  Includes width of both the
    number and the number_separator. */
-static int number_width;
+static số_nguyên number_width;
 
 /* Buffer sprintf uses to format a line number. */
 static char *number_buff;
@@ -675,7 +675,7 @@ static bool double_space = false;
 
 /* Number of files opened initially in init_files.  Should be 1
    unless we're printing multiple files in parallel. */
-static int total_files = 0;
+static số_nguyên total_files = 0;
 
 /* (-r) True means don't complain if we can't open a file. */
 static bool ignore_failed_opens = false;
@@ -688,17 +688,17 @@ static bool use_col_separator = false;
    Default without -S but together with one of the column options
    -a|COLUMN|-m is a 'space' and with the -J option a 'tab'. */
 static char const *col_sep_string = "";
-static int col_sep_length = 0;
+static số_nguyên col_sep_length = 0;
 static char *column_separator = (char *) " ";
 static char *line_separator = (char *) "\t";
 
 /* Number of separator characters waiting to be printed as soon as we
    know that we have any input remaining to be printed. */
-static int separators_not_printed;
+static số_nguyên separators_not_printed;
 
 /* Position we need to pad to, as soon as we know that we have input
    remaining to be printed. */
-static int padding_not_printed;
+static số_nguyên padding_not_printed;
 
 /* True means we should pad the end of the page.  Remains false until we
    know we have a page to print. */
@@ -718,7 +718,7 @@ static char *date_text;
 static char const *file_text;
 
 /* Output columns available, not counting the date and file name.  */
-static int header_width_available;
+static số_nguyên header_width_available;
 
 static char *clump_buff;
 
@@ -780,54 +780,54 @@ integer_overflow (void)
    stored lines. */
 
 ATTRIBUTE_PURE
-static unsigned int
+static unsigned số_nguyên
 cols_ready_to_print (void)
 {
   COLUMN *q;
-  unsigned int i;
-  unsigned int n;
+  unsigned số_nguyên i;
+  unsigned số_nguyên n;
 
   n = 0;
-  for (q = column_vector, i = 0; i < columns; ++q, ++i)
-    if (q->status == OPEN
+  cho (q = column_vector, i = 0; i < columns; ++q, ++i)
+    nếu (q->status == OPEN
         || q->status == FF_FOUND	/* With -b: To print a header only */
         || (storing_columns && q->lines_stored > 0 && q->lines_to_print > 0))
       ++n;
-  return n;
+  trả_về n;
 }
 
 /* Estimate first_ / last_page_number
    using option +FIRST_PAGE:LAST_PAGE */
 
 static bool
-first_last_page (int oi, char c, char const *pages)
+first_last_page (số_nguyên oi, char c, char const *pages)
 {
   char *p;
   uintmax_t first;
   uintmax_t last = UINTMAX_MAX;
   strtol_error err = xstrtoumax (pages, &p, 10, &first, "");
-  if (err != LONGINT_OK && err != LONGINT_INVALID_SUFFIX_CHAR)
+  nếu (err != LONGINT_OK && err != LONGINT_INVALID_SUFFIX_CHAR)
     xstrtol_fatal (err, oi, c, long_options, pages);
 
-  if (p == pages || !first)
-    return false;
+  nếu (p == pages || !first)
+    trả_về false;
 
-  if (*p == ':')
+  nếu (*p == ':')
     {
       char const *p1 = p + 1;
       err = xstrtoumax (p1, &p, 10, &last, "");
-      if (err != LONGINT_OK)
+      nếu (err != LONGINT_OK)
         xstrtol_fatal (err, oi, c, long_options, pages);
-      if (p1 == p || last < first)
-        return false;
+      nếu (p1 == p || last < first)
+        trả_về false;
     }
 
-  if (*p)
-    return false;
+  nếu (*p)
+    trả_về false;
 
   first_page_number = first;
   last_page_number = last;
-  return true;
+  trả_về true;
 }
 
 /* Parse column count string S, and if it's valid (1 or larger and
@@ -847,16 +847,16 @@ static void
 separator_string (char const *optarg_S)
 {
   size_t len = strlen (optarg_S);
-  if (INT_MAX < len)
+  nếu (INT_MAX < len)
     integer_overflow ();
   col_sep_length = len;
   col_sep_string = optarg_S;
 }
 
-int
-main (int argc, char **argv)
+số_nguyên
+main (số_nguyên argc, char **argv)
 {
-  unsigned int n_files;
+  unsigned số_nguyên n_files;
   bool old_options = false;
   bool old_w = false;
   bool old_s = false;
@@ -880,17 +880,17 @@ main (int argc, char **argv)
                 ? xnmalloc (argc - 1, sizeof (char *))
                 : NULL);
 
-  while (true)
+  trong_khi (true)
     {
-      int oi = -1;
-      int c = getopt_long (argc, argv, short_options, long_options, &oi);
-      if (c == -1)
+      số_nguyên oi = -1;
+      số_nguyên c = getopt_long (argc, argv, short_options, long_options, &oi);
+      nếu (c == -1)
         break;
 
-      if (c_isdigit (c))
+      nếu (c_isdigit (c))
         {
           /* Accumulate column-count digits specified via old-style options. */
-          if (n_digits + 1 >= n_alloc)
+          nếu (n_digits + 1 >= n_alloc)
             column_count_string = xpalloc (column_count_string, &n_alloc, 2, -1,
                                            sizeof *column_count_string);
           column_count_string[n_digits++] = c;
@@ -904,17 +904,17 @@ main (int argc, char **argv)
         {
         case 1:			/* Non-option argument. */
           /* long option --page dominates old '+FIRST_PAGE ...'.  */
-          if (! (first_page_number == 0
+          nếu (! (first_page_number == 0
                  && *optarg == '+' && first_last_page (-2, '+', optarg + 1)))
             file_names[n_files++] = optarg;
           break;
 
         case PAGES_OPTION:	/* --pages=FIRST_PAGE[:LAST_PAGE] */
           {			/* dominates old opt +... */
-            if (! optarg)
+            nếu (! optarg)
               error (EXIT_FAILURE, 0,
                      _("'--pages=FIRST_PAGE[:LAST_PAGE]' missing argument"));
-            else if (! first_last_page (oi, 0, optarg))
+            không_thì nếu (! first_last_page (oi, 0, optarg))
               error (EXIT_FAILURE, 0, _("invalid page range %s"),
                      quote (optarg));
             break;
@@ -950,7 +950,7 @@ main (int argc, char **argv)
           date_format = optarg;
           break;
         case 'e':
-          if (optarg)
+          nếu (optarg)
             getoptarg (optarg, 'e', &input_tab_char,
                        &chars_per_input_tab);
           /* Could check tab width > 0. */
@@ -964,7 +964,7 @@ main (int argc, char **argv)
           custom_header = optarg;
           break;
         case 'i':
-          if (optarg)
+          nếu (optarg)
             getoptarg (optarg, 'i', &output_tab_char,
                        &chars_per_output_tab);
           /* Could check tab width > 0. */
@@ -984,7 +984,7 @@ main (int argc, char **argv)
           break;
         case 'n':
           numbered_lines = true;
-          if (optarg)
+          nếu (optarg)
             getoptarg (optarg, 'n', &number_separator,
                        &chars_per_number);
           break;
@@ -1004,7 +1004,7 @@ main (int argc, char **argv)
         case 's':
           old_options = true;
           old_s = true;
-          if (!use_col_separator && optarg)
+          nếu (!use_col_separator && optarg)
             separator_string (optarg);
           break;
         case 'S':
@@ -1013,7 +1013,7 @@ main (int argc, char **argv)
           col_sep_string = "";
           col_sep_length = 0;
           use_col_separator = true;
-          if (optarg)
+          nếu (optarg)
             separator_string (optarg);
           break;
         case 't':
@@ -1031,10 +1031,10 @@ main (int argc, char **argv)
           old_options = true;
           old_w = true;
           {
-            int tmp_cpl
+            số_nguyên tmp_cpl
               = getoptnum (optarg, 1,
                            _("'-w PAGE_WIDTH' invalid number of characters"));
-            if (! truncate_lines)
+            nếu (! truncate_lines)
               chars_per_line = tmp_cpl;
           }
           break;
@@ -1053,13 +1053,13 @@ main (int argc, char **argv)
         }
     }
 
-  if (column_count_string)
+  nếu (column_count_string)
     {
       parse_column_count (column_count_string);
       free (column_count_string);
     }
 
-  if (! date_format)
+  nếu (! date_format)
     date_format = (getenv ("POSIXLY_CORRECT") && !hard_locale (LC_TIME)
                    ? "%b %e %H:%M %Y"
                    : "%Y-%m-%d %H:%M");
@@ -1067,14 +1067,14 @@ main (int argc, char **argv)
   localtz = tzalloc (getenv ("TZ"));
 
   /* Now we can set a reasonable initial value: */
-  if (first_page_number == 0)
+  nếu (first_page_number == 0)
     first_page_number = 1;
 
-  if (parallel_files && explicit_columns)
+  nếu (parallel_files && explicit_columns)
     error (EXIT_FAILURE, 0,
            _("cannot specify number of columns when printing in parallel"));
 
-  if (parallel_files && print_across_flag)
+  nếu (parallel_files && print_across_flag)
     error (EXIT_FAILURE, 0,
            _("cannot specify both printing across and printing in parallel"));
 
@@ -1082,39 +1082,39 @@ main (int argc, char **argv)
    To meet downward compatibility with other UNIX pr utilities
    and some POSIX specifications. */
 
-  if (old_options)
+  nếu (old_options)
     {
-      if (old_w)
+      nếu (old_w)
         {
-          if (parallel_files || explicit_columns)
+          nếu (parallel_files || explicit_columns)
             {
               /* activate -W */
               truncate_lines = true;
-              if (old_s)
+              nếu (old_s)
                 /* adapt HP-UX and SunOS: -s = no separator;
                    activate -S */
                 use_col_separator = true;
             }
-          else
+          không_thì
             /* old -w sets width with columns only
                activate -J */
             join_lines = true;
         }
-      else if (!use_col_separator)
+      không_thì nếu (!use_col_separator)
         {
           /* No -S option read */
-          if (old_s && (parallel_files || explicit_columns))
+          nếu (old_s && (parallel_files || explicit_columns))
             {
-              if (!truncate_lines)
+              nếu (!truncate_lines)
                 {
                   /* old -s (without -w and -W) annuls column alignment,
                   uses fields, activate -J */
                   join_lines = true;
-                  if (col_sep_length > 0)
+                  nếu (col_sep_length > 0)
                     /* activate -S */
                     use_col_separator = true;
                 }
-              else
+              không_thì
                 /* with -W */
                 /* adapt HP-UX and SunOS: -s = no separator;
                    activate -S */
@@ -1123,40 +1123,40 @@ main (int argc, char **argv)
         }
     }
 
-  for (; optind < argc; optind++)
+  cho (; optind < argc; optind++)
     {
       file_names[n_files++] = argv[optind];
     }
 
-  if (n_files == 0)
+  nếu (n_files == 0)
     {
       /* No file arguments specified;  read from standard input.  */
       print_files (0, NULL);
     }
-  else
+  không_thì
     {
-      if (parallel_files)
+      nếu (parallel_files)
         print_files (n_files, file_names);
-      else
+      không_thì
         {
-          for (unsigned int i = 0; i < n_files; i++)
+          cho (unsigned số_nguyên i = 0; i < n_files; i++)
             print_files (1, &file_names[i]);
         }
     }
 
   cleanup ();
 
-  if (have_read_stdin && fclose (stdin) == EOF)
+  nếu (have_read_stdin && fclose (stdin) == EOF)
     error (EXIT_FAILURE, errno, _("standard input"));
   main_exit (failed_opens ? EXIT_FAILURE : EXIT_SUCCESS);
 }
 
 /* Parse numeric arguments, ensuring MIN <= number <= INT_MAX.  */
 
-static int
-getoptnum (char const *n_str, int min, char const *err)
+static số_nguyên
+getoptnum (char const *n_str, số_nguyên min, char const *err)
 {
-  return xnumtoimax (n_str, 10, min, INT_MAX, "", err, 0,
+  trả_về xnumtoimax (n_str, 10, min, INT_MAX, "", err, 0,
                      min <= 0 ? 0 : XTOINT_MIN_RANGE);
 }
 
@@ -1167,30 +1167,30 @@ getoptnum (char const *n_str, int min, char const *err)
    a number. */
 
 static void
-getoptarg (char *arg, char switch_char, char *character, int *number)
+getoptarg (char *arg, char switch_char, char *character, số_nguyên *number)
 {
   char const *num = arg;
 
-  if (!*num)
+  nếu (!*num)
     {
       error (0, 0, _("'-%c': Invalid argument: %s"), switch_char, quote (num));
       usage (EXIT_FAILURE);
     }
 
-  if (!c_isdigit (*num))
+  nếu (!c_isdigit (*num))
     *character = *num++;
-  if (*num)
+  nếu (*num)
     {
-      long int tmp_long;
+      long số_nguyên tmp_long;
       strtol_error e = xstrtol (num, NULL, 10, &tmp_long, "");
-      if (e == LONGINT_OK)
+      nếu (e == LONGINT_OK)
         {
-          if (tmp_long <= 0)
+          nếu (tmp_long <= 0)
             e = LONGINT_INVALID;
-          else if (INT_MAX < tmp_long)
+          không_thì nếu (INT_MAX < tmp_long)
             e = LONGINT_OVERFLOW;
         }
-      if (e != LONGINT_OK)
+      nếu (e != LONGINT_OK)
         {
           error (0, e & LONGINT_OVERFLOW ? EOVERFLOW : 0,
              _("'-%c' extra characters or invalid number in the argument: %s"),
@@ -1204,44 +1204,44 @@ getoptarg (char *arg, char switch_char, char *character, int *number)
 /* Set parameters related to formatting. */
 
 static void
-init_parameters (int number_of_files)
+init_parameters (số_nguyên number_of_files)
 {
-  int chars_used_by_number = 0;
+  số_nguyên chars_used_by_number = 0;
 
   lines_per_body = lines_per_page - lines_per_header - lines_per_footer;
-  if (lines_per_body <= 0)
+  nếu (lines_per_body <= 0)
     {
       extremities = false;
       keep_FF = true;
     }
-  if (! extremities)
+  nếu (! extremities)
     lines_per_body = lines_per_page;
 
-  if (double_space)
+  nếu (double_space)
     lines_per_body = MAX (1, lines_per_body / 2);
 
   /* If input is stdin, cannot print parallel files.  BSD dumps core
      on this. */
-  if (number_of_files == 0)
+  nếu (number_of_files == 0)
     parallel_files = false;
 
-  if (parallel_files)
+  nếu (parallel_files)
     columns = number_of_files;
 
   /* One file, multi columns down: -b option is set to get a consistent
      formulation with "FF set by hand" in input files. */
-  if (storing_columns)
+  nếu (storing_columns)
     balance_columns = true;
 
   /* Tabification is assumed for multiple columns. */
-  if (columns > 1)
+  nếu (columns > 1)
     {
-      if (!use_col_separator)
+      nếu (!use_col_separator)
         {
           /* Use default separator */
-          if (join_lines)
+          nếu (join_lines)
             col_sep_string = line_separator;
-          else
+          không_thì
             col_sep_string = column_separator;
 
           col_sep_length = 1;
@@ -1249,24 +1249,24 @@ init_parameters (int number_of_files)
         }
       /* It's rather pointless to define a TAB separator with column
          alignment */
-      else if (!join_lines && col_sep_length == 1 && *col_sep_string == '\t')
+      không_thì nếu (!join_lines && col_sep_length == 1 && *col_sep_string == '\t')
         col_sep_string = column_separator;
 
       truncate_lines = true;
-      if (! (col_sep_length == 1 && *col_sep_string == '\t'))
+      nếu (! (col_sep_length == 1 && *col_sep_string == '\t'))
         untabify_input = true;
       tabify_output = true;
     }
-  else
+  không_thì
     storing_columns = false;
 
   /* -J dominates -w in any case */
-  if (join_lines)
+  nếu (join_lines)
     truncate_lines = false;
 
-  if (numbered_lines)
+  nếu (numbered_lines)
     {
-      int chars_per_default_tab = 8;
+      số_nguyên chars_per_default_tab = 8;
 
       line_count = start_line_num;
 
@@ -1276,30 +1276,30 @@ init_parameters (int number_of_files)
              + TAB_WIDTH (chars_per_input_tab, chars_per_number);   */
 
       /* Estimate chars_per_text without any margin and keep it constant. */
-      if (number_separator == '\t')
+      nếu (number_separator == '\t')
         number_width = (chars_per_number
                         + TAB_WIDTH (chars_per_default_tab, chars_per_number));
-      else
+      không_thì
         number_width = chars_per_number + 1;
 
       /* The number is part of the column width unless we are
          printing files in parallel. */
-      if (parallel_files)
+      nếu (parallel_files)
         chars_used_by_number = number_width;
     }
 
-  int sep_chars, useful_chars;
-  if (ckd_mul (&sep_chars, columns - 1, col_sep_length))
+  số_nguyên sep_chars, useful_chars;
+  nếu (ckd_mul (&sep_chars, columns - 1, col_sep_length))
     sep_chars = INT_MAX;
-  if (ckd_sub (&useful_chars, chars_per_line - chars_used_by_number,
+  nếu (ckd_sub (&useful_chars, chars_per_line - chars_used_by_number,
                sep_chars))
     useful_chars = 0;
   chars_per_column = useful_chars / columns;
 
-  if (chars_per_column < 1)
+  nếu (chars_per_column < 1)
     error (EXIT_FAILURE, 0, _("page width too narrow"));
 
-  if (numbered_lines)
+  nếu (numbered_lines)
     {
       free (number_buff);
       number_buff = xmalloc (MAX (chars_per_number,
@@ -1327,7 +1327,7 @@ init_parameters (int number_of_files)
    see also open_file.  */
 
 static bool
-init_fps (int number_of_files, char **av)
+init_fps (số_nguyên number_of_files, char **av)
 {
   COLUMN *p;
 
@@ -1336,32 +1336,32 @@ init_fps (int number_of_files, char **av)
   free (column_vector);
   column_vector = xnmalloc (columns, sizeof (COLUMN));
 
-  if (parallel_files)
+  nếu (parallel_files)
     {
-      int files_left = number_of_files;
-      for (p = column_vector; files_left--; ++p, ++av)
+      số_nguyên files_left = number_of_files;
+      cho (p = column_vector; files_left--; ++p, ++av)
         {
-          if (! open_file (*av, p))
+          nếu (! open_file (*av, p))
             {
               --p;
               --columns;
             }
         }
-      if (columns == 0)
-        return false;
+      nếu (columns == 0)
+        trả_về false;
       init_header ("", -1);
     }
-  else
+  không_thì
     {
       p = column_vector;
-      if (number_of_files > 0)
+      nếu (number_of_files > 0)
         {
-          if (! open_file (*av, p))
-            return false;
+          nếu (! open_file (*av, p))
+            trả_về false;
           init_header (*av, fileno (p->fp));
           p->lines_stored = 0;
         }
-      else
+      không_thì
         {
           p->name = _("standard input");
           p->fp = stdin;
@@ -1375,8 +1375,8 @@ init_fps (int number_of_files, char **av)
 
       char const *firstname = p->name;
       FILE *firstfp = p->fp;
-      int i;
-      for (i = columns - 1, ++p; i; --i, ++p)
+      số_nguyên i;
+      cho (i = columns - 1, ++p; i; --i, ++p)
         {
           p->name = firstname;
           p->fp = firstfp;
@@ -1386,7 +1386,7 @@ init_fps (int number_of_files, char **av)
         }
     }
   files_ready_to_read = total_files;
-  return true;
+  trả_về true;
 }
 
 /* Determine print_func and char_func, the functions
@@ -1398,21 +1398,21 @@ init_fps (int number_of_files, char **av)
 static void
 init_funcs (void)
 {
-  int i, h, h_next;
+  số_nguyên i, h, h_next;
   COLUMN *p;
 
   h = chars_per_margin;
 
-  if (!truncate_lines)
+  nếu (!truncate_lines)
     h_next = ANYWHERE;
-  else
+  không_thì
     {
       /* When numbering lines of parallel files, we enlarge the
          first column to accommodate the number.  Looks better than
          the Sys V approach. */
-      if (parallel_files && numbered_lines)
+      nếu (parallel_files && numbered_lines)
         h_next = h + chars_per_column + number_width;
-      else
+      không_thì
         h_next = h + chars_per_column;
     }
 
@@ -1422,14 +1422,14 @@ init_funcs (void)
 
   /* This loop takes care of all but the rightmost column. */
 
-  for (p = column_vector, i = 1; i < columns; ++p, ++i)
+  cho (p = column_vector, i = 1; i < columns; ++p, ++i)
     {
-      if (storing_columns)	/* One file, multi columns down. */
+      nếu (storing_columns)	/* One file, multi columns down. */
         {
           p->char_func = store_char;
           p->print_func = print_stored;
         }
-      else
+      không_thì
         /* One file, multi columns across; or parallel files.  */
         {
           p->char_func = print_char;
@@ -1445,12 +1445,12 @@ init_funcs (void)
          ANYWHERE, except the first column's start_position when
          using a margin. */
 
-      if (!truncate_lines)
+      nếu (!truncate_lines)
         {
           h = ANYWHERE;
           h_next = ANYWHERE;
         }
-      else
+      không_thì
         {
           h = h_next + col_sep_length;
           h_next = h + chars_per_column;
@@ -1461,12 +1461,12 @@ init_funcs (void)
 
      Doesn't need to be stored unless we intend to balance
      columns on the last page. */
-  if (storing_columns && balance_columns)
+  nếu (storing_columns && balance_columns)
     {
       p->char_func = store_char;
       p->print_func = print_stored;
     }
-  else
+  không_thì
     {
       p->char_func = print_char;
       p->print_func = read_line;
@@ -1484,29 +1484,29 @@ init_funcs (void)
 static bool
 open_file (char *name, COLUMN *p)
 {
-  if (streq (name, "-"))
+  nếu (streq (name, "-"))
     {
       p->name = _("standard input");
       p->fp = stdin;
       have_read_stdin = true;
     }
-  else
+  không_thì
     {
       p->name = name;
       p->fp = fopen (name, "r");
     }
-  if (p->fp == NULL)
+  nếu (p->fp == NULL)
     {
       failed_opens = true;
-      if (!ignore_failed_opens)
+      nếu (!ignore_failed_opens)
         error (0, errno, "%s", quotef (name));
-      return false;
+      trả_về false;
     }
   fadvise (p->fp, FADVISE_SEQUENTIAL);
   p->status = OPEN;
   p->full_page_printed = false;
   ++total_files;
-  return true;
+  trả_về true;
 }
 
 /* Close the file in P.
@@ -1518,33 +1518,33 @@ static void
 close_file (COLUMN *p)
 {
   COLUMN *q;
-  int i;
+  số_nguyên i;
 
-  if (p->status == CLOSED)
-    return;
+  nếu (p->status == CLOSED)
+    trả_về;
 
-  int err = errno;
-  if (!ferror (p->fp))
+  số_nguyên err = errno;
+  nếu (!ferror (p->fp))
     err = 0;
-  if (fileno (p->fp) == STDIN_FILENO)
+  nếu (fileno (p->fp) == STDIN_FILENO)
     clearerr (p->fp);
-  else if (fclose (p->fp) != 0 && !err)
+  không_thì nếu (fclose (p->fp) != 0 && !err)
     err = errno;
-  if (err)
+  nếu (err)
     error (EXIT_FAILURE, err, "%s", quotef (p->name));
 
-  if (!parallel_files)
+  nếu (!parallel_files)
     {
-      for (q = column_vector, i = columns; i; ++q, --i)
+      cho (q = column_vector, i = columns; i; ++q, --i)
         {
           q->status = CLOSED;
-          if (q->lines_stored == 0)
+          nếu (q->lines_stored == 0)
             {
               q->lines_to_print = 0;
             }
         }
     }
-  else
+  không_thì
     {
       p->status = CLOSED;
       p->lines_to_print = 0;
@@ -1563,17 +1563,17 @@ static void
 hold_file (COLUMN *p)
 {
   COLUMN *q;
-  int i;
+  số_nguyên i;
 
-  if (!parallel_files)
-    for (q = column_vector, i = columns; i; ++q, --i)
+  nếu (!parallel_files)
+    cho (q = column_vector, i = columns; i; ++q, --i)
       {
-        if (storing_columns)
+        nếu (storing_columns)
           q->status = FF_FOUND;
-        else
+        không_thì
           q->status = ON_HOLD;
       }
-  else
+  không_thì
     p->status = ON_HOLD;
 
   p->lines_to_print = 0;
@@ -1586,22 +1586,22 @@ hold_file (COLUMN *p)
 static void
 reset_status (void)
 {
-  int i = columns;
+  số_nguyên i = columns;
   COLUMN *p;
 
-  for (p = column_vector; i; --i, ++p)
-    if (p->status == ON_HOLD)
+  cho (p = column_vector; i; --i, ++p)
+    nếu (p->status == ON_HOLD)
       {
         p->status = OPEN;
         files_ready_to_read++;
       }
 
-  if (storing_columns)
+  nếu (storing_columns)
     {
-      if (column_vector->status == CLOSED)
+      nếu (column_vector->status == CLOSED)
         /* We use the info to output an error message in  skip_to_page. */
         files_ready_to_read = 0;
-      else
+      không_thì
         files_ready_to_read = 1;
     }
 }
@@ -1616,28 +1616,28 @@ reset_status (void)
    Print the file(s). */
 
 static void
-print_files (int number_of_files, char **av)
+print_files (số_nguyên number_of_files, char **av)
 {
   init_parameters (number_of_files);
-  if (! init_fps (number_of_files, av))
-    return;
-  if (storing_columns)
+  nếu (! init_fps (number_of_files, av))
+    trả_về;
+  nếu (storing_columns)
     init_store_cols ();
 
-  if (first_page_number > 1)
+  nếu (first_page_number > 1)
     {
-      if (!skip_to_page (first_page_number))
-        return;
-      else
+      nếu (!skip_to_page (first_page_number))
+        trả_về;
+      không_thì
         page_number = first_page_number;
     }
-  else
+  không_thì
     page_number = 1;
 
   init_funcs ();
 
   line_number = line_count;
-  while (print_page ())
+  trong_khi (print_page ())
     ;
 }
 
@@ -1646,42 +1646,42 @@ print_files (int number_of_files, char **av)
    FILENAME for reading.  */
 
 static void
-init_header (char const *filename, int desc)
+init_header (char const *filename, số_nguyên desc)
 {
   char *buf = NULL;
   struct stat st;
   struct timespec t;
-  int ns;
+  số_nguyên ns;
   struct tm tm;
 
   /* If parallel files or standard input, use current date. */
-  if (streq (filename, "-"))
+  nếu (streq (filename, "-"))
     desc = -1;
-  if (0 <= desc && fstat (desc, &st) == 0)
+  nếu (0 <= desc && fstat (desc, &st) == 0)
     t = get_stat_mtime (&st);
-  else
+  không_thì
     {
       static struct timespec timespec;
-      if (! timespec.tv_sec)
+      nếu (! timespec.tv_sec)
         gettime (&timespec);
       t = timespec;
     }
 
   ns = t.tv_nsec;
-  if (localtime_rz (localtz, &t.tv_sec, &tm))
+  nếu (localtime_rz (localtz, &t.tv_sec, &tm))
     {
       ptrdiff_t len = nstrftime (NULL, MIN (PTRDIFF_MAX, SIZE_MAX),
                                  date_format, &tm, localtz, ns);
-      if (0 <= len)
+      nếu (0 <= len)
         {
           buf = ximalloc (len + 1);
           nstrftime (buf, len + 1, date_format, &tm, localtz, ns);
         }
     }
-  if (!buf)
+  nếu (!buf)
     {
       char secbuf[INT_BUFSIZE_BOUND (intmax_t)];
-      buf = xmalloc (sizeof secbuf + MAX (10, INT_BUFSIZE_BOUND (int)));
+      buf = xmalloc (sizeof secbuf + MAX (10, INT_BUFSIZE_BOUND (số_nguyên)));
       sprintf (buf, "%s.%09d", timetostr (t.tv_sec, secbuf), ns);
     }
 
@@ -1706,41 +1706,41 @@ init_header (char const *filename, int desc)
 static void
 init_page (void)
 {
-  int j;
+  số_nguyên j;
   COLUMN *p;
 
-  if (storing_columns)
+  nếu (storing_columns)
     {
       store_columns ();
-      for (j = columns - 1, p = column_vector; j; --j, ++p)
+      cho (j = columns - 1, p = column_vector; j; --j, ++p)
         {
           p->lines_to_print = p->lines_stored;
         }
 
       /* Last column. */
-      if (balance_columns)
+      nếu (balance_columns)
         {
           p->lines_to_print = p->lines_stored;
         }
       /* Since we're not balancing columns, we don't need to store
          the rightmost column.   Read it straight from the file. */
-      else
+      không_thì
         {
-          if (p->status == OPEN)
+          nếu (p->status == OPEN)
             {
               p->lines_to_print = lines_per_body;
             }
-          else
+          không_thì
             p->lines_to_print = 0;
         }
     }
-  else
-    for (j = columns, p = column_vector; j; --j, ++p)
-      if (p->status == OPEN)
+  không_thì
+    cho (j = columns, p = column_vector; j; --j, ++p)
+      nếu (p->status == OPEN)
         {
           p->lines_to_print = lines_per_body;
         }
-      else
+      không_thì
         p->lines_to_print = 0;
 }
 
@@ -1752,16 +1752,16 @@ static void
 align_column (COLUMN *p)
 {
   padding_not_printed = p->start_position;
-  if (col_sep_length < padding_not_printed)
+  nếu (col_sep_length < padding_not_printed)
     {
       pad_across_to (padding_not_printed - col_sep_length);
       padding_not_printed = ANYWHERE;
     }
 
-  if (use_col_separator)
+  nếu (use_col_separator)
     print_sep_string ();
 
-  if (p->numbered)
+  nếu (p->numbered)
     add_line_number (p);
 }
 
@@ -1779,8 +1779,8 @@ align_column (COLUMN *p)
 static bool
 print_page (void)
 {
-  int j;
-  int lines_left_on_page;
+  số_nguyên j;
+  số_nguyên lines_left_on_page;
   COLUMN *p;
 
   /* Used as an accumulator (with | operator) of successive values of
@@ -1794,10 +1794,10 @@ print_page (void)
 
   init_page ();
 
-  if (cols_ready_to_print () == 0)
-    return false;
+  nếu (cols_ready_to_print () == 0)
+    trả_về false;
 
-  if (extremities)
+  nếu (extremities)
     print_a_header = true;
 
   /* Don't pad unless we know a page was printed. */
@@ -1805,10 +1805,10 @@ print_page (void)
   pv = false;
 
   lines_left_on_page = lines_per_body;
-  if (double_space)
+  nếu (double_space)
     lines_left_on_page *= 2;
 
-  while (lines_left_on_page > 0 && cols_ready_to_print () > 0)
+  trong_khi (lines_left_on_page > 0 && cols_ready_to_print () > 0)
     {
       output_position = 0;
       spaces_not_printed = 0;
@@ -1817,88 +1817,88 @@ print_page (void)
       align_empty_cols = false;
       empty_line = true;
 
-      for (j = 1, p = column_vector; j <= columns; ++j, ++p)
+      cho (j = 1, p = column_vector; j <= columns; ++j, ++p)
         {
           input_position = 0;
-          if (p->lines_to_print > 0 || p->status == FF_FOUND)
+          nếu (p->lines_to_print > 0 || p->status == FF_FOUND)
             {
               FF_only = false;
               padding_not_printed = p->start_position;
-              if (!(p->print_func) (p))
+              nếu (!(p->print_func) (p))
                 read_rest_of_line (p);
               pv |= pad_vertically;
 
               --p->lines_to_print;
-              if (p->lines_to_print <= 0)
+              nếu (p->lines_to_print <= 0)
                 {
-                  if (cols_ready_to_print () == 0)
+                  nếu (cols_ready_to_print () == 0)
                     break;
                 }
 
               /* File p changed its status to ON_HOLD or CLOSED */
-              if (parallel_files && p->status != OPEN)
+              nếu (parallel_files && p->status != OPEN)
                 {
-                  if (empty_line)
+                  nếu (empty_line)
                     align_empty_cols = true;
-                  else if (p->status == CLOSED
+                  không_thì nếu (p->status == CLOSED
                            || (p->status == ON_HOLD && FF_only))
                     align_column (p);
                 }
             }
-          else if (parallel_files)
+          không_thì nếu (parallel_files)
             {
               /* File status ON_HOLD or CLOSED */
-              if (empty_line)
+              nếu (empty_line)
                 align_empty_cols = true;
-              else
+              không_thì
                 align_column (p);
             }
 
           /* We need it also with an empty column */
-          if (use_col_separator)
+          nếu (use_col_separator)
             ++separators_not_printed;
         }
 
-      if (pad_vertically)
+      nếu (pad_vertically)
         {
           putchar ('\n');
           --lines_left_on_page;
         }
 
-      if (cols_ready_to_print () == 0 && !extremities)
+      nếu (cols_ready_to_print () == 0 && !extremities)
         break;
 
-      if (double_space && pv)
+      nếu (double_space && pv)
         {
           putchar ('\n');
           --lines_left_on_page;
         }
     }
 
-  if (lines_left_on_page == 0)
-    for (j = 1, p = column_vector; j <= columns; ++j, ++p)
-      if (p->status == OPEN)
+  nếu (lines_left_on_page == 0)
+    cho (j = 1, p = column_vector; j <= columns; ++j, ++p)
+      nếu (p->status == OPEN)
         p->full_page_printed = true;
 
   pad_vertically = pv;
 
-  if (pad_vertically && extremities)
+  nếu (pad_vertically && extremities)
     pad_down (lines_left_on_page + lines_per_footer);
-  else if (keep_FF && print_a_FF)
+  không_thì nếu (keep_FF && print_a_FF)
     {
       putchar ('\f');
       print_a_FF = false;
     }
 
-  if (ferror (stdout))
+  nếu (ferror (stdout))
     write_error ();
 
-  if (last_page_number < ++page_number)
-    return false;		/* Stop printing with LAST_PAGE */
+  nếu (last_page_number < ++page_number)
+    trả_về false;		/* Stop printing with LAST_PAGE */
 
   reset_status ();		/* Change ON_HOLD to OPEN. */
 
-  return true;			/* More pages to go. */
+  trả_về true;			/* More pages to go. */
 }
 
 /* Allocate space for storing columns.
@@ -1919,8 +1919,8 @@ static void
 init_store_cols (void)
 {
   /* Tune this.  */
-  int total_lines, total_lines_1, chars_per_column_1, chars_if_truncate;
-  if (ckd_mul (&total_lines, lines_per_body, columns)
+  số_nguyên total_lines, total_lines_1, chars_per_column_1, chars_if_truncate;
+  nếu (ckd_mul (&total_lines, lines_per_body, columns)
       || ckd_add (&total_lines_1, total_lines, 1)
       || ckd_add (&chars_per_column_1, chars_per_column, 1)
       || ckd_mul (&chars_if_truncate, total_lines, chars_per_column_1)
@@ -1953,37 +1953,37 @@ init_store_cols (void)
 static void
 store_columns (void)
 {
-  int i, j;
-  unsigned int line = 0;
-  unsigned int buff_start;
-  int last_col;		/* The rightmost column which will be saved in buff */
+  số_nguyên i, j;
+  unsigned số_nguyên line = 0;
+  unsigned số_nguyên buff_start;
+  số_nguyên last_col;		/* The rightmost column which will be saved in buff */
   COLUMN *p;
 
   buff_current = 0;
   buff_start = 0;
 
-  if (balance_columns)
+  nếu (balance_columns)
     last_col = columns;
-  else
+  không_thì
     last_col = columns - 1;
 
-  for (i = 1, p = column_vector; i <= last_col; ++i, ++p)
+  cho (i = 1, p = column_vector; i <= last_col; ++i, ++p)
     p->lines_stored = 0;
 
-  for (i = 1, p = column_vector; i <= last_col && files_ready_to_read;
+  cho (i = 1, p = column_vector; i <= last_col && files_ready_to_read;
        ++i, ++p)
     {
       p->current_line = line;
-      for (j = lines_per_body; j && files_ready_to_read; --j)
+      cho (j = lines_per_body; j && files_ready_to_read; --j)
 
-        if (p->status == OPEN)	/* Redundant.  Clean up. */
+        nếu (p->status == OPEN)	/* Redundant.  Clean up. */
           {
             input_position = 0;
 
-            if (!read_line (p))
+            nếu (!read_line (p))
               read_rest_of_line (p);
 
-            if (p->status == OPEN
+            nếu (p->status == OPEN
                 || buff_start != buff_current)
               {
                 ++p->lines_stored;
@@ -1997,21 +1997,21 @@ store_columns (void)
   /* Keep track of the location of the last char in buff. */
   line_vector[line] = buff_start;
 
-  if (balance_columns)
+  nếu (balance_columns)
     balance (line);
 }
 
 static void
-balance (int total_stored)
+balance (số_nguyên total_stored)
 {
   COLUMN *p;
-  int i, lines;
-  int first_line = 0;
+  số_nguyên i, lines;
+  số_nguyên first_line = 0;
 
-  for (i = 1, p = column_vector; i <= columns; ++i, ++p)
+  cho (i = 1, p = column_vector; i <= columns; ++i, ++p)
     {
       lines = total_stored / columns;
-      if (i <= total_stored % columns)
+      nếu (i <= total_stored % columns)
         ++lines;
 
       p->lines_stored = lines;
@@ -2026,7 +2026,7 @@ balance (int total_stored)
 static void
 store_char (char c)
 {
-  if (buff_current >= buff_allocated)
+  nếu (buff_current >= buff_allocated)
     {
       /* May be too generous. */
       buff = xpalloc (buff, &buff_allocated, 1, -1, sizeof *buff);
@@ -2037,44 +2037,44 @@ store_char (char c)
 static void
 add_line_number (COLUMN *p)
 {
-  int i;
+  số_nguyên i;
   char *s;
-  int num_width;
+  số_nguyên num_width;
 
   /* Cutting off the higher-order digits is more informative than
      lower-order cut off. */
   num_width = sprintf (number_buff, "%*d", chars_per_number, line_number);
   line_number++;
   s = number_buff + (num_width - chars_per_number);
-  for (i = chars_per_number; i > 0; i--)
+  cho (i = chars_per_number; i > 0; i--)
     (p->char_func) (*s++);
 
-  if (columns > 1)
+  nếu (columns > 1)
     {
       /* Tabification is assumed for multiple columns, also for n-separators,
          but 'default n-separator = TAB' hasn't been given priority over
          equal column_width also specified by POSIX. */
-      if (number_separator == '\t')
+      nếu (number_separator == '\t')
         {
           i = number_width - chars_per_number;
-          while (i-- > 0)
+          trong_khi (i-- > 0)
             (p->char_func) (' ');
         }
-      else
+      không_thì
         (p->char_func) (number_separator);
     }
-  else
+  không_thì
     /* To comply with POSIX, we avoid any expansion of default TAB
        separator with a single column output. No column_width requirement
        has to be considered. */
     {
       (p->char_func) (number_separator);
-      if (number_separator == '\t')
+      nếu (number_separator == '\t')
         output_position = POS_AFTER_TAB (chars_per_output_tab,
                           output_position);
     }
 
-  if (truncate_lines && !parallel_files)
+  nếu (truncate_lines && !parallel_files)
     input_position += number_width;
 }
 
@@ -2082,15 +2082,15 @@ add_line_number (COLUMN *p)
    is position. */
 
 static void
-pad_across_to (int position)
+pad_across_to (số_nguyên position)
 {
-  int h = output_position;
+  số_nguyên h = output_position;
 
-  if (tabify_output)
+  nếu (tabify_output)
     spaces_not_printed = position - output_position;
-  else
+  không_thì
     {
-      while (++h <= position)
+      trong_khi (++h <= position)
         putchar (' ');
       output_position = position;
     }
@@ -2102,12 +2102,12 @@ pad_across_to (int position)
    Otherwise, use newlines. */
 
 static void
-pad_down (unsigned int lines)
+pad_down (unsigned số_nguyên lines)
 {
-  if (use_form_feed)
+  nếu (use_form_feed)
     putchar ('\f');
-  else
-    for (unsigned int i = lines; i; --i)
+  không_thì
+    cho (unsigned số_nguyên i = lines; i; --i)
       putchar ('\n');
 }
 
@@ -2120,21 +2120,21 @@ pad_down (unsigned int lines)
 static void
 read_rest_of_line (COLUMN *p)
 {
-  int c;
+  số_nguyên c;
   FILE *f = p->fp;
 
-  while ((c = getc (f)) != '\n')
+  trong_khi ((c = getc (f)) != '\n')
     {
-      if (c == '\f')
+      nếu (c == '\f')
         {
-          if ((c = getc (f)) != '\n')
+          nếu ((c = getc (f)) != '\n')
             ungetc (c, f);
-          if (keep_FF)
+          nếu (keep_FF)
             print_a_FF = true;
           hold_file (p);
           break;
         }
-      else if (c == EOF)
+      không_thì nếu (c == EOF)
         {
           close_file (p);
           break;
@@ -2152,54 +2152,54 @@ read_rest_of_line (COLUMN *p)
    printed relative to 1st line of input file (start_line_num). */
 
 static void
-skip_read (COLUMN *p, int column_number)
+skip_read (COLUMN *p, số_nguyên column_number)
 {
-  int c;
+  số_nguyên c;
   FILE *f = p->fp;
-  int i;
+  số_nguyên i;
   bool single_ff = false;
   COLUMN *q;
 
   /* Read 1st character in a line or any character succeeding a FF */
-  if ((c = getc (f)) == '\f' && p->full_page_printed)
+  nếu ((c = getc (f)) == '\f' && p->full_page_printed)
     /* A FF-coincidence with a previous full_page_printed.
        To avoid an additional empty page, eliminate the FF */
-    if ((c = getc (f)) == '\n')
+    nếu ((c = getc (f)) == '\n')
       c = getc (f);
 
   p->full_page_printed = false;
 
   /* 1st character a FF means a single FF without any printable
      characters. Don't count it as a line with -n option. */
-  if (c == '\f')
+  nếu (c == '\f')
     single_ff = true;
 
   /* Preparing for a FF-coincidence: Maybe we finish that page
      without a FF found */
-  if (last_line)
+  nếu (last_line)
     p->full_page_printed = true;
 
-  while (c != '\n')
+  trong_khi (c != '\n')
     {
-      if (c == '\f')
+      nếu (c == '\f')
         {
           /* No FF-coincidence possible,
              no catching up of a FF-coincidence with next page */
-          if (last_line)
+          nếu (last_line)
             {
-              if (!parallel_files)
-                for (q = column_vector, i = columns; i; ++q, --i)
+              nếu (!parallel_files)
+                cho (q = column_vector, i = columns; i; ++q, --i)
                   q->full_page_printed = false;
-              else
+              không_thì
                 p->full_page_printed = false;
             }
 
-          if ((c = getc (f)) != '\n')
+          nếu ((c = getc (f)) != '\n')
             ungetc (c, f);
           hold_file (p);
           break;
         }
-      else if (c == EOF)
+      không_thì nếu (c == EOF)
         {
           close_file (p);
           break;
@@ -2207,8 +2207,8 @@ skip_read (COLUMN *p, int column_number)
       c = getc (f);
     }
 
-  if (skip_count)
-    if ((!parallel_files || column_number == 1) && !single_ff)
+  nếu (skip_count)
+    nếu ((!parallel_files || column_number == 1) && !single_ff)
       ++line_count;
 }
 
@@ -2221,17 +2221,17 @@ skip_read (COLUMN *p, int column_number)
 static void
 print_white_space (void)
 {
-  int h_new;
-  int h_old = output_position;
-  int goal = h_old + spaces_not_printed;
+  số_nguyên h_new;
+  số_nguyên h_old = output_position;
+  số_nguyên goal = h_old + spaces_not_printed;
 
-  while (goal - h_old > 1
+  trong_khi (goal - h_old > 1
          && (h_new = POS_AFTER_TAB (chars_per_output_tab, h_old)) <= goal)
     {
       putchar (output_tab_char);
       h_old = h_new;
     }
-  while (++h_old <= goal)
+  trong_khi (++h_old <= goal)
     putchar (' ');
 
   output_position = goal;
@@ -2247,39 +2247,39 @@ static void
 print_sep_string (void)
 {
   char const *s = col_sep_string;
-  int l = col_sep_length;
+  số_nguyên l = col_sep_length;
 
-  if (separators_not_printed <= 0)
+  nếu (separators_not_printed <= 0)
     {
       /* We'll be starting a line with chars_per_margin, anything else? */
-      if (spaces_not_printed > 0)
+      nếu (spaces_not_printed > 0)
         print_white_space ();
     }
-  else
+  không_thì
     {
-      for (; separators_not_printed > 0; --separators_not_printed)
+      cho (; separators_not_printed > 0; --separators_not_printed)
         {
-          while (l-- > 0)
+          trong_khi (l-- > 0)
             {
               /* 3 types of sep_strings: spaces only, spaces and chars,
               chars only */
-              if (*s == ' ')
+              nếu (*s == ' ')
                 {
                   /* We're tabifying output; consecutive spaces in
                   sep_string may have to be converted to tabs */
                   s++;
                   ++spaces_not_printed;
                 }
-              else
+              không_thì
                 {
-                  if (spaces_not_printed > 0)
+                  nếu (spaces_not_printed > 0)
                     print_white_space ();
                   putchar (*s++);
                   ++output_position;
                 }
             }
           /* sep_string ends with some spaces */
-          if (spaces_not_printed > 0)
+          nếu (spaces_not_printed > 0)
             print_white_space ();
         }
     }
@@ -2289,12 +2289,12 @@ print_sep_string (void)
    characters. */
 
 static void
-print_clump (COLUMN *p, int n, char *clump)
+print_clump (COLUMN *p, số_nguyên n, char *clump)
 {
-  while (n--)
+  trong_khi (n--)
     (p->char_func) (*clump++);
 
-  if (ferror (stdout))
+  nếu (ferror (stdout))
     write_error ();
 }
 
@@ -2310,23 +2310,23 @@ print_clump (COLUMN *p, int n, char *clump)
 static void
 print_char (char c)
 {
-  if (tabify_output)
+  nếu (tabify_output)
     {
-      if (c == ' ')
+      nếu (c == ' ')
         {
           ++spaces_not_printed;
-          return;
+          trả_về;
         }
-      else if (spaces_not_printed > 0)
+      không_thì nếu (spaces_not_printed > 0)
         print_white_space ();
 
       /* Nonprintables are assumed to have width 0, except '\b'. */
-      if (! isprint (to_uchar (c)))
+      nếu (! isprint (to_uchar (c)))
         {
-          if (c == '\b')
+          nếu (c == '\b')
             --output_position;
         }
-      else
+      không_thì
         ++output_position;
     }
   putchar (c);
@@ -2338,31 +2338,31 @@ print_char (char c)
 static bool
 skip_to_page (uintmax_t page)
 {
-  for (uintmax_t n = 1; n < page; ++n)
+  cho (uintmax_t n = 1; n < page; ++n)
     {
       COLUMN *p;
-      int j;
+      số_nguyên j;
 
-      for (int i = 1; i < lines_per_body; ++i)
+      cho (số_nguyên i = 1; i < lines_per_body; ++i)
         {
-          for (j = 1, p = column_vector; j <= columns; ++j, ++p)
-            if (p->status == OPEN)
+          cho (j = 1, p = column_vector; j <= columns; ++j, ++p)
+            nếu (p->status == OPEN)
               skip_read (p, j);
         }
       last_line = true;
-      for (j = 1, p = column_vector; j <= columns; ++j, ++p)
-        if (p->status == OPEN)
+      cho (j = 1, p = column_vector; j <= columns; ++j, ++p)
+        nếu (p->status == OPEN)
           skip_read (p, j);
 
-      if (storing_columns)	/* change FF_FOUND to ON_HOLD */
-        for (j = 1, p = column_vector; j <= columns; ++j, ++p)
-          if (p->status != CLOSED)
+      nếu (storing_columns)	/* change FF_FOUND to ON_HOLD */
+        cho (j = 1, p = column_vector; j <= columns; ++j, ++p)
+          nếu (p->status != CLOSED)
             p->status = ON_HOLD;
 
       reset_status ();
       last_line = false;
 
-      if (files_ready_to_read < 1)
+      nếu (files_ready_to_read < 1)
         {
           /* It's very helpful, normally the total number of pages is
              not known in advance.  */
@@ -2372,7 +2372,7 @@ skip_to_page (uintmax_t page)
           break;
         }
     }
-  return files_ready_to_read > 0;
+  trả_về files_ready_to_read > 0;
 }
 
 /* Print a header.
@@ -2384,15 +2384,15 @@ static void
 print_header (void)
 {
   char page_text[256 + INT_STRLEN_BOUND (page_number)];
-  int available_width;
-  int lhs_spaces;
-  int rhs_spaces;
+  số_nguyên available_width;
+  số_nguyên lhs_spaces;
+  số_nguyên rhs_spaces;
 
   output_position = 0;
   pad_across_to (chars_per_margin);
   print_white_space ();
 
-  if (page_number == 0)
+  nếu (page_number == 0)
     error (EXIT_FAILURE, 0, _("page number overflow"));
 
   /* The translator must ensure that formatting the translation of
@@ -2437,10 +2437,10 @@ print_header (void)
 static bool
 read_line (COLUMN *p)
 {
-  int c;
-  int chars IF_LINT (= 0);
-  int last_input_position;
-  int j, k;
+  số_nguyên c;
+  số_nguyên chars IF_LINT (= 0);
+  số_nguyên last_input_position;
+  số_nguyên j, k;
   COLUMN *q;
 
   /* read 1st character in each line or any character succeeding a FF: */
@@ -2448,111 +2448,111 @@ read_line (COLUMN *p)
 
   last_input_position = input_position;
 
-  if (c == '\f' && p->full_page_printed)
-    if ((c = getc (p->fp)) == '\n')
+  nếu (c == '\f' && p->full_page_printed)
+    nếu ((c = getc (p->fp)) == '\n')
       c = getc (p->fp);
   p->full_page_printed = false;
 
   switch (c)
     {
     case '\f':
-      if ((c = getc (p->fp)) != '\n')
+      nếu ((c = getc (p->fp)) != '\n')
         ungetc (c, p->fp);
       FF_only = true;
-      if (print_a_header && !storing_columns)
+      nếu (print_a_header && !storing_columns)
         {
           pad_vertically = true;
           print_header ();
         }
-      else if (keep_FF)
+      không_thì nếu (keep_FF)
         print_a_FF = true;
       hold_file (p);
-      return true;
+      trả_về true;
     case EOF:
       close_file (p);
-      return true;
+      trả_về true;
     case '\n':
       break;
     default:
       chars = char_to_clump (c);
     }
 
-  if (truncate_lines && input_position > chars_per_column)
+  nếu (truncate_lines && input_position > chars_per_column)
     {
       input_position = last_input_position;
-      return false;
+      trả_về false;
     }
 
-  if (p->char_func != store_char)
+  nếu (p->char_func != store_char)
     {
       pad_vertically = true;
 
-      if (print_a_header && !storing_columns)
+      nếu (print_a_header && !storing_columns)
         print_header ();
 
-      if (parallel_files && align_empty_cols)
+      nếu (parallel_files && align_empty_cols)
         {
           /* We have to align empty columns at the beginning of a line. */
           k = separators_not_printed;
           separators_not_printed = 0;
-          for (j = 1, q = column_vector; j <= k; ++j, ++q)
+          cho (j = 1, q = column_vector; j <= k; ++j, ++q)
             {
               align_column (q);
               separators_not_printed += 1;
             }
           padding_not_printed = p->start_position;
-          if (truncate_lines)
+          nếu (truncate_lines)
             spaces_not_printed = chars_per_column;
-          else
+          không_thì
             spaces_not_printed = 0;
           align_empty_cols = false;
         }
 
-      if (col_sep_length < padding_not_printed)
+      nếu (col_sep_length < padding_not_printed)
         {
           pad_across_to (padding_not_printed - col_sep_length);
           padding_not_printed = ANYWHERE;
         }
 
-      if (use_col_separator)
+      nếu (use_col_separator)
         print_sep_string ();
     }
 
-  if (p->numbered)
+  nếu (p->numbered)
     add_line_number (p);
 
   empty_line = false;
-  if (c == '\n')
-    return true;
+  nếu (c == '\n')
+    trả_về true;
 
   print_clump (p, chars, clump_buff);
 
-  while (true)
+  trong_khi (true)
     {
       c = getc (p->fp);
 
       switch (c)
         {
         case '\n':
-          return true;
+          trả_về true;
         case '\f':
-          if ((c = getc (p->fp)) != '\n')
+          nếu ((c = getc (p->fp)) != '\n')
             ungetc (c, p->fp);
-          if (keep_FF)
+          nếu (keep_FF)
             print_a_FF = true;
           hold_file (p);
-          return true;
+          trả_về true;
         case EOF:
           close_file (p);
-          return true;
+          trả_về true;
         }
 
       last_input_position = input_position;
       chars = char_to_clump (c);
-      if (truncate_lines && input_position > chars_per_column)
+      nếu (truncate_lines && input_position > chars_per_column)
         {
           input_position = last_input_position;
-          return false;
+          trả_về false;
         }
 
       print_clump (p, chars, clump_buff);
@@ -2578,7 +2578,7 @@ print_stored (COLUMN *p)
 {
   COLUMN *q;
 
-  int line = p->current_line++;
+  số_nguyên line = p->current_line++;
   char *first = &buff[line_vector[line]];
   /* FIXME
      UMR: Uninitialized memory read:
@@ -2595,42 +2595,42 @@ print_stored (COLUMN *p)
 
   pad_vertically = true;
 
-  if (print_a_header)
+  nếu (print_a_header)
     print_header ();
 
-  if (p->status == FF_FOUND)
+  nếu (p->status == FF_FOUND)
     {
-      int i;
-      for (i = 1, q = column_vector; i <= columns; ++i, ++q)
+      số_nguyên i;
+      cho (i = 1, q = column_vector; i <= columns; ++i, ++q)
         q->status = ON_HOLD;
-      if (column_vector->lines_to_print <= 0)
+      nếu (column_vector->lines_to_print <= 0)
         {
-          if (!extremities)
+          nếu (!extremities)
             pad_vertically = false;
-          return true;		/* print a header only */
+          trả_về true;		/* print a header only */
         }
     }
 
-  if (col_sep_length < padding_not_printed)
+  nếu (col_sep_length < padding_not_printed)
     {
       pad_across_to (padding_not_printed - col_sep_length);
       padding_not_printed = ANYWHERE;
     }
 
-  if (use_col_separator)
+  nếu (use_col_separator)
     print_sep_string ();
 
-  while (first != last)
+  trong_khi (first != last)
     print_char (*first++);
 
-  if (spaces_not_printed == 0)
+  nếu (spaces_not_printed == 0)
     {
       output_position = p->start_position + end_vector[line];
-      if (p->start_position - col_sep_length == chars_per_margin)
+      nếu (p->start_position - col_sep_length == chars_per_margin)
         output_position -= col_sep_length;
     }
 
-  return true;
+  trả_về true;
 }
 
 /* Convert a character to the proper format and return the number of
@@ -2645,80 +2645,80 @@ print_stored (COLUMN *p)
    characters in clump_buff.  (e.g., the width of '\b' is -1, while the
    number of characters is 1.) */
 
-static int
+static số_nguyên
 char_to_clump (char c)
 {
   unsigned char uc = c;
   char *s = clump_buff;
   char esc_buff[4];
-  int width;
-  int chars;
-  int chars_per_c = 8;
+  số_nguyên width;
+  số_nguyên chars;
+  số_nguyên chars_per_c = 8;
 
-  if (c == input_tab_char)
+  nếu (c == input_tab_char)
     chars_per_c = chars_per_input_tab;
 
-  if (c == input_tab_char || c == '\t')
+  nếu (c == input_tab_char || c == '\t')
     {
       width = TAB_WIDTH (chars_per_c, input_position);
 
-      if (untabify_input)
+      nếu (untabify_input)
         {
-          for (int i = width; i; --i)
+          cho (số_nguyên i = width; i; --i)
             *s++ = ' ';
           chars = width;
         }
-      else
+      không_thì
         {
           *s = c;
           chars = 1;
         }
 
     }
-  else if (! isprint (uc))
+  không_thì nếu (! isprint (uc))
     {
-      if (use_esc_sequence)
+      nếu (use_esc_sequence)
         {
           width = 4;
           chars = 4;
           *s++ = '\\';
           sprintf (esc_buff, "%03o", uc);
-          for (int i = 0; i <= 2; ++i)
+          cho (số_nguyên i = 0; i <= 2; ++i)
             *s++ = esc_buff[i];
         }
-      else if (use_cntrl_prefix)
+      không_thì nếu (use_cntrl_prefix)
         {
-          if (uc < 0200)
+          nếu (uc < 0200)
             {
               width = 2;
               chars = 2;
               *s++ = '^';
               *s = c ^ 0100;
             }
-          else
+          không_thì
             {
               width = 4;
               chars = 4;
               *s++ = '\\';
               sprintf (esc_buff, "%03o", uc);
-              for (int i = 0; i <= 2; ++i)
+              cho (số_nguyên i = 0; i <= 2; ++i)
                 *s++ = esc_buff[i];
             }
         }
-      else if (c == '\b')
+      không_thì nếu (c == '\b')
         {
           width = -1;
           chars = 1;
           *s = c;
         }
-      else
+      không_thì
         {
           width = 0;
           chars = 1;
           *s = c;
         }
     }
-  else
+  không_thì
     {
       width = 1;
       chars = 1;
@@ -2726,20 +2726,20 @@ char_to_clump (char c)
     }
 
   /* Too many backspaces must put us in position 0 -- never negative.  */
-  if (width < 0 && input_position == 0)
+  nếu (width < 0 && input_position == 0)
     {
       chars = 0;
       input_position = 0;
     }
-  else if (width < 0 && input_position <= -width)
+  không_thì nếu (width < 0 && input_position <= -width)
     input_position = 0;
-  else
+  không_thì
     {
-      if (ckd_add (&input_position, input_position, width))
+      nếu (ckd_add (&input_position, input_position, width))
         integer_overflow ();
     }
 
-  return chars;
+  trả_về chars;
 }
 
 /* We've just printed some files and need to clean up things before
@@ -2761,11 +2761,11 @@ cleanup (void)
 /* Complain, print a usage message, and die. */
 
 void
-usage (int status)
+usage (số_nguyên status)
 {
-  if (status != EXIT_SUCCESS)
+  nếu (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  không_thì
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE]...\n\
@@ -2773,7 +2773,7 @@ Usage: %s [OPTION]... [FILE]...\n\
               program_name);
 
       fputs (_("\
-Paginate or columnate FILE(s) for printing.\n\
+Paginate or columnate FILE(s) cho printing.\n\
 "), stdout);
 
       emit_stdin_note ();
@@ -2802,7 +2802,7 @@ Paginate or columnate FILE(s) for printing.\n\
 "));
       oputs (_("\
   -D, --date-format=FORMAT\n\
-         use FORMAT for the header date\n\
+         use FORMAT cho the header date\n\
 "));
       oputs (_("\
   -e[CHAR[WIDTH]], --expand-tabs[=CHAR[WIDTH]]\n\
@@ -2832,7 +2832,7 @@ Paginate or columnate FILE(s) for printing.\n\
   -l, --length=PAGE_LENGTH\n\
          set the page length to PAGE_LENGTH (66) lines\n\
          (default number of lines of text 56, and with -F 63).\n\
-         implies -t if PAGE_LENGTH <= 10\n\
+         implies -t nếu PAGE_LENGTH <= 10\n\
 "));
       oputs (_("\
   -m, --merge\n\
@@ -2860,7 +2860,7 @@ Paginate or columnate FILE(s) for printing.\n\
 "));
       oputs (_("\
   -s[CHAR], --separator[=CHAR]\n\
-         separate columns by a single character, default for CHAR\n\
+         separate columns by a single character, default cho CHAR\n\
          is the <TAB> character without -w and \'no char\' with -w.\n\
          -s[CHAR] turns off line truncation of all 3 column\n\
          options (-COLS|-a -COLS|-m) except -w is set\n\
@@ -2873,7 +2873,7 @@ Paginate or columnate FILE(s) for printing.\n\
 "));
       oputs (_("\
   -t, --omit-header\n\
-         omit page headers and trailers; implied if PAGE_LENGTH <= 10\n\
+         omit page headers and trailers; implied nếu PAGE_LENGTH <= 10\n\
 "));
       oputs (_("\
   -T, --omit-pagination\n\
@@ -2886,7 +2886,7 @@ Paginate or columnate FILE(s) for printing.\n\
 "));
       oputs (_("\
   -w, --width=PAGE_WIDTH\n\
-         set page width to PAGE_WIDTH (72) characters for\n\
+         set page width to PAGE_WIDTH (72) characters cho\n\
          multiple text-column output only, -s[char] turns off (72)\n\
 "));
       oputs (_("\

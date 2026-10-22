@@ -77,7 +77,7 @@ static bool recurse;
 
 /* 1 if --dereference, 0 if --no-dereference, -1 if neither has been
    specified.  */
-static int dereference = -1;
+static số_nguyên dereference = -1;
 
 /* If true, force silence (suppress most of error messages). */
 static bool force_silent;
@@ -125,32 +125,32 @@ static struct option const long_options[] =
    The old mode was OLD_MODE, but it was changed to NEW_MODE.  */
 
 static bool
-mode_changed (int dir_fd, char const *file, char const *file_full_name,
+mode_changed (số_nguyên dir_fd, char const *file, char const *file_full_name,
               mode_t old_mode, mode_t new_mode, bool ignore_missing,
               bool *file_missing)
 {
   *file_missing = false;
-  if (new_mode & (S_ISUID | S_ISGID | S_ISVTX))
+  nếu (new_mode & (S_ISUID | S_ISGID | S_ISVTX))
     {
       /* The new mode contains unusual bits that the call to chmod may
          have silently cleared.  Check whether they actually changed.  */
 
       struct stat new_stats;
 
-      if (fstatat (dir_fd, file, &new_stats, 0) != 0)
+      nếu (fstatat (dir_fd, file, &new_stats, 0) != 0)
         {
           *file_missing = (ignore_missing
                            && ignorable_traversal_errno (errno));
-          if (! *file_missing && ! force_silent)
+          nếu (! *file_missing && ! force_silent)
             error (0, errno, _("getting new attributes of %s"),
                    quoteaf (file_full_name));
-          return false;
+          trả_về false;
         }
 
       new_mode = new_stats.st_mode;
     }
 
-  return ((old_mode ^ new_mode) & CHMOD_MODE_BITS) != 0;
+  trả_về ((old_mode ^ new_mode) & CHMOD_MODE_BITS) != 0;
 }
 
 /* Tell the user how/if the MODE of FILE has been changed.
@@ -169,17 +169,17 @@ describe_change (char const *file, struct change_status const *ch)
     case CH_NOT_APPLIED:
       printf (_("neither symbolic link %s nor referent has been changed\n"),
               quoted_file);
-      return;
+      trả_về;
 
     case CH_NO_STAT:
       printf (_("%s could not be accessed\n"), quoted_file);
-      return;
+      trả_về;
 
     case CH_FAILED: case CH_NO_CHANGE_REQUESTED: case CH_SUCCEEDED:
       break;
   }
 
-  unsigned long int
+  unsigned long số_nguyên
     old_m = ch->old_mode & CHMOD_MODE_BITS,
     m = ch->new_mode & CHMOD_MODE_BITS;
 
@@ -200,7 +200,7 @@ describe_change (char const *file, struct change_status const *ch)
     case CH_NO_CHANGE_REQUESTED:
       fmt = _("mode of %s retained as %04lo (%s)\n");
       printf (fmt, quoted_file, m, &perms[1]);
-      return;
+      trả_về;
     case CH_NO_STAT: case CH_NOT_APPLIED: default:
       affirm (false);
     }
@@ -222,13 +222,13 @@ process_file (FTS *fts, FTSENT *ent)
   struct stat stat_buf;
   bool ignore_missing = ignore_missing_fts_entry (ent);
 
-  if (ignore_missing && ignorable_fts_error (ent))
-    return true;
+  nếu (ignore_missing && ignorable_fts_error (ent))
+    trả_về true;
 
   switch (ent->fts_info)
     {
     case FTS_DP:
-      return true;
+      trả_về true;
 
     case FTS_NS:
       /* For a top-level file or directory, this FTS_NS (stat failed)
@@ -238,32 +238,32 @@ process_file (FTS *fts, FTSENT *ent)
          accessible when control reaches this point.  So, if this is
          the first time we've seen the FTS_NS for this file, tell
          fts_read to stat it "again".  */
-      if (ent->fts_level == FTS_ROOTLEVEL && ent->fts_number == 0)
+      nếu (ent->fts_level == FTS_ROOTLEVEL && ent->fts_number == 0)
         {
           ent->fts_number = 1;
           fts_set (fts, ent, FTS_AGAIN);
-          return true;
+          trả_về true;
         }
-      if (! force_silent)
+      nếu (! force_silent)
         error (0, ent->fts_errno, _("cannot access %s"),
                quoteaf (file_full_name));
       break;
 
     case FTS_ERR:
-      if (! force_silent)
+      nếu (! force_silent)
         error (0, ent->fts_errno, "%s", quotef (file_full_name));
       break;
 
     case FTS_DNR:
-      if (! force_silent)
+      nếu (! force_silent)
         error (0, ent->fts_errno, _("cannot read directory %s"),
                quoteaf (file_full_name));
       break;
 
     case FTS_SLNONE:
-      if (dereference)
+      nếu (dereference)
         {
-          if (! force_silent)
+          nếu (! force_silent)
             error (0, 0, _("cannot operate on dangling symlink %s"),
                    quoteaf (file_full_name));
           break;
@@ -272,14 +272,14 @@ process_file (FTS *fts, FTSENT *ent)
       break;
 
     case FTS_SL:
-      if (dereference == 1)
+      nếu (dereference == 1)
         {
-          if (fstatat (fts->fts_cwd_fd, file, &stat_buf, 0) != 0)
+          nếu (fstatat (fts->fts_cwd_fd, file, &stat_buf, 0) != 0)
             {
-              if (ignore_missing
+              nếu (ignore_missing
                   && ignorable_traversal_errno (errno))
-                return true;
-              if (! force_silent)
+                trả_về true;
+              nếu (! force_silent)
                 error (0, errno, _("cannot dereference %s"),
                        quoteaf (file_full_name));
               break;
@@ -291,10 +291,10 @@ process_file (FTS *fts, FTSENT *ent)
       break;
 
     case FTS_DC:		/* directory that causes cycles */
-      if (cycle_warning_required (fts, ent))
+      nếu (cycle_warning_required (fts, ent))
         {
           emit_cycle_warning (file_full_name);
-          return false;
+          trả_về false;
         }
       FALLTHROUGH;
     default:
@@ -302,7 +302,7 @@ process_file (FTS *fts, FTSENT *ent)
       break;
     }
 
-  if (ch.status == CH_NOT_APPLIED
+  nếu (ch.status == CH_NOT_APPLIED
       && ROOT_DEV_INO_CHECK (root_dev_ino, file_stats))
     {
       ROOT_DEV_INO_WARN (file_full_name);
@@ -310,28 +310,28 @@ process_file (FTS *fts, FTSENT *ent)
       fts_set (fts, ent, FTS_SKIP);
       /* Ensure that we do not process "/" on the second visit.  */
       ignore_value (fts_read (fts));
-      return false;
+      trả_về false;
     }
 
-  if (ch.status == CH_NOT_APPLIED)
+  nếu (ch.status == CH_NOT_APPLIED)
     {
       ch.old_mode = file_stats->st_mode;
       ch.new_mode = mode_adjust (ch.old_mode, S_ISDIR (ch.old_mode) != 0,
                                  umask_value, change, NULL);
       bool follow_symlink = !!dereference;
-      if (dereference == -1) /* -H with/without -R, -P without -R.  */
+      nếu (dereference == -1) /* -H with/without -R, -P without -R.  */
         follow_symlink = ent->fts_level == FTS_ROOTLEVEL;
-      if (fchmodat (fts->fts_cwd_fd, file, ch.new_mode,
+      nếu (fchmodat (fts->fts_cwd_fd, file, ch.new_mode,
                     follow_symlink ? 0 : AT_SYMLINK_NOFOLLOW) == 0)
         ch.status = CH_SUCCEEDED;
-      else
+      không_thì
         {
-          if (ignore_missing
+          nếu (ignore_missing
               && ignorable_traversal_errno (errno))
-            return true;
-          if (! is_ENOTSUP (errno))
+            trả_về true;
+          nếu (! is_ENOTSUP (errno))
             {
-              if (! force_silent)
+              nếu (! force_silent)
                 error (0, errno, _("changing permissions of %s"),
                        quoteaf (file_full_name));
 
@@ -341,29 +341,29 @@ process_file (FTS *fts, FTSENT *ent)
         }
     }
 
-  if (verbosity != V_off)
+  nếu (verbosity != V_off)
     {
       bool file_missing;
-      if (ch.status == CH_SUCCEEDED
+      nếu (ch.status == CH_SUCCEEDED
           && !mode_changed (fts->fts_cwd_fd, file, file_full_name,
                             ch.old_mode, ch.new_mode, ignore_missing,
                             &file_missing))
         {
-          if (file_missing)
-            return true;
+          nếu (file_missing)
+            trả_về true;
           ch.status = CH_NO_CHANGE_REQUESTED;
         }
 
-      if (ch.status == CH_SUCCEEDED || verbosity == V_high)
+      nếu (ch.status == CH_SUCCEEDED || verbosity == V_high)
         describe_change (file_full_name, &ch);
     }
 
-  if (CH_NO_CHANGE_REQUESTED <= ch.status && diagnose_surprises)
+  nếu (CH_NO_CHANGE_REQUESTED <= ch.status && diagnose_surprises)
     {
       mode_t naively_expected_mode =
         mode_adjust (ch.old_mode, S_ISDIR (ch.old_mode) != 0,
                      0, change, NULL);
-      if (ch.new_mode & ~naively_expected_mode)
+      nếu (ch.new_mode & ~naively_expected_mode)
         {
           char new_perms[12];
           char naively_expected_perms[12];
@@ -378,10 +378,10 @@ process_file (FTS *fts, FTSENT *ent)
         }
     }
 
-  if ( ! recurse)
+  nếu ( ! recurse)
     fts_set (fts, ent, FTS_SKIP);
 
-  return CH_NOT_APPLIED <= ch.status;
+  trả_về CH_NOT_APPLIED <= ch.status;
 }
 
 /* Recursively change the modes of the specified FILES (the last entry
@@ -389,23 +389,23 @@ process_file (FTS *fts, FTSENT *ent)
    Return true if successful.  */
 
 static bool
-process_files (char **files, int bit_flags)
+process_files (char **files, số_nguyên bit_flags)
 {
   bool ok = true;
 
   FTS *fts = xfts_open (files, bit_flags, NULL);
 
-  while (true)
+  trong_khi (true)
     {
       FTSENT *ent;
 
       ent = fts_read (fts);
-      if (ent == NULL)
+      nếu (ent == NULL)
         {
-          if (errno != 0)
+          nếu (errno != 0)
             {
               /* FIXME: try to give a better message  */
-              if (! force_silent)
+              nếu (! force_silent)
                 error (0, errno, _("fts_read failed"));
               ok = false;
             }
@@ -415,21 +415,21 @@ process_files (char **files, int bit_flags)
       ok &= process_file (fts, ent);
     }
 
-  if (fts_close (fts) != 0)
+  nếu (fts_close (fts) != 0)
     {
       error (0, errno, _("fts_close failed"));
       ok = false;
     }
 
-  return ok;
+  trả_về ok;
 }
 
 void
-usage (int status)
+usage (số_nguyên status)
 {
-  if (status != EXIT_SUCCESS)
+  nếu (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  không_thì
     {
       printf (_("\
 Usage: %s [OPTION]... MODE[,MODE]... FILE...\n\
@@ -452,7 +452,7 @@ With --reference, change the mode of each FILE to that of RFILE.\n\
 "));
       oputs (_("\
   -v, --verbose\n\
-         output a diagnostic for every file processed\n\
+         output a diagnostic cho every file processed\n\
 "));
       oputs (_("\
       --dereference\n\
@@ -474,7 +474,7 @@ With --reference, change the mode of each FILE to that of RFILE.\n\
       oputs (_("\
       --reference=RFILE\n\
          use RFILE's mode instead of specifying MODE values.\n\
-         RFILE is always dereferenced if a symbolic link.\n\
+         RFILE is always dereferenced nếu a symbolic link.\n\
 "));
       oputs (_("\
   -R, --recursive\n\
@@ -495,8 +495,8 @@ Each MODE is of the form '[ugoa]*([-+=]([rwxXst]*|[ugo]))+|[-+=][0-7]+'.\n\
 /* Parse the ASCII mode given on the command line into a linked list
    of 'struct mode_change' and apply that to each file argument. */
 
-int
-main (int argc, char **argv)
+số_nguyên
+main (số_nguyên argc, char **argv)
 {
   char *mode = NULL;
   idx_t mode_len = 0;
@@ -504,8 +504,8 @@ main (int argc, char **argv)
   bool ok;
   bool preserve_root = false;
   char const *reference_file = NULL;
-  int c;
-  int bit_flags = FTS_COMFOLLOW | FTS_PHYSICAL;
+  số_nguyên c;
+  số_nguyên bit_flags = FTS_COMFOLLOW | FTS_PHYSICAL;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -515,7 +515,7 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((c = getopt_long (argc, argv,
+  trong_khi ((c = getopt_long (argc, argv,
                            ("HLPRcfhvr::w::x::X::s::t::u::g::o::a::,::+::=::"
                             "0::1::2::3::4::5::6::7::"),
                            long_options, NULL))
@@ -575,7 +575,7 @@ main (int argc, char **argv)
             idx_t mode_comma_len = mode_len + !!mode_len;
             idx_t new_mode_len = mode_comma_len + arg_len;
             assume (0 <= new_mode_len);  /* Pacify GCC bug #109613.  */
-            if (mode_alloc <= new_mode_len)
+            nếu (mode_alloc <= new_mode_len)
               mode = xpalloc (mode, &mode_alloc,
                               new_mode_len + 1 - mode_alloc, -1, 1);
             mode[mode_len] = ',';
@@ -613,54 +613,54 @@ main (int argc, char **argv)
         }
     }
 
-  if (recurse)
+  nếu (recurse)
     {
-      if (bit_flags == FTS_PHYSICAL)
+      nếu (bit_flags == FTS_PHYSICAL)
         {
-          if (dereference == 1)
+          nếu (dereference == 1)
             error (EXIT_FAILURE, 0,
                    _("-R --dereference requires either -H or -L"));
           dereference = 0;
         }
     }
 
-  if (dereference == -1 && bit_flags == FTS_LOGICAL)
+  nếu (dereference == -1 && bit_flags == FTS_LOGICAL)
     dereference = 1;
 
-  if (reference_file)
+  nếu (reference_file)
     {
-      if (mode)
+      nếu (mode)
         {
           error (0, 0, _("cannot combine mode and --reference options"));
           usage (EXIT_FAILURE);
         }
     }
-  else
+  không_thì
     {
-      if (!mode)
+      nếu (!mode)
         mode = argv[optind++];
     }
 
-  if (optind >= argc)
+  nếu (optind >= argc)
     {
-      if (!mode || mode != argv[optind - 1])
+      nếu (!mode || mode != argv[optind - 1])
         error (0, 0, _("missing operand"));
-      else
+      không_thì
         error (0, 0, _("missing operand after %s"), quote (argv[argc - 1]));
       usage (EXIT_FAILURE);
     }
 
-  if (reference_file)
+  nếu (reference_file)
     {
       change = mode_create_from_ref (reference_file);
-      if (!change)
+      nếu (!change)
         error (EXIT_FAILURE, errno, _("failed to get attributes of %s"),
                quoteaf (reference_file));
     }
-  else
+  không_thì
     {
       change = mode_compile (mode);
-      if (!change)
+      nếu (!change)
         {
           error (0, 0, _("invalid mode: %s"), quote (mode));
           usage (EXIT_FAILURE);
@@ -668,15 +668,15 @@ main (int argc, char **argv)
       umask_value = umask (0);
     }
 
-  if (recurse && preserve_root)
+  nếu (recurse && preserve_root)
     {
       static struct dev_ino dev_ino_buf;
       root_dev_ino = get_root_dev_ino (&dev_ino_buf);
-      if (root_dev_ino == NULL)
+      nếu (root_dev_ino == NULL)
         error (EXIT_FAILURE, errno, _("failed to get attributes of %s"),
                quoteaf ("/"));
     }
-  else
+  không_thì
     {
       root_dev_ino = NULL;
     }

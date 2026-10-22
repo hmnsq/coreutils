@@ -64,16 +64,16 @@ static struct option const longopts[] =
 };
 
 void
-usage (int status)
+usage (số_nguyên status)
 {
-  if (status != EXIT_SUCCESS)
+  nếu (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  không_thì
     {
       printf (_("\
 Usage: %s [OPTION] [VARIABLE]...\n\
 Print the values of the specified environment VARIABLE(s).\n\
-If no VARIABLE is specified, print name and value pairs for them all.\n\
+If no VARIABLE is specified, print name and value pairs cho them all.\n\
 \n\
 "),
               program_name);
@@ -83,7 +83,7 @@ If no VARIABLE is specified, print name and value pairs for them all.\n\
 "));
       oputs (_("\
       --quoting-style=WORD\n\
-         use quoting style WORD for names and values:\n\
+         use quoting style WORD cho names and values:\n\
            literal, locale, shell, shell-always,\n\
            shell-escape, shell-escape-always, c, escape\n\
 "));
@@ -95,11 +95,11 @@ If no VARIABLE is specified, print name and value pairs for them all.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+số_nguyên
+main (số_nguyên argc, char **argv)
 {
   bool opt_nul_terminate_output = false;
-  int quoting_style_opt = -1;
+  số_nguyên quoting_style_opt = -1;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -110,8 +110,8 @@ main (int argc, char **argv)
   initialize_exit_failure (PRINTENV_FAILURE);
   atexit (close_stdout);
 
-  int optc;
-  while ((optc = getopt_long (argc, argv, "+0", longopts, NULL)) != -1)
+  số_nguyên optc;
+  trong_khi ((optc = getopt_long (argc, argv, "+0", longopts, NULL)) != -1)
     {
       switch (optc)
         {
@@ -132,14 +132,14 @@ main (int argc, char **argv)
     }
 
   bool quote_output = false;
-  int qs = quoting_style_opt;
-  if (qs < 0 && isatty (STDOUT_FILENO))
+  số_nguyên qs = quoting_style_opt;
+  nếu (qs < 0 && isatty (STDOUT_FILENO))
     {
       qs = getenv_quoting_style ();
-      if (qs < 0)
+      nếu (qs < 0)
         qs = shell_escape_quoting_style;
     }
-  if (0 <= qs && qs != literal_quoting_style)
+  nếu (0 <= qs && qs != literal_quoting_style)
     {
       set_quoting_style (NULL, qs);
       quote_output = true;
@@ -149,34 +149,34 @@ main (int argc, char **argv)
   bool ok;
   char const terminator = opt_nul_terminate_output ? '\0' : '\n';
 
-  if (opt_nul_terminate_output)
+  nếu (opt_nul_terminate_output)
     xset_binary_mode (STDOUT_FILENO, O_BINARY);
 
-  if (n_args <= 0)
+  nếu (n_args <= 0)
     {
-      for (char **env = environ; *env != NULL; ++env)
+      cho (char **env = environ; *env != NULL; ++env)
         print_envvar (*env, terminator, quote_output);
       ok = true;
     }
-  else
+  không_thì
     {
-      int matches = 0;
+      số_nguyên matches = 0;
 
-      for (int i = optind; i < argc; ++i)
+      cho (số_nguyên i = optind; i < argc; ++i)
         {
           bool matched = false;
 
           /* 'printenv a=b' is silent, even if 'a=b=c' is in environ.  */
-          if (strchr (argv[i], '='))
+          nếu (strchr (argv[i], '='))
             continue;
 
-          for (char **env = environ; *env; ++env)
+          cho (char **env = environ; *env; ++env)
             {
               char const *ep = *env;
               char const *ap = argv[i];
-              while (*ep != '\0' && *ap != '\0' && *ep++ == *ap++)
+              trong_khi (*ep != '\0' && *ap != '\0' && *ep++ == *ap++)
                 {
-                  if (*ep == '=' && *ap == '\0')
+                  nếu (*ep == '=' && *ap == '\0')
                     {
                       char const *val = ep + 1;
                       fputs (quote_output ? quoteN (val) : val, stdout);
@@ -193,5 +193,5 @@ main (int argc, char **argv)
       ok = (matches == argc - optind);
     }
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  trả_về ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }
