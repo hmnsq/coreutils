@@ -1,5 +1,5 @@
-#include <stdint.h>
-struct wc_lines { int err; intmax_t lines; intmax_t bytes; };
-struct wc_lines wc_lines_avx2 (int);
-struct wc_lines wc_lines_avx512 (int);
-struct wc_lines wc_lines_neon (int fd);
+#ضمن <stdint.h>
+بنية wc_ليوك { صحيح err; intmax_t ليوك; intmax_t bytes; };
+بنية wc_ليوك wc_ليوك_avx2 (صحيح);
+بنية wc_ليوك wc_ليوك_avx512 (صحيح);
+بنية wc_ليوك wc_ليوك_neon (صحيح fd);

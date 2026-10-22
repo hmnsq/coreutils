@@ -17,18 +17,18 @@
 
 /* Written by David MacKenzie <djm@gnu.ai.mit.edu> */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/utsname.h>
-#include <getopt.h>
+#ضمن <config.h>
+#ضمن <stdio.h>
+#ضمن <sys/types.h>
+#ضمن <sys/utsname.h>
+#ضمن <getopt.h>
 
-#if HAVE_SYSINFO && HAVE_SYS_SYSTEMINFO_H
+#إذا HAVE_SYSINFO && HAVE_SYS_SYSTEMINFO_H
 # include <sys/systeminfo.h>
 #endif
 
-#if HAVE_SYS_SYSCTL_H && ! defined __GLIBC__ && ! defined __APPLE__
-# if HAVE_SYS_PARAM_H
+#إذا HAVE_SYS_SYSCTL_H && ! defined __GLIBC__ && ! defined __APPLE__
+# إذا HAVE_SYS_PARAM_H
 #  include <sys/param.h> /* needed for OpenBSD 3.0 */
 # endif
 # include <sys/sysctl.h>
@@ -37,16 +37,16 @@
 /* E.g., FreeBSD 4.5, NetBSD 1.5.2 */
 #   define UNAME_HARDWARE_PLATFORM HW_MODEL
 #   define UNAME_PROCESSOR HW_MACHINE_ARCH
-#  else
+#  وإلا
 /* E.g., OpenBSD 3.0 */
 #   define UNAME_PROCESSOR HW_MODEL
 #  endif
 # endif
 #endif
 
-#include "system.h"
-#include "quote.h"
-#include "uname.h"
+#ضمن "system.h"
+#ضمن "quote.h"
+#ضمن "uname.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME (uname_mode == UNAME_UNAME ? "uname" : "arch")
@@ -56,109 +56,109 @@
 
 /* Values that are bitwise or'd into 'toprint'. */
 /* Kernel name. */
-#define PRINT_KERNEL_NAME 1
+#define بغ_KERNEL_NAME 1
 
 /* Node name on a communications network. */
-#define PRINT_NODENAME 2
+#define بغ_NODENAME 2
 
 /* Kernel release. */
-#define PRINT_KERNEL_RELEASE 4
+#define بغ_KERNEL_RELEASE 4
 
 /* Kernel version. */
-#define PRINT_KERNEL_VERSION 8
+#define بغ_KERNEL_VERSION 8
 
 /* Machine hardware name. */
-#define PRINT_MACHINE 16
+#define بغ_MACHINE 16
 
 /* Processor type. */
-#define PRINT_PROCESSOR 32
+#define بغ_PROCESSOR 32
 
 /* Hardware platform.  */
-#define PRINT_HARDWARE_PLATFORM 64
+#define بغ_HARDWARE_PLATFORM 64
 
 /* Operating system.  */
-#define PRINT_OPERATING_SYSTEM 128
+#define بغ_OPERATING_SYSTEM 128
 
-static bool labeled = false;
+ساكن bool labeled = false;
 
-static struct option const uname_long_options[] =
+ساكن بنية option ثابت uname_long_options[] =
 {
-  {"all", no_argument, NULL, 'a'},
-  {"all-labeled", no_argument, NULL, 'A'},
-  {"kernel-name", no_argument, NULL, 's'},
-  {"sysname", no_argument, NULL, 's'},	/* Obsolescent.  */
-  {"nodename", no_argument, NULL, 'n'},
-  {"kernel-release", no_argument, NULL, 'r'},
-  {"release", no_argument, NULL, 'r'},  /* Obsolescent.  */
-  {"kernel-version", no_argument, NULL, 'v'},
-  {"machine", no_argument, NULL, 'm'},
-  {"processor", no_argument, NULL, 'p'},
-  {"hardware-platform", no_argument, NULL, 'i'},
-  {"operating-system", no_argument, NULL, 'o'},
+  {"all", no_argument, عدم, 'a'},
+  {"all-labeled", no_argument, عدم, 'A'},
+  {"kernel-name", no_argument, عدم, 's'},
+  {"sysname", no_argument, عدم, 's'},	/* Obsolescent.  */
+  {"nodename", no_argument, عدم, 'n'},
+  {"kernel-release", no_argument, عدم, 'r'},
+  {"release", no_argument, عدم, 'r'},  /* Obsolescent.  */
+  {"kernel-version", no_argument, عدم, 'v'},
+  {"machine", no_argument, عدم, 'm'},
+  {"processor", no_argument, عدم, 'p'},
+  {"hardware-platform", no_argument, عدم, 'i'},
+  {"operating-system", no_argument, عدم, 'o'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {عدم, 0, عدم, 0}
 };
 
-static struct option const arch_long_options[] =
+ساكن بنية option ثابت arch_long_options[] =
 {
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {عدم, 0, عدم, 0}
 };
 
-void
-usage (int status)
+فراغ
+usage (صحيح status)
 {
-  if (status != EXIT_SUCCESS)
+  إذا (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  وإلا
     {
       printf (_("Usage: %s [OPTION]...\n"), program_name);
 
-      if (uname_mode == UNAME_UNAME)
+      إذا (uname_mode == UNAME_UNAME)
         {
           fputs (_("\
-Print certain system information.  With no OPTION, same as -s.\n\
+بغ certain system information.  With no OPTION, same as -s.\n\
 \n\
 "), stdout);
           oputs (_("\
-  -a, --all                print all information, in the following order,\n\
-                             except omit -p and -i if unknown\n\
+  -a, --all                بغ_2 all information, in the following order,\n\
+                             except omit -p and -i إذا unknown\n\
 "));
           oputs (_("\
-  -A, --all-labeled        print all information, one labeled field per line,\n\
-                             except omit -p and -i if unknown\n\
+  -A, --all-labeled        بغ_2 all information, one labeled field per لي,\n\
+                             except omit -p and -i إذا unknown\n\
 "));
           oputs (_("\
-  -s, --kernel-name        print the kernel name\n\
+  -s, --kernel-name        بغ_2 the kernel name\n\
 "));
           oputs (_("\
-  -n, --nodename           print the network node hostname\n\
+  -n, --nodename           بغ_2 the network كلي hostname\n\
 "));
           oputs (_("\
-  -r, --kernel-release     print the kernel release\n\
+  -r, --kernel-release     بغ_2 the kernel release\n\
 "));
           oputs (_("\
-  -v, --kernel-version     print the kernel version\n\
+  -v, --kernel-version     بغ_2 the kernel version\n\
 "));
           oputs (_("\
-  -m, --machine            print the machine hardware name\n\
+  -m, --machine            بغ_2 the machine hardware name\n\
 "));
           oputs (_("\
-  -p, --processor          print the processor type (non-portable)\n\
+  -p, --processor          بغ_2 the processor type (non-portable)\n\
 "));
           oputs (_("\
-  -i, --hardware-platform  print the hardware platform (non-portable)\n\
+  -i, --hardware-platform  بغ_2 the hardware platform (non-portable)\n\
 "));
           oputs (_("\
-  -o, --operating-system   print the operating system\n\
+  -o, --operating-system   بغ_2 the operating system\n\
 "));
         }
-      else
+      وإلا
         {
           fputs (_("\
-Print machine architecture.\n\
+بغ machine architecture.\n\
 \n\
 "), stdout);
         }
@@ -173,17 +173,17 @@ Print machine architecture.\n\
 /* Print ELEMENT, preceded by a space if something has already been
    printed.  */
 
-static void
-print_element (char const *element, char const *label)
+ساكن فراغ
+بغ_element (حرف ثابت *element, حرف ثابت *label)
 {
-  if (labeled)
+  إذا (labeled)
     {
       printf ("%s: %s\n", label, element);
     }
-  else
+  وإلا
     {
-      static bool printed;
-      if (printed)
+      ساكن bool printed;
+      إذا (printed)
         putchar (' ');
       printed = true;
       fputs (element, stdout);
@@ -194,126 +194,126 @@ print_element (char const *element, char const *label)
    printed.  But if the environment variable ENVVAR is set, print its
    value instead of ELEMENT.  */
 
-static void
-print_element_env (char const *element,
-                   MAYBE_UNUSED char const *envvar,
-                   char const *label)
+ساكن فراغ
+بغ_element_env (حرف ثابت *element,
+                   MAYBE_UNUSED حرف ثابت *envvar,
+                   حرف ثابت *label)
 {
 #ifdef __APPLE__
-  if (envvar)
+  إذا (envvar)
     {
-      char const *val = getenv (envvar);
-      if (val)
+      حرف ثابت *val = getenv (envvar);
+      إذا (val)
         element = val;
     }
 #endif
-  print_element (element, label);
+  بغ_element (element, label);
 }
 
 
 /* Set all the option flags according to the switches specified.
    Return the mask indicating which elements to print.  */
 
-static int
-decode_switches (int argc, char **argv)
+ساكن صحيح
+decode_switches (صحيح argc, حرف **argv)
 {
-  int c;
-  unsigned int toprint = 0;
+  صحيح c;
+  unsigned صحيح toprint = 0;
 
-  if (uname_mode == UNAME_ARCH)
+  إذا (uname_mode == UNAME_ARCH)
     {
-      while ((c = getopt_long (argc, argv, "",
-                               arch_long_options, NULL))
+      طالما ((c = getopt_long (argc, argv, "",
+                               arch_long_options, عدم))
              != -1)
         {
-          switch (c)
+          بدل (c)
             {
             case_GETOPT_HELP_CHAR;
 
             case_GETOPT_VERSION_CHAR (PROGRAM_NAME, ARCH_AUTHORS);
 
-            default:
+            افتراضي:
               usage (EXIT_FAILURE);
             }
         }
-      toprint = PRINT_MACHINE;
+      toprint = بغ_MACHINE;
     }
-  else
+  وإلا
     {
-      while ((c = getopt_long (argc, argv, "asnrvmpioA",
-                               uname_long_options, NULL))
+      طالما ((c = getopt_long (argc, argv, "asnrvmpioA",
+                               uname_long_options, عدم))
              != -1)
         {
-          switch (c)
+          بدل (c)
             {
-            case 'a':
+            حالة 'a':
               toprint = UINT_MAX;
               labeled = false;
-              break;
+              اكسر;
 
-            case 'A':
+            حالة 'A':
               toprint = UINT_MAX;
               labeled = true;
-              break;
+              اكسر;
 
-            case 's':
-              toprint |= PRINT_KERNEL_NAME;
-              break;
+            حالة 's':
+              toprint |= بغ_KERNEL_NAME;
+              اكسر;
 
-            case 'n':
-              toprint |= PRINT_NODENAME;
-              break;
+            حالة 'n':
+              toprint |= بغ_NODENAME;
+              اكسر;
 
-            case 'r':
-              toprint |= PRINT_KERNEL_RELEASE;
-              break;
+            حالة 'r':
+              toprint |= بغ_KERNEL_RELEASE;
+              اكسر;
 
-            case 'v':
-              toprint |= PRINT_KERNEL_VERSION;
-              break;
+            حالة 'v':
+              toprint |= بغ_KERNEL_VERSION;
+              اكسر;
 
-            case 'm':
-              toprint |= PRINT_MACHINE;
-              break;
+            حالة 'm':
+              toprint |= بغ_MACHINE;
+              اكسر;
 
-            case 'p':
-              toprint |= PRINT_PROCESSOR;
-              break;
+            حالة 'p':
+              toprint |= بغ_PROCESSOR;
+              اكسر;
 
-            case 'i':
-              toprint |= PRINT_HARDWARE_PLATFORM;
-              break;
+            حالة 'i':
+              toprint |= بغ_HARDWARE_PLATFORM;
+              اكسر;
 
-            case 'o':
-              toprint |= PRINT_OPERATING_SYSTEM;
-              break;
+            حالة 'o':
+              toprint |= بغ_OPERATING_SYSTEM;
+              اكسر;
 
             case_GETOPT_HELP_CHAR;
 
             case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-            default:
+            افتراضي:
               usage (EXIT_FAILURE);
             }
         }
     }
 
-  if (argc != optind)
+  إذا (argc != optind)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind]));
       usage (EXIT_FAILURE);
     }
 
-  return toprint;
+  أرجع toprint;
 }
 
-int
-main (int argc, char **argv)
+صحيح
+main (صحيح argc, حرف **argv)
 {
-  static char const unknown[] = "unknown";
+  ساكن حرف ثابت unknown[] = "unknown";
 
   /* Mask indicating which elements to print. */
-  unsigned int toprint = 0;
+  unsigned صحيح toprint = 0;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -325,35 +325,35 @@ main (int argc, char **argv)
 
   toprint = decode_switches (argc, argv);
 
-  if (toprint == 0)
-    toprint = PRINT_KERNEL_NAME;
+  إذا (toprint == 0)
+    toprint = بغ_KERNEL_NAME;
 
-  if (toprint
-       & (PRINT_KERNEL_NAME | PRINT_NODENAME | PRINT_KERNEL_RELEASE
-          | PRINT_KERNEL_VERSION | PRINT_MACHINE))
+  إذا (toprint
+       & (بغ_KERNEL_NAME | بغ_NODENAME | بغ_KERNEL_RELEASE
+          | بغ_KERNEL_VERSION | بغ_MACHINE))
     {
-      struct utsname name;
+      بنية utsname name;
 
-      if (uname (&name) == -1)
+      إذا (uname (&name) == -1)
         error (EXIT_FAILURE, errno, _("cannot get system name"));
 
-      if (toprint & PRINT_KERNEL_NAME)
-        print_element_env (name.sysname, "UNAME_SYSNAME", _("Kernel name"));
-      if (toprint & PRINT_NODENAME)
-        print_element_env (name.nodename, "UNAME_NODENAME", _("Node name"));
-      if (toprint & PRINT_KERNEL_RELEASE)
-        print_element_env (name.release, "UNAME_RELEASE", _("Kernel release"));
-      if (toprint & PRINT_KERNEL_VERSION)
-        print_element_env (name.version, "UNAME_VERSION", _("Kernel version"));
-      if (toprint & PRINT_MACHINE)
-        print_element_env (name.machine, "UNAME_MACHINE", _("Machine"));
+      إذا (toprint & بغ_KERNEL_NAME)
+        بغ_element_env (name.sysname, "UNAME_SYSNAME", _("Kernel name"));
+      إذا (toprint & بغ_NODENAME)
+        بغ_element_env (name.nodename, "UNAME_NODENAME", _("Node name"));
+      إذا (toprint & بغ_KERNEL_RELEASE)
+        بغ_element_env (name.release, "UNAME_RELEASE", _("Kernel release"));
+      إذا (toprint & بغ_KERNEL_VERSION)
+        بغ_element_env (name.version, "UNAME_VERSION", _("Kernel version"));
+      إذا (toprint & بغ_MACHINE)
+        بغ_element_env (name.machine, "UNAME_MACHINE", _("Machine"));
     }
 
-  if (toprint & PRINT_PROCESSOR)
+  إذا (toprint & بغ_PROCESSOR)
     {
-      char const *element = unknown;
+      حرف ثابت *element = unknown;
 #ifdef __APPLE__
-# if defined __arm__ || defined __arm64__
+# إذا defined __arm__ || defined __arm64__
       element = "arm";
 # elif defined __i386__ || defined __x86_64__
       element = "i386";
@@ -361,58 +361,58 @@ main (int argc, char **argv)
       element = "powerpc";
 # endif
 #endif
-#if HAVE_SYSINFO && defined SI_ARCHITECTURE
-      if (element == unknown)
+#إذا HAVE_SYSINFO && defined SI_ARCHITECTURE
+      إذا (element == unknown)
         {
-          static char processor[257];
-          if (0 <= sysinfo (SI_ARCHITECTURE, processor, sizeof processor))
+          ساكن حرف processor[257];
+          إذا (0 <= sysinfo (SI_ARCHITECTURE, processor, حجم processor))
             element = processor;
         }
 #endif
 #ifdef UNAME_PROCESSOR
-      if (element == unknown)
+      إذا (element == unknown)
         {
-          static char processor[257];
-          size_t s = sizeof processor;
-          static int mib[] = { CTL_HW, UNAME_PROCESSOR };
-          if (sysctl (mib, 2, processor, &s, 0, 0) >= 0)
+          ساكن حرف processor[257];
+          size_t s = حجم processor;
+          ساكن صحيح mib[] = { CTL_HW, UNAME_PROCESSOR };
+          إذا (sysctl (mib, 2, processor, &s, 0, 0) >= 0)
             element = processor;
         }
 #endif
-      if (! (toprint == UINT_MAX && element == unknown))
-        print_element (element, _("Processor"));
+      إذا (! (toprint == UINT_MAX && element == unknown))
+        بغ_element (element, _("Processor"));
     }
 
-  if (toprint & PRINT_HARDWARE_PLATFORM)
+  إذا (toprint & بغ_HARDWARE_PLATFORM)
     {
-      char const *element = unknown;
-#if HAVE_SYSINFO && defined SI_PLATFORM
+      حرف ثابت *element = unknown;
+#إذا HAVE_SYSINFO && defined SI_PLATFORM
       {
-        static char hardware_platform[257];
-        if (0 <= sysinfo (SI_PLATFORM,
-                          hardware_platform, sizeof hardware_platform))
+        ساكن حرف hardware_platform[257];
+        إذا (0 <= sysinfo (SI_PLATFORM,
+                          hardware_platform, حجم hardware_platform))
           element = hardware_platform;
       }
 #endif
 #ifdef UNAME_HARDWARE_PLATFORM
-      if (element == unknown)
+      إذا (element == unknown)
         {
-          static char hardware_platform[257];
-          size_t s = sizeof hardware_platform;
-          static int mib[] = { CTL_HW, UNAME_HARDWARE_PLATFORM };
-          if (sysctl (mib, 2, hardware_platform, &s, 0, 0) >= 0)
+          ساكن حرف hardware_platform[257];
+          size_t s = حجم hardware_platform;
+          ساكن صحيح mib[] = { CTL_HW, UNAME_HARDWARE_PLATFORM };
+          إذا (sysctl (mib, 2, hardware_platform, &s, 0, 0) >= 0)
             element = hardware_platform;
         }
 #endif
-      if (! (toprint == UINT_MAX && element == unknown))
-        print_element (element, _("Hardware platform"));
+      إذا (! (toprint == UINT_MAX && element == unknown))
+        بغ_element (element, _("Hardware platform"));
     }
 
-  if (toprint & PRINT_OPERATING_SYSTEM)
-    print_element (HOST_OPERATING_SYSTEM, _("Operating system"));
+  إذا (toprint & بغ_OPERATING_SYSTEM)
+    بغ_element (HOST_OPERATING_SYSTEM, _("Operating system"));
 
-  if (!labeled)
+  إذا (!labeled)
     putchar ('\n');
 
-  return EXIT_SUCCESS;
+  أرجع EXIT_SUCCESS;
 }

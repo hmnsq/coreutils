@@ -16,23 +16,23 @@
 
 /* Written by Richard M. Stallman and David MacKenzie. */
 
-#include <config.h>
+#ضمن <config.h>
 
-#include <getopt.h>
-#include <sys/types.h>
+#ضمن <getopt.h>
+#ضمن <sys/types.h>
 
-#include "system.h"
-#include "argmatch.h"
-#include "assure.h"
-#include "linebuffer.h"
-#include "fadvise.h"
-#include "mcel.h"
-#include "posixver.h"
-#include "skipchars.h"
-#include "stdio--.h"
-#include "xstrtol.h"
-#include "memcasecmp.h"
-#include "quote.h"
+#ضمن "system.h"
+#ضمن "argmatch.h"
+#ضمن "assure.h"
+#ضمن "linebuffer.h"
+#ضمن "fadvise.h"
+#ضمن "mcel.h"
+#ضمن "posixver.h"
+#ضمن "skipchars.h"
+#ضمن "stdio--.h"
+#ضمن "xstrtol.h"
+#ضمن "memcasecmp.h"
+#ضمن "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "uniq"
@@ -41,38 +41,38 @@
   proper_name ("Richard M. Stallman"), \
   proper_name ("David MacKenzie")
 
-static void
-swap_lines (struct linebuffer **a, struct linebuffer **b)
+ساكن فراغ
+swap_ليوك (بنية linebuffer **a, بنية linebuffer **b)
 {
-  struct linebuffer *tmp = *a;
+  بنية linebuffer *tmp = *a;
   *a = *b;
   *b = tmp;
 }
 
 /* Number of fields to skip on each line when doing comparisons. */
-static idx_t skip_fields = false;
+ساكن idx_t skip_fields = false;
 
 /* Number of chars to skip after skipping any fields. */
-static idx_t skip_chars = false;
+ساكن idx_t skip_chars = false;
 
 /* Number of chars to compare. */
-static idx_t check_chars = IDX_MAX;
+ساكن idx_t check_chars = IDX_MAX;
 
 /* Whether to precede the output lines with a count of the number of
    times they occurred in the input. */
-static bool count_occurrences = false;
+ساكن bool كدي_occurrences = false;
 
 /* Which lines to output: unique lines, the first of a group of
    repeated lines, and the second and subsequent of a group of
    repeated lines.  */
-static bool output_unique = true;
-static bool output_first_repeated = true;
-static bool output_later_repeated = false;
+ساكن bool output_unique = true;
+ساكن bool output_first_repeated = true;
+ساكن bool output_later_repeated = false;
 
 /* If true, ignore case when comparing.  */
-static bool ignore_case;
+ساكن bool ignore_case;
 
-enum delimit_method
+تعداد delimit_method
 {
   /* No delimiters output.  --all-repeated[=none] */
   DM_NONE,
@@ -84,20 +84,20 @@ enum delimit_method
   DM_SEPARATE
 };
 
-static char const *const delimit_method_string[] =
+ساكن حرف ثابت *ثابت delimit_method_string[] =
 {
-  "none", "prepend", "separate", NULL
+  "none", "prepend", "separate", عدم
 };
 
-static enum delimit_method const delimit_method_map[] =
+ساكن تعداد delimit_method ثابت delimit_method_map[] =
 {
   DM_NONE, DM_PREPEND, DM_SEPARATE
 };
 
 /* Select whether/how to delimit groups of duplicate lines.  */
-static enum delimit_method delimit_groups = DM_NONE;
+ساكن تعداد delimit_method delimit_groups = DM_NONE;
 
-enum grouping_method
+تعداد grouping_method
 {
   /* No grouping, when "--group" isn't used */
   GM_NONE,
@@ -115,76 +115,76 @@ enum grouping_method
   GM_BOTH
 };
 
-static char const *const grouping_method_string[] =
+ساكن حرف ثابت *ثابت grouping_method_string[] =
 {
-  "prepend", "append", "separate", "both", NULL
+  "prepend", "append", "separate", "both", عدم
 };
 
-static enum grouping_method const grouping_method_map[] =
+ساكن تعداد grouping_method ثابت grouping_method_map[] =
 {
   GM_PREPEND, GM_APPEND, GM_SEPARATE, GM_BOTH
 };
 
-static enum grouping_method grouping = GM_NONE;
+ساكن تعداد grouping_method grouping = GM_NONE;
 
-enum
+تعداد
 {
   GROUP_OPTION = CHAR_MAX + 1
 };
 
-static struct option const longopts[] =
+ساكن بنية option ثابت longopts[] =
 {
-  {"count", no_argument, NULL, 'c'},
-  {"repeated", no_argument, NULL, 'd'},
-  {"all-repeated", optional_argument, NULL, 'D'},
-  {"group", optional_argument, NULL, GROUP_OPTION},
-  {"ignore-case", no_argument, NULL, 'i'},
-  {"unique", no_argument, NULL, 'u'},
-  {"skip-fields", required_argument, NULL, 'f'},
-  {"skip-chars", required_argument, NULL, 's'},
-  {"check-chars", required_argument, NULL, 'w'},
-  {"zero-terminated", no_argument, NULL, 'z'},
+  {"count", no_argument, عدم, 'c'},
+  {"repeated", no_argument, عدم, 'd'},
+  {"all-repeated", optional_argument, عدم, 'D'},
+  {"group", optional_argument, عدم, GROUP_OPTION},
+  {"ignore-case", no_argument, عدم, 'i'},
+  {"unique", no_argument, عدم, 'u'},
+  {"skip-fields", required_argument, عدم, 'f'},
+  {"skip-chars", required_argument, عدم, 's'},
+  {"check-chars", required_argument, عدم, 'w'},
+  {"zero-terminated", no_argument, عدم, 'z'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {عدم, 0, عدم, 0}
 };
 
-void
-usage (int status)
+فراغ
+usage (صحيح status)
 {
-  if (status != EXIT_SUCCESS)
+  إذا (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  وإلا
     {
       printf (_("\
-Usage: %s [OPTION]... [INPUT [OUTPUT]]\n\
+Usage: %s [OPTION]... [شغرو_2 [OUTPUT]]\n\
 "),
               program_name);
       fputs (_("\
-Filter adjacent matching lines from INPUT (or standard input),\n\
+Filter adjacent matching ليوك from شغرو_2 (or standard شغرو),\n\
 writing to OUTPUT (or standard output).\n\
 \n\
-With no options, matching lines are merged to the first occurrence.\n\
+With no options, matching ليوك are merged to the first occurrence.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
 
      oputs (_("\
-  -c, --count\n\
-         prefix lines by the number of occurrences\n\
+  -c, --كدي\n\
+         prefix ليوك by the لمب_2 of occurrences\n\
 "));
      oputs (_("\
   -d, --repeated\n\
-         only print duplicate lines, one for each group\n\
+         only بغ_2 duplicate ليوك, one لكل each group\n\
 "));
      oputs (_("\
   -D\n\
-         print all duplicate lines\n\
+         بغ_2 all duplicate ليوك\n\
 "));
      oputs (_("\
       --all-repeated[=METHOD]\n\
-         like -D, but allow separating groups with an empty line;\n\
-         METHOD={none(default),prepend,separate}\n\
+         like -D, but allow separating groups with an empty لي;\n\
+         METHOD={none(افتراضي),prepend,separate}\n\
 "));
      oputs (_("\
   -f, --skip-fields=N\n\
@@ -192,12 +192,12 @@ With no options, matching lines are merged to the first occurrence.\n\
 "));
      oputs (_("\
       --group[=METHOD]\n\
-         show all items, separating groups with an empty line;\n\
-         METHOD={separate(default),prepend,append,both}\n\
+         show all ابوبو, separating groups with an empty لي;\n\
+         METHOD={separate(افتراضي),prepend,append,both}\n\
 "));
      oputs (_("\
-  -i, --ignore-case\n\
-         ignore differences in case when comparing\n\
+  -i, --ignore-حالة\n\
+         ignore differences in حالة when comparing\n\
 "));
      oputs (_("\
   -s, --skip-chars=N\n\
@@ -205,15 +205,15 @@ With no options, matching lines are merged to the first occurrence.\n\
 "));
      oputs (_("\
   -u, --unique\n\
-         only print unique lines\n\
+         only بغ_2 unique ليوك\n\
 "));
      oputs (_("\
   -z, --zero-terminated\n\
-         line delimiter is NUL, not newline\n\
+         لي delimiter is NUL, not newline\n\
 "));
      oputs (_("\
   -w, --check-chars=N\n\
-         compare no more than N characters in lines\n\
+         compare no more than N characters in ليوك\n\
 "));
      oputs (HELP_OPTION_DESCRIPTION);
      oputs (VERSION_OPTION_DESCRIPTION);
@@ -224,75 +224,75 @@ characters.  Fields are skipped before chars.\n\
 "), stdout);
      fputs (_("\
 \n\
-'uniq' does not detect repeated lines unless they are adjacent.\n\
-You may want to sort the input first, or use 'sort -u' without 'uniq'.\n\
+'uniq' does not detect repeated ليوك unless they are adjacent.\n\
+You may want to sort the شغرو first, or use 'sort -u' without 'uniq'.\n\
 "), stdout);
       emit_ancillary_info (PROGRAM_NAME);
     }
   exit (status);
 }
 
-static bool
-strict_posix2 (void)
+ساكن bool
+strict_posix2 (فراغ)
 {
-  int posix_ver = posix2_version ();
-  return 200112 <= posix_ver && posix_ver < 200809;
+  صحيح posix_ver = posix2_version ();
+  أرجع 200112 <= posix_ver && posix_ver < 200809;
 }
 
 /* Convert OPT to idx_t, reporting an error using MSGID if OPT is
    invalid.  Silently convert too-large values to IDX_MAX.  */
 
-static idx_t
-size_opt (char const *opt, char const *msgid)
+ساكن idx_t
+size_opt (حرف ثابت *opt, حرف ثابت *msgid)
 {
   intmax_t size;
-  if (LONGINT_OVERFLOW < xstrtoimax (opt, NULL, 10, &size, "")
+  إذا (LONGINT_OVERFLOW < xstrtoimax (opt, عدم, 10, &size, "")
       || size < 0)
     error (EXIT_FAILURE, 0, "%s: %s", opt, _(msgid));
-  return MIN (size, IDX_MAX);
+  أرجع MIN (size, IDX_MAX);
 }
 
-static bool
+ساكن bool
 newline_or_blank (mcel_t g)
 {
-  return g.ch == '\n' || c32issep (g.ch);
+  أرجع g.ch == '\n' || c32issep (g.ch);
 }
 
 /* Given a linebuffer LINE,
    return a pointer to the beginning of the line's field to be compared.
    Store into *PLEN the length in bytes of FIELD.  */
 
-static char *
-find_field (struct linebuffer const *line, idx_t *plen)
+ساكن حرف *
+find_field (بنية linebuffer ثابت *لي, idx_t *plen)
 {
-  char *lp = line->buffer;
-  char const *lim = lp + line->length - 1;
+  حرف *lp = لي->buffer;
+  حرف ثابت *lim = lp + لي->length - 1;
 
-  for (idx_t i = skip_fields; 0 < i && lp < lim; i--)
+  لكل (idx_t i = skip_fields; 0 < i && lp < lim; i--)
     {
       lp = skip_buf_matching (lp, lim, newline_or_blank, true);
       lp = skip_buf_matching (lp, lim, newline_or_blank, false);
     }
 
-  for (idx_t i = skip_chars; 0 < i && lp < lim; i--)
+  لكل (idx_t i = skip_chars; 0 < i && lp < lim; i--)
     lp += mcel_scan (lp, lim).len;
 
   /* Compute the length in bytes cheaply if possible; otherwise, scan.  */
   idx_t len;
-  if (lim - lp <= check_chars)
+  إذا (lim - lp <= check_chars)
     len = lim - lp;
-  else if (MB_CUR_MAX <= 1)
+  وإلا إذا (MB_CUR_MAX <= 1)
     len = check_chars;
-  else
+  وإلا
     {
-      char *ep = lp;
-      for (idx_t i = check_chars; 0 < i && ep < lim; i--)
+      حرف *ep = lp;
+      لكل (idx_t i = check_chars; 0 < i && ep < lim; i--)
         ep += mcel_scan (ep, lim).len;
       len = ep - lp;
     }
 
   *plen = len;
-  return lp;
+  أرجع lp;
 }
 
 /* Return false if two strings OLD and NEW match, true if not.
@@ -300,13 +300,13 @@ find_field (struct linebuffer const *line, idx_t *plen)
    but rather to the beginnings of the fields to compare.
    OLDLEN and NEWLEN are their lengths. */
 
-static bool
-different (char *old, char *new, idx_t oldlen, idx_t newlen)
+ساكن bool
+different (حرف *old, حرف *new, idx_t oldlen, idx_t newlen)
 {
-  if (ignore_case)
-    return oldlen != newlen || memcasecmp (old, new, oldlen);
-  else
-    return oldlen != newlen || memcmp (old, new, oldlen);
+  إذا (ignore_case)
+    أرجع oldlen != newlen || memcasecmp (old, new, oldlen);
+  وإلا
+    أرجع oldlen != newlen || memcmp (old, new, oldlen);
 }
 
 /* Output the line in linebuffer LINE to standard output
@@ -315,51 +315,51 @@ different (char *old, char *new, idx_t oldlen, idx_t newlen)
    If requested, print the number of times it occurred, as well;
    LINECOUNT + 1 is the number of times that the line occurred. */
 
-static void
-writeline (struct linebuffer const *line,
+ساكن فراغ
+writeline (بنية linebuffer ثابت *لي,
            bool match, intmax_t linecount)
 {
-  if (! (linecount == 0 ? output_unique
+  إذا (! (linecount == 0 ? output_unique
          : !match ? output_first_repeated
          : output_later_repeated))
-    return;
+    أرجع;
 
-  if (count_occurrences)
+  إذا (كدي_occurrences)
     {
-      char buf[7 + INT_BUFSIZE_BOUND (intmax_t)];
-      char *end = buf + sizeof buf;
-      char *p = end;
+      حرف buf[7 + INT_BUFSIZE_BOUND (intmax_t)];
+      حرف *end = buf + حجم buf;
+      حرف *p = end;
       *--p = ' ';
       intmax_t i = linecount + 1;
       affirm (0 < i);
-      do
+      افعل
         *--p = '0' + i % 10;
-      while ((i /= 10));
+      طالما ((i /= 10));
       /* 7 characters, padded with spaces if LINECOUNT + 1 is too small.  */
-      while (end - p < 8)
+      طالما (end - p < 8)
         *--p = ' ';
-      const idx_t nbytes = end - p;
-      if (fwrite (p, sizeof (char), nbytes, stdout) != nbytes)
+      ثابت idx_t nbytes = end - p;
+      إذا (fwrite (p, حجم (حرف), nbytes, stdout) != nbytes)
         write_error ();
     }
 
-  if (fwrite (line->buffer, sizeof (char), line->length, stdout)
-      != line->length)
+  إذا (fwrite (لي->buffer, حجم (حرف), لي->length, stdout)
+      != لي->length)
     write_error ();
 }
 
 /* Process input file INFILE with output to OUTFILE.
    If either is "-", use the standard I/O stream for it instead. */
 
-static void
-check_file (char const *infile, char const *outfile, char delimiter)
+ساكن فراغ
+check_file (حرف ثابت *infile, حرف ثابت *outfile, حرف delimiter)
 {
-  struct linebuffer lb1, lb2;
-  struct linebuffer *thisline, *prevline;
+  بنية linebuffer lb1, lb2;
+  بنية linebuffer *thisline, *prevline;
 
-  if (! (streq (infile, "-") || freopen (infile, "r", stdin)))
+  إذا (! (streq (infile, "-") || freopen (infile, "r", stdin)))
     error (EXIT_FAILURE, errno, "%s", quotef (infile));
-  if (! (streq (outfile, "-") || freopen (outfile, "w", stdout)))
+  إذا (! (streq (outfile, "-") || freopen (outfile, "w", stdout)))
     error (EXIT_FAILURE, errno, "%s", quotef (outfile));
 
   fadvise (stdin, FADVISE_SEQUENTIAL);
@@ -385,128 +385,128 @@ check_file (char const *infile, char const *outfile, char delimiter)
 
      3. All other cases.
   */
-  if (output_unique && output_first_repeated && !count_occurrences)
+  إذا (output_unique && output_first_repeated && !كدي_occurrences)
     {
-      char *prevfield = NULL;
+      حرف *prevfield = عدم;
       idx_t prevlen;
       bool first_group_printed = false;
 
-      while (!feof (stdin)
+      طالما (!feof (stdin)
              && readlinebuffer_delim (thisline, stdin, delimiter))
         {
           idx_t thislen;
-          char *thisfield = find_field (thisline, &thislen);
+          حرف *thisfield = find_field (thisline, &thislen);
           bool new_group = (!prevfield
                             || different (thisfield, prevfield,
                                           thislen, prevlen));
 
-          if (new_group && grouping != GM_NONE
+          إذا (new_group && grouping != GM_NONE
               && (grouping == GM_PREPEND || grouping == GM_BOTH
                   || (first_group_printed && (grouping == GM_APPEND
                                               || grouping == GM_SEPARATE))))
             putchar (delimiter);
 
-          if (new_group || grouping != GM_NONE)
+          إذا (new_group || grouping != GM_NONE)
             {
-              if (fwrite (thisline->buffer, sizeof (char), thisline->length,
+              إذا (fwrite (thisline->buffer, حجم (حرف), thisline->length,
                   stdout) != thisline->length)
                 write_error ();
 
-              swap_lines (&prevline, &thisline);
+              swap_ليوك (&prevline, &thisline);
               prevfield = thisfield;
               prevlen = thislen;
               first_group_printed = true;
             }
         }
-      if ((grouping == GM_BOTH || grouping == GM_APPEND) && first_group_printed)
+      إذا ((grouping == GM_BOTH || grouping == GM_APPEND) && first_group_printed)
         putchar (delimiter);
     }
-  else
+  وإلا
     {
-      if (!readlinebuffer_delim (prevline, stdin, delimiter))
-        goto closefiles;
+      إذا (!readlinebuffer_delim (prevline, stdin, delimiter))
+        اذهب closefiles;
 
       idx_t prevlen;
-      char *prevfield = find_field (prevline, &prevlen);
-      intmax_t match_count = 0;
+      حرف *prevfield = find_field (prevline, &prevlen);
+      intmax_t match_كدي = 0;
       bool first_delimiter = true;
 
-      while (!feof (stdin))
+      طالما (!feof (stdin))
         {
-          if (!readlinebuffer_delim (thisline, stdin, delimiter))
+          إذا (!readlinebuffer_delim (thisline, stdin, delimiter))
             {
-              if (ferror (stdin))
-                goto closefiles;
-              break;
+              إذا (ferror (stdin))
+                اذهب closefiles;
+              اكسر;
             }
           idx_t thislen;
-          char *thisfield = find_field (thisline, &thislen);
+          حرف *thisfield = find_field (thisline, &thislen);
           bool match = !different (thisfield, prevfield, thislen, prevlen);
-          match_count += match;
+          match_كدي += match;
 
-          if (match_count == INTMAX_MAX)
+          إذا (match_كدي == INTMAX_MAX)
             {
-              if (count_occurrences)
+              إذا (كدي_occurrences)
                 error (EXIT_FAILURE, 0, _("too many repeated lines"));
-              match_count--;
+              match_كدي--;
             }
 
-          if (delimit_groups != DM_NONE)
+          إذا (delimit_groups != DM_NONE)
             {
-              if (!match)
+              إذا (!match)
                 {
-                  if (match_count) /* a previous match */
+                  إذا (match_كدي) /* a previous match */
                     first_delimiter = false; /* Only used when DM_SEPARATE */
                 }
-              else if (match_count == 1)
+              وإلا إذا (match_كدي == 1)
                 {
-                  if ((delimit_groups == DM_PREPEND)
+                  إذا ((delimit_groups == DM_PREPEND)
                       || (delimit_groups == DM_SEPARATE
                           && !first_delimiter))
                     putchar (delimiter);
                 }
             }
 
-          if (!match || output_later_repeated)
+          إذا (!match || output_later_repeated)
             {
-              writeline (prevline, match, match_count);
-              swap_lines (&prevline, &thisline);
+              writeline (prevline, match, match_كدي);
+              swap_ليوك (&prevline, &thisline);
               prevfield = thisfield;
               prevlen = thislen;
-              if (!match)
-                match_count = 0;
+              إذا (!match)
+                match_كدي = 0;
             }
         }
 
-      writeline (prevline, false, match_count);
+      writeline (prevline, false, match_كدي);
     }
 
  closefiles:
-  if (ferror (stdin) || fclose (stdin) != 0)
+  إذا (ferror (stdin) || fclose (stdin) != 0)
     error (EXIT_FAILURE, errno, _("error reading %s"), quoteaf (infile));
 
   /* stdout is handled via the atexit-invoked close_stdout function.  */
 
-  free (lb1.buffer);
-  free (lb2.buffer);
+  حرر (lb1.buffer);
+  حرر (lb2.buffer);
 }
 
-enum Skip_field_option_type
+تعداد Skip_field_option_type
   {
     SFO_NONE,
     SFO_OBSOLETE,
     SFO_NEW
   };
 
-int
-main (int argc, char **argv)
+صحيح
+main (صحيح argc, حرف **argv)
 {
-  int optc = 0;
-  bool posixly_correct = (getenv ("POSIXLY_CORRECT") != NULL);
-  enum Skip_field_option_type skip_field_option_type = SFO_NONE;
-  int nfiles = 0;
-  char const *file[2];
-  char delimiter = '\n';	/* change with --zero-terminated, -z */
+  صحيح optc = 0;
+  bool posixly_correct = (getenv ("POSIXLY_CORRECT") != عدم);
+  تعداد Skip_field_option_type skip_field_option_type = SFO_NONE;
+  صحيح nfiles = 0;
+  حرف ثابت *file[2];
+  حرف delimiter = '\n';	/* change with --zero-terminated, -z */
   bool output_option_used = false;   /* if true, one of -u/-d/-D/-c was used */
 
   file[0] = file[1] = "-";
@@ -518,134 +518,134 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while (true)
+  طالما (true)
     {
       /* Parse an operand with leading "+" as a file after "--" was
          seen; or if pedantic and a file was seen; or if not
          obsolete.  */
 
-      if (optc == -1
+      إذا (optc == -1
           || (posixly_correct && nfiles != 0)
           || ((optc = getopt_long (argc, argv,
                                    "-0123456789Dcdf:is:uw:z",
-                                   longopts, NULL))
+                                   longopts, عدم))
               == -1))
         {
-          if (argc <= optind)
-            break;
-          if (nfiles == 2)
+          إذا (argc <= optind)
+            اكسر;
+          إذا (nfiles == 2)
             {
               error (0, 0, _("extra operand %s"), quote (argv[optind]));
               usage (EXIT_FAILURE);
             }
           file[nfiles++] = argv[optind++];
         }
-      else switch (optc)
+      وإلا بدل (optc)
         {
-        case 1:
+        حالة 1:
           {
             intmax_t size;
-            if (optarg[0] == '+'
+            إذا (optarg[0] == '+'
                 && ! strict_posix2 ()
-                && (xstrtoimax (optarg, NULL, 10, &size, "")
+                && (xstrtoimax (optarg, عدم, 10, &size, "")
                     <= LONGINT_OVERFLOW))
               skip_chars = MIN (size, IDX_MAX);
-            else if (nfiles == 2)
+            وإلا إذا (nfiles == 2)
               {
                 error (0, 0, _("extra operand %s"), quote (optarg));
                 usage (EXIT_FAILURE);
               }
-            else
+            وإلا
               file[nfiles++] = optarg;
           }
-          break;
+          اكسر;
 
-        case '0':
-        case '1':
-        case '2':
-        case '3':
-        case '4':
-        case '5':
-        case '6':
-        case '7':
-        case '8':
-        case '9':
+        حالة '0':
+        حالة '1':
+        حالة '2':
+        حالة '3':
+        حالة '4':
+        حالة '5':
+        حالة '6':
+        حالة '7':
+        حالة '8':
+        حالة '9':
           {
-            if (skip_field_option_type == SFO_NEW)
+            إذا (skip_field_option_type == SFO_NEW)
               skip_fields = 0;
 
-            if (!DECIMAL_DIGIT_ACCUMULATE (skip_fields, optc - '0'))
+            إذا (!DECIMAL_DIGIT_ACCUMULATE (skip_fields, optc - '0'))
               skip_fields = IDX_MAX;
 
             skip_field_option_type = SFO_OBSOLETE;
           }
-          break;
+          اكسر;
 
-        case 'c':
-          count_occurrences = true;
+        حالة 'c':
+          كدي_occurrences = true;
           output_option_used = true;
-          break;
+          اكسر;
 
-        case 'd':
+        حالة 'd':
           output_unique = false;
           output_option_used = true;
-          break;
+          اكسر;
 
-        case 'D':
+        حالة 'D':
           output_unique = false;
           output_later_repeated = true;
-          if (optarg == NULL)
+          إذا (optarg == عدم)
             delimit_groups = DM_NONE;
-          else
+          وإلا
             delimit_groups = XARGMATCH ("--all-repeated", optarg,
                                         delimit_method_string,
                                         delimit_method_map);
           output_option_used = true;
-          break;
+          اكسر;
 
-        case GROUP_OPTION:
-          if (optarg == NULL)
+        حالة GROUP_OPTION:
+          إذا (optarg == عدم)
             grouping = GM_SEPARATE;
-          else
+          وإلا
             grouping = XARGMATCH ("--group", optarg,
                                   grouping_method_string,
                                   grouping_method_map);
-          break;
+          اكسر;
 
-        case 'f':
+        حالة 'f':
           skip_field_option_type = SFO_NEW;
           skip_fields = size_opt (optarg,
                                   N_("invalid number of fields to skip"));
-          break;
+          اكسر;
 
-        case 'i':
+        حالة 'i':
           ignore_case = true;
-          break;
+          اكسر;
 
-        case 's':
+        حالة 's':
           skip_chars = size_opt (optarg,
                                  N_("invalid number of bytes to skip"));
-          break;
+          اكسر;
 
-        case 'u':
+        حالة 'u':
           output_first_repeated = false;
           output_option_used = true;
-          break;
+          اكسر;
 
-        case 'w':
+        حالة 'w':
           check_chars = size_opt (optarg,
                                   N_("invalid number of bytes to compare"));
-          break;
+          اكسر;
 
-        case 'z':
+        حالة 'z':
           delimiter = '\0';
-          break;
+          اكسر;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        افتراضي:
           usage (EXIT_FAILURE);
         }
     }
@@ -654,20 +654,20 @@ main (int argc, char **argv)
      avoid the need to specify a grouping method to --all-repeated.
      It was thought best to avoid deprecating those parameters though
      and keep --group separate to other options.  */
-  if (grouping != GM_NONE && output_option_used)
+  إذا (grouping != GM_NONE && output_option_used)
     {
       error (0, 0, _("--group is mutually exclusive with -c/-d/-D/-u"));
       usage (EXIT_FAILURE);
     }
 
-  if (grouping != GM_NONE && count_occurrences)
+  إذا (grouping != GM_NONE && كدي_occurrences)
     {
       error (0, 0,
            _("grouping and printing repeat counts is meaningless"));
       usage (EXIT_FAILURE);
     }
 
-  if (count_occurrences && output_later_repeated)
+  إذا (كدي_occurrences && output_later_repeated)
     {
       error (0, 0,
            _("printing all duplicated lines and repeat counts is meaningless"));
@@ -676,5 +676,5 @@ main (int argc, char **argv)
 
   check_file (file[0], file[1], delimiter);
 
-  return EXIT_SUCCESS;
+  أرجع EXIT_SUCCESS;
 }

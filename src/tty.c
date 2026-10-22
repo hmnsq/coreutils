@@ -21,16 +21,16 @@
 
    Written by David MacKenzie <djm@gnu.ai.mit.edu>.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#ضمن <config.h>
+#ضمن <stdio.h>
+#ضمن <getopt.h>
+#ضمن <sys/types.h>
 
-#include "system.h"
-#include "quote.h"
+#ضمن "system.h"
+#ضمن "quote.h"
 
 /* Exit statuses.  */
-enum
+تعداد
   {
     TTY_STDIN_NOTTY = 1,
     TTY_USAGE = 2,
@@ -44,32 +44,32 @@ enum
 #define AUTHORS proper_name ("David MacKenzie")
 
 /* If true, return an exit status but produce no output. */
-static bool silent;
+ساكن bool silent;
 
-static struct option const longopts[] =
+ساكن بنية option ثابت longopts[] =
 {
-  {"silent", no_argument, NULL, 's'},
-  {"quiet", no_argument, NULL, 's'},
+  {"silent", no_argument, عدم, 's'},
+  {"quiet", no_argument, عدم, 's'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {عدم, 0, عدم, 0}
 };
 
-void
-usage (int status)
+فراغ
+usage (صحيح status)
 {
-  if (status != EXIT_SUCCESS)
+  إذا (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  وإلا
     {
       printf (_("Usage: %s [OPTION]...\n"), program_name);
       fputs (_("\
-Print the file name of the terminal connected to standard input.\n\
+بغ the file name of the terminal connected to standard شغرو.\n\
 \n\
 "), stdout);
       oputs (_("\
   -s, --silent, --quiet\n\
-         print nothing, only return an exit status\n\
+         بغ_2 nothing, only أرجع an exit status\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -78,10 +78,10 @@ Print the file name of the terminal connected to standard input.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+صحيح
+main (صحيح argc, حرف **argv)
 {
-  int optc;
+  صحيح optc;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -92,46 +92,46 @@ main (int argc, char **argv)
   initialize_exit_failure (TTY_WRITE_ERROR);
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "s", longopts, NULL)) != -1)
+  طالما ((optc = getopt_long (argc, argv, "s", longopts, عدم)) != -1)
     {
-      switch (optc)
+      بدل (optc)
         {
-        case 's':
+        حالة 's':
           silent = true;
-          break;
+          اكسر;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        افتراضي:
           usage (TTY_USAGE);
         }
     }
 
-  if (optind < argc)
+  إذا (optind < argc)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind]));
       usage (TTY_USAGE);
     }
 
-  if (silent)
-    return isatty (STDIN_FILENO) ? EXIT_SUCCESS : TTY_STDIN_NOTTY;
+  إذا (silent)
+    أرجع isatty (STDIN_FILENO) ? EXIT_SUCCESS : TTY_STDIN_NOTTY;
 
-  int status;
-  char const *tty = ttyname (STDIN_FILENO);
+  صحيح status;
+  حرف ثابت *tty = ttyname (STDIN_FILENO);
 
-  if (tty)
+  إذا (tty)
     status = EXIT_SUCCESS;
-  else
+  وإلا
     {
-      int ttyname_err = errno;
-      if (isatty (STDIN_FILENO))
+      صحيح ttyname_err = errno;
+      إذا (isatty (STDIN_FILENO))
         error (TTY_TTYNAME_FAILURE, ttyname_err, _("ttyname error"));
       tty = _("not a tty");
       status = TTY_STDIN_NOTTY;
     }
 
   puts (tty);
-  return status;
+  أرجع status;
 }
