@@ -20,45 +20,45 @@
 
    Ørn E. Hansen added NLS support in 1997.  */
 
-#include <config.h>
+#अन्तर्भाव <config.h>
 
-#include <getopt.h>
-#include <pthread.h>
-#include <sys/resource.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <signal.h>
-#include <spawn.h>
-#include "system.h"
-#include "argmatch.h"
-#include "assure.h"
-#include "c-ctype.h"
-#include "fadvise.h"
-#include "filevercmp.h"
-#include "findprog.h"
-#include "flexmember.h"
-#include "hard-locale.h"
-#include "hash.h"
-#include "heap.h"
-#include "ignore-value.h"
-#include "mbswidth.h"
-#include "nproc.h"
-#include "physmem.h"
-#include "posixver.h"
-#include "quote.h"
-#include "randread.h"
-#include "readtokens0.h"
-#include "stdlib--.h"
-#include "strnumcmp.h"
-#include "term-sig.h"
-#include "unistd--.h"
-#include "xmemcoll.h"
-#include "xnanosleep.h"
-#include "xstrtol.h"
-#include "xstrtol-error.h"
+#अन्तर्भाव <getopt.h>
+#अन्तर्भाव <pthread.h>
+#अन्तर्भाव <sys/resource.h>
+#अन्तर्भाव <sys/types.h>
+#अन्तर्भाव <sys/wait.h>
+#अन्तर्भाव <signal.h>
+#अन्तर्भाव <spawn.h>
+#अन्तर्भाव "system.h"
+#अन्तर्भाव "argmatch.h"
+#अन्तर्भाव "assure.h"
+#अन्तर्भाव "c-ctype.h"
+#अन्तर्भाव "fadvise.h"
+#अन्तर्भाव "filevercmp.h"
+#अन्तर्भाव "findprog.h"
+#अन्तर्भाव "flexmember.h"
+#अन्तर्भाव "hard-locale.h"
+#अन्तर्भाव "hash.h"
+#अन्तर्भाव "heap.h"
+#अन्तर्भाव "ignore-value.h"
+#अन्तर्भाव "mbswidth.h"
+#अन्तर्भाव "nproc.h"
+#अन्तर्भाव "physmem.h"
+#अन्तर्भाव "posixver.h"
+#अन्तर्भाव "quote.h"
+#अन्तर्भाव "randread.h"
+#अन्तर्भाव "readtokens0.h"
+#अन्तर्भाव "stdlib--.h"
+#अन्तर्भाव "strnumcmp.h"
+#अन्तर्भाव "term-sig.h"
+#अन्तर्भाव "unistd--.h"
+#अन्तर्भाव "xmemcoll.h"
+#अन्तर्भाव "xnanosleep.h"
+#अन्तर्भाव "xstrtol.h"
+#अन्तर्भाव "xstrtol-error.h"
 
 #ifndef RLIMIT_DATA
-struct rlimit { size_t rlim_cur; };
+संरचना rlimit { size_t rlim_cur; };
 # define getrlimit(Resource, Rlp) (-1)
 #endif
 
@@ -69,14 +69,14 @@ struct rlimit { size_t rlim_cur; };
   proper_name ("Mike Haertel"), \
   proper_name ("Paul Eggert")
 
-#if HAVE_LANGINFO_CODESET
+#यदि HAVE_LANGINFO_CODESET
 # include <langinfo.h>
 #endif
 
-#if !defined OPEN_MAX && defined NR_OPEN
+#यदि !defined OPEN_MAX && defined NR_OPEN
 # define OPEN_MAX NR_OPEN
 #endif
-#if !defined OPEN_MAX
+#यदि !defined OPEN_MAX
 # define OPEN_MAX 20
 #endif
 
@@ -99,15 +99,15 @@ struct rlimit { size_t rlim_cur; };
    lines of gensort -a output is sorted slightly faster with --parallel=2
    than with --parallel=1.  By contrast, using --parallel=1 is about 10%
    faster than using --parallel=2 with a 64K-line input.  */
-enum { SUBTHREAD_LINES_HEURISTIC = 128 * 1024 };
-static_assert (4 <= SUBTHREAD_LINES_HEURISTIC);
+गणना { SUBTHREAD_पंक्तियाँ_HEURISTIC = 128 * 1024 };
+static_assert (4 <= SUBTHREAD_पंक्तियाँ_HEURISTIC);
 
 /* The number of threads after which there are
    diminishing performance gains.  */
-enum { DEFAULT_MAX_THREADS = 8 };
+गणना { DEFAULT_MAX_THREADS = 8 };
 
 /* Exit statuses.  */
-enum
+गणना
   {
     /* POSIX says to exit with status 1 if invoked with -c and the
        input is not properly sorted.  */
@@ -118,7 +118,7 @@ enum
     SORT_FAILURE = 2
   };
 
-enum
+गणना
   {
     /* The number of times we should try to spawn a compression process
        (we retry if the posix_spawnp call fails with EAGAIN).  We don't _need_
@@ -132,50 +132,50 @@ enum
     MAX_TRIES_DECOMPRESS = 9
   };
 
-enum
+गणना
   {
     /* Level of the end-of-merge node, one level above the root. */
     MERGE_END = 0,
 
     /* Level of the root node in merge tree. */
-    MERGE_ROOT = 1
+    MERGE_मूल = 1
   };
 
 /* The representation of the decimal point in the current locale.  */
-static char decimal_point;
+स्थिर वर्ण decimal_point;
 
 /* Thousands separator; if outside char range, there is no separator.  */
-static int thousands_sep;
+स्थिर पूर्णाङ्क thousands_sep;
 /* We currently ignore multi-byte grouping chars.  */
-static bool thousands_sep_ignored;
+स्थिर bool thousands_sep_ignored;
 
 /* Nonzero if the corresponding locales are hard.  */
-static bool hard_LC_COLLATE;
-#if HAVE_NL_LANGINFO
-static bool hard_LC_TIME;
+स्थिर bool hard_LC_COLLATE;
+#यदि HAVE_NL_LANGINFO
+स्थिर bool hard_LC_TIME;
 #endif
 
 #define NONZERO(x) ((x) != 0)
 
 /* The kind of blanks for '-b' to skip in various options. */
-enum blanktype { bl_start, bl_end, bl_both };
+गणना blanktype { bl_start, bl_end, bl_both };
 
 /* The character marking end of line. Default to \n. */
-static char eolchar = '\n';
+स्थिर वर्ण eolchar = '\n';
 
 /* Lines are held in memory as counted strings. */
-struct line
+संरचना पंक्ति
 {
-  char *text;			/* Text of the line. */
+  वर्ण *text;			/* Text of the line. */
   size_t length;		/* Length including final newline. */
-  char *keybeg;			/* Start of first key. */
-  char *keylim;			/* Limit of first key. */
+  वर्ण *keybeg;			/* Start of first key. */
+  वर्ण *keylim;			/* Limit of first key. */
 };
 
 /* Input buffers. */
-struct buffer
+संरचना buffer
 {
-  char *buf;			/* Dynamically allocated buffer,
+  वर्ण *buf;			/* Dynamically allocated buffer,
                                    partitioned into 3 regions:
                                    - input data;
                                    - unused area;
@@ -183,15 +183,15 @@ struct buffer
   size_t used;			/* Number of bytes used for input data.  */
   size_t nlines;		/* Number of lines in the line array.  */
   idx_t alloc;			/* Number of bytes allocated. */
-  size_t left;			/* Number of bytes left from previous reads. */
-  size_t line_bytes;		/* Number of bytes to reserve for each line. */
+  size_t बायाँ;			/* Number of bytes left from previous reads. */
+  size_t पंक्ति_bytes;		/* Number of bytes to reserve for each line. */
   bool eof;			/* An EOF has been read.  */
 };
 
 /* Policy for sizing the main sort buffer.  INITIAL is the allocation
    to try first.  LIMIT is the largest allocation to try while reading
    normal input; a single input line can still force a larger buffer.  */
-struct sort_buffer_policy
+संरचना sort_buffer_policy
 {
   size_t initial;
   size_t limit;
@@ -199,14 +199,14 @@ struct sort_buffer_policy
 };
 
 /* Sort key.  */
-struct keyfield
+संरचना keyfield
 {
   size_t sword;			/* Zero-origin 'word' to start at. */
   size_t schar;			/* Additional characters to skip. */
   size_t eword;			/* Zero-origin last 'word' of key. */
   size_t echar;			/* Additional characters in field. */
-  bool const *ignore;		/* Boolean array of characters to ignore. */
-  char const *translate;	/* Translation applied to characters. */
+  bool ध्रुव *ignore;		/* Boolean array of characters to ignore. */
+  वर्ण ध्रुव *translate;	/* Translation applied to characters. */
   bool skipsblanks;		/* Skip leading blanks when finding start.  */
   bool skipeblanks;		/* Skip leading blanks when finding end.  */
   bool numeric;			/* Flag for numeric comparison.  Handle
@@ -221,44 +221,44 @@ struct keyfield
   bool reverse;			/* Reverse the sense of comparison. */
   bool version;			/* sort by version number */
   bool traditional_used;	/* Traditional key option format is used. */
-  struct keyfield *next;	/* Next keyfield to try. */
+  संरचना keyfield *next;	/* Next keyfield to try. */
 };
 
-struct month
+संरचना month
 {
-  char const *name;
-  int val;
+  वर्ण ध्रुव *name;
+  पूर्णाङ्क val;
 };
 
 /* Binary merge tree node. */
-struct merge_node
+संरचना merge_गाँठ
 {
-  struct line *lo;              /* Lines to merge from LO child node. */
-  struct line *hi;              /* Lines to merge from HI child node. */
-  struct line *end_lo;          /* End of available lines from LO. */
-  struct line *end_hi;          /* End of available lines from HI. */
-  struct line **dest;           /* Pointer to destination of merge. */
+  संरचना पंक्ति *lo;              /* Lines to merge from LO child node. */
+  संरचना पंक्ति *hi;              /* Lines to merge from HI child node. */
+  संरचना पंक्ति *end_lo;          /* End of available lines from LO. */
+  संरचना पंक्ति *end_hi;          /* End of available lines from HI. */
+  संरचना पंक्ति **dest;           /* Pointer to destination of merge. */
   size_t nlo;                   /* Total Lines remaining from LO. */
   size_t nhi;                   /* Total lines remaining from HI. */
-  struct merge_node *parent;    /* Parent node. */
-  struct merge_node *lo_child;  /* LO child node. */
-  struct merge_node *hi_child;  /* HI child node. */
-  unsigned int level;           /* Level in merge tree. */
+  संरचना merge_गाँठ *parent;    /* Parent node. */
+  संरचना merge_गाँठ *lo_child;  /* LO child node. */
+  संरचना merge_गाँठ *hi_child;  /* HI child node. */
+  unsigned पूर्णाङ्क level;           /* Level in merge tree. */
   bool queued;                  /* Node is already in heap. */
   pthread_mutex_t lock;         /* Lock for node operations. */
 };
 
 /* Priority queue of merge nodes. */
-struct merge_node_queue
+संरचना merge_गाँठ_queue
 {
-  struct heap *priority_queue;  /* Priority queue of merge tree nodes. */
+  संरचना heap *priority_queue;  /* Priority queue of merge tree nodes. */
   pthread_mutex_t mutex;        /* Lock for queue operations. */
   pthread_cond_t cond;          /* Conditional wait for empty queue to populate
                                    when popping. */
 };
 
 /* Used to implement --unique (-u).  */
-static struct line saved_line;
+स्थिर संरचना पंक्ति saved_पंक्ति;
 
 /* FIXME: None of these tables work with multibyte character sets.
    Also, there are many other bugs when handling multibyte characters.
@@ -267,22 +267,22 @@ static struct line saved_line;
    tricky.  */
 
 /* Table of blanks.  */
-static bool blanks[UCHAR_LIM];
+स्थिर bool blanks[UCHAR_LIM];
 
 /* Table of non-printing characters. */
-static bool nonprinting[UCHAR_LIM];
+स्थिर bool nonprinting[UCHAR_LIM];
 
 /* Table of non-dictionary characters (not letters, digits, or blanks). */
-static bool nondictionary[UCHAR_LIM];
+स्थिर bool nondictionary[UCHAR_LIM];
 
 /* Translation table folding lower case to upper.  */
-static char fold_toupper[UCHAR_LIM];
+स्थिर वर्ण fold_toupper[UCHAR_LIM];
 
 #define MONTHS_PER_YEAR 12
 
 /* Table mapping month names to integers.
    Alphabetic order allows binary search. */
-static struct month monthtab[] =
+स्थिर संरचना month monthtab[] =
 {
   {"APR", 4},
   {"AUG", 8},
@@ -302,7 +302,7 @@ static struct month monthtab[] =
 #define NMERGE_DEFAULT 16
 
 /* Minimum size for a merge or check buffer.  */
-#define MIN_MERGE_BUFFER_SIZE (2 + sizeof (struct line))
+#define MIN_MERGE_BUFFER_SIZE (2 + परिमाण (संरचना पंक्ति))
 
 /* Minimum sort size; the code might not work with smaller sizes.  */
 #define MIN_SORT_SIZE (nmerge * MIN_MERGE_BUFFER_SIZE)
@@ -310,20 +310,20 @@ static struct month monthtab[] =
 /* The number of bytes needed for a merge or check buffer, which can
    function relatively efficiently even if it holds only one line.  If
    a longer line is seen, this value is increased.  */
-static size_t merge_buffer_size = MAX (MIN_MERGE_BUFFER_SIZE, 256 * 1024);
+स्थिर size_t merge_buffer_size = MAX (MIN_MERGE_BUFFER_SIZE, 256 * 1024);
 
 /* The approximate maximum number of bytes of main memory to use, as
    specified by the user.  Zero if the user has not specified a size.  */
-static size_t sort_size;
+स्थिर size_t sort_size;
 
 /* The initial allocation factor for non-regular files.
    This is used, e.g., when reading from a pipe.
    Don't make it too big, since it is multiplied by ~130 to
    obtain the size of the actual buffer sort will allocate.
    Also, there may be 8 threads all doing this at the same time.  */
-#define INPUT_FILE_SIZE_GUESS (128 * 1024)
+#define निवेश_FILE_SIZE_GUESS (128 * 1024)
 
-static struct
+स्थिर संरचना
 {
   /* Number of temporary directory names used.  */
   idx_t n_dirs;
@@ -333,106 +333,106 @@ static struct
 
   /* Array of directory names in which any temporary files are
      to be created. */
-  char const **dirs COUNTED_BY (n_dirs);
+  वर्ण ध्रुव **dirs COUNTED_BY (n_dirs);
 } temp_dirs;
 
 
 
 /* Flag to reverse the order of all comparisons. */
-static bool reverse;
+स्थिर bool reverse;
 
 /* Flag for stable sort.  This turns off the last ditch bytewise
    comparison of lines, and instead leaves lines in the same order
    they were read if all keys compare equal.  */
-static bool stable;
+स्थिर bool stable;
 
 /* An int value outside char range.  */
-enum { NON_CHAR = CHAR_MAX + 1 };
+गणना { NON_CHAR = CHAR_MAX + 1 };
 
 /* If TAB has this value, blanks separate fields.  */
-enum { TAB_DEFAULT = CHAR_MAX + 1 };
+गणना { TAB_DEFAULT = CHAR_MAX + 1 };
 
 /* Tab character separating fields.  If TAB_DEFAULT, then fields are
    separated by the empty string between a non-blank character and a blank
    character. */
-static int tab = TAB_DEFAULT;
+स्थिर पूर्णाङ्क tab = TAB_DEFAULT;
 
 /* Flag to remove consecutive duplicate lines from the output.
    Only the last of a sequence of equal lines will be output. */
-static bool unique;
+स्थिर bool unique;
 
 /* Nonzero if any of the input files are the standard input. */
-static bool have_read_stdin;
+स्थिर bool have_read_stdin;
 
 /* List of key field comparisons to be tried.  */
-static struct keyfield *keylist;
+स्थिर संरचना keyfield *keylist;
 
 /* Program used to (de)compress temp files.  Must accept -d.  */
-static char const *compress_program;
+स्थिर वर्ण ध्रुव *compress_program;
 
 /* Annotate the output with extra info to aid the user.  */
-static bool debug;
+स्थिर bool debug;
 
 /* Maximum number of files to merge in one go.  If more than this
    number are present, temp files will be used. */
-static unsigned int nmerge = NMERGE_DEFAULT;
+स्थिर unsigned पूर्णाङ्क nmerge = NMERGE_DEFAULT;
 
 /* Whether SIGPIPE had the default disposition at startup.  */
-static bool default_SIGPIPE;
+स्थिर bool default_SIGPIPE;
 
 /* The list of temporary files. */
-struct tempnode
+संरचना tempnode
 {
-  struct tempnode *volatile next;
+  संरचना tempnode *चञ्चल next;
   pid_t pid;     /* The subprocess PID; undefined if state == UNCOMPRESSED.  */
-  char state;
-  char name[FLEXIBLE_ARRAY_MEMBER];
+  वर्ण state;
+  वर्ण name[FLEXIBLE_ARRAY_MEMBER];
 };
-static struct tempnode *volatile temphead;
-static struct tempnode *volatile *temptail = &temphead;
+स्थिर संरचना tempnode *चञ्चल temphead;
+स्थिर संरचना tempnode *चञ्चल *temptail = &temphead;
 
 /* Clean up any remaining temporary files.  */
 
-static void
-cleanup (void)
+स्थिर शून्य
+cleanup (शून्य)
 {
-  for (struct tempnode const *node = temphead; node; node = node->next)
-    unlink (node->name);
-  temphead = NULL;
+  प्रति (संरचना tempnode ध्रुव *गाँठ = temphead; गाँठ; गाँठ = गाँठ->next)
+    unlink (गाँठ->name);
+  temphead = रिक्त;
 }
 
 /* Handle interrupts and hangups. */
 
-static void
-sighandler (int sig)
+स्थिर शून्य
+sighandler (पूर्णाङ्क sig)
 {
   cleanup ();
 
-  signal (sig, SIG_DFL);
-  raise (sig);
+  सङ्केत (sig, SIG_DFL);
+  उत्थापय (sig);
 }
 
 /* Report MESSAGE for FILE, then clean up and exit.
    If FILE is null, it represents standard output.  */
 
-static void
-sort_die (char const *message, char const *file)
+स्थिर शून्य
+sort_die (वर्ण ध्रुव *message, वर्ण ध्रुव *file)
 {
   /* If we got EPIPE writing to stdout (from a previous fwrite() or fclose()
      and SIGPIPE was originally SIG_DFL, mimic standard SIGPIPE behavior.  */
-  if (errno == EPIPE && !file && default_SIGPIPE)
+  यदि (errno == EPIPE && !file && default_SIGPIPE)
     sighandler (SIGPIPE);
 
   error (SORT_FAILURE, errno, "%s: %s", message,
          quotef (file ? file : _("standard output")));
 }
 
-void
-usage (int status)
+शून्य
+usage (पूर्णाङ्क status)
 {
-  if (status != EXIT_SUCCESS)
+  यदि (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  अन्यथा
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE]...\n\
@@ -452,19 +452,19 @@ Ordering options:\n\
 "), stdout);
       oputs (_("\
   -b, --ignore-leading-blanks\n\
-         ignore leading blanks when finding sort keys in each line\n\
+         ignore leading blanks when finding sort कुंजियाँ in each पंक्ति\n\
 "));
       oputs (_("\
   -d, --dictionary-order\n\
          consider only blanks and alphanumeric characters\n\
 "));
       oputs (_("\
-  -f, --ignore-case\n\
-         fold lower case to upper case characters\n\
+  -f, --ignore-पक्ष\n\
+         fold lower पक्ष to upper पक्ष characters\n\
 "));
       oputs (_("\
   -g, --general-numeric-sort\n\
-         compare according to general numerical value\n\
+         compare according to general numerical मूल्य\n\
 "));
       oputs (_("\
   -i, --ignore-nonprinting\n\
@@ -480,12 +480,12 @@ Ordering options:\n\
 "));
       oputs (_("\
   -n, --numeric-sort\n\
-         compare according to string numerical value;\n\
-         see full documentation for supported strings\n\
+         compare according to string numerical मूल्य;\n\
+         see full documentation प्रति supported strings\n\
 "));
       oputs (_("\
   -R, --random-sort\n\
-         shuffle, but group identical keys.  See also shuf(1)\n\
+         shuffle, but group identical कुंजियाँ.  See also shuf(1)\n\
 "));
       oputs (_("\
       --random-source=FILE\n\
@@ -512,15 +512,15 @@ Other options:\n\
 "), stdout);
       oputs (_("\
       --batch-size=NMERGE\n\
-         merge at most NMERGE inputs at once; for more use temp files\n\
+         merge at most NMERGE inputs at once; प्रति more use temp files\n\
 "));
       oputs (_("\
   -c, --check, --check=diagnose-first\n\
-         check for sorted input; do not sort\n\
+         check प्रति sorted निवेश; कुरु not sort\n\
 "));
       oputs (_("\
   -C, --check=quiet, --check=silent\n\
-         like -c, but do not report first bad line\n\
+         like -c, but कुरु not report first bad पंक्ति\n\
 "));
       oputs (_("\
       --compress-program=PROG\n\
@@ -528,26 +528,26 @@ Other options:\n\
 "));
       oputs (_("\
       --debug\n\
-         annotate the part of the line used to sort,\n\
+         annotate the part of the पंक्ति used to sort,\n\
          and warn about questionable usage to standard error\n\
 "));
       oputs (_("\
       --files0-from=F\n\
-         read input from the files specified by NUL-terminated names in file F;\
+         पठ निवेश from the files specified by NUL-terminated names in file F;\
 \n\
-         If F is -, read names from standard input\n\
+         If F is -, पठ names from standard निवेश\n\
 "));
       oputs (_("\
-  -k, --key=KEYDEF\n\
-         sort via a key; KEYDEF gives location and type\n\
+  -k, --कुंजी=KEYDEF\n\
+         sort via a कुंजी; KEYDEF gives location and type\n\
 "));
       oputs (_("\
   -m, --merge\n\
-         merge already sorted files; do not sort\n\
+         merge already sorted files; कुरु not sort\n\
 "));
       oputs (_("\
   -o, --output=FILE\n\
-         write result to FILE instead of standard output\n\
+         लिख result to FILE instead of standard output\n\
 "));
       oputs (_("\
   -s, --stable\n\
@@ -555,7 +555,7 @@ Other options:\n\
 "));
       oputs (_("\
   -S, --buffer-size=SIZE\n\
-         use SIZE for main memory buffer\n\
+         use SIZE प्रति main memory buffer\n\
 "));
       oputs (_("\
   -t, --field-separator=SEP\n\
@@ -563,44 +563,44 @@ Other options:\n\
 "));
       oprintf (_("\
   -T, --temporary-directory=DIR\n\
-         use DIR for temporaries, not $TMPDIR or %s;\n\
+         use DIR प्रति temporaries, not $TMPDIR or %s;\n\
          multiple options specify multiple directories\n\
 "), DEFAULT_TMPDIR);
       oputs (_("\
       --parallel=N\n\
-         change the number of sorts run concurrently to N\n\
+         change the संख्या of sorts run concurrently to N\n\
 "));
       oputs (_("\
   -u, --unique\n\
-         output only the first of lines with equal keys;\n\
-         with -c, check for strict ordering\n\
+         output only the first of पंक्तियाँ with equal कुंजियाँ;\n\
+         with -c, check प्रति strict ordering\n\
 "));
       oputs (_("\
   -z, --zero-terminated\n\
-         line delimiter is NUL, not newline\n\
+         पंक्ति delimiter is NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-KEYDEF is F[.C][OPTS][,F[.C][OPTS]] for start and stop position, where F is a\n\
-field number and C a character position in the field; both are origin 1, and\n\
-the stop position defaults to the line's end.  If neither -t nor -b is in\n\
+KEYDEF is F[.C][OPTS][,F[.C][OPTS]] प्रति start and stop position, where F is a\n\
+field संख्या and C a character position in the field; both are origin 1, and\n\
+the stop position defaults to the पंक्ति's end.  If neither -t nor -b is in\n\
 effect, characters in a field are counted from the beginning of the preceding\n\
 whitespace.  OPTS is one or more single-letter ordering options [bdfgiMhnRrV],\
 \n\
-which override global ordering options for that key.  If no key is given, use\n\
-the entire line as the key.  Use --debug to diagnose incorrect key usage.\n\
+which override global ordering options प्रति that कुंजी.  If no कुंजी is given, use\n\
+the entire पंक्ति as the कुंजी.  Use --debug to diagnose incorrect कुंजी usage.\n\
 \n\
 SIZE may be followed by the following multiplicative suffixes:\n\
 "), stdout);
       fputs (_("\
-% 1% of memory, b 1, K 1024 (default), and so on for M, G, T, P, E, Z, Y, R, Q.\
+% 1% of memory, b 1, K 1024 (स्वभाव), and so on प्रति M, G, T, P, E, Z, Y, R, Q.\
 \n\n\
 *** WARNING ***\n\
 The locale specified by the environment affects sort order.\n\
 Set LC_ALL=C to get the traditional sort order that uses\n\
-native byte values.\n\
+native byte मूल्यावली.\n\
 "), stdout );
       emit_ancillary_info (PROGRAM_NAME);
     }
@@ -610,7 +610,7 @@ native byte values.\n\
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+गणना
 {
   CHECK_OPTION = CHAR_MAX + 1,
   COMPRESS_PROGRAM_OPTION,
@@ -622,41 +622,41 @@ enum
   PARALLEL_OPTION
 };
 
-static char const short_options[] = "-bcCdfghik:mMno:rRsS:t:T:uVy:z";
+स्थिर वर्ण ध्रुव short_options[] = "-bcCdfghik:mMno:rRsS:t:T:uVy:z";
 
-static struct option const long_options[] =
+स्थिर संरचना option ध्रुव long_options[] =
 {
-  {"ignore-leading-blanks", no_argument, NULL, 'b'},
-  {"check", optional_argument, NULL, CHECK_OPTION},
-  {"compress-program", required_argument, NULL, COMPRESS_PROGRAM_OPTION},
-  {"debug", no_argument, NULL, DEBUG_PROGRAM_OPTION},
-  {"dictionary-order", no_argument, NULL, 'd'},
-  {"ignore-case", no_argument, NULL, 'f'},
-  {"files0-from", required_argument, NULL, FILES0_FROM_OPTION},
-  {"general-numeric-sort", no_argument, NULL, 'g'},
-  {"ignore-nonprinting", no_argument, NULL, 'i'},
-  {"key", required_argument, NULL, 'k'},
-  {"merge", no_argument, NULL, 'm'},
-  {"month-sort", no_argument, NULL, 'M'},
-  {"numeric-sort", no_argument, NULL, 'n'},
-  {"human-numeric-sort", no_argument, NULL, 'h'},
-  {"version-sort", no_argument, NULL, 'V'},
-  {"random-sort", no_argument, NULL, 'R'},
-  {"random-source", required_argument, NULL, RANDOM_SOURCE_OPTION},
-  {"sort", required_argument, NULL, SORT_OPTION},
-  {"output", required_argument, NULL, 'o'},
-  {"reverse", no_argument, NULL, 'r'},
-  {"stable", no_argument, NULL, 's'},
-  {"batch-size", required_argument, NULL, NMERGE_OPTION},
-  {"buffer-size", required_argument, NULL, 'S'},
-  {"field-separator", required_argument, NULL, 't'},
-  {"temporary-directory", required_argument, NULL, 'T'},
-  {"unique", no_argument, NULL, 'u'},
-  {"zero-terminated", no_argument, NULL, 'z'},
-  {"parallel", required_argument, NULL, PARALLEL_OPTION},
+  {"ignore-leading-blanks", no_argument, रिक्त, 'b'},
+  {"check", optional_argument, रिक्त, CHECK_OPTION},
+  {"compress-program", required_argument, रिक्त, COMPRESS_PROGRAM_OPTION},
+  {"debug", no_argument, रिक्त, DEBUG_PROGRAM_OPTION},
+  {"dictionary-order", no_argument, रिक्त, 'd'},
+  {"ignore-case", no_argument, रिक्त, 'f'},
+  {"files0-from", required_argument, रिक्त, FILES0_FROM_OPTION},
+  {"general-numeric-sort", no_argument, रिक्त, 'g'},
+  {"ignore-nonprinting", no_argument, रिक्त, 'i'},
+  {"key", required_argument, रिक्त, 'k'},
+  {"merge", no_argument, रिक्त, 'm'},
+  {"month-sort", no_argument, रिक्त, 'M'},
+  {"numeric-sort", no_argument, रिक्त, 'n'},
+  {"human-numeric-sort", no_argument, रिक्त, 'h'},
+  {"version-sort", no_argument, रिक्त, 'V'},
+  {"random-sort", no_argument, रिक्त, 'R'},
+  {"random-source", required_argument, रिक्त, RANDOM_SOURCE_OPTION},
+  {"sort", required_argument, रिक्त, SORT_OPTION},
+  {"output", required_argument, रिक्त, 'o'},
+  {"reverse", no_argument, रिक्त, 'r'},
+  {"stable", no_argument, रिक्त, 's'},
+  {"batch-size", required_argument, रिक्त, NMERGE_OPTION},
+  {"buffer-size", required_argument, रिक्त, 'S'},
+  {"field-separator", required_argument, रिक्त, 't'},
+  {"temporary-directory", required_argument, रिक्त, 'T'},
+  {"unique", no_argument, रिक्त, 'u'},
+  {"zero-terminated", no_argument, रिक्त, 'z'},
+  {"parallel", required_argument, रिक्त, PARALLEL_OPTION},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0},
+  {रिक्त, 0, रिक्त, 0},
 };
 
 #define CHECK_TABLE \
@@ -664,13 +664,13 @@ static struct option const long_options[] =
   _ct_("silent",         'C') \
   _ct_("diagnose-first", 'c')
 
-static char const *const check_args[] =
+स्थिर वर्ण ध्रुव *ध्रुव check_args[] =
 {
 #define _ct_(_s, _c) _s,
-  CHECK_TABLE NULL
+  CHECK_TABLE रिक्त
 #undef  _ct_
 };
-static char const check_types[] =
+स्थिर वर्ण ध्रुव check_types[] =
 {
 #define _ct_(_s, _c) _c,
   CHECK_TABLE
@@ -685,13 +685,13 @@ static char const check_types[] =
   _st_("random",          'R') \
   _st_("version",         'V')
 
-static char const *const sort_args[] =
+स्थिर वर्ण ध्रुव *ध्रुव sort_args[] =
 {
 #define _st_(_s, _c) _s,
-  SORT_TABLE NULL
+  SORT_TABLE रिक्त
 #undef  _st_
 };
-static char const sort_types[] =
+स्थिर वर्ण ध्रुव sort_types[] =
 {
 #define _st_(_s, _c) _c,
   SORT_TABLE
@@ -699,73 +699,73 @@ static char const sort_types[] =
 };
 
 /* The set of signals that are caught.  */
-static sigset_t caught_signals;
+स्थिर sigset_t caught_signals;
 
 /* Critical section status.  */
-struct cs_status
+संरचना cs_status
 {
   bool valid;
   sigset_t sigs;
 };
 
 /* Enter a critical section.  */
-static void
-cs_enter (struct cs_status *status)
+स्थिर शून्य
+cs_enter (संरचना cs_status *status)
 {
-  int ret = pthread_sigmask (SIG_BLOCK, &caught_signals, &status->sigs);
+  पूर्णाङ्क ret = pthread_sigmask (SIG_BLOCK, &caught_signals, &status->sigs);
   status->valid = ret == 0;
 }
 
 /* Leave a critical section.  */
-static void
-cs_leave (struct cs_status const *status)
+स्थिर शून्य
+cs_leave (संरचना cs_status ध्रुव *status)
 {
-  if (status->valid)
+  यदि (status->valid)
     {
       /* Ignore failure when restoring the signal mask. */
-      pthread_sigmask (SIG_SETMASK, &status->sigs, NULL);
+      pthread_sigmask (SIG_SETMASK, &status->sigs, रिक्त);
     }
 }
 
 /* Possible states for a temp file.  If compressed, the file's status
    is unreaped or reaped, depending on whether 'sort' has waited for
    the subprocess to finish.  */
-enum { UNCOMPRESSED, UNREAPED, REAPED };
+गणना { UNCOMPRESSED, UNREAPED, REAPED };
 
 /* A file to be sorted.  */
-struct sortfile
+संरचना sortfile
 {
   /* The file's name.  */
-  char const *name;
+  वर्ण ध्रुव *name;
 
   /* Non-null if this is a temporary file, in which case NAME == TEMP->name.  */
-  struct tempnode *temp;
+  संरचना tempnode *temp;
 };
 
 /* Map PIDs of unreaped subprocesses to their struct tempnode objects.  */
-static Hash_table *proctab;
+स्थिर Hash_table *proctab;
 
-enum { INIT_PROCTAB_SIZE = 47 };
+गणना { INIT_PROCTAB_SIZE = 47 };
 
-static size_t
-proctab_hasher (void const *entry, size_t tabsize)
+स्थिर size_t
+proctab_hasher (शून्य ध्रुव *entry, size_t tabsize)
 {
-  struct tempnode const *node = entry;
-  return node->pid % tabsize;
+  संरचना tempnode ध्रुव *गाँठ = entry;
+  प्रत्यागम गाँठ->pid % tabsize;
 }
 
-static bool
-proctab_comparator (void const *e1, void const *e2)
+स्थिर bool
+proctab_comparator (शून्य ध्रुव *e1, शून्य ध्रुव *e2)
 {
-  struct tempnode const *n1 = e1;
-  struct tempnode const *n2 = e2;
-  return n1->pid == n2->pid;
+  संरचना tempnode ध्रुव *n1 = e1;
+  संरचना tempnode ध्रुव *n2 = e2;
+  प्रत्यागम n1->pid == n2->pid;
 }
 
 /* The number of unreaped child processes.  */
-static pid_t nprocs;
+स्थिर pid_t nprocs;
 
-static bool delete_proc (pid_t);
+स्थिर bool delete_proc (pid_t);
 
 /* If PID is positive, wait for the child process with that PID to
    exit, and assume that PID has already been removed from the process
@@ -774,88 +774,88 @@ static bool delete_proc (pid_t);
    child's process ID.  However, if PID is 0 and no children have
    exited, return 0 without waiting.  */
 
-static pid_t
+स्थिर pid_t
 reap (pid_t pid)
 {
-  int status;
+  पूर्णाङ्क status;
   pid_t cpid = waitpid ((pid ? pid : -1), &status, (pid ? 0 : WNOHANG));
 
-  if (cpid < 0)
+  यदि (cpid < 0)
     error (SORT_FAILURE, errno, _("waiting for %s [-d]"),
            quoteaf (compress_program));
-  else if (0 < cpid && (0 < pid || delete_proc (cpid)))
+  अन्यथा यदि (0 < cpid && (0 < pid || delete_proc (cpid)))
     {
-      if (! WIFEXITED (status) || WEXITSTATUS (status))
+      यदि (! WIFEXITED (status) || WEXITSTATUS (status))
         error (SORT_FAILURE, 0, _("%s [-d] terminated abnormally"),
                quoteaf (compress_program));
       --nprocs;
     }
 
-  return cpid;
+  प्रत्यागम cpid;
 }
 
 /* TEMP represents a new process; add it to the process table.  Create
    the process table the first time it's called.  */
 
-static void
-register_proc (struct tempnode *temp)
+स्थिर शून्य
+register_proc (संरचना tempnode *temp)
 {
-  if (! proctab)
+  यदि (! proctab)
     {
-      proctab = hash_initialize (INIT_PROCTAB_SIZE, NULL,
+      proctab = hash_initialize (INIT_PROCTAB_SIZE, रिक्त,
                                  proctab_hasher,
                                  proctab_comparator,
-                                 NULL);
-      if (! proctab)
+                                 रिक्त);
+      यदि (! proctab)
         xalloc_die ();
     }
 
   temp->state = UNREAPED;
 
-  if (! hash_insert (proctab, temp))
+  यदि (! hash_जोड़ो (proctab, temp))
     xalloc_die ();
 }
 
 /* If PID is in the process table, remove it and return true.
    Otherwise, return false.  */
 
-static bool
+स्थिर bool
 delete_proc (pid_t pid)
 {
-  struct tempnode test;
+  संरचना tempnode test;
 
   test.pid = pid;
-  struct tempnode *node = hash_remove (proctab, &test);
-  if (! node)
-    return false;
-  node->state = REAPED;
-  return true;
+  संरचना tempnode *गाँठ = hash_remove (proctab, &test);
+  यदि (! गाँठ)
+    प्रत्यागम false;
+  गाँठ->state = REAPED;
+  प्रत्यागम true;
 }
 
 /* Remove PID from the process table, and wait for it to exit if it
    hasn't already.  */
 
-static void
+स्थिर शून्य
 wait_proc (pid_t pid)
 {
-  if (delete_proc (pid))
+  यदि (delete_proc (pid))
     reap (pid);
 }
 
 /* Reap any exited children.  Do not block; reap only those that have
    already exited.  */
 
-static void
-reap_exited (void)
+स्थिर शून्य
+reap_exited (शून्य)
 {
-  while (0 < nprocs && reap (0))
-    continue;
+  यावत् (0 < nprocs && reap (0))
+    अनुवर्त;
 }
 
 /* Reap at least one exited child, waiting if necessary.  */
 
-static void
-reap_some (void)
+स्थिर शून्य
+reap_some (शून्य)
 {
   reap (-1);
   reap_exited ();
@@ -863,23 +863,23 @@ reap_some (void)
 
 /* Reap all children, waiting if necessary.  */
 
-static void
-reap_all (void)
+स्थिर शून्य
+reap_all (शून्य)
 {
-  while (0 < nprocs)
+  यावत् (0 < nprocs)
     reap (-1);
 }
 
 /* Cleanup actions to take when exiting.  */
 
-static void
-exit_cleanup (void)
+स्थिर शून्य
+exit_cleanup (शून्य)
 {
-  if (temphead)
+  यदि (temphead)
     {
       /* Clean up any remaining temporary files in a critical section so
          that a signal handler does not try to clean them too.  */
-      struct cs_status cs;
+      संरचना cs_status cs;
       cs_enter (&cs);
       cleanup ();
       cs_leave (&cs);
@@ -894,61 +894,61 @@ exit_cleanup (void)
    failure is due to file descriptor exhaustion and
    SURVIVE_FD_EXHAUSTION; otherwise, die.  */
 
-static struct tempnode *
-create_temp_file (int *pfd, bool survive_fd_exhaustion)
+स्थिर संरचना tempnode *
+create_temp_file (पूर्णाङ्क *pfd, bool survive_fd_exhaustion)
 {
-  static char const slashbase[] = "/sortXXXXXX";
-  static idx_t temp_dir_index;
-  int fd;
-  int saved_errno;
-  char const *temp_dir = temp_dirs.dirs[temp_dir_index];
+  स्थिर वर्ण ध्रुव slashbase[] = "/sortXXXXXX";
+  स्थिर idx_t temp_dir_index;
+  पूर्णाङ्क fd;
+  पूर्णाङ्क saved_errno;
+  वर्ण ध्रुव *temp_dir = temp_dirs.dirs[temp_dir_index];
   size_t len = strlen (temp_dir);
-  struct tempnode *node =
-    xmalloc (FLEXSIZEOF (struct tempnode, name, len + sizeof slashbase));
-  char *file = node->name;
-  struct cs_status cs;
+  संरचना tempnode *गाँठ =
+    xmalloc (FLEXSIZEOF (संरचना tempnode, name, len + परिमाण slashbase));
+  वर्ण *file = गाँठ->name;
+  संरचना cs_status cs;
 
   memcpy (file, temp_dir, len);
-  memcpy (file + len, slashbase, sizeof slashbase);
-  node->next = NULL;
-  if (++temp_dir_index == temp_dirs.n_dirs)
+  memcpy (file + len, slashbase, परिमाण slashbase);
+  गाँठ->next = रिक्त;
+  यदि (++temp_dir_index == temp_dirs.n_dirs)
     temp_dir_index = 0;
 
   /* Create the temporary file in a critical section, to avoid races.  */
   cs_enter (&cs);
   fd = mkostemp (file, O_CLOEXEC);
-  if (0 <= fd)
+  यदि (0 <= fd)
     {
-      *temptail = node;
-      temptail = &node->next;
+      *temptail = गाँठ;
+      temptail = &गाँठ->next;
     }
   saved_errno = errno;
   cs_leave (&cs);
   errno = saved_errno;
 
-  if (fd < 0)
+  यदि (fd < 0)
     {
-      if (! (survive_fd_exhaustion && errno == EMFILE))
+      यदि (! (survive_fd_exhaustion && errno == EMFILE))
         error (SORT_FAILURE, errno, _("cannot create temporary file in %s"),
                quoteaf (temp_dir));
-      free (node);
-      node = NULL;
+      मुक्त (गाँठ);
+      गाँठ = रिक्त;
     }
 
   *pfd = fd;
-  return node;
+  प्रत्यागम गाँठ;
 }
 
 /* Return a pointer to stdout status, or NULL on failure.  */
 
-static struct stat *
-get_outstatus (void)
+स्थिर संरचना stat *
+get_outstatus (शून्य)
 {
-  static int outstat_errno;
-  static struct stat outstat;
-  if (outstat_errno == 0)
+  स्थिर पूर्णाङ्क outstat_errno;
+  स्थिर संरचना stat outstat;
+  यदि (outstat_errno == 0)
     outstat_errno = fstat (STDOUT_FILENO, &outstat) == 0 ? -1 : errno;
-  return outstat_errno < 0 ? &outstat : NULL;
+  प्रत्यागम outstat_errno < 0 ? &outstat : रिक्त;
 }
 
 /* Return a stream for FILE, opened with mode HOW.  If HOW is "w",
@@ -999,127 +999,127 @@ get_outstatus (void)
    cache immediately after processing.  This is done implicitly
    however when the files are unlinked.  */
 
-static FILE *
-stream_open (char const *file, char const *how)
+स्थिर FILE *
+stream_open (वर्ण ध्रुव *file, वर्ण ध्रुव *how)
 {
   FILE *fp;
 
-  if (*how == 'r')
+  यदि (*how == 'r')
     {
-      if (streq (file, "-"))
+      यदि (streq (file, "-"))
         {
           have_read_stdin = true;
           fp = stdin;
         }
-      else
+      अन्यथा
         {
-          int fd = open (file, O_RDONLY | O_CLOEXEC);
-          fp = fd < 0 ? NULL : fdopen (fd, how);
+          पूर्णाङ्क fd = open (file, O_RDONLY | O_CLOEXEC);
+          fp = fd < 0 ? रिक्त : fdopen (fd, how);
         }
       fadvise (fp, FADVISE_SEQUENTIAL);
     }
-  else if (*how == 'w')
+  अन्यथा यदि (*how == 'w')
     {
-      if (file && ftruncate (STDOUT_FILENO, 0) != 0)
+      यदि (file && ftruncate (STDOUT_FILENO, 0) != 0)
         {
-          int ftruncate_errno = errno;
-          struct stat *outst = get_outstatus ();
-          if (!outst || S_ISREG (outst->st_mode) || S_TYPEISSHM (outst))
+          पूर्णाङ्क ftruncate_errno = errno;
+          संरचना stat *outst = get_outstatus ();
+          यदि (!outst || S_ISREG (outst->st_mode) || S_TYPEISSHM (outst))
             error (SORT_FAILURE, ftruncate_errno, _("%s: error truncating"),
                    quotef (file));
         }
       fp = stdout;
     }
-  else
+  अन्यथा
     affirm (!"unexpected mode passed to stream_open");
 
-  return fp;
+  प्रत्यागम fp;
 }
 
 /* Same as stream_open, except always return a non-null value; die on
    failure.  */
 
-static FILE *
-xfopen (char const *file, char const *how)
+स्थिर FILE *
+xfopen (वर्ण ध्रुव *file, वर्ण ध्रुव *how)
 {
   FILE *fp = stream_open (file, how);
-  if (!fp)
+  यदि (!fp)
     sort_die (_("open failed"), file);
-  return fp;
+  प्रत्यागम fp;
 }
 
 /* Close FP, whose name is FILE, and report any errors.  */
 
-static void
-xfclose (FILE *fp, char const *file)
+स्थिर शून्य
+xfclose (FILE *fp, वर्ण ध्रुव *file)
 {
-  switch (fileno (fp))
+  विकल्प (fileno (fp))
     {
-    case STDIN_FILENO:
+    पक्ष STDIN_FILENO:
       /* Allow reading stdin from tty more than once.  */
       clearerr (fp);
-      break;
+      भङ्ग;
 
-    case STDOUT_FILENO:
+    पक्ष STDOUT_FILENO:
       /* Don't close stdout just yet.  close_stdout does that.  */
-      if (fflush (fp) != 0)
+      यदि (fflush (fp) != 0)
         sort_die (_("fflush failed"), file);
-      break;
+      भङ्ग;
 
-    default:
-      if (fclose (fp) != 0)
+    स्वभाव:
+      यदि (fclose (fp) != 0)
         sort_die (_("close failed"), file);
-      break;
+      भङ्ग;
     }
 }
 
 /* Move OLDFD to NEWFD.  If OLDFD != NEWFD, NEWFD is not close-on-exec.  */
 
-static void
-move_fd (int oldfd, int newfd)
+स्थिर शून्य
+move_fd (पूर्णाङ्क oldfd, पूर्णाङ्क newfd)
 {
-  if (oldfd != newfd)
+  यदि (oldfd != newfd)
     {
       /* These should never fail for our usage.  */
-      ignore_value (dup2 (oldfd, newfd));
-      ignore_value (close (oldfd));
+      ignore_मूल्य (dup2 (oldfd, newfd));
+      ignore_मूल्य (close (oldfd));
     }
 }
 
 /* Setup ACTION to move OLDFD to NEWFD.  If OLDFD != NEWFD, NEWFD is not
    close-on-exec.  Returns 0 if successful, or an error number otherwise.  */
 
-static int
+स्थिर पूर्णाङ्क
 posix_spawn_file_actions_move_fd (posix_spawn_file_actions_t *actions,
-                                  int oldfd, int newfd)
+                                  पूर्णाङ्क oldfd, पूर्णाङ्क newfd)
 {
-  int result = 0;
-  if (oldfd != newfd)
+  पूर्णाङ्क result = 0;
+  यदि (oldfd != newfd)
     {
       result = posix_spawn_file_actions_adddup2 (actions, oldfd, newfd);
-      if (result == 0)
+      यदि (result == 0)
         result = posix_spawn_file_actions_addclose (actions, oldfd);
     }
-  return result;
+  प्रत्यागम result;
 }
 
 /* Look up COMPRESS_PROGRAM in $PATH, and return the resolved program name.
    Upon error, return NULL with errno set.  */
 
-static char const *
-get_resolved_compress_program (void)
+स्थिर वर्ण ध्रुव *
+get_resolved_compress_program (शून्य)
 {
   /* Use a cache, to perform the search only once.  */
-  static char const *resolved_compress_program_cache /* = NULL */;
+  स्थिर वर्ण ध्रुव *resolved_compress_program_cache /* = NULL */;
 
-  if (resolved_compress_program_cache == NULL)
+  यदि (resolved_compress_program_cache == रिक्त)
     {
       resolved_compress_program_cache =
-        find_in_given_path (compress_program, getenv ("PATH"), NULL, false);
+        find_in_given_path (compress_program, getenv ("PATH"), रिक्त, false);
       /* If resolved_compress_program_cache == NULL, errno is set here.  */
     }
 
-  return resolved_compress_program_cache;
+  प्रत्यागम resolved_compress_program_cache;
 }
 
 /* Execute COMPRESS_PROGRAM in a child process.  The child processes pid is
@@ -1127,15 +1127,15 @@ get_resolved_compress_program (void)
    a child process before giving up.  Return 0 on success, or an error number
    otherwise.  */
 
-static int
-pipe_child (pid_t *pid, int pipefds[2], int tempfd, bool decompress,
+स्थिर पूर्णाङ्क
+pipe_child (pid_t *pid, पूर्णाङ्क pipefds[2], पूर्णाङ्क tempfd, bool decompress,
             size_t tries)
 {
-  char const *resolved_compress_program;
-  struct tempnode *saved_temphead;
-  double wait_retry = 0.25;
-  struct cs_status cs;
-  int result;
+  वर्ण ध्रुव *resolved_compress_program;
+  संरचना tempnode *saved_temphead;
+  द्विगुण wait_retry = 0.25;
+  संरचना cs_status cs;
+  पूर्णाङ्क result;
   posix_spawnattr_t attr;
   posix_spawn_file_actions_t actions;
 
@@ -1144,27 +1144,27 @@ pipe_child (pid_t *pid, int pipefds[2], int tempfd, bool decompress,
      implementations/emulations of posix_spawn we get only a
      generic (fatal) error from the child in that case.  */
   resolved_compress_program = get_resolved_compress_program ();
-  if (resolved_compress_program == NULL)
-    return errno;
+  यदि (resolved_compress_program == रिक्त)
+    प्रत्यागम errno;
 
-  if ((result = posix_spawnattr_init (&attr)))
-    return result;
-  if ((result = posix_spawnattr_setflags (&attr, POSIX_SPAWN_USEVFORK))
+  यदि ((result = posix_spawnattr_init (&attr)))
+    प्रत्यागम result;
+  यदि ((result = posix_spawnattr_setflags (&attr, POSIX_SPAWN_USEVFORK))
       || (result = posix_spawn_file_actions_init (&actions)))
     {
       posix_spawnattr_destroy (&attr);
-      return result;
+      प्रत्यागम result;
     }
 
-  if (pipe2 (pipefds, O_CLOEXEC) < 0)
+  यदि (pipe2 (pipefds, O_CLOEXEC) < 0)
     {
-      int saved_errno = errno;
+      पूर्णाङ्क saved_errno = errno;
       posix_spawnattr_destroy (&attr);
       posix_spawn_file_actions_destroy (&actions);
-      return saved_errno;
+      प्रत्यागम saved_errno;
     }
 
-  if ((result = posix_spawn_file_actions_addclose (&actions, STDIN_FILENO))
+  यदि ((result = posix_spawn_file_actions_addclose (&actions, STDIN_FILENO))
       || (result = posix_spawn_file_actions_addclose (&actions, STDOUT_FILENO))
       || (decompress
           ? ((result = posix_spawn_file_actions_addclose (&actions,
@@ -1186,14 +1186,14 @@ pipe_child (pid_t *pid, int pipefds[2], int tempfd, bool decompress,
       close (pipefds[1]);
       posix_spawnattr_destroy (&attr);
       posix_spawn_file_actions_destroy (&actions);
-      return result;
+      प्रत्यागम result;
     }
 
-  char const *const argv[] =
+  वर्ण ध्रुव *ध्रुव argv[] =
     {
       resolved_compress_program,
-      decompress ? "-d" : NULL,
-      NULL
+      decompress ? "-d" : रिक्त,
+      रिक्त
     };
 
   /* At least NMERGE + 1 subprocesses are needed.  More could be created, but
@@ -1203,27 +1203,27 @@ pipe_child (pid_t *pid, int pipefds[2], int tempfd, bool decompress,
      previous merge finish (1 subprocess) in parallel with the current
      merge (NMERGE + 1 subprocesses).  */
 
-  if (nmerge + 1 < nprocs)
+  यदि (nmerge + 1 < nprocs)
     reap_some ();
 
-  while (tries--)
+  यावत् (tries--)
     {
       /* This is so the child process won't delete our temp files
          if it receives a signal before exec-ing.  */
       cs_enter (&cs);
       saved_temphead = temphead;
-      temphead = NULL;
+      temphead = रिक्त;
 
       result = posix_spawnp (pid, resolved_compress_program, &actions, &attr,
-                             (char * const *) argv, environ);
+                             (वर्ण * ध्रुव *) argv, environ);
 
       temphead = saved_temphead;
 
       cs_leave (&cs);
 
-      if (result != EAGAIN)
-        break;
-      else
+      यदि (result != EAGAIN)
+        भङ्ग;
+      अन्यथा
         {
           /* [v]fork/clone are indicating resource constraints,
              so back-off for a while and retry.  */
@@ -1236,15 +1236,15 @@ pipe_child (pid_t *pid, int pipefds[2], int tempfd, bool decompress,
   posix_spawnattr_destroy (&attr);
   posix_spawn_file_actions_destroy (&actions);
 
-  if (result)
+  यदि (result)
     {
       close (pipefds[0]);
       close (pipefds[1]);
     }
-  else
+  अन्यथा
     ++nprocs;
 
-  return result;
+  प्रत्यागम result;
 }
 
 /* Create a temporary file and, if asked for, start a compressor
@@ -1253,57 +1253,57 @@ pipe_child (pid_t *pid, int pipefds[2], int tempfd, bool decompress,
    fails, return NULL if the failure is due to file descriptor
    exhaustion and SURVIVE_FD_EXHAUSTION; otherwise, die.  */
 
-static struct tempnode *
+स्थिर संरचना tempnode *
 maybe_create_temp (FILE **pfp, bool survive_fd_exhaustion)
 {
-  int tempfd;
-  struct tempnode *node = create_temp_file (&tempfd, survive_fd_exhaustion);
-  if (! node)
-    return NULL;
+  पूर्णाङ्क tempfd;
+  संरचना tempnode *गाँठ = create_temp_file (&tempfd, survive_fd_exhaustion);
+  यदि (! गाँठ)
+    प्रत्यागम रिक्त;
 
-  node->state = UNCOMPRESSED;
+  गाँठ->state = UNCOMPRESSED;
 
-  if (compress_program)
+  यदि (compress_program)
     {
-      int pipefds[2];
-      static int last_result = 0;
+      पूर्णाङ्क pipefds[2];
+      स्थिर पूर्णाङ्क last_result = 0;
 
-      int result = pipe_child (&node->pid, pipefds, tempfd, false,
+      पूर्णाङ्क result = pipe_child (&गाँठ->pid, pipefds, tempfd, false,
                                MAX_TRIES_COMPRESS);
 
-      if (result)
+      यदि (result)
         {
-          if (result != last_result)
+          यदि (result != last_result)
             error (0, result, _("could not run compress program %s"),
                    quoteaf (compress_program));
         }
-      else
+      अन्यथा
         {
           close (tempfd);
           close (pipefds[0]);
           tempfd = pipefds[1];
 
-          register_proc (node);
+          register_proc (गाँठ);
         }
 
       last_result = result;
     }
 
   *pfp = fdopen (tempfd, "w");
-  if (! *pfp)
-    sort_die (_("couldn't create temporary file"), node->name);
+  यदि (! *pfp)
+    sort_die (_("couldn't create temporary file"), गाँठ->name);
 
-  return node;
+  प्रत्यागम गाँठ;
 }
 
 /* Create a temporary file and, if asked for, start a compressor
    to that file.  Set *PFP to the file handle and return the address
    of the new temp node.  Die on failure.  */
 
-static struct tempnode *
+स्थिर संरचना tempnode *
 create_temp (FILE **pfp)
 {
-  return maybe_create_temp (pfp, false);
+  प्रत्यागम maybe_create_temp (pfp, false);
 }
 
 /* Open a compressed temp file and start a decompression process through
@@ -1311,32 +1311,32 @@ create_temp (FILE **pfp)
    EMFILE) if we ran out of file descriptors, and die on any other
    kind of failure.  */
 
-static FILE *
-open_temp (struct tempnode *temp)
+स्थिर FILE *
+open_temp (संरचना tempnode *temp)
 {
-  int tempfd, pipefds[2];
-  FILE *fp = NULL;
+  पूर्णाङ्क tempfd, pipefds[2];
+  FILE *fp = रिक्त;
 
-  if (temp->state == UNREAPED)
+  यदि (temp->state == UNREAPED)
     wait_proc (temp->pid);
 
   tempfd = open (temp->name, O_RDONLY);
-  if (tempfd < 0)
-    return NULL;
+  यदि (tempfd < 0)
+    प्रत्यागम रिक्त;
 
   pid_t child;
-  int result = pipe_child (&child, pipefds, tempfd, true,
+  पूर्णाङ्क result = pipe_child (&child, pipefds, tempfd, true,
                            MAX_TRIES_DECOMPRESS);
 
-  if (result)
+  यदि (result)
     {
-      if (result != EMFILE)
+      यदि (result != EMFILE)
         error (SORT_FAILURE, result, _("could not run compress program %s -d"),
                quoteaf (compress_program));
       close (tempfd);
       errno = EMFILE;
     }
-  else
+  अन्यथा
     {
       temp->pid = child;
       register_proc (temp);
@@ -1344,80 +1344,80 @@ open_temp (struct tempnode *temp)
       close (pipefds[1]);
 
       fp = fdopen (pipefds[0], "r");
-      if (! fp)
+      यदि (! fp)
         {
-          int saved_errno = errno;
+          पूर्णाङ्क saved_errno = errno;
           close (pipefds[0]);
           errno = saved_errno;
         }
     }
 
-  return fp;
+  प्रत्यागम fp;
 }
 
 /* Append DIR to the array of temporary directory names.  */
-static void
-add_temp_dir (char const *dir)
+स्थिर शून्य
+add_temp_dir (वर्ण ध्रुव *dir)
 {
-  if (temp_dirs.n_dirs == temp_dirs.n_dirs_alloc)
+  यदि (temp_dirs.n_dirs == temp_dirs.n_dirs_alloc)
     temp_dirs.dirs = xpalloc (temp_dirs.dirs, &temp_dirs.n_dirs_alloc, 1, -1,
-                              sizeof *temp_dirs.dirs);
+                              परिमाण *temp_dirs.dirs);
 
-  idx_t const dir_idx = temp_dirs.n_dirs++;
+  idx_t ध्रुव dir_idx = temp_dirs.n_dirs++;
   temp_dirs.dirs[dir_idx] = dir;
 }
 
 /* Remove NAME from the list of temporary files.  */
 
-static void
-zaptemp (char const *name)
+स्थिर शून्य
+zaptemp (वर्ण ध्रुव *name)
 {
-  struct tempnode *volatile *pnode;
-  struct tempnode *node;
-  struct tempnode *next;
-  int unlink_status;
-  int unlink_errno = 0;
-  struct cs_status cs;
+  संरचना tempnode *चञ्चल *pnode;
+  संरचना tempnode *गाँठ;
+  संरचना tempnode *next;
+  पूर्णाङ्क unlink_status;
+  पूर्णाङ्क unlink_errno = 0;
+  संरचना cs_status cs;
 
-  for (pnode = &temphead; (node = *pnode)->name != name; pnode = &node->next)
-    continue;
+  प्रति (pnode = &temphead; (गाँठ = *pnode)->name != name; pnode = &गाँठ->next)
+    अनुवर्त;
 
-  if (node->state == UNREAPED)
-    wait_proc (node->pid);
+  यदि (गाँठ->state == UNREAPED)
+    wait_proc (गाँठ->pid);
 
   /* Unlink the temporary file in a critical section to avoid races.  */
-  next = node->next;
+  next = गाँठ->next;
   cs_enter (&cs);
   unlink_status = unlink (name);
   unlink_errno = errno;
   *pnode = next;
   cs_leave (&cs);
 
-  if (unlink_status != 0)
+  यदि (unlink_status != 0)
     error (0, unlink_errno, _("warning: cannot remove: %s"), quotef (name));
-  if (! next)
+  यदि (! next)
     temptail = pnode;
-  free (node);
+  मुक्त (गाँठ);
 }
 
-#if HAVE_NL_LANGINFO
+#यदि HAVE_NL_LANGINFO
 
-static int
-struct_month_cmp (void const *m1, void const *m2)
+स्थिर पूर्णाङ्क
+struct_month_cmp (शून्य ध्रुव *m1, शून्य ध्रुव *m2)
 {
-  struct month const *month1 = m1;
-  struct month const *month2 = m2;
-  return strcmp (month1->name, month2->name);
+  संरचना month ध्रुव *month1 = m1;
+  संरचना month ध्रुव *month2 = m2;
+  प्रत्यागम strcmp (month1->name, month2->name);
 }
 
 #endif
 
 /* Initialize the character class tables. */
 
-static void
-inittables (void)
+स्थिर शून्य
+inittables (शून्य)
 {
-  for (size_t i = 0; i < UCHAR_LIM; ++i)
+  प्रति (size_t i = 0; i < UCHAR_LIM; ++i)
     {
       blanks[i] = i == '\n' || isblank (i);
       nondictionary[i] = ! blanks[i] && ! isalnum (i);
@@ -1425,28 +1425,28 @@ inittables (void)
       fold_toupper[i] = toupper (i);
     }
 
-#if HAVE_NL_LANGINFO
+#यदि HAVE_NL_LANGINFO
   /* If we're not in the "C" locale, read different names for months.  */
-  if (hard_LC_TIME)
+  यदि (hard_LC_TIME)
     {
-      for (size_t i = 0; i < MONTHS_PER_YEAR; i++)
+      प्रति (size_t i = 0; i < MONTHS_PER_YEAR; i++)
         {
-          char const *s;
+          वर्ण ध्रुव *s;
           size_t s_len;
           size_t j, k;
-          char *name;
+          वर्ण *name;
 
           s = nl_langinfo (ABMON_1 + i);
           s_len = strlen (s);
           monthtab[i].name = name = xmalloc (s_len + 1);
           monthtab[i].val = i + 1;
 
-          for (j = k = 0; j < s_len; j++)
-            if (! isblank (to_uchar (s[j])))
+          प्रति (j = k = 0; j < s_len; j++)
+            यदि (! isblank (to_uchar (s[j])))
               name[k++] = fold_toupper[to_uchar (s[j])];
           name[k] = '\0';
         }
-      qsort (monthtab, MONTHS_PER_YEAR, sizeof *monthtab, struct_month_cmp);
+      qsort (monthtab, MONTHS_PER_YEAR, परिमाण *monthtab, struct_month_cmp);
     }
 #endif
 }
@@ -1454,29 +1454,29 @@ inittables (void)
 /* Specify how many inputs may be merged at once.
    This may be set on the command-line with the
    --batch-size option. */
-static void
-specify_nmerge (int oi, char c, char const *s)
+स्थिर शून्य
+specify_nmerge (पूर्णाङ्क oi, वर्ण c, वर्ण ध्रुव *s)
 {
   uintmax_t n;
-  struct rlimit rlimit;
-  enum strtol_error e = xstrtoumax (s, NULL, 10, &n, "");
+  संरचना rlimit rlimit;
+  गणना strtol_error e = xstrtoumax (s, रिक्त, 10, &n, "");
 
   /* Try to find out how many file descriptors we'll be able
      to open.  We need at least nmerge + 3 (STDIN_FILENO,
      STDOUT_FILENO and STDERR_FILENO). */
-  unsigned int max_nmerge = ((getrlimit (RLIMIT_NOFILE, &rlimit) == 0
+  unsigned पूर्णाङ्क max_nmerge = ((getrlimit (RLIMIT_NOFILE, &rlimit) == 0
                               ? rlimit.rlim_cur
                               : OPEN_MAX)
                              - 3);
 
-  if (e == LONGINT_OK)
+  यदि (e == LONGINT_OK)
     {
       nmerge = n;
-      if (nmerge != n)
+      यदि (nmerge != n)
         e = LONGINT_OVERFLOW;
-      else
+      अन्यथा
         {
-          if (nmerge < 2)
+          यदि (nmerge < 2)
             {
               error (0, 0, _("invalid --%s argument %s"),
                      long_options[oi].name, quote (s));
@@ -1484,16 +1484,16 @@ specify_nmerge (int oi, char c, char const *s)
                      _("minimum --%s argument is %s"),
                      long_options[oi].name, quote ("2"));
             }
-          else if (max_nmerge < nmerge)
+          अन्यथा यदि (max_nmerge < nmerge)
             {
               e = LONGINT_OVERFLOW;
             }
-          else
-            return;
+          अन्यथा
+            प्रत्यागम;
         }
     }
 
-  if (e == LONGINT_OVERFLOW)
+  यदि (e == LONGINT_OVERFLOW)
     {
       error (0, 0, _("--%s argument %s too large"),
              long_options[oi].name, quote (s));
@@ -1501,58 +1501,58 @@ specify_nmerge (int oi, char c, char const *s)
              _("maximum --%s argument with current rlimit is %u"),
              long_options[oi].name, max_nmerge);
     }
-  else
+  अन्यथा
     xstrtol_fatal (e, oi, c, long_options, s);
 }
 
 /* Specify the amount of main memory to use when sorting.  */
-static void
-specify_sort_size (int oi, char c, char const *s)
+स्थिर शून्य
+specify_sort_size (पूर्णाङ्क oi, वर्ण c, वर्ण ध्रुव *s)
 {
   uintmax_t n;
-  char *suffix;
-  enum strtol_error e = xstrtoumax (s, &suffix, 10, &n, "EgGkKmMPQRtTYZ");
+  वर्ण *suffix;
+  गणना strtol_error e = xstrtoumax (s, &suffix, 10, &n, "EgGkKmMPQRtTYZ");
 
   /* The default unit is KiB.  */
-  if (e == LONGINT_OK && c_isdigit (suffix[-1]) && ckd_mul (&n, n, 1024))
+  यदि (e == LONGINT_OK && c_isdigit (suffix[-1]) && ckd_mul (&n, n, 1024))
     e = LONGINT_OVERFLOW;
 
   /* A 'b' suffix means bytes; a '%' suffix means percent of memory.  */
-  if (e == LONGINT_INVALID_SUFFIX_CHAR && c_isdigit (suffix[-1]) && ! suffix[1])
-    switch (suffix[0])
+  यदि (e == LONGINT_INVALID_SUFFIX_CHAR && c_isdigit (suffix[-1]) && ! suffix[1])
+    विकल्प (suffix[0])
       {
-      case 'b':
+      पक्ष 'b':
         e = LONGINT_OK;
-        break;
+        भङ्ग;
 
-      case '%':
+      पक्ष '%':
         {
-          double mem = physmem_total () * n / 100;
+          द्विगुण mem = physmem_total () * n / 100;
 
           /* Use "<", not "<=", to avoid problems with rounding.  */
-          if (mem < UINTMAX_MAX)
+          यदि (mem < UINTMAX_MAX)
             {
               n = mem;
               e = LONGINT_OK;
             }
-          else
+          अन्यथा
             e = LONGINT_OVERFLOW;
         }
-        break;
+        भङ्ग;
       }
 
-  if (e == LONGINT_OK)
+  यदि (e == LONGINT_OK)
     {
       /* If multiple sort sizes are specified, take the maximum, so
          that option order does not matter.  */
-      if (n < sort_size)
-        return;
+      यदि (n < sort_size)
+        प्रत्यागम;
 
       sort_size = n;
-      if (sort_size == n)
+      यदि (sort_size == n)
         {
           sort_size = MAX (sort_size, MIN_SORT_SIZE);
-          return;
+          प्रत्यागम;
         }
 
       e = LONGINT_OVERFLOW;
@@ -1562,37 +1562,37 @@ specify_sort_size (int oi, char c, char const *s)
 }
 
 /* Specify the number of threads to spawn during internal sort.  */
-static size_t
-specify_nthreads (int oi, char c, char const *s)
+स्थिर size_t
+specify_nthreads (पूर्णाङ्क oi, वर्ण c, वर्ण ध्रुव *s)
 {
   uintmax_t nthreads;
-  enum strtol_error e = xstrtoumax (s, NULL, 10, &nthreads, "");
-  if (e == LONGINT_OVERFLOW)
-    return SIZE_MAX;
-  if (e != LONGINT_OK)
+  गणना strtol_error e = xstrtoumax (s, रिक्त, 10, &nthreads, "");
+  यदि (e == LONGINT_OVERFLOW)
+    प्रत्यागम SIZE_MAX;
+  यदि (e != LONGINT_OK)
     xstrtol_fatal (e, oi, c, long_options, s);
-  if (SIZE_MAX < nthreads)
+  यदि (SIZE_MAX < nthreads)
     nthreads = SIZE_MAX;
-  if (nthreads == 0)
+  यदि (nthreads == 0)
     error (SORT_FAILURE, 0, _("number in parallel must be nonzero"));
-  return nthreads;
+  प्रत्यागम nthreads;
 }
 
 /* Return the default sort size.  This is a growth limit, not necessarily
    the initial allocation size.  */
-static size_t
-default_sort_size (void)
+स्थिर size_t
+default_sort_size (शून्य)
 {
   /* Let SIZE be MEM, but no more than the maximum object size,
      total memory, or system resource limits.  Don't bother to check
      for values like RLIM_INFINITY since in practice they are not much
      less than SIZE_MAX.  */
   size_t size = SIZE_MAX;
-  struct rlimit rlimit;
-  if (getrlimit (RLIMIT_DATA, &rlimit) == 0 && rlimit.rlim_cur < size)
+  संरचना rlimit rlimit;
+  यदि (getrlimit (RLIMIT_DATA, &rlimit) == 0 && rlimit.rlim_cur < size)
     size = rlimit.rlim_cur;
 #ifdef RLIMIT_AS
-  if (getrlimit (RLIMIT_AS, &rlimit) == 0 && rlimit.rlim_cur < size)
+  यदि (getrlimit (RLIMIT_AS, &rlimit) == 0 && rlimit.rlim_cur < size)
     size = rlimit.rlim_cur;
 #endif
 
@@ -1603,80 +1603,80 @@ default_sort_size (void)
 #ifdef RLIMIT_RSS
   /* Leave a 1/16 margin for RSS to leave room for code, stack, etc.
      Exceeding RSS is not fatal, but can be quite slow.  */
-  if (getrlimit (RLIMIT_RSS, &rlimit) == 0 && rlimit.rlim_cur / 16 * 15 < size)
+  यदि (getrlimit (RLIMIT_RSS, &rlimit) == 0 && rlimit.rlim_cur / 16 * 15 < size)
     size = rlimit.rlim_cur / 16 * 15;
 #endif
 
   /* Let MEM be available memory or 1/8 of total memory, whichever
      is greater.  */
-  double avail = physmem_available ();
-  double total = physmem_total ();
-  double mem = MAX (avail, total / 8);
+  द्विगुण avail = physmem_available ();
+  द्विगुण total = physmem_total ();
+  द्विगुण mem = MAX (avail, total / 8);
 
   /* Leave a 1/4 margin for physical memory.  */
-  if (total * 0.75 < size)
+  यदि (total * 0.75 < size)
     size = total * 0.75;
 
   /* Return the minimum of MEM and SIZE, but no less than
      MIN_SORT_SIZE.  Avoid the MIN macro here, as it is not quite
      right when only one argument is floating point.  */
-  if (mem < size)
+  यदि (mem < size)
     size = mem;
-  return MAX (size, MIN_SORT_SIZE);
+  प्रत्यागम MAX (size, MIN_SORT_SIZE);
 }
 
 /* Return true if *ALLOC has been adjusted to a size suitable for a sort
    buffer.  */
 
-static bool
-line_aligned_size (size_t *alloc)
+स्थिर bool
+पंक्ति_aligned_size (size_t *alloc)
 {
   size_t size = *alloc;
-  size_t alignment = sizeof (struct line);
+  size_t alignment = परिमाण (संरचना पंक्ति);
   size_t padding = alignment - size % alignment;
   size_t aligned;
 
-  if (ckd_add (&aligned, size, padding))
-    return false;
+  यदि (ckd_add (&aligned, size, padding))
+    प्रत्यागम false;
 
   *alloc = aligned;
-  return true;
+  प्रत्यागम true;
 }
 
 /* Return the default initial allocation for a growable sort buffer.  */
 
-static size_t
-default_initial_sort_size (size_t line_bytes)
+स्थिर size_t
+default_initial_sort_size (size_t पंक्ति_bytes)
 {
-  size_t size = line_bytes + 2;
-  size_t input_size;
+  size_t size = पंक्ति_bytes + 2;
+  size_t निवेश_size;
 
-  if (ckd_mul (&input_size, INPUT_FILE_SIZE_GUESS, line_bytes + 1)
-      || ckd_add (&size, size, input_size))
-    return SIZE_MAX;
+  यदि (ckd_mul (&निवेश_size, निवेश_FILE_SIZE_GUESS, पंक्ति_bytes + 1)
+      || ckd_add (&size, size, निवेश_size))
+    प्रत्यागम SIZE_MAX;
 
-  return MAX (size, MIN_SORT_SIZE);
+  प्रत्यागम MAX (size, MIN_SORT_SIZE);
 }
 
 /* Store into *WORST_CASE the allocation needed for FILE_SIZE input bytes
    in the worst case, where each input byte is a line delimiter except
    for a final non-delimiter byte.  Return false on overflow.  */
 
-static bool
-input_size_buffer_bytes (uintmax_t file_size, size_t line_bytes,
+स्थिर bool
+निवेश_size_buffer_bytes (uintmax_t file_size, size_t पंक्ति_bytes,
                          size_t *worst_case)
 {
-  size_t worst_case_per_input_byte = line_bytes + 1;
+  size_t worst_case_per_निवेश_byte = पंक्ति_bytes + 1;
 
-  if (SIZE_MAX / worst_case_per_input_byte < file_size)
-    return false;
+  यदि (SIZE_MAX / worst_case_per_निवेश_byte < file_size)
+    प्रत्यागम false;
 
-  size_t size = file_size * worst_case_per_input_byte;
-  if (SIZE_MAX - size < 1)
-    return false;
+  size_t size = file_size * worst_case_per_निवेश_byte;
+  यदि (SIZE_MAX - size < 1)
+    प्रत्यागम false;
 
   *worst_case = size + 1;
-  return true;
+  प्रत्यागम true;
 }
 
 /* Set *POLICY to the sort buffer policy to use with the input files identified
@@ -1686,76 +1686,76 @@ input_size_buffer_bytes (uintmax_t file_size, size_t line_bytes,
    information.  Do not exceed the size bound specified by the user
    (or a default size bound, if the user does not specify one).  */
 
-static void
-sort_buffer_policy (FILE *const *fps, size_t nfps,
-                    char *const *files, size_t nfiles,
-                    size_t line_bytes,
-                    struct sort_buffer_policy *policy)
+स्थिर शून्य
+sort_buffer_policy (FILE *ध्रुव *fps, size_t nfps,
+                    वर्ण *ध्रुव *files, size_t nfiles,
+                    size_t पंक्ति_bytes,
+                    संरचना sort_buffer_policy *policy)
 {
   size_t size_bound = sort_size ? sort_size : default_sort_size ();
   size_t initial_bound =
-    sort_size ? size_bound : default_initial_sort_size (line_bytes);
+    sort_size ? size_bound : default_initial_sort_size (पंक्ति_bytes);
 
   /* In the worst case, each input byte is a newline.  */
-  size_t worst_case_per_input_byte = line_bytes + 1;
+  size_t worst_case_per_निवेश_byte = पंक्ति_bytes + 1;
 
   /* Keep enough room for one extra input line and an extra byte.
      This extra room might be needed when preparing to read EOF.  */
-  size_t size = worst_case_per_input_byte + 1;
+  size_t size = worst_case_per_निवेश_byte + 1;
 
   initial_bound = MIN (initial_bound, size_bound);
   policy->limit = size_bound;
   policy->growth_failed = false;
 
-  for (size_t i = 0; i < nfiles; i++)
+  प्रति (size_t i = 0; i < nfiles; i++)
     {
-      struct stat st;
+      संरचना stat st;
       off_t file_size;
       size_t worst_case;
       bool known_size;
 
-      if (size_bound <= size)
+      यदि (size_bound <= size)
         {
           policy->initial = size_bound;
-          return;
+          प्रत्यागम;
         }
 
-      if ((i < nfps ? fstat (fileno (fps[i]), &st)
+      यदि ((i < nfps ? fstat (fileno (fps[i]), &st)
            : streq (files[i], "-") ? fstat (STDIN_FILENO, &st)
            : stat (files[i], &st))
           != 0)
         sort_die (_("stat failed"), files[i]);
 
       known_size = usable_st_size (&st) && 0 < st.st_size;
-      if (known_size)
+      यदि (known_size)
         file_size = st.st_size;
-      else
+      अन्यथा
         {
           /* The file has unknown size.  If the user specified a sort
              buffer size, use that; otherwise, guess the size.  */
-          if (sort_size)
+          यदि (sort_size)
             {
               policy->initial = size_bound;
-              return;
+              प्रत्यागम;
             }
-          file_size = INPUT_FILE_SIZE_GUESS;
+          file_size = निवेश_FILE_SIZE_GUESS;
         }
 
       /* Add the amount of memory needed to represent the worst case
          where the input consists entirely of newlines followed by a
          single non-newline.  Check for overflow.  */
-      if (! input_size_buffer_bytes (file_size, line_bytes, &worst_case)
+      यदि (! निवेश_size_buffer_bytes (file_size, पंक्ति_bytes, &worst_case)
           || size_bound - size <= worst_case)
         {
           policy->initial = size_bound;
-          return;
+          प्रत्यागम;
         }
 
-      if (! known_size && ! sort_size
+      यदि (! known_size && ! sort_size
           && (initial_bound <= size || initial_bound - size <= worst_case))
         {
           policy->initial = MAX (size, initial_bound);
-          return;
+          प्रत्यागम;
         }
 
       size += worst_case;
@@ -1768,159 +1768,159 @@ sort_buffer_policy (FILE *const *fps, size_t nfps,
    must be at least sizeof (struct line).  Allocate ALLOC bytes
    initially.  */
 
-static void
-initbuf (struct buffer *buf, size_t line_bytes, size_t alloc)
+स्थिर शून्य
+initbuf (संरचना buffer *buf, size_t पंक्ति_bytes, size_t alloc)
 {
   /* Ensure that the line array is properly aligned.  If the desired
      size cannot be allocated, repeatedly halve it until allocation
      succeeds.  The smaller allocation may hurt overall performance,
      but that's better than failing.  */
-  while (true)
+  यावत् (true)
     {
-      if (! line_aligned_size (&alloc))
-        buf->buf = NULL;
-      else
+      यदि (! पंक्ति_aligned_size (&alloc))
+        buf->buf = रिक्त;
+      अन्यथा
         buf->buf = malloc (alloc);
-      if (buf->buf)
-        break;
+      यदि (buf->buf)
+        भङ्ग;
       alloc /= 2;
-      if (alloc <= line_bytes + 1)
+      यदि (alloc <= पंक्ति_bytes + 1)
         xalloc_die ();
     }
 
-  buf->line_bytes = line_bytes;
+  buf->पंक्ति_bytes = पंक्ति_bytes;
   buf->alloc = alloc;
-  buf->used = buf->left = buf->nlines = 0;
+  buf->used = buf->बायाँ = buf->nlines = 0;
   buf->eof = false;
 }
 
 /* Return one past the limit of the line array.  */
 
-static inline struct line *
-buffer_linelim (struct buffer const *buf)
+स्थिर अन्तःस्थ संरचना पंक्ति *
+buffer_linelim (संरचना buffer ध्रुव *buf)
 {
-  void *linelim = buf->buf + buf->alloc;
-  return linelim;
+  शून्य *linelim = buf->buf + buf->alloc;
+  प्रत्यागम linelim;
 }
 
 /* Try to resize BUF to ALLOC bytes.  Return true if successful.  This
    preserves the input data and the line array, adjusting line pointers
    when the buffer base changes.  */
 
-static bool
-try_growbuf (struct buffer *buf, size_t alloc)
+स्थिर bool
+try_growbuf (संरचना buffer *buf, size_t alloc)
 {
-  if (! line_aligned_size (&alloc) || alloc <= buf->alloc)
-    return false;
+  यदि (! पंक्ति_aligned_size (&alloc) || alloc <= buf->alloc)
+    प्रत्यागम false;
 
-  char *newbuf = malloc (alloc);
-  if (! newbuf)
-    return false;
+  वर्ण *newbuf = malloc (alloc);
+  यदि (! newbuf)
+    प्रत्यागम false;
 
-  char *oldbuf = buf->buf;
-  struct line *old_linelim = buffer_linelim (buf);
-  struct line *old_line = old_linelim - buf->nlines;
+  वर्ण *oldbuf = buf->buf;
+  संरचना पंक्ति *old_linelim = buffer_linelim (buf);
+  संरचना पंक्ति *old_पंक्ति = old_linelim - buf->nlines;
 
   memcpy (newbuf, oldbuf, buf->used);
 
-  struct line *new_linelim = (void *) (newbuf + alloc);
-  struct line *new_line = new_linelim - buf->nlines;
-  memcpy (new_line, old_line, buf->nlines * sizeof *new_line);
+  संरचना पंक्ति *new_linelim = (शून्य *) (newbuf + alloc);
+  संरचना पंक्ति *new_पंक्ति = new_linelim - buf->nlines;
+  memcpy (new_पंक्ति, old_पंक्ति, buf->nlines * परिमाण *new_पंक्ति);
 
-  for (struct line *line = new_line; line < new_linelim; line++)
+  प्रति (संरचना पंक्ति *पंक्ति = new_पंक्ति; पंक्ति < new_linelim; पंक्ति++)
     {
-      line->text = newbuf + (line->text - oldbuf);
-      if (keylist)
+      पंक्ति->text = newbuf + (पंक्ति->text - oldbuf);
+      यदि (keylist)
         {
-          line->keybeg = newbuf + (line->keybeg - oldbuf);
-          line->keylim = newbuf + (line->keylim - oldbuf);
+          पंक्ति->keybeg = newbuf + (पंक्ति->keybeg - oldbuf);
+          पंक्ति->keylim = newbuf + (पंक्ति->keylim - oldbuf);
         }
     }
 
-  free (oldbuf);
+  मुक्त (oldbuf);
   buf->buf = newbuf;
   buf->alloc = alloc;
-  return true;
+  प्रत्यागम true;
 }
 
 /* Try to grow BUF according to POLICY.  Return true if the buffer grew.  */
 
-static bool
-maybe_growbuf (struct buffer *buf, struct sort_buffer_policy *policy)
+स्थिर bool
+maybe_growbuf (संरचना buffer *buf, संरचना sort_buffer_policy *policy)
 {
-  if (! policy || policy->growth_failed || policy->limit <= buf->alloc)
-    return false;
+  यदि (! policy || policy->growth_failed || policy->limit <= buf->alloc)
+    प्रत्यागम false;
 
   size_t alloc;
-  if (buf->alloc <= policy->limit / 3)
+  यदि (buf->alloc <= policy->limit / 3)
     alloc = buf->alloc * 3;
-  else
+  अन्यथा
     alloc = policy->limit;
 
-  if (try_growbuf (buf, alloc))
-    return true;
+  यदि (try_growbuf (buf, alloc))
+    प्रत्यागम true;
 
   policy->growth_failed = true;
-  return false;
+  प्रत्यागम false;
 }
 
 /* Return a pointer to the first character of the field specified
    by KEY in LINE. */
 
-static char *
-begfield (struct line const *line, struct keyfield const *key)
+स्थिर वर्ण *
+begfield (संरचना पंक्ति ध्रुव *पंक्ति, संरचना keyfield ध्रुव *कुंजी)
 {
-  char *ptr = line->text, *lim = ptr + line->length - 1;
-  size_t sword = key->sword;
-  size_t schar = key->schar;
+  वर्ण *ptr = पंक्ति->text, *lim = ptr + पंक्ति->length - 1;
+  size_t sword = कुंजी->sword;
+  size_t schar = कुंजी->schar;
 
   /* The leading field separator itself is included in a field when -t
      is absent.  */
 
-  if (tab != TAB_DEFAULT)
-    while (ptr < lim && sword--)
+  यदि (tab != TAB_DEFAULT)
+    यावत् (ptr < lim && sword--)
       {
-        char *sep = memchr (ptr, tab, lim - ptr);
+        वर्ण *sep = memchr (ptr, tab, lim - ptr);
         ptr = sep ? sep : lim;
-        if (ptr < lim)
+        यदि (ptr < lim)
           ++ptr;
       }
-  else
-    while (ptr < lim && sword--)
+  अन्यथा
+    यावत् (ptr < lim && sword--)
       {
-        while (ptr < lim && blanks[to_uchar (*ptr)])
+        यावत् (ptr < lim && blanks[to_uchar (*ptr)])
           ++ptr;
-        while (ptr < lim && !blanks[to_uchar (*ptr)])
+        यावत् (ptr < lim && !blanks[to_uchar (*ptr)])
           ++ptr;
       }
 
   /* If we're ignoring leading blanks when computing the Start
      of the field, skip past them here.  */
-  if (key->skipsblanks)
-    while (ptr < lim && blanks[to_uchar (*ptr)])
+  यदि (कुंजी->skipsblanks)
+    यावत् (ptr < lim && blanks[to_uchar (*ptr)])
       ++ptr;
 
   /* Advance PTR by SCHAR (if possible), but no further than LIM.  */
   size_t remaining_bytes = lim - ptr;
-  if (schar < remaining_bytes)
+  यदि (schar < remaining_bytes)
     ptr += schar;
-  else
+  अन्यथा
     ptr = lim;
 
-  return ptr;
+  प्रत्यागम ptr;
 }
 
 /* Return the limit of (a pointer to the first character after) the field
    in LINE specified by KEY. */
 
 ATTRIBUTE_PURE
-static char *
-limfield (struct line const *line, struct keyfield const *key)
+स्थिर वर्ण *
+limfield (संरचना पंक्ति ध्रुव *पंक्ति, संरचना keyfield ध्रुव *कुंजी)
 {
-  char *ptr = line->text, *lim = ptr + line->length - 1;
-  size_t eword = key->eword, echar = key->echar;
+  वर्ण *ptr = पंक्ति->text, *lim = ptr + पंक्ति->length - 1;
+  size_t eword = कुंजी->eword, echar = कुंजी->echar;
 
-  if (echar == 0)
+  यदि (echar == 0)
     eword++; /* Skip all of end field.  */
 
   /* Move PTR past EWORD fields or to one past the last byte on LINE,
@@ -1930,20 +1930,20 @@ limfield (struct line const *line, struct keyfield const *key)
      'beginning' is the first character following the delimiting TAB.
      Otherwise, leave PTR pointing at the first 'blank' character after
      the preceding field.  */
-  if (tab != TAB_DEFAULT)
-    while (ptr < lim && eword--)
+  यदि (tab != TAB_DEFAULT)
+    यावत् (ptr < lim && eword--)
       {
-        char *sep = memchr (ptr, tab, lim - ptr);
+        वर्ण *sep = memchr (ptr, tab, lim - ptr);
         ptr = sep ? sep : lim;
-        if (ptr < lim && (eword || echar))
+        यदि (ptr < lim && (eword || echar))
           ++ptr;
       }
-  else
-    while (ptr < lim && eword--)
+  अन्यथा
+    यावत् (ptr < lim && eword--)
       {
-        while (ptr < lim && blanks[to_uchar (*ptr)])
+        यावत् (ptr < lim && blanks[to_uchar (*ptr)])
           ++ptr;
-        while (ptr < lim && !blanks[to_uchar (*ptr)])
+        यावत् (ptr < lim && !blanks[to_uchar (*ptr)])
           ++ptr;
       }
 
@@ -1979,42 +1979,42 @@ limfield (struct line const *line, struct keyfield const *key)
      */
 
   /* Make LIM point to the end of (one byte past) the current field.  */
-  if (tab != TAB_DEFAULT)
+  यदि (tab != TAB_DEFAULT)
     {
-      char *newlim;
+      वर्ण *newlim;
       newlim = memchr (ptr, tab, lim - ptr);
-      if (newlim)
+      यदि (newlim)
         lim = newlim;
     }
-  else
+  अन्यथा
     {
-      char *newlim;
+      वर्ण *newlim;
       newlim = ptr;
-      while (newlim < lim && blanks[to_uchar (*newlim)])
+      यावत् (newlim < lim && blanks[to_uchar (*newlim)])
         ++newlim;
-      while (newlim < lim && !blanks[to_uchar (*newlim)])
+      यावत् (newlim < lim && !blanks[to_uchar (*newlim)])
         ++newlim;
       lim = newlim;
     }
 #endif
 
-  if (echar != 0) /* We need to skip over a portion of the end field.  */
+  यदि (echar != 0) /* We need to skip over a portion of the end field.  */
     {
       /* If we're ignoring leading blanks when computing the End
          of the field, skip past them here.  */
-      if (key->skipeblanks)
-        while (ptr < lim && blanks[to_uchar (*ptr)])
+      यदि (कुंजी->skipeblanks)
+        यावत् (ptr < lim && blanks[to_uchar (*ptr)])
           ++ptr;
 
       /* Advance PTR by ECHAR (if possible), but no further than LIM.  */
       size_t remaining_bytes = lim - ptr;
-      if (echar < remaining_bytes)
+      यदि (echar < remaining_bytes)
         ptr += echar;
-      else
+      अन्यथा
         ptr = lim;
     }
 
-  return ptr;
+  प्रत्यागम ptr;
 }
 
 /* Fill BUF reading from FP, moving buf->left bytes from the end
@@ -2023,127 +2023,127 @@ limfield (struct line const *line, struct keyfield const *key)
    table too.  FILE is the name of the file corresponding to FP.
    Return true if some input was read.  */
 
-static bool
-fillbuf (struct buffer *buf, FILE *fp, char const *file,
-         struct sort_buffer_policy *policy)
+स्थिर bool
+fillbuf (संरचना buffer *buf, FILE *fp, वर्ण ध्रुव *file,
+         संरचना sort_buffer_policy *policy)
 {
-  struct keyfield const *key = keylist;
-  char eol = eolchar;
-  size_t line_bytes = buf->line_bytes;
+  संरचना keyfield ध्रुव *कुंजी = keylist;
+  वर्ण eol = eolchar;
+  size_t पंक्ति_bytes = buf->पंक्ति_bytes;
   size_t mergesize = merge_buffer_size - MIN_MERGE_BUFFER_SIZE;
 
-  if (buf->eof)
-    return false;
+  यदि (buf->eof)
+    प्रत्यागम false;
 
-  if (buf->used != buf->left)
+  यदि (buf->used != buf->बायाँ)
     {
-      memmove (buf->buf, buf->buf + buf->used - buf->left, buf->left);
-      buf->used = buf->left;
+      memmove (buf->buf, buf->buf + buf->used - buf->बायाँ, buf->बायाँ);
+      buf->used = buf->बायाँ;
       buf->nlines = 0;
     }
 
-  while (true)
+  यावत् (true)
     {
-      char *ptr = buf->buf + buf->used;
-      struct line *linelim = buffer_linelim (buf);
-      struct line *line = linelim - buf->nlines;
-      size_t avail = (char *) linelim - buf->nlines * line_bytes - ptr;
-      char *line_start = buf->nlines ? line->text + line->length : buf->buf;
+      वर्ण *ptr = buf->buf + buf->used;
+      संरचना पंक्ति *linelim = buffer_linelim (buf);
+      संरचना पंक्ति *पंक्ति = linelim - buf->nlines;
+      size_t avail = (वर्ण *) linelim - buf->nlines * पंक्ति_bytes - ptr;
+      वर्ण *पंक्ति_start = buf->nlines ? पंक्ति->text + पंक्ति->length : buf->buf;
 
-      while (line_bytes + 1 < avail)
+      यावत् (पंक्ति_bytes + 1 < avail)
         {
           /* Read as many bytes as possible, but do not read so many
              bytes that there might not be enough room for the
              corresponding line array.  The worst case is when the
              rest of the input file consists entirely of newlines,
              except that the last byte is not a newline.  */
-          size_t readsize = (avail - 1) / (line_bytes + 1);
+          size_t readsize = (avail - 1) / (पंक्ति_bytes + 1);
           size_t bytes_read = fread (ptr, 1, readsize, fp);
-          char *ptrlim = ptr + bytes_read;
-          char *p;
+          वर्ण *ptrlim = ptr + bytes_read;
+          वर्ण *p;
           avail -= bytes_read;
 
-          if (bytes_read != readsize)
+          यदि (bytes_read != readsize)
             {
-              if (ferror (fp))
+              यदि (ferror (fp))
                 sort_die (_("read failed"), file);
-              if (feof (fp))
+              यदि (feof (fp))
                 {
                   buf->eof = true;
-                  if (buf->buf == ptrlim)
-                    return false;
-                  if (line_start != ptrlim && ptrlim[-1] != eol)
+                  यदि (buf->buf == ptrlim)
+                    प्रत्यागम false;
+                  यदि (पंक्ति_start != ptrlim && ptrlim[-1] != eol)
                     *ptrlim++ = eol;
                 }
             }
 
           /* Find and record each line in the just-read input.  */
-          while ((p = memchr (ptr, eol, ptrlim - ptr)))
+          यावत् ((p = memchr (ptr, eol, ptrlim - ptr)))
             {
               /* Delimit the line with NUL. This eliminates the need to
                  temporarily replace the last byte with NUL when calling
                  xmemcoll, which increases performance.  */
               *p = '\0';
               ptr = p + 1;
-              line--;
-              line->text = line_start;
-              line->length = ptr - line_start;
-              mergesize = MAX (mergesize, line->length);
-              avail -= line_bytes;
+              पंक्ति--;
+              पंक्ति->text = पंक्ति_start;
+              पंक्ति->length = ptr - पंक्ति_start;
+              mergesize = MAX (mergesize, पंक्ति->length);
+              avail -= पंक्ति_bytes;
 
-              if (key)
+              यदि (कुंजी)
                 {
                   /* Precompute the position of the first key for
                      efficiency.  */
-                  line->keylim = (key->eword == SIZE_MAX
+                  पंक्ति->keylim = (कुंजी->eword == SIZE_MAX
                                   ? p
-                                  : limfield (line, key));
+                                  : limfield (पंक्ति, कुंजी));
 
-                  if (key->sword != SIZE_MAX)
-                    line->keybeg = begfield (line, key);
-                  else
+                  यदि (कुंजी->sword != SIZE_MAX)
+                    पंक्ति->keybeg = begfield (पंक्ति, कुंजी);
+                  अन्यथा
                     {
-                      if (key->skipsblanks)
-                        while (blanks[to_uchar (*line_start)])
-                          line_start++;
-                      line->keybeg = line_start;
+                      यदि (कुंजी->skipsblanks)
+                        यावत् (blanks[to_uchar (*पंक्ति_start)])
+                          पंक्ति_start++;
+                      पंक्ति->keybeg = पंक्ति_start;
                     }
                 }
 
-              line_start = ptr;
+              पंक्ति_start = ptr;
             }
 
           ptr = ptrlim;
-          if (buf->eof)
-            break;
+          यदि (buf->eof)
+            भङ्ग;
         }
 
       buf->used = ptr - buf->buf;
-      buf->nlines = buffer_linelim (buf) - line;
-      if (buf->nlines != 0)
+      buf->nlines = buffer_linelim (buf) - पंक्ति;
+      यदि (buf->nlines != 0)
         {
-          if (! buf->eof && maybe_growbuf (buf, policy))
-            continue;
-          buf->left = ptr - line_start;
+          यदि (! buf->eof && maybe_growbuf (buf, policy))
+            अनुवर्त;
+          buf->बायाँ = ptr - पंक्ति_start;
           merge_buffer_size = mergesize + MIN_MERGE_BUFFER_SIZE;
-          return true;
+          प्रत्यागम true;
         }
 
       {
         /* The current input line is too long to fit in the buffer.
            Increase the buffer size and try again, keeping it properly
            aligned.  */
-        idx_t line_alloc = buf->alloc / sizeof (struct line);
-        buf->buf = xpalloc (buf->buf, &line_alloc, 1, -1, sizeof (struct line));
-        buf->alloc = line_alloc * sizeof (struct line);
+        idx_t पंक्ति_alloc = buf->alloc / परिमाण (संरचना पंक्ति);
+        buf->buf = xpalloc (buf->buf, &पंक्ति_alloc, 1, -1, परिमाण (संरचना पंक्ति));
+        buf->alloc = पंक्ति_alloc * परिमाण (संरचना पंक्ति);
       }
     }
 }
 
 /* Table that maps characters to order-of-magnitude values.  */
-static char const unit_order[UCHAR_LIM] =
+स्थिर वर्ण ध्रुव unit_order[UCHAR_LIM] =
   {
-#if ! ('K' == 75 && 'M' == 77 && 'G' == 71 && 'T' == 84 && 'P' == 80 \
+#यदि ! ('K' == 75 && 'M' == 77 && 'G' == 71 && 'T' == 84 && 'P' == 80 \
        && 'E' == 69 && 'Z' == 90 && 'Y' == 89 && 'R' == 82 && 'Q' == 81 \
        && 'k' == 107)
     /* This initializer syntax works on all C99 hosts.  For now, use
@@ -2152,7 +2152,7 @@ static char const unit_order[UCHAR_LIM] =
     ['K']=1, ['M']=2, ['G']=3, ['T']=4, ['P']=5, ['E']=6, ['Z']=7, ['Y']=8,
     ['R']=9, ['Q']=10,
     ['k']=1,
-#else
+#अन्यथा
     /* Generate the following table with this command:
        perl -e 'my %a=(k=>1,K=>1,M=>2,G=>3,T=>4,P=>5,E=>6,Z=>7,Y=>8,R=>9,Q=>10);
        foreach my $i (0..255) {my $c=chr($i); $a{$c} ||= 0;print "$a{$c}, "}'\
@@ -2175,12 +2175,12 @@ static char const unit_order[UCHAR_LIM] =
    decimal_point chars only.  Returns the highest digit found in the number,
    or '\0' if no digit has been found.  Upon return *number points at the
    character that immediately follows after the given number.  */
-static char
-traverse_raw_number (char const **number)
+स्थिर वर्ण
+traverse_raw_संख्या (वर्ण ध्रुव **संख्या)
 {
-  char const *p = *number;
-  char ch;
-  char max_digit = '\0';
+  वर्ण ध्रुव *p = *संख्या;
+  वर्ण ch;
+  वर्ण max_digit = '\0';
   bool ends_with_thousands_sep = false;
 
   /* Scan to end of number.
@@ -2189,33 +2189,33 @@ traverse_raw_number (char const **number)
      to be lacking in units.
      FIXME: add support for multibyte thousands_sep and decimal_point.  */
 
-  while (c_isdigit (ch = *p++))
+  यावत् (c_isdigit (ch = *p++))
     {
-      if (max_digit < ch)
+      यदि (max_digit < ch)
         max_digit = ch;
 
       /* Allow to skip only one occurrence of thousands_sep to avoid finding
          the unit in the next column in case thousands_sep matches as blank
          and is used as column delimiter.  */
       ends_with_thousands_sep = (*p == thousands_sep);
-      if (ends_with_thousands_sep)
+      यदि (ends_with_thousands_sep)
         ++p;
     }
 
-  if (ends_with_thousands_sep)
+  यदि (ends_with_thousands_sep)
     {
       /* thousands_sep not followed by digit is not allowed.  */
-      *number = p - 2;
-      return max_digit;
+      *संख्या = p - 2;
+      प्रत्यागम max_digit;
     }
 
-  if (ch == decimal_point)
-    while (c_isdigit (ch = *p++))
-      if (max_digit < ch)
+  यदि (ch == decimal_point)
+    यावत् (c_isdigit (ch = *p++))
+      यदि (max_digit < ch)
         max_digit = ch;
 
-  *number = p - 1;
-  return max_digit;
+  *संख्या = p - 1;
+  प्रत्यागम max_digit;
 }
 
 /* Return an integer that represents the order of magnitude of the
@@ -2224,36 +2224,36 @@ traverse_raw_number (char const **number)
    Negative numbers get negative orders; zero numbers have a zero order.  */
 
 ATTRIBUTE_PURE
-static int
-find_unit_order (char const *number)
+स्थिर पूर्णाङ्क
+find_unit_order (वर्ण ध्रुव *संख्या)
 {
-  bool minus_sign = (*number == '-');
-  char const *p = number + minus_sign;
-  char max_digit = traverse_raw_number (&p);
-  if ('0' < max_digit)
+  bool minus_sign = (*संख्या == '-');
+  वर्ण ध्रुव *p = संख्या + minus_sign;
+  वर्ण max_digit = traverse_raw_संख्या (&p);
+  यदि ('0' < max_digit)
     {
-      unsigned char ch = *p;
-      int order = unit_order[ch];
-      return (minus_sign ? -order : order);
+      unsigned वर्ण ch = *p;
+      पूर्णाङ्क order = unit_order[ch];
+      प्रत्यागम (minus_sign ? -order : order);
     }
-  else
-    return 0;
+  अन्यथा
+    प्रत्यागम 0;
 }
 
 /* Compare numbers A and B ending in units with SI or IEC prefixes
        <none/unknown> < K/k < M < G < T < P < E < Z < Y < R < Q */
 
 ATTRIBUTE_PURE
-static int
-human_numcompare (char const *a, char const *b)
+स्थिर पूर्णाङ्क
+human_numcompare (वर्ण ध्रुव *a, वर्ण ध्रुव *b)
 {
-  while (blanks[to_uchar (*a)])
+  यावत् (blanks[to_uchar (*a)])
     a++;
-  while (blanks[to_uchar (*b)])
+  यावत् (blanks[to_uchar (*b)])
     b++;
 
-  int diff = find_unit_order (a) - find_unit_order (b);
-  return (diff ? diff : strnumcmp (a, b, decimal_point, thousands_sep));
+  पूर्णाङ्क diff = find_unit_order (a) - find_unit_order (b);
+  प्रत्यागम (diff ? diff : strnumcmp (a, b, decimal_point, thousands_sep));
 }
 
 /* Compare strings A and B as numbers without explicitly converting them to
@@ -2261,47 +2261,47 @@ human_numcompare (char const *a, char const *b)
    hideously fast. */
 
 ATTRIBUTE_PURE
-static int
-numcompare (char const *a, char const *b)
+स्थिर पूर्णाङ्क
+numcompare (वर्ण ध्रुव *a, वर्ण ध्रुव *b)
 {
-  while (blanks[to_uchar (*a)])
+  यावत् (blanks[to_uchar (*a)])
     a++;
-  while (blanks[to_uchar (*b)])
+  यावत् (blanks[to_uchar (*b)])
     b++;
 
-  return strnumcmp (a, b, decimal_point, thousands_sep);
+  प्रत्यागम strnumcmp (a, b, decimal_point, thousands_sep);
 }
 
-static int
-nan_compare (long double a, long double b)
+स्थिर पूर्णाङ्क
+nan_compare (long द्विगुण a, long द्विगुण b)
 {
-  char buf[2][sizeof "-nan""()" + CHAR_BIT * sizeof a];
-  snprintf (buf[0], sizeof buf[0], "%Lf", a);
-  snprintf (buf[1], sizeof buf[1], "%Lf", b);
-  return strcmp (buf[0], buf[1]);
+  वर्ण buf[2][परिमाण "-nan""()" + CHAR_BIT * परिमाण a];
+  snprintf (buf[0], परिमाण buf[0], "%Lf", a);
+  snprintf (buf[1], परिमाण buf[1], "%Lf", b);
+  प्रत्यागम strcmp (buf[0], buf[1]);
 }
 
-static int
-general_numcompare (char const *sa, char const *sb)
+स्थिर पूर्णाङ्क
+general_numcompare (वर्ण ध्रुव *sa, वर्ण ध्रुव *sb)
 {
   /* FIXME: maybe add option to try expensive FP conversion
      only if A and B can't be compared more cheaply/accurately.  */
 
-  char *ea;
-  char *eb;
-  long double a = strtold (sa, &ea);
-  long double b = strtold (sb, &eb);
+  वर्ण *ea;
+  वर्ण *eb;
+  long द्विगुण a = strtold (sa, &ea);
+  long द्विगुण b = strtold (sb, &eb);
 
   /* Put conversion errors at the start of the collating sequence.  */
-  if (sa == ea)
-    return sb == eb ? 0 : -1;
-  if (sb == eb)
-    return 1;
+  यदि (sa == ea)
+    प्रत्यागम sb == eb ? 0 : -1;
+  यदि (sb == eb)
+    प्रत्यागम 1;
 
   /* Sort numbers in the usual way, where -0 == +0.  Put NaNs after
      conversion errors but before numbers; sort them by internal
      bit-pattern, for lack of a more portable alternative.  */
-  return (a < b ? -1
+  प्रत्यागम (a < b ? -1
           : a > b ? 1
           : a == b ? 0
           : b == b ? -1
@@ -2312,57 +2312,57 @@ general_numcompare (char const *sa, char const *sb)
 /* Return an integer in 1..12 of the month name MONTH.
    Return 0 if the name in S is not recognized.  */
 
-static int
-getmonth (char const *month, char **ea)
+स्थिर पूर्णाङ्क
+getmonth (वर्ण ध्रुव *month, वर्ण **ea)
 {
   size_t lo = 0;
   size_t hi = MONTHS_PER_YEAR;
 
-  while (blanks[to_uchar (*month)])
+  यावत् (blanks[to_uchar (*month)])
     month++;
 
-  do
+  कुरु
     {
       size_t ix = (lo + hi) / 2;
-      char const *m = month;
-      char const *n = monthtab[ix].name;
+      वर्ण ध्रुव *m = month;
+      वर्ण ध्रुव *n = monthtab[ix].name;
 
-      for (;; m++, n++)
+      प्रति (;; m++, n++)
         {
-          if (!*n)
+          यदि (!*n)
             {
-              if (ea)
-                *ea = (char *) m;
-              return monthtab[ix].val;
+              यदि (ea)
+                *ea = (वर्ण *) m;
+              प्रत्यागम monthtab[ix].val;
             }
-          if (to_uchar (fold_toupper[to_uchar (*m)]) < to_uchar (*n))
+          यदि (to_uchar (fold_toupper[to_uchar (*m)]) < to_uchar (*n))
             {
               hi = ix;
-              break;
+              भङ्ग;
             }
-          else if (to_uchar (fold_toupper[to_uchar (*m)]) > to_uchar (*n))
+          अन्यथा यदि (to_uchar (fold_toupper[to_uchar (*m)]) > to_uchar (*n))
             {
               lo = ix + 1;
-              break;
+              भङ्ग;
             }
         }
     }
-  while (lo < hi);
+  यावत् (lo < hi);
 
-  return 0;
+  प्रत्यागम 0;
 }
 
 /* When using the OpenSSL implementation, dynamically link only if -R.
    This saves startup time in the usual (sans -R) case.  */
 
-#if DLOPEN_LIBCRYPTO && HAVE_OPENSSL_MD5
+#यदि DLOPEN_LIBCRYPTO && HAVE_OPENSSL_MD5
 /* In the typical case where md5.h does not #undef HAVE_OPENSSL_MD5,
    trick md5.h into declaring and using pointers to functions not functions.
    This causes the compiler's -lcrypto option to have no effect,
    as sort.o no longer uses any crypto symbols statically.  */
 
-# if 14 <= __GNUC__
-#  pragma GCC diagnostic push
+# यदि 14 <= __GNUC__
+#  pragma GCC diagnostic धकेलो
 #  pragma GCC diagnostic ignored "-Wmissing-variable-declarations"
 # endif
 # define MD5_Init (*ptr_MD5_Init)
@@ -2370,11 +2370,11 @@ getmonth (char const *month, char **ea)
 # define MD5_Final (*ptr_MD5_Final)
 #endif
 
-#include "md5.h"
+#अन्तर्भाव "md5.h"
 
-#if DLOPEN_LIBCRYPTO && HAVE_OPENSSL_MD5
-# if 14 <= __GNUC__
-#  pragma GCC diagnostic pop
+#यदि DLOPEN_LIBCRYPTO && HAVE_OPENSSL_MD5
+# यदि 14 <= __GNUC__
+#  pragma GCC diagnostic निकालो
 # endif
 # include <dlfcn.h>
 
@@ -2387,66 +2387,66 @@ SD_ELF_NOTE_DLOPEN ("random-sort",
                     LIBCRYPTO_SONAME);
 
 /* Diagnose a dynamic linking failure.  */
-static void
-link_failure (void)
+स्थिर शून्य
+link_failure (शून्य)
 {
   error (SORT_FAILURE, 0, "%s", dlerror ());
 }
 
 /* Return a function pointer in HANDLE for SYMBOL.  */
-static void *
-symbol_address (void *handle, char const *symbol)
+स्थिर शून्य *
+प्रतीक_address (शून्य *handle, वर्ण ध्रुव *प्रतीक)
 {
-  void *address = dlsym (handle, symbol);
-  if (!address)
+  शून्य *address = dlsym (handle, प्रतीक);
+  यदि (!address)
     link_failure ();
-  return address;
+  प्रत्यागम address;
 }
 #endif
 
 /* Dynamically link the crypto library, if it needs linking.  */
-static void
-link_libcrypto (void)
+स्थिर शून्य
+link_libcrypto (शून्य)
 {
-#if DLOPEN_LIBCRYPTO && HAVE_OPENSSL_MD5
-  void *handle = dlopen (LIBCRYPTO_SONAME, RTLD_LAZY | RTLD_GLOBAL);
-  if (!handle)
+#यदि DLOPEN_LIBCRYPTO && HAVE_OPENSSL_MD5
+  शून्य *handle = dlopen (LIBCRYPTO_SONAME, RTLD_LAZY | RTLD_GLOBAL);
+  यदि (!handle)
     link_failure ();
-  ptr_MD5_Init = symbol_address (handle, "MD5_Init");
-  ptr_MD5_Update = symbol_address (handle, "MD5_Update");
-  ptr_MD5_Final = symbol_address (handle, "MD5_Final");
+  ptr_MD5_Init = प्रतीक_address (handle, "MD5_Init");
+  ptr_MD5_Update = प्रतीक_address (handle, "MD5_Update");
+  ptr_MD5_Final = प्रतीक_address (handle, "MD5_Final");
 #endif
 }
 
 /* A randomly chosen MD5 state, used for random comparison.  */
-static struct md5_ctx random_md5_state;
+स्थिर संरचना md5_ctx random_md5_state;
 
 /* Initialize the randomly chosen MD5 state.  */
 
-static void
-random_md5_state_init (char const *random_source)
+स्थिर शून्य
+random_md5_state_init (वर्ण ध्रुव *random_source)
 {
-  unsigned char buf[MD5_DIGEST_SIZE];
-  struct randread_source *r = randread_new (random_source, sizeof buf);
-  if (! r)
+  unsigned वर्ण buf[MD5_DIGEST_SIZE];
+  संरचना randread_source *r = randread_new (random_source, परिमाण buf);
+  यदि (! r)
     sort_die (_("open failed"), random_source ? random_source : "getrandom");
-  randread (r, buf, sizeof buf);
-  if (randread_free (r) != 0)
+  randread (r, buf, परिमाण buf);
+  यदि (randread_free (r) != 0)
     sort_die (_("close failed"), random_source);
   link_libcrypto ();
   md5_init_ctx (&random_md5_state);
-  md5_process_bytes (buf, sizeof buf, &random_md5_state);
+  md5_process_bytes (buf, परिमाण buf, &random_md5_state);
 }
 
 /* This is like strxfrm, except it reports any error and exits.  */
 
-static size_t
-xstrxfrm (char *restrict dest, char const *restrict src, size_t destsize)
+स्थिर size_t
+xstrxfrm (वर्ण *restrict dest, वर्ण ध्रुव *restrict src, size_t destsize)
 {
   errno = 0;
   size_t translated_size = strxfrm (dest, src, destsize);
 
-  if (errno)
+  यदि (errno)
     {
       error (0, errno, _("string transformation failed"));
       error (0, 0, _("set LC_ALL='C' to work around the problem"));
@@ -2455,37 +2455,37 @@ xstrxfrm (char *restrict dest, char const *restrict src, size_t destsize)
              quotearg_n_style (0, locale_quoting_style, src));
     }
 
-  return translated_size;
+  प्रत्यागम translated_size;
 }
 
 /* Compare the keys TEXTA (of length LENA) and TEXTB (of length LENB)
    using one or more random hash functions.  TEXTA[LENA] and
    TEXTB[LENB] must be zero.  */
 
-static int
-compare_random (char *restrict texta, size_t lena,
-                char *restrict textb, size_t lenb)
+स्थिर पूर्णाङ्क
+compare_random (वर्ण *restrict texta, size_t lena,
+                वर्ण *restrict textb, size_t lenb)
 {
   /* XFRM_DIFF records the equivalent of memcmp on the transformed
      data.  This is used to break ties if there is a checksum
      collision, and this is good enough given the astronomically low
      probability of a collision.  */
-  int xfrm_diff = 0;
+  पूर्णाङ्क xfrm_diff = 0;
 
-  char stackbuf[4000];
-  char *buf = stackbuf;
-  size_t bufsize = sizeof stackbuf;
-  void *allocated = NULL;
-  uint32_t dig[2][MD5_DIGEST_SIZE / sizeof (uint32_t)];
-  struct md5_ctx s[2];
+  वर्ण stackbuf[4000];
+  वर्ण *buf = stackbuf;
+  size_t bufsize = परिमाण stackbuf;
+  शून्य *allocated = रिक्त;
+  uint32_t dig[2][MD5_DIGEST_SIZE / परिमाण (uint32_t)];
+  संरचना md5_ctx s[2];
   s[0] = s[1] = random_md5_state;
 
-  if (hard_LC_COLLATE)
+  यदि (hard_LC_COLLATE)
     {
-      char const *lima = texta + lena;
-      char const *limb = textb + lenb;
+      वर्ण ध्रुव *lima = texta + lena;
+      वर्ण ध्रुव *limb = textb + lenb;
 
-      while (true)
+      यावत् (true)
         {
           /* Transform the text into the basis of comparison, so that byte
              strings that would otherwise considered to be equal are
@@ -2503,15 +2503,15 @@ compare_random (char *restrict texta, size_t lena,
              twice on typical implementations.  Don't worry about
              size_t overflow, as the guess need not be correct.  */
           size_t guess_bufsize = 3 * (lena + lenb) + 2;
-          if (bufsize < guess_bufsize)
+          यदि (bufsize < guess_bufsize)
             {
               bufsize = MAX (guess_bufsize, bufsize * 3 / 2);
-              free (allocated);
+              मुक्त (allocated);
               buf = allocated = malloc (bufsize);
-              if (! buf)
+              यदि (! buf)
                 {
                   buf = stackbuf;
-                  bufsize = sizeof stackbuf;
+                  bufsize = परिमाण stackbuf;
                 }
             }
 
@@ -2520,21 +2520,21 @@ compare_random (char *restrict texta, size_t lena,
           bool a_fits = sizea <= bufsize;
           size_t sizeb =
             (textb < limb
-             ? (xstrxfrm ((a_fits ? buf + sizea : NULL), textb,
+             ? (xstrxfrm ((a_fits ? buf + sizea : रिक्त), textb,
                           (a_fits ? bufsize - sizea : 0))
                 + 1)
              : 0);
 
-          if (! (a_fits && sizea + sizeb <= bufsize))
+          यदि (! (a_fits && sizea + sizeb <= bufsize))
             {
               bufsize = sizea + sizeb;
-              if (bufsize < SIZE_MAX / 3)
+              यदि (bufsize < SIZE_MAX / 3)
                 bufsize = bufsize * 3 / 2;
-              free (allocated);
+              मुक्त (allocated);
               buf = allocated = xmalloc (bufsize);
-              if (texta < lima)
+              यदि (texta < lima)
                 strxfrm (buf, texta, sizea);
-              if (textb < limb)
+              यदि (textb < limb)
                 strxfrm (buf + sizea, textb, sizeb);
             }
 
@@ -2542,15 +2542,15 @@ compare_random (char *restrict texta, size_t lena,
              exiting the loop if both strings are exhausted.  When
              exiting the loop, prepare to finish off the tiebreaker
              comparison properly.  */
-          if (texta < lima)
+          यदि (texta < lima)
             texta += strlen (texta) + 1;
-          if (textb < limb)
+          यदि (textb < limb)
             textb += strlen (textb) + 1;
-          if (! (texta < lima || textb < limb))
+          यदि (! (texta < lima || textb < limb))
             {
               lena = sizea; texta = buf;
               lenb = sizeb; textb = buf + sizea;
-              break;
+              भङ्ग;
             }
 
           /* Accumulate the transformed data in the corresponding
@@ -2559,10 +2559,10 @@ compare_random (char *restrict texta, size_t lena,
           md5_process_bytes (buf + sizea, sizeb, &s[1]);
 
           /* Update the tiebreaker comparison of the transformed data.  */
-          if (! xfrm_diff)
+          यदि (! xfrm_diff)
             {
               xfrm_diff = memcmp (buf, buf + sizea, MIN (sizea, sizeb));
-              if (! xfrm_diff)
+              यदि (! xfrm_diff)
                 xfrm_diff = _GL_CMP (sizea, sizeb);
             }
         }
@@ -2571,55 +2571,55 @@ compare_random (char *restrict texta, size_t lena,
   /* Compute and compare the checksums.  */
   md5_process_bytes (texta, lena, &s[0]); md5_finish_ctx (&s[0], dig[0]);
   md5_process_bytes (textb, lenb, &s[1]); md5_finish_ctx (&s[1], dig[1]);
-  int diff = memcmp (dig[0], dig[1], sizeof dig[0]);
+  पूर्णाङ्क diff = memcmp (dig[0], dig[1], परिमाण dig[0]);
 
   /* Fall back on the tiebreaker if the checksums collide.  */
-  if (! diff)
+  यदि (! diff)
     {
-      if (! xfrm_diff)
+      यदि (! xfrm_diff)
         {
           xfrm_diff = memcmp (texta, textb, MIN (lena, lenb));
-          if (! xfrm_diff)
+          यदि (! xfrm_diff)
             xfrm_diff = _GL_CMP (lena, lenb);
         }
 
       diff = xfrm_diff;
     }
 
-  free (allocated);
+  मुक्त (allocated);
 
-  return diff;
+  प्रत्यागम diff;
 }
 
 /* Return the printable width of the block of memory starting at
    TEXT and ending just before LIM, counting each tab as one byte.
    FIXME: Should we generally be counting non printable chars?  */
 
-static size_t
-debug_width (char const *text, char const *lim)
+स्थिर size_t
+debug_width (वर्ण ध्रुव *text, वर्ण ध्रुव *lim)
 {
   size_t width = mbsnwidth (text, lim - text, 0);
-  while (text < lim)
+  यावत् (text < lim)
     width += (*text++ == '\t');
-  return width;
+  प्रत्यागम width;
 }
 
 /* For debug mode, "underline" a key at the
    specified offset and screen width.  */
 
-static void
-mark_key (size_t offset, size_t width)
+स्थिर शून्य
+mark_कुंजी (size_t offset, size_t width)
 {
-  while (offset--)
+  यावत् (offset--)
     putchar (' ');
 
-  if (!width)
+  यदि (!width)
     printf (_("^ no match for key\n"));
-  else
+  अन्यथा
     {
-      do
+      कुरु
         putchar ('_');
-      while (--width);
+      यावत् (--width);
 
       putchar ('\n');
     }
@@ -2627,62 +2627,62 @@ mark_key (size_t offset, size_t width)
 
 /* Return true if KEY is a numeric key.  */
 
-static inline bool
-key_numeric (struct keyfield const *key)
+स्थिर अन्तःस्थ bool
+कुंजी_numeric (संरचना keyfield ध्रुव *कुंजी)
 {
-  return key->numeric || key->general_numeric || key->human_numeric;
+  प्रत्यागम कुंजी->numeric || कुंजी->general_numeric || कुंजी->human_numeric;
 }
 
 /* For LINE, output a debugging line that underlines KEY in LINE.
    If KEY is null, underline the whole line.  */
 
-static void
-debug_key (struct line const *line, struct keyfield const *key)
+स्थिर शून्य
+debug_कुंजी (संरचना पंक्ति ध्रुव *पंक्ति, संरचना keyfield ध्रुव *कुंजी)
 {
-  char *text = line->text;
-  char *beg = text;
-  char *lim = text + line->length - 1;
+  वर्ण *text = पंक्ति->text;
+  वर्ण *beg = text;
+  वर्ण *lim = text + पंक्ति->length - 1;
 
-  if (key)
+  यदि (कुंजी)
     {
-      if (key->sword != SIZE_MAX)
-        beg = begfield (line, key);
-      if (key->eword != SIZE_MAX)
+      यदि (कुंजी->sword != SIZE_MAX)
+        beg = begfield (पंक्ति, कुंजी);
+      यदि (कुंजी->eword != SIZE_MAX)
         {
-          lim = limfield (line, key);
+          lim = limfield (पंक्ति, कुंजी);
           /* Treat field ends before field starts as empty fields.  */
           lim = MAX (beg, lim);
         }
 
-      if ((key->skipsblanks && key->sword == SIZE_MAX)
-          || key->month || key_numeric (key))
+      यदि ((कुंजी->skipsblanks && कुंजी->sword == SIZE_MAX)
+          || कुंजी->month || कुंजी_numeric (कुंजी))
         {
-          char saved = *lim;
+          वर्ण saved = *lim;
           *lim = '\0';
 
-          while (blanks[to_uchar (*beg)])
+          यावत् (blanks[to_uchar (*beg)])
             beg++;
 
-          char *tighter_lim = beg;
+          वर्ण *tighter_lim = beg;
 
-          if (lim < beg)
+          यदि (lim < beg)
             tighter_lim = lim;
-          else if (key->month)
+          अन्यथा यदि (कुंजी->month)
             getmonth (beg, &tighter_lim);
-          else if (key->general_numeric)
-            ignore_value (strtold (beg, &tighter_lim));
-          else if (key->numeric || key->human_numeric)
+          अन्यथा यदि (कुंजी->general_numeric)
+            ignore_मूल्य (strtold (beg, &tighter_lim));
+          अन्यथा यदि (कुंजी->numeric || कुंजी->human_numeric)
             {
-              char const *p = beg + (beg < lim && *beg == '-');
-              char max_digit = traverse_raw_number (&p);
-              if ('0' <= max_digit)
+              वर्ण ध्रुव *p = beg + (beg < lim && *beg == '-');
+              वर्ण max_digit = traverse_raw_संख्या (&p);
+              यदि ('0' <= max_digit)
                 {
-                  unsigned char ch = *p;
-                  tighter_lim = (char *) p
-                    + (key->human_numeric && unit_order[ch]);
+                  unsigned वर्ण ch = *p;
+                  tighter_lim = (वर्ण *) p
+                    + (कुंजी->human_numeric && unit_order[ch]);
                 }
             }
-          else
+          अन्यथा
             tighter_lim = lim;
 
           *lim = saved;
@@ -2692,226 +2692,226 @@ debug_key (struct line const *line, struct keyfield const *key)
 
   size_t offset = debug_width (text, beg);
   size_t width = debug_width (beg, lim);
-  mark_key (offset, width);
+  mark_कुंजी (offset, width);
 }
 
 /* Debug LINE by underlining its keys.  */
 
-static void
-debug_line (struct line const *line)
+स्थिर शून्य
+debug_पंक्ति (संरचना पंक्ति ध्रुव *पंक्ति)
 {
-  struct keyfield const *key = keylist;
+  संरचना keyfield ध्रुव *कुंजी = keylist;
 
-  do
-    debug_key (line, key);
-  while (key && ((key = key->next) || ! (unique || stable)));
+  कुरु
+    debug_कुंजी (पंक्ति, कुंजी);
+  यावत् (कुंजी && ((कुंजी = कुंजी->next) || ! (unique || stable)));
 }
 
 /* Return whether sorting options specified for key.  */
 
-static bool
-default_key_compare (struct keyfield const *key)
+स्थिर bool
+default_कुंजी_compare (संरचना keyfield ध्रुव *कुंजी)
 {
-  return ! (key->ignore
-            || key->translate
-            || key->skipsblanks
-            || key->skipeblanks
-            || key_numeric (key)
-            || key->month
-            || key->version
-            || key->random
+  प्रत्यागम ! (कुंजी->ignore
+            || कुंजी->translate
+            || कुंजी->skipsblanks
+            || कुंजी->skipeblanks
+            || कुंजी_numeric (कुंजी)
+            || कुंजी->month
+            || कुंजी->version
+            || कुंजी->random
             /* || key->reverse */
            );
 }
 
 /* Convert a key to the short options used to specify it.  */
 
-static void
-key_to_opts (struct keyfield const *key, char *opts)
+स्थिर शून्य
+कुंजी_to_opts (संरचना keyfield ध्रुव *कुंजी, वर्ण *opts)
 {
-  if (key->skipsblanks || key->skipeblanks)
+  यदि (कुंजी->skipsblanks || कुंजी->skipeblanks)
     *opts++ = 'b';/* either disables global -b  */
-  if (key->ignore == nondictionary)
+  यदि (कुंजी->ignore == nondictionary)
     *opts++ = 'd';
-  if (key->translate)
+  यदि (कुंजी->translate)
     *opts++ = 'f';
-  if (key->general_numeric)
+  यदि (कुंजी->general_numeric)
     *opts++ = 'g';
-  if (key->human_numeric)
+  यदि (कुंजी->human_numeric)
     *opts++ = 'h';
-  if (key->ignore == nonprinting)
+  यदि (कुंजी->ignore == nonprinting)
     *opts++ = 'i';
-  if (key->month)
+  यदि (कुंजी->month)
     *opts++ = 'M';
-  if (key->numeric)
+  यदि (कुंजी->numeric)
     *opts++ = 'n';
-  if (key->random)
+  यदि (कुंजी->random)
     *opts++ = 'R';
-  if (key->reverse)
+  यदि (कुंजी->reverse)
     *opts++ = 'r';
-  if (key->version)
+  यदि (कुंजी->version)
     *opts++ = 'V';
   *opts = '\0';
 }
 
 /* Output data independent key warnings to stderr.  */
 
-static void
-key_warnings (struct keyfield const *gkey, bool gkey_only)
+स्थिर शून्य
+कुंजी_warnings (संरचना keyfield ध्रुव *gkey, bool gkey_only)
 {
-  struct keyfield ugkey = *gkey;
+  संरचना keyfield ugkey = *gkey;
   unsigned long keynum = 1;
   bool basic_numeric_field = false;
   bool general_numeric_field = false;
   bool basic_numeric_field_span = false;
   bool general_numeric_field_span = false;
 
-  for (struct keyfield *key = keylist; key; key = key->next, keynum++)
+  प्रति (संरचना keyfield *कुंजी = keylist; कुंजी; कुंजी = कुंजी->next, keynum++)
     {
-      if (key_numeric (key))
+      यदि (कुंजी_numeric (कुंजी))
         {
-          if (key->general_numeric)
+          यदि (कुंजी->general_numeric)
             general_numeric_field = true;
-          else
+          अन्यथा
             basic_numeric_field = true;
         }
 
-      if (key->traditional_used)
+      यदि (कुंजी->traditional_used)
         {
-          size_t sword = key->sword;
-          size_t eword = key->eword;
-          char tmp[INT_BUFSIZE_BOUND (uintmax_t)];
+          size_t sword = कुंजी->sword;
+          size_t eword = कुंजी->eword;
+          वर्ण tmp[INT_BUFSIZE_BOUND (uintmax_t)];
           /* obsolescent syntax +A.x -B.y is equivalent to:
                -k A+1.x+1,B.y   (when y = 0)
                -k A+1.x+1,B+1.y (when y > 0)  */
-          char obuf[INT_BUFSIZE_BOUND (sword) * 2 + 4]; /* +# -#  */
-          char nbuf[INT_BUFSIZE_BOUND (sword) * 2 + 5]; /* -k #,#  */
-          char *po = obuf;
-          char *pn = nbuf;
+          वर्ण obuf[INT_BUFSIZE_BOUND (sword) * 2 + 4]; /* +# -#  */
+          वर्ण nbuf[INT_BUFSIZE_BOUND (sword) * 2 + 5]; /* -k #,#  */
+          वर्ण *po = obuf;
+          वर्ण *pn = nbuf;
 
-          if (sword == SIZE_MAX)
+          यदि (sword == SIZE_MAX)
             sword++;
 
           po = stpcpy (stpcpy (po, "+"), umaxtostr (sword, tmp));
           pn = stpcpy (stpcpy (pn, "-k "), umaxtostr (sword + 1, tmp));
-          if (key->eword != SIZE_MAX)
+          यदि (कुंजी->eword != SIZE_MAX)
             {
               stpcpy (stpcpy (po, " -"), umaxtostr (eword + 1, tmp));
               stpcpy (stpcpy (pn, ","),
                       umaxtostr (eword + 1
-                                 + (key->echar == SIZE_MAX), tmp));
+                                 + (कुंजी->echar == SIZE_MAX), tmp));
             }
           error (0, 0, _("obsolescent key %s used; consider %s instead"),
                  quote_n (0, obuf), quote_n (1, nbuf));
         }
 
       /* Warn about field specs that will never match.  */
-      bool zero_width = key->sword != SIZE_MAX && key->eword < key->sword;
-      if (zero_width)
+      bool zero_width = कुंजी->sword != SIZE_MAX && कुंजी->eword < कुंजी->sword;
+      यदि (zero_width)
         error (0, 0, _("key %lu has zero width and will be ignored"), keynum);
 
       /* Warn about significant leading blanks.  */
-      bool implicit_skip = key_numeric (key) || key->month;
-      bool line_offset = key->eword == 0 && key->echar != 0; /* -k1.x,1.y  */
-      if (!zero_width && !gkey_only && tab == TAB_DEFAULT && !line_offset
-          && ((!key->skipsblanks && !implicit_skip)
-              || (!key->skipsblanks && key->schar)
-              || (!key->skipeblanks && key->echar)))
+      bool implicit_skip = कुंजी_numeric (कुंजी) || कुंजी->month;
+      bool पंक्ति_offset = कुंजी->eword == 0 && कुंजी->echar != 0; /* -k1.x,1.y  */
+      यदि (!zero_width && !gkey_only && tab == TAB_DEFAULT && !पंक्ति_offset
+          && ((!कुंजी->skipsblanks && !implicit_skip)
+              || (!कुंजी->skipsblanks && कुंजी->schar)
+              || (!कुंजी->skipeblanks && कुंजी->echar)))
         error (0, 0, _("leading blanks are significant in key %lu; "
                        "consider also specifying 'b'"), keynum);
 
       /* Warn about numeric comparisons spanning fields,
          as field delimiters could be interpreted as part
          of the number (maybe only in other locales).  */
-      if (!gkey_only && key_numeric (key))
+      यदि (!gkey_only && कुंजी_numeric (कुंजी))
         {
-          size_t sword = key->sword + 1;
-          size_t eword = key->eword + 1;
-          if (!sword)
+          size_t sword = कुंजी->sword + 1;
+          size_t eword = कुंजी->eword + 1;
+          यदि (!sword)
             sword++;
-          if (!eword || sword < eword)
+          यदि (!eword || sword < eword)
             {
               error (0, 0, _("key %lu is numeric and spans multiple fields"),
                      keynum);
-              if (key->general_numeric)
+              यदि (कुंजी->general_numeric)
                 general_numeric_field_span = true;
-              else
+              अन्यथा
                 basic_numeric_field_span = true;
             }
         }
 
       /* Flag global options not copied or specified in any key.  */
-      if (ugkey.ignore && (ugkey.ignore == key->ignore))
-        ugkey.ignore = NULL;
-      if (ugkey.translate && (ugkey.translate == key->translate))
-        ugkey.translate = NULL;
-      ugkey.skipsblanks &= !key->skipsblanks;
-      ugkey.skipeblanks &= !key->skipeblanks;
-      ugkey.month &= !key->month;
-      ugkey.numeric &= !key->numeric;
-      ugkey.general_numeric &= !key->general_numeric;
-      ugkey.human_numeric &= !key->human_numeric;
-      ugkey.random &= !key->random;
-      ugkey.version &= !key->version;
-      ugkey.reverse &= !key->reverse;
+      यदि (ugkey.ignore && (ugkey.ignore == कुंजी->ignore))
+        ugkey.ignore = रिक्त;
+      यदि (ugkey.translate && (ugkey.translate == कुंजी->translate))
+        ugkey.translate = रिक्त;
+      ugkey.skipsblanks &= !कुंजी->skipsblanks;
+      ugkey.skipeblanks &= !कुंजी->skipeblanks;
+      ugkey.month &= !कुंजी->month;
+      ugkey.numeric &= !कुंजी->numeric;
+      ugkey.general_numeric &= !कुंजी->general_numeric;
+      ugkey.human_numeric &= !कुंजी->human_numeric;
+      ugkey.random &= !कुंजी->random;
+      ugkey.version &= !कुंजी->version;
+      ugkey.reverse &= !कुंजी->reverse;
     }
 
   /* Explicitly warn if field delimiters in this locale
      don't constrain numbers.  */
-  bool number_locale_warned = false;
-  if (basic_numeric_field_span)
+  bool संख्या_locale_warned = false;
+  यदि (basic_numeric_field_span)
     {
-      if (tab == TAB_DEFAULT
+      यदि (tab == TAB_DEFAULT
           ? thousands_sep != NON_CHAR && (isblank (to_uchar (thousands_sep)))
           : tab == thousands_sep)
         {
           error (0, 0,
                  _("field separator %s is treated as a "
                    "group separator in numbers"),
-                 quote (((char []) {thousands_sep, 0})));
-          number_locale_warned = true;
+                 quote (((वर्ण []) {thousands_sep, 0})));
+          संख्या_locale_warned = true;
         }
     }
-  if (basic_numeric_field_span || general_numeric_field_span)
+  यदि (basic_numeric_field_span || general_numeric_field_span)
     {
-      if (tab == TAB_DEFAULT
+      यदि (tab == TAB_DEFAULT
           ? thousands_sep != NON_CHAR && (isblank (to_uchar (decimal_point)))
           : tab == decimal_point)
         {
           error (0, 0,
                  _("field separator %s is treated as a "
                    "decimal point in numbers"),
-                 quote (((char []) {decimal_point, 0})));
-          number_locale_warned = true;
+                 quote (((वर्ण []) {decimal_point, 0})));
+          संख्या_locale_warned = true;
         }
-      else if (tab == '-')
+      अन्यथा यदि (tab == '-')
         {
           error (0, 0,
                  _("field separator %s is treated as a "
                    "minus sign in numbers"),
-                 quote (((char []) {tab, 0})));
+                 quote (((वर्ण []) {tab, 0})));
         }
-      else if (general_numeric_field_span && tab == '+')
+      अन्यथा यदि (general_numeric_field_span && tab == '+')
         {
           error (0, 0,
                  _("field separator %s is treated as a "
                    "plus sign in numbers"),
-                 quote (((char []) {tab, 0})));
+                 quote (((वर्ण []) {tab, 0})));
         }
     }
 
   /* Explicitly indicate the decimal point used in this locale,
      as it suggests that robust scripts need to consider
      setting the locale when comparing numbers.  */
-  if ((basic_numeric_field || general_numeric_field) && ! number_locale_warned)
+  यदि ((basic_numeric_field || general_numeric_field) && ! संख्या_locale_warned)
     {
       error (0, 0,
              _("numbers use %s as a decimal point in this locale"),
-             quote (((char []) {decimal_point, 0})));
+             quote (((वर्ण []) {decimal_point, 0})));
 
     }
 
-  if (basic_numeric_field && thousands_sep_ignored)
+  यदि (basic_numeric_field && thousands_sep_ignored)
     {
       error (0, 0,
              _("the multi-byte number group separator "
@@ -2920,55 +2920,55 @@ key_warnings (struct keyfield const *gkey, bool gkey_only)
 
   /* Warn about ignored global options flagged above.
      This clears all flags if UGKEY is the only one in the list.  */
-  if (!default_key_compare (&ugkey)
+  यदि (!default_कुंजी_compare (&ugkey)
       || (ugkey.reverse && (stable || unique) && keylist))
     {
       bool ugkey_reverse = ugkey.reverse;
-      if (!(stable || unique))
+      यदि (!(stable || unique))
         ugkey.reverse = false;
       /* The following is too big, but guaranteed to be "big enough".  */
-      char opts[sizeof short_options];
-      key_to_opts (&ugkey, opts);
+      वर्ण opts[परिमाण short_options];
+      कुंजी_to_opts (&ugkey, opts);
       error (0, 0,
              ngettext ("option '-%s' is ignored",
                        "options '-%s' are ignored",
                        select_plural (strlen (opts))), opts);
       ugkey.reverse = ugkey_reverse;
     }
-  if (ugkey.reverse && !(stable || unique) && keylist)
+  यदि (ugkey.reverse && !(stable || unique) && keylist)
     error (0, 0, _("option '-r' only applies to last-resort comparison"));
 }
 
 /* Return either the sense of DIFF or its reverse, depending on REVERSED.
    If REVERSED, do not simply negate DIFF as that can mishandle INT_MIN.  */
 
-static int
-diff_reversed (int diff, bool reversed)
+स्थिर पूर्णाङ्क
+diff_reversed (पूर्णाङ्क diff, bool reversed)
 {
-  return reversed ? _GL_CMP (0, diff) : diff;
+  प्रत्यागम reversed ? _GL_CMP (0, diff) : diff;
 }
 
 /* Compare two lines A and B trying every key in sequence until there
    are no more keys or a difference is found. */
 
-static int
-keycompare (struct line const *a, struct line const *b)
+स्थिर पूर्णाङ्क
+keycompare (संरचना पंक्ति ध्रुव *a, संरचना पंक्ति ध्रुव *b)
 {
-  struct keyfield *key = keylist;
+  संरचना keyfield *कुंजी = keylist;
 
   /* For the first iteration only, the key positions have been
      precomputed for us. */
-  char *texta = a->keybeg;
-  char *textb = b->keybeg;
-  char *lima = a->keylim;
-  char *limb = b->keylim;
+  वर्ण *texta = a->keybeg;
+  वर्ण *textb = b->keybeg;
+  वर्ण *lima = a->keylim;
+  वर्ण *limb = b->keylim;
 
-  int diff;
+  पूर्णाङ्क diff;
 
-  while (true)
+  यावत् (true)
     {
-      char const *translate = key->translate;
-      bool const *ignore = key->ignore;
+      वर्ण ध्रुव *translate = कुंजी->translate;
+      bool ध्रुव *ignore = कुंजी->ignore;
 
       /* Treat field ends before field starts as empty fields.  */
       lima = MAX (texta, lima);
@@ -2978,21 +2978,21 @@ keycompare (struct line const *a, struct line const *b)
       size_t lena = lima - texta;
       size_t lenb = limb - textb;
 
-      if (hard_LC_COLLATE || key_numeric (key)
-          || key->month || key->random || key->version)
+      यदि (hard_LC_COLLATE || कुंजी_numeric (कुंजी)
+          || कुंजी->month || कुंजी->random || कुंजी->version)
         {
           /* Ordinarily use the keys in-place, temporarily null-terminated.  */
-          char *ta = texta;
-          char *tb = textb;
+          वर्ण *ta = texta;
+          वर्ण *tb = textb;
           size_t tlena = lena;
           size_t tlenb = lenb;
-          char enda = ta[tlena];
-          char endb = tb[tlenb];
+          वर्ण enda = ta[tlena];
+          वर्ण endb = tb[tlenb];
 
-          void *allocated = NULL;
-          char stackbuf[4000];
+          शून्य *allocated = रिक्त;
+          वर्ण stackbuf[4000];
 
-          if (ignore || translate)
+          यदि (ignore || translate)
             {
               /* Compute with copies of the keys, which are the result of
                  translating or ignoring characters, and which need their
@@ -3002,22 +3002,22 @@ keycompare (struct line const *a, struct line const *b)
 
               /* Allocate space for copies.  */
               size_t size = lena + 1 + lenb + 1;
-              if (size <= sizeof stackbuf)
+              यदि (size <= परिमाण stackbuf)
                 ta = stackbuf;
-              else
+              अन्यथा
                 ta = allocated = xmalloc (size);
               tb = ta + lena + 1;
 
               /* Put into each copy a version of the key in which the
                  requested characters are ignored or translated.  */
-              for (tlena = i = 0; i < lena; i++)
-                if (! (ignore && ignore[to_uchar (texta[i])]))
+              प्रति (tlena = i = 0; i < lena; i++)
+                यदि (! (ignore && ignore[to_uchar (texta[i])]))
                   ta[tlena++] = (translate
                                  ? translate[to_uchar (texta[i])]
                                  : texta[i]);
 
-              for (tlenb = i = 0; i < lenb; i++)
-                if (! (ignore && ignore[to_uchar (textb[i])]))
+              प्रति (tlenb = i = 0; i < lenb; i++)
+                यदि (! (ignore && ignore[to_uchar (textb[i])]))
                   tb[tlenb++] = (translate
                                  ? translate[to_uchar (textb[i])]
                                  : textb[i]);
@@ -3026,151 +3026,151 @@ keycompare (struct line const *a, struct line const *b)
           ta[tlena] = '\0';
           tb[tlenb] = '\0';
 
-          if (key->numeric)
+          यदि (कुंजी->numeric)
             diff = numcompare (ta, tb);
-          else if (key->general_numeric)
+          अन्यथा यदि (कुंजी->general_numeric)
             diff = general_numcompare (ta, tb);
-          else if (key->human_numeric)
+          अन्यथा यदि (कुंजी->human_numeric)
             diff = human_numcompare (ta, tb);
-          else if (key->month)
-            diff = getmonth (ta, NULL) - getmonth (tb, NULL);
-          else if (key->random)
+          अन्यथा यदि (कुंजी->month)
+            diff = getmonth (ta, रिक्त) - getmonth (tb, रिक्त);
+          अन्यथा यदि (कुंजी->random)
             diff = compare_random (ta, tlena, tb, tlenb);
-          else if (key->version)
+          अन्यथा यदि (कुंजी->version)
             diff = filenvercmp (ta, tlena, tb, tlenb);
-          else
+          अन्यथा
             {
               /* Locale-dependent string sorting.  This is slower than
                  C-locale sorting, which is implemented below.  */
-              if (tlena == 0)
+              यदि (tlena == 0)
                 diff = - NONZERO (tlenb);
-              else if (tlenb == 0)
+              अन्यथा यदि (tlenb == 0)
                 diff = 1;
-              else
+              अन्यथा
                 diff = xmemcoll0 (ta, tlena + 1, tb, tlenb + 1);
             }
 
           ta[tlena] = enda;
           tb[tlenb] = endb;
 
-          free (allocated);
+          मुक्त (allocated);
         }
-      else if (ignore)
+      अन्यथा यदि (ignore)
         {
 #define CMP_WITH_IGNORE(A, B)						\
-  do									\
+  कुरु									\
     {									\
-          while (true)							\
+          यावत् (true)							\
             {								\
-              while (texta < lima && ignore[to_uchar (*texta)])		\
+              यावत् (texta < lima && ignore[to_uchar (*texta)])		\
                 ++texta;						\
-              while (textb < limb && ignore[to_uchar (*textb)])		\
+              यावत् (textb < limb && ignore[to_uchar (*textb)])		\
                 ++textb;						\
-              if (! (texta < lima && textb < limb))			\
+              यदि (! (texta < lima && textb < limb))			\
                 {							\
                   diff = (texta < lima) - (textb < limb);		\
-                  break;						\
+                  भङ्ग;						\
                 }							\
               diff = to_uchar (A) - to_uchar (B);			\
-              if (diff)							\
-                break;							\
+              यदि (diff)							\
+                भङ्ग;							\
               ++texta;							\
               ++textb;							\
             }								\
                                                                         \
     }									\
-  while (0)
+  यावत् (0)
 
-          if (translate)
+          यदि (translate)
             CMP_WITH_IGNORE (translate[to_uchar (*texta)],
                              translate[to_uchar (*textb)]);
-          else
+          अन्यथा
             CMP_WITH_IGNORE (*texta, *textb);
         }
-      else
+      अन्यथा
         {
           size_t lenmin = MIN (lena, lenb);
-          if (lenmin == 0)
+          यदि (lenmin == 0)
             diff = 0;
-          else if (translate)
+          अन्यथा यदि (translate)
             {
               size_t i = 0;
-              do
+              कुरु
                 {
                   diff = (to_uchar (translate[to_uchar (texta[i])])
                           - to_uchar (translate[to_uchar (textb[i])]));
-                  if (diff)
-                    break;
+                  यदि (diff)
+                    भङ्ग;
                   i++;
                 }
-              while (i < lenmin);
+              यावत् (i < lenmin);
             }
-          else
+          अन्यथा
             diff = memcmp (texta, textb, lenmin);
 
-          if (! diff)
+          यदि (! diff)
             diff = _GL_CMP (lena, lenb);
         }
 
-      if (diff)
-        break;
+      यदि (diff)
+        भङ्ग;
 
-      key = key->next;
-      if (! key)
-        return 0;
+      कुंजी = कुंजी->next;
+      यदि (! कुंजी)
+        प्रत्यागम 0;
 
       /* Find the beginning and limit of the next field.  */
-      if (key->eword != SIZE_MAX)
-        lima = limfield (a, key), limb = limfield (b, key);
-      else
+      यदि (कुंजी->eword != SIZE_MAX)
+        lima = limfield (a, कुंजी), limb = limfield (b, कुंजी);
+      अन्यथा
         lima = a->text + a->length - 1, limb = b->text + b->length - 1;
 
-      if (key->sword != SIZE_MAX)
-        texta = begfield (a, key), textb = begfield (b, key);
-      else
+      यदि (कुंजी->sword != SIZE_MAX)
+        texta = begfield (a, कुंजी), textb = begfield (b, कुंजी);
+      अन्यथा
         {
           texta = a->text, textb = b->text;
-          if (key->skipsblanks)
+          यदि (कुंजी->skipsblanks)
             {
-              while (texta < lima && blanks[to_uchar (*texta)])
+              यावत् (texta < lima && blanks[to_uchar (*texta)])
                 ++texta;
-              while (textb < limb && blanks[to_uchar (*textb)])
+              यावत् (textb < limb && blanks[to_uchar (*textb)])
                 ++textb;
             }
         }
     }
 
-  return diff_reversed (diff, key->reverse);
+  प्रत्यागम diff_reversed (diff, कुंजी->reverse);
 }
 
 /* Compare two lines A and B, returning negative, zero, or positive
    depending on whether A compares less than, equal to, or greater than B. */
 
-static int
-compare (struct line const *a, struct line const *b)
+स्थिर पूर्णाङ्क
+compare (संरचना पंक्ति ध्रुव *a, संरचना पंक्ति ध्रुव *b)
 {
-  int diff;
+  पूर्णाङ्क diff;
   size_t alen, blen;
 
   /* First try to compare on the specified keys (if any).
      The only two cases with no key at all are unadorned sort,
      and unadorned sort -r. */
-  if (keylist)
+  यदि (keylist)
     {
       diff = keycompare (a, b);
-      if (diff || unique || stable)
-        return diff;
+      यदि (diff || unique || stable)
+        प्रत्यागम diff;
     }
 
   /* If the keys all compare equal (or no keys were specified)
      fall through to the default comparison.  */
   alen = a->length - 1, blen = b->length - 1;
 
-  if (alen == 0)
+  यदि (alen == 0)
     diff = - NONZERO (blen);
-  else if (blen == 0)
+  अन्यथा यदि (blen == 0)
     diff = 1;
-  else if (hard_LC_COLLATE)
+  अन्यथा यदि (hard_LC_COLLATE)
     {
       /* xmemcoll0 is a performance enhancement as
          it will not unconditionally write '\0' after the
@@ -3178,14 +3178,14 @@ compare (struct line const *a, struct line const *b)
          a 3% increase in performance for short lines.  */
       diff = xmemcoll0 (a->text, alen + 1, b->text, blen + 1);
     }
-  else
+  अन्यथा
     {
       diff = memcmp (a->text, b->text, MIN (alen, blen));
-      if (!diff)
+      यदि (!diff)
         diff = _GL_CMP (alen, blen);
     }
 
-  return diff_reversed (diff, reverse);
+  प्रत्यागम diff_reversed (diff, reverse);
 }
 
 /* Write LINE to output stream FP; the output file's name is
@@ -3193,35 +3193,35 @@ compare (struct line const *a, struct line const *b)
    otherwise.  If debugging is enabled and FP is standard output,
    append some debugging information.  */
 
-static void
-write_line (struct line const *line, FILE *fp, char const *output_file)
+स्थिर शून्य
+write_पंक्ति (संरचना पंक्ति ध्रुव *पंक्ति, FILE *fp, वर्ण ध्रुव *output_file)
 {
-  char *buf = line->text;
-  size_t n_bytes = line->length;
-  char *ebuf = buf + n_bytes;
+  वर्ण *buf = पंक्ति->text;
+  size_t n_bytes = पंक्ति->length;
+  वर्ण *ebuf = buf + n_bytes;
 
-  if (!output_file && debug)
+  यदि (!output_file && debug)
     {
       /* Convert TAB to '>' and EOL to \n, and then output debugging info.  */
-      char const *c = buf;
+      वर्ण ध्रुव *c = buf;
 
-      while (c < ebuf)
+      यावत् (c < ebuf)
         {
-          char wc = *c++;
-          if (wc == '\t')
+          वर्ण wc = *c++;
+          यदि (wc == '\t')
             wc = '>';
-          else if (c == ebuf)
+          अन्यथा यदि (c == ebuf)
             wc = '\n';
-          if (fputc (wc, fp) == EOF)
+          यदि (fputc (wc, fp) == EOF)
             sort_die (_("write failed"), output_file);
         }
 
-      debug_line (line);
+      debug_पंक्ति (पंक्ति);
     }
-  else
+  अन्यथा
     {
       ebuf[-1] = eolchar;
-      if (fwrite (buf, 1, n_bytes, fp) != n_bytes)
+      यदि (fwrite (buf, 1, n_bytes, fp) != n_bytes)
         sort_die (_("write failed"), output_file);
       ebuf[-1] = '\0';
     }
@@ -3232,85 +3232,85 @@ write_line (struct line const *line, FILE *fp, char const *output_file)
    diagnostic (FILE_NAME, line number, contents of line) to stderr if
    they are not in order.  */
 
-static bool
-check (char const *file_name, char checkonly)
+स्थिर bool
+check (वर्ण ध्रुव *file_name, वर्ण checkonly)
 {
   FILE *fp = xfopen (file_name, "r");
-  struct buffer buf;		/* Input buffer. */
-  struct line temp;		/* Copy of previous line. */
+  संरचना buffer buf;		/* Input buffer. */
+  संरचना पंक्ति temp;		/* Copy of previous line. */
   size_t alloc = 0;
-  uintmax_t line_number = 0;
-  struct keyfield const *key = keylist;
+  uintmax_t पंक्ति_संख्या = 0;
+  संरचना keyfield ध्रुव *कुंजी = keylist;
   bool nonunique = ! unique;
   bool ordered = true;
 
-  initbuf (&buf, sizeof (struct line),
+  initbuf (&buf, परिमाण (संरचना पंक्ति),
            MAX (merge_buffer_size, sort_size));
-  temp.text = NULL;
+  temp.text = रिक्त;
 
-  while (fillbuf (&buf, fp, file_name, NULL))
+  यावत् (fillbuf (&buf, fp, file_name, रिक्त))
     {
-      struct line const *line = buffer_linelim (&buf);
-      struct line const *linebase = line - buf.nlines;
+      संरचना पंक्ति ध्रुव *पंक्ति = buffer_linelim (&buf);
+      संरचना पंक्ति ध्रुव *linebase = पंक्ति - buf.nlines;
 
       /* Make sure the line saved from the old buffer contents is
          less than or equal to the first line of the new buffer. */
-      if (alloc && nonunique <= compare (&temp, line - 1))
+      यदि (alloc && nonunique <= compare (&temp, पंक्ति - 1))
         {
         found_disorder:
           {
-            if (checkonly == 'c')
+            यदि (checkonly == 'c')
               {
-                struct line const *disorder_line = line - 1;
-                uintmax_t disorder_line_number =
-                  buffer_linelim (&buf) - disorder_line + line_number;
+                संरचना पंक्ति ध्रुव *disorder_पंक्ति = पंक्ति - 1;
+                uintmax_t disorder_पंक्ति_संख्या =
+                  buffer_linelim (&buf) - disorder_पंक्ति + पंक्ति_संख्या;
                 fprintf (stderr, _("%s: %s:%ju: disorder: "),
-                         program_name, file_name, disorder_line_number);
-                write_line (disorder_line, stderr, _("standard error"));
+                         program_name, file_name, disorder_पंक्ति_संख्या);
+                write_पंक्ति (disorder_पंक्ति, stderr, _("standard error"));
               }
 
             ordered = false;
-            break;
+            भङ्ग;
           }
         }
 
       /* Compare each line in the buffer with its successor.  */
-      while (linebase < --line)
-        if (nonunique <= compare (line, line - 1))
-          goto found_disorder;
+      यावत् (linebase < --पंक्ति)
+        यदि (nonunique <= compare (पंक्ति, पंक्ति - 1))
+          गच्छ found_disorder;
 
-      line_number += buf.nlines;
+      पंक्ति_संख्या += buf.nlines;
 
       /* Save the last line of the buffer.  */
-      if (alloc < line->length)
+      यदि (alloc < पंक्ति->length)
         {
-          do
+          कुरु
             {
               alloc *= 2;
-              if (! alloc)
+              यदि (! alloc)
                 {
-                  alloc = line->length;
-                  break;
+                  alloc = पंक्ति->length;
+                  भङ्ग;
                 }
             }
-          while (alloc < line->length);
+          यावत् (alloc < पंक्ति->length);
 
-          free (temp.text);
+          मुक्त (temp.text);
           temp.text = xmalloc (alloc);
         }
-      memcpy (temp.text, line->text, line->length);
-      temp.length = line->length;
-      if (key)
+      memcpy (temp.text, पंक्ति->text, पंक्ति->length);
+      temp.length = पंक्ति->length;
+      यदि (कुंजी)
         {
-          temp.keybeg = temp.text + (line->keybeg - line->text);
-          temp.keylim = temp.text + (line->keylim - line->text);
+          temp.keybeg = temp.text + (पंक्ति->keybeg - पंक्ति->text);
+          temp.keylim = temp.text + (पंक्ति->keylim - पंक्ति->text);
         }
     }
 
   xfclose (fp, file_name);
-  free (buf.buf);
-  free (temp.text);
-  return ordered;
+  मुक्त (buf.buf);
+  मुक्त (temp.text);
+  प्रत्यागम ordered;
 }
 
 /* Open FILES (there are NFILES of them) and store the resulting array
@@ -3318,23 +3318,23 @@ check (char const *file_name, char checkonly)
    number of successfully opened files, setting errno if this value is
    less than NFILES.  */
 
-static size_t
-open_input_files (struct sortfile *files, size_t nfiles, FILE ***pfps)
+स्थिर size_t
+open_निवेश_files (संरचना sortfile *files, size_t nfiles, FILE ***pfps)
 {
-  FILE **fps = *pfps = xnmalloc (nfiles, sizeof *fps);
-  int i;
+  FILE **fps = *pfps = xnmalloc (nfiles, परिमाण *fps);
+  पूर्णाङ्क i;
 
   /* Open as many input files as we can.  */
-  for (i = 0; i < nfiles; i++)
+  प्रति (i = 0; i < nfiles; i++)
     {
       fps[i] = (files[i].temp && files[i].temp->state != UNCOMPRESSED
                 ? open_temp (files[i].temp)
                 : stream_open (files[i].name, "r"));
-      if (!fps[i])
-        break;
+      यदि (!fps[i])
+        भङ्ग;
     }
 
-  return i;
+  प्रत्यागम i;
 }
 
 /* Merge lines from FILES onto OFP.  NTEMPS is the number of temporary
@@ -3345,52 +3345,52 @@ open_input_files (struct sortfile *files, size_t nfiles, FILE ***pfps)
    OUTPUT_FILE gives the name of the output file.  If it is null,
    the output file is standard output.  */
 
-static void
-mergefps (struct sortfile *files, size_t ntemps, size_t nfiles,
-          FILE *ofp, char const *output_file, FILE **fps)
+स्थिर शून्य
+mergefps (संरचना sortfile *files, size_t ntemps, size_t nfiles,
+          FILE *ofp, वर्ण ध्रुव *output_file, FILE **fps)
 {
-  struct buffer *buffer = xnmalloc (nfiles, sizeof *buffer);
+  संरचना buffer *buffer = xnmalloc (nfiles, परिमाण *buffer);
                                 /* Input buffers for each file. */
-  struct line saved;		/* Saved line storage for unique check. */
-  struct line const *savedline = NULL;
+  संरचना पंक्ति saved;		/* Saved line storage for unique check. */
+  संरचना पंक्ति ध्रुव *savedline = रिक्त;
                                 /* &saved if there is a saved line. */
   size_t savealloc = 0;		/* Size allocated for the saved line. */
-  struct line const **cur = xnmalloc (nfiles, sizeof *cur);
+  संरचना पंक्ति ध्रुव **cur = xnmalloc (nfiles, परिमाण *cur);
                                 /* Current line in each line table. */
-  struct line const **base = xnmalloc (nfiles, sizeof *base);
+  संरचना पंक्ति ध्रुव **base = xnmalloc (nfiles, परिमाण *base);
                                 /* Base of each line table.  */
-  size_t *ord = xnmalloc (nfiles, sizeof *ord);
+  size_t *ord = xnmalloc (nfiles, परिमाण *ord);
                                 /* Table representing a permutation of fps,
                                    such that cur[ord[0]] is the smallest line
                                    and will be next output. */
   size_t t;
-  struct keyfield const *key = keylist;
-  saved.text = NULL;
+  संरचना keyfield ध्रुव *कुंजी = keylist;
+  saved.text = रिक्त;
 
   /* Read initial lines from each input file. */
-  for (size_t i = 0; i < nfiles; )
+  प्रति (size_t i = 0; i < nfiles; )
     {
-      initbuf (&buffer[i], sizeof (struct line),
+      initbuf (&buffer[i], परिमाण (संरचना पंक्ति),
                MAX (merge_buffer_size, sort_size / nfiles));
-      if (fillbuf (&buffer[i], fps[i], files[i].name, NULL))
+      यदि (fillbuf (&buffer[i], fps[i], files[i].name, रिक्त))
         {
-          struct line const *linelim = buffer_linelim (&buffer[i]);
+          संरचना पंक्ति ध्रुव *linelim = buffer_linelim (&buffer[i]);
           cur[i] = linelim - 1;
           base[i] = linelim - buffer[i].nlines;
           i++;
         }
-      else
+      अन्यथा
         {
           /* fps[i] is empty; eliminate it from future consideration.  */
           xfclose (fps[i], files[i].name);
-          if (i < ntemps)
+          यदि (i < ntemps)
             {
               ntemps--;
               zaptemp (files[i].name);
             }
-          free (buffer[i].buf);
+          मुक्त (buffer[i].buf);
           --nfiles;
-          for (size_t j = i; j < nfiles; ++j)
+          प्रति (size_t j = i; j < nfiles; ++j)
             {
               files[j] = files[j + 1];
               fps[j] = fps[j + 1];
@@ -3401,45 +3401,45 @@ mergefps (struct sortfile *files, size_t ntemps, size_t nfiles,
   /* Set up the ord table according to comparisons among input lines.
      Since this only reorders two items if one is strictly greater than
      the other, it is stable. */
-  for (size_t i = 0; i < nfiles; ++i)
+  प्रति (size_t i = 0; i < nfiles; ++i)
     ord[i] = i;
-  for (size_t i = 1; i < nfiles; ++i)
-    if (0 < compare (cur[ord[i - 1]], cur[ord[i]]))
+  प्रति (size_t i = 1; i < nfiles; ++i)
+    यदि (0 < compare (cur[ord[i - 1]], cur[ord[i]]))
       t = ord[i - 1], ord[i - 1] = ord[i], ord[i] = t, i = 0;
 
   /* Repeatedly output the smallest line until no input remains. */
-  while (nfiles)
+  यावत् (nfiles)
     {
-      struct line const *smallest = cur[ord[0]];
+      संरचना पंक्ति ध्रुव *smallest = cur[ord[0]];
 
       /* If uniquified output is turned on, output only the first of
          an identical series of lines. */
-      if (unique)
+      यदि (unique)
         {
-          if (savedline && compare (savedline, smallest))
+          यदि (savedline && compare (savedline, smallest))
             {
-              savedline = NULL;
-              write_line (&saved, ofp, output_file);
+              savedline = रिक्त;
+              write_पंक्ति (&saved, ofp, output_file);
             }
-          if (!savedline)
+          यदि (!savedline)
             {
               savedline = &saved;
-              if (savealloc < smallest->length)
+              यदि (savealloc < smallest->length)
                 {
-                  do
-                    if (! savealloc)
+                  कुरु
+                    यदि (! savealloc)
                       {
                         savealloc = smallest->length;
-                        break;
+                        भङ्ग;
                       }
-                  while ((savealloc *= 2) < smallest->length);
+                  यावत् ((savealloc *= 2) < smallest->length);
 
-                  free (saved.text);
+                  मुक्त (saved.text);
                   saved.text = xmalloc (savealloc);
                 }
               saved.length = smallest->length;
               memcpy (saved.text, smallest->text, saved.length);
-              if (key)
+              यदि (कुंजी)
                 {
                   saved.keybeg =
                     saved.text + (smallest->keybeg - smallest->text);
@@ -3448,36 +3448,36 @@ mergefps (struct sortfile *files, size_t ntemps, size_t nfiles,
                 }
             }
         }
-      else
-        write_line (smallest, ofp, output_file);
+      अन्यथा
+        write_पंक्ति (smallest, ofp, output_file);
 
       /* Check if we need to read more lines into memory. */
-      if (base[ord[0]] < smallest)
+      यदि (base[ord[0]] < smallest)
         cur[ord[0]] = smallest - 1;
-      else
+      अन्यथा
         {
-          if (fillbuf (&buffer[ord[0]], fps[ord[0]], files[ord[0]].name,
-                       NULL))
+          यदि (fillbuf (&buffer[ord[0]], fps[ord[0]], files[ord[0]].name,
+                       रिक्त))
             {
-              struct line const *linelim = buffer_linelim (&buffer[ord[0]]);
+              संरचना पंक्ति ध्रुव *linelim = buffer_linelim (&buffer[ord[0]]);
               cur[ord[0]] = linelim - 1;
               base[ord[0]] = linelim - buffer[ord[0]].nlines;
             }
-          else
+          अन्यथा
             {
               /* We reached EOF on fps[ord[0]].  */
-              for (size_t i = 1; i < nfiles; ++i)
-                if (ord[i] > ord[0])
+              प्रति (size_t i = 1; i < nfiles; ++i)
+                यदि (ord[i] > ord[0])
                   --ord[i];
               --nfiles;
               xfclose (fps[ord[0]], files[ord[0]].name);
-              if (ord[0] < ntemps)
+              यदि (ord[0] < ntemps)
                 {
                   ntemps--;
                   zaptemp (files[ord[0]].name);
                 }
-              free (buffer[ord[0]].buf);
-              for (size_t i = ord[0]; i < nfiles; ++i)
+              मुक्त (buffer[ord[0]].buf);
+              प्रति (size_t i = ord[0]; i < nfiles; ++i)
                 {
                   fps[i] = fps[i + 1];
                   files[i] = files[i + 1];
@@ -3485,9 +3485,9 @@ mergefps (struct sortfile *files, size_t ntemps, size_t nfiles,
                   cur[i] = cur[i + 1];
                   base[i] = base[i + 1];
                 }
-              for (size_t i = 0; i < nfiles; ++i)
+              प्रति (size_t i = 0; i < nfiles; ++i)
                 ord[i] = ord[i + 1];
-              continue;
+              अनुवर्त;
             }
         }
 
@@ -3500,37 +3500,37 @@ mergefps (struct sortfile *files, size_t ntemps, size_t nfiles,
         size_t hi = nfiles;
         size_t probe = lo;
         size_t ord0 = ord[0];
-        size_t count_of_smaller_lines;
+        size_t गिनती_of_smaller_पंक्तियाँ;
 
-        while (lo < hi)
+        यावत् (lo < hi)
           {
-            int cmp = compare (cur[ord0], cur[ord[probe]]);
-            if (cmp < 0 || (cmp == 0 && ord0 < ord[probe]))
+            पूर्णाङ्क cmp = compare (cur[ord0], cur[ord[probe]]);
+            यदि (cmp < 0 || (cmp == 0 && ord0 < ord[probe]))
               hi = probe;
-            else
+            अन्यथा
               lo = probe + 1;
             probe = (lo + hi) / 2;
           }
 
-        count_of_smaller_lines = lo - 1;
-        for (size_t j = 0; j < count_of_smaller_lines; j++)
+        गिनती_of_smaller_पंक्तियाँ = lo - 1;
+        प्रति (size_t j = 0; j < गिनती_of_smaller_पंक्तियाँ; j++)
           ord[j] = ord[j + 1];
-        ord[count_of_smaller_lines] = ord0;
+        ord[गिनती_of_smaller_पंक्तियाँ] = ord0;
       }
     }
 
-  if (unique && savedline)
+  यदि (unique && savedline)
     {
-      write_line (&saved, ofp, output_file);
-      free (saved.text);
+      write_पंक्ति (&saved, ofp, output_file);
+      मुक्त (saved.text);
     }
 
   xfclose (ofp, output_file);
-  free (fps);
-  free (buffer);
-  free (ord);
-  free (base);
-  free (cur);
+  मुक्त (fps);
+  मुक्त (buffer);
+  मुक्त (ord);
+  मुक्त (base);
+  मुक्त (cur);
 }
 
 /* Merge lines from FILES onto OFP.  NTEMPS is the number of temporary
@@ -3543,16 +3543,16 @@ mergefps (struct sortfile *files, size_t ntemps, size_t nfiles,
    less than NFILES if we ran low on file descriptors, but in this
    case it is never less than 2.  */
 
-static size_t
-mergefiles (struct sortfile *files, size_t ntemps, size_t nfiles,
-            FILE *ofp, char const *output_file)
+स्थिर size_t
+mergefiles (संरचना sortfile *files, size_t ntemps, size_t nfiles,
+            FILE *ofp, वर्ण ध्रुव *output_file)
 {
   FILE **fps;
-  size_t nopened = open_input_files (files, nfiles, &fps);
-  if (nopened < nfiles && nopened < 2)
+  size_t nopened = open_निवेश_files (files, nfiles, &fps);
+  यदि (nopened < nfiles && nopened < 2)
     sort_die (_("open failed"), files[nopened].name);
   mergefps (files, ntemps, nopened, ofp, output_file, fps);
-  return nopened;
+  प्रत्यागम nopened;
 }
 
 /* Merge into T (of size NLINES) the two sorted arrays of lines
@@ -3561,35 +3561,35 @@ mergefiles (struct sortfile *files, size_t ntemps, size_t nfiles,
    T and LO point just past their respective arrays, and the arrays
    are in reverse order.  NLINES must be at least 2.  */
 
-static void
-mergelines (struct line *restrict t, size_t nlines,
-            struct line const *restrict lo)
+स्थिर शून्य
+mergelines (संरचना पंक्ति *restrict t, size_t nlines,
+            संरचना पंक्ति ध्रुव *restrict lo)
 {
   size_t nlo = nlines / 2;
   size_t nhi = nlines - nlo;
-  struct line *hi = t - nlo;
+  संरचना पंक्ति *hi = t - nlo;
 
-  while (true)
-    if (compare (lo - 1, hi - 1) <= 0)
+  यावत् (true)
+    यदि (compare (lo - 1, hi - 1) <= 0)
       {
         *--t = *--lo;
-        if (! --nlo)
+        यदि (! --nlo)
           {
             /* HI must equal T now, and there is no need to copy from
                HI to T. */
-            return;
+            प्रत्यागम;
           }
       }
-    else
+    अन्यथा
       {
         *--t = *--hi;
-        if (! --nhi)
+        यदि (! --nhi)
           {
-            do
+            कुरु
               *--t = *--lo;
-            while (--nlo);
+            यावत् (--nlo);
 
-            return;
+            प्रत्यागम;
           }
       }
 }
@@ -3608,96 +3608,96 @@ mergelines (struct line *restrict t, size_t nlines,
    writes that this memory optimization was originally published by
    D. A. Bell, Comp J. 1 (1958), 75.  */
 
-static void
-sequential_sort (struct line *restrict lines, size_t nlines,
-                 struct line *restrict temp, bool to_temp)
+स्थिर शून्य
+sequential_sort (संरचना पंक्ति *restrict पंक्तियाँ, size_t nlines,
+                 संरचना पंक्ति *restrict temp, bool to_temp)
 {
-  if (nlines == 2)
+  यदि (nlines == 2)
     {
       /* Declare 'swap' as int, not bool, to work around a bug
         <https://lists.gnu.org/r/bug-coreutils/2005-10/msg00086.html>
          in the IBM xlc 6.0.0.0 compiler in 64-bit mode.  */
-      int swap = (0 < compare (&lines[-1], &lines[-2]));
-      if (to_temp)
+      पूर्णाङ्क swap = (0 < compare (&पंक्तियाँ[-1], &पंक्तियाँ[-2]));
+      यदि (to_temp)
         {
-          temp[-1] = lines[-1 - swap];
-          temp[-2] = lines[-2 + swap];
+          temp[-1] = पंक्तियाँ[-1 - swap];
+          temp[-2] = पंक्तियाँ[-2 + swap];
         }
-      else if (swap)
+      अन्यथा यदि (swap)
         {
-          temp[-1] = lines[-1];
-          lines[-1] = lines[-2];
-          lines[-2] = temp[-1];
+          temp[-1] = पंक्तियाँ[-1];
+          पंक्तियाँ[-1] = पंक्तियाँ[-2];
+          पंक्तियाँ[-2] = temp[-1];
         }
     }
-  else
+  अन्यथा
     {
       size_t nlo = nlines / 2;
       size_t nhi = nlines - nlo;
-      struct line *lo = lines;
-      struct line *hi = lines - nlo;
+      संरचना पंक्ति *lo = पंक्तियाँ;
+      संरचना पंक्ति *hi = पंक्तियाँ - nlo;
 
       sequential_sort (hi, nhi, temp - (to_temp ? nlo : 0), to_temp);
-      if (1 < nlo)
+      यदि (1 < nlo)
         sequential_sort (lo, nlo, temp, !to_temp);
-      else if (!to_temp)
+      अन्यथा यदि (!to_temp)
         temp[-1] = lo[-1];
 
-      struct line *dest;
-      struct line const *sorted_lo;
-      if (to_temp)
+      संरचना पंक्ति *dest;
+      संरचना पंक्ति ध्रुव *sorted_lo;
+      यदि (to_temp)
         {
           dest = temp;
-          sorted_lo = lines;
+          sorted_lo = पंक्तियाँ;
         }
-      else
+      अन्यथा
         {
-          dest = lines;
+          dest = पंक्तियाँ;
           sorted_lo = temp;
         }
       mergelines (dest, nlines, sorted_lo);
     }
 }
 
-static struct merge_node *init_node (struct merge_node *restrict,
-                                     struct merge_node *restrict,
-                                     struct line *, size_t, size_t, bool);
+स्थिर संरचना merge_गाँठ *init_गाँठ (संरचना merge_गाँठ *restrict,
+                                     संरचना merge_गाँठ *restrict,
+                                     संरचना पंक्ति *, size_t, size_t, bool);
 
 
 /* Create and return a merge tree for NTHREADS threads, sorting NLINES
    lines, with destination DEST.  */
-static struct merge_node *
-merge_tree_init (size_t nthreads, size_t nlines, struct line *dest)
+स्थिर संरचना merge_गाँठ *
+merge_वृक्ष_init (size_t nthreads, size_t nlines, संरचना पंक्ति *dest)
 {
-  struct merge_node *merge_tree = xmalloc (2 * sizeof *merge_tree * nthreads);
+  संरचना merge_गाँठ *merge_वृक्ष = xmalloc (2 * परिमाण *merge_वृक्ष * nthreads);
 
-  struct merge_node *root = merge_tree;
-  root->lo = root->hi = root->end_lo = root->end_hi = NULL;
-  root->dest = NULL;
-  root->nlo = root->nhi = nlines;
-  root->parent = NULL;
-  root->level = MERGE_END;
-  root->queued = false;
-  pthread_mutex_init (&root->lock, NULL);
+  संरचना merge_गाँठ *मूल = merge_वृक्ष;
+  मूल->lo = मूल->hi = मूल->end_lo = मूल->end_hi = रिक्त;
+  मूल->dest = रिक्त;
+  मूल->nlo = मूल->nhi = nlines;
+  मूल->parent = रिक्त;
+  मूल->level = MERGE_END;
+  मूल->queued = false;
+  pthread_mutex_init (&मूल->lock, रिक्त);
 
-  init_node (root, root + 1, dest, nthreads, nlines, false);
-  return merge_tree;
+  init_गाँठ (मूल, मूल + 1, dest, nthreads, nlines, false);
+  प्रत्यागम merge_वृक्ष;
 }
 
 /* Destroy the merge tree. */
-static void
-merge_tree_destroy (size_t nthreads, struct merge_node *merge_tree)
+स्थिर शून्य
+merge_वृक्ष_destroy (size_t nthreads, संरचना merge_गाँठ *merge_वृक्ष)
 {
   size_t n_nodes = nthreads * 2;
-  struct merge_node *node = merge_tree;
+  संरचना merge_गाँठ *गाँठ = merge_वृक्ष;
 
-  while (n_nodes--)
+  यावत् (n_nodes--)
     {
-      pthread_mutex_destroy (&node->lock);
-      node++;
+      pthread_mutex_destroy (&गाँठ->lock);
+      गाँठ++;
     }
 
-  free (merge_tree);
+  मुक्त (merge_वृक्ष);
 }
 
 /* Initialize a merge tree node and its descendants.  The node's
@@ -3707,82 +3707,82 @@ merge_tree_destroy (size_t nthreads, struct merge_node *merge_tree)
    TOTAL_LINES.  IS_LO_CHILD is true if the node is the low child of
    its parent.  */
 
-static struct merge_node *
-init_node (struct merge_node *restrict parent,
-           struct merge_node *restrict node_pool,
-           struct line *dest, size_t nthreads,
-           size_t total_lines, bool is_lo_child)
+स्थिर संरचना merge_गाँठ *
+init_गाँठ (संरचना merge_गाँठ *restrict parent,
+           संरचना merge_गाँठ *restrict गाँठ_pool,
+           संरचना पंक्ति *dest, size_t nthreads,
+           size_t total_पंक्तियाँ, bool is_lo_child)
 {
   size_t nlines = (is_lo_child ? parent->nlo : parent->nhi);
   size_t nlo = nlines / 2;
   size_t nhi = nlines - nlo;
-  struct line *lo = dest - total_lines;
-  struct line *hi = lo - nlo;
-  struct line **parent_end = (is_lo_child ? &parent->end_lo : &parent->end_hi);
+  संरचना पंक्ति *lo = dest - total_पंक्तियाँ;
+  संरचना पंक्ति *hi = lo - nlo;
+  संरचना पंक्ति **parent_end = (is_lo_child ? &parent->end_lo : &parent->end_hi);
 
-  struct merge_node *node = node_pool++;
-  node->lo = node->end_lo = lo;
-  node->hi = node->end_hi = hi;
-  node->dest = parent_end;
-  node->nlo = nlo;
-  node->nhi = nhi;
-  node->parent = parent;
-  node->level = parent->level + 1;
-  node->queued = false;
-  pthread_mutex_init (&node->lock, NULL);
+  संरचना merge_गाँठ *गाँठ = गाँठ_pool++;
+  गाँठ->lo = गाँठ->end_lo = lo;
+  गाँठ->hi = गाँठ->end_hi = hi;
+  गाँठ->dest = parent_end;
+  गाँठ->nlo = nlo;
+  गाँठ->nhi = nhi;
+  गाँठ->parent = parent;
+  गाँठ->level = parent->level + 1;
+  गाँठ->queued = false;
+  pthread_mutex_init (&गाँठ->lock, रिक्त);
 
-  if (nthreads > 1)
+  यदि (nthreads > 1)
     {
       size_t lo_threads = nthreads / 2;
       size_t hi_threads = nthreads - lo_threads;
-      node->lo_child = node_pool;
-      node_pool = init_node (node, node_pool, lo, lo_threads,
-                             total_lines, true);
-      node->hi_child = node_pool;
-      node_pool = init_node (node, node_pool, hi, hi_threads,
-                             total_lines, false);
+      गाँठ->lo_child = गाँठ_pool;
+      गाँठ_pool = init_गाँठ (गाँठ, गाँठ_pool, lo, lo_threads,
+                             total_पंक्तियाँ, true);
+      गाँठ->hi_child = गाँठ_pool;
+      गाँठ_pool = init_गाँठ (गाँठ, गाँठ_pool, hi, hi_threads,
+                             total_पंक्तियाँ, false);
     }
-  else
+  अन्यथा
     {
-      node->lo_child = NULL;
-      node->hi_child = NULL;
+      गाँठ->lo_child = रिक्त;
+      गाँठ->hi_child = रिक्त;
     }
-  return node_pool;
+  प्रत्यागम गाँठ_pool;
 }
 
 
 /* Compare two merge nodes A and B for priority.  */
 
-static int
-compare_nodes (void const *a, void const *b)
+स्थिर पूर्णाङ्क
+compare_nodes (शून्य ध्रुव *a, शून्य ध्रुव *b)
 {
-  struct merge_node const *nodea = a;
-  struct merge_node const *nodeb = b;
-  if (nodea->level == nodeb->level)
-      return (nodea->nlo + nodea->nhi) < (nodeb->nlo + nodeb->nhi);
-  return nodea->level < nodeb->level;
+  संरचना merge_गाँठ ध्रुव *nodea = a;
+  संरचना merge_गाँठ ध्रुव *nodeb = b;
+  यदि (nodea->level == nodeb->level)
+      प्रत्यागम (nodea->nlo + nodea->nhi) < (nodeb->nlo + nodeb->nhi);
+  प्रत्यागम nodea->level < nodeb->level;
 }
 
 /* Lock a merge tree NODE.  */
 
-static inline void
-lock_node (struct merge_node *node)
+स्थिर अन्तःस्थ शून्य
+lock_गाँठ (संरचना merge_गाँठ *गाँठ)
 {
-  pthread_mutex_lock (&node->lock);
+  pthread_mutex_lock (&गाँठ->lock);
 }
 
 /* Unlock a merge tree NODE. */
 
-static inline void
-unlock_node (struct merge_node *node)
+स्थिर अन्तःस्थ शून्य
+unlock_गाँठ (संरचना merge_गाँठ *गाँठ)
 {
-  pthread_mutex_unlock (&node->lock);
+  pthread_mutex_unlock (&गाँठ->lock);
 }
 
 /* Destroy merge QUEUE. */
 
-static void
-queue_destroy (struct merge_node_queue *queue)
+स्थिर शून्य
+queue_destroy (संरचना merge_गाँठ_queue *queue)
 {
   heap_free (queue->priority_queue);
   pthread_cond_destroy (&queue->cond);
@@ -3792,43 +3792,43 @@ queue_destroy (struct merge_node_queue *queue)
 /* Initialize merge QUEUE, allocating space suitable for a maximum of
    NTHREADS threads.  */
 
-static void
-queue_init (struct merge_node_queue *queue, size_t nthreads)
+स्थिर शून्य
+queue_init (संरचना merge_गाँठ_queue *queue, size_t nthreads)
 {
   /* Though it's highly unlikely all nodes are in the heap at the same
      time, the heap should accommodate all of them.  Counting a null
      dummy head for the heap, reserve 2 * NTHREADS nodes.  */
   queue->priority_queue = heap_alloc (compare_nodes, 2 * nthreads);
-  pthread_mutex_init (&queue->mutex, NULL);
-  pthread_cond_init (&queue->cond, NULL);
+  pthread_mutex_init (&queue->mutex, रिक्त);
+  pthread_cond_init (&queue->cond, रिक्त);
 }
 
 /* Insert NODE into QUEUE.  The caller either holds a lock on NODE, or
    does not need to lock NODE.  */
 
-static void
-queue_insert (struct merge_node_queue *queue, struct merge_node *node)
+स्थिर शून्य
+queue_जोड़ो (संरचना merge_गाँठ_queue *queue, संरचना merge_गाँठ *गाँठ)
 {
   pthread_mutex_lock (&queue->mutex);
-  heap_insert (queue->priority_queue, node);
-  node->queued = true;
+  heap_जोड़ो (queue->priority_queue, गाँठ);
+  गाँठ->queued = true;
   pthread_cond_signal (&queue->cond);
   pthread_mutex_unlock (&queue->mutex);
 }
 
 /* Pop the top node off the priority QUEUE, lock the node, return it.  */
 
-static struct merge_node *
-queue_pop (struct merge_node_queue *queue)
+स्थिर संरचना merge_गाँठ *
+queue_निकालो (संरचना merge_गाँठ_queue *queue)
 {
-  struct merge_node *node;
+  संरचना merge_गाँठ *गाँठ;
   pthread_mutex_lock (&queue->mutex);
-  while (! (node = heap_remove_top (queue->priority_queue)))
+  यावत् (! (गाँठ = heap_remove_शीर्ष (queue->priority_queue)))
     pthread_cond_wait (&queue->cond, &queue->mutex);
   pthread_mutex_unlock (&queue->mutex);
-  lock_node (node);
-  node->queued = false;
-  return node;
+  lock_गाँठ (गाँठ);
+  गाँठ->queued = false;
+  प्रत्यागम गाँठ;
 }
 
 /* Output LINE to TFP, unless -u is specified and the line compares
@@ -3838,17 +3838,17 @@ queue_pop (struct merge_node_queue *queue)
    This function does not save the line for comparison later, so it is
    appropriate only for internal sort.  */
 
-static void
-write_unique (struct line const *line, FILE *tfp, char const *temp_output)
+स्थिर शून्य
+write_unique (संरचना पंक्ति ध्रुव *पंक्ति, FILE *tfp, वर्ण ध्रुव *temp_output)
 {
-  if (unique)
+  यदि (unique)
     {
-      if (saved_line.text && ! compare (line, &saved_line))
-        return;
-      saved_line = *line;
+      यदि (saved_पंक्ति.text && ! compare (पंक्ति, &saved_पंक्ति))
+        प्रत्यागम;
+      saved_पंक्ति = *पंक्ति;
     }
 
-  write_line (line, tfp, temp_output);
+  write_पंक्ति (पंक्ति, tfp, temp_output);
 }
 
 /* Merge the lines currently available to a NODE in the binary
@@ -3858,103 +3858,103 @@ write_unique (struct line const *line, FILE *tfp, char const *temp_output)
    If merging at the top level, send output to TFP.  TEMP_OUTPUT is
    the name of TFP, or is null if TFP is standard output.  */
 
-static void
-mergelines_node (struct merge_node *restrict node, size_t total_lines,
-                 FILE *tfp, char const *temp_output)
+स्थिर शून्य
+mergelines_गाँठ (संरचना merge_गाँठ *restrict गाँठ, size_t total_पंक्तियाँ,
+                 FILE *tfp, वर्ण ध्रुव *temp_output)
 {
-  struct line *lo_orig = node->lo;
-  struct line *hi_orig = node->hi;
-  size_t to_merge = MAX_MERGE (total_lines, node->level);
+  संरचना पंक्ति *lo_orig = गाँठ->lo;
+  संरचना पंक्ति *hi_orig = गाँठ->hi;
+  size_t to_merge = MAX_MERGE (total_पंक्तियाँ, गाँठ->level);
   size_t merged_lo;
   size_t merged_hi;
 
-  if (node->level > MERGE_ROOT)
+  यदि (गाँठ->level > MERGE_मूल)
     {
       /* Merge to destination buffer. */
-      struct line *dest = *node->dest;
-      while (node->lo != node->end_lo && node->hi != node->end_hi && to_merge--)
-        if (compare (node->lo - 1, node->hi - 1) <= 0)
-          *--dest = *--node->lo;
-        else
-          *--dest = *--node->hi;
+      संरचना पंक्ति *dest = *गाँठ->dest;
+      यावत् (गाँठ->lo != गाँठ->end_lo && गाँठ->hi != गाँठ->end_hi && to_merge--)
+        यदि (compare (गाँठ->lo - 1, गाँठ->hi - 1) <= 0)
+          *--dest = *--गाँठ->lo;
+        अन्यथा
+          *--dest = *--गाँठ->hi;
 
-      merged_lo = lo_orig - node->lo;
-      merged_hi = hi_orig - node->hi;
+      merged_lo = lo_orig - गाँठ->lo;
+      merged_hi = hi_orig - गाँठ->hi;
 
-      if (node->nhi == merged_hi)
-        while (node->lo != node->end_lo && to_merge--)
-          *--dest = *--node->lo;
-      else if (node->nlo == merged_lo)
-        while (node->hi != node->end_hi && to_merge--)
-          *--dest = *--node->hi;
-      *node->dest = dest;
+      यदि (गाँठ->nhi == merged_hi)
+        यावत् (गाँठ->lo != गाँठ->end_lo && to_merge--)
+          *--dest = *--गाँठ->lo;
+      अन्यथा यदि (गाँठ->nlo == merged_lo)
+        यावत् (गाँठ->hi != गाँठ->end_hi && to_merge--)
+          *--dest = *--गाँठ->hi;
+      *गाँठ->dest = dest;
     }
-  else
+  अन्यथा
     {
       /* Merge directly to output. */
-      while (node->lo != node->end_lo && node->hi != node->end_hi && to_merge--)
+      यावत् (गाँठ->lo != गाँठ->end_lo && गाँठ->hi != गाँठ->end_hi && to_merge--)
         {
-          if (compare (node->lo - 1, node->hi - 1) <= 0)
-            write_unique (--node->lo, tfp, temp_output);
-          else
-            write_unique (--node->hi, tfp, temp_output);
+          यदि (compare (गाँठ->lo - 1, गाँठ->hi - 1) <= 0)
+            write_unique (--गाँठ->lo, tfp, temp_output);
+          अन्यथा
+            write_unique (--गाँठ->hi, tfp, temp_output);
         }
 
-      merged_lo = lo_orig - node->lo;
-      merged_hi = hi_orig - node->hi;
+      merged_lo = lo_orig - गाँठ->lo;
+      merged_hi = hi_orig - गाँठ->hi;
 
-      if (node->nhi == merged_hi)
+      यदि (गाँठ->nhi == merged_hi)
         {
-          while (node->lo != node->end_lo && to_merge--)
-            write_unique (--node->lo, tfp, temp_output);
+          यावत् (गाँठ->lo != गाँठ->end_lo && to_merge--)
+            write_unique (--गाँठ->lo, tfp, temp_output);
         }
-      else if (node->nlo == merged_lo)
+      अन्यथा यदि (गाँठ->nlo == merged_lo)
         {
-          while (node->hi != node->end_hi && to_merge--)
-            write_unique (--node->hi, tfp, temp_output);
+          यावत् (गाँठ->hi != गाँठ->end_hi && to_merge--)
+            write_unique (--गाँठ->hi, tfp, temp_output);
         }
     }
 
   /* Update NODE. */
-  merged_lo = lo_orig - node->lo;
-  merged_hi = hi_orig - node->hi;
-  node->nlo -= merged_lo;
-  node->nhi -= merged_hi;
+  merged_lo = lo_orig - गाँठ->lo;
+  merged_hi = hi_orig - गाँठ->hi;
+  गाँठ->nlo -= merged_lo;
+  गाँठ->nhi -= merged_hi;
 }
 
 /* Into QUEUE, insert NODE if it is not already queued, and if one of
    NODE's children has available lines and the other either has
    available lines or has exhausted its lines.  */
 
-static void
-queue_check_insert (struct merge_node_queue *queue, struct merge_node *node)
+स्थिर शून्य
+queue_check_जोड़ो (संरचना merge_गाँठ_queue *queue, संरचना merge_गाँठ *गाँठ)
 {
-  if (! node->queued)
+  यदि (! गाँठ->queued)
     {
-      bool lo_avail = (node->lo - node->end_lo) != 0;
-      bool hi_avail = (node->hi - node->end_hi) != 0;
-      if (lo_avail ? hi_avail || ! node->nhi : hi_avail && ! node->nlo)
-        queue_insert (queue, node);
+      bool lo_avail = (गाँठ->lo - गाँठ->end_lo) != 0;
+      bool hi_avail = (गाँठ->hi - गाँठ->end_hi) != 0;
+      यदि (lo_avail ? hi_avail || ! गाँठ->nhi : hi_avail && ! गाँठ->nlo)
+        queue_जोड़ो (queue, गाँठ);
     }
 }
 
 /* Into QUEUE, insert NODE's parent if the parent can now be worked on.  */
 
-static void
-queue_check_insert_parent (struct merge_node_queue *queue,
-                           struct merge_node *node)
+स्थिर शून्य
+queue_check_जोड़ो_parent (संरचना merge_गाँठ_queue *queue,
+                           संरचना merge_गाँठ *गाँठ)
 {
-  if (node->level > MERGE_ROOT)
+  यदि (गाँठ->level > MERGE_मूल)
     {
-      lock_node (node->parent);
-      queue_check_insert (queue, node->parent);
-      unlock_node (node->parent);
+      lock_गाँठ (गाँठ->parent);
+      queue_check_जोड़ो (queue, गाँठ->parent);
+      unlock_गाँठ (गाँठ->parent);
     }
-  else if (node->nlo + node->nhi == 0)
+  अन्यथा यदि (गाँठ->nlo + गाँठ->nhi == 0)
     {
       /* If the MERGE_ROOT NODE has finished merging, insert the
          MERGE_END node.  */
-      queue_insert (queue, node->parent);
+      queue_जोड़ो (queue, गाँठ->parent);
     }
 }
 
@@ -3964,72 +3964,72 @@ queue_check_insert_parent (struct merge_node_queue *queue,
    level, send output to TFP.  TEMP_OUTPUT is the name of TFP, or is
    null if TFP is standard output.  */
 
-static void
-merge_loop (struct merge_node_queue *queue,
-            size_t total_lines, FILE *tfp, char const *temp_output)
+स्थिर शून्य
+merge_loop (संरचना merge_गाँठ_queue *queue,
+            size_t total_पंक्तियाँ, FILE *tfp, वर्ण ध्रुव *temp_output)
 {
-  while (true)
+  यावत् (true)
     {
-      struct merge_node *node = queue_pop (queue);
+      संरचना merge_गाँठ *गाँठ = queue_निकालो (queue);
 
-      if (node->level == MERGE_END)
+      यदि (गाँठ->level == MERGE_END)
         {
-          unlock_node (node);
+          unlock_गाँठ (गाँठ);
           /* Reinsert so other threads can pop it. */
-          queue_insert (queue, node);
-          break;
+          queue_जोड़ो (queue, गाँठ);
+          भङ्ग;
         }
-      mergelines_node (node, total_lines, tfp, temp_output);
-      queue_check_insert (queue, node);
-      queue_check_insert_parent (queue, node);
+      mergelines_गाँठ (गाँठ, total_पंक्तियाँ, tfp, temp_output);
+      queue_check_जोड़ो (queue, गाँठ);
+      queue_check_जोड़ो_parent (queue, गाँठ);
 
-      unlock_node (node);
+      unlock_गाँठ (गाँठ);
     }
 }
 
 
-static void sortlines (struct line *restrict, size_t, size_t,
-                       struct merge_node *, struct merge_node_queue *,
-                       FILE *, char const *);
+स्थिर शून्य sortlines (संरचना पंक्ति *restrict, size_t, size_t,
+                       संरचना merge_गाँठ *, संरचना merge_गाँठ_queue *,
+                       FILE *, वर्ण ध्रुव *);
 
 /* Thread arguments for sortlines_thread. */
 
-struct thread_args
+संरचना thread_args
 {
   /* Source, i.e., the array of lines to sort.  This points just past
      the end of the array.  */
-  struct line *lines;
+  संरचना पंक्ति *पंक्तियाँ;
 
   /* Number of threads to use.  If 0 or 1, sort single-threaded.  */
   size_t nthreads;
 
   /* Number of lines in LINES and DEST.  */
-  size_t const total_lines;
+  size_t ध्रुव total_पंक्तियाँ;
 
   /* Merge node. Lines from this node and this node's sibling will merged
      to this node's parent. */
-  struct merge_node *const node;
+  संरचना merge_गाँठ *ध्रुव गाँठ;
 
   /* The priority queue controlling available work for the entire
      internal sort.  */
-  struct merge_node_queue *const queue;
+  संरचना merge_गाँठ_queue *ध्रुव queue;
 
   /* If at the top level, the file to output to, and the file's name.
      If the file is standard output, the file's name is null.  */
   FILE *tfp;
-  char const *output_temp;
+  वर्ण ध्रुव *output_temp;
 };
 
 /* Like sortlines, except with a signature acceptable to pthread_create.  */
 
-static void *
-sortlines_thread (void *data)
+स्थिर शून्य *
+sortlines_thread (शून्य *data)
 {
-  struct thread_args const *args = data;
-  sortlines (args->lines, args->nthreads, args->total_lines,
-             args->node, args->queue, args->tfp,
+  संरचना thread_args ध्रुव *args = data;
+  sortlines (args->पंक्तियाँ, args->nthreads, args->total_पंक्तियाँ,
+             args->गाँठ, args->queue, args->tfp,
              args->output_temp);
-  return NULL;
+  प्रत्यागम रिक्त;
 }
 
 /* Sort lines, possibly in parallel.  The arguments are as in struct
@@ -4056,47 +4056,47 @@ sortlines_thread (void *data)
    merge. This continues until all lines at all nodes of the merge tree
    have been merged. */
 
-static void
-sortlines (struct line *restrict lines, size_t nthreads,
-           size_t total_lines, struct merge_node *node,
-           struct merge_node_queue *queue, FILE *tfp, char const *temp_output)
+स्थिर शून्य
+sortlines (संरचना पंक्ति *restrict पंक्तियाँ, size_t nthreads,
+           size_t total_पंक्तियाँ, संरचना merge_गाँठ *गाँठ,
+           संरचना merge_गाँठ_queue *queue, FILE *tfp, वर्ण ध्रुव *temp_output)
 {
-  size_t nlines = node->nlo + node->nhi;
+  size_t nlines = गाँठ->nlo + गाँठ->nhi;
 
   /* Calculate thread arguments. */
   size_t lo_threads = nthreads / 2;
   size_t hi_threads = nthreads - lo_threads;
   pthread_t thread;
-  struct thread_args args = {lines, lo_threads, total_lines,
-                             node->lo_child, queue, tfp, temp_output};
+  संरचना thread_args args = {पंक्तियाँ, lo_threads, total_पंक्तियाँ,
+                             गाँठ->lo_child, queue, tfp, temp_output};
 
-  if (nthreads > 1 && SUBTHREAD_LINES_HEURISTIC <= nlines
-      && pthread_create (&thread, NULL, sortlines_thread, &args) == 0)
+  यदि (nthreads > 1 && SUBTHREAD_पंक्तियाँ_HEURISTIC <= nlines
+      && pthread_create (&thread, रिक्त, sortlines_thread, &args) == 0)
     {
-      sortlines (lines - node->nlo, hi_threads, total_lines,
-                 node->hi_child, queue, tfp, temp_output);
-      pthread_join (thread, NULL);
+      sortlines (पंक्तियाँ - गाँठ->nlo, hi_threads, total_पंक्तियाँ,
+                 गाँठ->hi_child, queue, tfp, temp_output);
+      pthread_join (thread, रिक्त);
     }
-  else
+  अन्यथा
     {
       /* Nthreads = 1, this is a leaf NODE, or pthread_create failed.
          Sort with 1 thread. */
-      size_t nlo = node->nlo;
-      size_t nhi = node->nhi;
-      struct line *temp = lines - total_lines;
-      if (1 < nhi)
-        sequential_sort (lines - nlo, nhi, temp - nlo / 2, false);
-      if (1 < nlo)
-        sequential_sort (lines, nlo, temp, false);
+      size_t nlo = गाँठ->nlo;
+      size_t nhi = गाँठ->nhi;
+      संरचना पंक्ति *temp = पंक्तियाँ - total_पंक्तियाँ;
+      यदि (1 < nhi)
+        sequential_sort (पंक्तियाँ - nlo, nhi, temp - nlo / 2, false);
+      यदि (1 < nlo)
+        sequential_sort (पंक्तियाँ, nlo, temp, false);
 
       /* Update merge NODE. No need to lock yet. */
-      node->lo = lines;
-      node->hi = lines - nlo;
-      node->end_lo = lines - nlo;
-      node->end_hi = lines - nlo - nhi;
+      गाँठ->lo = पंक्तियाँ;
+      गाँठ->hi = पंक्तियाँ - nlo;
+      गाँठ->end_lo = पंक्तियाँ - nlo;
+      गाँठ->end_hi = पंक्तियाँ - nlo - nhi;
 
-      queue_insert (queue, node);
-      merge_loop (queue, total_lines, tfp, temp_output);
+      queue_जोड़ो (queue, गाँठ);
+      merge_loop (queue, total_पंक्तियाँ, tfp, temp_output);
     }
 }
 
@@ -4117,25 +4117,25 @@ sortlines (struct line *restrict lines, size_t nthreads,
    Catching these obscure cases would slow down performance in
    common cases.  */
 
-static void
-avoid_trashing_input (struct sortfile *files, size_t ntemps,
-                      size_t nfiles, char const *outfile)
+स्थिर शून्य
+avoid_trashing_निवेश (संरचना sortfile *files, size_t ntemps,
+                      size_t nfiles, वर्ण ध्रुव *outfile)
 {
-  struct tempnode *tempcopy = NULL;
+  संरचना tempnode *tempcopy = रिक्त;
 
-  for (size_t i = ntemps; i < nfiles; i++)
+  प्रति (size_t i = ntemps; i < nfiles; i++)
     {
       bool is_stdin = streq (files[i].name, "-");
       bool same;
-      struct stat instat;
+      संरचना stat instat;
 
-      if (outfile && streq (outfile, files[i].name) && !is_stdin)
+      यदि (outfile && streq (outfile, files[i].name) && !is_stdin)
         same = true;
-      else
+      अन्यथा
         {
-          struct stat *outst = get_outstatus ();
-          if (!outst)
-            break;
+          संरचना stat *outst = get_outstatus ();
+          यदि (!outst)
+            भङ्ग;
 
           same = (((is_stdin
                     ? fstat (STDIN_FILENO, &instat)
@@ -4144,9 +4144,9 @@ avoid_trashing_input (struct sortfile *files, size_t ntemps,
                   && psame_inode (&instat, outst));
         }
 
-      if (same)
+      यदि (same)
         {
-          if (! tempcopy)
+          यदि (! tempcopy)
             {
               FILE *tftp;
               tempcopy = create_temp (&tftp);
@@ -4168,15 +4168,15 @@ avoid_trashing_input (struct sortfile *files, size_t ntemps,
    Catching these obscure cases could slow down performance in
    common cases.  */
 
-static void
-check_inputs (char *const *files, size_t nfiles)
+स्थिर शून्य
+check_inputs (वर्ण *ध्रुव *files, size_t nfiles)
 {
-  for (size_t i = 0; i < nfiles; i++)
+  प्रति (size_t i = 0; i < nfiles; i++)
     {
-      if (streq (files[i], "-"))
-        continue;
+      यदि (streq (files[i], "-"))
+        अनुवर्त;
 
-      if (euidaccess (files[i], R_OK) != 0)
+      यदि (euidaccess (files[i], R_OK) != 0)
         sort_die (_("cannot read"), files[i]);
     }
 }
@@ -4185,14 +4185,14 @@ check_inputs (char *const *files, size_t nfiles)
    and point stdout to it.  Do not truncate the file.
    Exit with a diagnostic on failure.  */
 
-static void
-check_output (char const *outfile)
+स्थिर शून्य
+check_output (वर्ण ध्रुव *outfile)
 {
-  if (outfile)
+  यदि (outfile)
     {
-      int oflags = O_WRONLY | O_BINARY | O_CLOEXEC | O_CREAT;
-      int outfd = open (outfile, oflags, MODE_RW_UGO);
-      if (outfd < 0)
+      पूर्णाङ्क oflags = O_WRONLY | O_द्विआधारी | O_CLOEXEC | O_CREAT;
+      पूर्णाङ्क outfd = open (outfile, oflags, MODE_RW_UGO);
+      यदि (outfd < 0)
         sort_die (_("open failed"), outfile);
       move_fd (outfd, STDOUT_FILENO);
     }
@@ -4203,11 +4203,11 @@ check_output (char const *outfile)
    NFILES is the total number of files.  Put the output in
    OUTPUT_FILE; a null OUTPUT_FILE stands for standard output.  */
 
-static void
-merge (struct sortfile *files, size_t ntemps, size_t nfiles,
-       char const *output_file)
+स्थिर शून्य
+merge (संरचना sortfile *files, size_t ntemps, size_t nfiles,
+       वर्ण ध्रुव *output_file)
 {
-  while (nmerge < nfiles)
+  यावत् (nmerge < nfiles)
     {
       /* Number of input files processed so far.  */
       size_t in;
@@ -4225,68 +4225,68 @@ merge (struct sortfile *files, size_t ntemps, size_t nfiles,
       /* Do as many NMERGE-size merges as possible. In the case that
          nmerge is bogus, increment by the maximum number of file
          descriptors allowed.  */
-      for (out = in = 0; nmerge <= nfiles - in; out++)
+      प्रति (out = in = 0; nmerge <= nfiles - in; out++)
         {
           FILE *tfp;
-          struct tempnode *temp = create_temp (&tfp);
-          size_t num_merged = mergefiles (&files[in], MIN (ntemps, nmerge),
+          संरचना tempnode *temp = create_temp (&tfp);
+          size_t अंक_merged = mergefiles (&files[in], MIN (ntemps, nmerge),
                                           nmerge, tfp, temp->name);
-          ntemps -= MIN (ntemps, num_merged);
+          ntemps -= MIN (ntemps, अंक_merged);
           files[out].name = temp->name;
           files[out].temp = temp;
-          in += num_merged;
+          in += अंक_merged;
         }
 
       remainder = nfiles - in;
       cheap_slots = nmerge - out % nmerge;
 
-      if (cheap_slots < remainder)
+      यदि (cheap_slots < remainder)
         {
           /* So many files remain that they can't all be put into the last
              NMERGE-sized output window.  Do one more merge.  Merge as few
              files as possible, to avoid needless I/O.  */
           size_t nshortmerge = remainder - cheap_slots + 1;
           FILE *tfp;
-          struct tempnode *temp = create_temp (&tfp);
-          size_t num_merged = mergefiles (&files[in], MIN (ntemps, nshortmerge),
+          संरचना tempnode *temp = create_temp (&tfp);
+          size_t अंक_merged = mergefiles (&files[in], MIN (ntemps, nshortmerge),
                                           nshortmerge, tfp, temp->name);
-          ntemps -= MIN (ntemps, num_merged);
+          ntemps -= MIN (ntemps, अंक_merged);
           files[out].name = temp->name;
           files[out++].temp = temp;
-          in += num_merged;
+          in += अंक_merged;
         }
 
       /* Put the remaining input files into the last NMERGE-sized output
          window, so they will be merged in the next pass.  */
-      memmove (&files[out], &files[in], (nfiles - in) * sizeof *files);
+      memmove (&files[out], &files[in], (nfiles - in) * परिमाण *files);
       ntemps += out;
       nfiles -= in - out;
     }
 
-  avoid_trashing_input (files, ntemps, nfiles, output_file);
+  avoid_trashing_निवेश (files, ntemps, nfiles, output_file);
 
   /* We aren't guaranteed that this final mergefiles will work, therefore we
      try to merge into the output, and then merge as much as we can into a
      temp file if we can't. Repeat.  */
 
-  while (true)
+  यावत् (true)
     {
       /* Merge directly into the output file if possible.  */
       FILE **fps;
-      size_t nopened = open_input_files (files, nfiles, &fps);
+      size_t nopened = open_निवेश_files (files, nfiles, &fps);
 
-      if (nopened == nfiles)
+      यदि (nopened == nfiles)
         {
           FILE *ofp = stream_open (output_file, "w");
-          if (ofp)
+          यदि (ofp)
             {
               mergefps (files, ntemps, nfiles, ofp, output_file, fps);
-              break;
+              भङ्ग;
             }
-          if (errno != EMFILE || nopened <= 2)
+          यदि (errno != EMFILE || nopened <= 2)
             sort_die (_("open failed"), output_file);
         }
-      else if (nopened <= 2)
+      अन्यथा यदि (nopened <= 2)
         sort_die (_("open failed"), files[nopened].name);
 
       /* We ran out of file descriptors.  Close one of the input
@@ -4295,14 +4295,14 @@ merge (struct sortfile *files, size_t ntemps, size_t nfiles,
          (e.g., some other process could open a file between the time
          we closed and tried to create).  */
       FILE *tfp;
-      struct tempnode *temp;
-      do
+      संरचना tempnode *temp;
+      कुरु
         {
           nopened--;
           xfclose (fps[nopened], files[nopened].name);
           temp = maybe_create_temp (&tfp, ! (nopened <= 2));
         }
-      while (!temp);
+      यावत् (!temp);
 
       /* Merge into the newly allocated temporary.  */
       mergefps (&files[0], MIN (ntemps, nopened), nopened, tfp, temp->name,
@@ -4311,7 +4311,7 @@ merge (struct sortfile *files, size_t ntemps, size_t nfiles,
       files[0].name = temp->name;
       files[0].temp = temp;
 
-      memmove (&files[1], &files[nopened], (nfiles - nopened) * sizeof *files);
+      memmove (&files[1], &files[nopened], (nfiles - nopened) * परिमाण *files);
       ntemps++;
       nfiles -= nopened - 1;
     }
@@ -4319,12 +4319,12 @@ merge (struct sortfile *files, size_t ntemps, size_t nfiles,
 
 /* Sort NFILES FILES onto OUTPUT_FILE.  Use at most NTHREADS threads.  */
 
-static void
-sort (char *const *files, size_t nfiles, char const *output_file,
+स्थिर शून्य
+sort (वर्ण *ध्रुव *files, size_t nfiles, वर्ण ध्रुव *output_file,
       size_t nthreads)
 {
-  struct buffer buf;
-  struct sort_buffer_policy policy;
+  संरचना buffer buf;
+  संरचना sort_buffer_policy policy;
   size_t ntemps = 0;
   bool output_file_created = false;
 
@@ -4332,117 +4332,117 @@ sort (char *const *files, size_t nfiles, char const *output_file,
   policy.initial = policy.limit = 0;
   policy.growth_failed = false;
 
-  while (nfiles)
+  यावत् (nfiles)
     {
-      char const *temp_output;
-      char const *file = *files;
+      वर्ण ध्रुव *temp_output;
+      वर्ण ध्रुव *file = *files;
       FILE *fp = xfopen (file, "r");
       FILE *tfp;
 
-      size_t bytes_per_line;
-      if (nthreads > 1)
+      size_t bytes_per_पंक्ति;
+      यदि (nthreads > 1)
         {
           /* Get log P. */
           size_t tmp = 1;
           size_t mult = 1;
-          while (tmp < nthreads)
+          यावत् (tmp < nthreads)
             {
               tmp *= 2;
               mult++;
             }
-          bytes_per_line = (mult * sizeof (struct line));
+          bytes_per_पंक्ति = (mult * परिमाण (संरचना पंक्ति));
         }
-      else
-        bytes_per_line = sizeof (struct line) * 3 / 2;
+      अन्यथा
+        bytes_per_पंक्ति = परिमाण (संरचना पंक्ति) * 3 / 2;
 
-      if (! buf.alloc)
+      यदि (! buf.alloc)
         {
-          sort_buffer_policy (&fp, 1, files, nfiles, bytes_per_line,
+          sort_buffer_policy (&fp, 1, files, nfiles, bytes_per_पंक्ति,
                               &policy);
-          initbuf (&buf, bytes_per_line, policy.initial);
+          initbuf (&buf, bytes_per_पंक्ति, policy.initial);
         }
       buf.eof = false;
       files++;
       nfiles--;
 
-      while (fillbuf (&buf, fp, file, &policy))
+      यावत् (fillbuf (&buf, fp, file, &policy))
         {
-          struct line *line;
+          संरचना पंक्ति *पंक्ति;
 
-          if (buf.eof && nfiles
-              && (bytes_per_line + 1
-                  < (buf.alloc - buf.used - bytes_per_line * buf.nlines)))
+          यदि (buf.eof && nfiles
+              && (bytes_per_पंक्ति + 1
+                  < (buf.alloc - buf.used - bytes_per_पंक्ति * buf.nlines)))
             {
               /* End of file, but there is more input and buffer room.
                  Concatenate the next input file; this is faster in
                  the usual case.  */
-              buf.left = buf.used;
-              break;
+              buf.बायाँ = buf.used;
+              भङ्ग;
             }
 
-          saved_line.text = NULL;
-          line = buffer_linelim (&buf);
-          if (buf.eof && !nfiles && !ntemps && !buf.left)
+          saved_पंक्ति.text = रिक्त;
+          पंक्ति = buffer_linelim (&buf);
+          यदि (buf.eof && !nfiles && !ntemps && !buf.बायाँ)
             {
               xfclose (fp, file);
               tfp = xfopen (output_file, "w");
               temp_output = output_file;
               output_file_created = true;
             }
-          else
+          अन्यथा
             {
               ++ntemps;
               temp_output = create_temp (&tfp)->name;
             }
-          if (1 < buf.nlines)
+          यदि (1 < buf.nlines)
             {
-              if (nthreads > 1)
+              यदि (nthreads > 1)
                 {
-                  struct merge_node_queue queue;
+                  संरचना merge_गाँठ_queue queue;
                   queue_init (&queue, nthreads);
-                  struct merge_node *merge_tree =
-                    merge_tree_init (nthreads, buf.nlines, line);
+                  संरचना merge_गाँठ *merge_वृक्ष =
+                    merge_वृक्ष_init (nthreads, buf.nlines, पंक्ति);
 
-                  sortlines (line, nthreads, buf.nlines, merge_tree + 1,
+                  sortlines (पंक्ति, nthreads, buf.nlines, merge_वृक्ष + 1,
                              &queue, tfp, temp_output);
 
-                  merge_tree_destroy (nthreads, merge_tree);
+                  merge_वृक्ष_destroy (nthreads, merge_वृक्ष);
                   queue_destroy (&queue);
                 }
-              else
+              अन्यथा
                 {
-                  sequential_sort (line, buf.nlines,
-                                   line - buf.nlines, false);
-                  for (size_t i = 0; i < buf.nlines; i++)
-                    write_unique (line - i - 1, tfp, temp_output);
+                  sequential_sort (पंक्ति, buf.nlines,
+                                   पंक्ति - buf.nlines, false);
+                  प्रति (size_t i = 0; i < buf.nlines; i++)
+                    write_unique (पंक्ति - i - 1, tfp, temp_output);
                 }
             }
-          else
-            write_unique (line - 1, tfp, temp_output);
+          अन्यथा
+            write_unique (पंक्ति - 1, tfp, temp_output);
 
           xfclose (tfp, temp_output);
 
-          if (output_file_created)
-            goto finish;
+          यदि (output_file_created)
+            गच्छ finish;
         }
       xfclose (fp, file);
     }
 
  finish:
-  free (buf.buf);
+  मुक्त (buf.buf);
 
-  if (! output_file_created)
+  यदि (! output_file_created)
     {
-      struct tempnode *node = temphead;
-      struct sortfile *tempfiles = xnmalloc (ntemps, sizeof *tempfiles);
-      for (size_t i = 0; node; i++)
+      संरचना tempnode *गाँठ = temphead;
+      संरचना sortfile *tempfiles = xnmalloc (ntemps, परिमाण *tempfiles);
+      प्रति (size_t i = 0; गाँठ; i++)
         {
-          tempfiles[i].name = node->name;
-          tempfiles[i].temp = node;
-          node = node->next;
+          tempfiles[i].name = गाँठ->name;
+          tempfiles[i].temp = गाँठ;
+          गाँठ = गाँठ->next;
         }
       merge (tempfiles, ntemps, ntemps, output_file);
-      free (tempfiles);
+      मुक्त (tempfiles);
     }
 
   reap_all ();
@@ -4450,22 +4450,22 @@ sort (char *const *files, size_t nfiles, char const *output_file,
 
 /* Insert a malloc'd copy of key KEY_ARG at the end of the key list.  */
 
-static void
-insertkey (struct keyfield *key_arg)
+स्थिर शून्य
+insertkey (संरचना keyfield *कुंजी_arg)
 {
-  struct keyfield **p;
-  struct keyfield *key = xmemdup (key_arg, sizeof *key);
+  संरचना keyfield **p;
+  संरचना keyfield *कुंजी = xmemdup (कुंजी_arg, परिमाण *कुंजी);
 
-  for (p = &keylist; *p; p = &(*p)->next)
-    continue;
-  *p = key;
-  key->next = NULL;
+  प्रति (p = &keylist; *p; p = &(*p)->next)
+    अनुवर्त;
+  *p = कुंजी;
+  कुंजी->next = रिक्त;
 }
 
 /* Report a bad field specification SPEC, with extra info MSGID.  */
 
-static void
-badfieldspec (char const *spec, char const *msgid)
+स्थिर शून्य
+badfieldspec (वर्ण ध्रुव *spec, वर्ण ध्रुव *msgid)
 {
   error (SORT_FAILURE, 0, _("%s: invalid field specification %s"),
          _(msgid), quote (spec));
@@ -4473,26 +4473,26 @@ badfieldspec (char const *spec, char const *msgid)
 
 /* Report incompatible options.  */
 
-static void
-incompatible_options (char const *opts)
+स्थिर शून्य
+incompatible_options (वर्ण ध्रुव *opts)
 {
   error (SORT_FAILURE, 0, _("options '-%s' are incompatible"), (opts));
 }
 
 /* Check compatibility of ordering options.  */
 
-static void
-check_ordering_compatibility (void)
+स्थिर शून्य
+check_ordering_compatibility (शून्य)
 {
-  for (struct keyfield *key = keylist; key; key = key->next)
-    if (1 < (key->numeric + key->general_numeric + key->human_numeric
-             + key->month + (key->version | key->random | !!key->ignore)))
+  प्रति (संरचना keyfield *कुंजी = keylist; कुंजी; कुंजी = कुंजी->next)
+    यदि (1 < (कुंजी->numeric + कुंजी->general_numeric + कुंजी->human_numeric
+             + कुंजी->month + (कुंजी->version | कुंजी->random | !!कुंजी->ignore)))
       {
         /* The following is too big, but guaranteed to be "big enough".  */
-        char opts[sizeof short_options];
+        वर्ण opts[परिमाण short_options];
         /* Clear flags we're not interested in.  */
-        key->skipsblanks = key->skipeblanks = key->reverse = false;
-        key_to_opts (key, opts);
+        कुंजी->skipsblanks = कुंजी->skipeblanks = कुंजी->reverse = false;
+        कुंजी_to_opts (कुंजी, opts);
         incompatible_options (opts);
       }
 }
@@ -4503,33 +4503,33 @@ check_ordering_compatibility (void)
    substitute SIZE_MAX.  If MSGID is null, return NULL after
    failure; otherwise, report MSGID and exit on failure.  */
 
-static char const *
-parse_field_count (char const *string, size_t *val, char const *msgid)
+स्थिर वर्ण ध्रुव *
+parse_field_गिनती (वर्ण ध्रुव *string, size_t *val, वर्ण ध्रुव *msgid)
 {
-  char *suffix;
+  वर्ण *suffix;
   uintmax_t n;
 
-  switch (xstrtoumax (string, &suffix, 10, &n, ""))
+  विकल्प (xstrtoumax (string, &suffix, 10, &n, ""))
     {
-    case LONGINT_OK:
-    case LONGINT_INVALID_SUFFIX_CHAR:
+    पक्ष LONGINT_OK:
+    पक्ष LONGINT_INVALID_SUFFIX_CHAR:
       *val = n;
-      if (*val == n)
-        break;
+      यदि (*val == n)
+        भङ्ग;
       FALLTHROUGH;
-    case LONGINT_OVERFLOW:
-    case LONGINT_OVERFLOW | LONGINT_INVALID_SUFFIX_CHAR:
+    पक्ष LONGINT_OVERFLOW:
+    पक्ष LONGINT_OVERFLOW | LONGINT_INVALID_SUFFIX_CHAR:
       *val = SIZE_MAX;
-      break;
+      भङ्ग;
 
-    case LONGINT_INVALID:
-      if (msgid)
+    पक्ष LONGINT_INVALID:
+      यदि (msgid)
         error (SORT_FAILURE, 0, _("%s: invalid count at start of %s"),
                _(msgid), quote (string));
-      return NULL;
+      प्रत्यागम रिक्त;
     }
 
-  return suffix;
+  प्रत्यागम suffix;
 }
 
 /* Set the ordering options for KEY specified in S.
@@ -4537,92 +4537,92 @@ parse_field_count (char const *string, size_t *val, char const *msgid)
    is not a valid ordering option.
    BLANKTYPE is the kind of blanks that 'b' should skip. */
 
-static char *
-set_ordering (char const *s, struct keyfield *key, enum blanktype blanktype)
+स्थिर वर्ण *
+set_ordering (वर्ण ध्रुव *s, संरचना keyfield *कुंजी, गणना blanktype blanktype)
 {
-  while (*s)
+  यावत् (*s)
     {
-      switch (*s)
+      विकल्प (*s)
         {
-        case 'b':
-          if (blanktype == bl_start || blanktype == bl_both)
-            key->skipsblanks = true;
-          if (blanktype == bl_end || blanktype == bl_both)
-            key->skipeblanks = true;
-          break;
-        case 'd':
-          key->ignore = nondictionary;
-          break;
-        case 'f':
-          key->translate = fold_toupper;
-          break;
-        case 'g':
-          key->general_numeric = true;
-          break;
-        case 'h':
-          key->human_numeric = true;
-          break;
-        case 'i':
+        पक्ष 'b':
+          यदि (blanktype == bl_start || blanktype == bl_both)
+            कुंजी->skipsblanks = true;
+          यदि (blanktype == bl_end || blanktype == bl_both)
+            कुंजी->skipeblanks = true;
+          भङ्ग;
+        पक्ष 'd':
+          कुंजी->ignore = nondictionary;
+          भङ्ग;
+        पक्ष 'f':
+          कुंजी->translate = fold_toupper;
+          भङ्ग;
+        पक्ष 'g':
+          कुंजी->general_numeric = true;
+          भङ्ग;
+        पक्ष 'h':
+          कुंजी->human_numeric = true;
+          भङ्ग;
+        पक्ष 'i':
           /* Option order should not matter, so don't let -i override
              -d.  -d implies -i, but -i does not imply -d.  */
-          if (! key->ignore)
-            key->ignore = nonprinting;
-          break;
-        case 'M':
-          key->month = true;
-          break;
-        case 'n':
-          key->numeric = true;
-          break;
-        case 'R':
-          key->random = true;
-          break;
-        case 'r':
-          key->reverse = true;
-          break;
-        case 'V':
-          key->version = true;
-          break;
-        default:
-          return (char *) s;
+          यदि (! कुंजी->ignore)
+            कुंजी->ignore = nonprinting;
+          भङ्ग;
+        पक्ष 'M':
+          कुंजी->month = true;
+          भङ्ग;
+        पक्ष 'n':
+          कुंजी->numeric = true;
+          भङ्ग;
+        पक्ष 'R':
+          कुंजी->random = true;
+          भङ्ग;
+        पक्ष 'r':
+          कुंजी->reverse = true;
+          भङ्ग;
+        पक्ष 'V':
+          कुंजी->version = true;
+          भङ्ग;
+        स्वभाव:
+          प्रत्यागम (वर्ण *) s;
         }
       ++s;
     }
-  return (char *) s;
+  प्रत्यागम (वर्ण *) s;
 }
 
 /* Initialize KEY.  */
 
-static struct keyfield *
-key_init (struct keyfield *key)
+स्थिर संरचना keyfield *
+कुंजी_init (संरचना keyfield *कुंजी)
 {
-  memset (key, 0, sizeof *key);
-  key->eword = SIZE_MAX;
-  return key;
+  memset (कुंजी, 0, परिमाण *कुंजी);
+  कुंजी->eword = SIZE_MAX;
+  प्रत्यागम कुंजी;
 }
 
-int
-main (int argc, char **argv)
+पूर्णाङ्क
+main (पूर्णाङ्क argc, वर्ण **argv)
 {
-  struct keyfield *key;
-  struct keyfield key_buf;
-  struct keyfield gkey;
+  संरचना keyfield *कुंजी;
+  संरचना keyfield कुंजी_buf;
+  संरचना keyfield gkey;
   bool gkey_only = false;
-  char const *s;
-  int c = 0;
-  char checkonly = 0;
+  वर्ण ध्रुव *s;
+  पूर्णाङ्क c = 0;
+  वर्ण checkonly = 0;
   bool mergeonly = false;
-  char *random_source = NULL;
+  वर्ण *random_source = रिक्त;
   bool need_random = false;
   size_t nthreads = 0;
   size_t nfiles = 0;
-  bool posixly_correct = (getenv ("POSIXLY_CORRECT") != NULL);
-  int posix_ver = posix2_version ();
+  bool posixly_correct = (getenv ("POSIXLY_CORRECT") != रिक्त);
+  पूर्णाङ्क posix_ver = posix2_version ();
   bool traditional_usage = ! (200112 <= posix_ver && posix_ver < 200809);
-  char **files;
-  char *files_from = NULL;
-  struct Tokens tok;
-  char const *outfile = NULL;
+  वर्ण **files;
+  वर्ण *files_from = रिक्त;
+  संरचना Tokens tok;
+  वर्ण ध्रुव *outfile = रिक्त;
   bool locale_ok;
 
   initialize_main (&argc, &argv);
@@ -4634,43 +4634,43 @@ main (int argc, char **argv)
   initialize_exit_failure (SORT_FAILURE);
 
   hard_LC_COLLATE = hard_locale (LC_COLLATE);
-#if HAVE_NL_LANGINFO
+#यदि HAVE_NL_LANGINFO
   hard_LC_TIME = hard_locale (LC_TIME);
 #endif
 
   /* Get locale's representation of the decimal point.  */
   {
-    struct lconv const *locale = localeconv ();
+    संरचना lconv ध्रुव *locale = localeconv ();
 
     /* If the locale doesn't define a decimal point, or if the decimal
        point is multibyte, use the C locale's decimal point.  FIXME:
        add support for multibyte decimal points.  */
     decimal_point = locale->decimal_point[0];
-    if (! decimal_point || locale->decimal_point[1])
+    यदि (! decimal_point || locale->decimal_point[1])
       decimal_point = '.';
 
     /* FIXME: add support for multibyte thousands separators.  */
     thousands_sep = locale->thousands_sep[0];
-    if (thousands_sep && locale->thousands_sep[1])
+    यदि (thousands_sep && locale->thousands_sep[1])
       thousands_sep_ignored = true;
-    if (! thousands_sep || locale->thousands_sep[1])
+    यदि (! thousands_sep || locale->thousands_sep[1])
       thousands_sep = NON_CHAR;
   }
 
   inittables ();
 
   {
-    enum { nsigs = countof (term_sig) };
+    गणना { nsigs = countof (term_sig) };
 
-    struct sigaction act;
+    संरचना sigaction act;
 
     sigemptyset (&caught_signals);
-    for (size_t i = 0; i < nsigs; i++)
+    प्रति (size_t i = 0; i < nsigs; i++)
       {
-        if (term_sig[i] == SIGPIPE)
-          continue;  /* Handled below.  */
-        sigaction (term_sig[i], NULL, &act);
-        if (act.sa_handler != SIG_IGN)
+        यदि (term_sig[i] == SIGPIPE)
+          अनुवर्त;  /* Handled below.  */
+        sigaction (term_sig[i], रिक्त, &act);
+        यदि (act.sa_handler != SIG_IGN)
           sigaddset (&caught_signals, term_sig[i]);
       }
 
@@ -4678,33 +4678,33 @@ main (int argc, char **argv)
     act.sa_mask = caught_signals;
     act.sa_flags = 0;
 
-    for (size_t i = 0; i < nsigs; i++)
+    प्रति (size_t i = 0; i < nsigs; i++)
       {
-        if (term_sig[i] == SIGPIPE)
-          continue;  /* Handled below.  */
-        if (sigismember (&caught_signals, term_sig[i]))
-          sigaction (term_sig[i], &act, NULL);
+        यदि (term_sig[i] == SIGPIPE)
+          अनुवर्त;  /* Handled below.  */
+        यदि (sigismember (&caught_signals, term_sig[i]))
+          sigaction (term_sig[i], &act, रिक्त);
       }
   }
-  signal (SIGCHLD, SIG_DFL); /* Don't inherit CHLD handling from parent.  */
+  सङ्केत (SIGCHLD, SIG_DFL); /* Don't inherit CHLD handling from parent.  */
 
   /* The signal mask is known, so it is safe to invoke exit_cleanup.  */
   atexit (exit_cleanup);
 
-  key_init (&gkey);
+  कुंजी_init (&gkey);
   gkey.sword = SIZE_MAX;
 
-  files = xnmalloc (argc, sizeof *files);
+  files = xnmalloc (argc, परिमाण *files);
 
-  while (true)
+  यावत् (true)
     {
       /* Parse an operand as a file after "--" was seen; or if
          pedantic and a file was seen, unless the POSIX version
          is not 1003.1-2001 and -c was not seen and the operand is
          "-o FILE" or "-oFILE".  */
-      int oi = -1;
+      पूर्णाङ्क oi = -1;
 
-      if (c == -1
+      यदि (c == -1
           || (posixly_correct && nfiles != 0
               && ! (traditional_usage
                     && ! checkonly
@@ -4715,42 +4715,42 @@ main (int argc, char **argv)
                                 long_options, &oi))
               == -1))
         {
-          if (argc <= optind)
-            break;
+          यदि (argc <= optind)
+            भङ्ग;
           files[nfiles++] = argv[optind++];
         }
-      else switch (c)
+      अन्यथा विकल्प (c)
         {
-        case 1:
-          key = NULL;
-          if (optarg[0] == '+')
+        पक्ष 1:
+          कुंजी = रिक्त;
+          यदि (optarg[0] == '+')
             {
               bool minus_pos_usage = (optind != argc && argv[optind][0] == '-'
                                       && c_isdigit (argv[optind][1]));
               traditional_usage |= minus_pos_usage && !posixly_correct;
-              if (traditional_usage)
+              यदि (traditional_usage)
                 {
                   /* Treat +POS1 [-POS2] as a key if possible; but silently
                      treat an operand as a file if it is not a valid +POS1.  */
-                  key = key_init (&key_buf);
-                  s = parse_field_count (optarg + 1, &key->sword, NULL);
-                  if (s && *s == '.')
-                    s = parse_field_count (s + 1, &key->schar, NULL);
-                  if (! (key->sword || key->schar))
-                    key->sword = SIZE_MAX;
-                  if (! s || *set_ordering (s, key, bl_start))
-                    key = NULL;
-                  else
+                  कुंजी = कुंजी_init (&कुंजी_buf);
+                  s = parse_field_गिनती (optarg + 1, &कुंजी->sword, रिक्त);
+                  यदि (s && *s == '.')
+                    s = parse_field_गिनती (s + 1, &कुंजी->schar, रिक्त);
+                  यदि (! (कुंजी->sword || कुंजी->schar))
+                    कुंजी->sword = SIZE_MAX;
+                  यदि (! s || *set_ordering (s, कुंजी, bl_start))
+                    कुंजी = रिक्त;
+                  अन्यथा
                     {
-                      if (minus_pos_usage)
+                      यदि (minus_pos_usage)
                         {
-                          char const *optarg1 = argv[optind++];
-                          s = parse_field_count (optarg1 + 1, &key->eword,
+                          वर्ण ध्रुव *optarg1 = argv[optind++];
+                          s = parse_field_गिनती (optarg1 + 1, &कुंजी->eword,
                                              N_("invalid number after '-'"));
-                          if (*s == '.')
-                            s = parse_field_count (s + 1, &key->echar,
+                          यदि (*s == '.')
+                            s = parse_field_गिनती (s + 1, &कुंजी->echar,
                                                N_("invalid number after '.'"));
-                          if (!key->echar && key->eword)
+                          यदि (!कुंजी->echar && कुंजी->eword)
                             {
                               /* obsolescent syntax +A.x -B.y is equivalent to:
                                    -k A+1.x+1,B.y   (when y = 0)
@@ -4758,158 +4758,158 @@ main (int argc, char **argv)
                                  So eword is decremented as in the -k case
                                  only when the end field (B) is specified and
                                  echar (y) is 0.  */
-                              key->eword--;
+                              कुंजी->eword--;
                             }
-                          if (*set_ordering (s, key, bl_end))
+                          यदि (*set_ordering (s, कुंजी, bl_end))
                             badfieldspec (optarg1,
                                       N_("stray character in field spec"));
                         }
-                      key->traditional_used = true;
-                      insertkey (key);
+                      कुंजी->traditional_used = true;
+                      insertkey (कुंजी);
                     }
                 }
             }
-          if (! key)
+          यदि (! कुंजी)
             files[nfiles++] = optarg;
-          break;
+          भङ्ग;
 
-        case SORT_OPTION:
+        पक्ष SORT_OPTION:
           c = XARGMATCH ("--sort", optarg, sort_args, sort_types);
           FALLTHROUGH;
-        case 'b':
-        case 'd':
-        case 'f':
-        case 'g':
-        case 'h':
-        case 'i':
-        case 'M':
-        case 'n':
-        case 'r':
-        case 'R':
-        case 'V':
+        पक्ष 'b':
+        पक्ष 'd':
+        पक्ष 'f':
+        पक्ष 'g':
+        पक्ष 'h':
+        पक्ष 'i':
+        पक्ष 'M':
+        पक्ष 'n':
+        पक्ष 'r':
+        पक्ष 'R':
+        पक्ष 'V':
           {
-            char str[2];
+            वर्ण str[2];
             str[0] = c;
             str[1] = '\0';
             set_ordering (str, &gkey, bl_both);
           }
-          break;
+          भङ्ग;
 
-        case CHECK_OPTION:
+        पक्ष CHECK_OPTION:
           c = (optarg
                ? XARGMATCH ("--check", optarg, check_args, check_types)
                : 'c');
           FALLTHROUGH;
-        case 'c':
-        case 'C':
-          if (checkonly && checkonly != c)
+        पक्ष 'c':
+        पक्ष 'C':
+          यदि (checkonly && checkonly != c)
             incompatible_options ("cC");
           checkonly = c;
-          break;
+          भङ्ग;
 
-        case COMPRESS_PROGRAM_OPTION:
-          if (compress_program && !streq (compress_program, optarg))
+        पक्ष COMPRESS_PROGRAM_OPTION:
+          यदि (compress_program && !streq (compress_program, optarg))
             error (SORT_FAILURE, 0, _("multiple compress programs specified"));
           compress_program = optarg;
-          break;
+          भङ्ग;
 
-        case DEBUG_PROGRAM_OPTION:
+        पक्ष DEBUG_PROGRAM_OPTION:
           debug = true;
-          break;
+          भङ्ग;
 
-        case FILES0_FROM_OPTION:
+        पक्ष FILES0_FROM_OPTION:
           files_from = optarg;
-          break;
+          भङ्ग;
 
-        case 'k':
-          key = key_init (&key_buf);
+        पक्ष 'k':
+          कुंजी = कुंजी_init (&कुंजी_buf);
 
           /* Get POS1. */
-          s = parse_field_count (optarg, &key->sword,
+          s = parse_field_गिनती (optarg, &कुंजी->sword,
                                  N_("invalid number at field start"));
-          if (! key->sword--)
+          यदि (! कुंजी->sword--)
             {
               /* Provoke with 'sort -k0' */
               badfieldspec (optarg, N_("field number is zero"));
             }
-          if (*s == '.')
+          यदि (*s == '.')
             {
-              s = parse_field_count (s + 1, &key->schar,
+              s = parse_field_गिनती (s + 1, &कुंजी->schar,
                                      N_("invalid number after '.'"));
-              if (! key->schar--)
+              यदि (! कुंजी->schar--)
                 {
                   /* Provoke with 'sort -k1.0' */
                   badfieldspec (optarg, N_("character offset is zero"));
                 }
             }
-          if (! (key->sword || key->schar))
-            key->sword = SIZE_MAX;
-          s = set_ordering (s, key, bl_start);
-          if (*s != ',')
+          यदि (! (कुंजी->sword || कुंजी->schar))
+            कुंजी->sword = SIZE_MAX;
+          s = set_ordering (s, कुंजी, bl_start);
+          यदि (*s != ',')
             {
-              key->eword = SIZE_MAX;
-              key->echar = 0;
+              कुंजी->eword = SIZE_MAX;
+              कुंजी->echar = 0;
             }
-          else
+          अन्यथा
             {
               /* Get POS2. */
-              s = parse_field_count (s + 1, &key->eword,
+              s = parse_field_गिनती (s + 1, &कुंजी->eword,
                                      N_("invalid number after ','"));
-              if (! key->eword--)
+              यदि (! कुंजी->eword--)
                 {
                   /* Provoke with 'sort -k1,0' */
                   badfieldspec (optarg, N_("field number is zero"));
                 }
-              if (*s == '.')
+              यदि (*s == '.')
                 {
-                  s = parse_field_count (s + 1, &key->echar,
+                  s = parse_field_गिनती (s + 1, &कुंजी->echar,
                                          N_("invalid number after '.'"));
                 }
-              s = set_ordering (s, key, bl_end);
+              s = set_ordering (s, कुंजी, bl_end);
             }
-          if (*s)
+          यदि (*s)
             badfieldspec (optarg, N_("stray character in field spec"));
-          insertkey (key);
-          break;
+          insertkey (कुंजी);
+          भङ्ग;
 
-        case 'm':
+        पक्ष 'm':
           mergeonly = true;
-          break;
+          भङ्ग;
 
-        case NMERGE_OPTION:
+        पक्ष NMERGE_OPTION:
           specify_nmerge (oi, c, optarg);
-          break;
+          भङ्ग;
 
-        case 'o':
-          if (outfile && !streq (outfile, optarg))
+        पक्ष 'o':
+          यदि (outfile && !streq (outfile, optarg))
             error (SORT_FAILURE, 0, _("multiple output files specified"));
           outfile = optarg;
-          break;
+          भङ्ग;
 
-        case RANDOM_SOURCE_OPTION:
-          if (random_source && !streq (random_source, optarg))
+        पक्ष RANDOM_SOURCE_OPTION:
+          यदि (random_source && !streq (random_source, optarg))
             error (SORT_FAILURE, 0, _("multiple random sources specified"));
           random_source = optarg;
-          break;
+          भङ्ग;
 
-        case 's':
+        पक्ष 's':
           stable = true;
-          break;
+          भङ्ग;
 
-        case 'S':
+        पक्ष 'S':
           specify_sort_size (oi, c, optarg);
-          break;
+          भङ्ग;
 
-        case 't':
+        पक्ष 't':
           {
-            char newtab = optarg[0];
-            if (! newtab)
+            वर्ण newtab = optarg[0];
+            यदि (! newtab)
               error (SORT_FAILURE, 0, _("empty tab"));
-            if (optarg[1])
+            यदि (optarg[1])
               {
-                if (streq (optarg, "\\0"))
+                यदि (streq (optarg, "\\0"))
                   newtab = '\0';
-                else
+                अन्यथा
                   {
                     /* Provoke with 'sort -txx'.  Complain about
                        "multi-character tab" instead of "multibyte tab", so
@@ -4919,25 +4919,25 @@ main (int argc, char **argv)
                            quote (optarg));
                   }
               }
-            if (tab != TAB_DEFAULT && tab != newtab)
+            यदि (tab != TAB_DEFAULT && tab != newtab)
               error (SORT_FAILURE, 0, _("incompatible tabs"));
             tab = newtab;
           }
-          break;
+          भङ्ग;
 
-        case 'T':
+        पक्ष 'T':
           add_temp_dir (optarg);
-          break;
+          भङ्ग;
 
-        case PARALLEL_OPTION:
+        पक्ष PARALLEL_OPTION:
           nthreads = specify_nthreads (oi, c, optarg);
-          break;
+          भङ्ग;
 
-        case 'u':
+        पक्ष 'u':
           unique = true;
-          break;
+          भङ्ग;
 
-        case 'y':
+        पक्ष 'y':
           /* Accept and ignore e.g. -y0 for compatibility with Solaris 2.x
              through Solaris 7.  It is also accepted by many non-Solaris
              "sort" implementations, e.g., AIX 5.2, HP-UX 11i v2, IRIX 6.5.
@@ -4948,24 +4948,24 @@ main (int argc, char **argv)
              emulate Solaris 8 and 9 "sort -y 100" which ignores the "100",
              and which in general ignores the argument after "-y" if it
              consists entirely of digits (it can even be empty).  */
-          if (optarg == argv[optind - 1])
+          यदि (optarg == argv[optind - 1])
             {
-              char const *p;
-              for (p = optarg; c_isdigit (*p); p++)
-                continue;
+              वर्ण ध्रुव *p;
+              प्रति (p = optarg; c_isdigit (*p); p++)
+                अनुवर्त;
               optind -= (*p != '\0');
             }
-          break;
+          भङ्ग;
 
-        case 'z':
+        पक्ष 'z':
           eolchar = 0;
-          break;
+          भङ्ग;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        स्वभाव:
           usage (SORT_FAILURE);
         }
     }
@@ -4973,13 +4973,13 @@ main (int argc, char **argv)
   /* Ignore SIGPIPE so write failures are reported via EPIPE errno.
      For stdout, sort_die() will reraise SIGPIPE if it was originally SIG_DFL.
      For compression pipes, sort_die() will exit with SORT_FAILURE.  */
-  default_SIGPIPE = (signal (SIGPIPE, SIG_IGN) == SIG_DFL);
+  default_SIGPIPE = (सङ्केत (SIGPIPE, SIG_IGN) == SIG_DFL);
 
-  if (files_from)
+  यदि (files_from)
     {
       /* When using --files0-from=F, you may not specify any files
          on the command-line.  */
-      if (nfiles)
+      यदि (nfiles)
         {
           error (0, 0, _("extra operand %s"), quoteaf (files[0]));
           fprintf (stderr, "%s\n",
@@ -4991,62 +4991,62 @@ main (int argc, char **argv)
 
       readtokens0_init (&tok);
 
-      if (! readtokens0 (stream, &tok))
+      यदि (! readtokens0 (stream, &tok))
         error (SORT_FAILURE, 0, _("cannot read file names from %s"),
                quoteaf (files_from));
       xfclose (stream, files_from);
 
-      if (tok.n_tok)
+      यदि (tok.n_tok)
         {
-          free (files);
+          मुक्त (files);
           files = tok.tok;
           nfiles = tok.n_tok;
-          for (size_t i = 0; i < nfiles; i++)
+          प्रति (size_t i = 0; i < nfiles; i++)
             {
-              if (streq (files[i], "-"))
+              यदि (streq (files[i], "-"))
                 error (SORT_FAILURE, 0, _("when reading file names from "
                                           "standard input, "
                                           "no file name of %s allowed"),
                        quoteaf (files[i]));
-              else if (files[i][0] == '\0')
+              अन्यथा यदि (files[i][0] == '\0')
                 {
                   /* Using the standard 'filename:line-number:' prefix here is
                      not totally appropriate, since NUL is the separator,
                      not NL, but it might be better than nothing.  */
-                  unsigned long int file_number = i + 1;
+                  unsigned long पूर्णाङ्क file_संख्या = i + 1;
                   error (SORT_FAILURE, 0,
                          _("%s:%lu: invalid zero-length file name"),
-                         quotef (files_from), file_number);
+                         quotef (files_from), file_संख्या);
                 }
             }
         }
-      else
+      अन्यथा
         error (SORT_FAILURE, 0, _("no input from %s"),
                quoteaf (files_from));
     }
 
   /* Inheritance of global options to individual keys. */
-  for (key = keylist; key; key = key->next)
+  प्रति (कुंजी = keylist; कुंजी; कुंजी = कुंजी->next)
     {
-      if (default_key_compare (key) && !key->reverse)
+      यदि (default_कुंजी_compare (कुंजी) && !कुंजी->reverse)
         {
-          key->ignore = gkey.ignore;
-          key->translate = gkey.translate;
-          key->skipsblanks = gkey.skipsblanks;
-          key->skipeblanks = gkey.skipeblanks;
-          key->month = gkey.month;
-          key->numeric = gkey.numeric;
-          key->general_numeric = gkey.general_numeric;
-          key->human_numeric = gkey.human_numeric;
-          key->version = gkey.version;
-          key->random = gkey.random;
-          key->reverse = gkey.reverse;
+          कुंजी->ignore = gkey.ignore;
+          कुंजी->translate = gkey.translate;
+          कुंजी->skipsblanks = gkey.skipsblanks;
+          कुंजी->skipeblanks = gkey.skipeblanks;
+          कुंजी->month = gkey.month;
+          कुंजी->numeric = gkey.numeric;
+          कुंजी->general_numeric = gkey.general_numeric;
+          कुंजी->human_numeric = gkey.human_numeric;
+          कुंजी->version = gkey.version;
+          कुंजी->random = gkey.random;
+          कुंजी->reverse = gkey.reverse;
         }
 
-      need_random |= key->random;
+      need_random |= कुंजी->random;
     }
 
-  if (!keylist && !default_key_compare (&gkey))
+  यदि (!keylist && !default_कुंजी_compare (&gkey))
     {
       gkey_only = true;
       insertkey (&gkey);
@@ -5055,11 +5055,11 @@ main (int argc, char **argv)
 
   check_ordering_compatibility ();
 
-  if (debug)
+  यदि (debug)
     {
-      if (checkonly || outfile)
+      यदि (checkonly || outfile)
         {
-          static char opts[] = "X --debug";
+          स्थिर वर्ण opts[] = "X --debug";
           opts[0] = (checkonly ? checkonly : 'o');
           incompatible_options (opts);
         }
@@ -5069,53 +5069,53 @@ main (int argc, char **argv)
 
       /* OpenBSD can only set some categories with LC_ALL above,
          so set LC_COLLATE explicitly to flag errors.  */
-      if (locale_ok)
+      यदि (locale_ok)
         locale_ok = !! setlocale (LC_COLLATE, "");
-      if (! locale_ok)
+      यदि (! locale_ok)
           error (0, 0, "%s", _("failed to set locale"));
-      if (hard_LC_COLLATE)
+      यदि (hard_LC_COLLATE)
         error (0, 0, _("text ordering performed using %s sorting rules"),
-               quote (setlocale (LC_COLLATE, NULL)));
-      else
+               quote (setlocale (LC_COLLATE, रिक्त)));
+      अन्यथा
         error (0, 0, "%s",
                _("text ordering performed using simple byte comparison"));
 
-      key_warnings (&gkey, gkey_only);
+      कुंजी_warnings (&gkey, gkey_only);
     }
 
   reverse = gkey.reverse;
 
-  if (need_random)
+  यदि (need_random)
     random_md5_state_init (random_source);
 
-  if (temp_dirs.n_dirs == 0)
+  यदि (temp_dirs.n_dirs == 0)
     {
-      char const *tmp_dir = getenv ("TMPDIR");
+      वर्ण ध्रुव *tmp_dir = getenv ("TMPDIR");
       add_temp_dir (tmp_dir ? tmp_dir : DEFAULT_TMPDIR);
     }
 
-  if (nfiles == 0)
+  यदि (nfiles == 0)
     {
       nfiles = 1;
-      free (files);
-      files = xmalloc (sizeof *files);
-      *files = (char *) "-";
+      मुक्त (files);
+      files = xmalloc (परिमाण *files);
+      *files = (वर्ण *) "-";
     }
 
   /* Need to re-check that we meet the minimum requirement for memory
      usage with the final value for NMERGE. */
-  if (0 < sort_size)
+  यदि (0 < sort_size)
     sort_size = MAX (sort_size, MIN_SORT_SIZE);
 
-  if (checkonly)
+  यदि (checkonly)
     {
-      if (nfiles > 1)
+      यदि (nfiles > 1)
         error (SORT_FAILURE, 0, _("extra operand %s not allowed with -%c"),
                quoteaf (files[1]), checkonly);
 
-      if (outfile)
+      यदि (outfile)
         {
-          static char opts[] = {0, 'o', 0};
+          स्थिर वर्ण opts[] = {0, 'o', 0};
           opts[0] = checkonly;
           incompatible_options (opts);
         }
@@ -5131,31 +5131,31 @@ main (int argc, char **argv)
   /* Check output is writable, or exit immediately.  */
   check_output (outfile);
 
-  if (mergeonly)
+  यदि (mergeonly)
     {
-      struct sortfile *sortfiles = xcalloc (nfiles, sizeof *sortfiles);
+      संरचना sortfile *sortfiles = xcalloc (nfiles, परिमाण *sortfiles);
 
-      for (size_t i = 0; i < nfiles; ++i)
+      प्रति (size_t i = 0; i < nfiles; ++i)
         sortfiles[i].name = files[i];
 
       merge (sortfiles, 0, nfiles, outfile);
     }
-  else
+  अन्यथा
     {
-      if (!nthreads)
+      यदि (!nthreads)
         {
-          unsigned long int np = num_processors (NPROC_CURRENT_OVERRIDABLE);
+          unsigned long पूर्णाङ्क np = अंक_processors (NPROC_CURRENT_OVERRIDABLE);
           nthreads = MIN (np, DEFAULT_MAX_THREADS);
         }
 
       /* Avoid integer overflow later.  */
-      size_t nthreads_max = SIZE_MAX / (2 * sizeof (struct merge_node));
+      size_t nthreads_max = SIZE_MAX / (2 * परिमाण (संरचना merge_गाँठ));
       nthreads = MIN (nthreads, nthreads_max);
 
       sort (files, nfiles, outfile, nthreads);
     }
 
-  if (have_read_stdin && fclose (stdin) == EOF)
+  यदि (have_read_stdin && fclose (stdin) == EOF)
     sort_die (_("close failed"), "-");
 
   main_exit (EXIT_SUCCESS);
