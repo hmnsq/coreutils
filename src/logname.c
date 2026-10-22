@@ -14,25 +14,25 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
+#ضمن <config.h>
+#ضمن <stdio.h>
+#ضمن <sys/types.h>
 
-#include "system.h"
-#include "long-options.h"
-#include "quote.h"
+#ضمن "system.h"
+#ضمن "long-options.h"
+#ضمن "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "logname"
 
 #define AUTHORS proper_name ("David MacKenzie")
 
-void
-usage (int status)
+فراغ
+usage (صحيح status)
 {
-  if (status != EXIT_SUCCESS)
+  𐤀𐤌 (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  وإلا
     {
       printf (_("Usage: %s [OPTION]\n"), program_name);
       fputs (_("\
@@ -46,8 +46,8 @@ Print the user's login name.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+صحيح
+main (صحيح argc, حرف **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -59,9 +59,9 @@ main (int argc, char **argv)
 
   parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
                                    Version, true, usage, AUTHORS,
-                                   (char const *) NULL);
+                                   (حرف ثابت *) عدم);
 
-  if (optind < argc)
+  𐤀𐤌 (optind < argc)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind]));
       usage (EXIT_FAILURE);
@@ -69,10 +69,10 @@ main (int argc, char **argv)
 
   /* POSIX requires using getlogin (or equivalent code) and prohibits
      using a fallback technique.  */
-  char const *cp = getlogin ();
-  if (! cp)
+  حرف ثابت *cp = getlogin ();
+  𐤀𐤌 (! cp)
     error (EXIT_FAILURE, 0, _("no login name"));
 
   puts (cp);
-  return EXIT_SUCCESS;
+  أرجع EXIT_SUCCESS;
 }

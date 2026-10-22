@@ -17,7 +17,7 @@
 #ifndef SPLICE_H
 # define SPLICE_H 1
 
-# if HAVE_VMSPLICE
+# 𐤀𐤌 HAVE_VMSPLICE
 
 /* splice() and vmsplice() were introduced at the same time,
    so assume splice() is available.  Note AIX also has a different
@@ -26,19 +26,19 @@
 
 /* Empirically determined pipe size for best throughput.
    Needs to be <= /proc/sys/fs/pipe-max-size  */
-enum { SPLICE_PIPE_SIZE = 512 * 1024 };
+تعداد { SPLICE_PIPE_SIZE = 512 * 1024 };
 
-static inline idx_t
-increase_pipe_size (int fd)
+ساكن مضمن idx_t
+increase_pipe_size (صحيح fd)
 {
-  int pipe_cap = 0;
-#  if defined F_SETPIPE_SZ && defined F_GETPIPE_SZ
-  if ((pipe_cap = fcntl (fd, F_SETPIPE_SZ, SPLICE_PIPE_SIZE)) < 0)
+  صحيح pipe_cap = 0;
+#  𐤀𐤌 defined F_SETPIPE_SZ && defined F_GETPIPE_SZ
+  𐤀𐤌 ((pipe_cap = fcntl (fd, F_SETPIPE_SZ, SPLICE_PIPE_SIZE)) < 0)
     pipe_cap = fcntl (fd, F_GETPIPE_SZ);
 #  endif
-  if (pipe_cap <= 0)
+  𐤀𐤌 (pipe_cap <= 0)
     pipe_cap = 64 * 1024;
-  return pipe_cap;
+  أرجع pipe_cap;
 }
 
 # endif

@@ -17,28 +17,28 @@
 #ifndef PRINTENV_H
 # define PRINTENV_H 1
 
-static inline void
-print_envvar (char const *entry, char terminator, bool quoted)
+ساكن مضمن فراغ
+print_envvar (حرف ثابت *entry, حرف terminator, bool quoted)
 {
-  if (! quoted)
+  𐤀𐤌 (! quoted)
     fputs (entry, stdout);
-  else
+  وإلا
     {
-      idx_t const entry_len = strlen (entry);
-      char const *equal = memchr (entry, '=', entry_len);
+      idx_t ثابت entry_len = strlen (entry);
+      حرف ثابت *equal = memchr (entry, '=', entry_len);
 
       /* If the parent process manipulates ENVIRON directly, it is possible
          that an entry does not contain an equal sign.  */
-      idx_t const var_len = equal ? equal - entry : entry_len;
+      idx_t ثابت var_len = equal ? equal - entry : entry_len;
       fputs (quoteN_mem (entry, var_len), stdout);
 
-      if (equal)
+      𐤀𐤌 (equal)
         {
           putchar ('=');
-          char const *val = equal + 1;
-          idx_t const val_len = entry_len - (val - entry);
+          حرف ثابت *val = equal + 1;
+          idx_t ثابت val_len = entry_len - (val - entry);
           /* Prefer "VAR=" over "VAR=''".  */
-          if (0 < val_len)
+          𐤀𐤌 (0 < val_len)
             fputs (quoteN_mem (val, val_len), stdout);
         }
     }

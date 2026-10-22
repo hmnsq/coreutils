@@ -16,35 +16,35 @@
 
    Written by Carl Edquist in collaboration with Arsen Arsenović.  */
 
-#include <config.h>
+#ضمن <config.h>
 
 /* poll(2) is needed on AIX (where 'select' gives a readable
    event immediately) and Solaris (where 'select' never gave
    a readable event).  Also use poll(2) on systems we know work
    and/or are already using poll (linux).  On macOS we know poll()
    doesn't work on 10.5, while it does work on >= 11 at least. */
-#if defined _AIX || defined __sun \
+#𐤀𐤌 defined _AIX || defined __sun \
     || defined __linux__ || defined __ANDROID__ \
     || __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 110000
 # define IOPOLL_USES_POLL 1
   /* Check we've not enabled gnulib's poll module
      as that will emulate poll() in a way not
      currently compatible with our usage.  */
-# if defined HAVE_POLL
+# 𐤀𐤌 defined HAVE_POLL
 #  error "gnulib's poll() replacement is currently incompatible"
 # endif
 #endif
 
-#if IOPOLL_USES_POLL
+#𐤀𐤌 IOPOLL_USES_POLL
 # include <poll.h>
-#else
+#وإلا
 # include <sys/select.h>
 #endif
 
-#include "system.h"
-#include "assure.h"
-#include "iopoll.h"
-#include "isapipe.h"
+#ضمن "system.h"
+#ضمن "assure.h"
+#ضمن "iopoll.h"
+#ضمن "isapipe.h"
 
 
 /* BROKEN_OUTPUT selects the mode of operation of this function.
@@ -58,46 +58,46 @@
    FDOUT becomes a broken pipe. If !BROKEN_OUTPUT return 0 if FDOUT writable.
    Otherwise return IOPOLL_ERROR if there is a poll() or select() error.  */
 
-static int
-iopoll_internal (int fdin, int fdout, bool block, bool broken_output)
+ساكن صحيح
+iopoll_internal (صحيح fdin, صحيح fdout, bool block, bool broken_output)
 {
   affirm (fdin != -1 || fdout != -1);
 
-#if IOPOLL_USES_POLL
-  struct pollfd pfds[2] = {  /* POLLRDBAND needed for illumos, macOS.  */
+#𐤀𐤌 IOPOLL_USES_POLL
+  بنية pollfd pfds[2] = {  /* POLLRDBAND needed for illumos, macOS.  */
     { .fd = fdin,  .events = POLLIN | POLLRDBAND, .revents = 0 },
     { .fd = fdout, .events = POLLRDBAND, .revents = 0 },
   };
-  int check_out_events = POLLERR | POLLHUP | POLLNVAL;
-  int ret = 0;
+  صحيح check_out_events = POLLERR | POLLHUP | POLLNVAL;
+  صحيح ret = 0;
 
-  if (! broken_output)
+  𐤀𐤌 (! broken_output)
     {
       pfds[0].events = pfds[1].events = POLLOUT;
       check_out_events = POLLOUT;
     }
 
-  while (0 <= ret || errno == EINTR)
+  طالما (0 <= ret || errno == EINTR)
     {
       ret = poll (pfds, 2, block ? -1 : 0);
 
-      if (ret < 0)
-        continue;
-      if (ret == 0 && ! block)
-        return 0;
+      𐤀𐤌 (ret < 0)
+        استمر;
+      𐤀𐤌 (ret == 0 && ! block)
+        أرجع 0;
       affirm (0 < ret);
-      if (pfds[0].revents) /* input available or pipe closed indicating EOF; */
-        return 0;          /* should now be able to read() without blocking  */
-      if (pfds[1].revents & check_out_events)
-        return broken_output ? IOPOLL_BROKEN_OUTPUT : 0;
+      𐤀𐤌 (pfds[0].revents) /* input available or pipe closed indicating EOF; */
+        أرجع 0;          /* should now be able to read() without blocking  */
+      𐤀𐤌 (pfds[1].revents & check_out_events)
+        أرجع broken_output ? IOPOLL_BROKEN_OUTPUT : 0;
     }
 
-#else  /* fall back to select()-based implementation */
+#وإلا  /* fall back to select()-based implementation */
 
-  int nfds = (fdin > fdout ? fdin : fdout) + 1;
-  int ret = 0;
+  صحيح nfds = (fdin > fdout ? fdin : fdout) + 1;
+  صحيح ret = 0;
 
-  if (FD_SETSIZE < nfds)
+  𐤀𐤌 (FD_SETSIZE < nfds)
     {
       errno = EINVAL;
       ret = -1;
@@ -105,40 +105,40 @@ iopoll_internal (int fdin, int fdout, bool block, bool broken_output)
 
   /* If fdout has an error condition (like a broken pipe) it will be seen
      as ready for reading.  Assumes fdout is not actually readable.  */
-  while (0 <= ret || errno == EINTR)
+  طالما (0 <= ret || errno == EINTR)
     {
       fd_set fds;
       FD_ZERO (&fds);
-      if (0 <= fdin)
+      𐤀𐤌 (0 <= fdin)
         FD_SET (fdin, &fds);
-      if (0 <= fdout)
+      𐤀𐤌 (0 <= fdout)
         FD_SET (fdout, &fds);
 
-      struct timeval delay = {0};
+      بنية timeval delay = {0};
       ret = select (nfds,
-                    broken_output ? &fds : NULL,
-                    broken_output ? NULL : &fds,
-                    NULL, block ? NULL : &delay);
+                    broken_output ? &fds : عدم,
+                    broken_output ? عدم : &fds,
+                    عدم, block ? عدم : &delay);
 
-      if (ret < 0)
-        continue;
-      if (ret == 0 && ! block)
-        return 0;
+      𐤀𐤌 (ret < 0)
+        استمر;
+      𐤀𐤌 (ret == 0 && ! block)
+        أرجع 0;
       affirm (0 < ret);
-      if (0 <= fdin && FD_ISSET (fdin, &fds))    /* input available or EOF; */
-        return 0;          /* should now be able to read() without blocking */
-      if (0 <= fdout && FD_ISSET (fdout, &fds))  /* equiv to POLLERR        */
-        return broken_output ? IOPOLL_BROKEN_OUTPUT : 0;
+      𐤀𐤌 (0 <= fdin && FD_ISSET (fdin, &fds))    /* input available or EOF; */
+        أرجع 0;          /* should now be able to read() without blocking */
+      𐤀𐤌 (0 <= fdout && FD_ISSET (fdout, &fds))  /* equiv to POLLERR        */
+        أرجع broken_output ? IOPOLL_BROKEN_OUTPUT : 0;
     }
 
 #endif
-  return IOPOLL_ERROR;
+  أرجع IOPOLL_ERROR;
 }
 
-extern int
-iopoll (int fdin, int fdout, bool block)
+خارجي صحيح
+iopoll (صحيح fdin, صحيح fdout, bool block)
 {
-  return iopoll_internal (fdin, fdout, block, true);
+  أرجع iopoll_internal (fdin, fdout, block, true);
 }
 
 
@@ -147,28 +147,28 @@ iopoll (int fdin, int fdout, bool block)
    An fd is not relevant for iopoll() if it is always ready for reading,
    which is the case for a regular file or block device.  */
 
-extern bool
-iopoll_input_ok (int fdin)
+خارجي bool
+iopoll_input_ok (صحيح fdin)
 {
-  struct stat st;
+  بنية stat st;
   bool always_ready = fstat (fdin, &st) == 0
                       && (S_ISREG (st.st_mode)
                           || S_ISBLK (st.st_mode));
-  return ! always_ready;
+  أرجع ! always_ready;
 }
 
 /* Return true if fdout is suitable for iopoll().
    Namely, fdout refers to a pipe.  */
 
-extern bool
-iopoll_output_ok (int fdout)
+خارجي bool
+iopoll_output_ok (صحيح fdout)
 {
-  return isapipe (fdout) > 0;
+  أرجع isapipe (fdout) > 0;
 }
 
 #ifdef EWOULDBLOCK
 # define IS_EAGAIN(errcode) ((errcode) == EAGAIN || (errcode) == EWOULDBLOCK)
-#else
+#وإلا
 # define IS_EAGAIN(errcode) ((errcode) == EAGAIN)
 #endif
 
@@ -176,68 +176,68 @@ iopoll_output_ok (int fdout)
    On EAGAIN, wait for the underlying file descriptor to become writable.
    Return true, if EAGAIN has been successfully handled. */
 
-static bool
-wait_for_nonblocking_write (int fd)
+ساكن bool
+wait_for_nonblocking_write (صحيح fd)
 {
-  if (! IS_EAGAIN (errno))
+  𐤀𐤌 (! IS_EAGAIN (errno))
     /* non-recoverable write error */
-    return false;
+    أرجع false;
 
   /* wait for the file descriptor to become writable */
-  if (iopoll_internal (-1, fd, true, false) != 0)
+  𐤀𐤌 (iopoll_internal (-1, fd, true, false) != 0)
     {
       errno = EAGAIN;
-      return false;
+      أرجع false;
     }
 
   /* successfully waited for the descriptor to become writable */
-  return true;
+  أرجع true;
 }
 
 /* wrapper for write() that also waits for FD if non blocking.  */
 
-extern bool
-write_wait (int fd, void const *buffer, size_t size)
+خارجي bool
+write_wait (صحيح fd, فراغ ثابت *buffer, size_t size)
 {
-  unsigned char const *buf = buffer;
+  unsigned حرف ثابت *buf = buffer;
 
-  do
+  𐤐𐤏𐤋
     {
-      const ssize_t written = write (fd, buf, size);
+      ثابت ssize_t written = اكتب (fd, buf, size);
       /* POSIX says that calling write with SIZE of zero may detect and
          return errors.  If no error occurs, or write makes no attempt
          to detect errors, then write returns zero with no other
          results.  write_fail will return successfully in this case.  */
-      if (written == 0)
+      𐤀𐤌 (written == 0)
         {
-          if (size == 0)
-            return true;
-          else
+          𐤀𐤌 (size == 0)
+            أرجع true;
+          وإلا
             {
               /* If SIZE is greater than zero and write returns zero,
                  treat it as an error.  Some buggy drivers behave this
                  way.  See src/dd.c and Gnulib's lib/full-write.c for
                  more details.  */
               errno = ENOSPC;
-              return false;
+              أرجع false;
             }
         }
 
-      if (written < 0)
+      𐤀𐤌 (written < 0)
         {
           /* Return an error if write detected one with a SIZE of zero.
              Otherwise, if SIZE is greater than zero, fail if it does
              not become writable.  */
-          if (size == 0 || ! wait_for_nonblocking_write (fd))
-            return false;
+          𐤀𐤌 (size == 0 || ! wait_for_nonblocking_write (fd))
+            أرجع false;
         }
-      else
+      وإلا
         {
           buf += written;
           size -= written;
         }
     }
-  while (0 < size);
+  طالما (0 < size);
 
-  return true;
+  أرجع true;
 }

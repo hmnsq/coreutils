@@ -16,26 +16,26 @@
 
 /* Written by Jim Meyering */
 
-#include <config.h>
+#ضمن <config.h>
 
-#include <stdio.h>
-#include <sys/types.h>
-#include <getopt.h>
+#ضمن <stdio.h>
+#ضمن <sys/types.h>
+#ضمن <getopt.h>
 
-#include "system.h"
-#include "assure.h"
-#include "c-ctype.h"
-#include "fadvise.h"
-#include "quote.h"
-#include "xbinary-io.h"
-#include "xstrtol.h"
+#ضمن "system.h"
+#ضمن "assure.h"
+#ضمن "c-ctype.h"
+#ضمن "fadvise.h"
+#ضمن "quote.h"
+#ضمن "xbinary-io.h"
+#ضمن "xstrtol.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "tr"
 
 #define AUTHORS proper_name ("Jim Meyering")
 
-enum { N_CHARS = UCHAR_MAX + 1 };
+تعداد { N_CHARS = UCHAR_MAX + 1 };
 
 /* An unsigned integer type big enough to hold a repeat count or an
    unsigned character.  POSIX requires support for repeat counts as
@@ -43,7 +43,7 @@ enum { N_CHARS = UCHAR_MAX + 1 };
    match the length of an argument string, we need at least size_t to
    avoid arbitrary internal limits.  It doesn't cost much to use
    uintmax_t, though.  */
-typedef uintmax_t count;
+تعريفنوع uintmax_t count;
 
 /* The value for Spec_list->state that indicates to
    get_next that it should initialize the tail pointer.
@@ -65,7 +65,7 @@ typedef uintmax_t count;
 
 /* The following (but not CC_NO_CLASS) are indices into the array of
    valid character class strings.  */
-enum Char_class
+تعداد Char_class
   {
     CC_ALNUM = 0, CC_ALPHA = 1, CC_BLANK = 2, CC_CNTRL = 3,
     CC_DIGIT = 4, CC_GRAPH = 5, CC_LOWER = 6, CC_PRINT = 7,
@@ -79,7 +79,7 @@ enum Char_class
    is used only when translating and then, only to make sure that upper
    and lower class constructs have the same relative positions in string1
    and string2.  */
-enum Upper_Lower_class
+تعداد Upper_Lower_class
   {
     UL_LOWER,
     UL_UPPER,
@@ -87,7 +87,7 @@ enum Upper_Lower_class
   };
 
 /* The type of a List_element.  See build_spec_list for more details.  */
-enum Range_element_type
+تعداد Range_element_type
   {
     RE_NORMAL_CHAR,
     RE_RANGE,
@@ -101,24 +101,24 @@ enum Range_element_type
        tr -cs 'a-zA-Z_' '[\n*]'
    String1 has 3 constructs, two of which are ranges (a-z and A-Z),
    and a single normal character, '_'.  String2 has one construct.  */
-struct List_element
+بنية List_element
   {
-    enum Range_element_type type;
-    struct List_element *next;
-    union
+    تعداد Range_element_type type;
+    بنية List_element *next;
+    اتحاد
       {
-        unsigned char normal_char;
-        struct			/* unnamed */
+        unsigned حرف normal_char;
+        بنية			/* unnamed */
           {
-            unsigned char first_char;
-            unsigned char last_char;
+            unsigned حرف first_char;
+            unsigned حرف last_char;
           }
         range;
-        enum Char_class char_class;
-        unsigned char equiv_code;
-        struct			/* unnamed */
+        تعداد Char_class char_class;
+        unsigned حرف equiv_code;
+        بنية			/* unnamed */
           {
-            unsigned char the_repeated_char;
+            unsigned حرف the_repeated_char;
             count repeat_count;
           }
         repeated_char;
@@ -135,17 +135,17 @@ struct List_element
    'tail', which is first used to construct the list.  After construction,
    it is used by get_next to save its state when traversing the list.
    The member 'state' serves a similar function.  */
-struct Spec_list
+بنية Spec_list
   {
     /* Points to the head of the list of range elements.
        The first struct is a dummy; its members are never used.  */
-    struct List_element *head;
+    بنية List_element *head;
 
     /* When appending, points to the last element.  When traversing via
        get_next(), points to the element to process next.  Setting
        Spec_list.state to the value BEGIN_STATE before calling get_next
        signals get_next to initialize tail to point to head->next.  */
-    struct List_element *tail;
+    بنية List_element *tail;
 
     /* Used to save state between calls to get_next.  */
     count state;
@@ -160,7 +160,7 @@ struct Spec_list
     /* If n_indefinite_repeats is nonzero, this points to the List_element
        corresponding to the last [c*] or [c*0] construct encountered in
        this spec.  Otherwise it is undefined.  */
-    struct List_element *indefinite_repeat_element;
+    بنية List_element *indefinite_repeat_element;
 
     /* True if this spec contains at least one equivalence
        class construct e.g. [=c=].  */
@@ -179,31 +179,31 @@ struct Spec_list
    any backslash-escaped characters (other than octal or \a, \b, \f, \n,
    etc.) are marked as such in this structure by setting the corresponding
    entry in the ESCAPED vector.  */
-struct E_string
+بنية E_string
 {
-  char *s;
+  حرف *s;
   bool *escaped;
   size_t len;
 };
 
 /* Return nonzero if the Ith character of escaped string ES matches C
    and is not escaped itself.  */
-static inline bool
-es_match (struct E_string const *es, size_t i, char c)
+ساكن مضمن bool
+es_match (بنية E_string ثابت *es, size_t i, حرف c)
 {
-  return es->s[i] == c && !es->escaped[i];
+  أرجع es->s[i] == c && !es->escaped[i];
 }
 
 /* When true, each sequence in the input of a repeated character
    (call it c) is replaced (in the output) by a single occurrence of c
    for every c in the squeeze set.  */
-static bool squeeze_repeats = false;
+ساكن bool squeeze_repeats = false;
 
 /* When true, removes characters in the delete set from input.  */
-static bool delete = false;
+ساكن bool delete = false;
 
 /* Use the complement of set1 in place of set1.  */
-static bool complement = false;
+ساكن bool complement = false;
 
 /* When tr is performing translation and string1 is longer than string2,
    POSIX says that the result is unspecified.  That gives the implementer
@@ -233,15 +233,15 @@ static bool complement = false;
    of the POSIX constructs [:alpha:], [=c=], and [c*10], so if by
    some unfortunate coincidence you use such constructs in scripts
    expecting to use some other version of tr, the scripts will break.  */
-static bool truncate_set1 = false;
+ساكن bool truncate_set1 = false;
 
 /* An alias for (!delete && non_option_args == 2).
    It is set in main and used there and in validate().  */
-static bool translating;
+ساكن bool translating;
 
-static char io_buf[BUFSIZ];
+ساكن حرف io_buf[BUFSIZ];
 
-static char const *const char_class_name[] =
+ساكن حرف ثابت *ثابت char_class_name[] =
 {
   "alnum", "alpha", "blank", "cntrl", "digit", "graph",
   "lower", "print", "punct", "space", "upper", "xdigit"
@@ -251,36 +251,36 @@ static char const *const char_class_name[] =
    squeeze set if and only if in_squeeze_set[c] is true.  The squeeze
    set is defined by the last (possibly, the only) string argument
    on the command line when the squeeze option is given.  */
-static bool in_squeeze_set[N_CHARS];
+ساكن bool in_squeeze_set[N_CHARS];
 
 /* Array of boolean values.  A character 'c' is a member of the
    delete set if and only if in_delete_set[c] is true.  The delete
    set is defined by the first (or only) string argument on the
    command line when the delete option is given.  */
-static bool in_delete_set[N_CHARS];
+ساكن bool in_delete_set[N_CHARS];
 
 /* Array of character values defining the translation (if any) that
    tr is to perform.  Translation is performed only when there are
    two specification strings and the delete switch is not given.  */
-static char xlate[N_CHARS];
+ساكن حرف xlate[N_CHARS];
 
-static struct option const long_options[] =
+ساكن بنية option ثابت long_options[] =
 {
-  {"complement", no_argument, NULL, 'c'},
-  {"delete", no_argument, NULL, 'd'},
-  {"squeeze-repeats", no_argument, NULL, 's'},
-  {"truncate-set1", no_argument, NULL, 't'},
+  {"complement", no_argument, عدم, 'c'},
+  {"delete", no_argument, عدم, 'd'},
+  {"squeeze-repeats", no_argument, عدم, 's'},
+  {"truncate-set1", no_argument, عدم, 't'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {عدم, 0, عدم, 0}
 };
 
-void
-usage (int status)
+فراغ
+usage (صحيح status)
 {
-  if (status != EXIT_SUCCESS)
+  𐤀𐤌 (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  وإلا
     {
       printf (_("\
 Usage: %s [OPTION]... STRING1 [STRING2]\n\
@@ -298,7 +298,7 @@ characters ARRAY1 and ARRAY2 that control the action.\n\
 "));
       oputs (_("\
   -d, --delete\n\
-         delete characters in ARRAY1, do not translate\n\
+         delete characters in ARRAY1, 𐤐𐤏𐤋 not translate\n\
 "));
       oputs (_("\
   -s, --squeeze-repeats\n\
@@ -323,14 +323,14 @@ Interpreted sequences are:\n\
   \\b              backspace\n\
   \\f              form feed\n\
   \\n              new line\n\
-  \\r              return\n\
+  \\r              أرجع\n\
   \\t              horizontal tab\n\
 "), stdout);
      fputs (_("\
   \\v              vertical tab\n\
   CHAR1-CHAR2     all characters from CHAR1 to CHAR2 in ascending order\n\
   [CHAR*]         in ARRAY2, copies of CHAR until length of ARRAY1\n\
-  [CHAR*REPEAT]   REPEAT copies of CHAR, REPEAT octal if starting with 0\n\
+  [CHAR*REPEAT]   REPEAT copies of CHAR, REPEAT octal 𐤀𐤌 starting with 0\n\
   [:alnum:]       all letters and digits\n\
   [:alpha:]       all letters\n\
   [:blank:]       all horizontal whitespace\n\
@@ -339,22 +339,22 @@ Interpreted sequences are:\n\
 "), stdout);
      fputs (_("\
   [:graph:]       all printable characters, not including space\n\
-  [:lower:]       all lower case letters\n\
+  [:lower:]       all lower حالة letters\n\
   [:print:]       all printable characters, including space\n\
   [:punct:]       all punctuation characters\n\
   [:space:]       all horizontal or vertical whitespace\n\
-  [:upper:]       all upper case letters\n\
+  [:upper:]       all upper حالة letters\n\
   [:xdigit:]      all hexadecimal digits\n\
   [=CHAR=]        all characters which are equivalent to CHAR\n\
 "), stdout);
      fputs (_("\
 \n\
-Translation occurs if -d is not given and both STRING1 and STRING2 appear.\n\
+Translation occurs 𐤀𐤌 -d is not given and both STRING1 and STRING2 appear.\n\
 -t is only significant when translating.  ARRAY2 is extended to length of\n\
 ARRAY1 by repeating its last character as necessary.  Excess characters\n\
 of ARRAY2 are ignored.  Character classes expand in unspecified order;\n\
-while translating, '[:lower:]' and '[:upper:]' may be used in pairs to\n\
-specify case conversion.  Squeezing occurs after translation or deletion.\n\
+طالما translating, '[:lower:]' and '[:upper:]' may be used in pairs to\n\
+specify حالة conversion.  Squeezing occurs after translation or deletion.\n\
 Arguments like '[...]' should be quoted, to avoid potential shell globbing.\n\
 "), stdout);
       emit_ancillary_info (PROGRAM_NAME);
@@ -365,71 +365,71 @@ Arguments like '[...]' should be quoted, to avoid potential shell globbing.\n\
 /* Return nonzero if the character C is a member of the
    equivalence class containing the character EQUIV_CLASS.  */
 
-static inline bool
-is_equiv_class_member (unsigned char equiv_class, unsigned char c)
+ساكن مضمن bool
+is_equiv_class_member (unsigned حرف equiv_class, unsigned حرف c)
 {
-  return (equiv_class == c);
+  أرجع (equiv_class == c);
 }
 
 /* Return true if the character C is a member of the
    character class CHAR_CLASS.  */
 
 ATTRIBUTE_PURE
-static bool
-is_char_class_member (enum Char_class char_class, unsigned char c)
+ساكن bool
+is_char_class_member (تعداد Char_class char_class, unsigned حرف c)
 {
-  int result;
+  صحيح result;
 
-  switch (char_class)
+  بدل (char_class)
     {
-    case CC_ALNUM:
+    حالة CC_ALNUM:
       result = isalnum (c);
-      break;
-    case CC_ALPHA:
+      اكسر;
+    حالة CC_ALPHA:
       result = isalpha (c);
-      break;
-    case CC_BLANK:
+      اكسر;
+    حالة CC_BLANK:
       result = isblank (c);
-      break;
-    case CC_CNTRL:
+      اكسر;
+    حالة CC_CNTRL:
       result = iscntrl (c);
-      break;
-    case CC_DIGIT:
+      اكسر;
+    حالة CC_DIGIT:
       result = c_isdigit (c);
-      break;
-    case CC_GRAPH:
+      اكسر;
+    حالة CC_GRAPH:
       result = isgraph (c);
-      break;
-    case CC_LOWER:
+      اكسر;
+    حالة CC_LOWER:
       result = islower (c);
-      break;
-    case CC_PRINT:
+      اكسر;
+    حالة CC_PRINT:
       result = isprint (c);
-      break;
-    case CC_PUNCT:
+      اكسر;
+    حالة CC_PUNCT:
       result = ispunct (c);
-      break;
-    case CC_SPACE:
+      اكسر;
+    حالة CC_SPACE:
       result = isspace (c);
-      break;
-    case CC_UPPER:
+      اكسر;
+    حالة CC_UPPER:
       result = isupper (c);
-      break;
-    case CC_XDIGIT:
+      اكسر;
+    حالة CC_XDIGIT:
       result = c_isxdigit (c);
-      break;
-    case CC_NO_CLASS: default:
+      اكسر;
+    حالة CC_NO_CLASS: افتراضي:
       affirm (false);
     }
 
-  return !! result;
+  أرجع !! result;
 }
 
-static void
-es_free (struct E_string *es)
+ساكن فراغ
+es_free (بنية E_string *es)
 {
-  free (es->s);
-  free (es->escaped);
+  حرر (es->s);
+  حرر (es->escaped);
 }
 
 /* Perform the first pass over each range-spec argument S, converting all
@@ -440,73 +440,73 @@ es_free (struct E_string *es)
    however, on input, S is assumed to be null-terminated, and hence
    cannot contain actual (non-escaped) zero bytes.  */
 
-static bool
-unquote (char const *s, struct E_string *es)
+ساكن bool
+unquote (حرف ثابت *s, بنية E_string *es)
 {
   size_t len = strlen (s);
 
   es->s = xmalloc (len);
-  es->escaped = xcalloc (len, sizeof es->escaped[0]);
+  es->escaped = xcalloc (len, حجم es->escaped[0]);
 
-  unsigned int j = 0;
-  for (unsigned int i = 0; s[i]; i++)
+  unsigned صحيح j = 0;
+  لكل (unsigned صحيح i = 0; s[i]; i++)
     {
-      unsigned char c;
-      int oct_digit;
+      unsigned حرف c;
+      صحيح oct_digit;
 
-      switch (s[i])
+      بدل (s[i])
         {
-        case '\\':
+        حالة '\\':
           es->escaped[j] = true;
-          switch (s[i + 1])
+          بدل (s[i + 1])
             {
-            case '\\':
+            حالة '\\':
               c = '\\';
-              break;
-            case 'a':
+              اكسر;
+            حالة 'a':
               c = '\a';
-              break;
-            case 'b':
+              اكسر;
+            حالة 'b':
               c = '\b';
-              break;
-            case 'f':
+              اكسر;
+            حالة 'f':
               c = '\f';
-              break;
-            case 'n':
+              اكسر;
+            حالة 'n':
               c = '\n';
-              break;
-            case 'r':
+              اكسر;
+            حالة 'r':
               c = '\r';
-              break;
-            case 't':
+              اكسر;
+            حالة 't':
               c = '\t';
-              break;
-            case 'v':
+              اكسر;
+            حالة 'v':
               c = '\v';
-              break;
-            case '0':
-            case '1':
-            case '2':
-            case '3':
-            case '4':
-            case '5':
-            case '6':
-            case '7':
+              اكسر;
+            حالة '0':
+            حالة '1':
+            حالة '2':
+            حالة '3':
+            حالة '4':
+            حالة '5':
+            حالة '6':
+            حالة '7':
               c = s[i + 1] - '0';
               oct_digit = s[i + 2] - '0';
-              if (0 <= oct_digit && oct_digit <= 7)
+              𐤀𐤌 (0 <= oct_digit && oct_digit <= 7)
                 {
                   c = 8 * c + oct_digit;
                   ++i;
                   oct_digit = s[i + 2] - '0';
-                  if (0 <= oct_digit && oct_digit <= 7)
+                  𐤀𐤌 (0 <= oct_digit && oct_digit <= 7)
                     {
-                      if (8 * c + oct_digit < N_CHARS)
+                      𐤀𐤌 (8 * c + oct_digit < N_CHARS)
                         {
                           c = 8 * c + oct_digit;
                           ++i;
                         }
-                      else
+                      وإلا
                         {
                           /* A 3-digit octal number larger than \377 won't
                              fit in 8 bits.  So we stop when adding the
@@ -523,63 +523,63 @@ unquote (char const *s, struct E_string *es)
                         }
                     }
                 }
-              break;
-            case '\0':
+              اكسر;
+            حالة '\0':
               error (0, 0, _("warning: an unescaped backslash "
                              "at end of string is not portable"));
               /* POSIX is not clear about this.  */
               es->escaped[j] = false;
               i--;
               c = '\\';
-              break;
-            default:
+              اكسر;
+            افتراضي:
               c = s[i + 1];
-              break;
+              اكسر;
             }
           ++i;
           es->s[j++] = c;
-          break;
-        default:
+          اكسر;
+        افتراضي:
           es->s[j++] = s[i];
-          break;
+          اكسر;
         }
     }
   es->len = j;
-  return true;
+  أرجع true;
 }
 
 /* If CLASS_STR is a valid character class string, return its index
    in the global char_class_name array.  Otherwise, return CC_NO_CLASS.  */
 
 ATTRIBUTE_PURE
-static enum Char_class
-look_up_char_class (char const *class_str, size_t len)
+ساكن تعداد Char_class
+look_up_char_class (حرف ثابت *class_str, size_t len)
 {
-  for (enum Char_class i = 0; i < countof (char_class_name); i++)
-    if (STREQ_LEN (class_str, char_class_name[i], len)
+  لكل (تعداد Char_class i = 0; i < countof (char_class_name); i++)
+    𐤀𐤌 (STREQ_LEN (class_str, char_class_name[i], len)
         && strlen (char_class_name[i]) == len)
-      return i;
-  return CC_NO_CLASS;
+      أرجع i;
+  أرجع CC_NO_CLASS;
 }
 
 /* Return a newly allocated string with a printable version of C.
    This function is used solely for formatting error messages.  */
 
-static char *
-make_printable_char (unsigned char c)
+ساكن حرف *
+make_printable_char (unsigned حرف c)
 {
-  char *buf = xmalloc (5);
+  حرف *buf = xmalloc (5);
 
-  if (isprint (c))
+  𐤀𐤌 (isprint (c))
     {
       buf[0] = c;
       buf[1] = '\0';
     }
-  else
+  وإلا
     {
       sprintf (buf, "\\%03o", c);
     }
-  return buf;
+  أرجع buf;
 }
 
 /* Return a newly allocated copy of S which is suitable for printing.
@@ -589,70 +589,70 @@ make_printable_char (unsigned char c)
    where c is one of [abfnrtv] are represented by their 2-character \c
    sequences.  This function is used solely for printing error messages.  */
 
-static char *
-make_printable_str (char const *s, size_t len)
+ساكن حرف *
+make_printable_str (حرف ثابت *s, size_t len)
 {
   /* Worst case is that every character expands to a backslash
      followed by a 3-character octal escape sequence.  */
-  char *printable_buf = xnmalloc (len + 1, 4);
-  char *p = printable_buf;
+  حرف *printable_buf = xnmalloc (len + 1, 4);
+  حرف *p = printable_buf;
 
-  for (size_t i = 0; i < len; i++)
+  لكل (size_t i = 0; i < len; i++)
     {
-      char buf[5];
-      char const *tmp = NULL;
-      unsigned char c = s[i];
+      حرف buf[5];
+      حرف ثابت *tmp = عدم;
+      unsigned حرف c = s[i];
 
-      switch (c)
+      بدل (c)
         {
-        case '\\':
+        حالة '\\':
           tmp = "\\";
-          break;
-        case '\a':
+          اكسر;
+        حالة '\a':
           tmp = "\\a";
-          break;
-        case '\b':
+          اكسر;
+        حالة '\b':
           tmp = "\\b";
-          break;
-        case '\f':
+          اكسر;
+        حالة '\f':
           tmp = "\\f";
-          break;
-        case '\n':
+          اكسر;
+        حالة '\n':
           tmp = "\\n";
-          break;
-        case '\r':
+          اكسر;
+        حالة '\r':
           tmp = "\\r";
-          break;
-        case '\t':
+          اكسر;
+        حالة '\t':
           tmp = "\\t";
-          break;
-        case '\v':
+          اكسر;
+        حالة '\v':
           tmp = "\\v";
-          break;
-        default:
-          if (isprint (c))
+          اكسر;
+        افتراضي:
+          𐤀𐤌 (isprint (c))
             {
               buf[0] = c;
               buf[1] = '\0';
             }
-          else
+          وإلا
             sprintf (buf, "\\%03o", c);
           tmp = buf;
-          break;
+          اكسر;
         }
       p = stpcpy (p, tmp);
     }
-  return printable_buf;
+  أرجع printable_buf;
 }
 
 /* Append a newly allocated structure representing a
    character C to the specification list LIST.  */
 
-static void
-append_normal_char (struct Spec_list *list, unsigned char c)
+ساكن فراغ
+append_normal_char (بنية Spec_list *list, unsigned حرف c)
 {
-  struct List_element *new = xmalloc (sizeof *new);
-  new->next = NULL;
+  بنية List_element *new = xmalloc (حجم *new);
+  new->next = عدم;
   new->type = RE_NORMAL_CHAR;
   new->u.normal_char = c;
   list->tail->next = new;
@@ -664,29 +664,29 @@ append_normal_char (struct Spec_list *list, unsigned char c)
    Return false if LAST precedes FIRST in the collating sequence,
    true otherwise.  This means that '[c-c]' is acceptable.  */
 
-static bool
-append_range (struct Spec_list *list, unsigned char first, unsigned char last)
+ساكن bool
+append_range (بنية Spec_list *list, unsigned حرف first, unsigned حرف last)
 {
-  if (last < first)
+  𐤀𐤌 (last < first)
     {
-      char *tmp1 = make_printable_char (first);
-      char *tmp2 = make_printable_char (last);
+      حرف *tmp1 = make_printable_char (first);
+      حرف *tmp2 = make_printable_char (last);
 
       error (0, 0,
        _("range-endpoints of '%s-%s' are in reverse collating sequence order"),
              tmp1, tmp2);
-      free (tmp1);
-      free (tmp2);
-      return false;
+      حرر (tmp1);
+      حرر (tmp2);
+      أرجع false;
     }
-  struct List_element *new = xmalloc (sizeof *new);
-  new->next = NULL;
+  بنية List_element *new = xmalloc (حجم *new);
+  new->next = عدم;
   new->type = RE_RANGE;
   new->u.range.first_char = first;
   new->u.range.last_char = last;
   list->tail->next = new;
   list->tail = new;
-  return true;
+  أرجع true;
 }
 
 /* If CHAR_CLASS_STR is a valid character class string, append a
@@ -694,20 +694,20 @@ append_range (struct Spec_list *list, unsigned char first, unsigned char last)
    of the specification list LIST and return true.  If CHAR_CLASS_STR is not
    a valid string return false.  */
 
-static bool
-append_char_class (struct Spec_list *list,
-                   char const *char_class_str, size_t len)
+ساكن bool
+append_char_class (بنية Spec_list *list,
+                   حرف ثابت *char_class_str, size_t len)
 {
-  enum Char_class char_class = look_up_char_class (char_class_str, len);
-  if (char_class == CC_NO_CLASS)
-    return false;
-  struct List_element *new = xmalloc (sizeof *new);
-  new->next = NULL;
+  تعداد Char_class char_class = look_up_char_class (char_class_str, len);
+  𐤀𐤌 (char_class == CC_NO_CLASS)
+    أرجع false;
+  بنية List_element *new = xmalloc (حجم *new);
+  new->next = عدم;
   new->type = RE_CHAR_CLASS;
   new->u.char_class = char_class;
   list->tail->next = new;
   list->tail = new;
-  return true;
+  أرجع true;
 }
 
 /* Append a newly allocated structure representing a [c*n]
@@ -715,12 +715,12 @@ append_char_class (struct Spec_list *list,
    THE_CHAR is the single character to be repeated, and REPEAT_COUNT
    is a non-negative repeat count.  */
 
-static void
-append_repeated_char (struct Spec_list *list, unsigned char the_char,
+ساكن فراغ
+append_repeated_char (بنية Spec_list *list, unsigned حرف the_char,
                       count repeat_count)
 {
-  struct List_element *new = xmalloc (sizeof *new);
-  new->next = NULL;
+  بنية List_element *new = xmalloc (حجم *new);
+  new->next = عدم;
   new->type = RE_REPEATED_CHAR;
   new->u.repeated_char.the_repeated_char = the_char;
   new->u.repeated_char.repeat_count = repeat_count;
@@ -734,20 +734,20 @@ append_repeated_char (struct Spec_list *list, unsigned char the_char,
    equivalence class to the specification list, LIST and return true.
    If LEN is not 1, return false.  */
 
-static bool
-append_equiv_class (struct Spec_list *list,
-                    char const *equiv_class_str, size_t len)
+ساكن bool
+append_equiv_class (بنية Spec_list *list,
+                    حرف ثابت *equiv_class_str, size_t len)
 {
-  if (len != 1)
-    return false;
+  𐤀𐤌 (len != 1)
+    أرجع false;
 
-  struct List_element *new = xmalloc (sizeof *new);
-  new->next = NULL;
+  بنية List_element *new = xmalloc (حجم *new);
+  new->next = عدم;
   new->type = RE_EQUIV_CLASS;
   new->u.equiv_code = *equiv_class_str;
   list->tail->next = new;
   list->tail = new;
-  return true;
+  أرجع true;
 }
 
 /* Search forward starting at START_IDX for the 2-char sequence
@@ -756,18 +756,18 @@ append_equiv_class (struct Spec_list *list,
    character and return true.  Otherwise return false.  P may contain
    zero bytes.  */
 
-static bool
-find_closing_delim (const struct E_string *es, size_t start_idx,
-                    char pre_bracket_char, size_t *result_idx)
+ساكن bool
+find_closing_delim (ثابت بنية E_string *es, size_t start_idx,
+                    حرف pre_bracket_char, size_t *result_idx)
 {
-  for (size_t i = start_idx; i < es->len - 1; i++)
-    if (es->s[i] == pre_bracket_char && es->s[i + 1] == ']'
+  لكل (size_t i = start_idx; i < es->len - 1; i++)
+    𐤀𐤌 (es->s[i] == pre_bracket_char && es->s[i + 1] == ']'
         && !es->escaped[i] && !es->escaped[i + 1])
       {
         *result_idx = i;
-        return true;
+        أرجع true;
       }
-  return false;
+  أرجع false;
 }
 
 /* Parse the bracketed repeat-char syntax.  If the P_LEN characters
@@ -780,52 +780,52 @@ find_closing_delim (const struct E_string *es, size_t start_idx,
    empty, an octal number, or a decimal number, print an error message
    and return -2.  */
 
-static int
-find_bracketed_repeat (const struct E_string *es, size_t start_idx,
-                       unsigned char *char_to_repeat, count *repeat_count,
+ساكن صحيح
+find_bracketed_repeat (ثابت بنية E_string *es, size_t start_idx,
+                       unsigned حرف *char_to_repeat, count *repeat_count,
                        size_t *closing_bracket_idx)
 {
   affirm (start_idx + 1 < es->len);
-  if (!es_match (es, start_idx + 1, '*'))
-    return -1;
+  𐤀𐤌 (!es_match (es, start_idx + 1, '*'))
+    أرجع -1;
 
-  for (size_t i = start_idx + 2; i < es->len && !es->escaped[i]; i++)
+  لكل (size_t i = start_idx + 2; i < es->len && !es->escaped[i]; i++)
     {
-      if (es->s[i] == ']')
+      𐤀𐤌 (es->s[i] == ']')
         {
           size_t digit_str_len = i - start_idx - 2;
 
           *char_to_repeat = es->s[start_idx];
-          if (digit_str_len == 0)
+          𐤀𐤌 (digit_str_len == 0)
             {
               /* We've matched [c*] -- no explicit repeat count.  */
               *repeat_count = 0;
             }
-          else
+          وإلا
             {
               /* Here, we have found [c*s] where s should be a string
                  of octal (if it starts with '0') or decimal digits.  */
-              char const *digit_str = &es->s[start_idx + 2];
-              char *d_end;
-              if ((xstrtoumax (digit_str, &d_end, *digit_str == '0' ? 8 : 10,
-                               repeat_count, NULL)
+              حرف ثابت *digit_str = &es->s[start_idx + 2];
+              حرف *d_end;
+              𐤀𐤌 ((xstrtoumax (digit_str, &d_end, *digit_str == '0' ? 8 : 10,
+                               repeat_count, عدم)
                    != LONGINT_OK)
                   || REPEAT_COUNT_MAXIMUM < *repeat_count
                   || digit_str + digit_str_len != d_end)
                 {
-                  char *tmp = make_printable_str (digit_str, digit_str_len);
+                  حرف *tmp = make_printable_str (digit_str, digit_str_len);
                   error (0, 0,
                          _("invalid repeat count %s in [c*n] construct"),
                          quote (tmp));
-                  free (tmp);
-                  return -2;
+                  حرر (tmp);
+                  أرجع -2;
                 }
             }
           *closing_bracket_idx = i;
-          return 0;
+          أرجع 0;
         }
     }
-  return -1;			/* No bracket found.  */
+  أرجع -1;			/* No bracket found.  */
 }
 
 /* Return true if the string at ES->s[IDX] matches the regular
@@ -833,16 +833,16 @@ find_bracketed_repeat (const struct E_string *es, size_t start_idx,
    match if any of its characters are escaped.  */
 
 ATTRIBUTE_PURE
-static bool
-star_digits_closebracket (const struct E_string *es, size_t idx)
+ساكن bool
+star_digits_closebracket (ثابت بنية E_string *es, size_t idx)
 {
-  if (!es_match (es, idx, '*'))
-    return false;
+  𐤀𐤌 (!es_match (es, idx, '*'))
+    أرجع false;
 
-  for (size_t i = idx + 1; i < es->len; i++)
-    if (!c_isdigit (es->s[i]) || es->escaped[i])
-      return es_match (es, i, ']');
-  return false;
+  لكل (size_t i = idx + 1; i < es->len; i++)
+    𐤀𐤌 (!c_isdigit (es->s[i]) || es->escaped[i])
+      أرجع es_match (es, i, ']');
+  أرجع false;
 }
 
 /* Convert string UNESCAPED_STRING (which has been preprocessed to
@@ -857,10 +857,10 @@ star_digits_closebracket (const struct E_string *es, size_t idx)
           not precede the first in the current collating sequence.
       - c Any other character is interpreted as itself.  */
 
-static bool
-build_spec_list (const struct E_string *es, struct Spec_list *result)
+ساكن bool
+build_spec_list (ثابت بنية E_string *es, بنية Spec_list *result)
 {
-  char const *p = es->s;
+  حرف ثابت *p = es->s;
 
   /* The main for-loop below recognizes the 4 multi-character constructs.
      A character that matches (in its context) none of the multi-character
@@ -869,76 +869,76 @@ build_spec_list (const struct E_string *es, struct Spec_list *result)
      less are composed solely of normal characters.  Hence, the index of
      the outer for-loop runs only as far as LEN-2.  */
   size_t i;
-  for (i = 0; i + 2 < es->len; /* empty */)
+  لكل (i = 0; i + 2 < es->len; /* empty */)
     {
-      if (es_match (es, i, '['))
+      𐤀𐤌 (es_match (es, i, '['))
         {
           bool matched_multi_char_construct;
           size_t closing_bracket_idx;
-          unsigned char char_to_repeat;
+          unsigned حرف char_to_repeat;
           count repeat_count;
-          int err;
+          صحيح err;
 
           matched_multi_char_construct = true;
-          if (es_match (es, i + 1, ':') || es_match (es, i + 1, '='))
+          𐤀𐤌 (es_match (es, i + 1, ':') || es_match (es, i + 1, '='))
             {
               size_t closing_delim_idx;
 
-              if (find_closing_delim (es, i + 2, p[i + 1], &closing_delim_idx))
+              𐤀𐤌 (find_closing_delim (es, i + 2, p[i + 1], &closing_delim_idx))
                 {
                   size_t opnd_str_len = closing_delim_idx - 1 - (i + 2) + 1;
-                  char const *opnd_str = p + i + 2;
+                  حرف ثابت *opnd_str = p + i + 2;
 
-                  if (opnd_str_len == 0)
+                  𐤀𐤌 (opnd_str_len == 0)
                     {
-                      if (p[i + 1] == ':')
+                      𐤀𐤌 (p[i + 1] == ':')
                         error (0, 0, _("missing character class name '[::]'"));
-                      else
+                      وإلا
                         error (0, 0,
                                _("missing equivalence class character '[==]'"));
-                      return false;
+                      أرجع false;
                     }
 
-                  if (p[i + 1] == ':')
+                  𐤀𐤌 (p[i + 1] == ':')
                     {
                       /* FIXME: big comment.  */
-                      if (!append_char_class (result, opnd_str, opnd_str_len))
+                      𐤀𐤌 (!append_char_class (result, opnd_str, opnd_str_len))
                         {
-                          if (star_digits_closebracket (es, i + 2))
-                            goto try_bracketed_repeat;
-                          else
+                          𐤀𐤌 (star_digits_closebracket (es, i + 2))
+                            اذهب try_bracketed_repeat;
+                          وإلا
                             {
-                              char *tmp = make_printable_str (opnd_str,
+                              حرف *tmp = make_printable_str (opnd_str,
                                                               opnd_str_len);
                               error (0, 0, _("invalid character class %s"),
                                      quote (tmp));
-                              free (tmp);
-                              return false;
+                              حرر (tmp);
+                              أرجع false;
                             }
                         }
                     }
-                  else
+                  وإلا
                     {
                       /* FIXME: big comment.  */
-                      if (!append_equiv_class (result, opnd_str, opnd_str_len))
+                      𐤀𐤌 (!append_equiv_class (result, opnd_str, opnd_str_len))
                         {
-                          if (star_digits_closebracket (es, i + 2))
-                            goto try_bracketed_repeat;
-                          else
+                          𐤀𐤌 (star_digits_closebracket (es, i + 2))
+                            اذهب try_bracketed_repeat;
+                          وإلا
                             {
-                              char *tmp = make_printable_str (opnd_str,
+                              حرف *tmp = make_printable_str (opnd_str,
                                                               opnd_str_len);
                               error (0, 0,
                _("%s: equivalence class operand must be a single character"),
                                      tmp);
-                              free (tmp);
-                              return false;
+                              حرر (tmp);
+                              أرجع false;
                             }
                         }
                     }
 
                   i = closing_delim_idx + 2;
-                  continue;
+                  استمر;
                 }
               /* Else fall through.  This could be [:*] or [=*].  */
             }
@@ -950,24 +950,24 @@ build_spec_list (const struct E_string *es, struct Spec_list *result)
           err = find_bracketed_repeat (es, i + 1, &char_to_repeat,
                                        &repeat_count,
                                        &closing_bracket_idx);
-          if (err == 0)
+          𐤀𐤌 (err == 0)
             {
               append_repeated_char (result, char_to_repeat, repeat_count);
               i = closing_bracket_idx + 1;
             }
-          else if (err == -1)
+          وإلا 𐤀𐤌 (err == -1)
             {
               matched_multi_char_construct = false;
             }
-          else
+          وإلا
             {
               /* Found a string that looked like [c*n] but the
                  numeric part was invalid.  */
-              return false;
+              أرجع false;
             }
 
-          if (matched_multi_char_construct)
-            continue;
+          𐤀𐤌 (matched_multi_char_construct)
+            استمر;
 
           /* We reach this point if P does not match [:str:], [=c=],
              [c*n], or [c*].  Now, see if P looks like a range '[-c'
@@ -975,13 +975,13 @@ build_spec_list (const struct E_string *es, struct Spec_list *result)
         }
 
       /* Look ahead one char for ranges like a-z.  */
-      if (es_match (es, i + 1, '-'))
+      𐤀𐤌 (es_match (es, i + 1, '-'))
         {
-          if (!append_range (result, p[i], p[i + 2]))
-            return false;
+          𐤀𐤌 (!append_range (result, p[i], p[i + 2]))
+            أرجع false;
           i += 3;
         }
-      else
+      وإلا
         {
           append_normal_char (result, p[i]);
           ++i;
@@ -989,16 +989,16 @@ build_spec_list (const struct E_string *es, struct Spec_list *result)
     }
 
   /* Now handle the (2 or fewer) remaining characters p[i]..p[es->len - 1].  */
-  for (; i < es->len; i++)
+  لكل (; i < es->len; i++)
     append_normal_char (result, p[i]);
 
-  return true;
+  أرجع true;
 }
 
 /* Advance past the current construct.
    S->tail must be non-null.  */
-static void
-skip_construct (struct Spec_list *s)
+ساكن فراغ
+skip_construct (بنية Spec_list *s)
 {
   s->tail = s->tail->next;
   s->state = NEW_ELEMENT;
@@ -1018,84 +1018,84 @@ skip_construct (struct Spec_list *s)
    lower class constructs in the spec-strings appear in the same relative
    positions.  */
 
-static int
-get_next (struct Spec_list *s, enum Upper_Lower_class *class)
+ساكن صحيح
+get_next (بنية Spec_list *s, تعداد Upper_Lower_class *class)
 {
-  struct List_element *p;
-  int return_val;
-  int i;
+  بنية List_element *p;
+  صحيح return_val;
+  صحيح i;
 
-  if (class)
+  𐤀𐤌 (class)
     *class = UL_NONE;
 
-  if (s->state == BEGIN_STATE)
+  𐤀𐤌 (s->state == BEGIN_STATE)
     {
       s->tail = s->head->next;
       s->state = NEW_ELEMENT;
     }
 
   p = s->tail;
-  if (p == NULL)
-    return -1;
+  𐤀𐤌 (p == عدم)
+    أرجع -1;
 
-  switch (p->type)
+  بدل (p->type)
     {
-    case RE_NORMAL_CHAR:
+    حالة RE_NORMAL_CHAR:
       return_val = p->u.normal_char;
       s->state = NEW_ELEMENT;
       s->tail = p->next;
-      break;
+      اكسر;
 
-    case RE_RANGE:
-      if (s->state == NEW_ELEMENT)
+    حالة RE_RANGE:
+      𐤀𐤌 (s->state == NEW_ELEMENT)
         s->state = p->u.range.first_char;
-      else
+      وإلا
         ++(s->state);
       return_val = s->state;
-      if (s->state == p->u.range.last_char)
+      𐤀𐤌 (s->state == p->u.range.last_char)
         {
           s->tail = p->next;
           s->state = NEW_ELEMENT;
         }
-      break;
+      اكسر;
 
-    case RE_CHAR_CLASS:
-      if (class)
+    حالة RE_CHAR_CLASS:
+      𐤀𐤌 (class)
         {
-          switch (+p->u.char_class)
+          بدل (+p->u.char_class)
             {
-            case CC_LOWER:
+            حالة CC_LOWER:
               *class = UL_LOWER;
-              break;
-            case CC_UPPER:
+              اكسر;
+            حالة CC_UPPER:
               *class = UL_UPPER;
-              break;
+              اكسر;
             }
         }
 
-      if (s->state == NEW_ELEMENT)
+      𐤀𐤌 (s->state == NEW_ELEMENT)
         {
-          for (i = 0; i < N_CHARS; i++)
-            if (is_char_class_member (p->u.char_class, i))
-              break;
+          لكل (i = 0; i < N_CHARS; i++)
+            𐤀𐤌 (is_char_class_member (p->u.char_class, i))
+              اكسر;
           affirm (i < N_CHARS);
           s->state = i;
         }
       assure (is_char_class_member (p->u.char_class, s->state));
       return_val = s->state;
-      for (i = s->state + 1; i < N_CHARS; i++)
-        if (is_char_class_member (p->u.char_class, i))
-          break;
-      if (i < N_CHARS)
+      لكل (i = s->state + 1; i < N_CHARS; i++)
+        𐤀𐤌 (is_char_class_member (p->u.char_class, i))
+          اكسر;
+      𐤀𐤌 (i < N_CHARS)
         s->state = i;
-      else
+      وإلا
         {
           s->tail = p->next;
           s->state = NEW_ELEMENT;
         }
-      break;
+      اكسر;
 
-    case RE_EQUIV_CLASS:
+    حالة RE_EQUIV_CLASS:
       /* FIXME: this assumes that each character is alone in its own
          equivalence class (which appears to be correct for my
          LC_COLLATE.  But I don't know of any function that allows
@@ -1104,37 +1104,37 @@ get_next (struct Spec_list *s, enum Upper_Lower_class *class)
       return_val = p->u.equiv_code;
       s->state = NEW_ELEMENT;
       s->tail = p->next;
-      break;
+      اكسر;
 
-    case RE_REPEATED_CHAR:
+    حالة RE_REPEATED_CHAR:
       /* Here, a repeat count of n == 0 means don't repeat at all.  */
-      if (p->u.repeated_char.repeat_count == 0)
+      𐤀𐤌 (p->u.repeated_char.repeat_count == 0)
         {
           s->tail = p->next;
           s->state = NEW_ELEMENT;
           return_val = get_next (s, class);
         }
-      else
+      وإلا
         {
-          if (s->state == NEW_ELEMENT)
+          𐤀𐤌 (s->state == NEW_ELEMENT)
             {
               s->state = 0;
             }
           ++(s->state);
           return_val = p->u.repeated_char.the_repeated_char;
-          if (s->state == p->u.repeated_char.repeat_count)
+          𐤀𐤌 (s->state == p->u.repeated_char.repeat_count)
             {
               s->tail = p->next;
               s->state = NEW_ELEMENT;
             }
         }
-      break;
+      اكسر;
 
-    default:
+    افتراضي:
       unreachable ();
     }
 
-  return return_val;
+  أرجع return_val;
 }
 
 /* This is a minor kludge.  This function is called from
@@ -1142,20 +1142,20 @@ get_next (struct Spec_list *s, enum Upper_Lower_class *class)
    from a complemented string.  It's a kludge in that some of the
    same operations are (duplicated) performed in set_initialize.  */
 
-static int
-card_of_complement (struct Spec_list *s)
+ساكن صحيح
+card_of_complement (بنية Spec_list *s)
 {
-  int c;
-  int cardinality = N_CHARS;
+  صحيح c;
+  صحيح cardinality = N_CHARS;
   bool in_set[N_CHARS] = {0};
 
   s->state = BEGIN_STATE;
-  while ((c = get_next (s, NULL)) != -1)
+  طالما ((c = get_next (s, عدم)) != -1)
     {
       cardinality -= (!in_set[c]);
       in_set[c] = true;
     }
-  return cardinality;
+  أرجع cardinality;
 }
 
 /* Discard the lengths associated with a case conversion,
@@ -1167,49 +1167,49 @@ card_of_complement (struct Spec_list *s)
    is undefined.  Therefore we allow it (unlike Solaris)
    and treat it as a no-op.  */
 
-static void
-validate_case_classes (struct Spec_list *s1, struct Spec_list *s2)
+ساكن فراغ
+validate_case_classes (بنية Spec_list *s1, بنية Spec_list *s2)
 {
   size_t n_upper = 0;
   size_t n_lower = 0;
-  int c1 = 0;
-  int c2 = 0;
+  صحيح c1 = 0;
+  صحيح c2 = 0;
   MAYBE_UNUSED count old_s1_len = s1->length, old_s2_len = s2->length;
-  struct List_element *s1_tail = s1->tail;
-  struct List_element *s2_tail = s2->tail;
+  بنية List_element *s1_tail = s1->tail;
+  بنية List_element *s2_tail = s2->tail;
   bool s1_new_element = true;
   bool s2_new_element = true;
 
-  if (complement || !s2->has_char_class)
-    return;
+  𐤀𐤌 (complement || !s2->has_char_class)
+    أرجع;
 
-  for (int i = 0; i < N_CHARS; i++)
+  لكل (صحيح i = 0; i < N_CHARS; i++)
     {
-      if (isupper (i))
+      𐤀𐤌 (isupper (i))
         n_upper++;
-      if (islower (i))
+      𐤀𐤌 (islower (i))
         n_lower++;
     }
 
   s1->state = BEGIN_STATE;
   s2->state = BEGIN_STATE;
 
-  while (c1 != -1 && c2 != -1)
+  طالما (c1 != -1 && c2 != -1)
     {
-      enum Upper_Lower_class class_s1, class_s2;
+      تعداد Upper_Lower_class class_s1, class_s2;
 
       c1 = get_next (s1, &class_s1);
       c2 = get_next (s2, &class_s2);
 
       /* If c2 transitions to a new case class, then
          c1 must also transition at the same time.  */
-      if (s2_new_element && class_s2 != UL_NONE
+      𐤀𐤌 (s2_new_element && class_s2 != UL_NONE
           && !(s1_new_element && class_s1 != UL_NONE))
         error (EXIT_FAILURE, 0,
                _("misaligned [:upper:] and/or [:lower:] construct"));
 
       /* If case converting, quickly skip over the elements.  */
-      if (class_s2 != UL_NONE)
+      𐤀𐤌 (class_s2 != UL_NONE)
         {
           skip_construct (s1);
           skip_construct (s2);
@@ -1241,8 +1241,8 @@ validate_case_classes (struct Spec_list *s1, struct Spec_list *s2)
    tr a-z 'A[\n*]Z' on the second call to get_spec_stats, LEN_S1 would
    be 26 and S (representing string2) would be converted to 'A[\n*24]Z'.  */
 
-static void
-get_spec_stats (struct Spec_list *s)
+ساكن فراغ
+get_spec_stats (بنية Spec_list *s)
 {
   count length = 0;
 
@@ -1250,55 +1250,55 @@ get_spec_stats (struct Spec_list *s)
   s->has_equiv_class = false;
   s->has_restricted_char_class = false;
   s->has_char_class = false;
-  for (struct List_element *p = s->head->next; p; p = p->next)
+  لكل (بنية List_element *p = s->head->next; p; p = p->next)
     {
       count len = 0;
 
-      switch (p->type)
+      بدل (p->type)
         {
-        case RE_NORMAL_CHAR:
+        حالة RE_NORMAL_CHAR:
           len = 1;
-          break;
+          اكسر;
 
-        case RE_RANGE:
+        حالة RE_RANGE:
           affirm (p->u.range.last_char >= p->u.range.first_char);
           len = p->u.range.last_char - p->u.range.first_char + 1;
-          break;
+          اكسر;
 
-        case RE_CHAR_CLASS:
+        حالة RE_CHAR_CLASS:
           s->has_char_class = true;
-          for (int i = 0; i < N_CHARS; i++)
-            if (is_char_class_member (p->u.char_class, i))
+          لكل (صحيح i = 0; i < N_CHARS; i++)
+            𐤀𐤌 (is_char_class_member (p->u.char_class, i))
               ++len;
-          switch (+p->u.char_class)
+          بدل (+p->u.char_class)
             {
-            case CC_UPPER:
-            case CC_LOWER:
-              break;
-            default:
+            حالة CC_UPPER:
+            حالة CC_LOWER:
+              اكسر;
+            افتراضي:
               s->has_restricted_char_class = true;
-              break;
+              اكسر;
             }
-          break;
+          اكسر;
 
-        case RE_EQUIV_CLASS:
-          for (int i = 0; i < N_CHARS; i++)
-            if (is_equiv_class_member (p->u.equiv_code, i))
+        حالة RE_EQUIV_CLASS:
+          لكل (صحيح i = 0; i < N_CHARS; i++)
+            𐤀𐤌 (is_equiv_class_member (p->u.equiv_code, i))
               ++len;
           s->has_equiv_class = true;
-          break;
+          اكسر;
 
-        case RE_REPEATED_CHAR:
-          if (p->u.repeated_char.repeat_count > 0)
+        حالة RE_REPEATED_CHAR:
+          𐤀𐤌 (p->u.repeated_char.repeat_count > 0)
             len = p->u.repeated_char.repeat_count;
-          else
+          وإلا
             {
               s->indefinite_repeat_element = p;
               ++(s->n_indefinite_repeats);
             }
-          break;
+          اكسر;
 
-        default:
+        افتراضي:
           unreachable ();
         }
 
@@ -1306,26 +1306,26 @@ get_spec_stats (struct Spec_list *s)
          any length greater than the maximum repeat count, in case the
          length is later used to compute the repeat count for an
          indefinite element.  */
-      if (ckd_add (&length, length, len) || REPEAT_COUNT_MAXIMUM < length)
+      𐤀𐤌 (ckd_add (&length, length, len) || REPEAT_COUNT_MAXIMUM < length)
         error (EXIT_FAILURE, 0, _("too many characters in set"));
     }
 
   s->length = length;
 }
 
-static void
-get_s1_spec_stats (struct Spec_list *s1)
+ساكن فراغ
+get_s1_spec_stats (بنية Spec_list *s1)
 {
   get_spec_stats (s1);
-  if (complement)
+  𐤀𐤌 (complement)
     s1->length = card_of_complement (s1);
 }
 
-static void
-get_s2_spec_stats (struct Spec_list *s2, count len_s1)
+ساكن فراغ
+get_s2_spec_stats (بنية Spec_list *s2, count len_s1)
 {
   get_spec_stats (s2);
-  if (len_s1 >= s2->length && s2->n_indefinite_repeats == 1)
+  𐤀𐤌 (len_s1 >= s2->length && s2->n_indefinite_repeats == 1)
     {
       s2->indefinite_repeat_element->u.repeated_char.repeat_count =
         len_s1 - s2->length;
@@ -1333,12 +1333,12 @@ get_s2_spec_stats (struct Spec_list *s2, count len_s1)
     }
 }
 
-static void
-spec_init (struct Spec_list *spec_list)
+ساكن فراغ
+spec_init (بنية Spec_list *spec_list)
 {
-  struct List_element *new = xmalloc (sizeof *new);
+  بنية List_element *new = xmalloc (حجم *new);
   spec_list->head = spec_list->tail = new;
-  spec_list->head->next = NULL;
+  spec_list->head->next = عدم;
 }
 
 /* This function makes two passes over the argument string S.  The first
@@ -1347,13 +1347,13 @@ spec_init (struct Spec_list *spec_list)
    characters and constructs that comprise the argument string.  If either
    of these passes detects an error, this function returns false.  */
 
-static bool
-parse_str (char const *s, struct Spec_list *spec_list)
+ساكن bool
+parse_str (حرف ثابت *s, بنية Spec_list *spec_list)
 {
-  struct E_string es;
+  بنية E_string es;
   bool ok = unquote (s, &es) && build_spec_list (&es, spec_list);
   es_free (&es);
-  return ok;
+  أرجع ok;
 }
 
 /* Given two specification lists, S1 and S2, and assuming that
@@ -1365,26 +1365,26 @@ parse_str (char const *s, struct Spec_list *spec_list)
    zero-length, since in that case, there is no last character to repeat.
    So S2->length is required to be at least 1.  */
 
-static void
-string2_extend (const struct Spec_list *s1, struct Spec_list *s2)
+ساكن فراغ
+string2_extend (ثابت بنية Spec_list *s1, بنية Spec_list *s2)
 {
-  struct List_element *p;
-  unsigned char char_to_repeat;
+  بنية List_element *p;
+  unsigned حرف char_to_repeat;
 
   affirm (translating);
   affirm (s1->length > s2->length);
   affirm (s2->length > 0);
 
   p = s2->tail;
-  switch (p->type)
+  بدل (p->type)
     {
-    case RE_NORMAL_CHAR:
+    حالة RE_NORMAL_CHAR:
       char_to_repeat = p->u.normal_char;
-      break;
-    case RE_RANGE:
+      اكسر;
+    حالة RE_RANGE:
       char_to_repeat = p->u.range.last_char;
-      break;
-    case RE_CHAR_CLASS:
+      اكسر;
+    حالة RE_CHAR_CLASS:
       /* Note BSD allows extending of classes in string2.  For example:
            tr '[:upper:]0-9' '[:lower:]'
          That's not portable however, contradicts POSIX and is dependent
@@ -1393,11 +1393,11 @@ string2_extend (const struct Spec_list *s1, struct Spec_list *s2)
              _("when translating with string1 longer than string2,\n"
                "the latter string must not end with a character class"));
 
-    case RE_REPEATED_CHAR:
+    حالة RE_REPEATED_CHAR:
       char_to_repeat = p->u.repeated_char.the_repeated_char;
-      break;
+      اكسر;
 
-    case RE_EQUIV_CLASS: default:
+    حالة RE_EQUIV_CLASS: افتراضي:
       /* This shouldn't happen, because validate exits with an error
          if it finds an equiv class in string2 when translating.  */
       affirm (false);
@@ -1411,21 +1411,21 @@ string2_extend (const struct Spec_list *s1, struct Spec_list *s2)
    character (but potentially, many instances of it) appears.
    E.g., [X*] or xxxxxxxx.  */
 
-static bool
-homogeneous_spec_list (struct Spec_list *s)
+ساكن bool
+homogeneous_spec_list (بنية Spec_list *s)
 {
-  int b, c;
+  صحيح b, c;
 
   s->state = BEGIN_STATE;
 
-  if ((b = get_next (s, NULL)) == -1)
-    return false;
+  𐤀𐤌 ((b = get_next (s, عدم)) == -1)
+    أرجع false;
 
-  while ((c = get_next (s, NULL)) != -1)
-    if (c != b)
-      return false;
+  طالما ((c = get_next (s, عدم)) != -1)
+    𐤀𐤌 (c != b)
+      أرجع false;
 
-  return true;
+  أرجع true;
 }
 
 /* Die with an error message if S1 and S2 describe strings that
@@ -1436,30 +1436,30 @@ homogeneous_spec_list (struct Spec_list *s)
    the same token, if the --truncate-set1 option is not
    given, S2 may be extended.  */
 
-static void
-validate (struct Spec_list *s1, struct Spec_list *s2)
+ساكن فراغ
+validate (بنية Spec_list *s1, بنية Spec_list *s2)
 {
   get_s1_spec_stats (s1);
-  if (s1->n_indefinite_repeats > 0)
+  𐤀𐤌 (s1->n_indefinite_repeats > 0)
     error (EXIT_FAILURE, 0,
            _("the [c*] repeat construct may not appear in string1"));
 
-  if (s2)
+  𐤀𐤌 (s2)
     {
       get_s2_spec_stats (s2, s1->length);
 
-      if (s2->n_indefinite_repeats > 1)
+      𐤀𐤌 (s2->n_indefinite_repeats > 1)
         error (EXIT_FAILURE, 0,
                _("only one [c*] repeat construct may appear in string2"));
 
-      if (translating)
+      𐤀𐤌 (translating)
         {
-          if (s2->has_equiv_class)
+          𐤀𐤌 (s2->has_equiv_class)
             error (EXIT_FAILURE, 0,
                    _("[=c=] expressions may not appear in string2"
                      " when translating"));
 
-          if (s2->has_restricted_char_class)
+          𐤀𐤌 (s2->has_restricted_char_class)
             error (EXIT_FAILURE, 0,
                    _("when translating, the only character classes"
                      " that may appear in\n"
@@ -1467,14 +1467,14 @@ validate (struct Spec_list *s1, struct Spec_list *s2)
 
           validate_case_classes (s1, s2);
 
-          if (s1->length > s2->length)
+          𐤀𐤌 (s1->length > s2->length)
             {
-              if (!truncate_set1)
+              𐤀𐤌 (!truncate_set1)
                 {
                   /* string2 must be non-empty unless --truncate-set1 is
                      given or string1 is empty.  */
 
-                  if (s2->length == 0)
+                  𐤀𐤌 (s2->length == 0)
                     error (EXIT_FAILURE, 0,
                            _("when not truncating set1,"
                              " string2 must be non-empty"));
@@ -1482,16 +1482,16 @@ validate (struct Spec_list *s1, struct Spec_list *s2)
                 }
             }
 
-          if (complement && s1->has_char_class
+          𐤀𐤌 (complement && s1->has_char_class
               && ! (s2->length == s1->length && homogeneous_spec_list (s2)))
             error (EXIT_FAILURE, 0,
                    _("when translating with complemented character classes,\n"
                      "string2 must map all characters in the domain to one"));
         }
-      else
+      وإلا
         /* Not translating.  */
         {
-          if (s2->n_indefinite_repeats > 0)
+          𐤀𐤌 (s2->n_indefinite_repeats > 0)
             error (EXIT_FAILURE, 0,
                    _("the [c*] construct may appear in string2"
                      " only when translating"));
@@ -1507,30 +1507,30 @@ validate (struct Spec_list *s1, struct Spec_list *s2)
    stream are replaced by a single occurrence of that character if the
    character is in the squeeze set.  */
 
-static void
-squeeze_filter (char *buf, size_t size, size_t (*reader) (char *, size_t))
+ساكن فراغ
+squeeze_filter (حرف *buf, size_t size, size_t (*reader) (حرف *, size_t))
 {
   /* A value distinct from any character that may have been stored in a
      buffer as the result of a block-read in the function squeeze_filter.  */
-  const int NOT_A_CHAR = INT_MAX;
+  ثابت صحيح NOT_A_CHAR = INT_MAX;
 
-  int char_to_squeeze = NOT_A_CHAR;
+  صحيح char_to_squeeze = NOT_A_CHAR;
   size_t i = 0;
   size_t nr = 0;
 
-  while (true)
+  طالما (true)
     {
-      if (i >= nr)
+      𐤀𐤌 (i >= nr)
         {
           nr = reader (buf, size);
-          if (nr == 0)
-            break;
+          𐤀𐤌 (nr == 0)
+            اكسر;
           i = 0;
         }
 
       size_t begin = i;
 
-      if (char_to_squeeze == NOT_A_CHAR)
+      𐤀𐤌 (char_to_squeeze == NOT_A_CHAR)
         {
           size_t out_len;
           /* Here, by being a little tricky, we can get a significant
@@ -1544,18 +1544,18 @@ squeeze_filter (char *buf, size_t size, size_t (*reader) (char *, size_t))
              of the input is removed by squeezing repeats.  But most
              uses of this functionality seem to remove less than 20-30%
              of the input.  */
-          for (; i < nr && !in_squeeze_set[to_uchar (buf[i])]; i += 2)
-            continue;
+          لكل (; i < nr && !in_squeeze_set[to_uchar (buf[i])]; i += 2)
+            استمر;
 
           /* There is a special case when i == nr and we've just
              skipped a character (the last one in buf) that is in
              the squeeze set.  */
-          if (i == nr && in_squeeze_set[to_uchar (buf[i - 1])])
+          𐤀𐤌 (i == nr && in_squeeze_set[to_uchar (buf[i - 1])])
             --i;
 
-          if (i >= nr)
+          𐤀𐤌 (i >= nr)
             out_len = nr - begin;
-          else
+          وإلا
             {
               char_to_squeeze = buf[i];
               /* We're about to output buf[begin..i].  */
@@ -1563,7 +1563,7 @@ squeeze_filter (char *buf, size_t size, size_t (*reader) (char *, size_t))
 
               /* But since we stepped by 2 in the loop above,
                  out_len may be one too large.  */
-              if (i > 0 && buf[i - 1] == char_to_squeeze)
+              𐤀𐤌 (i > 0 && buf[i - 1] == char_to_squeeze)
                 --out_len;
 
               /* Advance i to the index of first character to be
@@ -1571,19 +1571,19 @@ squeeze_filter (char *buf, size_t size, size_t (*reader) (char *, size_t))
                  char_to_squeeze.  */
               ++i;
             }
-          if (out_len > 0
+          𐤀𐤌 (out_len > 0
               && fwrite (&buf[begin], 1, out_len, stdout) != out_len)
             write_error ();
         }
 
-      if (char_to_squeeze != NOT_A_CHAR)
+      𐤀𐤌 (char_to_squeeze != NOT_A_CHAR)
         {
           /* Advance i to index of first char != char_to_squeeze
              (or to nr if all the rest of the characters in this
              buffer are the same as char_to_squeeze).  */
-          for (; i < nr && buf[i] == char_to_squeeze; i++)
-            continue;
-          if (i < nr)
+          لكل (; i < nr && buf[i] == char_to_squeeze; i++)
+            استمر;
+          𐤀𐤌 (i < nr)
             char_to_squeeze = NOT_A_CHAR;
           /* If (i >= nr) we've squeezed the last character in this buffer.
              So now we have to read a new buffer and continue comparing
@@ -1592,13 +1592,13 @@ squeeze_filter (char *buf, size_t size, size_t (*reader) (char *, size_t))
     }
 }
 
-static size_t
-plain_read (char *buf, size_t size)
+ساكن size_t
+plain_read (حرف *buf, size_t size)
 {
-  ssize_t nr = read (STDIN_FILENO, buf, size);
-  if (nr < 0)
+  ssize_t nr = اقرأ (STDIN_FILENO, buf, size);
+  𐤀𐤌 (nr < 0)
     error (EXIT_FAILURE, errno, _("read error"));
-  return nr;
+  أرجع nr;
 }
 
 /* Read buffers of SIZE bytes from stdin until one is found that
@@ -1607,20 +1607,20 @@ plain_read (char *buf, size_t size)
    in the delete set, and return the number of characters saved
    or 0 upon EOF.  */
 
-static size_t
-read_and_delete (char *buf, size_t size)
+ساكن size_t
+read_and_delete (حرف *buf, size_t size)
 {
   size_t n_saved;
 
   /* This enclosing do-while loop is to make sure that
      we don't return zero (indicating EOF) when we've
      just deleted all the characters in a buffer.  */
-  do
+  𐤐𐤏𐤋
     {
       size_t nr = plain_read (buf, size);
 
-      if (nr == 0)
-        return 0;
+      𐤀𐤌 (nr == 0)
+        أرجع 0;
 
       /* This first loop may be a waste of code, but gives much
          better performance when no characters are deleted in
@@ -1628,32 +1628,32 @@ read_and_delete (char *buf, size_t size)
          of buf[i] into buf[n_saved] when it would be a NOP.  */
 
       size_t i;
-      for (i = 0; i < nr && !in_delete_set[to_uchar (buf[i])]; i++)
-        continue;
+      لكل (i = 0; i < nr && !in_delete_set[to_uchar (buf[i])]; i++)
+        استمر;
       n_saved = i;
 
-      for (++i; i < nr; i++)
-        if (!in_delete_set[to_uchar (buf[i])])
+      لكل (++i; i < nr; i++)
+        𐤀𐤌 (!in_delete_set[to_uchar (buf[i])])
           buf[n_saved++] = buf[i];
     }
-  while (n_saved == 0);
+  طالما (n_saved == 0);
 
-  return n_saved;
+  أرجع n_saved;
 }
 
 /* Read at most SIZE bytes from stdin into the array BUF.  Then
    perform the in-place and one-to-one mapping specified by the global
    array 'xlate'.  Return the number of characters read, or 0 upon EOF.  */
 
-static size_t
-read_and_xlate (char *buf, size_t size)
+ساكن size_t
+read_and_xlate (حرف *buf, size_t size)
 {
   size_t bytes_read = plain_read (buf, size);
 
-  for (size_t i = 0; i < bytes_read; i++)
+  لكل (size_t i = 0; i < bytes_read; i++)
     buf[i] = xlate[to_uchar (buf[i])];
 
-  return bytes_read;
+  أرجع bytes_read;
 }
 
 /* Initialize a boolean membership set, IN_SET, with the character
@@ -1662,29 +1662,29 @@ read_and_xlate (char *buf, size_t size)
    initialized to all zeros by the caller.  If COMPLEMENT_THIS_SET
    is true the resulting set is complemented.  */
 
-static void
-set_initialize (struct Spec_list *s, bool complement_this_set, bool *in_set)
+ساكن فراغ
+set_initialize (بنية Spec_list *s, bool complement_this_set, bool *in_set)
 {
-  int c;
+  صحيح c;
 
   s->state = BEGIN_STATE;
-  while ((c = get_next (s, NULL)) != -1)
+  طالما ((c = get_next (s, عدم)) != -1)
     in_set[c] = true;
-  if (complement_this_set)
-    for (size_t i = 0; i < N_CHARS; i++)
+  𐤀𐤌 (complement_this_set)
+    لكل (size_t i = 0; i < N_CHARS; i++)
       in_set[i] = (!in_set[i]);
 }
 
-int
-main (int argc, char **argv)
+صحيح
+main (صحيح argc, حرف **argv)
 {
-  int c;
-  int non_option_args;
-  int min_operands;
-  int max_operands;
-  struct Spec_list buf1, buf2;
-  struct Spec_list *s1 = &buf1;
-  struct Spec_list *s2 = &buf2;
+  صحيح c;
+  صحيح non_option_args;
+  صحيح min_operands;
+  صحيح max_operands;
+  بنية Spec_list buf1, buf2;
+  بنية Spec_list *s1 = &buf1;
+  بنية Spec_list *s2 = &buf2;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -1694,45 +1694,45 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((c = getopt_long (argc, argv, "+AcCdstu", long_options, NULL)) != -1)
+  طالما ((c = getopt_long (argc, argv, "+AcCdstu", long_options, عدم)) != -1)
     {
-      switch (c)
+      بدل (c)
         {
-        case 'A':
+        حالة 'A':
           /* Undocumented option, for compatibility with AIX.  */
           setlocale (LC_COLLATE, "C");
           setlocale (LC_CTYPE, "C");
-          break;
+          اكسر;
 
-        case 'c':
-        case 'C':
+        حالة 'c':
+        حالة 'C':
           complement = true;
-          break;
+          اكسر;
 
-        case 'd':
+        حالة 'd':
           delete = true;
-          break;
+          اكسر;
 
-        case 's':
+        حالة 's':
           squeeze_repeats = true;
-          break;
+          اكسر;
 
-        case 't':
+        حالة 't':
           truncate_set1 = true;
-          break;
+          اكسر;
 
-        case 'u':
+        حالة 'u':
           /* Undocumented option, for compatibility with FreeBSD/macOS.  */
-          setvbuf (stdout, NULL, _IONBF, 0);
-          break;
+          setvbuf (stdout, عدم, _IONBF, 0);
+          اكسر;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        افتراضي:
           usage (EXIT_FAILURE);
-          break;
+          اكسر;
         }
     }
 
@@ -1741,11 +1741,11 @@ main (int argc, char **argv)
   min_operands = 1 + (delete == squeeze_repeats);
   max_operands = 1 + (delete <= squeeze_repeats);
 
-  if (non_option_args < min_operands)
+  𐤀𐤌 (non_option_args < min_operands)
     {
-      if (non_option_args == 0)
+      𐤀𐤌 (non_option_args == 0)
         error (0, 0, _("missing operand"));
-      else
+      وإلا
         {
           error (0, 0, _("missing operand after %s"), quote (argv[argc - 1]));
           fprintf (stderr, "%s\n",
@@ -1757,10 +1757,10 @@ main (int argc, char **argv)
       usage (EXIT_FAILURE);
     }
 
-  if (max_operands < non_option_args)
+  𐤀𐤌 (max_operands < non_option_args)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind + max_operands]));
-      if (non_option_args == 2)
+      𐤀𐤌 (non_option_args == 2)
         fprintf (stderr, "%s\n",
                  _("Only one string may be given when "
                    "deleting without squeezing repeats."));
@@ -1768,17 +1768,17 @@ main (int argc, char **argv)
     }
 
   spec_init (s1);
-  if (!parse_str (argv[optind], s1))
+  𐤀𐤌 (!parse_str (argv[optind], s1))
     main_exit (EXIT_FAILURE);
 
-  if (non_option_args == 2)
+  𐤀𐤌 (non_option_args == 2)
     {
       spec_init (s2);
-      if (!parse_str (argv[optind + 1], s2))
+      𐤀𐤌 (!parse_str (argv[optind + 1], s2))
         main_exit (EXIT_FAILURE);
     }
-  else
-    s2 = NULL;
+  وإلا
+    s2 = عدم;
 
   validate (s1, s2);
 
@@ -1789,93 +1789,93 @@ main (int argc, char **argv)
   xset_binary_mode (STDOUT_FILENO, O_BINARY);
   fadvise (stdin, FADVISE_SEQUENTIAL);
 
-  if (squeeze_repeats && non_option_args == 1)
+  𐤀𐤌 (squeeze_repeats && non_option_args == 1)
     {
       set_initialize (s1, complement, in_squeeze_set);
-      squeeze_filter (io_buf, sizeof io_buf, plain_read);
+      squeeze_filter (io_buf, حجم io_buf, plain_read);
     }
-  else if (delete && non_option_args == 1)
+  وإلا 𐤀𐤌 (delete && non_option_args == 1)
     {
       set_initialize (s1, complement, in_delete_set);
 
-      while (true)
+      طالما (true)
         {
-          size_t nr = read_and_delete (io_buf, sizeof io_buf);
-          if (nr == 0)
-            break;
-          if (fwrite (io_buf, 1, nr, stdout) != nr)
+          size_t nr = read_and_delete (io_buf, حجم io_buf);
+          𐤀𐤌 (nr == 0)
+            اكسر;
+          𐤀𐤌 (fwrite (io_buf, 1, nr, stdout) != nr)
             write_error ();
         }
     }
-  else if (squeeze_repeats && delete && non_option_args == 2)
+  وإلا 𐤀𐤌 (squeeze_repeats && delete && non_option_args == 2)
     {
       set_initialize (s1, complement, in_delete_set);
       set_initialize (s2, false, in_squeeze_set);
-      squeeze_filter (io_buf, sizeof io_buf, read_and_delete);
+      squeeze_filter (io_buf, حجم io_buf, read_and_delete);
     }
-  else if (translating)
+  وإلا 𐤀𐤌 (translating)
     {
-      if (complement)
+      𐤀𐤌 (complement)
         {
           bool *in_s1 = in_delete_set;
 
           set_initialize (s1, false, in_s1);
           s2->state = BEGIN_STATE;
-          for (int i = 0; i < N_CHARS; i++)
+          لكل (صحيح i = 0; i < N_CHARS; i++)
             xlate[i] = i;
-          for (int i = 0; i < N_CHARS; i++)
+          لكل (صحيح i = 0; i < N_CHARS; i++)
             {
-              if (!in_s1[i])
+              𐤀𐤌 (!in_s1[i])
                 {
-                  int ch = get_next (s2, NULL);
+                  صحيح ch = get_next (s2, عدم);
                   affirm (ch != -1 || truncate_set1);
-                  if (ch == -1)
+                  𐤀𐤌 (ch == -1)
                     {
                       /* This will happen when tr is invoked like e.g.
                          tr -cs A-Za-z0-9 '\012'.  */
-                      break;
+                      اكسر;
                     }
                   xlate[i] = ch;
                 }
             }
         }
-      else
+      وإلا
         {
-          int c1, c2;
-          enum Upper_Lower_class class_s1;
-          enum Upper_Lower_class class_s2;
+          صحيح c1, c2;
+          تعداد Upper_Lower_class class_s1;
+          تعداد Upper_Lower_class class_s2;
 
-          for (int i = 0; i < N_CHARS; i++)
+          لكل (صحيح i = 0; i < N_CHARS; i++)
             xlate[i] = i;
           s1->state = BEGIN_STATE;
           s2->state = BEGIN_STATE;
-          while (true)
+          طالما (true)
             {
               c1 = get_next (s1, &class_s1);
               c2 = get_next (s2, &class_s2);
 
-              if (class_s1 == UL_LOWER && class_s2 == UL_UPPER)
+              𐤀𐤌 (class_s1 == UL_LOWER && class_s2 == UL_UPPER)
                 {
-                  for (int i = 0; i < N_CHARS; i++)
-                    if (islower (i))
+                  لكل (صحيح i = 0; i < N_CHARS; i++)
+                    𐤀𐤌 (islower (i))
                       xlate[i] = toupper (i);
                 }
-              else if (class_s1 == UL_UPPER && class_s2 == UL_LOWER)
+              وإلا 𐤀𐤌 (class_s1 == UL_UPPER && class_s2 == UL_LOWER)
                 {
-                  for (int i = 0; i < N_CHARS; i++)
-                    if (isupper (i))
+                  لكل (صحيح i = 0; i < N_CHARS; i++)
+                    𐤀𐤌 (isupper (i))
                       xlate[i] = tolower (i);
                 }
-              else
+              وإلا
                 {
                   /* The following should have been checked by validate...  */
-                  if (c1 == -1 || c2 == -1)
-                    break;
+                  𐤀𐤌 (c1 == -1 || c2 == -1)
+                    اكسر;
                   xlate[c1] = c2;
                 }
 
               /* When case-converting, skip the elements as an optimization.  */
-              if (class_s2 != UL_NONE)
+              𐤀𐤌 (class_s2 != UL_NONE)
                 {
                   skip_construct (s1);
                   skip_construct (s2);
@@ -1883,25 +1883,25 @@ main (int argc, char **argv)
             }
           affirm (c1 == -1 || truncate_set1);
         }
-      if (squeeze_repeats)
+      𐤀𐤌 (squeeze_repeats)
         {
           set_initialize (s2, false, in_squeeze_set);
-          squeeze_filter (io_buf, sizeof io_buf, read_and_xlate);
+          squeeze_filter (io_buf, حجم io_buf, read_and_xlate);
         }
-      else
+      وإلا
         {
-          while (true)
+          طالما (true)
             {
-              size_t bytes_read = read_and_xlate (io_buf, sizeof io_buf);
-              if (bytes_read == 0)
-                break;
-              if (fwrite (io_buf, 1, bytes_read, stdout) != bytes_read)
+              size_t bytes_read = read_and_xlate (io_buf, حجم io_buf);
+              𐤀𐤌 (bytes_read == 0)
+                اكسر;
+              𐤀𐤌 (fwrite (io_buf, 1, bytes_read, stdout) != bytes_read)
                 write_error ();
             }
         }
     }
 
-  if (close (STDIN_FILENO) != 0)
+  𐤀𐤌 (close (STDIN_FILENO) != 0)
     error (EXIT_FAILURE, errno, _("standard input"));
 
   main_exit (EXIT_SUCCESS);

@@ -20,35 +20,35 @@
 /* Define TEST_STANDALONE to get the /bin/test version.  Otherwise, you get
    the shell builtin version. */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
+#ضمن <config.h>
+#ضمن <stdio.h>
+#ضمن <sys/types.h>
 
 #define TEST_STANDALONE 1
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME (test_mode == TEST_TEST ? "test" : "[")
 
-#include "system.h"
-#include "assure.h"
-#include "c-ctype.h"
-#include "issymlink.h"
-#include "quote.h"
-#include "stat-time.h"
-#include "strnumcmp.h"
-#include "test.h"
+#ضمن "system.h"
+#ضمن "assure.h"
+#ضمن "c-ctype.h"
+#ضمن "issymlink.h"
+#ضمن "quote.h"
+#ضمن "stat-time.h"
+#ضمن "strnumcmp.h"
+#ضمن "test.h"
 
-#include <stdarg.h>
+#ضمن <stdarg.h>
 
-#if HAVE_SYS_PARAM_H
+#𐤀𐤌 HAVE_SYS_PARAM_H
 # include <sys/param.h>
 #endif
 
 /* Exit status for syntax errors, etc.  */
-enum { TEST_TRUE, TEST_FALSE, TEST_FAILURE };
+تعداد { TEST_TRUE, TEST_FALSE, TEST_FAILURE };
 
 /* Binary operators.  */
-enum binop
+تعداد binop
   {
     /* String comparisons, e.g., EQ_STRING_BINOP for = or ==.  */
     EQ_STRING_BINOP, GT_STRING_BINOP, LT_STRING_BINOP, NE_STRING_BINOP,
@@ -58,36 +58,36 @@ enum binop
     EF_BINOP, NT_BINOP, OT_BINOP
   };
 
-#if defined TEST_STANDALONE
+#𐤀𐤌 defined TEST_STANDALONE
 # define test_exit(val) exit (val)
-# define test_main_return(val) return val
-#else
-   static jmp_buf test_exit_buf;
-   static int test_error_return = 0;
+# define test_main_return(val) أرجع val
+#وإلا
+   ساكن jmp_buf test_exit_buf;
+   ساكن صحيح test_error_return = 0;
 # define test_exit(val) test_error_return = val, longjmp (test_exit_buf, 1)
 # define test_main_return(val) test_exit (val)
 #endif /* !TEST_STANDALONE */
 
-static int pos;		/* The offset of the current argument in ARGV. */
-static int argc;	/* The number of arguments present in ARGV. */
-static char **argv;	/* The argument list. */
+ساكن صحيح pos;		/* The offset of the current argument in ARGV. */
+ساكن صحيح argc;	/* The number of arguments present in ARGV. */
+ساكن حرف **argv;	/* The argument list. */
 
-static bool unary_operator (void);
-static bool binary_operator (bool, enum binop);
-static bool two_arguments (void);
-static bool three_arguments (void);
-static bool posixtest (int);
+ساكن bool unary_operator (فراغ);
+ساكن bool binary_operator (bool, تعداد binop);
+ساكن bool two_arguments (فراغ);
+ساكن bool three_arguments (فراغ);
+ساكن bool posixtest (صحيح);
 
-static bool expr (void);
-static bool term (void);
-static bool and (void);
-static bool or (void);
+ساكن bool expr (فراغ);
+ساكن bool term (فراغ);
+ساكن bool and (فراغ);
+ساكن bool or (فراغ);
 
-static void beyond (void);
+ساكن فراغ beyond (فراغ);
 
 ATTRIBUTE_FORMAT ((printf, 1, 2))
-static _Noreturn void
-test_syntax_error (char const *format, ...)
+ساكن _Noreturn فراغ
+test_syntax_error (حرف ثابت *format, ...)
 {
   va_list ap;
   va_start (ap, format);
@@ -99,17 +99,17 @@ test_syntax_error (char const *format, ...)
    past the end of the argument list.  This check is suppressed if the
    argument is false.  */
 
-static void
+ساكن فراغ
 advance (bool f)
 {
   ++pos;
 
-  if (f && pos >= argc)
+  𐤀𐤌 (f && pos >= argc)
     beyond ();
 }
 
-static void
-unary_advance (void)
+ساكن فراغ
+unary_advance (فراغ)
 {
   advance (true);
   ++pos;
@@ -119,8 +119,8 @@ unary_advance (void)
  * beyond - call when we're beyond the end of the argument list (an
  *	error condition)
  */
-static _Noreturn void
-beyond (void)
+ساكن _Noreturn فراغ
+beyond (فراغ)
 {
   test_syntax_error (_("missing argument after %s"), quote (argv[argc - 1]));
 }
@@ -128,34 +128,34 @@ beyond (void)
 /* If the characters pointed to by STRING constitute a valid number,
    return a pointer to the start of the number, skipping any blanks or
    leading '+'.  Otherwise, report an error and exit.  */
-static char const *
-find_int (char const *string)
+ساكن حرف ثابت *
+find_int (حرف ثابت *string)
 {
-  char const *p;
-  char const *number_start;
+  حرف ثابت *p;
+  حرف ثابت *number_start;
 
-  for (p = string; isspace (to_uchar (*p)); p++)
-    continue;
+  لكل (p = string; isspace (to_uchar (*p)); p++)
+    استمر;
 
-  if (*p == '+')
+  𐤀𐤌 (*p == '+')
     {
       p++;
       number_start = p;
     }
-  else
+  وإلا
     {
       number_start = p;
       p += (*p == '-');
     }
 
-  if (c_isdigit (*p++))
+  𐤀𐤌 (c_isdigit (*p++))
     {
-      while (c_isdigit (*p))
+      طالما (c_isdigit (*p))
         p++;
-      while (isspace (to_uchar (*p)))
+      طالما (isspace (to_uchar (*p)))
         p++;
-      if (!*p)
-        return number_start;
+      𐤀𐤌 (!*p)
+        أرجع number_start;
     }
 
   test_syntax_error (_("invalid integer %s"), quote (string));
@@ -164,21 +164,21 @@ find_int (char const *string)
 /* Return the modification time of FILENAME.
    If unsuccessful, return an invalid timestamp that is less
    than all valid timestamps.  */
-static struct timespec
-get_mtime (char const *filename)
+ساكن بنية timespec
+get_mtime (حرف ثابت *filename)
 {
-  struct stat finfo;
-  return (stat (filename, &finfo) < 0
+  بنية stat finfo;
+  أرجع (stat (filename, &finfo) < 0
           ? make_timespec (TYPE_MINIMUM (time_t), -1)
           : get_stat_mtime (&finfo));
 }
 
 /* Return the type of S, one of the test command's binary operators.
    If S is not a binary operator, return -1.  */
-static int
-binop (char const *s)
+ساكن صحيح
+binop (حرف ثابت *s)
 {
-  return (  streq (s, "="  ) ? EQ_STRING_BINOP
+  أرجع (  streq (s, "="  ) ? EQ_STRING_BINOP
           : streq (s, "==" ) ? EQ_STRING_BINOP /* an alias for = */
           : streq (s, "!=" ) ? NE_STRING_BINOP
           : streq (s, ">"  ) ? GT_STRING_BINOP
@@ -213,142 +213,142 @@ binop (char const *s)
  *	'-l' string
  *	positive and negative integers
  */
-static bool
-term (void)
+ساكن bool
+term (فراغ)
 {
   bool value;
   bool negated = false;
-  int bop;
+  صحيح bop;
 
   /* Deal with leading 'not's.  */
-  while (pos < argc && argv[pos][0] == '!' && argv[pos][1] == '\0')
+  طالما (pos < argc && argv[pos][0] == '!' && argv[pos][1] == '\0')
     {
       advance (true);
       negated = !negated;
     }
 
-  if (pos >= argc)
+  𐤀𐤌 (pos >= argc)
     beyond ();
 
   /* A paren-bracketed argument. */
-  if (argv[pos][0] == '(' && argv[pos][1] == '\0')
+  𐤀𐤌 (argv[pos][0] == '(' && argv[pos][1] == '\0')
     {
-      int nargs;
+      صحيح nargs;
 
       advance (true);
 
-      for (nargs = 1;
+      لكل (nargs = 1;
            pos + nargs < argc && ! streq (argv[pos + nargs], ")");
            nargs++)
-        if (nargs == 4)
+        𐤀𐤌 (nargs == 4)
           {
             nargs = argc - pos;
-            break;
+            اكسر;
           }
 
       value = posixtest (nargs);
-      if (!argv[pos])
+      𐤀𐤌 (!argv[pos])
         test_syntax_error (_("%s expected"), quote (")"));
-      else
-        if (argv[pos][0] != ')' || argv[pos][1])
+      وإلا
+        𐤀𐤌 (argv[pos][0] != ')' || argv[pos][1])
           test_syntax_error (_("%s expected, found %s"),
                              quote_n (0, ")"), quote_n (1, argv[pos]));
       advance (false);
     }
 
   /* Are there enough arguments left that this could be dyadic?  */
-  else if (4 <= argc - pos && streq (argv[pos], "-l")
+  وإلا 𐤀𐤌 (4 <= argc - pos && streq (argv[pos], "-l")
            && 0 <= (bop = binop (argv[pos + 2])))
     value = binary_operator (true, bop);
-  else if (3 <= argc - pos
+  وإلا 𐤀𐤌 (3 <= argc - pos
            && 0 <= (bop = binop (argv[pos + 1])))
     value = binary_operator (false, bop);
 
   /* It might be a switch type argument.  */
-  else if (argv[pos][0] == '-' && argv[pos][1] && argv[pos][1] != 'a'
+  وإلا 𐤀𐤌 (argv[pos][0] == '-' && argv[pos][1] && argv[pos][1] != 'a'
            && argv[pos][1] != 'o' && argv[pos][2] == '\0')
     value = unary_operator ();
-  else
+  وإلا
     {
       value = (argv[pos][0] != '\0');
       advance (false);
     }
 
-  return negated ^ value;
+  أرجع negated ^ value;
 }
 
-static bool
-binary_operator (bool l_is_l, enum binop bop)
+ساكن bool
+binary_operator (bool l_is_l, تعداد binop bop)
 {
-  int op;
+  صحيح op;
 
-  if (l_is_l)
+  𐤀𐤌 (l_is_l)
     advance (false);
   op = pos + 1;
 
   /* Is the right integer expression of the form '-l string'? */
   bool r_is_l = op < argc - 2 && streq (argv[op + 1], "-l");
-  if (r_is_l)
+  𐤀𐤌 (r_is_l)
     advance (false);
 
   pos += 3;
 
-  switch (bop)
+  بدل (bop)
     {
-    case EQ_BINOP: case GE_BINOP: case GT_BINOP:
-    case LE_BINOP: case LT_BINOP: case NE_BINOP:
+    حالة EQ_BINOP: حالة GE_BINOP: حالة GT_BINOP:
+    حالة LE_BINOP: حالة LT_BINOP: حالة NE_BINOP:
       {
-        char lbuf[INT_BUFSIZE_BOUND (uintmax_t)];
-        char rbuf[INT_BUFSIZE_BOUND (uintmax_t)];
-        char const *l = (l_is_l
+        حرف lbuf[INT_BUFSIZE_BOUND (uintmax_t)];
+        حرف rbuf[INT_BUFSIZE_BOUND (uintmax_t)];
+        حرف ثابت *l = (l_is_l
                          ? umaxtostr (strlen (argv[op - 1]), lbuf)
                          : find_int (argv[op - 1]));
-        char const *r = (r_is_l
+        حرف ثابت *r = (r_is_l
                          ? umaxtostr (strlen (argv[op + 2]), rbuf)
                          : find_int (argv[op + 1]));
-        int cmp = strintcmp (l, r);
-        switch (+bop)
+        صحيح cmp = strintcmp (l, r);
+        بدل (+bop)
           {
-          case EQ_BINOP: return cmp == 0;
-          case GE_BINOP: return cmp >= 0;
-          case GT_BINOP: return cmp >  0;
-          case LE_BINOP: return cmp <= 0;
-          case LT_BINOP: return cmp <  0;
-          case NE_BINOP: return cmp != 0;
+          حالة EQ_BINOP: أرجع cmp == 0;
+          حالة GE_BINOP: أرجع cmp >= 0;
+          حالة GT_BINOP: أرجع cmp >  0;
+          حالة LE_BINOP: أرجع cmp <= 0;
+          حالة LT_BINOP: أرجع cmp <  0;
+          حالة NE_BINOP: أرجع cmp != 0;
           }
         unreachable ();
       }
 
-    case NT_BINOP: case OT_BINOP:
+    حالة NT_BINOP: حالة OT_BINOP:
       {
-        if (l_is_l | r_is_l)
+        𐤀𐤌 (l_is_l | r_is_l)
           test_syntax_error (_("%s does not accept -l"),
                              argv[op]);
-        int cmp = timespec_cmp (get_mtime (argv[op - 1]),
+        صحيح cmp = timespec_cmp (get_mtime (argv[op - 1]),
                                 get_mtime (argv[op + 1]));
-        return bop == OT_BINOP ? cmp < 0 : cmp > 0;
+        أرجع bop == OT_BINOP ? cmp < 0 : cmp > 0;
       }
 
-    case EF_BINOP:
-      if (l_is_l | r_is_l)
+    حالة EF_BINOP:
+      𐤀𐤌 (l_is_l | r_is_l)
         test_syntax_error (_("-ef does not accept -l"));
-      else
+      وإلا
         {
-          struct stat st[2];
-          return (stat (argv[op - 1], &st[0]) == 0
+          بنية stat st[2];
+          أرجع (stat (argv[op - 1], &st[0]) == 0
                   && stat (argv[op + 1], &st[1]) == 0
                   && psame_inode (&st[0], &st[1]));
         }
 
-    case EQ_STRING_BINOP:
-    case NE_STRING_BINOP:
-      return streq (argv[op - 1], argv[op + 1]) == (bop == EQ_STRING_BINOP);
+    حالة EQ_STRING_BINOP:
+    حالة NE_STRING_BINOP:
+      أرجع streq (argv[op - 1], argv[op + 1]) == (bop == EQ_STRING_BINOP);
 
-    case GT_STRING_BINOP:
-    case LT_STRING_BINOP:
+    حالة GT_STRING_BINOP:
+    حالة LT_STRING_BINOP:
       {
-        int cmp = strcoll (argv[op - 1], argv[op + 1]);
-        return bop == LT_STRING_BINOP ? cmp < 0 : cmp > 0;
+        صحيح cmp = strcoll (argv[op - 1], argv[op + 1]);
+        أرجع bop == LT_STRING_BINOP ? cmp < 0 : cmp > 0;
       }
     }
 
@@ -356,14 +356,14 @@ binary_operator (bool l_is_l, enum binop bop)
   affirm (false);
 }
 
-static bool
-unary_operator (void)
+ساكن bool
+unary_operator (فراغ)
 {
-  struct stat stat_buf;
+  بنية stat stat_buf;
 
-  switch (argv[pos][1])
+  بدل (argv[pos][1])
     {
-    default:
+    افتراضي:
       test_syntax_error (_("%s: unary operator expected"), quote (argv[pos]));
 
       /* All of the following unary operators use unary_advance (), which
@@ -371,131 +371,131 @@ unary_operator (void)
          pos right past it.  This means that pos - 1 is the location of the
          argument. */
 
-    case 'e':			/* file exists in the file system? */
+    حالة 'e':			/* file exists in the file system? */
       unary_advance ();
-      return stat (argv[pos - 1], &stat_buf) == 0;
+      أرجع stat (argv[pos - 1], &stat_buf) == 0;
 
-    case 'r':			/* file is readable? */
+    حالة 'r':			/* file is readable? */
       unary_advance ();
-      return euidaccess (argv[pos - 1], R_OK) == 0;
+      أرجع euidaccess (argv[pos - 1], R_OK) == 0;
 
-    case 'w':			/* File is writable? */
+    حالة 'w':			/* File is writable? */
       unary_advance ();
-      return euidaccess (argv[pos - 1], W_OK) == 0;
+      أرجع euidaccess (argv[pos - 1], W_OK) == 0;
 
-    case 'x':			/* File is executable? */
+    حالة 'x':			/* File is executable? */
       unary_advance ();
-      return euidaccess (argv[pos - 1], X_OK) == 0;
+      أرجع euidaccess (argv[pos - 1], X_OK) == 0;
 
-    case 'N':  /* File exists and has been modified since it was last read? */
+    حالة 'N':  /* File exists and has been modified since it was last read? */
       {
         unary_advance ();
-        if (stat (argv[pos - 1], &stat_buf) != 0)
-          return false;
-        struct timespec atime = get_stat_atime (&stat_buf);
-        struct timespec mtime = get_stat_mtime (&stat_buf);
-        return (timespec_cmp (mtime, atime) > 0);
+        𐤀𐤌 (stat (argv[pos - 1], &stat_buf) != 0)
+          أرجع false;
+        بنية timespec atime = get_stat_atime (&stat_buf);
+        بنية timespec mtime = get_stat_mtime (&stat_buf);
+        أرجع (timespec_cmp (mtime, atime) > 0);
       }
 
-    case 'O':			/* File is owned by you? */
+    حالة 'O':			/* File is owned by you? */
       {
         unary_advance ();
-        if (stat (argv[pos - 1], &stat_buf) != 0)
-          return false;
+        𐤀𐤌 (stat (argv[pos - 1], &stat_buf) != 0)
+          أرجع false;
         errno = 0;
         uid_t euid = geteuid ();
         uid_t NO_UID = -1;
-        return ! (euid == NO_UID && errno) && euid == stat_buf.st_uid;
+        أرجع ! (euid == NO_UID && errno) && euid == stat_buf.st_uid;
       }
 
-    case 'G':			/* File is owned by your group? */
+    حالة 'G':			/* File is owned by your group? */
       {
         unary_advance ();
-        if (stat (argv[pos - 1], &stat_buf) != 0)
-          return false;
+        𐤀𐤌 (stat (argv[pos - 1], &stat_buf) != 0)
+          أرجع false;
         errno = 0;
         gid_t egid = getegid ();
         gid_t NO_GID = -1;
-        return ! (egid == NO_GID && errno) && egid == stat_buf.st_gid;
+        أرجع ! (egid == NO_GID && errno) && egid == stat_buf.st_gid;
       }
 
-    case 'f':			/* File is a file? */
+    حالة 'f':			/* File is a file? */
       unary_advance ();
       /* Under POSIX, -f is true if the given file exists
          and is a regular file. */
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      أرجع (stat (argv[pos - 1], &stat_buf) == 0
               && S_ISREG (stat_buf.st_mode));
 
-    case 'd':			/* File is a directory? */
+    حالة 'd':			/* File is a directory? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      أرجع (stat (argv[pos - 1], &stat_buf) == 0
               && S_ISDIR (stat_buf.st_mode));
 
-    case 's':			/* File has something in it? */
+    حالة 's':			/* File has something in it? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      أرجع (stat (argv[pos - 1], &stat_buf) == 0
               && 0 < stat_buf.st_size);
 
-    case 'S':			/* File is a socket? */
+    حالة 'S':			/* File is a socket? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      أرجع (stat (argv[pos - 1], &stat_buf) == 0
               && S_ISSOCK (stat_buf.st_mode));
 
-    case 'c':			/* File is character special? */
+    حالة 'c':			/* File is character special? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      أرجع (stat (argv[pos - 1], &stat_buf) == 0
               && S_ISCHR (stat_buf.st_mode));
 
-    case 'b':			/* File is block special? */
+    حالة 'b':			/* File is block special? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      أرجع (stat (argv[pos - 1], &stat_buf) == 0
               && S_ISBLK (stat_buf.st_mode));
 
-    case 'p':			/* File is a named pipe? */
+    حالة 'p':			/* File is a named pipe? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      أرجع (stat (argv[pos - 1], &stat_buf) == 0
               && S_ISFIFO (stat_buf.st_mode));
 
-    case 'L':			/* Same as -h  */
+    حالة 'L':			/* Same as -h  */
       /*FALLTHROUGH*/
 
-    case 'h':			/* File is a symbolic link? */
+    حالة 'h':			/* File is a symbolic link? */
       unary_advance ();
-      return issymlink (argv[pos - 1]) == 1;
+      أرجع issymlink (argv[pos - 1]) == 1;
 
-    case 'u':			/* File is setuid? */
+    حالة 'u':			/* File is setuid? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      أرجع (stat (argv[pos - 1], &stat_buf) == 0
               && (stat_buf.st_mode & S_ISUID));
 
-    case 'g':			/* File is setgid? */
+    حالة 'g':			/* File is setgid? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      أرجع (stat (argv[pos - 1], &stat_buf) == 0
               && (stat_buf.st_mode & S_ISGID));
 
-    case 'k':			/* File has sticky bit set? */
+    حالة 'k':			/* File has sticky bit set? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      أرجع (stat (argv[pos - 1], &stat_buf) == 0
               && (stat_buf.st_mode & S_ISVTX));
 
-    case 't':			/* File (fd) is a terminal? */
+    حالة 't':			/* File (fd) is a terminal? */
       {
-        long int fd;
-        char const *arg;
+        long صحيح fd;
+        حرف ثابت *arg;
         unary_advance ();
         arg = find_int (argv[pos - 1]);
         errno = 0;
-        fd = strtol (arg, NULL, 10);
-        return (errno != ERANGE && 0 <= fd && fd <= INT_MAX && isatty (fd));
+        fd = strtol (arg, عدم, 10);
+        أرجع (errno != ERANGE && 0 <= fd && fd <= INT_MAX && isatty (fd));
       }
 
-    case 'n':			/* True if arg has some length. */
+    حالة 'n':			/* True if arg has some length. */
       unary_advance ();
-      return argv[pos - 1][0] != 0;
+      أرجع argv[pos - 1][0] != 0;
 
-    case 'z':			/* True if arg has no length. */
+    حالة 'z':			/* True if arg has no length. */
       unary_advance ();
-      return argv[pos - 1][0] == '\0';
+      أرجع argv[pos - 1][0] == '\0';
     }
 }
 
@@ -504,16 +504,16 @@ unary_operator (void)
  *	term
  *	term '-a' and
  */
-static bool
-and (void)
+ساكن bool
+and (فراغ)
 {
   bool value = true;
 
-  while (true)
+  طالما (true)
     {
       value &= term ();
-      if (! (pos < argc && streq (argv[pos], "-a")))
-        return value;
+      𐤀𐤌 (! (pos < argc && streq (argv[pos], "-a")))
+        أرجع value;
       advance (false);
     }
 }
@@ -523,16 +523,16 @@ and (void)
  *	and
  *	and '-o' or
  */
-static bool
-or (void)
+ساكن bool
+or (فراغ)
 {
   bool value = false;
 
-  while (true)
+  طالما (true)
     {
       value |= and ();
-      if (! (pos < argc && streq (argv[pos], "-o")))
-        return value;
+      𐤀𐤌 (! (pos < argc && streq (argv[pos], "-o")))
+        أرجع value;
       advance (false);
     }
 }
@@ -541,122 +541,122 @@ or (void)
  * expr:
  *	or
  */
-static bool
-expr (void)
+ساكن bool
+expr (فراغ)
 {
-  if (pos >= argc)
+  𐤀𐤌 (pos >= argc)
     beyond ();
 
-  return or ();		/* Same with this. */
+  أرجع or ();		/* Same with this. */
 }
 
-static bool
-one_argument (void)
+ساكن bool
+one_argument (فراغ)
 {
-  return argv[pos++][0] != '\0';
+  أرجع argv[pos++][0] != '\0';
 }
 
-static bool
-two_arguments (void)
+ساكن bool
+two_arguments (فراغ)
 {
   bool value;
 
-  if (streq (argv[pos], "!"))
+  𐤀𐤌 (streq (argv[pos], "!"))
     {
       advance (false);
       value = ! one_argument ();
     }
-  else if (argv[pos][0] == '-'
+  وإلا 𐤀𐤌 (argv[pos][0] == '-'
            && argv[pos][1] != '\0'
            && argv[pos][2] == '\0')
     {
       value = unary_operator ();
     }
-  else
+  وإلا
     beyond ();
-  return (value);
+  أرجع (value);
 }
 
-static bool
-three_arguments (void)
+ساكن bool
+three_arguments (فراغ)
 {
   bool value;
-  int bop = binop (argv[pos + 1]);
+  صحيح bop = binop (argv[pos + 1]);
 
-  if (0 <= bop)
+  𐤀𐤌 (0 <= bop)
     value = binary_operator (false, bop);
-  else if (streq (argv[pos], "!"))
+  وإلا 𐤀𐤌 (streq (argv[pos], "!"))
     {
       advance (true);
       value = !two_arguments ();
     }
-  else if (streq (argv[pos], "(") && streq (argv[pos + 2], ")"))
+  وإلا 𐤀𐤌 (streq (argv[pos], "(") && streq (argv[pos + 2], ")"))
     {
       advance (false);
       value = one_argument ();
       advance (false);
     }
-  else if (streq (argv[pos + 1], "-a") || streq (argv[pos + 1], "-o")
+  وإلا 𐤀𐤌 (streq (argv[pos + 1], "-a") || streq (argv[pos + 1], "-o")
            || streq (argv[pos + 1], ">") || streq (argv[pos + 1], "<"))
     value = expr ();
-  else
+  وإلا
     test_syntax_error (_("%s: binary operator expected"),
                        quote (argv[pos + 1]));
-  return (value);
+  أرجع (value);
 }
 
 /* This is an implementation of a Posix.2 proposal by David Korn. */
-static bool
-posixtest (int nargs)
+ساكن bool
+posixtest (صحيح nargs)
 {
   bool value;
 
-  switch (nargs)
+  بدل (nargs)
     {
-      case 1:
+      حالة 1:
         value = one_argument ();
-        break;
+        اكسر;
 
-      case 2:
+      حالة 2:
         value = two_arguments ();
-        break;
+        اكسر;
 
-      case 3:
+      حالة 3:
         value = three_arguments ();
-        break;
+        اكسر;
 
-      case 4:
-        if (streq (argv[pos], "!"))
+      حالة 4:
+        𐤀𐤌 (streq (argv[pos], "!"))
           {
             advance (true);
             value = !three_arguments ();
-            break;
+            اكسر;
           }
-        if (streq (argv[pos], "(") && streq (argv[pos + 3], ")"))
+        𐤀𐤌 (streq (argv[pos], "(") && streq (argv[pos + 3], ")"))
           {
             advance (false);
             value = two_arguments ();
             advance (false);
-            break;
+            اكسر;
           }
         FALLTHROUGH;
-      case 5:
-      default:
+      حالة 5:
+      افتراضي:
         affirm (0 < nargs);
         value = expr ();
     }
 
-  return (value);
+  أرجع (value);
 }
 
-#if defined TEST_STANDALONE
+#𐤀𐤌 defined TEST_STANDALONE
 
-void
-usage (int status)
+فراغ
+usage (صحيح status)
 {
-  if (status != EXIT_SUCCESS)
+  𐤀𐤌 (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  وإلا
     {
       fputs (_("\
 Usage: test EXPRESSION\n\
@@ -768,7 +768,7 @@ EXPRESSION is true or false and sets exit status.  It is one of:\n\
   -L FILE     FILE exists and is a symbolic link (same as -h)\n\
 "));
       oputs (_("\
-  -N FILE     FILE exists and has been modified since it was last read\n\
+  -N FILE     FILE exists and has been modified since it was last اقرأ\n\
 "));
       oputs (_("\
   -O FILE     FILE exists and is owned by the effective user ID\n\
@@ -777,7 +777,7 @@ EXPRESSION is true or false and sets exit status.  It is one of:\n\
   -p FILE     FILE exists and is a named pipe\n\
 "));
       oputs (_("\
-  -r FILE     FILE exists and the user has read access\n\
+  -r FILE     FILE exists and the user has اقرأ access\n\
 "));
       oputs (_("\
   -s FILE     FILE exists and has a size greater than zero\n\
@@ -792,15 +792,15 @@ EXPRESSION is true or false and sets exit status.  It is one of:\n\
   -u FILE     FILE exists and its set-user-ID bit is set\n\
 "));
       oputs (_("\
-  -w FILE     FILE exists and the user has write access\n\
+  -w FILE     FILE exists and the user has اكتب access\n\
 "));
       oputs (_("\
   -x FILE     FILE exists and the user has execute (or search) access\n\
 "));
       fputs (_("\
 \n\
-Except for -h and -L, all FILE-related tests dereference symbolic links.\n\
-Beware that parentheses need to be escaped (e.g., by backslashes) for shells.\n\
+Except لكل -h and -L, all FILE-related tests dereference symbolic links.\n\
+Beware that parentheses need to be escaped (e.g., by backslashes) لكل shells.\n\
 INTEGER may also be -l STRING, which evaluates to the length of STRING.\n\
 "), stdout);
       fputs (_("\
@@ -819,7 +819,7 @@ or 'test EXPR1 || test EXPR2' instead.\n\
 }
 #endif /* TEST_STANDALONE */
 
-#if !defined TEST_STANDALONE
+#𐤀𐤌 !defined TEST_STANDALONE
 # define main test_command
 #endif
 
@@ -833,19 +833,19 @@ or 'test EXPR1 || test EXPR2' instead.\n\
  * test:
  *	test expr
  */
-int
-main (int margc, char **margv)
+صحيح
+main (صحيح margc, حرف **margv)
 {
   bool value;
 
-#if !defined TEST_STANDALONE
-  int code;
+#𐤀𐤌 !defined TEST_STANDALONE
+  صحيح code;
 
   code = setjmp (test_exit_buf);
 
-  if (code)
-    return (test_error_return);
-#else /* TEST_STANDALONE */
+  𐤀𐤌 (code)
+    أرجع (test_error_return);
+#وإلا /* TEST_STANDALONE */
   initialize_main (&margc, &margv);
   set_program_name (margv[0]);
   setlocale (LC_ALL, "");
@@ -858,7 +858,7 @@ main (int margc, char **margv)
 
   argv = margv;
 
-  if (test_mode == TEST_LBRACKET)
+  𐤀𐤌 (test_mode == TEST_LBRACKET)
     {
       /* Recognize --help or --version, but only when invoked in the
          "[" form, when the last argument is not "]".  Use direct
@@ -866,19 +866,19 @@ main (int margc, char **margv)
          abbreviations.  POSIX allows "[ --help" and "[ --version" to
          have the usual GNU behavior, but it requires "test --help"
          and "test --version" to exit silently with status 0.  */
-      if (margc == 2)
+      𐤀𐤌 (margc == 2)
         {
-          if (streq (margv[1], "--help"))
+          𐤀𐤌 (streq (margv[1], "--help"))
             usage (EXIT_SUCCESS);
 
-          if (streq (margv[1], "--version"))
+          𐤀𐤌 (streq (margv[1], "--version"))
             {
               version_etc (stdout, PROGRAM_NAME, PACKAGE_NAME, Version, AUTHORS,
-                           (char *) NULL);
+                           (حرف *) عدم);
               test_main_return (EXIT_SUCCESS);
             }
         }
-      if (margc < 2 || !streq (margv[margc - 1], "]"))
+      𐤀𐤌 (margc < 2 || !streq (margv[margc - 1], "]"))
         test_syntax_error (_("missing %s"), quote ("]"));
 
       --margc;
@@ -887,12 +887,12 @@ main (int margc, char **margv)
   argc = margc;
   pos = 1;
 
-  if (pos >= argc)
+  𐤀𐤌 (pos >= argc)
     test_main_return (TEST_FALSE);
 
   value = posixtest (argc - 1);
 
-  if (pos != argc)
+  𐤀𐤌 (pos != argc)
     test_syntax_error (_("extra argument %s"), quote (argv[pos]));
 
   test_main_return (value ? TEST_TRUE : TEST_FALSE);

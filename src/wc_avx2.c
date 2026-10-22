@@ -14,46 +14,46 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
+#ضمن <config.h>
 
-#include "wc.h"
-#include "system.h"
-#include "ioblksize.h"
+#ضمن "wc.h"
+#ضمن "system.h"
+#ضمن "ioblksize.h"
 
-#include <x86intrin.h>
+#ضمن <x86intrin.h>
 
 /* Read FD and return a summary.  */
-extern struct wc_lines
-wc_lines_avx2 (int fd)
+خارجي بنية wc_lines
+wc_lines_avx2 (صحيح fd)
 {
   intmax_t lines = 0;
   intmax_t bytes = 0;
 
   __m256i endlines = _mm256_set1_epi8 ('\n');
 
-  while (true)
+  طالما (true)
     {
-       __m256i avx_buf[IO_BUFSIZE / sizeof (__m256i)];
-      ssize_t bytes_read = read (fd, avx_buf, sizeof avx_buf);
-      if (bytes_read <= 0)
-        return (struct wc_lines) { bytes_read == 0 ? 0 : errno, lines, bytes };
+       __m256i avx_buf[IO_BUFSIZE / حجم (__m256i)];
+      ssize_t bytes_read = اقرأ (fd, avx_buf, حجم avx_buf);
+      𐤀𐤌 (bytes_read <= 0)
+        أرجع (بنية wc_lines) { bytes_read == 0 ? 0 : errno, lines, bytes };
 
       bytes += bytes_read;
       __m256i *datap = avx_buf;
 
-      while (bytes_read >= 32)
+      طالما (bytes_read >= 32)
         {
            __m256i to_match = _mm256_load_si256 (datap);
            __m256i matches = _mm256_cmpeq_epi8 (to_match, endlines);
-           int mask = _mm256_movemask_epi8 (matches);
+           صحيح mask = _mm256_movemask_epi8 (matches);
            lines += __builtin_popcount (mask);
            datap += 1;
            bytes_read -= 32;
         }
 
       /* Finish up any left over bytes */
-      char *end = (char *) datap + bytes_read;
-      for (char *p = (char *) datap; p < end; p++)
+      حرف *end = (حرف *) datap + bytes_read;
+      لكل (حرف *p = (حرف *) datap; p < end; p++)
         lines += *p == '\n';
     }
 }
