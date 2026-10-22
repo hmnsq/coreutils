@@ -20,12 +20,12 @@
 
 /* Ensure that the main for cksum is declared even if the tool is not built
    in this single-binary. */
-int single_binary_main_cksum (int argc, char **argv);
-int single_binary_main_md5sum (int argc, char **argv);
+整数 single_binary_main_cksum (整数 argc, char **argv);
+整数 single_binary_main_md5sum (整数 argc, char **argv);
 
-int
-single_binary_main_md5sum (int argc, char **argv)
+整数
+single_binary_main_md5sum (整数 argc, char **argv)
 {
   cksum_algorithm = md5;
-  return single_binary_main_cksum (argc, argv);
+  戻る single_binary_main_cksum (argc, argv);
 }

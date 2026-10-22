@@ -26,35 +26,35 @@
    of canonical PATH1 and PATH2, ensuring only full path components
    are matched.  Return 0 on no match.  */
 ATTRIBUTE_PURE
-static int
+static 整数
 path_common_prefix (char const *path1, char const *path2)
 {
-  int i = 0;
-  int ret = 0;
+  整数 i = 0;
+  整数 ret = 0;
 
   /* We already know path1[0] and path2[0] are '/'.  Special case
      '//', which is only present in a canonical name on platforms
      where it is distinct.  */
-  if ((path1[1] == '/') != (path2[1] == '/'))
-    return 0;
+  もし ((path1[1] == '/') != (path2[1] == '/'))
+    戻る 0;
 
-  while (*path1 && *path2)
+  ながら (*path1 && *path2)
     {
-      if (*path1 != *path2)
+      もし (*path1 != *path2)
         break;
-      if (*path1 == '/')
+      もし (*path1 == '/')
         ret = i + 1;
       path1++;
       path2++;
       i++;
     }
 
-  if ((!*path1 && !*path2)
+  もし ((!*path1 && !*path2)
       || (!*path1 && *path2 == '/')
       || (!*path2 && *path1 == '/'))
     ret = i;
 
-  return ret;
+  戻る ret;
 }
 
 /* Either output STR to stdout or
@@ -65,21 +65,21 @@ path_common_prefix (char const *path1, char const *path2)
 static bool
 buffer_or_output (char const *str, char **pbuf, size_t *plen)
 {
-  if (*pbuf)
+  もし (*pbuf)
     {
       size_t slen = strlen (str);
-      if (slen >= *plen)
-        return true;
+      もし (slen >= *plen)
+        戻る true;
       memcpy (*pbuf, str, slen + 1);
       *pbuf += slen;
       *plen -= slen;
     }
-  else
+  否则
     {
       fputs (str, stdout);
     }
 
-  return false;
+  戻る false;
 }
 
 /* Output the relative representation if possible.
@@ -90,44 +90,44 @@ relpath (char const *can_fname, char const *can_reldir, char *buf, size_t len)
   bool buf_err = false;
 
   /* Skip the prefix common to --relative-to and path.  */
-  int common_index = path_common_prefix (can_reldir, can_fname);
-  if (!common_index)
-    return false;
+  整数 common_index = path_common_prefix (can_reldir, can_fname);
+  もし (!common_index)
+    戻る false;
 
   char const *relto_suffix = can_reldir + common_index;
   char const *fname_suffix = can_fname + common_index;
 
   /* Skip over extraneous '/'.  */
-  if (*relto_suffix == '/')
+  もし (*relto_suffix == '/')
     relto_suffix++;
-  if (*fname_suffix == '/')
+  もし (*fname_suffix == '/')
     fname_suffix++;
 
   /* Replace remaining components of --relative-to with '..', to get
      to a common directory.  Then output the remainder of fname.  */
-  if (*relto_suffix)
+  もし (*relto_suffix)
     {
       buf_err |= buffer_or_output ("..", &buf, &len);
-      for (; *relto_suffix; ++relto_suffix)
+      ために (; *relto_suffix; ++relto_suffix)
         {
-          if (*relto_suffix == '/')
+          もし (*relto_suffix == '/')
             buf_err |= buffer_or_output ("/..", &buf, &len);
         }
 
-      if (*fname_suffix)
+      もし (*fname_suffix)
         {
           buf_err |= buffer_or_output ("/", &buf, &len);
           buf_err |= buffer_or_output (fname_suffix, &buf, &len);
         }
     }
-  else
+  否则
     {
         buf_err |= buffer_or_output (*fname_suffix ? fname_suffix : ".",
                                      &buf, &len);
     }
 
-  if (buf_err)
+  もし (buf_err)
     error (0, ENAMETOOLONG, "%s", _("generating relative path"));
 
-  return !buf_err;
+  戻る !buf_err;
 }

@@ -33,11 +33,11 @@
 #define AUTHORS proper_name ("Richard Mlynarik")
 
 void
-usage (int status)
+usage (整数 status)
 {
-  if (status != EXIT_SUCCESS)
+  もし (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  否则
     {
       printf (_("Usage: %s [OPTION]...\n"), program_name);
       fputs (_("\
@@ -52,8 +52,8 @@ Same as id -un.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+整数
+メインページ (整数 argc, char **argv)
 {
   uid_t NO_UID = -1;
 
@@ -69,7 +69,7 @@ main (int argc, char **argv)
                                    Version, true, usage, AUTHORS,
                                    (char const *) NULL);
 
-  if (optind != argc)
+  もし (optind != argc)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind]));
       usage (EXIT_FAILURE);
@@ -78,9 +78,9 @@ main (int argc, char **argv)
   errno = 0;
   uid_t uid = geteuid ();
   struct passwd *pw = uid == NO_UID && errno ? NULL : getpwuid (uid);
-  if (!pw)
+  もし (!pw)
     error (EXIT_FAILURE, errno, _("cannot find name for user ID %ju"),
            (uintmax_t) uid);
   puts (pw->pw_name);
-  return EXIT_SUCCESS;
+  戻る EXIT_SUCCESS;
 }

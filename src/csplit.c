@@ -52,7 +52,7 @@ struct control
   intmax_t offset;		/* Offset from regexp to split at. */
   intmax_t lines_required;	/* Number of lines required. */
   intmax_t repeat;		/* Repeat count. */
-  int argnum;			/* ARGV index. */
+  整数 argnum;			/* ARGV index. */
   bool repeat_forever;		/* True if '*' used as a repeat count. */
   bool ignore;			/* If true, produce no output (for regexp). */
   bool regexpr;			/* True if regular expression was used. */
@@ -138,10 +138,10 @@ static char const *volatile prefix = DEFAULT_PREFIX;
 static char *volatile suffix = NULL;
 
 /* Number of digits to use in output file names. */
-static int volatile digits = 2;
+static 整数 volatile digits = 2;
 
 /* Number of files created so far. */
-static int volatile files_created = 0;
+static 整数 volatile files_created = 0;
 
 /* Number of bytes written to current file. */
 static intmax_t bytes_written;
@@ -229,7 +229,7 @@ xalloc_die (void)
 }
 
 static void
-interrupt_handler (int sig)
+interrupt_handler (整数 sig)
 {
   delete_all_files (true);
   signal (sig, SIG_DFL);
@@ -256,21 +256,21 @@ save_to_hold_area (char *start, idx_t num)
 static idx_t
 read_input (char *dest, idx_t max_n_bytes)
 {
-  if (max_n_bytes == 0)
-    return 0;
+  もし (max_n_bytes == 0)
+    戻る 0;
 
   ptrdiff_t bytes_read = safe_read (STDIN_FILENO, dest, max_n_bytes);
 
-  if (bytes_read == 0)
+  もし (bytes_read == 0)
     have_read_eof = true;
 
-  if (bytes_read < 0)
+  もし (bytes_read < 0)
     {
       error (0, errno, _("read error"));
       cleanup_fatal ();
     }
 
-  return bytes_read;
+  戻る bytes_read;
 }
 
 /* Initialize existing line record P. */
@@ -293,7 +293,7 @@ new_line_control (void)
   p->next = NULL;
   clear_line_control (p);
 
-  return p;
+  戻る p;
 }
 
 /* Record LINE_START, which is the address of the start of a line
@@ -305,11 +305,11 @@ keep_new_line (struct buffer_record *b, char *line_start, idx_t line_len)
   struct line *l;
 
   /* If there is no existing area to keep line info, get some. */
-  if (b->line_start == NULL)
+  もし (b->line_start == NULL)
     b->line_start = b->curr_line = new_line_control ();
 
   /* If existing area for lines is full, get more. */
-  if (b->curr_line->used == CTRL_SIZE)
+  もし (b->curr_line->used == CTRL_SIZE)
     {
       b->curr_line->next = new_line_control ();
       b->curr_line = b->curr_line->next;
@@ -339,18 +339,18 @@ record_line_starts (struct buffer_record *b)
   idx_t lines;			/* Number of lines found. */
   idx_t line_length;		/* Length of each line found. */
 
-  if (b->bytes_used == 0)
-    return 0;
+  もし (b->bytes_used == 0)
+    戻る 0;
 
   lines = 0;
   line_start = b->buffer;
   char *buffer_end = line_start + b->bytes_used;
   *buffer_end = '\n';
 
-  while (true)
+  ながら (true)
     {
       char *line_end = rawmemchr (line_start, '\n');
-      if (line_end == buffer_end)
+      もし (line_end == buffer_end)
         break;
       line_length = line_end - line_start + 1;
       keep_new_line (b, line_start, line_length);
@@ -360,14 +360,14 @@ record_line_starts (struct buffer_record *b)
 
   /* Check for an incomplete last line. */
   idx_t bytes_left = buffer_end - line_start;
-  if (bytes_left)
+  もし (bytes_left)
     {
-      if (have_read_eof)
+      もし (have_read_eof)
         {
           keep_new_line (b, line_start, bytes_left);
           lines++;
         }
-      else
+      否则
         save_to_hold_area (ximemdup (line_start, bytes_left), bytes_left);
     }
 
@@ -375,11 +375,11 @@ record_line_starts (struct buffer_record *b)
   b->first_available = b->start_line = last_line_number + 1;
   last_line_number += lines;
 
-  return lines;
+  戻る lines;
 }
 
 /* Work around <https://gcc.gnu.org/PR109614>.  */
-#if 13 <= __GNUC__
+#もし 13 <= __GNUC__
 # pragma GCC diagnostic ignored "-Wanalyzer-mismatching-deallocation"
 # pragma GCC diagnostic ignored "-Wanalyzer-use-after-free"
 # pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value"
@@ -388,7 +388,7 @@ record_line_starts (struct buffer_record *b)
 static void
 free_buffer (struct buffer_record *buf)
 {
-  for (struct line *l = buf->line_start; l;)
+  ために (struct line *l = buf->line_start; l;)
     {
       struct line *n = l->next;
       free (l);
@@ -414,7 +414,7 @@ get_new_buffer (idx_t min_size)
   new_buffer->line_start = new_buffer->curr_line = NULL;
   new_buffer->next = NULL;
 
-  return new_buffer;
+  戻る new_buffer;
 }
 
 /* Append buffer BUF to the linked list of buffers that contain
@@ -426,12 +426,12 @@ save_buffer (struct buffer_record *buf)
   buf->next = NULL;
   buf->curr_line = buf->line_start;
 
-  if (head == NULL)
+  もし (head == NULL)
     head = buf;
-  else
+  否则
     {
       struct buffer_record *p;
-      for (p = head; p->next; p = p->next)
+      ために (p = head; p->next; p = p->next)
         /* Do nothing. */ ;
       p->next = buf;
     }
@@ -453,15 +453,15 @@ save_buffer (struct buffer_record *buf)
 static bool
 load_buffer (void)
 {
-  if (have_read_eof)
-    return false;
+  もし (have_read_eof)
+    戻る false;
 
   /* We must make the buffer at least as large as the amount of data
      in the partial line left over from the last call,
      plus room for a sentinel '\n'. */
   idx_t bytes_wanted = MAX (START_SIZE, hold_count + 1);
 
-  while (true)
+  ながら (true)
     {
       struct buffer_record *b = get_new_buffer (bytes_wanted);
       idx_t bytes_alloc = b->bytes_alloc;
@@ -469,7 +469,7 @@ load_buffer (void)
       char *p = b->buffer;
 
       /* First check the 'holding' area for a partial line. */
-      if (hold_count)
+      もし (hold_count)
         {
           p = mempcpy (p, hold_area, hold_count);
           b->bytes_used += hold_count;
@@ -479,16 +479,16 @@ load_buffer (void)
 
       b->bytes_used += read_input (p, bytes_avail - 1);
 
-      if (record_line_starts (b) != 0)
+      もし (record_line_starts (b) != 0)
         {
           save_buffer (b);
-          return true;
+          戻る true;
         }
 
       free_buffer (b);
-      if (have_read_eof)
-        return false;
-      if (ckd_add (&bytes_wanted, bytes_alloc, bytes_alloc >> 1))
+      もし (have_read_eof)
+        戻る false;
+      もし (ckd_add (&bytes_wanted, bytes_alloc, bytes_alloc >> 1))
         xalloc_die ();
     }
 }
@@ -499,10 +499,10 @@ load_buffer (void)
 static intmax_t
 get_first_line_in_buffer (void)
 {
-  if (head == NULL && !load_buffer ())
-    return 0;
+  もし (head == NULL && !load_buffer ())
+    戻る 0;
 
-  return head->first_available;
+  戻る head->first_available;
 }
 
 /* Return a pointer to the logical first line in the buffer and make the
@@ -520,16 +520,16 @@ remove_line (void)
   struct cstring *line;		/* Return value. */
   struct line *l;		/* For convenience. */
 
-  if (prev_buf)
+  もし (prev_buf)
     {
       free_buffer (prev_buf);
       prev_buf = NULL;
     }
 
-  if (head == NULL && !load_buffer ())
-    return NULL;
+  もし (head == NULL && !load_buffer ())
+    戻る NULL;
 
-  if (current_line < head->first_available)
+  もし (current_line < head->first_available)
     current_line = head->first_available;
 
   ++(head->first_available);
@@ -539,11 +539,11 @@ remove_line (void)
   line = &l->starts[l->retrieve_index];
 
   /* Advance index to next line. */
-  if (++l->retrieve_index == l->used)
+  もし (++l->retrieve_index == l->used)
     {
       /* Go on to the next line record. */
       head->curr_line = l->next;
-      if (head->curr_line == NULL || head->curr_line->used == 0)
+      もし (head->curr_line == NULL || head->curr_line->used == 0)
         {
           /* Go on to the next data block.
              but first record the current one so we can free it
@@ -553,7 +553,7 @@ remove_line (void)
         }
     }
 
-  return line;
+  戻る line;
 }
 
 /* Search the buffers for line LINENUM, reading more input if necessary.
@@ -562,15 +562,15 @@ remove_line (void)
 static struct cstring *
 find_line (intmax_t linenum)
 {
-  if (head == NULL && !load_buffer ())
-    return NULL;
+  もし (head == NULL && !load_buffer ())
+    戻る NULL;
 
-  if (linenum < head->start_line)
-    return NULL;
+  もし (linenum < head->start_line)
+    戻る NULL;
 
-  for (struct buffer_record *b = head;;)
+  ために (struct buffer_record *b = head;;)
     {
-      if (linenum < b->start_line + b->num_lines)
+      もし (linenum < b->start_line + b->num_lines)
         {
           /* The line is in this buffer. */
           struct line *l;
@@ -579,15 +579,15 @@ find_line (intmax_t linenum)
           l = b->line_start;
           offset = linenum - b->start_line;
           /* Find the control record. */
-          while (offset >= CTRL_SIZE)
+          ながら (offset >= CTRL_SIZE)
             {
               l = l->next;
               offset -= CTRL_SIZE;
             }
-          return &l->starts[offset];
+          戻る &l->starts[offset];
         }
-      if (b->next == NULL && !load_buffer ())
-        return NULL;
+      もし (b->next == NULL && !load_buffer ())
+        戻る NULL;
       b = b->next;		/* Try the next data block. */
     }
 }
@@ -597,7 +597,7 @@ find_line (intmax_t linenum)
 static bool
 no_more_lines (void)
 {
-  return find_line (current_line + 1) == NULL;
+  戻る find_line (current_line + 1) == NULL;
 }
 
 /* Open NAME as standard input.  */
@@ -605,7 +605,7 @@ no_more_lines (void)
 static void
 set_input_file (char const *name)
 {
-  if (! streq (name, "-") && fd_reopen (STDIN_FILENO, name, O_RDONLY, 0) < 0)
+  もし (! streq (name, "-") && fd_reopen (STDIN_FILENO, name, O_RDONLY, 0) < 0)
     error (EXIT_FAILURE, errno, _("cannot open %s for reading"),
            quoteaf (name));
 }
@@ -616,7 +616,7 @@ set_input_file (char const *name)
    ARGNUM is the index in ARGV of the current pattern. */
 
 static void
-write_to_file (intmax_t last_line, bool ignore, int argnum)
+write_to_file (intmax_t last_line, bool ignore, 整数 argnum)
 {
   struct cstring *line;
   intmax_t first_line;		/* First available input line. */
@@ -624,7 +624,7 @@ write_to_file (intmax_t last_line, bool ignore, int argnum)
 
   first_line = get_first_line_in_buffer ();
 
-  if (! first_line || first_line > last_line)
+  もし (! first_line || first_line > last_line)
     {
       error (0, 0, _("%s: line number out of range"),
              quote (global_argv[argnum]));
@@ -633,16 +633,16 @@ write_to_file (intmax_t last_line, bool ignore, int argnum)
 
   lines = last_line - first_line;
 
-  for (intmax_t i = 0; i < lines; i++)
+  ために (intmax_t i = 0; i < lines; i++)
     {
       line = remove_line ();
-      if (line == NULL)
+      もし (line == NULL)
         {
           error (0, 0, _("%s: line number out of range"),
                  quote (global_argv[argnum]));
           cleanup_fatal ();
         }
-      if (!ignore)
+      もし (!ignore)
         save_line_to_file (line);
     }
 }
@@ -654,7 +654,7 @@ dump_rest_of_file (void)
 {
   struct cstring *line;
 
-  while ((line = remove_line ()) != NULL)
+  ながら ((line = remove_line ()) != NULL)
     save_line_to_file (line);
 }
 
@@ -668,9 +668,9 @@ handle_line_error (const struct control *p, intmax_t repetition)
 
   fprintf (stderr, _("%s: %s: line number out of range"),
            program_name, quote (imaxtostr (p->lines_required, buf)));
-  if (repetition)
+  もし (repetition)
     fprintf (stderr, _(" on repetition %jd\n"), repetition);
-  else
+  否则
     fprintf (stderr, "\n");
 
   cleanup_fatal ();
@@ -692,28 +692,28 @@ process_line_count (const struct control *p, intmax_t repetition)
   /* Ensure that the line number specified is not 1 greater than
      the number of lines in the file.
      When suppressing matched lines, check before the loop. */
-  if (no_more_lines () && suppress_matched)
+  もし (no_more_lines () && suppress_matched)
     handle_line_error (p, repetition);
 
-  if (!(linenum = get_first_line_in_buffer ()))
+  もし (!(linenum = get_first_line_in_buffer ()))
     handle_line_error (p, repetition);
 
-  while (linenum++ < last_line_to_save)
+  ながら (linenum++ < last_line_to_save)
     {
       struct cstring *line = remove_line ();
-      if (line == NULL)
+      もし (line == NULL)
         handle_line_error (p, repetition);
       save_line_to_file (line);
     }
 
   close_output_file ();
 
-  if (suppress_matched)
+  もし (suppress_matched)
     remove_line ();
 
   /* Ensure that the line number specified is not 1 greater than
      the number of lines in the file. */
-  if (no_more_lines () && !suppress_matched)
+  もし (no_more_lines () && !suppress_matched)
     handle_line_error (p, repetition);
 }
 
@@ -723,12 +723,12 @@ regexp_error (struct control *p, intmax_t repetition, bool ignore)
   fprintf (stderr, _("%s: %s: match not found"),
            program_name, quote (global_argv[p->argnum]));
 
-  if (repetition)
+  もし (repetition)
     fprintf (stderr, _(" on repetition %jd\n"), repetition);
-  else
+  否则
     fprintf (stderr, "\n");
 
-  if (!ignore)
+  もし (!ignore)
     {
       dump_rest_of_file ();
       close_output_file ();
@@ -749,82 +749,82 @@ process_regexp (struct control *p, intmax_t repetition)
   bool ignore = p->ignore;	/* If true, skip this section. */
   regoff_t ret;
 
-  if (!ignore)
+  もし (!ignore)
     create_output_file ();
 
   /* If there is no offset for the regular expression, or
      it is positive, then it is not necessary to buffer the lines. */
 
-  if (p->offset >= 0)
+  もし (p->offset >= 0)
     {
-      while (true)
+      ながら (true)
         {
           line = find_line (++current_line);
-          if (line == NULL)
+          もし (line == NULL)
             {
-              if (p->repeat_forever)
+              もし (p->repeat_forever)
                 {
-                  if (!ignore)
+                  もし (!ignore)
                     {
                       dump_rest_of_file ();
                       close_output_file ();
                     }
                   exit (EXIT_SUCCESS);
                 }
-              else
+              否则
                 regexp_error (p, repetition, ignore);
             }
           line_len = line->len;
-          if (line->str[line_len - 1] == '\n')
+          もし (line->str[line_len - 1] == '\n')
             line_len--;
           ret = re_search (&p->re_compiled, line->str, line_len,
                            0, line_len, NULL);
-          if (ret == -2)
+          もし (ret == -2)
             {
               error (0, 0, _("error in regular expression search"));
               cleanup_fatal ();
             }
-          if (ret == -1)
+          もし (ret == -1)
             {
               line = remove_line ();
-              if (!ignore)
+              もし (!ignore)
                 save_line_to_file (line);
             }
-          else
+          否则
             break;
         }
     }
-  else
+  否则
     {
       /* Buffer the lines. */
-      while (true)
+      ながら (true)
         {
           line = find_line (++current_line);
-          if (line == NULL)
+          もし (line == NULL)
             {
-              if (p->repeat_forever)
+              もし (p->repeat_forever)
                 {
-                  if (!ignore)
+                  もし (!ignore)
                     {
                       dump_rest_of_file ();
                       close_output_file ();
                     }
                   exit (EXIT_SUCCESS);
                 }
-              else
+              否则
                 regexp_error (p, repetition, ignore);
             }
           line_len = line->len;
-          if (line->str[line_len - 1] == '\n')
+          もし (line->str[line_len - 1] == '\n')
             line_len--;
           ret = re_search (&p->re_compiled, line->str, line_len,
                            0, line_len, NULL);
-          if (ret == -2)
+          もし (ret == -2)
             {
               error (0, 0, _("error in regular expression search"));
               cleanup_fatal ();
             }
-          if (ret != -1)
+          もし (ret != -1)
             break;
         }
     }
@@ -834,13 +834,13 @@ process_regexp (struct control *p, intmax_t repetition)
 
   write_to_file (break_line, ignore, p->argnum);
 
-  if (!ignore)
+  もし (!ignore)
     close_output_file ();
 
-  if (p->offset > 0)
+  もし (p->offset > 0)
     current_line = break_line;
 
-  if (suppress_matched)
+  もし (suppress_matched)
     remove_line ();
 }
 
@@ -849,17 +849,17 @@ process_regexp (struct control *p, intmax_t repetition)
 static void
 split_file (void)
 {
-  for (idx_t i = 0; i < control_used; i++)
+  ために (idx_t i = 0; i < control_used; i++)
     {
-      if (controls[i].regexpr)
+      もし (controls[i].regexpr)
         {
-          for (intmax_t j = 0; (controls[i].repeat_forever
+          ために (intmax_t j = 0; (controls[i].repeat_forever
                        || j <= controls[i].repeat); j++)
             process_regexp (&controls[i], j);
         }
-      else
+      否则
         {
-          for (intmax_t j = 0; (controls[i].repeat_forever
+          ために (intmax_t j = 0; (controls[i].repeat_forever
                        || j <= controls[i].repeat); j++)
             process_line_count (&controls[i], j);
         }
@@ -878,14 +878,14 @@ split_file (void)
    know of any hosts where this implementation isn't safe.  */
 
 static char *
-make_filename (int num)
+make_filename (整数 num)
 {
   strcpy (filename_space, prefix);
-  if (suffix)
+  もし (suffix)
     sprintf (filename_space + strlen (prefix), suffix, num);
-  else
+  否则
     sprintf (filename_space + strlen (prefix), "%0*d", digits, num);
-  return filename_space;
+  戻る filename_space;
 }
 
 /* Create the next output file. */
@@ -893,18 +893,18 @@ make_filename (int num)
 static void
 create_output_file (void)
 {
-  int nfiles = files_created;
+  整数 nfiles = files_created;
   bool fopen_ok;
-  int fopen_errno;
+  整数 fopen_errno;
 
   output_filename = make_filename (nfiles);
 
-  if (nfiles == INT_MAX)
+  もし (nfiles == INT_MAX)
     {
       fopen_ok = false;
       fopen_errno = EOVERFLOW;
     }
-  else
+  否则
     {
       /* Create the output file in a critical section, to avoid races.  */
       sigset_t oldset;
@@ -916,7 +916,7 @@ create_output_file (void)
       sigprocmask (SIG_SETMASK, &oldset, NULL);
     }
 
-  if (! fopen_ok)
+  もし (! fopen_ok)
     {
       error (0, fopen_errno, "%s", quotef (output_filename));
       cleanup_fatal ();
@@ -930,13 +930,13 @@ create_output_file (void)
 static void
 delete_all_files (bool in_signal_handler)
 {
-  if (! remove_files)
-    return;
+  もし (! remove_files)
+    戻る;
 
-  for (int i = files_created; 0 <= --i; )
+  ために (整数 i = files_created; 0 <= --i; )
     {
       char const *name = make_filename (i);
-      if (unlink (name) != 0 && errno != ENOENT && !in_signal_handler)
+      もし (unlink (name) != 0 && errno != ENOENT && !in_signal_handler)
         error (0, errno, "%s", quotef (name));
     }
 
@@ -949,25 +949,25 @@ delete_all_files (bool in_signal_handler)
 static void
 close_output_file (void)
 {
-  if (output_stream)
+  もし (output_stream)
     {
-      if (ferror (output_stream))
+      もし (ferror (output_stream))
         {
           error (0, 0, _("write error for %s"), quoteaf (output_filename));
           output_stream = NULL;
           cleanup_fatal ();
         }
-      if (fclose (output_stream) != 0)
+      もし (fclose (output_stream) != 0)
         {
           error (0, errno, "%s", quotef (output_filename));
           output_stream = NULL;
           cleanup_fatal ();
         }
-      if (bytes_written == 0 && elide_empty_files)
+      もし (bytes_written == 0 && elide_empty_files)
         {
           sigset_t oldset;
           bool unlink_ok;
-          int unlink_errno;
+          整数 unlink_errno;
 
           /* Remove the output file in a critical section, to avoid races.  */
           sigprocmask (SIG_BLOCK, &caught_signals, &oldset);
@@ -976,12 +976,12 @@ close_output_file (void)
           files_created--;
           sigprocmask (SIG_SETMASK, &oldset, NULL);
 
-          if (! unlink_ok && unlink_errno != ENOENT)
+          もし (! unlink_ok && unlink_errno != ENOENT)
             error (0, unlink_errno, "%s", quotef (output_filename));
         }
-      else
+      否则
         {
-          if (!suppress_count)
+          もし (!suppress_count)
             fprintf (stdout, "%jd\n", bytes_written);
         }
       output_stream = NULL;
@@ -995,7 +995,7 @@ static void
 save_line_to_file (const struct cstring *line)
 {
   idx_t l = fwrite (line->str, sizeof (char), line->len, output_stream);
-  if (l != line->len)
+  もし (l != line->len)
     {
       error (0, errno, _("write error for %s"), quoteaf (output_filename));
       output_stream = NULL;
@@ -1012,7 +1012,7 @@ new_control_record (void)
   static idx_t control_allocated = 0; /* Total space allocated. */
   struct control *p;
 
-  if (control_used == control_allocated)
+  もし (control_used == control_allocated)
     controls = xpalloc (controls, &control_allocated, 1, -1, sizeof *controls);
   p = &controls[control_used++];
   p->regexpr = false;
@@ -1020,7 +1020,7 @@ new_control_record (void)
   p->repeat_forever = false;
   p->lines_required = 0;
   p->offset = 0;
-  return p;
+  戻る p;
 }
 
 /* Check if there is a numeric offset after a regular expression.
@@ -1031,7 +1031,7 @@ new_control_record (void)
 static void
 check_for_offset (struct control *p, char const *str, char const *num)
 {
-  if (xstrtoimax (num, NULL, 10, &p->offset, "") != LONGINT_OK)
+  もし (xstrtoimax (num, NULL, 10, &p->offset, "") != LONGINT_OK)
     error (EXIT_FAILURE, 0, _("%s: integer expected after delimiter"),
            quote (str));
 }
@@ -1042,22 +1042,22 @@ check_for_offset (struct control *p, char const *str, char const *num)
    ARGNUM is the ARGV index of STR. */
 
 static void
-parse_repeat_count (int argnum, struct control *p, char *str)
+parse_repeat_count (整数 argnum, struct control *p, char *str)
 {
   char *end;
 
   end = str + strlen (str) - 1;
-  if (*end != '}')
+  もし (*end != '}')
     error (EXIT_FAILURE, 0, _("%s: '}' is required in repeat count"),
            quote (str));
   *end = '\0';
 
-  if (str + 1 == end - 1 && *(str + 1) == '*')
+  もし (str + 1 == end - 1 && *(str + 1) == '*')
     p->repeat_forever = true;
-  else
+  否则
     {
       uintmax_t val;
-      if (xstrtoumax (str + 1, NULL, 10, &val, "") != LONGINT_OK
+      もし (xstrtoumax (str + 1, NULL, 10, &val, "") != LONGINT_OK
           || ckd_add (&p->repeat, val, 0))
         {
           error (EXIT_FAILURE, 0,
@@ -1076,7 +1076,7 @@ parse_repeat_count (int argnum, struct control *p, char *str)
    Unless IGNORE is true, mark these lines for output. */
 
 static struct control *
-extract_regexp (int argnum, bool ignore, char const *str)
+extract_regexp (整数 argnum, bool ignore, char const *str)
 {
   idx_t len;			/* Number of bytes in this regexp. */
   char delim = *str;
@@ -1085,7 +1085,7 @@ extract_regexp (int argnum, bool ignore, char const *str)
   char const *err;
 
   closing_delim = strrchr (str + 1, delim);
-  if (closing_delim == NULL)
+  もし (closing_delim == NULL)
     error (EXIT_FAILURE, 0,
            _("%s: closing delimiter '%c' missing"), str, delim);
 
@@ -1102,51 +1102,51 @@ extract_regexp (int argnum, bool ignore, char const *str)
   re_syntax_options =
     RE_SYNTAX_POSIX_BASIC & ~RE_CONTEXT_INVALID_DUP & ~RE_NO_EMPTY_RANGES;
   err = re_compile_pattern (str + 1, len, &p->re_compiled);
-  if (err)
+  もし (err)
     {
       error (0, 0, _("%s: invalid regular expression: %s"), quote (str), err);
       cleanup_fatal ();
     }
 
-  if (closing_delim[1])
+  もし (closing_delim[1])
     check_for_offset (p, str, closing_delim + 1);
 
-  return p;
+  戻る p;
 }
 
 /* Extract the break patterns from args START through ARGC - 1 of ARGV.
    After each pattern, check if the next argument is a repeat count. */
 
 static void
-parse_patterns (int argc, int start, char **argv)
+parse_patterns (整数 argc, 整数 start, char **argv)
 {
   struct control *p;		/* New control record created. */
   static intmax_t last_val = 0;
 
-  for (int i = start; i < argc; i++)
+  ために (整数 i = start; i < argc; i++)
     {
-      if (*argv[i] == '/' || *argv[i] == '%')
+      もし (*argv[i] == '/' || *argv[i] == '%')
         {
           p = extract_regexp (i, *argv[i] == '%', argv[i]);
         }
-      else
+      否则
         {
           p = new_control_record ();
           p->argnum = i;
 
           uintmax_t val;
-          if (xstrtoumax (argv[i], NULL, 10, &val, "") != LONGINT_OK
+          もし (xstrtoumax (argv[i], NULL, 10, &val, "") != LONGINT_OK
               || INTMAX_MAX < val)
             error (EXIT_FAILURE, 0, _("%s: invalid pattern"), quote (argv[i]));
-          if (val == 0)
+          もし (val == 0)
             error (EXIT_FAILURE, 0,
                    _("%s: line number must be greater than zero"), argv[i]);
-          if (val < last_val)
+          もし (val < last_val)
             error (EXIT_FAILURE, 0,
                    _("line number %s is smaller than preceding line number,"
                      " %jd"), quote (argv[i]), last_val);
 
-          if (val == last_val)
+          もし (val == last_val)
             error (0, 0,
            _("warning: line number %s is the same as preceding line number"),
                    quote (argv[i]));
@@ -1156,7 +1156,7 @@ parse_patterns (int argc, int start, char **argv)
           p->lines_required = val;
         }
 
-      if (i + 1 < argc && *argv[i + 1] == '{')
+      もし (i + 1 < argc && *argv[i + 1] == '{')
         {
           /* We have a repeat count. */
           i++;
@@ -1173,11 +1173,11 @@ enum { FLAG_THOUSANDS = 1, FLAG_ALTERNATIVE = 2 };
 /* Scan the printf format flags in FORMAT, storing info about the
    flags into *FLAGS_PTR.  Return the number of flags found.  */
 static idx_t
-get_format_flags (char const *format, int *flags_ptr)
+get_format_flags (char const *format, 整数 *flags_ptr)
 {
-  int flags = 0;
+  整数 flags = 0;
 
-  for (idx_t count = 0; ; count++)
+  ために (idx_t count = 0; ; count++)
     {
       switch (format[count])
         {
@@ -1195,7 +1195,7 @@ get_format_flags (char const *format, int *flags_ptr)
 
         default:
           *flags_ptr = flags;
-          return count;
+          戻る count;
         }
     }
 }
@@ -1204,10 +1204,10 @@ get_format_flags (char const *format, int *flags_ptr)
    and compatible with FLAGS.  Change it to 'd' if it is 'u',
    since the format will be used with a signed value.  */
 static void
-check_format_conv_type (char *format, int flags)
+check_format_conv_type (char *format, 整数 flags)
 {
   unsigned char ch = *format;
-  int compatible_flags = FLAG_THOUSANDS;
+  整数 compatible_flags = FLAG_THOUSANDS;
 
   switch (ch)
     {
@@ -1229,15 +1229,15 @@ check_format_conv_type (char *format, int flags)
       error (EXIT_FAILURE, 0, _("missing conversion specifier in suffix"));
 
     default:
-      if (isprint (ch))
+      もし (isprint (ch))
         error (EXIT_FAILURE, 0,
                _("invalid conversion specifier in suffix: %c"), ch);
-      else
+      否则
         error (EXIT_FAILURE, 0,
                _("invalid conversion specifier in suffix: \\%.3o"), ch);
     }
 
-  if (flags & ~ compatible_flags)
+  もし (flags & ~ compatible_flags)
     error (EXIT_FAILURE, 0,
            _("invalid flags in conversion specification: %%%c%c"),
            (flags & ~ compatible_flags & FLAG_ALTERNATIVE ? '#' : '\''), ch);
@@ -1251,37 +1251,37 @@ max_out (char *format)
 {
   bool percent = false;
 
-  for (char *f = format; *f; f++)
-    if (*f == '%' && *++f != '%')
+  ために (char *f = format; *f; f++)
+    もし (*f == '%' && *++f != '%')
       {
-        if (percent)
+        もし (percent)
           error (EXIT_FAILURE, 0,
                  _("too many %% conversion specifications in suffix"));
         percent = true;
-        int flags;
+        整数 flags;
         f += get_format_flags (f, &flags);
-        while (c_isdigit (*f))
+        ながら (c_isdigit (*f))
           f++;
-        if (*f == '.')
-          while (c_isdigit (*++f))
+        もし (*f == '.')
+          ながら (c_isdigit (*++f))
             continue;
         check_format_conv_type (f, flags);
       }
 
-  if (! percent)
+  もし (! percent)
     error (EXIT_FAILURE, 0,
            _("missing %% conversion specification in suffix"));
 
-  int maxlen = snprintf (NULL, 0, format, INT_MAX);
-  if (! (0 <= maxlen && maxlen <= IDX_MAX))
+  整数 maxlen = snprintf (NULL, 0, format, INT_MAX);
+  もし (! (0 <= maxlen && maxlen <= IDX_MAX))
     xalloc_die ();
-  return maxlen;
+  戻る maxlen;
 }
 
-int
-main (int argc, char **argv)
+整数
+メインページ (整数 argc, char **argv)
 {
-  int optc;
+  整数 optc;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -1293,7 +1293,7 @@ main (int argc, char **argv)
 
   global_argv = argv;
 
-  while ((optc = getopt_long (argc, argv, "f:b:kn:sqz", longopts, NULL))
+  ながら ((optc = getopt_long (argc, argv, "f:b:kn:sqz", longopts, NULL))
          != -1)
     switch (optc)
       {
@@ -1335,11 +1335,11 @@ main (int argc, char **argv)
         usage (EXIT_FAILURE);
       }
 
-  if (argc - optind < 2)
+  もし (argc - optind < 2)
     {
-      if (argc <= optind)
+      もし (argc <= optind)
         error (0, 0, _("missing operand"));
-      else
+      否则
         error (0, 0, _("missing operand after %s"), quote (argv[argc - 1]));
       usage (EXIT_FAILURE);
     }
@@ -1348,9 +1348,9 @@ main (int argc, char **argv)
   idx_t max_digit_string_len
     = (suffix
        ? max_out (suffix)
-       : MAX (INT_STRLEN_BOUND (int), digits));
+       : MAX (INT_STRLEN_BOUND (整数), digits));
   idx_t filename_size;
-  if (ckd_add (&filename_size, prefix_len, max_digit_string_len + 1))
+  もし (ckd_add (&filename_size, prefix_len, max_digit_string_len + 1))
     xalloc_die ();
   filename_space = ximalloc (filename_size);
 
@@ -1364,10 +1364,10 @@ main (int argc, char **argv)
     struct sigaction act;
 
     sigemptyset (&caught_signals);
-    for (int i = 0; i < nsigs; i++)
+    ために (整数 i = 0; i < nsigs; i++)
       {
         sigaction (term_sig[i], NULL, &act);
-        if (act.sa_handler != SIG_IGN)
+        もし (act.sa_handler != SIG_IGN)
           sigaddset (&caught_signals, term_sig[i]);
       }
 
@@ -1375,28 +1375,28 @@ main (int argc, char **argv)
     act.sa_mask = caught_signals;
     act.sa_flags = 0;
 
-    for (int i = 0; i < nsigs; i++)
-      if (sigismember (&caught_signals, term_sig[i]))
+    ために (整数 i = 0; i < nsigs; i++)
+      もし (sigismember (&caught_signals, term_sig[i]))
         sigaction (term_sig[i], &act, NULL);
   }
 
   split_file ();
 
-  if (close (STDIN_FILENO) != 0)
+  もし (close (STDIN_FILENO) != 0)
     {
       error (0, errno, _("read error"));
       cleanup_fatal ();
     }
 
-  return EXIT_SUCCESS;
+  戻る EXIT_SUCCESS;
 }
 
 void
-usage (int status)
+usage (整数 status)
 {
-  if (status != EXIT_SUCCESS)
+  もし (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  否则
     {
       printf (_("\
 Usage: %s [OPTION]... FILE PATTERN...\n\
@@ -1408,7 +1408,7 @@ and output byte counts of each piece to standard output.\n\
 "), stdout);
        fputs (_("\
 \n\
-Read standard input if FILE is -\n\
+Read standard input もし FILE is -\n\
 "), stdout);
 
       emit_mandatory_arg_note ();

@@ -33,7 +33,7 @@
 #define AUTHORS proper_name ("David MacKenzie")
 
 /* The value to return to the calling program.  */
-static int exit_status;
+static 整数 exit_status;
 
 /* True if the POSIXLY_CORRECT environment variable is set.  */
 static bool posixly_correct;
@@ -44,11 +44,11 @@ static char const *const cfcc_msg =
  N_("warning: %s: character(s) following character constant have been ignored");
 
 void
-usage (int status)
+usage (整数 status)
 {
-  if (status != EXIT_SUCCESS)
+  もし (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  否则
     {
       printf (_("\
 Usage: %s FORMAT [ARGUMENT]...\n\
@@ -75,7 +75,7 @@ FORMAT controls the output as in C printf.  Interpreted sequences are:\n\
   \\e      escape\n\
   \\f      form feed\n\
   \\n      new line\n\
-  \\r      carriage return\n\
+  \\r      carriage 戻る\n\
   \\t      horizontal tab\n\
   \\v      vertical tab\n\
 "), stdout);
@@ -129,17 +129,17 @@ with examples including usage of width, precision, and flags.\n\
 static void
 verify_numeric (char const *s, char const *end)
 {
-  if (s == end)
+  もし (s == end)
     {
       error (0, 0, _("%s: expected a numeric value"), quote (s));
       exit_status = EXIT_FAILURE;
     }
-  else if (errno)
+  否则 もし (errno)
     {
       error (0, errno, "%s", quote (s));
       exit_status = EXIT_FAILURE;
     }
-  else if (*end)
+  否则 もし (*end)
     {
       error (0, 0, _("%s: value not completely converted"), quote (s));
       exit_status = EXIT_FAILURE;
@@ -153,12 +153,12 @@ FUNC_NAME (char const *s)						 \
   char *end;								 \
   TYPE val;								 \
                                                                          \
-  if ((*s == '\"' || *s == '\'') && *(s + 1))				 \
+  もし ((*s == '\"' || *s == '\'') && *(s + 1))				 \
     {									 \
       unsigned char ch = *++s;						 \
       val = ch;								 \
                                                                          \
-      if (MB_CUR_MAX > 1 && *(s + 1))					 \
+      もし (MB_CUR_MAX > 1 && *(s + 1))					 \
         {								 \
           mbstate_t mbstate; mbszero (&mbstate);			 \
           wchar_t wc;							 \
@@ -166,7 +166,7 @@ FUNC_NAME (char const *s)						 \
           ssize_t bytes;						 \
           /* Use mbrtowc not mbrtoc32, as per POSIX.  */		 \
           bytes = mbrtowc (&wc, s, slen, &mbstate);			 \
-          if (0 < bytes)						 \
+          もし (0 < bytes)						 \
             {								 \
               val = wc;							 \
               s += bytes - 1;						 \
@@ -177,16 +177,16 @@ FUNC_NAME (char const *s)						 \
          are characters following the character constant and that GNU	 \
          printf is ignoring those characters.  If POSIXLY_CORRECT *is*	 \
          set, then don't give the warning.  */				 \
-      if (*++s != 0 && !posixly_correct)				 \
+      もし (*++s != 0 && !posixly_correct)				 \
         error (0, 0, _(cfcc_msg), s);					 \
     }									 \
-  else									 \
+  否则									 \
     {									 \
       errno = 0;							 \
       val = (LIB_FUNC_EXPR);						 \
       verify_numeric (s, end);						 \
     }									 \
-  return val;								 \
+  戻る val;								 \
 }									 \
 
 STRTOX (intmax_t,    vstrtoimax, strtoimax (s, &end, 0))
@@ -239,70 +239,70 @@ print_esc_char (char c)
    If OCTAL_0 is nonzero, octal escapes are of the form \0ooo, where o
    is an octal digit; otherwise they are of the form \ooo.  */
 
-static int
+static 整数
 print_esc (char const *escstart, bool octal_0)
 {
   char const *p = escstart + 1;
-  int esc_value = 0;		/* Value of \nnn escape. */
-  int esc_length;		/* Length of \nnn escape. */
+  整数 esc_value = 0;		/* Value of \nnn escape. */
+  整数 esc_length;		/* Length of \nnn escape. */
 
-  if (*p == 'x')
+  もし (*p == 'x')
     {
       /* A hexadecimal \xhh escape sequence must have 1 or 2 hex. digits.  */
-      for (esc_length = 0, ++p;
+      ために (esc_length = 0, ++p;
            esc_length < 2 && c_isxdigit (*p);
            ++esc_length, ++p)
         esc_value = esc_value * 16 + fromhex (*p);
-      if (esc_length == 0)
+      もし (esc_length == 0)
         error (EXIT_FAILURE, 0, _("missing hexadecimal number in escape"));
       putchar (esc_value);
     }
-  else if (isoct (*p))
+  否则 もし (isoct (*p))
     {
       /* Parse \0ooo (if octal_0 && *p == '0') or \ooo (otherwise).
          Allow \ooo if octal_0 && *p != '0'; this is an undocumented
          extension to POSIX that is compatible with Bash 2.05b.  */
-      for (esc_length = 0, p += octal_0 && *p == '0';
+      ために (esc_length = 0, p += octal_0 && *p == '0';
            esc_length < 3 && isoct (*p);
            ++esc_length, ++p)
         esc_value = esc_value * 8 + fromoct (*p);
       putchar (esc_value);
     }
-  else if (*p && strchr ("\"\\abcefnrtv", *p))
+  否则 もし (*p && strchr ("\"\\abcefnrtv", *p))
     print_esc_char (*p++);
-  else if (*p == 'u' || *p == 'U')
+  否则 もし (*p == 'u' || *p == 'U')
     {
       char esc_char = *p;
-      unsigned int uni_value;
+      unsigned 整数 uni_value;
 
       uni_value = 0;
-      for (esc_length = (esc_char == 'u' ? 4 : 8), ++p;
+      ために (esc_length = (esc_char == 'u' ? 4 : 8), ++p;
            esc_length > 0;
            --esc_length, ++p)
         {
-          if (! c_isxdigit (*p))
+          もし (! c_isxdigit (*p))
             error (EXIT_FAILURE, 0, _("missing hexadecimal number in escape"));
           uni_value = uni_value * 16 + fromhex (*p);
         }
 
       /* Error for invalid code points 0000D800 through 0000DFFF inclusive.
          Note print_unicode_char() would print the literal \u.. in this case. */
-      if (uni_value >= 0xd800 && uni_value <= 0xdfff)
+      もし (uni_value >= 0xd800 && uni_value <= 0xdfff)
         error (EXIT_FAILURE, 0, _("invalid universal character name \\%c%0*x"),
                esc_char, (esc_char == 'u' ? 4 : 8), uni_value);
 
       print_unicode_char (stdout, uni_value, 0);
     }
-  else
+  否则
     {
       putchar ('\\');
-      if (*p)
+      もし (*p)
         {
           putchar (*p);
           p++;
         }
     }
-  return p - escstart - 1;
+  戻る p - escstart - 1;
 }
 
 /* Print string STR, evaluating \ escapes. */
@@ -310,10 +310,10 @@ print_esc (char const *escstart, bool octal_0)
 static void
 print_esc_string (char const *str)
 {
-  for (; *str; str++)
-    if (*str == '\\')
+  ために (; *str; str++)
+    もし (*str == '\\')
       str += print_esc (str, true);
-    else
+    否则
       putchar (*str);
 }
 
@@ -325,8 +325,8 @@ print_esc_string (char const *str)
 
 static void
 print_direc (char const *start, char conversion,
-             bool have_field_width, int field_width,
-             bool have_precision, int precision,
+             bool have_field_width, 整数 field_width,
+             bool have_precision, 整数 precision,
              char const *argument)
 {
   char *p;		/* Null-terminated copy of % directive. */
@@ -372,18 +372,18 @@ print_direc (char const *start, char conversion,
     case 'i':
       {
         intmax_t arg = argument ? vstrtoimax (argument) : 0;
-        if (!have_field_width)
+        もし (!have_field_width)
           {
-            if (!have_precision)
+            もし (!have_precision)
               xprintf (p, arg);
-            else
+            否则
               xprintf (p, precision, arg);
           }
-        else
+        否则
           {
-            if (!have_precision)
+            もし (!have_precision)
               xprintf (p, field_width, arg);
-            else
+            否则
               xprintf (p, field_width, precision, arg);
           }
       }
@@ -395,18 +395,18 @@ print_direc (char const *start, char conversion,
     case 'X':
       {
         uintmax_t arg = argument ? vstrtoumax (argument) : 0;
-        if (!have_field_width)
+        もし (!have_field_width)
           {
-            if (!have_precision)
+            もし (!have_precision)
               xprintf (p, arg);
-            else
+            否则
               xprintf (p, precision, arg);
           }
-        else
+        否则
           {
-            if (!have_precision)
+            もし (!have_precision)
               xprintf (p, field_width, arg);
-            else
+            否则
               xprintf (p, field_width, precision, arg);
           }
       }
@@ -422,18 +422,18 @@ print_direc (char const *start, char conversion,
     case 'G':
       {
         long double arg = argument ? vstrtold (argument) : 0;
-        if (!have_field_width)
+        もし (!have_field_width)
           {
-            if (!have_precision)
+            もし (!have_precision)
               xprintf (p, arg);
-            else
+            否则
               xprintf (p, precision, arg);
           }
-        else
+        否则
           {
-            if (!have_precision)
+            もし (!have_precision)
               xprintf (p, field_width, arg);
-            else
+            否则
               xprintf (p, field_width, precision, arg);
           }
       }
@@ -442,28 +442,28 @@ print_direc (char const *start, char conversion,
     case 'c':
       {
         char c = argument ? *argument : '\0';
-        if (!have_field_width)
+        もし (!have_field_width)
           xprintf (p, c);
-        else
+        否则
           xprintf (p, field_width, c);
       }
       break;
 
     case 's':
-      if (!argument)
+      もし (!argument)
         argument = "";
-      if (!have_field_width)
+      もし (!have_field_width)
         {
-          if (!have_precision)
+          もし (!have_precision)
             xprintf (p, argument);
-          else
+          否则
             xprintf (p, precision, argument);
         }
-      else
+      否则
         {
-          if (!have_precision)
+          もし (!have_precision)
             xprintf (p, field_width, argument);
-          else
+          否则
             xprintf (p, field_width, precision, argument);
         }
       break;
@@ -479,40 +479,40 @@ print_direc (char const *start, char conversion,
 struct arg_cursor
 {
   char const *f;	/* Pointer into 'format'.  */
-  int curr_arg;		/* Current offset.  */
-  int curr_s_arg;	/* Current sequential offset.  */
-  int end_arg;		/* End arg processed.  */
-  int direc_arg;	/* Arg for main directive.  */
+  整数 curr_arg;		/* Current offset.  */
+  整数 curr_s_arg;	/* Current sequential offset.  */
+  整数 end_arg;		/* End arg processed.  */
+  整数 direc_arg;	/* Arg for main directive.  */
 };
 ATTRIBUTE_PURE static struct arg_cursor
-get_curr_arg (int pos, struct arg_cursor ac)
+get_curr_arg (整数 pos, struct arg_cursor ac)
 {
   /* Convert sequences like "123$" by hand to avoid problems with strtol,
      which might treat "$" as part of the number in some locales.  */
-  int arg = 0;
+  整数 arg = 0;
   char const *f = ac.f;
-  if (pos < 3 && c_isdigit (*f))
+  もし (pos < 3 && c_isdigit (*f))
     {
       bool v = false;
-      int a = *f++ - '0';
-      for (; c_isdigit (*f); f++)
+      整数 a = *f++ - '0';
+      ために (; c_isdigit (*f); f++)
         {
           v |= ckd_mul (&a, a, 10);
           v |= ckd_add (&a, a, *f - '0');
         }
-      if (*f == '$')
+      もし (*f == '$')
         arg = v ? INT_MAX : a;
     }
 
-  if (0 < arg)
+  もし (0 < arg)
     {
       /* Process indexed %i$ format.  */
       arg--;
       ac.f = f + 1;
-      if (pos == 0)
+      もし (pos == 0)
         ac.direc_arg = arg;
     }
-  else
+  否则
     {
       /* Process sequential arg.  */
       arg = (pos == 0 ? (ac.direc_arg = -1)
@@ -520,20 +520,20 @@ get_curr_arg (int pos, struct arg_cursor ac)
              : ac.direc_arg);
     }
 
-  if (0 <= arg)
+  もし (0 <= arg)
     {
       ac.curr_arg = arg;
       ac.end_arg = MAX (ac.end_arg, arg);
     }
-  return ac;
+  戻る ac;
 }
 
 /* Print the text in FORMAT, using ARGV (with ARGC elements) for
    arguments to any '%' directives.
    Return the number of elements of ARGV used.  */
 
-static int
-print_formatted (char const *format, int argc, char **argv)
+static 整数
+print_formatted (char const *format, 整数 argc, char **argv)
 {
   struct arg_cursor ac;
   ac.curr_arg = ac.curr_s_arg = ac.end_arg = ac.direc_arg = -1;
@@ -541,14 +541,14 @@ print_formatted (char const *format, int argc, char **argv)
   char *direc;			/* Generated % directive.  */
   char *pdirec;			/* Pointer to current end of directive.  */
   bool have_field_width;	/* True if FIELD_WIDTH is valid.  */
-  int field_width = 0;		/* Arg to first '*'.  */
+  整数 field_width = 0;		/* Arg to first '*'.  */
   bool have_precision;		/* True if PRECISION is valid.  */
-  int precision = 0;		/* Arg to second '*'.  */
+  整数 precision = 0;		/* Arg to second '*'.  */
   char ok[UCHAR_MAX + 1];	/* ok['x'] is true if %x is allowed.  */
 
   direc = xmalloc (strlen (format) + 1);
 
-  for (ac.f = format; *ac.f; ac.f++)
+  ために (ac.f = format; *ac.f; ac.f++)
     {
       switch (*ac.f)
         {
@@ -557,7 +557,7 @@ print_formatted (char const *format, int argc, char **argv)
           pdirec = direc;
           *pdirec++ = *ac.f++;
           have_field_width = have_precision = false;
-          if (*ac.f == '%')
+          もし (*ac.f == '%')
             {
               putchar ('%');
               break;
@@ -565,20 +565,20 @@ print_formatted (char const *format, int argc, char **argv)
 
           ac = get_curr_arg (0, ac);
 
-          if (*ac.f == 'b')
+          もし (*ac.f == 'b')
             {
               /* FIXME: Field width and precision are not supported
                  for %b, even though POSIX requires it.  */
               ac = get_curr_arg (3, ac);
-              if (ac.curr_arg < argc)
+              もし (ac.curr_arg < argc)
                 print_esc_string (argv[ac.curr_arg]);
               break;
             }
 
-          if (*ac.f == 'q')
+          もし (*ac.f == 'q')
             {
               ac = get_curr_arg (3, ac);
-              if (ac.curr_arg < argc)
+              もし (ac.curr_arg < argc)
                 {
                   fputs (quotearg_style (shell_escape_quoting_style,
                                          argv[ac.curr_arg]), stdout);
@@ -591,11 +591,11 @@ print_formatted (char const *format, int argc, char **argv)
             ok['f'] = ok['F'] = ok['g'] = ok['G'] = ok['i'] = ok['o'] =
             ok['s'] = ok['u'] = ok['x'] = ok['X'] = 1;
 
-          for (;; ac.f++)
+          ために (;; ac.f++)
             {
               switch (*ac.f)
                 {
-#if (__GLIBC__ == 2 && 2 <= __GLIBC_MINOR__) || 3 <= __GLIBC__
+#もし (__GLIBC__ == 2 && 2 <= __GLIBC_MINOR__) || 3 <= __GLIBC__
                 case 'I':
 #endif
                 case '\'':
@@ -617,73 +617,73 @@ print_formatted (char const *format, int argc, char **argv)
             }
         no_more_flag_characters:
 
-          if (*ac.f == '*')
+          もし (*ac.f == '*')
             {
               *pdirec++ = *ac.f++;
 
               ac = get_curr_arg (1, ac);
 
-              if (ac.curr_arg < argc)
+              もし (ac.curr_arg < argc)
                 {
                   intmax_t width = vstrtoimax (argv[ac.curr_arg]);
-                  if (INT_MIN <= width && width <= INT_MAX)
+                  もし (INT_MIN <= width && width <= INT_MAX)
                     field_width = width;
-                  else
+                  否则
                     error (EXIT_FAILURE, 0, _("invalid field width: %s"),
                            quote (argv[ac.curr_arg]));
                 }
-              else
+              否则
                 field_width = 0;
               have_field_width = true;
             }
-          else
-            while (c_isdigit (*ac.f))
+          否则
+            ながら (c_isdigit (*ac.f))
               *pdirec++ = *ac.f++;
-          if (*ac.f == '.')
+          もし (*ac.f == '.')
             {
               *pdirec++ = *ac.f++;
               ok['c'] = 0;
-              if (*ac.f == '*')
+              もし (*ac.f == '*')
                 {
                   *pdirec++ = *ac.f++;
 
                   ac = get_curr_arg (2, ac);
 
-                  if (ac.curr_arg < argc)
+                  もし (ac.curr_arg < argc)
                     {
                       intmax_t prec = vstrtoimax (argv[ac.curr_arg]);
-                      if (prec < 0)
+                      もし (prec < 0)
                         {
                           /* A negative precision is taken as if the
                              precision were omitted, so -1 is safe
                              here even if prec < INT_MIN.  */
                           precision = -1;
                         }
-                      else if (INT_MAX < prec)
+                      否则 もし (INT_MAX < prec)
                         error (EXIT_FAILURE, 0, _("invalid precision: %s"),
                                quote (argv[ac.curr_arg]));
-                      else
+                      否则
                         precision = prec;
                     }
-                  else
+                  否则
                     precision = 0;
                   have_precision = true;
                 }
-              else
-                while (c_isdigit (*ac.f))
+              否则
+                ながら (c_isdigit (*ac.f))
                   *pdirec++ = *ac.f++;
             }
 
           *pdirec++ = '\0';
 
-          while (*ac.f == 'l' || *ac.f == 'L' || *ac.f == 'h'
+          ながら (*ac.f == 'l' || *ac.f == 'L' || *ac.f == 'h'
                  || *ac.f == 'j' || *ac.f == 't' || *ac.f == 'z')
             ++ac.f;
 
           {
             unsigned char conversion = *ac.f;
-            int speclen = MIN (ac.f + 1 - direc_start, INT_MAX);
-            if (! ok[conversion])
+            整数 speclen = MIN (ac.f + 1 - direc_start, INT_MAX);
+            もし (! ok[conversion])
               error (EXIT_FAILURE, 0,
                      _("%.*s: invalid conversion specification"),
                      speclen, direc_start);
@@ -708,14 +708,14 @@ print_formatted (char const *format, int argc, char **argv)
     }
 
   free (direc);
-  return MIN (argc, ac.end_arg + 1);
+  戻る MIN (argc, ac.end_arg + 1);
 }
 
-int
-main (int argc, char **argv)
+整数
+メインページ (整数 argc, char **argv)
 {
   char *format;
-  int args_used;
+  整数 args_used;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -729,28 +729,28 @@ main (int argc, char **argv)
 
   /* We directly parse options, rather than use parse_long_options, in
      order to avoid accepting abbreviations.  */
-  if (argc == 2)
+  もし (argc == 2)
     {
-      if (streq (argv[1], "--help"))
+      もし (streq (argv[1], "--help"))
         usage (EXIT_SUCCESS);
 
-      if (streq (argv[1], "--version"))
+      もし (streq (argv[1], "--version"))
         {
           version_etc (stdout, PROGRAM_NAME, PACKAGE_NAME, Version, AUTHORS,
                        (char *) NULL);
-          return EXIT_SUCCESS;
+          戻る EXIT_SUCCESS;
         }
     }
 
   /* The above handles --help and --version.
      Since there is no other invocation of getopt, handle '--' here.  */
-  if (1 < argc && streq (argv[1], "--"))
+  もし (1 < argc && streq (argv[1], "--"))
     {
       --argc;
       ++argv;
     }
 
-  if (argc <= 1)
+  もし (argc <= 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
@@ -766,12 +766,12 @@ main (int argc, char **argv)
       argc -= args_used;
       argv += args_used;
     }
-  while (args_used > 0 && argc > 0);
+  ながら (args_used > 0 && argc > 0);
 
-  if (argc > 0)
+  もし (argc > 0)
     error (0, 0,
            _("warning: ignoring excess arguments, starting with %s"),
            quote (argv[0]));
 
-  return exit_status;
+  戻る exit_status;
 }

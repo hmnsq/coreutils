@@ -53,16 +53,16 @@ samedir_template (char const *dstname, char buf[smallsize])
   ptrdiff_t dstdirlen = last_component (dstname) - dstname;
   size_t dsttmpsize = dstdirlen + sizeof simple_pattern;
   char *dsttmp;
-  if (dsttmpsize <= smallsize)
+  もし (dsttmpsize <= smallsize)
     dsttmp = buf;
-  else
+  否则
     {
       dsttmp = malloc (dsttmpsize);
-      if (!dsttmp)
-        return dsttmp;
+      もし (!dsttmp)
+        戻る dsttmp;
     }
   strcpy (mempcpy (dsttmp, dstname, dstdirlen), simple_pattern);
-  return dsttmp;
+  戻る dsttmp;
 }
 
 
@@ -70,17 +70,17 @@ samedir_template (char const *dstname, char buf[smallsize])
 
 struct link_arg
 {
-  int srcdir;
+  整数 srcdir;
   char const *srcname;
-  int dstdir;
-  int flags;
+  整数 dstdir;
+  整数 flags;
 };
 
-static int
+static 整数
 try_link (char *dest, void *arg)
 {
   struct link_arg *a = arg;
-  return linkat (a->srcdir, a->srcname, a->dstdir, dest, a->flags);
+  戻る linkat (a->srcdir, a->srcname, a->dstdir, dest, a->flags);
 }
 
 /* Hard-link directory SRCDIR's file SRCNAME to directory DSTDIR's
@@ -91,27 +91,27 @@ try_link (char *dest, void *arg)
    -1 if successful and DSTNAME already existed,
    0 if successful and DSTNAME did not already exist, and
    a positive errno value on failure.  */
-extern int
-force_linkat (int srcdir, char const *srcname,
-              int dstdir, char const *dstname, int flags, bool force,
-              int linkat_errno)
+extern 整数
+force_linkat (整数 srcdir, char const *srcname,
+              整数 dstdir, char const *dstname, 整数 flags, bool force,
+              整数 linkat_errno)
 {
-  if (linkat_errno < 0)
+  もし (linkat_errno < 0)
     linkat_errno = (linkat (srcdir, srcname, dstdir, dstname, flags) == 0
                     ? 0 : errno);
-  if (!force || linkat_errno != EEXIST)
-    return linkat_errno;
+  もし (!force || linkat_errno != EEXIST)
+    戻る linkat_errno;
 
   char buf[smallsize];
   char *dsttmp = samedir_template (dstname, buf);
-  if (! dsttmp)
-    return errno;
+  もし (! dsttmp)
+    戻る errno;
   struct link_arg arg = { srcdir, srcname, dstdir, flags };
-  int err;
+  整数 err;
 
-  if (try_tempname_len (dsttmp, 0, &arg, try_link, x_suffix_len) != 0)
+  もし (try_tempname_len (dsttmp, 0, &arg, try_link, x_suffix_len) != 0)
     err = errno;
-  else
+  否则
     {
       err = renameat (dstdir, dsttmp, dstdir, dstname) == 0 ? -1 : errno;
       /* Unlink DSTTMP even if renameat succeeded, in case DSTTMP
@@ -120,9 +120,9 @@ force_linkat (int srcdir, char const *srcname,
       unlinkat (dstdir, dsttmp, 0);
     }
 
-  if (dsttmp != buf)
+  もし (dsttmp != buf)
     free (dsttmp);
-  return err;
+  戻る err;
 }
 
 
@@ -131,14 +131,14 @@ force_linkat (int srcdir, char const *srcname,
 struct symlink_arg
 {
   char const *srcname;
-  int dstdir;
+  整数 dstdir;
 };
 
-static int
+static 整数
 try_symlink (char *dest, void *arg)
 {
   struct symlink_arg *a = arg;
-  return symlinkat (a->srcname, a->dstdir, dest);
+  戻る symlinkat (a->srcname, a->dstdir, dest);
 }
 
 /* Create a symlink containing SRCNAME in directory DSTDIR's file DSTNAME.
@@ -148,37 +148,37 @@ try_symlink (char *dest, void *arg)
    -1 if successful and DSTNAME already existed,
    0 if successful and DSTNAME did not already exist, and
    a positive errno value on failure.  */
-extern int
-force_symlinkat (char const *srcname, int dstdir, char const *dstname,
-                 bool force, int symlinkat_errno)
+extern 整数
+force_symlinkat (char const *srcname, 整数 dstdir, char const *dstname,
+                 bool force, 整数 symlinkat_errno)
 {
-  if (symlinkat_errno < 0)
+  もし (symlinkat_errno < 0)
     symlinkat_errno = symlinkat (srcname, dstdir, dstname) == 0 ? 0 : errno;
-  if (!force || symlinkat_errno != EEXIST)
-    return symlinkat_errno;
+  もし (!force || symlinkat_errno != EEXIST)
+    戻る symlinkat_errno;
 
   char buf[smallsize];
   char *dsttmp = samedir_template (dstname, buf);
-  if (!dsttmp)
-    return errno;
+  もし (!dsttmp)
+    戻る errno;
   struct symlink_arg arg = { srcname, dstdir };
-  int err;
+  整数 err;
 
-  if (try_tempname_len (dsttmp, 0, &arg, try_symlink, x_suffix_len) != 0)
+  もし (try_tempname_len (dsttmp, 0, &arg, try_symlink, x_suffix_len) != 0)
     err = errno;
-  else if (renameat (dstdir, dsttmp, dstdir, dstname) != 0)
+  否则 もし (renameat (dstdir, dsttmp, dstdir, dstname) != 0)
     {
       err = errno;
       unlinkat (dstdir, dsttmp, 0);
     }
-  else
+  否则
     {
       /* Don't worry about renameat being a no-op, since DSTTMP is
          newly created.  */
       err = -1;
     }
 
-  if (dsttmp != buf)
+  もし (dsttmp != buf)
     free (dsttmp);
-  return err;
+  戻る err;
 }

@@ -109,7 +109,7 @@ rm_option_init (struct rm_options *x)
   {
     static struct dev_ino dev_ino_buf;
     x->root_dev_ino = get_root_dev_ino (&dev_ino_buf);
-    if (x->root_dev_ino == NULL)
+    もし (x->root_dev_ino == NULL)
       error (EXIT_FAILURE, errno, _("failed to get attributes of %s"),
              quoteaf ("/"));
   }
@@ -167,17 +167,17 @@ cp_option_init (struct cp_options *x)
 
 static bool
 do_move (char const *source, char const *dest,
-         int dest_dirfd, char const *dest_relname, const struct cp_options *x)
+         整数 dest_dirfd, char const *dest_relname, const struct cp_options *x)
 {
   bool copy_into_self;
   bool rename_succeeded;
   bool ok = copy (source, dest, dest_dirfd, dest_relname, 0, x,
                   &copy_into_self, &rename_succeeded);
 
-  if (ok)
+  もし (ok)
     {
       char const *dir_to_remove;
-      if (copy_into_self)
+      もし (copy_into_self)
         {
           /* In general, when copy returns with copy_into_self set, SOURCE is
              the same as, or a parent of DEST.  In this case we know it's a
@@ -193,13 +193,13 @@ do_move (char const *source, char const *dest,
           dir_to_remove = NULL;
           ok = false;
         }
-      else if (rename_succeeded)
+      否则 もし (rename_succeeded)
         {
           /* No need to remove anything.  SOURCE was successfully
              renamed to DEST.  Or the user declined to rename a file.  */
           dir_to_remove = NULL;
         }
-      else
+      否则
         {
           /* This may mean SOURCE and DEST referred to different devices.
              It may also conceivably mean that even though they referred
@@ -226,7 +226,7 @@ do_move (char const *source, char const *dest,
           dir_to_remove = source;
         }
 
-      if (dir_to_remove != NULL)
+      もし (dir_to_remove != NULL)
         {
           struct rm_options rm_options;
           rm_option_init (&rm_options);
@@ -235,20 +235,20 @@ do_move (char const *source, char const *dest,
 
           enum RM_status status = rm ((void *) dir, &rm_options);
           affirm (VALID_STATUS (status));
-          if (status == RM_ERROR)
+          もし (status == RM_ERROR)
             ok = false;
         }
     }
 
-  return ok;
+  戻る ok;
 }
 
 void
-usage (int status)
+usage (整数 status)
 {
-  if (status != EXIT_SUCCESS)
+  もし (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  否则
     {
       printf (_("\
 Usage: %s [OPTION]... [-T] SOURCE DEST\n\
@@ -295,7 +295,7 @@ If you specify more than one of -i, -f, -n, only the final one takes effect.\n\
 "), stdout);
       oputs (_("\
       --no-copy\n\
-         do not copy if renaming fails\n\
+         do not copy もし renaming fails\n\
 "));
       oputs (_("\
       --strip-trailing-slashes\n\
@@ -339,8 +339,8 @@ If you specify more than one of -i, -f, -n, only the final one takes effect.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+整数
+メインページ (整数 argc, char **argv)
 {
   bool make_backups = false;
   char const *backup_suffix = NULL;
@@ -364,15 +364,15 @@ main (int argc, char **argv)
   /* Try to disable the ability to unlink a directory.  */
   priv_set_remove_linkdir ();
 
-  int c;
-  while ((c = getopt_long (argc, argv, "bfint:uvS:TZ", long_options, NULL))
+  整数 c;
+  ながら ((c = getopt_long (argc, argv, "bfint:uvS:TZ", long_options, NULL))
          != -1)
     {
       switch (c)
         {
         case 'b':
           make_backups = true;
-          if (optarg)
+          もし (optarg)
             version_control_string = optarg;
           break;
         case 'f':
@@ -397,7 +397,7 @@ main (int argc, char **argv)
           remove_trailing_slashes = true;
           break;
         case 't':
-          if (target_directory)
+          もし (target_directory)
             error (EXIT_FAILURE, 0, _("multiple target directories specified"));
           target_directory = optarg;
           break;
@@ -406,7 +406,7 @@ main (int argc, char **argv)
           break;
         case 'u':
           x.update = UPDATE_OLDER;
-          if (optarg)
+          もし (optarg)
             x.update = XARGMATCH ("--update", optarg,
                                   update_type_string, update_type);
           break;
@@ -420,12 +420,12 @@ main (int argc, char **argv)
         case 'Z':
           /* As a performance enhancement, don't even bother trying
              to "restorecon" when not on an selinux-enabled kernel.  */
-          if (selinux_enabled)
+          もし (selinux_enabled)
             {
               x.preserve_security_context = false;
               x.set_security_context = selabel_open (SELABEL_CTX_FILE,
                                                      NULL, 0);
-              if (! x.set_security_context)
+              もし (! x.set_security_context)
                 error (0, errno, _("warning: ignoring --context"));
             }
           break;
@@ -436,14 +436,14 @@ main (int argc, char **argv)
         }
     }
 
-  int n_files = argc - optind;
+  整数 n_files = argc - optind;
   char **file = argv + optind;
 
-  if (n_files <= !target_directory)
+  もし (n_files <= !target_directory)
     {
-      if (n_files <= 0)
+      もし (n_files <= 0)
         error (0, 0, _("missing file operand"));
-      else
+      否则
         error (0, 0, _("missing destination file operand after %s"),
                quoteaf (file[0]));
       usage (EXIT_FAILURE);
@@ -451,44 +451,44 @@ main (int argc, char **argv)
 
   struct stat sb;
   sb.st_mode = 0;
-  int target_dirfd = AT_FDCWD;
-  if (no_target_directory)
+  整数 target_dirfd = AT_FDCWD;
+  もし (no_target_directory)
     {
-      if (target_directory)
+      もし (target_directory)
         error (EXIT_FAILURE, 0,
                _("cannot combine --target-directory (-t) "
                  "and --no-target-directory (-T)"));
-      if (2 < n_files)
+      もし (2 < n_files)
         {
           error (0, 0, _("extra operand %s"), quoteaf (file[2]));
           usage (EXIT_FAILURE);
         }
     }
-  else if (target_directory)
+  否则 もし (target_directory)
     {
       target_dirfd = target_directory_operand (target_directory, &sb);
-      if (! target_dirfd_valid (target_dirfd))
+      もし (! target_dirfd_valid (target_dirfd))
         error (EXIT_FAILURE, errno, _("target directory %s"),
                quoteaf (target_directory));
     }
-  else
+  否则
     {
       char const *lastfile = file[n_files - 1];
-      if (n_files == 2 && !x.exchange)
+      もし (n_files == 2 && !x.exchange)
         x.rename_errno = (renameatu (AT_FDCWD, file[0], AT_FDCWD, lastfile,
                                      RENAME_NOREPLACE)
                           ? errno : 0);
-      if (x.rename_errno != 0)
+      もし (x.rename_errno != 0)
         {
-          int fd = target_directory_operand (lastfile, &sb);
-          if (target_dirfd_valid (fd))
+          整数 fd = target_directory_operand (lastfile, &sb);
+          もし (target_dirfd_valid (fd))
             {
               x.rename_errno = -1;
               target_dirfd = fd;
               target_directory = lastfile;
               n_files--;
             }
-          else
+          否则
             {
               /* The last operand LASTFILE cannot be opened as a directory.
                  If there are more than two operands, report an error.
@@ -499,8 +499,8 @@ main (int argc, char **argv)
                  In this case use stat to test whether LASTFILE is a
                  directory, in case opening a non-directory with (O_SEARCH
                  | O_DIRECTORY) failed with EACCES not ENOTDIR.  */
-              int err = errno;
-              if (2 < n_files
+              整数 err = errno;
+              もし (2 < n_files
                   || (O_PATHSEARCH == O_SEARCH && err == EACCES
                       && (sb.st_mode != 0 || stat (lastfile, &sb) == 0)
                       && S_ISDIR (sb.st_mode)))
@@ -514,14 +514,14 @@ main (int argc, char **argv)
      systems (e.g., GNU/Linux) have a rename function that honors a
      trailing slash in the source, while others (Solaris 9, FreeBSD
      7.2) have a rename function that ignores it.  */
-  if (remove_trailing_slashes)
-    for (int i = 0; i < n_files; i++)
+  もし (remove_trailing_slashes)
+    ために (整数 i = 0; i < n_files; i++)
       strip_trailing_slashes (file[i]);
 
-  if (x.interactive == I_ALWAYS_SKIP)
+  もし (x.interactive == I_ALWAYS_SKIP)
     x.update = UPDATE_NONE;
 
-  if (make_backups
+  もし (make_backups
       && (x.exchange
           || x.update == UPDATE_NONE
           || x.update == UPDATE_NONE_FAIL))
@@ -541,16 +541,16 @@ main (int argc, char **argv)
   hash_init ();
 
   bool ok;
-  if (target_directory)
+  もし (target_directory)
     {
       /* Initialize the hash table only if we'll need it.
          The problem it is used to detect can arise only if there are
          two or more files to move.  */
-      if (2 <= n_files)
+      もし (2 <= n_files)
         dest_info_init (&x);
 
       ok = true;
-      for (int i = 0; i < n_files; ++i)
+      ために (整数 i = 0; i < n_files; ++i)
         {
           x.last_file = i + 1 == n_files;
           char const *source = file[i];
@@ -563,7 +563,7 @@ main (int argc, char **argv)
           free (dest);
         }
     }
-  else
+  否则
     {
       x.last_file = true;
       ok = do_move (file[0], file[1], AT_FDCWD, file[1], &x);

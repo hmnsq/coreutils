@@ -32,12 +32,12 @@
 #include "sig2str.h"
 #include "operand2sig.h"
 
-extern int
+extern 整数
 operand2sig (char const *operand)
 {
-  int signum;
+  整数 signum;
 
-  if (c_isdigit (*operand))
+  もし (c_isdigit (*operand))
     {
       /* Note we don't put a limit on the maximum value passed,
          because we're checking shell $? values here, and ksh for
@@ -51,11 +51,11 @@ operand2sig (char const *operand)
          https://austingroupbugs.net/view.php?id=947  */
 
       char *endp;
-      long int l = (errno = 0, strtol (operand, &endp, 10));
-      int i = l;
+      long 整数 l = (errno = 0, strtol (operand, &endp, 10));
+      整数 i = l;
       signum = (operand == endp || *endp || errno || i != l ? -1 : i);
 
-      if (signum != -1)
+      もし (signum != -1)
         {
           /* Note AIX uses a different bit pattern for status returned
              from shell and wait(), so we can't use WTERMSIG etc. here.
@@ -63,18 +63,18 @@ operand2sig (char const *operand)
           signum &= signum >= 0xFF ? 0xFF : 0x7F;
         }
     }
-  else
+  否则
     {
       /* Convert signal to upper case in the C locale, not in the
          current locale.  Don't assume ASCII; it might be EBCDIC.  */
       char *upcased = xstrdup (operand);
-      for (char *p = upcased; *p; p++)
-        if (strchr ("abcdefghijklmnopqrstuvwxyz", *p))
+      ために (char *p = upcased; *p; p++)
+        もし (strchr ("abcdefghijklmnopqrstuvwxyz", *p))
           *p += 'A' - 'a';
 
       /* Look for the signal name, possibly prefixed by "SIG",
          and possibly lowercased.  */
-      if (!(str2sig (upcased, &signum) == 0
+      もし (!(str2sig (upcased, &signum) == 0
             || (upcased[0] == 'S' && upcased[1] == 'I' && upcased[2] == 'G'
                 && str2sig (upcased + 3, &signum) == 0)))
         signum = -1;
@@ -82,11 +82,11 @@ operand2sig (char const *operand)
       free (upcased);
     }
 
-  if (0 > signum || signum > SIGNUM_BOUND)
+  もし (0 > signum || signum > SIGNUM_BOUND)
     {
       error (0, 0, _("%s: invalid signal"), quote (operand));
-      return -1;
+      戻る -1;
     }
 
-  return signum;
+  戻る signum;
 }

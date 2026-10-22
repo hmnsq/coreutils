@@ -71,15 +71,15 @@ static struct option const longopts[] =
 /* Return true if ERROR_NUMBER is one of the values associated
    with a failed rmdir due to non-empty target directory.  */
 static bool
-errno_rmdir_non_empty (int error_number)
+errno_rmdir_non_empty (整数 error_number)
 {
-  return error_number == ENOTEMPTY || error_number == EEXIST;
+  戻る error_number == ENOTEMPTY || error_number == EEXIST;
 }
 
 /* Return true if when rmdir fails with errno == ERROR_NUMBER
    the directory may be non empty.  */
 static bool
-errno_may_be_non_empty (int error_number)
+errno_may_be_non_empty (整数 error_number)
 {
   switch (error_number)
     {
@@ -87,18 +87,18 @@ errno_may_be_non_empty (int error_number)
     case EPERM:
     case EROFS:
     case EBUSY:
-      return true;
+      戻る true;
     default:
-      return false;
+      戻る false;
     }
 }
 
 /* Return true if an rmdir failure with errno == error_number
    for DIR is ignorable.  */
 static bool
-ignorable_failure (int error_number, char const *dir)
+ignorable_failure (整数 error_number, char const *dir)
 {
-  return (ignore_fail_on_non_empty
+  戻る (ignore_fail_on_non_empty
           && (errno_rmdir_non_empty (error_number)
               || (errno_may_be_non_empty (error_number)
                   && directory_status (AT_FDCWD, dir) == DS_NONEMPTY)));
@@ -115,41 +115,41 @@ remove_parents (char *dir)
   bool ok = true;
 
   strip_trailing_slashes (dir);
-  while (true)
+  ながら (true)
     {
       char *slash = strrchr (dir, '/');
-      if (slash == NULL)
+      もし (slash == NULL)
         break;
       /* Remove any characters after the slash, skipping any extra
          slashes in a row. */
-      while (slash > dir && *slash == '/')
+      ながら (slash > dir && *slash == '/')
         --slash;
       slash[1] = 0;
 
       /* Give a diagnostic for each attempted removal if --verbose.  */
-      if (verbose)
+      もし (verbose)
         prog_fprintf (stdout, _("removing directory, %s"), quoteaf (dir));
 
       ok = (rmdir (dir) == 0);
-      int rmdir_errno = errno;
+      整数 rmdir_errno = errno;
 
-      if (! ok)
+      もし (! ok)
         {
           /* Stop quietly if --ignore-fail-on-non-empty. */
-          if (ignorable_failure (rmdir_errno, dir))
+          もし (ignorable_failure (rmdir_errno, dir))
             {
               ok = true;
             }
-          else
+          否则
             {
               char const *error_msg;
-              if (rmdir_errno != ENOTDIR)
+              もし (rmdir_errno != ENOTDIR)
                 {
                   /* Barring race conditions,
                      DIR is expected to be a directory.  */
                   error_msg = N_("failed to remove directory %s");
                 }
-              else
+              否则
                 {
                   /* A path component could be a symbolic link */
                   error_msg = N_("failed to remove %s");
@@ -159,19 +159,19 @@ remove_parents (char *dir)
           break;
         }
     }
-  return ok;
+  戻る ok;
 }
 
 void
-usage (int status)
+usage (整数 status)
 {
-  if (status != EXIT_SUCCESS)
+  もし (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  否则
     {
       printf (_("Usage: %s [OPTION]... DIRECTORY...\n"), program_name);
       fputs (_("\
-Remove the DIRECTORY(ies), if they are empty.\n\
+Remove the DIRECTORY(ies), もし they are empty.\n\
 \n\
 "), stdout);
       oputs (_("\
@@ -185,7 +185,7 @@ Remove the DIRECTORY(ies), if they are empty.\n\
 "));
       oputs (_("\
   -v, --verbose\n\
-         output a diagnostic for every directory processed\n\
+         output a diagnostic ために every directory processed\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -194,8 +194,8 @@ Remove the DIRECTORY(ies), if they are empty.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+整数
+メインページ (整数 argc, char **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -205,8 +205,8 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  int optc;
-  while ((optc = getopt_long (argc, argv, "pv", longopts, NULL)) != -1)
+  整数 optc;
+  ながら ((optc = getopt_long (argc, argv, "pv", longopts, NULL)) != -1)
     {
       switch (optc)
         {
@@ -226,25 +226,25 @@ main (int argc, char **argv)
         }
     }
 
-  if (optind == argc)
+  もし (optind == argc)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
   bool ok = true;
-  for (; optind < argc; ++optind)
+  ために (; optind < argc; ++optind)
     {
       char *dir = argv[optind];
 
       /* Give a diagnostic for each attempted removal if --verbose.  */
-      if (verbose)
+      もし (verbose)
         prog_fprintf (stdout, _("removing directory, %s"), quoteaf (dir));
 
-      if (rmdir (dir) != 0)
+      もし (rmdir (dir) != 0)
         {
-          int rmdir_errno = errno;
-          if (ignorable_failure (rmdir_errno, dir))
+          整数 rmdir_errno = errno;
+          もし (ignorable_failure (rmdir_errno, dir))
             continue;
 
           /* Distinguish the case for a symlink with trailing slash.
@@ -253,21 +253,21 @@ main (int argc, char **argv)
              is followed.  We don't provide consistent behavior here,
              but at least we provide a more accurate error message.  */
           bool custom_error = false;
-          if (rmdir_errno == ENOTDIR)
+          もし (rmdir_errno == ENOTDIR)
             {
               char const *last_unix_slash = strrchr (dir, '/');
-              if (last_unix_slash && (*(last_unix_slash + 1) == '\0'))
+              もし (last_unix_slash && (*(last_unix_slash + 1) == '\0'))
                 {
                   struct stat st;
-                  int ret = stat (dir, &st);
+                  整数 ret = stat (dir, &st);
                   /* Some other issue following, or is actually a directory. */
-                  if ((ret != 0 && errno != ENOTDIR)
+                  もし ((ret != 0 && errno != ENOTDIR)
                       || (ret == 0 && S_ISDIR (st.st_mode)))
                     {
                       /* Ensure the last component was a symlink.  */
                       char *dir_arg = xstrdup (dir);
                       strip_trailing_slashes (dir);
-                      if (issymlink (dir) == 1)
+                      もし (issymlink (dir) == 1)
                         {
                           error (0, 0,
                                  _("failed to remove %s:"
@@ -280,16 +280,16 @@ main (int argc, char **argv)
                 }
             }
 
-          if (! custom_error)
+          もし (! custom_error)
             error (0, rmdir_errno, _("failed to remove %s"), quoteaf (dir));
 
           ok = false;
         }
-      else if (remove_empty_parents)
+      否则 もし (remove_empty_parents)
         {
           ok &= remove_parents (dir);
         }
     }
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  戻る ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

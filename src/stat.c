@@ -20,11 +20,11 @@
 
 /* Keep this conditional in sync with the similar conditional in
    ../m4/stat-prog.m4.  */
-#if ((STAT_STATVFS || STAT_STATVFS64)                                       \
+#もし ((STAT_STATVFS || STAT_STATVFS64)                                       \
      && (HAVE_STRUCT_STATVFS_F_BASETYPE || HAVE_STRUCT_STATVFS_F_FSTYPENAME \
          || (! HAVE_STRUCT_STATFS_F_FSTYPENAME && HAVE_STRUCT_STATVFS_F_TYPE)))
 # define USE_STATVFS 1
-#else
+#否则
 # define USE_STATVFS 0
 #endif
 
@@ -32,7 +32,7 @@
 #include <sys/types.h>
 #include <pwd.h>
 #include <grp.h>
-#if USE_STATVFS
+#もし USE_STATVFS
 # include <sys/statvfs.h>
 #elif HAVE_SYS_VFS_H
 # include <sys/vfs.h>
@@ -43,7 +43,7 @@
 /* NetBSD 1.5.2 needs these, for the declaration of struct statfs. */
 # include <sys/param.h>
 # include <sys/mount.h>
-# if HAVE_NFS_NFS_CLNT_H && HAVE_NFS_VFS_H
+# もし HAVE_NFS_NFS_CLNT_H && HAVE_NFS_VFS_H
 /* Ultrix 4.4 needs these for the declaration of struct statfs.  */
 #  include <netinet/in.h>
 #  include <nfs/nfs_clnt.h>
@@ -73,44 +73,44 @@
 #include "xvasprintf.h"
 #include "statx.h"
 
-#if HAVE_STATX && defined STATX_INO
+#もし HAVE_STATX && defined STATX_INO
 # define USE_STATX 1
-#else
+#否则
 # define USE_STATX 0
 #endif
 
-#if USE_STATVFS
+#もし USE_STATVFS
 # define STRUCT_STATXFS_F_FSID_IS_INTEGER STRUCT_STATVFS_F_FSID_IS_INTEGER
 # define HAVE_STRUCT_STATXFS_F_TYPE HAVE_STRUCT_STATVFS_F_TYPE
-# if HAVE_STRUCT_STATVFS_F_NAMEMAX
+# もし HAVE_STRUCT_STATVFS_F_NAMEMAX
 #  define SB_F_NAMEMAX(S) ((S)->f_namemax)
 # endif
-# if ! STAT_STATVFS && STAT_STATVFS64
+# もし ! STAT_STATVFS && STAT_STATVFS64
 #  define STRUCT_STATVFS struct statvfs64
 #  define STATFS statvfs64
-# else
+# 否则
 #  define STRUCT_STATVFS struct statvfs
 #  define STATFS statvfs
 # endif
 # define STATFS_FRSIZE(S) ((S)->f_frsize)
-#else
+#否则
 # define HAVE_STRUCT_STATXFS_F_TYPE HAVE_STRUCT_STATFS_F_TYPE
-# if HAVE_STRUCT_STATFS_F_NAMELEN
+# もし HAVE_STRUCT_STATFS_F_NAMELEN
 #  define SB_F_NAMEMAX(S) ((S)->f_namelen)
 # elif HAVE_STRUCT_STATFS_F_NAMEMAX
 #  define SB_F_NAMEMAX(S) ((S)->f_namemax)
 # endif
 # define STATFS statfs
-# if HAVE_OS_H /* BeOS */
+# もし HAVE_OS_H /* BeOS */
 /* BeOS has a statvfs function, but it does not return sensible values
    for f_files, f_ffree and f_favail, and lacks f_type, f_basetype and
    f_fstypename.  Use 'struct fs_info' instead.  */
 NODISCARD
-static int
+static 整数
 statfs (char const *filename, struct fs_info *buf)
 {
   dev_t device = dev_for_path (filename);
-  if (device < 0)
+  もし (device < 0)
     {
       errno = (device == B_ENTRY_NOT_FOUND ? ENOENT
                : device == B_BAD_VALUE ? EINVAL
@@ -118,10 +118,10 @@ statfs (char const *filename, struct fs_info *buf)
                : device == B_NO_MEMORY ? ENOMEM
                : device == B_FILE_ERROR ? EIO
                : 0);
-      return -1;
+      戻る -1;
     }
   /* If successful, buf->dev will be == device.  */
-  return fs_stat_dev (device, buf);
+  戻る fs_stat_dev (device, buf);
 }
 #  define f_fsid dev
 #  define f_blocks total_blocks
@@ -133,12 +133,12 @@ statfs (char const *filename, struct fs_info *buf)
 #  define STRUCT_STATVFS struct fs_info
 #  define STRUCT_STATXFS_F_FSID_IS_INTEGER true
 #  define STATFS_FRSIZE(S) ((S)->block_size)
-# else
+# 否则
 #  define STRUCT_STATVFS struct statfs
 #  define STRUCT_STATXFS_F_FSID_IS_INTEGER STRUCT_STATFS_F_FSID_IS_INTEGER
-#  if HAVE_STRUCT_STATFS_F_FRSIZE
+#  もし HAVE_STRUCT_STATFS_F_FRSIZE
 #   define STATFS_FRSIZE(S) ((S)->f_frsize)
-#  else
+#  否则
 #   define STATFS_FRSIZE(S) 0
 #  endif
 # endif
@@ -146,24 +146,24 @@ statfs (char const *filename, struct fs_info *buf)
 
 #ifdef SB_F_NAMEMAX
 # define OUT_NAMEMAX out_uint
-#else
+#否则
 /* Depending on whether statvfs or statfs is used,
    neither f_namemax or f_namelen may be available.  */
 # define SB_F_NAMEMAX(S) "?"
 # define OUT_NAMEMAX out_string
 #endif
 
-#if HAVE_STRUCT_STATVFS_F_BASETYPE
+#もし HAVE_STRUCT_STATVFS_F_BASETYPE
 # define STATXFS_FILE_SYSTEM_TYPE_MEMBER_NAME f_basetype
-#else
-# if HAVE_STRUCT_STATVFS_F_FSTYPENAME || HAVE_STRUCT_STATFS_F_FSTYPENAME
+#否则
+# もし HAVE_STRUCT_STATVFS_F_FSTYPENAME || HAVE_STRUCT_STATFS_F_FSTYPENAME
 #  define STATXFS_FILE_SYSTEM_TYPE_MEMBER_NAME f_fstypename
 # elif HAVE_OS_H /* BeOS */
 #  define STATXFS_FILE_SYSTEM_TYPE_MEMBER_NAME fsh_name
 # endif
 #endif
 
-#if HAVE_GETATTRAT
+#もし HAVE_GETATTRAT
 # include <attr.h>
 # include <sys/nvpair.h>
 #endif
@@ -241,7 +241,7 @@ static size_t decimal_point_len;
 
 static bool
 print_stat (char *pformat, size_t prefix_len, char mod, char m,
-            int fd, char const *filename, void const *data);
+            整数 fd, char const *filename, void const *data);
 
 /* Return the type of the specified file system.
    Some systems have statfvs.f_basetype[FSTYPSZ] (AIX, HP-UX, and Solaris).
@@ -254,11 +254,11 @@ static char const *
 human_fstype (STRUCT_STATVFS const *statfsbuf)
 {
 #ifdef STATXFS_FILE_SYSTEM_TYPE_MEMBER_NAME
-  return statfsbuf->STATXFS_FILE_SYSTEM_TYPE_MEMBER_NAME;
-#else
+  戻る statfsbuf->STATXFS_FILE_SYSTEM_TYPE_MEMBER_NAME;
+#否则
   switch (statfsbuf->f_type)
     {
-# if defined __linux__ || defined __ANDROID__
+# もし defined __linux__ || defined __ANDROID__
 
       /* Compare with what's in libc:
          f=/a/libc/sysdeps/unix/sysv/linux/linux_fsinfo.h
@@ -281,355 +281,355 @@ human_fstype (STRUCT_STATVFS const *statfsbuf)
          combined to produce the #define directives in fs.h.  */
 
     case S_MAGIC_AAFS: /* 0x5A3C69F0 local */
-      return "aafs";
+      戻る "aafs";
     case S_MAGIC_ACFS: /* 0x61636673 remote */
-      return "acfs";
+      戻る "acfs";
     case S_MAGIC_ADFS: /* 0xADF5 local */
-      return "adfs";
+      戻る "adfs";
     case S_MAGIC_AFFS: /* 0xADFF local */
-      return "affs";
+      戻る "affs";
     case S_MAGIC_AFS: /* 0x5346414F remote */
-      return "afs";
+      戻る "afs";
     case S_MAGIC_ANON_INODE_FS: /* 0x09041934 local */
-      return "anon-inode FS";
+      戻る "anon-inode FS";
     case S_MAGIC_AUFS: /* 0x61756673 remote */
       /* FIXME: change syntax or add an optional attribute like "inotify:no".
          The above is labeled as "remote" so that tail always uses polling,
          but this isn't really a remote file system type.  */
-      return "aufs";
+      戻る "aufs";
     case S_MAGIC_AUTOFS: /* 0x0187 local */
-      return "autofs";
+      戻る "autofs";
     case S_MAGIC_BALLOON_KVM: /* 0x13661366 local */
-      return "balloon-kvm-fs";
+      戻る "balloon-kvm-fs";
     case S_MAGIC_BCACHEFS: /* 0xCA451A4E local */
-      return "bcachefs";
+      戻る "bcachefs";
     case S_MAGIC_BEFS: /* 0x42465331 local */
-      return "befs";
+      戻る "befs";
     case S_MAGIC_BDEVFS: /* 0x62646576 local */
-      return "bdevfs";
+      戻る "bdevfs";
     case S_MAGIC_BFS: /* 0x1BADFACE local */
-      return "bfs";
+      戻る "bfs";
     case S_MAGIC_BINDERFS: /* 0x6C6F6F70 local */
-      return "binderfs";
+      戻る "binderfs";
     case S_MAGIC_BPF_FS: /* 0xCAFE4A11 local */
-      return "bpf_fs";
+      戻る "bpf_fs";
     case S_MAGIC_BINFMTFS: /* 0x42494E4D local */
-      return "binfmt_misc";
+      戻る "binfmt_misc";
     case S_MAGIC_BTRFS: /* 0x9123683E local */
-      return "btrfs";
+      戻る "btrfs";
     case S_MAGIC_BTRFS_TEST: /* 0x73727279 local */
-      return "btrfs_test";
+      戻る "btrfs_test";
     case S_MAGIC_CEPH: /* 0x00C36400 remote */
-      return "ceph";
+      戻る "ceph";
     case S_MAGIC_CGROUP: /* 0x0027E0EB local */
-      return "cgroupfs";
+      戻る "cgroupfs";
     case S_MAGIC_CGROUP2: /* 0x63677270 local */
-      return "cgroup2fs";
+      戻る "cgroup2fs";
     case S_MAGIC_CIFS: /* 0xFF534D42 remote */
-      return "cifs";
+      戻る "cifs";
     case S_MAGIC_CODA: /* 0x73757245 remote */
-      return "coda";
+      戻る "coda";
     case S_MAGIC_COH: /* 0x012FF7B7 local */
-      return "coh";
+      戻る "coh";
     case S_MAGIC_CONFIGFS: /* 0x62656570 local */
-      return "configfs";
+      戻る "configfs";
     case S_MAGIC_CRAMFS: /* 0x28CD3D45 local */
-      return "cramfs";
+      戻る "cramfs";
     case S_MAGIC_CRAMFS_WEND: /* 0x453DCD28 local */
-      return "cramfs-wend";
+      戻る "cramfs-wend";
     case S_MAGIC_DAXFS: /* 0x64646178 local */
-      return "daxfs";
+      戻る "daxfs";
     case S_MAGIC_DEBUGFS: /* 0x64626720 local */
-      return "debugfs";
+      戻る "debugfs";
     case S_MAGIC_DEVFS: /* 0x1373 local */
-      return "devfs";
+      戻る "devfs";
     case S_MAGIC_DEVMEM: /* 0x454D444D local */
-      return "devmem";
+      戻る "devmem";
     case S_MAGIC_DEVPTS: /* 0x1CD1 local */
-      return "devpts";
+      戻る "devpts";
     case S_MAGIC_DMA_BUF: /* 0x444D4142 local */
-      return "dma-buf-fs";
+      戻る "dma-buf-fs";
     case S_MAGIC_ECRYPTFS: /* 0xF15F local */
-      return "ecryptfs";
+      戻る "ecryptfs";
     case S_MAGIC_EFIVARFS: /* 0xDE5E81E4 local */
-      return "efivarfs";
+      戻る "efivarfs";
     case S_MAGIC_EFS: /* 0x00414A53 local */
-      return "efs";
+      戻る "efs";
     case S_MAGIC_EROFS_V1: /* 0xE0F5E1E2 local */
-      return "erofs";
+      戻る "erofs";
     case S_MAGIC_EXFAT: /* 0x2011BAB0 local */
-      return "exfat";
+      戻る "exfat";
     case S_MAGIC_EXFS: /* 0x45584653 local */
-      return "exfs";
+      戻る "exfs";
     case S_MAGIC_EXOFS: /* 0x5DF5 local */
-      return "exofs";
+      戻る "exofs";
     case S_MAGIC_EXT: /* 0x137D local */
-      return "ext";
+      戻る "ext";
     case S_MAGIC_EXT2: /* 0xEF53 local */
-      return "ext2/ext3";
+      戻る "ext2/ext3";
     case S_MAGIC_EXT2_OLD: /* 0xEF51 local */
-      return "ext2";
+      戻る "ext2";
     case S_MAGIC_F2FS: /* 0xF2F52010 local */
-      return "f2fs";
+      戻る "f2fs";
     case S_MAGIC_FAIL_FS: /* 0x4641494C local */
-      return "failfs";
+      戻る "failfs";
     case S_MAGIC_FAT: /* 0x4006 local */
-      return "fat";
+      戻る "fat";
     case S_MAGIC_FHGFS: /* 0x19830326 remote */
-      return "fhgfs";
+      戻る "fhgfs";
     case S_MAGIC_FUSE: /* 0x65735546 remote */
-      return "fuse";
+      戻る "fuse";
     case S_MAGIC_FUSECTL: /* 0x65735543 remote */
-      return "fusectl";
+      戻る "fusectl";
     case S_MAGIC_FUTEXFS: /* 0x0BAD1DEA local */
-      return "futexfs";
+      戻る "futexfs";
     case S_MAGIC_GFS: /* 0x01161970 remote */
-      return "gfs/gfs2";
+      戻る "gfs/gfs2";
     case S_MAGIC_GPFS: /* 0x47504653 remote */
-      return "gpfs";
+      戻る "gpfs";
     case S_MAGIC_GUEST_MEMFD: /* 0x474D454D remote */
-      return "guest-memfd";
+      戻る "guest-memfd";
     case S_MAGIC_HFS: /* 0x4244 local */
-      return "hfs";
+      戻る "hfs";
     case S_MAGIC_HFS_PLUS: /* 0x482B local */
-      return "hfs+";
+      戻る "hfs+";
     case S_MAGIC_HFS_X: /* 0x4858 local */
-      return "hfsx";
+      戻る "hfsx";
     case S_MAGIC_HOSTFS: /* 0x00C0FFEE local */
-      return "hostfs";
+      戻る "hostfs";
     case S_MAGIC_HPFS: /* 0xF995E849 local */
-      return "hpfs";
+      戻る "hpfs";
     case S_MAGIC_HUGETLBFS: /* 0x958458F6 local */
-      return "hugetlbfs";
+      戻る "hugetlbfs";
     case S_MAGIC_MTD_INODE_FS: /* 0x11307854 local */
-      return "inodefs";
+      戻る "inodefs";
     case S_MAGIC_IBRIX: /* 0x013111A8 remote */
-      return "ibrix";
+      戻る "ibrix";
     case S_MAGIC_INOTIFYFS: /* 0x2BAD1DEA local */
-      return "inotifyfs";
+      戻る "inotifyfs";
     case S_MAGIC_ISOFS: /* 0x9660 local */
-      return "isofs";
+      戻る "isofs";
     case S_MAGIC_ISOFS_R_WIN: /* 0x4004 local */
-      return "isofs";
+      戻る "isofs";
     case S_MAGIC_ISOFS_WIN: /* 0x4000 local */
-      return "isofs";
+      戻る "isofs";
     case S_MAGIC_JFFS: /* 0x07C0 local */
-      return "jffs";
+      戻る "jffs";
     case S_MAGIC_JFFS2: /* 0x72B6 local */
-      return "jffs2";
+      戻る "jffs2";
     case S_MAGIC_JFS: /* 0x3153464A local */
-      return "jfs";
+      戻る "jfs";
     case S_MAGIC_KAFS: /* 0x6B414653 remote */
-      return "k-afs";
+      戻る "k-afs";
     case S_MAGIC_LOGFS: /* 0xC97E8168 local */
-      return "logfs";
+      戻る "logfs";
     case S_MAGIC_LUSTRE: /* 0x0BD00BD0 remote */
-      return "lustre";
+      戻る "lustre";
     case S_MAGIC_M1FS: /* 0x5346314D local */
-      return "m1fs";
+      戻る "m1fs";
     case S_MAGIC_MINIX: /* 0x137F local */
-      return "minix";
+      戻る "minix";
     case S_MAGIC_MINIX_30: /* 0x138F local */
-      return "minix (30 char.)";
+      戻る "minix (30 char.)";
     case S_MAGIC_MINIX_V2: /* 0x2468 local */
-      return "minix v2";
+      戻る "minix v2";
     case S_MAGIC_MINIX_V2_30: /* 0x2478 local */
-      return "minix v2 (30 char.)";
+      戻る "minix v2 (30 char.)";
     case S_MAGIC_MINIX_V3: /* 0x4D5A local */
-      return "minix3";
+      戻る "minix3";
     case S_MAGIC_MQUEUE: /* 0x19800202 local */
-      return "mqueue";
+      戻る "mqueue";
     case S_MAGIC_MSDOS: /* 0x4D44 local */
-      return "msdos";
+      戻る "msdos";
     case S_MAGIC_NCP: /* 0x564C remote */
-      return "novell";
+      戻る "novell";
     case S_MAGIC_NFS: /* 0x6969 remote */
-      return "nfs";
+      戻る "nfs";
     case S_MAGIC_NFSD: /* 0x6E667364 remote */
-      return "nfsd";
+      戻る "nfsd";
     case S_MAGIC_NILFS: /* 0x3434 local */
-      return "nilfs";
+      戻る "nilfs";
     case S_MAGIC_NSFS: /* 0x6E736673 local */
-      return "nsfs";
+      戻る "nsfs";
     case S_MAGIC_NTFS: /* 0x5346544E local */
-      return "ntfs";
+      戻る "ntfs";
     case S_MAGIC_NULL_FS: /* 0x4E554C4C local */
-      return "nullfs";
+      戻る "nullfs";
     case S_MAGIC_OPENPROM: /* 0x9FA1 local */
-      return "openprom";
+      戻る "openprom";
     case S_MAGIC_OCFS2: /* 0x7461636F remote */
-      return "ocfs2";
+      戻る "ocfs2";
     case S_MAGIC_OVERLAYFS: /* 0x794C7630 remote */
       /* This may overlay remote file systems.
          Also there have been issues reported with inotify and overlayfs,
          so mark as "remote" so that polling is used.  */
-      return "overlayfs";
+      戻る "overlayfs";
     case S_MAGIC_PANFS: /* 0xAAD7AAEA remote */
-      return "panfs";
+      戻る "panfs";
     case S_MAGIC_PID_FS: /* 0x50494446 local */
-      return "pidfs";
+      戻る "pidfs";
     case S_MAGIC_PIPEFS: /* 0x50495045 remote */
       /* FIXME: change syntax or add an optional attribute like "inotify:no".
          pipefs is labeled as "remote" so that tail always polls,
          but it isn't really remote file system type.  */
-      return "pipefs";
+      戻る "pipefs";
     case S_MAGIC_PPC_CMM: /* 0xC7571590 local */
-      return "ppc-cmm-fs";
+      戻る "ppc-cmm-fs";
     case S_MAGIC_PRL_FS: /* 0x7C7C6673 remote */
-      return "prl_fs";
+      戻る "prl_fs";
     case S_MAGIC_PROC: /* 0x9FA0 local */
-      return "proc";
+      戻る "proc";
     case S_MAGIC_PSTOREFS: /* 0x6165676C local */
-      return "pstorefs";
+      戻る "pstorefs";
     case S_MAGIC_QNX4: /* 0x002F local */
-      return "qnx4";
+      戻る "qnx4";
     case S_MAGIC_QNX6: /* 0x68191122 local */
-      return "qnx6";
+      戻る "qnx6";
     case S_MAGIC_RAMFS: /* 0x858458F6 local */
-      return "ramfs";
+      戻る "ramfs";
     case S_MAGIC_RDTGROUP: /* 0x07655821 local */
-      return "rdt";
+      戻る "rdt";
     case S_MAGIC_REISERFS: /* 0x52654973 local */
-      return "reiserfs";
+      戻る "reiserfs";
     case S_MAGIC_ROMFS: /* 0x7275 local */
-      return "romfs";
+      戻る "romfs";
     case S_MAGIC_RPC_PIPEFS: /* 0x67596969 local */
-      return "rpc_pipefs";
+      戻る "rpc_pipefs";
     case S_MAGIC_SDCARDFS: /* 0x5DCA2DF5 local */
-      return "sdcardfs";
+      戻る "sdcardfs";
     case S_MAGIC_SECRETMEM: /* 0x5345434D local */
-      return "secretmem";
+      戻る "secretmem";
     case S_MAGIC_SECURITYFS: /* 0x73636673 local */
-      return "securityfs";
+      戻る "securityfs";
     case S_MAGIC_SELINUX: /* 0xF97CFF8C local */
-      return "selinux";
+      戻る "selinux";
     case S_MAGIC_SMACK: /* 0x43415D53 local */
-      return "smackfs";
+      戻る "smackfs";
     case S_MAGIC_SMB: /* 0x517B remote */
-      return "smb";
+      戻る "smb";
     case S_MAGIC_SMB2: /* 0xFE534D42 remote */
-      return "smb2";
+      戻る "smb2";
     case S_MAGIC_SNFS: /* 0xBEEFDEAD remote */
-      return "snfs";
+      戻る "snfs";
     case S_MAGIC_SOCKFS: /* 0x534F434B local */
-      return "sockfs";
+      戻る "sockfs";
     case S_MAGIC_SQUASHFS: /* 0x73717368 local */
-      return "squashfs";
+      戻る "squashfs";
     case S_MAGIC_SYSFS: /* 0x62656572 local */
-      return "sysfs";
+      戻る "sysfs";
     case S_MAGIC_SYSV2: /* 0x012FF7B6 local */
-      return "sysv2";
+      戻る "sysv2";
     case S_MAGIC_SYSV4: /* 0x012FF7B5 local */
-      return "sysv4";
+      戻る "sysv4";
     case S_MAGIC_TMPFS: /* 0x01021994 local */
-      return "tmpfs";
+      戻る "tmpfs";
     case S_MAGIC_TRACEFS: /* 0x74726163 local */
-      return "tracefs";
+      戻る "tracefs";
     case S_MAGIC_UBIFS: /* 0x24051905 local */
-      return "ubifs";
+      戻る "ubifs";
     case S_MAGIC_UDF: /* 0x15013346 local */
-      return "udf";
+      戻る "udf";
     case S_MAGIC_UFS: /* 0x00011954 local */
-      return "ufs";
+      戻る "ufs";
     case S_MAGIC_UFS_BYTESWAPPED: /* 0x54190100 local */
-      return "ufs";
+      戻る "ufs";
     case S_MAGIC_USBDEVFS: /* 0x9FA2 local */
-      return "usbdevfs";
+      戻る "usbdevfs";
     case S_MAGIC_V9FS: /* 0x01021997 local */
-      return "v9fs";
+      戻る "v9fs";
     case S_MAGIC_VBOXSF: /* 0x786F4256 remote */
-      return "vboxsf";
+      戻る "vboxsf";
     case S_MAGIC_VMHGFS: /* 0xBACBACBC remote */
-      return "vmhgfs";
+      戻る "vmhgfs";
     case S_MAGIC_VXFS: /* 0xA501FCF5 remote */
       /* Veritas File System can run in single instance or clustered mode,
          so mark as remote to cater for the latter case.  */
-      return "vxfs";
+      戻る "vxfs";
     case S_MAGIC_VZFS: /* 0x565A4653 local */
-      return "vzfs";
+      戻る "vzfs";
     case S_MAGIC_WSLFS: /* 0x53464846 local */
-      return "wslfs";
+      戻る "wslfs";
     case S_MAGIC_XENFS: /* 0xABBA1974 local */
-      return "xenfs";
+      戻る "xenfs";
     case S_MAGIC_XENIX: /* 0x012FF7B4 local */
-      return "xenix";
+      戻る "xenix";
     case S_MAGIC_XFS: /* 0x58465342 local */
-      return "xfs";
+      戻る "xfs";
     case S_MAGIC_XIAFS: /* 0x012FD16D local */
-      return "xia";
+      戻る "xia";
     case S_MAGIC_Z3FOLD: /* 0x0033 local */
-      return "z3fold";
+      戻る "z3fold";
     case S_MAGIC_ZFS: /* 0x2FC12FC1 local */
-      return "zfs";
+      戻る "zfs";
     case S_MAGIC_ZONEFS: /* 0x5A4F4653 local */
-      return "zonefs";
+      戻る "zonefs";
     case S_MAGIC_ZSMALLOC: /* 0x58295829 local */
-      return "zsmallocfs";
+      戻る "zsmallocfs";
 
 
 # elif __GNU__
     case FSTYPE_UFS:
-      return "ufs";
+      戻る "ufs";
     case FSTYPE_NFS:
-      return "nfs";
+      戻る "nfs";
     case FSTYPE_GFS:
-      return "gfs";
+      戻る "gfs";
     case FSTYPE_LFS:
-      return "lfs";
+      戻る "lfs";
     case FSTYPE_SYSV:
-      return "sysv";
+      戻る "sysv";
     case FSTYPE_FTP:
-      return "ftp";
+      戻る "ftp";
     case FSTYPE_TAR:
-      return "tar";
+      戻る "tar";
     case FSTYPE_AR:
-      return "ar";
+      戻る "ar";
     case FSTYPE_CPIO:
-      return "cpio";
+      戻る "cpio";
     case FSTYPE_MSLOSS:
-      return "msloss";
+      戻る "msloss";
     case FSTYPE_CPM:
-      return "cpm";
+      戻る "cpm";
     case FSTYPE_HFS:
-      return "hfs";
+      戻る "hfs";
     case FSTYPE_DTFS:
-      return "dtfs";
+      戻る "dtfs";
     case FSTYPE_GRFS:
-      return "grfs";
+      戻る "grfs";
     case FSTYPE_TERM:
-      return "term";
+      戻る "term";
     case FSTYPE_DEV:
-      return "dev";
+      戻る "dev";
     case FSTYPE_PROC:
-      return "proc";
+      戻る "proc";
     case FSTYPE_IFSOCK:
-      return "ifsock";
+      戻る "ifsock";
     case FSTYPE_AFS:
-      return "afs";
+      戻る "afs";
     case FSTYPE_DFS:
-      return "dfs";
+      戻る "dfs";
     case FSTYPE_PROC9:
-      return "proc9";
+      戻る "proc9";
     case FSTYPE_SOCKET:
-      return "socket";
+      戻る "socket";
     case FSTYPE_MISC:
-      return "misc";
+      戻る "misc";
     case FSTYPE_EXT2FS:
-      return "ext2/ext3";
+      戻る "ext2/ext3";
     case FSTYPE_HTTP:
-      return "http";
+      戻る "http";
     case FSTYPE_MEMFS:
-      return "memfs";
+      戻る "memfs";
     case FSTYPE_ISO9660:
-      return "iso9660";
+      戻る "iso9660";
 # endif
     default:
       {
-        unsigned long int type = statfsbuf->f_type;
+        unsigned long 整数 type = statfsbuf->f_type;
         static char buf[sizeof "UNKNOWN (0x%lx)" - 3
                         + (sizeof type * CHAR_BIT + 3) / 4];
         sprintf (buf, "UNKNOWN (0x%lx)", type);
-        return buf;
+        戻る buf;
       }
     }
 #endif
@@ -642,7 +642,7 @@ human_access (struct stat const *statbuf)
   static char modebuf[12];
   filemodestring (statbuf, modebuf);
   modebuf[10] = 0;
-  return modebuf;
+  戻る modebuf;
 }
 
 NODISCARD
@@ -653,22 +653,22 @@ human_time (struct timespec t)
      because localtime_rz fails, or because the time zone is truly
      outlandish so that %z expands to a long string.  */
   static char str[INT_BUFSIZE_BOUND (intmax_t)
-                  + INT_STRLEN_BOUND (int) /* YYYY */
+                  + INT_STRLEN_BOUND (整数) /* YYYY */
                   + 1 /* because YYYY might equal INT_MAX + 1900 */
                   + sizeof "-MM-DD HH:MM:SS.NNNNNNNNN +"];
   static timezone_t tz;
-  if (!tz)
+  もし (!tz)
     tz = tzalloc (getenv ("TZ"));
   struct tm tm;
-  int ns = t.tv_nsec;
-  if (localtime_rz (tz, &t.tv_sec, &tm))
+  整数 ns = t.tv_nsec;
+  もし (localtime_rz (tz, &t.tv_sec, &tm))
     nstrftime (str, sizeof str, "%Y-%m-%d %H:%M:%S.%N %z", &tm, tz, ns);
-  else
+  否则
     {
       char secbuf[INT_BUFSIZE_BOUND (intmax_t)];
       sprintf (str, "%s.%09d", timetostr (t.tv_sec, secbuf), ns);
     }
-  return str;
+  戻る str;
 }
 
 /* PFORMAT points to a '%' followed by a prefix of a format, all of
@@ -682,10 +682,10 @@ make_format (char *pformat, size_t prefix_len, char const *allowed_flags,
   char *dst = pformat + 1;
   char const *src;
   char const *srclim = pformat + prefix_len;
-  for (src = dst; src < srclim && strchr (printf_flags, *src); src++)
-    if (strchr (allowed_flags, *src))
+  ために (src = dst; src < srclim && strchr (printf_flags, *src); src++)
+    もし (strchr (allowed_flags, *src))
       *dst++ = *src;
-  while (src < srclim)
+  ながら (src < srclim)
     *dst++ = *src++;
   strcpy (dst, suffix);
 }
@@ -696,17 +696,17 @@ out_string (char *pformat, size_t prefix_len, char const *arg)
   make_format (pformat, prefix_len, "-", "s");
   printf (pformat, arg);
 }
-static int
+static 整数
 out_int (char *pformat, size_t prefix_len, intmax_t arg)
 {
   make_format (pformat, prefix_len, "'-+ 0", "jd");
-  return printf (pformat, arg);
+  戻る printf (pformat, arg);
 }
-static int
+static 整数
 out_uint (char *pformat, size_t prefix_len, uintmax_t arg)
 {
   make_format (pformat, prefix_len, "'-0", "ju");
-  return printf (pformat, arg);
+  戻る printf (pformat, arg);
 }
 static void
 out_uint_o (char *pformat, size_t prefix_len, uintmax_t arg)
@@ -720,11 +720,11 @@ out_uint_x (char *pformat, size_t prefix_len, uintmax_t arg)
   make_format (pformat, prefix_len, "-#0", "jx");
   printf (pformat, arg);
 }
-static int
+static 整数
 out_minus_zero (char *pformat, size_t prefix_len)
 {
   make_format (pformat, prefix_len, "'-+ 0", ".0f");
-  return printf (pformat, -0.25);
+  戻る printf (pformat, -0.25);
 }
 
 /* Output the number of seconds since the Epoch, using a format that
@@ -735,26 +735,26 @@ out_epoch_sec (char *pformat, size_t prefix_len,
 {
   char *dot = memchr (pformat, '.', prefix_len);
   size_t sec_prefix_len = prefix_len;
-  int width = 0;
-  int precision = 0;
+  整数 width = 0;
+  整数 precision = 0;
   bool frac_left_adjust = false;
 
-  if (dot)
+  もし (dot)
     {
       sec_prefix_len = dot - pformat;
       pformat[prefix_len] = '\0';
 
-      if (c_isdigit (dot[1]))
+      もし (c_isdigit (dot[1]))
         {
-          long int lprec = strtol (dot + 1, NULL, 10);
+          long 整数 lprec = strtol (dot + 1, NULL, 10);
           precision = (lprec <= INT_MAX ? lprec : INT_MAX);
         }
-      else
+      否则
         {
           precision = 9;
         }
 
-      if (precision && c_isdigit (dot[-1]))
+      もし (precision && c_isdigit (dot[-1]))
         {
           /* If a nontrivial width is given, subtract the width of the
              decimal point and PRECISION digits that will be output
@@ -764,28 +764,28 @@ out_epoch_sec (char *pformat, size_t prefix_len,
 
           do
             --p;
-          while (c_isdigit (p[-1]));
+          ながら (c_isdigit (p[-1]));
 
-          long int lwidth = strtol (p, NULL, 10);
+          long 整数 lwidth = strtol (p, NULL, 10);
           width = (lwidth <= INT_MAX ? lwidth : INT_MAX);
-          if (1 < width)
+          もし (1 < width)
             {
               p += (*p == '0');
               sec_prefix_len = p - pformat;
-              int w_d = (decimal_point_len < width
+              整数 w_d = (decimal_point_len < width
                          ? width - decimal_point_len
                          : 0);
-              if (1 < w_d)
+              もし (1 < w_d)
                 {
-                  int w = w_d - precision;
-                  if (1 < w)
+                  整数 w = w_d - precision;
+                  もし (1 < w)
                     {
                       char *dst = pformat;
-                      for (char const *src = dst; src < p; src++)
+                      ために (char const *src = dst; src < p; src++)
                         {
-                          if (*src == '-')
+                          もし (*src == '-')
                             frac_left_adjust = true;
-                          else
+                          否则
                             *dst++ = *src;
                         }
                       sec_prefix_len =
@@ -797,18 +797,18 @@ out_epoch_sec (char *pformat, size_t prefix_len,
         }
     }
 
-  int divisor = 1;
-  for (int i = precision; i < 9; i++)
+  整数 divisor = 1;
+  ために (整数 i = precision; i < 9; i++)
     divisor *= 10;
-  int frac_sec = arg.tv_nsec / divisor;
-  int int_len;
+  整数 frac_sec = arg.tv_nsec / divisor;
+  整数 int_len;
 
-  if (TYPE_SIGNED (time_t))
+  もし (TYPE_SIGNED (time_t))
     {
       bool minus_zero = false;
-      if (arg.tv_sec < 0 && arg.tv_nsec != 0)
+      もし (arg.tv_sec < 0 && arg.tv_nsec != 0)
         {
-          int frac_sec_modulus = 1000000000 / divisor;
+          整数 frac_sec_modulus = 1000000000 / divisor;
           frac_sec = (frac_sec_modulus - frac_sec
                       - (arg.tv_nsec % divisor != 0));
           arg.tv_sec += (frac_sec != 0);
@@ -818,15 +818,15 @@ out_epoch_sec (char *pformat, size_t prefix_len,
                  ? out_minus_zero (pformat, sec_prefix_len)
                  : out_int (pformat, sec_prefix_len, arg.tv_sec));
     }
-  else
+  否则
     int_len = out_uint (pformat, sec_prefix_len, arg.tv_sec);
 
-  if (precision)
+  もし (precision)
     {
-      int prec = (precision < 9 ? precision : 9);
-      int trailing_prec = precision - prec;
-      int ilen = (int_len < 0 ? 0 : int_len);
-      int trailing_width = (ilen < width && decimal_point_len < width - ilen
+      整数 prec = (precision < 9 ? precision : 9);
+      整数 trailing_prec = precision - prec;
+      整数 ilen = (int_len < 0 ? 0 : int_len);
+      整数 trailing_width = (ilen < width && decimal_point_len < width - ilen
                             ? width - ilen - decimal_point_len - prec
                             : 0);
       printf ("%s%.*d%-*.*d", decimal_point, prec, frac_sec,
@@ -843,7 +843,7 @@ out_file_context (char *pformat, size_t prefix_len, char const *filename)
   char *scontext;
   bool fail = false;
 
-  if ((follow_links
+  もし ((follow_links
        ? getfilecon (filename, &scontext)
        : lgetfilecon (filename, &scontext)) < 0)
     {
@@ -854,9 +854,9 @@ out_file_context (char *pformat, size_t prefix_len, char const *filename)
     }
   strcpy (pformat + prefix_len, "s");
   printf (pformat, (scontext ? scontext : "?"));
-  if (scontext)
+  もし (scontext)
     freecon (scontext);
-  return fail;
+  戻る fail;
 }
 
 /* Set the quoting style once it is needed.  */
@@ -864,10 +864,10 @@ static void
 initialize_quoting_style (void)
 {
   static bool initialized;
-  if (!initialized)
+  もし (!initialized)
     {
       initialized = true;
-      int qs = getenv_quoting_style ();
+      整数 qs = getenv_quoting_style ();
       set_quoting_style (NULL, 0 <= qs ? qs : shell_escape_quoting_style);
     }
 }
@@ -876,7 +876,7 @@ initialize_quoting_style (void)
 NODISCARD
 static bool
 print_statfs (char *pformat, size_t prefix_len, MAYBE_UNUSED char mod, char m,
-              MAYBE_UNUSED int fd, char const *filename,
+              MAYBE_UNUSED 整数 fd, char const *filename,
               void const *data)
 {
   STRUCT_STATVFS const *statfsbuf = data;
@@ -885,7 +885,7 @@ print_statfs (char *pformat, size_t prefix_len, MAYBE_UNUSED char mod, char m,
   switch (m)
     {
     case 'n':
-      if (mod == 'Q')
+      もし (mod == 'Q')
         {
           initialize_quoting_style ();
           filename = quoteN (filename);
@@ -895,10 +895,10 @@ print_statfs (char *pformat, size_t prefix_len, MAYBE_UNUSED char mod, char m,
 
     case 'i':
       {
-#if STRUCT_STATXFS_F_FSID_IS_INTEGER
+#もし STRUCT_STATXFS_F_FSID_IS_INTEGER
         uintmax_t fsid = statfsbuf->f_fsid;
-#else
-        typedef unsigned int fsid_word;
+#否则
+        typedef unsigned 整数 fsid_word;
         static_assert (alignof (STRUCT_STATVFS) % alignof (fsid_word) == 0);
         static_assert (offsetof (STRUCT_STATVFS, f_fsid) % alignof (fsid_word)
                        == 0);
@@ -908,8 +908,8 @@ print_statfs (char *pformat, size_t prefix_len, MAYBE_UNUSED char mod, char m,
         /* Assume a little-endian word order, as that is compatible
            with glibc's statvfs implementation.  */
         uintmax_t fsid = 0;
-        int words = sizeof statfsbuf->f_fsid / sizeof *p;
-        for (int i = 0; i < words && i * sizeof *p < sizeof fsid; i++)
+        整数 words = sizeof statfsbuf->f_fsid / sizeof *p;
+        ために (整数 i = 0; i < words && i * sizeof *p < sizeof fsid; i++)
           {
             uintmax_t u = p[words - 1 - i];
             fsid |= u << (i * CHAR_BIT * sizeof *p);
@@ -923,9 +923,9 @@ print_statfs (char *pformat, size_t prefix_len, MAYBE_UNUSED char mod, char m,
       OUT_NAMEMAX (pformat, prefix_len, SB_F_NAMEMAX (statfsbuf));
       break;
     case 't':
-#if HAVE_STRUCT_STATXFS_F_TYPE
+#もし HAVE_STRUCT_STATXFS_F_TYPE
       out_uint_x (pformat, prefix_len, statfsbuf->f_type);
-#else
+#否则
       fputc ('?', stdout);
 #endif
       break;
@@ -947,7 +947,7 @@ print_statfs (char *pformat, size_t prefix_len, MAYBE_UNUSED char mod, char m,
     case 'S':
       {
         uintmax_t frsize = STATFS_FRSIZE (statfsbuf);
-        if (! frsize)
+        もし (! frsize)
           frsize = statfsbuf->f_bsize;
         out_uint (pformat, prefix_len, frsize);
       }
@@ -962,7 +962,7 @@ print_statfs (char *pformat, size_t prefix_len, MAYBE_UNUSED char mod, char m,
       fputc ('?', stdout);
       break;
     }
-  return fail;
+  戻る fail;
 }
 
 /* Return any bind mounted source for a path.
@@ -976,25 +976,25 @@ find_bind_mount (char const * name)
 
   static struct mount_entry *mount_list;
   static bool tried_mount_list = false;
-  if (!tried_mount_list) /* attempt/warn once per process.  */
+  もし (!tried_mount_list) /* attempt/warn once per process.  */
     {
-      if (!(mount_list = read_file_system_list (false)))
+      もし (!(mount_list = read_file_system_list (false)))
         error (0, errno, "%s", _("cannot read table of mounted file systems"));
       tried_mount_list = true;
     }
 
   struct stat name_stats;
-  if (stat (name, &name_stats) != 0)
-    return NULL;
+  もし (stat (name, &name_stats) != 0)
+    戻る NULL;
 
-  for (struct mount_entry *me = mount_list; me; me = me->me_next)
+  ために (struct mount_entry *me = mount_list; me; me = me->me_next)
     {
-      if (me->me_dummy && me->me_devname[0] == '/'
+      もし (me->me_dummy && me->me_devname[0] == '/'
           && streq (me->me_mountdir, name))
         {
           struct stat dev_stats;
 
-          if (stat (me->me_devname, &dev_stats) == 0
+          もし (stat (me->me_devname, &dev_stats) == 0
               && psame_inode (&name_stats, &dev_stats))
             {
               bind_mount = me->me_devname;
@@ -1003,7 +1003,7 @@ find_bind_mount (char const * name)
         }
     }
 
-  return bind_mount;
+  戻る bind_mount;
 }
 
 /* Print mount point.  Return zero upon success, nonzero upon failure.  */
@@ -1019,17 +1019,17 @@ out_mount_point (char const *filename, char *pformat, size_t prefix_len,
 
   /* Look for bind mounts first.  Note we output the immediate alias,
      rather than further resolving to a base device mount point.  */
-  if (follow_links || !S_ISLNK (statp->st_mode))
+  もし (follow_links || !S_ISLNK (statp->st_mode))
     {
       char *resolved = canonicalize_file_name (filename);
-      if (!resolved)
+      もし (!resolved)
         {
           error (0, errno, _("failed to canonicalize %s"), quoteaf (filename));
           goto print_mount_point;
         }
       bp = find_bind_mount (resolved);
       free (resolved);
-      if (bp)
+      もし (bp)
         {
           fail = false;
           goto print_mount_point;
@@ -1041,7 +1041,7 @@ out_mount_point (char const *filename, char *pformat, size_t prefix_len,
      Note we don't detect if any of the directory components
      are bind mounted to the same device, but that's OK
      since we've not directly queried them.  */
-  if ((mp = find_mount_point (filename, statp)))
+  もし ((mp = find_mount_point (filename, statp)))
     {
       /* This dir might be bind mounted to another device,
          so we resolve the bound source in that case also.  */
@@ -1053,17 +1053,17 @@ print_mount_point:
 
   out_string (pformat, prefix_len, bp ? bp : mp ? mp : np);
   free (mp);
-  return fail;
+  戻る fail;
 }
 
 /* Map a TS with negative TS.tv_nsec to {0,0}.  */
 static inline struct timespec
 neg_to_zero (struct timespec ts)
 {
-  if (0 <= ts.tv_nsec)
-    return ts;
+  もし (0 <= ts.tv_nsec)
+    戻る ts;
   struct timespec z = {0};
-  return z;
+  戻る z;
 }
 
 /* Output a single-character \ escape.  */
@@ -1114,9 +1114,9 @@ format_code_offset (char const *directive)
   size_t len = strspn (directive + 1, printf_flags);
   char const *fmt_char = directive + len + 1;
   fmt_char += strspn (fmt_char, digits);
-  if (*fmt_char == '.')
+  もし (*fmt_char == '.')
     fmt_char += 1 + strspn (fmt_char + 1, digits);
-  return fmt_char - directive;
+  戻る fmt_char - directive;
 }
 
 /* Print the information specified by the format string, FORMAT,
@@ -1124,9 +1124,9 @@ format_code_offset (char const *directive)
    Return zero upon success, nonzero upon failure.  */
 NODISCARD
 static bool
-print_it (char const *format, int fd, char const *filename,
+print_it (char const *format, 整数 fd, char const *filename,
           bool (*print_func) (char *, size_t, char, char,
-                              int, char const *, void const *),
+                              整数, char const *, void const *),
           void const *data)
 {
   bool fail = false;
@@ -1142,7 +1142,7 @@ print_it (char const *format, int fd, char const *filename,
     };
   size_t n_alloc = strlen (format) + MAX_ADDITIONAL_BYTES + 1;
   char *dest = xmalloc (n_alloc);
-  for (char const *b = format; *b; b++)
+  ために (char const *b = format; *b; b++)
     {
       switch (*b)
         {
@@ -1160,7 +1160,7 @@ print_it (char const *format, int fd, char const *filename,
                 --b;
                 FALLTHROUGH;
               case '%':
-                if (1 < len)
+                もし (1 < len)
                   {
                     dest[len] = fmt_char;
                     dest[len + 1] = '\0';
@@ -1174,14 +1174,14 @@ print_it (char const *format, int fd, char const *filename,
               case 'Q':
                 mod_char = fmt_char;
                 fmt_char = *(b + 1);
-                if ((mod_char == 'Q' && fmt_char == 'n')
+                もし ((mod_char == 'Q' && fmt_char == 'n')
                     || (print_func == print_stat
                         && (mod_char == 'H' || mod_char == 'L')
                         && (fmt_char == 'd' || fmt_char == 'r')))
                   {
                     b++;
                   }
-                else
+                否则
                   {
                     fmt_char = mod_char;
                     mod_char = 0;
@@ -1196,17 +1196,17 @@ print_it (char const *format, int fd, char const *filename,
           }
 
         case '\\':
-          if ( ! interpret_backslash_escapes)
+          もし ( ! interpret_backslash_escapes)
             {
               putchar ('\\');
               break;
             }
           ++b;
-          if (isoct (*b))
+          もし (isoct (*b))
             {
-              int esc_value = fromoct (*b);
-              int esc_length = 1;	/* number of octal digits */
-              for (++b; esc_length < 3 && isoct (*b);
+              整数 esc_value = fromoct (*b);
+              整数 esc_length = 1;	/* number of octal digits */
+              ために (++b; esc_length < 3 && isoct (*b);
                    ++esc_length, ++b)
                 {
                   esc_value = esc_value * 8 + fromoct (*b);
@@ -1214,27 +1214,27 @@ print_it (char const *format, int fd, char const *filename,
               putchar (esc_value);
               --b;
             }
-          else if (*b == 'x' && c_isxdigit (b[1]))
+          否则 もし (*b == 'x' && c_isxdigit (b[1]))
             {
-              int esc_value = fromhex (b[1]);	/* Value of \xhh escape. */
+              整数 esc_value = fromhex (b[1]);	/* Value of \xhh escape. */
               /* A hexadecimal \xhh escape sequence must have
                  1 or 2 hex. digits.  */
               ++b;
-              if (c_isxdigit (b[1]))
+              もし (c_isxdigit (b[1]))
                 {
                   ++b;
                   esc_value = esc_value * 16 + fromhex (*b);
                 }
               putchar (esc_value);
             }
-          else if (*b == '\0')
+          否则 もし (*b == '\0')
             {
               error (0, 0, _("warning: backslash at end of format"));
               putchar ('\\');
               /* Arrange to exit the loop.  */
               --b;
             }
-          else
+          否则
             {
               print_esc_char (*b);
             }
@@ -1249,7 +1249,7 @@ print_it (char const *format, int fd, char const *filename,
 
   fputs (trailing_delim, stdout);
 
-  return fail;
+  戻る fail;
 }
 
 /* Stat the file system and print what we find.  */
@@ -1259,22 +1259,22 @@ do_statfs (char const *filename, char const *format)
 {
   STRUCT_STATVFS statfsbuf;
 
-  if (streq (filename, "-"))
+  もし (streq (filename, "-"))
     {
       error (0, 0, _("using %s to denote standard input does not work"
                      " in file system mode"), quoteaf (filename));
-      return false;
+      戻る false;
     }
 
-  if (STATFS (filename, &statfsbuf) != 0)
+  もし (STATFS (filename, &statfsbuf) != 0)
     {
       error (0, errno, _("cannot read file system information for %s"),
              quoteaf (filename));
-      return false;
+      戻る false;
     }
 
   bool fail = print_it (format, -1, filename, print_statfs, &statfsbuf);
-  return ! fail;
+  戻る ! fail;
 }
 
 struct print_args {
@@ -1288,76 +1288,76 @@ static bool dont_sync;
 /* Ask statx to force sync? */
 static bool force_sync;
 
-#if USE_STATX
-static unsigned int
+#もし USE_STATX
+static unsigned 整数
 fmt_to_mask (char fmt)
 {
   switch (fmt)
     {
     case 'N':
-      return STATX_MODE;
+      戻る STATX_MODE;
     case 'd':
     case 'D':
-      return STATX_MODE;
+      戻る STATX_MODE;
     case 'i':
-      return STATX_INO;
+      戻る STATX_INO;
     case 'a':
     case 'A':
-      return STATX_MODE;
+      戻る STATX_MODE;
     case 'f':
-      return STATX_MODE|STATX_TYPE;
+      戻る STATX_MODE|STATX_TYPE;
     case 'F':
-      return STATX_TYPE;
+      戻る STATX_TYPE;
     case 'h':
-      return STATX_NLINK;
+      戻る STATX_NLINK;
     case 'u':
     case 'U':
-      return STATX_UID;
+      戻る STATX_UID;
     case 'g':
     case 'G':
-      return STATX_GID;
+      戻る STATX_GID;
     case 'm':
-      return STATX_MODE|STATX_INO;
+      戻る STATX_MODE|STATX_INO;
     case 's':
-      return STATX_SIZE;
+      戻る STATX_SIZE;
     case 't':
     case 'T':
-      return STATX_MODE;
+      戻る STATX_MODE;
     case 'b':
-      return STATX_BLOCKS;
+      戻る STATX_BLOCKS;
     case 'w':
     case 'W':
-      return STATX_BTIME;
+      戻る STATX_BTIME;
     case 'x':
     case 'X':
-      return STATX_ATIME;
+      戻る STATX_ATIME;
     case 'y':
     case 'Y':
-      return STATX_MTIME;
+      戻る STATX_MTIME;
     case 'z':
     case 'Z':
-      return STATX_CTIME;
+      戻る STATX_CTIME;
     }
-  return 0;
+  戻る 0;
 }
 
 ATTRIBUTE_PURE
-static unsigned int
+static unsigned 整数
 format_to_mask (char const *format)
 {
-  unsigned int mask = 0;
+  unsigned 整数 mask = 0;
 
-  for (char const *b = format; *b; b++)
+  ために (char const *b = format; *b; b++)
     {
-      if (*b != '%')
+      もし (*b != '%')
         continue;
 
       b += format_code_offset (b);
-      if (*b == '\0')
+      もし (*b == '\0')
         break;
       mask |= fmt_to_mask (*b);
     }
-  return mask;
+  戻る mask;
 }
 
 /* statx the file and print what we find */
@@ -1365,8 +1365,8 @@ NODISCARD
 static bool
 do_stat (char const *filename, char const *format, char const *format2)
 {
-  int fd = streq (filename, "-") ? 0 : AT_FDCWD;
-  int flags = 0;
+  整数 fd = streq (filename, "-") ? 0 : AT_FDCWD;
+  整数 flags = 0;
   struct stat st;
   struct statx stx = {0};
   char const *pathname = filename;
@@ -1374,64 +1374,64 @@ do_stat (char const *filename, char const *format, char const *format2)
   pa.st = &st;
   pa.btime = (struct timespec) {.tv_sec = -1, .tv_nsec = -1};
 
-  if (AT_FDCWD != fd)
+  もし (AT_FDCWD != fd)
     {
       pathname = "";
       flags = AT_EMPTY_PATH;
     }
-  else if (!follow_links)
+  否则 もし (!follow_links)
     {
       flags = AT_SYMLINK_NOFOLLOW;
     }
 
-  if (dont_sync)
+  もし (dont_sync)
     flags |= AT_STATX_DONT_SYNC;
-  else if (force_sync)
+  否则 もし (force_sync)
     flags |= AT_STATX_FORCE_SYNC;
 
-  if (! force_sync)
+  もし (! force_sync)
     flags |= AT_NO_AUTOMOUNT;
 
   fd = statx (fd, pathname, flags, format_to_mask (format), &stx);
-  if (fd < 0)
+  もし (fd < 0)
     {
-      if (flags & AT_EMPTY_PATH)
+      もし (flags & AT_EMPTY_PATH)
         error (0, errno, _("cannot stat standard input"));
-      else
+      否则
         error (0, errno, _("cannot statx %s"), quoteaf (filename));
-      return false;
+      戻る false;
     }
 
-  if (S_ISBLK (stx.stx_mode) || S_ISCHR (stx.stx_mode))
+  もし (S_ISBLK (stx.stx_mode) || S_ISCHR (stx.stx_mode))
     format = format2;
 
   statx_to_stat (&stx, &st);
-  if (stx.stx_mask & STATX_BTIME)
+  もし (stx.stx_mask & STATX_BTIME)
     pa.btime = statx_timestamp_to_timespec (stx.stx_btime);
 
   bool fail = print_it (format, fd, filename, print_stat, &pa);
-  return ! fail;
+  戻る ! fail;
 }
 
-#else /* USE_STATX */
+#否则 /* USE_STATX */
 
 static struct timespec
-get_birthtime (int fd, char const *filename, struct stat const *st)
+get_birthtime (整数 fd, char const *filename, struct stat const *st)
 {
   struct timespec ts = get_stat_birthtime (st);
 
-# if HAVE_GETATTRAT
-  if (ts.tv_nsec < 0)
+# もし HAVE_GETATTRAT
+  もし (ts.tv_nsec < 0)
     {
       nvlist_t *response;
-      if ((fd < 0
+      もし ((fd < 0
            ? getattrat (AT_FDCWD, XATTR_VIEW_READWRITE, filename, &response)
            : fgetattr (fd, XATTR_VIEW_READWRITE, &response))
           == 0)
         {
           uint64_t *val;
           uint_t n;
-          if (nvlist_lookup_uint64_array (response, A_CRTIME, &val, &n) == 0
+          もし (nvlist_lookup_uint64_array (response, A_CRTIME, &val, &n) == 0
               && 2 <= n
               && val[0] <= TYPE_MAXIMUM (time_t)
               && val[1] < 1000000000 * 2 /* for leap seconds */)
@@ -1444,7 +1444,7 @@ get_birthtime (int fd, char const *filename, struct stat const *st)
     }
 # endif
 
-  return ts;
+  戻る ts;
 }
 
 
@@ -1454,36 +1454,36 @@ static bool
 do_stat (char const *filename, char const *format,
          char const *format2)
 {
-  int fd = streq (filename, "-") ? 0 : -1;
+  整数 fd = streq (filename, "-") ? 0 : -1;
   struct stat statbuf;
   struct print_args pa;
   pa.st = &statbuf;
   pa.btime = (struct timespec) {.tv_sec = -1, .tv_nsec = -1};
 
-  if (0 <= fd)
+  もし (0 <= fd)
     {
-      if (fstat (fd, &statbuf) != 0)
+      もし (fstat (fd, &statbuf) != 0)
         {
           error (0, errno, _("cannot stat standard input"));
-          return false;
+          戻る false;
         }
     }
   /* We can't use the shorter
      (follow_links?stat:lstat) (filename, &statbug)
      since stat might be a function-like macro.  */
-  else if ((follow_links
+  否则 もし ((follow_links
             ? stat (filename, &statbuf)
             : lstat (filename, &statbuf)) != 0)
     {
       error (0, errno, _("cannot stat %s"), quoteaf (filename));
-      return false;
+      戻る false;
     }
 
-  if (S_ISBLK (statbuf.st_mode) || S_ISCHR (statbuf.st_mode))
+  もし (S_ISBLK (statbuf.st_mode) || S_ISCHR (statbuf.st_mode))
     format = format2;
 
   bool fail = print_it (format, fd, filename, print_stat, &pa);
-  return ! fail;
+  戻る ! fail;
 }
 #endif /* USE_STATX */
 
@@ -1493,13 +1493,13 @@ do_stat (char const *filename, char const *format,
 static uintmax_t
 unsigned_file_size (off_t size)
 {
-  return size + (size < 0) * ((uintmax_t) OFF_T_MAX - OFF_T_MIN + 1);
+  戻る size + (size < 0) * ((uintmax_t) OFF_T_MAX - OFF_T_MIN + 1);
 }
 
 /* Print stat info.  Return zero upon success, nonzero upon failure.  */
 static bool
 print_stat (char *pformat, size_t prefix_len, char mod, char m,
-            MAYBE_UNUSED int fd, char const *filename, void const *data)
+            MAYBE_UNUSED 整数 fd, char const *filename, void const *data)
 {
   struct print_args *parg = (struct print_args *) data;
   struct stat *statbuf = parg->st;
@@ -1511,7 +1511,7 @@ print_stat (char *pformat, size_t prefix_len, char mod, char m,
   switch (m)
     {
     case 'n':
-      if (mod == 'Q')
+      もし (mod == 'Q')
         {
           initialize_quoting_style ();
           filename = quoteN (filename);
@@ -1521,14 +1521,14 @@ print_stat (char *pformat, size_t prefix_len, char mod, char m,
     case 'N':
       initialize_quoting_style ();
       out_string (pformat, prefix_len, quoteN (filename));
-      if (S_ISLNK (statbuf->st_mode))
+      もし (S_ISLNK (statbuf->st_mode))
         {
           char *linkname = areadlink_with_size (filename, statbuf->st_size);
-          if (linkname == NULL)
+          もし (linkname == NULL)
             {
               error (0, errno, _("cannot read symbolic link %s"),
                      quoteaf (filename));
-              return true;
+              戻る true;
             }
           printf (" -> ");
           out_string (pformat, prefix_len, quoteN (linkname));
@@ -1536,11 +1536,11 @@ print_stat (char *pformat, size_t prefix_len, char mod, char m,
         }
       break;
     case 'd':
-      if (mod == 'H')
+      もし (mod == 'H')
         out_uint (pformat, prefix_len, major (statbuf->st_dev));
-      else if (mod == 'L')
+      否则 もし (mod == 'L')
         out_uint (pformat, prefix_len, minor (statbuf->st_dev));
-      else
+      否则
         out_uint (pformat, prefix_len, statbuf->st_dev);
       break;
     case 'D':
@@ -1587,11 +1587,11 @@ print_stat (char *pformat, size_t prefix_len, char mod, char m,
       out_uint (pformat, prefix_len, unsigned_file_size (statbuf->st_size));
       break;
     case 'r':
-      if (mod == 'H')
+      もし (mod == 'H')
         out_uint (pformat, prefix_len, major (statbuf->st_rdev));
-      else if (mod == 'L')
+      否则 もし (mod == 'L')
         out_uint (pformat, prefix_len, minor (statbuf->st_rdev));
-      else
+      否则
         out_uint (pformat, prefix_len, statbuf->st_rdev);
       break;
     case 'R':
@@ -1614,18 +1614,18 @@ print_stat (char *pformat, size_t prefix_len, char mod, char m,
       break;
     case 'w':
       {
-#if ! USE_STATX
+#もし ! USE_STATX
         btime = get_birthtime (fd, filename, statbuf);
 #endif
-        if (btime.tv_nsec < 0)
+        もし (btime.tv_nsec < 0)
           out_string (pformat, prefix_len, "-");
-        else
+        否则
           out_string (pformat, prefix_len, human_time (btime));
       }
       break;
     case 'W':
       {
-#if ! USE_STATX
+#もし ! USE_STATX
         btime = get_birthtime (fd, filename, statbuf);
 #endif
         out_epoch_sec (pformat, prefix_len, neg_to_zero (btime));
@@ -1656,7 +1656,7 @@ print_stat (char *pformat, size_t prefix_len, char mod, char m,
       fputc ('?', stdout);
       break;
     }
-  return fail;
+  戻る fail;
 }
 
 /* Return an allocated format string in static storage that
@@ -1665,11 +1665,11 @@ static char *
 default_format (bool fs, bool terse, bool device)
 {
   char *format;
-  if (fs)
+  もし (fs)
     {
-      if (terse)
+      もし (terse)
         format = xstrdup (fmt_terse_fs);
-      else
+      否则
         {
           /* TRANSLATORS: This string uses format specifiers from
              'stat --help' with --file-system, and NOT from printf.  */
@@ -1680,16 +1680,16 @@ default_format (bool fs, bool terse, bool device)
                               "Inodes: Total: %-10c Free: %d\n"));
         }
     }
-  else /* ! fs */
+  否则 /* ! fs */
     {
-      if (terse)
+      もし (terse)
         {
-          if (0 < is_selinux_enabled ())
+          もし (0 < is_selinux_enabled ())
             format = xstrdup (fmt_terse_selinux);
-          else
+          否则
             format = xstrdup (fmt_terse_regular);
         }
-      else
+      否则
         {
           char *temp;
           /* TRANSLATORS: This string uses format specifiers from
@@ -1700,7 +1700,7 @@ default_format (bool fs, bool terse, bool device)
 "));
 
           temp = format;
-          if (device)
+          もし (device)
             {
               /* TRANSLATORS: This string uses format specifiers from
                  'stat --help' without --file-system, and NOT from printf.  */
@@ -1708,7 +1708,7 @@ default_format (bool fs, bool terse, bool device)
 " "Device: %Hd,%Ld\tInode: %-10i  Links: %-5h Device type: %Hr,%Lr\n\
 "));
             }
-          else
+          否则
             {
               /* TRANSLATORS: This string uses format specifiers from
                  'stat --help' without --file-system, and NOT from printf.  */
@@ -1726,7 +1726,7 @@ default_format (bool fs, bool terse, bool device)
 "));
           free (temp);
 
-          if (0 < is_selinux_enabled ())
+          もし (0 < is_selinux_enabled ())
             {
               temp = format;
               /* TRANSLATORS: This string uses format specifiers from
@@ -1747,15 +1747,15 @@ default_format (bool fs, bool terse, bool device)
           free (temp);
         }
     }
-  return format;
+  戻る format;
 }
 
 void
-usage (int status)
+usage (整数 status)
 {
-  if (status != EXIT_SUCCESS)
+  もし (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  否则
     {
       printf (_("Usage: %s [OPTION]... FILE...\n"), program_name);
       fputs (_("\
@@ -1786,7 +1786,7 @@ Display file or file system status.\n\
       --printf=FORMAT\n\
          like --format, but interpret backslash escapes,\n\
          and do not output a mandatory trailing newline;\n\
-         if you want a newline, include \\n in FORMAT\n\
+         もし you want a newline, include \\n in FORMAT\n\
 "));
       oputs (_("\
   -t, --terse\n\
@@ -1797,13 +1797,13 @@ Display file or file system status.\n\
 
       fputs (_("\n\
 The MODE argument of --cached can be: always, never, or default.\n\
-'always' will use cached attributes if available, while\n\
+'always' will use cached attributes もし available, ながら\n\
 'never' will try to synchronize with the latest attributes, and\n\
 'default' will leave it up to the underlying file system.\n\
 "), stdout);
 
       fputs (_("\n\
-The valid format sequences for files (without --file-system):\n\
+The valid format sequences ために files (without --file-system):\n\
 \n\
   %a   permission bits in octal (see '#' and '0' printf flags)\n\
   %A   permission bits and file type in human readable form\n\
@@ -1827,21 +1827,21 @@ The valid format sequences for files (without --file-system):\n\
   %m   mount point\n\
   %n   file name\n\
   %Qn  quoted file name\n\
-  %N   quoted file name with dereference if symbolic link\n\
+  %N   quoted file name with dereference もし symbolic link\n\
   %o   optimal I/O transfer size hint\n\
   %s   total size, in bytes\n\
   %r   device type in decimal (st_rdev)\n\
   %R   device type in hex (st_rdev)\n\
-  %Hr  major device type in decimal, for character/block device special files\n\
-  %Lr  minor device type in decimal, for character/block device special files\n\
-  %t   major device type in hex, for character/block device special files\n\
-  %T   minor device type in hex, for character/block device special files\n\
+  %Hr  major device type in decimal, ために character/block device special files\n\
+  %Lr  minor device type in decimal, ために character/block device special files\n\
+  %t   major device type in hex, ために character/block device special files\n\
+  %T   minor device type in hex, ために character/block device special files\n\
 "), stdout);
       fputs (_("\
   %u   user ID of owner\n\
   %U   user name of owner\n\
-  %w   time of file birth, human-readable; - if unknown\n\
-  %W   time of file birth, seconds since Epoch; 0 if unknown\n\
+  %w   time of file birth, human-readable; - もし unknown\n\
+  %W   time of file birth, seconds since Epoch; 0 もし unknown\n\
   %x   time of last access, human-readable\n\
   %X   time of last access, seconds since Epoch\n\
   %y   time of last data modification, human-readable\n\
@@ -1852,7 +1852,7 @@ The valid format sequences for files (without --file-system):\n\
 "), stdout);
 
       fputs (_("\
-Valid format sequences for file systems:\n\
+Valid format sequences ために file systems:\n\
 \n\
   %a   free blocks available to non-superuser\n\
   %b   total data blocks in file system\n\
@@ -1865,8 +1865,8 @@ Valid format sequences for file systems:\n\
   %l   maximum length of filenames\n\
   %n   file name\n\
   %Qn  quoted file name\n\
-  %s   block size (for faster transfers)\n\
-  %S   fundamental block size (for block counts)\n\
+  %s   block size (ために faster transfers)\n\
+  %S   fundamental block size (ために block counts)\n\
   %t   file system type in hex\n\
   %T   file system type in human readable form\n\
 "), stdout);
@@ -1875,9 +1875,9 @@ Valid format sequences for file systems:\n\
 --terse is equivalent to the following FORMAT:\n\
     %s\
 "),
-#if HAVE_SELINUX_SELINUX_H
+#もし HAVE_SELINUX_SELINUX_H
               fmt_terse_selinux
-#else
+#否则
               fmt_terse_regular
 #endif
               );
@@ -1893,10 +1893,10 @@ Valid format sequences for file systems:\n\
   exit (status);
 }
 
-int
-main (int argc, char *argv[])
+整数
+メインページ (整数 argc, char *argv[])
 {
-  int c;
+  整数 c;
   bool fs = false;
   bool terse = false;
   char *format = NULL;
@@ -1915,7 +1915,7 @@ main (int argc, char *argv[])
 
   atexit (close_stdout);
 
-  while ((c = getopt_long (argc, argv, "c:fLt", long_options, NULL)) != -1)
+  ながら ((c = getopt_long (argc, argv, "c:fLt", long_options, NULL)) != -1)
     {
       switch (c)
         {
@@ -1969,23 +1969,23 @@ main (int argc, char *argv[])
         }
     }
 
-  if (argc == optind)
+  もし (argc == optind)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
-  if (format)
+  もし (format)
     {
       format2 = format;
     }
-  else
+  否则
     {
       format = default_format (fs, terse, /* device= */ false);
       format2 = default_format (fs, terse, /* device= */ true);
     }
 
-  for (int i = optind; i < argc; i++)
+  ために (整数 i = optind; i < argc; i++)
     ok &= (fs
            ? do_statfs (argv[i], format)
            : do_stat (argv[i], format, format2));

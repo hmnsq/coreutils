@@ -43,11 +43,11 @@ static struct option const longopts[] =
 };
 
 void
-usage (int status)
+usage (整数 status)
 {
-  if (status != EXIT_SUCCESS)
+  もし (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  否则
     {
       printf (_("\
 Usage: %s [OPTION] NAME...\n\
@@ -55,7 +55,7 @@ Usage: %s [OPTION] NAME...\n\
               program_name);
       fputs (_("\
 Output each NAME with its last non-slash component and trailing slashes\n\
-removed; if NAME contains no /'s, output '.' (meaning the current directory).\n\
+removed; もし NAME contains no /'s, output '.' (meaning the current directory).\n\
 \n\
 "), stdout);
       oputs (_("\
@@ -77,8 +77,8 @@ Examples:\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+整数
+メインページ (整数 argc, char **argv)
 {
   bool use_nuls = false;
 
@@ -90,11 +90,11 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while (true)
+  ながら (true)
     {
-      int c = getopt_long (argc, argv, "z", longopts, NULL);
+      整数 c = getopt_long (argc, argv, "z", longopts, NULL);
 
-      if (c == -1)
+      もし (c == -1)
         break;
 
       switch (c)
@@ -111,37 +111,37 @@ main (int argc, char **argv)
         }
     }
 
-  if (argc < optind + 1)
+  もし (argc < optind + 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
 
-  if (!use_nuls && isatty (STDOUT_FILENO))
+  もし (!use_nuls && isatty (STDOUT_FILENO))
     {
-      int qs = getenv_quoting_style ();
-      if (qs < 0)
+      整数 qs = getenv_quoting_style ();
+      もし (qs < 0)
         qs = shell_escape_quoting_style;
-      if (qs != literal_quoting_style)
+      もし (qs != literal_quoting_style)
         {
           set_quoting_style (NULL, qs);
           quote_output = true;
         }
     }
 
-  for (; optind < argc; optind++)
+  ために (; optind < argc; optind++)
     {
       char const *result = argv[optind];
       idx_t len = dir_len (result);
 
-      if (! len)
+      もし (! len)
         {
           static char const dot = '.';
           result = &dot;
           len = 1;
         }
-      if (quote_output)
+      もし (quote_output)
         {
           result = quoteN_mem (result, len);
           len = strlen (result);
@@ -150,5 +150,5 @@ main (int argc, char **argv)
       putchar (use_nuls ? '\0' :'\n');
     }
 
-  return EXIT_SUCCESS;
+  戻る EXIT_SUCCESS;
 }

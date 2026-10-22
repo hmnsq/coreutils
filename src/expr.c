@@ -114,44 +114,44 @@ static void printv (VALUE *v);
 static size_t
 mbs_logical_cspn (char const *s, char const *accept)
 {
-  if (accept[0] == '\0')
-    return 0;
+  もし (accept[0] == '\0')
+    戻る 0;
 
   /* General case.  */
-  if (MB_CUR_MAX > 1)
+  もし (MB_CUR_MAX > 1)
     {
       size_t idx = 0;
-      for (char const *p = s; *p; )
+      ために (char const *p = s; *p; )
         {
           ++idx;
           mcel_t g = mcel_scanz (p);
-          if (g.len == 1)
+          もし (g.len == 1)
             {
-              if (mbschr (accept, *p))
-                return idx;
+              もし (mbschr (accept, *p))
+                戻る idx;
             }
-          else
-            for (char const *a = accept; *a; )
+          否则
+            ために (char const *a = accept; *a; )
               {
                 mcel_t h = mcel_scanz (a);
-                if (mcel_eq (g, h))
-                  return idx;
+                もし (mcel_eq (g, h))
+                  戻る idx;
                 a += h.len;
               }
           p += g.len;
         }
     }
-  else
+  否则
     {
       /* single-byte locale,
          convert returned byte offset to 1-based index or zero if not found. */
       size_t i = strcspn (s, accept);
-      if (s[i])
-        return i + 1;
+      もし (s[i])
+        戻る i + 1;
     }
 
   /* not found */
-  return 0;
+  戻る 0;
 }
 
 /* Extract the substring of S, from logical character
@@ -172,24 +172,24 @@ mbs_logical_substr (char const *s, size_t pos, size_t len)
 
   char const *substart = s;
   idx_t sublen = 0;
-  if (pos == 0 || len == SIZE_MAX)
+  もし (pos == 0 || len == SIZE_MAX)
     {
       /* The request is invalid.  Silently yield an empty string.  */
     }
-  else if (mb_cur_max <= 1)
+  否则 もし (mb_cur_max <= 1)
     {
       substart += pos - 1;
       sublen = vlen;
     }
-  else
-    for (idx_t idx = 1; *s && vlen; idx++)
+  否则
+    ために (idx_t idx = 1; *s && vlen; idx++)
       {
         idx_t char_bytes = mcel_scanz (s).len;
 
         /* Skip until we reach the starting position.  */
-        if (pos <= idx)
+        もし (pos <= idx)
           {
-            if (pos == idx)
+            もし (pos == idx)
               substart = s;
 
             /* Add one character's length in bytes.  */
@@ -200,7 +200,7 @@ mbs_logical_substr (char const *s, size_t pos, size_t len)
         s += char_bytes;
       }
 
-  return ximemdup0 (substart, sublen);
+  戻る ximemdup0 (substart, sublen);
 }
 
 /* Return the number of logical characters (possibly multibyte)
@@ -215,19 +215,19 @@ static size_t
 mbs_offset_to_chars (char const *s, size_t ofs)
 {
   size_t c = 0;
-  for (size_t d = 0; d < ofs && s[d]; d += mcel_scanz (s + d).len)
+  ために (size_t d = 0; d < ofs && s[d]; d += mcel_scanz (s + d).len)
     c++;
-  return c;
+  戻る c;
 }
 
 
 
 void
-usage (int status)
+usage (整数 status)
 {
-  if (status != EXIT_SUCCESS)
+  もし (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  否则
     {
       printf (_("\
 Usage: %s EXPRESSION\n\
@@ -242,9 +242,9 @@ Usage: %s EXPRESSION\n\
 Print the value of EXPRESSION to standard output.  A blank line below\n\
 separates increasing precedence groups.  EXPRESSION may be:\n\
 \n\
-  ARG1 | ARG2       ARG1 if it is neither null nor 0, otherwise ARG2\n\
+  ARG1 | ARG2       ARG1 もし it is neither null nor 0, otherwise ARG2\n\
 \n\
-  ARG1 & ARG2       ARG1 if neither argument is null or 0, otherwise 0\n\
+  ARG1 & ARG2       ARG1 もし neither argument is null or 0, otherwise 0\n\
 "), stdout);
       fputs (_("\
 \n\
@@ -278,22 +278,22 @@ separates increasing precedence groups.  EXPRESSION may be:\n\
   length STRING              length of STRING\n\
 "), stdout);
       fputs (_("\
-  + TOKEN                    interpret TOKEN as a string, even if it is a\n\
+  + TOKEN                    interpret TOKEN as a string, even もし it is a\n\
                                keyword like 'match' or an operator like '/'\n\
 \n\
   ( EXPRESSION )             value of EXPRESSION\n\
 "), stdout);
       fputs (_("\
 \n\
-Beware that many operators need to be escaped or quoted for shells.\n\
-Comparisons are arithmetic if both ARGs are numbers, else lexicographical.\n\
-Pattern matches return the string matched between \\( and \\) or null; if\n\
-\\( and \\) are not used, they return the number of characters matched or 0.\n\
+Beware that many operators need to be escaped or quoted ために shells.\n\
+Comparisons are arithmetic もし both ARGs are numbers, 否则 lexicographical.\n\
+Pattern matches 戻る the string matched between \\( and \\) or null; もし\n\
+\\( and \\) are not used, they 戻る the number of characters matched or 0.\n\
 "), stdout);
       fputs (_("\
 \n\
-Exit status is 0 if EXPRESSION is neither null nor 0, 1 if EXPRESSION is null\n\
-or 0, 2 if EXPRESSION is syntactically invalid, and 3 if an error occurred.\n\
+Exit status is 0 もし EXPRESSION is neither null nor 0, 1 もし EXPRESSION is null\n\
+or 0, 2 もし EXPRESSION is syntactically invalid, and 3 もし an error occurred.\n\
 "), stdout);
       emit_ancillary_info (PROGRAM_NAME);
     }
@@ -301,8 +301,8 @@ or 0, 2 if EXPRESSION is syntactically invalid, and 3 if an error occurred.\n\
 }
 
 
-int
-main (int argc, char **argv)
+整数
+メインページ (整数 argc, char **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -318,13 +318,13 @@ main (int argc, char **argv)
 
   /* The above handles --help and --version.
      Since there is no other invocation of getopt, handle '--' here.  */
-  if (1 < argc && streq (argv[1], "--"))
+  もし (1 < argc && streq (argv[1], "--"))
     {
       --argc;
       ++argv;
     }
 
-  if (argc <= 1)
+  もし (argc <= 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXPR_INVALID);
@@ -333,7 +333,7 @@ main (int argc, char **argv)
   args = argv + 1;
 
   VALUE *v = eval (true);
-  if (!nomoreargs ())
+  もし (!nomoreargs ())
     error (EXPR_INVALID, 0, _("syntax error: unexpected argument %s"),
            quotearg_n_style (0, locale_quoting_style, *args));
 
@@ -345,12 +345,12 @@ main (int argc, char **argv)
 /* Return a VALUE for I.  */
 
 static VALUE *
-int_value (unsigned long int i)
+int_value (unsigned long 整数 i)
 {
   VALUE *v = xmalloc (sizeof *v);
   v->type = integer;
   mpz_init_set_ui (v->u.i, i);
-  return v;
+  戻る v;
 }
 
 /* Return a VALUE for S.  */
@@ -361,7 +361,7 @@ str_value (char const *s)
   VALUE *v = xmalloc (sizeof *v);
   v->type = string;
   v->u.s = xstrdup (s);
-  return v;
+  戻る v;
 }
 
 /* Free VALUE V, including structure components.  */
@@ -369,9 +369,9 @@ str_value (char const *s)
 static void
 freev (VALUE *v)
 {
-  if (v->type == string)
+  もし (v->type == string)
     free (v->u.s);
-  else
+  否则
     mpz_clear (v->u.i);
   free (v);
 }
@@ -404,23 +404,23 @@ null (VALUE *v)
   switch (v->type)
     {
     case integer:
-      return mpz_sgn (v->u.i) == 0;
+      戻る mpz_sgn (v->u.i) == 0;
     case string:
       {
         char const *cp = v->u.s;
-        if (*cp == '\0')
-          return true;
+        もし (*cp == '\0')
+          戻る true;
 
         cp += (*cp == '-');
 
         do
           {
-            if (*cp != '0')
-              return false;
+            もし (*cp != '0')
+              戻る false;
           }
-        while (*++cp);
+        ながら (*++cp);
 
-        return true;
+        戻る true;
       }
     default:
       unreachable ();
@@ -436,11 +436,11 @@ looks_like_integer (char const *cp)
   cp += (*cp == '-');
 
   do
-    if (! c_isdigit (*cp))
-      return false;
-  while (*++cp);
+    もし (! c_isdigit (*cp))
+      戻る false;
+  ながら (*++cp);
 
-  return true;
+  戻る true;
 }
 
 /* Coerce V to a string value (can't fail).  */
@@ -473,18 +473,18 @@ toarith (VALUE *v)
   switch (v->type)
     {
     case integer:
-      return true;
+      戻る true;
     case string:
       {
         char *s = v->u.s;
 
-        if (! looks_like_integer (s))
-          return false;
-        if (mpz_init_set_str (v->u.i, s, 10) != 0)
+        もし (! looks_like_integer (s))
+          戻る false;
+        もし (mpz_init_set_str (v->u.i, s, 10) != 0)
           error (EXPR_FAILURE, ERANGE, "%s", (s));
         free (s);
         v->type = integer;
-        return true;
+        戻る true;
       }
     default:
       unreachable ();
@@ -497,15 +497,15 @@ toarith (VALUE *v)
 static size_t
 getsize (mpz_t i)
 {
-  if (mpz_sgn (i) < 0)
-    return SIZE_MAX;
-  if (mpz_fits_ulong_p (i))
+  もし (mpz_sgn (i) < 0)
+    戻る SIZE_MAX;
+  もし (mpz_fits_ulong_p (i))
     {
-      unsigned long int ul = mpz_get_ui (i);
-      if (ul < SIZE_MAX)
-        return ul;
+      unsigned long 整数 ul = mpz_get_ui (i);
+      もし (ul < SIZE_MAX)
+        戻る ul;
     }
-  return SIZE_MAX - 1;
+  戻る SIZE_MAX - 1;
 }
 
 /* Return true and advance if the next token matches STR exactly.
@@ -514,13 +514,13 @@ getsize (mpz_t i)
 static bool
 nextarg (char const *str)
 {
-  if (*args == NULL)
-    return false;
-  else
+  もし (*args == NULL)
+    戻る false;
+  否则
     {
       bool r = streq (*args, str);
       args += r;
-      return r;
+      戻る r;
     }
 }
 
@@ -529,7 +529,7 @@ nextarg (char const *str)
 static bool
 nomoreargs (void)
 {
-  return !*args;
+  戻る !*args;
 }
 
 /* Report missing operand.
@@ -538,7 +538,7 @@ nomoreargs (void)
 static void
 require_more_args (void)
 {
-  if (nomoreargs ())
+  もし (nomoreargs ())
     error (EXPR_INVALID, 0, _("syntax error: missing argument after %s"),
            quotearg_n_style (0, locale_quoting_style, *(args - 1)));
 }
@@ -551,7 +551,7 @@ static void
 trace (char const *fxn)
 {
   printf ("%s:", fxn);
-  for (char **a = args; *a; a++)
+  ために (char **a = args; *a; a++)
     printf (" %s", *a);
   putchar ('\n');
 }
@@ -582,27 +582,27 @@ docolon (VALUE *sv, VALUE *pv)
                        & ~RE_NO_EMPTY_RANGES);
   char const *errmsg = re_compile_pattern (pv->u.s, strlen (pv->u.s),
                                            &re_buffer);
-  if (errmsg)
+  もし (errmsg)
     error (EXPR_INVALID, 0, "%s", (errmsg));
   re_buffer.newline_anchor = 0;
 
   VALUE *v;
   regoff_t matchlen = re_match (&re_buffer, sv->u.s, strlen (sv->u.s), 0,
                                 &re_regs);
-  if (0 <= matchlen)
+  もし (0 <= matchlen)
     {
       /* Were \(...\) used? */
-      if (re_buffer.re_nsub > 0)
+      もし (re_buffer.re_nsub > 0)
         {
-          if (re_regs.end[1] < 0)
+          もし (re_regs.end[1] < 0)
             v = str_value ("");
-          else
+          否则
             {
               sv->u.s[re_regs.end[1]] = '\0';
               v = str_value (sv->u.s + re_regs.start[1]);
             }
         }
-      else
+      否则
         {
           /* In multibyte locales, convert the matched offset (=number of bytes)
              to the number of matched characters. */
@@ -612,27 +612,27 @@ docolon (VALUE *sv, VALUE *pv)
           v = int_value (i);
         }
     }
-  else if (matchlen == -1)
+  否则 もし (matchlen == -1)
     {
       /* Match failed -- return the right kind of null.  */
-      if (re_buffer.re_nsub > 0)
+      もし (re_buffer.re_nsub > 0)
         v = str_value ("");
-      else
+      否则
         v = int_value (0);
     }
-  else
+  否则
     error (EXPR_FAILURE,
            matchlen == -2 ? errno : EOVERFLOW,
            _("error in regular expression matcher"));
 
-  if (0 < re_regs.num_regs)
+  もし (0 < re_regs.num_regs)
     {
       free (re_regs.start);
       free (re_regs.end);
     }
   re_buffer.fastmap = NULL;
   regfree (&re_buffer);
-  return v;
+  戻る v;
 }
 
 /* Handle bare operands and ( expr ) syntax.  */
@@ -645,22 +645,22 @@ eval7 (bool evaluate)
 #endif
   require_more_args ();
 
-  if (nextarg ("("))
+  もし (nextarg ("("))
     {
       VALUE *v = eval (evaluate);
-      if (nomoreargs ())
+      もし (nomoreargs ())
         error (EXPR_INVALID, 0, _("syntax error: expecting ')' after %s"),
                quotearg_n_style (0, locale_quoting_style, *(args - 1)));
-      if (!nextarg (")"))
+      もし (!nextarg (")"))
         error (EXPR_INVALID, 0, _("syntax error: expecting ')' instead of %s"),
                quotearg_n_style (0, locale_quoting_style, *args));
-      return v;
+      戻る v;
     }
 
-  if (nextarg (")"))
+  もし (nextarg (")"))
     error (EXPR_INVALID, 0, _("syntax error: unexpected ')'"));
 
-  return str_value (*args++);
+  戻る str_value (*args++);
 }
 
 /* Handle match, substr, index, and length keywords, and quoting "+".  */
@@ -671,35 +671,35 @@ eval6 (bool evaluate)
 #ifdef EVAL_TRACE
   trace ("eval6");
 #endif
-  if (nextarg ("+"))
+  もし (nextarg ("+"))
     {
       require_more_args ();
-      return str_value (*args++);
+      戻る str_value (*args++);
     }
-  else if (nextarg ("length"))
+  否则 もし (nextarg ("length"))
     {
       VALUE *r = eval6 (evaluate);
       tostring (r);
       VALUE *v = int_value (mbslen (r->u.s));
       freev (r);
-      return v;
+      戻る v;
     }
-  else if (nextarg ("match"))
+  否则 もし (nextarg ("match"))
     {
       VALUE *l = eval6 (evaluate);
       VALUE *r = eval6 (evaluate);
       VALUE *v;
-      if (evaluate)
+      もし (evaluate)
         {
           v = docolon (l, r);
           freev (l);
         }
-      else
+      否则
         v = l;
       freev (r);
-      return v;
+      戻る v;
     }
-  else if (nextarg ("index"))
+  否则 もし (nextarg ("index"))
     {
       VALUE *l = eval6 (evaluate);
       VALUE *r = eval6 (evaluate);
@@ -709,9 +709,9 @@ eval6 (bool evaluate)
       VALUE *v = int_value (pos);
       freev (l);
       freev (r);
-      return v;
+      戻る v;
     }
-  else if (nextarg ("substr"))
+  否则 もし (nextarg ("substr"))
     {
       VALUE *l = eval6 (evaluate);
       VALUE *i1 = eval6 (evaluate);
@@ -719,9 +719,9 @@ eval6 (bool evaluate)
       tostring (l);
 
       VALUE *v;
-      if (!toarith (i1) || !toarith (i2))
+      もし (!toarith (i1) || !toarith (i2))
         v = str_value ("");
-      else
+      否则
         {
           size_t pos = getsize (i1->u.i);
           size_t len = getsize (i2->u.i);
@@ -733,10 +733,10 @@ eval6 (bool evaluate)
       freev (l);
       freev (i1);
       freev (i2);
-      return v;
+      戻る v;
     }
-  else
-    return eval7 (evaluate);
+  否则
+    戻る eval7 (evaluate);
 }
 
 /* Handle : operator (pattern matching).
@@ -749,12 +749,12 @@ eval5 (bool evaluate)
   trace ("eval5");
 #endif
   VALUE *l = eval6 (evaluate);
-  while (true)
+  ながら (true)
     {
-      if (nextarg (":"))
+      もし (nextarg (":"))
         {
           VALUE *r = eval6 (evaluate);
-          if (evaluate)
+          もし (evaluate)
             {
               VALUE *v = docolon (l, r);
               freev (l);
@@ -762,8 +762,8 @@ eval5 (bool evaluate)
             }
           freev (r);
         }
-      else
-        return l;
+      否则
+        戻る l;
     }
 }
 
@@ -776,24 +776,24 @@ eval4 (bool evaluate)
   trace ("eval4");
 #endif
   VALUE *l = eval5 (evaluate);
-  while (true)
+  ながら (true)
     {
       enum { multiply, divide, mod } fxn;
 
-      if (nextarg ("*"))
+      もし (nextarg ("*"))
         fxn = multiply;
-      else if (nextarg ("/"))
+      否则 もし (nextarg ("/"))
         fxn = divide;
-      else if (nextarg ("%"))
+      否则 もし (nextarg ("%"))
         fxn = mod;
-      else
-        return l;
+      否则
+        戻る l;
       VALUE *r = eval5 (evaluate);
-      if (evaluate)
+      もし (evaluate)
         {
-          if (!toarith (l) || !toarith (r))
+          もし (!toarith (l) || !toarith (r))
             error (EXPR_INVALID, 0, _("non-integer argument"));
-          if (fxn != multiply && mpz_sgn (r->u.i) == 0)
+          もし (fxn != multiply && mpz_sgn (r->u.i) == 0)
             error (EXPR_INVALID, 0, _("division by zero"));
           ((fxn == multiply ? mpz_mul
             : fxn == divide ? mpz_tdiv_q
@@ -813,20 +813,20 @@ eval3 (bool evaluate)
   trace ("eval3");
 #endif
   VALUE *l = eval4 (evaluate);
-  while (true)
+  ながら (true)
     {
       enum { plus, minus } fxn;
 
-      if (nextarg ("+"))
+      もし (nextarg ("+"))
         fxn = plus;
-      else if (nextarg ("-"))
+      否则 もし (nextarg ("-"))
         fxn = minus;
-      else
-        return l;
+      否则
+        戻る l;
       VALUE *r = eval4 (evaluate);
-      if (evaluate)
+      もし (evaluate)
         {
-          if (!toarith (l) || !toarith (r))
+          もし (!toarith (l) || !toarith (r))
             error (EXPR_INVALID, 0, _("non-integer argument"));
           (fxn == plus ? mpz_add : mpz_sub) (l->u.i, l->u.i, r->u.i);
         }
@@ -843,44 +843,44 @@ eval2 (bool evaluate)
   trace ("eval2");
 #endif
   VALUE *l = eval3 (evaluate);
-  while (true)
+  ながら (true)
     {
       enum
         {
           less_than, less_equal, equal, not_equal, greater_equal, greater_than
         } fxn;
 
-      if (nextarg ("<"))
+      もし (nextarg ("<"))
         fxn = less_than;
-      else if (nextarg ("<="))
+      否则 もし (nextarg ("<="))
         fxn = less_equal;
-      else if (nextarg ("=") || nextarg ("=="))
+      否则 もし (nextarg ("=") || nextarg ("=="))
         fxn = equal;
-      else if (nextarg ("!="))
+      否则 もし (nextarg ("!="))
         fxn = not_equal;
-      else if (nextarg (">="))
+      否则 もし (nextarg (">="))
         fxn = greater_equal;
-      else if (nextarg (">"))
+      否则 もし (nextarg (">"))
         fxn = greater_than;
-      else
-        return l;
+      否则
+        戻る l;
       VALUE *r = eval3 (evaluate);
 
       bool val = false;
-      if (evaluate)
+      もし (evaluate)
         {
           tostring (l);
           tostring (r);
 
-          int cmp;
-          if (looks_like_integer (l->u.s) && looks_like_integer (r->u.s))
+          整数 cmp;
+          もし (looks_like_integer (l->u.s) && looks_like_integer (r->u.s))
             cmp = strintcmp (l->u.s, r->u.s);
-          else
+          否则
             {
               errno = 0;
               cmp = strcoll (l->u.s, r->u.s);
 
-              if (errno)
+              もし (errno)
                 {
                   error (0, errno, _("string comparison failed"));
                   error (0, 0, _("set LC_ALL='C' to work around the problem"));
@@ -918,22 +918,22 @@ eval1 (bool evaluate)
   trace ("eval1");
 #endif
   VALUE *l = eval2 (evaluate);
-  while (true)
+  ながら (true)
     {
-      if (nextarg ("&"))
+      もし (nextarg ("&"))
         {
           VALUE *r = eval2 (evaluate && !null (l));
-          if (null (l) || null (r))
+          もし (null (l) || null (r))
             {
               freev (l);
               freev (r);
               l = int_value (0);
             }
-          else
+          否则
             freev (r);
         }
-      else
-        return l;
+      否则
+        戻る l;
     }
 }
 
@@ -946,25 +946,25 @@ eval (bool evaluate)
   trace ("eval");
 #endif
   VALUE *l = eval1 (evaluate);
-  while (true)
+  ながら (true)
     {
-      if (nextarg ("|"))
+      もし (nextarg ("|"))
         {
           VALUE *r = eval1 (evaluate && null (l));
-          if (null (l))
+          もし (null (l))
             {
               freev (l);
               l = r;
-              if (null (l))
+              もし (null (l))
                 {
                   freev (l);
                   l = int_value (0);
                 }
             }
-          else
+          否则
             freev (r);
         }
-      else
-        return l;
+      否则
+        戻る l;
     }
 }

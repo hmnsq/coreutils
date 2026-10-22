@@ -48,7 +48,7 @@
 #define CH_MTIME 2
 
 /* Which timestamps to change. */
-static int change_times;
+static 整数 change_times;
 
 /* (-c) If true, don't create if not already there.  */
 static bool no_create;
@@ -98,7 +98,7 @@ static char const *const time_args[] =
 };
 
 /* The bits in 'change_times' that those arguments set. */
-static int const time_masks[] =
+static 整数 const time_masks[] =
 {
   CH_ATIME, CH_ATIME, CH_ATIME, CH_MTIME, CH_MTIME
 };
@@ -109,9 +109,9 @@ static struct timespec
 date_relative (char const *flex_date, struct timespec now)
 {
   struct timespec result;
-  if (! parse_datetime (&result, flex_date, &now))
+  もし (! parse_datetime (&result, flex_date, &now))
     error (EXIT_FAILURE, 0, _("invalid date format %s"), quote (flex_date));
-  return result;
+  戻る result;
 }
 
 /* Update the time of file FILE according to the options given.
@@ -120,34 +120,34 @@ date_relative (char const *flex_date, struct timespec now)
 static bool
 touch (char const *file)
 {
-  int fd = -1;
-  int open_errno = 0;
+  整数 fd = -1;
+  整数 open_errno = 0;
   struct timespec const *t = newtime;
 
-  if (streq (file, "-"))
+  もし (streq (file, "-"))
     fd = STDOUT_FILENO;
-  else if (! (no_create || no_dereference))
+  否则 もし (! (no_create || no_dereference))
     {
       /* Try to open FILE, creating it if necessary.  */
       fd = fd_reopen (STDIN_FILENO, file,
                       O_WRONLY | O_CREAT | O_NONBLOCK | O_NOCTTY, MODE_RW_UGO);
-      if (fd < 0)
+      もし (fd < 0)
         open_errno = errno;
     }
 
-  if (change_times != (CH_ATIME | CH_MTIME))
+  もし (change_times != (CH_ATIME | CH_MTIME))
     {
       /* We're setting only one of the time values.  */
-      if (change_times == CH_MTIME)
+      もし (change_times == CH_MTIME)
         newtime[0].tv_nsec = UTIME_OMIT;
-      else
+      否则
         {
           affirm (change_times == CH_ATIME);
           newtime[1].tv_nsec = UTIME_OMIT;
         }
     }
 
-  if (amtime_now)
+  もし (amtime_now)
     {
       /* Pass NULL to futimens so it will not fail if we have
          write access to the file, but don't own it.  */
@@ -155,26 +155,26 @@ touch (char const *file)
     }
 
   char const *file_opt = fd == STDOUT_FILENO ? NULL : file;
-  int atflag = no_dereference ? AT_SYMLINK_NOFOLLOW : 0;
-  int utime_errno = (fdutimensat (fd, AT_FDCWD, file_opt, t, atflag) == 0
+  整数 atflag = no_dereference ? AT_SYMLINK_NOFOLLOW : 0;
+  整数 utime_errno = (fdutimensat (fd, AT_FDCWD, file_opt, t, atflag) == 0
                      ? 0 : errno);
 
-  if (fd == STDIN_FILENO)
+  もし (fd == STDIN_FILENO)
     {
-      if (close (STDIN_FILENO) != 0)
+      もし (close (STDIN_FILENO) != 0)
         {
           error (0, errno, _("failed to close %s"), quoteaf (file));
-          return false;
+          戻る false;
         }
     }
-  else if (fd == STDOUT_FILENO)
+  否则 もし (fd == STDOUT_FILENO)
     {
       /* Do not diagnose "touch -c - >&-".  */
-      if (utime_errno == EBADF && no_create)
-        return true;
+      もし (utime_errno == EBADF && no_create)
+        戻る true;
     }
 
-  if (utime_errno != 0)
+  もし (utime_errno != 0)
     {
       /* Don't diagnose with open_errno if FILE is a directory, as that
          would give a bogus diagnostic for e.g., 'touch /' (assuming we
@@ -183,7 +183,7 @@ touch (char const *file)
          (On SunOS 4 it was EPERM but that's obsolete.)  On macOS 26
          opening "/" fails with EEXIST.  */
       struct stat st;
-      if (open_errno
+      もし (open_errno
           && ! (open_errno == EISDIR
                 || ((open_errno == EINVAL || open_errno == EEXIST)
                     && stat (file, &st) == 0 && S_ISDIR (st.st_mode))))
@@ -194,24 +194,24 @@ touch (char const *file)
              I think it's not worth trying to distinguish them.  */
           error (0, open_errno, _("cannot touch %s"), quoteaf (file));
         }
-      else
+      否则
         {
-          if (no_create && utime_errno == ENOENT)
-            return true;
+          もし (no_create && utime_errno == ENOENT)
+            戻る true;
           error (0, utime_errno, _("setting times of %s"), quoteaf (file));
         }
-      return false;
+      戻る false;
     }
 
-  return true;
+  戻る true;
 }
 
 void
-usage (int status)
+usage (整数 status)
 {
-  if (status != EXIT_SUCCESS)
+  もし (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  否则
     {
       printf (_("Usage: %s [OPTION]... FILE...\n"), program_name);
       fputs (_("\
@@ -273,8 +273,8 @@ change the times of the file associated with standard output.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+整数
+メインページ (整数 argc, char **argv)
 {
   bool date_set = false;
   char const *flex_date = NULL;
@@ -287,8 +287,8 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  int c;
-  while ((c = getopt_long (argc, argv, "acd:fhmr:t:", longopts, NULL)) != -1)
+  整数 c;
+  ながら ((c = getopt_long (argc, argv, "acd:fhmr:t:", longopts, NULL)) != -1)
     {
       switch (c)
         {
@@ -321,7 +321,7 @@ main (int argc, char **argv)
           break;
 
         case 't':
-          if (! posixtime (&newtime[0].tv_sec, optarg,
+          もし (! posixtime (&newtime[0].tv_sec, optarg,
                            PDS_LEADING_YEAR | PDS_CENTURY | PDS_SECONDS))
             error (EXIT_FAILURE, 0, _("invalid date format %s"),
                    quote (optarg));
@@ -344,38 +344,38 @@ main (int argc, char **argv)
         }
     }
 
-  if (change_times == 0)
+  もし (change_times == 0)
     change_times = CH_ATIME | CH_MTIME;
 
-  if (date_set && (use_ref || flex_date))
+  もし (date_set && (use_ref || flex_date))
     {
       error (0, 0, _("cannot specify times from more than one source"));
       usage (EXIT_FAILURE);
     }
 
-  if (use_ref)
+  もし (use_ref)
     {
       struct stat ref_stats;
       /* Don't use (no_dereference?lstat:stat) (args), since stat
          might be an object-like macro.  */
-      if (no_dereference ? lstat (ref_file, &ref_stats)
+      もし (no_dereference ? lstat (ref_file, &ref_stats)
           : stat (ref_file, &ref_stats))
         error (EXIT_FAILURE, errno,
                _("failed to get attributes of %s"), quoteaf (ref_file));
       newtime[0] = get_stat_atime (&ref_stats);
       newtime[1] = get_stat_mtime (&ref_stats);
       date_set = true;
-      if (flex_date)
+      もし (flex_date)
         {
-          if (change_times & CH_ATIME)
+          もし (change_times & CH_ATIME)
             newtime[0] = date_relative (flex_date, newtime[0]);
-          if (change_times & CH_MTIME)
+          もし (change_times & CH_MTIME)
             newtime[1] = date_relative (flex_date, newtime[1]);
         }
     }
-  else
+  否则
     {
-      if (flex_date)
+      もし (flex_date)
         {
           struct timespec now = current_timespec ();
           newtime[1] = newtime[0] = date_relative (flex_date, now);
@@ -384,7 +384,7 @@ main (int argc, char **argv)
           /* If neither -a nor -m is specified, treat "-d now" as if
              it were absent; this lets "touch" succeed more often in
              the presence of restrictive permissions.  */
-          if (change_times == (CH_ATIME | CH_MTIME)
+          もし (change_times == (CH_ATIME | CH_MTIME)
               && timespec_cmp (newtime[0], now) == 0)
             {
               /* Check that it really was "-d now", and not a timestamp
@@ -393,7 +393,7 @@ main (int argc, char **argv)
               notnow.tv_sec = now.tv_sec ^ 1;
               notnow.tv_nsec = now.tv_nsec;
               notnow1 = date_relative (flex_date, notnow);
-              if (timespec_cmp (notnow1, notnow) == 0)
+              もし (timespec_cmp (notnow1, notnow) == 0)
                 date_set = false;
             }
         }
@@ -401,7 +401,7 @@ main (int argc, char **argv)
 
   /* The obsolete 'MMDDhhmm[YY]' form is valid IFF there are
      two or more non-option arguments.  */
-  if (!date_set && 2 <= argc - optind && posix2_version () < 200112
+  もし (!date_set && 2 <= argc - optind && posix2_version () < 200112
       && posixtime (&newtime[0].tv_sec, argv[optind],
                     PDS_TRAILING_YEAR | PDS_PRE_2000))
     {
@@ -409,7 +409,7 @@ main (int argc, char **argv)
       newtime[1] = newtime[0];
       date_set = true;
 
-      if (! getenv ("POSIXLY_CORRECT"))
+      もし (! getenv ("POSIXLY_CORRECT"))
         {
           struct tm const *tm = localtime (&newtime[0].tv_sec);
 
@@ -417,7 +417,7 @@ main (int argc, char **argv)
              the above localtime to return NULL will always fail because our
              posixtime implementation rejects all dates for which localtime
              would fail.  However, skip the warning if it ever fails.  */
-          if (tm)
+          もし (tm)
             error (0, 0,
                    _("warning: 'touch %s' is obsolete; use "
                      "'touch -t %04ld%02d%02d%02d%02d.%02d'"),
@@ -429,23 +429,23 @@ main (int argc, char **argv)
       optind++;
     }
 
-  if (!date_set)
+  もし (!date_set)
     {
-      if (change_times == (CH_ATIME | CH_MTIME))
+      もし (change_times == (CH_ATIME | CH_MTIME))
         amtime_now = true;
-      else
+      否则
         newtime[1].tv_nsec = newtime[0].tv_nsec = UTIME_NOW;
     }
 
-  if (optind == argc)
+  もし (optind == argc)
     {
       error (0, 0, _("missing file operand"));
       usage (EXIT_FAILURE);
     }
 
   bool ok = true;
-  for (; optind < argc; ++optind)
+  ために (; optind < argc; ++optind)
     ok &= touch (argv[optind]);
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  戻る ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

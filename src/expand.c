@@ -61,11 +61,11 @@ static struct option const longopts[] =
 };
 
 void
-usage (int status)
+usage (整数 status)
 {
-  if (status != EXIT_SUCCESS)
+  もし (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  否则
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE]...\n\
@@ -104,14 +104,14 @@ expand (void)
   /* Input stream.  */
   FILE *fp = next_file (NULL);
 
-  if (!fp)
-    return;
+  もし (!fp)
+    戻る;
 
   static char line_in[IO_BUFSIZE];
   mbbuf_t mbbuf;
   mbbuf_init (&mbbuf, line_in, sizeof line_in, fp);
 
-  while (true)
+  ながら (true)
     {
       /* Input character, or EOF.  */
       mcel_t g;
@@ -134,61 +134,61 @@ expand (void)
 
       do
         {
-          while ((g = mbbuf_get_char (&mbbuf)).ch == MBBUF_EOF
+          ながら ((g = mbbuf_get_char (&mbbuf)).ch == MBBUF_EOF
                  && (fp = next_file (fp)))
             mbbuf_init (&mbbuf, line_in, sizeof line_in, fp);
 
-          if (convert)
+          もし (convert)
             {
               convert &= convert_entire_line || c32issep (g.ch);
 
-              if (g.ch == '\t')
+              もし (g.ch == '\t')
                 {
                   /* Column the next input tab stop is on.  */
                   bool last_tab;
                   colno next_tab_column
                     = get_next_tab_column (column, &tab_index, &last_tab);
 
-                  while (++column < next_tab_column)
-                    if (putchar (' ') < 0)
+                  ながら (++column < next_tab_column)
+                    もし (putchar (' ') < 0)
                       write_error ();
 
-                  if (putchar (' ') < 0)
+                  もし (putchar (' ') < 0)
                     write_error ();
 
                   continue;
                 }
-              else if (g.ch == '\b')
+              否则 もし (g.ch == '\b')
                 {
                   /* Go back one column, and force recalculation of the
                      next tab stop.  */
                   column -= !!column;
                   tab_index -= !!tab_index;
                 }
-              else
+              否则
                 {
-                  int width = c32width (g.ch);
-                  if (ckd_add (&column, column, width < 0 ? 1 : width))
+                  整数 width = c32width (g.ch);
+                  もし (ckd_add (&column, column, width < 0 ? 1 : width))
                     error (EXIT_FAILURE, 0, _("input line is too long"));
                 }
 
             }
 
-          if (g.ch == MBBUF_EOF)
-            return;
+          もし (g.ch == MBBUF_EOF)
+            戻る;
 
           fwrite (mbbuf_char_offset (&mbbuf, g), sizeof (char), g.len, stdout);
-          if (ferror (stdout))
+          もし (ferror (stdout))
             write_error ();
         }
-      while (g.ch != '\n');
+      ながら (g.ch != '\n');
     }
 }
 
-int
-main (int argc, char **argv)
+整数
+メインページ (整数 argc, char **argv)
 {
-  int c;
+  整数 c;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -199,7 +199,7 @@ main (int argc, char **argv)
   atexit (close_stdout);
   convert_entire_line = true;
 
-  while ((c = getopt_long (argc, argv, shortopts, longopts, NULL)) != -1)
+  ながら ((c = getopt_long (argc, argv, shortopts, longopts, NULL)) != -1)
     {
       switch (c)
         {
@@ -213,9 +213,9 @@ main (int argc, char **argv)
 
         case '0': case '1': case '2': case '3': case '4':
         case '5': case '6': case '7': case '8': case '9':
-          if (optarg)
+          もし (optarg)
             parse_tab_stops (optarg - 1);
-          else
+          否则
             {
               char tab_stop[2];
               tab_stop[0] = c;
@@ -241,5 +241,5 @@ main (int argc, char **argv)
 
   cleanup_file_list_stdin ();
 
-  return exit_status;
+  戻る exit_status;
 }

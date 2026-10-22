@@ -67,11 +67,11 @@ static struct option const long_options[] =
 };
 
 void
-usage (int status)
+usage (整数 status)
 {
-  if (status != EXIT_SUCCESS)
+  もし (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  否则
     {
       printf (_("\
 Usage: %s [CONTEXT COMMAND [ARG]...]\n\
@@ -91,7 +91,7 @@ With neither CONTEXT nor COMMAND, print the current security context.\n\
   -c, --compute      compute process transition context before modifying\n\
 "));
       oputs (_("\
-  -t, --type=TYPE    type (for same role as parent)\n\
+  -t, --type=TYPE    type (ために same role as parent)\n\
 "));
       oputs (_("\
   -u, --user=USER    user identity\n\
@@ -110,8 +110,8 @@ With neither CONTEXT nor COMMAND, print the current security context.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+整数
+メインページ (整数 argc, char **argv)
 {
   char *role = NULL;
   char *range = NULL;
@@ -134,32 +134,32 @@ main (int argc, char **argv)
   initialize_exit_failure (EXIT_CANCELED);
   atexit (close_stdout);
 
-  while (true)
+  ながら (true)
     {
-      int option_index = 0;
-      int c = getopt_long (argc, argv, "+r:t:u:l:c", long_options,
+      整数 option_index = 0;
+      整数 c = getopt_long (argc, argv, "+r:t:u:l:c", long_options,
                            &option_index);
-      if (c == -1)
+      もし (c == -1)
         break;
       switch (c)
         {
         case 'r':
-          if (role)
+          もし (role)
             error (EXIT_CANCELED, 0, _("multiple roles"));
           role = optarg;
           break;
         case 't':
-          if (type)
+          もし (type)
             error (EXIT_CANCELED, 0, _("multiple types"));
           type = optarg;
           break;
         case 'u':
-          if (user)
+          もし (user)
             error (EXIT_CANCELED, 0, _("multiple users"));
           user = optarg;
           break;
         case 'l':
-          if (range)
+          もし (range)
             error (EXIT_CANCELED, 0, _("multiple levelranges"));
           range = optarg;
           break;
@@ -175,18 +175,18 @@ main (int argc, char **argv)
         }
     }
 
-  if (argc - optind == 0)
+  もし (argc - optind == 0)
     {
-      if (getcon (&cur_context) < 0)
+      もし (getcon (&cur_context) < 0)
         error (EXIT_CANCELED, errno, _("failed to get current context"));
       fputs (cur_context, stdout);
       fputc ('\n', stdout);
-      return EXIT_SUCCESS;
+      戻る EXIT_SUCCESS;
     }
 
-  if (!(user || role || type || range || compute_trans))
+  もし (!(user || role || type || range || compute_trans))
     {
-      if (optind >= argc)
+      もし (optind >= argc)
         {
           error (0, 0, _("you must specify -c, -t, -u, -l, -r, or context"));
           usage (EXIT_CANCELED);
@@ -194,38 +194,38 @@ main (int argc, char **argv)
       context = argv[optind++];
     }
 
-  if (optind >= argc)
+  もし (optind >= argc)
     {
       error (0, 0, _("no command specified"));
       usage (EXIT_CANCELED);
     }
 
-  if (is_selinux_enabled () != 1)
+  もし (is_selinux_enabled () != 1)
     error (EXIT_CANCELED, 0, _("%s may be used only on a SELinux kernel"),
            program_name);
 
-  if (context)
+  もし (context)
     {
       con = context_new (context);
-      if (!con)
+      もし (!con)
         error (EXIT_CANCELED, errno, _("failed to create security context: %s"),
                quote (context));
     }
-  else
+  否则
     {
-      if (getcon (&cur_context) < 0)
+      もし (getcon (&cur_context) < 0)
         error (EXIT_CANCELED, errno, _("failed to get current context"));
 
       /* We will generate context based on process transition */
-      if (compute_trans)
+      もし (compute_trans)
         {
           /* Get context of file to be executed */
-          if (getfilecon (argv[optind], &file_context) == -1)
+          もし (getfilecon (argv[optind], &file_context) == -1)
             error (EXIT_CANCELED, errno,
                    _("failed to get security context of %s"),
                    quoteaf (argv[optind]));
           /* compute result of process transition */
-          if (security_compute_create (cur_context, file_context,
+          もし (security_compute_create (cur_context, file_context,
                                        string_to_security_class ("process"),
                                        &new_context) != 0)
             error (EXIT_CANCELED, errno, _("failed to compute a new context"));
@@ -238,36 +238,36 @@ main (int argc, char **argv)
         }
 
       con = context_new (cur_context);
-      if (!con)
+      もし (!con)
         error (EXIT_CANCELED, errno, _("failed to create security context: %s"),
                quote (cur_context));
-      if (user && context_user_set (con, user))
+      もし (user && context_user_set (con, user))
         error (EXIT_CANCELED, errno, _("failed to set new user: %s"),
                quote (user));
-      if (type && context_type_set (con, type))
+      もし (type && context_type_set (con, type))
         error (EXIT_CANCELED, errno, _("failed to set new type: %s"),
                quote (type));
-      if (range && context_range_set (con, range))
+      もし (range && context_range_set (con, range))
         error (EXIT_CANCELED, errno, _("failed to set new range: %s"),
                quote (range));
-      if (role && context_role_set (con, role))
+      もし (role && context_role_set (con, role))
         error (EXIT_CANCELED, errno, _("failed to set new role: %s"),
                quote (role));
     }
 
-  if (security_check_context (context_str (con)) < 0)
+  もし (security_check_context (context_str (con)) < 0)
     error (EXIT_CANCELED, errno, _("invalid context: %s"),
            quote (context_str (con)));
 
-  if (setexeccon (context_str (con)) != 0)
+  もし (setexeccon (context_str (con)) != 0)
     error (EXIT_CANCELED, errno, _("unable to set security context %s"),
            quote (context_str (con)));
-  if (cur_context != NULL)
+  もし (cur_context != NULL)
     freecon (cur_context);
 
   (compute_trans ? execv : execvp) (argv[optind], argv + optind);
 
-  int exit_status = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
+  整数 exit_status = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
   error (0, errno, "%s", quote (argv[optind]));
-  return exit_status;
+  戻る exit_status;
 }

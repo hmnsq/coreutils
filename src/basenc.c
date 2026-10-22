@@ -31,15 +31,15 @@
 #include "xstrtol.h"
 #include "xbinary-io.h"
 
-#if BASE_TYPE == 42
+#もし BASE_TYPE == 42
 # define AUTHORS \
   proper_name ("Simon Josefsson"), \
   proper_name ("Assaf Gordon")
-#else
+#否则
 # define AUTHORS proper_name ("Simon Josefsson")
 #endif
 
-#if BASE_TYPE == 32
+#もし BASE_TYPE == 32
 # include "base32.h"
 # define PROGRAM_NAME "base32"
 #elif BASE_TYPE == 64
@@ -50,13 +50,13 @@
 # include "base64.h"
 # include "assure.h"
 # define PROGRAM_NAME "basenc"
-#else
+#否则
 # error missing/invalid BASE_TYPE definition
 #endif
 
 
 
-#if BASE_TYPE == 42
+#もし BASE_TYPE == 42
 enum
 {
   BASE64_OPTION = CHAR_MAX + 1,
@@ -76,7 +76,7 @@ static struct option const long_options[] =
   {"decode", no_argument, NULL, 'd'},
   {"wrap", required_argument, NULL, 'w'},
   {"ignore-garbage", no_argument, NULL, 'i'},
-#if BASE_TYPE == 42
+#もし BASE_TYPE == 42
   {"base64",    no_argument, NULL, BASE64_OPTION},
   {"base64url", no_argument, NULL, BASE64URL_OPTION},
   {"base58",    no_argument, NULL, BASE58_OPTION},
@@ -93,21 +93,21 @@ static struct option const long_options[] =
 };
 
 void
-usage (int status)
+usage (整数 status)
 {
-  if (status != EXIT_SUCCESS)
+  もし (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  否则
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE]\n\
 "), program_name);
 
-#if BASE_TYPE == 42
+#もし BASE_TYPE == 42
       fputs (_("\
 basenc encode or decode FILE, or standard input, to standard output.\n\
 "), stdout);
-#else
+#否则
       printf (_("\
 Base%d encode or decode FILE, or standard input, to standard output.\n\
 "), BASE_TYPE);
@@ -115,7 +115,7 @@ Base%d encode or decode FILE, or standard input, to standard output.\n\
 
       emit_stdin_note ();
       emit_mandatory_arg_note ();
-#if BASE_TYPE == 42
+#もし BASE_TYPE == 42
       oputs (_("\
       --base64\n\
          same as base64(1) program (RFC4648 section 4)\n\
@@ -162,7 +162,7 @@ Base%d encode or decode FILE, or standard input, to standard output.\n\
          wrap encoded lines after COLS character (default 76).\n\
          Use 0 to disable line wrapping\n\
 "));
-#if BASE_TYPE == 42
+#もし BASE_TYPE == 42
       oputs (_("\
       --z85\n\
          ascii85-like encoding (ZeroMQ spec:32/Z85);\n\
@@ -172,17 +172,17 @@ Base%d encode or decode FILE, or standard input, to standard output.\n\
 #endif
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
-#if BASE_TYPE == 42
+#もし BASE_TYPE == 42
       fputs (_("\
 \n\
 When decoding, the input may contain newlines in addition to the bytes of\n\
 the formal alphabet.  Use --ignore-garbage to attempt to recover\n\
 from any other non-alphabet bytes in the encoded stream.\n\
 "), stdout);
-#else
+#否则
       printf (_("\
 \n\
-The data are encoded as described for the %s alphabet in RFC 4648.\n\
+The data are encoded as described ために the %s alphabet in RFC 4648.\n\
 When decoding, the input may contain newlines in addition to the bytes of\n\
 the formal %s alphabet.  Use --ignore-garbage to attempt to recover\n\
 from any other non-alphabet bytes in the encoded stream.\n"),
@@ -194,35 +194,35 @@ from any other non-alphabet bytes in the encoded stream.\n"),
   exit (status);
 }
 
-#if BASE_TYPE != 64
-static int
-base32_required_padding (int len)
+#もし BASE_TYPE != 64
+static 整数
+base32_required_padding (整数 len)
 {
-  int partial = len % 8;
-  return partial ? 8 - partial : 0;
+  整数 partial = len % 8;
+  戻る partial ? 8 - partial : 0;
 }
 #endif
 
-#if BASE_TYPE != 32
-static int
-base64_required_padding (int len)
+#もし BASE_TYPE != 32
+static 整数
+base64_required_padding (整数 len)
 {
-  int partial = len % 4;
-  return partial ? 4 - partial : 0;
+  整数 partial = len % 4;
+  戻る partial ? 4 - partial : 0;
 }
 #endif
 
-#if BASE_TYPE == 42
-static int
-no_required_padding (MAYBE_UNUSED int len)
+#もし BASE_TYPE == 42
+static 整数
+no_required_padding (MAYBE_UNUSED 整数 len)
 {
-  return 0;
+  戻る 0;
 }
 #endif
 
 #define ENC_BLOCKSIZE (1024 * 3 * 10)
 
-#if BASE_TYPE == 32
+#もし BASE_TYPE == 32
 # define BASE_LENGTH BASE32_LENGTH
 # define REQUIRED_PADDING base32_required_padding
 /* Note that increasing this may decrease performance if --ignore-garbage
@@ -269,7 +269,7 @@ static_assert (DEC_BLOCKSIZE % 40 == 0); /* complete encoded blocks for base32*/
 static_assert (DEC_BLOCKSIZE % 12 == 0); /* complete encoded blocks for base64*/
 
 static idx_t (*base_length) (idx_t len);
-static int (*required_padding) (int i);
+static 整数 (*required_padding) (整数 i);
 static bool (*isubase) (unsigned char ch);
 static void (*base_encode) (char const *restrict in, idx_t inlen,
                             char *restrict out, idx_t outlen);
@@ -282,7 +282,7 @@ struct base16_decode_context
 
 struct z85_decode_context
 {
-  int i;
+  整数 i;
   unsigned char octets[5];
 };
 
@@ -296,7 +296,7 @@ struct base58_context
 struct base2_decode_context
 {
   unsigned char octet;
-  int bit_pos;
+  整数 bit_pos;
 };
 
 struct base_decode_context
@@ -336,72 +336,72 @@ static bool (*base_encode_ctx_finalize) (struct base_encode_context *ctx,
 static bool
 no_padding (MAYBE_UNUSED struct base_decode_context *ctx)
 {
-  return false;
+  戻る false;
 }
 
-static int
+static 整数
 no_pending_length (MAYBE_UNUSED struct base_decode_context *ctx)
 {
-  return 0;
+  戻る 0;
 }
 #endif
 
-#if BASE_TYPE == 42
+#もし BASE_TYPE == 42
 static bool (*has_padding) (struct base_decode_context *ctx);
-static int (*get_pending_length) (struct base_decode_context *ctx);
+static 整数 (*get_pending_length) (struct base_decode_context *ctx);
 
 static bool
 base64_ctx_has_padding (struct base_decode_context *ctx)
 {
-  return ctx->ctx.base64.i && ctx->ctx.base64.buf[ctx->ctx.base64.i - 1] == '=';
+  戻る ctx->ctx.base64.i && ctx->ctx.base64.buf[ctx->ctx.base64.i - 1] == '=';
 }
 
 static bool
 base32_ctx_has_padding (struct base_decode_context *ctx)
 {
-  return ctx->ctx.base32.i && ctx->ctx.base32.buf[ctx->ctx.base32.i - 1] == '=';
+  戻る ctx->ctx.base32.i && ctx->ctx.base32.buf[ctx->ctx.base32.i - 1] == '=';
 }
 
-static int
+static 整数
 base64_ctx_get_pending_length (struct base_decode_context *ctx)
 {
-  return ctx->ctx.base64.i;
+  戻る ctx->ctx.base64.i;
 }
 
-static int
+static 整数
 base32_ctx_get_pending_length (struct base_decode_context *ctx)
 {
-  return ctx->ctx.base32.i;
+  戻る ctx->ctx.base32.i;
 }
 
-static int
+static 整数
 base16_ctx_get_pending_length (MAYBE_UNUSED struct base_decode_context *ctx)
 {
-  return 1; /* Always check nibble state.  */
+  戻る 1; /* Always check nibble state.  */
 }
 
-static int
+static 整数
 z85_ctx_get_pending_length (struct base_decode_context *ctx)
 {
-  return ctx->ctx.z85.i;
+  戻る ctx->ctx.z85.i;
 }
 
-static int
+static 整数
 base2_ctx_get_pending_length (struct base_decode_context *ctx)
 {
-  return ctx->ctx.base2.bit_pos;
+  戻る ctx->ctx.base2.bit_pos;
 }
-#else
+#否则
 static bool
 has_padding (struct base_decode_context *ctx)
 {
-  return ctx->i && ctx->buf[ctx->i - 1] == '=';
+  戻る ctx->i && ctx->buf[ctx->i - 1] == '=';
 }
 
-static int
+static 整数
 get_pending_length (struct base_decode_context *ctx)
 {
-  return ctx->i;
+  戻る ctx->i;
 }
 #endif
 
@@ -413,10 +413,10 @@ static bool
 decode_ctx_finalize (struct base_decode_context *ctx,
                      char *restrict *out, idx_t *outlen)
 {
-  if (get_pending_length (ctx) == 0)
+  もし (get_pending_length (ctx) == 0)
     {
       *outlen = 0;
-      return true;
+      戻る true;
     }
 
   /* Auto-pad input and flush the context */
@@ -426,26 +426,26 @@ decode_ctx_finalize (struct base_decode_context *ctx,
   idx_t n = *outlen;
   bool result;
 
-  if (auto_padding && ! has_padding (ctx))
+  もし (auto_padding && ! has_padding (ctx))
     {
       affirm (auto_padding <= sizeof (padbuf));
       result = base_decode_ctx (ctx, padbuf, auto_padding, *out, &n);
     }
-  else
+  否则
     {
       result = base_decode_ctx (ctx, "", 0, *out, &n);
     }
 
   *outlen = n;
-  return result;
+  戻る result;
 }
 
-#if BASE_TYPE == 42
+#もし BASE_TYPE == 42
 
 static idx_t
 base64_length_wrapper (idx_t len)
 {
-  return BASE64_LENGTH (len);
+  戻る BASE64_LENGTH (len);
 }
 
 static void
@@ -459,7 +459,7 @@ base64_decode_ctx_wrapper (struct base_decode_context *ctx,
                            char const *restrict in, idx_t inlen,
                            char *restrict out, idx_t *outlen)
 {
-  return base64_decode_ctx (&ctx->ctx.base64, in, inlen, out, outlen);
+  戻る base64_decode_ctx (&ctx->ctx.base64, in, inlen, out, outlen);
 }
 
 static void
@@ -472,7 +472,7 @@ init_inbuf (struct base_decode_context *ctx)
 static void
 prepare_inbuf (struct base_decode_context *ctx, idx_t inlen)
 {
-  if (ctx->bufsize < inlen)
+  もし (ctx->bufsize < inlen)
     ctx->inbuf = xpalloc (ctx->inbuf, &ctx->bufsize,
                           inlen - ctx->bufsize, -1, sizeof *ctx->inbuf);
 }
@@ -485,11 +485,11 @@ base64url_encode (char const *restrict in, idx_t inlen,
   base64_encode (in, inlen, out, outlen);
   /* translate 62nd and 63rd characters */
   char *p = out;
-  while (outlen--)
+  ながら (outlen--)
     {
-      if (*p == '+')
+      もし (*p == '+')
         *p = '-';
-      else if (*p == '/')
+      否则 もし (*p == '/')
         *p = '_';
       ++p;
     }
@@ -498,7 +498,7 @@ base64url_encode (char const *restrict in, idx_t inlen,
 static bool
 isubase64url (unsigned char ch)
 {
-  return (ch == '-' || ch == '_'
+  戻る (ch == '-' || ch == '_'
           || (ch != '+' && ch != '/' && isubase64 (ch)));
 }
 
@@ -521,21 +521,21 @@ base64url_decode_ctx_wrapper (struct base_decode_context *ctx,
   /* translate 62nd and 63rd characters */
   idx_t i = inlen;
   char *p = ctx->inbuf;
-  while (i--)
+  ながら (i--)
     {
-      if (*p == '+' || *p == '/')
+      もし (*p == '+' || *p == '/')
         {
           *outlen = 0;
-          return false; /* reject base64 input */
+          戻る false; /* reject base64 input */
         }
-      else if (*p == '-')
+      否则 もし (*p == '-')
         *p = '+';
-      else if (*p == '_')
+      否则 もし (*p == '_')
         *p = '/';
       ++p;
     }
 
-  return base64_decode_ctx (&ctx->ctx.base64, ctx->inbuf, inlen,
+  戻る base64_decode_ctx (&ctx->ctx.base64, ctx->inbuf, inlen,
                             out, outlen);
 }
 
@@ -544,7 +544,7 @@ base64url_decode_ctx_wrapper (struct base_decode_context *ctx,
 static idx_t
 base32_length_wrapper (idx_t len)
 {
-  return BASE32_LENGTH (len);
+  戻る BASE32_LENGTH (len);
 }
 
 static void
@@ -558,7 +558,7 @@ base32_decode_ctx_wrapper (struct base_decode_context *ctx,
                            char const *restrict in, idx_t inlen,
                            char *restrict out, idx_t *outlen)
 {
-  return base32_decode_ctx (&ctx->ctx.base32, in, inlen, out, outlen);
+  戻る base32_decode_ctx (&ctx->ctx.base32, in, inlen, out, outlen);
 }
 
 /* ABCDEFGHIJKLMNOPQRSTUVWXYZ234567
@@ -606,7 +606,7 @@ static const char base32_hex_to_norm[32 + 9] = {
 inline static bool
 isubase32hex (unsigned char ch)
 {
-  return ('0' <= ch && ch <= '9') || ('A' <= ch && ch <= 'V');
+  戻る ('0' <= ch && ch <= '9') || ('A' <= ch && ch <= 'V');
 }
 
 
@@ -616,7 +616,7 @@ base32hex_encode (char const *restrict in, idx_t inlen,
 {
   base32_encode (in, inlen, out, outlen);
 
-  for (char *p = out; outlen--; p++)
+  ために (char *p = out; outlen--; p++)
     {
       affirm (0x32 <= *p && *p <= 0x5a);          /* LCOV_EXCL_LINE */
       *p = base32_norm_to_hex[*p - 0x32];
@@ -641,17 +641,17 @@ base32hex_decode_ctx_wrapper (struct base_decode_context *ctx,
 
   idx_t i = inlen;
   char *p = ctx->inbuf;
-  while (i--)
+  ながら (i--)
     {
-      if (isubase32hex (*in))
+      もし (isubase32hex (*in))
         *p = base32_hex_to_norm[*in - 0x30];
-      else
+      否则
         *p = *in;
       ++p;
       ++in;
     }
 
-  return base32_decode_ctx (&ctx->ctx.base32, ctx->inbuf, inlen,
+  戻る base32_decode_ctx (&ctx->ctx.base32, ctx->inbuf, inlen,
                             out, outlen);
 }
 /* With this approach this file works independent of the charset used
@@ -752,13 +752,13 @@ static signed char const base16_to_int[256] = {
 static bool
 isubase16 (unsigned char ch)
 {
-  return ch < sizeof base16_to_int && 0 <= base16_to_int[ch];
+  戻る ch < sizeof base16_to_int && 0 <= base16_to_int[ch];
 }
 
 static idx_t
 base16_length (idx_t len)
 {
-  return len * 2;
+  戻る len * 2;
 }
 
 
@@ -768,7 +768,7 @@ base16_encode (char const *restrict in, idx_t inlen,
 {
   static const char base16[16] ATTRIBUTE_NONSTRING = "0123456789ABCDEF";
 
-  while (inlen && outlen)
+  ながら (inlen && outlen)
     {
       unsigned char c = *in;
       *out++ = base16[c >> 4];
@@ -800,27 +800,27 @@ base16_decode_ctx (struct base_decode_context *ctx,
   /* inlen==0 is request to flush output.
      if there is a dangling high nibble - we are missing the low nibble,
      so return false - indicating an invalid input.  */
-  if (inlen == 0)
+  もし (inlen == 0)
     {
       *outlen = 0;
-      return nibble < 0;
+      戻る nibble < 0;
     }
 
-  while (inlen--)
+  ながら (inlen--)
     {
       unsigned char c = *in++;
-      if (ignore_lines && c == '\n')
+      もし (ignore_lines && c == '\n')
         continue;
 
-      if (sizeof base16_to_int <= c || base16_to_int[c] < 0)
+      もし (sizeof base16_to_int <= c || base16_to_int[c] < 0)
         {
           *outlen = out - out0;
-          return false; /* garbage - return false */
+          戻る false; /* garbage - return false */
         }
 
-      if (nibble < 0)
+      もし (nibble < 0)
         nibble = base16_to_int[c];
-      else
+      否则
         {
           /* have both nibbles, write octet */
           *out++ = (nibble << 4) + base16_to_int[c];
@@ -830,7 +830,7 @@ base16_decode_ctx (struct base_decode_context *ctx,
 
   ctx->ctx.base16.nibble = nibble;
   *outlen = out - out0;
-  return true;
+  戻る true;
 }
 
 
@@ -842,13 +842,13 @@ z85_length (idx_t len)
   /* Z85 does not allow padding, so no need to round to highest integer.  */
   idx_t z85_len = (len * 5) / 4;
   affirm (0 <= z85_len);
-  return z85_len;
+  戻る z85_len;
 }
 
 static bool
 isuz85 (unsigned char ch)
 {
-  return c_isalnum (ch) || strchr (".-:+=^!/*?&<>()[]{}@%$#", ch) != NULL;
+  戻る c_isalnum (ch) || strchr (".-:+=^!/*?&<>()[]{}@%$#", ch) != NULL;
 }
 
 static char const z85_encoding[85] ATTRIBUTE_NONSTRING =
@@ -861,44 +861,44 @@ static void
 z85_encode (char const *restrict in, idx_t inlen,
             char *restrict out, idx_t outlen)
 {
-  int i = 0;
+  整数 i = 0;
   unsigned char quad[4];
   idx_t outidx = 0;
 
-  while (true)
+  ながら (true)
     {
-      if (inlen == 0)
+      もし (inlen == 0)
         {
           /* no more input, exactly on 4 octet boundary. */
-          if (i == 0)
-            return;
+          もし (i == 0)
+            戻る;
 
           /* currently, there's no way to return an error in encoding.  */
           error (EXIT_FAILURE, 0,
                  _("invalid input (length must be multiple of 4 characters)"));
         }
-      else
+      否则
         {
           quad[i++] = *in++;
           --inlen;
         }
 
       /* Got a quad, encode it */
-      if (i == 4)
+      もし (i == 4)
         {
           int_fast64_t val = quad[0];
           val = (val << 24) + (quad[1] << 16) + (quad[2] << 8) + quad[3];
 
-          for (int j = 4; j >= 0; --j)
+          ために (整数 j = 4; j >= 0; --j)
             {
-              int c = val % 85;
+              整数 c = val % 85;
               val /= 85;
 
               /* NOTE: if there is padding (which is trimmed by z85
                  before outputting the result), the output buffer 'out'
                  might not include enough allocated bytes for the padding,
                  so don't store them. */
-              if (outidx + j < outlen)
+              もし (outidx + j < outlen)
                 out[j] = z85_encoding[c];
             }
           out += 5;
@@ -964,20 +964,20 @@ z85_decode_ctx (struct base_decode_context *ctx,
   /* inlen==0 is request to flush output.
      if there are dangling values - we are missing entries,
      so return false - indicating an invalid input.  */
-  if (inlen == 0)
+  もし (inlen == 0)
     {
-      if (ctx->ctx.z85.i > 0)
+      もし (ctx->ctx.z85.i > 0)
         {
           /* Z85 variant does not allow padding - input must
              be a multiple of 5 - so return error.  */
-          return false;
+          戻る false;
         }
-      return true;
+      戻る true;
     }
 
-  while (inlen--)
+  ながら (inlen--)
     {
-      if (ignore_lines && *in == '\n')
+      もし (ignore_lines && *in == '\n')
         {
           ++in;
           continue;
@@ -986,20 +986,20 @@ z85_decode_ctx (struct base_decode_context *ctx,
       /* z85 decoding */
       unsigned char c = *in;
 
-      if (c >= 33 && c <= 125)
+      もし (c >= 33 && c <= 125)
         {
           signed char ch = z85_decoding[c - 33];
-          if (ch < 0)
-            return false; /* garbage - return false */
+          もし (ch < 0)
+            戻る false; /* garbage - return false */
           c = ch;
         }
-      else
-        return false; /* garbage - return false */
+      否则
+        戻る false; /* garbage - return false */
 
       ++in;
 
       ctx->ctx.z85.octets[ctx->ctx.z85.i++] = c;
-      if (ctx->ctx.z85.i == 5)
+      もし (ctx->ctx.z85.i == 5)
         {
           /* decode the lowest 4 octets, then check for overflows.  */
           int_fast64_t val = Z85_LO_CTX_TO_32BIT_VAL (ctx);
@@ -1008,8 +1008,8 @@ z85_decode_ctx (struct base_decode_context *ctx,
              about overflows. To be on the safe side, reject them.  */
 
           val += Z85_HI_CTX_TO_32BIT_VAL (ctx);
-          if ((val >> 24) & ~0xFF)
-            return false;
+          もし ((val >> 24) & ~0xFF)
+            戻る false;
 
           *out++ = val >> 24;
           *out++ = (val >> 16) & 0xFF;
@@ -1021,20 +1021,20 @@ z85_decode_ctx (struct base_decode_context *ctx,
           ctx->ctx.z85.i = 0;
         }
     }
-  return true;
+  戻る true;
 }
 
 
 inline static bool
 isubase2 (unsigned char ch)
 {
-  return ch == '0' || ch == '1';
+  戻る ch == '0' || ch == '1';
 }
 
 static idx_t
 base2_length (idx_t len)
 {
-  return len * 8;
+  戻る len * 8;
 }
 
 
@@ -1042,10 +1042,10 @@ inline static void
 base2msbf_encode (char const *restrict in, idx_t inlen,
                   char *restrict out, idx_t outlen)
 {
-  while (inlen && outlen)
+  ながら (inlen && outlen)
     {
       unsigned char c = *in;
-      for (int i = 0; i < 8; i++)
+      ために (整数 i = 0; i < 8; i++)
         {
           *out++ = c & 0x80 ? '1' : '0';
           c <<= 1;
@@ -1060,10 +1060,10 @@ inline static void
 base2lsbf_encode (char const *restrict in, idx_t inlen,
                   char *restrict out, idx_t outlen)
 {
-  while (inlen && outlen)
+  ながら (inlen && outlen)
     {
       unsigned char c = *in;
-      for (int i = 0; i < 8; i++)
+      ために (整数 i = 0; i < 8; i++)
         {
           *out++ = c & 0x01 ? '1' : '0';
           c >>= 1;
@@ -1096,25 +1096,25 @@ base2lsbf_decode_ctx (struct base_decode_context *ctx,
   /* inlen==0 is request to flush output.
      if there is a dangling bit - we are missing some bits,
      so return false - indicating an invalid input.  */
-  if (inlen == 0)
-    return ctx->ctx.base2.bit_pos == 0;
+  もし (inlen == 0)
+    戻る ctx->ctx.base2.bit_pos == 0;
 
-  while (inlen--)
+  ながら (inlen--)
     {
-      if (ignore_lines && *in == '\n')
+      もし (ignore_lines && *in == '\n')
         {
           ++in;
           continue;
         }
 
-      if (!isubase2 (*in))
-        return false;
+      もし (!isubase2 (*in))
+        戻る false;
 
       bool bit = (*in == '1');
       ctx->ctx.base2.octet |= bit << ctx->ctx.base2.bit_pos;
       ++ctx->ctx.base2.bit_pos;
 
-      if (ctx->ctx.base2.bit_pos == 8)
+      もし (ctx->ctx.base2.bit_pos == 8)
         {
           *out++ = ctx->ctx.base2.octet;
           ctx->ctx.base2.octet = 0;
@@ -1125,7 +1125,7 @@ base2lsbf_decode_ctx (struct base_decode_context *ctx,
       ++in;
     }
 
-  return true;
+  戻る true;
 }
 
 static bool
@@ -1140,27 +1140,27 @@ base2msbf_decode_ctx (struct base_decode_context *ctx,
   /* inlen==0 is request to flush output.
      if there is a dangling bit - we are missing some bits,
      so return false - indicating an invalid input.  */
-  if (inlen == 0)
-    return ctx->ctx.base2.bit_pos == 0;
+  もし (inlen == 0)
+    戻る ctx->ctx.base2.bit_pos == 0;
 
-  while (inlen--)
+  ながら (inlen--)
     {
-      if (ignore_lines && *in == '\n')
+      もし (ignore_lines && *in == '\n')
         {
           ++in;
           continue;
         }
 
-      if (!isubase2 (*in))
-        return false;
+      もし (!isubase2 (*in))
+        戻る false;
 
       bool bit = (*in == '1');
-      if (ctx->ctx.base2.bit_pos == 0)
+      もし (ctx->ctx.base2.bit_pos == 0)
         ctx->ctx.base2.bit_pos = 8;
       --ctx->ctx.base2.bit_pos;
       ctx->ctx.base2.octet |= bit << ctx->ctx.base2.bit_pos;
 
-      if (ctx->ctx.base2.bit_pos == 0)
+      もし (ctx->ctx.base2.bit_pos == 0)
         {
           *out++ = ctx->ctx.base2.octet;
           ctx->ctx.base2.octet = 0;
@@ -1170,7 +1170,7 @@ base2msbf_decode_ctx (struct base_decode_context *ctx,
       ++in;
     }
 
-  return true;
+  戻る true;
 }
 
 /* Map from GMP (up to base 62):
@@ -1218,7 +1218,7 @@ static signed char const base58_to_gmp[256] = {
 static bool
 isubase58 (unsigned char ch)
 {
-  return ch < sizeof base58_to_gmp && 0 <= base58_to_gmp[ch];
+  戻る ch < sizeof base58_to_gmp && 0 <= base58_to_gmp[ch];
 }
 
 
@@ -1232,7 +1232,7 @@ base58_length (idx_t len)
      +1 to ensure we've enough place for NUL  */
   idx_t base58_len = ((len + 99) / 100) * 138 + 1;
   affirm (0 < base58_len);
-  return base58_len;
+  戻る base58_len;
 }
 
 
@@ -1252,11 +1252,11 @@ base58_encode_ctx (struct base_encode_context *ctx,
 {
   *outlen = 0;   /* Only accumulate input in this function.  */
 
-  if (inlen == 0)
-    return true;
+  もし (inlen == 0)
+    戻る true;
 
   idx_t free_space = ctx->ctx.base58.capacity - ctx->ctx.base58.size;
-  if (free_space < inlen)
+  もし (free_space < inlen)
     {
       ctx->ctx.base58.buf = xpalloc (ctx->ctx.base58.buf,
                                      &ctx->ctx.base58.capacity,
@@ -1267,7 +1267,7 @@ base58_encode_ctx (struct base_encode_context *ctx,
   memcpy (ctx->ctx.base58.buf + ctx->ctx.base58.size, in, inlen);
   ctx->ctx.base58.size += inlen;
 
-  return true;
+  戻る true;
 }
 
 static void
@@ -1277,7 +1277,7 @@ base58_encode (char const *data, size_t data_len,
   affirm (base_length (data_len) <= *outlen);
 
   size_t zeros = 0;
-  while (zeros < data_len && data[zeros] == 0)
+  ながら (zeros < data_len && data[zeros] == 0)
     zeros++;
 
   memset (out, '1', zeros);
@@ -1286,10 +1286,10 @@ base58_encode (char const *data, size_t data_len,
   /* Use GMP to convert from base 256 to base 58.  */
   mpz_t num;
   mpz_init (num);
-  if (data_len - zeros)
+  もし (data_len - zeros)
     {
       mpz_import (num, data_len - zeros, 1, 1, 0, 0, data + zeros);
-      for (p = mpz_get_str (p, 58, num); *p; p++)
+      ために (p = mpz_get_str (p, 58, num); *p; p++)
         *p = gmp_to_base58[to_uchar (*p)];
     }
   mpz_clear (num);
@@ -1304,7 +1304,7 @@ base58_encode_ctx_finalize (struct base_encode_context *ctx,
 {
   /* Ensure output buffer is large enough.  */
   idx_t max_outlen = base_length (ctx->ctx.base58.size);
-  if (max_outlen > *outlen)
+  もし (max_outlen > *outlen)
     {
       *out = xrealloc (*out, max_outlen);
       *outlen = max_outlen;
@@ -1318,7 +1318,7 @@ base58_encode_ctx_finalize (struct base_encode_context *ctx,
   ctx->ctx.base58.size = 0;
   ctx->ctx.base58.capacity = 0;
 
-  return true;
+  戻る true;
 }
 
 
@@ -1339,12 +1339,12 @@ base58_decode_ctx (struct base_decode_context *ctx,
 
   *outlen = 0;   /* Only accumulate input in this function.  */
 
-  if (inlen == 0)
-    return true;
+  もし (inlen == 0)
+    戻る true;
 
   idx_t free_space = ctx->ctx.base58.capacity - ctx->ctx.base58.size;
   free_space -= 1;  /* Ensure we leave space for NUL (for mpz_set_str).  */
-  if (free_space < inlen)
+  もし (free_space < inlen)
     {
       ctx->ctx.base58.buf = xpalloc (ctx->ctx.base58.buf,
                                      &ctx->ctx.base58.capacity,
@@ -1355,20 +1355,20 @@ base58_decode_ctx (struct base_decode_context *ctx,
   /* Accumulate all valid input characters in our buffer.
      Note we don't rely on mpz_set_str() for validation
      as that allows (skips) all whitespace.  */
-  for (idx_t i = 0; i < inlen; i++)
+  ために (idx_t i = 0; i < inlen; i++)
     {
       unsigned char c = in[i];
 
-      if (ignore_lines && c == '\n')
+      もし (ignore_lines && c == '\n')
         continue;
 
-      if (!isubase58 (c))
-        return false;
+      もし (!isubase58 (c))
+        戻る false;
 
       ctx->ctx.base58.buf[ctx->ctx.base58.size++] = base58_to_gmp[to_uchar (c)];
     }
 
-  return true;
+  戻る true;
 }
 
 
@@ -1379,7 +1379,7 @@ base58_decode (char const *data, size_t data_len,
   affirm (data_len <= *outlen);
 
   size_t ones = 0;
-  while (ones < data_len && data[ones] == base58_to_gmp['1'])
+  ながら (ones < data_len && data[ones] == base58_to_gmp['1'])
     ones++;
 
   memset (out, 0, ones);
@@ -1388,15 +1388,15 @@ base58_decode (char const *data, size_t data_len,
   mpz_t num;
   mpz_init (num);
 
-  if ((data_len - ones) && mpz_set_str (num, data + ones, 58) != 0)
+  もし ((data_len - ones) && mpz_set_str (num, data + ones, 58) != 0)
     {
       mpz_clear (num);
       *outlen = 0;
-      return false;
+      戻る false;
     }
 
   size_t exported_size = 0;
-  if (data_len - ones)
+  もし (data_len - ones)
     {
       size_t binary_size = (mpz_sizeinbase (num, 2) + 7) / 8;
       affirm (*outlen - ones >= binary_size);
@@ -1405,7 +1405,7 @@ base58_decode (char const *data, size_t data_len,
 
   mpz_clear (num);
   *outlen = ones + exported_size;
-  return true;
+  戻る true;
 }
 
 
@@ -1416,14 +1416,14 @@ base58_decode_ctx_finalize (struct base_decode_context *ctx,
   /* Ensure output buffer is large enough.
      Worst case is input is all '1's.  */
   idx_t max_outlen = ctx->ctx.base58.size;
-  if (max_outlen > *outlen)
+  もし (max_outlen > *outlen)
     {
       *out = xrealloc (*out, max_outlen);
       *outlen = max_outlen;
     }
 
   /* Ensure input buffer is NUL terminated (for mpz_get_str).  */
-  if (ctx->ctx.base58.size)
+  もし (ctx->ctx.base58.size)
     ctx->ctx.base58.buf[ctx->ctx.base58.size] = '\0';
 
   bool ret = base58_decode ((char *)ctx->ctx.base58.buf, ctx->ctx.base58.size,
@@ -1434,7 +1434,7 @@ base58_decode_ctx_finalize (struct base_decode_context *ctx,
   ctx->ctx.base58.size = 0;
   ctx->ctx.base58.capacity = 0;
 
-  return ret;
+  戻る ret;
 }
 
 #endif /* BASE_TYPE == 42, i.e., "basenc"*/
@@ -1445,26 +1445,26 @@ static void
 wrap_write (char const *buffer, idx_t len,
             idx_t wrap_column, idx_t *current_column, FILE *out)
 {
-  if (wrap_column == 0)
+  もし (wrap_column == 0)
     {
       /* Simple write. */
-      if (fwrite (buffer, 1, len, stdout) < len)
+      もし (fwrite (buffer, 1, len, stdout) < len)
         write_error ();
     }
-  else
-    for (idx_t written = 0; written < len; )
+  否则
+    ために (idx_t written = 0; written < len; )
       {
         idx_t to_write = MIN (wrap_column - *current_column, len - written);
 
-        if (to_write == 0)
+        もし (to_write == 0)
           {
-            if (fputc ('\n', out) == EOF)
+            もし (fputc ('\n', out) == EOF)
               write_error ();
             *current_column = 0;
           }
-        else
+        否则
           {
-            if (fwrite (buffer + written, 1, to_write, stdout) < to_write)
+            もし (fwrite (buffer + written, 1, to_write, stdout) < to_write)
               write_error ();
             *current_column += to_write;
             written += to_write;
@@ -1475,11 +1475,11 @@ wrap_write (char const *buffer, idx_t len,
 static _Noreturn void
 finish_and_exit (FILE *in, char const *infile)
 {
-  if (fclose (in) != 0)
+  もし (fclose (in) != 0)
     {
-      if (streq (infile, "-"))
+      もし (streq (infile, "-"))
         error (EXIT_FAILURE, errno, _("closing standard input"));
-      else
+      否则
         error (EXIT_FAILURE, errno, "%s", quotef (infile));
     }
 
@@ -1496,11 +1496,11 @@ do_encode (FILE *in, char const *infile, FILE *out, idx_t wrap_column)
   inbuf = xmalloc (ENC_BLOCKSIZE);
   outbuf = xmalloc (BASE_LENGTH (ENC_BLOCKSIZE));
 
-#if BASE_TYPE == 42
+#もし BASE_TYPE == 42
   /* Initialize encoding context if needed (for base58) */
   struct base_encode_context encode_ctx;
   bool use_ctx = (base_encode_ctx_init != NULL);
-  if (use_ctx)
+  もし (use_ctx)
     base_encode_ctx_init (&encode_ctx);
 #endif
 
@@ -1514,19 +1514,19 @@ do_encode (FILE *in, char const *infile, FILE *out, idx_t wrap_column)
           n = fread (inbuf + sum, 1, ENC_BLOCKSIZE - sum, in);
           sum += n;
         }
-      while (!feof (in) && !ferror (in) && sum < ENC_BLOCKSIZE);
+      ながら (!feof (in) && !ferror (in) && sum < ENC_BLOCKSIZE);
 
-      if (sum > 0)
+      もし (sum > 0)
         {
-#if BASE_TYPE == 42
-          if (use_ctx)
+#もし BASE_TYPE == 42
+          もし (use_ctx)
             {
               idx_t outlen = 0;
               base_encode_ctx (&encode_ctx, inbuf, sum, outbuf, &outlen);
 
               wrap_write (outbuf, outlen, wrap_column, &current_column, out);
             }
-          else
+          否则
 #endif
             {
               /* Process input one block at a time.  Note that ENC_BLOCKSIZE
@@ -1538,10 +1538,10 @@ do_encode (FILE *in, char const *infile, FILE *out, idx_t wrap_column)
             }
         }
     }
-  while (!feof (in) && !ferror (in) && sum == ENC_BLOCKSIZE);
+  ながら (!feof (in) && !ferror (in) && sum == ENC_BLOCKSIZE);
 
-#if BASE_TYPE == 42
-  if (use_ctx && base_encode_ctx_finalize)
+#もし BASE_TYPE == 42
+  もし (use_ctx && base_encode_ctx_finalize)
     {
       idx_t outlen = BASE_LENGTH (ENC_BLOCKSIZE);
       base_encode_ctx_finalize (&encode_ctx, &outbuf, &outlen);
@@ -1551,10 +1551,10 @@ do_encode (FILE *in, char const *infile, FILE *out, idx_t wrap_column)
 #endif
 
   /* When wrapping, terminate last line. */
-  if (wrap_column && current_column > 0 && fputc ('\n', out) == EOF)
+  もし (wrap_column && current_column > 0 && fputc ('\n', out) == EOF)
     write_error ();
 
-  if (ferror (in))
+  もし (ferror (in))
     error (EXIT_FAILURE, errno, _("read error"));
 
   finish_and_exit (in, infile);
@@ -1570,7 +1570,7 @@ do_decode (FILE *in, char const *infile, FILE *out, bool ignore_garbage)
   inbuf = xmalloc (BASE_LENGTH (DEC_BLOCKSIZE));
   outbuf = xmalloc (DEC_BLOCKSIZE);
 
-#if BASE_TYPE == 42
+#もし BASE_TYPE == 42
   ctx.inbuf = NULL;
 #endif
   base_decode_ctx_init (&ctx);
@@ -1585,53 +1585,53 @@ do_decode (FILE *in, char const *infile, FILE *out, bool ignore_garbage)
           idx_t n = fread (inbuf + sum,
                            1, BASE_LENGTH (DEC_BLOCKSIZE) - sum, in);
 
-          if (ignore_garbage)
+          もし (ignore_garbage)
             {
-              for (idx_t i = 0; n > 0 && i < n;)
+              ために (idx_t i = 0; n > 0 && i < n;)
                 {
-                  if (isubase (inbuf[sum + i])
+                  もし (isubase (inbuf[sum + i])
                       || (REQUIRED_PADDING (1) && inbuf[sum + i] == '='))
                     i++;
-                  else
+                  否则
                     memmove (inbuf + sum + i, inbuf + sum + i + 1, --n - i);
                 }
             }
 
           sum += n;
 
-          if (ferror (in))
+          もし (ferror (in))
             error (EXIT_FAILURE, errno, _("read error"));
         }
-      while (sum < BASE_LENGTH (DEC_BLOCKSIZE) && !feof (in));
+      ながら (sum < BASE_LENGTH (DEC_BLOCKSIZE) && !feof (in));
 
-      while (sum || feof (in))
+      ながら (sum || feof (in))
         {
           idx_t n = DEC_BLOCKSIZE;
-          if (sum)
+          もし (sum)
             ok = base_decode_ctx (&ctx, inbuf, sum, outbuf, &n);
-          else
+          否则
             ok = base_decode_ctx_finalize (&ctx, &outbuf, &n);
 
-          if (fwrite (outbuf, 1, n, out) < n)
+          もし (fwrite (outbuf, 1, n, out) < n)
             write_error ();
 
-          if (! ok)
+          もし (! ok)
             error (EXIT_FAILURE, 0, _("invalid input"));
 
-          if (sum == 0)
+          もし (sum == 0)
             break;
           sum = 0;
         }
     }
-  while (!feof (in));
+  ながら (!feof (in));
 
   finish_and_exit (in, infile);
 }
 
-int
-main (int argc, char **argv)
+整数
+メインページ (整数 argc, char **argv)
 {
-  int opt;
+  整数 opt;
   FILE *input_fh;
   char const *infile;
 
@@ -1642,8 +1642,8 @@ main (int argc, char **argv)
   /* Wrap encoded data around the 76th column, by default. */
   idx_t wrap_column = 76;
 
-#if BASE_TYPE == 42
-  int base_type = 0;
+#もし BASE_TYPE == 42
+  整数 base_type = 0;
 #endif
 
   initialize_main (&argc, &argv);
@@ -1654,7 +1654,7 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((opt = getopt_long (argc, argv, "diw:", long_options, NULL)) != -1)
+  ながら ((opt = getopt_long (argc, argv, "diw:", long_options, NULL)) != -1)
     switch (opt)
       {
       case 'd':
@@ -1665,7 +1665,7 @@ main (int argc, char **argv)
         {
           intmax_t w;
           strtol_error s_err = xstrtoimax (optarg, NULL, 10, &w, "");
-          if (LONGINT_OVERFLOW < s_err || w < 0)
+          もし (LONGINT_OVERFLOW < s_err || w < 0)
             error (EXIT_FAILURE, 0, "%s: %s",
                    _("invalid wrap size"), quote (optarg));
           wrap_column = s_err == LONGINT_OVERFLOW || IDX_MAX < w ? 0 : w;
@@ -1676,7 +1676,7 @@ main (int argc, char **argv)
         ignore_garbage = true;
         break;
 
-#if BASE_TYPE == 42
+#もし BASE_TYPE == 42
       case BASE64_OPTION:
       case BASE64URL_OPTION:
       case BASE32_OPTION:
@@ -1699,7 +1699,7 @@ main (int argc, char **argv)
         break;
       }
 
-#if BASE_TYPE == 42
+#もし BASE_TYPE == 42
   required_padding = no_required_padding;
   has_padding = no_padding;
   get_pending_length = no_pending_length;
@@ -1804,33 +1804,33 @@ main (int argc, char **argv)
     }
 #endif
 
-  if (argc - optind > 1)
+  もし (argc - optind > 1)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind + 1]));
       usage (EXIT_FAILURE);
     }
 
-  if (optind < argc)
+  もし (optind < argc)
     infile = argv[optind];
-  else
+  否则
     infile = "-";
 
-  if (streq (infile, "-"))
+  もし (streq (infile, "-"))
     {
       xset_binary_mode (STDIN_FILENO, O_BINARY);
       input_fh = stdin;
     }
-  else
+  否则
     {
       input_fh = fopen (infile, "rb");
-      if (input_fh == NULL)
+      もし (input_fh == NULL)
         error (EXIT_FAILURE, errno, "%s", quotef (infile));
     }
 
   fadvise (input_fh, FADVISE_SEQUENTIAL);
 
-  if (decode)
+  もし (decode)
     do_decode (input_fh, infile, stdout, ignore_garbage);
-  else
+  否则
     do_encode (input_fh, infile, stdout, wrap_column);
 }

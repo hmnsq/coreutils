@@ -68,14 +68,14 @@ static bool do_short_format = true;
 static bool do_lookup;
 
 /* if true, display the ut_host field. */
-#if HAVE_STRUCT_XTMP_UT_HOST
+#もし HAVE_STRUCT_XTMP_UT_HOST
 static bool include_where = true;
 #endif
 
 /* The strftime format to use for login times, and its expected
    output width.  */
 static char const *time_format;
-static int time_format_width;
+static 整数 time_format_width;
 
 /* for long options with no corresponding short option, use enum */
 enum
@@ -98,9 +98,9 @@ static idx_t
 count_ampersands (char const *str)
 {
   idx_t count = 0;
-  for (; *str; str++)
+  ために (; *str; str++)
     count += *str == '&';
-  return count;
+  戻る count;
 }
 
 /* Create a string (via xmalloc) which contains a full name by substituting
@@ -115,11 +115,11 @@ create_fullname (char const *gecos_name, char const *user_name)
   idx_t rsize = strlen (gecos_name) + 1;
   idx_t ampersands = count_ampersands (gecos_name);
 
-  if (ampersands != 0)
+  もし (ampersands != 0)
     {
       idx_t ulen = strlen (user_name);
       ptrdiff_t product;
-      if (ckd_mul (&product, ulen - 1, ampersands)
+      もし (ckd_mul (&product, ulen - 1, ampersands)
           || ckd_add (&rsize, rsize, product))
         xalloc_die ();
     }
@@ -127,17 +127,17 @@ create_fullname (char const *gecos_name, char const *user_name)
   char *result = xmalloc (rsize);
   char *r = result;
 
-  while (*gecos_name)
+  ながら (*gecos_name)
     {
-      if (*gecos_name == '&')
+      もし (*gecos_name == '&')
         {
           char const *uname = user_name;
-          if (islower (to_uchar (*uname)))
+          もし (islower (to_uchar (*uname)))
             *r++ = toupper (to_uchar (*uname++));
-          while (*uname)
+          ながら (*uname)
             *r++ = *uname++;
         }
-      else
+      否则
         {
           *r++ = *gecos_name;
         }
@@ -146,7 +146,7 @@ create_fullname (char const *gecos_name, char const *user_name)
     }
   *r = 0;
 
-  return result;
+  戻る result;
 }
 
 /* Return a string representing the time between WHEN and the time
@@ -158,24 +158,24 @@ idle_string (time_t when)
   static time_t now = 0;
   static char buf[INT_STRLEN_BOUND (intmax_t) + sizeof "d"];
 
-  if (now == 0)
+  もし (now == 0)
     time (&now);
 
   time_t seconds_idle = now - when;
-  if (seconds_idle < 60)	/* One minute. */
-    return "     ";
-  if (seconds_idle < (24 * 60 * 60))	/* One day. */
+  もし (seconds_idle < 60)	/* One minute. */
+    戻る "     ";
+  もし (seconds_idle < (24 * 60 * 60))	/* One day. */
     {
-      int hours = seconds_idle / (60 * 60);
-      int minutes = (seconds_idle % (60 * 60)) / 60;
+      整数 hours = seconds_idle / (60 * 60);
+      整数 minutes = (seconds_idle % (60 * 60)) / 60;
       sprintf (buf, "%02d:%02d", hours, minutes);
     }
-  else
+  否则
     {
       intmax_t days = seconds_idle / (24 * 60 * 60);
       sprintf (buf, "%jdd", days);
     }
-  return buf;
+  戻る buf;
 }
 
 /* Return a time string.  */
@@ -185,13 +185,13 @@ time_string (STRUCT_UTMP const *utmp_ent)
   static char buf[INT_STRLEN_BOUND (intmax_t) + sizeof "-%m-%d %H:%M"];
   struct tm *tmp = localtime (&utmp_ent->ut_ts.tv_sec);
 
-  if (tmp)
+  もし (tmp)
     {
       strftime (buf, sizeof buf, time_format, tmp);
-      return buf;
+      戻る buf;
     }
-  else
-    return timetostr (utmp_ent->ut_ts.tv_sec, buf);
+  否则
+    戻る timetostr (utmp_ent->ut_ts.tv_sec, buf);
 }
 
 /* Display a line of information about UTMP_ENT. */
@@ -204,16 +204,16 @@ print_entry (STRUCT_UTMP const *utmp_ent)
   char *space = strchr (line, ' ');
   line = space ? space + 1 : line;
 
-  int dirfd;
-  if (IS_ABSOLUTE_FILE_NAME (line))
+  整数 dirfd;
+  もし (IS_ABSOLUTE_FILE_NAME (line))
     dirfd = AT_FDCWD;
-  else
+  否则
     {
-      static int dev_dirfd;
-      if (!dev_dirfd)
+      static 整数 dev_dirfd;
+      もし (!dev_dirfd)
         {
           dev_dirfd = open ("/dev", O_PATHSEARCH | O_DIRECTORY);
-          if (dev_dirfd < 0)
+          もし (dev_dirfd < 0)
             dev_dirfd = AT_FDCWD - 1;
         }
       dirfd = dev_dirfd;
@@ -222,34 +222,34 @@ print_entry (STRUCT_UTMP const *utmp_ent)
   struct stat stats;
   time_t last_change;
   char mesg;
-  if (AT_FDCWD <= dirfd && fstatat (dirfd, line, &stats, 0) == 0)
+  もし (AT_FDCWD <= dirfd && fstatat (dirfd, line, &stats, 0) == 0)
     {
       mesg = (stats.st_mode & S_IWGRP) ? ' ' : '*';
       last_change = stats.st_atime;
     }
-  else
+  否则
     {
       mesg = '?';
       last_change = 0;
     }
 
   char *ut_user = utmp_ent->ut_user;
-  if (strnlen (ut_user, 8) < 8)
+  もし (strnlen (ut_user, 8) < 8)
     printf ("%-8s", ut_user);
-  else
+  否则
     fputs (ut_user, stdout);
 
-  if (include_fullname)
+  もし (include_fullname)
     {
       struct passwd *pw = getpwnam (ut_user);
-      if (pw == NULL)
+      もし (pw == NULL)
         /* TRANSLATORS: Real name is unknown; at most 19 characters. */
         printf (" %19s", _("        ???"));
-      else
+      否则
         {
           char *const comma = strchr (pw->pw_gecos, ',');
 
-          if (comma)
+          もし (comma)
             *comma = '\0';
 
           char *result = create_fullname (pw->pw_gecos, pw->pw_name);
@@ -260,16 +260,16 @@ print_entry (STRUCT_UTMP const *utmp_ent)
 
   fputc (' ', stdout);
   fputc (mesg, stdout);
-  if (strnlen (utmp_ent->ut_line, 8) < 8)
+  もし (strnlen (utmp_ent->ut_line, 8) < 8)
     printf ("%-8s", utmp_ent->ut_line);
-  else
+  否则
     fputs (utmp_ent->ut_line, stdout);
 
-  if (include_idle)
+  もし (include_idle)
     {
-      if (last_change)
+      もし (last_change)
         printf (" %-6s", idle_string (last_change));
-      else
+      否则
         /* TRANSLATORS: Idle time is unknown; at most 5 characters. */
         printf (" %-6s", _("?????"));
     }
@@ -277,38 +277,38 @@ print_entry (STRUCT_UTMP const *utmp_ent)
   printf (" %s", time_string (utmp_ent));
 
 #ifdef HAVE_STRUCT_XTMP_UT_HOST
-  if (include_where && utmp_ent->ut_host[0])
+  もし (include_where && utmp_ent->ut_host[0])
     {
       char *ut_host = utmp_ent->ut_host;
 
       /* Look for an X display.  */
       char *display = strchr (ut_host, ':');
-      if (display)
+      もし (display)
         *display++ = '\0';
 
       char *host = NULL;
-      if (*ut_host && do_lookup)
+      もし (*ut_host && do_lookup)
         /* See if we can canonicalize it.  */
         host = canon_host (ut_host);
-      if ( ! host)
+      もし ( ! host)
         host = ut_host;
 
       fputc (' ', stdout);
       fputs (host, stdout);
-      if (display)
+      もし (display)
         {
           fputc (':', stdout);
           fputs (display, stdout);
         }
 
-      if (host != ut_host)
+      もし (host != ut_host)
         free (host);
     }
 #endif
 
   putchar ('\n');
 
-  if (ferror (stdout))
+  もし (ferror (stdout))
     write_error ();
 }
 
@@ -320,16 +320,16 @@ cat_file (char const *header, char const *home, char const *file)
   char *full_name = file_name_concat (home, file, NULL);
   FILE *fp = fopen (full_name, "r");
 
-  if (fp)
+  もし (fp)
     {
       fputs (header, stdout);
 
       fadvise (fp, FADVISE_SEQUENTIAL);
 
       char buf[BUFSIZ];
-      for (size_t bytes_read;
+      ために (size_t bytes_read;
            0 < (bytes_read = fread (buf, 1, sizeof buf, fp));)
-        if (fwrite (buf, 1, bytes_read, stdout) != bytes_read)
+        もし (fwrite (buf, 1, bytes_read, stdout) != bytes_read)
           write_error ();
 
       fclose (fp);
@@ -349,17 +349,17 @@ print_long_entry (const char name[])
   printf ("%-28s", name);
 
   printf (_("In real life: "));
-  if (pw == NULL)
+  もし (pw == NULL)
     {
       /* TRANSLATORS: Real name is unknown; no hard limit. */
       printf (" %s", _("???\n"));
-      return;
+      戻る;
     }
-  else
+  否则
     {
       char *const comma = strchr (pw->pw_gecos, ',');
 
-      if (comma)
+      もし (comma)
         *comma = '\0';
 
       char *result = create_fullname (pw->pw_gecos, pw->pw_name);
@@ -369,7 +369,7 @@ print_long_entry (const char name[])
 
   putchar ('\n');
 
-  if (include_home_and_shell)
+  もし (include_home_and_shell)
     {
       printf (_("Directory: "));
       printf ("%-29s", pw->pw_dir);
@@ -378,15 +378,15 @@ print_long_entry (const char name[])
       putchar ('\n');
     }
 
-  if (include_project)
+  もし (include_project)
     cat_file (_("Project: "), pw->pw_dir, ".project");
 
-  if (include_plan)
+  もし (include_plan)
     cat_file (_("Plan:\n"), pw->pw_dir, ".plan");
 
   putchar ('\n');
 
-  if (ferror (stdout))
+  もし (ferror (stdout))
     write_error ();
 }
 
@@ -397,14 +397,14 @@ static void
 print_heading (void)
 {
   printf ("%-8s", _("Login"));
-  if (include_fullname)
+  もし (include_fullname)
     printf (" %-19s", _("Name"));
   printf (" %-9s", _(" TTY"));
-  if (include_idle)
+  もし (include_idle)
     printf (" %-6s", _("Idle"));
   printf (" %-*s", time_format_width, _("When"));
 #ifdef HAVE_STRUCT_XTMP_UT_HOST
-  if (include_where)
+  もし (include_where)
     printf (" %s", _("Where"));
 #endif
   putchar ('\n');
@@ -414,36 +414,36 @@ print_heading (void)
 
 static void
 scan_entries (idx_t n, STRUCT_UTMP const *utmp_buf,
-              const int argc_names, char *const argv_names[])
+              const 整数 argc_names, char *const argv_names[])
 {
-  if (hard_locale (LC_TIME))
+  もし (hard_locale (LC_TIME))
     {
       time_format = "%Y-%m-%d %H:%M";
       time_format_width = 4 + 1 + 2 + 1 + 2 + 1 + 2 + 1 + 2;
     }
-  else
+  否则
     {
       time_format = "%b %e %H:%M";
       time_format_width = 3 + 1 + 2 + 1 + 2 + 1 + 2;
     }
 
-  if (include_heading)
+  もし (include_heading)
     print_heading ();
 
-  while (n--)
+  ながら (n--)
     {
-      if (IS_USER_PROCESS (utmp_buf))
+      もし (IS_USER_PROCESS (utmp_buf))
         {
-          if (argc_names)
+          もし (argc_names)
             {
-              for (int i = 0; i < argc_names; i++)
-                if (streq (utmp_buf->ut_user, argv_names[i]))
+              ために (整数 i = 0; i < argc_names; i++)
+                もし (streq (utmp_buf->ut_user, argv_names[i]))
                   {
                     print_entry (utmp_buf);
                     break;
                   }
             }
-          else
+          否则
             print_entry (utmp_buf);
         }
       utmp_buf++;
@@ -454,11 +454,11 @@ scan_entries (idx_t n, STRUCT_UTMP const *utmp_buf,
 
 static void
 short_pinky (char const *filename,
-             const int argc_names, char *const argv_names[])
+             const 整数 argc_names, char *const argv_names[])
 {
   idx_t n_users;
   STRUCT_UTMP *utmp_buf;
-  if (read_utmp (filename, &n_users, &utmp_buf, READ_UTMP_USER_PROCESS) != 0)
+  もし (read_utmp (filename, &n_users, &utmp_buf, READ_UTMP_USER_PROCESS) != 0)
     error (EXIT_FAILURE, errno, "%s", quotef (filename));
 
   scan_entries (n_users, utmp_buf, argc_names, argv_names);
@@ -466,25 +466,25 @@ short_pinky (char const *filename,
 }
 
 static void
-long_pinky (const int argc_names, char *const argv_names[])
+long_pinky (const 整数 argc_names, char *const argv_names[])
 {
-  for (int i = 0; i < argc_names; i++)
+  ために (整数 i = 0; i < argc_names; i++)
     print_long_entry (argv_names[i]);
 }
 
 void
-usage (int status)
+usage (整数 status)
 {
-  if (status != EXIT_SUCCESS)
+  もし (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  否则
     {
       printf (_("Usage: %s [OPTION]... [USER]...\n"), program_name);
       fputs (_("\
 \n\
 "), stdout);
       oputs (_("\
-  -l     produce long format output for the specified USERs\n\
+  -l     produce long format output ために the specified USERs\n\
 "));
       oputs (_("\
   -b     omit the user's home directory and shell in long format\n\
@@ -526,8 +526,8 @@ The utmp file will be %s.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+整数
+メインページ (整数 argc, char **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -537,8 +537,8 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  int optc;
-  while ((optc = getopt_long (argc, argv, "sfwiqbhlp", longopts, NULL))
+  整数 optc;
+  ながら ((optc = getopt_long (argc, argv, "sfwiqbhlp", longopts, NULL))
          != -1)
     {
       switch (optc)
@@ -599,19 +599,19 @@ main (int argc, char **argv)
         }
     }
 
-  int n_users = argc - optind;
+  整数 n_users = argc - optind;
 
-  if (!do_short_format && n_users == 0)
+  もし (!do_short_format && n_users == 0)
     {
       error (0, 0, _("no username specified; at least one must be\
  specified when using -l"));
       usage (EXIT_FAILURE);
     }
 
-  if (do_short_format)
+  もし (do_short_format)
     short_pinky (UTMP_FILE, n_users, argv + optind);
-  else
+  否则
     long_pinky (n_users, argv + optind);
 
-  return EXIT_SUCCESS;
+  戻る EXIT_SUCCESS;
 }

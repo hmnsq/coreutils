@@ -39,6 +39,6 @@ enum
 };
 
 /* allocates and initializes the FRP array and N_FRP count */
-extern void set_fields (char const *fieldstr, unsigned int options);
+extern void set_fields (char const *fieldstr, unsigned 整数 options);
 
 #endif

@@ -90,22 +90,22 @@ static struct option const long_options[] =
 /* Given a security context, CONTEXT, derive a context_t (*RET),
    setting any portions selected via the global variables, specified_user,
    specified_role, etc.  */
-static int
+static 整数
 compute_context_from_mask (char const *context, context_t *ret)
 {
   bool ok = true;
   context_t new_context = context_new (context);
-  if (!new_context)
+  もし (!new_context)
     {
       error (0, errno, _("failed to create security context: %s"),
              quote (context));
-      return 1;
+      戻る 1;
     }
 
 #define SET_COMPONENT(C, comp)						\
    do									\
      {									\
-       if (specified_ ## comp						\
+       もし (specified_ ## comp						\
            && context_ ## comp ## _set ((C), specified_ ## comp))	\
          {								\
             error (0, errno,						\
@@ -114,84 +114,84 @@ compute_context_from_mask (char const *context, context_t *ret)
            ok = false;							\
          }								\
      }									\
-   while (0)
+   ながら (0)
 
   SET_COMPONENT (new_context, user);
   SET_COMPONENT (new_context, range);
   SET_COMPONENT (new_context, role);
   SET_COMPONENT (new_context, type);
 
-  if (!ok)
+  もし (!ok)
     {
-      int saved_errno = errno;
+      整数 saved_errno = errno;
       context_free (new_context);
       errno = saved_errno;
-      return 1;
+      戻る 1;
     }
 
   *ret = new_context;
-  return 0;
+  戻る 0;
 }
 
 /* Change the context of FILE, using specified components.
    If it is a directory and -R is given, recurse.
    Return 0 if successful, 1 if errors occurred. */
 
-static int
-change_file_context (int fd, char const *file, bool ignore_missing)
+static 整数
+change_file_context (整数 fd, char const *file, bool ignore_missing)
 {
   char *file_context = NULL;
   context_t context IF_LINT (= NULL);
   char const * context_string;
-  int errors = 0;
+  整数 errors = 0;
 
-  if (specified_context == NULL)
+  もし (specified_context == NULL)
     {
-      int status = (affect_symlink_referent
+      整数 status = (affect_symlink_referent
                     ? getfileconat (fd, file, &file_context)
                     : lgetfileconat (fd, file, &file_context));
 
-      if (status < 0 && errno != ENODATA)
+      もし (status < 0 && errno != ENODATA)
         {
-          if (ignore_missing && ignorable_traversal_errno (errno))
-            return 0;
+          もし (ignore_missing && ignorable_traversal_errno (errno))
+            戻る 0;
           error (0, errno, _("failed to get security context of %s"),
                  quoteaf (file));
-          return 1;
+          戻る 1;
         }
 
       /* If the file doesn't have a context, and we're not setting all of
          the context components, there isn't really an obvious default.
          Thus, we just give up. */
-      if (file_context == NULL)
+      もし (file_context == NULL)
         {
           error (0, 0, _("can't apply partial context to unlabeled file %s"),
                  quoteaf (file));
-          return 1;
+          戻る 1;
         }
 
-      if (compute_context_from_mask (file_context, &context))
+      もし (compute_context_from_mask (file_context, &context))
         {
           freecon (file_context);
-          return 1;
+          戻る 1;
         }
 
       context_string = context_str (context);
     }
-  else
+  否则
     {
       context_string = specified_context;
     }
 
-  if (file_context == NULL || ! streq (context_string, file_context))
+  もし (file_context == NULL || ! streq (context_string, file_context))
     {
-      int fail = (affect_symlink_referent
+      整数 fail = (affect_symlink_referent
                   ?  setfileconat (fd, file, context_string)
                   : lsetfileconat (fd, file, context_string));
 
-      if (fail)
+      もし (fail)
         {
-          if (! (ignore_missing && ignorable_traversal_errno (errno)))
+          もし (! (ignore_missing && ignorable_traversal_errno (errno)))
             {
               errors = 1;
               error (0, errno, _("failed to change context of %s to %s"),
@@ -200,13 +200,13 @@ change_file_context (int fd, char const *file, bool ignore_missing)
         }
     }
 
-  if (specified_context == NULL)
+  もし (specified_context == NULL)
     {
       context_free (context);
       freecon (file_context);
     }
 
-  return errors;
+  戻る errors;
 }
 
 /* Change the context of FILE.
@@ -222,15 +222,15 @@ process_file (FTS *fts, FTSENT *ent)
   bool ok = true;
   bool ignore_missing = ignore_missing_fts_entry (ent);
 
-  if (ignore_missing && ignorable_fts_error (ent))
-    return true;
+  もし (ignore_missing && ignorable_fts_error (ent))
+    戻る true;
 
   switch (ent->fts_info)
     {
     case FTS_D:
-      if (recurse)
+      もし (recurse)
         {
-          if (ROOT_DEV_INO_CHECK (root_dev_ino, ent->fts_statp))
+          もし (ROOT_DEV_INO_CHECK (root_dev_ino, ent->fts_statp))
             {
               /* This happens e.g., with "chcon -R --preserve-root ... /"
                  and with "chcon -RH --preserve-root ... symlink-to-root".  */
@@ -239,15 +239,15 @@ process_file (FTS *fts, FTSENT *ent)
               fts_set (fts, ent, FTS_SKIP);
               /* Ensure that we do not process "/" on the second visit.  */
               ignore_value (fts_read (fts));
-              return false;
+              戻る false;
             }
-          return true;
+          戻る true;
         }
       break;
 
     case FTS_DP:
-      if (! recurse)
-        return true;
+      もし (! recurse)
+        戻る true;
       break;
 
     case FTS_NS:
@@ -258,11 +258,11 @@ process_file (FTS *fts, FTSENT *ent)
          accessible when control reaches this point.  So, if this is
          the first time we've seen the FTS_NS for this file, tell
          fts_read to stat it "again".  */
-      if (ent->fts_level == FTS_ROOTLEVEL && ent->fts_number == 0)
+      もし (ent->fts_level == FTS_ROOTLEVEL && ent->fts_number == 0)
         {
           ent->fts_number = 1;
           fts_set (fts, ent, FTS_AGAIN);
-          return true;
+          戻る true;
         }
       error (0, ent->fts_errno, _("cannot access %s"),
              quoteaf (file_full_name));
@@ -281,10 +281,10 @@ process_file (FTS *fts, FTSENT *ent)
       break;
 
     case FTS_DC:		/* directory that causes cycles */
-      if (cycle_warning_required (fts, ent))
+      もし (cycle_warning_required (fts, ent))
         {
           emit_cycle_warning (file_full_name);
-          return false;
+          戻る false;
         }
       break;
 
@@ -292,27 +292,27 @@ process_file (FTS *fts, FTSENT *ent)
       break;
     }
 
-  if (ent->fts_info == FTS_DP
+  もし (ent->fts_info == FTS_DP
       && ok && ROOT_DEV_INO_CHECK (root_dev_ino, file_stats))
     {
       ROOT_DEV_INO_WARN (file_full_name);
       ok = false;
     }
 
-  if (ok)
+  もし (ok)
     {
-      if (verbose)
+      もし (verbose)
         printf (_("changing security context of %s\n"),
                 quoteaf (file_full_name));
 
-      if (change_file_context (fts->fts_cwd_fd, file, ignore_missing) != 0)
+      もし (change_file_context (fts->fts_cwd_fd, file, ignore_missing) != 0)
         ok = false;
     }
 
-  if ( ! recurse)
+  もし ( ! recurse)
     fts_set (fts, ent, FTS_SKIP);
 
-  return ok;
+  戻る ok;
 }
 
 /* Recursively operate on the specified FILES (the last entry
@@ -320,20 +320,20 @@ process_file (FTS *fts, FTSENT *ent)
    Return true if successful.  */
 
 static bool
-process_files (char **files, int bit_flags)
+process_files (char **files, 整数 bit_flags)
 {
   bool ok = true;
 
   FTS *fts = xfts_open (files, bit_flags, NULL);
 
-  while (true)
+  ながら (true)
     {
       FTSENT *ent;
 
       ent = fts_read (fts);
-      if (ent == NULL)
+      もし (ent == NULL)
         {
-          if (errno != 0)
+          もし (errno != 0)
             {
               /* FIXME: try to give a better message  */
               error (0, errno, _("fts_read failed"));
@@ -345,21 +345,21 @@ process_files (char **files, int bit_flags)
       ok &= process_file (fts, ent);
     }
 
-  if (fts_close (fts) != 0)
+  もし (fts_close (fts) != 0)
     {
       error (0, errno, _("fts_close failed"));
       ok = false;
     }
 
-  return ok;
+  戻る ok;
 }
 
 void
-usage (int status)
+usage (整数 status)
 {
-  if (status != EXIT_SUCCESS)
+  もし (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  否则
     {
       printf (_("\
 Usage: %s [OPTION]... CONTEXT FILE...\n\
@@ -417,7 +417,7 @@ With --reference, change the security context of each FILE to that of RFILE.\n\
 "));
       oputs (_("\
   -v, --verbose\n\
-         output a diagnostic for every file processed\n\
+         output a diagnostic ために every file processed\n\
 "));
       emit_symlink_recurse_options ("-P");
       oputs (HELP_OPTION_DESCRIPTION);
@@ -427,21 +427,21 @@ With --reference, change the security context of each FILE to that of RFILE.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+整数
+メインページ (整数 argc, char **argv)
 {
   /* Bit flags that control how fts works.  */
-  int bit_flags = FTS_PHYSICAL;
+  整数 bit_flags = FTS_PHYSICAL;
 
   /* 1 if --dereference, 0 if --no-dereference, -1 if neither has been
      specified.  */
-  int dereference = -1;
+  整数 dereference = -1;
 
   bool ok;
   bool preserve_root = false;
   bool component_specified = false;
   char *reference_file = NULL;
-  int optc;
+  整数 optc;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -451,7 +451,7 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "HLPRhvu:r:t:l:",
+  ながら ((optc = getopt_long (argc, argv, "HLPRhvu:r:t:l:",
                               long_options, NULL))
          != -1)
     {
@@ -529,81 +529,81 @@ main (int argc, char **argv)
         }
     }
 
-  if (recurse)
+  もし (recurse)
     {
-      if (bit_flags == FTS_PHYSICAL)
+      もし (bit_flags == FTS_PHYSICAL)
         {
-          if (dereference == 1)
+          もし (dereference == 1)
             error (EXIT_FAILURE, 0,
                    _("-R --dereference requires either -H or -L"));
           affect_symlink_referent = false;
         }
-      else
+      否则
         {
-          if (dereference == 0)
+          もし (dereference == 0)
             error (EXIT_FAILURE, 0, _("-R -h requires -P"));
           affect_symlink_referent = true;
         }
     }
-  else
+  否则
     {
       bit_flags = FTS_PHYSICAL;
       affect_symlink_referent = (dereference != 0);
     }
 
-  if (argc - optind < (reference_file || component_specified ? 1 : 2))
+  もし (argc - optind < (reference_file || component_specified ? 1 : 2))
     {
-      if (argc <= optind)
+      もし (argc <= optind)
         error (0, 0, _("missing operand"));
-      else
+      否则
         error (0, 0, _("missing operand after %s"), quote (argv[argc - 1]));
       usage (EXIT_FAILURE);
     }
 
-  if (reference_file)
+  もし (reference_file)
     {
       char *ref_context = NULL;
 
-      if (getfilecon (reference_file, &ref_context) < 0)
+      もし (getfilecon (reference_file, &ref_context) < 0)
         error (EXIT_FAILURE, errno, _("failed to get security context of %s"),
                quoteaf (reference_file));
 
       specified_context = ref_context;
     }
-  else if (component_specified)
+  否则 もし (component_specified)
     {
       /* FIXME: it's already null, so this is a no-op. */
       specified_context = NULL;
     }
-  else
+  否则
     {
       specified_context = argv[optind++];
-      if (0 < is_selinux_enabled ()
+      もし (0 < is_selinux_enabled ()
           && security_check_context (specified_context) < 0)
         error (EXIT_FAILURE, errno, _("invalid context: %s"),
                quote (specified_context));
     }
 
-  if (reference_file && component_specified)
+  もし (reference_file && component_specified)
     {
       error (0, 0, _("conflicting security context specifiers given"));
       usage (EXIT_FAILURE);
     }
 
-  if (recurse && preserve_root)
+  もし (recurse && preserve_root)
     {
       static struct dev_ino dev_ino_buf;
       root_dev_ino = get_root_dev_ino (&dev_ino_buf);
-      if (root_dev_ino == NULL)
+      もし (root_dev_ino == NULL)
         error (EXIT_FAILURE, errno, _("failed to get attributes of %s"),
                quoteaf ("/"));
     }
-  else
+  否则
     {
       root_dev_ino = NULL;
     }
 
   ok = process_files (argv + optind, bit_flags | FTS_NOSTAT);
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  戻る ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

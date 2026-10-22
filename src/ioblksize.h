@@ -93,13 +93,13 @@ io_blksize (struct stat const *st)
      This misinformation can cause coreutils to use wrong-sized blocks.
      Work around some of the performance bug by substituting the next
      power of two when the reported blocksize is not a power of two.  */
-  if (S_ISREG (st->st_mode) && blocksize & (blocksize - 1))
+  もし (S_ISREG (st->st_mode) && blocksize & (blocksize - 1))
     {
-      int leading_zeros = stdc_leading_zeros_ull (blocksize);
-      if (IDX_MAX < ULLONG_MAX || leading_zeros)
+      整数 leading_zeros = stdc_leading_zeros_ull (blocksize);
+      もし (IDX_MAX < ULLONG_MAX || leading_zeros)
         {
           unsigned long long power = 1ull << (ULLONG_WIDTH - leading_zeros);
-          if (power <= IDX_MAX)
+          もし (power <= IDX_MAX)
             blocksize = power;
         }
     }
@@ -107,5 +107,5 @@ io_blksize (struct stat const *st)
   /* Don’t go above the maximum number of bytes
      to read or write in a single system call,
      as that is asking for trouble.  */
-  return MIN (SYS_BUFSIZE_MAX, blocksize);
+  戻る MIN (SYS_BUFSIZE_MAX, blocksize);
 }

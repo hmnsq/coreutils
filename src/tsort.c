@@ -72,11 +72,11 @@ static struct item *loop = NULL;
 static size_t n_strings = 0;
 
 void
-usage (int status)
+usage (整数 status)
 {
-  if (status != EXIT_SUCCESS)
+  もし (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  否则
     {
       printf (_("\
 Usage: %s [OPTION] [FILE]\n\
@@ -102,9 +102,9 @@ new_item (char const *str)
 {
   /* T1. Initialize (COUNT[k] <- 0 and TOP[k] <- ^).  */
   struct item *k = xzalloc (sizeof *k);
-  if (str)
+  もし (str)
     k->str = xstrdup (str);
-  return k;
+  戻る k;
 }
 
 /* Search binary tree rooted at *ROOT for STR.  Allocate a new tree if
@@ -119,64 +119,64 @@ static struct item *
 search_item (struct item *root, char const *str)
 {
   struct item *p, *q, *r, *s, *t;
-  int a;
+  整数 a;
 
   /* Make sure the tree is not empty, since that is what the algorithm
      below expects.  */
-  if (root->right == NULL)
-    return (root->right = new_item (str));
+  もし (root->right == NULL)
+    戻る (root->right = new_item (str));
 
   /* A1. Initialize.  */
   t = root;
   s = p = root->right;
 
-  while (true)
+  ながら (true)
     {
       /* A2. Compare.  */
       a = strcmp (str, p->str);
-      if (a == 0)
-        return p;
+      もし (a == 0)
+        戻る p;
 
       /* A3 & A4.  Move left & right.  */
-      if (a < 0)
+      もし (a < 0)
         q = p->left;
-      else
+      否则
         q = p->right;
 
-      if (q == NULL)
+      もし (q == NULL)
         {
           /* A5. Insert.  */
           q = new_item (str);
 
           /* A3 & A4.  (continued).  */
-          if (a < 0)
+          もし (a < 0)
             p->left = q;
-          else
+          否则
             p->right = q;
 
           /* A6. Adjust balance factors.  */
           a = strcmp (str, s->str);
-          if (a < 0)
+          もし (a < 0)
             {
               r = p = s->left;
               a = -1;
             }
-          else
+          否则
             {
               affirm (0 < a);
               r = p = s->right;
               a = 1;
             }
 
-          while (p != q)
+          ながら (p != q)
             {
-              int cmp = strcmp (str, p->str);
-              if (cmp < 0)
+              整数 cmp = strcmp (str, p->str);
+              もし (cmp < 0)
                 {
                   p->balance = -1;
                   p = p->left;
                 }
-              else
+              否则
                 {
                   affirm (0 < cmp);
                   p->balance = 1;
@@ -185,32 +185,32 @@ search_item (struct item *root, char const *str)
             }
 
           /* A7. Balancing act.  */
-          if (s->balance == 0 || s->balance == -a)
+          もし (s->balance == 0 || s->balance == -a)
             {
               s->balance += a;
-              return q;
+              戻る q;
             }
 
-          if (r->balance == a)
+          もし (r->balance == a)
             {
               /* A8. Single Rotation.  */
               p = r;
-              if (a < 0)
+              もし (a < 0)
                 {
                   s->left = r->right;
                   r->right = s;
                 }
-              else
+              否则
                 {
                   s->right = r->left;
                   r->left = s;
                 }
               s->balance = r->balance = 0;
             }
-          else
+          否则
             {
               /* A9. Double rotation.  */
-              if (a < 0)
+              もし (a < 0)
                 {
                   p = r->right;
                   r->right = p->left;
@@ -218,7 +218,7 @@ search_item (struct item *root, char const *str)
                   s->left = p->right;
                   p->right = s;
                 }
-              else
+              否则
                 {
                   p = r->left;
                   r->left = p->right;
@@ -229,24 +229,24 @@ search_item (struct item *root, char const *str)
 
               s->balance = 0;
               r->balance = 0;
-              if (p->balance == a)
+              もし (p->balance == a)
                 s->balance = -a;
-              else if (p->balance == -a)
+              否则 もし (p->balance == -a)
                 r->balance = a;
               p->balance = 0;
             }
 
           /* A10. Finishing touch.  */
-          if (s == t->right)
+          もし (s == t->right)
             t->right = p;
-          else
+          否则
             t->left = p;
 
-          return q;
+          戻る q;
         }
 
       /* A3 & A4.  (continued).  */
-      if (q->balance)
+      もし (q->balance)
         {
           t = p;
           s = q;
@@ -265,7 +265,7 @@ record_relation (struct item *j, struct item *k)
 {
   struct successor *p;
 
-  if (!streq (j->str, k->str))
+  もし (!streq (j->str, k->str))
     {
       k->count++;
       p = xmalloc (sizeof *p);
@@ -279,24 +279,24 @@ static bool
 count_items (MAYBE_UNUSED struct item *unused)
 {
   n_strings++;
-  return false;
+  戻る false;
 }
 
 static bool
 scan_zeros (struct item *k)
 {
   /* Ignore strings that have already been printed.  */
-  if (k->count == 0 && !k->printed)
+  もし (k->count == 0 && !k->printed)
     {
-      if (head == NULL)
+      もし (head == NULL)
         head = k;
-      else
+      否则
         zeros->qlink = k;
 
       zeros = k;
     }
 
-  return false;
+  戻る false;
 }
 
 /* Try to detect the loop.  If we have detected that K is part of a
@@ -320,33 +320,33 @@ scan_zeros (struct item *k)
 static bool
 detect_loop (struct item *k)
 {
-  if (k->count > 0)
+  もし (k->count > 0)
     {
       /* K does not have to be part of a cycle.  It is however part of
          a graph that contains a cycle.  */
 
-      if (loop == NULL)
+      もし (loop == NULL)
         /* Start traversing the graph at K.  */
         loop = k;
-      else
+      否则
         {
           struct successor **p = &k->top;
 
-          while (*p)
+          ながら (*p)
             {
-              if ((*p)->suc == loop)
+              もし ((*p)->suc == loop)
                 {
-                  if (k->qlink)
+                  もし (k->qlink)
                     {
                       /* We have found a loop.  Retrace our steps.  */
-                      while (loop)
+                      ながら (loop)
                         {
                           struct item *tmp = loop->qlink;
 
                           error (0, 0, "%s", (loop->str));
 
                           /* Until we encounter K again.  */
-                          if (loop == k)
+                          もし (loop == k)
                             {
                               /* Remove relation.  */
                               struct successor *s = *p;
@@ -362,7 +362,7 @@ detect_loop (struct item *k)
                           loop = tmp;
                         }
 
-                      while (loop)
+                      ながら (loop)
                         {
                           struct item *tmp = loop->qlink;
 
@@ -372,9 +372,9 @@ detect_loop (struct item *k)
 
                       /* Since we have found the loop, stop walking
                          the tree.  */
-                      return true;
+                      戻る true;
                     }
-                  else
+                  否则
                     {
                       k->qlink = loop;
                       loop = k;
@@ -387,7 +387,7 @@ detect_loop (struct item *k)
         }
     }
 
-  return false;
+  戻る false;
 }
 
 /* Recurse (sub)tree rooted at ROOT, calling ACTION for each node.
@@ -396,21 +396,21 @@ detect_loop (struct item *k)
 static bool
 recurse_tree (struct item *root, bool (*action) (struct item *))
 {
-  if (root->left == NULL && root->right == NULL)
-    return (*action) (root);
-  else
+  もし (root->left == NULL && root->right == NULL)
+    戻る (*action) (root);
+  否则
     {
-      if (root->left != NULL)
-        if (recurse_tree (root->left, action))
-          return true;
-      if ((*action) (root))
-        return true;
-      if (root->right != NULL)
-        if (recurse_tree (root->right, action))
-          return true;
+      もし (root->left != NULL)
+        もし (recurse_tree (root->left, action))
+          戻る true;
+      もし ((*action) (root))
+        戻る true;
+      もし (root->right != NULL)
+        もし (recurse_tree (root->right, action))
+          戻る true;
     }
 
-  return false;
+  戻る false;
 }
 
 /* Walk the tree specified by the head ROOT, calling ACTION for
@@ -419,7 +419,7 @@ recurse_tree (struct item *root, bool (*action) (struct item *))
 static void
 walk_tree (struct item *root, bool (*action) (struct item *))
 {
-  if (root->right)
+  もし (root->right)
     recurse_tree (root->right, action);
 }
 
@@ -437,20 +437,20 @@ tsort (char const *file)
   /* Initialize the head of the tree holding the strings we're sorting.  */
   struct item *root = new_item (NULL);
 
-  if (!is_stdin && ! freopen (file, "r", stdin))
+  もし (!is_stdin && ! freopen (file, "r", stdin))
     error (EXIT_FAILURE, errno, "%s", quotef (file));
 
   fadvise (stdin, FADVISE_SEQUENTIAL);
 
   init_tokenbuffer (&tokenbuffer);
 
-  while (true)
+  ながら (true)
     {
       /* T2. Next Relation.  */
       size_t len = readtoken (stdin, DELIM, sizeof (DELIM) - 1, &tokenbuffer);
-      if (len == (size_t) -1)
+      もし (len == (size_t) -1)
         {
-          if (ferror (stdin))
+          もし (ferror (stdin))
             error (EXIT_FAILURE, errno, _("%s: read error"), quotef (file));
           break;
         }
@@ -458,7 +458,7 @@ tsort (char const *file)
       affirm (len != 0);
 
       k = search_item (root, tokenbuffer.buffer);
-      if (j)
+      もし (j)
         {
           /* T3. Record the relation.  */
           record_relation (j, k);
@@ -468,19 +468,19 @@ tsort (char const *file)
       j = k;
     }
 
-  if (k != NULL)
+  もし (k != NULL)
     error (EXIT_FAILURE, 0, _("%s: input contains an odd number of tokens"),
            quotef (file));
 
   /* T1. Initialize (N <- n).  */
   walk_tree (root, count_items);
 
-  while (n_strings > 0)
+  ながら (n_strings > 0)
     {
       /* T4. Scan for zeros.  */
       walk_tree (root, scan_zeros);
 
-      while (head)
+      ながら (head)
         {
           struct successor *p = head->top;
 
@@ -490,10 +490,10 @@ tsort (char const *file)
           n_strings--;
 
           /* T6. Erase relations.  */
-          while (p)
+          ながら (p)
             {
               p->suc->count--;
-              if (p->suc->count == 0)
+              もし (p->suc->count == 0)
                 {
                   zeros->qlink = p->suc;
                   zeros = p->suc;
@@ -507,7 +507,7 @@ tsort (char const *file)
         }
 
       /* T8.  End of process.  */
-      if (n_strings > 0)
+      もし (n_strings > 0)
         {
           /* The input contains a loop.  */
           error (0, 0, _("%s: input contains a loop:"), quotef (file));
@@ -516,19 +516,19 @@ tsort (char const *file)
           /* Print the loop and remove a relation to break it.  */
           do
             walk_tree (root, detect_loop);
-          while (loop);
+          ながら (loop);
         }
     }
 
-  if (fclose (stdin) != 0)
+  もし (fclose (stdin) != 0)
     error (EXIT_FAILURE, errno, "%s",
            is_stdin ? _("standard input") : quotef (file));
 
   exit (ok ? EXIT_SUCCESS : EXIT_FAILURE);
 }
 
-int
-main (int argc, char **argv)
+整数
+メインページ (整数 argc, char **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -538,7 +538,7 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while (true)
+  ながら (true)
     {
       static struct option const long_options[] =
         {
@@ -546,9 +546,9 @@ main (int argc, char **argv)
           {GETOPT_VERSION_OPTION_DECL},
           {NULL, 0, NULL, 0}
         };
-      int c = getopt_long (argc, argv, "w", long_options, NULL);
+      整数 c = getopt_long (argc, argv, "w", long_options, NULL);
 
-      if (c == -1)
+      もし (c == -1)
         break;
 
       switch (c)
@@ -565,7 +565,7 @@ main (int argc, char **argv)
         }
     }
 
-  if (1 < argc - optind)
+  もし (1 < argc - optind)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind + 1]));
       usage (EXIT_FAILURE);
