@@ -23,19 +23,19 @@
    idle: -u
 */
 
-#include <config.h>
-#include <getopt.h>
-#include <stdio.h>
+#ضمن <config.h>
+#ضمن <getopt.h>
+#ضمن <stdio.h>
 
-#include <sys/types.h>
-#include "system.h"
+#ضمن <sys/types.h>
+#ضمن "system.h"
 
-#include "c-ctype.h"
-#include "canon-host.h"
-#include "readutmp.h"
-#include "hard-locale.h"
-#include "quote.h"
-#include "xvasprintf.h"
+#ضمن "c-ctype.h"
+#ضمن "canon-host.h"
+#ضمن "readutmp.h"
+#ضمن "hard-locale.h"
+#ضمن "quote.h"
+#ضمن "xvasprintf.h"
 
 #ifdef TTY_GROUP_NAME
 # include <grp.h>
@@ -51,206 +51,206 @@
 
 #ifdef RUN_LVL
 # define UT_TYPE_RUN_LVL(U) ((U)->ut_type == RUN_LVL)
-#else
+#وإلا
 # define UT_TYPE_RUN_LVL(U) false
 #endif
 
 #ifdef INIT_PROCESS
 # define UT_TYPE_INIT_PROCESS(U) ((U)->ut_type == INIT_PROCESS)
-#else
+#وإلا
 # define UT_TYPE_INIT_PROCESS(U) false
 #endif
 
 #ifdef DEAD_PROCESS
 # define UT_TYPE_DEAD_PROCESS(U) ((U)->ut_type == DEAD_PROCESS)
-#else
+#وإلا
 # define UT_TYPE_DEAD_PROCESS(U) false
 #endif
 
 #ifdef NEW_TIME
 # define UT_TYPE_NEW_TIME(U) ((U)->ut_type == NEW_TIME)
-#else
+#وإلا
 # define UT_TYPE_NEW_TIME(U) false
 #endif
 
 #define IDLESTR_LEN 6
 
-#if HAVE_STRUCT_XTMP_UT_PID
+#إذا HAVE_STRUCT_XTMP_UT_PID
 # define PIDSTR_DECL_AND_INIT(Var, Utmp_ent) \
-  char Var[INT_STRLEN_BOUND (Utmp_ent->ut_pid) + 1]; \
-  sprintf (Var, "%ld", (long int) (Utmp_ent->ut_pid))
-#else
+  حرف Var[INT_STRLEN_BOUND (Utmp_ent->ut_pid) + 1]; \
+  sprintf (Var, "%ld", (long صحيح) (Utmp_ent->ut_pid))
+#وإلا
 # define PIDSTR_DECL_AND_INIT(Var, Utmp_ent) \
-  char const *Var = ""
+  حرف ثابت *Var = ""
 #endif
 
-#if HAVE_STRUCT_XTMP_UT_ID
+#إذا HAVE_STRUCT_XTMP_UT_ID
 # define UT_ID(U) ((U)->ut_id)
-#else
+#وإلا
 # define UT_ID(U) "??"
 #endif
 
 /* If true, attempt to canonicalize hostnames via a DNS lookup. */
-static bool do_lookup;
+ساكن bool do_lookup;
 
 /* If true, display only a list of usernames and count of
    the users logged on.
    Ignored for 'who am i'.  */
-static bool short_list;
+ساكن bool short_list;
 
 /* If true, display only name, line, and time fields.  */
-static bool short_output;
+ساكن bool short_output;
 
 /* If true, display the hours:minutes since each user has touched
    the keyboard, or "." if within the last minute, or "old" if
    not within the last day.  */
-static bool include_idle;
+ساكن bool include_idle;
 
 /* If true, display a line at the top describing each field.  */
-static bool include_heading;
+ساكن bool include_heading;
 
 /* If true, display a '+' for each user if mesg y, a '-' if mesg n,
    or a '?' if their tty cannot be statted. */
-static bool include_mesg;
+ساكن bool include_mesg;
 
 /* If true, display process termination & exit status.  */
-static bool include_exit;
+ساكن bool include_exit;
 
 /* If true, display the last boot time.  */
-static bool need_boottime;
+ساكن bool need_boottime;
 
 /* If true, display dead processes.  */
-static bool need_deadprocs;
+ساكن bool need_deadprocs;
 
 /* If true, display processes waiting for user login.  */
-static bool need_login;
+ساكن bool need_login;
 
 /* If true, display processes started by init.  */
-static bool need_initspawn;
+ساكن bool need_initspawn;
 
 /* If true, display the last clock change.  */
-static bool need_clockchange;
+ساكن bool need_clockchange;
 
 /* If true, display the current runlevel.  */
-static bool need_runlevel;
+ساكن bool need_runlevel;
 
 /* If true, display user processes.  */
-static bool need_users;
+ساكن bool need_users;
 
 /* If true, display info only for the controlling tty.  */
-static bool my_line_only;
+ساكن bool my_قۇر_only;
 
 /* The strftime format to use for login times, and its expected
    output width.  */
-static char const *time_format;
-static int time_format_width;
+ساكن حرف ثابت *time_format;
+ساكن صحيح time_format_width;
 
 /* for long options with no corresponding short option, use enum */
-enum
+تعداد
 {
   LOOKUP_OPTION = CHAR_MAX + 1
 };
 
-static struct option const longopts[] =
+ساكن بنية option ثابت longopts[] =
 {
-  {"all", no_argument, NULL, 'a'},
-  {"boot", no_argument, NULL, 'b'},
-  {"count", no_argument, NULL, 'q'},
-  {"dead", no_argument, NULL, 'd'},
-  {"heading", no_argument, NULL, 'H'},
-  {"login", no_argument, NULL, 'l'},
-  {"lookup", no_argument, NULL, LOOKUP_OPTION},
-  {"message", no_argument, NULL, 'T'},
-  {"mesg", no_argument, NULL, 'T'},
-  {"process", no_argument, NULL, 'p'},
-  {"runlevel", no_argument, NULL, 'r'},
-  {"short", no_argument, NULL, 's'},
-  {"time", no_argument, NULL, 't'},
-  {"users", no_argument, NULL, 'u'},
-  {"writable", no_argument, NULL, 'T'},
+  {"all", no_argument, عدم, 'a'},
+  {"boot", no_argument, عدم, 'b'},
+  {"count", no_argument, عدم, 'q'},
+  {"dead", no_argument, عدم, 'd'},
+  {"heading", no_argument, عدم, 'H'},
+  {"login", no_argument, عدم, 'l'},
+  {"lookup", no_argument, عدم, LOOKUP_OPTION},
+  {"message", no_argument, عدم, 'T'},
+  {"mesg", no_argument, عدم, 'T'},
+  {"process", no_argument, عدم, 'p'},
+  {"runlevel", no_argument, عدم, 'r'},
+  {"short", no_argument, عدم, 's'},
+  {"time", no_argument, عدم, 't'},
+  {"users", no_argument, عدم, 'u'},
+  {"writable", no_argument, عدم, 'T'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {عدم, 0, عدم, 0}
 };
 
 /* Return a string representing the time between WHEN and now.
    BOOTTIME is the time of last reboot.
    FIXME: locale? */
-static char const *
+ساكن حرف ثابت *
 idle_string (time_t when, time_t boottime)
 {
-  static time_t now = TYPE_MINIMUM (time_t);
+  ساكن time_t now = TYPE_MINIMUM (time_t);
 
-  if (now == TYPE_MINIMUM (time_t))
+  إذا (now == TYPE_MINIMUM (time_t))
     time (&now);
 
-  int seconds_idle;
-  if (boottime < when && when <= now
+  صحيح seconds_idle;
+  إذا (boottime < when && when <= now
       && ! ckd_sub (&seconds_idle, now, when)
       && seconds_idle < 24 * 60 * 60)
     {
-      if (seconds_idle < 60)
-        return "  .  ";
-      else
+      إذا (seconds_idle < 60)
+        أرجع "  .  ";
+      وإلا
         {
-          static char idle_hhmm[IDLESTR_LEN];
+          ساكن حرف idle_hhmm[IDLESTR_LEN];
           sprintf (idle_hhmm, "%02d:%02d",
                    seconds_idle / (60 * 60),
                    (seconds_idle % (60 * 60)) / 60);
-          return idle_hhmm;
+          أرجع idle_hhmm;
         }
     }
 
-  return _(" old ");
+  أرجع _(" old ");
 }
 
 /* Return a time string.  */
-static char const *
-time_string (STRUCT_UTMP const *utmp_ent)
+ساكن حرف ثابت *
+time_string (STRUCT_UTMP ثابت *utmp_ent)
 {
-  static char buf[INT_STRLEN_BOUND (intmax_t) + sizeof "-%m-%d %H:%M"];
-  struct tm *tmp = localtime (&utmp_ent->ut_ts.tv_sec);
+  ساكن حرف buf[INT_STRLEN_BOUND (intmax_t) + حجم "-%m-%d %H:%M"];
+  بنية tm *tmp = localtime (&utmp_ent->ut_ts.tv_sec);
 
-  if (tmp)
+  إذا (tmp)
     {
-      strftime (buf, sizeof buf, time_format, tmp);
-      return buf;
+      strftime (buf, حجم buf, time_format, tmp);
+      أرجع buf;
     }
-  else
-    return timetostr (utmp_ent->ut_ts.tv_sec, buf);
+  وإلا
+    أرجع timetostr (utmp_ent->ut_ts.tv_sec, buf);
 }
 
 /* Print formatted output line. Uses mostly arbitrary field sizes, probably
    will need tweaking if any of the localization stuff is done, or for 64 bit
    pids, etc. */
-static void
-print_line (char const *user, const char state,
-            char const *line,
-            char const *time_str, char const *idle, char const *pid,
-            char const *comment, char const *exitstr)
+ساكن فراغ
+print_قۇر (حرف ثابت *user, ثابت حرف state,
+            حرف ثابت *قۇر,
+            حرف ثابت *time_str, حرف ثابت *idle, حرف ثابت *pid,
+            حرف ثابت *comment, حرف ثابت *exitstr)
 {
-  static char mesg[3] = { ' ', 'x', '\0' };
-  char *buf;
-  char x_idle[1 + IDLESTR_LEN + 1];
-  char x_pid[1 + INT_STRLEN_BOUND (pid_t) + 1];
-  char *x_exitstr;
+  ساكن حرف mesg[3] = { ' ', 'x', '\0' };
+  حرف *buf;
+  حرف x_idle[1 + IDLESTR_LEN + 1];
+  حرف x_pid[1 + INT_STRLEN_BOUND (pid_t) + 1];
+  حرف *x_exitstr;
 
   mesg[1] = state;
 
-  if (include_idle && !short_output && strlen (idle) < sizeof x_idle - 1)
+  إذا (include_idle && !short_output && strlen (idle) < حجم x_idle - 1)
     sprintf (x_idle, " %-6s", idle);
-  else
+  وإلا
     *x_idle = '\0';
 
-  if (!short_output && strlen (pid) < sizeof x_pid - 1)
+  إذا (!short_output && strlen (pid) < حجم x_pid - 1)
     sprintf (x_pid, " %10s", pid);
-  else
+  وإلا
     *x_pid = '\0';
 
   x_exitstr = xmalloc (include_exit ? 1 + MAX (12, strlen (exitstr)) + 1 : 1);
-  if (include_exit)
+  إذا (include_exit)
     sprintf (x_exitstr, " %-12s", exitstr);
-  else
+  وإلا
     *x_exitstr = '\0';
 
   buf = xasprintf ("%-8s"
@@ -264,7 +264,7 @@ print_line (char const *user, const char state,
                    ,
                    user ? user : "   .",
                    include_mesg ? mesg : "",
-                   line,
+                   قۇر,
                    time_format_width,
                    time_str,
                    x_idle,
@@ -279,178 +279,178 @@ print_line (char const *user, const char state,
 
   {
     /* Remove any trailing spaces.  */
-    char *p = buf + strlen (buf);
-    while (*--p == ' ')
+    حرف *p = buf + strlen (buf);
+    طالما (*--p == ' ')
       /* empty */;
     *(p + 1) = '\0';
   }
 
   puts (buf);
-  free (buf);
-  free (x_exitstr);
+  حرر (buf);
+  حرر (x_exitstr);
 }
 
 /* Return true if a terminal device given as PSTAT allows other users
    to send messages to; false otherwise */
-static bool
-is_tty_writable (struct stat const *pstat)
+ساكن bool
+is_tty_writable (بنية stat ثابت *pstat)
 {
 #ifdef TTY_GROUP_NAME
   /* Ensure the group of the TTY device matches TTY_GROUP_NAME, more info at
      https://bugzilla.redhat.com/454261 */
-  struct group *ttygr = getgrnam (TTY_GROUP_NAME);
-  if (!ttygr || (pstat->st_gid != ttygr->gr_gid))
-    return false;
+  بنية group *ttygr = getgrnam (TTY_GROUP_NAME);
+  إذا (!ttygr || (pstat->st_gid != ttygr->gr_gid))
+    أرجع false;
 #endif
 
-  return pstat->st_mode & S_IWGRP;
+  أرجع pstat->st_mode & S_IWGRP;
 }
 
 /* Send properly parsed USER_PROCESS info to print_line.  The most
    recent boot time is BOOTTIME. */
-static void
-print_user (STRUCT_UTMP const *utmp_ent, time_t boottime)
+ساكن فراغ
+print_user (STRUCT_UTMP ثابت *utmp_ent, time_t boottime)
 {
-  struct stat stats;
+  بنية stat stats;
   time_t last_change;
-  char mesg;
-  char idlestr[IDLESTR_LEN + 1];
+  حرف mesg;
+  حرف idlestr[IDLESTR_LEN + 1];
   PIDSTR_DECL_AND_INIT (pidstr, utmp_ent);
-  static char *hoststr;
-#if HAVE_STRUCT_XTMP_UT_HOST
-  static idx_t hostlen;
+  ساكن حرف *hoststr;
+#إذا HAVE_STRUCT_XTMP_UT_HOST
+  ساكن idx_t hostlen;
 #endif
 
   /* If ut_line contains a space, the device name starts after the space.  */
-  char *line = utmp_ent->ut_line;
-  char *space = strchr (line, ' ');
-  line = space ? space + 1 : line;
+  حرف *قۇر = utmp_ent->ut_قۇر;
+  حرف *space = strchr (قۇر, ' ');
+  قۇر = space ? space + 1 : قۇر;
 
-  int dirfd;
-  if (IS_ABSOLUTE_FILE_NAME (line))
+  صحيح dirfd;
+  إذا (IS_ABSOLUTE_FILE_NAME (قۇر))
     dirfd = AT_FDCWD;
-  else
+  وإلا
     {
-      static int dev_dirfd;
-      if (!dev_dirfd)
+      ساكن صحيح dev_dirfd;
+      إذا (!dev_dirfd)
         {
           dev_dirfd = open ("/dev", O_PATHSEARCH | O_DIRECTORY);
-          if (dev_dirfd < 0)
+          إذا (dev_dirfd < 0)
             dev_dirfd = AT_FDCWD - 1;
         }
       dirfd = dev_dirfd;
     }
 
-  if (AT_FDCWD <= dirfd && fstatat (dirfd, line, &stats, 0) == 0)
+  إذا (AT_FDCWD <= dirfd && fstatat (dirfd, قۇر, &stats, 0) == 0)
     {
       mesg = is_tty_writable (&stats) ? '+' : '-';
       last_change = stats.st_atime;
     }
-  else
+  وإلا
     {
       mesg = '?';
       last_change = 0;
     }
 
-  if (last_change)
+  إذا (last_change)
     sprintf (idlestr, "%.*s", IDLESTR_LEN, idle_string (last_change, boottime));
-  else
+  وإلا
     sprintf (idlestr, "  ?");
 
-#if HAVE_STRUCT_XTMP_UT_HOST
-  if (utmp_ent->ut_host[0])
+#إذا HAVE_STRUCT_XTMP_UT_HOST
+  إذا (utmp_ent->ut_host[0])
     {
-      char *host = NULL;
-      char *display = NULL;
-      char *ut_host = utmp_ent->ut_host;
+      حرف *host = عدم;
+      حرف *display = عدم;
+      حرف *ut_host = utmp_ent->ut_host;
 
       /* Look for an X display.  */
       display = strchr (ut_host, ':');
-      if (display)
+      إذا (display)
         *display++ = '\0';
 
-      if (*ut_host && do_lookup)
+      إذا (*ut_host && do_lookup)
         {
           /* See if we can canonicalize it.  */
           host = canon_host (ut_host);
         }
 
-      if (! host)
+      إذا (! host)
         host = ut_host;
 
-      if (display)
+      إذا (display)
         {
           idx_t needed = strlen (host) + strlen (display) + 4;
-          if (hostlen < needed)
+          إذا (hostlen < needed)
             {
-              free (hoststr);
-              hoststr = xpalloc (NULL, &hostlen, needed - hostlen, -1, 1);
+              حرر (hoststr);
+              hoststr = xpalloc (عدم, &hostlen, needed - hostlen, -1, 1);
             }
-          char *p = hoststr;
+          حرف *p = hoststr;
           *p++ = '(';
           p = stpcpy (p, host);
           *p++ = ':';
           strcpy (stpcpy (p, display), ")");
         }
-      else
+      وإلا
         {
           idx_t needed = strlen (host) + 3;
-          if (hostlen < needed)
+          إذا (hostlen < needed)
             {
-              free (hoststr);
-              hoststr = xpalloc (NULL, &hostlen, needed - hostlen, -1, 1);
+              حرر (hoststr);
+              hoststr = xpalloc (عدم, &hostlen, needed - hostlen, -1, 1);
             }
-          char *p = hoststr;
+          حرف *p = hoststr;
           *p++ = '(';
           strcpy (stpcpy (p, host), ")");
         }
 
-      if (host != ut_host)
-        free (host);
+      إذا (host != ut_host)
+        حرر (host);
     }
-  else
+  وإلا
     {
-      if (hostlen < 1)
+      إذا (hostlen < 1)
         hoststr = xpalloc (hoststr, &hostlen, 1, -1, 1);
       *hoststr = '\0';
     }
 #endif
 
-  print_line (utmp_ent->ut_user, mesg,
-              utmp_ent->ut_line,
+  print_قۇر (utmp_ent->ut_user, mesg,
+              utmp_ent->ut_قۇر,
               time_string (utmp_ent), idlestr, pidstr,
               hoststr ? hoststr : "", "");
 }
 
-static void
-print_boottime (STRUCT_UTMP const *utmp_ent)
+ساكن فراغ
+print_boottime (STRUCT_UTMP ثابت *utmp_ent)
 {
-  print_line ("", ' ', _("system boot"),
+  print_قۇر ("", ' ', _("system boot"),
               time_string (utmp_ent), "", "", "", "");
 }
 
-static char *
-make_id_equals_comment (STRUCT_UTMP const *utmp_ent)
+ساكن حرف *
+make_id_equals_comment (STRUCT_UTMP ثابت *utmp_ent)
 {
-  char const *id = UT_ID (utmp_ent);
+  حرف ثابت *id = UT_ID (utmp_ent);
   idx_t idlen = strlen (id);
-  char const *prefix = _("id=");
+  حرف ثابت *prefix = _("id=");
   idx_t prefixlen = strlen (prefix);
-  char *comment = xmalloc (prefixlen + idlen + 1);
-  char *p = mempcpy (comment, prefix, prefixlen);
+  حرف *comment = xmalloc (prefixlen + idlen + 1);
+  حرف *p = mempcpy (comment, prefix, prefixlen);
   p = mempcpy (p, id, idlen);
   *p = '\0';
-  return comment;
+  أرجع comment;
 }
 
-static void
-print_deadprocs (STRUCT_UTMP const *utmp_ent)
+ساكن فراغ
+print_deadprocs (STRUCT_UTMP ثابت *utmp_ent)
 {
-  static char *exitstr;
-  char *comment = make_id_equals_comment (utmp_ent);
+  ساكن حرف *exitstr;
+  حرف *comment = make_id_equals_comment (utmp_ent);
   PIDSTR_DECL_AND_INIT (pidstr, utmp_ent);
 
-  if (!exitstr)
+  إذا (!exitstr)
     exitstr = xmalloc (strlen (_("term="))
                        + INT_STRLEN_BOUND (utmp_ent->ut_exit.e_termination) + 1
                        + strlen (_("exit="))
@@ -461,81 +461,81 @@ print_deadprocs (STRUCT_UTMP const *utmp_ent)
 
   /* FIXME: add idle time? */
 
-  print_line ("", ' ', utmp_ent->ut_line,
+  print_قۇر ("", ' ', utmp_ent->ut_قۇر,
               time_string (utmp_ent), "", pidstr, comment, exitstr);
-  free (comment);
+  حرر (comment);
 }
 
-static void
-print_login (STRUCT_UTMP const *utmp_ent)
+ساكن فراغ
+print_login (STRUCT_UTMP ثابت *utmp_ent)
 {
-  char *comment = make_id_equals_comment (utmp_ent);
+  حرف *comment = make_id_equals_comment (utmp_ent);
   PIDSTR_DECL_AND_INIT (pidstr, utmp_ent);
 
   /* FIXME: add idle time? */
 
-  print_line (_("LOGIN"), ' ', utmp_ent->ut_line,
+  print_قۇر (_("LOGIN"), ' ', utmp_ent->ut_قۇر,
               time_string (utmp_ent), "", pidstr, comment, "");
-  free (comment);
+  حرر (comment);
 }
 
-static void
-print_initspawn (STRUCT_UTMP const *utmp_ent)
+ساكن فراغ
+print_initspawn (STRUCT_UTMP ثابت *utmp_ent)
 {
-  char *comment = make_id_equals_comment (utmp_ent);
+  حرف *comment = make_id_equals_comment (utmp_ent);
   PIDSTR_DECL_AND_INIT (pidstr, utmp_ent);
 
-  print_line ("", ' ', utmp_ent->ut_line,
+  print_قۇر ("", ' ', utmp_ent->ut_قۇر,
               time_string (utmp_ent), "", pidstr, comment, "");
-  free (comment);
+  حرر (comment);
 }
 
-static void
-print_clockchange (STRUCT_UTMP const *utmp_ent)
+ساكن فراغ
+print_clockchange (STRUCT_UTMP ثابت *utmp_ent)
 {
   /* FIXME: handle NEW_TIME & OLD_TIME both */
-  print_line ("", ' ', _("clock change"),
+  print_قۇر ("", ' ', _("clock change"),
               time_string (utmp_ent), "", "", "", "");
 }
 
-static void
-print_runlevel (STRUCT_UTMP const *utmp_ent)
+ساكن فراغ
+print_runlevel (STRUCT_UTMP ثابت *utmp_ent)
 {
-  static char *runlevline, *comment;
-  unsigned char last = utmp_ent->ut_pid / 256;
-  unsigned char curr = utmp_ent->ut_pid % 256;
+  ساكن حرف *runlevline, *comment;
+  unsigned حرف last = utmp_ent->ut_pid / 256;
+  unsigned حرف curr = utmp_ent->ut_pid % 256;
 
-  if (!runlevline)
+  إذا (!runlevline)
     runlevline = xmalloc (strlen (_("run-level")) + 3);
   sprintf (runlevline, "%s %c", _("run-level"), curr);
 
-  if (!comment)
+  إذا (!comment)
     comment = xmalloc (strlen (_("last=")) + 2);
   sprintf (comment, "%s%c", _("last="), (last == 'N') ? 'S' : last);
 
-  print_line ("", ' ', runlevline, time_string (utmp_ent),
+  print_قۇر ("", ' ', runlevline, time_string (utmp_ent),
               "", "", c_isprint (last) ? comment : "", "");
 }
 
 /* Print the username of each valid entry and the number of valid entries
    in UTMP_BUF, which should have N elements. */
-static void
-list_entries_who (idx_t n, STRUCT_UTMP const *utmp_buf)
+ساكن فراغ
+list_entries_who (idx_t n, STRUCT_UTMP ثابت *utmp_buf)
 {
   idx_t entries = 0;
 
-  while (n--)
+  طالما (n--)
     {
-      if (IS_USER_PROCESS (utmp_buf))
+      إذا (IS_USER_PROCESS (utmp_buf))
         {
-          char *trimmed_name;
+          حرف *trimmed_name;
 
           trimmed_name = extract_trimmed_name (utmp_buf);
 
-          if (entries)
+          إذا (entries)
             putchar (' ');
           fputs (trimmed_name, stdout);
-          free (trimmed_name);
+          حرر (trimmed_name);
           entries++;
         }
       utmp_buf++;
@@ -543,57 +543,57 @@ list_entries_who (idx_t n, STRUCT_UTMP const *utmp_buf)
   printf (_("\n# users=%td\n"), entries);
 }
 
-static void
-print_heading (void)
+ساكن فراغ
+print_heading (فراغ)
 {
-  print_line (_("NAME"), ' ', _("LINE"), _("TIME"), _("IDLE"),
+  print_قۇر (_("NAME"), ' ', _("LINE"), _("TIME"), _("IDLE"),
               _("PID"), _("COMMENT"), _("EXIT"));
 }
 
 /* Display UTMP_BUF, which should have N entries. */
-static void
-scan_entries (idx_t n, STRUCT_UTMP const *utmp_buf)
+ساكن فراغ
+scan_entries (idx_t n, STRUCT_UTMP ثابت *utmp_buf)
 {
-  char *ttyname_b IF_LINT ( = NULL);
+  حرف *ttyname_b IF_LINT ( = عدم);
   time_t boottime = TYPE_MINIMUM (time_t);
 
-  if (include_heading)
+  إذا (include_heading)
     print_heading ();
 
-  if (my_line_only)
+  إذا (my_قۇر_only)
     {
       ttyname_b = ttyname (STDIN_FILENO);
-      if (!ttyname_b)
-        return;
-      if (STRNCMP_LIT (ttyname_b, "/dev/") == 0)
-        ttyname_b += sizeof "/dev/" - 1;	/* Discard /dev/ prefix.  */
+      إذا (!ttyname_b)
+        أرجع;
+      إذا (STRNCMP_LIT (ttyname_b, "/dev/") == 0)
+        ttyname_b += حجم "/dev/" - 1;	/* Discard /dev/ prefix.  */
     }
 
-  while (n--)
+  طالما (n--)
     {
-      if (!my_line_only
-          || str_endswith (utmp_buf->ut_line, ttyname_b))
+      إذا (!my_قۇر_only
+          || str_endswith (utmp_buf->ut_قۇر, ttyname_b))
         {
-          if (need_users && IS_USER_PROCESS (utmp_buf))
+          إذا (need_users && IS_USER_PROCESS (utmp_buf))
             print_user (utmp_buf, boottime);
-          else if (need_runlevel && UT_TYPE_RUN_LVL (utmp_buf))
+          وإلا إذا (need_runlevel && UT_TYPE_RUN_LVL (utmp_buf))
             print_runlevel (utmp_buf);
-          else if (need_boottime && UT_TYPE_BOOT_TIME (utmp_buf))
+          وإلا إذا (need_boottime && UT_TYPE_BOOT_TIME (utmp_buf))
             print_boottime (utmp_buf);
           /* I've never seen one of these, so I don't know what it should
              look like :^)
              FIXME: handle OLD_TIME also, perhaps show the delta? */
-          else if (need_clockchange && UT_TYPE_NEW_TIME (utmp_buf))
+          وإلا إذا (need_clockchange && UT_TYPE_NEW_TIME (utmp_buf))
             print_clockchange (utmp_buf);
-          else if (need_initspawn && UT_TYPE_INIT_PROCESS (utmp_buf))
+          وإلا إذا (need_initspawn && UT_TYPE_INIT_PROCESS (utmp_buf))
             print_initspawn (utmp_buf);
-          else if (need_login && UT_TYPE_LOGIN_PROCESS (utmp_buf))
+          وإلا إذا (need_login && UT_TYPE_LOGIN_PROCESS (utmp_buf))
             print_login (utmp_buf);
-          else if (need_deadprocs && UT_TYPE_DEAD_PROCESS (utmp_buf))
+          وإلا إذا (need_deadprocs && UT_TYPE_DEAD_PROCESS (utmp_buf))
             print_deadprocs (utmp_buf);
         }
 
-      if (UT_TYPE_BOOT_TIME (utmp_buf))
+      إذا (UT_TYPE_BOOT_TIME (utmp_buf))
         boottime = utmp_buf->ut_ts.tv_sec;
 
       utmp_buf++;
@@ -602,30 +602,30 @@ scan_entries (idx_t n, STRUCT_UTMP const *utmp_buf)
 
 /* Display a list of who is on the system, according to utmp file FILENAME.
    Use read_utmp OPTIONS to read the file.  */
-static void
-who (char const *filename, int options)
+ساكن فراغ
+who (حرف ثابت *filename, صحيح options)
 {
   idx_t n_users;
   STRUCT_UTMP *utmp_buf;
-  if (short_list)
+  إذا (short_list)
     options |= READ_UTMP_USER_PROCESS;
-  if (read_utmp (filename, &n_users, &utmp_buf, options) != 0)
+  إذا (read_utmp (filename, &n_users, &utmp_buf, options) != 0)
     error (EXIT_FAILURE, errno, "%s", quotef (filename));
 
-  if (short_list)
+  إذا (short_list)
     list_entries_who (n_users, utmp_buf);
-  else
+  وإلا
     scan_entries (n_users, utmp_buf);
 
-  free (utmp_buf);
+  حرر (utmp_buf);
 }
 
-void
-usage (int status)
+فراغ
+usage (صحيح status)
 {
-  if (status != EXIT_SUCCESS)
+  إذا (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  وإلا
     {
       printf (_("Usage: %s [OPTION]... [ FILE | ARG1 ARG2 ]\n"), program_name);
       fputs (_("\
@@ -644,7 +644,7 @@ Print information about users who are currently logged in.\n\
   -d, --dead        print dead processes\n\
 "));
       oputs (_("\
-  -H, --heading     print line of column headings\n\
+  -H, --heading     print قۇر of column headings\n\
 "));
       oputs (_("\
   -l, --login       print system login processes\n\
@@ -653,19 +653,19 @@ Print information about users who are currently logged in.\n\
       --lookup      attempt to canonicalize hostnames via DNS\n\
 "));
       oputs (_("\
-  -m                only hostname and user associated with standard input\n\
+  -m                only hostname and user associated with standard كىرگۈزۈش\n\
 "));
       oputs (_("\
   -p, --process     print active processes spawned by init\n\
 "));
       oputs (_("\
-  -q, --count       all login names and number of users logged on\n\
+  -q, --سانى       all login names and سان of users logged on\n\
 "));
       oputs (_("\
   -r, --runlevel    print current runlevel\n\
 "));
       oputs (_("\
-  -s, --short       print only name, line, and time (default)\n\
+  -s, --short       print only name, قۇر, and time (افتراضي)\n\
 "));
       oputs (_("\
   -t, --time        print last system clock change\n\
@@ -694,10 +694,10 @@ If ARG1 ARG2 given, -m presumed: 'am i' or 'mom likes' are usual.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+صحيح
+main (صحيح argc, حرف **argv)
 {
-  int optc;
+  صحيح optc;
   bool assumptions = true;
 
   initialize_main (&argc, &argv);
@@ -708,12 +708,12 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "abdlmpqrstuwHT", longopts, NULL))
+  طالما ((optc = getopt_long (argc, argv, "abdlmpqrstuwHT", longopts, عدم))
          != -1)
     {
-      switch (optc)
+      بدل (optc)
         {
-        case 'a':
+        حالة 'a':
           need_boottime = true;
           need_deadprocs = true;
           need_login = true;
@@ -725,122 +725,122 @@ main (int argc, char **argv)
           include_idle = true;
           include_exit = true;
           assumptions = false;
-          break;
+          اكسر;
 
-        case 'b':
+        حالة 'b':
           need_boottime = true;
           assumptions = false;
-          break;
+          اكسر;
 
-        case 'd':
+        حالة 'd':
           need_deadprocs = true;
           include_idle = true;
           include_exit = true;
           assumptions = false;
-          break;
+          اكسر;
 
-        case 'H':
+        حالة 'H':
           include_heading = true;
-          break;
+          اكسر;
 
-        case 'l':
+        حالة 'l':
           need_login = true;
           include_idle = true;
           assumptions = false;
-          break;
+          اكسر;
 
-        case 'm':
-          my_line_only = true;
-          break;
+        حالة 'm':
+          my_قۇر_only = true;
+          اكسر;
 
-        case 'p':
+        حالة 'p':
           need_initspawn = true;
           assumptions = false;
-          break;
+          اكسر;
 
-        case 'q':
+        حالة 'q':
           short_list = true;
-          break;
+          اكسر;
 
-        case 'r':
+        حالة 'r':
           need_runlevel = true;
           include_idle = true;
           assumptions = false;
-          break;
+          اكسر;
 
-        case 's':
+        حالة 's':
           short_output = true;
-          break;
+          اكسر;
 
-        case 't':
+        حالة 't':
           need_clockchange = true;
           assumptions = false;
-          break;
+          اكسر;
 
-        case 'T':
-        case 'w':
+        حالة 'T':
+        حالة 'w':
           include_mesg = true;
-          break;
+          اكسر;
 
-        case 'u':
+        حالة 'u':
           need_users = true;
           include_idle = true;
           assumptions = false;
-          break;
+          اكسر;
 
-        case LOOKUP_OPTION:
+        حالة LOOKUP_OPTION:
           do_lookup = true;
-          break;
+          اكسر;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        افتراضي:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (assumptions)
+  إذا (assumptions)
     {
       need_users = true;
       short_output = true;
     }
 
-  if (include_exit)
+  إذا (include_exit)
     {
       short_output = false;
     }
 
-  if (hard_locale (LC_TIME))
+  إذا (hard_locale (LC_TIME))
     {
       time_format = "%Y-%m-%d %H:%M";
       time_format_width = 4 + 1 + 2 + 1 + 2 + 1 + 2 + 1 + 2;
     }
-  else
+  وإلا
     {
       time_format = "%b %e %H:%M";
       time_format_width = 3 + 1 + 2 + 1 + 2 + 1 + 2;
     }
 
-  switch (argc - optind)
+  بدل (argc - optind)
     {
-    case 2:			/* who <blurf> <glop> */
-      my_line_only = true;
+    حالة 2:			/* who <blurf> <glop> */
+      my_قۇر_only = true;
       FALLTHROUGH;
-    case -1:
-    case 0:			/* who */
+    حالة -1:
+    حالة 0:			/* who */
       who (UTMP_FILE, READ_UTMP_CHECK_PIDS);
-      break;
+      اكسر;
 
-    case 1:			/* who <utmp file> */
+    حالة 1:			/* who <utmp file> */
       who (argv[optind], 0);
-      break;
+      اكسر;
 
-    default:			/* lose */
+    افتراضي:			/* lose */
       error (0, 0, _("extra operand %s"), quote (argv[optind + 2]));
       usage (EXIT_FAILURE);
     }
 
-  return EXIT_SUCCESS;
+  أرجع EXIT_SUCCESS;
 }

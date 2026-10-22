@@ -17,113 +17,113 @@
    Written by Torbjörn Granlund, Sweden (tege@sics.se).
    Rewritten to use lib/hash.c by Jim Meyering.  */
 
-#include <config.h>
+#ضمن <config.h>
 
-#include <sys/types.h>
-#include "system.h"
+#ضمن <sys/types.h>
+#ضمن "system.h"
 
-#include "hash.h"
-#include "cp-hash.h"
+#ضمن "hash.h"
+#ضمن "cp-hash.h"
 
 /* Use ST_DEV and ST_INO as the key, FILENAME as the value.
    These are used e.g., in copy.c to associate the destination name with
    the source device/inode pair so that if we encounter a matching dev/ino
    pair in the source tree we can arrange to create a hard link between
    the corresponding names in the destination tree.  */
-struct Src_to_dest
+بنية Src_to_dest
 {
   ino_t st_ino;
   dev_t st_dev;
   /* Destination file name (of non-directory or pre-existing directory)
      corresponding to the dev/ino of a copied file, or the destination file
      name corresponding to a dev/ino pair for a newly-created directory. */
-  char *name;
+  حرف *name;
 };
 
 /* This table maps source dev/ino to destination file name.
    We use it to preserve hard links when copying.  */
-static Hash_table *src_to_dest;
+ساكن Hash_table *src_to_dest;
 
 /* Initial size of the above hash table.  */
 #define INITIAL_TABLE_SIZE 103
 
-static size_t
-src_to_dest_hash (void const *x, size_t table_size)
+ساكن size_t
+src_to_dest_hash (فراغ ثابت *x, size_t table_size)
 {
-  struct Src_to_dest const *p = x;
+  بنية Src_to_dest ثابت *p = x;
 
   /* Ignoring the device number here should be fine.  */
   /* The cast to uintmax_t prevents negative remainders
      if st_ino is negative.  */
-  return (uintmax_t) {p->st_ino} % table_size;
+  أرجع (uintmax_t) {p->st_ino} % table_size;
 }
 
 /* Compare two Src_to_dest entries.
    Return true if their keys are judged 'equal'.  */
-static bool
-src_to_dest_compare (void const *x, void const *y)
+ساكن bool
+src_to_dest_compare (فراغ ثابت *x, فراغ ثابت *y)
 {
-  struct Src_to_dest const *a = x;
-  struct Src_to_dest const *b = y;
-  return PSAME_INODE (a, b);
+  بنية Src_to_dest ثابت *a = x;
+  بنية Src_to_dest ثابت *b = y;
+  أرجع PSAME_INODE (a, b);
 }
 
-static void
-src_to_dest_free (void *x)
+ساكن فراغ
+src_to_dest_free (فراغ *x)
 {
-  struct Src_to_dest *a = x;
-  free (a->name);
-  free (x);
+  بنية Src_to_dest *a = x;
+  حرر (a->name);
+  حرر (x);
 }
 
 /* Remove the entry matching INO/DEV from the table
    that maps source ino/dev to destination file name.  */
-extern void
+خارجي فراغ
 forget_created (ino_t ino, dev_t dev)
 {
-  struct Src_to_dest probe;
-  struct Src_to_dest *ent;
+  بنية Src_to_dest probe;
+  بنية Src_to_dest *ent;
 
   probe.st_ino = ino;
   probe.st_dev = dev;
-  probe.name = NULL;
+  probe.name = عدم;
 
   ent = hash_remove (src_to_dest, &probe);
-  if (ent)
+  إذا (ent)
     src_to_dest_free (ent);
 }
 
 /* If INO/DEV correspond to an already-copied source file, return the
    name of the corresponding destination file.  Otherwise, return NULL.  */
 
-extern char *
+خارجي حرف *
 src_to_dest_lookup (ino_t ino, dev_t dev)
 {
-  struct Src_to_dest ent;
-  struct Src_to_dest const *e;
+  بنية Src_to_dest ent;
+  بنية Src_to_dest ثابت *e;
   ent.st_ino = ino;
   ent.st_dev = dev;
   e = hash_lookup (src_to_dest, &ent);
-  return e ? e->name : NULL;
+  أرجع e ? e->name : عدم;
 }
 
 /* Add file NAME, copied from inode number INO and device number DEV,
    to the list of files we have copied.
    Return NULL if inserted, otherwise a non-null pointer. */
 
-extern char *
-remember_copied (char const *name, ino_t ino, dev_t dev)
+خارجي حرف *
+remember_copied (حرف ثابت *name, ino_t ino, dev_t dev)
 {
-  struct Src_to_dest *ent;
-  struct Src_to_dest *ent_from_table;
+  بنية Src_to_dest *ent;
+  بنية Src_to_dest *ent_from_table;
 
-  ent = xmalloc (sizeof *ent);
+  ent = xmalloc (حجم *ent);
   ent->name = xstrdup (name);
   ent->st_ino = ino;
   ent->st_dev = dev;
 
-  ent_from_table = hash_insert (src_to_dest, ent);
-  if (ent_from_table == NULL)
+  ent_from_table = hash_قىستۇرۇش (src_to_dest, ent);
+  إذا (ent_from_table == عدم)
     {
       /* Insertion failed due to lack of memory.  */
       xalloc_die ();
@@ -132,24 +132,24 @@ remember_copied (char const *name, ino_t ino, dev_t dev)
   /* Determine whether there was already an entry in the table
      with a matching key.  If so, free ENT (it wasn't inserted) and
      return the 'name' from the table entry.  */
-  if (ent_from_table != ent)
+  إذا (ent_from_table != ent)
     {
       src_to_dest_free (ent);
-      return ent_from_table->name;
+      أرجع ent_from_table->name;
     }
 
   /* New key;  insertion succeeded.  */
-  return NULL;
+  أرجع عدم;
 }
 
 /* Initialize the hash table.  */
-extern void
-hash_init (void)
+خارجي فراغ
+hash_init (فراغ)
 {
-  src_to_dest = hash_initialize (INITIAL_TABLE_SIZE, NULL,
+  src_to_dest = hash_initialize (INITIAL_TABLE_SIZE, عدم,
                                  src_to_dest_hash,
                                  src_to_dest_compare,
                                  src_to_dest_free);
-  if (src_to_dest == NULL)
+  إذا (src_to_dest == عدم)
     xalloc_die ();
 }

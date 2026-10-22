@@ -22,14 +22,14 @@
 
    David MacKenzie <djm@ai.mit.edu>  */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#ضمن <config.h>
+#ضمن <stdio.h>
+#ضمن <getopt.h>
+#ضمن <sys/types.h>
 
-#include "system.h"
-#include "issymlink.h"
-#include "prog-fprintf.h"
+#ضمن "system.h"
+#ضمن "issymlink.h"
+#ضمن "prog-fprintf.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "rmdir"
@@ -37,70 +37,70 @@
 #define AUTHORS proper_name ("David MacKenzie")
 
 /* If true, remove empty parent directories.  */
-static bool remove_empty_parents;
+ساكن bool remove_empty_parents;
 
 /* If true, don't treat failure to remove a nonempty directory
    as an error.  */
-static bool ignore_fail_on_non_empty;
+ساكن bool ignore_fail_on_non_empty;
 
 /* If true, output a diagnostic for every directory processed.  */
-static bool verbose;
+ساكن bool verbose;
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+تعداد
 {
   IGNORE_FAIL_ON_NON_EMPTY_OPTION = CHAR_MAX + 1
 };
 
-static struct option const longopts[] =
+ساكن بنية option ثابت longopts[] =
 {
   /* Don't name this '--force' because it's not close enough in meaning
      to e.g. rm's -f option.  */
-  {"ignore-fail-on-non-empty", no_argument, NULL,
+  {"ignore-fail-on-non-empty", no_argument, عدم,
    IGNORE_FAIL_ON_NON_EMPTY_OPTION},
 
-  {"path", no_argument, NULL, 'p'},  /* Deprecated.  */
-  {"parents", no_argument, NULL, 'p'},
-  {"verbose", no_argument, NULL, 'v'},
+  {"path", no_argument, عدم, 'p'},  /* Deprecated.  */
+  {"parents", no_argument, عدم, 'p'},
+  {"verbose", no_argument, عدم, 'v'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {عدم, 0, عدم, 0}
 };
 
 /* Return true if ERROR_NUMBER is one of the values associated
    with a failed rmdir due to non-empty target directory.  */
-static bool
-errno_rmdir_non_empty (int error_number)
+ساكن bool
+errno_rmdir_non_empty (صحيح error_سان)
 {
-  return error_number == ENOTEMPTY || error_number == EEXIST;
+  أرجع error_سان == ENOTEMPTY || error_سان == EEXIST;
 }
 
 /* Return true if when rmdir fails with errno == ERROR_NUMBER
    the directory may be non empty.  */
-static bool
-errno_may_be_non_empty (int error_number)
+ساكن bool
+errno_may_be_non_empty (صحيح error_سان)
 {
-  switch (error_number)
+  بدل (error_سان)
     {
-    case EACCES:
-    case EPERM:
-    case EROFS:
-    case EBUSY:
-      return true;
-    default:
-      return false;
+    حالة EACCES:
+    حالة EPERM:
+    حالة EROFS:
+    حالة EBUSY:
+      أرجع true;
+    افتراضي:
+      أرجع false;
     }
 }
 
 /* Return true if an rmdir failure with errno == error_number
    for DIR is ignorable.  */
-static bool
-ignorable_failure (int error_number, char const *dir)
+ساكن bool
+ignorable_failure (صحيح error_سان, حرف ثابت *dir)
 {
-  return (ignore_fail_on_non_empty
-          && (errno_rmdir_non_empty (error_number)
-              || (errno_may_be_non_empty (error_number)
+  أرجع (ignore_fail_on_non_empty
+          && (errno_rmdir_non_empty (error_سان)
+              || (errno_may_be_non_empty (error_سان)
                   && directory_status (AT_FDCWD, dir) == DS_NONEMPTY)));
 }
 
@@ -109,69 +109,69 @@ ignorable_failure (int error_number, char const *dir)
    (beginning with the rightmost) is replaced with a NUL byte.
    Return true if successful.  */
 
-static bool
-remove_parents (char *dir)
+ساكن bool
+remove_parents (حرف *dir)
 {
   bool ok = true;
 
   strip_trailing_slashes (dir);
-  while (true)
+  طالما (true)
     {
-      char *slash = strrchr (dir, '/');
-      if (slash == NULL)
-        break;
+      حرف *slash = strrchr (dir, '/');
+      إذا (slash == عدم)
+        اكسر;
       /* Remove any characters after the slash, skipping any extra
          slashes in a row. */
-      while (slash > dir && *slash == '/')
+      طالما (slash > dir && *slash == '/')
         --slash;
       slash[1] = 0;
 
       /* Give a diagnostic for each attempted removal if --verbose.  */
-      if (verbose)
+      إذا (verbose)
         prog_fprintf (stdout, _("removing directory, %s"), quoteaf (dir));
 
       ok = (rmdir (dir) == 0);
-      int rmdir_errno = errno;
+      صحيح rmdir_errno = errno;
 
-      if (! ok)
+      إذا (! ok)
         {
           /* Stop quietly if --ignore-fail-on-non-empty. */
-          if (ignorable_failure (rmdir_errno, dir))
+          إذا (ignorable_failure (rmdir_errno, dir))
             {
               ok = true;
             }
-          else
+          وإلا
             {
-              char const *error_msg;
-              if (rmdir_errno != ENOTDIR)
+              حرف ثابت *error_ئۇچۇر;
+              إذا (rmdir_errno != ENOTDIR)
                 {
                   /* Barring race conditions,
                      DIR is expected to be a directory.  */
-                  error_msg = N_("failed to remove directory %s");
+                  error_ئۇچۇر = N_("failed to remove directory %s");
                 }
-              else
+              وإلا
                 {
                   /* A path component could be a symbolic link */
-                  error_msg = N_("failed to remove %s");
+                  error_ئۇچۇر = N_("failed to remove %s");
                 }
-              error (0, rmdir_errno, _(error_msg), quoteaf (dir));
+              error (0, rmdir_errno, _(error_ئۇچۇر), quoteaf (dir));
             }
-          break;
+          اكسر;
         }
     }
-  return ok;
+  أرجع ok;
 }
 
-void
-usage (int status)
+فراغ
+usage (صحيح status)
 {
-  if (status != EXIT_SUCCESS)
+  إذا (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  وإلا
     {
       printf (_("Usage: %s [OPTION]... DIRECTORY...\n"), program_name);
       fputs (_("\
-Remove the DIRECTORY(ies), if they are empty.\n\
+Remove the DIRECTORY(ies), إذا they are empty.\n\
 \n\
 "), stdout);
       oputs (_("\
@@ -185,7 +185,7 @@ Remove the DIRECTORY(ies), if they are empty.\n\
 "));
       oputs (_("\
   -v, --verbose\n\
-         output a diagnostic for every directory processed\n\
+         output a diagnostic لكل every directory processed\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -194,8 +194,8 @@ Remove the DIRECTORY(ies), if they are empty.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+صحيح
+main (صحيح argc, حرف **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -205,47 +205,47 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  int optc;
-  while ((optc = getopt_long (argc, argv, "pv", longopts, NULL)) != -1)
+  صحيح optc;
+  طالما ((optc = getopt_long (argc, argv, "pv", longopts, عدم)) != -1)
     {
-      switch (optc)
+      بدل (optc)
         {
-        case 'p':
+        حالة 'p':
           remove_empty_parents = true;
-          break;
-        case IGNORE_FAIL_ON_NON_EMPTY_OPTION:
+          اكسر;
+        حالة IGNORE_FAIL_ON_NON_EMPTY_OPTION:
           ignore_fail_on_non_empty = true;
-          break;
-        case 'v':
+          اكسر;
+        حالة 'v':
           verbose = true;
-          break;
+          اكسر;
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        افتراضي:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (optind == argc)
+  إذا (optind == argc)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
   bool ok = true;
-  for (; optind < argc; ++optind)
+  لكل (; optind < argc; ++optind)
     {
-      char *dir = argv[optind];
+      حرف *dir = argv[optind];
 
       /* Give a diagnostic for each attempted removal if --verbose.  */
-      if (verbose)
+      إذا (verbose)
         prog_fprintf (stdout, _("removing directory, %s"), quoteaf (dir));
 
-      if (rmdir (dir) != 0)
+      إذا (rmdir (dir) != 0)
         {
-          int rmdir_errno = errno;
-          if (ignorable_failure (rmdir_errno, dir))
-            continue;
+          صحيح rmdir_errno = errno;
+          إذا (ignorable_failure (rmdir_errno, dir))
+            استمر;
 
           /* Distinguish the case for a symlink with trailing slash.
              On Linux, rmdir(2) confusingly does not follow the symlink,
@@ -253,21 +253,21 @@ main (int argc, char **argv)
              is followed.  We don't provide consistent behavior here,
              but at least we provide a more accurate error message.  */
           bool custom_error = false;
-          if (rmdir_errno == ENOTDIR)
+          إذا (rmdir_errno == ENOTDIR)
             {
-              char const *last_unix_slash = strrchr (dir, '/');
-              if (last_unix_slash && (*(last_unix_slash + 1) == '\0'))
+              حرف ثابت *last_unix_slash = strrchr (dir, '/');
+              إذا (last_unix_slash && (*(last_unix_slash + 1) == '\0'))
                 {
-                  struct stat st;
-                  int ret = stat (dir, &st);
+                  بنية stat st;
+                  صحيح ret = stat (dir, &st);
                   /* Some other issue following, or is actually a directory. */
-                  if ((ret != 0 && errno != ENOTDIR)
+                  إذا ((ret != 0 && errno != ENOTDIR)
                       || (ret == 0 && S_ISDIR (st.st_mode)))
                     {
                       /* Ensure the last component was a symlink.  */
-                      char *dir_arg = xstrdup (dir);
+                      حرف *dir_arg = xstrdup (dir);
                       strip_trailing_slashes (dir);
-                      if (issymlink (dir) == 1)
+                      إذا (issymlink (dir) == 1)
                         {
                           error (0, 0,
                                  _("failed to remove %s:"
@@ -275,21 +275,21 @@ main (int argc, char **argv)
                                  quoteaf (dir_arg));
                           custom_error = true;
                         }
-                      free (dir_arg);
+                      حرر (dir_arg);
                     }
                 }
             }
 
-          if (! custom_error)
+          إذا (! custom_error)
             error (0, rmdir_errno, _("failed to remove %s"), quoteaf (dir));
 
           ok = false;
         }
-      else if (remove_empty_parents)
+      وإلا إذا (remove_empty_parents)
         {
           ok &= remove_parents (dir);
         }
     }
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  أرجع ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

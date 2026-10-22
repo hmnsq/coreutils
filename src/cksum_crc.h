@@ -20,31 +20,31 @@
 # include <stdint.h>
 # include <stdio.h>
 
-extern bool cksum_debug;
+خارجي bool cksum_debug;
 
-extern int
-crc_sum_stream (FILE *stream, void *resstream, intmax_t *length);
+خارجي صحيح
+crc_sum_stream (FILE *stream, فراغ *resstream, intmax_t *length);
 
-extern int
-crc32b_sum_stream (FILE *stream, void *resstream, intmax_t *length);
+خارجي صحيح
+crc32b_sum_stream (FILE *stream, فراغ *resstream, intmax_t *length);
 
-extern void
-output_crc (char const *file, int binary_file, void const *digest, bool raw,
-            bool tagged, unsigned char delim, bool args, intmax_t length)
+خارجي فراغ
+output_crc (حرف ثابت *file, صحيح ئىككىلىك_file, فراغ ثابت *digest, bool raw,
+            bool tagged, unsigned حرف delim, bool args, intmax_t length)
   _GL_ATTRIBUTE_NONNULL ((3));
 
-extern bool
+خارجي bool
 cksum_vmull (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out);
 
-extern bool
+خارجي bool
 cksum_pclmul (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out);
 
-extern bool
+خارجي bool
 cksum_avx2 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out);
 
-extern bool
+خارجي bool
 cksum_avx512 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out);
 
-extern uint_fast32_t const crctab[8][256];
+خارجي uint_fast32_t ثابت crctab[8][256];
 
 #endif
