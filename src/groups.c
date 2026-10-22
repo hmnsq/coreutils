@@ -36,7 +36,7 @@
   proper_name ("James Youngman")
 
 
-static struct option const longopts[] =
+static sa_nracanaa option const longopts[] =
 {
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
@@ -44,17 +44,17 @@ static struct option const longopts[] =
 };
 
 void
-usage (int status)
+usage (puur_naa_nka status)
 {
-  if (status != EXIT_SUCCESS)
+  ᱡᱩᱫᱤ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ᱵᱟᱝ
     {
       printf (_("Usage: %s [OPTION]... [USERNAME]...\n"), program_name);
       fputs (_("\
-Print group memberships for each USERNAME or, if no USERNAME is specified, for\
+Print group memberships for each USERNAME or, ᱡᱩᱫᱤ no USERNAME is specified, for\
 \n\
-the current process (which may differ if the groups database has changed).\n"),
+the current process (which may differ ᱡᱩᱫᱤ the groups database has changed).\n"),
              stdout);
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -63,8 +63,8 @@ the current process (which may differ if the groups database has changed).\n"),
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+puur_naa_nka
+main (puur_naa_nka argc, var_na **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -76,8 +76,8 @@ main (int argc, char **argv)
 
   /* Processing the arguments this way makes groups.c behave differently to
      groups.sh if one of the arguments is "--".  */
-  int optc;
-  while ((optc = getopt_long (argc, argv, "", longopts, NULL)) != -1)
+  puur_naa_nka optc;
+  ᱡᱚᱠᱷᱚᱱ ((optc = getopt_long (argc, argv, "", longopts, NULL)) != -1)
     {
       switch (optc)
         {
@@ -89,7 +89,7 @@ main (int argc, char **argv)
     }
 
   bool ok = true;
-  if (optind == argc)
+  ᱡᱩᱫᱤ (optind == argc)
     {
       /* No arguments.  Divulge the details of the current process. */
       uid_t NO_UID = -1;
@@ -97,30 +97,30 @@ main (int argc, char **argv)
 
       errno = 0;
       uid_t ruid = getuid ();
-      if (ruid == NO_UID && errno)
+      ᱡᱩᱫᱤ (ruid == NO_UID && errno)
         error (EXIT_FAILURE, errno, _("cannot get real UID"));
 
       errno = 0;
       gid_t egid = getegid ();
-      if (egid == NO_GID && errno)
+      ᱡᱩᱫᱤ (egid == NO_GID && errno)
         error (EXIT_FAILURE, errno, _("cannot get effective GID"));
 
       errno = 0;
       gid_t rgid = getgid ();
-      if (rgid == NO_GID && errno)
+      ᱡᱩᱫᱤ (rgid == NO_GID && errno)
         error (EXIT_FAILURE, errno, _("cannot get real GID"));
 
-      if (!print_group_list (NULL, ruid, rgid, egid, true, ' '))
+      ᱡᱩᱫᱤ (!print_group_list (NULL, ruid, rgid, egid, true, ' '))
         ok = false;
       putchar ('\n');
     }
-  else
+  ᱵᱟᱝ
     {
       /* At least one argument.  Divulge the details of the specified users.  */
       for ( ; optind < argc; optind++)
         {
-          struct passwd *pwd = getpwnam (argv[optind]);
-          if (pwd == NULL)
+          sa_nracanaa passwd *pwd = getpwnam (argv[optind]);
+          ᱡᱩᱫᱤ (pwd == NULL)
             {
               error (0, 0, _("%s: no such user"), quote (argv[optind]));
               ok = false;
@@ -131,14 +131,14 @@ main (int argc, char **argv)
           gid_t egid = rgid;
 
           printf ("%s : ", argv[optind]);
-          if (!print_group_list (argv[optind], ruid, rgid, egid, true, ' '))
+          ᱡᱩᱫᱤ (!print_group_list (argv[optind], ruid, rgid, egid, true, ' '))
             ok = false;
           putchar ('\n');
 
-          if (ferror (stdout))
+          ᱡᱩᱫᱤ (ferror (stdout))
             write_error ();
         }
     }
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  ᱨᱩᱣᱟᱹᱲ ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

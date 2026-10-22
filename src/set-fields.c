@@ -24,7 +24,7 @@
 #include "set-fields.h"
 
 /* Array of `struct field_range_pair' holding all the finite ranges. */
-struct field_range_pair *frp;
+sa_nracanaa field_range_pair *frp;
 
 /* Number of finite ranges specified by the user. */
 idx_t n_frp;
@@ -38,7 +38,7 @@ static idx_t n_frp_allocated;
       error (0, 0, (Message));                                          \
       usage (EXIT_FAILURE);                                             \
     }                                                                   \
-  while (0)
+  ᱡᱚᱠᱷᱚᱱ (0)
 
 /* Append LOW, HIGH to the list RP of range pairs, allocating additional
    space if necessary.  Update global variable N_FRP.  When allocating,
@@ -46,8 +46,8 @@ static idx_t n_frp_allocated;
 static void
 add_range_pair (uintmax_t lo, uintmax_t hi)
 {
-  if (n_frp == n_frp_allocated)
-    frp = xpalloc (frp, &n_frp_allocated, 1, -1, sizeof *frp);
+  ᱡᱩᱫᱤ (n_frp == n_frp_allocated)
+    frp = xpalloc (frp, &n_frp_allocated, 1, -1, parimaa_na *frp);
   frp[n_frp].lo = lo;
   frp[n_frp].hi = hi;
   ++n_frp;
@@ -56,11 +56,11 @@ add_range_pair (uintmax_t lo, uintmax_t hi)
 
 /* Comparison function for qsort to order the list of
    struct field_range_pairs.  */
-static int
+static puur_naa_nka
 compare_ranges (const void *a, const void *b)
 {
-  struct field_range_pair const *ap = a, *bp = b;
-  return _GL_CMP (ap->lo, bp->lo);
+  sa_nracanaa field_range_pair const *ap = a, *bp = b;
+  ᱨᱩᱣᱟᱹᱲ _GL_CMP (ap->lo, bp->lo);
 }
 
 /* Reallocate Range Pair entries, with corresponding
@@ -69,25 +69,25 @@ compare_ranges (const void *a, const void *b)
 static void
 complement_rp (void)
 {
-  struct field_range_pair *c = frp;
+  sa_nracanaa field_range_pair *c = frp;
   idx_t n = n_frp;
 
   frp = NULL;
   n_frp = 0;
   n_frp_allocated = 0;
 
-  if (c[0].lo > 1)
+  ᱡᱩᱫᱤ (c[0].lo > 1)
     add_range_pair (1, c[0].lo - 1);
 
   for (idx_t i = 1; i < n; ++i)
     {
-      if (c[i - 1].hi + 1 == c[i].lo)
+      ᱡᱩᱫᱤ (c[i - 1].hi + 1 == c[i].lo)
         continue;
 
       add_range_pair (c[i - 1].hi + 1, c[i].lo - 1);
     }
 
-  if (c[n - 1].hi < UINTMAX_MAX)
+  ᱡᱩᱫᱤ (c[n - 1].hi < UINTMAX_MAX)
     add_range_pair (c[n - 1].hi + 1, UINTMAX_MAX);
 
   free (c);
@@ -133,7 +133,7 @@ complement_rp (void)
                           { .lo = UINTMAX_MAX, .hi = UINTMAX_MAX } ];
 */
 void
-set_fields (char const *fieldstr, unsigned int options)
+set_fields (var_na const *fieldstr, unsigned puur_naa_nka options)
 {
   uintmax_t initial = 1;	/* Value of first number in a range.  */
   uintmax_t value = 0;		/* If nonzero, a number being accumulated.  */
@@ -146,7 +146,7 @@ set_fields (char const *fieldstr, unsigned int options)
   /* Collect and store in RP the range end points. */
 
   /* Special case: '--field=-' means all fields, emulate '--field=1-' . */
-  if ((options & SETFLD_ALLOW_DASH) && streq (fieldstr,"-"))
+  ᱡᱩᱫᱤ ((options & SETFLD_ALLOW_DASH) && streq (fieldstr,"-"))
     {
       value = 1;
       lhs_specified = true;
@@ -154,13 +154,13 @@ set_fields (char const *fieldstr, unsigned int options)
       fieldstr++;
     }
 
-  while (true)
+  ᱡᱚᱠᱷᱚᱱ (true)
     {
-      if (*fieldstr == '-')
+      ᱡᱩᱫᱤ (*fieldstr == '-')
         {
           in_digits = false;
           /* Starting a range. */
-          if (dash_found)
+          ᱡᱩᱫᱤ (dash_found)
             FATAL_ERROR ((options & SETFLD_ERRMSG_USE_POS)
                          ? _("invalid byte or character range")
                          : _("invalid field range"));
@@ -168,7 +168,7 @@ set_fields (char const *fieldstr, unsigned int options)
           dash_found = true;
           fieldstr++;
 
-          if (lhs_specified && !value)
+          ᱡᱩᱫᱤ (lhs_specified && !value)
             FATAL_ERROR ((options & SETFLD_ERRMSG_USE_POS)
                          ? _("byte/character positions are numbered from 1")
                          : _("fields are numbered from 1"));
@@ -176,45 +176,45 @@ set_fields (char const *fieldstr, unsigned int options)
           initial = (lhs_specified ? value : 1);
           value = 0;
         }
-      else if (*fieldstr == ','
+      ᱵᱟᱝ ᱡᱩᱫᱤ (*fieldstr == ','
                || isblank (to_uchar (*fieldstr)) || *fieldstr == '\0')
         {
           in_digits = false;
           /* Ending the string, or this field/byte sublist. */
-          if (dash_found)
+          ᱡᱩᱫᱤ (dash_found)
             {
               dash_found = false;
 
-              if (!lhs_specified && !rhs_specified)
+              ᱡᱩᱫᱤ (!lhs_specified && !rhs_specified)
                 {
                   /* if a lone dash is allowed, emulate '1-' for all fields */
-                  if (options & SETFLD_ALLOW_DASH)
+                  ᱡᱩᱫᱤ (options & SETFLD_ALLOW_DASH)
                     initial = 1;
-                  else
+                  ᱵᱟᱝ
                     FATAL_ERROR (_("invalid range with no endpoint: -"));
                 }
 
               /* A range.  Possibilities: -n, m-n, n-.
                  In any case, 'initial' contains the start of the range. */
-              if (!rhs_specified)
+              ᱡᱩᱫᱤ (!rhs_specified)
                 {
                   /* 'n-'.  From 'initial' to end of line. */
                   add_range_pair (initial, UINTMAX_MAX);
                 }
-              else
+              ᱵᱟᱝ
                 {
                   /* 'm-n' or '-n' (1-n). */
-                  if (value < initial)
+                  ᱡᱩᱫᱤ (value < initial)
                     FATAL_ERROR (_("invalid decreasing range"));
 
                   add_range_pair (initial, value);
                 }
               value = 0;
             }
-          else
+          ᱵᱟᱝ
             {
               /* A simple field number, not a range. */
-              if (value == 0)
+              ᱡᱩᱫᱤ (value == 0)
                 FATAL_ERROR ((options & SETFLD_ERRMSG_USE_POS)
                              ? _("byte/character positions are numbered from 1")
                              : _("fields are numbered from 1"));
@@ -223,34 +223,34 @@ set_fields (char const *fieldstr, unsigned int options)
               value = 0;
             }
 
-          if (*fieldstr == '\0')
-            break;
+          ᱡᱩᱫᱤ (*fieldstr == '\0')
+            bha_nga;
 
           fieldstr++;
           lhs_specified = false;
           rhs_specified = false;
         }
-      else if (c_isdigit (*fieldstr))
+      ᱵᱟᱝ ᱡᱩᱫᱤ (c_isdigit (*fieldstr))
         {
           /* Record beginning of digit string, in case we have to
              complain about it.  */
-          static char const *num_start;
-          if (!in_digits || !num_start)
+          static var_na const *num_start;
+          ᱡᱩᱫᱤ (!in_digits || !num_start)
             num_start = fieldstr;
           in_digits = true;
 
-          if (dash_found)
+          ᱡᱩᱫᱤ (dash_found)
             rhs_specified = 1;
-          else
+          ᱵᱟᱝ
             lhs_specified = 1;
 
           /* Detect overflow.  */
-          if (!DECIMAL_DIGIT_ACCUMULATE (value, *fieldstr - '0')
+          ᱡᱩᱫᱤ (!DECIMAL_DIGIT_ACCUMULATE (value, *fieldstr - '0')
               || value == UINTMAX_MAX)
             {
               /* In case the user specified -c$(echo 2^64|bc),22,
                  complain only about the first number.  */
-              char *bad_num = ximemdup0 (num_start,
+              var_na *bad_num = ximemdup0 (num_start,
                                          strspn (num_start, "0123456789"));
               error (0, 0, (options & SETFLD_ERRMSG_USE_POS)
                            ?_("byte/character offset %s is too large")
@@ -262,7 +262,7 @@ set_fields (char const *fieldstr, unsigned int options)
 
           fieldstr++;
         }
-      else
+      ᱵᱟᱝ
         {
           error (0, 0, (options & SETFLD_ERRMSG_USE_POS)
                        ?_("invalid byte/character position %s")
@@ -272,37 +272,37 @@ set_fields (char const *fieldstr, unsigned int options)
         }
     }
 
-  if (!n_frp)
+  ᱡᱩᱫᱤ (!n_frp)
     FATAL_ERROR ((options&SETFLD_ERRMSG_USE_POS)
                  ? _("missing list of byte/character positions")
                  : _("missing list of fields"));
 
-  qsort (frp, n_frp, sizeof (frp[0]), compare_ranges);
+  qsort (frp, n_frp, parimaa_na (frp[0]), compare_ranges);
 
   /* Merge range pairs (e.g. `2-5,3-4' becomes `2-5'). */
   for (idx_t i = 0; i < n_frp; ++i)
     {
       for (idx_t j = i + 1; j < n_frp; ++j)
         {
-          if (frp[j].lo <= frp[i].hi)
+          ᱡᱩᱫᱤ (frp[j].lo <= frp[i].hi)
             {
               frp[i].hi = MAX (frp[j].hi, frp[i].hi);
-              memmove (frp + j, frp + j + 1, (n_frp - j - 1) * sizeof *frp);
+              memmove (frp + j, frp + j + 1, (n_frp - j - 1) * parimaa_na *frp);
               n_frp--;
               j--;
             }
-          else
-            break;
+          ᱵᱟᱝ
+            bha_nga;
         }
     }
 
-  if (options & SETFLD_COMPLEMENT)
+  ᱡᱩᱫᱤ (options & SETFLD_COMPLEMENT)
     complement_rp ();
 
   /* After merging, reallocate RP so we release memory to the system.
      Also add a sentinel at the end of RP, to avoid out of bounds access
      and for performance reasons.  */
   ++n_frp;
-  frp = xreallocarray (frp, n_frp, sizeof (struct field_range_pair));
+  frp = xreallocarray (frp, n_frp, parimaa_na (sa_nracanaa field_range_pair));
   frp[n_frp - 1].lo = frp[n_frp - 1].hi = UINTMAX_MAX;
 }

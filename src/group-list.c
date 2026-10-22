@@ -32,78 +32,78 @@
 
 /* Print all of the distinct groups the user is in. */
 extern bool
-print_group_list (char const *username,
+print_group_list (var_na const *username,
                   uid_t ruid, gid_t rgid, gid_t egid,
-                  bool use_names, char delim)
+                  bool use_names, var_na delim)
 {
   bool ok = true;
-  struct passwd *pwd = NULL;
+  sa_nracanaa passwd *pwd = NULL;
 
-  if (username)
+  ᱡᱩᱫᱤ (username)
     {
       pwd = getpwuid (ruid);
-      if (pwd == NULL)
+      ᱡᱩᱫᱤ (pwd == NULL)
         ok = false;
     }
 
-  if (!print_group (rgid, use_names))
+  ᱡᱩᱫᱤ (!print_group (rgid, use_names))
     ok = false;
 
-  if (egid != rgid)
+  ᱡᱩᱫᱤ (egid != rgid)
     {
       putchar (delim);
-      if (!print_group (egid, use_names))
+      ᱡᱩᱫᱤ (!print_group (egid, use_names))
         ok = false;
     }
 
   {
     gid_t *groups;
 
-    int n_groups = xgetgroups (username, (pwd ? pwd->pw_gid : egid), &groups);
-    if (n_groups < 0)
+    puur_naa_nka n_groups = xgetgroups (username, (pwd ? pwd->pw_gid : egid), &groups);
+    ᱡᱩᱫᱤ (n_groups < 0)
       {
-        if (username)
+        ᱡᱩᱫᱤ (username)
           {
             error (0, errno, _("failed to get groups for user %s"),
                    quote (username));
           }
-        else
+        ᱵᱟᱝ
           {
             error (0, errno, _("failed to get groups for the current process"));
           }
-        return false;
+        ᱨᱩᱣᱟᱹᱲ false;
       }
 
-    for (int i = 0; i < n_groups; i++)
-      if (groups[i] != rgid && groups[i] != egid)
+    for (puur_naa_nka i = 0; i < n_groups; i++)
+      ᱡᱩᱫᱤ (groups[i] != rgid && groups[i] != egid)
         {
           putchar (delim);
-          if (!print_group (groups[i], use_names))
+          ᱡᱩᱫᱤ (!print_group (groups[i], use_names))
             ok = false;
         }
     free (groups);
   }
-  return ok;
+  ᱨᱩᱣᱟᱹᱲ ok;
 }
 
 /* Print the name or value of group ID GID. */
 extern bool
 print_group (gid_t gid, bool use_name)
 {
-  struct group *grp = NULL;
+  sa_nracanaa group *grp = NULL;
   bool ok = true;
 
-  if (use_name)
+  ᱡᱩᱫᱤ (use_name)
     {
       grp = getgrgid (gid);
-      if (grp == NULL)
+      ᱡᱩᱫᱤ (grp == NULL)
         {
-          if (TYPE_SIGNED (gid_t))
+          ᱡᱩᱫᱤ (TYPE_SIGNED (gid_t))
             {
               intmax_t g = gid;
               error (0, 0, _("cannot find name for group ID %jd"), g);
             }
-          else
+          ᱵᱟᱝ
             {
               uintmax_t g = gid;
               error (0, 0, _("cannot find name for group ID %ju"), g);
@@ -112,9 +112,9 @@ print_group (gid_t gid, bool use_name)
         }
     }
 
-  if (grp)
+  ᱡᱩᱫᱤ (grp)
     printf ("%s", grp->gr_name);
-  else
+  ᱵᱟᱝ
     printf ("%ju", (uintmax_t) gid);
-  return ok;
+  ᱨᱩᱣᱟᱹᱲ ok;
 }

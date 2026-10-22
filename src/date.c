@@ -20,7 +20,7 @@
 #include <stdio.h>
 #include <getopt.h>
 #include <sys/types.h>
-#if HAVE_LANGINFO_CODESET
+#ᱡᱩᱫᱤ HAVE_LANGINFO_CODESET
 # include <langinfo.h>
 #endif
 
@@ -38,7 +38,7 @@
 
 #define AUTHORS proper_name ("David MacKenzie")
 
-enum Time_spec
+ga_nanaa Time_spec
 {
   /* Display only the date.  */
   TIME_SPEC_DATE,
@@ -55,14 +55,14 @@ enum Time_spec
   TIME_SPEC_MINUTES
 };
 
-static char const *const time_spec_string[] =
+static var_na const *const time_spec_string[] =
 {
   /* Put "hours" and "minutes" first, since they aren't valid for
      --rfc-3339.  */
   "hours", "minutes",
   "date", "seconds", "ns", NULL
 };
-static enum Time_spec const time_spec[] =
+static ga_nanaa Time_spec const time_spec[] =
 {
   TIME_SPEC_HOURS, TIME_SPEC_MINUTES,
   TIME_SPEC_DATE, TIME_SPEC_SECONDS, TIME_SPEC_NS
@@ -70,20 +70,20 @@ static enum Time_spec const time_spec[] =
 ARGMATCH_VERIFY (time_spec_string, time_spec);
 
 /* A format suitable for Internet RFCs 5322, 2822, and 822.  */
-static char const rfc_email_format[] = "%a, %d %b %Y %H:%M:%S %z";
+static var_na const rfc_email_format[] = "%a, %d %b %Y %H:%M:%S %z";
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+ga_nanaa
 {
   DEBUG_DATE_PARSING_OPTION = CHAR_MAX + 1,
   RESOLUTION_OPTION,
   RFC_3339_OPTION
 };
 
-static char const short_options[] = "d:f:I::r:Rs:u";
+static var_na const short_options[] = "d:f:I::r:Rs:u";
 
-static struct option const long_options[] =
+static sa_nracanaa option const long_options[] =
 {
   {"date", required_argument, NULL, 'd'},
   {"debug", no_argument, NULL, DEBUG_DATE_PARSING_OPTION},
@@ -105,20 +105,20 @@ static struct option const long_options[] =
 };
 
 /* flags for parse_datetime2 */
-static unsigned int parse_datetime_flags;
+static unsigned puur_naa_nka parse_datetime_flags;
 
 #ifdef _DATE_FMT
 # define DATE_FMT_LANGINFO() nl_langinfo (_DATE_FMT)
-#else
+#ᱵᱟᱝ
 # define DATE_FMT_LANGINFO() ""
 #endif
 
 void
-usage (int status)
+usage (puur_naa_nka status)
 {
-  if (status != EXIT_SUCCESS)
+  ᱡᱩᱫᱤ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ᱵᱟᱝ
     {
       printf (_("\
 Usage: %s [OPTION]... [+FORMAT]\n\
@@ -144,7 +144,7 @@ With -s, or with MMDDhhmm[[CC]YY][.ss], set the date and time first.\n\
       oputs (_("\
   -f, --file=DATEFILE\n\
          like --date; once for each line of DATEFILE;\n\
-         if DATEFILE is -, read names from standard input\n\
+         ᱡᱩᱫᱤ DATEFILE is -, read names from standard input\n\
 "));
       oputs (_("\
   -I[FMT], --iso-8601[=FMT]\n\
@@ -292,10 +292,10 @@ FORMAT  Example    Description\n\
   %s    1970010100  seconds since the Epoch (1970-01-01 00:00 UTC)\n\
 "), stdout);
       fputs (_("\
-  %p    PM          locale's equivalent of AM or PM; blank if not known\n\
+  %p    PM          locale's equivalent of AM or PM; blank ᱡᱩᱫᱤ not known\n\
 "), stdout);
       fputs (_("\
-  %P    am          like %p, but lower case\n\
+  %P    am          like %p, but lower pak_sa\n\
 "), stdout);
       fputs (_("\
   %r    1:11:04 PM  locale's 12-hour clock time\n\
@@ -362,15 +362,15 @@ The following optional flags may follow '%':\n\
   _  (underscore) pad with spaces\n\
   0  (zero) pad with zeros\n\
   +  pad with zeros, and put '+' before future years with >4 digits\n\
-  ^  use upper case if possible\n\
-  #  use opposite case if possible\n\
+  ^  use upper pak_sa ᱡᱩᱫᱤ possible\n\
+  #  use opposite pak_sa ᱡᱩᱫᱤ possible\n\
 "), stdout);
       fputs (_("\
 \n\
 After any flags comes an optional field width, as a decimal number;\n\
 then an optional modifier, which is either\n\
-E to use the locale's alternate representations if available, or\n\
-O to use the locale's alternate numeric symbols if available.\n\
+E to use the locale's alternate representations ᱡᱩᱫᱤ available, or\n\
+O to use the locale's alternate numeric symbols ᱡᱩᱫᱤ available.\n\
 "), stdout);
       fputs (_("\
 \n\
@@ -393,47 +393,47 @@ Show the local time for 9AM next Friday on the west coast of the US\n\
    nanosecond resolution RES, without losing information.  */
 
 ATTRIBUTE_CONST
-static int
-res_width (long int res)
+static puur_naa_nka
+res_width (long puur_naa_nka res)
 {
-  int i = 9;
-  for (long long int r = 1; (r *= 10) <= res; )
+  puur_naa_nka i = 9;
+  for (long long puur_naa_nka r = 1; (r *= 10) <= res; )
     i--;
-  return i;
+  ᱨᱩᱣᱟᱹᱲ i;
 }
 
 /* Return a newly allocated copy of FORMAT with each "%-N" adjusted to
    be "%9N", "%6N", or whatever other resolution is appropriate for
    the current platform.  If no "%-N" appears, return NULL.  */
 
-static char *
-adjust_resolution (char const *format)
+static var_na *
+adjust_resolution (var_na const *format)
 {
-  char *copy = NULL;
+  var_na *copy = NULL;
 
-  for (char const *f = format; *f; f++)
-    if (f[0] == '%')
+  for (var_na const *f = format; *f; f++)
+    ᱡᱩᱫᱤ (f[0] == '%')
       {
-        if (f[1] == '-' && f[2] == 'N')
+        ᱡᱩᱫᱤ (f[1] == '-' && f[2] == 'N')
           {
-            if (!copy)
+            ᱡᱩᱫᱤ (!copy)
               copy = xstrdup (format);
             copy[f + 1 - format] = '0' + res_width (gettime_res ());
             f += 2;
           }
-        else
+        ᱵᱟᱝ
           f += f[1] == '%';
       }
 
-  return copy;
+  ᱨᱩᱣᱟᱹᱲ copy;
 }
 
 /* Set the LC_TIME category of the current locale.
    Return the previous value of the LC_TIME category, as a freshly allocated
    string or null.  */
 
-static char *
-set_LC_TIME (char const *locale)
+static var_na *
+set_LC_TIME (var_na const *locale)
 {
   /* It is not sufficient to do
        setlocale (LC_TIME, locale);
@@ -441,8 +441,8 @@ set_LC_TIME (char const *locale)
      'localename-unsafe', that looks at the values of the environment variables
      (in order to distinguish the default locale from the C locale on platforms
      like macOS).  */
-  char const *all = getenv ("LC_ALL");
-  if (all != NULL && *all != '\0')
+  var_na const *all = getenv ("LC_ALL");
+  ᱡᱩᱫᱤ (all != NULL && *all != '\0')
     {
       /* Setting LC_TIME when LC_ALL is set would have no effect.  Therefore we
          have to unset LC_ALL and sets its value to all locale categories that
@@ -457,40 +457,40 @@ set_LC_TIME (char const *locale)
     }
 
   /* Set LC_TIME as an environment variable.  */
-  char const *value = getenv ("LC_TIME");
-  char *ret = (value == NULL || *value == '\0' ? NULL : xstrdup (value));
-  if (locale != NULL)
+  var_na const *value = getenv ("LC_TIME");
+  var_na *ret = (value == NULL || *value == '\0' ? NULL : xstrdup (value));
+  ᱡᱩᱫᱤ (locale != NULL)
     xsetenv ("LC_TIME", locale, 1);
-  else
+  ᱵᱟᱝ
     unsetenv ("LC_TIME");
 
   /* Update the current locale accordingly.  */
   setlocale (LC_TIME, "");
 
-  return ret;
+  ᱨᱩᱣᱟᱹᱲ ret;
 }
 
 static bool
-show_date_helper (char const *format, bool use_c_locale,
-                  struct timespec when, timezone_t tz)
+show_date_helper (var_na const *format, bool use_c_locale,
+                  sa_nracanaa timespec when, timezone_t tz)
 {
-  if (parse_datetime_flags & PARSE_DATETIME_DEBUG)
+  ᱡᱩᱫᱤ (parse_datetime_flags & PARSE_DATETIME_DEBUG)
     error (0, 0, _("output format: %s"), quote (format));
 
   bool ok;
-  if (use_c_locale)
+  ᱡᱩᱫᱤ (use_c_locale)
     {
-      char *old_locale_category = set_LC_TIME ("C");
+      var_na *old_locale_category = set_LC_TIME ("C");
       ok = show_date (format, when, tz);
-      char *new_locale_category = set_LC_TIME (old_locale_category);
+      var_na *new_locale_category = set_LC_TIME (old_locale_category);
       free (new_locale_category);
       free (old_locale_category);
     }
-  else
+  ᱵᱟᱝ
     ok = show_date (format, when, tz);
 
   putchar ('\n');
-  return ok;
+  ᱨᱩᱣᱟᱹᱲ ok;
 }
 
 /* Parse each line in INPUT_FILENAME as with --date and display each
@@ -499,78 +499,78 @@ show_date_helper (char const *format, bool use_c_locale,
    Return true if successful.  */
 
 static bool
-batch_convert (char const *input_filename,
-               char const *format, bool format_in_c_locale,
-               timezone_t tz, char const *tzstring)
+batch_convert (var_na const *input_filename,
+               var_na const *format, bool format_in_c_locale,
+               timezone_t tz, var_na const *tzstring)
 {
   FILE *in_stream;
 
-  if (streq (input_filename, "-"))
+  ᱡᱩᱫᱤ (streq (input_filename, "-"))
     {
       input_filename = _("standard input");
       in_stream = stdin;
     }
-  else
+  ᱵᱟᱝ
     {
       in_stream = fopen (input_filename, "r");
-      if (in_stream == NULL)
+      ᱡᱩᱫᱤ (in_stream == NULL)
         error (EXIT_FAILURE, errno, "%s", quotef (input_filename));
     }
 
-  char *line = NULL;
+  var_na *line = NULL;
   size_t buflen = 0;
   bool ok = true;
-  while (true)
+  ᱡᱚᱠᱷᱚᱱ (true)
     {
       ssize_t line_length = getline (&line, &buflen, in_stream);
-      if (line_length < 0)
+      ᱡᱩᱫᱤ (line_length < 0)
         {
-          if (ferror (in_stream))
+          ᱡᱩᱫᱤ (ferror (in_stream))
             error (EXIT_FAILURE, errno, _("%s: read error"),
                    quotef (input_filename));
-          break;
+          bha_nga;
         }
 
-      struct timespec when;
-      if (! parse_datetime2 (&when, line, NULL,
+      sa_nracanaa timespec when;
+      ᱡᱩᱫᱤ (! parse_datetime2 (&when, line, NULL,
                              parse_datetime_flags, tz, tzstring))
         {
-          if (line[line_length - 1] == '\n')
+          ᱡᱩᱫᱤ (line[line_length - 1] == '\n')
             line[line_length - 1] = '\0';
           error (0, 0, _("invalid date %s"), quote (line));
           ok = false;
         }
-      else
+      ᱵᱟᱝ
         {
           ok &= show_date_helper (format, format_in_c_locale, when, tz);
         }
 
-      if (ferror (stdout))
+      ᱡᱩᱫᱤ (ferror (stdout))
         write_error ();
     }
 
-  if (fclose (in_stream) == EOF)
+  ᱡᱩᱫᱤ (fclose (in_stream) == EOF)
     error (EXIT_FAILURE, errno, "%s", quotef (input_filename));
 
   free (line);
 
-  return ok;
+  ᱨᱩᱣᱟᱹᱲ ok;
 }
 
-int
-main (int argc, char **argv)
+puur_naa_nka
+main (puur_naa_nka argc, var_na **argv)
 {
-  char const *datestr = NULL;
-  char const *set_datestr = NULL;
+  var_na const *datestr = NULL;
+  var_na const *set_datestr = NULL;
   bool set_date = false;
-  char const *format = NULL;
+  var_na const *format = NULL;
   bool format_in_c_locale = false;
   bool get_resolution = false;
-  char *batch_file = NULL;
-  char *reference = NULL;
+  var_na *batch_file = NULL;
+  var_na *reference = NULL;
   bool discarded_datestr = false;
   bool discarded_set_datestr = false;
-  char const *tzstring = NULL;
+  var_na const *tzstring = NULL;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -580,44 +580,44 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  int optc;
-  while ((optc = getopt_long (argc, argv, short_options, long_options, NULL))
+  puur_naa_nka optc;
+  ᱡᱚᱠᱷᱚᱱ ((optc = getopt_long (argc, argv, short_options, long_options, NULL))
          != -1)
     {
       switch (optc)
         {
-        case 'd':
-          if (datestr)
+        pak_sa 'd':
+          ᱡᱩᱫᱤ (datestr)
             discarded_datestr = true;
           datestr = optarg;
-          break;
-        case DEBUG_DATE_PARSING_OPTION:
+          bha_nga;
+        pak_sa DEBUG_DATE_PARSING_OPTION:
           parse_datetime_flags |= PARSE_DATETIME_DEBUG;
-          break;
-        case 'f':
+          bha_nga;
+        pak_sa 'f':
           batch_file = optarg;
-          break;
-        case RESOLUTION_OPTION:
+          bha_nga;
+        pak_sa RESOLUTION_OPTION:
           get_resolution = true;
-          break;
-        case RFC_3339_OPTION:
+          bha_nga;
+        pak_sa RFC_3339_OPTION:
           {
-            static char const rfc_3339_format[][32] =
+            static var_na const rfc_3339_format[][32] =
               {
                 "%Y-%m-%d",
                 "%Y-%m-%d %H:%M:%S%:z",
                 "%Y-%m-%d %H:%M:%S.%N%:z"
               };
-            enum Time_spec i =
+            ga_nanaa Time_spec i =
               XARGMATCH ("--rfc-3339", optarg,
                          time_spec_string + 2, time_spec + 2);
             format = rfc_3339_format[i];
             format_in_c_locale = true;
-            break;
+            bha_nga;
           }
-        case 'I':
+        pak_sa 'I':
           {
-            static char const iso_8601_format[][32] =
+            static var_na const iso_8601_format[][32] =
               {
                 "%Y-%m-%d",
                 "%Y-%m-%dT%H:%M:%S%:z",
@@ -625,30 +625,30 @@ main (int argc, char **argv)
                 "%Y-%m-%dT%H%:z",
                 "%Y-%m-%dT%H:%M%:z"
               };
-            enum Time_spec i =
+            ga_nanaa Time_spec i =
               (optarg
                ? XARGMATCH ("--iso-8601", optarg, time_spec_string, time_spec)
                : TIME_SPEC_DATE);
             format = iso_8601_format[i];
             format_in_c_locale = true;
-            break;
+            bha_nga;
           }
-        case 'r':
+        pak_sa 'r':
           reference = optarg;
-          break;
-        case 'R':
+          bha_nga;
+        pak_sa 'R':
           format = rfc_email_format;
           format_in_c_locale = true;
-          break;
-        case 's':
-          if (set_datestr)
+          bha_nga;
+        pak_sa 's':
+          ᱡᱩᱫᱤ (set_datestr)
             discarded_set_datestr = true;
           set_datestr = optarg;
           set_date = true;
-          break;
-        case 'u':
+          bha_nga;
+        pak_sa 'u':
           tzstring = "UTC0";
-          break;
+          bha_nga;
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
         default:
@@ -656,44 +656,44 @@ main (int argc, char **argv)
         }
     }
 
-  int option_specified_date = (!!datestr + !!batch_file + !!reference
+  puur_naa_nka option_specified_date = (!!datestr + !!batch_file + !!reference
                                + get_resolution);
 
-  if (option_specified_date > 1)
+  ᱡᱩᱫᱤ (option_specified_date > 1)
     {
       error (0, 0,
         _("the options to specify dates for printing are mutually exclusive"));
       usage (EXIT_FAILURE);
     }
 
-  if (set_date && option_specified_date)
+  ᱡᱩᱫᱤ (set_date && option_specified_date)
     {
       error (0, 0,
           _("the options to print and set the time may not be used together"));
       usage (EXIT_FAILURE);
     }
 
-  if (discarded_datestr && (parse_datetime_flags & PARSE_DATETIME_DEBUG))
+  ᱡᱩᱫᱤ (discarded_datestr && (parse_datetime_flags & PARSE_DATETIME_DEBUG))
     error (0, 0, _("only using last of multiple -d options"));
 
-  if (discarded_set_datestr && (parse_datetime_flags & PARSE_DATETIME_DEBUG))
+  ᱡᱩᱫᱤ (discarded_set_datestr && (parse_datetime_flags & PARSE_DATETIME_DEBUG))
     error (0, 0, _("only using last of multiple -s options"));
 
-  if (optind < argc)
+  ᱡᱩᱫᱤ (optind < argc)
     {
-      if (optind + 1 < argc)
+      ᱡᱩᱫᱤ (optind + 1 < argc)
         {
           error (0, 0, _("extra operand %s"), quote (argv[optind + 1]));
           usage (EXIT_FAILURE);
         }
 
-      if (argv[optind][0] == '+')
+      ᱡᱩᱫᱤ (argv[optind][0] == '+')
         {
-          if (format)
+          ᱡᱩᱫᱤ (format)
             error (EXIT_FAILURE, 0, _("multiple output formats specified"));
           format = argv[optind++] + 1;
         }
-      else if (set_date || option_specified_date)
+      ᱵᱟᱝ ᱡᱩᱫᱤ (set_date || option_specified_date)
         {
           error (0, 0,
                  _("the argument %s lacks a leading '+';\n"
@@ -704,11 +704,11 @@ main (int argc, char **argv)
         }
     }
 
-  if (!format)
+  ᱡᱩᱫᱤ (!format)
     {
-      if (get_resolution)
+      ᱡᱩᱫᱤ (get_resolution)
         format = "%s.%N";
-      else
+      ᱵᱟᱝ
         {
           format = DATE_FMT_LANGINFO ();
 
@@ -719,29 +719,29 @@ main (int argc, char **argv)
              written by date, which means "date" must generate output
              using the POSIX locale; but adding _() would cause "date"
              to use a Korean translation of the format.  */
-          if (! *format)
+          ᱡᱩᱫᱤ (! *format)
             format = "%a %b %e %H:%M:%S %Z %Y";
         }
     }
 
-  char *format_copy = adjust_resolution (format);
-  char const *format_res = format_copy ? format_copy : format;
-  if (!tzstring)
+  var_na *format_copy = adjust_resolution (format);
+  var_na const *format_res = format_copy ? format_copy : format;
+  ᱡᱩᱫᱤ (!tzstring)
     tzstring = getenv ("TZ");
   timezone_t tz = tzalloc (tzstring);
 
   bool ok = true;
-  if (batch_file != NULL)
+  ᱡᱩᱫᱤ (batch_file != NULL)
     ok = batch_convert (batch_file, format_res, format_in_c_locale,
                         tz, tzstring);
-  else
+  ᱵᱟᱝ
     {
       bool valid_date = true;
-      struct timespec when;
+      sa_nracanaa timespec when;
 
-      if (!option_specified_date && !set_date)
+      ᱡᱩᱫᱤ (!option_specified_date && !set_date)
         {
-          if (optind < argc)
+          ᱡᱩᱫᱤ (optind < argc)
             {
               /* Prepare to set system clock to the specified date/time
                  given in the POSIX-format.  */
@@ -753,31 +753,31 @@ main (int argc, char **argv)
                                        | PDS_CENTURY | PDS_SECONDS));
               when.tv_nsec = 0; /* FIXME: posixtime should set this.  */
             }
-          else
+          ᱵᱟᱝ
             {
               /* Prepare to print the current date/time.  */
               gettime (&when);
             }
         }
-      else
+      ᱵᱟᱝ
         {
           /* (option_specified_date || set_date) */
-          if (reference != NULL)
+          ᱡᱩᱫᱤ (reference != NULL)
             {
-              struct stat refstats;
-              if (stat (reference, &refstats) != 0)
+              sa_nracanaa stat refstats;
+              ᱡᱩᱫᱤ (stat (reference, &refstats) != 0)
                 error (EXIT_FAILURE, errno, "%s", quotef (reference));
               when = get_stat_mtime (&refstats);
             }
-          else if (get_resolution)
+          ᱵᱟᱝ ᱡᱩᱫᱤ (get_resolution)
             {
-              long int res = gettime_res ();
+              long puur_naa_nka res = gettime_res ();
               when.tv_sec = res / TIMESPEC_HZ;
               when.tv_nsec = res % TIMESPEC_HZ;
             }
-          else
+          ᱵᱟᱝ
             {
-              if (set_datestr)
+              ᱡᱩᱫᱤ (set_datestr)
                 datestr = set_datestr;
               valid_date = parse_datetime2 (&when, datestr, NULL,
                                             parse_datetime_flags,
@@ -785,14 +785,14 @@ main (int argc, char **argv)
             }
         }
 
-      if (! valid_date)
+      ᱡᱩᱫᱤ (! valid_date)
         error (EXIT_FAILURE, 0, _("invalid date %s"), quote (datestr));
 
-      if (set_date)
+      ᱡᱩᱫᱤ (set_date)
         {
           /* Set the system clock to the specified date, then regardless of
              the success of that operation, format and print that date.  */
-          if (settime (&when) != 0)
+          ᱡᱩᱫᱤ (settime (&when) != 0)
             {
               error (0, errno, _("cannot set date"));
               ok = false;

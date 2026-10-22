@@ -17,28 +17,28 @@
 #ifndef PRINTENV_H
 # define PRINTENV_H 1
 
-static inline void
-print_envvar (char const *entry, char terminator, bool quoted)
+static anta_hstha void
+print_envvar (var_na const *entry, var_na terminator, bool quoted)
 {
-  if (! quoted)
+  ᱡᱩᱫᱤ (! quoted)
     fputs (entry, stdout);
-  else
+  ᱵᱟᱝ
     {
       idx_t const entry_len = strlen (entry);
-      char const *equal = memchr (entry, '=', entry_len);
+      var_na const *equal = memchr (entry, '=', entry_len);
 
       /* If the parent process manipulates ENVIRON directly, it is possible
          that an entry does not contain an equal sign.  */
       idx_t const var_len = equal ? equal - entry : entry_len;
       fputs (quoteN_mem (entry, var_len), stdout);
 
-      if (equal)
+      ᱡᱩᱫᱤ (equal)
         {
           putchar ('=');
-          char const *val = equal + 1;
+          var_na const *val = equal + 1;
           idx_t const val_len = entry_len - (val - entry);
           /* Prefer "VAR=" over "VAR=''".  */
-          if (0 < val_len)
+          ᱡᱩᱫᱤ (0 < val_len)
             fputs (quoteN_mem (val, val_len), stdout);
         }
     }
