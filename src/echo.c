@@ -14,12 +14,12 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include "system.h"
-#include "assure.h"
-#include "c-ctype.h"
+#અન્તર્ભાવ <config.h>
+#અન્તર્ભાવ <stdio.h>
+#અન્તર્ભાવ <sys/types.h>
+#અન્તર્ભાવ "system.h"
+#અન્તર્ભાવ "assure.h"
+#અન્તર્ભાવ "c-ctype.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "echo"
@@ -30,11 +30,11 @@
 
 /* If true, interpret backslash escapes by default.  */
 #ifndef DEFAULT_ECHO_TO_XPG
-enum { DEFAULT_ECHO_TO_XPG = false };
+ગણના { DEFAULT_ECHO_TO_XPG = false };
 #endif
 
-void
-usage (int status)
+શૂન્ય
+usage (પૂર્ણાંક status)
 {
   /* STATUS should always be EXIT_SUCCESS (unlike in most other
      utilities which would call emit_try_help otherwise).  */
@@ -49,11 +49,11 @@ Echo the STRING(s) to standard output.\n\
 \n\
 "), stdout);
   oputs (_("\
-  -n     do not output the trailing newline\n\
+  -n     કરો not output the trailing newline\n\
 "));
   oputs (_(DEFAULT_ECHO_TO_XPG
            ? N_("\
-  -e     enable interpretation of backslash escapes (default)\n\
+  -e     enable interpretation of backslash escapes (મૂળભૂત)\n\
 ")
            : N_("\
   -e     enable interpretation of backslash escapes\n\
@@ -63,7 +63,7 @@ Echo the STRING(s) to standard output.\n\
   -E     disable interpretation of backslash escapes\n\
 ")
            : N_("\
-  -E     disable interpretation of backslash escapes (default)\n\
+  -E     disable interpretation of backslash escapes (મૂળભૂત)\n\
 ")));
   oputs (HELP_OPTION_DESCRIPTION);
   oputs (VERSION_OPTION_DESCRIPTION);
@@ -79,14 +79,14 @@ If -e is in effect, the following sequences are recognized:\n\
   \\c      produce no further output\n\
   \\e      escape\n\
   \\f      form feed\n\
-  \\n      new line\n\
-  \\r      carriage return\n\
+  \\n      new લીટી\n\
+  \\r      carriage પાછા\n\
   \\t      horizontal tab\n\
   \\v      vertical tab\n\
 "), stdout);
   fputs (_("\
-  \\0NNN   byte with octal value NNN (1 to 3 digits)\n\
-  \\xHH    byte with hexadecimal value HH (1 to 2 digits)\n\
+  \\0NNN   byte with octal કિંમત NNN (1 to 3 digits)\n\
+  \\xHH    byte with hexadecimal કિંમત HH (1 to 2 digits)\n\
 "), stdout);
   printf (USAGE_BUILTIN_WARNING, PROGRAM_NAME);
   fputs (_("\n\
@@ -98,18 +98,18 @@ as it avoids problems when outputting option-like strings.\n\
 }
 
 /* Convert C from hexadecimal character to integer.  */
-static int
-hextobin (unsigned char c)
+સ્થિર પૂર્ણાંક
+hextobin (unsigned અક્ષર c)
 {
-  switch (c)
+  પસંદગી (c)
     {
-    default: return c - '0';
-    case 'a': case 'A': return 10;
-    case 'b': case 'B': return 11;
-    case 'c': case 'C': return 12;
-    case 'd': case 'D': return 13;
-    case 'e': case 'E': return 14;
-    case 'f': case 'F': return 15;
+    મૂળભૂત: પાછા c - '0';
+    સ્થિતિ 'a': સ્થિતિ 'A': પાછા 10;
+    સ્થિતિ 'b': સ્થિતિ 'B': પાછા 11;
+    સ્થિતિ 'c': સ્થિતિ 'C': પાછા 12;
+    સ્થિતિ 'd': સ્થિતિ 'D': પાછા 13;
+    સ્થિતિ 'e': સ્થિતિ 'E': પાછા 14;
+    સ્થિતિ 'f': સ્થિતિ 'F': પાછા 15;
     }
 }
 
@@ -117,8 +117,8 @@ hextobin (unsigned char c)
    '-n', then don't print a trailing newline.  We also support the
    echo syntax from Version 9 unix systems. */
 
-int
-main (int argc, char **argv)
+પૂર્ણાંક
+મુખ્ય (પૂર્ણાંક argc, અક્ષર **argv)
 {
   bool display_return = true;
   bool posixly_correct = !!getenv ("POSIXLY_CORRECT");
@@ -141,60 +141,60 @@ main (int argc, char **argv)
 
   /* We directly parse options, rather than use parse_long_options, in
      order to avoid accepting abbreviations.  */
-  if (allow_options && argc == 2)
+  જો (allow_options && argc == 2)
     {
-      if (streq (argv[1], "--help"))
+      જો (streq (argv[1], "--help"))
         usage (EXIT_SUCCESS);
 
-      if (streq (argv[1], "--version"))
+      જો (streq (argv[1], "--version"))
         {
           version_etc (stdout, PROGRAM_NAME, PACKAGE_NAME, Version, AUTHORS,
-                       (char *) NULL);
-          return EXIT_SUCCESS;
+                       (અક્ષર *) ખાલી);
+          પાછા EXIT_SUCCESS;
         }
     }
 
   --argc;
   ++argv;
 
-  if (allow_options)
-    while (argc > 0 && *argv[0] == '-')
+  જો (allow_options)
+    જ્યારે (argc > 0 && *argv[0] == '-')
       {
-        char const *temp = argv[0] + 1;
+        અક્ષર અચલ *temp = argv[0] + 1;
         size_t i;
 
         /* If it appears that we are handling options, then make sure that
            all of the options specified are actually valid.  Otherwise, the
            string should just be echoed.  */
 
-        for (i = 0; temp[i]; i++)
-          switch (temp[i])
+        માટે (i = 0; temp[i]; i++)
+          પસંદગી (temp[i])
             {
-            case 'e': case 'E': case 'n':
-              break;
-            default:
-              goto just_echo;
+            સ્થિતિ 'e': સ્થિતિ 'E': સ્થિતિ 'n':
+              તોડો;
+            મૂળભૂત:
+              જાઓ just_echo;
             }
 
-        if (i == 0)
-          goto just_echo;
+        જો (i == 0)
+          જાઓ just_echo;
 
         /* All of the options in TEMP are valid options to ECHO.
            Handle them. */
-        while (*temp)
-          switch (*temp++)
+        જ્યારે (*temp)
+          પસંદગી (*temp++)
             {
-            case 'e':
+            સ્થિતિ 'e':
               do_v9 = true;
-              break;
+              તોડો;
 
-            case 'E':
+            સ્થિતિ 'E':
               do_v9 = false;
-              break;
+              તોડો;
 
-            case 'n':
+            સ્થિતિ 'n':
               display_return = false;
-              break;
+              તોડો;
             }
 
         argc--;
@@ -203,84 +203,84 @@ main (int argc, char **argv)
 
 just_echo:
 
-  if (do_v9 || posixly_correct)
+  જો (do_v9 || posixly_correct)
     {
-      while (argc > 0)
+      જ્યારે (argc > 0)
         {
-          char const *s = argv[0];
-          unsigned char c;
+          અક્ષર અચલ *s = argv[0];
+          unsigned અક્ષર c;
 
-          while ((c = *s++))
+          જ્યારે ((c = *s++))
             {
-              if (c == '\\' && *s)
+              જો (c == '\\' && *s)
                 {
-                  switch (c = *s++)
+                  પસંદગી (c = *s++)
                     {
-                    case 'a': c = '\a'; break;
-                    case 'b': c = '\b'; break;
-                    case 'c': return EXIT_SUCCESS;
-                    case 'e': c = '\x1B'; break;
-                    case 'f': c = '\f'; break;
-                    case 'n': c = '\n'; break;
-                    case 'r': c = '\r'; break;
-                    case 't': c = '\t'; break;
-                    case 'v': c = '\v'; break;
-                    case 'x':
+                    સ્થિતિ 'a': c = '\a'; તોડો;
+                    સ્થિતિ 'b': c = '\b'; તોડો;
+                    સ્થિતિ 'c': પાછા EXIT_SUCCESS;
+                    સ્થિતિ 'e': c = '\x1B'; તોડો;
+                    સ્થિતિ 'f': c = '\f'; તોડો;
+                    સ્થિતિ 'n': c = '\n'; તોડો;
+                    સ્થિતિ 'r': c = '\r'; તોડો;
+                    સ્થિતિ 't': c = '\t'; તોડો;
+                    સ્થિતિ 'v': c = '\v'; તોડો;
+                    સ્થિતિ 'x':
                       {
-                        unsigned char ch = *s;
-                        if (! c_isxdigit (ch))
-                          goto not_an_escape;
+                        unsigned અક્ષર ch = *s;
+                        જો (! c_isxdigit (ch))
+                          જાઓ not_an_escape;
                         s++;
                         c = hextobin (ch);
                         ch = *s;
-                        if (c_isxdigit (ch))
+                        જો (c_isxdigit (ch))
                           {
                             s++;
                             c = c * 16 + hextobin (ch);
                           }
                       }
-                      break;
-                    case '0':
+                      તોડો;
+                    સ્થિતિ '0':
                       c = 0;
-                      if (! ('0' <= *s && *s <= '7'))
-                        break;
+                      જો (! ('0' <= *s && *s <= '7'))
+                        તોડો;
                       c = *s++;
                       FALLTHROUGH;
-                    case '1': case '2': case '3':
-                    case '4': case '5': case '6': case '7':
+                    સ્થિતિ '1': સ્થિતિ '2': સ્થિતિ '3':
+                    સ્થિતિ '4': સ્થિતિ '5': સ્થિતિ '6': સ્થિતિ '7':
                       c -= '0';
-                      if ('0' <= *s && *s <= '7')
+                      જો ('0' <= *s && *s <= '7')
                         c = c * 8 + (*s++ - '0');
-                      if ('0' <= *s && *s <= '7')
+                      જો ('0' <= *s && *s <= '7')
                         c = c * 8 + (*s++ - '0');
-                      break;
-                    case '\\': break;
+                      તોડો;
+                    સ્થિતિ '\\': તોડો;
 
                     not_an_escape:
-                    default:  putchar ('\\'); break;
+                    મૂળભૂત:  putchar ('\\'); તોડો;
                     }
                 }
               putchar (c);
             }
           argc--;
           argv++;
-          if (argc > 0)
+          જો (argc > 0)
             putchar (' ');
         }
     }
-  else
+  નહીંતર
     {
-      while (argc > 0)
+      જ્યારે (argc > 0)
         {
           fputs (argv[0], stdout);
           argc--;
           argv++;
-          if (argc > 0)
+          જો (argc > 0)
             putchar (' ');
         }
     }
 
-  if (display_return)
+  જો (display_return)
     putchar ('\n');
-  return EXIT_SUCCESS;
+  પાછા EXIT_SUCCESS;
 }

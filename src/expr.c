@@ -28,17 +28,17 @@
 
    Define EVAL_TRACE to print an evaluation trace.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include "system.h"
+#અન્તર્ભાવ <config.h>
+#અન્તર્ભાવ <stdio.h>
+#અન્તર્ભાવ <sys/types.h>
+#અન્તર્ભાવ "system.h"
 
-#include <gmp.h>
-#include <regex.h>
-#include "c-ctype.h"
-#include "long-options.h"
-#include "mcel.h"
-#include "strnumcmp.h"
+#અન્તર્ભાવ <gmp.h>
+#અન્તર્ભાવ <regex.h>
+#અન્તર્ભાવ "c-ctype.h"
+#અન્તર્ભાવ "long-options.h"
+#અન્તર્ભાવ "mcel.h"
+#અન્તર્ભાવ "strnumcmp.h"
 
 /* Various parts of this code assume size_t fits into unsigned long
    int, the widest unsigned type that GMP supports.  */
@@ -53,45 +53,45 @@ static_assert (SIZE_MAX <= ULONG_MAX);
   proper_name ("Paul Eggert")
 
 /* Exit statuses.  */
-enum
+ગણના
   {
     /* Invalid expression: e.g., its form does not conform to the
        grammar for expressions.  Our grammar is an extension of the
        POSIX grammar.  */
-    EXPR_INVALID = 2,
+    પદાવલિ_INVALID = 2,
 
     /* An internal error occurred, e.g., arithmetic overflow, storage
        exhaustion.  */
-    EXPR_FAILURE
+    પદાવલિ_FAILURE
   };
 
 /* The kinds of value we can have.  */
-enum valtype
+ગણના valtype
 {
   integer,
   string
 };
-typedef enum valtype TYPE;
+પ્રકારવ્યાખ્યા ગણના valtype TYPE;
 
 /* A value is.... */
-struct valinfo
+સંરચના valinfo
 {
   TYPE type;			/* Which kind. */
-  union
+  સંઘ
   {				/* The value itself. */
     mpz_t i;
-    char *s;
+    અક્ષર *s;
   } u;
 };
-typedef struct valinfo VALUE;
+પ્રકારવ્યાખ્યા સંરચના valinfo કિંમત_2;
 
 /* The arguments given to the program, minus the program name.  */
-static char **args;
+સ્થિર અક્ષર **args;
 
-static VALUE *eval (bool);
-static bool nomoreargs (void);
-static bool null (VALUE *v);
-static void printv (VALUE *v);
+સ્થિર કિંમત_2 *eval (bool);
+સ્થિર bool nomoreargs (શૂન્ય);
+સ્થિર bool null (કિંમત_2 *v);
+સ્થિર શૂન્ય printv (કિંમત_2 *v);
 
 
 /*
@@ -111,47 +111,47 @@ static void printv (VALUE *v);
    In UTF-8 \xCE\xB1 is a single character (greek alpha):
      mbs_logical_cspn ('\xCE\xB1bc','\xCE\xB1') => 1
      mbs_logical_cspn ('\xCE\xB1bc','c') => 3 */
-static size_t
-mbs_logical_cspn (char const *s, char const *accept)
+સ્થિર size_t
+mbs_logical_cspn (અક્ષર અચલ *s, અક્ષર અચલ *accept)
 {
-  if (accept[0] == '\0')
-    return 0;
+  જો (accept[0] == '\0')
+    પાછા 0;
 
   /* General case.  */
-  if (MB_CUR_MAX > 1)
+  જો (MB_CUR_MAX > 1)
     {
       size_t idx = 0;
-      for (char const *p = s; *p; )
+      માટે (અક્ષર અચલ *p = s; *p; )
         {
           ++idx;
           mcel_t g = mcel_scanz (p);
-          if (g.len == 1)
+          જો (g.len == 1)
             {
-              if (mbschr (accept, *p))
-                return idx;
+              જો (mbschr (accept, *p))
+                પાછા idx;
             }
-          else
-            for (char const *a = accept; *a; )
+          નહીંતર
+            માટે (અક્ષર અચલ *a = accept; *a; )
               {
                 mcel_t h = mcel_scanz (a);
-                if (mcel_eq (g, h))
-                  return idx;
+                જો (mcel_eq (g, h))
+                  પાછા idx;
                 a += h.len;
               }
           p += g.len;
         }
     }
-  else
+  નહીંતર
     {
       /* single-byte locale,
          convert returned byte offset to 1-based index or zero if not found. */
       size_t i = strcspn (s, accept);
-      if (s[i])
-        return i + 1;
+      જો (s[i])
+        પાછા i + 1;
     }
 
   /* not found */
-  return 0;
+  પાછા 0;
 }
 
 /* Extract the substring of S, from logical character
@@ -161,8 +161,8 @@ mbs_logical_cspn (char const *s, char const *accept)
 
    Upon exit, sets v->s to the new string.
    The new string might be empty if POS/LEN are invalid. */
-static char *
-mbs_logical_substr (char const *s, size_t pos, size_t len)
+સ્થિર અક્ષર *
+mbs_logical_substr (અક્ષર અચલ *s, size_t pos, size_t len)
 {
   size_t mb_cur_max = MB_CUR_MAX;
   idx_t llen = mb_cur_max <= 1 ? strlen (s) : mbslen (s); /* logical length */
@@ -170,26 +170,26 @@ mbs_logical_substr (char const *s, size_t pos, size_t len)
   /* characters to copy */
   size_t vlen = MIN (len, pos <= llen ? llen - pos + 1 : 0);
 
-  char const *substart = s;
+  અક્ષર અચલ *substart = s;
   idx_t sublen = 0;
-  if (pos == 0 || len == SIZE_MAX)
+  જો (pos == 0 || len == SIZE_MAX)
     {
       /* The request is invalid.  Silently yield an empty string.  */
     }
-  else if (mb_cur_max <= 1)
+  નહીંતર જો (mb_cur_max <= 1)
     {
       substart += pos - 1;
       sublen = vlen;
     }
-  else
-    for (idx_t idx = 1; *s && vlen; idx++)
+  નહીંતર
+    માટે (idx_t idx = 1; *s && vlen; idx++)
       {
         idx_t char_bytes = mcel_scanz (s).len;
 
         /* Skip until we reach the starting position.  */
-        if (pos <= idx)
+        જો (pos <= idx)
           {
-            if (pos == idx)
+            જો (pos == idx)
               substart = s;
 
             /* Add one character's length in bytes.  */
@@ -200,7 +200,7 @@ mbs_logical_substr (char const *s, size_t pos, size_t len)
         s += char_bytes;
       }
 
-  return ximemdup0 (substart, sublen);
+  પાછા ximemdup0 (substart, sublen);
 }
 
 /* Return the number of logical characters (possibly multibyte)
@@ -211,23 +211,23 @@ mbs_logical_substr (char const *s, size_t pos, size_t len)
    In the string below, there are only two characters
    up to the first 4 bytes (The U+2767 which occupies 3 bytes and 'x'):
       mbs_count_to_offset ("\xE2\x9D\xA7xyz", 4) => 2  */
-static size_t
-mbs_offset_to_chars (char const *s, size_t ofs)
+સ્થિર size_t
+mbs_offset_to_chars (અક્ષર અચલ *s, size_t ofs)
 {
   size_t c = 0;
-  for (size_t d = 0; d < ofs && s[d]; d += mcel_scanz (s + d).len)
+  માટે (size_t d = 0; d < ofs && s[d]; d += mcel_scanz (s + d).len)
     c++;
-  return c;
+  પાછા c;
 }
 
 
 
-void
-usage (int status)
+શૂન્ય
+usage (પૂર્ણાંક status)
 {
-  if (status != EXIT_SUCCESS)
+  જો (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  નહીંતર
     {
       printf (_("\
 Usage: %s EXPRESSION\n\
@@ -239,12 +239,12 @@ Usage: %s EXPRESSION\n\
       oputs (VERSION_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-Print the value of EXPRESSION to standard output.  A blank line below\n\
+Print the કિંમત of EXPRESSION to standard output.  A blank લીટી below\n\
 separates increasing precedence groups.  EXPRESSION may be:\n\
 \n\
-  ARG1 | ARG2       ARG1 if it is neither null nor 0, otherwise ARG2\n\
+  ARG1 | ARG2       ARG1 જો it is neither null nor 0, otherwise ARG2\n\
 \n\
-  ARG1 & ARG2       ARG1 if neither argument is null or 0, otherwise 0\n\
+  ARG1 & ARG2       ARG1 જો neither argument is null or 0, otherwise 0\n\
 "), stdout);
       fputs (_("\
 \n\
@@ -278,22 +278,22 @@ separates increasing precedence groups.  EXPRESSION may be:\n\
   length STRING              length of STRING\n\
 "), stdout);
       fputs (_("\
-  + TOKEN                    interpret TOKEN as a string, even if it is a\n\
+  + TOKEN                    interpret TOKEN as a string, even જો it is a\n\
                                keyword like 'match' or an operator like '/'\n\
 \n\
-  ( EXPRESSION )             value of EXPRESSION\n\
+  ( EXPRESSION )             કિંમત of EXPRESSION\n\
 "), stdout);
       fputs (_("\
 \n\
-Beware that many operators need to be escaped or quoted for shells.\n\
-Comparisons are arithmetic if both ARGs are numbers, else lexicographical.\n\
-Pattern matches return the string matched between \\( and \\) or null; if\n\
-\\( and \\) are not used, they return the number of characters matched or 0.\n\
+Beware that many operators need to be escaped or quoted માટે shells.\n\
+Comparisons are arithmetic જો both ARGs are numbers, નહીંતર lexicographical.\n\
+Pattern matches પાછા the string matched between \\( and \\) or null; જો\n\
+\\( and \\) are not used, they પાછા the સંખ્યા of characters matched or 0.\n\
 "), stdout);
       fputs (_("\
 \n\
-Exit status is 0 if EXPRESSION is neither null nor 0, 1 if EXPRESSION is null\n\
-or 0, 2 if EXPRESSION is syntactically invalid, and 3 if an error occurred.\n\
+Exit status is 0 જો EXPRESSION is neither null nor 0, 1 જો EXPRESSION is null\n\
+or 0, 2 જો EXPRESSION is syntactically invalid, and 3 જો an error occurred.\n\
 "), stdout);
       emit_ancillary_info (PROGRAM_NAME);
     }
@@ -301,8 +301,8 @@ or 0, 2 if EXPRESSION is syntactically invalid, and 3 if an error occurred.\n\
 }
 
 
-int
-main (int argc, char **argv)
+પૂર્ણાંક
+મુખ્ય (પૂર્ણાંક argc, અક્ષર **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -310,31 +310,31 @@ main (int argc, char **argv)
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
-  initialize_exit_failure (EXPR_FAILURE);
+  initialize_exit_failure (પદાવલિ_FAILURE);
   atexit (close_stdout);
 
   parse_long_options (argc, argv, PROGRAM_NAME, PACKAGE_NAME, VERSION,
-                      usage, AUTHORS, (char const *) NULL);
+                      usage, AUTHORS, (અક્ષર અચલ *) ખાલી);
 
   /* The above handles --help and --version.
      Since there is no other invocation of getopt, handle '--' here.  */
-  if (1 < argc && streq (argv[1], "--"))
+  જો (1 < argc && streq (argv[1], "--"))
     {
       --argc;
       ++argv;
     }
 
-  if (argc <= 1)
+  જો (argc <= 1)
     {
       error (0, 0, _("missing operand"));
-      usage (EXPR_INVALID);
+      usage (પદાવલિ_INVALID);
     }
 
   args = argv + 1;
 
-  VALUE *v = eval (true);
-  if (!nomoreargs ())
-    error (EXPR_INVALID, 0, _("syntax error: unexpected argument %s"),
+  કિંમત_2 *v = eval (true);
+  જો (!nomoreargs ())
+    error (પદાવલિ_INVALID, 0, _("syntax error: unexpected argument %s"),
            quotearg_n_style (0, locale_quoting_style, *args));
 
   printv (v);
@@ -344,53 +344,53 @@ main (int argc, char **argv)
 
 /* Return a VALUE for I.  */
 
-static VALUE *
-int_value (unsigned long int i)
+સ્થિર કિંમત_2 *
+int_કિંમત (unsigned long પૂર્ણાંક i)
 {
-  VALUE *v = xmalloc (sizeof *v);
+  કિંમત_2 *v = xmalloc (કદ *v);
   v->type = integer;
   mpz_init_set_ui (v->u.i, i);
-  return v;
+  પાછા v;
 }
 
 /* Return a VALUE for S.  */
 
-static VALUE *
-str_value (char const *s)
+સ્થિર કિંમત_2 *
+str_કિંમત (અક્ષર અચલ *s)
 {
-  VALUE *v = xmalloc (sizeof *v);
+  કિંમત_2 *v = xmalloc (કદ *v);
   v->type = string;
   v->u.s = xstrdup (s);
-  return v;
+  પાછા v;
 }
 
 /* Free VALUE V, including structure components.  */
 
-static void
-freev (VALUE *v)
+સ્થિર શૂન્ય
+freev (કિંમત_2 *v)
 {
-  if (v->type == string)
-    free (v->u.s);
-  else
+  જો (v->type == string)
+    મુક્ત (v->u.s);
+  નહીંતર
     mpz_clear (v->u.i);
-  free (v);
+  મુક્ત (v);
 }
 
 /* Print VALUE V.  */
 
-static void
-printv (VALUE *v)
+સ્થિર શૂન્ય
+printv (કિંમત_2 *v)
 {
-  switch (v->type)
+  પસંદગી (v->type)
     {
-    case integer:
+    સ્થિતિ integer:
       mpz_out_str (stdout, 10, v->u.i);
       putchar ('\n');
-      break;
-    case string:
+      તોડો;
+    સ્થિતિ string:
       puts (v->u.s);
-      break;
-    default:
+      તોડો;
+    મૂળભૂત:
       unreachable ();
     }
 }
@@ -398,31 +398,31 @@ printv (VALUE *v)
 /* Return true if V is a null-string or zero-number.  */
 
 ATTRIBUTE_PURE
-static bool
-null (VALUE *v)
+સ્થિર bool
+null (કિંમત_2 *v)
 {
-  switch (v->type)
+  પસંદગી (v->type)
     {
-    case integer:
-      return mpz_sgn (v->u.i) == 0;
-    case string:
+    સ્થિતિ integer:
+      પાછા mpz_sgn (v->u.i) == 0;
+    સ્થિતિ string:
       {
-        char const *cp = v->u.s;
-        if (*cp == '\0')
-          return true;
+        અક્ષર અચલ *cp = v->u.s;
+        જો (*cp == '\0')
+          પાછા true;
 
         cp += (*cp == '-');
 
-        do
+        કરો
           {
-            if (*cp != '0')
-              return false;
+            જો (*cp != '0')
+              પાછા false;
           }
-        while (*++cp);
+        જ્યારે (*++cp);
 
-        return true;
+        પાછા true;
       }
-    default:
+    મૂળભૂત:
       unreachable ();
     }
 }
@@ -430,63 +430,63 @@ null (VALUE *v)
 /* Return true if CP takes the form of an integer.  */
 
 ATTRIBUTE_PURE
-static bool
-looks_like_integer (char const *cp)
+સ્થિર bool
+looks_like_integer (અક્ષર અચલ *cp)
 {
   cp += (*cp == '-');
 
-  do
-    if (! c_isdigit (*cp))
-      return false;
-  while (*++cp);
+  કરો
+    જો (! c_isdigit (*cp))
+      પાછા false;
+  જ્યારે (*++cp);
 
-  return true;
+  પાછા true;
 }
 
 /* Coerce V to a string value (can't fail).  */
 
-static void
-tostring (VALUE *v)
+સ્થિર શૂન્ય
+tostring (કિંમત_2 *v)
 {
-  switch (v->type)
+  પસંદગી (v->type)
     {
-    case integer:
+    સ્થિતિ integer:
       {
-        char *s = mpz_get_str (NULL, 10, v->u.i);
+        અક્ષર *s = mpz_get_str (ખાલી, 10, v->u.i);
         mpz_clear (v->u.i);
         v->u.s = s;
         v->type = string;
       }
-      break;
-    case string:
-      break;
-    default:
+      તોડો;
+    સ્થિતિ string:
+      તોડો;
+    મૂળભૂત:
       unreachable ();
     }
 }
 
 /* Coerce V to an integer value.  Return true on success, false on failure.  */
 
-static bool
-toarith (VALUE *v)
+સ્થિર bool
+toarith (કિંમત_2 *v)
 {
-  switch (v->type)
+  પસંદગી (v->type)
     {
-    case integer:
-      return true;
-    case string:
+    સ્થિતિ integer:
+      પાછા true;
+    સ્થિતિ string:
       {
-        char *s = v->u.s;
+        અક્ષર *s = v->u.s;
 
-        if (! looks_like_integer (s))
-          return false;
-        if (mpz_init_set_str (v->u.i, s, 10) != 0)
-          error (EXPR_FAILURE, ERANGE, "%s", (s));
-        free (s);
+        જો (! looks_like_integer (s))
+          પાછા false;
+        જો (mpz_init_set_str (v->u.i, s, 10) != 0)
+          error (પદાવલિ_FAILURE, ERANGE, "%s", (s));
+        મુક્ત (s);
         v->type = integer;
-        return true;
+        પાછા true;
       }
-    default:
+    મૂળભૂત:
       unreachable ();
     }
 }
@@ -494,52 +494,52 @@ toarith (VALUE *v)
 /* Extract a size_t value from an integer value I.
    If the value is negative, return SIZE_MAX.
    If the value is too large, return SIZE_MAX - 1.  */
-static size_t
+સ્થિર size_t
 getsize (mpz_t i)
 {
-  if (mpz_sgn (i) < 0)
-    return SIZE_MAX;
-  if (mpz_fits_ulong_p (i))
+  જો (mpz_sgn (i) < 0)
+    પાછા SIZE_MAX;
+  જો (mpz_fits_ulong_p (i))
     {
-      unsigned long int ul = mpz_get_ui (i);
-      if (ul < SIZE_MAX)
-        return ul;
+      unsigned long પૂર્ણાંક ul = mpz_get_ui (i);
+      જો (ul < SIZE_MAX)
+        પાછા ul;
     }
-  return SIZE_MAX - 1;
+  પાછા SIZE_MAX - 1;
 }
 
 /* Return true and advance if the next token matches STR exactly.
    STR must not be null.  */
 
-static bool
-nextarg (char const *str)
+સ્થિર bool
+nextarg (અક્ષર અચલ *str)
 {
-  if (*args == NULL)
-    return false;
-  else
+  જો (*args == ખાલી)
+    પાછા false;
+  નહીંતર
     {
       bool r = streq (*args, str);
       args += r;
-      return r;
+      પાછા r;
     }
 }
 
 /* Return true if there no more tokens.  */
 
-static bool
-nomoreargs (void)
+સ્થિર bool
+nomoreargs (શૂન્ય)
 {
-  return !*args;
+  પાછા !*args;
 }
 
 /* Report missing operand.
    There is an implicit assumption that there was a previous argument,
    and (args-1) is valid. */
-static void
-require_more_args (void)
+સ્થિર શૂન્ય
+require_more_args (શૂન્ય)
 {
-  if (nomoreargs ())
-    error (EXPR_INVALID, 0, _("syntax error: missing argument after %s"),
+  જો (nomoreargs ())
+    error (પદાવલિ_INVALID, 0, _("syntax error: missing argument after %s"),
            quotearg_n_style (0, locale_quoting_style, *(args - 1)));
 }
 
@@ -547,11 +547,11 @@ require_more_args (void)
 #ifdef EVAL_TRACE
 /* Print evaluation trace and args remaining.  */
 
-static void
-trace (char const *fxn)
+સ્થિર શૂન્ય
+trace (અક્ષર અચલ *fxn)
 {
   printf ("%s:", fxn);
-  for (char **a = args; *a; a++)
+  માટે (અક્ષર **a = args; *a; a++)
     printf (" %s", *a);
   putchar ('\n');
 }
@@ -561,83 +561,83 @@ trace (char const *fxn)
    SV is the VALUE for the lhs (the string),
    PV is the VALUE for the rhs (the pattern).  */
 
-static VALUE *
-docolon (VALUE *sv, VALUE *pv)
+સ્થિર કિંમત_2 *
+docolon (કિંમત_2 *sv, કિંમત_2 *pv)
 {
   tostring (sv);
   tostring (pv);
 
-  struct re_registers re_regs;
-  re_regs.num_regs = 0;
-  re_regs.start = NULL;
-  re_regs.end = NULL;
+  સંરચના re_registers re_regs;
+  re_regs.અંક_regs = 0;
+  re_regs.start = ખાલી;
+  re_regs.end = ખાલી;
 
-  struct re_pattern_buffer re_buffer;
-  char fastmap[UCHAR_MAX + 1];
-  re_buffer.buffer = NULL;
+  સંરચના re_pattern_buffer re_buffer;
+  અક્ષર fastmap[UCHAR_MAX + 1];
+  re_buffer.buffer = ખાલી;
   re_buffer.allocated = 0;
   re_buffer.fastmap = fastmap;
-  re_buffer.translate = NULL;
+  re_buffer.translate = ખાલી;
   re_syntax_options = (RE_SYNTAX_POSIX_BASIC & ~RE_CONTEXT_INVALID_DUP
                        & ~RE_NO_EMPTY_RANGES);
-  char const *errmsg = re_compile_pattern (pv->u.s, strlen (pv->u.s),
+  અક્ષર અચલ *errmsg = re_compile_pattern (pv->u.s, strlen (pv->u.s),
                                            &re_buffer);
-  if (errmsg)
-    error (EXPR_INVALID, 0, "%s", (errmsg));
+  જો (errmsg)
+    error (પદાવલિ_INVALID, 0, "%s", (errmsg));
   re_buffer.newline_anchor = 0;
 
-  VALUE *v;
+  કિંમત_2 *v;
   regoff_t matchlen = re_match (&re_buffer, sv->u.s, strlen (sv->u.s), 0,
                                 &re_regs);
-  if (0 <= matchlen)
+  જો (0 <= matchlen)
     {
       /* Were \(...\) used? */
-      if (re_buffer.re_nsub > 0)
+      જો (re_buffer.re_nsub > 0)
         {
-          if (re_regs.end[1] < 0)
-            v = str_value ("");
-          else
+          જો (re_regs.end[1] < 0)
+            v = str_કિંમત ("");
+          નહીંતર
             {
               sv->u.s[re_regs.end[1]] = '\0';
-              v = str_value (sv->u.s + re_regs.start[1]);
+              v = str_કિંમત (sv->u.s + re_regs.start[1]);
             }
         }
-      else
+      નહીંતર
         {
           /* In multibyte locales, convert the matched offset (=number of bytes)
              to the number of matched characters. */
           size_t i = (MB_CUR_MAX == 1
                       ? matchlen
                       : mbs_offset_to_chars (sv->u.s, matchlen));
-          v = int_value (i);
+          v = int_કિંમત (i);
         }
     }
-  else if (matchlen == -1)
+  નહીંતર જો (matchlen == -1)
     {
       /* Match failed -- return the right kind of null.  */
-      if (re_buffer.re_nsub > 0)
-        v = str_value ("");
-      else
-        v = int_value (0);
+      જો (re_buffer.re_nsub > 0)
+        v = str_કિંમત ("");
+      નહીંતર
+        v = int_કિંમત (0);
     }
-  else
-    error (EXPR_FAILURE,
+  નહીંતર
+    error (પદાવલિ_FAILURE,
            matchlen == -2 ? errno : EOVERFLOW,
            _("error in regular expression matcher"));
 
-  if (0 < re_regs.num_regs)
+  જો (0 < re_regs.અંક_regs)
     {
-      free (re_regs.start);
-      free (re_regs.end);
+      મુક્ત (re_regs.start);
+      મુક્ત (re_regs.end);
     }
-  re_buffer.fastmap = NULL;
+  re_buffer.fastmap = ખાલી;
   regfree (&re_buffer);
-  return v;
+  પાછા v;
 }
 
 /* Handle bare operands and ( expr ) syntax.  */
 
-static VALUE *
+સ્થિર કિંમત_2 *
 eval7 (bool evaluate)
 {
 #ifdef EVAL_TRACE
@@ -645,156 +645,156 @@ eval7 (bool evaluate)
 #endif
   require_more_args ();
 
-  if (nextarg ("("))
+  જો (nextarg ("("))
     {
-      VALUE *v = eval (evaluate);
-      if (nomoreargs ())
-        error (EXPR_INVALID, 0, _("syntax error: expecting ')' after %s"),
+      કિંમત_2 *v = eval (evaluate);
+      જો (nomoreargs ())
+        error (પદાવલિ_INVALID, 0, _("syntax error: expecting ')' after %s"),
                quotearg_n_style (0, locale_quoting_style, *(args - 1)));
-      if (!nextarg (")"))
-        error (EXPR_INVALID, 0, _("syntax error: expecting ')' instead of %s"),
+      જો (!nextarg (")"))
+        error (પદાવલિ_INVALID, 0, _("syntax error: expecting ')' instead of %s"),
                quotearg_n_style (0, locale_quoting_style, *args));
-      return v;
+      પાછા v;
     }
 
-  if (nextarg (")"))
-    error (EXPR_INVALID, 0, _("syntax error: unexpected ')'"));
+  જો (nextarg (")"))
+    error (પદાવલિ_INVALID, 0, _("syntax error: unexpected ')'"));
 
-  return str_value (*args++);
+  પાછા str_કિંમત (*args++);
 }
 
 /* Handle match, substr, index, and length keywords, and quoting "+".  */
 
-static VALUE *
+સ્થિર કિંમત_2 *
 eval6 (bool evaluate)
 {
 #ifdef EVAL_TRACE
   trace ("eval6");
 #endif
-  if (nextarg ("+"))
+  જો (nextarg ("+"))
     {
       require_more_args ();
-      return str_value (*args++);
+      પાછા str_કિંમત (*args++);
     }
-  else if (nextarg ("length"))
+  નહીંતર જો (nextarg ("length"))
     {
-      VALUE *r = eval6 (evaluate);
+      કિંમત_2 *r = eval6 (evaluate);
       tostring (r);
-      VALUE *v = int_value (mbslen (r->u.s));
+      કિંમત_2 *v = int_કિંમત (mbslen (r->u.s));
       freev (r);
-      return v;
+      પાછા v;
     }
-  else if (nextarg ("match"))
+  નહીંતર જો (nextarg ("match"))
     {
-      VALUE *l = eval6 (evaluate);
-      VALUE *r = eval6 (evaluate);
-      VALUE *v;
-      if (evaluate)
+      કિંમત_2 *l = eval6 (evaluate);
+      કિંમત_2 *r = eval6 (evaluate);
+      કિંમત_2 *v;
+      જો (evaluate)
         {
           v = docolon (l, r);
           freev (l);
         }
-      else
+      નહીંતર
         v = l;
       freev (r);
-      return v;
+      પાછા v;
     }
-  else if (nextarg ("index"))
+  નહીંતર જો (nextarg ("index"))
     {
-      VALUE *l = eval6 (evaluate);
-      VALUE *r = eval6 (evaluate);
+      કિંમત_2 *l = eval6 (evaluate);
+      કિંમત_2 *r = eval6 (evaluate);
       tostring (l);
       tostring (r);
       size_t pos = mbs_logical_cspn (l->u.s, r->u.s);
-      VALUE *v = int_value (pos);
+      કિંમત_2 *v = int_કિંમત (pos);
       freev (l);
       freev (r);
-      return v;
+      પાછા v;
     }
-  else if (nextarg ("substr"))
+  નહીંતર જો (nextarg ("substr"))
     {
-      VALUE *l = eval6 (evaluate);
-      VALUE *i1 = eval6 (evaluate);
-      VALUE *i2 = eval6 (evaluate);
+      કિંમત_2 *l = eval6 (evaluate);
+      કિંમત_2 *i1 = eval6 (evaluate);
+      કિંમત_2 *i2 = eval6 (evaluate);
       tostring (l);
 
-      VALUE *v;
-      if (!toarith (i1) || !toarith (i2))
-        v = str_value ("");
-      else
+      કિંમત_2 *v;
+      જો (!toarith (i1) || !toarith (i2))
+        v = str_કિંમત ("");
+      નહીંતર
         {
           size_t pos = getsize (i1->u.i);
           size_t len = getsize (i2->u.i);
 
-          char *s = mbs_logical_substr (l->u.s, pos, len);
-          v = str_value (s);
-          free (s);
+          અક્ષર *s = mbs_logical_substr (l->u.s, pos, len);
+          v = str_કિંમત (s);
+          મુક્ત (s);
         }
       freev (l);
       freev (i1);
       freev (i2);
-      return v;
+      પાછા v;
     }
-  else
-    return eval7 (evaluate);
+  નહીંતર
+    પાછા eval7 (evaluate);
 }
 
 /* Handle : operator (pattern matching).
    Calls docolon to do the real work.  */
 
-static VALUE *
+સ્થિર કિંમત_2 *
 eval5 (bool evaluate)
 {
 #ifdef EVAL_TRACE
   trace ("eval5");
 #endif
-  VALUE *l = eval6 (evaluate);
-  while (true)
+  કિંમત_2 *l = eval6 (evaluate);
+  જ્યારે (true)
     {
-      if (nextarg (":"))
+      જો (nextarg (":"))
         {
-          VALUE *r = eval6 (evaluate);
-          if (evaluate)
+          કિંમત_2 *r = eval6 (evaluate);
+          જો (evaluate)
             {
-              VALUE *v = docolon (l, r);
+              કિંમત_2 *v = docolon (l, r);
               freev (l);
               l = v;
             }
           freev (r);
         }
-      else
-        return l;
+      નહીંતર
+        પાછા l;
     }
 }
 
 /* Handle *, /, % operators.  */
 
-static VALUE *
+સ્થિર કિંમત_2 *
 eval4 (bool evaluate)
 {
 #ifdef EVAL_TRACE
   trace ("eval4");
 #endif
-  VALUE *l = eval5 (evaluate);
-  while (true)
+  કિંમત_2 *l = eval5 (evaluate);
+  જ્યારે (true)
     {
-      enum { multiply, divide, mod } fxn;
+      ગણના { multiply, divide, mod } fxn;
 
-      if (nextarg ("*"))
+      જો (nextarg ("*"))
         fxn = multiply;
-      else if (nextarg ("/"))
+      નહીંતર જો (nextarg ("/"))
         fxn = divide;
-      else if (nextarg ("%"))
+      નહીંતર જો (nextarg ("%"))
         fxn = mod;
-      else
-        return l;
-      VALUE *r = eval5 (evaluate);
-      if (evaluate)
+      નહીંતર
+        પાછા l;
+      કિંમત_2 *r = eval5 (evaluate);
+      જો (evaluate)
         {
-          if (!toarith (l) || !toarith (r))
-            error (EXPR_INVALID, 0, _("non-integer argument"));
-          if (fxn != multiply && mpz_sgn (r->u.i) == 0)
-            error (EXPR_INVALID, 0, _("division by zero"));
+          જો (!toarith (l) || !toarith (r))
+            error (પદાવલિ_INVALID, 0, _("non-integer argument"));
+          જો (fxn != multiply && mpz_sgn (r->u.i) == 0)
+            error (પદાવલિ_INVALID, 0, _("division by zero"));
           ((fxn == multiply ? mpz_mul
             : fxn == divide ? mpz_tdiv_q
             : mpz_tdiv_r)
@@ -806,28 +806,28 @@ eval4 (bool evaluate)
 
 /* Handle +, - operators.  */
 
-static VALUE *
+સ્થિર કિંમત_2 *
 eval3 (bool evaluate)
 {
 #ifdef EVAL_TRACE
   trace ("eval3");
 #endif
-  VALUE *l = eval4 (evaluate);
-  while (true)
+  કિંમત_2 *l = eval4 (evaluate);
+  જ્યારે (true)
     {
-      enum { plus, minus } fxn;
+      ગણના { plus, minus } fxn;
 
-      if (nextarg ("+"))
+      જો (nextarg ("+"))
         fxn = plus;
-      else if (nextarg ("-"))
+      નહીંતર જો (nextarg ("-"))
         fxn = minus;
-      else
-        return l;
-      VALUE *r = eval4 (evaluate);
-      if (evaluate)
+      નહીંતર
+        પાછા l;
+      કિંમત_2 *r = eval4 (evaluate);
+      જો (evaluate)
         {
-          if (!toarith (l) || !toarith (r))
-            error (EXPR_INVALID, 0, _("non-integer argument"));
+          જો (!toarith (l) || !toarith (r))
+            error (પદાવલિ_INVALID, 0, _("non-integer argument"));
           (fxn == plus ? mpz_add : mpz_sub) (l->u.i, l->u.i, r->u.i);
         }
       freev (r);
@@ -836,135 +836,135 @@ eval3 (bool evaluate)
 
 /* Handle comparisons.  */
 
-static VALUE *
+સ્થિર કિંમત_2 *
 eval2 (bool evaluate)
 {
 #ifdef EVAL_TRACE
   trace ("eval2");
 #endif
-  VALUE *l = eval3 (evaluate);
-  while (true)
+  કિંમત_2 *l = eval3 (evaluate);
+  જ્યારે (true)
     {
-      enum
+      ગણના
         {
           less_than, less_equal, equal, not_equal, greater_equal, greater_than
         } fxn;
 
-      if (nextarg ("<"))
+      જો (nextarg ("<"))
         fxn = less_than;
-      else if (nextarg ("<="))
+      નહીંતર જો (nextarg ("<="))
         fxn = less_equal;
-      else if (nextarg ("=") || nextarg ("=="))
+      નહીંતર જો (nextarg ("=") || nextarg ("=="))
         fxn = equal;
-      else if (nextarg ("!="))
+      નહીંતર જો (nextarg ("!="))
         fxn = not_equal;
-      else if (nextarg (">="))
+      નહીંતર જો (nextarg (">="))
         fxn = greater_equal;
-      else if (nextarg (">"))
+      નહીંતર જો (nextarg (">"))
         fxn = greater_than;
-      else
-        return l;
-      VALUE *r = eval3 (evaluate);
+      નહીંતર
+        પાછા l;
+      કિંમત_2 *r = eval3 (evaluate);
 
       bool val = false;
-      if (evaluate)
+      જો (evaluate)
         {
           tostring (l);
           tostring (r);
 
-          int cmp;
-          if (looks_like_integer (l->u.s) && looks_like_integer (r->u.s))
+          પૂર્ણાંક cmp;
+          જો (looks_like_integer (l->u.s) && looks_like_integer (r->u.s))
             cmp = strintcmp (l->u.s, r->u.s);
-          else
+          નહીંતર
             {
               errno = 0;
               cmp = strcoll (l->u.s, r->u.s);
 
-              if (errno)
+              જો (errno)
                 {
                   error (0, errno, _("string comparison failed"));
                   error (0, 0, _("set LC_ALL='C' to work around the problem"));
-                  error (EXPR_INVALID, 0,
+                  error (પદાવલિ_INVALID, 0,
                          _("the strings compared were %s and %s"),
                          quotearg_n_style (0, locale_quoting_style, l->u.s),
                          quotearg_n_style (1, locale_quoting_style, r->u.s));
                 }
             }
 
-          switch (fxn)
+          પસંદગી (fxn)
             {
-            case less_than:     val = (cmp <  0); break;
-            case less_equal:    val = (cmp <= 0); break;
-            case equal:         val = (cmp == 0); break;
-            case not_equal:     val = (cmp != 0); break;
-            case greater_equal: val = (cmp >= 0); break;
-            case greater_than:  val = (cmp >  0); break;
-            default: unreachable ();
+            સ્થિતિ less_than:     val = (cmp <  0); તોડો;
+            સ્થિતિ less_equal:    val = (cmp <= 0); તોડો;
+            સ્થિતિ equal:         val = (cmp == 0); તોડો;
+            સ્થિતિ not_equal:     val = (cmp != 0); તોડો;
+            સ્થિતિ greater_equal: val = (cmp >= 0); તોડો;
+            સ્થિતિ greater_than:  val = (cmp >  0); તોડો;
+            મૂળભૂત: unreachable ();
             }
         }
 
       freev (l);
       freev (r);
-      l = int_value (val);
+      l = int_કિંમત (val);
     }
 }
 
 /* Handle &.  */
 
-static VALUE *
+સ્થિર કિંમત_2 *
 eval1 (bool evaluate)
 {
 #ifdef EVAL_TRACE
   trace ("eval1");
 #endif
-  VALUE *l = eval2 (evaluate);
-  while (true)
+  કિંમત_2 *l = eval2 (evaluate);
+  જ્યારે (true)
     {
-      if (nextarg ("&"))
+      જો (nextarg ("&"))
         {
-          VALUE *r = eval2 (evaluate && !null (l));
-          if (null (l) || null (r))
+          કિંમત_2 *r = eval2 (evaluate && !null (l));
+          જો (null (l) || null (r))
             {
               freev (l);
               freev (r);
-              l = int_value (0);
+              l = int_કિંમત (0);
             }
-          else
+          નહીંતર
             freev (r);
         }
-      else
-        return l;
+      નહીંતર
+        પાછા l;
     }
 }
 
 /* Handle |.  */
 
-static VALUE *
+સ્થિર કિંમત_2 *
 eval (bool evaluate)
 {
 #ifdef EVAL_TRACE
   trace ("eval");
 #endif
-  VALUE *l = eval1 (evaluate);
-  while (true)
+  કિંમત_2 *l = eval1 (evaluate);
+  જ્યારે (true)
     {
-      if (nextarg ("|"))
+      જો (nextarg ("|"))
         {
-          VALUE *r = eval1 (evaluate && null (l));
-          if (null (l))
+          કિંમત_2 *r = eval1 (evaluate && null (l));
+          જો (null (l))
             {
               freev (l);
               l = r;
-              if (null (l))
+              જો (null (l))
                 {
                   freev (l);
-                  l = int_value (0);
+                  l = int_કિંમત (0);
                 }
             }
-          else
+          નહીંતર
             freev (r);
         }
-      else
-        return l;
+      નહીંતર
+        પાછા l;
     }
 }

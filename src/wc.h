@@ -1,5 +1,5 @@
-#include <stdint.h>
-struct wc_lines { int err; intmax_t lines; intmax_t bytes; };
-struct wc_lines wc_lines_avx2 (int);
-struct wc_lines wc_lines_avx512 (int);
-struct wc_lines wc_lines_neon (int fd);
+#અન્તર્ભાવ <stdint.h>
+સંરચના wc_લીટીઓ { પૂર્ણાંક err; intmax_t લીટીઓ; intmax_t bytes; };
+સંરચના wc_લીટીઓ wc_લીટીઓ_avx2 (પૂર્ણાંક);
+સંરચના wc_લીટીઓ wc_લીટીઓ_avx512 (પૂર્ણાંક);
+સંરચના wc_લીટીઓ wc_લીટીઓ_neon (પૂર્ણાંક fd);

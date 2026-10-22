@@ -16,41 +16,41 @@
 
 /* Include this file _after_ system headers if possible.  */
 
-#include <attribute.h>
+#અન્તર્ભાવ <attribute.h>
 
-#include <alloca.h>
+#અન્તર્ભાવ <alloca.h>
 
-#include <ctype.h>
+#અન્તર્ભાવ <ctype.h>
 
-#include <sys/stat.h>
+#અન્તર્ભાવ <sys/stat.h>
 
 /* Commonly used file permission combination.  */
 #define MODE_RW_UGO (S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH)
 
-#if HAVE_SYS_PARAM_H
+#જો HAVE_SYS_PARAM_H
 # include <sys/param.h>
 #endif
 
-#include <unistd.h>
+#અન્તર્ભાવ <unistd.h>
 
-#include <limits.h>
+#અન્તર્ભાવ <limits.h>
 
-#include "pathmax.h"
+#અન્તર્ભાવ "pathmax.h"
 #ifndef PATH_MAX
 # define PATH_MAX 8192
 #endif
 
-#include "configmake.h"
+#અન્તર્ભાવ "configmake.h"
 
-#include <sys/time.h>
-#include <time.h>
+#અન્તર્ભાવ <sys/time.h>
+#અન્તર્ભાવ <time.h>
 
 /* Since major is a function on SVR4, we can't use 'ifndef major'.  */
-#if MAJOR_IN_MKDEV
+#જો MAJOR_IN_MKDEV
 # include <sys/mkdev.h>
 # define HAVE_MAJOR
 #endif
-#if MAJOR_IN_SYSMACROS
+#જો MAJOR_IN_SYSMACROS
 # include <sys/sysmacros.h>
 # define HAVE_MAJOR
 #endif
@@ -65,16 +65,16 @@
 #endif
 #undef HAVE_MAJOR
 
-#if ! defined makedev && defined mkdev
+#જો ! defined makedev && defined mkdev
 # define makedev(maj, min)  mkdev (maj, min)
 #endif
 
-#include <stdckdint.h>
-#include <stdcountof.h>
-#include <stddef.h>
-#include <string.h>
-#include <uchar.h>
-#include <errno.h>
+#અન્તર્ભાવ <stdckdint.h>
+#અન્તર્ભાવ <stdcountof.h>
+#અન્તર્ભાવ <stddef.h>
+#અન્તર્ભાવ <string.h>
+#અન્તર્ભાવ <uchar.h>
+#અન્તર્ભાવ <errno.h>
 
 /* Some systems don't define this; POSIX mentions it but says it is
    obsolete.  gnulib defines it, but only on native Windows systems,
@@ -85,14 +85,14 @@
 
 /* Return true if ERRNUM indicates that a file disappeared during a
    directory traversal.  */
-static inline bool
-ignorable_traversal_errno (int errnum) { return errnum == ENOENT; }
+સ્થિર અંતઃરેખ bool
+ignorable_traversal_errno (પૂર્ણાંક errnum) { પાછા errnum == ENOENT; }
 
-#include <stdlib.h>
-#include "version.h"
+#અન્તર્ભાવ <stdlib.h>
+#અન્તર્ભાવ "version.h"
 
 /* Exit statuses for programs like 'env' that exec other programs.  */
-enum
+ગણના
 {
   EXIT_TIMEDOUT = 124, /* Time expired before child completed.  */
   EXIT_CANCELED = 125, /* Internal error prior to exec attempt.  */
@@ -100,85 +100,85 @@ enum
   EXIT_ENOENT = 127 /* Could not find program to exec.  */
 };
 
-#include "exitfail.h"
+#અન્તર્ભાવ "exitfail.h"
 
 /* Set exit_failure to STATUS if that's not the default already.  */
-static inline void
-initialize_exit_failure (int status)
+સ્થિર અંતઃરેખ શૂન્ય
+initialize_exit_failure (પૂર્ણાંક status)
 {
-  if (status != EXIT_FAILURE)
+  જો (status != EXIT_FAILURE)
     exit_failure = status;
 }
 
-#include <fcntl.h>
+#અન્તર્ભાવ <fcntl.h>
 #ifdef O_PATH
-enum { O_PATHSEARCH = O_PATH };
-#else
-enum { O_PATHSEARCH = O_SEARCH };
+ગણના { O_PATHSEARCH = O_PATH };
+#નહીંતર
+ગણના { O_PATHSEARCH = O_શોધ };
 #endif
 
-#include <dirent.h>
+#અન્તર્ભાવ <dirent.h>
 #ifndef _D_EXACT_NAMLEN
 # define _D_EXACT_NAMLEN(dp) strlen ((dp)->d_name)
 #endif
 
-enum
+ગણના
 {
-  NOT_AN_INODE_NUMBER = 0
+  NOT_AN_INODE_સંખ્યા = 0
 };
 
 #ifdef D_INO_IN_DIRENT
 # define D_INO(dp) (dp)->d_ino
-#else
+#નહીંતર
 /* Some systems don't have inodes, so fake them to avoid lots of ifdefs.  */
-# define D_INO(dp) NOT_AN_INODE_NUMBER
+# define D_INO(dp) NOT_AN_INODE_સંખ્યા
 #endif
 
 /* include here for SIZE_MAX.  */
-#include <inttypes.h>
+#અન્તર્ભાવ <inttypes.h>
 
 /* Redirection and wildcarding when done by the utility itself.
    Generally a noop, but used in particular for OS/2.  */
 #ifndef initialize_main
 # ifndef __OS2__
 #  define initialize_main(ac, av)
-# else
+# નહીંતર
 #  define initialize_main(ac, av) \
-     do { _wildcard (ac, av); _response (ac, av); } while (0)
+     કરો { _wildcard (ac, av); _response (ac, av); } જ્યારે (0)
 # endif
 #endif
 
-#include "stat-macros.h"
+#અન્તર્ભાવ "stat-macros.h"
 
-#include "timespec.h"
+#અન્તર્ભાવ "timespec.h"
 
 /* Convert a possibly-signed character to an unsigned character.  This is
    a bit safer than casting to unsigned char, since it catches some type
    errors that the cast doesn't.  */
-static inline unsigned char to_uchar (char ch) { return ch; }
+સ્થિર અંતઃરેખ unsigned અક્ષર to_uchar (અક્ષર ch) { પાછા ch; }
 
 /* Return non zero if a non breaking space.  */
 ATTRIBUTE_PURE
-static inline int
+સ્થિર અંતઃરેખ પૂર્ણાંક
 c32isnbspace (char32_t wc)
 {
-  return wc == 0x00A0 || wc == 0x2007 || wc == 0x202F || wc == 0x2060;
+  પાછા wc == 0x00A0 || wc == 0x2007 || wc == 0x202F || wc == 0x2060;
 }
 
 ATTRIBUTE_PURE
-static inline int
+સ્થિર અંતઃરેખ પૂર્ણાંક
 c32isnewline (char32_t wc)
 {
-  return wc == 0x000A || wc == 0x0085 || wc == 0x2028 || wc == 0x2029;
+  પાછા wc == 0x000A || wc == 0x0085 || wc == 0x2028 || wc == 0x2029;
 }
 
 ATTRIBUTE_PURE
-static inline int
+સ્થિર અંતઃરેખ પૂર્ણાંક
 c32isvertspace (char32_t wc)
 {
   /* 000D is backwards as opposed to vertical,
      but that's fine for this grouping.  */
-  return c32isnewline (wc) || wc == 0x000B || wc == 0x000C || wc == 0x000D;
+  પાછા c32isnewline (wc) || wc == 0x000B || wc == 0x000C || wc == 0x000D;
 }
 
 /* c32isblank() is too variable on non GLIBC platforms.
@@ -186,22 +186,22 @@ c32isvertspace (char32_t wc)
    E.g., does include non-breaking space on Solaris and NetBSD.
    This equivalent is more consistent across systems.  */
 ATTRIBUTE_PURE
-static inline bool
+સ્થિર અંતઃરેખ bool
 c32issep (char32_t wc)
 {
-#if defined __GLIBC__
-  return !! c32isblank (wc);
-#else
-  return c32isspace (wc) && ! c32isvertspace (wc) && ! c32isnbspace (wc);
+#જો defined __GLIBC__
+  પાછા !! c32isblank (wc);
+#નહીંતર
+  પાછા c32isspace (wc) && ! c32isvertspace (wc) && ! c32isnbspace (wc);
 #endif
 }
 
-#include <locale.h>
+#અન્તર્ભાવ <locale.h>
 
 /* Take care of NLS matters.  */
 
-#include "gettext.h"
-#if ! ENABLE_NLS
+#અન્તર્ભાવ "gettext.h"
+#જો ! ENABLE_NLS
 # undef textdomain
 # define textdomain(Domainname) /* empty */
 # undef bindtextdomain
@@ -213,13 +213,13 @@ c32issep (char32_t wc)
 
 /* Return a value that pluralizes the same way that N does, in all
    languages we know of.  */
-static inline unsigned long int
+સ્થિર અંતઃરેખ unsigned long પૂર્ણાંક
 select_plural (uintmax_t n)
 {
   /* Reduce by a power of ten, but keep it away from zero.  The
      gettext manual says 1000000 should be safe.  */
-  enum { PLURAL_REDUCER = 1000000 };
-  return (n <= ULONG_MAX ? n : n % PLURAL_REDUCER + PLURAL_REDUCER);
+  ગણના { PLURAL_REDUCER = 1000000 };
+  પાછા (n <= ULONG_MAX ? n : n % PLURAL_REDUCER + PLURAL_REDUCER);
 }
 
 #define STREQ_LEN(a, b, n) (strncmp (a, b, n) == 0) /* n==-1 means unbounded */
@@ -227,26 +227,26 @@ select_plural (uintmax_t n)
 
 /* Just like strncmp, but the second argument must be a literal string
    and you don't specify the length;  that comes from the literal.  */
-#define STRNCMP_LIT(s, lit) strncmp (s, "" lit "", sizeof (lit) - 1)
+#define STRNCMP_LIT(s, lit) strncmp (s, "" lit "", કદ (lit) - 1)
 
-#if !HAVE_DECL_GETLOGIN
-char *getlogin (void);
+#જો !HAVE_DECL_GETLOGIN
+અક્ષર *getlogin (શૂન્ય);
 #endif
 
-#if !HAVE_DECL_TTYNAME
-char *ttyname (int);
+#જો !HAVE_DECL_TTYNAME
+અક્ષર *ttyname (પૂર્ણાંક);
 #endif
 
-#if !HAVE_DECL_GETEUID
-uid_t geteuid (void);
+#જો !HAVE_DECL_GETEUID
+uid_t geteuid (શૂન્ય);
 #endif
 
-#if !HAVE_DECL_GETPWUID
-struct passwd *getpwuid (uid_t);
+#જો !HAVE_DECL_GETPWUID
+સંરચના passwd *getpwuid (uid_t);
 #endif
 
-#if !HAVE_DECL_GETGRGID
-struct group *getgrgid (gid_t);
+#જો !HAVE_DECL_GETGRGID
+સંરચના group *getgrgid (gid_t);
 #endif
 
 /* Interix has replacements for getgr{gid,nam,ent}, that don't
@@ -255,52 +255,52 @@ struct group *getgrgid (gid_t);
 /* To protect any system that could provide _nomembers functions
    other than interix, check for HAVE_SETGROUPS, as interix is
    one of the very few (the only?) platform that lacks it */
-#if ! HAVE_SETGROUPS
-# if HAVE_GETGRGID_NOMEMBERS
+#જો ! HAVE_SETGROUPS
+# જો HAVE_GETGRGID_NOMEMBERS
 #  define getgrgid(gid) getgrgid_nomembers(gid)
 # endif
-# if HAVE_GETGRNAM_NOMEMBERS
+# જો HAVE_GETGRNAM_NOMEMBERS
 #  define getgrnam(nam) getgrnam_nomembers(nam)
 # endif
-# if HAVE_GETGRENT_NOMEMBERS
+# જો HAVE_GETGRENT_NOMEMBERS
 #  define getgrent() getgrent_nomembers()
 # endif
 #endif
 
-#if !HAVE_DECL_GETUID
-uid_t getuid (void);
+#જો !HAVE_DECL_GETUID
+uid_t getuid (શૂન્ય);
 #endif
 
-#include "idx.h"
-#include "xalloc.h"
-#include "verify.h"
-#include "unlocked-io.h"
-#include "same-inode.h"
+#અન્તર્ભાવ "idx.h"
+#અન્તર્ભાવ "xalloc.h"
+#અન્તર્ભાવ "verify.h"
+#અન્તર્ભાવ "unlocked-io.h"
+#અન્તર્ભાવ "same-inode.h"
 
-#include "dirname.h"
-#include "openat.h"
+#અન્તર્ભાવ "dirname.h"
+#અન્તર્ભાવ "openat.h"
 
-static inline bool
-dot_or_dotdot (char const *file_name)
+સ્થિર અંતઃરેખ bool
+dot_or_dotdot (અક્ષર અચલ *file_name)
 {
-  if (file_name[0] == '.')
+  જો (file_name[0] == '.')
     {
-      char sep = file_name[(file_name[1] == '.') + 1];
-      return (! sep || ISSLASH (sep));
+      અક્ષર sep = file_name[(file_name[1] == '.') + 1];
+      પાછા (! sep || ISSLASH (sep));
     }
-  else
-    return false;
+  નહીંતર
+    પાછા false;
 }
 
 /* A wrapper for readdir so that callers don't see entries for '.' or '..'.  */
-static inline struct dirent const *
+સ્થિર અંતઃરેખ સંરચના dirent અચલ *
 readdir_ignoring_dot_and_dotdot (DIR *dirp)
 {
-  while (true)
+  જ્યારે (true)
     {
-      struct dirent const *dp = readdir (dirp);
-      if (dp == NULL || ! dot_or_dotdot (dp->d_name))
-        return dp;
+      સંરચના dirent અચલ *dp = readdir (dirp);
+      જો (dp == ખાલી || ! dot_or_dotdot (dp->d_name))
+        પાછા dp;
     }
 }
 
@@ -308,37 +308,37 @@ readdir_ignoring_dot_and_dotdot (DIR *dirp)
    0 if DIR is a nonempty directory,
    and a positive error number if there was trouble determining
    whether DIR is an empty or nonempty directory.  */
-enum {
+ગણના {
     DS_UNKNOWN = -2,
     DS_EMPTY = -1,
     DS_NONEMPTY = 0,
 };
-static inline int
-directory_status (int fd_cwd, char const *dir)
+સ્થિર અંતઃરેખ પૂર્ણાંક
+directory_status (પૂર્ણાંક fd_cwd, અક્ષર અચલ *dir)
 {
   DIR *dirp;
   bool no_direntries;
-  int saved_errno;
-  int fd = openat (fd_cwd, dir,
+  પૂર્ણાંક saved_errno;
+  પૂર્ણાંક fd = openat (fd_cwd, dir,
                    (O_RDONLY | O_DIRECTORY
                     | O_NOCTTY | O_NOFOLLOW | O_NONBLOCK));
 
-  if (fd < 0)
-    return errno;
+  જો (fd < 0)
+    પાછા errno;
 
   dirp = fdopendir (fd);
-  if (dirp == NULL)
+  જો (dirp == ખાલી)
     {
       saved_errno = errno;
       close (fd);
-      return saved_errno;
+      પાછા saved_errno;
     }
 
   errno = 0;
   no_direntries = !readdir_ignoring_dot_and_dotdot (dirp);
   saved_errno = errno;
   closedir (dirp);
-  return no_direntries && saved_errno == 0 ? DS_EMPTY : saved_errno;
+  પાછા no_direntries && saved_errno == 0 ? DS_EMPTY : saved_errno;
 }
 
 /* Factor out some of the common --help and --version processing code.  */
@@ -346,23 +346,23 @@ directory_status (int fd_cwd, char const *dir)
 /* These enum values cannot possibly conflict with the option values
    ordinarily used by commands, including CHAR_MAX + 1, etc.  Avoid
    CHAR_MIN - 1, as it may equal -1, the getopt end-of-options value.  */
-enum
+ગણના
 {
   GETOPT_HELP_CHAR = (CHAR_MIN - 2),
   GETOPT_VERSION_CHAR = (CHAR_MIN - 3)
 };
 
 #define GETOPT_HELP_OPTION_DECL \
-  "help", no_argument, NULL, GETOPT_HELP_CHAR
+  "help", no_argument, ખાલી, GETOPT_HELP_CHAR
 #define GETOPT_VERSION_OPTION_DECL \
-  "version", no_argument, NULL, GETOPT_VERSION_CHAR
+  "version", no_argument, ખાલી, GETOPT_VERSION_CHAR
 #define GETOPT_SELINUX_CONTEXT_OPTION_DECL \
-  "context", optional_argument, NULL, 'Z'
+  "context", optional_argument, ખાલી, 'Z'
 
 #define case_GETOPT_HELP_CHAR			\
-  case GETOPT_HELP_CHAR:			\
+  સ્થિતિ GETOPT_HELP_CHAR:			\
     usage (EXIT_SUCCESS);			\
-    break;
+    તોડો;
 
 /* Program_name must be a literal string.
    Usually it is just PROGRAM_NAME.  */
@@ -377,29 +377,29 @@ enum
 #define VERSION_OPTION_DESCRIPTION \
   _("      --version\n         output version information and exit\n")
 
-#include "closein.h"
-#include "closeout.h"
+#અન્તર્ભાવ "closein.h"
+#અન્તર્ભાવ "closeout.h"
 
-#include "version-etc.h"
+#અન્તર્ભાવ "version-etc.h"
 
-#include "propername.h"
+#અન્તર્ભાવ "propername.h"
 /* Define away proper_name, since it's not worth the cost of adding ~17KB to
    the x86_64 text size of every single program.  This avoids a 40%
    (almost ~2MB) increase in the file system space utilization for the set
    of the 100 binaries. */
 #define proper_name(x) proper_name_lite (x, x)
 
-#include "progname.h"
+#અન્તર્ભાવ "progname.h"
 
 #define case_GETOPT_VERSION_CHAR(Program_name, Authors)			\
-  case GETOPT_VERSION_CHAR:						\
+  સ્થિતિ GETOPT_VERSION_CHAR:						\
     version_etc (stdout, Program_name, PACKAGE_NAME, Version, Authors,	\
-                 (char *) NULL);					\
+                 (અક્ષર *) ખાલી);					\
     exit (EXIT_SUCCESS);						\
-    break;
+    તોડો;
 
-#include "minmax.h"
-#include "intprops.h"
+#અન્તર્ભાવ "minmax.h"
+#અન્તર્ભાવ "intprops.h"
 
 #ifndef SSIZE_MAX
 # define SSIZE_MAX TYPE_MAXIMUM (ssize_t)
@@ -428,7 +428,7 @@ enum
 /* Use this to suppress gcc warnings.  */
 #ifdef lint
 # define IF_LINT(Code) Code
-#else
+#નહીંતર
 # define IF_LINT(Code) /* empty */
 #endif
 
@@ -440,35 +440,35 @@ enum
    checking preferred and may yet be again.  */
 #ifdef lint
 # define main_exit(status) exit (status)
-#else
-# define main_exit(status) return status
+#નહીંતર
+# define main_exit(status) પાછા status
 #endif
 
 #ifdef __GNUC__
 # define LIKELY(cond)    __builtin_expect ((cond), 1)
 # define UNLIKELY(cond)  __builtin_expect ((cond), 0)
-#else
+#નહીંતર
 # define LIKELY(cond)    (cond)
 # define UNLIKELY(cond)  (cond)
 #endif
 
 
-#if defined strdupa
+#જો defined strdupa
 # define ASSIGN_STRDUPA(DEST, S)		\
-  do { DEST = strdupa (S); } while (0)
-#else
+  કરો { DEST = strdupa (S); } જ્યારે (0)
+#નહીંતર
 # define ASSIGN_STRDUPA(DEST, S)		\
-  do						\
+  કરો						\
     {						\
-      char const *s_ = (S);			\
+      અક્ષર અચલ *s_ = (S);			\
       size_t len_ = strlen (s_) + 1;		\
-      char *tmp_dest_ = alloca (len_);		\
+      અક્ષર *tmp_dest_ = alloca (len_);		\
       DEST = memcpy (tmp_dest_, s_, len_);	\
     }						\
-  while (0)
+  જ્યારે (0)
 #endif
 
-#if ! HAVE_SYNC
+#જો ! HAVE_SYNC
 # define sync() /* empty */
 #endif
 
@@ -476,18 +476,18 @@ enum
    algorithm.  U and V must be nonzero.  */
 
 ATTRIBUTE_CONST
-static inline size_t
+સ્થિર અંતઃરેખ size_t
 gcd (size_t u, size_t v)
 {
-  do
+  કરો
     {
       size_t t = u % v;
       u = v;
       v = t;
     }
-  while (v);
+  જ્યારે (v);
 
-  return u;
+  પાછા u;
 }
 
 /* Compute the least common multiple of U and V.  U and V must be
@@ -495,10 +495,10 @@ gcd (size_t u, size_t v)
    specify outlandish sizes.  */
 
 ATTRIBUTE_CONST
-static inline size_t
+સ્થિર અંતઃરેખ size_t
 lcm (size_t u, size_t v)
 {
-  return u * (v / gcd (u, v));
+  પાછા u * (v / gcd (u, v));
 }
 
 /* Return PTR, aligned upward to the next multiple of ALIGNMENT.
@@ -506,64 +506,64 @@ lcm (size_t u, size_t v)
    PTR) through ((char *) PTR + ALIGNMENT - 1) to be addressable
    locations.  */
 
-static inline void *
-ptr_align (void const *ptr, size_t alignment)
+સ્થિર અંતઃરેખ શૂન્ય *
+ptr_align (શૂન્ય અચલ *ptr, size_t alignment)
 {
-  char const *p0 = ptr;
-  char const *p1 = p0 + alignment - 1;
-  return (void *) (p1 - (size_t) p1 % alignment);
+  અક્ષર અચલ *p0 = ptr;
+  અક્ષર અચલ *p1 = p0 + alignment - 1;
+  પાછા (શૂન્ય *) (p1 - (size_t) p1 % alignment);
 }
 
 /* Return whether the buffer consists entirely of NULs.
    Based on memeqzero in CCAN by Rusty Russell under CC0 (Public domain).  */
 
 ATTRIBUTE_PURE
-static inline bool
-is_nul (void const *buf, size_t length)
+સ્થિર અંતઃરેખ bool
+is_nul (શૂન્ય અચલ *buf, size_t length)
 {
-  const unsigned char *p = buf;
+  અચલ unsigned અક્ષર *p = buf;
 /* Using possibly unaligned access for the first 16 bytes
    saves about 30-40 cycles, though it is strictly undefined behavior
    and so would need __attribute__ ((__no_sanitize_undefined__))
    to avoid -fsanitize=undefined warnings.
    Considering coreutils is mainly concerned with relatively
    large buffers, we'll just use the defined behavior.  */
-#if 0 && (_STRING_ARCH_unaligned || _STRING_INLINE_unaligned)
+#જો 0 && (_STRING_ARCH_unaligned || _STRING_INLINE_unaligned)
   unsigned long word;
-#else
-  unsigned char word;
+#નહીંતર
+  unsigned અક્ષર word;
 #endif
 
-  if (! length)
-    return true;
+  જો (! length)
+    પાછા true;
 
   /* Check len bytes not aligned on a word.  */
-  while (UNLIKELY (length & (sizeof word - 1)))
+  જ્યારે (UNLIKELY (length & (કદ word - 1)))
     {
-      if (*p)
-        return false;
+      જો (*p)
+        પાછા false;
       p++;
       length--;
-      if (! length)
-        return true;
+      જો (! length)
+        પાછા true;
    }
 
   /* Check up to 16 bytes a word at a time.  */
-  for (;;)
+  માટે (;;)
     {
-      memcpy (&word, p, sizeof word);
-      if (word)
-        return false;
-      p += sizeof word;
-      length -= sizeof word;
-      if (! length)
-        return true;
-      if (UNLIKELY (length & 15) == 0)
-        break;
+      memcpy (&word, p, કદ word);
+      જો (word)
+        પાછા false;
+      p += કદ word;
+      length -= કદ word;
+      જો (! length)
+        પાછા true;
+      જો (UNLIKELY (length & 15) == 0)
+        તોડો;
    }
 
   /* Now we know first 16 bytes are NUL, memeq with self.  */
-  return memeq (buf, p, length);
+  પાછા memeq (buf, p, length);
 }
 
 /* Set Accum = 10*Accum + Digit_val and return true, where Accum is an
@@ -581,49 +581,49 @@ is_nul (void const *buf, size_t length)
    though it can be disabled in edge cases with the TERM=dumb env var.  */
 
 #define oputs(option) oputs_ (PROGRAM_NAME, option)
-static inline void
-oputs_ (MAYBE_UNUSED char const *program, char const *option)
+સ્થિર અંતઃરેખ શૂન્ય
+oputs_ (MAYBE_UNUSED અક્ષર અચલ *program, અક્ષર અચલ *option)
 {
-  static int help_markup =
-#if defined MANUAL_URL || defined BOLD_MAN_REFS
+  સ્થિર પૂર્ણાંક help_markup =
+#જો defined MANUAL_URL || defined BOLD_MAN_REFS
     -1;  /* Lookup.  */
-#else
+#નહીંતર
     0;   /* Disable.  */
 #endif
-  if (help_markup == -1)
+  જો (help_markup == -1)
     {
       /* Note one generally would want markup when piping to grep/less etc.
          but we're conservative here for now, and only markup to tty.  */
-      char const *te;
+      અક્ષર અચલ *te;
       help_markup = (isatty (STDOUT_FILENO)
                      ? ((te = getenv ("TERM")) && *te && !streq (te, "dumb"))
-                     : getenv ("IN_HELP2MAN") != NULL);
+                     : getenv ("IN_HELP2MAN") != ખાલી);
     }
-  if (! help_markup)
+  જો (! help_markup)
     {
       fputs (option, stdout);
-      return;
+      પાછા;
     }
 
   bool double_space = true;
-  char const *first_word = option + strspn (option, " \t\n");
-  char const *option_text = strchr (option, '-');
-  if (!option_text)                    /* for dd(1) option syntax.  */
+  અક્ષર અચલ *first_word = option + strspn (option, " \t\n");
+  અક્ષર અચલ *option_text = strchr (option, '-');
+  જો (!option_text)                    /* for dd(1) option syntax.  */
     {
       option_text = first_word;
       /* Just match first word to support single spaced
          translated dd "foo=bar description" format.  */
       double_space = false;
     }
-  else if (option_text != first_word)  /* for test(1) option syntax.  */
+  નહીંતર જો (option_text != first_word)  /* for test(1) option syntax.  */
     {
       /* Ensure only a single space encountered before '-', to avoid
          matching within descriptions for translated dd option syntax.  */
-      char const *s = first_word;
+      અક્ષર અચલ *s = first_word;
       size_t spaces = 0;
-      while (s < option_text && spaces < 2)
+      જ્યારે (s < option_text && spaces < 2)
         spaces += !!isspace (to_uchar (*s++));
-      if (spaces == 2)
+      જો (spaces == 2)
         {
           /* Probably mismatched dd format.  */
           option_text = first_word;
@@ -636,19 +636,19 @@ oputs_ (MAYBE_UNUSED char const *program, char const *option)
   /* Set highlighted text up to spacing after the full option text.
      Any single space is included in highlighted text,
      double space or TAB or newline terminates the option text.  */
-  char const *desc_text = option_text + anchor_len;
-  while (*desc_text && *desc_text != '\n')
+  અક્ષર અચલ *desc_text = option_text + anchor_len;
+  જ્યારે (*desc_text && *desc_text != '\n')
     {
-      if (*desc_text == '-' && *(desc_text + 1) == '-')
+      જો (*desc_text == '-' && *(desc_text + 1) == '-')
         double_space = false;
-      if (isspace (to_uchar (*desc_text)))
+      જો (isspace (to_uchar (*desc_text)))
         {
-          if (*desc_text == '\t' || isspace (to_uchar (*(desc_text + 1))))
-            break;
+          જો (*desc_text == '\t' || isspace (to_uchar (*(desc_text + 1))))
+            તોડો;
           /* With long options we restrict the match as some translations
              delimit a long option and description with a single space.  */
-          if (!double_space && *(desc_text + 1) != '-')
-            break;
+          જો (!double_space && *(desc_text + 1) != '-')
+            તોડો;
         }
 
       desc_text++;
@@ -659,7 +659,7 @@ oputs_ (MAYBE_UNUSED char const *program, char const *option)
 
   /* write option text.  */
 #ifdef MANUAL_URL
-  char const *url_program =   streq (program, "[") ? "test"
+  અક્ષર અચલ *url_program =   streq (program, "[") ? "test"
                             : streq (program, "dir") ? "ls"
                             : streq (program, "vdir") ? "ls"
                             : streq (program, "b2sum") ? "cksum"
@@ -674,21 +674,21 @@ oputs_ (MAYBE_UNUSED char const *program, char const *option)
      it's unused with http:// links and not usually useful with file:// links.
      Also there is the possibility that local (hostname agnostic) links
      would work if remotely accessing a similar system to the local one.  */
-  if (STREQ_LEN (option_text, "--help", 6)
+  જો (STREQ_LEN (option_text, "--help", 6)
       || STREQ_LEN (option_text, "--version", 9))
     {
       /* We don't have --help and --version links for each command,
          and they wouldn't be useful to reference anyway.
          Instead use these to reference the single node manual.  */
       printf ("\033]8;;%s%s#%s%.*s", PACKAGE_URL,
-              url_program, url_program, (int) anchor_len, option_text);
+              url_program, url_program, (પૂર્ણાંક) anchor_len, option_text);
     }
-  else
+  નહીંતર
     {
       /* The single node manual doesn't work for ls, cksum, md5sum, sha*sum,
          so we link to the full manual.  */
       printf ("\033]8;;%s#%s%.*s", MANUAL_URL, url_program,
-              (int) anchor_len, option_text);
+              (પૂર્ણાંક) anchor_len, option_text);
     }
   fputs ("\033\\", stdout);
 #endif
@@ -714,116 +714,116 @@ oputs_ (MAYBE_UNUSED char const *program, char const *option)
 
 #define oprintf(...) oprintf_ (PROGRAM_NAME, __VA_ARGS__)
 ATTRIBUTE_FORMAT ((printf, 2, 3))
-static inline void
-oprintf_ (char const *program, char const *message, ...)
+સ્થિર અંતઃરેખ શૂન્ય
+oprintf_ (અક્ષર અચલ *program, અક્ષર અચલ *message, ...)
 {
   va_list args;
-  char *buf;
-  int buflen = -1;
+  અક્ષર *buf;
+  પૂર્ણાંક buflen = -1;
 
-#if defined MANUAL_URL || defined BOLD_MAN_REFS
+#જો defined MANUAL_URL || defined BOLD_MAN_REFS
   va_start (args, message);
   buflen = vasprintf (&buf, message, args);
   va_end (args);
 #endif
 
-  if (buflen < 0)
+  જો (buflen < 0)
     {
       va_start (args, message);
       vprintf (message, args);
       va_end (args);
-      return;
+      પાછા;
     }
 
   oputs_ (program, buf);
-  free (buf);
+  મુક્ત (buf);
 }
 
-static inline void
-emit_stdin_note (void)
+સ્થિર અંતઃરેખ શૂન્ય
+emit_stdin_note (શૂન્ય)
 {
   fputs (_("\n\
-With no FILE, or when FILE is -, read standard input.\n\
+With no FILE, or when FILE is -, પઠ standard આગત.\n\
 "), stdout);
 }
-static inline void
-emit_mandatory_arg_note (void)
+સ્થિર અંતઃરેખ શૂન્ય
+emit_mandatory_arg_note (શૂન્ય)
 {
   fputs (_("\n\
-Mandatory arguments to long options are mandatory for short options too.\n\
+Mandatory arguments to long options are mandatory માટે short options too.\n\
 "), stdout);
 }
 
-static inline void
-emit_size_note (void)
+સ્થિર અંતઃરેખ શૂન્ય
+emit_size_note (શૂન્ય)
 {
   fputs (_("\n\
 The SIZE argument is an integer and optional unit (example: 10K is 10*1024).\n\
 Units are K,M,G,T,P,E,Z,Y,R,Q (powers of 1024) or KB,MB,... (powers of 1000).\n\
-Binary prefixes can be used, too: KiB=K, MiB=M, and so on.\n\
+દ્વિઅંકી_2 prefixes can be used, too: KiB=K, MiB=M, and so on.\n\
 "), stdout);
 }
 
-static inline void
-emit_blocksize_note (char const *program)
+સ્થિર અંતઃરેખ શૂન્ય
+emit_blocksize_note (અક્ષર અચલ *program)
 {
   printf (_("\n\
-Display values are in units of the first available SIZE from --block-size,\n\
+Display કિંમતો are in units of the first available SIZE from --block-size,\n\
 and the %s_BLOCK_SIZE, BLOCK_SIZE and BLOCKSIZE environment variables.\n\
-Otherwise, units default to 1024 bytes (or 512 if POSIXLY_CORRECT is set).\n\
+Otherwise, units મૂળભૂત to 1024 bytes (or 512 જો POSIXLY_CORRECT is set).\n\
 "), program);
 }
 
-static inline void
-emit_update_parameters_note (void)
+સ્થિર અંતઃરેખ શૂન્ય
+emit_update_parameters_note (શૂન્ય)
 {
   fputs (_("\
 \n\
 UPDATE controls which existing files in the destination are replaced.\n\
-'all' is the default operation when an --update option is not specified,\n\
+'all' is the મૂળભૂત operation when an --update option is not specified,\n\
 and results in all existing files in the destination being replaced.\n\
 'none' is like the --no-clobber option, in that no files in the\n\
-destination are replaced, and skipped files do not induce a failure.\n\
+destination are replaced, and skipped files કરો not induce a failure.\n\
 'none-fail' also ensures no files are replaced in the destination,\n\
 but any skipped files are diagnosed and induce a failure.\n\
-'older' is the default operation when --update is specified, and results\n\
-in files being replaced if they're older than the corresponding source file.\n\
+'older' is the મૂળભૂત operation when --update is specified, and results\n\
+in files being replaced જો they're older than the corresponding source file.\n\
 "), stdout);
 }
 
-static inline void
-emit_backup_suffix_note (void)
+સ્થિર અંતઃરેખ શૂન્ય
+emit_backup_suffix_note (શૂન્ય)
 {
   fputs (_("\
 \n\
 The backup suffix is '~', unless set with --suffix or SIMPLE_BACKUP_SUFFIX.\n\
 The version control method may be selected via the --backup option or through\n\
-the VERSION_CONTROL environment variable.  Here are the values:\n\
+the VERSION_CONTROL environment variable.  Here are the કિંમતો:\n\
 \n\
 "), stdout);
   fputs (_("\
-  none, off       never make backups (even if --backup is given)\n\
+  none, off       never make backups (even જો --backup is given)\n\
   numbered, t     make numbered backups\n\
-  existing, nil   numbered if numbered backups exist, simple otherwise\n\
+  existing, nil   numbered જો numbered backups exist, simple otherwise\n\
   simple, never   always make simple backups\n\
 "), stdout);
 }
 
 #define emit_symlink_recurse_options(default_opt) \
  emit_symlink_recurse_options_ (PROGRAM_NAME, default_opt)
-static inline void
-emit_symlink_recurse_options_ (char const *program, char const *default_opt)
+સ્થિર અંતઃરેખ શૂન્ય
+emit_symlink_recurse_options_ (અક્ષર અચલ *program, અક્ષર અચલ *default_opt)
 {
       printf (_("\
 \n\
 The following options modify how a hierarchy is traversed when the -R\n\
 option is also specified.  If more than one is specified, only the final\n\
-one takes effect. %s is the default.\n\
+one takes effect. %s is the મૂળભૂત.\n\
 \n\
 "), default_opt);
       oputs_ (program, _("\
   -H\n\
-         if a command line argument is a symlink to a directory, traverse it\n\
+         જો a command લીટી argument is a symlink to a directory, traverse it\n\
 "));
       oputs_ (program, _("\
   -L\n\
@@ -831,55 +831,55 @@ one takes effect. %s is the default.\n\
 "));
       oputs_ (program, _("\
   -P\n\
-         do not traverse any symbolic links\n\
+         કરો not traverse any symbolic links\n\
 \n\
 "));
 }
 
-static inline void
-emit_exec_status (char const *program)
+સ્થિર અંતઃરેખ શૂન્ય
+emit_exec_status (અક્ષર અચલ *program)
 {
       printf (_("\n\
 Exit status:\n\
-  125  if the %s command itself fails\n\
-  126  if COMMAND is found but cannot be invoked\n\
-  127  if COMMAND cannot be found\n\
+  125  જો the %s command itself fails\n\
+  126  જો COMMAND is found but cannot be invoked\n\
+  127  જો COMMAND cannot be found\n\
   -    the exit status of COMMAND otherwise\n\
 "), program);
 }
 
-static inline void
-emit_ancillary_info (char const *program)
+સ્થિર અંતઃરેખ શૂન્ય
+emit_ancillary_info (અક્ષર અચલ *program)
 {
-  struct infomap { char const *program; char const *node; } const infomap[] = {
+  સંરચના infomap { અક્ષર અચલ *program; અક્ષર અચલ *ગાંઠ; } અચલ infomap[] = {
     { "[", "test invocation" },
     { "coreutils", "Multi-call invocation" },
     { "sha224sum", "sha2 utilities" },
     { "sha256sum", "sha2 utilities" },
     { "sha384sum", "sha2 utilities" },
     { "sha512sum", "sha2 utilities" },
-    { NULL, NULL }
+    { ખાલી, ખાલી }
   };
 
-  char const *node = program;
-  struct infomap const *map_prog = infomap;
+  અક્ષર અચલ *ગાંઠ = program;
+  સંરચના infomap અચલ *map_prog = infomap;
 
-  while (map_prog->program && ! streq (program, map_prog->program))
+  જ્યારે (map_prog->program && ! streq (program, map_prog->program))
     map_prog++;
 
-  if (map_prog->node)
-    node = map_prog->node;
+  જો (map_prog->ગાંઠ)
+    ગાંઠ = map_prog->ગાંઠ;
 
   emit_bug_reporting_address ();
 
   /* .htaccess on the coreutils web site maps programs to the appropriate page,
      however we explicitly handle "[" -> "test" here as the "[" is not
      recognized as part of a URL by default in terminals.  */
-  char const *url_program = streq (program, "[") ? "test" : program;
+  અક્ષર અચલ *url_program = streq (program, "[") ? "test" : program;
   printf (_("Full documentation <%s%s>\n"),
           PACKAGE_URL, url_program);
   printf (_("or available locally via: info '(coreutils) %s%s'\n"),
-          node, node == program ? " invocation" : "");
+          ગાંઠ, ગાંઠ == program ? " invocation" : "");
 }
 
 /* Use a macro rather than an inline function, as this references
@@ -887,53 +887,53 @@ emit_ancillary_info (char const *program)
    in libstdbuf.so on some systems where unused functions
    are not removed by the linker.  */
 #define emit_try_help() \
-  do \
+  કરો \
     { \
       fprintf (stderr, _("Try '%s --help' for more information.\n"), \
                program_name); \
     } \
-  while (0)
+  જ્યારે (0)
 
-#include "inttostr.h"
+#અન્તર્ભાવ "inttostr.h"
 
-static inline char *
-timetostr (time_t t, char *buf)
+સ્થિર અંતઃરેખ અક્ષર *
+timetostr (time_t t, અક્ષર *buf)
 {
-  return (TYPE_SIGNED (time_t)
+  પાછા (TYPE_SIGNED (time_t)
           ? imaxtostr (t, buf)
           : umaxtostr (t, buf));
 }
 
-static inline char *
-bad_cast (char const *s)
+સ્થિર અંતઃરેખ અક્ષર *
+bad_cast (અક્ષર અચલ *s)
 {
-  return (char *) s;
+  પાછા (અક્ષર *) s;
 }
 
 /* Return a boolean indicating whether SB->st_size is defined.  */
-static inline bool
-usable_st_size (struct stat const *sb)
+સ્થિર અંતઃરેખ bool
+usable_st_size (સંરચના stat અચલ *sb)
 {
-  return (S_ISREG (sb->st_mode) || S_ISLNK (sb->st_mode)
+  પાછા (S_ISREG (sb->st_mode) || S_ISLNK (sb->st_mode)
           || S_TYPEISSHM (sb) || S_TYPEISTMO (sb));
 }
 
-_Noreturn void usage (int status);
+_Noreturn શૂન્ય usage (પૂર્ણાંક status);
 
-#include <error.h>
+#અન્તર્ભાવ <error.h>
 
 /* Like error(0, 0, ...), but without an implicit newline.
    Also a noop unless the global DEV_DEBUG is set.  */
 #define devmsg(...)			\
-  do					\
+  કરો					\
     {					\
-      if (dev_debug)			\
+      જો (dev_debug)			\
         fprintf (stderr, __VA_ARGS__);	\
     }					\
-  while (0)
+  જ્યારે (0)
 
 #define emit_cycle_warning(file_name)	\
-  do					\
+  કરો					\
     {					\
       error (0, 0, _("\
 WARNING: Circular directory structure.\n\
@@ -942,14 +942,14 @@ NOTIFY YOUR SYSTEM MANAGER.\n\
 The following directory is part of the cycle:\n  %s\n"), \
              quotef (file_name));	\
     }					\
-  while (0)
+  જ્યારે (0)
 
 /* exit with a _single_ "write error" diagnostic.  */
 
-static inline void
-write_error (void)
+સ્થિર અંતઃરેખ શૂન્ય
+write_error (શૂન્ય)
 {
-  int saved_errno = errno;
+  પૂર્ણાંક saved_errno = errno;
   fflush (stdout);    /* Last attempt to write any buffered data.  */
   fpurge (stdout);    /* Ensure nothing buffered that might induce an error. */
   clearerr (stdout);  /* Avoid extraneous diagnostic from close_stdout.  */
@@ -961,29 +961,29 @@ write_error (void)
    this function writes a NUL byte into dest[len].  Thus, the length
    of the destination buffer must be at least LEN + 1.
    The DEST and SRC buffers must not overlap.  */
-static inline char *
-stzncpy (char *restrict dest, char const *restrict src, size_t len)
+સ્થિર અંતઃરેખ અક્ષર *
+stzncpy (અક્ષર *restrict dest, અક્ષર અચલ *restrict src, size_t len)
 {
-  for (size_t i = 0; i < len && *src; i++)
+  માટે (size_t i = 0; i < len && *src; i++)
     *dest++ = *src++;
   *dest = 0;
-  return dest;
+  પાછા dest;
 }
 
 /* Return true if ERR is ENOTSUP or EOPNOTSUPP, otherwise false.
    This wrapper function avoids the redundant 'or'd comparison on
    systems like Linux for which they have the same value.  It also
    avoids the gcc warning to that effect.  */
-static inline bool
-is_ENOTSUP (int err)
+સ્થિર અંતઃરેખ bool
+is_ENOTSUP (પૂર્ણાંક err)
 {
-  return err == EOPNOTSUPP || (ENOTSUP != EOPNOTSUPP && err == ENOTSUP);
+  પાછા err == EOPNOTSUPP || (ENOTSUP != EOPNOTSUPP && err == ENOTSUP);
 }
 
 
 /* How coreutils quotes filenames, to minimize use of outer quotes,
    but also provide better support for copy and paste when used.  */
-#include "quotearg.h"
+#અન્તર્ભાવ "quotearg.h"
 
 /* Use these to shell quote only when necessary,
    when the quoted item is already delimited with colons.  */
@@ -1000,42 +1000,42 @@ is_ENOTSUP (int err)
   quotearg_n_style (n, shell_escape_always_quoting_style, arg)
 
 /* Equivalent to quotearg(), but explicit to avoid syntax checks.  */
-#define quoteN(x) quotearg_style (get_quoting_style (NULL), x)
+#define quoteN(x) quotearg_style (get_quoting_style (ખાલી), x)
 #define quoteN_mem(x, size)                                     \
-  quotearg_style_mem (get_quoting_style (NULL), x, size)
+  quotearg_style_mem (get_quoting_style (ખાલી), x, size)
 
 #ifdef ARGMATCH
 /* Return the quoting style specified by the environment variable
    QUOTING_STYLE if set and valid, -1 otherwise.  */
-static inline int
-getenv_quoting_style (void)
+સ્થિર અંતઃરેખ પૂર્ણાંક
+getenv_quoting_style (શૂન્ય)
 {
-  char const *q_style = getenv ("QUOTING_STYLE");
-  if (!q_style)
-    return -1;
+  અક્ષર અચલ *q_style = getenv ("QUOTING_STYLE");
+  જો (!q_style)
+    પાછા -1;
 
-  int i = ARGMATCH (q_style, quoting_style_args, quoting_style_vals);
-  if (i < 0)
+  પૂર્ણાંક i = ARGMATCH (q_style, quoting_style_args, quoting_style_vals);
+  જો (i < 0)
     {
       error (0, 0, _("ignoring invalid value of environment "
                      "variable QUOTING_STYLE: %s"), quote (q_style));
-      return -1;
+      પાછા -1;
     }
-  return quoting_style_vals[i];
+  પાછા quoting_style_vals[i];
 }
 
 /* Used instead of XARGMATCH() to provide a custom error message.  */
-static inline ptrdiff_t
-x_timestyle_match (char const * style, bool allow_posix,
-                   char const *const * timestyle_args,
-                   char const * timestyle_types,
+સ્થિર અંતઃરેખ ptrdiff_t
+x_timestyle_match (અક્ષર અચલ * style, bool allow_posix,
+                   અક્ષર અચલ *અચલ * timestyle_args,
+                   અક્ષર અચલ * timestyle_types,
                    size_t timestyle_types_size,
-                   int fail_status)
+                   પૂર્ણાંક fail_status)
 {
   ptrdiff_t res = argmatch (style, timestyle_args,
                             timestyle_types,
                             timestyle_types_size);
-  if (res < 0)
+  જો (res < 0)
     {
       /* This whole block used to be a simple use of XARGMATCH.
          but that didn't print the "posix-"-prefixed variants or
@@ -1048,15 +1048,15 @@ x_timestyle_match (char const * style, bool allow_posix,
          only because all four existing time_style_types values
          are distinct.  */
       fputs (_("Valid arguments are:\n"), stderr);
-      char const *const *p = timestyle_args;
-      char const *posix_prefix = allow_posix ? "[posix-]" : "";
-      while (*p)
+      અક્ષર અચલ *અચલ *p = timestyle_args;
+      અક્ષર અચલ *posix_prefix = allow_posix ? "[posix-]" : "";
+      જ્યારે (*p)
         fprintf (stderr, "  - %s%s\n", posix_prefix, *p++);
       fputs (_("  - +FORMAT (e.g., +%H:%M) for a 'date'-style"
                " format\n"), stderr);
       usage (fail_status);
     }
 
-  return res;
+  પાછા res;
 }
 #endif

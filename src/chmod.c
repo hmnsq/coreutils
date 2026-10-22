@@ -16,21 +16,21 @@
 
 /* Written by David MacKenzie <djm@gnu.ai.mit.edu> */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#અન્તર્ભાવ <config.h>
+#અન્તર્ભાવ <stdio.h>
+#અન્તર્ભાવ <getopt.h>
+#અન્તર્ભાવ <sys/types.h>
 
-#include "system.h"
-#include "assure.h"
-#include "dev-ino.h"
-#include "filemode.h"
-#include "fts-missing.h"
-#include "ignore-value.h"
-#include "modechange.h"
-#include "quote.h"
-#include "root-dev-ino.h"
-#include "xfts.h"
+#અન્તર્ભાવ "system.h"
+#અન્તર્ભાવ "assure.h"
+#અન્તર્ભાવ "dev-ino.h"
+#અન્તર્ભાવ "filemode.h"
+#અન્તર્ભાવ "fts-missing.h"
+#અન્તર્ભાવ "ignore-value.h"
+#અન્તર્ભાવ "modechange.h"
+#અન્તર્ભાવ "quote.h"
+#અન્તર્ભાવ "root-dev-ino.h"
+#અન્તર્ભાવ "xfts.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "chmod"
@@ -39,9 +39,9 @@
   proper_name ("David MacKenzie"), \
   proper_name ("Jim Meyering")
 
-struct change_status
+સંરચના change_status
 {
-  enum
+  ગણના
     {
       CH_NO_STAT,
       CH_FAILED,
@@ -54,10 +54,10 @@ struct change_status
   mode_t new_mode;
 };
 
-enum Verbosity
+ગણના Verbosity
 {
   /* Print a message for each file that is processed.  */
-  V_high,
+  V_ઉપલું,
 
   /* Print a message for each file whose attributes we change.  */
   V_changes_only,
@@ -67,119 +67,119 @@ enum Verbosity
 };
 
 /* The desired change to the mode.  */
-static struct mode_change *change;
+સ્થિર સંરચના mode_change *change;
 
 /* The initial umask value, if it might be needed.  */
-static mode_t umask_value;
+સ્થિર mode_t umask_કિંમત;
 
 /* If true, change the modes of directories recursively. */
-static bool recurse;
+સ્થિર bool recurse;
 
 /* 1 if --dereference, 0 if --no-dereference, -1 if neither has been
    specified.  */
-static int dereference = -1;
+સ્થિર પૂર્ણાંક dereference = -1;
 
 /* If true, force silence (suppress most of error messages). */
-static bool force_silent;
+સ્થિર bool force_silent;
 
 /* If true, diagnose surprises from naive misuses like "chmod -r file".
    POSIX allows diagnostics here, as portable code is supposed to use
    "chmod -- -r file".  */
-static bool diagnose_surprises;
+સ્થિર bool diagnose_surprises;
 
 /* Level of verbosity.  */
-static enum Verbosity verbosity = V_off;
+સ્થિર ગણના Verbosity verbosity = V_off;
 
 /* Pointer to the device and inode numbers of '/', when --recursive.
    Otherwise NULL.  */
-static struct dev_ino *root_dev_ino;
+સ્થિર સંરચના dev_ino *મૂળ_dev_ino;
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+ગણના
 {
   DEREFERENCE_OPTION = CHAR_MAX + 1,
-  NO_PRESERVE_ROOT,
-  PRESERVE_ROOT,
+  NO_PRESERVE_મૂળ,
+  PRESERVE_મૂળ,
   REFERENCE_FILE_OPTION
 };
 
-static struct option const long_options[] =
+સ્થિર સંરચના option અચલ long_options[] =
 {
-  {"changes", no_argument, NULL, 'c'},
-  {"dereference", no_argument, NULL, DEREFERENCE_OPTION},
-  {"recursive", no_argument, NULL, 'R'},
-  {"no-dereference", no_argument, NULL, 'h'},
-  {"no-preserve-root", no_argument, NULL, NO_PRESERVE_ROOT},
-  {"preserve-root", no_argument, NULL, PRESERVE_ROOT},
-  {"quiet", no_argument, NULL, 'f'},
-  {"reference", required_argument, NULL, REFERENCE_FILE_OPTION},
-  {"silent", no_argument, NULL, 'f'},
-  {"verbose", no_argument, NULL, 'v'},
+  {"changes", no_argument, ખાલી, 'c'},
+  {"dereference", no_argument, ખાલી, DEREFERENCE_OPTION},
+  {"recursive", no_argument, ખાલી, 'R'},
+  {"no-dereference", no_argument, ખાલી, 'h'},
+  {"no-preserve-root", no_argument, ખાલી, NO_PRESERVE_મૂળ},
+  {"preserve-root", no_argument, ખાલી, PRESERVE_મૂળ},
+  {"quiet", no_argument, ખાલી, 'f'},
+  {"reference", required_argument, ખાલી, REFERENCE_FILE_OPTION},
+  {"silent", no_argument, ખાલી, 'f'},
+  {"verbose", no_argument, ખાલી, 'v'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ખાલી, 0, ખાલી, 0}
 };
 
 /* Return true if the chmodable permission bits of FILE changed.
    The old mode was OLD_MODE, but it was changed to NEW_MODE.  */
 
-static bool
-mode_changed (int dir_fd, char const *file, char const *file_full_name,
+સ્થિર bool
+mode_changed (પૂર્ણાંક dir_fd, અક્ષર અચલ *file, અક્ષર અચલ *file_full_name,
               mode_t old_mode, mode_t new_mode, bool ignore_missing,
               bool *file_missing)
 {
   *file_missing = false;
-  if (new_mode & (S_ISUID | S_ISGID | S_ISVTX))
+  જો (new_mode & (S_ISUID | S_ISGID | S_ISVTX))
     {
       /* The new mode contains unusual bits that the call to chmod may
          have silently cleared.  Check whether they actually changed.  */
 
-      struct stat new_stats;
+      સંરચના stat new_stats;
 
-      if (fstatat (dir_fd, file, &new_stats, 0) != 0)
+      જો (fstatat (dir_fd, file, &new_stats, 0) != 0)
         {
           *file_missing = (ignore_missing
                            && ignorable_traversal_errno (errno));
-          if (! *file_missing && ! force_silent)
+          જો (! *file_missing && ! force_silent)
             error (0, errno, _("getting new attributes of %s"),
                    quoteaf (file_full_name));
-          return false;
+          પાછા false;
         }
 
       new_mode = new_stats.st_mode;
     }
 
-  return ((old_mode ^ new_mode) & CHMOD_MODE_BITS) != 0;
+  પાછા ((old_mode ^ new_mode) & CHMOD_MODE_BITS) != 0;
 }
 
 /* Tell the user how/if the MODE of FILE has been changed.
    CH describes what (if anything) has happened. */
 
-static void
-describe_change (char const *file, struct change_status const *ch)
+સ્થિર શૂન્ય
+describe_change (અક્ષર અચલ *file, સંરચના change_status અચલ *ch)
 {
-  char perms[12];		/* "-rwxrwxrwx" ls-style modes. */
-  char old_perms[12];
-  char const *fmt;
-  char const *quoted_file = quoteaf (file);
+  અક્ષર perms[12];		/* "-rwxrwxrwx" ls-style modes. */
+  અક્ષર old_perms[12];
+  અક્ષર અચલ *fmt;
+  અક્ષર અચલ *quoted_file = quoteaf (file);
 
-  switch (ch->status)
+  પસંદગી (ch->status)
     {
-    case CH_NOT_APPLIED:
+    સ્થિતિ CH_NOT_APPLIED:
       printf (_("neither symbolic link %s nor referent has been changed\n"),
               quoted_file);
-      return;
+      પાછા;
 
-    case CH_NO_STAT:
+    સ્થિતિ CH_NO_STAT:
       printf (_("%s could not be accessed\n"), quoted_file);
-      return;
+      પાછા;
 
-    case CH_FAILED: case CH_NO_CHANGE_REQUESTED: case CH_SUCCEEDED:
-      break;
+    સ્થિતિ CH_FAILED: સ્થિતિ CH_NO_CHANGE_REQUESTED: સ્થિતિ CH_SUCCEEDED:
+      તોડો;
   }
 
-  unsigned long int
+  unsigned long પૂર્ણાંક
     old_m = ch->old_mode & CHMOD_MODE_BITS,
     m = ch->new_mode & CHMOD_MODE_BITS;
 
@@ -189,19 +189,19 @@ describe_change (char const *file, struct change_status const *ch)
   strmode (ch->old_mode, old_perms);
   old_perms[10] = '\0';		/* Remove trailing space.  */
 
-  switch (ch->status)
+  પસંદગી (ch->status)
     {
-    case CH_SUCCEEDED:
+    સ્થિતિ CH_SUCCEEDED:
       fmt = _("mode of %s changed from %04lo (%s) to %04lo (%s)\n");
-      break;
-    case CH_FAILED:
+      તોડો;
+    સ્થિતિ CH_FAILED:
       fmt = _("failed to change mode of %s from %04lo (%s) to %04lo (%s)\n");
-      break;
-    case CH_NO_CHANGE_REQUESTED:
+      તોડો;
+    સ્થિતિ CH_NO_CHANGE_REQUESTED:
       fmt = _("mode of %s retained as %04lo (%s)\n");
       printf (fmt, quoted_file, m, &perms[1]);
-      return;
-    case CH_NO_STAT: case CH_NOT_APPLIED: default:
+      પાછા;
+    સ્થિતિ CH_NO_STAT: સ્થિતિ CH_NOT_APPLIED: મૂળભૂત:
       affirm (false);
     }
   printf (fmt, quoted_file, old_m, &old_perms[1], m, &perms[1]);
@@ -211,26 +211,26 @@ describe_change (char const *file, struct change_status const *ch)
    Return true if successful.  This function is called
    once for every file system object that fts encounters.  */
 
-static bool
+સ્થિર bool
 process_file (FTS *fts, FTSENT *ent)
 {
-  char const *file_full_name = ent->fts_path;
-  char const *file = ent->fts_accpath;
-  const struct stat *file_stats = ent->fts_statp;
-  struct change_status ch = {0};
+  અક્ષર અચલ *file_full_name = ent->fts_path;
+  અક્ષર અચલ *file = ent->fts_accpath;
+  અચલ સંરચના stat *file_stats = ent->fts_statp;
+  સંરચના change_status ch = {0};
   ch.status = CH_NO_STAT;
-  struct stat stat_buf;
+  સંરચના stat stat_buf;
   bool ignore_missing = ignore_missing_fts_entry (ent);
 
-  if (ignore_missing && ignorable_fts_error (ent))
-    return true;
+  જો (ignore_missing && ignorable_fts_error (ent))
+    પાછા true;
 
-  switch (ent->fts_info)
+  પસંદગી (ent->fts_info)
     {
-    case FTS_DP:
-      return true;
+    સ્થિતિ FTS_DP:
+      પાછા true;
 
-    case FTS_NS:
+    સ્થિતિ FTS_NS:
       /* For a top-level file or directory, this FTS_NS (stat failed)
          indicator is determined at the time of the initial fts_open call.
          With programs like chmod, chown, and chgrp, that modify
@@ -238,100 +238,100 @@ process_file (FTS *fts, FTSENT *ent)
          accessible when control reaches this point.  So, if this is
          the first time we've seen the FTS_NS for this file, tell
          fts_read to stat it "again".  */
-      if (ent->fts_level == FTS_ROOTLEVEL && ent->fts_number == 0)
+      જો (ent->fts_level == FTS_ROOTLEVEL && ent->fts_સંખ્યા == 0)
         {
-          ent->fts_number = 1;
+          ent->fts_સંખ્યા = 1;
           fts_set (fts, ent, FTS_AGAIN);
-          return true;
+          પાછા true;
         }
-      if (! force_silent)
+      જો (! force_silent)
         error (0, ent->fts_errno, _("cannot access %s"),
                quoteaf (file_full_name));
-      break;
+      તોડો;
 
-    case FTS_ERR:
-      if (! force_silent)
+    સ્થિતિ FTS_ERR:
+      જો (! force_silent)
         error (0, ent->fts_errno, "%s", quotef (file_full_name));
-      break;
+      તોડો;
 
-    case FTS_DNR:
-      if (! force_silent)
+    સ્થિતિ FTS_DNR:
+      જો (! force_silent)
         error (0, ent->fts_errno, _("cannot read directory %s"),
                quoteaf (file_full_name));
-      break;
+      તોડો;
 
-    case FTS_SLNONE:
-      if (dereference)
+    સ્થિતિ FTS_SLNONE:
+      જો (dereference)
         {
-          if (! force_silent)
+          જો (! force_silent)
             error (0, 0, _("cannot operate on dangling symlink %s"),
                    quoteaf (file_full_name));
-          break;
+          તોડો;
         }
       ch.status = CH_NOT_APPLIED;
-      break;
+      તોડો;
 
-    case FTS_SL:
-      if (dereference == 1)
+    સ્થિતિ FTS_SL:
+      જો (dereference == 1)
         {
-          if (fstatat (fts->fts_cwd_fd, file, &stat_buf, 0) != 0)
+          જો (fstatat (fts->fts_cwd_fd, file, &stat_buf, 0) != 0)
             {
-              if (ignore_missing
+              જો (ignore_missing
                   && ignorable_traversal_errno (errno))
-                return true;
-              if (! force_silent)
+                પાછા true;
+              જો (! force_silent)
                 error (0, errno, _("cannot dereference %s"),
                        quoteaf (file_full_name));
-              break;
+              તોડો;
             }
 
           file_stats = &stat_buf;
         }
       ch.status = CH_NOT_APPLIED;
-      break;
+      તોડો;
 
-    case FTS_DC:		/* directory that causes cycles */
-      if (cycle_warning_required (fts, ent))
+    સ્થિતિ FTS_DC:		/* directory that causes cycles */
+      જો (cycle_warning_required (fts, ent))
         {
           emit_cycle_warning (file_full_name);
-          return false;
+          પાછા false;
         }
       FALLTHROUGH;
-    default:
+    મૂળભૂત:
       ch.status = CH_NOT_APPLIED;
-      break;
+      તોડો;
     }
 
-  if (ch.status == CH_NOT_APPLIED
-      && ROOT_DEV_INO_CHECK (root_dev_ino, file_stats))
+  જો (ch.status == CH_NOT_APPLIED
+      && મૂળ_DEV_INO_CHECK (મૂળ_dev_ino, file_stats))
     {
-      ROOT_DEV_INO_WARN (file_full_name);
+      મૂળ_DEV_INO_WARN (file_full_name);
       /* Tell fts not to traverse into this hierarchy.  */
       fts_set (fts, ent, FTS_SKIP);
       /* Ensure that we do not process "/" on the second visit.  */
-      ignore_value (fts_read (fts));
-      return false;
+      ignore_કિંમત (fts_read (fts));
+      પાછા false;
     }
 
-  if (ch.status == CH_NOT_APPLIED)
+  જો (ch.status == CH_NOT_APPLIED)
     {
       ch.old_mode = file_stats->st_mode;
       ch.new_mode = mode_adjust (ch.old_mode, S_ISDIR (ch.old_mode) != 0,
-                                 umask_value, change, NULL);
+                                 umask_કિંમત, change, ખાલી);
       bool follow_symlink = !!dereference;
-      if (dereference == -1) /* -H with/without -R, -P without -R.  */
+      જો (dereference == -1) /* -H with/without -R, -P without -R.  */
         follow_symlink = ent->fts_level == FTS_ROOTLEVEL;
-      if (fchmodat (fts->fts_cwd_fd, file, ch.new_mode,
+      જો (fchmodat (fts->fts_cwd_fd, file, ch.new_mode,
                     follow_symlink ? 0 : AT_SYMLINK_NOFOLLOW) == 0)
         ch.status = CH_SUCCEEDED;
-      else
+      નહીંતર
         {
-          if (ignore_missing
+          જો (ignore_missing
               && ignorable_traversal_errno (errno))
-            return true;
-          if (! is_ENOTSUP (errno))
+            પાછા true;
+          જો (! is_ENOTSUP (errno))
             {
-              if (! force_silent)
+              જો (! force_silent)
                 error (0, errno, _("changing permissions of %s"),
                        quoteaf (file_full_name));
 
@@ -341,32 +341,32 @@ process_file (FTS *fts, FTSENT *ent)
         }
     }
 
-  if (verbosity != V_off)
+  જો (verbosity != V_off)
     {
       bool file_missing;
-      if (ch.status == CH_SUCCEEDED
+      જો (ch.status == CH_SUCCEEDED
           && !mode_changed (fts->fts_cwd_fd, file, file_full_name,
                             ch.old_mode, ch.new_mode, ignore_missing,
                             &file_missing))
         {
-          if (file_missing)
-            return true;
+          જો (file_missing)
+            પાછા true;
           ch.status = CH_NO_CHANGE_REQUESTED;
         }
 
-      if (ch.status == CH_SUCCEEDED || verbosity == V_high)
+      જો (ch.status == CH_SUCCEEDED || verbosity == V_ઉપલું)
         describe_change (file_full_name, &ch);
     }
 
-  if (CH_NO_CHANGE_REQUESTED <= ch.status && diagnose_surprises)
+  જો (CH_NO_CHANGE_REQUESTED <= ch.status && diagnose_surprises)
     {
       mode_t naively_expected_mode =
         mode_adjust (ch.old_mode, S_ISDIR (ch.old_mode) != 0,
-                     0, change, NULL);
-      if (ch.new_mode & ~naively_expected_mode)
+                     0, change, ખાલી);
+      જો (ch.new_mode & ~naively_expected_mode)
         {
-          char new_perms[12];
-          char naively_expected_perms[12];
+          અક્ષર new_perms[12];
+          અક્ષર naively_expected_perms[12];
           strmode (ch.new_mode, new_perms);
           strmode (naively_expected_mode, naively_expected_perms);
           new_perms[10] = naively_expected_perms[10] = '\0';
@@ -378,58 +378,58 @@ process_file (FTS *fts, FTSENT *ent)
         }
     }
 
-  if ( ! recurse)
+  જો ( ! recurse)
     fts_set (fts, ent, FTS_SKIP);
 
-  return CH_NOT_APPLIED <= ch.status;
+  પાછા CH_NOT_APPLIED <= ch.status;
 }
 
 /* Recursively change the modes of the specified FILES (the last entry
    of which is null).  BIT_FLAGS controls how fts works.
    Return true if successful.  */
 
-static bool
-process_files (char **files, int bit_flags)
+સ્થિર bool
+process_files (અક્ષર **files, પૂર્ણાંક bit_flags)
 {
   bool ok = true;
 
-  FTS *fts = xfts_open (files, bit_flags, NULL);
+  FTS *fts = xfts_open (files, bit_flags, ખાલી);
 
-  while (true)
+  જ્યારે (true)
     {
       FTSENT *ent;
 
       ent = fts_read (fts);
-      if (ent == NULL)
+      જો (ent == ખાલી)
         {
-          if (errno != 0)
+          જો (errno != 0)
             {
               /* FIXME: try to give a better message  */
-              if (! force_silent)
+              જો (! force_silent)
                 error (0, errno, _("fts_read failed"));
               ok = false;
             }
-          break;
+          તોડો;
         }
 
       ok &= process_file (fts, ent);
     }
 
-  if (fts_close (fts) != 0)
+  જો (fts_close (fts) != 0)
     {
       error (0, errno, _("fts_close failed"));
       ok = false;
     }
 
-  return ok;
+  પાછા ok;
 }
 
-void
-usage (int status)
+શૂન્ય
+usage (પૂર્ણાંક status)
 {
-  if (status != EXIT_SUCCESS)
+  જો (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  નહીંતર
     {
       printf (_("\
 Usage: %s [OPTION]... MODE[,MODE]... FILE...\n\
@@ -452,7 +452,7 @@ With --reference, change the mode of each FILE to that of RFILE.\n\
 "));
       oputs (_("\
   -v, --verbose\n\
-         output a diagnostic for every file processed\n\
+         output a diagnostic માટે every file processed\n\
 "));
       oputs (_("\
       --dereference\n\
@@ -464,17 +464,17 @@ With --reference, change the mode of each FILE to that of RFILE.\n\
          affect each symbolic link, rather than the referent\n\
 "));
       oputs (_("\
-      --no-preserve-root\n\
-         do not treat '/' specially (the default)\n\
+      --no-preserve-મૂળ\n\
+         કરો not treat '/' specially (the મૂળભૂત)\n\
 "));
       oputs (_("\
-      --preserve-root\n\
+      --preserve-મૂળ\n\
          fail to operate recursively on '/'\n\
 "));
       oputs (_("\
       --reference=RFILE\n\
-         use RFILE's mode instead of specifying MODE values.\n\
-         RFILE is always dereferenced if a symbolic link.\n\
+         use RFILE's mode instead of specifying MODE કિંમતો.\n\
+         RFILE is always dereferenced જો a symbolic link.\n\
 "));
       oputs (_("\
   -R, --recursive\n\
@@ -495,17 +495,17 @@ Each MODE is of the form '[ugoa]*([-+=]([rwxXst]*|[ugo]))+|[-+=][0-7]+'.\n\
 /* Parse the ASCII mode given on the command line into a linked list
    of 'struct mode_change' and apply that to each file argument. */
 
-int
-main (int argc, char **argv)
+પૂર્ણાંક
+મુખ્ય (પૂર્ણાંક argc, અક્ષર **argv)
 {
-  char *mode = NULL;
+  અક્ષર *mode = ખાલી;
   idx_t mode_len = 0;
   idx_t mode_alloc = 0;
   bool ok;
-  bool preserve_root = false;
-  char const *reference_file = NULL;
-  int c;
-  int bit_flags = FTS_COMFOLLOW | FTS_PHYSICAL;
+  bool preserve_મૂળ = false;
+  અક્ષર અચલ *reference_file = ખાલી;
+  પૂર્ણાંક c;
+  પૂર્ણાંક bit_flags = FTS_COMFOLLOW | FTS_PHYSICAL;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -515,51 +515,51 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((c = getopt_long (argc, argv,
+  જ્યારે ((c = getopt_long (argc, argv,
                            ("HLPRcfhvr::w::x::X::s::t::u::g::o::a::,::+::=::"
                             "0::1::2::3::4::5::6::7::"),
-                           long_options, NULL))
+                           long_options, ખાલી))
          != -1)
     {
-      switch (c)
+      પસંદગી (c)
         {
 
-        case 'H': /* Traverse command-line symlinks-to-directories.  */
+        સ્થિતિ 'H': /* Traverse command-line symlinks-to-directories.  */
           bit_flags = FTS_COMFOLLOW | FTS_PHYSICAL;
-          break;
+          તોડો;
 
-        case 'L': /* Traverse all symlinks-to-directories.  */
+        સ્થિતિ 'L': /* Traverse all symlinks-to-directories.  */
           bit_flags = FTS_LOGICAL;
-          break;
+          તોડો;
 
-        case 'P': /* Traverse no symlinks-to-directories.  */
+        સ્થિતિ 'P': /* Traverse no symlinks-to-directories.  */
           bit_flags = FTS_PHYSICAL;
-          break;
+          તોડો;
 
-        case 'h': /* --no-dereference: affect symlinks */
+        સ્થિતિ 'h': /* --no-dereference: affect symlinks */
           dereference = 0;
-          break;
+          તોડો;
 
-        case DEREFERENCE_OPTION: /* --dereference: affect the referent
+        સ્થિતિ DEREFERENCE_OPTION: /* --dereference: affect the referent
                                     of each symlink */
           dereference = 1;
-          break;
+          તોડો;
 
-        case 'r':
-        case 'w':
-        case 'x':
-        case 'X':
-        case 's':
-        case 't':
-        case 'u':
-        case 'g':
-        case 'o':
-        case 'a':
-        case ',':
-        case '+':
-        case '=':
-        case '0': case '1': case '2': case '3':
-        case '4': case '5': case '6': case '7':
+        સ્થિતિ 'r':
+        સ્થિતિ 'w':
+        સ્થિતિ 'x':
+        સ્થિતિ 'X':
+        સ્થિતિ 's':
+        સ્થિતિ 't':
+        સ્થિતિ 'u':
+        સ્થિતિ 'g':
+        સ્થિતિ 'o':
+        સ્થિતિ 'a':
+        સ્થિતિ ',':
+        સ્થિતિ '+':
+        સ્થિતિ '=':
+        સ્થિતિ '0': સ્થિતિ '1': સ્થિતિ '2': સ્થિતિ '3':
+        સ્થિતિ '4': સ્થિતિ '5': સ્થિતિ '6': સ્થિતિ '7':
           /* Support non-portable uses like "chmod -w", but diagnose
              surprises due to umask confusion.  Even though "--", "--r",
              etc., are valid modes, there is no "case '-'" here since
@@ -570,12 +570,12 @@ main (int argc, char **argv)
                string was given, concatenate the previous string, a
                comma, and the new string (e.g., "-s,-rwx").  */
 
-            char const *arg = argv[optind - 1];
+            અક્ષર અચલ *arg = argv[optind - 1];
             idx_t arg_len = strlen (arg);
             idx_t mode_comma_len = mode_len + !!mode_len;
             idx_t new_mode_len = mode_comma_len + arg_len;
             assume (0 <= new_mode_len);  /* Pacify GCC bug #109613.  */
-            if (mode_alloc <= new_mode_len)
+            જો (mode_alloc <= new_mode_len)
               mode = xpalloc (mode, &mode_alloc,
                               new_mode_len + 1 - mode_alloc, -1, 1);
             mode[mode_len] = ',';
@@ -584,101 +584,101 @@ main (int argc, char **argv)
 
             diagnose_surprises = true;
           }
-          break;
-        case NO_PRESERVE_ROOT:
-          preserve_root = false;
-          break;
-        case PRESERVE_ROOT:
-          preserve_root = true;
-          break;
-        case REFERENCE_FILE_OPTION:
+          તોડો;
+        સ્થિતિ NO_PRESERVE_મૂળ:
+          preserve_મૂળ = false;
+          તોડો;
+        સ્થિતિ PRESERVE_મૂળ:
+          preserve_મૂળ = true;
+          તોડો;
+        સ્થિતિ REFERENCE_FILE_OPTION:
           reference_file = optarg;
-          break;
-        case 'R':
+          તોડો;
+        સ્થિતિ 'R':
           recurse = true;
-          break;
-        case 'c':
+          તોડો;
+        સ્થિતિ 'c':
           verbosity = V_changes_only;
-          break;
-        case 'f':
+          તોડો;
+        સ્થિતિ 'f':
           force_silent = true;
-          break;
-        case 'v':
-          verbosity = V_high;
-          break;
+          તોડો;
+        સ્થિતિ 'v':
+          verbosity = V_ઉપલું;
+          તોડો;
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        મૂળભૂત:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (recurse)
+  જો (recurse)
     {
-      if (bit_flags == FTS_PHYSICAL)
+      જો (bit_flags == FTS_PHYSICAL)
         {
-          if (dereference == 1)
+          જો (dereference == 1)
             error (EXIT_FAILURE, 0,
                    _("-R --dereference requires either -H or -L"));
           dereference = 0;
         }
     }
 
-  if (dereference == -1 && bit_flags == FTS_LOGICAL)
+  જો (dereference == -1 && bit_flags == FTS_LOGICAL)
     dereference = 1;
 
-  if (reference_file)
+  જો (reference_file)
     {
-      if (mode)
+      જો (mode)
         {
           error (0, 0, _("cannot combine mode and --reference options"));
           usage (EXIT_FAILURE);
         }
     }
-  else
+  નહીંતર
     {
-      if (!mode)
+      જો (!mode)
         mode = argv[optind++];
     }
 
-  if (optind >= argc)
+  જો (optind >= argc)
     {
-      if (!mode || mode != argv[optind - 1])
+      જો (!mode || mode != argv[optind - 1])
         error (0, 0, _("missing operand"));
-      else
+      નહીંતર
         error (0, 0, _("missing operand after %s"), quote (argv[argc - 1]));
       usage (EXIT_FAILURE);
     }
 
-  if (reference_file)
+  જો (reference_file)
     {
       change = mode_create_from_ref (reference_file);
-      if (!change)
+      જો (!change)
         error (EXIT_FAILURE, errno, _("failed to get attributes of %s"),
                quoteaf (reference_file));
     }
-  else
+  નહીંતર
     {
       change = mode_compile (mode);
-      if (!change)
+      જો (!change)
         {
           error (0, 0, _("invalid mode: %s"), quote (mode));
           usage (EXIT_FAILURE);
         }
-      umask_value = umask (0);
+      umask_કિંમત = umask (0);
     }
 
-  if (recurse && preserve_root)
+  જો (recurse && preserve_મૂળ)
     {
-      static struct dev_ino dev_ino_buf;
-      root_dev_ino = get_root_dev_ino (&dev_ino_buf);
-      if (root_dev_ino == NULL)
+      સ્થિર સંરચના dev_ino dev_ino_buf;
+      મૂળ_dev_ino = get_મૂળ_dev_ino (&dev_ino_buf);
+      જો (મૂળ_dev_ino == ખાલી)
         error (EXIT_FAILURE, errno, _("failed to get attributes of %s"),
                quoteaf ("/"));
     }
-  else
+  નહીંતર
     {
-      root_dev_ino = NULL;
+      મૂળ_dev_ino = ખાલી;
     }
 
   bit_flags |= FTS_DEFER_STAT;

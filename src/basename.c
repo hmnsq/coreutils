@@ -14,38 +14,38 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include <getopt.h>
-#include <stdio.h>
-#include <sys/types.h>
+#અન્તર્ભાવ <config.h>
+#અન્તર્ભાવ <getopt.h>
+#અન્તર્ભાવ <stdio.h>
+#અન્તર્ભાવ <sys/types.h>
 
-#include "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
-#include "system.h"
-#include "quote.h"
+#અન્તર્ભાવ "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
+#અન્તર્ભાવ "system.h"
+#અન્તર્ભાવ "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "basename"
 
 #define AUTHORS proper_name ("David MacKenzie")
 
-static bool quote_output;
+સ્થિર bool quote_output;
 
-static struct option const longopts[] =
+સ્થિર સંરચના option અચલ longopts[] =
 {
-  {"multiple", no_argument, NULL, 'a'},
-  {"suffix", required_argument, NULL, 's'},
-  {"zero", no_argument, NULL, 'z'},
+  {"multiple", no_argument, ખાલી, 'a'},
+  {"suffix", required_argument, ખાલી, 's'},
+  {"zero", no_argument, ખાલી, 'z'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ખાલી, 0, ખાલી, 0}
 };
 
-void
-usage (int status)
+શૂન્ય
+usage (પૂર્ણાંક status)
 {
-  if (status != EXIT_SUCCESS)
+  જો (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  નહીંતર
     {
       printf (_("\
 Usage: %s NAME [SUFFIX]\n\
@@ -69,7 +69,7 @@ If specified, also remove a trailing SUFFIX.\n\
 "));
       oputs (_("\
   -z, --zero\n\
-         end each output line with NUL, not newline\n\
+         end each output લીટી with NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -90,16 +90,16 @@ Examples:\n\
 /* Remove SUFFIX from the end of NAME if it is there, unless NAME
    consists entirely of SUFFIX.  */
 
-static void
-remove_suffix (char *name, char const *suffix, idx_t suffix_len)
+સ્થિર શૂન્ય
+remove_suffix (અક્ષર *name, અક્ષર અચલ *suffix, idx_t suffix_len)
 {
-  char *np = name + strlen (name);
-  char const *sp = suffix + suffix_len;
+  અક્ષર *np = name + strlen (name);
+  અક્ષર અચલ *sp = suffix + suffix_len;
 
-  while (np > name && sp > suffix)
-    if (*--np != *--sp)
-      return;
-  if (np > name)
+  જ્યારે (np > name && sp > suffix)
+    જો (*--np != *--sp)
+      પાછા;
+  જો (np > name)
     *np = '\0';
 }
 
@@ -107,11 +107,11 @@ remove_suffix (char *name, char const *suffix, idx_t suffix_len)
    length of SUFFIX_LEN bytes, remove the trailing SUFFIX.
    Finally, output the result string.  */
 
-static void
-perform_basename (char const *string, char const *suffix, idx_t suffix_len,
+સ્થિર શૂન્ય
+perform_basename (અક્ષર અચલ *string, અક્ષર અચલ *suffix, idx_t suffix_len,
                   bool use_nuls)
 {
-  char *name = base_name (string);
+  અક્ષર *name = base_name (string);
   strip_trailing_slashes (name);
 
   /* Per POSIX, 'basename // /' must return '//' on platforms with
@@ -120,21 +120,21 @@ perform_basename (char const *string, char const *suffix, idx_t suffix_len,
      skipping suffix stripping if base_name returned an absolute path
      or a drive letter (only possible if name is a file-system
      root).  */
-  if (0 < suffix_len && IS_RELATIVE_FILE_NAME (name)
+  જો (0 < suffix_len && IS_RELATIVE_FILE_NAME (name)
       && ! FILE_SYSTEM_PREFIX_LEN (name))
     remove_suffix (name, suffix, suffix_len);
 
   fputs (quote_output ? quoteN (name) : name, stdout);
   putchar (use_nuls ? '\0' : '\n');
-  free (name);
+  મુક્ત (name);
 }
 
-int
-main (int argc, char **argv)
+પૂર્ણાંક
+મુખ્ય (પૂર્ણાંક argc, અક્ષર **argv)
 {
   bool multiple_names = false;
   bool use_nuls = false;
-  char const *suffix = NULL;
+  અક્ષર અચલ *suffix = ખાલી;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -144,72 +144,72 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while (true)
+  જ્યારે (true)
     {
-      int c = getopt_long (argc, argv, "+as:z", longopts, NULL);
+      પૂર્ણાંક c = getopt_long (argc, argv, "+as:z", longopts, ખાલી);
 
-      if (c == -1)
-        break;
+      જો (c == -1)
+        તોડો;
 
-      switch (c)
+      પસંદગી (c)
         {
-        case 's':
+        સ્થિતિ 's':
           suffix = optarg;
           /* -s implies -a, so...  */
           FALLTHROUGH;
 
-        case 'a':
+        સ્થિતિ 'a':
           multiple_names = true;
-          break;
+          તોડો;
 
-        case 'z':
+        સ્થિતિ 'z':
           use_nuls = true;
-          break;
+          તોડો;
 
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        મૂળભૂત:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (argc < optind + 1)
+  જો (argc < optind + 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
-  if (! multiple_names)
+  જો (! multiple_names)
     {
-      if (optind + 2 == argc)
+      જો (optind + 2 == argc)
         suffix = argv[optind + 1];
-      else if (optind + 2 < argc)
+      નહીંતર જો (optind + 2 < argc)
         {
           error (0, 0, _("extra operand %s"), quote (argv[optind + 2]));
           usage (EXIT_FAILURE);
         }
     }
 
-  if (!use_nuls && isatty (STDOUT_FILENO))
+  જો (!use_nuls && isatty (STDOUT_FILENO))
     {
-      int qs = getenv_quoting_style ();
-      if (qs < 0)
+      પૂર્ણાંક qs = getenv_quoting_style ();
+      જો (qs < 0)
         qs = shell_escape_quoting_style;
-      if (qs != literal_quoting_style)
+      જો (qs != literal_quoting_style)
         {
-          set_quoting_style (NULL, qs);
+          set_quoting_style (ખાલી, qs);
           quote_output = true;
         }
     }
 
   idx_t suffix_len = suffix ? strlen (suffix) : 0;
 
-  char **file = argv + optind;
-  int n_files = multiple_names ? argc - optind : 1;
+  અક્ષર **file = argv + optind;
+  પૂર્ણાંક n_files = multiple_names ? argc - optind : 1;
 
-  for (int i = 0; i < n_files; ++i)
+  માટે (પૂર્ણાંક i = 0; i < n_files; ++i)
     perform_basename (file[i], suffix, suffix_len, use_nuls);
 
-  return EXIT_SUCCESS;
+  પાછા EXIT_SUCCESS;
 }

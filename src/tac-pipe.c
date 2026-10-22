@@ -16,7 +16,7 @@
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
 /* FIXME */
-#include "assure.h"
+#અન્તર્ભાવ "assure.h"
 
 /* FIXME: this is small for testing */
 #define BUFFER_SIZE (8)
@@ -26,29 +26,29 @@
 
 #define ONE_PAST_END(X, I) ((X)->p[(I)].one_past_end)
 
-struct Line_ptr
+સંરચના લીટી_ptr
 {
   size_t i;
-  char *ptr;
+  અક્ષર *ptr;
 };
-typedef struct Line_ptr Line_ptr;
+પ્રકારવ્યાખ્યા સંરચના લીટી_ptr લીટી_ptr;
 
-struct B_pair
+સંરચના B_pair
 {
-  char *start;
-  char *one_past_end;
+  અક્ષર *start;
+  અક્ષર *one_past_end;
 };
 
-struct Buf
+સંરચના Buf
 {
   size_t n_bufs;
-  struct obstack obs;
-  struct B_pair *p;
+  સંરચના obstack obs;
+  સંરચના B_pair *p;
 };
-typedef struct Buf Buf;
+પ્રકારવ્યાખ્યા સંરચના Buf Buf;
 
-static bool
-buf_init_from_stdin (Buf *x, char eol_byte)
+સ્થિર bool
+buf_init_from_stdin (Buf *x, અક્ષર eol_byte)
 {
   bool last_byte_is_eol_byte = true;
   bool ok = true;
@@ -56,146 +56,146 @@ buf_init_from_stdin (Buf *x, char eol_byte)
 #define OBS (&(x->obs))
   obstack_init (OBS);
 
-  while (true)
+  જ્યારે (true)
     {
-      char *buf = malloc (BUFFER_SIZE);
+      અક્ષર *buf = malloc (BUFFER_SIZE);
 
-      if (buf == NULL)
+      જો (buf == ખાલી)
         {
           /* Fall back on the code that relies on a temporary file.
              Write all buffers to that file and free them.  */
           /* FIXME */
           ok = false;
-          break;
+          તોડો;
         }
       idx_t bytes_read = full_read (STDIN_FILENO, buf, BUFFER_SIZE);
-      if (bytes_read != BUFFER_SIZE && errno != 0)
+      જો (bytes_read != BUFFER_SIZE && errno != 0)
         error (EXIT_FAILURE, errno, _("read error"));
 
       {
-        struct B_pair bp;
+        સંરચના B_pair bp;
         bp.start = buf;
         bp.one_past_end = buf + bytes_read;
-        obstack_grow (OBS, &bp, sizeof (bp));
+        obstack_grow (OBS, &bp, કદ (bp));
       }
 
-      if (bytes_read != 0)
+      જો (bytes_read != 0)
         last_byte_is_eol_byte = (buf[bytes_read - 1] == eol_byte);
 
-      if (bytes_read < BUFFER_SIZE)
-        break;
+      જો (bytes_read < BUFFER_SIZE)
+        તોડો;
     }
 
-  if (ok)
+  જો (ok)
     {
       /* If the file was non-empty and lacked an EOL_BYTE at its end,
          then add a buffer containing just that one byte.  */
-      if (!last_byte_is_eol_byte)
+      જો (!last_byte_is_eol_byte)
         {
-          char *buf = malloc (1);
-          if (buf == NULL)
+          અક્ષર *buf = malloc (1);
+          જો (buf == ખાલી)
             {
               /* FIXME: just like above */
               ok = false;
             }
-          else
+          નહીંતર
             {
-              struct B_pair bp;
+              સંરચના B_pair bp;
               *buf = eol_byte;
               bp.start = buf;
               bp.one_past_end = buf + 1;
-              obstack_grow (OBS, &bp, sizeof (bp));
+              obstack_grow (OBS, &bp, કદ (bp));
             }
         }
     }
 
-  x->n_bufs = obstack_object_size (OBS) / sizeof (x->p[0]);
-  x->p = (struct B_pair *) obstack_finish (OBS);
+  x->n_bufs = obstack_object_size (OBS) / કદ (x->p[0]);
+  x->p = (સંરચના B_pair *) obstack_finish (OBS);
 
   /* If there are two or more buffers and the last buffer is empty,
      then free the last one and decrement the buffer count.  */
-  if (x->n_bufs >= 2
+  જો (x->n_bufs >= 2
       && x->p[x->n_bufs - 1].start == x->p[x->n_bufs - 1].one_past_end)
-    free (x->p[--(x->n_bufs)].start);
+    મુક્ત (x->p[--(x->n_bufs)].start);
 
-  return ok;
+  પાછા ok;
 }
 
-static void
+સ્થિર શૂન્ય
 buf_free (Buf *x)
 {
-  for (size_t i = 0; i < x->n_bufs; i++)
-    free (x->p[i].start);
-  obstack_free (OBS, NULL);
+  માટે (size_t i = 0; i < x->n_bufs; i++)
+    મુક્ત (x->p[i].start);
+  obstack_free (OBS, ખાલી);
 }
 
-Line_ptr
-line_ptr_decrement (const Buf *x, const Line_ptr *lp)
+લીટી_ptr
+લીટી_ptr_decrement (અચલ Buf *x, અચલ લીટી_ptr *lp)
 {
-  Line_ptr lp_new;
+  લીટી_ptr lp_new;
 
-  if (lp->ptr > x->p[lp->i].start)
+  જો (lp->ptr > x->p[lp->i].start)
     {
       lp_new.i = lp->i;
       lp_new.ptr = lp->ptr - 1;
     }
-  else
+  નહીંતર
     {
       affirm (lp->i > 0);
       lp_new.i = lp->i - 1;
       lp_new.ptr = ONE_PAST_END (x, lp->i - 1) - 1;
     }
-  return lp_new;
+  પાછા lp_new;
 }
 
-Line_ptr
-line_ptr_increment (const Buf *x, const Line_ptr *lp)
+લીટી_ptr
+લીટી_ptr_increment (અચલ Buf *x, અચલ લીટી_ptr *lp)
 {
-  Line_ptr lp_new;
+  લીટી_ptr lp_new;
 
   affirm (lp->ptr <= ONE_PAST_END (x, lp->i) - 1);
-  if (lp->ptr < ONE_PAST_END (x, lp->i) - 1)
+  જો (lp->ptr < ONE_PAST_END (x, lp->i) - 1)
     {
       lp_new.i = lp->i;
       lp_new.ptr = lp->ptr + 1;
     }
-  else
+  નહીંતર
     {
       affirm (lp->i < x->n_bufs - 1);
       lp_new.i = lp->i + 1;
       lp_new.ptr = x->p[lp->i + 1].start;
     }
-  return lp_new;
+  પાછા lp_new;
 }
 
-static bool
-find_bol (const Buf *x,
-          const Line_ptr *last_bol, Line_ptr *new_bol, char eol_byte)
+સ્થિર bool
+find_bol (અચલ Buf *x,
+          અચલ લીટી_ptr *last_bol, લીટી_ptr *new_bol, અક્ષર eol_byte)
 {
   size_t i;
-  Line_ptr tmp;
-  char *last_bol_ptr;
+  લીટી_ptr tmp;
+  અક્ષર *last_bol_ptr;
 
-  if (last_bol->ptr == x->p[0].start)
-    return false;
+  જો (last_bol->ptr == x->p[0].start)
+    પાછા false;
 
-  tmp = line_ptr_decrement (x, last_bol);
+  tmp = લીટી_ptr_decrement (x, last_bol);
   last_bol_ptr = tmp.ptr;
   i = tmp.i;
-  while (true)
+  જ્યારે (true)
     {
-      char *nl = memrchr (x->p[i].start, last_bol_ptr, eol_byte);
-      if (nl)
+      અક્ષર *nl = memrchr (x->p[i].start, last_bol_ptr, eol_byte);
+      જો (nl)
         {
-          Line_ptr nl_pos;
+          લીટી_ptr nl_pos;
           nl_pos.i = i;
           nl_pos.ptr = nl;
-          *new_bol = line_ptr_increment (x, &nl_pos);
-          return true;
+          *new_bol = લીટી_ptr_increment (x, &nl_pos);
+          પાછા true;
         }
 
-      if (i == 0)
-        break;
+      જો (i == 0)
+        તોડો;
 
       --i;
       last_bol_ptr = ONE_PAST_END (x, i);
@@ -204,56 +204,56 @@ find_bol (const Buf *x,
   /* If last_bol->ptr didn't point at the first byte of X, then reaching
      this point means that we're about to return the line that is at the
      beginning of X.  */
-  if (last_bol->ptr != x->p[0].start)
+  જો (last_bol->ptr != x->p[0].start)
     {
       new_bol->i = 0;
       new_bol->ptr = x->p[0].start;
-      return true;
+      પાછા true;
     }
 
-  return false;
+  પાછા false;
 }
 
-static void
-print_line (FILE *out_stream, const Buf *x,
-            const Line_ptr *bol, const Line_ptr *bol_next)
+સ્થિર શૂન્ય
+print_લીટી (FILE *out_stream, અચલ Buf *x,
+            અચલ લીટી_ptr *bol, અચલ લીટી_ptr *bol_next)
 {
-  for (size_t i = bol->i; i <= bol_next->i; i++)
+  માટે (size_t i = bol->i; i <= bol_next->i; i++)
     {
-      char *a = (i == bol->i ? bol->ptr : x->p[i].start);
-      char *b = (i == bol_next->i ? bol_next->ptr : ONE_PAST_END (x, i));
+      અક્ષર *a = (i == bol->i ? bol->ptr : x->p[i].start);
+      અક્ષર *b = (i == bol_next->i ? bol_next->ptr : ONE_PAST_END (x, i));
       fwrite (a, 1, b - a, out_stream);
     }
 }
 
-static bool
+સ્થિર bool
 tac_mem ()
 {
   Buf x;
-  Line_ptr bol;
-  char eol_byte = '\n';
+  લીટી_ptr bol;
+  અક્ષર eol_byte = '\n';
 
-  if (! buf_init_from_stdin (&x, eol_byte))
+  જો (! buf_init_from_stdin (&x, eol_byte))
     {
       buf_free (&x);
-      return false;
+      પાછા false;
     }
 
   /* Special case the empty file.  */
-  if (EMPTY (&x))
-    return true;
+  જો (EMPTY (&x))
+    પાછા true;
 
   /* Initially, point at one past the last byte of the file.  */
   bol.i = x.n_bufs - 1;
   bol.ptr = ONE_PAST_END (&x, bol.i);
 
-  while (true)
+  જ્યારે (true)
     {
-      Line_ptr new_bol;
-      if (! find_bol (&x, &bol, &new_bol, eol_byte))
-        break;
-      print_line (stdout, &x, &new_bol, &bol);
+      લીટી_ptr new_bol;
+      જો (! find_bol (&x, &bol, &new_bol, eol_byte))
+        તોડો;
+      print_લીટી (stdout, &x, &new_bol, &bol);
       bol = new_bol;
     }
-  return true;
+  પાછા true;
 }

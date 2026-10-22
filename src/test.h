@@ -1,4 +1,4 @@
-enum test_modes
+ગણના test_modes
 {
   /* This is for the 'test' program.  */
   TEST_TEST,
@@ -7,4 +7,4 @@ enum test_modes
   TEST_LBRACKET
 };
 
-extern enum test_modes test_mode;
+બાહ્ય ગણના test_modes test_mode;

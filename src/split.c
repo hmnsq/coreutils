@@ -19,31 +19,31 @@
    TODO:
    * support -p REGEX as in BSD's split.
    * support --suppress-matched as in csplit.  */
-#include <config.h>
+#અન્તર્ભાવ <config.h>
 
-#include <stdio.h>
-#include <getopt.h>
-#include <signal.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <spawn.h>
+#અન્તર્ભાવ <stdio.h>
+#અન્તર્ભાવ <getopt.h>
+#અન્તર્ભાવ <signal.h>
+#અન્તર્ભાવ <sys/types.h>
+#અન્તર્ભાવ <sys/wait.h>
+#અન્તર્ભાવ <spawn.h>
 
-#include "system.h"
-#include "alignalloc.h"
-#include "assure.h"
-#include "fadvise.h"
-#include "fd-reopen.h"
-#include "fcntl--.h"
-#include "full-write.h"
-#include "ioblksize.h"
-#include "quote.h"
-#include "sig2str.h"
-#include "sys-limits.h"
-#include "temp-stream.h"
-#include "unistd--.h"
-#include "xbinary-io.h"
-#include "xdectoint.h"
-#include "xstrtol.h"
+#અન્તર્ભાવ "system.h"
+#અન્તર્ભાવ "alignalloc.h"
+#અન્તર્ભાવ "assure.h"
+#અન્તર્ભાવ "fadvise.h"
+#અન્તર્ભાવ "fd-reopen.h"
+#અન્તર્ભાવ "fcntl--.h"
+#અન્તર્ભાવ "full-write.h"
+#અન્તર્ભાવ "ioblksize.h"
+#અન્તર્ભાવ "quote.h"
+#અન્તર્ભાવ "sig2str.h"
+#અન્તર્ભાવ "sys-limits.h"
+#અન્તર્ભાવ "temp-stream.h"
+#અન્તર્ભાવ "unistd--.h"
+#અન્તર્ભાવ "xbinary-io.h"
+#અન્તર્ભાવ "xdectoint.h"
+#અન્તર્ભાવ "xstrtol.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "split"
@@ -53,84 +53,84 @@
   proper_name ("Richard M. Stallman")
 
 /* Shell command to filter through, instead of creating files.  */
-static char const *filter_command;
+સ્થિર અક્ષર અચલ *filter_command;
 
 /* Process ID of the filter.  */
-static pid_t filter_pid;
+સ્થિર pid_t filter_pid;
 
-static struct
+સ્થિર સંરચના
 {
   /* The number of open pipes.  */
-  int n_pipes;
+  પૂર્ણાંક n_pipes;
 
   /* The number of allocated pipes.  */
   idx_t n_pipes_alloc;
 
   /* Array of open pipes.  */
-  int *pipes COUNTED_BY (n_pipes);
+  પૂર્ણાંક *pipes COUNTED_BY (n_pipes);
 } open_pipes;
 
 /* Whether SIGPIPE has the default action, when --filter is used.  */
-static bool default_SIGPIPE;
+સ્થિર bool default_SIGPIPE;
 
 /* Base name of output files.  */
-static char const *outbase = "x";
+સ્થિર અક્ષર અચલ *outbase = "x";
 
 /* Name of output files.  */
-static char *outfile;
+સ્થિર અક્ષર *outfile;
 
 /* Pointer to the end of the prefix in OUTFILE.
    Suffixes are inserted here.  */
-static char *outfile_mid;
+સ્થિર અક્ષર *outfile_mid;
 
 /* Generate new suffix when suffixes are exhausted.  */
-static bool suffix_auto = true;
+સ્થિર bool suffix_auto = true;
 
 /* Length of OUTFILE's suffix.  */
-static idx_t suffix_length;
+સ્થિર idx_t suffix_length;
 
 /* Alphabet of characters to use in suffix.  */
-static char const *suffix_alphabet = "abcdefghijklmnopqrstuvwxyz";
+સ્થિર અક્ષર અચલ *suffix_alphabet = "abcdefghijklmnopqrstuvwxyz";
 
 /* Numerical suffix start value.  */
-static char const *numeric_suffix_start;
+સ્થિર અક્ષર અચલ *numeric_suffix_start;
 
 /* Additional suffix to append to output file names.  */
-static char const *additional_suffix;
+સ્થિર અક્ષર અચલ *additional_suffix;
 
 /* Name of input file.  May be "-".  */
-static char const *infile = "-";
+સ્થિર અક્ષર અચલ *infile = "-";
 
 /* stat buf for input file.  */
-static struct stat in_stat_buf;
+સ્થિર સંરચના stat in_stat_buf;
 
 /* Descriptor on which output file is open.  */
-static int output_desc = -1;
+સ્થિર પૂર્ણાંક output_desc = -1;
 
 /* If true, print a diagnostic on standard error just before each
    output file is opened. */
-static bool verbose;
+સ્થિર bool verbose;
 
 /* If true, don't generate zero length output files. */
-static bool elide_empty_files;
+સ્થિર bool elide_empty_files;
 
 /* If true, in round robin mode, immediately copy
    input to output, which is much slower, so disabled by default.  */
-static bool unbuffered;
+સ્થિર bool unbuffered;
 
 /* The character marking end of line.  Defaults to \n below.  */
-static int eolchar = -1;
+સ્થિર પૂર્ણાંક eolchar = -1;
 
 /* The split mode to use.  */
-enum Split_type
+ગણના Split_type
 {
-  type_undef, type_bytes, type_byteslines, type_lines, type_digits,
-  type_chunk_bytes, type_chunk_lines, type_rr
+  type_undef, type_bytes, type_byteslines, type_લીટીઓ, type_digits,
+  type_chunk_bytes, type_chunk_લીટીઓ, type_rr
 };
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+ગણના
 {
   VERBOSE_OPTION = CHAR_MAX + 1,
   FILTER_OPTION,
@@ -138,97 +138,97 @@ enum
   ADDITIONAL_SUFFIX_OPTION
 };
 
-static struct option const longopts[] =
+સ્થિર સંરચના option અચલ longopts[] =
 {
-  {"bytes", required_argument, NULL, 'b'},
-  {"lines", required_argument, NULL, 'l'},
-  {"line-bytes", required_argument, NULL, 'C'},
-  {"number", required_argument, NULL, 'n'},
-  {"elide-empty-files", no_argument, NULL, 'e'},
-  {"unbuffered", no_argument, NULL, 'u'},
-  {"suffix-length", required_argument, NULL, 'a'},
-  {"additional-suffix", required_argument, NULL,
+  {"bytes", required_argument, ખાલી, 'b'},
+  {"lines", required_argument, ખાલી, 'l'},
+  {"line-bytes", required_argument, ખાલી, 'C'},
+  {"number", required_argument, ખાલી, 'n'},
+  {"elide-empty-files", no_argument, ખાલી, 'e'},
+  {"unbuffered", no_argument, ખાલી, 'u'},
+  {"suffix-length", required_argument, ખાલી, 'a'},
+  {"additional-suffix", required_argument, ખાલી,
    ADDITIONAL_SUFFIX_OPTION},
-  {"numeric-suffixes", optional_argument, NULL, 'd'},
-  {"hex-suffixes", optional_argument, NULL, 'x'},
-  {"filter", required_argument, NULL, FILTER_OPTION},
-  {"verbose", no_argument, NULL, VERBOSE_OPTION},
-  {"separator", required_argument, NULL, 't'},
-  {"-io-blksize", required_argument, NULL,
+  {"numeric-suffixes", optional_argument, ખાલી, 'd'},
+  {"hex-suffixes", optional_argument, ખાલી, 'x'},
+  {"filter", required_argument, ખાલી, FILTER_OPTION},
+  {"verbose", no_argument, ખાલી, VERBOSE_OPTION},
+  {"separator", required_argument, ખાલી, 't'},
+  {"-io-blksize", required_argument, ખાલી,
    IO_BLKSIZE_OPTION}, /* do not document */
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ખાલી, 0, ખાલી, 0}
 };
 
 /* Return true if the errno value, ERR, is ignorable.  */
-static inline bool
-ignorable (int err)
+સ્થિર અંતઃરેખ bool
+ignorable (પૂર્ણાંક err)
 {
-  return filter_command && err == EPIPE;
+  પાછા filter_command && err == EPIPE;
 }
 
-static void
-set_suffix_length (intmax_t n_units, enum Split_type split_type)
+સ્થિર શૂન્ય
+set_suffix_length (intmax_t n_units, ગણના Split_type split_type)
 {
 #define DEFAULT_SUFFIX_LENGTH 2
 
-  int suffix_length_needed = 0;
+  પૂર્ણાંક suffix_length_needed = 0;
 
   /* The suffix auto length feature is incompatible with
      a user specified start value as the generated suffixes
      are not all consecutive.  */
-  if (numeric_suffix_start)
+  જો (numeric_suffix_start)
     suffix_auto = false;
 
   /* Auto-calculate the suffix length if the number of files is given.  */
-  if (split_type == type_chunk_bytes || split_type == type_chunk_lines
+  જો (split_type == type_chunk_bytes || split_type == type_chunk_લીટીઓ
       || split_type == type_rr)
     {
       intmax_t n_units_end = n_units - 1;
-      if (numeric_suffix_start)
+      જો (numeric_suffix_start)
         {
           intmax_t n_start;
-          strtol_error e = xstrtoimax (numeric_suffix_start, NULL, 10,
+          strtol_error e = xstrtoimax (numeric_suffix_start, ખાલી, 10,
                                        &n_start, "");
-          if (e == LONGINT_OK && n_start < n_units)
+          જો (e == LONGINT_OK && n_start < n_units)
             {
               /* Restrict auto adjustment so we don't keep
                  incrementing a suffix size arbitrarily,
                  as that would break sort order for files
                  generated from multiple split runs.  */
-              if (ckd_add (&n_units_end, n_units_end, n_start))
+              જો (ckd_add (&n_units_end, n_units_end, n_start))
                 n_units_end = INTMAX_MAX;
             }
 
         }
       idx_t alphabet_len = strlen (suffix_alphabet);
-      do
+      કરો
         suffix_length_needed++;
-      while (n_units_end /= alphabet_len);
+      જ્યારે (n_units_end /= alphabet_len);
 
       suffix_auto = false;
     }
 
-  if (suffix_length)            /* set by user */
+  જો (suffix_length)            /* set by user */
     {
-      if (suffix_length < suffix_length_needed)
+      જો (suffix_length < suffix_length_needed)
         error (EXIT_FAILURE, 0,
                _("the suffix length needs to be at least %d"),
                suffix_length_needed);
       suffix_auto = false;
-      return;
+      પાછા;
     }
-  else
+  નહીંતર
     suffix_length = MAX (DEFAULT_SUFFIX_LENGTH, suffix_length_needed);
 }
 
-void
-usage (int status)
+શૂન્ય
+usage (પૂર્ણાંક status)
 {
-  if (status != EXIT_SUCCESS)
+  જો (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  નહીંતર
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE [PREFIX]]\n\
@@ -236,7 +236,7 @@ Usage: %s [OPTION]... [FILE [PREFIX]]\n\
               program_name);
       fputs (_("\
 Output pieces of FILE to PREFIXaa, PREFIXab, ...;\n\
-default size is 1000 lines, and default PREFIX is 'x'.\n\
+મૂળભૂત size is 1000 લીટીઓ, and મૂળભૂત PREFIX is 'x'.\n\
 "), stdout);
 
       emit_stdin_note ();
@@ -244,7 +244,7 @@ default size is 1000 lines, and default PREFIX is 'x'.\n\
 
       oprintf (_("\
   -a, --suffix-length=N\n\
-         generate suffixes of length N (default %d)\n\
+         generate suffixes of length N (મૂળભૂત %d)\n\
 "), DEFAULT_SUFFIX_LENGTH);
       oputs (_("\
       --additional-suffix=SUFFIX\n\
@@ -255,7 +255,7 @@ default size is 1000 lines, and default PREFIX is 'x'.\n\
          put SIZE bytes per output file\n\
 "));
       oputs (_("\
-  -C, --line-bytes=SIZE\n\
+  -C, --લીટી-bytes=SIZE\n\
          put at most SIZE bytes of records per output file\n\
 "));
       oputs (_("\
@@ -264,7 +264,7 @@ default size is 1000 lines, and default PREFIX is 'x'.\n\
 "));
       oputs (_("\
       --numeric-suffixes[=FROM]\n\
-         same as -d, but allow setting the start value\n\
+         same as -d, but allow setting the start કિંમત\n\
 "));
       oputs (_("\
   -x\n\
@@ -272,22 +272,22 @@ default size is 1000 lines, and default PREFIX is 'x'.\n\
 "));
       oputs (_("\
       --hex-suffixes[=FROM]\n\
-         same as -x, but allow setting the start value\n\
+         same as -x, but allow setting the start કિંમત\n\
 "));
       oputs (_("\
   -e, --elide-empty-files\n\
-         do not generate empty output files with '-n'\n\
+         કરો not generate empty output files with '-n'\n\
 "));
       oputs (_("\
       --filter=COMMAND\n\
-         write to shell COMMAND; file name is $FILE\n\
+         લિખ to shell COMMAND; file name is $FILE\n\
 "));
       oputs (_("\
-  -l, --lines=NUMBER\n\
-         put NUMBER lines/records per output file\n\
+  -l, --લીટીઓ=સંખ્યા_2\n\
+         put સંખ્યા_2 લીટીઓ/records per output file\n\
 "));
       oputs (_("\
-  -n, --number=CHUNKS\n\
+  -n, --સંખ્યા=CHUNKS\n\
          generate CHUNKS output files; see explanation below\n\
 "));
       oputs (_("\
@@ -297,7 +297,7 @@ default size is 1000 lines, and default PREFIX is 'x'.\n\
 "));
       oputs (_("\
   -u, --unbuffered\n\
-         immediately copy input to output with '-n r/...'\n\
+         immediately copy આગત to output with '-n r/...'\n\
 "));
       oputs (_("\
       --verbose\n\
@@ -308,16 +308,16 @@ default size is 1000 lines, and default PREFIX is 'x'.\n\
       emit_size_note ();
       fputs (_("\n\
 CHUNKS may be:\n\
-  N       split into N files based on size of input\n\
+  N       split into N files based on size of આગત\n\
   K/N     output Kth of N to standard output\n\
-  l/N     split into N files without splitting lines/records\n\
-  l/K/N   output Kth of N to standard output without splitting lines/records\n\
+  l/N     split into N files without splitting લીટીઓ/records\n\
+  l/K/N   output Kth of N to standard output without splitting લીટીઓ/records\n\
   r/N     like 'l' but use round robin distribution\n\
   r/K/N   likewise but only output Kth of N to standard output\n\
 "), stdout);
       fputs (_("\n\
 -n (except -nr) will buffer to $TMPDIR, defaulting to /tmp,\n\
-if the input size cannot easily be determined.\n\
+જો the આગત size cannot easily be determined.\n\
 "), stdout);
       emit_ancillary_info (PROGRAM_NAME);
     }
@@ -327,34 +327,34 @@ if the input size cannot easily be determined.\n\
 /* Copy the data in FD to a temporary file, then make that file FD.
    Use BUF, of size BUFSIZE, to copy.  Return the number of
    bytes copied, or -1 (setting errno) on error.  */
-static off_t
-copy_to_tmpfile (int fd, char *buf, idx_t bufsize)
+સ્થિર off_t
+copy_to_tmpfile (પૂર્ણાંક fd, અક્ષર *buf, idx_t bufsize)
 {
   FILE *tmp;
-  if (!temp_stream (&tmp, NULL))
-    return -1;
+  જો (!temp_stream (&tmp, ખાલી))
+    પાછા -1;
   off_t copied = 0;
   off_t r;
 
-  while (0 < (r = read (fd, buf, bufsize)))
+  જ્યારે (0 < (r = પઠ (fd, buf, bufsize)))
     {
-      if (fwrite (buf, 1, r, tmp) != r)
-        return -1;
-      if (ckd_add (&copied, copied, r))
+      જો (fwrite (buf, 1, r, tmp) != r)
+        પાછા -1;
+      જો (ckd_add (&copied, copied, r))
         {
           errno = EOVERFLOW;
-          return -1;
+          પાછા -1;
         }
     }
 
-  if (r < 0)
-    return r;
+  જો (r < 0)
+    પાછા r;
   r = dup2 (fileno (tmp), fd);
-  if (r < 0)
-    return r;
-  if (fclose (tmp) < 0)
-    return -1;
-  return copied;
+  જો (r < 0)
+    પાછા r;
+  જો (fclose (tmp) < 0)
+    પાછા -1;
+  પાછા copied;
 }
 
 /* Return the number of bytes that can be read from FD with status ST.
@@ -362,70 +362,70 @@ copy_to_tmpfile (int fd, char *buf, idx_t bufsize)
    and advance the file position by the number of bytes read.  On
    input error, set errno and return -1.  */
 
-static off_t
-input_file_size (int fd, struct stat const *st, char *buf, idx_t bufsize)
+સ્થિર off_t
+આગત_file_size (પૂર્ણાંક fd, સંરચના stat અચલ *st, અક્ષર *buf, idx_t bufsize)
 {
   off_t size = 0;
-  do
+  કરો
     {
-      ssize_t n_read = read (fd, buf + size, bufsize - size);
-      if (n_read <= 0)
-        return n_read < 0 ? n_read : size;
+      ssize_t n_read = પઠ (fd, buf + size, bufsize - size);
+      જો (n_read <= 0)
+        પાછા n_read < 0 ? n_read : size;
       size += n_read;
     }
-  while (size < bufsize);
+  જ્યારે (size < bufsize);
 
   off_t cur, end;
-  if ((usable_st_size (st) && st->st_size < size)
+  જો ((usable_st_size (st) && st->st_size < size)
       || (cur = lseek (fd, 0, SEEK_CUR)) < 0
       || cur < size /* E.g., /dev/zero on GNU/Linux.  */
       || (end = lseek (fd, 0, SEEK_END)) < 0)
     {
-      char *tmpbuf = xmalloc (bufsize);
+      અક્ષર *tmpbuf = xmalloc (bufsize);
       end = copy_to_tmpfile (fd, tmpbuf, bufsize);
-      free (tmpbuf);
-      if (end < 0)
-        return end;
+      મુક્ત (tmpbuf);
+      જો (end < 0)
+        પાછા end;
       cur = 0;
     }
 
-  if (end == OFF_T_MAX /* E.g., /dev/zero on GNU/Hurd.  */
+  જો (end == OFF_T_MAX /* E.g., /dev/zero on GNU/Hurd.  */
       || (cur < end && ckd_add (&size, size, end - cur)))
     {
       errno = EOVERFLOW;
-      return -1;
+      પાછા -1;
     }
 
-  if (cur < end)
+  જો (cur < end)
     {
       off_t r = lseek (fd, cur, SEEK_SET);
-      if (r < 0)
-        return r;
+      જો (r < 0)
+        પાછા r;
     }
 
-  return size;
+  પાછા size;
 }
 
 /* Compute the next sequential output file name and store it into the
    string 'outfile'.  */
 
-static void
-next_file_name (void)
+સ્થિર શૂન્ય
+next_file_name (શૂન્ય)
 {
   /* Index in suffix_alphabet of each character in the suffix.  */
-  static idx_t *sufindex;
-  static idx_t outbase_length;
-  static idx_t outfile_length;
-  static idx_t addsuf_length;
+  સ્થિર idx_t *sufindex;
+  સ્થિર idx_t outbase_length;
+  સ્થિર idx_t outfile_length;
+  સ્થિર idx_t addsuf_length;
 
-  if (! outfile)
+  જો (! outfile)
     {
       bool overflow, widen;
 
 new_name:
       widen = !! outfile_length;
 
-      if (! widen)
+      જો (! widen)
         {
           /* Allocate and initialize the first file name.  */
 
@@ -434,7 +434,7 @@ new_name:
           overflow = ckd_add (&outfile_length, outbase_length + addsuf_length,
                               suffix_length);
         }
-      else
+      નહીંતર
         {
           /* Reallocate and initialize a new wider file name.
              We do this by subsuming the unchanging part of
@@ -447,13 +447,13 @@ new_name:
 
       idx_t outfile_size;
       overflow |= ckd_add (&outfile_size, outfile_length, 1);
-      if (overflow)
+      જો (overflow)
         xalloc_die ();
       outfile = xirealloc (outfile, outfile_size);
 
-      if (! widen)
+      જો (! widen)
         memcpy (outfile, outbase, outbase_length);
-      else
+      નહીંતર
         {
           /* Append the last alphabet character to the file name prefix.  */
           outfile[outbase_length] = suffix_alphabet[sufindex[0]];
@@ -462,14 +462,14 @@ new_name:
 
       outfile_mid = outfile + outbase_length;
       memset (outfile_mid, suffix_alphabet[0], suffix_length);
-      if (additional_suffix)
+      જો (additional_suffix)
         memcpy (outfile_mid + suffix_length, additional_suffix, addsuf_length);
       outfile[outfile_length] = 0;
 
-      free (sufindex);
-      sufindex = xicalloc (suffix_length, sizeof *sufindex);
+      મુક્ત (sufindex);
+      sufindex = xicalloc (suffix_length, કદ *sufindex);
 
-      if (numeric_suffix_start)
+      જો (numeric_suffix_start)
         {
           affirm (! widen);
 
@@ -479,37 +479,37 @@ new_name:
 
           /* Update the suffix index.  */
           idx_t *sufindex_end = sufindex + suffix_length;
-          while (i-- != 0)
+          જ્યારે (i-- != 0)
             *--sufindex_end = numeric_suffix_start[i] - '0';
         }
 
-#if ! _POSIX_NO_TRUNC && HAVE_PATHCONF && defined _PC_NAME_MAX
+#જો ! _POSIX_NO_TRUNC && HAVE_PATHCONF && defined _PC_NAME_MAX
       /* POSIX requires that if the output file name is too long for
          its directory, 'split' must fail without creating any files.
          This must be checked for explicitly on operating systems that
          silently truncate file names.  */
       {
-        char *dir = dir_name (outfile);
+        અક્ષર *dir = dir_name (outfile);
         long name_max = pathconf (dir, _PC_NAME_MAX);
-        if (0 <= name_max && name_max < base_len (last_component (outfile)))
+        જો (0 <= name_max && name_max < base_len (last_component (outfile)))
           error (EXIT_FAILURE, ENAMETOOLONG, "%s", quotef (outfile));
-        free (dir);
+        મુક્ત (dir);
       }
 #endif
     }
-  else
+  નહીંતર
     {
       /* Increment the suffix in place, if possible.  */
 
       idx_t i = suffix_length;
-      while (i-- != 0)
+      જ્યારે (i-- != 0)
         {
           sufindex[i]++;
-          if (suffix_auto && i == 0 && ! suffix_alphabet[sufindex[0] + 1])
-            goto new_name;
+          જો (suffix_auto && i == 0 && ! suffix_alphabet[sufindex[0] + 1])
+            જાઓ new_name;
           outfile_mid[i] = suffix_alphabet[sufindex[i]];
-          if (outfile_mid[i])
-            return;
+          જો (outfile_mid[i])
+            પાછા;
           sufindex[i] = 0;
           outfile_mid[i] = suffix_alphabet[sufindex[i]];
         }
@@ -519,43 +519,43 @@ new_name:
 
 /* Create or truncate a file.  */
 
-static int
-create (char const *name)
+સ્થિર પૂર્ણાંક
+create (અક્ષર અચલ *name)
 {
-  if (!filter_command)
+  જો (!filter_command)
     {
-      if (verbose)
+      જો (verbose)
         fprintf (stdout, _("creating file %s\n"), quoteaf (name));
 
-      int oflags = O_WRONLY | O_CREAT | O_BINARY;
-      int fd = open (name, oflags | O_EXCL, MODE_RW_UGO);
-      if (0 <= fd || errno != EEXIST)
-        return fd;
+      પૂર્ણાંક oflags = O_WRONLY | O_CREAT | O_દ્વિઅંકી;
+      પૂર્ણાંક fd = open (name, oflags | O_EXCL, MODE_RW_UGO);
+      જો (0 <= fd || errno != EEXIST)
+        પાછા fd;
       fd = open (name, oflags, MODE_RW_UGO);
-      if (fd < 0)
-        return fd;
-      struct stat out_stat_buf;
-      if (fstat (fd, &out_stat_buf) != 0)
+      જો (fd < 0)
+        પાછા fd;
+      સંરચના stat out_stat_buf;
+      જો (fstat (fd, &out_stat_buf) != 0)
         error (EXIT_FAILURE, errno, _("failed to stat %s"), quoteaf (name));
-      if (psame_inode (&in_stat_buf, &out_stat_buf))
+      જો (psame_inode (&in_stat_buf, &out_stat_buf))
         error (EXIT_FAILURE, 0, _("%s would overwrite input; aborting"),
                quoteaf (name));
-      if (ftruncate (fd, 0) < 0
+      જો (ftruncate (fd, 0) < 0
           && (S_ISREG (out_stat_buf.st_mode) || S_TYPEISSHM (&out_stat_buf)))
         error (EXIT_FAILURE, errno, _("%s: error truncating"), quotef (name));
 
-      return fd;
+      પાછા fd;
     }
-  else
+  નહીંતર
     {
-      if (setenv ("FILE", name, 1) != 0)
+      જો (setenv ("FILE", name, 1) != 0)
         error (EXIT_FAILURE, errno,
                _("failed to set FILE environment variable"));
-      if (verbose)
+      જો (verbose)
         fprintf (stdout, _("executing with FILE=%s\n"), quotef (name));
 
-      int result;
-      int fd_pair[2];
+      પૂર્ણાંક result;
+      પૂર્ણાંક fd_pair[2];
       pid_t child_pid;
 
       posix_spawnattr_t attr;
@@ -563,10 +563,10 @@ create (char const *name)
 
       sigset_t set;
       sigemptyset (&set);
-      if (default_SIGPIPE)
+      જો (default_SIGPIPE)
         sigaddset (&set, SIGPIPE);
 
-      if (   (result = posix_spawnattr_init (&attr))
+      જો (   (result = posix_spawnattr_init (&attr))
           || (result = posix_spawnattr_setflags (&attr,
                                                  (POSIX_SPAWN_USEVFORK
                                                   | POSIX_SPAWN_SETSIGDEF)))
@@ -575,19 +575,19 @@ create (char const *name)
          )
         error (EXIT_FAILURE, result, _("posix_spawn initialization failed"));
 
-      if (pipe (fd_pair) != 0)
+      જો (pipe (fd_pair) != 0)
         error (EXIT_FAILURE, errno, _("failed to create pipe"));
 
       /* We have to close any pipes that were opened during an
          earlier call, otherwise this process will be holding a
          write-pipe that will prevent the earlier process from
          reading an EOF on the corresponding read-pipe.  */
-      for (int i = 0; i < open_pipes.n_pipes; ++i)
-        if ((result = posix_spawn_file_actions_addclose (&actions,
+      માટે (પૂર્ણાંક i = 0; i < open_pipes.n_pipes; ++i)
+        જો ((result = posix_spawn_file_actions_addclose (&actions,
                                                          open_pipes.pipes[i])))
-          break;
+          તોડો;
 
-      if (   result
+      જો (   result
           || (result = posix_spawn_file_actions_addclose (&actions, fd_pair[1]))
           || (fd_pair[0] != STDIN_FILENO
               && (   (result = posix_spawn_file_actions_adddup2 (&actions,
@@ -599,83 +599,83 @@ create (char const *name)
         error (EXIT_FAILURE, result, _("posix_spawn setup failed"));
 
 
-      char const *shell_prog = getenv ("SHELL");
-      if (shell_prog == NULL)
+      અક્ષર અચલ *shell_prog = getenv ("SHELL");
+      જો (shell_prog == ખાલી)
         shell_prog = "/bin/sh";
-      char const *const argv[] = { last_component (shell_prog), "-c",
-                                   filter_command, NULL };
+      અક્ષર અચલ *અચલ argv[] = { last_component (shell_prog), "-c",
+                                   filter_command, ખાલી };
 
       result = posix_spawn (&child_pid, shell_prog, &actions, &attr,
-                            (char * const *) argv, environ);
-      if (result != 0)
+                            (અક્ષર * અચલ *) argv, environ);
+      જો (result != 0)
         error (EXIT_FAILURE, errno, _("failed to run command: \"%s -c %s\""),
                shell_prog, filter_command);
 
       posix_spawnattr_destroy (&attr);
       posix_spawn_file_actions_destroy (&actions);
 
-      if (close (fd_pair[0]) != 0)
+      જો (close (fd_pair[0]) != 0)
         error (EXIT_FAILURE, errno, _("failed to close input pipe"));
       filter_pid = child_pid;
-      if (open_pipes.n_pipes == open_pipes.n_pipes_alloc)
+      જો (open_pipes.n_pipes == open_pipes.n_pipes_alloc)
         open_pipes.pipes = xpalloc (open_pipes.pipes, &open_pipes.n_pipes_alloc,
                                     1, MIN (INT_MAX, IDX_MAX),
-                                    sizeof *open_pipes.pipes);
-      idx_t const pipe_idx = open_pipes.n_pipes++;
+                                    કદ *open_pipes.pipes);
+      idx_t અચલ pipe_idx = open_pipes.n_pipes++;
       open_pipes.pipes[pipe_idx] = fd_pair[1];
-      return fd_pair[1];
+      પાછા fd_pair[1];
     }
 }
 
 /* Close the output file, and do any associated cleanup.
    If FP and FD are both specified, they refer to the same open file;
    in this case FP is closed, but FD is still used in cleanup.  */
-static void
-closeout (FILE *fp, int fd, pid_t pid, char const *name)
+સ્થિર શૂન્ય
+closeout (FILE *fp, પૂર્ણાંક fd, pid_t pid, અક્ષર અચલ *name)
 {
-  if (fp != NULL && fclose (fp) != 0 && ! ignorable (errno))
+  જો (fp != ખાલી && fclose (fp) != 0 && ! ignorable (errno))
     error (EXIT_FAILURE, errno, "%s", quotef (name));
-  if (fd >= 0)
+  જો (fd >= 0)
     {
-      if (fp == NULL && close (fd) < 0)
+      જો (fp == ખાલી && close (fd) < 0)
         error (EXIT_FAILURE, errno, "%s", quotef (name));
-      for (int j = 0; j < open_pipes.n_pipes; ++j)
+      માટે (પૂર્ણાંક j = 0; j < open_pipes.n_pipes; ++j)
         {
-          if (open_pipes.pipes[j] == fd)
+          જો (open_pipes.pipes[j] == fd)
             {
-              idx_t const last_idx = open_pipes.n_pipes - 1;
+              idx_t અચલ last_idx = open_pipes.n_pipes - 1;
               open_pipes.pipes[j] = open_pipes.pipes[last_idx];
               open_pipes.n_pipes--;
-              break;
+              તોડો;
             }
         }
     }
-  if (pid > 0)
+  જો (pid > 0)
     {
-      int wstatus;
-      if (waitpid (pid, &wstatus, 0) < 0)
+      પૂર્ણાંક wstatus;
+      જો (waitpid (pid, &wstatus, 0) < 0)
         error (EXIT_FAILURE, errno, _("waiting for child process"));
-      else if (WIFSIGNALED (wstatus))
+      નહીંતર જો (WIFSIGNALED (wstatus))
         {
-          int sig = WTERMSIG (wstatus);
-          if (sig != SIGPIPE)
+          પૂર્ણાંક sig = WTERMSIG (wstatus);
+          જો (sig != SIGPIPE)
             {
-              char signame[MAX (SIG2STR_MAX, INT_BUFSIZE_BOUND (int))];
-              if (sig2str (sig, signame) != 0)
+              અક્ષર signame[MAX (SIG2STR_MAX, INT_BUFSIZE_BOUND (પૂર્ણાંક))];
+              જો (sig2str (sig, signame) != 0)
                 sprintf (signame, "%d", sig);
               error (sig + 128, 0,
                      _("with FILE=%s, signal %s from command: %s"),
                      quotef (name), signame, filter_command);
             }
         }
-      else if (WIFEXITED (wstatus))
+      નહીંતર જો (WIFEXITED (wstatus))
         {
-          int ex = WEXITSTATUS (wstatus);
-          if (ex != 0)
+          પૂર્ણાંક ex = WEXITSTATUS (wstatus);
+          જો (ex != 0)
             error (ex, 0, _("with FILE=%s, exit %d from command: %s"),
                    quotef (name), ex, filter_command);
         }
-      else
+      નહીંતર
         {
           /* shouldn't happen.  */
           error (EXIT_FAILURE, 0,
@@ -689,27 +689,27 @@ closeout (FILE *fp, int fd, pid_t pid, char const *name)
    Otherwise add to the same output file already in use.
    Return true if successful.  */
 
-static bool
-cwrite (bool new_file_flag, char const *bp, idx_t bytes)
+સ્થિર bool
+cwrite (bool new_file_flag, અક્ષર અચલ *bp, idx_t bytes)
 {
-  if (new_file_flag)
+  જો (new_file_flag)
     {
-      if (!bp && bytes == 0 && elide_empty_files)
-        return true;
-      closeout (NULL, output_desc, filter_pid, outfile);
+      જો (!bp && bytes == 0 && elide_empty_files)
+        પાછા true;
+      closeout (ખાલી, output_desc, filter_pid, outfile);
       next_file_name ();
       output_desc = create (outfile);
-      if (output_desc < 0)
+      જો (output_desc < 0)
         error (EXIT_FAILURE, errno, "%s", quotef (outfile));
     }
 
-  if (full_write (output_desc, bp, bytes) == bytes)
-    return true;
-  else
+  જો (full_write (output_desc, bp, bytes) == bytes)
+    પાછા true;
+  નહીંતર
     {
-      if (! ignorable (errno))
+      જો (! ignorable (errno))
         error (EXIT_FAILURE, errno, "%s", quotef (outfile));
-      return false;
+      પાછા false;
     }
 }
 
@@ -719,9 +719,9 @@ cwrite (bool new_file_flag, char const *bp, idx_t bytes)
    If INITIAL_READ is nonnegative,
    BUF contains the first INITIAL_READ input bytes.  */
 
-static void
+સ્થિર શૂન્ય
 bytes_split (intmax_t n_bytes, intmax_t rem_bytes,
-             char *buf, idx_t bufsize, ssize_t initial_read,
+             અક્ષર *buf, idx_t bufsize, ssize_t initial_read,
              intmax_t max_files)
 {
   bool new_file_flag = true;
@@ -730,57 +730,57 @@ bytes_split (intmax_t n_bytes, intmax_t rem_bytes,
   intmax_t to_write = n_bytes + (0 < rem_bytes);
   bool eof = ! to_write;
 
-  while (! eof)
+  જ્યારે (! eof)
     {
       ssize_t n_read;
-      if (0 <= initial_read)
+      જો (0 <= initial_read)
         {
           n_read = initial_read;
           initial_read = -1;
           eof = n_read < bufsize;
         }
-      else
+      નહીંતર
         {
-          if (! filter_ok
+          જો (! filter_ok
               && 0 <= lseek (STDIN_FILENO, to_write, SEEK_CUR))
             {
               to_write = n_bytes + (opened + 1 < rem_bytes);
               new_file_flag = true;
             }
 
-          n_read = read (STDIN_FILENO, buf, bufsize);
-          if (n_read < 0)
+          n_read = પઠ (STDIN_FILENO, buf, bufsize);
+          જો (n_read < 0)
             error (EXIT_FAILURE, errno, "%s", quotef (infile));
           eof = n_read == 0;
         }
-      char *bp_out = buf;
-      while (0 < to_write && to_write <= n_read)
+      અક્ષર *bp_out = buf;
+      જ્યારે (0 < to_write && to_write <= n_read)
         {
-          if (filter_ok || new_file_flag)
+          જો (filter_ok || new_file_flag)
             filter_ok = cwrite (new_file_flag, bp_out, to_write);
           opened += new_file_flag;
           new_file_flag = !max_files || (opened < max_files);
-          if (! filter_ok && ! new_file_flag)
+          જો (! filter_ok && ! new_file_flag)
             {
               /* If filters no longer accepting input, stop reading.  */
               n_read = 0;
               eof = true;
-              break;
+              તોડો;
             }
           bp_out += to_write;
           n_read -= to_write;
           to_write = n_bytes + (opened < rem_bytes);
         }
-      if (0 < n_read)
+      જો (0 < n_read)
         {
-          if (filter_ok || new_file_flag)
+          જો (filter_ok || new_file_flag)
             filter_ok = cwrite (new_file_flag, bp_out, n_read);
           opened += new_file_flag;
           new_file_flag = false;
-          if (! filter_ok && opened == max_files)
+          જો (! filter_ok && opened == max_files)
             {
               /* If filters no longer accepting input, stop reading.  */
-              break;
+              તોડો;
             }
           to_write -= n_read;
         }
@@ -789,45 +789,45 @@ bytes_split (intmax_t n_bytes, intmax_t rem_bytes,
   /* Ensure NUMBER files are created, which truncates
      any existing files or notifies any consumers on fifos.
      FIXME: Should we do this before EXIT_FAILURE?  */
-  while (opened++ < max_files)
-    cwrite (true, NULL, 0);
+  જ્યારે (opened++ < max_files)
+    cwrite (true, ખાલી, 0);
 }
 
 /* Split into pieces of exactly N_LINES lines.
    Use buffer BUF, whose size is BUFSIZE.  */
 
-static void
-lines_split (intmax_t n_lines, char *buf, idx_t bufsize)
+સ્થિર શૂન્ય
+લીટીઓ_split (intmax_t n_લીટીઓ, અક્ષર *buf, idx_t bufsize)
 {
   ssize_t n_read;
-  char *bp, *bp_out, *eob;
+  અક્ષર *bp, *bp_out, *eob;
   bool new_file_flag = true;
   intmax_t n = 0;
 
-  do
+  કરો
     {
-      n_read = read (STDIN_FILENO, buf, bufsize);
-      if (n_read < 0)
+      n_read = પઠ (STDIN_FILENO, buf, bufsize);
+      જો (n_read < 0)
         error (EXIT_FAILURE, errno, "%s", quotef (infile));
       bp = bp_out = buf;
       eob = bp + n_read;
       *eob = eolchar;
-      while (true)
+      જ્યારે (true)
         {
           bp = rawmemchr (bp, eolchar);
-          if (bp == eob)
+          જો (bp == eob)
             {
-              if (eob != bp_out) /* do not write 0 bytes! */
+              જો (eob != bp_out) /* do not write 0 bytes! */
                 {
                   idx_t len = eob - bp_out;
                   cwrite (new_file_flag, bp_out, len);
                   new_file_flag = false;
                 }
-              break;
+              તોડો;
             }
 
           ++bp;
-          if (++n >= n_lines)
+          જો (++n >= n_લીટીઓ)
             {
               cwrite (new_file_flag, bp_out, bp - bp_out);
               bp_out = bp;
@@ -836,50 +836,50 @@ lines_split (intmax_t n_lines, char *buf, idx_t bufsize)
             }
         }
     }
-  while (n_read);
+  જ્યારે (n_read);
 }
 
 /* Split into pieces that are as large as possible while still not more
    than N_BYTES bytes, and are split on line boundaries except
    where lines longer than N_BYTES bytes occur. */
 
-static void
-line_bytes_split (intmax_t n_bytes, char *buf, idx_t bufsize)
+સ્થિર શૂન્ય
+લીટી_bytes_split (intmax_t n_bytes, અક્ષર *buf, idx_t bufsize)
 {
   ssize_t n_read;
   intmax_t n_out = 0;      /* for each split.  */
   idx_t n_hold = 0;
-  char *hold = NULL;        /* for lines > bufsize.  */
+  અક્ષર *hold = ખાલી;        /* for lines > bufsize.  */
   idx_t hold_size = 0;
-  bool split_line = false;  /* Whether a \n was output in a split.  */
+  bool split_લીટી = false;  /* Whether a \n was output in a split.  */
 
-  do
+  કરો
     {
-      n_read = read (STDIN_FILENO, buf, bufsize);
-      if (n_read < 0)
+      n_read = પઠ (STDIN_FILENO, buf, bufsize);
+      જો (n_read < 0)
         error (EXIT_FAILURE, errno, "%s", quotef (infile));
-      idx_t n_left = n_read;
-      char *sob = buf;
-      while (n_left)
+      idx_t n_ડાબું = n_read;
+      અક્ષર *sob = buf;
+      જ્યારે (n_ડાબું)
         {
           idx_t split_rest = 0;
-          char *eoc = NULL;
-          char *eol;
+          અક્ષર *eoc = ખાલી;
+          અક્ષર *eol;
 
           /* Determine End Of Chunk and/or End of Line,
              which are used below to select what to write or buffer.  */
-          if (n_bytes - n_out - n_hold <= n_left)
+          જો (n_bytes - n_out - n_hold <= n_ડાબું)
             {
               /* Have enough for split.  */
               split_rest = n_bytes - n_out - n_hold;
               eoc = sob + split_rest - 1;
               eol = memrchr (sob, eolchar, split_rest);
             }
-          else
-            eol = memrchr (sob, eolchar, n_left);
+          નહીંતર
+            eol = memrchr (sob, eolchar, n_ડાબું);
 
           /* Output hold space if possible.  */
-          if (n_hold && !(!eol && n_out))
+          જો (n_hold && !(!eol && n_out))
             {
               cwrite (n_out == 0, hold, n_hold);
               n_out += n_hold;
@@ -887,58 +887,58 @@ line_bytes_split (intmax_t n_bytes, char *buf, idx_t bufsize)
             }
 
           /* Output to eol if present.  */
-          if (eol)
+          જો (eol)
             {
-              split_line = true;
+              split_લીટી = true;
               idx_t n_write = eol - sob + 1;
               cwrite (n_out == 0, sob, n_write);
               n_out += n_write;
-              n_left -= n_write;
+              n_ડાબું -= n_write;
               sob += n_write;
-              if (eoc)
+              જો (eoc)
                 split_rest -= n_write;
             }
 
           /* Output to eoc or eob if possible.  */
-          if (n_left && !split_line)
+          જો (n_ડાબું && !split_લીટી)
             {
-              idx_t n_write = eoc ? split_rest : n_left;
+              idx_t n_write = eoc ? split_rest : n_ડાબું;
               cwrite (n_out == 0, sob, n_write);
               n_out += n_write;
-              n_left -= n_write;
+              n_ડાબું -= n_write;
               sob += n_write;
-              if (eoc)
+              જો (eoc)
                 split_rest -= n_write;
             }
 
           /* Update hold if needed.  */
-          if ((eoc && split_rest) || (!eoc && n_left))
+          જો ((eoc && split_rest) || (!eoc && n_ડાબું))
             {
-              idx_t n_buf = eoc ? split_rest : n_left;
-              if (hold_size - n_hold < n_buf)
+              idx_t n_buf = eoc ? split_rest : n_ડાબું;
+              જો (hold_size - n_hold < n_buf)
                 hold = xpalloc (hold, &hold_size, n_buf - (hold_size - n_hold),
-                                -1, sizeof *hold);
+                                -1, કદ *hold);
               memcpy (hold + n_hold, sob, n_buf);
               n_hold += n_buf;
-              n_left -= n_buf;
+              n_ડાબું -= n_buf;
               sob += n_buf;
             }
 
           /* Reset for new split.  */
-          if (eoc)
+          જો (eoc)
             {
               n_out = 0;
-              split_line = false;
+              split_લીટી = false;
             }
         }
     }
-  while (n_read);
+  જ્યારે (n_read);
 
   /* Handle no eol at end of file.  */
-  if (n_hold)
+  જો (n_hold)
     cwrite (n_out == 0, hold, n_hold);
 
-  free (hold);
+  મુક્ત (hold);
 }
 
 /* -n l/[K/]N: Write lines to files of approximately file size / N.
@@ -949,8 +949,8 @@ line_bytes_split (intmax_t n_bytes, char *buf, idx_t bufsize)
    can be larger or smaller than the partition size, and even empty
    if a line is so long as to completely overlap the partition.  */
 
-static void
-lines_chunk_split (intmax_t k, intmax_t n, char *buf, idx_t bufsize,
+સ્થિર શૂન્ય
+લીટીઓ_chunk_split (intmax_t k, intmax_t n, અક્ષર *buf, idx_t bufsize,
                    ssize_t initial_read, off_t file_size)
 {
   affirm (n && k <= n);
@@ -963,18 +963,18 @@ lines_chunk_split (intmax_t k, intmax_t n, char *buf, idx_t bufsize,
   bool new_file_flag = true;
   bool chunk_truncated = false;
 
-  if (k > 1 && 0 < file_size)
+  જો (k > 1 && 0 < file_size)
     {
       /* Start reading 1 byte before kth chunk of file.  */
       off_t start = (k - 1) * chunk_size + MIN (k - 1, rem_bytes) - 1;
-      if (start < initial_read)
+      જો (start < initial_read)
         {
           memmove (buf, buf + start, initial_read - start);
           initial_read -= start;
         }
-      else
+      નહીંતર
         {
-          if (initial_read < start
+          જો (initial_read < start
               && lseek (STDIN_FILENO, start - initial_read, SEEK_CUR) < 0)
             error (EXIT_FAILURE, errno, "%s", quotef (infile));
           initial_read = -1;
@@ -984,53 +984,53 @@ lines_chunk_split (intmax_t k, intmax_t n, char *buf, idx_t bufsize,
       chunk_end = start + 1;
     }
 
-  while (n_written < file_size)
+  જ્યારે (n_written < file_size)
     {
-      char *bp = buf, *eob;
+      અક્ષર *bp = buf, *eob;
       ssize_t n_read;
-      if (0 <= initial_read)
+      જો (0 <= initial_read)
         {
           n_read = initial_read;
           initial_read = -1;
         }
-      else
+      નહીંતર
         {
-          n_read = read (STDIN_FILENO, buf,
+          n_read = પઠ (STDIN_FILENO, buf,
                          MIN (bufsize, file_size - n_written));
-          if (n_read < 0)
+          જો (n_read < 0)
             error (EXIT_FAILURE, errno, "%s", quotef (infile));
         }
-      if (n_read == 0)
-        break; /* eof.  */
+      જો (n_read == 0)
+        તોડો; /* eof.  */
       chunk_truncated = false;
       eob = buf + n_read;
 
-      while (bp != eob)
+      જ્યારે (bp != eob)
         {
           idx_t to_write;
           bool next = false;
 
           /* Begin looking for '\n' at last byte of chunk.  */
           off_t skip = MIN (n_read, MAX (0, chunk_end - 1 - n_written));
-          char *bp_out = memchr (bp + skip, eolchar, n_read - skip);
-          if (bp_out)
+          અક્ષર *bp_out = memchr (bp + skip, eolchar, n_read - skip);
+          જો (bp_out)
             {
               bp_out++;
               next = true;
             }
-          else
+          નહીંતર
             bp_out = eob;
           to_write = bp_out - bp;
 
-          if (k == chunk_no)
+          જો (k == chunk_no)
             {
               /* We don't use the stdout buffer here since we're writing
                  large chunks from an existing file, so it's more efficient
                  to write out directly.  */
-              if (full_write (STDOUT_FILENO, bp, to_write) != to_write)
+              જો (full_write (STDOUT_FILENO, bp, to_write) != to_write)
                 write_error ();
             }
-          else if (! k)
+          નહીંતર જો (! k)
             cwrite (new_file_flag, bp, to_write);
           n_written += to_write;
           bp += to_write;
@@ -1039,44 +1039,44 @@ lines_chunk_split (intmax_t k, intmax_t n, char *buf, idx_t bufsize,
 
           /* A line could have been so long that it skipped
              entire chunks. So create empty files in that case.  */
-          while (next || chunk_end <= n_written)
+          જ્યારે (next || chunk_end <= n_written)
             {
-              if (!next && bp == eob)
+              જો (!next && bp == eob)
                 {
                   /* replenish buf, before going to next chunk.  */
                   chunk_truncated = true;
-                  break;
+                  તોડો;
                 }
-              if (k == chunk_no)
-                return;
+              જો (k == chunk_no)
+                પાછા;
               chunk_end += chunk_size + (chunk_no < rem_bytes);
               chunk_no++;
-              if (chunk_end <= n_written)
+              જો (chunk_end <= n_written)
                 {
-                  if (! k)
-                    cwrite (true, NULL, 0);
+                  જો (! k)
+                    cwrite (true, ખાલી, 0);
                 }
-              else
+              નહીંતર
                 next = false;
             }
         }
     }
 
-  if (chunk_truncated)
+  જો (chunk_truncated)
     chunk_no++;
 
   /* Ensure NUMBER files are created, which truncates
      any existing files or notifies any consumers on fifos.
      FIXME: Should we do this before EXIT_FAILURE?  */
-  if (!k)
-    while (chunk_no++ <= n)
-      cwrite (true, NULL, 0);
+  જો (!k)
+    જ્યારે (chunk_no++ <= n)
+      cwrite (true, ખાલી, 0);
 }
 
 /* -n K/N: Extract Kth of N chunks.  */
 
-static void
-bytes_chunk_extract (intmax_t k, intmax_t n, char *buf, idx_t bufsize,
+સ્થિર શૂન્ય
+bytes_chunk_extract (intmax_t k, intmax_t n, અક્ષર *buf, idx_t bufsize,
                      ssize_t initial_read, off_t file_size)
 {
   off_t start;
@@ -1087,52 +1087,52 @@ bytes_chunk_extract (intmax_t k, intmax_t n, char *buf, idx_t bufsize,
   start = (k - 1) * (file_size / n) + MIN (k - 1, file_size % n);
   end = k == n ? file_size : k * (file_size / n) + MIN (k, file_size % n);
 
-  if (start < initial_read)
+  જો (start < initial_read)
     {
       memmove (buf, buf + start, initial_read - start);
       initial_read -= start;
     }
-  else
+  નહીંતર
     {
-      if (initial_read < start
+      જો (initial_read < start
           && lseek (STDIN_FILENO, start - initial_read, SEEK_CUR) < 0)
         error (EXIT_FAILURE, errno, "%s", quotef (infile));
       initial_read = -1;
     }
 
-  while (start < end)
+  જ્યારે (start < end)
     {
       ssize_t n_read;
-      if (0 <= initial_read)
+      જો (0 <= initial_read)
         {
           n_read = initial_read;
           initial_read = -1;
         }
-      else
+      નહીંતર
         {
-          n_read = read (STDIN_FILENO, buf, bufsize);
-          if (n_read < 0)
+          n_read = પઠ (STDIN_FILENO, buf, bufsize);
+          જો (n_read < 0)
             error (EXIT_FAILURE, errno, "%s", quotef (infile));
         }
-      if (n_read == 0)
-        break; /* eof.  */
+      જો (n_read == 0)
+        તોડો; /* eof.  */
       n_read = MIN (n_read, end - start);
-      if (full_write (STDOUT_FILENO, buf, n_read) != n_read
+      જો (full_write (STDOUT_FILENO, buf, n_read) != n_read
           && ! ignorable (errno))
         error (EXIT_FAILURE, errno, "%s", quotef ("-"));
       start += n_read;
     }
 }
 
-typedef struct of_info
+પ્રકારવ્યાખ્યા સંરચના of_info
 {
-  char *of_name;
-  int ofd;
+  અક્ષર *of_name;
+  પૂર્ણાંક ofd;
   FILE *ofile;
   pid_t opid;
 } of_t;
 
-enum
+ગણના
 {
   OFD_NEW = -1,
   OFD_APPEND = -2
@@ -1143,24 +1143,24 @@ enum
    Return whether we came under file resource pressure.
    If so, it's probably best to close each file when finished with it.  */
 
-static bool
+સ્થિર bool
 ofile_open (of_t *files, idx_t i_check, idx_t nfiles)
 {
   bool file_limit = false;
 
-  if (files[i_check].ofd <= OFD_NEW)
+  જો (files[i_check].ofd <= OFD_NEW)
     {
-      int fd;
+      પૂર્ણાંક fd;
       idx_t i_reopen = i_check ? i_check - 1 : nfiles - 1;
 
       /* Another process could have opened a file in between the calls to
          close and open, so we should keep trying until open succeeds or
          we've closed all of our files.  */
-      while (true)
+      જ્યારે (true)
         {
-          if (files[i_check].ofd == OFD_NEW)
+          જો (files[i_check].ofd == OFD_NEW)
             fd = create (files[i_check].of_name);
-          else /* OFD_APPEND  */
+          નહીંતર /* OFD_APPEND  */
             {
               /* Attempt to append to previously opened file.
                  We use O_NONBLOCK to support writing to fifos,
@@ -1177,43 +1177,43 @@ ofile_open (of_t *files, idx_t i_check, idx_t nfiles)
                  I.e., we don't support restarting filters, as that would
                  put too much burden on users specifying --filter commands.  */
               fd = open (files[i_check].of_name,
-                         O_WRONLY | O_BINARY | O_APPEND | O_NONBLOCK);
+                         O_WRONLY | O_દ્વિઅંકી | O_APPEND | O_NONBLOCK);
             }
 
-          if (0 <= fd)
-            break;
+          જો (0 <= fd)
+            તોડો;
 
-          if (!(errno == EMFILE || errno == ENFILE))
+          જો (!(errno == EMFILE || errno == ENFILE))
             error (EXIT_FAILURE, errno, "%s", quotef (files[i_check].of_name));
 
           file_limit = true;
 
           /* Search backwards for an open file to close.  */
-          while (files[i_reopen].ofd < 0)
+          જ્યારે (files[i_reopen].ofd < 0)
             {
               i_reopen = i_reopen ? i_reopen - 1 : nfiles - 1;
               /* No more open files to close, exit with E[NM]FILE.  */
-              if (i_reopen == i_check)
+              જો (i_reopen == i_check)
                 error (EXIT_FAILURE, errno, "%s",
                        quotef (files[i_check].of_name));
             }
 
-          if (fclose (files[i_reopen].ofile) != 0)
+          જો (fclose (files[i_reopen].ofile) != 0)
             error (EXIT_FAILURE, errno, "%s", quotef (files[i_reopen].of_name));
-          files[i_reopen].ofile = NULL;
+          files[i_reopen].ofile = ખાલી;
           files[i_reopen].ofd = OFD_APPEND;
         }
 
       files[i_check].ofd = fd;
       FILE *ofile = fdopen (fd, "a");
-      if (!ofile)
+      જો (!ofile)
         error (EXIT_FAILURE, errno, "%s", quotef (files[i_check].of_name));
       files[i_check].ofile = ofile;
       files[i_check].opid = filter_pid;
       filter_pid = 0;
     }
 
-  return file_limit;
+  પાછા file_limit;
 }
 
 /* -n r/[K/]N: Divide file into N chunks in round robin fashion.
@@ -1223,112 +1223,112 @@ ofile_open (of_t *files, idx_t i_check, idx_t nfiles)
    If we run out of file resources, then we revert
    to opening and closing each file for each line.  */
 
-static void
-lines_rr (intmax_t k, intmax_t n, char *buf, idx_t bufsize, of_t **filesp)
+સ્થિર શૂન્ય
+લીટીઓ_rr (intmax_t k, intmax_t n, અક્ષર *buf, idx_t bufsize, of_t **filesp)
 {
   bool wrapped = false;
   bool wrote = false;
   bool file_limit;
   idx_t i_file;
-  of_t *files IF_LINT (= NULL);
-  intmax_t line_no;
+  of_t *files IF_LINT (= ખાલી);
+  intmax_t લીટી_no;
 
-  if (k)
-    line_no = 1;
-  else
+  જો (k)
+    લીટી_no = 1;
+  નહીંતર
     {
-      if (IDX_MAX < n)
+      જો (IDX_MAX < n)
         xalloc_die ();
-      files = *filesp = xinmalloc (n, sizeof *files);
+      files = *filesp = xinmalloc (n, કદ *files);
 
       /* Generate output file names. */
-      for (i_file = 0; i_file < n; i_file++)
+      માટે (i_file = 0; i_file < n; i_file++)
         {
           next_file_name ();
           files[i_file].of_name = xstrdup (outfile);
           files[i_file].ofd = OFD_NEW;
-          files[i_file].ofile = NULL;
+          files[i_file].ofile = ખાલી;
           files[i_file].opid = 0;
         }
       i_file = 0;
       file_limit = false;
     }
 
-  while (true)
+  જ્યારે (true)
     {
-      char *bp = buf, *eob;
-      ssize_t n_read = read (STDIN_FILENO, buf, bufsize);
-      if (n_read < 0)
+      અક્ષર *bp = buf, *eob;
+      ssize_t n_read = પઠ (STDIN_FILENO, buf, bufsize);
+      જો (n_read < 0)
         error (EXIT_FAILURE, errno, "%s", quotef (infile));
-      else if (n_read == 0)
-        break; /* eof.  */
+      નહીંતર જો (n_read == 0)
+        તોડો; /* eof.  */
       eob = buf + n_read;
 
-      while (bp != eob)
+      જ્યારે (bp != eob)
         {
           idx_t to_write;
           bool next = false;
 
           /* Find end of line. */
-          char *bp_out = memchr (bp, eolchar, eob - bp);
-          if (bp_out)
+          અક્ષર *bp_out = memchr (bp, eolchar, eob - bp);
+          જો (bp_out)
             {
               bp_out++;
               next = true;
             }
-          else
+          નહીંતર
             bp_out = eob;
           to_write = bp_out - bp;
 
-          if (k)
+          જો (k)
             {
-              if (line_no == k && unbuffered)
+              જો (લીટી_no == k && unbuffered)
                 {
-                  if (full_write (STDOUT_FILENO, bp, to_write) != to_write)
+                  જો (full_write (STDOUT_FILENO, bp, to_write) != to_write)
                     write_error ();
                 }
-              else if (line_no == k && fwrite (bp, to_write, 1, stdout) != 1)
+              નહીંતર જો (લીટી_no == k && fwrite (bp, to_write, 1, stdout) != 1)
                 {
                   write_error ();
                 }
-              if (next)
-                line_no = (line_no == n) ? 1 : line_no + 1;
+              જો (next)
+                લીટી_no = (લીટી_no == n) ? 1 : લીટી_no + 1;
             }
-          else
+          નહીંતર
             {
               /* Secure file descriptor. */
               file_limit |= ofile_open (files, i_file, n);
-              if (unbuffered)
+              જો (unbuffered)
                 {
                   /* Note writing to fd, rather than flushing the FILE gives
                      an 8% performance benefit, due to reduced data copying.  */
-                  if (full_write (files[i_file].ofd, bp, to_write) != to_write
+                  જો (full_write (files[i_file].ofd, bp, to_write) != to_write
                       && ! ignorable (errno))
                     error (EXIT_FAILURE, errno, "%s",
                            quotef (files[i_file].of_name));
                 }
-              else if (fwrite (bp, to_write, 1, files[i_file].ofile) != 1
+              નહીંતર જો (fwrite (bp, to_write, 1, files[i_file].ofile) != 1
                        && ! ignorable (errno))
                 error (EXIT_FAILURE, errno, "%s",
                        quotef (files[i_file].of_name));
 
-              if (! ignorable (errno))
+              જો (! ignorable (errno))
                 wrote = true;
 
-              if (file_limit)
+              જો (file_limit)
                 {
-                  if (fclose (files[i_file].ofile) != 0)
+                  જો (fclose (files[i_file].ofile) != 0)
                     error (EXIT_FAILURE, errno, "%s",
                            quotef (files[i_file].of_name));
-                  files[i_file].ofile = NULL;
+                  files[i_file].ofile = ખાલી;
                   files[i_file].ofd = OFD_APPEND;
                 }
-              if (next && ++i_file == n)
+              જો (next && ++i_file == n)
                 {
                   wrapped = true;
                   /* If no filters are accepting input, stop reading.  */
-                  if (! wrote)
-                    goto no_filters;
+                  જો (! wrote)
+                    જાઓ no_filters;
                   wrote = false;
                   i_file = 0;
                 }
@@ -1343,14 +1343,14 @@ no_filters:
      and to signal any waiting fifo consumers.
      Also, close any open file descriptors.
      FIXME: Should we do this before EXIT_FAILURE?  */
-  if (!k)
+  જો (!k)
     {
       idx_t ceiling = wrapped ? n : i_file;
-      for (i_file = 0; i_file < n; i_file++)
+      માટે (i_file = 0; i_file < n; i_file++)
         {
-          if (i_file >= ceiling && !elide_empty_files)
+          જો (i_file >= ceiling && !elide_empty_files)
             file_limit |= ofile_open (files, i_file, n);
-          if (files[i_file].ofd >= 0)
+          જો (files[i_file].ofd >= 0)
             closeout (files[i_file].ofile, files[i_file].ofd,
                       files[i_file].opid, files[i_file].of_name);
           files[i_file].ofd = OFD_APPEND;
@@ -1359,17 +1359,17 @@ no_filters:
 }
 
 #define FAIL_ONLY_ONE_WAY()					\
-  do								\
+  કરો								\
     {								\
       error (0, 0, _("cannot split in more than one way"));	\
       usage (EXIT_FAILURE);					\
     }								\
-  while (0)
+  જ્યારે (0)
 
 /* Report a string-to-integer conversion failure MSGID with ARG.  */
 
-static _Noreturn void
-strtoint_die (char const *msgid, char const *arg)
+સ્થિર _Noreturn શૂન્ય
+strtoint_die (અક્ષર અચલ *msgid, અક્ષર અચલ *arg)
 {
   error (EXIT_FAILURE, errno == EINVAL ? 0 : errno, "%s: %s",
          gettext (msgid), quote (arg));
@@ -1384,48 +1384,48 @@ strtoint_die (char const *msgid, char const *arg)
    If the number cannot be parsed, diagnose with MSG.
    Return the number parsed, or an INTMAX_MAX on overflow.  */
 
-static intmax_t
-parse_n_units (char const *arg, char const *multipliers, char const *msgid)
+સ્થિર intmax_t
+parse_n_units (અક્ષર અચલ *arg, અક્ષર અચલ *multipliers, અક્ષર અચલ *msgid)
 {
   intmax_t n;
-  if (OVERFLOW_OK < xstrtoimax (arg, NULL, 10, &n, multipliers) || n < 1)
+  જો (OVERFLOW_OK < xstrtoimax (arg, ખાલી, 10, &n, multipliers) || n < 1)
     strtoint_die (msgid, arg);
-  return n;
+  પાછા n;
 }
 
 /* Parse K/N syntax of chunk options.  */
 
-static void
-parse_chunk (intmax_t *k_units, intmax_t *n_units, char const *arg)
+સ્થિર શૂન્ય
+parse_chunk (intmax_t *k_units, intmax_t *n_units, અક્ષર અચલ *arg)
 {
-  char *argend;
+  અક્ષર *argend;
   strtol_error e = xstrtoimax (arg, &argend, 10, n_units, "");
-  if (e == LONGINT_INVALID_SUFFIX_CHAR && *argend == '/')
+  જો (e == LONGINT_INVALID_SUFFIX_CHAR && *argend == '/')
     {
       *k_units = *n_units;
       *n_units = parse_n_units (argend + 1, "",
                                 N_("invalid number of chunks"));
-      if (! (0 < *k_units && *k_units <= *n_units))
+      જો (! (0 < *k_units && *k_units <= *n_units))
         error (EXIT_FAILURE, 0, "%s: %s", _("invalid chunk number"),
                quote_mem (arg, argend - arg));
     }
-  else if (! (e <= OVERFLOW_OK && 0 < *n_units))
+  નહીંતર જો (! (e <= OVERFLOW_OK && 0 < *n_units))
     strtoint_die (N_("invalid number of chunks"), arg);
 }
 
 
-int
-main (int argc, char **argv)
+પૂર્ણાંક
+મુખ્ય (પૂર્ણાંક argc, અક્ષર **argv)
 {
-  enum Split_type split_type = type_undef;
+  ગણના Split_type split_type = type_undef;
   idx_t in_blk_size = 0;	/* optimal block size of input file device */
   idx_t page_size = getpagesize ();
   intmax_t k_units = 0;
   intmax_t n_units = 0;
 
-  static char const multipliers[] = "bEGKkMmPQRTYZ0";
-  int c;
-  int digits_optind = 0;
+  સ્થિર અક્ષર અચલ multipliers[] = "bEGKkMmPQRTYZ0";
+  પૂર્ણાંક c;
+  પૂર્ણાંક digits_optind = 0;
   off_t file_size = OFF_T_MAX;
 
   initialize_main (&argc, &argv);
@@ -1438,27 +1438,27 @@ main (int argc, char **argv)
 
   /* Parse command line options.  */
 
-  while (true)
+  જ્યારે (true)
     {
       /* This is the argv-index of the option we will read next.  */
-      int this_optind = optind ? optind : 1;
+      પૂર્ણાંક this_optind = optind ? optind : 1;
 
       c = getopt_long (argc, argv, "0123456789C:a:b:del:n:t:ux",
-                       longopts, NULL);
-      if (c == -1)
-        break;
+                       longopts, ખાલી);
+      જો (c == -1)
+        તોડો;
 
-      switch (c)
+      પસંદગી (c)
         {
-        case 'a':
+        સ્થિતિ 'a':
           suffix_length = xdectoimax (optarg, 0, IDX_MAX,
                                       "", _("invalid suffix length"), 0);
-          break;
+          તોડો;
 
-        case ADDITIONAL_SUFFIX_OPTION:
+        સ્થિતિ ADDITIONAL_SUFFIX_OPTION:
           {
-            int suffix_len = strlen (optarg);
-            if (last_component (optarg) != optarg
+            પૂર્ણાંક suffix_len = strlen (optarg);
+            જો (last_component (optarg) != optarg
                 || (suffix_len && ISSLASH (optarg[suffix_len - 1])))
               {
                 error (0, 0,
@@ -1468,66 +1468,66 @@ main (int argc, char **argv)
               }
           }
           additional_suffix = optarg;
-          break;
+          તોડો;
 
-        case 'b':
-          if (split_type != type_undef)
+        સ્થિતિ 'b':
+          જો (split_type != type_undef)
             FAIL_ONLY_ONE_WAY ();
           split_type = type_bytes;
           n_units = parse_n_units (optarg, multipliers,
                                    N_("invalid number of bytes"));
-          break;
+          તોડો;
 
-        case 'l':
-          if (split_type != type_undef)
+        સ્થિતિ 'l':
+          જો (split_type != type_undef)
             FAIL_ONLY_ONE_WAY ();
-          split_type = type_lines;
+          split_type = type_લીટીઓ;
           n_units = parse_n_units (optarg, "", N_("invalid number of lines"));
-          break;
+          તોડો;
 
-        case 'C':
-          if (split_type != type_undef)
+        સ્થિતિ 'C':
+          જો (split_type != type_undef)
             FAIL_ONLY_ONE_WAY ();
           split_type = type_byteslines;
           n_units = parse_n_units (optarg, multipliers,
                                    N_("invalid number of lines"));
-          break;
+          તોડો;
 
-        case 'n':
-          if (split_type != type_undef)
+        સ્થિતિ 'n':
+          જો (split_type != type_undef)
             FAIL_ONLY_ONE_WAY ();
           /* skip any whitespace */
-          while (isspace (to_uchar (*optarg)))
+          જ્યારે (isspace (to_uchar (*optarg)))
             optarg++;
-          if (STRNCMP_LIT (optarg, "r/") == 0)
+          જો (STRNCMP_LIT (optarg, "r/") == 0)
             {
               split_type = type_rr;
               optarg += 2;
             }
-          else if (STRNCMP_LIT (optarg, "l/") == 0)
+          નહીંતર જો (STRNCMP_LIT (optarg, "l/") == 0)
             {
-              split_type = type_chunk_lines;
+              split_type = type_chunk_લીટીઓ;
               optarg += 2;
             }
-          else
+          નહીંતર
             split_type = type_chunk_bytes;
           parse_chunk (&k_units, &n_units, optarg);
-          break;
+          તોડો;
 
-        case 'u':
+        સ્થિતિ 'u':
           unbuffered = true;
-          break;
+          તોડો;
 
-        case 't':
+        સ્થિતિ 't':
           {
-            char neweol = optarg[0];
-            if (! neweol)
+            અક્ષર neweol = optarg[0];
+            જો (! neweol)
               error (EXIT_FAILURE, 0, _("empty record separator"));
-            if (optarg[1])
+            જો (optarg[1])
               {
-                if (streq (optarg, "\\0"))
+                જો (streq (optarg, "\\0"))
                   neweol = '\0';
-                else
+                નહીંતર
                   {
                     /* Provoke with 'split -txx'.  Complain about
                        "multi-character tab" instead of "multibyte tab", so
@@ -1538,7 +1538,7 @@ main (int argc, char **argv)
                   }
               }
             /* Make it explicit we don't support multiple separators.  */
-            if (0 <= eolchar && neweol != eolchar)
+            જો (0 <= eolchar && neweol != eolchar)
               {
                 error (EXIT_FAILURE, 0,
                        _("multiple separator characters specified"));
@@ -1546,42 +1546,42 @@ main (int argc, char **argv)
 
             eolchar = neweol;
           }
-          break;
+          તોડો;
 
-        case '0':
-        case '1':
-        case '2':
-        case '3':
-        case '4':
-        case '5':
-        case '6':
-        case '7':
-        case '8':
-        case '9':
-          if (split_type == type_undef)
+        સ્થિતિ '0':
+        સ્થિતિ '1':
+        સ્થિતિ '2':
+        સ્થિતિ '3':
+        સ્થિતિ '4':
+        સ્થિતિ '5':
+        સ્થિતિ '6':
+        સ્થિતિ '7':
+        સ્થિતિ '8':
+        સ્થિતિ '9':
+          જો (split_type == type_undef)
             {
               split_type = type_digits;
               n_units = 0;
             }
-          if (split_type != type_undef && split_type != type_digits)
+          જો (split_type != type_undef && split_type != type_digits)
             FAIL_ONLY_ONE_WAY ();
-          if (digits_optind != 0 && digits_optind != this_optind)
+          જો (digits_optind != 0 && digits_optind != this_optind)
             n_units = 0;	/* More than one number given; ignore other. */
           digits_optind = this_optind;
-          if (ckd_mul (&n_units, n_units, 10)
+          જો (ckd_mul (&n_units, n_units, 10)
               || ckd_add (&n_units, n_units, c - '0'))
             n_units = INTMAX_MAX;
-          break;
+          તોડો;
 
-        case 'd':
-        case 'x':
-          if (c == 'd')
+        સ્થિતિ 'd':
+        સ્થિતિ 'x':
+          જો (c == 'd')
             suffix_alphabet = "0123456789";
-          else
+          નહીંતર
             suffix_alphabet = "0123456789abcdef";
-          if (optarg)
+          જો (optarg)
             {
-              if (strlen (optarg) != strspn (optarg, suffix_alphabet))
+              જો (strlen (optarg) != strspn (optarg, suffix_alphabet))
                 {
                   error (0, 0,
                          (c == 'd') ?
@@ -1590,46 +1590,46 @@ main (int argc, char **argv)
                          quote (optarg));
                   usage (EXIT_FAILURE);
                 }
-              else
+              નહીંતર
                 {
                   /* Skip any leading zero.  */
-                  while (*optarg == '0' && *(optarg + 1) != '\0')
+                  જ્યારે (*optarg == '0' && *(optarg + 1) != '\0')
                     optarg++;
                   numeric_suffix_start = optarg;
                 }
             }
-          break;
+          તોડો;
 
-        case 'e':
+        સ્થિતિ 'e':
           elide_empty_files = true;
-          break;
+          તોડો;
 
-        case FILTER_OPTION:
+        સ્થિતિ FILTER_OPTION:
           filter_command = optarg;
-          break;
+          તોડો;
 
-        case IO_BLKSIZE_OPTION:
+        સ્થિતિ IO_BLKSIZE_OPTION:
           in_blk_size = xnumtoumax (optarg, 10, 1,
                                     MIN (SYS_BUFSIZE_MAX,
                                          MIN (IDX_MAX, SIZE_MAX) - 1),
                                     multipliers, _("invalid IO block size"),
                                     0, XTOINT_MIN_RANGE);
-          break;
+          તોડો;
 
-        case VERBOSE_OPTION:
+        સ્થિતિ VERBOSE_OPTION:
           verbose = true;
-          break;
+          તોડો;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        મૂળભૂત:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (k_units != 0 && filter_command)
+  જો (k_units != 0 && filter_command)
     {
       error (0, 0, _("--filter does not process a chunk extracted to "
                      "standard output"));
@@ -1637,32 +1637,32 @@ main (int argc, char **argv)
     }
 
   /* Handle default case.  */
-  if (split_type == type_undef)
+  જો (split_type == type_undef)
     {
-      split_type = type_lines;
+      split_type = type_લીટીઓ;
       n_units = 1000;
     }
 
-  if (n_units == 0)
+  જો (n_units == 0)
     {
       error (0, 0, _("invalid number of lines: %s"), quote ("0"));
       usage (EXIT_FAILURE);
     }
 
-  if (eolchar < 0)
+  જો (eolchar < 0)
     eolchar = '\n';
 
   set_suffix_length (n_units, split_type);
 
   /* Get out the filename arguments.  */
 
-  if (optind < argc)
+  જો (optind < argc)
     infile = argv[optind++];
 
-  if (optind < argc)
+  જો (optind < argc)
     outbase = argv[optind++];
 
-  if (optind < argc)
+  જો (optind < argc)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind]));
       usage (EXIT_FAILURE);
@@ -1670,7 +1670,7 @@ main (int argc, char **argv)
 
   /* Check that the suffix length is large enough for the numerical
      suffix start value.  */
-  if (numeric_suffix_start && strlen (numeric_suffix_start) > suffix_length)
+  જો (numeric_suffix_start && strlen (numeric_suffix_start) > suffix_length)
     {
       error (0, 0, _("numerical suffix start value is too large "
                      "for the suffix length"));
@@ -1678,37 +1678,37 @@ main (int argc, char **argv)
     }
 
   /* Open the input file.  */
-  if (! streq (infile, "-")
+  જો (! streq (infile, "-")
       && fd_reopen (STDIN_FILENO, infile, O_RDONLY, 0) < 0)
     error (EXIT_FAILURE, errno, _("cannot open %s for reading"),
            quoteaf (infile));
 
   /* Binary I/O is safer when byte counts are used.  */
-  xset_binary_mode (STDIN_FILENO, O_BINARY);
+  xset_દ્વિઅંકી_mode (STDIN_FILENO, O_દ્વિઅંકી);
 
   /* Advise the kernel of our access pattern.  */
   fdadvise (STDIN_FILENO, 0, 0, FADVISE_SEQUENTIAL);
 
   /* Get the optimal block size of input device and make a buffer.  */
 
-  if (fstat (STDIN_FILENO, &in_stat_buf) != 0)
+  જો (fstat (STDIN_FILENO, &in_stat_buf) != 0)
     error (EXIT_FAILURE, errno, "%s", quotef (infile));
 
-  if (in_blk_size == 0)
+  જો (in_blk_size == 0)
     {
       in_blk_size = io_blksize (&in_stat_buf);
-      if (SYS_BUFSIZE_MAX < in_blk_size)
+      જો (SYS_BUFSIZE_MAX < in_blk_size)
         in_blk_size = SYS_BUFSIZE_MAX;
     }
 
-  char *buf = xalignalloc (page_size, in_blk_size + 1);
+  અક્ષર *buf = xalignalloc (page_size, in_blk_size + 1);
   ssize_t initial_read = -1;
 
-  if (split_type == type_chunk_bytes || split_type == type_chunk_lines)
+  જો (split_type == type_chunk_bytes || split_type == type_chunk_લીટીઓ)
     {
-      file_size = input_file_size (STDIN_FILENO, &in_stat_buf,
+      file_size = આગત_file_size (STDIN_FILENO, &in_stat_buf,
                                    buf, in_blk_size);
-      if (file_size < 0)
+      જો (file_size < 0)
         error (EXIT_FAILURE, errno, _("%s: cannot determine file size"),
                quotef (infile));
       initial_read = MIN (file_size, in_blk_size);
@@ -1716,54 +1716,54 @@ main (int argc, char **argv)
 
   /* When filtering, closure of one pipe must not terminate the process,
      as there may still be other streams expecting input from us.  */
-  if (filter_command)
-    default_SIGPIPE = signal (SIGPIPE, SIG_IGN) == SIG_DFL;
+  જો (filter_command)
+    default_SIGPIPE = સંકેત (SIGPIPE, SIG_IGN) == SIG_DFL;
 
-  switch (split_type)
+  પસંદગી (split_type)
     {
-    case type_digits:
-    case type_lines:
-      lines_split (n_units, buf, in_blk_size);
-      break;
+    સ્થિતિ type_digits:
+    સ્થિતિ type_લીટીઓ:
+      લીટીઓ_split (n_units, buf, in_blk_size);
+      તોડો;
 
-    case type_bytes:
+    સ્થિતિ type_bytes:
       bytes_split (n_units, 0, buf, in_blk_size, -1, 0);
-      break;
+      તોડો;
 
-    case type_byteslines:
-      line_bytes_split (n_units, buf, in_blk_size);
-      break;
+    સ્થિતિ type_byteslines:
+      લીટી_bytes_split (n_units, buf, in_blk_size);
+      તોડો;
 
-    case type_chunk_bytes:
-      if (k_units == 0)
+    સ્થિતિ type_chunk_bytes:
+      જો (k_units == 0)
         bytes_split (file_size / n_units, file_size % n_units,
                      buf, in_blk_size, initial_read, n_units);
-      else
+      નહીંતર
         bytes_chunk_extract (k_units, n_units, buf, in_blk_size, initial_read,
                              file_size);
-      break;
+      તોડો;
 
-    case type_chunk_lines:
-      lines_chunk_split (k_units, n_units, buf, in_blk_size, initial_read,
+    સ્થિતિ type_chunk_લીટીઓ:
+      લીટીઓ_chunk_split (k_units, n_units, buf, in_blk_size, initial_read,
                          file_size);
-      break;
+      તોડો;
 
-    case type_rr:
+    સ્થિતિ type_rr:
       /* Note, this is like 'sed -n ${k}~${n}p' when k > 0,
          but the functionality is provided for symmetry.  */
       {
         of_t *files;
-        lines_rr (k_units, n_units, buf, in_blk_size, &files);
+        લીટીઓ_rr (k_units, n_units, buf, in_blk_size, &files);
       }
-      break;
+      તોડો;
 
-    case type_undef: default:
+    સ્થિતિ type_undef: મૂળભૂત:
       affirm (false);
     }
 
-  if (close (STDIN_FILENO) != 0)
+  જો (close (STDIN_FILENO) != 0)
     error (EXIT_FAILURE, errno, "%s", quotef (infile));
-  closeout (NULL, output_desc, filter_pid, outfile);
+  closeout (ખાલી, output_desc, filter_pid, outfile);
 
   main_exit (EXIT_SUCCESS);
 }

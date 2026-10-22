@@ -16,45 +16,45 @@
 
 /* Written by Pádraig Brady.  */
 
-#include <config.h>
+#અન્તર્ભાવ <config.h>
 
-#include "system.h"
-#include "relpath.h"
+#અન્તર્ભાવ "system.h"
+#અન્તર્ભાવ "relpath.h"
 
 
 /* Return the length of the longest common prefix
    of canonical PATH1 and PATH2, ensuring only full path components
    are matched.  Return 0 on no match.  */
 ATTRIBUTE_PURE
-static int
-path_common_prefix (char const *path1, char const *path2)
+સ્થિર પૂર્ણાંક
+path_common_prefix (અક્ષર અચલ *path1, અક્ષર અચલ *path2)
 {
-  int i = 0;
-  int ret = 0;
+  પૂર્ણાંક i = 0;
+  પૂર્ણાંક ret = 0;
 
   /* We already know path1[0] and path2[0] are '/'.  Special case
      '//', which is only present in a canonical name on platforms
      where it is distinct.  */
-  if ((path1[1] == '/') != (path2[1] == '/'))
-    return 0;
+  જો ((path1[1] == '/') != (path2[1] == '/'))
+    પાછા 0;
 
-  while (*path1 && *path2)
+  જ્યારે (*path1 && *path2)
     {
-      if (*path1 != *path2)
-        break;
-      if (*path1 == '/')
+      જો (*path1 != *path2)
+        તોડો;
+      જો (*path1 == '/')
         ret = i + 1;
       path1++;
       path2++;
       i++;
     }
 
-  if ((!*path1 && !*path2)
+  જો ((!*path1 && !*path2)
       || (!*path1 && *path2 == '/')
       || (!*path2 && *path1 == '/'))
     ret = i;
 
-  return ret;
+  પાછા ret;
 }
 
 /* Either output STR to stdout or
@@ -62,72 +62,72 @@ path_common_prefix (char const *path1, char const *path2)
    and update *PBUF to point to the end of the buffer
    and adjust *PLEN to reflect the remaining space.
    Return TRUE on failure.  */
-static bool
-buffer_or_output (char const *str, char **pbuf, size_t *plen)
+સ્થિર bool
+buffer_or_output (અક્ષર અચલ *str, અક્ષર **pbuf, size_t *plen)
 {
-  if (*pbuf)
+  જો (*pbuf)
     {
       size_t slen = strlen (str);
-      if (slen >= *plen)
-        return true;
+      જો (slen >= *plen)
+        પાછા true;
       memcpy (*pbuf, str, slen + 1);
       *pbuf += slen;
       *plen -= slen;
     }
-  else
+  નહીંતર
     {
       fputs (str, stdout);
     }
 
-  return false;
+  પાછા false;
 }
 
 /* Output the relative representation if possible.
    If BUF is non-null, write to that buffer rather than to stdout.  */
 bool
-relpath (char const *can_fname, char const *can_reldir, char *buf, size_t len)
+relpath (અક્ષર અચલ *can_fname, અક્ષર અચલ *can_reldir, અક્ષર *buf, size_t len)
 {
   bool buf_err = false;
 
   /* Skip the prefix common to --relative-to and path.  */
-  int common_index = path_common_prefix (can_reldir, can_fname);
-  if (!common_index)
-    return false;
+  પૂર્ણાંક common_index = path_common_prefix (can_reldir, can_fname);
+  જો (!common_index)
+    પાછા false;
 
-  char const *relto_suffix = can_reldir + common_index;
-  char const *fname_suffix = can_fname + common_index;
+  અક્ષર અચલ *relto_suffix = can_reldir + common_index;
+  અક્ષર અચલ *fname_suffix = can_fname + common_index;
 
   /* Skip over extraneous '/'.  */
-  if (*relto_suffix == '/')
+  જો (*relto_suffix == '/')
     relto_suffix++;
-  if (*fname_suffix == '/')
+  જો (*fname_suffix == '/')
     fname_suffix++;
 
   /* Replace remaining components of --relative-to with '..', to get
      to a common directory.  Then output the remainder of fname.  */
-  if (*relto_suffix)
+  જો (*relto_suffix)
     {
       buf_err |= buffer_or_output ("..", &buf, &len);
-      for (; *relto_suffix; ++relto_suffix)
+      માટે (; *relto_suffix; ++relto_suffix)
         {
-          if (*relto_suffix == '/')
+          જો (*relto_suffix == '/')
             buf_err |= buffer_or_output ("/..", &buf, &len);
         }
 
-      if (*fname_suffix)
+      જો (*fname_suffix)
         {
           buf_err |= buffer_or_output ("/", &buf, &len);
           buf_err |= buffer_or_output (fname_suffix, &buf, &len);
         }
     }
-  else
+  નહીંતર
     {
         buf_err |= buffer_or_output (*fname_suffix ? fname_suffix : ".",
                                      &buf, &len);
     }
 
-  if (buf_err)
+  જો (buf_err)
     error (0, ENAMETOOLONG, "%s", _("generating relative path"));
 
-  return !buf_err;
+  પાછા !buf_err;
 }

@@ -18,92 +18,92 @@
    Major rewrite by David MacKenzie, djm@gnu.ai.mit.edu.
    Extracted from id.c by James Youngman. */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <pwd.h>
-#include <grp.h>
+#અન્તર્ભાવ <config.h>
+#અન્તર્ભાવ <stdio.h>
+#અન્તર્ભાવ <sys/types.h>
+#અન્તર્ભાવ <pwd.h>
+#અન્તર્ભાવ <grp.h>
 
-#include "system.h"
-#include "mgetgroups.h"
-#include "quote.h"
-#include "group-list.h"
+#અન્તર્ભાવ "system.h"
+#અન્તર્ભાવ "mgetgroups.h"
+#અન્તર્ભાવ "quote.h"
+#અન્તર્ભાવ "group-list.h"
 
 
 /* Print all of the distinct groups the user is in. */
-extern bool
-print_group_list (char const *username,
+બાહ્ય bool
+print_group_list (અક્ષર અચલ *username,
                   uid_t ruid, gid_t rgid, gid_t egid,
-                  bool use_names, char delim)
+                  bool use_names, અક્ષર delim)
 {
   bool ok = true;
-  struct passwd *pwd = NULL;
+  સંરચના passwd *pwd = ખાલી;
 
-  if (username)
+  જો (username)
     {
       pwd = getpwuid (ruid);
-      if (pwd == NULL)
+      જો (pwd == ખાલી)
         ok = false;
     }
 
-  if (!print_group (rgid, use_names))
+  જો (!print_group (rgid, use_names))
     ok = false;
 
-  if (egid != rgid)
+  જો (egid != rgid)
     {
       putchar (delim);
-      if (!print_group (egid, use_names))
+      જો (!print_group (egid, use_names))
         ok = false;
     }
 
   {
     gid_t *groups;
 
-    int n_groups = xgetgroups (username, (pwd ? pwd->pw_gid : egid), &groups);
-    if (n_groups < 0)
+    પૂર્ણાંક n_groups = xgetgroups (username, (pwd ? pwd->pw_gid : egid), &groups);
+    જો (n_groups < 0)
       {
-        if (username)
+        જો (username)
           {
             error (0, errno, _("failed to get groups for user %s"),
                    quote (username));
           }
-        else
+        નહીંતર
           {
             error (0, errno, _("failed to get groups for the current process"));
           }
-        return false;
+        પાછા false;
       }
 
-    for (int i = 0; i < n_groups; i++)
-      if (groups[i] != rgid && groups[i] != egid)
+    માટે (પૂર્ણાંક i = 0; i < n_groups; i++)
+      જો (groups[i] != rgid && groups[i] != egid)
         {
           putchar (delim);
-          if (!print_group (groups[i], use_names))
+          જો (!print_group (groups[i], use_names))
             ok = false;
         }
-    free (groups);
+    મુક્ત (groups);
   }
-  return ok;
+  પાછા ok;
 }
 
 /* Print the name or value of group ID GID. */
-extern bool
+બાહ્ય bool
 print_group (gid_t gid, bool use_name)
 {
-  struct group *grp = NULL;
+  સંરચના group *grp = ખાલી;
   bool ok = true;
 
-  if (use_name)
+  જો (use_name)
     {
       grp = getgrgid (gid);
-      if (grp == NULL)
+      જો (grp == ખાલી)
         {
-          if (TYPE_SIGNED (gid_t))
+          જો (TYPE_SIGNED (gid_t))
             {
               intmax_t g = gid;
               error (0, 0, _("cannot find name for group ID %jd"), g);
             }
-          else
+          નહીંતર
             {
               uintmax_t g = gid;
               error (0, 0, _("cannot find name for group ID %ju"), g);
@@ -112,9 +112,9 @@ print_group (gid_t gid, bool use_name)
         }
     }
 
-  if (grp)
+  જો (grp)
     printf ("%s", grp->gr_name);
-  else
+  નહીંતર
     printf ("%ju", (uintmax_t) gid);
-  return ok;
+  પાછા ok;
 }

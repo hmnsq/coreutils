@@ -3,7 +3,7 @@
 
 # include <signal.h>
 
-static int const term_sig[] =
+સ્થિર પૂર્ણાંક અચલ term_sig[] =
   {
     SIGALRM, /* our timeout.  */
     SIGINT,  /* Ctrl-C at terminal for example.  */

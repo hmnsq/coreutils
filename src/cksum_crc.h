@@ -20,31 +20,31 @@
 # include <stdint.h>
 # include <stdio.h>
 
-extern bool cksum_debug;
+બાહ્ય bool cksum_debug;
 
-extern int
-crc_sum_stream (FILE *stream, void *resstream, intmax_t *length);
+બાહ્ય પૂર્ણાંક
+crc_sum_stream (FILE *stream, શૂન્ય *resstream, intmax_t *length);
 
-extern int
-crc32b_sum_stream (FILE *stream, void *resstream, intmax_t *length);
+બાહ્ય પૂર્ણાંક
+crc32b_sum_stream (FILE *stream, શૂન્ય *resstream, intmax_t *length);
 
-extern void
-output_crc (char const *file, int binary_file, void const *digest, bool raw,
-            bool tagged, unsigned char delim, bool args, intmax_t length)
+બાહ્ય શૂન્ય
+output_crc (અક્ષર અચલ *file, પૂર્ણાંક દ્વિઅંકી_file, શૂન્ય અચલ *digest, bool raw,
+            bool tagged, unsigned અક્ષર delim, bool args, intmax_t length)
   _GL_ATTRIBUTE_NONNULL ((3));
 
-extern bool
+બાહ્ય bool
 cksum_vmull (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out);
 
-extern bool
+બાહ્ય bool
 cksum_pclmul (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out);
 
-extern bool
+બાહ્ય bool
 cksum_avx2 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out);
 
-extern bool
+બાહ્ય bool
 cksum_avx512 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out);
 
-extern uint_fast32_t const crctab[8][256];
+બાહ્ય uint_fast32_t અચલ crctab[8][256];
 
 #endif

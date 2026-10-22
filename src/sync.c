@@ -16,13 +16,13 @@
 
 /* Written by Jim Meyering */
 
-#include <config.h>
-#include <getopt.h>
-#include <stdio.h>
-#include <sys/types.h>
+#અન્તર્ભાવ <config.h>
+#અન્તર્ભાવ <getopt.h>
+#અન્તર્ભાવ <stdio.h>
+#અન્તર્ભાવ <sys/types.h>
 
-#include "system.h"
-#include "assure.h"
+#અન્તર્ભાવ "system.h"
+#અન્તર્ભાવ "assure.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "sync"
@@ -35,7 +35,7 @@
 # define HAVE_SYNCFS 0
 #endif
 
-enum sync_mode
+ગણના sync_mode
 {
   MODE_FILE,
   MODE_DATA,
@@ -43,21 +43,21 @@ enum sync_mode
   MODE_SYNC
 };
 
-static struct option const long_options[] =
+સ્થિર સંરચના option અચલ long_options[] =
 {
-  {"data", no_argument, NULL, 'd'},
-  {"file-system", no_argument, NULL, 'f'},
+  {"data", no_argument, ખાલી, 'd'},
+  {"file-system", no_argument, ખાલી, 'f'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ખાલી, 0, ખાલી, 0}
 };
 
-void
-usage (int status)
+શૂન્ય
+usage (પૂર્ણાંક status)
 {
-  if (status != EXIT_SUCCESS)
+  જો (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  નહીંતર
     {
       printf (_("Usage: %s [OPTION] [FILE]...\n"), program_name);
       fputs (_("\
@@ -84,39 +84,39 @@ or their containing file systems.\n\
 /* Sync the specified FILE, or file systems associated with FILE.
    Return 1 on success.  */
 
-static bool
-sync_arg (enum sync_mode mode, char const *file)
+સ્થિર bool
+sync_arg (ગણના sync_mode mode, અક્ષર અચલ *file)
 {
-  int open_flags = O_RDONLY | O_NONBLOCK;
+  પૂર્ણાંક open_flags = O_RDONLY | O_NONBLOCK;
 
-#if defined _AIX || defined __CYGWIN__
+#જો defined _AIX || defined __CYGWIN__
   /* AIX 7.1, CYGWIN 2.9.0, fsync requires write access to file.  */
-  if (mode == MODE_FILE)
+  જો (mode == MODE_FILE)
     open_flags = O_WRONLY | O_NONBLOCK;
 #endif
 
   /* Note O_PATH might be supported with syncfs(),
      though as of Linux 3.18 is not.  */
-  int fd = open (file, open_flags);
-  if (fd < 0)
+  પૂર્ણાંક fd = open (file, open_flags);
+  જો (fd < 0)
     {
       /* Use the O_RDONLY errno, which is significant
          with directories for example.  */
-      int rd_errno = errno;
-      if (open_flags != (O_WRONLY | O_NONBLOCK))
+      પૂર્ણાંક rd_errno = errno;
+      જો (open_flags != (O_WRONLY | O_NONBLOCK))
         fd = open (file, O_WRONLY | O_NONBLOCK);
-      if (fd < 0)
+      જો (fd < 0)
         {
           error (0, rd_errno, _("error opening %s"), quoteaf (file));
-          return false;
+          પાછા false;
         }
     }
 
   bool ret = true;
   /* We used O_NONBLOCK above to not hang with fifos,
      so reset that here.  */
-  int fdflags = fcntl (fd, F_GETFL);
-  if (fdflags == -1
+  પૂર્ણાંક fdflags = fcntl (fd, F_GETFL);
+  જો (fdflags == -1
       || fcntl (fd, F_SETFL, fdflags & ~O_NONBLOCK) < 0)
     {
       error (0, errno, _("couldn't reset non-blocking mode %s"),
@@ -124,47 +124,47 @@ sync_arg (enum sync_mode mode, char const *file)
       ret = false;
     }
 
-  if (ret)
+  જો (ret)
     {
-      int sync_status = -1;
+      પૂર્ણાંક sync_status = -1;
 
-      switch (mode)
+      પસંદગી (mode)
         {
-        case MODE_DATA:
+        સ્થિતિ MODE_DATA:
           sync_status = fdatasync (fd);
-          break;
+          તોડો;
 
-        case MODE_FILE:
+        સ્થિતિ MODE_FILE:
           sync_status = fsync (fd);
-          break;
+          તોડો;
 
-        case MODE_FILE_SYSTEM:
-#if HAVE_SYNCFS
+        સ્થિતિ MODE_FILE_SYSTEM:
+#જો HAVE_SYNCFS
           sync_status = syncfs (fd);
-          break;
+          તોડો;
 #endif
-        case MODE_SYNC: default:
+        સ્થિતિ MODE_SYNC: મૂળભૂત:
           affirm (false);
         }
 
-      if (sync_status < 0)
+      જો (sync_status < 0)
         {
           error (0, errno, _("error syncing %s"), quoteaf (file));
           ret = false;
         }
     }
 
-  if (close (fd) < 0)
+  જો (close (fd) < 0)
     {
       error (0, errno, _("failed to close %s"), quoteaf (file));
       ret = false;
     }
 
-  return ret;
+  પાછા ret;
 }
 
-int
-main (int argc, char **argv)
+પૂર્ણાંક
+મુખ્ય (પૂર્ણાંક argc, અક્ષર **argv)
 {
   bool arg_data = false, arg_file_system = false;
   bool ok = true;
@@ -177,55 +177,55 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  int c;
-  while ((c = getopt_long (argc, argv, "df", long_options, NULL))
+  પૂર્ણાંક c;
+  જ્યારે ((c = getopt_long (argc, argv, "df", long_options, ખાલી))
          != -1)
     {
-      switch (c)
+      પસંદગી (c)
         {
-        case 'd':
+        સ્થિતિ 'd':
           arg_data = true;
-          break;
+          તોડો;
 
-        case 'f':
+        સ્થિતિ 'f':
           arg_file_system = true;
-          break;
+          તોડો;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        મૂળભૂત:
           usage (EXIT_FAILURE);
         }
     }
 
   bool args_specified = optind < argc;
 
-  if (arg_data && arg_file_system)
+  જો (arg_data && arg_file_system)
     error (EXIT_FAILURE, 0,
            _("cannot specify both --data and --file-system"));
 
-  if (!args_specified && arg_data)
+  જો (!args_specified && arg_data)
     error (EXIT_FAILURE, 0, _("--data needs at least one argument"));
 
-  enum sync_mode mode;
-  if (! args_specified || (arg_file_system && ! HAVE_SYNCFS))
+  ગણના sync_mode mode;
+  જો (! args_specified || (arg_file_system && ! HAVE_SYNCFS))
     mode = MODE_SYNC;
-  else if (arg_file_system)
+  નહીંતર જો (arg_file_system)
     mode = MODE_FILE_SYSTEM;
-  else if (! arg_data)
+  નહીંતર જો (! arg_data)
     mode = MODE_FILE;
-  else
+  નહીંતર
     mode = MODE_DATA;
 
-  if (mode == MODE_SYNC)
+  જો (mode == MODE_SYNC)
     sync ();
-  else
+  નહીંતર
     {
-      for (; optind < argc; optind++)
+      માટે (; optind < argc; optind++)
         ok &= sync_arg (mode, argv[optind]);
     }
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  પાછા ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

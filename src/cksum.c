@@ -16,65 +16,65 @@
 
 /* Written by Ulrich Drepper <drepper@gnu.ai.mit.edu>.  */
 
-#include <config.h>
+#અન્તર્ભાવ <config.h>
 
-#include <getopt.h>
-#include <sys/types.h>
+#અન્તર્ભાવ <getopt.h>
+#અન્તર્ભાવ <sys/types.h>
 
-#include "assure.h"
-#include "system.h"
-#include "argmatch.h"
-#include "c-ctype.h"
-#include "quote.h"
-#include "xdectoint.h"
-#include "xstrtol.h"
+#અન્તર્ભાવ "assure.h"
+#અન્તર્ભાવ "system.h"
+#અન્તર્ભાવ "argmatch.h"
+#અન્તર્ભાવ "c-ctype.h"
+#અન્તર્ભાવ "quote.h"
+#અન્તર્ભાવ "xdectoint.h"
+#અન્તર્ભાવ "xstrtol.h"
 
 #ifndef HASH_ALGO_CKSUM
 # define HASH_ALGO_CKSUM 0
 #endif
 
-#if HASH_ALGO_SUM || HASH_ALGO_CKSUM
+#જો HASH_ALGO_SUM || HASH_ALGO_CKSUM
 # include "sum.h"
 #endif
-#if HASH_ALGO_CKSUM
+#જો HASH_ALGO_CKSUM
 # include "cksum.h"
 # include "cksum_crc.h"
 # include "base64.h"
 #endif
-#if HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
+#જો HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
 # include "blake2/b2sum.h"
 #endif
-#if HASH_ALGO_MD5 || HASH_ALGO_CKSUM
+#જો HASH_ALGO_MD5 || HASH_ALGO_CKSUM
 # include "md5.h"
 #endif
-#if HASH_ALGO_SHA1 || HASH_ALGO_CKSUM
+#જો HASH_ALGO_SHA1 || HASH_ALGO_CKSUM
 # include "sha1.h"
 #endif
-#if HASH_ALGO_SHA256 || HASH_ALGO_SHA224 || HASH_ALGO_CKSUM
+#જો HASH_ALGO_SHA256 || HASH_ALGO_SHA224 || HASH_ALGO_CKSUM
 # include "sha256.h"
 #endif
-#if HASH_ALGO_SHA512 || HASH_ALGO_SHA384 || HASH_ALGO_CKSUM
+#જો HASH_ALGO_SHA512 || HASH_ALGO_SHA384 || HASH_ALGO_CKSUM
 # include "sha512.h"
 #endif
-#if HASH_ALGO_CKSUM
+#જો HASH_ALGO_CKSUM
 # include "sha3.h"
 #endif
-#if HASH_ALGO_CKSUM
+#જો HASH_ALGO_CKSUM
 # include "sm3.h"
 #endif
-#include "fadvise.h"
-#include "stdio--.h"
-#include "xbinary-io.h"
+#અન્તર્ભાવ "fadvise.h"
+#અન્તર્ભાવ "stdio--.h"
+#અન્તર્ભાવ "xbinary-io.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#if HASH_ALGO_SUM
+#જો HASH_ALGO_SUM
 # define PROGRAM_NAME "sum"
 # define DIGEST_TYPE_STRING "BSD"
 # define DIGEST_STREAM sumfns[sum_algorithm]
 # define DIGEST_OUT sum_output_fns[sum_algorithm]
 # define DIGEST_BITS 16
 # define DIGEST_ALIGN 4
-#elif HASH_ALGO_CKSUM
+#અથવાજો HASH_ALGO_CKSUM
 # define MAX_DIGEST_BITS 512
 # define MAX_DIGEST_ALIGN 8
 # define DIGEST_TYPE_STRING algorithm_tags[cksum_algorithm]
@@ -82,63 +82,63 @@
 # define DIGEST_OUT cksum_output_fns[cksum_algorithm]
 # define DIGEST_BITS MAX_DIGEST_BITS
 # define DIGEST_ALIGN MAX_DIGEST_ALIGN
-#elif HASH_ALGO_MD5
+#અથવાજો HASH_ALGO_MD5
 # define PROGRAM_NAME "md5sum"
 # define DIGEST_TYPE_STRING "MD5"
 # define DIGEST_STREAM md5_stream
 # define DIGEST_BITS 128
 # define DIGEST_REFERENCE "RFC 1321"
 # define DIGEST_ALIGN 4
-#elif HASH_ALGO_BLAKE2
+#અથવાજો HASH_ALGO_BLAKE2
 # define PROGRAM_NAME "b2sum"
 # define DIGEST_TYPE_STRING "BLAKE2b"
 # define DIGEST_STREAM blake2b_stream
 # define DIGEST_BITS 512
 # define DIGEST_REFERENCE "RFC 7693"
 # define DIGEST_ALIGN 8
-#elif HASH_ALGO_SHA1
+#અથવાજો HASH_ALGO_SHA1
 # define PROGRAM_NAME "sha1sum"
 # define DIGEST_TYPE_STRING "SHA1"
 # define DIGEST_STREAM sha1_stream
 # define DIGEST_BITS 160
 # define DIGEST_REFERENCE "FIPS-180-1"
 # define DIGEST_ALIGN 4
-#elif HASH_ALGO_SHA256
+#અથવાજો HASH_ALGO_SHA256
 # define PROGRAM_NAME "sha256sum"
 # define DIGEST_TYPE_STRING "SHA256"
 # define DIGEST_STREAM sha256_stream
 # define DIGEST_BITS 256
 # define DIGEST_REFERENCE "FIPS-180-2"
 # define DIGEST_ALIGN 4
-#elif HASH_ALGO_SHA224
+#અથવાજો HASH_ALGO_SHA224
 # define PROGRAM_NAME "sha224sum"
 # define DIGEST_TYPE_STRING "SHA224"
 # define DIGEST_STREAM sha224_stream
 # define DIGEST_BITS 224
 # define DIGEST_REFERENCE "RFC 3874"
 # define DIGEST_ALIGN 4
-#elif HASH_ALGO_SHA512
+#અથવાજો HASH_ALGO_SHA512
 # define PROGRAM_NAME "sha512sum"
 # define DIGEST_TYPE_STRING "SHA512"
 # define DIGEST_STREAM sha512_stream
 # define DIGEST_BITS 512
 # define DIGEST_REFERENCE "FIPS-180-2"
 # define DIGEST_ALIGN 8
-#elif HASH_ALGO_SHA384
+#અથવાજો HASH_ALGO_SHA384
 # define PROGRAM_NAME "sha384sum"
 # define DIGEST_TYPE_STRING "SHA384"
 # define DIGEST_STREAM sha384_stream
 # define DIGEST_BITS 384
 # define DIGEST_REFERENCE "FIPS-180-2"
 # define DIGEST_ALIGN 8
-#else
+#નહીંતર
 # error "Can't decide which hash algorithm to compile."
 #endif
-#if !HASH_ALGO_SUM && !HASH_ALGO_CKSUM
+#જો !HASH_ALGO_SUM && !HASH_ALGO_CKSUM
 # define DIGEST_OUT output_file
 #endif
 
-#if HASH_ALGO_CKSUM
+#જો HASH_ALGO_CKSUM
 # define PROGRAM_NAME (!legacy_mode ? "cksum"			 \
                        : cksum_algorithm == md5 ? "md5sum"	 \
                        : cksum_algorithm == sha1 ? "sha1sum"	 \
@@ -149,207 +149,207 @@
                        : "cksum")
 #endif
 
-#if HASH_ALGO_SUM
+#જો HASH_ALGO_SUM
 # define AUTHORS \
   proper_name ("Kayvan Aghaiepour"), \
   proper_name ("David MacKenzie")
-#elif HASH_ALGO_CKSUM
+#અથવાજો HASH_ALGO_CKSUM
 # define AUTHORS \
   proper_name_lite ("Padraig Brady", "P\303\241draig Brady"), \
   proper_name ("Q. Frank Xia")
-#elif HASH_ALGO_BLAKE2
+#અથવાજો HASH_ALGO_BLAKE2
 # define AUTHORS \
   proper_name_lite ("Padraig Brady", "P\303\241draig Brady"), \
   proper_name ("Samuel Neves")
-#else
+#નહીંતર
 # define AUTHORS \
   proper_name ("Ulrich Drepper"), \
   proper_name ("Scott Miller"), \
   proper_name ("David Madore")
 #endif
-#if !HASH_ALGO_BLAKE2 && !HASH_ALGO_CKSUM
+#જો !HASH_ALGO_BLAKE2 && !HASH_ALGO_CKSUM
 # define DIGEST_HEX_BYTES (DIGEST_BITS / 4)
 #endif
 #define DIGEST_BIN_BYTES (DIGEST_BITS / 8)
 
 /* The minimum length of a valid digest line.  This length does
    not include any newline character at the end of a line.  */
-#if HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
-# define MIN_DIGEST_LINE_LENGTH 3 /* With -l 8.  */
-#else
-# define MIN_DIGEST_LINE_LENGTH \
+#જો HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
+# define MIN_DIGEST_લીટી_LENGTH 3 /* With -l 8.  */
+#નહીંતર
+# define MIN_DIGEST_લીટી_LENGTH \
    (DIGEST_HEX_BYTES /* length of hexadecimal message digest */ \
     + 1 /* blank */ \
     + 1 /* minimum filename length */ )
 #endif
 
-#if !HASH_ALGO_SUM
-static void
-output_file (char const *file, int binary_file, void const *digest,
-             bool raw, bool tagged, unsigned char delim, bool args,
+#જો !HASH_ALGO_SUM
+સ્થિર શૂન્ય
+output_file (અક્ષર અચલ *file, પૂર્ણાંક દ્વિઅંકી_file, શૂન્ય અચલ *digest,
+             bool raw, bool tagged, unsigned અક્ષર delim, bool args,
              intmax_t length);
 #endif
 
 /* True if any of the files read were the standard input. */
-static bool have_read_stdin;
+સ્થિર bool have_read_stdin;
 
 /* The minimum length of a valid checksum line for the selected algorithm.  */
-static idx_t min_digest_line_length;
+સ્થિર idx_t min_digest_લીટી_length;
 
 /* Set to the length of a digest hex string for the selected algorithm.  */
-static idx_t digest_hex_bytes;
+સ્થિર idx_t digest_hex_bytes;
 
 /* With --check, don't generate any output.
    The exit code indicates success or failure.  */
-static bool status_only = false;
+સ્થિર bool status_only = false;
 
 /* With --check, print a message to standard error warning about each
    improperly formatted checksum line.  */
-static bool warn = false;
+સ્થિર bool warn = false;
 
 /* With --check, ignore missing files.  */
-static bool ignore_missing = false;
+સ્થિર bool ignore_missing = false;
 
 /* With --check, suppress the "OK" printed for each verified file.  */
-static bool quiet = false;
+સ્થિર bool quiet = false;
 
 /* With --check, exit with a non-zero return code if any line is
    improperly formatted. */
-static bool strict = false;
+સ્થિર bool strict = false;
 
 /* Whether a BSD reversed format checksum is detected.  */
-static int bsd_reversed = -1;
+સ્થિર પૂર્ણાંક bsd_reversed = -1;
 
 /* line delimiter.  */
-static unsigned char digest_delim = '\n';
+સ્થિર unsigned અક્ષર digest_delim = '\n';
 
-#if HASH_ALGO_CKSUM
+#જો HASH_ALGO_CKSUM
 /* If true, print base64-encoded digests, not hex.  */
-static bool base64_digest = false;
+સ્થિર bool base64_digest = false;
 #endif
 
 /* If true, print binary digests, not hex.  */
-static bool raw_digest = false;
+સ્થિર bool raw_digest = false;
 
 /* blake2b and sha3 allow the -l option.  Luckily they both have the same
    maximum digest size.  */
-#if HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
-# if HASH_ALGO_CKSUM
+#જો HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
+# જો HASH_ALGO_CKSUM
 static_assert (BLAKE2B_OUTBYTES == SHA3_512_DIGEST_SIZE);
 # endif
 # define DIGEST_MAX_LEN BLAKE2B_OUTBYTES
-static idx_t digest_length;
+સ્થિર idx_t digest_length;
 #endif /* HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM */
 
-typedef void (*digest_output_fn)(char const *, int, void const *, bool,
-                                 bool, unsigned char, bool, intmax_t);
-#if HASH_ALGO_SUM
-enum Algorithm
+પ્રકારવ્યાખ્યા શૂન્ય (*digest_output_fn)(અક્ષર અચલ *, પૂર્ણાંક, શૂન્ય અચલ *, bool,
+                                 bool, unsigned અક્ષર, bool, intmax_t);
+#જો HASH_ALGO_SUM
+ગણના Algorithm
 {
   bsd,
   sysv,
 };
 
-static enum Algorithm sum_algorithm;
-static sumfn sumfns[]=
+સ્થિર ગણના Algorithm sum_algorithm;
+સ્થિર sumfn sumfns[]=
 {
   bsd_sum_stream,
   sysv_sum_stream,
 };
-static digest_output_fn sum_output_fns[]=
+સ્થિર digest_output_fn sum_output_fns[]=
 {
   output_bsd,
   output_sysv,
 };
 #endif
 
-#if HASH_ALGO_CKSUM
-static int
-md5_sum_stream (FILE *stream, void *resstream, MAYBE_UNUSED intmax_t *length)
+#જો HASH_ALGO_CKSUM
+સ્થિર પૂર્ણાંક
+md5_sum_stream (FILE *stream, શૂન્ય *resstream, MAYBE_UNUSED intmax_t *length)
 {
-  return md5_stream (stream, resstream);
+  પાછા md5_stream (stream, resstream);
 }
-static int
-sha1_sum_stream (FILE *stream, void *resstream, MAYBE_UNUSED intmax_t *length)
+સ્થિર પૂર્ણાંક
+sha1_sum_stream (FILE *stream, શૂન્ય *resstream, MAYBE_UNUSED intmax_t *length)
 {
-  return sha1_stream (stream, resstream);
+  પાછા sha1_stream (stream, resstream);
 }
-static int
-sha224_sum_stream (FILE *stream, void *resstream,
+સ્થિર પૂર્ણાંક
+sha224_sum_stream (FILE *stream, શૂન્ય *resstream,
                    MAYBE_UNUSED intmax_t *length)
 {
-  return sha224_stream (stream, resstream);
+  પાછા sha224_stream (stream, resstream);
 }
-static int
-sha256_sum_stream (FILE *stream, void *resstream,
+સ્થિર પૂર્ણાંક
+sha256_sum_stream (FILE *stream, શૂન્ય *resstream,
                    MAYBE_UNUSED intmax_t *length)
 {
-  return sha256_stream (stream, resstream);
+  પાછા sha256_stream (stream, resstream);
 }
-static int
-sha384_sum_stream (FILE *stream, void *resstream,
+સ્થિર પૂર્ણાંક
+sha384_sum_stream (FILE *stream, શૂન્ય *resstream,
                    MAYBE_UNUSED intmax_t *length)
 {
-  return sha384_stream (stream, resstream);
+  પાછા sha384_stream (stream, resstream);
 }
-static int
-sha512_sum_stream (FILE *stream, void *resstream,
+સ્થિર પૂર્ણાંક
+sha512_sum_stream (FILE *stream, શૂન્ય *resstream,
                    MAYBE_UNUSED intmax_t *length)
 {
-  return sha512_stream (stream, resstream);
+  પાછા sha512_stream (stream, resstream);
 }
-static int
-sha2_sum_stream (FILE *stream, void *resstream, intmax_t *length)
+સ્થિર પૂર્ણાંક
+sha2_sum_stream (FILE *stream, શૂન્ય *resstream, intmax_t *length)
 {
-  switch (*length)
+  પસંદગી (*length)
     {
-    case SHA224_DIGEST_SIZE:
-      return sha224_stream (stream, resstream);
-    case SHA256_DIGEST_SIZE:
-      return sha256_stream (stream, resstream);
-    case SHA384_DIGEST_SIZE:
-      return sha384_stream (stream, resstream);
-    case SHA512_DIGEST_SIZE:
-      return sha512_stream (stream, resstream);
-    default:
+    સ્થિતિ SHA224_DIGEST_SIZE:
+      પાછા sha224_stream (stream, resstream);
+    સ્થિતિ SHA256_DIGEST_SIZE:
+      પાછા sha256_stream (stream, resstream);
+    સ્થિતિ SHA384_DIGEST_SIZE:
+      પાછા sha384_stream (stream, resstream);
+    સ્થિતિ SHA512_DIGEST_SIZE:
+      પાછા sha512_stream (stream, resstream);
+    મૂળભૂત:
       affirm (false);
     }
 }
-static int
-sha3_sum_stream (FILE *stream, void *resstream, intmax_t *length)
+સ્થિર પૂર્ણાંક
+sha3_sum_stream (FILE *stream, શૂન્ય *resstream, intmax_t *length)
 {
-  switch (*length)
+  પસંદગી (*length)
     {
-    case SHA3_224_DIGEST_SIZE:
-      return sha3_224_stream (stream, resstream);
-    case SHA3_256_DIGEST_SIZE:
-      return sha3_256_stream (stream, resstream);
-    case SHA3_384_DIGEST_SIZE:
-      return sha3_384_stream (stream, resstream);
-    case SHA3_512_DIGEST_SIZE:
-      return sha3_512_stream (stream, resstream);
-    default:
+    સ્થિતિ SHA3_224_DIGEST_SIZE:
+      પાછા sha3_224_stream (stream, resstream);
+    સ્થિતિ SHA3_256_DIGEST_SIZE:
+      પાછા sha3_256_stream (stream, resstream);
+    સ્થિતિ SHA3_384_DIGEST_SIZE:
+      પાછા sha3_384_stream (stream, resstream);
+    સ્થિતિ SHA3_512_DIGEST_SIZE:
+      પાછા sha3_512_stream (stream, resstream);
+    મૂળભૂત:
       affirm (false);
     }
 }
-static int
-blake2b_sum_stream (FILE *stream, void *resstream, intmax_t *length)
+સ્થિર પૂર્ણાંક
+blake2b_sum_stream (FILE *stream, શૂન્ય *resstream, intmax_t *length)
 {
-  return blake2b_stream (stream, resstream, *length);
+  પાછા blake2b_stream (stream, resstream, *length);
 }
-static int
-sm3_sum_stream (FILE *stream, void *resstream, MAYBE_UNUSED intmax_t *length)
+સ્થિર પૂર્ણાંક
+sm3_sum_stream (FILE *stream, શૂન્ય *resstream, MAYBE_UNUSED intmax_t *length)
 {
-  return sm3_stream (stream, resstream);
+  પાછા sm3_stream (stream, resstream);
 }
 
-static char const *const algorithm_args[] =
+સ્થિર અક્ષર અચલ *અચલ algorithm_args[] =
 {
   "bsd", "sysv", "crc", "crc32b", "md5", "sha1",
   "sha224", "sha256", "sha384", "sha512", /* Legacy naming */
-  "sha2", "sha3", "blake2b", "sm3", NULL
+  "sha2", "sha3", "blake2b", "sm3", ખાલી
 };
-static enum Algorithm const algorithm_types[] =
+સ્થિર ગણના Algorithm અચલ algorithm_types[] =
 {
   bsd, sysv, crc, crc32b, md5, sha1,
   sha224, sha256, sha384, sha512,
@@ -357,13 +357,13 @@ static enum Algorithm const algorithm_types[] =
 };
 ARGMATCH_VERIFY (algorithm_args, algorithm_types);
 
-static char const *const algorithm_tags[] =
+સ્થિર અક્ષર અચલ *અચલ algorithm_tags[] =
 {
   "BSD", "SYSV", "CRC", "CRC32B", "MD5", "SHA1",
   "SHA224", "SHA256", "SHA384", "SHA512",
-  "SHA2", "SHA3", "BLAKE2b", "SM3", NULL
+  "SHA2", "SHA3", "BLAKE2b", "SM3", ખાલી
 };
-static int const algorithm_bits[] =
+સ્થિર પૂર્ણાંક અચલ algorithm_bits[] =
 {
   16, 16, 32, 32, 128, 160,
   224, 256, 384, 512,
@@ -372,11 +372,11 @@ static int const algorithm_bits[] =
 
 static_assert (countof (algorithm_bits) == countof (algorithm_args));
 
-static bool algorithm_specified = false;
-static bool legacy_mode = false;
-enum Algorithm cksum_algorithm = crc;
+સ્થિર bool algorithm_specified = false;
+સ્થિર bool legacy_mode = false;
+ગણના Algorithm cksum_algorithm = crc;
 
-static sumfn cksumfns[]=
+સ્થિર sumfn cksumfns[]=
 {
   bsd_sum_stream,
   sysv_sum_stream,
@@ -393,7 +393,7 @@ static sumfn cksumfns[]=
   blake2b_sum_stream,
   sm3_sum_stream,
 };
-static digest_output_fn cksum_output_fns[]=
+સ્થિર digest_output_fn cksum_output_fns[]=
 {
   output_bsd,
   output_sysv,
@@ -416,7 +416,7 @@ bool cksum_debug;
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
 
-enum
+ગણના
 {
   IGNORE_MISSING_OPTION = CHAR_MAX + 1,
   STATUS_OPTION,
@@ -429,74 +429,74 @@ enum
   BASE64_OPTION,
 };
 
-#if HASH_ALGO_CKSUM
-static struct option const legacy_long_options[] =
+#જો HASH_ALGO_CKSUM
+સ્થિર સંરચના option અચલ legacy_long_options[] =
 {
-  { "check", no_argument, NULL, 'c' },
-  { "ignore-missing", no_argument, NULL, IGNORE_MISSING_OPTION },
-  { "quiet", no_argument, NULL, QUIET_OPTION },
-  { "status", no_argument, NULL, STATUS_OPTION },
-  { "warn", no_argument, NULL, 'w' },
-  { "strict", no_argument, NULL, STRICT_OPTION },
-  { "tag", no_argument, NULL, TAG_OPTION },
-  { "zero", no_argument, NULL, 'z' },
+  { "check", no_argument, ખાલી, 'c' },
+  { "ignore-missing", no_argument, ખાલી, IGNORE_MISSING_OPTION },
+  { "quiet", no_argument, ખાલી, QUIET_OPTION },
+  { "status", no_argument, ખાલી, STATUS_OPTION },
+  { "warn", no_argument, ખાલી, 'w' },
+  { "strict", no_argument, ખાલી, STRICT_OPTION },
+  { "tag", no_argument, ખાલી, TAG_OPTION },
+  { "zero", no_argument, ખાલી, 'z' },
 
-  { "binary", no_argument, NULL, 'b' }, /* Deprecated.  */
-  { "text", no_argument, NULL, 't' }, /* Deprecated.  */
+  { "binary", no_argument, ખાલી, 'b' }, /* Deprecated.  */
+  { "text", no_argument, ખાલી, 't' }, /* Deprecated.  */
 
   { GETOPT_HELP_OPTION_DECL },
   { GETOPT_VERSION_OPTION_DECL },
-  { NULL, 0, NULL, 0 }
+  { ખાલી, 0, ખાલી, 0 }
 };
 #endif
 
-static struct option const long_options[] =
+સ્થિર સંરચના option અચલ long_options[] =
 {
-#if HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
-  { "length", required_argument, NULL, 'l'},
+#જો HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
+  { "length", required_argument, ખાલી, 'l'},
 #endif
 
-#if !HASH_ALGO_SUM
-  { "check", no_argument, NULL, 'c' },
-  { "ignore-missing", no_argument, NULL, IGNORE_MISSING_OPTION},
-  { "quiet", no_argument, NULL, QUIET_OPTION },
-  { "status", no_argument, NULL, STATUS_OPTION },
-  { "warn", no_argument, NULL, 'w' },
-  { "strict", no_argument, NULL, STRICT_OPTION },
-  { "tag", no_argument, NULL, TAG_OPTION },
-  { "zero", no_argument, NULL, 'z' },
+#જો !HASH_ALGO_SUM
+  { "check", no_argument, ખાલી, 'c' },
+  { "ignore-missing", no_argument, ખાલી, IGNORE_MISSING_OPTION},
+  { "quiet", no_argument, ખાલી, QUIET_OPTION },
+  { "status", no_argument, ખાલી, STATUS_OPTION },
+  { "warn", no_argument, ખાલી, 'w' },
+  { "strict", no_argument, ખાલી, STRICT_OPTION },
+  { "tag", no_argument, ખાલી, TAG_OPTION },
+  { "zero", no_argument, ખાલી, 'z' },
 
-# if HASH_ALGO_CKSUM
-  { "algorithm", required_argument, NULL, 'a'},
-  { "base64", no_argument, NULL, BASE64_OPTION },
-  { "debug", no_argument, NULL, DEBUG_PROGRAM_OPTION},
-  { "raw", no_argument, NULL, RAW_OPTION},
-  { "untagged", no_argument, NULL, UNTAG_OPTION },
+# જો HASH_ALGO_CKSUM
+  { "algorithm", required_argument, ખાલી, 'a'},
+  { "base64", no_argument, ખાલી, BASE64_OPTION },
+  { "debug", no_argument, ખાલી, DEBUG_PROGRAM_OPTION},
+  { "raw", no_argument, ખાલી, RAW_OPTION},
+  { "untagged", no_argument, ખાલી, UNTAG_OPTION },
 # endif
-  { "binary", no_argument, NULL, 'b' }, /* Deprecated.  */
-  { "text", no_argument, NULL, 't' }, /* Deprecated.  */
+  { "binary", no_argument, ખાલી, 'b' }, /* Deprecated.  */
+  { "text", no_argument, ખાલી, 't' }, /* Deprecated.  */
 
-#else
-  {"sysv", no_argument, NULL, 's'},  /* Not in cksum.  */
+#નહીંતર
+  {"sysv", no_argument, ખાલી, 's'},  /* Not in cksum.  */
 #endif
 
   { GETOPT_HELP_OPTION_DECL },
   { GETOPT_VERSION_OPTION_DECL },
-  { NULL, 0, NULL, 0 }
+  { ખાલી, 0, ખાલી, 0 }
 };
 
-void
-usage (int status)
+શૂન્ય
+usage (પૂર્ણાંક status)
 {
-  if (status != EXIT_SUCCESS)
+  જો (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  નહીંતર
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE]...\n\
 "), program_name);
-#if HASH_ALGO_CKSUM
-    if (legacy_mode)
+#જો HASH_ALGO_CKSUM
+    જો (legacy_mode)
       {
         printf (_("\
 Print or check %s checksums.\n\
@@ -505,12 +505,12 @@ Print or check %s checksums.\n\
 Legacy interface to the cksum(1) utility.\n\
 "), stdout);
       }
-    else
+    નહીંતર
       fputs (_("\
 Print or verify checksums.\n\
-By default use the 32 bit CRC algorithm.\n\
+By મૂળભૂત use the 32 bit CRC algorithm.\n\
 "), stdout);
-#else
+#નહીંતર
       printf (_("\
 Print or check %s (%d-bit) checksums.\n\
 "),
@@ -522,111 +522,111 @@ Legacy interface to the cksum(1) utility.\n\
 #endif
 
       emit_stdin_note ();
-#if HASH_ALGO_SUM
+#જો HASH_ALGO_SUM
       oputs (_("\
   -r\n\
-         use BSD sum algorithm (the default), use 1K blocks\n\
+         use BSD sum algorithm (the મૂળભૂત), use 1K blocks\n\
 "));
       oputs (_("\
   -s, --sysv\n\
          use System V sum algorithm, use 512 bytes blocks\n\
 "));
 #endif
-#if HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
+#જો HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
         emit_mandatory_arg_note ();
 #endif
-#if HASH_ALGO_CKSUM
-     if (! legacy_mode)
+#જો HASH_ALGO_CKSUM
+     જો (! legacy_mode)
         oputs (_("\
   -a, --algorithm=TYPE\n\
          select the digest type to use.  See DIGEST below\n\
 "));
-     if (! legacy_mode)
+     જો (! legacy_mode)
         oputs (_("\
       --base64\n\
          emit base64-encoded digests, not hexadecimal\n\
 "));
 #endif
-#if !HASH_ALGO_SUM
-# if HASH_ALGO_CKSUM
-     if (legacy_mode)
+#જો !HASH_ALGO_SUM
+# જો HASH_ALGO_CKSUM
+     જો (legacy_mode)
        {
 # endif
-      if (O_BINARY)
+      જો (O_દ્વિઅંકી)
         oputs (_("\
-  -b, --binary\n\
-         read in binary mode (default unless reading tty stdin)\n\
+  -b, --દ્વિઅંકી\n\
+         પઠ in દ્વિઅંકી mode (મૂળભૂત unless reading tty stdin)\n\
 "));
-      else
+      નહીંતર
         oputs (_("\
-  -b, --binary\n\
-         read in binary mode\n\
+  -b, --દ્વિઅંકી\n\
+         પઠ in દ્વિઅંકી mode\n\
 "));
-# if HASH_ALGO_CKSUM
+# જો HASH_ALGO_CKSUM
        }
 # endif
         oputs (_("\
   -c, --check\n\
-         read checksums from the FILEs and check them\n\
+         પઠ checksums from the FILEs and check them\n\
 "));
-# if HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
-#  if HASH_ALGO_CKSUM
-     if (! legacy_mode)
+# જો HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
+#  જો HASH_ALGO_CKSUM
+     જો (! legacy_mode)
 #  endif
         oputs (_("\
   -l, --length=BITS\n\
          digest length in bits; must not exceed the max size\n\
-         and must be a multiple of 8 for blake2b;\n\
-         must be 224, 256, 384, or 512 for sha2 or sha3\n\
+         and must be a multiple of 8 માટે blake2b;\n\
+         must be 224, 256, 384, or 512 માટે sha2 or sha3\n\
 "));
 # endif
-# if HASH_ALGO_CKSUM
-    if (! legacy_mode)
+# જો HASH_ALGO_CKSUM
+    જો (! legacy_mode)
         oputs (_("\
       --raw\n\
-         emit a raw binary digest, not hexadecimal\n\
+         emit a raw દ્વિઅંકી digest, not hexadecimal\n\
 "));
-    if (legacy_mode)
+    જો (legacy_mode)
       oputs (_("\
       --tag\n\
          create a BSD-style checksum\n\
 "));
-    else
+    નહીંતર
       oputs (_("\
       --tag\n\
-         create a BSD-style checksum (the default)\n\
+         create a BSD-style checksum (the મૂળભૂત)\n\
 "));
-    if (! legacy_mode)
+    જો (! legacy_mode)
       oputs (_("\
       --untagged\n\
          create a reversed style checksum, without digest type\n\
 "));
-# else
+# નહીંતર
       oputs (_("\
       --tag\n\
          create a BSD-style checksum\n\
 "));
 # endif
-# if HASH_ALGO_CKSUM
-    if (legacy_mode)
+# જો HASH_ALGO_CKSUM
+    જો (legacy_mode)
       {
 # endif
-      if (O_BINARY)
+      જો (O_દ્વિઅંકી)
         oputs (_("\
   -t, --text\n\
-         read in text mode (default if reading tty stdin)\n\
+         પઠ in text mode (મૂળભૂત જો reading tty stdin)\n\
 "));
-      else
+      નહીંતર
         oputs (_("\
   -t, --text\n\
-         read in text mode (default)\n\
+         પઠ in text mode (મૂળભૂત)\n\
 "));
-# if HASH_ALGO_CKSUM
+# જો HASH_ALGO_CKSUM
       }
 # endif
       oputs (_("\
   -z, --zero\n\
-         end each output line with NUL, not newline,\n\
+         end each output લીટી with NUL, not newline,\n\
          and disable file name escaping\n\
 "));
       fputs (_("\
@@ -635,11 +635,11 @@ The following five options are useful only when verifying checksums:\n\
 "), stdout);
       oputs (_("\
       --ignore-missing\n\
-         don't fail or report status for missing files\n\
+         don't fail or report status માટે missing files\n\
 "));
       oputs (_("\
       --quiet\n\
-         don't print OK for each successfully verified file\n\
+         don't print OK માટે each successfully verified file\n\
 "));
       oputs (_("\
       --status\n\
@@ -647,15 +647,15 @@ The following five options are useful only when verifying checksums:\n\
 "));
       oputs (_("\
       --strict\n\
-         exit non-zero for improperly formatted checksum lines\n\
+         exit non-zero માટે improperly formatted checksum લીટીઓ\n\
 "));
       oputs (_("\
   -w, --warn\n\
-         warn about improperly formatted checksum lines\n\
+         warn about improperly formatted checksum લીટીઓ\n\
 "));
 #endif
-#if HASH_ALGO_CKSUM
-    if (! legacy_mode)
+#જો HASH_ALGO_CKSUM
+    જો (! legacy_mode)
       oputs (_("\
       --debug\n\
          indicate which implementation used\n\
@@ -663,11 +663,11 @@ The following five options are useful only when verifying checksums:\n\
 #endif
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
-#if HASH_ALGO_CKSUM
-    if (! legacy_mode)
+#જો HASH_ALGO_CKSUM
+    જો (! legacy_mode)
       fputs (_("\
 \n\
-DIGEST determines the digest algorithm and default output format:\n\
+DIGEST determines the digest algorithm and મૂળભૂત output format:\n\
   sysv      (equivalent to sum -s)\n\
   bsd       (equivalent to sum -r)\n\
   crc       (equivalent to cksum)\n\
@@ -680,22 +680,22 @@ DIGEST determines the digest algorithm and default output format:\n\
   sm3       (only available through cksum)\n\
 \n"), stdout);
 #endif
-#if !HASH_ALGO_SUM && !HASH_ALGO_CKSUM
+#જો !HASH_ALGO_SUM && !HASH_ALGO_CKSUM
       printf (_("\
 \n\
 The sums are computed as described in %s.\n"), DIGEST_REFERENCE);
       fputs (_("\
-When checking, the input should be a former output of this program.\n\
-The default mode is to print a line with: checksum, a space,\n\
-a character indicating input mode ('*' for binary, ' ' for text\n\
-or where binary is insignificant), and name for each FILE.\n\
+When checking, the આગત should be a former output of this program.\n\
+The મૂળભૂત mode is to print a લીટી with: checksum, a space,\n\
+a character indicating આગત mode ('*' માટે દ્વિઅંકી, ' ' માટે text\n\
+or where દ્વિઅંકી is insignificant), and name માટે each FILE.\n\
 \n\
-There is no difference between binary mode and text mode on GNU systems.\
+There is no difference between દ્વિઅંકી mode and text mode on GNU systems.\
 \n"), stdout);
 #endif
-#if HASH_ALGO_CKSUM
+#જો HASH_ALGO_CKSUM
       fputs (_("\
-When checking, the input should be a former output of this program,\n\
+When checking, the આગત should be a former output of this program,\n\
 or equivalent standalone program.\
 \n"), stdout);
 #endif
@@ -705,17 +705,17 @@ or equivalent standalone program.\
   exit (status);
 }
 
-#if !HASH_ALGO_SUM
+#જો !HASH_ALGO_SUM
 /* Given a string S, return TRUE if it contains problematic characters
    that need escaping.  Note we escape '\' itself to provide some forward
    compat to introduce escaping of other characters.  */
 
 ATTRIBUTE_PURE
-static bool
-problematic_chars (char const *s)
+સ્થિર bool
+problematic_chars (અક્ષર અચલ *s)
 {
   idx_t length = strcspn (s, "\\\n\r");
-  return s[length] != '\0';
+  પાછા s[length] != '\0';
 }
 #endif
 
@@ -728,92 +728,92 @@ problematic_chars (char const *s)
    of backslashes or if it contains a backslash followed by anything other
    than "n" or another backslash, return NULL.  */
 
-static char *
-filename_unescape (char *s, idx_t s_len)
+સ્થિર અક્ષર *
+filename_unescape (અક્ષર *s, idx_t s_len)
 {
-  char *dst = s;
+  અક્ષર *dst = s;
 
-  for (idx_t i = 0; i < s_len; i++)
+  માટે (idx_t i = 0; i < s_len; i++)
     {
-      switch (s[i])
+      પસંદગી (s[i])
         {
-        case '\\':
-          if (i == s_len - 1)
+        સ્થિતિ '\\':
+          જો (i == s_len - 1)
             {
               /* File name ends with an unescaped backslash: invalid.  */
-              return NULL;
+              પાછા ખાલી;
             }
           ++i;
-          switch (s[i])
+          પસંદગી (s[i])
             {
-            case 'n':
+            સ્થિતિ 'n':
               *dst++ = '\n';
-              break;
-            case 'r':
+              તોડો;
+            સ્થિતિ 'r':
               *dst++ = '\r';
-              break;
-            case '\\':
+              તોડો;
+            સ્થિતિ '\\':
               *dst++ = '\\';
-              break;
-            default:
+              તોડો;
+            મૂળભૂત:
               /* Only '\', 'n' or 'r' may follow a backslash.  */
-              return NULL;
+              પાછા ખાલી;
             }
-          break;
+          તોડો;
 
-        case '\0':
+        સ્થિતિ '\0':
           /* The file name may not contain a NUL.  */
-          return NULL;
+          પાછા ખાલી;
 
-        default:
+        મૂળભૂત:
           *dst++ = s[i];
-          break;
+          તોડો;
         }
     }
-  if (dst < s + s_len)
+  જો (dst < s + s_len)
     *dst = '\0';
 
-  return s;
+  પાછા s;
 }
 
 /* Return true if S is a LEN-byte NUL-terminated string of hex or base64
    digits and has the expected length.  Otherwise, return false.  */
 ATTRIBUTE_PURE
-static bool
-valid_digits (unsigned char const *s, idx_t len)
+સ્થિર bool
+valid_digits (unsigned અક્ષર અચલ *s, idx_t len)
 {
-#if HASH_ALGO_CKSUM
-  if (len == BASE64_LENGTH (digest_length >> 3))
+#જો HASH_ALGO_CKSUM
+  જો (len == BASE64_LENGTH (digest_length >> 3))
     {
       idx_t i;
-      for (i = 0; i < len - digest_length % 3; i++)
+      માટે (i = 0; i < len - digest_length % 3; i++)
         {
-          if (!isbase64 (*s))
-            return false;
+          જો (!isbase64 (*s))
+            પાછા false;
           ++s;
         }
-      for ( ; i < len; i++)
+      માટે ( ; i < len; i++)
         {
-          if (*s != '=')
-            return false;
+          જો (*s != '=')
+            પાછા false;
           ++s;
         }
     }
-  else
+  નહીંતર
 #endif
-  if (len == digest_hex_bytes)
+  જો (len == digest_hex_bytes)
     {
-      for (idx_t i = 0; i < digest_hex_bytes; i++)
+      માટે (idx_t i = 0; i < digest_hex_bytes; i++)
         {
-          if (!c_isxdigit (*s))
-            return false;
+          જો (!c_isxdigit (*s))
+            પાછા false;
           ++s;
         }
     }
-  else
-    return false;
+  નહીંતર
+    પાછા false;
 
-  return *s == '\0';
+  પાછા *s == '\0';
 }
 
 /* Split the checksum string S (of length S_LEN) from a BSD 'md5' or
@@ -821,59 +821,59 @@ valid_digits (unsigned char const *s, idx_t len)
    name.  S is modified.  Set *D_LEN to the length of the digest string.
    Return true if successful.  */
 
-static bool
-bsd_split_3 (char *s, idx_t s_len,
-             unsigned char **digest, idx_t *d_len,
-             char **file_name, bool escaped_filename)
+સ્થિર bool
+bsd_split_3 (અક્ષર *s, idx_t s_len,
+             unsigned અક્ષર **digest, idx_t *d_len,
+             અક્ષર **file_name, bool escaped_filename)
 {
-  if (s_len == 0)
-    return false;
+  જો (s_len == 0)
+    પાછા false;
 
   /* Find end of filename.  */
   idx_t i = s_len - 1;
-  while (i && s[i] != ')')
+  જ્યારે (i && s[i] != ')')
     i--;
 
-  if (s[i] != ')')
-    return false;
+  જો (s[i] != ')')
+    પાછા false;
 
   *file_name = s;
 
-  if (escaped_filename && filename_unescape (s, i) == NULL)
-    return false;
+  જો (escaped_filename && filename_unescape (s, i) == ખાલી)
+    પાછા false;
 
   s[i++] = '\0';
 
-  while (c_isblank (s[i]))
+  જ્યારે (c_isblank (s[i]))
     i++;
 
-  if (s[i] != '=')
-    return false;
+  જો (s[i] != '=')
+    પાછા false;
 
   i++;
 
-  while (c_isblank (s[i]))
+  જ્યારે (c_isblank (s[i]))
     i++;
 
-  *digest = (unsigned char *) &s[i];
+  *digest = (unsigned અક્ષર *) &s[i];
 
   *d_len = s_len - i;
-  return valid_digits (*digest, *d_len);
+  પાછા valid_digits (*digest, *d_len);
 }
 
-#if HASH_ALGO_CKSUM
+#જો HASH_ALGO_CKSUM
 /* Return the corresponding Algorithm for the string S,
    or -1 for no match.  */
 
-static ptrdiff_t
-algorithm_from_tag (char *s)
+સ્થિર ptrdiff_t
+algorithm_from_tag (અક્ષર *s)
 {
   /* Limit check size to this length for perf reasons.  */
-  static idx_t max_tag_len;
-  if (! max_tag_len)
+  સ્થિર idx_t max_tag_len;
+  જો (! max_tag_len)
     {
-      char const * const * tag = algorithm_tags;
-      while (*tag)
+      અક્ષર અચલ * અચલ * tag = algorithm_tags;
+      જ્યારે (*tag)
         {
           idx_t tag_len = strlen (*tag++);
           max_tag_len = MAX (tag_len, max_tag_len);
@@ -883,20 +883,20 @@ algorithm_from_tag (char *s)
   idx_t i = 0;
 
   /* Find end of tag */
-  while (i <= max_tag_len && s[i] && ! c_isblank (s[i])
+  જ્યારે (i <= max_tag_len && s[i] && ! c_isblank (s[i])
          && s[i] != '-' && s[i] != '(')
     ++i;
 
-  if (i > max_tag_len)
-    return -1;
+  જો (i > max_tag_len)
+    પાછા -1;
 
   /* Terminate tag, and lookup.  */
-  char sep = s[i];
+  અક્ષર sep = s[i];
   s[i] = '\0';
   ptrdiff_t algo = argmatch_exact (s, algorithm_tags);
   s[i] = sep;
 
-  return algo;
+  પાછા algo;
 }
 #endif
 
@@ -905,18 +905,18 @@ algorithm_from_tag (char *s)
    S is modified.  Set *D_LEN to the length of the digest string.
    Return true if successful.  */
 
-static bool
-split_3 (char *s, idx_t s_len,
-         unsigned char **digest, idx_t *d_len, int *binary, char **file_name)
+સ્થિર bool
+split_3 (અક્ષર *s, idx_t s_len,
+         unsigned અક્ષર **digest, idx_t *d_len, પૂર્ણાંક *દ્વિઅંકી, અક્ષર **file_name)
 {
   bool escaped_filename = false;
   idx_t algo_name_len;
 
   idx_t i = 0;
-  while (c_isblank (s[i]))
+  જ્યારે (c_isblank (s[i]))
     ++i;
 
-  if (s[i] == '\\')
+  જો (s[i] == '\\')
     {
       ++i;
       escaped_filename = true;
@@ -924,24 +924,24 @@ split_3 (char *s, idx_t s_len,
 
   /* Check for BSD-style checksum line. */
 
-#if HASH_ALGO_CKSUM
-  if (! algorithm_specified || cksum_algorithm == sha2)
+#જો HASH_ALGO_CKSUM
+  જો (! algorithm_specified || cksum_algorithm == sha2)
     {
       ptrdiff_t algo_tag = algorithm_from_tag (s + i);
-      if (! algorithm_specified)
+      જો (! algorithm_specified)
         {
-          if (algo_tag >= 0)
+          જો (algo_tag >= 0)
             {
-              if (algo_tag <= crc32b)
-                return false;  /* We don't support checking these formats.  */
+              જો (algo_tag <= crc32b)
+                પાછા false;  /* We don't support checking these formats.  */
               cksum_algorithm = algo_tag;
             }
-          else
-            return false;      /* We only support tagged format without -a.  */
+          નહીંતર
+            પાછા false;      /* We only support tagged format without -a.  */
         }
-      else
+      નહીંતર
         {
-          if (cksum_algorithm == sha2 && (algo_tag == sha2
+          જો (cksum_algorithm == sha2 && (algo_tag == sha2
               || algo_tag == sha224 || algo_tag == sha256
               || algo_tag == sha384 || algo_tag == sha512))
             cksum_algorithm = algo_tag;
@@ -955,49 +955,49 @@ split_3 (char *s, idx_t s_len,
 
   idx_t parse_offset = i;
   algo_name_len = strlen (DIGEST_TYPE_STRING);
-  if (STREQ_LEN (s + i, DIGEST_TYPE_STRING, algo_name_len))
+  જો (STREQ_LEN (s + i, DIGEST_TYPE_STRING, algo_name_len))
     {
       i += algo_name_len;
-#if HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
+#જો HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
 
-# if HASH_ALGO_BLAKE2
+# જો HASH_ALGO_BLAKE2
       digest_length = DIGEST_MAX_LEN * 8;
-# else
+# નહીંતર
       digest_length = algorithm_bits[cksum_algorithm];
 # endif
-      if (s[i] == '-')  /* length specified. Not base64 */
+      જો (s[i] == '-')  /* length specified. Not base64 */
         {
           ++i;
           intmax_t length;
-          char *siend;
-          if (!c_isdigit (s[i])
-              || xstrtoimax (s + i, &siend, 0, &length, NULL) != LONGINT_OK)
-            return false;
-# if HASH_ALGO_CKSUM
-          else if (cksum_algorithm == sha2 || cksum_algorithm == sha3)
+          અક્ષર *siend;
+          જો (!c_isdigit (s[i])
+              || xstrtoimax (s + i, &siend, 0, &length, ખાલી) != LONGINT_OK)
+            પાછા false;
+# જો HASH_ALGO_CKSUM
+          નહીંતર જો (cksum_algorithm == sha2 || cksum_algorithm == sha3)
             {
-              if (length != SHA224_DIGEST_SIZE * 8
+              જો (length != SHA224_DIGEST_SIZE * 8
                   && length != SHA256_DIGEST_SIZE * 8
                   && length != SHA384_DIGEST_SIZE * 8
                   && length != SHA512_DIGEST_SIZE * 8)
-                return false;
+                પાછા false;
             }
 # endif
-          else if (!(0 < length && length <= digest_length && length % 8 == 0))
-            return false;
+          નહીંતર જો (!(0 < length && length <= digest_length && length % 8 == 0))
+            પાછા false;
 
           i = siend - s;
           digest_length = length;
         }
       digest_hex_bytes = digest_length >> 2;
 #endif
-      if (s[i] == ' ')
+      જો (s[i] == ' ')
         ++i;
-      if (s[i] == '(')  /* not base64 */
+      જો (s[i] == '(')  /* not base64 */
         {
           ++i;
-          *binary = 0;
-          return bsd_split_3 (s + i, s_len - i,
+          *દ્વિઅંકી = 0;
+          પાછા bsd_split_3 (s + i, s_len - i,
                               digest, d_len, file_name, escaped_filename);
         }
 
@@ -1011,22 +1011,22 @@ split_3 (char *s, idx_t s_len,
      Each line must have at least 'min_digest_line_length - 1' (or one more, if
      the first is a backslash) more characters to contain correct message digest
      information.  */
-  if (s_len - i < min_digest_line_length + (s[i] == '\\'))
-    return false;
+  જો (s_len - i < min_digest_લીટી_length + (s[i] == '\\'))
+    પાછા false;
 
-  *digest = (unsigned char *) &s[i];
+  *digest = (unsigned અક્ષર *) &s[i];
 
-#if HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
+#જો HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
   /* Auto determine length.  */
-# if HASH_ALGO_CKSUM
-  if (cksum_algorithm == blake2b
+# જો HASH_ALGO_CKSUM
+  જો (cksum_algorithm == blake2b
       || cksum_algorithm == sha2 || cksum_algorithm == sha3) {
 # endif
-  unsigned char const *hp = *digest;
+  unsigned અક્ષર અચલ *hp = *digest;
   digest_hex_bytes = 0;
-  for (; c_isxdigit (*hp); ++hp, ++digest_hex_bytes)
+  માટે (; c_isxdigit (*hp); ++hp, ++digest_hex_bytes)
     ;
-# if HASH_ALGO_CKSUM
+# જો HASH_ALGO_CKSUM
   /* Check the number of base64 characters.  This works because the hexadecimal
      character set is a subset of the base64 character set.
      Note there is the ambiguity that all characters are hex when they
@@ -1038,71 +1038,71 @@ split_3 (char *s, idx_t s_len,
      and smaller blake2b lengths aren't practical for verification anyway.  */
   idx_t digest_base64_bytes = digest_hex_bytes;
   idx_t trailing_equals = 0;
-  for (; isubase64 (*hp); ++hp, ++digest_base64_bytes)
+  માટે (; isubase64 (*hp); ++hp, ++digest_base64_bytes)
     ;
-  for (; *hp == '='; ++hp, ++trailing_equals)
+  માટે (; *hp == '='; ++hp, ++trailing_equals)
     ;
-  if ((cksum_algorithm == sha2 || cksum_algorithm == sha3)
+  જો ((cksum_algorithm == sha2 || cksum_algorithm == sha3)
       && digest_hex_bytes >> 1 != SHA224_DIGEST_SIZE
       && digest_hex_bytes >> 1 != SHA256_DIGEST_SIZE
       && digest_hex_bytes >> 1 != SHA384_DIGEST_SIZE
       && digest_hex_bytes >> 1 != SHA512_DIGEST_SIZE)
     {
-      if (digest_base64_bytes + trailing_equals
+      જો (digest_base64_bytes + trailing_equals
           == BASE64_LENGTH (SHA224_DIGEST_SIZE))
         digest_hex_bytes = SHA224_DIGEST_SIZE * 2;
-      else if (digest_base64_bytes + trailing_equals
+      નહીંતર જો (digest_base64_bytes + trailing_equals
                == BASE64_LENGTH (SHA256_DIGEST_SIZE))
         digest_hex_bytes = SHA256_DIGEST_SIZE * 2;
-      else if (digest_base64_bytes + trailing_equals
+      નહીંતર જો (digest_base64_bytes + trailing_equals
                == BASE64_LENGTH (SHA384_DIGEST_SIZE))
         digest_hex_bytes = SHA384_DIGEST_SIZE * 2;
-      else if (digest_base64_bytes + trailing_equals
+      નહીંતર જો (digest_base64_bytes + trailing_equals
                == BASE64_LENGTH (SHA512_DIGEST_SIZE))
         digest_hex_bytes = SHA512_DIGEST_SIZE * 2;
-      else
-        return false;
+      નહીંતર
+        પાછા false;
     }
-  else if (cksum_algorithm == blake2b
+  નહીંતર જો (cksum_algorithm == blake2b
            && digest_hex_bytes < digest_base64_bytes)
     {
-      for (int j = 8; j <= DIGEST_MAX_LEN * 8; j += 8)
+      માટે (પૂર્ણાંક j = 8; j <= DIGEST_MAX_LEN * 8; j += 8)
         {
-          if (BASE64_LENGTH (j / 8) == digest_base64_bytes + trailing_equals
+          જો (BASE64_LENGTH (j / 8) == digest_base64_bytes + trailing_equals
               && j % 3 == trailing_equals)
             {
               digest_hex_bytes = j / 4;
-              break;
+              તોડો;
             }
         }
     }
 # endif
-  if (digest_hex_bytes < 2 || digest_hex_bytes % 2
+  જો (digest_hex_bytes < 2 || digest_hex_bytes % 2
       || DIGEST_MAX_LEN * 2 < digest_hex_bytes)
-    return false;
+    પાછા false;
   digest_length = digest_hex_bytes * 4;
-# if HASH_ALGO_CKSUM
+# જો HASH_ALGO_CKSUM
   }
 # endif
 #endif
 
   /* This field must be the hexadecimal or base64 representation
      of the message digest.  */
-  while (s[i] && !c_isblank (s[i]))
+  જ્યારે (s[i] && !c_isblank (s[i]))
     i++;
 
   /* The digest must be followed by at least one whitespace character.  */
-  if (i == s_len)
-    return false;
+  જો (i == s_len)
+    પાછા false;
 
-  *d_len = &s[i] - (char *) *digest;
+  *d_len = &s[i] - (અક્ષર *) *digest;
   s[i++] = '\0';
 
-  if (! valid_digits (*digest, *d_len))
-    return false;
+  જો (! valid_digits (*digest, *d_len))
+    પાછા false;
 
   /* If "bsd reversed" format detected.  */
-  if ((s_len - i == 1) || (s[i] != ' ' && s[i] != '*'))
+  જો ((s_len - i == 1) || (s[i] != ' ' && s[i] != '*'))
     {
       /* Don't allow mixing bsd and standard formats,
          to minimize security issues with attackers
@@ -1110,59 +1110,59 @@ split_3 (char *s, idx_t s_len,
          This assumes that with bsd format checksums
          that the first file name does not have
          a leading ' ' or '*'.  */
-      if (bsd_reversed == 0)
-        return false;
+      જો (bsd_reversed == 0)
+        પાછા false;
       bsd_reversed = 1;
     }
-  else if (bsd_reversed != 1)
+  નહીંતર જો (bsd_reversed != 1)
     {
       bsd_reversed = 0;
-      *binary = (s[i++] == '*');
+      *દ્વિઅંકી = (s[i++] == '*');
     }
 
   /* All characters between the type indicator and end of line are
      significant -- that includes leading and trailing white space.  */
   *file_name = &s[i];
 
-  if (escaped_filename)
-    return filename_unescape (&s[i], s_len - i) != NULL;
+  જો (escaped_filename)
+    પાછા filename_unescape (&s[i], s_len - i) != ખાલી;
 
-  return true;
+  પાછા true;
 }
 
-#if !HASH_ALGO_SUM
+#જો !HASH_ALGO_SUM
 /* If ESCAPE is true, then translate each:
    NEWLINE byte to the string, "\\n",
    CARRIAGE RETURN byte to the string, "\\r",
    and each backslash to "\\\\".  */
-static void
-print_filename (char const *file, bool escape)
+સ્થિર શૂન્ય
+print_filename (અક્ષર અચલ *file, bool escape)
 {
-  if (! escape)
+  જો (! escape)
     {
       fputs (file, stdout);
-      return;
+      પાછા;
     }
 
-  while (*file)
+  જ્યારે (*file)
     {
-      switch (*file)
+      પસંદગી (*file)
         {
-        case '\n':
+        સ્થિતિ '\n':
           fputs ("\\n", stdout);
-          break;
+          તોડો;
 
-        case '\r':
+        સ્થિતિ '\r':
           fputs ("\\r", stdout);
-          break;
+          તોડો;
 
-        case '\\':
+        સ્થિતિ '\\':
           fputs ("\\\\", stdout);
-          break;
+          તોડો;
 
-        default:
+        મૂળભૂત:
           putchar (*file);
-          break;
+          તોડો;
         }
       file++;
     }
@@ -1181,112 +1181,112 @@ print_filename (char const *file, bool escape)
    Put true in *MISSING if the file can't be opened due to ENOENT.
    Return true if successful.  */
 
-static bool
-digest_file (char const *filename, int *binary, unsigned char *bin_result,
+સ્થિર bool
+digest_file (અક્ષર અચલ *filename, પૂર્ણાંક *દ્વિઅંકી, unsigned અક્ષર *bin_result,
              bool *missing, MAYBE_UNUSED intmax_t *length)
 {
   FILE *fp;
-  int err;
+  પૂર્ણાંક err;
   bool is_stdin = streq (filename, "-");
 
   *missing = false;
 
-  if (is_stdin)
+  જો (is_stdin)
     {
       have_read_stdin = true;
       fp = stdin;
-      if (O_BINARY && *binary)
+      જો (O_દ્વિઅંકી && *દ્વિઅંકી)
         {
-          if (*binary < 0)
-            *binary = ! isatty (STDIN_FILENO);
-          if (*binary)
-            xset_binary_mode (STDIN_FILENO, O_BINARY);
+          જો (*દ્વિઅંકી < 0)
+            *દ્વિઅંકી = ! isatty (STDIN_FILENO);
+          જો (*દ્વિઅંકી)
+            xset_દ્વિઅંકી_mode (STDIN_FILENO, O_દ્વિઅંકી);
         }
     }
-  else
+  નહીંતર
     {
-      fp = fopen (filename, O_BINARY ? (*binary ? "rb" : "rt") : "r");
-      if (fp == NULL)
+      fp = fopen (filename, O_દ્વિઅંકી ? (*દ્વિઅંકી ? "rb" : "rt") : "r");
+      જો (fp == ખાલી)
         {
-          if (ignore_missing && errno == ENOENT)
+          જો (ignore_missing && errno == ENOENT)
             {
               *missing = true;
-              return true;
+              પાછા true;
             }
           error (0, errno, "%s", quotef (filename));
-          return false;
+          પાછા false;
         }
     }
 
   fadvise (fp, FADVISE_SEQUENTIAL);
 
-#if HASH_ALGO_CKSUM
-  if (cksum_algorithm == blake2b
+#જો HASH_ALGO_CKSUM
+  જો (cksum_algorithm == blake2b
       || cksum_algorithm == sha2 || cksum_algorithm == sha3)
     *length = digest_length >> 3;
   err = DIGEST_STREAM (fp, bin_result, length);
-#elif HASH_ALGO_SUM
+#અથવાજો HASH_ALGO_SUM
   err = DIGEST_STREAM (fp, bin_result, length);
-#elif HASH_ALGO_BLAKE2
+#અથવાજો HASH_ALGO_BLAKE2
   err = DIGEST_STREAM (fp, bin_result, digest_length >> 3);
-#else
+#નહીંતર
   err = DIGEST_STREAM (fp, bin_result);
 #endif
   err = err ? errno : 0;
-  if (is_stdin)
+  જો (is_stdin)
     clearerr (fp);
-  else if (fclose (fp) != 0 && !err)
+  નહીંતર જો (fclose (fp) != 0 && !err)
     err = errno;
 
-  if (err)
+  જો (err)
     {
       error (0, err, "%s", quotef (filename));
-      return false;
+      પાછા false;
     }
 
-  return true;
+  પાછા true;
 }
 
-#if !HASH_ALGO_SUM
-static void
-output_file (char const *file, int binary_file, void const *digest,
-             MAYBE_UNUSED bool raw, bool tagged, unsigned char delim,
+#જો !HASH_ALGO_SUM
+સ્થિર શૂન્ય
+output_file (અક્ષર અચલ *file, પૂર્ણાંક દ્વિઅંકી_file, શૂન્ય અચલ *digest,
+             MAYBE_UNUSED bool raw, bool tagged, unsigned અક્ષર delim,
              MAYBE_UNUSED bool args, MAYBE_UNUSED intmax_t length)
 {
-# if HASH_ALGO_CKSUM
-  if (raw)
+# જો HASH_ALGO_CKSUM
+  જો (raw)
     {
       fwrite (digest, 1, digest_length >> 3, stdout);
-      return;
+      પાછા;
     }
 # endif
 
-  unsigned char const *bin_buffer = digest;
+  unsigned અક્ષર અચલ *bin_buffer = digest;
 
   /* Output a leading backslash if the file name contains problematic chars.  */
   bool needs_escape = delim == '\n' && problematic_chars (file);
 
-  if (needs_escape)
+  જો (needs_escape)
     putchar ('\\');
 
-  if (tagged)
+  જો (tagged)
     {
-# if HASH_ALGO_CKSUM
-      if (cksum_algorithm == sha2)
-        printf ("SHA%u", (unsigned int) digest_length);
-      else
+# જો HASH_ALGO_CKSUM
+      જો (cksum_algorithm == sha2)
+        printf ("SHA%u", (unsigned પૂર્ણાંક) digest_length);
+      નહીંતર
 # endif
       fputs (DIGEST_TYPE_STRING, stdout);
-# if HASH_ALGO_BLAKE2
-      if (digest_length < DIGEST_MAX_LEN * 8)
-        printf ("-%u", (unsigned int) digest_length);
+# જો HASH_ALGO_BLAKE2
+      જો (digest_length < DIGEST_MAX_LEN * 8)
+        printf ("-%u", (unsigned પૂર્ણાંક) digest_length);
 # elif HASH_ALGO_CKSUM
-      if (cksum_algorithm == sha3)
-        printf ("-%u", (unsigned int) digest_length);
-      if (cksum_algorithm == blake2b)
+      જો (cksum_algorithm == sha3)
+        printf ("-%u", (unsigned પૂર્ણાંક) digest_length);
+      જો (cksum_algorithm == blake2b)
         {
-          if (digest_length < DIGEST_MAX_LEN * 8)
-            printf ("-%u", (unsigned int) digest_length);
+          જો (digest_length < DIGEST_MAX_LEN * 8)
+            printf ("-%u", (unsigned પૂર્ણાંક) digest_length);
         }
 # endif
       fputs (" (", stdout);
@@ -1294,25 +1294,25 @@ output_file (char const *file, int binary_file, void const *digest,
       fputs (") = ", stdout);
     }
 
-# if HASH_ALGO_CKSUM
-  if (base64_digest)
+# જો HASH_ALGO_CKSUM
+  જો (base64_digest)
     {
-      char b64[BASE64_LENGTH (DIGEST_BIN_BYTES) + 1];
-      base64_encode ((char const *) bin_buffer, digest_length >> 3,
-                     b64, sizeof b64);
+      અક્ષર b64[BASE64_LENGTH (DIGEST_BIN_BYTES) + 1];
+      base64_encode ((અક્ષર અચલ *) bin_buffer, digest_length >> 3,
+                     b64, કદ b64);
       fputs (b64, stdout);
     }
-  else
+  નહીંતર
 # endif
     {
-      for (idx_t i = 0; i < (digest_hex_bytes >> 1); ++i)
+      માટે (idx_t i = 0; i < (digest_hex_bytes >> 1); ++i)
         printf ("%02x", bin_buffer[i]);
     }
 
-  if (!tagged)
+  જો (!tagged)
     {
       putchar (' ');
-      putchar (binary_file ? '*' : ' ');
+      putchar (દ્વિઅંકી_file ? '*' : ' ');
       print_filename (file, needs_escape);
     }
 
@@ -1320,26 +1320,26 @@ output_file (char const *file, int binary_file, void const *digest,
 }
 #endif
 
-#if HASH_ALGO_CKSUM
+#જો HASH_ALGO_CKSUM
 /* Return true if B64_DIGEST is the same as the base64 digest of the
    DIGEST_LENGTH/8 bytes at BIN_BUFFER.  */
-static bool
-b64_equal (unsigned char const *b64_digest, unsigned char const *bin_buffer)
+સ્થિર bool
+b64_equal (unsigned અક્ષર અચલ *b64_digest, unsigned અક્ષર અચલ *bin_buffer)
 {
   idx_t b64_n_bytes = BASE64_LENGTH (digest_length >> 3);
-  char b64[BASE64_LENGTH (DIGEST_BIN_BYTES) + 1];
-  base64_encode ((char const *) bin_buffer, digest_length >> 3,
-                 b64, sizeof b64);
-  return memeq (b64_digest, b64, b64_n_bytes + 1);
+  અક્ષર b64[BASE64_LENGTH (DIGEST_BIN_BYTES) + 1];
+  base64_encode ((અક્ષર અચલ *) bin_buffer, digest_length >> 3,
+                 b64, કદ b64);
+  પાછા memeq (b64_digest, b64, b64_n_bytes + 1);
 }
 #endif
 
 /* Return true if HEX_DIGEST is the same as the hex-encoded digest of the
    DIGEST_LENGTH/8 bytes at BIN_BUFFER.  */
-static bool
-hex_equal (unsigned char const *hex_digest, unsigned char const *bin_buffer)
+સ્થિર bool
+hex_equal (unsigned અક્ષર અચલ *hex_digest, unsigned અક્ષર અચલ *bin_buffer)
 {
-  static const char bin2hex[] = { '0', '1', '2', '3',
+  સ્થિર અચલ અક્ષર bin2hex[] = { '0', '1', '2', '3',
                                   '4', '5', '6', '7',
                                   '8', '9', 'a', 'b',
                                   'c', 'd', 'e', 'f' };
@@ -1348,188 +1348,188 @@ hex_equal (unsigned char const *hex_digest, unsigned char const *bin_buffer)
   /* Compare generated binary number with text representation
      in check file.  Ignore case of hex digits.  */
   idx_t cnt;
-  for (cnt = 0; cnt < digest_bin_bytes; ++cnt)
+  માટે (cnt = 0; cnt < digest_bin_bytes; ++cnt)
     {
-      if (c_tolower (hex_digest[2 * cnt])
+      જો (c_tolower (hex_digest[2 * cnt])
           != bin2hex[bin_buffer[cnt] >> 4]
           || (c_tolower (hex_digest[2 * cnt + 1])
               != (bin2hex[bin_buffer[cnt] & 0xf])))
-        break;
+        તોડો;
     }
-  return cnt == digest_bin_bytes;
+  પાછા cnt == digest_bin_bytes;
 }
 
-static bool
-digest_check (char const *checkfile_name)
+સ્થિર bool
+digest_check (અક્ષર અચલ *checkfile_name)
 {
   FILE *checkfile_stream;
-  intmax_t n_misformatted_lines = 0;
+  intmax_t n_misformatted_લીટીઓ = 0;
   intmax_t n_mismatched_checksums = 0;
   intmax_t n_open_or_read_failures = 0;
-  bool properly_formatted_lines = false;
+  bool properly_formatted_લીટીઓ = false;
   bool matched_checksums = false;
-  unsigned char bin_buffer_unaligned[DIGEST_BIN_BYTES + DIGEST_ALIGN];
+  unsigned અક્ષર bin_buffer_unaligned[DIGEST_BIN_BYTES + DIGEST_ALIGN];
   /* Make sure bin_buffer is properly aligned. */
-  unsigned char *bin_buffer = ptr_align (bin_buffer_unaligned, DIGEST_ALIGN);
-  intmax_t line_number;
-  char *line;
-  size_t line_chars_allocated;
+  unsigned અક્ષર *bin_buffer = ptr_align (bin_buffer_unaligned, DIGEST_ALIGN);
+  intmax_t લીટી_સંખ્યા;
+  અક્ષર *લીટી;
+  size_t લીટી_chars_allocated;
   bool is_stdin = streq (checkfile_name, "-");
 
-  if (is_stdin)
+  જો (is_stdin)
     {
       have_read_stdin = true;
       checkfile_name = _("standard input");
       checkfile_stream = stdin;
     }
-  else
+  નહીંતર
     {
       checkfile_stream = fopen (checkfile_name, "r");
-      if (checkfile_stream == NULL)
+      જો (checkfile_stream == ખાલી)
         {
           error (0, errno, "%s", quotef (checkfile_name));
-          return false;
+          પાછા false;
         }
     }
 
-  line_number = 0;
-  line = NULL;
-  line_chars_allocated = 0;
-  do
+  લીટી_સંખ્યા = 0;
+  લીટી = ખાલી;
+  લીટી_chars_allocated = 0;
+  કરો
     {
-      char *filename;
-      int binary;
-      unsigned char *digest;
-      ssize_t line_length;
+      અક્ષર *filename;
+      પૂર્ણાંક દ્વિઅંકી;
+      unsigned અક્ષર *digest;
+      ssize_t લીટી_length;
 
-      ++line_number;
-      if (line_number == 0)
+      ++લીટી_સંખ્યા;
+      જો (લીટી_સંખ્યા == 0)
         error (EXIT_FAILURE, 0, _("%s: too many checksum lines"),
                quotef (checkfile_name));
 
-      line_length = getline (&line, &line_chars_allocated, checkfile_stream);
-      if (line_length <= 0)
-        break;
+      લીટી_length = getline (&લીટી, &લીટી_chars_allocated, checkfile_stream);
+      જો (લીટી_length <= 0)
+        તોડો;
 
       /* Ignore comment lines, which begin with a '#' character.  */
-      if (line[0] == '#')
-        continue;
+      જો (લીટી[0] == '#')
+        ચાલુ;
 
       /* Remove any trailing newline.  */
-      line_length -= line[line_length - 1] == '\n';
+      લીટી_length -= લીટી[લીટી_length - 1] == '\n';
       /* Remove any trailing carriage return.  */
-      line_length -= line[line_length - (0 < line_length)] == '\r';
+      લીટી_length -= લીટી[લીટી_length - (0 < લીટી_length)] == '\r';
 
       /* Ignore empty lines.  */
-      if (line_length == 0)
-        continue;
+      જો (લીટી_length == 0)
+        ચાલુ;
 
-      line[line_length] = '\0';
+      લીટી[લીટી_length] = '\0';
 
       idx_t d_len;
-      if (! (split_3 (line, line_length, &digest, &d_len, &binary, &filename)
+      જો (! (split_3 (લીટી, લીટી_length, &digest, &d_len, &દ્વિઅંકી, &filename)
              && ! (is_stdin && streq (filename, "-"))))
         {
-          ++n_misformatted_lines;
+          ++n_misformatted_લીટીઓ;
 
-          if (warn)
+          જો (warn)
             {
               error (0, 0,
                      _("%s: %jd"
                        ": improperly formatted %s checksum line"),
-                     quotef (checkfile_name), line_number,
+                     quotef (checkfile_name), લીટી_સંખ્યા,
                      DIGEST_TYPE_STRING);
             }
         }
-      else
+      નહીંતર
         {
           bool ok;
           bool missing;
 
-          properly_formatted_lines = true;
+          properly_formatted_લીટીઓ = true;
 
           intmax_t length;
-          ok = digest_file (filename, &binary, bin_buffer, &missing, &length);
+          ok = digest_file (filename, &દ્વિઅંકી, bin_buffer, &missing, &length);
 
-          if (!ok)
+          જો (!ok)
             {
               ++n_open_or_read_failures;
-              if (!status_only)
+              જો (!status_only)
                 printf ("%s: %s\n", quotef (filename),_("FAILED open or read"));
             }
-          else if (ignore_missing && missing)
+          નહીંતર જો (ignore_missing && missing)
             {
               /* Ignore missing files with --ignore-missing.  */
               ;
             }
-          else
+          નહીંતર
             {
               bool match = false;
-#if HASH_ALGO_CKSUM
-              if (d_len == BASE64_LENGTH (digest_length >> 3))
+#જો HASH_ALGO_CKSUM
+              જો (d_len == BASE64_LENGTH (digest_length >> 3))
                 match = b64_equal (digest, bin_buffer);
-              else
+              નહીંતર
 #endif
-                if (d_len == digest_hex_bytes)
+                જો (d_len == digest_hex_bytes)
                   match = hex_equal (digest, bin_buffer);
 
-              if (match)
+              જો (match)
                 matched_checksums = true;
-              else
+              નહીંતર
                 ++n_mismatched_checksums;
 
-              if (!status_only)
+              જો (!status_only)
                 {
-                  if (! match || ! quiet)
+                  જો (! match || ! quiet)
                     fputs (quotef (filename), stdout);
 
-                  if (! match)
+                  જો (! match)
                     printf (": %s\n", _("FAILED"));
-                  else if (!quiet)
+                  નહીંતર જો (!quiet)
                     printf (": %s\n", _("OK"));
                 }
             }
 
-          if (ferror (stdout))
+          જો (ferror (stdout))
             write_error ();
         }
     }
-  while (!feof (checkfile_stream) && !ferror (checkfile_stream));
+  જ્યારે (!feof (checkfile_stream) && !ferror (checkfile_stream));
 
-  free (line);
+  મુક્ત (લીટી);
 
-  int err = ferror (checkfile_stream) ? 0 : -1;
-  if (is_stdin)
+  પૂર્ણાંક err = ferror (checkfile_stream) ? 0 : -1;
+  જો (is_stdin)
     clearerr (checkfile_stream);
-  else if (fclose (checkfile_stream) != 0 && err < 0)
+  નહીંતર જો (fclose (checkfile_stream) != 0 && err < 0)
     err = errno;
 
-  if (0 <= err)
+  જો (0 <= err)
     {
       error (0, err, err ? "%s" : _("%s: read error"),
              quotef (checkfile_name));
-      return false;
+      પાછા false;
     }
 
-  if (! properly_formatted_lines)
+  જો (! properly_formatted_લીટીઓ)
     {
       /* Warn if no tests are found.  */
       error (0, 0, _("%s: no properly formatted checksum lines found"),
              quotef (checkfile_name));
     }
-  else
+  નહીંતર
     {
-      if (!status_only)
+      જો (!status_only)
         {
-          if (n_misformatted_lines != 0)
+          જો (n_misformatted_લીટીઓ != 0)
             error (0, 0,
                    (ngettext
                     ("WARNING: %jd line is improperly formatted",
                      "WARNING: %jd lines are improperly formatted",
-                     select_plural (n_misformatted_lines))),
-                   n_misformatted_lines);
+                     select_plural (n_misformatted_લીટીઓ))),
+                   n_misformatted_લીટીઓ);
 
-          if (n_open_or_read_failures != 0)
+          જો (n_open_or_read_failures != 0)
             error (0, 0,
                    (ngettext
                     ("WARNING: %jd listed file could not be read",
@@ -1537,7 +1537,7 @@ digest_check (char const *checkfile_name)
                      select_plural (n_open_or_read_failures))),
                    n_open_or_read_failures);
 
-          if (n_mismatched_checksums != 0)
+          જો (n_mismatched_checksums != 0)
             error (0, 0,
                    (ngettext
                     ("WARNING: %jd computed checksum did NOT match",
@@ -1545,34 +1545,34 @@ digest_check (char const *checkfile_name)
                      select_plural (n_mismatched_checksums))),
                    n_mismatched_checksums);
 
-          if (ignore_missing && ! matched_checksums)
+          જો (ignore_missing && ! matched_checksums)
             error (0, 0, _("%s: no file was verified"),
                    quotef (checkfile_name));
         }
     }
 
-  return (properly_formatted_lines
+  પાછા (properly_formatted_લીટીઓ
           && matched_checksums
           && n_mismatched_checksums == 0
           && n_open_or_read_failures == 0
-          && (!strict || n_misformatted_lines == 0));
+          && (!strict || n_misformatted_લીટીઓ == 0));
 }
 
-int
-main (int argc, char **argv)
+પૂર્ણાંક
+મુખ્ય (પૂર્ણાંક argc, અક્ષર **argv)
 {
-  unsigned char bin_buffer_unaligned[DIGEST_BIN_BYTES + DIGEST_ALIGN];
+  unsigned અક્ષર bin_buffer_unaligned[DIGEST_BIN_BYTES + DIGEST_ALIGN];
   /* Make sure bin_buffer is properly aligned. */
-  unsigned char *bin_buffer = ptr_align (bin_buffer_unaligned, DIGEST_ALIGN);
+  unsigned અક્ષર *bin_buffer = ptr_align (bin_buffer_unaligned, DIGEST_ALIGN);
   bool do_check = false;
-  int opt;
+  પૂર્ણાંક opt;
   bool ok = true;
-  int binary = -1;
-  int prefix_tag = -1;
-  struct option const *long_opts = long_options;
+  પૂર્ણાંક દ્વિઅંકી = -1;
+  પૂર્ણાંક prefix_tag = -1;
+  સંરચના option અચલ *long_opts = long_options;
 
-#if HASH_ALGO_CKSUM
-  if (cksum_algorithm != crc)
+#જો HASH_ALGO_CKSUM
+  જો (cksum_algorithm != crc)
     {
       legacy_mode = true;
       prefix_tag = 0;
@@ -1592,125 +1592,125 @@ main (int argc, char **argv)
 
   /* Line buffer stdout to ensure lines are written atomically and immediately
      so that processes running in parallel do not intersperse their output.  */
-  setvbuf (stdout, NULL, _IOLBF, 0);
+  setvbuf (stdout, ખાલી, _IOLBF, 0);
 
-#if HASH_ALGO_SUM
-  char const *short_opts = "rs";
-#elif HASH_ALGO_CKSUM
-  char const *short_opts = legacy_mode ? "bctwz" : "a:l:bctwz";
-  char const *digest_length_str = "";
-#elif HASH_ALGO_BLAKE2
-  char const *short_opts = "l:bctwz";
-  char const *digest_length_str = "";
-#else
-  char const *short_opts = "bctwz";
+#જો HASH_ALGO_SUM
+  અક્ષર અચલ *short_opts = "rs";
+#અથવાજો HASH_ALGO_CKSUM
+  અક્ષર અચલ *short_opts = legacy_mode ? "bctwz" : "a:l:bctwz";
+  અક્ષર અચલ *digest_length_str = "";
+#અથવાજો HASH_ALGO_BLAKE2
+  અક્ષર અચલ *short_opts = "l:bctwz";
+  અક્ષર અચલ *digest_length_str = "";
+#નહીંતર
+  અક્ષર અચલ *short_opts = "bctwz";
 #endif
 
-  while ((opt = getopt_long (argc, argv, short_opts, long_opts, NULL))
+  જ્યારે ((opt = getopt_long (argc, argv, short_opts, long_opts, ખાલી))
          != -1)
-    switch (opt)
+    પસંદગી (opt)
       {
-#if HASH_ALGO_CKSUM
-      case 'a':
+#જો HASH_ALGO_CKSUM
+      સ્થિતિ 'a':
         cksum_algorithm = XARGMATCH_EXACT ("--algorithm", optarg,
                                            algorithm_args, algorithm_types);
         algorithm_specified = true;
-        break;
+        તોડો;
 
-      case DEBUG_PROGRAM_OPTION:
+      સ્થિતિ DEBUG_PROGRAM_OPTION:
         cksum_debug = true;
-        break;
+        તોડો;
 #endif
-#if HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
-      case 'l':
+#જો HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
+      સ્થિતિ 'l':
         digest_length = xnumtoimax (optarg, 10, 0, IDX_MAX, "",
                                     _("invalid length"), 0,
                                     XTOINT_MAX_QUIET);
         digest_length_str = optarg;
-        break;
+        તોડો;
 #endif
-#if !HASH_ALGO_SUM
-      case 'c':
+#જો !HASH_ALGO_SUM
+      સ્થિતિ 'c':
         do_check = true;
-        break;
-      case STATUS_OPTION:
+        તોડો;
+      સ્થિતિ STATUS_OPTION:
         status_only = true;
         warn = false;
         quiet = false;
-        break;
-      case 'b':
-        binary = 1;
-        break;
-      case 't':
-        binary = 0;
-        break;
-      case 'w':
+        તોડો;
+      સ્થિતિ 'b':
+        દ્વિઅંકી = 1;
+        તોડો;
+      સ્થિતિ 't':
+        દ્વિઅંકી = 0;
+        તોડો;
+      સ્થિતિ 'w':
         status_only = false;
         warn = true;
         quiet = false;
-        break;
-      case IGNORE_MISSING_OPTION:
+        તોડો;
+      સ્થિતિ IGNORE_MISSING_OPTION:
         ignore_missing = true;
-        break;
-      case QUIET_OPTION:
+        તોડો;
+      સ્થિતિ QUIET_OPTION:
         status_only = false;
         warn = false;
         quiet = true;
-        break;
-      case STRICT_OPTION:
+        તોડો;
+      સ્થિતિ STRICT_OPTION:
         strict = true;
-        break;
-# if HASH_ALGO_CKSUM
-      case BASE64_OPTION:
+        તોડો;
+# જો HASH_ALGO_CKSUM
+      સ્થિતિ BASE64_OPTION:
         base64_digest = true;
-        break;
-      case RAW_OPTION:
+        તોડો;
+      સ્થિતિ RAW_OPTION:
         raw_digest = true;
-        break;
-      case UNTAG_OPTION:
+        તોડો;
+      સ્થિતિ UNTAG_OPTION:
         prefix_tag = 0;
-        break;
+        તોડો;
 # endif
-      case TAG_OPTION:
+      સ્થિતિ TAG_OPTION:
         prefix_tag = 1;
-        break;
-      case 'z':
+        તોડો;
+      સ્થિતિ 'z':
         digest_delim = '\0';
-        break;
+        તોડો;
 #endif
-#if HASH_ALGO_SUM
-      case 'r':		/* For SysV compatibility. */
+#જો HASH_ALGO_SUM
+      સ્થિતિ 'r':		/* For SysV compatibility. */
         sum_algorithm = bsd;
-        break;
+        તોડો;
 
-      case 's':
+      સ્થિતિ 's':
         sum_algorithm = sysv;
-        break;
+        તોડો;
 #endif
       case_GETOPT_HELP_CHAR;
       case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-      default:
+      મૂળભૂત:
         usage (EXIT_FAILURE);
       }
 
-  min_digest_line_length = MIN_DIGEST_LINE_LENGTH;
-#if HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
-# if HASH_ALGO_CKSUM
-  if (digest_length && (cksum_algorithm != blake2b
+  min_digest_લીટી_length = MIN_DIGEST_લીટી_LENGTH;
+#જો HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
+# જો HASH_ALGO_CKSUM
+  જો (digest_length && (cksum_algorithm != blake2b
                         && cksum_algorithm != sha2
                         && cksum_algorithm != sha3))
     error (EXIT_FAILURE, 0,
            _("--length is only supported with --algorithm "
              "blake2b, sha2, or sha3"));
-  if (cksum_algorithm == sha2 || cksum_algorithm == sha3)
+  જો (cksum_algorithm == sha2 || cksum_algorithm == sha3)
     {
       /* Do not require --length with --check.  */
-      if (digest_length == 0 && *digest_length_str == '\0' && ! do_check)
+      જો (digest_length == 0 && *digest_length_str == '\0' && ! do_check)
         error (EXIT_FAILURE, 0, _("--algorithm=%s requires specifying "
                                   "--length 224, 256, 384, or 512"),
                algorithm_args[cksum_algorithm]);
       /* If --check and --length are used we verify the digest length.  */
-      if ((! do_check || *digest_length_str != '\0')
+      જો ((! do_check || *digest_length_str != '\0')
           && digest_length != SHA224_DIGEST_SIZE * 8
           && digest_length != SHA256_DIGEST_SIZE * 8
           && digest_length != SHA384_DIGEST_SIZE * 8
@@ -1722,14 +1722,14 @@ main (int argc, char **argv)
                  quote (DIGEST_TYPE_STRING));
         }
     }
-  else
+  નહીંતર
     {
       /* If the digest length checks for SHA-3 are satisfied, the less strict
          checks for BLAKE2 will also be.  */
-# else
+# નહીંતર
     {
 # endif
-      if (digest_length > DIGEST_MAX_LEN * 8)
+      જો (digest_length > DIGEST_MAX_LEN * 8)
         {
           error (0, 0, _("invalid length: %s"), quote (digest_length_str));
           error (EXIT_FAILURE, 0,
@@ -1737,53 +1737,53 @@ main (int argc, char **argv)
                  quote (DIGEST_TYPE_STRING),
                  DIGEST_MAX_LEN * 8);
         }
-      if (digest_length % 8 != 0)
+      જો (digest_length % 8 != 0)
         {
           error (0, 0, _("invalid length: %s"), quote (digest_length_str));
           error (EXIT_FAILURE, 0, _("length is not a multiple of 8"));
         }
     }
-  if (digest_length == 0)
+  જો (digest_length == 0)
     {
-# if HASH_ALGO_BLAKE2
+# જો HASH_ALGO_BLAKE2
       digest_length = DIGEST_MAX_LEN * 8;
-# else
+# નહીંતર
       digest_length = algorithm_bits[cksum_algorithm];
 # endif
     }
   digest_hex_bytes = digest_length >> 2;
-#else
+#નહીંતર
   digest_hex_bytes = DIGEST_HEX_BYTES;
 #endif
 
-#if HASH_ALGO_CKSUM
-  switch (+cksum_algorithm)
+#જો HASH_ALGO_CKSUM
+  પસંદગી (+cksum_algorithm)
     {
-    case bsd:
-    case sysv:
-    case crc:
-    case crc32b:
-        if (do_check && algorithm_specified)
+    સ્થિતિ bsd:
+    સ્થિતિ sysv:
+    સ્થિતિ crc:
+    સ્થિતિ crc32b:
+        જો (do_check && algorithm_specified)
           error (EXIT_FAILURE, 0,
                  _("--check is not supported with "
                    "--algorithm={bsd,sysv,crc,crc32b}"));
-        break;
+        તોડો;
     }
 
-  if (base64_digest && raw_digest)
+  જો (base64_digest && raw_digest)
    {
      error (0, 0, _("--base64 and --raw are mutually exclusive"));
      usage (EXIT_FAILURE);
    }
 #endif
 
-  if (digest_delim != '\n' && do_check)
+  જો (digest_delim != '\n' && do_check)
     {
       error (0, 0, _("the --zero option is not supported when "
                      "verifying checksums"));
       usage (EXIT_FAILURE);
     }
-  if (1 <= prefix_tag && do_check)
+  જો (1 <= prefix_tag && do_check)
     {
       /* Note we allow --untagged with --check to more
          seamlessly support --untagged in an emulation wrapper.  */
@@ -1792,14 +1792,14 @@ main (int argc, char **argv)
       usage (EXIT_FAILURE);
     }
 
-  if (0 <= binary && do_check)
+  જો (0 <= દ્વિઅંકી && do_check)
     {
       error (0, 0, _("the --binary and --text options are meaningless when "
                      "verifying checksums"));
       usage (EXIT_FAILURE);
     }
 
-  if (ignore_missing && !do_check)
+  જો (ignore_missing && !do_check)
     {
       error (0, 0,
              _("the --ignore-missing option is meaningful only when "
@@ -1807,89 +1807,89 @@ main (int argc, char **argv)
       usage (EXIT_FAILURE);
     }
 
-  if (status_only && !do_check)
+  જો (status_only && !do_check)
     {
       error (0, 0,
        _("the --status option is meaningful only when verifying checksums"));
       usage (EXIT_FAILURE);
     }
 
-  if (warn && !do_check)
+  જો (warn && !do_check)
     {
       error (0, 0,
        _("the --warn option is meaningful only when verifying checksums"));
       usage (EXIT_FAILURE);
     }
 
-  if (quiet && !do_check)
+  જો (quiet && !do_check)
     {
       error (0, 0,
        _("the --quiet option is meaningful only when verifying checksums"));
       usage (EXIT_FAILURE);
     }
 
-  if (strict & !do_check)
+  જો (strict & !do_check)
    {
      error (0, 0,
         _("the --strict option is meaningful only when verifying checksums"));
      usage (EXIT_FAILURE);
    }
 
-  if (prefix_tag == -1)
+  જો (prefix_tag == -1)
     prefix_tag = HASH_ALGO_CKSUM;
 
-  if (prefix_tag && !binary)
+  જો (prefix_tag && !દ્વિઅંકી)
    {
      /* This could be supported in a backwards compatible way
         by prefixing the output line with a space in text mode.
         However that's invasive enough that it was agreed to
         not support this mode with --tag, as --text use cases
         are adequately supported by the default output format.  */
-#if !HASH_ALGO_CKSUM
+#જો !HASH_ALGO_CKSUM
      error (0, 0, _("--tag does not support --text mode"));
-#else
+#નહીંતર
      error (0, 0, _("--text mode is only supported with --untagged"));
 #endif
      usage (EXIT_FAILURE);
    }
 
-  if (!O_BINARY && binary < 0)
-    binary = 0;
-  else if (prefix_tag)
-    binary = 1;
+  જો (!O_દ્વિઅંકી && દ્વિઅંકી < 0)
+    દ્વિઅંકી = 0;
+  નહીંતર જો (prefix_tag)
+    દ્વિઅંકી = 1;
 
-  char **operand_lim = argv + argc;
-  if (optind == argc)
+  અક્ષર **operand_lim = argv + argc;
+  જો (optind == argc)
     *operand_lim++ = bad_cast ("-");
-  else if (1 < argc - optind && raw_digest)
+  નહીંતર જો (1 < argc - optind && raw_digest)
     error (EXIT_FAILURE, 0,
            _("the --raw option is not supported with multiple files"));
 
-  for (char **operandp = argv + optind; operandp < operand_lim; operandp++)
+  માટે (અક્ષર **operandp = argv + optind; operandp < operand_lim; operandp++)
     {
-      char *file = *operandp;
-      if (do_check)
+      અક્ષર *file = *operandp;
+      જો (do_check)
         ok &= digest_check (file);
-      else
+      નહીંતર
         {
-          int binary_file = binary;
+          પૂર્ણાંક દ્વિઅંકી_file = દ્વિઅંકી;
           bool missing;
           intmax_t length;
 
-          if (! digest_file (file, &binary_file, bin_buffer, &missing, &length))
+          જો (! digest_file (file, &દ્વિઅંકી_file, bin_buffer, &missing, &length))
             ok = false;
-          else
+          નહીંતર
             {
-              DIGEST_OUT (file, binary_file, bin_buffer, raw_digest, prefix_tag,
+              DIGEST_OUT (file, દ્વિઅંકી_file, bin_buffer, raw_digest, prefix_tag,
                           digest_delim, optind != argc, length);
-              if (ferror (stdout))
+              જો (ferror (stdout))
                 write_error ();
             }
         }
     }
 
-  if (have_read_stdin && fclose (stdin) == EOF)
+  જો (have_read_stdin && fclose (stdin) == EOF)
     error (EXIT_FAILURE, errno, _("standard input"));
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  પાછા ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

@@ -49,36 +49,36 @@
                  | BIT (11) | BIT (10) | BIT (8) | BIT (7) | BIT (5) \
                  | BIT (4) | BIT (2) | BIT (1) | BIT (0))
 
-static unsigned int r[8];
+સ્થિર unsigned પૂર્ણાંક r[8];
 
-static void
-fill_r (void)
+સ્થિર શૂન્ય
+fill_r (શૂન્ય)
 {
   r[0] = GEN;
-  for (int i = 1; i < 8; i++)
+  માટે (પૂર્ણાંક i = 1; i < 8; i++)
     r[i] = (r[i - 1] << 1) ^ ((r[i - 1] & SBIT) ? GEN : 0);
 }
 
-static unsigned int
-crc_remainder (int m)
+સ્થિર unsigned પૂર્ણાંક
+crc_remainder (પૂર્ણાંક m)
 {
-  unsigned int rem = 0;
+  unsigned પૂર્ણાંક rem = 0;
 
-  for (int i = 0; i < 8; i++)
-    if (BIT (i) & m)
+  માટે (પૂર્ણાંક i = 0; i < 8; i++)
+    જો (BIT (i) & m)
       rem ^= r[i];
 
-  return rem & 0xFFFFFFFF;	/* Make it run on 64-bit machine.  */
+  પાછા rem & 0xFFFFFFFF;	/* Make it run on 64-bit machine.  */
 }
 
-int
-main (void)
+પૂર્ણાંક
+મુખ્ય (શૂન્ય)
 {
-  static unsigned int crctab[8][256];
+  સ્થિર unsigned પૂર્ણાંક crctab[8][256];
 
   fill_r ();
 
-  for (int i = 0; i < 256; i++)
+  માટે (પૂર્ણાંક i = 0; i < 256; i++)
     crctab[0][i] = crc_remainder (i);
 
   /* CRC(0x11 0x22 0x33 0x44)
@@ -88,12 +88,12 @@ main (void)
      We precompute the CRC values for the offset values into
      separate CRC tables. We can then use them to speed up
      CRC calculation by processing multiple bytes at the time. */
-  for (int i = 0; i < 256; i++)
+  માટે (પૂર્ણાંક i = 0; i < 256; i++)
     {
-      unsigned int crc = 0;
+      unsigned પૂર્ણાંક crc = 0;
 
       crc = (crc << 8) ^ crctab[0][((crc >> 24) ^ i) & 0xFF];
-      for (int offset = 1; offset < 8; offset++)
+      માટે (પૂર્ણાંક offset = 1; offset < 8; offset++)
         {
           crc = (crc << 8) ^ crctab[0][((crc >> 24) ^ 0) & 0xFF];
           crctab[offset][i] = crc & 0xFFFFFFFF;
@@ -104,10 +104,10 @@ main (void)
   printf ("#include \"cksum_crc.h\"\n");
   printf ("\n");
   printf ("uint_fast32_t const crctab[8][256] = {\n");
-  for (int y = 0; y < 8; y++)
+  માટે (પૂર્ણાંક y = 0; y < 8; y++)
     {
       printf ("{\n  0x%08x", crctab[y][0]);
-      for (int i = 0; i < 51; i++)
+      માટે (પૂર્ણાંક i = 0; i < 51; i++)
         {
           printf (",\n  0x%08x, 0x%08x, 0x%08x, 0x%08x, 0x%08x",
                   crctab[y][i * 5 + 1], crctab[y][i * 5 + 2],
@@ -119,7 +119,7 @@ main (void)
   printf ("};\n");
 }
 
-#else /* !CRCTAB */
+#નહીંતર /* !CRCTAB */
 
 # include "cksum_crc.h"
 # include <sys/types.h>
@@ -137,115 +137,115 @@ main (void)
 /* Number of bytes to read at once.  */
 # define BUFLEN (1 << 16)
 
-typedef bool (*cksum_fp_t) (FILE *, uint_fast32_t *, intmax_t *);
+પ્રકારવ્યાખ્યા bool (*cksum_fp_t) (FILE *, uint_fast32_t *, intmax_t *);
 
-static cksum_fp_t
-pclmul_supported (void)
+સ્થિર cksum_fp_t
+pclmul_supported (શૂન્ય)
 {
-# if USE_PCLMUL_CRC32 || GL_CRC_X86_64_PCLMUL
+# જો USE_PCLMUL_CRC32 || GL_CRC_X86_64_PCLMUL
   bool pclmul_enabled = (cpu_supports ("avx")
                          && cpu_supports ("pclmul"));
-  if (cksum_debug)
+  જો (cksum_debug)
     error (0, 0, "%s",
            (pclmul_enabled
             ? _("using pclmul hardware support")
             : _("pclmul support not detected")));
-#  if USE_PCLMUL_CRC32
-  if (pclmul_enabled)
-    return cksum_pclmul;
+#  જો USE_PCLMUL_CRC32
+  જો (pclmul_enabled)
+    પાછા cksum_pclmul;
 #  endif
 # endif
 
-  return NULL;
+  પાછા ખાલી;
 }
 
-static cksum_fp_t
-avx2_supported (void)
+સ્થિર cksum_fp_t
+avx2_supported (શૂન્ય)
 {
   /* AVX512 processors will not set vpclmulqdq unless they support
      the avx512 version, but it implies that the avx2 version
      is supported  */
-# if USE_AVX2_CRC32
+# જો USE_AVX2_CRC32
   bool avx2_enabled = (cpu_supports ("avx2")
                        && cpu_supports ("vpclmulqdq"));
-  if (cksum_debug)
+  જો (cksum_debug)
     error (0, 0, "%s",
            (avx2_enabled
             ? _("using avx2 hardware support")
             : _("avx2 support not detected")));
-  if (avx2_enabled)
-    return cksum_avx2;
+  જો (avx2_enabled)
+    પાછા cksum_avx2;
 # endif
 
-  return NULL;
+  પાછા ખાલી;
 }
 
-static cksum_fp_t
-avx512_supported (void)
+સ્થિર cksum_fp_t
+avx512_supported (શૂન્ય)
 {
   /* vpclmulqdq for multiplication
      mavx512f for most of the avx512 functions we're using
      mavx512bw for byte swapping  */
-# if USE_AVX512_CRC32
+# જો USE_AVX512_CRC32
   bool avx512_enabled = (cpu_supports ("avx512f")
                          && cpu_supports ("avx512bw")
                          && cpu_supports ("vpclmulqdq"));
 
-  if (cksum_debug)
+  જો (cksum_debug)
     error (0, 0, "%s",
            (avx512_enabled
             ? _("using avx512 hardware support")
             : _("avx512 support not detected")));
-  if (avx512_enabled)
-    return cksum_avx512;
+  જો (avx512_enabled)
+    પાછા cksum_avx512;
 # endif
 
-  return NULL;
+  પાછા ખાલી;
 }
 
-static cksum_fp_t
-vmull_supported (void)
+સ્થિર cksum_fp_t
+vmull_supported (શૂન્ય)
 {
   /* vmull for multiplication  */
-# if USE_VMULL_CRC32
+# જો USE_VMULL_CRC32
   bool vmull_enabled = (cpu_may_support ("pmull")
                         && (getauxval (AT_HWCAP) & HWCAP_PMULL) > 0);
-  if (cksum_debug)
+  જો (cksum_debug)
     error (0, 0, "%s",
            (vmull_enabled
             ? _("using vmull hardware support")
             : _("vmull support not detected")));
-  if (vmull_enabled)
-    return cksum_vmull;
+  જો (vmull_enabled)
+    પાછા cksum_vmull;
 # endif
 
-  return NULL;
+  પાછા ખાલી;
 }
 
-static bool
+સ્થિર bool
 cksum_slice8 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
 {
-  uint32_t buf[BUFLEN / sizeof (uint32_t)];
+  uint32_t buf[BUFLEN / કદ (uint32_t)];
   uint_fast32_t crc = 0;
   intmax_t length = 0;
   size_t bytes_read;
 
-  if (!fp || !crc_out || !length_out)
-    return false;
+  જો (!fp || !crc_out || !length_out)
+    પાછા false;
 
-  while ((bytes_read = fread (buf, 1, BUFLEN, fp)) > 0)
+  જ્યારે ((bytes_read = fread (buf, 1, BUFLEN, fp)) > 0)
     {
       uint32_t *datap;
 
-      if (ckd_add (&length, length, bytes_read))
+      જો (ckd_add (&length, length, bytes_read))
         {
           errno = EOVERFLOW;
-          return false;
+          પાછા false;
         }
 
       /* Process multiples of 8 bytes */
       datap = buf;
-      while (bytes_read >= 8)
+      જ્યારે (bytes_read >= 8)
         {
           uint32_t first = *datap++, second = *datap++;
           crc ^= htobe32 (first);
@@ -262,114 +262,114 @@ cksum_slice8 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
         }
 
       /* And finish up last 0-7 bytes in a byte by byte fashion */
-      unsigned char *cp = (unsigned char *)datap;
-      while (bytes_read--)
+      unsigned અક્ષર *cp = (unsigned અક્ષર *)datap;
+      જ્યારે (bytes_read--)
         crc = (crc << 8) ^ crctab[0][((crc >> 24) ^ *cp++) & 0xFF];
-      if (feof (fp))
-        break;
+      જો (feof (fp))
+        તોડો;
     }
 
   *crc_out = crc;
   *length_out = length;
 
-  return !ferror (fp);
+  પાછા !ferror (fp);
 }
 
 /* Calculate the checksum and length in bytes of stream STREAM.
    Return -1 on error, 0 on success.  */
 
-int
-crc_sum_stream (FILE *stream, void *resstream, intmax_t *length)
+પૂર્ણાંક
+crc_sum_stream (FILE *stream, શૂન્ય *resstream, intmax_t *length)
 {
   intmax_t total_bytes = 0;
   uint_fast32_t crc = 0;
 
-  static cksum_fp_t cksum_fp;
-  if (! cksum_fp)
+  સ્થિર cksum_fp_t cksum_fp;
+  જો (! cksum_fp)
     cksum_fp = avx512_supported ();
-  if (! cksum_fp)
+  જો (! cksum_fp)
     cksum_fp = avx2_supported ();
-  if (! cksum_fp)
+  જો (! cksum_fp)
     cksum_fp = pclmul_supported ();
-  if (! cksum_fp)
+  જો (! cksum_fp)
     cksum_fp = vmull_supported ();
-  if (! cksum_fp)
+  જો (! cksum_fp)
     cksum_fp = cksum_slice8;
 
-  if (! cksum_fp (stream, &crc, &total_bytes))
-    return -1;
+  જો (! cksum_fp (stream, &crc, &total_bytes))
+    પાછા -1;
 
   *length = total_bytes;
 
-  for (; total_bytes; total_bytes >>= 8)
+  માટે (; total_bytes; total_bytes >>= 8)
     crc = (crc << 8) ^ crctab[0][((crc >> 24) ^ total_bytes) & 0xFF];
   crc = ~crc & 0xFFFFFFFF;
 
-  unsigned int crc_out = crc;
-  memcpy (resstream, &crc_out, sizeof crc_out);
+  unsigned પૂર્ણાંક crc_out = crc;
+  memcpy (resstream, &crc_out, કદ crc_out);
 
-  return 0;
+  પાછા 0;
 }
 
 /* Calculate the crc32b checksum and length in bytes of stream STREAM.
    Return -1 on error, 0 on success.  */
 
-int
-crc32b_sum_stream (FILE *stream, void *resstream, intmax_t *reslen)
+પૂર્ણાંક
+crc32b_sum_stream (FILE *stream, શૂન્ય *resstream, intmax_t *reslen)
 {
-  uint32_t buf[BUFLEN / sizeof (uint32_t)];
+  uint32_t buf[BUFLEN / કદ (uint32_t)];
   uint32_t crc = 0;
   intmax_t len = 0;
   size_t bytes_read;
 
-  if (!stream || !resstream || !reslen)
-    return -1;
+  જો (!stream || !resstream || !reslen)
+    પાછા -1;
 
-# if GL_CRC_X86_64_PCLMUL
-  if (cksum_debug)
-    (void) pclmul_supported ();
+# જો GL_CRC_X86_64_PCLMUL
+  જો (cksum_debug)
+    (શૂન્ય) pclmul_supported ();
 # endif
 
-  while ((bytes_read = fread (buf, 1, BUFLEN, stream)) > 0)
+  જ્યારે ((bytes_read = fread (buf, 1, BUFLEN, stream)) > 0)
     {
-      if (ckd_add (&len, len, bytes_read))
+      જો (ckd_add (&len, len, bytes_read))
         {
           errno = EOVERFLOW;
-          return -1;
+          પાછા -1;
         }
 
-      crc = crc32_update (crc, (char const *)buf, bytes_read);
+      crc = crc32_update (crc, (અક્ષર અચલ *)buf, bytes_read);
 
-      if (feof (stream))
-        break;
+      જો (feof (stream))
+        તોડો;
     }
 
-  unsigned int crc_out = crc;
-  memcpy (resstream, &crc_out, sizeof crc_out);
+  unsigned પૂર્ણાંક crc_out = crc;
+  memcpy (resstream, &crc_out, કદ crc_out);
 
   *reslen = len;
 
-  return ferror (stream) ? -1 : 0;
+  પાછા ferror (stream) ? -1 : 0;
 }
 
 /* Print the checksum and size to stdout.
    If ARGS is true, also print the FILE name.  */
 
-void
-output_crc (char const *file, MAYBE_UNUSED int binary_file,
-            void const *digest, bool raw, MAYBE_UNUSED bool tagged,
-            unsigned char delim, bool args, intmax_t length)
+શૂન્ય
+output_crc (અક્ષર અચલ *file, MAYBE_UNUSED પૂર્ણાંક દ્વિઅંકી_file,
+            શૂન્ય અચલ *digest, bool raw, MAYBE_UNUSED bool tagged,
+            unsigned અક્ષર delim, bool args, intmax_t length)
 {
-  if (raw)
+  જો (raw)
     {
       /* Output in network byte order (big endian).  */
       uint32_t out_int = htobe32 (*(uint32_t *)digest);
       fwrite (&out_int, 1, 32/8, stdout);
-      return;
+      પાછા;
     }
 
-  printf ("%u %jd", *(unsigned int *)digest, length);
-  if (args)
+  printf ("%u %jd", *(unsigned પૂર્ણાંક *)digest, length);
+  જો (args)
     printf (" %s", file);
   putchar (delim);
 }

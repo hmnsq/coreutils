@@ -16,15 +16,15 @@
 
 /* Written by jla; revised by djm */
 
-#include <config.h>
-#include <stdio.h>
+#અન્તર્ભાવ <config.h>
+#અન્તર્ભાવ <stdio.h>
 
-#include <sys/types.h>
-#include "system.h"
+#અન્તર્ભાવ <sys/types.h>
+#અન્તર્ભાવ "system.h"
 
-#include "long-options.h"
-#include "quote.h"
-#include "readutmp.h"
+#અન્તર્ભાવ "long-options.h"
+#અન્તર્ભાવ "quote.h"
+#અન્તર્ભાવ "readutmp.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "users"
@@ -33,25 +33,25 @@
   proper_name ("Joseph Arceneaux"), \
   proper_name ("David MacKenzie")
 
-static int
-userid_compare (const void *v_a, const void *v_b)
+સ્થિર પૂર્ણાંક
+userid_compare (અચલ શૂન્ય *v_a, અચલ શૂન્ય *v_b)
 {
-  char **a = (char **) v_a;
-  char **b = (char **) v_b;
-  return strcmp (*a, *b);
+  અક્ષર **a = (અક્ષર **) v_a;
+  અક્ષર **b = (અક્ષર **) v_b;
+  પાછા strcmp (*a, *b);
 }
 
-static void
-list_entries_users (idx_t n, STRUCT_UTMP const *this)
+સ્થિર શૂન્ય
+list_entries_users (idx_t n, STRUCT_UTMP અચલ *this)
 {
-  char **u = xinmalloc (n, sizeof *u);
+  અક્ષર **u = xinmalloc (n, કદ *u);
   idx_t n_entries = 0;
 
-  while (n--)
+  જ્યારે (n--)
     {
-      if (IS_USER_PROCESS (this))
+      જો (IS_USER_PROCESS (this))
         {
-          char *trimmed_name;
+          અક્ષર *trimmed_name;
 
           trimmed_name = extract_trimmed_name (this);
 
@@ -61,43 +61,43 @@ list_entries_users (idx_t n, STRUCT_UTMP const *this)
       this++;
     }
 
-  qsort (u, n_entries, sizeof (u[0]), userid_compare);
+  qsort (u, n_entries, કદ (u[0]), userid_compare);
 
-  for (idx_t i = 0; i < n_entries; i++)
+  માટે (idx_t i = 0; i < n_entries; i++)
     {
-      char c = (i < n_entries - 1 ? ' ' : '\n');
+      અક્ષર c = (i < n_entries - 1 ? ' ' : '\n');
       fputs (u[i], stdout);
       putchar (c);
     }
 
-  for (idx_t i = 0; i < n_entries; i++)
-    free (u[i]);
-  free (u);
+  માટે (idx_t i = 0; i < n_entries; i++)
+    મુક્ત (u[i]);
+  મુક્ત (u);
 }
 
 /* Display a list of users on the system, according to utmp file FILENAME.
    Use read_utmp OPTIONS to read FILENAME.  */
 
-static void
-users (char const *filename, int options)
+સ્થિર શૂન્ય
+users (અક્ષર અચલ *filename, પૂર્ણાંક options)
 {
   idx_t n_users;
   STRUCT_UTMP *utmp_buf;
   options |= READ_UTMP_USER_PROCESS;
-  if (read_utmp (filename, &n_users, &utmp_buf, options) != 0)
+  જો (read_utmp (filename, &n_users, &utmp_buf, options) != 0)
     error (EXIT_FAILURE, errno, "%s", quotef (filename));
 
   list_entries_users (n_users, utmp_buf);
 
-  free (utmp_buf);
+  મુક્ત (utmp_buf);
 }
 
-void
-usage (int status)
+શૂન્ય
+usage (પૂર્ણાંક status)
 {
-  if (status != EXIT_SUCCESS)
+  જો (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  નહીંતર
     {
       printf (_("Usage: %s [OPTION]... [FILE]\n"), program_name);
       printf (_("\
@@ -113,8 +113,8 @@ If FILE is not specified, use %s.  %s as FILE is common.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+પૂર્ણાંક
+મુખ્ય (પૂર્ણાંક argc, અક્ષર **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -126,22 +126,22 @@ main (int argc, char **argv)
 
   parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
                                    Version, true, usage, AUTHORS,
-                                   (char const *) NULL);
+                                   (અક્ષર અચલ *) ખાલી);
 
-  switch (argc - optind)
+  પસંદગી (argc - optind)
     {
-    case 0:			/* users */
+    સ્થિતિ 0:			/* users */
       users (UTMP_FILE, READ_UTMP_CHECK_PIDS);
-      break;
+      તોડો;
 
-    case 1:			/* users <utmp file> */
+    સ્થિતિ 1:			/* users <utmp file> */
       users (argv[optind], 0);
-      break;
+      તોડો;
 
-    default:			/* lose */
+    મૂળભૂત:			/* lose */
       error (0, 0, _("extra operand %s"), quote (argv[optind + 1]));
       usage (EXIT_FAILURE);
     }
 
-  return EXIT_SUCCESS;
+  પાછા EXIT_SUCCESS;
 }

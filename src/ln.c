@@ -16,25 +16,25 @@
 
 /* Written by Mike Parker and David MacKenzie. */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <getopt.h>
+#અન્તર્ભાવ <config.h>
+#અન્તર્ભાવ <stdio.h>
+#અન્તર્ભાવ <sys/types.h>
+#અન્તર્ભાવ <getopt.h>
 
-#include "system.h"
-#include "backupfile.h"
-#include "fcntl-safer.h"
-#include "filenamecat.h"
-#include "file-set.h"
-#include "force-link.h"
-#include "hash.h"
-#include "hashcode-file.h"
-#include "priv-set.h"
-#include "relpath.h"
-#include "same.h"
-#include "unlinkdir.h"
-#include "yesno.h"
-#include "canonicalize.h"
+#અન્તર્ભાવ "system.h"
+#અન્તર્ભાવ "backupfile.h"
+#અન્તર્ભાવ "fcntl-safer.h"
+#અન્તર્ભાવ "filenamecat.h"
+#અન્તર્ભાવ "file-set.h"
+#અન્તર્ભાવ "force-link.h"
+#અન્તર્ભાવ "hash.h"
+#અન્તર્ભાવ "hashcode-file.h"
+#અન્તર્ભાવ "priv-set.h"
+#અન્તર્ભાવ "relpath.h"
+#અન્તર્ભાવ "same.h"
+#અન્તર્ભાવ "unlinkdir.h"
+#અન્તર્ભાવ "yesno.h"
+#અન્તર્ભાવ "canonicalize.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "ln"
@@ -44,110 +44,110 @@
   proper_name ("David MacKenzie")
 
 /* FIXME: document */
-static enum backup_type backup_type;
+સ્થિર ગણના backup_type backup_type;
 
 /* If true, make symbolic links; otherwise, make hard links.  */
-static bool symbolic_link;
+સ્થિર bool symbolic_link;
 
 /* If true, make symbolic links relative  */
-static bool relative;
+સ્થિર bool relative;
 
 /* If true, hard links are logical rather than physical.  */
-static bool logical = !!LINK_FOLLOWS_SYMLINKS;
+સ્થિર bool logical = !!LINK_FOLLOWS_SYMLINKS;
 
 /* If true, ask the user before removing existing files.  */
-static bool interactive;
+સ્થિર bool interactive;
 
 /* If true, remove existing files unconditionally.  */
-static bool remove_existing_files;
+સ્થિર bool remove_existing_files;
 
 /* If true, list each file as it is moved. */
-static bool verbose;
+સ્થિર bool verbose;
 
 /* If true, allow the superuser to *attempt* to make hard links
    to directories.  However, it appears that this option is not useful
    in practice, since even the superuser is prohibited from hard-linking
    directories on most existing systems (Solaris being an exception).  */
-static bool hard_dir_link;
+સ્થિર bool hard_dir_link;
 
 /* If true, watch out for creating or removing hard links to directories.  */
-static bool beware_hard_dir_link;
+સ્થિર bool beware_hard_dir_link;
 
 /* If nonzero, and the specified destination is a symbolic link to a
    directory, treat it just as if it were a directory.  Otherwise, the
    command 'ln --force --no-dereference file symlink-to-dir' deletes
    symlink-to-dir before creating the new link.  */
-static bool dereference_dest_dir_symlinks = true;
+સ્થિર bool dereference_dest_dir_symlinks = true;
 
 /* This is a set of destination name/inode/dev triples for hard links
    created by ln.  Use this data structure to avoid data loss via a
    sequence of commands like this:
    rm -rf a b c; mkdir a b c; touch a/f b/f; ln -f a/f b/f c && rm -r a b */
-static Hash_table *dest_set;
+સ્થિર Hash_table *dest_set;
 
 /* Initial size of the dest_set hash table.  */
-enum { DEST_INFO_INITIAL_CAPACITY = 61 };
+ગણના { DEST_INFO_INITIAL_CAPACITY = 61 };
 
-static struct option const long_options[] =
+સ્થિર સંરચના option અચલ long_options[] =
 {
-  {"backup", optional_argument, NULL, 'b'},
-  {"directory", no_argument, NULL, 'F'},
-  {"no-dereference", no_argument, NULL, 'n'},
-  {"no-target-directory", no_argument, NULL, 'T'},
-  {"force", no_argument, NULL, 'f'},
-  {"interactive", no_argument, NULL, 'i'},
-  {"suffix", required_argument, NULL, 'S'},
-  {"target-directory", required_argument, NULL, 't'},
-  {"logical", no_argument, NULL, 'L'},
-  {"physical", no_argument, NULL, 'P'},
-  {"relative", no_argument, NULL, 'r'},
-  {"symbolic", no_argument, NULL, 's'},
-  {"verbose", no_argument, NULL, 'v'},
+  {"backup", optional_argument, ખાલી, 'b'},
+  {"directory", no_argument, ખાલી, 'F'},
+  {"no-dereference", no_argument, ખાલી, 'n'},
+  {"no-target-directory", no_argument, ખાલી, 'T'},
+  {"force", no_argument, ખાલી, 'f'},
+  {"interactive", no_argument, ખાલી, 'i'},
+  {"suffix", required_argument, ખાલી, 'S'},
+  {"target-directory", required_argument, ખાલી, 't'},
+  {"logical", no_argument, ખાલી, 'L'},
+  {"physical", no_argument, ખાલી, 'P'},
+  {"relative", no_argument, ખાલી, 'r'},
+  {"symbolic", no_argument, ખાલી, 's'},
+  {"verbose", no_argument, ખાલી, 'v'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ખાલી, 0, ખાલી, 0}
 };
 
 /* Return an errno value for a system call that returned STATUS.
    This is zero if STATUS is zero, and is errno otherwise.  */
 
-static int
-errnoize (int status)
+સ્થિર પૂર્ણાંક
+errnoize (પૂર્ણાંક status)
 {
-  return status < 0 ? errno : 0;
+  પાછા status < 0 ? errno : 0;
 }
 
 /* Return FROM represented as relative to the dir of TARGET.
    The result is malloced.  */
 
-static char *
-convert_abs_rel (char const *from, char const *target)
+સ્થિર અક્ષર *
+convert_abs_rel (અક્ષર અચલ *from, અક્ષર અચલ *target)
 {
   /* Get dirname to generate paths relative to.  We don't resolve
      the full TARGET as the last component could be an existing symlink.  */
-  char *targetdir = dir_name (target);
+  અક્ષર *targetdir = dir_name (target);
 
-  char *realdest = canonicalize_filename_mode (targetdir, CAN_MISSING);
-  char *realfrom = canonicalize_filename_mode (from, CAN_MISSING);
+  અક્ષર *realdest = canonicalize_filename_mode (targetdir, CAN_MISSING);
+  અક્ષર *realfrom = canonicalize_filename_mode (from, CAN_MISSING);
 
-  char *relative_from = NULL;
-  if (realdest && realfrom)
+  અક્ષર *relative_from = ખાલી;
+  જો (realdest && realfrom)
     {
       /* Write to a PATH_MAX buffer.  */
       relative_from = xmalloc (PATH_MAX);
 
-      if (!relpath (realfrom, realdest, relative_from, PATH_MAX))
+      જો (!relpath (realfrom, realdest, relative_from, PATH_MAX))
         {
-          free (relative_from);
-          relative_from = NULL;
+          મુક્ત (relative_from);
+          relative_from = ખાલી;
         }
     }
 
-  free (targetdir);
-  free (realdest);
-  free (realfrom);
+  મુક્ત (targetdir);
+  મુક્ત (realdest);
+  મુક્ત (realfrom);
 
-  return relative_from ? relative_from : xstrdup (from);
+  પાછા relative_from ? relative_from : xstrdup (from);
 }
 
 /* Link SOURCE to DESTDIR_FD + DEST_BASE atomically.  DESTDIR_FD is
@@ -156,10 +156,10 @@ convert_abs_rel (char const *from, char const *target)
    done.  This handles the common case where the destination does not
    already exist and -r is not specified.  */
 
-static int
-atomic_link (char const *source, int destdir_fd, char const *dest_base)
+સ્થિર પૂર્ણાંક
+atomic_link (અક્ષર અચલ *source, પૂર્ણાંક destdir_fd, અક્ષર અચલ *dest_base)
 {
-  return (symbolic_link
+  પાછા (symbolic_link
           ? (relative ? -1
              : errnoize (symlinkat (source, destdir_fd, dest_base)))
           : beware_hard_dir_link ? -1
@@ -174,72 +174,72 @@ atomic_link (char const *source, int destdir_fd, char const *dest_base)
    -1 if no attempt has been made to create the link.
    Return true if successful.  */
 
-static bool
-do_link (char const *source, int destdir_fd, char const *dest_base,
-         char const *dest, int link_errno)
+સ્થિર bool
+do_link (અક્ષર અચલ *source, પૂર્ણાંક destdir_fd, અક્ષર અચલ *dest_base,
+         અક્ષર અચલ *dest, પૂર્ણાંક link_errno)
 {
-  struct stat source_stats;
-  int source_status = 1;
-  char *backup_base = NULL;
-  char *rel_source = NULL;
-  int nofollow_flag = logical ? 0 : AT_SYMLINK_NOFOLLOW;
-  if (link_errno < 0)
+  સંરચના stat source_stats;
+  પૂર્ણાંક source_status = 1;
+  અક્ષર *backup_base = ખાલી;
+  અક્ષર *rel_source = ખાલી;
+  પૂર્ણાંક nofollow_flag = logical ? 0 : AT_SYMLINK_NOFOLLOW;
+  જો (link_errno < 0)
     link_errno = atomic_link (source, destdir_fd, dest_base);
 
   /* Get SOURCE_STATS if later code will need it, if only for sharper
      diagnostics.  */
-  if ((link_errno || dest_set) && !symbolic_link)
+  જો ((link_errno || dest_set) && !symbolic_link)
     {
       source_status = fstatat (AT_FDCWD, source, &source_stats, nofollow_flag);
-      if (source_status != 0)
+      જો (source_status != 0)
         {
           error (0, errno, _("failed to access %s"), quoteaf (source));
-          return false;
+          પાછા false;
         }
     }
 
-  if (link_errno)
+  જો (link_errno)
     {
-      if (!symbolic_link && !hard_dir_link && S_ISDIR (source_stats.st_mode))
+      જો (!symbolic_link && !hard_dir_link && S_ISDIR (source_stats.st_mode))
         {
           error (0, 0, _("%s: hard link not allowed for directory"),
                  quotef (source));
-          return false;
+          પાછા false;
         }
 
-      if (relative)
+      જો (relative)
         source = rel_source = convert_abs_rel (source, dest);
 
       bool force = (remove_existing_files || interactive
                     || backup_type != no_backups);
-      if (force)
+      જો (force)
         {
-          struct stat dest_stats;
-          if (fstatat (destdir_fd, dest_base, &dest_stats, AT_SYMLINK_NOFOLLOW)
+          સંરચના stat dest_stats;
+          જો (fstatat (destdir_fd, dest_base, &dest_stats, AT_SYMLINK_NOFOLLOW)
               != 0)
             {
-              if (errno != ENOENT)
+              જો (errno != ENOENT)
                 {
                   error (0, errno, _("failed to access %s"), quoteaf (dest));
-                  goto fail;
+                  જાઓ fail;
                 }
               force = false;
             }
-          else if (S_ISDIR (dest_stats.st_mode))
+          નહીંતર જો (S_ISDIR (dest_stats.st_mode))
             {
               error (0, 0, _("%s: cannot overwrite directory"), quotef (dest));
-              goto fail;
+              જાઓ fail;
             }
-          else if (seen_file (dest_set, dest, &dest_stats))
+          નહીંતર જો (seen_file (dest_set, dest, &dest_stats))
             {
               /* The current target was created as a hard link to another
                  source file.  */
               error (0, 0,
                      _("will not overwrite just-created %s with %s"),
                      quoteaf_n (0, dest), quoteaf_n (1, source));
-              goto fail;
+              જાઓ fail;
             }
-          else
+          નહીંતર
             {
               /* Beware removing DEST if it is the same directory entry as
                  SOURCE, because in that case removing DEST can cause the
@@ -248,7 +248,7 @@ do_link (char const *source, int destdir_fd, char const *dest_base,
                  links) which loses the contents of DEST.  So, when backing
                  up, worry about creating hard links (since the backups cover
                  the symlink case); otherwise, worry about about -f.  */
-              if (backup_type != no_backups
+              જો (backup_type != no_backups
                   ? !symbolic_link
                   : remove_existing_files)
                 {
@@ -256,9 +256,9 @@ do_link (char const *source, int destdir_fd, char const *dest_base,
                      If the file has only one link then both are surely the
                      same directory entry.  Otherwise check whether they point
                      to the same name in the same directory.  */
-                  if (source_status != 0)
+                  જો (source_status != 0)
                     source_status = stat (source, &source_stats);
-                  if (source_status == 0
+                  જો (source_status == 0
                       && psame_inode (&source_stats, &dest_stats)
                       && (source_stats.st_nlink == 1
                           || same_nameat (AT_FDCWD, source,
@@ -266,40 +266,40 @@ do_link (char const *source, int destdir_fd, char const *dest_base,
                     {
                       error (0, 0, _("%s and %s are the same file"),
                              quoteaf_n (0, source), quoteaf_n (1, dest));
-                      goto fail;
+                      જાઓ fail;
                     }
                 }
 
-              if (link_errno < 0 || link_errno == EEXIST)
+              જો (link_errno < 0 || link_errno == EEXIST)
                 {
-                  if (interactive)
+                  જો (interactive)
                     {
                       fprintf (stderr, _("%s: replace %s? "),
                                program_name, quoteaf (dest));
-                      if (!yesno ())
+                      જો (!yesno ())
                         {
-                          free (rel_source);
-                          return false;
+                          મુક્ત (rel_source);
+                          પાછા false;
                         }
                     }
 
-                  if (backup_type != no_backups)
+                  જો (backup_type != no_backups)
                     {
                       backup_base = find_backup_file_name (destdir_fd,
                                                            dest_base,
                                                            backup_type);
-                      if (renameat (destdir_fd, dest_base,
+                      જો (renameat (destdir_fd, dest_base,
                                     destdir_fd, backup_base)
                           != 0)
                         {
-                          int rename_errno = errno;
-                          free (backup_base);
-                          backup_base = NULL;
-                          if (rename_errno != ENOENT)
+                          પૂર્ણાંક rename_errno = errno;
+                          મુક્ત (backup_base);
+                          backup_base = ખાલી;
+                          જો (rename_errno != ENOENT)
                             {
                               error (0, rename_errno, _("cannot backup %s"),
                                      quoteaf (dest));
-                              goto fail;
+                              જાઓ fail;
                             }
                           force = false;
                         }
@@ -336,23 +336,23 @@ do_link (char const *source, int destdir_fd, char const *dest_base,
          required removing the destination first.  */
     }
 
-  if (link_errno <= 0)
+  જો (link_errno <= 0)
     {
       /* Right after creating a hard link, do this: (note dest name and
          source_stats, which are also the just-linked-destinations stats) */
-      if (! symbolic_link)
+      જો (! symbolic_link)
         record_file (dest_set, dest, &source_stats);
 
-      if (verbose)
+      જો (verbose)
         {
-          char const *quoted_backup = "";
-          char const *backup_sep = "";
-          if (backup_base)
+          અક્ષર અચલ *quoted_backup = "";
+          અક્ષર અચલ *backup_sep = "";
+          જો (backup_base)
             {
-              char *backup = backup_base;
-              void *alloc = NULL;
+              અક્ષર *backup = backup_base;
+              શૂન્ય *alloc = ખાલી;
               ptrdiff_t destdirlen = dest_base - dest;
-              if (0 < destdirlen)
+              જો (0 < destdirlen)
                 {
                   alloc = xmalloc (destdirlen + strlen (backup_base) + 1);
                   backup = memcpy (alloc, dest, destdirlen);
@@ -360,63 +360,63 @@ do_link (char const *source, int destdir_fd, char const *dest_base,
                 }
               quoted_backup = quoteaf_n (2, backup);
               backup_sep = " ~ ";
-              free (alloc);
+              મુક્ત (alloc);
             }
           printf ("%s%s%s %c> %s\n", quoted_backup, backup_sep,
                   quoteaf_n (0, dest), symbolic_link ? '-' : '=',
                   quoteaf_n (1, source));
         }
     }
-  else
+  નહીંતર
     {
-      char *dest_quoted = quoteaf_n (0, dest);
-      char *source_quoted = quoteaf_n (1, source);
+      અક્ષર *dest_quoted = quoteaf_n (0, dest);
+      અક્ષર *source_quoted = quoteaf_n (1, source);
 
-      if (symbolic_link)
+      જો (symbolic_link)
         {
-          if (link_errno != ENAMETOOLONG && *source)
+          જો (link_errno != ENAMETOOLONG && *source)
             error (0, link_errno, _("failed to create symbolic link %s"),
                    dest_quoted);
-          else
+          નહીંતર
             error (0, link_errno, _("failed to create symbolic link %s -> %s"),
                    dest_quoted, source_quoted);
         }
-      else
+      નહીંતર
         {
-          if (link_errno == EMLINK)
+          જો (link_errno == EMLINK)
             error (0, link_errno, _("failed to create hard link to %s"),
                    source_quoted);
-          else if (link_errno == EDQUOT || link_errno == EEXIST
+          નહીંતર જો (link_errno == EDQUOT || link_errno == EEXIST
                    || link_errno == ENOSPC || link_errno == EROFS)
             error (0, link_errno, _("failed to create hard link %s"),
                    dest_quoted);
-          else
+          નહીંતર
             error (0, link_errno, _("failed to create hard link %s => %s"),
                    dest_quoted, source_quoted);
         }
 
-      if (backup_base)
+      જો (backup_base)
         {
-          if (renameat (destdir_fd, backup_base, destdir_fd, dest_base) != 0)
+          જો (renameat (destdir_fd, backup_base, destdir_fd, dest_base) != 0)
             error (0, errno, _("cannot un-backup %s"), quoteaf (dest));
         }
     }
 
-  free (backup_base);
-  free (rel_source);
-  return link_errno <= 0;
+  મુક્ત (backup_base);
+  મુક્ત (rel_source);
+  પાછા link_errno <= 0;
 
 fail:
-  free (rel_source);
-  return false;
+  મુક્ત (rel_source);
+  પાછા false;
 }
 
-void
-usage (int status)
+શૂન્ય
+usage (પૂર્ણાંક status)
 {
-  if (status != EXIT_SUCCESS)
+  જો (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  નહીંતર
     {
       printf (_("\
 Usage: %s [OPTION]... [-T] TARGET LINK_NAME\n\
@@ -429,10 +429,10 @@ Usage: %s [OPTION]... [-T] TARGET LINK_NAME\n\
 In the 1st form, create a link to TARGET with the name LINK_NAME.\n\
 In the 2nd form, create a link to TARGET in the current directory.\n\
 In the 3rd and 4th forms, create links to each TARGET in DIRECTORY.\n\
-Create hard links by default, symbolic links with --symbolic.\n\
-By default, each destination (name of new link) should not already exist.\n\
+Create hard links by મૂળભૂત, symbolic links with --symbolic.\n\
+By મૂળભૂત, each destination (name of new link) should not already exist.\n\
 When creating hard links, each TARGET must exist.  Symbolic links\n\
-can hold arbitrary text; if later resolved, a relative link is\n\
+can hold arbitrary text; જો later resolved, a relative link is\n\
 interpreted in relation to its parent directory.\n\
 "), stdout);
 
@@ -449,7 +449,7 @@ interpreted in relation to its parent directory.\n\
       oputs (_("\
   -d, -F, --directory\n\
          allow the superuser to attempt to hard link directories,\n\
-         if supported by the system\n\
+         જો supported by the system\n\
 "));
       oputs (_("\
   -f, --force\n\
@@ -466,7 +466,7 @@ interpreted in relation to its parent directory.\n\
       oputs (_("\
   -n, --no-dereference\n\
          treat LINK_NAME as a normal file\n\
-         if it is a symbolic link to a directory\n\
+         જો it is a symbolic link to a directory\n\
 "));
       oputs (_("\
   -P, --physical\n\
@@ -509,20 +509,20 @@ behavior when a TARGET is a symbolic link, defaulting to %s.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+પૂર્ણાંક
+મુખ્ય (પૂર્ણાંક argc, અક્ષર **argv)
 {
-  int c;
+  પૂર્ણાંક c;
   bool ok;
   bool make_backups = false;
-  char const *backup_suffix = NULL;
-  char *version_control_string = NULL;
-  char const *target_directory = NULL;
-  int destdir_fd;
+  અક્ષર અચલ *backup_suffix = ખાલી;
+  અક્ષર *version_control_string = ખાલી;
+  અક્ષર અચલ *target_directory = ખાલી;
+  પૂર્ણાંક destdir_fd;
   bool no_target_directory = false;
-  int n_files;
-  char **file;
-  int link_errno = -1;
+  પૂર્ણાંક n_files;
+  અક્ષર **file;
+  પૂર્ણાંક link_errno = -1;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -532,135 +532,135 @@ main (int argc, char **argv)
 
   atexit (close_stdin);
 
-  while ((c = getopt_long (argc, argv, "bdfinrst:vFLPS:T",
-                           long_options, NULL))
+  જ્યારે ((c = getopt_long (argc, argv, "bdfinrst:vFLPS:T",
+                           long_options, ખાલી))
          != -1)
     {
-      switch (c)
+      પસંદગી (c)
         {
-        case 'b':
+        સ્થિતિ 'b':
           make_backups = true;
-          if (optarg)
+          જો (optarg)
             version_control_string = optarg;
-          break;
-        case 'd':
-        case 'F':
+          તોડો;
+        સ્થિતિ 'd':
+        સ્થિતિ 'F':
           hard_dir_link = true;
-          break;
-        case 'f':
+          તોડો;
+        સ્થિતિ 'f':
           remove_existing_files = true;
           interactive = false;
-          break;
-        case 'i':
+          તોડો;
+        સ્થિતિ 'i':
           remove_existing_files = false;
           interactive = true;
-          break;
-        case 'L':
+          તોડો;
+        સ્થિતિ 'L':
           logical = true;
-          break;
-        case 'n':
+          તોડો;
+        સ્થિતિ 'n':
           dereference_dest_dir_symlinks = false;
-          break;
-        case 'P':
+          તોડો;
+        સ્થિતિ 'P':
           logical = false;
-          break;
-        case 'r':
+          તોડો;
+        સ્થિતિ 'r':
           relative = true;
-          break;
-        case 's':
+          તોડો;
+        સ્થિતિ 's':
           symbolic_link = true;
-          break;
-        case 't':
-          if (target_directory)
+          તોડો;
+        સ્થિતિ 't':
+          જો (target_directory)
             error (EXIT_FAILURE, 0, _("multiple target directories specified"));
-          else
+          નહીંતર
             {
-              struct stat st;
-              if (stat (optarg, &st) != 0)
+              સંરચના stat st;
+              જો (stat (optarg, &st) != 0)
                 error (EXIT_FAILURE, errno, _("failed to access %s"),
                        quoteaf (optarg));
-              if (! S_ISDIR (st.st_mode))
+              જો (! S_ISDIR (st.st_mode))
                 error (EXIT_FAILURE, 0, _("target %s is not a directory"),
                        quoteaf (optarg));
             }
           target_directory = optarg;
-          break;
-        case 'T':
+          તોડો;
+        સ્થિતિ 'T':
           no_target_directory = true;
-          break;
-        case 'v':
+          તોડો;
+        સ્થિતિ 'v':
           verbose = true;
-          break;
-        case 'S':
+          તોડો;
+        સ્થિતિ 'S':
           make_backups = true;
           backup_suffix = optarg;
-          break;
+          તોડો;
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        મૂળભૂત:
           usage (EXIT_FAILURE);
-          break;
+          તોડો;
         }
     }
 
   n_files = argc - optind;
   file = argv + optind;
 
-  if (n_files <= 0)
+  જો (n_files <= 0)
     {
       error (0, 0, _("missing file operand"));
       usage (EXIT_FAILURE);
     }
 
-  if (relative && !symbolic_link)
+  જો (relative && !symbolic_link)
     error (EXIT_FAILURE, 0, _("cannot do --relative without --symbolic"));
 
-  if (!hard_dir_link)
+  જો (!hard_dir_link)
     {
       priv_set_remove_linkdir ();
       beware_hard_dir_link = !cannot_unlink_dir ();
     }
 
-  if (no_target_directory)
+  જો (no_target_directory)
     {
-      if (target_directory)
+      જો (target_directory)
         error (EXIT_FAILURE, 0,
                _("cannot combine --target-directory "
                  "and --no-target-directory"));
-      if (n_files != 2)
+      જો (n_files != 2)
         {
-          if (n_files < 2)
+          જો (n_files < 2)
             error (0, 0,
                    _("missing destination file operand after %s"),
                    quoteaf (file[0]));
-          else
+          નહીંતર
             error (0, 0, _("extra operand %s"), quoteaf (file[2]));
           usage (EXIT_FAILURE);
         }
     }
-  else if (n_files < 2 && !target_directory)
+  નહીંતર જો (n_files < 2 && !target_directory)
     {
       target_directory = ".";
       destdir_fd = AT_FDCWD;
     }
-  else
+  નહીંતર
     {
-      if (n_files == 2 && !target_directory)
+      જો (n_files == 2 && !target_directory)
         link_errno = atomic_link (file[0], AT_FDCWD, file[1]);
-      if (link_errno < 0 || link_errno == EEXIST || link_errno == ENOTDIR
+      જો (link_errno < 0 || link_errno == EEXIST || link_errno == ENOTDIR
           || link_errno == EINVAL)
         {
-          char const *d
+          અક્ષર અચલ *d
             = target_directory ? target_directory : file[n_files - 1];
-          int flags = (O_PATHSEARCH | O_DIRECTORY
+          પૂર્ણાંક flags = (O_PATHSEARCH | O_DIRECTORY
                        | (dereference_dest_dir_symlinks ? 0 : O_NOFOLLOW));
           destdir_fd = openat_safer (AT_FDCWD, d, flags);
-          if (0 <= destdir_fd)
+          જો (0 <= destdir_fd)
             {
               n_files -= !target_directory;
               target_directory = d;
             }
-          else if (! (n_files == 2 && !target_directory))
+          નહીંતર જો (! (n_files == 2 && !target_directory))
             error (EXIT_FAILURE, errno, _("target %s"), quoteaf (d));
         }
     }
@@ -671,12 +671,12 @@ main (int argc, char **argv)
   set_simple_backup_suffix (backup_suffix);
 
 
-  if (target_directory)
+  જો (target_directory)
     {
       /* Create the data structure we'll use to record which hard links we
          create.  Used to ensure that ln detects an obscure corner case that
          might result in user data loss.  Create it only if needed.  */
-      if (2 <= n_files
+      જો (2 <= n_files
           && remove_existing_files
           /* Don't bother trying to protect symlinks, since ln clobbering
              a just-created symlink won't ever lead to real data loss.  */
@@ -686,27 +686,27 @@ main (int argc, char **argv)
           && backup_type != numbered_backups)
         {
           dest_set = hash_initialize (DEST_INFO_INITIAL_CAPACITY,
-                                      NULL,
+                                      ખાલી,
                                       triple_hash,
                                       triple_compare,
                                       triple_free);
-          if (dest_set == NULL)
+          જો (dest_set == ખાલી)
             xalloc_die ();
         }
 
       ok = true;
-      for (int i = 0; i < n_files; ++i)
+      માટે (પૂર્ણાંક i = 0; i < n_files; ++i)
         {
-          char *dest_base;
-          char *dest = file_name_concat (target_directory,
+          અક્ષર *dest_base;
+          અક્ષર *dest = file_name_concat (target_directory,
                                          last_component (file[i]),
                                          &dest_base);
           strip_trailing_slashes (dest_base);
           ok &= do_link (file[i], destdir_fd, dest_base, dest, -1);
-          free (dest);
+          મુક્ત (dest);
         }
     }
-  else
+  નહીંતર
     ok = do_link (file[0], AT_FDCWD, file[1], file[1], link_errno);
 
   main_exit (ok ? EXIT_SUCCESS : EXIT_FAILURE);

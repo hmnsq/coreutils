@@ -18,24 +18,24 @@
    --human-readable option added by lm@sgi.com.
    --si and large file support added by eggert@twinsun.com.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <getopt.h>
-#include <c-ctype.h>
+#અન્તર્ભાવ <config.h>
+#અન્તર્ભાવ <stdio.h>
+#અન્તર્ભાવ <sys/types.h>
+#અન્તર્ભાવ <getopt.h>
+#અન્તર્ભાવ <c-ctype.h>
 
-#include "system.h"
-#include "assure.h"
-#include "canonicalize.h"
-#include "fsusage.h"
-#include "human.h"
-#include "mbswidth.h"
-#include "mountlist.h"
-#include "quote.h"
-#include "find-mount-point.h"
-#include "hash.h"
-#include "xstrtol-error.h"
-#include "xvasprintf.h"
+#અન્તર્ભાવ "system.h"
+#અન્તર્ભાવ "assure.h"
+#અન્તર્ભાવ "canonicalize.h"
+#અન્તર્ભાવ "fsusage.h"
+#અન્તર્ભાવ "human.h"
+#અન્તર્ભાવ "mbswidth.h"
+#અન્તર્ભાવ "mountlist.h"
+#અન્તર્ભાવ "quote.h"
+#અન્તર્ભાવ "find-mount-point.h"
+#અન્તર્ભાવ "hash.h"
+#અન્તર્ભાવ "xstrtol-error.h"
+#અન્તર્ભાવ "xvasprintf.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "df"
@@ -45,54 +45,54 @@
   proper_name ("David MacKenzie"), \
   proper_name ("Paul Eggert")
 
-struct devlist
+સંરચના devlist
 {
-  dev_t dev_num;
-  struct mount_entry *me;
-  struct devlist *next;
-  struct devlist *next_same_dev;
-  struct devlist *seen_last; /* valid for hashed devlist entries only */
+  dev_t dev_અંક;
+  સંરચના mount_entry *me;
+  સંરચના devlist *next;
+  સંરચના devlist *next_same_dev;
+  સંરચના devlist *seen_last; /* valid for hashed devlist entries only */
 };
 
 /* Filled with device numbers of examined file systems to avoid
    duplicates in output.  */
-static Hash_table *devlist_table;
+સ્થિર Hash_table *devlist_table;
 
 /* If true, show even file systems with zero size or
    uninteresting types.  */
-static bool show_all_fs;
+સ્થિર bool show_all_fs;
 
 /* If true, show only local file systems.  */
-static bool show_local_fs;
+સ્થિર bool show_local_fs;
 
 /* If true, output data for each file system corresponding to a
    command line argument -- even if it's a dummy (automounter) entry.  */
-static bool show_listed_fs;
+સ્થિર bool show_listed_fs;
 
 /* Human-readable options for output.  */
-static int human_output_opts = -1;
+સ્થિર પૂર્ણાંક human_output_opts = -1;
 
 /* The units to use when printing sizes.  */
-static uintmax_t output_block_size;
+સ્થિર uintmax_t output_block_size;
 
 /* True if a file system has been processed for output.  */
-static bool file_systems_processed;
+સ્થિર bool file_systems_processed;
 
 /* If true, invoke the 'sync' system call before getting any usage data.
    Using this option can make df very slow, especially with many or very
    busy file systems.  This may make a difference on some systems --
    SunOS 4.1.3, for one.  It is *not* necessary on GNU/Linux.  */
-static bool require_sync;
+સ્થિર bool require_sync;
 
 /* Desired exit status.  */
-static int exit_status;
+સ્થિર પૂર્ણાંક exit_status;
 
 /* A file system type to display.  */
 
-struct fs_type_list
+સંરચના fs_type_list
 {
-  char *fs_name;
-  struct fs_type_list *fs_next;
+  અક્ષર *fs_name;
+  સંરચના fs_type_list *fs_next;
 };
 
 /* Linked list of file system types to display.
@@ -106,27 +106,27 @@ struct fs_type_list
    Some file system types:
    4.2 4.3 ufs nfs swap ignore io vm efs dbg */
 
-static struct fs_type_list *fs_select_list;
+સ્થિર સંરચના fs_type_list *fs_select_list;
 
 /* Linked list of file system types to omit.
    If the list is empty, don't exclude any types.  */
 
-static struct fs_type_list *fs_exclude_list;
+સ્થિર સંરચના fs_type_list *fs_exclude_list;
 
 /* Linked list of mounted file systems.  */
-static struct mount_entry *mount_list;
+સ્થિર સંરચના mount_entry *mount_list;
 
 /* If true, print file system type as well.  */
-static bool print_type;
+સ્થિર bool print_type;
 
 /* If true, print a grand total at the end.  */
-static bool print_grand_total;
+સ્થિર bool print_grand_total;
 
 /* Grand total data.  */
-static struct fs_usage grand_fsu = { .fsu_blocksize = 1 };
+સ્થિર સંરચના fs_usage grand_fsu = { .fsu_blocksize = 1 };
 
 /* Display modes.  */
-static enum
+સ્થિર ગણના
 {
   DEFAULT_MODE,
   INODES_MODE,
@@ -136,7 +136,7 @@ static enum
 } header_mode = DEFAULT_MODE;
 
 /* Displayable fields.  */
-typedef enum
+પ્રકારવ્યાખ્યા ગણના
 {
   SOURCE_FIELD, /* file system */
   FSTYPE_FIELD, /* FS type */
@@ -154,7 +154,7 @@ typedef enum
 } display_field_t;
 
 /* Flag if a field contains a block, an inode or another value.  */
-typedef enum
+પ્રકારવ્યાખ્યા ગણના
 {
   BLOCK_FLD, /* Block values field */
   INODE_FLD, /* Inode values field */
@@ -162,19 +162,19 @@ typedef enum
 } field_type_t;
 
 /* Attributes of a display field.  */
-struct field_data_t
+સંરચના field_data_t
 {
   display_field_t field;
-  char const *arg;
+  અક્ષર અચલ *arg;
   field_type_t field_type;
-  char const *caption;/* NULL means use default header of this field.  */
-  int width;          /* Auto adjusted (up) widths used to align columns.  */
-  bool align_right;   /* Whether to right-align columns, not left-align.  */
+  અક્ષર અચલ *caption;/* NULL means use default header of this field.  */
+  પૂર્ણાંક width;          /* Auto adjusted (up) widths used to align columns.  */
+  bool align_જમણું;   /* Whether to right-align columns, not left-align.  */
   bool used;
 };
 
 /* Header strings, minimum width and alignment for the above fields.  */
-static struct field_data_t field_data[] = {
+સ્થિર સંરચના field_data_t field_data[] = {
   [SOURCE_FIELD] = { SOURCE_FIELD,
     "source", OTHER_FLD, N_("Filesystem"), 14, false,  false },
 
@@ -212,11 +212,11 @@ static struct field_data_t field_data[] = {
     "file",   OTHER_FLD, N_("File"),        0, false,  false }
 };
 
-static char const *all_args_string =
+સ્થિર અક્ષર અચલ *all_args_string =
   "source,fstype,itotal,iused,iavail,ipcent,size,"
   "used,avail,pcent,file,target";
 
-static struct
+સ્થિર સંરચના
 {
   /* The current number of processed rows (including header).  */
   idx_t nrows;
@@ -225,7 +225,7 @@ static struct
   idx_t nrows_alloc;
 
   /* Storage for pointers for each string (cell of table).  */
-  char ***rows COUNTED_BY (nrows);
+  અક્ષર ***rows COUNTED_BY (nrows);
 
   /* The current number of output columns.  */
   idx_t ncolumns;
@@ -234,25 +234,25 @@ static struct
   idx_t ncolumns_alloc;
 
   /* Storage for the definition of output columns.  */
-  struct field_data_t **columns COUNTED_BY (ncolumns);
+  સંરચના field_data_t **columns COUNTED_BY (ncolumns);
 } table;
 
 /* Field values.  */
-struct field_values_t
+સંરચના field_કિંમતો_t
 {
-  uintmax_t input_units;
+  uintmax_t આગત_units;
   uintmax_t output_units;
   uintmax_t total;
   uintmax_t available;
   bool negate_available;
-  uintmax_t available_to_root;
+  uintmax_t available_to_મૂળ;
   uintmax_t used;
   bool negate_used;
 };
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+ગણના
 {
   NO_SYNC_OPTION = CHAR_MAX + 1,
   SYNC_OPTION,
@@ -260,62 +260,62 @@ enum
   OUTPUT_OPTION
 };
 
-static struct option const long_options[] =
+સ્થિર સંરચના option અચલ long_options[] =
 {
-  {"all", no_argument, NULL, 'a'},
-  {"block-size", required_argument, NULL, 'B'},
-  {"inodes", no_argument, NULL, 'i'},
-  {"human-readable", no_argument, NULL, 'h'},
-  {"si", no_argument, NULL, 'H'},
-  {"local", no_argument, NULL, 'l'},
-  {"output", optional_argument, NULL, OUTPUT_OPTION},
-  {"portability", no_argument, NULL, 'P'},
-  {"print-type", no_argument, NULL, 'T'},
-  {"sync", no_argument, NULL, SYNC_OPTION},
-  {"no-sync", no_argument, NULL, NO_SYNC_OPTION},
-  {"total", no_argument, NULL, TOTAL_OPTION},
-  {"type", required_argument, NULL, 't'},
-  {"exclude-type", required_argument, NULL, 'x'},
+  {"all", no_argument, ખાલી, 'a'},
+  {"block-size", required_argument, ખાલી, 'B'},
+  {"inodes", no_argument, ખાલી, 'i'},
+  {"human-readable", no_argument, ખાલી, 'h'},
+  {"si", no_argument, ખાલી, 'H'},
+  {"local", no_argument, ખાલી, 'l'},
+  {"output", optional_argument, ખાલી, OUTPUT_OPTION},
+  {"portability", no_argument, ખાલી, 'P'},
+  {"print-type", no_argument, ખાલી, 'T'},
+  {"sync", no_argument, ખાલી, SYNC_OPTION},
+  {"no-sync", no_argument, ખાલી, NO_SYNC_OPTION},
+  {"total", no_argument, ખાલી, TOTAL_OPTION},
+  {"type", required_argument, ખાલી, 't'},
+  {"exclude-type", required_argument, ખાલી, 'x'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ખાલી, 0, ખાલી, 0}
 };
 
 /* Stat FILE and put the results into *ST.  Return 0 if successful, an
    error number otherwise.  Try to open FILE before statting, to
    trigger automounts.  */
 
-static int
-automount_stat_err (char const *file, struct stat *st)
+સ્થિર પૂર્ણાંક
+automount_stat_err (અક્ષર અચલ *file, સંરચના stat *st)
 {
-  int fd = open (file, O_RDONLY | O_NOCTTY | O_NONBLOCK);
-  if (fd < 0)
+  પૂર્ણાંક fd = open (file, O_RDONLY | O_NOCTTY | O_NONBLOCK);
+  જો (fd < 0)
     {
-      if (errno == ENOENT || errno == ENOTDIR)
-        return errno;
-      return stat (file, st) == 0 ? 0 : errno;
+      જો (errno == ENOENT || errno == ENOTDIR)
+        પાછા errno;
+      પાછા stat (file, st) == 0 ? 0 : errno;
     }
-  else
+  નહીંતર
     {
-      int err = fstat (fd, st) == 0 ? 0 : errno;
+      પૂર્ણાંક err = fstat (fd, st) == 0 ? 0 : errno;
       close (fd);
-      return err;
+      પાછા err;
     }
 }
 
-enum { MBSWIDTH_FLAGS = MBSW_REJECT_INVALID | MBSW_REJECT_UNPRINTABLE };
+ગણના { MBSWIDTH_FLAGS = MBSW_REJECT_INVALID | MBSW_REJECT_UNPRINTABLE };
 
 /* Replace problematic chars with '?'.
    Since only control characters are currently considered,
    this should work in all encodings.  */
 
-static void
-replace_control_chars (char *cell)
+સ્થિર શૂન્ય
+replace_control_chars (અક્ષર *cell)
 {
-  char *p = cell;
-  while (*p)
+  અક્ષર *p = cell;
+  જ્યારે (*p)
     {
-      if (c_iscntrl (*p))
+      જો (c_iscntrl (*p))
         *p = '?';
       p++;
     }
@@ -323,32 +323,32 @@ replace_control_chars (char *cell)
 
 /* Replace problematic chars with '?'.  */
 
-static void
-replace_invalid_chars (char *cell)
+સ્થિર શૂન્ય
+replace_invalid_chars (અક્ષર *cell)
 {
-  char *srcend = cell + strlen (cell);
-  char *dst = cell;
+  અક્ષર *srcend = cell + strlen (cell);
+  અક્ષર *dst = cell;
   mbstate_t mbstate; mbszero (&mbstate);
   size_t n;
 
-  for (char *src = cell; src != srcend; src += n)
+  માટે (અક્ષર *src = cell; src != srcend; src += n)
     {
       char32_t wc;
       size_t srcbytes = srcend - src;
       n = mbrtoc32 (&wc, src, srcbytes, &mbstate);
       bool ok = n <= srcbytes;
 
-      if (ok)
+      જો (ok)
         ok = !c32iscntrl (wc);
-      else
+      નહીંતર
         n = 1;
 
-      if (ok)
+      જો (ok)
         {
           memmove (dst, src, n);
           dst += n;
         }
-      else
+      નહીંતર
         {
           *dst++ = '?';
           mbszero (&mbstate);
@@ -358,11 +358,11 @@ replace_invalid_chars (char *cell)
   *dst = '\0';
 }
 
-static void
-replace_problematic_chars (char *cell)
+સ્થિર શૂન્ય
+replace_problematic_chars (અક્ષર *cell)
 {
-  static int tty_out = -1;
-  if (tty_out < 0)
+  સ્થિર પૂર્ણાંક tty_out = -1;
+  જો (tty_out < 0)
     tty_out = isatty (STDOUT_FILENO);
 
   (tty_out ? replace_invalid_chars : replace_control_chars) (cell) ;
@@ -372,43 +372,43 @@ replace_problematic_chars (char *cell)
 /* Dynamically allocate a row of pointers in TABLE.ROWS, which
    can then be accessed with standard 2D array notation.  */
 
-static void
-alloc_table_row (void)
+સ્થિર શૂન્ય
+alloc_table_row (શૂન્ય)
 {
-  if (table.nrows == table.nrows_alloc)
+  જો (table.nrows == table.nrows_alloc)
     table.rows = xpalloc (table.rows, &table.nrows_alloc, 1, -1,
-                          sizeof *table.rows);
-  idx_t const row_idx = table.nrows++;
-  table.rows[row_idx] = xinmalloc (table.ncolumns, sizeof *table.rows[0]);
+                          કદ *table.rows);
+  idx_t અચલ row_idx = table.nrows++;
+  table.rows[row_idx] = xinmalloc (table.ncolumns, કદ *table.rows[0]);
 }
 
 /* Output each cell in the table, accounting for the
    alignment and max width of each column.  */
 
-static void
-print_table (void)
+સ્થિર શૂન્ય
+print_table (શૂન્ય)
 {
-  for (idx_t row = 0; row < table.nrows; row++)
+  માટે (idx_t row = 0; row < table.nrows; row++)
     {
-      for (idx_t col = 0; col < table.ncolumns; col++)
+      માટે (idx_t col = 0; col < table.ncolumns; col++)
         {
-          char *cell = table.rows[row][col];
+          અક્ષર *cell = table.rows[row][col];
 
           /* Note the SOURCE_FIELD used to be displayed on it's own line
              if (!posix_format && mbswidth (cell) > 20), but that
              functionality was probably more problematic than helpful,
              hence changed in commit v8.10-40-g99679ff.  */
-          if (col != 0)
+          જો (col != 0)
             putchar (' ');
 
-          int width = mbswidth (cell, MBSWIDTH_FLAGS);
-          int fill = width < 0 ? 0 : table.columns[col]->width - width;
-          if (table.columns[col]->align_right)
-            for (; 0 < fill; fill--)
+          પૂર્ણાંક width = mbswidth (cell, MBSWIDTH_FLAGS);
+          પૂર્ણાંક fill = width < 0 ? 0 : table.columns[col]->width - width;
+          જો (table.columns[col]->align_જમણું)
+            માટે (; 0 < fill; fill--)
               putchar (' ');
           fputs (cell, stdout);
-          if (col + 1 < table.ncolumns)
-            for (; 0 < fill; fill--)
+          જો (col + 1 < table.ncolumns)
+            માટે (; 0 < fill; fill--)
               putchar (' ');
         }
       putchar ('\n');
@@ -418,15 +418,15 @@ print_table (void)
 /* Dynamically allocate a struct field_t in TABLE.COLUMNS, which
    can then be accessed with standard array notation.  */
 
-static void
-alloc_field (int f, char const *c)
+સ્થિર શૂન્ય
+alloc_field (પૂર્ણાંક f, અક્ષર અચલ *c)
 {
-  if (table.ncolumns == table.ncolumns_alloc)
+  જો (table.ncolumns == table.ncolumns_alloc)
     table.columns = xpalloc (table.columns, &table.ncolumns_alloc, 1, -1,
-                             sizeof *table.columns);
-  idx_t const column_idx = table.ncolumns++;
+                             કદ *table.columns);
+  idx_t અચલ column_idx = table.ncolumns++;
   table.columns[column_idx] = &field_data[f];
-  if (c != NULL)
+  જો (c != ખાલી)
     field_data[f].caption = c;
 
   affirm (!field_data[f].used);
@@ -438,37 +438,37 @@ alloc_field (int f, char const *c)
 
 /* Given a string, ARG, containing a comma-separated list of arguments
    to the --output option, add the appropriate fields to columns.  */
-static void
-decode_output_arg (char const *arg)
+સ્થિર શૂન્ય
+decode_output_arg (અક્ષર અચલ *arg)
 {
-  char *arg_writable = xstrdup (arg);
-  char *s = arg_writable;
-  do
+  અક્ષર *arg_writable = xstrdup (arg);
+  અક્ષર *s = arg_writable;
+  કરો
     {
       /* find next comma */
-      char *comma = strchr (s, ',');
+      અક્ષર *comma = strchr (s, ',');
 
       /* If we found a comma, put a NUL in its place and advance.  */
-      if (comma)
+      જો (comma)
         *comma++ = 0;
 
       /* process S.  */
       display_field_t field = INVALID_FIELD;
-      for (idx_t i = 0; i < countof (field_data); i++)
+      માટે (idx_t i = 0; i < countof (field_data); i++)
         {
-          if (streq (field_data[i].arg, s))
+          જો (streq (field_data[i].arg, s))
             {
               field = i;
-              break;
+              તોડો;
             }
         }
-      if (field == INVALID_FIELD)
+      જો (field == INVALID_FIELD)
         {
           error (0, 0, _("option --output: field %s unknown"), quote (s));
           usage (EXIT_FAILURE);
         }
 
-      if (field_data[field].used)
+      જો (field_data[field].used)
         {
           /* Prevent the fields from being used more than once.  */
           error (0, 0, _("option --output: field %s used more than once"),
@@ -476,124 +476,124 @@ decode_output_arg (char const *arg)
           usage (EXIT_FAILURE);
         }
 
-      switch (field)
+      પસંદગી (field)
         {
-        case SOURCE_FIELD:
-        case FSTYPE_FIELD:
-        case USED_FIELD:
-        case PCENT_FIELD:
-        case ITOTAL_FIELD:
-        case IUSED_FIELD:
-        case IAVAIL_FIELD:
-        case IPCENT_FIELD:
-        case TARGET_FIELD:
-        case FILE_FIELD:
-          alloc_field (field, NULL);
-          break;
+        સ્થિતિ SOURCE_FIELD:
+        સ્થિતિ FSTYPE_FIELD:
+        સ્થિતિ USED_FIELD:
+        સ્થિતિ PCENT_FIELD:
+        સ્થિતિ ITOTAL_FIELD:
+        સ્થિતિ IUSED_FIELD:
+        સ્થિતિ IAVAIL_FIELD:
+        સ્થિતિ IPCENT_FIELD:
+        સ્થિતિ TARGET_FIELD:
+        સ્થિતિ FILE_FIELD:
+          alloc_field (field, ખાલી);
+          તોડો;
 
-        case SIZE_FIELD:
+        સ્થિતિ SIZE_FIELD:
           alloc_field (field, N_("Size"));
-          break;
+          તોડો;
 
-        case AVAIL_FIELD:
+        સ્થિતિ AVAIL_FIELD:
           alloc_field (field, N_("Avail"));
-          break;
+          તોડો;
 
-        case INVALID_FIELD:
-        default:
+        સ્થિતિ INVALID_FIELD:
+        મૂળભૂત:
           affirm (!"invalid field");
         }
       s = comma;
     }
-  while (s);
+  જ્યારે (s);
 
-  free (arg_writable);
+  મુક્ત (arg_writable);
 }
 
 /* Get the appropriate columns for the mode.  */
-static void
-get_field_list (void)
+સ્થિર શૂન્ય
+get_field_list (શૂન્ય)
 {
-  switch (header_mode)
+  પસંદગી (header_mode)
     {
-    case DEFAULT_MODE:
-      alloc_field (SOURCE_FIELD, NULL);
-      if (print_type)
-        alloc_field (FSTYPE_FIELD, NULL);
-      alloc_field (SIZE_FIELD,   NULL);
-      alloc_field (USED_FIELD,   NULL);
-      alloc_field (AVAIL_FIELD,  NULL);
-      alloc_field (PCENT_FIELD,  NULL);
-      alloc_field (TARGET_FIELD, NULL);
-      break;
+    સ્થિતિ DEFAULT_MODE:
+      alloc_field (SOURCE_FIELD, ખાલી);
+      જો (print_type)
+        alloc_field (FSTYPE_FIELD, ખાલી);
+      alloc_field (SIZE_FIELD,   ખાલી);
+      alloc_field (USED_FIELD,   ખાલી);
+      alloc_field (AVAIL_FIELD,  ખાલી);
+      alloc_field (PCENT_FIELD,  ખાલી);
+      alloc_field (TARGET_FIELD, ખાલી);
+      તોડો;
 
-    case HUMAN_MODE:
-      alloc_field (SOURCE_FIELD, NULL);
-      if (print_type)
-        alloc_field (FSTYPE_FIELD, NULL);
+    સ્થિતિ HUMAN_MODE:
+      alloc_field (SOURCE_FIELD, ખાલી);
+      જો (print_type)
+        alloc_field (FSTYPE_FIELD, ખાલી);
 
       alloc_field (SIZE_FIELD,   N_("Size"));
-      alloc_field (USED_FIELD,   NULL);
+      alloc_field (USED_FIELD,   ખાલી);
       alloc_field (AVAIL_FIELD,  N_("Avail"));
-      alloc_field (PCENT_FIELD,  NULL);
-      alloc_field (TARGET_FIELD, NULL);
-      break;
+      alloc_field (PCENT_FIELD,  ખાલી);
+      alloc_field (TARGET_FIELD, ખાલી);
+      તોડો;
 
-    case INODES_MODE:
-      alloc_field (SOURCE_FIELD, NULL);
-      if (print_type)
-        alloc_field (FSTYPE_FIELD, NULL);
-      alloc_field (ITOTAL_FIELD,  NULL);
-      alloc_field (IUSED_FIELD,   NULL);
-      alloc_field (IAVAIL_FIELD,  NULL);
-      alloc_field (IPCENT_FIELD,  NULL);
-      alloc_field (TARGET_FIELD,  NULL);
-      break;
+    સ્થિતિ INODES_MODE:
+      alloc_field (SOURCE_FIELD, ખાલી);
+      જો (print_type)
+        alloc_field (FSTYPE_FIELD, ખાલી);
+      alloc_field (ITOTAL_FIELD,  ખાલી);
+      alloc_field (IUSED_FIELD,   ખાલી);
+      alloc_field (IAVAIL_FIELD,  ખાલી);
+      alloc_field (IPCENT_FIELD,  ખાલી);
+      alloc_field (TARGET_FIELD,  ખાલી);
+      તોડો;
 
-    case POSIX_MODE:
-      alloc_field (SOURCE_FIELD, NULL);
-      if (print_type)
-        alloc_field (FSTYPE_FIELD, NULL);
-      alloc_field (SIZE_FIELD,   NULL);
-      alloc_field (USED_FIELD,   NULL);
-      alloc_field (AVAIL_FIELD,  NULL);
+    સ્થિતિ POSIX_MODE:
+      alloc_field (SOURCE_FIELD, ખાલી);
+      જો (print_type)
+        alloc_field (FSTYPE_FIELD, ખાલી);
+      alloc_field (SIZE_FIELD,   ખાલી);
+      alloc_field (USED_FIELD,   ખાલી);
+      alloc_field (AVAIL_FIELD,  ખાલી);
       alloc_field (PCENT_FIELD,  N_("Capacity"));
-      alloc_field (TARGET_FIELD, NULL);
-      break;
+      alloc_field (TARGET_FIELD, ખાલી);
+      તોડો;
 
-    case OUTPUT_MODE:
-      if (!table.ncolumns)
+    સ્થિતિ OUTPUT_MODE:
+      જો (!table.ncolumns)
         {
           /* Add all fields if --output was given without a field list.  */
           decode_output_arg (all_args_string);
         }
-      break;
+      તોડો;
 
-    default:
+    મૂળભૂત:
       unreachable ();
     }
 }
 
 /* Obtain the appropriate header entries.  */
 
-static void
-get_header (void)
+સ્થિર શૂન્ય
+get_header (શૂન્ય)
 {
   alloc_table_row ();
 
-  for (idx_t col = 0; col < table.ncolumns; col++)
+  માટે (idx_t col = 0; col < table.ncolumns; col++)
     {
-      char *cell;
-      char const *header = _(table.columns[col]->caption);
+      અક્ષર *cell;
+      અક્ષર અચલ *header = _(table.columns[col]->caption);
 
-      if (table.columns[col]->field == SIZE_FIELD
+      જો (table.columns[col]->field == SIZE_FIELD
           && (header_mode == DEFAULT_MODE
               || (header_mode == OUTPUT_MODE
                   && !(human_output_opts & human_autoscale))))
         {
-          char buf[LONGEST_HUMAN_READABLE + 1];
+          અક્ષર buf[LONGEST_HUMAN_READABLE + 1];
 
-          int opts = (human_suppress_point_zero
+          પૂર્ણાંક opts = (human_suppress_point_zero
                       | human_autoscale | human_SI
                       | (human_output_opts
                          & (human_group_digits | human_base_1024 | human_B)));
@@ -606,42 +606,42 @@ get_header (void)
           bool divisible_by_1000;
           bool divisible_by_1024;
 
-          do
+          કરો
             {
               divisible_by_1000 = q1000 % 1000 == 0;  q1000 /= 1000;
               divisible_by_1024 = q1024 % 1024 == 0;  q1024 /= 1024;
             }
-          while (divisible_by_1000 & divisible_by_1024);
+          જ્યારે (divisible_by_1000 & divisible_by_1024);
 
-          if (divisible_by_1000 < divisible_by_1024)
+          જો (divisible_by_1000 < divisible_by_1024)
             opts |= human_base_1024;
-          if (divisible_by_1024 < divisible_by_1000)
+          જો (divisible_by_1024 < divisible_by_1000)
             opts &= ~human_base_1024;
-          if (! (opts & human_base_1024))
+          જો (! (opts & human_base_1024))
             opts |= human_B;
 
-          char *num = human_readable (output_block_size, buf, opts, 1, 1);
+          અક્ષર *અંક = human_readable (output_block_size, buf, opts, 1, 1);
 
           /* Reset the header back to the default in OUTPUT_MODE.  */
           header = _("blocks");
 
           /* TRANSLATORS: this is the "1K-blocks" header in "df" output.  */
-          cell = xasprintf (_("%s-%s"), num, header);
+          cell = xasprintf (_("%s-%s"), અંક, header);
         }
-      else if (header_mode == POSIX_MODE
+      નહીંતર જો (header_mode == POSIX_MODE
                && table.columns[col]->field == SIZE_FIELD)
         {
           /* TRANSLATORS: this is the "1024-blocks" header in "df -P".  */
           cell = xasprintf (_("%ju-%s"), output_block_size, header);
         }
-      else
+      નહીંતર
         cell = xstrdup (header);
 
       replace_problematic_chars (cell);
 
       table.rows[table.nrows - 1][col] = cell;
 
-      int cell_width = mbswidth (cell, MBSWIDTH_FLAGS);
+      પૂર્ણાંક cell_width = mbswidth (cell, MBSWIDTH_FLAGS);
       table.columns[col]->width = MAX (table.columns[col]->width, cell_width);
     }
 }
@@ -649,62 +649,62 @@ get_header (void)
 /* Is FSTYPE a type of file system that should be listed?  */
 
 ATTRIBUTE_PURE
-static bool
-selected_fstype (char const *fstype)
+સ્થિર bool
+selected_fstype (અક્ષર અચલ *fstype)
 {
-  if (fs_select_list == NULL || fstype == NULL)
-    return true;
-  for (const struct fs_type_list *fsp = fs_select_list; fsp;
+  જો (fs_select_list == ખાલી || fstype == ખાલી)
+    પાછા true;
+  માટે (અચલ સંરચના fs_type_list *fsp = fs_select_list; fsp;
        fsp = fsp->fs_next)
-    if (streq (fstype, fsp->fs_name))
-      return true;
-  return false;
+    જો (streq (fstype, fsp->fs_name))
+      પાછા true;
+  પાછા false;
 }
 
 /* Is FSTYPE a type of file system that should be omitted?  */
 
 ATTRIBUTE_PURE
-static bool
-excluded_fstype (char const *fstype)
+સ્થિર bool
+excluded_fstype (અક્ષર અચલ *fstype)
 {
-  if (fs_exclude_list == NULL || fstype == NULL)
-    return false;
-  for (const struct fs_type_list *fsp = fs_exclude_list; fsp;
+  જો (fs_exclude_list == ખાલી || fstype == ખાલી)
+    પાછા false;
+  માટે (અચલ સંરચના fs_type_list *fsp = fs_exclude_list; fsp;
        fsp = fsp->fs_next)
-    if (streq (fstype, fsp->fs_name))
-      return true;
-  return false;
+    જો (streq (fstype, fsp->fs_name))
+      પાછા true;
+  પાછા false;
 }
 
-static size_t
-devlist_hash (void const *x, size_t table_size)
+સ્થિર size_t
+devlist_hash (શૂન્ય અચલ *x, size_t table_size)
 {
-  struct devlist const *p = x;
-  return (uintmax_t) {p->dev_num} % table_size;
+  સંરચના devlist અચલ *p = x;
+  પાછા (uintmax_t) {p->dev_અંક} % table_size;
 }
 
-static bool
-devlist_compare (void const *x, void const *y)
+સ્થિર bool
+devlist_compare (શૂન્ય અચલ *x, શૂન્ય અચલ *y)
 {
-  struct devlist const *a = x;
-  struct devlist const *b = y;
-  return a->dev_num == b->dev_num;
+  સંરચના devlist અચલ *a = x;
+  સંરચના devlist અચલ *b = y;
+  પાછા a->dev_અંક == b->dev_અંક;
 }
 
-static struct devlist *
+સ્થિર સંરચના devlist *
 devlist_for_dev (dev_t dev)
 {
-  if (devlist_table == NULL)
-    return NULL;
-  struct devlist dev_entry;
-  dev_entry.dev_num = dev;
+  જો (devlist_table == ખાલી)
+    પાછા ખાલી;
+  સંરચના devlist dev_entry;
+  dev_entry.dev_અંક = dev;
 
-  struct devlist *found = hash_lookup (devlist_table, &dev_entry);
-  if (found == NULL)
-    return NULL;
+  સંરચના devlist *found = hash_lookup (devlist_table, &dev_entry);
+  જો (found == ખાલી)
+    પાછા ખાલી;
 
   /* Return the last devlist entry we have seen with this dev_num */
-  return found->seen_last;
+  પાછા found->seen_last;
 }
 
 /* Filter mount list by skipping duplicate entries.
@@ -714,32 +714,32 @@ devlist_for_dev (dev_t dev)
    me_mountdir wins.  If DEVICES_ONLY is true (set with df -a), only update
    the global devlist_table, rather than filtering the global mount_list.  */
 
-static void
+સ્થિર શૂન્ય
 filter_mount_list (bool devices_only)
 {
   /* Temporary list to keep entries ordered.  */
-  struct devlist *device_list = NULL;
-  int mount_list_size = 0;
+  સંરચના devlist *device_list = ખાલી;
+  પૂર્ણાંક mount_list_size = 0;
 
-  for (struct mount_entry *me = mount_list; me; me = me->me_next)
+  માટે (સંરચના mount_entry *me = mount_list; me; me = me->me_next)
     mount_list_size++;
 
-  devlist_table = hash_initialize (mount_list_size, NULL,
-                                   devlist_hash, devlist_compare, NULL);
-  if (devlist_table == NULL)
+  devlist_table = hash_initialize (mount_list_size, ખાલી,
+                                   devlist_hash, devlist_compare, ખાલી);
+  જો (devlist_table == ખાલી)
     xalloc_die ();
 
   /* Sort all 'wanted' entries into the list device_list.  */
-  for (struct mount_entry *me = mount_list; me;)
+  માટે (સંરચના mount_entry *me = mount_list; me;)
     {
-      struct stat buf;
-      struct mount_entry *discard_me = NULL;
-      struct devlist *last_seen_dev = NULL, *seen_dev = NULL;
+      સંરચના stat buf;
+      સંરચના mount_entry *discard_me = ખાલી;
+      સંરચના devlist *last_seen_dev = ખાલી, *seen_dev = ખાલી;
 
       /* Avoid stating remote file systems as that may hang.
          On Linux we probably have me_dev populated from /proc/self/mountinfo,
          however we still stat() in case another device was mounted later.  */
-      if ((me->me_remote && show_local_fs)
+      જો ((me->me_remote && show_local_fs)
           || (me->me_dummy && !show_all_fs && !show_listed_fs)
           || (!selected_fstype (me->me_type) || excluded_fstype (me->me_type))
           || -1 == stat (me->me_mountdir, &buf))
@@ -749,21 +749,21 @@ filter_mount_list (bool devices_only)
              If stat failed; add ME to be able to complain about it later.  */
           buf.st_dev = me->me_dev;
         }
-      else
+      નહીંતર
         {
           /* If we've already seen this device...  */
           last_seen_dev = seen_dev = devlist_for_dev (buf.st_dev);
 
-          for (; seen_dev && ! discard_me; seen_dev = seen_dev->next_same_dev)
+          માટે (; seen_dev && ! discard_me; seen_dev = seen_dev->next_same_dev)
             {
-              bool target_nearer_root = strlen (seen_dev->me->me_mountdir)
+              bool target_nearer_મૂળ = strlen (seen_dev->me->me_mountdir)
                                         > strlen (me->me_mountdir);
               /* With bind mounts, prefer items nearer the root of the source */
-              bool source_below_root = seen_dev->me->me_mntroot != NULL
-                                       && me->me_mntroot != NULL
+              bool source_below_મૂળ = seen_dev->me->me_mntroot != ખાલી
+                                       && me->me_mntroot != ખાલી
                                        && (strlen (seen_dev->me->me_mntroot)
                                            < strlen (me->me_mntroot));
-              if (! print_grand_total
+              જો (! print_grand_total
                   && me->me_remote && seen_dev->me->me_remote
                   && ! streq (seen_dev->me->me_devname, me->me_devname))
                 {
@@ -772,11 +772,11 @@ filter_mount_list (bool devices_only)
                      However avoid this when producing a total to give
                      a more accurate value in that case.  */
                 }
-              else if ((strchr (me->me_devname, '/')
+              નહીંતર જો ((strchr (me->me_devname, '/')
                        /* let "real" devices with '/' in the name win.  */
                         && ! strchr (seen_dev->me->me_devname, '/'))
                        /* let points towards the root of the device win.  */
-                       || (target_nearer_root && ! source_below_root)
+                       || (target_nearer_મૂળ && ! source_below_મૂળ)
                        /* let an entry overmounted on a new device win...  */
                        || (! streq (seen_dev->me->me_devname, me->me_devname)
                            /* ... but only when matching an existing mnt point,
@@ -790,7 +790,7 @@ filter_mount_list (bool devices_only)
                   discard_me = seen_dev->me;
                   seen_dev->me = me;
                 }
-              else
+              નહીંતર
                 {
                   /* Discard mount entry currently being processed.  */
                   discard_me = me;
@@ -799,24 +799,24 @@ filter_mount_list (bool devices_only)
             }
         }
 
-      if (discard_me)
+      જો (discard_me)
         {
           me = me->me_next;
-          if (! devices_only)
+          જો (! devices_only)
             free_mount_entry (discard_me);
         }
-      else
+      નહીંતર
         {
           /* Add the device number to the device_table.  */
-          struct devlist *devlist = xmalloc (sizeof *devlist);
+          સંરચના devlist *devlist = xmalloc (કદ *devlist);
           devlist->me = me;
-          devlist->dev_num = buf.st_dev;
+          devlist->dev_અંક = buf.st_dev;
           devlist->next_same_dev = last_seen_dev;
           devlist->next = device_list;
           device_list = devlist;
 
-          struct devlist *hash_entry = hash_insert (devlist_table, devlist);
-          if (hash_entry == NULL)
+          સંરચના devlist *hash_entry = hash_ઉમેરો (devlist_table, devlist);
+          જો (hash_entry == ખાલી)
             xalloc_die ();
           /* Ensure lookups use this latest devlist.  */
           hash_entry->seen_last = devlist;
@@ -826,21 +826,21 @@ filter_mount_list (bool devices_only)
     }
 
   /* Finally rebuild the mount_list from the devlist.  */
-  if (! devices_only)
+  જો (! devices_only)
     {
-      mount_list = NULL;
-      while (device_list)
+      mount_list = ખાલી;
+      જ્યારે (device_list)
         {
           /* Add the mount entry.  */
-          struct mount_entry *me = device_list->me;
+          સંરચના mount_entry *me = device_list->me;
           me->me_next = mount_list;
           mount_list = me;
-          struct devlist *next = device_list->next;
-          free (device_list);
+          સંરચના devlist *next = device_list->next;
+          મુક્ત (device_list);
           device_list = next;
         }
       hash_free (devlist_table);
-      devlist_table = NULL;
+      devlist_table = ખાલી;
     }
 }
 
@@ -849,24 +849,24 @@ filter_mount_list (bool devices_only)
    Return the corresponding mount entry if found or NULL if not.  */
 
 ATTRIBUTE_PURE
-static struct mount_entry const *
+સ્થિર સંરચના mount_entry અચલ *
 me_for_dev (dev_t dev)
 {
-  struct devlist *dl = devlist_for_dev (dev);
-  if (dl)
-        return dl->me;
+  સંરચના devlist *dl = devlist_for_dev (dev);
+  જો (dl)
+        પાછા dl->me;
 
-  return NULL;
+  પાછા ખાલી;
 }
 
 /* Return true if N is a known integer value.  On many file systems,
    UINTMAX_MAX represents an unknown value; on AIX, UINTMAX_MAX - 1
    represents unknown.  Use a rule that works on AIX file systems, and
    that almost-always works on other types.  */
-static bool
-known_value (uintmax_t n)
+સ્થિર bool
+known_કિંમત (uintmax_t n)
 {
-  return n < UINTMAX_MAX - 1;
+  પાછા n < UINTMAX_MAX - 1;
 }
 
 /* Like human_readable (N, BUF, human_output_opts, INPUT_UNITS, OUTPUT_UNITS),
@@ -876,19 +876,19 @@ known_value (uintmax_t n)
       expressed in two's complement.
     - Otherwise, return "-" if N is unknown.  */
 
-static char const *
-df_readable (bool negative, uintmax_t n, char *buf,
-             uintmax_t input_units, uintmax_t output_units)
+સ્થિર અક્ષર અચલ *
+df_readable (bool negative, uintmax_t n, અક્ષર *buf,
+             uintmax_t આગત_units, uintmax_t output_units)
 {
-  if (! known_value (n) && !negative)
-    return "-";
-  else
+  જો (! known_કિંમત (n) && !negative)
+    પાછા "-";
+  નહીંતર
     {
-      char *p = human_readable (negative ? -n : n, buf + negative,
-                                human_output_opts, input_units, output_units);
-      if (negative)
+      અક્ષર *p = human_readable (negative ? -n : n, buf + negative,
+                                human_output_opts, આગત_units, output_units);
+      જો (negative)
         *--p = '-';
-      return p;
+      પાછા p;
     }
 }
 
@@ -896,31 +896,31 @@ df_readable (bool negative, uintmax_t n, char *buf,
    negation flag.  It adds value of SRC and SRC_NEG to DEST and DEST_NEG.
    The result will be in DEST and DEST_NEG.  See df_readable to understand
    how the negation flag is used.  */
-static void
+સ્થિર શૂન્ય
 add_uint_with_neg_flag (uintmax_t *dest, bool *dest_neg,
                         uintmax_t src, bool src_neg)
 {
-  if (*dest_neg == src_neg)
+  જો (*dest_neg == src_neg)
     {
       *dest += src;
-      return;
+      પાછા;
     }
 
-  if (*dest_neg)
+  જો (*dest_neg)
     *dest = -*dest;
 
-  if (src_neg)
+  જો (src_neg)
     src = -src;
 
-  if (src < *dest)
+  જો (src < *dest)
     *dest -= src;
-  else
+  નહીંતર
     {
       *dest = src - *dest;
       *dest_neg = src_neg;
     }
 
-  if (*dest_neg)
+  જો (*dest_neg)
     *dest = -*dest;
 }
 
@@ -928,70 +928,70 @@ add_uint_with_neg_flag (uintmax_t *dest, bool *dest_neg,
    i.e., of the form HHHHHHHH-HHHH-HHHH-HHHH-HHHHHHHHHHHH, where
    each H is an upper or lower case hexadecimal digit.  */
 ATTRIBUTE_PURE
-static bool
-has_uuid_suffix (char const *s)
+સ્થિર bool
+has_uuid_suffix (અક્ષર અચલ *s)
 {
   size_t len = strlen (s);
-  return (36 < len
+  પાછા (36 < len
           && strspn (s + len - 36, "-0123456789abcdefABCDEF") == 36);
 }
 
 /* Obtain the block values BV and inode values IV
    from the file system usage FSU.  */
-static void
-get_field_values (struct field_values_t *bv,
-                  struct field_values_t *iv,
-                  const struct fs_usage *fsu)
+સ્થિર શૂન્ય
+get_field_કિંમતો (સંરચના field_કિંમતો_t *bv,
+                  સંરચના field_કિંમતો_t *iv,
+                  અચલ સંરચના fs_usage *fsu)
 {
   /* Inode values.  */
-  iv->input_units = iv->output_units = 1;
+  iv->આગત_units = iv->output_units = 1;
   iv->total = fsu->fsu_files;
-  iv->available = iv->available_to_root = fsu->fsu_ffree;
+  iv->available = iv->available_to_મૂળ = fsu->fsu_ffree;
   iv->negate_available = false;
 
   iv->used = UINTMAX_MAX;
   iv->negate_used = false;
-  if (known_value (iv->total) && known_value (iv->available_to_root))
+  જો (known_કિંમત (iv->total) && known_કિંમત (iv->available_to_મૂળ))
     {
-      iv->used = iv->total - iv->available_to_root;
-      iv->negate_used = (iv->total < iv->available_to_root);
+      iv->used = iv->total - iv->available_to_મૂળ;
+      iv->negate_used = (iv->total < iv->available_to_મૂળ);
     }
 
   /* Block values.  */
-  bv->input_units = fsu->fsu_blocksize;
+  bv->આગત_units = fsu->fsu_blocksize;
   bv->output_units = output_block_size;
   bv->total = fsu->fsu_blocks;
   bv->available = fsu->fsu_bavail;
-  bv->available_to_root = fsu->fsu_bfree;
-  bv->negate_available = (fsu->fsu_bavail_top_bit_set
-                         && known_value (fsu->fsu_bavail));
+  bv->available_to_મૂળ = fsu->fsu_bfree;
+  bv->negate_available = (fsu->fsu_bavail_ટોચ_bit_set
+                         && known_કિંમત (fsu->fsu_bavail));
 
   bv->used = UINTMAX_MAX;
   bv->negate_used = false;
-  if (known_value (bv->total) && known_value (bv->available_to_root))
+  જો (known_કિંમત (bv->total) && known_કિંમત (bv->available_to_મૂળ))
     {
-      bv->used = bv->total - bv->available_to_root;
-      bv->negate_used = (bv->total < bv->available_to_root);
+      bv->used = bv->total - bv->available_to_મૂળ;
+      bv->negate_used = (bv->total < bv->available_to_મૂળ);
     }
 }
 
 /* Add block and inode values to grand total.  */
-static void
-add_to_grand_total (struct field_values_t *bv, struct field_values_t *iv)
+સ્થિર શૂન્ય
+add_to_grand_total (સંરચના field_કિંમતો_t *bv, સંરચના field_કિંમતો_t *iv)
 {
-  if (known_value (iv->total))
+  જો (known_કિંમત (iv->total))
     grand_fsu.fsu_files += iv->total;
-  if (known_value (iv->available))
+  જો (known_કિંમત (iv->available))
     grand_fsu.fsu_ffree += iv->available;
 
-  if (known_value (bv->total))
-    grand_fsu.fsu_blocks += bv->input_units * bv->total;
-  if (known_value (bv->available_to_root))
-    grand_fsu.fsu_bfree += bv->input_units * bv->available_to_root;
-  if (known_value (bv->available))
+  જો (known_કિંમત (bv->total))
+    grand_fsu.fsu_blocks += bv->આગત_units * bv->total;
+  જો (known_કિંમત (bv->available_to_મૂળ))
+    grand_fsu.fsu_bfree += bv->આગત_units * bv->available_to_મૂળ;
+  જો (known_કિંમત (bv->available))
     add_uint_with_neg_flag (&grand_fsu.fsu_bavail,
-                            &grand_fsu.fsu_bavail_top_bit_set,
-                            bv->input_units * bv->available,
+                            &grand_fsu.fsu_bavail_ટોચ_bit_set,
+                            bv->આગત_units * bv->available,
                             bv->negate_available);
 }
 
@@ -1010,92 +1010,92 @@ add_to_grand_total (struct field_values_t *bv, struct field_values_t *iv)
    Caller must set PROCESS_ALL to true when iterating over all entries, as
    when df is invoked with no non-option argument.  See below for details.  */
 
-static void
-get_dev (char const *device, char const *mount_point, char const *file,
-         char const *stat_file, char const *fstype,
+સ્થિર શૂન્ય
+get_dev (અક્ષર અચલ *device, અક્ષર અચલ *mount_point, અક્ષર અચલ *file,
+         અક્ષર અચલ *stat_file, અક્ષર અચલ *fstype,
          bool me_dummy, bool me_remote,
-         const struct fs_usage *force_fsu,
+         અચલ સંરચના fs_usage *force_fsu,
          bool process_all)
 {
-  if (me_remote && show_local_fs)
-    return;
+  જો (me_remote && show_local_fs)
+    પાછા;
 
-  if (me_dummy && !show_all_fs && !show_listed_fs)
-    return;
+  જો (me_dummy && !show_all_fs && !show_listed_fs)
+    પાછા;
 
-  if (!selected_fstype (fstype) || excluded_fstype (fstype))
-    return;
+  જો (!selected_fstype (fstype) || excluded_fstype (fstype))
+    પાછા;
 
   /* Ignore relative MOUNT_POINTs, which are present for example
      in /proc/mounts on Linux with network namespaces.  */
-  if (!force_fsu && ! IS_ABSOLUTE_FILE_NAME (mount_point))
-    return;
+  જો (!force_fsu && ! IS_ABSOLUTE_FILE_NAME (mount_point))
+    પાછા;
 
-  if (!stat_file)
+  જો (!stat_file)
     stat_file = mount_point;
 
-  struct fs_usage fsu;
-  if (force_fsu)
+  સંરચના fs_usage fsu;
+  જો (force_fsu)
     fsu = *force_fsu;
-  else if (get_fs_usage (stat_file, device, &fsu))
+  નહીંતર જો (get_fs_usage (stat_file, device, &fsu))
     {
       /* If we can't access a system provided entry due
          to it not being present (now), or due to permissions,
          just output placeholder values rather than failing.  */
-      if (process_all && (errno == EACCES || errno == ENOENT))
+      જો (process_all && (errno == EACCES || errno == ENOENT))
         {
-          if (! show_all_fs)
-            return;
+          જો (! show_all_fs)
+            પાછા;
 
           fstype = "-";
-          fsu.fsu_bavail_top_bit_set = false;
+          fsu.fsu_bavail_ટોચ_bit_set = false;
           fsu.fsu_blocksize = fsu.fsu_blocks = fsu.fsu_bfree =
           fsu.fsu_bavail = fsu.fsu_files = fsu.fsu_ffree = UINTMAX_MAX;
         }
-      else
+      નહીંતર
         {
           error (0, errno, "%s", quotef (stat_file));
           exit_status = EXIT_FAILURE;
-          return;
+          પાછા;
         }
     }
-  else if (process_all && show_all_fs)
+  નહીંતર જો (process_all && show_all_fs)
     {
       /* Ensure we don't output incorrect stats for over-mounted directories.
          Discard stats when the device name doesn't match.  Though don't
          discard when used and current mount entries are both remote due
          to the possibility of aliased host names or exports.  */
-      struct stat sb;
-      if (stat (stat_file, &sb) == 0)
+      સંરચના stat sb;
+      જો (stat (stat_file, &sb) == 0)
         {
-          struct mount_entry const * dev_me = me_for_dev (sb.st_dev);
-          if (dev_me && ! streq (dev_me->me_devname, device)
+          સંરચના mount_entry અચલ * dev_me = me_for_dev (sb.st_dev);
+          જો (dev_me && ! streq (dev_me->me_devname, device)
               && (! dev_me->me_remote || ! me_remote))
             {
               fstype = "-";
-              fsu.fsu_bavail_top_bit_set = false;
+              fsu.fsu_bavail_ટોચ_bit_set = false;
               fsu.fsu_blocksize = fsu.fsu_blocks = fsu.fsu_bfree =
               fsu.fsu_bavail = fsu.fsu_files = fsu.fsu_ffree = UINTMAX_MAX;
             }
         }
     }
 
-  if (fsu.fsu_blocks == 0 && !show_all_fs && !show_listed_fs)
-    return;
+  જો (fsu.fsu_blocks == 0 && !show_all_fs && !show_listed_fs)
+    પાછા;
 
-  if (! force_fsu)
+  જો (! force_fsu)
     file_systems_processed = true;
 
   alloc_table_row ();
 
-  if (! device)
+  જો (! device)
     device = "-";		/* unknown */
 
-  if (! file)
+  જો (! file)
     file = "-";			/* unspecified */
 
-  char *dev_name = xstrdup (device);
-  char *resolved_dev;
+  અક્ષર *dev_name = xstrdup (device);
+  અક્ષર *resolved_dev;
 
   /* On some systems, dev_name is a long-named symlink like
      /dev/disk/by-uuid/828fc648-9f30-43d8-a0b1-f7196a2edb66 pointing to a
@@ -1103,81 +1103,81 @@ get_dev (char const *device, char const *mount_point, char const *file,
      like /dev/mapper/luks-828fc648-9f30-43d8-a0b1-f7196a2edb66 and point to
      /dev/dm-0.  When process_all is true and dev_name is a symlink whose
      name ends with a UUID use the resolved name instead.  */
-  if (process_all
+  જો (process_all
       && has_uuid_suffix (dev_name)
       && (resolved_dev = canonicalize_filename_mode (dev_name, CAN_EXISTING)))
     {
-      free (dev_name);
+      મુક્ત (dev_name);
       dev_name = resolved_dev;
     }
 
-  if (! fstype)
+  જો (! fstype)
     fstype = "-";		/* unknown */
 
-  struct field_values_t block_values;
-  struct field_values_t inode_values;
-  get_field_values (&block_values, &inode_values, &fsu);
+  સંરચના field_કિંમતો_t block_કિંમતો;
+  સંરચના field_કિંમતો_t inode_કિંમતો;
+  get_field_કિંમતો (&block_કિંમતો, &inode_કિંમતો, &fsu);
 
   /* Add to grand total unless processing grand total line.  */
-  if (print_grand_total && ! force_fsu)
-    add_to_grand_total (&block_values, &inode_values);
+  જો (print_grand_total && ! force_fsu)
+    add_to_grand_total (&block_કિંમતો, &inode_કિંમતો);
 
-  for (idx_t col = 0; col < table.ncolumns; col++)
+  માટે (idx_t col = 0; col < table.ncolumns; col++)
     {
-      char buf[LONGEST_HUMAN_READABLE + 2];
-      char *cell;
+      અક્ષર buf[LONGEST_HUMAN_READABLE + 2];
+      અક્ષર *cell;
 
-      struct field_values_t *v;
-      switch (table.columns[col]->field_type)
+      સંરચના field_કિંમતો_t *v;
+      પસંદગી (table.columns[col]->field_type)
         {
-        case BLOCK_FLD:
-          v = &block_values;
-          break;
-        case INODE_FLD:
-          v = &inode_values;
-          break;
-        case OTHER_FLD:
-          v = NULL;
-          break;
-        default:
+        સ્થિતિ BLOCK_FLD:
+          v = &block_કિંમતો;
+          તોડો;
+        સ્થિતિ INODE_FLD:
+          v = &inode_કિંમતો;
+          તોડો;
+        સ્થિતિ OTHER_FLD:
+          v = ખાલી;
+          તોડો;
+        મૂળભૂત:
           affirm (!"bad field_type");
         }
 
-      switch (table.columns[col]->field)
+      પસંદગી (table.columns[col]->field)
         {
-        case SOURCE_FIELD:
+        સ્થિતિ SOURCE_FIELD:
           cell = xstrdup (dev_name);
-          break;
+          તોડો;
 
-        case FSTYPE_FIELD:
+        સ્થિતિ FSTYPE_FIELD:
           cell = xstrdup (fstype);
-          break;
+          તોડો;
 
-        case SIZE_FIELD:
-        case ITOTAL_FIELD:
+        સ્થિતિ SIZE_FIELD:
+        સ્થિતિ ITOTAL_FIELD:
           cell = xstrdup (df_readable (false, v->total, buf,
-                                       v->input_units, v->output_units));
-          break;
+                                       v->આગત_units, v->output_units));
+          તોડો;
 
-        case USED_FIELD:
-        case IUSED_FIELD:
+        સ્થિતિ USED_FIELD:
+        સ્થિતિ IUSED_FIELD:
           cell = xstrdup (df_readable (v->negate_used, v->used, buf,
-                                       v->input_units, v->output_units));
-          break;
+                                       v->આગત_units, v->output_units));
+          તોડો;
 
-        case AVAIL_FIELD:
-        case IAVAIL_FIELD:
+        સ્થિતિ AVAIL_FIELD:
+        સ્થિતિ IAVAIL_FIELD:
           cell = xstrdup (df_readable (v->negate_available, v->available, buf,
-                                       v->input_units, v->output_units));
-          break;
+                                       v->આગત_units, v->output_units));
+          તોડો;
 
-        case PCENT_FIELD:
-        case IPCENT_FIELD:
+        સ્થિતિ PCENT_FIELD:
+        સ્થિતિ IPCENT_FIELD:
           {
-            double pct = -1;
-            if (! known_value (v->used) || ! known_value (v->available))
+            દ્વિગુણ pct = -1;
+            જો (! known_કિંમત (v->used) || ! known_કિંમત (v->available))
               ;
-            else if (!v->negate_used
+            નહીંતર જો (!v->negate_used
                      && v->used <= UINTMAX_MAX / 100
                      && v->used + v->available != 0
                      && (v->used + v->available < v->used)
@@ -1187,195 +1187,195 @@ get_dev (char const *device, char const *mount_point, char const *file,
                 uintmax_t nonroot_total = v->used + v->available;
                 pct = u100 / nonroot_total + (u100 % nonroot_total != 0);
               }
-            else
+            નહીંતર
               {
                 /* The calculation cannot be done easily with integer
                    arithmetic.  Fall back on floating point.  This can suffer
                    from minor rounding errors, but doing it exactly requires
                    multiple precision arithmetic, and it's not worth the
                    aggravation.  */
-                double u = v->negate_used ? - (double) - v->used : v->used;
-                double a = v->negate_available
-                           ? - (double) - v->available : v->available;
-                double nonroot_total = u + a;
-                if (nonroot_total)
+                દ્વિગુણ u = v->negate_used ? - (દ્વિગુણ) - v->used : v->used;
+                દ્વિગુણ a = v->negate_available
+                           ? - (દ્વિગુણ) - v->available : v->available;
+                દ્વિગુણ nonroot_total = u + a;
+                જો (nonroot_total)
                   {
-                    long int lipct = pct = u * 100 / nonroot_total;
-                    double ipct = lipct;
+                    long પૂર્ણાંક lipct = pct = u * 100 / nonroot_total;
+                    દ્વિગુણ ipct = lipct;
 
                     /* Like 'pct = ceil (dpct);', but avoid ceil so that
                        the math library needn't be linked.  */
-                    if (ipct - 1 < pct && pct <= ipct + 1)
+                    જો (ipct - 1 < pct && pct <= ipct + 1)
                       pct = ipct + (ipct < pct);
                   }
               }
 
             cell = pct < 0 ? xstrdup ("-") : xasprintf ("%.0f%%", pct);
-            break;
+            તોડો;
           }
 
-        case FILE_FIELD:
+        સ્થિતિ FILE_FIELD:
           cell = xstrdup (file);
-          break;
+          તોડો;
 
-        case TARGET_FIELD:
+        સ્થિતિ TARGET_FIELD:
 #ifdef HIDE_AUTOMOUNT_PREFIX
           /* Don't print the first directory name in MOUNT_POINT if it's an
              artifact of an automounter.  This is a bit too aggressive to be
              the default.  */
-          if (STRNCMP_LIT (mount_point, "/auto/") == 0)
+          જો (STRNCMP_LIT (mount_point, "/auto/") == 0)
             mount_point += 5;
-          else if (STRNCMP_LIT (mount_point, "/tmp_mnt/") == 0)
+          નહીંતર જો (STRNCMP_LIT (mount_point, "/tmp_mnt/") == 0)
             mount_point += 8;
 #endif
           cell = xstrdup (mount_point);
-          break;
+          તોડો;
 
-        case INVALID_FIELD:
-        default:
+        સ્થિતિ INVALID_FIELD:
+        મૂળભૂત:
           affirm (!"unhandled field");
         }
 
       affirm (cell);
 
       replace_problematic_chars (cell);
-      int cell_width = mbswidth (cell, MBSWIDTH_FLAGS);
+      પૂર્ણાંક cell_width = mbswidth (cell, MBSWIDTH_FLAGS);
       table.columns[col]->width = MAX (table.columns[col]->width, cell_width);
       table.rows[table.nrows - 1][col] = cell;
     }
-  free (dev_name);
+  મુક્ત (dev_name);
 }
 
 /* Scan the mount list returning the _last_ device found for MOUNT.
    NULL is returned if MOUNT not found.  The result is malloced.  */
-static char *
-last_device_for_mount (char const *mount)
+સ્થિર અક્ષર *
+last_device_for_mount (અક્ષર અચલ *mount)
 {
-  struct mount_entry const *le = NULL;
+  સંરચના mount_entry અચલ *le = ખાલી;
 
-  for (struct mount_entry const *me = mount_list; me; me = me->me_next)
+  માટે (સંરચના mount_entry અચલ *me = mount_list; me; me = me->me_next)
     {
-      if (streq (me->me_mountdir, mount))
+      જો (streq (me->me_mountdir, mount))
         le = me;
     }
 
-  if (le)
+  જો (le)
     {
-      char *devname = le->me_devname;
-      char *canon_dev = canonicalize_file_name (devname);
-      if (canon_dev && IS_ABSOLUTE_FILE_NAME (canon_dev))
-        return canon_dev;
-      free (canon_dev);
-      return xstrdup (le->me_devname);
+      અક્ષર *devname = le->me_devname;
+      અક્ષર *canon_dev = canonicalize_file_name (devname);
+      જો (canon_dev && IS_ABSOLUTE_FILE_NAME (canon_dev))
+        પાછા canon_dev;
+      મુક્ત (canon_dev);
+      પાછા xstrdup (le->me_devname);
     }
-  else
-    return NULL;
+  નહીંતર
+    પાછા ખાલી;
 }
 
 /* If DEVICE corresponds to a mount point, show its usage
    and return true.  Otherwise, return false.  */
-static bool
-get_device (char const *device)
+સ્થિર bool
+get_device (અક્ષર અચલ *device)
 {
-  struct mount_entry const *best_match = NULL;
+  સંરચના mount_entry અચલ *best_match = ખાલી;
   bool best_match_accessible = false;
   bool eclipsed_device = false;
-  char const *file = device;
+  અક્ષર અચલ *file = device;
 
-  char *resolved = canonicalize_file_name (device);
-  if (resolved && IS_ABSOLUTE_FILE_NAME (resolved))
+  અક્ષર *resolved = canonicalize_file_name (device);
+  જો (resolved && IS_ABSOLUTE_FILE_NAME (resolved))
     device = resolved;
 
   size_t best_match_len = SIZE_MAX;
-  for (struct mount_entry const *me = mount_list; me; me = me->me_next)
+  માટે (સંરચના mount_entry અચલ *me = mount_list; me; me = me->me_next)
     {
       /* TODO: Should cache canon_dev in the mount_entry struct.  */
-      char *devname = me->me_devname;
-      char *canon_dev = canonicalize_file_name (me->me_devname);
-      if (canon_dev && IS_ABSOLUTE_FILE_NAME (canon_dev))
+      અક્ષર *devname = me->me_devname;
+      અક્ષર *canon_dev = canonicalize_file_name (me->me_devname);
+      જો (canon_dev && IS_ABSOLUTE_FILE_NAME (canon_dev))
         devname = canon_dev;
 
-      if (streq (device, devname))
+      જો (streq (device, devname))
         {
-          char *last_device = last_device_for_mount (me->me_mountdir);
+          અક્ષર *last_device = last_device_for_mount (me->me_mountdir);
           eclipsed_device = last_device && ! streq (last_device, devname);
           size_t len = strlen (me->me_mountdir);
 
-          if (! eclipsed_device
+          જો (! eclipsed_device
               && (! best_match_accessible || len < best_match_len))
             {
-              struct stat device_stats;
+              સંરચના stat device_stats;
               bool this_match_accessible = false;
 
-              if (stat (me->me_mountdir, &device_stats) == 0)
+              જો (stat (me->me_mountdir, &device_stats) == 0)
                 best_match_accessible = this_match_accessible = true;
 
-              if (this_match_accessible
+              જો (this_match_accessible
                   || (! best_match_accessible && len < best_match_len))
                 {
                   best_match = me;
-                  if (len == 1) /* Traditional root.  */
+                  જો (len == 1) /* Traditional root.  */
                     {
-                      free (last_device);
-                      free (canon_dev);
-                      break;
+                      મુક્ત (last_device);
+                      મુક્ત (canon_dev);
+                      તોડો;
                     }
-                  else
+                  નહીંતર
                     best_match_len = len;
                 }
             }
 
-          free (last_device);
+          મુક્ત (last_device);
         }
 
-      free (canon_dev);
+      મુક્ત (canon_dev);
     }
 
-  free (resolved);
+  મુક્ત (resolved);
 
-  if (best_match)
+  જો (best_match)
     {
-      get_dev (best_match->me_devname, best_match->me_mountdir, file, NULL,
+      get_dev (best_match->me_devname, best_match->me_mountdir, file, ખાલી,
                best_match->me_type, best_match->me_dummy,
-               best_match->me_remote, NULL, false);
-      return true;
+               best_match->me_remote, ખાલી, false);
+      પાછા true;
     }
-  else if (eclipsed_device)
+  નહીંતર જો (eclipsed_device)
     {
       error (0, 0, _("cannot access %s: over-mounted by another device"),
              quoteaf (file));
       exit_status = EXIT_FAILURE;
-      return true;
+      પાછા true;
     }
 
-  return false;
+  પાછા false;
 }
 
 /* Figure out which device file or directory POINT is mounted on
    and show its device usage.
    STATP must be the result of 'stat (POINT, STATP)'.  */
-static void
-get_point (char const *point, const struct stat *statp)
+સ્થિર શૂન્ય
+get_point (અક્ષર અચલ *point, અચલ સંરચના stat *statp)
 {
-  struct stat device_stats;
-  struct mount_entry const *best_match = NULL;
+  સંરચના stat device_stats;
+  સંરચના mount_entry અચલ *best_match = ખાલી;
 
   /* Calculate the real absolute file name for POINT, and use that to find
      the mount point.  This avoids statting unavailable mount points,
      which can hang df.  */
-  char *resolved = canonicalize_file_name (point);
-  if (resolved && resolved[0] == '/')
+  અક્ષર *resolved = canonicalize_file_name (point);
+  જો (resolved && resolved[0] == '/')
     {
       size_t resolved_len = strlen (resolved);
       size_t best_match_len = 0;
 
-      for (struct mount_entry *me = mount_list; me; me = me->me_next)
+      માટે (સંરચના mount_entry *me = mount_list; me; me = me->me_next)
         {
-          if (!streq (me->me_type, "lofs")
+          જો (!streq (me->me_type, "lofs")
               && (!best_match || best_match->me_dummy || !me->me_dummy))
             {
               size_t len = strlen (me->me_mountdir);
-              if (best_match_len <= len && len <= resolved_len
+              જો (best_match_len <= len && len <= resolved_len
                   && (len == 1 /* root file system */
                       || ((len == resolved_len || resolved[len] == '/')
                           && STREQ_LEN (me->me_mountdir, resolved, len))))
@@ -1386,25 +1386,25 @@ get_point (char const *point, const struct stat *statp)
             }
         }
     }
-  free (resolved);
-  if (best_match
+  મુક્ત (resolved);
+  જો (best_match
       && (stat (best_match->me_mountdir, &device_stats) != 0
           || device_stats.st_dev != statp->st_dev))
-    best_match = NULL;
+    best_match = ખાલી;
 
-  if (! best_match)
-    for (struct mount_entry *me = mount_list; me; me = me->me_next)
+  જો (! best_match)
+    માટે (સંરચના mount_entry *me = mount_list; me; me = me->me_next)
       {
-        if (me->me_dev == (dev_t) -1)
+        જો (me->me_dev == (dev_t) -1)
           {
-            if (stat (me->me_mountdir, &device_stats) == 0)
+            જો (stat (me->me_mountdir, &device_stats) == 0)
               me->me_dev = device_stats.st_dev;
-            else
+            નહીંતર
               {
                 /* Report only I/O errors.  Other errors might be
                    caused by shadowed mount points, which means POINT
                    can't possibly be on this file system.  */
-                if (errno == EIO)
+                જો (errno == EIO)
                   {
                     error (0, errno, "%s", quotef (me->me_mountdir));
                     exit_status = EXIT_FAILURE;
@@ -1415,36 +1415,36 @@ get_point (char const *point, const struct stat *statp)
               }
           }
 
-        if (statp->st_dev == me->me_dev
+        જો (statp->st_dev == me->me_dev
             && !streq (me->me_type, "lofs")
             && (!best_match || best_match->me_dummy || !me->me_dummy))
           {
             /* Skip bogus mtab entries.  */
-            if (stat (me->me_mountdir, &device_stats) != 0
+            જો (stat (me->me_mountdir, &device_stats) != 0
                 || device_stats.st_dev != me->me_dev)
               me->me_dev = (dev_t) -2;
-            else
+            નહીંતર
               best_match = me;
           }
       }
 
-  if (best_match)
+  જો (best_match)
     get_dev (best_match->me_devname, best_match->me_mountdir, point, point,
              best_match->me_type, best_match->me_dummy, best_match->me_remote,
-             NULL, false);
-  else
+             ખાલી, false);
+  નહીંતર
     {
       /* We couldn't find the mount entry corresponding to POINT.  Go ahead and
          print as much info as we can; methods that require the device to be
          present will fail at a later point.  */
 
       /* Find the actual mount point.  */
-      char *mp = find_mount_point (point, statp);
-      if (mp)
+      અક્ષર *mp = find_mount_point (point, statp);
+      જો (mp)
         {
-          get_dev (NULL, mp, point, NULL, NULL,
-                   false, false, NULL, false);
-          free (mp);
+          get_dev (ખાલી, mp, point, ખાલી, ખાલી,
+                   false, false, ખાલી, false);
+          મુક્ત (mp);
         }
     }
 }
@@ -1452,12 +1452,12 @@ get_point (char const *point, const struct stat *statp)
 /* Determine what kind of node NAME is and show the device usage
    for it.  STATP is the results of 'stat' on NAME.  */
 
-static void
-get_entry (char const *name, struct stat const *statp)
+સ્થિર શૂન્ય
+get_entry (અક્ષર અચલ *name, સંરચના stat અચલ *statp)
 {
-  if ((S_ISBLK (statp->st_mode) || S_ISCHR (statp->st_mode))
+  જો ((S_ISBLK (statp->st_mode) || S_ISCHR (statp->st_mode))
       && get_device (name))
-    return;
+    પાછા;
 
   get_point (name, statp);
 }
@@ -1465,53 +1465,53 @@ get_entry (char const *name, struct stat const *statp)
 /* Show all mounted file systems, except perhaps those that are of
    an unselected type or are empty.  */
 
-static void
-get_all_entries (void)
+સ્થિર શૂન્ય
+get_all_entries (શૂન્ય)
 {
   filter_mount_list (show_all_fs);
 
-  for (struct mount_entry *me = mount_list; me; me = me->me_next)
-    get_dev (me->me_devname, me->me_mountdir, NULL, NULL, me->me_type,
-             me->me_dummy, me->me_remote, NULL, true);
+  માટે (સંરચના mount_entry *me = mount_list; me; me = me->me_next)
+    get_dev (me->me_devname, me->me_mountdir, ખાલી, ખાલી, me->me_type,
+             me->me_dummy, me->me_remote, ખાલી, true);
 }
 
 /* Add FSTYPE to the list of file system types to display.  */
 
-static void
-add_fs_type (char const *fstype)
+સ્થિર શૂન્ય
+add_fs_type (અક્ષર અચલ *fstype)
 {
-  struct fs_type_list *fsp;
+  સંરચના fs_type_list *fsp;
 
-  fsp = xmalloc (sizeof *fsp);
-  fsp->fs_name = (char *) fstype;
+  fsp = xmalloc (કદ *fsp);
+  fsp->fs_name = (અક્ષર *) fstype;
   fsp->fs_next = fs_select_list;
   fs_select_list = fsp;
 }
 
 /* Add FSTYPE to the list of file system types to be omitted.  */
 
-static void
-add_excluded_fs_type (char const *fstype)
+સ્થિર શૂન્ય
+add_excluded_fs_type (અક્ષર અચલ *fstype)
 {
-  struct fs_type_list *fsp;
+  સંરચના fs_type_list *fsp;
 
-  fsp = xmalloc (sizeof *fsp);
-  fsp->fs_name = (char *) fstype;
+  fsp = xmalloc (કદ *fsp);
+  fsp->fs_name = (અક્ષર *) fstype;
   fsp->fs_next = fs_exclude_list;
   fs_exclude_list = fsp;
 }
 
-void
-usage (int status)
+શૂન્ય
+usage (પૂર્ણાંક status)
 {
-  if (status != EXIT_SUCCESS)
+  જો (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  નહીંતર
     {
       printf (_("Usage: %s [OPTION]... [FILE]...\n"), program_name);
       fputs (_("\
 Show information about the file system on which each FILE resides,\n\
-or all file systems by default.\n\
+or all file systems by મૂળભૂત.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
@@ -1549,12 +1549,12 @@ or all file systems by default.\n\
 "));
       oputs (_("\
       --no-sync\n\
-         do not invoke sync before getting usage info (default)\n\
+         કરો not invoke sync before getting usage info (મૂળભૂત)\n\
 "));
       oputs (_("\
       --output[=FIELD_LIST]\n\
          use the output format defined by FIELD_LIST,\n\
-         or print all fields if FIELD_LIST is omitted\n\
+         or print all fields જો FIELD_LIST is omitted\n\
 "));
       oputs (_("\
   -P, --portability\n\
@@ -1599,10 +1599,10 @@ field names are: 'source', 'fstype', 'itotal', 'iused', 'iavail', 'ipcent',\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+પૂર્ણાંક
+મુખ્ય (પૂર્ણાંક argc, અક્ષર **argv)
 {
-  struct stat *stats = NULL;
+  સંરચના stat *stats = ખાલી;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -1615,244 +1615,244 @@ main (int argc, char **argv)
   /* If true, use the POSIX output format.  */
   bool posix_format = false;
 
-  char const *msg_mut_excl = _("options %s and %s are mutually exclusive");
+  અક્ષર અચલ *સંદેશ_mut_excl = _("options %s and %s are mutually exclusive");
 
-  while (true)
+  જ્યારે (true)
     {
-      int oi = -1;
-      int c = getopt_long (argc, argv, "aB:iF:hHklmPTt:vx:", long_options,
+      પૂર્ણાંક oi = -1;
+      પૂર્ણાંક c = getopt_long (argc, argv, "aB:iF:hHklmPTt:vx:", long_options,
                            &oi);
-      if (c == -1)
-        break;
+      જો (c == -1)
+        તોડો;
 
-      switch (c)
+      પસંદગી (c)
         {
-        case 'a':
+        સ્થિતિ 'a':
           show_all_fs = true;
-          break;
-        case 'B':
+          તોડો;
+        સ્થિતિ 'B':
           {
-            enum strtol_error e = human_options (optarg, &human_output_opts,
+            ગણના strtol_error e = human_options (optarg, &human_output_opts,
                                                  &output_block_size);
-            if (e != LONGINT_OK)
+            જો (e != LONGINT_OK)
               xstrtol_fatal (e, oi, c, long_options, optarg);
           }
-          break;
-        case 'i':
-          if (header_mode == OUTPUT_MODE)
+          તોડો;
+        સ્થિતિ 'i':
+          જો (header_mode == OUTPUT_MODE)
             {
-              error (0, 0, msg_mut_excl, "-i", "--output");
+              error (0, 0, સંદેશ_mut_excl, "-i", "--output");
               usage (EXIT_FAILURE);
             }
           header_mode = INODES_MODE;
-          break;
-        case 'h':
+          તોડો;
+        સ્થિતિ 'h':
           human_output_opts = human_autoscale | human_SI | human_base_1024;
           output_block_size = 1;
-          break;
-        case 'H':
+          તોડો;
+        સ્થિતિ 'H':
           human_output_opts = human_autoscale | human_SI;
           output_block_size = 1;
-          break;
-        case 'k':
+          તોડો;
+        સ્થિતિ 'k':
           human_output_opts = 0;
           output_block_size = 1024;
-          break;
-        case 'l':
+          તોડો;
+        સ્થિતિ 'l':
           show_local_fs = true;
-          break;
-        case 'm': /* obsolescent, exists for BSD compatibility */
+          તોડો;
+        સ્થિતિ 'm': /* obsolescent, exists for BSD compatibility */
           human_output_opts = 0;
           output_block_size = 1024 * 1024;
-          break;
-        case 'T':
-          if (header_mode == OUTPUT_MODE)
+          તોડો;
+        સ્થિતિ 'T':
+          જો (header_mode == OUTPUT_MODE)
             {
-              error (0, 0, msg_mut_excl, "-T", "--output");
+              error (0, 0, સંદેશ_mut_excl, "-T", "--output");
               usage (EXIT_FAILURE);
             }
           print_type = true;
-          break;
-        case 'P':
-          if (header_mode == OUTPUT_MODE)
+          તોડો;
+        સ્થિતિ 'P':
+          જો (header_mode == OUTPUT_MODE)
             {
-              error (0, 0, msg_mut_excl, "-P", "--output");
+              error (0, 0, સંદેશ_mut_excl, "-P", "--output");
               usage (EXIT_FAILURE);
             }
           posix_format = true;
-          break;
-        case SYNC_OPTION:
+          તોડો;
+        સ્થિતિ SYNC_OPTION:
           require_sync = true;
-          break;
-        case NO_SYNC_OPTION:
+          તોડો;
+        સ્થિતિ NO_SYNC_OPTION:
           require_sync = false;
-          break;
+          તોડો;
 
-        case 'F':
+        સ્થિતિ 'F':
           /* Accept -F as a synonym for -t for compatibility with Solaris.  */
-        case 't':
+        સ્થિતિ 't':
           add_fs_type (optarg);
-          break;
+          તોડો;
 
-        case 'v':		/* For SysV compatibility.  */
+        સ્થિતિ 'v':		/* For SysV compatibility.  */
           /* ignore */
-          break;
-        case 'x':
+          તોડો;
+        સ્થિતિ 'x':
           add_excluded_fs_type (optarg);
-          break;
+          તોડો;
 
-        case OUTPUT_OPTION:
-          if (header_mode == INODES_MODE)
+        સ્થિતિ OUTPUT_OPTION:
+          જો (header_mode == INODES_MODE)
             {
-              error (0, 0, msg_mut_excl, "-i", "--output");
+              error (0, 0, સંદેશ_mut_excl, "-i", "--output");
               usage (EXIT_FAILURE);
             }
-          if (posix_format && header_mode == DEFAULT_MODE)
+          જો (posix_format && header_mode == DEFAULT_MODE)
             {
-              error (0, 0, msg_mut_excl, "-P", "--output");
+              error (0, 0, સંદેશ_mut_excl, "-P", "--output");
               usage (EXIT_FAILURE);
             }
-          if (print_type)
+          જો (print_type)
             {
-              error (0, 0, msg_mut_excl, "-T", "--output");
+              error (0, 0, સંદેશ_mut_excl, "-T", "--output");
               usage (EXIT_FAILURE);
             }
           header_mode = OUTPUT_MODE;
-          if (optarg)
+          જો (optarg)
             decode_output_arg (optarg);
-          break;
+          તોડો;
 
-        case TOTAL_OPTION:
+        સ્થિતિ TOTAL_OPTION:
           print_grand_total = true;
-          break;
+          તોડો;
 
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        મૂળભૂત:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (human_output_opts == -1)
+  જો (human_output_opts == -1)
     {
-      if (posix_format)
+      જો (posix_format)
         {
           human_output_opts = 0;
           output_block_size = (getenv ("POSIXLY_CORRECT") ? 512 : 1024);
         }
-      else
+      નહીંતર
         human_options (getenv ("DF_BLOCK_SIZE"),
                        &human_output_opts, &output_block_size);
     }
 
-  if (header_mode == INODES_MODE || header_mode == OUTPUT_MODE)
+  જો (header_mode == INODES_MODE || header_mode == OUTPUT_MODE)
     ;
-  else if (human_output_opts & human_autoscale)
+  નહીંતર જો (human_output_opts & human_autoscale)
     header_mode = HUMAN_MODE;
-  else if (posix_format)
+  નહીંતર જો (posix_format)
     header_mode = POSIX_MODE;
 
   /* Fail if the same file system type was both selected and excluded.  */
   {
     bool match = false;
-    for (struct fs_type_list *fs_incl = fs_select_list; fs_incl;
+    માટે (સંરચના fs_type_list *fs_incl = fs_select_list; fs_incl;
          fs_incl = fs_incl->fs_next)
       {
-        for (struct fs_type_list *fs_excl = fs_exclude_list; fs_excl;
+        માટે (સંરચના fs_type_list *fs_excl = fs_exclude_list; fs_excl;
              fs_excl = fs_excl->fs_next)
           {
-            if (streq (fs_incl->fs_name, fs_excl->fs_name))
+            જો (streq (fs_incl->fs_name, fs_excl->fs_name))
               {
                 error (0, 0,
                        _("file system type %s both selected and excluded"),
                        quote (fs_incl->fs_name));
                 match = true;
-                break;
+                તોડો;
               }
           }
       }
-    if (match)
-      return EXIT_FAILURE;
+    જો (match)
+      પાછા EXIT_FAILURE;
   }
 
-  if (optind < argc)
+  જો (optind < argc)
     {
       /* stat each of the given entries to make sure any corresponding
          partition is automounted.  This must be done before reading the
          file system table.  */
-      stats = xnmalloc (argc - optind, sizeof *stats);
-      for (int i = optind; i < argc; ++i)
+      stats = xnmalloc (argc - optind, કદ *stats);
+      માટે (પૂર્ણાંક i = optind; i < argc; ++i)
         {
-          int err = automount_stat_err (argv[i], &stats[i - optind]);
-          if (err != 0)
+          પૂર્ણાંક err = automount_stat_err (argv[i], &stats[i - optind]);
+          જો (err != 0)
             {
               error (0, err, "%s", quotef (argv[i]));
               exit_status = EXIT_FAILURE;
-              argv[i] = NULL;
+              argv[i] = ખાલી;
             }
         }
     }
 
   mount_list =
-    read_file_system_list ((fs_select_list != NULL
-                            || fs_exclude_list != NULL
+    read_file_system_list ((fs_select_list != ખાલી
+                            || fs_exclude_list != ખાલી
                             || print_type
                             || field_data[FSTYPE_FIELD].used
                             || show_local_fs));
 
-  if (mount_list == NULL)
+  જો (mount_list == ખાલી)
     {
       /* Couldn't read the table of mounted file systems.
          Fail if df was invoked with no file name arguments,
          or when either of -a, -l, -t or -x is used with file name
          arguments.  Otherwise, merely give a warning and proceed.  */
-      int status = 0;
-      if ( ! (optind < argc)
+      પૂર્ણાંક status = 0;
+      જો ( ! (optind < argc)
            || (show_all_fs
                || show_local_fs
-               || fs_select_list != NULL
-               || fs_exclude_list != NULL))
+               || fs_select_list != ખાલી
+               || fs_exclude_list != ખાલી))
         {
           status = EXIT_FAILURE;
         }
-      char const *warning = (status == 0 ? _("Warning: ") : "");
+      અક્ષર અચલ *warning = (status == 0 ? _("Warning: ") : "");
       error (status, errno, "%s%s", warning,
              _("cannot read table of mounted file systems"));
     }
 
-  if (require_sync)
+  જો (require_sync)
     sync ();
 
   get_field_list ();
   get_header ();
 
-  if (stats)
+  જો (stats)
     {
       /* Display explicitly requested empty file systems.  */
       show_listed_fs = true;
 
-      for (int i = optind; i < argc; ++i)
-        if (argv[i])
+      માટે (પૂર્ણાંક i = optind; i < argc; ++i)
+        જો (argv[i])
           get_entry (argv[i], &stats[i - optind]);
     }
-  else
+  નહીંતર
     get_all_entries ();
 
-  if (file_systems_processed)
+  જો (file_systems_processed)
     {
-      if (print_grand_total)
+      જો (print_grand_total)
         get_dev ("total",
                  (field_data[SOURCE_FIELD].used ? "-" : "total"),
-                 NULL, NULL, NULL, false, false, &grand_fsu, false);
+                 ખાલી, ખાલી, ખાલી, false, false, &grand_fsu, false);
 
       print_table ();
     }
-  else
+  નહીંતર
     {
       /* Print the "no FS processed" diagnostic only if there was no preceding
          diagnostic, e.g., if all have been excluded.  */
-      if (exit_status == EXIT_SUCCESS)
+      જો (exit_status == EXIT_SUCCESS)
         error (EXIT_FAILURE, 0, _("no file systems processed"));
     }
 

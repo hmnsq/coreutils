@@ -14,14 +14,14 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
-#include <wchar.h>
+#અન્તર્ભાવ <config.h>
+#અન્તર્ભાવ <stdio.h>
+#અન્તર્ભાવ <getopt.h>
+#અન્તર્ભાવ <sys/types.h>
+#અન્તર્ભાવ <wchar.h>
 
-#include "system.h"
-#include "quote.h"
+#અન્તર્ભાવ "system.h"
+#અન્તર્ભાવ "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "pathchk"
@@ -40,16 +40,16 @@
 
 #ifdef _XOPEN_NAME_MAX
 # define NAME_MAX_MINIMUM _XOPEN_NAME_MAX
-#else
+#નહીંતર
 # define NAME_MAX_MINIMUM _POSIX_NAME_MAX
 #endif
 #ifdef _XOPEN_PATH_MAX
 # define PATH_MAX_MINIMUM _XOPEN_PATH_MAX
-#else
+#નહીંતર
 # define PATH_MAX_MINIMUM _POSIX_PATH_MAX
 #endif
 
-#if ! (HAVE_PATHCONF && defined _PC_NAME_MAX && defined _PC_PATH_MAX)
+#જો ! (HAVE_PATHCONF && defined _PC_NAME_MAX && defined _PC_PATH_MAX)
 # ifndef _PC_NAME_MAX
 #  define _PC_NAME_MAX 0
 #  define _PC_PATH_MAX 1
@@ -60,29 +60,29 @@
 # endif
 #endif
 
-static bool validate_file_name (char *, bool, bool);
+સ્થિર bool validate_file_name (અક્ષર *, bool, bool);
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+ગણના
 {
   PORTABILITY_OPTION = CHAR_MAX + 1
 };
 
-static struct option const longopts[] =
+સ્થિર સંરચના option અચલ longopts[] =
 {
-  {"portability", no_argument, NULL, PORTABILITY_OPTION},
+  {"portability", no_argument, ખાલી, PORTABILITY_OPTION},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ખાલી, 0, ખાલી, 0}
 };
 
-void
-usage (int status)
+શૂન્ય
+usage (પૂર્ણાંક status)
 {
-  if (status != EXIT_SUCCESS)
+  જો (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  નહીંતર
     {
       printf (_("Usage: %s [OPTION]... NAME...\n"), program_name);
       fputs (_("\
@@ -90,14 +90,14 @@ Diagnose invalid or non-portable file names.\n\
 \n\
 "), stdout);
       oputs (_("\
-  -p     check for most POSIX systems\n\
+  -p     check માટે most POSIX systems\n\
 "));
       oputs (_("\
-  -P     check for empty names and leading \"-\"\n\
+  -P     check માટે empty names and leading \"-\"\n\
 "));
       oputs (_("\
       --portability\n\
-         check for all POSIX systems (equivalent to -p -P)\n\
+         check માટે all POSIX systems (equivalent to -p -P)\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -106,13 +106,13 @@ Diagnose invalid or non-portable file names.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+પૂર્ણાંક
+મુખ્ય (પૂર્ણાંક argc, અક્ષર **argv)
 {
   bool ok = true;
   bool check_basic_portability = false;
   bool check_extra_portability = false;
-  int optc;
+  પૂર્ણાંક optc;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -122,76 +122,76 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "+pP", longopts, NULL)) != -1)
+  જ્યારે ((optc = getopt_long (argc, argv, "+pP", longopts, ખાલી)) != -1)
     {
-      switch (optc)
+      પસંદગી (optc)
         {
-        case PORTABILITY_OPTION:
+        સ્થિતિ PORTABILITY_OPTION:
           check_basic_portability = true;
           check_extra_portability = true;
-          break;
+          તોડો;
 
-        case 'p':
+        સ્થિતિ 'p':
           check_basic_portability = true;
-          break;
+          તોડો;
 
-        case 'P':
+        સ્થિતિ 'P':
           check_extra_portability = true;
-          break;
+          તોડો;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        મૂળભૂત:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (optind == argc)
+  જો (optind == argc)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
-  for (; optind < argc; ++optind)
+  માટે (; optind < argc; ++optind)
     ok &= validate_file_name (argv[optind],
                               check_basic_portability, check_extra_portability);
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  પાછા ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 /* If FILE contains a component with a leading "-", report an error
    and return false; otherwise, return true.  */
 
-static bool
-no_leading_hyphen (char const *file)
+સ્થિર bool
+no_leading_hyphen (અક્ષર અચલ *file)
 {
-  for (char const *p = file;  (p = strchr (p, '-'));  p++)
-    if (p == file || p[-1] == '/')
+  માટે (અક્ષર અચલ *p = file;  (p = strchr (p, '-'));  p++)
+    જો (p == file || p[-1] == '/')
       {
         error (0, 0, _("leading '-' in a component of file name %s"),
                quoteaf (file));
-        return false;
+        પાછા false;
       }
 
-  return true;
+  પાછા true;
 }
 
 /* If FILE (of length FILELEN) contains only portable characters,
    return true, else report an error and return false.  */
 
-static bool
-portable_chars_only (char const *file, size_t filelen)
+સ્થિર bool
+portable_chars_only (અક્ષર અચલ *file, size_t filelen)
 {
   size_t validlen = strspn (file,
                             ("/"
                              "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                              "abcdefghijklmnopqrstuvwxyz"
                              "0123456789._-"));
-  char const *invalid = file + validlen;
+  અક્ષર અચલ *invalid = file + validlen;
 
-  if (*invalid)
+  જો (*invalid)
     {
       mbstate_t mbstate; mbszero (&mbstate);
       size_t charlen = mbrlen (invalid, filelen - validlen, &mbstate);
@@ -200,33 +200,33 @@ portable_chars_only (char const *file, size_t filelen)
              quotearg_n_style_mem (1, locale_quoting_style, invalid,
                                    (charlen <= MB_LEN_MAX ? charlen : 1)),
              quoteaf_n (0, file));
-      return false;
+      પાછા false;
     }
 
-  return true;
+  પાછા true;
 }
 
 /* Return the address of the start of the next file name component in F.  */
 
 ATTRIBUTE_PURE
-static char *
-component_start (char *f)
+સ્થિર અક્ષર *
+component_start (અક્ષર *f)
 {
-  while (*f == '/')
+  જ્યારે (*f == '/')
     f++;
-  return f;
+  પાછા f;
 }
 
 /* Return the size of the file name component F.  F must be nonempty.  */
 
 ATTRIBUTE_PURE
-static size_t
-component_len (char const *f)
+સ્થિર size_t
+component_len (અક્ષર અચલ *f)
 {
   size_t len;
-  for (len = 1; f[len] != '/' && f[len]; len++)
-    continue;
-  return len;
+  માટે (len = 1; f[len] != '/' && f[len]; len++)
+    ચાલુ;
+  પાછા len;
 }
 
 /* Make sure that
@@ -249,8 +249,8 @@ component_len (char const *f)
 
    Return true if all of these tests are successful, false if any fail.  */
 
-static bool
-validate_file_name (char *file, bool check_basic_portability,
+સ્થિર bool
+validate_file_name (અક્ષર *file, bool check_basic_portability,
                     bool check_extra_portability)
 {
   idx_t filelen = strlen (file);
@@ -261,10 +261,10 @@ validate_file_name (char *file, bool check_basic_portability,
   /* True if the file is known to exist.  */
   bool file_exists = false;
 
-  if (check_extra_portability && ! no_leading_hyphen (file))
-    return false;
+  જો (check_extra_portability && ! no_leading_hyphen (file))
+    પાછા false;
 
-  if ((check_basic_portability || check_extra_portability)
+  જો ((check_basic_portability || check_extra_portability)
       && filelen == 0)
     {
       /* Fail, since empty names are not portable.  As of
@@ -272,59 +272,59 @@ validate_file_name (char *file, bool check_basic_portability,
          should (or is allowed to) fail, so this is not a
          conformance violation.  */
       error (0, 0, _("empty file name"));
-      return false;
+      પાછા false;
     }
 
-  if (check_basic_portability)
+  જો (check_basic_portability)
     {
-      if (! portable_chars_only (file, filelen))
-        return false;
+      જો (! portable_chars_only (file, filelen))
+        પાછા false;
     }
-  else
+  નહીંતર
     {
       /* Check whether a file name component is in a directory that
          is not searchable, or has some other serious problem.
          POSIX does not allow "" as a file name, but some non-POSIX
          hosts do (as an alias for "."), so allow "" if lstat does.  */
 
-      struct stat st;
-      if (lstat (file, &st) == 0)
+      સંરચના stat st;
+      જો (lstat (file, &st) == 0)
         file_exists = true;
-      else if (errno != ENOENT || filelen == 0)
+      નહીંતર જો (errno != ENOENT || filelen == 0)
         {
           error (0, errno, "%s", quotef (file));
-          return false;
+          પાછા false;
         }
     }
 
-  if (check_basic_portability
+  જો (check_basic_portability
       || (! file_exists && PATH_MAX_MINIMUM <= filelen))
     {
       idx_t maxsize;
 
-      if (check_basic_portability)
+      જો (check_basic_portability)
         maxsize = _POSIX_PATH_MAX;
-      else
+      નહીંતર
         {
-          long int size;
-          char const *dir = (*file == '/' ? "/" : ".");
+          long પૂર્ણાંક size;
+          અક્ષર અચલ *dir = (*file == '/' ? "/" : ".");
           errno = 0;
           size = pathconf (dir, _PC_PATH_MAX);
-          if (size < 0 && errno != 0)
+          જો (size < 0 && errno != 0)
             {
               error (0, errno,
                      _("%s: unable to determine maximum file name length"),
                      dir);
-              return false;
+              પાછા false;
             }
           maxsize = MIN (size, MIN (SSIZE_MAX, IDX_MAX));
         }
 
-      if (maxsize <= filelen)
+      જો (maxsize <= filelen)
         {
           error (0, 0, _("limit %td exceeded by length %td of file name %s"),
                  maxsize - 1, filelen, quoteaf (file));
-          return false;
+          પાછા false;
         }
     }
 
@@ -334,23 +334,23 @@ validate_file_name (char *file, bool check_basic_portability,
      it's more convenient to check component lengths below.  */
 
   check_component_lengths = check_basic_portability;
-  if (! check_component_lengths && ! file_exists)
+  જો (! check_component_lengths && ! file_exists)
     {
-      for (char *start = file; *(start = component_start (start)); )
+      માટે (અક્ષર *start = file; *(start = component_start (start)); )
         {
           size_t length = component_len (start);
 
-          if (NAME_MAX_MINIMUM < length)
+          જો (NAME_MAX_MINIMUM < length)
             {
               check_component_lengths = true;
-              break;
+              તોડો;
             }
 
           start += length;
         }
     }
 
-  if (check_component_lengths)
+  જો (check_component_lengths)
     {
       /* The limit on file name components for the current component.
          This defaults to NAME_MAX_MINIMUM, for the sake of non-POSIX
@@ -361,61 +361,61 @@ validate_file_name (char *file, bool check_basic_portability,
       /* If nonzero, the known limit on file name components.  */
       idx_t known_name_max = check_basic_portability ? _POSIX_NAME_MAX : 0;
 
-      for (char *start = file; *(start = component_start (start)); )
+      માટે (અક્ષર *start = file; *(start = component_start (start)); )
         {
           idx_t length;
 
-          if (known_name_max)
+          જો (known_name_max)
             name_max = known_name_max;
-          else
+          નહીંતર
             {
-              long int len;
-              char const *dir = (start == file ? "." : file);
-              char c = *start;
+              long પૂર્ણાંક len;
+              અક્ષર અચલ *dir = (start == file ? "." : file);
+              અક્ષર c = *start;
               errno = 0;
               *start = '\0';
               len = pathconf (dir, _PC_NAME_MAX);
               *start = c;
-              if (0 <= len)
+              જો (0 <= len)
                 name_max = MIN (len, MIN (SSIZE_MAX, IDX_MAX));
-              else
-                switch (errno)
+              નહીંતર
+                પસંદગી (errno)
                   {
-                  case 0:
+                  સ્થિતિ 0:
                     /* There is no limit.  */
                     name_max = IDX_MAX;
-                    break;
+                    તોડો;
 
-                  case ENOENT:
+                  સ્થિતિ ENOENT:
                     /* DIR does not exist; use its parent's maximum.  */
                     known_name_max = name_max;
-                    break;
+                    તોડો;
 
-                  default:
+                  મૂળભૂત:
                     *start = '\0';
                     error (0, errno, "%s", quotef (dir));
                     *start = c;
-                    return false;
+                    પાછા false;
                   }
             }
 
           length = component_len (start);
 
-          if (name_max < length)
+          જો (name_max < length)
             {
-              char c = start[length];
+              અક્ષર c = start[length];
               start[length] = '\0';
               error (0, 0,
                      _("limit %td exceeded by length %td "
                        "of file name component %s"),
                      name_max, length, quote (start));
               start[length] = c;
-              return false;
+              પાછા false;
             }
 
           start += length;
         }
     }
 
-  return true;
+  પાછા true;
 }

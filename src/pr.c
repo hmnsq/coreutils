@@ -307,22 +307,22 @@
 
 */
 
-#include <config.h>
+#અન્તર્ભાવ <config.h>
 
-#include <getopt.h>
-#include <sys/types.h>
-#include "system.h"
-#include "c-ctype.h"
-#include "fadvise.h"
-#include "hard-locale.h"
-#include "mbswidth.h"
-#include "quote.h"
-#include "stat-time.h"
-#include "stdio--.h"
-#include "strftime.h"
-#include "xstrtol.h"
-#include "xstrtol-error.h"
-#include "xdectoint.h"
+#અન્તર્ભાવ <getopt.h>
+#અન્તર્ભાવ <sys/types.h>
+#અન્તર્ભાવ "system.h"
+#અન્તર્ભાવ "c-ctype.h"
+#અન્તર્ભાવ "fadvise.h"
+#અન્તર્ભાવ "hard-locale.h"
+#અન્તર્ભાવ "mbswidth.h"
+#અન્તર્ભાવ "quote.h"
+#અન્તર્ભાવ "stat-time.h"
+#અન્તર્ભાવ "stdio--.h"
+#અન્તર્ભાવ "strftime.h"
+#અન્તર્ભાવ "xstrtol.h"
+#અન્તર્ભાવ "xstrtol-error.h"
+#અન્તર્ભાવ "xdectoint.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "pr"
@@ -380,12 +380,12 @@
    options.  Many of the "int" values below should be "size_t" or
    something else like that.  */
 
-struct COLUMN;
-struct COLUMN
+સંરચના COLUMN;
+સંરચના COLUMN
   {
     FILE *fp;			/* Input stream for this column. */
-    char const *name;		/* File name. */
-    enum
+    અક્ષર અચલ *name;		/* File name. */
+    ગણના
       {
         OPEN,
         FF_FOUND,		/* used with -b option, set with \f, changed
@@ -396,15 +396,15 @@ struct COLUMN
     status;			/* Status of the file pointer. */
 
     /* Func to print lines in this col. */
-    bool (*print_func) (struct COLUMN *);
+    bool (*print_func) (સંરચના COLUMN *);
 
     /* Func to print/store chars in this col. */
-    void (*char_func) (char);
+    શૂન્ય (*char_func) (અક્ષર);
 
-    int current_line;		/* Index of current place in line_vector. */
-    int lines_stored;		/* Number of lines stored in buff. */
-    int lines_to_print;		/* No. lines stored or space left on page. */
-    int start_position;		/* Horizontal position of first char. */
+    પૂર્ણાંક current_લીટી;		/* Index of current place in line_vector. */
+    પૂર્ણાંક લીટીઓ_stored;		/* Number of lines stored in buff. */
+    પૂર્ણાંક લીટીઓ_to_print;		/* No. lines stored or space left on page. */
+    પૂર્ણાંક start_position;		/* Horizontal position of first char. */
     bool numbered;
     bool full_page_printed;	/* True means printed without a FF found. */
 
@@ -414,186 +414,186 @@ struct COLUMN
        the next line. */
   };
 
-typedef struct COLUMN COLUMN;
+પ્રકારવ્યાખ્યા સંરચના COLUMN COLUMN;
 
-static int char_to_clump (char c);
-static bool read_line (COLUMN *p);
-static bool print_page (void);
-static bool print_stored (COLUMN *p);
-static bool open_file (char *name, COLUMN *p);
-static bool skip_to_page (uintmax_t page);
-static void print_header (void);
-static void pad_across_to (int position);
-static void add_line_number (COLUMN *p);
-static int getoptnum (char const *n_str, int min, char const *errfmt);
-static void getoptarg (char *arg, char switch_char, char *character,
-                       int *number);
-static void print_files (int number_of_files, char **av);
-static void init_parameters (int number_of_files);
-static void init_header (char const *filename, int desc);
-static bool init_fps (int number_of_files, char **av);
-static void init_funcs (void);
-static void init_store_cols (void);
-static void store_columns (void);
-static void balance (int total_stored);
-static void store_char (char c);
-static void pad_down (unsigned int lines);
-static void read_rest_of_line (COLUMN *p);
-static void skip_read (COLUMN *p, int column_number);
-static void print_char (char c);
-static void cleanup (void);
-static void print_sep_string (void);
-static void separator_string (char const *optarg_S);
+સ્થિર પૂર્ણાંક char_to_clump (અક્ષર c);
+સ્થિર bool read_લીટી (COLUMN *p);
+સ્થિર bool print_page (શૂન્ય);
+સ્થિર bool print_stored (COLUMN *p);
+સ્થિર bool open_file (અક્ષર *name, COLUMN *p);
+સ્થિર bool skip_to_page (uintmax_t page);
+સ્થિર શૂન્ય print_header (શૂન્ય);
+સ્થિર શૂન્ય pad_across_to (પૂર્ણાંક position);
+સ્થિર શૂન્ય add_લીટી_સંખ્યા (COLUMN *p);
+સ્થિર પૂર્ણાંક getoptnum (અક્ષર અચલ *n_str, પૂર્ણાંક min, અક્ષર અચલ *errfmt);
+સ્થિર શૂન્ય getoptarg (અક્ષર *arg, અક્ષર switch_char, અક્ષર *character,
+                       પૂર્ણાંક *સંખ્યા);
+સ્થિર શૂન્ય print_files (પૂર્ણાંક સંખ્યા_of_files, અક્ષર **av);
+સ્થિર શૂન્ય init_parameters (પૂર્ણાંક સંખ્યા_of_files);
+સ્થિર શૂન્ય init_header (અક્ષર અચલ *filename, પૂર્ણાંક desc);
+સ્થિર bool init_fps (પૂર્ણાંક સંખ્યા_of_files, અક્ષર **av);
+સ્થિર શૂન્ય init_funcs (શૂન્ય);
+સ્થિર શૂન્ય init_store_cols (શૂન્ય);
+સ્થિર શૂન્ય store_columns (શૂન્ય);
+સ્થિર શૂન્ય balance (પૂર્ણાંક total_stored);
+સ્થિર શૂન્ય store_char (અક્ષર c);
+સ્થિર શૂન્ય pad_down (unsigned પૂર્ણાંક લીટીઓ);
+સ્થિર શૂન્ય read_rest_of_લીટી (COLUMN *p);
+સ્થિર શૂન્ય skip_read (COLUMN *p, પૂર્ણાંક column_સંખ્યા);
+સ્થિર શૂન્ય print_char (અક્ષર c);
+સ્થિર શૂન્ય cleanup (શૂન્ય);
+સ્થિર શૂન્ય print_sep_string (શૂન્ય);
+સ્થિર શૂન્ય separator_string (અક્ષર અચલ *optarg_S);
 
 /* All of the columns to print.  */
-static COLUMN *column_vector;
+સ્થિર COLUMN *column_vector;
 
 /* When printing a single file in multiple downward columns,
    we store the leftmost columns contiguously in buff.
    To print a line from buff, get the index of the first character
    from line_vector[i], and print up to line_vector[i + 1]. */
-static char *buff;
+સ્થિર અક્ષર *buff;
 
 /* Index of the position in buff where the next character
    will be stored. */
-static unsigned int buff_current;
+સ્થિર unsigned પૂર્ણાંક buff_current;
 
 /* The number of characters in buff.
    Used for allocation of buff and to detect overflow of buff. */
-static idx_t buff_allocated;
+સ્થિર idx_t buff_allocated;
 
 /* Array of indices into buff.
    Each entry is an index of the first character of a line.
    This is used when storing lines to facilitate shuffling when
    we do column balancing on the last page. */
-static int *line_vector;
+સ્થિર પૂર્ણાંક *લીટી_vector;
 
 /* Array of horizontal positions.
    For each line in line_vector, end_vector[line] is the horizontal
    position we are in after printing that line.  We keep track of this
    so that we know how much we need to pad to prepare for the next
    column. */
-static int *end_vector;
+સ્થિર પૂર્ણાંક *end_vector;
 
 /* (-m) True means we're printing multiple files in parallel. */
-static bool parallel_files = false;
+સ્થિર bool parallel_files = false;
 
 /* (-m) True means a line starts with some empty columns (some files
    already CLOSED or ON_HOLD) which we have to align. */
-static bool align_empty_cols;
+સ્થિર bool align_empty_cols;
 
 /* (-m) True means we have not yet found any printable column in a line.
    align_empty_cols = true  has to be maintained. */
-static bool empty_line;
+સ્થિર bool empty_લીટી;
 
 /* (-m) False means printable column output precedes a form feed found.
    Column alignment is done only once. No additional action with that form
    feed.
    True means we found only a form feed in a column. Maybe we have to do
    some column alignment with that form feed. */
-static bool FF_only;
+સ્થિર bool FF_only;
 
 /* (-[0-9]+) True means we're given an option explicitly specifying
    number of columns.  Used to detect when this option is used with -m
    and when translating old options to new/long options. */
-static bool explicit_columns = false;
+સ્થિર bool explicit_columns = false;
 
 /* (-t|-T) False means we aren't printing headers and footers. */
-static bool extremities = true;
+સ્થિર bool extremities = true;
 
 /* (-t) True means we retain all FF set by hand in input files.
    False is set with -T option. */
-static bool keep_FF = false;
-static bool print_a_FF = false;
+સ્થિર bool keep_FF = false;
+સ્થિર bool print_a_FF = false;
 
 /* True means we need to print a header as soon as we know we've got input
    to print after it. */
-static bool print_a_header;
+સ્થિર bool print_a_header;
 
 /* (-f) True means use formfeeds instead of newlines to separate pages. */
-static bool use_form_feed = false;
+સ્થિર bool use_form_feed = false;
 
 /* True means we have read the standard input. */
-static bool have_read_stdin = false;
+સ્થિર bool have_read_stdin = false;
 
 /* True means the -a flag has been given. */
-static bool print_across_flag = false;
+સ્થિર bool print_across_flag = false;
 
 /* True means we're printing one file in multiple (>1) downward columns. */
-static bool storing_columns = true;
+સ્થિર bool storing_columns = true;
 
 /* (-b) True means balance columns on the last page as Sys V does. */
 /* That's no longer an independent option. With storing_columns = true
    balance_columns = true is used too (s. function init_parameters).
    We get a consistent formulation with "FF set by hand" in input files. */
-static bool balance_columns = false;
+સ્થિર bool balance_columns = false;
 
 /* (-l) Number of lines on a page, including header and footer lines. */
-static int lines_per_page = 66;
+સ્થિર પૂર્ણાંક લીટીઓ_per_page = 66;
 
 /* Number of lines in the header and footer can be reset to 0 using
    the -t flag. */
-enum { lines_per_header = 5 };
-static int lines_per_body;
-enum { lines_per_footer = 5 };
+ગણના { લીટીઓ_per_header = 5 };
+સ્થિર પૂર્ણાંક લીટીઓ_per_body;
+ગણના { લીટીઓ_per_footer = 5 };
 
 /* (-w|-W) Width in characters of the page.  Does not include the width of
    the margin. */
-static int chars_per_line = 72;
+સ્થિર પૂર્ણાંક chars_per_લીટી = 72;
 
 /* (-w|W) True means we truncate lines longer than chars_per_column. */
-static bool truncate_lines = false;
+સ્થિર bool truncate_લીટીઓ = false;
 
 /* (-J) True means we join lines without any line truncation. -J
    dominates -w option. */
-static bool join_lines = false;
+સ્થિર bool join_લીટીઓ = false;
 
 /* Number of characters in a column.  Based on col_sep_length and
    page width. */
-static int chars_per_column;
+સ્થિર પૂર્ણાંક chars_per_column;
 
 /* (-e) True means convert tabs to spaces on input. */
-static bool untabify_input = false;
+સ્થિર bool untabify_આગત = false;
 
 /* (-e) The input tab character. */
-static char input_tab_char = '\t';
+સ્થિર અક્ષર આગત_tab_char = '\t';
 
 /* (-e) Tabstops are at chars_per_tab, 2*chars_per_tab, 3*chars_per_tab, ...
    where the leftmost column is 1. */
-static int chars_per_input_tab = 8;
+સ્થિર પૂર્ણાંક chars_per_આગત_tab = 8;
 
 /* (-i) True means convert spaces to tabs on output. */
-static bool tabify_output = false;
+સ્થિર bool tabify_output = false;
 
 /* (-i) The output tab character. */
-static char output_tab_char = '\t';
+સ્થિર અક્ષર output_tab_char = '\t';
 
 /* (-i) The width of the output tab. */
-static int chars_per_output_tab = 8;
+સ્થિર પૂર્ણાંક chars_per_output_tab = 8;
 
 /* Keeps track of pending white space.  When we hit a nonspace
    character after some whitespace, we print whitespace, tabbing
    if necessary to get to output_position + spaces_not_printed. */
-static int spaces_not_printed;
+સ્થિર પૂર્ણાંક spaces_not_printed;
 
 /* (-o) Number of spaces in the left margin (tabs used when possible). */
-static int chars_per_margin = 0;
+સ્થિર પૂર્ણાંક chars_per_margin = 0;
 
 /* Position where the next character will fall.
    Leftmost position is 0 + chars_per_margin.
    Rightmost position is chars_per_margin + chars_per_line - 1.
    This is important for converting spaces to tabs on output. */
-static int output_position;
+સ્થિર પૂર્ણાંક output_position;
 
 /* Horizontal position relative to the current file.
    (output_position depends on where we are on the page;
    input_position depends on where we are in the file.)
    Important for converting tabs to spaces on input. */
-static int input_position;
+સ્થિર પૂર્ણાંક આગત_position;
 
 /* True if there were any failed opens so we can exit with nonzero
    status.  */
-static bool failed_opens = false;
+સ્થિર bool failed_opens = false;
 
 /* The number of spaces taken up if we print a tab character with width
    c_ from position h_. */
@@ -604,18 +604,18 @@ static bool failed_opens = false;
 #define POS_AFTER_TAB(c_, h_) ((h_) + TAB_WIDTH (c_, h_))
 
 /* (-NNN) Number of columns of text to print. */
-static int columns = 1;
+સ્થિર પૂર્ણાંક columns = 1;
 
 /* (+NNN:MMM) Page numbers on which to begin and stop printing.
    first_page_number = 0  will be used to check input only. */
-static uintmax_t first_page_number = 0;
-static uintmax_t last_page_number = UINTMAX_MAX;
+સ્થિર uintmax_t first_page_સંખ્યા = 0;
+સ્થિર uintmax_t last_page_સંખ્યા = UINTMAX_MAX;
 
 /* Number of files open (not closed, not on hold). */
-static int files_ready_to_read = 0;
+સ્થિર પૂર્ણાંક files_ready_to_read = 0;
 
 /* Current page number.  Displayed in header. */
-static uintmax_t page_number;
+સ્થિર uintmax_t page_સંખ્યા;
 
 /* Current line number.  Displayed when -n flag is specified.
 
@@ -630,148 +630,148 @@ static uintmax_t page_number;
    Otherwise, line numbering is as follows:
    1    foo     3       goo     5       too
    2    moo     4       hoo     6       zoo */
-static int line_number;
+સ્થિર પૂર્ણાંક લીટી_સંખ્યા;
 
 /* (-n) True means lines should be preceded by numbers. */
-static bool numbered_lines = false;
+સ્થિર bool numbered_લીટીઓ = false;
 
 /* (-n) Character which follows each line number. */
-static char number_separator = '\t';
+સ્થિર અક્ષર સંખ્યા_separator = '\t';
 
 /* (-n) line counting starts with 1st line of input file (not with 1st
    line of 1st page printed). */
-static int line_count = 1;
+સ્થિર પૂર્ણાંક લીટી_ગણતરી = 1;
 
 /* (-n) True means counting of skipped lines starts with 1st line of
    input file. False means -N option is used in addition, counting of
    skipped lines not required. */
-static bool skip_count = true;
+સ્થિર bool skip_ગણતરી = true;
 
 /* (-N) Counting starts with start_line_number = NUMBER at 1st line of
    first page printed, usually not 1st page of input file. */
-static int start_line_num = 1;
+સ્થિર પૂર્ણાંક start_લીટી_અંક = 1;
 
 /* (-n) Width in characters of a line number. */
-static int chars_per_number = 5;
+સ્થિર પૂર્ણાંક chars_per_સંખ્યા = 5;
 
 /* Used when widening the first column to accommodate numbers -- only
    needed when printing files in parallel.  Includes width of both the
    number and the number_separator. */
-static int number_width;
+સ્થિર પૂર્ણાંક સંખ્યા_width;
 
 /* Buffer sprintf uses to format a line number. */
-static char *number_buff;
+સ્થિર અક્ષર *સંખ્યા_buff;
 
 /* (-v) True means nonprintable characters are printed as escape sequences.
    control-g becomes \007. */
-static bool use_esc_sequence = false;
+સ્થિર bool use_esc_sequence = false;
 
 /* (-c) True means nonprintable characters are printed as control prefixes.
    control-g becomes ^G. */
-static bool use_cntrl_prefix = false;
+સ્થિર bool use_cntrl_prefix = false;
 
 /* (-d) True means output is double spaced. */
-static bool double_space = false;
+સ્થિર bool double_space = false;
 
 /* Number of files opened initially in init_files.  Should be 1
    unless we're printing multiple files in parallel. */
-static int total_files = 0;
+સ્થિર પૂર્ણાંક total_files = 0;
 
 /* (-r) True means don't complain if we can't open a file. */
-static bool ignore_failed_opens = false;
+સ્થિર bool ignore_failed_opens = false;
 
 /* (-S) True means we separate columns with a specified string.
    -S option does not affect line truncation nor column alignment. */
-static bool use_col_separator = false;
+સ્થિર bool use_col_separator = false;
 
 /* String used to separate columns if the -S option has been specified.
    Default without -S but together with one of the column options
    -a|COLUMN|-m is a 'space' and with the -J option a 'tab'. */
-static char const *col_sep_string = "";
-static int col_sep_length = 0;
-static char *column_separator = (char *) " ";
-static char *line_separator = (char *) "\t";
+સ્થિર અક્ષર અચલ *col_sep_string = "";
+સ્થિર પૂર્ણાંક col_sep_length = 0;
+સ્થિર અક્ષર *column_separator = (અક્ષર *) " ";
+સ્થિર અક્ષર *લીટી_separator = (અક્ષર *) "\t";
 
 /* Number of separator characters waiting to be printed as soon as we
    know that we have any input remaining to be printed. */
-static int separators_not_printed;
+સ્થિર પૂર્ણાંક separators_not_printed;
 
 /* Position we need to pad to, as soon as we know that we have input
    remaining to be printed. */
-static int padding_not_printed;
+સ્થિર પૂર્ણાંક padding_not_printed;
 
 /* True means we should pad the end of the page.  Remains false until we
    know we have a page to print. */
-static bool pad_vertically;
+સ્થિર bool pad_vertically;
 
 /* (-h) String of characters used in place of the filename in the header. */
-static char *custom_header;
+સ્થિર અક્ષર *custom_header;
 
 /* (-D) Date format for the header.  */
-static char const *date_format;
+સ્થિર અક્ષર અચલ *date_format;
 
 /* The local time zone rules, as per the TZ environment variable.  */
-static timezone_t localtz;
+સ્થિર timezone_t localtz;
 
 /* Date and file name for the header.  */
-static char *date_text;
-static char const *file_text;
+સ્થિર અક્ષર *date_text;
+સ્થિર અક્ષર અચલ *file_text;
 
 /* Output columns available, not counting the date and file name.  */
-static int header_width_available;
+સ્થિર પૂર્ણાંક header_width_available;
 
-static char *clump_buff;
+સ્થિર અક્ષર *clump_buff;
 
 /* True means we read the line no. lines_per_body in skip_read
    called by skip_to_page. That variable controls the coincidence of a
    "FF set by hand" and "full_page_printed", see above the definition of
    structure COLUMN. */
-static bool last_line = false;
+સ્થિર bool last_લીટી = false;
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+ગણના
 {
   COLUMNS_OPTION = CHAR_MAX + 1,
   PAGES_OPTION
 };
 
-static char const short_options[] =
+સ્થિર અક્ષર અચલ short_options[] =
   "-0123456789D:FJN:S::TW:abcde::fh:i::l:mn::o:rs::tvw:";
 
-static struct option const long_options[] =
+સ્થિર સંરચના option અચલ long_options[] =
 {
-  {"pages", required_argument, NULL, PAGES_OPTION},
-  {"columns", required_argument, NULL, COLUMNS_OPTION},
-  {"across", no_argument, NULL, 'a'},
-  {"show-control-chars", no_argument, NULL, 'c'},
-  {"double-space", no_argument, NULL, 'd'},
-  {"date-format", required_argument, NULL, 'D'},
-  {"expand-tabs", optional_argument, NULL, 'e'},
-  {"form-feed", no_argument, NULL, 'f'},
-  {"header", required_argument, NULL, 'h'},
-  {"output-tabs", optional_argument, NULL, 'i'},
-  {"join-lines", no_argument, NULL, 'J'},
-  {"length", required_argument, NULL, 'l'},
-  {"merge", no_argument, NULL, 'm'},
-  {"number-lines", optional_argument, NULL, 'n'},
-  {"first-line-number", required_argument, NULL, 'N'},
-  {"indent", required_argument, NULL, 'o'},
-  {"no-file-warnings", no_argument, NULL, 'r'},
-  {"separator", optional_argument, NULL, 's'},
-  {"sep-string", optional_argument, NULL, 'S'},
-  {"omit-header", no_argument, NULL, 't'},
-  {"omit-pagination", no_argument, NULL, 'T'},
-  {"show-nonprinting", no_argument, NULL, 'v'},
-  {"width", required_argument, NULL, 'w'},
-  {"page-width", required_argument, NULL, 'W'},
+  {"pages", required_argument, ખાલી, PAGES_OPTION},
+  {"columns", required_argument, ખાલી, COLUMNS_OPTION},
+  {"across", no_argument, ખાલી, 'a'},
+  {"show-control-chars", no_argument, ખાલી, 'c'},
+  {"double-space", no_argument, ખાલી, 'd'},
+  {"date-format", required_argument, ખાલી, 'D'},
+  {"expand-tabs", optional_argument, ખાલી, 'e'},
+  {"form-feed", no_argument, ખાલી, 'f'},
+  {"header", required_argument, ખાલી, 'h'},
+  {"output-tabs", optional_argument, ખાલી, 'i'},
+  {"join-lines", no_argument, ખાલી, 'J'},
+  {"length", required_argument, ખાલી, 'l'},
+  {"merge", no_argument, ખાલી, 'm'},
+  {"number-lines", optional_argument, ખાલી, 'n'},
+  {"first-line-number", required_argument, ખાલી, 'N'},
+  {"indent", required_argument, ખાલી, 'o'},
+  {"no-file-warnings", no_argument, ખાલી, 'r'},
+  {"separator", optional_argument, ખાલી, 's'},
+  {"sep-string", optional_argument, ખાલી, 'S'},
+  {"omit-header", no_argument, ખાલી, 't'},
+  {"omit-pagination", no_argument, ખાલી, 'T'},
+  {"show-nonprinting", no_argument, ખાલી, 'v'},
+  {"width", required_argument, ખાલી, 'w'},
+  {"page-width", required_argument, ખાલી, 'W'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ખાલી, 0, ખાલી, 0}
 };
 
-static _Noreturn void
-integer_overflow (void)
+સ્થિર _Noreturn શૂન્ય
+integer_overflow (શૂન્ય)
 {
   error (EXIT_FAILURE, 0, _("integer overflow"));
 }
@@ -780,62 +780,62 @@ integer_overflow (void)
    stored lines. */
 
 ATTRIBUTE_PURE
-static unsigned int
-cols_ready_to_print (void)
+સ્થિર unsigned પૂર્ણાંક
+cols_ready_to_print (શૂન્ય)
 {
   COLUMN *q;
-  unsigned int i;
-  unsigned int n;
+  unsigned પૂર્ણાંક i;
+  unsigned પૂર્ણાંક n;
 
   n = 0;
-  for (q = column_vector, i = 0; i < columns; ++q, ++i)
-    if (q->status == OPEN
+  માટે (q = column_vector, i = 0; i < columns; ++q, ++i)
+    જો (q->status == OPEN
         || q->status == FF_FOUND	/* With -b: To print a header only */
-        || (storing_columns && q->lines_stored > 0 && q->lines_to_print > 0))
+        || (storing_columns && q->લીટીઓ_stored > 0 && q->લીટીઓ_to_print > 0))
       ++n;
-  return n;
+  પાછા n;
 }
 
 /* Estimate first_ / last_page_number
    using option +FIRST_PAGE:LAST_PAGE */
 
-static bool
-first_last_page (int oi, char c, char const *pages)
+સ્થિર bool
+first_last_page (પૂર્ણાંક oi, અક્ષર c, અક્ષર અચલ *pages)
 {
-  char *p;
+  અક્ષર *p;
   uintmax_t first;
   uintmax_t last = UINTMAX_MAX;
   strtol_error err = xstrtoumax (pages, &p, 10, &first, "");
-  if (err != LONGINT_OK && err != LONGINT_INVALID_SUFFIX_CHAR)
+  જો (err != LONGINT_OK && err != LONGINT_INVALID_SUFFIX_CHAR)
     xstrtol_fatal (err, oi, c, long_options, pages);
 
-  if (p == pages || !first)
-    return false;
+  જો (p == pages || !first)
+    પાછા false;
 
-  if (*p == ':')
+  જો (*p == ':')
     {
-      char const *p1 = p + 1;
+      અક્ષર અચલ *p1 = p + 1;
       err = xstrtoumax (p1, &p, 10, &last, "");
-      if (err != LONGINT_OK)
+      જો (err != LONGINT_OK)
         xstrtol_fatal (err, oi, c, long_options, pages);
-      if (p1 == p || last < first)
-        return false;
+      જો (p1 == p || last < first)
+        પાછા false;
     }
 
-  if (*p)
-    return false;
+  જો (*p)
+    પાછા false;
 
-  first_page_number = first;
-  last_page_number = last;
-  return true;
+  first_page_સંખ્યા = first;
+  last_page_સંખ્યા = last;
+  પાછા true;
 }
 
 /* Parse column count string S, and if it's valid (1 or larger and
    within range of the type of 'columns') set the global variables
    columns and explicit_columns.  Otherwise, exit with a diagnostic.  */
 
-static void
-parse_column_count (char const *s)
+સ્થિર શૂન્ય
+parse_column_ગણતરી (અક્ષર અચલ *s)
 {
   columns = getoptnum (s, 1, _("invalid number of columns"));
   explicit_columns = true;
@@ -843,27 +843,27 @@ parse_column_count (char const *s)
 
 /* Estimate length of col_sep_string with option -S.  */
 
-static void
-separator_string (char const *optarg_S)
+સ્થિર શૂન્ય
+separator_string (અક્ષર અચલ *optarg_S)
 {
   size_t len = strlen (optarg_S);
-  if (INT_MAX < len)
+  જો (INT_MAX < len)
     integer_overflow ();
   col_sep_length = len;
   col_sep_string = optarg_S;
 }
 
-int
-main (int argc, char **argv)
+પૂર્ણાંક
+મુખ્ય (પૂર્ણાંક argc, અક્ષર **argv)
 {
-  unsigned int n_files;
+  unsigned પૂર્ણાંક n_files;
   bool old_options = false;
   bool old_w = false;
   bool old_s = false;
-  char **file_names;
+  અક્ષર **file_names;
 
   /* Accumulate the digits of old-style options like -99.  */
-  char *column_count_string = NULL;
+  અક્ષર *column_ગણતરી_string = ખાલી;
   idx_t n_digits = 0;
   idx_t n_alloc = 0;
 
@@ -877,189 +877,189 @@ main (int argc, char **argv)
 
   n_files = 0;
   file_names = (argc > 1
-                ? xnmalloc (argc - 1, sizeof (char *))
-                : NULL);
+                ? xnmalloc (argc - 1, કદ (અક્ષર *))
+                : ખાલી);
 
-  while (true)
+  જ્યારે (true)
     {
-      int oi = -1;
-      int c = getopt_long (argc, argv, short_options, long_options, &oi);
-      if (c == -1)
-        break;
+      પૂર્ણાંક oi = -1;
+      પૂર્ણાંક c = getopt_long (argc, argv, short_options, long_options, &oi);
+      જો (c == -1)
+        તોડો;
 
-      if (c_isdigit (c))
+      જો (c_isdigit (c))
         {
           /* Accumulate column-count digits specified via old-style options. */
-          if (n_digits + 1 >= n_alloc)
-            column_count_string = xpalloc (column_count_string, &n_alloc, 2, -1,
-                                           sizeof *column_count_string);
-          column_count_string[n_digits++] = c;
-          column_count_string[n_digits] = '\0';
-          continue;
+          જો (n_digits + 1 >= n_alloc)
+            column_ગણતરી_string = xpalloc (column_ગણતરી_string, &n_alloc, 2, -1,
+                                           કદ *column_ગણતરી_string);
+          column_ગણતરી_string[n_digits++] = c;
+          column_ગણતરી_string[n_digits] = '\0';
+          ચાલુ;
         }
 
       n_digits = 0;
 
-      switch (c)
+      પસંદગી (c)
         {
-        case 1:			/* Non-option argument. */
+        સ્થિતિ 1:			/* Non-option argument. */
           /* long option --page dominates old '+FIRST_PAGE ...'.  */
-          if (! (first_page_number == 0
+          જો (! (first_page_સંખ્યા == 0
                  && *optarg == '+' && first_last_page (-2, '+', optarg + 1)))
             file_names[n_files++] = optarg;
-          break;
+          તોડો;
 
-        case PAGES_OPTION:	/* --pages=FIRST_PAGE[:LAST_PAGE] */
+        સ્થિતિ PAGES_OPTION:	/* --pages=FIRST_PAGE[:LAST_PAGE] */
           {			/* dominates old opt +... */
-            if (! optarg)
+            જો (! optarg)
               error (EXIT_FAILURE, 0,
                      _("'--pages=FIRST_PAGE[:LAST_PAGE]' missing argument"));
-            else if (! first_last_page (oi, 0, optarg))
+            નહીંતર જો (! first_last_page (oi, 0, optarg))
               error (EXIT_FAILURE, 0, _("invalid page range %s"),
                      quote (optarg));
-            break;
+            તોડો;
           }
 
-        case COLUMNS_OPTION:	/* --columns=COLS */
+        સ્થિતિ COLUMNS_OPTION:	/* --columns=COLS */
           {
-            parse_column_count (optarg);
+            parse_column_ગણતરી (optarg);
 
             /* If there was a prior column count specified via the
                short-named option syntax, e.g., -9, ensure that this
                long-name-specified value overrides it.  */
-            free (column_count_string);
-            column_count_string = NULL;
+            મુક્ત (column_ગણતરી_string);
+            column_ગણતરી_string = ખાલી;
             n_alloc = 0;
-            break;
+            તોડો;
           }
 
-        case 'a':
+        સ્થિતિ 'a':
           print_across_flag = true;
           storing_columns = false;
-          break;
-        case 'b':
+          તોડો;
+        સ્થિતિ 'b':
           balance_columns = true;
-          break;
-        case 'c':
+          તોડો;
+        સ્થિતિ 'c':
           use_cntrl_prefix = true;
-          break;
-        case 'd':
+          તોડો;
+        સ્થિતિ 'd':
           double_space = true;
-          break;
-        case 'D':
+          તોડો;
+        સ્થિતિ 'D':
           date_format = optarg;
-          break;
-        case 'e':
-          if (optarg)
-            getoptarg (optarg, 'e', &input_tab_char,
-                       &chars_per_input_tab);
+          તોડો;
+        સ્થિતિ 'e':
+          જો (optarg)
+            getoptarg (optarg, 'e', &આગત_tab_char,
+                       &chars_per_આગત_tab);
           /* Could check tab width > 0. */
-          untabify_input = true;
-          break;
-        case 'f':
-        case 'F':
+          untabify_આગત = true;
+          તોડો;
+        સ્થિતિ 'f':
+        સ્થિતિ 'F':
           use_form_feed = true;
-          break;
-        case 'h':
+          તોડો;
+        સ્થિતિ 'h':
           custom_header = optarg;
-          break;
-        case 'i':
-          if (optarg)
+          તોડો;
+        સ્થિતિ 'i':
+          જો (optarg)
             getoptarg (optarg, 'i', &output_tab_char,
                        &chars_per_output_tab);
           /* Could check tab width > 0. */
           tabify_output = true;
-          break;
-        case 'J':
-          join_lines = true;
-          break;
-        case 'l':
-          lines_per_page
+          તોડો;
+        સ્થિતિ 'J':
+          join_લીટીઓ = true;
+          તોડો;
+        સ્થિતિ 'l':
+          લીટીઓ_per_page
             = getoptnum (optarg, 1,
                          _("'-l PAGE_LENGTH' invalid number of lines"));
-          break;
-        case 'm':
+          તોડો;
+        સ્થિતિ 'm':
           parallel_files = true;
           storing_columns = false;
-          break;
-        case 'n':
-          numbered_lines = true;
-          if (optarg)
-            getoptarg (optarg, 'n', &number_separator,
-                       &chars_per_number);
-          break;
-        case 'N':
-          skip_count = false;
-          start_line_num
+          તોડો;
+        સ્થિતિ 'n':
+          numbered_લીટીઓ = true;
+          જો (optarg)
+            getoptarg (optarg, 'n', &સંખ્યા_separator,
+                       &chars_per_સંખ્યા);
+          તોડો;
+        સ્થિતિ 'N':
+          skip_ગણતરી = false;
+          start_લીટી_અંક
             = getoptnum (optarg, INT_MIN,
                          _("'-N NUMBER' invalid starting line number"));
-          break;
-        case 'o':
+          તોડો;
+        સ્થિતિ 'o':
           chars_per_margin = getoptnum (optarg, 0,
                                         _("'-o MARGIN' invalid line offset"));
-          break;
-        case 'r':
+          તોડો;
+        સ્થિતિ 'r':
           ignore_failed_opens = true;
-          break;
-        case 's':
+          તોડો;
+        સ્થિતિ 's':
           old_options = true;
           old_s = true;
-          if (!use_col_separator && optarg)
+          જો (!use_col_separator && optarg)
             separator_string (optarg);
-          break;
-        case 'S':
+          તોડો;
+        સ્થિતિ 'S':
           old_s = false;
           /* Reset an additional input of -s, -S dominates -s */
           col_sep_string = "";
           col_sep_length = 0;
           use_col_separator = true;
-          if (optarg)
+          જો (optarg)
             separator_string (optarg);
-          break;
-        case 't':
+          તોડો;
+        સ્થિતિ 't':
           extremities = false;
           keep_FF = true;
-          break;
-        case 'T':
+          તોડો;
+        સ્થિતિ 'T':
           extremities = false;
           keep_FF = false;
-          break;
-        case 'v':
+          તોડો;
+        સ્થિતિ 'v':
           use_esc_sequence = true;
-          break;
-        case 'w':
+          તોડો;
+        સ્થિતિ 'w':
           old_options = true;
           old_w = true;
           {
-            int tmp_cpl
+            પૂર્ણાંક tmp_cpl
               = getoptnum (optarg, 1,
                            _("'-w PAGE_WIDTH' invalid number of characters"));
-            if (! truncate_lines)
-              chars_per_line = tmp_cpl;
+            જો (! truncate_લીટીઓ)
+              chars_per_લીટી = tmp_cpl;
           }
-          break;
-        case 'W':
+          તોડો;
+        સ્થિતિ 'W':
           old_w = false;			/* dominates -w */
-          truncate_lines = true;
-          chars_per_line
+          truncate_લીટીઓ = true;
+          chars_per_લીટી
             = getoptnum (optarg, 1,
                          _("'-W PAGE_WIDTH' invalid number of characters"));
-          break;
+          તોડો;
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        મૂળભૂત:
           usage (EXIT_FAILURE);
-          break;
+          તોડો;
         }
     }
 
-  if (column_count_string)
+  જો (column_ગણતરી_string)
     {
-      parse_column_count (column_count_string);
-      free (column_count_string);
+      parse_column_ગણતરી (column_ગણતરી_string);
+      મુક્ત (column_ગણતરી_string);
     }
 
-  if (! date_format)
+  જો (! date_format)
     date_format = (getenv ("POSIXLY_CORRECT") && !hard_locale (LC_TIME)
                    ? "%b %e %H:%M %Y"
                    : "%Y-%m-%d %H:%M");
@@ -1067,14 +1067,14 @@ main (int argc, char **argv)
   localtz = tzalloc (getenv ("TZ"));
 
   /* Now we can set a reasonable initial value: */
-  if (first_page_number == 0)
-    first_page_number = 1;
+  જો (first_page_સંખ્યા == 0)
+    first_page_સંખ્યા = 1;
 
-  if (parallel_files && explicit_columns)
+  જો (parallel_files && explicit_columns)
     error (EXIT_FAILURE, 0,
            _("cannot specify number of columns when printing in parallel"));
 
-  if (parallel_files && print_across_flag)
+  જો (parallel_files && print_across_flag)
     error (EXIT_FAILURE, 0,
            _("cannot specify both printing across and printing in parallel"));
 
@@ -1082,39 +1082,39 @@ main (int argc, char **argv)
    To meet downward compatibility with other UNIX pr utilities
    and some POSIX specifications. */
 
-  if (old_options)
+  જો (old_options)
     {
-      if (old_w)
+      જો (old_w)
         {
-          if (parallel_files || explicit_columns)
+          જો (parallel_files || explicit_columns)
             {
               /* activate -W */
-              truncate_lines = true;
-              if (old_s)
+              truncate_લીટીઓ = true;
+              જો (old_s)
                 /* adapt HP-UX and SunOS: -s = no separator;
                    activate -S */
                 use_col_separator = true;
             }
-          else
+          નહીંતર
             /* old -w sets width with columns only
                activate -J */
-            join_lines = true;
+            join_લીટીઓ = true;
         }
-      else if (!use_col_separator)
+      નહીંતર જો (!use_col_separator)
         {
           /* No -S option read */
-          if (old_s && (parallel_files || explicit_columns))
+          જો (old_s && (parallel_files || explicit_columns))
             {
-              if (!truncate_lines)
+              જો (!truncate_લીટીઓ)
                 {
                   /* old -s (without -w and -W) annuls column alignment,
                   uses fields, activate -J */
-                  join_lines = true;
-                  if (col_sep_length > 0)
+                  join_લીટીઓ = true;
+                  જો (col_sep_length > 0)
                     /* activate -S */
                     use_col_separator = true;
                 }
-              else
+              નહીંતર
                 /* with -W */
                 /* adapt HP-UX and SunOS: -s = no separator;
                    activate -S */
@@ -1123,40 +1123,40 @@ main (int argc, char **argv)
         }
     }
 
-  for (; optind < argc; optind++)
+  માટે (; optind < argc; optind++)
     {
       file_names[n_files++] = argv[optind];
     }
 
-  if (n_files == 0)
+  જો (n_files == 0)
     {
       /* No file arguments specified;  read from standard input.  */
-      print_files (0, NULL);
+      print_files (0, ખાલી);
     }
-  else
+  નહીંતર
     {
-      if (parallel_files)
+      જો (parallel_files)
         print_files (n_files, file_names);
-      else
+      નહીંતર
         {
-          for (unsigned int i = 0; i < n_files; i++)
+          માટે (unsigned પૂર્ણાંક i = 0; i < n_files; i++)
             print_files (1, &file_names[i]);
         }
     }
 
   cleanup ();
 
-  if (have_read_stdin && fclose (stdin) == EOF)
+  જો (have_read_stdin && fclose (stdin) == EOF)
     error (EXIT_FAILURE, errno, _("standard input"));
   main_exit (failed_opens ? EXIT_FAILURE : EXIT_SUCCESS);
 }
 
 /* Parse numeric arguments, ensuring MIN <= number <= INT_MAX.  */
 
-static int
-getoptnum (char const *n_str, int min, char const *err)
+સ્થિર પૂર્ણાંક
+getoptnum (અક્ષર અચલ *n_str, પૂર્ણાંક min, અક્ષર અચલ *err)
 {
-  return xnumtoimax (n_str, 10, min, INT_MAX, "", err, 0,
+  પાછા xnumtoimax (n_str, 10, min, INT_MAX, "", err, 0,
                      min <= 0 ? 0 : XTOINT_MIN_RANGE);
 }
 
@@ -1166,82 +1166,82 @@ getoptnum (char const *n_str, int min, char const *err)
    separator, and k is the optional width of the field used when printing
    a number. */
 
-static void
-getoptarg (char *arg, char switch_char, char *character, int *number)
+સ્થિર શૂન્ય
+getoptarg (અક્ષર *arg, અક્ષર switch_char, અક્ષર *character, પૂર્ણાંક *સંખ્યા)
 {
-  char const *num = arg;
+  અક્ષર અચલ *અંક = arg;
 
-  if (!*num)
+  જો (!*અંક)
     {
-      error (0, 0, _("'-%c': Invalid argument: %s"), switch_char, quote (num));
+      error (0, 0, _("'-%c': Invalid argument: %s"), switch_char, quote (અંક));
       usage (EXIT_FAILURE);
     }
 
-  if (!c_isdigit (*num))
-    *character = *num++;
-  if (*num)
+  જો (!c_isdigit (*અંક))
+    *character = *અંક++;
+  જો (*અંક)
     {
-      long int tmp_long;
-      strtol_error e = xstrtol (num, NULL, 10, &tmp_long, "");
-      if (e == LONGINT_OK)
+      long પૂર્ણાંક tmp_long;
+      strtol_error e = xstrtol (અંક, ખાલી, 10, &tmp_long, "");
+      જો (e == LONGINT_OK)
         {
-          if (tmp_long <= 0)
+          જો (tmp_long <= 0)
             e = LONGINT_INVALID;
-          else if (INT_MAX < tmp_long)
+          નહીંતર જો (INT_MAX < tmp_long)
             e = LONGINT_OVERFLOW;
         }
-      if (e != LONGINT_OK)
+      જો (e != LONGINT_OK)
         {
           error (0, e & LONGINT_OVERFLOW ? EOVERFLOW : 0,
              _("'-%c' extra characters or invalid number in the argument: %s"),
                  switch_char, quote (arg));
           usage (EXIT_FAILURE);
         }
-      *number = tmp_long;
+      *સંખ્યા = tmp_long;
     }
 }
 
 /* Set parameters related to formatting. */
 
-static void
-init_parameters (int number_of_files)
+સ્થિર શૂન્ય
+init_parameters (પૂર્ણાંક સંખ્યા_of_files)
 {
-  int chars_used_by_number = 0;
+  પૂર્ણાંક chars_used_by_સંખ્યા = 0;
 
-  lines_per_body = lines_per_page - lines_per_header - lines_per_footer;
-  if (lines_per_body <= 0)
+  લીટીઓ_per_body = લીટીઓ_per_page - લીટીઓ_per_header - લીટીઓ_per_footer;
+  જો (લીટીઓ_per_body <= 0)
     {
       extremities = false;
       keep_FF = true;
     }
-  if (! extremities)
-    lines_per_body = lines_per_page;
+  જો (! extremities)
+    લીટીઓ_per_body = લીટીઓ_per_page;
 
-  if (double_space)
-    lines_per_body = MAX (1, lines_per_body / 2);
+  જો (double_space)
+    લીટીઓ_per_body = MAX (1, લીટીઓ_per_body / 2);
 
   /* If input is stdin, cannot print parallel files.  BSD dumps core
      on this. */
-  if (number_of_files == 0)
+  જો (સંખ્યા_of_files == 0)
     parallel_files = false;
 
-  if (parallel_files)
-    columns = number_of_files;
+  જો (parallel_files)
+    columns = સંખ્યા_of_files;
 
   /* One file, multi columns down: -b option is set to get a consistent
      formulation with "FF set by hand" in input files. */
-  if (storing_columns)
+  જો (storing_columns)
     balance_columns = true;
 
   /* Tabification is assumed for multiple columns. */
-  if (columns > 1)
+  જો (columns > 1)
     {
-      if (!use_col_separator)
+      જો (!use_col_separator)
         {
           /* Use default separator */
-          if (join_lines)
-            col_sep_string = line_separator;
-          else
+          જો (join_લીટીઓ)
+            col_sep_string = લીટી_separator;
+          નહીંતર
             col_sep_string = column_separator;
 
           col_sep_length = 1;
@@ -1249,26 +1249,26 @@ init_parameters (int number_of_files)
         }
       /* It's rather pointless to define a TAB separator with column
          alignment */
-      else if (!join_lines && col_sep_length == 1 && *col_sep_string == '\t')
+      નહીંતર જો (!join_લીટીઓ && col_sep_length == 1 && *col_sep_string == '\t')
         col_sep_string = column_separator;
 
-      truncate_lines = true;
-      if (! (col_sep_length == 1 && *col_sep_string == '\t'))
-        untabify_input = true;
+      truncate_લીટીઓ = true;
+      જો (! (col_sep_length == 1 && *col_sep_string == '\t'))
+        untabify_આગત = true;
       tabify_output = true;
     }
-  else
+  નહીંતર
     storing_columns = false;
 
   /* -J dominates -w in any case */
-  if (join_lines)
-    truncate_lines = false;
+  જો (join_લીટીઓ)
+    truncate_લીટીઓ = false;
 
-  if (numbered_lines)
+  જો (numbered_લીટીઓ)
     {
-      int chars_per_default_tab = 8;
+      પૂર્ણાંક chars_per_default_tab = 8;
 
-      line_count = start_line_num;
+      લીટી_ગણતરી = start_લીટી_અંક;
 
       /* To allow input tab-expansion (-e sensitive) use:
          if (number_separator == input_tab_char)
@@ -1276,34 +1276,34 @@ init_parameters (int number_of_files)
              + TAB_WIDTH (chars_per_input_tab, chars_per_number);   */
 
       /* Estimate chars_per_text without any margin and keep it constant. */
-      if (number_separator == '\t')
-        number_width = (chars_per_number
-                        + TAB_WIDTH (chars_per_default_tab, chars_per_number));
-      else
-        number_width = chars_per_number + 1;
+      જો (સંખ્યા_separator == '\t')
+        સંખ્યા_width = (chars_per_સંખ્યા
+                        + TAB_WIDTH (chars_per_default_tab, chars_per_સંખ્યા));
+      નહીંતર
+        સંખ્યા_width = chars_per_સંખ્યા + 1;
 
       /* The number is part of the column width unless we are
          printing files in parallel. */
-      if (parallel_files)
-        chars_used_by_number = number_width;
+      જો (parallel_files)
+        chars_used_by_સંખ્યા = સંખ્યા_width;
     }
 
-  int sep_chars, useful_chars;
-  if (ckd_mul (&sep_chars, columns - 1, col_sep_length))
+  પૂર્ણાંક sep_chars, useful_chars;
+  જો (ckd_mul (&sep_chars, columns - 1, col_sep_length))
     sep_chars = INT_MAX;
-  if (ckd_sub (&useful_chars, chars_per_line - chars_used_by_number,
+  જો (ckd_sub (&useful_chars, chars_per_લીટી - chars_used_by_સંખ્યા,
                sep_chars))
     useful_chars = 0;
   chars_per_column = useful_chars / columns;
 
-  if (chars_per_column < 1)
+  જો (chars_per_column < 1)
     error (EXIT_FAILURE, 0, _("page width too narrow"));
 
-  if (numbered_lines)
+  જો (numbered_લીટીઓ)
     {
-      free (number_buff);
-      number_buff = xmalloc (MAX (chars_per_number,
-                                  INT_STRLEN_BOUND (line_number)) + 1);
+      મુક્ત (સંખ્યા_buff);
+      સંખ્યા_buff = xmalloc (MAX (chars_per_સંખ્યા,
+                                  INT_STRLEN_BOUND (લીટી_સંખ્યા)) + 1);
     }
 
   /* Pick the maximum between the tab width and the width of an
@@ -1311,8 +1311,8 @@ init_parameters (int number_of_files)
      The width of an escape sequence (4) isn't the lower limit any longer.
      We've to use 8 as the lower limit, if we use chars_per_default_tab = 8
      to expand a tab which is not an input_tab-char. */
-  free (clump_buff);
-  clump_buff = xmalloc (MAX (8, chars_per_input_tab));
+  મુક્ત (clump_buff);
+  clump_buff = xmalloc (MAX (8, chars_per_આગત_tab));
 }
 
 /* Open the necessary files,
@@ -1326,42 +1326,42 @@ init_parameters (int number_of_files)
    With each column/file p, p->full_page_printed is initialized,
    see also open_file.  */
 
-static bool
-init_fps (int number_of_files, char **av)
+સ્થિર bool
+init_fps (પૂર્ણાંક સંખ્યા_of_files, અક્ષર **av)
 {
   COLUMN *p;
 
   total_files = 0;
 
-  free (column_vector);
-  column_vector = xnmalloc (columns, sizeof (COLUMN));
+  મુક્ત (column_vector);
+  column_vector = xnmalloc (columns, કદ (COLUMN));
 
-  if (parallel_files)
+  જો (parallel_files)
     {
-      int files_left = number_of_files;
-      for (p = column_vector; files_left--; ++p, ++av)
+      પૂર્ણાંક files_ડાબું = સંખ્યા_of_files;
+      માટે (p = column_vector; files_ડાબું--; ++p, ++av)
         {
-          if (! open_file (*av, p))
+          જો (! open_file (*av, p))
             {
               --p;
               --columns;
             }
         }
-      if (columns == 0)
-        return false;
+      જો (columns == 0)
+        પાછા false;
       init_header ("", -1);
     }
-  else
+  નહીંતર
     {
       p = column_vector;
-      if (number_of_files > 0)
+      જો (સંખ્યા_of_files > 0)
         {
-          if (! open_file (*av, p))
-            return false;
+          જો (! open_file (*av, p))
+            પાછા false;
           init_header (*av, fileno (p->fp));
-          p->lines_stored = 0;
+          p->લીટીઓ_stored = 0;
         }
-      else
+      નહીંતર
         {
           p->name = _("standard input");
           p->fp = stdin;
@@ -1370,23 +1370,23 @@ init_fps (int number_of_files, char **av)
           p->full_page_printed = false;
           ++total_files;
           init_header ("", -1);
-          p->lines_stored = 0;
+          p->લીટીઓ_stored = 0;
         }
 
-      char const *firstname = p->name;
+      અક્ષર અચલ *firstname = p->name;
       FILE *firstfp = p->fp;
-      int i;
-      for (i = columns - 1, ++p; i; --i, ++p)
+      પૂર્ણાંક i;
+      માટે (i = columns - 1, ++p; i; --i, ++p)
         {
           p->name = firstname;
           p->fp = firstfp;
           p->status = OPEN;
           p->full_page_printed = false;
-          p->lines_stored = 0;
+          p->લીટીઓ_stored = 0;
         }
     }
   files_ready_to_read = total_files;
-  return true;
+  પાછા true;
 }
 
 /* Determine print_func and char_func, the functions
@@ -1395,24 +1395,24 @@ init_fps (int number_of_files, char **av)
    Determine the horizontal position desired when we begin
    printing a column (p->start_position). */
 
-static void
-init_funcs (void)
+સ્થિર શૂન્ય
+init_funcs (શૂન્ય)
 {
-  int i, h, h_next;
+  પૂર્ણાંક i, h, h_next;
   COLUMN *p;
 
   h = chars_per_margin;
 
-  if (!truncate_lines)
+  જો (!truncate_લીટીઓ)
     h_next = ANYWHERE;
-  else
+  નહીંતર
     {
       /* When numbering lines of parallel files, we enlarge the
          first column to accommodate the number.  Looks better than
          the Sys V approach. */
-      if (parallel_files && numbered_lines)
-        h_next = h + chars_per_column + number_width;
-      else
+      જો (parallel_files && numbered_લીટીઓ)
+        h_next = h + chars_per_column + સંખ્યા_width;
+      નહીંતર
         h_next = h + chars_per_column;
     }
 
@@ -1422,35 +1422,35 @@ init_funcs (void)
 
   /* This loop takes care of all but the rightmost column. */
 
-  for (p = column_vector, i = 1; i < columns; ++p, ++i)
+  માટે (p = column_vector, i = 1; i < columns; ++p, ++i)
     {
-      if (storing_columns)	/* One file, multi columns down. */
+      જો (storing_columns)	/* One file, multi columns down. */
         {
           p->char_func = store_char;
           p->print_func = print_stored;
         }
-      else
+      નહીંતર
         /* One file, multi columns across; or parallel files.  */
         {
           p->char_func = print_char;
-          p->print_func = read_line;
+          p->print_func = read_લીટી;
         }
 
       /* Number only the first column when printing files in
          parallel. */
-      p->numbered = numbered_lines && (!parallel_files || i == 1);
+      p->numbered = numbered_લીટીઓ && (!parallel_files || i == 1);
       p->start_position = h;
 
       /* If we don't truncate lines, all start_positions are
          ANYWHERE, except the first column's start_position when
          using a margin. */
 
-      if (!truncate_lines)
+      જો (!truncate_લીટીઓ)
         {
           h = ANYWHERE;
           h_next = ANYWHERE;
         }
-      else
+      નહીંતર
         {
           h = h_next + col_sep_length;
           h_next = h + chars_per_column;
@@ -1461,18 +1461,18 @@ init_funcs (void)
 
      Doesn't need to be stored unless we intend to balance
      columns on the last page. */
-  if (storing_columns && balance_columns)
+  જો (storing_columns && balance_columns)
     {
       p->char_func = store_char;
       p->print_func = print_stored;
     }
-  else
+  નહીંતર
     {
       p->char_func = print_char;
-      p->print_func = read_line;
+      p->print_func = read_લીટી;
     }
 
-  p->numbered = numbered_lines && (!parallel_files || i == 1);
+  p->numbered = numbered_લીટીઓ && (!parallel_files || i == 1);
   p->start_position = h;
 }
 
@@ -1481,32 +1481,32 @@ init_funcs (void)
    With each file p, p->full_page_printed is initialized,
    see also init_fps. */
 
-static bool
-open_file (char *name, COLUMN *p)
+સ્થિર bool
+open_file (અક્ષર *name, COLUMN *p)
 {
-  if (streq (name, "-"))
+  જો (streq (name, "-"))
     {
       p->name = _("standard input");
       p->fp = stdin;
       have_read_stdin = true;
     }
-  else
+  નહીંતર
     {
       p->name = name;
       p->fp = fopen (name, "r");
     }
-  if (p->fp == NULL)
+  જો (p->fp == ખાલી)
     {
       failed_opens = true;
-      if (!ignore_failed_opens)
+      જો (!ignore_failed_opens)
         error (0, errno, "%s", quotef (name));
-      return false;
+      પાછા false;
     }
   fadvise (p->fp, FADVISE_SEQUENTIAL);
   p->status = OPEN;
   p->full_page_printed = false;
   ++total_files;
-  return true;
+  પાછા true;
 }
 
 /* Close the file in P.
@@ -1514,40 +1514,40 @@ open_file (char *name, COLUMN *p)
    If we aren't dealing with multiple files in parallel, we change
    the status of all columns in the column list to reflect the close. */
 
-static void
+સ્થિર શૂન્ય
 close_file (COLUMN *p)
 {
   COLUMN *q;
-  int i;
+  પૂર્ણાંક i;
 
-  if (p->status == CLOSED)
-    return;
+  જો (p->status == CLOSED)
+    પાછા;
 
-  int err = errno;
-  if (!ferror (p->fp))
+  પૂર્ણાંક err = errno;
+  જો (!ferror (p->fp))
     err = 0;
-  if (fileno (p->fp) == STDIN_FILENO)
+  જો (fileno (p->fp) == STDIN_FILENO)
     clearerr (p->fp);
-  else if (fclose (p->fp) != 0 && !err)
+  નહીંતર જો (fclose (p->fp) != 0 && !err)
     err = errno;
-  if (err)
+  જો (err)
     error (EXIT_FAILURE, err, "%s", quotef (p->name));
 
-  if (!parallel_files)
+  જો (!parallel_files)
     {
-      for (q = column_vector, i = columns; i; ++q, --i)
+      માટે (q = column_vector, i = columns; i; ++q, --i)
         {
           q->status = CLOSED;
-          if (q->lines_stored == 0)
+          જો (q->લીટીઓ_stored == 0)
             {
-              q->lines_to_print = 0;
+              q->લીટીઓ_to_print = 0;
             }
         }
     }
-  else
+  નહીંતર
     {
       p->status = CLOSED;
-      p->lines_to_print = 0;
+      p->લીટીઓ_to_print = 0;
     }
 
   --files_ready_to_read;
@@ -1559,49 +1559,49 @@ close_file (COLUMN *p)
    If we aren't dealing with parallel files, we must change the
    status of all columns in the column list. */
 
-static void
+સ્થિર શૂન્ય
 hold_file (COLUMN *p)
 {
   COLUMN *q;
-  int i;
+  પૂર્ણાંક i;
 
-  if (!parallel_files)
-    for (q = column_vector, i = columns; i; ++q, --i)
+  જો (!parallel_files)
+    માટે (q = column_vector, i = columns; i; ++q, --i)
       {
-        if (storing_columns)
+        જો (storing_columns)
           q->status = FF_FOUND;
-        else
+        નહીંતર
           q->status = ON_HOLD;
       }
-  else
+  નહીંતર
     p->status = ON_HOLD;
 
-  p->lines_to_print = 0;
+  p->લીટીઓ_to_print = 0;
   --files_ready_to_read;
 }
 
 /* Undo hold_file -- go through the column list and change any
    ON_HOLD columns to OPEN.  Used at the end of each page. */
 
-static void
-reset_status (void)
+સ્થિર શૂન્ય
+reset_status (શૂન્ય)
 {
-  int i = columns;
+  પૂર્ણાંક i = columns;
   COLUMN *p;
 
-  for (p = column_vector; i; --i, ++p)
-    if (p->status == ON_HOLD)
+  માટે (p = column_vector; i; --i, ++p)
+    જો (p->status == ON_HOLD)
       {
         p->status = OPEN;
         files_ready_to_read++;
       }
 
-  if (storing_columns)
+  જો (storing_columns)
     {
-      if (column_vector->status == CLOSED)
+      જો (column_vector->status == CLOSED)
         /* We use the info to output an error message in  skip_to_page. */
         files_ready_to_read = 0;
-      else
+      નહીંતર
         files_ready_to_read = 1;
     }
 }
@@ -1615,29 +1615,29 @@ reset_status (void)
    in each column.
    Print the file(s). */
 
-static void
-print_files (int number_of_files, char **av)
+સ્થિર શૂન્ય
+print_files (પૂર્ણાંક સંખ્યા_of_files, અક્ષર **av)
 {
-  init_parameters (number_of_files);
-  if (! init_fps (number_of_files, av))
-    return;
-  if (storing_columns)
+  init_parameters (સંખ્યા_of_files);
+  જો (! init_fps (સંખ્યા_of_files, av))
+    પાછા;
+  જો (storing_columns)
     init_store_cols ();
 
-  if (first_page_number > 1)
+  જો (first_page_સંખ્યા > 1)
     {
-      if (!skip_to_page (first_page_number))
-        return;
-      else
-        page_number = first_page_number;
+      જો (!skip_to_page (first_page_સંખ્યા))
+        પાછા;
+      નહીંતર
+        page_સંખ્યા = first_page_સંખ્યા;
     }
-  else
-    page_number = 1;
+  નહીંતર
+    page_સંખ્યા = 1;
 
   init_funcs ();
 
-  line_number = line_count;
-  while (print_page ())
+  લીટી_સંખ્યા = લીટી_ગણતરી;
+  જ્યારે (print_page ())
     ;
 }
 
@@ -1645,50 +1645,50 @@ print_files (int number_of_files, char **av)
    If DESC is non-negative, it is a file descriptor open to
    FILENAME for reading.  */
 
-static void
-init_header (char const *filename, int desc)
+સ્થિર શૂન્ય
+init_header (અક્ષર અચલ *filename, પૂર્ણાંક desc)
 {
-  char *buf = NULL;
-  struct stat st;
-  struct timespec t;
-  int ns;
-  struct tm tm;
+  અક્ષર *buf = ખાલી;
+  સંરચના stat st;
+  સંરચના timespec t;
+  પૂર્ણાંક ns;
+  સંરચના tm tm;
 
   /* If parallel files or standard input, use current date. */
-  if (streq (filename, "-"))
+  જો (streq (filename, "-"))
     desc = -1;
-  if (0 <= desc && fstat (desc, &st) == 0)
+  જો (0 <= desc && fstat (desc, &st) == 0)
     t = get_stat_mtime (&st);
-  else
+  નહીંતર
     {
-      static struct timespec timespec;
-      if (! timespec.tv_sec)
+      સ્થિર સંરચના timespec timespec;
+      જો (! timespec.tv_sec)
         gettime (&timespec);
       t = timespec;
     }
 
   ns = t.tv_nsec;
-  if (localtime_rz (localtz, &t.tv_sec, &tm))
+  જો (localtime_rz (localtz, &t.tv_sec, &tm))
     {
-      ptrdiff_t len = nstrftime (NULL, MIN (PTRDIFF_MAX, SIZE_MAX),
+      ptrdiff_t len = nstrftime (ખાલી, MIN (PTRDIFF_MAX, SIZE_MAX),
                                  date_format, &tm, localtz, ns);
-      if (0 <= len)
+      જો (0 <= len)
         {
           buf = ximalloc (len + 1);
           nstrftime (buf, len + 1, date_format, &tm, localtz, ns);
         }
     }
-  if (!buf)
+  જો (!buf)
     {
-      char secbuf[INT_BUFSIZE_BOUND (intmax_t)];
-      buf = xmalloc (sizeof secbuf + MAX (10, INT_BUFSIZE_BOUND (int)));
+      અક્ષર secbuf[INT_BUFSIZE_BOUND (intmax_t)];
+      buf = xmalloc (કદ secbuf + MAX (10, INT_BUFSIZE_BOUND (પૂર્ણાંક)));
       sprintf (buf, "%s.%09d", timetostr (t.tv_sec, secbuf), ns);
     }
 
-  free (date_text);
+  મુક્ત (date_text);
   date_text = buf;
   file_text = custom_header ? custom_header : desc < 0 ? "" : filename;
-  header_width_available = (chars_per_line
+  header_width_available = (chars_per_લીટી
                             - mbswidth (date_text, 0)
                             - mbswidth (file_text, 0));
 }
@@ -1703,66 +1703,66 @@ init_header (char const *filename, int desc)
    if we're reading straight from the file)
    Keep track of this total so we know when to stop printing */
 
-static void
-init_page (void)
+સ્થિર શૂન્ય
+init_page (શૂન્ય)
 {
-  int j;
+  પૂર્ણાંક j;
   COLUMN *p;
 
-  if (storing_columns)
+  જો (storing_columns)
     {
       store_columns ();
-      for (j = columns - 1, p = column_vector; j; --j, ++p)
+      માટે (j = columns - 1, p = column_vector; j; --j, ++p)
         {
-          p->lines_to_print = p->lines_stored;
+          p->લીટીઓ_to_print = p->લીટીઓ_stored;
         }
 
       /* Last column. */
-      if (balance_columns)
+      જો (balance_columns)
         {
-          p->lines_to_print = p->lines_stored;
+          p->લીટીઓ_to_print = p->લીટીઓ_stored;
         }
       /* Since we're not balancing columns, we don't need to store
          the rightmost column.   Read it straight from the file. */
-      else
+      નહીંતર
         {
-          if (p->status == OPEN)
+          જો (p->status == OPEN)
             {
-              p->lines_to_print = lines_per_body;
+              p->લીટીઓ_to_print = લીટીઓ_per_body;
             }
-          else
-            p->lines_to_print = 0;
+          નહીંતર
+            p->લીટીઓ_to_print = 0;
         }
     }
-  else
-    for (j = columns, p = column_vector; j; --j, ++p)
-      if (p->status == OPEN)
+  નહીંતર
+    માટે (j = columns, p = column_vector; j; --j, ++p)
+      જો (p->status == OPEN)
         {
-          p->lines_to_print = lines_per_body;
+          p->લીટીઓ_to_print = લીટીઓ_per_body;
         }
-      else
-        p->lines_to_print = 0;
+      નહીંતર
+        p->લીટીઓ_to_print = 0;
 }
 
 /* Align empty columns and print separators.
    Empty columns will be formed by files with status ON_HOLD or CLOSED
    when printing multiple files in parallel. */
 
-static void
+સ્થિર શૂન્ય
 align_column (COLUMN *p)
 {
   padding_not_printed = p->start_position;
-  if (col_sep_length < padding_not_printed)
+  જો (col_sep_length < padding_not_printed)
     {
       pad_across_to (padding_not_printed - col_sep_length);
       padding_not_printed = ANYWHERE;
     }
 
-  if (use_col_separator)
+  જો (use_col_separator)
     print_sep_string ();
 
-  if (p->numbered)
-    add_line_number (p);
+  જો (p->numbered)
+    add_લીટી_સંખ્યા (p);
 }
 
 /* Print one page.
@@ -1776,11 +1776,11 @@ align_column (COLUMN *p)
    reset the status of all files -- any files which where on hold because
    of formfeeds are now put back into the lineup. */
 
-static bool
-print_page (void)
+સ્થિર bool
+print_page (શૂન્ય)
 {
-  int j;
-  int lines_left_on_page;
+  પૂર્ણાંક j;
+  પૂર્ણાંક લીટીઓ_ડાબું_on_page;
   COLUMN *p;
 
   /* Used as an accumulator (with | operator) of successive values of
@@ -1794,111 +1794,111 @@ print_page (void)
 
   init_page ();
 
-  if (cols_ready_to_print () == 0)
-    return false;
+  જો (cols_ready_to_print () == 0)
+    પાછા false;
 
-  if (extremities)
+  જો (extremities)
     print_a_header = true;
 
   /* Don't pad unless we know a page was printed. */
   pad_vertically = false;
   pv = false;
 
-  lines_left_on_page = lines_per_body;
-  if (double_space)
-    lines_left_on_page *= 2;
+  લીટીઓ_ડાબું_on_page = લીટીઓ_per_body;
+  જો (double_space)
+    લીટીઓ_ડાબું_on_page *= 2;
 
-  while (lines_left_on_page > 0 && cols_ready_to_print () > 0)
+  જ્યારે (લીટીઓ_ડાબું_on_page > 0 && cols_ready_to_print () > 0)
     {
       output_position = 0;
       spaces_not_printed = 0;
       separators_not_printed = 0;
       pad_vertically = false;
       align_empty_cols = false;
-      empty_line = true;
+      empty_લીટી = true;
 
-      for (j = 1, p = column_vector; j <= columns; ++j, ++p)
+      માટે (j = 1, p = column_vector; j <= columns; ++j, ++p)
         {
-          input_position = 0;
-          if (p->lines_to_print > 0 || p->status == FF_FOUND)
+          આગત_position = 0;
+          જો (p->લીટીઓ_to_print > 0 || p->status == FF_FOUND)
             {
               FF_only = false;
               padding_not_printed = p->start_position;
-              if (!(p->print_func) (p))
-                read_rest_of_line (p);
+              જો (!(p->print_func) (p))
+                read_rest_of_લીટી (p);
               pv |= pad_vertically;
 
-              --p->lines_to_print;
-              if (p->lines_to_print <= 0)
+              --p->લીટીઓ_to_print;
+              જો (p->લીટીઓ_to_print <= 0)
                 {
-                  if (cols_ready_to_print () == 0)
-                    break;
+                  જો (cols_ready_to_print () == 0)
+                    તોડો;
                 }
 
               /* File p changed its status to ON_HOLD or CLOSED */
-              if (parallel_files && p->status != OPEN)
+              જો (parallel_files && p->status != OPEN)
                 {
-                  if (empty_line)
+                  જો (empty_લીટી)
                     align_empty_cols = true;
-                  else if (p->status == CLOSED
+                  નહીંતર જો (p->status == CLOSED
                            || (p->status == ON_HOLD && FF_only))
                     align_column (p);
                 }
             }
-          else if (parallel_files)
+          નહીંતર જો (parallel_files)
             {
               /* File status ON_HOLD or CLOSED */
-              if (empty_line)
+              જો (empty_લીટી)
                 align_empty_cols = true;
-              else
+              નહીંતર
                 align_column (p);
             }
 
           /* We need it also with an empty column */
-          if (use_col_separator)
+          જો (use_col_separator)
             ++separators_not_printed;
         }
 
-      if (pad_vertically)
+      જો (pad_vertically)
         {
           putchar ('\n');
-          --lines_left_on_page;
+          --લીટીઓ_ડાબું_on_page;
         }
 
-      if (cols_ready_to_print () == 0 && !extremities)
-        break;
+      જો (cols_ready_to_print () == 0 && !extremities)
+        તોડો;
 
-      if (double_space && pv)
+      જો (double_space && pv)
         {
           putchar ('\n');
-          --lines_left_on_page;
+          --લીટીઓ_ડાબું_on_page;
         }
     }
 
-  if (lines_left_on_page == 0)
-    for (j = 1, p = column_vector; j <= columns; ++j, ++p)
-      if (p->status == OPEN)
+  જો (લીટીઓ_ડાબું_on_page == 0)
+    માટે (j = 1, p = column_vector; j <= columns; ++j, ++p)
+      જો (p->status == OPEN)
         p->full_page_printed = true;
 
   pad_vertically = pv;
 
-  if (pad_vertically && extremities)
-    pad_down (lines_left_on_page + lines_per_footer);
-  else if (keep_FF && print_a_FF)
+  જો (pad_vertically && extremities)
+    pad_down (લીટીઓ_ડાબું_on_page + લીટીઓ_per_footer);
+  નહીંતર જો (keep_FF && print_a_FF)
     {
       putchar ('\f');
       print_a_FF = false;
     }
 
-  if (ferror (stdout))
+  જો (ferror (stdout))
     write_error ();
 
-  if (last_page_number < ++page_number)
-    return false;		/* Stop printing with LAST_PAGE */
+  જો (last_page_સંખ્યા < ++page_સંખ્યા)
+    પાછા false;		/* Stop printing with LAST_PAGE */
 
   reset_status ();		/* Change ON_HOLD to OPEN. */
 
-  return true;			/* More pages to go. */
+  પાછા true;			/* More pages to go. */
 }
 
 /* Allocate space for storing columns.
@@ -1915,26 +1915,26 @@ print_page (void)
    because the last entry tells us the index of the last character,
    which we need to know in order to print the last line in buff. */
 
-static void
-init_store_cols (void)
+સ્થિર શૂન્ય
+init_store_cols (શૂન્ય)
 {
   /* Tune this.  */
-  int total_lines, total_lines_1, chars_per_column_1, chars_if_truncate;
-  if (ckd_mul (&total_lines, lines_per_body, columns)
-      || ckd_add (&total_lines_1, total_lines, 1)
+  પૂર્ણાંક total_લીટીઓ, total_લીટીઓ_1, chars_per_column_1, chars_if_truncate;
+  જો (ckd_mul (&total_લીટીઓ, લીટીઓ_per_body, columns)
+      || ckd_add (&total_લીટીઓ_1, total_લીટીઓ, 1)
       || ckd_add (&chars_per_column_1, chars_per_column, 1)
-      || ckd_mul (&chars_if_truncate, total_lines, chars_per_column_1)
+      || ckd_mul (&chars_if_truncate, total_લીટીઓ, chars_per_column_1)
       || ckd_mul (&buff_allocated, chars_if_truncate, use_col_separator + 1))
     integer_overflow ();
 
-  free (line_vector);
+  મુક્ત (લીટી_vector);
   /* FIXME: here's where it was allocated.  */
-  line_vector = xnmalloc (total_lines_1, sizeof *line_vector);
+  લીટી_vector = xnmalloc (total_લીટીઓ_1, કદ *લીટી_vector);
 
-  free (end_vector);
-  end_vector = xnmalloc (total_lines, sizeof *end_vector);
+  મુક્ત (end_vector);
+  end_vector = xnmalloc (total_લીટીઓ, કદ *end_vector);
 
-  free (buff);
+  મુક્ત (buff);
   buff = ximalloc (buff_allocated);
 }
 
@@ -1950,147 +1950,147 @@ init_store_cols (void)
    buff_start is the index in buff of the first character in the
    current line. */
 
-static void
-store_columns (void)
+સ્થિર શૂન્ય
+store_columns (શૂન્ય)
 {
-  int i, j;
-  unsigned int line = 0;
-  unsigned int buff_start;
-  int last_col;		/* The rightmost column which will be saved in buff */
+  પૂર્ણાંક i, j;
+  unsigned પૂર્ણાંક લીટી = 0;
+  unsigned પૂર્ણાંક buff_start;
+  પૂર્ણાંક last_col;		/* The rightmost column which will be saved in buff */
   COLUMN *p;
 
   buff_current = 0;
   buff_start = 0;
 
-  if (balance_columns)
+  જો (balance_columns)
     last_col = columns;
-  else
+  નહીંતર
     last_col = columns - 1;
 
-  for (i = 1, p = column_vector; i <= last_col; ++i, ++p)
-    p->lines_stored = 0;
+  માટે (i = 1, p = column_vector; i <= last_col; ++i, ++p)
+    p->લીટીઓ_stored = 0;
 
-  for (i = 1, p = column_vector; i <= last_col && files_ready_to_read;
+  માટે (i = 1, p = column_vector; i <= last_col && files_ready_to_read;
        ++i, ++p)
     {
-      p->current_line = line;
-      for (j = lines_per_body; j && files_ready_to_read; --j)
+      p->current_લીટી = લીટી;
+      માટે (j = લીટીઓ_per_body; j && files_ready_to_read; --j)
 
-        if (p->status == OPEN)	/* Redundant.  Clean up. */
+        જો (p->status == OPEN)	/* Redundant.  Clean up. */
           {
-            input_position = 0;
+            આગત_position = 0;
 
-            if (!read_line (p))
-              read_rest_of_line (p);
+            જો (!read_લીટી (p))
+              read_rest_of_લીટી (p);
 
-            if (p->status == OPEN
+            જો (p->status == OPEN
                 || buff_start != buff_current)
               {
-                ++p->lines_stored;
-                line_vector[line] = buff_start;
-                end_vector[line++] = input_position;
+                ++p->લીટીઓ_stored;
+                લીટી_vector[લીટી] = buff_start;
+                end_vector[લીટી++] = આગત_position;
                 buff_start = buff_current;
               }
           }
     }
 
   /* Keep track of the location of the last char in buff. */
-  line_vector[line] = buff_start;
+  લીટી_vector[લીટી] = buff_start;
 
-  if (balance_columns)
-    balance (line);
+  જો (balance_columns)
+    balance (લીટી);
 }
 
-static void
-balance (int total_stored)
+સ્થિર શૂન્ય
+balance (પૂર્ણાંક total_stored)
 {
   COLUMN *p;
-  int i, lines;
-  int first_line = 0;
+  પૂર્ણાંક i, લીટીઓ;
+  પૂર્ણાંક first_લીટી = 0;
 
-  for (i = 1, p = column_vector; i <= columns; ++i, ++p)
+  માટે (i = 1, p = column_vector; i <= columns; ++i, ++p)
     {
-      lines = total_stored / columns;
-      if (i <= total_stored % columns)
-        ++lines;
+      લીટીઓ = total_stored / columns;
+      જો (i <= total_stored % columns)
+        ++લીટીઓ;
 
-      p->lines_stored = lines;
-      p->current_line = first_line;
+      p->લીટીઓ_stored = લીટીઓ;
+      p->current_લીટી = first_લીટી;
 
-      first_line += lines;
+      first_લીટી += લીટીઓ;
     }
 }
 
 /* Store a character in the buffer. */
 
-static void
-store_char (char c)
+સ્થિર શૂન્ય
+store_char (અક્ષર c)
 {
-  if (buff_current >= buff_allocated)
+  જો (buff_current >= buff_allocated)
     {
       /* May be too generous. */
-      buff = xpalloc (buff, &buff_allocated, 1, -1, sizeof *buff);
+      buff = xpalloc (buff, &buff_allocated, 1, -1, કદ *buff);
     }
   buff[buff_current++] = c;
 }
 
-static void
-add_line_number (COLUMN *p)
+સ્થિર શૂન્ય
+add_લીટી_સંખ્યા (COLUMN *p)
 {
-  int i;
-  char *s;
-  int num_width;
+  પૂર્ણાંક i;
+  અક્ષર *s;
+  પૂર્ણાંક અંક_width;
 
   /* Cutting off the higher-order digits is more informative than
      lower-order cut off. */
-  num_width = sprintf (number_buff, "%*d", chars_per_number, line_number);
-  line_number++;
-  s = number_buff + (num_width - chars_per_number);
-  for (i = chars_per_number; i > 0; i--)
+  અંક_width = sprintf (સંખ્યા_buff, "%*d", chars_per_સંખ્યા, લીટી_સંખ્યા);
+  લીટી_સંખ્યા++;
+  s = સંખ્યા_buff + (અંક_width - chars_per_સંખ્યા);
+  માટે (i = chars_per_સંખ્યા; i > 0; i--)
     (p->char_func) (*s++);
 
-  if (columns > 1)
+  જો (columns > 1)
     {
       /* Tabification is assumed for multiple columns, also for n-separators,
          but 'default n-separator = TAB' hasn't been given priority over
          equal column_width also specified by POSIX. */
-      if (number_separator == '\t')
+      જો (સંખ્યા_separator == '\t')
         {
-          i = number_width - chars_per_number;
-          while (i-- > 0)
+          i = સંખ્યા_width - chars_per_સંખ્યા;
+          જ્યારે (i-- > 0)
             (p->char_func) (' ');
         }
-      else
-        (p->char_func) (number_separator);
+      નહીંતર
+        (p->char_func) (સંખ્યા_separator);
     }
-  else
+  નહીંતર
     /* To comply with POSIX, we avoid any expansion of default TAB
        separator with a single column output. No column_width requirement
        has to be considered. */
     {
-      (p->char_func) (number_separator);
-      if (number_separator == '\t')
+      (p->char_func) (સંખ્યા_separator);
+      જો (સંખ્યા_separator == '\t')
         output_position = POS_AFTER_TAB (chars_per_output_tab,
                           output_position);
     }
 
-  if (truncate_lines && !parallel_files)
-    input_position += number_width;
+  જો (truncate_લીટીઓ && !parallel_files)
+    આગત_position += સંખ્યા_width;
 }
 
 /* Print (or store) padding until the current horizontal position
    is position. */
 
-static void
-pad_across_to (int position)
+સ્થિર શૂન્ય
+pad_across_to (પૂર્ણાંક position)
 {
-  int h = output_position;
+  પૂર્ણાંક h = output_position;
 
-  if (tabify_output)
+  જો (tabify_output)
     spaces_not_printed = position - output_position;
-  else
+  નહીંતર
     {
-      while (++h <= position)
+      જ્યારે (++h <= position)
         putchar (' ');
       output_position = position;
     }
@@ -2101,13 +2101,13 @@ pad_across_to (int position)
    If the user has requested a formfeed, use one.
    Otherwise, use newlines. */
 
-static void
-pad_down (unsigned int lines)
+સ્થિર શૂન્ય
+pad_down (unsigned પૂર્ણાંક લીટીઓ)
 {
-  if (use_form_feed)
+  જો (use_form_feed)
     putchar ('\f');
-  else
-    for (unsigned int i = lines; i; --i)
+  નહીંતર
+    માટે (unsigned પૂર્ણાંક i = લીટીઓ; i; --i)
       putchar ('\n');
 }
 
@@ -2117,27 +2117,27 @@ pad_down (unsigned int lines)
    hit.  Used when we've truncated a line and we no longer need
    to print or store its characters. */
 
-static void
-read_rest_of_line (COLUMN *p)
+સ્થિર શૂન્ય
+read_rest_of_લીટી (COLUMN *p)
 {
-  int c;
+  પૂર્ણાંક c;
   FILE *f = p->fp;
 
-  while ((c = getc (f)) != '\n')
+  જ્યારે ((c = getc (f)) != '\n')
     {
-      if (c == '\f')
+      જો (c == '\f')
         {
-          if ((c = getc (f)) != '\n')
+          જો ((c = getc (f)) != '\n')
             ungetc (c, f);
-          if (keep_FF)
+          જો (keep_FF)
             print_a_FF = true;
           hold_file (p);
-          break;
+          તોડો;
         }
-      else if (c == EOF)
+      નહીંતર જો (c == EOF)
         {
           close_file (p);
-          break;
+          તોડો;
         }
     }
 }
@@ -2151,65 +2151,65 @@ read_rest_of_line (COLUMN *p)
    Count lines of skipped pages to find the line number of 1st page
    printed relative to 1st line of input file (start_line_num). */
 
-static void
-skip_read (COLUMN *p, int column_number)
+સ્થિર શૂન્ય
+skip_read (COLUMN *p, પૂર્ણાંક column_સંખ્યા)
 {
-  int c;
+  પૂર્ણાંક c;
   FILE *f = p->fp;
-  int i;
+  પૂર્ણાંક i;
   bool single_ff = false;
   COLUMN *q;
 
   /* Read 1st character in a line or any character succeeding a FF */
-  if ((c = getc (f)) == '\f' && p->full_page_printed)
+  જો ((c = getc (f)) == '\f' && p->full_page_printed)
     /* A FF-coincidence with a previous full_page_printed.
        To avoid an additional empty page, eliminate the FF */
-    if ((c = getc (f)) == '\n')
+    જો ((c = getc (f)) == '\n')
       c = getc (f);
 
   p->full_page_printed = false;
 
   /* 1st character a FF means a single FF without any printable
      characters. Don't count it as a line with -n option. */
-  if (c == '\f')
+  જો (c == '\f')
     single_ff = true;
 
   /* Preparing for a FF-coincidence: Maybe we finish that page
      without a FF found */
-  if (last_line)
+  જો (last_લીટી)
     p->full_page_printed = true;
 
-  while (c != '\n')
+  જ્યારે (c != '\n')
     {
-      if (c == '\f')
+      જો (c == '\f')
         {
           /* No FF-coincidence possible,
              no catching up of a FF-coincidence with next page */
-          if (last_line)
+          જો (last_લીટી)
             {
-              if (!parallel_files)
-                for (q = column_vector, i = columns; i; ++q, --i)
+              જો (!parallel_files)
+                માટે (q = column_vector, i = columns; i; ++q, --i)
                   q->full_page_printed = false;
-              else
+              નહીંતર
                 p->full_page_printed = false;
             }
 
-          if ((c = getc (f)) != '\n')
+          જો ((c = getc (f)) != '\n')
             ungetc (c, f);
           hold_file (p);
-          break;
+          તોડો;
         }
-      else if (c == EOF)
+      નહીંતર જો (c == EOF)
         {
           close_file (p);
-          break;
+          તોડો;
         }
       c = getc (f);
     }
 
-  if (skip_count)
-    if ((!parallel_files || column_number == 1) && !single_ff)
-      ++line_count;
+  જો (skip_ગણતરી)
+    જો ((!parallel_files || column_સંખ્યા == 1) && !single_ff)
+      ++લીટી_ગણતરી;
 }
 
 /* If we're tabifying output,
@@ -2218,20 +2218,20 @@ skip_read (COLUMN *p, int column_number)
    of our desired horizontal position and delays printing
    until this function is called. */
 
-static void
-print_white_space (void)
+સ્થિર શૂન્ય
+print_white_space (શૂન્ય)
 {
-  int h_new;
-  int h_old = output_position;
-  int goal = h_old + spaces_not_printed;
+  પૂર્ણાંક h_new;
+  પૂર્ણાંક h_old = output_position;
+  પૂર્ણાંક goal = h_old + spaces_not_printed;
 
-  while (goal - h_old > 1
+  જ્યારે (goal - h_old > 1
          && (h_new = POS_AFTER_TAB (chars_per_output_tab, h_old)) <= goal)
     {
       putchar (output_tab_char);
       h_old = h_new;
     }
-  while (++h_old <= goal)
+  જ્યારે (++h_old <= goal)
     putchar (' ');
 
   output_position = goal;
@@ -2243,43 +2243,43 @@ print_white_space (void)
    We keep a count until we know that we'll be printing a line,
    then print_sep_string() is called. */
 
-static void
-print_sep_string (void)
+સ્થિર શૂન્ય
+print_sep_string (શૂન્ય)
 {
-  char const *s = col_sep_string;
-  int l = col_sep_length;
+  અક્ષર અચલ *s = col_sep_string;
+  પૂર્ણાંક l = col_sep_length;
 
-  if (separators_not_printed <= 0)
+  જો (separators_not_printed <= 0)
     {
       /* We'll be starting a line with chars_per_margin, anything else? */
-      if (spaces_not_printed > 0)
+      જો (spaces_not_printed > 0)
         print_white_space ();
     }
-  else
+  નહીંતર
     {
-      for (; separators_not_printed > 0; --separators_not_printed)
+      માટે (; separators_not_printed > 0; --separators_not_printed)
         {
-          while (l-- > 0)
+          જ્યારે (l-- > 0)
             {
               /* 3 types of sep_strings: spaces only, spaces and chars,
               chars only */
-              if (*s == ' ')
+              જો (*s == ' ')
                 {
                   /* We're tabifying output; consecutive spaces in
                   sep_string may have to be converted to tabs */
                   s++;
                   ++spaces_not_printed;
                 }
-              else
+              નહીંતર
                 {
-                  if (spaces_not_printed > 0)
+                  જો (spaces_not_printed > 0)
                     print_white_space ();
                   putchar (*s++);
                   ++output_position;
                 }
             }
           /* sep_string ends with some spaces */
-          if (spaces_not_printed > 0)
+          જો (spaces_not_printed > 0)
             print_white_space ();
         }
     }
@@ -2288,13 +2288,13 @@ print_sep_string (void)
 /* Print (or store, depending on p->char_func) a clump of N
    characters. */
 
-static void
-print_clump (COLUMN *p, int n, char *clump)
+સ્થિર શૂન્ય
+print_clump (COLUMN *p, પૂર્ણાંક n, અક્ષર *clump)
 {
-  while (n--)
+  જ્યારે (n--)
     (p->char_func) (*clump++);
 
-  if (ferror (stdout))
+  જો (ferror (stdout))
     write_error ();
 }
 
@@ -2307,26 +2307,26 @@ print_clump (COLUMN *p, int n, char *clump)
    a nonspace is encountered, call print_white_space() to print the
    required number of tabs and spaces. */
 
-static void
-print_char (char c)
+સ્થિર શૂન્ય
+print_char (અક્ષર c)
 {
-  if (tabify_output)
+  જો (tabify_output)
     {
-      if (c == ' ')
+      જો (c == ' ')
         {
           ++spaces_not_printed;
-          return;
+          પાછા;
         }
-      else if (spaces_not_printed > 0)
+      નહીંતર જો (spaces_not_printed > 0)
         print_white_space ();
 
       /* Nonprintables are assumed to have width 0, except '\b'. */
-      if (! isprint (to_uchar (c)))
+      જો (! isprint (to_uchar (c)))
         {
-          if (c == '\b')
+          જો (c == '\b')
             --output_position;
         }
-      else
+      નહીંતર
         ++output_position;
     }
   putchar (c);
@@ -2335,44 +2335,44 @@ print_char (char c)
 /* Skip to page PAGE before printing.
    PAGE may be larger than total number of pages. */
 
-static bool
+સ્થિર bool
 skip_to_page (uintmax_t page)
 {
-  for (uintmax_t n = 1; n < page; ++n)
+  માટે (uintmax_t n = 1; n < page; ++n)
     {
       COLUMN *p;
-      int j;
+      પૂર્ણાંક j;
 
-      for (int i = 1; i < lines_per_body; ++i)
+      માટે (પૂર્ણાંક i = 1; i < લીટીઓ_per_body; ++i)
         {
-          for (j = 1, p = column_vector; j <= columns; ++j, ++p)
-            if (p->status == OPEN)
+          માટે (j = 1, p = column_vector; j <= columns; ++j, ++p)
+            જો (p->status == OPEN)
               skip_read (p, j);
         }
-      last_line = true;
-      for (j = 1, p = column_vector; j <= columns; ++j, ++p)
-        if (p->status == OPEN)
+      last_લીટી = true;
+      માટે (j = 1, p = column_vector; j <= columns; ++j, ++p)
+        જો (p->status == OPEN)
           skip_read (p, j);
 
-      if (storing_columns)	/* change FF_FOUND to ON_HOLD */
-        for (j = 1, p = column_vector; j <= columns; ++j, ++p)
-          if (p->status != CLOSED)
+      જો (storing_columns)	/* change FF_FOUND to ON_HOLD */
+        માટે (j = 1, p = column_vector; j <= columns; ++j, ++p)
+          જો (p->status != CLOSED)
             p->status = ON_HOLD;
 
       reset_status ();
-      last_line = false;
+      last_લીટી = false;
 
-      if (files_ready_to_read < 1)
+      જો (files_ready_to_read < 1)
         {
           /* It's very helpful, normally the total number of pages is
              not known in advance.  */
           error (0, 0,
                  _("starting page number %ju exceeds page count %ju"),
                  page, n);
-          break;
+          તોડો;
         }
     }
-  return files_ready_to_read > 0;
+  પાછા files_ready_to_read > 0;
 }
 
 /* Print a header.
@@ -2380,25 +2380,25 @@ skip_to_page (uintmax_t page)
    Formfeeds are assumed to use up two lines at the beginning of
    the page. */
 
-static void
-print_header (void)
+સ્થિર શૂન્ય
+print_header (શૂન્ય)
 {
-  char page_text[256 + INT_STRLEN_BOUND (page_number)];
-  int available_width;
-  int lhs_spaces;
-  int rhs_spaces;
+  અક્ષર page_text[256 + INT_STRLEN_BOUND (page_સંખ્યા)];
+  પૂર્ણાંક available_width;
+  પૂર્ણાંક lhs_spaces;
+  પૂર્ણાંક rhs_spaces;
 
   output_position = 0;
   pad_across_to (chars_per_margin);
   print_white_space ();
 
-  if (page_number == 0)
+  જો (page_સંખ્યા == 0)
     error (EXIT_FAILURE, 0, _("page number overflow"));
 
   /* The translator must ensure that formatting the translation of
      "Page %ju" does not generate more than (sizeof page_text - 1)
      bytes.  */
-  sprintf (page_text, _("Page %ju"), page_number);
+  sprintf (page_text, _("Page %ju"), page_સંખ્યા);
   available_width = header_width_available - mbswidth (page_text, 0);
   available_width = MAX (0, available_width);
   lhs_spaces = available_width >> 1;
@@ -2434,125 +2434,125 @@ print_header (void)
    Return false if we exceed chars_per_column before reading
    an end of line character, true otherwise. */
 
-static bool
-read_line (COLUMN *p)
+સ્થિર bool
+read_લીટી (COLUMN *p)
 {
-  int c;
-  int chars IF_LINT (= 0);
-  int last_input_position;
-  int j, k;
+  પૂર્ણાંક c;
+  પૂર્ણાંક chars IF_LINT (= 0);
+  પૂર્ણાંક last_આગત_position;
+  પૂર્ણાંક j, k;
   COLUMN *q;
 
   /* read 1st character in each line or any character succeeding a FF: */
   c = getc (p->fp);
 
-  last_input_position = input_position;
+  last_આગત_position = આગત_position;
 
-  if (c == '\f' && p->full_page_printed)
-    if ((c = getc (p->fp)) == '\n')
+  જો (c == '\f' && p->full_page_printed)
+    જો ((c = getc (p->fp)) == '\n')
       c = getc (p->fp);
   p->full_page_printed = false;
 
-  switch (c)
+  પસંદગી (c)
     {
-    case '\f':
-      if ((c = getc (p->fp)) != '\n')
+    સ્થિતિ '\f':
+      જો ((c = getc (p->fp)) != '\n')
         ungetc (c, p->fp);
       FF_only = true;
-      if (print_a_header && !storing_columns)
+      જો (print_a_header && !storing_columns)
         {
           pad_vertically = true;
           print_header ();
         }
-      else if (keep_FF)
+      નહીંતર જો (keep_FF)
         print_a_FF = true;
       hold_file (p);
-      return true;
-    case EOF:
+      પાછા true;
+    સ્થિતિ EOF:
       close_file (p);
-      return true;
-    case '\n':
-      break;
-    default:
+      પાછા true;
+    સ્થિતિ '\n':
+      તોડો;
+    મૂળભૂત:
       chars = char_to_clump (c);
     }
 
-  if (truncate_lines && input_position > chars_per_column)
+  જો (truncate_લીટીઓ && આગત_position > chars_per_column)
     {
-      input_position = last_input_position;
-      return false;
+      આગત_position = last_આગત_position;
+      પાછા false;
     }
 
-  if (p->char_func != store_char)
+  જો (p->char_func != store_char)
     {
       pad_vertically = true;
 
-      if (print_a_header && !storing_columns)
+      જો (print_a_header && !storing_columns)
         print_header ();
 
-      if (parallel_files && align_empty_cols)
+      જો (parallel_files && align_empty_cols)
         {
           /* We have to align empty columns at the beginning of a line. */
           k = separators_not_printed;
           separators_not_printed = 0;
-          for (j = 1, q = column_vector; j <= k; ++j, ++q)
+          માટે (j = 1, q = column_vector; j <= k; ++j, ++q)
             {
               align_column (q);
               separators_not_printed += 1;
             }
           padding_not_printed = p->start_position;
-          if (truncate_lines)
+          જો (truncate_લીટીઓ)
             spaces_not_printed = chars_per_column;
-          else
+          નહીંતર
             spaces_not_printed = 0;
           align_empty_cols = false;
         }
 
-      if (col_sep_length < padding_not_printed)
+      જો (col_sep_length < padding_not_printed)
         {
           pad_across_to (padding_not_printed - col_sep_length);
           padding_not_printed = ANYWHERE;
         }
 
-      if (use_col_separator)
+      જો (use_col_separator)
         print_sep_string ();
     }
 
-  if (p->numbered)
-    add_line_number (p);
+  જો (p->numbered)
+    add_લીટી_સંખ્યા (p);
 
-  empty_line = false;
-  if (c == '\n')
-    return true;
+  empty_લીટી = false;
+  જો (c == '\n')
+    પાછા true;
 
   print_clump (p, chars, clump_buff);
 
-  while (true)
+  જ્યારે (true)
     {
       c = getc (p->fp);
 
-      switch (c)
+      પસંદગી (c)
         {
-        case '\n':
-          return true;
-        case '\f':
-          if ((c = getc (p->fp)) != '\n')
+        સ્થિતિ '\n':
+          પાછા true;
+        સ્થિતિ '\f':
+          જો ((c = getc (p->fp)) != '\n')
             ungetc (c, p->fp);
-          if (keep_FF)
+          જો (keep_FF)
             print_a_FF = true;
           hold_file (p);
-          return true;
-        case EOF:
+          પાછા true;
+        સ્થિતિ EOF:
           close_file (p);
-          return true;
+          પાછા true;
         }
 
-      last_input_position = input_position;
+      last_આગત_position = આગત_position;
       chars = char_to_clump (c);
-      if (truncate_lines && input_position > chars_per_column)
+      જો (truncate_લીટીઓ && આગત_position > chars_per_column)
         {
-          input_position = last_input_position;
-          return false;
+          આગત_position = last_આગત_position;
+          પાછા false;
         }
 
       print_clump (p, chars, clump_buff);
@@ -2573,13 +2573,13 @@ read_line (COLUMN *p)
 
    Return true, meaning there is no need to call read_rest_of_line. */
 
-static bool
+સ્થિર bool
 print_stored (COLUMN *p)
 {
   COLUMN *q;
 
-  int line = p->current_line++;
-  char *first = &buff[line_vector[line]];
+  પૂર્ણાંક લીટી = p->current_લીટી++;
+  અક્ષર *first = &buff[લીટી_vector[લીટી]];
   /* FIXME
      UMR: Uninitialized memory read:
      * This is occurring while in:
@@ -2591,46 +2591,46 @@ print_stored (COLUMN *p)
      xmalloc        [xmalloc.c:94]
      init_store_cols [pr.c:1648]
      */
-  char *last = &buff[line_vector[line + 1]];
+  અક્ષર *last = &buff[લીટી_vector[લીટી + 1]];
 
   pad_vertically = true;
 
-  if (print_a_header)
+  જો (print_a_header)
     print_header ();
 
-  if (p->status == FF_FOUND)
+  જો (p->status == FF_FOUND)
     {
-      int i;
-      for (i = 1, q = column_vector; i <= columns; ++i, ++q)
+      પૂર્ણાંક i;
+      માટે (i = 1, q = column_vector; i <= columns; ++i, ++q)
         q->status = ON_HOLD;
-      if (column_vector->lines_to_print <= 0)
+      જો (column_vector->લીટીઓ_to_print <= 0)
         {
-          if (!extremities)
+          જો (!extremities)
             pad_vertically = false;
-          return true;		/* print a header only */
+          પાછા true;		/* print a header only */
         }
     }
 
-  if (col_sep_length < padding_not_printed)
+  જો (col_sep_length < padding_not_printed)
     {
       pad_across_to (padding_not_printed - col_sep_length);
       padding_not_printed = ANYWHERE;
     }
 
-  if (use_col_separator)
+  જો (use_col_separator)
     print_sep_string ();
 
-  while (first != last)
+  જ્યારે (first != last)
     print_char (*first++);
 
-  if (spaces_not_printed == 0)
+  જો (spaces_not_printed == 0)
     {
-      output_position = p->start_position + end_vector[line];
-      if (p->start_position - col_sep_length == chars_per_margin)
+      output_position = p->start_position + end_vector[લીટી];
+      જો (p->start_position - col_sep_length == chars_per_margin)
         output_position -= col_sep_length;
     }
 
-  return true;
+  પાછા true;
 }
 
 /* Convert a character to the proper format and return the number of
@@ -2645,80 +2645,80 @@ print_stored (COLUMN *p)
    characters in clump_buff.  (e.g., the width of '\b' is -1, while the
    number of characters is 1.) */
 
-static int
-char_to_clump (char c)
+સ્થિર પૂર્ણાંક
+char_to_clump (અક્ષર c)
 {
-  unsigned char uc = c;
-  char *s = clump_buff;
-  char esc_buff[4];
-  int width;
-  int chars;
-  int chars_per_c = 8;
+  unsigned અક્ષર uc = c;
+  અક્ષર *s = clump_buff;
+  અક્ષર esc_buff[4];
+  પૂર્ણાંક width;
+  પૂર્ણાંક chars;
+  પૂર્ણાંક chars_per_c = 8;
 
-  if (c == input_tab_char)
-    chars_per_c = chars_per_input_tab;
+  જો (c == આગત_tab_char)
+    chars_per_c = chars_per_આગત_tab;
 
-  if (c == input_tab_char || c == '\t')
+  જો (c == આગત_tab_char || c == '\t')
     {
-      width = TAB_WIDTH (chars_per_c, input_position);
+      width = TAB_WIDTH (chars_per_c, આગત_position);
 
-      if (untabify_input)
+      જો (untabify_આગત)
         {
-          for (int i = width; i; --i)
+          માટે (પૂર્ણાંક i = width; i; --i)
             *s++ = ' ';
           chars = width;
         }
-      else
+      નહીંતર
         {
           *s = c;
           chars = 1;
         }
 
     }
-  else if (! isprint (uc))
+  નહીંતર જો (! isprint (uc))
     {
-      if (use_esc_sequence)
+      જો (use_esc_sequence)
         {
           width = 4;
           chars = 4;
           *s++ = '\\';
           sprintf (esc_buff, "%03o", uc);
-          for (int i = 0; i <= 2; ++i)
+          માટે (પૂર્ણાંક i = 0; i <= 2; ++i)
             *s++ = esc_buff[i];
         }
-      else if (use_cntrl_prefix)
+      નહીંતર જો (use_cntrl_prefix)
         {
-          if (uc < 0200)
+          જો (uc < 0200)
             {
               width = 2;
               chars = 2;
               *s++ = '^';
               *s = c ^ 0100;
             }
-          else
+          નહીંતર
             {
               width = 4;
               chars = 4;
               *s++ = '\\';
               sprintf (esc_buff, "%03o", uc);
-              for (int i = 0; i <= 2; ++i)
+              માટે (પૂર્ણાંક i = 0; i <= 2; ++i)
                 *s++ = esc_buff[i];
             }
         }
-      else if (c == '\b')
+      નહીંતર જો (c == '\b')
         {
           width = -1;
           chars = 1;
           *s = c;
         }
-      else
+      નહીંતર
         {
           width = 0;
           chars = 1;
           *s = c;
         }
     }
-  else
+  નહીંતર
     {
       width = 1;
       chars = 1;
@@ -2726,20 +2726,20 @@ char_to_clump (char c)
     }
 
   /* Too many backspaces must put us in position 0 -- never negative.  */
-  if (width < 0 && input_position == 0)
+  જો (width < 0 && આગત_position == 0)
     {
       chars = 0;
-      input_position = 0;
+      આગત_position = 0;
     }
-  else if (width < 0 && input_position <= -width)
-    input_position = 0;
-  else
+  નહીંતર જો (width < 0 && આગત_position <= -width)
+    આગત_position = 0;
+  નહીંતર
     {
-      if (ckd_add (&input_position, input_position, width))
+      જો (ckd_add (&આગત_position, આગત_position, width))
         integer_overflow ();
     }
 
-  return chars;
+  પાછા chars;
 }
 
 /* We've just printed some files and need to clean up things before
@@ -2747,25 +2747,25 @@ char_to_clump (char c)
 
    Free everything we've xmalloc'ed, except 'header'. */
 
-static void
-cleanup (void)
+સ્થિર શૂન્ય
+cleanup (શૂન્ય)
 {
-  free (number_buff);
-  free (clump_buff);
-  free (column_vector);
-  free (line_vector);
-  free (end_vector);
-  free (buff);
+  મુક્ત (સંખ્યા_buff);
+  મુક્ત (clump_buff);
+  મુક્ત (column_vector);
+  મુક્ત (લીટી_vector);
+  મુક્ત (end_vector);
+  મુક્ત (buff);
 }
 
 /* Complain, print a usage message, and die. */
 
-void
-usage (int status)
+શૂન્ય
+usage (પૂર્ણાંક status)
 {
-  if (status != EXIT_SUCCESS)
+  જો (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  નહીંતર
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE]...\n\
@@ -2773,7 +2773,7 @@ Usage: %s [OPTION]... [FILE]...\n\
               program_name);
 
       fputs (_("\
-Paginate or columnate FILE(s) for printing.\n\
+Paginate or columnate FILE(s) માટે printing.\n\
 "), stdout);
 
       emit_stdin_note ();
@@ -2786,7 +2786,7 @@ Paginate or columnate FILE(s) for printing.\n\
       oputs (_("\
   -COLS, --columns=COLS\n\
          output COLS columns and print columns down, unless -a is used.\n\
-         Balance number of lines in the columns on each page\n\
+         Balance સંખ્યા of લીટીઓ in the columns on each page\n\
 "));
       oputs (_("\
   -a, --across\n\
@@ -2797,61 +2797,61 @@ Paginate or columnate FILE(s) for printing.\n\
          use hat notation (^G) and octal backslash notation\n\
 "));
       oputs (_("\
-  -d, --double-space\n\
-         double space the output\n\
+  -d, --દ્વિગુણ-space\n\
+         દ્વિગુણ space the output\n\
 "));
       oputs (_("\
   -D, --date-format=FORMAT\n\
-         use FORMAT for the header date\n\
+         use FORMAT માટે the header date\n\
 "));
       oputs (_("\
   -e[CHAR[WIDTH]], --expand-tabs[=CHAR[WIDTH]]\n\
-         expand input CHARs (TABs) to tab WIDTH (8)\n\
+         expand આગત CHARs (TABs) to tab WIDTH (8)\n\
 "));
       oputs (_("\
   -F, -f, --form-feed\n\
          use form feeds instead of newlines to separate pages\n\
-         (by a 3-line page header with -F or a 5-line header\n\
+         (by a 3-લીટી page header with -F or a 5-લીટી header\n\
          and trailer without -F)\n\
 "));
       oputs (_("\
   -h, --header=HEADER\n\
          use a centered HEADER instead of filename in page header,\n\
-         -h \"\" prints a blank line, don't use -h\"\"\n\
+         -h \"\" prints a blank લીટી, don't use -h\"\"\n\
 "));
       oputs (_("\
   -i[CHAR[WIDTH]], --output-tabs[=CHAR[WIDTH]]\n\
          replace spaces with CHARs (TABs) to tab WIDTH (8)\n\
 "));
       oputs (_("\
-  -J, --join-lines\n\
-         merge full lines, turns off -W line truncation,\n\
+  -J, --join-લીટીઓ\n\
+         merge full લીટીઓ, turns off -W લીટી truncation,\n\
          no column alignment, --sep-string[=STRING] sets separators\n\
 "));
       oputs (_("\
   -l, --length=PAGE_LENGTH\n\
-         set the page length to PAGE_LENGTH (66) lines\n\
-         (default number of lines of text 56, and with -F 63).\n\
-         implies -t if PAGE_LENGTH <= 10\n\
+         set the page length to PAGE_LENGTH (66) લીટીઓ\n\
+         (મૂળભૂત સંખ્યા of લીટીઓ of text 56, and with -F 63).\n\
+         implies -t જો PAGE_LENGTH <= 10\n\
 "));
       oputs (_("\
   -m, --merge\n\
          print all files in parallel, one in each column,\n\
-         truncate lines, but join lines of full length with -J\n\
+         truncate લીટીઓ, but join લીટીઓ of full length with -J\n\
 "));
       oputs (_("\
-  -n[SEP[DIGITS]], --number-lines[=SEP[DIGITS]]\n\
-         number lines, use DIGITS (5) digits, then SEP (TAB),\n\
-         default counting starts with 1st line of input file\n\
+  -n[SEP[DIGITS]], --સંખ્યા-લીટીઓ[=SEP[DIGITS]]\n\
+         સંખ્યા લીટીઓ, use DIGITS (5) digits, then SEP (TAB),\n\
+         મૂળભૂત counting starts with 1st લીટી of આગત file\n\
 "));
       oputs (_("\
-  -N, --first-line-number=NUMBER\n\
-         start counting with NUMBER at 1st line of first\n\
+  -N, --first-લીટી-સંખ્યા=સંખ્યા_2\n\
+         start counting with સંખ્યા_2 at 1st લીટી of first\n\
          page printed (see +FIRST_PAGE)\n\
 "));
       oputs (_("\
   -o, --indent=MARGIN\n\
-         offset each line with MARGIN (zero) spaces, do not\n\
+         offset each લીટી with MARGIN (zero) spaces, કરો not\n\
          affect -w or -W, MARGIN will be added to PAGE_WIDTH\n\
 "));
       oputs (_("\
@@ -2860,9 +2860,9 @@ Paginate or columnate FILE(s) for printing.\n\
 "));
       oputs (_("\
   -s[CHAR], --separator[=CHAR]\n\
-         separate columns by a single character, default for CHAR\n\
-         is the <TAB> character without -w and \'no char\' with -w.\n\
-         -s[CHAR] turns off line truncation of all 3 column\n\
+         separate columns by a single character, મૂળભૂત માટે CHAR\n\
+         is the <TAB> character without -w and \'no અક્ષર\' with -w.\n\
+         -s[CHAR] turns off લીટી truncation of all 3 column\n\
          options (-COLS|-a -COLS|-m) except -w is set\n\
 "));
       oputs (_("\
@@ -2873,12 +2873,12 @@ Paginate or columnate FILE(s) for printing.\n\
 "));
       oputs (_("\
   -t, --omit-header\n\
-         omit page headers and trailers; implied if PAGE_LENGTH <= 10\n\
+         omit page headers and trailers; implied જો PAGE_LENGTH <= 10\n\
 "));
       oputs (_("\
   -T, --omit-pagination\n\
          omit page headers and trailers,\n\
-         eliminate any pagination by form feeds set in input files\n\
+         eliminate any pagination by form feeds set in આગત files\n\
 "));
       oputs (_("\
   -v, --show-nonprinting\n\
@@ -2886,13 +2886,13 @@ Paginate or columnate FILE(s) for printing.\n\
 "));
       oputs (_("\
   -w, --width=PAGE_WIDTH\n\
-         set page width to PAGE_WIDTH (72) characters for\n\
-         multiple text-column output only, -s[char] turns off (72)\n\
+         set page width to PAGE_WIDTH (72) characters માટે\n\
+         multiple text-column output only, -s[અક્ષર] turns off (72)\n\
 "));
       oputs (_("\
   -W, --page-width=PAGE_WIDTH\n\
          set page width to PAGE_WIDTH (72) characters always,\n\
-         truncate lines, except -J option is set,\n\
+         truncate લીટીઓ, except -J option is set,\n\
          no interference with -S or -s\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);

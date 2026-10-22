@@ -16,34 +16,34 @@
 
 /* Written by Collin Funk <collin.funk1@gmail.com>, 2026.  */
 
-#include <config.h>
+#અન્તર્ભાવ <config.h>
 
-#include "wc.h"
-#include "system.h"
-#include "ioblksize.h"
+#અન્તર્ભાવ "wc.h"
+#અન્તર્ભાવ "system.h"
+#અન્તર્ભાવ "ioblksize.h"
 
-#include <arm_neon.h>
+#અન્તર્ભાવ <arm_neon.h>
 
 /* Read FD and return a summary.  */
-extern struct wc_lines
-wc_lines_neon (int fd)
+બાહ્ય સંરચના wc_લીટીઓ
+wc_લીટીઓ_neon (પૂર્ણાંક fd)
 {
-  intmax_t lines = 0;
+  intmax_t લીટીઓ = 0;
   intmax_t bytes = 0;
 
-  const uint8x16_t endlines = vdupq_n_u8 ('\n');
+  અચલ uint8x16_t endlines = vdupq_n_u8 ('\n');
 
-  while (true)
+  જ્યારે (true)
     {
-      unsigned char alignas (16) neon_buf[IO_BUFSIZE];
-      ssize_t bytes_read = read (fd, neon_buf, sizeof neon_buf);
-      if (bytes_read <= 0)
-        return (struct wc_lines) { bytes_read == 0 ? 0 : errno, lines, bytes };
+      unsigned અક્ષર alignas (16) neon_buf[IO_BUFSIZE];
+      ssize_t bytes_read = પઠ (fd, neon_buf, કદ neon_buf);
+      જો (bytes_read <= 0)
+        પાછા (સંરચના wc_લીટીઓ) { bytes_read == 0 ? 0 : errno, લીટીઓ, bytes };
 
       bytes += bytes_read;
-      unsigned char *datap = neon_buf;
+      unsigned અક્ષર *datap = neon_buf;
 
-      while (8192 <= bytes_read)
+      જ્યારે (8192 <= bytes_read)
         {
           /* Accumulator.  */
           int8x16_t acc0 = vdupq_n_s8 (0);
@@ -52,7 +52,7 @@ wc_lines_neon (int fd)
           int8x16_t acc3 = vdupq_n_s8 (0);
 
           /* Process all 8192 bytes in 64 byte chunks.  */
-          for (int i = 0; i < 128; ++i)
+          માટે (પૂર્ણાંક i = 0; i < 128; ++i)
             {
               /* Load 64 bytes from DATAP.  */
               uint8x16_t v0 = vld1q_u8 (datap);
@@ -93,7 +93,7 @@ wc_lines_neon (int fd)
           /* Extract the lane sums.  Since each newline was counted as -1, we
              subtract the sum of them from LINES to get the total number of
              lines.  */
-          lines -= (vgetq_lane_s64 (c0, 0) + vgetq_lane_s64 (c0, 1)
+          લીટીઓ -= (vgetq_lane_s64 (c0, 0) + vgetq_lane_s64 (c0, 1)
                     + vgetq_lane_s64 (c1, 0) + vgetq_lane_s64 (c1, 1)
                     + vgetq_lane_s64 (c2, 0) + vgetq_lane_s64 (c2, 1)
                     + vgetq_lane_s64 (c3, 0) + vgetq_lane_s64 (c3, 1));
@@ -102,8 +102,8 @@ wc_lines_neon (int fd)
         }
 
       /* Finish up any left over bytes.  */
-      unsigned char *end = (unsigned char *) datap + bytes_read;
-      for (unsigned char *p = (unsigned char *) datap; p < end; p++)
-        lines += *p == '\n';
+      unsigned અક્ષર *end = (unsigned અક્ષર *) datap + bytes_read;
+      માટે (unsigned અક્ષર *p = (unsigned અક્ષર *) datap; p < end; p++)
+        લીટીઓ += *p == '\n';
     }
 }

@@ -16,18 +16,18 @@
 
 /* Written by Alex Deymo <deymo@chromium.org>.  */
 
-#include <config.h>
-#include "system.h"
+#અન્તર્ભાવ <config.h>
+#અન્તર્ભાવ "system.h"
 
-#include "ls.h"
+#અન્તર્ભાવ "ls.h"
 /* Ensure that the main for ls is declared even if the tool is not being built
    in this single-binary. */
-int single_binary_main_ls (int argc, char **argv);
-int single_binary_main_dir (int argc, char **argv);
+પૂર્ણાંક single_દ્વિઅંકી_main_ls (પૂર્ણાંક argc, અક્ષર **argv);
+પૂર્ણાંક single_દ્વિઅંકી_main_dir (પૂર્ણાંક argc, અક્ષર **argv);
 
-int
-single_binary_main_dir (int argc, char **argv)
+પૂર્ણાંક
+single_દ્વિઅંકી_main_dir (પૂર્ણાંક argc, અક્ષર **argv)
 {
   ls_mode = LS_MULTI_COL;
-  return single_binary_main_ls (argc, argv);
+  પાછા single_દ્વિઅંકી_main_ls (argc, argv);
 }

@@ -14,18 +14,18 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include "system.h"
-#include "cksum.h"
+#અન્તર્ભાવ <config.h>
+#અન્તર્ભાવ "system.h"
+#અન્તર્ભાવ "cksum.h"
 
 /* Ensure that the main for cksum is declared even if the tool is not built
    in this single-binary. */
-int single_binary_main_cksum (int argc, char **argv);
-int single_binary_main_sha1sum (int argc, char **argv);
+પૂર્ણાંક single_દ્વિઅંકી_main_cksum (પૂર્ણાંક argc, અક્ષર **argv);
+પૂર્ણાંક single_દ્વિઅંકી_main_sha1sum (પૂર્ણાંક argc, અક્ષર **argv);
 
-int
-single_binary_main_sha1sum (int argc, char **argv)
+પૂર્ણાંક
+single_દ્વિઅંકી_main_sha1sum (પૂર્ણાંક argc, અક્ષર **argv)
 {
   cksum_algorithm = sha1;
-  return single_binary_main_cksum (argc, argv);
+  પાછા single_દ્વિઅંકી_main_cksum (argc, argv);
 }

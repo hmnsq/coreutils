@@ -16,21 +16,21 @@
 
 /* Created by hacking who.c by Kaveh Ghazi ghazi@caip.rutgers.edu */
 
-#include <config.h>
-#include <getopt.h>
-#include <pwd.h>
-#include <stdio.h>
+#અન્તર્ભાવ <config.h>
+#અન્તર્ભાવ <getopt.h>
+#અન્તર્ભાવ <pwd.h>
+#અન્તર્ભાવ <stdio.h>
 
-#include <sys/types.h>
-#include "system.h"
+#અન્તર્ભાવ <sys/types.h>
+#અન્તર્ભાવ "system.h"
 
-#include "canon-host.h"
-#include "fadvise.h"
-#include "filenamecat.h"
-#include "full-write.h"
-#include "hard-locale.h"
-#include "ioblksize.h"
-#include "readutmp.h"
+#અન્તર્ભાવ "canon-host.h"
+#અન્તર્ભાવ "fadvise.h"
+#અન્તર્ભાવ "filenamecat.h"
+#અન્તર્ભાવ "full-write.h"
+#અન્તર્ભાવ "hard-locale.h"
+#અન્તર્ભાવ "ioblksize.h"
+#અન્તર્ભાવ "readutmp.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "pinky"
@@ -43,64 +43,64 @@
 /* If true, display the hours:minutes since each user has touched
    the keyboard, or blank if within the last minute, or days followed
    by a 'd' if not within the last day. */
-static bool include_idle = true;
+સ્થિર bool include_idle = true;
 
 /* If true, display a line at the top describing each field. */
-static bool include_heading = true;
+સ્થિર bool include_heading = true;
 
 /* if true, display the user's full name from pw_gecos. */
-static bool include_fullname = true;
+સ્થિર bool include_fullname = true;
 
 /* if true, display the user's ~/.project file when doing long format. */
-static bool include_project = true;
+સ્થિર bool include_project = true;
 
 /* if true, display the user's ~/.plan file when doing long format. */
-static bool include_plan = true;
+સ્થિર bool include_plan = true;
 
 /* if true, display the user's home directory and shell
    when doing long format. */
-static bool include_home_and_shell = true;
+સ્થિર bool include_home_and_shell = true;
 
 /* if true, use the "short" output format. */
-static bool do_short_format = true;
+સ્થિર bool do_short_format = true;
 
 /* If true, attempt to canonicalize hostnames via a DNS lookup. */
-static bool do_lookup;
+સ્થિર bool do_lookup;
 
 /* if true, display the ut_host field. */
-#if HAVE_STRUCT_XTMP_UT_HOST
-static bool include_where = true;
+#જો HAVE_STRUCT_XTMP_UT_HOST
+સ્થિર bool include_where = true;
 #endif
 
 /* The strftime format to use for login times, and its expected
    output width.  */
-static char const *time_format;
-static int time_format_width;
+સ્થિર અક્ષર અચલ *time_format;
+સ્થિર પૂર્ણાંક time_format_width;
 
 /* for long options with no corresponding short option, use enum */
-enum
+ગણના
 {
   LOOKUP_OPTION = CHAR_MAX + 1
 };
 
-static struct option const longopts[] =
+સ્થિર સંરચના option અચલ longopts[] =
 {
-  {"lookup", no_argument, NULL, LOOKUP_OPTION},
+  {"lookup", no_argument, ખાલી, LOOKUP_OPTION},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ખાલી, 0, ખાલી, 0}
 };
 
 /* Count and return the number of ampersands in STR.  */
 
 ATTRIBUTE_PURE
-static idx_t
-count_ampersands (char const *str)
+સ્થિર idx_t
+ગણતરી_ampersands (અક્ષર અચલ *str)
 {
-  idx_t count = 0;
-  for (; *str; str++)
-    count += *str == '&';
-  return count;
+  idx_t ગણતરી = 0;
+  માટે (; *str; str++)
+    ગણતરી += *str == '&';
+  પાછા ગણતરી;
 }
 
 /* Create a string (via xmalloc) which contains a full name by substituting
@@ -109,35 +109,35 @@ count_ampersands (char const *str)
    no ','s.  The caller also is responsible for free'ing the return value of
    this function.  */
 
-static char *
-create_fullname (char const *gecos_name, char const *user_name)
+સ્થિર અક્ષર *
+create_fullname (અક્ષર અચલ *gecos_name, અક્ષર અચલ *user_name)
 {
   idx_t rsize = strlen (gecos_name) + 1;
-  idx_t ampersands = count_ampersands (gecos_name);
+  idx_t ampersands = ગણતરી_ampersands (gecos_name);
 
-  if (ampersands != 0)
+  જો (ampersands != 0)
     {
       idx_t ulen = strlen (user_name);
       ptrdiff_t product;
-      if (ckd_mul (&product, ulen - 1, ampersands)
+      જો (ckd_mul (&product, ulen - 1, ampersands)
           || ckd_add (&rsize, rsize, product))
         xalloc_die ();
     }
 
-  char *result = xmalloc (rsize);
-  char *r = result;
+  અક્ષર *result = xmalloc (rsize);
+  અક્ષર *r = result;
 
-  while (*gecos_name)
+  જ્યારે (*gecos_name)
     {
-      if (*gecos_name == '&')
+      જો (*gecos_name == '&')
         {
-          char const *uname = user_name;
-          if (islower (to_uchar (*uname)))
+          અક્ષર અચલ *uname = user_name;
+          જો (islower (to_uchar (*uname)))
             *r++ = toupper (to_uchar (*uname++));
-          while (*uname)
+          જ્યારે (*uname)
             *r++ = *uname++;
         }
-      else
+      નહીંતર
         {
           *r++ = *gecos_name;
         }
@@ -146,130 +146,130 @@ create_fullname (char const *gecos_name, char const *user_name)
     }
   *r = 0;
 
-  return result;
+  પાછા result;
 }
 
 /* Return a string representing the time between WHEN and the time
    that this function is first run. */
 
-static char const *
+સ્થિર અક્ષર અચલ *
 idle_string (time_t when)
 {
-  static time_t now = 0;
-  static char buf[INT_STRLEN_BOUND (intmax_t) + sizeof "d"];
+  સ્થિર time_t now = 0;
+  સ્થિર અક્ષર buf[INT_STRLEN_BOUND (intmax_t) + કદ "d"];
 
-  if (now == 0)
+  જો (now == 0)
     time (&now);
 
   time_t seconds_idle = now - when;
-  if (seconds_idle < 60)	/* One minute. */
-    return "     ";
-  if (seconds_idle < (24 * 60 * 60))	/* One day. */
+  જો (seconds_idle < 60)	/* One minute. */
+    પાછા "     ";
+  જો (seconds_idle < (24 * 60 * 60))	/* One day. */
     {
-      int hours = seconds_idle / (60 * 60);
-      int minutes = (seconds_idle % (60 * 60)) / 60;
+      પૂર્ણાંક hours = seconds_idle / (60 * 60);
+      પૂર્ણાંક minutes = (seconds_idle % (60 * 60)) / 60;
       sprintf (buf, "%02d:%02d", hours, minutes);
     }
-  else
+  નહીંતર
     {
       intmax_t days = seconds_idle / (24 * 60 * 60);
       sprintf (buf, "%jdd", days);
     }
-  return buf;
+  પાછા buf;
 }
 
 /* Return a time string.  */
-static char const *
-time_string (STRUCT_UTMP const *utmp_ent)
+સ્થિર અક્ષર અચલ *
+time_string (STRUCT_UTMP અચલ *utmp_ent)
 {
-  static char buf[INT_STRLEN_BOUND (intmax_t) + sizeof "-%m-%d %H:%M"];
-  struct tm *tmp = localtime (&utmp_ent->ut_ts.tv_sec);
+  સ્થિર અક્ષર buf[INT_STRLEN_BOUND (intmax_t) + કદ "-%m-%d %H:%M"];
+  સંરચના tm *tmp = localtime (&utmp_ent->ut_ts.tv_sec);
 
-  if (tmp)
+  જો (tmp)
     {
-      strftime (buf, sizeof buf, time_format, tmp);
-      return buf;
+      strftime (buf, કદ buf, time_format, tmp);
+      પાછા buf;
     }
-  else
-    return timetostr (utmp_ent->ut_ts.tv_sec, buf);
+  નહીંતર
+    પાછા timetostr (utmp_ent->ut_ts.tv_sec, buf);
 }
 
 /* Display a line of information about UTMP_ENT. */
 
-static void
-print_entry (STRUCT_UTMP const *utmp_ent)
+સ્થિર શૂન્ય
+print_entry (STRUCT_UTMP અચલ *utmp_ent)
 {
   /* If ut_line contains a space, the device name starts after the space.  */
-  char *line = utmp_ent->ut_line;
-  char *space = strchr (line, ' ');
-  line = space ? space + 1 : line;
+  અક્ષર *લીટી = utmp_ent->ut_લીટી;
+  અક્ષર *space = strchr (લીટી, ' ');
+  લીટી = space ? space + 1 : લીટી;
 
-  int dirfd;
-  if (IS_ABSOLUTE_FILE_NAME (line))
+  પૂર્ણાંક dirfd;
+  જો (IS_ABSOLUTE_FILE_NAME (લીટી))
     dirfd = AT_FDCWD;
-  else
+  નહીંતર
     {
-      static int dev_dirfd;
-      if (!dev_dirfd)
+      સ્થિર પૂર્ણાંક dev_dirfd;
+      જો (!dev_dirfd)
         {
           dev_dirfd = open ("/dev", O_PATHSEARCH | O_DIRECTORY);
-          if (dev_dirfd < 0)
+          જો (dev_dirfd < 0)
             dev_dirfd = AT_FDCWD - 1;
         }
       dirfd = dev_dirfd;
     }
 
-  struct stat stats;
+  સંરચના stat stats;
   time_t last_change;
-  char mesg;
-  if (AT_FDCWD <= dirfd && fstatat (dirfd, line, &stats, 0) == 0)
+  અક્ષર mesg;
+  જો (AT_FDCWD <= dirfd && fstatat (dirfd, લીટી, &stats, 0) == 0)
     {
       mesg = (stats.st_mode & S_IWGRP) ? ' ' : '*';
       last_change = stats.st_atime;
     }
-  else
+  નહીંતર
     {
       mesg = '?';
       last_change = 0;
     }
 
-  char *ut_user = utmp_ent->ut_user;
-  if (strnlen (ut_user, 8) < 8)
+  અક્ષર *ut_user = utmp_ent->ut_user;
+  જો (strnlen (ut_user, 8) < 8)
     printf ("%-8s", ut_user);
-  else
+  નહીંતર
     fputs (ut_user, stdout);
 
-  if (include_fullname)
+  જો (include_fullname)
     {
-      struct passwd *pw = getpwnam (ut_user);
-      if (pw == NULL)
+      સંરચના passwd *pw = getpwnam (ut_user);
+      જો (pw == ખાલી)
         /* TRANSLATORS: Real name is unknown; at most 19 characters. */
         printf (" %19s", _("        ???"));
-      else
+      નહીંતર
         {
-          char *const comma = strchr (pw->pw_gecos, ',');
+          અક્ષર *અચલ comma = strchr (pw->pw_gecos, ',');
 
-          if (comma)
+          જો (comma)
             *comma = '\0';
 
-          char *result = create_fullname (pw->pw_gecos, pw->pw_name);
+          અક્ષર *result = create_fullname (pw->pw_gecos, pw->pw_name);
           printf (" %-19.19s", result);
-          free (result);
+          મુક્ત (result);
         }
     }
 
   fputc (' ', stdout);
   fputc (mesg, stdout);
-  if (strnlen (utmp_ent->ut_line, 8) < 8)
-    printf ("%-8s", utmp_ent->ut_line);
-  else
-    fputs (utmp_ent->ut_line, stdout);
+  જો (strnlen (utmp_ent->ut_લીટી, 8) < 8)
+    printf ("%-8s", utmp_ent->ut_લીટી);
+  નહીંતર
+    fputs (utmp_ent->ut_લીટી, stdout);
 
-  if (include_idle)
+  જો (include_idle)
     {
-      if (last_change)
+      જો (last_change)
         printf (" %-6s", idle_string (last_change));
-      else
+      નહીંતર
         /* TRANSLATORS: Idle time is unknown; at most 5 characters. */
         printf (" %-6s", _("?????"));
     }
@@ -277,99 +277,99 @@ print_entry (STRUCT_UTMP const *utmp_ent)
   printf (" %s", time_string (utmp_ent));
 
 #ifdef HAVE_STRUCT_XTMP_UT_HOST
-  if (include_where && utmp_ent->ut_host[0])
+  જો (include_where && utmp_ent->ut_host[0])
     {
-      char *ut_host = utmp_ent->ut_host;
+      અક્ષર *ut_host = utmp_ent->ut_host;
 
       /* Look for an X display.  */
-      char *display = strchr (ut_host, ':');
-      if (display)
+      અક્ષર *display = strchr (ut_host, ':');
+      જો (display)
         *display++ = '\0';
 
-      char *host = NULL;
-      if (*ut_host && do_lookup)
+      અક્ષર *host = ખાલી;
+      જો (*ut_host && do_lookup)
         /* See if we can canonicalize it.  */
         host = canon_host (ut_host);
-      if ( ! host)
+      જો ( ! host)
         host = ut_host;
 
       fputc (' ', stdout);
       fputs (host, stdout);
-      if (display)
+      જો (display)
         {
           fputc (':', stdout);
           fputs (display, stdout);
         }
 
-      if (host != ut_host)
-        free (host);
+      જો (host != ut_host)
+        મુક્ત (host);
     }
 #endif
 
   putchar ('\n');
 
-  if (ferror (stdout))
+  જો (ferror (stdout))
     write_error ();
 }
 
 /* If FILE exists in HOME, print it to standard output, preceded by HEADER. */
 
-static void
-cat_file (char const *header, char const *home, char const *file)
+સ્થિર શૂન્ય
+cat_file (અક્ષર અચલ *header, અક્ષર અચલ *home, અક્ષર અચલ *file)
 {
-  char *full_name = file_name_concat (home, file, NULL);
+  અક્ષર *full_name = file_name_concat (home, file, ખાલી);
   FILE *fp = fopen (full_name, "r");
 
-  if (fp)
+  જો (fp)
     {
       fputs (header, stdout);
 
       fadvise (fp, FADVISE_SEQUENTIAL);
 
-      char buf[BUFSIZ];
-      for (size_t bytes_read;
-           0 < (bytes_read = fread (buf, 1, sizeof buf, fp));)
-        if (fwrite (buf, 1, bytes_read, stdout) != bytes_read)
+      અક્ષર buf[BUFSIZ];
+      માટે (size_t bytes_read;
+           0 < (bytes_read = fread (buf, 1, કદ buf, fp));)
+        જો (fwrite (buf, 1, bytes_read, stdout) != bytes_read)
           write_error ();
 
       fclose (fp);
     }
 
-  free (full_name);
+  મુક્ત (full_name);
 }
 
 /* Display a verbose line of information about UTMP_ENT. */
 
-static void
-print_long_entry (const char name[])
+સ્થિર શૂન્ય
+print_long_entry (અચલ અક્ષર name[])
 {
-  struct passwd *pw = getpwnam (name);
+  સંરચના passwd *pw = getpwnam (name);
 
   printf (_("Login name: "));
   printf ("%-28s", name);
 
   printf (_("In real life: "));
-  if (pw == NULL)
+  જો (pw == ખાલી)
     {
       /* TRANSLATORS: Real name is unknown; no hard limit. */
       printf (" %s", _("???\n"));
-      return;
+      પાછા;
     }
-  else
+  નહીંતર
     {
-      char *const comma = strchr (pw->pw_gecos, ',');
+      અક્ષર *અચલ comma = strchr (pw->pw_gecos, ',');
 
-      if (comma)
+      જો (comma)
         *comma = '\0';
 
-      char *result = create_fullname (pw->pw_gecos, pw->pw_name);
+      અક્ષર *result = create_fullname (pw->pw_gecos, pw->pw_name);
       printf (" %s", result);
-      free (result);
+      મુક્ત (result);
     }
 
   putchar ('\n');
 
-  if (include_home_and_shell)
+  જો (include_home_and_shell)
     {
       printf (_("Directory: "));
       printf ("%-29s", pw->pw_dir);
@@ -378,33 +378,33 @@ print_long_entry (const char name[])
       putchar ('\n');
     }
 
-  if (include_project)
+  જો (include_project)
     cat_file (_("Project: "), pw->pw_dir, ".project");
 
-  if (include_plan)
+  જો (include_plan)
     cat_file (_("Plan:\n"), pw->pw_dir, ".plan");
 
   putchar ('\n');
 
-  if (ferror (stdout))
+  જો (ferror (stdout))
     write_error ();
 }
 
 /* Print the username of each valid entry and the number of valid entries
    in UTMP_BUF, which should have N elements. */
 
-static void
-print_heading (void)
+સ્થિર શૂન્ય
+print_heading (શૂન્ય)
 {
   printf ("%-8s", _("Login"));
-  if (include_fullname)
+  જો (include_fullname)
     printf (" %-19s", _("Name"));
   printf (" %-9s", _(" TTY"));
-  if (include_idle)
+  જો (include_idle)
     printf (" %-6s", _("Idle"));
   printf (" %-*s", time_format_width, _("When"));
 #ifdef HAVE_STRUCT_XTMP_UT_HOST
-  if (include_where)
+  જો (include_where)
     printf (" %s", _("Where"));
 #endif
   putchar ('\n');
@@ -412,38 +412,38 @@ print_heading (void)
 
 /* Display UTMP_BUF, which should have N entries. */
 
-static void
-scan_entries (idx_t n, STRUCT_UTMP const *utmp_buf,
-              const int argc_names, char *const argv_names[])
+સ્થિર શૂન્ય
+scan_entries (idx_t n, STRUCT_UTMP અચલ *utmp_buf,
+              અચલ પૂર્ણાંક argc_names, અક્ષર *અચલ argv_names[])
 {
-  if (hard_locale (LC_TIME))
+  જો (hard_locale (LC_TIME))
     {
       time_format = "%Y-%m-%d %H:%M";
       time_format_width = 4 + 1 + 2 + 1 + 2 + 1 + 2 + 1 + 2;
     }
-  else
+  નહીંતર
     {
       time_format = "%b %e %H:%M";
       time_format_width = 3 + 1 + 2 + 1 + 2 + 1 + 2;
     }
 
-  if (include_heading)
+  જો (include_heading)
     print_heading ();
 
-  while (n--)
+  જ્યારે (n--)
     {
-      if (IS_USER_PROCESS (utmp_buf))
+      જો (IS_USER_PROCESS (utmp_buf))
         {
-          if (argc_names)
+          જો (argc_names)
             {
-              for (int i = 0; i < argc_names; i++)
-                if (streq (utmp_buf->ut_user, argv_names[i]))
+              માટે (પૂર્ણાંક i = 0; i < argc_names; i++)
+                જો (streq (utmp_buf->ut_user, argv_names[i]))
                   {
                     print_entry (utmp_buf);
-                    break;
+                    તોડો;
                   }
             }
-          else
+          નહીંતર
             print_entry (utmp_buf);
         }
       utmp_buf++;
@@ -452,39 +452,39 @@ scan_entries (idx_t n, STRUCT_UTMP const *utmp_buf,
 
 /* Display a list of who is on the system, according to utmp file FILENAME. */
 
-static void
-short_pinky (char const *filename,
-             const int argc_names, char *const argv_names[])
+સ્થિર શૂન્ય
+short_pinky (અક્ષર અચલ *filename,
+             અચલ પૂર્ણાંક argc_names, અક્ષર *અચલ argv_names[])
 {
   idx_t n_users;
   STRUCT_UTMP *utmp_buf;
-  if (read_utmp (filename, &n_users, &utmp_buf, READ_UTMP_USER_PROCESS) != 0)
+  જો (read_utmp (filename, &n_users, &utmp_buf, READ_UTMP_USER_PROCESS) != 0)
     error (EXIT_FAILURE, errno, "%s", quotef (filename));
 
   scan_entries (n_users, utmp_buf, argc_names, argv_names);
   exit (EXIT_SUCCESS);
 }
 
-static void
-long_pinky (const int argc_names, char *const argv_names[])
+સ્થિર શૂન્ય
+long_pinky (અચલ પૂર્ણાંક argc_names, અક્ષર *અચલ argv_names[])
 {
-  for (int i = 0; i < argc_names; i++)
+  માટે (પૂર્ણાંક i = 0; i < argc_names; i++)
     print_long_entry (argv_names[i]);
 }
 
-void
-usage (int status)
+શૂન્ય
+usage (પૂર્ણાંક status)
 {
-  if (status != EXIT_SUCCESS)
+  જો (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  નહીંતર
     {
       printf (_("Usage: %s [OPTION]... [USER]...\n"), program_name);
       fputs (_("\
 \n\
 "), stdout);
       oputs (_("\
-  -l     produce long format output for the specified USERs\n\
+  -l     produce long format output માટે the specified USERs\n\
 "));
       oputs (_("\
   -b     omit the user's home directory and shell in long format\n\
@@ -496,10 +496,10 @@ usage (int status)
   -p     omit the user's plan file in long format\n\
 "));
       oputs (_("\
-  -s     do short format output, this is the default\n\
+  -s     કરો short format output, this is the મૂળભૂત\n\
 "));
       oputs (_("\
-  -f     omit the line of column headings in short format\n\
+  -f     omit the લીટી of column headings in short format\n\
 "));
       oputs (_("\
   -w     omit the user's full name in short format\n\
@@ -526,8 +526,8 @@ The utmp file will be %s.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+પૂર્ણાંક
+મુખ્ય (પૂર્ણાંક argc, અક્ષર **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -537,81 +537,81 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  int optc;
-  while ((optc = getopt_long (argc, argv, "sfwiqbhlp", longopts, NULL))
+  પૂર્ણાંક optc;
+  જ્યારે ((optc = getopt_long (argc, argv, "sfwiqbhlp", longopts, ખાલી))
          != -1)
     {
-      switch (optc)
+      પસંદગી (optc)
         {
-        case 's':
+        સ્થિતિ 's':
           do_short_format = true;
-          break;
+          તોડો;
 
-        case 'l':
+        સ્થિતિ 'l':
           do_short_format = false;
-          break;
+          તોડો;
 
-        case 'f':
+        સ્થિતિ 'f':
           include_heading = false;
-          break;
+          તોડો;
 
-        case 'w':
+        સ્થિતિ 'w':
           include_fullname = false;
-          break;
+          તોડો;
 
-        case 'i':
+        સ્થિતિ 'i':
           include_fullname = false;
 #ifdef HAVE_STRUCT_XTMP_UT_HOST
           include_where = false;
 #endif
-          break;
+          તોડો;
 
-        case 'q':
+        સ્થિતિ 'q':
           include_fullname = false;
 #ifdef HAVE_STRUCT_XTMP_UT_HOST
           include_where = false;
 #endif
           include_idle = false;
-          break;
+          તોડો;
 
-        case 'h':
+        સ્થિતિ 'h':
           include_project = false;
-          break;
+          તોડો;
 
-        case 'p':
+        સ્થિતિ 'p':
           include_plan = false;
-          break;
+          તોડો;
 
-        case 'b':
+        સ્થિતિ 'b':
           include_home_and_shell = false;
-          break;
+          તોડો;
 
-        case LOOKUP_OPTION:
+        સ્થિતિ LOOKUP_OPTION:
           do_lookup = true;
-          break;
+          તોડો;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        મૂળભૂત:
           usage (EXIT_FAILURE);
         }
     }
 
-  int n_users = argc - optind;
+  પૂર્ણાંક n_users = argc - optind;
 
-  if (!do_short_format && n_users == 0)
+  જો (!do_short_format && n_users == 0)
     {
       error (0, 0, _("no username specified; at least one must be\
  specified when using -l"));
       usage (EXIT_FAILURE);
     }
 
-  if (do_short_format)
+  જો (do_short_format)
     short_pinky (UTMP_FILE, n_users, argv + optind);
-  else
+  નહીંતર
     long_pinky (n_users, argv + optind);
 
-  return EXIT_SUCCESS;
+  પાછા EXIT_SUCCESS;
 }

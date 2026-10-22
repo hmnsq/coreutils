@@ -73,42 +73,42 @@
 
 #define AUTHORS proper_name ("Colin Plumb")
 
-#include <config.h>
+#અન્તર્ભાવ <config.h>
 
-#include <getopt.h>
-#include <stdio.h>
-#include <sys/types.h>
-#if defined __linux__ && HAVE_SYS_MTIO_H
+#અન્તર્ભાવ <getopt.h>
+#અન્તર્ભાવ <stdio.h>
+#અન્તર્ભાવ <sys/types.h>
+#જો defined __linux__ && HAVE_SYS_MTIO_H
 # include <sys/mtio.h>
 #endif
 
-#include "system.h"
-#include "alignalloc.h"
-#include "argmatch.h"
-#include "assure.h"
-#include "xdectoint.h"
-#include "fcntl--.h"
-#include "gethrxtime.h"
-#include "human.h"
-#include "randint.h"
-#include "randread.h"
-#include "renameatu.h"
-#include "stat-size.h"
+#અન્તર્ભાવ "system.h"
+#અન્તર્ભાવ "alignalloc.h"
+#અન્તર્ભાવ "argmatch.h"
+#અન્તર્ભાવ "assure.h"
+#અન્તર્ભાવ "xdectoint.h"
+#અન્તર્ભાવ "fcntl--.h"
+#અન્તર્ભાવ "gethrxtime.h"
+#અન્તર્ભાવ "human.h"
+#અન્તર્ભાવ "randint.h"
+#અન્તર્ભાવ "randread.h"
+#અન્તર્ભાવ "renameatu.h"
+#અન્તર્ભાવ "stat-size.h"
 
 /* Default number of times to overwrite.  */
-enum { DEFAULT_PASSES = 3 };
+ગણના { DEFAULT_PASSES = 3 };
 
 /* How many seconds to wait before checking whether to output another
    verbose output line.  */
-enum { VERBOSE_UPDATE = 5 };
+ગણના { VERBOSE_UPDATE = 5 };
 
 /* Sector size and corresponding mask, for recovering after write failures.
    The size must be a power of 2.  */
-enum { SECTOR_SIZE = 512 };
-enum { SECTOR_MASK = SECTOR_SIZE - 1 };
+ગણના { SECTOR_SIZE = 512 };
+ગણના { SECTOR_MASK = SECTOR_SIZE - 1 };
 static_assert (0 < SECTOR_SIZE && (SECTOR_SIZE & SECTOR_MASK) == 0);
 
-enum remove_method
+ગણના remove_method
 {
   remove_none = 0,      /* the default: only wipe data.  */
   remove_unlink,        /* don't obfuscate name, just unlink.  */
@@ -116,22 +116,22 @@ enum remove_method
   remove_wipesync       /* obfuscate name, syncing each byte, before unlink.  */
 };
 
-static char const *const remove_args[] =
+સ્થિર અક્ષર અચલ *અચલ remove_args[] =
 {
-  "unlink", "wipe", "wipesync", NULL
+  "unlink", "wipe", "wipesync", ખાલી
 };
 
-static enum remove_method const remove_methods[] =
+સ્થિર ગણના remove_method અચલ remove_methods[] =
 {
   remove_unlink, remove_wipe, remove_wipesync
 };
 
-struct Options
+સંરચના Options
 {
   bool force;		/* -f flag: chmod files if necessary */
   size_t n_iterations;	/* -n flag: Number of iterations */
   off_t size;		/* -s flag: size of file */
-  enum remove_method remove_file; /* -u flag: remove file after shredding */
+  ગણના remove_method remove_file; /* -u flag: remove file after shredding */
   bool verbose;		/* -v flag: Print progress */
   bool exact;		/* -x flag: Do not round up file size */
   bool zero_fill;	/* -z flag: Add a final zero pass */
@@ -139,37 +139,37 @@ struct Options
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+ગણના
 {
   RANDOM_SOURCE_OPTION = CHAR_MAX + 1
 };
 
-static struct option const long_opts[] =
+સ્થિર સંરચના option અચલ long_opts[] =
 {
-  {"exact", no_argument, NULL, 'x'},
-  {"force", no_argument, NULL, 'f'},
-  {"iterations", required_argument, NULL, 'n'},
-  {"size", required_argument, NULL, 's'},
-  {"random-source", required_argument, NULL, RANDOM_SOURCE_OPTION},
-  {"remove", optional_argument, NULL, 'u'},
-  {"verbose", no_argument, NULL, 'v'},
-  {"zero", no_argument, NULL, 'z'},
+  {"exact", no_argument, ખાલી, 'x'},
+  {"force", no_argument, ખાલી, 'f'},
+  {"iterations", required_argument, ખાલી, 'n'},
+  {"size", required_argument, ખાલી, 's'},
+  {"random-source", required_argument, ખાલી, RANDOM_SOURCE_OPTION},
+  {"remove", optional_argument, ખાલી, 'u'},
+  {"verbose", no_argument, ખાલી, 'v'},
+  {"zero", no_argument, ખાલી, 'z'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ખાલી, 0, ખાલી, 0}
 };
 
-void
-usage (int status)
+શૂન્ય
+usage (પૂર્ણાંક status)
 {
-  if (status != EXIT_SUCCESS)
+  જો (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  નહીંતર
     {
       printf (_("Usage: %s [OPTION]... FILE...\n"), program_name);
       fputs (_("\
 Overwrite the specified FILE(s) repeatedly, in order to make it harder\n\
-for even very expensive hardware probing to recover the data.\n\
+માટે even very expensive hardware probing to recover the data.\n\
 "), stdout);
       fputs (_("\
 \n\
@@ -180,11 +180,11 @@ If FILE is -, shred standard output.\n\
 
       oputs (_("\
   -f, --force\n\
-         change permissions to allow writing if necessary\n\
+         change permissions to allow writing જો necessary\n\
 "));
       oprintf (_("\
   -n, --iterations=N\n\
-         overwrite N times instead of the default (%d)\n\
+         overwrite N times instead of the મૂળભૂત (%d)\n\
 "), DEFAULT_PASSES);
       oputs (_("\
       --random-source=FILE\n\
@@ -208,8 +208,8 @@ If FILE is -, shred standard output.\n\
 "));
       oputs (_("\
   -x, --exact\n\
-         do not round file sizes up to the next full block;\n\
-         this is the default for non-regular files\n\
+         કરો not round file sizes up to the next full block;\n\
+         this is the મૂળભૂત માટે non-regular files\n\
 "));
       oputs (_("\
   -z, --zero\n\
@@ -219,26 +219,26 @@ If FILE is -, shred standard output.\n\
       oputs (VERSION_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-FILE will be skipped with a diagnostic message if it is a FIFO, socket, or\n\
+FILE will be skipped with a diagnostic message જો it is a FIFO, socket, or\n\
 terminal, since its data does not reside on disk.\n\
 "), stdout);
       fputs (_("\
 \n\
-Delete FILE(s) if --remove (-u) is specified.  The default is not to remove\n\
+Delete FILE(s) જો --remove (-u) is specified.  The મૂળભૂત is not to remove\n\
 the files because it is common to operate on device files like /dev/hda,\n\
 and those files usually should not be removed.\n\
 The optional HOW parameter indicates how to remove a directory entry:\n\
 'unlink' => use a standard unlink call.\n\
 'wipe' => also first obfuscate bytes in the name.\n\
 'wipesync' => also sync each obfuscated byte to the device.\n\
-The default mode is 'wipesync', but note it can be expensive.\n\
+The મૂળભૂત mode is 'wipesync', but note it can be expensive.\n\
 \n\
 "), stdout);
       fputs (_("\
 CAUTION: shred assumes the file system and hardware overwrite data in place.\n\
 Although this is common, many platforms operate otherwise.  Also, backups\n\
 and mirrors may contain unremovable copies that will let a shredded file\n\
-be recovered later.  See the GNU coreutils manual for details.\n\
+be recovered later.  See the GNU coreutils manual માટે details.\n\
 "), stdout);
       emit_ancillary_info (PROGRAM_NAME);
     }
@@ -248,21 +248,21 @@ be recovered later.  See the GNU coreutils manual for details.\n\
 /*
  * Determine if pattern type is periodic or not.
  */
-static bool
-periodic_pattern (int type)
+સ્થિર bool
+periodic_pattern (પૂર્ણાંક type)
 {
-  if (type <= 0)
-    return false;
+  જો (type <= 0)
+    પાછા false;
 
-  unsigned char r[3];
-  unsigned int bits = type & 0xfff;
+  unsigned અક્ષર r[3];
+  unsigned પૂર્ણાંક bits = type & 0xfff;
 
   bits |= bits << 12;
   r[0] = (bits >> 4) & 255;
   r[1] = (bits >> 8) & 255;
   r[2] = bits & 255;
 
-  return (r[0] != r[1]) || (r[0] != r[2]);
+  પાછા (r[0] != r[1]) || (r[0] != r[2]);
 }
 
 /*
@@ -271,24 +271,24 @@ periodic_pattern (int type)
  * The buffer must be at least 3 bytes long, even if
  * size is less.  Larger sizes are filled exactly.
  */
-static void
-fillpattern (int type, unsigned char *r, size_t size)
+સ્થિર શૂન્ય
+fillpattern (પૂર્ણાંક type, unsigned અક્ષર *r, size_t size)
 {
   size_t i;
-  unsigned int bits = type & 0xfff;
+  unsigned પૂર્ણાંક bits = type & 0xfff;
 
   bits |= bits << 12;
   r[0] = (bits >> 4) & 255;
   r[1] = (bits >> 8) & 255;
   r[2] = bits & 255;
-  for (i = 3; i <= size / 2; i *= 2)
+  માટે (i = 3; i <= size / 2; i *= 2)
     memcpy (r + i, r, i);
-  if (i < size)
+  જો (i < size)
     memcpy (r + i, r, size - i);
 
   /* Invert the first bit of every sector. */
-  if (type & 0x1000)
-    for (i = 0; i < size; i += SECTOR_SIZE)
+  જો (type & 0x1000)
+    માટે (i = 0; i < size; i += SECTOR_SIZE)
       r[i] ^= 0x80;
 }
 
@@ -297,21 +297,21 @@ fillpattern (int type, unsigned char *r, size_t size)
  * FIXME: allow translation of "random".
  */
 #define PASS_NAME_SIZE 7
-static void
-passname (unsigned char const *data, char name[PASS_NAME_SIZE])
+સ્થિર શૂન્ય
+passname (unsigned અક્ષર અચલ *data, અક્ષર name[PASS_NAME_SIZE])
 {
-  if (data)
+  જો (data)
     sprintf (name, "%02x%02x%02x", data[0], data[1], data[2]);
-  else
+  નહીંતર
     memcpy (name, "random", PASS_NAME_SIZE);
 }
 
 /* Return true when it's ok to ignore an fsync or fdatasync
    failure that set errno to ERRNO_VAL.  */
-static bool
-ignorable_sync_errno (int errno_val)
+સ્થિર bool
+ignorable_sync_errno (પૂર્ણાંક errno_val)
 {
-  return (errno_val == EINVAL
+  પાછા (errno_val == EINVAL
           || errno_val == EBADF
           /* HP-UX does this */
           || errno_val == EISDIR);
@@ -323,88 +323,88 @@ ignorable_sync_errno (int errno_val)
    (setting errno) on failure.  It is not an error if fdatasync and/or
    fsync is not supported for this file, or if the file is not a
    writable file descriptor.  */
-static int
-dosync (int fd, char const *qname)
+સ્થિર પૂર્ણાંક
+dosync (પૂર્ણાંક fd, અક્ષર અચલ *qname)
 {
-  int err;
+  પૂર્ણાંક err;
 
-  if (fdatasync (fd) == 0)
-    return 0;
+  જો (fdatasync (fd) == 0)
+    પાછા 0;
   err = errno;
-  if ( ! ignorable_sync_errno (err))
+  જો ( ! ignorable_sync_errno (err))
     {
       error (0, err, _("%s: fdatasync failed"), qname);
       errno = err;
-      return -1;
+      પાછા -1;
     }
 
-  if (fsync (fd) == 0)
-    return 0;
+  જો (fsync (fd) == 0)
+    પાછા 0;
   err = errno;
-  if ( ! ignorable_sync_errno (err))
+  જો ( ! ignorable_sync_errno (err))
     {
       error (0, err, _("%s: fsync failed"), qname);
       errno = err;
-      return -1;
+      પાછા -1;
     }
 
   sync ();
-  return 0;
+  પાછા 0;
 }
 
 /* Turn on or off direct I/O mode for file descriptor FD, if possible.
    Try to turn it on if ENABLE is true.  Otherwise, try to turn it off.  */
-static void
-direct_mode (int fd, bool enable)
+સ્થિર શૂન્ય
+direct_mode (પૂર્ણાંક fd, bool enable)
 {
-  if (O_DIRECT)
+  જો (O_DIRECT)
     {
-      int fd_flags = fcntl (fd, F_GETFL);
-      if (0 < fd_flags)
+      પૂર્ણાંક fd_flags = fcntl (fd, F_GETFL);
+      જો (0 < fd_flags)
         {
-          int new_flags = (enable
+          પૂર્ણાંક new_flags = (enable
                            ? (fd_flags | O_DIRECT)
                            : (fd_flags & ~O_DIRECT));
-          if (new_flags != fd_flags)
+          જો (new_flags != fd_flags)
             fcntl (fd, F_SETFL, new_flags);
         }
     }
 
-#if HAVE_DIRECTIO && defined DIRECTIO_ON && defined DIRECTIO_OFF
+#જો HAVE_DIRECTIO && defined DIRECTIO_ON && defined DIRECTIO_OFF
   /* This is Solaris-specific.  */
   directio (fd, enable ? DIRECTIO_ON : DIRECTIO_OFF);
 #endif
 }
 
 /* Rewind FD; its status is ST.  */
-static bool
-dorewind (int fd, struct stat const *st)
+સ્થિર bool
+dorewind (પૂર્ણાંક fd, સંરચના stat અચલ *st)
 {
-  if (S_ISCHR (st->st_mode))
+  જો (S_ISCHR (st->st_mode))
     {
-#if defined __linux__ && HAVE_SYS_MTIO_H
+#જો defined __linux__ && HAVE_SYS_MTIO_H
       /* In the Linux kernel, lseek does not work on tape devices; it
          returns a randomish value instead.  Try the low-level tape
          rewind operation first.  */
-      struct mtop op;
+      સંરચના mtop op;
       op.mt_op = MTREW;
-      op.mt_count = 1;
-      if (ioctl (fd, MTIOCTOP, &op) == 0)
-        return true;
+      op.mt_ગણતરી = 1;
+      જો (ioctl (fd, MTIOCTOP, &op) == 0)
+        પાછા true;
 #endif
     }
   off_t offset = lseek (fd, 0, SEEK_SET);
-  if (0 < offset)
+  જો (0 < offset)
     errno = EINVAL;
-  return offset == 0;
+  પાછા offset == 0;
 }
 
 /* By convention, negative sizes represent unknown values.  */
 
-static bool
+સ્થિર bool
 known (off_t size)
 {
-  return 0 <= size;
+  પાછા 0 <= size;
 }
 
 /*
@@ -417,10 +417,10 @@ known (off_t size)
  *
  * Return 1 on write error, -1 on other error, 0 on success.
  */
-static int
-dopass (int fd, struct stat const *st, char const *qname, off_t *sizep,
-        int type, struct randread_source *s,
-        unsigned long int k, unsigned long int n)
+સ્થિર પૂર્ણાંક
+dopass (પૂર્ણાંક fd, સંરચના stat અચલ *st, અક્ષર અચલ *qname, off_t *sizep,
+        પૂર્ણાંક type, સંરચના randread_source *s,
+        unsigned long પૂર્ણાંક k, unsigned long પૂર્ણાંક n)
 {
   off_t size = *sizep;
   off_t offset;                /* Current file position */
@@ -438,44 +438,44 @@ dopass (int fd, struct stat const *st, char const *qname, off_t *sizep,
   size_t output_size = periodic_pattern (type)
                        ? PERIODIC_OUTPUT_SIZE : NONPERIODIC_OUTPUT_SIZE;
 #define FILLPATTERN_SIZE (((output_size + 2) / 3) * 3) /* Multiple of 3 */
-  unsigned char *pbuf = xalignalloc (page_size, FILLPATTERN_SIZE);
+  unsigned અક્ષર *pbuf = xalignalloc (page_size, FILLPATTERN_SIZE);
 
-  char pass_string[PASS_NAME_SIZE];	/* Name of current pass */
+  અક્ષર pass_string[PASS_NAME_SIZE];	/* Name of current pass */
   bool write_error = false;
   bool other_error = false;
 
   /* Printable previous offset into the file */
-  char previous_offset_buf[LONGEST_HUMAN_READABLE + 1];
-  char const *previous_human_offset;
+  અક્ષર previous_offset_buf[LONGEST_HUMAN_READABLE + 1];
+  અક્ષર અચલ *previous_human_offset;
 
   /* As a performance tweak, avoid direct I/O for small sizes,
      as it's just a performance rather than security consideration,
      and direct I/O can often be unsupported for small non aligned sizes.  */
   bool try_without_directio = 0 < size && size < output_size;
-  if (! try_without_directio)
+  જો (! try_without_directio)
     direct_mode (fd, true);
 
-  if (! dorewind (fd, st))
+  જો (! dorewind (fd, st))
     {
       error (0, errno, _("%s: cannot rewind"), qname);
       other_error = true;
-      goto free_pattern_mem;
+      જાઓ free_pattern_mem;
     }
 
   /* Constant fill patterns need only be set up once. */
-  if (type >= 0)
+  જો (type >= 0)
     {
       lim = known (size) && size < FILLPATTERN_SIZE ? size : FILLPATTERN_SIZE;
       fillpattern (type, pbuf, lim);
       passname (pbuf, pass_string);
     }
-  else
+  નહીંતર
     {
-      passname (NULL, pass_string);
+      passname (ખાલી, pass_string);
     }
 
   /* Set position if first status update */
-  if (n)
+  જો (n)
     {
       error (0, 0, _("%s: pass %lu/%lu (%s)..."), qname, k, n, pass_string);
       prev = gethrxtime ();
@@ -483,47 +483,47 @@ dopass (int fd, struct stat const *st, char const *qname, off_t *sizep,
     }
 
   offset = 0;
-  while (true)
+  જ્યારે (true)
     {
       /* How much to write this time? */
       lim = output_size;
-      if (known (size) && size - offset < output_size)
+      જો (known (size) && size - offset < output_size)
         {
-          if (size < offset)
-            break;
+          જો (size < offset)
+            તોડો;
           lim = size - offset;
-          if (!lim)
-            break;
+          જો (!lim)
+            તોડો;
         }
-      if (type < 0)
+      જો (type < 0)
         randread (s, pbuf, lim);
       /* Loop to retry partial writes. */
-      for (soff = 0; soff < lim; soff += ssize)
+      માટે (soff = 0; soff < lim; soff += ssize)
         {
-          ssize = write (fd, pbuf + soff, lim - soff);
-          if (ssize <= 0)
+          ssize = લિખ (fd, pbuf + soff, lim - soff);
+          જો (ssize <= 0)
             {
-              if (! known (size) && (ssize == 0 || errno == ENOSPC))
+              જો (! known (size) && (ssize == 0 || errno == ENOSPC))
                 {
                   /* We have found the end of the file.  */
-                  if (soff <= OFF_T_MAX - offset)
+                  જો (soff <= OFF_T_MAX - offset)
                     *sizep = size = offset + soff;
-                  break;
+                  તોડો;
                 }
-              else
+              નહીંતર
                 {
-                  int errnum = errno;
+                  પૂર્ણાંક errnum = errno;
 
                   /* Retry without direct I/O since this may not be supported
                      at all on some (file) systems, or with the current size.
                      I.e., a specified --size that is not aligned, or when
                      dealing with slop at the end of a file with --exact.  */
-                  if (! try_without_directio && errno == EINVAL)
+                  જો (! try_without_directio && errno == EINVAL)
                     {
                       direct_mode (fd, false);
                       ssize = 0;
                       try_without_directio = true;
-                      continue;
+                      ચાલુ;
                     }
                   uintmax_t error_offset = offset + soff;
                   error (0, errnum, _("%s: error writing at offset %ju"),
@@ -536,66 +536,66 @@ dopass (int fd, struct stat const *st, char const *qname, off_t *sizep,
                      also enables direct I/O on some (file) systems.  */
                   static_assert (PERIODIC_OUTPUT_SIZE % SECTOR_SIZE == 0);
                   static_assert (NONPERIODIC_OUTPUT_SIZE % SECTOR_SIZE == 0);
-                  if (errnum == EIO && known (size)
+                  જો (errnum == EIO && known (size)
                       && (soff | SECTOR_MASK) < lim)
                     {
                       size_t soff1 = (soff | SECTOR_MASK) + 1;
-                      if (lseek (fd, offset + soff1, SEEK_SET) != -1)
+                      જો (lseek (fd, offset + soff1, SEEK_SET) != -1)
                         {
                           /* Arrange to skip this block. */
                           ssize = soff1 - soff;
                           write_error = true;
-                          continue;
+                          ચાલુ;
                         }
                       error (0, errno, _("%s: lseek failed"), qname);
                     }
                   other_error = true;
-                  goto free_pattern_mem;
+                  જાઓ free_pattern_mem;
                 }
             }
         }
 
       /* Okay, we have written "soff" bytes. */
 
-      if (ckd_add (&offset, offset, soff))
+      જો (ckd_add (&offset, offset, soff))
         {
           error (0, 0, _("%s: file too large"), qname);
           other_error = true;
-          goto free_pattern_mem;
+          જાઓ free_pattern_mem;
         }
 
       bool done = offset == size;
 
       /* Time to print progress? */
-      if (n && ((done && *previous_human_offset)
+      જો (n && ((done && *previous_human_offset)
                 || VERBOSE_UPDATE <= xtime_sec ((now = gethrxtime ()) - prev)))
         {
-          char offset_buf[LONGEST_HUMAN_READABLE + 1];
-          char size_buf[LONGEST_HUMAN_READABLE + 1];
-          int human_progress_opts = (human_autoscale | human_SI
+          અક્ષર offset_buf[LONGEST_HUMAN_READABLE + 1];
+          અક્ષર size_buf[LONGEST_HUMAN_READABLE + 1];
+          પૂર્ણાંક human_progress_opts = (human_autoscale | human_SI
                                      | human_base_1024 | human_B);
-          char const *human_offset
+          અક્ષર અચલ *human_offset
             = human_readable (offset, offset_buf,
                               human_floor | human_progress_opts, 1, 1);
 
-          if (done || !streq (previous_human_offset, human_offset))
+          જો (done || !streq (previous_human_offset, human_offset))
             {
-              if (! known (size))
+              જો (! known (size))
                 error (0, 0, _("%s: pass %lu/%lu (%s)...%s"),
                        qname, k, n, pass_string, human_offset);
-              else
+              નહીંતર
                 {
                   uintmax_t off = offset;
-                  int percent = (size == 0
+                  પૂર્ણાંક percent = (size == 0
                                  ? 100
                                  : (off <= UINTMAX_MAX / 100
                                     ? off * 100 / size
                                     : off / (size / 100)));
-                  char const *human_size
+                  અક્ષર અચલ *human_size
                     = human_readable (size, size_buf,
                                       human_ceiling | human_progress_opts,
                                       1, 1);
-                  if (done)
+                  જો (done)
                     human_offset = human_size;
                   error (0, 0, _("%s: pass %lu/%lu (%s)...%s/%s %d%%"),
                          qname, k, n, pass_string, human_offset, human_size,
@@ -613,12 +613,12 @@ dopass (int fd, struct stat const *st, char const *qname, off_t *sizep,
                * It's a common problem with programs that do lots of writes,
                * like mkfs.
                */
-              if (dosync (fd, qname) != 0)
+              જો (dosync (fd, qname) != 0)
                 {
-                  if (errno != EIO)
+                  જો (errno != EIO)
                     {
                       other_error = true;
-                      goto free_pattern_mem;
+                      જાઓ free_pattern_mem;
                     }
                   write_error = true;
                 }
@@ -627,12 +627,12 @@ dopass (int fd, struct stat const *st, char const *qname, off_t *sizep,
     }
 
   /* Force what we just wrote to hit the media. */
-  if (dosync (fd, qname) != 0)
+  જો (dosync (fd, qname) != 0)
     {
-      if (errno != EIO)
+      જો (errno != EIO)
         {
           other_error = true;
-          goto free_pattern_mem;
+          જાઓ free_pattern_mem;
         }
       write_error = true;
     }
@@ -640,7 +640,7 @@ dopass (int fd, struct stat const *st, char const *qname, off_t *sizep,
 free_pattern_mem:
   alignfree (pbuf);
 
-  return other_error ? -1 : write_error;
+  પાછા other_error ? -1 : write_error;
 }
 
 /*
@@ -697,7 +697,7 @@ free_pattern_mem:
  * If you want more passes than the entire list of groups can
  * provide, just start repeating from the beginning of the list.
  */
-static int const
+સ્થિર પૂર્ણાંક અચલ
   patterns[] =
 {
   -2,				/* 2 random passes */
@@ -722,60 +722,60 @@ static int const
  * are chosen, and then they are shuffled into the desired
  * order.
  */
-static void
-genpattern (int *dest, size_t num, struct randint_source *s)
+સ્થિર શૂન્ય
+genpattern (પૂર્ણાંક *dest, size_t અંક, સંરચના randint_source *s)
 {
   size_t randpasses;
-  int const *p;
-  int *d;
+  પૂર્ણાંક અચલ *p;
+  પૂર્ણાંક *d;
   size_t n;
-  size_t accum, top, swap;
-  int k;
+  size_t accum, ટોચ, swap;
+  પૂર્ણાંક k;
 
-  if (!num)
-    return;
+  જો (!અંક)
+    પાછા;
 
   /* Stage 1: choose the passes to use */
   p = patterns;
   randpasses = 0;
   d = dest;			/* Destination for generated pass list */
-  n = num;			/* Passes remaining to fill */
+  n = અંક;			/* Passes remaining to fill */
 
-  while (true)
+  જ્યારે (true)
     {
       k = *p++;			/* Block descriptor word */
-      if (!k)
+      જો (!k)
         {			/* Loop back to the beginning */
           p = patterns;
         }
-      else if (k < 0)
+      નહીંતર જો (k < 0)
         {			/* -k random passes */
           k = -k;
-          if ((size_t) k >= n)
+          જો ((size_t) k >= n)
             {
               randpasses += n;
-              break;
+              તોડો;
             }
           randpasses += k;
           n -= k;
         }
-      else if ((size_t) k <= n)
+      નહીંતર જો ((size_t) k <= n)
         {			/* Full block of patterns */
-          memcpy (d, p, k * sizeof (int));
+          memcpy (d, p, k * કદ (પૂર્ણાંક));
           p += k;
           d += k;
           n -= k;
         }
-      else if (n < 2 || 3 * n < (size_t) k)
+      નહીંતર જો (n < 2 || 3 * n < (size_t) k)
         {			/* Finish with random */
           randpasses += n;
-          break;
+          તોડો;
         }
-      else
+      નહીંતર
         {			/* Pad out with n of the k available */
-          do
+          કરો
             {
-              if (n == (size_t) k || randint_choose (s, k) < n)
+              જો (n == (size_t) k || randint_choose (s, k) < n)
                 {
                   *d++ = *p;
                   n--;
@@ -783,11 +783,11 @@ genpattern (int *dest, size_t num, struct randint_source *s)
               p++;
               k--;
             }
-          while (n);
-          break;
+          જ્યારે (n);
+          તોડો;
         }
     }
-  top = num - randpasses;	/* Top of initialized data */
+  ટોચ = અંક - randpasses;	/* Top of initialized data */
   /* affirm (d == dest + top); */
 
   /*
@@ -812,17 +812,17 @@ genpattern (int *dest, size_t num, struct randint_source *s)
    */
   randpasses--;			/* To speed up later math */
   accum = randpasses;		/* Bresenham DDA accumulator */
-  for (n = 0; n < num; n++)
+  માટે (n = 0; n < અંક; n++)
     {
-      if (accum <= randpasses)
+      જો (accum <= randpasses)
         {
-          accum += num - 1;
-          dest[top++] = dest[n];
+          accum += અંક - 1;
+          dest[ટોચ++] = dest[n];
           dest[n] = -1;
         }
-      else
+      નહીંતર
         {
-          swap = n + randint_choose (s, top - n);
+          swap = n + randint_choose (s, ટોચ - n);
           k = dest[n];
           dest[n] = dest[swap];
           dest[swap] = k;
@@ -836,74 +836,74 @@ genpattern (int *dest, size_t num, struct randint_source *s)
  * The core routine to actually do the work.  This overwrites the first
  * size bytes of the given fd.  Return true if successful.
  */
-static bool
-do_wipefd (int fd, char const *qname, struct randint_source *s,
-           struct Options const *flags)
+સ્થિર bool
+do_wipefd (પૂર્ણાંક fd, અક્ષર અચલ *qname, સંરચના randint_source *s,
+           સંરચના Options અચલ *flags)
 {
-  struct stat st;
+  સંરચના stat st;
   off_t size;		/* Size to write, size to read */
   off_t i_size = 0;	/* For small files, initial size to overwrite inode */
-  unsigned long int n;	/* Number of passes for printing purposes */
-  int *passarray;
+  unsigned long પૂર્ણાંક n;	/* Number of passes for printing purposes */
+  પૂર્ણાંક *passarray;
   bool ok = true;
-  struct randread_source *rs;
+  સંરચના randread_source *rs;
 
   n = 0;		/* dopass takes n == 0 to mean "don't print progress" */
-  if (flags->verbose)
+  જો (flags->verbose)
     n = flags->n_iterations + flags->zero_fill;
 
-  if (fstat (fd, &st))
+  જો (fstat (fd, &st))
     {
       error (0, errno, _("%s: fstat failed"), qname);
-      return false;
+      પાછા false;
     }
 
   /* If we know that we can't possibly shred the file, give up now.
      Otherwise, we may go into an infinite loop writing data before we
      find that we can't rewind the device.  */
-  if ((S_ISCHR (st.st_mode) && isatty (fd))
+  જો ((S_ISCHR (st.st_mode) && isatty (fd))
       || S_ISFIFO (st.st_mode)
       || S_ISSOCK (st.st_mode))
     {
       error (0, 0, _("%s: invalid file type"), qname);
-      return false;
+      પાછા false;
     }
-  else if (S_ISREG (st.st_mode) && st.st_size < 0)
+  નહીંતર જો (S_ISREG (st.st_mode) && st.st_size < 0)
     {
       error (0, 0, _("%s: file has negative size"), qname);
-      return false;
+      પાછા false;
     }
 
   /* Allocate pass array */
-  passarray = xnmalloc (flags->n_iterations, sizeof *passarray);
+  passarray = xnmalloc (flags->n_iterations, કદ *passarray);
 
   size = flags->size;
-  if (size == -1)
+  જો (size == -1)
     {
-      if (S_ISREG (st.st_mode))
+      જો (S_ISREG (st.st_mode))
         {
           size = st.st_size;
 
-          if (! flags->exact)
+          જો (! flags->exact)
             {
               /* Round up to the nearest block size to clear slack space.  */
               off_t remainder = size % STP_BLKSIZE (&st);
-              if (size && size < STP_BLKSIZE (&st))
+              જો (size && size < STP_BLKSIZE (&st))
                 i_size = size;
-              if (remainder != 0)
+              જો (remainder != 0)
                 {
                   off_t size_incr = STP_BLKSIZE (&st) - remainder;
                   size += MIN (size_incr, OFF_T_MAX - size);
                 }
             }
         }
-      else
+      નહીંતર
         {
           /* The behavior of lseek is unspecified, but in practice if
              it returns a positive number that's the size of this
              device.  */
           size = lseek (fd, 0, SEEK_END);
-          if (size <= 0)
+          જો (size <= 0)
             {
               /* We are unable to determine the length, up front.
                  Let dopass do that as part of its first iteration.  */
@@ -911,7 +911,7 @@ do_wipefd (int fd, char const *qname, struct randint_source *s,
             }
         }
     }
-  else if (S_ISREG (st.st_mode)
+  નહીંતર જો (S_ISREG (st.st_mode)
            && st.st_size < MIN (STP_BLKSIZE (&st), size))
     i_size = st.st_size;
 
@@ -920,18 +920,18 @@ do_wipefd (int fd, char const *qname, struct randint_source *s,
 
   rs = randint_get_source (s);
 
-  while (true)
+  જ્યારે (true)
     {
       off_t pass_size;
-      unsigned long int pn = n;
+      unsigned long પૂર્ણાંક pn = n;
 
-      if (i_size)
+      જો (i_size)
         {
           pass_size = i_size;
           i_size = 0;
           pn = 0;
         }
-      else if (size)
+      નહીંતર જો (size)
         {
           pass_size = size;
           size = 0;
@@ -939,21 +939,21 @@ do_wipefd (int fd, char const *qname, struct randint_source *s,
       /* TODO: consider handling tail packing by
          writing the tail padding as a separate pass,
          (that would not rewind).  */
-      else
-        break;
+      નહીંતર
+        તોડો;
 
-      for (size_t i = 0; i < flags->n_iterations + flags->zero_fill; i++)
+      માટે (size_t i = 0; i < flags->n_iterations + flags->zero_fill; i++)
         {
-          int err = 0;
-          int type = i < flags->n_iterations ? passarray[i] : 0;
+          પૂર્ણાંક err = 0;
+          પૂર્ણાંક type = i < flags->n_iterations ? passarray[i] : 0;
 
           err = dopass (fd, &st, qname, &pass_size, type, rs, i + 1, pn);
 
-          if (err)
+          જો (err)
             {
               ok = false;
-              if (err < 0)
-                goto wipefd_out;
+              જો (err < 0)
+                જાઓ wipefd_out;
             }
         }
     }
@@ -963,43 +963,43 @@ do_wipefd (int fd, char const *qname, struct randint_source *s,
      they are not possible here); don't worry about errors reported
      for other file types.  */
 
-  if (flags->remove_file && ftruncate (fd, 0) != 0
+  જો (flags->remove_file && ftruncate (fd, 0) != 0
       && (S_ISREG (st.st_mode) || S_TYPEISSHM (&st)))
     {
       error (0, errno, _("%s: error truncating"), qname);
       ok = false;
-      goto wipefd_out;
+      જાઓ wipefd_out;
     }
 
 wipefd_out:
-  free (passarray);
-  return ok;
+  મુક્ત (passarray);
+  પાછા ok;
 }
 
 /* A wrapper with a little more checking for fds on the command line */
-static bool
-wipefd (int fd, char const *qname, struct randint_source *s,
-        struct Options const *flags)
+સ્થિર bool
+wipefd (પૂર્ણાંક fd, અક્ષર અચલ *qname, સંરચના randint_source *s,
+        સંરચના Options અચલ *flags)
 {
-  int fd_flags = fcntl (fd, F_GETFL);
+  પૂર્ણાંક fd_flags = fcntl (fd, F_GETFL);
 
-  if (fd_flags < 0)
+  જો (fd_flags < 0)
     {
       error (0, errno, _("%s: fcntl failed"), qname);
-      return false;
+      પાછા false;
     }
-  if (fd_flags & O_APPEND)
+  જો (fd_flags & O_APPEND)
     {
       error (0, 0, _("%s: cannot shred append-only file descriptor"), qname);
-      return false;
+      પાછા false;
     }
-  return do_wipefd (fd, qname, s, flags);
+  પાછા do_wipefd (fd, qname, s, flags);
 }
 
 /* --- Name-wiping code --- */
 
 /* Characters allowed in a file name - a safe universal set.  */
-static char const nameset[] =
+સ્થિર અક્ષર અચલ nameset[] =
 "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_.";
 
 /* Increment NAME (with LEN bytes).  NAME must be a big-endian base N
@@ -1007,28 +1007,28 @@ static char const nameset[] =
    Otherwise, (because NAME already has the greatest possible value)
    return false.  */
 
-static bool
-incname (char *name, size_t len)
+સ્થિર bool
+incname (અક્ષર *name, size_t len)
 {
-  while (len--)
+  જ્યારે (len--)
     {
-      char const *p = strchr (nameset, name[len]);
+      અક્ષર અચલ *p = strchr (nameset, name[len]);
 
       /* Given that NAME is composed of bytes from NAMESET,
          P will never be null here.  */
 
       /* If this character has a successor, use it.  */
-      if (p[1])
+      જો (p[1])
         {
           name[len] = p[1];
-          return true;
+          પાછા true;
         }
 
       /* Otherwise, set this digit to 0 and increment the prefix.  */
       name[len] = nameset[0];
     }
 
-  return false;
+  પાછા false;
 }
 
 /*
@@ -1057,45 +1057,45 @@ incname (char *name, size_t len)
  * This is fairly significantly Unix-specific.  Of course, on any
  * file system with synchronous metadata updates, this is unnecessary.
  */
-static bool
-wipename (char *oldname, char const *qoldname, struct Options const *flags)
+સ્થિર bool
+wipename (અક્ષર *oldname, અક્ષર અચલ *qoldname, સંરચના Options અચલ *flags)
 {
-  char *newname = xstrdup (oldname);
-  char *base = last_component (newname);
-  char *dir = dir_name (newname);
-  char *qdir = xstrdup (quotef (dir));
+  અક્ષર *newname = xstrdup (oldname);
+  અક્ષર *base = last_component (newname);
+  અક્ષર *dir = dir_name (newname);
+  અક્ષર *qdir = xstrdup (quotef (dir));
   bool first = true;
   bool ok = true;
-  int dir_fd = -1;
+  પૂર્ણાંક dir_fd = -1;
 
-  if (flags->remove_file == remove_wipesync)
+  જો (flags->remove_file == remove_wipesync)
     dir_fd = open (dir, O_RDONLY | O_DIRECTORY | O_NOCTTY | O_NONBLOCK);
 
-  if (flags->verbose)
+  જો (flags->verbose)
     error (0, 0, _("%s: removing"), qoldname);
 
-  if (flags->remove_file != remove_unlink)
-    for (size_t len = base_len (base); len != 0; len--)
+  જો (flags->remove_file != remove_unlink)
+    માટે (size_t len = base_len (base); len != 0; len--)
       {
         memset (base, nameset[0], len);
         base[len] = 0;
         bool rename_ok;
-        while (! (rename_ok = (renameatu (AT_FDCWD, oldname, AT_FDCWD, newname,
+        જ્યારે (! (rename_ok = (renameatu (AT_FDCWD, oldname, AT_FDCWD, newname,
                                           RENAME_NOREPLACE)
                                == 0))
                && errno == EEXIST && incname (base, len))
-          continue;
-        if (rename_ok)
+          ચાલુ;
+        જો (rename_ok)
           {
-            if (0 <= dir_fd && dosync (dir_fd, qdir) != 0)
+            જો (0 <= dir_fd && dosync (dir_fd, qdir) != 0)
               ok = false;
-            if (flags->verbose)
+            જો (flags->verbose)
               {
                 /* People seem to understand this better than talking
                    about renaming OLDNAME.  NEWNAME doesn't need
                    quoting because we picked it.  OLDNAME needs to be
                    quoted only the first time.  */
-                char const *old = first ? qoldname : oldname;
+                અક્ષર અચલ *old = first ? qoldname : oldname;
                 error (0, 0,
                        _("%s: renamed to %s"), old, newname);
                 first = false;
@@ -1104,27 +1104,27 @@ wipename (char *oldname, char const *qoldname, struct Options const *flags)
           }
       }
 
-  if (unlink (oldname) != 0)
+  જો (unlink (oldname) != 0)
     {
       error (0, errno, _("%s: failed to remove"), qoldname);
       ok = false;
     }
-  else if (flags->verbose)
+  નહીંતર જો (flags->verbose)
     error (0, 0, _("%s: removed"), qoldname);
-  if (0 <= dir_fd)
+  જો (0 <= dir_fd)
     {
-      if (dosync (dir_fd, qdir) != 0)
+      જો (dosync (dir_fd, qdir) != 0)
         ok = false;
-      if (close (dir_fd) != 0)
+      જો (close (dir_fd) != 0)
         {
           error (0, errno, _("%s: failed to close"), qdir);
           ok = false;
         }
     }
-  free (newname);
-  free (dir);
-  free (qdir);
-  return ok;
+  મુક્ત (newname);
+  મુક્ત (dir);
+  મુક્ત (qdir);
+  પાછા ok;
 }
 
 /*
@@ -1139,72 +1139,72 @@ wipename (char *oldname, char const *qoldname, struct Options const *flags)
  * again or EPERM, which both give similar error messages.
  * Does anyone disagree?
  */
-static bool
-wipefile (char *name, char const *qname,
-          struct randint_source *s, struct Options const *flags)
+સ્થિર bool
+wipefile (અક્ષર *name, અક્ષર અચલ *qname,
+          સંરચના randint_source *s, સંરચના Options અચલ *flags)
 {
-  int fd = open (name, O_WRONLY | O_NOCTTY | O_NONBLOCK | O_BINARY);
-  if (fd < 0
+  પૂર્ણાંક fd = open (name, O_WRONLY | O_NOCTTY | O_NONBLOCK | O_દ્વિઅંકી);
+  જો (fd < 0
       && (errno == EACCES && flags->force)
       && chmod (name, S_IWUSR) == 0)
-    fd = open (name, O_WRONLY | O_NOCTTY | O_NONBLOCK | O_BINARY);
-  if (fd < 0)
+    fd = open (name, O_WRONLY | O_NOCTTY | O_NONBLOCK | O_દ્વિઅંકી);
+  જો (fd < 0)
     {
-      struct stat st;
-      const int open_errno = errno;
+      સંરચના stat st;
+      અચલ પૂર્ણાંક open_errno = errno;
 
       /* Try to give a more meaningful error message if we attempt to
          open a FIFO with no readers.  */
-      if (open_errno == ENXIO && 0 <= stat (name, &st)
+      જો (open_errno == ENXIO && 0 <= stat (name, &st)
           && S_ISFIFO (st.st_mode))
         error (0, 0, _("%s: invalid file type"), qname);
-      else
+      નહીંતર
         error (0, open_errno, _("%s: failed to open for writing"), qname);
-      return false;
+      પાછા false;
     }
 
   /* We used O_NONBLOCK to prevent blocking when opening a FIFO.
      Reset that here.  */
-  int fd_flags = fcntl (fd, F_GETFL);
+  પૂર્ણાંક fd_flags = fcntl (fd, F_GETFL);
   bool ok = 0 <= fd_flags && 0 <= fcntl (fd, F_SETFL, fd_flags & ~O_NONBLOCK);
-  if (ok)
+  જો (ok)
     ok = do_wipefd (fd, qname, s, flags);
-  else
+  નહીંતર
     error (0, errno, _("couldn't reset non-blocking mode %s"), qname);
 
-  if (close (fd) != 0)
+  જો (close (fd) != 0)
     {
       error (0, errno, _("%s: failed to close"), qname);
       ok = false;
     }
-  if (ok && flags->remove_file)
+  જો (ok && flags->remove_file)
     ok = wipename (name, qname, flags);
-  return ok;
+  પાછા ok;
 }
 
 
 /* Buffers for random data.  */
-static struct randint_source *randint_source;
+સ્થિર સંરચના randint_source *randint_source;
 
 /* Just on general principles, wipe buffers containing information
    that may be related to the possibly-pseudorandom values used during
    shredding.  */
-static void
-clear_random_data (void)
+સ્થિર શૂન્ય
+clear_random_data (શૂન્ય)
 {
   randint_all_free (randint_source);
 }
 
 
-int
-main (int argc, char **argv)
+પૂર્ણાંક
+મુખ્ય (પૂર્ણાંક argc, અક્ષર **argv)
 {
   bool ok = true;
-  struct Options flags = {0};
-  char **file;
-  int n_files;
-  int c;
-  char const *random_source = NULL;
+  સંરચના Options flags = {0};
+  અક્ષર **file;
+  પૂર્ણાંક n_files;
+  પૂર્ણાંક c;
+  અક્ષર અચલ *random_source = ખાલી;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -1217,57 +1217,57 @@ main (int argc, char **argv)
   flags.n_iterations = DEFAULT_PASSES;
   flags.size = -1;
 
-  while ((c = getopt_long (argc, argv, "fn:s:uvxz", long_opts, NULL)) != -1)
+  જ્યારે ((c = getopt_long (argc, argv, "fn:s:uvxz", long_opts, ખાલી)) != -1)
     {
-      switch (c)
+      પસંદગી (c)
         {
-        case 'f':
+        સ્થિતિ 'f':
           flags.force = true;
-          break;
+          તોડો;
 
-        case 'n':
+        સ્થિતિ 'n':
           flags.n_iterations = xdectoumax (optarg, 0,
                                            MIN (ULONG_MAX,
-                                                SIZE_MAX / sizeof (int)), "",
+                                                SIZE_MAX / કદ (પૂર્ણાંક)), "",
                                            _("invalid number of passes"), 0);
-          break;
+          તોડો;
 
-        case RANDOM_SOURCE_OPTION:
-          if (random_source && !streq (random_source, optarg))
+        સ્થિતિ RANDOM_SOURCE_OPTION:
+          જો (random_source && !streq (random_source, optarg))
             error (EXIT_FAILURE, 0, _("multiple random sources specified"));
           random_source = optarg;
-          break;
+          તોડો;
 
-        case 'u':
-          if (optarg == NULL)
+        સ્થિતિ 'u':
+          જો (optarg == ખાલી)
             flags.remove_file = remove_wipesync;
-          else
+          નહીંતર
             flags.remove_file = XARGMATCH ("--remove", optarg,
                                            remove_args, remove_methods);
-          break;
+          તોડો;
 
-        case 's':
+        સ્થિતિ 's':
           flags.size = xnumtoumax (optarg, 0, 0, OFF_T_MAX, "cbBkKMGTPEZYRQ0",
                                    _("invalid file size"), 0, 0);
-          break;
+          તોડો;
 
-        case 'v':
+        સ્થિતિ 'v':
           flags.verbose = true;
-          break;
+          તોડો;
 
-        case 'x':
+        સ્થિતિ 'x':
           flags.exact = true;
-          break;
+          તોડો;
 
-        case 'z':
+        સ્થિતિ 'z':
           flags.zero_fill = true;
-          break;
+          તોડો;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        મૂળભૂત:
           usage (EXIT_FAILURE);
         }
     }
@@ -1275,34 +1275,34 @@ main (int argc, char **argv)
   file = argv + optind;
   n_files = argc - optind;
 
-  if (n_files == 0)
+  જો (n_files == 0)
     {
       error (0, 0, _("missing file operand"));
       usage (EXIT_FAILURE);
     }
 
   randint_source = randint_all_new (random_source, SIZE_MAX);
-  if (! randint_source)
+  જો (! randint_source)
     error (EXIT_FAILURE, errno, "%s",
            quotef (random_source ? random_source : "getrandom"));
   atexit (clear_random_data);
 
-  for (int i = 0; i < n_files; i++)
+  માટે (પૂર્ણાંક i = 0; i < n_files; i++)
     {
-      char *qname = xstrdup (quotef (file[i]));
-      if (streq (file[i], "-"))
+      અક્ષર *qname = xstrdup (quotef (file[i]));
+      જો (streq (file[i], "-"))
         {
           ok &= wipefd (STDOUT_FILENO, qname, randint_source, &flags);
         }
-      else
+      નહીંતર
         {
           /* Plain filename - Note that this overwrites *argv! */
           ok &= wipefile (file[i], qname, randint_source, &flags);
         }
-      free (qname);
+      મુક્ત (qname);
     }
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  પાછા ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 /*
  * vim:sw=2:sts=2:
