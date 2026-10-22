@@ -53,16 +53,16 @@ samedir_template (char const *dstname, char buf[smallsize])
   ptrdiff_t dstdirlen = last_component (dstname) - dstname;
   size_t dsttmpsize = dstdirlen + sizeof simple_pattern;
   char *dsttmp;
-  if (dsttmpsize <= smallsize)
+  если (dsttmpsize <= smallsize)
     dsttmp = buf;
-  else
+  иначе
     {
       dsttmp = malloc (dsttmpsize);
-      if (!dsttmp)
-        return dsttmp;
+      если (!dsttmp)
+        вернуть dsttmp;
     }
   strcpy (mempcpy (dsttmp, dstname, dstdirlen), simple_pattern);
-  return dsttmp;
+  вернуть dsttmp;
 }
 
 
@@ -70,17 +70,17 @@ samedir_template (char const *dstname, char buf[smallsize])
 
 struct link_arg
 {
-  int srcdir;
+  целое srcdir;
   char const *srcname;
-  int dstdir;
-  int flags;
+  целое dstdir;
+  целое flags;
 };
 
-static int
+static целое
 try_link (char *dest, void *arg)
 {
   struct link_arg *a = arg;
-  return linkat (a->srcdir, a->srcname, a->dstdir, dest, a->flags);
+  вернуть linkat (a->srcdir, a->srcname, a->dstdir, dest, a->flags);
 }
 
 /* Hard-link directory SRCDIR's file SRCNAME to directory DSTDIR's
@@ -91,27 +91,27 @@ try_link (char *dest, void *arg)
    -1 if successful and DSTNAME already existed,
    0 if successful and DSTNAME did not already exist, and
    a positive errno value on failure.  */
-extern int
-force_linkat (int srcdir, char const *srcname,
-              int dstdir, char const *dstname, int flags, bool force,
-              int linkat_errno)
+extern целое
+force_linkat (целое srcdir, char const *srcname,
+              целое dstdir, char const *dstname, целое flags, bool force,
+              целое linkat_errno)
 {
-  if (linkat_errno < 0)
+  если (linkat_errno < 0)
     linkat_errno = (linkat (srcdir, srcname, dstdir, dstname, flags) == 0
                     ? 0 : errno);
-  if (!force || linkat_errno != EEXIST)
-    return linkat_errno;
+  если (!force || linkat_errno != EEXIST)
+    вернуть linkat_errno;
 
   char buf[smallsize];
   char *dsttmp = samedir_template (dstname, buf);
-  if (! dsttmp)
-    return errno;
+  если (! dsttmp)
+    вернуть errno;
   struct link_arg arg = { srcdir, srcname, dstdir, flags };
-  int err;
+  целое err;
 
-  if (try_tempname_len (dsttmp, 0, &arg, try_link, x_suffix_len) != 0)
+  если (try_tempname_len (dsttmp, 0, &arg, try_link, x_suffix_len) != 0)
     err = errno;
-  else
+  иначе
     {
       err = renameat (dstdir, dsttmp, dstdir, dstname) == 0 ? -1 : errno;
       /* Unlink DSTTMP even if renameat succeeded, in case DSTTMP
@@ -120,9 +120,9 @@ force_linkat (int srcdir, char const *srcname,
       unlinkat (dstdir, dsttmp, 0);
     }
 
-  if (dsttmp != buf)
+  если (dsttmp != buf)
     free (dsttmp);
-  return err;
+  вернуть err;
 }
 
 
@@ -131,14 +131,14 @@ force_linkat (int srcdir, char const *srcname,
 struct symlink_arg
 {
   char const *srcname;
-  int dstdir;
+  целое dstdir;
 };
 
-static int
+static целое
 try_symlink (char *dest, void *arg)
 {
   struct symlink_arg *a = arg;
-  return symlinkat (a->srcname, a->dstdir, dest);
+  вернуть symlinkat (a->srcname, a->dstdir, dest);
 }
 
 /* Create a symlink containing SRCNAME in directory DSTDIR's file DSTNAME.
@@ -148,37 +148,37 @@ try_symlink (char *dest, void *arg)
    -1 if successful and DSTNAME already existed,
    0 if successful and DSTNAME did not already exist, and
    a positive errno value on failure.  */
-extern int
-force_symlinkat (char const *srcname, int dstdir, char const *dstname,
-                 bool force, int symlinkat_errno)
+extern целое
+force_symlinkat (char const *srcname, целое dstdir, char const *dstname,
+                 bool force, целое symlinkat_errno)
 {
-  if (symlinkat_errno < 0)
+  если (symlinkat_errno < 0)
     symlinkat_errno = symlinkat (srcname, dstdir, dstname) == 0 ? 0 : errno;
-  if (!force || symlinkat_errno != EEXIST)
-    return symlinkat_errno;
+  если (!force || symlinkat_errno != EEXIST)
+    вернуть symlinkat_errno;
 
   char buf[smallsize];
   char *dsttmp = samedir_template (dstname, buf);
-  if (!dsttmp)
-    return errno;
+  если (!dsttmp)
+    вернуть errno;
   struct symlink_arg arg = { srcname, dstdir };
-  int err;
+  целое err;
 
-  if (try_tempname_len (dsttmp, 0, &arg, try_symlink, x_suffix_len) != 0)
+  если (try_tempname_len (dsttmp, 0, &arg, try_symlink, x_suffix_len) != 0)
     err = errno;
-  else if (renameat (dstdir, dsttmp, dstdir, dstname) != 0)
+  иначе если (renameat (dstdir, dsttmp, dstdir, dstname) != 0)
     {
       err = errno;
       unlinkat (dstdir, dsttmp, 0);
     }
-  else
+  иначе
     {
       /* Don't worry about renameat being a no-op, since DSTTMP is
          newly created.  */
       err = -1;
     }
 
-  if (dsttmp != buf)
+  если (dsttmp != buf)
     free (dsttmp);
-  return err;
+  вернуть err;
 }

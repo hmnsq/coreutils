@@ -45,7 +45,7 @@
 
 /* Debugging the memory allocator.  */
 
-#if WITH_DMALLOC
+#если WITH_DMALLOC
 # define MALLOC_FUNC_CHECK 1
 # include <dmalloc.h>
 #endif
@@ -155,7 +155,7 @@ static WORD_TABLE only_table;		/* table of words to select */
 
 /* Source text table, and scanning macros.  */
 
-static int number_input_files;	/* number of text input files */
+static целое number_input_files;	/* number of text input files */
 static intmax_t total_line_count;	/* total number of lines seen so far */
 static char const **input_file_name;	/* array of text input file names */
 static intmax_t *file_line_count;	/* array of line count values at end */
@@ -165,34 +165,34 @@ static BLOCK *text_buffers;	/* files to study */
 /* SKIP_NON_WHITE used only for getting or skipping the reference.  */
 
 #define SKIP_NON_WHITE(cursor, limit) \
-  while (cursor < limit && ! isspace (to_uchar (*cursor)))		\
+  пока (cursor < limit && ! isspace (to_uchar (*cursor)))		\
     cursor++
 
 #define SKIP_WHITE(cursor, limit) \
-  while (cursor < limit && isspace (to_uchar (*cursor)))		\
+  пока (cursor < limit && isspace (to_uchar (*cursor)))		\
     cursor++
 
 #define SKIP_WHITE_BACKWARDS(cursor, start) \
-  while (cursor > start && isspace (to_uchar (cursor[-1])))		\
+  пока (cursor > start && isspace (to_uchar (cursor[-1])))		\
     cursor--
 
 /* Always advance by at least one byte, lest a nullable word regexp
    such as 'a*' match the empty string and loop forever.  */
 
 #define SKIP_SOMETHING(cursor, limit) \
-  if (word_regex.string)						\
+  если (word_regex.string)						\
     {									\
       regoff_t count;							\
       count = re_match (&word_regex.pattern, cursor, limit - cursor,	\
                         0, NULL);					\
-      if (count == -2)							\
+      если (count == -2)							\
         matcher_error ();						\
       cursor += count <= 0 ? 1 : count;					\
     }									\
-  else if (word_fastmap[to_uchar (*cursor)])				\
-    while (cursor < limit && word_fastmap[to_uchar (*cursor)])		\
+  иначе если (word_fastmap[to_uchar (*cursor)])				\
+    пока (cursor < limit && word_fastmap[to_uchar (*cursor)])		\
       cursor++;								\
-  else									\
+  иначе									\
     cursor++
 
 /* Occurrences table.
@@ -228,7 +228,7 @@ typedef struct
     ptrdiff_t left;		/* distance to left context start */
     ptrdiff_t right;		/* distance to right context end */
     intmax_t reference;		/* reference descriptor */
-    int file_index;		/* corresponding file  */
+    целое file_index;		/* corresponding file  */
   }
 OCCURS;
 
@@ -295,36 +295,36 @@ static void
 unescape_string (char *string)
 {
   char *cursor;			/* cursor in result */
-  int value;			/* value of \nnn escape */
-  int length;			/* length of \nnn escape */
+  целое value;			/* value of \nnn escape */
+  целое length;			/* length of \nnn escape */
 
   cursor = string;
 
-  while (*string)
+  пока (*string)
     {
-      if (*string == '\\')
+      если (*string == '\\')
         {
           string++;
           switch (*string)
             {
             case 'x':		/* \xhhh escape, 3 chars maximum */
               value = 0;
-              for (length = 0, string++;
+              для (length = 0, string++;
                    length < 3 && c_isxdigit (*string);
                    length++, string++)
                 value = value * 16 + fromhex (*string);
-              if (length == 0)
+              если (length == 0)
                 {
                   *cursor++ = '\\';
                   *cursor++ = 'x';
                 }
-              else
+              иначе
                 *cursor++ = value;
               break;
 
             case '0':		/* \0ooo escape, 3 chars maximum */
               value = 0;
-              for (length = 0, string++;
+              для (length = 0, string++;
                    length < 3 && isoct (*string);
                    length++, string++)
                 value = value * 8 + fromoct (*string);
@@ -342,7 +342,7 @@ unescape_string (char *string)
               break;
 
             case 'c':		/* cancel the rest of the output */
-              while (*string)
+              пока (*string)
                 string++;
               break;
 
@@ -381,7 +381,7 @@ unescape_string (char *string)
               break;
             }
         }
-      else
+      иначе
         *cursor++ = *string++;
     }
 
@@ -405,7 +405,7 @@ compile_regex (struct regex_data *regex)
   pattern->translate = ignore_case ? folded_chars : NULL;
 
   message = re_compile_pattern (string, strlen (string), pattern);
-  if (message)
+  если (message)
     error (EXIT_FAILURE, 0, _("%s (for regexp %s)"), message, quote (string));
 
   /* The fastmap should be compiled before 're_match'.  The following
@@ -425,8 +425,8 @@ initialize_regex (void)
 {
   /* Initialize the case folding table.  */
 
-  if (ignore_case)
-    for (int character = 0; character < CHAR_SET_SIZE; character++)
+  если (ignore_case)
+    для (целое character = 0; character < CHAR_SET_SIZE; character++)
       folded_chars[character] = toupper (character);
 
   /* Unless the user already provided a description of the end of line or
@@ -436,17 +436,17 @@ initialize_regex (void)
      extensions are enabled, use end of sentence like in GNU emacs.  If
      disabled, use end of lines.  */
 
-  if (context_regex.string)
+  если (context_regex.string)
     {
-      if (!*context_regex.string)
+      если (!*context_regex.string)
         context_regex.string = NULL;
     }
-  else if (gnu_extensions && !input_reference)
+  иначе если (gnu_extensions && !input_reference)
     context_regex.string = "[.?!][]\"')}]*\\($\\|\t\\|  \\)[ \t\n]*";
-  else
+  иначе
     context_regex.string = "\n";
 
-  if (context_regex.string)
+  если (context_regex.string)
     compile_regex (&context_regex);
 
   /* If the user has already provided a non-empty regexp to describe
@@ -457,19 +457,19 @@ initialize_regex (void)
      include almost everything, even punctuation; stop only on white
      space.  */
 
-  if (word_regex.string)
+  если (word_regex.string)
     compile_regex (&word_regex);
-  else if (!break_file)
+  иначе если (!break_file)
     {
-      if (gnu_extensions)
+      если (gnu_extensions)
         {
 
           /* Simulate \w+.  */
 
-          for (int character = 0; character < CHAR_SET_SIZE; character++)
+          для (целое character = 0; character < CHAR_SET_SIZE; character++)
             word_fastmap[character] = !! isalpha (character);
         }
-      else
+      иначе
         {
 
           /* Simulate [^ \t\n]+.  */
@@ -502,15 +502,15 @@ swallow_file_in_memory (char const *file_name, BLOCK *block)
      input, which is already opened.  In all other cases, open the file from
      its name.  */
   bool using_stdin = !file_name || !*file_name || streq (file_name, "-");
-  if (using_stdin)
+  если (using_stdin)
     block->start = fread_file (stdin, 0, &used_length);
-  else
+  иначе
     block->start = read_file (file_name, 0, &used_length);
 
-  if (!block->start)
+  если (!block->start)
     error (EXIT_FAILURE, errno, "%s", quotef (using_stdin ? "-" : file_name));
 
-  if (using_stdin)
+  если (using_stdin)
     clearerr (stdin);
 
   block->end = block->start + used_length;
@@ -526,35 +526,35 @@ swallow_file_in_memory (char const *file_name, BLOCK *block)
 | If a word is indeed a prefix of the other, the shorter should go first.   |
 `--------------------------------------------------------------------------*/
 
-static int
+static целое
 compare_words (const void *void_first, const void *void_second)
 {
   WORD const *first = void_first;
   WORD const *second = void_second;
   idx_t length = MIN (first->size, second->size);
 
-  if (ignore_case)
+  если (ignore_case)
     {
-      for (idx_t counter = 0; counter < length; counter++)
+      для (idx_t counter = 0; counter < length; counter++)
         {
-          int value = (folded_chars[to_uchar (first->start[counter])]
+          целое value = (folded_chars[to_uchar (first->start[counter])]
                        - folded_chars[to_uchar (second->start[counter])]);
-          if (value != 0)
-            return value;
+          если (value != 0)
+            вернуть value;
         }
     }
-  else
+  иначе
     {
-      for (idx_t counter = 0; counter < length; counter++)
+      для (idx_t counter = 0; counter < length; counter++)
         {
-          int value = (to_uchar (first->start[counter])
+          целое value = (to_uchar (first->start[counter])
                        - to_uchar (second->start[counter]));
-          if (value != 0)
-            return value;
+          если (value != 0)
+            вернуть value;
         }
     }
 
-  return _GL_CMP (first->size, second->size);
+  вернуть _GL_CMP (first->size, second->size);
 }
 
 /*-----------------------------------------------------------------------.
@@ -563,15 +563,15 @@ compare_words (const void *void_first, const void *void_second)
 | pointer comparison.							 |
 `-----------------------------------------------------------------------*/
 
-static int
+static целое
 compare_occurs (const void *void_first, const void *void_second)
 {
 #define first ((const OCCURS *) void_first)
 #define second ((const OCCURS *) void_second)
-  int value;
+  целое value;
 
   value = compare_words (&first->key, &second->key);
-  return (value ? value
+  вернуть (value ? value
           : _GL_CMP (first->key.start, second->key.start));
 #undef first
 #undef second
@@ -585,18 +585,18 @@ search_table (WORD *word, WORD_TABLE *table)
 {
   idx_t lo = 0;
   idx_t hi = table->length;
-  while (lo < hi)
+  пока (lo < hi)
     {
       idx_t middle = (lo >> 1) + (hi >> 1) + (lo & hi & 1);
-      int value = compare_words (word, table->start + middle);
-      if (value < 0)
+      целое value = compare_words (word, table->start + middle);
+      если (value < 0)
         hi = middle;
-      else if (value > 0)
+      иначе если (value > 0)
         lo = middle + 1;
-      else
-        return true;
+      иначе
+        вернуть true;
     }
-  return false;
+  вернуть false;
 }
 
 /*---------------------------------------------------------------------.
@@ -610,7 +610,7 @@ sort_found_occurs (void)
 {
 
   /* Only one language for the time being.  */
-  if (number_of_occurs[0])
+  если (number_of_occurs[0])
     qsort (occurs_table[0], number_of_occurs[0], sizeof **occurs_table,
            compare_occurs);
 }
@@ -633,11 +633,11 @@ digest_break_file (char const *file_name)
   /* Make the fastmap and record the file contents in it.  */
 
   memset (word_fastmap, 1, CHAR_SET_SIZE);
-  for (char *cursor = file_contents.start; cursor < file_contents.end;
+  для (char *cursor = file_contents.start; cursor < file_contents.end;
        cursor++)
     word_fastmap[to_uchar (*cursor)] = 0;
 
-  if (!gnu_extensions)
+  если (!gnu_extensions)
     {
 
       /* If GNU extensions are enabled, the only way to avoid newline as
@@ -679,20 +679,20 @@ digest_word_file (char const *file_name, WORD_TABLE *table)
   /* Read the whole file.  */
 
   cursor = file_contents.start;
-  while (cursor < file_contents.end)
+  пока (cursor < file_contents.end)
     {
 
       /* Read one line, and save the word in contains.  */
 
       word_start = cursor;
-      while (cursor < file_contents.end && *cursor != '\n')
+      пока (cursor < file_contents.end && *cursor != '\n')
         cursor++;
 
       /* Record the word in table if it is not empty.  */
 
-      if (cursor > word_start)
+      если (cursor > word_start)
         {
-          if (table->length == table->alloc)
+          если (table->length == table->alloc)
             table->start = xpalloc (table->start, &table->alloc, 1, -1,
                                     sizeof *table->start);
           idx_t const table_idx = table->length++;
@@ -702,7 +702,7 @@ digest_word_file (char const *file_name, WORD_TABLE *table)
 
       /* This test allows for an incomplete line at end of file.  */
 
-      if (cursor < file_contents.end)
+      если (cursor < file_contents.end)
         cursor++;
     }
 
@@ -718,7 +718,7 @@ digest_word_file (char const *file_name, WORD_TABLE *table)
 `----------------------------------------------------------------------*/
 
 static void
-find_occurs_in_text (int file_index)
+find_occurs_in_text (целое file_index)
 {
   char *scan;			/* for scanning the source text */
   char *line_start;		/* start of the current input line */
@@ -752,7 +752,7 @@ find_occurs_in_text (int file_index)
 
   line_start = text_buffer->start;
   line_scan = line_start;
-  if (input_reference)
+  если (input_reference)
     {
       SKIP_NON_WHITE (line_scan, text_buffer->end);
       reference_length = line_scan - line_start;
@@ -761,7 +761,7 @@ find_occurs_in_text (int file_index)
 
   /* Process the whole buffer, one line or one sentence at a time.  */
 
-  for (char *cursor = text_buffer->start;
+  для (char *cursor = text_buffer->start;
        cursor < text_buffer->end;
        cursor = next_context_start)
     {
@@ -781,7 +781,7 @@ find_occurs_in_text (int file_index)
          sentence at the end of the buffer.  */
 
       next_context_start = text_buffer->end;
-      if (context_regex.string)
+      если (context_regex.string)
         switch (re_search (&context_regex.pattern, cursor,
                            text_buffer->end - cursor,
                            0, text_buffer->end - cursor, &context_regs))
@@ -813,9 +813,9 @@ find_occurs_in_text (int file_index)
       /* Read and process a single input line or sentence, one word at a
          time.  */
 
-      while (true)
+      пока (true)
         {
-          if (word_regex.string)
+          если (word_regex.string)
 
             /* If a word regexp has been compiled, use it to skip at the
                beginning of the next word.  If there is no such word, exit
@@ -825,14 +825,14 @@ find_occurs_in_text (int file_index)
               regoff_t r = re_search (&word_regex.pattern, cursor,
                                       context_end - cursor,
                                       0, context_end - cursor, &word_regs);
-              if (r == -2)
+              если (r == -2)
                 matcher_error ();
-              if (r == -1)
+              если (r == -1)
                 break;
               word_start = cursor + word_regs.start[0];
               word_end = cursor + word_regs.end[0];
             }
-          else
+          иначе
 
             /* Avoid re_search and use the fastmap to skip to the
                beginning of the next word.  If there is no more word in
@@ -840,16 +840,16 @@ find_occurs_in_text (int file_index)
 
             {
               scan = cursor;
-              while (scan < context_end
+              пока (scan < context_end
                      && !word_fastmap[to_uchar (*scan)])
                 scan++;
 
-              if (scan == context_end)
+              если (scan == context_end)
                 break;
 
               word_start = scan;
 
-              while (scan < context_end
+              пока (scan < context_end
                      && word_fastmap[to_uchar (*scan)])
                 scan++;
 
@@ -863,7 +863,7 @@ find_occurs_in_text (int file_index)
           /* Skip any zero length word.  Just advance a single position,
              then go fetch the next word.  */
 
-          if (word_end == word_start)
+          если (word_end == word_start)
             {
               cursor++;
               continue;
@@ -880,7 +880,7 @@ find_occurs_in_text (int file_index)
           possible_key.size = word_end - word_start;
           cursor += possible_key.size;
 
-          if (possible_key.size > maximum_word_length)
+          если (possible_key.size > maximum_word_length)
             maximum_word_length = possible_key.size;
 
           /* In input reference mode, update 'line_start' from its previous
@@ -888,10 +888,10 @@ find_occurs_in_text (int file_index)
              also selected. If it happens that the word just matched is
              indeed part of a reference; just ignore it.  */
 
-          if (input_reference)
+          если (input_reference)
             {
-              while (line_scan < possible_key.start)
-                if (*line_scan == '\n')
+              пока (line_scan < possible_key.start)
+                если (*line_scan == '\n')
                   {
                     total_line_count++;
                     line_scan++;
@@ -899,9 +899,9 @@ find_occurs_in_text (int file_index)
                     SKIP_NON_WHITE (line_scan, text_buffer->end);
                     reference_length = line_scan - line_start;
                   }
-                else
+                иначе
                   line_scan++;
-              if (line_scan > possible_key.start)
+              если (line_scan > possible_key.start)
                 continue;
             }
 
@@ -915,23 +915,23 @@ find_occurs_in_text (int file_index)
              tables, the Ignore table could then reject words that would
              have been previously accepted by the Only table.  */
 
-          if (ignore_file && search_table (&possible_key, &ignore_table))
+          если (ignore_file && search_table (&possible_key, &ignore_table))
             continue;
-          if (only_file && !search_table (&possible_key, &only_table))
+          если (only_file && !search_table (&possible_key, &only_table))
             continue;
 
           /* A non-empty word has been found.  First of all, insure
              proper allocation of the next OCCURS, and make a pointer to
              where it will be constructed.  */
 
-          if (number_of_occurs[0] == occurs_alloc[0])
+          если (number_of_occurs[0] == occurs_alloc[0])
             occurs_table[0] = xpalloc (occurs_table[0], &occurs_alloc[0],
                                        1, -1, sizeof *occurs_table[0]);
           occurs_cursor = occurs_table[0] + number_of_occurs[0];
 
           /* Define the reference field, if any.  */
 
-          if (auto_reference)
+          если (auto_reference)
             {
 
               /* While auto referencing, update 'line_start' from its
@@ -940,20 +940,20 @@ find_occurs_in_text (int file_index)
                  advanced earlier, and the following loop is never really
                  executed.  */
 
-              while (line_scan < possible_key.start)
-                if (*line_scan == '\n')
+              пока (line_scan < possible_key.start)
+                если (*line_scan == '\n')
                   {
                     total_line_count++;
                     line_scan++;
                     line_start = line_scan;
                     SKIP_NON_WHITE (line_scan, text_buffer->end);
                   }
-                else
+                иначе
                   line_scan++;
 
               occurs_cursor->reference = total_line_count;
             }
-          else if (input_reference)
+          иначе если (input_reference)
             {
 
               /* If only input referencing, 'line_start' has been computed
@@ -962,13 +962,13 @@ find_occurs_in_text (int file_index)
                  value of 'line_start'.  */
 
               occurs_cursor->reference = line_start - possible_key.start;
-              if (reference_length > reference_max_width)
+              если (reference_length > reference_max_width)
                 reference_max_width = reference_length;
             }
 
           /* Exclude the reference from the context in simple cases.  */
 
-          if (input_reference && line_start == context_start)
+          если (input_reference && line_start == context_start)
             {
               SKIP_NON_WHITE (context_start, context_end);
               SKIP_WHITE (context_start, context_end);
@@ -995,7 +995,7 @@ find_occurs_in_text (int file_index)
 static void
 print_spaces (ptrdiff_t number)
 {
-  for (ptrdiff_t counter = number; counter > 0; counter--)
+  для (ptrdiff_t counter = number; counter > 0; counter--)
     putchar (' ');
 }
 
@@ -1009,10 +1009,10 @@ print_field (BLOCK field)
   /* Whitespace is not really compressed.  Instead, each white space
      character (tab, vt, ht etc.) is printed as one single space.  */
 
-  for (char *cursor = field.start; cursor < field.end; cursor++)
+  для (char *cursor = field.start; cursor < field.end; cursor++)
     {
       unsigned char character = *cursor;
-      if (edited_flag[character])
+      если (edited_flag[character])
         {
           /* Handle cases which are specific to 'roff' or TeX.  All
              white space processing is done as the default case of
@@ -1053,7 +1053,7 @@ print_field (BLOCK field)
               putchar (' ');
             }
         }
-      else
+      иначе
         putchar (*cursor);
     }
 }
@@ -1072,19 +1072,19 @@ fix_output_parameters (void)
      precomputed and subtracted from the overall line width.  Add one for
      the column which separate the file name from the line number.  */
 
-  if (auto_reference)
+  если (auto_reference)
     {
       reference_max_width = 0;
-      for (int file_index = 0; file_index < number_input_files; file_index++)
+      для (целое file_index = 0; file_index < number_input_files; file_index++)
         {
           intmax_t line_ordinal = file_line_count[file_index] + 1;
-          if (file_index > 0)
+          если (file_index > 0)
             line_ordinal -= file_line_count[file_index - 1];
           char ordinal_string[INT_BUFSIZE_BOUND (intmax_t)];
           idx_t reference_width = sprintf (ordinal_string, "%jd", line_ordinal);
-          if (input_file_name[file_index])
+          если (input_file_name[file_index])
             reference_width += strlen (input_file_name[file_index]);
-          if (reference_width > reference_max_width)
+          если (reference_width > reference_max_width)
             reference_max_width = reference_width;
         }
       reference_max_width++;
@@ -1094,7 +1094,7 @@ fix_output_parameters (void)
   /* If the reference appears to the left of the output line, reserve some
      space for it right away, including one gap size.  */
 
-  if ((auto_reference || input_reference) && !right_reference)
+  если ((auto_reference || input_reference) && !right_reference)
     line_width = MAX (0, line_width - (reference_max_width + gap_size));
 
   /* The output lines, minimally, will contain from left to right a left
@@ -1117,12 +1117,12 @@ fix_output_parameters (void)
      tests.  In this case, truncation_string_length will never get used, so
      there is no need to set it.  */
 
-  if (truncation_string && *truncation_string)
+  если (truncation_string && *truncation_string)
     truncation_string_length = strlen (truncation_string);
-  else
+  иначе
     truncation_string = NULL;
 
-  if (gnu_extensions)
+  если (gnu_extensions)
     {
 
       /* When flagging truncation at the left of the keyword, the
@@ -1150,7 +1150,7 @@ fix_output_parameters (void)
       before_max_width -= 2 * truncation_string_length;
       keyafter_max_width -= 2 * truncation_string_length;
     }
-  else
+  иначе
     {
 
       /* I never figured out exactly how UNIX' ptx plans the output width
@@ -1162,14 +1162,14 @@ fix_output_parameters (void)
       keyafter_max_width -= 2 * truncation_string_length + 1;
     }
 
-  if (before_max_width < 0)
+  если (before_max_width < 0)
     before_max_width = 0;
 
   /* Compute which characters need special output processing.  Initialize
      by flagging any white space character.  Some systems do not consider
      form feed as a space character, but we do.  */
 
-  for (int character = 0; character < CHAR_SET_SIZE; character++)
+  для (целое character = 0; character < CHAR_SET_SIZE; character++)
     edited_flag[character] = !! isspace (character);
   edited_flag['\f'] = 1;
 
@@ -1195,7 +1195,7 @@ fix_output_parameters (void)
 
       /* Various characters need special processing.  */
 
-      for (char const *cursor = "$%&#_{}\\"; *cursor; cursor++)
+      для (char const *cursor = "$%&#_{}\\"; *cursor; cursor++)
         edited_flag[to_uchar (*cursor)] = 1;
 
       break;
@@ -1236,13 +1236,13 @@ define_all_fields (OCCURS *occurs)
   buffer_end = text_buffers[occurs->file_index].end;
 
   cursor = keyafter.end;
-  while (cursor < right_context_end
+  пока (cursor < right_context_end
          && cursor <= keyafter.start + keyafter_max_width)
     {
       keyafter.end = cursor;
       SKIP_SOMETHING (cursor, right_context_end);
     }
-  if (cursor <= keyafter.start + keyafter_max_width)
+  если (cursor <= keyafter.start + keyafter_max_width)
     keyafter.end = cursor;
 
   keyafter_truncation = truncation_string && keyafter.end < right_context_end;
@@ -1261,13 +1261,13 @@ define_all_fields (OCCURS *occurs)
      beginning of 'head' or 'before' fields, we will skip forward words or
      delimiters until we get sufficiently near.  */
 
-  if (-occurs->left > half_line_width + maximum_word_length)
+  если (-occurs->left > half_line_width + maximum_word_length)
     {
       left_field_start
         = keyafter.start - (half_line_width + maximum_word_length);
       SKIP_SOMETHING (left_field_start, keyafter.start);
     }
-  else
+  иначе
     left_field_start = keyafter.start + occurs->left;
 
   /* 'before' certainly ends at the keyword, but not including separating
@@ -1280,16 +1280,16 @@ define_all_fields (OCCURS *occurs)
   before.end = keyafter.start;
   SKIP_WHITE_BACKWARDS (before.end, before.start);
 
-  while (before.start + before_max_width < before.end)
+  пока (before.start + before_max_width < before.end)
     SKIP_SOMETHING (before.start, before.end);
 
-  if (truncation_string)
+  если (truncation_string)
     {
       cursor = before.start;
       SKIP_WHITE_BACKWARDS (cursor, buffer_start);
       before_truncation = cursor > left_context_start;
     }
-  else
+  иначе
     before_truncation = false;
 
   SKIP_WHITE (before.start, buffer_end);
@@ -1304,34 +1304,34 @@ define_all_fields (OCCURS *occurs)
   tail_max_width
     = before_max_width - (before.end - before.start) - gap_size;
 
-  if (tail_max_width > 0)
+  если (tail_max_width > 0)
     {
       tail.start = keyafter.end;
       SKIP_WHITE (tail.start, buffer_end);
 
       tail.end = tail.start;
       cursor = tail.end;
-      while (cursor < right_context_end
+      пока (cursor < right_context_end
              && cursor < tail.start + tail_max_width)
         {
           tail.end = cursor;
           SKIP_SOMETHING (cursor, right_context_end);
         }
 
-      if (cursor < tail.start + tail_max_width)
+      если (cursor < tail.start + tail_max_width)
         tail.end = cursor;
 
-      if (tail.end > tail.start)
+      если (tail.end > tail.start)
         {
           keyafter_truncation = false;
           tail_truncation = truncation_string && tail.end < right_context_end;
         }
-      else
+      иначе
         tail_truncation = false;
 
       SKIP_WHITE_BACKWARDS (tail.end, tail.start);
     }
-  else
+  иначе
     {
 
       /* No place left for a tail field.  */
@@ -1350,27 +1350,27 @@ define_all_fields (OCCURS *occurs)
   head_max_width
     = keyafter_max_width - (keyafter.end - keyafter.start) - gap_size;
 
-  if (head_max_width > 0)
+  если (head_max_width > 0)
     {
       head.end = before.start;
       SKIP_WHITE_BACKWARDS (head.end, buffer_start);
 
       head.start = left_field_start;
-      while (head.start + head_max_width < head.end)
+      пока (head.start + head_max_width < head.end)
         SKIP_SOMETHING (head.start, head.end);
 
-      if (head.end > head.start)
+      если (head.end > head.start)
         {
           before_truncation = false;
           head_truncation = (truncation_string
                              && head.start > left_context_start);
         }
-      else
+      иначе
         head_truncation = false;
 
       SKIP_WHITE (head.start, head.end);
     }
-  else
+  иначе
     {
 
       /* No place left for a head field.  */
@@ -1380,7 +1380,7 @@ define_all_fields (OCCURS *occurs)
       head_truncation = false;
     }
 
-  if (auto_reference)
+  если (auto_reference)
     {
 
       /* Construct the reference text in preallocated space from the file
@@ -1388,17 +1388,17 @@ define_all_fields (OCCURS *occurs)
          Ensure line numbers are 1 based, even if they are computed 0 based.  */
 
       file_name = input_file_name[occurs->file_index];
-      if (!file_name)
+      если (!file_name)
         file_name = "";
 
       line_ordinal = occurs->reference + 1;
-      if (occurs->file_index > 0)
+      если (occurs->file_index > 0)
         line_ordinal -= file_line_count[occurs->file_index - 1];
 
       char *file_end = stpcpy (reference.start, file_name);
       reference.end = file_end + sprintf (file_end, ":%jd", line_ordinal);
     }
-  else if (input_reference)
+  иначе если (input_reference)
     {
 
       /* Reference starts at saved position for reference and extends right
@@ -1423,14 +1423,14 @@ output_one_roff_line (void)
 
   printf (".%s \"", macro_name);
   print_field (tail);
-  if (tail_truncation)
+  если (tail_truncation)
     fputs (truncation_string, stdout);
   putchar ('"');
 
   /* Output the 'before' field.  */
 
   fputs (" \"", stdout);
-  if (before_truncation)
+  если (before_truncation)
     fputs (truncation_string, stdout);
   print_field (before);
   putchar ('"');
@@ -1439,21 +1439,21 @@ output_one_roff_line (void)
 
   fputs (" \"", stdout);
   print_field (keyafter);
-  if (keyafter_truncation)
+  если (keyafter_truncation)
     fputs (truncation_string, stdout);
   putchar ('"');
 
   /* Output the 'head' field.  */
 
   fputs (" \"", stdout);
-  if (head_truncation)
+  если (head_truncation)
     fputs (truncation_string, stdout);
   print_field (head);
   putchar ('"');
 
   /* Conditionally output the 'reference' field.  */
 
-  if (auto_reference || input_reference)
+  если (auto_reference || input_reference)
     {
       fputs (" \"", stdout);
       print_field (reference);
@@ -1492,7 +1492,7 @@ output_one_tex_line (void)
   fputs ("}{", stdout);
   print_field (head);
   putchar ('}');
-  if (auto_reference || input_reference)
+  если (auto_reference || input_reference)
     {
       putchar ('{');
       print_field (reference);
@@ -1508,9 +1508,9 @@ output_one_tex_line (void)
 static void
 output_one_dumb_line (void)
 {
-  if (!right_reference)
+  если (!right_reference)
     {
-      if (auto_reference)
+      если (auto_reference)
         {
 
           /* Output the 'reference' field, in such a way that GNU emacs
@@ -1524,7 +1524,7 @@ output_one_dumb_line (void)
                         - (reference.end - reference.start)
                         - 1);
         }
-      else
+      иначе
         {
 
           /* Output the 'reference' field and its following gap.  */
@@ -1536,12 +1536,12 @@ output_one_dumb_line (void)
         }
     }
 
-  if (tail.start < tail.end)
+  если (tail.start < tail.end)
     {
       /* Output the 'tail' field.  */
 
       print_field (tail);
-      if (tail_truncation)
+      если (tail_truncation)
         fputs (truncation_string, stdout);
 
       print_spaces (half_line_width - gap_size
@@ -1550,14 +1550,14 @@ output_one_dumb_line (void)
                     - (tail.end - tail.start)
                     - (tail_truncation ? truncation_string_length : 0));
     }
-  else
+  иначе
     print_spaces (half_line_width - gap_size
                   - (before.end - before.start)
                   - (before_truncation ? truncation_string_length : 0));
 
   /* Output the 'before' field.  */
 
-  if (before_truncation)
+  если (before_truncation)
     fputs (truncation_string, stdout);
   print_field (before);
 
@@ -1566,10 +1566,10 @@ output_one_dumb_line (void)
   /* Output the 'keyafter' field.  */
 
   print_field (keyafter);
-  if (keyafter_truncation)
+  если (keyafter_truncation)
     fputs (truncation_string, stdout);
 
-  if (head.start < head.end)
+  если (head.start < head.end)
     {
       /* Output the 'head' field.  */
 
@@ -1578,18 +1578,18 @@ output_one_dumb_line (void)
                     - (keyafter_truncation ? truncation_string_length : 0)
                     - (head.end - head.start)
                     - (head_truncation ? truncation_string_length : 0));
-      if (head_truncation)
+      если (head_truncation)
         fputs (truncation_string, stdout);
       print_field (head);
     }
-  else
+  иначе
 
-    if ((auto_reference || input_reference) && right_reference)
+    если ((auto_reference || input_reference) && right_reference)
       print_spaces (half_line_width
                     - (keyafter.end - keyafter.start)
                     - (keyafter_truncation ? truncation_string_length : 0));
 
-  if ((auto_reference || input_reference) && right_reference)
+  если ((auto_reference || input_reference) && right_reference)
     {
       /* Output the 'reference' field.  */
 
@@ -1626,7 +1626,7 @@ generate_all_output (void)
 
   occurs_cursor = occurs_table[0];
 
-  for (idx_t occurs_index = 0; occurs_index < number_of_occurs[0];
+  для (idx_t occurs_index = 0; occurs_index < number_of_occurs[0];
        occurs_index++)
     {
       /* Compute the exact size of every field and whenever truncation flags
@@ -1667,11 +1667,11 @@ generate_all_output (void)
 `------------------------------------------------------*/
 
 void
-usage (int status)
+usage (целое status)
 {
-  if (status != EXIT_SUCCESS)
+  если (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  иначе
     {
       printf (_("\
 Usage: %s [OPTION]... [INPUT]...   (without -G)\n\
@@ -1691,7 +1691,7 @@ Output a permuted index, including context, of the words in the input files.\n\
   -G, --traditional              behave more like System V 'ptx'\n\
 "));
       oputs (_("\
-  -F, --flag-truncation=STRING   use STRING for flagging line truncations.\n\
+  -F, --flag-truncation=STRING   use STRING для flagging line truncations.\n\
                                  The default is '/'\n\
 "));
       oputs (_("\
@@ -1704,7 +1704,7 @@ Output a permuted index, including context, of the words in the input files.\n\
   -R, --right-side-refs          put references at right, not counted in -w\n\
 "));
       oputs (_("\
-  -S, --sentence-regexp=REGEXP   for end of lines or end of sentences\n\
+  -S, --sentence-regexp=REGEXP   для end of lines or end of sentences\n\
 "));
       oputs (_("\
   -T, --format=tex               generate output as TeX directives\n\
@@ -1716,7 +1716,7 @@ Output a permuted index, including context, of the words in the input files.\n\
   -b, --break-file=FILE          word break characters in this FILE\n\
 "));
       oputs (_("\
-  -f, --ignore-case              fold lower case to upper case for sorting\n\
+  -f, --ignore-case              fold lower case to upper case для sorting\n\
 "));
       oputs (_("\
   -g, --gap-size=NUMBER          gap size in columns between output fields\n\
@@ -1789,11 +1789,11 @@ static enum Format const format_vals[] =
   ROFF_FORMAT, TEX_FORMAT
 };
 
-int
-main (int argc, char **argv)
+целое
+основной (целое argc, char **argv)
 {
-  int optchar;			/* argument character */
-  int file_index;		/* index in text input file arrays */
+  целое optchar;			/* argument character */
+  целое file_index;		/* index in text input file arrays */
 
   /* Decode program options.  */
 
@@ -1805,7 +1805,7 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while (optchar = getopt_long (argc, argv, "AF:GM:ORS:TW:b:i:fg:o:trw:",
+  пока (optchar = getopt_long (argc, argv, "AF:GM:ORS:TW:b:i:fg:o:trw:",
                                 long_options, NULL),
          optchar != EOF)
     {
@@ -1829,7 +1829,7 @@ main (int argc, char **argv)
         case 'g':
           {
             intmax_t tmp;
-            if (! (xstrtoimax (optarg, NULL, 0, &tmp, "") == LONGINT_OK
+            если (! (xstrtoimax (optarg, NULL, 0, &tmp, "") == LONGINT_OK
                    && 0 < tmp && tmp <= IDX_MAX))
               error (EXIT_FAILURE, 0, _("invalid gap width: %s"),
                      quote (optarg));
@@ -1850,14 +1850,14 @@ main (int argc, char **argv)
           break;
 
         case 't':
-          if (line_width < 0)
+          если (line_width < 0)
             line_width = 100;
           break;
 
         case 'w':
           {
             intmax_t tmp;
-            if (! (xstrtoimax (optarg, NULL, 0, &tmp, "") == LONGINT_OK
+            если (! (xstrtoimax (optarg, NULL, 0, &tmp, "") == LONGINT_OK
                    && 0 < tmp && tmp <= IDX_MAX))
               error (EXIT_FAILURE, 0, _("invalid line width: %s"),
                      quote (optarg));
@@ -1898,7 +1898,7 @@ main (int argc, char **argv)
         case 'W':
           word_regex.string = optarg;
           unescape_string (optarg);
-          if (!*word_regex.string)
+          если (!*word_regex.string)
             word_regex.string = NULL;
           break;
 
@@ -1913,14 +1913,14 @@ main (int argc, char **argv)
         }
     }
 
-  if (line_width < 0)
+  если (line_width < 0)
     line_width = 72;
 
   /* Process remaining arguments.  If GNU extensions are enabled, process
      all arguments as input parameters.  If disabled, accept at most two
      arguments, the second of which is an output parameter.  */
 
-  if (optind == argc)
+  если (optind == argc)
     {
 
       /* No more argument simply means: read standard input.  */
@@ -1931,23 +1931,23 @@ main (int argc, char **argv)
       number_input_files = 1;
       input_file_name[0] = NULL;
     }
-  else if (gnu_extensions)
+  иначе если (gnu_extensions)
     {
       number_input_files = argc - optind;
       input_file_name = xnmalloc (number_input_files, sizeof *input_file_name);
       file_line_count = xnmalloc (number_input_files, sizeof *file_line_count);
       text_buffers    = xnmalloc (number_input_files, sizeof *text_buffers);
 
-      for (file_index = 0; file_index < number_input_files; file_index++)
+      для (file_index = 0; file_index < number_input_files; file_index++)
         {
-          if (!*argv[optind] || streq (argv[optind], "-"))
+          если (!*argv[optind] || streq (argv[optind], "-"))
             input_file_name[file_index] = NULL;
-          else
+          иначе
             input_file_name[file_index] = argv[optind];
           optind++;
         }
     }
-  else
+  иначе
     {
 
       /* There is one necessary input file.  */
@@ -1956,24 +1956,24 @@ main (int argc, char **argv)
       input_file_name = xmalloc (sizeof *input_file_name);
       file_line_count = xmalloc (sizeof *file_line_count);
       text_buffers    = xmalloc (sizeof *text_buffers);
-      if (!*argv[optind] || streq (argv[optind], "-"))
+      если (!*argv[optind] || streq (argv[optind], "-"))
         input_file_name[0] = NULL;
-      else
+      иначе
         input_file_name[0] = argv[optind];
       optind++;
 
       /* Redirect standard output, only if requested.  */
 
-      if (optind < argc)
+      если (optind < argc)
         {
-          if (! freopen (argv[optind], "w", stdout))
+          если (! freopen (argv[optind], "w", stdout))
             error (EXIT_FAILURE, errno, "%s", quotef (argv[optind]));
           optind++;
         }
 
       /* Diagnose any other argument as an error.  */
 
-      if (optind < argc)
+      если (optind < argc)
         {
           error (0, 0, _("extra operand %s"), quote (argv[optind]));
           usage (EXIT_FAILURE);
@@ -1983,7 +1983,7 @@ main (int argc, char **argv)
   /* If the output format has not been explicitly selected, choose dumb
      terminal format if GNU extensions are enabled, else 'roff' format.  */
 
-  if (output_format == UNKNOWN_FORMAT)
+  если (output_format == UNKNOWN_FORMAT)
     output_format = gnu_extensions ? DUMB_FORMAT : ROFF_FORMAT;
 
   /* Initialize the main tables.  */
@@ -1992,24 +1992,24 @@ main (int argc, char **argv)
 
   /* Read 'Break character' file, if any.  */
 
-  if (break_file)
+  если (break_file)
     digest_break_file (break_file);
 
   /* Read 'Ignore words' file and 'Only words' files, if any.  If any of
      these files is empty, reset the name of the file to null, to avoid
      unnecessary calls to search_table. */
 
-  if (ignore_file)
+  если (ignore_file)
     {
       digest_word_file (ignore_file, &ignore_table);
-      if (ignore_table.length == 0)
+      если (ignore_table.length == 0)
         ignore_file = NULL;
     }
 
-  if (only_file)
+  если (only_file)
     {
       digest_word_file (only_file, &only_table);
-      if (only_table.length == 0)
+      если (only_table.length == 0)
         only_file = NULL;
     }
 
@@ -2020,7 +2020,7 @@ main (int argc, char **argv)
   maximum_word_length = 0;
   reference_max_width = 0;
 
-  for (file_index = 0; file_index < number_input_files; file_index++)
+  для (file_index = 0; file_index < number_input_files; file_index++)
     {
       BLOCK *text_buffer = text_buffers + file_index;
 
@@ -2045,5 +2045,5 @@ main (int argc, char **argv)
 
   /* All done.  */
 
-  return EXIT_SUCCESS;
+  вернуть EXIT_SUCCESS;
 }

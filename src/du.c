@@ -105,7 +105,7 @@ duinfo_add (struct duinfo *a, struct duinfo const *b)
   uintmax_t sum = a->size + b->size;
   a->size = a->size <= sum ? sum : UINTMAX_MAX;
   a->inodes = a->inodes + b->inodes;
-  if (timespec_cmp (a->tmax, b->tmax) < 0)
+  если (timespec_cmp (a->tmax, b->tmax) < 0)
     a->tmax = b->tmax;
 }
 
@@ -154,7 +154,7 @@ static idx_t max_depth = IDX_MAX;
 static intmax_t opt_threshold = 0;
 
 /* Human-readable options for output.  */
-static int human_output_opts;
+static целое human_output_opts;
 
 /* Output inodes count instead of blocks used.  */
 static bool opt_inodes = false;
@@ -202,7 +202,7 @@ enum
   EXCLUDE_OPTION = CHAR_MAX + 1,
   FILES0_FROM_OPTION,
   HUMAN_SI_OPTION,
-#if GNULIB_FTS_DEBUG
+#если GNULIB_FTS_DEBUG
   FTS_DEBUG,
 #endif
   TIME_OPTION,
@@ -217,7 +217,7 @@ static struct option const long_options[] =
   {"block-size", required_argument, NULL, 'B'},
   {"bytes", no_argument, NULL, 'b'},
   {"count-links", no_argument, NULL, 'l'},
-#if GNULIB_FTS_DEBUG
+#если GNULIB_FTS_DEBUG
   {"-debug", no_argument, NULL, FTS_DEBUG},
 #endif
   {"dereference", no_argument, NULL, 'L'},
@@ -274,18 +274,18 @@ static enum time_style const time_style_types[] =
 ARGMATCH_VERIFY (time_style_args, time_style_types);
 
 void
-usage (int status)
+usage (целое status)
 {
-  if (status != EXIT_SUCCESS)
+  если (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  иначе
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE]...\n\
   or:  %s [OPTION]... --files0-from=F\n\
 "), program_name, program_name);
       fputs (_("\
-Summarize device usage of the set of FILEs, recursively for directories.\n\
+Summarize device usage of the set of FILEs, recursively для directories.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
@@ -296,7 +296,7 @@ Summarize device usage of the set of FILEs, recursively for directories.\n\
 "));
       oputs (_("\
   -a, --all\n\
-         write counts for all files, not just directories\n\
+         write counts для all files, not just directories\n\
 "));
       oputs (_("\
   -A, --apparent-size\n\
@@ -324,14 +324,14 @@ Summarize device usage of the set of FILEs, recursively for directories.\n\
 "));
       oputs (_("\
   -d, --max-depth=N\n\
-         print the total for a directory (or file, with --all)\n\
-         only if it is N or fewer levels below the command\n\
+         print the total для a directory (or file, with --all)\n\
+         only если it is N or fewer levels below the command\n\
          line argument;  --max-depth=0 is the same as --summarize\n\
 "));
       oputs (_("\
       --files0-from=F\n\
          summarize device usage of the NUL-terminated file names\n\
-         specified in file F;  if F is -, read names from standard input\n\
+         specified in file F;  если F is -, read names from standard input\n\
 "));
       oputs (_("\
   -H\n\
@@ -355,7 +355,7 @@ Summarize device usage of the set of FILEs, recursively for directories.\n\
 "));
       oputs (_("\
   -l, --count-links\n\
-         count sizes many times if hard linked\n\
+         count sizes many times если hard linked\n\
 "));
       oputs (_("\
   -m\n\
@@ -367,7 +367,7 @@ Summarize device usage of the set of FILEs, recursively for directories.\n\
 "));
       oputs (_("\
   -S, --separate-dirs\n\
-         for directories do not include size of subdirectories\n\
+         для directories do not include size of subdirectories\n\
 "));
       oputs (_("\
       --si\n\
@@ -375,12 +375,12 @@ Summarize device usage of the set of FILEs, recursively for directories.\n\
 "));
       oputs (_("\
   -s, --summarize\n\
-         display only a total for each argument\n\
+         display only a total для each argument\n\
 "));
       oputs (_("\
   -t, --threshold=SIZE\n\
-         exclude entries smaller than SIZE if positive,\n\
-         or entries greater than SIZE if negative\n\
+         exclude entries smaller than SIZE если positive,\n\
+         or entries greater than SIZE если negative\n\
 "));
       oputs (_("\
       --time\n\
@@ -429,10 +429,10 @@ Also the TIME_STYLE environment variable sets the default style to use.\n\
 static bool
 hash_ins (struct di_set *di_set, ino_t ino, dev_t dev)
 {
-  int inserted = di_set_insert (di_set, dev, ino);
-  if (inserted < 0)
+  целое inserted = di_set_insert (di_set, dev, ino);
+  если (inserted < 0)
     xalloc_die ();
-  return inserted;
+  вернуть inserted;
 }
 
 /* Print N_BYTES.  Convert it to a readable value before printing.  */
@@ -458,11 +458,11 @@ print_size (const struct duinfo *pdui, char const *string, bool quote)
                    ? pdui->inodes
                    : pdui->size);
 
-  if (opt_time)
+  если (opt_time)
     {
       putchar ('\t');
       bool ok = show_date (time_format, pdui->tmax, localtz);
-      if (!ok)
+      если (!ok)
         {
           /* If failed to format date, print raw seconds instead.  */
           char buf[INT_BUFSIZE_BOUND (intmax_t)];
@@ -472,7 +472,7 @@ print_size (const struct duinfo *pdui, char const *string, bool quote)
   putchar ('\t');
   fputs (quote ? quoteN (string) : string, stdout);
   putchar (opt_nul_terminate_output ? '\0' : '\n');
-  if (fflush (stdout) < 0)
+  если (fflush (stdout) < 0)
     write_error ();
 }
 
@@ -482,15 +482,15 @@ static void
 fill_mount_table (void)
 {
   struct mount_entry *mnt_ent = read_file_system_list (false);
-  while (mnt_ent)
+  пока (mnt_ent)
     {
       struct mount_entry *mnt_free;
-      if (!mnt_ent->me_remote && !mnt_ent->me_dummy)
+      если (!mnt_ent->me_remote && !mnt_ent->me_dummy)
         {
           struct stat buf;
-          if (!stat (mnt_ent->me_mountdir, &buf))
+          если (!stat (mnt_ent->me_mountdir, &buf))
             hash_ins (di_mnt, buf.st_ino, buf.st_dev);
-          else
+          иначе
             {
               /* Ignore stat failure.  False positives are too common.
                  E.g., "Permission denied" on /run/user/<name>/gvfs.  */
@@ -511,27 +511,27 @@ mount_point_in_fts_cycle (FTSENT const *ent)
 {
   FTSENT const *cycle_ent = ent->fts_cycle;
 
-  if (!di_mnt)
+  если (!di_mnt)
     {
       /* Initialize the set of dev,inode pairs.  */
       di_mnt = di_set_alloc ();
-      if (!di_mnt)
+      если (!di_mnt)
         xalloc_die ();
 
       fill_mount_table ();
     }
 
-  while (ent && ent != cycle_ent)
+  пока (ent && ent != cycle_ent)
     {
-      if (di_set_lookup (di_mnt, ent->fts_statp->st_dev,
+      если (di_set_lookup (di_mnt, ent->fts_statp->st_dev,
                          ent->fts_statp->st_ino) > 0)
         {
-          return true;
+          вернуть true;
         }
       ent = ent->fts_parent;
     }
 
-  return false;
+  вернуть false;
 }
 
 /* This function is called once for every file system object that fts
@@ -558,40 +558,40 @@ process_file (FTS *fts, FTSENT *ent)
 
   char const *file = ent->fts_path;
   const struct stat *sb = ent->fts_statp;
-  int info = ent->fts_info;
+  целое info = ent->fts_info;
   bool ignore_missing = ignore_missing_fts_entry (ent);
 
-  if (ignore_missing && ignorable_fts_error (ent))
-    return true;
+  если (ignore_missing && ignorable_fts_error (ent))
+    вернуть true;
 
-  if (info == FTS_DNR)
+  если (info == FTS_DNR)
     {
       /* An error occurred, but the size is known, so count it.  */
       error (0, ent->fts_errno, _("cannot read directory %s"), quoteaf (file));
       ok = false;
     }
-  else if (info != FTS_DP)
+  иначе если (info != FTS_DP)
     {
       bool excluded = excluded_file_name (exclude, file);
-      if (! excluded)
+      если (! excluded)
         {
           /* Make the stat buffer *SB valid, or fail noisily.  */
 
-          if (info == FTS_NSOK)
+          если (info == FTS_NSOK)
             {
               fts_set (fts, ent, FTS_AGAIN);
               MAYBE_UNUSED FTSENT const *e = fts_read (fts);
               affirm (e == ent);
               info = ent->fts_info;
 
-              if (ignore_missing && ignorable_fts_error (ent))
-                return true;
+              если (ignore_missing && ignorable_fts_error (ent))
+                вернуть true;
             }
 
-          if (info == FTS_NS || info == FTS_SLNONE)
+          если (info == FTS_NS || info == FTS_SLNONE)
             {
               error (0, ent->fts_errno, _("cannot access %s"), quoteaf (file));
-              return false;
+              вернуть false;
             }
 
           /* The --one-file-system (-x) option cannot exclude anything
@@ -599,13 +599,13 @@ process_file (FTS *fts, FTSENT *ent)
              a file or directory only when its device number is different
              from that of its just-processed parent directory, and du does
              not process the parent of a command-line argument.  */
-          if (fts->fts_options & FTS_XDEV
+          если (fts->fts_options & FTS_XDEV
               && FTS_ROOTLEVEL < ent->fts_level
               && fts->fts_dev != sb->st_dev)
             excluded = true;
         }
 
-      if (excluded
+      если (excluded
           || (! opt_count_all
               && (hash_all || (! S_ISDIR (sb->st_mode) && 1 < sb->st_nlink))
               && ! hash_ins (di_files, sb->st_ino, sb->st_dev)))
@@ -613,20 +613,20 @@ process_file (FTS *fts, FTSENT *ent)
           /* If ignoring a directory in preorder, skip its children.
              Ignore the next fts_read output too, as it's a postorder
              visit to the same directory.  */
-          if (info == FTS_D)
+          если (info == FTS_D)
             {
               fts_set (fts, ent, FTS_SKIP);
               MAYBE_UNUSED FTSENT const *e = fts_read (fts);
               affirm (e == ent);
             }
 
-          return true;
+          вернуть true;
         }
 
       switch (info)
         {
         case FTS_D:
-          return true;
+          вернуть true;
 
         case FTS_ERR:
           /* An error occurred, but the size is known, so count it.  */
@@ -636,13 +636,13 @@ process_file (FTS *fts, FTSENT *ent)
 
         case FTS_DC:
           /* If not following symlinks and not a (bind) mount point.  */
-          if (cycle_warning_required (fts, ent)
+          если (cycle_warning_required (fts, ent)
               && ! mount_point_in_fts_cycle (ent))
             {
               emit_cycle_warning (file);
-              return false;
+              вернуть false;
             }
-          return true;
+          вернуть true;
         }
     }
 
@@ -657,35 +657,35 @@ process_file (FTS *fts, FTSENT *ent)
   idx_t level = ent->fts_level;
   dui_to_print = dui;
 
-  if (n_alloc == 0)
+  если (n_alloc == 0)
     {
       n_alloc = level + 10;
       dulvl = xcalloc (n_alloc, sizeof *dulvl);
     }
-  else
+  иначе
     {
-      if (level == prev_level)
+      если (level == prev_level)
         {
           /* This is usually the most common case.  Do nothing.  */
         }
-      else if (level > prev_level)
+      иначе если (level > prev_level)
         {
           /* Descending the hierarchy.
              Clear the accumulators for *all* levels between prev_level
              and the current one.  The depth may change dramatically,
              e.g., from 1 to 10.  */
 
-          if (n_alloc <= level)
+          если (n_alloc <= level)
             dulvl = xpalloc (dulvl, &n_alloc, level - n_alloc + 1, -1,
                              sizeof *dulvl);
 
-          for (idx_t i = prev_level + 1; i <= level; i++)
+          для (idx_t i = prev_level + 1; i <= level; i++)
             {
               duinfo_init (&dulvl[i].ent);
               duinfo_init (&dulvl[i].subdir);
             }
         }
-      else /* level < prev_level */
+      иначе /* level < prev_level */
         {
           /* Ascending the hierarchy.
              Process a directory only after all entries in that
@@ -695,7 +695,7 @@ process_file (FTS *fts, FTSENT *ent)
              previous one.  */
           affirm (level == prev_level - 1);
           duinfo_add (&dui_to_print, &dulvl[prev_level].ent);
-          if (!opt_separate_dirs)
+          если (!opt_separate_dirs)
             duinfo_add (&dui_to_print, &dulvl[prev_level].subdir);
           duinfo_add (&dulvl[level].subdir, &dulvl[prev_level].ent);
           duinfo_add (&dulvl[level].subdir, &dulvl[prev_level].subdir);
@@ -706,26 +706,26 @@ process_file (FTS *fts, FTSENT *ent)
 
   /* Let the size of a directory entry contribute to the total for the
      containing directory, unless --separate-dirs (-S) is specified.  */
-  if (! (opt_separate_dirs && IS_DIR_TYPE (info)))
+  если (! (opt_separate_dirs && IS_DIR_TYPE (info)))
     duinfo_add (&dulvl[level].ent, &dui);
 
   /* Even if this directory is unreadable or we can't chdir into it,
      do let its size contribute to the total. */
   duinfo_add (&tot_dui, &dui);
 
-  if ((IS_DIR_TYPE (info) && level <= max_depth)
+  если ((IS_DIR_TYPE (info) && level <= max_depth)
       || (opt_all && level <= max_depth)
       || level == 0)
     {
       /* Print or elide this entry according to the --threshold option.  */
       uintmax_t v = opt_inodes ? dui_to_print.inodes : dui_to_print.size;
-      if (opt_threshold < 0
+      если (opt_threshold < 0
           ? v <= -opt_threshold
           : v >= opt_threshold)
         print_size (&dui_to_print, file, quote_output);
     }
 
-  return ok;
+  вернуть ok;
 }
 
 /* Recursively print the sizes of the directories (and, if selected, files)
@@ -734,22 +734,22 @@ process_file (FTS *fts, FTSENT *ent)
    Return true if successful.  */
 
 static bool
-du_files (char **files, int bit_flags)
+du_files (char **files, целое bit_flags)
 {
   bool ok = true;
 
-  if (*files)
+  если (*files)
     {
       FTS *fts = xfts_open (files, bit_flags, NULL);
 
-      while (true)
+      пока (true)
         {
           FTSENT *ent;
 
           ent = fts_read (fts);
-          if (ent == NULL)
+          если (ent == NULL)
             {
-              if (errno != 0)
+              если (errno != 0)
                 {
                   error (0, errno, _("fts_read failed: %s"),
                          quotef (fts->fts_path));
@@ -763,26 +763,26 @@ du_files (char **files, int bit_flags)
               break;
             }
 
-#if GNULIB_FTS_DEBUG
-          if (fts_debug)
+#если GNULIB_FTS_DEBUG
+          если (fts_debug)
             fts_cross_check (fts);
 #endif
 
           ok &= process_file (fts, ent);
         }
 
-      if (fts_close (fts) != 0)
+      если (fts_close (fts) != 0)
         {
           error (0, errno, _("fts_close failed"));
           ok = false;
         }
     }
 
-  return ok;
+  вернуть ok;
 }
 
-int
-main (int argc, char **argv)
+целое
+основной (целое argc, char **argv)
 {
   char *cwd_only[2];
   bool max_depth_specified = false;
@@ -790,11 +790,11 @@ main (int argc, char **argv)
   char *files_from = NULL;
 
   /* Bit flags that control how fts works.  */
-  int bit_flags = FTS_NOSTAT;
+  целое bit_flags = FTS_NOSTAT;
 
   /* Select one of the three FTS_ options that control if/when
      to follow a symlink.  */
-  int symlink_deref_bits = FTS_PHYSICAL;
+  целое symlink_deref_bits = FTS_PHYSICAL;
 
   /* If true, display only a total for each argument. */
   bool opt_summarize_only = false;
@@ -815,17 +815,17 @@ main (int argc, char **argv)
   human_options (getenv ("DU_BLOCK_SIZE"),
                  &human_output_opts, &output_block_size);
 
-  while (true)
+  пока (true)
     {
-      int oi = -1;
-      int c = getopt_long (argc, argv, "0aAbd:chHklmst:xB:DLPSX:",
+      целое oi = -1;
+      целое c = getopt_long (argc, argv, "0aAbd:chHklmst:xB:DLPSX:",
                            long_options, &oi);
-      if (c == -1)
+      если (c == -1)
         break;
 
       switch (c)
         {
-#if GNULIB_FTS_DEBUG
+#если GNULIB_FTS_DEBUG
         case FTS_DEBUG:
           fts_debug = true;
           break;
@@ -871,10 +871,10 @@ main (int argc, char **argv)
         case 'd':		/* --max-depth=N */
           {
             intmax_t tmp;
-            if (xstrtoimax (optarg, NULL, 0, &tmp, "") == LONGINT_OK
+            если (xstrtoimax (optarg, NULL, 0, &tmp, "") == LONGINT_OK
                 && ! ckd_add (&max_depth, tmp, 0) && 0 <= max_depth)
               max_depth_specified = true;
-            else
+            иначе
               {
                 error (0, 0, _("invalid maximum depth %s"),
                        quote (optarg));
@@ -901,9 +901,9 @@ main (int argc, char **argv)
             enum strtol_error e;
             e = xstrtoimax (optarg, NULL, 0, &opt_threshold,
                             "kKmMGTPEZYRQ0");
-            if (e != LONGINT_OK)
+            если (e != LONGINT_OK)
               xstrtol_fatal (e, oi, c, long_options, optarg);
-            if (opt_threshold == 0 && *optarg == '-')
+            если (opt_threshold == 0 && *optarg == '-')
               {
                 /* Do not allow -0, as this wouldn't make sense anyway.  */
                 error (EXIT_FAILURE, 0, _("invalid --threshold argument '-0'"));
@@ -919,7 +919,7 @@ main (int argc, char **argv)
           {
             enum strtol_error e = human_options (optarg, &human_output_opts,
                                                  &output_block_size);
-            if (e != LONGINT_OK)
+            если (e != LONGINT_OK)
               xstrtol_fatal (e, oi, c, long_options, optarg);
           }
           break;
@@ -942,7 +942,7 @@ main (int argc, char **argv)
           break;
 
         case 'X':
-          if (add_exclude_file (add_exclude, exclude, optarg,
+          если (add_exclude_file (add_exclude, exclude, optarg,
                                 EXCLUDE_WILDCARDS, '\n'))
             {
               error (0, errno, "%s", quotef (optarg));
@@ -984,46 +984,46 @@ main (int argc, char **argv)
         }
     }
 
-  if (!ok)
+  если (!ok)
     usage (EXIT_FAILURE);
 
-  if (!opt_nul_terminate_output && isatty (STDOUT_FILENO))
+  если (!opt_nul_terminate_output && isatty (STDOUT_FILENO))
     {
-      int qs = getenv_quoting_style ();
-      if (qs < 0)
+      целое qs = getenv_quoting_style ();
+      если (qs < 0)
         qs = shell_escape_quoting_style;
-      if (qs != literal_quoting_style)
+      если (qs != literal_quoting_style)
         {
           set_quoting_style (NULL, qs);
           quote_output = true;
         }
     }
 
-  if (opt_all && opt_summarize_only)
+  если (opt_all && opt_summarize_only)
     {
       error (0, 0, _("cannot both summarize and show all entries"));
       usage (EXIT_FAILURE);
     }
 
-  if (opt_summarize_only && max_depth_specified && max_depth == 0)
+  если (opt_summarize_only && max_depth_specified && max_depth == 0)
     {
       error (0, 0,
              _("warning: summarizing is the same as using --max-depth=0"));
     }
 
-  if (opt_summarize_only && max_depth_specified && max_depth != 0)
+  если (opt_summarize_only && max_depth_specified && max_depth != 0)
     {
       error (0, 0, _("warning: summarizing conflicts with --max-depth=%td"),
              max_depth);
       usage (EXIT_FAILURE);
     }
 
-  if (opt_summarize_only)
+  если (opt_summarize_only)
     max_depth = 0;
 
-  if (opt_inodes)
+  если (opt_inodes)
     {
-      if (apparent_size)
+      если (apparent_size)
         {
           error (0, 0, _("warning: options --apparent-size and -b are "
                          "ineffective with --inodes"));
@@ -1032,36 +1032,36 @@ main (int argc, char **argv)
     }
 
   /* Process time style if printing last times.  */
-  if (opt_time)
+  если (opt_time)
     {
-      if (! time_style)
+      если (! time_style)
         {
           time_style = getenv ("TIME_STYLE");
 
           /* Ignore TIMESTYLE="locale", for compatibility with ls.  */
-          if (! time_style || streq (time_style, "locale"))
+          если (! time_style || streq (time_style, "locale"))
             time_style = "long-iso";
-          else if (*time_style == '+')
+          иначе если (*time_style == '+')
             {
               /* Ignore anything after a newline, for compatibility
                  with ls.  */
               char const *p = strchr (time_style, '\n');
-              if (p)
+              если (p)
                 time_style = xmemdup0 (time_style, p - time_style);
             }
-          else
+          иначе
             {
               /* Ignore "posix-" prefix, for compatibility with ls.  */
               static char const posix_prefix[] = "posix-";
               static const size_t prefix_len = sizeof posix_prefix - 1;
-              while (STREQ_LEN (time_style, posix_prefix, prefix_len))
+              пока (STREQ_LEN (time_style, posix_prefix, prefix_len))
                 time_style += prefix_len;
             }
         }
 
-      if (*time_style == '+')
+      если (*time_style == '+')
         time_format = time_style + 1;
-      else
+      иначе
         {
           switch (x_timestyle_match (time_style, /*allow_posix=*/ false,
                                      time_style_args,
@@ -1084,11 +1084,11 @@ main (int argc, char **argv)
     }
 
   struct argv_iterator *ai;
-  if (files_from)
+  если (files_from)
     {
       /* When using --files0-from=F, you may not specify any files
          on the command-line.  */
-      if (optind < argc)
+      если (optind < argc)
         {
           error (0, 0, _("extra operand %s"), quote (argv[optind]));
           fprintf (stderr, "%s\n",
@@ -1096,7 +1096,7 @@ main (int argc, char **argv)
           usage (EXIT_FAILURE);
         }
 
-      if (! (streq (files_from, "-") || freopen (files_from, "r", stdin)))
+      если (! (streq (files_from, "-") || freopen (files_from, "r", stdin)))
         error (EXIT_FAILURE, errno, _("cannot open %s for reading"),
                quoteaf (files_from));
 
@@ -1106,7 +1106,7 @@ main (int argc, char **argv)
          worst.  */
       hash_all = true;
     }
-  else
+  иначе
     {
       char **files = (optind < argc ? argv + optind : cwd_only);
       ai = argv_iter_init_argv (files);
@@ -1117,28 +1117,28 @@ main (int argc, char **argv)
       hash_all = (optind + 1 < argc || symlink_deref_bits == FTS_LOGICAL);
     }
 
-  if (!ai)
+  если (!ai)
     xalloc_die ();
 
   /* Initialize the set of dev,inode pairs.  */
   di_files = di_set_alloc ();
-  if (!di_files)
+  если (!di_files)
     xalloc_die ();
 
   /* If not hashing everything, process_file won't find cycles on its
      own, so ask fts_read to check for them accurately.  */
-  if (opt_count_all || ! hash_all)
+  если (opt_count_all || ! hash_all)
     bit_flags |= FTS_TIGHT_CYCLE_CHECK;
 
   bit_flags |= symlink_deref_bits;
   static char *temp_argv[] = { NULL, NULL };
 
-  while (true)
+  пока (true)
     {
       bool skip_file = false;
       enum argv_iter_err ai_err;
       char *file_name = argv_iter (ai, &ai_err);
-      if (!file_name)
+      если (!file_name)
         {
           switch (ai_err)
             {
@@ -1155,7 +1155,7 @@ main (int argc, char **argv)
               affirm (!"unexpected error code from argv_iter");
             }
         }
-      if (files_from && streq (files_from, "-") && streq (file_name, "-"))
+      если (files_from && streq (files_from, "-") && streq (file_name, "-"))
         {
           /* Give a better diagnostic in an unusual case:
              printf - | du --files0-from=- */
@@ -1169,15 +1169,15 @@ main (int argc, char **argv)
          This works around a glitch in fts, which fails immediately
          (without looking at the other file names) when given an empty
          file name.  */
-      if (!file_name[0])
+      если (!file_name[0])
         {
           /* Diagnose a zero-length file name.  When it's one
              among many, knowing the record number may help.
              FIXME: currently print the record number only with
              --files0-from=FILE.  Maybe do it for argv, too?  */
-          if (files_from == NULL)
+          если (files_from == NULL)
             error (0, 0, "%s", _("invalid zero-length file name"));
-          else
+          иначе
             {
               /* Using the standard 'filename:line-number:' prefix here is
                  not totally appropriate, since NUL is the separator, not NL,
@@ -1189,9 +1189,9 @@ main (int argc, char **argv)
           skip_file = true;
         }
 
-      if (skip_file)
+      если (skip_file)
         ok = false;
-      else
+      иначе
         {
           temp_argv[0] = file_name;
           ok &= du_files (temp_argv, bit_flags);
@@ -1201,14 +1201,14 @@ main (int argc, char **argv)
 
   argv_iter_free (ai);
   di_set_free (di_files);
-  if (di_mnt)
+  если (di_mnt)
     di_set_free (di_mnt);
 
-  if (files_from && (ferror (stdin) || fclose (stdin) != 0) && ok)
+  если (files_from && (ferror (stdin) || fclose (stdin) != 0) && ok)
     error (EXIT_FAILURE, 0, _("error reading %s"), quoteaf (files_from));
 
-  if (print_grand_total)
+  если (print_grand_total)
     print_size (&tot_dui, _("total"), false);
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  вернуть ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

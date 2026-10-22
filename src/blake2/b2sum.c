@@ -22,41 +22,41 @@
 
 #include "blake2.h"
 
-#if 0
+#если 0
 /* This will help compatibility with coreutils */
-int blake2s_stream( FILE *stream, void *resstream, size_t outbytes )
+целое blake2s_stream( FILE *stream, void *resstream, size_t outbytes )
 {
-  int ret = -1;
+  целое ret = -1;
   size_t sum, n;
   blake2s_state S[1];
   static const size_t buffer_length = 32768;
   uint8_t *buffer = ( uint8_t * )malloc( buffer_length );
 
-  if( !buffer ) return -1;
+  если( !buffer ) вернуть -1;
 
   blake2s_init( S, outbytes );
 
-  while( 1 )
+  пока( 1 )
   {
     sum = 0;
 
-    while( 1 )
+    пока( 1 )
     {
       n = fread( buffer + sum, 1, buffer_length - sum, stream );
       sum += n;
 
-      if( buffer_length == sum )
+      если( buffer_length == sum )
         break;
 
-      if( 0 == n )
+      если( 0 == n )
       {
-        if( ferror( stream ) )
+        если( ferror( stream ) )
           goto cleanup_buffer;
 
         goto final_process;
       }
 
-      if( feof( stream ) )
+      если( feof( stream ) )
         goto final_process;
     }
 
@@ -65,49 +65,49 @@ int blake2s_stream( FILE *stream, void *resstream, size_t outbytes )
 
 final_process:;
 
-  if( sum > 0 ) blake2s_update( S, buffer, sum );
+  если( sum > 0 ) blake2s_update( S, buffer, sum );
 
   blake2s_final( S, resstream, outbytes );
   ret = 0;
 cleanup_buffer:
   free( buffer );
-  return ret;
+  вернуть ret;
 }
 #endif
 
-int blake2b_stream( FILE *stream, void *resstream, size_t outbytes )
+целое blake2b_stream( FILE *stream, void *resstream, size_t outbytes )
 {
-  int ret = -1;
+  целое ret = -1;
   size_t sum, n;
   blake2b_state S[1];
   static const size_t buffer_length = 32768;
   uint8_t *buffer = ( uint8_t * )malloc( buffer_length );
 
-  if( !buffer ) return -1;
+  если( !buffer ) вернуть -1;
 
   blake2b_init( S, outbytes );
 
-  while( 1 )
+  пока( 1 )
   {
     sum = 0;
 
-    while( 1 )
+    пока( 1 )
     {
       n = fread( buffer + sum, 1, buffer_length - sum, stream );
       sum += n;
 
-      if( buffer_length == sum )
+      если( buffer_length == sum )
         break;
 
-      if( 0 == n )
+      если( 0 == n )
       {
-        if( ferror( stream ) )
+        если( ferror( stream ) )
           goto cleanup_buffer;
 
         goto final_process;
       }
 
-      if( feof( stream ) )
+      если( feof( stream ) )
         goto final_process;
     }
 
@@ -116,55 +116,55 @@ int blake2b_stream( FILE *stream, void *resstream, size_t outbytes )
 
 final_process:;
 
-  if( sum > 0 ) blake2b_update( S, buffer, sum );
+  если( sum > 0 ) blake2b_update( S, buffer, sum );
 
   blake2b_final( S, resstream, outbytes );
   ret = 0;
 cleanup_buffer:
   free( buffer );
-  return ret;
+  вернуть ret;
 }
 
-#if 0
+#если 0
 
 #include <errno.h>
 #include <getopt.h>
 #include <string.h>
 #include <unistd.h>
 
-int blake2sp_stream( FILE *stream, void *resstream, size_t outbytes )
+целое blake2sp_stream( FILE *stream, void *resstream, size_t outbytes )
 {
-  int ret = -1;
+  целое ret = -1;
   size_t sum, n;
   blake2sp_state S[1];
   static const size_t buffer_length = 16 * ( 1UL << 20 );
   uint8_t *buffer = ( uint8_t * )malloc( buffer_length );
 
-  if( !buffer ) return -1;
+  если( !buffer ) вернуть -1;
 
   blake2sp_init( S, outbytes );
 
-  while( 1 )
+  пока( 1 )
   {
     sum = 0;
 
-    while( 1 )
+    пока( 1 )
     {
       n = fread( buffer + sum, 1, buffer_length - sum, stream );
       sum += n;
 
-      if( buffer_length == sum )
+      если( buffer_length == sum )
         break;
 
-      if( 0 == n )
+      если( 0 == n )
       {
-        if( ferror( stream ) )
+        если( ferror( stream ) )
           goto cleanup_buffer;
 
         goto final_process;
       }
 
-      if( feof( stream ) )
+      если( feof( stream ) )
         goto final_process;
     }
 
@@ -173,49 +173,49 @@ int blake2sp_stream( FILE *stream, void *resstream, size_t outbytes )
 
 final_process:;
 
-  if( sum > 0 ) blake2sp_update( S, buffer, sum );
+  если( sum > 0 ) blake2sp_update( S, buffer, sum );
 
   blake2sp_final( S, resstream, outbytes );
   ret = 0;
 cleanup_buffer:
   free( buffer );
-  return ret;
+  вернуть ret;
 }
 
 
-int blake2bp_stream( FILE *stream, void *resstream, size_t outbytes )
+целое blake2bp_stream( FILE *stream, void *resstream, size_t outbytes )
 {
-  int ret = -1;
+  целое ret = -1;
   size_t sum, n;
   blake2bp_state S[1];
   static const size_t buffer_length = 16 * ( 1UL << 20 );
   uint8_t *buffer = ( uint8_t * )malloc( buffer_length );
 
-  if( !buffer ) return -1;
+  если( !buffer ) вернуть -1;
 
   blake2bp_init( S, outbytes );
 
-  while( 1 )
+  пока( 1 )
   {
     sum = 0;
 
-    while( 1 )
+    пока( 1 )
     {
       n = fread( buffer + sum, 1, buffer_length - sum, stream );
       sum += n;
 
-      if( buffer_length == sum )
+      если( buffer_length == sum )
         break;
 
-      if( 0 == n )
+      если( 0 == n )
       {
-        if( ferror( stream ) )
+        если( ferror( stream ) )
           goto cleanup_buffer;
 
         goto final_process;
       }
 
-      if( feof( stream ) )
+      если( feof( stream ) )
         goto final_process;
     }
 
@@ -224,19 +224,19 @@ int blake2bp_stream( FILE *stream, void *resstream, size_t outbytes )
 
 final_process:;
 
-  if( sum > 0 ) blake2bp_update( S, buffer, sum );
+  если( sum > 0 ) blake2bp_update( S, buffer, sum );
 
   blake2bp_final( S, resstream, outbytes );
   ret = 0;
 cleanup_buffer:
   free( buffer );
-  return ret;
+  вернуть ret;
 }
 
-typedef int ( *blake2fn )( FILE *, void *, size_t );
+typedef целое ( *blake2fn )( FILE *, void *, size_t );
 
 
-static void usage( char **argv, int errcode )
+static void usage( char **argv, целое errcode )
 {
   FILE *out = errcode ? stderr : stdout;
   fprintf( out, "Usage: %s [OPTION]... [FILE]...\n", argv[0] );
@@ -253,7 +253,7 @@ static void usage( char **argv, int errcode )
 }
 
 
-int main( int argc, char **argv )
+целое основной( целое argc, char **argv )
 {
   blake2fn blake2_stream = blake2b_stream;
   unsigned long maxbytes = BLAKE2B_OUTBYTES;
@@ -261,12 +261,12 @@ int main( int argc, char **argv )
   unsigned long outbytes = 0;
   unsigned char hash[BLAKE2B_OUTBYTES] = {0};
   bool bsdstyle = false;
-  int c, i;
+  целое c, i;
   opterr = 1;
 
-  while( 1 )
+  пока( 1 )
   {
-    int option_index = 0;
+    целое option_index = 0;
     char *end = NULL;
     unsigned long outbits;
     static struct option long_options[] = {
@@ -276,35 +276,35 @@ int main( int argc, char **argv )
     };
 
     c = getopt_long( argc, argv, "a:l:", long_options, &option_index );
-    if( c == -1 ) break;
+    если( c == -1 ) break;
     switch( c )
     {
     case 'a':
-      if( 0 == strcmp( optarg, "blake2b" ) )
+      если( 0 == strcmp( optarg, "blake2b" ) )
       {
         blake2_stream = blake2b_stream;
         maxbytes = BLAKE2B_OUTBYTES;
         algorithm = "BLAKE2b";
       }
-      else if ( 0 == strcmp( optarg, "blake2s" ) )
+      иначе если ( 0 == strcmp( optarg, "blake2s" ) )
       {
         blake2_stream = blake2s_stream;
         maxbytes = BLAKE2S_OUTBYTES;
         algorithm = "BLAKE2s";
       }
-      else if ( 0 == strcmp( optarg, "blake2bp" ) )
+      иначе если ( 0 == strcmp( optarg, "blake2bp" ) )
       {
         blake2_stream = blake2bp_stream;
         maxbytes = BLAKE2B_OUTBYTES;
         algorithm = "BLAKE2bp";
       }
-      else if ( 0 == strcmp( optarg, "blake2sp" ) )
+      иначе если ( 0 == strcmp( optarg, "blake2sp" ) )
       {
         blake2_stream = blake2sp_stream;
         maxbytes = BLAKE2S_OUTBYTES;
         algorithm = "BLAKE2sp";
       }
-      else
+      иначе
       {
         printf( "Invalid function name: `%s'\n", optarg );
         usage( argv, 111 );
@@ -314,7 +314,7 @@ int main( int argc, char **argv )
 
     case 'l':
       outbits = strtoul(optarg, &end, 10);
-      if( !end || *end != '\0' || outbits % 8 != 0)
+      если( !end || *end != '\0' || outbits % 8 != 0)
       {
         printf( "Invalid length argument: `%s'\n", optarg);
         usage( argv, 111 );
@@ -323,9 +323,9 @@ int main( int argc, char **argv )
       break;
 
     case 0:
-      if( 0 == strcmp( "help", long_options[option_index].name ) )
+      если( 0 == strcmp( "help", long_options[option_index].name ) )
         usage( argv, 0 );
-      else if( 0 == strcmp( "tag", long_options[option_index].name ) )
+      иначе если( 0 == strcmp( "tag", long_options[option_index].name ) )
         bsdstyle = true;
       break;
 
@@ -335,62 +335,62 @@ int main( int argc, char **argv )
     }
   }
 
-  if(outbytes > maxbytes)
+  если(outbytes > maxbytes)
   {
     printf( "Invalid length argument: %lu\n", outbytes * 8 );
     printf( "Maximum digest length for %s is %lu\n", algorithm, maxbytes * 8 );
     usage( argv, 111 );
   }
-  else if( outbytes == 0 )
+  иначе если( outbytes == 0 )
     outbytes = maxbytes;
 
-  if( optind == argc )
+  если( optind == argc )
     argv[argc++] = (char *) "-";
 
-  for( i = optind; i < argc; ++i )
+  для( i = optind; i < argc; ++i )
   {
     FILE *f = NULL;
-    if( argv[i][0] == '-' && argv[i][1] == '\0' )
+    если( argv[i][0] == '-' && argv[i][1] == '\0' )
       f = stdin;
-    else
+    иначе
       f = fopen( argv[i], "rb" );
 
-    if( !f )
+    если( !f )
     {
       fprintf( stderr, "Could not open `%s': %s\n", argv[i], strerror( errno ) );
       continue;
     }
 
-    if( blake2_stream( f, hash, outbytes ) < 0 )
+    если( blake2_stream( f, hash, outbytes ) < 0 )
     {
       fprintf( stderr, "Failed to hash `%s'\n", argv[i] );
     }
-    else
+    иначе
     {
       size_t j;
-      if( bsdstyle )
+      если( bsdstyle )
       {
-        if( outbytes < maxbytes )
+        если( outbytes < maxbytes )
           printf( "%s-%lu (%s) = ", algorithm, outbytes * 8, argv[i] );
-        else
+        иначе
           printf( "%s (%s) = ", algorithm, argv[i] );
       }
 
-      for( j = 0; j < outbytes; ++j )
+      для( j = 0; j < outbytes; ++j )
         printf( "%02x", hash[j] );
 
-      if( bsdstyle )
+      если( bsdstyle )
         printf( "\n" );
-      else
+      иначе
         printf( "  %s\n", argv[i] );
     }
 
-    if( f == stdin )
+    если( f == stdin )
       clearerr( f );
-    else if( fclose( f ) != 0 )
+    иначе если( fclose( f ) != 0 )
       fprintf( stderr, "Could not close `%s': %s\n", argv[i], strerror( errno ) );
   }
 
-  return 0;
+  вернуть 0;
 }
 #endif

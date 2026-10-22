@@ -45,7 +45,7 @@
   struct line *tmp = a; \
   a = b; \
   b = tmp; \
-} while (0);
+} пока (0);
 
 /* An element of the list identifying which fields to print for each
    output line.  */
@@ -53,7 +53,7 @@ struct outlist
   {
     /* File number: 0, 1, or 2.  0 means use the join field.
        1 means use the first file argument, 2 the second.  */
-    int file;
+    целое file;
 
     /* Field index (zero-based), specified only when FILE is 1 or 2.  */
     idx_t field;
@@ -186,11 +186,11 @@ static bool join_header_lines;
 static char eolchar = '\n';
 
 void
-usage (int status)
+usage (целое status)
 {
-  if (status != EXIT_SUCCESS)
+  если (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  иначе
     {
       printf (_("\
 Usage: %s [OPTION]... FILE1 FILE2\n\
@@ -226,7 +226,7 @@ When FILE1 or FILE2 (not both) is -, read standard input.\n\
 "));
       oputs (_("\
   -o FORMAT\n\
-         obey FORMAT while constructing output line\n\
+         obey FORMAT пока constructing output line\n\
 "));
       oputs (_("\
   -t CHAR\n\
@@ -247,7 +247,7 @@ When FILE1 or FILE2 (not both) is -, read standard input.\n\
       oputs (_("\
       --check-order\n\
          check that the input is correctly sorted, even\n\
-         if all input lines are pairable\n\
+         если all input lines are pairable\n\
 "));
       oputs (_("\
       --nocheck-order\n\
@@ -267,16 +267,16 @@ When FILE1 or FILE2 (not both) is -, read standard input.\n\
       fputs (_("\
 \n\
 Unless -t CHAR is given, leading blanks separate fields and are ignored,\n\
-else fields are separated by CHAR.  Any FIELD is a field number counted\n\
+иначе fields are separated by CHAR.  Any FIELD is a field number counted\n\
 from 1.  FORMAT is one or more comma or blank separated specifications,\n\
 each being 'FILENUM.FIELD' or '0'.  Default FORMAT outputs the join field,\n\
 the remaining fields from FILE1, the remaining fields from FILE2, all\n\
 separated by CHAR.  If FORMAT is the keyword 'auto', then the first\n\
-line of each file determines the number of fields output for each line.\n\
+line of each file determines the number of fields output для each line.\n\
 \n\
 Important: FILE1 and FILE2 must be sorted on the join fields.\n\
-E.g., use \"sort -k 1b,1\" if 'join' has no options,\n\
-or use \"join -t ''\" if 'sort' has no options.\n\
+E.g., use \"sort -k 1b,1\" если 'join' has no options,\n\
+or use \"join -t ''\" если 'sort' has no options.\n\
 Comparisons honor the rules specified by 'LC_COLLATE'.\n\
 If the input is not sorted and some lines cannot be joined, a\n\
 warning message will be given.\n\
@@ -291,7 +291,7 @@ warning message will be given.\n\
 static void
 extract_field (struct line *line, char *field, idx_t len)
 {
-  if (line->nfields >= line->nfields_allocated)
+  если (line->nfields >= line->nfields_allocated)
     line->fields = xpalloc (line->fields, &line->nfields_allocated, 1,
                             -1, sizeof *line->fields);
   idx_t const field_index = line->nfields++;
@@ -302,13 +302,13 @@ extract_field (struct line *line, char *field, idx_t len)
 static bool
 eq_tab (mcel_t g)
 {
-  return mcel_eq (g, tab);
+  вернуть mcel_eq (g, tab);
 }
 
 static bool
 newline_or_blank (mcel_t g)
 {
-  return g.ch == '\n' || c32issep (g.ch);
+  вернуть g.ch == '\n' || c32issep (g.ch);
 }
 
 /* Fill in the 'fields' structure in LINE.  */
@@ -319,20 +319,20 @@ xfields (struct line *line)
   char *ptr = line->buf.buffer;
   char const *lim = ptr + line->buf.length - 1;
 
-  if (ptr == lim)
-    return;
+  если (ptr == lim)
+    вернуть;
 
-  if (!tab.len)
-    while ((ptr = skip_buf_matching (ptr, lim, newline_or_blank, true)) < lim)
+  если (!tab.len)
+    пока ((ptr = skip_buf_matching (ptr, lim, newline_or_blank, true)) < lim)
       {
         char *sep = skip_buf_matching (ptr, lim, newline_or_blank, false);
         extract_field (line, ptr, sep - ptr);
         ptr = sep;
       }
-  else
+  иначе
     {
-      if (tab.ch != '\n')
-        for (char *sep;
+      если (tab.ch != '\n')
+        для (char *sep;
              (sep = skip_buf_matching (ptr, lim, eq_tab, false)) < lim;
              ptr = sep + mcel_scan (sep, lim).len)
           extract_field (line, ptr, sep - ptr);
@@ -344,8 +344,8 @@ xfields (struct line *line)
 static void
 freeline (struct line *line)
 {
-  if (line == NULL)
-    return;
+  если (line == NULL)
+    вернуть;
   free (line->fields);
   line->fields = NULL;
   line->nfields_allocated = 0;
@@ -359,7 +359,7 @@ freeline (struct line *line)
    Report an error and exit if the comparison fails.
    Use join fields JF_1 and JF_2 respectively.  */
 
-static int
+static целое
 keycmp (struct line const *line1, struct line const *line2,
         idx_t jf_1, idx_t jf_2)
 {
@@ -369,51 +369,51 @@ keycmp (struct line const *line1, struct line const *line2,
 
   idx_t len1;
   idx_t len2;		/* Length of fields to compare.  */
-  int diff;
+  целое diff;
 
-  if (jf_1 < line1->nfields)
+  если (jf_1 < line1->nfields)
     {
       beg1 = line1->fields[jf_1].beg;
       len1 = line1->fields[jf_1].len;
     }
-  else
+  иначе
     {
       beg1 = NULL;
       len1 = 0;
     }
 
-  if (jf_2 < line2->nfields)
+  если (jf_2 < line2->nfields)
     {
       beg2 = line2->fields[jf_2].beg;
       len2 = line2->fields[jf_2].len;
     }
-  else
+  иначе
     {
       beg2 = NULL;
       len2 = 0;
     }
 
-  if (len1 == 0)
-    return len2 == 0 ? 0 : -1;
-  if (len2 == 0)
-    return 1;
+  если (len1 == 0)
+    вернуть len2 == 0 ? 0 : -1;
+  если (len2 == 0)
+    вернуть 1;
 
-  if (ignore_case)
+  если (ignore_case)
     {
       /* FIXME: ignore_case does not work with NLS (in particular,
          with multibyte chars).  */
       diff = memcasecmp (beg1, beg2, MIN (len1, len2));
     }
-  else
+  иначе
     {
-      if (hard_LC_COLLATE)
-        return xmemcoll (beg1, len1, beg2, len2);
+      если (hard_LC_COLLATE)
+        вернуть xmemcoll (beg1, len1, beg2, len2);
       diff = memcmp (beg1, beg2, MIN (len1, len2));
     }
 
-  if (diff)
-    return diff;
-  return _GL_CMP (len1, len2);
+  если (diff)
+    вернуть diff;
+  вернуть _GL_CMP (len1, len2);
 }
 
 /* Check that successive input lines PREV and CURRENT from input file
@@ -430,19 +430,19 @@ keycmp (struct line const *line1, struct line const *line2,
 static void
 check_order (const struct line *prev,
              const struct line *current,
-             int whatfile)
+             целое whatfile)
 {
-  if (check_input_order != CHECK_ORDER_DISABLED
+  если (check_input_order != CHECK_ORDER_DISABLED
       && ((check_input_order == CHECK_ORDER_ENABLED) || seen_unpairable))
     {
-      if (!issued_disorder_warning[whatfile - 1])
+      если (!issued_disorder_warning[whatfile - 1])
         {
           idx_t join_field = whatfile == 1 ? join_field_1 : join_field_2;
-          if (keycmp (prev, current, join_field, join_field) > 0)
+          если (keycmp (prev, current, join_field, join_field) > 0)
             {
               /* Exclude any trailing newline. */
               idx_t len = current->buf.length;
-              if (0 < len && current->buf.buffer[len - 1] == '\n')
+              если (0 < len && current->buf.buffer[len - 1] == '\n')
                 --len;
 
               /* If the offending line is longer than INT_MAX, output
@@ -453,7 +453,7 @@ check_order (const struct line *prev,
                       ? EXIT_FAILURE : 0),
                      0, _("%s:%ju: is not sorted: %.*s"),
                      g_names[whatfile - 1], line_no[whatfile - 1],
-                     (int) len, current->buf.buffer);
+                     (целое) len, current->buf.buffer);
 
               /* If we get to here, the message was merely a warning.
                  Arrange to issue it only once per file.  */
@@ -474,52 +474,52 @@ init_linep (struct line **linep)
 {
   struct line *line = xzalloc (sizeof *line);
   *linep = line;
-  return line;
+  вернуть line;
 }
 
 /* Read a line from FP into LINE and split it into fields.
    Return true if successful.  */
 
 static bool
-get_line (FILE *fp, struct line **linep, int which)
+get_line (FILE *fp, struct line **linep, целое which)
 {
   struct line *line = *linep;
 
-  if (line == prevline[which - 1])
+  если (line == prevline[which - 1])
     {
       SWAPLINES (line, spareline[which - 1]);
       *linep = line;
     }
 
-  if (line)
+  если (line)
     reset_line (line);
-  else
+  иначе
     line = init_linep (linep);
 
-  if (! readlinebuffer_delim (&line->buf, fp, eolchar))
+  если (! readlinebuffer_delim (&line->buf, fp, eolchar))
     {
-      if (ferror (fp))
+      если (ferror (fp))
         error (EXIT_FAILURE, errno, _("read error"));
       freeline (line);
-      return false;
+      вернуть false;
     }
   ++line_no[which - 1];
 
   xfields (line);
 
-  if (prevline[which - 1])
+  если (prevline[which - 1])
     check_order (prevline[which - 1], line, which);
 
   prevline[which - 1] = line;
-  return true;
+  вернуть true;
 }
 
 static void
 free_spareline (void)
 {
-  for (idx_t i = 0; i < countof (spareline); i++)
+  для (idx_t i = 0; i < countof (spareline); i++)
     {
-      if (spareline[i])
+      если (spareline[i])
         {
           freeline (spareline[i]);
           free (spareline[i]);
@@ -538,38 +538,38 @@ initseq (struct seq *seq)
 /* Read a line from FP and add it to SEQ.  Return true if successful.  */
 
 static bool
-getseq (FILE *fp, struct seq *seq, int whichfile)
+getseq (FILE *fp, struct seq *seq, целое whichfile)
 {
-  if (seq->count == seq->alloc)
+  если (seq->count == seq->alloc)
     {
       seq->lines = xpalloc (seq->lines, &seq->alloc, 1, -1, sizeof *seq->lines);
-      for (idx_t i = seq->count; i < seq->alloc; i++)
+      для (idx_t i = seq->count; i < seq->alloc; i++)
         seq->lines[i] = NULL;
     }
 
-  if (get_line (fp, &seq->lines[seq->count], whichfile))
+  если (get_line (fp, &seq->lines[seq->count], whichfile))
     {
       ++seq->count;
-      return true;
+      вернуть true;
     }
-  return false;
+  вернуть false;
 }
 
 /* Read a line from FP and add it to SEQ, as the first item if FIRST is
    true, else as the next.  */
 static bool
-advance_seq (FILE *fp, struct seq *seq, bool first, int whichfile)
+advance_seq (FILE *fp, struct seq *seq, bool first, целое whichfile)
 {
-  if (first)
+  если (first)
     seq->count = 0;
 
-  return getseq (fp, seq, whichfile);
+  вернуть getseq (fp, seq, whichfile);
 }
 
 static void
 delseq (struct seq *seq)
 {
-  for (idx_t i = 0; i < seq->alloc; i++)
+  для (idx_t i = 0; i < seq->alloc; i++)
     {
       freeline (seq->lines[i]);
       free (seq->lines[i]);
@@ -584,15 +584,15 @@ delseq (struct seq *seq)
 static void
 prfield (idx_t n, struct line const *line)
 {
-  if (n < line->nfields)
+  если (n < line->nfields)
     {
       idx_t len = line->fields[n].len;
-      if (len)
+      если (len)
         fwrite (line->fields[n].beg, 1, len, stdout);
-      else if (empty_filler)
+      иначе если (empty_filler)
         fputs (empty_filler, stdout);
     }
-  else if (empty_filler)
+  иначе если (empty_filler)
     fputs (empty_filler, stdout);
 }
 
@@ -603,12 +603,12 @@ prfields (struct line const *line, idx_t join_field, idx_t autocount)
 {
   idx_t nfields = autoformat ? autocount : line->nfields;
 
-  for (idx_t i = 0; i < join_field && i < nfields; ++i)
+  для (idx_t i = 0; i < join_field && i < nfields; ++i)
     {
       fwrite (output_separator, 1, output_seplen, stdout);
       prfield (i, line);
     }
-  for (idx_t i = join_field + 1; i < nfields; ++i)
+  для (idx_t i = join_field + 1; i < nfields; ++i)
     {
       fwrite (output_separator, 1, output_seplen, stdout);
       prfield (i, line);
@@ -625,47 +625,47 @@ prjoin (struct line const *line1, struct line const *line2)
   struct line const *line;
 
   outlist = outlist_head.next;
-  if (outlist)
+  если (outlist)
     {
       const struct outlist *o;
 
       o = outlist;
-      while (true)
+      пока (true)
         {
-          if (o->file == 0)
+          если (o->file == 0)
             {
-              if (line1 == &uni_blank)
+              если (line1 == &uni_blank)
                 {
                   line = line2;
                   field = join_field_2;
                 }
-              else
+              иначе
                 {
                   line = line1;
                   field = join_field_1;
                 }
             }
-          else
+          иначе
             {
               line = (o->file == 1 ? line1 : line2);
               field = o->field;
             }
           prfield (field, line);
           o = o->next;
-          if (o == NULL)
+          если (o == NULL)
             break;
           fwrite (output_separator, 1, output_seplen, stdout);
         }
       putchar (eolchar);
     }
-  else
+  иначе
     {
-      if (line1 == &uni_blank)
+      если (line1 == &uni_blank)
         {
           line = line2;
           field = join_field_2;
         }
-      else
+      иначе
         {
           line = line1;
           field = join_field_1;
@@ -681,7 +681,7 @@ prjoin (struct line const *line1, struct line const *line2)
       putchar (eolchar);
     }
 
-  if (ferror (stdout))
+  если (ferror (stdout))
     write_error ();
 }
 
@@ -691,7 +691,7 @@ static void
 join (FILE *fp1, FILE *fp2)
 {
   struct seq seq1, seq2;
-  int diff;
+  целое diff;
   bool eof1, eof2;
 
   fadvise (fp1, FADVISE_SEQUENTIAL);
@@ -703,40 +703,40 @@ join (FILE *fp1, FILE *fp2)
   initseq (&seq2);
   getseq (fp2, &seq2, 2);
 
-  if (autoformat)
+  если (autoformat)
     {
       autocount_1 = seq1.count ? seq1.lines[0]->nfields : 0;
       autocount_2 = seq2.count ? seq2.lines[0]->nfields : 0;
     }
 
-  if (join_header_lines && (seq1.count || seq2.count))
+  если (join_header_lines && (seq1.count || seq2.count))
     {
       struct line const *hline1 = seq1.count ? seq1.lines[0] : &uni_blank;
       struct line const *hline2 = seq2.count ? seq2.lines[0] : &uni_blank;
       prjoin (hline1, hline2);
       prevline[0] = NULL;
       prevline[1] = NULL;
-      if (seq1.count)
+      если (seq1.count)
         advance_seq (fp1, &seq1, true, 1);
-      if (seq2.count)
+      если (seq2.count)
         advance_seq (fp2, &seq2, true, 2);
     }
 
-  while (seq1.count && seq2.count)
+  пока (seq1.count && seq2.count)
     {
       diff = keycmp (seq1.lines[0], seq2.lines[0],
                      join_field_1, join_field_2);
-      if (diff < 0)
+      если (diff < 0)
         {
-          if (print_unpairables_1)
+          если (print_unpairables_1)
             prjoin (seq1.lines[0], &uni_blank);
           advance_seq (fp1, &seq1, true, 1);
           seen_unpairable = true;
           continue;
         }
-      if (diff > 0)
+      если (diff > 0)
         {
-          if (print_unpairables_2)
+          если (print_unpairables_2)
             prjoin (&uni_blank, seq2.lines[0]);
           advance_seq (fp2, &seq2, true, 2);
           seen_unpairable = true;
@@ -747,51 +747,51 @@ join (FILE *fp1, FILE *fp2)
          match the current line from file2.  */
       eof1 = false;
       do
-        if (!advance_seq (fp1, &seq1, false, 1))
+        если (!advance_seq (fp1, &seq1, false, 1))
           {
             eof1 = true;
             ++seq1.count;
             break;
           }
-      while (!keycmp (seq1.lines[seq1.count - 1], seq2.lines[0],
+      пока (!keycmp (seq1.lines[seq1.count - 1], seq2.lines[0],
                       join_field_1, join_field_2));
 
       /* Keep reading lines from file2 as long as they continue to
          match the current line from file1.  */
       eof2 = false;
       do
-        if (!advance_seq (fp2, &seq2, false, 2))
+        если (!advance_seq (fp2, &seq2, false, 2))
           {
             eof2 = true;
             ++seq2.count;
             break;
           }
-      while (!keycmp (seq1.lines[0], seq2.lines[seq2.count - 1],
+      пока (!keycmp (seq1.lines[0], seq2.lines[seq2.count - 1],
                       join_field_1, join_field_2));
 
-      if (print_pairables)
+      если (print_pairables)
         {
-          for (idx_t i = 0; i < seq1.count - 1; ++i)
+          для (idx_t i = 0; i < seq1.count - 1; ++i)
             {
-              for (idx_t j = 0; j < seq2.count - 1; ++j)
+              для (idx_t j = 0; j < seq2.count - 1; ++j)
                 prjoin (seq1.lines[i], seq2.lines[j]);
             }
         }
 
-      if (!eof1)
+      если (!eof1)
         {
           SWAPLINES (seq1.lines[0], seq1.lines[seq1.count - 1]);
           seq1.count = 1;
         }
-      else
+      иначе
         seq1.count = 0;
 
-      if (!eof2)
+      если (!eof2)
         {
           SWAPLINES (seq2.lines[0], seq2.lines[seq2.count - 1]);
           seq2.count = 1;
         }
-      else
+      иначе
         seq2.count = 0;
     }
 
@@ -802,36 +802,36 @@ join (FILE *fp1, FILE *fp2)
   struct line *line = NULL;
   bool checktail = false;
 
-  if (check_input_order != CHECK_ORDER_DISABLED
+  если (check_input_order != CHECK_ORDER_DISABLED
       && !(issued_disorder_warning[0] && issued_disorder_warning[1]))
     checktail = true;
 
-  if ((print_unpairables_1 || checktail) && seq1.count)
+  если ((print_unpairables_1 || checktail) && seq1.count)
     {
-      if (print_unpairables_1)
+      если (print_unpairables_1)
         prjoin (seq1.lines[0], &uni_blank);
-      if (seq2.count)
+      если (seq2.count)
         seen_unpairable = true;
-      while (get_line (fp1, &line, 1))
+      пока (get_line (fp1, &line, 1))
         {
-          if (print_unpairables_1)
+          если (print_unpairables_1)
             prjoin (line, &uni_blank);
-          if (issued_disorder_warning[0] && !print_unpairables_1)
+          если (issued_disorder_warning[0] && !print_unpairables_1)
             break;
         }
     }
 
-  if ((print_unpairables_2 || checktail) && seq2.count)
+  если ((print_unpairables_2 || checktail) && seq2.count)
     {
-      if (print_unpairables_2)
+      если (print_unpairables_2)
         prjoin (&uni_blank, seq2.lines[0]);
-      if (seq1.count)
+      если (seq1.count)
         seen_unpairable = true;
-      while (get_line (fp2, &line, 2))
+      пока (get_line (fp2, &line, 2))
         {
-          if (print_unpairables_2)
+          если (print_unpairables_2)
             prjoin (&uni_blank, line);
-          if (issued_disorder_warning[1] && !print_unpairables_2)
+          если (issued_disorder_warning[1] && !print_unpairables_2)
             break;
         }
     }
@@ -846,7 +846,7 @@ join (FILE *fp1, FILE *fp2)
 /* Add a field spec for field FIELD of file FILE to 'outlist'.  */
 
 static void
-add_field (int file, idx_t field)
+add_field (целое file, idx_t field)
 {
   struct outlist *o;
 
@@ -875,12 +875,12 @@ string_to_join_field (char const *str)
   intmax_t val;
 
   strtol_error s_err = xstrtoimax (str, NULL, 10, &val, "");
-  if (s_err == LONGINT_OVERFLOW || (s_err == LONGINT_OK && PTRDIFF_MAX < val))
+  если (s_err == LONGINT_OVERFLOW || (s_err == LONGINT_OK && PTRDIFF_MAX < val))
     val = PTRDIFF_MAX;
-  else if (s_err != LONGINT_OK || val <= 0)
+  иначе если (s_err != LONGINT_OK || val <= 0)
     error (EXIT_FAILURE, 0, _("invalid field number: %s"), quote (str));
 
-  return val - 1;
+  вернуть val - 1;
 }
 
 /* Convert a single field specifier string, S, to a *FILE_INDEX, *FIELD_INDEX
@@ -888,13 +888,13 @@ string_to_join_field (char const *str)
    If S is valid, return true.  Otherwise, give a diagnostic and exit.  */
 
 static void
-decode_field_spec (char const *s, int *file_index, idx_t *field_index)
+decode_field_spec (char const *s, целое *file_index, idx_t *field_index)
 {
   /* The first character must be 0, 1, or 2.  */
   switch (s[0])
     {
     case '0':
-      if (s[1])
+      если (s[1])
         {
           /* '0' must be all alone -- no '.FIELD'.  */
           error (EXIT_FAILURE, 0, _("invalid field specifier: %s"), quote (s));
@@ -905,7 +905,7 @@ decode_field_spec (char const *s, int *file_index, idx_t *field_index)
 
     case '1':
     case '2':
-      if (s[1] != '.')
+      если (s[1] != '.')
         error (EXIT_FAILURE, 0, _("invalid field specifier: %s"), quote (s));
       *file_index = s[0] - '0';
       *field_index = string_to_join_field (s + 2);
@@ -920,7 +920,7 @@ decode_field_spec (char const *s, int *file_index, idx_t *field_index)
 static bool
 comma_or_blank (mcel_t g)
 {
-  return g.ch == ',' || c32issep (g.ch);
+  вернуть g.ch == ',' || c32issep (g.ch);
 }
 
 /* Add the comma or blank separated field spec(s) in STR to 'outlist'.  */
@@ -932,11 +932,11 @@ add_field_list (char *str)
 
   do
     {
-      int file_index;
+      целое file_index;
       idx_t field_index;
       char const *spec_item = p;
       p = skip_str_matching (spec_item, comma_or_blank, false);
-      if (*p)
+      если (*p)
         {
           mcel_t g = mcel_scanz (p);
           *p = '\0';
@@ -945,7 +945,7 @@ add_field_list (char *str)
       decode_field_spec (spec_item, &file_index, &field_index);
       add_field (file_index, field_index);
     }
-  while (*p);
+  пока (*p);
 }
 
 /* Set the join field *VAR to VAL, but report an error if *VAR is set
@@ -954,7 +954,7 @@ add_field_list (char *str)
 static void
 set_join_field (ptrdiff_t *var, idx_t val)
 {
-  if (0 <= *var && *var != val)
+  если (0 <= *var && *var != val)
     error (EXIT_FAILURE, 0,
            _("incompatible join fields %td, %td"), *var, val);
   *var = val;
@@ -983,12 +983,12 @@ enum operand_status
 
 static void
 add_file_name (char *name, char *names[2],
-               int operand_status[2], int joption_count[2], int *nfiles,
-               int *prev_optc_status, int *optc_status)
+               целое operand_status[2], целое joption_count[2], целое *nfiles,
+               целое *prev_optc_status, целое *optc_status)
 {
-  int n = *nfiles;
+  целое n = *nfiles;
 
-  if (n == 2)
+  если (n == 2)
     {
       bool op0 = (operand_status[0] == MUST_BE_OPERAND);
       char *arg = names[op0];
@@ -1012,7 +1012,7 @@ add_file_name (char *name, char *names[2],
           add_field_list (arg);
           break;
         }
-      if (!op0)
+      если (!op0)
         {
           operand_status[0] = operand_status[1];
           names[0] = names[1];
@@ -1023,20 +1023,20 @@ add_file_name (char *name, char *names[2],
   operand_status[n] = *prev_optc_status;
   names[n] = name;
   *nfiles = n + 1;
-  if (*prev_optc_status == MIGHT_BE_O_ARG)
+  если (*prev_optc_status == MIGHT_BE_O_ARG)
     *optc_status = MIGHT_BE_O_ARG;
 }
 
-int
-main (int argc, char **argv)
+целое
+основной (целое argc, char **argv)
 {
-  int optc_status;
-  int prev_optc_status = MUST_BE_OPERAND;
-  int operand_status[2];
-  int joption_count[2] = { 0, 0 };
+  целое optc_status;
+  целое prev_optc_status = MUST_BE_OPERAND;
+  целое operand_status[2];
+  целое joption_count[2] = { 0, 0 };
   FILE *fp1, *fp2;
-  int optc;
-  int nfiles = 0;
+  целое optc;
+  целое nfiles = 0;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -1048,7 +1048,7 @@ main (int argc, char **argv)
   atexit (close_stdout);
   atexit (free_spareline);
 
-  while ((optc = getopt_long (argc, argv, "-a:e:i1:2:j:o:t:v:z",
+  пока ((optc = getopt_long (argc, argv, "-a:e:i1:2:j:o:t:v:z",
                               longopts, NULL))
          != -1)
     {
@@ -1062,20 +1062,20 @@ main (int argc, char **argv)
 
         case 'a':
           {
-            long int val;
-            if (xstrtol (optarg, NULL, 10, &val, "") != LONGINT_OK
+            long целое val;
+            если (xstrtol (optarg, NULL, 10, &val, "") != LONGINT_OK
                 || (val != 1 && val != 2))
               error (EXIT_FAILURE, 0,
                      _("invalid file number: %s"), quote (optarg));
-            if (val == 1)
+            если (val == 1)
               print_unpairables_1 = true;
-            else
+            иначе
               print_unpairables_2 = true;
           }
           break;
 
         case 'e':
-          if (empty_filler && ! streq (empty_filler, optarg))
+          если (empty_filler && ! streq (empty_filler, optarg))
             error (EXIT_FAILURE, 0,
                    _("conflicting empty-field replacement strings"));
           empty_filler = optarg;
@@ -1094,7 +1094,7 @@ main (int argc, char **argv)
           break;
 
         case 'j':
-          if ((optarg[0] == '1' || optarg[0] == '2') && !optarg[1]
+          если ((optarg[0] == '1' || optarg[0] == '2') && !optarg[1]
               && optarg == argv[optind - 1] + 2)
             {
               /* The argument was either "-j1" or "-j2".  */
@@ -1102,7 +1102,7 @@ main (int argc, char **argv)
               joption_count[is_j2]++;
               optc_status = MIGHT_BE_J1_ARG + is_j2;
             }
-          else
+          иначе
             {
               set_join_field (&join_field_1, string_to_join_field (optarg));
               set_join_field (&join_field_2, join_field_1);
@@ -1110,9 +1110,9 @@ main (int argc, char **argv)
           break;
 
         case 'o':
-          if (streq (optarg, "auto"))
+          если (streq (optarg, "auto"))
             autoformat = true;
-          else
+          иначе
             {
               add_field_list (optarg);
               optc_status = MIGHT_BE_O_ARG;
@@ -1122,26 +1122,26 @@ main (int argc, char **argv)
         case 't':
           {
             mcel_t newtab;
-            if (!*optarg)
+            если (!*optarg)
               {
                 /* '' => process the whole line.  */
                 newtab = mcel_ch ('\n', 1);
                 /* output_separator does not matter.  */
               }
-            else if (streq (optarg, "\\0"))
+            иначе если (streq (optarg, "\\0"))
               {
                 newtab = mcel_ch ('\0', 1);
                 output_separator = "";
               }
-            else
+            иначе
               {
                 newtab = mcel_scanz (optarg);
-                if (optarg[newtab.len])
+                если (optarg[newtab.len])
                   error (EXIT_FAILURE, 0, _("multi-character tab %s"),
                          quote (optarg));
                 output_separator = optarg;
               }
-            if (tab.len && ! mcel_eq (tab, newtab))
+            если (tab.len && ! mcel_eq (tab, newtab))
               error (EXIT_FAILURE, 0, _("incompatible tabs"));
             tab = newtab;
             output_seplen = newtab.len;
@@ -1182,50 +1182,50 @@ main (int argc, char **argv)
 
   /* Process any operands after "--".  */
   prev_optc_status = MUST_BE_OPERAND;
-  while (optind < argc)
+  пока (optind < argc)
     add_file_name (argv[optind++], g_names, operand_status, joption_count,
                    &nfiles, &prev_optc_status, &optc_status);
 
-  if (nfiles != 2)
+  если (nfiles != 2)
     {
-      if (nfiles == 0)
+      если (nfiles == 0)
         error (0, 0, _("missing operand"));
-      else
+      иначе
         error (0, 0, _("missing operand after %s"), quote (argv[argc - 1]));
       usage (EXIT_FAILURE);
     }
 
   /* If "-j1" was specified and it turns out not to have had an argument,
      treat it as "-j 1".  Likewise for -j2.  */
-  for (int i = 0; i < 2; i++)
-    if (joption_count[i] != 0)
+  для (целое i = 0; i < 2; i++)
+    если (joption_count[i] != 0)
       {
         set_join_field (&join_field_1, i);
         set_join_field (&join_field_2, i);
       }
 
-  if (join_field_1 < 0)
+  если (join_field_1 < 0)
     join_field_1 = 0;
-  if (join_field_2 < 0)
+  если (join_field_2 < 0)
     join_field_2 = 0;
 
   fp1 = streq (g_names[0], "-") ? stdin : fopen (g_names[0], "r");
-  if (!fp1)
+  если (!fp1)
     error (EXIT_FAILURE, errno, "%s", quotef (g_names[0]));
   fp2 = streq (g_names[1], "-") ? stdin : fopen (g_names[1], "r");
-  if (!fp2)
+  если (!fp2)
     error (EXIT_FAILURE, errno, "%s", quotef (g_names[1]));
-  if (fp1 == fp2)
+  если (fp1 == fp2)
     error (EXIT_FAILURE, errno, _("both files cannot be standard input"));
   join (fp1, fp2);
 
-  if (fclose (fp1) != 0)
+  если (fclose (fp1) != 0)
     error (EXIT_FAILURE, errno, "%s", quotef (g_names[0]));
-  if (fclose (fp2) != 0)
+  если (fclose (fp2) != 0)
     error (EXIT_FAILURE, errno, "%s", quotef (g_names[1]));
 
-  if (issued_disorder_warning[0] || issued_disorder_warning[1])
+  если (issued_disorder_warning[0] || issued_disorder_warning[1])
     error (EXIT_FAILURE, 0, _("input is not in sorted order"));
-  else
-    return EXIT_SUCCESS;
+  иначе
+    вернуть EXIT_SUCCESS;
 }

@@ -63,11 +63,11 @@ static struct option const longopts[] =
 };
 
 void
-usage (int status)
+usage (целое status)
 {
-  if (status != EXIT_SUCCESS)
+  если (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  иначе
     {
       printf (_("Usage: %s [OPTION]... FILE...\n"), program_name);
       fputs (_("\
@@ -115,17 +115,17 @@ Print the resolved absolute file name.\n\
 /* A wrapper around canonicalize_filename_mode(),
    to call it twice when in LOGICAL mode.  */
 static char *
-realpath_canon (char const *fname, int can_mode)
+realpath_canon (char const *fname, целое can_mode)
 {
   char *can_fname = canonicalize_filename_mode (fname, can_mode);
-  if (logical && can_fname)  /* canonicalize again to resolve symlinks.  */
+  если (logical && can_fname)  /* canonicalize again to resolve symlinks.  */
     {
       can_mode &= ~CAN_NOLINKS;
       char *can_fname2 = canonicalize_filename_mode (can_fname, can_mode);
       free (can_fname);
-      return can_fname2;
+      вернуть can_fname2;
     }
-  return can_fname;
+  вернуть can_fname;
 }
 
 /* Test whether canonical prefix is parent or match of path.  */
@@ -139,31 +139,31 @@ path_prefix (char const *prefix, char const *path)
 
   /* '/' is the prefix of everything except '//' (since we know '//'
      is only present after canonicalization if it is distinct).  */
-  if (!*prefix)
-    return *path != '/';
+  если (!*prefix)
+    вернуть *path != '/';
 
   /* Likewise, '//' is a prefix of any double-slash path.  */
-  if (*prefix == '/' && !prefix[1])
-    return *path == '/';
+  если (*prefix == '/' && !prefix[1])
+    вернуть *path == '/';
 
   /* Any other prefix has a non-slash portion.  */
-  while (*prefix && *path)
+  пока (*prefix && *path)
     {
-      if (*prefix != *path)
+      если (*prefix != *path)
         break;
       prefix++;
       path++;
     }
-  return (!*prefix && (*path == '/' || !*path));
+  вернуть (!*prefix && (*path == '/' || !*path));
 }
 
 static bool
 isdir (char const *path)
 {
   struct stat sb;
-  if (stat (path, &sb) != 0)
+  если (stat (path, &sb) != 0)
     error (EXIT_FAILURE, errno, _("cannot stat %s"), quoteaf (path));
-  return S_ISDIR (sb.st_mode);
+  вернуть S_ISDIR (sb.st_mode);
 }
 
 static void
@@ -177,35 +177,35 @@ print_path (char const *path)
 static bool
 print_relative_path (char const *can_fname)
 {
-  if (!quote_output)
-    return relpath (can_fname, can_relative_to, NULL, 0);
+  если (!quote_output)
+    вернуть relpath (can_fname, can_relative_to, NULL, 0);
 
   size_t size;
-  if (ckd_mul (&size, strlen (can_relative_to), 2)
+  если (ckd_mul (&size, strlen (can_relative_to), 2)
       || ckd_add (&size, size, strlen (can_fname))
       || ckd_add (&size, size, 1))
     xalloc_die ();
 
   char *relative_path = xmalloc (size);
   bool success = relpath (can_fname, can_relative_to, relative_path, size);
-  if (success)
+  если (success)
     print_path (relative_path);
   free (relative_path);
-  return success;
+  вернуть success;
 }
 
 static bool
-process_path (char const *fname, int can_mode)
+process_path (char const *fname, целое can_mode)
 {
   char *can_fname = realpath_canon (fname, can_mode);
-  if (!can_fname)
+  если (!can_fname)
     {
-      if (verbose)
+      если (verbose)
         error (0, errno, "%s", quotef (fname));
-      return false;
+      вернуть false;
     }
 
-  if (!can_relative_to
+  если (!can_relative_to
       || (can_relative_base && !path_prefix (can_relative_base, can_fname))
       || (can_relative_to && !print_relative_path (can_fname)))
     print_path (can_fname);
@@ -214,17 +214,17 @@ process_path (char const *fname, int can_mode)
 
   free (can_fname);
 
-  if (ferror (stdout))
+  если (ferror (stdout))
     write_error ();
 
-  return true;
+  вернуть true;
 }
 
-int
-main (int argc, char **argv)
+целое
+основной (целое argc, char **argv)
 {
   bool ok = true;
-  int can_mode = CAN_ALL_BUT_LAST;
+  целое can_mode = CAN_ALL_BUT_LAST;
   char const *relative_to = NULL;
   char const *relative_base = NULL;
 
@@ -236,10 +236,10 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while (true)
+  пока (true)
     {
-      int c = getopt_long (argc, argv, "EeLmPqsz", longopts, NULL);
-      if (c == -1)
+      целое c = getopt_long (argc, argv, "EeLmPqsz", longopts, NULL);
+      если (c == -1)
         break;
       switch (c)
         {
@@ -286,50 +286,50 @@ main (int argc, char **argv)
         }
     }
 
-  if (optind >= argc)
+  если (optind >= argc)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
-  if (! use_nuls && isatty (STDOUT_FILENO))
+  если (! use_nuls && isatty (STDOUT_FILENO))
     {
-      int qs = getenv_quoting_style ();
-      if (qs < 0)
+      целое qs = getenv_quoting_style ();
+      если (qs < 0)
         qs = shell_escape_quoting_style;
-      if (qs != literal_quoting_style)
+      если (qs != literal_quoting_style)
         {
           set_quoting_style (NULL, qs);
           quote_output = true;
         }
     }
 
-  if (relative_base && !relative_to)
+  если (relative_base && !relative_to)
     relative_to = relative_base;
 
   bool need_dir = (can_mode & CAN_MODE_MASK) == CAN_EXISTING;
-  if (relative_to)
+  если (relative_to)
     {
       can_relative_to = realpath_canon (relative_to, can_mode);
-      if (!can_relative_to)
+      если (!can_relative_to)
         error (EXIT_FAILURE, errno, "%s", quotef (relative_to));
-      if (need_dir && !isdir (can_relative_to))
+      если (need_dir && !isdir (can_relative_to))
         error (EXIT_FAILURE, ENOTDIR, "%s", quotef (relative_to));
     }
-  if (relative_base == relative_to)
+  если (relative_base == relative_to)
     can_relative_base = can_relative_to;
-  else if (relative_base)
+  иначе если (relative_base)
     {
       char *base = realpath_canon (relative_base, can_mode);
-      if (!base)
+      если (!base)
         error (EXIT_FAILURE, errno, "%s", quotef (relative_base));
-      if (need_dir && !isdir (base))
+      если (need_dir && !isdir (base))
         error (EXIT_FAILURE, ENOTDIR, "%s", quotef (relative_base));
       /* --relative-to is a no-op if it does not have --relative-base
            as a prefix */
-      if (path_prefix (base, can_relative_to))
+      если (path_prefix (base, can_relative_to))
         can_relative_base = base;
-      else
+      иначе
         {
           free (base);
           can_relative_base = can_relative_to;
@@ -337,8 +337,8 @@ main (int argc, char **argv)
         }
     }
 
-  for (; optind < argc; ++optind)
+  для (; optind < argc; ++optind)
     ok &= process_path (argv[optind], can_mode);
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  вернуть ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

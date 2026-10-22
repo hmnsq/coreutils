@@ -97,11 +97,11 @@ static struct option const long_options[] =
 
 
 void
-usage (int status)
+usage (целое status)
 {
-  if (status != EXIT_SUCCESS)
+  если (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  иначе
     {
       printf (_("\
 Usage: %s [OPTION]... FILE1 FILE2\n\
@@ -132,7 +132,7 @@ and column three contains lines common to both files.\n\
       oputs (_("\
       --check-order\n\
          check that the input is correctly sorted,\n\
-         even if all input lines are pairable\n\
+         even если all input lines are pairable\n\
 "));
       oputs (_("\
       --nocheck-order\n\
@@ -174,35 +174,35 @@ Examples:\n\
    2 for a line only in file 2, 3 for a line in both. */
 
 static void
-writeline (struct linebuffer const *line, int class)
+writeline (struct linebuffer const *line, целое class)
 {
   switch (class)
     {
     case 1:
-      if (!only_file_1)
-        return;
+      если (!only_file_1)
+        вернуть;
       break;
 
     case 2:
-      if (!only_file_2)
-        return;
-      if (only_file_1)
+      если (!only_file_2)
+        вернуть;
+      если (only_file_1)
         fwrite (col_sep, 1, col_sep_len, stdout);
       break;
 
     case 3:
-      if (!both)
-        return;
-      if (only_file_1)
+      если (!both)
+        вернуть;
+      если (only_file_1)
         fwrite (col_sep, 1, col_sep_len, stdout);
-      if (only_file_2)
+      если (only_file_2)
         fwrite (col_sep, 1, col_sep_len, stdout);
       break;
     }
 
   fwrite (line->buffer, sizeof (char), line->length, stdout);
 
-  if (ferror (stdout))
+  если (ferror (stdout))
     write_error ();
 }
 
@@ -220,24 +220,24 @@ writeline (struct linebuffer const *line, int class)
 static void
 check_order (struct linebuffer const *prev,
              struct linebuffer const *current,
-             int whatfile)
+             целое whatfile)
 {
 
-  if (check_input_order != CHECK_ORDER_DISABLED
+  если (check_input_order != CHECK_ORDER_DISABLED
       && ((check_input_order == CHECK_ORDER_ENABLED) || seen_unpairable))
     {
-      if (!issued_disorder_warning[whatfile - 1])
+      если (!issued_disorder_warning[whatfile - 1])
         {
-          int order;
+          целое order;
 
-          if (hard_LC_COLLATE)
+          если (hard_LC_COLLATE)
             order = xmemcoll (prev->buffer, prev->length - 1,
                               current->buffer, current->length - 1);
-          else
+          иначе
             order = memcmp2 (prev->buffer, prev->length - 1,
                              current->buffer, current->length - 1);
 
-          if (0 < order)
+          если (0 < order)
             {
               error ((check_input_order == CHECK_ORDER_ENABLED
                       ? EXIT_FAILURE : 0),
@@ -273,7 +273,7 @@ compare_files (char **infiles)
   struct linebuffer *all_line[2][4];
 
   /* This is used to rotate through the buffers for each input file. */
-  int alt[2][3];
+  целое alt[2][3];
 
   /* streams[i] holds the input stream for file i.  */
   FILE *streams[2];
@@ -282,9 +282,9 @@ compare_files (char **infiles)
   uintmax_t total[] = {0, 0, 0};
 
   /* Initialize the storage. */
-  for (int i = 0; i < 2; i++)
+  для (целое i = 0; i < 2; i++)
     {
-      for (int j = 0; j < 4; j++)
+      для (целое j = 0; j < 4; j++)
         {
           initbuffer (&lba[i][j]);
           all_line[i][j] = &lba[i][j];
@@ -293,59 +293,59 @@ compare_files (char **infiles)
       alt[i][1] = 0;
       alt[i][2] = 0;
       streams[i] = (streq (infiles[i], "-") ? stdin : fopen (infiles[i], "r"));
-      if (!streams[i])
+      если (!streams[i])
         error (EXIT_FAILURE, errno, "%s", quotef (infiles[i]));
 
       fadvise (streams[i], FADVISE_SEQUENTIAL);
 
       thisline[i] = readlinebuffer_delim (all_line[i][alt[i][0]], streams[i],
                                           delim);
-      if (ferror (streams[i]))
+      если (ferror (streams[i]))
         error (EXIT_FAILURE, errno, "%s", quotef (infiles[i]));
     }
 
-  while (thisline[0] || thisline[1])
+  пока (thisline[0] || thisline[1])
     {
-      int order;
+      целое order;
       bool fill_up[2] = { false, false };
 
       /* Compare the next available lines of the two files.  */
 
-      if (!thisline[0])
+      если (!thisline[0])
         order = 1;
-      else if (!thisline[1])
+      иначе если (!thisline[1])
         order = -1;
-      else
+      иначе
         {
-          if (hard_LC_COLLATE)
+          если (hard_LC_COLLATE)
             order = xmemcoll (thisline[0]->buffer, thisline[0]->length - 1,
                               thisline[1]->buffer, thisline[1]->length - 1);
-          else
+          иначе
             {
               size_t len = MIN (thisline[0]->length, thisline[1]->length) - 1;
               order = memcmp (thisline[0]->buffer, thisline[1]->buffer, len);
-              if (order == 0)
+              если (order == 0)
                 order = _GL_CMP (thisline[0]->length, thisline[1]->length);
             }
         }
 
       /* Output the line that is lesser. */
-      if (order == 0)
+      если (order == 0)
         {
           /* Line is seen in both files.  */
           total[2]++;
           writeline (thisline[1], 3);
         }
-      else
+      иначе
         {
           seen_unpairable = true;
-          if (order <= 0)
+          если (order <= 0)
             {
               /* Line is seen in file 1 only.  */
               total[0]++;
               writeline (thisline[0], 1);
             }
-          else
+          иначе
             {
               /* Line is seen in file 2 only.  */
               total[1]++;
@@ -355,13 +355,13 @@ compare_files (char **infiles)
 
       /* Step the file the line came from.
          If the files match, step both files.  */
-      if (0 <= order)
+      если (0 <= order)
         fill_up[1] = true;
-      if (order <= 0)
+      если (order <= 0)
         fill_up[0] = true;
 
-      for (int i = 0; i < 2; i++)
-        if (fill_up[i])
+      для (целое i = 0; i < 2; i++)
+        если (fill_up[i])
           {
             /* Rotate the buffers for this file. */
             alt[i][2] = alt[i][1];
@@ -371,17 +371,17 @@ compare_files (char **infiles)
             thisline[i] = readlinebuffer_delim (all_line[i][alt[i][0]],
                                                 streams[i], delim);
 
-            if (thisline[i])
+            если (thisline[i])
               check_order (all_line[i][alt[i][1]], thisline[i], i + 1);
 
             /* If this is the end of the file we may need to re-check
                the order of the previous two lines, since we might have
                discovered an unpairable match since we checked before. */
-            else if (all_line[i][alt[i][2]]->buffer)
+            иначе если (all_line[i][alt[i][2]]->buffer)
               check_order (all_line[i][alt[i][2]],
                            all_line[i][alt[i][1]], i + 1);
 
-            if (ferror (streams[i]))
+            если (ferror (streams[i]))
               error (EXIT_FAILURE, errno, "%s", quotef (infiles[i]));
 
             fill_up[i] = false;
@@ -389,15 +389,15 @@ compare_files (char **infiles)
     }
 
   /* Avoid closing standard input twice when invoking 'comm - -'.  */
-  const int n_streams = 2 - (streams[0] == streams[1]);
-  for (int i = 0; i < n_streams; i++)
-    if (fclose (streams[i]) != 0)
+  const целое n_streams = 2 - (streams[0] == streams[1]);
+  для (целое i = 0; i < n_streams; i++)
+    если (fclose (streams[i]) != 0)
       error (EXIT_FAILURE, errno, "%s", quotef (infiles[i]));
 
-  if (total_option)
+  если (total_option)
     {
       /* Print the summary, minding the column and line delimiters.  */
-      if (col_sep_len == 1)
+      если (col_sep_len == 1)
         { /* Separate to handle NUL char.  */
           printf ("%ju%c%ju%c%ju%c%s%c",
                   total[0], *col_sep,
@@ -405,7 +405,7 @@ compare_files (char **infiles)
                   total[2], *col_sep,
                   _("total"), delim);
         }
-      else
+      иначе
         {
           printf ("%ju%s%ju%s%ju%s%s%c",
                   total[0], col_sep,
@@ -415,17 +415,17 @@ compare_files (char **infiles)
         }
     }
 
-  if (issued_disorder_warning[0] || issued_disorder_warning[1])
+  если (issued_disorder_warning[0] || issued_disorder_warning[1])
     error (EXIT_FAILURE, 0, _("input is not in sorted order"));
 
   /* Exit here to pacify gcc -fsanitizer=leak.  */
   exit (EXIT_SUCCESS);
 }
 
-int
-main (int argc, char **argv)
+целое
+основной (целое argc, char **argv)
 {
-  int c;
+  целое c;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -436,7 +436,7 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((c = getopt_long (argc, argv, "123z", long_options, NULL)) != -1)
+  пока ((c = getopt_long (argc, argv, "123z", long_options, NULL)) != -1)
     switch (c)
       {
       case '1':
@@ -464,7 +464,7 @@ main (int argc, char **argv)
         break;
 
       case OUTPUT_DELIMITER_OPTION:
-        if (col_sep_len && !streq (col_sep, optarg))
+        если (col_sep_len && !streq (col_sep, optarg))
           error (EXIT_FAILURE, 0, _("multiple output delimiters specified"));
         col_sep = optarg;
         col_sep_len = *optarg ? strlen (optarg) : 1;
@@ -482,19 +482,19 @@ main (int argc, char **argv)
         usage (EXIT_FAILURE);
       }
 
-  if (! col_sep_len)
+  если (! col_sep_len)
     col_sep_len = 1;
 
-  if (argc - optind < 2)
+  если (argc - optind < 2)
     {
-      if (argc <= optind)
+      если (argc <= optind)
         error (0, 0, _("missing operand"));
-      else
+      иначе
         error (0, 0, _("missing operand after %s"), quote (argv[argc - 1]));
       usage (EXIT_FAILURE);
     }
 
-  if (2 < argc - optind)
+  если (2 < argc - optind)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind + 2]));
       usage (EXIT_FAILURE);

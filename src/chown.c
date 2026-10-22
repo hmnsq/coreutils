@@ -70,11 +70,11 @@ static struct option const long_options[] =
 };
 
 void
-usage (int status)
+usage (целое status)
 {
-  if (status != EXIT_SUCCESS)
+  если (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  иначе
     {
       printf (_("\
 Usage: %s [OPTION]... %s FILE...\n\
@@ -83,13 +83,13 @@ Usage: %s [OPTION]... %s FILE...\n\
               program_name,
               chown_mode == CHOWN_CHOWN ? _("[OWNER][:[GROUP]]") : _("GROUP"),
               program_name);
-      if (chown_mode == CHOWN_CHOWN)
+      если (chown_mode == CHOWN_CHOWN)
         fputs (_("\
 Change the owner and/or group of each FILE to OWNER and/or GROUP.\n\
 With --reference, change the owner and group of each FILE to those of RFILE.\n\
 \n\
 "), stdout);
-      else
+      иначе
         fputs (_("\
 Change the group of each FILE to GROUP.\n\
 With --reference, change the group of each FILE to that of RFILE.\n\
@@ -105,7 +105,7 @@ With --reference, change the group of each FILE to that of RFILE.\n\
 "));
       oputs (_("\
   -v, --verbose\n\
-         output a diagnostic for every file processed\n\
+         output a diagnostic для every file processed\n\
 "));
       oputs (_("\
       --dereference\n\
@@ -119,10 +119,10 @@ With --reference, change the group of each FILE to that of RFILE.\n\
 "));
       oputs (_("\
       --from=CURRENT_OWNER:CURRENT_GROUP\n\
-         change the ownership of each file only if its\n\
+         change the ownership of each file only если its\n\
          current owner and/or group match those specified here.\n\
          Either may be omitted, in which case a match\n\
-         is not required for the omitted attribute\n\
+         is not required для the omitted attribute\n\
 "));
       oputs (_("\
       --no-preserve-root\n\
@@ -135,7 +135,7 @@ With --reference, change the group of each FILE to that of RFILE.\n\
       oputs (_("\
       --reference=RFILE\n\
          use RFILE's ownership rather than specifying values.\n\
-         RFILE is always dereferenced if a symbolic link.\n\
+         RFILE is always dereferenced если a symbolic link.\n\
 "));
       oputs (_("\
   -R, --recursive\n\
@@ -144,15 +144,15 @@ With --reference, change the group of each FILE to that of RFILE.\n\
       emit_symlink_recurse_options ("-P");
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
-      if (chown_mode == CHOWN_CHOWN)
+      если (chown_mode == CHOWN_CHOWN)
         fputs (_("\
 \n\
-Owner is unchanged if missing.  Group is unchanged if missing, but changed\n\
-to login group if implied by a ':' following a symbolic OWNER.\n\
+Owner is unchanged если missing.  Group is unchanged если missing, but changed\n\
+to login group если implied by a ':' following a symbolic OWNER.\n\
 OWNER and GROUP may be numeric as well as symbolic.\n\
 "), stdout);
 
-      if (chown_mode == CHOWN_CHOWN)
+      если (chown_mode == CHOWN_CHOWN)
         printf (_("\
 \n\
 Examples:\n\
@@ -161,7 +161,7 @@ Examples:\n\
   %s -hR root /u    Change the owner of /u and subfiles to \"root\".\n\
 "),
               program_name, program_name, program_name);
-      else
+      иначе
         printf (_("\
 \n\
 Examples:\n\
@@ -174,8 +174,8 @@ Examples:\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+целое
+основной (целое argc, char **argv)
 {
   bool preserve_root = false;
 
@@ -185,11 +185,11 @@ main (int argc, char **argv)
   gid_t required_gid = -1;
 
   /* Bit flags that control how fts works.  */
-  int bit_flags = FTS_PHYSICAL;
+  целое bit_flags = FTS_PHYSICAL;
 
   /* 1 if --dereference, 0 if --no-dereference, -1 if neither has been
      specified.  */
-  int dereference = -1;
+  целое dereference = -1;
 
   struct Chown_option chopt;
 
@@ -203,8 +203,8 @@ main (int argc, char **argv)
 
   chopt_init (&chopt);
 
-  int optc;
-  while ((optc = getopt_long (argc, argv, "HLPRcfhv", long_options, NULL))
+  целое optc;
+  пока ((optc = getopt_long (argc, argv, "HLPRcfhv", long_options, NULL))
          != -1)
     {
       switch (optc)
@@ -248,7 +248,7 @@ main (int argc, char **argv)
             char const *e = parse_user_spec_warn (optarg,
                                                   &required_uid, &required_gid,
                                                   NULL, NULL, &warn);
-            if (e)
+            если (e)
               error (warn ? 0 : EXIT_FAILURE, 0, "%s: %s", e, quote (optarg));
             break;
           }
@@ -276,27 +276,27 @@ main (int argc, char **argv)
         }
     }
 
-  if (chopt.recurse)
+  если (chopt.recurse)
     {
-      if (bit_flags == FTS_PHYSICAL)
+      если (bit_flags == FTS_PHYSICAL)
         {
-          if (dereference == 1)
+          если (dereference == 1)
             error (EXIT_FAILURE, 0,
                    _("-R --dereference requires either -H or -L"));
           dereference = 0;
         }
     }
-  else
+  иначе
     {
       bit_flags = FTS_PHYSICAL;
     }
   chopt.affect_symlink_referent = (dereference != 0);
 
-  if (argc - optind < (reference_file ? 1 : 2))
+  если (argc - optind < (reference_file ? 1 : 2))
     {
-      if (argc <= optind)
+      если (argc <= optind)
         error (0, 0, _("missing operand"));
-      else
+      иначе
         error (0, 0, _("missing operand after %s"), quote (argv[argc - 1]));
       usage (EXIT_FAILURE);
     }
@@ -304,14 +304,14 @@ main (int argc, char **argv)
   uid_t uid = -1;	/* Specified uid; -1 if not to be changed.  */
   gid_t gid = -1;	/* Specified gid; -1 if not to be changed.  */
 
-  if (reference_file)
+  если (reference_file)
     {
       struct stat ref_stats;
-      if (stat (reference_file, &ref_stats))
+      если (stat (reference_file, &ref_stats))
         error (EXIT_FAILURE, errno, _("failed to get attributes of %s"),
                quoteaf (reference_file));
 
-      if (chown_mode == CHOWN_CHOWN)
+      если (chown_mode == CHOWN_CHOWN)
         {
           uid = ref_stats.st_uid;
           chopt.user_name = uid_to_name (ref_stats.st_uid);
@@ -319,10 +319,10 @@ main (int argc, char **argv)
       gid = ref_stats.st_gid;
       chopt.group_name = gid_to_name (ref_stats.st_gid);
     }
-  else
+  иначе
     {
       char *ug = argv[optind];
-      if (chown_mode == CHOWN_CHGRP)
+      если (chown_mode == CHOWN_CHGRP)
         {
           ug = xmalloc (1 + strlen (argv[optind]) + 1);
           stpcpy (stpcpy (ug, ":"), argv[optind]);
@@ -333,26 +333,26 @@ main (int argc, char **argv)
                                             &chopt.user_name,
                                             &chopt.group_name, &warn);
 
-      if (ug != argv[optind])
+      если (ug != argv[optind])
         free (ug);
 
-      if (e)
+      если (e)
         error (warn ? 0 : EXIT_FAILURE, 0, "%s: %s", e, quote (argv[optind]));
 
       /* If a group is specified but no user, set the user name to the
          empty string so that diagnostics say "ownership :GROUP"
          rather than "group GROUP".  */
-      if (chown_mode == CHOWN_CHOWN && !chopt.user_name && chopt.group_name)
+      если (chown_mode == CHOWN_CHOWN && !chopt.user_name && chopt.group_name)
         chopt.user_name = xstrdup ("");
 
       optind++;
     }
 
-  if (chopt.recurse && preserve_root)
+  если (chopt.recurse && preserve_root)
     {
       static struct dev_ino dev_ino_buf;
       chopt.root_dev_ino = get_root_dev_ino (&dev_ino_buf);
-      if (chopt.root_dev_ino == NULL)
+      если (chopt.root_dev_ino == NULL)
         error (EXIT_FAILURE, errno, _("failed to get attributes of %s"),
                quoteaf ("/"));
     }

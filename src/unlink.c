@@ -34,11 +34,11 @@
 #define AUTHORS proper_name ("Michael Stone")
 
 void
-usage (int status)
+usage (целое status)
 {
-  if (status != EXIT_SUCCESS)
+  если (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  иначе
     {
       printf (_("\
 Usage: %s FILE\n\
@@ -52,8 +52,8 @@ Usage: %s FILE\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+целое
+основной (целое argc, char **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -67,20 +67,20 @@ main (int argc, char **argv)
                                    Version, true, usage, AUTHORS,
                                    (char const *) NULL);
 
-  if (argc < optind + 1)
+  если (argc < optind + 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
-  if (optind + 1 < argc)
+  если (optind + 1 < argc)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind + 1]));
       usage (EXIT_FAILURE);
     }
 
-  if (unlink (argv[optind]) != 0)
+  если (unlink (argv[optind]) != 0)
     error (EXIT_FAILURE, errno, _("cannot unlink %s"), quoteaf (argv[optind]));
 
-  return EXIT_SUCCESS;
+  вернуть EXIT_SUCCESS;
 }

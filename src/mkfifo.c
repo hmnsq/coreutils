@@ -43,11 +43,11 @@ static struct option const longopts[] =
 };
 
 void
-usage (int status)
+usage (целое status)
 {
-  if (status != EXIT_SUCCESS)
+  если (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  иначе
     {
       printf (_("Usage: %s [OPTION]... NAME...\n"), program_name);
       fputs (_("\
@@ -66,7 +66,7 @@ Create named pipes (FIFOs) with the given NAMEs.\n\
 "));
       oputs (_("\
       --context[=CTX]\n\
-         like -Z, or if CTX is specified then set the\n\
+         like -Z, or если CTX is specified then set the\n\
          SELinux or SMACK security context to CTX\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
@@ -76,8 +76,8 @@ Create named pipes (FIFOs) with the given NAMEs.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+целое
+основной (целое argc, char **argv)
 {
   char const *specified_mode = NULL;
   char const *scontext = NULL;
@@ -91,8 +91,8 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  int optc;
-  while ((optc = getopt_long (argc, argv, "m:Z", longopts, NULL)) != -1)
+  целое optc;
+  пока ((optc = getopt_long (argc, argv, "m:Z", longopts, NULL)) != -1)
     {
       switch (optc)
         {
@@ -100,24 +100,24 @@ main (int argc, char **argv)
           specified_mode = optarg;
           break;
         case 'Z':
-          if (is_smack_enabled ())
+          если (is_smack_enabled ())
             {
               /* We don't yet support -Z to restore context with SMACK.  */
               scontext = optarg;
             }
-          else if (is_selinux_enabled () > 0)
+          иначе если (is_selinux_enabled () > 0)
             {
-              if (optarg)
+              если (optarg)
                 scontext = optarg;
-              else
+              иначе
                 {
                   set_security_context = selabel_open (SELABEL_CTX_FILE,
                                                        NULL, 0);
-                  if (! set_security_context)
+                  если (! set_security_context)
                     error (0, errno, _("warning: ignoring --context"));
                 }
             }
-          else if (optarg)
+          иначе если (optarg)
             {
               error (0, 0,
                      _("warning: ignoring --context; "
@@ -131,52 +131,52 @@ main (int argc, char **argv)
         }
     }
 
-  if (optind == argc)
+  если (optind == argc)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
-  if (scontext)
+  если (scontext)
     {
-      int ret = 0;
-      if (is_smack_enabled ())
+      целое ret = 0;
+      если (is_smack_enabled ())
         ret = smack_set_label_for_self (scontext);
-      else
+      иначе
         ret = setfscreatecon (scontext);
 
-      if (ret < 0)
+      если (ret < 0)
         error (EXIT_FAILURE, errno,
                _("failed to set default file creation context to %s"),
                quote (scontext));
     }
 
   mode_t newmode = MODE_RW_UGO;
-  if (specified_mode)
+  если (specified_mode)
     {
       struct mode_change *change = mode_compile (specified_mode);
-      if (!change)
+      если (!change)
         error (EXIT_FAILURE, 0, _("invalid mode"));
       mode_t umask_value = umask (0);
       umask (umask_value);
       newmode = mode_adjust (newmode, false, umask_value, change, NULL);
       free (change);
-      if (newmode & ~S_IRWXUGO)
+      если (newmode & ~S_IRWXUGO)
         error (EXIT_FAILURE, 0,
                _("mode must specify only file permission bits"));
     }
 
-  int exit_status = EXIT_SUCCESS;
-  for (; optind < argc; ++optind)
+  целое exit_status = EXIT_SUCCESS;
+  для (; optind < argc; ++optind)
     {
-      if (set_security_context)
+      если (set_security_context)
         defaultcon (set_security_context, argv[optind], S_IFIFO);
-      if (mkfifo (argv[optind], newmode) != 0)
+      если (mkfifo (argv[optind], newmode) != 0)
         {
           error (0, errno, _("cannot create fifo %s"), quoteaf (argv[optind]));
           exit_status = EXIT_FAILURE;
         }
-      else if (specified_mode && lchmod (argv[optind], newmode) != 0)
+      иначе если (specified_mode && lchmod (argv[optind], newmode) != 0)
         {
           error (0, errno, _("cannot set permissions of %s"),
                  quoteaf (argv[optind]));
@@ -184,5 +184,5 @@ main (int argc, char **argv)
         }
     }
 
-  return exit_status;
+  вернуть exit_status;
 }

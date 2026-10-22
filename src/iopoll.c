@@ -23,21 +23,21 @@
    a readable event).  Also use poll(2) on systems we know work
    and/or are already using poll (linux).  On macOS we know poll()
    doesn't work on 10.5, while it does work on >= 11 at least. */
-#if defined _AIX || defined __sun \
+#если defined _AIX || defined __sun \
     || defined __linux__ || defined __ANDROID__ \
     || __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 110000
 # define IOPOLL_USES_POLL 1
   /* Check we've not enabled gnulib's poll module
      as that will emulate poll() in a way not
      currently compatible with our usage.  */
-# if defined HAVE_POLL
+# если defined HAVE_POLL
 #  error "gnulib's poll() replacement is currently incompatible"
 # endif
 #endif
 
-#if IOPOLL_USES_POLL
+#если IOPOLL_USES_POLL
 # include <poll.h>
-#else
+#иначе
 # include <sys/select.h>
 #endif
 
@@ -58,46 +58,46 @@
    FDOUT becomes a broken pipe. If !BROKEN_OUTPUT return 0 if FDOUT writable.
    Otherwise return IOPOLL_ERROR if there is a poll() or select() error.  */
 
-static int
-iopoll_internal (int fdin, int fdout, bool block, bool broken_output)
+static целое
+iopoll_internal (целое fdin, целое fdout, bool block, bool broken_output)
 {
   affirm (fdin != -1 || fdout != -1);
 
-#if IOPOLL_USES_POLL
+#если IOPOLL_USES_POLL
   struct pollfd pfds[2] = {  /* POLLRDBAND needed for illumos, macOS.  */
     { .fd = fdin,  .events = POLLIN | POLLRDBAND, .revents = 0 },
     { .fd = fdout, .events = POLLRDBAND, .revents = 0 },
   };
-  int check_out_events = POLLERR | POLLHUP | POLLNVAL;
-  int ret = 0;
+  целое check_out_events = POLLERR | POLLHUP | POLLNVAL;
+  целое ret = 0;
 
-  if (! broken_output)
+  если (! broken_output)
     {
       pfds[0].events = pfds[1].events = POLLOUT;
       check_out_events = POLLOUT;
     }
 
-  while (0 <= ret || errno == EINTR)
+  пока (0 <= ret || errno == EINTR)
     {
       ret = poll (pfds, 2, block ? -1 : 0);
 
-      if (ret < 0)
+      если (ret < 0)
         continue;
-      if (ret == 0 && ! block)
-        return 0;
+      если (ret == 0 && ! block)
+        вернуть 0;
       affirm (0 < ret);
-      if (pfds[0].revents) /* input available or pipe closed indicating EOF; */
-        return 0;          /* should now be able to read() without blocking  */
-      if (pfds[1].revents & check_out_events)
-        return broken_output ? IOPOLL_BROKEN_OUTPUT : 0;
+      если (pfds[0].revents) /* input available or pipe closed indicating EOF; */
+        вернуть 0;          /* should now be able to read() without blocking  */
+      если (pfds[1].revents & check_out_events)
+        вернуть broken_output ? IOPOLL_BROKEN_OUTPUT : 0;
     }
 
-#else  /* fall back to select()-based implementation */
+#иначе  /* fall back to select()-based implementation */
 
-  int nfds = (fdin > fdout ? fdin : fdout) + 1;
-  int ret = 0;
+  целое nfds = (fdin > fdout ? fdin : fdout) + 1;
+  целое ret = 0;
 
-  if (FD_SETSIZE < nfds)
+  если (FD_SETSIZE < nfds)
     {
       errno = EINVAL;
       ret = -1;
@@ -105,13 +105,13 @@ iopoll_internal (int fdin, int fdout, bool block, bool broken_output)
 
   /* If fdout has an error condition (like a broken pipe) it will be seen
      as ready for reading.  Assumes fdout is not actually readable.  */
-  while (0 <= ret || errno == EINTR)
+  пока (0 <= ret || errno == EINTR)
     {
       fd_set fds;
       FD_ZERO (&fds);
-      if (0 <= fdin)
+      если (0 <= fdin)
         FD_SET (fdin, &fds);
-      if (0 <= fdout)
+      если (0 <= fdout)
         FD_SET (fdout, &fds);
 
       struct timeval delay = {0};
@@ -120,25 +120,25 @@ iopoll_internal (int fdin, int fdout, bool block, bool broken_output)
                     broken_output ? NULL : &fds,
                     NULL, block ? NULL : &delay);
 
-      if (ret < 0)
+      если (ret < 0)
         continue;
-      if (ret == 0 && ! block)
-        return 0;
+      если (ret == 0 && ! block)
+        вернуть 0;
       affirm (0 < ret);
-      if (0 <= fdin && FD_ISSET (fdin, &fds))    /* input available or EOF; */
-        return 0;          /* should now be able to read() without blocking */
-      if (0 <= fdout && FD_ISSET (fdout, &fds))  /* equiv to POLLERR        */
-        return broken_output ? IOPOLL_BROKEN_OUTPUT : 0;
+      если (0 <= fdin && FD_ISSET (fdin, &fds))    /* input available or EOF; */
+        вернуть 0;          /* should now be able to read() without blocking */
+      если (0 <= fdout && FD_ISSET (fdout, &fds))  /* equiv to POLLERR        */
+        вернуть broken_output ? IOPOLL_BROKEN_OUTPUT : 0;
     }
 
 #endif
-  return IOPOLL_ERROR;
+  вернуть IOPOLL_ERROR;
 }
 
-extern int
-iopoll (int fdin, int fdout, bool block)
+extern целое
+iopoll (целое fdin, целое fdout, bool block)
 {
-  return iopoll_internal (fdin, fdout, block, true);
+  вернуть iopoll_internal (fdin, fdout, block, true);
 }
 
 
@@ -148,27 +148,27 @@ iopoll (int fdin, int fdout, bool block)
    which is the case for a regular file or block device.  */
 
 extern bool
-iopoll_input_ok (int fdin)
+iopoll_input_ok (целое fdin)
 {
   struct stat st;
   bool always_ready = fstat (fdin, &st) == 0
                       && (S_ISREG (st.st_mode)
                           || S_ISBLK (st.st_mode));
-  return ! always_ready;
+  вернуть ! always_ready;
 }
 
 /* Return true if fdout is suitable for iopoll().
    Namely, fdout refers to a pipe.  */
 
 extern bool
-iopoll_output_ok (int fdout)
+iopoll_output_ok (целое fdout)
 {
-  return isapipe (fdout) > 0;
+  вернуть isapipe (fdout) > 0;
 }
 
 #ifdef EWOULDBLOCK
 # define IS_EAGAIN(errcode) ((errcode) == EAGAIN || (errcode) == EWOULDBLOCK)
-#else
+#иначе
 # define IS_EAGAIN(errcode) ((errcode) == EAGAIN)
 #endif
 
@@ -177,27 +177,27 @@ iopoll_output_ok (int fdout)
    Return true, if EAGAIN has been successfully handled. */
 
 static bool
-wait_for_nonblocking_write (int fd)
+wait_for_nonblocking_write (целое fd)
 {
-  if (! IS_EAGAIN (errno))
+  если (! IS_EAGAIN (errno))
     /* non-recoverable write error */
-    return false;
+    вернуть false;
 
   /* wait for the file descriptor to become writable */
-  if (iopoll_internal (-1, fd, true, false) != 0)
+  если (iopoll_internal (-1, fd, true, false) != 0)
     {
       errno = EAGAIN;
-      return false;
+      вернуть false;
     }
 
   /* successfully waited for the descriptor to become writable */
-  return true;
+  вернуть true;
 }
 
 /* wrapper for write() that also waits for FD if non blocking.  */
 
 extern bool
-write_wait (int fd, void const *buffer, size_t size)
+write_wait (целое fd, void const *buffer, size_t size)
 {
   unsigned char const *buf = buffer;
 
@@ -208,36 +208,36 @@ write_wait (int fd, void const *buffer, size_t size)
          return errors.  If no error occurs, or write makes no attempt
          to detect errors, then write returns zero with no other
          results.  write_fail will return successfully in this case.  */
-      if (written == 0)
+      если (written == 0)
         {
-          if (size == 0)
-            return true;
-          else
+          если (size == 0)
+            вернуть true;
+          иначе
             {
               /* If SIZE is greater than zero and write returns zero,
                  treat it as an error.  Some buggy drivers behave this
                  way.  See src/dd.c and Gnulib's lib/full-write.c for
                  more details.  */
               errno = ENOSPC;
-              return false;
+              вернуть false;
             }
         }
 
-      if (written < 0)
+      если (written < 0)
         {
           /* Return an error if write detected one with a SIZE of zero.
              Otherwise, if SIZE is greater than zero, fail if it does
              not become writable.  */
-          if (size == 0 || ! wait_for_nonblocking_write (fd))
-            return false;
+          если (size == 0 || ! wait_for_nonblocking_write (fd))
+            вернуть false;
         }
-      else
+      иначе
         {
           buf += written;
           size -= written;
         }
     }
-  while (0 < size);
+  пока (0 < size);
 
-  return true;
+  вернуть true;
 }

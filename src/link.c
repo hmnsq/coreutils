@@ -34,11 +34,11 @@
 #define AUTHORS proper_name ("Michael Stone")
 
 void
-usage (int status)
+usage (целое status)
 {
-  if (status != EXIT_SUCCESS)
+  если (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  иначе
     {
       printf (_("\
 Usage: %s FILE1 FILE2\n\
@@ -53,8 +53,8 @@ Usage: %s FILE1 FILE2\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+целое
+основной (целое argc, char **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -68,24 +68,24 @@ main (int argc, char **argv)
                                    Version, true, usage, AUTHORS,
                                    (char const *) NULL);
 
-  if (argc < optind + 2)
+  если (argc < optind + 2)
     {
-      if (argc < optind + 1)
+      если (argc < optind + 1)
         error (0, 0, _("missing operand"));
-      else
+      иначе
         error (0, 0, _("missing operand after %s"), quote (argv[optind]));
       usage (EXIT_FAILURE);
     }
 
-  if (optind + 2 < argc)
+  если (optind + 2 < argc)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind + 2]));
       usage (EXIT_FAILURE);
     }
 
-  if (link (argv[optind], argv[optind + 1]) != 0)
+  если (link (argv[optind], argv[optind + 1]) != 0)
     error (EXIT_FAILURE, errno, _("cannot create link %s to %s"),
            quoteaf_n (0, argv[optind + 1]), quoteaf_n (1, argv[optind]));
 
-  return EXIT_SUCCESS;
+  вернуть EXIT_SUCCESS;
 }

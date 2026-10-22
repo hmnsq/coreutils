@@ -66,15 +66,15 @@ static char *stdin_argv[] =
 static bool have_read_stdin = false;
 
 /* The desired exit status.  */
-int exit_status = EXIT_SUCCESS;
+целое exit_status = EXIT_SUCCESS;
 
 
 static void
 set_max_column_width (colno width)
 {
-  if (max_column_width < width)
+  если (max_column_width < width)
     {
-      if (ckd_add (&max_column_width, width, 0))
+      если (ckd_add (&max_column_width, width, 0))
         error (EXIT_FAILURE, 0, _("tabs are too far apart"));
     }
 }
@@ -86,7 +86,7 @@ add_tab_stop (colno tabval)
   colno prev_column = first_free_tab ? tab_list[first_free_tab - 1] : 0;
   colno column_width = prev_column <= tabval ? tabval - prev_column : 0;
 
-  if (first_free_tab == n_tabs_allocated)
+  если (first_free_tab == n_tabs_allocated)
     tab_list = xpalloc (tab_list, &n_tabs_allocated, 1, -1, sizeof *tab_list);
   tab_list[first_free_tab++] = tabval;
 
@@ -98,7 +98,7 @@ set_extend_size (colno tabval)
 {
   bool ok = true;
 
-  if (extend_size)
+  если (extend_size)
     {
       error (0, 0,
              _("'/' specifier only allowed"
@@ -109,7 +109,7 @@ set_extend_size (colno tabval)
 
   set_max_column_width (extend_size);
 
-  return ok;
+  вернуть ok;
 }
 
 static bool
@@ -117,7 +117,7 @@ set_increment_size (colno tabval)
 {
   bool ok = true;
 
-  if (increment_size)
+  если (increment_size)
     {
       error (0,0,
              _("'+' specifier only allowed"
@@ -128,7 +128,7 @@ set_increment_size (colno tabval)
 
   set_max_column_width (increment_size);
 
-  return ok;
+  вернуть ok;
 }
 
 /* Add the comma or blank separated list of tab stops STOPS
@@ -143,36 +143,36 @@ parse_tab_stops (char const *stops)
   char const *num_start = NULL;
   bool ok = true;
 
-  for (; *stops; stops++)
+  для (; *stops; stops++)
     {
-      if (*stops == ',' || isblank (to_uchar (*stops)))
+      если (*stops == ',' || isblank (to_uchar (*stops)))
         {
-          if (have_tabval)
+          если (have_tabval)
             {
-              if (extend_tabval)
+              если (extend_tabval)
                 {
-                  if (! set_extend_size (tabval))
+                  если (! set_extend_size (tabval))
                     {
                       ok = false;
                       break;
                     }
                 }
-              else if (increment_tabval)
+              иначе если (increment_tabval)
                 {
-                  if (! set_increment_size (tabval))
+                  если (! set_increment_size (tabval))
                     {
                       ok = false;
                       break;
                     }
                 }
-              else
+              иначе
                 add_tab_stop (tabval);
             }
           have_tabval = false;
         }
-      else if (*stops == '/')
+      иначе если (*stops == '/')
         {
-          if (have_tabval)
+          если (have_tabval)
             {
               error (0, 0, _("'/' specifier not at start of number: %s"),
                      quote (stops));
@@ -181,9 +181,9 @@ parse_tab_stops (char const *stops)
           extend_tabval = true;
           increment_tabval = false;
         }
-      else if (*stops == '+')
+      иначе если (*stops == '+')
         {
-          if (have_tabval)
+          если (have_tabval)
             {
               error (0, 0, _("'+' specifier not at start of number: %s"),
                      quote (stops));
@@ -192,9 +192,9 @@ parse_tab_stops (char const *stops)
           increment_tabval = true;
           extend_tabval = false;
         }
-      else if (c_isdigit (*stops))
+      иначе если (c_isdigit (*stops))
         {
-          if (!have_tabval)
+          если (!have_tabval)
             {
               tabval = 0;
               have_tabval = true;
@@ -202,7 +202,7 @@ parse_tab_stops (char const *stops)
             }
 
           /* Detect overflow.  */
-          if (!DECIMAL_DIGIT_ACCUMULATE (tabval, *stops - '0'))
+          если (!DECIMAL_DIGIT_ACCUMULATE (tabval, *stops - '0'))
             {
               idx_t len = strspn (num_start, "0123456789");
               char *bad_num = ximemdup0 (num_start, len);
@@ -212,7 +212,7 @@ parse_tab_stops (char const *stops)
               stops = num_start + len - 1;
             }
         }
-      else
+      иначе
         {
           error (0, 0, _("tab size contains invalid character(s): %s"),
                  quote (stops));
@@ -221,17 +221,17 @@ parse_tab_stops (char const *stops)
         }
     }
 
-  if (ok && have_tabval)
+  если (ok && have_tabval)
     {
-      if (extend_tabval)
+      если (extend_tabval)
         ok &= set_extend_size (tabval);
-      else if (increment_tabval)
+      иначе если (increment_tabval)
         ok &= set_increment_size (tabval);
-      else
+      иначе
         add_tab_stop (tabval);
     }
 
-  if (! ok)
+  если (! ok)
     exit (EXIT_FAILURE);
 }
 
@@ -243,16 +243,16 @@ validate_tab_stops (colno const *tabs, idx_t entries)
 {
   colno prev_tab = 0;
 
-  for (idx_t i = 0; i < entries; i++)
+  для (idx_t i = 0; i < entries; i++)
     {
-      if (tabs[i] == 0)
+      если (tabs[i] == 0)
         error (EXIT_FAILURE, 0, _("tab size cannot be 0"));
-      if (tabs[i] <= prev_tab)
+      если (tabs[i] <= prev_tab)
         error (EXIT_FAILURE, 0, _("tab sizes must be ascending"));
       prev_tab = tabs[i];
     }
 
-  if (increment_size && extend_size)
+  если (increment_size && extend_size)
     error (EXIT_FAILURE, 0, _("'/' specifier is mutually exclusive with '+'"));
 }
 
@@ -269,13 +269,13 @@ finalize_tab_stops (void)
 {
   validate_tab_stops (tab_list, first_free_tab);
 
-  if (first_free_tab == 0)
+  если (first_free_tab == 0)
     tab_size = max_column_width = extend_size
                                   ? extend_size : increment_size
                                                   ? increment_size : 8;
-  else if (first_free_tab == 1 && ! extend_size && ! increment_size)
+  иначе если (first_free_tab == 1 && ! extend_size && ! increment_size)
     tab_size = tab_list[0];
-  else
+  иначе
     tab_size = 0;
 }
 
@@ -291,30 +291,30 @@ get_next_tab_column (colno column, idx_t *tab_index, bool *last_tab)
   colno tab_distance;
 
   /* single tab-size - return multiples of it */
-  if (tab_size)
+  если (tab_size)
     tab_distance = tab_size - column % tab_size;
-  else
+  иначе
     {
       /* multiple tab-sizes - iterate them until the tab position is beyond
          the current input column. */
-      for ( ; *tab_index < first_free_tab ; (*tab_index)++ )
+      для ( ; *tab_index < first_free_tab ; (*tab_index)++ )
         {
           colno tab = tab_list[*tab_index];
-          if (column < tab)
-            return tab;
+          если (column < tab)
+            вернуть tab;
         }
 
       /* relative last tab - return multiples of it */
-      if (extend_size)
+      если (extend_size)
         tab_distance = extend_size - column % extend_size;
-      else if (increment_size)
+      иначе если (increment_size)
         {
           /* incremental last tab - add increment_size to the previous
              tab stop */
           colno end_tab = tab_list[first_free_tab - 1];
           tab_distance = increment_size - ((column - end_tab) % increment_size);
         }
-      else
+      иначе
         {
           *last_tab = true;
           tab_distance = 1;
@@ -322,9 +322,9 @@ get_next_tab_column (colno column, idx_t *tab_index, bool *last_tab)
     }
 
   colno tab_stop;
-  if (ckd_add (&tab_stop, column, tab_distance))
+  если (ckd_add (&tab_stop, column, tab_distance))
     error (EXIT_FAILURE, 0, _("input line is too long"));
-  return tab_stop;
+  вернуть tab_stop;
 }
 
 
@@ -334,9 +334,9 @@ set_file_list (char **list)
 {
   have_read_stdin = false;
 
-  if (!list)
+  если (!list)
     file_list = stdin_argv;
-  else
+  иначе
     file_list = list;
 }
 
@@ -351,48 +351,48 @@ next_file (FILE *fp)
   static char *prev_file;
   char *file;
 
-  if (fp)
+  если (fp)
     {
-      int err = errno;
-      if (!ferror (fp))
+      целое err = errno;
+      если (!ferror (fp))
         err = 0;
-      if (streq (prev_file, "-"))
+      если (streq (prev_file, "-"))
         clearerr (fp);		/* Also clear EOF.  */
-      else if (fclose (fp) != 0)
+      иначе если (fclose (fp) != 0)
         err = errno;
-      if (err)
+      если (err)
         {
           error (0, err, "%s", quotef (prev_file));
           exit_status = EXIT_FAILURE;
         }
     }
 
-  while ((file = *file_list++) != NULL)
+  пока ((file = *file_list++) != NULL)
     {
-      if (streq (file, "-"))
+      если (streq (file, "-"))
         {
           have_read_stdin = true;
           fp = stdin;
         }
-      else
+      иначе
         fp = fopen (file, "r");
-      if (fp)
+      если (fp)
         {
           prev_file = file;
           fadvise (fp, FADVISE_SEQUENTIAL);
-          return fp;
+          вернуть fp;
         }
       error (0, errno, "%s", quotef (file));
       exit_status = EXIT_FAILURE;
     }
-  return NULL;
+  вернуть NULL;
 }
 
 /* Close standard input if we have read from it.  */
 extern void
 cleanup_file_list_stdin (void)
 {
-    if (have_read_stdin && fclose (stdin) != 0)
+    если (have_read_stdin && fclose (stdin) != 0)
       error (EXIT_FAILURE, errno, "-");
 }
 

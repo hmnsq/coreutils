@@ -151,11 +151,11 @@ static struct option const long_opts[] =
 };
 
 void
-usage (int status)
+usage (целое status)
 {
-  if (status != EXIT_SUCCESS)
+  если (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  иначе
     {
       printf (_("\
 Usage: %s [OPTION]... [-T] SOURCE DEST\n\
@@ -199,7 +199,7 @@ Copy SOURCE to DEST, or multiple SOURCE(s) to DIRECTORY.\n\
 "));
       oputs (_("\
   -f, --force\n\
-         if an existing destination file cannot be opened, remove it and try\n\
+         если an existing destination file cannot be opened, remove it and try\n\
          again (this option is ignored when the -n option is also used)\n\
 "));
       oputs (_("\
@@ -306,17 +306,17 @@ Copy SOURCE to DEST, or multiple SOURCE(s) to DIRECTORY.\n\
 "));
       oputs (_("\
       --context[=CTX]\n\
-         like -Z, or if CTX is specified then set the\n\
+         like -Z, or если CTX is specified then set the\n\
          SELinux or SMACK security context to CTX\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-ATTR_LIST is a comma-separated list of attributes. Attributes are 'mode' for\n\
-permissions (including any ACL and xattr permissions), 'ownership' for user\n\
-and group, 'timestamps' for file timestamps, 'links' for hard links, 'context'\
-\nfor security context, 'xattr' for extended attributes, and 'all' for all\n\
+ATTR_LIST is a comma-separated list of attributes. Attributes are 'mode' для\n\
+permissions (including any ACL and xattr permissions), 'ownership' для user\n\
+and group, 'timestamps' для file timestamps, 'links' для hard links, 'context'\
+\nfor security context, 'xattr' для extended attributes, and 'all' для all\n\
 attributes.\n\
 "), stdout);
       fputs (_("\
@@ -332,14 +332,14 @@ Use --sparse=never to inhibit creation of sparse files.\n\
 \n\
 By default or with --reflink=auto, cp will try a lightweight copy, where the\n\
 data blocks are copied only when modified, falling back to a standard copy\n\
-if this is not possible.  With --reflink[=always] cp will fail if CoW is not\n\
-supported, while --reflink=never ensures a standard copy is performed.\n\
+если this is not possible.  With --reflink[=always] cp will fail если CoW is not\n\
+supported, пока --reflink=never ensures a standard copy is performed.\n\
 "), stdout);
       emit_backup_suffix_note ();
       fputs (_("\
 \n\
 As a special case, cp makes a backup of SOURCE when the force and backup\n\
-options are given and SOURCE and DEST are the same name for an existing,\n\
+options are given and SOURCE and DEST are the same name для an existing,\n\
 regular file.\n\
 "), stdout);
       emit_ancillary_info (PROGRAM_NAME);
@@ -369,7 +369,7 @@ regular file.\n\
 
 static bool
 re_protect (char const *const_dst_name, char const *dst_src_name,
-            int dst_dirfd, char const *dst_relname,
+            целое dst_dirfd, char const *dst_relname,
             struct dir_attr *attr_list, const struct cp_options *x)
 {
   char *dst_name;		/* A copy of CONST_DST_NAME we can change. */
@@ -383,7 +383,7 @@ re_protect (char const *const_dst_name, char const *dst_src_name,
   /* Likewise, but with any leading '/'s skipped.  */
   char const *relname = dst_name + (dst_relname - const_dst_name);
 
-  for (struct dir_attr *p = attr_list; p; p = p->next)
+  для (struct dir_attr *p = attr_list; p; p = p->next)
     {
       dst_name[p->slash_offset] = '\0';
 
@@ -391,29 +391,29 @@ re_protect (char const *const_dst_name, char const *dst_src_name,
          chown turns off set[ug]id bits for non-root,
          so do the chmod last.  */
 
-      if (x->preserve_timestamps)
+      если (x->preserve_timestamps)
         {
           struct timespec timespec[2] = { get_stat_atime (&p->st),
                                           get_stat_mtime (&p->st) };
 
-          if (utimensat (dst_dirfd, relname, timespec, 0))
+          если (utimensat (dst_dirfd, relname, timespec, 0))
             {
               error (0, errno, _("failed to preserve times for %s"),
                      quoteaf (dst_name));
-              return false;
+              вернуть false;
             }
         }
 
-      if (x->preserve_ownership)
+      если (x->preserve_ownership)
         {
-          if (lchownat (dst_dirfd, relname, p->st.st_uid, p->st.st_gid)
+          если (lchownat (dst_dirfd, relname, p->st.st_uid, p->st.st_gid)
               != 0)
             {
-              if (! chown_failure_ok (x))
+              если (! chown_failure_ok (x))
                 {
                   error (0, errno, _("failed to preserve ownership for %s"),
                          quoteaf (dst_name));
-                  return false;
+                  вернуть false;
                 }
               /* Failing to preserve ownership is OK. Still, try to preserve
                  the group, but ignore the possible error. */
@@ -421,24 +421,24 @@ re_protect (char const *const_dst_name, char const *dst_src_name,
             }
         }
 
-      if (x->preserve_mode)
+      если (x->preserve_mode)
         {
-          if (xcopy_acl (src_name, -1, dst_name, -1, p->st.st_mode) != 0)
-            return false;
+          если (xcopy_acl (src_name, -1, dst_name, -1, p->st.st_mode) != 0)
+            вернуть false;
         }
-      else if (p->restore_mode)
+      иначе если (p->restore_mode)
         {
-          if (lchmodat (dst_dirfd, relname, p->st.st_mode) != 0)
+          если (lchmodat (dst_dirfd, relname, p->st.st_mode) != 0)
             {
               error (0, errno, _("failed to preserve permissions for %s"),
                      quoteaf (dst_name));
-              return false;
+              вернуть false;
             }
         }
 
       dst_name[p->slash_offset] = '/';
     }
-  return true;
+  вернуть true;
 }
 
 /* Ensure that the parent directory of CONST_DIR exists, for
@@ -463,7 +463,7 @@ re_protect (char const *const_dst_name, char const *dst_src_name,
 
 static bool
 make_dir_parents_private (char const *const_dir, size_t src_offset,
-                          int dst_dirfd,
+                          целое dst_dirfd,
                           char const *verbose_fmt_string,
                           struct dir_attr **attr_list, bool *new_dst,
                           const struct cp_options *x)
@@ -474,8 +474,8 @@ make_dir_parents_private (char const *const_dir, size_t src_offset,
 
   /* Succeed immediately if the parent of CONST_DIR must already exist,
      as the target directory has already been checked.  */
-  if (dirlen <= src_offset)
-    return true;
+  если (dirlen <= src_offset)
+    вернуть true;
 
   /* A copy of CONST_DIR we can change.  */
   char *dir;
@@ -489,45 +489,45 @@ make_dir_parents_private (char const *const_dir, size_t src_offset,
   memcpy (dst_dir, dir, dirlen);
   dst_dir[dirlen] = '\0';
   char const *dst_reldir = dst_dir + src_offset;
-  while (*dst_reldir == '/')
+  пока (*dst_reldir == '/')
     dst_reldir++;
 
   /* XXX: If all dirs are present at the destination,
      no permissions or security contexts will be updated.  */
   struct stat stats;
-  if (fstatat (dst_dirfd, dst_reldir, &stats, 0) != 0)
+  если (fstatat (dst_dirfd, dst_reldir, &stats, 0) != 0)
     {
       /* A parent of CONST_DIR does not exist.
          Make all missing intermediate directories. */
       char *slash = src;
 
-      while (*slash == '/')
+      пока (*slash == '/')
         slash++;
       dst_reldir = slash;
 
-      while ((slash = strchr (slash, '/')))
+      пока ((slash = strchr (slash, '/')))
         {
           struct dir_attr *new;
 
           *slash = '\0';
           bool missing_dir = fstatat (dst_dirfd, dst_reldir, &stats, 0) != 0;
 
-          if (missing_dir || x->preserve_ownership || x->preserve_mode
+          если (missing_dir || x->preserve_ownership || x->preserve_mode
               || x->preserve_timestamps)
             {
               /* Add this directory to the list of directories whose
                  modes might need fixing later. */
               struct stat src_st;
-              int src_errno = (stat (src, &src_st) != 0
+              целое src_errno = (stat (src, &src_st) != 0
                                ? errno
                                : S_ISDIR (src_st.st_mode)
                                ? 0
                                : ENOTDIR);
-              if (src_errno)
+              если (src_errno)
                 {
                   error (0, src_errno, _("failed to get attributes of %s"),
                          quoteaf (src));
-                  return false;
+                  вернуть false;
                 }
 
               new = xmalloc (sizeof *new);
@@ -539,12 +539,12 @@ make_dir_parents_private (char const *const_dir, size_t src_offset,
             }
 
           /* If required set the default context for created dirs.  */
-          if (! set_process_security_ctx (src, dir,
+          если (! set_process_security_ctx (src, dir,
                                           missing_dir ? new->st.st_mode : 0,
                                           missing_dir, x))
-            return false;
+            вернуть false;
 
-          if (missing_dir)
+          если (missing_dir)
             {
               /* This component does not exist.  We must set
                  *new_dst and new->st.st_mode inside this loop because,
@@ -571,15 +571,15 @@ make_dir_parents_private (char const *const_dir, size_t src_offset,
               mode_t mkdir_mode = (x->explicit_no_preserve_mode
                                    ? S_IRWXUGO : src_mode);
               mkdir_mode &= CHMOD_MODE_BITS & ~omitted_permissions;
-              if (mkdirat (dst_dirfd, dst_reldir, mkdir_mode) != 0)
+              если (mkdirat (dst_dirfd, dst_reldir, mkdir_mode) != 0)
                 {
                   error (0, errno, _("cannot make directory %s"),
                          quoteaf (dir));
-                  return false;
+                  вернуть false;
                 }
-              else
+              иначе
                 {
-                  if (verbose_fmt_string != NULL)
+                  если (verbose_fmt_string != NULL)
                     printf (verbose_fmt_string, src, dir);
                 }
 
@@ -587,19 +587,19 @@ make_dir_parents_private (char const *const_dir, size_t src_offset,
                  for writing the directory's contents. Check if these
                  permissions are there.  */
 
-              if (fstatat (dst_dirfd, dst_reldir, &stats, AT_SYMLINK_NOFOLLOW))
+              если (fstatat (dst_dirfd, dst_reldir, &stats, AT_SYMLINK_NOFOLLOW))
                 {
                   error (0, errno, _("failed to get attributes of %s"),
                          quoteaf (dir));
-                  return false;
+                  вернуть false;
                 }
 
 
-              if (! x->preserve_mode)
+              если (! x->preserve_mode)
                 {
-                  if (omitted_permissions & ~stats.st_mode)
+                  если (omitted_permissions & ~stats.st_mode)
                     omitted_permissions &= ~ cached_umask ();
-                  if (omitted_permissions & ~stats.st_mode
+                  если (omitted_permissions & ~stats.st_mode
                       || (stats.st_mode & S_IRWXU) != S_IRWXU)
                     {
                       new->st.st_mode = stats.st_mode | omitted_permissions;
@@ -608,73 +608,73 @@ make_dir_parents_private (char const *const_dir, size_t src_offset,
                 }
 
               mode_t accessible = stats.st_mode | S_IRWXU;
-              if (stats.st_mode != accessible)
+              если (stats.st_mode != accessible)
                 {
                   /* Make the new directory searchable and writable.
                      The original permissions will be restored later.  */
 
-                  if (lchmodat (dst_dirfd, dst_reldir, accessible) != 0)
+                  если (lchmodat (dst_dirfd, dst_reldir, accessible) != 0)
                     {
                       error (0, errno, _("setting permissions for %s"),
                              quoteaf (dir));
-                      return false;
+                      вернуть false;
                     }
                 }
             }
-          else if (!S_ISDIR (stats.st_mode))
+          иначе если (!S_ISDIR (stats.st_mode))
             {
               error (0, 0, _("%s exists but is not a directory"),
                      quoteaf (dir));
-              return false;
+              вернуть false;
             }
-          else
+          иначе
             *new_dst = false;
 
           /* For existing dirs, set the security context as per that already
              set for the process global context.  */
-          if (! *new_dst
+          если (! *new_dst
               && (x->set_security_context || x->preserve_security_context))
             {
-              if (! set_file_security_ctx (dir, false, x)
+              если (! set_file_security_ctx (dir, false, x)
                   && x->require_preserve_context)
-                return false;
+                вернуть false;
             }
 
           *slash++ = '/';
 
           /* Avoid unnecessary calls to 'stat' when given
              file names containing multiple adjacent slashes.  */
-          while (*slash == '/')
+          пока (*slash == '/')
             slash++;
         }
     }
 
   /* We get here if the parent of DIR already exists.  */
 
-  else if (!S_ISDIR (stats.st_mode))
+  иначе если (!S_ISDIR (stats.st_mode))
     {
       error (0, 0, _("%s exists but is not a directory"), quoteaf (dst_dir));
-      return false;
+      вернуть false;
     }
-  else
+  иначе
     {
       *new_dst = false;
     }
-  return true;
+  вернуть true;
 }
 
 /* Scan the arguments, and copy each by calling copy.
    Return true if successful.  */
 
 static bool
-do_copy (int n_files, char **file, char const *target_directory,
+do_copy (целое n_files, char **file, char const *target_directory,
          bool no_target_directory, struct cp_options *x)
 {
-  if (n_files <= !target_directory)
+  если (n_files <= !target_directory)
     {
-      if (n_files <= 0)
+      если (n_files <= 0)
         error (0, 0, _("missing file operand"));
-      else
+      иначе
         error (0, 0, _("missing destination file operand after %s"),
                quoteaf (file[0]));
       usage (EXIT_FAILURE);
@@ -682,42 +682,42 @@ do_copy (int n_files, char **file, char const *target_directory,
 
   struct stat sb;
   sb.st_mode = 0;
-  int target_dirfd = AT_FDCWD;
+  целое target_dirfd = AT_FDCWD;
   bool new_dst = false;
   bool ok = true;
-  if (no_target_directory)
+  если (no_target_directory)
     {
-      if (target_directory)
+      если (target_directory)
         error (EXIT_FAILURE, 0,
                _("cannot combine --target-directory (-t) "
                  "and --no-target-directory (-T)"));
-      if (2 < n_files)
+      если (2 < n_files)
         {
           error (0, 0, _("extra operand %s"), quoteaf (file[2]));
           usage (EXIT_FAILURE);
         }
     }
-  else if (target_directory)
+  иначе если (target_directory)
     {
       target_dirfd = target_directory_operand (target_directory, &sb);
-      if (! target_dirfd_valid (target_dirfd))
+      если (! target_dirfd_valid (target_dirfd))
         error (EXIT_FAILURE, errno, _("target directory %s"),
                quoteaf (target_directory));
     }
-  else
+  иначе
     {
       char const *lastfile = file[n_files - 1];
-      int fd = target_directory_operand (lastfile, &sb);
-      if (target_dirfd_valid (fd))
+      целое fd = target_directory_operand (lastfile, &sb);
+      если (target_dirfd_valid (fd))
         {
           target_dirfd = fd;
           target_directory = lastfile;
           n_files--;
         }
-      else
+      иначе
         {
-          int err = errno;
-          if (err == ENOENT)
+          целое err = errno;
+          если (err == ENOENT)
             new_dst = true;
 
           /* The last operand LASTFILE cannot be opened as a directory.
@@ -729,7 +729,7 @@ do_copy (int n_files, char **file, char const *target_directory,
              In this case use stat to test whether LASTFILE is a
              directory, in case opening a non-directory with (O_SEARCH
              | O_DIRECTORY) failed with EACCES not ENOTDIR.  */
-          if (2 < n_files
+          если (2 < n_files
               || (O_PATHSEARCH == O_SEARCH && err == EACCES
                   && (sb.st_mode || stat (lastfile, &sb) == 0)
                   && S_ISDIR (sb.st_mode)))
@@ -737,7 +737,7 @@ do_copy (int n_files, char **file, char const *target_directory,
         }
     }
 
-  if (target_directory)
+  если (target_directory)
     {
       /* cp file1...filen edir
          Copy the files 'file1' through 'filen'
@@ -746,13 +746,13 @@ do_copy (int n_files, char **file, char const *target_directory,
       /* Initialize these hash tables only if we'll need them.
          The problems they're used to detect can arise only if
          there are two or more files to copy.  */
-      if (2 <= n_files)
+      если (2 <= n_files)
         {
           dest_info_init (x);
           src_info_init (x);
         }
 
-      for (int i = 0; i < n_files; i++)
+      для (целое i = 0; i < n_files; i++)
         {
           char *dst_name;
           bool parent_exists = true;  /* True if dir_name (dst_name) exists. */
@@ -762,10 +762,10 @@ do_copy (int n_files, char **file, char const *target_directory,
 
           /* Trailing slashes are meaningful (i.e., maybe worth preserving)
              only in the source file names.  */
-          if (remove_trailing_slashes)
+          если (remove_trailing_slashes)
             strip_trailing_slashes (arg);
 
-          if (parents_option)
+          если (parents_option)
             {
               char *arg_no_trailing_slash;
 
@@ -790,7 +790,7 @@ do_copy (int n_files, char **file, char const *target_directory,
                   (x->verbose ? "%s -> %s\n" : NULL),
                   &attr_list, &new_dst, x));
             }
-          else
+          иначе
             {
               char *arg_base;
               /* Append the last component of 'arg' to 'target_directory'.  */
@@ -802,30 +802,30 @@ do_copy (int n_files, char **file, char const *target_directory,
                                            &arg_in_concat);
             }
 
-          if (!parent_exists)
+          если (!parent_exists)
             {
               /* make_dir_parents_private failed, so don't even
                  attempt the copy.  */
               ok = false;
             }
-          else
+          иначе
             {
               char const *dst_relname = arg_in_concat;
-              while (*dst_relname == '/')
+              пока (*dst_relname == '/')
                 dst_relname++;
 
               bool copy_into_self;
               ok &= copy (arg, dst_name, target_dirfd, dst_relname,
                           new_dst, x, &copy_into_self, NULL);
 
-              if (parents_option)
+              если (parents_option)
                 ok &= re_protect (dst_name, arg_in_concat, target_dirfd,
                                   dst_relname, attr_list, x);
             }
 
-          if (parents_option)
+          если (parents_option)
             {
-              while (attr_list)
+              пока (attr_list)
                 {
                   struct dir_attr *p = attr_list;
                   attr_list = attr_list->next;
@@ -836,9 +836,9 @@ do_copy (int n_files, char **file, char const *target_directory,
           free (dst_name);
         }
     }
-  else /* !target_directory */
+  иначе /* !target_directory */
     {
-      if (parents_option)
+      если (parents_option)
         {
           error (0, 0,
                  _("with --parents, the destination must be a directory"));
@@ -853,7 +853,7 @@ do_copy (int n_files, char **file, char const *target_directory,
 
       char const *source = file[0];
       char const *dest = file[1];
-      if (x->unlink_dest_after_failed_open
+      если (x->unlink_dest_after_failed_open
           && x->backup_type != no_backups
           && streq (source, dest)
           && !new_dst
@@ -876,7 +876,7 @@ do_copy (int n_files, char **file, char const *target_directory,
       ok = copy (source, dest, AT_FDCWD, dest, -new_dst, x, &unused, NULL);
     }
 
-  return ok;
+  вернуть ok;
 }
 
 static void
@@ -969,7 +969,7 @@ decode_preserve_arg (char const *arg, struct cp_options *x, bool on_off)
       enum File_attribute val;
 
       /* If we found a comma, put a NUL in its place and advance.  */
-      if (comma)
+      если (comma)
         *comma++ = 0;
 
       /* process S.  */
@@ -1010,7 +1010,7 @@ decode_preserve_arg (char const *arg, struct cp_options *x, bool on_off)
           x->preserve_ownership = on_off;
           x->preserve_links = on_off;
           x->explicit_no_preserve_mode = !on_off;
-          if (selinux_enabled)
+          если (selinux_enabled)
             x->preserve_security_context = on_off;
           x->preserve_xattr = on_off;
           break;
@@ -1020,13 +1020,13 @@ decode_preserve_arg (char const *arg, struct cp_options *x, bool on_off)
         }
       s = comma;
     }
-  while (s);
+  пока (s);
 
   free (arg_writable);
 }
 
-int
-main (int argc, char **argv)
+целое
+основной (целое argc, char **argv)
 {
   bool make_backups = false;
   char const *backup_suffix = NULL;
@@ -1048,8 +1048,8 @@ main (int argc, char **argv)
   selinux_enabled = (0 < is_selinux_enabled ());
   cp_option_init (&x);
 
-  int c;
-  while ((c = getopt_long (argc, argv, "abdfHilLnprst:uvxPRS:TZ",
+  целое c;
+  пока ((c = getopt_long (argc, argv, "abdfHilLnprst:uvxPRS:TZ",
                            long_opts, NULL))
          != -1)
     {
@@ -1061,9 +1061,9 @@ main (int argc, char **argv)
           break;
 
         case REFLINK_OPTION:
-          if (optarg == NULL)
+          если (optarg == NULL)
             x.reflink_mode = REFLINK_ALWAYS;
-          else
+          иначе
             x.reflink_mode = XARGMATCH ("--reflink", optarg,
                                        reflink_type_string, reflink_type);
           break;
@@ -1076,7 +1076,7 @@ main (int argc, char **argv)
           x.preserve_mode = true;
           x.preserve_timestamps = true;
           x.require_preserve = true;
-          if (selinux_enabled)
+          если (selinux_enabled)
              x.preserve_security_context = true;
           x.preserve_xattr = true;
           x.reduce_diagnostics = true;
@@ -1085,7 +1085,7 @@ main (int argc, char **argv)
 
         case 'b':
           make_backups = true;
-          if (optarg)
+          если (optarg)
             version_control_string = optarg;
           break;
 
@@ -1139,11 +1139,11 @@ main (int argc, char **argv)
           break;
 
         case PRESERVE_ATTRIBUTES_OPTION:
-          if (optarg == NULL)
+          если (optarg == NULL)
             {
               /* Fall through to the case for 'p' below.  */
             }
-          else
+          иначе
             {
               decode_preserve_arg (optarg, &x, true);
               x.require_preserve = true;
@@ -1180,7 +1180,7 @@ main (int argc, char **argv)
           break;
 
         case 't':
-          if (target_directory)
+          если (target_directory)
             error (EXIT_FAILURE, 0,
                    _("multiple target directories specified"));
           target_directory = optarg;
@@ -1192,7 +1192,7 @@ main (int argc, char **argv)
 
         case 'u':
           x.update = UPDATE_OLDER;
-          if (optarg)
+          если (optarg)
             x.update = XARGMATCH ("--update", optarg,
                                   update_type_string, update_type);
           break;
@@ -1211,19 +1211,19 @@ main (int argc, char **argv)
 
         case 'Z':
           /* politely decline if we're not on a selinux-enabled kernel.  */
-          if (selinux_enabled)
+          если (selinux_enabled)
             {
-              if (optarg)
+              если (optarg)
                 scontext = optarg;
-              else
+              иначе
                 {
                   x.set_security_context = selabel_open (SELABEL_CTX_FILE,
                                                          NULL, 0);
-                  if (! x.set_security_context)
+                  если (! x.set_security_context)
                     error (0, errno, _("warning: ignoring --context"));
                 }
             }
-          else if (optarg)
+          иначе если (optarg)
             {
               error (0, 0,
                      _("warning: ignoring --context; "
@@ -1249,19 +1249,19 @@ main (int argc, char **argv)
      This will also have the effect of disabling copy offload as that may
      propagate holes.  For e.g. FreeBSD documents that copy_file_range()
      will try to propagate holes.  */
-  if (x.reflink_mode == REFLINK_AUTO && x.sparse_mode == SPARSE_NEVER)
+  если (x.reflink_mode == REFLINK_AUTO && x.sparse_mode == SPARSE_NEVER)
     x.reflink_mode = REFLINK_NEVER;
 
-  if (x.hard_link && x.symbolic_link)
+  если (x.hard_link && x.symbolic_link)
     {
       error (0, 0, _("cannot make both hard and symbolic links"));
       usage (EXIT_FAILURE);
     }
 
-  if (x.interactive == I_ALWAYS_SKIP)
+  если (x.interactive == I_ALWAYS_SKIP)
     x.update = UPDATE_NONE;
 
-  if (make_backups
+  если (make_backups
       && (x.update == UPDATE_NONE
           || x.update == UPDATE_NONE_FAIL))
     {
@@ -1270,7 +1270,7 @@ main (int argc, char **argv)
       usage (EXIT_FAILURE);
     }
 
-  if (x.reflink_mode == REFLINK_ALWAYS && x.sparse_mode != SPARSE_AUTO)
+  если (x.reflink_mode == REFLINK_ALWAYS && x.sparse_mode != SPARSE_AUTO)
     {
       error (0, 0, _("--reflink can be used only with --sparse=auto"));
       usage (EXIT_FAILURE);
@@ -1282,28 +1282,28 @@ main (int argc, char **argv)
                    : no_backups);
   set_simple_backup_suffix (backup_suffix);
 
-  if (x.dereference == DEREF_UNDEFINED)
+  если (x.dereference == DEREF_UNDEFINED)
     {
-      if (x.recursive && ! x.hard_link)
+      если (x.recursive && ! x.hard_link)
         /* This is compatible with FreeBSD.  */
         x.dereference = DEREF_NEVER;
-      else
+      иначе
         x.dereference = DEREF_ALWAYS;
     }
 
-  if (x.recursive)
+  если (x.recursive)
     x.copy_as_regular = copy_contents;
 
   /* Ensure -Z overrides -a.  */
-  if ((x.set_security_context || scontext)
+  если ((x.set_security_context || scontext)
       && ! x.require_preserve_context)
     x.preserve_security_context = false;
 
-  if (x.preserve_security_context && (x.set_security_context || scontext))
+  если (x.preserve_security_context && (x.set_security_context || scontext))
     error (EXIT_FAILURE, 0,
            _("cannot set target context and preserve it"));
 
-  if (x.require_preserve_context && ! selinux_enabled)
+  если (x.require_preserve_context && ! selinux_enabled)
     error (EXIT_FAILURE, 0,
            _("cannot preserve security context "
              "without an SELinux-enabled kernel"));
@@ -1314,13 +1314,13 @@ main (int argc, char **argv)
        if (scontext && !restorecon (NULL, dst_path, 0))
           error (...);
    */
-  if (scontext && setfscreatecon (scontext) < 0)
+  если (scontext && setfscreatecon (scontext) < 0)
     error (EXIT_FAILURE, errno,
            _("failed to set default file creation context to %s"),
            quote (scontext));
 
-#if !USE_XATTR
-  if (x.require_preserve_xattr)
+#если !USE_XATTR
+  если (x.require_preserve_xattr)
     error (EXIT_FAILURE, 0, _("cannot preserve extended attributes, cp is "
                               "built without xattr support"));
 #endif

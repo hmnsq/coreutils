@@ -114,44 +114,44 @@ static void printv (VALUE *v);
 static size_t
 mbs_logical_cspn (char const *s, char const *accept)
 {
-  if (accept[0] == '\0')
-    return 0;
+  если (accept[0] == '\0')
+    вернуть 0;
 
   /* General case.  */
-  if (MB_CUR_MAX > 1)
+  если (MB_CUR_MAX > 1)
     {
       size_t idx = 0;
-      for (char const *p = s; *p; )
+      для (char const *p = s; *p; )
         {
           ++idx;
           mcel_t g = mcel_scanz (p);
-          if (g.len == 1)
+          если (g.len == 1)
             {
-              if (mbschr (accept, *p))
-                return idx;
+              если (mbschr (accept, *p))
+                вернуть idx;
             }
-          else
-            for (char const *a = accept; *a; )
+          иначе
+            для (char const *a = accept; *a; )
               {
                 mcel_t h = mcel_scanz (a);
-                if (mcel_eq (g, h))
-                  return idx;
+                если (mcel_eq (g, h))
+                  вернуть idx;
                 a += h.len;
               }
           p += g.len;
         }
     }
-  else
+  иначе
     {
       /* single-byte locale,
          convert returned byte offset to 1-based index or zero if not found. */
       size_t i = strcspn (s, accept);
-      if (s[i])
-        return i + 1;
+      если (s[i])
+        вернуть i + 1;
     }
 
   /* not found */
-  return 0;
+  вернуть 0;
 }
 
 /* Extract the substring of S, from logical character
@@ -172,24 +172,24 @@ mbs_logical_substr (char const *s, size_t pos, size_t len)
 
   char const *substart = s;
   idx_t sublen = 0;
-  if (pos == 0 || len == SIZE_MAX)
+  если (pos == 0 || len == SIZE_MAX)
     {
       /* The request is invalid.  Silently yield an empty string.  */
     }
-  else if (mb_cur_max <= 1)
+  иначе если (mb_cur_max <= 1)
     {
       substart += pos - 1;
       sublen = vlen;
     }
-  else
-    for (idx_t idx = 1; *s && vlen; idx++)
+  иначе
+    для (idx_t idx = 1; *s && vlen; idx++)
       {
         idx_t char_bytes = mcel_scanz (s).len;
 
         /* Skip until we reach the starting position.  */
-        if (pos <= idx)
+        если (pos <= idx)
           {
-            if (pos == idx)
+            если (pos == idx)
               substart = s;
 
             /* Add one character's length in bytes.  */
@@ -200,7 +200,7 @@ mbs_logical_substr (char const *s, size_t pos, size_t len)
         s += char_bytes;
       }
 
-  return ximemdup0 (substart, sublen);
+  вернуть ximemdup0 (substart, sublen);
 }
 
 /* Return the number of logical characters (possibly multibyte)
@@ -215,19 +215,19 @@ static size_t
 mbs_offset_to_chars (char const *s, size_t ofs)
 {
   size_t c = 0;
-  for (size_t d = 0; d < ofs && s[d]; d += mcel_scanz (s + d).len)
+  для (size_t d = 0; d < ofs && s[d]; d += mcel_scanz (s + d).len)
     c++;
-  return c;
+  вернуть c;
 }
 
 
 
 void
-usage (int status)
+usage (целое status)
 {
-  if (status != EXIT_SUCCESS)
+  если (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  иначе
     {
       printf (_("\
 Usage: %s EXPRESSION\n\
@@ -242,9 +242,9 @@ Usage: %s EXPRESSION\n\
 Print the value of EXPRESSION to standard output.  A blank line below\n\
 separates increasing precedence groups.  EXPRESSION may be:\n\
 \n\
-  ARG1 | ARG2       ARG1 if it is neither null nor 0, otherwise ARG2\n\
+  ARG1 | ARG2       ARG1 если it is neither null nor 0, otherwise ARG2\n\
 \n\
-  ARG1 & ARG2       ARG1 if neither argument is null or 0, otherwise 0\n\
+  ARG1 & ARG2       ARG1 если neither argument is null or 0, otherwise 0\n\
 "), stdout);
       fputs (_("\
 \n\
@@ -278,22 +278,22 @@ separates increasing precedence groups.  EXPRESSION may be:\n\
   length STRING              length of STRING\n\
 "), stdout);
       fputs (_("\
-  + TOKEN                    interpret TOKEN as a string, even if it is a\n\
+  + TOKEN                    interpret TOKEN as a string, even если it is a\n\
                                keyword like 'match' or an operator like '/'\n\
 \n\
   ( EXPRESSION )             value of EXPRESSION\n\
 "), stdout);
       fputs (_("\
 \n\
-Beware that many operators need to be escaped or quoted for shells.\n\
-Comparisons are arithmetic if both ARGs are numbers, else lexicographical.\n\
-Pattern matches return the string matched between \\( and \\) or null; if\n\
-\\( and \\) are not used, they return the number of characters matched or 0.\n\
+Beware that many operators need to be escaped or quoted для shells.\n\
+Comparisons are arithmetic если both ARGs are numbers, иначе lexicographical.\n\
+Pattern matches вернуть the string matched between \\( and \\) or null; если\n\
+\\( and \\) are not used, they вернуть the number of characters matched or 0.\n\
 "), stdout);
       fputs (_("\
 \n\
-Exit status is 0 if EXPRESSION is neither null nor 0, 1 if EXPRESSION is null\n\
-or 0, 2 if EXPRESSION is syntactically invalid, and 3 if an error occurred.\n\
+Exit status is 0 если EXPRESSION is neither null nor 0, 1 если EXPRESSION is null\n\
+or 0, 2 если EXPRESSION is syntactically invalid, and 3 если an error occurred.\n\
 "), stdout);
       emit_ancillary_info (PROGRAM_NAME);
     }
@@ -301,8 +301,8 @@ or 0, 2 if EXPRESSION is syntactically invalid, and 3 if an error occurred.\n\
 }
 
 
-int
-main (int argc, char **argv)
+целое
+основной (целое argc, char **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -318,13 +318,13 @@ main (int argc, char **argv)
 
   /* The above handles --help and --version.
      Since there is no other invocation of getopt, handle '--' here.  */
-  if (1 < argc && streq (argv[1], "--"))
+  если (1 < argc && streq (argv[1], "--"))
     {
       --argc;
       ++argv;
     }
 
-  if (argc <= 1)
+  если (argc <= 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXPR_INVALID);
@@ -333,7 +333,7 @@ main (int argc, char **argv)
   args = argv + 1;
 
   VALUE *v = eval (true);
-  if (!nomoreargs ())
+  если (!nomoreargs ())
     error (EXPR_INVALID, 0, _("syntax error: unexpected argument %s"),
            quotearg_n_style (0, locale_quoting_style, *args));
 
@@ -345,12 +345,12 @@ main (int argc, char **argv)
 /* Return a VALUE for I.  */
 
 static VALUE *
-int_value (unsigned long int i)
+int_value (unsigned long целое i)
 {
   VALUE *v = xmalloc (sizeof *v);
   v->type = integer;
   mpz_init_set_ui (v->u.i, i);
-  return v;
+  вернуть v;
 }
 
 /* Return a VALUE for S.  */
@@ -361,7 +361,7 @@ str_value (char const *s)
   VALUE *v = xmalloc (sizeof *v);
   v->type = string;
   v->u.s = xstrdup (s);
-  return v;
+  вернуть v;
 }
 
 /* Free VALUE V, including structure components.  */
@@ -369,9 +369,9 @@ str_value (char const *s)
 static void
 freev (VALUE *v)
 {
-  if (v->type == string)
+  если (v->type == string)
     free (v->u.s);
-  else
+  иначе
     mpz_clear (v->u.i);
   free (v);
 }
@@ -404,23 +404,23 @@ null (VALUE *v)
   switch (v->type)
     {
     case integer:
-      return mpz_sgn (v->u.i) == 0;
+      вернуть mpz_sgn (v->u.i) == 0;
     case string:
       {
         char const *cp = v->u.s;
-        if (*cp == '\0')
-          return true;
+        если (*cp == '\0')
+          вернуть true;
 
         cp += (*cp == '-');
 
         do
           {
-            if (*cp != '0')
-              return false;
+            если (*cp != '0')
+              вернуть false;
           }
-        while (*++cp);
+        пока (*++cp);
 
-        return true;
+        вернуть true;
       }
     default:
       unreachable ();
@@ -436,11 +436,11 @@ looks_like_integer (char const *cp)
   cp += (*cp == '-');
 
   do
-    if (! c_isdigit (*cp))
-      return false;
-  while (*++cp);
+    если (! c_isdigit (*cp))
+      вернуть false;
+  пока (*++cp);
 
-  return true;
+  вернуть true;
 }
 
 /* Coerce V to a string value (can't fail).  */
@@ -473,18 +473,18 @@ toarith (VALUE *v)
   switch (v->type)
     {
     case integer:
-      return true;
+      вернуть true;
     case string:
       {
         char *s = v->u.s;
 
-        if (! looks_like_integer (s))
-          return false;
-        if (mpz_init_set_str (v->u.i, s, 10) != 0)
+        если (! looks_like_integer (s))
+          вернуть false;
+        если (mpz_init_set_str (v->u.i, s, 10) != 0)
           error (EXPR_FAILURE, ERANGE, "%s", (s));
         free (s);
         v->type = integer;
-        return true;
+        вернуть true;
       }
     default:
       unreachable ();
@@ -497,15 +497,15 @@ toarith (VALUE *v)
 static size_t
 getsize (mpz_t i)
 {
-  if (mpz_sgn (i) < 0)
-    return SIZE_MAX;
-  if (mpz_fits_ulong_p (i))
+  если (mpz_sgn (i) < 0)
+    вернуть SIZE_MAX;
+  если (mpz_fits_ulong_p (i))
     {
-      unsigned long int ul = mpz_get_ui (i);
-      if (ul < SIZE_MAX)
-        return ul;
+      unsigned long целое ul = mpz_get_ui (i);
+      если (ul < SIZE_MAX)
+        вернуть ul;
     }
-  return SIZE_MAX - 1;
+  вернуть SIZE_MAX - 1;
 }
 
 /* Return true and advance if the next token matches STR exactly.
@@ -514,13 +514,13 @@ getsize (mpz_t i)
 static bool
 nextarg (char const *str)
 {
-  if (*args == NULL)
-    return false;
-  else
+  если (*args == NULL)
+    вернуть false;
+  иначе
     {
       bool r = streq (*args, str);
       args += r;
-      return r;
+      вернуть r;
     }
 }
 
@@ -529,7 +529,7 @@ nextarg (char const *str)
 static bool
 nomoreargs (void)
 {
-  return !*args;
+  вернуть !*args;
 }
 
 /* Report missing operand.
@@ -538,7 +538,7 @@ nomoreargs (void)
 static void
 require_more_args (void)
 {
-  if (nomoreargs ())
+  если (nomoreargs ())
     error (EXPR_INVALID, 0, _("syntax error: missing argument after %s"),
            quotearg_n_style (0, locale_quoting_style, *(args - 1)));
 }
@@ -551,7 +551,7 @@ static void
 trace (char const *fxn)
 {
   printf ("%s:", fxn);
-  for (char **a = args; *a; a++)
+  для (char **a = args; *a; a++)
     printf (" %s", *a);
   putchar ('\n');
 }
@@ -582,27 +582,27 @@ docolon (VALUE *sv, VALUE *pv)
                        & ~RE_NO_EMPTY_RANGES);
   char const *errmsg = re_compile_pattern (pv->u.s, strlen (pv->u.s),
                                            &re_buffer);
-  if (errmsg)
+  если (errmsg)
     error (EXPR_INVALID, 0, "%s", (errmsg));
   re_buffer.newline_anchor = 0;
 
   VALUE *v;
   regoff_t matchlen = re_match (&re_buffer, sv->u.s, strlen (sv->u.s), 0,
                                 &re_regs);
-  if (0 <= matchlen)
+  если (0 <= matchlen)
     {
       /* Were \(...\) used? */
-      if (re_buffer.re_nsub > 0)
+      если (re_buffer.re_nsub > 0)
         {
-          if (re_regs.end[1] < 0)
+          если (re_regs.end[1] < 0)
             v = str_value ("");
-          else
+          иначе
             {
               sv->u.s[re_regs.end[1]] = '\0';
               v = str_value (sv->u.s + re_regs.start[1]);
             }
         }
-      else
+      иначе
         {
           /* In multibyte locales, convert the matched offset (=number of bytes)
              to the number of matched characters. */
@@ -612,27 +612,27 @@ docolon (VALUE *sv, VALUE *pv)
           v = int_value (i);
         }
     }
-  else if (matchlen == -1)
+  иначе если (matchlen == -1)
     {
       /* Match failed -- return the right kind of null.  */
-      if (re_buffer.re_nsub > 0)
+      если (re_buffer.re_nsub > 0)
         v = str_value ("");
-      else
+      иначе
         v = int_value (0);
     }
-  else
+  иначе
     error (EXPR_FAILURE,
            matchlen == -2 ? errno : EOVERFLOW,
            _("error in regular expression matcher"));
 
-  if (0 < re_regs.num_regs)
+  если (0 < re_regs.num_regs)
     {
       free (re_regs.start);
       free (re_regs.end);
     }
   re_buffer.fastmap = NULL;
   regfree (&re_buffer);
-  return v;
+  вернуть v;
 }
 
 /* Handle bare operands and ( expr ) syntax.  */
@@ -645,22 +645,22 @@ eval7 (bool evaluate)
 #endif
   require_more_args ();
 
-  if (nextarg ("("))
+  если (nextarg ("("))
     {
       VALUE *v = eval (evaluate);
-      if (nomoreargs ())
+      если (nomoreargs ())
         error (EXPR_INVALID, 0, _("syntax error: expecting ')' after %s"),
                quotearg_n_style (0, locale_quoting_style, *(args - 1)));
-      if (!nextarg (")"))
+      если (!nextarg (")"))
         error (EXPR_INVALID, 0, _("syntax error: expecting ')' instead of %s"),
                quotearg_n_style (0, locale_quoting_style, *args));
-      return v;
+      вернуть v;
     }
 
-  if (nextarg (")"))
+  если (nextarg (")"))
     error (EXPR_INVALID, 0, _("syntax error: unexpected ')'"));
 
-  return str_value (*args++);
+  вернуть str_value (*args++);
 }
 
 /* Handle match, substr, index, and length keywords, and quoting "+".  */
@@ -671,35 +671,35 @@ eval6 (bool evaluate)
 #ifdef EVAL_TRACE
   trace ("eval6");
 #endif
-  if (nextarg ("+"))
+  если (nextarg ("+"))
     {
       require_more_args ();
-      return str_value (*args++);
+      вернуть str_value (*args++);
     }
-  else if (nextarg ("length"))
+  иначе если (nextarg ("length"))
     {
       VALUE *r = eval6 (evaluate);
       tostring (r);
       VALUE *v = int_value (mbslen (r->u.s));
       freev (r);
-      return v;
+      вернуть v;
     }
-  else if (nextarg ("match"))
+  иначе если (nextarg ("match"))
     {
       VALUE *l = eval6 (evaluate);
       VALUE *r = eval6 (evaluate);
       VALUE *v;
-      if (evaluate)
+      если (evaluate)
         {
           v = docolon (l, r);
           freev (l);
         }
-      else
+      иначе
         v = l;
       freev (r);
-      return v;
+      вернуть v;
     }
-  else if (nextarg ("index"))
+  иначе если (nextarg ("index"))
     {
       VALUE *l = eval6 (evaluate);
       VALUE *r = eval6 (evaluate);
@@ -709,9 +709,9 @@ eval6 (bool evaluate)
       VALUE *v = int_value (pos);
       freev (l);
       freev (r);
-      return v;
+      вернуть v;
     }
-  else if (nextarg ("substr"))
+  иначе если (nextarg ("substr"))
     {
       VALUE *l = eval6 (evaluate);
       VALUE *i1 = eval6 (evaluate);
@@ -719,9 +719,9 @@ eval6 (bool evaluate)
       tostring (l);
 
       VALUE *v;
-      if (!toarith (i1) || !toarith (i2))
+      если (!toarith (i1) || !toarith (i2))
         v = str_value ("");
-      else
+      иначе
         {
           size_t pos = getsize (i1->u.i);
           size_t len = getsize (i2->u.i);
@@ -733,10 +733,10 @@ eval6 (bool evaluate)
       freev (l);
       freev (i1);
       freev (i2);
-      return v;
+      вернуть v;
     }
-  else
-    return eval7 (evaluate);
+  иначе
+    вернуть eval7 (evaluate);
 }
 
 /* Handle : operator (pattern matching).
@@ -749,12 +749,12 @@ eval5 (bool evaluate)
   trace ("eval5");
 #endif
   VALUE *l = eval6 (evaluate);
-  while (true)
+  пока (true)
     {
-      if (nextarg (":"))
+      если (nextarg (":"))
         {
           VALUE *r = eval6 (evaluate);
-          if (evaluate)
+          если (evaluate)
             {
               VALUE *v = docolon (l, r);
               freev (l);
@@ -762,8 +762,8 @@ eval5 (bool evaluate)
             }
           freev (r);
         }
-      else
-        return l;
+      иначе
+        вернуть l;
     }
 }
 
@@ -776,24 +776,24 @@ eval4 (bool evaluate)
   trace ("eval4");
 #endif
   VALUE *l = eval5 (evaluate);
-  while (true)
+  пока (true)
     {
       enum { multiply, divide, mod } fxn;
 
-      if (nextarg ("*"))
+      если (nextarg ("*"))
         fxn = multiply;
-      else if (nextarg ("/"))
+      иначе если (nextarg ("/"))
         fxn = divide;
-      else if (nextarg ("%"))
+      иначе если (nextarg ("%"))
         fxn = mod;
-      else
-        return l;
+      иначе
+        вернуть l;
       VALUE *r = eval5 (evaluate);
-      if (evaluate)
+      если (evaluate)
         {
-          if (!toarith (l) || !toarith (r))
+          если (!toarith (l) || !toarith (r))
             error (EXPR_INVALID, 0, _("non-integer argument"));
-          if (fxn != multiply && mpz_sgn (r->u.i) == 0)
+          если (fxn != multiply && mpz_sgn (r->u.i) == 0)
             error (EXPR_INVALID, 0, _("division by zero"));
           ((fxn == multiply ? mpz_mul
             : fxn == divide ? mpz_tdiv_q
@@ -813,20 +813,20 @@ eval3 (bool evaluate)
   trace ("eval3");
 #endif
   VALUE *l = eval4 (evaluate);
-  while (true)
+  пока (true)
     {
       enum { plus, minus } fxn;
 
-      if (nextarg ("+"))
+      если (nextarg ("+"))
         fxn = plus;
-      else if (nextarg ("-"))
+      иначе если (nextarg ("-"))
         fxn = minus;
-      else
-        return l;
+      иначе
+        вернуть l;
       VALUE *r = eval4 (evaluate);
-      if (evaluate)
+      если (evaluate)
         {
-          if (!toarith (l) || !toarith (r))
+          если (!toarith (l) || !toarith (r))
             error (EXPR_INVALID, 0, _("non-integer argument"));
           (fxn == plus ? mpz_add : mpz_sub) (l->u.i, l->u.i, r->u.i);
         }
@@ -843,44 +843,44 @@ eval2 (bool evaluate)
   trace ("eval2");
 #endif
   VALUE *l = eval3 (evaluate);
-  while (true)
+  пока (true)
     {
       enum
         {
           less_than, less_equal, equal, not_equal, greater_equal, greater_than
         } fxn;
 
-      if (nextarg ("<"))
+      если (nextarg ("<"))
         fxn = less_than;
-      else if (nextarg ("<="))
+      иначе если (nextarg ("<="))
         fxn = less_equal;
-      else if (nextarg ("=") || nextarg ("=="))
+      иначе если (nextarg ("=") || nextarg ("=="))
         fxn = equal;
-      else if (nextarg ("!="))
+      иначе если (nextarg ("!="))
         fxn = not_equal;
-      else if (nextarg (">="))
+      иначе если (nextarg (">="))
         fxn = greater_equal;
-      else if (nextarg (">"))
+      иначе если (nextarg (">"))
         fxn = greater_than;
-      else
-        return l;
+      иначе
+        вернуть l;
       VALUE *r = eval3 (evaluate);
 
       bool val = false;
-      if (evaluate)
+      если (evaluate)
         {
           tostring (l);
           tostring (r);
 
-          int cmp;
-          if (looks_like_integer (l->u.s) && looks_like_integer (r->u.s))
+          целое cmp;
+          если (looks_like_integer (l->u.s) && looks_like_integer (r->u.s))
             cmp = strintcmp (l->u.s, r->u.s);
-          else
+          иначе
             {
               errno = 0;
               cmp = strcoll (l->u.s, r->u.s);
 
-              if (errno)
+              если (errno)
                 {
                   error (0, errno, _("string comparison failed"));
                   error (0, 0, _("set LC_ALL='C' to work around the problem"));
@@ -918,22 +918,22 @@ eval1 (bool evaluate)
   trace ("eval1");
 #endif
   VALUE *l = eval2 (evaluate);
-  while (true)
+  пока (true)
     {
-      if (nextarg ("&"))
+      если (nextarg ("&"))
         {
           VALUE *r = eval2 (evaluate && !null (l));
-          if (null (l) || null (r))
+          если (null (l) || null (r))
             {
               freev (l);
               freev (r);
               l = int_value (0);
             }
-          else
+          иначе
             freev (r);
         }
-      else
-        return l;
+      иначе
+        вернуть l;
     }
 }
 
@@ -946,25 +946,25 @@ eval (bool evaluate)
   trace ("eval");
 #endif
   VALUE *l = eval1 (evaluate);
-  while (true)
+  пока (true)
     {
-      if (nextarg ("|"))
+      если (nextarg ("|"))
         {
           VALUE *r = eval1 (evaluate && null (l));
-          if (null (l))
+          если (null (l))
             {
               freev (l);
               l = r;
-              if (null (l))
+              если (null (l))
                 {
                   freev (l);
                   l = int_value (0);
                 }
             }
-          else
+          иначе
             freev (r);
         }
-      else
-        return l;
+      иначе
+        вернуть l;
     }
 }

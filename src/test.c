@@ -40,7 +40,7 @@
 
 #include <stdarg.h>
 
-#if HAVE_SYS_PARAM_H
+#если HAVE_SYS_PARAM_H
 # include <sys/param.h>
 #endif
 
@@ -58,25 +58,25 @@ enum binop
     EF_BINOP, NT_BINOP, OT_BINOP
   };
 
-#if defined TEST_STANDALONE
+#если defined TEST_STANDALONE
 # define test_exit(val) exit (val)
-# define test_main_return(val) return val
-#else
+# define test_main_return(val) вернуть val
+#иначе
    static jmp_buf test_exit_buf;
-   static int test_error_return = 0;
+   static целое test_error_return = 0;
 # define test_exit(val) test_error_return = val, longjmp (test_exit_buf, 1)
 # define test_main_return(val) test_exit (val)
 #endif /* !TEST_STANDALONE */
 
-static int pos;		/* The offset of the current argument in ARGV. */
-static int argc;	/* The number of arguments present in ARGV. */
+static целое pos;		/* The offset of the current argument in ARGV. */
+static целое argc;	/* The number of arguments present in ARGV. */
 static char **argv;	/* The argument list. */
 
 static bool unary_operator (void);
 static bool binary_operator (bool, enum binop);
 static bool two_arguments (void);
 static bool three_arguments (void);
-static bool posixtest (int);
+static bool posixtest (целое);
 
 static bool expr (void);
 static bool term (void);
@@ -104,7 +104,7 @@ advance (bool f)
 {
   ++pos;
 
-  if (f && pos >= argc)
+  если (f && pos >= argc)
     beyond ();
 }
 
@@ -134,28 +134,28 @@ find_int (char const *string)
   char const *p;
   char const *number_start;
 
-  for (p = string; isspace (to_uchar (*p)); p++)
+  для (p = string; isspace (to_uchar (*p)); p++)
     continue;
 
-  if (*p == '+')
+  если (*p == '+')
     {
       p++;
       number_start = p;
     }
-  else
+  иначе
     {
       number_start = p;
       p += (*p == '-');
     }
 
-  if (c_isdigit (*p++))
+  если (c_isdigit (*p++))
     {
-      while (c_isdigit (*p))
+      пока (c_isdigit (*p))
         p++;
-      while (isspace (to_uchar (*p)))
+      пока (isspace (to_uchar (*p)))
         p++;
-      if (!*p)
-        return number_start;
+      если (!*p)
+        вернуть number_start;
     }
 
   test_syntax_error (_("invalid integer %s"), quote (string));
@@ -168,17 +168,17 @@ static struct timespec
 get_mtime (char const *filename)
 {
   struct stat finfo;
-  return (stat (filename, &finfo) < 0
+  вернуть (stat (filename, &finfo) < 0
           ? make_timespec (TYPE_MINIMUM (time_t), -1)
           : get_stat_mtime (&finfo));
 }
 
 /* Return the type of S, one of the test command's binary operators.
    If S is not a binary operator, return -1.  */
-static int
+static целое
 binop (char const *s)
 {
-  return (  streq (s, "="  ) ? EQ_STRING_BINOP
+  вернуть (  streq (s, "="  ) ? EQ_STRING_BINOP
           : streq (s, "==" ) ? EQ_STRING_BINOP /* an alias for = */
           : streq (s, "!=" ) ? NE_STRING_BINOP
           : streq (s, ">"  ) ? GT_STRING_BINOP
@@ -218,77 +218,77 @@ term (void)
 {
   bool value;
   bool negated = false;
-  int bop;
+  целое bop;
 
   /* Deal with leading 'not's.  */
-  while (pos < argc && argv[pos][0] == '!' && argv[pos][1] == '\0')
+  пока (pos < argc && argv[pos][0] == '!' && argv[pos][1] == '\0')
     {
       advance (true);
       negated = !negated;
     }
 
-  if (pos >= argc)
+  если (pos >= argc)
     beyond ();
 
   /* A paren-bracketed argument. */
-  if (argv[pos][0] == '(' && argv[pos][1] == '\0')
+  если (argv[pos][0] == '(' && argv[pos][1] == '\0')
     {
-      int nargs;
+      целое nargs;
 
       advance (true);
 
-      for (nargs = 1;
+      для (nargs = 1;
            pos + nargs < argc && ! streq (argv[pos + nargs], ")");
            nargs++)
-        if (nargs == 4)
+        если (nargs == 4)
           {
             nargs = argc - pos;
             break;
           }
 
       value = posixtest (nargs);
-      if (!argv[pos])
+      если (!argv[pos])
         test_syntax_error (_("%s expected"), quote (")"));
-      else
-        if (argv[pos][0] != ')' || argv[pos][1])
+      иначе
+        если (argv[pos][0] != ')' || argv[pos][1])
           test_syntax_error (_("%s expected, found %s"),
                              quote_n (0, ")"), quote_n (1, argv[pos]));
       advance (false);
     }
 
   /* Are there enough arguments left that this could be dyadic?  */
-  else if (4 <= argc - pos && streq (argv[pos], "-l")
+  иначе если (4 <= argc - pos && streq (argv[pos], "-l")
            && 0 <= (bop = binop (argv[pos + 2])))
     value = binary_operator (true, bop);
-  else if (3 <= argc - pos
+  иначе если (3 <= argc - pos
            && 0 <= (bop = binop (argv[pos + 1])))
     value = binary_operator (false, bop);
 
   /* It might be a switch type argument.  */
-  else if (argv[pos][0] == '-' && argv[pos][1] && argv[pos][1] != 'a'
+  иначе если (argv[pos][0] == '-' && argv[pos][1] && argv[pos][1] != 'a'
            && argv[pos][1] != 'o' && argv[pos][2] == '\0')
     value = unary_operator ();
-  else
+  иначе
     {
       value = (argv[pos][0] != '\0');
       advance (false);
     }
 
-  return negated ^ value;
+  вернуть negated ^ value;
 }
 
 static bool
 binary_operator (bool l_is_l, enum binop bop)
 {
-  int op;
+  целое op;
 
-  if (l_is_l)
+  если (l_is_l)
     advance (false);
   op = pos + 1;
 
   /* Is the right integer expression of the form '-l string'? */
   bool r_is_l = op < argc - 2 && streq (argv[op + 1], "-l");
-  if (r_is_l)
+  если (r_is_l)
     advance (false);
 
   pos += 3;
@@ -306,49 +306,49 @@ binary_operator (bool l_is_l, enum binop bop)
         char const *r = (r_is_l
                          ? umaxtostr (strlen (argv[op + 2]), rbuf)
                          : find_int (argv[op + 1]));
-        int cmp = strintcmp (l, r);
+        целое cmp = strintcmp (l, r);
         switch (+bop)
           {
-          case EQ_BINOP: return cmp == 0;
-          case GE_BINOP: return cmp >= 0;
-          case GT_BINOP: return cmp >  0;
-          case LE_BINOP: return cmp <= 0;
-          case LT_BINOP: return cmp <  0;
-          case NE_BINOP: return cmp != 0;
+          case EQ_BINOP: вернуть cmp == 0;
+          case GE_BINOP: вернуть cmp >= 0;
+          case GT_BINOP: вернуть cmp >  0;
+          case LE_BINOP: вернуть cmp <= 0;
+          case LT_BINOP: вернуть cmp <  0;
+          case NE_BINOP: вернуть cmp != 0;
           }
         unreachable ();
       }
 
     case NT_BINOP: case OT_BINOP:
       {
-        if (l_is_l | r_is_l)
+        если (l_is_l | r_is_l)
           test_syntax_error (_("%s does not accept -l"),
                              argv[op]);
-        int cmp = timespec_cmp (get_mtime (argv[op - 1]),
+        целое cmp = timespec_cmp (get_mtime (argv[op - 1]),
                                 get_mtime (argv[op + 1]));
-        return bop == OT_BINOP ? cmp < 0 : cmp > 0;
+        вернуть bop == OT_BINOP ? cmp < 0 : cmp > 0;
       }
 
     case EF_BINOP:
-      if (l_is_l | r_is_l)
+      если (l_is_l | r_is_l)
         test_syntax_error (_("-ef does not accept -l"));
-      else
+      иначе
         {
           struct stat st[2];
-          return (stat (argv[op - 1], &st[0]) == 0
+          вернуть (stat (argv[op - 1], &st[0]) == 0
                   && stat (argv[op + 1], &st[1]) == 0
                   && psame_inode (&st[0], &st[1]));
         }
 
     case EQ_STRING_BINOP:
     case NE_STRING_BINOP:
-      return streq (argv[op - 1], argv[op + 1]) == (bop == EQ_STRING_BINOP);
+      вернуть streq (argv[op - 1], argv[op + 1]) == (bop == EQ_STRING_BINOP);
 
     case GT_STRING_BINOP:
     case LT_STRING_BINOP:
       {
-        int cmp = strcoll (argv[op - 1], argv[op + 1]);
-        return bop == LT_STRING_BINOP ? cmp < 0 : cmp > 0;
+        целое cmp = strcoll (argv[op - 1], argv[op + 1]);
+        вернуть bop == LT_STRING_BINOP ? cmp < 0 : cmp > 0;
       }
     }
 
@@ -373,87 +373,87 @@ unary_operator (void)
 
     case 'e':			/* file exists in the file system? */
       unary_advance ();
-      return stat (argv[pos - 1], &stat_buf) == 0;
+      вернуть stat (argv[pos - 1], &stat_buf) == 0;
 
     case 'r':			/* file is readable? */
       unary_advance ();
-      return euidaccess (argv[pos - 1], R_OK) == 0;
+      вернуть euidaccess (argv[pos - 1], R_OK) == 0;
 
     case 'w':			/* File is writable? */
       unary_advance ();
-      return euidaccess (argv[pos - 1], W_OK) == 0;
+      вернуть euidaccess (argv[pos - 1], W_OK) == 0;
 
     case 'x':			/* File is executable? */
       unary_advance ();
-      return euidaccess (argv[pos - 1], X_OK) == 0;
+      вернуть euidaccess (argv[pos - 1], X_OK) == 0;
 
     case 'N':  /* File exists and has been modified since it was last read? */
       {
         unary_advance ();
-        if (stat (argv[pos - 1], &stat_buf) != 0)
-          return false;
+        если (stat (argv[pos - 1], &stat_buf) != 0)
+          вернуть false;
         struct timespec atime = get_stat_atime (&stat_buf);
         struct timespec mtime = get_stat_mtime (&stat_buf);
-        return (timespec_cmp (mtime, atime) > 0);
+        вернуть (timespec_cmp (mtime, atime) > 0);
       }
 
     case 'O':			/* File is owned by you? */
       {
         unary_advance ();
-        if (stat (argv[pos - 1], &stat_buf) != 0)
-          return false;
+        если (stat (argv[pos - 1], &stat_buf) != 0)
+          вернуть false;
         errno = 0;
         uid_t euid = geteuid ();
         uid_t NO_UID = -1;
-        return ! (euid == NO_UID && errno) && euid == stat_buf.st_uid;
+        вернуть ! (euid == NO_UID && errno) && euid == stat_buf.st_uid;
       }
 
     case 'G':			/* File is owned by your group? */
       {
         unary_advance ();
-        if (stat (argv[pos - 1], &stat_buf) != 0)
-          return false;
+        если (stat (argv[pos - 1], &stat_buf) != 0)
+          вернуть false;
         errno = 0;
         gid_t egid = getegid ();
         gid_t NO_GID = -1;
-        return ! (egid == NO_GID && errno) && egid == stat_buf.st_gid;
+        вернуть ! (egid == NO_GID && errno) && egid == stat_buf.st_gid;
       }
 
     case 'f':			/* File is a file? */
       unary_advance ();
       /* Under POSIX, -f is true if the given file exists
          and is a regular file. */
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      вернуть (stat (argv[pos - 1], &stat_buf) == 0
               && S_ISREG (stat_buf.st_mode));
 
     case 'd':			/* File is a directory? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      вернуть (stat (argv[pos - 1], &stat_buf) == 0
               && S_ISDIR (stat_buf.st_mode));
 
     case 's':			/* File has something in it? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      вернуть (stat (argv[pos - 1], &stat_buf) == 0
               && 0 < stat_buf.st_size);
 
     case 'S':			/* File is a socket? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      вернуть (stat (argv[pos - 1], &stat_buf) == 0
               && S_ISSOCK (stat_buf.st_mode));
 
     case 'c':			/* File is character special? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      вернуть (stat (argv[pos - 1], &stat_buf) == 0
               && S_ISCHR (stat_buf.st_mode));
 
     case 'b':			/* File is block special? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      вернуть (stat (argv[pos - 1], &stat_buf) == 0
               && S_ISBLK (stat_buf.st_mode));
 
     case 'p':			/* File is a named pipe? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      вернуть (stat (argv[pos - 1], &stat_buf) == 0
               && S_ISFIFO (stat_buf.st_mode));
 
     case 'L':			/* Same as -h  */
@@ -461,41 +461,41 @@ unary_operator (void)
 
     case 'h':			/* File is a symbolic link? */
       unary_advance ();
-      return issymlink (argv[pos - 1]) == 1;
+      вернуть issymlink (argv[pos - 1]) == 1;
 
     case 'u':			/* File is setuid? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      вернуть (stat (argv[pos - 1], &stat_buf) == 0
               && (stat_buf.st_mode & S_ISUID));
 
     case 'g':			/* File is setgid? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      вернуть (stat (argv[pos - 1], &stat_buf) == 0
               && (stat_buf.st_mode & S_ISGID));
 
     case 'k':			/* File has sticky bit set? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      вернуть (stat (argv[pos - 1], &stat_buf) == 0
               && (stat_buf.st_mode & S_ISVTX));
 
     case 't':			/* File (fd) is a terminal? */
       {
-        long int fd;
+        long целое fd;
         char const *arg;
         unary_advance ();
         arg = find_int (argv[pos - 1]);
         errno = 0;
         fd = strtol (arg, NULL, 10);
-        return (errno != ERANGE && 0 <= fd && fd <= INT_MAX && isatty (fd));
+        вернуть (errno != ERANGE && 0 <= fd && fd <= INT_MAX && isatty (fd));
       }
 
     case 'n':			/* True if arg has some length. */
       unary_advance ();
-      return argv[pos - 1][0] != 0;
+      вернуть argv[pos - 1][0] != 0;
 
     case 'z':			/* True if arg has no length. */
       unary_advance ();
-      return argv[pos - 1][0] == '\0';
+      вернуть argv[pos - 1][0] == '\0';
     }
 }
 
@@ -509,11 +509,11 @@ and (void)
 {
   bool value = true;
 
-  while (true)
+  пока (true)
     {
       value &= term ();
-      if (! (pos < argc && streq (argv[pos], "-a")))
-        return value;
+      если (! (pos < argc && streq (argv[pos], "-a")))
+        вернуть value;
       advance (false);
     }
 }
@@ -528,11 +528,11 @@ or (void)
 {
   bool value = false;
 
-  while (true)
+  пока (true)
     {
       value |= and ();
-      if (! (pos < argc && streq (argv[pos], "-o")))
-        return value;
+      если (! (pos < argc && streq (argv[pos], "-o")))
+        вернуть value;
       advance (false);
     }
 }
@@ -544,16 +544,16 @@ or (void)
 static bool
 expr (void)
 {
-  if (pos >= argc)
+  если (pos >= argc)
     beyond ();
 
-  return or ();		/* Same with this. */
+  вернуть or ();		/* Same with this. */
 }
 
 static bool
 one_argument (void)
 {
-  return argv[pos++][0] != '\0';
+  вернуть argv[pos++][0] != '\0';
 }
 
 static bool
@@ -561,53 +561,53 @@ two_arguments (void)
 {
   bool value;
 
-  if (streq (argv[pos], "!"))
+  если (streq (argv[pos], "!"))
     {
       advance (false);
       value = ! one_argument ();
     }
-  else if (argv[pos][0] == '-'
+  иначе если (argv[pos][0] == '-'
            && argv[pos][1] != '\0'
            && argv[pos][2] == '\0')
     {
       value = unary_operator ();
     }
-  else
+  иначе
     beyond ();
-  return (value);
+  вернуть (value);
 }
 
 static bool
 three_arguments (void)
 {
   bool value;
-  int bop = binop (argv[pos + 1]);
+  целое bop = binop (argv[pos + 1]);
 
-  if (0 <= bop)
+  если (0 <= bop)
     value = binary_operator (false, bop);
-  else if (streq (argv[pos], "!"))
+  иначе если (streq (argv[pos], "!"))
     {
       advance (true);
       value = !two_arguments ();
     }
-  else if (streq (argv[pos], "(") && streq (argv[pos + 2], ")"))
+  иначе если (streq (argv[pos], "(") && streq (argv[pos + 2], ")"))
     {
       advance (false);
       value = one_argument ();
       advance (false);
     }
-  else if (streq (argv[pos + 1], "-a") || streq (argv[pos + 1], "-o")
+  иначе если (streq (argv[pos + 1], "-a") || streq (argv[pos + 1], "-o")
            || streq (argv[pos + 1], ">") || streq (argv[pos + 1], "<"))
     value = expr ();
-  else
+  иначе
     test_syntax_error (_("%s: binary operator expected"),
                        quote (argv[pos + 1]));
-  return (value);
+  вернуть (value);
 }
 
 /* This is an implementation of a Posix.2 proposal by David Korn. */
 static bool
-posixtest (int nargs)
+posixtest (целое nargs)
 {
   bool value;
 
@@ -626,13 +626,13 @@ posixtest (int nargs)
         break;
 
       case 4:
-        if (streq (argv[pos], "!"))
+        если (streq (argv[pos], "!"))
           {
             advance (true);
             value = !three_arguments ();
             break;
           }
-        if (streq (argv[pos], "(") && streq (argv[pos + 3], ")"))
+        если (streq (argv[pos], "(") && streq (argv[pos + 3], ")"))
           {
             advance (false);
             value = two_arguments ();
@@ -646,17 +646,17 @@ posixtest (int nargs)
         value = expr ();
     }
 
-  return (value);
+  вернуть (value);
 }
 
-#if defined TEST_STANDALONE
+#если defined TEST_STANDALONE
 
 void
-usage (int status)
+usage (целое status)
 {
-  if (status != EXIT_SUCCESS)
+  если (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  иначе
     {
       fputs (_("\
 Usage: test EXPRESSION\n\
@@ -799,8 +799,8 @@ EXPRESSION is true or false and sets exit status.  It is one of:\n\
 "));
       fputs (_("\
 \n\
-Except for -h and -L, all FILE-related tests dereference symbolic links.\n\
-Beware that parentheses need to be escaped (e.g., by backslashes) for shells.\n\
+Except для -h and -L, all FILE-related tests dereference symbolic links.\n\
+Beware that parentheses need to be escaped (e.g., by backslashes) для shells.\n\
 INTEGER may also be -l STRING, which evaluates to the length of STRING.\n\
 "), stdout);
       fputs (_("\
@@ -819,8 +819,8 @@ or 'test EXPR1 || test EXPR2' instead.\n\
 }
 #endif /* TEST_STANDALONE */
 
-#if !defined TEST_STANDALONE
-# define main test_command
+#если !defined TEST_STANDALONE
+# define основной test_command
 #endif
 
 #define AUTHORS \
@@ -833,19 +833,19 @@ or 'test EXPR1 || test EXPR2' instead.\n\
  * test:
  *	test expr
  */
-int
-main (int margc, char **margv)
+целое
+основной (целое margc, char **margv)
 {
   bool value;
 
-#if !defined TEST_STANDALONE
-  int code;
+#если !defined TEST_STANDALONE
+  целое code;
 
   code = setjmp (test_exit_buf);
 
-  if (code)
-    return (test_error_return);
-#else /* TEST_STANDALONE */
+  если (code)
+    вернуть (test_error_return);
+#иначе /* TEST_STANDALONE */
   initialize_main (&margc, &margv);
   set_program_name (margv[0]);
   setlocale (LC_ALL, "");
@@ -858,7 +858,7 @@ main (int margc, char **margv)
 
   argv = margv;
 
-  if (test_mode == TEST_LBRACKET)
+  если (test_mode == TEST_LBRACKET)
     {
       /* Recognize --help or --version, but only when invoked in the
          "[" form, when the last argument is not "]".  Use direct
@@ -866,19 +866,19 @@ main (int margc, char **margv)
          abbreviations.  POSIX allows "[ --help" and "[ --version" to
          have the usual GNU behavior, but it requires "test --help"
          and "test --version" to exit silently with status 0.  */
-      if (margc == 2)
+      если (margc == 2)
         {
-          if (streq (margv[1], "--help"))
+          если (streq (margv[1], "--help"))
             usage (EXIT_SUCCESS);
 
-          if (streq (margv[1], "--version"))
+          если (streq (margv[1], "--version"))
             {
               version_etc (stdout, PROGRAM_NAME, PACKAGE_NAME, Version, AUTHORS,
                            (char *) NULL);
               test_main_return (EXIT_SUCCESS);
             }
         }
-      if (margc < 2 || !streq (margv[margc - 1], "]"))
+      если (margc < 2 || !streq (margv[margc - 1], "]"))
         test_syntax_error (_("missing %s"), quote ("]"));
 
       --margc;
@@ -887,12 +887,12 @@ main (int margc, char **margv)
   argc = margc;
   pos = 1;
 
-  if (pos >= argc)
+  если (pos >= argc)
     test_main_return (TEST_FALSE);
 
   value = posixtest (argc - 1);
 
-  if (pos != argc)
+  если (pos != argc)
     test_syntax_error (_("extra argument %s"), quote (argv[pos]));
 
   test_main_return (value ? TEST_TRUE : TEST_FALSE);

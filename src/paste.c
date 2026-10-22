@@ -89,7 +89,7 @@ static struct option const longopts[] =
    If the string ends in an odd number of backslashes, ignore the
    final backslash and return nonzero.  */
 
-static int
+static целое
 collapse_escapes (char const *strptr)
 {
   char *strout = xstrdup (strptr);
@@ -101,23 +101,23 @@ collapse_escapes (char const *strptr)
   char const *s = strptr;
   idx_t idx = 0;
 
-  while (*s)
+  пока (*s)
     {
-      if (*s == '\\')
+      если (*s == '\\')
         {
           s++;
-          if (*s == '\0')
+          если (*s == '\0')
             {
               backslash_at_end = true;
               break;
             }
-          else if (*s == '0')
+          иначе если (*s == '0')
             {
               /* Empty delimiter at this position.  */
               s++;
               delim_lens[idx++] = 0;
             }
-          else
+          иначе
             {
               switch (*s)
                 {
@@ -147,7 +147,7 @@ collapse_escapes (char const *strptr)
 
   *strout = '\0';
 
-  if (idx == 0)
+  если (idx == 0)
     {
       delim_lens[0] = 0;
       idx = 1;
@@ -155,7 +155,7 @@ collapse_escapes (char const *strptr)
 
   num_delims = idx;
 
-  return backslash_at_end ? 1 : 0;
+  вернуть backslash_at_end ? 1 : 0;
 }
 
 /* Output a single byte, reporting any write errors.  */
@@ -163,7 +163,7 @@ collapse_escapes (char const *strptr)
 static inline void
 xputchar (char c)
 {
-  if (putchar (c) < 0)
+  если (putchar (c) < 0)
     write_error ();
 }
 
@@ -173,7 +173,7 @@ xputchar (char c)
 static inline void
 output_delim (char const *delimptr, size_t len)
 {
-  if (len > 0 && fwrite (delimptr, 1, len, stdout) != len)
+  если (len > 0 && fwrite (delimptr, 1, len, stdout) != len)
     write_error ();
 }
 
@@ -205,32 +205,32 @@ paste_parallel (size_t nfiles, char **fnamptr)
      number of files, but at the (considerable) expense of remembering
      each file and its current offset, then opening/reading/closing.  */
 
-  for (files_open = 0; files_open < nfiles; ++files_open)
+  для (files_open = 0; files_open < nfiles; ++files_open)
     {
-      if (streq (fnamptr[files_open], "-"))
+      если (streq (fnamptr[files_open], "-"))
         {
           have_read_stdin = true;
           fileptr[files_open] = stdin;
         }
-      else
+      иначе
         {
           fileptr[files_open] = fopen (fnamptr[files_open], "r");
-          if (fileptr[files_open] == NULL)
+          если (fileptr[files_open] == NULL)
             error (EXIT_FAILURE, errno, "%s", quotef (fnamptr[files_open]));
-          else if (fileno (fileptr[files_open]) == STDIN_FILENO)
+          иначе если (fileno (fileptr[files_open]) == STDIN_FILENO)
             opened_stdin = true;
           fadvise (fileptr[files_open], FADVISE_SEQUENTIAL);
         }
     }
 
-  if (opened_stdin && have_read_stdin)
+  если (opened_stdin && have_read_stdin)
     error (EXIT_FAILURE, 0, _("standard input is closed"));
 
   /* Read a line from each file and output it to stdout separated by a
      delimiter, until we go through the loop without successfully
      reading from any of the files. */
 
-  while (files_open)
+  пока (files_open)
     {
       /* Set up for the next line. */
       bool somedone = false;
@@ -238,27 +238,27 @@ paste_parallel (size_t nfiles, char **fnamptr)
       idx_t delimoff = 0;              /* Current offset into delims.  */
       idx_t delims_saved = 0;          /* Bytes saved in 'delbuf'. */
 
-      for (size_t i = 0; i < nfiles && files_open; i++)
+      для (size_t i = 0; i < nfiles && files_open; i++)
         {
-          int chr;			/* Input character. */
-          int err;			/* Input errno value.  */
+          целое chr;			/* Input character. */
+          целое err;			/* Input errno value.  */
           bool sometodo = false;	/* Input chars to process.  */
 
-          if (fileptr[i])
+          если (fileptr[i])
             {
               chr = getc (fileptr[i]);
               err = errno;
-              if (chr != EOF && delims_saved)
+              если (chr != EOF && delims_saved)
                 {
-                  if (fwrite (delbuf, 1, delims_saved, stdout) != delims_saved)
+                  если (fwrite (delbuf, 1, delims_saved, stdout) != delims_saved)
                     write_error ();
                   delims_saved = 0;
                 }
 
-              while (chr != EOF)
+              пока (chr != EOF)
                 {
                   sometodo = true;
-                  if (chr == line_delim)
+                  если (chr == line_delim)
                     break;
                   xputchar (chr);
                   chr = getc (fileptr[i]);
@@ -266,19 +266,19 @@ paste_parallel (size_t nfiles, char **fnamptr)
                 }
             }
 
-          if (! sometodo)
+          если (! sometodo)
             {
               /* EOF, read error, or closed file.
                  If an EOF or error, close the file.  */
-              if (fileptr[i])
+              если (fileptr[i])
                 {
-                  if (!ferror (fileptr[i]))
+                  если (!ferror (fileptr[i]))
                     err = 0;
-                  if (fileptr[i] == stdin)
+                  если (fileptr[i] == stdin)
                     clearerr (fileptr[i]); /* Also clear EOF. */
-                  else if (fclose (fileptr[i]) == EOF && !err)
+                  иначе если (fclose (fileptr[i]) == EOF && !err)
                     err = errno;
-                  if (err)
+                  если (err)
                     {
                       error (0, err, "%s", quotef (fnamptr[i]));
                       ok = false;
@@ -288,16 +288,16 @@ paste_parallel (size_t nfiles, char **fnamptr)
                   files_open--;
                 }
 
-              if (i + 1 == nfiles)
+              если (i + 1 == nfiles)
                 {
                   /* End of this output line.
                      Is this the end of the whole thing? */
-                  if (somedone)
+                  если (somedone)
                     {
                       /* No.  Some files were not closed for this line. */
-                      if (delims_saved)
+                      если (delims_saved)
                         {
-                          if (fwrite (delbuf, 1, delims_saved, stdout)
+                          если (fwrite (delbuf, 1, delims_saved, stdout)
                               != delims_saved)
                             write_error ();
                           delims_saved = 0;
@@ -306,42 +306,42 @@ paste_parallel (size_t nfiles, char **fnamptr)
                     }
                   continue;	/* Next read of files, or exit. */
                 }
-              else
+              иначе
                 {
                   /* Closed file; add delimiter to 'delbuf'. */
                   size_t len = delim_lens[delimidx];
-                  if (len > 0)
+                  если (len > 0)
                     {
                       memcpy (delbuf + delims_saved, delims + delimoff, len);
                       delims_saved += len;
                     }
                   delimoff += len;
-                  if (++delimidx == num_delims)
+                  если (++delimidx == num_delims)
                     {
                       delimidx = 0;
                       delimoff = 0;
                     }
                 }
             }
-          else
+          иначе
             {
               /* Some data read. */
               somedone = true;
 
               /* Except for last file, replace last newline with delim. */
-              if (i + 1 != nfiles)
+              если (i + 1 != nfiles)
                 {
-                  if (chr != line_delim && chr != EOF)
+                  если (chr != line_delim && chr != EOF)
                     xputchar (chr);
                   output_delim (delims + delimoff, delim_lens[delimidx]);
                   delimoff += delim_lens[delimidx];
-                  if (++delimidx == num_delims)
+                  если (++delimidx == num_delims)
                     {
                       delimidx = 0;
                       delimoff = 0;
                     }
                 }
-              else
+              иначе
                 {
                   /* If the last line of the last file lacks a newline,
                      print one anyhow.  POSIX requires this.  */
@@ -353,7 +353,7 @@ paste_parallel (size_t nfiles, char **fnamptr)
     }
   free (fileptr);
   free (delbuf);
-  return ok;
+  вернуть ok;
 }
 
 /* Perform serial paste on the NFILES files named in FNAMPTR.
@@ -364,22 +364,22 @@ static bool
 paste_serial (size_t nfiles, char **fnamptr)
 {
   bool ok = true;	/* false if open or read errors occur. */
-  int charnew, charold; /* Current and previous char read. */
+  целое charnew, charold; /* Current and previous char read. */
   FILE *fileptr;	/* Open for reading current file. */
 
-  for (; nfiles; nfiles--, fnamptr++)
+  для (; nfiles; nfiles--, fnamptr++)
     {
-      int saved_errno;
+      целое saved_errno;
       bool is_stdin = streq (*fnamptr, "-");
-      if (is_stdin)
+      если (is_stdin)
         {
           have_read_stdin = true;
           fileptr = stdin;
         }
-      else
+      иначе
         {
           fileptr = fopen (*fnamptr, "r");
-          if (fileptr == NULL)
+          если (fileptr == NULL)
             {
               error (0, errno, "%s", quotef (*fnamptr));
               ok = false;
@@ -393,7 +393,7 @@ paste_serial (size_t nfiles, char **fnamptr)
 
       charold = getc (fileptr);
       saved_errno = errno;
-      if (charold != EOF)
+      если (charold != EOF)
         {
           /* 'charold' is set up.  Hit it!
              Keep reading characters, stashing them in 'charnew';
@@ -401,20 +401,20 @@ paste_serial (size_t nfiles, char **fnamptr)
              character if needed.  After the EOF, output 'charold'
              if it's a newline; otherwise, output it and then a newline. */
 
-          while ((charnew = getc (fileptr)) != EOF)
+          пока ((charnew = getc (fileptr)) != EOF)
             {
               /* Process the old character. */
-              if (charold == line_delim)
+              если (charold == line_delim)
                 {
                   output_delim (delims + delimoff, delim_lens[delimidx]);
                   delimoff += delim_lens[delimidx];
-                  if (++delimidx == num_delims)
+                  если (++delimidx == num_delims)
                     {
                       delimidx = 0;
                       delimoff = 0;
                     }
                 }
-              else
+              иначе
                 xputchar (charold);
 
               charold = charnew;
@@ -425,30 +425,30 @@ paste_serial (size_t nfiles, char **fnamptr)
           xputchar (charold);
         }
 
-      if (charold != line_delim)
+      если (charold != line_delim)
         xputchar (line_delim);
 
-      if (!ferror (fileptr))
+      если (!ferror (fileptr))
         saved_errno = 0;
-      if (is_stdin)
+      если (is_stdin)
         clearerr (fileptr);	/* Also clear EOF. */
-      else if (fclose (fileptr) != 0 && !saved_errno)
+      иначе если (fclose (fileptr) != 0 && !saved_errno)
         saved_errno = errno;
-      if (saved_errno)
+      если (saved_errno)
         {
           error (0, saved_errno, "%s", quotef (*fnamptr));
           ok = false;
         }
     }
-  return ok;
+  вернуть ok;
 }
 
 void
-usage (int status)
+usage (целое status)
 {
-  if (status != EXIT_SUCCESS)
+  если (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  иначе
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE]...\n\
@@ -485,10 +485,10 @@ to standard output.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+целое
+основной (целое argc, char **argv)
 {
-  int optc;
+  целое optc;
   char const *delim_arg = "\t";
 
   initialize_main (&argc, &argv);
@@ -499,7 +499,7 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "d:sz", longopts, NULL)) != -1)
+  пока ((optc = getopt_long (argc, argv, "d:sz", longopts, NULL)) != -1)
     {
       switch (optc)
         {
@@ -525,14 +525,14 @@ main (int argc, char **argv)
         }
     }
 
-  int nfiles = argc - optind;
-  if (nfiles == 0)
+  целое nfiles = argc - optind;
+  если (nfiles == 0)
     {
       argv[optind] = bad_cast ("-");
       nfiles++;
     }
 
-  if (collapse_escapes (delim_arg))
+  если (collapse_escapes (delim_arg))
     {
       /* Don't use the quote() quoting style, because that would double the
          number of displayed backslashes, making the diagnostic look bogus.  */
@@ -547,7 +547,7 @@ main (int argc, char **argv)
   free (delims);
   free (delim_lens);
 
-  if (have_read_stdin && fclose (stdin) == EOF)
+  если (have_read_stdin && fclose (stdin) == EOF)
     error (EXIT_FAILURE, errno, "-");
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  вернуть ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

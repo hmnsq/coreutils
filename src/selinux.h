@@ -24,31 +24,31 @@ struct selabel_handle;
 /* Return true if ERR corresponds to an unsupported request,
    or if there is no context or it's inaccessible.  */
 static inline bool
-ignorable_ctx_err (int err)
+ignorable_ctx_err (целое err)
 {
-  return err == ENOTSUP || err == ENODATA;
+  вернуть err == ENOTSUP || err == ENODATA;
 }
 
-# if HAVE_SELINUX_LABEL_H
+# если HAVE_SELINUX_LABEL_H
 
 extern bool
 restorecon (struct selabel_handle *selabel_handle,
             char const *path, bool recurse);
-extern int
+extern целое
 defaultcon (struct selabel_handle *selabel_handle,
             char const *path, mode_t mode);
 
-# else
+# иначе
 
 static inline bool
 restorecon (MAYBE_UNUSED struct selabel_handle *selabel_handle,
             MAYBE_UNUSED char const *path, MAYBE_UNUSED bool recurse)
-{ errno = ENOTSUP; return false; }
+{ errno = ENOTSUP; вернуть false; }
 
-static inline int
+static inline целое
 defaultcon (MAYBE_UNUSED struct selabel_handle *selabel_handle,
             MAYBE_UNUSED char const *path, MAYBE_UNUSED mode_t mode)
-{ errno = ENOTSUP; return -1; }
+{ errno = ENOTSUP; вернуть -1; }
 
 # endif
 

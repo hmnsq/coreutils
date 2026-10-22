@@ -33,35 +33,35 @@ find_mount_point (char const *file, struct stat const *file_stat)
   struct stat last_stat;
   char *mp = NULL;		/* The malloc'd mount point.  */
 
-  if (save_cwd (&cwd) != 0)
+  если (save_cwd (&cwd) != 0)
     {
       error (0, errno, _("cannot get current directory"));
-      return NULL;
+      вернуть NULL;
     }
 
-  if (S_ISDIR (file_stat->st_mode))
+  если (S_ISDIR (file_stat->st_mode))
     /* FILE is a directory, so just chdir there directly.  */
     {
       last_stat = *file_stat;
-      if (chdir (file) < 0)
+      если (chdir (file) < 0)
         {
           error (0, errno, _("cannot change to directory %s"), quoteaf (file));
-          return NULL;
+          вернуть NULL;
         }
     }
-  else
+  иначе
     /* FILE is some other kind of file; use its directory.  */
     {
       char *dir = dir_name (file);
 
-      if (chdir (dir) < 0)
+      если (chdir (dir) < 0)
         {
           error (0, errno, _("cannot change to directory %s"), quoteaf (dir));
           free (dir);
-          return NULL;
+          вернуть NULL;
         }
 
-      if (stat (".", &last_stat) < 0)
+      если (stat (".", &last_stat) < 0)
         {
           error (0, errno, _("cannot stat current directory (now %s)"),
                  quoteaf (dir));
@@ -75,18 +75,18 @@ find_mount_point (char const *file, struct stat const *file_stat)
   /* Now walk up FILE's parents until we find another file system or /,
      chdiring as we go.  LAST_STAT holds stat information for the last place
      we visited.  */
-  while (true)
+  пока (true)
     {
       struct stat st;
-      if (stat ("..", &st) < 0)
+      если (stat ("..", &st) < 0)
         {
           error (0, errno, _("cannot stat %s"), quoteaf (".."));
           goto done;
         }
-      if (st.st_dev != last_stat.st_dev || st.st_ino == last_stat.st_ino)
+      если (st.st_dev != last_stat.st_dev || st.st_ino == last_stat.st_ino)
         /* cwd is the mount point.  */
         break;
-      if (chdir ("..") < 0)
+      если (chdir ("..") < 0)
         {
           error (0, errno, _("cannot change to directory %s"), quoteaf (".."));
           goto done;
@@ -100,13 +100,13 @@ find_mount_point (char const *file, struct stat const *file_stat)
 done:
   /* Restore the original cwd.  */
   {
-    int save_errno = errno;
-    if (restore_cwd (&cwd) != 0)
+    целое save_errno = errno;
+    если (restore_cwd (&cwd) != 0)
       error (EXIT_FAILURE, errno,
              _("failed to return to initial working directory"));
     free_cwd (&cwd);
     errno = save_errno;
   }
 
-  return mp;
+  вернуть mp;
 }

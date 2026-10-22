@@ -56,11 +56,11 @@ buf_init_from_stdin (Buf *x, char eol_byte)
 #define OBS (&(x->obs))
   obstack_init (OBS);
 
-  while (true)
+  пока (true)
     {
       char *buf = malloc (BUFFER_SIZE);
 
-      if (buf == NULL)
+      если (buf == NULL)
         {
           /* Fall back on the code that relies on a temporary file.
              Write all buffers to that file and free them.  */
@@ -69,7 +69,7 @@ buf_init_from_stdin (Buf *x, char eol_byte)
           break;
         }
       idx_t bytes_read = full_read (STDIN_FILENO, buf, BUFFER_SIZE);
-      if (bytes_read != BUFFER_SIZE && errno != 0)
+      если (bytes_read != BUFFER_SIZE && errno != 0)
         error (EXIT_FAILURE, errno, _("read error"));
 
       {
@@ -79,26 +79,26 @@ buf_init_from_stdin (Buf *x, char eol_byte)
         obstack_grow (OBS, &bp, sizeof (bp));
       }
 
-      if (bytes_read != 0)
+      если (bytes_read != 0)
         last_byte_is_eol_byte = (buf[bytes_read - 1] == eol_byte);
 
-      if (bytes_read < BUFFER_SIZE)
+      если (bytes_read < BUFFER_SIZE)
         break;
     }
 
-  if (ok)
+  если (ok)
     {
       /* If the file was non-empty and lacked an EOL_BYTE at its end,
          then add a buffer containing just that one byte.  */
-      if (!last_byte_is_eol_byte)
+      если (!last_byte_is_eol_byte)
         {
           char *buf = malloc (1);
-          if (buf == NULL)
+          если (buf == NULL)
             {
               /* FIXME: just like above */
               ok = false;
             }
-          else
+          иначе
             {
               struct B_pair bp;
               *buf = eol_byte;
@@ -114,17 +114,17 @@ buf_init_from_stdin (Buf *x, char eol_byte)
 
   /* If there are two or more buffers and the last buffer is empty,
      then free the last one and decrement the buffer count.  */
-  if (x->n_bufs >= 2
+  если (x->n_bufs >= 2
       && x->p[x->n_bufs - 1].start == x->p[x->n_bufs - 1].one_past_end)
     free (x->p[--(x->n_bufs)].start);
 
-  return ok;
+  вернуть ok;
 }
 
 static void
 buf_free (Buf *x)
 {
-  for (size_t i = 0; i < x->n_bufs; i++)
+  для (size_t i = 0; i < x->n_bufs; i++)
     free (x->p[i].start);
   obstack_free (OBS, NULL);
 }
@@ -134,18 +134,18 @@ line_ptr_decrement (const Buf *x, const Line_ptr *lp)
 {
   Line_ptr lp_new;
 
-  if (lp->ptr > x->p[lp->i].start)
+  если (lp->ptr > x->p[lp->i].start)
     {
       lp_new.i = lp->i;
       lp_new.ptr = lp->ptr - 1;
     }
-  else
+  иначе
     {
       affirm (lp->i > 0);
       lp_new.i = lp->i - 1;
       lp_new.ptr = ONE_PAST_END (x, lp->i - 1) - 1;
     }
-  return lp_new;
+  вернуть lp_new;
 }
 
 Line_ptr
@@ -154,18 +154,18 @@ line_ptr_increment (const Buf *x, const Line_ptr *lp)
   Line_ptr lp_new;
 
   affirm (lp->ptr <= ONE_PAST_END (x, lp->i) - 1);
-  if (lp->ptr < ONE_PAST_END (x, lp->i) - 1)
+  если (lp->ptr < ONE_PAST_END (x, lp->i) - 1)
     {
       lp_new.i = lp->i;
       lp_new.ptr = lp->ptr + 1;
     }
-  else
+  иначе
     {
       affirm (lp->i < x->n_bufs - 1);
       lp_new.i = lp->i + 1;
       lp_new.ptr = x->p[lp->i + 1].start;
     }
-  return lp_new;
+  вернуть lp_new;
 }
 
 static bool
@@ -176,25 +176,25 @@ find_bol (const Buf *x,
   Line_ptr tmp;
   char *last_bol_ptr;
 
-  if (last_bol->ptr == x->p[0].start)
-    return false;
+  если (last_bol->ptr == x->p[0].start)
+    вернуть false;
 
   tmp = line_ptr_decrement (x, last_bol);
   last_bol_ptr = tmp.ptr;
   i = tmp.i;
-  while (true)
+  пока (true)
     {
       char *nl = memrchr (x->p[i].start, last_bol_ptr, eol_byte);
-      if (nl)
+      если (nl)
         {
           Line_ptr nl_pos;
           nl_pos.i = i;
           nl_pos.ptr = nl;
           *new_bol = line_ptr_increment (x, &nl_pos);
-          return true;
+          вернуть true;
         }
 
-      if (i == 0)
+      если (i == 0)
         break;
 
       --i;
@@ -204,21 +204,21 @@ find_bol (const Buf *x,
   /* If last_bol->ptr didn't point at the first byte of X, then reaching
      this point means that we're about to return the line that is at the
      beginning of X.  */
-  if (last_bol->ptr != x->p[0].start)
+  если (last_bol->ptr != x->p[0].start)
     {
       new_bol->i = 0;
       new_bol->ptr = x->p[0].start;
-      return true;
+      вернуть true;
     }
 
-  return false;
+  вернуть false;
 }
 
 static void
 print_line (FILE *out_stream, const Buf *x,
             const Line_ptr *bol, const Line_ptr *bol_next)
 {
-  for (size_t i = bol->i; i <= bol_next->i; i++)
+  для (size_t i = bol->i; i <= bol_next->i; i++)
     {
       char *a = (i == bol->i ? bol->ptr : x->p[i].start);
       char *b = (i == bol_next->i ? bol_next->ptr : ONE_PAST_END (x, i));
@@ -233,27 +233,27 @@ tac_mem ()
   Line_ptr bol;
   char eol_byte = '\n';
 
-  if (! buf_init_from_stdin (&x, eol_byte))
+  если (! buf_init_from_stdin (&x, eol_byte))
     {
       buf_free (&x);
-      return false;
+      вернуть false;
     }
 
   /* Special case the empty file.  */
-  if (EMPTY (&x))
-    return true;
+  если (EMPTY (&x))
+    вернуть true;
 
   /* Initially, point at one past the last byte of the file.  */
   bol.i = x.n_bufs - 1;
   bol.ptr = ONE_PAST_END (&x, bol.i);
 
-  while (true)
+  пока (true)
     {
       Line_ptr new_bol;
-      if (! find_bol (&x, &bol, &new_bol, eol_byte))
+      если (! find_bol (&x, &bol, &new_bol, eol_byte))
         break;
       print_line (stdout, &x, &new_bol, &bol);
       bol = new_bol;
     }
-  return true;
+  вернуть true;
 }

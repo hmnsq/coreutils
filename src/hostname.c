@@ -31,29 +31,29 @@
 #define AUTHORS proper_name ("Jim Meyering")
 
 #ifndef HAVE_SETHOSTNAME
-# if defined HAVE_SYSINFO && defined HAVE_SYS_SYSTEMINFO_H
+# если defined HAVE_SYSINFO && defined HAVE_SYS_SYSTEMINFO_H
 #  include <sys/systeminfo.h>
 # endif
 
-static int
+static целое
 sethostname (char const *name, size_t namelen)
 {
-# if defined HAVE_SYSINFO && defined HAVE_SYS_SYSTEMINFO_H
+# если defined HAVE_SYSINFO && defined HAVE_SYS_SYSTEMINFO_H
   /* Using sysinfo() is the SVR4 mechanism to set a hostname. */
-  return (sysinfo (SI_SET_HOSTNAME, name, namelen) < 0 ? -1 : 0);
-# else
+  вернуть (sysinfo (SI_SET_HOSTNAME, name, namelen) < 0 ? -1 : 0);
+# иначе
   errno = ENOTSUP;
-  return -1;
+  вернуть -1;
 # endif
 }
 #endif
 
 void
-usage (int status)
+usage (целое status)
 {
-  if (status != EXIT_SUCCESS)
+  если (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  иначе
     {
       printf (_("\
 Usage: %s [NAME]\n\
@@ -69,8 +69,8 @@ Print or set the hostname of the current system.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+целое
+основной (целое argc, char **argv)
 {
   char *hostname;
 
@@ -86,24 +86,24 @@ main (int argc, char **argv)
                                    Version, true, usage, AUTHORS,
                                    (char const *) NULL);
 
-  if (optind + 1 < argc)
+  если (optind + 1 < argc)
      {
        error (0, 0, _("extra operand %s"), quote (argv[optind + 1]));
        usage (EXIT_FAILURE);
      }
 
-  if (optind + 1 == argc)
+  если (optind + 1 == argc)
     {
       /* Set hostname to operand.  */
       char const *name = argv[optind];
-      if (sethostname (name, strlen (name)) != 0)
+      если (sethostname (name, strlen (name)) != 0)
         error (EXIT_FAILURE, errno, _("cannot set name to %s"),
                quote (name));
     }
-  else
+  иначе
     {
       hostname = xgethostname ();
-      if (hostname == NULL)
+      если (hostname == NULL)
         error (EXIT_FAILURE, errno, _("cannot determine hostname"));
       puts (hostname);
     }
