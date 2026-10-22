@@ -99,17 +99,17 @@ ARGMATCH_VERIFY (interactive_args, interactive_types);
    "-foo" exists, assuming ARGC and ARGV are as with 'main'.  */
 
 static void
-diagnose_leading_hyphen (int argc, char **argv)
+diagnose_leading_hyphen (정수 argc, char **argv)
 {
   /* OPTIND is unreliable, so iterate through the arguments looking
      for a file name that looks like an option.  */
 
-  for (int i = 1; i < argc; i++)
+  위해 (정수 i = 1; i < argc; i++)
     {
       char const *arg = argv[i];
       struct stat st;
 
-      if (arg[0] == '-' && arg[1] && lstat (arg, &st) == 0)
+      만약 (arg[0] == '-' && arg[1] && lstat (arg, &st) == 0)
         {
           fprintf (stderr,
                    _("Try '%s ./%s' to remove the file %s.\n"),
@@ -122,11 +122,11 @@ diagnose_leading_hyphen (int argc, char **argv)
 }
 
 void
-usage (int status)
+usage (정수 status)
 {
-  if (status != EXIT_SUCCESS)
+  만약 (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  아니면
     {
       printf (_("Usage: %s [OPTION]... [FILE]...\n"), program_name);
       fputs (_("\
@@ -145,7 +145,7 @@ Remove (unlink) the FILE(s).\n\
   -I\n\
          prompt once before removing more than three files,\n\
          or when removing recursively; less intrusive than -i,\n\
-         while still giving protection against most mistakes\n\
+         동안 still giving protection against most mistakes\n\
 "));
       oputs (_("\
       --interactive[=WHEN]\n\
@@ -194,7 +194,7 @@ is rejected with a diagnostic.\n\
 "), stdout);
       printf (_("\
 \n\
-To remove a file whose name starts with a '-', for example '-foo',\n\
+To remove a file whose name starts with a '-', 위해 example '-foo',\n\
 use one of these commands:\n\
   %s -- -foo\n\
 \n\
@@ -230,13 +230,13 @@ rm_option_init (struct rm_options *x)
   x->require_restore_cwd = false;
 }
 
-int
-main (int argc, char **argv)
+정수
+main (정수 argc, char **argv)
 {
   bool preserve_root = true;
   struct rm_options x;
   bool prompt_once = false;
-  int c;
+  정수 c;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -251,7 +251,7 @@ main (int argc, char **argv)
   /* Try to disable the ability to unlink a directory.  */
   priv_set_remove_linkdir ();
 
-  while ((c = getopt_long (argc, argv, "dfirvIR", long_opts, NULL)) != -1)
+  동안 ((c = getopt_long (argc, argv, "dfirvIR", long_opts, NULL)) != -1)
     {
       switch (c)
         {
@@ -284,11 +284,11 @@ main (int argc, char **argv)
 
         case INTERACTIVE_OPTION:
           {
-            int i;
-            if (optarg)
+            정수 i;
+            만약 (optarg)
               i = XARGMATCH ("--interactive", optarg, interactive_args,
                              interactive_types);
-            else
+            아니면
               i = interactive_always;
             switch (i)
               {
@@ -317,18 +317,18 @@ main (int argc, char **argv)
           break;
 
         case NO_PRESERVE_ROOT:
-          if (! streq (argv[optind - 1], "--no-preserve-root"))
+          만약 (! streq (argv[optind - 1], "--no-preserve-root"))
             error (EXIT_FAILURE, 0,
                    _("you may not abbreviate the --no-preserve-root option"));
           preserve_root = false;
           break;
 
         case PRESERVE_ROOT:
-          if (optarg)
+          만약 (optarg)
             {
-              if (streq (optarg, "all"))
+              만약 (streq (optarg, "all"))
                 x.preserve_all_root = true;
-              else
+              아니면
                 error (EXIT_FAILURE, 0,
                        _("unrecognized --preserve-root argument: %s"),
                        quoteaf (optarg));
@@ -352,22 +352,22 @@ main (int argc, char **argv)
         }
     }
 
-  if (argc <= optind)
+  만약 (argc <= optind)
     {
-      if (x.ignore_missing_files)
-        return EXIT_SUCCESS;
-      else
+      만약 (x.ignore_missing_files)
+        반환 EXIT_SUCCESS;
+      아니면
         {
           error (0, 0, _("missing operand"));
           usage (EXIT_FAILURE);
         }
     }
 
-  if (x.recursive && preserve_root)
+  만약 (x.recursive && preserve_root)
     {
       static struct dev_ino dev_ino_buf;
       x.root_dev_ino = get_root_dev_ino (&dev_ino_buf);
-      if (x.root_dev_ino == NULL)
+      만약 (x.root_dev_ino == NULL)
         error (EXIT_FAILURE, errno, _("failed to get attributes of %s"),
                quoteaf ("/"));
     }
@@ -375,7 +375,7 @@ main (int argc, char **argv)
   uintmax_t n_files = argc - optind;
   char **file =  argv + optind;
 
-  if (prompt_once && (x.recursive || 3 < n_files))
+  만약 (prompt_once && (x.recursive || 3 < n_files))
     {
       fprintf (stderr,
                (x.recursive
@@ -386,11 +386,11 @@ main (int argc, char **argv)
                             "%s: remove %ju arguments? ",
                             select_plural (n_files))),
                program_name, n_files);
-      if (!yesno ())
-        return EXIT_SUCCESS;
+      만약 (!yesno ())
+        반환 EXIT_SUCCESS;
     }
 
   enum RM_status status = rm (file, &x);
   affirm (VALID_STATUS (status));
-  return status == RM_ERROR ? EXIT_FAILURE : EXIT_SUCCESS;
+  반환 status == RM_ERROR ? EXIT_FAILURE : EXIT_SUCCESS;
 }

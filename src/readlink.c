@@ -56,11 +56,11 @@ static struct option const longopts[] =
 };
 
 void
-usage (int status)
+usage (정수 status)
 {
-  if (status != EXIT_SUCCESS)
+  만약 (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  아니면
     {
       printf (_("Usage: %s [OPTION]... FILE...\n"), program_name);
       fputs (_("Print value of a symbolic link or canonical file name\n\n"),
@@ -93,12 +93,12 @@ usage (int status)
       oputs (_("\
   -s, --silent\n\
          suppress most error messages\n\
-         (on by default if POSIXLY_CORRECT is not set)\n\
+         (on by default 만약 POSIXLY_CORRECT is not set)\n\
 "));
       oputs (_("\
   -v, --verbose\n\
          report error messages\n\
-         (on by default if POSIXLY_CORRECT is set)\n\
+         (on by default 만약 POSIXLY_CORRECT is set)\n\
 "));
       oputs (_("\
   -z, --zero\n\
@@ -111,13 +111,13 @@ usage (int status)
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+정수
+main (정수 argc, char **argv)
 {
   /* If not -1, use this method to canonicalize.  */
-  int can_mode = -1;
-  int status = EXIT_SUCCESS;
-  int optc;
+  정수 can_mode = -1;
+  정수 status = EXIT_SUCCESS;
+  정수 optc;
   bool use_nuls = false;
 
   initialize_main (&argc, &argv);
@@ -128,7 +128,7 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "efmnqsvz", longopts, NULL)) != -1)
+  동안 ((optc = getopt_long (argc, argv, "efmnqsvz", longopts, NULL)) != -1)
     {
       switch (optc)
         {
@@ -161,25 +161,25 @@ main (int argc, char **argv)
         }
     }
 
-  if (optind >= argc)
+  만약 (optind >= argc)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
-  if (argc - optind > 1)
+  만약 (argc - optind > 1)
     {
-      if (no_newline)
+      만약 (no_newline)
         error (0, 0, _("ignoring --no-newline with multiple arguments"));
       no_newline = false;
     }
 
-  if (!use_nuls && isatty (STDOUT_FILENO))
+  만약 (!use_nuls && isatty (STDOUT_FILENO))
     {
-      int qs = getenv_quoting_style ();
-      if (qs < 0)
+      정수 qs = getenv_quoting_style ();
+      만약 (qs < 0)
         qs = shell_escape_quoting_style;
-      if (qs != literal_quoting_style)
+      만약 (qs != literal_quoting_style)
         {
           set_quoting_style (NULL, qs);
           quote_output = true;
@@ -188,31 +188,31 @@ main (int argc, char **argv)
 
   /* POSIX requires a diagnostic message written to standard error and a
      non-zero exit status when given a file that is not a symbolic link.  */
-  if (getenv ("POSIXLY_CORRECT") != NULL)
+  만약 (getenv ("POSIXLY_CORRECT") != NULL)
     verbose = true;
 
-  for (; optind < argc; ++optind)
+  위해 (; optind < argc; ++optind)
     {
       char const *fname = argv[optind];
       char *value = (can_mode != -1
                      ? canonicalize_filename_mode (fname, can_mode)
                      : areadlink_with_size (fname, 63));
-      if (value)
+      만약 (value)
         {
           fputs (quote_output ? quoteN (value) : value, stdout);
-          if (! no_newline)
+          만약 (! no_newline)
             putchar (use_nuls ? '\0' : '\n');
           free (value);
-          if (ferror (stdout))
+          만약 (ferror (stdout))
             write_error ();
         }
-      else
+      아니면
         {
           status = EXIT_FAILURE;
-          if (verbose)
+          만약 (verbose)
             error (0, errno, "%s", quotef (fname));
         }
     }
 
-  return status;
+  반환 status;
 }

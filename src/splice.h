@@ -17,7 +17,7 @@
 #ifndef SPLICE_H
 # define SPLICE_H 1
 
-# if HAVE_VMSPLICE
+# 만약 HAVE_VMSPLICE
 
 /* splice() and vmsplice() were introduced at the same time,
    so assume splice() is available.  Note AIX also has a different
@@ -29,16 +29,16 @@
 enum { SPLICE_PIPE_SIZE = 512 * 1024 };
 
 static inline idx_t
-increase_pipe_size (int fd)
+increase_pipe_size (정수 fd)
 {
-  int pipe_cap = 0;
-#  if defined F_SETPIPE_SZ && defined F_GETPIPE_SZ
-  if ((pipe_cap = fcntl (fd, F_SETPIPE_SZ, SPLICE_PIPE_SIZE)) < 0)
+  정수 pipe_cap = 0;
+#  만약 defined F_SETPIPE_SZ && defined F_GETPIPE_SZ
+  만약 ((pipe_cap = fcntl (fd, F_SETPIPE_SZ, SPLICE_PIPE_SIZE)) < 0)
     pipe_cap = fcntl (fd, F_GETPIPE_SZ);
 #  endif
-  if (pipe_cap <= 0)
+  만약 (pipe_cap <= 0)
     pipe_cap = 64 * 1024;
-  return pipe_cap;
+  반환 pipe_cap;
 }
 
 # endif

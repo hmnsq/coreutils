@@ -24,31 +24,31 @@ struct selabel_handle;
 /* Return true if ERR corresponds to an unsupported request,
    or if there is no context or it's inaccessible.  */
 static inline bool
-ignorable_ctx_err (int err)
+ignorable_ctx_err (정수 err)
 {
-  return err == ENOTSUP || err == ENODATA;
+  반환 err == ENOTSUP || err == ENODATA;
 }
 
-# if HAVE_SELINUX_LABEL_H
+# 만약 HAVE_SELINUX_LABEL_H
 
 extern bool
 restorecon (struct selabel_handle *selabel_handle,
             char const *path, bool recurse);
-extern int
+extern 정수
 defaultcon (struct selabel_handle *selabel_handle,
             char const *path, mode_t mode);
 
-# else
+# 아니면
 
 static inline bool
 restorecon (MAYBE_UNUSED struct selabel_handle *selabel_handle,
             MAYBE_UNUSED char const *path, MAYBE_UNUSED bool recurse)
-{ errno = ENOTSUP; return false; }
+{ errno = ENOTSUP; 반환 false; }
 
-static inline int
+static inline 정수
 defaultcon (MAYBE_UNUSED struct selabel_handle *selabel_handle,
             MAYBE_UNUSED char const *path, MAYBE_UNUSED mode_t mode)
-{ errno = ENOTSUP; return -1; }
+{ errno = ENOTSUP; 반환 -1; }
 
 # endif
 

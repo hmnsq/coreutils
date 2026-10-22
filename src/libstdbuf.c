@@ -71,36 +71,36 @@ static void
 apply_mode (FILE *stream, char const *stream_name, char const *envvar)
 {
   char *buf = NULL;
-  int setvbuf_mode;
-  unsigned long int size = 0;
+  정수 setvbuf_mode;
+  unsigned long 정수 size = 0;
 
   char const *mode = getenv (envvar);
-  if (!mode)
-    return;
+  만약 (!mode)
+    반환;
 
-  if (*mode == '0')
+  만약 (*mode == '0')
     setvbuf_mode = _IONBF;
-  else if (*mode == 'L')
+  아니면 만약 (*mode == 'L')
     setvbuf_mode = _IOLBF;      /* FIXME: should we allow 1ML  */
-  else
+  아니면
     {
       setvbuf_mode = _IOFBF;
       char *mode_end;
       size = strtoul (mode, &mode_end, 10);
-      if (size == 0 || *mode_end)
+      만약 (size == 0 || *mode_end)
         {
           fprintf (stderr, _("invalid buffering mode %s for %s\n"),
                    mode, stream_name);
-          return;
+          반환;
         }
 
       /* If strtoul might have overflowed or if the size is more than
          half of size_t range, treat it as an allocation failure.
          Huge sizes can cause problems with some stdio implementations.  */
-      buf = (size <= ((unsigned long int) -2 < (size_t) -1 / 2
-                      ? (unsigned long int) -2 : (size_t) -1 / 2)
+      buf = (size <= ((unsigned long 정수) -2 < (size_t) -1 / 2
+                      ? (unsigned long 정수) -2 : (size_t) -1 / 2)
              ? malloc (size) : NULL);
-      if (!buf)
+      만약 (!buf)
         {
           /* We could defer the allocation to libc, however since
              glibc currently ignores the combination of null buffer
@@ -108,12 +108,12 @@ apply_mode (FILE *stream, char const *stream_name, char const *envvar)
           fprintf (stderr,
                    _("failed to allocate a %lu byte stdio buffer\n"),
                    size);
-          return;
+          반환;
         }
       /* buf will be freed by fclose.  */
     }
 
-  if (setvbuf (stream, buf, setvbuf_mode, size) != 0)
+  만약 (setvbuf (stream, buf, setvbuf_mode, size) != 0)
     {
       fprintf (stderr, _("could not set buffering of %s to mode %s\n"),
                stream_name, mode);

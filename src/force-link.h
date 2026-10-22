@@ -1,4 +1,4 @@
-extern int force_linkat (int, char const *, int, char const *, int, bool, int)
+extern 정수 force_linkat (정수, char const *, 정수, char const *, 정수, bool, 정수)
   _GL_ATTRIBUTE_NONNULL ();
-extern int force_symlinkat (char const *, int, char const *, bool, int)
+extern 정수 force_symlinkat (char const *, 정수, char const *, bool, 정수)
   _GL_ATTRIBUTE_NONNULL ();

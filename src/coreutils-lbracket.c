@@ -20,12 +20,12 @@
 #include "test.h"
 /* Ensure that the main for test is declared even if the tool is not being
    built in this single-binary. */
-int single_binary_main_test (int argc, char **argv);
-int single_binary_main_lbracket (int argc, char **argv);
+정수 single_binary_main_test (정수 argc, char **argv);
+정수 single_binary_main_lbracket (정수 argc, char **argv);
 
-int
-single_binary_main_lbracket (int argc, char **argv)
+정수
+single_binary_main_lbracket (정수 argc, char **argv)
 {
   test_mode = TEST_LBRACKET;
-  return single_binary_main_test (argc, argv);
+  반환 single_binary_main_test (argc, argv);
 }

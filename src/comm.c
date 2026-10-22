@@ -97,11 +97,11 @@ static struct option const long_options[] =
 
 
 void
-usage (int status)
+usage (정수 status)
 {
-  if (status != EXIT_SUCCESS)
+  만약 (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  아니면
     {
       printf (_("\
 Usage: %s [OPTION]... FILE1 FILE2\n\
@@ -132,7 +132,7 @@ and column three contains lines common to both files.\n\
       oputs (_("\
       --check-order\n\
          check that the input is correctly sorted,\n\
-         even if all input lines are pairable\n\
+         even 만약 all input lines are pairable\n\
 "));
       oputs (_("\
       --nocheck-order\n\
@@ -174,35 +174,35 @@ Examples:\n\
    2 for a line only in file 2, 3 for a line in both. */
 
 static void
-writeline (struct linebuffer const *line, int class)
+writeline (struct linebuffer const *line, 정수 class)
 {
   switch (class)
     {
     case 1:
-      if (!only_file_1)
-        return;
+      만약 (!only_file_1)
+        반환;
       break;
 
     case 2:
-      if (!only_file_2)
-        return;
-      if (only_file_1)
+      만약 (!only_file_2)
+        반환;
+      만약 (only_file_1)
         fwrite (col_sep, 1, col_sep_len, stdout);
       break;
 
     case 3:
-      if (!both)
-        return;
-      if (only_file_1)
+      만약 (!both)
+        반환;
+      만약 (only_file_1)
         fwrite (col_sep, 1, col_sep_len, stdout);
-      if (only_file_2)
+      만약 (only_file_2)
         fwrite (col_sep, 1, col_sep_len, stdout);
       break;
     }
 
   fwrite (line->buffer, sizeof (char), line->length, stdout);
 
-  if (ferror (stdout))
+  만약 (ferror (stdout))
     write_error ();
 }
 
@@ -220,24 +220,24 @@ writeline (struct linebuffer const *line, int class)
 static void
 check_order (struct linebuffer const *prev,
              struct linebuffer const *current,
-             int whatfile)
+             정수 whatfile)
 {
 
-  if (check_input_order != CHECK_ORDER_DISABLED
+  만약 (check_input_order != CHECK_ORDER_DISABLED
       && ((check_input_order == CHECK_ORDER_ENABLED) || seen_unpairable))
     {
-      if (!issued_disorder_warning[whatfile - 1])
+      만약 (!issued_disorder_warning[whatfile - 1])
         {
-          int order;
+          정수 order;
 
-          if (hard_LC_COLLATE)
+          만약 (hard_LC_COLLATE)
             order = xmemcoll (prev->buffer, prev->length - 1,
                               current->buffer, current->length - 1);
-          else
+          아니면
             order = memcmp2 (prev->buffer, prev->length - 1,
                              current->buffer, current->length - 1);
 
-          if (0 < order)
+          만약 (0 < order)
             {
               error ((check_input_order == CHECK_ORDER_ENABLED
                       ? EXIT_FAILURE : 0),
@@ -273,7 +273,7 @@ compare_files (char **infiles)
   struct linebuffer *all_line[2][4];
 
   /* This is used to rotate through the buffers for each input file. */
-  int alt[2][3];
+  정수 alt[2][3];
 
   /* streams[i] holds the input stream for file i.  */
   FILE *streams[2];
@@ -282,9 +282,9 @@ compare_files (char **infiles)
   uintmax_t total[] = {0, 0, 0};
 
   /* Initialize the storage. */
-  for (int i = 0; i < 2; i++)
+  위해 (정수 i = 0; i < 2; i++)
     {
-      for (int j = 0; j < 4; j++)
+      위해 (정수 j = 0; j < 4; j++)
         {
           initbuffer (&lba[i][j]);
           all_line[i][j] = &lba[i][j];
@@ -293,59 +293,59 @@ compare_files (char **infiles)
       alt[i][1] = 0;
       alt[i][2] = 0;
       streams[i] = (streq (infiles[i], "-") ? stdin : fopen (infiles[i], "r"));
-      if (!streams[i])
+      만약 (!streams[i])
         error (EXIT_FAILURE, errno, "%s", quotef (infiles[i]));
 
       fadvise (streams[i], FADVISE_SEQUENTIAL);
 
       thisline[i] = readlinebuffer_delim (all_line[i][alt[i][0]], streams[i],
                                           delim);
-      if (ferror (streams[i]))
+      만약 (ferror (streams[i]))
         error (EXIT_FAILURE, errno, "%s", quotef (infiles[i]));
     }
 
-  while (thisline[0] || thisline[1])
+  동안 (thisline[0] || thisline[1])
     {
-      int order;
+      정수 order;
       bool fill_up[2] = { false, false };
 
       /* Compare the next available lines of the two files.  */
 
-      if (!thisline[0])
+      만약 (!thisline[0])
         order = 1;
-      else if (!thisline[1])
+      아니면 만약 (!thisline[1])
         order = -1;
-      else
+      아니면
         {
-          if (hard_LC_COLLATE)
+          만약 (hard_LC_COLLATE)
             order = xmemcoll (thisline[0]->buffer, thisline[0]->length - 1,
                               thisline[1]->buffer, thisline[1]->length - 1);
-          else
+          아니면
             {
               size_t len = MIN (thisline[0]->length, thisline[1]->length) - 1;
               order = memcmp (thisline[0]->buffer, thisline[1]->buffer, len);
-              if (order == 0)
+              만약 (order == 0)
                 order = _GL_CMP (thisline[0]->length, thisline[1]->length);
             }
         }
 
       /* Output the line that is lesser. */
-      if (order == 0)
+      만약 (order == 0)
         {
           /* Line is seen in both files.  */
           total[2]++;
           writeline (thisline[1], 3);
         }
-      else
+      아니면
         {
           seen_unpairable = true;
-          if (order <= 0)
+          만약 (order <= 0)
             {
               /* Line is seen in file 1 only.  */
               total[0]++;
               writeline (thisline[0], 1);
             }
-          else
+          아니면
             {
               /* Line is seen in file 2 only.  */
               total[1]++;
@@ -355,13 +355,13 @@ compare_files (char **infiles)
 
       /* Step the file the line came from.
          If the files match, step both files.  */
-      if (0 <= order)
+      만약 (0 <= order)
         fill_up[1] = true;
-      if (order <= 0)
+      만약 (order <= 0)
         fill_up[0] = true;
 
-      for (int i = 0; i < 2; i++)
-        if (fill_up[i])
+      위해 (정수 i = 0; i < 2; i++)
+        만약 (fill_up[i])
           {
             /* Rotate the buffers for this file. */
             alt[i][2] = alt[i][1];
@@ -371,17 +371,17 @@ compare_files (char **infiles)
             thisline[i] = readlinebuffer_delim (all_line[i][alt[i][0]],
                                                 streams[i], delim);
 
-            if (thisline[i])
+            만약 (thisline[i])
               check_order (all_line[i][alt[i][1]], thisline[i], i + 1);
 
             /* If this is the end of the file we may need to re-check
                the order of the previous two lines, since we might have
                discovered an unpairable match since we checked before. */
-            else if (all_line[i][alt[i][2]]->buffer)
+            아니면 만약 (all_line[i][alt[i][2]]->buffer)
               check_order (all_line[i][alt[i][2]],
                            all_line[i][alt[i][1]], i + 1);
 
-            if (ferror (streams[i]))
+            만약 (ferror (streams[i]))
               error (EXIT_FAILURE, errno, "%s", quotef (infiles[i]));
 
             fill_up[i] = false;
@@ -389,15 +389,15 @@ compare_files (char **infiles)
     }
 
   /* Avoid closing standard input twice when invoking 'comm - -'.  */
-  const int n_streams = 2 - (streams[0] == streams[1]);
-  for (int i = 0; i < n_streams; i++)
-    if (fclose (streams[i]) != 0)
+  const 정수 n_streams = 2 - (streams[0] == streams[1]);
+  위해 (정수 i = 0; i < n_streams; i++)
+    만약 (fclose (streams[i]) != 0)
       error (EXIT_FAILURE, errno, "%s", quotef (infiles[i]));
 
-  if (total_option)
+  만약 (total_option)
     {
       /* Print the summary, minding the column and line delimiters.  */
-      if (col_sep_len == 1)
+      만약 (col_sep_len == 1)
         { /* Separate to handle NUL char.  */
           printf ("%ju%c%ju%c%ju%c%s%c",
                   total[0], *col_sep,
@@ -405,7 +405,7 @@ compare_files (char **infiles)
                   total[2], *col_sep,
                   _("total"), delim);
         }
-      else
+      아니면
         {
           printf ("%ju%s%ju%s%ju%s%s%c",
                   total[0], col_sep,
@@ -415,17 +415,17 @@ compare_files (char **infiles)
         }
     }
 
-  if (issued_disorder_warning[0] || issued_disorder_warning[1])
+  만약 (issued_disorder_warning[0] || issued_disorder_warning[1])
     error (EXIT_FAILURE, 0, _("input is not in sorted order"));
 
   /* Exit here to pacify gcc -fsanitizer=leak.  */
   exit (EXIT_SUCCESS);
 }
 
-int
-main (int argc, char **argv)
+정수
+main (정수 argc, char **argv)
 {
-  int c;
+  정수 c;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -436,7 +436,7 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((c = getopt_long (argc, argv, "123z", long_options, NULL)) != -1)
+  동안 ((c = getopt_long (argc, argv, "123z", long_options, NULL)) != -1)
     switch (c)
       {
       case '1':
@@ -464,7 +464,7 @@ main (int argc, char **argv)
         break;
 
       case OUTPUT_DELIMITER_OPTION:
-        if (col_sep_len && !streq (col_sep, optarg))
+        만약 (col_sep_len && !streq (col_sep, optarg))
           error (EXIT_FAILURE, 0, _("multiple output delimiters specified"));
         col_sep = optarg;
         col_sep_len = *optarg ? strlen (optarg) : 1;
@@ -482,19 +482,19 @@ main (int argc, char **argv)
         usage (EXIT_FAILURE);
       }
 
-  if (! col_sep_len)
+  만약 (! col_sep_len)
     col_sep_len = 1;
 
-  if (argc - optind < 2)
+  만약 (argc - optind < 2)
     {
-      if (argc <= optind)
+      만약 (argc <= optind)
         error (0, 0, _("missing operand"));
-      else
+      아니면
         error (0, 0, _("missing operand after %s"), quote (argv[argc - 1]));
       usage (EXIT_FAILURE);
     }
 
-  if (2 < argc - optind)
+  만약 (2 < argc - optind)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind + 2]));
       usage (EXIT_FAILURE);

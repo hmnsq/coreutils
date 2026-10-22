@@ -24,24 +24,24 @@
 
 /* Read FD and return a summary.  */
 extern struct wc_lines
-wc_lines_avx512 (int fd)
+wc_lines_avx512 (정수 fd)
 {
   intmax_t lines = 0;
   intmax_t bytes = 0;
 
   __m512i endlines = _mm512_set1_epi8 ('\n');
 
-  while (true)
+  동안 (true)
     {
        __m512i avx_buf[IO_BUFSIZE / sizeof (__m512i)];
       ssize_t bytes_read = read (fd, avx_buf, sizeof avx_buf);
-      if (bytes_read <= 0)
-        return (struct wc_lines) { bytes_read == 0 ? 0 : errno, lines, bytes };
+      만약 (bytes_read <= 0)
+        반환 (struct wc_lines) { bytes_read == 0 ? 0 : errno, lines, bytes };
 
       bytes += bytes_read;
       __m512i *datap = avx_buf;
 
-      while (bytes_read >= 64)
+      동안 (bytes_read >= 64)
         {
            __m512i to_match = _mm512_load_si512 (datap);
            long long matches = _mm512_cmpeq_epi8_mask (to_match, endlines);
@@ -52,7 +52,7 @@ wc_lines_avx512 (int fd)
 
       /* Finish up any left over bytes */
       char *end = (char *) datap + bytes_read;
-      for (char *p = (char *) datap; p < end; p++)
+      위해 (char *p = (char *) datap; p < end; p++)
         lines += *p == '\n';
     }
 }

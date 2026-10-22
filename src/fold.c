@@ -64,11 +64,11 @@ static struct option const longopts[] =
 };
 
 void
-usage (int status)
+usage (정수 status)
 {
-  if (status != EXIT_SUCCESS)
+  만약 (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  아니면
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE]...\n\
@@ -111,31 +111,31 @@ Wrap input lines in each FILE, writing to standard output.\n\
 static size_t
 adjust_column (size_t column, mcel_t g)
 {
-  if (counting_mode != COUNT_BYTES)
+  만약 (counting_mode != COUNT_BYTES)
     {
-      if (g.ch == '\b')
+      만약 (g.ch == '\b')
         column -= !!column;
-      else if (g.ch == '\r')
+      아니면 만약 (g.ch == '\r')
         column = 0;
-      else if (g.ch == '\t')
+      아니면 만약 (g.ch == '\t')
         column += TAB_WIDTH - column % TAB_WIDTH;
-      else
+      아니면
         {
-          int width = (counting_mode == COUNT_CHARACTERS
+          정수 width = (counting_mode == COUNT_CHARACTERS
                        ? 1 : c32width (g.ch));
           /* Default to a width of 1 if there is an invalid character.  */
           column += width < 0 ? 1 : width;
         }
     }
-  else
+  아니면
     column += g.len;
-  return column;
+  반환 column;
 }
 
 static void
 write_out (char const *line, size_t line_len, bool newline)
 {
-  if (fwrite (line, sizeof (char), line_len, stdout) != line_len
+  만약 (fwrite (line, sizeof (char), line_len, stdout) != line_len
       || (newline && putchar ('\n') < 0))
     write_error ();
 }
@@ -153,29 +153,29 @@ fold_file (char const *filename, size_t width)
   static char line_out[IO_BUFSIZE];
   static char line_in[IO_BUFSIZE];
   mbbuf_t mbbuf;
-  int saved_errno;
+  정수 saved_errno;
 
-  if (streq (filename, "-"))
+  만약 (streq (filename, "-"))
     {
       istream = stdin;
       have_read_stdin = true;
     }
-  else
+  아니면
     istream = fopen (filename, "r");
 
-  if (istream == NULL)
+  만약 (istream == NULL)
     {
       error (0, errno, "%s", quotef (filename));
-      return false;
+      반환 false;
     }
 
   fadvise (istream, FADVISE_SEQUENTIAL);
   mbbuf_init (&mbbuf, line_in, sizeof line_in, istream);
 
   mcel_t g;
-  while ((g = mbbuf_get_char (&mbbuf)).ch != MBBUF_EOF)
+  동안 ((g = mbbuf_get_char (&mbbuf)).ch != MBBUF_EOF)
     {
-      if (g.ch == '\n')
+      만약 (g.ch == '\n')
         {
           write_out (line_out, offset_out, /*newline=*/ true);
           column = offset_out = 0;
@@ -184,29 +184,29 @@ fold_file (char const *filename, size_t width)
     rescan:
       column = adjust_column (column, g);
 
-      if (column > width)
+      만약 (column > width)
         {
           /* This character would make the line too long.
              Print the line plus a newline, and make this character
              start the next line. */
-          if (break_spaces)
+          만약 (break_spaces)
             {
-              int space_length = 0;
+              정수 space_length = 0;
               idx_t logical_end = offset_out;
               char *logical_p = line_out;
               char *logical_lim = logical_p + logical_end;
 
-              for (mcel_t g2; logical_p < logical_lim; logical_p += g2.len)
+              위해 (mcel_t g2; logical_p < logical_lim; logical_p += g2.len)
                 {
                   g2 = mcel_scan (logical_p, logical_lim);
-                  if (c32issep (g2.ch))
+                  만약 (c32issep (g2.ch))
                     {
                       space_length = g2.len;
                       logical_end = logical_p - line_out;
                     }
                 }
 
-              if (space_length)
+              만약 (space_length)
                 {
                   logical_end += space_length;
                   /* Found a blank.  Don't output the part after it. */
@@ -219,7 +219,7 @@ fold_file (char const *filename, size_t width)
                   column = 0;
                   char *printed_p = line_out;
                   char *printed_lim = printed_p + offset_out;
-                  for (mcel_t g2; printed_p < printed_lim;
+                  위해 (mcel_t g2; printed_p < printed_lim;
                        printed_p += g2.len)
                     {
                       g2 = mcel_scan (printed_p, printed_lim);
@@ -229,7 +229,7 @@ fold_file (char const *filename, size_t width)
                 }
             }
 
-          if (offset_out == 0)
+          만약 (offset_out == 0)
             {
               memcpy (line_out, mbbuf_char_offset (&mbbuf, g), g.len);
               offset_out += g.len;
@@ -243,7 +243,7 @@ fold_file (char const *filename, size_t width)
 
       /* This can occur if we have read characters with a width of
          zero.  */
-      if (sizeof line_out <= offset_out + g.len)
+      만약 (sizeof line_out <= offset_out + g.len)
         {
           write_out (line_out, offset_out, /*newline=*/ false);
           offset_out = 0;
@@ -254,31 +254,31 @@ fold_file (char const *filename, size_t width)
     }
 
   saved_errno = errno;
-  if (!ferror (istream))
+  만약 (!ferror (istream))
     saved_errno = 0;
 
-  if (offset_out)
+  만약 (offset_out)
     write_out (line_out, offset_out, /*newline=*/ false);
 
-  if (streq (filename, "-"))
+  만약 (streq (filename, "-"))
     clearerr (istream);
-  else if (fclose (istream) != 0 && !saved_errno)
+  아니면 만약 (fclose (istream) != 0 && !saved_errno)
     saved_errno = errno;
 
-  if (saved_errno)
+  만약 (saved_errno)
     {
       error (0, saved_errno, "%s", quotef (filename));
-      return false;
+      반환 false;
     }
 
-  return true;
+  반환 true;
 }
 
-int
-main (int argc, char **argv)
+정수
+main (정수 argc, char **argv)
 {
   size_t width = 80;
-  int optc;
+  정수 optc;
   bool ok;
 
   initialize_main (&argc, &argv);
@@ -289,7 +289,7 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, shortopts, longopts, NULL)) != -1)
+  동안 ((optc = getopt_long (argc, argv, shortopts, longopts, NULL)) != -1)
     {
       char optargbuf[2];
 
@@ -309,9 +309,9 @@ main (int argc, char **argv)
 
         case '0': case '1': case '2': case '3': case '4':
         case '5': case '6': case '7': case '8': case '9':
-          if (optarg)
+          만약 (optarg)
             optarg--;
-          else
+          아니면
             {
               optargbuf[0] = optc;
               optargbuf[1] = '\0';
@@ -333,17 +333,17 @@ main (int argc, char **argv)
         }
     }
 
-  if (argc == optind)
+  만약 (argc == optind)
     ok = fold_file ("-", width);
-  else
+  아니면
     {
       ok = true;
-      for (int i = optind; i < argc; i++)
+      위해 (정수 i = optind; i < argc; i++)
         ok &= fold_file (argv[i], width);
     }
 
-  if (have_read_stdin && fclose (stdin) == EOF)
+  만약 (have_read_stdin && fclose (stdin) == EOF)
     error (EXIT_FAILURE, errno, "-");
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  반환 ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

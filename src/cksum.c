@@ -33,33 +33,33 @@
 # define HASH_ALGO_CKSUM 0
 #endif
 
-#if HASH_ALGO_SUM || HASH_ALGO_CKSUM
+#만약 HASH_ALGO_SUM || HASH_ALGO_CKSUM
 # include "sum.h"
 #endif
-#if HASH_ALGO_CKSUM
+#만약 HASH_ALGO_CKSUM
 # include "cksum.h"
 # include "cksum_crc.h"
 # include "base64.h"
 #endif
-#if HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
+#만약 HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
 # include "blake2/b2sum.h"
 #endif
-#if HASH_ALGO_MD5 || HASH_ALGO_CKSUM
+#만약 HASH_ALGO_MD5 || HASH_ALGO_CKSUM
 # include "md5.h"
 #endif
-#if HASH_ALGO_SHA1 || HASH_ALGO_CKSUM
+#만약 HASH_ALGO_SHA1 || HASH_ALGO_CKSUM
 # include "sha1.h"
 #endif
-#if HASH_ALGO_SHA256 || HASH_ALGO_SHA224 || HASH_ALGO_CKSUM
+#만약 HASH_ALGO_SHA256 || HASH_ALGO_SHA224 || HASH_ALGO_CKSUM
 # include "sha256.h"
 #endif
-#if HASH_ALGO_SHA512 || HASH_ALGO_SHA384 || HASH_ALGO_CKSUM
+#만약 HASH_ALGO_SHA512 || HASH_ALGO_SHA384 || HASH_ALGO_CKSUM
 # include "sha512.h"
 #endif
-#if HASH_ALGO_CKSUM
+#만약 HASH_ALGO_CKSUM
 # include "sha3.h"
 #endif
-#if HASH_ALGO_CKSUM
+#만약 HASH_ALGO_CKSUM
 # include "sm3.h"
 #endif
 #include "fadvise.h"
@@ -67,7 +67,7 @@
 #include "xbinary-io.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#if HASH_ALGO_SUM
+#만약 HASH_ALGO_SUM
 # define PROGRAM_NAME "sum"
 # define DIGEST_TYPE_STRING "BSD"
 # define DIGEST_STREAM sumfns[sum_algorithm]
@@ -131,14 +131,14 @@
 # define DIGEST_BITS 384
 # define DIGEST_REFERENCE "FIPS-180-2"
 # define DIGEST_ALIGN 8
-#else
+#아니면
 # error "Can't decide which hash algorithm to compile."
 #endif
-#if !HASH_ALGO_SUM && !HASH_ALGO_CKSUM
+#만약 !HASH_ALGO_SUM && !HASH_ALGO_CKSUM
 # define DIGEST_OUT output_file
 #endif
 
-#if HASH_ALGO_CKSUM
+#만약 HASH_ALGO_CKSUM
 # define PROGRAM_NAME (!legacy_mode ? "cksum"			 \
                        : cksum_algorithm == md5 ? "md5sum"	 \
                        : cksum_algorithm == sha1 ? "sha1sum"	 \
@@ -149,7 +149,7 @@
                        : "cksum")
 #endif
 
-#if HASH_ALGO_SUM
+#만약 HASH_ALGO_SUM
 # define AUTHORS \
   proper_name ("Kayvan Aghaiepour"), \
   proper_name ("David MacKenzie")
@@ -161,31 +161,31 @@
 # define AUTHORS \
   proper_name_lite ("Padraig Brady", "P\303\241draig Brady"), \
   proper_name ("Samuel Neves")
-#else
+#아니면
 # define AUTHORS \
   proper_name ("Ulrich Drepper"), \
   proper_name ("Scott Miller"), \
   proper_name ("David Madore")
 #endif
-#if !HASH_ALGO_BLAKE2 && !HASH_ALGO_CKSUM
+#만약 !HASH_ALGO_BLAKE2 && !HASH_ALGO_CKSUM
 # define DIGEST_HEX_BYTES (DIGEST_BITS / 4)
 #endif
 #define DIGEST_BIN_BYTES (DIGEST_BITS / 8)
 
 /* The minimum length of a valid digest line.  This length does
    not include any newline character at the end of a line.  */
-#if HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
+#만약 HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
 # define MIN_DIGEST_LINE_LENGTH 3 /* With -l 8.  */
-#else
+#아니면
 # define MIN_DIGEST_LINE_LENGTH \
    (DIGEST_HEX_BYTES /* length of hexadecimal message digest */ \
     + 1 /* blank */ \
     + 1 /* minimum filename length */ )
 #endif
 
-#if !HASH_ALGO_SUM
+#만약 !HASH_ALGO_SUM
 static void
-output_file (char const *file, int binary_file, void const *digest,
+output_file (char const *file, 정수 binary_file, void const *digest,
              bool raw, bool tagged, unsigned char delim, bool args,
              intmax_t length);
 #endif
@@ -218,12 +218,12 @@ static bool quiet = false;
 static bool strict = false;
 
 /* Whether a BSD reversed format checksum is detected.  */
-static int bsd_reversed = -1;
+static 정수 bsd_reversed = -1;
 
 /* line delimiter.  */
 static unsigned char digest_delim = '\n';
 
-#if HASH_ALGO_CKSUM
+#만약 HASH_ALGO_CKSUM
 /* If true, print base64-encoded digests, not hex.  */
 static bool base64_digest = false;
 #endif
@@ -233,17 +233,17 @@ static bool raw_digest = false;
 
 /* blake2b and sha3 allow the -l option.  Luckily they both have the same
    maximum digest size.  */
-#if HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
-# if HASH_ALGO_CKSUM
+#만약 HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
+# 만약 HASH_ALGO_CKSUM
 static_assert (BLAKE2B_OUTBYTES == SHA3_512_DIGEST_SIZE);
 # endif
 # define DIGEST_MAX_LEN BLAKE2B_OUTBYTES
 static idx_t digest_length;
 #endif /* HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM */
 
-typedef void (*digest_output_fn)(char const *, int, void const *, bool,
+typedef void (*digest_output_fn)(char const *, 정수, void const *, bool,
                                  bool, unsigned char, bool, intmax_t);
-#if HASH_ALGO_SUM
+#만약 HASH_ALGO_SUM
 enum Algorithm
 {
   bsd,
@@ -263,84 +263,84 @@ static digest_output_fn sum_output_fns[]=
 };
 #endif
 
-#if HASH_ALGO_CKSUM
-static int
+#만약 HASH_ALGO_CKSUM
+static 정수
 md5_sum_stream (FILE *stream, void *resstream, MAYBE_UNUSED intmax_t *length)
 {
-  return md5_stream (stream, resstream);
+  반환 md5_stream (stream, resstream);
 }
-static int
+static 정수
 sha1_sum_stream (FILE *stream, void *resstream, MAYBE_UNUSED intmax_t *length)
 {
-  return sha1_stream (stream, resstream);
+  반환 sha1_stream (stream, resstream);
 }
-static int
+static 정수
 sha224_sum_stream (FILE *stream, void *resstream,
                    MAYBE_UNUSED intmax_t *length)
 {
-  return sha224_stream (stream, resstream);
+  반환 sha224_stream (stream, resstream);
 }
-static int
+static 정수
 sha256_sum_stream (FILE *stream, void *resstream,
                    MAYBE_UNUSED intmax_t *length)
 {
-  return sha256_stream (stream, resstream);
+  반환 sha256_stream (stream, resstream);
 }
-static int
+static 정수
 sha384_sum_stream (FILE *stream, void *resstream,
                    MAYBE_UNUSED intmax_t *length)
 {
-  return sha384_stream (stream, resstream);
+  반환 sha384_stream (stream, resstream);
 }
-static int
+static 정수
 sha512_sum_stream (FILE *stream, void *resstream,
                    MAYBE_UNUSED intmax_t *length)
 {
-  return sha512_stream (stream, resstream);
+  반환 sha512_stream (stream, resstream);
 }
-static int
+static 정수
 sha2_sum_stream (FILE *stream, void *resstream, intmax_t *length)
 {
   switch (*length)
     {
     case SHA224_DIGEST_SIZE:
-      return sha224_stream (stream, resstream);
+      반환 sha224_stream (stream, resstream);
     case SHA256_DIGEST_SIZE:
-      return sha256_stream (stream, resstream);
+      반환 sha256_stream (stream, resstream);
     case SHA384_DIGEST_SIZE:
-      return sha384_stream (stream, resstream);
+      반환 sha384_stream (stream, resstream);
     case SHA512_DIGEST_SIZE:
-      return sha512_stream (stream, resstream);
+      반환 sha512_stream (stream, resstream);
     default:
       affirm (false);
     }
 }
-static int
+static 정수
 sha3_sum_stream (FILE *stream, void *resstream, intmax_t *length)
 {
   switch (*length)
     {
     case SHA3_224_DIGEST_SIZE:
-      return sha3_224_stream (stream, resstream);
+      반환 sha3_224_stream (stream, resstream);
     case SHA3_256_DIGEST_SIZE:
-      return sha3_256_stream (stream, resstream);
+      반환 sha3_256_stream (stream, resstream);
     case SHA3_384_DIGEST_SIZE:
-      return sha3_384_stream (stream, resstream);
+      반환 sha3_384_stream (stream, resstream);
     case SHA3_512_DIGEST_SIZE:
-      return sha3_512_stream (stream, resstream);
+      반환 sha3_512_stream (stream, resstream);
     default:
       affirm (false);
     }
 }
-static int
+static 정수
 blake2b_sum_stream (FILE *stream, void *resstream, intmax_t *length)
 {
-  return blake2b_stream (stream, resstream, *length);
+  반환 blake2b_stream (stream, resstream, *length);
 }
-static int
+static 정수
 sm3_sum_stream (FILE *stream, void *resstream, MAYBE_UNUSED intmax_t *length)
 {
-  return sm3_stream (stream, resstream);
+  반환 sm3_stream (stream, resstream);
 }
 
 static char const *const algorithm_args[] =
@@ -363,7 +363,7 @@ static char const *const algorithm_tags[] =
   "SHA224", "SHA256", "SHA384", "SHA512",
   "SHA2", "SHA3", "BLAKE2b", "SM3", NULL
 };
-static int const algorithm_bits[] =
+static 정수 const algorithm_bits[] =
 {
   16, 16, 32, 32, 128, 160,
   224, 256, 384, 512,
@@ -429,7 +429,7 @@ enum
   BASE64_OPTION,
 };
 
-#if HASH_ALGO_CKSUM
+#만약 HASH_ALGO_CKSUM
 static struct option const legacy_long_options[] =
 {
   { "check", no_argument, NULL, 'c' },
@@ -452,11 +452,11 @@ static struct option const legacy_long_options[] =
 
 static struct option const long_options[] =
 {
-#if HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
+#만약 HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
   { "length", required_argument, NULL, 'l'},
 #endif
 
-#if !HASH_ALGO_SUM
+#만약 !HASH_ALGO_SUM
   { "check", no_argument, NULL, 'c' },
   { "ignore-missing", no_argument, NULL, IGNORE_MISSING_OPTION},
   { "quiet", no_argument, NULL, QUIET_OPTION },
@@ -466,7 +466,7 @@ static struct option const long_options[] =
   { "tag", no_argument, NULL, TAG_OPTION },
   { "zero", no_argument, NULL, 'z' },
 
-# if HASH_ALGO_CKSUM
+# 만약 HASH_ALGO_CKSUM
   { "algorithm", required_argument, NULL, 'a'},
   { "base64", no_argument, NULL, BASE64_OPTION },
   { "debug", no_argument, NULL, DEBUG_PROGRAM_OPTION},
@@ -476,7 +476,7 @@ static struct option const long_options[] =
   { "binary", no_argument, NULL, 'b' }, /* Deprecated.  */
   { "text", no_argument, NULL, 't' }, /* Deprecated.  */
 
-#else
+#아니면
   {"sysv", no_argument, NULL, 's'},  /* Not in cksum.  */
 #endif
 
@@ -486,17 +486,17 @@ static struct option const long_options[] =
 };
 
 void
-usage (int status)
+usage (정수 status)
 {
-  if (status != EXIT_SUCCESS)
+  만약 (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  아니면
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE]...\n\
 "), program_name);
-#if HASH_ALGO_CKSUM
-    if (legacy_mode)
+#만약 HASH_ALGO_CKSUM
+    만약 (legacy_mode)
       {
         printf (_("\
 Print or check %s checksums.\n\
@@ -505,12 +505,12 @@ Print or check %s checksums.\n\
 Legacy interface to the cksum(1) utility.\n\
 "), stdout);
       }
-    else
+    아니면
       fputs (_("\
 Print or verify checksums.\n\
 By default use the 32 bit CRC algorithm.\n\
 "), stdout);
-#else
+#아니면
       printf (_("\
 Print or check %s (%d-bit) checksums.\n\
 "),
@@ -522,7 +522,7 @@ Legacy interface to the cksum(1) utility.\n\
 #endif
 
       emit_stdin_note ();
-#if HASH_ALGO_SUM
+#만약 HASH_ALGO_SUM
       oputs (_("\
   -r\n\
          use BSD sum algorithm (the default), use 1K blocks\n\
@@ -532,96 +532,96 @@ Legacy interface to the cksum(1) utility.\n\
          use System V sum algorithm, use 512 bytes blocks\n\
 "));
 #endif
-#if HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
+#만약 HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
         emit_mandatory_arg_note ();
 #endif
-#if HASH_ALGO_CKSUM
-     if (! legacy_mode)
+#만약 HASH_ALGO_CKSUM
+     만약 (! legacy_mode)
         oputs (_("\
   -a, --algorithm=TYPE\n\
          select the digest type to use.  See DIGEST below\n\
 "));
-     if (! legacy_mode)
+     만약 (! legacy_mode)
         oputs (_("\
       --base64\n\
          emit base64-encoded digests, not hexadecimal\n\
 "));
 #endif
-#if !HASH_ALGO_SUM
-# if HASH_ALGO_CKSUM
-     if (legacy_mode)
+#만약 !HASH_ALGO_SUM
+# 만약 HASH_ALGO_CKSUM
+     만약 (legacy_mode)
        {
 # endif
-      if (O_BINARY)
+      만약 (O_BINARY)
         oputs (_("\
   -b, --binary\n\
          read in binary mode (default unless reading tty stdin)\n\
 "));
-      else
+      아니면
         oputs (_("\
   -b, --binary\n\
          read in binary mode\n\
 "));
-# if HASH_ALGO_CKSUM
+# 만약 HASH_ALGO_CKSUM
        }
 # endif
         oputs (_("\
   -c, --check\n\
          read checksums from the FILEs and check them\n\
 "));
-# if HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
-#  if HASH_ALGO_CKSUM
-     if (! legacy_mode)
+# 만약 HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
+#  만약 HASH_ALGO_CKSUM
+     만약 (! legacy_mode)
 #  endif
         oputs (_("\
   -l, --length=BITS\n\
          digest length in bits; must not exceed the max size\n\
-         and must be a multiple of 8 for blake2b;\n\
-         must be 224, 256, 384, or 512 for sha2 or sha3\n\
+         and must be a multiple of 8 위해 blake2b;\n\
+         must be 224, 256, 384, or 512 위해 sha2 or sha3\n\
 "));
 # endif
-# if HASH_ALGO_CKSUM
-    if (! legacy_mode)
+# 만약 HASH_ALGO_CKSUM
+    만약 (! legacy_mode)
         oputs (_("\
       --raw\n\
          emit a raw binary digest, not hexadecimal\n\
 "));
-    if (legacy_mode)
+    만약 (legacy_mode)
       oputs (_("\
       --tag\n\
          create a BSD-style checksum\n\
 "));
-    else
+    아니면
       oputs (_("\
       --tag\n\
          create a BSD-style checksum (the default)\n\
 "));
-    if (! legacy_mode)
+    만약 (! legacy_mode)
       oputs (_("\
       --untagged\n\
          create a reversed style checksum, without digest type\n\
 "));
-# else
+# 아니면
       oputs (_("\
       --tag\n\
          create a BSD-style checksum\n\
 "));
 # endif
-# if HASH_ALGO_CKSUM
-    if (legacy_mode)
+# 만약 HASH_ALGO_CKSUM
+    만약 (legacy_mode)
       {
 # endif
-      if (O_BINARY)
+      만약 (O_BINARY)
         oputs (_("\
   -t, --text\n\
-         read in text mode (default if reading tty stdin)\n\
+         read in text mode (default 만약 reading tty stdin)\n\
 "));
-      else
+      아니면
         oputs (_("\
   -t, --text\n\
          read in text mode (default)\n\
 "));
-# if HASH_ALGO_CKSUM
+# 만약 HASH_ALGO_CKSUM
       }
 # endif
       oputs (_("\
@@ -635,11 +635,11 @@ The following five options are useful only when verifying checksums:\n\
 "), stdout);
       oputs (_("\
       --ignore-missing\n\
-         don't fail or report status for missing files\n\
+         don't fail or report status 위해 missing files\n\
 "));
       oputs (_("\
       --quiet\n\
-         don't print OK for each successfully verified file\n\
+         don't print OK 위해 each successfully verified file\n\
 "));
       oputs (_("\
       --status\n\
@@ -647,15 +647,15 @@ The following five options are useful only when verifying checksums:\n\
 "));
       oputs (_("\
       --strict\n\
-         exit non-zero for improperly formatted checksum lines\n\
+         exit non-zero 위해 improperly formatted checksum lines\n\
 "));
       oputs (_("\
   -w, --warn\n\
          warn about improperly formatted checksum lines\n\
 "));
 #endif
-#if HASH_ALGO_CKSUM
-    if (! legacy_mode)
+#만약 HASH_ALGO_CKSUM
+    만약 (! legacy_mode)
       oputs (_("\
       --debug\n\
          indicate which implementation used\n\
@@ -663,8 +663,8 @@ The following five options are useful only when verifying checksums:\n\
 #endif
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
-#if HASH_ALGO_CKSUM
-    if (! legacy_mode)
+#만약 HASH_ALGO_CKSUM
+    만약 (! legacy_mode)
       fputs (_("\
 \n\
 DIGEST determines the digest algorithm and default output format:\n\
@@ -680,20 +680,20 @@ DIGEST determines the digest algorithm and default output format:\n\
   sm3       (only available through cksum)\n\
 \n"), stdout);
 #endif
-#if !HASH_ALGO_SUM && !HASH_ALGO_CKSUM
+#만약 !HASH_ALGO_SUM && !HASH_ALGO_CKSUM
       printf (_("\
 \n\
 The sums are computed as described in %s.\n"), DIGEST_REFERENCE);
       fputs (_("\
 When checking, the input should be a former output of this program.\n\
 The default mode is to print a line with: checksum, a space,\n\
-a character indicating input mode ('*' for binary, ' ' for text\n\
-or where binary is insignificant), and name for each FILE.\n\
+a character indicating input mode ('*' 위해 binary, ' ' 위해 text\n\
+or where binary is insignificant), and name 위해 each FILE.\n\
 \n\
 There is no difference between binary mode and text mode on GNU systems.\
 \n"), stdout);
 #endif
-#if HASH_ALGO_CKSUM
+#만약 HASH_ALGO_CKSUM
       fputs (_("\
 When checking, the input should be a former output of this program,\n\
 or equivalent standalone program.\
@@ -705,7 +705,7 @@ or equivalent standalone program.\
   exit (status);
 }
 
-#if !HASH_ALGO_SUM
+#만약 !HASH_ALGO_SUM
 /* Given a string S, return TRUE if it contains problematic characters
    that need escaping.  Note we escape '\' itself to provide some forward
    compat to introduce escaping of other characters.  */
@@ -715,7 +715,7 @@ static bool
 problematic_chars (char const *s)
 {
   idx_t length = strcspn (s, "\\\n\r");
-  return s[length] != '\0';
+  반환 s[length] != '\0';
 }
 #endif
 
@@ -733,15 +733,15 @@ filename_unescape (char *s, idx_t s_len)
 {
   char *dst = s;
 
-  for (idx_t i = 0; i < s_len; i++)
+  위해 (idx_t i = 0; i < s_len; i++)
     {
       switch (s[i])
         {
         case '\\':
-          if (i == s_len - 1)
+          만약 (i == s_len - 1)
             {
               /* File name ends with an unescaped backslash: invalid.  */
-              return NULL;
+              반환 NULL;
             }
           ++i;
           switch (s[i])
@@ -757,23 +757,23 @@ filename_unescape (char *s, idx_t s_len)
               break;
             default:
               /* Only '\', 'n' or 'r' may follow a backslash.  */
-              return NULL;
+              반환 NULL;
             }
           break;
 
         case '\0':
           /* The file name may not contain a NUL.  */
-          return NULL;
+          반환 NULL;
 
         default:
           *dst++ = s[i];
           break;
         }
     }
-  if (dst < s + s_len)
+  만약 (dst < s + s_len)
     *dst = '\0';
 
-  return s;
+  반환 s;
 }
 
 /* Return true if S is a LEN-byte NUL-terminated string of hex or base64
@@ -782,38 +782,38 @@ ATTRIBUTE_PURE
 static bool
 valid_digits (unsigned char const *s, idx_t len)
 {
-#if HASH_ALGO_CKSUM
-  if (len == BASE64_LENGTH (digest_length >> 3))
+#만약 HASH_ALGO_CKSUM
+  만약 (len == BASE64_LENGTH (digest_length >> 3))
     {
       idx_t i;
-      for (i = 0; i < len - digest_length % 3; i++)
+      위해 (i = 0; i < len - digest_length % 3; i++)
         {
-          if (!isbase64 (*s))
-            return false;
+          만약 (!isbase64 (*s))
+            반환 false;
           ++s;
         }
-      for ( ; i < len; i++)
+      위해 ( ; i < len; i++)
         {
-          if (*s != '=')
-            return false;
+          만약 (*s != '=')
+            반환 false;
           ++s;
         }
     }
-  else
+  아니면
 #endif
-  if (len == digest_hex_bytes)
+  만약 (len == digest_hex_bytes)
     {
-      for (idx_t i = 0; i < digest_hex_bytes; i++)
+      위해 (idx_t i = 0; i < digest_hex_bytes; i++)
         {
-          if (!c_isxdigit (*s))
-            return false;
+          만약 (!c_isxdigit (*s))
+            반환 false;
           ++s;
         }
     }
-  else
-    return false;
+  아니면
+    반환 false;
 
-  return *s == '\0';
+  반환 *s == '\0';
 }
 
 /* Split the checksum string S (of length S_LEN) from a BSD 'md5' or
@@ -826,42 +826,42 @@ bsd_split_3 (char *s, idx_t s_len,
              unsigned char **digest, idx_t *d_len,
              char **file_name, bool escaped_filename)
 {
-  if (s_len == 0)
-    return false;
+  만약 (s_len == 0)
+    반환 false;
 
   /* Find end of filename.  */
   idx_t i = s_len - 1;
-  while (i && s[i] != ')')
+  동안 (i && s[i] != ')')
     i--;
 
-  if (s[i] != ')')
-    return false;
+  만약 (s[i] != ')')
+    반환 false;
 
   *file_name = s;
 
-  if (escaped_filename && filename_unescape (s, i) == NULL)
-    return false;
+  만약 (escaped_filename && filename_unescape (s, i) == NULL)
+    반환 false;
 
   s[i++] = '\0';
 
-  while (c_isblank (s[i]))
+  동안 (c_isblank (s[i]))
     i++;
 
-  if (s[i] != '=')
-    return false;
+  만약 (s[i] != '=')
+    반환 false;
 
   i++;
 
-  while (c_isblank (s[i]))
+  동안 (c_isblank (s[i]))
     i++;
 
   *digest = (unsigned char *) &s[i];
 
   *d_len = s_len - i;
-  return valid_digits (*digest, *d_len);
+  반환 valid_digits (*digest, *d_len);
 }
 
-#if HASH_ALGO_CKSUM
+#만약 HASH_ALGO_CKSUM
 /* Return the corresponding Algorithm for the string S,
    or -1 for no match.  */
 
@@ -870,10 +870,10 @@ algorithm_from_tag (char *s)
 {
   /* Limit check size to this length for perf reasons.  */
   static idx_t max_tag_len;
-  if (! max_tag_len)
+  만약 (! max_tag_len)
     {
       char const * const * tag = algorithm_tags;
-      while (*tag)
+      동안 (*tag)
         {
           idx_t tag_len = strlen (*tag++);
           max_tag_len = MAX (tag_len, max_tag_len);
@@ -883,12 +883,12 @@ algorithm_from_tag (char *s)
   idx_t i = 0;
 
   /* Find end of tag */
-  while (i <= max_tag_len && s[i] && ! c_isblank (s[i])
+  동안 (i <= max_tag_len && s[i] && ! c_isblank (s[i])
          && s[i] != '-' && s[i] != '(')
     ++i;
 
-  if (i > max_tag_len)
-    return -1;
+  만약 (i > max_tag_len)
+    반환 -1;
 
   /* Terminate tag, and lookup.  */
   char sep = s[i];
@@ -896,7 +896,7 @@ algorithm_from_tag (char *s)
   ptrdiff_t algo = argmatch_exact (s, algorithm_tags);
   s[i] = sep;
 
-  return algo;
+  반환 algo;
 }
 #endif
 
@@ -907,16 +907,16 @@ algorithm_from_tag (char *s)
 
 static bool
 split_3 (char *s, idx_t s_len,
-         unsigned char **digest, idx_t *d_len, int *binary, char **file_name)
+         unsigned char **digest, idx_t *d_len, 정수 *binary, char **file_name)
 {
   bool escaped_filename = false;
   idx_t algo_name_len;
 
   idx_t i = 0;
-  while (c_isblank (s[i]))
+  동안 (c_isblank (s[i]))
     ++i;
 
-  if (s[i] == '\\')
+  만약 (s[i] == '\\')
     {
       ++i;
       escaped_filename = true;
@@ -924,24 +924,24 @@ split_3 (char *s, idx_t s_len,
 
   /* Check for BSD-style checksum line. */
 
-#if HASH_ALGO_CKSUM
-  if (! algorithm_specified || cksum_algorithm == sha2)
+#만약 HASH_ALGO_CKSUM
+  만약 (! algorithm_specified || cksum_algorithm == sha2)
     {
       ptrdiff_t algo_tag = algorithm_from_tag (s + i);
-      if (! algorithm_specified)
+      만약 (! algorithm_specified)
         {
-          if (algo_tag >= 0)
+          만약 (algo_tag >= 0)
             {
-              if (algo_tag <= crc32b)
-                return false;  /* We don't support checking these formats.  */
+              만약 (algo_tag <= crc32b)
+                반환 false;  /* We don't support checking these formats.  */
               cksum_algorithm = algo_tag;
             }
-          else
-            return false;      /* We only support tagged format without -a.  */
+          아니면
+            반환 false;      /* We only support tagged format without -a.  */
         }
-      else
+      아니면
         {
-          if (cksum_algorithm == sha2 && (algo_tag == sha2
+          만약 (cksum_algorithm == sha2 && (algo_tag == sha2
               || algo_tag == sha224 || algo_tag == sha256
               || algo_tag == sha384 || algo_tag == sha512))
             cksum_algorithm = algo_tag;
@@ -955,49 +955,49 @@ split_3 (char *s, idx_t s_len,
 
   idx_t parse_offset = i;
   algo_name_len = strlen (DIGEST_TYPE_STRING);
-  if (STREQ_LEN (s + i, DIGEST_TYPE_STRING, algo_name_len))
+  만약 (STREQ_LEN (s + i, DIGEST_TYPE_STRING, algo_name_len))
     {
       i += algo_name_len;
-#if HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
+#만약 HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
 
-# if HASH_ALGO_BLAKE2
+# 만약 HASH_ALGO_BLAKE2
       digest_length = DIGEST_MAX_LEN * 8;
-# else
+# 아니면
       digest_length = algorithm_bits[cksum_algorithm];
 # endif
-      if (s[i] == '-')  /* length specified. Not base64 */
+      만약 (s[i] == '-')  /* length specified. Not base64 */
         {
           ++i;
           intmax_t length;
           char *siend;
-          if (!c_isdigit (s[i])
+          만약 (!c_isdigit (s[i])
               || xstrtoimax (s + i, &siend, 0, &length, NULL) != LONGINT_OK)
-            return false;
-# if HASH_ALGO_CKSUM
-          else if (cksum_algorithm == sha2 || cksum_algorithm == sha3)
+            반환 false;
+# 만약 HASH_ALGO_CKSUM
+          아니면 만약 (cksum_algorithm == sha2 || cksum_algorithm == sha3)
             {
-              if (length != SHA224_DIGEST_SIZE * 8
+              만약 (length != SHA224_DIGEST_SIZE * 8
                   && length != SHA256_DIGEST_SIZE * 8
                   && length != SHA384_DIGEST_SIZE * 8
                   && length != SHA512_DIGEST_SIZE * 8)
-                return false;
+                반환 false;
             }
 # endif
-          else if (!(0 < length && length <= digest_length && length % 8 == 0))
-            return false;
+          아니면 만약 (!(0 < length && length <= digest_length && length % 8 == 0))
+            반환 false;
 
           i = siend - s;
           digest_length = length;
         }
       digest_hex_bytes = digest_length >> 2;
 #endif
-      if (s[i] == ' ')
+      만약 (s[i] == ' ')
         ++i;
-      if (s[i] == '(')  /* not base64 */
+      만약 (s[i] == '(')  /* not base64 */
         {
           ++i;
           *binary = 0;
-          return bsd_split_3 (s + i, s_len - i,
+          반환 bsd_split_3 (s + i, s_len - i,
                               digest, d_len, file_name, escaped_filename);
         }
 
@@ -1011,22 +1011,22 @@ split_3 (char *s, idx_t s_len,
      Each line must have at least 'min_digest_line_length - 1' (or one more, if
      the first is a backslash) more characters to contain correct message digest
      information.  */
-  if (s_len - i < min_digest_line_length + (s[i] == '\\'))
-    return false;
+  만약 (s_len - i < min_digest_line_length + (s[i] == '\\'))
+    반환 false;
 
   *digest = (unsigned char *) &s[i];
 
-#if HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
+#만약 HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
   /* Auto determine length.  */
-# if HASH_ALGO_CKSUM
-  if (cksum_algorithm == blake2b
+# 만약 HASH_ALGO_CKSUM
+  만약 (cksum_algorithm == blake2b
       || cksum_algorithm == sha2 || cksum_algorithm == sha3) {
 # endif
   unsigned char const *hp = *digest;
   digest_hex_bytes = 0;
-  for (; c_isxdigit (*hp); ++hp, ++digest_hex_bytes)
+  위해 (; c_isxdigit (*hp); ++hp, ++digest_hex_bytes)
     ;
-# if HASH_ALGO_CKSUM
+# 만약 HASH_ALGO_CKSUM
   /* Check the number of base64 characters.  This works because the hexadecimal
      character set is a subset of the base64 character set.
      Note there is the ambiguity that all characters are hex when they
@@ -1038,37 +1038,37 @@ split_3 (char *s, idx_t s_len,
      and smaller blake2b lengths aren't practical for verification anyway.  */
   idx_t digest_base64_bytes = digest_hex_bytes;
   idx_t trailing_equals = 0;
-  for (; isubase64 (*hp); ++hp, ++digest_base64_bytes)
+  위해 (; isubase64 (*hp); ++hp, ++digest_base64_bytes)
     ;
-  for (; *hp == '='; ++hp, ++trailing_equals)
+  위해 (; *hp == '='; ++hp, ++trailing_equals)
     ;
-  if ((cksum_algorithm == sha2 || cksum_algorithm == sha3)
+  만약 ((cksum_algorithm == sha2 || cksum_algorithm == sha3)
       && digest_hex_bytes >> 1 != SHA224_DIGEST_SIZE
       && digest_hex_bytes >> 1 != SHA256_DIGEST_SIZE
       && digest_hex_bytes >> 1 != SHA384_DIGEST_SIZE
       && digest_hex_bytes >> 1 != SHA512_DIGEST_SIZE)
     {
-      if (digest_base64_bytes + trailing_equals
+      만약 (digest_base64_bytes + trailing_equals
           == BASE64_LENGTH (SHA224_DIGEST_SIZE))
         digest_hex_bytes = SHA224_DIGEST_SIZE * 2;
-      else if (digest_base64_bytes + trailing_equals
+      아니면 만약 (digest_base64_bytes + trailing_equals
                == BASE64_LENGTH (SHA256_DIGEST_SIZE))
         digest_hex_bytes = SHA256_DIGEST_SIZE * 2;
-      else if (digest_base64_bytes + trailing_equals
+      아니면 만약 (digest_base64_bytes + trailing_equals
                == BASE64_LENGTH (SHA384_DIGEST_SIZE))
         digest_hex_bytes = SHA384_DIGEST_SIZE * 2;
-      else if (digest_base64_bytes + trailing_equals
+      아니면 만약 (digest_base64_bytes + trailing_equals
                == BASE64_LENGTH (SHA512_DIGEST_SIZE))
         digest_hex_bytes = SHA512_DIGEST_SIZE * 2;
-      else
-        return false;
+      아니면
+        반환 false;
     }
-  else if (cksum_algorithm == blake2b
+  아니면 만약 (cksum_algorithm == blake2b
            && digest_hex_bytes < digest_base64_bytes)
     {
-      for (int j = 8; j <= DIGEST_MAX_LEN * 8; j += 8)
+      위해 (정수 j = 8; j <= DIGEST_MAX_LEN * 8; j += 8)
         {
-          if (BASE64_LENGTH (j / 8) == digest_base64_bytes + trailing_equals
+          만약 (BASE64_LENGTH (j / 8) == digest_base64_bytes + trailing_equals
               && j % 3 == trailing_equals)
             {
               digest_hex_bytes = j / 4;
@@ -1077,32 +1077,32 @@ split_3 (char *s, idx_t s_len,
         }
     }
 # endif
-  if (digest_hex_bytes < 2 || digest_hex_bytes % 2
+  만약 (digest_hex_bytes < 2 || digest_hex_bytes % 2
       || DIGEST_MAX_LEN * 2 < digest_hex_bytes)
-    return false;
+    반환 false;
   digest_length = digest_hex_bytes * 4;
-# if HASH_ALGO_CKSUM
+# 만약 HASH_ALGO_CKSUM
   }
 # endif
 #endif
 
   /* This field must be the hexadecimal or base64 representation
      of the message digest.  */
-  while (s[i] && !c_isblank (s[i]))
+  동안 (s[i] && !c_isblank (s[i]))
     i++;
 
   /* The digest must be followed by at least one whitespace character.  */
-  if (i == s_len)
-    return false;
+  만약 (i == s_len)
+    반환 false;
 
   *d_len = &s[i] - (char *) *digest;
   s[i++] = '\0';
 
-  if (! valid_digits (*digest, *d_len))
-    return false;
+  만약 (! valid_digits (*digest, *d_len))
+    반환 false;
 
   /* If "bsd reversed" format detected.  */
-  if ((s_len - i == 1) || (s[i] != ' ' && s[i] != '*'))
+  만약 ((s_len - i == 1) || (s[i] != ' ' && s[i] != '*'))
     {
       /* Don't allow mixing bsd and standard formats,
          to minimize security issues with attackers
@@ -1110,11 +1110,11 @@ split_3 (char *s, idx_t s_len,
          This assumes that with bsd format checksums
          that the first file name does not have
          a leading ' ' or '*'.  */
-      if (bsd_reversed == 0)
-        return false;
+      만약 (bsd_reversed == 0)
+        반환 false;
       bsd_reversed = 1;
     }
-  else if (bsd_reversed != 1)
+  아니면 만약 (bsd_reversed != 1)
     {
       bsd_reversed = 0;
       *binary = (s[i++] == '*');
@@ -1124,13 +1124,13 @@ split_3 (char *s, idx_t s_len,
      significant -- that includes leading and trailing white space.  */
   *file_name = &s[i];
 
-  if (escaped_filename)
-    return filename_unescape (&s[i], s_len - i) != NULL;
+  만약 (escaped_filename)
+    반환 filename_unescape (&s[i], s_len - i) != NULL;
 
-  return true;
+  반환 true;
 }
 
-#if !HASH_ALGO_SUM
+#만약 !HASH_ALGO_SUM
 /* If ESCAPE is true, then translate each:
    NEWLINE byte to the string, "\\n",
    CARRIAGE RETURN byte to the string, "\\r",
@@ -1138,13 +1138,13 @@ split_3 (char *s, idx_t s_len,
 static void
 print_filename (char const *file, bool escape)
 {
-  if (! escape)
+  만약 (! escape)
     {
       fputs (file, stdout);
-      return;
+      반환;
     }
 
-  while (*file)
+  동안 (*file)
     {
       switch (*file)
         {
@@ -1182,46 +1182,46 @@ print_filename (char const *file, bool escape)
    Return true if successful.  */
 
 static bool
-digest_file (char const *filename, int *binary, unsigned char *bin_result,
+digest_file (char const *filename, 정수 *binary, unsigned char *bin_result,
              bool *missing, MAYBE_UNUSED intmax_t *length)
 {
   FILE *fp;
-  int err;
+  정수 err;
   bool is_stdin = streq (filename, "-");
 
   *missing = false;
 
-  if (is_stdin)
+  만약 (is_stdin)
     {
       have_read_stdin = true;
       fp = stdin;
-      if (O_BINARY && *binary)
+      만약 (O_BINARY && *binary)
         {
-          if (*binary < 0)
+          만약 (*binary < 0)
             *binary = ! isatty (STDIN_FILENO);
-          if (*binary)
+          만약 (*binary)
             xset_binary_mode (STDIN_FILENO, O_BINARY);
         }
     }
-  else
+  아니면
     {
       fp = fopen (filename, O_BINARY ? (*binary ? "rb" : "rt") : "r");
-      if (fp == NULL)
+      만약 (fp == NULL)
         {
-          if (ignore_missing && errno == ENOENT)
+          만약 (ignore_missing && errno == ENOENT)
             {
               *missing = true;
-              return true;
+              반환 true;
             }
           error (0, errno, "%s", quotef (filename));
-          return false;
+          반환 false;
         }
     }
 
   fadvise (fp, FADVISE_SEQUENTIAL);
 
-#if HASH_ALGO_CKSUM
-  if (cksum_algorithm == blake2b
+#만약 HASH_ALGO_CKSUM
+  만약 (cksum_algorithm == blake2b
       || cksum_algorithm == sha2 || cksum_algorithm == sha3)
     *length = digest_length >> 3;
   err = DIGEST_STREAM (fp, bin_result, length);
@@ -1229,35 +1229,35 @@ digest_file (char const *filename, int *binary, unsigned char *bin_result,
   err = DIGEST_STREAM (fp, bin_result, length);
 #elif HASH_ALGO_BLAKE2
   err = DIGEST_STREAM (fp, bin_result, digest_length >> 3);
-#else
+#아니면
   err = DIGEST_STREAM (fp, bin_result);
 #endif
   err = err ? errno : 0;
-  if (is_stdin)
+  만약 (is_stdin)
     clearerr (fp);
-  else if (fclose (fp) != 0 && !err)
+  아니면 만약 (fclose (fp) != 0 && !err)
     err = errno;
 
-  if (err)
+  만약 (err)
     {
       error (0, err, "%s", quotef (filename));
-      return false;
+      반환 false;
     }
 
-  return true;
+  반환 true;
 }
 
-#if !HASH_ALGO_SUM
+#만약 !HASH_ALGO_SUM
 static void
-output_file (char const *file, int binary_file, void const *digest,
+output_file (char const *file, 정수 binary_file, void const *digest,
              MAYBE_UNUSED bool raw, bool tagged, unsigned char delim,
              MAYBE_UNUSED bool args, MAYBE_UNUSED intmax_t length)
 {
-# if HASH_ALGO_CKSUM
-  if (raw)
+# 만약 HASH_ALGO_CKSUM
+  만약 (raw)
     {
       fwrite (digest, 1, digest_length >> 3, stdout);
-      return;
+      반환;
     }
 # endif
 
@@ -1266,27 +1266,27 @@ output_file (char const *file, int binary_file, void const *digest,
   /* Output a leading backslash if the file name contains problematic chars.  */
   bool needs_escape = delim == '\n' && problematic_chars (file);
 
-  if (needs_escape)
+  만약 (needs_escape)
     putchar ('\\');
 
-  if (tagged)
+  만약 (tagged)
     {
-# if HASH_ALGO_CKSUM
-      if (cksum_algorithm == sha2)
-        printf ("SHA%u", (unsigned int) digest_length);
-      else
+# 만약 HASH_ALGO_CKSUM
+      만약 (cksum_algorithm == sha2)
+        printf ("SHA%u", (unsigned 정수) digest_length);
+      아니면
 # endif
       fputs (DIGEST_TYPE_STRING, stdout);
-# if HASH_ALGO_BLAKE2
-      if (digest_length < DIGEST_MAX_LEN * 8)
-        printf ("-%u", (unsigned int) digest_length);
+# 만약 HASH_ALGO_BLAKE2
+      만약 (digest_length < DIGEST_MAX_LEN * 8)
+        printf ("-%u", (unsigned 정수) digest_length);
 # elif HASH_ALGO_CKSUM
-      if (cksum_algorithm == sha3)
-        printf ("-%u", (unsigned int) digest_length);
-      if (cksum_algorithm == blake2b)
+      만약 (cksum_algorithm == sha3)
+        printf ("-%u", (unsigned 정수) digest_length);
+      만약 (cksum_algorithm == blake2b)
         {
-          if (digest_length < DIGEST_MAX_LEN * 8)
-            printf ("-%u", (unsigned int) digest_length);
+          만약 (digest_length < DIGEST_MAX_LEN * 8)
+            printf ("-%u", (unsigned 정수) digest_length);
         }
 # endif
       fputs (" (", stdout);
@@ -1294,22 +1294,22 @@ output_file (char const *file, int binary_file, void const *digest,
       fputs (") = ", stdout);
     }
 
-# if HASH_ALGO_CKSUM
-  if (base64_digest)
+# 만약 HASH_ALGO_CKSUM
+  만약 (base64_digest)
     {
       char b64[BASE64_LENGTH (DIGEST_BIN_BYTES) + 1];
       base64_encode ((char const *) bin_buffer, digest_length >> 3,
                      b64, sizeof b64);
       fputs (b64, stdout);
     }
-  else
+  아니면
 # endif
     {
-      for (idx_t i = 0; i < (digest_hex_bytes >> 1); ++i)
+      위해 (idx_t i = 0; i < (digest_hex_bytes >> 1); ++i)
         printf ("%02x", bin_buffer[i]);
     }
 
-  if (!tagged)
+  만약 (!tagged)
     {
       putchar (' ');
       putchar (binary_file ? '*' : ' ');
@@ -1320,7 +1320,7 @@ output_file (char const *file, int binary_file, void const *digest,
 }
 #endif
 
-#if HASH_ALGO_CKSUM
+#만약 HASH_ALGO_CKSUM
 /* Return true if B64_DIGEST is the same as the base64 digest of the
    DIGEST_LENGTH/8 bytes at BIN_BUFFER.  */
 static bool
@@ -1330,7 +1330,7 @@ b64_equal (unsigned char const *b64_digest, unsigned char const *bin_buffer)
   char b64[BASE64_LENGTH (DIGEST_BIN_BYTES) + 1];
   base64_encode ((char const *) bin_buffer, digest_length >> 3,
                  b64, sizeof b64);
-  return memeq (b64_digest, b64, b64_n_bytes + 1);
+  반환 memeq (b64_digest, b64, b64_n_bytes + 1);
 }
 #endif
 
@@ -1348,15 +1348,15 @@ hex_equal (unsigned char const *hex_digest, unsigned char const *bin_buffer)
   /* Compare generated binary number with text representation
      in check file.  Ignore case of hex digits.  */
   idx_t cnt;
-  for (cnt = 0; cnt < digest_bin_bytes; ++cnt)
+  위해 (cnt = 0; cnt < digest_bin_bytes; ++cnt)
     {
-      if (c_tolower (hex_digest[2 * cnt])
+      만약 (c_tolower (hex_digest[2 * cnt])
           != bin2hex[bin_buffer[cnt] >> 4]
           || (c_tolower (hex_digest[2 * cnt + 1])
               != (bin2hex[bin_buffer[cnt] & 0xf])))
         break;
     }
-  return cnt == digest_bin_bytes;
+  반환 cnt == digest_bin_bytes;
 }
 
 static bool
@@ -1376,19 +1376,19 @@ digest_check (char const *checkfile_name)
   size_t line_chars_allocated;
   bool is_stdin = streq (checkfile_name, "-");
 
-  if (is_stdin)
+  만약 (is_stdin)
     {
       have_read_stdin = true;
       checkfile_name = _("standard input");
       checkfile_stream = stdin;
     }
-  else
+  아니면
     {
       checkfile_stream = fopen (checkfile_name, "r");
-      if (checkfile_stream == NULL)
+      만약 (checkfile_stream == NULL)
         {
           error (0, errno, "%s", quotef (checkfile_name));
-          return false;
+          반환 false;
         }
     }
 
@@ -1398,21 +1398,21 @@ digest_check (char const *checkfile_name)
   do
     {
       char *filename;
-      int binary;
+      정수 binary;
       unsigned char *digest;
       ssize_t line_length;
 
       ++line_number;
-      if (line_number == 0)
+      만약 (line_number == 0)
         error (EXIT_FAILURE, 0, _("%s: too many checksum lines"),
                quotef (checkfile_name));
 
       line_length = getline (&line, &line_chars_allocated, checkfile_stream);
-      if (line_length <= 0)
+      만약 (line_length <= 0)
         break;
 
       /* Ignore comment lines, which begin with a '#' character.  */
-      if (line[0] == '#')
+      만약 (line[0] == '#')
         continue;
 
       /* Remove any trailing newline.  */
@@ -1421,18 +1421,18 @@ digest_check (char const *checkfile_name)
       line_length -= line[line_length - (0 < line_length)] == '\r';
 
       /* Ignore empty lines.  */
-      if (line_length == 0)
+      만약 (line_length == 0)
         continue;
 
       line[line_length] = '\0';
 
       idx_t d_len;
-      if (! (split_3 (line, line_length, &digest, &d_len, &binary, &filename)
+      만약 (! (split_3 (line, line_length, &digest, &d_len, &binary, &filename)
              && ! (is_stdin && streq (filename, "-"))))
         {
           ++n_misformatted_lines;
 
-          if (warn)
+          만약 (warn)
             {
               error (0, 0,
                      _("%s: %jd"
@@ -1441,7 +1441,7 @@ digest_check (char const *checkfile_name)
                      DIGEST_TYPE_STRING);
             }
         }
-      else
+      아니면
         {
           bool ok;
           bool missing;
@@ -1451,77 +1451,77 @@ digest_check (char const *checkfile_name)
           intmax_t length;
           ok = digest_file (filename, &binary, bin_buffer, &missing, &length);
 
-          if (!ok)
+          만약 (!ok)
             {
               ++n_open_or_read_failures;
-              if (!status_only)
+              만약 (!status_only)
                 printf ("%s: %s\n", quotef (filename),_("FAILED open or read"));
             }
-          else if (ignore_missing && missing)
+          아니면 만약 (ignore_missing && missing)
             {
               /* Ignore missing files with --ignore-missing.  */
               ;
             }
-          else
+          아니면
             {
               bool match = false;
-#if HASH_ALGO_CKSUM
-              if (d_len == BASE64_LENGTH (digest_length >> 3))
+#만약 HASH_ALGO_CKSUM
+              만약 (d_len == BASE64_LENGTH (digest_length >> 3))
                 match = b64_equal (digest, bin_buffer);
-              else
+              아니면
 #endif
-                if (d_len == digest_hex_bytes)
+                만약 (d_len == digest_hex_bytes)
                   match = hex_equal (digest, bin_buffer);
 
-              if (match)
+              만약 (match)
                 matched_checksums = true;
-              else
+              아니면
                 ++n_mismatched_checksums;
 
-              if (!status_only)
+              만약 (!status_only)
                 {
-                  if (! match || ! quiet)
+                  만약 (! match || ! quiet)
                     fputs (quotef (filename), stdout);
 
-                  if (! match)
+                  만약 (! match)
                     printf (": %s\n", _("FAILED"));
-                  else if (!quiet)
+                  아니면 만약 (!quiet)
                     printf (": %s\n", _("OK"));
                 }
             }
 
-          if (ferror (stdout))
+          만약 (ferror (stdout))
             write_error ();
         }
     }
-  while (!feof (checkfile_stream) && !ferror (checkfile_stream));
+  동안 (!feof (checkfile_stream) && !ferror (checkfile_stream));
 
   free (line);
 
-  int err = ferror (checkfile_stream) ? 0 : -1;
-  if (is_stdin)
+  정수 err = ferror (checkfile_stream) ? 0 : -1;
+  만약 (is_stdin)
     clearerr (checkfile_stream);
-  else if (fclose (checkfile_stream) != 0 && err < 0)
+  아니면 만약 (fclose (checkfile_stream) != 0 && err < 0)
     err = errno;
 
-  if (0 <= err)
+  만약 (0 <= err)
     {
       error (0, err, err ? "%s" : _("%s: read error"),
              quotef (checkfile_name));
-      return false;
+      반환 false;
     }
 
-  if (! properly_formatted_lines)
+  만약 (! properly_formatted_lines)
     {
       /* Warn if no tests are found.  */
       error (0, 0, _("%s: no properly formatted checksum lines found"),
              quotef (checkfile_name));
     }
-  else
+  아니면
     {
-      if (!status_only)
+      만약 (!status_only)
         {
-          if (n_misformatted_lines != 0)
+          만약 (n_misformatted_lines != 0)
             error (0, 0,
                    (ngettext
                     ("WARNING: %jd line is improperly formatted",
@@ -1529,7 +1529,7 @@ digest_check (char const *checkfile_name)
                      select_plural (n_misformatted_lines))),
                    n_misformatted_lines);
 
-          if (n_open_or_read_failures != 0)
+          만약 (n_open_or_read_failures != 0)
             error (0, 0,
                    (ngettext
                     ("WARNING: %jd listed file could not be read",
@@ -1537,7 +1537,7 @@ digest_check (char const *checkfile_name)
                      select_plural (n_open_or_read_failures))),
                    n_open_or_read_failures);
 
-          if (n_mismatched_checksums != 0)
+          만약 (n_mismatched_checksums != 0)
             error (0, 0,
                    (ngettext
                     ("WARNING: %jd computed checksum did NOT match",
@@ -1545,34 +1545,34 @@ digest_check (char const *checkfile_name)
                      select_plural (n_mismatched_checksums))),
                    n_mismatched_checksums);
 
-          if (ignore_missing && ! matched_checksums)
+          만약 (ignore_missing && ! matched_checksums)
             error (0, 0, _("%s: no file was verified"),
                    quotef (checkfile_name));
         }
     }
 
-  return (properly_formatted_lines
+  반환 (properly_formatted_lines
           && matched_checksums
           && n_mismatched_checksums == 0
           && n_open_or_read_failures == 0
           && (!strict || n_misformatted_lines == 0));
 }
 
-int
-main (int argc, char **argv)
+정수
+main (정수 argc, char **argv)
 {
   unsigned char bin_buffer_unaligned[DIGEST_BIN_BYTES + DIGEST_ALIGN];
   /* Make sure bin_buffer is properly aligned. */
   unsigned char *bin_buffer = ptr_align (bin_buffer_unaligned, DIGEST_ALIGN);
   bool do_check = false;
-  int opt;
+  정수 opt;
   bool ok = true;
-  int binary = -1;
-  int prefix_tag = -1;
+  정수 binary = -1;
+  정수 prefix_tag = -1;
   struct option const *long_opts = long_options;
 
-#if HASH_ALGO_CKSUM
-  if (cksum_algorithm != crc)
+#만약 HASH_ALGO_CKSUM
+  만약 (cksum_algorithm != crc)
     {
       legacy_mode = true;
       prefix_tag = 0;
@@ -1594,7 +1594,7 @@ main (int argc, char **argv)
      so that processes running in parallel do not intersperse their output.  */
   setvbuf (stdout, NULL, _IOLBF, 0);
 
-#if HASH_ALGO_SUM
+#만약 HASH_ALGO_SUM
   char const *short_opts = "rs";
 #elif HASH_ALGO_CKSUM
   char const *short_opts = legacy_mode ? "bctwz" : "a:l:bctwz";
@@ -1602,15 +1602,15 @@ main (int argc, char **argv)
 #elif HASH_ALGO_BLAKE2
   char const *short_opts = "l:bctwz";
   char const *digest_length_str = "";
-#else
+#아니면
   char const *short_opts = "bctwz";
 #endif
 
-  while ((opt = getopt_long (argc, argv, short_opts, long_opts, NULL))
+  동안 ((opt = getopt_long (argc, argv, short_opts, long_opts, NULL))
          != -1)
     switch (opt)
       {
-#if HASH_ALGO_CKSUM
+#만약 HASH_ALGO_CKSUM
       case 'a':
         cksum_algorithm = XARGMATCH_EXACT ("--algorithm", optarg,
                                            algorithm_args, algorithm_types);
@@ -1621,7 +1621,7 @@ main (int argc, char **argv)
         cksum_debug = true;
         break;
 #endif
-#if HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
+#만약 HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
       case 'l':
         digest_length = xnumtoimax (optarg, 10, 0, IDX_MAX, "",
                                     _("invalid length"), 0,
@@ -1629,7 +1629,7 @@ main (int argc, char **argv)
         digest_length_str = optarg;
         break;
 #endif
-#if !HASH_ALGO_SUM
+#만약 !HASH_ALGO_SUM
       case 'c':
         do_check = true;
         break;
@@ -1660,7 +1660,7 @@ main (int argc, char **argv)
       case STRICT_OPTION:
         strict = true;
         break;
-# if HASH_ALGO_CKSUM
+# 만약 HASH_ALGO_CKSUM
       case BASE64_OPTION:
         base64_digest = true;
         break;
@@ -1678,7 +1678,7 @@ main (int argc, char **argv)
         digest_delim = '\0';
         break;
 #endif
-#if HASH_ALGO_SUM
+#만약 HASH_ALGO_SUM
       case 'r':		/* For SysV compatibility. */
         sum_algorithm = bsd;
         break;
@@ -1694,23 +1694,23 @@ main (int argc, char **argv)
       }
 
   min_digest_line_length = MIN_DIGEST_LINE_LENGTH;
-#if HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
-# if HASH_ALGO_CKSUM
-  if (digest_length && (cksum_algorithm != blake2b
+#만약 HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
+# 만약 HASH_ALGO_CKSUM
+  만약 (digest_length && (cksum_algorithm != blake2b
                         && cksum_algorithm != sha2
                         && cksum_algorithm != sha3))
     error (EXIT_FAILURE, 0,
            _("--length is only supported with --algorithm "
              "blake2b, sha2, or sha3"));
-  if (cksum_algorithm == sha2 || cksum_algorithm == sha3)
+  만약 (cksum_algorithm == sha2 || cksum_algorithm == sha3)
     {
       /* Do not require --length with --check.  */
-      if (digest_length == 0 && *digest_length_str == '\0' && ! do_check)
+      만약 (digest_length == 0 && *digest_length_str == '\0' && ! do_check)
         error (EXIT_FAILURE, 0, _("--algorithm=%s requires specifying "
                                   "--length 224, 256, 384, or 512"),
                algorithm_args[cksum_algorithm]);
       /* If --check and --length are used we verify the digest length.  */
-      if ((! do_check || *digest_length_str != '\0')
+      만약 ((! do_check || *digest_length_str != '\0')
           && digest_length != SHA224_DIGEST_SIZE * 8
           && digest_length != SHA256_DIGEST_SIZE * 8
           && digest_length != SHA384_DIGEST_SIZE * 8
@@ -1722,14 +1722,14 @@ main (int argc, char **argv)
                  quote (DIGEST_TYPE_STRING));
         }
     }
-  else
+  아니면
     {
       /* If the digest length checks for SHA-3 are satisfied, the less strict
          checks for BLAKE2 will also be.  */
-# else
+# 아니면
     {
 # endif
-      if (digest_length > DIGEST_MAX_LEN * 8)
+      만약 (digest_length > DIGEST_MAX_LEN * 8)
         {
           error (0, 0, _("invalid length: %s"), quote (digest_length_str));
           error (EXIT_FAILURE, 0,
@@ -1737,53 +1737,53 @@ main (int argc, char **argv)
                  quote (DIGEST_TYPE_STRING),
                  DIGEST_MAX_LEN * 8);
         }
-      if (digest_length % 8 != 0)
+      만약 (digest_length % 8 != 0)
         {
           error (0, 0, _("invalid length: %s"), quote (digest_length_str));
           error (EXIT_FAILURE, 0, _("length is not a multiple of 8"));
         }
     }
-  if (digest_length == 0)
+  만약 (digest_length == 0)
     {
-# if HASH_ALGO_BLAKE2
+# 만약 HASH_ALGO_BLAKE2
       digest_length = DIGEST_MAX_LEN * 8;
-# else
+# 아니면
       digest_length = algorithm_bits[cksum_algorithm];
 # endif
     }
   digest_hex_bytes = digest_length >> 2;
-#else
+#아니면
   digest_hex_bytes = DIGEST_HEX_BYTES;
 #endif
 
-#if HASH_ALGO_CKSUM
+#만약 HASH_ALGO_CKSUM
   switch (+cksum_algorithm)
     {
     case bsd:
     case sysv:
     case crc:
     case crc32b:
-        if (do_check && algorithm_specified)
+        만약 (do_check && algorithm_specified)
           error (EXIT_FAILURE, 0,
                  _("--check is not supported with "
                    "--algorithm={bsd,sysv,crc,crc32b}"));
         break;
     }
 
-  if (base64_digest && raw_digest)
+  만약 (base64_digest && raw_digest)
    {
      error (0, 0, _("--base64 and --raw are mutually exclusive"));
      usage (EXIT_FAILURE);
    }
 #endif
 
-  if (digest_delim != '\n' && do_check)
+  만약 (digest_delim != '\n' && do_check)
     {
       error (0, 0, _("the --zero option is not supported when "
                      "verifying checksums"));
       usage (EXIT_FAILURE);
     }
-  if (1 <= prefix_tag && do_check)
+  만약 (1 <= prefix_tag && do_check)
     {
       /* Note we allow --untagged with --check to more
          seamlessly support --untagged in an emulation wrapper.  */
@@ -1792,14 +1792,14 @@ main (int argc, char **argv)
       usage (EXIT_FAILURE);
     }
 
-  if (0 <= binary && do_check)
+  만약 (0 <= binary && do_check)
     {
       error (0, 0, _("the --binary and --text options are meaningless when "
                      "verifying checksums"));
       usage (EXIT_FAILURE);
     }
 
-  if (ignore_missing && !do_check)
+  만약 (ignore_missing && !do_check)
     {
       error (0, 0,
              _("the --ignore-missing option is meaningful only when "
@@ -1807,89 +1807,89 @@ main (int argc, char **argv)
       usage (EXIT_FAILURE);
     }
 
-  if (status_only && !do_check)
+  만약 (status_only && !do_check)
     {
       error (0, 0,
        _("the --status option is meaningful only when verifying checksums"));
       usage (EXIT_FAILURE);
     }
 
-  if (warn && !do_check)
+  만약 (warn && !do_check)
     {
       error (0, 0,
        _("the --warn option is meaningful only when verifying checksums"));
       usage (EXIT_FAILURE);
     }
 
-  if (quiet && !do_check)
+  만약 (quiet && !do_check)
     {
       error (0, 0,
        _("the --quiet option is meaningful only when verifying checksums"));
       usage (EXIT_FAILURE);
     }
 
-  if (strict & !do_check)
+  만약 (strict & !do_check)
    {
      error (0, 0,
         _("the --strict option is meaningful only when verifying checksums"));
      usage (EXIT_FAILURE);
    }
 
-  if (prefix_tag == -1)
+  만약 (prefix_tag == -1)
     prefix_tag = HASH_ALGO_CKSUM;
 
-  if (prefix_tag && !binary)
+  만약 (prefix_tag && !binary)
    {
      /* This could be supported in a backwards compatible way
         by prefixing the output line with a space in text mode.
         However that's invasive enough that it was agreed to
         not support this mode with --tag, as --text use cases
         are adequately supported by the default output format.  */
-#if !HASH_ALGO_CKSUM
+#만약 !HASH_ALGO_CKSUM
      error (0, 0, _("--tag does not support --text mode"));
-#else
+#아니면
      error (0, 0, _("--text mode is only supported with --untagged"));
 #endif
      usage (EXIT_FAILURE);
    }
 
-  if (!O_BINARY && binary < 0)
+  만약 (!O_BINARY && binary < 0)
     binary = 0;
-  else if (prefix_tag)
+  아니면 만약 (prefix_tag)
     binary = 1;
 
   char **operand_lim = argv + argc;
-  if (optind == argc)
+  만약 (optind == argc)
     *operand_lim++ = bad_cast ("-");
-  else if (1 < argc - optind && raw_digest)
+  아니면 만약 (1 < argc - optind && raw_digest)
     error (EXIT_FAILURE, 0,
            _("the --raw option is not supported with multiple files"));
 
-  for (char **operandp = argv + optind; operandp < operand_lim; operandp++)
+  위해 (char **operandp = argv + optind; operandp < operand_lim; operandp++)
     {
       char *file = *operandp;
-      if (do_check)
+      만약 (do_check)
         ok &= digest_check (file);
-      else
+      아니면
         {
-          int binary_file = binary;
+          정수 binary_file = binary;
           bool missing;
           intmax_t length;
 
-          if (! digest_file (file, &binary_file, bin_buffer, &missing, &length))
+          만약 (! digest_file (file, &binary_file, bin_buffer, &missing, &length))
             ok = false;
-          else
+          아니면
             {
               DIGEST_OUT (file, binary_file, bin_buffer, raw_digest, prefix_tag,
                           digest_delim, optind != argc, length);
-              if (ferror (stdout))
+              만약 (ferror (stdout))
                 write_error ();
             }
         }
     }
 
-  if (have_read_stdin && fclose (stdin) == EOF)
+  만약 (have_read_stdin && fclose (stdin) == EOF)
     error (EXIT_FAILURE, errno, _("standard input"));
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  반환 ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

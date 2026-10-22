@@ -47,11 +47,11 @@ enum { RESERVOIR_MIN_INPUT = 8192 * 1024 };
 
 
 void
-usage (int status)
+usage (정수 status)
 {
-  if (status != EXIT_SUCCESS)
+  만약 (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  아니면
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE]\n\
@@ -117,17 +117,17 @@ static struct option const long_opts[] =
 };
 
 static void
-input_from_argv (char **operand, int n_operands, char eolbyte)
+input_from_argv (char **operand, 정수 n_operands, char eolbyte)
 {
   char *p;
   size_t size = n_operands;
-  int i;
+  정수 i;
 
-  for (i = 0; i < n_operands; i++)
+  위해 (i = 0; i < n_operands; i++)
     size += strlen (operand[i]);
   p = xmalloc (size);
 
-  for (i = 0; i < n_operands; i++)
+  위해 (i = 0; i < n_operands; i++)
     {
       char *p1 = stpcpy (p, operand[i]);
       operand[i] = p;
@@ -145,7 +145,7 @@ static char *
 next_line (char *line, char eolbyte)
 {
   char *p = rawmemchr (line, eolbyte);
-  return p + 1;
+  반환 p + 1;
 }
 
 /* Return the size of the input if possible or OFF_T_MAX if not.  */
@@ -156,20 +156,20 @@ input_size (void)
   off_t file_size;
 
   struct stat stat_buf;
-  if (fstat (STDIN_FILENO, &stat_buf) != 0)
-    return OFF_T_MAX;
-  if (usable_st_size (&stat_buf))
+  만약 (fstat (STDIN_FILENO, &stat_buf) != 0)
+    반환 OFF_T_MAX;
+  만약 (usable_st_size (&stat_buf))
     file_size = stat_buf.st_size;
-  else
-    return OFF_T_MAX;
+  아니면
+    반환 OFF_T_MAX;
 
   off_t input_offset = lseek (STDIN_FILENO, 0, SEEK_CUR);
-  if (input_offset < 0)
-    return OFF_T_MAX;
+  만약 (input_offset < 0)
+    반환 OFF_T_MAX;
 
   file_size -= input_offset;
 
-  return file_size;
+  반환 file_size;
 }
 
 /* Read all lines and store up to K permuted lines in *OUT_RSRV.
@@ -186,10 +186,10 @@ read_input_reservoir_sampling (FILE *in, char eolbyte, idx_t k,
   struct linebuffer *rsrv = NULL;
 
   /* Fill the first K lines, directly into the reservoir.  */
-  for (n_lines = 0; n_lines < k; n_lines++)
+  위해 (n_lines = 0; n_lines < k; n_lines++)
     {
       /* Enlarge reservoir if needed.  */
-      if (n_lines == n_alloc_lines)
+      만약 (n_lines == n_alloc_lines)
         {
           idx_t old = n_alloc_lines;
           rsrv = xpalloc (rsrv, &n_alloc_lines, 1, k, sizeof *rsrv);
@@ -197,12 +197,12 @@ read_input_reservoir_sampling (FILE *in, char eolbyte, idx_t k,
         }
 
       line = readlinebuffer_delim (&rsrv[n_lines], in, eolbyte);
-      if (!line)
+      만약 (!line)
         break;
     }
 
   /* last line wasn't null - so there may be more lines to read.  */
-  if (line != NULL)
+  만약 (line != NULL)
     {
       struct linebuffer dummy;
       initbuffer (&dummy);  /* space for lines not put in reservoir.  */
@@ -221,34 +221,34 @@ read_input_reservoir_sampling (FILE *in, char eolbyte, idx_t k,
           randint j = randint_choose (s, n_lines + 1);  /* 0 .. n_lines.  */
           line = (j < k) ? (&rsrv[j]) : (&dummy);
         }
-      while (readlinebuffer_delim (line, in, eolbyte) != NULL && n_lines++);
+      동안 (readlinebuffer_delim (line, in, eolbyte) != NULL && n_lines++);
 
-      if (! n_lines)
+      만약 (! n_lines)
         error (EXIT_FAILURE, EOVERFLOW, _("too many input lines"));
 
       freebuffer (&dummy);
     }
 
   /* no more input lines, or an input error.  */
-  if (ferror (in))
+  만약 (ferror (in))
     error (EXIT_FAILURE, errno, _("read error"));
 
   *out_rsrv = rsrv;
-  return MIN (k, n_lines);
+  반환 MIN (k, n_lines);
 }
 
-static int
+static 정수
 write_permuted_output_reservoir (size_t n_lines, struct linebuffer *lines,
                                  size_t const *permutation)
 {
-  for (size_t i = 0; i < n_lines; i++)
+  위해 (size_t i = 0; i < n_lines; i++)
     {
       const struct linebuffer *p = &lines[permutation[i]];
-      if (fwrite (p->buffer, sizeof (char), p->length, stdout) != p->length)
-        return -1;
+      만약 (fwrite (p->buffer, sizeof (char), p->length, stdout) != p->length)
+        반환 -1;
     }
 
-  return 0;
+  반환 0;
 }
 
 /* Read data from file IN.  Input lines are delimited by EOLBYTE;
@@ -276,116 +276,116 @@ read_input (FILE *in, char eolbyte, char ***pline)
      or if none left, stdin.  Doing that would give better performance by
      avoiding the reservoir CPU overhead when reading < RESERVOIR_MIN_INPUT
      from a pipe, and allow us to dispense with the input_size() function.  */
-  if (!(buf = fread_file (in, 0, &used)))
+  만약 (!(buf = fread_file (in, 0, &used)))
     error (EXIT_FAILURE, errno, _("read error"));
 
-  if (used && buf[used - 1] != eolbyte)
+  만약 (used && buf[used - 1] != eolbyte)
     buf[used++] = eolbyte;
 
   lim = buf + used;
 
   n_lines = 0;
-  for (p = buf; p < lim; p = next_line (p, eolbyte))
+  위해 (p = buf; p < lim; p = next_line (p, eolbyte))
     n_lines++;
 
   *pline = line = xnmalloc (n_lines + 1, sizeof *line);
 
   line[0] = p = buf;
-  for (size_t i = 1; i <= n_lines; i++)
+  위해 (size_t i = 1; i <= n_lines; i++)
     line[i] = p = next_line (p, eolbyte);
 
-  return n_lines;
+  반환 n_lines;
 }
 
 /* Output N_LINES lines to stdout from LINE array,
    chosen by the indices in PERMUTATION.
    PERMUTATION and LINE must have at least N_LINES elements.
    Strings in LINE must include the line-terminator character.  */
-static int
+static 정수
 write_permuted_lines (size_t n_lines, char *const *line,
                       size_t const *permutation)
 {
-  for (size_t i = 0; i < n_lines; i++)
+  위해 (size_t i = 0; i < n_lines; i++)
     {
       char *const *p = line + permutation[i];
       size_t len = p[1] - p[0];
-      if (fwrite (p[0], sizeof *p[0], len, stdout) != len)
-        return -1;
+      만약 (fwrite (p[0], sizeof *p[0], len, stdout) != len)
+        반환 -1;
     }
 
-  return 0;
+  반환 0;
 }
 
 /* Print NUMBER followed by EOLBYTE to standard output.
    Return false on failure, true on success.  */
 static bool
-print_number (unsigned long int number, char eolbyte)
+print_number (unsigned long 정수 number, char eolbyte)
 {
-  char buf[INT_BUFSIZE_BOUND (unsigned long int)];
-  char *p = buf + INT_STRLEN_BOUND (unsigned long int);
+  char buf[INT_BUFSIZE_BOUND (unsigned long 정수)];
+  char *p = buf + INT_STRLEN_BOUND (unsigned long 정수);
   *p = eolbyte;
   do
     *--p = '0' + number % 10;
-  while ((number /= 10) != 0);
+  동안 ((number /= 10) != 0);
   idx_t len = buf + sizeof buf - p;
-  return fwrite (p, 1, len, stdout) == len;
+  반환 fwrite (p, 1, len, stdout) == len;
 }
 
 /* Output N_LINES of numbers to stdout, from PERMUTATION array.
    PERMUTATION must have at least N_LINES elements.  */
-static int
+static 정수
 write_permuted_numbers (size_t n_lines, size_t lo_input,
                         size_t const *permutation, char eolbyte)
 {
-  for (size_t i = 0; i < n_lines; i++)
+  위해 (size_t i = 0; i < n_lines; i++)
     {
-      unsigned long int n = lo_input + permutation[i];
-      if (! print_number (n, eolbyte))
-        return -1;
+      unsigned long 정수 n = lo_input + permutation[i];
+      만약 (! print_number (n, eolbyte))
+        반환 -1;
     }
 
-  return 0;
+  반환 0;
 }
 
 /* Output COUNT numbers to stdout, chosen randomly from range
    LO_INPUT through HI_INPUT.  */
-static int
+static 정수
 write_random_numbers (struct randint_source *s, size_t count,
                       size_t lo_input, size_t hi_input, char eolbyte)
 {
   const randint range = hi_input - lo_input + 1;
 
-  for (size_t i = 0; i < count; i++)
+  위해 (size_t i = 0; i < count; i++)
     {
-      unsigned long int j = lo_input + randint_choose (s, range);
-      if (! print_number (j, eolbyte))
-        return -1;
+      unsigned long 정수 j = lo_input + randint_choose (s, range);
+      만약 (! print_number (j, eolbyte))
+        반환 -1;
     }
 
-  return 0;
+  반환 0;
 }
 
 /* Output COUNT lines to stdout from LINES array.
    LINES must have at least N_LINES elements in it.
    Strings in LINES_ must include the line-terminator character.  */
-static int
+static 정수
 write_random_lines (struct randint_source *s, size_t count,
                     char *const *lines, size_t n_lines)
 {
-  for (size_t i = 0; i < count; i++)
+  위해 (size_t i = 0; i < count; i++)
     {
       const randint j = randint_choose (s, n_lines);
       char *const *p = lines + j;
       size_t len = p[1] - p[0];
-      if (fwrite (p[0], sizeof *p[0], len, stdout) != len)
-        return -1;
+      만약 (fwrite (p[0], sizeof *p[0], len, stdout) != len)
+        반환 -1;
     }
 
-  return 0;
+  반환 0;
 }
 
-int
-main (int argc, char **argv)
+정수
+main (정수 argc, char **argv)
 {
   bool echo = false;
   bool input_range = false;
@@ -399,15 +399,15 @@ main (int argc, char **argv)
   bool use_reservoir_sampling = false;
   bool repeat = false;
 
-  int optc;
-  int n_operands;
+  정수 optc;
+  정수 n_operands;
   char **operand;
   size_t n_lines;
   char **line = NULL;
   struct linebuffer *reservoir = NULL;
   struct randint_source *randint_source;
   size_t *permutation = NULL;
-  int i;
+  정수 i;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -417,7 +417,7 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "ei:n:o:rz", long_opts, NULL))
+  동안 ((optc = getopt_long (argc, argv, "ei:n:o:rz", long_opts, NULL))
          != -1)
     switch (optc)
       {
@@ -427,27 +427,27 @@ main (int argc, char **argv)
 
       case 'i':
         {
-          if (input_range)
+          만약 (input_range)
             error (EXIT_FAILURE, 0, _("multiple -i options specified"));
           input_range = true;
 
           uintmax_t u;
           char *lo_end;
           strtol_error err = xstrtoumax (optarg, &lo_end, 10, &u, NULL);
-          if (err == LONGINT_OK)
+          만약 (err == LONGINT_OK)
             {
               lo_input = u;
-              if (lo_input != u)
+              만약 (lo_input != u)
                 err = LONGINT_OVERFLOW;
-              else if (*lo_end != '-')
+              아니면 만약 (*lo_end != '-')
                 err = LONGINT_INVALID;
-              else
+              아니면
                 {
                   err = xstrtoumax (lo_end + 1, NULL, 10, &u, "");
-                  if (err == LONGINT_OK)
+                  만약 (err == LONGINT_OK)
                     {
                       hi_input = u;
-                      if (hi_input != u)
+                      만약 (hi_input != u)
                         err = LONGINT_OVERFLOW;
                     }
                 }
@@ -455,7 +455,7 @@ main (int argc, char **argv)
 
           n_lines = hi_input - lo_input + 1;
 
-          if (err != LONGINT_OK || (lo_input <= hi_input) == (n_lines == 0))
+          만약 (err != LONGINT_OK || (lo_input <= hi_input) == (n_lines == 0))
             error (EXIT_FAILURE, err == LONGINT_OVERFLOW ? EOVERFLOW : 0,
                    "%s: %s", _("invalid input range"), quote (optarg));
         }
@@ -466,22 +466,22 @@ main (int argc, char **argv)
           uintmax_t argval;
           strtol_error e = xstrtoumax (optarg, NULL, 10, &argval, "");
 
-          if (e == LONGINT_OK)
+          만약 (e == LONGINT_OK)
             head_lines = MIN (head_lines, argval);
-          else if (e != LONGINT_OVERFLOW)
+          아니면 만약 (e != LONGINT_OVERFLOW)
             error (EXIT_FAILURE, 0, _("invalid line count: %s"),
                    quote (optarg));
         }
         break;
 
       case 'o':
-        if (outfile && !streq (outfile, optarg))
+        만약 (outfile && !streq (outfile, optarg))
           error (EXIT_FAILURE, 0, _("multiple output files specified"));
         outfile = optarg;
         break;
 
       case RANDOM_SOURCE_OPTION:
-        if (random_source && !streq (random_source, optarg))
+        만약 (random_source && !streq (random_source, optarg))
           error (EXIT_FAILURE, 0, _("multiple random sources specified"));
         random_source = optarg;
         break;
@@ -504,51 +504,51 @@ main (int argc, char **argv)
   operand = argv + optind;
 
   /* Check invalid usage.  */
-  if (echo && input_range)
+  만약 (echo && input_range)
     {
       error (0, 0, _("cannot combine -e and -i options"));
       usage (EXIT_FAILURE);
     }
-  if (input_range ? 0 < n_operands : !echo && 1 < n_operands)
+  만약 (input_range ? 0 < n_operands : !echo && 1 < n_operands)
     {
       error (0, 0, _("extra operand %s"), quote (operand[!input_range]));
       usage (EXIT_FAILURE);
     }
 
   /* Prepare input.  */
-  if (head_lines == 0)
+  만약 (head_lines == 0)
     {
       n_lines = 0;
       line = NULL;
     }
-  else if (echo)
+  아니면 만약 (echo)
     {
       input_from_argv (operand, n_operands, eolbyte);
       n_lines = n_operands;
       line = operand;
     }
-  else if (input_range)
+  아니면 만약 (input_range)
     {
       IF_LINT (n_lines = hi_input - lo_input + 1); /* Avoid GCC 10 warning.  */
       line = NULL;
     }
-  else
+  아니면
     {
       /* If an input file is specified, re-open it as stdin.  */
-      if (n_operands == 1
+      만약 (n_operands == 1
           && ! (streq (operand[0], "-")
                 || freopen (operand[0], "r", stdin)))
         error (EXIT_FAILURE, errno, "%s", quotef (operand[0]));
 
       fadvise (stdin, FADVISE_SEQUENTIAL);
 
-      if (repeat || head_lines == MIN (IDX_MAX, SIZE_MAX)
+      만약 (repeat || head_lines == MIN (IDX_MAX, SIZE_MAX)
           || input_size () <= RESERVOIR_MIN_INPUT)
         {
           n_lines = read_input (stdin, eolbyte, &input_lines);
           line = input_lines;
         }
-      else
+      아니면
         {
           use_reservoir_sampling = true;
           n_lines = SIZE_MAX;   /* unknown number of input lines, for now.  */
@@ -563,11 +563,11 @@ main (int argc, char **argv)
                                     (use_reservoir_sampling || repeat
                                      ? SIZE_MAX
                                      : randperm_bound (ahead_lines, n_lines)));
-  if (! randint_source)
+  만약 (! randint_source)
     error (EXIT_FAILURE, errno, "%s",
            quotef (random_source ? random_source : "getrandom"));
 
-  if (use_reservoir_sampling)
+  만약 (use_reservoir_sampling)
     {
       /* Instead of reading the entire file into 'line',
          use reservoir-sampling to store just AHEAD_LINES random lines.  */
@@ -579,43 +579,43 @@ main (int argc, char **argv)
   /* Close stdin now, rather than earlier, so that randint_all_new
      doesn't have to worry about opening something other than
      stdin.  */
-  if (! (head_lines == 0 || echo || input_range || fclose (stdin) == 0))
+  만약 (! (head_lines == 0 || echo || input_range || fclose (stdin) == 0))
     error (EXIT_FAILURE, errno, _("read error"));
 
-  if (!repeat)
+  만약 (!repeat)
     permutation = randperm_new (randint_source, ahead_lines, n_lines);
 
-  if (outfile && ! freopen (outfile, "w", stdout))
+  만약 (outfile && ! freopen (outfile, "w", stdout))
     error (EXIT_FAILURE, errno, "%s", quotef (outfile));
 
   /* Generate output according to requested method */
-  if (repeat)
+  만약 (repeat)
     {
-      if (head_lines == 0)
+      만약 (head_lines == 0)
         i = 0;
-      else
+      아니면
         {
-          if (n_lines == 0)
+          만약 (n_lines == 0)
             error (EXIT_FAILURE, 0, _("no lines to repeat"));
-          if (input_range)
+          만약 (input_range)
             i = write_random_numbers (randint_source, ahead_lines,
                                       lo_input, hi_input, eolbyte);
-          else
+          아니면
             i = write_random_lines (randint_source, ahead_lines, line, n_lines);
         }
     }
-  else
+  아니면
     {
-      if (use_reservoir_sampling)
+      만약 (use_reservoir_sampling)
         i = write_permuted_output_reservoir (n_lines, reservoir, permutation);
-      else if (input_range)
+      아니면 만약 (input_range)
         i = write_permuted_numbers (ahead_lines, lo_input,
                                     permutation, eolbyte);
-      else
+      아니면
         i = write_permuted_lines (ahead_lines, line, permutation);
     }
 
-  if (i != 0)
+  만약 (i != 0)
     write_error ();
 
   IF_LINT (randint_all_free (randint_source));  /* For older valgrind.  */

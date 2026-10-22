@@ -32,7 +32,7 @@ bswap_neon (uint64x2_t in)
   uint64x2_t a =
     vreinterpretq_u64_u8 (vrev64q_u8 (vreinterpretq_u8_u64 (in)));
   a = vcombine_u64 (vget_high_u64 (a), vget_low_u64 (a));
-  return a;
+  반환 a;
 }
 
 /* Calculate CRC32 using VMULL CPU instruction found in ARMv8 CPUs */
@@ -47,8 +47,8 @@ cksum_vmull (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
   poly64x2_t single_mult_constant;
   poly64x2_t four_mult_constant;
 
-  if (!fp || !crc_out || !length_out)
-    return false;
+  만약 (!fp || !crc_out || !length_out)
+    반환 false;
 
   /* These constants and general algorithms are taken from the Intel whitepaper
      "Fast CRC Computation for Generic Polynomials Using PCLMULQDQ Instruction"
@@ -58,7 +58,7 @@ cksum_vmull (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
   four_mult_constant =
     vcombine_p64 (vcreate_p64 (0xE6228B11), vcreate_p64 (0x8833794C));
 
-  while ((bytes_read = fread (buf, 1, BUFLEN, fp)) > 0)
+  동안 ((bytes_read = fread (buf, 1, BUFLEN, fp)) > 0)
     {
       uint64x2_t *datap;
       uint64x2_t data;
@@ -72,16 +72,16 @@ cksum_vmull (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
       uint64x2_t fold_data;
       uint64x2_t xor_crc;
 
-      if (ckd_add (&length, length, bytes_read))
+      만약 (ckd_add (&length, length, bytes_read))
         {
           errno = EOVERFLOW;
-          return false;
+          반환 false;
         }
 
       datap = (uint64x2_t *) buf;
 
       /* Fold in parallel eight 16-byte blocks into four 16-byte blocks */
-      if (bytes_read >= 16 * 8)
+      만약 (bytes_read >= 16 * 8)
         {
           data = vld1q_u64 ((uint64_t *) (datap));
           data = bswap_neon (data);
@@ -99,7 +99,7 @@ cksum_vmull (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
           data7 = bswap_neon (data7);
 
 
-          while (bytes_read >= 16 * 8)
+          동안 (bytes_read >= 16 * 8)
             {
               datap += 4;
 
@@ -185,7 +185,7 @@ cksum_vmull (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
         }
 
       /* Fold two 16-byte blocks into one 16-byte block */
-      if (bytes_read >= 32)
+      만약 (bytes_read >= 32)
         {
           data = vld1q_u64 ((uint64_t *) (datap));
           data = bswap_neon (data);
@@ -193,7 +193,7 @@ cksum_vmull (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
           xor_crc = vcombine_u64 (vcreate_u64 (0), vcreate_u64 (wcrc << 32));
           crc = 0;
           data = veorq_u64 (data, xor_crc);
-          while (bytes_read >= 32)
+          동안 (bytes_read >= 32)
             {
               datap++;
 
@@ -219,14 +219,14 @@ cksum_vmull (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
 
       /* And finish up last 0-31 bytes in a byte by byte fashion */
       unsigned char *cp = (unsigned char *) datap;
-      while (bytes_read--)
+      동안 (bytes_read--)
         crc = (crc << 8) ^ crctab[0][((crc >> 24) ^ *cp++) & 0xFF];
-      if (feof (fp))
+      만약 (feof (fp))
         break;
     }
 
   *crc_out = crc;
   *length_out = length;
 
-  return !ferror (fp);
+  반환 !ferror (fp);
 }

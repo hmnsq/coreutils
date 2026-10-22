@@ -85,21 +85,21 @@ static struct option const longopts[] =
 };
 
 void
-usage (int status)
+usage (정수 status)
 {
-  if (status != EXIT_SUCCESS)
+  만약 (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  아니면
     {
       printf (_("Usage: %s [OPTION]... [USER]...\n"), program_name);
       fputs (_("\
-Print user and group information for each specified USER,\n\
-or (when USER omitted) for the current process.\n\
+Print user and group information 위해 each specified USER,\n\
+or (when USER omitted) 위해 the current process.\n\
 \n"),
              stdout);
       oputs (_("\
   -a\n\
-         ignore, for compatibility with other versions\n\
+         ignore, 위해 compatibility with other versions\n\
 "));
       oputs (_("\
   -Z, --context\n\
@@ -115,7 +115,7 @@ or (when USER omitted) for the current process.\n\
 "));
       oputs (_("\
   -n, --name\n\
-         print a name instead of a number, for -u, -g, -G\n\
+         print a name instead of a number, 위해 -u, -g, -G\n\
 "));
       oputs (_("\
   -r, --real\n\
@@ -141,11 +141,11 @@ Without any OPTION, print some useful set of identified information.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+정수
+main (정수 argc, char **argv)
 {
-  int optc;
-  int selinux_enabled = (is_selinux_enabled () > 0);
+  정수 optc;
+  정수 selinux_enabled = (is_selinux_enabled () > 0);
   bool smack_enabled = is_smack_enabled ();
 
   initialize_main (&argc, &argv);
@@ -156,7 +156,7 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "agnruzGZ", longopts, NULL)) != -1)
+  동안 ((optc = getopt_long (argc, argv, "agnruzGZ", longopts, NULL)) != -1)
     {
       switch (optc)
         {
@@ -168,12 +168,12 @@ main (int argc, char **argv)
           /* politely decline if we're not on a SELinux/SMACK-enabled kernel.
              Keep require_selinux_ in tests in sync with these messages.  */
 #ifdef HAVE_SMACK
-          if (!selinux_enabled && !smack_enabled)
+          만약 (!selinux_enabled && !smack_enabled)
             error (EXIT_FAILURE, 0,
                    _("--context (-Z) works only on "
                      "an SELinux/SMACK-enabled kernel"));
-#else
-          if (!selinux_enabled)
+#아니면
+          만약 (!selinux_enabled)
             error (EXIT_FAILURE, 0,
                    _("--context (-Z) works only on an SELinux-enabled kernel"));
 #endif
@@ -207,11 +207,11 @@ main (int argc, char **argv)
 
   size_t n_ids = argc - optind;
 
-  if (n_ids && just_context)
+  만약 (n_ids && just_context)
     error (EXIT_FAILURE, 0,
            _("cannot print security context when user specified"));
 
-  if (just_user + just_group + just_group_list + just_context > 1)
+  만약 (just_user + just_group + just_group_list + just_context > 1)
     error (EXIT_FAILURE, 0, _("cannot print \"only\" of more than one choice"));
 
   bool default_format = ! (just_user
@@ -219,11 +219,11 @@ main (int argc, char **argv)
                            || just_group_list
                            || just_context);
 
-  if (default_format && (use_real || use_name))
+  만약 (default_format && (use_real || use_name))
     error (EXIT_FAILURE, 0,
            _("printing only names or real IDs requires -u, -g, or -G"));
 
-  if (default_format && opt_zero)
+  만약 (default_format && opt_zero)
     error (EXIT_FAILURE, 0,
            _("option --zero not permitted in default format"));
 
@@ -232,19 +232,19 @@ main (int argc, char **argv)
      and we're not in POSIXLY_CORRECT mode, get our context.  Otherwise,
      leave the context variable alone - it has been initialized to an
      invalid value that will be not displayed in print_full_info().  */
-  if (n_ids == 0
+  만약 (n_ids == 0
       && (just_context
           || (default_format && ! getenv ("POSIXLY_CORRECT"))))
     {
       /* Report failure only if --context (-Z) was explicitly requested.  */
-      if ((selinux_enabled && getcon (&context) && just_context)
+      만약 ((selinux_enabled && getcon (&context) && just_context)
           || (smack_enabled
               && smack_new_label_from_self (&context) < 0
               && just_context))
         error (EXIT_FAILURE, 0, _("can't get process context"));
     }
 
-  if (n_ids >= 1)
+  만약 (n_ids >= 1)
     {
       multiple_users = n_ids > 1 ? true : false;
       /* Changing the value of n_ids to the last index in the array where we
@@ -253,7 +253,7 @@ main (int argc, char **argv)
          last username lies in argv[].  */
       n_ids += optind;
       /* For each username/userid to get its pw_name field */
-      for (; optind < n_ids; optind++)
+      위해 (; optind < n_ids; optind++)
         {
           char *pw_name = NULL;
           struct passwd *pwd = NULL;
@@ -261,30 +261,30 @@ main (int argc, char **argv)
           /* Disallow an empty spec here as parse_user_spec() doesn't
              give an error for that as it seems it's a valid way to
              specify a noop or "reset special bits" depending on the system.  */
-          if (*spec)
+          만약 (*spec)
             {
-              if (! parse_user_spec (spec, &euid, NULL, &pw_name, NULL))
+              만약 (! parse_user_spec (spec, &euid, NULL, &pw_name, NULL))
                 pwd = pw_name ? getpwnam (pw_name) : getpwuid (euid);
             }
-          if (pwd == NULL)
+          만약 (pwd == NULL)
             {
               error (0, errno, _("%s: no such user"), quote (spec));
               ok &= false;
             }
-          else
+          아니면
             {
-              if (!pw_name)
+              만약 (!pw_name)
                 pw_name = xstrdup (pwd->pw_name);
               ruid = euid = pwd->pw_uid;
               rgid = egid = pwd->pw_gid;
               print_stuff (pw_name);
-              if (ferror (stdout))
+              만약 (ferror (stdout))
                 write_error ();
             }
           free (pw_name);
         }
     }
-  else
+  아니면
     {
       /* POSIX says identification functions (getuid, getgid, and
          others) cannot fail, but they can fail under GNU/Hurd and a
@@ -292,40 +292,40 @@ main (int argc, char **argv)
       uid_t NO_UID = -1;
       gid_t NO_GID = -1;
 
-      if (just_user ? !use_real
+      만약 (just_user ? !use_real
           : !just_group && !just_group_list && !just_context)
         {
           errno = 0;
           euid = geteuid ();
-          if (euid == NO_UID && errno)
+          만약 (euid == NO_UID && errno)
             error (EXIT_FAILURE, errno, _("cannot get effective UID"));
         }
 
-      if (just_user ? use_real
+      만약 (just_user ? use_real
           : !just_group && (just_group_list || !just_context))
         {
           errno = 0;
           ruid = getuid ();
-          if (ruid == NO_UID && errno)
+          만약 (ruid == NO_UID && errno)
             error (EXIT_FAILURE, errno, _("cannot get real UID"));
         }
 
-      if (!just_user && (just_group || just_group_list || !just_context))
+      만약 (!just_user && (just_group || just_group_list || !just_context))
         {
           errno = 0;
           egid = getegid ();
-          if (egid == NO_GID && errno)
+          만약 (egid == NO_GID && errno)
             error (EXIT_FAILURE, errno, _("cannot get effective GID"));
 
           errno = 0;
           rgid = getgid ();
-          if (rgid == NO_GID && errno)
+          만약 (rgid == NO_GID && errno)
             error (EXIT_FAILURE, errno, _("cannot get real GID"));
         }
         print_stuff (NULL);
     }
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  반환 ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 /* Print the name or value of user ID UID. */
@@ -335,19 +335,19 @@ print_user (uid_t uid)
 {
   struct passwd *pwd = NULL;
 
-  if (use_name)
+  만약 (use_name)
     {
       pwd = getpwuid (uid);
-      if (pwd == NULL)
+      만약 (pwd == NULL)
         {
           error (0, 0, _("cannot find name for user ID %ju"), (uintmax_t) uid);
           ok &= false;
         }
     }
 
-  if (pwd)
+  만약 (pwd)
     printf ("%s", pwd->pw_name);
-  else
+  아니면
     printf ("%ju", (uintmax_t) uid);
 }
 
@@ -361,27 +361,27 @@ print_full_info (char const *username)
 
   printf (_("uid=%ju"), (uintmax_t) ruid);
   pwd = getpwuid (ruid);
-  if (pwd)
+  만약 (pwd)
     printf ("(%s)", pwd->pw_name);
 
   printf (_(" gid=%ju"), (uintmax_t) rgid);
   grp = getgrgid (rgid);
-  if (grp)
+  만약 (grp)
     printf ("(%s)", grp->gr_name);
 
-  if (euid != ruid)
+  만약 (euid != ruid)
     {
       printf (_(" euid=%ju"), (uintmax_t) euid);
       pwd = getpwuid (euid);
-      if (pwd)
+      만약 (pwd)
         printf ("(%s)", pwd->pw_name);
     }
 
-  if (egid != rgid)
+  만약 (egid != rgid)
     {
       printf (_(" egid=%ju"), (uintmax_t) egid);
       grp = getgrgid (egid);
-      if (grp)
+      만약 (grp)
         printf ("(%s)", grp->gr_name);
     }
 
@@ -389,32 +389,32 @@ print_full_info (char const *username)
     gid_t *groups;
 
     gid_t primary_group;
-    if (username)
+    만약 (username)
       primary_group = pwd ? pwd->pw_gid : -1;
-    else
+    아니면
       primary_group = egid;
 
-    int n_groups = xgetgroups (username, primary_group, &groups);
-    if (n_groups < 0)
+    정수 n_groups = xgetgroups (username, primary_group, &groups);
+    만약 (n_groups < 0)
       {
-        if (username)
+        만약 (username)
           error (0, errno, _("failed to get groups for user %s"),
                  quote (username));
-        else
+        아니면
           error (0, errno, _("failed to get groups for the current process"));
         ok &= false;
-        return;
+        반환;
       }
 
-    if (n_groups > 0)
+    만약 (n_groups > 0)
       fputs (_(" groups="), stdout);
-    for (int i = 0; i < n_groups; i++)
+    위해 (정수 i = 0; i < n_groups; i++)
       {
-        if (i > 0)
+        만약 (i > 0)
           putchar (',');
         printf ("%ju", (uintmax_t) groups[i]);
         grp = getgrgid (groups[i]);
-        if (grp)
+        만약 (grp)
           printf ("(%s)", grp->gr_name);
       }
     free (groups);
@@ -422,7 +422,7 @@ print_full_info (char const *username)
 
   /* POSIX mandates the precise output format, and that it not include
      any context=... part, so skip that if POSIXLY_CORRECT is set.  */
-  if (context)
+  만약 (context)
     printf (_(" context=%s"), context);
 }
 
@@ -431,7 +431,7 @@ print_full_info (char const *username)
 static void
 print_stuff (char const *pw_name)
 {
-  if (just_user)
+  만약 (just_user)
       print_user (use_real ? ruid : euid);
 
   /* print_group and print_group_list return true on successful
@@ -439,25 +439,25 @@ print_stuff (char const *pw_name)
      the current value of 'ok' because we want to know if one of the previous
      users faced a problem in these functions. This value of 'ok' is later used
      to understand what status program should exit with. */
-  else if (just_group)
+  아니면 만약 (just_group)
     ok &= print_group (use_real ? rgid : egid, use_name);
-  else if (just_group_list)
+  아니면 만약 (just_group_list)
     ok &= print_group_list (pw_name, ruid, rgid, egid,
                             use_name, opt_zero ? '\0' : ' ');
-  else if (just_context)
+  아니면 만약 (just_context)
     fputs (context, stdout);
-  else
+  아니면
     print_full_info (pw_name);
 
   /* When printing records for more than 1 user, at the end of groups
      of each user terminate the record with two consequent NUL characters
      to make parsing and distinguishing between two records possible. */
-  if (opt_zero && just_group_list && multiple_users)
+  만약 (opt_zero && just_group_list && multiple_users)
     {
       putchar ('\0');
       putchar ('\0');
     }
-  else
+  아니면
     {
       putchar (opt_zero ? '\0' : '\n');
     }

@@ -41,11 +41,11 @@ static struct option const longopts[] =
 };
 
 void
-usage (int status)
+usage (정수 status)
 {
-  if (status != EXIT_SUCCESS)
+  만약 (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  아니면
     {
       printf (_("\
 Usage: %s NAME [SUFFIX]\n\
@@ -96,10 +96,10 @@ remove_suffix (char *name, char const *suffix, idx_t suffix_len)
   char *np = name + strlen (name);
   char const *sp = suffix + suffix_len;
 
-  while (np > name && sp > suffix)
-    if (*--np != *--sp)
-      return;
-  if (np > name)
+  동안 (np > name && sp > suffix)
+    만약 (*--np != *--sp)
+      반환;
+  만약 (np > name)
     *np = '\0';
 }
 
@@ -120,7 +120,7 @@ perform_basename (char const *string, char const *suffix, idx_t suffix_len,
      skipping suffix stripping if base_name returned an absolute path
      or a drive letter (only possible if name is a file-system
      root).  */
-  if (0 < suffix_len && IS_RELATIVE_FILE_NAME (name)
+  만약 (0 < suffix_len && IS_RELATIVE_FILE_NAME (name)
       && ! FILE_SYSTEM_PREFIX_LEN (name))
     remove_suffix (name, suffix, suffix_len);
 
@@ -129,8 +129,8 @@ perform_basename (char const *string, char const *suffix, idx_t suffix_len,
   free (name);
 }
 
-int
-main (int argc, char **argv)
+정수
+main (정수 argc, char **argv)
 {
   bool multiple_names = false;
   bool use_nuls = false;
@@ -144,11 +144,11 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while (true)
+  동안 (true)
     {
-      int c = getopt_long (argc, argv, "+as:z", longopts, NULL);
+      정수 c = getopt_long (argc, argv, "+as:z", longopts, NULL);
 
-      if (c == -1)
+      만약 (c == -1)
         break;
 
       switch (c)
@@ -174,29 +174,29 @@ main (int argc, char **argv)
         }
     }
 
-  if (argc < optind + 1)
+  만약 (argc < optind + 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
-  if (! multiple_names)
+  만약 (! multiple_names)
     {
-      if (optind + 2 == argc)
+      만약 (optind + 2 == argc)
         suffix = argv[optind + 1];
-      else if (optind + 2 < argc)
+      아니면 만약 (optind + 2 < argc)
         {
           error (0, 0, _("extra operand %s"), quote (argv[optind + 2]));
           usage (EXIT_FAILURE);
         }
     }
 
-  if (!use_nuls && isatty (STDOUT_FILENO))
+  만약 (!use_nuls && isatty (STDOUT_FILENO))
     {
-      int qs = getenv_quoting_style ();
-      if (qs < 0)
+      정수 qs = getenv_quoting_style ();
+      만약 (qs < 0)
         qs = shell_escape_quoting_style;
-      if (qs != literal_quoting_style)
+      만약 (qs != literal_quoting_style)
         {
           set_quoting_style (NULL, qs);
           quote_output = true;
@@ -206,10 +206,10 @@ main (int argc, char **argv)
   idx_t suffix_len = suffix ? strlen (suffix) : 0;
 
   char **file = argv + optind;
-  int n_files = multiple_names ? argc - optind : 1;
+  정수 n_files = multiple_names ? argc - optind : 1;
 
-  for (int i = 0; i < n_files; ++i)
+  위해 (정수 i = 0; i < n_files; ++i)
     perform_basename (file[i], suffix, suffix_len, use_nuls);
 
-  return EXIT_SUCCESS;
+  반환 EXIT_SUCCESS;
 }

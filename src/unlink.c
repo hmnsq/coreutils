@@ -34,11 +34,11 @@
 #define AUTHORS proper_name ("Michael Stone")
 
 void
-usage (int status)
+usage (정수 status)
 {
-  if (status != EXIT_SUCCESS)
+  만약 (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  아니면
     {
       printf (_("\
 Usage: %s FILE\n\
@@ -52,8 +52,8 @@ Usage: %s FILE\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+정수
+main (정수 argc, char **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -67,20 +67,20 @@ main (int argc, char **argv)
                                    Version, true, usage, AUTHORS,
                                    (char const *) NULL);
 
-  if (argc < optind + 1)
+  만약 (argc < optind + 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
-  if (optind + 1 < argc)
+  만약 (optind + 1 < argc)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind + 1]));
       usage (EXIT_FAILURE);
     }
 
-  if (unlink (argv[optind]) != 0)
+  만약 (unlink (argv[optind]) != 0)
     error (EXIT_FAILURE, errno, _("cannot unlink %s"), quoteaf (argv[optind]));
 
-  return EXIT_SUCCESS;
+  반환 EXIT_SUCCESS;
 }

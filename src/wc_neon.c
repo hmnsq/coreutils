@@ -26,24 +26,24 @@
 
 /* Read FD and return a summary.  */
 extern struct wc_lines
-wc_lines_neon (int fd)
+wc_lines_neon (정수 fd)
 {
   intmax_t lines = 0;
   intmax_t bytes = 0;
 
   const uint8x16_t endlines = vdupq_n_u8 ('\n');
 
-  while (true)
+  동안 (true)
     {
       unsigned char alignas (16) neon_buf[IO_BUFSIZE];
       ssize_t bytes_read = read (fd, neon_buf, sizeof neon_buf);
-      if (bytes_read <= 0)
-        return (struct wc_lines) { bytes_read == 0 ? 0 : errno, lines, bytes };
+      만약 (bytes_read <= 0)
+        반환 (struct wc_lines) { bytes_read == 0 ? 0 : errno, lines, bytes };
 
       bytes += bytes_read;
       unsigned char *datap = neon_buf;
 
-      while (8192 <= bytes_read)
+      동안 (8192 <= bytes_read)
         {
           /* Accumulator.  */
           int8x16_t acc0 = vdupq_n_s8 (0);
@@ -52,7 +52,7 @@ wc_lines_neon (int fd)
           int8x16_t acc3 = vdupq_n_s8 (0);
 
           /* Process all 8192 bytes in 64 byte chunks.  */
-          for (int i = 0; i < 128; ++i)
+          위해 (정수 i = 0; i < 128; ++i)
             {
               /* Load 64 bytes from DATAP.  */
               uint8x16_t v0 = vld1q_u8 (datap);
@@ -103,7 +103,7 @@ wc_lines_neon (int fd)
 
       /* Finish up any left over bytes.  */
       unsigned char *end = (unsigned char *) datap + bytes_read;
-      for (unsigned char *p = (unsigned char *) datap; p < end; p++)
+      위해 (unsigned char *p = (unsigned char *) datap; p < end; p++)
         lines += *p == '\n';
     }
 }

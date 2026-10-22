@@ -39,51 +39,51 @@ print_group_list (char const *username,
   bool ok = true;
   struct passwd *pwd = NULL;
 
-  if (username)
+  만약 (username)
     {
       pwd = getpwuid (ruid);
-      if (pwd == NULL)
+      만약 (pwd == NULL)
         ok = false;
     }
 
-  if (!print_group (rgid, use_names))
+  만약 (!print_group (rgid, use_names))
     ok = false;
 
-  if (egid != rgid)
+  만약 (egid != rgid)
     {
       putchar (delim);
-      if (!print_group (egid, use_names))
+      만약 (!print_group (egid, use_names))
         ok = false;
     }
 
   {
     gid_t *groups;
 
-    int n_groups = xgetgroups (username, (pwd ? pwd->pw_gid : egid), &groups);
-    if (n_groups < 0)
+    정수 n_groups = xgetgroups (username, (pwd ? pwd->pw_gid : egid), &groups);
+    만약 (n_groups < 0)
       {
-        if (username)
+        만약 (username)
           {
             error (0, errno, _("failed to get groups for user %s"),
                    quote (username));
           }
-        else
+        아니면
           {
             error (0, errno, _("failed to get groups for the current process"));
           }
-        return false;
+        반환 false;
       }
 
-    for (int i = 0; i < n_groups; i++)
-      if (groups[i] != rgid && groups[i] != egid)
+    위해 (정수 i = 0; i < n_groups; i++)
+      만약 (groups[i] != rgid && groups[i] != egid)
         {
           putchar (delim);
-          if (!print_group (groups[i], use_names))
+          만약 (!print_group (groups[i], use_names))
             ok = false;
         }
     free (groups);
   }
-  return ok;
+  반환 ok;
 }
 
 /* Print the name or value of group ID GID. */
@@ -93,17 +93,17 @@ print_group (gid_t gid, bool use_name)
   struct group *grp = NULL;
   bool ok = true;
 
-  if (use_name)
+  만약 (use_name)
     {
       grp = getgrgid (gid);
-      if (grp == NULL)
+      만약 (grp == NULL)
         {
-          if (TYPE_SIGNED (gid_t))
+          만약 (TYPE_SIGNED (gid_t))
             {
               intmax_t g = gid;
               error (0, 0, _("cannot find name for group ID %jd"), g);
             }
-          else
+          아니면
             {
               uintmax_t g = gid;
               error (0, 0, _("cannot find name for group ID %ju"), g);
@@ -112,9 +112,9 @@ print_group (gid_t gid, bool use_name)
         }
     }
 
-  if (grp)
+  만약 (grp)
     printf ("%s", grp->gr_name);
-  else
+  아니면
     printf ("%ju", (uintmax_t) gid);
-  return ok;
+  반환 ok;
 }

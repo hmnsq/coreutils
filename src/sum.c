@@ -30,51 +30,51 @@
 /* Calculate the checksum and the size in bytes of stream STREAM.
    Return -1 on error, 0 on success.  */
 
-int
+정수
 bsd_sum_stream (FILE *stream, void *resstream, intmax_t *length)
 {
-  int ret = -1;
+  정수 ret = -1;
   idx_t sum;
-  int checksum = 0;	/* The checksum mod 2^16. */
+  정수 checksum = 0;	/* The checksum mod 2^16. */
   intmax_t total_bytes = 0;	/* The number of bytes. */
   enum { buffer_length = 32768 };
   uint8_t *buffer = malloc (buffer_length);
 
-  if (! buffer)
-    return -1;
+  만약 (! buffer)
+    반환 -1;
 
   /* Process file */
-  while (true)
+  동안 (true)
   {
     sum = 0;
 
     /* Read block */
-    while (true)
+    동안 (true)
     {
       size_t n = fread (buffer + sum, 1, buffer_length - sum, stream);
-      if (n == 0)
+      만약 (n == 0)
         {
-          if (ferror (stream))
+          만약 (ferror (stream))
             goto cleanup_buffer;
           goto final_process;
         }
 
       sum += n;
 
-      if (buffer_length == sum)
+      만약 (buffer_length == sum)
         break;
 
-      if (feof (stream))
+      만약 (feof (stream))
         goto final_process;
     }
 
-    for (size_t i = 0; i < sum; i++)
+    위해 (size_t i = 0; i < sum; i++)
       {
         checksum = (checksum >> 1) + ((checksum & 1) << 15);
         checksum += buffer[i];
         checksum &= 0xffff;	/* Keep it within bounds. */
       }
-    if (ckd_add (&total_bytes, total_bytes, sum))
+    만약 (ckd_add (&total_bytes, total_bytes, sum))
       {
         errno = EOVERFLOW;
         goto cleanup_buffer;
@@ -83,13 +83,13 @@ bsd_sum_stream (FILE *stream, void *resstream, intmax_t *length)
 
 final_process:;
 
-  for (idx_t i = 0; i < sum; i++)
+  위해 (idx_t i = 0; i < sum; i++)
     {
       checksum = (checksum >> 1) + ((checksum & 1) << 15);
       checksum += buffer[i];
       checksum &= 0xffff;	/* Keep it within bounds. */
     }
-  if (ckd_add (&total_bytes, total_bytes, sum))
+  만약 (ckd_add (&total_bytes, total_bytes, sum))
     {
       errno = EOVERFLOW;
       goto cleanup_buffer;
@@ -100,55 +100,55 @@ final_process:;
   ret = 0;
 cleanup_buffer:
   free (buffer);
-  return ret;
+  반환 ret;
 }
 
 /* Calculate the checksum and the size in bytes of stream STREAM.
    Return -1 on error, 0 on success.  */
 
-int
+정수
 sysv_sum_stream (FILE *stream, void *resstream, intmax_t *length)
 {
-  int ret = -1;
+  정수 ret = -1;
   idx_t sum;
   intmax_t total_bytes = 0;
   enum { buffer_length = 32768 };
   uint8_t *buffer = malloc (buffer_length);
 
-  if (! buffer)
-    return -1;
+  만약 (! buffer)
+    반환 -1;
 
   /* The sum of all the input bytes, modulo (UINT_MAX + 1).  */
-  unsigned int s = 0;
+  unsigned 정수 s = 0;
 
   /* Process file */
-  while (true)
+  동안 (true)
   {
     sum = 0;
 
     /* Read block */
-    while (true)
+    동안 (true)
     {
       size_t n = fread (buffer + sum, 1, buffer_length - sum, stream);
-      if (n == 0)
+      만약 (n == 0)
         {
-          if (ferror (stream))
+          만약 (ferror (stream))
             goto cleanup_buffer;
           goto final_process;
         }
 
       sum += n;
 
-      if (buffer_length == sum)
+      만약 (buffer_length == sum)
         break;
 
-      if (feof (stream))
+      만약 (feof (stream))
         goto final_process;
     }
 
-    for (size_t i = 0; i < sum; i++)
+    위해 (size_t i = 0; i < sum; i++)
       s += buffer[i];
-    if (total_bytes + sum < total_bytes)
+    만약 (total_bytes + sum < total_bytes)
       {
         errno = EOVERFLOW;
         goto cleanup_buffer;
@@ -158,47 +158,47 @@ sysv_sum_stream (FILE *stream, void *resstream, intmax_t *length)
 
 final_process:;
 
-  for (size_t i = 0; i < sum; i++)
+  위해 (size_t i = 0; i < sum; i++)
     s += buffer[i];
-  if (total_bytes + sum < total_bytes)
+  만약 (total_bytes + sum < total_bytes)
     {
       errno = EOVERFLOW;
       goto cleanup_buffer;
     }
   total_bytes += sum;
 
-  int r = (s & 0xffff) + ((s & 0xffffffff) >> 16);
-  int checksum = (r & 0xffff) + (r >> 16);
+  정수 r = (s & 0xffff) + ((s & 0xffffffff) >> 16);
+  정수 checksum = (r & 0xffff) + (r >> 16);
 
   memcpy (resstream, &checksum, sizeof checksum);
   *length = total_bytes;
   ret = 0;
 cleanup_buffer:
   free (buffer);
-  return ret;
+  반환 ret;
 }
 
 /* Print the checksum and size (in 1024 byte blocks) to stdout.
    If ARGS is true, also print the FILE name.  */
 
 void
-output_bsd (char const *file, MAYBE_UNUSED int binary_file, void const *digest,
+output_bsd (char const *file, MAYBE_UNUSED 정수 binary_file, void const *digest,
             bool raw, MAYBE_UNUSED bool tagged, unsigned char delim, bool args,
             intmax_t length)
 {
-  if (raw)
+  만약 (raw)
     {
       /* Output in network byte order (big endian).  */
-      uint16_t out_int = *(int *)digest;
+      uint16_t out_int = *(정수 *)digest;
       out_int = htobe16 (out_int);
       fwrite (&out_int, 1, 16/8, stdout);
-      return;
+      반환;
     }
 
   char hbuf[LONGEST_HUMAN_READABLE + 1];
-  printf ("%05d %5s", *(int *)digest,
+  printf ("%05d %5s", *(정수 *)digest,
           human_readable (length, hbuf, human_ceiling, 1, 1024));
-  if (args)
+  만약 (args)
     printf (" %s", file);
   putchar (delim);
 }
@@ -207,23 +207,23 @@ output_bsd (char const *file, MAYBE_UNUSED int binary_file, void const *digest,
    If ARGS is true, also print the FILE name.  */
 
 void
-output_sysv (char const *file, MAYBE_UNUSED int binary_file,
+output_sysv (char const *file, MAYBE_UNUSED 정수 binary_file,
              void const *digest, bool raw, MAYBE_UNUSED bool tagged,
              unsigned char delim, bool args, intmax_t length)
 {
-  if (raw)
+  만약 (raw)
     {
       /* Output in network byte order (big endian).  */
-      uint16_t out_int = *(int *)digest;
+      uint16_t out_int = *(정수 *)digest;
       out_int = htobe16 (out_int);
       fwrite (&out_int, 1, 16/8, stdout);
-      return;
+      반환;
     }
 
   char hbuf[LONGEST_HUMAN_READABLE + 1];
-  printf ("%d %s", *(int *)digest,
+  printf ("%d %s", *(정수 *)digest,
           human_readable (length, hbuf, human_ceiling, 1, 512));
-  if (args)
+  만약 (args)
     printf (" %s", file);
   putchar (delim);
 }
