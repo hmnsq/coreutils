@@ -71,36 +71,36 @@ static void
 apply_mode (FILE *stream, char const *stream_name, char const *envvar)
 {
   char *buf = NULL;
-  int setvbuf_mode;
-  unsigned long int size = 0;
+  цео setvbuf_mode;
+  unsigned long цео size = 0;
 
   char const *mode = getenv (envvar);
-  if (!mode)
-    return;
+  ако (!mode)
+    врати;
 
-  if (*mode == '0')
+  ако (*mode == '0')
     setvbuf_mode = _IONBF;
-  else if (*mode == 'L')
+  инако ако (*mode == 'L')
     setvbuf_mode = _IOLBF;      /* FIXME: should we allow 1ML  */
-  else
+  инако
     {
       setvbuf_mode = _IOFBF;
       char *mode_end;
       size = strtoul (mode, &mode_end, 10);
-      if (size == 0 || *mode_end)
+      ако (size == 0 || *mode_end)
         {
           fprintf (stderr, _("invalid buffering mode %s for %s\n"),
                    mode, stream_name);
-          return;
+          врати;
         }
 
       /* If strtoul might have overflowed or if the size is more than
          half of size_t range, treat it as an allocation failure.
          Huge sizes can cause problems with some stdio implementations.  */
-      buf = (size <= ((unsigned long int) -2 < (size_t) -1 / 2
-                      ? (unsigned long int) -2 : (size_t) -1 / 2)
+      buf = (size <= ((unsigned long цео) -2 < (size_t) -1 / 2
+                      ? (unsigned long цео) -2 : (size_t) -1 / 2)
              ? malloc (size) : NULL);
-      if (!buf)
+      ако (!buf)
         {
           /* We could defer the allocation to libc, however since
              glibc currently ignores the combination of null buffer
@@ -108,12 +108,12 @@ apply_mode (FILE *stream, char const *stream_name, char const *envvar)
           fprintf (stderr,
                    _("failed to allocate a %lu byte stdio buffer\n"),
                    size);
-          return;
+          врати;
         }
       /* buf will be freed by fclose.  */
     }
 
-  if (setvbuf (stream, buf, setvbuf_mode, size) != 0)
+  ако (setvbuf (stream, buf, setvbuf_mode, size) != 0)
     {
       fprintf (stderr, _("could not set buffering of %s to mode %s\n"),
                stream_name, mode);

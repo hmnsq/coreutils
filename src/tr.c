@@ -191,7 +191,7 @@ struct E_string
 static inline bool
 es_match (struct E_string const *es, size_t i, char c)
 {
-  return es->s[i] == c && !es->escaped[i];
+  врати es->s[i] == c && !es->escaped[i];
 }
 
 /* When true, each sequence in the input of a repeated character
@@ -276,11 +276,11 @@ static struct option const long_options[] =
 };
 
 void
-usage (int status)
+usage (цео status)
 {
-  if (status != EXIT_SUCCESS)
+  ако (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  инако
     {
       printf (_("\
 Usage: %s [OPTION]... STRING1 [STRING2]\n\
@@ -323,14 +323,14 @@ Interpreted sequences are:\n\
   \\b              backspace\n\
   \\f              form feed\n\
   \\n              new line\n\
-  \\r              return\n\
+  \\r              врати\n\
   \\t              horizontal tab\n\
 "), stdout);
      fputs (_("\
   \\v              vertical tab\n\
   CHAR1-CHAR2     all characters from CHAR1 to CHAR2 in ascending order\n\
   [CHAR*]         in ARRAY2, copies of CHAR until length of ARRAY1\n\
-  [CHAR*REPEAT]   REPEAT copies of CHAR, REPEAT octal if starting with 0\n\
+  [CHAR*REPEAT]   REPEAT copies of CHAR, REPEAT octal ако starting with 0\n\
   [:alnum:]       all letters and digits\n\
   [:alpha:]       all letters\n\
   [:blank:]       all horizontal whitespace\n\
@@ -349,11 +349,11 @@ Interpreted sequences are:\n\
 "), stdout);
      fputs (_("\
 \n\
-Translation occurs if -d is not given and both STRING1 and STRING2 appear.\n\
+Translation occurs ако -d is not given and both STRING1 and STRING2 appear.\n\
 -t is only significant when translating.  ARRAY2 is extended to length of\n\
 ARRAY1 by repeating its last character as necessary.  Excess characters\n\
 of ARRAY2 are ignored.  Character classes expand in unspecified order;\n\
-while translating, '[:lower:]' and '[:upper:]' may be used in pairs to\n\
+док translating, '[:lower:]' and '[:upper:]' may be used in pairs to\n\
 specify case conversion.  Squeezing occurs after translation or deletion.\n\
 Arguments like '[...]' should be quoted, to avoid potential shell globbing.\n\
 "), stdout);
@@ -368,7 +368,7 @@ Arguments like '[...]' should be quoted, to avoid potential shell globbing.\n\
 static inline bool
 is_equiv_class_member (unsigned char equiv_class, unsigned char c)
 {
-  return (equiv_class == c);
+  врати (equiv_class == c);
 }
 
 /* Return true if the character C is a member of the
@@ -378,7 +378,7 @@ ATTRIBUTE_PURE
 static bool
 is_char_class_member (enum Char_class char_class, unsigned char c)
 {
-  int result;
+  цео result;
 
   switch (char_class)
     {
@@ -422,7 +422,7 @@ is_char_class_member (enum Char_class char_class, unsigned char c)
       affirm (false);
     }
 
-  return !! result;
+  врати !! result;
 }
 
 static void
@@ -448,11 +448,11 @@ unquote (char const *s, struct E_string *es)
   es->s = xmalloc (len);
   es->escaped = xcalloc (len, sizeof es->escaped[0]);
 
-  unsigned int j = 0;
-  for (unsigned int i = 0; s[i]; i++)
+  unsigned цео j = 0;
+  за (unsigned цео i = 0; s[i]; i++)
     {
       unsigned char c;
-      int oct_digit;
+      цео oct_digit;
 
       switch (s[i])
         {
@@ -494,19 +494,19 @@ unquote (char const *s, struct E_string *es)
             case '7':
               c = s[i + 1] - '0';
               oct_digit = s[i + 2] - '0';
-              if (0 <= oct_digit && oct_digit <= 7)
+              ако (0 <= oct_digit && oct_digit <= 7)
                 {
                   c = 8 * c + oct_digit;
                   ++i;
                   oct_digit = s[i + 2] - '0';
-                  if (0 <= oct_digit && oct_digit <= 7)
+                  ако (0 <= oct_digit && oct_digit <= 7)
                     {
-                      if (8 * c + oct_digit < N_CHARS)
+                      ако (8 * c + oct_digit < N_CHARS)
                         {
                           c = 8 * c + oct_digit;
                           ++i;
                         }
-                      else
+                      инако
                         {
                           /* A 3-digit octal number larger than \377 won't
                              fit in 8 bits.  So we stop when adding the
@@ -545,7 +545,7 @@ unquote (char const *s, struct E_string *es)
         }
     }
   es->len = j;
-  return true;
+  врати true;
 }
 
 /* If CLASS_STR is a valid character class string, return its index
@@ -555,11 +555,11 @@ ATTRIBUTE_PURE
 static enum Char_class
 look_up_char_class (char const *class_str, size_t len)
 {
-  for (enum Char_class i = 0; i < countof (char_class_name); i++)
-    if (STREQ_LEN (class_str, char_class_name[i], len)
+  за (enum Char_class i = 0; i < countof (char_class_name); i++)
+    ако (STREQ_LEN (class_str, char_class_name[i], len)
         && strlen (char_class_name[i]) == len)
-      return i;
-  return CC_NO_CLASS;
+      врати i;
+  врати CC_NO_CLASS;
 }
 
 /* Return a newly allocated string with a printable version of C.
@@ -570,16 +570,16 @@ make_printable_char (unsigned char c)
 {
   char *buf = xmalloc (5);
 
-  if (isprint (c))
+  ако (isprint (c))
     {
       buf[0] = c;
       buf[1] = '\0';
     }
-  else
+  инако
     {
       sprintf (buf, "\\%03o", c);
     }
-  return buf;
+  врати buf;
 }
 
 /* Return a newly allocated copy of S which is suitable for printing.
@@ -597,7 +597,7 @@ make_printable_str (char const *s, size_t len)
   char *printable_buf = xnmalloc (len + 1, 4);
   char *p = printable_buf;
 
-  for (size_t i = 0; i < len; i++)
+  за (size_t i = 0; i < len; i++)
     {
       char buf[5];
       char const *tmp = NULL;
@@ -630,19 +630,19 @@ make_printable_str (char const *s, size_t len)
           tmp = "\\v";
           break;
         default:
-          if (isprint (c))
+          ако (isprint (c))
             {
               buf[0] = c;
               buf[1] = '\0';
             }
-          else
+          инако
             sprintf (buf, "\\%03o", c);
           tmp = buf;
           break;
         }
       p = stpcpy (p, tmp);
     }
-  return printable_buf;
+  врати printable_buf;
 }
 
 /* Append a newly allocated structure representing a
@@ -667,7 +667,7 @@ append_normal_char (struct Spec_list *list, unsigned char c)
 static bool
 append_range (struct Spec_list *list, unsigned char first, unsigned char last)
 {
-  if (last < first)
+  ако (last < first)
     {
       char *tmp1 = make_printable_char (first);
       char *tmp2 = make_printable_char (last);
@@ -677,7 +677,7 @@ append_range (struct Spec_list *list, unsigned char first, unsigned char last)
              tmp1, tmp2);
       free (tmp1);
       free (tmp2);
-      return false;
+      врати false;
     }
   struct List_element *new = xmalloc (sizeof *new);
   new->next = NULL;
@@ -686,7 +686,7 @@ append_range (struct Spec_list *list, unsigned char first, unsigned char last)
   new->u.range.last_char = last;
   list->tail->next = new;
   list->tail = new;
-  return true;
+  врати true;
 }
 
 /* If CHAR_CLASS_STR is a valid character class string, append a
@@ -699,15 +699,15 @@ append_char_class (struct Spec_list *list,
                    char const *char_class_str, size_t len)
 {
   enum Char_class char_class = look_up_char_class (char_class_str, len);
-  if (char_class == CC_NO_CLASS)
-    return false;
+  ако (char_class == CC_NO_CLASS)
+    врати false;
   struct List_element *new = xmalloc (sizeof *new);
   new->next = NULL;
   new->type = RE_CHAR_CLASS;
   new->u.char_class = char_class;
   list->tail->next = new;
   list->tail = new;
-  return true;
+  врати true;
 }
 
 /* Append a newly allocated structure representing a [c*n]
@@ -738,8 +738,8 @@ static bool
 append_equiv_class (struct Spec_list *list,
                     char const *equiv_class_str, size_t len)
 {
-  if (len != 1)
-    return false;
+  ако (len != 1)
+    врати false;
 
   struct List_element *new = xmalloc (sizeof *new);
   new->next = NULL;
@@ -747,7 +747,7 @@ append_equiv_class (struct Spec_list *list,
   new->u.equiv_code = *equiv_class_str;
   list->tail->next = new;
   list->tail = new;
-  return true;
+  врати true;
 }
 
 /* Search forward starting at START_IDX for the 2-char sequence
@@ -760,14 +760,14 @@ static bool
 find_closing_delim (const struct E_string *es, size_t start_idx,
                     char pre_bracket_char, size_t *result_idx)
 {
-  for (size_t i = start_idx; i < es->len - 1; i++)
-    if (es->s[i] == pre_bracket_char && es->s[i + 1] == ']'
+  за (size_t i = start_idx; i < es->len - 1; i++)
+    ако (es->s[i] == pre_bracket_char && es->s[i + 1] == ']'
         && !es->escaped[i] && !es->escaped[i + 1])
       {
         *result_idx = i;
-        return true;
+        врати true;
       }
-  return false;
+  врати false;
 }
 
 /* Parse the bracketed repeat-char syntax.  If the P_LEN characters
@@ -780,34 +780,34 @@ find_closing_delim (const struct E_string *es, size_t start_idx,
    empty, an octal number, or a decimal number, print an error message
    and return -2.  */
 
-static int
+static цео
 find_bracketed_repeat (const struct E_string *es, size_t start_idx,
                        unsigned char *char_to_repeat, count *repeat_count,
                        size_t *closing_bracket_idx)
 {
   affirm (start_idx + 1 < es->len);
-  if (!es_match (es, start_idx + 1, '*'))
-    return -1;
+  ако (!es_match (es, start_idx + 1, '*'))
+    врати -1;
 
-  for (size_t i = start_idx + 2; i < es->len && !es->escaped[i]; i++)
+  за (size_t i = start_idx + 2; i < es->len && !es->escaped[i]; i++)
     {
-      if (es->s[i] == ']')
+      ако (es->s[i] == ']')
         {
           size_t digit_str_len = i - start_idx - 2;
 
           *char_to_repeat = es->s[start_idx];
-          if (digit_str_len == 0)
+          ако (digit_str_len == 0)
             {
               /* We've matched [c*] -- no explicit repeat count.  */
               *repeat_count = 0;
             }
-          else
+          инако
             {
               /* Here, we have found [c*s] where s should be a string
                  of octal (if it starts with '0') or decimal digits.  */
               char const *digit_str = &es->s[start_idx + 2];
               char *d_end;
-              if ((xstrtoumax (digit_str, &d_end, *digit_str == '0' ? 8 : 10,
+              ако ((xstrtoumax (digit_str, &d_end, *digit_str == '0' ? 8 : 10,
                                repeat_count, NULL)
                    != LONGINT_OK)
                   || REPEAT_COUNT_MAXIMUM < *repeat_count
@@ -818,14 +818,14 @@ find_bracketed_repeat (const struct E_string *es, size_t start_idx,
                          _("invalid repeat count %s in [c*n] construct"),
                          quote (tmp));
                   free (tmp);
-                  return -2;
+                  врати -2;
                 }
             }
           *closing_bracket_idx = i;
-          return 0;
+          врати 0;
         }
     }
-  return -1;			/* No bracket found.  */
+  врати -1;			/* No bracket found.  */
 }
 
 /* Return true if the string at ES->s[IDX] matches the regular
@@ -836,13 +836,13 @@ ATTRIBUTE_PURE
 static bool
 star_digits_closebracket (const struct E_string *es, size_t idx)
 {
-  if (!es_match (es, idx, '*'))
-    return false;
+  ако (!es_match (es, idx, '*'))
+    врати false;
 
-  for (size_t i = idx + 1; i < es->len; i++)
-    if (!c_isdigit (es->s[i]) || es->escaped[i])
-      return es_match (es, i, ']');
-  return false;
+  за (size_t i = idx + 1; i < es->len; i++)
+    ако (!c_isdigit (es->s[i]) || es->escaped[i])
+      врати es_match (es, i, ']');
+  врати false;
 }
 
 /* Convert string UNESCAPED_STRING (which has been preprocessed to
@@ -869,62 +869,62 @@ build_spec_list (const struct E_string *es, struct Spec_list *result)
      less are composed solely of normal characters.  Hence, the index of
      the outer for-loop runs only as far as LEN-2.  */
   size_t i;
-  for (i = 0; i + 2 < es->len; /* empty */)
+  за (i = 0; i + 2 < es->len; /* empty */)
     {
-      if (es_match (es, i, '['))
+      ако (es_match (es, i, '['))
         {
           bool matched_multi_char_construct;
           size_t closing_bracket_idx;
           unsigned char char_to_repeat;
           count repeat_count;
-          int err;
+          цео err;
 
           matched_multi_char_construct = true;
-          if (es_match (es, i + 1, ':') || es_match (es, i + 1, '='))
+          ако (es_match (es, i + 1, ':') || es_match (es, i + 1, '='))
             {
               size_t closing_delim_idx;
 
-              if (find_closing_delim (es, i + 2, p[i + 1], &closing_delim_idx))
+              ако (find_closing_delim (es, i + 2, p[i + 1], &closing_delim_idx))
                 {
                   size_t opnd_str_len = closing_delim_idx - 1 - (i + 2) + 1;
                   char const *opnd_str = p + i + 2;
 
-                  if (opnd_str_len == 0)
+                  ако (opnd_str_len == 0)
                     {
-                      if (p[i + 1] == ':')
+                      ако (p[i + 1] == ':')
                         error (0, 0, _("missing character class name '[::]'"));
-                      else
+                      инако
                         error (0, 0,
                                _("missing equivalence class character '[==]'"));
-                      return false;
+                      врати false;
                     }
 
-                  if (p[i + 1] == ':')
+                  ако (p[i + 1] == ':')
                     {
                       /* FIXME: big comment.  */
-                      if (!append_char_class (result, opnd_str, opnd_str_len))
+                      ако (!append_char_class (result, opnd_str, opnd_str_len))
                         {
-                          if (star_digits_closebracket (es, i + 2))
+                          ако (star_digits_closebracket (es, i + 2))
                             goto try_bracketed_repeat;
-                          else
+                          инако
                             {
                               char *tmp = make_printable_str (opnd_str,
                                                               opnd_str_len);
                               error (0, 0, _("invalid character class %s"),
                                      quote (tmp));
                               free (tmp);
-                              return false;
+                              врати false;
                             }
                         }
                     }
-                  else
+                  инако
                     {
                       /* FIXME: big comment.  */
-                      if (!append_equiv_class (result, opnd_str, opnd_str_len))
+                      ако (!append_equiv_class (result, opnd_str, opnd_str_len))
                         {
-                          if (star_digits_closebracket (es, i + 2))
+                          ако (star_digits_closebracket (es, i + 2))
                             goto try_bracketed_repeat;
-                          else
+                          инако
                             {
                               char *tmp = make_printable_str (opnd_str,
                                                               opnd_str_len);
@@ -932,7 +932,7 @@ build_spec_list (const struct E_string *es, struct Spec_list *result)
                _("%s: equivalence class operand must be a single character"),
                                      tmp);
                               free (tmp);
-                              return false;
+                              врати false;
                             }
                         }
                     }
@@ -950,23 +950,23 @@ build_spec_list (const struct E_string *es, struct Spec_list *result)
           err = find_bracketed_repeat (es, i + 1, &char_to_repeat,
                                        &repeat_count,
                                        &closing_bracket_idx);
-          if (err == 0)
+          ако (err == 0)
             {
               append_repeated_char (result, char_to_repeat, repeat_count);
               i = closing_bracket_idx + 1;
             }
-          else if (err == -1)
+          инако ако (err == -1)
             {
               matched_multi_char_construct = false;
             }
-          else
+          инако
             {
               /* Found a string that looked like [c*n] but the
                  numeric part was invalid.  */
-              return false;
+              врати false;
             }
 
-          if (matched_multi_char_construct)
+          ако (matched_multi_char_construct)
             continue;
 
           /* We reach this point if P does not match [:str:], [=c=],
@@ -975,13 +975,13 @@ build_spec_list (const struct E_string *es, struct Spec_list *result)
         }
 
       /* Look ahead one char for ranges like a-z.  */
-      if (es_match (es, i + 1, '-'))
+      ако (es_match (es, i + 1, '-'))
         {
-          if (!append_range (result, p[i], p[i + 2]))
-            return false;
+          ако (!append_range (result, p[i], p[i + 2]))
+            врати false;
           i += 3;
         }
-      else
+      инако
         {
           append_normal_char (result, p[i]);
           ++i;
@@ -989,10 +989,10 @@ build_spec_list (const struct E_string *es, struct Spec_list *result)
     }
 
   /* Now handle the (2 or fewer) remaining characters p[i]..p[es->len - 1].  */
-  for (; i < es->len; i++)
+  за (; i < es->len; i++)
     append_normal_char (result, p[i]);
 
-  return true;
+  врати true;
 }
 
 /* Advance past the current construct.
@@ -1018,25 +1018,25 @@ skip_construct (struct Spec_list *s)
    lower class constructs in the spec-strings appear in the same relative
    positions.  */
 
-static int
+static цео
 get_next (struct Spec_list *s, enum Upper_Lower_class *class)
 {
   struct List_element *p;
-  int return_val;
-  int i;
+  цео return_val;
+  цео i;
 
-  if (class)
+  ако (class)
     *class = UL_NONE;
 
-  if (s->state == BEGIN_STATE)
+  ако (s->state == BEGIN_STATE)
     {
       s->tail = s->head->next;
       s->state = NEW_ELEMENT;
     }
 
   p = s->tail;
-  if (p == NULL)
-    return -1;
+  ако (p == NULL)
+    врати -1;
 
   switch (p->type)
     {
@@ -1047,12 +1047,12 @@ get_next (struct Spec_list *s, enum Upper_Lower_class *class)
       break;
 
     case RE_RANGE:
-      if (s->state == NEW_ELEMENT)
+      ако (s->state == NEW_ELEMENT)
         s->state = p->u.range.first_char;
-      else
+      инако
         ++(s->state);
       return_val = s->state;
-      if (s->state == p->u.range.last_char)
+      ако (s->state == p->u.range.last_char)
         {
           s->tail = p->next;
           s->state = NEW_ELEMENT;
@@ -1060,7 +1060,7 @@ get_next (struct Spec_list *s, enum Upper_Lower_class *class)
       break;
 
     case RE_CHAR_CLASS:
-      if (class)
+      ако (class)
         {
           switch (+p->u.char_class)
             {
@@ -1073,22 +1073,22 @@ get_next (struct Spec_list *s, enum Upper_Lower_class *class)
             }
         }
 
-      if (s->state == NEW_ELEMENT)
+      ако (s->state == NEW_ELEMENT)
         {
-          for (i = 0; i < N_CHARS; i++)
-            if (is_char_class_member (p->u.char_class, i))
+          за (i = 0; i < N_CHARS; i++)
+            ако (is_char_class_member (p->u.char_class, i))
               break;
           affirm (i < N_CHARS);
           s->state = i;
         }
       assure (is_char_class_member (p->u.char_class, s->state));
       return_val = s->state;
-      for (i = s->state + 1; i < N_CHARS; i++)
-        if (is_char_class_member (p->u.char_class, i))
+      за (i = s->state + 1; i < N_CHARS; i++)
+        ако (is_char_class_member (p->u.char_class, i))
           break;
-      if (i < N_CHARS)
+      ако (i < N_CHARS)
         s->state = i;
-      else
+      инако
         {
           s->tail = p->next;
           s->state = NEW_ELEMENT;
@@ -1108,21 +1108,21 @@ get_next (struct Spec_list *s, enum Upper_Lower_class *class)
 
     case RE_REPEATED_CHAR:
       /* Here, a repeat count of n == 0 means don't repeat at all.  */
-      if (p->u.repeated_char.repeat_count == 0)
+      ако (p->u.repeated_char.repeat_count == 0)
         {
           s->tail = p->next;
           s->state = NEW_ELEMENT;
           return_val = get_next (s, class);
         }
-      else
+      инако
         {
-          if (s->state == NEW_ELEMENT)
+          ако (s->state == NEW_ELEMENT)
             {
               s->state = 0;
             }
           ++(s->state);
           return_val = p->u.repeated_char.the_repeated_char;
-          if (s->state == p->u.repeated_char.repeat_count)
+          ако (s->state == p->u.repeated_char.repeat_count)
             {
               s->tail = p->next;
               s->state = NEW_ELEMENT;
@@ -1134,7 +1134,7 @@ get_next (struct Spec_list *s, enum Upper_Lower_class *class)
       unreachable ();
     }
 
-  return return_val;
+  врати return_val;
 }
 
 /* This is a minor kludge.  This function is called from
@@ -1142,20 +1142,20 @@ get_next (struct Spec_list *s, enum Upper_Lower_class *class)
    from a complemented string.  It's a kludge in that some of the
    same operations are (duplicated) performed in set_initialize.  */
 
-static int
+static цео
 card_of_complement (struct Spec_list *s)
 {
-  int c;
-  int cardinality = N_CHARS;
+  цео c;
+  цео cardinality = N_CHARS;
   bool in_set[N_CHARS] = {0};
 
   s->state = BEGIN_STATE;
-  while ((c = get_next (s, NULL)) != -1)
+  док ((c = get_next (s, NULL)) != -1)
     {
       cardinality -= (!in_set[c]);
       in_set[c] = true;
     }
-  return cardinality;
+  врати cardinality;
 }
 
 /* Discard the lengths associated with a case conversion,
@@ -1172,29 +1172,29 @@ validate_case_classes (struct Spec_list *s1, struct Spec_list *s2)
 {
   size_t n_upper = 0;
   size_t n_lower = 0;
-  int c1 = 0;
-  int c2 = 0;
+  цео c1 = 0;
+  цео c2 = 0;
   MAYBE_UNUSED count old_s1_len = s1->length, old_s2_len = s2->length;
   struct List_element *s1_tail = s1->tail;
   struct List_element *s2_tail = s2->tail;
   bool s1_new_element = true;
   bool s2_new_element = true;
 
-  if (complement || !s2->has_char_class)
-    return;
+  ако (complement || !s2->has_char_class)
+    врати;
 
-  for (int i = 0; i < N_CHARS; i++)
+  за (цео i = 0; i < N_CHARS; i++)
     {
-      if (isupper (i))
+      ако (isupper (i))
         n_upper++;
-      if (islower (i))
+      ако (islower (i))
         n_lower++;
     }
 
   s1->state = BEGIN_STATE;
   s2->state = BEGIN_STATE;
 
-  while (c1 != -1 && c2 != -1)
+  док (c1 != -1 && c2 != -1)
     {
       enum Upper_Lower_class class_s1, class_s2;
 
@@ -1203,13 +1203,13 @@ validate_case_classes (struct Spec_list *s1, struct Spec_list *s2)
 
       /* If c2 transitions to a new case class, then
          c1 must also transition at the same time.  */
-      if (s2_new_element && class_s2 != UL_NONE
+      ако (s2_new_element && class_s2 != UL_NONE
           && !(s1_new_element && class_s1 != UL_NONE))
         error (EXIT_FAILURE, 0,
                _("misaligned [:upper:] and/or [:lower:] construct"));
 
       /* If case converting, quickly skip over the elements.  */
-      if (class_s2 != UL_NONE)
+      ако (class_s2 != UL_NONE)
         {
           skip_construct (s1);
           skip_construct (s2);
@@ -1250,7 +1250,7 @@ get_spec_stats (struct Spec_list *s)
   s->has_equiv_class = false;
   s->has_restricted_char_class = false;
   s->has_char_class = false;
-  for (struct List_element *p = s->head->next; p; p = p->next)
+  за (struct List_element *p = s->head->next; p; p = p->next)
     {
       count len = 0;
 
@@ -1267,8 +1267,8 @@ get_spec_stats (struct Spec_list *s)
 
         case RE_CHAR_CLASS:
           s->has_char_class = true;
-          for (int i = 0; i < N_CHARS; i++)
-            if (is_char_class_member (p->u.char_class, i))
+          за (цео i = 0; i < N_CHARS; i++)
+            ако (is_char_class_member (p->u.char_class, i))
               ++len;
           switch (+p->u.char_class)
             {
@@ -1282,16 +1282,16 @@ get_spec_stats (struct Spec_list *s)
           break;
 
         case RE_EQUIV_CLASS:
-          for (int i = 0; i < N_CHARS; i++)
-            if (is_equiv_class_member (p->u.equiv_code, i))
+          за (цео i = 0; i < N_CHARS; i++)
+            ако (is_equiv_class_member (p->u.equiv_code, i))
               ++len;
           s->has_equiv_class = true;
           break;
 
         case RE_REPEATED_CHAR:
-          if (p->u.repeated_char.repeat_count > 0)
+          ако (p->u.repeated_char.repeat_count > 0)
             len = p->u.repeated_char.repeat_count;
-          else
+          инако
             {
               s->indefinite_repeat_element = p;
               ++(s->n_indefinite_repeats);
@@ -1306,7 +1306,7 @@ get_spec_stats (struct Spec_list *s)
          any length greater than the maximum repeat count, in case the
          length is later used to compute the repeat count for an
          indefinite element.  */
-      if (ckd_add (&length, length, len) || REPEAT_COUNT_MAXIMUM < length)
+      ако (ckd_add (&length, length, len) || REPEAT_COUNT_MAXIMUM < length)
         error (EXIT_FAILURE, 0, _("too many characters in set"));
     }
 
@@ -1317,7 +1317,7 @@ static void
 get_s1_spec_stats (struct Spec_list *s1)
 {
   get_spec_stats (s1);
-  if (complement)
+  ако (complement)
     s1->length = card_of_complement (s1);
 }
 
@@ -1325,7 +1325,7 @@ static void
 get_s2_spec_stats (struct Spec_list *s2, count len_s1)
 {
   get_spec_stats (s2);
-  if (len_s1 >= s2->length && s2->n_indefinite_repeats == 1)
+  ако (len_s1 >= s2->length && s2->n_indefinite_repeats == 1)
     {
       s2->indefinite_repeat_element->u.repeated_char.repeat_count =
         len_s1 - s2->length;
@@ -1353,7 +1353,7 @@ parse_str (char const *s, struct Spec_list *spec_list)
   struct E_string es;
   bool ok = unquote (s, &es) && build_spec_list (&es, spec_list);
   es_free (&es);
-  return ok;
+  врати ok;
 }
 
 /* Given two specification lists, S1 and S2, and assuming that
@@ -1414,18 +1414,18 @@ string2_extend (const struct Spec_list *s1, struct Spec_list *s2)
 static bool
 homogeneous_spec_list (struct Spec_list *s)
 {
-  int b, c;
+  цео b, c;
 
   s->state = BEGIN_STATE;
 
-  if ((b = get_next (s, NULL)) == -1)
-    return false;
+  ако ((b = get_next (s, NULL)) == -1)
+    врати false;
 
-  while ((c = get_next (s, NULL)) != -1)
-    if (c != b)
-      return false;
+  док ((c = get_next (s, NULL)) != -1)
+    ако (c != b)
+      врати false;
 
-  return true;
+  врати true;
 }
 
 /* Die with an error message if S1 and S2 describe strings that
@@ -1440,26 +1440,26 @@ static void
 validate (struct Spec_list *s1, struct Spec_list *s2)
 {
   get_s1_spec_stats (s1);
-  if (s1->n_indefinite_repeats > 0)
+  ако (s1->n_indefinite_repeats > 0)
     error (EXIT_FAILURE, 0,
            _("the [c*] repeat construct may not appear in string1"));
 
-  if (s2)
+  ако (s2)
     {
       get_s2_spec_stats (s2, s1->length);
 
-      if (s2->n_indefinite_repeats > 1)
+      ако (s2->n_indefinite_repeats > 1)
         error (EXIT_FAILURE, 0,
                _("only one [c*] repeat construct may appear in string2"));
 
-      if (translating)
+      ако (translating)
         {
-          if (s2->has_equiv_class)
+          ако (s2->has_equiv_class)
             error (EXIT_FAILURE, 0,
                    _("[=c=] expressions may not appear in string2"
                      " when translating"));
 
-          if (s2->has_restricted_char_class)
+          ако (s2->has_restricted_char_class)
             error (EXIT_FAILURE, 0,
                    _("when translating, the only character classes"
                      " that may appear in\n"
@@ -1467,14 +1467,14 @@ validate (struct Spec_list *s1, struct Spec_list *s2)
 
           validate_case_classes (s1, s2);
 
-          if (s1->length > s2->length)
+          ако (s1->length > s2->length)
             {
-              if (!truncate_set1)
+              ако (!truncate_set1)
                 {
                   /* string2 must be non-empty unless --truncate-set1 is
                      given or string1 is empty.  */
 
-                  if (s2->length == 0)
+                  ако (s2->length == 0)
                     error (EXIT_FAILURE, 0,
                            _("when not truncating set1,"
                              " string2 must be non-empty"));
@@ -1482,16 +1482,16 @@ validate (struct Spec_list *s1, struct Spec_list *s2)
                 }
             }
 
-          if (complement && s1->has_char_class
+          ако (complement && s1->has_char_class
               && ! (s2->length == s1->length && homogeneous_spec_list (s2)))
             error (EXIT_FAILURE, 0,
                    _("when translating with complemented character classes,\n"
                      "string2 must map all characters in the domain to one"));
         }
-      else
+      инако
         /* Not translating.  */
         {
-          if (s2->n_indefinite_repeats > 0)
+          ако (s2->n_indefinite_repeats > 0)
             error (EXIT_FAILURE, 0,
                    _("the [c*] construct may appear in string2"
                      " only when translating"));
@@ -1512,25 +1512,25 @@ squeeze_filter (char *buf, size_t size, size_t (*reader) (char *, size_t))
 {
   /* A value distinct from any character that may have been stored in a
      buffer as the result of a block-read in the function squeeze_filter.  */
-  const int NOT_A_CHAR = INT_MAX;
+  const цео NOT_A_CHAR = INT_MAX;
 
-  int char_to_squeeze = NOT_A_CHAR;
+  цео char_to_squeeze = NOT_A_CHAR;
   size_t i = 0;
   size_t nr = 0;
 
-  while (true)
+  док (true)
     {
-      if (i >= nr)
+      ако (i >= nr)
         {
           nr = reader (buf, size);
-          if (nr == 0)
+          ако (nr == 0)
             break;
           i = 0;
         }
 
       size_t begin = i;
 
-      if (char_to_squeeze == NOT_A_CHAR)
+      ако (char_to_squeeze == NOT_A_CHAR)
         {
           size_t out_len;
           /* Here, by being a little tricky, we can get a significant
@@ -1544,18 +1544,18 @@ squeeze_filter (char *buf, size_t size, size_t (*reader) (char *, size_t))
              of the input is removed by squeezing repeats.  But most
              uses of this functionality seem to remove less than 20-30%
              of the input.  */
-          for (; i < nr && !in_squeeze_set[to_uchar (buf[i])]; i += 2)
+          за (; i < nr && !in_squeeze_set[to_uchar (buf[i])]; i += 2)
             continue;
 
           /* There is a special case when i == nr and we've just
              skipped a character (the last one in buf) that is in
              the squeeze set.  */
-          if (i == nr && in_squeeze_set[to_uchar (buf[i - 1])])
+          ако (i == nr && in_squeeze_set[to_uchar (buf[i - 1])])
             --i;
 
-          if (i >= nr)
+          ако (i >= nr)
             out_len = nr - begin;
-          else
+          инако
             {
               char_to_squeeze = buf[i];
               /* We're about to output buf[begin..i].  */
@@ -1563,7 +1563,7 @@ squeeze_filter (char *buf, size_t size, size_t (*reader) (char *, size_t))
 
               /* But since we stepped by 2 in the loop above,
                  out_len may be one too large.  */
-              if (i > 0 && buf[i - 1] == char_to_squeeze)
+              ако (i > 0 && buf[i - 1] == char_to_squeeze)
                 --out_len;
 
               /* Advance i to the index of first character to be
@@ -1571,19 +1571,19 @@ squeeze_filter (char *buf, size_t size, size_t (*reader) (char *, size_t))
                  char_to_squeeze.  */
               ++i;
             }
-          if (out_len > 0
+          ако (out_len > 0
               && fwrite (&buf[begin], 1, out_len, stdout) != out_len)
             write_error ();
         }
 
-      if (char_to_squeeze != NOT_A_CHAR)
+      ако (char_to_squeeze != NOT_A_CHAR)
         {
           /* Advance i to index of first char != char_to_squeeze
              (or to nr if all the rest of the characters in this
              buffer are the same as char_to_squeeze).  */
-          for (; i < nr && buf[i] == char_to_squeeze; i++)
+          за (; i < nr && buf[i] == char_to_squeeze; i++)
             continue;
-          if (i < nr)
+          ако (i < nr)
             char_to_squeeze = NOT_A_CHAR;
           /* If (i >= nr) we've squeezed the last character in this buffer.
              So now we have to read a new buffer and continue comparing
@@ -1596,9 +1596,9 @@ static size_t
 plain_read (char *buf, size_t size)
 {
   ssize_t nr = read (STDIN_FILENO, buf, size);
-  if (nr < 0)
+  ако (nr < 0)
     error (EXIT_FAILURE, errno, _("read error"));
-  return nr;
+  врати nr;
 }
 
 /* Read buffers of SIZE bytes from stdin until one is found that
@@ -1619,8 +1619,8 @@ read_and_delete (char *buf, size_t size)
     {
       size_t nr = plain_read (buf, size);
 
-      if (nr == 0)
-        return 0;
+      ако (nr == 0)
+        врати 0;
 
       /* This first loop may be a waste of code, but gives much
          better performance when no characters are deleted in
@@ -1628,17 +1628,17 @@ read_and_delete (char *buf, size_t size)
          of buf[i] into buf[n_saved] when it would be a NOP.  */
 
       size_t i;
-      for (i = 0; i < nr && !in_delete_set[to_uchar (buf[i])]; i++)
+      за (i = 0; i < nr && !in_delete_set[to_uchar (buf[i])]; i++)
         continue;
       n_saved = i;
 
-      for (++i; i < nr; i++)
-        if (!in_delete_set[to_uchar (buf[i])])
+      за (++i; i < nr; i++)
+        ако (!in_delete_set[to_uchar (buf[i])])
           buf[n_saved++] = buf[i];
     }
-  while (n_saved == 0);
+  док (n_saved == 0);
 
-  return n_saved;
+  врати n_saved;
 }
 
 /* Read at most SIZE bytes from stdin into the array BUF.  Then
@@ -1650,10 +1650,10 @@ read_and_xlate (char *buf, size_t size)
 {
   size_t bytes_read = plain_read (buf, size);
 
-  for (size_t i = 0; i < bytes_read; i++)
+  за (size_t i = 0; i < bytes_read; i++)
     buf[i] = xlate[to_uchar (buf[i])];
 
-  return bytes_read;
+  врати bytes_read;
 }
 
 /* Initialize a boolean membership set, IN_SET, with the character
@@ -1665,23 +1665,23 @@ read_and_xlate (char *buf, size_t size)
 static void
 set_initialize (struct Spec_list *s, bool complement_this_set, bool *in_set)
 {
-  int c;
+  цео c;
 
   s->state = BEGIN_STATE;
-  while ((c = get_next (s, NULL)) != -1)
+  док ((c = get_next (s, NULL)) != -1)
     in_set[c] = true;
-  if (complement_this_set)
-    for (size_t i = 0; i < N_CHARS; i++)
+  ако (complement_this_set)
+    за (size_t i = 0; i < N_CHARS; i++)
       in_set[i] = (!in_set[i]);
 }
 
-int
-main (int argc, char **argv)
+цео
+main (цео argc, char **argv)
 {
-  int c;
-  int non_option_args;
-  int min_operands;
-  int max_operands;
+  цео c;
+  цео non_option_args;
+  цео min_operands;
+  цео max_operands;
   struct Spec_list buf1, buf2;
   struct Spec_list *s1 = &buf1;
   struct Spec_list *s2 = &buf2;
@@ -1694,7 +1694,7 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((c = getopt_long (argc, argv, "+AcCdstu", long_options, NULL)) != -1)
+  док ((c = getopt_long (argc, argv, "+AcCdstu", long_options, NULL)) != -1)
     {
       switch (c)
         {
@@ -1741,11 +1741,11 @@ main (int argc, char **argv)
   min_operands = 1 + (delete == squeeze_repeats);
   max_operands = 1 + (delete <= squeeze_repeats);
 
-  if (non_option_args < min_operands)
+  ако (non_option_args < min_operands)
     {
-      if (non_option_args == 0)
+      ако (non_option_args == 0)
         error (0, 0, _("missing operand"));
-      else
+      инако
         {
           error (0, 0, _("missing operand after %s"), quote (argv[argc - 1]));
           fprintf (stderr, "%s\n",
@@ -1757,10 +1757,10 @@ main (int argc, char **argv)
       usage (EXIT_FAILURE);
     }
 
-  if (max_operands < non_option_args)
+  ако (max_operands < non_option_args)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind + max_operands]));
-      if (non_option_args == 2)
+      ако (non_option_args == 2)
         fprintf (stderr, "%s\n",
                  _("Only one string may be given when "
                    "deleting without squeezing repeats."));
@@ -1768,16 +1768,16 @@ main (int argc, char **argv)
     }
 
   spec_init (s1);
-  if (!parse_str (argv[optind], s1))
+  ако (!parse_str (argv[optind], s1))
     main_exit (EXIT_FAILURE);
 
-  if (non_option_args == 2)
+  ако (non_option_args == 2)
     {
       spec_init (s2);
-      if (!parse_str (argv[optind + 1], s2))
+      ако (!parse_str (argv[optind + 1], s2))
         main_exit (EXIT_FAILURE);
     }
-  else
+  инако
     s2 = NULL;
 
   validate (s1, s2);
@@ -1789,47 +1789,47 @@ main (int argc, char **argv)
   xset_binary_mode (STDOUT_FILENO, O_BINARY);
   fadvise (stdin, FADVISE_SEQUENTIAL);
 
-  if (squeeze_repeats && non_option_args == 1)
+  ако (squeeze_repeats && non_option_args == 1)
     {
       set_initialize (s1, complement, in_squeeze_set);
       squeeze_filter (io_buf, sizeof io_buf, plain_read);
     }
-  else if (delete && non_option_args == 1)
+  инако ако (delete && non_option_args == 1)
     {
       set_initialize (s1, complement, in_delete_set);
 
-      while (true)
+      док (true)
         {
           size_t nr = read_and_delete (io_buf, sizeof io_buf);
-          if (nr == 0)
+          ако (nr == 0)
             break;
-          if (fwrite (io_buf, 1, nr, stdout) != nr)
+          ако (fwrite (io_buf, 1, nr, stdout) != nr)
             write_error ();
         }
     }
-  else if (squeeze_repeats && delete && non_option_args == 2)
+  инако ако (squeeze_repeats && delete && non_option_args == 2)
     {
       set_initialize (s1, complement, in_delete_set);
       set_initialize (s2, false, in_squeeze_set);
       squeeze_filter (io_buf, sizeof io_buf, read_and_delete);
     }
-  else if (translating)
+  инако ако (translating)
     {
-      if (complement)
+      ако (complement)
         {
           bool *in_s1 = in_delete_set;
 
           set_initialize (s1, false, in_s1);
           s2->state = BEGIN_STATE;
-          for (int i = 0; i < N_CHARS; i++)
+          за (цео i = 0; i < N_CHARS; i++)
             xlate[i] = i;
-          for (int i = 0; i < N_CHARS; i++)
+          за (цео i = 0; i < N_CHARS; i++)
             {
-              if (!in_s1[i])
+              ако (!in_s1[i])
                 {
-                  int ch = get_next (s2, NULL);
+                  цео ch = get_next (s2, NULL);
                   affirm (ch != -1 || truncate_set1);
-                  if (ch == -1)
+                  ако (ch == -1)
                     {
                       /* This will happen when tr is invoked like e.g.
                          tr -cs A-Za-z0-9 '\012'.  */
@@ -1839,43 +1839,43 @@ main (int argc, char **argv)
                 }
             }
         }
-      else
+      инако
         {
-          int c1, c2;
+          цео c1, c2;
           enum Upper_Lower_class class_s1;
           enum Upper_Lower_class class_s2;
 
-          for (int i = 0; i < N_CHARS; i++)
+          за (цео i = 0; i < N_CHARS; i++)
             xlate[i] = i;
           s1->state = BEGIN_STATE;
           s2->state = BEGIN_STATE;
-          while (true)
+          док (true)
             {
               c1 = get_next (s1, &class_s1);
               c2 = get_next (s2, &class_s2);
 
-              if (class_s1 == UL_LOWER && class_s2 == UL_UPPER)
+              ако (class_s1 == UL_LOWER && class_s2 == UL_UPPER)
                 {
-                  for (int i = 0; i < N_CHARS; i++)
-                    if (islower (i))
+                  за (цео i = 0; i < N_CHARS; i++)
+                    ако (islower (i))
                       xlate[i] = toupper (i);
                 }
-              else if (class_s1 == UL_UPPER && class_s2 == UL_LOWER)
+              инако ако (class_s1 == UL_UPPER && class_s2 == UL_LOWER)
                 {
-                  for (int i = 0; i < N_CHARS; i++)
-                    if (isupper (i))
+                  за (цео i = 0; i < N_CHARS; i++)
+                    ако (isupper (i))
                       xlate[i] = tolower (i);
                 }
-              else
+              инако
                 {
                   /* The following should have been checked by validate...  */
-                  if (c1 == -1 || c2 == -1)
+                  ако (c1 == -1 || c2 == -1)
                     break;
                   xlate[c1] = c2;
                 }
 
               /* When case-converting, skip the elements as an optimization.  */
-              if (class_s2 != UL_NONE)
+              ако (class_s2 != UL_NONE)
                 {
                   skip_construct (s1);
                   skip_construct (s2);
@@ -1883,25 +1883,25 @@ main (int argc, char **argv)
             }
           affirm (c1 == -1 || truncate_set1);
         }
-      if (squeeze_repeats)
+      ако (squeeze_repeats)
         {
           set_initialize (s2, false, in_squeeze_set);
           squeeze_filter (io_buf, sizeof io_buf, read_and_xlate);
         }
-      else
+      инако
         {
-          while (true)
+          док (true)
             {
               size_t bytes_read = read_and_xlate (io_buf, sizeof io_buf);
-              if (bytes_read == 0)
+              ако (bytes_read == 0)
                 break;
-              if (fwrite (io_buf, 1, bytes_read, stdout) != bytes_read)
+              ако (fwrite (io_buf, 1, bytes_read, stdout) != bytes_read)
                 write_error ();
             }
         }
     }
 
-  if (close (STDIN_FILENO) != 0)
+  ако (close (STDIN_FILENO) != 0)
     error (EXIT_FAILURE, errno, _("standard input"));
 
   main_exit (EXIT_SUCCESS);

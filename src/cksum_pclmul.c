@@ -39,8 +39,8 @@ cksum_pclmul (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
   __m128i four_mult_constant;
   __m128i shuffle_constant;
 
-  if (!fp || !crc_out || !length_out)
-    return false;
+  ако (!fp || !crc_out || !length_out)
+    врати false;
 
   /* These constants and general algorithms are taken from the Intel whitepaper
      "Fast CRC Computation for Generic Polynomials Using PCLMULQDQ Instruction"
@@ -52,7 +52,7 @@ cksum_pclmul (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
   shuffle_constant = _mm_set_epi8 (0, 1, 2, 3, 4, 5, 6, 7, 8,
                                    9, 10, 11, 12, 13, 14, 15);
 
-  while ((bytes_read = fread (buf, 1, BUFLEN, fp)) > 0)
+  док ((bytes_read = fread (buf, 1, BUFLEN, fp)) > 0)
     {
       __m128i *datap;
       __m128i data;
@@ -66,16 +66,16 @@ cksum_pclmul (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
       __m128i fold_data;
       __m128i xor_crc;
 
-      if (ckd_add (&length, length, bytes_read))
+      ако (ckd_add (&length, length, bytes_read))
         {
           errno = EOVERFLOW;
-          return false;
+          врати false;
         }
 
       datap = buf;
 
       /* Fold in parallel eight 16-byte blocks into four 16-byte blocks */
-      if (bytes_read >= 16 * 8)
+      ако (bytes_read >= 16 * 8)
         {
           data = _mm_loadu_si128 (datap);
           data = _mm_shuffle_epi8 (data, shuffle_constant);
@@ -92,7 +92,7 @@ cksum_pclmul (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
           data7 = _mm_shuffle_epi8 (data7, shuffle_constant);
 
 
-          while (bytes_read >= 16 * 8)
+          док (bytes_read >= 16 * 8)
             {
               datap += 4;
 
@@ -146,14 +146,14 @@ cksum_pclmul (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
         }
 
       /* Fold two 16-byte blocks into one 16-byte block */
-      if (bytes_read >= 32)
+      ако (bytes_read >= 32)
         {
           data = _mm_loadu_si128 (datap);
           data = _mm_shuffle_epi8 (data, shuffle_constant);
           xor_crc = _mm_set_epi32 (crc, 0, 0, 0);
           crc = 0;
           data = _mm_xor_si128 (data, xor_crc);
-          while (bytes_read >= 32)
+          док (bytes_read >= 32)
             {
               datap++;
 
@@ -171,14 +171,14 @@ cksum_pclmul (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
 
       /* And finish up last 0-31 bytes in a byte by byte fashion */
       unsigned char *cp = (unsigned char *)datap;
-      while (bytes_read--)
+      док (bytes_read--)
         crc = (crc << 8) ^ crctab[0][((crc >> 24) ^ *cp++) & 0xFF];
-      if (feof (fp))
+      ако (feof (fp))
         break;
     }
 
   *crc_out = crc;
   *length_out = length;
 
-  return !ferror (fp);
+  врати !ferror (fp);
 }

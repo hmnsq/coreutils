@@ -114,44 +114,44 @@ static void printv (VALUE *v);
 static size_t
 mbs_logical_cspn (char const *s, char const *accept)
 {
-  if (accept[0] == '\0')
-    return 0;
+  ако (accept[0] == '\0')
+    врати 0;
 
   /* General case.  */
-  if (MB_CUR_MAX > 1)
+  ако (MB_CUR_MAX > 1)
     {
       size_t idx = 0;
-      for (char const *p = s; *p; )
+      за (char const *p = s; *p; )
         {
           ++idx;
           mcel_t g = mcel_scanz (p);
-          if (g.len == 1)
+          ако (g.len == 1)
             {
-              if (mbschr (accept, *p))
-                return idx;
+              ако (mbschr (accept, *p))
+                врати idx;
             }
-          else
-            for (char const *a = accept; *a; )
+          инако
+            за (char const *a = accept; *a; )
               {
                 mcel_t h = mcel_scanz (a);
-                if (mcel_eq (g, h))
-                  return idx;
+                ако (mcel_eq (g, h))
+                  врати idx;
                 a += h.len;
               }
           p += g.len;
         }
     }
-  else
+  инако
     {
       /* single-byte locale,
          convert returned byte offset to 1-based index or zero if not found. */
       size_t i = strcspn (s, accept);
-      if (s[i])
-        return i + 1;
+      ако (s[i])
+        врати i + 1;
     }
 
   /* not found */
-  return 0;
+  врати 0;
 }
 
 /* Extract the substring of S, from logical character
@@ -172,24 +172,24 @@ mbs_logical_substr (char const *s, size_t pos, size_t len)
 
   char const *substart = s;
   idx_t sublen = 0;
-  if (pos == 0 || len == SIZE_MAX)
+  ако (pos == 0 || len == SIZE_MAX)
     {
       /* The request is invalid.  Silently yield an empty string.  */
     }
-  else if (mb_cur_max <= 1)
+  инако ако (mb_cur_max <= 1)
     {
       substart += pos - 1;
       sublen = vlen;
     }
-  else
-    for (idx_t idx = 1; *s && vlen; idx++)
+  инако
+    за (idx_t idx = 1; *s && vlen; idx++)
       {
         idx_t char_bytes = mcel_scanz (s).len;
 
         /* Skip until we reach the starting position.  */
-        if (pos <= idx)
+        ако (pos <= idx)
           {
-            if (pos == idx)
+            ако (pos == idx)
               substart = s;
 
             /* Add one character's length in bytes.  */
@@ -200,7 +200,7 @@ mbs_logical_substr (char const *s, size_t pos, size_t len)
         s += char_bytes;
       }
 
-  return ximemdup0 (substart, sublen);
+  врати ximemdup0 (substart, sublen);
 }
 
 /* Return the number of logical characters (possibly multibyte)
@@ -215,19 +215,19 @@ static size_t
 mbs_offset_to_chars (char const *s, size_t ofs)
 {
   size_t c = 0;
-  for (size_t d = 0; d < ofs && s[d]; d += mcel_scanz (s + d).len)
+  за (size_t d = 0; d < ofs && s[d]; d += mcel_scanz (s + d).len)
     c++;
-  return c;
+  врати c;
 }
 
 
 
 void
-usage (int status)
+usage (цео status)
 {
-  if (status != EXIT_SUCCESS)
+  ако (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  инако
     {
       printf (_("\
 Usage: %s EXPRESSION\n\
@@ -242,9 +242,9 @@ Usage: %s EXPRESSION\n\
 Print the value of EXPRESSION to standard output.  A blank line below\n\
 separates increasing precedence groups.  EXPRESSION may be:\n\
 \n\
-  ARG1 | ARG2       ARG1 if it is neither null nor 0, otherwise ARG2\n\
+  ARG1 | ARG2       ARG1 ако it is neither null nor 0, otherwise ARG2\n\
 \n\
-  ARG1 & ARG2       ARG1 if neither argument is null or 0, otherwise 0\n\
+  ARG1 & ARG2       ARG1 ако neither argument is null or 0, otherwise 0\n\
 "), stdout);
       fputs (_("\
 \n\
@@ -278,22 +278,22 @@ separates increasing precedence groups.  EXPRESSION may be:\n\
   length STRING              length of STRING\n\
 "), stdout);
       fputs (_("\
-  + TOKEN                    interpret TOKEN as a string, even if it is a\n\
+  + TOKEN                    interpret TOKEN as a string, even ако it is a\n\
                                keyword like 'match' or an operator like '/'\n\
 \n\
   ( EXPRESSION )             value of EXPRESSION\n\
 "), stdout);
       fputs (_("\
 \n\
-Beware that many operators need to be escaped or quoted for shells.\n\
-Comparisons are arithmetic if both ARGs are numbers, else lexicographical.\n\
-Pattern matches return the string matched between \\( and \\) or null; if\n\
-\\( and \\) are not used, they return the number of characters matched or 0.\n\
+Beware that many operators need to be escaped or quoted за shells.\n\
+Comparisons are arithmetic ако both ARGs are numbers, инако lexicographical.\n\
+Pattern matches врати the string matched between \\( and \\) or null; ако\n\
+\\( and \\) are not used, they врати the number of characters matched or 0.\n\
 "), stdout);
       fputs (_("\
 \n\
-Exit status is 0 if EXPRESSION is neither null nor 0, 1 if EXPRESSION is null\n\
-or 0, 2 if EXPRESSION is syntactically invalid, and 3 if an error occurred.\n\
+Exit status is 0 ако EXPRESSION is neither null nor 0, 1 ако EXPRESSION is null\n\
+or 0, 2 ако EXPRESSION is syntactically invalid, and 3 ако an error occurred.\n\
 "), stdout);
       emit_ancillary_info (PROGRAM_NAME);
     }
@@ -301,8 +301,8 @@ or 0, 2 if EXPRESSION is syntactically invalid, and 3 if an error occurred.\n\
 }
 
 
-int
-main (int argc, char **argv)
+цео
+main (цео argc, char **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -318,13 +318,13 @@ main (int argc, char **argv)
 
   /* The above handles --help and --version.
      Since there is no other invocation of getopt, handle '--' here.  */
-  if (1 < argc && streq (argv[1], "--"))
+  ако (1 < argc && streq (argv[1], "--"))
     {
       --argc;
       ++argv;
     }
 
-  if (argc <= 1)
+  ако (argc <= 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXPR_INVALID);
@@ -333,7 +333,7 @@ main (int argc, char **argv)
   args = argv + 1;
 
   VALUE *v = eval (true);
-  if (!nomoreargs ())
+  ако (!nomoreargs ())
     error (EXPR_INVALID, 0, _("syntax error: unexpected argument %s"),
            quotearg_n_style (0, locale_quoting_style, *args));
 
@@ -345,12 +345,12 @@ main (int argc, char **argv)
 /* Return a VALUE for I.  */
 
 static VALUE *
-int_value (unsigned long int i)
+int_value (unsigned long цео i)
 {
   VALUE *v = xmalloc (sizeof *v);
   v->type = integer;
   mpz_init_set_ui (v->u.i, i);
-  return v;
+  врати v;
 }
 
 /* Return a VALUE for S.  */
@@ -361,7 +361,7 @@ str_value (char const *s)
   VALUE *v = xmalloc (sizeof *v);
   v->type = string;
   v->u.s = xstrdup (s);
-  return v;
+  врати v;
 }
 
 /* Free VALUE V, including structure components.  */
@@ -369,9 +369,9 @@ str_value (char const *s)
 static void
 freev (VALUE *v)
 {
-  if (v->type == string)
+  ако (v->type == string)
     free (v->u.s);
-  else
+  инако
     mpz_clear (v->u.i);
   free (v);
 }
@@ -404,23 +404,23 @@ null (VALUE *v)
   switch (v->type)
     {
     case integer:
-      return mpz_sgn (v->u.i) == 0;
+      врати mpz_sgn (v->u.i) == 0;
     case string:
       {
         char const *cp = v->u.s;
-        if (*cp == '\0')
-          return true;
+        ако (*cp == '\0')
+          врати true;
 
         cp += (*cp == '-');
 
         do
           {
-            if (*cp != '0')
-              return false;
+            ако (*cp != '0')
+              врати false;
           }
-        while (*++cp);
+        док (*++cp);
 
-        return true;
+        врати true;
       }
     default:
       unreachable ();
@@ -436,11 +436,11 @@ looks_like_integer (char const *cp)
   cp += (*cp == '-');
 
   do
-    if (! c_isdigit (*cp))
-      return false;
-  while (*++cp);
+    ако (! c_isdigit (*cp))
+      врати false;
+  док (*++cp);
 
-  return true;
+  врати true;
 }
 
 /* Coerce V to a string value (can't fail).  */
@@ -473,18 +473,18 @@ toarith (VALUE *v)
   switch (v->type)
     {
     case integer:
-      return true;
+      врати true;
     case string:
       {
         char *s = v->u.s;
 
-        if (! looks_like_integer (s))
-          return false;
-        if (mpz_init_set_str (v->u.i, s, 10) != 0)
+        ако (! looks_like_integer (s))
+          врати false;
+        ако (mpz_init_set_str (v->u.i, s, 10) != 0)
           error (EXPR_FAILURE, ERANGE, "%s", (s));
         free (s);
         v->type = integer;
-        return true;
+        врати true;
       }
     default:
       unreachable ();
@@ -497,15 +497,15 @@ toarith (VALUE *v)
 static size_t
 getsize (mpz_t i)
 {
-  if (mpz_sgn (i) < 0)
-    return SIZE_MAX;
-  if (mpz_fits_ulong_p (i))
+  ако (mpz_sgn (i) < 0)
+    врати SIZE_MAX;
+  ако (mpz_fits_ulong_p (i))
     {
-      unsigned long int ul = mpz_get_ui (i);
-      if (ul < SIZE_MAX)
-        return ul;
+      unsigned long цео ul = mpz_get_ui (i);
+      ако (ul < SIZE_MAX)
+        врати ul;
     }
-  return SIZE_MAX - 1;
+  врати SIZE_MAX - 1;
 }
 
 /* Return true and advance if the next token matches STR exactly.
@@ -514,13 +514,13 @@ getsize (mpz_t i)
 static bool
 nextarg (char const *str)
 {
-  if (*args == NULL)
-    return false;
-  else
+  ако (*args == NULL)
+    врати false;
+  инако
     {
       bool r = streq (*args, str);
       args += r;
-      return r;
+      врати r;
     }
 }
 
@@ -529,7 +529,7 @@ nextarg (char const *str)
 static bool
 nomoreargs (void)
 {
-  return !*args;
+  врати !*args;
 }
 
 /* Report missing operand.
@@ -538,7 +538,7 @@ nomoreargs (void)
 static void
 require_more_args (void)
 {
-  if (nomoreargs ())
+  ако (nomoreargs ())
     error (EXPR_INVALID, 0, _("syntax error: missing argument after %s"),
            quotearg_n_style (0, locale_quoting_style, *(args - 1)));
 }
@@ -551,7 +551,7 @@ static void
 trace (char const *fxn)
 {
   printf ("%s:", fxn);
-  for (char **a = args; *a; a++)
+  за (char **a = args; *a; a++)
     printf (" %s", *a);
   putchar ('\n');
 }
@@ -582,27 +582,27 @@ docolon (VALUE *sv, VALUE *pv)
                        & ~RE_NO_EMPTY_RANGES);
   char const *errmsg = re_compile_pattern (pv->u.s, strlen (pv->u.s),
                                            &re_buffer);
-  if (errmsg)
+  ако (errmsg)
     error (EXPR_INVALID, 0, "%s", (errmsg));
   re_buffer.newline_anchor = 0;
 
   VALUE *v;
   regoff_t matchlen = re_match (&re_buffer, sv->u.s, strlen (sv->u.s), 0,
                                 &re_regs);
-  if (0 <= matchlen)
+  ако (0 <= matchlen)
     {
       /* Were \(...\) used? */
-      if (re_buffer.re_nsub > 0)
+      ако (re_buffer.re_nsub > 0)
         {
-          if (re_regs.end[1] < 0)
+          ако (re_regs.end[1] < 0)
             v = str_value ("");
-          else
+          инако
             {
               sv->u.s[re_regs.end[1]] = '\0';
               v = str_value (sv->u.s + re_regs.start[1]);
             }
         }
-      else
+      инако
         {
           /* In multibyte locales, convert the matched offset (=number of bytes)
              to the number of matched characters. */
@@ -612,27 +612,27 @@ docolon (VALUE *sv, VALUE *pv)
           v = int_value (i);
         }
     }
-  else if (matchlen == -1)
+  инако ако (matchlen == -1)
     {
       /* Match failed -- return the right kind of null.  */
-      if (re_buffer.re_nsub > 0)
+      ако (re_buffer.re_nsub > 0)
         v = str_value ("");
-      else
+      инако
         v = int_value (0);
     }
-  else
+  инако
     error (EXPR_FAILURE,
            matchlen == -2 ? errno : EOVERFLOW,
            _("error in regular expression matcher"));
 
-  if (0 < re_regs.num_regs)
+  ако (0 < re_regs.num_regs)
     {
       free (re_regs.start);
       free (re_regs.end);
     }
   re_buffer.fastmap = NULL;
   regfree (&re_buffer);
-  return v;
+  врати v;
 }
 
 /* Handle bare operands and ( expr ) syntax.  */
@@ -645,22 +645,22 @@ eval7 (bool evaluate)
 #endif
   require_more_args ();
 
-  if (nextarg ("("))
+  ако (nextarg ("("))
     {
       VALUE *v = eval (evaluate);
-      if (nomoreargs ())
+      ако (nomoreargs ())
         error (EXPR_INVALID, 0, _("syntax error: expecting ')' after %s"),
                quotearg_n_style (0, locale_quoting_style, *(args - 1)));
-      if (!nextarg (")"))
+      ако (!nextarg (")"))
         error (EXPR_INVALID, 0, _("syntax error: expecting ')' instead of %s"),
                quotearg_n_style (0, locale_quoting_style, *args));
-      return v;
+      врати v;
     }
 
-  if (nextarg (")"))
+  ако (nextarg (")"))
     error (EXPR_INVALID, 0, _("syntax error: unexpected ')'"));
 
-  return str_value (*args++);
+  врати str_value (*args++);
 }
 
 /* Handle match, substr, index, and length keywords, and quoting "+".  */
@@ -671,35 +671,35 @@ eval6 (bool evaluate)
 #ifdef EVAL_TRACE
   trace ("eval6");
 #endif
-  if (nextarg ("+"))
+  ако (nextarg ("+"))
     {
       require_more_args ();
-      return str_value (*args++);
+      врати str_value (*args++);
     }
-  else if (nextarg ("length"))
+  инако ако (nextarg ("length"))
     {
       VALUE *r = eval6 (evaluate);
       tostring (r);
       VALUE *v = int_value (mbslen (r->u.s));
       freev (r);
-      return v;
+      врати v;
     }
-  else if (nextarg ("match"))
+  инако ако (nextarg ("match"))
     {
       VALUE *l = eval6 (evaluate);
       VALUE *r = eval6 (evaluate);
       VALUE *v;
-      if (evaluate)
+      ако (evaluate)
         {
           v = docolon (l, r);
           freev (l);
         }
-      else
+      инако
         v = l;
       freev (r);
-      return v;
+      врати v;
     }
-  else if (nextarg ("index"))
+  инако ако (nextarg ("index"))
     {
       VALUE *l = eval6 (evaluate);
       VALUE *r = eval6 (evaluate);
@@ -709,9 +709,9 @@ eval6 (bool evaluate)
       VALUE *v = int_value (pos);
       freev (l);
       freev (r);
-      return v;
+      врати v;
     }
-  else if (nextarg ("substr"))
+  инако ако (nextarg ("substr"))
     {
       VALUE *l = eval6 (evaluate);
       VALUE *i1 = eval6 (evaluate);
@@ -719,9 +719,9 @@ eval6 (bool evaluate)
       tostring (l);
 
       VALUE *v;
-      if (!toarith (i1) || !toarith (i2))
+      ако (!toarith (i1) || !toarith (i2))
         v = str_value ("");
-      else
+      инако
         {
           size_t pos = getsize (i1->u.i);
           size_t len = getsize (i2->u.i);
@@ -733,10 +733,10 @@ eval6 (bool evaluate)
       freev (l);
       freev (i1);
       freev (i2);
-      return v;
+      врати v;
     }
-  else
-    return eval7 (evaluate);
+  инако
+    врати eval7 (evaluate);
 }
 
 /* Handle : operator (pattern matching).
@@ -749,12 +749,12 @@ eval5 (bool evaluate)
   trace ("eval5");
 #endif
   VALUE *l = eval6 (evaluate);
-  while (true)
+  док (true)
     {
-      if (nextarg (":"))
+      ако (nextarg (":"))
         {
           VALUE *r = eval6 (evaluate);
-          if (evaluate)
+          ако (evaluate)
             {
               VALUE *v = docolon (l, r);
               freev (l);
@@ -762,8 +762,8 @@ eval5 (bool evaluate)
             }
           freev (r);
         }
-      else
-        return l;
+      инако
+        врати l;
     }
 }
 
@@ -776,24 +776,24 @@ eval4 (bool evaluate)
   trace ("eval4");
 #endif
   VALUE *l = eval5 (evaluate);
-  while (true)
+  док (true)
     {
       enum { multiply, divide, mod } fxn;
 
-      if (nextarg ("*"))
+      ако (nextarg ("*"))
         fxn = multiply;
-      else if (nextarg ("/"))
+      инако ако (nextarg ("/"))
         fxn = divide;
-      else if (nextarg ("%"))
+      инако ако (nextarg ("%"))
         fxn = mod;
-      else
-        return l;
+      инако
+        врати l;
       VALUE *r = eval5 (evaluate);
-      if (evaluate)
+      ако (evaluate)
         {
-          if (!toarith (l) || !toarith (r))
+          ако (!toarith (l) || !toarith (r))
             error (EXPR_INVALID, 0, _("non-integer argument"));
-          if (fxn != multiply && mpz_sgn (r->u.i) == 0)
+          ако (fxn != multiply && mpz_sgn (r->u.i) == 0)
             error (EXPR_INVALID, 0, _("division by zero"));
           ((fxn == multiply ? mpz_mul
             : fxn == divide ? mpz_tdiv_q
@@ -813,20 +813,20 @@ eval3 (bool evaluate)
   trace ("eval3");
 #endif
   VALUE *l = eval4 (evaluate);
-  while (true)
+  док (true)
     {
       enum { plus, minus } fxn;
 
-      if (nextarg ("+"))
+      ако (nextarg ("+"))
         fxn = plus;
-      else if (nextarg ("-"))
+      инако ако (nextarg ("-"))
         fxn = minus;
-      else
-        return l;
+      инако
+        врати l;
       VALUE *r = eval4 (evaluate);
-      if (evaluate)
+      ако (evaluate)
         {
-          if (!toarith (l) || !toarith (r))
+          ако (!toarith (l) || !toarith (r))
             error (EXPR_INVALID, 0, _("non-integer argument"));
           (fxn == plus ? mpz_add : mpz_sub) (l->u.i, l->u.i, r->u.i);
         }
@@ -843,44 +843,44 @@ eval2 (bool evaluate)
   trace ("eval2");
 #endif
   VALUE *l = eval3 (evaluate);
-  while (true)
+  док (true)
     {
       enum
         {
           less_than, less_equal, equal, not_equal, greater_equal, greater_than
         } fxn;
 
-      if (nextarg ("<"))
+      ако (nextarg ("<"))
         fxn = less_than;
-      else if (nextarg ("<="))
+      инако ако (nextarg ("<="))
         fxn = less_equal;
-      else if (nextarg ("=") || nextarg ("=="))
+      инако ако (nextarg ("=") || nextarg ("=="))
         fxn = equal;
-      else if (nextarg ("!="))
+      инако ако (nextarg ("!="))
         fxn = not_equal;
-      else if (nextarg (">="))
+      инако ако (nextarg (">="))
         fxn = greater_equal;
-      else if (nextarg (">"))
+      инако ако (nextarg (">"))
         fxn = greater_than;
-      else
-        return l;
+      инако
+        врати l;
       VALUE *r = eval3 (evaluate);
 
       bool val = false;
-      if (evaluate)
+      ако (evaluate)
         {
           tostring (l);
           tostring (r);
 
-          int cmp;
-          if (looks_like_integer (l->u.s) && looks_like_integer (r->u.s))
+          цео cmp;
+          ако (looks_like_integer (l->u.s) && looks_like_integer (r->u.s))
             cmp = strintcmp (l->u.s, r->u.s);
-          else
+          инако
             {
               errno = 0;
               cmp = strcoll (l->u.s, r->u.s);
 
-              if (errno)
+              ако (errno)
                 {
                   error (0, errno, _("string comparison failed"));
                   error (0, 0, _("set LC_ALL='C' to work around the problem"));
@@ -918,22 +918,22 @@ eval1 (bool evaluate)
   trace ("eval1");
 #endif
   VALUE *l = eval2 (evaluate);
-  while (true)
+  док (true)
     {
-      if (nextarg ("&"))
+      ако (nextarg ("&"))
         {
           VALUE *r = eval2 (evaluate && !null (l));
-          if (null (l) || null (r))
+          ако (null (l) || null (r))
             {
               freev (l);
               freev (r);
               l = int_value (0);
             }
-          else
+          инако
             freev (r);
         }
-      else
-        return l;
+      инако
+        врати l;
     }
 }
 
@@ -946,25 +946,25 @@ eval (bool evaluate)
   trace ("eval");
 #endif
   VALUE *l = eval1 (evaluate);
-  while (true)
+  док (true)
     {
-      if (nextarg ("|"))
+      ако (nextarg ("|"))
         {
           VALUE *r = eval1 (evaluate && null (l));
-          if (null (l))
+          ако (null (l))
             {
               freev (l);
               l = r;
-              if (null (l))
+              ако (null (l))
                 {
                   freev (l);
                   l = int_value (0);
                 }
             }
-          else
+          инако
             freev (r);
         }
-      else
-        return l;
+      инако
+        врати l;
     }
 }

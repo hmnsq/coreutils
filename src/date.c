@@ -20,7 +20,7 @@
 #include <stdio.h>
 #include <getopt.h>
 #include <sys/types.h>
-#if HAVE_LANGINFO_CODESET
+#ако HAVE_LANGINFO_CODESET
 # include <langinfo.h>
 #endif
 
@@ -105,20 +105,20 @@ static struct option const long_options[] =
 };
 
 /* flags for parse_datetime2 */
-static unsigned int parse_datetime_flags;
+static unsigned цео parse_datetime_flags;
 
 #ifdef _DATE_FMT
 # define DATE_FMT_LANGINFO() nl_langinfo (_DATE_FMT)
-#else
+#инако
 # define DATE_FMT_LANGINFO() ""
 #endif
 
 void
-usage (int status)
+usage (цео status)
 {
-  if (status != EXIT_SUCCESS)
+  ако (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  инако
     {
       printf (_("\
 Usage: %s [OPTION]... [+FORMAT]\n\
@@ -143,14 +143,14 @@ With -s, or with MMDDhhmm[[CC]YY][.ss], set the date and time first.\n\
 "));
       oputs (_("\
   -f, --file=DATEFILE\n\
-         like --date; once for each line of DATEFILE;\n\
-         if DATEFILE is -, read names from standard input\n\
+         like --date; once за each line of DATEFILE;\n\
+         ако DATEFILE is -, read names from standard input\n\
 "));
       oputs (_("\
   -I[FMT], --iso-8601[=FMT]\n\
          output date/time in ISO 8601 format.\n\
          FMT='date' (default), 'hours', 'minutes', 'seconds', or 'ns'\n\
-         for date and time to the indicated precision.\n\
+         за date and time to the indicated precision.\n\
          Example: 2006-08-14T02:34:56-06:00\n\
 "));
       oputs (_("\
@@ -167,7 +167,7 @@ With -s, or with MMDDhhmm[[CC]YY][.ss], set the date and time first.\n\
       --rfc-3339=FMT\n\
          output date/time in RFC 3339 format.\n\
          FMT='date', 'seconds', or 'ns'\n\
-         for date and time to the indicated precision.\n\
+         за date and time to the indicated precision.\n\
          Example: 2006-08-14 02:34:56-06:00\n\
 "));
       oputs (_("\
@@ -292,7 +292,7 @@ FORMAT  Example    Description\n\
   %s    1970010100  seconds since the Epoch (1970-01-01 00:00 UTC)\n\
 "), stdout);
       fputs (_("\
-  %p    PM          locale's equivalent of AM or PM; blank if not known\n\
+  %p    PM          locale's equivalent of AM or PM; blank ако not known\n\
 "), stdout);
       fputs (_("\
   %P    am          like %p, but lower case\n\
@@ -362,15 +362,15 @@ The following optional flags may follow '%':\n\
   _  (underscore) pad with spaces\n\
   0  (zero) pad with zeros\n\
   +  pad with zeros, and put '+' before future years with >4 digits\n\
-  ^  use upper case if possible\n\
-  #  use opposite case if possible\n\
+  ^  use upper case ако possible\n\
+  #  use opposite case ако possible\n\
 "), stdout);
       fputs (_("\
 \n\
 After any flags comes an optional field width, as a decimal number;\n\
 then an optional modifier, which is either\n\
-E to use the locale's alternate representations if available, or\n\
-O to use the locale's alternate numeric symbols if available.\n\
+E to use the locale's alternate representations ако available, or\n\
+O to use the locale's alternate numeric symbols ако available.\n\
 "), stdout);
       fputs (_("\
 \n\
@@ -381,7 +381,7 @@ Convert seconds since the Epoch (1970-01-01 UTC) to a date\n\
 Show the time on the west coast of the US (use tzselect(1) to find TZ)\n\
   $ TZ='America/Los_Angeles' date\n\
 \n\
-Show the local time for 9AM next Friday on the west coast of the US\n\
+Show the local time за 9AM next Friday on the west coast of the US\n\
   $ date --date='TZ=\"America/Los_Angeles\" 09:00 next Fri'\n\
 "), stdout);
       emit_ancillary_info (PROGRAM_NAME);
@@ -393,13 +393,13 @@ Show the local time for 9AM next Friday on the west coast of the US\n\
    nanosecond resolution RES, without losing information.  */
 
 ATTRIBUTE_CONST
-static int
-res_width (long int res)
+static цео
+res_width (long цео res)
 {
-  int i = 9;
-  for (long long int r = 1; (r *= 10) <= res; )
+  цео i = 9;
+  за (long long цео r = 1; (r *= 10) <= res; )
     i--;
-  return i;
+  врати i;
 }
 
 /* Return a newly allocated copy of FORMAT with each "%-N" adjusted to
@@ -411,21 +411,21 @@ adjust_resolution (char const *format)
 {
   char *copy = NULL;
 
-  for (char const *f = format; *f; f++)
-    if (f[0] == '%')
+  за (char const *f = format; *f; f++)
+    ако (f[0] == '%')
       {
-        if (f[1] == '-' && f[2] == 'N')
+        ако (f[1] == '-' && f[2] == 'N')
           {
-            if (!copy)
+            ако (!copy)
               copy = xstrdup (format);
             copy[f + 1 - format] = '0' + res_width (gettime_res ());
             f += 2;
           }
-        else
+        инако
           f += f[1] == '%';
       }
 
-  return copy;
+  врати copy;
 }
 
 /* Set the LC_TIME category of the current locale.
@@ -442,7 +442,7 @@ set_LC_TIME (char const *locale)
      (in order to distinguish the default locale from the C locale on platforms
      like macOS).  */
   char const *all = getenv ("LC_ALL");
-  if (all != NULL && *all != '\0')
+  ако (all != NULL && *all != '\0')
     {
       /* Setting LC_TIME when LC_ALL is set would have no effect.  Therefore we
          have to unset LC_ALL and sets its value to all locale categories that
@@ -459,26 +459,26 @@ set_LC_TIME (char const *locale)
   /* Set LC_TIME as an environment variable.  */
   char const *value = getenv ("LC_TIME");
   char *ret = (value == NULL || *value == '\0' ? NULL : xstrdup (value));
-  if (locale != NULL)
+  ако (locale != NULL)
     xsetenv ("LC_TIME", locale, 1);
-  else
+  инако
     unsetenv ("LC_TIME");
 
   /* Update the current locale accordingly.  */
   setlocale (LC_TIME, "");
 
-  return ret;
+  врати ret;
 }
 
 static bool
 show_date_helper (char const *format, bool use_c_locale,
                   struct timespec when, timezone_t tz)
 {
-  if (parse_datetime_flags & PARSE_DATETIME_DEBUG)
+  ако (parse_datetime_flags & PARSE_DATETIME_DEBUG)
     error (0, 0, _("output format: %s"), quote (format));
 
   bool ok;
-  if (use_c_locale)
+  ако (use_c_locale)
     {
       char *old_locale_category = set_LC_TIME ("C");
       ok = show_date (format, when, tz);
@@ -486,11 +486,11 @@ show_date_helper (char const *format, bool use_c_locale,
       free (new_locale_category);
       free (old_locale_category);
     }
-  else
+  инако
     ok = show_date (format, when, tz);
 
   putchar ('\n');
-  return ok;
+  врати ok;
 }
 
 /* Parse each line in INPUT_FILENAME as with --date and display each
@@ -505,60 +505,60 @@ batch_convert (char const *input_filename,
 {
   FILE *in_stream;
 
-  if (streq (input_filename, "-"))
+  ако (streq (input_filename, "-"))
     {
       input_filename = _("standard input");
       in_stream = stdin;
     }
-  else
+  инако
     {
       in_stream = fopen (input_filename, "r");
-      if (in_stream == NULL)
+      ако (in_stream == NULL)
         error (EXIT_FAILURE, errno, "%s", quotef (input_filename));
     }
 
   char *line = NULL;
   size_t buflen = 0;
   bool ok = true;
-  while (true)
+  док (true)
     {
       ssize_t line_length = getline (&line, &buflen, in_stream);
-      if (line_length < 0)
+      ако (line_length < 0)
         {
-          if (ferror (in_stream))
+          ако (ferror (in_stream))
             error (EXIT_FAILURE, errno, _("%s: read error"),
                    quotef (input_filename));
           break;
         }
 
       struct timespec when;
-      if (! parse_datetime2 (&when, line, NULL,
+      ако (! parse_datetime2 (&when, line, NULL,
                              parse_datetime_flags, tz, tzstring))
         {
-          if (line[line_length - 1] == '\n')
+          ако (line[line_length - 1] == '\n')
             line[line_length - 1] = '\0';
           error (0, 0, _("invalid date %s"), quote (line));
           ok = false;
         }
-      else
+      инако
         {
           ok &= show_date_helper (format, format_in_c_locale, when, tz);
         }
 
-      if (ferror (stdout))
+      ако (ferror (stdout))
         write_error ();
     }
 
-  if (fclose (in_stream) == EOF)
+  ако (fclose (in_stream) == EOF)
     error (EXIT_FAILURE, errno, "%s", quotef (input_filename));
 
   free (line);
 
-  return ok;
+  врати ok;
 }
 
-int
-main (int argc, char **argv)
+цео
+main (цео argc, char **argv)
 {
   char const *datestr = NULL;
   char const *set_datestr = NULL;
@@ -580,14 +580,14 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  int optc;
-  while ((optc = getopt_long (argc, argv, short_options, long_options, NULL))
+  цео optc;
+  док ((optc = getopt_long (argc, argv, short_options, long_options, NULL))
          != -1)
     {
       switch (optc)
         {
         case 'd':
-          if (datestr)
+          ако (datestr)
             discarded_datestr = true;
           datestr = optarg;
           break;
@@ -641,7 +641,7 @@ main (int argc, char **argv)
           format_in_c_locale = true;
           break;
         case 's':
-          if (set_datestr)
+          ако (set_datestr)
             discarded_set_datestr = true;
           set_datestr = optarg;
           set_date = true;
@@ -656,44 +656,44 @@ main (int argc, char **argv)
         }
     }
 
-  int option_specified_date = (!!datestr + !!batch_file + !!reference
+  цео option_specified_date = (!!datestr + !!batch_file + !!reference
                                + get_resolution);
 
-  if (option_specified_date > 1)
+  ако (option_specified_date > 1)
     {
       error (0, 0,
         _("the options to specify dates for printing are mutually exclusive"));
       usage (EXIT_FAILURE);
     }
 
-  if (set_date && option_specified_date)
+  ако (set_date && option_specified_date)
     {
       error (0, 0,
           _("the options to print and set the time may not be used together"));
       usage (EXIT_FAILURE);
     }
 
-  if (discarded_datestr && (parse_datetime_flags & PARSE_DATETIME_DEBUG))
+  ако (discarded_datestr && (parse_datetime_flags & PARSE_DATETIME_DEBUG))
     error (0, 0, _("only using last of multiple -d options"));
 
-  if (discarded_set_datestr && (parse_datetime_flags & PARSE_DATETIME_DEBUG))
+  ако (discarded_set_datestr && (parse_datetime_flags & PARSE_DATETIME_DEBUG))
     error (0, 0, _("only using last of multiple -s options"));
 
-  if (optind < argc)
+  ако (optind < argc)
     {
-      if (optind + 1 < argc)
+      ако (optind + 1 < argc)
         {
           error (0, 0, _("extra operand %s"), quote (argv[optind + 1]));
           usage (EXIT_FAILURE);
         }
 
-      if (argv[optind][0] == '+')
+      ако (argv[optind][0] == '+')
         {
-          if (format)
+          ако (format)
             error (EXIT_FAILURE, 0, _("multiple output formats specified"));
           format = argv[optind++] + 1;
         }
-      else if (set_date || option_specified_date)
+      инако ако (set_date || option_specified_date)
         {
           error (0, 0,
                  _("the argument %s lacks a leading '+';\n"
@@ -704,11 +704,11 @@ main (int argc, char **argv)
         }
     }
 
-  if (!format)
+  ако (!format)
     {
-      if (get_resolution)
+      ако (get_resolution)
         format = "%s.%N";
-      else
+      инако
         {
           format = DATE_FMT_LANGINFO ();
 
@@ -719,29 +719,29 @@ main (int argc, char **argv)
              written by date, which means "date" must generate output
              using the POSIX locale; but adding _() would cause "date"
              to use a Korean translation of the format.  */
-          if (! *format)
+          ако (! *format)
             format = "%a %b %e %H:%M:%S %Z %Y";
         }
     }
 
   char *format_copy = adjust_resolution (format);
   char const *format_res = format_copy ? format_copy : format;
-  if (!tzstring)
+  ако (!tzstring)
     tzstring = getenv ("TZ");
   timezone_t tz = tzalloc (tzstring);
 
   bool ok = true;
-  if (batch_file != NULL)
+  ако (batch_file != NULL)
     ok = batch_convert (batch_file, format_res, format_in_c_locale,
                         tz, tzstring);
-  else
+  инако
     {
       bool valid_date = true;
       struct timespec when;
 
-      if (!option_specified_date && !set_date)
+      ако (!option_specified_date && !set_date)
         {
-          if (optind < argc)
+          ако (optind < argc)
             {
               /* Prepare to set system clock to the specified date/time
                  given in the POSIX-format.  */
@@ -753,31 +753,31 @@ main (int argc, char **argv)
                                        | PDS_CENTURY | PDS_SECONDS));
               when.tv_nsec = 0; /* FIXME: posixtime should set this.  */
             }
-          else
+          инако
             {
               /* Prepare to print the current date/time.  */
               gettime (&when);
             }
         }
-      else
+      инако
         {
           /* (option_specified_date || set_date) */
-          if (reference != NULL)
+          ако (reference != NULL)
             {
               struct stat refstats;
-              if (stat (reference, &refstats) != 0)
+              ако (stat (reference, &refstats) != 0)
                 error (EXIT_FAILURE, errno, "%s", quotef (reference));
               when = get_stat_mtime (&refstats);
             }
-          else if (get_resolution)
+          инако ако (get_resolution)
             {
-              long int res = gettime_res ();
+              long цео res = gettime_res ();
               when.tv_sec = res / TIMESPEC_HZ;
               when.tv_nsec = res % TIMESPEC_HZ;
             }
-          else
+          инако
             {
-              if (set_datestr)
+              ако (set_datestr)
                 datestr = set_datestr;
               valid_date = parse_datetime2 (&when, datestr, NULL,
                                             parse_datetime_flags,
@@ -785,14 +785,14 @@ main (int argc, char **argv)
             }
         }
 
-      if (! valid_date)
+      ако (! valid_date)
         error (EXIT_FAILURE, 0, _("invalid date %s"), quote (datestr));
 
-      if (set_date)
+      ако (set_date)
         {
           /* Set the system clock to the specified date, then regardless of
              the success of that operation, format and print that date.  */
-          if (settime (&when) != 0)
+          ако (settime (&when) != 0)
             {
               error (0, errno, _("cannot set date"));
               ok = false;

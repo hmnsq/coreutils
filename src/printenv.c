@@ -64,16 +64,16 @@ static struct option const longopts[] =
 };
 
 void
-usage (int status)
+usage (цео status)
 {
-  if (status != EXIT_SUCCESS)
+  ако (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  инако
     {
       printf (_("\
 Usage: %s [OPTION] [VARIABLE]...\n\
 Print the values of the specified environment VARIABLE(s).\n\
-If no VARIABLE is specified, print name and value pairs for them all.\n\
+If no VARIABLE is specified, print name and value pairs за them all.\n\
 \n\
 "),
               program_name);
@@ -83,7 +83,7 @@ If no VARIABLE is specified, print name and value pairs for them all.\n\
 "));
       oputs (_("\
       --quoting-style=WORD\n\
-         use quoting style WORD for names and values:\n\
+         use quoting style WORD за names and values:\n\
            literal, locale, shell, shell-always,\n\
            shell-escape, shell-escape-always, c, escape\n\
 "));
@@ -95,11 +95,11 @@ If no VARIABLE is specified, print name and value pairs for them all.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+цео
+main (цео argc, char **argv)
 {
   bool opt_nul_terminate_output = false;
-  int quoting_style_opt = -1;
+  цео quoting_style_opt = -1;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -110,8 +110,8 @@ main (int argc, char **argv)
   initialize_exit_failure (PRINTENV_FAILURE);
   atexit (close_stdout);
 
-  int optc;
-  while ((optc = getopt_long (argc, argv, "+0", longopts, NULL)) != -1)
+  цео optc;
+  док ((optc = getopt_long (argc, argv, "+0", longopts, NULL)) != -1)
     {
       switch (optc)
         {
@@ -132,14 +132,14 @@ main (int argc, char **argv)
     }
 
   bool quote_output = false;
-  int qs = quoting_style_opt;
-  if (qs < 0 && isatty (STDOUT_FILENO))
+  цео qs = quoting_style_opt;
+  ако (qs < 0 && isatty (STDOUT_FILENO))
     {
       qs = getenv_quoting_style ();
-      if (qs < 0)
+      ако (qs < 0)
         qs = shell_escape_quoting_style;
     }
-  if (0 <= qs && qs != literal_quoting_style)
+  ако (0 <= qs && qs != literal_quoting_style)
     {
       set_quoting_style (NULL, qs);
       quote_output = true;
@@ -149,34 +149,34 @@ main (int argc, char **argv)
   bool ok;
   char const terminator = opt_nul_terminate_output ? '\0' : '\n';
 
-  if (opt_nul_terminate_output)
+  ако (opt_nul_terminate_output)
     xset_binary_mode (STDOUT_FILENO, O_BINARY);
 
-  if (n_args <= 0)
+  ако (n_args <= 0)
     {
-      for (char **env = environ; *env != NULL; ++env)
+      за (char **env = environ; *env != NULL; ++env)
         print_envvar (*env, terminator, quote_output);
       ok = true;
     }
-  else
+  инако
     {
-      int matches = 0;
+      цео matches = 0;
 
-      for (int i = optind; i < argc; ++i)
+      за (цео i = optind; i < argc; ++i)
         {
           bool matched = false;
 
           /* 'printenv a=b' is silent, even if 'a=b=c' is in environ.  */
-          if (strchr (argv[i], '='))
+          ако (strchr (argv[i], '='))
             continue;
 
-          for (char **env = environ; *env; ++env)
+          за (char **env = environ; *env; ++env)
             {
               char const *ep = *env;
               char const *ap = argv[i];
-              while (*ep != '\0' && *ap != '\0' && *ep++ == *ap++)
+              док (*ep != '\0' && *ap != '\0' && *ep++ == *ap++)
                 {
-                  if (*ep == '=' && *ap == '\0')
+                  ако (*ep == '=' && *ap == '\0')
                     {
                       char const *val = ep + 1;
                       fputs (quote_output ? quoteN (val) : val, stdout);
@@ -193,5 +193,5 @@ main (int argc, char **argv)
       ok = (matches == argc - optind);
     }
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  врати ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

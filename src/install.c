@@ -50,14 +50,14 @@
 
 #define AUTHORS proper_name ("David MacKenzie")
 
-static int selinux_enabled = 0;
+static цео selinux_enabled = 0;
 static bool use_default_selinux_context = true;
 
-#if ! HAVE_ENDGRENT
+#ако ! HAVE_ENDGRENT
 # define endgrent() ((void) 0)
 #endif
 
-#if ! HAVE_ENDPWENT
+#ако ! HAVE_ENDPWENT
 # define endpwent() ((void) 0)
 #endif
 
@@ -137,22 +137,22 @@ static struct option const long_options[] =
 /* Compare content of opened files using file descriptors A_FD and B_FD. Return
    true if files are equal. */
 static bool
-have_same_content (int a_fd, int b_fd)
+have_same_content (цео a_fd, цео b_fd)
 {
   enum { CMP_BLOCK_SIZE = 4096 };
   static char a_buff[CMP_BLOCK_SIZE];
   static char b_buff[CMP_BLOCK_SIZE];
 
   idx_t size;
-  while (0 < (size = full_read (a_fd, a_buff, sizeof a_buff))) {
-    if (size != full_read (b_fd, b_buff, sizeof b_buff))
-      return false;
+  док (0 < (size = full_read (a_fd, a_buff, sizeof a_buff))) {
+    ако (size != full_read (b_fd, b_buff, sizeof b_buff))
+      врати false;
 
-    if (!memeq (a_buff, b_buff, size))
-      return false;
+    ако (!memeq (a_buff, b_buff, size))
+      врати false;
   }
 
-  return size == 0;
+  врати size == 0;
 }
 
 /* Return true for mode with non-permission bits. */
@@ -160,95 +160,95 @@ static bool
 extra_mode (mode_t input)
 {
   mode_t mask = S_IRWXUGO | S_IFMT;
-  return !! (input & ~ mask);
+  врати !! (input & ~ mask);
 }
 
 /* Return true if copy of file SRC_NAME to file DEST_NAME aka
    DEST_DIRFD+DEST_RELNAME is necessary. */
 static bool
 need_copy (char const *src_name, char const *dest_name,
-           int dest_dirfd, char const *dest_relname,
+           цео dest_dirfd, char const *dest_relname,
            const struct cp_options *x)
 {
-  if (extra_mode (mode))
-    return true;
+  ако (extra_mode (mode))
+    врати true;
 
   /* compare files using stat */
   struct stat src_sb;
-  if (stat (src_name, &src_sb) != 0)
-    return true;
+  ако (stat (src_name, &src_sb) != 0)
+    врати true;
 
   struct stat dest_sb;
-  if (fstatat (dest_dirfd, dest_relname, &dest_sb, AT_SYMLINK_NOFOLLOW) != 0)
-    return true;
+  ако (fstatat (dest_dirfd, dest_relname, &dest_sb, AT_SYMLINK_NOFOLLOW) != 0)
+    врати true;
 
-  if (!S_ISREG (src_sb.st_mode) || !S_ISREG (dest_sb.st_mode)
+  ако (!S_ISREG (src_sb.st_mode) || !S_ISREG (dest_sb.st_mode)
       || extra_mode (src_sb.st_mode) || extra_mode (dest_sb.st_mode))
-    return true;
+    врати true;
 
-  if (src_sb.st_size != dest_sb.st_size
+  ако (src_sb.st_size != dest_sb.st_size
       || (dest_sb.st_mode & CHMOD_MODE_BITS) != mode)
-    return true;
+    врати true;
 
-  if (owner_id == (uid_t) -1)
+  ако (owner_id == (uid_t) -1)
     {
       errno = 0;
       uid_t ruid = getuid ();
-      if ((ruid == (uid_t) -1 && errno) || dest_sb.st_uid != ruid)
-        return true;
+      ако ((ruid == (uid_t) -1 && errno) || dest_sb.st_uid != ruid)
+        врати true;
     }
-  else if (dest_sb.st_uid != owner_id)
-    return true;
+  инако ако (dest_sb.st_uid != owner_id)
+    врати true;
 
-  if (group_id == (uid_t) -1)
+  ако (group_id == (uid_t) -1)
     {
       errno = 0;
       gid_t rgid = getgid ();
-      if ((rgid == (uid_t) -1 && errno) || dest_sb.st_gid != rgid)
-        return true;
+      ако ((rgid == (uid_t) -1 && errno) || dest_sb.st_gid != rgid)
+        врати true;
     }
-  else if (dest_sb.st_gid != group_id)
-    return true;
+  инако ако (dest_sb.st_gid != group_id)
+    врати true;
 
   /* compare SELinux context if preserving */
-  if (selinux_enabled && x->preserve_security_context)
+  ако (selinux_enabled && x->preserve_security_context)
     {
       char *file_scontext_raw = NULL;
-      if (getfilecon_raw (src_name, &file_scontext_raw) == -1)
-        return true;
+      ако (getfilecon_raw (src_name, &file_scontext_raw) == -1)
+        врати true;
 
       char *to_scontext_raw = NULL;
-      if (getfilecon_raw (dest_name, &to_scontext_raw) == -1)
+      ако (getfilecon_raw (dest_name, &to_scontext_raw) == -1)
         {
           freecon (file_scontext_raw);
-          return true;
+          врати true;
         }
 
       bool scontext_match = streq (file_scontext_raw, to_scontext_raw);
 
       freecon (file_scontext_raw);
       freecon (to_scontext_raw);
-      if (!scontext_match)
-        return true;
+      ако (!scontext_match)
+        врати true;
     }
 
   /* compare files content */
-  int src_fd = open (src_name, O_RDONLY | O_BINARY);
-  if (src_fd < 0)
-    return true;
+  цео src_fd = open (src_name, O_RDONLY | O_BINARY);
+  ако (src_fd < 0)
+    врати true;
 
-  int dest_fd = openat (dest_dirfd, dest_relname, O_RDONLY | O_BINARY);
-  if (dest_fd < 0)
+  цео dest_fd = openat (dest_dirfd, dest_relname, O_RDONLY | O_BINARY);
+  ако (dest_fd < 0)
     {
       close (src_fd);
-      return true;
+      врати true;
     }
 
   bool content_match = have_same_content (src_fd, dest_fd);
 
   close (src_fd);
   close (dest_fd);
-  return !content_match;
+  врати !content_match;
 }
 
 static void
@@ -302,14 +302,14 @@ get_labeling_handle (void)
 {
   static bool initialized;
   static struct selabel_handle *hnd;
-  if (!initialized)
+  ако (!initialized)
     {
       initialized = true;
       hnd = selabel_open (SELABEL_CTX_FILE, NULL, 0);
-      if (!hnd)
+      ако (!hnd)
         error (0, errno, _("warning: security labeling handle failed"));
     }
-  return hnd;
+  врати hnd;
 }
 
 /* Modify file context to match the specified policy.
@@ -319,30 +319,30 @@ get_labeling_handle (void)
 static void
 setdefaultfilecon (char const *file)
 {
-  if (selinux_enabled != 1)
+  ако (selinux_enabled != 1)
     {
       /* Indicate no context found. */
-      return;
+      врати;
     }
 
   struct stat st;
-  if (lstat (file, &st) != 0)
-    return;
+  ако (lstat (file, &st) != 0)
+    врати;
 
   struct selabel_handle *hnd = get_labeling_handle ();
-  if (!hnd)
-    return;
+  ако (!hnd)
+    врати;
 
   char *scontext_raw = NULL;
-  if (selabel_lookup_raw (hnd, &scontext_raw, file, st.st_mode) != 0)
+  ако (selabel_lookup_raw (hnd, &scontext_raw, file, st.st_mode) != 0)
     {
-      if (errno != ENOENT && ! ignorable_ctx_err (errno))
+      ако (errno != ENOENT && ! ignorable_ctx_err (errno))
         error (0, errno, _("warning: %s: context lookup failed"),
                quotef (file));
-      return;
+      врати;
     }
 
-  if (lsetfilecon_raw (file, scontext_raw) < 0 && errno != ENOTSUP)
+  ако (lsetfilecon_raw (file, scontext_raw) < 0 && errno != ENOTSUP)
     error (0, errno,
            _("warning: %s: failed to change context to %s"),
            quotef_n (0, file), quote_n (1, scontext_raw));
@@ -355,36 +355,36 @@ static void
 announce_mkdir (char const *dir, void *options)
 {
   struct cp_options const *x = options;
-  if (x->verbose)
+  ако (x->verbose)
     prog_fprintf (stdout, _("creating directory %s"), quoteaf (dir));
 }
 
 /* Make ancestor directory DIR, whose last file name component is
    COMPONENT, with options OPTIONS.  Assume the working directory is
    COMPONENT's parent.  */
-static int
+static цео
 make_ancestor (char const *dir, char const *component, void *options)
 {
   struct cp_options const *x = options;
-  if (x->set_security_context
+  ако (x->set_security_context
       && defaultcon (x->set_security_context, component, S_IFDIR) < 0
       && ! ignorable_ctx_err (errno))
     error (0, errno, _("failed to set default creation context for %s"),
            quoteaf (dir));
 
-  int r = mkdir (component, DEFAULT_MODE);
-  if (r == 0)
+  цео r = mkdir (component, DEFAULT_MODE);
+  ако (r == 0)
     announce_mkdir (dir, options);
-  return r;
+  врати r;
 }
 
 /* Process a command-line file name, for the -d option.  */
-static int
+static цео
 process_dir (char *dir, struct savewd *wd, void *options)
 {
   struct cp_options const *x = options;
 
-  int ret = (make_dir_parents (dir, wd, make_ancestor, options,
+  цео ret = (make_dir_parents (dir, wd, make_ancestor, options,
                                dir_mode, announce_mkdir,
                                dir_mode_bits, owner_id, group_id, false)
           ? EXIT_SUCCESS
@@ -395,15 +395,15 @@ process_dir (char *dir, struct savewd *wd, void *options)
      final component of DIR is created.  So for now, create the
      final component with the context from previous component
      and here we set the context for the final component. */
-  if (ret == EXIT_SUCCESS && x->set_security_context)
+  ако (ret == EXIT_SUCCESS && x->set_security_context)
     {
-      if (! restorecon (x->set_security_context, last_component (dir), false)
+      ако (! restorecon (x->set_security_context, last_component (dir), false)
           && ! ignorable_ctx_err (errno))
         error (0, errno, _("failed to restore context for %s"),
                quoteaf (dir));
     }
 
-  return ret;
+  врати ret;
 }
 
 enum copy_status { COPY_FAILED, COPY_OK, COPY_SKIPPED };
@@ -414,10 +414,10 @@ enum copy_status { COPY_FAILED, COPY_OK, COPY_SKIPPED };
 
 static enum copy_status
 copy_file (char const *from, char const *to,
-           int to_dirfd, char const *to_relname, const struct cp_options *x)
+           цео to_dirfd, char const *to_relname, const struct cp_options *x)
 {
-  if (copy_only_if_needed && !need_copy (from, to, to_dirfd, to_relname, x))
-    return COPY_SKIPPED;
+  ако (copy_only_if_needed && !need_copy (from, to, to_dirfd, to_relname, x))
+    врати COPY_SKIPPED;
 
   /* Allow installing from non-regular files like /dev/null.
      Charles Karney reported that some Sun version of install allows that
@@ -426,7 +426,7 @@ copy_file (char const *from, char const *to,
      is a directory.  */
 
   bool copy_into_self;
-  return (copy (from, to, to_dirfd, to_relname, 0, x, &copy_into_self, NULL)
+  врати (copy (from, to, to_dirfd, to_relname, 0, x, &copy_into_self, NULL)
           ? COPY_OK : COPY_FAILED);
 }
 
@@ -434,7 +434,7 @@ copy_file (char const *from, char const *to,
    Return true if successful.  */
 
 static bool
-change_attributes (char const *name, int dirfd, char const *relname)
+change_attributes (char const *name, цео dirfd, char const *relname)
 {
   bool ok = false;
   /* chown must precede chmod because on some systems,
@@ -449,18 +449,18 @@ change_attributes (char const *name, int dirfd, char const *relname)
      If the file doesn't end up with the group they asked for, they'll
      want to know.  */
 
-  if (! (owner_id == (uid_t) -1 && group_id == (gid_t) -1)
+  ако (! (owner_id == (uid_t) -1 && group_id == (gid_t) -1)
       && lchownat (dirfd, relname, owner_id, group_id) != 0)
     error (0, errno, _("cannot change ownership of %s"), quoteaf (name));
-  else if (chmodat (dirfd, relname, mode) != 0)
+  инако ако (chmodat (dirfd, relname, mode) != 0)
     error (0, errno, _("cannot change permissions of %s"), quoteaf (name));
-  else
+  инако
     ok = true;
 
-  if (use_default_selinux_context)
+  ако (use_default_selinux_context)
     setdefaultfilecon (name);
 
-  return ok;
+  врати ok;
 }
 
 /* Set the timestamps of file DEST aka DIRFD+RELNAME to match those of SRC_SB.
@@ -468,17 +468,17 @@ change_attributes (char const *name, int dirfd, char const *relname)
 
 static bool
 change_timestamps (struct stat const *src_sb, char const *dest,
-                   int dirfd, char const *relname)
+                   цео dirfd, char const *relname)
 {
   struct timespec timespec[2] = { get_stat_atime (src_sb),
                                   get_stat_mtime (src_sb) };
 
-  if (utimensat (dirfd, relname, timespec, 0))
+  ако (utimensat (dirfd, relname, timespec, 0))
     {
       error (0, errno, _("cannot set timestamps for %s"), quoteaf (dest));
-      return false;
+      врати false;
     }
-  return true;
+  врати true;
 }
 
 /* Strip the symbol table from the file NAME.
@@ -494,28 +494,28 @@ strip (char const *name)
   posix_spawnattr_t *attrp = NULL;
 
   /* Try to use vfork for systems where it matters.  */
-  if (posix_spawnattr_init (&attr) == 0)
+  ако (posix_spawnattr_init (&attr) == 0)
     {
-      if (posix_spawnattr_setflags (&attr, POSIX_SPAWN_USEVFORK) == 0)
+      ако (posix_spawnattr_setflags (&attr, POSIX_SPAWN_USEVFORK) == 0)
         attrp = &attr;
-      else
+      инако
         posix_spawnattr_destroy (&attr);
     }
 
   /* Construct the arguments to 'strip'.  */
   char *concat_name = NULL;
   char const *safe_name = name;
-  if (name && *name == '-')
+  ако (name && *name == '-')
     safe_name = concat_name = file_name_concat (".", name, NULL);
   char const *const argv[] = { strip_program, safe_name, NULL };
 
   /* Run 'strip'.  */
   pid_t pid;
-  int result = posix_spawnp (&pid, strip_program, NULL, attrp,
+  цео result = posix_spawnp (&pid, strip_program, NULL, attrp,
                              (char * const *) argv, environ);
 
   bool ok = false;
-  if (result != 0)
+  ако (result != 0)
     {
       error (0, result,
              streq (strip_program, "strip")
@@ -523,23 +523,23 @@ strip (char const *name)
                : _("cannot run strip program %s"),
              quoteaf (strip_program));
     }
-  else
+  инако
     {
       /* Wait for 'strip' to complete, and emit a warning message on failure  */
-      int status;
-      if (waitpid (pid, &status, 0) < 0)
+      цео status;
+      ако (waitpid (pid, &status, 0) < 0)
         error (0, errno, _("waiting for strip"));
-      else if (! WIFEXITED (status) || WEXITSTATUS (status))
+      инако ако (! WIFEXITED (status) || WEXITSTATUS (status))
         error (0, 0, _("strip process terminated abnormally"));
-      else
+      инако
         ok = true;
     }
 
   free (concat_name);
-  if (attrp)
+  ако (attrp)
     posix_spawnattr_destroy (attrp);
 
-  return ok;
+  врати ok;
 }
 
 /* Initialize the user and group ownership of the files to install. */
@@ -547,49 +547,49 @@ strip (char const *name)
 static void
 get_ids (void)
 {
-  if (owner_name)
+  ако (owner_name)
     {
       struct passwd *pw = getpwnam (owner_name);
-      if (pw == NULL)
+      ако (pw == NULL)
         {
           uintmax_t tmp;
-          if (xstrtoumax (owner_name, NULL, 0, &tmp, "") != LONGINT_OK
+          ако (xstrtoumax (owner_name, NULL, 0, &tmp, "") != LONGINT_OK
               || ckd_add (&owner_id, tmp, 0))
             error (EXIT_FAILURE, 0, _("invalid user %s"),
                    quoteaf (owner_name));
         }
-      else
+      инако
         owner_id = pw->pw_uid;
       endpwent ();
     }
-  else
+  инако
     owner_id = (uid_t) -1;
 
-  if (group_name)
+  ако (group_name)
     {
       struct group *gr = getgrnam (group_name);
-      if (gr == NULL)
+      ако (gr == NULL)
         {
           uintmax_t tmp;
-          if (xstrtoumax (group_name, NULL, 0, &tmp, "") != LONGINT_OK
+          ако (xstrtoumax (group_name, NULL, 0, &tmp, "") != LONGINT_OK
               || ckd_add (&group_id, tmp, 0))
             error (EXIT_FAILURE, 0, _("invalid group %s"),
                    quoteaf (group_name));
         }
-      else
+      инако
         group_id = gr->gr_gid;
       endgrent ();
     }
-  else
+  инако
     group_id = (gid_t) -1;
 }
 
 void
-usage (int status)
+usage (цео status)
 {
-  if (status != EXIT_SUCCESS)
+  ако (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  инако
     {
       printf (_("\
 Usage: %s [OPTION]... [-T] SOURCE DEST\n\
@@ -606,7 +606,7 @@ package on a GNU/Linux system, you should instead be using a package manager\n\
 like yum(1) or apt-get(1).\n\
 \n\
 In the first three forms, copy SOURCE to DEST or multiple SOURCE(s) to\n\
-the existing DIRECTORY, while setting permission modes and owner/group.\n\
+the existing DIRECTORY, док setting permission modes and owner/group.\n\
 In the 4th form, create all components of the given DIRECTORY(ies).\n\
 "), stdout);
 
@@ -627,7 +627,7 @@ In the 4th form, create all components of the given DIRECTORY(ies).\n\
       oputs (_("\
   -C, --compare\n\
          compare content of source and destination files,\n\
-         and if no change to content, ownership, and permissions,\n\
+         and ако no change to content, ownership, and permissions,\n\
          do not modify the destination at all\n\
 "));
       oputs (_("\
@@ -697,7 +697,7 @@ In the 4th form, create all components of the given DIRECTORY(ies).\n\
 "));
       oputs (_("\
       --context[=CTX]\n\
-         like -Z, or if CTX is specified then set the\n\
+         like -Z, or ако CTX is specified then set the\n\
          SELinux or SMACK security context to CTX\n\
 "));
 
@@ -715,30 +715,30 @@ In the 4th form, create all components of the given DIRECTORY(ies).\n\
 
 static bool
 install_file_in_file (char const *from, char const *to,
-                      int to_dirfd, char const *to_relname,
+                      цео to_dirfd, char const *to_relname,
                       const struct cp_options *x)
 {
   struct stat from_sb;
-  if (x->preserve_timestamps && stat (from, &from_sb) != 0)
+  ако (x->preserve_timestamps && stat (from, &from_sb) != 0)
     {
       error (0, errno, _("cannot stat %s"), quoteaf (from));
-      return false;
+      врати false;
     }
   enum copy_status copy_status = copy_file (from, to, to_dirfd, to_relname, x);
-  if (copy_status == COPY_FAILED)
-    return false;
-  if (copy_status == COPY_OK && strip_files && ! strip (to))
+  ако (copy_status == COPY_FAILED)
+    врати false;
+  ако (copy_status == COPY_OK && strip_files && ! strip (to))
     {
-      if (unlinkat (to_dirfd, to_relname, 0) != 0)  /* Cleanup.  */
+      ако (unlinkat (to_dirfd, to_relname, 0) != 0)  /* Cleanup.  */
         error (EXIT_FAILURE, errno, _("cannot unlink %s"), quoteaf (to));
-      return false;
+      врати false;
     }
-  if (x->preserve_timestamps && (copy_status == COPY_SKIPPED || strip_files
+  ако (x->preserve_timestamps && (copy_status == COPY_SKIPPED || strip_files
                                  || ! S_ISREG (from_sb.st_mode))
       && ! change_timestamps (&from_sb, to, to_dirfd, to_relname))
-    return false;
+    врати false;
 
-  return copy_status == COPY_SKIPPED
+  врати copy_status == COPY_SKIPPED
          || change_attributes (to, to_dirfd, to_relname);
 }
 
@@ -756,31 +756,31 @@ mkancesdirs_safe_wd (char const *from, char *to, struct cp_options *x,
 
   struct savewd wd;
   savewd_init (&wd);
-  if (! save_working_directory)
+  ако (! save_working_directory)
     savewd_finish (&wd);
 
-  int status = EXIT_SUCCESS;
-  if (mkancesdirs (to, &wd, make_ancestor, x) == -1)
+  цео status = EXIT_SUCCESS;
+  ако (mkancesdirs (to, &wd, make_ancestor, x) == -1)
     {
       error (0, errno, _("cannot create directory %s"), quoteaf (to));
       status = EXIT_FAILURE;
     }
 
-  if (save_working_directory)
+  ако (save_working_directory)
     {
-      int restore_result = savewd_restore (&wd, status);
-      int restore_errno = errno;
+      цео restore_result = savewd_restore (&wd, status);
+      цео restore_errno = errno;
       savewd_finish (&wd);
-      if (EXIT_SUCCESS < restore_result)
-        return false;
-      if (restore_result < 0 && status == EXIT_SUCCESS)
+      ако (EXIT_SUCCESS < restore_result)
+        врати false;
+      ако (restore_result < 0 && status == EXIT_SUCCESS)
         {
           error (0, restore_errno, _("cannot create directory %s"),
                  quoteaf (to));
-          return false;
+          врати false;
         }
     }
-  return status == EXIT_SUCCESS;
+  врати status == EXIT_SUCCESS;
 }
 
 /* Copy file FROM onto file TO, creating any missing parent directories of TO.
@@ -790,7 +790,7 @@ static bool
 install_file_in_file_parents (char const *from, char *to,
                               const struct cp_options *x)
 {
-  return (mkancesdirs_safe_wd (from, to, (struct cp_options *)x, false)
+  врати (mkancesdirs_safe_wd (from, to, (struct cp_options *)x, false)
           && install_file_in_file (from, to, AT_FDCWD, to, x));
 }
 
@@ -801,31 +801,31 @@ install_file_in_file_parents (char const *from, char *to,
 static bool
 install_file_in_dir (char const *from, char const *to_dir,
                      const struct cp_options *x, bool mkdir_and_install,
-                     int *target_dirfd)
+                     цео *target_dirfd)
 {
   char const *from_base = last_component (from);
   char *to_relname;
   char *to = file_name_concat (to_dir, from_base, &to_relname);
   bool ret = true;
 
-  if (!target_dirfd_valid (*target_dirfd)
+  ако (!target_dirfd_valid (*target_dirfd)
       && (ret = mkdir_and_install)
       && (ret = mkancesdirs_safe_wd (from, to, (struct cp_options *) x, true)))
     {
-      int fd = open (to_dir, O_PATHSEARCH | O_DIRECTORY);
-      if (fd < 0)
+      цео fd = open (to_dir, O_PATHSEARCH | O_DIRECTORY);
+      ако (fd < 0)
         {
           error (0, errno, _("cannot open %s"), quoteaf (to));
           ret = false;
         }
-      else
+      инако
         *target_dirfd = fd;
     }
 
-  if (ret)
+  ако (ret)
     {
-      int to_dirfd = *target_dirfd;
-      if (!target_dirfd_valid (to_dirfd))
+      цео to_dirfd = *target_dirfd;
+      ако (!target_dirfd_valid (to_dirfd))
         {
           to_dirfd = AT_FDCWD;
           to_relname = to;
@@ -834,11 +834,11 @@ install_file_in_dir (char const *from, char const *to_dir,
     }
 
   free (to);
-  return ret;
+  врати ret;
 }
 
-int
-main (int argc, char **argv)
+цео
+main (цео argc, char **argv)
 {
   char const *specified_mode = NULL;
   bool make_backups = false;
@@ -865,8 +865,8 @@ main (int argc, char **argv)
 
   umask (0);
 
-  int optc;
-  while ((optc = getopt_long (argc, argv, "bcCsDdg:m:o:pt:TvS:Z", long_options,
+  цео optc;
+  док ((optc = getopt_long (argc, argv, "bcCsDdg:m:o:pt:TvS:Z", long_options,
                               NULL))
          != -1)
     {
@@ -874,7 +874,7 @@ main (int argc, char **argv)
         {
         case 'b':
           make_backups = true;
-          if (optarg)
+          ако (optarg)
             version_control_string = optarg;
           break;
         case 'c':
@@ -922,7 +922,7 @@ main (int argc, char **argv)
           backup_suffix = optarg;
           break;
         case 't':
-          if (target_directory)
+          ако (target_directory)
             error (EXIT_FAILURE, 0,
                    _("multiple target directories specified"));
           target_directory = optarg;
@@ -932,7 +932,7 @@ main (int argc, char **argv)
           break;
 
         case PRESERVE_CONTEXT_OPTION:
-          if (! selinux_enabled)
+          ако (! selinux_enabled)
             {
               error (0, 0, _("WARNING: ignoring --preserve-context; "
                              "this kernel is not SELinux-enabled"));
@@ -942,7 +942,7 @@ main (int argc, char **argv)
           use_default_selinux_context = false;
           break;
         case 'Z':
-          if (selinux_enabled)
+          ако (selinux_enabled)
             {
               /* Disable use of the install(1) specific setdefaultfilecon().
                  Note setdefaultfilecon() is different from the newer and more
@@ -952,12 +952,12 @@ main (int argc, char **argv)
                  TODO: consider removing setdefaultfilecon() in future.  */
               use_default_selinux_context = false;
 
-              if (optarg)
+              ако (optarg)
                 scontext = optarg;
-              else
+              инако
                 x.set_security_context = get_labeling_handle ();
             }
-          else if (optarg)
+          инако ако (optarg)
             {
               error (0, 0,
                      _("warning: ignoring --context; "
@@ -972,10 +972,10 @@ main (int argc, char **argv)
     }
 
   /* Check for invalid combinations of arguments. */
-  if (dir_arg && strip_files)
+  ако (dir_arg && strip_files)
     error (EXIT_FAILURE, 0,
            _("the strip option may not be used when installing a directory"));
-  if (dir_arg && target_directory)
+  ако (dir_arg && target_directory)
     error (EXIT_FAILURE, 0,
            _("target directory not allowed when installing a directory"));
 
@@ -985,113 +985,113 @@ main (int argc, char **argv)
                    : no_backups);
   set_simple_backup_suffix (backup_suffix);
 
-  if (x.preserve_security_context && (x.set_security_context || scontext))
+  ако (x.preserve_security_context && (x.set_security_context || scontext))
     error (EXIT_FAILURE, 0,
            _("cannot set target context and preserve it"));
 
-  if (scontext && setfscreatecon (scontext) < 0)
+  ако (scontext && setfscreatecon (scontext) < 0)
     error (EXIT_FAILURE, errno,
            _("failed to set default file creation context to %s"),
          quote (scontext));
 
-  int n_files = argc - optind;
+  цео n_files = argc - optind;
   char **file = argv + optind;
 
-  if (n_files <= ! (dir_arg || target_directory))
+  ако (n_files <= ! (dir_arg || target_directory))
     {
-      if (n_files <= 0)
+      ако (n_files <= 0)
         error (0, 0, _("missing file operand"));
-      else
+      инако
         error (0, 0, _("missing destination file operand after %s"),
                quoteaf (file[0]));
       usage (EXIT_FAILURE);
     }
 
   struct stat sb;
-  int target_dirfd = AT_FDCWD;
-  if (no_target_directory)
+  цео target_dirfd = AT_FDCWD;
+  ако (no_target_directory)
     {
-      if (target_directory)
+      ако (target_directory)
         error (EXIT_FAILURE, 0,
                _("cannot combine --target-directory (-t) "
                  "and --no-target-directory (-T)"));
-      if (2 < n_files)
+      ако (2 < n_files)
         {
           error (0, 0, _("extra operand %s"), quoteaf (file[2]));
           usage (EXIT_FAILURE);
         }
     }
-  else if (target_directory)
+  инако ако (target_directory)
     {
       target_dirfd = target_directory_operand (target_directory, &sb);
-      if (! (target_dirfd_valid (target_dirfd)
+      ако (! (target_dirfd_valid (target_dirfd)
              || (mkdir_and_install && errno == ENOENT)))
         error (EXIT_FAILURE, errno, _("failed to access %s"),
                quoteaf (target_directory));
     }
-  else if (!dir_arg)
+  инако ако (!dir_arg)
     {
       char const *lastfile = file[n_files - 1];
-      int fd = target_directory_operand (lastfile, &sb);
-      if (target_dirfd_valid (fd))
+      цео fd = target_directory_operand (lastfile, &sb);
+      ако (target_dirfd_valid (fd))
         {
           target_dirfd = fd;
           target_directory = lastfile;
           n_files--;
         }
-      else if (2 < n_files)
+      инако ако (2 < n_files)
         error (EXIT_FAILURE, errno, _("target %s"), quoteaf (lastfile));
     }
 
-  if (specified_mode)
+  ако (specified_mode)
     {
       struct mode_change *change = mode_compile (specified_mode);
-      if (!change)
+      ако (!change)
         error (EXIT_FAILURE, 0, _("invalid mode %s"), quote (specified_mode));
       mode = mode_adjust (0, false, 0, change, NULL);
       dir_mode = mode_adjust (0, true, 0, change, &dir_mode_bits);
       free (change);
     }
 
-  if (strip_program_specified && !strip_files)
+  ако (strip_program_specified && !strip_files)
     error (0, 0, _("WARNING: ignoring --strip-program option as -s option was "
                    "not specified"));
 
-  if (copy_only_if_needed && strip_files)
+  ако (copy_only_if_needed && strip_files)
     {
       error (0, 0, _("options --compare (-C) and --strip are mutually "
                      "exclusive"));
       usage (EXIT_FAILURE);
     }
 
-  if (copy_only_if_needed && extra_mode (mode))
+  ако (copy_only_if_needed && extra_mode (mode))
     error (0, 0, _("the --compare (-C) option is ignored when you"
                    " specify a mode with non-permission bits"));
 
   get_ids ();
 
-  int exit_status = EXIT_SUCCESS;
-  if (dir_arg)
+  цео exit_status = EXIT_SUCCESS;
+  ако (dir_arg)
     exit_status = savewd_process_files (n_files, file, process_dir, &x);
-  else
+  инако
     {
       /* FIXME: it's a little gross that this initialization is
          required by copy.c::copy. */
       hash_init ();
 
-      if (!target_directory)
+      ако (!target_directory)
         {
-          if (! (mkdir_and_install
+          ако (! (mkdir_and_install
                  ? install_file_in_file_parents (file[0], file[1], &x)
                  : install_file_in_file (file[0], file[1], AT_FDCWD,
                                          file[1], &x)))
             exit_status = EXIT_FAILURE;
         }
-      else
+      инако
         {
           dest_info_init (&x);
-          for (int i = 0; i < n_files; i++)
-            if (! install_file_in_dir (file[i], target_directory, &x,
+          за (цео i = 0; i < n_files; i++)
+            ако (! install_file_in_dir (file[i], target_directory, &x,
                                        i == 0 && mkdir_and_install,
                                        &target_dirfd))
               exit_status = EXIT_FAILURE;

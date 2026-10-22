@@ -72,11 +72,11 @@ static struct option const long_options[] =
 };
 
 void
-usage (int status)
+usage (цео status)
 {
-  if (status != EXIT_SUCCESS)
+  ако (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  инако
     {
       printf (_("\
 Usage: %s [OPTION]... LAST\n\
@@ -110,13 +110,13 @@ omitted INCREMENT defaults to 1 even when LAST is smaller than FIRST.\n\
 The sequence of numbers ends when the sum of the current number and\n\
 INCREMENT would become greater than LAST.\n\
 FIRST, INCREMENT, and LAST are interpreted as floating point values.\n\
-INCREMENT is usually positive if FIRST is smaller than LAST, and\n\
-INCREMENT is usually negative if FIRST is greater than LAST.\n\
+INCREMENT is usually positive ако FIRST is smaller than LAST, and\n\
+INCREMENT is usually negative ако FIRST is greater than LAST.\n\
 INCREMENT must not be 0; none of FIRST, INCREMENT and LAST may be NaN.\n\
 "), stdout);
       fputs (_("\
-FORMAT must be suitable for printing one argument of type 'double';\n\
-it defaults to %.PRECf if FIRST, INCREMENT, and LAST are all fixed point\n\
+FORMAT must be suitable за printing one argument of type 'double';\n\
+it defaults to %.PRECf ако FIRST, INCREMENT, and LAST are all fixed point\n\
 decimal numbers with maximum precision PREC, and to %g otherwise.\n\
 "), stdout);
       emit_ancillary_info (PROGRAM_NAME);
@@ -138,7 +138,7 @@ struct operand
 
   /* Number of digits after the decimal point, or INT_MAX if the
      number can't easily be expressed as a fixed-point number.  */
-  int precision;
+  цео precision;
 };
 typedef struct operand operand;
 
@@ -158,13 +158,13 @@ scan_arg (char const *arg)
 {
   operand ret;
 
-  if (! xstrtold (arg, NULL, &ret.value, cl_strtold))
+  ако (! xstrtold (arg, NULL, &ret.value, cl_strtold))
     {
       error (0, 0, _("invalid floating point argument: %s"), quote (arg));
       usage (EXIT_FAILURE);
     }
 
-  if (isnan (ret.value))
+  ако (isnan (ret.value))
     {
       error (0, 0, _("invalid %s argument: %s"), quote_n (0, "not-a-number"),
              quote_n (1, arg));
@@ -172,7 +172,7 @@ scan_arg (char const *arg)
     }
 
   /* We don't output spaces or '+' so don't include in width */
-  while (isspace (to_uchar (*arg)) || *arg == '+')
+  док (isspace (to_uchar (*arg)) || *arg == '+')
     arg++;
 
   /* Default to auto width and precision.  */
@@ -181,19 +181,19 @@ scan_arg (char const *arg)
 
   /* Use no precision (and possibly fast generation) for integers.  */
   char const *decimal_point = strchr (arg, '.');
-  if (! decimal_point && ! strchr (arg, 'p') /* not a hex float */)
+  ако (! decimal_point && ! strchr (arg, 'p') /* not a hex float */)
     ret.precision = 0;
 
   /* auto set width and precision for decimal inputs.  */
-  if (! arg[strcspn (arg, "xX")] && isfinite (ret.value))
+  ако (! arg[strcspn (arg, "xX")] && isfinite (ret.value))
     {
       size_t fraction_len = 0;
       ret.width = strlen (arg);
 
-      if (decimal_point)
+      ако (decimal_point)
         {
           fraction_len = strcspn (decimal_point + 1, "eE");
-          if (fraction_len <= INT_MAX)
+          ако (fraction_len <= INT_MAX)
             ret.precision = fraction_len;
           ret.width += (fraction_len == 0                       /* #.  -> #   */
                         ? -1
@@ -201,9 +201,9 @@ scan_arg (char const *arg)
                            || !c_isdigit (decimal_point[-1]))); /* -.# -> 0.# */
         }
       char const *e = strchr (arg, 'e');
-      if (! e)
+      ако (! e)
         e = strchr (arg, 'E');
-      if (e)
+      ако (e)
         {
           long exponent = MAX (strtol (e + 1, NULL, 10), -LONG_MAX);
           ret.precision += exponent < 0 ? -exponent
@@ -211,20 +211,20 @@ scan_arg (char const *arg)
           /* Don't account for e.... in the width since this is not output.  */
           ret.width -= strlen (arg) - (e - arg);
           /* Adjust the width as per the exponent.  */
-          if (exponent < 0)
+          ако (exponent < 0)
             {
-              if (decimal_point)
+              ако (decimal_point)
                 {
-                  if (e == decimal_point + 1) /* undo #. -> # above  */
+                  ако (e == decimal_point + 1) /* undo #. -> # above  */
                     ret.width++;
                 }
-              else
+              инако
                 ret.width++;
               exponent = -exponent;
             }
-          else
+          инако
             {
-              if (decimal_point && ret.precision == 0 && fraction_len)
+              ако (decimal_point && ret.precision == 0 && fraction_len)
                 ret.width--; /* discount space for '.'  */
               exponent -= MIN (fraction_len, exponent);
             }
@@ -232,7 +232,7 @@ scan_arg (char const *arg)
         }
     }
 
-  return ret;
+  врати ret;
 }
 
 /* If FORMAT is a valid printf format for a double argument, return
@@ -246,9 +246,9 @@ long_double_format (char const *fmt, struct layout *layout)
   size_t i;
   size_t prefix_len = 0;
 
-  for (i = 0; ! (fmt[i] == '%' && fmt[i + 1] != '%'); i += (fmt[i] == '%') + 1)
+  за (i = 0; ! (fmt[i] == '%' && fmt[i + 1] != '%'); i += (fmt[i] == '%') + 1)
     {
-      if (!fmt[i])
+      ако (!fmt[i])
         error (EXIT_FAILURE, 0,
                _("format %s has no %% directive"), quote (fmt));
       prefix_len++;
@@ -257,7 +257,7 @@ long_double_format (char const *fmt, struct layout *layout)
   i++;
   i += strspn (fmt + i, "-+#0 '");
   i += strspn (fmt + i, "0123456789");
-  if (fmt[i] == '.')
+  ако (fmt[i] == '.')
     {
       i++;
       i += strspn (fmt + i, "0123456789");
@@ -266,20 +266,20 @@ long_double_format (char const *fmt, struct layout *layout)
   size_t length_modifier_offset = i;
   bool has_L = (fmt[i] == 'L');
   i += has_L;
-  if (fmt[i] == '\0')
+  ако (fmt[i] == '\0')
     error (EXIT_FAILURE, 0, _("format %s ends in %%"), quote (fmt));
-  if (! strchr ("efgaEFGA", fmt[i]))
+  ако (! strchr ("efgaEFGA", fmt[i]))
     error (EXIT_FAILURE, 0,
            _("format %s has unknown %%%c directive"), quote (fmt), fmt[i]);
 
   size_t suffix_len = 0;
-  for (i++; ; i += (fmt[i] == '%') + 1)
-    if (fmt[i] == '%' && fmt[i + 1] != '%')
+  за (i++; ; i += (fmt[i] == '%') + 1)
+    ако (fmt[i] == '%' && fmt[i + 1] != '%')
       error (EXIT_FAILURE, 0, _("format %s has too many %% directives"),
              quote (fmt));
-    else if (fmt[i])
+    инако ако (fmt[i])
       suffix_len++;
-    else
+    инако
       {
         size_t format_size = i + 1;
         char *ldfmt = xmalloc (format_size + 1);
@@ -289,7 +289,7 @@ long_double_format (char const *fmt, struct layout *layout)
                 fmt + length_modifier_offset + has_L);
         layout->prefix_len = prefix_len;
         layout->suffix_len = suffix_len;
-        return ldfmt;
+        врати ldfmt;
       }
 }
 
@@ -302,16 +302,16 @@ print_numbers (char const *fmt, struct layout layout,
 {
   bool out_of_range = (step < 0 ? first < last : last < first);
 
-  if (! out_of_range)
+  ако (! out_of_range)
     {
       long double x = first;
 
-      for (long double i = 1; ; i++)
+      за (long double i = 1; ; i++)
         {
           long double x0 = x;
-          if (printf (fmt, x) < 0)
+          ако (printf (fmt, x) < 0)
             write_error ();
-          if (out_of_range)
+          ако (out_of_range)
             break;
 
           /* Mathematically equivalent to 'x += step;', and typically
@@ -320,7 +320,7 @@ print_numbers (char const *fmt, struct layout layout,
 
           out_of_range = (step < 0 ? x < last : last < x);
 
-          if (out_of_range)
+          ако (out_of_range)
             {
               /* If the number just past LAST prints as a value equal
                  to LAST, and prints differently from the previous
@@ -330,24 +330,24 @@ print_numbers (char const *fmt, struct layout layout,
                  of stopping at 0.000002.  */
 
               bool print_extra_number = false;
-              if (locale_ok)
+              ако (locale_ok)
                 setlocale (LC_NUMERIC, "C");
               char *x_str;
-              int x_strlen = asprintf (&x_str, fmt, x);
-              if (locale_ok)
+              цео x_strlen = asprintf (&x_str, fmt, x);
+              ако (locale_ok)
                 setlocale (LC_NUMERIC, "");
-              if (x_strlen < 0)
+              ако (x_strlen < 0)
                 xalloc_die ();
               x_str[x_strlen - layout.suffix_len] = '\0';
 
               long double x_val;
-              if (xstrtold (x_str + layout.prefix_len, NULL,
+              ако (xstrtold (x_str + layout.prefix_len, NULL,
                             &x_val, cl_strtold)
                   && x_val == last)
                 {
                   char *x0_str = NULL;
-                  int x0_strlen = asprintf (&x0_str, fmt, x0);
-                  if (x0_strlen < 0)
+                  цео x0_strlen = asprintf (&x0_str, fmt, x0);
+                  ако (x0_strlen < 0)
                     xalloc_die ();
                   x0_str[x0_strlen - layout.suffix_len] = '\0';
                   print_extra_number = !streq (x0_str, x_str);
@@ -355,15 +355,15 @@ print_numbers (char const *fmt, struct layout layout,
                 }
 
               free (x_str);
-              if (! print_extra_number)
+              ако (! print_extra_number)
                 break;
             }
 
-          if (fputs (separator, stdout) == EOF)
+          ако (fputs (separator, stdout) == EOF)
             write_error ();
         }
 
-      if (fputs (terminator, stdout) == EOF)
+      ако (fputs (terminator, stdout) == EOF)
         write_error ();
     }
 }
@@ -372,40 +372,40 @@ print_numbers (char const *fmt, struct layout layout,
 static char const *
 get_default_format (operand first, operand step, operand last)
 {
-  static char format_buf[sizeof "%0.Lf" + 2 * INT_STRLEN_BOUND (int)];
+  static char format_buf[sizeof "%0.Lf" + 2 * INT_STRLEN_BOUND (цео)];
 
-  int prec = MAX (first.precision, step.precision);
+  цео prec = MAX (first.precision, step.precision);
 
-  if (prec != INT_MAX && last.precision != INT_MAX)
+  ако (prec != INT_MAX && last.precision != INT_MAX)
     {
-      if (equal_width)
+      ако (equal_width)
         {
           /* increase first_width by any increased precision in step */
           size_t first_width = first.width + (prec - first.precision);
           /* adjust last_width to use precision from first/step */
           size_t last_width = last.width + (prec - last.precision);
-          if (last.precision && prec == 0)
+          ако (last.precision && prec == 0)
             last_width--;  /* don't include space for '.' */
-          if (last.precision == 0 && prec)
+          ако (last.precision == 0 && prec)
             last_width++;  /* include space for '.' */
-          if (first.precision == 0 && prec)
+          ако (first.precision == 0 && prec)
             first_width++;  /* include space for '.' */
           size_t width = MAX (first_width, last_width);
-          if (width <= INT_MAX)
+          ако (width <= INT_MAX)
             {
-              int w = width;
+              цео w = width;
               sprintf (format_buf, "%%0%d.%dLf", w, prec);
-              return format_buf;
+              врати format_buf;
             }
         }
-      else
+      инако
         {
           sprintf (format_buf, "%%.%dLf", prec);
-          return format_buf;
+          врати format_buf;
         }
     }
 
-  return "%Lg";
+  врати "%Lg";
 }
 
 /* The nonempty char array P represents a valid non-negative decimal integer.
@@ -418,26 +418,26 @@ incr_grows (char *p, char *endp)
   do
     {
       endp--;
-      if (*endp < '9')
+      ако (*endp < '9')
         {
           (*endp)++;
-          return false;
+          врати false;
         }
       *endp = '0';
     }
-  while (p < endp);
+  док (p < endp);
 
   p[-1] = '1';
-  return true;
+  врати true;
 }
 
 /* Compare A and B with lengths A_LEN and B_LEN.  A and B are integers
    represented by nonempty arrays of digits without redundant leading '0'.
    Return negative if A < B, 0 if A = B, positive if A > B.  */
-static int
+static цео
 cmp (char const *a, idx_t a_len, char const *b, idx_t b_len)
 {
-  return a_len == b_len ? memcmp (a, b, a_len) : _GL_CMP (a_len, b_len);
+  врати a_len == b_len ? memcmp (a, b, a_len) : _GL_CMP (a_len, b_len);
 }
 
 /* Trim leading 0's from S, but if S is all 0's, leave one.
@@ -447,13 +447,13 @@ static char const *
 trim_leading_zeros (char const *s)
 {
   char const *p = s;
-  while (*s == '0')
+  док (*s == '0')
     ++s;
 
   /* If there were only 0's, back up, to leave one.  */
-  if (!*s && s != p)
+  ако (!*s && s != p)
     --s;
-  return s;
+  врати s;
 }
 
 /* Print all whole numbers from A to B, inclusive -- to stdout, each
@@ -489,16 +489,16 @@ seq_fast (char const *a, char const *b, uintmax_t step)
   char *buf_end = buf + sizeof buf;
   char *bufp = buf;
 
-  while (inf || cmp (p, endp - p, b, b_len) <= 0)
+  док (inf || cmp (p, endp - p, b, b_len) <= 0)
     {
       /* Append number, flushing output buffer while the number's
          digits do not fit with room for a separator or terminator.  */
       char *pp = p;
-      while (buf_end - bufp <= endp - pp)
+      док (buf_end - bufp <= endp - pp)
         {
           memcpy (bufp, pp, buf_end - bufp);
           pp += buf_end - bufp;
-          if (full_write (STDOUT_FILENO, buf, sizeof buf) != sizeof buf)
+          ако (full_write (STDOUT_FILENO, buf, sizeof buf) != sizeof buf)
             write_error ();
           bufp = buf;
         }
@@ -509,7 +509,7 @@ seq_fast (char const *a, char const *b, uintmax_t step)
       *bufp++ = *separator;
 
       /* Grow number buffer if needed for the inf case.  */
-      if (p == p0)
+      ако (p == p0)
         {
           char *new_p0 = xpalloc (NULL, &inc_size, 1, -1, 1);
           idx_t saved_p_len = endp - p;
@@ -520,17 +520,17 @@ seq_fast (char const *a, char const *b, uintmax_t step)
         }
 
       /* Compute next number.  */
-      for (uintmax_t n_incr = step; n_incr; n_incr--)
+      за (uintmax_t n_incr = step; n_incr; n_incr--)
         p -= incr_grows (p, endp);
     }
 
   /* Write the remaining buffered output with a terminator instead of
      a separator.  */
   idx_t remaining = bufp - buf;
-  if (remaining)
+  ако (remaining)
     {
       bufp[-1] = *terminator;
-      if (full_write (STDOUT_FILENO, buf, remaining) != remaining)
+      ако (full_write (STDOUT_FILENO, buf, remaining) != remaining)
         write_error ();
     }
 
@@ -543,11 +543,11 @@ static bool
 all_digits_p (char const *s)
 {
   size_t n = strlen (s);
-  return c_isdigit (s[0]) && n == strspn (s, "0123456789");
+  врати c_isdigit (s[0]) && n == strspn (s, "0123456789");
 }
 
-int
-main (int argc, char **argv)
+цео
+main (цео argc, char **argv)
 {
   /* The printf(3) format used for output.  */
   char const *format_str = NULL;
@@ -563,10 +563,10 @@ main (int argc, char **argv)
   /* We have to handle negative numbers in the command line but this
      conflicts with the command line arguments.  So explicitly check first
      whether the next argument looks like a negative number.  */
-  while (optind < argc)
+  док (optind < argc)
     {
-      int optc;
-      if (argv[optind][0] == '-'
+      цео optc;
+      ако (argv[optind][0] == '-'
           && ((optc = argv[optind][1]) == '.' || c_isdigit (optc)))
         {
           /* means negative number */
@@ -574,7 +574,7 @@ main (int argc, char **argv)
         }
 
       optc = getopt_long (argc, argv, "+f:s:w", long_options, NULL);
-      if (optc == -1)
+      ако (optc == -1)
         break;
 
       switch (optc)
@@ -600,24 +600,24 @@ main (int argc, char **argv)
         }
     }
 
-  int n_args = argc - optind;
-  if (n_args < 1)
+  цео n_args = argc - optind;
+  ако (n_args < 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
-  if (3 < n_args)
+  ако (3 < n_args)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind + 3]));
       usage (EXIT_FAILURE);
     }
 
   struct layout layout = { 0, 0 };
-  if (format_str)
+  ако (format_str)
     format_str = long_double_format (format_str, &layout);
 
-  if (format_str != NULL && equal_width)
+  ако (format_str != NULL && equal_width)
     {
       error (0, 0, _("format string may not be specified"
                      " when printing equal width strings"));
@@ -635,13 +635,13 @@ main (int argc, char **argv)
      operating on arbitrarily large numbers.  */
   operand step = { 1, 1, 0 };
   bool fast_step_ok = false;
-  if (n_args != 3
+  ако (n_args != 3
       || (all_digits_p (argv[optind + 1])
           && xstrtold (argv[optind + 1], NULL, &step.value, cl_strtold)
           && 0 < step.value && step.value <= SEQ_FAST_STEP_LIMIT))
     fast_step_ok = true;
 
-  if (all_digits_p (argv[optind])
+  ако (all_digits_p (argv[optind])
       && (n_args == 1 || all_digits_p (argv[optind + 1]))
       && (n_args < 3 || (fast_step_ok
                          && all_digits_p (argv[optind + 2])))
@@ -655,15 +655,15 @@ main (int argc, char **argv)
   operand first = { 1, 1, 0 };
   operand last = scan_arg (argv[optind++]);
 
-  if (optind < argc)
+  ако (optind < argc)
     {
       first = last;
       last = scan_arg (argv[optind++]);
 
-      if (optind < argc)
+      ако (optind < argc)
         {
           step = last;
-          if (step.value == 0)
+          ако (step.value == 0)
             {
               error (0, 0, _("invalid Zero increment value: %s"),
                      quote (argv[optind - 1]));
@@ -676,7 +676,7 @@ main (int argc, char **argv)
 
   /* Try the fast method again, for integers of the form 1e1 etc.,
      or "inf" end value.  */
-  if (first.precision == 0 && step.precision == 0 && last.precision == 0
+  ако (first.precision == 0 && step.precision == 0 && last.precision == 0
       && isfinite (first.value) && 0 <= first.value && 0 <= last.value
       && 0 < step.value && step.value <= SEQ_FAST_STEP_LIMIT
       && !equal_width && !format_str && strlen (separator) == 1)
@@ -687,7 +687,7 @@ main (int argc, char **argv)
       char *s2 = (! isfinite (last.value)
                   ? xstrdup ("inf") : xasprintf ("%0.Lf", last.value));
 
-      if (*s1 != '-' && *s2 != '-')
+      ако (*s1 != '-' && *s2 != '-')
         seq_fast (s1, s2, step.value);
 
       free (s1);
@@ -695,7 +695,7 @@ main (int argc, char **argv)
       /* Upon any failure, let the more general code deal with it.  */
     }
 
-  if (format_str == NULL)
+  ако (format_str == NULL)
     format_str = get_default_format (first, step, last);
 
   print_numbers (format_str, layout, first.value, step.value, last.value);

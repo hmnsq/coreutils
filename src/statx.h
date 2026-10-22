@@ -17,7 +17,7 @@
 #ifndef COREUTILS_STATX_H
 # define COREUTILS_STATX_H
 
-# if HAVE_STATX && defined STATX_INO
+# ако HAVE_STATX && defined STATX_INO
 /* Much of the format printing requires a struct stat or timespec */
 static inline struct timespec
 statx_timestamp_to_timespec (struct statx_timestamp tsx)
@@ -26,7 +26,7 @@ statx_timestamp_to_timespec (struct statx_timestamp tsx)
 
   ts.tv_sec = tsx.tv_sec;
   ts.tv_nsec = tsx.tv_nsec;
-  return ts;
+  врати ts;
 }
 
 static inline void

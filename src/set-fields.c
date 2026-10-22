@@ -38,7 +38,7 @@ static idx_t n_frp_allocated;
       error (0, 0, (Message));                                          \
       usage (EXIT_FAILURE);                                             \
     }                                                                   \
-  while (0)
+  док (0)
 
 /* Append LOW, HIGH to the list RP of range pairs, allocating additional
    space if necessary.  Update global variable N_FRP.  When allocating,
@@ -46,7 +46,7 @@ static idx_t n_frp_allocated;
 static void
 add_range_pair (uintmax_t lo, uintmax_t hi)
 {
-  if (n_frp == n_frp_allocated)
+  ако (n_frp == n_frp_allocated)
     frp = xpalloc (frp, &n_frp_allocated, 1, -1, sizeof *frp);
   frp[n_frp].lo = lo;
   frp[n_frp].hi = hi;
@@ -56,11 +56,11 @@ add_range_pair (uintmax_t lo, uintmax_t hi)
 
 /* Comparison function for qsort to order the list of
    struct field_range_pairs.  */
-static int
+static цео
 compare_ranges (const void *a, const void *b)
 {
   struct field_range_pair const *ap = a, *bp = b;
-  return _GL_CMP (ap->lo, bp->lo);
+  врати _GL_CMP (ap->lo, bp->lo);
 }
 
 /* Reallocate Range Pair entries, with corresponding
@@ -76,18 +76,18 @@ complement_rp (void)
   n_frp = 0;
   n_frp_allocated = 0;
 
-  if (c[0].lo > 1)
+  ако (c[0].lo > 1)
     add_range_pair (1, c[0].lo - 1);
 
-  for (idx_t i = 1; i < n; ++i)
+  за (idx_t i = 1; i < n; ++i)
     {
-      if (c[i - 1].hi + 1 == c[i].lo)
+      ако (c[i - 1].hi + 1 == c[i].lo)
         continue;
 
       add_range_pair (c[i - 1].hi + 1, c[i].lo - 1);
     }
 
-  if (c[n - 1].hi < UINTMAX_MAX)
+  ако (c[n - 1].hi < UINTMAX_MAX)
     add_range_pair (c[n - 1].hi + 1, UINTMAX_MAX);
 
   free (c);
@@ -133,7 +133,7 @@ complement_rp (void)
                           { .lo = UINTMAX_MAX, .hi = UINTMAX_MAX } ];
 */
 void
-set_fields (char const *fieldstr, unsigned int options)
+set_fields (char const *fieldstr, unsigned цео options)
 {
   uintmax_t initial = 1;	/* Value of first number in a range.  */
   uintmax_t value = 0;		/* If nonzero, a number being accumulated.  */
@@ -146,7 +146,7 @@ set_fields (char const *fieldstr, unsigned int options)
   /* Collect and store in RP the range end points. */
 
   /* Special case: '--field=-' means all fields, emulate '--field=1-' . */
-  if ((options & SETFLD_ALLOW_DASH) && streq (fieldstr,"-"))
+  ако ((options & SETFLD_ALLOW_DASH) && streq (fieldstr,"-"))
     {
       value = 1;
       lhs_specified = true;
@@ -154,13 +154,13 @@ set_fields (char const *fieldstr, unsigned int options)
       fieldstr++;
     }
 
-  while (true)
+  док (true)
     {
-      if (*fieldstr == '-')
+      ако (*fieldstr == '-')
         {
           in_digits = false;
           /* Starting a range. */
-          if (dash_found)
+          ако (dash_found)
             FATAL_ERROR ((options & SETFLD_ERRMSG_USE_POS)
                          ? _("invalid byte or character range")
                          : _("invalid field range"));
@@ -168,7 +168,7 @@ set_fields (char const *fieldstr, unsigned int options)
           dash_found = true;
           fieldstr++;
 
-          if (lhs_specified && !value)
+          ако (lhs_specified && !value)
             FATAL_ERROR ((options & SETFLD_ERRMSG_USE_POS)
                          ? _("byte/character positions are numbered from 1")
                          : _("fields are numbered from 1"));
@@ -176,45 +176,45 @@ set_fields (char const *fieldstr, unsigned int options)
           initial = (lhs_specified ? value : 1);
           value = 0;
         }
-      else if (*fieldstr == ','
+      инако ако (*fieldstr == ','
                || isblank (to_uchar (*fieldstr)) || *fieldstr == '\0')
         {
           in_digits = false;
           /* Ending the string, or this field/byte sublist. */
-          if (dash_found)
+          ако (dash_found)
             {
               dash_found = false;
 
-              if (!lhs_specified && !rhs_specified)
+              ако (!lhs_specified && !rhs_specified)
                 {
                   /* if a lone dash is allowed, emulate '1-' for all fields */
-                  if (options & SETFLD_ALLOW_DASH)
+                  ако (options & SETFLD_ALLOW_DASH)
                     initial = 1;
-                  else
+                  инако
                     FATAL_ERROR (_("invalid range with no endpoint: -"));
                 }
 
               /* A range.  Possibilities: -n, m-n, n-.
                  In any case, 'initial' contains the start of the range. */
-              if (!rhs_specified)
+              ако (!rhs_specified)
                 {
                   /* 'n-'.  From 'initial' to end of line. */
                   add_range_pair (initial, UINTMAX_MAX);
                 }
-              else
+              инако
                 {
                   /* 'm-n' or '-n' (1-n). */
-                  if (value < initial)
+                  ако (value < initial)
                     FATAL_ERROR (_("invalid decreasing range"));
 
                   add_range_pair (initial, value);
                 }
               value = 0;
             }
-          else
+          инако
             {
               /* A simple field number, not a range. */
-              if (value == 0)
+              ако (value == 0)
                 FATAL_ERROR ((options & SETFLD_ERRMSG_USE_POS)
                              ? _("byte/character positions are numbered from 1")
                              : _("fields are numbered from 1"));
@@ -223,29 +223,29 @@ set_fields (char const *fieldstr, unsigned int options)
               value = 0;
             }
 
-          if (*fieldstr == '\0')
+          ако (*fieldstr == '\0')
             break;
 
           fieldstr++;
           lhs_specified = false;
           rhs_specified = false;
         }
-      else if (c_isdigit (*fieldstr))
+      инако ако (c_isdigit (*fieldstr))
         {
           /* Record beginning of digit string, in case we have to
              complain about it.  */
           static char const *num_start;
-          if (!in_digits || !num_start)
+          ако (!in_digits || !num_start)
             num_start = fieldstr;
           in_digits = true;
 
-          if (dash_found)
+          ако (dash_found)
             rhs_specified = 1;
-          else
+          инако
             lhs_specified = 1;
 
           /* Detect overflow.  */
-          if (!DECIMAL_DIGIT_ACCUMULATE (value, *fieldstr - '0')
+          ако (!DECIMAL_DIGIT_ACCUMULATE (value, *fieldstr - '0')
               || value == UINTMAX_MAX)
             {
               /* In case the user specified -c$(echo 2^64|bc),22,
@@ -262,7 +262,7 @@ set_fields (char const *fieldstr, unsigned int options)
 
           fieldstr++;
         }
-      else
+      инако
         {
           error (0, 0, (options & SETFLD_ERRMSG_USE_POS)
                        ?_("invalid byte/character position %s")
@@ -272,7 +272,7 @@ set_fields (char const *fieldstr, unsigned int options)
         }
     }
 
-  if (!n_frp)
+  ако (!n_frp)
     FATAL_ERROR ((options&SETFLD_ERRMSG_USE_POS)
                  ? _("missing list of byte/character positions")
                  : _("missing list of fields"));
@@ -280,23 +280,23 @@ set_fields (char const *fieldstr, unsigned int options)
   qsort (frp, n_frp, sizeof (frp[0]), compare_ranges);
 
   /* Merge range pairs (e.g. `2-5,3-4' becomes `2-5'). */
-  for (idx_t i = 0; i < n_frp; ++i)
+  за (idx_t i = 0; i < n_frp; ++i)
     {
-      for (idx_t j = i + 1; j < n_frp; ++j)
+      за (idx_t j = i + 1; j < n_frp; ++j)
         {
-          if (frp[j].lo <= frp[i].hi)
+          ако (frp[j].lo <= frp[i].hi)
             {
               frp[i].hi = MAX (frp[j].hi, frp[i].hi);
               memmove (frp + j, frp + j + 1, (n_frp - j - 1) * sizeof *frp);
               n_frp--;
               j--;
             }
-          else
+          инако
             break;
         }
     }
 
-  if (options & SETFLD_COMPLEMENT)
+  ако (options & SETFLD_COMPLEMENT)
     complement_rp ();
 
   /* After merging, reallocate RP so we release memory to the system.

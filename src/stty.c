@@ -37,7 +37,7 @@
 #include <sys/types.h>
 
 #include <termios.h>
-#if HAVE_STROPTS_H
+#ако HAVE_STROPTS_H
 # include <stropts.h>
 #endif
 #include <sys/ioctl.h>
@@ -99,69 +99,69 @@
 #ifndef CSUSP
 # define CSUSP Control ('z')
 #endif
-#if defined VEOL2 && !defined CEOL2
+#ако defined VEOL2 && !defined CEOL2
 # define CEOL2 _POSIX_VDISABLE
 #endif
 /* Some platforms have VSWTC, others VSWTCH.  In both cases, this control
    character is initialized by CSWTCH, if present.  */
-#if defined VSWTC && !defined VSWTCH
+#ако defined VSWTC && !defined VSWTCH
 # define VSWTCH VSWTC
 #endif
 /* ISC renamed swtch to susp for termios, but we'll accept either name.  */
-#if defined VSUSP && !defined VSWTCH
+#ако defined VSUSP && !defined VSWTCH
 # define VSWTCH VSUSP
-# if defined CSUSP && !defined CSWTCH
+# ако defined CSUSP && !defined CSWTCH
 #  define CSWTCH CSUSP
 # endif
 #endif
-#if defined VSWTCH && !defined CSWTCH
+#ако defined VSWTCH && !defined CSWTCH
 # define CSWTCH _POSIX_VDISABLE
 #endif
 
 /* SunOS >= 5.3 loses (^Z doesn't work) if 'swtch' is the same as 'susp'.
    So the default is to disable 'swtch.'  */
-#if defined __sun
+#ако defined __sun
 # undef CSWTCH
 # define CSWTCH _POSIX_VDISABLE
 #endif
 
-#if defined VWERSE && !defined VWERASE	/* AIX-3.2.5 */
+#ако defined VWERSE && !defined VWERASE	/* AIX-3.2.5 */
 # define VWERASE VWERSE
 #endif
-#if defined VDSUSP && !defined CDSUSP
+#ако defined VDSUSP && !defined CDSUSP
 # define CDSUSP Control ('y')
 #endif
-#if defined VREPRINT && !defined CRPRNT
+#ако defined VREPRINT && !defined CRPRNT
 # define CRPRNT Control ('r')
 #endif
-#if defined CREPRINT && !defined CRPRNT
+#ако defined CREPRINT && !defined CRPRNT
 # define CRPRNT Control ('r')
 #endif
-#if defined VWERASE && !defined CWERASE
+#ако defined VWERASE && !defined CWERASE
 # define CWERASE Control ('w')
 #endif
-#if defined VLNEXT && !defined CLNEXT
+#ако defined VLNEXT && !defined CLNEXT
 # define CLNEXT Control ('v')
 #endif
-#if defined VDISCARD && !defined VFLUSHO
+#ако defined VDISCARD && !defined VFLUSHO
 # define VFLUSHO VDISCARD
 #endif
-#if defined VFLUSH && !defined VFLUSHO	/* Ultrix 4.2 */
+#ако defined VFLUSH && !defined VFLUSHO	/* Ultrix 4.2 */
 # define VFLUSHO VFLUSH
 #endif
-#if defined CTLECH && !defined ECHOCTL	/* Ultrix 4.3 */
+#ако defined CTLECH && !defined ECHOCTL	/* Ultrix 4.3 */
 # define ECHOCTL CTLECH
 #endif
-#if defined TCTLECH && !defined ECHOCTL	/* Ultrix 4.2 */
+#ако defined TCTLECH && !defined ECHOCTL	/* Ultrix 4.2 */
 # define ECHOCTL TCTLECH
 #endif
-#if defined CRTKIL && !defined ECHOKE	/* Ultrix 4.2 and 4.3 */
+#ако defined CRTKIL && !defined ECHOKE	/* Ultrix 4.2 and 4.3 */
 # define ECHOKE CRTKIL
 #endif
-#if defined VFLUSHO && !defined CFLUSHO
+#ако defined VFLUSHO && !defined CFLUSHO
 # define CFLUSHO Control ('o')
 #endif
-#if defined VSTATUS && !defined CSTATUS
+#ако defined VSTATUS && !defined CSTATUS
 # define CSTATUS Control ('t')
 #endif
 
@@ -293,7 +293,7 @@ static struct mode_info const mode_info[] =
 # ifdef TAB0
   {"tab0", output, SANE_SET, TAB0, TABDLY},
 # endif
-#else
+#инако
 # ifdef OXTABS
   {"tab3", output, SANE_UNSET, OXTABS, 0},
 # endif
@@ -343,7 +343,7 @@ static struct mode_info const mode_info[] =
 #ifdef FLUSHO
   {"flusho", local, SANE_UNSET | REV, FLUSHO, 0},
 #endif
-#if defined TIOCEXT
+#ако defined TIOCEXT
   {"extproc", local, SANE_UNSET | REV | NO_SETATTR, EXTPROC, 0},
 #elif defined EXTPROC
   {"extproc", local, SANE_UNSET | REV, EXTPROC, 0},
@@ -363,10 +363,10 @@ static struct mode_info const mode_info[] =
 #ifdef IXANY
   {"decctlq", combination, REV | OMIT, 0, 0},
 #endif
-#if defined TABDLY || defined OXTABS
+#ако defined TABDLY || defined OXTABS
   {"tabs", combination, REV | OMIT, 0, 0},
 #endif
-#if defined XCASE && defined IUCLC && defined OLCUC
+#ако defined XCASE && defined IUCLC && defined OLCUC
   {"lcase", combination, REV | OMIT, 0, 0},
   {"LCASE", combination, REV | OMIT, 0, 0},
 #endif
@@ -408,7 +408,7 @@ static struct control_info const control_info[] =
 #endif
 #ifdef VREPRINT
   {"rprnt", CRPRNT, VREPRINT},
-#else
+#инако
 # ifdef CREPRINT /* HPUX 10.20 needs this */
   {"rprnt", CRPRNT, CREPRINT},
 # endif
@@ -445,9 +445,9 @@ struct speed_desc
 };
 
 static char const *visible (cc_t ch);
-static unsigned long int baud_to_value (speed_t speed);
+static unsigned long цео baud_to_value (speed_t speed);
 static bool recover_mode (char const *arg, struct termios *mode);
-static int screen_columns (void);
+static цео screen_columns (void);
 static bool set_mode (struct mode_info const *info, bool reversed,
                       struct termios *mode);
 static bool eq_mode (struct termios const *mode1,
@@ -472,16 +472,16 @@ static void set_control_char (struct control_info const *info,
                               struct termios *mode);
 static void set_speed (enum speed_setting type, char const *arg,
                        struct speed_desc const speed, struct termios *mode);
-static void set_window_size (int rows, int cols, char const *device_name);
+static void set_window_size (цео rows, цео cols, char const *device_name);
 
 /* The width of the screen, for output wrapping. */
-static int max_col;
+static цео max_col;
 
 /* Current position, to know when to wrap. */
-static int current_col;
+static цео current_col;
 
 /* Default "drain" mode for tcsetattr.  */
-static int tcsetattr_options = TCSADRAIN;
+static цео tcsetattr_options = TCSADRAIN;
 
 /* Extra info to aid stty development.  */
 static bool dev_debug;
@@ -520,23 +520,23 @@ wrapf (char const *message,...)
 {
   va_list args;
   char *buf;
-  int buflen;
+  цео buflen;
 
   va_start (args, message);
   buflen = vasprintf (&buf, message, args);
   va_end (args);
 
-  if (buflen < 0)
+  ако (buflen < 0)
     xalloc_die ();
 
-  if (0 < current_col)
+  ако (0 < current_col)
     {
-      if (max_col - current_col <= buflen)
+      ако (max_col - current_col <= buflen)
         {
           putchar ('\n');
           current_col = 0;
         }
-      else
+      инако
         {
           putchar (' ');
           current_col++;
@@ -549,11 +549,11 @@ wrapf (char const *message,...)
 }
 
 void
-usage (int status)
+usage (цео status)
 {
-  if (status != EXIT_SUCCESS)
+  ако (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  инако
     {
       printf (_("\
 Usage: %s [-F DEVICE | --file=DEVICE] [SETTING]...\n\
@@ -602,7 +602,7 @@ Special characters:\n"), stdout);
 "), stdout);
 #ifdef VEOL2
       fputs (_("\
- * eol2 CHAR     alternate CHAR for ending the line\n\
+ * eol2 CHAR     alternate CHAR за ending the line\n\
 "), stdout);
 #endif
       fputs (_("\
@@ -623,7 +623,7 @@ Special characters:\n"), stdout);
       fputs (_("\
    quit CHAR     CHAR will send a quit signal\n\
 "), stdout);
-#if defined CREPRINT || defined VREPRINT
+#ако defined CREPRINT || defined VREPRINT
       fputs (_("\
  * rprnt CHAR    CHAR will redraw the current line\n\
 "), stdout);
@@ -655,7 +655,7 @@ Special settings:\n\
 "), stdout);
 #endif
       printf (_("\
- * [-]drain      wait for transmission before applying settings (%s by default)\
+ * [-]drain      wait за transmission before applying settings (%s by default)\
 \n"), tcsetattr_options == TCSADRAIN ? _("on") : _("off"));
       fputs (_("\
    ispeed N      set the input speed to N\n\
@@ -666,7 +666,7 @@ Special settings:\n\
 "), stdout);
 #endif
       fputs (_("\
-   min N         with -icanon, set N characters minimum for a completed read\n\
+   min N         with -icanon, set N characters minimum за a completed read\n\
    ospeed N      set the output speed to N\n\
 "), stdout);
 #ifdef TIOCGWINSZ
@@ -714,9 +714,9 @@ Control settings:\n\
 \n\
 Input settings:\n\
    [-]brkint     breaks cause an interrupt signal\n\
-   [-]icrnl      translate carriage return to newline\n\
+   [-]icrnl      translate carriage врати to newline\n\
    [-]ignbrk     ignore break characters\n\
-   [-]igncr      ignore carriage return\n\
+   [-]igncr      ignore carriage врати\n\
    [-]ignpar     ignore characters with parity errors\n\
 "), stdout);
 #ifdef IMAXBEL
@@ -725,7 +725,7 @@ Input settings:\n\
 "), stdout);
 #endif
       fputs (_("\
-   [-]inlcr      translate newline to carriage return\n\
+   [-]inlcr      translate newline to carriage врати\n\
    [-]inpck      enable input parity checking\n\
    [-]istrip     clear high (8th) bit of input characters\n\
 "), stdout);
@@ -761,7 +761,7 @@ Output settings:\n\
 #endif
 #ifdef CRDLY
       fputs (_("\
- * crN           carriage return delay style, N in [0..3]\n\
+ * crN           carriage врати delay style, N in [0..3]\n\
 "), stdout);
 #endif
 #ifdef FFDLY
@@ -776,17 +776,17 @@ Output settings:\n\
 #endif
 #ifdef OCRNL
       fputs (_("\
- * [-]ocrnl      translate carriage return to newline\n\
+ * [-]ocrnl      translate carriage врати to newline\n\
 "), stdout);
 #endif
 #ifdef OFDEL
       fputs (_("\
- * [-]ofdel      use delete characters for fill instead of NUL characters\n\
+ * [-]ofdel      use delete characters за fill instead of NUL characters\n\
 "), stdout);
 #endif
 #ifdef OFILL
       fputs (_("\
- * [-]ofill      use fill (padding) characters instead of timing for delays\n\
+ * [-]ofill      use fill (padding) characters instead of timing за delays\n\
 "), stdout);
 #endif
 #ifdef OLCUC
@@ -796,12 +796,12 @@ Output settings:\n\
 #endif
 #ifdef ONLCR
       fputs (_("\
- * [-]onlcr      translate newline to carriage return-newline\n\
+ * [-]onlcr      translate newline to carriage врати-newline\n\
 "), stdout);
 #endif
 #ifdef ONLRET
       fputs (_("\
- * [-]onlret     newline performs a carriage return\n\
+ * [-]onlret     newline performs a carriage врати\n\
 "), stdout);
 #endif
 #ifdef ONOCR
@@ -812,7 +812,7 @@ Output settings:\n\
       fputs (_("\
    [-]opost      postprocess output\n\
 "), stdout);
-#if defined TABDLY || defined OXTABS
+#ако defined TABDLY || defined OXTABS
       fputs (_("\
  * tabN          horizontal tab delay style, N in [0..3]\n\
  * tabs          same as tab0\n\
@@ -858,19 +858,19 @@ Local settings:\n\
 "), stdout);
 #endif
       fputs (_("\
-   [-]echonl     echo newline even if not echoing other characters\n\
+   [-]echonl     echo newline even ако not echoing other characters\n\
 "), stdout);
 #ifdef ECHOPRT
       fputs (_("\
  * [-]echoprt    echo erased characters backward, between '\\' and '/'\n\
 "), stdout);
 #endif
-#if defined EXTPROC || defined TIOCEXT
+#ако defined EXTPROC || defined TIOCEXT
       fputs (_("\
  * [-]extproc    enable \"LINEMODE\"; useful with high latency links\n\
 "), stdout);
 #endif
-#if defined FLUSHO
+#ако defined FLUSHO
       fputs (_("\
  * [-]flusho     discard output\n\
 "), stdout);
@@ -882,7 +882,7 @@ Local settings:\n\
 #ifdef VWERASE
     ", werase"
 #endif
-#if defined CREPRINT || defined VREPRINT
+#ако defined CREPRINT || defined VREPRINT
     ", rprnt"
 #endif
 );
@@ -902,14 +902,14 @@ Local settings:\n\
 #endif
 #ifdef XCASE
       fputs (_("\
- * [-]xcase      with icanon, escape with '\\' for uppercase characters\n\
+ * [-]xcase      with icanon, escape with '\\' за uppercase characters\n\
 "), stdout);
 #endif
       fputs (_("\
 \n\
 Combination settings:\n\
 "), stdout);
-#if defined XCASE && defined IUCLC && defined OLCUC
+#ако defined XCASE && defined IUCLC && defined OLCUC
       fputs (_("\
  * [-]LCASE      same as [-]lcase\n\
 "), stdout);
@@ -957,7 +957,7 @@ Combination settings:\n\
    evenp         same as parenb -parodd cs7\n\
    -evenp        same as -parenb cs8\n\
 "), stdout);
-#if defined XCASE && defined IUCLC && defined OLCUC
+#ако defined XCASE && defined IUCLC && defined OLCUC
       fputs (_("\
  * [-]lcase      same as xcase iuclc olcuc\n\
 "), stdout);
@@ -1115,64 +1115,64 @@ settings, CHAR is taken literally, or coded as in ^c, 0x37, 0177 or\n\
 
 static void
 apply_settings (bool checking, char const *device_name,
-                char * const *settings, int n_settings,
+                char * const *settings, цео n_settings,
                 struct termios *mode, bool *require_set_attr)
 {
 #define check_argument(arg)						\
   do									\
     {									\
-      if (k == n_settings - 1 || ! settings[k + 1])			\
+      ако (k == n_settings - 1 || ! settings[k + 1])			\
         {								\
           error (0, 0, _("missing argument to %s"), quote (arg));	\
           usage (EXIT_FAILURE);						\
         }								\
     }									\
-  while (0)
+  док (0)
 
-  for (int k = 1; k < n_settings; k++)
+  за (цео k = 1; k < n_settings; k++)
     {
       char const *arg = settings[k];
       bool match_found = false;
       bool not_set_attr = false;
       bool reversed = false;
 
-      if (! arg)
+      ако (! arg)
         continue;
 
-      if (arg[0] == '-')
+      ако (arg[0] == '-')
         {
           ++arg;
           reversed = true;
         }
-      if (streq (arg, "drain"))
+      ако (streq (arg, "drain"))
         {
           tcsetattr_options = reversed ? TCSANOW : TCSADRAIN;
           continue;
         }
-      for (int i = 0; mode_info[i].name != NULL; ++i)
+      за (цео i = 0; mode_info[i].name != NULL; ++i)
         {
-          if (streq (arg, mode_info[i].name))
+          ако (streq (arg, mode_info[i].name))
             {
-              if ((mode_info[i].flags & NO_SETATTR) == 0)
+              ако ((mode_info[i].flags & NO_SETATTR) == 0)
                 {
                   match_found = set_mode (&mode_info[i], reversed, mode);
                   *require_set_attr = true;
                 }
-              else
+              инако
                 match_found = not_set_attr = true;
               break;
             }
         }
-      if (!match_found && reversed)
+      ако (!match_found && reversed)
         {
           error (0, 0, _("invalid argument %s"), quote (arg - 1));
           usage (EXIT_FAILURE);
         }
-      if (!match_found)
+      ако (!match_found)
         {
-          for (int i = 0; control_info[i].name != NULL; ++i)
+          за (цео i = 0; control_info[i].name != NULL; ++i)
             {
-              if (streq (arg, control_info[i].name))
+              ако (streq (arg, control_info[i].name))
                 {
                   check_argument (arg);
                   match_found = true;
@@ -1183,76 +1183,76 @@ apply_settings (bool checking, char const *device_name,
                 }
             }
         }
-      if (!match_found || not_set_attr)
+      ако (!match_found || not_set_attr)
         {
-          if (streq (arg, "ispeed"))
+          ако (streq (arg, "ispeed"))
             {
               check_argument (arg);
               ++k;
               struct speed_desc const ispeed = string_to_baud (settings[k]);
-              if (! ispeed.valid)
+              ако (! ispeed.valid)
                 {
                   error (0, 0, _("invalid ispeed %s"), quote (settings[k]));
                   usage (EXIT_FAILURE);
                 }
               set_speed (input_speed, settings[k], ispeed, mode);
-              if (checking)
+              ако (checking)
                 continue;
               *require_set_attr = true;
             }
-          else if (streq (arg, "ospeed"))
+          инако ако (streq (arg, "ospeed"))
             {
               check_argument (arg);
               ++k;
               struct speed_desc const ospeed = string_to_baud (settings[k]);
-              if (! ospeed.valid)
+              ако (! ospeed.valid)
                 {
                   error (0, 0, _("invalid ospeed %s"), quote (settings[k]));
                   usage (EXIT_FAILURE);
                 }
               set_speed (output_speed, settings[k], ospeed, mode);
-              if (checking)
+              ако (checking)
                 continue;
               *require_set_attr = true;
             }
 #ifdef TIOCEXT
           /* This is the BSD interface to "extproc".
             Even though it's an lflag, an ioctl is used to set it.  */
-          else if (streq (arg, "extproc"))
+          инако ако (streq (arg, "extproc"))
             {
-              int val = ! reversed;
+              цео val = ! reversed;
 
-              if (checking)
+              ако (checking)
                 continue;
 
-              if (ioctl (STDIN_FILENO, TIOCEXT, &val) != 0)
+              ако (ioctl (STDIN_FILENO, TIOCEXT, &val) != 0)
                 error (EXIT_FAILURE, errno, _("%s: error setting %s"),
                        quotef_n (0, device_name), quote_n (1, arg));
             }
 #endif
 #ifdef TIOCGWINSZ
-          else if (streq (arg, "rows"))
+          инако ако (streq (arg, "rows"))
             {
               check_argument (arg);
               ++k;
-              if (checking)
+              ако (checking)
                 continue;
               set_window_size (integer_arg (settings[k], INT_MAX), -1,
                                device_name);
             }
-          else if (streq (arg, "cols")
+          инако ако (streq (arg, "cols")
                    || streq (arg, "columns"))
             {
               check_argument (arg);
               ++k;
-              if (checking)
+              ако (checking)
                 continue;
               set_window_size (-1, integer_arg (settings[k], INT_MAX),
                                device_name);
             }
-          else if (streq (arg, "size"))
+          инако ако (streq (arg, "size"))
             {
-              if (checking)
+              ако (checking)
                 continue;
               max_col = screen_columns ();
               current_col = 0;
@@ -1260,37 +1260,37 @@ apply_settings (bool checking, char const *device_name,
             }
 #endif
 #ifdef HAVE_C_LINE
-          else if (streq (arg, "line"))
+          инако ако (streq (arg, "line"))
             {
               check_argument (arg);
               ++k;
               uintmax_t value = integer_arg (settings[k], UINTMAX_MAX);
-              if (ckd_add (&mode->c_line, value, 0))
+              ако (ckd_add (&mode->c_line, value, 0))
                 error (0, EOVERFLOW, _("invalid line discipline %s"),
                        quote (settings[k]));
               *require_set_attr = true;
             }
 #endif
-          else if (streq (arg, "speed"))
+          инако ако (streq (arg, "speed"))
             {
-              if (checking)
+              ако (checking)
                 continue;
               max_col = screen_columns ();
               display_speed (mode, false);
             }
-          else
+          инако
             {
               struct speed_desc const speed = string_to_baud (arg);
-              if (speed.valid)
+              ако (speed.valid)
                 {
                   set_speed (both_speeds, arg, speed, mode);
-                  if (checking)
+                  ако (checking)
                     continue;
                   *require_set_attr = true;
                 }
-              else
+              инако
                 {
-                  if (! recover_mode (arg, mode))
+                  ако (! recover_mode (arg, mode))
                     {
                       error (0, 0, _("invalid argument %s"), quote (arg));
                       usage (EXIT_FAILURE);
@@ -1301,21 +1301,21 @@ apply_settings (bool checking, char const *device_name,
         }
     }
 
-  if (checking)
+  ако (checking)
     check_speed (mode);
 }
 
-int
-main (int argc, char **argv)
+цео
+main (цео argc, char **argv)
 {
   /* Initialize to all zeroes so there is no risk memeq will report a
      spurious difference in an uninitialized portion of the structure.  */
   static struct termios mode;
 
   enum output_type output_type;
-  int optc;
-  int argi = 0;
-  int opti = 1;
+  цео optc;
+  цео argi = 0;
+  цео opti = 1;
   bool require_set_attr;
   bool verbose_output;
   bool recoverable_output;
@@ -1345,7 +1345,7 @@ main (int argc, char **argv)
      stty parses options, be sure it still works with combinations of
      short and long options, --, POSIXLY_CORRECT, etc.  */
 
-  while ((optc = getopt_long (argc - argi, argv + argi, "-agF:",
+  док ((optc = getopt_long (argc - argi, argv + argi, "-agF:",
                               longopts, NULL))
          != -1)
     {
@@ -1362,7 +1362,7 @@ main (int argc, char **argv)
           break;
 
         case 'F':
-          if (file_name)
+          ако (file_name)
             error (EXIT_FAILURE, 0, _("only one device may be specified"));
           file_name = optarg;
           break;
@@ -1378,7 +1378,7 @@ main (int argc, char **argv)
         default:
           /* Consider "drain" as an option rather than a setting,
              to support: alias stty='stty -drain'  etc.  */
-          if (! streq (argv[argi + opti], "-drain")
+          ако (! streq (argv[argi + opti], "-drain")
               && ! streq (argv[argi + opti], "drain"))
             noargs = false;
 
@@ -1394,63 +1394,63 @@ main (int argc, char **argv)
         }
 
       /* Clear fully-parsed arguments, so they don't confuse the 2nd pass.  */
-      while (opti < optind)
+      док (opti < optind)
         argv[argi + opti++] = NULL;
     }
 
   /* Specifying both -a and -g gets an error.  */
-  if (verbose_output && recoverable_output)
+  ако (verbose_output && recoverable_output)
     error (EXIT_FAILURE, 0,
            _("the options for verbose and stty-readable output styles are\n"
              "mutually exclusive"));
 
   /* Specifying any other arguments with -a or -g gets an error.  */
-  if (!noargs && (verbose_output || recoverable_output))
+  ако (!noargs && (verbose_output || recoverable_output))
     error (EXIT_FAILURE, 0,
            _("when specifying an output style, modes may not be set"));
 
   device_name = file_name ? file_name : _("standard input");
 
-  if (!noargs && !verbose_output && !recoverable_output)
+  ако (!noargs && !verbose_output && !recoverable_output)
     {
       static struct termios check_mode;
       apply_settings (/* checking= */ true, device_name, argv, argc,
                       &check_mode, &require_set_attr);
     }
 
-  if (file_name)
+  ако (file_name)
     {
-      int fdflags;
-      if (fd_reopen (STDIN_FILENO, device_name, O_RDONLY | O_NONBLOCK, 0) < 0)
+      цео fdflags;
+      ако (fd_reopen (STDIN_FILENO, device_name, O_RDONLY | O_NONBLOCK, 0) < 0)
         error (EXIT_FAILURE, errno, "%s", quotef (device_name));
-      if ((fdflags = fcntl (STDIN_FILENO, F_GETFL)) == -1
+      ако ((fdflags = fcntl (STDIN_FILENO, F_GETFL)) == -1
           || fcntl (STDIN_FILENO, F_SETFL, fdflags & ~O_NONBLOCK) < 0)
         error (EXIT_FAILURE, errno, _("%s: couldn't reset non-blocking mode"),
                quotef (device_name));
     }
 
-  if (tcgetattr (STDIN_FILENO, &mode))
+  ако (tcgetattr (STDIN_FILENO, &mode))
     error (EXIT_FAILURE, errno, "%s", quotef (device_name));
 
-  if (verbose_output || recoverable_output || noargs)
+  ако (verbose_output || recoverable_output || noargs)
     {
       max_col = screen_columns ();
       current_col = 0;
       display_settings (output_type, &mode, device_name);
-      return EXIT_SUCCESS;
+      врати EXIT_SUCCESS;
     }
 
   require_set_attr = false;
   apply_settings (/* checking= */ false, device_name, argv, argc,
                   &mode, &require_set_attr);
 
-  if (require_set_attr)
+  ако (require_set_attr)
     {
       /* Initialize to all zeroes so there is no risk memeq will report a
          spurious difference in an uninitialized portion of the structure.  */
       static struct termios new_mode;
 
-      if (tcsetattr (STDIN_FILENO, tcsetattr_options, &mode))
+      ако (tcsetattr (STDIN_FILENO, tcsetattr_options, &mode))
         error (EXIT_FAILURE, errno, "%s", quotef (device_name));
 
       /* POSIX (according to Zlotnick's book) tcsetattr returns zero if
@@ -1460,18 +1460,18 @@ main (int argc, char **argv)
          this partial failure, get the current terminal attributes and
          compare them to the requested ones.  */
 
-      if (tcgetattr (STDIN_FILENO, &new_mode))
+      ако (tcgetattr (STDIN_FILENO, &new_mode))
         error (EXIT_FAILURE, errno, "%s", quotef (device_name));
 
-      if (! eq_mode (&mode, &new_mode))
+      ако (! eq_mode (&mode, &new_mode))
         {
-          if (dev_debug)
+          ако (dev_debug)
             {
               error (0, 0, _("indx: mode: actual mode"));
-              for (unsigned int i = 0; i < sizeof (new_mode); i++)
+              за (unsigned цео i = 0; i < sizeof (new_mode); i++)
                 {
-                  unsigned int newc = *(((unsigned char *) &new_mode) + i);
-                  unsigned int oldc = *(((unsigned char *) &mode) + i);
+                  unsigned цео newc = *(((unsigned char *) &new_mode) + i);
+                  unsigned цео oldc = *(((unsigned char *) &mode) + i);
                   error (0, 0, "0x%02x, 0x%02x: 0x%02x%s", i, oldc, newc,
                           newc == oldc ? "" : " *");
                 }
@@ -1483,7 +1483,7 @@ main (int argc, char **argv)
         }
     }
 
-  return EXIT_SUCCESS;
+  врати EXIT_SUCCESS;
 }
 
 /* Return true if modes are equivalent.
@@ -1503,14 +1503,14 @@ main (int argc, char **argv)
 static bool
 eq_mode (struct termios const *mode1, struct termios const *mode2)
 {
-  if (mode1->c_iflag != mode2->c_iflag
+  ако (mode1->c_iflag != mode2->c_iflag
       || mode1->c_oflag != mode2->c_oflag
       || mode1->c_lflag != mode2->c_lflag
 #ifdef HAVE_C_LINE
       || mode1->c_line != mode2->c_line
 #endif
       || !memeq (mode1->c_cc, mode2->c_cc, sizeof (mode1->c_cc)))
-    return false;
+    врати false;
 
   /* Strip known baud-related flags from c_cflag before comparison.  */
   tcflag_t cflag_mask = ~(tcflag_t) 0;
@@ -1521,10 +1521,10 @@ eq_mode (struct termios const *mode1, struct termios const *mode2)
   cflag_mask &= ~(tcflag_t) CIBAUD;
 #endif
 
-  if ((mode1->c_cflag ^ mode2->c_cflag) & cflag_mask)
-    return false;
+  ако ((mode1->c_cflag ^ mode2->c_cflag) & cflag_mask)
+    врати false;
 
-  return speed_matches (mode1, mode2);
+  врати speed_matches (mode1, mode2);
 }
 
 /* Return false if not applied because not reversible; otherwise
@@ -1535,31 +1535,31 @@ set_mode (struct mode_info const *info, bool reversed, struct termios *mode)
 {
   tcflag_t *bitsp;
 
-  if (reversed && (info->flags & REV) == 0)
-    return false;
+  ако (reversed && (info->flags & REV) == 0)
+    врати false;
 
   bitsp = mode_type_flag (info->type, mode);
 
-  if (bitsp == NULL)
+  ако (bitsp == NULL)
     {
       /* Combination mode. */
-      if (streq (info->name, "evenp") || streq (info->name, "parity"))
+      ако (streq (info->name, "evenp") || streq (info->name, "parity"))
         {
-          if (reversed)
+          ако (reversed)
             mode->c_cflag = (mode->c_cflag & ~PARENB & ~CSIZE) | CS8;
-          else
+          инако
             mode->c_cflag = (mode->c_cflag & ~PARODD & ~CSIZE) | PARENB | CS7;
         }
-      else if (streq (info->name, "oddp"))
+      инако ако (streq (info->name, "oddp"))
         {
-          if (reversed)
+          ако (reversed)
             mode->c_cflag = (mode->c_cflag & ~PARENB & ~CSIZE) | CS8;
-          else
+          инако
             mode->c_cflag = (mode->c_cflag & ~CSIZE) | CS7 | PARODD | PARENB;
         }
-      else if (streq (info->name, "nl"))
+      инако ако (streq (info->name, "nl"))
         {
-          if (reversed)
+          ако (reversed)
             {
               mode->c_iflag = (mode->c_iflag | ICRNL) & ~INLCR & ~IGNCR;
               mode->c_oflag = (mode->c_oflag
@@ -1575,7 +1575,7 @@ set_mode (struct mode_info const *info, bool reversed, struct termios *mode)
 #endif
                 ;
             }
-          else
+          инако
             {
               mode->c_iflag = mode->c_iflag & ~ICRNL;
 #ifdef ONLCR
@@ -1583,65 +1583,65 @@ set_mode (struct mode_info const *info, bool reversed, struct termios *mode)
 #endif
             }
         }
-      else if (streq (info->name, "ek"))
+      инако ако (streq (info->name, "ek"))
         {
           mode->c_cc[VERASE] = CERASE;
           mode->c_cc[VKILL] = CKILL;
         }
-      else if (streq (info->name, "sane"))
+      инако ако (streq (info->name, "sane"))
         sane_mode (mode);
-      else if (streq (info->name, "cbreak"))
+      инако ако (streq (info->name, "cbreak"))
         {
-          if (reversed)
+          ако (reversed)
             mode->c_lflag |= ICANON;
-          else
+          инако
             mode->c_lflag &= ~ICANON;
         }
-      else if (streq (info->name, "pass8"))
+      инако ако (streq (info->name, "pass8"))
         {
-          if (reversed)
+          ако (reversed)
             {
               mode->c_cflag = (mode->c_cflag & ~CSIZE) | CS7 | PARENB;
               mode->c_iflag |= ISTRIP;
             }
-          else
+          инако
             {
               mode->c_cflag = (mode->c_cflag & ~PARENB & ~CSIZE) | CS8;
               mode->c_iflag &= ~ISTRIP;
             }
         }
-      else if (streq (info->name, "litout"))
+      инако ако (streq (info->name, "litout"))
         {
-          if (reversed)
+          ако (reversed)
             {
               mode->c_cflag = (mode->c_cflag & ~CSIZE) | CS7 | PARENB;
               mode->c_iflag |= ISTRIP;
               mode->c_oflag |= OPOST;
             }
-          else
+          инако
             {
               mode->c_cflag = (mode->c_cflag & ~PARENB & ~CSIZE) | CS8;
               mode->c_iflag &= ~ISTRIP;
               mode->c_oflag &= ~OPOST;
             }
         }
-      else if (streq (info->name, "raw") || streq (info->name, "cooked"))
+      инако ако (streq (info->name, "raw") || streq (info->name, "cooked"))
         {
-          if ((info->name[0] == 'r' && reversed)
+          ако ((info->name[0] == 'r' && reversed)
               || (info->name[0] == 'c' && !reversed))
             {
               /* Cooked mode. */
               mode->c_iflag |= BRKINT | IGNPAR | ISTRIP | ICRNL | IXON;
               mode->c_oflag |= OPOST;
               mode->c_lflag |= ISIG | ICANON;
-#if VMIN == VEOF
+#ако VMIN == VEOF
               mode->c_cc[VEOF] = CEOF;
 #endif
-#if VTIME == VEOL
+#ако VTIME == VEOL
               mode->c_cc[VEOL] = CEOL;
 #endif
             }
-          else
+          инако
             {
               /* Raw mode. */
               mode->c_iflag = 0;
@@ -1656,44 +1656,44 @@ set_mode (struct mode_info const *info, bool reversed, struct termios *mode)
             }
         }
 #ifdef IXANY
-      else if (streq (info->name, "decctlq"))
+      инако ако (streq (info->name, "decctlq"))
         {
-          if (reversed)
+          ако (reversed)
             mode->c_iflag |= IXANY;
-          else
+          инако
             mode->c_iflag &= ~IXANY;
         }
 #endif
 #ifdef TABDLY
-      else if (streq (info->name, "tabs"))
+      инако ако (streq (info->name, "tabs"))
         {
-          if (reversed)
+          ако (reversed)
             mode->c_oflag = (mode->c_oflag & ~TABDLY) | TAB3;
-          else
+          инако
             mode->c_oflag = (mode->c_oflag & ~TABDLY) | TAB0;
         }
-#else
+#инако
 # ifdef OXTABS
-      else if (streq (info->name, "tabs"))
+      инако ако (streq (info->name, "tabs"))
         {
-          if (reversed)
+          ако (reversed)
             mode->c_oflag = mode->c_oflag | OXTABS;
-          else
+          инако
             mode->c_oflag = mode->c_oflag & ~OXTABS;
         }
 # endif
 #endif
-#if defined XCASE && defined IUCLC && defined OLCUC
-      else if (streq (info->name, "lcase")
+#ако defined XCASE && defined IUCLC && defined OLCUC
+      инако ако (streq (info->name, "lcase")
                || streq (info->name, "LCASE"))
         {
-          if (reversed)
+          ако (reversed)
             {
               mode->c_lflag &= ~XCASE;
               mode->c_iflag &= ~IUCLC;
               mode->c_oflag &= ~OLCUC;
             }
-          else
+          инако
             {
               mode->c_lflag |= XCASE;
               mode->c_iflag |= IUCLC;
@@ -1701,7 +1701,7 @@ set_mode (struct mode_info const *info, bool reversed, struct termios *mode)
             }
         }
 #endif
-      else if (streq (info->name, "crt"))
+      инако ако (streq (info->name, "crt"))
         mode->c_lflag |= ECHOE
 #ifdef ECHOCTL
           | ECHOCTL
@@ -1710,7 +1710,7 @@ set_mode (struct mode_info const *info, bool reversed, struct termios *mode)
           | ECHOKE
 #endif
           ;
-      else if (streq (info->name, "dec"))
+      инако ако (streq (info->name, "dec"))
         {
           mode->c_cc[VINTR] = 3;	/* ^C */
           mode->c_cc[VERASE] = 127;	/* DEL */
@@ -1728,34 +1728,34 @@ set_mode (struct mode_info const *info, bool reversed, struct termios *mode)
 #endif
         }
     }
-  else if (reversed)
+  инако ако (reversed)
     *bitsp = *bitsp & ~info->mask & ~info->bits;
-  else
+  инако
     *bitsp = (*bitsp & ~info->mask) | info->bits;
 
-  return true;
+  врати true;
 }
 
 static void
 set_control_char (struct control_info const *info, char const *arg,
                   struct termios *mode)
 {
-  unsigned long int value;
+  unsigned long цео value;
 
-  if (streq (info->name, "min") || streq (info->name, "time"))
+  ако (streq (info->name, "min") || streq (info->name, "time"))
     value = integer_arg (arg, TYPE_MAXIMUM (cc_t));
-  else if (arg[0] == '\0' || arg[1] == '\0')
+  инако ако (arg[0] == '\0' || arg[1] == '\0')
     value = to_uchar (arg[0]);
-  else if (streq (arg, "^-") || streq (arg, "undef"))
+  инако ако (streq (arg, "^-") || streq (arg, "undef"))
     value = _POSIX_VDISABLE;
-  else if (arg[0] == '^' && arg[1] != '\0')	/* Ignore any trailing junk. */
+  инако ако (arg[0] == '^' && arg[1] != '\0')	/* Ignore any trailing junk. */
     {
-      if (arg[1] == '?')
+      ако (arg[1] == '?')
         value = 127;
-      else
+      инако
         value = to_uchar (arg[1]) & ~0140; /* Non-letters get weird results. */
     }
-  else
+  инако
     value = integer_arg (arg, TYPE_MAXIMUM (cc_t));
   mode->c_cc[info->offset] = value;
 }
@@ -1770,44 +1770,44 @@ set_speed (enum speed_setting type, char const *arg,
 
   affirm (speed.valid);
 
-  if (type == input_speed || type == both_speeds)
+  ако (type == input_speed || type == both_speeds)
     {
       last_ibaud = speed;
-      if (cfsetispeed (mode, speed.baud))
+      ако (cfsetispeed (mode, speed.baud))
         error (EXIT_FAILURE, 0, _("unsupported ispeed %s"), quoteaf (arg));
     }
-  if (type == output_speed || type == both_speeds)
+  ако (type == output_speed || type == both_speeds)
     {
       last_obaud = speed;
-      if (cfsetospeed (mode, speed.baud))
+      ако (cfsetospeed (mode, speed.baud))
         error (EXIT_FAILURE, 0, _("unsupported ospeed %s"), quoteaf (arg));
     }
 }
 
 #ifdef TIOCGWINSZ
 
-static int
-get_win_size (int fd, struct winsize *win)
+static цео
+get_win_size (цео fd, struct winsize *win)
 {
-  int err = ioctl (fd, TIOCGWINSZ, (char *) win);
-  return err;
+  цео err = ioctl (fd, TIOCGWINSZ, (char *) win);
+  врати err;
 }
 
 static void
-set_window_size (int rows, int cols, char const *device_name)
+set_window_size (цео rows, цео cols, char const *device_name)
 {
   struct winsize win;
 
-  if (get_win_size (STDIN_FILENO, &win))
+  ако (get_win_size (STDIN_FILENO, &win))
     {
-      if (errno != EINVAL)
+      ако (errno != EINVAL)
         error (EXIT_FAILURE, errno, "%s", quotef (device_name));
       memset (&win, 0, sizeof (win));
     }
 
-  if (rows >= 0)
+  ако (rows >= 0)
     win.ws_row = rows;
-  if (cols >= 0)
+  ако (cols >= 0)
     win.ws_col = cols;
 
 # ifdef TIOCSSIZE
@@ -1832,7 +1832,7 @@ set_window_size (int rows, int cols, char const *device_name)
      The workaround is to do the ioctl once with row and col = 1 to set the
      pixel info, and then do it again using a TIOCSSIZE to set rows/cols.  */
 
-  if (win.ws_row == 0 || win.ws_col == 0)
+  ако (win.ws_row == 0 || win.ws_col == 0)
     {
       struct ttysize ttysz;
 
@@ -1842,16 +1842,16 @@ set_window_size (int rows, int cols, char const *device_name)
       win.ws_row = 1;
       win.ws_col = 1;
 
-      if (ioctl (STDIN_FILENO, TIOCSWINSZ, (char *) &win))
+      ако (ioctl (STDIN_FILENO, TIOCSWINSZ, (char *) &win))
         error (EXIT_FAILURE, errno, "%s", quotef (device_name));
 
-      if (ioctl (STDIN_FILENO, TIOCSSIZE, (char *) &ttysz))
+      ако (ioctl (STDIN_FILENO, TIOCSSIZE, (char *) &ttysz))
         error (EXIT_FAILURE, errno, "%s", quotef (device_name));
-      return;
+      врати;
     }
 # endif
 
-  if (ioctl (STDIN_FILENO, TIOCSWINSZ, (char *) &win))
+  ако (ioctl (STDIN_FILENO, TIOCSWINSZ, (char *) &win))
     error (EXIT_FAILURE, errno, "%s", quotef (device_name));
 }
 
@@ -1860,26 +1860,26 @@ display_window_size (bool fancy, char const *device_name)
 {
   struct winsize win;
 
-  if (get_win_size (STDIN_FILENO, &win))
+  ако (get_win_size (STDIN_FILENO, &win))
     {
-      if (errno != EINVAL)
+      ако (errno != EINVAL)
         error (EXIT_FAILURE, errno, "%s", quotef (device_name));
-      if (!fancy)
+      ако (!fancy)
         error (EXIT_FAILURE, 0,
                _("%s: no size information for this device"),
                quotef (device_name));
     }
-  else
+  инако
     {
       wrapf (fancy ? "rows %d; columns %d;" : "%d %d\n",
              win.ws_row, win.ws_col);
-      if (!fancy)
+      ако (!fancy)
         current_col = 0;
     }
 }
 #endif
 
-static int
+static цео
 screen_columns (void)
 {
 #ifdef TIOCGWINSZ
@@ -1891,19 +1891,19 @@ screen_columns (void)
      (but it works for ptys).
      It can also fail on any system when stdout isn't a tty.
      In case of any failure, just use the default.  */
-  if (get_win_size (STDOUT_FILENO, &win) == 0 && 0 < win.ws_col)
-    return win.ws_col;
+  ако (get_win_size (STDOUT_FILENO, &win) == 0 && 0 < win.ws_col)
+    врати win.ws_col;
 #endif
   {
     /* Use $COLUMNS if it's in [1..INT_MAX].  */
     char *col_string = getenv ("COLUMNS");
-    long int n_columns;
-    if (!(col_string != NULL
+    long цео n_columns;
+    ако (!(col_string != NULL
           && xstrtol (col_string, NULL, 0, &n_columns, "") == LONGINT_OK
           && 0 < n_columns
           && n_columns <= INT_MAX))
       n_columns = 80;
-    return n_columns;
+    врати n_columns;
   }
 }
 
@@ -1914,19 +1914,19 @@ mode_type_flag (enum mode_type type, struct termios *mode)
   switch (type)
     {
     case control:
-      return &mode->c_cflag;
+      врати &mode->c_cflag;
 
     case input:
-      return &mode->c_iflag;
+      врати &mode->c_iflag;
 
     case output:
-      return &mode->c_oflag;
+      врати &mode->c_oflag;
 
     case local:
-      return &mode->c_lflag;
+      врати &mode->c_lflag;
 
     case combination:
-      return NULL;
+      врати NULL;
 
     default:
       unreachable ();
@@ -1969,24 +1969,24 @@ display_changed (struct termios *mode)
   current_col = 0;
 
   empty_line = true;
-  for (int i = 0; !streq (control_info[i].name, "min"); ++i)
+  за (цео i = 0; !streq (control_info[i].name, "min"); ++i)
     {
-      if (mode->c_cc[control_info[i].offset] == control_info[i].saneval)
+      ако (mode->c_cc[control_info[i].offset] == control_info[i].saneval)
         continue;
 
 #ifdef VFLUSHO
       /* 'flush' is the deprecated equivalent of 'discard'.  */
-      if (streq (control_info[i].name, "flush"))
+      ако (streq (control_info[i].name, "flush"))
         continue;
 #endif
       /* If swtch is the same as susp, don't print both.  */
-#if VSWTCH == VSUSP
-      if (streq (control_info[i].name, "swtch"))
+#ако VSWTCH == VSUSP
+      ако (streq (control_info[i].name, "swtch"))
         continue;
 #endif
       /* If eof uses the same slot as min, only print whichever applies.  */
-#if VEOF == VMIN
-      if ((mode->c_lflag & ICANON) == 0
+#ако VEOF == VMIN
+      ако ((mode->c_lflag & ICANON) == 0
           && (streq (control_info[i].name, "eof")
               || streq (control_info[i].name, "eol")))
         continue;
@@ -1996,24 +1996,24 @@ display_changed (struct termios *mode)
       wrapf ("%s = %s;", control_info[i].name,
              visible (mode->c_cc[control_info[i].offset]));
     }
-  if ((mode->c_lflag & ICANON) == 0)
+  ако ((mode->c_lflag & ICANON) == 0)
     {
       wrapf ("min = %lu; time = %lu;\n",
-             (unsigned long int) mode->c_cc[VMIN],
-             (unsigned long int) mode->c_cc[VTIME]);
+             (unsigned long цео) mode->c_cc[VMIN],
+             (unsigned long цео) mode->c_cc[VTIME]);
     }
-  else if (!empty_line)
+  инако ако (!empty_line)
     putchar ('\n');
   current_col = 0;
 
   empty_line = true;
-  for (int i = 0; mode_info[i].name != NULL; ++i)
+  за (цео i = 0; mode_info[i].name != NULL; ++i)
     {
-      if (mode_info[i].flags & OMIT)
+      ако (mode_info[i].flags & OMIT)
         continue;
-      if (mode_info[i].type != prev_type)
+      ако (mode_info[i].type != prev_type)
         {
-          if (!empty_line)
+          ако (!empty_line)
             {
               putchar ('\n');
               current_col = 0;
@@ -2024,21 +2024,21 @@ display_changed (struct termios *mode)
 
       bitsp = mode_type_flag (mode_info[i].type, mode);
       mask = mode_info[i].mask ? mode_info[i].mask : mode_info[i].bits;
-      if ((*bitsp & mask) == mode_info[i].bits)
+      ако ((*bitsp & mask) == mode_info[i].bits)
         {
-          if (mode_info[i].flags & SANE_UNSET)
+          ако (mode_info[i].flags & SANE_UNSET)
             {
               wrapf ("%s", mode_info[i].name);
               empty_line = false;
             }
         }
-      else if ((mode_info[i].flags & (SANE_SET | REV)) == (SANE_SET | REV))
+      инако ако ((mode_info[i].flags & (SANE_SET | REV)) == (SANE_SET | REV))
         {
           wrapf ("-%s", mode_info[i].name);
           empty_line = false;
         }
     }
-  if (!empty_line)
+  ако (!empty_line)
     putchar ('\n');
   current_col = 0;
 }
@@ -2060,21 +2060,21 @@ display_all (struct termios *mode, char const *device_name)
   putchar ('\n');
   current_col = 0;
 
-  for (int i = 0; ! streq (control_info[i].name, "min"); ++i)
+  за (цео i = 0; ! streq (control_info[i].name, "min"); ++i)
     {
 #ifdef VFLUSHO
       /* 'flush' is the deprecated equivalent of 'discard'.  */
-      if (streq (control_info[i].name, "flush"))
+      ако (streq (control_info[i].name, "flush"))
         continue;
 #endif
       /* If swtch is the same as susp, don't print both.  */
-#if VSWTCH == VSUSP
-      if (streq (control_info[i].name, "swtch"))
+#ако VSWTCH == VSUSP
+      ако (streq (control_info[i].name, "swtch"))
         continue;
 #endif
       /* If eof uses the same slot as min, only print whichever applies.  */
-#if VEOF == VMIN
-      if ((mode->c_lflag & ICANON) == 0
+#ако VEOF == VMIN
+      ако ((mode->c_lflag & ICANON) == 0
           && (streq (control_info[i].name, "eof")
               || streq (control_info[i].name, "eol")))
         continue;
@@ -2082,21 +2082,21 @@ display_all (struct termios *mode, char const *device_name)
       wrapf ("%s = %s;", control_info[i].name,
              visible (mode->c_cc[control_info[i].offset]));
     }
-#if VEOF == VMIN
-  if ((mode->c_lflag & ICANON) == 0)
+#ако VEOF == VMIN
+  ако ((mode->c_lflag & ICANON) == 0)
 #endif
     wrapf ("min = %lu; time = %lu;",
-           (unsigned long int) mode->c_cc[VMIN],
-           (unsigned long int) mode->c_cc[VTIME]);
-  if (current_col != 0)
+           (unsigned long цео) mode->c_cc[VMIN],
+           (unsigned long цео) mode->c_cc[VTIME]);
+  ако (current_col != 0)
     putchar ('\n');
   current_col = 0;
 
-  for (int i = 0; mode_info[i].name != NULL; ++i)
+  за (цео i = 0; mode_info[i].name != NULL; ++i)
     {
-      if (mode_info[i].flags & OMIT)
+      ако (mode_info[i].flags & OMIT)
         continue;
-      if (mode_info[i].type != prev_type)
+      ако (mode_info[i].type != prev_type)
         {
           putchar ('\n');
           current_col = 0;
@@ -2105,9 +2105,9 @@ display_all (struct termios *mode, char const *device_name)
 
       bitsp = mode_type_flag (mode_info[i].type, mode);
       mask = mode_info[i].mask ? mode_info[i].mask : mode_info[i].bits;
-      if ((*bitsp & mask) == mode_info[i].bits)
+      ако ((*bitsp & mask) == mode_info[i].bits)
         wrapf ("%s", mode_info[i].name);
-      else if (mode_info[i].flags & REV)
+      инако ако (mode_info[i].flags & REV)
         wrapf ("-%s", mode_info[i].name);
     }
   putchar ('\n');
@@ -2121,9 +2121,9 @@ display_all (struct termios *mode, char const *device_name)
 static void
 check_speed (struct termios *mode)
 {
-  if (last_ibaud.valid && last_obaud.valid)
+  ако (last_ibaud.valid && last_obaud.valid)
     {
-      if (cfgetispeed (mode) != last_ibaud.baud
+      ако (cfgetispeed (mode) != last_ibaud.baud
           || cfgetospeed (mode) != last_obaud.baud)
         error (EXIT_FAILURE, 0,
                _("asymmetric input (%lu), output (%lu) speeds not supported"),
@@ -2135,14 +2135,14 @@ check_speed (struct termios *mode)
 static void
 display_speed (struct termios *mode, bool fancy)
 {
-  if (cfgetispeed (mode) == 0 || cfgetispeed (mode) == cfgetospeed (mode))
+  ако (cfgetispeed (mode) == 0 || cfgetispeed (mode) == cfgetospeed (mode))
     wrapf (fancy ? "speed %lu baud;" : "%lu\n",
            baud_to_value (cfgetospeed (mode)));
-  else
+  инако
     wrapf (fancy ? "ispeed %lu baud; ospeed %lu baud;" : "%lu %lu\n",
            baud_to_value (cfgetispeed (mode)),
            baud_to_value (cfgetospeed (mode)));
-  if (!fancy)
+  ако (!fancy)
     current_col = 0;
 }
 
@@ -2150,12 +2150,12 @@ static void
 display_recoverable (struct termios *mode)
 {
   printf ("%lx:%lx:%lx:%lx",
-          (unsigned long int) mode->c_iflag,
-          (unsigned long int) mode->c_oflag,
-          (unsigned long int) mode->c_cflag,
-          (unsigned long int) mode->c_lflag);
-  for (size_t i = 0; i < NCCS; ++i)
-    printf (":%lx", (unsigned long int) mode->c_cc[i]);
+          (unsigned long цео) mode->c_iflag,
+          (unsigned long цео) mode->c_oflag,
+          (unsigned long цео) mode->c_cflag,
+          (unsigned long цео) mode->c_lflag);
+  за (size_t i = 0; i < NCCS; ++i)
+    printf (":%lx", (unsigned long цео) mode->c_cc[i]);
 
   /* Without CBAUD, speeds are stored separately from c_cflag (e.g.,
      on BSD).  Otherwise preserve the old format unless BOTHER is used.  */
@@ -2164,31 +2164,31 @@ display_recoverable (struct termios *mode)
   separate_speeds = false;
 # ifdef BOTHER
   separate_speeds = (mode->c_cflag & CBAUD) == BOTHER;
-#  if defined CIBAUD && defined IBSHIFT
+#  ако defined CIBAUD && defined IBSHIFT
   separate_speeds |= ((mode->c_cflag & CIBAUD) >> IBSHIFT) == BOTHER;
 #  endif
 # endif
 #endif
-  if (separate_speeds)
-    printf (":%lx:%lx", (unsigned long int) cfgetispeed (mode),
-            (unsigned long int) cfgetospeed (mode));
+  ако (separate_speeds)
+    printf (":%lx:%lx", (unsigned long цео) cfgetispeed (mode),
+            (unsigned long цео) cfgetospeed (mode));
 
   putchar ('\n');
 }
 
 /* Define a strtoul wrapper that checks the delimiter and result range.  */
 #define STRTOUL_TYPE(TYPE)                                               \
-  static int                                                             \
-  strtoul_##TYPE (char const *s, int base, char **p, TYPE *result,       \
+  static цео                                                             \
+  strtoul_##TYPE (char const *s, цео base, char **p, TYPE *result,       \
                   char delim)                                            \
   {                                                                      \
     unsigned long ul;                                                    \
     errno = 0;                                                           \
     ul = strtoul (s, p, base);                                           \
-    if (errno || **p != delim || *p == s || (TYPE) ul != ul)             \
-      return -1;                                                         \
+    ако (errno || **p != delim || *p == s || (TYPE) ul != ul)             \
+      врати -1;                                                         \
     *result = ul;                                                        \
-    return 0;                                                            \
+    врати 0;                                                            \
   }
 
 STRTOUL_TYPE (tcflag_t)
@@ -2206,11 +2206,11 @@ recover_mode (char const *arg, struct termios *mode)
 {
   tcflag_t flag[4];
   char const *s = arg;
-  for (size_t i = 0; i < 4; i++)
+  за (size_t i = 0; i < 4; i++)
     {
       char *p;
-      if (strtoul_tcflag_t (s, 16, &p, flag + i, ':') != 0)
-        return false;
+      ако (strtoul_tcflag_t (s, 16, &p, flag + i, ':') != 0)
+        врати false;
       s = p + 1;
     }
   mode->c_iflag = flag[0];
@@ -2218,14 +2218,14 @@ recover_mode (char const *arg, struct termios *mode)
   mode->c_cflag = flag[2];
   mode->c_lflag = flag[3];
 
-  for (size_t i = 0; i < NCCS; ++i)
+  за (size_t i = 0; i < NCCS; ++i)
     {
       char *p;
       char delim = i < NCCS - 1 || strchr (s, ':') ? ':' : '\0';
-      if (strtoul_cc_t (s, 16, &p, mode->c_cc + i, delim) != 0)
-        return false;
+      ако (strtoul_cc_t (s, 16, &p, mode->c_cc + i, delim) != 0)
+        врати false;
       /* Accept the old format, which has no separate speed fields.  */
-      if (! *p)
+      ако (! *p)
         {
 #ifdef CBAUD
           /* Some systems keep numeric speeds separately even when the
@@ -2233,42 +2233,42 @@ recover_mode (char const *arg, struct termios *mode)
              after restoring the flags.  */
 # ifdef TERMIOS_SPEED_T_SANE
           struct speed_desc ospeed = cbaud_to_speed (mode->c_cflag & CBAUD);
-          if (ospeed.valid && cfsetospeed (mode, ospeed.baud) != 0)
-            return false;
-#  if defined CIBAUD && defined IBSHIFT
+          ако (ospeed.valid && cfsetospeed (mode, ospeed.baud) != 0)
+            врати false;
+#  ако defined CIBAUD && defined IBSHIFT
           struct speed_desc ispeed =
             cbaud_to_speed ((mode->c_cflag & CIBAUD) >> IBSHIFT);
-          if (ispeed.valid && cfsetispeed (mode, ispeed.baud) != 0)
-            return false;
+          ако (ispeed.valid && cfsetispeed (mode, ispeed.baud) != 0)
+            врати false;
 #  endif
 # endif
           last_ibaud.baud = cfgetispeed (mode);
           last_obaud.baud = cfgetospeed (mode);
 #endif
-          return true;
+          врати true;
         }
       s = p + 1;
     }
 
   speed_t speed[2];
-  for (size_t i = 0; i < 2; i++)
+  за (size_t i = 0; i < 2; i++)
     {
       char *p;
       char delim = i == 0 ? ':' : '\0';
-      if (strtoul_speed_t (s, 16, &p, speed + i, delim) != 0)
-        return false;
+      ако (strtoul_speed_t (s, 16, &p, speed + i, delim) != 0)
+        врати false;
       s = p + (i == 0);
     }
 
   /* Set output first, since an input speed of zero can mean to use
      the output speed.  */
-  if (cfsetospeed (mode, speed[1]) != 0
+  ако (cfsetospeed (mode, speed[1]) != 0
       || cfsetispeed (mode, speed[0]) != 0)
-    return false;
+    врати false;
 
   last_ibaud.baud = speed[0] == 0 ? cfgetispeed (mode) : speed[0];
   last_obaud.baud = speed[1];
-  return true;
+  врати true;
 }
 
 /* Return true if MODE1 and MODE2 have equivalent speeds.  */
@@ -2277,12 +2277,12 @@ speed_matches (struct termios const *mode1, struct termios const *mode2)
 {
   speed_t speed1[2] = { cfgetospeed (mode1), cfgetispeed (mode1) };
   speed_t speed2[2] = { cfgetospeed (mode2), cfgetispeed (mode2) };
-  if (speed1[1] == 0)
+  ако (speed1[1] == 0)
     speed1[1] = speed1[0];
-  if (speed2[1] == 0)
+  ако (speed2[1] == 0)
     speed2[1] = speed2[0];
 
-  unsigned int bits = 2;  /* Start and stop bits.  */
+  unsigned цео bits = 2;  /* Start and stop bits.  */
   bits += !!(mode1->c_cflag & CSTOPB);  /* Extra stop bit.  */
   bits += !!(mode1->c_cflag & PARENB);  /* Parity bit.  */
   /* Data bits.  */
@@ -2294,13 +2294,13 @@ speed_matches (struct termios const *mode1, struct termios const *mode2)
       default: bits += 8; break;
     }
 
-  for (int i = 0; i < 2; i++)
+  за (цео i = 0; i < 2; i++)
     {
-      unsigned long int value1;
-      unsigned long int value2;
-      unsigned long int delta;
+      unsigned long цео value1;
+      unsigned long цео value2;
+      unsigned long цео delta;
 
-      if (speed1[i] == speed2[i])
+      ако (speed1[i] == speed2[i])
         continue;
 
       value1 = baud_to_value (speed1[i]);
@@ -2308,18 +2308,18 @@ speed_matches (struct termios const *mode1, struct termios const *mode2)
 
 #ifndef TERMIOS_SPEED_T_SANE
       /* baud_to_value uses ULONG_MAX for an unrecognized encoding.  */
-      if (value1 == ULONG_MAX || value2 == ULONG_MAX)
-        return false;
+      ако (value1 == ULONG_MAX || value2 == ULONG_MAX)
+        врати false;
 #endif
 
       /* Accept a value that's within a 1/4 bit per character.
          E.g., for 8N1, within 2.5% of the requested speed.  */
       delta = value1 < value2 ? value2 - value1 : value1 - value2;
-      if (delta > value1 / (bits * 4))
-        return false;
+      ако (delta > value1 / (bits * 4))
+        врати false;
     }
 
-  return true;
+  врати true;
 }
 
 ATTRIBUTE_PURE
@@ -2331,60 +2331,60 @@ string_to_baud (char const *arg)
   unsigned char c;
 
   /* Explicitly disallow negative numbers.  */
-  while (c_isspace (*arg))
+  док (c_isspace (*arg))
     arg++;
-  if (*arg == '-')
+  ако (*arg == '-')
     goto invalid;
 
   /* Empty does not mean 0.  */
-  if (! *arg)
+  ако (! *arg)
     goto invalid;
 
   value = strtoul (arg, &ep, 10);
 
   c = *ep++;
-  if (c == '.')
+  ако (c == '.')
     {
       /* Number includes a fraction. Round it to nearest-even.
          Note in particular that 134.5 must round to 134! */
       c = *ep++;
-      if (c)
+      ако (c)
         {
           unsigned char d = c - '0';
-          if (d > 5)
+          ако (d > 5)
             value++;
-          else if (d == 5)
+          инако ако (d == 5)
             {
-              while ((c = *ep++) == '0'); /* Skip zeroes after .5 */
+              док ((c = *ep++) == '0'); /* Skip zeroes after .5 */
 
-              if (c)
+              ако (c)
                 value++;                /* Nonzero, round up */
-              else
+              инако
                 value += (value & 1);   /* Exactly in the middle, round even */
             }
 
-          while (c_isdigit (c)) /* Skip remaining digits.  */
+          док (c_isdigit (c)) /* Skip remaining digits.  */
             c = *ep++;
 
-          if (c)
+          ако (c)
             goto invalid; /* Garbage after otherwise valid number */
         }
     }
-  else if (c)
+  инако ако (c)
     {
       /* Not a valid number; check for legacy aliases "exta" and "extb" */
-      if (streq (arg, "exta"))
-        return (struct speed_desc) { .baud = B19200, .valid = true };
-      else if (streq (arg, "extb"))
-        return (struct speed_desc) { .baud = B38400, .valid = true };
-      else
+      ако (streq (arg, "exta"))
+        врати (struct speed_desc) { .baud = B19200, .valid = true };
+      инако ако (streq (arg, "extb"))
+        врати (struct speed_desc) { .baud = B38400, .valid = true };
+      инако
         goto invalid;
     }
 
-  return value_to_baud (value);
+  врати value_to_baud (value);
 
  invalid:
-  return (struct speed_desc) { .baud = (speed_t) -1, .valid = false };
+  врати (struct speed_desc) { .baud = (speed_t) -1, .valid = false };
 }
 
 static void
@@ -2392,27 +2392,27 @@ sane_mode (struct termios *mode)
 {
   tcflag_t *bitsp;
 
-  for (int i = 0; control_info[i].name; ++i)
+  за (цео i = 0; control_info[i].name; ++i)
     {
-#if VMIN == VEOF
-      if (streq (control_info[i].name, "min"))
+#ако VMIN == VEOF
+      ако (streq (control_info[i].name, "min"))
         break;
 #endif
       mode->c_cc[control_info[i].offset] = control_info[i].saneval;
     }
 
-  for (int i = 0; mode_info[i].name != NULL; ++i)
+  за (цео i = 0; mode_info[i].name != NULL; ++i)
     {
-      if (mode_info[i].flags & NO_SETATTR)
+      ако (mode_info[i].flags & NO_SETATTR)
         continue;
 
-      if (mode_info[i].flags & SANE_SET)
+      ако (mode_info[i].flags & SANE_SET)
         {
           bitsp = mode_type_flag (mode_info[i].type, mode);
           assume (bitsp); /* combination modes will not have SANE_SET.  */
           *bitsp = (*bitsp & ~mode_info[i].mask) | mode_info[i].bits;
         }
-      else if (mode_info[i].flags & SANE_UNSET)
+      инако ако (mode_info[i].flags & SANE_UNSET)
         {
           bitsp = mode_type_flag (mode_info[i].type, mode);
           assume (bitsp); /* combination modes will not have SANE_UNSET.  */
@@ -2430,46 +2430,46 @@ visible (cc_t ch)
   static char buf[10];
   char *bpout = buf;
 
-  if (ch == _POSIX_VDISABLE)
-    return "<undef>";
+  ако (ch == _POSIX_VDISABLE)
+    врати "<undef>";
 
-  if (ch >= 32)
+  ако (ch >= 32)
     {
-      if (ch < 127)
+      ако (ch < 127)
         *bpout++ = ch;
-      else if (ch == 127)
+      инако ако (ch == 127)
         {
           *bpout++ = '^';
           *bpout++ = '?';
         }
-      else
+      инако
         {
           *bpout++ = 'M';
           *bpout++ = '-';
-          if (ch >= 128 + 32)
+          ако (ch >= 128 + 32)
             {
-              if (ch < 128 + 127)
+              ако (ch < 128 + 127)
                 *bpout++ = ch - 128;
-              else
+              инако
                 {
                   *bpout++ = '^';
                   *bpout++ = '?';
                 }
             }
-          else
+          инако
             {
               *bpout++ = '^';
               *bpout++ = ch - 128 + 64;
             }
         }
     }
-  else
+  инако
     {
       *bpout++ = '^';
       *bpout++ = ch + 64;
     }
   *bpout = '\0';
-  return (char const *) buf;
+  врати (char const *) buf;
 }
 
 /* Parse string S as an integer, using decimal radix by default,
@@ -2479,6 +2479,6 @@ visible (cc_t ch)
 static uintmax_t
 integer_arg (char const *s, uintmax_t maxval)
 {
-  return xnumtoumax (s, 0, 0, maxval, "bB", _("invalid integer argument"),
+  врати xnumtoumax (s, 0, 0, maxval, "bB", _("invalid integer argument"),
                      0, 0);
 }

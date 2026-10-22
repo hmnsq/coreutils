@@ -20,12 +20,12 @@
 
 /* Ensure that the main for cksum is declared even if the tool is not built
    in this single-binary. */
-int single_binary_main_cksum (int argc, char **argv);
-int single_binary_main_sha1sum (int argc, char **argv);
+цео single_binary_main_cksum (цео argc, char **argv);
+цео single_binary_main_sha1sum (цео argc, char **argv);
 
-int
-single_binary_main_sha1sum (int argc, char **argv)
+цео
+single_binary_main_sha1sum (цео argc, char **argv)
 {
   cksum_algorithm = sha1;
-  return single_binary_main_cksum (argc, argv);
+  врати single_binary_main_cksum (argc, argv);
 }

@@ -34,7 +34,7 @@
 
 #include "set-fields.h"
 
-#if HAVE_FPSETPREC
+#ако HAVE_FPSETPREC
 # include <ieeefp.h>
 #endif
 
@@ -175,22 +175,22 @@ static char const *suffix = NULL;
 static char const *unit_separator = NULL;
 static uintmax_t from_unit_size = 1;
 static uintmax_t to_unit_size = 1;
-static int grouping = 0;
+static цео grouping = 0;
 static char *padding_buffer = NULL;
 static idx_t padding_buffer_size = 0;
 static intmax_t padding_width = 0;
-static int zero_padding_width = 0;
-static long int user_precision = -1;
+static цео zero_padding_width = 0;
+static long цео user_precision = -1;
 static char const *format_str = NULL;
 static char *format_str_prefix = NULL;
 static char *format_str_suffix = NULL;
 
 /* By default, any conversion error will terminate the program.  */
-static int conv_exit_code = EXIT_CONVERSION_WARNINGS;
+static цео conv_exit_code = EXIT_CONVERSION_WARNINGS;
 
 
 /* auto-pad each line based on skipped whitespace.  */
-static int auto_padding = 0;
+static цео auto_padding = 0;
 
 /* field delimiter - if NULL, blanks separate fields.  */
 static char const *delimiter = NULL;
@@ -207,9 +207,9 @@ static bool debug;
 
 /* will be set according to the current locale.  */
 static char const *decimal_point;
-static int decimal_point_length;
+static цео decimal_point_length;
 static char const *thousands_sep;
-static int thousands_sep_length;
+static цео thousands_sep_length;
 
 /* debugging for developers.  Enables devmsg().  */
 static bool dev_debug = false;
@@ -217,23 +217,23 @@ static bool dev_debug = false;
 static bool
 newline_or_blank (mcel_t g)
 {
-  return g.ch == '\n' || c32issep (g.ch);
+  врати g.ch == '\n' || c32issep (g.ch);
 }
 
-static inline int
+static inline цео
 default_scale_base (enum scale_type scale)
 {
   switch (scale)
     {
     case scale_IEC:
     case scale_IEC_I:
-      return 1024;
+      врати 1024;
 
     case scale_none:
     case scale_auto:
     case scale_SI:
     default:
-      return 1000;
+      врати 1000;
     }
 }
 
@@ -243,90 +243,90 @@ static char const *valid_suffixes = 1 + zero_and_valid_suffixes;
 static inline bool
 valid_suffix (const char suf)
 {
-  return strchr (valid_suffixes, suf) != NULL;
+  врати strchr (valid_suffixes, suf) != NULL;
 }
 
-static inline int
+static inline цео
 suffix_power (const char suf)
 {
   switch (suf)
     {
     case 'k':                  /* kilo.  */
     case 'K':                  /* kilo or kibi.  */
-      return 1;
+      врати 1;
 
     case 'M':                  /* mega or mebi.  */
-      return 2;
+      врати 2;
 
     case 'G':                  /* giga or gibi.  */
-      return 3;
+      врати 3;
 
     case 'T':                  /* tera or tebi.  */
-      return 4;
+      врати 4;
 
     case 'P':                  /* peta or pebi.  */
-      return 5;
+      врати 5;
 
     case 'E':                  /* exa or exbi.  */
-      return 6;
+      врати 6;
 
     case 'Z':                  /* zetta or 2**70.  */
-      return 7;
+      врати 7;
 
     case 'Y':                  /* yotta or 2**80.  */
-      return 8;
+      врати 8;
 
     case 'R':                  /* ronna or 2**90.  */
-      return 9;
+      врати 9;
 
     case 'Q':                  /* quetta or 2**100.  */
-      return 10;
+      врати 10;
 
     default:                   /* should never happen. assert?  */
-      return 0;
+      врати 0;
     }
 }
 
 static inline char const *
-suffix_power_char (int power)
+suffix_power_char (цео power)
 {
   switch (power)
     {
     case 0:
-      return "";
+      врати "";
 
     case 1:
-      return "K";
+      врати "K";
 
     case 2:
-      return "M";
+      врати "M";
 
     case 3:
-      return "G";
+      врати "G";
 
     case 4:
-      return "T";
+      врати "T";
 
     case 5:
-      return "P";
+      врати "P";
 
     case 6:
-      return "E";
+      врати "E";
 
     case 7:
-      return "Z";
+      врати "Z";
 
     case 8:
-      return "Y";
+      врати "Y";
 
     case 9:
-      return "R";
+      врати "R";
 
     case 10:
-      return "Q";
+      врати "Q";
 
     default:
-      return "(error)";
+      врати "(error)";
     }
 }
 
@@ -335,22 +335,22 @@ static long double
 powerld (long double base, ptrdiff_t x)
 {
   long double result = base;
-  if (x == 0)
-    return 1;                   /* note for test coverage: this is never
+  ако (x == 0)
+    врати 1;                   /* note for test coverage: this is never
                                    reached, as 'powerld' won't be called if
                                    there's no suffix, hence, no "power".  */
 
   /* TODO: check for overflow, inf?  */
-  while (--x)
+  док (--x)
     result *= base;
-  return result;
+  врати result;
 }
 
 /* Similar to 'fabs(3)' but without requiring 'libm'.  */
 static inline long double
 absld (long double val)
 {
-  return val < 0 ? -val : val;
+  врати val < 0 ? -val : val;
 }
 
 /* Scale down 'val', returns 'updated val' and 'x', such that
@@ -358,21 +358,21 @@ absld (long double val)
      Similar to "frexpl(3)" but without requiring 'libm',
      allowing only integer scale, limited functionality and error checking.  */
 static long double
-expld (long double val, int base, int /*output */ *x)
+expld (long double val, цео base, цео /*output */ *x)
 {
-  int power = 0;
+  цео power = 0;
 
-  if (val >= -LDBL_MAX && val <= LDBL_MAX)
+  ако (val >= -LDBL_MAX && val <= LDBL_MAX)
     {
-      while (absld (val) >= base)
+      док (absld (val) >= base)
         {
           ++power;
           val /= base;
         }
     }
-  if (x)
+  ако (x)
     *x = power;
-  return val;
+  врати val;
 }
 
 /* EXTREMELY limited 'ceil' - without 'libm'.
@@ -381,9 +381,9 @@ static inline intmax_t
 simple_round_ceiling (long double val)
 {
   intmax_t intval = val;
-  if (intval < val)
+  ако (intval < val)
     intval++;
-  return intval;
+  врати intval;
 }
 
 /* EXTREMELY limited 'floor' - without 'libm'.
@@ -391,7 +391,7 @@ simple_round_ceiling (long double val)
 static inline intmax_t
 simple_round_floor (long double val)
 {
-  return -simple_round_ceiling (-val);
+  врати -simple_round_ceiling (-val);
 }
 
 /* EXTREMELY limited 'round away from zero'.
@@ -399,7 +399,7 @@ simple_round_floor (long double val)
 static inline intmax_t
 simple_round_from_zero (long double val)
 {
-  return val < 0 ? simple_round_floor (val) : simple_round_ceiling (val);
+  врати val < 0 ? simple_round_floor (val) : simple_round_ceiling (val);
 }
 
 /* EXTREMELY limited 'round away to zero'.
@@ -407,7 +407,7 @@ simple_round_from_zero (long double val)
 static inline intmax_t
 simple_round_to_zero (long double val)
 {
-  return val;
+  врати val;
 }
 
 /* EXTREMELY limited 'round' - without 'libm'.
@@ -415,7 +415,7 @@ simple_round_to_zero (long double val)
 static inline intmax_t
 simple_round_nearest (long double val)
 {
-  return val < 0 ? val - 0.5 : val + 0.5;
+  врати val < 0 ? val - 0.5 : val + 0.5;
 }
 
 ATTRIBUTE_CONST
@@ -450,10 +450,10 @@ simple_round (long double val, enum round_type t)
 
     default:
       /* to silence the compiler - this should never happen.  */
-      return 0;
+      врати 0;
     }
 
-  return (long double) INTMAX_MAX * intmax_mul + rval;
+  врати (long double) INTMAX_MAX * intmax_mul + rval;
 }
 
 enum simple_strtod_error
@@ -492,53 +492,53 @@ simple_strtod_int (char const *input_str,
   enum simple_strtod_error e = SSE_OK;
 
   long double val = 0;
-  int digits = 0;
+  цео digits = 0;
   bool found_digit = false;
 
-  if (*input_str == '-')
+  ако (*input_str == '-')
     {
       input_str++;
       *negative = true;
     }
-  else
+  инако
     *negative = false;
 
   *endptr = (char *) input_str;
-  while (c_isdigit (**endptr))
+  док (c_isdigit (**endptr))
     {
-      int digit = (**endptr) - '0';
+      цео digit = (**endptr) - '0';
 
       found_digit = true;
 
-      if (val || digit)
+      ако (val || digit)
         digits++;
 
-      if (digits > MAX_UNSCALED_DIGITS)
+      ако (digits > MAX_UNSCALED_DIGITS)
         e = SSE_OK_PRECISION_LOSS;
 
-      if (digits > MAX_ACCEPTABLE_DIGITS)
-        return SSE_OVERFLOW;
+      ако (digits > MAX_ACCEPTABLE_DIGITS)
+        врати SSE_OVERFLOW;
 
       val *= 10;
       val += digit;
 
       ++(*endptr);
 
-      if (thousands_sep_length > 0
+      ако (thousands_sep_length > 0
           && STREQ_LEN (*endptr, thousands_sep, thousands_sep_length)
           && c_isdigit ((*endptr)[thousands_sep_length]))
         (*endptr) += thousands_sep_length;
     }
-  if (! found_digit
+  ако (! found_digit
       && ! STREQ_LEN (*endptr, decimal_point, decimal_point_length))
-    return SSE_INVALID_NUMBER;
-  if (*negative)
+    врати SSE_INVALID_NUMBER;
+  ако (*negative)
     val = -val;
 
-  if (value)
+  ако (value)
     *value = val;
 
-  return e;
+  врати e;
 }
 
 /* Read a floating-point INPUT_STR represented as "NNNN[.NNNNN]",
@@ -564,16 +564,16 @@ simple_strtod_float (char const *input_str,
   bool negative;
   enum simple_strtod_error e = SSE_OK;
 
-  if (precision)
+  ако (precision)
     *precision = 0;
 
   /* TODO: accept locale'd grouped values for the integral part.  */
   e = simple_strtod_int (input_str, endptr, value, &negative);
-  if (e != SSE_OK && e != SSE_OK_PRECISION_LOSS)
-    return e;
+  ако (e != SSE_OK && e != SSE_OK_PRECISION_LOSS)
+    врати e;
 
   /* optional decimal point + fraction.  */
-  if (STREQ_LEN (*endptr, decimal_point, decimal_point_length))
+  ако (STREQ_LEN (*endptr, decimal_point, decimal_point_length))
     {
       char *ptr2;
       long double val_frac = 0;
@@ -582,12 +582,12 @@ simple_strtod_float (char const *input_str,
       (*endptr) += decimal_point_length;
       enum simple_strtod_error e2 =
         simple_strtod_int (*endptr, &ptr2, &val_frac, &neg_frac);
-      if (e2 != SSE_OK && e2 != SSE_OK_PRECISION_LOSS)
-        return e2;
-      if (e2 == SSE_OK_PRECISION_LOSS)
+      ако (e2 != SSE_OK && e2 != SSE_OK_PRECISION_LOSS)
+        врати e2;
+      ако (e2 == SSE_OK_PRECISION_LOSS)
         e = e2;                       /* propagate warning.  */
-      if (neg_frac)
-        return SSE_INVALID_NUMBER;
+      ако (neg_frac)
+        врати SSE_INVALID_NUMBER;
 
       /* number of digits in the fractions.  */
       ptrdiff_t exponent = ptr2 - *endptr;
@@ -596,20 +596,20 @@ simple_strtod_float (char const *input_str,
 
       /* TODO: detect loss of precision (only really 18 digits
          of precision across all digits (before and after '.')).  */
-      if (value)
+      ако (value)
         {
-          if (negative)
+          ако (negative)
             *value -= val_frac;
-          else
+          инако
             *value += val_frac;
         }
 
-      if (precision)
+      ако (precision)
         *precision = exponent;
 
       *endptr = ptr2;
     }
-  return e;
+  врати e;
 }
 
 /* Read a 'human' INPUT_STR represented as "NNNN[.NNNNN] + suffix",
@@ -636,9 +636,9 @@ simple_strtod_human (char const *input_str,
                      char **endptr, long double *value, size_t *precision,
                      enum scale_type allowed_scaling)
 {
-  int power = 0;
+  цео power = 0;
   /* 'scale_auto' is checked below.  */
-  int scale_base = default_scale_base (allowed_scaling);
+  цео scale_base = default_scale_base (allowed_scaling);
 
   devmsg ("simple_strtod_human:\n  input string: %s\n"
           "  locale decimal-point: %s\n"
@@ -649,55 +649,55 @@ simple_strtod_human (char const *input_str,
 
   enum simple_strtod_error e =
     simple_strtod_float (input_str, endptr, value, precision);
-  if (e != SSE_OK && e != SSE_OK_PRECISION_LOSS)
-    return e;
+  ако (e != SSE_OK && e != SSE_OK_PRECISION_LOSS)
+    врати e;
 
   devmsg ("  parsed numeric value: %Lf\n"
-          "  input precision = %d\n", *value, (int)*precision);
+          "  input precision = %d\n", *value, (цео)*precision);
 
-  while (**endptr)
+  док (**endptr)
     {
       /* process suffix.  */
 
       /* Skip a single blank, NBSP or specified unit separator.
          Note an explicit empty --unit-sep should disable blank matching. */
       bool matched_unit_sep = false;
-      if (unit_separator)
+      ако (unit_separator)
         {
           size_t sep_len = strlen (unit_separator);
-          if (STREQ_LEN (*endptr, unit_separator, sep_len))
+          ако (STREQ_LEN (*endptr, unit_separator, sep_len))
             {
               matched_unit_sep = true;
               (*endptr) += sep_len;
             }
         }
-      if (!matched_unit_sep)
+      ако (!matched_unit_sep)
         {
           mcel_t g = mcel_scanz (*endptr);
-          if (c32issep (g.ch) || c32isnbspace (g.ch))
+          ако (c32issep (g.ch) || c32isnbspace (g.ch))
             (*endptr) += g.len;
         }
 
-      if (**endptr == '\0')
+      ако (**endptr == '\0')
         break;  /* Treat as no suffix.  */
 
-      if (!valid_suffix (**endptr))
+      ако (!valid_suffix (**endptr))
         {
           /* Trailing blanks are allowed.  */
           *endptr = skip_str_matching (*endptr, newline_or_blank, true);
-          if (**endptr == '\0')
+          ако (**endptr == '\0')
             break;
 
-          return SSE_INVALID_SUFFIX;
+          врати SSE_INVALID_SUFFIX;
         }
 
-      if (allowed_scaling == scale_none)
-        return SSE_VALID_BUT_FORBIDDEN_SUFFIX;
+      ако (allowed_scaling == scale_none)
+        врати SSE_VALID_BUT_FORBIDDEN_SUFFIX;
 
       power = suffix_power (**endptr);
       (*endptr)++;                     /* skip first suffix character.  */
 
-      if (allowed_scaling == scale_auto && **endptr == 'i')
+      ако (allowed_scaling == scale_auto && **endptr == 'i')
         {
           /* auto-scaling enabled, and the first suffix character
              is followed by an 'i' (e.g. Ki, Mi, Gi).  */
@@ -706,12 +706,12 @@ simple_strtod_human (char const *input_str,
           devmsg ("  Auto-scaling, found 'i', switching to base %d\n",
                   scale_base);
         }
-      else if (allowed_scaling == scale_IEC_I)
+      инако ако (allowed_scaling == scale_IEC_I)
         {
-          if (**endptr == 'i')
+          ако (**endptr == 'i')
             (*endptr)++;
-          else
-            return SSE_MISSING_I_SUFFIX;
+          инако
+            врати SSE_MISSING_I_SUFFIX;
         }
 
       *precision = 0;  /* Reset, to select precision based on scale.  */
@@ -731,7 +731,7 @@ simple_strtod_human (char const *input_str,
 
   devmsg ("  returning value: %Lf (%LG)\n", *value, *value);
 
-  return e;
+  врати e;
 }
 
 
@@ -768,7 +768,7 @@ simple_strtod_fatal (enum simple_strtod_error err, char const *input_str)
       affirm (false);
     }
 
-  if (inval_style != inval_ignore)
+  ако (inval_style != inval_ignore)
     error (conv_exit_code, 0, gettext (msgid), quote (input_str));
 }
 
@@ -777,24 +777,24 @@ simple_strtod_fatal (enum simple_strtod_error err, char const *input_str)
    the number of bytes needed to represent VAL.  If this number is not
    less than BUF_SIZE, the buffer is too small; if it is negative, the
    formatting failed for some reason.  */
-static int
-double_to_human (long double val, int precision,
+static цео
+double_to_human (long double val, цео precision,
                  char *buf, idx_t buf_size,
-                 enum scale_type scale, int group, enum round_type round)
+                 enum scale_type scale, цео group, enum round_type round)
 {
   char fmt[sizeof "%'0.*Lfi%s%s%s%s" + INT_STRLEN_BOUND (zero_padding_width)];
   char *pfmt = fmt;
   *pfmt++ = '%';
 
-  if (group)
+  ако (group)
     *pfmt++ = '\'';
 
-  if (zero_padding_width)
+  ако (zero_padding_width)
     pfmt += sprintf (pfmt, "0%d", zero_padding_width);
 
   devmsg ("double_to_human:\n");
 
-  if (scale == scale_none)
+  ако (scale == scale_none)
     {
       val *= powerld (10, precision);
       val = simple_round (val, round);
@@ -806,7 +806,7 @@ double_to_human (long double val, int precision,
 
       strcpy (pfmt, ".*Lf%s");
 
-      return snprintf (buf, buf_size, fmt, precision, val,
+      врати snprintf (buf, buf_size, fmt, precision, val,
                        suffix ? suffix : "");
     }
 
@@ -814,15 +814,15 @@ double_to_human (long double val, int precision,
   double scale_base = default_scale_base (scale);
 
   /* Normalize val to scale. */
-  int power = 0;
+  цео power = 0;
   val = expld (val, scale_base, &power);
   devmsg ("  scaled value to %Lf * %0.f ^ %d\n", val, scale_base, power);
 
   /* Perform rounding. */
-  int power_adjust = 0;
-  if (user_precision != -1)
+  цео power_adjust = 0;
+  ако (user_precision != -1)
     power_adjust = MIN (power * 3, user_precision);
-  else if (absld (val) < 10)
+  инако ако (absld (val) < 10)
     {
       /* for values less than 10, we allow one decimal-point digit,
          so adjust before rounding. */
@@ -836,7 +836,7 @@ double_to_human (long double val, int precision,
   /* two special cases after rounding:
      1. a "999.99" can turn into 1000 - so scale down
      2. a "9.99" can turn into 10 - so don't display decimal-point.  */
-  if (absld (val) >= scale_base)
+  ако (absld (val) >= scale_base)
     {
       val /= scale_base;
       power++;
@@ -844,16 +844,16 @@ double_to_human (long double val, int precision,
 
   /* should "7.0" be printed as "7" ?
      if removing the ".0" is preferred, enable the fourth condition.  */
-  int show_decimal_point = (val != 0) && (absld (val) < 10) && (power > 0);
+  цео show_decimal_point = (val != 0) && (absld (val) < 10) && (power > 0);
   /* && (absld (val) > simple_round_floor (val))) */
 
   devmsg ("  after rounding, value=%Lf * %0.f ^ %d\n", val, scale_base, power);
 
   strcpy (pfmt, ".*Lf%s%s%s%s");
 
-  int prec = user_precision == -1 ? show_decimal_point : user_precision;
+  цео prec = user_precision == -1 ? show_decimal_point : user_precision;
 
-  return snprintf (buf, buf_size, fmt, prec, val,
+  врати snprintf (buf, buf_size, fmt, prec, val,
                    (power > 0 && unit_separator) ? unit_separator : "",
                    power == 1 && scale == scale_SI
                    ? "k" : suffix_power_char (power),
@@ -877,15 +877,15 @@ unit_to_umax (char const *n_string)
   char const *suffixes = valid_suffixes;
 
   /* Adjust suffixes so K=1000, Ki=1024, KiB=invalid.  */
-  if (n_len && ! c_isdigit (n_string[n_len - 1]))
+  ако (n_len && ! c_isdigit (n_string[n_len - 1]))
     {
       t_string = xmalloc (n_len + 2);
       end = t_string + n_len - 1;
       memcpy (t_string, n_string, n_len);
 
-      if (*end == 'i' && 2 <= n_len && ! c_isdigit (*(end - 1)))
+      ако (*end == 'i' && 2 <= n_len && ! c_isdigit (*(end - 1)))
         *end = '\0';
-      else
+      инако
         {
           *++end = 'B';
           *++end = '\0';
@@ -897,7 +897,7 @@ unit_to_umax (char const *n_string)
 
   s_err = xstrtoumax (c_string, &end, 10, &n, suffixes);
 
-  if (s_err != LONGINT_OK || *end || n == 0)
+  ако (s_err != LONGINT_OK || *end || n == 0)
     {
       free (t_string);
       error (EXIT_FAILURE, 0, _("invalid unit size: %s"), quote (n_string));
@@ -905,21 +905,21 @@ unit_to_umax (char const *n_string)
 
   free (t_string);
 
-  return n;
+  врати n;
 }
 
 void
-usage (int status)
+usage (цео status)
 {
-  if (status != EXIT_SUCCESS)
+  ако (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  инако
     {
       printf (_("\
 Usage: %s [OPTION]... [NUMBER]...\n\
 "), program_name);
       fputs (_("\
-Reformat NUMBER(s), or the numbers from standard input if none are specified.\n\
+Reformat NUMBER(s), or the numbers from standard input ако none are specified.\n\
 "), stdout);
       emit_mandatory_arg_note ();
       oputs (_("\
@@ -928,22 +928,22 @@ Reformat NUMBER(s), or the numbers from standard input if none are specified.\n\
 "));
       oputs (_("\
   -d, --delimiter=X\n\
-         use X instead of whitespace for field delimiter\n\
+         use X instead of whitespace за field delimiter\n\
 "));
       oputs (_("\
       --field=FIELDS\n\
          replace the numbers in these input fields (default=1);\n\
-         see FIELDS below for details\n\
+         see FIELDS below за details\n\
 "));
       oputs (_("\
       --format=FORMAT\n\
          use printf style floating-point FORMAT;\n\
-         see FORMAT below for details\n\
+         see FORMAT below за details\n\
 "));
       oputs (_("\
       --from=UNIT\n\
          auto-scale input numbers to UNITs; default is 'none';\n\
-         see UNIT below for details\n\
+         see UNIT below за details\n\
 "));
       oputs (_("\
       --from-unit=N\n\
@@ -957,23 +957,23 @@ Reformat NUMBER(s), or the numbers from standard input if none are specified.\n\
       oputs (_("\
       --header[=N]\n\
          print (without converting) the first N header lines;\n\
-         N defaults to 1 if not specified\n\
+         N defaults to 1 ако not specified\n\
 "));
       oputs (_("\
       --invalid=MODE\n\
-         failure mode for invalid numbers;\n\
+         failure mode за invalid numbers;\n\
          MODE can be: abort (default), fail, warn, ignore\n\
 "));
       oputs (_("\
       --padding=N\n\
          pad the output to N characters;\n\
          positive N will right-align, negative N will left-align;\n\
-         padding is ignored if the output is wider than N;\n\
-         the default is to automatically pad if a whitespace is found\n\
+         padding is ignored ако the output is wider than N;\n\
+         the default is to automatically pad ако a whitespace is found\n\
 "));
       oputs (_("\
       --round=METHOD\n\
-         use METHOD for rounding when scaling; METHOD can be:\n\
+         use METHOD за rounding when scaling; METHOD can be:\n\
          up, down, from-zero (default), towards-zero, nearest\n\
 "));
       oputs (_("\
@@ -1040,17 +1040,17 @@ Multiple fields/ranges can be separated with commas\n\
 "), stdout);
 
       fputs (_("\n\
-FORMAT must be suitable for printing one floating-point argument '%f'.\n\
-Optional quote (%'f) will enable --grouping (if supported by current locale).\n\
+FORMAT must be suitable за printing one floating-point argument '%f'.\n\
+Optional quote (%'f) will enable --grouping (ако supported by current locale).\n\
 Optional width value (%10f) will pad output. Optional zero (%010f) width\n\
 will zero pad the number. Optional negative values (%-10f) will left align.\n\
 Optional precision (%.1f) will override the input determined precision.\n\
 "), stdout);
 
       printf (_("\n\
-Exit status is 0 if all input numbers were successfully converted.\n\
+Exit status is 0 ако all input numbers were successfully converted.\n\
 By default, %s will stop at the first conversion error with exit status 2.\n\
-With --invalid='fail' a warning is printed for each conversion error\n\
+With --invalid='fail' a warning is printed за each conversion error\n\
 and the exit status is 2.  With --invalid='warn' each conversion error is\n\
 diagnosed, but the exit status is 0.  With --invalid='ignore' conversion\n\
 errors are not diagnosed and the exit status is 0.\n\
@@ -1104,64 +1104,64 @@ parse_format_string (char const *fmt)
   char *endptr = NULL;
   bool zero_padding = false;
 
-  for (i = 0; !(fmt[i] == '%' && fmt[i + 1] != '%'); i += (fmt[i] == '%') + 1)
+  за (i = 0; !(fmt[i] == '%' && fmt[i + 1] != '%'); i += (fmt[i] == '%') + 1)
     {
-      if (!fmt[i])
+      ако (!fmt[i])
         error (EXIT_FAILURE, 0,
                _("format %s has no %% directive"), quote (fmt));
       prefix_len++;
     }
 
   i++;
-  while (true)
+  док (true)
     {
       size_t skip = strspn (fmt + i, " ");
       i += skip;
-      if (fmt[i] == '\'')
+      ако (fmt[i] == '\'')
         {
           grouping = 1;
           i++;
         }
-      else if (fmt[i] == '0')
+      инако ако (fmt[i] == '0')
         {
           zero_padding = true;
           i++;
         }
-      else if (! skip)
+      инако ако (! skip)
         break;
     }
 
   intmax_t pad = strtoimax (fmt + i, &endptr, 10);
 
-  if (pad != 0)
+  ако (pad != 0)
     {
-      if (debug && padding_width && !(zero_padding && pad > 0))
+      ако (debug && padding_width && !(zero_padding && pad > 0))
         error (0, 0, _("--format padding overriding --padding"));
 
       /* Set padding width and alignment.  On overflow, set widths to
          large values that cause later code to avoid undefined behavior
          and fail at a reasonable point.  */
-      if (pad < 0)
+      ако (pad < 0)
         padding_width = pad;
-      else
+      инако
         {
-          if (zero_padding)
+          ако (zero_padding)
             zero_padding_width = MIN (pad, INT_MAX);
-          else
+          инако
             padding_width = pad;
         }
     }
   i = endptr - fmt;
 
-  if (fmt[i] == '\0')
+  ако (fmt[i] == '\0')
     error (EXIT_FAILURE, 0, _("format %s ends in %%"), quote (fmt));
 
-  if (fmt[i] == '.')
+  ако (fmt[i] == '.')
     {
       i++;
       errno = 0;
       user_precision = strtol (fmt + i, &endptr, 10);
-      if (errno == ERANGE || user_precision < 0 || SIZE_MAX < user_precision
+      ако (errno == ERANGE || user_precision < 0 || SIZE_MAX < user_precision
           || c_isblank (fmt[i]) || fmt[i] == '+')
         {
           /* Note we disallow negative user_precision to be
@@ -1175,21 +1175,21 @@ parse_format_string (char const *fmt)
       i = endptr - fmt;
     }
 
-  if (fmt[i] != 'f')
+  ако (fmt[i] != 'f')
     error (EXIT_FAILURE, 0, _("invalid format %s,"
                               " directive must be %%[0]['][-][N][.][N]f"),
          quote (fmt));
   i++;
   suffix_pos = i;
 
-  for (; fmt[i] != '\0'; i += (fmt[i] == '%') + 1)
-    if (fmt[i] == '%' && fmt[i + 1] != '%')
+  за (; fmt[i] != '\0'; i += (fmt[i] == '%') + 1)
+    ако (fmt[i] == '%' && fmt[i + 1] != '%')
       error (EXIT_FAILURE, 0, _("format %s has too many %% directives"),
              quote (fmt));
 
-  if (prefix_len)
+  ако (prefix_len)
     format_str_prefix = ximemdup0 (fmt, prefix_len);
-  if (fmt[suffix_pos] != '\0')
+  ако (fmt[suffix_pos] != '\0')
     format_str_suffix = xstrdup (fmt + suffix_pos);
 
   devmsg ("format String:\n  input: %s\n  grouping: %s\n"
@@ -1217,20 +1217,20 @@ parse_human_number (char const *str, long double /*output */ *value,
 
   enum simple_strtod_error e =
     simple_strtod_human (str, &ptr, value, precision, scale_from);
-  if (e != SSE_OK && e != SSE_OK_PRECISION_LOSS)
+  ако (e != SSE_OK && e != SSE_OK_PRECISION_LOSS)
     {
       simple_strtod_fatal (e, str);
-      return e;
+      врати e;
     }
 
-  if (ptr && *ptr != '\0')
+  ако (ptr && *ptr != '\0')
     {
-      if (inval_style != inval_ignore)
+      ако (inval_style != inval_ignore)
         error (conv_exit_code, 0, _("invalid suffix in input %s: %s"),
                quote_n (0, str), quote_n (1, ptr));
       e = SSE_INVALID_SUFFIX;
     }
-  return e;
+  врати e;
 }
 
 
@@ -1244,44 +1244,44 @@ prepare_padded_number (const long double val, size_t precision,
   size_t precision_used = user_precision == -1 ? precision : user_precision;
 
   /* Can't reliably print too-large values without auto-scaling. */
-  int x;
+  цео x;
   expld (val, 10, &x);
 
-  if (scale_to == scale_none
+  ако (scale_to == scale_none
       && x + precision_used > MAX_UNSCALED_DIGITS)
     {
-      if (inval_style != inval_ignore)
+      ако (inval_style != inval_ignore)
         {
-          if (precision_used)
+          ако (precision_used)
             error (conv_exit_code, 0,
                    _("value/precision too large to be printed: '%Lg/%zu'"
                      " (consider using --to)"), val, precision_used);
-          else
+          инако
             error (conv_exit_code, 0,
                    _("value too large to be printed: '%Lg'"
                      " (consider using --to)"), val);
         }
-      return false;
+      врати false;
     }
 
-  if (x > MAX_ACCEPTABLE_DIGITS - 1)
+  ако (x > MAX_ACCEPTABLE_DIGITS - 1)
     {
-      if (inval_style != inval_ignore)
+      ако (inval_style != inval_ignore)
         error (conv_exit_code, 0, _("value too large to be printed: '%Lg'"
                                     " (cannot handle values > 999Q)"), val);
-      return false;
+      врати false;
     }
 
-  while (true)
+  док (true)
     {
-      int numlen = double_to_human (val, precision_used,
+      цео numlen = double_to_human (val, precision_used,
                                     padding_buffer, padding_buffer_size,
                                     scale_to, grouping, round_style);
       ptrdiff_t growth;
-      if (numlen < 0 || ckd_sub (&growth, numlen, padding_buffer_size - 1))
+      ако (numlen < 0 || ckd_sub (&growth, numlen, padding_buffer_size - 1))
         error (EXIT_FAILURE, 0,
                _("failed to prepare value '%Lf' for printing"), val);
-      if (growth <= 0)
+      ако (growth <= 0)
         break;
       padding_buffer = xpalloc (padding_buffer, &padding_buffer_size,
                                 growth, -1, 1);
@@ -1291,44 +1291,44 @@ prepare_padded_number (const long double val, size_t precision,
           val, quote (padding_buffer));
 
   intmax_t pad = 0;
-  if (padding_width)
+  ако (padding_width)
     {
-      int buf_width = mbswidth (padding_buffer,
+      цео buf_width = mbswidth (padding_buffer,
                                 MBSW_REJECT_INVALID | MBSW_REJECT_UNPRINTABLE);
-      if (0 <= buf_width)
+      ако (0 <= buf_width)
         {
-          if (padding_width < 0)
+          ако (padding_width < 0)
             {
-              if (padding_width < -buf_width)
+              ако (padding_width < -buf_width)
                 pad = padding_width + buf_width;
             }
-          else
+          инако
             {
-              if (buf_width < padding_width)
+              ако (buf_width < padding_width)
                 pad = padding_width - buf_width;
             }
         }
     }
 
   *padding = pad;
-  return true;
+  врати true;
 }
 
 static void
 print_padded_number (intmax_t padding)
 {
-  if (format_str_prefix)
+  ако (format_str_prefix)
     fputs (format_str_prefix, stdout);
 
-  for (intmax_t p = padding; 0 < p; p--)
+  за (intmax_t p = padding; 0 < p; p--)
     putchar (' ');
 
   fputs (padding_buffer, stdout);
 
-  for (intmax_t p = padding; p < 0; p++)
+  за (intmax_t p = padding; p < 0; p++)
     putchar (' ');
 
-  if (format_str_suffix)
+  ако (format_str_suffix)
     fputs (format_str_suffix, stdout);
 }
 
@@ -1336,19 +1336,19 @@ print_padded_number (intmax_t padding)
    and handles automatic suffix addition.  */
 static bool
 process_suffixed_number (char *text, long double *result,
-                         size_t *precision, long int field)
+                         size_t *precision, long цео field)
 {
   char saved_suffix = '\0';
 
-  if (suffix)
+  ако (suffix)
     {
-      if (mbs_endswith (text, suffix))
+      ако (mbs_endswith (text, suffix))
         {
           saved_suffix = *(text + strlen (text) - strlen (suffix));
           *(text + strlen (text) - strlen (suffix)) = '\0';
           devmsg ("trimming suffix %s\n", quote (suffix));
         }
-      else
+      инако
         devmsg ("no valid suffix found\n");
     }
 
@@ -1356,35 +1356,35 @@ process_suffixed_number (char *text, long double *result,
   char *p = skip_str_matching (text, newline_or_blank, true);
 
   /* setup auto-padding.  */
-  if (auto_padding)
+  ако (auto_padding)
     {
       padding_width = text < p || 1 < field
                       ? mbswidth (text,
                                   MBSW_REJECT_INVALID | MBSW_REJECT_UNPRINTABLE)
                       : 0;
-      if (padding_width < 0)
+      ако (padding_width < 0)
         padding_width = strlen (text);
       devmsg ("setting Auto-Padding to %jd characters\n", padding_width);
     }
 
   long double val = 0;
   enum simple_strtod_error e = parse_human_number (p, &val, precision);
-  if (e == SSE_OK_PRECISION_LOSS && debug)
+  ако (e == SSE_OK_PRECISION_LOSS && debug)
     error (0, 0, _("large input value %s: possible precision loss"),
            quote (p));
 
-  if (from_unit_size != 1 || to_unit_size != 1)
+  ако (from_unit_size != 1 || to_unit_size != 1)
     val = (val * from_unit_size) / to_unit_size;
 
   *result = val;
 
-  if (e == SSE_OK || e == SSE_OK_PRECISION_LOSS)
-    return true;
-  else
+  ако (e == SSE_OK || e == SSE_OK_PRECISION_LOSS)
+    врати true;
+  инако
     {
-      if (saved_suffix)
+      ако (saved_suffix)
         *(text + strlen (text)) = saved_suffix;
-      return false;
+      врати false;
     }
 }
 
@@ -1396,12 +1396,12 @@ mbsmbchr (char const *s, char const *c)
 {
   unsigned char uc = *c;
    /* GB18030 is the most restrictive for the 0x30 optimization below.  */
-  if (uc < 0x30 || MB_CUR_MAX == 1)
-    return (char *) strchr (s, uc);
-  else if (is_utf8_charset ())
-    return (char *) (uc < 0x80 ? strchr (s, uc) : strstr (s, c));
-  else
-    return *(c + 1) == '\0' ? mbschr (s, uc) : (char *) mbsstr (s, c);
+  ако (uc < 0x30 || MB_CUR_MAX == 1)
+    врати (char *) strchr (s, uc);
+  инако ако (is_utf8_charset ())
+    врати (char *) (uc < 0x80 ? strchr (s, uc) : strstr (s, c));
+  инако
+    врати *(c + 1) == '\0' ? mbschr (s, uc) : (char *) mbsstr (s, c);
 }
 
 /* Return a pointer to the beginning of the next field in line.
@@ -1412,12 +1412,12 @@ next_field (char **line)
   char *field_start = *line;
   char *field_end   = field_start;
 
-  if (delimiter)
+  ако (delimiter)
     {
-      if (! (field_end = mbsmbchr (field_start, delimiter)))
+      ако (! (field_end = mbsmbchr (field_start, delimiter)))
         field_end = strchr (field_start, '\0');
     }
-  else
+  инако
     {
       /* keep any space prefix in the returned field */
       field_end = skip_str_matching (field_end, newline_or_blank, true);
@@ -1425,7 +1425,7 @@ next_field (char **line)
     }
 
   *line = field_end;
-  return field_start;
+  врати field_start;
 }
 
 ATTRIBUTE_PURE
@@ -1433,16 +1433,16 @@ static bool
 include_field (uintmax_t field)
 {
   struct field_range_pair *p = frp;
-  if (!p)
-    return field == 1;
+  ако (!p)
+    врати field == 1;
 
-  while (p->lo != UINTMAX_MAX)
+  док (p->lo != UINTMAX_MAX)
     {
-      if (p->lo <= field && p->hi >= field)
-        return true;
+      ако (p->lo <= field && p->hi >= field)
+        врати true;
       ++p;
     }
-  return false;
+  врати false;
 }
 
 /* Convert and output the given field. If it is not included in the set
@@ -1454,85 +1454,85 @@ process_field (char *text, uintmax_t field)
   size_t precision = 0;
   bool valid_number = true;
 
-  if (include_field (field))
+  ако (include_field (field))
     {
       valid_number =
         process_suffixed_number (text, &val, &precision, field);
 
       intmax_t padding;
-      if (valid_number)
+      ако (valid_number)
         valid_number = prepare_padded_number (val, precision, &padding);
 
-      if (valid_number)
+      ако (valid_number)
         print_padded_number (padding);
-      else
+      инако
         fputs (text, stdout);
     }
-  else
+  инако
     fputs (text, stdout);
 
-  return valid_number;
+  врати valid_number;
 }
 
 /* Convert number in a given line of text.
    NEWLINE specifies whether to output a '\n' for this "line".  */
-static int
+static цео
 process_line (char *line, bool newline)
 {
   char *next;
   uintmax_t field = 0;
   bool valid_number = true;
 
-  while (true) {
+  док (true) {
     ++field;
     next = next_field (&line);
 
-    if (*line != '\0')
+    ако (*line != '\0')
       {
         /* NUL terminate the current field string and process */
         char end_field = *line;
         *line = '\0';
 
-        if (! process_field (next, field))
+        ако (! process_field (next, field))
           valid_number = false;
 
-        if (delimiter != NULL)
+        ако (delimiter != NULL)
           fputs (delimiter, stdout);
-        else
+        инако
           fputc (' ', stdout);
 
-        if (delimiter)
+        ако (delimiter)
           line += MAX (strlen (delimiter), 1);
-        else
+        инако
           {
             *line = end_field;
             mcel_t g = mcel_scanz (line);
             line += g.len;
           }
       }
-    else
+    инако
       {
         /* end of the line, process the last field and finish */
-        if (! process_field (next, field))
+        ако (! process_field (next, field))
           valid_number = false;
 
         break;
       }
   }
 
-  if (newline)
+  ако (newline)
     putchar (line_delim);
 
- if (ferror (stdout))
+ ако (ferror (stdout))
    write_error ();
 
-  return valid_number;
+  врати valid_number;
 }
 
-int
-main (int argc, char **argv)
+цео
+main (цео argc, char **argv)
 {
-  int valid_numbers = 1;
+  цео valid_numbers = 1;
   bool locale_ok;
 
   initialize_main (&argc, &argv);
@@ -1541,28 +1541,28 @@ main (int argc, char **argv)
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
-#if HAVE_FPSETPREC
+#ако HAVE_FPSETPREC
   /* Enabled extended precision if needed.  */
   fpsetprec (FP_PE);
 #endif
 
   decimal_point = nl_langinfo (RADIXCHAR);
-  if (decimal_point == NULL || strlen (decimal_point) == 0)
+  ако (decimal_point == NULL || strlen (decimal_point) == 0)
     decimal_point = ".";
   decimal_point_length = strlen (decimal_point);
 
   thousands_sep = nl_langinfo (THOUSEP);
-  if (thousands_sep == NULL)
+  ако (thousands_sep == NULL)
     thousands_sep = "";
   thousands_sep_length = strlen (thousands_sep);
 
   atexit (close_stdout);
 
-  while (true)
+  док (true)
     {
-      int c = getopt_long (argc, argv, "d:z", longopts, NULL);
+      цео c = getopt_long (argc, argv, "d:z", longopts, NULL);
 
-      if (c == -1)
+      ако (c == -1)
         break;
 
       switch (c)
@@ -1594,7 +1594,7 @@ main (int argc, char **argv)
           break;
 
         case PADDING_OPTION:
-          if (((xstrtoimax (optarg, NULL, 10, &padding_width, "")
+          ако (((xstrtoimax (optarg, NULL, 10, &padding_width, "")
                 & ~LONGINT_OVERFLOW)
                != LONGINT_OK)
               || padding_width == 0)
@@ -1605,20 +1605,20 @@ main (int argc, char **argv)
           break;
 
         case FIELD_OPTION:
-          if (n_frp)
+          ако (n_frp)
             error (EXIT_FAILURE, 0, _("multiple field specifications"));
           set_fields (optarg, SETFLD_ALLOW_DASH);
           break;
 
         case 'd':
           /* Interpret -d '' to mean 'use the NUL byte as the delimiter.'  */
-          if (optarg[0] != '\0')
+          ако (optarg[0] != '\0')
             {
               mcel_t g = mcel_scanz (optarg);
               /* Note we always allow single bytes, especially since mcel
                  explicitly does not avoid https://sourceware.org/PR29511
                  I.e., we ignore g.err, and rely on g.len==1 with g.err.  */
-              if (optarg[g.len] != '\0')
+              ако (optarg[g.len] != '\0')
                 error (EXIT_FAILURE, 0,
                        _("the delimiter must be a single character"));
             }
@@ -1647,14 +1647,14 @@ main (int argc, char **argv)
           break;
 
         case HEADER_OPTION:
-          if (optarg)
+          ако (optarg)
             {
-              if (xstrtoumax (optarg, NULL, 10, &header, "") != LONGINT_OK
+              ако (xstrtoumax (optarg, NULL, 10, &header, "") != LONGINT_OK
                   || header == 0)
                 error (EXIT_FAILURE, 0, _("invalid header value %s"),
                        quote (optarg));
             }
-          else
+          инако
             {
               header = 1;
             }
@@ -1677,76 +1677,76 @@ main (int argc, char **argv)
         }
     }
 
-  if (format_str != NULL && grouping)
+  ако (format_str != NULL && grouping)
     error (EXIT_FAILURE, 0, _("--grouping cannot be combined with --format"));
 
-  if (debug && ! locale_ok)
+  ако (debug && ! locale_ok)
     error (0, 0, _("failed to set locale"));
 
   /* Warn about no-op.  */
-  if (debug && scale_from == scale_none && scale_to == scale_none
+  ако (debug && scale_from == scale_none && scale_to == scale_none
       && !grouping && (padding_width == 0) && (format_str == NULL))
     error (0, 0, _("no conversion option specified"));
 
-  if (debug && unit_separator && delimiter == NULL)
+  ако (debug && unit_separator && delimiter == NULL)
     error (0, 0,
            _("field delimiters have higher precedence than unit separators"));
 
-  if (format_str)
+  ако (format_str)
     parse_format_string (format_str);
 
-  if (grouping)
+  ако (grouping)
     {
-      if (scale_to != scale_none)
+      ако (scale_to != scale_none)
         error (EXIT_FAILURE, 0, _("grouping cannot be combined with --to"));
-      if (debug && thousands_sep_length == 0)
+      ако (debug && thousands_sep_length == 0)
         error (0, 0, _("grouping has no effect in this locale"));
     }
 
   auto_padding = (padding_width == 0 && delimiter == NULL);
 
-  if (inval_style != inval_abort)
+  ако (inval_style != inval_abort)
     conv_exit_code = 0;
 
-  if (argc > optind)
+  ако (argc > optind)
     {
-      if (debug && header)
+      ако (debug && header)
         error (0, 0, _("--header ignored with command-line input"));
 
-      for (; optind < argc; optind++)
+      за (; optind < argc; optind++)
         valid_numbers &= process_line (argv[optind], true);
     }
-  else
+  инако
     {
       char *line = NULL;
       size_t line_allocated = 0;
       ssize_t len;
 
-      while (header-- && getdelim (&line, &line_allocated,
+      док (header-- && getdelim (&line, &line_allocated,
                                    line_delim, stdin) > 0)
         {
-          if (fputs (line, stdout) == EOF)
+          ако (fputs (line, stdout) == EOF)
             write_error ();
         }
 
-      while ((len = getdelim (&line, &line_allocated,
+      док ((len = getdelim (&line, &line_allocated,
                               line_delim, stdin)) > 0)
         {
           bool newline = line[len - 1] == line_delim;
-          if (newline)
+          ако (newline)
             line[len - 1] = '\0';
           valid_numbers &= process_line (line, newline);
         }
 
-      if (ferror (stdin))
+      ако (ferror (stdin))
         error (EXIT_FAILURE, errno, _("error reading input"));
     }
 
-  if (debug && !valid_numbers)
+  ако (debug && !valid_numbers)
     error (0, 0, _("failed to convert some of the input numbers"));
 
-  int exit_status = EXIT_SUCCESS;
-  if (!valid_numbers
+  цео exit_status = EXIT_SUCCESS;
+  ако (!valid_numbers
       && inval_style != inval_warn && inval_style != inval_ignore)
     exit_status = EXIT_CONVERSION_WARNINGS;
 
