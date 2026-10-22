@@ -14,31 +14,31 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
+#समावेश <config.h>
 
-#include "cksum_crc.h"
+#समावेश "cksum_crc.h"
 
-#include <stdio.h>
-#include <sys/types.h>
-#include <x86intrin.h>
-#include "system.h"
+#समावेश <stdio.h>
+#समावेश <sys/types.h>
+#समावेश <x86intrin.h>
+#समावेश "system.h"
 
 /* Number of bytes to read at once.  */
-#define BUFLEN (1 << 16)
+#घोषणा BUFLEN (1 << 16)
 
 bool
-cksum_avx2 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
+cksum_avx2 (खाता *fp, uint_fast32_t *crc_out, intmax_t *लंबाई_out)
 {
-  __m256i buf[BUFLEN / sizeof (__m256i)];
+  __m256i buf[BUFLEN / माप (__m256i)];
   uint_fast32_t crc = 0;
-  intmax_t length = 0;
-  size_t bytes_read;
+  intmax_t लंबाई = 0;
+  माप_प्रकार bytes_read;
   __m256i single_mult_constant;
   __m256i four_mult_constant;
   __m256i shuffle_constant;
 
-  if (!fp || !crc_out || !length_out)
-    return false;
+  अगर (!fp || !crc_out || !लंबाई_out)
+    वापस false;
 
   /* These constants and general algorithms are taken from the Intel whitepaper
      "Fast CRC Computation for Generic Polynomials Using PCLMULQDQ Instruction"
@@ -53,9 +53,9 @@ cksum_avx2 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
                                       9, 10, 11, 12, 13, 14, 15,
                                       0, 1, 2, 3, 4, 5, 6, 7, 8,
                                       9, 10, 11, 12, 13, 14, 15);
-  while ((bytes_read = fread (buf, 1, BUFLEN, fp)) > 0)
+  जबतक ((bytes_read = ख_पढ़ो (buf, 1, BUFLEN, fp)) > 0)
     {
-      __m256i data;
+      __m256i तथ्य;
       __m256i data2;
       __m256i data3;
       __m256i data4;
@@ -63,29 +63,29 @@ cksum_avx2 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
       __m256i data6;
       __m256i data7;
       __m256i data8;
-      __m256i fold_data;
+      __m256i fold_तथ्य;
       __m256i xor_crc;
 
       __m256i *datap;
 
-      if (ckd_add (&length, length, bytes_read))
+      अगर (ckd_add (&लंबाई, लंबाई, bytes_read))
         {
-          errno = EOVERFLOW;
-          return false;
+          त्रुटि_सं = EOVERFLOW;
+          वापस false;
         }
 
       datap = buf;
 
       /* Fold in parallel 16x 16-byte blocks into 8x 16-byte blocks */
-      if (bytes_read >= 16 * 8 * 2)
+      अगर (bytes_read >= 16 * 8 * 2)
         {
-          data = _mm256_loadu_si256 (datap);
-          data = _mm256_shuffle_epi8 (data, shuffle_constant);
+          तथ्य = _mm256_loadu_si256 (datap);
+          तथ्य = _mm256_shuffle_epi8 (तथ्य, shuffle_constant);
           /* XOR in initial CRC value (for us 0 so no effect), or CRC value
              calculated for previous BUFLEN buffer from fread */
           xor_crc = _mm256_set_epi32 (0, 0, 0, 0, crc, 0, 0, 0);
           crc = 0;
-          data = _mm256_xor_si256 (data, xor_crc);
+          तथ्य = _mm256_xor_si256 (तथ्य, xor_crc);
           data3 = _mm256_loadu_si256 (datap + 1);
           data3 = _mm256_shuffle_epi8 (data3, shuffle_constant);
           data5 = _mm256_loadu_si256 (datap + 2);
@@ -93,14 +93,14 @@ cksum_avx2 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
           data7 = _mm256_loadu_si256 (datap + 3);
           data7 = _mm256_shuffle_epi8 (data7, shuffle_constant);
 
-          while (bytes_read >= 16 * 8 * 2)
+          जबतक (bytes_read >= 16 * 8 * 2)
             {
               datap += 4;
 
               /* Do multiplication here for 8x consecutive 16 byte blocks */
-              data2 = _mm256_clmulepi64_epi128 (data, four_mult_constant,
+              data2 = _mm256_clmulepi64_epi128 (तथ्य, four_mult_constant,
                                                 0x00);
-              data = _mm256_clmulepi64_epi128 (data, four_mult_constant,
+              तथ्य = _mm256_clmulepi64_epi128 (तथ्य, four_mult_constant,
                                                0x11);
               data4 = _mm256_clmulepi64_epi128 (data3, four_mult_constant,
                                                 0x00);
@@ -120,10 +120,10 @@ cksum_avx2 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
                  "consumes" the first 8x blocks from the buffer.
                  Keep xor result in variables for multiplication in next
                  round of loop. */
-              data = _mm256_xor_si256 (data, data2);
+              तथ्य = _mm256_xor_si256 (तथ्य, data2);
               data2 = _mm256_loadu_si256 (datap);
               data2 = _mm256_shuffle_epi8 (data2, shuffle_constant);
-              data = _mm256_xor_si256 (data, data2);
+              तथ्य = _mm256_xor_si256 (तथ्य, data2);
 
               data3 = _mm256_xor_si256 (data3, data4);
               data4 = _mm256_loadu_si256 (datap + 1);
@@ -144,8 +144,8 @@ cksum_avx2 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
             }
           /* At end of loop we write out results from variables back into
              the buffer, for use in single fold loop */
-          data = _mm256_shuffle_epi8 (data, shuffle_constant);
-          _mm256_storeu_si256 (datap, data);
+          तथ्य = _mm256_shuffle_epi8 (तथ्य, shuffle_constant);
+          _mm256_storeu_si256 (datap, तथ्य);
           data3 = _mm256_shuffle_epi8 (data3, shuffle_constant);
           _mm256_storeu_si256 (datap + 1, data3);
           data5 = _mm256_shuffle_epi8 (data5, shuffle_constant);
@@ -155,41 +155,41 @@ cksum_avx2 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
         }
 
       /* Fold two 32-byte blocks into one 32-byte block */
-      if (bytes_read >= 64)
+      अगर (bytes_read >= 64)
         {
-          data = _mm256_loadu_si256 (datap);
-          data = _mm256_shuffle_epi8 (data, shuffle_constant);
+          तथ्य = _mm256_loadu_si256 (datap);
+          तथ्य = _mm256_shuffle_epi8 (तथ्य, shuffle_constant);
           xor_crc = _mm256_set_epi32 (0, 0, 0, 0, crc, 0, 0, 0);
           crc = 0;
-          data = _mm256_xor_si256 (data, xor_crc);
-          while (bytes_read >= 64)
+          तथ्य = _mm256_xor_si256 (तथ्य, xor_crc);
+          जबतक (bytes_read >= 64)
             {
               datap++;
 
-              data2 = _mm256_clmulepi64_epi128 (data, single_mult_constant,
+              data2 = _mm256_clmulepi64_epi128 (तथ्य, single_mult_constant,
                                                 0x00);
-              data = _mm256_clmulepi64_epi128 (data, single_mult_constant,
+              तथ्य = _mm256_clmulepi64_epi128 (तथ्य, single_mult_constant,
                                                0x11);
-              fold_data = _mm256_loadu_si256 (datap);
-              fold_data = _mm256_shuffle_epi8 (fold_data, shuffle_constant);
-              data = _mm256_xor_si256 (data, data2);
-              data = _mm256_xor_si256 (data, fold_data);
+              fold_तथ्य = _mm256_loadu_si256 (datap);
+              fold_तथ्य = _mm256_shuffle_epi8 (fold_तथ्य, shuffle_constant);
+              तथ्य = _mm256_xor_si256 (तथ्य, data2);
+              तथ्य = _mm256_xor_si256 (तथ्य, fold_तथ्य);
               bytes_read -= 32;
             }
-          data = _mm256_shuffle_epi8 (data, shuffle_constant);
-          _mm256_storeu_si256 (datap, data);
+          तथ्य = _mm256_shuffle_epi8 (तथ्य, shuffle_constant);
+          _mm256_storeu_si256 (datap, तथ्य);
         }
 
       /* And finish up last 0-63 bytes in a byte by byte fashion */
-      unsigned char *cp = (unsigned char *)datap;
-      while (bytes_read--)
+      अचिन्हित अक्षर *cp = (अचिन्हित अक्षर *)datap;
+      जबतक (bytes_read--)
         crc = (crc << 8) ^ crctab[0][((crc >> 24) ^ *cp++) & 0xFF];
-      if (feof (fp))
-        break;
+      अगर (ख_पूर्ण (fp))
+        अवरोध;
     }
 
   *crc_out = crc;
-  *length_out = length;
+  *लंबाई_out = लंबाई;
 
-  return !ferror (fp);
+  वापस !ख_त्रुटि (fp);
 }

@@ -1,19 +1,19 @@
-#ifndef TERM_SIG_H
+#अगर_अघोषित TERM_SIG_H
 # define TERM_SIG_H
 
 # include <signal.h>
 
-static int const term_sig[] =
+अटल पूर्णांक स्थिर term_sig[] =
   {
     SIGALRM, /* our timeout.  */
-    SIGINT,  /* Ctrl-C at terminal for example.  */
+    संक_विघ्न,  /* Ctrl-C at terminal for example.  */
     SIGQUIT, /* Ctrl-\ at terminal for example.  */
     SIGHUP,  /* terminal closed for example.  */
-    SIGTERM, /* if terminated, stop monitored proc.  */
+    संक_इति, /* if terminated, stop monitored proc.  */
 
     SIGPIPE, SIGUSR1, SIGUSR2,
 
-    SIGILL, SIGTRAP, SIGABRT, SIGBUS, SIGFPE, SIGSEGV,
+    संक_अवैध, SIGTRAP, SIGABRT, SIGBUS, संक_भ_त्रुटि, संक_अंश,
 
 # ifdef SIGXCPU
     SIGXCPU,
@@ -47,4 +47,4 @@ static int const term_sig[] =
 # endif
   };
 
-#endif
+#पूर्ण_अगर

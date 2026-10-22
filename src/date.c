@@ -16,29 +16,29 @@
 
    David MacKenzie <djm@gnu.ai.mit.edu> */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
-#if HAVE_LANGINFO_CODESET
+#समावेश <config.h>
+#समावेश <stdio.h>
+#समावेश <getopt.h>
+#समावेश <sys/types.h>
+#अगर HAVE_LANGINFO_CODESET
 # include <langinfo.h>
-#endif
+#पूर्ण_अगर
 
-#include "system.h"
-#include "argmatch.h"
-#include "parse-datetime.h"
-#include "posixtm.h"
-#include "quote.h"
-#include "show-date.h"
-#include "stat-time.h"
-#include "xsetenv.h"
+#समावेश "system.h"
+#समावेश "argmatch.h"
+#समावेश "parse-datetime.h"
+#समावेश "posixtm.h"
+#समावेश "quote.h"
+#समावेश "show-date.h"
+#समावेश "stat-time.h"
+#समावेश "xsetenv.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "date"
+#घोषणा PROGRAM_NAME "date"
 
-#define AUTHORS proper_name ("David MacKenzie")
+#घोषणा AUTHORS proper_name ("David MacKenzie")
 
-enum Time_spec
+क्रमागत Time_spec
 {
   /* Display only the date.  */
   TIME_SPEC_DATE,
@@ -55,14 +55,14 @@ enum Time_spec
   TIME_SPEC_MINUTES
 };
 
-static char const *const time_spec_string[] =
+अटल अक्षर स्थिर *स्थिर time_spec_string[] =
 {
   /* Put "hours" and "minutes" first, since they aren't valid for
      --rfc-3339.  */
   "hours", "minutes",
-  "date", "seconds", "ns", NULL
+  "date", "seconds", "ns", शून्य
 };
-static enum Time_spec const time_spec[] =
+अटल क्रमागत Time_spec स्थिर time_spec[] =
 {
   TIME_SPEC_HOURS, TIME_SPEC_MINUTES,
   TIME_SPEC_DATE, TIME_SPEC_SECONDS, TIME_SPEC_NS
@@ -70,71 +70,71 @@ static enum Time_spec const time_spec[] =
 ARGMATCH_VERIFY (time_spec_string, time_spec);
 
 /* A format suitable for Internet RFCs 5322, 2822, and 822.  */
-static char const rfc_email_format[] = "%a, %d %b %Y %H:%M:%S %z";
+अटल अक्षर स्थिर rfc_email_format[] = "%a, %d %b %Y %H:%M:%S %z";
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+क्रमागत
 {
-  DEBUG_DATE_PARSING_OPTION = CHAR_MAX + 1,
+  DEBUG_DATE_PARSING_OPTION = अक्षर_उच्च + 1,
   RESOLUTION_OPTION,
   RFC_3339_OPTION
 };
 
-static char const short_options[] = "d:f:I::r:Rs:u";
+अटल अक्षर स्थिर short_options[] = "d:f:I::r:Rs:u";
 
-static struct option const long_options[] =
+अटल काष्ठा option स्थिर long_options[] =
 {
-  {"date", required_argument, NULL, 'd'},
-  {"debug", no_argument, NULL, DEBUG_DATE_PARSING_OPTION},
-  {"file", required_argument, NULL, 'f'},
-  {"iso-8601", optional_argument, NULL, 'I'},
-  {"reference", required_argument, NULL, 'r'},
-  {"resolution", no_argument, NULL, RESOLUTION_OPTION},
-  {"rfc-email", no_argument, NULL, 'R'},
-  {"rfc-822", no_argument, NULL, 'R'},  /* Deprecated.  */
-  {"rfc-2822", no_argument, NULL, 'R'},  /* Deprecated.  */
-  {"rfc-3339", required_argument, NULL, RFC_3339_OPTION},
-  {"set", required_argument, NULL, 's'},
-  {"uct", no_argument, NULL, 'u'},  /* Deprecated.  */
-  {"utc", no_argument, NULL, 'u'},
-  {"universal", no_argument, NULL, 'u'},
+  {"date", required_argument, शून्य, 'd'},
+  {"debug", no_argument, शून्य, DEBUG_DATE_PARSING_OPTION},
+  {"file", required_argument, शून्य, 'f'},
+  {"iso-8601", optional_argument, शून्य, 'I'},
+  {"reference", required_argument, शून्य, 'r'},
+  {"resolution", no_argument, शून्य, RESOLUTION_OPTION},
+  {"rfc-email", no_argument, शून्य, 'R'},
+  {"rfc-822", no_argument, शून्य, 'R'},  /* Deprecated.  */
+  {"rfc-2822", no_argument, शून्य, 'R'},  /* Deprecated.  */
+  {"rfc-3339", required_argument, शून्य, RFC_3339_OPTION},
+  {"set", required_argument, शून्य, 's'},
+  {"uct", no_argument, शून्य, 'u'},  /* Deprecated.  */
+  {"utc", no_argument, शून्य, 'u'},
+  {"universal", no_argument, शून्य, 'u'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {शून्य, 0, शून्य, 0}
 };
 
 /* flags for parse_datetime2 */
-static unsigned int parse_datetime_flags;
+अटल अचिन्हित पूर्णांक parse_datetime_flags;
 
-#ifdef _DATE_FMT
+#अगर_घोषित _DATE_FMT
 # define DATE_FMT_LANGINFO() nl_langinfo (_DATE_FMT)
-#else
+#अन्यथा
 # define DATE_FMT_LANGINFO() ""
-#endif
+#पूर्ण_अगर
 
-void
-usage (int status)
+व्योम
+usage (पूर्णांक status)
 {
-  if (status != EXIT_SUCCESS)
+  अगर (status != निकास_सफल)
     emit_try_help ();
-  else
+  अन्यथा
     {
-      printf (_("\
+      म_लिखो (_("\
 Usage: %s [OPTION]... [+FORMAT]\n\
   or:  %s [OPTION]... MMDDhhmm[[CC]YY][.ss]\n\
 "),
               program_name, program_name);
-      fputs (_("\
-Display date and time in the given FORMAT.\n\
-With -s, or with MMDDhhmm[[CC]YY][.ss], set the date and time first.\n\
-"), stdout);
+      ख_माला_दो (_("\
+Display date and समय in the given FORMAT.\n\
+With -s, or with MMDDhhmm[[CC]YY][.ss], set the date and समय first.\n\
+"), मानक_निकास);
 
       emit_mandatory_arg_note ();
 
       oputs (_("\
   -d, --date=STRING\n\
-         display time described by STRING, not 'now'\n\
+         display समय described by STRING, not 'now'\n\
 "));
       oputs (_("\
       --debug\n\
@@ -143,14 +143,14 @@ With -s, or with MMDDhhmm[[CC]YY][.ss], set the date and time first.\n\
 "));
       oputs (_("\
   -f, --file=DATEFILE\n\
-         like --date; once for each line of DATEFILE;\n\
-         if DATEFILE is -, read names from standard input\n\
+         like --date; once क्रम each पंक्ति of DATEFILE;\n\
+         अगर DATEFILE is -, पढ़ो names from standard निवेश\n\
 "));
       oputs (_("\
   -I[FMT], --iso-8601[=FMT]\n\
-         output date/time in ISO 8601 format.\n\
-         FMT='date' (default), 'hours', 'minutes', 'seconds', or 'ns'\n\
-         for date and time to the indicated precision.\n\
+         output date/समय in ISO 8601 format.\n\
+         FMT='date' (शेष), 'hours', 'minutes', 'seconds', or 'ns'\n\
+         क्रम date and समय to the indicated precision.\n\
          Example: 2006-08-14T02:34:56-06:00\n\
 "));
       oputs (_("\
@@ -160,23 +160,23 @@ With -s, or with MMDDhhmm[[CC]YY][.ss], set the date and time first.\n\
 "));
       oputs (_("\
   -R, --rfc-email\n\
-         output date and time in RFC 5322 format.\n\
+         output date and समय in RFC 5322 format.\n\
          Example: Mon, 14 Aug 2006 02:34:56 +0000\n\
 "));
       oputs (_("\
       --rfc-3339=FMT\n\
-         output date/time in RFC 3339 format.\n\
+         output date/समय in RFC 3339 format.\n\
          FMT='date', 'seconds', or 'ns'\n\
-         for date and time to the indicated precision.\n\
+         क्रम date and समय to the indicated precision.\n\
          Example: 2006-08-14 02:34:56-06:00\n\
 "));
       oputs (_("\
-  -r, --reference=FILE\n\
-         display the last modification time of FILE\n\
+  -r, --reference=खाता\n\
+         display the last modification समय of खाता\n\
 "));
       oputs (_("\
   -s, --set=STRING\n\
-         set time described by STRING\n\
+         set समय described by STRING\n\
 "));
       oputs (_("\
   -u, --utc, --universal\n\
@@ -184,256 +184,256 @@ With -s, or with MMDDhhmm[[CC]YY][.ss], set the date and time first.\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
-      fputs (_("\
+      ख_माला_दो (_("\
 \n\
 All options that specify the date to display are mutually exclusive.\n\
 I.e.: --date, --file, --reference, --resolution.\n\
-"), stdout);
-      fputs (_("\
+"), मानक_निकास);
+      ख_माला_दो (_("\
 \n\
 FORMAT controls the output.  Interpreted sequences are:\n\
 \n\
-"), stdout);
-      fputs (_("\
+"), मानक_निकास);
+      ख_माला_दो (_("\
 FORMAT  Example    Description\n\
 \n\
-"), stdout);
-      fputs (_("\
+"), मानक_निकास);
+      ख_माला_दो (_("\
   %%    %           a literal %\n\
-"), stdout);
-      fputs (_("\
+"), मानक_निकास);
+      ख_माला_दो (_("\
   %n    \\n          a newline\n\
-"), stdout);
-      fputs (_("\
+"), मानक_निकास);
+      ख_माला_दो (_("\
   %t    \\t          a tab\n\
-"), stdout);
+"), मानक_निकास);
 
-      fputs ("\n", stdout);
+      ख_माला_दो ("\n", मानक_निकास);
 
-      fputs (_("\
+      ख_माला_दो (_("\
   %C    20          century; like %Y, except omit last two digits\n\
-"), stdout);
-      fputs (_("\
+"), मानक_निकास);
+      ख_माला_दो (_("\
   %y    99          year (last two digits; 00..99)\n\
-"), stdout);
-      fputs (_("\
+"), मानक_निकास);
+      ख_माला_दो (_("\
   %Y    1999        year\n\
-"), stdout);
-      fputs (_("\
-  %g    99          year of ISO week number (last 2 digits; 00-99); see %G\n\
-"), stdout);
-      fputs (_("\
-  %G    1999        year of ISO week number; normally useful only with %V\n\
-"), stdout);
+"), मानक_निकास);
+      ख_माला_दो (_("\
+  %g    99          year of ISO week संख्या (last 2 digits; 00-99); see %G\n\
+"), मानक_निकास);
+      ख_माला_दो (_("\
+  %G    1999        year of ISO week संख्या; normally useful only with %V\n\
+"), मानक_निकास);
 
-      fputs ("\n", stdout);
+      ख_माला_दो ("\n", मानक_निकास);
 
-      fputs (_("\
+      ख_माला_दो (_("\
   %a    Sun         locale's abbreviated weekday name\n\
-"), stdout);
-      fputs (_("\
+"), मानक_निकास);
+      ख_माला_दो (_("\
   %A    Sunday      locale's full weekday name\n\
-"), stdout);
-      fputs (_("\
+"), मानक_निकास);
+      ख_माला_दो (_("\
   %b    Mar         locale's abbreviated month name\n\
-"), stdout);
-      fputs (_("\
+"), मानक_निकास);
+      ख_माला_दो (_("\
   %h    Mar         same as %b\n\
-"), stdout);
-      fputs (_("\
+"), मानक_निकास);
+      ख_माला_दो (_("\
   %B    March       locale's full month name\n\
-"), stdout);
-      fputs (_("\
+"), मानक_निकास);
+      ख_माला_दो (_("\
   %m    12          month (01..12)\n\
-"), stdout);
-      fputs (_("\
+"), मानक_निकास);
+      ख_माला_दो (_("\
   %d    31          day of month (01..31)\n\
-"), stdout);
-      fputs (_("\
+"), मानक_निकास);
+      ख_माला_दो (_("\
   %e     1          day of month, space padded; same as %_d\n\
-"), stdout);
-      fputs (_("\
+"), मानक_निकास);
+      ख_माला_दो (_("\
   %D    12/31/99    date (ambiguous); same as %m/%d/%y\n\
-"), stdout);
-      fputs (_("\
+"), मानक_निकास);
+      ख_माला_दो (_("\
   %F    1999-12-31  full date; like %+4Y-%m-%d\n\
-"), stdout);
-      fputs (_("\
+"), मानक_निकास);
+      ख_माला_दो (_("\
   %x    12/31/99    locale's date (can be ambiguous)\n\
-"), stdout);
-      fputs (_("\
-  %c    ...         locale's date and time (e.g., Thu Mar  3 23:05 2005)\n\
-"), stdout);
+"), मानक_निकास);
+      ख_माला_दो (_("\
+  %c    ...         locale's date and समय (e.g., Thu Mar  3 23:05 2005)\n\
+"), मानक_निकास);
 
-      fputs ("\n", stdout);
+      ख_माला_दो ("\n", मानक_निकास);
 
-      fputs (_("\
+      ख_माला_दो (_("\
   %H    23          hour (00..23)\n\
-"), stdout);
-      fputs (_("\
+"), मानक_निकास);
+      ख_माला_दो (_("\
   %I    01          hour (01..12)\n\
-"), stdout);
-      fputs (_("\
+"), मानक_निकास);
+      ख_माला_दो (_("\
   %k     8          hour, space padded ( 0..23); same as %_H\n\
-"), stdout);
-      fputs (_("\
+"), मानक_निकास);
+      ख_माला_दो (_("\
   %l     9          hour, space padded ( 1..12); same as %_I\n\
-"), stdout);
-      fputs (_("\
+"), मानक_निकास);
+      ख_माला_दो (_("\
   %M    59          minute (00..59)\n\
-"), stdout);
-      fputs (_("\
+"), मानक_निकास);
+      ख_माला_दो (_("\
   %S    60          second (00..60)\n\
-"), stdout);
-      fputs (_("\
+"), मानक_निकास);
+      ख_माला_दो (_("\
   %N    123456789   nanoseconds (000000000..999999999)\n\
-"), stdout);
-      fputs (_("\
+"), मानक_निकास);
+      ख_माला_दो (_("\
   %s    1970010100  seconds since the Epoch (1970-01-01 00:00 UTC)\n\
-"), stdout);
-      fputs (_("\
-  %p    PM          locale's equivalent of AM or PM; blank if not known\n\
-"), stdout);
-      fputs (_("\
-  %P    am          like %p, but lower case\n\
-"), stdout);
-      fputs (_("\
-  %r    1:11:04 PM  locale's 12-hour clock time\n\
-"), stdout);
-      fputs (_("\
+"), मानक_निकास);
+      ख_माला_दो (_("\
+  %p    PM          locale's equivalent of AM or PM; blank अगर not known\n\
+"), मानक_निकास);
+      ख_माला_दो (_("\
+  %P    am          like %p, but lower हाल\n\
+"), मानक_निकास);
+      ख_माला_दो (_("\
+  %r    1:11:04 PM  locale's 12-hour घड़ी समय\n\
+"), मानक_निकास);
+      ख_माला_दो (_("\
   %R    23:59       24-hour hour and minute; same as %H:%M\n\
-"), stdout);
-      fputs (_("\
-  %T    23:59:59    time; same as %H:%M:%S\n\
-"), stdout);
-      fputs (_("\
-  %X    23:59:59    locale's time representation\n\
-"), stdout);
+"), मानक_निकास);
+      ख_माला_दो (_("\
+  %T    23:59:59    समय; same as %H:%M:%S\n\
+"), मानक_निकास);
+      ख_माला_दो (_("\
+  %X    23:59:59    locale's समय representation\n\
+"), मानक_निकास);
 
-      fputs ("\n", stdout);
+      ख_माला_दो ("\n", मानक_निकास);
 
-      fputs (_("\
+      ख_माला_दो (_("\
   %j    365         day of year (001..366)\n\
-"), stdout);
-      fputs (_("\
+"), मानक_निकास);
+      ख_माला_दो (_("\
   %q    4           quarter of year (1..4)\n\
-"), stdout);
-      fputs (_("\
+"), मानक_निकास);
+      ख_माला_दो (_("\
   %u    7           day of week (1..7); 1 is Monday\n\
-"), stdout);
-      fputs (_("\
+"), मानक_निकास);
+      ख_माला_दो (_("\
   %w    6           day of week (0..6); 0 is Sunday\n\
-"), stdout);
-      fputs (_("\
+"), मानक_निकास);
+      ख_माला_दो (_("\
   %U    52          week of year; Sunday as first day of week (00..53)\n\
-"), stdout);
-      fputs (_("\
-  %V    52          ISO week number; Monday as first day of week (01..53)\n\
-"), stdout);
-      fputs (_("\
+"), मानक_निकास);
+      ख_माला_दो (_("\
+  %V    52          ISO week संख्या; Monday as first day of week (01..53)\n\
+"), मानक_निकास);
+      ख_माला_दो (_("\
   %W    52          week of year; Monday as first day of week (00..53)\n\
-"), stdout);
+"), मानक_निकास);
 
-      fputs ("\n", stdout);
+      ख_माला_दो ("\n", मानक_निकास);
 
-      fputs (_("\
-  %z     +0400      +hhmm numeric time zone\n\
-"), stdout);
-      fputs (_("\
-  %:z    +04:00     +hh:mm numeric time zone\n\
-"), stdout);
-      fputs (_("\
-  %::z   +04:00:00  +hh:mm:ss numeric time zone\n\
-"), stdout);
-      fputs (_("\
-  %:::z  +04        numeric time zone to necessary precision; with :\n\
-"), stdout);
-      fputs (_("\
-  %Z     EDT        alphabetic time zone abbreviation\n\
-"), stdout);
-      fputs (_("\
+      ख_माला_दो (_("\
+  %z     +0400      +hhmm numeric समय zone\n\
+"), मानक_निकास);
+      ख_माला_दो (_("\
+  %:z    +04:00     +hh:mm numeric समय zone\n\
+"), मानक_निकास);
+      ख_माला_दो (_("\
+  %::z   +04:00:00  +hh:mm:ss numeric समय zone\n\
+"), मानक_निकास);
+      ख_माला_दो (_("\
+  %:::z  +04        numeric समय zone to necessary precision; with :\n\
+"), मानक_निकास);
+      ख_माला_दो (_("\
+  %Z     EDT        alphabetic समय zone abbreviation\n\
+"), मानक_निकास);
+      ख_माला_दो (_("\
 \n\
-By default, date pads numeric fields with zeroes.\n\
-"), stdout);
-      fputs (_("\
+By शेष, date pads numeric fields with zeroes.\n\
+"), मानक_निकास);
+      ख_माला_दो (_("\
 The following optional flags may follow '%':\n\
 \n\
-  -  (hyphen) do not pad the field\n\
+  -  (hyphen) करो not pad the field\n\
   _  (underscore) pad with spaces\n\
   0  (zero) pad with zeros\n\
   +  pad with zeros, and put '+' before future years with >4 digits\n\
-  ^  use upper case if possible\n\
-  #  use opposite case if possible\n\
-"), stdout);
-      fputs (_("\
+  ^  use upper हाल अगर possible\n\
+  #  use opposite हाल अगर possible\n\
+"), मानक_निकास);
+      ख_माला_दो (_("\
 \n\
-After any flags comes an optional field width, as a decimal number;\n\
+After any flags comes an optional field width, as a decimal संख्या;\n\
 then an optional modifier, which is either\n\
-E to use the locale's alternate representations if available, or\n\
-O to use the locale's alternate numeric symbols if available.\n\
-"), stdout);
-      fputs (_("\
+E to use the locale's alternate representations अगर available, or\n\
+O to use the locale's alternate numeric symbols अगर available.\n\
+"), मानक_निकास);
+      ख_माला_दो (_("\
 \n\
 Examples:\n\
 Convert seconds since the Epoch (1970-01-01 UTC) to a date\n\
   $ date --date='@2147483647'\n\
 \n\
-Show the time on the west coast of the US (use tzselect(1) to find TZ)\n\
+Show the समय on the west coast of the US (use tzselect(1) to find TZ)\n\
   $ TZ='America/Los_Angeles' date\n\
 \n\
-Show the local time for 9AM next Friday on the west coast of the US\n\
+Show the local समय क्रम 9AM अग्र Friday on the west coast of the US\n\
   $ date --date='TZ=\"America/Los_Angeles\" 09:00 next Fri'\n\
-"), stdout);
+"), मानक_निकास);
       emit_ancillary_info (PROGRAM_NAME);
     }
-  exit (status);
+  निकास (status);
 }
 
 /* Yield the number of decimal digits needed to output a time with the
    nanosecond resolution RES, without losing information.  */
 
 ATTRIBUTE_CONST
-static int
-res_width (long int res)
+अटल पूर्णांक
+res_width (दीर्घ पूर्णांक res)
 {
-  int i = 9;
-  for (long long int r = 1; (r *= 10) <= res; )
+  पूर्णांक i = 9;
+  क्रम (दीर्घ दीर्घ पूर्णांक r = 1; (r *= 10) <= res; )
     i--;
-  return i;
+  वापस i;
 }
 
 /* Return a newly allocated copy of FORMAT with each "%-N" adjusted to
    be "%9N", "%6N", or whatever other resolution is appropriate for
    the current platform.  If no "%-N" appears, return NULL.  */
 
-static char *
-adjust_resolution (char const *format)
+अटल अक्षर *
+adjust_resolution (अक्षर स्थिर *format)
 {
-  char *copy = NULL;
+  अक्षर *copy = शून्य;
 
-  for (char const *f = format; *f; f++)
-    if (f[0] == '%')
+  क्रम (अक्षर स्थिर *f = format; *f; f++)
+    अगर (f[0] == '%')
       {
-        if (f[1] == '-' && f[2] == 'N')
+        अगर (f[1] == '-' && f[2] == 'N')
           {
-            if (!copy)
+            अगर (!copy)
               copy = xstrdup (format);
             copy[f + 1 - format] = '0' + res_width (gettime_res ());
             f += 2;
           }
-        else
+        अन्यथा
           f += f[1] == '%';
       }
 
-  return copy;
+  वापस copy;
 }
 
 /* Set the LC_TIME category of the current locale.
    Return the previous value of the LC_TIME category, as a freshly allocated
    string or null.  */
 
-static char *
-set_LC_TIME (char const *locale)
+अटल अक्षर *
+set_LC_TIME (अक्षर स्थिर *locale)
 {
   /* It is not sufficient to do
        setlocale (LC_TIME, locale);
@@ -441,8 +441,8 @@ set_LC_TIME (char const *locale)
      'localename-unsafe', that looks at the values of the environment variables
      (in order to distinguish the default locale from the C locale on platforms
      like macOS).  */
-  char const *all = getenv ("LC_ALL");
-  if (all != NULL && *all != '\0')
+  अक्षर स्थिर *all = दो_पर्या ("LC_ALL");
+  अगर (all != शून्य && *all != '\0')
     {
       /* Setting LC_TIME when LC_ALL is set would have no effect.  Therefore we
          have to unset LC_ALL and sets its value to all locale categories that
@@ -457,40 +457,40 @@ set_LC_TIME (char const *locale)
     }
 
   /* Set LC_TIME as an environment variable.  */
-  char const *value = getenv ("LC_TIME");
-  char *ret = (value == NULL || *value == '\0' ? NULL : xstrdup (value));
-  if (locale != NULL)
+  अक्षर स्थिर *मूल्य = दो_पर्या ("LC_TIME");
+  अक्षर *ret = (मूल्य == शून्य || *मूल्य == '\0' ? शून्य : xstrdup (मूल्य));
+  अगर (locale != शून्य)
     xsetenv ("LC_TIME", locale, 1);
-  else
+  अन्यथा
     unsetenv ("LC_TIME");
 
   /* Update the current locale accordingly.  */
-  setlocale (LC_TIME, "");
+  रखो_क्षेत्र (LC_TIME, "");
 
-  return ret;
+  वापस ret;
 }
 
-static bool
-show_date_helper (char const *format, bool use_c_locale,
-                  struct timespec when, timezone_t tz)
+अटल bool
+show_date_helper (अक्षर स्थिर *format, bool use_c_locale,
+                  काष्ठा timespec when, timezone_t tz)
 {
-  if (parse_datetime_flags & PARSE_DATETIME_DEBUG)
+  अगर (parse_datetime_flags & PARSE_DATETIME_DEBUG)
     error (0, 0, _("output format: %s"), quote (format));
 
   bool ok;
-  if (use_c_locale)
+  अगर (use_c_locale)
     {
-      char *old_locale_category = set_LC_TIME ("C");
+      अक्षर *old_locale_category = set_LC_TIME ("C");
       ok = show_date (format, when, tz);
-      char *new_locale_category = set_LC_TIME (old_locale_category);
-      free (new_locale_category);
-      free (old_locale_category);
+      अक्षर *new_locale_category = set_LC_TIME (old_locale_category);
+      मुक्त (new_locale_category);
+      मुक्त (old_locale_category);
     }
-  else
+  अन्यथा
     ok = show_date (format, when, tz);
 
-  putchar ('\n');
-  return ok;
+  अक्षर_दो ('\n');
+  वापस ok;
 }
 
 /* Parse each line in INPUT_FILENAME as with --date and display each
@@ -498,126 +498,126 @@ show_date_helper (char const *format, bool use_c_locale,
    then exit.  Issue a diagnostic for any lines that cannot be parsed.
    Return true if successful.  */
 
-static bool
-batch_convert (char const *input_filename,
-               char const *format, bool format_in_c_locale,
-               timezone_t tz, char const *tzstring)
+अटल bool
+batch_convert (अक्षर स्थिर *निवेश_filename,
+               अक्षर स्थिर *format, bool format_in_c_locale,
+               timezone_t tz, अक्षर स्थिर *tzstring)
 {
-  FILE *in_stream;
+  खाता *in_stream;
 
-  if (streq (input_filename, "-"))
+  अगर (streq (निवेश_filename, "-"))
     {
-      input_filename = _("standard input");
-      in_stream = stdin;
+      निवेश_filename = _("standard input");
+      in_stream = मानक_निवेश;
     }
-  else
+  अन्यथा
     {
-      in_stream = fopen (input_filename, "r");
-      if (in_stream == NULL)
-        error (EXIT_FAILURE, errno, "%s", quotef (input_filename));
+      in_stream = ख_खोलो (निवेश_filename, "r");
+      अगर (in_stream == शून्य)
+        error (निकास_त्रुटि, त्रुटि_सं, "%s", quotef (निवेश_filename));
     }
 
-  char *line = NULL;
-  size_t buflen = 0;
+  अक्षर *पंक्ति = शून्य;
+  माप_प्रकार buflen = 0;
   bool ok = true;
-  while (true)
+  जबतक (true)
     {
-      ssize_t line_length = getline (&line, &buflen, in_stream);
-      if (line_length < 0)
+      ssize_t पंक्ति_लंबाई = getline (&पंक्ति, &buflen, in_stream);
+      अगर (पंक्ति_लंबाई < 0)
         {
-          if (ferror (in_stream))
-            error (EXIT_FAILURE, errno, _("%s: read error"),
-                   quotef (input_filename));
-          break;
+          अगर (ख_त्रुटि (in_stream))
+            error (निकास_त्रुटि, त्रुटि_सं, _("%s: read error"),
+                   quotef (निवेश_filename));
+          अवरोध;
         }
 
-      struct timespec when;
-      if (! parse_datetime2 (&when, line, NULL,
+      काष्ठा timespec when;
+      अगर (! parse_datetime2 (&when, पंक्ति, शून्य,
                              parse_datetime_flags, tz, tzstring))
         {
-          if (line[line_length - 1] == '\n')
-            line[line_length - 1] = '\0';
-          error (0, 0, _("invalid date %s"), quote (line));
+          अगर (पंक्ति[पंक्ति_लंबाई - 1] == '\n')
+            पंक्ति[पंक्ति_लंबाई - 1] = '\0';
+          error (0, 0, _("invalid date %s"), quote (पंक्ति));
           ok = false;
         }
-      else
+      अन्यथा
         {
           ok &= show_date_helper (format, format_in_c_locale, when, tz);
         }
 
-      if (ferror (stdout))
+      अगर (ख_त्रुटि (मानक_निकास))
         write_error ();
     }
 
-  if (fclose (in_stream) == EOF)
-    error (EXIT_FAILURE, errno, "%s", quotef (input_filename));
+  अगर (ख_बंद (in_stream) == खातापूर्ण)
+    error (निकास_त्रुटि, त्रुटि_सं, "%s", quotef (निवेश_filename));
 
-  free (line);
+  मुक्त (पंक्ति);
 
-  return ok;
+  वापस ok;
 }
 
-int
-main (int argc, char **argv)
+पूर्णांक
+मुख्य (पूर्णांक argc, अक्षर **argv)
 {
-  char const *datestr = NULL;
-  char const *set_datestr = NULL;
+  अक्षर स्थिर *datestr = शून्य;
+  अक्षर स्थिर *set_datestr = शून्य;
   bool set_date = false;
-  char const *format = NULL;
+  अक्षर स्थिर *format = शून्य;
   bool format_in_c_locale = false;
   bool get_resolution = false;
-  char *batch_file = NULL;
-  char *reference = NULL;
+  अक्षर *batch_file = शून्य;
+  अक्षर *reference = शून्य;
   bool discarded_datestr = false;
   bool discarded_set_datestr = false;
-  char const *tzstring = NULL;
+  अक्षर स्थिर *tzstring = शून्य;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
-  setlocale (LC_ALL, "");
+  रखो_क्षेत्र (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
-  atexit (close_stdout);
+  निकास_पर (close_stdout);
 
-  int optc;
-  while ((optc = getopt_long (argc, argv, short_options, long_options, NULL))
+  पूर्णांक optc;
+  जबतक ((optc = getopt_long (argc, argv, short_options, long_options, शून्य))
          != -1)
     {
-      switch (optc)
+      चयन (optc)
         {
-        case 'd':
-          if (datestr)
+        हाल 'd':
+          अगर (datestr)
             discarded_datestr = true;
           datestr = optarg;
-          break;
-        case DEBUG_DATE_PARSING_OPTION:
+          अवरोध;
+        हाल DEBUG_DATE_PARSING_OPTION:
           parse_datetime_flags |= PARSE_DATETIME_DEBUG;
-          break;
-        case 'f':
+          अवरोध;
+        हाल 'f':
           batch_file = optarg;
-          break;
-        case RESOLUTION_OPTION:
+          अवरोध;
+        हाल RESOLUTION_OPTION:
           get_resolution = true;
-          break;
-        case RFC_3339_OPTION:
+          अवरोध;
+        हाल RFC_3339_OPTION:
           {
-            static char const rfc_3339_format[][32] =
+            अटल अक्षर स्थिर rfc_3339_format[][32] =
               {
                 "%Y-%m-%d",
                 "%Y-%m-%d %H:%M:%S%:z",
                 "%Y-%m-%d %H:%M:%S.%N%:z"
               };
-            enum Time_spec i =
+            क्रमागत Time_spec i =
               XARGMATCH ("--rfc-3339", optarg,
                          time_spec_string + 2, time_spec + 2);
             format = rfc_3339_format[i];
             format_in_c_locale = true;
-            break;
+            अवरोध;
           }
-        case 'I':
+        हाल 'I':
           {
-            static char const iso_8601_format[][32] =
+            अटल अक्षर स्थिर iso_8601_format[][32] =
               {
                 "%Y-%m-%d",
                 "%Y-%m-%dT%H:%M:%S%:z",
@@ -625,90 +625,90 @@ main (int argc, char **argv)
                 "%Y-%m-%dT%H%:z",
                 "%Y-%m-%dT%H:%M%:z"
               };
-            enum Time_spec i =
+            क्रमागत Time_spec i =
               (optarg
                ? XARGMATCH ("--iso-8601", optarg, time_spec_string, time_spec)
                : TIME_SPEC_DATE);
             format = iso_8601_format[i];
             format_in_c_locale = true;
-            break;
+            अवरोध;
           }
-        case 'r':
+        हाल 'r':
           reference = optarg;
-          break;
-        case 'R':
+          अवरोध;
+        हाल 'R':
           format = rfc_email_format;
           format_in_c_locale = true;
-          break;
-        case 's':
-          if (set_datestr)
+          अवरोध;
+        हाल 's':
+          अगर (set_datestr)
             discarded_set_datestr = true;
           set_datestr = optarg;
           set_date = true;
-          break;
-        case 'u':
+          अवरोध;
+        हाल 'u':
           tzstring = "UTC0";
-          break;
+          अवरोध;
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
-          usage (EXIT_FAILURE);
+        शेष:
+          usage (निकास_त्रुटि);
         }
     }
 
-  int option_specified_date = (!!datestr + !!batch_file + !!reference
+  पूर्णांक option_specified_date = (!!datestr + !!batch_file + !!reference
                                + get_resolution);
 
-  if (option_specified_date > 1)
+  अगर (option_specified_date > 1)
     {
       error (0, 0,
         _("the options to specify dates for printing are mutually exclusive"));
-      usage (EXIT_FAILURE);
+      usage (निकास_त्रुटि);
     }
 
-  if (set_date && option_specified_date)
+  अगर (set_date && option_specified_date)
     {
       error (0, 0,
           _("the options to print and set the time may not be used together"));
-      usage (EXIT_FAILURE);
+      usage (निकास_त्रुटि);
     }
 
-  if (discarded_datestr && (parse_datetime_flags & PARSE_DATETIME_DEBUG))
+  अगर (discarded_datestr && (parse_datetime_flags & PARSE_DATETIME_DEBUG))
     error (0, 0, _("only using last of multiple -d options"));
 
-  if (discarded_set_datestr && (parse_datetime_flags & PARSE_DATETIME_DEBUG))
+  अगर (discarded_set_datestr && (parse_datetime_flags & PARSE_DATETIME_DEBUG))
     error (0, 0, _("only using last of multiple -s options"));
 
-  if (optind < argc)
+  अगर (optind < argc)
     {
-      if (optind + 1 < argc)
+      अगर (optind + 1 < argc)
         {
           error (0, 0, _("extra operand %s"), quote (argv[optind + 1]));
-          usage (EXIT_FAILURE);
+          usage (निकास_त्रुटि);
         }
 
-      if (argv[optind][0] == '+')
+      अगर (argv[optind][0] == '+')
         {
-          if (format)
-            error (EXIT_FAILURE, 0, _("multiple output formats specified"));
+          अगर (format)
+            error (निकास_त्रुटि, 0, _("multiple output formats specified"));
           format = argv[optind++] + 1;
         }
-      else if (set_date || option_specified_date)
+      अन्यथा अगर (set_date || option_specified_date)
         {
           error (0, 0,
                  _("the argument %s lacks a leading '+';\n"
                    "when using an option to specify date(s), any non-option\n"
                    "argument must be a format string beginning with '+'"),
                  quote (argv[optind]));
-          usage (EXIT_FAILURE);
+          usage (निकास_त्रुटि);
         }
     }
 
-  if (!format)
+  अगर (!format)
     {
-      if (get_resolution)
+      अगर (get_resolution)
         format = "%s.%N";
-      else
+      अन्यथा
         {
           format = DATE_FMT_LANGINFO ();
 
@@ -719,29 +719,29 @@ main (int argc, char **argv)
              written by date, which means "date" must generate output
              using the POSIX locale; but adding _() would cause "date"
              to use a Korean translation of the format.  */
-          if (! *format)
+          अगर (! *format)
             format = "%a %b %e %H:%M:%S %Z %Y";
         }
     }
 
-  char *format_copy = adjust_resolution (format);
-  char const *format_res = format_copy ? format_copy : format;
-  if (!tzstring)
-    tzstring = getenv ("TZ");
+  अक्षर *format_copy = adjust_resolution (format);
+  अक्षर स्थिर *format_res = format_copy ? format_copy : format;
+  अगर (!tzstring)
+    tzstring = दो_पर्या ("TZ");
   timezone_t tz = tzalloc (tzstring);
 
   bool ok = true;
-  if (batch_file != NULL)
+  अगर (batch_file != शून्य)
     ok = batch_convert (batch_file, format_res, format_in_c_locale,
                         tz, tzstring);
-  else
+  अन्यथा
     {
       bool valid_date = true;
-      struct timespec when;
+      काष्ठा timespec when;
 
-      if (!option_specified_date && !set_date)
+      अगर (!option_specified_date && !set_date)
         {
-          if (optind < argc)
+          अगर (optind < argc)
             {
               /* Prepare to set system clock to the specified date/time
                  given in the POSIX-format.  */
@@ -753,48 +753,48 @@ main (int argc, char **argv)
                                        | PDS_CENTURY | PDS_SECONDS));
               when.tv_nsec = 0; /* FIXME: posixtime should set this.  */
             }
-          else
+          अन्यथा
             {
               /* Prepare to print the current date/time.  */
-              gettime (&when);
+              समय_लो (&when);
             }
         }
-      else
+      अन्यथा
         {
           /* (option_specified_date || set_date) */
-          if (reference != NULL)
+          अगर (reference != शून्य)
             {
-              struct stat refstats;
-              if (stat (reference, &refstats) != 0)
-                error (EXIT_FAILURE, errno, "%s", quotef (reference));
+              काष्ठा stat refstats;
+              अगर (stat (reference, &refstats) != 0)
+                error (निकास_त्रुटि, त्रुटि_सं, "%s", quotef (reference));
               when = get_stat_mtime (&refstats);
             }
-          else if (get_resolution)
+          अन्यथा अगर (get_resolution)
             {
-              long int res = gettime_res ();
+              दीर्घ पूर्णांक res = gettime_res ();
               when.tv_sec = res / TIMESPEC_HZ;
               when.tv_nsec = res % TIMESPEC_HZ;
             }
-          else
+          अन्यथा
             {
-              if (set_datestr)
+              अगर (set_datestr)
                 datestr = set_datestr;
-              valid_date = parse_datetime2 (&when, datestr, NULL,
+              valid_date = parse_datetime2 (&when, datestr, शून्य,
                                             parse_datetime_flags,
                                             tz, tzstring);
             }
         }
 
-      if (! valid_date)
-        error (EXIT_FAILURE, 0, _("invalid date %s"), quote (datestr));
+      अगर (! valid_date)
+        error (निकास_त्रुटि, 0, _("invalid date %s"), quote (datestr));
 
-      if (set_date)
+      अगर (set_date)
         {
           /* Set the system clock to the specified date, then regardless of
              the success of that operation, format and print that date.  */
-          if (settime (&when) != 0)
+          अगर (समय_रखो (&when) != 0)
             {
-              error (0, errno, _("cannot set date"));
+              error (0, त्रुटि_सं, _("cannot set date"));
               ok = false;
             }
         }
@@ -802,5 +802,5 @@ main (int argc, char **argv)
       ok &= show_date_helper (format_res, format_in_c_locale, when, tz);
     }
 
-  main_exit (ok ? EXIT_SUCCESS : EXIT_FAILURE);
+  main_exit (ok ? निकास_सफल : निकास_त्रुटि);
 }

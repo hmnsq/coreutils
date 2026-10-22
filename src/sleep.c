@@ -14,37 +14,37 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
+#समावेश <config.h>
+#समावेश <stdio.h>
+#समावेश <sys/types.h>
 
-#include "system.h"
-#include "cl-strtod.h"
-#include "dtimespec-bound.h"
-#include "long-options.h"
-#include "quote.h"
-#include "xnanosleep.h"
+#समावेश "system.h"
+#समावेश "cl-strtod.h"
+#समावेश "dtimespec-bound.h"
+#समावेश "long-options.h"
+#समावेश "quote.h"
+#समावेश "xnanosleep.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "sleep"
+#घोषणा PROGRAM_NAME "sleep"
 
-#define AUTHORS \
+#घोषणा AUTHORS \
   proper_name ("Jim Meyering"), \
   proper_name ("Paul Eggert")
 
-void
-usage (int status)
+व्योम
+usage (पूर्णांक status)
 {
-  if (status != EXIT_SUCCESS)
+  अगर (status != निकास_सफल)
     emit_try_help ();
-  else
+  अन्यथा
     {
-      printf (_("\
-Usage: %s NUMBER[SUFFIX]...\n\
+      म_लिखो (_("\
+Usage: %s संख्या_2[SUFFIX]...\n\
   or:  %s OPTION\n\
-Pause for NUMBER seconds, where NUMBER is an integer or floating-point.\n\
-SUFFIX may be 's','m','h', or 'd', for seconds, minutes, hours, days.\n\
-With multiple arguments, pause for the sum of their values.\n\
+Pause क्रम संख्या_2 seconds, where संख्या_2 is an integer or floating-point.\n\
+SUFFIX may be 's','m','h', or 'd', क्रम seconds, minutes, hours, days.\n\
+With multiple arguments, छोड़ो क्रम the योग of their मूल्यावली.\n\
 \n\
 "),
               program_name, program_name);
@@ -52,7 +52,7 @@ With multiple arguments, pause for the sum of their values.\n\
       oputs (VERSION_OPTION_DESCRIPTION);
       emit_ancillary_info (PROGRAM_NAME);
     }
-  exit (status);
+  निकास (status);
 }
 
 /* Given a floating point value *X, and a suffix character, SUFFIX_CHAR,
@@ -61,66 +61,66 @@ With multiple arguments, pause for the sum of their values.\n\
    hours, or 'd' for days.  If SUFFIX_CHAR is invalid, don't modify *X
    and return false.  Otherwise return true.  */
 
-static bool
-apply_suffix (double *x, char suffix_char)
+अटल bool
+apply_suffix (द्विगुन *x, अक्षर suffix_char)
 {
-  int multiplier;
+  पूर्णांक multiplier;
 
-  switch (suffix_char)
+  चयन (suffix_char)
     {
-    case 0:
-    case 's':
+    हाल 0:
+    हाल 's':
       multiplier = 1;
-      break;
-    case 'm':
+      अवरोध;
+    हाल 'm':
       multiplier = 60;
-      break;
-    case 'h':
+      अवरोध;
+    हाल 'h':
       multiplier = 60 * 60;
-      break;
-    case 'd':
+      अवरोध;
+    हाल 'd':
       multiplier = 60 * 60 * 24;
-      break;
-    default:
-      return false;
+      अवरोध;
+    शेष:
+      वापस false;
     }
 
   *x = dtimespec_bound (*x * multiplier, 0);
 
-  return true;
+  वापस true;
 }
 
-int
-main (int argc, char **argv)
+पूर्णांक
+मुख्य (पूर्णांक argc, अक्षर **argv)
 {
-  double seconds = 0.0;
+  द्विगुन seconds = 0.0;
   bool ok = true;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
-  setlocale (LC_ALL, "");
+  रखो_क्षेत्र (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
-  atexit (close_stdout);
+  निकास_पर (close_stdout);
 
   parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
                                    Version, true, usage, AUTHORS,
-                                   (char const *) NULL);
+                                   (अक्षर स्थिर *) शून्य);
 
-  if (argc == 1)
+  अगर (argc == 1)
     {
       error (0, 0, _("missing operand"));
-      usage (EXIT_FAILURE);
+      usage (निकास_त्रुटि);
     }
 
-  for (int i = optind; i < argc; i++)
+  क्रम (पूर्णांक i = optind; i < argc; i++)
     {
-      char *p;
-      errno = 0;
-      double duration = cl_strtod (argv[i], &p);
-      double s = dtimespec_bound (duration, errno);
-      if (argv[i] == p
+      अक्षर *p;
+      त्रुटि_सं = 0;
+      द्विगुन duration = cl_strtod (argv[i], &p);
+      द्विगुन s = dtimespec_bound (duration, त्रुटि_सं);
+      अगर (argv[i] == p
           /* Nonnegative interval.  */
           || ! (0 <= s)
           /* No extra chars after the number and an optional s,m,h,d char.  */
@@ -135,11 +135,11 @@ main (int argc, char **argv)
       seconds = dtimespec_bound (seconds + s, 0);
     }
 
-  if (!ok)
-    usage (EXIT_FAILURE);
+  अगर (!ok)
+    usage (निकास_त्रुटि);
 
-  if (xnanosleep (seconds))
-    error (EXIT_FAILURE, errno, _("cannot read realtime clock"));
+  अगर (xnanosleep (seconds))
+    error (निकास_त्रुटि, त्रुटि_सं, _("cannot read realtime clock"));
 
-  return EXIT_SUCCESS;
+  वापस निकास_सफल;
 }

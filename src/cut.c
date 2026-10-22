@@ -22,49 +22,49 @@
 
    Rewrite cut_fields and cut_bytes -- Jim Meyering.  */
 
-#include <config.h>
+#समावेश <config.h>
 
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
-#include "system.h"
+#समावेश <stdio.h>
+#समावेश <getopt.h>
+#समावेश <sys/types.h>
+#समावेश "system.h"
 
-#include "argmatch.h"
-#include "assure.h"
-#include "c-ctype.h"
-#include "fadvise.h"
-#include "ioblksize.h"
-#include "mbbuf.h"
-#include "memchr2.h"
+#समावेश "argmatch.h"
+#समावेश "assure.h"
+#समावेश "c-ctype.h"
+#समावेश "fadvise.h"
+#समावेश "ioblksize.h"
+#समावेश "mbbuf.h"
+#समावेश "memchr2.h"
 
-#include "set-fields.h"
-#include "utf8.h"
+#समावेश "set-fields.h"
+#समावेश "utf8.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "cut"
+#घोषणा PROGRAM_NAME "cut"
 
-#define AUTHORS \
+#घोषणा AUTHORS \
   proper_name ("David M. Ihnat"), \
   proper_name ("David MacKenzie"), \
   proper_name ("Jim Meyering")
 
-#define FATAL_ERROR(Message)						\
-  do									\
+#घोषणा FATAL_ERROR(Message)						\
+  करो									\
     {									\
       error (0, 0, (Message));						\
-      usage (EXIT_FAILURE);						\
+      usage (निकास_त्रुटि);						\
     }									\
-  while (0)
+  जबतक (0)
 
 /* Above this function call overhead becomes less of a concern.
    At this and below we avoid fwrite(), memchr() etc.  */
-#define SMALL_BYTE_THRESHOLD 3
+#घोषणा SMALL_BYTE_THRESHOLD 3
 
 /* Pointer inside RP.  When checking if a -b,-c,-f is selected
    by a finite range, we check if it is between CURRENT_RP.LO
    and CURRENT_RP.HI.  If the index is greater than
    CURRENT_RP.HI then we make CURRENT_RP to point to the next range pair.  */
-static struct field_range_pair *current_rp;
+अटल काष्ठा field_range_pair *current_rp;
 
 /* This buffer is used to support the semantics of the -s option
    (or lack of same) when the specified field list includes (does
@@ -73,66 +73,66 @@ static struct field_range_pair *current_rp;
    is followed by a delimiter or a newline before any of it may be
    output.  Otherwise, cut_fields can do the job without using this
    buffer.  */
-static char *field_1_buffer;
+अटल अक्षर *field_1_बफर;
 
 /* The number of bytes allocated for FIELD_1_BUFFER.  */
-static idx_t field_1_bufsize;
+अटल idx_t field_1_bufsize;
 
 /* If true, do not output lines containing no delimiter characters.
    Otherwise, all such lines are printed.  This option is valid only
    with field mode.  */
-static bool suppress_non_delimited;
+अटल bool suppress_non_delimited;
 
 /* If true, print all bytes, characters, or fields _except_
    those that were specified.  */
-static bool complement;
+अटल bool complement;
 
 /* The delimiter character for multibyte field mode.  */
-static mcel_t delim_mcel;
+अटल mcel_t delim_mcel;
 
 /* The delimiter bytes
    (to be NUL terminated for strstr() optimization).  */
-static char delim_bytes[MCEL_LEN_MAX + 1];
+अटल अक्षर delim_bytes[MCEL_LEN_MAX + 1];
 
 /* The delimiter for each line/record.  */
-static unsigned char line_delim = '\n';
+अटल अचिन्हित अक्षर पंक्ति_delim = '\n';
 
 /* The length of output_delimiter_string.  */
-static size_t output_delimiter_length;
+अटल माप_प्रकार output_delimiter_लंबाई;
 
 /* The output field separator string.  Defaults to the 1-character
    string consisting of the input delimiter.  */
-static char *output_delimiter_string;
+अटल अक्षर *output_delimiter_string;
 
 /* The output delimiter string contents, if the default.  */
-static char output_delimiter_default[MCEL_LEN_MAX];
+अटल अक्षर output_delimiter_default[MCEL_LEN_MAX];
 
 /* True if we have ever read standard input.  */
-static bool have_read_stdin;
+अटल bool have_read_stdin;
 
 /* If true, don't split multibyte characters in byte mode.  */
-static bool no_split;
+अटल bool no_split;
 
 /* If true, interpret each run of whitespace as one field delimiter.  */
-static bool whitespace_delimited;
+अटल bool whitespace_delimited;
 
 /* If true, ignore leading and trailing whitespace in -w mode.  */
-static bool trim_outer_whitespace;
+अटल bool trim_outer_whitespace;
 
 /* If true, default the output delimiter to a single space.  */
-static bool space_output_delimiter_default;
+अटल bool space_output_delimiter_default;
 
-enum whitespace_option
+क्रमागत whitespace_option
 {
   WHITESPACE_OPTION_TRIMMED
 };
 
-static char const *const whitespace_option_args[] =
+अटल अक्षर स्थिर *स्थिर whitespace_option_args[] =
 {
-  "trimmed", NULL
+  "trimmed", शून्य
 };
 
-static enum whitespace_option const whitespace_option_types[] =
+अटल क्रमागत whitespace_option स्थिर whitespace_option_types[] =
 {
   WHITESPACE_OPTION_TRIMMED
 };
@@ -140,7 +140,7 @@ static enum whitespace_option const whitespace_option_types[] =
 ARGMATCH_VERIFY (whitespace_option_args, whitespace_option_types);
 
 /* Whether to cut bytes, characters, or fields.  */
-static enum
+अटल क्रमागत
 {
   CUT_MODE_NONE,
   CUT_MODE_BYTES,
@@ -150,42 +150,42 @@ static enum
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+क्रमागत
 {
-  COMPLEMENT_OPTION = CHAR_MAX + 1
+  COMPLEMENT_OPTION = अक्षर_उच्च + 1
 };
 
-static struct option const longopts[] =
+अटल काष्ठा option स्थिर longopts[] =
 {
-  {"bytes", required_argument, NULL, 'b'},
-  {"characters", required_argument, NULL, 'c'},
-  {"fields", required_argument, NULL, 'f'},
-  {"delimiter", required_argument, NULL, 'd'},
-  {"no-partial", no_argument, NULL, 'n'},
-  {"whitespace-delimited", optional_argument, NULL, 'w'},
-  {"only-delimited", no_argument, NULL, 's'},
-  {"output-delimiter", required_argument, NULL, 'O'},
-  {"complement", no_argument, NULL, COMPLEMENT_OPTION},
-  {"zero-terminated", no_argument, NULL, 'z'},
+  {"bytes", required_argument, शून्य, 'b'},
+  {"characters", required_argument, शून्य, 'c'},
+  {"fields", required_argument, शून्य, 'f'},
+  {"delimiter", required_argument, शून्य, 'd'},
+  {"no-partial", no_argument, शून्य, 'n'},
+  {"whitespace-delimited", optional_argument, शून्य, 'w'},
+  {"only-delimited", no_argument, शून्य, 's'},
+  {"output-delimiter", required_argument, शून्य, 'O'},
+  {"complement", no_argument, शून्य, COMPLEMENT_OPTION},
+  {"zero-terminated", no_argument, शून्य, 'z'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {शून्य, 0, शून्य, 0}
 };
 
-void
-usage (int status)
+व्योम
+usage (पूर्णांक status)
 {
-  if (status != EXIT_SUCCESS)
+  अगर (status != निकास_सफल)
     emit_try_help ();
-  else
+  अन्यथा
     {
-      printf (_("\
-Usage: %s OPTION... [FILE]...\n\
+      म_लिखो (_("\
+Usage: %s OPTION... [खाता]...\n\
 "),
               program_name);
-      fputs (_("\
-Print selected parts of lines from each FILE to standard output.\n\
-"), stdout);
+      ख_माला_दो (_("\
+Print selected parts of पंक्तियाँ from each खाता to standard output.\n\
+"), मानक_निकास);
 
       emit_stdin_note ();
       emit_mandatory_arg_note ();
@@ -204,11 +204,11 @@ Print selected parts of lines from each FILE to standard output.\n\
 "));
       oputs (_("\
   -d, --delimiter=DELIM\n\
-         use DELIM instead of TAB for field delimiter\n\
+         use DELIM instead of TAB क्रम field delimiter\n\
 "));
       oputs (_("\
   -f, --fields=LIST\n\
-         select only these fields;  also print any line that contains\n\
+         select only these fields;  also print any पंक्ति that contains\n\
          no delimiter character, unless the -s option is specified\n\
 "));
       oputs (_("\
@@ -222,11 +222,11 @@ Print selected parts of lines from each FILE to standard output.\n\
       oputs (_("\
   -O, --output-delimiter=STRING\n\
          use STRING as the output delimiter;\n\
-         the default is to use the input delimiter\n\
+         the शेष is to use the निवेश delimiter\n\
 "));
       oputs (_("\
   -s, --only-delimited\n\
-         do not print lines not containing delimiters\n\
+         करो not print पंक्तियाँ not containing delimiters\n\
 "));
       oputs (_("\
   -w, --whitespace-delimited[=trimmed]\n\
@@ -235,81 +235,81 @@ Print selected parts of lines from each FILE to standard output.\n\
 "));
       oputs (_("\
   -z, --zero-terminated\n\
-         line delimiter is NUL, not newline\n\
+         पंक्ति delimiter is NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
-      fputs (_("\
+      ख_माला_दो (_("\
 \n\
 Use one, and only one of -b, -c, -f or -F.  Each LIST is made up of one\n\
-range, or many ranges separated by commas.  Selected input is written\n\
-in the same order that it is read, and is written exactly once.\n\
-"), stdout);
-      fputs (_("\
+range, or many ranges separated by commas.  Selected निवेश is written\n\
+in the same order that it is पढ़ो, and is written exactly once.\n\
+"), मानक_निकास);
+      ख_माला_दो (_("\
 Each range is one of:\n\
 \n\
   N     N'th byte, character or field, counted from 1\n\
-  N-    from N'th byte, character or field, to end of line\n\
+  N-    from N'th byte, character or field, to end of पंक्ति\n\
   N-M   from N'th to M'th (included) byte, character or field\n\
   -M    from first to M'th (included) byte, character or field\n\
-"), stdout);
+"), मानक_निकास);
       emit_ancillary_info (PROGRAM_NAME);
     }
-  exit (status);
+  निकास (status);
 }
 
 
 /* Increment *ITEM_IDX (i.e., a field or byte index),
    and if required CURRENT_RP.  */
 
-static inline void
-next_item (uintmax_t *item_idx)
+अटल अंतरभूत व्योम
+अग्र_item (uintmax_t *item_idx)
 {
   (*item_idx)++;
-  if ((*item_idx) > current_rp->hi)
+  अगर ((*item_idx) > current_rp->hi)
     current_rp++;
 }
 
 /* Return nonzero if the K'th field or byte is printable.  */
 
-static inline bool
+अटल अंतरभूत bool
 print_kth (uintmax_t k)
 {
-  return current_rp->lo <= k;
+  वापस current_rp->lo <= k;
 }
 
 /* Return nonzero if K'th byte is the beginning of a range.  */
 
-static inline bool
-is_range_start_index (uintmax_t k)
+अटल अंतरभूत bool
+is_range_start_सूचकांक (uintmax_t k)
 {
-  return k == current_rp->lo;
+  वापस k == current_rp->lo;
 }
 
-static inline bool
-field_delim_is_line_delim (void)
+अटल अंतरभूत bool
+field_delim_is_पंक्ति_delim (व्योम)
 {
-  return delim_mcel.len == 1 && delim_bytes[0] == line_delim;
+  वापस delim_mcel.len == 1 && delim_bytes[0] == पंक्ति_delim;
 }
 
 /* This is equivalent to but faster than calling c32issep directly.
    It assumes all unibyte locales match c_isblank.  */
 
-static bool
+अटल bool
 mcel_isblank (mcel_t g)
 {
-  return (g.len == 1 && c_isblank (g.ch)) || (g.len > 1 && c32issep (g.ch));
+  वापस (g.len == 1 && c_isblank (g.ch)) || (g.len > 1 && c32issep (g.ch));
 }
 
 /* Return TRUE if it's valid to do a simple byte search
    for the delimiter bytes.  */
 
-static inline bool
-bytesearch_field_delim_ok (void)
+अटल अंतरभूत bool
+bytesearch_field_delim_ok (व्योम)
 {
-  unsigned char delim_0 = delim_bytes[0];
+  अचिन्हित अक्षर delim_0 = delim_bytes[0];
 
-  return (delim_mcel.len == 1
+  वापस (delim_mcel.len == 1
           ? (MB_CUR_MAX <= 1
              || (is_utf8_charset ()
                  ? (delim_0 < 0x80 || delim_0 > 0xF4) : delim_0 < 0x30))
@@ -317,292 +317,292 @@ bytesearch_field_delim_ok (void)
 }
 
 
-enum field_terminator
+क्रमागत field_terminator
 {
-  FIELD_DATA,
+  FIELD_तथ्य,
   FIELD_DELIMITER,
-  FIELD_LINE_DELIMITER,
+  FIELD_पंक्ति_DELIMITER,
   FIELD_EOF
 };
 
-enum bytesearch_mode
+क्रमागत bytesearch_mode
 {
   BYTESEARCH_FIELDS,
-  BYTESEARCH_LINE_ONLY
+  BYTESEARCH_पंक्ति_ONLY
 };
 
-struct bytesearch_context
+काष्ठा bytesearch_context
 {
-  enum bytesearch_mode mode;
+  क्रमागत bytesearch_mode mode;
   bool blank_delimited;
   bool at_eof;
-  char *line_end;
-  bool line_end_known;
+  अक्षर *पंक्ति_end;
+  bool पंक्ति_end_known;
 };
 
-static inline void
-bytesearch_context_reset (struct bytesearch_context *ctx)
+अटल अंतरभूत व्योम
+bytesearch_context_reset (काष्ठा bytesearch_context *ctx)
 {
   ctx->mode = BYTESEARCH_FIELDS;
-  ctx->line_end = NULL;
-  ctx->line_end_known = false;
+  ctx->पंक्ति_end = शून्य;
+  ctx->पंक्ति_end_known = false;
 }
 
-struct mbfield_parser
+काष्ठा mbfield_parser
 {
   bool whitespace_delimited;
   bool trim_outer_whitespace;
-  bool at_line_start;
+  bool at_पंक्ति_start;
   bool have_saved;
   mcel_t saved_g;
 };
 
-static inline mcel_t
+अटल अंतरभूत mcel_t
 mbbuf_get_saved_char (mbbuf_t *mbbuf, bool *have_saved, mcel_t *saved_g)
 {
-  if (*have_saved)
+  अगर (*have_saved)
     {
       *have_saved = false;
-      return *saved_g;
+      वापस *saved_g;
     }
-  return mbbuf_get_char (mbbuf);
+  वापस mbbuf_get_char (mbbuf);
 }
 
-static inline enum field_terminator
-skip_whitespace_run (mbbuf_t *mbuf, struct mbfield_parser *parser,
-                     bool *have_pending_line,
+अटल अंतरभूत क्रमागत field_terminator
+skip_whitespace_run (mbbuf_t *mbuf, काष्ठा mbfield_parser *parser,
+                     bool *have_pending_पंक्ति,
                      bool have_initial_whitespace)
 {
   mcel_t g;
 
-  do
+  करो
     {
       g = mbbuf_get_char (mbuf);
-      if (g.ch != MBBUF_EOF)
-        *have_pending_line = true;
+      अगर (g.ch != MBBUF_EOF)
+        *have_pending_पंक्ति = true;
     }
-  while (g.ch != MBBUF_EOF && g.ch != line_delim && mcel_isblank (g));
+  जबतक (g.ch != MBBUF_EOF && g.ch != पंक्ति_delim && mcel_isblank (g));
 
-  bool trim_start = parser->trim_outer_whitespace && parser->at_line_start;
+  bool trim_start = parser->trim_outer_whitespace && parser->at_पंक्ति_start;
 
-  if (parser->trim_outer_whitespace
-      && (g.ch == MBBUF_EOF || g.ch == line_delim))
+  अगर (parser->trim_outer_whitespace
+      && (g.ch == MBBUF_EOF || g.ch == पंक्ति_delim))
     {
-      return g.ch == MBBUF_EOF ? FIELD_EOF : FIELD_LINE_DELIMITER;
+      वापस g.ch == MBBUF_EOF ? FIELD_EOF : FIELD_पंक्ति_DELIMITER;
     }
 
   parser->saved_g = g;
   parser->have_saved = true;
-  return trim_start && !have_initial_whitespace ? FIELD_DATA : FIELD_DELIMITER;
+  वापस trim_start && !have_initial_whitespace ? FIELD_तथ्य : FIELD_DELIMITER;
 }
 
 /* Like fwrite, but avoid a function call for smaller amounts,
    and exit immediately upon error.  */
 
-static void
-write_bytes (char const *buf, size_t n_bytes)
+अटल व्योम
+write_bytes (अक्षर स्थिर *buf, माप_प्रकार n_bytes)
 {
-  if (n_bytes <= SMALL_BYTE_THRESHOLD)
+  अगर (n_bytes <= SMALL_BYTE_THRESHOLD)
     {
-      for (size_t i = 0; i < n_bytes; i++)
-        if (putchar (buf[i]) < 0)
+      क्रम (माप_प्रकार i = 0; i < n_bytes; i++)
+        अगर (अक्षर_दो (buf[i]) < 0)
           write_error ();
-      return;
+      वापस;
     }
 
-  if (fwrite (buf, sizeof (char), n_bytes, stdout) != n_bytes)
+  अगर (ख_डालो (buf, माप (अक्षर), n_bytes, मानक_निकास) != n_bytes)
     write_error ();
 }
 
 /* Like memcpy, but avoid a function call for smaller amounts.  */
 
-static inline void
-copy_bytes (char *dst, char const *src, size_t n_bytes)
+अटल अंतरभूत व्योम
+copy_bytes (अक्षर *dst, अक्षर स्थिर *src, माप_प्रकार n_bytes)
 {
-  if (n_bytes <= SMALL_BYTE_THRESHOLD)
+  अगर (n_bytes <= SMALL_BYTE_THRESHOLD)
     {
-      for (size_t i = 0; i < n_bytes; i++)
+      क्रम (माप_प्रकार i = 0; i < n_bytes; i++)
         dst[i] = src[i];
-      return;
+      वापस;
     }
 
-  memcpy (dst, src, n_bytes);
+  स_नकल (dst, src, n_bytes);
 }
 
 /* Like memchr, but avoid a function call for smaller amounts.  */
 
-static inline void*
-search_bytes (char const *buf, int c, size_t n_bytes)
+अटल अंतरभूत व्योम*
+खोज_bytes (अक्षर स्थिर *buf, पूर्णांक c, माप_प्रकार n_bytes)
 {
-  if (n_bytes != 0 && to_uchar (buf[0]) == c)
-    return (char *) buf;
-  if (1 < n_bytes && to_uchar (buf[1]) == c)
-    return (char *) buf + 1;
+  अगर (n_bytes != 0 && to_uchar (buf[0]) == c)
+    वापस (अक्षर *) buf;
+  अगर (1 < n_bytes && to_uchar (buf[1]) == c)
+    वापस (अक्षर *) buf + 1;
 
-  return 2 < n_bytes ? (char *) memchr (buf + 2, c, n_bytes - 2) : NULL;
+  वापस 2 < n_bytes ? (अक्षर *) स_प्रथम (buf + 2, c, n_bytes - 2) : शून्य;
 }
 
-static inline void
-write_line_delim (void)
+अटल अंतरभूत व्योम
+write_पंक्ति_delim (व्योम)
 {
-  if (putchar (line_delim) < 0)
+  अगर (अक्षर_दो (पंक्ति_delim) < 0)
     write_error ();
 }
 
-static inline void
-reset_item_line (uintmax_t *item_idx, bool *print_delimiter)
+अटल अंतरभूत व्योम
+reset_item_पंक्ति (uintmax_t *item_idx, bool *print_delimiter)
 {
-  write_line_delim ();
+  write_पंक्ति_delim ();
   *item_idx = 0;
   *print_delimiter = false;
   current_rp = frp;
 }
 
-static inline void
-write_pending_line_delim (uintmax_t item_idx)
+अटल अंतरभूत व्योम
+write_pending_पंक्ति_delim (uintmax_t item_idx)
 {
-  if (item_idx > 0)
-    write_line_delim ();
+  अगर (item_idx > 0)
+    write_पंक्ति_delim ();
 }
 
-static inline void
+अटल अंतरभूत व्योम
 write_selected_item (bool *print_delimiter, bool range_start,
-                     char const *buf, size_t n_bytes)
+                     अक्षर स्थिर *buf, माप_प्रकार n_bytes)
 {
-  if (output_delimiter_string != output_delimiter_default)
+  अगर (output_delimiter_string != output_delimiter_default)
     {
-      if (*print_delimiter && range_start)
-        write_bytes (output_delimiter_string, output_delimiter_length);
+      अगर (*print_delimiter && range_start)
+        write_bytes (output_delimiter_string, output_delimiter_लंबाई);
       *print_delimiter = true;
     }
 
   write_bytes (buf, n_bytes);
 }
 
-static inline void
-append_field_1_chunk (char const *buf, idx_t len, idx_t *n_bytes)
+अटल अंतरभूत व्योम
+append_field_1_chunk (अक्षर स्थिर *buf, idx_t len, idx_t *n_bytes)
 {
-  if (field_1_bufsize - *n_bytes < len)
+  अगर (field_1_bufsize - *n_bytes < len)
     {
-      field_1_buffer = xpalloc (field_1_buffer, &field_1_bufsize,
-                                len, -1, sizeof *field_1_buffer);
+      field_1_बफर = xpalloc (field_1_बफर, &field_1_bufsize,
+                                len, -1, माप *field_1_बफर);
     }
 
-  copy_bytes (field_1_buffer + *n_bytes, buf, len);
+  copy_bytes (field_1_बफर + *n_bytes, buf, len);
   *n_bytes += len;
 }
 
-static inline void
+अटल अंतरभूत व्योम
 append_field_1_bytes (mbbuf_t *mbbuf, mcel_t g, idx_t *n_bytes)
 {
   append_field_1_chunk (mbbuf_char_offset (mbbuf, g), g.len, n_bytes);
 }
 
-static inline enum field_terminator
-scan_mb_blank_field (mbbuf_t *mbbuf, struct mbfield_parser *parser,
-                     bool *have_pending_line, bool write_field,
+अटल अंतरभूत क्रमागत field_terminator
+scan_mb_blank_field (mbbuf_t *mbbuf, काष्ठा mbfield_parser *parser,
+                     bool *have_pending_पंक्ति, bool write_field,
                      idx_t *n_bytes)
 {
-  if (parser->trim_outer_whitespace && parser->at_line_start)
+  अगर (parser->trim_outer_whitespace && parser->at_पंक्ति_start)
     {
-      enum field_terminator terminator
-        = skip_whitespace_run (mbbuf, parser, have_pending_line, false);
-      if (terminator != FIELD_DATA)
-        return terminator;
+      क्रमागत field_terminator terminator
+        = skip_whitespace_run (mbbuf, parser, have_pending_पंक्ति, false);
+      अगर (terminator != FIELD_तथ्य)
+        वापस terminator;
     }
 
-  parser->at_line_start = false;
+  parser->at_पंक्ति_start = false;
 
-  while (true)
+  जबतक (true)
     {
       mcel_t g = mbbuf_get_saved_char (mbbuf, &parser->have_saved,
                                       &parser->saved_g);
-      if (g.ch == MBBUF_EOF)
-        return FIELD_EOF;
+      अगर (g.ch == MBBUF_EOF)
+        वापस FIELD_EOF;
 
-      *have_pending_line = true;
+      *have_pending_पंक्ति = true;
 
-      if (g.ch == line_delim)
-        return FIELD_LINE_DELIMITER;
+      अगर (g.ch == पंक्ति_delim)
+        वापस FIELD_पंक्ति_DELIMITER;
 
-      if (mcel_isblank (g))
-        return skip_whitespace_run (mbbuf, parser, have_pending_line, true);
+      अगर (mcel_isblank (g))
+        वापस skip_whitespace_run (mbbuf, parser, have_pending_पंक्ति, true);
 
-      if (n_bytes)
+      अगर (n_bytes)
         append_field_1_bytes (mbbuf, g, n_bytes);
-      else if (write_field)
+      अन्यथा अगर (write_field)
         write_bytes (mbbuf_char_offset (mbbuf, g), g.len);
     }
 }
 
-static inline enum field_terminator
-scan_mb_delim_field (mbbuf_t *mbbuf, bool *have_pending_line,
+अटल अंतरभूत क्रमागत field_terminator
+scan_mb_delim_field (mbbuf_t *mbbuf, bool *have_pending_पंक्ति,
                      bool write_field, idx_t *n_bytes)
 {
-  while (true)
+  जबतक (true)
     {
       mcel_t g = mbbuf_get_char (mbbuf);
-      if (g.ch == MBBUF_EOF)
-        return FIELD_EOF;
+      अगर (g.ch == MBBUF_EOF)
+        वापस FIELD_EOF;
 
-      *have_pending_line = true;
+      *have_pending_पंक्ति = true;
 
-      if (g.ch == line_delim)
-        return FIELD_LINE_DELIMITER;
+      अगर (g.ch == पंक्ति_delim)
+        वापस FIELD_पंक्ति_DELIMITER;
 
-      if (delim_mcel.err ? g.err == delim_mcel.err : mcel_eq (g, delim_mcel))
-        return FIELD_DELIMITER;
+      अगर (delim_mcel.err ? g.err == delim_mcel.err : mcel_eq (g, delim_mcel))
+        वापस FIELD_DELIMITER;
 
-      if (n_bytes)
+      अगर (n_bytes)
         append_field_1_bytes (mbbuf, g, n_bytes);
-      else if (write_field)
+      अन्यथा अगर (write_field)
         write_bytes (mbbuf_char_offset (mbbuf, g), g.len);
     }
 }
 
-static inline enum field_terminator
-scan_mb_field (mbbuf_t *mbbuf, struct mbfield_parser *parser,
-               bool *have_pending_line, bool write_field, idx_t *n_bytes)
+अटल अंतरभूत क्रमागत field_terminator
+scan_mb_field (mbbuf_t *mbbuf, काष्ठा mbfield_parser *parser,
+               bool *have_pending_पंक्ति, bool write_field, idx_t *n_bytes)
 {
-  return (parser->whitespace_delimited
-          ? scan_mb_blank_field (mbbuf, parser, have_pending_line,
+  वापस (parser->whitespace_delimited
+          ? scan_mb_blank_field (mbbuf, parser, have_pending_पंक्ति,
                                  write_field, n_bytes)
-          : scan_mb_delim_field (mbbuf, have_pending_line, write_field,
+          : scan_mb_delim_field (mbbuf, have_pending_पंक्ति, write_field,
                                  n_bytes));
 }
 
 /* Skip input through the next line delimiter without decoding characters.
    PARSER may have saved a character beyond a whitespace delimiter.  */
 
-static enum field_terminator
-scan_mb_line_end (mbbuf_t *mbbuf, struct mbfield_parser *parser,
-                  bool *have_pending_line)
+अटल क्रमागत field_terminator
+scan_mb_पंक्ति_end (mbbuf_t *mbbuf, काष्ठा mbfield_parser *parser,
+                  bool *have_pending_पंक्ति)
 {
-  if (parser->have_saved)
+  अगर (parser->have_saved)
     {
       parser->have_saved = false;
-      if (parser->saved_g.ch == MBBUF_EOF)
-        return FIELD_EOF;
+      अगर (parser->saved_g.ch == MBBUF_EOF)
+        वापस FIELD_EOF;
 
-      *have_pending_line = true;
-      if (parser->saved_g.ch == line_delim)
-        return FIELD_LINE_DELIMITER;
+      *have_pending_पंक्ति = true;
+      अगर (parser->saved_g.ch == पंक्ति_delim)
+        वापस FIELD_पंक्ति_DELIMITER;
     }
 
-  while (true)
+  जबतक (true)
     {
       idx_t available = mbbuf_topup (mbbuf);
-      if (available == 0)
-        return FIELD_EOF;
+      अगर (available == 0)
+        वापस FIELD_EOF;
 
-      char *buffer = mbbuf->buffer + mbbuf->offset;
-      char *line_end = search_bytes (buffer, line_delim, available);
-      idx_t n = line_end ? line_end - buffer + 1 : available;
+      अक्षर *बफर = mbbuf->बफर + mbbuf->offset;
+      अक्षर *पंक्ति_end = खोज_bytes (बफर, पंक्ति_delim, available);
+      idx_t n = पंक्ति_end ? पंक्ति_end - बफर + 1 : available;
       mbbuf_advance (mbbuf, n);
-      *have_pending_line = true;
+      *have_pending_पंक्ति = true;
 
-      if (line_end)
-        return FIELD_LINE_DELIMITER;
+      अगर (पंक्ति_end)
+        वापस FIELD_पंक्ति_DELIMITER;
     }
 }
 
@@ -612,41 +612,41 @@ scan_mb_line_end (mbbuf_t *mbbuf, struct mbfield_parser *parser,
    and must have room for a trailing NUL byte at BUF[LEN].  */
 
 ATTRIBUTE_PURE
-static char *
-find_field_delim (char *buf, size_t len)
+अटल अक्षर *
+find_field_delim (अक्षर *buf, माप_प्रकार len)
 {
-  if (len < delim_mcel.len)
-    return NULL;
+  अगर (len < delim_mcel.len)
+    वापस शून्य;
 
-#if ! __GLIBC__  /* Only S390 has optimized memmem on glibc-2.42  */
-  return memmem (buf, len, delim_bytes, delim_mcel.len);
-#else
-  if (delim_mcel.len == 1)
-    return memchr (buf, delim_bytes[0], len);
+#अगर ! __GLIBC__  /* Only S390 has optimized memmem on glibc-2.42  */
+  वापस memmem (buf, len, delim_bytes, delim_mcel.len);
+#अन्यथा
+  अगर (delim_mcel.len == 1)
+    वापस स_प्रथम (buf, delim_bytes[0], len);
 
-  char const *p = buf;
-  char const *end = buf + len;
+  अक्षर स्थिर *p = buf;
+  अक्षर स्थिर *end = buf + len;
 
-  char saved = buf[len];
+  अक्षर saved = buf[len];
   buf[len] = '\0'; /* for strstr.  */
 
-  while (p < end)
+  जबतक (p < end)
     {
-      char const *nul = memchr (p, '\0', end - p);
-      if (!nul)
+      अक्षर स्थिर *nul = स_प्रथम (p, '\0', end - p);
+      अगर (!nul)
         {
-          char const *match = strstr (p, delim_bytes);
+          अक्षर स्थिर *match = म_माला (p, delim_bytes);
           buf[len] = saved;
-          return (char *) match;
+          वापस (अक्षर *) match;
         }
 
-      if (p < nul)
+      अगर (p < nul)
         {
-          char const *match = strstr (p, delim_bytes);
-          if (match)
+          अक्षर स्थिर *match = म_माला (p, delim_bytes);
+          अगर (match)
             {
               buf[len] = saved;
-              return (char *) match;
+              वापस (अक्षर *) match;
             }
         }
 
@@ -654,8 +654,8 @@ find_field_delim (char *buf, size_t len)
     }
 
   buf[len] = saved;
-  return NULL;
-#endif
+  वापस शून्य;
+#पूर्ण_अगर
 }
 
 /* Return a pointer to the next TAB or SPACE in BUF, searching LEN bytes.
@@ -663,247 +663,247 @@ find_field_delim (char *buf, size_t len)
    It works for all unibyte locales, i.e., assumes they match c_isblank.  */
 
 ATTRIBUTE_PURE
-static char *
-find_c_blank (char *buf, size_t len)
+अटल अक्षर *
+find_c_blank (अक्षर *buf, माप_प्रकार len)
 {
   /* Avoid memchr2 setup for short fields.  */
   idx_t n = MIN (len, 16);
-  for (idx_t i = 0; i < n; i++)
-    if (c_isblank (buf[i]))
-      return buf + i;
+  क्रम (idx_t i = 0; i < n; i++)
+    अगर (c_isblank (buf[i]))
+      वापस buf + i;
 
-  return memchr2 (buf + n, ' ', '\t', len - n);
+  वापस memchr2 (buf + n, ' ', '\t', len - n);
 }
 
 /* Return the number of trailing bytes in BUF that could be the initial
    bytes of a delimiter split across buffers.  */
 
 ATTRIBUTE_PURE
-static idx_t
-field_delim_overlap (char const *buf, idx_t len)
+अटल idx_t
+field_delim_overlap (अक्षर स्थिर *buf, idx_t len)
 {
   idx_t overlap = MIN (len, delim_mcel.len - 1);
 
-  while (0 < overlap)
+  जबतक (0 < overlap)
     {
-      if (memeq (buf + len - overlap, delim_bytes, overlap))
-        return overlap;
+      अगर (memeq (buf + len - overlap, delim_bytes, overlap))
+        वापस overlap;
       overlap--;
     }
 
-  return 0;
+  वापस 0;
 }
 
 /* Byte search for line end or delimiter in BUF,
    returning results in CTX.  */
 
-static inline enum field_terminator
-find_field_terminator (char *buf, idx_t len,
-                       struct bytesearch_context *ctx, char **terminator)
+अटल अंतरभूत क्रमागत field_terminator
+find_field_terminator (अक्षर *buf, idx_t len,
+                       काष्ठा bytesearch_context *ctx, अक्षर **terminator)
 {
-  if (ctx->mode == BYTESEARCH_LINE_ONLY)
+  अगर (ctx->mode == BYTESEARCH_पंक्ति_ONLY)
     {
-      if (!ctx->line_end_known)
+      अगर (!ctx->पंक्ति_end_known)
         {
-          ctx->line_end = memchr (buf, line_delim, len);
-          ctx->line_end_known = true;
+          ctx->पंक्ति_end = स_प्रथम (buf, पंक्ति_delim, len);
+          ctx->पंक्ति_end_known = true;
         }
 
-      *terminator = ctx->line_end;
-      return *terminator ? FIELD_LINE_DELIMITER : FIELD_DATA;
+      *terminator = ctx->पंक्ति_end;
+      वापस *terminator ? FIELD_पंक्ति_DELIMITER : FIELD_तथ्य;
     }
 
-  if (field_delim_is_line_delim ())
+  अगर (field_delim_is_पंक्ति_delim ())
     {
-      *terminator = memchr (buf, line_delim, len);
-      return *terminator ? FIELD_DELIMITER : FIELD_DATA;
+      *terminator = स_प्रथम (buf, पंक्ति_delim, len);
+      वापस *terminator ? FIELD_DELIMITER : FIELD_तथ्य;
     }
 
-  if (!ctx->line_end_known)
+  अगर (!ctx->पंक्ति_end_known)
     {
-      ctx->line_end = memchr (buf, line_delim, len);
-      ctx->line_end_known = true;
+      ctx->पंक्ति_end = स_प्रथम (buf, पंक्ति_delim, len);
+      ctx->पंक्ति_end_known = true;
     }
 
-  idx_t field_len = ctx->line_end ? ctx->line_end - buf : len;
+  idx_t field_len = ctx->पंक्ति_end ? ctx->पंक्ति_end - buf : len;
 
-  char *field_end = (ctx->blank_delimited
+  अक्षर *field_end = (ctx->blank_delimited
                      ? find_c_blank (buf, field_len)
                      : find_field_delim (buf, field_len));
 
-  if (field_end)
+  अगर (field_end)
     {
       *terminator = field_end;
-      return FIELD_DELIMITER;
+      वापस FIELD_DELIMITER;
     }
 
-  *terminator = ctx->line_end;
-  return ctx->line_end ? FIELD_LINE_DELIMITER : FIELD_DATA;
+  *terminator = ctx->पंक्ति_end;
+  वापस ctx->पंक्ति_end ? FIELD_पंक्ति_DELIMITER : FIELD_तथ्य;
 }
 
 /* Write the end-of-line delimiter if appropriate for the current line.  */
 
-static inline void
-maybe_write_line_delim (bool found_any_selected_field, uintmax_t field_idx)
+अटल अंतरभूत व्योम
+maybe_write_पंक्ति_delim (bool found_any_selected_field, uintmax_t field_idx)
 {
-  if (found_any_selected_field
+  अगर (found_any_selected_field
       || !(suppress_non_delimited && field_idx == 1))
-    write_line_delim ();
+    write_पंक्ति_delim ();
 }
 
 /* Return TRUE if FIELD_IDX is selected,
    and write the output delimiter if appropriate.  */
 
-static inline bool
-begin_field_output (uintmax_t field_idx, bool buffer_first_field,
+अटल अंतरभूत bool
+begin_field_output (uintmax_t field_idx, bool बफर_first_field,
                     bool *found_any_selected_field)
 {
   bool write_field = print_kth (field_idx);
 
-  if (write_field && ! (field_idx == 1 && buffer_first_field))
+  अगर (write_field && ! (field_idx == 1 && बफर_first_field))
     {
-      if (*found_any_selected_field)
-        write_bytes (output_delimiter_string, output_delimiter_length);
+      अगर (*found_any_selected_field)
+        write_bytes (output_delimiter_string, output_delimiter_लंबाई);
       *found_any_selected_field = true;
     }
 
-  return write_field;
+  वापस write_field;
 }
 
-static inline bool
-handle_field_1 (uintmax_t field_idx, bool buffer_first_field,
+अटल अंतरभूत bool
+handle_field_1 (uintmax_t field_idx, bool बफर_first_field,
                 idx_t *field_1_n_bytes)
 {
   bool field_1_selected = false;
 
-  if (field_idx == 1 && buffer_first_field)
+  अगर (field_idx == 1 && बफर_first_field)
     {
-      if ((field_1_selected = print_kth (1)))
-        write_bytes (field_1_buffer, *field_1_n_bytes);
+      अगर ((field_1_selected = print_kth (1)))
+        write_bytes (field_1_बफर, *field_1_n_bytes);
       *field_1_n_bytes = 0;
     }
 
-  return field_1_selected;
+  वापस field_1_selected;
 }
 
-static inline void
-handle_field_delimiter (uintmax_t *field_idx, bool buffer_first_field,
+अटल अंतरभूत व्योम
+handle_field_delimiter (uintmax_t *field_idx, bool बफर_first_field,
                         idx_t *field_1_n_bytes,
                         bool *found_any_selected_field, bool *write_field)
 {
-  if (handle_field_1 (*field_idx, buffer_first_field, field_1_n_bytes))
+  अगर (handle_field_1 (*field_idx, बफर_first_field, field_1_n_bytes))
     *found_any_selected_field = true;
 
-  next_item (field_idx);
-  *write_field = begin_field_output (*field_idx, buffer_first_field,
+  अग्र_item (field_idx);
+  *write_field = begin_field_output (*field_idx, बफर_first_field,
                                      found_any_selected_field);
 }
 
-static inline bool
+अटल अंतरभूत bool
 field_selection_exhausted (uintmax_t field_idx)
 {
-  return !print_kth (field_idx) && current_rp->lo == UINTMAX_MAX;
+  वापस !print_kth (field_idx) && current_rp->lo == UINTMAX_MAX;
 }
 
-static inline void
-finish_current_line (uintmax_t field_idx, bool buffer_first_field,
+अटल अंतरभूत व्योम
+finish_current_पंक्ति (uintmax_t field_idx, bool बफर_first_field,
                      idx_t *field_1_n_bytes,
-                     bool found_any_selected_field, bool line_terminated)
+                     bool found_any_selected_field, bool पंक्ति_terminated)
 {
-  if (field_idx == 1 && buffer_first_field)
+  अगर (field_idx == 1 && बफर_first_field)
     {
-      if (!suppress_non_delimited
-          && (line_terminated || *field_1_n_bytes != 0))
+      अगर (!suppress_non_delimited
+          && (पंक्ति_terminated || *field_1_n_bytes != 0))
         {
-          write_bytes (field_1_buffer, *field_1_n_bytes);
-          write_line_delim ();
+          write_bytes (field_1_बफर, *field_1_n_bytes);
+          write_पंक्ति_delim ();
         }
       *field_1_n_bytes = 0;
     }
-  else
-    maybe_write_line_delim (found_any_selected_field, field_idx);
+  अन्यथा
+    maybe_write_पंक्ति_delim (found_any_selected_field, field_idx);
 }
 
-static inline void
+अटल अंतरभूत व्योम
 sync_byte_selection (uintmax_t byte_idx)
 {
-  while (current_rp->hi <= byte_idx)
+  जबतक (current_rp->hi <= byte_idx)
     current_rp++;
 }
 
-static inline void
-reset_field_line (uintmax_t *field_idx, bool *found_any_selected_field,
-                  bool *have_pending_line, struct mbfield_parser *parser)
+अटल अंतरभूत व्योम
+reset_field_पंक्ति (uintmax_t *field_idx, bool *found_any_selected_field,
+                  bool *have_pending_पंक्ति, काष्ठा mbfield_parser *parser)
 {
   *field_idx = 1;
   current_rp = frp;
   *found_any_selected_field = false;
-  *have_pending_line = false;
+  *have_pending_पंक्ति = false;
   parser->have_saved = false;
-  parser->at_line_start = true;
+  parser->at_पंक्ति_start = true;
 }
 
 /* Read from STREAM using buffered block reads, printing selected bytes.
    BYTE_IDX and PRINT_DELIMITER track the current line state and allow
    callers to hand off mid-line.  */
 
-static void
-cut_bytes (FILE *stream)
+अटल व्योम
+cut_bytes (खाता *stream)
 {
-  static char bytes_in[IO_BUFSIZE];
+  अटल अक्षर bytes_in[IO_BUFSIZE];
   uintmax_t byte_idx = 0;
   bool print_delimiter = false;
-  int fd = fileno (stream);
+  पूर्णांक fd = fileno (stream);
 
   current_rp = frp;
 
-  while (true)
+  जबतक (true)
     {
-      idx_t available = read (fd, bytes_in, sizeof bytes_in);
-      if (available <= 0)
+      idx_t available = पढ़ो (fd, bytes_in, माप bytes_in);
+      अगर (available <= 0)
         {
-          if (available < 0)
+          अगर (available < 0)
             fseterr (stream);
-          write_pending_line_delim (byte_idx);
-          break;
+          write_pending_पंक्ति_delim (byte_idx);
+          अवरोध;
         }
 
       idx_t processed = 0;
 
-      while (processed < available)
+      जबतक (processed < available)
         {
-          char *line = bytes_in + processed;
+          अक्षर *पंक्ति = bytes_in + processed;
           idx_t to_process = available - processed;
-          char *line_end = search_bytes (line, line_delim, to_process);
-          char *end = line + (line_end ? line_end - line : to_process);
-          char *p = line;
+          अक्षर *पंक्ति_end = खोज_bytes (पंक्ति, पंक्ति_delim, to_process);
+          अक्षर *end = पंक्ति + (पंक्ति_end ? पंक्ति_end - पंक्ति : to_process);
+          अक्षर *p = पंक्ति;
 
-          while (0 < end - p)
+          जबतक (0 < end - p)
             {
               sync_byte_selection (byte_idx);
 
-              if (byte_idx + 1 < current_rp->lo)
+              अगर (byte_idx + 1 < current_rp->lo)
                 {
                   idx_t skip = MIN (end - p, current_rp->lo - (byte_idx + 1));
                   p += skip;
                   byte_idx += skip;
                 }
-              else
+              अन्यथा
                 {
                   idx_t n = MIN (end - p, current_rp->hi - byte_idx);
                   write_selected_item (&print_delimiter,
-                                       is_range_start_index (byte_idx + 1),
+                                       is_range_start_सूचकांक (byte_idx + 1),
                                        p, n);
                   p += n;
                   byte_idx += n;
                 }
             }
 
-          processed += end - line;
-          if (line_end)
+          processed += end - पंक्ति;
+          अगर (पंक्ति_end)
             {
               processed++;
-              reset_item_line (&byte_idx, &print_delimiter);
+              reset_item_पंक्ति (&byte_idx, &print_delimiter);
             }
         }
     }
@@ -912,103 +912,103 @@ cut_bytes (FILE *stream)
 /* Read from STREAM, printing selected bytes without splitting
    multibyte characters.  */
 
-static void
-cut_characters_mode (FILE *stream, bool byte_mode)
+अटल व्योम
+cut_characters_mode (खाता *stream, bool byte_mode)
 {
   bool utf8 = is_utf8_charset ();
   uintmax_t idx = 0;
   bool print_delimiter = false;
-  static char bytes_in[IO_BUFSIZE];
+  अटल अक्षर bytes_in[IO_BUFSIZE];
   mbbuf_t mbbuf;
 
   current_rp = frp;
-  mbbuf_init (&mbbuf, bytes_in, sizeof bytes_in, stream);
+  mbbuf_init (&mbbuf, bytes_in, माप bytes_in, stream);
 
-  while (true)
+  जबतक (true)
     {
       /* Skip unselected line suffixes without decoding each character.  */
-      if (idx && field_selection_exhausted (idx))
+      अगर (idx && field_selection_exhausted (idx))
         {
           idx_t available = mbbuf_topup (&mbbuf);
-          char *p = mbbuf.buffer + mbbuf.offset;
-          char *end = search_bytes (p, line_delim, available);
+          अक्षर *p = mbbuf.बफर + mbbuf.offset;
+          अक्षर *end = खोज_bytes (p, पंक्ति_delim, available);
           mbbuf_advance (&mbbuf, end ? end - p : available);
-          if (!end && available)
-            continue;
+          अगर (!end && available)
+            जारी;
         }
 
       /* Count unselected ASCII/UTF-8 characters directly, for efficiency.  */
-      if (!byte_mode && utf8 && idx + 1 < current_rp->lo)
+      अगर (!byte_mode && utf8 && idx + 1 < current_rp->lo)
         {
-          char const *p = mbbuf.buffer + mbbuf.offset;
+          अक्षर स्थिर *p = mbbuf.बफर + mbbuf.offset;
           idx_t n = MIN (mbbuf_avail (&mbbuf), current_rp->lo - idx - 1);
-          char const *end = search_bytes (p, line_delim, n);
-          if (end)
+          अक्षर स्थिर *end = खोज_bytes (p, पंक्ति_delim, n);
+          अगर (end)
             {
               /* Even with ASCII, this cannot reach the next selection.  */
               mbbuf_advance (&mbbuf, end - p + 1);
-              reset_item_line (&idx, &print_delimiter);
-              continue;
+              reset_item_पंक्ति (&idx, &print_delimiter);
+              जारी;
             }
 
-          idx += u8_count (p, &n);
+          idx += u8_गिनती (p, &n);
           mbbuf_advance (&mbbuf, n);
         }
 
       mcel_t g = mbbuf_get_char (&mbbuf);
 
-      if (g.ch == line_delim)
-        reset_item_line (&idx, &print_delimiter);
-      else if (g.ch == MBBUF_EOF)
+      अगर (g.ch == पंक्ति_delim)
+        reset_item_पंक्ति (&idx, &print_delimiter);
+      अन्यथा अगर (g.ch == MBBUF_EOF)
         {
-          write_pending_line_delim (idx);
-          break;
+          write_pending_पंक्ति_delim (idx);
+          अवरोध;
         }
-      else if (byte_mode)
+      अन्यथा अगर (byte_mode)
         {
           bool first_selected_is_range_start = false;
           bool seen_selected = false;
           bool suffix_selected = true;
 
-          for (idx_t i = 0; i < g.len; i++)
+          क्रम (idx_t i = 0; i < g.len; i++)
             {
-              next_item (&idx);
-              if (print_kth (idx))
+              अग्र_item (&idx);
+              अगर (print_kth (idx))
                 {
-                  if (!seen_selected)
+                  अगर (!seen_selected)
                     {
                       seen_selected = true;
                       first_selected_is_range_start
-                        = is_range_start_index (idx);
+                        = is_range_start_सूचकांक (idx);
                     }
                 }
-              else if (seen_selected)
+              अन्यथा अगर (seen_selected)
                 suffix_selected = false;
             }
 
-          if (seen_selected && suffix_selected)
+          अगर (seen_selected && suffix_selected)
             write_selected_item (&print_delimiter,first_selected_is_range_start,
                                  mbbuf_char_offset (&mbbuf, g), g.len);
         }
-      else
+      अन्यथा
         {
-          next_item (&idx);
-          if (print_kth (idx))
+          अग्र_item (&idx);
+          अगर (print_kth (idx))
             write_selected_item (&print_delimiter,
-                                 is_range_start_index (idx),
+                                 is_range_start_सूचकांक (idx),
                                  mbbuf_char_offset (&mbbuf, g), g.len);
         }
     }
 }
 
-static void
-cut_bytes_no_split (FILE *stream)
+अटल व्योम
+cut_bytes_no_split (खाता *stream)
 {
   cut_characters_mode (stream, true);
 }
 
-static void
-cut_characters (FILE *stream)
+अटल व्योम
+cut_characters (खाता *stream)
 {
   cut_characters_mode (stream, false);
 }
@@ -1016,66 +1016,66 @@ cut_characters (FILE *stream)
 /* Read from STREAM, printing to standard output any selected fields,
    using a multibyte-aware field delimiter parser.  */
 
-static void
-cut_fields_mb_any (FILE *stream, bool whitespace_mode)
+अटल व्योम
+cut_fields_mb_any (खाता *stream, bool whitespace_mode)
 {
-  static char bytes_in[IO_BUFSIZE];
+  अटल अक्षर bytes_in[IO_BUFSIZE];
   mbbuf_t mbbuf;
-  struct mbfield_parser parser =
+  काष्ठा mbfield_parser parser =
     {
       .whitespace_delimited = whitespace_mode,
       .trim_outer_whitespace = trim_outer_whitespace,
-      .at_line_start = true,
+      .at_पंक्ति_start = true,
       .saved_g = { .ch = MBBUF_EOF }
     };
   uintmax_t field_idx = 1;
   bool found_any_selected_field = false;
-  bool buffer_first_field;
-  bool have_pending_line = false;
+  bool बफर_first_field;
+  bool have_pending_पंक्ति = false;
   bool write_field;
   idx_t field_1_n_bytes = 0;
 
   current_rp = frp;
-  mbbuf_init (&mbbuf, bytes_in, sizeof bytes_in, stream);
+  mbbuf_init (&mbbuf, bytes_in, माप bytes_in, stream);
 
-  buffer_first_field = (suppress_non_delimited ^ !print_kth (1));
-  write_field = begin_field_output (field_idx, buffer_first_field,
+  बफर_first_field = (suppress_non_delimited ^ !print_kth (1));
+  write_field = begin_field_output (field_idx, बफर_first_field,
                                     &found_any_selected_field);
 
-  while (true)
+  जबतक (true)
     {
-      enum field_terminator terminator;
-      if (!buffer_first_field || field_idx != 1)
-        terminator = scan_mb_field (&mbbuf, &parser, &have_pending_line,
-                                    write_field, NULL);
-      else
-        terminator = scan_mb_field (&mbbuf, &parser, &have_pending_line,
+      क्रमागत field_terminator terminator;
+      अगर (!बफर_first_field || field_idx != 1)
+        terminator = scan_mb_field (&mbbuf, &parser, &have_pending_पंक्ति,
+                                    write_field, शून्य);
+      अन्यथा
+        terminator = scan_mb_field (&mbbuf, &parser, &have_pending_पंक्ति,
                                     false, &field_1_n_bytes);
 
-      if (terminator == FIELD_DELIMITER)
+      अगर (terminator == FIELD_DELIMITER)
         {
-          handle_field_delimiter (&field_idx, buffer_first_field,
+          handle_field_delimiter (&field_idx, बफर_first_field,
                                   &field_1_n_bytes,
                                   &found_any_selected_field, &write_field);
-          if (! field_selection_exhausted (field_idx))
-            continue;
+          अगर (! field_selection_exhausted (field_idx))
+            जारी;
 
-          terminator = scan_mb_line_end (&mbbuf, &parser,
-                                         &have_pending_line);
+          terminator = scan_mb_पंक्ति_end (&mbbuf, &parser,
+                                         &have_pending_पंक्ति);
         }
 
-      if (terminator == FIELD_EOF && !have_pending_line)
-        break;
+      अगर (terminator == FIELD_EOF && !have_pending_पंक्ति)
+        अवरोध;
 
-      finish_current_line (field_idx, buffer_first_field,
+      finish_current_पंक्ति (field_idx, बफर_first_field,
                            &field_1_n_bytes, found_any_selected_field,
-                           terminator == FIELD_LINE_DELIMITER);
-      if (terminator == FIELD_EOF)
-        break;
+                           terminator == FIELD_पंक्ति_DELIMITER);
+      अगर (terminator == FIELD_EOF)
+        अवरोध;
 
-      reset_field_line (&field_idx, &found_any_selected_field,
-                        &have_pending_line, &parser);
-      write_field = begin_field_output (field_idx, buffer_first_field,
+      reset_field_पंक्ति (&field_idx, &found_any_selected_field,
+                        &have_pending_पंक्ति, &parser);
+      write_field = begin_field_output (field_idx, बफर_first_field,
                                         &found_any_selected_field);
     }
 }
@@ -1083,8 +1083,8 @@ cut_fields_mb_any (FILE *stream, bool whitespace_mode)
 /* Read from STREAM, printing to standard output any selected fields,
    using a multibyte field delimiter.  */
 
-static void
-cut_fields_mb (FILE *stream)
+अटल व्योम
+cut_fields_mb (खाता *stream)
 {
   cut_fields_mb_any (stream, false);
 }
@@ -1092,185 +1092,185 @@ cut_fields_mb (FILE *stream)
 /* Read from STREAM, printing to standard output any selected fields,
    using byte searches for a single-byte or valid UTF-8 field delimiter.  */
 
-static void
-cut_fields_bytesearch (FILE *stream)
+अटल व्योम
+cut_fields_bytesearch (खाता *stream)
 {
   /* Leave 1 byte unused so space to NUL terminate (for strstr).  */
-  static char bytes_in[IO_BUFSIZE+1];
+  अटल अक्षर bytes_in[IO_BUFSIZE+1];
   mbbuf_t mbbuf;
   uintmax_t field_idx = 1;
   bool found_any_selected_field = false;
-  bool have_pending_line = false;
+  bool have_pending_पंक्ति = false;
   bool skip_blank_run = false;
-  bool pending_line_delim_field = false;
+  bool pending_पंक्ति_delim_field = false;
   bool write_field;
   idx_t field_1_n_bytes = 0;
 
   current_rp = frp;
-  bool buffer_first_field = suppress_non_delimited ^ !print_kth (1);
-  mbbuf_init (&mbbuf, bytes_in, sizeof bytes_in - 1, stream);
-  write_field = begin_field_output (field_idx, buffer_first_field,
+  bool बफर_first_field = suppress_non_delimited ^ !print_kth (1);
+  mbbuf_init (&mbbuf, bytes_in, माप bytes_in - 1, stream);
+  write_field = begin_field_output (field_idx, बफर_first_field,
                                     &found_any_selected_field);
 
-  struct bytesearch_context search = { .blank_delimited = whitespace_delimited};
-  bytesearch_context_reset (&search);
+  काष्ठा bytesearch_context खोज = { .blank_delimited = whitespace_delimited};
+  bytesearch_context_reset (&खोज);
 
-  while (true)
+  जबतक (true)
     {
       idx_t n_avail = mbbuf_topup (&mbbuf);
-      search.at_eof = mbbuf.eof;
-      search.line_end_known = false;
+      खोज.at_eof = mbbuf.eof;
+      खोज.पंक्ति_end_known = false;
 
-      if (pending_line_delim_field)
+      अगर (pending_पंक्ति_delim_field)
         {
-          pending_line_delim_field = false;
+          pending_पंक्ति_delim_field = false;
 
-          if (n_avail == 0)
+          अगर (n_avail == 0)
             {
-              if (handle_field_1 (field_idx, buffer_first_field,
+              अगर (handle_field_1 (field_idx, बफर_first_field,
                                   &field_1_n_bytes))
-                next_item (&field_idx);
-              maybe_write_line_delim (found_any_selected_field, field_idx);
-              return;
+                अग्र_item (&field_idx);
+              maybe_write_पंक्ति_delim (found_any_selected_field, field_idx);
+              वापस;
             }
 
-          handle_field_delimiter (&field_idx, buffer_first_field,
+          handle_field_delimiter (&field_idx, बफर_first_field,
                                   &field_1_n_bytes,
                                   &found_any_selected_field, &write_field);
-          if (whitespace_delimited)
+          अगर (whitespace_delimited)
             skip_blank_run = true;
         }
 
-      if (n_avail == 0)
-        break;
+      अगर (n_avail == 0)
+        अवरोध;
 
-      char *chunk = mbbuf.buffer + mbbuf.offset;
+      अक्षर *chunk = mbbuf.बफर + mbbuf.offset;
       idx_t processed = 0;
 
       /* Fast path: no field delimiter in chunk — output or skip lines.  */
-      if (field_idx == 1
+      अगर (field_idx == 1
           && (!whitespace_delimited || !field_selection_exhausted (field_idx))
-          && !field_delim_is_line_delim ()
+          && !field_delim_is_पंक्ति_delim ()
           && !(whitespace_delimited
                ? find_c_blank (chunk, n_avail)
                : find_field_delim (chunk, n_avail)))
         {
-          char *last_line_delim = search.at_eof
+          अक्षर *last_पंक्ति_delim = खोज.at_eof
                                   ? chunk + n_avail - 1
-                                  : memrchr (chunk, line_delim, n_avail);
-          if (last_line_delim)
+                                  : memrchr (chunk, पंक्ति_delim, n_avail);
+          अगर (last_पंक्ति_delim)
             {
-              idx_t n = last_line_delim - chunk + 1;
-              if (! suppress_non_delimited)
+              idx_t n = last_पंक्ति_delim - chunk + 1;
+              अगर (! suppress_non_delimited)
                 {
-                  write_bytes (field_1_buffer, field_1_n_bytes);
+                  write_bytes (field_1_बफर, field_1_n_bytes);
                   write_bytes (chunk, n);
-                  if (search.at_eof && chunk[n - 1] != line_delim)
-                    write_line_delim ();
+                  अगर (खोज.at_eof && chunk[n - 1] != पंक्ति_delim)
+                    write_पंक्ति_delim ();
                 }
               field_1_n_bytes = 0;
               mbbuf_advance (&mbbuf, n);
-              have_pending_line = false;
-              if (search.at_eof)
-                return;
-              continue;
+              have_pending_पंक्ति = false;
+              अगर (खोज.at_eof)
+                वापस;
+              जारी;
             }
         }
 
-      while (processed < n_avail)
+      जबतक (processed < n_avail)
         {
-          char *terminator = NULL;
+          अक्षर *terminator = शून्य;
 
-          if (skip_blank_run)
+          अगर (skip_blank_run)
             {
-              while (processed < n_avail && c_isblank (chunk[processed]))
+              जबतक (processed < n_avail && c_isblank (chunk[processed]))
                 processed++;
-              if (processed == n_avail)
-                break;
+              अगर (processed == n_avail)
+                अवरोध;
               skip_blank_run = false;
             }
 
-          if (field_selection_exhausted (field_idx))
+          अगर (field_selection_exhausted (field_idx))
             {
-              if (field_delim_is_line_delim ())
+              अगर (field_delim_is_पंक्ति_delim ())
                 {
-                  maybe_write_line_delim (found_any_selected_field,
+                  maybe_write_पंक्ति_delim (found_any_selected_field,
                                           field_idx);
                   mbbuf_advance (&mbbuf, processed);
-                  return;
+                  वापस;
                 }
-              search.mode = BYTESEARCH_LINE_ONLY;
-              enum field_terminator terminator_kind
+              खोज.mode = BYTESEARCH_पंक्ति_ONLY;
+              क्रमागत field_terminator terminator_kind
                 = find_field_terminator (chunk + processed, n_avail - processed,
-                                         &search, &terminator);
-              if (terminator_kind == FIELD_LINE_DELIMITER)
+                                         &खोज, &terminator);
+              अगर (terminator_kind == FIELD_पंक्ति_DELIMITER)
                 {
                   processed = terminator - chunk + 1;
-                  maybe_write_line_delim (found_any_selected_field,
+                  maybe_write_पंक्ति_delim (found_any_selected_field,
                                           field_idx);
-                  goto reset_line;
+                  जाओ reset_पंक्ति;
                 }
               processed = n_avail;
-              break;
+              अवरोध;
             }
 
-          enum field_terminator terminator_kind
+          क्रमागत field_terminator terminator_kind
             = find_field_terminator (chunk + processed, n_avail - processed,
-                                     &search, &terminator);
+                                     &खोज, &terminator);
           idx_t field_len = terminator ? terminator - (chunk + processed)
                                        : n_avail - processed;
 
-          if (terminator_kind == FIELD_DATA
-              && !search.at_eof
+          अगर (terminator_kind == FIELD_तथ्य
+              && !खोज.at_eof
               && !whitespace_delimited
-              && !field_delim_is_line_delim ())
+              && !field_delim_is_पंक्ति_delim ())
             field_len -= field_delim_overlap (chunk + processed, field_len);
 
-          if (field_len || terminator)
-            have_pending_line = true;
+          अगर (field_len || terminator)
+            have_pending_पंक्ति = true;
 
           /* Output field content.  */
-          if (field_idx == 1 && buffer_first_field)
+          अगर (field_idx == 1 && बफर_first_field)
             append_field_1_chunk (chunk + processed, field_len,
                                   &field_1_n_bytes);
-          else if (write_field)
+          अन्यथा अगर (write_field)
             write_bytes (chunk + processed, field_len);
           processed += field_len;
 
-          if (terminator_kind == FIELD_DATA)
-            break;
+          अगर (terminator_kind == FIELD_तथ्य)
+            अवरोध;
 
-          if (terminator_kind == FIELD_DELIMITER)
+          अगर (terminator_kind == FIELD_DELIMITER)
             {
-              if (field_delim_is_line_delim () && processed + 1 == n_avail)
+              अगर (field_delim_is_पंक्ति_delim () && processed + 1 == n_avail)
                 {
                   processed++;
-                  pending_line_delim_field = true;
-                  break;
+                  pending_पंक्ति_delim_field = true;
+                  अवरोध;
                 }
 
               processed += whitespace_delimited ? 1 : delim_mcel.len;
-              handle_field_delimiter (&field_idx, buffer_first_field,
+              handle_field_delimiter (&field_idx, बफर_first_field,
                                       &field_1_n_bytes,
                                       &found_any_selected_field, &write_field);
-              if (whitespace_delimited)
+              अगर (whitespace_delimited)
                 skip_blank_run = true;
             }
-          else
+          अन्यथा
             {
-              affirm (terminator_kind == FIELD_LINE_DELIMITER);
+              affirm (terminator_kind == FIELD_पंक्ति_DELIMITER);
               processed++;
-              finish_current_line (field_idx, buffer_first_field,
+              finish_current_पंक्ति (field_idx, बफर_first_field,
                                    &field_1_n_bytes,
                                    found_any_selected_field, true);
 
-            reset_line:
+            reset_पंक्ति:
               field_idx = 1;
               current_rp = frp;
               found_any_selected_field = false;
-              have_pending_line = false;
-              bytesearch_context_reset (&search);
-              write_field = begin_field_output (field_idx, buffer_first_field,
+              have_pending_पंक्ति = false;
+              bytesearch_context_reset (&खोज);
+              write_field = begin_field_output (field_idx, बफर_first_field,
                                                 &found_any_selected_field);
             }
         }
@@ -1278,46 +1278,46 @@ cut_fields_bytesearch (FILE *stream)
       mbbuf_advance (&mbbuf, processed);
     }
 
-  if (!have_pending_line)
-    return;
+  अगर (!have_pending_पंक्ति)
+    वापस;
 
-  finish_current_line (field_idx, buffer_first_field, &field_1_n_bytes,
+  finish_current_पंक्ति (field_idx, बफर_first_field, &field_1_n_bytes,
                        found_any_selected_field, false);
 }
 
 /* Read from STREAM, printing to standard output any selected fields,
    using runs of whitespace as the field delimiter.  */
 
-static void
-cut_fields_ws (FILE *stream)
+अटल व्योम
+cut_fields_ws (खाता *stream)
 {
-  if (MB_CUR_MAX <= 1 && !trim_outer_whitespace)
+  अगर (MB_CUR_MAX <= 1 && !trim_outer_whitespace)
     cut_fields_bytesearch (stream);
-  else
+  अन्यथा
     cut_fields_mb_any (stream, true);
 }
 
 /* Process file FILE to standard output, using CUT_STREAM.
    Return true if successful.  */
 
-static bool
-cut_file (char const *file, void (*cut_stream) (FILE *))
+अटल bool
+cut_file (अक्षर स्थिर *file, व्योम (*cut_stream) (खाता *))
 {
-  FILE *stream;
+  खाता *stream;
 
-  if (streq (file, "-"))
+  अगर (streq (file, "-"))
     {
       have_read_stdin = true;
-      stream = stdin;
+      stream = मानक_निवेश;
       assume (stream);  /* Pacify GCC bug#109613.  */
     }
-  else
+  अन्यथा
     {
-      stream = fopen (file, "r");
-      if (stream == NULL)
+      stream = ख_खोलो (file, "r");
+      अगर (stream == शून्य)
         {
-          error (0, errno, "%s", quotef (file));
-          return false;
+          error (0, त्रुटि_सं, "%s", quotef (file));
+          वापस false;
         }
     }
 
@@ -1325,78 +1325,78 @@ cut_file (char const *file, void (*cut_stream) (FILE *))
 
   cut_stream (stream);
 
-  int err = errno;
-  if (!ferror (stream))
+  पूर्णांक err = त्रुटि_सं;
+  अगर (!ख_त्रुटि (stream))
     err = 0;
-  if (streq (file, "-"))
-    clearerr (stream);		/* Also clear EOF.  */
-  else if (fclose (stream) == EOF)
-    err = errno;
-  if (err)
+  अगर (streq (file, "-"))
+    साफ_त्रुटि (stream);		/* Also clear EOF.  */
+  अन्यथा अगर (ख_बंद (stream) == खातापूर्ण)
+    err = त्रुटि_सं;
+  अगर (err)
     {
       error (0, err, "%s", quotef (file));
-      return false;
+      वापस false;
     }
-  return true;
+  वापस true;
 }
 
-int
-main (int argc, char **argv)
+पूर्णांक
+मुख्य (पूर्णांक argc, अक्षर **argv)
 {
-  int optc;
+  पूर्णांक optc;
   bool ok;
   bool delim_specified = false;
   bool whitespace_delimited_specified = false;
-  char *spec_list_string = NULL;
+  अक्षर *spec_list_string = शून्य;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
-  setlocale (LC_ALL, "");
+  रखो_क्षेत्र (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
-  atexit (close_stdout);
+  निकास_पर (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "b:c:d:f:F:nO:szw", longopts, NULL))
+  जबतक ((optc = getopt_long (argc, argv, "b:c:d:f:F:nO:szw", longopts, शून्य))
          != -1)
     {
-      switch (optc)
+      चयन (optc)
         {
-        case 'b':
+        हाल 'b':
           cut_mode = CUT_MODE_BYTES;
           FALLTHROUGH;
-        case 'c':
-          if (optc == 'c')
+        हाल 'c':
+          अगर (optc == 'c')
             cut_mode = CUT_MODE_CHARACTERS;
           FALLTHROUGH;
-        case 'f':
-        case 'F':
-          if (optc == 'f' || optc == 'F')
+        हाल 'f':
+        हाल 'F':
+          अगर (optc == 'f' || optc == 'F')
             cut_mode = CUT_MODE_FIELDS;
-          if (optc == 'F')
+          अगर (optc == 'F')
             {
               whitespace_delimited = true;
               space_output_delimiter_default = true;
             }
-          if (spec_list_string)
+          अगर (spec_list_string)
             FATAL_ERROR (_("only one list may be specified"));
           spec_list_string = optarg;
-          break;
+          अवरोध;
 
-        case 'd':
+        हाल 'd':
           {
             /* New delimiter.  */
             /* Interpret -d '' to mean 'use the NUL byte as the delimiter.'  */
             mcel_t g = delim_mcel = mcel_scanz (optarg);
-            if (optarg[0] && optarg[g.len])
+            अगर (optarg[0] && optarg[g.len])
               FATAL_ERROR (_("the delimiter must be a single character"));
             /* Note NUL is copied for use with strstr.  */
             copy_bytes (delim_bytes, optarg, g.len + 1);
             delim_specified = true;
-            break;
+            अवरोध;
           }
 
-        case 'w':
+        हाल 'w':
           whitespace_delimited = true;
           whitespace_delimited_specified = true;
           trim_outer_whitespace
@@ -1405,57 +1405,57 @@ main (int argc, char **argv)
                              whitespace_option_args,
                              whitespace_option_types)
                   == WHITESPACE_OPTION_TRIMMED);
-          break;
+          अवरोध;
 
-        case 'O':
+        हाल 'O':
           /* Interpret --output-delimiter='' to mean
              'use the NUL byte as the delimiter.'  */
-          output_delimiter_length = (optarg[0] == '\0'
-                                     ? 1 : strlen (optarg));
+          output_delimiter_लंबाई = (optarg[0] == '\0'
+                                     ? 1 : म_माप (optarg));
           output_delimiter_string = optarg;
-          break;
+          अवरोध;
 
-        case 'n':
+        हाल 'n':
           no_split = true;
-          break;
+          अवरोध;
 
-        case 's':
+        हाल 's':
           suppress_non_delimited = true;
-          break;
+          अवरोध;
 
-        case 'z':
-          line_delim = '\0';
-          break;
+        हाल 'z':
+          पंक्ति_delim = '\0';
+          अवरोध;
 
-        case COMPLEMENT_OPTION:
+        हाल COMPLEMENT_OPTION:
           complement = true;
-          break;
+          अवरोध;
 
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
-          usage (EXIT_FAILURE);
+        शेष:
+          usage (निकास_त्रुटि);
         }
     }
 
-  if (!spec_list_string)
+  अगर (!spec_list_string)
     FATAL_ERROR (_("you must specify a list of bytes, characters, or fields"));
 
-  if (cut_mode == CUT_MODE_BYTES || cut_mode == CUT_MODE_CHARACTERS)
+  अगर (cut_mode == CUT_MODE_BYTES || cut_mode == CUT_MODE_CHARACTERS)
     {
-      if (delim_specified || whitespace_delimited)
-        FATAL_ERROR (_("an input delimiter makes sense\n\
+      अगर (delim_specified || whitespace_delimited)
+        FATAL_ERROR (_("an निवेश delimiter makes sense\n\
 \tonly when operating on fields"));
 
-      if (suppress_non_delimited)
-        FATAL_ERROR (_("suppressing non-delimited lines makes sense\n\
+      अगर (suppress_non_delimited)
+        FATAL_ERROR (_("suppressing non-delimited पंक्तियाँ makes sense\n\
 \tonly when operating on fields"));
     }
 
-  if (delim_specified && whitespace_delimited_specified)
+  अगर (delim_specified && whitespace_delimited_specified)
     FATAL_ERROR (_("-d and -w are mutually exclusive"));
 
-  if (delim_specified && !whitespace_delimited_specified)
+  अगर (delim_specified && !whitespace_delimited_specified)
     whitespace_delimited = false;
 
   set_fields (spec_list_string,
@@ -1464,61 +1464,61 @@ main (int argc, char **argv)
                 ? SETFLD_ERRMSG_USE_POS : 0)
                | (complement ? SETFLD_COMPLEMENT : 0)));
 
-  if (!delim_specified)
+  अगर (!delim_specified)
     {
       delim_bytes[0] = '\t';
       delim_mcel = mcel_ch ('\t', 1);
     }
 
-  if (output_delimiter_string == NULL)
+  अगर (output_delimiter_string == शून्य)
     {
       output_delimiter_string = output_delimiter_default;
-      if (space_output_delimiter_default)
+      अगर (space_output_delimiter_default)
         {
           output_delimiter_default[0] = ' ';
-          output_delimiter_length = 1;
+          output_delimiter_लंबाई = 1;
         }
-      else
+      अन्यथा
         {
           copy_bytes (output_delimiter_default, delim_bytes, delim_mcel.len);
-          output_delimiter_length = delim_mcel.len;
+          output_delimiter_लंबाई = delim_mcel.len;
         }
     }
 
-  void (*cut_stream) (FILE *) = NULL;
-  switch (cut_mode)
+  व्योम (*cut_stream) (खाता *) = शून्य;
+  चयन (cut_mode)
     {
-    case CUT_MODE_BYTES:
+    हाल CUT_MODE_BYTES:
       cut_stream = MB_CUR_MAX <= 1 || !no_split
                    ? cut_bytes : cut_bytes_no_split;
-      break;
+      अवरोध;
 
-    case CUT_MODE_CHARACTERS:
+    हाल CUT_MODE_CHARACTERS:
       cut_stream = MB_CUR_MAX <= 1 ? cut_bytes : cut_characters;
-      break;
+      अवरोध;
 
-    case CUT_MODE_FIELDS:
+    हाल CUT_MODE_FIELDS:
       cut_stream = whitespace_delimited ? cut_fields_ws
                    : bytesearch_field_delim_ok () ? cut_fields_bytesearch
                    : cut_fields_mb;
-      break;
+      अवरोध;
 
-    case CUT_MODE_NONE:
+    हाल CUT_MODE_NONE:
       affirm (false);
     }
   affirm (cut_stream);
-  if (optind == argc)
+  अगर (optind == argc)
     ok = cut_file ("-", cut_stream);
-  else
-    for (ok = true; optind < argc; optind++)
+  अन्यथा
+    क्रम (ok = true; optind < argc; optind++)
       ok &= cut_file (argv[optind], cut_stream);
 
 
-  if (have_read_stdin && fclose (stdin) == EOF)
+  अगर (have_read_stdin && ख_बंद (मानक_निवेश) == खातापूर्ण)
     {
-      error (0, errno, "-");
+      error (0, त्रुटि_सं, "-");
       ok = false;
     }
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  वापस ok ? निकास_सफल : निकास_त्रुटि;
 }

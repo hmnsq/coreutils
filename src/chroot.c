@@ -16,70 +16,70 @@
 
 /* Written by Roland McGrath.  */
 
-#include <config.h>
-#include <getopt.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <pwd.h>
-#include <grp.h>
+#समावेश <config.h>
+#समावेश <getopt.h>
+#समावेश <stdio.h>
+#समावेश <sys/types.h>
+#समावेश <pwd.h>
+#समावेश <grp.h>
 
-#include "system.h"
-#include "ignore-value.h"
-#include "mgetgroups.h"
-#include "quote.h"
-#include "userspec.h"
-#include "xstrtol.h"
+#समावेश "system.h"
+#समावेश "ignore-value.h"
+#समावेश "mgetgroups.h"
+#समावेश "quote.h"
+#समावेश "userspec.h"
+#समावेश "xstrtol.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "chroot"
+#घोषणा PROGRAM_NAME "chroot"
 
-#define AUTHORS proper_name ("Roland McGrath")
+#घोषणा AUTHORS proper_name ("Roland McGrath")
 
-#ifndef MAXGID
+#अगर_अघोषित MAXGID
 # define MAXGID GID_T_MAX
-#endif
+#पूर्ण_अगर
 
-static inline bool uid_unset (uid_t uid) { return uid == (uid_t) -1; }
-static inline bool gid_unset (gid_t gid) { return gid == (gid_t) -1; }
-#define uid_set(x) (!uid_unset (x))
-#define gid_set(x) (!gid_unset (x))
+अटल अंतरभूत bool uid_unset (uid_t uid) { वापस uid == (uid_t) -1; }
+अटल अंतरभूत bool gid_unset (gid_t gid) { वापस gid == (gid_t) -1; }
+#घोषणा uid_set(x) (!uid_unset (x))
+#घोषणा gid_set(x) (!gid_unset (x))
 
-enum
+क्रमागत
 {
-  GROUPS = UCHAR_MAX + 1,
+  GROUPS = अच_अक्षर_उच्च + 1,
   USERSPEC,
   SKIP_CHDIR
 };
 
-static struct option const long_opts[] =
+अटल काष्ठा option स्थिर long_opts[] =
 {
-  {"groups", required_argument, NULL, GROUPS},
-  {"userspec", required_argument, NULL, USERSPEC},
-  {"skip-chdir", no_argument, NULL, SKIP_CHDIR},
+  {"groups", required_argument, शून्य, GROUPS},
+  {"userspec", required_argument, शून्य, USERSPEC},
+  {"skip-chdir", no_argument, शून्य, SKIP_CHDIR},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {शून्य, 0, शून्य, 0}
 };
 
-#if ! HAVE_SETGROUPS
+#अगर ! HAVE_SETGROUPS
 /* At least Interix lacks supplemental group support.  */
-static int
-setgroups (size_t size, MAYBE_UNUSED gid_t const *list)
+अटल पूर्णांक
+setgroups (माप_प्रकार आकार, MAYBE_UNUSED gid_t स्थिर *list)
 {
-  if (size == 0)
+  अगर (आकार == 0)
     {
       /* Return success when clearing supplemental groups
          as ! HAVE_SETGROUPS should only be the case on
          platforms that don't support supplemental groups.  */
-      return 0;
+      वापस 0;
     }
-  else
+  अन्यथा
     {
-      errno = ENOTSUP;
-      return -1;
+      त्रुटि_सं = ENOTSUP;
+      वापस -1;
     }
 }
-#endif
+#पूर्ण_अगर
 
 /* Determine the group IDs for the specified supplementary GROUPS,
    which is a comma separated list of supplementary groups (names or numbers).
@@ -89,105 +89,105 @@ setgroups (size_t size, MAYBE_UNUSED gid_t const *list)
    Upon any failure return nonzero, and issue diagnostic if SHOW_ERRORS is true.
    Otherwise return zero.  */
 
-static int
-parse_additional_groups (char const *groups, GETGROUPS_T **pgids,
+अटल पूर्णांक
+parse_additional_groups (अक्षर स्थिर *groups, GETGROUPS_T **pgids,
                          idx_t *pn_gids, bool show_errors)
 {
-  GETGROUPS_T *gids = NULL;
+  GETGROUPS_T *gids = शून्य;
   idx_t n_gids_allocated = 0;
   idx_t n_gids = 0;
-  char *buffer = xstrdup (groups);
-  int ret = 0;
+  अक्षर *बफर = xstrdup (groups);
+  पूर्णांक ret = 0;
 
-  for (char const *tmp = strtok (buffer, ","); tmp;
-       tmp = strtok (NULL, ","))
+  क्रम (अक्षर स्थिर *tmp = म_मोहर (बफर, ","); tmp;
+       tmp = म_मोहर (शून्य, ","))
     {
-      struct group *g;
-      uintmax_t value;
+      काष्ठा group *g;
+      uintmax_t मूल्य;
 
-      if (xstrtoumax (tmp, NULL, 10, &value, "") == LONGINT_OK
-          && value <= MAXGID)
+      अगर (xstrtoumax (tmp, शून्य, 10, &मूल्य, "") == LONGINT_OK
+          && मूल्य <= MAXGID)
         {
-          while (isspace (to_uchar (*tmp)))
+          जबतक (है_खाली (to_uchar (*tmp)))
             tmp++;
-          if (*tmp != '+')
+          अगर (*tmp != '+')
             {
               /* Handle the case where the name is numeric.  */
               g = getgrnam (tmp);
-              if (g != NULL)
-                value = g->gr_gid;
+              अगर (g != शून्य)
+                मूल्य = g->gr_gid;
             }
           /* Flag that we've got a group from the number.  */
-          g = (struct group *) (intptr_t) ! NULL;
+          g = (काष्ठा group *) (intptr_t) ! शून्य;
         }
-      else
+      अन्यथा
         {
           g = getgrnam (tmp);
-          if (g != NULL)
-            value = g->gr_gid;
+          अगर (g != शून्य)
+            मूल्य = g->gr_gid;
         }
 
-      if (g == NULL)
+      अगर (g == शून्य)
         {
           ret = -1;
 
-          if (show_errors)
+          अगर (show_errors)
             {
-              error (0, errno, _("invalid group %s"), quote (tmp));
-              continue;
+              error (0, त्रुटि_सं, _("invalid group %s"), quote (tmp));
+              जारी;
             }
 
-          break;
+          अवरोध;
         }
 
-      if (n_gids == n_gids_allocated)
-        gids = xpalloc (gids, &n_gids_allocated, 1, -1, sizeof *gids);
-      gids[n_gids++] = value;
+      अगर (n_gids == n_gids_allocated)
+        gids = xpalloc (gids, &n_gids_allocated, 1, -1, माप *gids);
+      gids[n_gids++] = मूल्य;
     }
 
-  if (ret == 0 && n_gids == 0)
+  अगर (ret == 0 && n_gids == 0)
     {
-      if (show_errors)
+      अगर (show_errors)
         error (0, 0, _("invalid group list %s"), quote (groups));
       ret = -1;
     }
 
   *pgids = gids;
 
-  if (ret == 0)
+  अगर (ret == 0)
     *pn_gids = n_gids;
 
-  free (buffer);
-  return ret;
+  मुक्त (बफर);
+  वापस ret;
 }
 
 /* Return whether the passed path is equivalent to "/".
    Note we don't compare against get_root_dev_ino() as "/"
    could be bind mounted to a separate location.  */
 
-static bool
-is_root (char const *dir)
+अटल bool
+is_मूल (अक्षर स्थिर *dir)
 {
-  char *resolved = canonicalize_file_name (dir);
-  bool is_res_root = resolved && streq ("/", resolved);
-  free (resolved);
-  return is_res_root;
+  अक्षर *resolved = canonicalize_file_name (dir);
+  bool is_res_मूल = resolved && streq ("/", resolved);
+  मुक्त (resolved);
+  वापस is_res_मूल;
 }
 
-void
-usage (int status)
+व्योम
+usage (पूर्णांक status)
 {
-  if (status != EXIT_SUCCESS)
+  अगर (status != निकास_सफल)
     emit_try_help ();
-  else
+  अन्यथा
     {
-      printf (_("\
+      म_लिखो (_("\
 Usage: %s [OPTION]... NEWROOT [COMMAND [ARG]...]\n"), program_name);
 
-      fputs (_("\
-Run COMMAND with root directory set to NEWROOT.\n\
+      ख_माला_दो (_("\
+Run COMMAND with मूल directory set to NEWROOT.\n\
 \n\
-"), stdout);
+"), मानक_निकास);
 
       oputs (_("\
       --groups=G_LIST\n\
@@ -198,31 +198,31 @@ Run COMMAND with root directory set to NEWROOT.\n\
          specify user and group (ID or name) to use\n\
 "));
       oprintf (_("\
-      --skip-chdir\n\
-         do not change working directory to %s\n\
+      --skip-स_बदलो\n\
+         करो not change working directory to %s\n\
 "), quoteaf ("/"));
 
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
-      fputs (_("\
+      ख_माला_दो (_("\
 \n\
-If no command is given, run '\"$SHELL\" -i' (default: '/bin/sh -i').\n\
-"), stdout);
+If no command is given, run '\"$SHELL\" -i' (शेष: '/bin/sh -i').\n\
+"), मानक_निकास);
       emit_exec_status (PROGRAM_NAME);
       emit_ancillary_info (PROGRAM_NAME);
     }
-  exit (status);
+  निकास (status);
 }
 
-int
-main (int argc, char **argv)
+पूर्णांक
+मुख्य (पूर्णांक argc, अक्षर **argv)
 {
-  int c;
+  पूर्णांक c;
 
   /* Input user and groups spec.  */
-  char *userspec = NULL;
-  char const *username = NULL;
-  char const *groups = NULL;
+  अक्षर *userspec = शून्य;
+  अक्षर स्थिर *username = शून्य;
+  अक्षर स्थिर *groups = शून्य;
   bool skip_chdir = false;
 
   /* Parsed user and group IDs.  */
@@ -231,68 +231,68 @@ main (int argc, char **argv)
   /* Whether GID was inferred from UID outside the chroot,
      in which case a look-up inside the chroot takes precedence.  */
   bool gid_inferred = false;
-  GETGROUPS_T *out_gids = NULL;
+  GETGROUPS_T *out_gids = शून्य;
   idx_t n_gids = 0;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
-  setlocale (LC_ALL, "");
+  रखो_क्षेत्र (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   initialize_exit_failure (EXIT_CANCELED);
-  atexit (close_stdout);
+  निकास_पर (close_stdout);
 
-  while ((c = getopt_long (argc, argv, "+", long_opts, NULL)) != -1)
+  जबतक ((c = getopt_long (argc, argv, "+", long_opts, शून्य)) != -1)
     {
-      switch (c)
+      चयन (c)
         {
-        case USERSPEC:
+        हाल USERSPEC:
           {
             userspec = optarg;
             /* Treat 'user:' just like 'user'
                as we lookup the primary group by default
                (and support doing so for UIDs as well as names.  */
-            idx_t userlen = strlen (userspec);
-            if (userlen && userspec[userlen - 1] == ':')
+            idx_t userlen = म_माप (userspec);
+            अगर (userlen && userspec[userlen - 1] == ':')
               userspec[userlen - 1] = '\0';
-            break;
+            अवरोध;
           }
 
-        case GROUPS:
+        हाल GROUPS:
           groups = optarg;
-          break;
+          अवरोध;
 
-        case SKIP_CHDIR:
+        हाल SKIP_CHDIR:
           skip_chdir = true;
-          break;
+          अवरोध;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        शेष:
           usage (EXIT_CANCELED);
         }
     }
 
-  if (argc <= optind)
+  अगर (argc <= optind)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_CANCELED);
     }
 
-  char const *newroot = argv[optind];
-  bool is_oldroot = is_root (newroot);
+  अक्षर स्थिर *newroot = argv[optind];
+  bool is_oldroot = is_मूल (newroot);
 
-  if (! is_oldroot && skip_chdir)
+  अगर (! is_oldroot && skip_chdir)
     {
       error (0, 0, _("option --skip-chdir only permitted if NEWROOT is old %s"),
              quoteaf ("/"));
       usage (EXIT_CANCELED);
     }
 
-  if (! is_oldroot)
+  अगर (! is_oldroot)
     {
       /* We have to look up users and groups twice.
         - First, outside the chroot to load potentially necessary passwd/group
@@ -300,17 +300,17 @@ main (int argc, char **argv)
         - Second, inside chroot to redo parsing in case IDs are different.
           Within chroot lookup is the main justification for having
           the --user option supported by the chroot command itself.  */
-      if (userspec)
-        ignore_value (parse_user_spec (userspec, &uid, &gid, NULL, NULL));
+      अगर (userspec)
+        ignore_मूल्य (parse_user_spec (userspec, &uid, &gid, शून्य, शून्य));
 
       /* If no gid is supplied or looked up, do so now.
         Also lookup the username for use with getgroups.  */
-      if (uid_set (uid) && (! groups || gid_unset (gid)))
+      अगर (uid_set (uid) && (! groups || gid_unset (gid)))
         {
-          const struct passwd *pwd;
-          if ((pwd = getpwuid (uid)))
+          स्थिर काष्ठा passwd *pwd;
+          अगर ((pwd = getpwuid (uid)))
             {
-              if (gid_unset (gid))
+              अगर (gid_unset (gid))
                 {
                   gid = pwd->pw_gid;
                   gid_inferred = true;
@@ -319,37 +319,37 @@ main (int argc, char **argv)
             }
         }
 
-      if (groups && *groups)
-        ignore_value (parse_additional_groups (groups, &out_gids, &n_gids,
+      अगर (groups && *groups)
+        ignore_मूल्य (parse_additional_groups (groups, &out_gids, &n_gids,
                                                false));
-#if HAVE_SETGROUPS
-      else if (! groups && gid_set (gid) && username)
+#अगर HAVE_SETGROUPS
+      अन्यथा अगर (! groups && gid_set (gid) && username)
         {
-          int ngroups = xgetgroups (username, gid, &out_gids);
-          if (0 < ngroups)
+          पूर्णांक ngroups = xgetgroups (username, gid, &out_gids);
+          अगर (0 < ngroups)
             n_gids = ngroups;
         }
-#endif
+#पूर्ण_अगर
     }
 
-  if (chroot (newroot) != 0)
-    error (EXIT_CANCELED, errno, _("cannot change root directory to %s"),
+  अगर (chroot (newroot) != 0)
+    error (EXIT_CANCELED, त्रुटि_सं, _("cannot change root directory to %s"),
            quoteaf (newroot));
 
-  if (! skip_chdir && chdir ("/"))
-    error (EXIT_CANCELED, errno, _("cannot chdir to root directory"));
+  अगर (! skip_chdir && स_बदलो ("/"))
+    error (EXIT_CANCELED, त्रुटि_सं, _("cannot chdir to root directory"));
 
-  if (argc == optind + 1)
+  अगर (argc == optind + 1)
     {
       /* No command.  Run an interactive shell.  */
-      char *shell = getenv ("SHELL");
-      if (shell == NULL)
+      अक्षर *shell = दो_पर्या ("SHELL");
+      अगर (shell == शून्य)
         shell = bad_cast ("/bin/sh");
       argv[0] = shell;
       argv[1] = bad_cast ("-i");
-      argv[2] = NULL;
+      argv[2] = शून्य;
     }
-  else
+  अन्यथा
     {
       /* The following arguments give the command.  */
       argv += optind + 1;
@@ -357,82 +357,82 @@ main (int argc, char **argv)
 
   /* Attempt to set all three: supplementary groups, group ID, user ID.
      Diagnose any failures.  If any have failed, exit before execvp.  */
-  if (userspec)
+  अगर (userspec)
     {
       bool warn;
-      char const *err = parse_user_spec_warn (userspec, &uid, &gid,
-                                              NULL, NULL, &warn);
-      if (err)
+      अक्षर स्थिर *err = parse_user_spec_warn (userspec, &uid, &gid,
+                                              शून्य, शून्य, &warn);
+      अगर (err)
         error (warn ? 0 : EXIT_CANCELED, 0, "%s", (err));
     }
 
   /* If no gid is supplied or looked up, do so now.
      Also lookup the username for use with getgroups.  */
-  if (uid_set (uid) && (! groups || gid_unset (gid) || gid_inferred))
+  अगर (uid_set (uid) && (! groups || gid_unset (gid) || gid_inferred))
     {
-      const struct passwd *pwd;
-      if ((pwd = getpwuid (uid)))
+      स्थिर काष्ठा passwd *pwd;
+      अगर ((pwd = getpwuid (uid)))
         {
-          if (gid_unset (gid) || gid_inferred)
+          अगर (gid_unset (gid) || gid_inferred)
             gid = pwd->pw_gid;
           username = pwd->pw_name;
         }
-      else if (gid_unset (gid))
+      अन्यथा अगर (gid_unset (gid))
         {
-          error (EXIT_CANCELED, errno,
+          error (EXIT_CANCELED, त्रुटि_सं,
                  _("no group specified for unknown uid: %ju"),
                  (uintmax_t) uid);
         }
     }
 
   GETGROUPS_T *gids = out_gids;
-  GETGROUPS_T *in_gids = NULL;
-  if (groups && *groups)
+  GETGROUPS_T *in_gids = शून्य;
+  अगर (groups && *groups)
     {
-      if (parse_additional_groups (groups, &in_gids, &n_gids, !n_gids) != 0)
+      अगर (parse_additional_groups (groups, &in_gids, &n_gids, !n_gids) != 0)
         {
-          if (! n_gids)
-            return EXIT_CANCELED;
+          अगर (! n_gids)
+            वापस EXIT_CANCELED;
           /* else look-up outside the chroot worked, then go with those.  */
         }
-      else
+      अन्यथा
         gids = in_gids;
     }
-#if HAVE_SETGROUPS
-  else if (! groups && gid_set (gid) && username)
+#अगर HAVE_SETGROUPS
+  अन्यथा अगर (! groups && gid_set (gid) && username)
     {
-      int ngroups = xgetgroups (username, gid, &in_gids);
-      if (ngroups <= 0)
+      पूर्णांक ngroups = xgetgroups (username, gid, &in_gids);
+      अगर (ngroups <= 0)
         {
-          if (! n_gids)
-            error (EXIT_CANCELED, errno,
+          अगर (! n_gids)
+            error (EXIT_CANCELED, त्रुटि_सं,
                    _("failed to get supplemental groups"));
           /* else look-up outside the chroot worked, then go with those.  */
         }
-      else
+      अन्यथा
         {
           n_gids = ngroups;
           gids = in_gids;
         }
     }
-#endif
+#पूर्ण_अगर
 
-  if ((uid_set (uid) || groups) && setgroups (n_gids, gids) != 0)
-    error (EXIT_CANCELED, errno, _("failed to set supplemental groups"));
+  अगर ((uid_set (uid) || groups) && setgroups (n_gids, gids) != 0)
+    error (EXIT_CANCELED, त्रुटि_सं, _("failed to set supplemental groups"));
 
-  free (in_gids);
-  free (out_gids);
+  मुक्त (in_gids);
+  मुक्त (out_gids);
 
-  if (gid_set (gid) && setgid (gid))
-    error (EXIT_CANCELED, errno, _("failed to set group-ID"));
+  अगर (gid_set (gid) && setgid (gid))
+    error (EXIT_CANCELED, त्रुटि_सं, _("failed to set group-ID"));
 
-  if (uid_set (uid) && setuid (uid))
-    error (EXIT_CANCELED, errno, _("failed to set user-ID"));
+  अगर (uid_set (uid) && setuid (uid))
+    error (EXIT_CANCELED, त्रुटि_सं, _("failed to set user-ID"));
 
   /* Execute the given command.  */
   execvp (argv[0], argv);
 
-  int exit_status = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
-  error (0, errno, _("failed to run command %s"), quote (argv[0]));
-  return exit_status;
+  पूर्णांक exit_status = त्रुटि_सं == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
+  error (0, त्रुटि_सं, _("failed to run command %s"), quote (argv[0]));
+  वापस exit_status;
 }

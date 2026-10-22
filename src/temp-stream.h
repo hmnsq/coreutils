@@ -3,4 +3,4 @@
    pair, rewinding/truncating it upon each reuse.
 
    Note this honors $TMPDIR, unlike the standard defined tmpfile().  */
-extern bool temp_stream (FILE **fp, char **file_name);
+बाह्य bool अस्थायी_stream (खाता **fp, अक्षर **file_name);

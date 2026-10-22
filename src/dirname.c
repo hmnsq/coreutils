@@ -17,54 +17,54 @@
 
 /* Written by David MacKenzie and Jim Meyering. */
 
-#include <config.h>
-#include <getopt.h>
-#include <stdio.h>
-#include <sys/types.h>
+#समावेश <config.h>
+#समावेश <getopt.h>
+#समावेश <stdio.h>
+#समावेश <sys/types.h>
 
-#include "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
-#include "system.h"
+#समावेश "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
+#समावेश "system.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "dirname"
+#घोषणा PROGRAM_NAME "dirname"
 
-#define AUTHORS \
+#घोषणा AUTHORS \
   proper_name ("David MacKenzie"), \
   proper_name ("Jim Meyering")
 
-static bool quote_output;
+अटल bool quote_output;
 
-static struct option const longopts[] =
+अटल काष्ठा option स्थिर longopts[] =
 {
-  {"zero", no_argument, NULL, 'z'},
+  {"zero", no_argument, शून्य, 'z'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {शून्य, 0, शून्य, 0}
 };
 
-void
-usage (int status)
+व्योम
+usage (पूर्णांक status)
 {
-  if (status != EXIT_SUCCESS)
+  अगर (status != निकास_सफल)
     emit_try_help ();
-  else
+  अन्यथा
     {
-      printf (_("\
+      म_लिखो (_("\
 Usage: %s [OPTION] NAME...\n\
 "),
               program_name);
-      fputs (_("\
+      ख_माला_दो (_("\
 Output each NAME with its last non-slash component and trailing slashes\n\
-removed; if NAME contains no /'s, output '.' (meaning the current directory).\n\
+removed; अगर NAME contains no /'s, output '.' (meaning the current directory).\n\
 \n\
-"), stdout);
+"), मानक_निकास);
       oputs (_("\
   -z, --zero\n\
-         end each output line with NUL, not newline\n\
+         end each output पंक्ति with NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
-      printf (_("\
+      म_लिखो (_("\
 \n\
 Examples:\n\
   %s /usr/bin/          -> \"/usr\"\n\
@@ -74,81 +74,81 @@ Examples:\n\
               program_name, program_name, program_name);
       emit_ancillary_info (PROGRAM_NAME);
     }
-  exit (status);
+  निकास (status);
 }
 
-int
-main (int argc, char **argv)
+पूर्णांक
+मुख्य (पूर्णांक argc, अक्षर **argv)
 {
   bool use_nuls = false;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
-  setlocale (LC_ALL, "");
+  रखो_क्षेत्र (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
-  atexit (close_stdout);
+  निकास_पर (close_stdout);
 
-  while (true)
+  जबतक (true)
     {
-      int c = getopt_long (argc, argv, "z", longopts, NULL);
+      पूर्णांक c = getopt_long (argc, argv, "z", longopts, शून्य);
 
-      if (c == -1)
-        break;
+      अगर (c == -1)
+        अवरोध;
 
-      switch (c)
+      चयन (c)
         {
-        case 'z':
+        हाल 'z':
           use_nuls = true;
-          break;
+          अवरोध;
 
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
-          usage (EXIT_FAILURE);
+        शेष:
+          usage (निकास_त्रुटि);
         }
     }
 
-  if (argc < optind + 1)
+  अगर (argc < optind + 1)
     {
       error (0, 0, _("missing operand"));
-      usage (EXIT_FAILURE);
+      usage (निकास_त्रुटि);
     }
 
 
-  if (!use_nuls && isatty (STDOUT_FILENO))
+  अगर (!use_nuls && isatty (STDOUT_FILENO))
     {
-      int qs = getenv_quoting_style ();
-      if (qs < 0)
+      पूर्णांक qs = getenv_quoting_style ();
+      अगर (qs < 0)
         qs = shell_escape_quoting_style;
-      if (qs != literal_quoting_style)
+      अगर (qs != literal_quoting_style)
         {
-          set_quoting_style (NULL, qs);
+          set_quoting_style (शून्य, qs);
           quote_output = true;
         }
     }
 
-  for (; optind < argc; optind++)
+  क्रम (; optind < argc; optind++)
     {
-      char const *result = argv[optind];
-      idx_t len = dir_len (result);
+      अक्षर स्थिर *परिणाम = argv[optind];
+      idx_t len = dir_len (परिणाम);
 
-      if (! len)
+      अगर (! len)
         {
-          static char const dot = '.';
-          result = &dot;
+          अटल अक्षर स्थिर dot = '.';
+          परिणाम = &dot;
           len = 1;
         }
-      if (quote_output)
+      अगर (quote_output)
         {
-          result = quoteN_mem (result, len);
-          len = strlen (result);
+          परिणाम = quoteN_mem (परिणाम, len);
+          len = म_माप (परिणाम);
         }
-      fwrite (result, 1, len, stdout);
-      putchar (use_nuls ? '\0' :'\n');
+      ख_डालो (परिणाम, 1, len, मानक_निकास);
+      अक्षर_दो (use_nuls ? '\0' :'\n');
     }
 
-  return EXIT_SUCCESS;
+  वापस निकास_सफल;
 }

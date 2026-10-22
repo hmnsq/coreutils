@@ -16,10 +16,10 @@
 
 /* Written by Pádraig Brady.  */
 
-#ifndef _RELPATH_H
+#अगर_अघोषित _RELPATH_H
 # define _RELPATH_H
 
-extern bool
-relpath (char const *can_fname, char const *can_reldir, char *buf, size_t len);
+बाह्य bool
+relpath (अक्षर स्थिर *can_fname, अक्षर स्थिर *can_reldir, अक्षर *buf, माप_प्रकार len);
 
-#endif
+#पूर्ण_अगर

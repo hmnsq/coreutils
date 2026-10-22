@@ -16,63 +16,63 @@
 
 /* David MacKenzie <djm@gnu.ai.mit.edu> */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#समावेश <config.h>
+#समावेश <stdio.h>
+#समावेश <getopt.h>
+#समावेश <sys/types.h>
 
-#include "system.h"
+#समावेश "system.h"
 
-#if ! HAVE_NICE
+#अगर ! HAVE_NICE
 /* Include this after "system.h" so we're sure to have definitions
    (from time.h or sys/time.h) required for e.g. the ru_utime member.  */
 # include <sys/resource.h>
-#endif
+#पूर्ण_अगर
 
-#include "c-ctype.h"
-#include "quote.h"
-#include "xstrtol.h"
+#समावेश "c-ctype.h"
+#समावेश "quote.h"
+#समावेश "xstrtol.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "nice"
+#घोषणा PROGRAM_NAME "nice"
 
-#define AUTHORS proper_name ("David MacKenzie")
+#घोषणा AUTHORS proper_name ("David MacKenzie")
 
-#if HAVE_NICE
+#अगर HAVE_NICE
 # define GET_NICENESS() nice (0)
-#else
+#अन्यथा
 # define GET_NICENESS() getpriority (PRIO_PROCESS, 0)
-#endif
+#पूर्ण_अगर
 
-#ifndef NZERO
+#अगर_अघोषित NZERO
 # define NZERO 20
-#endif
+#पूर्ण_अगर
 
 /* This is required for Darwin Kernel Version 7.7.0.  */
-#if NZERO == 0
+#अगर NZERO == 0
 # undef  NZERO
 # define NZERO 20
-#endif
+#पूर्ण_अगर
 
-static struct option const longopts[] =
+अटल काष्ठा option स्थिर longopts[] =
 {
-  {"adjustment", required_argument, NULL, 'n'},
+  {"adjustment", required_argument, शून्य, 'n'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {शून्य, 0, शून्य, 0}
 };
 
-void
-usage (int status)
+व्योम
+usage (पूर्णांक status)
 {
-  if (status != EXIT_SUCCESS)
+  अगर (status != निकास_सफल)
     emit_try_help ();
-  else
+  अन्यथा
     {
-      printf (_("Usage: %s [OPTION] [COMMAND [ARG]...]\n"), program_name);
-      printf (_("\
+      म_लिखो (_("Usage: %s [OPTION] [COMMAND [ARG]...]\n"), program_name);
+      म_लिखो (_("\
 Run COMMAND with an adjusted niceness, which affects process scheduling.\n\
-With no COMMAND, print the current niceness.  Niceness values range from\n\
+With no COMMAND, print the current niceness.  Niceness मूल्यावली range from\n\
 %d (most favorable to the process) to %d (least favorable to the process).\n\
 "),
               - NZERO, NZERO - 1);
@@ -81,55 +81,55 @@ With no COMMAND, print the current niceness.  Niceness values range from\n\
 
       oputs (_("\
   -n, --adjustment=N\n\
-         add integer N to the niceness (default 10)\n\
+         add integer N to the niceness (शेष 10)\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
-      printf (USAGE_BUILTIN_WARNING, PROGRAM_NAME);
+      म_लिखो (USAGE_BUILTIN_WARNING, PROGRAM_NAME);
       emit_exec_status (PROGRAM_NAME);
       emit_ancillary_info (PROGRAM_NAME);
     }
-  exit (status);
+  निकास (status);
 }
 
-static bool
-perm_related_errno (int err)
+अटल bool
+perm_related_errno (पूर्णांक err)
 {
-  return err == EACCES || err == EPERM;
+  वापस err == EACCES || err == EPERM;
 }
 
-int
-main (int argc, char **argv)
+पूर्णांक
+मुख्य (पूर्णांक argc, अक्षर **argv)
 {
-  int current_niceness;
-  int adjustment = 10;
-  char const *adjustment_given = NULL;
+  पूर्णांक current_niceness;
+  पूर्णांक adjustment = 10;
+  अक्षर स्थिर *adjustment_given = शून्य;
   bool ok;
-  int i;
+  पूर्णांक i;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
-  setlocale (LC_ALL, "");
+  रखो_क्षेत्र (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   initialize_exit_failure (EXIT_CANCELED);
-  atexit (close_stdout);
+  निकास_पर (close_stdout);
 
-  for (i = 1; i < argc; /* empty */)
+  क्रम (i = 1; i < argc; /* empty */)
     {
-      char const *s = argv[i];
+      अक्षर स्थिर *s = argv[i];
 
-      if (s[0] == '-' && c_isdigit (s[1 + (s[1] == '-' || s[1] == '+')]))
+      अगर (s[0] == '-' && c_isdigit (s[1 + (s[1] == '-' || s[1] == '+')]))
         {
           adjustment_given = s + 1;
           ++i;
         }
-      else
+      अन्यथा
         {
-          int c;
-          int fake_argc = argc - (i - 1);
-          char **fake_argv = argv + (i - 1);
+          पूर्णांक c;
+          पूर्णांक fake_argc = argc - (i - 1);
+          अक्षर **fake_argv = argv + (i - 1);
 
           /* Ensure that any getopt diagnostics use the right name.  */
           fake_argv[0] = argv[0];
@@ -137,120 +137,120 @@ main (int argc, char **argv)
           /* Initialize getopt_long's internal state.  */
           optind = 0;
 
-          c = getopt_long (fake_argc, fake_argv, "+n:", longopts, NULL);
+          c = getopt_long (fake_argc, fake_argv, "+n:", longopts, शून्य);
           i += optind - 1;
 
-          switch (c)
+          चयन (c)
             {
-            case 'n':
+            हाल 'n':
               adjustment_given = optarg;
-              break;
+              अवरोध;
 
-            case -1:
-              break;
+            हाल -1:
+              अवरोध;
 
             case_GETOPT_HELP_CHAR;
 
             case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-            default:
+            शेष:
               usage (EXIT_CANCELED);
-              break;
+              अवरोध;
             }
 
-          if (c == -1)
-            break;
+          अगर (c == -1)
+            अवरोध;
         }
     }
 
-  if (adjustment_given)
+  अगर (adjustment_given)
     {
       /* If the requested adjustment is outside the valid range,
          silently bring it to just within range; this mimics what
          "setpriority" and "nice" do.  */
-#if (defined __gnu_hurd__                                               \
+#अगर (defined __gnu_hurd__                                               \
      && (__GLIBC__ < 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ < 43)))
       /* GNU/Hurd's nice(2) only supported 0 to (2 * NZERO - 2) niceness
          until glibc 2.43.  */
-      enum { MIN_ADJUSTMENT = 0, MAX_ADJUSTMENT = 2 * NZERO - 2 };
-#else
-      enum { MIN_ADJUSTMENT = 1 - 2 * NZERO, MAX_ADJUSTMENT = 2 * NZERO - 1 };
-#endif
-      long int tmp;
-      if (LONGINT_OVERFLOW < xstrtol (adjustment_given, NULL, 10, &tmp, ""))
+      क्रमागत { MIN_ADJUSTMENT = 0, MAX_ADJUSTMENT = 2 * NZERO - 2 };
+#अन्यथा
+      क्रमागत { MIN_ADJUSTMENT = 1 - 2 * NZERO, MAX_ADJUSTMENT = 2 * NZERO - 1 };
+#पूर्ण_अगर
+      दीर्घ पूर्णांक tmp;
+      अगर (LONGINT_OVERFLOW < xstrtol (adjustment_given, शून्य, 10, &tmp, ""))
         error (EXIT_CANCELED, 0, _("invalid adjustment %s"),
                quote (adjustment_given));
-#if (defined __gnu_hurd__                                               \
+#अगर (defined __gnu_hurd__                                               \
      && (__GLIBC__ < 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ < 43)))
       /* GNU/Hurd's nice(2) also did not clamp the new niceness into the
          supported range until glibc 2.43.
          See <https://sourceware.org/PR33614>.  */
-      errno = 0;
+      त्रुटि_सं = 0;
       current_niceness = GET_NICENESS ();
-      if (current_niceness == -1 && errno != 0)
-        error (EXIT_CANCELED, errno, _("cannot get niceness"));
-      if (tmp < 0)
+      अगर (current_niceness == -1 && त्रुटि_सं != 0)
+        error (EXIT_CANCELED, त्रुटि_सं, _("cannot get niceness"));
+      अगर (tmp < 0)
         {
-          int sum;
-          if (ckd_add (&sum, current_niceness, tmp) || sum < MIN_ADJUSTMENT)
+          पूर्णांक योग;
+          अगर (ckd_add (&योग, current_niceness, tmp) || योग < MIN_ADJUSTMENT)
             adjustment = MIN_ADJUSTMENT - current_niceness;
-          else
+          अन्यथा
             adjustment = tmp;
         }
-      else
+      अन्यथा
         {
-          int sum;
-          if (ckd_add (&sum, current_niceness, tmp) || MAX_ADJUSTMENT < sum)
+          पूर्णांक योग;
+          अगर (ckd_add (&योग, current_niceness, tmp) || MAX_ADJUSTMENT < योग)
             adjustment = MAX_ADJUSTMENT - current_niceness;
-          else
+          अन्यथा
             adjustment = tmp;
         }
-#else
+#अन्यथा
       adjustment = MAX (MIN_ADJUSTMENT, MIN (tmp, MAX_ADJUSTMENT));
-#endif
+#पूर्ण_अगर
     }
 
-  if (i == argc)
+  अगर (i == argc)
     {
-      if (adjustment_given)
+      अगर (adjustment_given)
         {
           error (0, 0, _("a command must be given with an adjustment"));
           usage (EXIT_CANCELED);
         }
       /* No command given; print the niceness.  */
-      errno = 0;
+      त्रुटि_सं = 0;
       current_niceness = GET_NICENESS ();
-      if (current_niceness == -1 && errno != 0)
-        error (EXIT_CANCELED, errno, _("cannot get niceness"));
-      printf ("%d\n", current_niceness);
-      return EXIT_SUCCESS;
+      अगर (current_niceness == -1 && त्रुटि_सं != 0)
+        error (EXIT_CANCELED, त्रुटि_सं, _("cannot get niceness"));
+      म_लिखो ("%d\n", current_niceness);
+      वापस निकास_सफल;
     }
 
-  errno = 0;
-#if HAVE_NICE
-  ok = (nice (adjustment) != -1 || errno == 0);
-#else
+  त्रुटि_सं = 0;
+#अगर HAVE_NICE
+  ok = (nice (adjustment) != -1 || त्रुटि_सं == 0);
+#अन्यथा
   current_niceness = GET_NICENESS ();
-  if (current_niceness == -1 && errno != 0)
-    error (EXIT_CANCELED, errno, _("cannot get niceness"));
+  अगर (current_niceness == -1 && त्रुटि_सं != 0)
+    error (EXIT_CANCELED, त्रुटि_सं, _("cannot get niceness"));
   ok = (setpriority (PRIO_PROCESS, 0, current_niceness + adjustment) == 0);
-#endif
-  if (!ok)
+#पूर्ण_अगर
+  अगर (!ok)
     {
-      error (perm_related_errno (errno) ? 0
-             : EXIT_CANCELED, errno, _("cannot set niceness"));
+      error (perm_related_errno (त्रुटि_सं) ? 0
+             : EXIT_CANCELED, त्रुटि_सं, _("cannot set niceness"));
       /* error() flushes stderr, but does not check for write failure.
          Normally, we would catch this via our atexit() hook of
          close_stdout, but execvp() gets in the way.  If stderr
          encountered a write failure, there is no need to try calling
          error() again.  */
-      if (ferror (stderr))
-        return EXIT_CANCELED;
+      अगर (ख_त्रुटि (मानक_त्रुटि))
+        वापस EXIT_CANCELED;
     }
 
   execvp (argv[i], &argv[i]);
 
-  int exit_status = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
-  error (0, errno, "%s", quote (argv[i]));
-  return exit_status;
+  पूर्णांक exit_status = त्रुटि_सं == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
+  error (0, त्रुटि_सं, "%s", quote (argv[i]));
+  वापस exit_status;
 }

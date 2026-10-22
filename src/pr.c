@@ -307,27 +307,27 @@
 
 */
 
-#include <config.h>
+#समावेश <config.h>
 
-#include <getopt.h>
-#include <sys/types.h>
-#include "system.h"
-#include "c-ctype.h"
-#include "fadvise.h"
-#include "hard-locale.h"
-#include "mbswidth.h"
-#include "quote.h"
-#include "stat-time.h"
-#include "stdio--.h"
-#include "strftime.h"
-#include "xstrtol.h"
-#include "xstrtol-error.h"
-#include "xdectoint.h"
+#समावेश <getopt.h>
+#समावेश <sys/types.h>
+#समावेश "system.h"
+#समावेश "c-ctype.h"
+#समावेश "fadvise.h"
+#समावेश "hard-locale.h"
+#समावेश "mbswidth.h"
+#समावेश "quote.h"
+#समावेश "stat-time.h"
+#समावेश "stdio--.h"
+#समावेश "strftime.h"
+#समावेश "xstrtol.h"
+#समावेश "xstrtol-error.h"
+#समावेश "xdectoint.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "pr"
+#घोषणा PROGRAM_NAME "pr"
 
-#define AUTHORS \
+#घोषणा AUTHORS \
   proper_name ("Pete TerMaat"), \
   proper_name ("Roland Huebner")
 
@@ -335,7 +335,7 @@
    If start_position == ANYWHERE, we aren't truncating columns and
    can begin printing a column anywhere.  Otherwise we must pad to
    the horizontal position start_position. */
-#define ANYWHERE	0
+#घोषणा ANYWHERE	0
 
 /* Each column has one of these structures allocated for it.
    If we're only dealing with one file, fp is the same for all
@@ -380,12 +380,12 @@
    options.  Many of the "int" values below should be "size_t" or
    something else like that.  */
 
-struct COLUMN;
-struct COLUMN
+काष्ठा COLUMN;
+काष्ठा COLUMN
   {
-    FILE *fp;			/* Input stream for this column. */
-    char const *name;		/* File name. */
-    enum
+    खाता *fp;			/* Input stream for this column. */
+    अक्षर स्थिर *name;		/* File name. */
+    क्रमागत
       {
         OPEN,
         FF_FOUND,		/* used with -b option, set with \f, changed
@@ -396,15 +396,15 @@ struct COLUMN
     status;			/* Status of the file pointer. */
 
     /* Func to print lines in this col. */
-    bool (*print_func) (struct COLUMN *);
+    bool (*print_func) (काष्ठा COLUMN *);
 
     /* Func to print/store chars in this col. */
-    void (*char_func) (char);
+    व्योम (*char_func) (अक्षर);
 
-    int current_line;		/* Index of current place in line_vector. */
-    int lines_stored;		/* Number of lines stored in buff. */
-    int lines_to_print;		/* No. lines stored or space left on page. */
-    int start_position;		/* Horizontal position of first char. */
+    पूर्णांक current_पंक्ति;		/* Index of current place in line_vector. */
+    पूर्णांक पंक्तियाँ_stored;		/* Number of lines stored in buff. */
+    पूर्णांक पंक्तियाँ_to_print;		/* No. lines stored or space left on page. */
+    पूर्णांक start_position;		/* Horizontal position of first char. */
     bool numbered;
     bool full_page_printed;	/* True means printed without a FF found. */
 
@@ -414,208 +414,208 @@ struct COLUMN
        the next line. */
   };
 
-typedef struct COLUMN COLUMN;
+प्रकार काष्ठा COLUMN COLUMN;
 
-static int char_to_clump (char c);
-static bool read_line (COLUMN *p);
-static bool print_page (void);
-static bool print_stored (COLUMN *p);
-static bool open_file (char *name, COLUMN *p);
-static bool skip_to_page (uintmax_t page);
-static void print_header (void);
-static void pad_across_to (int position);
-static void add_line_number (COLUMN *p);
-static int getoptnum (char const *n_str, int min, char const *errfmt);
-static void getoptarg (char *arg, char switch_char, char *character,
-                       int *number);
-static void print_files (int number_of_files, char **av);
-static void init_parameters (int number_of_files);
-static void init_header (char const *filename, int desc);
-static bool init_fps (int number_of_files, char **av);
-static void init_funcs (void);
-static void init_store_cols (void);
-static void store_columns (void);
-static void balance (int total_stored);
-static void store_char (char c);
-static void pad_down (unsigned int lines);
-static void read_rest_of_line (COLUMN *p);
-static void skip_read (COLUMN *p, int column_number);
-static void print_char (char c);
-static void cleanup (void);
-static void print_sep_string (void);
-static void separator_string (char const *optarg_S);
+अटल पूर्णांक char_to_clump (अक्षर c);
+अटल bool read_पंक्ति (COLUMN *p);
+अटल bool print_page (व्योम);
+अटल bool print_stored (COLUMN *p);
+अटल bool open_file (अक्षर *name, COLUMN *p);
+अटल bool skip_to_page (uintmax_t page);
+अटल व्योम print_header (व्योम);
+अटल व्योम pad_across_to (पूर्णांक position);
+अटल व्योम add_पंक्ति_संख्या (COLUMN *p);
+अटल पूर्णांक getoptnum (अक्षर स्थिर *n_str, पूर्णांक min, अक्षर स्थिर *errfmt);
+अटल व्योम getoptarg (अक्षर *arg, अक्षर switch_char, अक्षर *character,
+                       पूर्णांक *संख्या);
+अटल व्योम print_files (पूर्णांक संख्या_of_files, अक्षर **av);
+अटल व्योम init_parameters (पूर्णांक संख्या_of_files);
+अटल व्योम init_header (अक्षर स्थिर *filename, पूर्णांक desc);
+अटल bool init_fps (पूर्णांक संख्या_of_files, अक्षर **av);
+अटल व्योम init_funcs (व्योम);
+अटल व्योम init_store_cols (व्योम);
+अटल व्योम store_columns (व्योम);
+अटल व्योम balance (पूर्णांक योग_stored);
+अटल व्योम store_char (अक्षर c);
+अटल व्योम pad_down (अचिन्हित पूर्णांक पंक्तियाँ);
+अटल व्योम read_rest_of_पंक्ति (COLUMN *p);
+अटल व्योम skip_read (COLUMN *p, पूर्णांक column_संख्या);
+अटल व्योम print_char (अक्षर c);
+अटल व्योम cleanup (व्योम);
+अटल व्योम print_sep_string (व्योम);
+अटल व्योम separator_string (अक्षर स्थिर *optarg_S);
 
 /* All of the columns to print.  */
-static COLUMN *column_vector;
+अटल COLUMN *column_vector;
 
 /* When printing a single file in multiple downward columns,
    we store the leftmost columns contiguously in buff.
    To print a line from buff, get the index of the first character
    from line_vector[i], and print up to line_vector[i + 1]. */
-static char *buff;
+अटल अक्षर *buff;
 
 /* Index of the position in buff where the next character
    will be stored. */
-static unsigned int buff_current;
+अटल अचिन्हित पूर्णांक buff_current;
 
 /* The number of characters in buff.
    Used for allocation of buff and to detect overflow of buff. */
-static idx_t buff_allocated;
+अटल idx_t buff_allocated;
 
 /* Array of indices into buff.
    Each entry is an index of the first character of a line.
    This is used when storing lines to facilitate shuffling when
    we do column balancing on the last page. */
-static int *line_vector;
+अटल पूर्णांक *पंक्ति_vector;
 
 /* Array of horizontal positions.
    For each line in line_vector, end_vector[line] is the horizontal
    position we are in after printing that line.  We keep track of this
    so that we know how much we need to pad to prepare for the next
    column. */
-static int *end_vector;
+अटल पूर्णांक *end_vector;
 
 /* (-m) True means we're printing multiple files in parallel. */
-static bool parallel_files = false;
+अटल bool parallel_files = false;
 
 /* (-m) True means a line starts with some empty columns (some files
    already CLOSED or ON_HOLD) which we have to align. */
-static bool align_empty_cols;
+अटल bool align_empty_cols;
 
 /* (-m) True means we have not yet found any printable column in a line.
    align_empty_cols = true  has to be maintained. */
-static bool empty_line;
+अटल bool empty_पंक्ति;
 
 /* (-m) False means printable column output precedes a form feed found.
    Column alignment is done only once. No additional action with that form
    feed.
    True means we found only a form feed in a column. Maybe we have to do
    some column alignment with that form feed. */
-static bool FF_only;
+अटल bool FF_only;
 
 /* (-[0-9]+) True means we're given an option explicitly specifying
    number of columns.  Used to detect when this option is used with -m
    and when translating old options to new/long options. */
-static bool explicit_columns = false;
+अटल bool explicit_columns = false;
 
 /* (-t|-T) False means we aren't printing headers and footers. */
-static bool extremities = true;
+अटल bool extremities = true;
 
 /* (-t) True means we retain all FF set by hand in input files.
    False is set with -T option. */
-static bool keep_FF = false;
-static bool print_a_FF = false;
+अटल bool keep_FF = false;
+अटल bool print_a_FF = false;
 
 /* True means we need to print a header as soon as we know we've got input
    to print after it. */
-static bool print_a_header;
+अटल bool print_a_header;
 
 /* (-f) True means use formfeeds instead of newlines to separate pages. */
-static bool use_form_feed = false;
+अटल bool use_form_feed = false;
 
 /* True means we have read the standard input. */
-static bool have_read_stdin = false;
+अटल bool have_read_stdin = false;
 
 /* True means the -a flag has been given. */
-static bool print_across_flag = false;
+अटल bool print_across_flag = false;
 
 /* True means we're printing one file in multiple (>1) downward columns. */
-static bool storing_columns = true;
+अटल bool storing_columns = true;
 
 /* (-b) True means balance columns on the last page as Sys V does. */
 /* That's no longer an independent option. With storing_columns = true
    balance_columns = true is used too (s. function init_parameters).
    We get a consistent formulation with "FF set by hand" in input files. */
-static bool balance_columns = false;
+अटल bool balance_columns = false;
 
 /* (-l) Number of lines on a page, including header and footer lines. */
-static int lines_per_page = 66;
+अटल पूर्णांक पंक्तियाँ_per_page = 66;
 
 /* Number of lines in the header and footer can be reset to 0 using
    the -t flag. */
-enum { lines_per_header = 5 };
-static int lines_per_body;
-enum { lines_per_footer = 5 };
+क्रमागत { पंक्तियाँ_per_header = 5 };
+अटल पूर्णांक पंक्तियाँ_per_body;
+क्रमागत { पंक्तियाँ_per_footer = 5 };
 
 /* (-w|-W) Width in characters of the page.  Does not include the width of
    the margin. */
-static int chars_per_line = 72;
+अटल पूर्णांक chars_per_पंक्ति = 72;
 
 /* (-w|W) True means we truncate lines longer than chars_per_column. */
-static bool truncate_lines = false;
+अटल bool truncate_पंक्तियाँ = false;
 
 /* (-J) True means we join lines without any line truncation. -J
    dominates -w option. */
-static bool join_lines = false;
+अटल bool join_पंक्तियाँ = false;
 
 /* Number of characters in a column.  Based on col_sep_length and
    page width. */
-static int chars_per_column;
+अटल पूर्णांक chars_per_column;
 
 /* (-e) True means convert tabs to spaces on input. */
-static bool untabify_input = false;
+अटल bool untabify_निवेश = false;
 
 /* (-e) The input tab character. */
-static char input_tab_char = '\t';
+अटल अक्षर निवेश_tab_char = '\t';
 
 /* (-e) Tabstops are at chars_per_tab, 2*chars_per_tab, 3*chars_per_tab, ...
    where the leftmost column is 1. */
-static int chars_per_input_tab = 8;
+अटल पूर्णांक chars_per_निवेश_tab = 8;
 
 /* (-i) True means convert spaces to tabs on output. */
-static bool tabify_output = false;
+अटल bool tabify_output = false;
 
 /* (-i) The output tab character. */
-static char output_tab_char = '\t';
+अटल अक्षर output_tab_char = '\t';
 
 /* (-i) The width of the output tab. */
-static int chars_per_output_tab = 8;
+अटल पूर्णांक chars_per_output_tab = 8;
 
 /* Keeps track of pending white space.  When we hit a nonspace
    character after some whitespace, we print whitespace, tabbing
    if necessary to get to output_position + spaces_not_printed. */
-static int spaces_not_printed;
+अटल पूर्णांक spaces_not_printed;
 
 /* (-o) Number of spaces in the left margin (tabs used when possible). */
-static int chars_per_margin = 0;
+अटल पूर्णांक chars_per_margin = 0;
 
 /* Position where the next character will fall.
    Leftmost position is 0 + chars_per_margin.
    Rightmost position is chars_per_margin + chars_per_line - 1.
    This is important for converting spaces to tabs on output. */
-static int output_position;
+अटल पूर्णांक output_position;
 
 /* Horizontal position relative to the current file.
    (output_position depends on where we are on the page;
    input_position depends on where we are in the file.)
    Important for converting tabs to spaces on input. */
-static int input_position;
+अटल पूर्णांक निवेश_position;
 
 /* True if there were any failed opens so we can exit with nonzero
    status.  */
-static bool failed_opens = false;
+अटल bool failed_opens = false;
 
 /* The number of spaces taken up if we print a tab character with width
    c_ from position h_. */
-#define TAB_WIDTH(c_, h_) ((c_) - ((h_) % (c_)))
+#घोषणा TAB_WIDTH(c_, h_) ((c_) - ((h_) % (c_)))
 
 /* The horizontal position we'll be at after printing a tab character
    of width c_ from the position h_. */
-#define POS_AFTER_TAB(c_, h_) ((h_) + TAB_WIDTH (c_, h_))
+#घोषणा POS_AFTER_TAB(c_, h_) ((h_) + TAB_WIDTH (c_, h_))
 
 /* (-NNN) Number of columns of text to print. */
-static int columns = 1;
+अटल पूर्णांक columns = 1;
 
 /* (+NNN:MMM) Page numbers on which to begin and stop printing.
    first_page_number = 0  will be used to check input only. */
-static uintmax_t first_page_number = 0;
-static uintmax_t last_page_number = UINTMAX_MAX;
+अटल uintmax_t first_page_संख्या = 0;
+अटल uintmax_t last_page_संख्या = UINTMAX_MAX;
 
 /* Number of files open (not closed, not on hold). */
-static int files_ready_to_read = 0;
+अटल पूर्णांक files_ready_to_read = 0;
 
 /* Current page number.  Displayed in header. */
-static uintmax_t page_number;
+अटल uintmax_t page_संख्या;
 
 /* Current line number.  Displayed when -n flag is specified.
 
@@ -630,212 +630,212 @@ static uintmax_t page_number;
    Otherwise, line numbering is as follows:
    1    foo     3       goo     5       too
    2    moo     4       hoo     6       zoo */
-static int line_number;
+अटल पूर्णांक पंक्ति_संख्या;
 
 /* (-n) True means lines should be preceded by numbers. */
-static bool numbered_lines = false;
+अटल bool numbered_पंक्तियाँ = false;
 
 /* (-n) Character which follows each line number. */
-static char number_separator = '\t';
+अटल अक्षर संख्या_separator = '\t';
 
 /* (-n) line counting starts with 1st line of input file (not with 1st
    line of 1st page printed). */
-static int line_count = 1;
+अटल पूर्णांक पंक्ति_गिनती = 1;
 
 /* (-n) True means counting of skipped lines starts with 1st line of
    input file. False means -N option is used in addition, counting of
    skipped lines not required. */
-static bool skip_count = true;
+अटल bool skip_गिनती = true;
 
 /* (-N) Counting starts with start_line_number = NUMBER at 1st line of
    first page printed, usually not 1st page of input file. */
-static int start_line_num = 1;
+अटल पूर्णांक start_पंक्ति_अंक = 1;
 
 /* (-n) Width in characters of a line number. */
-static int chars_per_number = 5;
+अटल पूर्णांक chars_per_संख्या = 5;
 
 /* Used when widening the first column to accommodate numbers -- only
    needed when printing files in parallel.  Includes width of both the
    number and the number_separator. */
-static int number_width;
+अटल पूर्णांक संख्या_width;
 
 /* Buffer sprintf uses to format a line number. */
-static char *number_buff;
+अटल अक्षर *संख्या_buff;
 
 /* (-v) True means nonprintable characters are printed as escape sequences.
    control-g becomes \007. */
-static bool use_esc_sequence = false;
+अटल bool use_esc_sequence = false;
 
 /* (-c) True means nonprintable characters are printed as control prefixes.
    control-g becomes ^G. */
-static bool use_cntrl_prefix = false;
+अटल bool use_cntrl_prefix = false;
 
 /* (-d) True means output is double spaced. */
-static bool double_space = false;
+अटल bool double_space = false;
 
 /* Number of files opened initially in init_files.  Should be 1
    unless we're printing multiple files in parallel. */
-static int total_files = 0;
+अटल पूर्णांक योग_files = 0;
 
 /* (-r) True means don't complain if we can't open a file. */
-static bool ignore_failed_opens = false;
+अटल bool ignore_failed_opens = false;
 
 /* (-S) True means we separate columns with a specified string.
    -S option does not affect line truncation nor column alignment. */
-static bool use_col_separator = false;
+अटल bool use_col_separator = false;
 
 /* String used to separate columns if the -S option has been specified.
    Default without -S but together with one of the column options
    -a|COLUMN|-m is a 'space' and with the -J option a 'tab'. */
-static char const *col_sep_string = "";
-static int col_sep_length = 0;
-static char *column_separator = (char *) " ";
-static char *line_separator = (char *) "\t";
+अटल अक्षर स्थिर *col_sep_string = "";
+अटल पूर्णांक col_sep_लंबाई = 0;
+अटल अक्षर *column_separator = (अक्षर *) " ";
+अटल अक्षर *पंक्ति_separator = (अक्षर *) "\t";
 
 /* Number of separator characters waiting to be printed as soon as we
    know that we have any input remaining to be printed. */
-static int separators_not_printed;
+अटल पूर्णांक separators_not_printed;
 
 /* Position we need to pad to, as soon as we know that we have input
    remaining to be printed. */
-static int padding_not_printed;
+अटल पूर्णांक padding_not_printed;
 
 /* True means we should pad the end of the page.  Remains false until we
    know we have a page to print. */
-static bool pad_vertically;
+अटल bool pad_vertically;
 
 /* (-h) String of characters used in place of the filename in the header. */
-static char *custom_header;
+अटल अक्षर *custom_header;
 
 /* (-D) Date format for the header.  */
-static char const *date_format;
+अटल अक्षर स्थिर *date_format;
 
 /* The local time zone rules, as per the TZ environment variable.  */
-static timezone_t localtz;
+अटल timezone_t localtz;
 
 /* Date and file name for the header.  */
-static char *date_text;
-static char const *file_text;
+अटल अक्षर *date_text;
+अटल अक्षर स्थिर *file_text;
 
 /* Output columns available, not counting the date and file name.  */
-static int header_width_available;
+अटल पूर्णांक header_width_available;
 
-static char *clump_buff;
+अटल अक्षर *clump_buff;
 
 /* True means we read the line no. lines_per_body in skip_read
    called by skip_to_page. That variable controls the coincidence of a
    "FF set by hand" and "full_page_printed", see above the definition of
    structure COLUMN. */
-static bool last_line = false;
+अटल bool last_पंक्ति = false;
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+क्रमागत
 {
-  COLUMNS_OPTION = CHAR_MAX + 1,
+  COLUMNS_OPTION = अक्षर_उच्च + 1,
   PAGES_OPTION
 };
 
-static char const short_options[] =
+अटल अक्षर स्थिर short_options[] =
   "-0123456789D:FJN:S::TW:abcde::fh:i::l:mn::o:rs::tvw:";
 
-static struct option const long_options[] =
+अटल काष्ठा option स्थिर long_options[] =
 {
-  {"pages", required_argument, NULL, PAGES_OPTION},
-  {"columns", required_argument, NULL, COLUMNS_OPTION},
-  {"across", no_argument, NULL, 'a'},
-  {"show-control-chars", no_argument, NULL, 'c'},
-  {"double-space", no_argument, NULL, 'd'},
-  {"date-format", required_argument, NULL, 'D'},
-  {"expand-tabs", optional_argument, NULL, 'e'},
-  {"form-feed", no_argument, NULL, 'f'},
-  {"header", required_argument, NULL, 'h'},
-  {"output-tabs", optional_argument, NULL, 'i'},
-  {"join-lines", no_argument, NULL, 'J'},
-  {"length", required_argument, NULL, 'l'},
-  {"merge", no_argument, NULL, 'm'},
-  {"number-lines", optional_argument, NULL, 'n'},
-  {"first-line-number", required_argument, NULL, 'N'},
-  {"indent", required_argument, NULL, 'o'},
-  {"no-file-warnings", no_argument, NULL, 'r'},
-  {"separator", optional_argument, NULL, 's'},
-  {"sep-string", optional_argument, NULL, 'S'},
-  {"omit-header", no_argument, NULL, 't'},
-  {"omit-pagination", no_argument, NULL, 'T'},
-  {"show-nonprinting", no_argument, NULL, 'v'},
-  {"width", required_argument, NULL, 'w'},
-  {"page-width", required_argument, NULL, 'W'},
+  {"pages", required_argument, शून्य, PAGES_OPTION},
+  {"columns", required_argument, शून्य, COLUMNS_OPTION},
+  {"across", no_argument, शून्य, 'a'},
+  {"show-control-chars", no_argument, शून्य, 'c'},
+  {"double-space", no_argument, शून्य, 'd'},
+  {"date-format", required_argument, शून्य, 'D'},
+  {"expand-tabs", optional_argument, शून्य, 'e'},
+  {"form-feed", no_argument, शून्य, 'f'},
+  {"header", required_argument, शून्य, 'h'},
+  {"output-tabs", optional_argument, शून्य, 'i'},
+  {"join-lines", no_argument, शून्य, 'J'},
+  {"length", required_argument, शून्य, 'l'},
+  {"merge", no_argument, शून्य, 'm'},
+  {"number-lines", optional_argument, शून्य, 'n'},
+  {"first-line-number", required_argument, शून्य, 'N'},
+  {"indent", required_argument, शून्य, 'o'},
+  {"no-file-warnings", no_argument, शून्य, 'r'},
+  {"separator", optional_argument, शून्य, 's'},
+  {"sep-string", optional_argument, शून्य, 'S'},
+  {"omit-header", no_argument, शून्य, 't'},
+  {"omit-pagination", no_argument, शून्य, 'T'},
+  {"show-nonprinting", no_argument, शून्य, 'v'},
+  {"width", required_argument, शून्य, 'w'},
+  {"page-width", required_argument, शून्य, 'W'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {शून्य, 0, शून्य, 0}
 };
 
-static _Noreturn void
-integer_overflow (void)
+अटल _Noreturn व्योम
+integer_overflow (व्योम)
 {
-  error (EXIT_FAILURE, 0, _("integer overflow"));
+  error (निकास_त्रुटि, 0, _("integer overflow"));
 }
 
 /* Return the number of columns that have either an open file or
    stored lines. */
 
 ATTRIBUTE_PURE
-static unsigned int
-cols_ready_to_print (void)
+अटल अचिन्हित पूर्णांक
+cols_ready_to_print (व्योम)
 {
   COLUMN *q;
-  unsigned int i;
-  unsigned int n;
+  अचिन्हित पूर्णांक i;
+  अचिन्हित पूर्णांक n;
 
   n = 0;
-  for (q = column_vector, i = 0; i < columns; ++q, ++i)
-    if (q->status == OPEN
+  क्रम (q = column_vector, i = 0; i < columns; ++q, ++i)
+    अगर (q->status == OPEN
         || q->status == FF_FOUND	/* With -b: To print a header only */
-        || (storing_columns && q->lines_stored > 0 && q->lines_to_print > 0))
+        || (storing_columns && q->पंक्तियाँ_stored > 0 && q->पंक्तियाँ_to_print > 0))
       ++n;
-  return n;
+  वापस n;
 }
 
 /* Estimate first_ / last_page_number
    using option +FIRST_PAGE:LAST_PAGE */
 
-static bool
-first_last_page (int oi, char c, char const *pages)
+अटल bool
+first_last_page (पूर्णांक oi, अक्षर c, अक्षर स्थिर *pages)
 {
-  char *p;
+  अक्षर *p;
   uintmax_t first;
   uintmax_t last = UINTMAX_MAX;
   strtol_error err = xstrtoumax (pages, &p, 10, &first, "");
-  if (err != LONGINT_OK && err != LONGINT_INVALID_SUFFIX_CHAR)
+  अगर (err != LONGINT_OK && err != LONGINT_INVALID_SUFFIX_CHAR)
     xstrtol_fatal (err, oi, c, long_options, pages);
 
-  if (p == pages || !first)
-    return false;
+  अगर (p == pages || !first)
+    वापस false;
 
-  if (*p == ':')
+  अगर (*p == ':')
     {
-      char const *p1 = p + 1;
+      अक्षर स्थिर *p1 = p + 1;
       err = xstrtoumax (p1, &p, 10, &last, "");
-      if (err != LONGINT_OK)
+      अगर (err != LONGINT_OK)
         xstrtol_fatal (err, oi, c, long_options, pages);
-      if (p1 == p || last < first)
-        return false;
+      अगर (p1 == p || last < first)
+        वापस false;
     }
 
-  if (*p)
-    return false;
+  अगर (*p)
+    वापस false;
 
-  first_page_number = first;
-  last_page_number = last;
-  return true;
+  first_page_संख्या = first;
+  last_page_संख्या = last;
+  वापस true;
 }
 
 /* Parse column count string S, and if it's valid (1 or larger and
    within range of the type of 'columns') set the global variables
    columns and explicit_columns.  Otherwise, exit with a diagnostic.  */
 
-static void
-parse_column_count (char const *s)
+अटल व्योम
+parse_column_गिनती (अक्षर स्थिर *s)
 {
   columns = getoptnum (s, 1, _("invalid number of columns"));
   explicit_columns = true;
@@ -843,278 +843,278 @@ parse_column_count (char const *s)
 
 /* Estimate length of col_sep_string with option -S.  */
 
-static void
-separator_string (char const *optarg_S)
+अटल व्योम
+separator_string (अक्षर स्थिर *optarg_S)
 {
-  size_t len = strlen (optarg_S);
-  if (INT_MAX < len)
+  माप_प्रकार len = म_माप (optarg_S);
+  अगर (पूर्णांक_उच्च < len)
     integer_overflow ();
-  col_sep_length = len;
+  col_sep_लंबाई = len;
   col_sep_string = optarg_S;
 }
 
-int
-main (int argc, char **argv)
+पूर्णांक
+मुख्य (पूर्णांक argc, अक्षर **argv)
 {
-  unsigned int n_files;
+  अचिन्हित पूर्णांक n_files;
   bool old_options = false;
   bool old_w = false;
   bool old_s = false;
-  char **file_names;
+  अक्षर **file_names;
 
   /* Accumulate the digits of old-style options like -99.  */
-  char *column_count_string = NULL;
+  अक्षर *column_गिनती_string = शून्य;
   idx_t n_digits = 0;
   idx_t n_alloc = 0;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
-  setlocale (LC_ALL, "");
+  रखो_क्षेत्र (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
-  atexit (close_stdout);
+  निकास_पर (close_stdout);
 
   n_files = 0;
   file_names = (argc > 1
-                ? xnmalloc (argc - 1, sizeof (char *))
-                : NULL);
+                ? xnmalloc (argc - 1, माप (अक्षर *))
+                : शून्य);
 
-  while (true)
+  जबतक (true)
     {
-      int oi = -1;
-      int c = getopt_long (argc, argv, short_options, long_options, &oi);
-      if (c == -1)
-        break;
+      पूर्णांक oi = -1;
+      पूर्णांक c = getopt_long (argc, argv, short_options, long_options, &oi);
+      अगर (c == -1)
+        अवरोध;
 
-      if (c_isdigit (c))
+      अगर (c_isdigit (c))
         {
           /* Accumulate column-count digits specified via old-style options. */
-          if (n_digits + 1 >= n_alloc)
-            column_count_string = xpalloc (column_count_string, &n_alloc, 2, -1,
-                                           sizeof *column_count_string);
-          column_count_string[n_digits++] = c;
-          column_count_string[n_digits] = '\0';
-          continue;
+          अगर (n_digits + 1 >= n_alloc)
+            column_गिनती_string = xpalloc (column_गिनती_string, &n_alloc, 2, -1,
+                                           माप *column_गिनती_string);
+          column_गिनती_string[n_digits++] = c;
+          column_गिनती_string[n_digits] = '\0';
+          जारी;
         }
 
       n_digits = 0;
 
-      switch (c)
+      चयन (c)
         {
-        case 1:			/* Non-option argument. */
+        हाल 1:			/* Non-option argument. */
           /* long option --page dominates old '+FIRST_PAGE ...'.  */
-          if (! (first_page_number == 0
+          अगर (! (first_page_संख्या == 0
                  && *optarg == '+' && first_last_page (-2, '+', optarg + 1)))
             file_names[n_files++] = optarg;
-          break;
+          अवरोध;
 
-        case PAGES_OPTION:	/* --pages=FIRST_PAGE[:LAST_PAGE] */
+        हाल PAGES_OPTION:	/* --pages=FIRST_PAGE[:LAST_PAGE] */
           {			/* dominates old opt +... */
-            if (! optarg)
-              error (EXIT_FAILURE, 0,
+            अगर (! optarg)
+              error (निकास_त्रुटि, 0,
                      _("'--pages=FIRST_PAGE[:LAST_PAGE]' missing argument"));
-            else if (! first_last_page (oi, 0, optarg))
-              error (EXIT_FAILURE, 0, _("invalid page range %s"),
+            अन्यथा अगर (! first_last_page (oi, 0, optarg))
+              error (निकास_त्रुटि, 0, _("invalid page range %s"),
                      quote (optarg));
-            break;
+            अवरोध;
           }
 
-        case COLUMNS_OPTION:	/* --columns=COLS */
+        हाल COLUMNS_OPTION:	/* --columns=COLS */
           {
-            parse_column_count (optarg);
+            parse_column_गिनती (optarg);
 
             /* If there was a prior column count specified via the
                short-named option syntax, e.g., -9, ensure that this
                long-name-specified value overrides it.  */
-            free (column_count_string);
-            column_count_string = NULL;
+            मुक्त (column_गिनती_string);
+            column_गिनती_string = शून्य;
             n_alloc = 0;
-            break;
+            अवरोध;
           }
 
-        case 'a':
+        हाल 'a':
           print_across_flag = true;
           storing_columns = false;
-          break;
-        case 'b':
+          अवरोध;
+        हाल 'b':
           balance_columns = true;
-          break;
-        case 'c':
+          अवरोध;
+        हाल 'c':
           use_cntrl_prefix = true;
-          break;
-        case 'd':
+          अवरोध;
+        हाल 'd':
           double_space = true;
-          break;
-        case 'D':
+          अवरोध;
+        हाल 'D':
           date_format = optarg;
-          break;
-        case 'e':
-          if (optarg)
-            getoptarg (optarg, 'e', &input_tab_char,
-                       &chars_per_input_tab);
+          अवरोध;
+        हाल 'e':
+          अगर (optarg)
+            getoptarg (optarg, 'e', &निवेश_tab_char,
+                       &chars_per_निवेश_tab);
           /* Could check tab width > 0. */
-          untabify_input = true;
-          break;
-        case 'f':
-        case 'F':
+          untabify_निवेश = true;
+          अवरोध;
+        हाल 'f':
+        हाल 'F':
           use_form_feed = true;
-          break;
-        case 'h':
+          अवरोध;
+        हाल 'h':
           custom_header = optarg;
-          break;
-        case 'i':
-          if (optarg)
+          अवरोध;
+        हाल 'i':
+          अगर (optarg)
             getoptarg (optarg, 'i', &output_tab_char,
                        &chars_per_output_tab);
           /* Could check tab width > 0. */
           tabify_output = true;
-          break;
-        case 'J':
-          join_lines = true;
-          break;
-        case 'l':
-          lines_per_page
+          अवरोध;
+        हाल 'J':
+          join_पंक्तियाँ = true;
+          अवरोध;
+        हाल 'l':
+          पंक्तियाँ_per_page
             = getoptnum (optarg, 1,
                          _("'-l PAGE_LENGTH' invalid number of lines"));
-          break;
-        case 'm':
+          अवरोध;
+        हाल 'm':
           parallel_files = true;
           storing_columns = false;
-          break;
-        case 'n':
-          numbered_lines = true;
-          if (optarg)
-            getoptarg (optarg, 'n', &number_separator,
-                       &chars_per_number);
-          break;
-        case 'N':
-          skip_count = false;
-          start_line_num
-            = getoptnum (optarg, INT_MIN,
+          अवरोध;
+        हाल 'n':
+          numbered_पंक्तियाँ = true;
+          अगर (optarg)
+            getoptarg (optarg, 'n', &संख्या_separator,
+                       &chars_per_संख्या);
+          अवरोध;
+        हाल 'N':
+          skip_गिनती = false;
+          start_पंक्ति_अंक
+            = getoptnum (optarg, पूर्णांक_न्यून,
                          _("'-N NUMBER' invalid starting line number"));
-          break;
-        case 'o':
+          अवरोध;
+        हाल 'o':
           chars_per_margin = getoptnum (optarg, 0,
                                         _("'-o MARGIN' invalid line offset"));
-          break;
-        case 'r':
+          अवरोध;
+        हाल 'r':
           ignore_failed_opens = true;
-          break;
-        case 's':
+          अवरोध;
+        हाल 's':
           old_options = true;
           old_s = true;
-          if (!use_col_separator && optarg)
+          अगर (!use_col_separator && optarg)
             separator_string (optarg);
-          break;
-        case 'S':
+          अवरोध;
+        हाल 'S':
           old_s = false;
           /* Reset an additional input of -s, -S dominates -s */
           col_sep_string = "";
-          col_sep_length = 0;
+          col_sep_लंबाई = 0;
           use_col_separator = true;
-          if (optarg)
+          अगर (optarg)
             separator_string (optarg);
-          break;
-        case 't':
+          अवरोध;
+        हाल 't':
           extremities = false;
           keep_FF = true;
-          break;
-        case 'T':
+          अवरोध;
+        हाल 'T':
           extremities = false;
           keep_FF = false;
-          break;
-        case 'v':
+          अवरोध;
+        हाल 'v':
           use_esc_sequence = true;
-          break;
-        case 'w':
+          अवरोध;
+        हाल 'w':
           old_options = true;
           old_w = true;
           {
-            int tmp_cpl
+            पूर्णांक tmp_cpl
               = getoptnum (optarg, 1,
                            _("'-w PAGE_WIDTH' invalid number of characters"));
-            if (! truncate_lines)
-              chars_per_line = tmp_cpl;
+            अगर (! truncate_पंक्तियाँ)
+              chars_per_पंक्ति = tmp_cpl;
           }
-          break;
-        case 'W':
+          अवरोध;
+        हाल 'W':
           old_w = false;			/* dominates -w */
-          truncate_lines = true;
-          chars_per_line
+          truncate_पंक्तियाँ = true;
+          chars_per_पंक्ति
             = getoptnum (optarg, 1,
                          _("'-W PAGE_WIDTH' invalid number of characters"));
-          break;
+          अवरोध;
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
-          usage (EXIT_FAILURE);
-          break;
+        शेष:
+          usage (निकास_त्रुटि);
+          अवरोध;
         }
     }
 
-  if (column_count_string)
+  अगर (column_गिनती_string)
     {
-      parse_column_count (column_count_string);
-      free (column_count_string);
+      parse_column_गिनती (column_गिनती_string);
+      मुक्त (column_गिनती_string);
     }
 
-  if (! date_format)
-    date_format = (getenv ("POSIXLY_CORRECT") && !hard_locale (LC_TIME)
+  अगर (! date_format)
+    date_format = (दो_पर्या ("POSIXLY_CORRECT") && !hard_locale (LC_TIME)
                    ? "%b %e %H:%M %Y"
                    : "%Y-%m-%d %H:%M");
 
-  localtz = tzalloc (getenv ("TZ"));
+  localtz = tzalloc (दो_पर्या ("TZ"));
 
   /* Now we can set a reasonable initial value: */
-  if (first_page_number == 0)
-    first_page_number = 1;
+  अगर (first_page_संख्या == 0)
+    first_page_संख्या = 1;
 
-  if (parallel_files && explicit_columns)
-    error (EXIT_FAILURE, 0,
+  अगर (parallel_files && explicit_columns)
+    error (निकास_त्रुटि, 0,
            _("cannot specify number of columns when printing in parallel"));
 
-  if (parallel_files && print_across_flag)
-    error (EXIT_FAILURE, 0,
+  अगर (parallel_files && print_across_flag)
+    error (निकास_त्रुटि, 0,
            _("cannot specify both printing across and printing in parallel"));
 
 /* Translate some old short options to new/long options.
    To meet downward compatibility with other UNIX pr utilities
    and some POSIX specifications. */
 
-  if (old_options)
+  अगर (old_options)
     {
-      if (old_w)
+      अगर (old_w)
         {
-          if (parallel_files || explicit_columns)
+          अगर (parallel_files || explicit_columns)
             {
               /* activate -W */
-              truncate_lines = true;
-              if (old_s)
+              truncate_पंक्तियाँ = true;
+              अगर (old_s)
                 /* adapt HP-UX and SunOS: -s = no separator;
                    activate -S */
                 use_col_separator = true;
             }
-          else
+          अन्यथा
             /* old -w sets width with columns only
                activate -J */
-            join_lines = true;
+            join_पंक्तियाँ = true;
         }
-      else if (!use_col_separator)
+      अन्यथा अगर (!use_col_separator)
         {
           /* No -S option read */
-          if (old_s && (parallel_files || explicit_columns))
+          अगर (old_s && (parallel_files || explicit_columns))
             {
-              if (!truncate_lines)
+              अगर (!truncate_पंक्तियाँ)
                 {
                   /* old -s (without -w and -W) annuls column alignment,
                   uses fields, activate -J */
-                  join_lines = true;
-                  if (col_sep_length > 0)
+                  join_पंक्तियाँ = true;
+                  अगर (col_sep_लंबाई > 0)
                     /* activate -S */
                     use_col_separator = true;
                 }
-              else
+              अन्यथा
                 /* with -W */
                 /* adapt HP-UX and SunOS: -s = no separator;
                    activate -S */
@@ -1123,40 +1123,40 @@ main (int argc, char **argv)
         }
     }
 
-  for (; optind < argc; optind++)
+  क्रम (; optind < argc; optind++)
     {
       file_names[n_files++] = argv[optind];
     }
 
-  if (n_files == 0)
+  अगर (n_files == 0)
     {
       /* No file arguments specified;  read from standard input.  */
-      print_files (0, NULL);
+      print_files (0, शून्य);
     }
-  else
+  अन्यथा
     {
-      if (parallel_files)
+      अगर (parallel_files)
         print_files (n_files, file_names);
-      else
+      अन्यथा
         {
-          for (unsigned int i = 0; i < n_files; i++)
+          क्रम (अचिन्हित पूर्णांक i = 0; i < n_files; i++)
             print_files (1, &file_names[i]);
         }
     }
 
   cleanup ();
 
-  if (have_read_stdin && fclose (stdin) == EOF)
-    error (EXIT_FAILURE, errno, _("standard input"));
-  main_exit (failed_opens ? EXIT_FAILURE : EXIT_SUCCESS);
+  अगर (have_read_stdin && ख_बंद (मानक_निवेश) == खातापूर्ण)
+    error (निकास_त्रुटि, त्रुटि_सं, _("standard input"));
+  main_exit (failed_opens ? निकास_त्रुटि : निकास_सफल);
 }
 
 /* Parse numeric arguments, ensuring MIN <= number <= INT_MAX.  */
 
-static int
-getoptnum (char const *n_str, int min, char const *err)
+अटल पूर्णांक
+getoptnum (अक्षर स्थिर *n_str, पूर्णांक min, अक्षर स्थिर *err)
 {
-  return xnumtoimax (n_str, 10, min, INT_MAX, "", err, 0,
+  वापस xnumtoimax (n_str, 10, min, पूर्णांक_उच्च, "", err, 0,
                      min <= 0 ? 0 : XTOINT_MIN_RANGE);
 }
 
@@ -1166,109 +1166,109 @@ getoptnum (char const *n_str, int min, char const *err)
    separator, and k is the optional width of the field used when printing
    a number. */
 
-static void
-getoptarg (char *arg, char switch_char, char *character, int *number)
+अटल व्योम
+getoptarg (अक्षर *arg, अक्षर switch_char, अक्षर *character, पूर्णांक *संख्या)
 {
-  char const *num = arg;
+  अक्षर स्थिर *अंक = arg;
 
-  if (!*num)
+  अगर (!*अंक)
     {
-      error (0, 0, _("'-%c': Invalid argument: %s"), switch_char, quote (num));
-      usage (EXIT_FAILURE);
+      error (0, 0, _("'-%c': Invalid argument: %s"), switch_char, quote (अंक));
+      usage (निकास_त्रुटि);
     }
 
-  if (!c_isdigit (*num))
-    *character = *num++;
-  if (*num)
+  अगर (!c_isdigit (*अंक))
+    *character = *अंक++;
+  अगर (*अंक)
     {
-      long int tmp_long;
-      strtol_error e = xstrtol (num, NULL, 10, &tmp_long, "");
-      if (e == LONGINT_OK)
+      दीर्घ पूर्णांक tmp_long;
+      strtol_error e = xstrtol (अंक, शून्य, 10, &tmp_long, "");
+      अगर (e == LONGINT_OK)
         {
-          if (tmp_long <= 0)
+          अगर (tmp_long <= 0)
             e = LONGINT_INVALID;
-          else if (INT_MAX < tmp_long)
+          अन्यथा अगर (पूर्णांक_उच्च < tmp_long)
             e = LONGINT_OVERFLOW;
         }
-      if (e != LONGINT_OK)
+      अगर (e != LONGINT_OK)
         {
           error (0, e & LONGINT_OVERFLOW ? EOVERFLOW : 0,
              _("'-%c' extra characters or invalid number in the argument: %s"),
                  switch_char, quote (arg));
-          usage (EXIT_FAILURE);
+          usage (निकास_त्रुटि);
         }
-      *number = tmp_long;
+      *संख्या = tmp_long;
     }
 }
 
 /* Set parameters related to formatting. */
 
-static void
-init_parameters (int number_of_files)
+अटल व्योम
+init_parameters (पूर्णांक संख्या_of_files)
 {
-  int chars_used_by_number = 0;
+  पूर्णांक chars_used_by_संख्या = 0;
 
-  lines_per_body = lines_per_page - lines_per_header - lines_per_footer;
-  if (lines_per_body <= 0)
+  पंक्तियाँ_per_body = पंक्तियाँ_per_page - पंक्तियाँ_per_header - पंक्तियाँ_per_footer;
+  अगर (पंक्तियाँ_per_body <= 0)
     {
       extremities = false;
       keep_FF = true;
     }
-  if (! extremities)
-    lines_per_body = lines_per_page;
+  अगर (! extremities)
+    पंक्तियाँ_per_body = पंक्तियाँ_per_page;
 
-  if (double_space)
-    lines_per_body = MAX (1, lines_per_body / 2);
+  अगर (double_space)
+    पंक्तियाँ_per_body = MAX (1, पंक्तियाँ_per_body / 2);
 
   /* If input is stdin, cannot print parallel files.  BSD dumps core
      on this. */
-  if (number_of_files == 0)
+  अगर (संख्या_of_files == 0)
     parallel_files = false;
 
-  if (parallel_files)
-    columns = number_of_files;
+  अगर (parallel_files)
+    columns = संख्या_of_files;
 
   /* One file, multi columns down: -b option is set to get a consistent
      formulation with "FF set by hand" in input files. */
-  if (storing_columns)
+  अगर (storing_columns)
     balance_columns = true;
 
   /* Tabification is assumed for multiple columns. */
-  if (columns > 1)
+  अगर (columns > 1)
     {
-      if (!use_col_separator)
+      अगर (!use_col_separator)
         {
           /* Use default separator */
-          if (join_lines)
-            col_sep_string = line_separator;
-          else
+          अगर (join_पंक्तियाँ)
+            col_sep_string = पंक्ति_separator;
+          अन्यथा
             col_sep_string = column_separator;
 
-          col_sep_length = 1;
+          col_sep_लंबाई = 1;
           use_col_separator = true;
         }
       /* It's rather pointless to define a TAB separator with column
          alignment */
-      else if (!join_lines && col_sep_length == 1 && *col_sep_string == '\t')
+      अन्यथा अगर (!join_पंक्तियाँ && col_sep_लंबाई == 1 && *col_sep_string == '\t')
         col_sep_string = column_separator;
 
-      truncate_lines = true;
-      if (! (col_sep_length == 1 && *col_sep_string == '\t'))
-        untabify_input = true;
+      truncate_पंक्तियाँ = true;
+      अगर (! (col_sep_लंबाई == 1 && *col_sep_string == '\t'))
+        untabify_निवेश = true;
       tabify_output = true;
     }
-  else
+  अन्यथा
     storing_columns = false;
 
   /* -J dominates -w in any case */
-  if (join_lines)
-    truncate_lines = false;
+  अगर (join_पंक्तियाँ)
+    truncate_पंक्तियाँ = false;
 
-  if (numbered_lines)
+  अगर (numbered_पंक्तियाँ)
     {
-      int chars_per_default_tab = 8;
+      पूर्णांक chars_per_default_tab = 8;
 
-      line_count = start_line_num;
+      पंक्ति_गिनती = start_पंक्ति_अंक;
 
       /* To allow input tab-expansion (-e sensitive) use:
          if (number_separator == input_tab_char)
@@ -1276,34 +1276,34 @@ init_parameters (int number_of_files)
              + TAB_WIDTH (chars_per_input_tab, chars_per_number);   */
 
       /* Estimate chars_per_text without any margin and keep it constant. */
-      if (number_separator == '\t')
-        number_width = (chars_per_number
-                        + TAB_WIDTH (chars_per_default_tab, chars_per_number));
-      else
-        number_width = chars_per_number + 1;
+      अगर (संख्या_separator == '\t')
+        संख्या_width = (chars_per_संख्या
+                        + TAB_WIDTH (chars_per_default_tab, chars_per_संख्या));
+      अन्यथा
+        संख्या_width = chars_per_संख्या + 1;
 
       /* The number is part of the column width unless we are
          printing files in parallel. */
-      if (parallel_files)
-        chars_used_by_number = number_width;
+      अगर (parallel_files)
+        chars_used_by_संख्या = संख्या_width;
     }
 
-  int sep_chars, useful_chars;
-  if (ckd_mul (&sep_chars, columns - 1, col_sep_length))
-    sep_chars = INT_MAX;
-  if (ckd_sub (&useful_chars, chars_per_line - chars_used_by_number,
+  पूर्णांक sep_chars, useful_chars;
+  अगर (ckd_mul (&sep_chars, columns - 1, col_sep_लंबाई))
+    sep_chars = पूर्णांक_उच्च;
+  अगर (ckd_sub (&useful_chars, chars_per_पंक्ति - chars_used_by_संख्या,
                sep_chars))
     useful_chars = 0;
   chars_per_column = useful_chars / columns;
 
-  if (chars_per_column < 1)
-    error (EXIT_FAILURE, 0, _("page width too narrow"));
+  अगर (chars_per_column < 1)
+    error (निकास_त्रुटि, 0, _("page width too narrow"));
 
-  if (numbered_lines)
+  अगर (numbered_पंक्तियाँ)
     {
-      free (number_buff);
-      number_buff = xmalloc (MAX (chars_per_number,
-                                  INT_STRLEN_BOUND (line_number)) + 1);
+      मुक्त (संख्या_buff);
+      संख्या_buff = xmalloc (MAX (chars_per_संख्या,
+                                  INT_STRLEN_BOUND (पंक्ति_संख्या)) + 1);
     }
 
   /* Pick the maximum between the tab width and the width of an
@@ -1311,8 +1311,8 @@ init_parameters (int number_of_files)
      The width of an escape sequence (4) isn't the lower limit any longer.
      We've to use 8 as the lower limit, if we use chars_per_default_tab = 8
      to expand a tab which is not an input_tab-char. */
-  free (clump_buff);
-  clump_buff = xmalloc (MAX (8, chars_per_input_tab));
+  मुक्त (clump_buff);
+  clump_buff = xmalloc (MAX (8, chars_per_निवेश_tab));
 }
 
 /* Open the necessary files,
@@ -1326,67 +1326,67 @@ init_parameters (int number_of_files)
    With each column/file p, p->full_page_printed is initialized,
    see also open_file.  */
 
-static bool
-init_fps (int number_of_files, char **av)
+अटल bool
+init_fps (पूर्णांक संख्या_of_files, अक्षर **av)
 {
   COLUMN *p;
 
-  total_files = 0;
+  योग_files = 0;
 
-  free (column_vector);
-  column_vector = xnmalloc (columns, sizeof (COLUMN));
+  मुक्त (column_vector);
+  column_vector = xnmalloc (columns, माप (COLUMN));
 
-  if (parallel_files)
+  अगर (parallel_files)
     {
-      int files_left = number_of_files;
-      for (p = column_vector; files_left--; ++p, ++av)
+      पूर्णांक files_बायाँ = संख्या_of_files;
+      क्रम (p = column_vector; files_बायाँ--; ++p, ++av)
         {
-          if (! open_file (*av, p))
+          अगर (! open_file (*av, p))
             {
               --p;
               --columns;
             }
         }
-      if (columns == 0)
-        return false;
+      अगर (columns == 0)
+        वापस false;
       init_header ("", -1);
     }
-  else
+  अन्यथा
     {
       p = column_vector;
-      if (number_of_files > 0)
+      अगर (संख्या_of_files > 0)
         {
-          if (! open_file (*av, p))
-            return false;
+          अगर (! open_file (*av, p))
+            वापस false;
           init_header (*av, fileno (p->fp));
-          p->lines_stored = 0;
+          p->पंक्तियाँ_stored = 0;
         }
-      else
+      अन्यथा
         {
           p->name = _("standard input");
-          p->fp = stdin;
+          p->fp = मानक_निवेश;
           have_read_stdin = true;
           p->status = OPEN;
           p->full_page_printed = false;
-          ++total_files;
+          ++योग_files;
           init_header ("", -1);
-          p->lines_stored = 0;
+          p->पंक्तियाँ_stored = 0;
         }
 
-      char const *firstname = p->name;
-      FILE *firstfp = p->fp;
-      int i;
-      for (i = columns - 1, ++p; i; --i, ++p)
+      अक्षर स्थिर *firstname = p->name;
+      खाता *firstfp = p->fp;
+      पूर्णांक i;
+      क्रम (i = columns - 1, ++p; i; --i, ++p)
         {
           p->name = firstname;
           p->fp = firstfp;
           p->status = OPEN;
           p->full_page_printed = false;
-          p->lines_stored = 0;
+          p->पंक्तियाँ_stored = 0;
         }
     }
-  files_ready_to_read = total_files;
-  return true;
+  files_ready_to_read = योग_files;
+  वापस true;
 }
 
 /* Determine print_func and char_func, the functions
@@ -1395,65 +1395,65 @@ init_fps (int number_of_files, char **av)
    Determine the horizontal position desired when we begin
    printing a column (p->start_position). */
 
-static void
-init_funcs (void)
+अटल व्योम
+init_funcs (व्योम)
 {
-  int i, h, h_next;
+  पूर्णांक i, h, h_अग्र;
   COLUMN *p;
 
   h = chars_per_margin;
 
-  if (!truncate_lines)
-    h_next = ANYWHERE;
-  else
+  अगर (!truncate_पंक्तियाँ)
+    h_अग्र = ANYWHERE;
+  अन्यथा
     {
       /* When numbering lines of parallel files, we enlarge the
          first column to accommodate the number.  Looks better than
          the Sys V approach. */
-      if (parallel_files && numbered_lines)
-        h_next = h + chars_per_column + number_width;
-      else
-        h_next = h + chars_per_column;
+      अगर (parallel_files && numbered_पंक्तियाँ)
+        h_अग्र = h + chars_per_column + संख्या_width;
+      अन्यथा
+        h_अग्र = h + chars_per_column;
     }
 
   /* Enlarge p->start_position of first column to use the same form of
      padding_not_printed with all columns. */
-  h = h + col_sep_length;
+  h = h + col_sep_लंबाई;
 
   /* This loop takes care of all but the rightmost column. */
 
-  for (p = column_vector, i = 1; i < columns; ++p, ++i)
+  क्रम (p = column_vector, i = 1; i < columns; ++p, ++i)
     {
-      if (storing_columns)	/* One file, multi columns down. */
+      अगर (storing_columns)	/* One file, multi columns down. */
         {
           p->char_func = store_char;
           p->print_func = print_stored;
         }
-      else
+      अन्यथा
         /* One file, multi columns across; or parallel files.  */
         {
           p->char_func = print_char;
-          p->print_func = read_line;
+          p->print_func = read_पंक्ति;
         }
 
       /* Number only the first column when printing files in
          parallel. */
-      p->numbered = numbered_lines && (!parallel_files || i == 1);
+      p->numbered = numbered_पंक्तियाँ && (!parallel_files || i == 1);
       p->start_position = h;
 
       /* If we don't truncate lines, all start_positions are
          ANYWHERE, except the first column's start_position when
          using a margin. */
 
-      if (!truncate_lines)
+      अगर (!truncate_पंक्तियाँ)
         {
           h = ANYWHERE;
-          h_next = ANYWHERE;
+          h_अग्र = ANYWHERE;
         }
-      else
+      अन्यथा
         {
-          h = h_next + col_sep_length;
-          h_next = h + chars_per_column;
+          h = h_अग्र + col_sep_लंबाई;
+          h_अग्र = h + chars_per_column;
         }
     }
 
@@ -1461,18 +1461,18 @@ init_funcs (void)
 
      Doesn't need to be stored unless we intend to balance
      columns on the last page. */
-  if (storing_columns && balance_columns)
+  अगर (storing_columns && balance_columns)
     {
       p->char_func = store_char;
       p->print_func = print_stored;
     }
-  else
+  अन्यथा
     {
       p->char_func = print_char;
-      p->print_func = read_line;
+      p->print_func = read_पंक्ति;
     }
 
-  p->numbered = numbered_lines && (!parallel_files || i == 1);
+  p->numbered = numbered_पंक्तियाँ && (!parallel_files || i == 1);
   p->start_position = h;
 }
 
@@ -1481,32 +1481,32 @@ init_funcs (void)
    With each file p, p->full_page_printed is initialized,
    see also init_fps. */
 
-static bool
-open_file (char *name, COLUMN *p)
+अटल bool
+open_file (अक्षर *name, COLUMN *p)
 {
-  if (streq (name, "-"))
+  अगर (streq (name, "-"))
     {
       p->name = _("standard input");
-      p->fp = stdin;
+      p->fp = मानक_निवेश;
       have_read_stdin = true;
     }
-  else
+  अन्यथा
     {
       p->name = name;
-      p->fp = fopen (name, "r");
+      p->fp = ख_खोलो (name, "r");
     }
-  if (p->fp == NULL)
+  अगर (p->fp == शून्य)
     {
       failed_opens = true;
-      if (!ignore_failed_opens)
-        error (0, errno, "%s", quotef (name));
-      return false;
+      अगर (!ignore_failed_opens)
+        error (0, त्रुटि_सं, "%s", quotef (name));
+      वापस false;
     }
   fadvise (p->fp, FADVISE_SEQUENTIAL);
   p->status = OPEN;
   p->full_page_printed = false;
-  ++total_files;
-  return true;
+  ++योग_files;
+  वापस true;
 }
 
 /* Close the file in P.
@@ -1514,40 +1514,40 @@ open_file (char *name, COLUMN *p)
    If we aren't dealing with multiple files in parallel, we change
    the status of all columns in the column list to reflect the close. */
 
-static void
+अटल व्योम
 close_file (COLUMN *p)
 {
   COLUMN *q;
-  int i;
+  पूर्णांक i;
 
-  if (p->status == CLOSED)
-    return;
+  अगर (p->status == CLOSED)
+    वापस;
 
-  int err = errno;
-  if (!ferror (p->fp))
+  पूर्णांक err = त्रुटि_सं;
+  अगर (!ख_त्रुटि (p->fp))
     err = 0;
-  if (fileno (p->fp) == STDIN_FILENO)
-    clearerr (p->fp);
-  else if (fclose (p->fp) != 0 && !err)
-    err = errno;
-  if (err)
-    error (EXIT_FAILURE, err, "%s", quotef (p->name));
+  अगर (fileno (p->fp) == STDIN_FILENO)
+    साफ_त्रुटि (p->fp);
+  अन्यथा अगर (ख_बंद (p->fp) != 0 && !err)
+    err = त्रुटि_सं;
+  अगर (err)
+    error (निकास_त्रुटि, err, "%s", quotef (p->name));
 
-  if (!parallel_files)
+  अगर (!parallel_files)
     {
-      for (q = column_vector, i = columns; i; ++q, --i)
+      क्रम (q = column_vector, i = columns; i; ++q, --i)
         {
           q->status = CLOSED;
-          if (q->lines_stored == 0)
+          अगर (q->पंक्तियाँ_stored == 0)
             {
-              q->lines_to_print = 0;
+              q->पंक्तियाँ_to_print = 0;
             }
         }
     }
-  else
+  अन्यथा
     {
       p->status = CLOSED;
-      p->lines_to_print = 0;
+      p->पंक्तियाँ_to_print = 0;
     }
 
   --files_ready_to_read;
@@ -1559,49 +1559,49 @@ close_file (COLUMN *p)
    If we aren't dealing with parallel files, we must change the
    status of all columns in the column list. */
 
-static void
+अटल व्योम
 hold_file (COLUMN *p)
 {
   COLUMN *q;
-  int i;
+  पूर्णांक i;
 
-  if (!parallel_files)
-    for (q = column_vector, i = columns; i; ++q, --i)
+  अगर (!parallel_files)
+    क्रम (q = column_vector, i = columns; i; ++q, --i)
       {
-        if (storing_columns)
+        अगर (storing_columns)
           q->status = FF_FOUND;
-        else
+        अन्यथा
           q->status = ON_HOLD;
       }
-  else
+  अन्यथा
     p->status = ON_HOLD;
 
-  p->lines_to_print = 0;
+  p->पंक्तियाँ_to_print = 0;
   --files_ready_to_read;
 }
 
 /* Undo hold_file -- go through the column list and change any
    ON_HOLD columns to OPEN.  Used at the end of each page. */
 
-static void
-reset_status (void)
+अटल व्योम
+reset_status (व्योम)
 {
-  int i = columns;
+  पूर्णांक i = columns;
   COLUMN *p;
 
-  for (p = column_vector; i; --i, ++p)
-    if (p->status == ON_HOLD)
+  क्रम (p = column_vector; i; --i, ++p)
+    अगर (p->status == ON_HOLD)
       {
         p->status = OPEN;
         files_ready_to_read++;
       }
 
-  if (storing_columns)
+  अगर (storing_columns)
     {
-      if (column_vector->status == CLOSED)
+      अगर (column_vector->status == CLOSED)
         /* We use the info to output an error message in  skip_to_page. */
         files_ready_to_read = 0;
-      else
+      अन्यथा
         files_ready_to_read = 1;
     }
 }
@@ -1615,29 +1615,29 @@ reset_status (void)
    in each column.
    Print the file(s). */
 
-static void
-print_files (int number_of_files, char **av)
+अटल व्योम
+print_files (पूर्णांक संख्या_of_files, अक्षर **av)
 {
-  init_parameters (number_of_files);
-  if (! init_fps (number_of_files, av))
-    return;
-  if (storing_columns)
+  init_parameters (संख्या_of_files);
+  अगर (! init_fps (संख्या_of_files, av))
+    वापस;
+  अगर (storing_columns)
     init_store_cols ();
 
-  if (first_page_number > 1)
+  अगर (first_page_संख्या > 1)
     {
-      if (!skip_to_page (first_page_number))
-        return;
-      else
-        page_number = first_page_number;
+      अगर (!skip_to_page (first_page_संख्या))
+        वापस;
+      अन्यथा
+        page_संख्या = first_page_संख्या;
     }
-  else
-    page_number = 1;
+  अन्यथा
+    page_संख्या = 1;
 
   init_funcs ();
 
-  line_number = line_count;
-  while (print_page ())
+  पंक्ति_संख्या = पंक्ति_गिनती;
+  जबतक (print_page ())
     ;
 }
 
@@ -1645,50 +1645,50 @@ print_files (int number_of_files, char **av)
    If DESC is non-negative, it is a file descriptor open to
    FILENAME for reading.  */
 
-static void
-init_header (char const *filename, int desc)
+अटल व्योम
+init_header (अक्षर स्थिर *filename, पूर्णांक desc)
 {
-  char *buf = NULL;
-  struct stat st;
-  struct timespec t;
-  int ns;
-  struct tm tm;
+  अक्षर *buf = शून्य;
+  काष्ठा stat st;
+  काष्ठा timespec t;
+  पूर्णांक ns;
+  काष्ठा पंचांग पंचांग;
 
   /* If parallel files or standard input, use current date. */
-  if (streq (filename, "-"))
+  अगर (streq (filename, "-"))
     desc = -1;
-  if (0 <= desc && fstat (desc, &st) == 0)
+  अगर (0 <= desc && ख_स्थिति (desc, &st) == 0)
     t = get_stat_mtime (&st);
-  else
+  अन्यथा
     {
-      static struct timespec timespec;
-      if (! timespec.tv_sec)
-        gettime (&timespec);
+      अटल काष्ठा timespec timespec;
+      अगर (! timespec.tv_sec)
+        समय_लो (&timespec);
       t = timespec;
     }
 
   ns = t.tv_nsec;
-  if (localtime_rz (localtz, &t.tv_sec, &tm))
+  अगर (localtime_rz (localtz, &t.tv_sec, &पंचांग))
     {
-      ptrdiff_t len = nstrftime (NULL, MIN (PTRDIFF_MAX, SIZE_MAX),
-                                 date_format, &tm, localtz, ns);
-      if (0 <= len)
+      सूचक_भेद_प्रकार len = nstrftime (शून्य, MIN (PTRDIFF_MAX, SIZE_MAX),
+                                 date_format, &पंचांग, localtz, ns);
+      अगर (0 <= len)
         {
           buf = ximalloc (len + 1);
-          nstrftime (buf, len + 1, date_format, &tm, localtz, ns);
+          nstrftime (buf, len + 1, date_format, &पंचांग, localtz, ns);
         }
     }
-  if (!buf)
+  अगर (!buf)
     {
-      char secbuf[INT_BUFSIZE_BOUND (intmax_t)];
-      buf = xmalloc (sizeof secbuf + MAX (10, INT_BUFSIZE_BOUND (int)));
-      sprintf (buf, "%s.%09d", timetostr (t.tv_sec, secbuf), ns);
+      अक्षर secbuf[INT_BUFSIZE_BOUND (intmax_t)];
+      buf = xmalloc (माप secbuf + MAX (10, INT_BUFSIZE_BOUND (पूर्णांक)));
+      प्र_लिखो (buf, "%s.%09d", timetostr (t.tv_sec, secbuf), ns);
     }
 
-  free (date_text);
+  मुक्त (date_text);
   date_text = buf;
   file_text = custom_header ? custom_header : desc < 0 ? "" : filename;
-  header_width_available = (chars_per_line
+  header_width_available = (chars_per_पंक्ति
                             - mbswidth (date_text, 0)
                             - mbswidth (file_text, 0));
 }
@@ -1703,66 +1703,66 @@ init_header (char const *filename, int desc)
    if we're reading straight from the file)
    Keep track of this total so we know when to stop printing */
 
-static void
-init_page (void)
+अटल व्योम
+init_page (व्योम)
 {
-  int j;
+  पूर्णांक j;
   COLUMN *p;
 
-  if (storing_columns)
+  अगर (storing_columns)
     {
       store_columns ();
-      for (j = columns - 1, p = column_vector; j; --j, ++p)
+      क्रम (j = columns - 1, p = column_vector; j; --j, ++p)
         {
-          p->lines_to_print = p->lines_stored;
+          p->पंक्तियाँ_to_print = p->पंक्तियाँ_stored;
         }
 
       /* Last column. */
-      if (balance_columns)
+      अगर (balance_columns)
         {
-          p->lines_to_print = p->lines_stored;
+          p->पंक्तियाँ_to_print = p->पंक्तियाँ_stored;
         }
       /* Since we're not balancing columns, we don't need to store
          the rightmost column.   Read it straight from the file. */
-      else
+      अन्यथा
         {
-          if (p->status == OPEN)
+          अगर (p->status == OPEN)
             {
-              p->lines_to_print = lines_per_body;
+              p->पंक्तियाँ_to_print = पंक्तियाँ_per_body;
             }
-          else
-            p->lines_to_print = 0;
+          अन्यथा
+            p->पंक्तियाँ_to_print = 0;
         }
     }
-  else
-    for (j = columns, p = column_vector; j; --j, ++p)
-      if (p->status == OPEN)
+  अन्यथा
+    क्रम (j = columns, p = column_vector; j; --j, ++p)
+      अगर (p->status == OPEN)
         {
-          p->lines_to_print = lines_per_body;
+          p->पंक्तियाँ_to_print = पंक्तियाँ_per_body;
         }
-      else
-        p->lines_to_print = 0;
+      अन्यथा
+        p->पंक्तियाँ_to_print = 0;
 }
 
 /* Align empty columns and print separators.
    Empty columns will be formed by files with status ON_HOLD or CLOSED
    when printing multiple files in parallel. */
 
-static void
+अटल व्योम
 align_column (COLUMN *p)
 {
   padding_not_printed = p->start_position;
-  if (col_sep_length < padding_not_printed)
+  अगर (col_sep_लंबाई < padding_not_printed)
     {
-      pad_across_to (padding_not_printed - col_sep_length);
+      pad_across_to (padding_not_printed - col_sep_लंबाई);
       padding_not_printed = ANYWHERE;
     }
 
-  if (use_col_separator)
+  अगर (use_col_separator)
     print_sep_string ();
 
-  if (p->numbered)
-    add_line_number (p);
+  अगर (p->numbered)
+    add_पंक्ति_संख्या (p);
 }
 
 /* Print one page.
@@ -1776,11 +1776,11 @@ align_column (COLUMN *p)
    reset the status of all files -- any files which where on hold because
    of formfeeds are now put back into the lineup. */
 
-static bool
-print_page (void)
+अटल bool
+print_page (व्योम)
 {
-  int j;
-  int lines_left_on_page;
+  पूर्णांक j;
+  पूर्णांक पंक्तियाँ_बायाँ_on_page;
   COLUMN *p;
 
   /* Used as an accumulator (with | operator) of successive values of
@@ -1794,111 +1794,111 @@ print_page (void)
 
   init_page ();
 
-  if (cols_ready_to_print () == 0)
-    return false;
+  अगर (cols_ready_to_print () == 0)
+    वापस false;
 
-  if (extremities)
+  अगर (extremities)
     print_a_header = true;
 
   /* Don't pad unless we know a page was printed. */
   pad_vertically = false;
   pv = false;
 
-  lines_left_on_page = lines_per_body;
-  if (double_space)
-    lines_left_on_page *= 2;
+  पंक्तियाँ_बायाँ_on_page = पंक्तियाँ_per_body;
+  अगर (double_space)
+    पंक्तियाँ_बायाँ_on_page *= 2;
 
-  while (lines_left_on_page > 0 && cols_ready_to_print () > 0)
+  जबतक (पंक्तियाँ_बायाँ_on_page > 0 && cols_ready_to_print () > 0)
     {
       output_position = 0;
       spaces_not_printed = 0;
       separators_not_printed = 0;
       pad_vertically = false;
       align_empty_cols = false;
-      empty_line = true;
+      empty_पंक्ति = true;
 
-      for (j = 1, p = column_vector; j <= columns; ++j, ++p)
+      क्रम (j = 1, p = column_vector; j <= columns; ++j, ++p)
         {
-          input_position = 0;
-          if (p->lines_to_print > 0 || p->status == FF_FOUND)
+          निवेश_position = 0;
+          अगर (p->पंक्तियाँ_to_print > 0 || p->status == FF_FOUND)
             {
               FF_only = false;
               padding_not_printed = p->start_position;
-              if (!(p->print_func) (p))
-                read_rest_of_line (p);
+              अगर (!(p->print_func) (p))
+                read_rest_of_पंक्ति (p);
               pv |= pad_vertically;
 
-              --p->lines_to_print;
-              if (p->lines_to_print <= 0)
+              --p->पंक्तियाँ_to_print;
+              अगर (p->पंक्तियाँ_to_print <= 0)
                 {
-                  if (cols_ready_to_print () == 0)
-                    break;
+                  अगर (cols_ready_to_print () == 0)
+                    अवरोध;
                 }
 
               /* File p changed its status to ON_HOLD or CLOSED */
-              if (parallel_files && p->status != OPEN)
+              अगर (parallel_files && p->status != OPEN)
                 {
-                  if (empty_line)
+                  अगर (empty_पंक्ति)
                     align_empty_cols = true;
-                  else if (p->status == CLOSED
+                  अन्यथा अगर (p->status == CLOSED
                            || (p->status == ON_HOLD && FF_only))
                     align_column (p);
                 }
             }
-          else if (parallel_files)
+          अन्यथा अगर (parallel_files)
             {
               /* File status ON_HOLD or CLOSED */
-              if (empty_line)
+              अगर (empty_पंक्ति)
                 align_empty_cols = true;
-              else
+              अन्यथा
                 align_column (p);
             }
 
           /* We need it also with an empty column */
-          if (use_col_separator)
+          अगर (use_col_separator)
             ++separators_not_printed;
         }
 
-      if (pad_vertically)
+      अगर (pad_vertically)
         {
-          putchar ('\n');
-          --lines_left_on_page;
+          अक्षर_दो ('\n');
+          --पंक्तियाँ_बायाँ_on_page;
         }
 
-      if (cols_ready_to_print () == 0 && !extremities)
-        break;
+      अगर (cols_ready_to_print () == 0 && !extremities)
+        अवरोध;
 
-      if (double_space && pv)
+      अगर (double_space && pv)
         {
-          putchar ('\n');
-          --lines_left_on_page;
+          अक्षर_दो ('\n');
+          --पंक्तियाँ_बायाँ_on_page;
         }
     }
 
-  if (lines_left_on_page == 0)
-    for (j = 1, p = column_vector; j <= columns; ++j, ++p)
-      if (p->status == OPEN)
+  अगर (पंक्तियाँ_बायाँ_on_page == 0)
+    क्रम (j = 1, p = column_vector; j <= columns; ++j, ++p)
+      अगर (p->status == OPEN)
         p->full_page_printed = true;
 
   pad_vertically = pv;
 
-  if (pad_vertically && extremities)
-    pad_down (lines_left_on_page + lines_per_footer);
-  else if (keep_FF && print_a_FF)
+  अगर (pad_vertically && extremities)
+    pad_down (पंक्तियाँ_बायाँ_on_page + पंक्तियाँ_per_footer);
+  अन्यथा अगर (keep_FF && print_a_FF)
     {
-      putchar ('\f');
+      अक्षर_दो ('\f');
       print_a_FF = false;
     }
 
-  if (ferror (stdout))
+  अगर (ख_त्रुटि (मानक_निकास))
     write_error ();
 
-  if (last_page_number < ++page_number)
-    return false;		/* Stop printing with LAST_PAGE */
+  अगर (last_page_संख्या < ++page_संख्या)
+    वापस false;		/* Stop printing with LAST_PAGE */
 
   reset_status ();		/* Change ON_HOLD to OPEN. */
 
-  return true;			/* More pages to go. */
+  वापस true;			/* More pages to go. */
 }
 
 /* Allocate space for storing columns.
@@ -1915,26 +1915,26 @@ print_page (void)
    because the last entry tells us the index of the last character,
    which we need to know in order to print the last line in buff. */
 
-static void
-init_store_cols (void)
+अटल व्योम
+init_store_cols (व्योम)
 {
   /* Tune this.  */
-  int total_lines, total_lines_1, chars_per_column_1, chars_if_truncate;
-  if (ckd_mul (&total_lines, lines_per_body, columns)
-      || ckd_add (&total_lines_1, total_lines, 1)
+  पूर्णांक योग_पंक्तियाँ, योग_पंक्तियाँ_1, chars_per_column_1, chars_if_truncate;
+  अगर (ckd_mul (&योग_पंक्तियाँ, पंक्तियाँ_per_body, columns)
+      || ckd_add (&योग_पंक्तियाँ_1, योग_पंक्तियाँ, 1)
       || ckd_add (&chars_per_column_1, chars_per_column, 1)
-      || ckd_mul (&chars_if_truncate, total_lines, chars_per_column_1)
+      || ckd_mul (&chars_if_truncate, योग_पंक्तियाँ, chars_per_column_1)
       || ckd_mul (&buff_allocated, chars_if_truncate, use_col_separator + 1))
     integer_overflow ();
 
-  free (line_vector);
+  मुक्त (पंक्ति_vector);
   /* FIXME: here's where it was allocated.  */
-  line_vector = xnmalloc (total_lines_1, sizeof *line_vector);
+  पंक्ति_vector = xnmalloc (योग_पंक्तियाँ_1, माप *पंक्ति_vector);
 
-  free (end_vector);
-  end_vector = xnmalloc (total_lines, sizeof *end_vector);
+  मुक्त (end_vector);
+  end_vector = xnmalloc (योग_पंक्तियाँ, माप *end_vector);
 
-  free (buff);
+  मुक्त (buff);
   buff = ximalloc (buff_allocated);
 }
 
@@ -1950,148 +1950,148 @@ init_store_cols (void)
    buff_start is the index in buff of the first character in the
    current line. */
 
-static void
-store_columns (void)
+अटल व्योम
+store_columns (व्योम)
 {
-  int i, j;
-  unsigned int line = 0;
-  unsigned int buff_start;
-  int last_col;		/* The rightmost column which will be saved in buff */
+  पूर्णांक i, j;
+  अचिन्हित पूर्णांक पंक्ति = 0;
+  अचिन्हित पूर्णांक buff_start;
+  पूर्णांक last_col;		/* The rightmost column which will be saved in buff */
   COLUMN *p;
 
   buff_current = 0;
   buff_start = 0;
 
-  if (balance_columns)
+  अगर (balance_columns)
     last_col = columns;
-  else
+  अन्यथा
     last_col = columns - 1;
 
-  for (i = 1, p = column_vector; i <= last_col; ++i, ++p)
-    p->lines_stored = 0;
+  क्रम (i = 1, p = column_vector; i <= last_col; ++i, ++p)
+    p->पंक्तियाँ_stored = 0;
 
-  for (i = 1, p = column_vector; i <= last_col && files_ready_to_read;
+  क्रम (i = 1, p = column_vector; i <= last_col && files_ready_to_read;
        ++i, ++p)
     {
-      p->current_line = line;
-      for (j = lines_per_body; j && files_ready_to_read; --j)
+      p->current_पंक्ति = पंक्ति;
+      क्रम (j = पंक्तियाँ_per_body; j && files_ready_to_read; --j)
 
-        if (p->status == OPEN)	/* Redundant.  Clean up. */
+        अगर (p->status == OPEN)	/* Redundant.  Clean up. */
           {
-            input_position = 0;
+            निवेश_position = 0;
 
-            if (!read_line (p))
-              read_rest_of_line (p);
+            अगर (!read_पंक्ति (p))
+              read_rest_of_पंक्ति (p);
 
-            if (p->status == OPEN
+            अगर (p->status == OPEN
                 || buff_start != buff_current)
               {
-                ++p->lines_stored;
-                line_vector[line] = buff_start;
-                end_vector[line++] = input_position;
+                ++p->पंक्तियाँ_stored;
+                पंक्ति_vector[पंक्ति] = buff_start;
+                end_vector[पंक्ति++] = निवेश_position;
                 buff_start = buff_current;
               }
           }
     }
 
   /* Keep track of the location of the last char in buff. */
-  line_vector[line] = buff_start;
+  पंक्ति_vector[पंक्ति] = buff_start;
 
-  if (balance_columns)
-    balance (line);
+  अगर (balance_columns)
+    balance (पंक्ति);
 }
 
-static void
-balance (int total_stored)
+अटल व्योम
+balance (पूर्णांक योग_stored)
 {
   COLUMN *p;
-  int i, lines;
-  int first_line = 0;
+  पूर्णांक i, पंक्तियाँ;
+  पूर्णांक first_पंक्ति = 0;
 
-  for (i = 1, p = column_vector; i <= columns; ++i, ++p)
+  क्रम (i = 1, p = column_vector; i <= columns; ++i, ++p)
     {
-      lines = total_stored / columns;
-      if (i <= total_stored % columns)
-        ++lines;
+      पंक्तियाँ = योग_stored / columns;
+      अगर (i <= योग_stored % columns)
+        ++पंक्तियाँ;
 
-      p->lines_stored = lines;
-      p->current_line = first_line;
+      p->पंक्तियाँ_stored = पंक्तियाँ;
+      p->current_पंक्ति = first_पंक्ति;
 
-      first_line += lines;
+      first_पंक्ति += पंक्तियाँ;
     }
 }
 
 /* Store a character in the buffer. */
 
-static void
-store_char (char c)
+अटल व्योम
+store_char (अक्षर c)
 {
-  if (buff_current >= buff_allocated)
+  अगर (buff_current >= buff_allocated)
     {
       /* May be too generous. */
-      buff = xpalloc (buff, &buff_allocated, 1, -1, sizeof *buff);
+      buff = xpalloc (buff, &buff_allocated, 1, -1, माप *buff);
     }
   buff[buff_current++] = c;
 }
 
-static void
-add_line_number (COLUMN *p)
+अटल व्योम
+add_पंक्ति_संख्या (COLUMN *p)
 {
-  int i;
-  char *s;
-  int num_width;
+  पूर्णांक i;
+  अक्षर *s;
+  पूर्णांक अंक_width;
 
   /* Cutting off the higher-order digits is more informative than
      lower-order cut off. */
-  num_width = sprintf (number_buff, "%*d", chars_per_number, line_number);
-  line_number++;
-  s = number_buff + (num_width - chars_per_number);
-  for (i = chars_per_number; i > 0; i--)
+  अंक_width = प्र_लिखो (संख्या_buff, "%*d", chars_per_संख्या, पंक्ति_संख्या);
+  पंक्ति_संख्या++;
+  s = संख्या_buff + (अंक_width - chars_per_संख्या);
+  क्रम (i = chars_per_संख्या; i > 0; i--)
     (p->char_func) (*s++);
 
-  if (columns > 1)
+  अगर (columns > 1)
     {
       /* Tabification is assumed for multiple columns, also for n-separators,
          but 'default n-separator = TAB' hasn't been given priority over
          equal column_width also specified by POSIX. */
-      if (number_separator == '\t')
+      अगर (संख्या_separator == '\t')
         {
-          i = number_width - chars_per_number;
-          while (i-- > 0)
+          i = संख्या_width - chars_per_संख्या;
+          जबतक (i-- > 0)
             (p->char_func) (' ');
         }
-      else
-        (p->char_func) (number_separator);
+      अन्यथा
+        (p->char_func) (संख्या_separator);
     }
-  else
+  अन्यथा
     /* To comply with POSIX, we avoid any expansion of default TAB
        separator with a single column output. No column_width requirement
        has to be considered. */
     {
-      (p->char_func) (number_separator);
-      if (number_separator == '\t')
+      (p->char_func) (संख्या_separator);
+      अगर (संख्या_separator == '\t')
         output_position = POS_AFTER_TAB (chars_per_output_tab,
                           output_position);
     }
 
-  if (truncate_lines && !parallel_files)
-    input_position += number_width;
+  अगर (truncate_पंक्तियाँ && !parallel_files)
+    निवेश_position += संख्या_width;
 }
 
 /* Print (or store) padding until the current horizontal position
    is position. */
 
-static void
-pad_across_to (int position)
+अटल व्योम
+pad_across_to (पूर्णांक position)
 {
-  int h = output_position;
+  पूर्णांक h = output_position;
 
-  if (tabify_output)
+  अगर (tabify_output)
     spaces_not_printed = position - output_position;
-  else
+  अन्यथा
     {
-      while (++h <= position)
-        putchar (' ');
+      जबतक (++h <= position)
+        अक्षर_दो (' ');
       output_position = position;
     }
 }
@@ -2101,14 +2101,14 @@ pad_across_to (int position)
    If the user has requested a formfeed, use one.
    Otherwise, use newlines. */
 
-static void
-pad_down (unsigned int lines)
+अटल व्योम
+pad_down (अचिन्हित पूर्णांक पंक्तियाँ)
 {
-  if (use_form_feed)
-    putchar ('\f');
-  else
-    for (unsigned int i = lines; i; --i)
-      putchar ('\n');
+  अगर (use_form_feed)
+    अक्षर_दो ('\f');
+  अन्यथा
+    क्रम (अचिन्हित पूर्णांक i = पंक्तियाँ; i; --i)
+      अक्षर_दो ('\n');
 }
 
 /* Read the rest of the line.
@@ -2117,27 +2117,27 @@ pad_down (unsigned int lines)
    hit.  Used when we've truncated a line and we no longer need
    to print or store its characters. */
 
-static void
-read_rest_of_line (COLUMN *p)
+अटल व्योम
+read_rest_of_पंक्ति (COLUMN *p)
 {
-  int c;
-  FILE *f = p->fp;
+  पूर्णांक c;
+  खाता *f = p->fp;
 
-  while ((c = getc (f)) != '\n')
+  जबतक ((c = अ_लो (f)) != '\n')
     {
-      if (c == '\f')
+      अगर (c == '\f')
         {
-          if ((c = getc (f)) != '\n')
-            ungetc (c, f);
-          if (keep_FF)
+          अगर ((c = अ_लो (f)) != '\n')
+            अक्षर_वापस (c, f);
+          अगर (keep_FF)
             print_a_FF = true;
           hold_file (p);
-          break;
+          अवरोध;
         }
-      else if (c == EOF)
+      अन्यथा अगर (c == खातापूर्ण)
         {
           close_file (p);
-          break;
+          अवरोध;
         }
     }
 }
@@ -2151,65 +2151,65 @@ read_rest_of_line (COLUMN *p)
    Count lines of skipped pages to find the line number of 1st page
    printed relative to 1st line of input file (start_line_num). */
 
-static void
-skip_read (COLUMN *p, int column_number)
+अटल व्योम
+skip_read (COLUMN *p, पूर्णांक column_संख्या)
 {
-  int c;
-  FILE *f = p->fp;
-  int i;
+  पूर्णांक c;
+  खाता *f = p->fp;
+  पूर्णांक i;
   bool single_ff = false;
   COLUMN *q;
 
   /* Read 1st character in a line or any character succeeding a FF */
-  if ((c = getc (f)) == '\f' && p->full_page_printed)
+  अगर ((c = अ_लो (f)) == '\f' && p->full_page_printed)
     /* A FF-coincidence with a previous full_page_printed.
        To avoid an additional empty page, eliminate the FF */
-    if ((c = getc (f)) == '\n')
-      c = getc (f);
+    अगर ((c = अ_लो (f)) == '\n')
+      c = अ_लो (f);
 
   p->full_page_printed = false;
 
   /* 1st character a FF means a single FF without any printable
      characters. Don't count it as a line with -n option. */
-  if (c == '\f')
+  अगर (c == '\f')
     single_ff = true;
 
   /* Preparing for a FF-coincidence: Maybe we finish that page
      without a FF found */
-  if (last_line)
+  अगर (last_पंक्ति)
     p->full_page_printed = true;
 
-  while (c != '\n')
+  जबतक (c != '\n')
     {
-      if (c == '\f')
+      अगर (c == '\f')
         {
           /* No FF-coincidence possible,
              no catching up of a FF-coincidence with next page */
-          if (last_line)
+          अगर (last_पंक्ति)
             {
-              if (!parallel_files)
-                for (q = column_vector, i = columns; i; ++q, --i)
+              अगर (!parallel_files)
+                क्रम (q = column_vector, i = columns; i; ++q, --i)
                   q->full_page_printed = false;
-              else
+              अन्यथा
                 p->full_page_printed = false;
             }
 
-          if ((c = getc (f)) != '\n')
-            ungetc (c, f);
+          अगर ((c = अ_लो (f)) != '\n')
+            अक्षर_वापस (c, f);
           hold_file (p);
-          break;
+          अवरोध;
         }
-      else if (c == EOF)
+      अन्यथा अगर (c == खातापूर्ण)
         {
           close_file (p);
-          break;
+          अवरोध;
         }
-      c = getc (f);
+      c = अ_लो (f);
     }
 
-  if (skip_count)
-    if ((!parallel_files || column_number == 1) && !single_ff)
-      ++line_count;
+  अगर (skip_गिनती)
+    अगर ((!parallel_files || column_संख्या == 1) && !single_ff)
+      ++पंक्ति_गिनती;
 }
 
 /* If we're tabifying output,
@@ -2218,21 +2218,21 @@ skip_read (COLUMN *p, int column_number)
    of our desired horizontal position and delays printing
    until this function is called. */
 
-static void
-print_white_space (void)
+अटल व्योम
+print_white_space (व्योम)
 {
-  int h_new;
-  int h_old = output_position;
-  int goal = h_old + spaces_not_printed;
+  पूर्णांक h_new;
+  पूर्णांक h_old = output_position;
+  पूर्णांक goal = h_old + spaces_not_printed;
 
-  while (goal - h_old > 1
+  जबतक (goal - h_old > 1
          && (h_new = POS_AFTER_TAB (chars_per_output_tab, h_old)) <= goal)
     {
-      putchar (output_tab_char);
+      अक्षर_दो (output_tab_char);
       h_old = h_new;
     }
-  while (++h_old <= goal)
-    putchar (' ');
+  जबतक (++h_old <= goal)
+    अक्षर_दो (' ');
 
   output_position = goal;
   spaces_not_printed = 0;
@@ -2243,43 +2243,43 @@ print_white_space (void)
    We keep a count until we know that we'll be printing a line,
    then print_sep_string() is called. */
 
-static void
-print_sep_string (void)
+अटल व्योम
+print_sep_string (व्योम)
 {
-  char const *s = col_sep_string;
-  int l = col_sep_length;
+  अक्षर स्थिर *s = col_sep_string;
+  पूर्णांक l = col_sep_लंबाई;
 
-  if (separators_not_printed <= 0)
+  अगर (separators_not_printed <= 0)
     {
       /* We'll be starting a line with chars_per_margin, anything else? */
-      if (spaces_not_printed > 0)
+      अगर (spaces_not_printed > 0)
         print_white_space ();
     }
-  else
+  अन्यथा
     {
-      for (; separators_not_printed > 0; --separators_not_printed)
+      क्रम (; separators_not_printed > 0; --separators_not_printed)
         {
-          while (l-- > 0)
+          जबतक (l-- > 0)
             {
               /* 3 types of sep_strings: spaces only, spaces and chars,
               chars only */
-              if (*s == ' ')
+              अगर (*s == ' ')
                 {
                   /* We're tabifying output; consecutive spaces in
                   sep_string may have to be converted to tabs */
                   s++;
                   ++spaces_not_printed;
                 }
-              else
+              अन्यथा
                 {
-                  if (spaces_not_printed > 0)
+                  अगर (spaces_not_printed > 0)
                     print_white_space ();
-                  putchar (*s++);
+                  अक्षर_दो (*s++);
                   ++output_position;
                 }
             }
           /* sep_string ends with some spaces */
-          if (spaces_not_printed > 0)
+          अगर (spaces_not_printed > 0)
             print_white_space ();
         }
     }
@@ -2288,13 +2288,13 @@ print_sep_string (void)
 /* Print (or store, depending on p->char_func) a clump of N
    characters. */
 
-static void
-print_clump (COLUMN *p, int n, char *clump)
+अटल व्योम
+print_clump (COLUMN *p, पूर्णांक n, अक्षर *clump)
 {
-  while (n--)
+  जबतक (n--)
     (p->char_func) (*clump++);
 
-  if (ferror (stdout))
+  अगर (ख_त्रुटि (मानक_निकास))
     write_error ();
 }
 
@@ -2307,72 +2307,72 @@ print_clump (COLUMN *p, int n, char *clump)
    a nonspace is encountered, call print_white_space() to print the
    required number of tabs and spaces. */
 
-static void
-print_char (char c)
+अटल व्योम
+print_char (अक्षर c)
 {
-  if (tabify_output)
+  अगर (tabify_output)
     {
-      if (c == ' ')
+      अगर (c == ' ')
         {
           ++spaces_not_printed;
-          return;
+          वापस;
         }
-      else if (spaces_not_printed > 0)
+      अन्यथा अगर (spaces_not_printed > 0)
         print_white_space ();
 
       /* Nonprintables are assumed to have width 0, except '\b'. */
-      if (! isprint (to_uchar (c)))
+      अगर (! है_छाप (to_uchar (c)))
         {
-          if (c == '\b')
+          अगर (c == '\b')
             --output_position;
         }
-      else
+      अन्यथा
         ++output_position;
     }
-  putchar (c);
+  अक्षर_दो (c);
 }
 
 /* Skip to page PAGE before printing.
    PAGE may be larger than total number of pages. */
 
-static bool
+अटल bool
 skip_to_page (uintmax_t page)
 {
-  for (uintmax_t n = 1; n < page; ++n)
+  क्रम (uintmax_t n = 1; n < page; ++n)
     {
       COLUMN *p;
-      int j;
+      पूर्णांक j;
 
-      for (int i = 1; i < lines_per_body; ++i)
+      क्रम (पूर्णांक i = 1; i < पंक्तियाँ_per_body; ++i)
         {
-          for (j = 1, p = column_vector; j <= columns; ++j, ++p)
-            if (p->status == OPEN)
+          क्रम (j = 1, p = column_vector; j <= columns; ++j, ++p)
+            अगर (p->status == OPEN)
               skip_read (p, j);
         }
-      last_line = true;
-      for (j = 1, p = column_vector; j <= columns; ++j, ++p)
-        if (p->status == OPEN)
+      last_पंक्ति = true;
+      क्रम (j = 1, p = column_vector; j <= columns; ++j, ++p)
+        अगर (p->status == OPEN)
           skip_read (p, j);
 
-      if (storing_columns)	/* change FF_FOUND to ON_HOLD */
-        for (j = 1, p = column_vector; j <= columns; ++j, ++p)
-          if (p->status != CLOSED)
+      अगर (storing_columns)	/* change FF_FOUND to ON_HOLD */
+        क्रम (j = 1, p = column_vector; j <= columns; ++j, ++p)
+          अगर (p->status != CLOSED)
             p->status = ON_HOLD;
 
       reset_status ();
-      last_line = false;
+      last_पंक्ति = false;
 
-      if (files_ready_to_read < 1)
+      अगर (files_ready_to_read < 1)
         {
           /* It's very helpful, normally the total number of pages is
              not known in advance.  */
           error (0, 0,
                  _("starting page number %ju exceeds page count %ju"),
                  page, n);
-          break;
+          अवरोध;
         }
     }
-  return files_ready_to_read > 0;
+  वापस files_ready_to_read > 0;
 }
 
 /* Print a header.
@@ -2380,31 +2380,31 @@ skip_to_page (uintmax_t page)
    Formfeeds are assumed to use up two lines at the beginning of
    the page. */
 
-static void
-print_header (void)
+अटल व्योम
+print_header (व्योम)
 {
-  char page_text[256 + INT_STRLEN_BOUND (page_number)];
-  int available_width;
-  int lhs_spaces;
-  int rhs_spaces;
+  अक्षर page_text[256 + INT_STRLEN_BOUND (page_संख्या)];
+  पूर्णांक available_width;
+  पूर्णांक lhs_spaces;
+  पूर्णांक rhs_spaces;
 
   output_position = 0;
   pad_across_to (chars_per_margin);
   print_white_space ();
 
-  if (page_number == 0)
-    error (EXIT_FAILURE, 0, _("page number overflow"));
+  अगर (page_संख्या == 0)
+    error (निकास_त्रुटि, 0, _("page number overflow"));
 
   /* The translator must ensure that formatting the translation of
      "Page %ju" does not generate more than (sizeof page_text - 1)
      bytes.  */
-  sprintf (page_text, _("Page %ju"), page_number);
+  प्र_लिखो (page_text, _("Page %ju"), page_संख्या);
   available_width = header_width_available - mbswidth (page_text, 0);
   available_width = MAX (0, available_width);
   lhs_spaces = available_width >> 1;
   rhs_spaces = available_width - lhs_spaces;
 
-  printf ("\n\n%*s%s%*s%s%*s%s\n\n\n",
+  म_लिखो ("\n\n%*s%s%*s%s%*s%s\n\n\n",
           chars_per_margin, "",
           date_text, lhs_spaces, " ",
           file_text, rhs_spaces, " ", page_text);
@@ -2434,125 +2434,125 @@ print_header (void)
    Return false if we exceed chars_per_column before reading
    an end of line character, true otherwise. */
 
-static bool
-read_line (COLUMN *p)
+अटल bool
+read_पंक्ति (COLUMN *p)
 {
-  int c;
-  int chars IF_LINT (= 0);
-  int last_input_position;
-  int j, k;
+  पूर्णांक c;
+  पूर्णांक chars IF_LINT (= 0);
+  पूर्णांक last_निवेश_position;
+  पूर्णांक j, k;
   COLUMN *q;
 
   /* read 1st character in each line or any character succeeding a FF: */
-  c = getc (p->fp);
+  c = अ_लो (p->fp);
 
-  last_input_position = input_position;
+  last_निवेश_position = निवेश_position;
 
-  if (c == '\f' && p->full_page_printed)
-    if ((c = getc (p->fp)) == '\n')
-      c = getc (p->fp);
+  अगर (c == '\f' && p->full_page_printed)
+    अगर ((c = अ_लो (p->fp)) == '\n')
+      c = अ_लो (p->fp);
   p->full_page_printed = false;
 
-  switch (c)
+  चयन (c)
     {
-    case '\f':
-      if ((c = getc (p->fp)) != '\n')
-        ungetc (c, p->fp);
+    हाल '\f':
+      अगर ((c = अ_लो (p->fp)) != '\n')
+        अक्षर_वापस (c, p->fp);
       FF_only = true;
-      if (print_a_header && !storing_columns)
+      अगर (print_a_header && !storing_columns)
         {
           pad_vertically = true;
           print_header ();
         }
-      else if (keep_FF)
+      अन्यथा अगर (keep_FF)
         print_a_FF = true;
       hold_file (p);
-      return true;
-    case EOF:
+      वापस true;
+    हाल खातापूर्ण:
       close_file (p);
-      return true;
-    case '\n':
-      break;
-    default:
+      वापस true;
+    हाल '\n':
+      अवरोध;
+    शेष:
       chars = char_to_clump (c);
     }
 
-  if (truncate_lines && input_position > chars_per_column)
+  अगर (truncate_पंक्तियाँ && निवेश_position > chars_per_column)
     {
-      input_position = last_input_position;
-      return false;
+      निवेश_position = last_निवेश_position;
+      वापस false;
     }
 
-  if (p->char_func != store_char)
+  अगर (p->char_func != store_char)
     {
       pad_vertically = true;
 
-      if (print_a_header && !storing_columns)
+      अगर (print_a_header && !storing_columns)
         print_header ();
 
-      if (parallel_files && align_empty_cols)
+      अगर (parallel_files && align_empty_cols)
         {
           /* We have to align empty columns at the beginning of a line. */
           k = separators_not_printed;
           separators_not_printed = 0;
-          for (j = 1, q = column_vector; j <= k; ++j, ++q)
+          क्रम (j = 1, q = column_vector; j <= k; ++j, ++q)
             {
               align_column (q);
               separators_not_printed += 1;
             }
           padding_not_printed = p->start_position;
-          if (truncate_lines)
+          अगर (truncate_पंक्तियाँ)
             spaces_not_printed = chars_per_column;
-          else
+          अन्यथा
             spaces_not_printed = 0;
           align_empty_cols = false;
         }
 
-      if (col_sep_length < padding_not_printed)
+      अगर (col_sep_लंबाई < padding_not_printed)
         {
-          pad_across_to (padding_not_printed - col_sep_length);
+          pad_across_to (padding_not_printed - col_sep_लंबाई);
           padding_not_printed = ANYWHERE;
         }
 
-      if (use_col_separator)
+      अगर (use_col_separator)
         print_sep_string ();
     }
 
-  if (p->numbered)
-    add_line_number (p);
+  अगर (p->numbered)
+    add_पंक्ति_संख्या (p);
 
-  empty_line = false;
-  if (c == '\n')
-    return true;
+  empty_पंक्ति = false;
+  अगर (c == '\n')
+    वापस true;
 
   print_clump (p, chars, clump_buff);
 
-  while (true)
+  जबतक (true)
     {
-      c = getc (p->fp);
+      c = अ_लो (p->fp);
 
-      switch (c)
+      चयन (c)
         {
-        case '\n':
-          return true;
-        case '\f':
-          if ((c = getc (p->fp)) != '\n')
-            ungetc (c, p->fp);
-          if (keep_FF)
+        हाल '\n':
+          वापस true;
+        हाल '\f':
+          अगर ((c = अ_लो (p->fp)) != '\n')
+            अक्षर_वापस (c, p->fp);
+          अगर (keep_FF)
             print_a_FF = true;
           hold_file (p);
-          return true;
-        case EOF:
+          वापस true;
+        हाल खातापूर्ण:
           close_file (p);
-          return true;
+          वापस true;
         }
 
-      last_input_position = input_position;
+      last_निवेश_position = निवेश_position;
       chars = char_to_clump (c);
-      if (truncate_lines && input_position > chars_per_column)
+      अगर (truncate_पंक्तियाँ && निवेश_position > chars_per_column)
         {
-          input_position = last_input_position;
-          return false;
+          निवेश_position = last_निवेश_position;
+          वापस false;
         }
 
       print_clump (p, chars, clump_buff);
@@ -2573,13 +2573,13 @@ read_line (COLUMN *p)
 
    Return true, meaning there is no need to call read_rest_of_line. */
 
-static bool
+अटल bool
 print_stored (COLUMN *p)
 {
   COLUMN *q;
 
-  int line = p->current_line++;
-  char *first = &buff[line_vector[line]];
+  पूर्णांक पंक्ति = p->current_पंक्ति++;
+  अक्षर *first = &buff[पंक्ति_vector[पंक्ति]];
   /* FIXME
      UMR: Uninitialized memory read:
      * This is occurring while in:
@@ -2591,46 +2591,46 @@ print_stored (COLUMN *p)
      xmalloc        [xmalloc.c:94]
      init_store_cols [pr.c:1648]
      */
-  char *last = &buff[line_vector[line + 1]];
+  अक्षर *last = &buff[पंक्ति_vector[पंक्ति + 1]];
 
   pad_vertically = true;
 
-  if (print_a_header)
+  अगर (print_a_header)
     print_header ();
 
-  if (p->status == FF_FOUND)
+  अगर (p->status == FF_FOUND)
     {
-      int i;
-      for (i = 1, q = column_vector; i <= columns; ++i, ++q)
+      पूर्णांक i;
+      क्रम (i = 1, q = column_vector; i <= columns; ++i, ++q)
         q->status = ON_HOLD;
-      if (column_vector->lines_to_print <= 0)
+      अगर (column_vector->पंक्तियाँ_to_print <= 0)
         {
-          if (!extremities)
+          अगर (!extremities)
             pad_vertically = false;
-          return true;		/* print a header only */
+          वापस true;		/* print a header only */
         }
     }
 
-  if (col_sep_length < padding_not_printed)
+  अगर (col_sep_लंबाई < padding_not_printed)
     {
-      pad_across_to (padding_not_printed - col_sep_length);
+      pad_across_to (padding_not_printed - col_sep_लंबाई);
       padding_not_printed = ANYWHERE;
     }
 
-  if (use_col_separator)
+  अगर (use_col_separator)
     print_sep_string ();
 
-  while (first != last)
+  जबतक (first != last)
     print_char (*first++);
 
-  if (spaces_not_printed == 0)
+  अगर (spaces_not_printed == 0)
     {
-      output_position = p->start_position + end_vector[line];
-      if (p->start_position - col_sep_length == chars_per_margin)
-        output_position -= col_sep_length;
+      output_position = p->start_position + end_vector[पंक्ति];
+      अगर (p->start_position - col_sep_लंबाई == chars_per_margin)
+        output_position -= col_sep_लंबाई;
     }
 
-  return true;
+  वापस true;
 }
 
 /* Convert a character to the proper format and return the number of
@@ -2645,80 +2645,80 @@ print_stored (COLUMN *p)
    characters in clump_buff.  (e.g., the width of '\b' is -1, while the
    number of characters is 1.) */
 
-static int
-char_to_clump (char c)
+अटल पूर्णांक
+char_to_clump (अक्षर c)
 {
-  unsigned char uc = c;
-  char *s = clump_buff;
-  char esc_buff[4];
-  int width;
-  int chars;
-  int chars_per_c = 8;
+  अचिन्हित अक्षर uc = c;
+  अक्षर *s = clump_buff;
+  अक्षर esc_buff[4];
+  पूर्णांक width;
+  पूर्णांक chars;
+  पूर्णांक chars_per_c = 8;
 
-  if (c == input_tab_char)
-    chars_per_c = chars_per_input_tab;
+  अगर (c == निवेश_tab_char)
+    chars_per_c = chars_per_निवेश_tab;
 
-  if (c == input_tab_char || c == '\t')
+  अगर (c == निवेश_tab_char || c == '\t')
     {
-      width = TAB_WIDTH (chars_per_c, input_position);
+      width = TAB_WIDTH (chars_per_c, निवेश_position);
 
-      if (untabify_input)
+      अगर (untabify_निवेश)
         {
-          for (int i = width; i; --i)
+          क्रम (पूर्णांक i = width; i; --i)
             *s++ = ' ';
           chars = width;
         }
-      else
+      अन्यथा
         {
           *s = c;
           chars = 1;
         }
 
     }
-  else if (! isprint (uc))
+  अन्यथा अगर (! है_छाप (uc))
     {
-      if (use_esc_sequence)
+      अगर (use_esc_sequence)
         {
           width = 4;
           chars = 4;
           *s++ = '\\';
-          sprintf (esc_buff, "%03o", uc);
-          for (int i = 0; i <= 2; ++i)
+          प्र_लिखो (esc_buff, "%03o", uc);
+          क्रम (पूर्णांक i = 0; i <= 2; ++i)
             *s++ = esc_buff[i];
         }
-      else if (use_cntrl_prefix)
+      अन्यथा अगर (use_cntrl_prefix)
         {
-          if (uc < 0200)
+          अगर (uc < 0200)
             {
               width = 2;
               chars = 2;
               *s++ = '^';
               *s = c ^ 0100;
             }
-          else
+          अन्यथा
             {
               width = 4;
               chars = 4;
               *s++ = '\\';
-              sprintf (esc_buff, "%03o", uc);
-              for (int i = 0; i <= 2; ++i)
+              प्र_लिखो (esc_buff, "%03o", uc);
+              क्रम (पूर्णांक i = 0; i <= 2; ++i)
                 *s++ = esc_buff[i];
             }
         }
-      else if (c == '\b')
+      अन्यथा अगर (c == '\b')
         {
           width = -1;
           chars = 1;
           *s = c;
         }
-      else
+      अन्यथा
         {
           width = 0;
           chars = 1;
           *s = c;
         }
     }
-  else
+  अन्यथा
     {
       width = 1;
       chars = 1;
@@ -2726,20 +2726,20 @@ char_to_clump (char c)
     }
 
   /* Too many backspaces must put us in position 0 -- never negative.  */
-  if (width < 0 && input_position == 0)
+  अगर (width < 0 && निवेश_position == 0)
     {
       chars = 0;
-      input_position = 0;
+      निवेश_position = 0;
     }
-  else if (width < 0 && input_position <= -width)
-    input_position = 0;
-  else
+  अन्यथा अगर (width < 0 && निवेश_position <= -width)
+    निवेश_position = 0;
+  अन्यथा
     {
-      if (ckd_add (&input_position, input_position, width))
+      अगर (ckd_add (&निवेश_position, निवेश_position, width))
         integer_overflow ();
     }
 
-  return chars;
+  वापस chars;
 }
 
 /* We've just printed some files and need to clean up things before
@@ -2747,34 +2747,34 @@ char_to_clump (char c)
 
    Free everything we've xmalloc'ed, except 'header'. */
 
-static void
-cleanup (void)
+अटल व्योम
+cleanup (व्योम)
 {
-  free (number_buff);
-  free (clump_buff);
-  free (column_vector);
-  free (line_vector);
-  free (end_vector);
-  free (buff);
+  मुक्त (संख्या_buff);
+  मुक्त (clump_buff);
+  मुक्त (column_vector);
+  मुक्त (पंक्ति_vector);
+  मुक्त (end_vector);
+  मुक्त (buff);
 }
 
 /* Complain, print a usage message, and die. */
 
-void
-usage (int status)
+व्योम
+usage (पूर्णांक status)
 {
-  if (status != EXIT_SUCCESS)
+  अगर (status != निकास_सफल)
     emit_try_help ();
-  else
+  अन्यथा
     {
-      printf (_("\
-Usage: %s [OPTION]... [FILE]...\n\
+      म_लिखो (_("\
+Usage: %s [OPTION]... [खाता]...\n\
 "),
               program_name);
 
-      fputs (_("\
-Paginate or columnate FILE(s) for printing.\n\
-"), stdout);
+      ख_माला_दो (_("\
+Paginate or columnate खाता(s) क्रम printing.\n\
+"), मानक_निकास);
 
       emit_stdin_note ();
       emit_mandatory_arg_note ();
@@ -2786,7 +2786,7 @@ Paginate or columnate FILE(s) for printing.\n\
       oputs (_("\
   -COLS, --columns=COLS\n\
          output COLS columns and print columns down, unless -a is used.\n\
-         Balance number of lines in the columns on each page\n\
+         Balance संख्या of पंक्तियाँ in the columns on each page\n\
 "));
       oputs (_("\
   -a, --across\n\
@@ -2797,61 +2797,61 @@ Paginate or columnate FILE(s) for printing.\n\
          use hat notation (^G) and octal backslash notation\n\
 "));
       oputs (_("\
-  -d, --double-space\n\
-         double space the output\n\
+  -d, --द्विगुन-space\n\
+         द्विगुन space the output\n\
 "));
       oputs (_("\
   -D, --date-format=FORMAT\n\
-         use FORMAT for the header date\n\
+         use FORMAT क्रम the header date\n\
 "));
       oputs (_("\
   -e[CHAR[WIDTH]], --expand-tabs[=CHAR[WIDTH]]\n\
-         expand input CHARs (TABs) to tab WIDTH (8)\n\
+         expand निवेश CHARs (TABs) to tab WIDTH (8)\n\
 "));
       oputs (_("\
   -F, -f, --form-feed\n\
          use form feeds instead of newlines to separate pages\n\
-         (by a 3-line page header with -F or a 5-line header\n\
+         (by a 3-पंक्ति page header with -F or a 5-पंक्ति header\n\
          and trailer without -F)\n\
 "));
       oputs (_("\
   -h, --header=HEADER\n\
          use a centered HEADER instead of filename in page header,\n\
-         -h \"\" prints a blank line, don't use -h\"\"\n\
+         -h \"\" prints a blank पंक्ति, don't use -h\"\"\n\
 "));
       oputs (_("\
   -i[CHAR[WIDTH]], --output-tabs[=CHAR[WIDTH]]\n\
          replace spaces with CHARs (TABs) to tab WIDTH (8)\n\
 "));
       oputs (_("\
-  -J, --join-lines\n\
-         merge full lines, turns off -W line truncation,\n\
+  -J, --join-पंक्तियाँ\n\
+         merge full पंक्तियाँ, turns off -W पंक्ति truncation,\n\
          no column alignment, --sep-string[=STRING] sets separators\n\
 "));
       oputs (_("\
-  -l, --length=PAGE_LENGTH\n\
-         set the page length to PAGE_LENGTH (66) lines\n\
-         (default number of lines of text 56, and with -F 63).\n\
-         implies -t if PAGE_LENGTH <= 10\n\
+  -l, --लंबाई=PAGE_लंबाई\n\
+         set the page लंबाई to PAGE_लंबाई (66) पंक्तियाँ\n\
+         (शेष संख्या of पंक्तियाँ of text 56, and with -F 63).\n\
+         implies -t अगर PAGE_लंबाई <= 10\n\
 "));
       oputs (_("\
   -m, --merge\n\
          print all files in parallel, one in each column,\n\
-         truncate lines, but join lines of full length with -J\n\
+         truncate पंक्तियाँ, but join पंक्तियाँ of full लंबाई with -J\n\
 "));
       oputs (_("\
-  -n[SEP[DIGITS]], --number-lines[=SEP[DIGITS]]\n\
-         number lines, use DIGITS (5) digits, then SEP (TAB),\n\
-         default counting starts with 1st line of input file\n\
+  -n[SEP[DIGITS]], --संख्या-पंक्तियाँ[=SEP[DIGITS]]\n\
+         संख्या पंक्तियाँ, use DIGITS (5) digits, then SEP (TAB),\n\
+         शेष counting starts with 1st पंक्ति of निवेश file\n\
 "));
       oputs (_("\
-  -N, --first-line-number=NUMBER\n\
-         start counting with NUMBER at 1st line of first\n\
+  -N, --first-पंक्ति-संख्या=संख्या_2\n\
+         start counting with संख्या_2 at 1st पंक्ति of first\n\
          page printed (see +FIRST_PAGE)\n\
 "));
       oputs (_("\
   -o, --indent=MARGIN\n\
-         offset each line with MARGIN (zero) spaces, do not\n\
+         offset each पंक्ति with MARGIN (zero) spaces, करो not\n\
          affect -w or -W, MARGIN will be added to PAGE_WIDTH\n\
 "));
       oputs (_("\
@@ -2860,9 +2860,9 @@ Paginate or columnate FILE(s) for printing.\n\
 "));
       oputs (_("\
   -s[CHAR], --separator[=CHAR]\n\
-         separate columns by a single character, default for CHAR\n\
-         is the <TAB> character without -w and \'no char\' with -w.\n\
-         -s[CHAR] turns off line truncation of all 3 column\n\
+         separate columns by a single character, शेष क्रम CHAR\n\
+         is the <TAB> character without -w and \'no अक्षर\' with -w.\n\
+         -s[CHAR] turns off पंक्ति truncation of all 3 column\n\
          options (-COLS|-a -COLS|-m) except -w is set\n\
 "));
       oputs (_("\
@@ -2873,12 +2873,12 @@ Paginate or columnate FILE(s) for printing.\n\
 "));
       oputs (_("\
   -t, --omit-header\n\
-         omit page headers and trailers; implied if PAGE_LENGTH <= 10\n\
+         omit page headers and trailers; implied अगर PAGE_लंबाई <= 10\n\
 "));
       oputs (_("\
   -T, --omit-pagination\n\
          omit page headers and trailers,\n\
-         eliminate any pagination by form feeds set in input files\n\
+         eliminate any pagination by form feeds set in निवेश files\n\
 "));
       oputs (_("\
   -v, --show-nonprinting\n\
@@ -2886,18 +2886,18 @@ Paginate or columnate FILE(s) for printing.\n\
 "));
       oputs (_("\
   -w, --width=PAGE_WIDTH\n\
-         set page width to PAGE_WIDTH (72) characters for\n\
-         multiple text-column output only, -s[char] turns off (72)\n\
+         set page width to PAGE_WIDTH (72) characters क्रम\n\
+         multiple text-column output only, -s[अक्षर] turns off (72)\n\
 "));
       oputs (_("\
   -W, --page-width=PAGE_WIDTH\n\
          set page width to PAGE_WIDTH (72) characters always,\n\
-         truncate lines, except -J option is set,\n\
+         truncate पंक्तियाँ, except -J option is set,\n\
          no interference with -S or -s\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
       emit_ancillary_info (PROGRAM_NAME);
     }
-  exit (status);
+  निकास (status);
 }

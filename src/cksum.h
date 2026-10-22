@@ -1,4 +1,4 @@
-enum Algorithm
+क्रमागत Algorithm
 {
   bsd,
   sysv,
@@ -16,4 +16,4 @@ enum Algorithm
   sm3,
 };
 
-extern enum Algorithm cksum_algorithm;
+बाह्य क्रमागत Algorithm cksum_algorithm;

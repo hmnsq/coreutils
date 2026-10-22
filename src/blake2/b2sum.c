@@ -13,384 +13,384 @@
    https://blake2.net.
 */
 
-#ifdef HAVE_CONFIG_H
+#अगर_घोषित HAVE_CONFIG_H
 # include <config.h>
-#endif
+#पूर्ण_अगर
 
-#include <stdio.h>
-#include <stdlib.h>
+#समावेश <stdio.h>
+#समावेश <stdlib.h>
 
-#include "blake2.h"
+#समावेश "blake2.h"
 
-#if 0
+#अगर 0
 /* This will help compatibility with coreutils */
-int blake2s_stream( FILE *stream, void *resstream, size_t outbytes )
+पूर्णांक blake2s_stream( खाता *stream, व्योम *resstream, माप_प्रकार outbytes )
 {
-  int ret = -1;
-  size_t sum, n;
+  पूर्णांक ret = -1;
+  माप_प्रकार योग, n;
   blake2s_state S[1];
-  static const size_t buffer_length = 32768;
-  uint8_t *buffer = ( uint8_t * )malloc( buffer_length );
+  अटल स्थिर माप_प्रकार बफर_लंबाई = 32768;
+  uint8_t *बफर = ( uint8_t * )दो_स्मृति( बफर_लंबाई );
 
-  if( !buffer ) return -1;
+  अगर( !बफर ) वापस -1;
 
   blake2s_init( S, outbytes );
 
-  while( 1 )
+  जबतक( 1 )
   {
-    sum = 0;
+    योग = 0;
 
-    while( 1 )
+    जबतक( 1 )
     {
-      n = fread( buffer + sum, 1, buffer_length - sum, stream );
-      sum += n;
+      n = ख_पढ़ो( बफर + योग, 1, बफर_लंबाई - योग, stream );
+      योग += n;
 
-      if( buffer_length == sum )
-        break;
+      अगर( बफर_लंबाई == योग )
+        अवरोध;
 
-      if( 0 == n )
+      अगर( 0 == n )
       {
-        if( ferror( stream ) )
-          goto cleanup_buffer;
+        अगर( ख_त्रुटि( stream ) )
+          जाओ cleanup_बफर;
 
-        goto final_process;
+        जाओ final_process;
       }
 
-      if( feof( stream ) )
-        goto final_process;
+      अगर( ख_पूर्ण( stream ) )
+        जाओ final_process;
     }
 
-    blake2s_update( S, buffer, buffer_length );
+    blake2s_update( S, बफर, बफर_लंबाई );
   }
 
 final_process:;
 
-  if( sum > 0 ) blake2s_update( S, buffer, sum );
+  अगर( योग > 0 ) blake2s_update( S, बफर, योग );
 
   blake2s_final( S, resstream, outbytes );
   ret = 0;
-cleanup_buffer:
-  free( buffer );
-  return ret;
+cleanup_बफर:
+  मुक्त( बफर );
+  वापस ret;
 }
-#endif
+#पूर्ण_अगर
 
-int blake2b_stream( FILE *stream, void *resstream, size_t outbytes )
+पूर्णांक blake2b_stream( खाता *stream, व्योम *resstream, माप_प्रकार outbytes )
 {
-  int ret = -1;
-  size_t sum, n;
+  पूर्णांक ret = -1;
+  माप_प्रकार योग, n;
   blake2b_state S[1];
-  static const size_t buffer_length = 32768;
-  uint8_t *buffer = ( uint8_t * )malloc( buffer_length );
+  अटल स्थिर माप_प्रकार बफर_लंबाई = 32768;
+  uint8_t *बफर = ( uint8_t * )दो_स्मृति( बफर_लंबाई );
 
-  if( !buffer ) return -1;
+  अगर( !बफर ) वापस -1;
 
   blake2b_init( S, outbytes );
 
-  while( 1 )
+  जबतक( 1 )
   {
-    sum = 0;
+    योग = 0;
 
-    while( 1 )
+    जबतक( 1 )
     {
-      n = fread( buffer + sum, 1, buffer_length - sum, stream );
-      sum += n;
+      n = ख_पढ़ो( बफर + योग, 1, बफर_लंबाई - योग, stream );
+      योग += n;
 
-      if( buffer_length == sum )
-        break;
+      अगर( बफर_लंबाई == योग )
+        अवरोध;
 
-      if( 0 == n )
+      अगर( 0 == n )
       {
-        if( ferror( stream ) )
-          goto cleanup_buffer;
+        अगर( ख_त्रुटि( stream ) )
+          जाओ cleanup_बफर;
 
-        goto final_process;
+        जाओ final_process;
       }
 
-      if( feof( stream ) )
-        goto final_process;
+      अगर( ख_पूर्ण( stream ) )
+        जाओ final_process;
     }
 
-    blake2b_update( S, buffer, buffer_length );
+    blake2b_update( S, बफर, बफर_लंबाई );
   }
 
 final_process:;
 
-  if( sum > 0 ) blake2b_update( S, buffer, sum );
+  अगर( योग > 0 ) blake2b_update( S, बफर, योग );
 
   blake2b_final( S, resstream, outbytes );
   ret = 0;
-cleanup_buffer:
-  free( buffer );
-  return ret;
+cleanup_बफर:
+  मुक्त( बफर );
+  वापस ret;
 }
 
-#if 0
+#अगर 0
 
-#include <errno.h>
-#include <getopt.h>
-#include <string.h>
-#include <unistd.h>
+#समावेश <errno.h>
+#समावेश <getopt.h>
+#समावेश <string.h>
+#समावेश <unistd.h>
 
-int blake2sp_stream( FILE *stream, void *resstream, size_t outbytes )
+पूर्णांक blake2sp_stream( खाता *stream, व्योम *resstream, माप_प्रकार outbytes )
 {
-  int ret = -1;
-  size_t sum, n;
+  पूर्णांक ret = -1;
+  माप_प्रकार योग, n;
   blake2sp_state S[1];
-  static const size_t buffer_length = 16 * ( 1UL << 20 );
-  uint8_t *buffer = ( uint8_t * )malloc( buffer_length );
+  अटल स्थिर माप_प्रकार बफर_लंबाई = 16 * ( 1UL << 20 );
+  uint8_t *बफर = ( uint8_t * )दो_स्मृति( बफर_लंबाई );
 
-  if( !buffer ) return -1;
+  अगर( !बफर ) वापस -1;
 
   blake2sp_init( S, outbytes );
 
-  while( 1 )
+  जबतक( 1 )
   {
-    sum = 0;
+    योग = 0;
 
-    while( 1 )
+    जबतक( 1 )
     {
-      n = fread( buffer + sum, 1, buffer_length - sum, stream );
-      sum += n;
+      n = ख_पढ़ो( बफर + योग, 1, बफर_लंबाई - योग, stream );
+      योग += n;
 
-      if( buffer_length == sum )
-        break;
+      अगर( बफर_लंबाई == योग )
+        अवरोध;
 
-      if( 0 == n )
+      अगर( 0 == n )
       {
-        if( ferror( stream ) )
-          goto cleanup_buffer;
+        अगर( ख_त्रुटि( stream ) )
+          जाओ cleanup_बफर;
 
-        goto final_process;
+        जाओ final_process;
       }
 
-      if( feof( stream ) )
-        goto final_process;
+      अगर( ख_पूर्ण( stream ) )
+        जाओ final_process;
     }
 
-    blake2sp_update( S, buffer, buffer_length );
+    blake2sp_update( S, बफर, बफर_लंबाई );
   }
 
 final_process:;
 
-  if( sum > 0 ) blake2sp_update( S, buffer, sum );
+  अगर( योग > 0 ) blake2sp_update( S, बफर, योग );
 
   blake2sp_final( S, resstream, outbytes );
   ret = 0;
-cleanup_buffer:
-  free( buffer );
-  return ret;
+cleanup_बफर:
+  मुक्त( बफर );
+  वापस ret;
 }
 
 
-int blake2bp_stream( FILE *stream, void *resstream, size_t outbytes )
+पूर्णांक blake2bp_stream( खाता *stream, व्योम *resstream, माप_प्रकार outbytes )
 {
-  int ret = -1;
-  size_t sum, n;
+  पूर्णांक ret = -1;
+  माप_प्रकार योग, n;
   blake2bp_state S[1];
-  static const size_t buffer_length = 16 * ( 1UL << 20 );
-  uint8_t *buffer = ( uint8_t * )malloc( buffer_length );
+  अटल स्थिर माप_प्रकार बफर_लंबाई = 16 * ( 1UL << 20 );
+  uint8_t *बफर = ( uint8_t * )दो_स्मृति( बफर_लंबाई );
 
-  if( !buffer ) return -1;
+  अगर( !बफर ) वापस -1;
 
   blake2bp_init( S, outbytes );
 
-  while( 1 )
+  जबतक( 1 )
   {
-    sum = 0;
+    योग = 0;
 
-    while( 1 )
+    जबतक( 1 )
     {
-      n = fread( buffer + sum, 1, buffer_length - sum, stream );
-      sum += n;
+      n = ख_पढ़ो( बफर + योग, 1, बफर_लंबाई - योग, stream );
+      योग += n;
 
-      if( buffer_length == sum )
-        break;
+      अगर( बफर_लंबाई == योग )
+        अवरोध;
 
-      if( 0 == n )
+      अगर( 0 == n )
       {
-        if( ferror( stream ) )
-          goto cleanup_buffer;
+        अगर( ख_त्रुटि( stream ) )
+          जाओ cleanup_बफर;
 
-        goto final_process;
+        जाओ final_process;
       }
 
-      if( feof( stream ) )
-        goto final_process;
+      अगर( ख_पूर्ण( stream ) )
+        जाओ final_process;
     }
 
-    blake2bp_update( S, buffer, buffer_length );
+    blake2bp_update( S, बफर, बफर_लंबाई );
   }
 
 final_process:;
 
-  if( sum > 0 ) blake2bp_update( S, buffer, sum );
+  अगर( योग > 0 ) blake2bp_update( S, बफर, योग );
 
   blake2bp_final( S, resstream, outbytes );
   ret = 0;
-cleanup_buffer:
-  free( buffer );
-  return ret;
+cleanup_बफर:
+  मुक्त( बफर );
+  वापस ret;
 }
 
-typedef int ( *blake2fn )( FILE *, void *, size_t );
+प्रकार पूर्णांक ( *blake2fn )( खाता *, व्योम *, माप_प्रकार );
 
 
-static void usage( char **argv, int errcode )
+अटल व्योम usage( अक्षर **argv, पूर्णांक errcode )
 {
-  FILE *out = errcode ? stderr : stdout;
-  fprintf( out, "Usage: %s [OPTION]... [FILE]...\n", argv[0] );
-  fprintf( out, "\n" );
-  fprintf( out, "With no FILE, or when FILE is -, read standard input.\n" );
-  fprintf( out, "\n" );
-  fprintf( out, "  -a <algo>    hash algorithm (blake2b is default): \n"
+  खाता *out = errcode ? मानक_त्रुटि : मानक_निकास;
+  ख_लिखो( out, "Usage: %s [OPTION]... [FILE]...\n", argv[0] );
+  ख_लिखो( out, "\n" );
+  ख_लिखो( out, "With no FILE, or when FILE is -, read standard input.\n" );
+  ख_लिखो( out, "\n" );
+  ख_लिखो( out, "  -a <algo>    hash algorithm (blake2b is default): \n"
                 "               [blake2b|blake2s|blake2bp|blake2sp]\n" );
-  fprintf( out, "  -l <length>  digest length in bits, must not exceed the maximum for\n"
+  ख_लिखो( out, "  -l <length>  digest length in bits, must not exceed the maximum for\n"
                 "               the selected algorithm and must be a multiple of 8\n" );
-  fprintf( out, "  --tag        create a BSD-style checksum\n" );
-  fprintf( out, "  --help       display this help and exit\n" );
-  exit( errcode );
+  ख_लिखो( out, "  --tag        create a BSD-style checksum\n" );
+  ख_लिखो( out, "  --help       display this help and exit\n" );
+  निकास( errcode );
 }
 
 
-int main( int argc, char **argv )
+पूर्णांक मुख्य( पूर्णांक argc, अक्षर **argv )
 {
   blake2fn blake2_stream = blake2b_stream;
-  unsigned long maxbytes = BLAKE2B_OUTBYTES;
-  const char *algorithm = "BLAKE2b";
-  unsigned long outbytes = 0;
-  unsigned char hash[BLAKE2B_OUTBYTES] = {0};
+  अचिन्हित दीर्घ maxbytes = BLAKE2B_OUTBYTES;
+  स्थिर अक्षर *algorithm = "BLAKE2b";
+  अचिन्हित दीर्घ outbytes = 0;
+  अचिन्हित अक्षर hash[BLAKE2B_OUTBYTES] = {0};
   bool bsdstyle = false;
-  int c, i;
+  पूर्णांक c, i;
   opterr = 1;
 
-  while( 1 )
+  जबतक( 1 )
   {
-    int option_index = 0;
-    char *end = NULL;
-    unsigned long outbits;
-    static struct option long_options[] = {
+    पूर्णांक option_सूचकांक = 0;
+    अक्षर *end = शून्य;
+    अचिन्हित दीर्घ outbits;
+    अटल काष्ठा option long_options[] = {
       { "help",  no_argument, 0,  0  },
       { "tag",   no_argument, 0,  0  },
-      { NULL, 0, NULL, 0 }
+      { शून्य, 0, शून्य, 0 }
     };
 
-    c = getopt_long( argc, argv, "a:l:", long_options, &option_index );
-    if( c == -1 ) break;
-    switch( c )
+    c = getopt_long( argc, argv, "a:l:", long_options, &option_सूचकांक );
+    अगर( c == -1 ) अवरोध;
+    चयन( c )
     {
-    case 'a':
-      if( 0 == strcmp( optarg, "blake2b" ) )
+    हाल 'a':
+      अगर( 0 == म_भेद( optarg, "blake2b" ) )
       {
         blake2_stream = blake2b_stream;
         maxbytes = BLAKE2B_OUTBYTES;
         algorithm = "BLAKE2b";
       }
-      else if ( 0 == strcmp( optarg, "blake2s" ) )
+      अन्यथा अगर ( 0 == म_भेद( optarg, "blake2s" ) )
       {
         blake2_stream = blake2s_stream;
         maxbytes = BLAKE2S_OUTBYTES;
         algorithm = "BLAKE2s";
       }
-      else if ( 0 == strcmp( optarg, "blake2bp" ) )
+      अन्यथा अगर ( 0 == म_भेद( optarg, "blake2bp" ) )
       {
         blake2_stream = blake2bp_stream;
         maxbytes = BLAKE2B_OUTBYTES;
         algorithm = "BLAKE2bp";
       }
-      else if ( 0 == strcmp( optarg, "blake2sp" ) )
+      अन्यथा अगर ( 0 == म_भेद( optarg, "blake2sp" ) )
       {
         blake2_stream = blake2sp_stream;
         maxbytes = BLAKE2S_OUTBYTES;
         algorithm = "BLAKE2sp";
       }
-      else
+      अन्यथा
       {
-        printf( "Invalid function name: `%s'\n", optarg );
+        म_लिखो( "Invalid function name: `%s'\n", optarg );
         usage( argv, 111 );
       }
 
-      break;
+      अवरोध;
 
-    case 'l':
-      outbits = strtoul(optarg, &end, 10);
-      if( !end || *end != '\0' || outbits % 8 != 0)
+    हाल 'l':
+      outbits = म_से_अदीर्घ(optarg, &end, 10);
+      अगर( !end || *end != '\0' || outbits % 8 != 0)
       {
-        printf( "Invalid length argument: `%s'\n", optarg);
+        म_लिखो( "Invalid length argument: `%s'\n", optarg);
         usage( argv, 111 );
       }
       outbytes = outbits / 8;
-      break;
+      अवरोध;
 
-    case 0:
-      if( 0 == strcmp( "help", long_options[option_index].name ) )
+    हाल 0:
+      अगर( 0 == म_भेद( "help", long_options[option_सूचकांक].name ) )
         usage( argv, 0 );
-      else if( 0 == strcmp( "tag", long_options[option_index].name ) )
+      अन्यथा अगर( 0 == म_भेद( "tag", long_options[option_सूचकांक].name ) )
         bsdstyle = true;
-      break;
+      अवरोध;
 
-    case '?':
+    हाल '?':
       usage( argv, 1 );
-      break;
+      अवरोध;
     }
   }
 
-  if(outbytes > maxbytes)
+  अगर(outbytes > maxbytes)
   {
-    printf( "Invalid length argument: %lu\n", outbytes * 8 );
-    printf( "Maximum digest length for %s is %lu\n", algorithm, maxbytes * 8 );
+    म_लिखो( "Invalid length argument: %lu\n", outbytes * 8 );
+    म_लिखो( "Maximum digest length for %s is %lu\n", algorithm, maxbytes * 8 );
     usage( argv, 111 );
   }
-  else if( outbytes == 0 )
+  अन्यथा अगर( outbytes == 0 )
     outbytes = maxbytes;
 
-  if( optind == argc )
-    argv[argc++] = (char *) "-";
+  अगर( optind == argc )
+    argv[argc++] = (अक्षर *) "-";
 
-  for( i = optind; i < argc; ++i )
+  क्रम( i = optind; i < argc; ++i )
   {
-    FILE *f = NULL;
-    if( argv[i][0] == '-' && argv[i][1] == '\0' )
-      f = stdin;
-    else
-      f = fopen( argv[i], "rb" );
+    खाता *f = शून्य;
+    अगर( argv[i][0] == '-' && argv[i][1] == '\0' )
+      f = मानक_निवेश;
+    अन्यथा
+      f = ख_खोलो( argv[i], "rb" );
 
-    if( !f )
+    अगर( !f )
     {
-      fprintf( stderr, "Could not open `%s': %s\n", argv[i], strerror( errno ) );
-      continue;
+      ख_लिखो( मानक_त्रुटि, "Could not open `%s': %s\n", argv[i], म_त्रुटि( त्रुटि_सं ) );
+      जारी;
     }
 
-    if( blake2_stream( f, hash, outbytes ) < 0 )
+    अगर( blake2_stream( f, hash, outbytes ) < 0 )
     {
-      fprintf( stderr, "Failed to hash `%s'\n", argv[i] );
+      ख_लिखो( मानक_त्रुटि, "Failed to hash `%s'\n", argv[i] );
     }
-    else
+    अन्यथा
     {
-      size_t j;
-      if( bsdstyle )
+      माप_प्रकार j;
+      अगर( bsdstyle )
       {
-        if( outbytes < maxbytes )
-          printf( "%s-%lu (%s) = ", algorithm, outbytes * 8, argv[i] );
-        else
-          printf( "%s (%s) = ", algorithm, argv[i] );
+        अगर( outbytes < maxbytes )
+          म_लिखो( "%s-%lu (%s) = ", algorithm, outbytes * 8, argv[i] );
+        अन्यथा
+          म_लिखो( "%s (%s) = ", algorithm, argv[i] );
       }
 
-      for( j = 0; j < outbytes; ++j )
-        printf( "%02x", hash[j] );
+      क्रम( j = 0; j < outbytes; ++j )
+        म_लिखो( "%02x", hash[j] );
 
-      if( bsdstyle )
-        printf( "\n" );
-      else
-        printf( "  %s\n", argv[i] );
+      अगर( bsdstyle )
+        म_लिखो( "\n" );
+      अन्यथा
+        म_लिखो( "  %s\n", argv[i] );
     }
 
-    if( f == stdin )
-      clearerr( f );
-    else if( fclose( f ) != 0 )
-      fprintf( stderr, "Could not close `%s': %s\n", argv[i], strerror( errno ) );
+    अगर( f == मानक_निवेश )
+      साफ_त्रुटि( f );
+    अन्यथा अगर( ख_बंद( f ) != 0 )
+      ख_लिखो( मानक_त्रुटि, "Could not close `%s': %s\n", argv[i], म_त्रुटि( त्रुटि_सं ) );
   }
 
-  return 0;
+  वापस 0;
 }
-#endif
+#पूर्ण_अगर

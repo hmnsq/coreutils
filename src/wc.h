@@ -1,5 +1,5 @@
-#include <stdint.h>
-struct wc_lines { int err; intmax_t lines; intmax_t bytes; };
-struct wc_lines wc_lines_avx2 (int);
-struct wc_lines wc_lines_avx512 (int);
-struct wc_lines wc_lines_neon (int fd);
+#समावेश <stdint.h>
+काष्ठा wc_पंक्तियाँ { पूर्णांक err; intmax_t पंक्तियाँ; intmax_t bytes; };
+काष्ठा wc_पंक्तियाँ wc_पंक्तियाँ_avx2 (पूर्णांक);
+काष्ठा wc_पंक्तियाँ wc_पंक्तियाँ_avx512 (पूर्णांक);
+काष्ठा wc_पंक्तियाँ wc_पंक्तियाँ_neon (पूर्णांक fd);

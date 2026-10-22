@@ -20,91 +20,91 @@
    sort) in Donald E. Knuth, The Art of Computer Programming, Volume
    1/Fundamental Algorithms, page 262.  */
 
-#include <config.h>
+#समावेश <config.h>
 
-#include <getopt.h>
-#include <sys/types.h>
+#समावेश <getopt.h>
+#समावेश <sys/types.h>
 
-#include "system.h"
-#include "assure.h"
-#include "fadvise.h"
-#include "readtokens.h"
-#include "stdio--.h"
-#include "quote.h"
+#समावेश "system.h"
+#समावेश "assure.h"
+#समावेश "fadvise.h"
+#समावेश "readtokens.h"
+#समावेश "stdio--.h"
+#समावेश "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "tsort"
+#घोषणा PROGRAM_NAME "tsort"
 
-#define AUTHORS proper_name ("Mark Kettenis")
+#घोषणा AUTHORS proper_name ("Mark Kettenis")
 
 /* Token delimiters when reading from a file.  */
-#define DELIM " \t\n"
+#घोषणा DELIM " \t\n"
 
 /* Members of the list of successors.  */
-struct successor
+काष्ठा successor
 {
-  struct item *suc;
-  struct successor *next;
+  काष्ठा item *suc;
+  काष्ठा successor *अग्र;
 };
 
 /* Each string is held in memory as the head of a list of successors.  */
-struct item
+काष्ठा item
 {
-  char const *str;
-  struct item *left, *right;
-  signed char balance; /* -1, 0, or +1 */
+  अक्षर स्थिर *str;
+  काष्ठा item *बायाँ, *दायाँ;
+  चिन्हित अक्षर balance; /* -1, 0, or +1 */
   bool printed;
-  size_t count;
-  struct item *qlink;
-  struct successor *top;
+  माप_प्रकार गिनती;
+  काष्ठा item *qlink;
+  काष्ठा successor *शीर्ष_2;
 };
 
 /* The head of the sorted list.  */
-static struct item *head = NULL;
+अटल काष्ठा item *शीर्ष = शून्य;
 
 /* The tail of the list of 'zeros', strings that have no predecessors.  */
-static struct item *zeros = NULL;
+अटल काष्ठा item *zeros = शून्य;
 
 /* Used for loop detection.  */
-static struct item *loop = NULL;
+अटल काष्ठा item *loop = शून्य;
 
 /* The number of strings to sort.  */
-static size_t n_strings = 0;
+अटल माप_प्रकार n_strings = 0;
 
-void
-usage (int status)
+व्योम
+usage (पूर्णांक status)
 {
-  if (status != EXIT_SUCCESS)
+  अगर (status != निकास_सफल)
     emit_try_help ();
-  else
+  अन्यथा
     {
-      printf (_("\
-Usage: %s [OPTION] [FILE]\n\
-Write totally ordered list consistent with the partial ordering in FILE.\n\
+      म_लिखो (_("\
+Usage: %s [OPTION] [खाता]\n\
+Write totally ordered list consistent with the partial ordering in खाता.\n\
 "), program_name);
 
       emit_stdin_note ();
 
-      fputs (_("\
+      ख_माला_दो (_("\
 \n\
-"), stdout);
+"), मानक_निकास);
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
       emit_ancillary_info (PROGRAM_NAME);
     }
 
-  exit (status);
+  निकास (status);
 }
 
 /* Create a new item/node for STR.  */
-static struct item *
-new_item (char const *str)
+अटल काष्ठा item *
+new_item (अक्षर स्थिर *str)
 {
   /* T1. Initialize (COUNT[k] <- 0 and TOP[k] <- ^).  */
-  struct item *k = xzalloc (sizeof *k);
-  if (str)
+  काष्ठा item *k = xzalloc (माप *k);
+  अगर (str)
     k->str = xstrdup (str);
-  return k;
+  वापस k;
 }
 
 /* Search binary tree rooted at *ROOT for STR.  Allocate a new tree if
@@ -115,138 +115,138 @@ new_item (char const *str)
    insertion) in Donald E. Knuth, The Art of Computer Programming,
    Volume 3/Searching and Sorting, pages 455--457.  */
 
-static struct item *
-search_item (struct item *root, char const *str)
+अटल काष्ठा item *
+खोज_item (काष्ठा item *मूल, अक्षर स्थिर *str)
 {
-  struct item *p, *q, *r, *s, *t;
-  int a;
+  काष्ठा item *p, *q, *r, *s, *t;
+  पूर्णांक a;
 
   /* Make sure the tree is not empty, since that is what the algorithm
      below expects.  */
-  if (root->right == NULL)
-    return (root->right = new_item (str));
+  अगर (मूल->दायाँ == शून्य)
+    वापस (मूल->दायाँ = new_item (str));
 
   /* A1. Initialize.  */
-  t = root;
-  s = p = root->right;
+  t = मूल;
+  s = p = मूल->दायाँ;
 
-  while (true)
+  जबतक (true)
     {
       /* A2. Compare.  */
-      a = strcmp (str, p->str);
-      if (a == 0)
-        return p;
+      a = म_भेद (str, p->str);
+      अगर (a == 0)
+        वापस p;
 
       /* A3 & A4.  Move left & right.  */
-      if (a < 0)
-        q = p->left;
-      else
-        q = p->right;
+      अगर (a < 0)
+        q = p->बायाँ;
+      अन्यथा
+        q = p->दायाँ;
 
-      if (q == NULL)
+      अगर (q == शून्य)
         {
           /* A5. Insert.  */
           q = new_item (str);
 
           /* A3 & A4.  (continued).  */
-          if (a < 0)
-            p->left = q;
-          else
-            p->right = q;
+          अगर (a < 0)
+            p->बायाँ = q;
+          अन्यथा
+            p->दायाँ = q;
 
           /* A6. Adjust balance factors.  */
-          a = strcmp (str, s->str);
-          if (a < 0)
+          a = म_भेद (str, s->str);
+          अगर (a < 0)
             {
-              r = p = s->left;
+              r = p = s->बायाँ;
               a = -1;
             }
-          else
+          अन्यथा
             {
               affirm (0 < a);
-              r = p = s->right;
+              r = p = s->दायाँ;
               a = 1;
             }
 
-          while (p != q)
+          जबतक (p != q)
             {
-              int cmp = strcmp (str, p->str);
-              if (cmp < 0)
+              पूर्णांक cmp = म_भेद (str, p->str);
+              अगर (cmp < 0)
                 {
                   p->balance = -1;
-                  p = p->left;
+                  p = p->बायाँ;
                 }
-              else
+              अन्यथा
                 {
                   affirm (0 < cmp);
                   p->balance = 1;
-                  p = p->right;
+                  p = p->दायाँ;
                 }
             }
 
           /* A7. Balancing act.  */
-          if (s->balance == 0 || s->balance == -a)
+          अगर (s->balance == 0 || s->balance == -a)
             {
               s->balance += a;
-              return q;
+              वापस q;
             }
 
-          if (r->balance == a)
+          अगर (r->balance == a)
             {
               /* A8. Single Rotation.  */
               p = r;
-              if (a < 0)
+              अगर (a < 0)
                 {
-                  s->left = r->right;
-                  r->right = s;
+                  s->बायाँ = r->दायाँ;
+                  r->दायाँ = s;
                 }
-              else
+              अन्यथा
                 {
-                  s->right = r->left;
-                  r->left = s;
+                  s->दायाँ = r->बायाँ;
+                  r->बायाँ = s;
                 }
               s->balance = r->balance = 0;
             }
-          else
+          अन्यथा
             {
               /* A9. Double rotation.  */
-              if (a < 0)
+              अगर (a < 0)
                 {
-                  p = r->right;
-                  r->right = p->left;
-                  p->left = r;
-                  s->left = p->right;
-                  p->right = s;
+                  p = r->दायाँ;
+                  r->दायाँ = p->बायाँ;
+                  p->बायाँ = r;
+                  s->बायाँ = p->दायाँ;
+                  p->दायाँ = s;
                 }
-              else
+              अन्यथा
                 {
-                  p = r->left;
-                  r->left = p->right;
-                  p->right = r;
-                  s->right = p->left;
-                  p->left = s;
+                  p = r->बायाँ;
+                  r->बायाँ = p->दायाँ;
+                  p->दायाँ = r;
+                  s->दायाँ = p->बायाँ;
+                  p->बायाँ = s;
                 }
 
               s->balance = 0;
               r->balance = 0;
-              if (p->balance == a)
+              अगर (p->balance == a)
                 s->balance = -a;
-              else if (p->balance == -a)
+              अन्यथा अगर (p->balance == -a)
                 r->balance = a;
               p->balance = 0;
             }
 
           /* A10. Finishing touch.  */
-          if (s == t->right)
-            t->right = p;
-          else
-            t->left = p;
+          अगर (s == t->दायाँ)
+            t->दायाँ = p;
+          अन्यथा
+            t->बायाँ = p;
 
-          return q;
+          वापस q;
         }
 
       /* A3 & A4.  (continued).  */
-      if (q->balance)
+      अगर (q->balance)
         {
           t = p;
           s = q;
@@ -260,43 +260,43 @@ search_item (struct item *root, char const *str)
 
 /* Record the fact that J precedes K.  */
 
-static void
-record_relation (struct item *j, struct item *k)
+अटल व्योम
+record_relation (काष्ठा item *j, काष्ठा item *k)
 {
-  struct successor *p;
+  काष्ठा successor *p;
 
-  if (!streq (j->str, k->str))
+  अगर (!streq (j->str, k->str))
     {
-      k->count++;
-      p = xmalloc (sizeof *p);
+      k->गिनती++;
+      p = xmalloc (माप *p);
       p->suc = k;
-      p->next = j->top;
-      j->top = p;
+      p->अग्र = j->शीर्ष_2;
+      j->शीर्ष_2 = p;
     }
 }
 
-static bool
-count_items (MAYBE_UNUSED struct item *unused)
+अटल bool
+गिनती_वस्तुएँ (MAYBE_UNUSED काष्ठा item *unused)
 {
   n_strings++;
-  return false;
+  वापस false;
 }
 
-static bool
-scan_zeros (struct item *k)
+अटल bool
+scan_zeros (काष्ठा item *k)
 {
   /* Ignore strings that have already been printed.  */
-  if (k->count == 0 && !k->printed)
+  अगर (k->गिनती == 0 && !k->printed)
     {
-      if (head == NULL)
-        head = k;
-      else
+      अगर (शीर्ष == शून्य)
+        शीर्ष = k;
+      अन्यथा
         zeros->qlink = k;
 
       zeros = k;
     }
 
-  return false;
+  वापस false;
 }
 
 /* Try to detect the loop.  If we have detected that K is part of a
@@ -317,258 +317,258 @@ scan_zeros (struct item *k)
    loop has completely been constructed.  If the loop was found, the
    global variable LOOP will be null.  */
 
-static bool
-detect_loop (struct item *k)
+अटल bool
+detect_loop (काष्ठा item *k)
 {
-  if (k->count > 0)
+  अगर (k->गिनती > 0)
     {
       /* K does not have to be part of a cycle.  It is however part of
          a graph that contains a cycle.  */
 
-      if (loop == NULL)
+      अगर (loop == शून्य)
         /* Start traversing the graph at K.  */
         loop = k;
-      else
+      अन्यथा
         {
-          struct successor **p = &k->top;
+          काष्ठा successor **p = &k->शीर्ष_2;
 
-          while (*p)
+          जबतक (*p)
             {
-              if ((*p)->suc == loop)
+              अगर ((*p)->suc == loop)
                 {
-                  if (k->qlink)
+                  अगर (k->qlink)
                     {
                       /* We have found a loop.  Retrace our steps.  */
-                      while (loop)
+                      जबतक (loop)
                         {
-                          struct item *tmp = loop->qlink;
+                          काष्ठा item *tmp = loop->qlink;
 
                           error (0, 0, "%s", (loop->str));
 
                           /* Until we encounter K again.  */
-                          if (loop == k)
+                          अगर (loop == k)
                             {
                               /* Remove relation.  */
-                              struct successor *s = *p;
-                              s->suc->count--;
-                              *p = s->next;
-                              IF_LINT (free (s));
-                              break;
+                              काष्ठा successor *s = *p;
+                              s->suc->गिनती--;
+                              *p = s->अग्र;
+                              IF_LINT (मुक्त (s));
+                              अवरोध;
                             }
 
                           /* Tidy things up since we might have to
                              detect another loop.  */
-                          loop->qlink = NULL;
+                          loop->qlink = शून्य;
                           loop = tmp;
                         }
 
-                      while (loop)
+                      जबतक (loop)
                         {
-                          struct item *tmp = loop->qlink;
+                          काष्ठा item *tmp = loop->qlink;
 
-                          loop->qlink = NULL;
+                          loop->qlink = शून्य;
                           loop = tmp;
                         }
 
                       /* Since we have found the loop, stop walking
                          the tree.  */
-                      return true;
+                      वापस true;
                     }
-                  else
+                  अन्यथा
                     {
                       k->qlink = loop;
                       loop = k;
-                      break;
+                      अवरोध;
                     }
                 }
 
-              p = &(*p)->next;
+              p = &(*p)->अग्र;
             }
         }
     }
 
-  return false;
+  वापस false;
 }
 
 /* Recurse (sub)tree rooted at ROOT, calling ACTION for each node.
    Stop when ACTION returns true.  */
 
-static bool
-recurse_tree (struct item *root, bool (*action) (struct item *))
+अटल bool
+recurse_वृक्ष (काष्ठा item *मूल, bool (*action) (काष्ठा item *))
 {
-  if (root->left == NULL && root->right == NULL)
-    return (*action) (root);
-  else
+  अगर (मूल->बायाँ == शून्य && मूल->दायाँ == शून्य)
+    वापस (*action) (मूल);
+  अन्यथा
     {
-      if (root->left != NULL)
-        if (recurse_tree (root->left, action))
-          return true;
-      if ((*action) (root))
-        return true;
-      if (root->right != NULL)
-        if (recurse_tree (root->right, action))
-          return true;
+      अगर (मूल->बायाँ != शून्य)
+        अगर (recurse_वृक्ष (मूल->बायाँ, action))
+          वापस true;
+      अगर ((*action) (मूल))
+        वापस true;
+      अगर (मूल->दायाँ != शून्य)
+        अगर (recurse_वृक्ष (मूल->दायाँ, action))
+          वापस true;
     }
 
-  return false;
+  वापस false;
 }
 
 /* Walk the tree specified by the head ROOT, calling ACTION for
    each node.  */
 
-static void
-walk_tree (struct item *root, bool (*action) (struct item *))
+अटल व्योम
+walk_वृक्ष (काष्ठा item *मूल, bool (*action) (काष्ठा item *))
 {
-  if (root->right)
-    recurse_tree (root->right, action);
+  अगर (मूल->दायाँ)
+    recurse_वृक्ष (मूल->दायाँ, action);
 }
 
 /* Do a topological sort on FILE.  Exit with appropriate exit status.  */
 
-static _Noreturn void
-tsort (char const *file)
+अटल _Noreturn व्योम
+tsort (अक्षर स्थिर *file)
 {
   bool ok = true;
-  struct item *j = NULL;
-  struct item *k = NULL;
-  token_buffer tokenbuffer;
+  काष्ठा item *j = शून्य;
+  काष्ठा item *k = शून्य;
+  token_बफर tokenbuffer;
   bool is_stdin = streq (file, "-");
 
   /* Initialize the head of the tree holding the strings we're sorting.  */
-  struct item *root = new_item (NULL);
+  काष्ठा item *मूल = new_item (शून्य);
 
-  if (!is_stdin && ! freopen (file, "r", stdin))
-    error (EXIT_FAILURE, errno, "%s", quotef (file));
+  अगर (!is_stdin && ! ख_व_खोलो (file, "r", मानक_निवेश))
+    error (निकास_त्रुटि, त्रुटि_सं, "%s", quotef (file));
 
-  fadvise (stdin, FADVISE_SEQUENTIAL);
+  fadvise (मानक_निवेश, FADVISE_SEQUENTIAL);
 
   init_tokenbuffer (&tokenbuffer);
 
-  while (true)
+  जबतक (true)
     {
       /* T2. Next Relation.  */
-      size_t len = readtoken (stdin, DELIM, sizeof (DELIM) - 1, &tokenbuffer);
-      if (len == (size_t) -1)
+      माप_प्रकार len = readtoken (मानक_निवेश, DELIM, माप (DELIM) - 1, &tokenbuffer);
+      अगर (len == (माप_प्रकार) -1)
         {
-          if (ferror (stdin))
-            error (EXIT_FAILURE, errno, _("%s: read error"), quotef (file));
-          break;
+          अगर (ख_त्रुटि (मानक_निवेश))
+            error (निकास_त्रुटि, त्रुटि_सं, _("%s: read error"), quotef (file));
+          अवरोध;
         }
 
       affirm (len != 0);
 
-      k = search_item (root, tokenbuffer.buffer);
-      if (j)
+      k = खोज_item (मूल, tokenbuffer.बफर);
+      अगर (j)
         {
           /* T3. Record the relation.  */
           record_relation (j, k);
-          k = NULL;
+          k = शून्य;
         }
 
       j = k;
     }
 
-  if (k != NULL)
-    error (EXIT_FAILURE, 0, _("%s: input contains an odd number of tokens"),
+  अगर (k != शून्य)
+    error (निकास_त्रुटि, 0, _("%s: input contains an odd number of tokens"),
            quotef (file));
 
   /* T1. Initialize (N <- n).  */
-  walk_tree (root, count_items);
+  walk_वृक्ष (मूल, गिनती_वस्तुएँ);
 
-  while (n_strings > 0)
+  जबतक (n_strings > 0)
     {
       /* T4. Scan for zeros.  */
-      walk_tree (root, scan_zeros);
+      walk_वृक्ष (मूल, scan_zeros);
 
-      while (head)
+      जबतक (शीर्ष)
         {
-          struct successor *p = head->top;
+          काष्ठा successor *p = शीर्ष->शीर्ष_2;
 
           /* T5. Output front of queue.  */
-          puts (head->str);
-          head->printed = true;
+          माला_दो (शीर्ष->str);
+          शीर्ष->printed = true;
           n_strings--;
 
           /* T6. Erase relations.  */
-          while (p)
+          जबतक (p)
             {
-              p->suc->count--;
-              if (p->suc->count == 0)
+              p->suc->गिनती--;
+              अगर (p->suc->गिनती == 0)
                 {
                   zeros->qlink = p->suc;
                   zeros = p->suc;
                 }
 
-              p = p->next;
+              p = p->अग्र;
             }
 
           /* T7. Remove from queue.  */
-          head = head->qlink;
+          शीर्ष = शीर्ष->qlink;
         }
 
       /* T8.  End of process.  */
-      if (n_strings > 0)
+      अगर (n_strings > 0)
         {
           /* The input contains a loop.  */
           error (0, 0, _("%s: input contains a loop:"), quotef (file));
           ok = false;
 
           /* Print the loop and remove a relation to break it.  */
-          do
-            walk_tree (root, detect_loop);
-          while (loop);
+          करो
+            walk_वृक्ष (मूल, detect_loop);
+          जबतक (loop);
         }
     }
 
-  if (fclose (stdin) != 0)
-    error (EXIT_FAILURE, errno, "%s",
+  अगर (ख_बंद (मानक_निवेश) != 0)
+    error (निकास_त्रुटि, त्रुटि_सं, "%s",
            is_stdin ? _("standard input") : quotef (file));
 
-  exit (ok ? EXIT_SUCCESS : EXIT_FAILURE);
+  निकास (ok ? निकास_सफल : निकास_त्रुटि);
 }
 
-int
-main (int argc, char **argv)
+पूर्णांक
+मुख्य (पूर्णांक argc, अक्षर **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
-  setlocale (LC_ALL, "");
+  रखो_क्षेत्र (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
-  atexit (close_stdout);
+  निकास_पर (close_stdout);
 
-  while (true)
+  जबतक (true)
     {
-      static struct option const long_options[] =
+      अटल काष्ठा option स्थिर long_options[] =
         {
           {GETOPT_HELP_OPTION_DECL},
           {GETOPT_VERSION_OPTION_DECL},
-          {NULL, 0, NULL, 0}
+          {शून्य, 0, शून्य, 0}
         };
-      int c = getopt_long (argc, argv, "w", long_options, NULL);
+      पूर्णांक c = getopt_long (argc, argv, "w", long_options, शून्य);
 
-      if (c == -1)
-        break;
+      अगर (c == -1)
+        अवरोध;
 
-      switch (c)
+      चयन (c)
         {
-        case 'w':
-          break;
+        हाल 'w':
+          अवरोध;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
-          usage (EXIT_FAILURE);
+        शेष:
+          usage (निकास_त्रुटि);
         }
     }
 
-  if (1 < argc - optind)
+  अगर (1 < argc - optind)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind + 1]));
-      usage (EXIT_FAILURE);
+      usage (निकास_त्रुटि);
     }
 
   tsort (optind == argc ? "-" : argv[optind]);

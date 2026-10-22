@@ -17,26 +17,26 @@
 /* Written by Paul Rubin, Arnold Robbins, Jim Kingdon, David MacKenzie,
    and Randy Smith. */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#समावेश <config.h>
+#समावेश <stdio.h>
+#समावेश <getopt.h>
+#समावेश <sys/types.h>
 
-#include "system.h"
-#include "argmatch.h"
-#include "assure.h"
-#include "fd-reopen.h"
-#include "parse-datetime.h"
-#include "posixtm.h"
-#include "posixver.h"
-#include "quote.h"
-#include "stat-time.h"
-#include "utimens.h"
+#समावेश "system.h"
+#समावेश "argmatch.h"
+#समावेश "assure.h"
+#समावेश "fd-reopen.h"
+#समावेश "parse-datetime.h"
+#समावेश "posixtm.h"
+#समावेश "posixver.h"
+#समावेश "quote.h"
+#समावेश "stat-time.h"
+#समावेश "utimens.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "touch"
+#घोषणा PROGRAM_NAME "touch"
 
-#define AUTHORS \
+#घोषणा AUTHORS \
   proper_name ("Paul Rubin"), \
   proper_name ("Arnold Robbins"), \
   proper_name ("Jim Kingdon"), \
@@ -44,137 +44,137 @@
   proper_name ("Randy Smith")
 
 /* Bitmasks for 'change_times'. */
-#define CH_ATIME 1
-#define CH_MTIME 2
+#घोषणा CH_ATIME 1
+#घोषणा CH_MTIME 2
 
 /* Which timestamps to change. */
-static int change_times;
+अटल पूर्णांक change_times;
 
 /* (-c) If true, don't create if not already there.  */
-static bool no_create;
+अटल bool no_create;
 
 /* (-r) If true, use times from a reference file.  */
-static bool use_ref;
+अटल bool use_ref;
 
 /* (-h) If true, change the times of an existing symlink, if possible.  */
-static bool no_dereference;
+अटल bool no_dereference;
 
 /* If true, the only thing we have to do is change both the
    modification and access time to the current time, so we don't
    have to own the file, just be able to read and write it.
    On some systems, we can do this if we own the file, even though
    we have neither read nor write access to it.  */
-static bool amtime_now;
+अटल bool amtime_now;
 
 /* New access and modification times to use when setting time.  */
-static struct timespec newtime[2];
+अटल काष्ठा timespec newtime[2];
 
 /* File to use for -r. */
-static char *ref_file;
+अटल अक्षर *ref_file;
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+क्रमागत
 {
-  TIME_OPTION = CHAR_MAX + 1
+  TIME_OPTION = अक्षर_उच्च + 1
 };
 
-static struct option const longopts[] =
+अटल काष्ठा option स्थिर longopts[] =
 {
-  {"time", required_argument, NULL, TIME_OPTION},
-  {"no-create", no_argument, NULL, 'c'},
-  {"date", required_argument, NULL, 'd'},
-  {"reference", required_argument, NULL, 'r'},
-  {"no-dereference", no_argument, NULL, 'h'},
+  {"time", required_argument, शून्य, TIME_OPTION},
+  {"no-create", no_argument, शून्य, 'c'},
+  {"date", required_argument, शून्य, 'd'},
+  {"reference", required_argument, शून्य, 'r'},
+  {"no-dereference", no_argument, शून्य, 'h'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {शून्य, 0, शून्य, 0}
 };
 
 /* Valid arguments to the '--time' option. */
-static char const *const time_args[] =
+अटल अक्षर स्थिर *स्थिर time_args[] =
 {
-  "atime", "access", "use", "mtime", "modify", NULL
+  "atime", "access", "use", "mtime", "modify", शून्य
 };
 
 /* The bits in 'change_times' that those arguments set. */
-static int const time_masks[] =
+अटल पूर्णांक स्थिर time_masks[] =
 {
   CH_ATIME, CH_ATIME, CH_ATIME, CH_MTIME, CH_MTIME
 };
 
 /* The interpretation of FLEX_DATE as a date, relative to NOW.  */
 
-static struct timespec
-date_relative (char const *flex_date, struct timespec now)
+अटल काष्ठा timespec
+date_relative (अक्षर स्थिर *flex_date, काष्ठा timespec now)
 {
-  struct timespec result;
-  if (! parse_datetime (&result, flex_date, &now))
-    error (EXIT_FAILURE, 0, _("invalid date format %s"), quote (flex_date));
-  return result;
+  काष्ठा timespec परिणाम;
+  अगर (! parse_datetime (&परिणाम, flex_date, &now))
+    error (निकास_त्रुटि, 0, _("invalid date format %s"), quote (flex_date));
+  वापस परिणाम;
 }
 
 /* Update the time of file FILE according to the options given.
    Return true if successful.  */
 
-static bool
-touch (char const *file)
+अटल bool
+touch (अक्षर स्थिर *file)
 {
-  int fd = -1;
-  int open_errno = 0;
-  struct timespec const *t = newtime;
+  पूर्णांक fd = -1;
+  पूर्णांक open_errno = 0;
+  काष्ठा timespec स्थिर *t = newtime;
 
-  if (streq (file, "-"))
+  अगर (streq (file, "-"))
     fd = STDOUT_FILENO;
-  else if (! (no_create || no_dereference))
+  अन्यथा अगर (! (no_create || no_dereference))
     {
       /* Try to open FILE, creating it if necessary.  */
       fd = fd_reopen (STDIN_FILENO, file,
                       O_WRONLY | O_CREAT | O_NONBLOCK | O_NOCTTY, MODE_RW_UGO);
-      if (fd < 0)
-        open_errno = errno;
+      अगर (fd < 0)
+        open_errno = त्रुटि_सं;
     }
 
-  if (change_times != (CH_ATIME | CH_MTIME))
+  अगर (change_times != (CH_ATIME | CH_MTIME))
     {
       /* We're setting only one of the time values.  */
-      if (change_times == CH_MTIME)
+      अगर (change_times == CH_MTIME)
         newtime[0].tv_nsec = UTIME_OMIT;
-      else
+      अन्यथा
         {
           affirm (change_times == CH_ATIME);
           newtime[1].tv_nsec = UTIME_OMIT;
         }
     }
 
-  if (amtime_now)
+  अगर (amtime_now)
     {
       /* Pass NULL to futimens so it will not fail if we have
          write access to the file, but don't own it.  */
-      t = NULL;
+      t = शून्य;
     }
 
-  char const *file_opt = fd == STDOUT_FILENO ? NULL : file;
-  int atflag = no_dereference ? AT_SYMLINK_NOFOLLOW : 0;
-  int utime_errno = (fdutimensat (fd, AT_FDCWD, file_opt, t, atflag) == 0
-                     ? 0 : errno);
+  अक्षर स्थिर *file_opt = fd == STDOUT_FILENO ? शून्य : file;
+  पूर्णांक atflag = no_dereference ? AT_SYMLINK_NOFOLLOW : 0;
+  पूर्णांक utime_errno = (fdutimensat (fd, AT_FDCWD, file_opt, t, atflag) == 0
+                     ? 0 : त्रुटि_सं);
 
-  if (fd == STDIN_FILENO)
+  अगर (fd == STDIN_FILENO)
     {
-      if (close (STDIN_FILENO) != 0)
+      अगर (बंद (STDIN_FILENO) != 0)
         {
-          error (0, errno, _("failed to close %s"), quoteaf (file));
-          return false;
+          error (0, त्रुटि_सं, _("failed to close %s"), quoteaf (file));
+          वापस false;
         }
     }
-  else if (fd == STDOUT_FILENO)
+  अन्यथा अगर (fd == STDOUT_FILENO)
     {
       /* Do not diagnose "touch -c - >&-".  */
-      if (utime_errno == EBADF && no_create)
-        return true;
+      अगर (utime_errno == EBADF && no_create)
+        वापस true;
     }
 
-  if (utime_errno != 0)
+  अगर (utime_errno != 0)
     {
       /* Don't diagnose with open_errno if FILE is a directory, as that
          would give a bogus diagnostic for e.g., 'touch /' (assuming we
@@ -182,8 +182,8 @@ touch (char const *file)
          other systems, opening a directory like "." fails with EINVAL.
          (On SunOS 4 it was EPERM but that's obsolete.)  On macOS 26
          opening "/" fails with EEXIST.  */
-      struct stat st;
-      if (open_errno
+      काष्ठा stat st;
+      अगर (open_errno
           && ! (open_errno == EISDIR
                 || ((open_errno == EINVAL || open_errno == EEXIST)
                     && stat (file, &st) == 0 && S_ISDIR (st.st_mode))))
@@ -194,49 +194,49 @@ touch (char const *file)
              I think it's not worth trying to distinguish them.  */
           error (0, open_errno, _("cannot touch %s"), quoteaf (file));
         }
-      else
+      अन्यथा
         {
-          if (no_create && utime_errno == ENOENT)
-            return true;
+          अगर (no_create && utime_errno == ENOENT)
+            वापस true;
           error (0, utime_errno, _("setting times of %s"), quoteaf (file));
         }
-      return false;
+      वापस false;
     }
 
-  return true;
+  वापस true;
 }
 
-void
-usage (int status)
+व्योम
+usage (पूर्णांक status)
 {
-  if (status != EXIT_SUCCESS)
+  अगर (status != निकास_सफल)
     emit_try_help ();
-  else
+  अन्यथा
     {
-      printf (_("Usage: %s [OPTION]... FILE...\n"), program_name);
-      fputs (_("\
-Update the access and modification times of each FILE to the current time.\n\
+      म_लिखो (_("Usage: %s [OPTION]... FILE...\n"), program_name);
+      ख_माला_दो (_("\
+Update the access and modification बार of each खाता to the current समय.\n\
 \n\
-A FILE argument that does not exist is created empty, unless -c or -h\n\
+A खाता argument that does not exist is created empty, unless -c or -h\n\
 is supplied.\n\
 \n\
-A FILE argument string of - is handled specially and causes touch to\n\
-change the times of the file associated with standard output.\n\
-"), stdout);
+A खाता argument string of - is handled specially and causes touch to\n\
+change the बार of the file associated with standard output.\n\
+"), मानक_निकास);
 
       emit_mandatory_arg_note ();
 
       oputs (_("\
   -a\n\
-         change only the access time\n\
+         change only the access समय\n\
 "));
       oputs (_("\
   -c, --no-create\n\
-         do not create any files\n\
+         करो not create any files\n\
 "));
       oputs (_("\
   -d, --date=STRING\n\
-         parse STRING and use it instead of current time\n\
+         parse STRING and use it instead of current समय\n\
 "));
       oputs (_("\
   -f\n\
@@ -249,151 +249,151 @@ change the times of the file associated with standard output.\n\
 "));
       oputs (_("\
   -m\n\
-         change only the modification time\n\
+         change only the modification समय\n\
 "));
       oputs (_("\
-  -r, --reference=FILE\n\
-         use this file's times instead of current time\n\
+  -r, --reference=खाता\n\
+         use this file's बार instead of current समय\n\
 "));
       oputs (_("\
   -t [[CC]YY]MMDDhhmm[.ss]\n\
-         use specified time instead of current time,\n\
-         with a date-time format that differs from -d's\n\
+         use specified समय instead of current समय,\n\
+         with a date-समय format that differs from -d's\n\
 "));
       oputs (_("\
-      --time=WORD\n\
-         specify which time to change:\n\
-         access time (-a): 'access', 'atime', 'use';\n\
-         modification time (-m): 'modify', 'mtime'\n\
+      --समय=WORD\n\
+         specify which समय to change:\n\
+         access समय (-a): 'access', 'atime', 'use';\n\
+         modification समय (-m): 'modify', 'mtime'\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
       emit_ancillary_info (PROGRAM_NAME);
     }
-  exit (status);
+  निकास (status);
 }
 
-int
-main (int argc, char **argv)
+पूर्णांक
+मुख्य (पूर्णांक argc, अक्षर **argv)
 {
   bool date_set = false;
-  char const *flex_date = NULL;
+  अक्षर स्थिर *flex_date = शून्य;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
-  setlocale (LC_ALL, "");
+  रखो_क्षेत्र (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
-  atexit (close_stdout);
+  निकास_पर (close_stdout);
 
-  int c;
-  while ((c = getopt_long (argc, argv, "acd:fhmr:t:", longopts, NULL)) != -1)
+  पूर्णांक c;
+  जबतक ((c = getopt_long (argc, argv, "acd:fhmr:t:", longopts, शून्य)) != -1)
     {
-      switch (c)
+      चयन (c)
         {
-        case 'a':
+        हाल 'a':
           change_times |= CH_ATIME;
-          break;
+          अवरोध;
 
-        case 'c':
+        हाल 'c':
           no_create = true;
-          break;
+          अवरोध;
 
-        case 'd':
+        हाल 'd':
           flex_date = optarg;
-          break;
+          अवरोध;
 
-        case 'f':
-          break;
+        हाल 'f':
+          अवरोध;
 
-        case 'h':
+        हाल 'h':
           no_dereference = true;
-          break;
+          अवरोध;
 
-        case 'm':
+        हाल 'm':
           change_times |= CH_MTIME;
-          break;
+          अवरोध;
 
-        case 'r':
+        हाल 'r':
           use_ref = true;
           ref_file = optarg;
-          break;
+          अवरोध;
 
-        case 't':
-          if (! posixtime (&newtime[0].tv_sec, optarg,
+        हाल 't':
+          अगर (! posixtime (&newtime[0].tv_sec, optarg,
                            PDS_LEADING_YEAR | PDS_CENTURY | PDS_SECONDS))
-            error (EXIT_FAILURE, 0, _("invalid date format %s"),
+            error (निकास_त्रुटि, 0, _("invalid date format %s"),
                    quote (optarg));
           newtime[0].tv_nsec = 0;
           newtime[1] = newtime[0];
           date_set = true;
-          break;
+          अवरोध;
 
-        case TIME_OPTION:	/* --time */
+        हाल TIME_OPTION:	/* --time */
           change_times |= XARGMATCH ("--time", optarg,
                                      time_args, time_masks);
-          break;
+          अवरोध;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
-          usage (EXIT_FAILURE);
+        शेष:
+          usage (निकास_त्रुटि);
         }
     }
 
-  if (change_times == 0)
+  अगर (change_times == 0)
     change_times = CH_ATIME | CH_MTIME;
 
-  if (date_set && (use_ref || flex_date))
+  अगर (date_set && (use_ref || flex_date))
     {
       error (0, 0, _("cannot specify times from more than one source"));
-      usage (EXIT_FAILURE);
+      usage (निकास_त्रुटि);
     }
 
-  if (use_ref)
+  अगर (use_ref)
     {
-      struct stat ref_stats;
+      काष्ठा stat ref_stats;
       /* Don't use (no_dereference?lstat:stat) (args), since stat
          might be an object-like macro.  */
-      if (no_dereference ? lstat (ref_file, &ref_stats)
+      अगर (no_dereference ? lstat (ref_file, &ref_stats)
           : stat (ref_file, &ref_stats))
-        error (EXIT_FAILURE, errno,
+        error (निकास_त्रुटि, त्रुटि_सं,
                _("failed to get attributes of %s"), quoteaf (ref_file));
       newtime[0] = get_stat_atime (&ref_stats);
       newtime[1] = get_stat_mtime (&ref_stats);
       date_set = true;
-      if (flex_date)
+      अगर (flex_date)
         {
-          if (change_times & CH_ATIME)
+          अगर (change_times & CH_ATIME)
             newtime[0] = date_relative (flex_date, newtime[0]);
-          if (change_times & CH_MTIME)
+          अगर (change_times & CH_MTIME)
             newtime[1] = date_relative (flex_date, newtime[1]);
         }
     }
-  else
+  अन्यथा
     {
-      if (flex_date)
+      अगर (flex_date)
         {
-          struct timespec now = current_timespec ();
+          काष्ठा timespec now = current_timespec ();
           newtime[1] = newtime[0] = date_relative (flex_date, now);
           date_set = true;
 
           /* If neither -a nor -m is specified, treat "-d now" as if
              it were absent; this lets "touch" succeed more often in
              the presence of restrictive permissions.  */
-          if (change_times == (CH_ATIME | CH_MTIME)
+          अगर (change_times == (CH_ATIME | CH_MTIME)
               && timespec_cmp (newtime[0], now) == 0)
             {
               /* Check that it really was "-d now", and not a timestamp
                  that just happens to be the current time.  */
-              struct timespec notnow, notnow1;
+              काष्ठा timespec notnow, notnow1;
               notnow.tv_sec = now.tv_sec ^ 1;
               notnow.tv_nsec = now.tv_nsec;
               notnow1 = date_relative (flex_date, notnow);
-              if (timespec_cmp (notnow1, notnow) == 0)
+              अगर (timespec_cmp (notnow1, notnow) == 0)
                 date_set = false;
             }
         }
@@ -401,7 +401,7 @@ main (int argc, char **argv)
 
   /* The obsolete 'MMDDhhmm[YY]' form is valid IFF there are
      two or more non-option arguments.  */
-  if (!date_set && 2 <= argc - optind && posix2_version () < 200112
+  अगर (!date_set && 2 <= argc - optind && posix2_version () < 200112
       && posixtime (&newtime[0].tv_sec, argv[optind],
                     PDS_TRAILING_YEAR | PDS_PRE_2000))
     {
@@ -409,43 +409,43 @@ main (int argc, char **argv)
       newtime[1] = newtime[0];
       date_set = true;
 
-      if (! getenv ("POSIXLY_CORRECT"))
+      अगर (! दो_पर्या ("POSIXLY_CORRECT"))
         {
-          struct tm const *tm = localtime (&newtime[0].tv_sec);
+          काष्ठा पंचांग स्थिर *पंचांग = स_स्थानीय (&newtime[0].tv_sec);
 
           /* Technically, it appears that even a deliberate attempt to cause
              the above localtime to return NULL will always fail because our
              posixtime implementation rejects all dates for which localtime
              would fail.  However, skip the warning if it ever fails.  */
-          if (tm)
+          अगर (पंचांग)
             error (0, 0,
                    _("warning: 'touch %s' is obsolete; use "
                      "'touch -t %04ld%02d%02d%02d%02d.%02d'"),
                    argv[optind],
-                   tm->tm_year + 1900L, tm->tm_mon + 1, tm->tm_mday,
-                   tm->tm_hour, tm->tm_min, tm->tm_sec);
+                   पंचांग->tm_year + 1900L, पंचांग->tm_mon + 1, पंचांग->tm_mday,
+                   पंचांग->tm_hour, पंचांग->tm_min, पंचांग->tm_sec);
         }
 
       optind++;
     }
 
-  if (!date_set)
+  अगर (!date_set)
     {
-      if (change_times == (CH_ATIME | CH_MTIME))
+      अगर (change_times == (CH_ATIME | CH_MTIME))
         amtime_now = true;
-      else
+      अन्यथा
         newtime[1].tv_nsec = newtime[0].tv_nsec = UTIME_NOW;
     }
 
-  if (optind == argc)
+  अगर (optind == argc)
     {
       error (0, 0, _("missing file operand"));
-      usage (EXIT_FAILURE);
+      usage (निकास_त्रुटि);
     }
 
   bool ok = true;
-  for (; optind < argc; ++optind)
+  क्रम (; optind < argc; ++optind)
     ok &= touch (argv[optind]);
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  वापस ok ? निकास_सफल : निकास_त्रुटि;
 }

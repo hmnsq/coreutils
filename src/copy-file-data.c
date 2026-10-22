@@ -16,21 +16,21 @@
 
 /* Extracted from copy.c by Paul Eggert.  */
 
-#include <config.h>
+#समावेश <config.h>
 
-#include "system.h"
+#समावेश "system.h"
 
-#include "alignalloc.h"
-#include "assure.h"
-#include "backupfile.h"
-#include "buffer-lcm.h"
-#include "copy.h"
-#include "fadvise.h"
-#include "full-write.h"
-#include "ioblksize.h"
+#समावेश "alignalloc.h"
+#समावेश "assure.h"
+#समावेश "backupfile.h"
+#समावेश "buffer-lcm.h"
+#समावेश "copy.h"
+#समावेश "fadvise.h"
+#समावेश "full-write.h"
+#समावेश "ioblksize.h"
 
 /* Result of infer_scantype when it returns LSEEK_SCANTYPE.  */
-struct scan_inference
+काष्ठा scan_inference
 {
   /* The offset of the first data block, or -1 if the file has no data.  */
   off_t ext_start;
@@ -42,56 +42,56 @@ struct scan_inference
 /* Attempt to punch a hole to avoid any permanent
    speculative preallocation on file systems such as XFS.
    Return values as per fallocate(2) except ENOSYS etc. are ignored.  */
-static int
-punch_hole (int fd, off_t offset, off_t length)
+अटल पूर्णांक
+punch_hole (पूर्णांक fd, off_t offset, off_t लंबाई)
 {
-  int ret = 0;
+  पूर्णांक ret = 0;
 /* +0 is to work around older <linux/fs.h> defining HAVE_FALLOCATE to empty.  */
-#if HAVE_FALLOCATE + 0
-# if defined FALLOC_FL_PUNCH_HOLE && defined FALLOC_FL_KEEP_SIZE
-  ret = fallocate (fd, FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE,
-                   offset, length);
-  if (ret < 0 && (is_ENOTSUP (errno) || errno == ENOSYS))
+#अगर HAVE_FALLOCATE + 0
+# अगर defined FALLOC_FL_PUNCH_HOLE && defined FALLOC_FL_KEEP_आकार
+  ret = fallocate (fd, FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_आकार,
+                   offset, लंबाई);
+  अगर (ret < 0 && (is_ENOTSUP (त्रुटि_सं) || त्रुटि_सं == ENOSYS))
     ret = 0;
 # endif
-#endif
-  return ret;
+#पूर्ण_अगर
+  वापस ret;
 }
 
 /* Create a hole at the end of the file with descriptor FD and name NAME.
    The hole is of size SIZE.  Assume FD is already at file end,
    and advance FD past the newly-created hole.
    Return the resulting position, or -1 on failure.  */
-static off_t
-create_hole (int fd, char const *name, off_t size)
+अटल off_t
+create_hole (पूर्णांक fd, अक्षर स्थिर *name, off_t आकार)
 {
-  off_t file_end = lseek (fd, size, SEEK_CUR);
+  off_t file_end = lseek (fd, आकार, प्रस्तुत_से);
 
-  if (file_end < 0)
+  अगर (file_end < 0)
     {
-      error (0, errno, _("cannot lseek %s"), quoteaf (name));
-      return -1;
+      error (0, त्रुटि_सं, _("cannot lseek %s"), quoteaf (name));
+      वापस -1;
     }
 
   /* Some file systems (like XFS) preallocate when write extending a file.
      I.e., a previous write() may have preallocated extra space
      that the seek above will not discard.  A subsequent write() could
      then make this allocation permanent.  */
-  if (punch_hole (fd, file_end - size, size) < 0)
+  अगर (punch_hole (fd, file_end - आकार, आकार) < 0)
     {
-      error (0, errno, _("error deallocating %s"), quoteaf (name));
-      return -1;
+      error (0, त्रुटि_सं, _("error deallocating %s"), quoteaf (name));
+      वापस -1;
     }
 
-  return file_end;
+  वापस file_end;
 }
 
 /* Does ERR mean the copying operation is not supported or allowed for
    this file or process, even though the operation was invoked correctly?  */
-static bool
-is_CLONENOTSUP (int err)
+अटल bool
+is_CLONENOTSUP (पूर्णांक err)
 {
-  return err == ENOSYS || err == ENOTTY || is_ENOTSUP (err)
+  वापस err == ENOSYS || err == ENOTTY || is_ENOTSUP (err)
          || err == EINVAL || err == EBADF
          || err == EXDEV || err == ETXTBSY
          || err == EPERM || err == EACCES;
@@ -109,53 +109,53 @@ is_CLONENOTSUP (int err)
    Read and update *DEBUG as needed.
    If successful, return the number of bytes copied,
    otherwise diagnose the failure and return -1.  */
-static intmax_t
-sparse_copy (int src_fd, int dest_fd, char **abuf, idx_t buf_size,
+अटल intmax_t
+sparse_copy (पूर्णांक src_fd, पूर्णांक dest_fd, अक्षर **abuf, idx_t buf_आकार,
              bool allow_reflink,
-             char const *src_name, char const *dst_name,
-             count_t max_n_read, off_t *hole_size,
-             struct copy_debug *debug)
+             अक्षर स्थिर *src_name, अक्षर स्थिर *dst_name,
+             गिनती_t max_n_read, off_t *hole_आकार,
+             काष्ठा copy_debug *debug)
 {
-  count_t total_n_read = 0;
+  गिनती_t योग_n_read = 0;
 
-  if (debug->sparse_detection == COPY_DEBUG_UNKNOWN)
-    debug->sparse_detection = hole_size ? COPY_DEBUG_YES : COPY_DEBUG_NO;
-  else if (hole_size && debug->sparse_detection == COPY_DEBUG_EXTERNAL)
+  अगर (debug->sparse_detection == COPY_DEBUG_UNKNOWN)
+    debug->sparse_detection = hole_आकार ? COPY_DEBUG_YES : COPY_DEBUG_NO;
+  अन्यथा अगर (hole_आकार && debug->sparse_detection == COPY_DEBUG_EXTERNAL)
     debug->sparse_detection = COPY_DEBUG_EXTERNAL_INTERNAL;
 
   /* If not looking for holes, use copy_file_range if functional,
      but don't use if reflink disallowed as that may be implicit.  */
-  if (!hole_size && allow_reflink)
-    while (0 < max_n_read)
+  अगर (!hole_आकार && allow_reflink)
+    जबतक (0 < max_n_read)
       {
         /* Copy at most COPY_MAX bytes at a time; this is min
            (SSIZE_MAX, SIZE_MAX) truncated to a value that is
            surely aligned well.  */
         ssize_t copy_max = MIN (SSIZE_MAX, SIZE_MAX) >> 30 << 30;
-        ssize_t n_copied = copy_file_range (src_fd, NULL, dest_fd, NULL,
+        ssize_t n_copied = copy_file_range (src_fd, शून्य, dest_fd, शून्य,
                                             MIN (max_n_read, copy_max), 0);
-        if (n_copied == 0)
+        अगर (n_copied == 0)
           {
             /* copy_file_range incorrectly returns 0 when reading from
                the proc file system on the Linux kernel through at
                least 5.6.19 (2020), so fall back on 'read' if the
                input file seems empty.  */
-            if (total_n_read == 0)
-              break;
+            अगर (योग_n_read == 0)
+              अवरोध;
             debug->offload = COPY_DEBUG_YES;
-            return total_n_read;
+            वापस योग_n_read;
           }
-        if (n_copied < 0)
+        अगर (n_copied < 0)
           {
-            debug->offload = errno;
+            debug->offload = त्रुटि_सं;
 
             /* Don’t treat EFBIG as a reportable error from copy_file_range.
                If the input is at EOF and the output position is 2**63 - 1,
                copy_file_range (ifd, NULL, ofd, NULL, 2146435072, 0)
                incorrectly fails with EFBIG.  Problem observed on Ubuntu 25.10
                x86-64 with Linux kernel 6.17.0-8-generic #8-Ubuntu.  */
-            if (errno == EFBIG)
-              break;
+            अगर (त्रुटि_सं == EFBIG)
+              अवरोध;
 
             /* Consider operation unsupported only if no data copied.
                For example, EPERM could occur if copy_file_range not enabled
@@ -163,101 +163,101 @@ sparse_copy (int src_fd, int dest_fd, char **abuf, idx_t buf_size,
                also occur for immutable files, but that would only be in the
                edge case where the file is made immutable after creating,
                in which case the (more accurate) error is still shown.  */
-            if (total_n_read == 0 && is_CLONENOTSUP (errno))
-              break;
+            अगर (योग_n_read == 0 && is_CLONENOTSUP (त्रुटि_सं))
+              अवरोध;
 
             /* ENOENT was seen sometimes across CIFS shares, resulting in
                no data being copied, but subsequent standard copies succeed.  */
-            if (total_n_read == 0 && errno == ENOENT)
-              break;
+            अगर (योग_n_read == 0 && त्रुटि_सं == ENOENT)
+              अवरोध;
 
-            if (errno == EINTR)
+            अगर (त्रुटि_सं == EINTR)
               n_copied = 0;
-            else
+            अन्यथा
               {
-                error (0, errno, _("error copying %s to %s"),
+                error (0, त्रुटि_सं, _("error copying %s to %s"),
                        quoteaf_n (0, src_name), quoteaf_n (1, dst_name));
-                return -1;
+                वापस -1;
               }
           }
         debug->offload = COPY_DEBUG_YES;
         max_n_read -= n_copied;
-        total_n_read += n_copied;
+        योग_n_read += n_copied;
       }
-  else
+  अन्यथा
     debug->offload = COPY_DEBUG_AVOIDED;
 
 
-  off_t psize = hole_size ? *hole_size : 0;
+  off_t psize = hole_आकार ? *hole_आकार : 0;
   bool make_hole = !!psize;
 
-  while (0 < max_n_read)
+  जबतक (0 < max_n_read)
     {
-      if (!*abuf)
-        *abuf = xalignalloc (getpagesize (), buf_size);
-      char *buf = *abuf;
-      ssize_t n_read = read (src_fd, buf, MIN (max_n_read, buf_size));
-      if (n_read < 0)
+      अगर (!*abuf)
+        *abuf = xalignalloc (getpagesize (), buf_आकार);
+      अक्षर *buf = *abuf;
+      ssize_t n_read = पढ़ो (src_fd, buf, MIN (max_n_read, buf_आकार));
+      अगर (n_read < 0)
         {
-          if (errno == EINTR)
-            continue;
-          error (0, errno, _("error reading %s"), quoteaf (src_name));
-          return -1;
+          अगर (त्रुटि_सं == EINTR)
+            जारी;
+          error (0, त्रुटि_सं, _("error reading %s"), quoteaf (src_name));
+          वापस -1;
         }
-      if (n_read == 0)
-        break;
+      अगर (n_read == 0)
+        अवरोध;
       max_n_read -= n_read;
-      total_n_read += n_read;
+      योग_n_read += n_read;
 
       /* If looking for holes, loop over the input buffer in chunks
          corresponding to the minimum hole size.  Otherwise, scan the
          whole buffer.  struct stat does not report the minimum hole
          size for a file, so use ST_NBLOCKSIZE which should be the
          minimum for all file systems on this platform.  */
-      idx_t csize = hole_size ? ST_NBLOCKSIZE : buf_size;
-      char *cbuf = buf;
-      char *pbuf = buf;
+      idx_t csize = hole_आकार ? ST_NBLOCKSIZE : buf_आकार;
+      अक्षर *cbuf = buf;
+      अक्षर *pbuf = buf;
 
-      while (n_read)
+      जबतक (n_read)
         {
-          bool prev_hole = make_hole;
+          bool पूर्व_hole = make_hole;
           csize = MIN (csize, n_read);
 
-          if (hole_size)
+          अगर (hole_आकार)
             make_hole = is_nul (cbuf, csize);
 
-          bool transition = (make_hole != prev_hole) && psize;
+          bool transition = (make_hole != पूर्व_hole) && psize;
           bool last_chunk = n_read == csize && !make_hole;
 
-          if (transition || last_chunk)
+          अगर (transition || last_chunk)
             {
-              if (! transition)
+              अगर (! transition)
                 psize += csize;
-              else if (prev_hole)
+              अन्यथा अगर (पूर्व_hole)
                 {
-                  if (create_hole (dest_fd, dst_name, psize) < 0)
-                    return false;
+                  अगर (create_hole (dest_fd, dst_name, psize) < 0)
+                    वापस false;
                   pbuf = cbuf;
                   psize = csize;
                 }
 
-              if (!prev_hole || (transition && last_chunk))
+              अगर (!पूर्व_hole || (transition && last_chunk))
                 {
-                  if (full_write (dest_fd, pbuf, psize) != psize)
+                  अगर (full_write (dest_fd, pbuf, psize) != psize)
                     {
-                      error (0, errno, _("error writing %s"),
+                      error (0, त्रुटि_सं, _("error writing %s"),
                              quoteaf (dst_name));
-                      return -1;
+                      वापस -1;
                     }
-                  psize = !prev_hole && transition ? csize : 0;
+                  psize = !पूर्व_hole && transition ? csize : 0;
                 }
             }
-          else  /* Coalesce writes/seeks.  */
+          अन्यथा  /* Coalesce writes/seeks.  */
             {
-              if (ckd_add (&psize, psize, csize))
+              अगर (ckd_add (&psize, psize, csize))
                 {
                   error (0, 0, _("overflow reading %s"), quoteaf (src_name));
-                  return -1;
+                  वापस -1;
                 }
             }
 
@@ -271,37 +271,37 @@ sparse_copy (int src_fd, int dest_fd, char **abuf, idx_t buf_size,
          certain files in /proc or /sys with linux kernels.  */
     }
 
-  if (hole_size)
-    *hole_size = make_hole ? psize : 0;
-  return total_n_read;
+  अगर (hole_आकार)
+    *hole_आकार = make_hole ? psize : 0;
+  वापस योग_n_read;
 }
 
 /* Write to FD.  Write data consisting of N_BYTES' worth of '\0's.
    Use the buffer *ABUF of size BUF_SIZE for temporary storage,
    allocating the buffer lazily if *ABUF is null.
    Return true if successful, false (setting errno) otherwise.  */
-static bool
-write_zeros (int fd, off_t n_bytes, char **abuf, idx_t buf_size)
+अटल bool
+write_zeros (पूर्णांक fd, off_t n_bytes, अक्षर **abuf, idx_t buf_आकार)
 {
-  char *zeros = NULL;
-  while (n_bytes)
+  अक्षर *zeros = शून्य;
+  जबतक (n_bytes)
     {
-      idx_t n = MIN (buf_size, n_bytes);
-      if (!zeros)
+      idx_t n = MIN (buf_आकार, n_bytes);
+      अगर (!zeros)
         {
-          if (!*abuf)
-            *abuf = xalignalloc (getpagesize (), buf_size);
-          zeros = memset (*abuf, 0, n);
+          अगर (!*abuf)
+            *abuf = xalignalloc (getpagesize (), buf_आकार);
+          zeros = स_रखो (*abuf, 0, n);
         }
-      if (full_write (fd, zeros, n) != n)
-        return false;
+      अगर (full_write (fd, zeros, n) != n)
+        वापस false;
       n_bytes -= n;
     }
 
-  return true;
+  वापस true;
 }
 
-#ifdef SEEK_HOLE
+#अगर_घोषित SEEK_HOLE
 /* Perform an efficient extent copy, if possible.  This avoids
    the overhead of detecting holes in hole-introducing/preserving
    copy, and thus makes copying sparse files much more efficient.
@@ -324,21 +324,21 @@ write_zeros (int fd, off_t n_bytes, char **abuf, idx_t buf_size)
    If successful, return the number of bytes copied,
    otherwise diagnose the failure and return -1.  */
 
-static off_t
-lseek_copy (int src_fd, int dest_fd, char **abuf, idx_t buf_size,
-            off_t src_pos, count_t ibytes,
-            struct scan_inference const *scan_inference, off_t src_total_size,
-            enum Sparse_type sparse_mode,
+अटल off_t
+lseek_copy (पूर्णांक src_fd, पूर्णांक dest_fd, अक्षर **abuf, idx_t buf_आकार,
+            off_t src_pos, गिनती_t ibytes,
+            काष्ठा scan_inference स्थिर *scan_inference, off_t src_योग_आकार,
+            क्रमागत Sparse_type sparse_mode,
             bool allow_reflink,
-            char const *src_name, char const *dst_name,
-            off_t *hole_size, struct copy_debug *debug)
+            अक्षर स्थिर *src_name, अक्षर स्थिर *dst_name,
+            off_t *hole_आकार, काष्ठा copy_debug *debug)
 {
   off_t last_ext_start = src_pos;
   off_t last_ext_len = 0;
   off_t max_ipos = ckd_add (&max_ipos, src_pos, ibytes) ? OFF_T_MAX : max_ipos;
 
   /* From here on, SRC_TOTAL_SIZE is bounded above by MAX_IPOS.  */
-  src_total_size = MIN (src_total_size, max_ipos);
+  src_योग_आकार = MIN (src_योग_आकार, max_ipos);
 
   /* The input position after the most recent read of data,
      or SRC_POS if no data have been read.  */
@@ -348,68 +348,68 @@ lseek_copy (int src_fd, int dest_fd, char **abuf, idx_t buf_size,
 
   bool used_scan_inference = false;
 
-  for (off_t ext_start = scan_inference->ext_start;
+  क्रम (off_t ext_start = scan_inference->ext_start;
        0 <= ext_start && ext_start < max_ipos; )
     {
       off_t ext_end;
-      if (ext_start == src_pos && ! used_scan_inference)
+      अगर (ext_start == src_pos && ! used_scan_inference)
         {
           ext_end = scan_inference->hole_start;
           used_scan_inference = true;
         }
-      else
+      अन्यथा
         ext_end = lseek (src_fd, ext_start, SEEK_HOLE);
-      if (0 <= ext_end)
+      अगर (0 <= ext_end)
         ext_end = MIN (ext_end, max_ipos);
-      else
+      अन्यथा
         {
-          if (errno != ENXIO)
-            goto cannot_lseek;
-          ext_end = src_total_size;
-          if (ext_end <= ext_start)
+          अगर (त्रुटि_सं != ENXIO)
+            जाओ cannot_lseek;
+          ext_end = src_योग_आकार;
+          अगर (ext_end <= ext_start)
             {
               /* The input file grew; get its current size.  */
-              src_total_size = lseek (src_fd, 0, SEEK_END);
-              if (src_total_size < 0)
-                goto cannot_lseek;
-              src_total_size = MIN (src_total_size, max_ipos);
+              src_योग_आकार = lseek (src_fd, 0, अंत_से);
+              अगर (src_योग_आकार < 0)
+                जाओ cannot_lseek;
+              src_योग_आकार = MIN (src_योग_आकार, max_ipos);
 
               /* If the input file shrank after growing, stop copying.  */
-              if (src_total_size <= ext_start)
-                break;
+              अगर (src_योग_आकार <= ext_start)
+                अवरोध;
 
-              ext_end = src_total_size;
+              ext_end = src_योग_आकार;
             }
         }
       /* If the input file must have grown, increase its measured size.  */
-      if (src_total_size < ext_end)
-        src_total_size = ext_end;
+      अगर (src_योग_आकार < ext_end)
+        src_योग_आकार = ext_end;
 
-      if (lseek (src_fd, ext_start, SEEK_SET) < 0)
-        goto cannot_lseek;
+      अगर (lseek (src_fd, ext_start, शुरू_से) < 0)
+        जाओ cannot_lseek;
 
-      off_t ext_hole_size = ext_start - last_ext_start - last_ext_len;
+      off_t ext_hole_आकार = ext_start - last_ext_start - last_ext_len;
 
-      if (ext_hole_size)
+      अगर (ext_hole_आकार)
         {
-          if (sparse_mode == SPARSE_ALWAYS)
-            *hole_size += ext_hole_size;
-          else if (sparse_mode != SPARSE_NEVER)
+          अगर (sparse_mode == SPARSE_ALWAYS)
+            *hole_आकार += ext_hole_आकार;
+          अन्यथा अगर (sparse_mode != SPARSE_NEVER)
             {
-              off_t epos = create_hole (dest_fd, dst_name, ext_hole_size);
-              if (epos < 0)
-                return epos;
+              off_t epos = create_hole (dest_fd, dst_name, ext_hole_आकार);
+              अगर (epos < 0)
+                वापस epos;
             }
-          else
+          अन्यथा
             {
               /* When not inducing holes and when there is a hole between
                  the end of the previous extent and the beginning of the
                  current one, write zeros to the destination file.  */
-              if (! write_zeros (dest_fd, ext_hole_size, abuf, buf_size))
+              अगर (! write_zeros (dest_fd, ext_hole_आकार, abuf, buf_आकार))
                 {
-                  error (0, errno, _("%s: write failed"),
+                  error (0, त्रुटि_सं, _("%s: write failed"),
                          quotef (dst_name));
-                  return -1;
+                  वापस -1;
                 }
             }
         }
@@ -422,42 +422,42 @@ lseek_copy (int src_fd, int dest_fd, char **abuf, idx_t buf_size,
          bother to write zeros if --sparse=always, since SEEK_HOLE
          is conservative and may miss some holes.  */
       off_t n_read
-        = sparse_copy (src_fd, dest_fd, abuf, buf_size,
+        = sparse_copy (src_fd, dest_fd, abuf, buf_आकार,
                        allow_reflink, src_name, dst_name,
                        ext_len,
-                       sparse_mode == SPARSE_ALWAYS ? hole_size : NULL,
+                       sparse_mode == SPARSE_ALWAYS ? hole_आकार : शून्य,
                        debug);
-      if (n_read < 0)
-        return -1;
+      अगर (n_read < 0)
+        वापस -1;
 
       ipos = ext_start + n_read;
-      if (n_read < ext_len)
+      अगर (n_read < ext_len)
         {
           /* The input file shrank.  */
-          src_total_size = ipos;
-          break;
+          src_योग_आकार = ipos;
+          अवरोध;
         }
 
-      ext_start = lseek (src_fd, ipos, SEEK_DATA);
-      if (ext_start < 0 && errno != ENXIO)
-        goto cannot_lseek;
+      ext_start = lseek (src_fd, ipos, SEEK_तथ्य);
+      अगर (ext_start < 0 && त्रुटि_सं != ENXIO)
+        जाओ cannot_lseek;
     }
 
-  *hole_size += src_total_size - (last_ext_start + last_ext_len);
-  return src_total_size - src_pos;
+  *hole_आकार += src_योग_आकार - (last_ext_start + last_ext_len);
+  वापस src_योग_आकार - src_pos;
 
  cannot_lseek:
-  error (0, errno, _("cannot lseek %s"), quoteaf (src_name));
-  return -1;
+  error (0, त्रुटि_सं, _("cannot lseek %s"), quoteaf (src_name));
+  वापस -1;
 }
-#endif
+#पूर्ण_अगर
 
-#ifndef HAVE_STRUCT_STAT_ST_BLOCKS
+#अगर_अघोषित HAVE_STRUCT_STAT_ST_BLOCKS
 # define HAVE_STRUCT_STAT_ST_BLOCKS 0
-#endif
+#पूर्ण_अगर
 
 /* Type of scan being done on the input when looking for sparseness.  */
-enum scantype
+क्रमागत scantype
   {
    /* An error was found when determining scantype.  */
    ERROR_SCANTYPE,
@@ -476,26 +476,26 @@ enum scantype
 /* Return how to scan a file with descriptor FD and stat buffer SB.
    The scan starts at POS.
    Set *SCAN_INFERENCE if returning LSEEK_SCANTYPE.  */
-static enum scantype
-infer_scantype (int fd, struct stat const *sb, off_t pos,
-                struct scan_inference *scan_inference)
+अटल क्रमागत scantype
+infer_scantype (पूर्णांक fd, काष्ठा stat स्थिर *sb, off_t pos,
+                काष्ठा scan_inference *scan_inference)
 {
   /* Try SEEK_HOLE only if this heuristic
      suggests the file is sparse.  */
-  if (! (HAVE_STRUCT_STAT_ST_BLOCKS
+  अगर (! (HAVE_STRUCT_STAT_ST_BLOCKS
          && S_ISREG (sb->st_mode)
-         && STP_NBLOCKS (sb) < sb->st_size / ST_NBLOCKSIZE))
-    return PLAIN_SCANTYPE;
+         && STP_NBLOCKS (sb) < sb->st_आकार / ST_NBLOCKSIZE))
+    वापस PLAIN_SCANTYPE;
 
-#ifdef SEEK_HOLE
-  scan_inference->ext_start = lseek (fd, pos, SEEK_DATA);
-  if (scan_inference->ext_start == pos)
+#अगर_घोषित SEEK_HOLE
+  scan_inference->ext_start = lseek (fd, pos, SEEK_तथ्य);
+  अगर (scan_inference->ext_start == pos)
     {
       scan_inference->hole_start = lseek (fd, pos, SEEK_HOLE);
-      if (0 <= scan_inference->hole_start)
+      अगर (0 <= scan_inference->hole_start)
         {
-          if (scan_inference->hole_start < sb->st_size)
-            return LSEEK_SCANTYPE;
+          अगर (scan_inference->hole_start < sb->st_आकार)
+            वापस LSEEK_SCANTYPE;
 
           /* Though the file may have holes, SEEK_DATA and SEEK_HOLE
              didn't find any.  This can happen with file systems
@@ -504,25 +504,25 @@ infer_scantype (int fd, struct stat const *sb, off_t pos,
              This can also happen due to transparent file compression,
              which can also indicate fewer than the usual number of blocks.  */
 
-          if (lseek (fd, pos, SEEK_SET) < 0)
-            return ERROR_SCANTYPE;
+          अगर (lseek (fd, pos, शुरू_से) < 0)
+            वापस ERROR_SCANTYPE;
 
           /* we prefer to return PLAIN_SCANTYPE here so that copy offload
              continues to be used.  Falling through to ZERO_SCANTYPE would be
              less efficient in the compressed file case.  */
-          return PLAIN_SCANTYPE;
+          वापस PLAIN_SCANTYPE;
         }
     }
-  else if (pos < scan_inference->ext_start || errno == ENXIO)
+  अन्यथा अगर (pos < scan_inference->ext_start || त्रुटि_सं == ENXIO)
     {
       scan_inference->hole_start = pos;  /* Pacify -Wmaybe-uninitialized.  */
-      return LSEEK_SCANTYPE;
+      वापस LSEEK_SCANTYPE;
     }
-  else if (errno != EINVAL && !is_ENOTSUP (errno))
-    return ERROR_SCANTYPE;
-#endif
+  अन्यथा अगर (त्रुटि_सं != EINVAL && !is_ENOTSUP (त्रुटि_सं))
+    वापस ERROR_SCANTYPE;
+#पूर्ण_अगर
 
-  return ZERO_SCANTYPE;
+  वापस ZERO_SCANTYPE;
 }
 
 /* Copy data from input file (descriptor IFD, status IST, initial file
@@ -538,22 +538,22 @@ infer_scantype (int fd, struct stat const *sb, off_t pos,
    otherwise, diagnose the error and return -1.
    If unsuccessful, the destination area's contents are unspecified.  */
 
-extern intmax_t
-copy_file_data (int ifd, struct stat const *ist, off_t ipos, char const *iname,
-                int ofd, struct stat const *ost, off_t opos, char const *oname,
-                count_t ibytes, struct cp_options const *x,
-                struct copy_debug *debug)
+बाह्य intmax_t
+copy_file_तथ्य (पूर्णांक ifd, काष्ठा stat स्थिर *ist, off_t ipos, अक्षर स्थिर *iname,
+                पूर्णांक ofd, काष्ठा stat स्थिर *ost, off_t opos, अक्षर स्थिर *oname,
+                गिनती_t ibytes, काष्ठा cp_options स्थिर *x,
+                काष्ठा copy_debug *debug)
 {
   /* Choose a suitable buffer size; it may be adjusted later.  */
-  idx_t buf_size = io_blksize (ost);
+  idx_t buf_आकार = io_blksize (ost);
 
   /* Deal with sparse files.  */
-  struct scan_inference scan_inference;
-  enum scantype scantype = infer_scantype (ifd, ist, ipos, &scan_inference);
-  if (scantype == ERROR_SCANTYPE)
+  काष्ठा scan_inference scan_inference;
+  क्रमागत scantype scantype = infer_scantype (ifd, ist, ipos, &scan_inference);
+  अगर (scantype == ERROR_SCANTYPE)
     {
-      error (0, errno, _("cannot lseek %s"), quoteaf (iname));
-      return -1;
+      error (0, त्रुटि_सं, _("cannot lseek %s"), quoteaf (iname));
+      वापस -1;
     }
   bool make_holes
     = (S_ISREG (ost->st_mode)
@@ -569,13 +569,13 @@ copy_file_data (int ifd, struct stat const *ist, off_t ipos, char const *iname,
      Also we only apply this hint for the whole file (0 length)
      as OpenZFS 2.2.2 at least will otherwise synchronously
      (decompress and) populate the cache when given a specific length.  */
-  if (ipos == 0 && ibytes == COUNT_MAX
+  अगर (ipos == 0 && ibytes == गिनती_MAX
       && (x->reflink_mode != REFLINK_AUTO || x->sparse_mode != SPARSE_AUTO))
     fdadvise (ifd, 0, 0, FADVISE_SEQUENTIAL);
 
   /* If not making a sparse file, try to use a more-efficient
      buffer size.  */
-  if (! make_holes)
+  अगर (! make_holes)
     {
       /* Compute the least common multiple of the input and output
          buffer sizes, adjusting for outlandish values.
@@ -583,65 +583,65 @@ copy_file_data (int ifd, struct stat const *ist, off_t ipos, char const *iname,
          Note we read in multiples of the reported block size
          to support (unusual) devices that have this constraint.  */
       idx_t blcm_max = MIN (MIN (IDX_MAX - 1, SSIZE_MAX), SIZE_MAX);
-      idx_t blcm = buffer_lcm (io_blksize (ist), buf_size,
+      idx_t blcm = बफर_lcm (io_blksize (ist), buf_आकार,
                                blcm_max);
 
       /* Do not bother with a buffer larger than the input file, plus one
          byte to make sure the file has not grown while reading it.  */
-      if (S_ISREG (ist->st_mode) && 0 <= ist->st_size
-          && ist->st_size < buf_size)
-        buf_size = ist->st_size + 1;
+      अगर (S_ISREG (ist->st_mode) && 0 <= ist->st_आकार
+          && ist->st_आकार < buf_आकार)
+        buf_आकार = ist->st_आकार + 1;
 
       /* However, stick with a block size that is a positive multiple of
          blcm, overriding the above adjustments.  Watch out for
          overflow.  */
-      buf_size = ckd_add (&buf_size, buf_size, blcm - 1) ? IDX_MAX : buf_size;
-      buf_size -= buf_size % blcm;
+      buf_आकार = ckd_add (&buf_आकार, buf_आकार, blcm - 1) ? IDX_MAX : buf_आकार;
+      buf_आकार -= buf_आकार % blcm;
     }
 
-  char *buf = NULL;
-  intmax_t result;
-  off_t hole_size = 0;
+  अक्षर *buf = शून्य;
+  intmax_t परिणाम;
+  off_t hole_आकार = 0;
 
-  if (scantype == LSEEK_SCANTYPE)
+  अगर (scantype == LSEEK_SCANTYPE)
     {
-#ifdef SEEK_HOLE
-      result = lseek_copy (ifd, ofd, &buf, buf_size,
-                           ipos, ibytes, &scan_inference, ist->st_size,
+#अगर_घोषित SEEK_HOLE
+      परिणाम = lseek_copy (ifd, ofd, &buf, buf_आकार,
+                           ipos, ibytes, &scan_inference, ist->st_आकार,
                            make_holes ? x->sparse_mode : SPARSE_NEVER,
                            x->reflink_mode != REFLINK_NEVER,
-                           iname, oname, &hole_size, debug);
-#else
+                           iname, oname, &hole_आकार, debug);
+#अन्यथा
       affirm (false);
-#endif
+#पूर्ण_अगर
     }
-  else
-    result = sparse_copy (ifd, ofd, &buf, buf_size,
+  अन्यथा
+    परिणाम = sparse_copy (ifd, ofd, &buf, buf_आकार,
                           x->reflink_mode != REFLINK_NEVER,
                           iname, oname, ibytes,
-                          make_holes ? &hole_size : NULL,
+                          make_holes ? &hole_आकार : शून्य,
                           debug);
 
-  if (0 <= result && 0 < hole_size)
+  अगर (0 <= परिणाम && 0 < hole_आकार)
     {
       off_t oend;
-      if (ckd_add (&oend, opos, result)
-          ? (errno = EOVERFLOW, true)
+      अगर (ckd_add (&oend, opos, परिणाम)
+          ? (त्रुटि_सं = EOVERFLOW, true)
           : make_holes
           ? ftruncate (ofd, oend) < 0
-          : !write_zeros (ofd, hole_size, &buf, buf_size))
+          : !write_zeros (ofd, hole_आकार, &buf, buf_आकार))
         {
-          error (0, errno, _("failed to extend %s"), quoteaf (oname));
-          result = -1;
+          error (0, त्रुटि_सं, _("failed to extend %s"), quoteaf (oname));
+          परिणाम = -1;
         }
-      else if (make_holes
-               && punch_hole (ofd, oend - hole_size, hole_size) < 0)
+      अन्यथा अगर (make_holes
+               && punch_hole (ofd, oend - hole_आकार, hole_आकार) < 0)
         {
-          error (0, errno, _("error deallocating %s"), quoteaf (oname));
-          result = -1;
+          error (0, त्रुटि_सं, _("error deallocating %s"), quoteaf (oname));
+          परिणाम = -1;
         }
     }
 
   alignfree (buf);
-  return result;
+  वापस परिणाम;
 }

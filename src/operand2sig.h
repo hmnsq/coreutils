@@ -15,5 +15,5 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-extern int operand2sig (char const *operand)
+बाह्य पूर्णांक operand2sig (अक्षर स्थिर *operand)
   _GL_ATTRIBUTE_NONNULL ();

@@ -1,2 +1,2 @@
-#include "uname.h"
-enum uname_modes uname_mode = UNAME_UNAME;
+#समावेश "uname.h"
+क्रमागत uname_modes uname_mode = UNAME_UNAME;

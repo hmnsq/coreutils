@@ -16,216 +16,216 @@
 
 /* Written by Jim Meyering */
 
-#include <config.h>
-#include <getopt.h>
-#include <stdio.h>
-#include <sys/types.h>
+#समावेश <config.h>
+#समावेश <getopt.h>
+#समावेश <stdio.h>
+#समावेश <sys/types.h>
 
-#include "system.h"
-#include "assure.h"
+#समावेश "system.h"
+#समावेश "assure.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "sync"
+#घोषणा PROGRAM_NAME "sync"
 
-#define AUTHORS                                 \
+#घोषणा AUTHORS                                 \
   proper_name ("Jim Meyering"),                 \
   proper_name ("Giuseppe Scrivano")
 
-#ifndef HAVE_SYNCFS
+#अगर_अघोषित HAVE_SYNCFS
 # define HAVE_SYNCFS 0
-#endif
+#पूर्ण_अगर
 
-enum sync_mode
+क्रमागत sync_mode
 {
   MODE_FILE,
-  MODE_DATA,
+  MODE_तथ्य,
   MODE_FILE_SYSTEM,
   MODE_SYNC
 };
 
-static struct option const long_options[] =
+अटल काष्ठा option स्थिर long_options[] =
 {
-  {"data", no_argument, NULL, 'd'},
-  {"file-system", no_argument, NULL, 'f'},
+  {"data", no_argument, शून्य, 'd'},
+  {"file-system", no_argument, शून्य, 'f'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {शून्य, 0, शून्य, 0}
 };
 
-void
-usage (int status)
+व्योम
+usage (पूर्णांक status)
 {
-  if (status != EXIT_SUCCESS)
+  अगर (status != निकास_सफल)
     emit_try_help ();
-  else
+  अन्यथा
     {
-      printf (_("Usage: %s [OPTION] [FILE]...\n"), program_name);
-      fputs (_("\
+      म_लिखो (_("Usage: %s [OPTION] [FILE]...\n"), program_name);
+      ख_माला_दो (_("\
 Synchronize cached writes to persistent storage\n\
 \n\
 If one or more files are specified, sync only them,\n\
 or their containing file systems.\n\
 \n\
-"), stdout);
+"), मानक_निकास);
 
       oputs (_("\
-  -d, --data             sync only file data, no unneeded metadata\n\
+  -d, --तथ्य             sync only file तथ्य, no unneeded metadata\n\
 "));
       oputs (_("\
-  -f, --file-system      sync the file systems that contain the files\n\
+  -f, --file-प्रणाली      sync the file systems that contain the files\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
       emit_ancillary_info (PROGRAM_NAME);
     }
-  exit (status);
+  निकास (status);
 }
 
 /* Sync the specified FILE, or file systems associated with FILE.
    Return 1 on success.  */
 
-static bool
-sync_arg (enum sync_mode mode, char const *file)
+अटल bool
+sync_arg (क्रमागत sync_mode mode, अक्षर स्थिर *file)
 {
-  int open_flags = O_RDONLY | O_NONBLOCK;
+  पूर्णांक open_flags = O_RDONLY | O_NONBLOCK;
 
-#if defined _AIX || defined __CYGWIN__
+#अगर defined _AIX || defined __CYGWIN__
   /* AIX 7.1, CYGWIN 2.9.0, fsync requires write access to file.  */
-  if (mode == MODE_FILE)
+  अगर (mode == MODE_FILE)
     open_flags = O_WRONLY | O_NONBLOCK;
-#endif
+#पूर्ण_अगर
 
   /* Note O_PATH might be supported with syncfs(),
      though as of Linux 3.18 is not.  */
-  int fd = open (file, open_flags);
-  if (fd < 0)
+  पूर्णांक fd = खोलो (file, open_flags);
+  अगर (fd < 0)
     {
       /* Use the O_RDONLY errno, which is significant
          with directories for example.  */
-      int rd_errno = errno;
-      if (open_flags != (O_WRONLY | O_NONBLOCK))
-        fd = open (file, O_WRONLY | O_NONBLOCK);
-      if (fd < 0)
+      पूर्णांक rd_errno = त्रुटि_सं;
+      अगर (open_flags != (O_WRONLY | O_NONBLOCK))
+        fd = खोलो (file, O_WRONLY | O_NONBLOCK);
+      अगर (fd < 0)
         {
           error (0, rd_errno, _("error opening %s"), quoteaf (file));
-          return false;
+          वापस false;
         }
     }
 
   bool ret = true;
   /* We used O_NONBLOCK above to not hang with fifos,
      so reset that here.  */
-  int fdflags = fcntl (fd, F_GETFL);
-  if (fdflags == -1
+  पूर्णांक fdflags = fcntl (fd, F_GETFL);
+  अगर (fdflags == -1
       || fcntl (fd, F_SETFL, fdflags & ~O_NONBLOCK) < 0)
     {
-      error (0, errno, _("couldn't reset non-blocking mode %s"),
+      error (0, त्रुटि_सं, _("couldn't reset non-blocking mode %s"),
              quoteaf (file));
       ret = false;
     }
 
-  if (ret)
+  अगर (ret)
     {
-      int sync_status = -1;
+      पूर्णांक sync_status = -1;
 
-      switch (mode)
+      चयन (mode)
         {
-        case MODE_DATA:
+        हाल MODE_तथ्य:
           sync_status = fdatasync (fd);
-          break;
+          अवरोध;
 
-        case MODE_FILE:
+        हाल MODE_FILE:
           sync_status = fsync (fd);
-          break;
+          अवरोध;
 
-        case MODE_FILE_SYSTEM:
-#if HAVE_SYNCFS
+        हाल MODE_FILE_SYSTEM:
+#अगर HAVE_SYNCFS
           sync_status = syncfs (fd);
-          break;
-#endif
-        case MODE_SYNC: default:
+          अवरोध;
+#पूर्ण_अगर
+        हाल MODE_SYNC: शेष:
           affirm (false);
         }
 
-      if (sync_status < 0)
+      अगर (sync_status < 0)
         {
-          error (0, errno, _("error syncing %s"), quoteaf (file));
+          error (0, त्रुटि_सं, _("error syncing %s"), quoteaf (file));
           ret = false;
         }
     }
 
-  if (close (fd) < 0)
+  अगर (बंद (fd) < 0)
     {
-      error (0, errno, _("failed to close %s"), quoteaf (file));
+      error (0, त्रुटि_सं, _("failed to close %s"), quoteaf (file));
       ret = false;
     }
 
-  return ret;
+  वापस ret;
 }
 
-int
-main (int argc, char **argv)
+पूर्णांक
+मुख्य (पूर्णांक argc, अक्षर **argv)
 {
-  bool arg_data = false, arg_file_system = false;
+  bool arg_तथ्य = false, arg_file_system = false;
   bool ok = true;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
-  setlocale (LC_ALL, "");
+  रखो_क्षेत्र (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
-  atexit (close_stdout);
+  निकास_पर (close_stdout);
 
-  int c;
-  while ((c = getopt_long (argc, argv, "df", long_options, NULL))
+  पूर्णांक c;
+  जबतक ((c = getopt_long (argc, argv, "df", long_options, शून्य))
          != -1)
     {
-      switch (c)
+      चयन (c)
         {
-        case 'd':
-          arg_data = true;
-          break;
+        हाल 'd':
+          arg_तथ्य = true;
+          अवरोध;
 
-        case 'f':
+        हाल 'f':
           arg_file_system = true;
-          break;
+          अवरोध;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
-          usage (EXIT_FAILURE);
+        शेष:
+          usage (निकास_त्रुटि);
         }
     }
 
   bool args_specified = optind < argc;
 
-  if (arg_data && arg_file_system)
-    error (EXIT_FAILURE, 0,
+  अगर (arg_तथ्य && arg_file_system)
+    error (निकास_त्रुटि, 0,
            _("cannot specify both --data and --file-system"));
 
-  if (!args_specified && arg_data)
-    error (EXIT_FAILURE, 0, _("--data needs at least one argument"));
+  अगर (!args_specified && arg_तथ्य)
+    error (निकास_त्रुटि, 0, _("--data needs at least one argument"));
 
-  enum sync_mode mode;
-  if (! args_specified || (arg_file_system && ! HAVE_SYNCFS))
+  क्रमागत sync_mode mode;
+  अगर (! args_specified || (arg_file_system && ! HAVE_SYNCFS))
     mode = MODE_SYNC;
-  else if (arg_file_system)
+  अन्यथा अगर (arg_file_system)
     mode = MODE_FILE_SYSTEM;
-  else if (! arg_data)
+  अन्यथा अगर (! arg_तथ्य)
     mode = MODE_FILE;
-  else
-    mode = MODE_DATA;
+  अन्यथा
+    mode = MODE_तथ्य;
 
-  if (mode == MODE_SYNC)
+  अगर (mode == MODE_SYNC)
     sync ();
-  else
+  अन्यथा
     {
-      for (; optind < argc; optind++)
+      क्रम (; optind < argc; optind++)
         ok &= sync_arg (mode, argv[optind]);
     }
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  वापस ok ? निकास_सफल : निकास_त्रुटि;
 }

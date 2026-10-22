@@ -17,38 +17,38 @@
 
    François Pinard <pinard@iro.umontreal.ca> */
 
-#include <config.h>
+#समावेश <config.h>
 
-#include <getopt.h>
-#include <sys/types.h>
-#include "system.h"
-#include <regex.h>
-#include "argmatch.h"
-#include "c-ctype.h"
-#include "fadvise.h"
-#include "octhexdigits.h"
-#include "quote.h"
-#include "read-file.h"
-#include "stdio--.h"
-#include "xstrtol.h"
+#समावेश <getopt.h>
+#समावेश <sys/types.h>
+#समावेश "system.h"
+#समावेश <regex.h>
+#समावेश "argmatch.h"
+#समावेश "c-ctype.h"
+#समावेश "fadvise.h"
+#समावेश "octhexdigits.h"
+#समावेश "quote.h"
+#समावेश "read-file.h"
+#समावेश "stdio--.h"
+#समावेश "xstrtol.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "ptx"
+#घोषणा PROGRAM_NAME "ptx"
 
 /* TRANSLATORS: Please translate "F. Pinard" to "François Pinard"
    if "ç" (c-with-cedilla) is available in the translation's character
    set and encoding.  */
-#define AUTHORS proper_name_lite ("F. Pinard", "Fran\xc3\xa7ois Pinard")
+#घोषणा AUTHORS proper_name_lite ("F. Pinard", "Fran\xc3\xa7ois Pinard")
 
 /* Number of possible characters in a byte.  */
-#define CHAR_SET_SIZE 256
+#घोषणा CHAR_SET_आकार 256
 
 /* Debugging the memory allocator.  */
 
-#if WITH_DMALLOC
+#अगर WITH_DMALLOC
 # define MALLOC_FUNC_CHECK 1
 # include <dmalloc.h>
-#endif
+#पूर्ण_अगर
 
 /* Global definitions.  */
 
@@ -59,7 +59,7 @@
 
 /* Program options.  */
 
-enum Format
+क्रमागत Format
 {
   UNKNOWN_FORMAT,		/* output format still unknown */
   DUMB_FORMAT,			/* output for a dumb terminal */
@@ -67,132 +67,132 @@ enum Format
   TEX_FORMAT			/* output for 'TeX' or 'LaTeX' */
 };
 
-static bool gnu_extensions = true;	/* trigger all GNU extensions */
-static bool auto_reference = false;	/* refs are 'file_name:line_number:' */
-static bool input_reference = false;	/* refs at beginning of input lines */
-static bool right_reference = false;	/* output refs after right context  */
-static idx_t line_width = -1;		/* output line width in characters */
-static idx_t gap_size = 3;	/* number of spaces between output fields */
-static char const *truncation_string = "/";
+अटल bool gnu_extensions = true;	/* trigger all GNU extensions */
+अटल bool auto_reference = false;	/* refs are 'file_name:line_number:' */
+अटल bool निवेश_reference = false;	/* refs at beginning of input lines */
+अटल bool दायाँ_reference = false;	/* output refs after right context  */
+अटल idx_t पंक्ति_width = -1;		/* output line width in characters */
+अटल idx_t gap_आकार = 3;	/* number of spaces between output fields */
+अटल अक्षर स्थिर *truncation_string = "/";
                                 /* string used to mark line truncations */
-static char const *macro_name = "xx";	/* macro name for roff or TeX output */
-static enum Format output_format = UNKNOWN_FORMAT;
+अटल अक्षर स्थिर *macro_name = "xx";	/* macro name for roff or TeX output */
+अटल क्रमागत Format output_format = UNKNOWN_FORMAT;
                                 /* output format */
 
-static bool ignore_case = false;	/* fold lower to upper for sorting */
-static char const *break_file = NULL; /* name of the 'Break chars' file */
-static char const *only_file = NULL;	/* name of the 'Only words' file */
-static char const *ignore_file = NULL; /* name of the 'Ignore words' file */
+अटल bool ignore_case = false;	/* fold lower to upper for sorting */
+अटल अक्षर स्थिर *break_file = शून्य; /* name of the 'Break chars' file */
+अटल अक्षर स्थिर *only_file = शून्य;	/* name of the 'Only words' file */
+अटल अक्षर स्थिर *ignore_file = शून्य; /* name of the 'Ignore words' file */
 
 /* Options that use regular expressions.  */
-struct regex_data
+काष्ठा regex_तथ्य
 {
   /* The original regular expression, as a string.  */
-  char const *string;
+  अक्षर स्थिर *string;
 
   /* The compiled regular expression, and its fastmap.  */
-  struct re_pattern_buffer pattern;
-  char fastmap[UCHAR_MAX + 1];
+  काष्ठा re_pattern_बफर pattern;
+  अक्षर fastmap[अच_अक्षर_उच्च + 1];
 };
 
-static struct regex_data context_regex;	/* end of context */
-static struct regex_data word_regex;	/* keyword */
+अटल काष्ठा regex_तथ्य context_regex;	/* end of context */
+अटल काष्ठा regex_तथ्य word_regex;	/* keyword */
 
 /* A BLOCK delimit a region in memory of arbitrary size, like the copy of a
    whole file.  A WORD is similar, except it is intended for smaller regions.
    A WORD_TABLE may contain several WORDs.  */
 
-typedef struct
+प्रकार काष्ठा
   {
-    char *start;		/* pointer to beginning of region */
-    char *end;			/* pointer to end + 1 of region */
+    अक्षर *start;		/* pointer to beginning of region */
+    अक्षर *end;			/* pointer to end + 1 of region */
   }
 BLOCK;
 
-typedef struct
+प्रकार काष्ठा
   {
-    char *start;		/* pointer to beginning of region */
-    idx_t size;			/* length of the region */
+    अक्षर *start;		/* pointer to beginning of region */
+    idx_t आकार;			/* length of the region */
   }
 WORD;
 
-typedef struct
+प्रकार काष्ठा
   {
     idx_t alloc;		/* allocated length */
-    idx_t length;		/* number of used entries */
-    WORD *start COUNTED_BY (length);	/* array of WORDs */
+    idx_t लंबाई;		/* number of used entries */
+    WORD *start COUNTED_BY (लंबाई);	/* array of WORDs */
   }
 WORD_TABLE;
 
 /* Pattern description tables.  */
 
 /* For each character, provide its folded equivalent.  */
-static unsigned char folded_chars[CHAR_SET_SIZE];
+अटल अचिन्हित अक्षर folded_chars[CHAR_SET_आकार];
 
 /* End of context pattern register indices.  */
-static struct re_registers context_regs;
+अटल काष्ठा re_registers context_regs;
 
 /* Keyword pattern register indices.  */
-static struct re_registers word_regs;
+अटल काष्ठा re_registers word_regs;
 
 /* A word characters fastmap is used only when no word regexp has been
    provided.  A word is then made up of a sequence of one or more characters
    allowed by the fastmap.  Contains !0 if character allowed in word.  Not
    only this is faster in most cases, but it simplifies the implementation
    of the Break files.  */
-static char word_fastmap[CHAR_SET_SIZE];
+अटल अक्षर word_fastmap[CHAR_SET_आकार];
 
 /* Maximum length of any word read.  */
-static idx_t maximum_word_length;
+अटल idx_t maximum_word_लंबाई;
 
 /* Maximum width of any reference used.  */
-static idx_t reference_max_width;
+अटल idx_t reference_max_width;
 
 /* Ignore and Only word tables.  */
 
-static WORD_TABLE ignore_table;	/* table of words to ignore */
-static WORD_TABLE only_table;		/* table of words to select */
+अटल WORD_TABLE ignore_table;	/* table of words to ignore */
+अटल WORD_TABLE only_table;		/* table of words to select */
 
 /* Source text table, and scanning macros.  */
 
-static int number_input_files;	/* number of text input files */
-static intmax_t total_line_count;	/* total number of lines seen so far */
-static char const **input_file_name;	/* array of text input file names */
-static intmax_t *file_line_count;	/* array of line count values at end */
+अटल पूर्णांक संख्या_निवेश_files;	/* number of text input files */
+अटल intmax_t योग_पंक्ति_गिनती;	/* total number of lines seen so far */
+अटल अक्षर स्थिर **निवेश_file_name;	/* array of text input file names */
+अटल intmax_t *file_पंक्ति_गिनती;	/* array of line count values at end */
 
-static BLOCK *text_buffers;	/* files to study */
+अटल BLOCK *text_buffers;	/* files to study */
 
 /* SKIP_NON_WHITE used only for getting or skipping the reference.  */
 
-#define SKIP_NON_WHITE(cursor, limit) \
-  while (cursor < limit && ! isspace (to_uchar (*cursor)))		\
+#घोषणा SKIP_NON_WHITE(cursor, limit) \
+  जबतक (cursor < limit && ! है_खाली (to_uchar (*cursor)))		\
     cursor++
 
-#define SKIP_WHITE(cursor, limit) \
-  while (cursor < limit && isspace (to_uchar (*cursor)))		\
+#घोषणा SKIP_WHITE(cursor, limit) \
+  जबतक (cursor < limit && है_खाली (to_uchar (*cursor)))		\
     cursor++
 
-#define SKIP_WHITE_BACKWARDS(cursor, start) \
-  while (cursor > start && isspace (to_uchar (cursor[-1])))		\
+#घोषणा SKIP_WHITE_BACKWARDS(cursor, start) \
+  जबतक (cursor > start && है_खाली (to_uchar (cursor[-1])))		\
     cursor--
 
 /* Always advance by at least one byte, lest a nullable word regexp
    such as 'a*' match the empty string and loop forever.  */
 
-#define SKIP_SOMETHING(cursor, limit) \
-  if (word_regex.string)						\
+#घोषणा SKIP_SOMETHING(cursor, limit) \
+  अगर (word_regex.string)						\
     {									\
-      regoff_t count;							\
-      count = re_match (&word_regex.pattern, cursor, limit - cursor,	\
-                        0, NULL);					\
-      if (count == -2)							\
+      regoff_t गिनती;							\
+      गिनती = re_match (&word_regex.pattern, cursor, limit - cursor,	\
+                        0, शून्य);					\
+      अगर (गिनती == -2)							\
         matcher_error ();						\
-      cursor += count <= 0 ? 1 : count;					\
+      cursor += गिनती <= 0 ? 1 : गिनती;					\
     }									\
-  else if (word_fastmap[to_uchar (*cursor)])				\
-    while (cursor < limit && word_fastmap[to_uchar (*cursor)])		\
+  अन्यथा अगर (word_fastmap[to_uchar (*cursor)])				\
+    जबतक (cursor < limit && word_fastmap[to_uchar (*cursor)])		\
       cursor++;								\
-  else									\
+  अन्यथा									\
     cursor++
 
 /* Occurrences table.
@@ -222,42 +222,42 @@ static BLOCK *text_buffers;	/* files to study */
    start of the reference field, and it fits in ptrdiff_t and is usually
    negative.  */
 
-typedef struct
+प्रकार काष्ठा
   {
-    WORD key;			/* description of the keyword */
-    ptrdiff_t left;		/* distance to left context start */
-    ptrdiff_t right;		/* distance to right context end */
+    WORD कुंजी;			/* description of the keyword */
+    सूचक_भेद_प्रकार बायाँ;		/* distance to left context start */
+    सूचक_भेद_प्रकार दायाँ;		/* distance to right context end */
     intmax_t reference;		/* reference descriptor */
-    int file_index;		/* corresponding file  */
+    पूर्णांक file_सूचकांक;		/* corresponding file  */
   }
 OCCURS;
 
 /* The various OCCURS tables are indexed by the language.  But the time
    being, there is no such multiple language support.  */
 
-static OCCURS *occurs_table[1];	/* all words retained from the read text */
-static idx_t occurs_alloc[1];	/* allocated size of occurs_table */
-static idx_t number_of_occurs[1]; /* number of used slots in occurs_table */
+अटल OCCURS *occurs_table[1];	/* all words retained from the read text */
+अटल idx_t occurs_alloc[1];	/* allocated size of occurs_table */
+अटल idx_t संख्या_of_occurs[1]; /* number of used slots in occurs_table */
 
 
 /* Communication among output routines.  */
 
 /* Indicate if special output processing is requested for each character.  */
-static char edited_flag[CHAR_SET_SIZE];
+अटल अक्षर edited_flag[CHAR_SET_आकार];
 
 /* Half of line width, reference excluded.  */
-static idx_t half_line_width;
+अटल idx_t half_पंक्ति_width;
 
 /* Maximum width of before field.
    FIXME: Is this nonnegative?  That is, should this be idx_t?  */
-static ptrdiff_t before_max_width;
+अटल सूचक_भेद_प्रकार before_max_width;
 
 /* Maximum width of keyword-and-after field.
    FIXME: Is this nonnegative?  That is, should this be idx_t?  */
-static ptrdiff_t keyafter_max_width;
+अटल सूचक_भेद_प्रकार keyafter_max_width;
 
 /* Length of string that flags truncation.  */
-static idx_t truncation_string_length;
+अटल idx_t truncation_string_लंबाई;
 
 /* When context is limited by lines, wraparound may happen on final output:
    the 'head' pointer gives access to some supplementary left context which
@@ -265,123 +265,123 @@ static idx_t truncation_string_length;
    access to some supplementary right context which will be seen at the
    beginning of the output line. */
 
-static BLOCK tail;		/* tail field */
-static bool tail_truncation;	/* flag truncation after the tail field */
+अटल BLOCK पुच्छ;		/* tail field */
+अटल bool पुच्छ_truncation;	/* flag truncation after the tail field */
 
-static BLOCK before;		/* before field */
-static bool before_truncation;	/* flag truncation before the before field */
+अटल BLOCK before;		/* before field */
+अटल bool before_truncation;	/* flag truncation before the before field */
 
-static BLOCK keyafter;		/* keyword-and-after field */
-static bool keyafter_truncation; /* flag truncation after the keyafter field */
+अटल BLOCK keyafter;		/* keyword-and-after field */
+अटल bool keyafter_truncation; /* flag truncation after the keyafter field */
 
-static BLOCK head;		/* head field */
-static bool head_truncation;	/* flag truncation before the head field */
+अटल BLOCK शीर्ष;		/* head field */
+अटल bool शीर्ष_truncation;	/* flag truncation before the head field */
 
-static BLOCK reference;		/* reference field for input reference mode */
+अटल BLOCK reference;		/* reference field for input reference mode */
 
 /* Miscellaneous routines.  */
 
 /* Diagnose an error in the regular expression matcher.  Then exit.  */
 
-static _Noreturn void
-matcher_error (void)
+अटल _Noreturn व्योम
+matcher_error (व्योम)
 {
-  error (EXIT_FAILURE, errno, _("error in regular expression matcher"));
+  error (निकास_त्रुटि, त्रुटि_सं, _("error in regular expression matcher"));
 }
 
 /* Unescape STRING in-place.  */
 
-static void
-unescape_string (char *string)
+अटल व्योम
+unescape_string (अक्षर *string)
 {
-  char *cursor;			/* cursor in result */
-  int value;			/* value of \nnn escape */
-  int length;			/* length of \nnn escape */
+  अक्षर *cursor;			/* cursor in result */
+  पूर्णांक मूल्य;			/* value of \nnn escape */
+  पूर्णांक लंबाई;			/* length of \nnn escape */
 
   cursor = string;
 
-  while (*string)
+  जबतक (*string)
     {
-      if (*string == '\\')
+      अगर (*string == '\\')
         {
           string++;
-          switch (*string)
+          चयन (*string)
             {
-            case 'x':		/* \xhhh escape, 3 chars maximum */
-              value = 0;
-              for (length = 0, string++;
-                   length < 3 && c_isxdigit (*string);
-                   length++, string++)
-                value = value * 16 + fromhex (*string);
-              if (length == 0)
+            हाल 'x':		/* \xhhh escape, 3 chars maximum */
+              मूल्य = 0;
+              क्रम (लंबाई = 0, string++;
+                   लंबाई < 3 && c_isxdigit (*string);
+                   लंबाई++, string++)
+                मूल्य = मूल्य * 16 + fromhex (*string);
+              अगर (लंबाई == 0)
                 {
                   *cursor++ = '\\';
                   *cursor++ = 'x';
                 }
-              else
-                *cursor++ = value;
-              break;
+              अन्यथा
+                *cursor++ = मूल्य;
+              अवरोध;
 
-            case '0':		/* \0ooo escape, 3 chars maximum */
-              value = 0;
-              for (length = 0, string++;
-                   length < 3 && isoct (*string);
-                   length++, string++)
-                value = value * 8 + fromoct (*string);
-              *cursor++ = value;
-              break;
+            हाल '0':		/* \0ooo escape, 3 chars maximum */
+              मूल्य = 0;
+              क्रम (लंबाई = 0, string++;
+                   लंबाई < 3 && isoct (*string);
+                   लंबाई++, string++)
+                मूल्य = मूल्य * 8 + fromoct (*string);
+              *cursor++ = मूल्य;
+              अवरोध;
 
-            case 'a':		/* alert */
+            हाल 'a':		/* alert */
               *cursor++ = '\a';
               string++;
-              break;
+              अवरोध;
 
-            case 'b':		/* backspace */
+            हाल 'b':		/* backspace */
               *cursor++ = '\b';
               string++;
-              break;
+              अवरोध;
 
-            case 'c':		/* cancel the rest of the output */
-              while (*string)
+            हाल 'c':		/* cancel the rest of the output */
+              जबतक (*string)
                 string++;
-              break;
+              अवरोध;
 
-            case 'f':		/* form feed */
+            हाल 'f':		/* form feed */
               *cursor++ = '\f';
               string++;
-              break;
+              अवरोध;
 
-            case 'n':		/* new line */
+            हाल 'n':		/* new line */
               *cursor++ = '\n';
               string++;
-              break;
+              अवरोध;
 
-            case 'r':		/* carriage return */
+            हाल 'r':		/* carriage return */
               *cursor++ = '\r';
               string++;
-              break;
+              अवरोध;
 
-            case 't':		/* horizontal tab */
+            हाल 't':		/* horizontal tab */
               *cursor++ = '\t';
               string++;
-              break;
+              अवरोध;
 
-            case 'v':		/* vertical tab */
+            हाल 'v':		/* vertical tab */
               *cursor++ = '\v';
               string++;
-              break;
+              अवरोध;
 
-            case '\0':		/* lone backslash at end of string */
+            हाल '\0':		/* lone backslash at end of string */
               /* ignore it */
-              break;
+              अवरोध;
 
-            default:
+            शेष:
               *cursor++ = '\\';
               *cursor++ = *string++;
-              break;
+              अवरोध;
             }
         }
-      else
+      अन्यथा
         *cursor++ = *string++;
     }
 
@@ -392,21 +392,21 @@ unescape_string (char *string)
 | Compile the regex represented by REGEX, diagnose and abort if any error.  |
 `--------------------------------------------------------------------------*/
 
-static void
-compile_regex (struct regex_data *regex)
+अटल व्योम
+compile_regex (काष्ठा regex_तथ्य *regex)
 {
-  struct re_pattern_buffer *pattern = &regex->pattern;
-  char const *string = regex->string;
-  char const *message;
+  काष्ठा re_pattern_बफर *pattern = &regex->pattern;
+  अक्षर स्थिर *string = regex->string;
+  अक्षर स्थिर *message;
 
-  pattern->buffer = NULL;
+  pattern->बफर = शून्य;
   pattern->allocated = 0;
   pattern->fastmap = regex->fastmap;
-  pattern->translate = ignore_case ? folded_chars : NULL;
+  pattern->translate = ignore_case ? folded_chars : शून्य;
 
-  message = re_compile_pattern (string, strlen (string), pattern);
-  if (message)
-    error (EXIT_FAILURE, 0, _("%s (for regexp %s)"), message, quote (string));
+  message = re_compile_pattern (string, म_माप (string), pattern);
+  अगर (message)
+    error (निकास_त्रुटि, 0, _("%s (for regexp %s)"), message, quote (string));
 
   /* The fastmap should be compiled before 're_match'.  The following
      call is not mandatory, because 're_search' is always called sooner,
@@ -420,14 +420,14 @@ compile_regex (struct regex_data *regex)
 | regexps.								  |
 `------------------------------------------------------------------------*/
 
-static void
-initialize_regex (void)
+अटल व्योम
+initialize_regex (व्योम)
 {
   /* Initialize the case folding table.  */
 
-  if (ignore_case)
-    for (int character = 0; character < CHAR_SET_SIZE; character++)
-      folded_chars[character] = toupper (character);
+  अगर (ignore_case)
+    क्रम (पूर्णांक character = 0; character < CHAR_SET_आकार; character++)
+      folded_chars[character] = बड़े (character);
 
   /* Unless the user already provided a description of the end of line or
      end of sentence sequence, select an end of line sequence to compile.
@@ -436,17 +436,17 @@ initialize_regex (void)
      extensions are enabled, use end of sentence like in GNU emacs.  If
      disabled, use end of lines.  */
 
-  if (context_regex.string)
+  अगर (context_regex.string)
     {
-      if (!*context_regex.string)
-        context_regex.string = NULL;
+      अगर (!*context_regex.string)
+        context_regex.string = शून्य;
     }
-  else if (gnu_extensions && !input_reference)
+  अन्यथा अगर (gnu_extensions && !निवेश_reference)
     context_regex.string = "[.?!][]\"')}]*\\($\\|\t\\|  \\)[ \t\n]*";
-  else
+  अन्यथा
     context_regex.string = "\n";
 
-  if (context_regex.string)
+  अगर (context_regex.string)
     compile_regex (&context_regex);
 
   /* If the user has already provided a non-empty regexp to describe
@@ -457,24 +457,24 @@ initialize_regex (void)
      include almost everything, even punctuation; stop only on white
      space.  */
 
-  if (word_regex.string)
+  अगर (word_regex.string)
     compile_regex (&word_regex);
-  else if (!break_file)
+  अन्यथा अगर (!break_file)
     {
-      if (gnu_extensions)
+      अगर (gnu_extensions)
         {
 
           /* Simulate \w+.  */
 
-          for (int character = 0; character < CHAR_SET_SIZE; character++)
-            word_fastmap[character] = !! isalpha (character);
+          क्रम (पूर्णांक character = 0; character < CHAR_SET_आकार; character++)
+            word_fastmap[character] = !! है_अक्षर (character);
         }
-      else
+      अन्यथा
         {
 
           /* Simulate [^ \t\n]+.  */
 
-          memset (word_fastmap, 1, CHAR_SET_SIZE);
+          स_रखो (word_fastmap, 1, CHAR_SET_आकार);
           word_fastmap[' '] = 0;
           word_fastmap['\t'] = 0;
           word_fastmap['\n'] = 0;
@@ -493,27 +493,27 @@ initialize_regex (void)
 | compression is ever reinstated, it should be in output routines.	  |
 `------------------------------------------------------------------------*/
 
-static void
-swallow_file_in_memory (char const *file_name, BLOCK *block)
+अटल व्योम
+swallow_file_in_memory (अक्षर स्थिर *file_name, BLOCK *block)
 {
-  size_t used_length;		/* used length in memory buffer */
+  माप_प्रकार used_लंबाई;		/* used length in memory buffer */
 
   /* As special cases, a file name which is null or "-" indicates standard
      input, which is already opened.  In all other cases, open the file from
      its name.  */
   bool using_stdin = !file_name || !*file_name || streq (file_name, "-");
-  if (using_stdin)
-    block->start = fread_file (stdin, 0, &used_length);
-  else
-    block->start = read_file (file_name, 0, &used_length);
+  अगर (using_stdin)
+    block->start = fread_file (मानक_निवेश, 0, &used_लंबाई);
+  अन्यथा
+    block->start = read_file (file_name, 0, &used_लंबाई);
 
-  if (!block->start)
-    error (EXIT_FAILURE, errno, "%s", quotef (using_stdin ? "-" : file_name));
+  अगर (!block->start)
+    error (निकास_त्रुटि, त्रुटि_सं, "%s", quotef (using_stdin ? "-" : file_name));
 
-  if (using_stdin)
-    clearerr (stdin);
+  अगर (using_stdin)
+    साफ_त्रुटि (मानक_निवेश);
 
-  block->end = block->start + used_length;
+  block->end = block->start + used_लंबाई;
 }
 
 /* Sort and search routines.  */
@@ -526,35 +526,35 @@ swallow_file_in_memory (char const *file_name, BLOCK *block)
 | If a word is indeed a prefix of the other, the shorter should go first.   |
 `--------------------------------------------------------------------------*/
 
-static int
-compare_words (const void *void_first, const void *void_second)
+अटल पूर्णांक
+compare_शब्दगण (स्थिर व्योम *void_first, स्थिर व्योम *void_second)
 {
-  WORD const *first = void_first;
-  WORD const *second = void_second;
-  idx_t length = MIN (first->size, second->size);
+  WORD स्थिर *first = void_first;
+  WORD स्थिर *second = void_second;
+  idx_t लंबाई = MIN (first->आकार, second->आकार);
 
-  if (ignore_case)
+  अगर (ignore_case)
     {
-      for (idx_t counter = 0; counter < length; counter++)
+      क्रम (idx_t गणक = 0; गणक < लंबाई; गणक++)
         {
-          int value = (folded_chars[to_uchar (first->start[counter])]
-                       - folded_chars[to_uchar (second->start[counter])]);
-          if (value != 0)
-            return value;
+          पूर्णांक मूल्य = (folded_chars[to_uchar (first->start[गणक])]
+                       - folded_chars[to_uchar (second->start[गणक])]);
+          अगर (मूल्य != 0)
+            वापस मूल्य;
         }
     }
-  else
+  अन्यथा
     {
-      for (idx_t counter = 0; counter < length; counter++)
+      क्रम (idx_t गणक = 0; गणक < लंबाई; गणक++)
         {
-          int value = (to_uchar (first->start[counter])
-                       - to_uchar (second->start[counter]));
-          if (value != 0)
-            return value;
+          पूर्णांक मूल्य = (to_uchar (first->start[गणक])
+                       - to_uchar (second->start[गणक]));
+          अगर (मूल्य != 0)
+            वापस मूल्य;
         }
     }
 
-  return _GL_CMP (first->size, second->size);
+  वापस _GL_CMP (first->आकार, second->आकार);
 }
 
 /*-----------------------------------------------------------------------.
@@ -563,40 +563,40 @@ compare_words (const void *void_first, const void *void_second)
 | pointer comparison.							 |
 `-----------------------------------------------------------------------*/
 
-static int
-compare_occurs (const void *void_first, const void *void_second)
+अटल पूर्णांक
+compare_occurs (स्थिर व्योम *void_first, स्थिर व्योम *void_second)
 {
-#define first ((const OCCURS *) void_first)
-#define second ((const OCCURS *) void_second)
-  int value;
+#घोषणा first ((स्थिर OCCURS *) void_first)
+#घोषणा second ((स्थिर OCCURS *) void_second)
+  पूर्णांक मूल्य;
 
-  value = compare_words (&first->key, &second->key);
-  return (value ? value
-          : _GL_CMP (first->key.start, second->key.start));
-#undef first
-#undef second
+  मूल्य = compare_शब्दगण (&first->कुंजी, &second->कुंजी);
+  वापस (मूल्य ? मूल्य
+          : _GL_CMP (first->कुंजी.start, second->कुंजी.start));
+#अघोषित first
+#अघोषित second
 }
 
 /* True if WORD appears in TABLE.  Uses a binary search.  */
 
 ATTRIBUTE_PURE
-static bool
-search_table (WORD *word, WORD_TABLE *table)
+अटल bool
+खोज_table (WORD *word, WORD_TABLE *table)
 {
   idx_t lo = 0;
-  idx_t hi = table->length;
-  while (lo < hi)
+  idx_t hi = table->लंबाई;
+  जबतक (lo < hi)
     {
-      idx_t middle = (lo >> 1) + (hi >> 1) + (lo & hi & 1);
-      int value = compare_words (word, table->start + middle);
-      if (value < 0)
-        hi = middle;
-      else if (value > 0)
-        lo = middle + 1;
-      else
-        return true;
+      idx_t मध्य = (lo >> 1) + (hi >> 1) + (lo & hi & 1);
+      पूर्णांक मूल्य = compare_शब्दगण (word, table->start + मध्य);
+      अगर (मूल्य < 0)
+        hi = मध्य;
+      अन्यथा अगर (मूल्य > 0)
+        lo = मध्य + 1;
+      अन्यथा
+        वापस true;
     }
-  return false;
+  वापस false;
 }
 
 /*---------------------------------------------------------------------.
@@ -605,13 +605,13 @@ search_table (WORD *word, WORD_TABLE *table)
 | stabilized throughout the comparison routine.			       |
 `---------------------------------------------------------------------*/
 
-static void
-sort_found_occurs (void)
+अटल व्योम
+sort_found_occurs (व्योम)
 {
 
   /* Only one language for the time being.  */
-  if (number_of_occurs[0])
-    qsort (occurs_table[0], number_of_occurs[0], sizeof **occurs_table,
+  अगर (संख्या_of_occurs[0])
+    क्विक (occurs_table[0], संख्या_of_occurs[0], माप **occurs_table,
            compare_occurs);
 }
 
@@ -623,8 +623,8 @@ sort_found_occurs (void)
 | allowed except those found in the file.  Characters may be repeated.  |
 `----------------------------------------------------------------------*/
 
-static void
-digest_break_file (char const *file_name)
+अटल व्योम
+digest_break_file (अक्षर स्थिर *file_name)
 {
   BLOCK file_contents;		/* to receive a copy of the file */
 
@@ -632,12 +632,12 @@ digest_break_file (char const *file_name)
 
   /* Make the fastmap and record the file contents in it.  */
 
-  memset (word_fastmap, 1, CHAR_SET_SIZE);
-  for (char *cursor = file_contents.start; cursor < file_contents.end;
+  स_रखो (word_fastmap, 1, CHAR_SET_आकार);
+  क्रम (अक्षर *cursor = file_contents.start; cursor < file_contents.end;
        cursor++)
     word_fastmap[to_uchar (*cursor)] = 0;
 
-  if (!gnu_extensions)
+  अगर (!gnu_extensions)
     {
 
       /* If GNU extensions are enabled, the only way to avoid newline as
@@ -653,7 +653,7 @@ digest_break_file (char const *file_name)
 
   /* Return the space of the file, which is no more required.  */
 
-  free (file_contents.start);
+  मुक्त (file_contents.start);
 }
 
 /*-----------------------------------------------------------------------.
@@ -663,52 +663,52 @@ digest_break_file (char const *file_name)
 | needed for newlines, which are useless; however, the reading is fast.	 |
 `-----------------------------------------------------------------------*/
 
-static void
-digest_word_file (char const *file_name, WORD_TABLE *table)
+अटल व्योम
+digest_word_file (अक्षर स्थिर *file_name, WORD_TABLE *table)
 {
   BLOCK file_contents;		/* to receive a copy of the file */
-  char *cursor;			/* cursor in file copy */
-  char *word_start;		/* start of the current word */
+  अक्षर *cursor;			/* cursor in file copy */
+  अक्षर *word_start;		/* start of the current word */
 
   swallow_file_in_memory (file_name, &file_contents);
 
-  table->start = NULL;
+  table->start = शून्य;
   table->alloc = 0;
-  table->length = 0;
+  table->लंबाई = 0;
 
   /* Read the whole file.  */
 
   cursor = file_contents.start;
-  while (cursor < file_contents.end)
+  जबतक (cursor < file_contents.end)
     {
 
       /* Read one line, and save the word in contains.  */
 
       word_start = cursor;
-      while (cursor < file_contents.end && *cursor != '\n')
+      जबतक (cursor < file_contents.end && *cursor != '\n')
         cursor++;
 
       /* Record the word in table if it is not empty.  */
 
-      if (cursor > word_start)
+      अगर (cursor > word_start)
         {
-          if (table->length == table->alloc)
+          अगर (table->लंबाई == table->alloc)
             table->start = xpalloc (table->start, &table->alloc, 1, -1,
-                                    sizeof *table->start);
-          idx_t const table_idx = table->length++;
+                                    माप *table->start);
+          idx_t स्थिर table_idx = table->लंबाई++;
           table->start[table_idx].start = word_start;
-          table->start[table_idx].size = cursor - word_start;
+          table->start[table_idx].आकार = cursor - word_start;
         }
 
       /* This test allows for an incomplete line at end of file.  */
 
-      if (cursor < file_contents.end)
+      अगर (cursor < file_contents.end)
         cursor++;
     }
 
   /* Finally, sort all the words read.  */
 
-  qsort (table->start, table->length, sizeof table->start[0], compare_words);
+  क्विक (table->start, table->लंबाई, माप table->start[0], compare_शब्दगण);
 }
 
 /* Keyword recognition and selection.  */
@@ -717,29 +717,29 @@ digest_word_file (char const *file_name, WORD_TABLE *table)
 | For each keyword in the source text, constructs an OCCURS structure.  |
 `----------------------------------------------------------------------*/
 
-static void
-find_occurs_in_text (int file_index)
+अटल व्योम
+find_occurs_in_text (पूर्णांक file_सूचकांक)
 {
-  char *scan;			/* for scanning the source text */
-  char *line_start;		/* start of the current input line */
-  char *line_scan;		/* newlines scanned until this point */
-  idx_t reference_length;	/* length of reference in input mode */
-  WORD possible_key;		/* possible key, to ease searches */
+  अक्षर *scan;			/* for scanning the source text */
+  अक्षर *पंक्ति_start;		/* start of the current input line */
+  अक्षर *पंक्ति_scan;		/* newlines scanned until this point */
+  idx_t reference_लंबाई;	/* length of reference in input mode */
+  WORD possible_कुंजी;		/* possible key, to ease searches */
   OCCURS *occurs_cursor;	/* current OCCURS under construction */
 
-  char *context_start;		/* start of left context */
-  char *context_end;		/* end of right context */
-  char *word_start;		/* start of word */
-  char *word_end;		/* end of word */
-  char *next_context_start;	/* next start of left context */
+  अक्षर *context_start;		/* start of left context */
+  अक्षर *context_end;		/* end of right context */
+  अक्षर *word_start;		/* start of word */
+  अक्षर *word_end;		/* end of word */
+  अक्षर *अग्र_context_start;	/* next start of left context */
 
-  const BLOCK *text_buffer = &text_buffers[file_index];
+  स्थिर BLOCK *text_बफर = &text_buffers[file_सूचकांक];
 
   /* reference_length is always used within 'if (input_reference)'.
      However, GNU C diagnoses that it may be used uninitialized.  The
      following assignment is merely to shut it up.  */
 
-  reference_length = 0;
+  reference_लंबाई = 0;
 
   /* Tracking where lines start is helpful for reference processing.  In
      auto reference mode, this allows counting lines.  In input reference
@@ -750,20 +750,20 @@ find_occurs_in_text (int file_index)
      found inside it.  Also, unconditionally assigning these variable has
      the happy effect of shutting up lint.  */
 
-  line_start = text_buffer->start;
-  line_scan = line_start;
-  if (input_reference)
+  पंक्ति_start = text_बफर->start;
+  पंक्ति_scan = पंक्ति_start;
+  अगर (निवेश_reference)
     {
-      SKIP_NON_WHITE (line_scan, text_buffer->end);
-      reference_length = line_scan - line_start;
-      SKIP_WHITE (line_scan, text_buffer->end);
+      SKIP_NON_WHITE (पंक्ति_scan, text_बफर->end);
+      reference_लंबाई = पंक्ति_scan - पंक्ति_start;
+      SKIP_WHITE (पंक्ति_scan, text_बफर->end);
     }
 
   /* Process the whole buffer, one line or one sentence at a time.  */
 
-  for (char *cursor = text_buffer->start;
-       cursor < text_buffer->end;
-       cursor = next_context_start)
+  क्रम (अक्षर *cursor = text_बफर->start;
+       cursor < text_बफर->end;
+       cursor = अग्र_context_start)
     {
 
       /* 'context_start' gets initialized before the processing of each
@@ -780,59 +780,59 @@ find_occurs_in_text (int file_index)
          This test also accounts for the case of an incomplete line or
          sentence at the end of the buffer.  */
 
-      next_context_start = text_buffer->end;
-      if (context_regex.string)
-        switch (re_search (&context_regex.pattern, cursor,
-                           text_buffer->end - cursor,
-                           0, text_buffer->end - cursor, &context_regs))
+      अग्र_context_start = text_बफर->end;
+      अगर (context_regex.string)
+        चयन (re_खोज (&context_regex.pattern, cursor,
+                           text_बफर->end - cursor,
+                           0, text_बफर->end - cursor, &context_regs))
           {
-          case -2:
+          हाल -2:
             matcher_error ();
 
-          case -1:
-            break;
+          हाल -1:
+            अवरोध;
 
-          case 0:
-            error (EXIT_FAILURE, 0,
+          हाल 0:
+            error (निकास_त्रुटि, 0,
                    _("error: regular expression has a match of length zero:"
                      " %s"),
                    quote (context_regex.string));
 
-          default:
-            next_context_start = cursor + context_regs.end[0];
-            break;
+          शेष:
+            अग्र_context_start = cursor + context_regs.end[0];
+            अवरोध;
           }
 
       /* Include the separator into the right context, but not any suffix
          white space in this separator; this insures it will be seen in
          output and will not take more space than necessary.  */
 
-      context_end = next_context_start;
+      context_end = अग्र_context_start;
       SKIP_WHITE_BACKWARDS (context_end, context_start);
 
       /* Read and process a single input line or sentence, one word at a
          time.  */
 
-      while (true)
+      जबतक (true)
         {
-          if (word_regex.string)
+          अगर (word_regex.string)
 
             /* If a word regexp has been compiled, use it to skip at the
                beginning of the next word.  If there is no such word, exit
                the loop.  */
 
             {
-              regoff_t r = re_search (&word_regex.pattern, cursor,
+              regoff_t r = re_खोज (&word_regex.pattern, cursor,
                                       context_end - cursor,
                                       0, context_end - cursor, &word_regs);
-              if (r == -2)
+              अगर (r == -2)
                 matcher_error ();
-              if (r == -1)
-                break;
+              अगर (r == -1)
+                अवरोध;
               word_start = cursor + word_regs.start[0];
               word_end = cursor + word_regs.end[0];
             }
-          else
+          अन्यथा
 
             /* Avoid re_search and use the fastmap to skip to the
                beginning of the next word.  If there is no more word in
@@ -840,16 +840,16 @@ find_occurs_in_text (int file_index)
 
             {
               scan = cursor;
-              while (scan < context_end
+              जबतक (scan < context_end
                      && !word_fastmap[to_uchar (*scan)])
                 scan++;
 
-              if (scan == context_end)
-                break;
+              अगर (scan == context_end)
+                अवरोध;
 
               word_start = scan;
 
-              while (scan < context_end
+              जबतक (scan < context_end
                      && word_fastmap[to_uchar (*scan)])
                 scan++;
 
@@ -863,10 +863,10 @@ find_occurs_in_text (int file_index)
           /* Skip any zero length word.  Just advance a single position,
              then go fetch the next word.  */
 
-          if (word_end == word_start)
+          अगर (word_end == word_start)
             {
               cursor++;
-              continue;
+              जारी;
             }
 
           /* This is a genuine, non empty word, so save it as a possible
@@ -876,33 +876,33 @@ find_occurs_in_text (int file_index)
              are actually kept or rejected, because backward jumps at output
              generation time may fall in *any* word.  */
 
-          possible_key.start = cursor;
-          possible_key.size = word_end - word_start;
-          cursor += possible_key.size;
+          possible_कुंजी.start = cursor;
+          possible_कुंजी.आकार = word_end - word_start;
+          cursor += possible_कुंजी.आकार;
 
-          if (possible_key.size > maximum_word_length)
-            maximum_word_length = possible_key.size;
+          अगर (possible_कुंजी.आकार > maximum_word_लंबाई)
+            maximum_word_लंबाई = possible_कुंजी.आकार;
 
           /* In input reference mode, update 'line_start' from its previous
              value.  Count the lines just in case auto reference mode is
              also selected. If it happens that the word just matched is
              indeed part of a reference; just ignore it.  */
 
-          if (input_reference)
+          अगर (निवेश_reference)
             {
-              while (line_scan < possible_key.start)
-                if (*line_scan == '\n')
+              जबतक (पंक्ति_scan < possible_कुंजी.start)
+                अगर (*पंक्ति_scan == '\n')
                   {
-                    total_line_count++;
-                    line_scan++;
-                    line_start = line_scan;
-                    SKIP_NON_WHITE (line_scan, text_buffer->end);
-                    reference_length = line_scan - line_start;
+                    योग_पंक्ति_गिनती++;
+                    पंक्ति_scan++;
+                    पंक्ति_start = पंक्ति_scan;
+                    SKIP_NON_WHITE (पंक्ति_scan, text_बफर->end);
+                    reference_लंबाई = पंक्ति_scan - पंक्ति_start;
                   }
-                else
-                  line_scan++;
-              if (line_scan > possible_key.start)
-                continue;
+                अन्यथा
+                  पंक्ति_scan++;
+              अगर (पंक्ति_scan > possible_कुंजी.start)
+                जारी;
             }
 
           /* Ignore the word if an 'Ignore words' table exists and if it is
@@ -915,23 +915,23 @@ find_occurs_in_text (int file_index)
              tables, the Ignore table could then reject words that would
              have been previously accepted by the Only table.  */
 
-          if (ignore_file && search_table (&possible_key, &ignore_table))
-            continue;
-          if (only_file && !search_table (&possible_key, &only_table))
-            continue;
+          अगर (ignore_file && खोज_table (&possible_कुंजी, &ignore_table))
+            जारी;
+          अगर (only_file && !खोज_table (&possible_कुंजी, &only_table))
+            जारी;
 
           /* A non-empty word has been found.  First of all, insure
              proper allocation of the next OCCURS, and make a pointer to
              where it will be constructed.  */
 
-          if (number_of_occurs[0] == occurs_alloc[0])
+          अगर (संख्या_of_occurs[0] == occurs_alloc[0])
             occurs_table[0] = xpalloc (occurs_table[0], &occurs_alloc[0],
-                                       1, -1, sizeof *occurs_table[0]);
-          occurs_cursor = occurs_table[0] + number_of_occurs[0];
+                                       1, -1, माप *occurs_table[0]);
+          occurs_cursor = occurs_table[0] + संख्या_of_occurs[0];
 
           /* Define the reference field, if any.  */
 
-          if (auto_reference)
+          अगर (auto_reference)
             {
 
               /* While auto referencing, update 'line_start' from its
@@ -940,20 +940,20 @@ find_occurs_in_text (int file_index)
                  advanced earlier, and the following loop is never really
                  executed.  */
 
-              while (line_scan < possible_key.start)
-                if (*line_scan == '\n')
+              जबतक (पंक्ति_scan < possible_कुंजी.start)
+                अगर (*पंक्ति_scan == '\n')
                   {
-                    total_line_count++;
-                    line_scan++;
-                    line_start = line_scan;
-                    SKIP_NON_WHITE (line_scan, text_buffer->end);
+                    योग_पंक्ति_गिनती++;
+                    पंक्ति_scan++;
+                    पंक्ति_start = पंक्ति_scan;
+                    SKIP_NON_WHITE (पंक्ति_scan, text_बफर->end);
                   }
-                else
-                  line_scan++;
+                अन्यथा
+                  पंक्ति_scan++;
 
-              occurs_cursor->reference = total_line_count;
+              occurs_cursor->reference = योग_पंक्ति_गिनती;
             }
-          else if (input_reference)
+          अन्यथा अगर (निवेश_reference)
             {
 
               /* If only input referencing, 'line_start' has been computed
@@ -961,14 +961,14 @@ find_occurs_in_text (int file_index)
                  of the reference.  The reference position is simply the
                  value of 'line_start'.  */
 
-              occurs_cursor->reference = line_start - possible_key.start;
-              if (reference_length > reference_max_width)
-                reference_max_width = reference_length;
+              occurs_cursor->reference = पंक्ति_start - possible_कुंजी.start;
+              अगर (reference_लंबाई > reference_max_width)
+                reference_max_width = reference_लंबाई;
             }
 
           /* Exclude the reference from the context in simple cases.  */
 
-          if (input_reference && line_start == context_start)
+          अगर (निवेश_reference && पंक्ति_start == context_start)
             {
               SKIP_NON_WHITE (context_start, context_end);
               SKIP_WHITE (context_start, context_end);
@@ -976,12 +976,12 @@ find_occurs_in_text (int file_index)
 
           /* Completes the OCCURS structure.  */
 
-          occurs_cursor->key = possible_key;
-          occurs_cursor->left = context_start - possible_key.start;
-          occurs_cursor->right = context_end - possible_key.start;
-          occurs_cursor->file_index = file_index;
+          occurs_cursor->कुंजी = possible_कुंजी;
+          occurs_cursor->बायाँ = context_start - possible_कुंजी.start;
+          occurs_cursor->दायाँ = context_end - possible_कुंजी.start;
+          occurs_cursor->file_सूचकांक = file_सूचकांक;
 
-          number_of_occurs[0]++;
+          संख्या_of_occurs[0]++;
         }
     }
 }
@@ -992,69 +992,69 @@ find_occurs_in_text (int file_index)
 | Prints some NUMBER of spaces on stdout.  |
 `-----------------------------------------*/
 
-static void
-print_spaces (ptrdiff_t number)
+अटल व्योम
+print_spaces (सूचक_भेद_प्रकार संख्या)
 {
-  for (ptrdiff_t counter = number; counter > 0; counter--)
-    putchar (' ');
+  क्रम (सूचक_भेद_प्रकार गणक = संख्या; गणक > 0; गणक--)
+    अक्षर_दो (' ');
 }
 
 /*-------------------------------------.
 | Prints the field provided by FIELD.  |
 `-------------------------------------*/
 
-static void
+अटल व्योम
 print_field (BLOCK field)
 {
   /* Whitespace is not really compressed.  Instead, each white space
      character (tab, vt, ht etc.) is printed as one single space.  */
 
-  for (char *cursor = field.start; cursor < field.end; cursor++)
+  क्रम (अक्षर *cursor = field.start; cursor < field.end; cursor++)
     {
-      unsigned char character = *cursor;
-      if (edited_flag[character])
+      अचिन्हित अक्षर character = *cursor;
+      अगर (edited_flag[character])
         {
           /* Handle cases which are specific to 'roff' or TeX.  All
              white space processing is done as the default case of
              this switch.  */
 
-          switch (character)
+          चयन (character)
             {
-            case '"':
+            हाल '"':
               /* In roff output format, double any quote.  */
-              putchar ('"');
-              putchar ('"');
-              break;
+              अक्षर_दो ('"');
+              अक्षर_दो ('"');
+              अवरोध;
 
-            case '$':
-            case '%':
-            case '&':
-            case '#':
-            case '_':
+            हाल '$':
+            हाल '%':
+            हाल '&':
+            हाल '#':
+            हाल '_':
               /* In TeX output format, precede these with a backslash.  */
-              putchar ('\\');
-              putchar (character);
-              break;
+              अक्षर_दो ('\\');
+              अक्षर_दो (character);
+              अवरोध;
 
-            case '{':
-            case '}':
+            हाल '{':
+            हाल '}':
               /* In TeX output format, precede these with a backslash and
                  force mathematical mode.  */
-              printf ("$\\%c$", character);
-              break;
+              म_लिखो ("$\\%c$", character);
+              अवरोध;
 
-            case '\\':
+            हाल '\\':
               /* In TeX output mode, request production of a backslash.  */
-              fputs ("\\backslash{}", stdout);
-              break;
+              ख_माला_दो ("\\backslash{}", मानक_निकास);
+              अवरोध;
 
-            default:
+            शेष:
               /* Any other flagged character produces a single space.  */
-              putchar (' ');
+              अक्षर_दो (' ');
             }
         }
-      else
-        putchar (*cursor);
+      अन्यथा
+        अक्षर_दो (*cursor);
     }
 }
 
@@ -1065,26 +1065,26 @@ print_field (BLOCK field)
 | readings, compute and fix some output parameter values.	      |
 `--------------------------------------------------------------------*/
 
-static void
-fix_output_parameters (void)
+अटल व्योम
+fix_output_parameters (व्योम)
 {
   /* In auto reference mode, the maximum width of this field is
      precomputed and subtracted from the overall line width.  Add one for
      the column which separate the file name from the line number.  */
 
-  if (auto_reference)
+  अगर (auto_reference)
     {
       reference_max_width = 0;
-      for (int file_index = 0; file_index < number_input_files; file_index++)
+      क्रम (पूर्णांक file_सूचकांक = 0; file_सूचकांक < संख्या_निवेश_files; file_सूचकांक++)
         {
-          intmax_t line_ordinal = file_line_count[file_index] + 1;
-          if (file_index > 0)
-            line_ordinal -= file_line_count[file_index - 1];
-          char ordinal_string[INT_BUFSIZE_BOUND (intmax_t)];
-          idx_t reference_width = sprintf (ordinal_string, "%jd", line_ordinal);
-          if (input_file_name[file_index])
-            reference_width += strlen (input_file_name[file_index]);
-          if (reference_width > reference_max_width)
+          intmax_t पंक्ति_ordinal = file_पंक्ति_गिनती[file_सूचकांक] + 1;
+          अगर (file_सूचकांक > 0)
+            पंक्ति_ordinal -= file_पंक्ति_गिनती[file_सूचकांक - 1];
+          अक्षर ordinal_string[INT_BUFSIZE_BOUND (intmax_t)];
+          idx_t reference_width = प्र_लिखो (ordinal_string, "%jd", पंक्ति_ordinal);
+          अगर (निवेश_file_name[file_सूचकांक])
+            reference_width += म_माप (निवेश_file_name[file_सूचकांक]);
+          अगर (reference_width > reference_max_width)
             reference_max_width = reference_width;
         }
       reference_max_width++;
@@ -1094,8 +1094,8 @@ fix_output_parameters (void)
   /* If the reference appears to the left of the output line, reserve some
      space for it right away, including one gap size.  */
 
-  if ((auto_reference || input_reference) && !right_reference)
-    line_width = MAX (0, line_width - (reference_max_width + gap_size));
+  अगर ((auto_reference || निवेश_reference) && !दायाँ_reference)
+    पंक्ति_width = MAX (0, पंक्ति_width - (reference_max_width + gap_आकार));
 
   /* The output lines, minimally, will contain from left to right a left
      context, a gap, and a keyword followed by the right context with no
@@ -1109,20 +1109,20 @@ fix_output_parameters (void)
      on a case by case basis.  It is worth noting that it cannot happen that
      both the tail and head fields are used at once.  */
 
-  half_line_width = line_width >> 1;
-  before_max_width = half_line_width - gap_size;
-  keyafter_max_width = half_line_width;
+  half_पंक्ति_width = पंक्ति_width >> 1;
+  before_max_width = half_पंक्ति_width - gap_आकार;
+  keyafter_max_width = half_पंक्ति_width;
 
   /* If truncation_string is the empty string, make it null to speed up
      tests.  In this case, truncation_string_length will never get used, so
      there is no need to set it.  */
 
-  if (truncation_string && *truncation_string)
-    truncation_string_length = strlen (truncation_string);
-  else
-    truncation_string = NULL;
+  अगर (truncation_string && *truncation_string)
+    truncation_string_लंबाई = म_माप (truncation_string);
+  अन्यथा
+    truncation_string = शून्य;
 
-  if (gnu_extensions)
+  अगर (gnu_extensions)
     {
 
       /* When flagging truncation at the left of the keyword, the
@@ -1147,10 +1147,10 @@ fix_output_parameters (void)
          on the left side of the center of the output line, both on the
          right side, or one on either side.  */
 
-      before_max_width -= 2 * truncation_string_length;
-      keyafter_max_width -= 2 * truncation_string_length;
+      before_max_width -= 2 * truncation_string_लंबाई;
+      keyafter_max_width -= 2 * truncation_string_लंबाई;
     }
-  else
+  अन्यथा
     {
 
       /* I never figured out exactly how UNIX' ptx plans the output width
@@ -1159,46 +1159,46 @@ fix_output_parameters (void)
          following formula, which does not completely imitate UNIX' ptx,
          but almost.  */
 
-      keyafter_max_width -= 2 * truncation_string_length + 1;
+      keyafter_max_width -= 2 * truncation_string_लंबाई + 1;
     }
 
-  if (before_max_width < 0)
+  अगर (before_max_width < 0)
     before_max_width = 0;
 
   /* Compute which characters need special output processing.  Initialize
      by flagging any white space character.  Some systems do not consider
      form feed as a space character, but we do.  */
 
-  for (int character = 0; character < CHAR_SET_SIZE; character++)
-    edited_flag[character] = !! isspace (character);
+  क्रम (पूर्णांक character = 0; character < CHAR_SET_आकार; character++)
+    edited_flag[character] = !! है_खाली (character);
   edited_flag['\f'] = 1;
 
   /* Complete the special character flagging according to selected output
      format.  */
 
-  switch (output_format)
+  चयन (output_format)
     {
-    case UNKNOWN_FORMAT:
+    हाल UNKNOWN_FORMAT:
       /* Should never happen.  */
 
-    case DUMB_FORMAT:
-      break;
+    हाल DUMB_FORMAT:
+      अवरोध;
 
-    case ROFF_FORMAT:
+    हाल ROFF_FORMAT:
 
       /* 'Quote' characters should be doubled.  */
 
       edited_flag['"'] = 1;
-      break;
+      अवरोध;
 
-    case TEX_FORMAT:
+    हाल TEX_FORMAT:
 
       /* Various characters need special processing.  */
 
-      for (char const *cursor = "$%&#_{}\\"; *cursor; cursor++)
+      क्रम (अक्षर स्थिर *cursor = "$%&#_{}\\"; *cursor; cursor++)
         edited_flag[to_uchar (*cursor)] = 1;
 
-      break;
+      अवरोध;
     }
 }
 
@@ -1207,19 +1207,19 @@ fix_output_parameters (void)
 | pointer to some OCCURS.					    |
 `------------------------------------------------------------------*/
 
-static void
+अटल व्योम
 define_all_fields (OCCURS *occurs)
 {
-  ptrdiff_t tail_max_width;	/* allowable width of tail field */
-  ptrdiff_t head_max_width;	/* allowable width of head field */
-  char *cursor;			/* running cursor in source text */
-  char *left_context_start;	/* start of left context */
-  char *right_context_end;	/* end of right context */
-  char *left_field_start;	/* conservative start for 'head'/'before' */
-  char const *file_name;	/* file name for reference */
-  intmax_t line_ordinal;	/* line ordinal for reference */
-  char const *buffer_start;	/* start of buffered file for this occurs */
-  char const *buffer_end;	/* end of buffered file for this occurs */
+  सूचक_भेद_प्रकार पुच्छ_max_width;	/* allowable width of tail field */
+  सूचक_भेद_प्रकार शीर्ष_max_width;	/* allowable width of head field */
+  अक्षर *cursor;			/* running cursor in source text */
+  अक्षर *बायाँ_context_start;	/* start of left context */
+  अक्षर *दायाँ_context_end;	/* end of right context */
+  अक्षर *बायाँ_field_start;	/* conservative start for 'head'/'before' */
+  अक्षर स्थिर *file_name;	/* file name for reference */
+  intmax_t पंक्ति_ordinal;	/* line ordinal for reference */
+  अक्षर स्थिर *बफर_start;	/* start of buffered file for this occurs */
+  अक्षर स्थिर *बफर_end;	/* end of buffered file for this occurs */
 
   /* Define 'keyafter', start of left context and end of right context.
      'keyafter' starts at the saved position for keyword and extend to the
@@ -1227,25 +1227,25 @@ define_all_fields (OCCURS *occurs)
      not beyond maximum allowed width for 'keyafter' field or limit for the
      right context.  Suffix spaces will be removed afterwards.  */
 
-  keyafter.start = occurs->key.start;
-  keyafter.end = keyafter.start + occurs->key.size;
-  left_context_start = keyafter.start + occurs->left;
-  right_context_end = keyafter.start + occurs->right;
+  keyafter.start = occurs->कुंजी.start;
+  keyafter.end = keyafter.start + occurs->कुंजी.आकार;
+  बायाँ_context_start = keyafter.start + occurs->बायाँ;
+  दायाँ_context_end = keyafter.start + occurs->दायाँ;
 
-  buffer_start = text_buffers[occurs->file_index].start;
-  buffer_end = text_buffers[occurs->file_index].end;
+  बफर_start = text_buffers[occurs->file_सूचकांक].start;
+  बफर_end = text_buffers[occurs->file_सूचकांक].end;
 
   cursor = keyafter.end;
-  while (cursor < right_context_end
+  जबतक (cursor < दायाँ_context_end
          && cursor <= keyafter.start + keyafter_max_width)
     {
       keyafter.end = cursor;
-      SKIP_SOMETHING (cursor, right_context_end);
+      SKIP_SOMETHING (cursor, दायाँ_context_end);
     }
-  if (cursor <= keyafter.start + keyafter_max_width)
+  अगर (cursor <= keyafter.start + keyafter_max_width)
     keyafter.end = cursor;
 
-  keyafter_truncation = truncation_string && keyafter.end < right_context_end;
+  keyafter_truncation = truncation_string && keyafter.end < दायाँ_context_end;
 
   SKIP_WHITE_BACKWARDS (keyafter.end, keyafter.start);
 
@@ -1261,14 +1261,14 @@ define_all_fields (OCCURS *occurs)
      beginning of 'head' or 'before' fields, we will skip forward words or
      delimiters until we get sufficiently near.  */
 
-  if (-occurs->left > half_line_width + maximum_word_length)
+  अगर (-occurs->बायाँ > half_पंक्ति_width + maximum_word_लंबाई)
     {
-      left_field_start
-        = keyafter.start - (half_line_width + maximum_word_length);
-      SKIP_SOMETHING (left_field_start, keyafter.start);
+      बायाँ_field_start
+        = keyafter.start - (half_पंक्ति_width + maximum_word_लंबाई);
+      SKIP_SOMETHING (बायाँ_field_start, keyafter.start);
     }
-  else
-    left_field_start = keyafter.start + occurs->left;
+  अन्यथा
+    बायाँ_field_start = keyafter.start + occurs->बायाँ;
 
   /* 'before' certainly ends at the keyword, but not including separating
      spaces.  It starts after than the saved value for the left context, by
@@ -1276,23 +1276,23 @@ define_all_fields (OCCURS *occurs)
      before field.  There will be no prefix spaces either.  'before' only
      advances by skipping single separators or whole words. */
 
-  before.start = left_field_start;
+  before.start = बायाँ_field_start;
   before.end = keyafter.start;
   SKIP_WHITE_BACKWARDS (before.end, before.start);
 
-  while (before.start + before_max_width < before.end)
+  जबतक (before.start + before_max_width < before.end)
     SKIP_SOMETHING (before.start, before.end);
 
-  if (truncation_string)
+  अगर (truncation_string)
     {
       cursor = before.start;
-      SKIP_WHITE_BACKWARDS (cursor, buffer_start);
-      before_truncation = cursor > left_context_start;
+      SKIP_WHITE_BACKWARDS (cursor, बफर_start);
+      before_truncation = cursor > बायाँ_context_start;
     }
-  else
+  अन्यथा
     before_truncation = false;
 
-  SKIP_WHITE (before.start, buffer_end);
+  SKIP_WHITE (before.start, बफर_end);
 
   /* The tail could not take more columns than what has been left in the
      left context field, and a gap is mandatory.  It starts after the
@@ -1301,44 +1301,44 @@ define_all_fields (OCCURS *occurs)
      whichever comes first.  It cannot contain only part of a word, and
      has no suffixed spaces.  */
 
-  tail_max_width
-    = before_max_width - (before.end - before.start) - gap_size;
+  पुच्छ_max_width
+    = before_max_width - (before.end - before.start) - gap_आकार;
 
-  if (tail_max_width > 0)
+  अगर (पुच्छ_max_width > 0)
     {
-      tail.start = keyafter.end;
-      SKIP_WHITE (tail.start, buffer_end);
+      पुच्छ.start = keyafter.end;
+      SKIP_WHITE (पुच्छ.start, बफर_end);
 
-      tail.end = tail.start;
-      cursor = tail.end;
-      while (cursor < right_context_end
-             && cursor < tail.start + tail_max_width)
+      पुच्छ.end = पुच्छ.start;
+      cursor = पुच्छ.end;
+      जबतक (cursor < दायाँ_context_end
+             && cursor < पुच्छ.start + पुच्छ_max_width)
         {
-          tail.end = cursor;
-          SKIP_SOMETHING (cursor, right_context_end);
+          पुच्छ.end = cursor;
+          SKIP_SOMETHING (cursor, दायाँ_context_end);
         }
 
-      if (cursor < tail.start + tail_max_width)
-        tail.end = cursor;
+      अगर (cursor < पुच्छ.start + पुच्छ_max_width)
+        पुच्छ.end = cursor;
 
-      if (tail.end > tail.start)
+      अगर (पुच्छ.end > पुच्छ.start)
         {
           keyafter_truncation = false;
-          tail_truncation = truncation_string && tail.end < right_context_end;
+          पुच्छ_truncation = truncation_string && पुच्छ.end < दायाँ_context_end;
         }
-      else
-        tail_truncation = false;
+      अन्यथा
+        पुच्छ_truncation = false;
 
-      SKIP_WHITE_BACKWARDS (tail.end, tail.start);
+      SKIP_WHITE_BACKWARDS (पुच्छ.end, पुच्छ.start);
     }
-  else
+  अन्यथा
     {
 
       /* No place left for a tail field.  */
 
-      tail.start = NULL;
-      tail.end = NULL;
-      tail_truncation = false;
+      पुच्छ.start = शून्य;
+      पुच्छ.end = शून्य;
+      पुच्छ_truncation = false;
     }
 
   /* 'head' could not take more columns than what has been left in the right
@@ -1347,58 +1347,58 @@ define_all_fields (OCCURS *occurs)
      until the head field has shrunk to its allowed width.  It cannot
      contain only part of a word, and has no suffixed spaces.  */
 
-  head_max_width
-    = keyafter_max_width - (keyafter.end - keyafter.start) - gap_size;
+  शीर्ष_max_width
+    = keyafter_max_width - (keyafter.end - keyafter.start) - gap_आकार;
 
-  if (head_max_width > 0)
+  अगर (शीर्ष_max_width > 0)
     {
-      head.end = before.start;
-      SKIP_WHITE_BACKWARDS (head.end, buffer_start);
+      शीर्ष.end = before.start;
+      SKIP_WHITE_BACKWARDS (शीर्ष.end, बफर_start);
 
-      head.start = left_field_start;
-      while (head.start + head_max_width < head.end)
-        SKIP_SOMETHING (head.start, head.end);
+      शीर्ष.start = बायाँ_field_start;
+      जबतक (शीर्ष.start + शीर्ष_max_width < शीर्ष.end)
+        SKIP_SOMETHING (शीर्ष.start, शीर्ष.end);
 
-      if (head.end > head.start)
+      अगर (शीर्ष.end > शीर्ष.start)
         {
           before_truncation = false;
-          head_truncation = (truncation_string
-                             && head.start > left_context_start);
+          शीर्ष_truncation = (truncation_string
+                             && शीर्ष.start > बायाँ_context_start);
         }
-      else
-        head_truncation = false;
+      अन्यथा
+        शीर्ष_truncation = false;
 
-      SKIP_WHITE (head.start, head.end);
+      SKIP_WHITE (शीर्ष.start, शीर्ष.end);
     }
-  else
+  अन्यथा
     {
 
       /* No place left for a head field.  */
 
-      head.start = NULL;
-      head.end = NULL;
-      head_truncation = false;
+      शीर्ष.start = शून्य;
+      शीर्ष.end = शून्य;
+      शीर्ष_truncation = false;
     }
 
-  if (auto_reference)
+  अगर (auto_reference)
     {
 
       /* Construct the reference text in preallocated space from the file
          name and the line number.  Standard input yields an empty file name.
          Ensure line numbers are 1 based, even if they are computed 0 based.  */
 
-      file_name = input_file_name[occurs->file_index];
-      if (!file_name)
+      file_name = निवेश_file_name[occurs->file_सूचकांक];
+      अगर (!file_name)
         file_name = "";
 
-      line_ordinal = occurs->reference + 1;
-      if (occurs->file_index > 0)
-        line_ordinal -= file_line_count[occurs->file_index - 1];
+      पंक्ति_ordinal = occurs->reference + 1;
+      अगर (occurs->file_सूचकांक > 0)
+        पंक्ति_ordinal -= file_पंक्ति_गिनती[occurs->file_सूचकांक - 1];
 
-      char *file_end = stpcpy (reference.start, file_name);
-      reference.end = file_end + sprintf (file_end, ":%jd", line_ordinal);
+      अक्षर *file_end = stpcpy (reference.start, file_name);
+      reference.end = file_end + प्र_लिखो (file_end, ":%jd", पंक्ति_ordinal);
     }
-  else if (input_reference)
+  अन्यथा अगर (निवेश_reference)
     {
 
       /* Reference starts at saved position for reference and extends right
@@ -1406,7 +1406,7 @@ define_all_fields (OCCURS *occurs)
 
       reference.start = keyafter.start + occurs->reference;
       reference.end = reference.start;
-      SKIP_NON_WHITE (reference.end, right_context_end);
+      SKIP_NON_WHITE (reference.end, दायाँ_context_end);
     }
 }
 
@@ -1416,101 +1416,101 @@ define_all_fields (OCCURS *occurs)
 | Output the current output fields as one line for 'troff' or 'nroff'.  |
 `----------------------------------------------------------------------*/
 
-static void
-output_one_roff_line (void)
+अटल व्योम
+output_one_roff_पंक्ति (व्योम)
 {
   /* Output the 'tail' field.  */
 
-  printf (".%s \"", macro_name);
-  print_field (tail);
-  if (tail_truncation)
-    fputs (truncation_string, stdout);
-  putchar ('"');
+  म_लिखो (".%s \"", macro_name);
+  print_field (पुच्छ);
+  अगर (पुच्छ_truncation)
+    ख_माला_दो (truncation_string, मानक_निकास);
+  अक्षर_दो ('"');
 
   /* Output the 'before' field.  */
 
-  fputs (" \"", stdout);
-  if (before_truncation)
-    fputs (truncation_string, stdout);
+  ख_माला_दो (" \"", मानक_निकास);
+  अगर (before_truncation)
+    ख_माला_दो (truncation_string, मानक_निकास);
   print_field (before);
-  putchar ('"');
+  अक्षर_दो ('"');
 
   /* Output the 'keyafter' field.  */
 
-  fputs (" \"", stdout);
+  ख_माला_दो (" \"", मानक_निकास);
   print_field (keyafter);
-  if (keyafter_truncation)
-    fputs (truncation_string, stdout);
-  putchar ('"');
+  अगर (keyafter_truncation)
+    ख_माला_दो (truncation_string, मानक_निकास);
+  अक्षर_दो ('"');
 
   /* Output the 'head' field.  */
 
-  fputs (" \"", stdout);
-  if (head_truncation)
-    fputs (truncation_string, stdout);
-  print_field (head);
-  putchar ('"');
+  ख_माला_दो (" \"", मानक_निकास);
+  अगर (शीर्ष_truncation)
+    ख_माला_दो (truncation_string, मानक_निकास);
+  print_field (शीर्ष);
+  अक्षर_दो ('"');
 
   /* Conditionally output the 'reference' field.  */
 
-  if (auto_reference || input_reference)
+  अगर (auto_reference || निवेश_reference)
     {
-      fputs (" \"", stdout);
+      ख_माला_दो (" \"", मानक_निकास);
       print_field (reference);
-      putchar ('"');
+      अक्षर_दो ('"');
     }
 
-  putchar ('\n');
+  अक्षर_दो ('\n');
 }
 
 /*---------------------------------------------------------.
 | Output the current output fields as one line for 'TeX'.  |
 `---------------------------------------------------------*/
 
-static void
-output_one_tex_line (void)
+अटल व्योम
+output_one_tex_पंक्ति (व्योम)
 {
-  BLOCK key;			/* key field, isolated */
+  BLOCK कुंजी;			/* key field, isolated */
   BLOCK after;			/* after field, isolated */
-  char *cursor;			/* running cursor in source text */
+  अक्षर *cursor;			/* running cursor in source text */
 
-  printf ("\\%s ", macro_name);
-  putchar ('{');
-  print_field (tail);
-  fputs ("}{", stdout);
+  म_लिखो ("\\%s ", macro_name);
+  अक्षर_दो ('{');
+  print_field (पुच्छ);
+  ख_माला_दो ("}{", मानक_निकास);
   print_field (before);
-  fputs ("}{", stdout);
-  key.start = keyafter.start;
+  ख_माला_दो ("}{", मानक_निकास);
+  कुंजी.start = keyafter.start;
   after.end = keyafter.end;
   cursor = keyafter.start;
   SKIP_SOMETHING (cursor, keyafter.end);
-  key.end = cursor;
+  कुंजी.end = cursor;
   after.start = cursor;
-  print_field (key);
-  fputs ("}{", stdout);
+  print_field (कुंजी);
+  ख_माला_दो ("}{", मानक_निकास);
   print_field (after);
-  fputs ("}{", stdout);
-  print_field (head);
-  putchar ('}');
-  if (auto_reference || input_reference)
+  ख_माला_दो ("}{", मानक_निकास);
+  print_field (शीर्ष);
+  अक्षर_दो ('}');
+  अगर (auto_reference || निवेश_reference)
     {
-      putchar ('{');
+      अक्षर_दो ('{');
       print_field (reference);
-      putchar ('}');
+      अक्षर_दो ('}');
     }
-  putchar ('\n');
+  अक्षर_दो ('\n');
 }
 
 /*-------------------------------------------------------------------.
 | Output the current output fields as one line for a dumb terminal.  |
 `-------------------------------------------------------------------*/
 
-static void
-output_one_dumb_line (void)
+अटल व्योम
+output_one_dumb_पंक्ति (व्योम)
 {
-  if (!right_reference)
+  अगर (!दायाँ_reference)
     {
-      if (auto_reference)
+      अगर (auto_reference)
         {
 
           /* Output the 'reference' field, in such a way that GNU emacs
@@ -1518,86 +1518,86 @@ output_one_dumb_line (void)
              gap which follows.  */
 
           print_field (reference);
-          putchar (':');
+          अक्षर_दो (':');
           print_spaces (reference_max_width
-                        + gap_size
+                        + gap_आकार
                         - (reference.end - reference.start)
                         - 1);
         }
-      else
+      अन्यथा
         {
 
           /* Output the 'reference' field and its following gap.  */
 
           print_field (reference);
           print_spaces (reference_max_width
-                        + gap_size
+                        + gap_आकार
                         - (reference.end - reference.start));
         }
     }
 
-  if (tail.start < tail.end)
+  अगर (पुच्छ.start < पुच्छ.end)
     {
       /* Output the 'tail' field.  */
 
-      print_field (tail);
-      if (tail_truncation)
-        fputs (truncation_string, stdout);
+      print_field (पुच्छ);
+      अगर (पुच्छ_truncation)
+        ख_माला_दो (truncation_string, मानक_निकास);
 
-      print_spaces (half_line_width - gap_size
+      print_spaces (half_पंक्ति_width - gap_आकार
                     - (before.end - before.start)
-                    - (before_truncation ? truncation_string_length : 0)
-                    - (tail.end - tail.start)
-                    - (tail_truncation ? truncation_string_length : 0));
+                    - (before_truncation ? truncation_string_लंबाई : 0)
+                    - (पुच्छ.end - पुच्छ.start)
+                    - (पुच्छ_truncation ? truncation_string_लंबाई : 0));
     }
-  else
-    print_spaces (half_line_width - gap_size
+  अन्यथा
+    print_spaces (half_पंक्ति_width - gap_आकार
                   - (before.end - before.start)
-                  - (before_truncation ? truncation_string_length : 0));
+                  - (before_truncation ? truncation_string_लंबाई : 0));
 
   /* Output the 'before' field.  */
 
-  if (before_truncation)
-    fputs (truncation_string, stdout);
+  अगर (before_truncation)
+    ख_माला_दो (truncation_string, मानक_निकास);
   print_field (before);
 
-  print_spaces (gap_size);
+  print_spaces (gap_आकार);
 
   /* Output the 'keyafter' field.  */
 
   print_field (keyafter);
-  if (keyafter_truncation)
-    fputs (truncation_string, stdout);
+  अगर (keyafter_truncation)
+    ख_माला_दो (truncation_string, मानक_निकास);
 
-  if (head.start < head.end)
+  अगर (शीर्ष.start < शीर्ष.end)
     {
       /* Output the 'head' field.  */
 
-      print_spaces (half_line_width
+      print_spaces (half_पंक्ति_width
                     - (keyafter.end - keyafter.start)
-                    - (keyafter_truncation ? truncation_string_length : 0)
-                    - (head.end - head.start)
-                    - (head_truncation ? truncation_string_length : 0));
-      if (head_truncation)
-        fputs (truncation_string, stdout);
-      print_field (head);
+                    - (keyafter_truncation ? truncation_string_लंबाई : 0)
+                    - (शीर्ष.end - शीर्ष.start)
+                    - (शीर्ष_truncation ? truncation_string_लंबाई : 0));
+      अगर (शीर्ष_truncation)
+        ख_माला_दो (truncation_string, मानक_निकास);
+      print_field (शीर्ष);
     }
-  else
+  अन्यथा
 
-    if ((auto_reference || input_reference) && right_reference)
-      print_spaces (half_line_width
+    अगर ((auto_reference || निवेश_reference) && दायाँ_reference)
+      print_spaces (half_पंक्ति_width
                     - (keyafter.end - keyafter.start)
-                    - (keyafter_truncation ? truncation_string_length : 0));
+                    - (keyafter_truncation ? truncation_string_लंबाई : 0));
 
-  if ((auto_reference || input_reference) && right_reference)
+  अगर ((auto_reference || निवेश_reference) && दायाँ_reference)
     {
       /* Output the 'reference' field.  */
 
-      print_spaces (gap_size);
+      print_spaces (gap_आकार);
       print_field (reference);
     }
 
-  putchar ('\n');
+  अक्षर_दो ('\n');
 }
 
 /*------------------------------------------------------------------------.
@@ -1605,8 +1605,8 @@ output_one_dumb_line (void)
 | appropriate format.							  |
 `------------------------------------------------------------------------*/
 
-static void
-generate_all_output (void)
+अटल व्योम
+generate_all_output (व्योम)
 {
   OCCURS *occurs_cursor;	/* current keyword entry being processed */
 
@@ -1614,20 +1614,20 @@ generate_all_output (void)
      line contexts or references are not used, in which case these variables
      would never be computed.  */
 
-  tail.start = NULL;
-  tail.end = NULL;
-  tail_truncation = false;
+  पुच्छ.start = शून्य;
+  पुच्छ.end = शून्य;
+  पुच्छ_truncation = false;
 
-  head.start = NULL;
-  head.end = NULL;
-  head_truncation = false;
+  शीर्ष.start = शून्य;
+  शीर्ष.end = शून्य;
+  शीर्ष_truncation = false;
 
   /* Loop over all keyword occurrences.  */
 
   occurs_cursor = occurs_table[0];
 
-  for (idx_t occurs_index = 0; occurs_index < number_of_occurs[0];
-       occurs_index++)
+  क्रम (idx_t occurs_सूचकांक = 0; occurs_सूचकांक < संख्या_of_occurs[0];
+       occurs_सूचकांक++)
     {
       /* Compute the exact size of every field and whenever truncation flags
          are present or not.  */
@@ -1636,22 +1636,22 @@ generate_all_output (void)
 
       /* Produce one output line according to selected format.  */
 
-      switch (output_format)
+      चयन (output_format)
         {
-        case UNKNOWN_FORMAT:
+        हाल UNKNOWN_FORMAT:
           /* Should never happen.  */
 
-        case DUMB_FORMAT:
-          output_one_dumb_line ();
-          break;
+        हाल DUMB_FORMAT:
+          output_one_dumb_पंक्ति ();
+          अवरोध;
 
-        case ROFF_FORMAT:
-          output_one_roff_line ();
-          break;
+        हाल ROFF_FORMAT:
+          output_one_roff_पंक्ति ();
+          अवरोध;
 
-        case TEX_FORMAT:
-          output_one_tex_line ();
-          break;
+        हाल TEX_FORMAT:
+          output_one_tex_पंक्ति ();
+          अवरोध;
         }
 
       /* Advance the cursor into the occurs table.  */
@@ -1666,33 +1666,33 @@ generate_all_output (void)
 | Print program identification and options, then exit.  |
 `------------------------------------------------------*/
 
-void
-usage (int status)
+व्योम
+usage (पूर्णांक status)
 {
-  if (status != EXIT_SUCCESS)
+  अगर (status != निकास_सफल)
     emit_try_help ();
-  else
+  अन्यथा
     {
-      printf (_("\
-Usage: %s [OPTION]... [INPUT]...   (without -G)\n\
-  or:  %s -G [OPTION]... [INPUT [OUTPUT]]\n"),
+      म_लिखो (_("\
+Usage: %s [OPTION]... [निवेश_2]...   (without -G)\n\
+  or:  %s -G [OPTION]... [निवेश_2 [OUTPUT]]\n"),
               program_name, program_name);
-      fputs (_("\
-Output a permuted index, including context, of the words in the input files.\n\
-"), stdout);
+      ख_माला_दो (_("\
+Output a permuted index, including context, of the शब्दगण in the निवेश files.\n\
+"), मानक_निकास);
 
       emit_stdin_note ();
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -A, --auto-reference           output automatically generated references\n\
+  -A, --स्वतः-reference           output automatically generated references\n\
 "));
       oputs (_("\
   -G, --traditional              behave more like System V 'ptx'\n\
 "));
       oputs (_("\
-  -F, --flag-truncation=STRING   use STRING for flagging line truncations.\n\
-                                 The default is '/'\n\
+  -F, --flag-truncation=STRING   use STRING क्रम flagging पंक्ति truncations.\n\
+                                 The शेष is '/'\n\
 "));
       oputs (_("\
   -M, --macro-name=STRING        macro name to use instead of 'xx'\n\
@@ -1701,10 +1701,10 @@ Output a permuted index, including context, of the words in the input files.\n\
   -O, --format=roff              generate output as roff directives\n\
 "));
       oputs (_("\
-  -R, --right-side-refs          put references at right, not counted in -w\n\
+  -R, --दायाँ-side-refs          put references at दायाँ, not counted in -w\n\
 "));
       oputs (_("\
-  -S, --sentence-regexp=REGEXP   for end of lines or end of sentences\n\
+  -S, --sentence-regexp=REGEXP   क्रम end of पंक्तियाँ or end of sentences\n\
 "));
       oputs (_("\
   -T, --format=tex               generate output as TeX directives\n\
@@ -1713,34 +1713,34 @@ Output a permuted index, including context, of the words in the input files.\n\
   -W, --word-regexp=REGEXP       use REGEXP to match each keyword\n\
 "));
       oputs (_("\
-  -b, --break-file=FILE          word break characters in this FILE\n\
+  -b, --अवरोध-file=खाता          word अवरोध characters in this खाता\n\
 "));
       oputs (_("\
-  -f, --ignore-case              fold lower case to upper case for sorting\n\
+  -f, --ignore-हाल              fold lower हाल to upper हाल क्रम sorting\n\
 "));
       oputs (_("\
-  -g, --gap-size=NUMBER          gap size in columns between output fields\n\
+  -g, --gap-आकार=संख्या_2          gap आकार in columns between output fields\n\
 "));
       oputs (_("\
-  -i, --ignore-file=FILE         read ignore word list from FILE\n\
+  -i, --ignore-file=खाता         पढ़ो ignore word list from खाता\n\
 "));
       oputs (_("\
-  -o, --only-file=FILE           read only word list from this FILE\n\
+  -o, --only-file=खाता           पढ़ो only word list from this खाता\n\
 "));
       oputs (_("\
-  -r, --references               first field of each line is a reference\n\
+  -r, --references               first field of each पंक्ति is a reference\n\
 "));
       oputs (_("\
-  -t, --typeset-mode             change the default width from 72 to 100\n\
+  -t, --typeset-mode             change the शेष width from 72 to 100\n\
 "));
       oputs (_("\
-  -w, --width=NUMBER             output width in columns, reference excluded\n\
+  -w, --width=संख्या_2             output width in columns, reference excluded\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
       emit_ancillary_info (PROGRAM_NAME);
     }
-  exit (status);
+  निकास (status);
 }
 
 /*----------------------------------------------------------------------.
@@ -1750,162 +1750,162 @@ Output a permuted index, including context, of the words in the input files.\n\
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+क्रमागत
 {
-  FORMAT_OPTION = CHAR_MAX + 1
+  FORMAT_OPTION = अक्षर_उच्च + 1
 };
 
 /* Long options equivalences.  */
-static struct option const long_options[] =
+अटल काष्ठा option स्थिर long_options[] =
 {
-  {"auto-reference", no_argument, NULL, 'A'},
-  {"break-file", required_argument, NULL, 'b'},
-  {"flag-truncation", required_argument, NULL, 'F'},
-  {"ignore-case", no_argument, NULL, 'f'},
-  {"gap-size", required_argument, NULL, 'g'},
-  {"ignore-file", required_argument, NULL, 'i'},
-  {"macro-name", required_argument, NULL, 'M'},
-  {"only-file", required_argument, NULL, 'o'},
-  {"references", no_argument, NULL, 'r'},
-  {"right-side-refs", no_argument, NULL, 'R'},
-  {"format", required_argument, NULL, FORMAT_OPTION},
-  {"sentence-regexp", required_argument, NULL, 'S'},
-  {"traditional", no_argument, NULL, 'G'},
-  {"typeset-mode", no_argument, NULL, 't'},
-  {"width", required_argument, NULL, 'w'},
-  {"word-regexp", required_argument, NULL, 'W'},
+  {"auto-reference", no_argument, शून्य, 'A'},
+  {"break-file", required_argument, शून्य, 'b'},
+  {"flag-truncation", required_argument, शून्य, 'F'},
+  {"ignore-case", no_argument, शून्य, 'f'},
+  {"gap-size", required_argument, शून्य, 'g'},
+  {"ignore-file", required_argument, शून्य, 'i'},
+  {"macro-name", required_argument, शून्य, 'M'},
+  {"only-file", required_argument, शून्य, 'o'},
+  {"references", no_argument, शून्य, 'r'},
+  {"right-side-refs", no_argument, शून्य, 'R'},
+  {"format", required_argument, शून्य, FORMAT_OPTION},
+  {"sentence-regexp", required_argument, शून्य, 'S'},
+  {"traditional", no_argument, शून्य, 'G'},
+  {"typeset-mode", no_argument, शून्य, 't'},
+  {"width", required_argument, शून्य, 'w'},
+  {"word-regexp", required_argument, शून्य, 'W'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0},
+  {शून्य, 0, शून्य, 0},
 };
 
-static char const *const format_args[] =
+अटल अक्षर स्थिर *स्थिर format_args[] =
 {
-  "roff", "tex", NULL
+  "roff", "tex", शून्य
 };
 
-static enum Format const format_vals[] =
+अटल क्रमागत Format स्थिर format_vals[] =
 {
   ROFF_FORMAT, TEX_FORMAT
 };
 
-int
-main (int argc, char **argv)
+पूर्णांक
+मुख्य (पूर्णांक argc, अक्षर **argv)
 {
-  int optchar;			/* argument character */
-  int file_index;		/* index in text input file arrays */
+  पूर्णांक optchar;			/* argument character */
+  पूर्णांक file_सूचकांक;		/* index in text input file arrays */
 
   /* Decode program options.  */
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
-  setlocale (LC_ALL, "");
+  रखो_क्षेत्र (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
-  atexit (close_stdout);
+  निकास_पर (close_stdout);
 
-  while (optchar = getopt_long (argc, argv, "AF:GM:ORS:TW:b:i:fg:o:trw:",
-                                long_options, NULL),
-         optchar != EOF)
+  जबतक (optchar = getopt_long (argc, argv, "AF:GM:ORS:TW:b:i:fg:o:trw:",
+                                long_options, शून्य),
+         optchar != खातापूर्ण)
     {
-      switch (optchar)
+      चयन (optchar)
         {
-        default:
-          usage (EXIT_FAILURE);
+        शेष:
+          usage (निकास_त्रुटि);
 
-        case 'G':
+        हाल 'G':
           gnu_extensions = false;
-          break;
+          अवरोध;
 
-        case 'b':
+        हाल 'b':
           break_file = optarg;
-          break;
+          अवरोध;
 
-        case 'f':
+        हाल 'f':
           ignore_case = true;
-          break;
+          अवरोध;
 
-        case 'g':
+        हाल 'g':
           {
             intmax_t tmp;
-            if (! (xstrtoimax (optarg, NULL, 0, &tmp, "") == LONGINT_OK
+            अगर (! (xstrtoimax (optarg, शून्य, 0, &tmp, "") == LONGINT_OK
                    && 0 < tmp && tmp <= IDX_MAX))
-              error (EXIT_FAILURE, 0, _("invalid gap width: %s"),
+              error (निकास_त्रुटि, 0, _("invalid gap width: %s"),
                      quote (optarg));
-            gap_size = tmp;
-            break;
+            gap_आकार = tmp;
+            अवरोध;
           }
 
-        case 'i':
+        हाल 'i':
           ignore_file = optarg;
-          break;
+          अवरोध;
 
-        case 'o':
+        हाल 'o':
           only_file = optarg;
-          break;
+          अवरोध;
 
-        case 'r':
-          input_reference = true;
-          break;
+        हाल 'r':
+          निवेश_reference = true;
+          अवरोध;
 
-        case 't':
-          if (line_width < 0)
-            line_width = 100;
-          break;
+        हाल 't':
+          अगर (पंक्ति_width < 0)
+            पंक्ति_width = 100;
+          अवरोध;
 
-        case 'w':
+        हाल 'w':
           {
             intmax_t tmp;
-            if (! (xstrtoimax (optarg, NULL, 0, &tmp, "") == LONGINT_OK
+            अगर (! (xstrtoimax (optarg, शून्य, 0, &tmp, "") == LONGINT_OK
                    && 0 < tmp && tmp <= IDX_MAX))
-              error (EXIT_FAILURE, 0, _("invalid line width: %s"),
+              error (निकास_त्रुटि, 0, _("invalid line width: %s"),
                      quote (optarg));
-            line_width = tmp;
-            break;
+            पंक्ति_width = tmp;
+            अवरोध;
           }
 
-        case 'A':
+        हाल 'A':
           auto_reference = true;
-          break;
+          अवरोध;
 
-        case 'F':
+        हाल 'F':
           truncation_string = optarg;
           unescape_string (optarg);
-          break;
+          अवरोध;
 
-        case 'M':
+        हाल 'M':
           macro_name = optarg;
-          break;
+          अवरोध;
 
-        case 'O':
+        हाल 'O':
           output_format = ROFF_FORMAT;
-          break;
+          अवरोध;
 
-        case 'R':
-          right_reference = true;
-          break;
+        हाल 'R':
+          दायाँ_reference = true;
+          अवरोध;
 
-        case 'S':
+        हाल 'S':
           context_regex.string = optarg;
           unescape_string (optarg);
-          break;
+          अवरोध;
 
-        case 'T':
+        हाल 'T':
           output_format = TEX_FORMAT;
-          break;
+          अवरोध;
 
-        case 'W':
+        हाल 'W':
           word_regex.string = optarg;
           unescape_string (optarg);
-          if (!*word_regex.string)
-            word_regex.string = NULL;
-          break;
+          अगर (!*word_regex.string)
+            word_regex.string = शून्य;
+          अवरोध;
 
-        case FORMAT_OPTION:
+        हाल FORMAT_OPTION:
           output_format = XARGMATCH ("--format", optarg,
                                      format_args, format_vals);
-          break;
+          अवरोध;
 
         case_GETOPT_HELP_CHAR;
 
@@ -1913,77 +1913,77 @@ main (int argc, char **argv)
         }
     }
 
-  if (line_width < 0)
-    line_width = 72;
+  अगर (पंक्ति_width < 0)
+    पंक्ति_width = 72;
 
   /* Process remaining arguments.  If GNU extensions are enabled, process
      all arguments as input parameters.  If disabled, accept at most two
      arguments, the second of which is an output parameter.  */
 
-  if (optind == argc)
+  अगर (optind == argc)
     {
 
       /* No more argument simply means: read standard input.  */
 
-      input_file_name = xmalloc (sizeof *input_file_name);
-      file_line_count = xmalloc (sizeof *file_line_count);
-      text_buffers =    xmalloc (sizeof *text_buffers);
-      number_input_files = 1;
-      input_file_name[0] = NULL;
+      निवेश_file_name = xmalloc (माप *निवेश_file_name);
+      file_पंक्ति_गिनती = xmalloc (माप *file_पंक्ति_गिनती);
+      text_buffers =    xmalloc (माप *text_buffers);
+      संख्या_निवेश_files = 1;
+      निवेश_file_name[0] = शून्य;
     }
-  else if (gnu_extensions)
+  अन्यथा अगर (gnu_extensions)
     {
-      number_input_files = argc - optind;
-      input_file_name = xnmalloc (number_input_files, sizeof *input_file_name);
-      file_line_count = xnmalloc (number_input_files, sizeof *file_line_count);
-      text_buffers    = xnmalloc (number_input_files, sizeof *text_buffers);
+      संख्या_निवेश_files = argc - optind;
+      निवेश_file_name = xnmalloc (संख्या_निवेश_files, माप *निवेश_file_name);
+      file_पंक्ति_गिनती = xnmalloc (संख्या_निवेश_files, माप *file_पंक्ति_गिनती);
+      text_buffers    = xnmalloc (संख्या_निवेश_files, माप *text_buffers);
 
-      for (file_index = 0; file_index < number_input_files; file_index++)
+      क्रम (file_सूचकांक = 0; file_सूचकांक < संख्या_निवेश_files; file_सूचकांक++)
         {
-          if (!*argv[optind] || streq (argv[optind], "-"))
-            input_file_name[file_index] = NULL;
-          else
-            input_file_name[file_index] = argv[optind];
+          अगर (!*argv[optind] || streq (argv[optind], "-"))
+            निवेश_file_name[file_सूचकांक] = शून्य;
+          अन्यथा
+            निवेश_file_name[file_सूचकांक] = argv[optind];
           optind++;
         }
     }
-  else
+  अन्यथा
     {
 
       /* There is one necessary input file.  */
 
-      number_input_files = 1;
-      input_file_name = xmalloc (sizeof *input_file_name);
-      file_line_count = xmalloc (sizeof *file_line_count);
-      text_buffers    = xmalloc (sizeof *text_buffers);
-      if (!*argv[optind] || streq (argv[optind], "-"))
-        input_file_name[0] = NULL;
-      else
-        input_file_name[0] = argv[optind];
+      संख्या_निवेश_files = 1;
+      निवेश_file_name = xmalloc (माप *निवेश_file_name);
+      file_पंक्ति_गिनती = xmalloc (माप *file_पंक्ति_गिनती);
+      text_buffers    = xmalloc (माप *text_buffers);
+      अगर (!*argv[optind] || streq (argv[optind], "-"))
+        निवेश_file_name[0] = शून्य;
+      अन्यथा
+        निवेश_file_name[0] = argv[optind];
       optind++;
 
       /* Redirect standard output, only if requested.  */
 
-      if (optind < argc)
+      अगर (optind < argc)
         {
-          if (! freopen (argv[optind], "w", stdout))
-            error (EXIT_FAILURE, errno, "%s", quotef (argv[optind]));
+          अगर (! ख_व_खोलो (argv[optind], "w", मानक_निकास))
+            error (निकास_त्रुटि, त्रुटि_सं, "%s", quotef (argv[optind]));
           optind++;
         }
 
       /* Diagnose any other argument as an error.  */
 
-      if (optind < argc)
+      अगर (optind < argc)
         {
           error (0, 0, _("extra operand %s"), quote (argv[optind]));
-          usage (EXIT_FAILURE);
+          usage (निकास_त्रुटि);
         }
     }
 
   /* If the output format has not been explicitly selected, choose dumb
      terminal format if GNU extensions are enabled, else 'roff' format.  */
 
-  if (output_format == UNKNOWN_FORMAT)
+  अगर (output_format == UNKNOWN_FORMAT)
     output_format = gnu_extensions ? DUMB_FORMAT : ROFF_FORMAT;
 
   /* Initialize the main tables.  */
@@ -1992,49 +1992,49 @@ main (int argc, char **argv)
 
   /* Read 'Break character' file, if any.  */
 
-  if (break_file)
+  अगर (break_file)
     digest_break_file (break_file);
 
   /* Read 'Ignore words' file and 'Only words' files, if any.  If any of
      these files is empty, reset the name of the file to null, to avoid
      unnecessary calls to search_table. */
 
-  if (ignore_file)
+  अगर (ignore_file)
     {
       digest_word_file (ignore_file, &ignore_table);
-      if (ignore_table.length == 0)
-        ignore_file = NULL;
+      अगर (ignore_table.लंबाई == 0)
+        ignore_file = शून्य;
     }
 
-  if (only_file)
+  अगर (only_file)
     {
       digest_word_file (only_file, &only_table);
-      if (only_table.length == 0)
-        only_file = NULL;
+      अगर (only_table.लंबाई == 0)
+        only_file = शून्य;
     }
 
   /* Prepare to study all the input files.  */
 
-  number_of_occurs[0] = 0;
-  total_line_count = 0;
-  maximum_word_length = 0;
+  संख्या_of_occurs[0] = 0;
+  योग_पंक्ति_गिनती = 0;
+  maximum_word_लंबाई = 0;
   reference_max_width = 0;
 
-  for (file_index = 0; file_index < number_input_files; file_index++)
+  क्रम (file_सूचकांक = 0; file_सूचकांक < संख्या_निवेश_files; file_सूचकांक++)
     {
-      BLOCK *text_buffer = text_buffers + file_index;
+      BLOCK *text_बफर = text_buffers + file_सूचकांक;
 
       /* Read the file contents into memory, then study it.  */
 
-      swallow_file_in_memory (input_file_name[file_index], text_buffer);
-      find_occurs_in_text (file_index);
+      swallow_file_in_memory (निवेश_file_name[file_सूचकांक], text_बफर);
+      find_occurs_in_text (file_सूचकांक);
 
       /* Maintain for each file how many lines has been read so far when its
          end is reached.  Incrementing the count first is a simple kludge to
          handle a possible incomplete line at end of file.  */
 
-      total_line_count++;
-      file_line_count[file_index] = total_line_count;
+      योग_पंक्ति_गिनती++;
+      file_पंक्ति_गिनती[file_सूचकांक] = योग_पंक्ति_गिनती;
     }
 
   /* Do the output process phase.  */
@@ -2045,5 +2045,5 @@ main (int argc, char **argv)
 
   /* All done.  */
 
-  return EXIT_SUCCESS;
+  वापस निकास_सफल;
 }

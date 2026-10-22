@@ -16,42 +16,42 @@
 
 /* Written by jla; revised by djm */
 
-#include <config.h>
-#include <stdio.h>
+#समावेश <config.h>
+#समावेश <stdio.h>
 
-#include <sys/types.h>
-#include "system.h"
+#समावेश <sys/types.h>
+#समावेश "system.h"
 
-#include "long-options.h"
-#include "quote.h"
-#include "readutmp.h"
+#समावेश "long-options.h"
+#समावेश "quote.h"
+#समावेश "readutmp.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "users"
+#घोषणा PROGRAM_NAME "users"
 
-#define AUTHORS \
+#घोषणा AUTHORS \
   proper_name ("Joseph Arceneaux"), \
   proper_name ("David MacKenzie")
 
-static int
-userid_compare (const void *v_a, const void *v_b)
+अटल पूर्णांक
+userid_compare (स्थिर व्योम *v_a, स्थिर व्योम *v_b)
 {
-  char **a = (char **) v_a;
-  char **b = (char **) v_b;
-  return strcmp (*a, *b);
+  अक्षर **a = (अक्षर **) v_a;
+  अक्षर **b = (अक्षर **) v_b;
+  वापस म_भेद (*a, *b);
 }
 
-static void
-list_entries_users (idx_t n, STRUCT_UTMP const *this)
+अटल व्योम
+list_entries_users (idx_t n, STRUCT_UTMP स्थिर *this)
 {
-  char **u = xinmalloc (n, sizeof *u);
+  अक्षर **u = xinmalloc (n, माप *u);
   idx_t n_entries = 0;
 
-  while (n--)
+  जबतक (n--)
     {
-      if (IS_USER_PROCESS (this))
+      अगर (IS_USER_PROCESS (this))
         {
-          char *trimmed_name;
+          अक्षर *trimmed_name;
 
           trimmed_name = extract_trimmed_name (this);
 
@@ -61,48 +61,48 @@ list_entries_users (idx_t n, STRUCT_UTMP const *this)
       this++;
     }
 
-  qsort (u, n_entries, sizeof (u[0]), userid_compare);
+  क्विक (u, n_entries, माप (u[0]), userid_compare);
 
-  for (idx_t i = 0; i < n_entries; i++)
+  क्रम (idx_t i = 0; i < n_entries; i++)
     {
-      char c = (i < n_entries - 1 ? ' ' : '\n');
-      fputs (u[i], stdout);
-      putchar (c);
+      अक्षर c = (i < n_entries - 1 ? ' ' : '\n');
+      ख_माला_दो (u[i], मानक_निकास);
+      अक्षर_दो (c);
     }
 
-  for (idx_t i = 0; i < n_entries; i++)
-    free (u[i]);
-  free (u);
+  क्रम (idx_t i = 0; i < n_entries; i++)
+    मुक्त (u[i]);
+  मुक्त (u);
 }
 
 /* Display a list of users on the system, according to utmp file FILENAME.
    Use read_utmp OPTIONS to read FILENAME.  */
 
-static void
-users (char const *filename, int options)
+अटल व्योम
+users (अक्षर स्थिर *filename, पूर्णांक options)
 {
   idx_t n_users;
   STRUCT_UTMP *utmp_buf;
   options |= READ_UTMP_USER_PROCESS;
-  if (read_utmp (filename, &n_users, &utmp_buf, options) != 0)
-    error (EXIT_FAILURE, errno, "%s", quotef (filename));
+  अगर (read_utmp (filename, &n_users, &utmp_buf, options) != 0)
+    error (निकास_त्रुटि, त्रुटि_सं, "%s", quotef (filename));
 
   list_entries_users (n_users, utmp_buf);
 
-  free (utmp_buf);
+  मुक्त (utmp_buf);
 }
 
-void
-usage (int status)
+व्योम
+usage (पूर्णांक status)
 {
-  if (status != EXIT_SUCCESS)
+  अगर (status != निकास_सफल)
     emit_try_help ();
-  else
+  अन्यथा
     {
-      printf (_("Usage: %s [OPTION]... [FILE]\n"), program_name);
-      printf (_("\
-Output who is currently logged in according to FILE.\n\
-If FILE is not specified, use %s.  %s as FILE is common.\n\
+      म_लिखो (_("Usage: %s [OPTION]... [FILE]\n"), program_name);
+      म_लिखो (_("\
+Output who is currently logged in according to खाता.\n\
+If खाता is not specified, use %s.  %s as खाता is common.\n\
 \n\
 "),
               UTMP_FILE, WTMP_FILE);
@@ -110,38 +110,38 @@ If FILE is not specified, use %s.  %s as FILE is common.\n\
       oputs (VERSION_OPTION_DESCRIPTION);
       emit_ancillary_info (PROGRAM_NAME);
     }
-  exit (status);
+  निकास (status);
 }
 
-int
-main (int argc, char **argv)
+पूर्णांक
+मुख्य (पूर्णांक argc, अक्षर **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
-  setlocale (LC_ALL, "");
+  रखो_क्षेत्र (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
-  atexit (close_stdout);
+  निकास_पर (close_stdout);
 
   parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
                                    Version, true, usage, AUTHORS,
-                                   (char const *) NULL);
+                                   (अक्षर स्थिर *) शून्य);
 
-  switch (argc - optind)
+  चयन (argc - optind)
     {
-    case 0:			/* users */
+    हाल 0:			/* users */
       users (UTMP_FILE, READ_UTMP_CHECK_PIDS);
-      break;
+      अवरोध;
 
-    case 1:			/* users <utmp file> */
+    हाल 1:			/* users <utmp file> */
       users (argv[optind], 0);
-      break;
+      अवरोध;
 
-    default:			/* lose */
+    शेष:			/* lose */
       error (0, 0, _("extra operand %s"), quote (argv[optind + 1]));
-      usage (EXIT_FAILURE);
+      usage (निकास_त्रुटि);
     }
 
-  return EXIT_SUCCESS;
+  वापस निकास_सफल;
 }

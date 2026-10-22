@@ -18,69 +18,69 @@
 /* Equivalent to 'id -un'. */
 /* Written by Richard Mlynarik. */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <pwd.h>
+#समावेश <config.h>
+#समावेश <stdio.h>
+#समावेश <sys/types.h>
+#समावेश <pwd.h>
 
-#include "system.h"
-#include "long-options.h"
-#include "quote.h"
+#समावेश "system.h"
+#समावेश "long-options.h"
+#समावेश "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "whoami"
+#घोषणा PROGRAM_NAME "whoami"
 
-#define AUTHORS proper_name ("Richard Mlynarik")
+#घोषणा AUTHORS proper_name ("Richard Mlynarik")
 
-void
-usage (int status)
+व्योम
+usage (पूर्णांक status)
 {
-  if (status != EXIT_SUCCESS)
+  अगर (status != निकास_सफल)
     emit_try_help ();
-  else
+  अन्यथा
     {
-      printf (_("Usage: %s [OPTION]...\n"), program_name);
-      fputs (_("\
+      म_लिखो (_("Usage: %s [OPTION]...\n"), program_name);
+      ख_माला_दो (_("\
 Print the user name associated with the current effective user ID.\n\
 Same as id -un.\n\
 \n\
-"), stdout);
+"), मानक_निकास);
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
       emit_ancillary_info (PROGRAM_NAME);
     }
-  exit (status);
+  निकास (status);
 }
 
-int
-main (int argc, char **argv)
+पूर्णांक
+मुख्य (पूर्णांक argc, अक्षर **argv)
 {
   uid_t NO_UID = -1;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
-  setlocale (LC_ALL, "");
+  रखो_क्षेत्र (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
-  atexit (close_stdout);
+  निकास_पर (close_stdout);
 
   parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
                                    Version, true, usage, AUTHORS,
-                                   (char const *) NULL);
+                                   (अक्षर स्थिर *) शून्य);
 
-  if (optind != argc)
+  अगर (optind != argc)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind]));
-      usage (EXIT_FAILURE);
+      usage (निकास_त्रुटि);
     }
 
-  errno = 0;
+  त्रुटि_सं = 0;
   uid_t uid = geteuid ();
-  struct passwd *pw = uid == NO_UID && errno ? NULL : getpwuid (uid);
-  if (!pw)
-    error (EXIT_FAILURE, errno, _("cannot find name for user ID %ju"),
+  काष्ठा passwd *pw = uid == NO_UID && त्रुटि_सं ? शून्य : getpwuid (uid);
+  अगर (!pw)
+    error (निकास_त्रुटि, त्रुटि_सं, _("cannot find name for user ID %ju"),
            (uintmax_t) uid);
-  puts (pw->pw_name);
-  return EXIT_SUCCESS;
+  माला_दो (pw->pw_name);
+  वापस निकास_सफल;
 }

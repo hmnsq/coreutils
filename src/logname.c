@@ -14,65 +14,65 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
+#समावेश <config.h>
+#समावेश <stdio.h>
+#समावेश <sys/types.h>
 
-#include "system.h"
-#include "long-options.h"
-#include "quote.h"
+#समावेश "system.h"
+#समावेश "long-options.h"
+#समावेश "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "logname"
+#घोषणा PROGRAM_NAME "logname"
 
-#define AUTHORS proper_name ("David MacKenzie")
+#घोषणा AUTHORS proper_name ("David MacKenzie")
 
-void
-usage (int status)
+व्योम
+usage (पूर्णांक status)
 {
-  if (status != EXIT_SUCCESS)
+  अगर (status != निकास_सफल)
     emit_try_help ();
-  else
+  अन्यथा
     {
-      printf (_("Usage: %s [OPTION]\n"), program_name);
-      fputs (_("\
+      म_लिखो (_("Usage: %s [OPTION]\n"), program_name);
+      ख_माला_दो (_("\
 Print the user's login name.\n\
 \n\
-"), stdout);
+"), मानक_निकास);
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
       emit_ancillary_info (PROGRAM_NAME);
     }
-  exit (status);
+  निकास (status);
 }
 
-int
-main (int argc, char **argv)
+पूर्णांक
+मुख्य (पूर्णांक argc, अक्षर **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
-  setlocale (LC_ALL, "");
+  रखो_क्षेत्र (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
-  atexit (close_stdout);
+  निकास_पर (close_stdout);
 
   parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
                                    Version, true, usage, AUTHORS,
-                                   (char const *) NULL);
+                                   (अक्षर स्थिर *) शून्य);
 
-  if (optind < argc)
+  अगर (optind < argc)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind]));
-      usage (EXIT_FAILURE);
+      usage (निकास_त्रुटि);
     }
 
   /* POSIX requires using getlogin (or equivalent code) and prohibits
      using a fallback technique.  */
-  char const *cp = getlogin ();
-  if (! cp)
-    error (EXIT_FAILURE, 0, _("no login name"));
+  अक्षर स्थिर *cp = getlogin ();
+  अगर (! cp)
+    error (निकास_त्रुटि, 0, _("no login name"));
 
-  puts (cp);
-  return EXIT_SUCCESS;
+  माला_दो (cp);
+  वापस निकास_सफल;
 }

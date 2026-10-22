@@ -16,40 +16,40 @@
 
 /* Written by Daniel Walsh <dwalsh@redhat.com> */
 
-#ifndef COREUTILS_SELINUX_H
+#अगर_अघोषित COREUTILS_SELINUX_H
 # define COREUTILS_SELINUX_H
 
-struct selabel_handle;
+काष्ठा selabel_handle;
 
 /* Return true if ERR corresponds to an unsupported request,
    or if there is no context or it's inaccessible.  */
-static inline bool
-ignorable_ctx_err (int err)
+अटल अंतरभूत bool
+ignorable_ctx_err (पूर्णांक err)
 {
-  return err == ENOTSUP || err == ENODATA;
+  वापस err == ENOTSUP || err == ENODATA;
 }
 
-# if HAVE_SELINUX_LABEL_H
+# अगर HAVE_SELINUX_LABEL_H
 
-extern bool
-restorecon (struct selabel_handle *selabel_handle,
-            char const *path, bool recurse);
-extern int
-defaultcon (struct selabel_handle *selabel_handle,
-            char const *path, mode_t mode);
+बाह्य bool
+restorecon (काष्ठा selabel_handle *selabel_handle,
+            अक्षर स्थिर *path, bool recurse);
+बाह्य पूर्णांक
+defaultcon (काष्ठा selabel_handle *selabel_handle,
+            अक्षर स्थिर *path, mode_t mode);
 
-# else
+# अन्यथा
 
-static inline bool
-restorecon (MAYBE_UNUSED struct selabel_handle *selabel_handle,
-            MAYBE_UNUSED char const *path, MAYBE_UNUSED bool recurse)
-{ errno = ENOTSUP; return false; }
+अटल अंतरभूत bool
+restorecon (MAYBE_UNUSED काष्ठा selabel_handle *selabel_handle,
+            MAYBE_UNUSED अक्षर स्थिर *path, MAYBE_UNUSED bool recurse)
+{ त्रुटि_सं = ENOTSUP; वापस false; }
 
-static inline int
-defaultcon (MAYBE_UNUSED struct selabel_handle *selabel_handle,
-            MAYBE_UNUSED char const *path, MAYBE_UNUSED mode_t mode)
-{ errno = ENOTSUP; return -1; }
+अटल अंतरभूत पूर्णांक
+defaultcon (MAYBE_UNUSED काष्ठा selabel_handle *selabel_handle,
+            MAYBE_UNUSED अक्षर स्थिर *path, MAYBE_UNUSED mode_t mode)
+{ त्रुटि_सं = ENOTSUP; वापस -1; }
 
 # endif
 
-#endif
+#पूर्ण_अगर

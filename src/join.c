@@ -16,209 +16,209 @@
 
    Written by Mike Haertel, mike@gnu.ai.mit.edu.  */
 
-#include <config.h>
+#समावेश <config.h>
 
-#include <sys/types.h>
-#include <getopt.h>
+#समावेश <sys/types.h>
+#समावेश <getopt.h>
 
-#include "system.h"
-#include "assure.h"
-#include "fadvise.h"
-#include "hard-locale.h"
-#include "linebuffer.h"
-#include "mcel.h"
-#include "memcasecmp.h"
-#include "quote.h"
-#include "skipchars.h"
-#include "stdio--.h"
-#include "xmemcoll.h"
-#include "xstrtol.h"
+#समावेश "system.h"
+#समावेश "assure.h"
+#समावेश "fadvise.h"
+#समावेश "hard-locale.h"
+#समावेश "linebuffer.h"
+#समावेश "mcel.h"
+#समावेश "memcasecmp.h"
+#समावेश "quote.h"
+#समावेश "skipchars.h"
+#समावेश "stdio--.h"
+#समावेश "xmemcoll.h"
+#समावेश "xstrtol.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "join"
+#घोषणा PROGRAM_NAME "join"
 
-#define AUTHORS proper_name ("Mike Haertel")
+#घोषणा AUTHORS proper_name ("Mike Haertel")
 
-#define join system_join
+#घोषणा join system_join
 
-#define SWAPLINES(a, b) do { \
-  struct line *tmp = a; \
+#घोषणा SWAPLINES(a, b) करो { \
+  काष्ठा पंक्ति *tmp = a; \
   a = b; \
   b = tmp; \
-} while (0);
+} जबतक (0);
 
 /* An element of the list identifying which fields to print for each
    output line.  */
-struct outlist
+काष्ठा outlist
   {
     /* File number: 0, 1, or 2.  0 means use the join field.
        1 means use the first file argument, 2 the second.  */
-    int file;
+    पूर्णांक file;
 
     /* Field index (zero-based), specified only when FILE is 1 or 2.  */
     idx_t field;
 
-    struct outlist *next;
+    काष्ठा outlist *अग्र;
   };
 
 /* A field of a line.  */
-struct field
+काष्ठा field
   {
-    char *beg;			/* First character in field.  */
+    अक्षर *beg;			/* First character in field.  */
     idx_t len;			/* The length of the field.  */
   };
 
 /* A line read from an input file.  */
-struct line
+काष्ठा पंक्ति
   {
-    struct linebuffer buf;	/* The line itself.  */
+    काष्ठा linebuffer buf;	/* The line itself.  */
     idx_t nfields;		/* Number of elements in 'fields'.  */
     idx_t nfields_allocated;	/* Number of elements allocated for 'fields'. */
-    struct field *fields COUNTED_BY (nfields);
+    काष्ठा field *fields COUNTED_BY (nfields);
   };
 
 /* One or more consecutive lines read from a file that all have the
    same join field value.  */
-struct seq
+काष्ठा seq
   {
-    idx_t count;		/* Elements used in 'lines'.  */
+    idx_t गिनती;		/* Elements used in 'lines'.  */
     idx_t alloc;		/* Elements allocated in 'lines'.  */
-    struct line **lines COUNTED_BY (alloc);
+    काष्ठा पंक्ति **पंक्तियाँ COUNTED_BY (alloc);
   };
 
 /* The previous line read from each file.  */
-static struct line *prevline[2] = {NULL, NULL};
+अटल काष्ठा पंक्ति *prevline[2] = {शून्य, शून्य};
 
 /* The number of lines read from each file.  */
-static uintmax_t line_no[2] = {0, 0};
+अटल uintmax_t पंक्ति_no[2] = {0, 0};
 
 /* The input file names.  */
-static char *g_names[2];
+अटल अक्षर *g_names[2];
 
 /* This provides an extra line buffer for each file.  We need these if we
    try to read two consecutive lines into the same buffer, since we don't
    want to overwrite the previous buffer before we check order. */
-static struct line *spareline[2] = {NULL, NULL};
+अटल काष्ठा पंक्ति *spareline[2] = {शून्य, शून्य};
 
 /* True if the LC_COLLATE locale is hard.  */
-static bool hard_LC_COLLATE;
+अटल bool hard_LC_COLLATE;
 
 /* If nonzero, print unpairable lines in file 1 or 2.  */
-static bool print_unpairables_1, print_unpairables_2;
+अटल bool print_unpairables_1, print_unpairables_2;
 
 /* If nonzero, print pairable lines.  */
-static bool print_pairables = true;
+अटल bool print_pairables = true;
 
 /* If nonzero, we have seen at least one unpairable line. */
-static bool seen_unpairable;
+अटल bool seen_unpairable;
 
 /* If nonzero, we have warned about disorder in that file. */
-static bool issued_disorder_warning[2];
+अटल bool issued_disorder_warning[2];
 
 /* Empty output field filler.  */
-static char const *empty_filler;
+अटल अक्षर स्थिर *empty_filler;
 
 /* Whether to ensure the same number of fields are output from each line.  */
-static bool autoformat;
+अटल bool autoformat;
 /* The number of fields to output for each line.
    Only significant when autoformat is true.  */
-static idx_t autocount_1;
-static idx_t autocount_2;
+अटल idx_t autocount_1;
+अटल idx_t autocount_2;
 
 /* Field to join on; -1 means they haven't been determined yet.  */
-static ptrdiff_t join_field_1 = -1;
-static ptrdiff_t join_field_2 = -1;
+अटल सूचक_भेद_प्रकार join_field_1 = -1;
+अटल सूचक_भेद_प्रकार join_field_2 = -1;
 
 /* List of fields to print.  */
-static struct outlist outlist_head;
+अटल काष्ठा outlist outlist_शीर्ष;
 
 /* Last element in 'outlist', where a new element can be added.  */
-static struct outlist *outlist_end = &outlist_head;
+अटल काष्ठा outlist *outlist_end = &outlist_शीर्ष;
 
 /* Tab character (or encoding error) separating fields.  If TAB.len == 0,
    fields are separated by any nonempty string of blanks, otherwise by
    exactly one tab character (or encoding error) equal to TAB.  */
-static mcel_t tab;
+अटल mcel_t tab;
 
 /* The output separator to use, and its length in bytes.  */
-static char const *output_separator = " ";
-static idx_t output_seplen = 1;
+अटल अक्षर स्थिर *output_separator = " ";
+अटल idx_t output_seplen = 1;
 
 /* If nonzero, check that the input is correctly ordered. */
-static enum
+अटल क्रमागत
   {
     CHECK_ORDER_DEFAULT,
     CHECK_ORDER_ENABLED,
     CHECK_ORDER_DISABLED
-  } check_input_order;
+  } check_निवेश_order;
 
-enum
+क्रमागत
 {
-  CHECK_ORDER_OPTION = CHAR_MAX + 1,
+  CHECK_ORDER_OPTION = अक्षर_उच्च + 1,
   NOCHECK_ORDER_OPTION,
-  HEADER_LINE_OPTION
+  HEADER_पंक्ति_OPTION
 };
 
 
-static struct option const longopts[] =
+अटल काष्ठा option स्थिर longopts[] =
 {
-  {"ignore-case", no_argument, NULL, 'i'},
-  {"check-order", no_argument, NULL, CHECK_ORDER_OPTION},
-  {"nocheck-order", no_argument, NULL, NOCHECK_ORDER_OPTION},
-  {"zero-terminated", no_argument, NULL, 'z'},
-  {"header", no_argument, NULL, HEADER_LINE_OPTION},
+  {"ignore-case", no_argument, शून्य, 'i'},
+  {"check-order", no_argument, शून्य, CHECK_ORDER_OPTION},
+  {"nocheck-order", no_argument, शून्य, NOCHECK_ORDER_OPTION},
+  {"zero-terminated", no_argument, शून्य, 'z'},
+  {"header", no_argument, शून्य, HEADER_पंक्ति_OPTION},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {शून्य, 0, शून्य, 0}
 };
 
 /* Used to print non-joining lines */
-static struct line uni_blank;
+अटल काष्ठा पंक्ति uni_blank;
 
 /* If nonzero, ignore case when comparing join fields.  */
-static bool ignore_case;
+अटल bool ignore_case;
 
 /* If nonzero, treat the first line of each file as column headers --
    join them without checking for ordering */
-static bool join_header_lines;
+अटल bool join_header_पंक्तियाँ;
 
 /* The character marking end of line. Default to \n. */
-static char eolchar = '\n';
+अटल अक्षर eolchar = '\n';
 
-void
-usage (int status)
+व्योम
+usage (पूर्णांक status)
 {
-  if (status != EXIT_SUCCESS)
+  अगर (status != निकास_सफल)
     emit_try_help ();
-  else
+  अन्यथा
     {
-      printf (_("\
+      म_लिखो (_("\
 Usage: %s [OPTION]... FILE1 FILE2\n\
 "),
               program_name);
-      fputs (_("\
-For each pair of input lines with identical join fields, write a line to\n\
-standard output.  The default join field is the first, delimited by blanks.\
+      ख_माला_दो (_("\
+For each pair of निवेश पंक्तियाँ with identical join fields, ग_लिखो a पंक्ति to\n\
+standard output.  The शेष join field is the first, delimited by blanks.\
 \n\
-"), stdout);
-      fputs (_("\
+"), मानक_निकास);
+      ख_माला_दो (_("\
 \n\
-When FILE1 or FILE2 (not both) is -, read standard input.\n\
-"), stdout);
+When FILE1 or FILE2 (not both) is -, पढ़ो standard निवेश.\n\
+"), मानक_निकास);
 
       oputs (_("\
   -a FILENUM\n\
-         also print unpairable lines from file FILENUM,\n\
+         also print unpairable पंक्तियाँ from file FILENUM,\n\
          where FILENUM is 1 or 2, corresponding to FILE1 or FILE2\n\
 "));
       oputs (_("\
   -e STRING\n\
-         replace missing (empty) input fields with STRING;\n\
+         replace missing (empty) निवेश fields with STRING;\n\
          I.e., missing fields specified with '-12jo' options\n\
 "));
       oputs (_("\
-  -i, --ignore-case\n\
-         ignore differences in case when comparing fields\n\
+  -i, --ignore-हाल\n\
+         ignore differences in हाल when comparing fields\n\
 "));
       oputs (_("\
   -j FIELD\n\
@@ -226,15 +226,15 @@ When FILE1 or FILE2 (not both) is -, read standard input.\n\
 "));
       oputs (_("\
   -o FORMAT\n\
-         obey FORMAT while constructing output line\n\
+         obey FORMAT जबतक constructing output पंक्ति\n\
 "));
       oputs (_("\
   -t CHAR\n\
-         use CHAR as input and output field separator\n\
+         use CHAR as निवेश and output field separator\n\
 "));
       oputs (_("\
   -v FILENUM\n\
-         like -a FILENUM, but suppress joined output lines\n\
+         like -a FILENUM, but suppress joined output पंक्तियाँ\n\
 "));
       oputs (_("\
   -1 FIELD\n\
@@ -246,112 +246,112 @@ When FILE1 or FILE2 (not both) is -, read standard input.\n\
 "));
       oputs (_("\
       --check-order\n\
-         check that the input is correctly sorted, even\n\
-         if all input lines are pairable\n\
+         check that the निवेश is correctly sorted, even\n\
+         अगर all निवेश पंक्तियाँ are pairable\n\
 "));
       oputs (_("\
       --nocheck-order\n\
-         do not check that the input is correctly sorted\n\
+         करो not check that the निवेश is correctly sorted\n\
 "));
       oputs (_("\
       --header\n\
-         treat the first line in each file as field headers,\n\
+         treat the first पंक्ति in each file as field headers,\n\
          print them without trying to pair them\n\
 "));
       oputs (_("\
   -z, --zero-terminated\n\
-         line delimiter is NUL, not newline\n\
+         पंक्ति delimiter is NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
-      fputs (_("\
+      ख_माला_दो (_("\
 \n\
 Unless -t CHAR is given, leading blanks separate fields and are ignored,\n\
-else fields are separated by CHAR.  Any FIELD is a field number counted\n\
+अन्यथा fields are separated by CHAR.  Any FIELD is a field संख्या counted\n\
 from 1.  FORMAT is one or more comma or blank separated specifications,\n\
 each being 'FILENUM.FIELD' or '0'.  Default FORMAT outputs the join field,\n\
 the remaining fields from FILE1, the remaining fields from FILE2, all\n\
 separated by CHAR.  If FORMAT is the keyword 'auto', then the first\n\
-line of each file determines the number of fields output for each line.\n\
+पंक्ति of each file determines the संख्या of fields output क्रम each पंक्ति.\n\
 \n\
 Important: FILE1 and FILE2 must be sorted on the join fields.\n\
-E.g., use \"sort -k 1b,1\" if 'join' has no options,\n\
-or use \"join -t ''\" if 'sort' has no options.\n\
+E.g., use \"sort -k 1b,1\" अगर 'join' has no options,\n\
+or use \"join -t ''\" अगर 'sort' has no options.\n\
 Comparisons honor the rules specified by 'LC_COLLATE'.\n\
-If the input is not sorted and some lines cannot be joined, a\n\
+If the निवेश is not sorted and some पंक्तियाँ cannot be joined, a\n\
 warning message will be given.\n\
-"), stdout);
+"), मानक_निकास);
       emit_ancillary_info (PROGRAM_NAME);
     }
-  exit (status);
+  निकास (status);
 }
 
 /* Record a field in LINE, with location FIELD and size LEN.  */
 
-static void
-extract_field (struct line *line, char *field, idx_t len)
+अटल व्योम
+extract_field (काष्ठा पंक्ति *पंक्ति, अक्षर *field, idx_t len)
 {
-  if (line->nfields >= line->nfields_allocated)
-    line->fields = xpalloc (line->fields, &line->nfields_allocated, 1,
-                            -1, sizeof *line->fields);
-  idx_t const field_index = line->nfields++;
-  line->fields[field_index].beg = field;
-  line->fields[field_index].len = len;
+  अगर (पंक्ति->nfields >= पंक्ति->nfields_allocated)
+    पंक्ति->fields = xpalloc (पंक्ति->fields, &पंक्ति->nfields_allocated, 1,
+                            -1, माप *पंक्ति->fields);
+  idx_t स्थिर field_सूचकांक = पंक्ति->nfields++;
+  पंक्ति->fields[field_सूचकांक].beg = field;
+  पंक्ति->fields[field_सूचकांक].len = len;
 }
 
-static bool
+अटल bool
 eq_tab (mcel_t g)
 {
-  return mcel_eq (g, tab);
+  वापस mcel_eq (g, tab);
 }
 
-static bool
+अटल bool
 newline_or_blank (mcel_t g)
 {
-  return g.ch == '\n' || c32issep (g.ch);
+  वापस g.ch == '\n' || c32issep (g.ch);
 }
 
 /* Fill in the 'fields' structure in LINE.  */
 
-static void
-xfields (struct line *line)
+अटल व्योम
+xfields (काष्ठा पंक्ति *पंक्ति)
 {
-  char *ptr = line->buf.buffer;
-  char const *lim = ptr + line->buf.length - 1;
+  अक्षर *ptr = पंक्ति->buf.बफर;
+  अक्षर स्थिर *lim = ptr + पंक्ति->buf.लंबाई - 1;
 
-  if (ptr == lim)
-    return;
+  अगर (ptr == lim)
+    वापस;
 
-  if (!tab.len)
-    while ((ptr = skip_buf_matching (ptr, lim, newline_or_blank, true)) < lim)
+  अगर (!tab.len)
+    जबतक ((ptr = skip_buf_matching (ptr, lim, newline_or_blank, true)) < lim)
       {
-        char *sep = skip_buf_matching (ptr, lim, newline_or_blank, false);
-        extract_field (line, ptr, sep - ptr);
+        अक्षर *sep = skip_buf_matching (ptr, lim, newline_or_blank, false);
+        extract_field (पंक्ति, ptr, sep - ptr);
         ptr = sep;
       }
-  else
+  अन्यथा
     {
-      if (tab.ch != '\n')
-        for (char *sep;
+      अगर (tab.ch != '\n')
+        क्रम (अक्षर *sep;
              (sep = skip_buf_matching (ptr, lim, eq_tab, false)) < lim;
              ptr = sep + mcel_scan (sep, lim).len)
-          extract_field (line, ptr, sep - ptr);
+          extract_field (पंक्ति, ptr, sep - ptr);
 
-      extract_field (line, ptr, lim - ptr);
+      extract_field (पंक्ति, ptr, lim - ptr);
     }
 }
 
-static void
-freeline (struct line *line)
+अटल व्योम
+freeline (काष्ठा पंक्ति *पंक्ति)
 {
-  if (line == NULL)
-    return;
-  free (line->fields);
-  line->fields = NULL;
-  line->nfields_allocated = 0;
-  free (line->buf.buffer);
-  line->buf.buffer = NULL;
-  line->buf.size = 0;
+  अगर (पंक्ति == शून्य)
+    वापस;
+  मुक्त (पंक्ति->fields);
+  पंक्ति->fields = शून्य;
+  पंक्ति->nfields_allocated = 0;
+  मुक्त (पंक्ति->buf.बफर);
+  पंक्ति->buf.बफर = शून्य;
+  पंक्ति->buf.आकार = 0;
 }
 
 /* Return <0 if the join field in LINE1 compares less than the one in LINE2;
@@ -359,61 +359,61 @@ freeline (struct line *line)
    Report an error and exit if the comparison fails.
    Use join fields JF_1 and JF_2 respectively.  */
 
-static int
-keycmp (struct line const *line1, struct line const *line2,
+अटल पूर्णांक
+keycmp (काष्ठा पंक्ति स्थिर *line1, काष्ठा पंक्ति स्थिर *line2,
         idx_t jf_1, idx_t jf_2)
 {
   /* Start of field to compare in each file.  */
-  char *beg1;
-  char *beg2;
+  अक्षर *beg1;
+  अक्षर *beg2;
 
   idx_t len1;
   idx_t len2;		/* Length of fields to compare.  */
-  int diff;
+  पूर्णांक diff;
 
-  if (jf_1 < line1->nfields)
+  अगर (jf_1 < line1->nfields)
     {
       beg1 = line1->fields[jf_1].beg;
       len1 = line1->fields[jf_1].len;
     }
-  else
+  अन्यथा
     {
-      beg1 = NULL;
+      beg1 = शून्य;
       len1 = 0;
     }
 
-  if (jf_2 < line2->nfields)
+  अगर (jf_2 < line2->nfields)
     {
       beg2 = line2->fields[jf_2].beg;
       len2 = line2->fields[jf_2].len;
     }
-  else
+  अन्यथा
     {
-      beg2 = NULL;
+      beg2 = शून्य;
       len2 = 0;
     }
 
-  if (len1 == 0)
-    return len2 == 0 ? 0 : -1;
-  if (len2 == 0)
-    return 1;
+  अगर (len1 == 0)
+    वापस len2 == 0 ? 0 : -1;
+  अगर (len2 == 0)
+    वापस 1;
 
-  if (ignore_case)
+  अगर (ignore_case)
     {
       /* FIXME: ignore_case does not work with NLS (in particular,
          with multibyte chars).  */
       diff = memcasecmp (beg1, beg2, MIN (len1, len2));
     }
-  else
+  अन्यथा
     {
-      if (hard_LC_COLLATE)
-        return xmemcoll (beg1, len1, beg2, len2);
-      diff = memcmp (beg1, beg2, MIN (len1, len2));
+      अगर (hard_LC_COLLATE)
+        वापस xmemcoll (beg1, len1, beg2, len2);
+      diff = स_भेद (beg1, beg2, MIN (len1, len2));
     }
 
-  if (diff)
-    return diff;
-  return _GL_CMP (len1, len2);
+  अगर (diff)
+    वापस diff;
+  वापस _GL_CMP (len1, len2);
 }
 
 /* Check that successive input lines PREV and CURRENT from input file
@@ -427,33 +427,33 @@ keycmp (struct line const *line1, struct line const *line2,
 
    A message is printed at most once per input file. */
 
-static void
-check_order (const struct line *prev,
-             const struct line *current,
-             int whatfile)
+अटल व्योम
+check_order (स्थिर काष्ठा पंक्ति *पूर्व,
+             स्थिर काष्ठा पंक्ति *current,
+             पूर्णांक whatfile)
 {
-  if (check_input_order != CHECK_ORDER_DISABLED
-      && ((check_input_order == CHECK_ORDER_ENABLED) || seen_unpairable))
+  अगर (check_निवेश_order != CHECK_ORDER_DISABLED
+      && ((check_निवेश_order == CHECK_ORDER_ENABLED) || seen_unpairable))
     {
-      if (!issued_disorder_warning[whatfile - 1])
+      अगर (!issued_disorder_warning[whatfile - 1])
         {
           idx_t join_field = whatfile == 1 ? join_field_1 : join_field_2;
-          if (keycmp (prev, current, join_field, join_field) > 0)
+          अगर (keycmp (पूर्व, current, join_field, join_field) > 0)
             {
               /* Exclude any trailing newline. */
-              idx_t len = current->buf.length;
-              if (0 < len && current->buf.buffer[len - 1] == '\n')
+              idx_t len = current->buf.लंबाई;
+              अगर (0 < len && current->buf.बफर[len - 1] == '\n')
                 --len;
 
               /* If the offending line is longer than INT_MAX, output
                  only the first INT_MAX bytes in this diagnostic.  */
-              len = MIN (INT_MAX, len);
+              len = MIN (पूर्णांक_उच्च, len);
 
-              error ((check_input_order == CHECK_ORDER_ENABLED
-                      ? EXIT_FAILURE : 0),
+              error ((check_निवेश_order == CHECK_ORDER_ENABLED
+                      ? निकास_त्रुटि : 0),
                      0, _("%s:%ju: is not sorted: %.*s"),
-                     g_names[whatfile - 1], line_no[whatfile - 1],
-                     (int) len, current->buf.buffer);
+                     g_names[whatfile - 1], पंक्ति_no[whatfile - 1],
+                     (पूर्णांक) len, current->buf.बफर);
 
               /* If we get to here, the message was merely a warning.
                  Arrange to issue it only once per file.  */
@@ -463,235 +463,235 @@ check_order (const struct line *prev,
     }
 }
 
-static inline void
-reset_line (struct line *line)
+अटल अंतरभूत व्योम
+reset_पंक्ति (काष्ठा पंक्ति *पंक्ति)
 {
-  line->nfields = 0;
+  पंक्ति->nfields = 0;
 }
 
-static struct line *
-init_linep (struct line **linep)
+अटल काष्ठा पंक्ति *
+init_linep (काष्ठा पंक्ति **linep)
 {
-  struct line *line = xzalloc (sizeof *line);
-  *linep = line;
-  return line;
+  काष्ठा पंक्ति *पंक्ति = xzalloc (माप *पंक्ति);
+  *linep = पंक्ति;
+  वापस पंक्ति;
 }
 
 /* Read a line from FP into LINE and split it into fields.
    Return true if successful.  */
 
-static bool
-get_line (FILE *fp, struct line **linep, int which)
+अटल bool
+get_पंक्ति (खाता *fp, काष्ठा पंक्ति **linep, पूर्णांक which)
 {
-  struct line *line = *linep;
+  काष्ठा पंक्ति *पंक्ति = *linep;
 
-  if (line == prevline[which - 1])
+  अगर (पंक्ति == prevline[which - 1])
     {
-      SWAPLINES (line, spareline[which - 1]);
-      *linep = line;
+      SWAPLINES (पंक्ति, spareline[which - 1]);
+      *linep = पंक्ति;
     }
 
-  if (line)
-    reset_line (line);
-  else
-    line = init_linep (linep);
+  अगर (पंक्ति)
+    reset_पंक्ति (पंक्ति);
+  अन्यथा
+    पंक्ति = init_linep (linep);
 
-  if (! readlinebuffer_delim (&line->buf, fp, eolchar))
+  अगर (! readlinebuffer_delim (&पंक्ति->buf, fp, eolchar))
     {
-      if (ferror (fp))
-        error (EXIT_FAILURE, errno, _("read error"));
-      freeline (line);
-      return false;
+      अगर (ख_त्रुटि (fp))
+        error (निकास_त्रुटि, त्रुटि_सं, _("read error"));
+      freeline (पंक्ति);
+      वापस false;
     }
-  ++line_no[which - 1];
+  ++पंक्ति_no[which - 1];
 
-  xfields (line);
+  xfields (पंक्ति);
 
-  if (prevline[which - 1])
-    check_order (prevline[which - 1], line, which);
+  अगर (prevline[which - 1])
+    check_order (prevline[which - 1], पंक्ति, which);
 
-  prevline[which - 1] = line;
-  return true;
+  prevline[which - 1] = पंक्ति;
+  वापस true;
 }
 
-static void
-free_spareline (void)
+अटल व्योम
+free_spareline (व्योम)
 {
-  for (idx_t i = 0; i < countof (spareline); i++)
+  क्रम (idx_t i = 0; i < countof (spareline); i++)
     {
-      if (spareline[i])
+      अगर (spareline[i])
         {
           freeline (spareline[i]);
-          free (spareline[i]);
+          मुक्त (spareline[i]);
         }
     }
 }
 
-static void
-initseq (struct seq *seq)
+अटल व्योम
+initseq (काष्ठा seq *seq)
 {
-  seq->count = 0;
+  seq->गिनती = 0;
   seq->alloc = 0;
-  seq->lines = NULL;
+  seq->पंक्तियाँ = शून्य;
 }
 
 /* Read a line from FP and add it to SEQ.  Return true if successful.  */
 
-static bool
-getseq (FILE *fp, struct seq *seq, int whichfile)
+अटल bool
+getseq (खाता *fp, काष्ठा seq *seq, पूर्णांक whichfile)
 {
-  if (seq->count == seq->alloc)
+  अगर (seq->गिनती == seq->alloc)
     {
-      seq->lines = xpalloc (seq->lines, &seq->alloc, 1, -1, sizeof *seq->lines);
-      for (idx_t i = seq->count; i < seq->alloc; i++)
-        seq->lines[i] = NULL;
+      seq->पंक्तियाँ = xpalloc (seq->पंक्तियाँ, &seq->alloc, 1, -1, माप *seq->पंक्तियाँ);
+      क्रम (idx_t i = seq->गिनती; i < seq->alloc; i++)
+        seq->पंक्तियाँ[i] = शून्य;
     }
 
-  if (get_line (fp, &seq->lines[seq->count], whichfile))
+  अगर (get_पंक्ति (fp, &seq->पंक्तियाँ[seq->गिनती], whichfile))
     {
-      ++seq->count;
-      return true;
+      ++seq->गिनती;
+      वापस true;
     }
-  return false;
+  वापस false;
 }
 
 /* Read a line from FP and add it to SEQ, as the first item if FIRST is
    true, else as the next.  */
-static bool
-advance_seq (FILE *fp, struct seq *seq, bool first, int whichfile)
+अटल bool
+advance_seq (खाता *fp, काष्ठा seq *seq, bool first, पूर्णांक whichfile)
 {
-  if (first)
-    seq->count = 0;
+  अगर (first)
+    seq->गिनती = 0;
 
-  return getseq (fp, seq, whichfile);
+  वापस getseq (fp, seq, whichfile);
 }
 
-static void
-delseq (struct seq *seq)
+अटल व्योम
+delseq (काष्ठा seq *seq)
 {
-  for (idx_t i = 0; i < seq->alloc; i++)
+  क्रम (idx_t i = 0; i < seq->alloc; i++)
     {
-      freeline (seq->lines[i]);
-      free (seq->lines[i]);
+      freeline (seq->पंक्तियाँ[i]);
+      मुक्त (seq->पंक्तियाँ[i]);
     }
-  free (seq->lines);
+  मुक्त (seq->पंक्तियाँ);
 }
 
 
 /* Print field N of LINE if it exists and is nonempty, otherwise
    'empty_filler' if it is nonempty.  */
 
-static void
-prfield (idx_t n, struct line const *line)
+अटल व्योम
+prfield (idx_t n, काष्ठा पंक्ति स्थिर *पंक्ति)
 {
-  if (n < line->nfields)
+  अगर (n < पंक्ति->nfields)
     {
-      idx_t len = line->fields[n].len;
-      if (len)
-        fwrite (line->fields[n].beg, 1, len, stdout);
-      else if (empty_filler)
-        fputs (empty_filler, stdout);
+      idx_t len = पंक्ति->fields[n].len;
+      अगर (len)
+        ख_डालो (पंक्ति->fields[n].beg, 1, len, मानक_निकास);
+      अन्यथा अगर (empty_filler)
+        ख_माला_दो (empty_filler, मानक_निकास);
     }
-  else if (empty_filler)
-    fputs (empty_filler, stdout);
+  अन्यथा अगर (empty_filler)
+    ख_माला_दो (empty_filler, मानक_निकास);
 }
 
 /* Output all the fields in line, other than the join field.  */
 
-static void
-prfields (struct line const *line, idx_t join_field, idx_t autocount)
+अटल व्योम
+prfields (काष्ठा पंक्ति स्थिर *पंक्ति, idx_t join_field, idx_t autocount)
 {
-  idx_t nfields = autoformat ? autocount : line->nfields;
+  idx_t nfields = autoformat ? autocount : पंक्ति->nfields;
 
-  for (idx_t i = 0; i < join_field && i < nfields; ++i)
+  क्रम (idx_t i = 0; i < join_field && i < nfields; ++i)
     {
-      fwrite (output_separator, 1, output_seplen, stdout);
-      prfield (i, line);
+      ख_डालो (output_separator, 1, output_seplen, मानक_निकास);
+      prfield (i, पंक्ति);
     }
-  for (idx_t i = join_field + 1; i < nfields; ++i)
+  क्रम (idx_t i = join_field + 1; i < nfields; ++i)
     {
-      fwrite (output_separator, 1, output_seplen, stdout);
-      prfield (i, line);
+      ख_डालो (output_separator, 1, output_seplen, मानक_निकास);
+      prfield (i, पंक्ति);
     }
 }
 
 /* Print the join of LINE1 and LINE2.  */
 
-static void
-prjoin (struct line const *line1, struct line const *line2)
+अटल व्योम
+prjoin (काष्ठा पंक्ति स्थिर *line1, काष्ठा पंक्ति स्थिर *line2)
 {
-  const struct outlist *outlist;
+  स्थिर काष्ठा outlist *outlist;
   idx_t field;
-  struct line const *line;
+  काष्ठा पंक्ति स्थिर *पंक्ति;
 
-  outlist = outlist_head.next;
-  if (outlist)
+  outlist = outlist_शीर्ष.अग्र;
+  अगर (outlist)
     {
-      const struct outlist *o;
+      स्थिर काष्ठा outlist *o;
 
       o = outlist;
-      while (true)
+      जबतक (true)
         {
-          if (o->file == 0)
+          अगर (o->file == 0)
             {
-              if (line1 == &uni_blank)
+              अगर (line1 == &uni_blank)
                 {
-                  line = line2;
+                  पंक्ति = line2;
                   field = join_field_2;
                 }
-              else
+              अन्यथा
                 {
-                  line = line1;
+                  पंक्ति = line1;
                   field = join_field_1;
                 }
             }
-          else
+          अन्यथा
             {
-              line = (o->file == 1 ? line1 : line2);
+              पंक्ति = (o->file == 1 ? line1 : line2);
               field = o->field;
             }
-          prfield (field, line);
-          o = o->next;
-          if (o == NULL)
-            break;
-          fwrite (output_separator, 1, output_seplen, stdout);
+          prfield (field, पंक्ति);
+          o = o->अग्र;
+          अगर (o == शून्य)
+            अवरोध;
+          ख_डालो (output_separator, 1, output_seplen, मानक_निकास);
         }
-      putchar (eolchar);
+      अक्षर_दो (eolchar);
     }
-  else
+  अन्यथा
     {
-      if (line1 == &uni_blank)
+      अगर (line1 == &uni_blank)
         {
-          line = line2;
+          पंक्ति = line2;
           field = join_field_2;
         }
-      else
+      अन्यथा
         {
-          line = line1;
+          पंक्ति = line1;
           field = join_field_1;
         }
 
       /* Output the join field.  */
-      prfield (field, line);
+      prfield (field, पंक्ति);
 
       /* Output other fields.  */
       prfields (line1, join_field_1, autocount_1);
       prfields (line2, join_field_2, autocount_2);
 
-      putchar (eolchar);
+      अक्षर_दो (eolchar);
     }
 
-  if (ferror (stdout))
+  अगर (ख_त्रुटि (मानक_निकास))
     write_error ();
 }
 
 /* Print the join of the files in FP1 and FP2.  */
 
-static void
-join (FILE *fp1, FILE *fp2)
+अटल व्योम
+join (खाता *fp1, खाता *fp2)
 {
-  struct seq seq1, seq2;
-  int diff;
+  काष्ठा seq seq1, seq2;
+  पूर्णांक diff;
   bool eof1, eof2;
 
   fadvise (fp1, FADVISE_SEQUENTIAL);
@@ -703,141 +703,141 @@ join (FILE *fp1, FILE *fp2)
   initseq (&seq2);
   getseq (fp2, &seq2, 2);
 
-  if (autoformat)
+  अगर (autoformat)
     {
-      autocount_1 = seq1.count ? seq1.lines[0]->nfields : 0;
-      autocount_2 = seq2.count ? seq2.lines[0]->nfields : 0;
+      autocount_1 = seq1.गिनती ? seq1.पंक्तियाँ[0]->nfields : 0;
+      autocount_2 = seq2.गिनती ? seq2.पंक्तियाँ[0]->nfields : 0;
     }
 
-  if (join_header_lines && (seq1.count || seq2.count))
+  अगर (join_header_पंक्तियाँ && (seq1.गिनती || seq2.गिनती))
     {
-      struct line const *hline1 = seq1.count ? seq1.lines[0] : &uni_blank;
-      struct line const *hline2 = seq2.count ? seq2.lines[0] : &uni_blank;
+      काष्ठा पंक्ति स्थिर *hline1 = seq1.गिनती ? seq1.पंक्तियाँ[0] : &uni_blank;
+      काष्ठा पंक्ति स्थिर *hline2 = seq2.गिनती ? seq2.पंक्तियाँ[0] : &uni_blank;
       prjoin (hline1, hline2);
-      prevline[0] = NULL;
-      prevline[1] = NULL;
-      if (seq1.count)
+      prevline[0] = शून्य;
+      prevline[1] = शून्य;
+      अगर (seq1.गिनती)
         advance_seq (fp1, &seq1, true, 1);
-      if (seq2.count)
+      अगर (seq2.गिनती)
         advance_seq (fp2, &seq2, true, 2);
     }
 
-  while (seq1.count && seq2.count)
+  जबतक (seq1.गिनती && seq2.गिनती)
     {
-      diff = keycmp (seq1.lines[0], seq2.lines[0],
+      diff = keycmp (seq1.पंक्तियाँ[0], seq2.पंक्तियाँ[0],
                      join_field_1, join_field_2);
-      if (diff < 0)
+      अगर (diff < 0)
         {
-          if (print_unpairables_1)
-            prjoin (seq1.lines[0], &uni_blank);
+          अगर (print_unpairables_1)
+            prjoin (seq1.पंक्तियाँ[0], &uni_blank);
           advance_seq (fp1, &seq1, true, 1);
           seen_unpairable = true;
-          continue;
+          जारी;
         }
-      if (diff > 0)
+      अगर (diff > 0)
         {
-          if (print_unpairables_2)
-            prjoin (&uni_blank, seq2.lines[0]);
+          अगर (print_unpairables_2)
+            prjoin (&uni_blank, seq2.पंक्तियाँ[0]);
           advance_seq (fp2, &seq2, true, 2);
           seen_unpairable = true;
-          continue;
+          जारी;
         }
 
       /* Keep reading lines from file1 as long as they continue to
          match the current line from file2.  */
       eof1 = false;
-      do
-        if (!advance_seq (fp1, &seq1, false, 1))
+      करो
+        अगर (!advance_seq (fp1, &seq1, false, 1))
           {
             eof1 = true;
-            ++seq1.count;
-            break;
+            ++seq1.गिनती;
+            अवरोध;
           }
-      while (!keycmp (seq1.lines[seq1.count - 1], seq2.lines[0],
+      जबतक (!keycmp (seq1.पंक्तियाँ[seq1.गिनती - 1], seq2.पंक्तियाँ[0],
                       join_field_1, join_field_2));
 
       /* Keep reading lines from file2 as long as they continue to
          match the current line from file1.  */
       eof2 = false;
-      do
-        if (!advance_seq (fp2, &seq2, false, 2))
+      करो
+        अगर (!advance_seq (fp2, &seq2, false, 2))
           {
             eof2 = true;
-            ++seq2.count;
-            break;
+            ++seq2.गिनती;
+            अवरोध;
           }
-      while (!keycmp (seq1.lines[0], seq2.lines[seq2.count - 1],
+      जबतक (!keycmp (seq1.पंक्तियाँ[0], seq2.पंक्तियाँ[seq2.गिनती - 1],
                       join_field_1, join_field_2));
 
-      if (print_pairables)
+      अगर (print_pairables)
         {
-          for (idx_t i = 0; i < seq1.count - 1; ++i)
+          क्रम (idx_t i = 0; i < seq1.गिनती - 1; ++i)
             {
-              for (idx_t j = 0; j < seq2.count - 1; ++j)
-                prjoin (seq1.lines[i], seq2.lines[j]);
+              क्रम (idx_t j = 0; j < seq2.गिनती - 1; ++j)
+                prjoin (seq1.पंक्तियाँ[i], seq2.पंक्तियाँ[j]);
             }
         }
 
-      if (!eof1)
+      अगर (!eof1)
         {
-          SWAPLINES (seq1.lines[0], seq1.lines[seq1.count - 1]);
-          seq1.count = 1;
+          SWAPLINES (seq1.पंक्तियाँ[0], seq1.पंक्तियाँ[seq1.गिनती - 1]);
+          seq1.गिनती = 1;
         }
-      else
-        seq1.count = 0;
+      अन्यथा
+        seq1.गिनती = 0;
 
-      if (!eof2)
+      अगर (!eof2)
         {
-          SWAPLINES (seq2.lines[0], seq2.lines[seq2.count - 1]);
-          seq2.count = 1;
+          SWAPLINES (seq2.पंक्तियाँ[0], seq2.पंक्तियाँ[seq2.गिनती - 1]);
+          seq2.गिनती = 1;
         }
-      else
-        seq2.count = 0;
+      अन्यथा
+        seq2.गिनती = 0;
     }
 
   /* If the user did not specify --nocheck-order, then we read the
      tail ends of both inputs to verify that they are in order.  We
      skip the rest of the tail once we have issued a warning for that
      file, unless we actually need to print the unpairable lines.  */
-  struct line *line = NULL;
+  काष्ठा पंक्ति *पंक्ति = शून्य;
   bool checktail = false;
 
-  if (check_input_order != CHECK_ORDER_DISABLED
+  अगर (check_निवेश_order != CHECK_ORDER_DISABLED
       && !(issued_disorder_warning[0] && issued_disorder_warning[1]))
     checktail = true;
 
-  if ((print_unpairables_1 || checktail) && seq1.count)
+  अगर ((print_unpairables_1 || checktail) && seq1.गिनती)
     {
-      if (print_unpairables_1)
-        prjoin (seq1.lines[0], &uni_blank);
-      if (seq2.count)
+      अगर (print_unpairables_1)
+        prjoin (seq1.पंक्तियाँ[0], &uni_blank);
+      अगर (seq2.गिनती)
         seen_unpairable = true;
-      while (get_line (fp1, &line, 1))
+      जबतक (get_पंक्ति (fp1, &पंक्ति, 1))
         {
-          if (print_unpairables_1)
-            prjoin (line, &uni_blank);
-          if (issued_disorder_warning[0] && !print_unpairables_1)
-            break;
+          अगर (print_unpairables_1)
+            prjoin (पंक्ति, &uni_blank);
+          अगर (issued_disorder_warning[0] && !print_unpairables_1)
+            अवरोध;
         }
     }
 
-  if ((print_unpairables_2 || checktail) && seq2.count)
+  अगर ((print_unpairables_2 || checktail) && seq2.गिनती)
     {
-      if (print_unpairables_2)
-        prjoin (&uni_blank, seq2.lines[0]);
-      if (seq1.count)
+      अगर (print_unpairables_2)
+        prjoin (&uni_blank, seq2.पंक्तियाँ[0]);
+      अगर (seq1.गिनती)
         seen_unpairable = true;
-      while (get_line (fp2, &line, 2))
+      जबतक (get_पंक्ति (fp2, &पंक्ति, 2))
         {
-          if (print_unpairables_2)
-            prjoin (&uni_blank, line);
-          if (issued_disorder_warning[1] && !print_unpairables_2)
-            break;
+          अगर (print_unpairables_2)
+            prjoin (&uni_blank, पंक्ति);
+          अगर (issued_disorder_warning[1] && !print_unpairables_2)
+            अवरोध;
         }
     }
 
-  freeline (line);
-  free (line);
+  freeline (पंक्ति);
+  मुक्त (पंक्ति);
 
   delseq (&seq1);
   delseq (&seq2);
@@ -845,21 +845,21 @@ join (FILE *fp1, FILE *fp2)
 
 /* Add a field spec for field FIELD of file FILE to 'outlist'.  */
 
-static void
-add_field (int file, idx_t field)
+अटल व्योम
+add_field (पूर्णांक file, idx_t field)
 {
-  struct outlist *o;
+  काष्ठा outlist *o;
 
   affirm (file == 0 || file == 1 || file == 2);
   affirm (file != 0 || field == 0);
 
-  o = xmalloc (sizeof *o);
+  o = xmalloc (माप *o);
   o->file = file;
   o->field = field;
-  o->next = NULL;
+  o->अग्र = शून्य;
 
   /* Add to the end of the list so the fields are in the right order.  */
-  outlist_end->next = o;
+  outlist_end->अग्र = o;
   outlist_end = o;
 }
 
@@ -869,100 +869,100 @@ add_field (int file, idx_t field)
    to PTRDIFF_MAX.  Otherwise, if a value cannot be converted, give a
    diagnostic and exit.  */
 
-static idx_t
-string_to_join_field (char const *str)
+अटल idx_t
+string_to_join_field (अक्षर स्थिर *str)
 {
   intmax_t val;
 
-  strtol_error s_err = xstrtoimax (str, NULL, 10, &val, "");
-  if (s_err == LONGINT_OVERFLOW || (s_err == LONGINT_OK && PTRDIFF_MAX < val))
+  strtol_error s_err = xstrtoimax (str, शून्य, 10, &val, "");
+  अगर (s_err == LONGINT_OVERFLOW || (s_err == LONGINT_OK && PTRDIFF_MAX < val))
     val = PTRDIFF_MAX;
-  else if (s_err != LONGINT_OK || val <= 0)
-    error (EXIT_FAILURE, 0, _("invalid field number: %s"), quote (str));
+  अन्यथा अगर (s_err != LONGINT_OK || val <= 0)
+    error (निकास_त्रुटि, 0, _("invalid field number: %s"), quote (str));
 
-  return val - 1;
+  वापस val - 1;
 }
 
 /* Convert a single field specifier string, S, to a *FILE_INDEX, *FIELD_INDEX
    pair.  In S, the field index string is 1-based; *FIELD_INDEX is zero-based.
    If S is valid, return true.  Otherwise, give a diagnostic and exit.  */
 
-static void
-decode_field_spec (char const *s, int *file_index, idx_t *field_index)
+अटल व्योम
+decode_field_spec (अक्षर स्थिर *s, पूर्णांक *file_सूचकांक, idx_t *field_सूचकांक)
 {
   /* The first character must be 0, 1, or 2.  */
-  switch (s[0])
+  चयन (s[0])
     {
-    case '0':
-      if (s[1])
+    हाल '0':
+      अगर (s[1])
         {
           /* '0' must be all alone -- no '.FIELD'.  */
-          error (EXIT_FAILURE, 0, _("invalid field specifier: %s"), quote (s));
+          error (निकास_त्रुटि, 0, _("invalid field specifier: %s"), quote (s));
         }
-      *file_index = 0;
-      *field_index = 0;
-      break;
+      *file_सूचकांक = 0;
+      *field_सूचकांक = 0;
+      अवरोध;
 
-    case '1':
-    case '2':
-      if (s[1] != '.')
-        error (EXIT_FAILURE, 0, _("invalid field specifier: %s"), quote (s));
-      *file_index = s[0] - '0';
-      *field_index = string_to_join_field (s + 2);
-      break;
+    हाल '1':
+    हाल '2':
+      अगर (s[1] != '.')
+        error (निकास_त्रुटि, 0, _("invalid field specifier: %s"), quote (s));
+      *file_सूचकांक = s[0] - '0';
+      *field_सूचकांक = string_to_join_field (s + 2);
+      अवरोध;
 
-    default:
-      error (EXIT_FAILURE, 0,
+    शेष:
+      error (निकास_त्रुटि, 0,
              _("invalid file number in field spec: %s"), quote (s));
     }
 }
 
-static bool
+अटल bool
 comma_or_blank (mcel_t g)
 {
-  return g.ch == ',' || c32issep (g.ch);
+  वापस g.ch == ',' || c32issep (g.ch);
 }
 
 /* Add the comma or blank separated field spec(s) in STR to 'outlist'.  */
 
-static void
-add_field_list (char *str)
+अटल व्योम
+add_field_list (अक्षर *str)
 {
-  char *p = str;
+  अक्षर *p = str;
 
-  do
+  करो
     {
-      int file_index;
-      idx_t field_index;
-      char const *spec_item = p;
+      पूर्णांक file_सूचकांक;
+      idx_t field_सूचकांक;
+      अक्षर स्थिर *spec_item = p;
       p = skip_str_matching (spec_item, comma_or_blank, false);
-      if (*p)
+      अगर (*p)
         {
           mcel_t g = mcel_scanz (p);
           *p = '\0';
           p += g.len;
         }
-      decode_field_spec (spec_item, &file_index, &field_index);
-      add_field (file_index, field_index);
+      decode_field_spec (spec_item, &file_सूचकांक, &field_सूचकांक);
+      add_field (file_सूचकांक, field_सूचकांक);
     }
-  while (*p);
+  जबतक (*p);
 }
 
 /* Set the join field *VAR to VAL, but report an error if *VAR is set
    more than once to incompatible values.  */
 
-static void
-set_join_field (ptrdiff_t *var, idx_t val)
+अटल व्योम
+set_join_field (सूचक_भेद_प्रकार *var, idx_t val)
 {
-  if (0 <= *var && *var != val)
-    error (EXIT_FAILURE, 0,
+  अगर (0 <= *var && *var != val)
+    error (निकास_त्रुटि, 0,
            _("incompatible join fields %td, %td"), *var, val);
   *var = val;
 }
 
 /* Status of command-line arguments.  */
 
-enum operand_status
+क्रमागत operand_status
   {
     /* This argument must be an operand, i.e., one of the files to be
        joined.  */
@@ -981,38 +981,38 @@ enum operand_status
 /* Add NAME to the array of input file NAMES with operand statuses
    OPERAND_STATUS; currently there are NFILES names in the list.  */
 
-static void
-add_file_name (char *name, char *names[2],
-               int operand_status[2], int joption_count[2], int *nfiles,
-               int *prev_optc_status, int *optc_status)
+अटल व्योम
+add_file_name (अक्षर *name, अक्षर *names[2],
+               पूर्णांक operand_status[2], पूर्णांक joption_गिनती[2], पूर्णांक *nfiles,
+               पूर्णांक *पूर्व_optc_status, पूर्णांक *optc_status)
 {
-  int n = *nfiles;
+  पूर्णांक n = *nfiles;
 
-  if (n == 2)
+  अगर (n == 2)
     {
       bool op0 = (operand_status[0] == MUST_BE_OPERAND);
-      char *arg = names[op0];
-      switch (operand_status[op0])
+      अक्षर *arg = names[op0];
+      चयन (operand_status[op0])
         {
-        case MUST_BE_OPERAND:
+        हाल MUST_BE_OPERAND:
           error (0, 0, _("extra operand %s"), quoteaf (name));
-          usage (EXIT_FAILURE);
+          usage (निकास_त्रुटि);
 
-        case MIGHT_BE_J1_ARG:
-          joption_count[0]--;
+        हाल MIGHT_BE_J1_ARG:
+          joption_गिनती[0]--;
           set_join_field (&join_field_1, string_to_join_field (arg));
-          break;
+          अवरोध;
 
-        case MIGHT_BE_J2_ARG:
-          joption_count[1]--;
+        हाल MIGHT_BE_J2_ARG:
+          joption_गिनती[1]--;
           set_join_field (&join_field_2, string_to_join_field (arg));
-          break;
+          अवरोध;
 
-        case MIGHT_BE_O_ARG:
+        हाल MIGHT_BE_O_ARG:
           add_field_list (arg);
-          break;
+          अवरोध;
         }
-      if (!op0)
+      अगर (!op0)
         {
           operand_status[0] = operand_status[1];
           names[0] = names[1];
@@ -1020,212 +1020,212 @@ add_file_name (char *name, char *names[2],
       n = 1;
     }
 
-  operand_status[n] = *prev_optc_status;
+  operand_status[n] = *पूर्व_optc_status;
   names[n] = name;
   *nfiles = n + 1;
-  if (*prev_optc_status == MIGHT_BE_O_ARG)
+  अगर (*पूर्व_optc_status == MIGHT_BE_O_ARG)
     *optc_status = MIGHT_BE_O_ARG;
 }
 
-int
-main (int argc, char **argv)
+पूर्णांक
+मुख्य (पूर्णांक argc, अक्षर **argv)
 {
-  int optc_status;
-  int prev_optc_status = MUST_BE_OPERAND;
-  int operand_status[2];
-  int joption_count[2] = { 0, 0 };
-  FILE *fp1, *fp2;
-  int optc;
-  int nfiles = 0;
+  पूर्णांक optc_status;
+  पूर्णांक पूर्व_optc_status = MUST_BE_OPERAND;
+  पूर्णांक operand_status[2];
+  पूर्णांक joption_गिनती[2] = { 0, 0 };
+  खाता *fp1, *fp2;
+  पूर्णांक optc;
+  पूर्णांक nfiles = 0;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
-  setlocale (LC_ALL, "");
+  रखो_क्षेत्र (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
   hard_LC_COLLATE = hard_locale (LC_COLLATE);
 
-  atexit (close_stdout);
-  atexit (free_spareline);
+  निकास_पर (close_stdout);
+  निकास_पर (free_spareline);
 
-  while ((optc = getopt_long (argc, argv, "-a:e:i1:2:j:o:t:v:z",
-                              longopts, NULL))
+  जबतक ((optc = getopt_long (argc, argv, "-a:e:i1:2:j:o:t:v:z",
+                              longopts, शून्य))
          != -1)
     {
       optc_status = MUST_BE_OPERAND;
 
-      switch (optc)
+      चयन (optc)
         {
-        case 'v':
+        हाल 'v':
             print_pairables = false;
             FALLTHROUGH;
 
-        case 'a':
+        हाल 'a':
           {
-            long int val;
-            if (xstrtol (optarg, NULL, 10, &val, "") != LONGINT_OK
+            दीर्घ पूर्णांक val;
+            अगर (xstrtol (optarg, शून्य, 10, &val, "") != LONGINT_OK
                 || (val != 1 && val != 2))
-              error (EXIT_FAILURE, 0,
+              error (निकास_त्रुटि, 0,
                      _("invalid file number: %s"), quote (optarg));
-            if (val == 1)
+            अगर (val == 1)
               print_unpairables_1 = true;
-            else
+            अन्यथा
               print_unpairables_2 = true;
           }
-          break;
+          अवरोध;
 
-        case 'e':
-          if (empty_filler && ! streq (empty_filler, optarg))
-            error (EXIT_FAILURE, 0,
+        हाल 'e':
+          अगर (empty_filler && ! streq (empty_filler, optarg))
+            error (निकास_त्रुटि, 0,
                    _("conflicting empty-field replacement strings"));
           empty_filler = optarg;
-          break;
+          अवरोध;
 
-        case 'i':
+        हाल 'i':
           ignore_case = true;
-          break;
+          अवरोध;
 
-        case '1':
+        हाल '1':
           set_join_field (&join_field_1, string_to_join_field (optarg));
-          break;
+          अवरोध;
 
-        case '2':
+        हाल '2':
           set_join_field (&join_field_2, string_to_join_field (optarg));
-          break;
+          अवरोध;
 
-        case 'j':
-          if ((optarg[0] == '1' || optarg[0] == '2') && !optarg[1]
+        हाल 'j':
+          अगर ((optarg[0] == '1' || optarg[0] == '2') && !optarg[1]
               && optarg == argv[optind - 1] + 2)
             {
               /* The argument was either "-j1" or "-j2".  */
               bool is_j2 = (optarg[0] == '2');
-              joption_count[is_j2]++;
+              joption_गिनती[is_j2]++;
               optc_status = MIGHT_BE_J1_ARG + is_j2;
             }
-          else
+          अन्यथा
             {
               set_join_field (&join_field_1, string_to_join_field (optarg));
               set_join_field (&join_field_2, join_field_1);
             }
-          break;
+          अवरोध;
 
-        case 'o':
-          if (streq (optarg, "auto"))
+        हाल 'o':
+          अगर (streq (optarg, "auto"))
             autoformat = true;
-          else
+          अन्यथा
             {
               add_field_list (optarg);
               optc_status = MIGHT_BE_O_ARG;
             }
-          break;
+          अवरोध;
 
-        case 't':
+        हाल 't':
           {
             mcel_t newtab;
-            if (!*optarg)
+            अगर (!*optarg)
               {
                 /* '' => process the whole line.  */
                 newtab = mcel_ch ('\n', 1);
                 /* output_separator does not matter.  */
               }
-            else if (streq (optarg, "\\0"))
+            अन्यथा अगर (streq (optarg, "\\0"))
               {
                 newtab = mcel_ch ('\0', 1);
                 output_separator = "";
               }
-            else
+            अन्यथा
               {
                 newtab = mcel_scanz (optarg);
-                if (optarg[newtab.len])
-                  error (EXIT_FAILURE, 0, _("multi-character tab %s"),
+                अगर (optarg[newtab.len])
+                  error (निकास_त्रुटि, 0, _("multi-character tab %s"),
                          quote (optarg));
                 output_separator = optarg;
               }
-            if (tab.len && ! mcel_eq (tab, newtab))
-              error (EXIT_FAILURE, 0, _("incompatible tabs"));
+            अगर (tab.len && ! mcel_eq (tab, newtab))
+              error (निकास_त्रुटि, 0, _("incompatible tabs"));
             tab = newtab;
             output_seplen = newtab.len;
           }
-          break;
+          अवरोध;
 
-        case 'z':
+        हाल 'z':
           eolchar = 0;
-          break;
+          अवरोध;
 
-        case NOCHECK_ORDER_OPTION:
-          check_input_order = CHECK_ORDER_DISABLED;
-          break;
+        हाल NOCHECK_ORDER_OPTION:
+          check_निवेश_order = CHECK_ORDER_DISABLED;
+          अवरोध;
 
-        case CHECK_ORDER_OPTION:
-          check_input_order = CHECK_ORDER_ENABLED;
-          break;
+        हाल CHECK_ORDER_OPTION:
+          check_निवेश_order = CHECK_ORDER_ENABLED;
+          अवरोध;
 
-        case 1:		/* Non-option argument.  */
-          add_file_name (optarg, g_names, operand_status, joption_count,
-                         &nfiles, &prev_optc_status, &optc_status);
-          break;
+        हाल 1:		/* Non-option argument.  */
+          add_file_name (optarg, g_names, operand_status, joption_गिनती,
+                         &nfiles, &पूर्व_optc_status, &optc_status);
+          अवरोध;
 
-        case HEADER_LINE_OPTION:
-          join_header_lines = true;
-          break;
+        हाल HEADER_पंक्ति_OPTION:
+          join_header_पंक्तियाँ = true;
+          अवरोध;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
-          usage (EXIT_FAILURE);
+        शेष:
+          usage (निकास_त्रुटि);
         }
 
-      prev_optc_status = optc_status;
+      पूर्व_optc_status = optc_status;
     }
 
   /* Process any operands after "--".  */
-  prev_optc_status = MUST_BE_OPERAND;
-  while (optind < argc)
-    add_file_name (argv[optind++], g_names, operand_status, joption_count,
-                   &nfiles, &prev_optc_status, &optc_status);
+  पूर्व_optc_status = MUST_BE_OPERAND;
+  जबतक (optind < argc)
+    add_file_name (argv[optind++], g_names, operand_status, joption_गिनती,
+                   &nfiles, &पूर्व_optc_status, &optc_status);
 
-  if (nfiles != 2)
+  अगर (nfiles != 2)
     {
-      if (nfiles == 0)
+      अगर (nfiles == 0)
         error (0, 0, _("missing operand"));
-      else
+      अन्यथा
         error (0, 0, _("missing operand after %s"), quote (argv[argc - 1]));
-      usage (EXIT_FAILURE);
+      usage (निकास_त्रुटि);
     }
 
   /* If "-j1" was specified and it turns out not to have had an argument,
      treat it as "-j 1".  Likewise for -j2.  */
-  for (int i = 0; i < 2; i++)
-    if (joption_count[i] != 0)
+  क्रम (पूर्णांक i = 0; i < 2; i++)
+    अगर (joption_गिनती[i] != 0)
       {
         set_join_field (&join_field_1, i);
         set_join_field (&join_field_2, i);
       }
 
-  if (join_field_1 < 0)
+  अगर (join_field_1 < 0)
     join_field_1 = 0;
-  if (join_field_2 < 0)
+  अगर (join_field_2 < 0)
     join_field_2 = 0;
 
-  fp1 = streq (g_names[0], "-") ? stdin : fopen (g_names[0], "r");
-  if (!fp1)
-    error (EXIT_FAILURE, errno, "%s", quotef (g_names[0]));
-  fp2 = streq (g_names[1], "-") ? stdin : fopen (g_names[1], "r");
-  if (!fp2)
-    error (EXIT_FAILURE, errno, "%s", quotef (g_names[1]));
-  if (fp1 == fp2)
-    error (EXIT_FAILURE, errno, _("both files cannot be standard input"));
+  fp1 = streq (g_names[0], "-") ? मानक_निवेश : ख_खोलो (g_names[0], "r");
+  अगर (!fp1)
+    error (निकास_त्रुटि, त्रुटि_सं, "%s", quotef (g_names[0]));
+  fp2 = streq (g_names[1], "-") ? मानक_निवेश : ख_खोलो (g_names[1], "r");
+  अगर (!fp2)
+    error (निकास_त्रुटि, त्रुटि_सं, "%s", quotef (g_names[1]));
+  अगर (fp1 == fp2)
+    error (निकास_त्रुटि, त्रुटि_सं, _("both files cannot be standard input"));
   join (fp1, fp2);
 
-  if (fclose (fp1) != 0)
-    error (EXIT_FAILURE, errno, "%s", quotef (g_names[0]));
-  if (fclose (fp2) != 0)
-    error (EXIT_FAILURE, errno, "%s", quotef (g_names[1]));
+  अगर (ख_बंद (fp1) != 0)
+    error (निकास_त्रुटि, त्रुटि_सं, "%s", quotef (g_names[0]));
+  अगर (ख_बंद (fp2) != 0)
+    error (निकास_त्रुटि, त्रुटि_सं, "%s", quotef (g_names[1]));
 
-  if (issued_disorder_warning[0] || issued_disorder_warning[1])
-    error (EXIT_FAILURE, 0, _("input is not in sorted order"));
-  else
-    return EXIT_SUCCESS;
+  अगर (issued_disorder_warning[0] || issued_disorder_warning[1])
+    error (निकास_त्रुटि, 0, _("input is not in sorted order"));
+  अन्यथा
+    वापस निकास_सफल;
 }

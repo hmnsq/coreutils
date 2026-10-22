@@ -17,193 +17,193 @@
 /* Written by Stuart Kemp, cpsrk@groper.jcu.edu.au.
    Modified by David MacKenzie, djm@gnu.ai.mit.edu. */
 
-#include <config.h>
+#समावेश <config.h>
 
-#include <getopt.h>
-#include <sys/types.h>
-#include <signal.h>
+#समावेश <getopt.h>
+#समावेश <sys/types.h>
+#समावेश <signal.h>
 
-#include "system.h"
+#समावेश "system.h"
 
-#include <regex.h>
+#समावेश <regex.h>
 
-#include "c-ctype.h"
-#include "fd-reopen.h"
-#include "quote.h"
-#include "safe-read.h"
-#include "stdio--.h"
-#include "term-sig.h"
-#include "xdectoint.h"
-#include "xstrtol.h"
+#समावेश "c-ctype.h"
+#समावेश "fd-reopen.h"
+#समावेश "quote.h"
+#समावेश "safe-read.h"
+#समावेश "stdio--.h"
+#समावेश "term-sig.h"
+#समावेश "xdectoint.h"
+#समावेश "xstrtol.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "csplit"
+#घोषणा PROGRAM_NAME "csplit"
 
-#define AUTHORS \
+#घोषणा AUTHORS \
   proper_name ("Stuart Kemp"), \
   proper_name ("David MacKenzie")
 
 /* The default prefix for output file names. */
-#define DEFAULT_PREFIX	"xx"
+#घोषणा DEFAULT_PREFIX	"xx"
 
 /* A compiled pattern arg. */
-struct control
+काष्ठा control
 {
   intmax_t offset;		/* Offset from regexp to split at. */
-  intmax_t lines_required;	/* Number of lines required. */
+  intmax_t पंक्तियाँ_required;	/* Number of lines required. */
   intmax_t repeat;		/* Repeat count. */
-  int argnum;			/* ARGV index. */
+  पूर्णांक argnum;			/* ARGV index. */
   bool repeat_forever;		/* True if '*' used as a repeat count. */
   bool ignore;			/* If true, produce no output (for regexp). */
   bool regexpr;			/* True if regular expression was used. */
-  struct re_pattern_buffer re_compiled;	/* Compiled regular expression. */
+  काष्ठा re_pattern_बफर re_compiled;	/* Compiled regular expression. */
 };
 
 /* Initial size of data area in buffers. */
-#define START_SIZE	8191
+#घोषणा START_आकार	8191
 
 /* Number of lines kept in each node in line list. */
-#define CTRL_SIZE	80
+#घोषणा CTRL_आकार	80
 
-#ifdef DEBUG
+#अगर_घोषित DEBUG
 /* Some small values to test the algorithms. */
-# define START_SIZE	200
-# define CTRL_SIZE	1
-#endif
+# define START_आकार	200
+# define CTRL_आकार	1
+#पूर्ण_अगर
 
 /* A string with a length count. */
-struct cstring
+काष्ठा cstring
 {
   idx_t len;
-  char *str;
+  अक्षर *str;
 };
 
 /* Pointers to the beginnings of lines in the buffer area.
    These structures are linked together if needed. */
-struct line
+काष्ठा पंक्ति
 {
   idx_t used;			/* Number of offsets used in this struct. */
-  idx_t insert_index;		/* Next offset to use when inserting line. */
-  idx_t retrieve_index;	/* Next index to use when retrieving line. */
-  struct cstring starts[CTRL_SIZE]; /* Lines in the data area. */
-  struct line *next;		/* Next in linked list. */
+  idx_t जोड़ो_सूचकांक;		/* Next offset to use when inserting line. */
+  idx_t retrieve_सूचकांक;	/* Next index to use when retrieving line. */
+  काष्ठा cstring starts[CTRL_आकार]; /* Lines in the data area. */
+  काष्ठा पंक्ति *अग्र;		/* Next in linked list. */
 };
 
 /* The structure to hold the input lines.
    Contains a pointer to the data area and a list containing
    pointers to the individual lines. */
-struct buffer_record
+काष्ठा बफर_record
 {
   idx_t bytes_alloc;		/* Size of the buffer area. */
   idx_t bytes_used;		/* Bytes used in the buffer area. */
-  intmax_t start_line;		/* First line number in this buffer. */
+  intmax_t start_पंक्ति;		/* First line number in this buffer. */
   intmax_t first_available;	/* First line that can be retrieved. */
-  idx_t num_lines;		/* Number of complete lines in this buffer. */
-  char *buffer COUNTED_BY (bytes_alloc);	/* Data area. */
-  struct line *line_start;	/* Head of list of pointers to lines. */
-  struct line *curr_line;	/* The line start record currently in use. */
-  struct buffer_record *next;
+  idx_t अंक_पंक्तियाँ;		/* Number of complete lines in this buffer. */
+  अक्षर *बफर COUNTED_BY (bytes_alloc);	/* Data area. */
+  काष्ठा पंक्ति *पंक्ति_start;	/* Head of list of pointers to lines. */
+  काष्ठा पंक्ति *curr_पंक्ति;	/* The line start record currently in use. */
+  काष्ठा बफर_record *अग्र;
 };
 
-static void close_output_file (void);
-static void create_output_file (void);
-static void delete_all_files (bool);
-static void save_line_to_file (const struct cstring *line);
+अटल व्योम close_output_file (व्योम);
+अटल व्योम create_output_file (व्योम);
+अटल व्योम delete_all_files (bool);
+अटल व्योम save_पंक्ति_to_file (स्थिर काष्ठा cstring *पंक्ति);
 
 /* Start of buffer list. */
-static struct buffer_record *head = NULL;
+अटल काष्ठा बफर_record *शीर्ष = शून्य;
 
 /* Partially read line. */
-static char *hold_area = NULL;
+अटल अक्षर *hold_area = शून्य;
 
 /* Number of bytes in 'hold_area'. */
-static idx_t hold_count = 0;
+अटल idx_t hold_गिनती = 0;
 
 /* Number of the last line in the buffers. */
-static intmax_t last_line_number = 0;
+अटल intmax_t last_पंक्ति_संख्या = 0;
 
 /* Number of the line currently being examined. */
-static intmax_t current_line = 0;
+अटल intmax_t current_पंक्ति = 0;
 
 /* If true, we have read EOF. */
-static bool have_read_eof = false;
+अटल bool have_read_eof = false;
 
 /* Name of output files. */
-static char *volatile filename_space = NULL;
+अटल अक्षर *अस्थिर filename_space = शून्य;
 
 /* Prefix part of output file names. */
-static char const *volatile prefix = DEFAULT_PREFIX;
+अटल अक्षर स्थिर *अस्थिर prefix = DEFAULT_PREFIX;
 
 /* Suffix part of output file names. */
-static char *volatile suffix = NULL;
+अटल अक्षर *अस्थिर suffix = शून्य;
 
 /* Number of digits to use in output file names. */
-static int volatile digits = 2;
+अटल पूर्णांक अस्थिर digits = 2;
 
 /* Number of files created so far. */
-static int volatile files_created = 0;
+अटल पूर्णांक अस्थिर files_created = 0;
 
 /* Number of bytes written to current file. */
-static intmax_t bytes_written;
+अटल intmax_t bytes_written;
 
 /* Output file pointer. */
-static FILE *output_stream = NULL;
+अटल खाता *output_stream = शून्य;
 
 /* Output file name. */
-static char *output_filename = NULL;
+अटल अक्षर *output_filename = शून्य;
 
 /* Perhaps it would be cleaner to pass arg values instead of indexes. */
-static char **global_argv;
+अटल अक्षर **global_argv;
 
 /* If true, do not print the count of bytes in each output file. */
-static bool suppress_count;
+अटल bool suppress_गिनती;
 
 /* If true, remove output files on error. */
-static bool volatile remove_files = true;
+अटल bool अस्थिर remove_files = true;
 
 /* If true, remove all output files which have a zero length. */
-static bool elide_empty_files;
+अटल bool elide_empty_files;
 
 /* If true, suppress the lines that match the PATTERN */
-static bool suppress_matched;
+अटल bool suppress_matched;
 
 /* The compiled pattern arguments, which determine how to split
    the input file. */
-static struct control *controls;
+अटल काष्ठा control *controls;
 
 /* Number of elements in 'controls'. */
-static idx_t control_used;
+अटल idx_t control_used;
 
 /* The set of signals that are caught.  */
-static sigset_t caught_signals;
+अटल sigset_t caught_signals;
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+क्रमागत
 {
-  SUPPRESS_MATCHED_OPTION = CHAR_MAX + 1
+  SUPPRESS_MATCHED_OPTION = अक्षर_उच्च + 1
 };
 
-static struct option const longopts[] =
+अटल काष्ठा option स्थिर longopts[] =
 {
-  {"digits", required_argument, NULL, 'n'},
-  {"quiet", no_argument, NULL, 'q'},  /* Deprecated.  */
-  {"silent", no_argument, NULL, 's'},
-  {"keep-files", no_argument, NULL, 'k'},
-  {"elide-empty-files", no_argument, NULL, 'z'},
-  {"prefix", required_argument, NULL, 'f'},
-  {"suffix-format", required_argument, NULL, 'b'},
-  {"suppress-matched", no_argument, NULL, SUPPRESS_MATCHED_OPTION},
+  {"digits", required_argument, शून्य, 'n'},
+  {"quiet", no_argument, शून्य, 'q'},  /* Deprecated.  */
+  {"silent", no_argument, शून्य, 's'},
+  {"keep-files", no_argument, शून्य, 'k'},
+  {"elide-empty-files", no_argument, शून्य, 'z'},
+  {"prefix", required_argument, शून्य, 'f'},
+  {"suffix-format", required_argument, शून्य, 'b'},
+  {"suppress-matched", no_argument, शून्य, SUPPRESS_MATCHED_OPTION},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {शून्य, 0, शून्य, 0}
 };
 
 /* Optionally remove files created so far; then exit.
    Called when an error detected. */
 
-static void
-cleanup (void)
+अटल व्योम
+cleanup (व्योम)
 {
   sigset_t oldset;
 
@@ -211,117 +211,117 @@ cleanup (void)
 
   sigprocmask (SIG_BLOCK, &caught_signals, &oldset);
   delete_all_files (false);
-  sigprocmask (SIG_SETMASK, &oldset, NULL);
+  sigprocmask (SIG_SETMASK, &oldset, शून्य);
 }
 
-static _Noreturn void
-cleanup_fatal (void)
+अटल _Noreturn व्योम
+cleanup_fatal (व्योम)
 {
   cleanup ();
-  exit (EXIT_FAILURE);
+  निकास (निकास_त्रुटि);
 }
 
-extern void
-xalloc_die (void)
+बाह्य व्योम
+xalloc_die (व्योम)
 {
   error (0, 0, "%s", _("memory exhausted"));
   cleanup_fatal ();
 }
 
-static void
-interrupt_handler (int sig)
+अटल व्योम
+interrupt_handler (पूर्णांक sig)
 {
   delete_all_files (true);
-  signal (sig, SIG_DFL);
+  संकेत (sig, संक_पूर्व);
   /* The signal has been reset to SIG_DFL, but blocked during this
      handler.  Force the default action of this signal once the
      handler returns and the block is removed.  */
-  raise (sig);
+  उठाओ (sig);
 }
 
 /* Keep track of NUM bytes of a partial line in buffer START.
    These bytes will be retrieved later when another large buffer is read.  */
 
-static void
-save_to_hold_area (char *start, idx_t num)
+अटल व्योम
+save_to_hold_area (अक्षर *start, idx_t अंक)
 {
-  free (hold_area);
+  मुक्त (hold_area);
   hold_area = start;
-  hold_count = num;
+  hold_गिनती = अंक;
 }
 
 /* Read up to MAX_N_BYTES bytes from the input stream into DEST.
    Return the number of bytes read. */
 
-static idx_t
-read_input (char *dest, idx_t max_n_bytes)
+अटल idx_t
+read_निवेश (अक्षर *dest, idx_t max_n_bytes)
 {
-  if (max_n_bytes == 0)
-    return 0;
+  अगर (max_n_bytes == 0)
+    वापस 0;
 
-  ptrdiff_t bytes_read = safe_read (STDIN_FILENO, dest, max_n_bytes);
+  सूचक_भेद_प्रकार bytes_read = safe_read (STDIN_FILENO, dest, max_n_bytes);
 
-  if (bytes_read == 0)
+  अगर (bytes_read == 0)
     have_read_eof = true;
 
-  if (bytes_read < 0)
+  अगर (bytes_read < 0)
     {
-      error (0, errno, _("read error"));
+      error (0, त्रुटि_सं, _("read error"));
       cleanup_fatal ();
     }
 
-  return bytes_read;
+  वापस bytes_read;
 }
 
 /* Initialize existing line record P. */
 
-static void
-clear_line_control (struct line *p)
+अटल व्योम
+clear_पंक्ति_control (काष्ठा पंक्ति *p)
 {
   p->used = 0;
-  p->insert_index = 0;
-  p->retrieve_index = 0;
+  p->जोड़ो_सूचकांक = 0;
+  p->retrieve_सूचकांक = 0;
 }
 
 /* Return a new, initialized line record. */
 
-static struct line *
-new_line_control (void)
+अटल काष्ठा पंक्ति *
+new_पंक्ति_control (व्योम)
 {
-  struct line *p = xmalloc (sizeof *p);
+  काष्ठा पंक्ति *p = xmalloc (माप *p);
 
-  p->next = NULL;
-  clear_line_control (p);
+  p->अग्र = शून्य;
+  clear_पंक्ति_control (p);
 
-  return p;
+  वापस p;
 }
 
 /* Record LINE_START, which is the address of the start of a line
    of length LINE_LEN in the large buffer, in the lines buffer of B. */
 
-static void
-keep_new_line (struct buffer_record *b, char *line_start, idx_t line_len)
+अटल व्योम
+keep_new_पंक्ति (काष्ठा बफर_record *b, अक्षर *पंक्ति_start, idx_t पंक्ति_len)
 {
-  struct line *l;
+  काष्ठा पंक्ति *l;
 
   /* If there is no existing area to keep line info, get some. */
-  if (b->line_start == NULL)
-    b->line_start = b->curr_line = new_line_control ();
+  अगर (b->पंक्ति_start == शून्य)
+    b->पंक्ति_start = b->curr_पंक्ति = new_पंक्ति_control ();
 
   /* If existing area for lines is full, get more. */
-  if (b->curr_line->used == CTRL_SIZE)
+  अगर (b->curr_पंक्ति->used == CTRL_आकार)
     {
-      b->curr_line->next = new_line_control ();
-      b->curr_line = b->curr_line->next;
+      b->curr_पंक्ति->अग्र = new_पंक्ति_control ();
+      b->curr_पंक्ति = b->curr_पंक्ति->अग्र;
     }
 
-  l = b->curr_line;
+  l = b->curr_पंक्ति;
 
   /* Record the start of the line, and update counters. */
-  l->starts[l->insert_index].str = line_start;
-  l->starts[l->insert_index].len = line_len;
+  l->starts[l->जोड़ो_सूचकांक].str = पंक्ति_start;
+  l->starts[l->जोड़ो_सूचकांक].len = पंक्ति_len;
   l->used++;
-  l->insert_index++;
+  l->जोड़ो_सूचकांक++;
 }
 
 /* Scan the buffer in B for newline characters
@@ -332,108 +332,108 @@ keep_new_line (struct buffer_record *b, char *line_start, idx_t line_len)
    a pointer is kept to this area, which will be used when
    the next buffer is filled. */
 
-static idx_t
-record_line_starts (struct buffer_record *b)
+अटल idx_t
+record_पंक्ति_starts (काष्ठा बफर_record *b)
 {
-  char *line_start;		/* Start of current line. */
-  idx_t lines;			/* Number of lines found. */
-  idx_t line_length;		/* Length of each line found. */
+  अक्षर *पंक्ति_start;		/* Start of current line. */
+  idx_t पंक्तियाँ;			/* Number of lines found. */
+  idx_t पंक्ति_लंबाई;		/* Length of each line found. */
 
-  if (b->bytes_used == 0)
-    return 0;
+  अगर (b->bytes_used == 0)
+    वापस 0;
 
-  lines = 0;
-  line_start = b->buffer;
-  char *buffer_end = line_start + b->bytes_used;
-  *buffer_end = '\n';
+  पंक्तियाँ = 0;
+  पंक्ति_start = b->बफर;
+  अक्षर *बफर_end = पंक्ति_start + b->bytes_used;
+  *बफर_end = '\n';
 
-  while (true)
+  जबतक (true)
     {
-      char *line_end = rawmemchr (line_start, '\n');
-      if (line_end == buffer_end)
-        break;
-      line_length = line_end - line_start + 1;
-      keep_new_line (b, line_start, line_length);
-      line_start = line_end + 1;
-      lines++;
+      अक्षर *पंक्ति_end = rawmemchr (पंक्ति_start, '\n');
+      अगर (पंक्ति_end == बफर_end)
+        अवरोध;
+      पंक्ति_लंबाई = पंक्ति_end - पंक्ति_start + 1;
+      keep_new_पंक्ति (b, पंक्ति_start, पंक्ति_लंबाई);
+      पंक्ति_start = पंक्ति_end + 1;
+      पंक्तियाँ++;
     }
 
   /* Check for an incomplete last line. */
-  idx_t bytes_left = buffer_end - line_start;
-  if (bytes_left)
+  idx_t bytes_बायाँ = बफर_end - पंक्ति_start;
+  अगर (bytes_बायाँ)
     {
-      if (have_read_eof)
+      अगर (have_read_eof)
         {
-          keep_new_line (b, line_start, bytes_left);
-          lines++;
+          keep_new_पंक्ति (b, पंक्ति_start, bytes_बायाँ);
+          पंक्तियाँ++;
         }
-      else
-        save_to_hold_area (ximemdup (line_start, bytes_left), bytes_left);
+      अन्यथा
+        save_to_hold_area (ximemdup (पंक्ति_start, bytes_बायाँ), bytes_बायाँ);
     }
 
-  b->num_lines = lines;
-  b->first_available = b->start_line = last_line_number + 1;
-  last_line_number += lines;
+  b->अंक_पंक्तियाँ = पंक्तियाँ;
+  b->first_available = b->start_पंक्ति = last_पंक्ति_संख्या + 1;
+  last_पंक्ति_संख्या += पंक्तियाँ;
 
-  return lines;
+  वापस पंक्तियाँ;
 }
 
 /* Work around <https://gcc.gnu.org/PR109614>.  */
-#if 13 <= __GNUC__
+#अगर 13 <= __GNUC__
 # pragma GCC diagnostic ignored "-Wanalyzer-mismatching-deallocation"
 # pragma GCC diagnostic ignored "-Wanalyzer-use-after-free"
 # pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value"
-#endif
+#पूर्ण_अगर
 
-static void
-free_buffer (struct buffer_record *buf)
+अटल व्योम
+free_बफर (काष्ठा बफर_record *buf)
 {
-  for (struct line *l = buf->line_start; l;)
+  क्रम (काष्ठा पंक्ति *l = buf->पंक्ति_start; l;)
     {
-      struct line *n = l->next;
-      free (l);
+      काष्ठा पंक्ति *n = l->अग्र;
+      मुक्त (l);
       l = n;
     }
-  free (buf->buffer);
-  free (buf);
+  मुक्त (buf->बफर);
+  मुक्त (buf);
 }
 
 /* Return a new buffer of at least MINSIZE bytes.  */
 
-static ATTRIBUTE_DEALLOC (free_buffer, 1)
-struct buffer_record *
-get_new_buffer (idx_t min_size)
+अटल ATTRIBUTE_DEALLOC (free_बफर, 1)
+काष्ठा बफर_record *
+get_new_बफर (idx_t min_आकार)
 {
-  struct buffer_record *new_buffer = xmalloc (sizeof *new_buffer);
-  new_buffer->bytes_alloc = 0;
-  new_buffer->buffer = xpalloc (NULL, &new_buffer->bytes_alloc, min_size,
+  काष्ठा बफर_record *new_बफर = xmalloc (माप *new_बफर);
+  new_बफर->bytes_alloc = 0;
+  new_बफर->बफर = xpalloc (शून्य, &new_बफर->bytes_alloc, min_आकार,
                                 -1, 1);
-  new_buffer->bytes_used = 0;
-  new_buffer->start_line = new_buffer->first_available = last_line_number + 1;
-  new_buffer->num_lines = 0;
-  new_buffer->line_start = new_buffer->curr_line = NULL;
-  new_buffer->next = NULL;
+  new_बफर->bytes_used = 0;
+  new_बफर->start_पंक्ति = new_बफर->first_available = last_पंक्ति_संख्या + 1;
+  new_बफर->अंक_पंक्तियाँ = 0;
+  new_बफर->पंक्ति_start = new_बफर->curr_पंक्ति = शून्य;
+  new_बफर->अग्र = शून्य;
 
-  return new_buffer;
+  वापस new_बफर;
 }
 
 /* Append buffer BUF to the linked list of buffers that contain
    some data yet to be processed. */
 
-static void
-save_buffer (struct buffer_record *buf)
+अटल व्योम
+save_बफर (काष्ठा बफर_record *buf)
 {
-  buf->next = NULL;
-  buf->curr_line = buf->line_start;
+  buf->अग्र = शून्य;
+  buf->curr_पंक्ति = buf->पंक्ति_start;
 
-  if (head == NULL)
-    head = buf;
-  else
+  अगर (शीर्ष == शून्य)
+    शीर्ष = buf;
+  अन्यथा
     {
-      struct buffer_record *p;
-      for (p = head; p->next; p = p->next)
+      काष्ठा बफर_record *p;
+      क्रम (p = शीर्ष; p->अग्र; p = p->अग्र)
         /* Do nothing. */ ;
-      p->next = buf;
+      p->अग्र = buf;
     }
 }
 
@@ -450,45 +450,45 @@ save_buffer (struct buffer_record *buf)
    Return true if a new buffer was obtained, otherwise false
    (in which case end-of-file must have been encountered). */
 
-static bool
-load_buffer (void)
+अटल bool
+load_बफर (व्योम)
 {
-  if (have_read_eof)
-    return false;
+  अगर (have_read_eof)
+    वापस false;
 
   /* We must make the buffer at least as large as the amount of data
      in the partial line left over from the last call,
      plus room for a sentinel '\n'. */
-  idx_t bytes_wanted = MAX (START_SIZE, hold_count + 1);
+  idx_t bytes_wanted = MAX (START_आकार, hold_गिनती + 1);
 
-  while (true)
+  जबतक (true)
     {
-      struct buffer_record *b = get_new_buffer (bytes_wanted);
+      काष्ठा बफर_record *b = get_new_बफर (bytes_wanted);
       idx_t bytes_alloc = b->bytes_alloc;
       idx_t bytes_avail = bytes_alloc;
-      char *p = b->buffer;
+      अक्षर *p = b->बफर;
 
       /* First check the 'holding' area for a partial line. */
-      if (hold_count)
+      अगर (hold_गिनती)
         {
-          p = mempcpy (p, hold_area, hold_count);
-          b->bytes_used += hold_count;
-          bytes_avail -= hold_count;
-          hold_count = 0;
+          p = mempcpy (p, hold_area, hold_गिनती);
+          b->bytes_used += hold_गिनती;
+          bytes_avail -= hold_गिनती;
+          hold_गिनती = 0;
         }
 
-      b->bytes_used += read_input (p, bytes_avail - 1);
+      b->bytes_used += read_निवेश (p, bytes_avail - 1);
 
-      if (record_line_starts (b) != 0)
+      अगर (record_पंक्ति_starts (b) != 0)
         {
-          save_buffer (b);
-          return true;
+          save_बफर (b);
+          वापस true;
         }
 
-      free_buffer (b);
-      if (have_read_eof)
-        return false;
-      if (ckd_add (&bytes_wanted, bytes_alloc, bytes_alloc >> 1))
+      free_बफर (b);
+      अगर (have_read_eof)
+        वापस false;
+      अगर (ckd_add (&bytes_wanted, bytes_alloc, bytes_alloc >> 1))
         xalloc_die ();
     }
 }
@@ -496,117 +496,117 @@ load_buffer (void)
 /* Return the line number of the first line that has not yet been retrieved.
    Return 0 if no lines available.  */
 
-static intmax_t
-get_first_line_in_buffer (void)
+अटल intmax_t
+get_first_पंक्ति_in_बफर (व्योम)
 {
-  if (head == NULL && !load_buffer ())
-    return 0;
+  अगर (शीर्ष == शून्य && !load_बफर ())
+    वापस 0;
 
-  return head->first_available;
+  वापस शीर्ष->first_available;
 }
 
 /* Return a pointer to the logical first line in the buffer and make the
    next line the logical first line.
    Return NULL if there is no more input. */
 
-static struct cstring *
-remove_line (void)
+अटल काष्ठा cstring *
+remove_पंक्ति (व्योम)
 {
   /* If non-null, this is the buffer for which the previous call
      returned the final line.  So now, presuming that line has been
      processed, we can free the buffer and reset this pointer.  */
-  static struct buffer_record *prev_buf = NULL;
+  अटल काष्ठा बफर_record *पूर्व_buf = शून्य;
 
-  struct cstring *line;		/* Return value. */
-  struct line *l;		/* For convenience. */
+  काष्ठा cstring *पंक्ति;		/* Return value. */
+  काष्ठा पंक्ति *l;		/* For convenience. */
 
-  if (prev_buf)
+  अगर (पूर्व_buf)
     {
-      free_buffer (prev_buf);
-      prev_buf = NULL;
+      free_बफर (पूर्व_buf);
+      पूर्व_buf = शून्य;
     }
 
-  if (head == NULL && !load_buffer ())
-    return NULL;
+  अगर (शीर्ष == शून्य && !load_बफर ())
+    वापस शून्य;
 
-  if (current_line < head->first_available)
-    current_line = head->first_available;
+  अगर (current_पंक्ति < शीर्ष->first_available)
+    current_पंक्ति = शीर्ष->first_available;
 
-  ++(head->first_available);
+  ++(शीर्ष->first_available);
 
-  l = head->curr_line;
+  l = शीर्ष->curr_पंक्ति;
 
-  line = &l->starts[l->retrieve_index];
+  पंक्ति = &l->starts[l->retrieve_सूचकांक];
 
   /* Advance index to next line. */
-  if (++l->retrieve_index == l->used)
+  अगर (++l->retrieve_सूचकांक == l->used)
     {
       /* Go on to the next line record. */
-      head->curr_line = l->next;
-      if (head->curr_line == NULL || head->curr_line->used == 0)
+      शीर्ष->curr_पंक्ति = l->अग्र;
+      अगर (शीर्ष->curr_पंक्ति == शून्य || शीर्ष->curr_पंक्ति->used == 0)
         {
           /* Go on to the next data block.
              but first record the current one so we can free it
              once the line we're returning has been processed.  */
-          prev_buf = head;
-          head = head->next;
+          पूर्व_buf = शीर्ष;
+          शीर्ष = शीर्ष->अग्र;
         }
     }
 
-  return line;
+  वापस पंक्ति;
 }
 
 /* Search the buffers for line LINENUM, reading more input if necessary.
    Return a pointer to the line, or NULL if it is not found in the file. */
 
-static struct cstring *
-find_line (intmax_t linenum)
+अटल काष्ठा cstring *
+find_पंक्ति (intmax_t linenum)
 {
-  if (head == NULL && !load_buffer ())
-    return NULL;
+  अगर (शीर्ष == शून्य && !load_बफर ())
+    वापस शून्य;
 
-  if (linenum < head->start_line)
-    return NULL;
+  अगर (linenum < शीर्ष->start_पंक्ति)
+    वापस शून्य;
 
-  for (struct buffer_record *b = head;;)
+  क्रम (काष्ठा बफर_record *b = शीर्ष;;)
     {
-      if (linenum < b->start_line + b->num_lines)
+      अगर (linenum < b->start_पंक्ति + b->अंक_पंक्तियाँ)
         {
           /* The line is in this buffer. */
-          struct line *l;
+          काष्ठा पंक्ति *l;
           idx_t offset;	/* How far into the buffer the line is. */
 
-          l = b->line_start;
-          offset = linenum - b->start_line;
+          l = b->पंक्ति_start;
+          offset = linenum - b->start_पंक्ति;
           /* Find the control record. */
-          while (offset >= CTRL_SIZE)
+          जबतक (offset >= CTRL_आकार)
             {
-              l = l->next;
-              offset -= CTRL_SIZE;
+              l = l->अग्र;
+              offset -= CTRL_आकार;
             }
-          return &l->starts[offset];
+          वापस &l->starts[offset];
         }
-      if (b->next == NULL && !load_buffer ())
-        return NULL;
-      b = b->next;		/* Try the next data block. */
+      अगर (b->अग्र == शून्य && !load_बफर ())
+        वापस शून्य;
+      b = b->अग्र;		/* Try the next data block. */
     }
 }
 
 /* Return true if at least one more line is available for input. */
 
-static bool
-no_more_lines (void)
+अटल bool
+no_more_पंक्तियाँ (व्योम)
 {
-  return find_line (current_line + 1) == NULL;
+  वापस find_पंक्ति (current_पंक्ति + 1) == शून्य;
 }
 
 /* Open NAME as standard input.  */
 
-static void
-set_input_file (char const *name)
+अटल व्योम
+set_निवेश_file (अक्षर स्थिर *name)
 {
-  if (! streq (name, "-") && fd_reopen (STDIN_FILENO, name, O_RDONLY, 0) < 0)
-    error (EXIT_FAILURE, errno, _("cannot open %s for reading"),
+  अगर (! streq (name, "-") && fd_reopen (STDIN_FILENO, name, O_RDONLY, 0) < 0)
+    error (निकास_त्रुटि, त्रुटि_सं, _("cannot open %s for reading"),
            quoteaf (name));
 }
 
@@ -615,63 +615,63 @@ set_input_file (char const *name)
    If IGNORE is true, do not output lines selected here.
    ARGNUM is the index in ARGV of the current pattern. */
 
-static void
-write_to_file (intmax_t last_line, bool ignore, int argnum)
+अटल व्योम
+write_to_file (intmax_t last_पंक्ति, bool ignore, पूर्णांक argnum)
 {
-  struct cstring *line;
-  intmax_t first_line;		/* First available input line. */
-  intmax_t lines;		/* Number of lines to output. */
+  काष्ठा cstring *पंक्ति;
+  intmax_t first_पंक्ति;		/* First available input line. */
+  intmax_t पंक्तियाँ;		/* Number of lines to output. */
 
-  first_line = get_first_line_in_buffer ();
+  first_पंक्ति = get_first_पंक्ति_in_बफर ();
 
-  if (! first_line || first_line > last_line)
+  अगर (! first_पंक्ति || first_पंक्ति > last_पंक्ति)
     {
       error (0, 0, _("%s: line number out of range"),
              quote (global_argv[argnum]));
       cleanup_fatal ();
     }
 
-  lines = last_line - first_line;
+  पंक्तियाँ = last_पंक्ति - first_पंक्ति;
 
-  for (intmax_t i = 0; i < lines; i++)
+  क्रम (intmax_t i = 0; i < पंक्तियाँ; i++)
     {
-      line = remove_line ();
-      if (line == NULL)
+      पंक्ति = remove_पंक्ति ();
+      अगर (पंक्ति == शून्य)
         {
           error (0, 0, _("%s: line number out of range"),
                  quote (global_argv[argnum]));
           cleanup_fatal ();
         }
-      if (!ignore)
-        save_line_to_file (line);
+      अगर (!ignore)
+        save_पंक्ति_to_file (पंक्ति);
     }
 }
 
 /* Output any lines left after all regexps have been processed. */
 
-static void
-dump_rest_of_file (void)
+अटल व्योम
+dump_rest_of_file (व्योम)
 {
-  struct cstring *line;
+  काष्ठा cstring *पंक्ति;
 
-  while ((line = remove_line ()) != NULL)
-    save_line_to_file (line);
+  जबतक ((पंक्ति = remove_पंक्ति ()) != शून्य)
+    save_पंक्ति_to_file (पंक्ति);
 }
 
 /* Handle an attempt to read beyond EOF under the control of record P,
    on iteration REPETITION if nonzero. */
 
-static void
-handle_line_error (const struct control *p, intmax_t repetition)
+अटल व्योम
+handle_पंक्ति_error (स्थिर काष्ठा control *p, intmax_t repetition)
 {
-  char buf[INT_BUFSIZE_BOUND (intmax_t)];
+  अक्षर buf[INT_BUFSIZE_BOUND (intmax_t)];
 
-  fprintf (stderr, _("%s: %s: line number out of range"),
-           program_name, quote (imaxtostr (p->lines_required, buf)));
-  if (repetition)
-    fprintf (stderr, _(" on repetition %jd\n"), repetition);
-  else
-    fprintf (stderr, "\n");
+  ख_लिखो (मानक_त्रुटि, _("%s: %s: line number out of range"),
+           program_name, quote (imaxtostr (p->पंक्तियाँ_required, buf)));
+  अगर (repetition)
+    ख_लिखो (मानक_त्रुटि, _(" on repetition %jd\n"), repetition);
+  अन्यथा
+    ख_लिखो (मानक_त्रुटि, "\n");
 
   cleanup_fatal ();
 }
@@ -681,54 +681,54 @@ handle_line_error (const struct control *p, intmax_t repetition)
    P is the control record.
    REPETITION is the repetition number. */
 
-static void
-process_line_count (const struct control *p, intmax_t repetition)
+अटल व्योम
+process_पंक्ति_गिनती (स्थिर काष्ठा control *p, intmax_t repetition)
 {
   intmax_t linenum;
-  intmax_t last_line_to_save = p->lines_required * (repetition + 1);
+  intmax_t last_पंक्ति_to_save = p->पंक्तियाँ_required * (repetition + 1);
 
   create_output_file ();
 
   /* Ensure that the line number specified is not 1 greater than
      the number of lines in the file.
      When suppressing matched lines, check before the loop. */
-  if (no_more_lines () && suppress_matched)
-    handle_line_error (p, repetition);
+  अगर (no_more_पंक्तियाँ () && suppress_matched)
+    handle_पंक्ति_error (p, repetition);
 
-  if (!(linenum = get_first_line_in_buffer ()))
-    handle_line_error (p, repetition);
+  अगर (!(linenum = get_first_पंक्ति_in_बफर ()))
+    handle_पंक्ति_error (p, repetition);
 
-  while (linenum++ < last_line_to_save)
+  जबतक (linenum++ < last_पंक्ति_to_save)
     {
-      struct cstring *line = remove_line ();
-      if (line == NULL)
-        handle_line_error (p, repetition);
-      save_line_to_file (line);
+      काष्ठा cstring *पंक्ति = remove_पंक्ति ();
+      अगर (पंक्ति == शून्य)
+        handle_पंक्ति_error (p, repetition);
+      save_पंक्ति_to_file (पंक्ति);
     }
 
   close_output_file ();
 
-  if (suppress_matched)
-    remove_line ();
+  अगर (suppress_matched)
+    remove_पंक्ति ();
 
   /* Ensure that the line number specified is not 1 greater than
      the number of lines in the file. */
-  if (no_more_lines () && !suppress_matched)
-    handle_line_error (p, repetition);
+  अगर (no_more_पंक्तियाँ () && !suppress_matched)
+    handle_पंक्ति_error (p, repetition);
 }
 
-static void
-regexp_error (struct control *p, intmax_t repetition, bool ignore)
+अटल व्योम
+regexp_error (काष्ठा control *p, intmax_t repetition, bool ignore)
 {
-  fprintf (stderr, _("%s: %s: match not found"),
+  ख_लिखो (मानक_त्रुटि, _("%s: %s: match not found"),
            program_name, quote (global_argv[p->argnum]));
 
-  if (repetition)
-    fprintf (stderr, _(" on repetition %jd\n"), repetition);
-  else
-    fprintf (stderr, "\n");
+  अगर (repetition)
+    ख_लिखो (मानक_त्रुटि, _(" on repetition %jd\n"), repetition);
+  अन्यथा
+    ख_लिखो (मानक_त्रुटि, "\n");
 
-  if (!ignore)
+  अगर (!ignore)
     {
       dump_rest_of_file ();
       close_output_file ();
@@ -740,128 +740,128 @@ regexp_error (struct control *p, intmax_t repetition, bool ignore)
    it unless P->IGNORE is true.
    REPETITION is this repeat-count; 0 means the first time. */
 
-static void
-process_regexp (struct control *p, intmax_t repetition)
+अटल व्योम
+process_regexp (काष्ठा control *p, intmax_t repetition)
 {
-  struct cstring *line;		/* From input file. */
-  idx_t line_len;		/* To make "$" in regexps work. */
-  intmax_t break_line;		/* First line number of next file. */
+  काष्ठा cstring *पंक्ति;		/* From input file. */
+  idx_t पंक्ति_len;		/* To make "$" in regexps work. */
+  intmax_t break_पंक्ति;		/* First line number of next file. */
   bool ignore = p->ignore;	/* If true, skip this section. */
   regoff_t ret;
 
-  if (!ignore)
+  अगर (!ignore)
     create_output_file ();
 
   /* If there is no offset for the regular expression, or
      it is positive, then it is not necessary to buffer the lines. */
 
-  if (p->offset >= 0)
+  अगर (p->offset >= 0)
     {
-      while (true)
+      जबतक (true)
         {
-          line = find_line (++current_line);
-          if (line == NULL)
+          पंक्ति = find_पंक्ति (++current_पंक्ति);
+          अगर (पंक्ति == शून्य)
             {
-              if (p->repeat_forever)
+              अगर (p->repeat_forever)
                 {
-                  if (!ignore)
+                  अगर (!ignore)
                     {
                       dump_rest_of_file ();
                       close_output_file ();
                     }
-                  exit (EXIT_SUCCESS);
+                  निकास (निकास_सफल);
                 }
-              else
+              अन्यथा
                 regexp_error (p, repetition, ignore);
             }
-          line_len = line->len;
-          if (line->str[line_len - 1] == '\n')
-            line_len--;
-          ret = re_search (&p->re_compiled, line->str, line_len,
-                           0, line_len, NULL);
-          if (ret == -2)
+          पंक्ति_len = पंक्ति->len;
+          अगर (पंक्ति->str[पंक्ति_len - 1] == '\n')
+            पंक्ति_len--;
+          ret = re_खोज (&p->re_compiled, पंक्ति->str, पंक्ति_len,
+                           0, पंक्ति_len, शून्य);
+          अगर (ret == -2)
             {
               error (0, 0, _("error in regular expression search"));
               cleanup_fatal ();
             }
-          if (ret == -1)
+          अगर (ret == -1)
             {
-              line = remove_line ();
-              if (!ignore)
-                save_line_to_file (line);
+              पंक्ति = remove_पंक्ति ();
+              अगर (!ignore)
+                save_पंक्ति_to_file (पंक्ति);
             }
-          else
-            break;
+          अन्यथा
+            अवरोध;
         }
     }
-  else
+  अन्यथा
     {
       /* Buffer the lines. */
-      while (true)
+      जबतक (true)
         {
-          line = find_line (++current_line);
-          if (line == NULL)
+          पंक्ति = find_पंक्ति (++current_पंक्ति);
+          अगर (पंक्ति == शून्य)
             {
-              if (p->repeat_forever)
+              अगर (p->repeat_forever)
                 {
-                  if (!ignore)
+                  अगर (!ignore)
                     {
                       dump_rest_of_file ();
                       close_output_file ();
                     }
-                  exit (EXIT_SUCCESS);
+                  निकास (निकास_सफल);
                 }
-              else
+              अन्यथा
                 regexp_error (p, repetition, ignore);
             }
-          line_len = line->len;
-          if (line->str[line_len - 1] == '\n')
-            line_len--;
-          ret = re_search (&p->re_compiled, line->str, line_len,
-                           0, line_len, NULL);
-          if (ret == -2)
+          पंक्ति_len = पंक्ति->len;
+          अगर (पंक्ति->str[पंक्ति_len - 1] == '\n')
+            पंक्ति_len--;
+          ret = re_खोज (&p->re_compiled, पंक्ति->str, पंक्ति_len,
+                           0, पंक्ति_len, शून्य);
+          अगर (ret == -2)
             {
               error (0, 0, _("error in regular expression search"));
               cleanup_fatal ();
             }
-          if (ret != -1)
-            break;
+          अगर (ret != -1)
+            अवरोध;
         }
     }
 
   /* Account for any offset from this regexp. */
-  break_line = current_line + p->offset;
+  break_पंक्ति = current_पंक्ति + p->offset;
 
-  write_to_file (break_line, ignore, p->argnum);
+  write_to_file (break_पंक्ति, ignore, p->argnum);
 
-  if (!ignore)
+  अगर (!ignore)
     close_output_file ();
 
-  if (p->offset > 0)
-    current_line = break_line;
+  अगर (p->offset > 0)
+    current_पंक्ति = break_पंक्ति;
 
-  if (suppress_matched)
-    remove_line ();
+  अगर (suppress_matched)
+    remove_पंक्ति ();
 }
 
 /* Split the input file according to the control records we have built. */
 
-static void
-split_file (void)
+अटल व्योम
+split_file (व्योम)
 {
-  for (idx_t i = 0; i < control_used; i++)
+  क्रम (idx_t i = 0; i < control_used; i++)
     {
-      if (controls[i].regexpr)
+      अगर (controls[i].regexpr)
         {
-          for (intmax_t j = 0; (controls[i].repeat_forever
+          क्रम (intmax_t j = 0; (controls[i].repeat_forever
                        || j <= controls[i].repeat); j++)
             process_regexp (&controls[i], j);
         }
-      else
+      अन्यथा
         {
-          for (intmax_t j = 0; (controls[i].repeat_forever
+          क्रम (intmax_t j = 0; (controls[i].repeat_forever
                        || j <= controls[i].repeat); j++)
-            process_line_count (&controls[i], j);
+            process_पंक्ति_गिनती (&controls[i], j);
         }
     }
 
@@ -877,46 +877,46 @@ split_file (void)
    not guarantee this for the functions called below, but we don't
    know of any hosts where this implementation isn't safe.  */
 
-static char *
-make_filename (int num)
+अटल अक्षर *
+make_filename (पूर्णांक अंक)
 {
-  strcpy (filename_space, prefix);
-  if (suffix)
-    sprintf (filename_space + strlen (prefix), suffix, num);
-  else
-    sprintf (filename_space + strlen (prefix), "%0*d", digits, num);
-  return filename_space;
+  म_नकल (filename_space, prefix);
+  अगर (suffix)
+    प्र_लिखो (filename_space + म_माप (prefix), suffix, अंक);
+  अन्यथा
+    प्र_लिखो (filename_space + म_माप (prefix), "%0*d", digits, अंक);
+  वापस filename_space;
 }
 
 /* Create the next output file. */
 
-static void
-create_output_file (void)
+अटल व्योम
+create_output_file (व्योम)
 {
-  int nfiles = files_created;
+  पूर्णांक nfiles = files_created;
   bool fopen_ok;
-  int fopen_errno;
+  पूर्णांक fopen_errno;
 
   output_filename = make_filename (nfiles);
 
-  if (nfiles == INT_MAX)
+  अगर (nfiles == पूर्णांक_उच्च)
     {
       fopen_ok = false;
       fopen_errno = EOVERFLOW;
     }
-  else
+  अन्यथा
     {
       /* Create the output file in a critical section, to avoid races.  */
       sigset_t oldset;
       sigprocmask (SIG_BLOCK, &caught_signals, &oldset);
-      output_stream = fopen (output_filename, "w");
-      fopen_ok = (output_stream != NULL);
-      fopen_errno = errno;
+      output_stream = ख_खोलो (output_filename, "w");
+      fopen_ok = (output_stream != शून्य);
+      fopen_errno = त्रुटि_सं;
       files_created = nfiles + fopen_ok;
-      sigprocmask (SIG_SETMASK, &oldset, NULL);
+      sigprocmask (SIG_SETMASK, &oldset, शून्य);
     }
 
-  if (! fopen_ok)
+  अगर (! fopen_ok)
     {
       error (0, fopen_errno, "%s", quotef (output_filename));
       cleanup_fatal ();
@@ -927,17 +927,17 @@ create_output_file (void)
 /* If requested, delete all the files we have created.  This function
    must be called only from critical sections.  */
 
-static void
+अटल व्योम
 delete_all_files (bool in_signal_handler)
 {
-  if (! remove_files)
-    return;
+  अगर (! remove_files)
+    वापस;
 
-  for (int i = files_created; 0 <= --i; )
+  क्रम (पूर्णांक i = files_created; 0 <= --i; )
     {
-      char const *name = make_filename (i);
-      if (unlink (name) != 0 && errno != ENOENT && !in_signal_handler)
-        error (0, errno, "%s", quotef (name));
+      अक्षर स्थिर *name = make_filename (i);
+      अगर (unlink (name) != 0 && त्रुटि_सं != ENOENT && !in_signal_handler)
+        error (0, त्रुटि_सं, "%s", quotef (name));
     }
 
   files_created = 0;
@@ -946,81 +946,81 @@ delete_all_files (bool in_signal_handler)
 /* Close the current output file and print the count
    of characters in this file. */
 
-static void
-close_output_file (void)
+अटल व्योम
+close_output_file (व्योम)
 {
-  if (output_stream)
+  अगर (output_stream)
     {
-      if (ferror (output_stream))
+      अगर (ख_त्रुटि (output_stream))
         {
           error (0, 0, _("write error for %s"), quoteaf (output_filename));
-          output_stream = NULL;
+          output_stream = शून्य;
           cleanup_fatal ();
         }
-      if (fclose (output_stream) != 0)
+      अगर (ख_बंद (output_stream) != 0)
         {
-          error (0, errno, "%s", quotef (output_filename));
-          output_stream = NULL;
+          error (0, त्रुटि_सं, "%s", quotef (output_filename));
+          output_stream = शून्य;
           cleanup_fatal ();
         }
-      if (bytes_written == 0 && elide_empty_files)
+      अगर (bytes_written == 0 && elide_empty_files)
         {
           sigset_t oldset;
           bool unlink_ok;
-          int unlink_errno;
+          पूर्णांक unlink_errno;
 
           /* Remove the output file in a critical section, to avoid races.  */
           sigprocmask (SIG_BLOCK, &caught_signals, &oldset);
           unlink_ok = (unlink (output_filename) == 0);
-          unlink_errno = errno;
+          unlink_errno = त्रुटि_सं;
           files_created--;
-          sigprocmask (SIG_SETMASK, &oldset, NULL);
+          sigprocmask (SIG_SETMASK, &oldset, शून्य);
 
-          if (! unlink_ok && unlink_errno != ENOENT)
+          अगर (! unlink_ok && unlink_errno != ENOENT)
             error (0, unlink_errno, "%s", quotef (output_filename));
         }
-      else
+      अन्यथा
         {
-          if (!suppress_count)
-            fprintf (stdout, "%jd\n", bytes_written);
+          अगर (!suppress_गिनती)
+            ख_लिखो (मानक_निकास, "%jd\n", bytes_written);
         }
-      output_stream = NULL;
+      output_stream = शून्य;
     }
 }
 
 /* Save line LINE to the output file and
    increment the character count for the current file. */
 
-static void
-save_line_to_file (const struct cstring *line)
+अटल व्योम
+save_पंक्ति_to_file (स्थिर काष्ठा cstring *पंक्ति)
 {
-  idx_t l = fwrite (line->str, sizeof (char), line->len, output_stream);
-  if (l != line->len)
+  idx_t l = ख_डालो (पंक्ति->str, माप (अक्षर), पंक्ति->len, output_stream);
+  अगर (l != पंक्ति->len)
     {
-      error (0, errno, _("write error for %s"), quoteaf (output_filename));
-      output_stream = NULL;
+      error (0, त्रुटि_सं, _("write error for %s"), quoteaf (output_filename));
+      output_stream = शून्य;
       cleanup_fatal ();
     }
-  bytes_written += line->len;
+  bytes_written += पंक्ति->len;
 }
 
 /* Return a new, initialized control record. */
 
-static struct control *
-new_control_record (void)
+अटल काष्ठा control *
+new_control_record (व्योम)
 {
-  static idx_t control_allocated = 0; /* Total space allocated. */
-  struct control *p;
+  अटल idx_t control_allocated = 0; /* Total space allocated. */
+  काष्ठा control *p;
 
-  if (control_used == control_allocated)
-    controls = xpalloc (controls, &control_allocated, 1, -1, sizeof *controls);
+  अगर (control_used == control_allocated)
+    controls = xpalloc (controls, &control_allocated, 1, -1, माप *controls);
   p = &controls[control_used++];
   p->regexpr = false;
   p->repeat = 0;
   p->repeat_forever = false;
-  p->lines_required = 0;
+  p->पंक्तियाँ_required = 0;
   p->offset = 0;
-  return p;
+  वापस p;
 }
 
 /* Check if there is a numeric offset after a regular expression.
@@ -1028,11 +1028,11 @@ new_control_record (void)
    P is the control record for this regular expression.
    NUM is the numeric part of STR. */
 
-static void
-check_for_offset (struct control *p, char const *str, char const *num)
+अटल व्योम
+check_for_offset (काष्ठा control *p, अक्षर स्थिर *str, अक्षर स्थिर *अंक)
 {
-  if (xstrtoimax (num, NULL, 10, &p->offset, "") != LONGINT_OK)
-    error (EXIT_FAILURE, 0, _("%s: integer expected after delimiter"),
+  अगर (xstrtoimax (अंक, शून्य, 10, &p->offset, "") != LONGINT_OK)
+    error (निकास_त्रुटि, 0, _("%s: integer expected after delimiter"),
            quote (str));
 }
 
@@ -1041,26 +1041,26 @@ check_for_offset (struct control *p, char const *str, char const *num)
    and store its value in P.
    ARGNUM is the ARGV index of STR. */
 
-static void
-parse_repeat_count (int argnum, struct control *p, char *str)
+अटल व्योम
+parse_repeat_गिनती (पूर्णांक argnum, काष्ठा control *p, अक्षर *str)
 {
-  char *end;
+  अक्षर *end;
 
-  end = str + strlen (str) - 1;
-  if (*end != '}')
-    error (EXIT_FAILURE, 0, _("%s: '}' is required in repeat count"),
+  end = str + म_माप (str) - 1;
+  अगर (*end != '}')
+    error (निकास_त्रुटि, 0, _("%s: '}' is required in repeat count"),
            quote (str));
   *end = '\0';
 
-  if (str + 1 == end - 1 && *(str + 1) == '*')
+  अगर (str + 1 == end - 1 && *(str + 1) == '*')
     p->repeat_forever = true;
-  else
+  अन्यथा
     {
       uintmax_t val;
-      if (xstrtoumax (str + 1, NULL, 10, &val, "") != LONGINT_OK
+      अगर (xstrtoumax (str + 1, शून्य, 10, &val, "") != LONGINT_OK
           || ckd_add (&p->repeat, val, 0))
         {
-          error (EXIT_FAILURE, 0,
+          error (निकास_त्रुटि, 0,
                  _("%s}: integer required between '{' and '}'"),
                  quote (global_argv[argnum]));
         }
@@ -1075,18 +1075,18 @@ parse_repeat_count (int argnum, struct control *p, char *str)
    ARGNUM is the ARGV index of STR.
    Unless IGNORE is true, mark these lines for output. */
 
-static struct control *
-extract_regexp (int argnum, bool ignore, char const *str)
+अटल काष्ठा control *
+extract_regexp (पूर्णांक argnum, bool ignore, अक्षर स्थिर *str)
 {
   idx_t len;			/* Number of bytes in this regexp. */
-  char delim = *str;
-  char const *closing_delim;
-  struct control *p;
-  char const *err;
+  अक्षर delim = *str;
+  अक्षर स्थिर *closing_delim;
+  काष्ठा control *p;
+  अक्षर स्थिर *err;
 
-  closing_delim = strrchr (str + 1, delim);
-  if (closing_delim == NULL)
-    error (EXIT_FAILURE, 0,
+  closing_delim = म_खोजप (str + 1, delim);
+  अगर (closing_delim == शून्य)
+    error (निकास_त्रुटि, 0,
            _("%s: closing delimiter '%c' missing"), str, delim);
 
   len = closing_delim - str - 1;
@@ -1095,72 +1095,72 @@ extract_regexp (int argnum, bool ignore, char const *str)
   p->ignore = ignore;
 
   p->regexpr = true;
-  p->re_compiled.buffer = NULL;
+  p->re_compiled.बफर = शून्य;
   p->re_compiled.allocated = 0;
-  p->re_compiled.fastmap = xmalloc (UCHAR_MAX + 1);
-  p->re_compiled.translate = NULL;
+  p->re_compiled.fastmap = xmalloc (अच_अक्षर_उच्च + 1);
+  p->re_compiled.translate = शून्य;
   re_syntax_options =
     RE_SYNTAX_POSIX_BASIC & ~RE_CONTEXT_INVALID_DUP & ~RE_NO_EMPTY_RANGES;
   err = re_compile_pattern (str + 1, len, &p->re_compiled);
-  if (err)
+  अगर (err)
     {
       error (0, 0, _("%s: invalid regular expression: %s"), quote (str), err);
       cleanup_fatal ();
     }
 
-  if (closing_delim[1])
+  अगर (closing_delim[1])
     check_for_offset (p, str, closing_delim + 1);
 
-  return p;
+  वापस p;
 }
 
 /* Extract the break patterns from args START through ARGC - 1 of ARGV.
    After each pattern, check if the next argument is a repeat count. */
 
-static void
-parse_patterns (int argc, int start, char **argv)
+अटल व्योम
+parse_patterns (पूर्णांक argc, पूर्णांक start, अक्षर **argv)
 {
-  struct control *p;		/* New control record created. */
-  static intmax_t last_val = 0;
+  काष्ठा control *p;		/* New control record created. */
+  अटल intmax_t last_val = 0;
 
-  for (int i = start; i < argc; i++)
+  क्रम (पूर्णांक i = start; i < argc; i++)
     {
-      if (*argv[i] == '/' || *argv[i] == '%')
+      अगर (*argv[i] == '/' || *argv[i] == '%')
         {
           p = extract_regexp (i, *argv[i] == '%', argv[i]);
         }
-      else
+      अन्यथा
         {
           p = new_control_record ();
           p->argnum = i;
 
           uintmax_t val;
-          if (xstrtoumax (argv[i], NULL, 10, &val, "") != LONGINT_OK
+          अगर (xstrtoumax (argv[i], शून्य, 10, &val, "") != LONGINT_OK
               || INTMAX_MAX < val)
-            error (EXIT_FAILURE, 0, _("%s: invalid pattern"), quote (argv[i]));
-          if (val == 0)
-            error (EXIT_FAILURE, 0,
+            error (निकास_त्रुटि, 0, _("%s: invalid pattern"), quote (argv[i]));
+          अगर (val == 0)
+            error (निकास_त्रुटि, 0,
                    _("%s: line number must be greater than zero"), argv[i]);
-          if (val < last_val)
-            error (EXIT_FAILURE, 0,
+          अगर (val < last_val)
+            error (निकास_त्रुटि, 0,
                    _("line number %s is smaller than preceding line number,"
                      " %jd"), quote (argv[i]), last_val);
 
-          if (val == last_val)
+          अगर (val == last_val)
             error (0, 0,
            _("warning: line number %s is the same as preceding line number"),
                    quote (argv[i]));
 
           last_val = val;
 
-          p->lines_required = val;
+          p->पंक्तियाँ_required = val;
         }
 
-      if (i + 1 < argc && *argv[i + 1] == '{')
+      अगर (i + 1 < argc && *argv[i + 1] == '{')
         {
           /* We have a repeat count. */
           i++;
-          parse_repeat_count (i, p, argv[i]);
+          parse_repeat_गिनती (i, p, argv[i]);
         }
     }
 }
@@ -1168,34 +1168,34 @@ parse_patterns (int argc, int start, char **argv)
 
 
 /* Names for the printf format flags ' and #.  These can be ORed together.  */
-enum { FLAG_THOUSANDS = 1, FLAG_ALTERNATIVE = 2 };
+क्रमागत { FLAG_THOUSANDS = 1, FLAG_ALTERNATIVE = 2 };
 
 /* Scan the printf format flags in FORMAT, storing info about the
    flags into *FLAGS_PTR.  Return the number of flags found.  */
-static idx_t
-get_format_flags (char const *format, int *flags_ptr)
+अटल idx_t
+get_format_flags (अक्षर स्थिर *format, पूर्णांक *flags_ptr)
 {
-  int flags = 0;
+  पूर्णांक flags = 0;
 
-  for (idx_t count = 0; ; count++)
+  क्रम (idx_t गिनती = 0; ; गिनती++)
     {
-      switch (format[count])
+      चयन (format[गिनती])
         {
-        case '-':
-        case '0':
-          break;
+        हाल '-':
+        हाल '0':
+          अवरोध;
 
-        case '\'':
+        हाल '\'':
           flags |= FLAG_THOUSANDS;
-          break;
+          अवरोध;
 
-        case '#':
+        हाल '#':
           flags |= FLAG_ALTERNATIVE;
-          break;
+          अवरोध;
 
-        default:
+        शेष:
           *flags_ptr = flags;
-          return count;
+          वापस गिनती;
         }
     }
 }
@@ -1203,42 +1203,42 @@ get_format_flags (char const *format, int *flags_ptr)
 /* Check that the printf format conversion specifier *FORMAT is valid
    and compatible with FLAGS.  Change it to 'd' if it is 'u',
    since the format will be used with a signed value.  */
-static void
-check_format_conv_type (char *format, int flags)
+अटल व्योम
+check_format_conv_type (अक्षर *format, पूर्णांक flags)
 {
-  unsigned char ch = *format;
-  int compatible_flags = FLAG_THOUSANDS;
+  अचिन्हित अक्षर ch = *format;
+  पूर्णांक compatible_flags = FLAG_THOUSANDS;
 
-  switch (ch)
+  चयन (ch)
     {
-    case 'd':
-    case 'i':
-      break;
+    हाल 'd':
+    हाल 'i':
+      अवरोध;
 
-    case 'u':
+    हाल 'u':
       *format = 'd';
-      break;
+      अवरोध;
 
-    case 'o':
-    case 'x':
-    case 'X':
+    हाल 'o':
+    हाल 'x':
+    हाल 'X':
       compatible_flags = FLAG_ALTERNATIVE;
-      break;
+      अवरोध;
 
-    case 0:
-      error (EXIT_FAILURE, 0, _("missing conversion specifier in suffix"));
+    हाल 0:
+      error (निकास_त्रुटि, 0, _("missing conversion specifier in suffix"));
 
-    default:
-      if (isprint (ch))
-        error (EXIT_FAILURE, 0,
+    शेष:
+      अगर (है_छाप (ch))
+        error (निकास_त्रुटि, 0,
                _("invalid conversion specifier in suffix: %c"), ch);
-      else
-        error (EXIT_FAILURE, 0,
+      अन्यथा
+        error (निकास_त्रुटि, 0,
                _("invalid conversion specifier in suffix: \\%.3o"), ch);
     }
 
-  if (flags & ~ compatible_flags)
-    error (EXIT_FAILURE, 0,
+  अगर (flags & ~ compatible_flags)
+    error (निकास_त्रुटि, 0,
            _("invalid flags in conversion specification: %%%c%c"),
            (flags & ~ compatible_flags & FLAG_ALTERNATIVE ? '#' : '\''), ch);
 }
@@ -1246,128 +1246,128 @@ check_format_conv_type (char *format, int flags)
 /* Return the maximum number of bytes that can be generated by
    applying FORMAT to an int value.  If the format is
    invalid, diagnose the problem and exit.  */
-static idx_t
-max_out (char *format)
+अटल idx_t
+max_out (अक्षर *format)
 {
   bool percent = false;
 
-  for (char *f = format; *f; f++)
-    if (*f == '%' && *++f != '%')
+  क्रम (अक्षर *f = format; *f; f++)
+    अगर (*f == '%' && *++f != '%')
       {
-        if (percent)
-          error (EXIT_FAILURE, 0,
+        अगर (percent)
+          error (निकास_त्रुटि, 0,
                  _("too many %% conversion specifications in suffix"));
         percent = true;
-        int flags;
+        पूर्णांक flags;
         f += get_format_flags (f, &flags);
-        while (c_isdigit (*f))
+        जबतक (c_isdigit (*f))
           f++;
-        if (*f == '.')
-          while (c_isdigit (*++f))
-            continue;
+        अगर (*f == '.')
+          जबतक (c_isdigit (*++f))
+            जारी;
         check_format_conv_type (f, flags);
       }
 
-  if (! percent)
-    error (EXIT_FAILURE, 0,
+  अगर (! percent)
+    error (निकास_त्रुटि, 0,
            _("missing %% conversion specification in suffix"));
 
-  int maxlen = snprintf (NULL, 0, format, INT_MAX);
-  if (! (0 <= maxlen && maxlen <= IDX_MAX))
+  पूर्णांक maxlen = snprintf (शून्य, 0, format, पूर्णांक_उच्च);
+  अगर (! (0 <= maxlen && maxlen <= IDX_MAX))
     xalloc_die ();
-  return maxlen;
+  वापस maxlen;
 }
 
-int
-main (int argc, char **argv)
+पूर्णांक
+मुख्य (पूर्णांक argc, अक्षर **argv)
 {
-  int optc;
+  पूर्णांक optc;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
-  setlocale (LC_ALL, "");
+  रखो_क्षेत्र (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
-  atexit (close_stdout);
+  निकास_पर (close_stdout);
 
   global_argv = argv;
 
-  while ((optc = getopt_long (argc, argv, "f:b:kn:sqz", longopts, NULL))
+  जबतक ((optc = getopt_long (argc, argv, "f:b:kn:sqz", longopts, शून्य))
          != -1)
-    switch (optc)
+    चयन (optc)
       {
-      case 'f':
+      हाल 'f':
         prefix = optarg;
-        break;
+        अवरोध;
 
-      case 'b':
+      हाल 'b':
         suffix = optarg;
-        break;
+        अवरोध;
 
-      case 'k':
+      हाल 'k':
         remove_files = false;
-        break;
+        अवरोध;
 
-      case 'n':
-        digits = xdectoimax (optarg, 0, MIN (INT_MAX, IDX_MAX), "",
+      हाल 'n':
+        digits = xdectoimax (optarg, 0, MIN (पूर्णांक_उच्च, IDX_MAX), "",
                              _("invalid number"), 0);
-        break;
+        अवरोध;
 
-      case 's':
-      case 'q':
-        suppress_count = true;
-        break;
+      हाल 's':
+      हाल 'q':
+        suppress_गिनती = true;
+        अवरोध;
 
-      case 'z':
+      हाल 'z':
         elide_empty_files = true;
-        break;
+        अवरोध;
 
-      case SUPPRESS_MATCHED_OPTION:
+      हाल SUPPRESS_MATCHED_OPTION:
         suppress_matched = true;
-        break;
+        अवरोध;
 
       case_GETOPT_HELP_CHAR;
 
       case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-      default:
-        usage (EXIT_FAILURE);
+      शेष:
+        usage (निकास_त्रुटि);
       }
 
-  if (argc - optind < 2)
+  अगर (argc - optind < 2)
     {
-      if (argc <= optind)
+      अगर (argc <= optind)
         error (0, 0, _("missing operand"));
-      else
+      अन्यथा
         error (0, 0, _("missing operand after %s"), quote (argv[argc - 1]));
-      usage (EXIT_FAILURE);
+      usage (निकास_त्रुटि);
     }
 
-  idx_t prefix_len = strlen (prefix);
+  idx_t prefix_len = म_माप (prefix);
   idx_t max_digit_string_len
     = (suffix
        ? max_out (suffix)
-       : MAX (INT_STRLEN_BOUND (int), digits));
-  idx_t filename_size;
-  if (ckd_add (&filename_size, prefix_len, max_digit_string_len + 1))
+       : MAX (INT_STRLEN_BOUND (पूर्णांक), digits));
+  idx_t filename_आकार;
+  अगर (ckd_add (&filename_आकार, prefix_len, max_digit_string_len + 1))
     xalloc_die ();
-  filename_space = ximalloc (filename_size);
+  filename_space = ximalloc (filename_आकार);
 
-  set_input_file (argv[optind++]);
+  set_निवेश_file (argv[optind++]);
 
   parse_patterns (argc, optind, argv);
 
   {
-    enum { nsigs = countof (term_sig) };
+    क्रमागत { nsigs = countof (term_sig) };
 
-    struct sigaction act;
+    काष्ठा sigaction act;
 
     sigemptyset (&caught_signals);
-    for (int i = 0; i < nsigs; i++)
+    क्रम (पूर्णांक i = 0; i < nsigs; i++)
       {
-        sigaction (term_sig[i], NULL, &act);
-        if (act.sa_handler != SIG_IGN)
+        sigaction (term_sig[i], शून्य, &act);
+        अगर (act.sa_handler != संक_छोड़ो)
           sigaddset (&caught_signals, term_sig[i]);
       }
 
@@ -1375,47 +1375,47 @@ main (int argc, char **argv)
     act.sa_mask = caught_signals;
     act.sa_flags = 0;
 
-    for (int i = 0; i < nsigs; i++)
-      if (sigismember (&caught_signals, term_sig[i]))
-        sigaction (term_sig[i], &act, NULL);
+    क्रम (पूर्णांक i = 0; i < nsigs; i++)
+      अगर (sigismember (&caught_signals, term_sig[i]))
+        sigaction (term_sig[i], &act, शून्य);
   }
 
   split_file ();
 
-  if (close (STDIN_FILENO) != 0)
+  अगर (बंद (STDIN_FILENO) != 0)
     {
-      error (0, errno, _("read error"));
+      error (0, त्रुटि_सं, _("read error"));
       cleanup_fatal ();
     }
 
-  return EXIT_SUCCESS;
+  वापस निकास_सफल;
 }
 
-void
-usage (int status)
+व्योम
+usage (पूर्णांक status)
 {
-  if (status != EXIT_SUCCESS)
+  अगर (status != निकास_सफल)
     emit_try_help ();
-  else
+  अन्यथा
     {
-      printf (_("\
-Usage: %s [OPTION]... FILE PATTERN...\n\
+      म_लिखो (_("\
+Usage: %s [OPTION]... खाता PATTERN...\n\
 "),
               program_name);
-      fputs (_("\
-Output pieces of FILE separated by PATTERN(s) to files 'xx00', 'xx01', ...,\n\
+      ख_माला_दो (_("\
+Output pieces of खाता separated by PATTERN(s) to files 'xx00', 'xx01', ...,\n\
 and output byte counts of each piece to standard output.\n\
-"), stdout);
-       fputs (_("\
+"), मानक_निकास);
+       ख_माला_दो (_("\
 \n\
-Read standard input if FILE is -\n\
-"), stdout);
+Read standard निवेश अगर खाता is -\n\
+"), मानक_निकास);
 
       emit_mandatory_arg_note ();
 
       oputs (_("\
   -b, --suffix-format=FORMAT\n\
-         use sprintf FORMAT instead of %02d\n\
+         use प्र_लिखो FORMAT instead of %02d\n\
 "));
       oputs (_("\
   -f, --prefix=PREFIX\n\
@@ -1423,19 +1423,19 @@ Read standard input if FILE is -\n\
 "));
       oputs (_("\
   -k, --keep-files\n\
-         do not remove output files on errors\n\
+         करो not हटाओ output files on errors\n\
 "));
       oputs (_("\
       --suppress-matched\n\
-         suppress the lines matching PATTERN\n\
+         suppress the पंक्तियाँ matching PATTERN\n\
 "));
       oputs (_("\
   -n, --digits=DIGITS\n\
-         use specified number of digits instead of 2\n\
+         use specified संख्या of digits instead of 2\n\
 "));
       oputs (_("\
   -s, --quiet, --silent\n\
-         do not print counts of output file sizes\n\
+         करो not print counts of output file sizes\n\
 "));
       oputs (_("\
   -z, --elide-empty-files\n\
@@ -1443,18 +1443,18 @@ Read standard input if FILE is -\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
-      fputs (_("\
+      ख_माला_दो (_("\
 \n\
 Each PATTERN may be:\n\
-  INTEGER            copy up to but not including specified line number\n\
-  /REGEXP/[OFFSET]   copy up to but not including a matching line\n\
-  %REGEXP%[OFFSET]   skip to, but not including a matching line\n\
-  {INTEGER}          repeat the previous pattern specified number of times\n\
-  {*}                repeat the previous pattern as many times as possible\n\
+  INTEGER            copy up to but not including specified पंक्ति संख्या\n\
+  /REGEXP/[OFFSET]   copy up to but not including a matching पंक्ति\n\
+  %REGEXP%[OFFSET]   skip to, but not including a matching पंक्ति\n\
+  {INTEGER}          repeat the previous pattern specified संख्या of बार\n\
+  {*}                repeat the previous pattern as many बार as possible\n\
 \n\
-A line OFFSET is an integer optionally preceded by '+' or '-'\n\
-"), stdout);
+A पंक्ति OFFSET is an integer optionally preceded by '+' or '-'\n\
+"), मानक_निकास);
       emit_ancillary_info (PROGRAM_NAME);
     }
-  exit (status);
+  निकास (status);
 }

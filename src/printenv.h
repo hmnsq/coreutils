@@ -14,35 +14,35 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#ifndef PRINTENV_H
+#अगर_अघोषित PRINTENV_H
 # define PRINTENV_H 1
 
-static inline void
-print_envvar (char const *entry, char terminator, bool quoted)
+अटल अंतरभूत व्योम
+print_envvar (अक्षर स्थिर *entry, अक्षर terminator, bool quoted)
 {
-  if (! quoted)
-    fputs (entry, stdout);
-  else
+  अगर (! quoted)
+    ख_माला_दो (entry, मानक_निकास);
+  अन्यथा
     {
-      idx_t const entry_len = strlen (entry);
-      char const *equal = memchr (entry, '=', entry_len);
+      idx_t स्थिर entry_len = म_माप (entry);
+      अक्षर स्थिर *equal = स_प्रथम (entry, '=', entry_len);
 
       /* If the parent process manipulates ENVIRON directly, it is possible
          that an entry does not contain an equal sign.  */
-      idx_t const var_len = equal ? equal - entry : entry_len;
-      fputs (quoteN_mem (entry, var_len), stdout);
+      idx_t स्थिर var_len = equal ? equal - entry : entry_len;
+      ख_माला_दो (quoteN_mem (entry, var_len), मानक_निकास);
 
-      if (equal)
+      अगर (equal)
         {
-          putchar ('=');
-          char const *val = equal + 1;
-          idx_t const val_len = entry_len - (val - entry);
+          अक्षर_दो ('=');
+          अक्षर स्थिर *val = equal + 1;
+          idx_t स्थिर val_len = entry_len - (val - entry);
           /* Prefer "VAR=" over "VAR=''".  */
-          if (0 < val_len)
-            fputs (quoteN_mem (val, val_len), stdout);
+          अगर (0 < val_len)
+            ख_माला_दो (quoteN_mem (val, val_len), मानक_निकास);
         }
     }
-  putchar (terminator);
+  अक्षर_दो (terminator);
 }
 
-#endif
+#पूर्ण_अगर

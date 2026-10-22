@@ -1,4 +1,4 @@
-enum true_modes
+क्रमागत true_modes
 {
   /* This is for the 'true' program.  */
   TRUE_TRUE,
@@ -7,4 +7,4 @@ enum true_modes
   TRUE_FALSE
 };
 
-extern enum true_modes true_mode;
+बाह्य क्रमागत true_modes true_mode;

@@ -14,23 +14,23 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#ifndef COREUTILS_STATX_H
+#अगर_अघोषित COREUTILS_STATX_H
 # define COREUTILS_STATX_H
 
-# if HAVE_STATX && defined STATX_INO
+# अगर HAVE_STATX && defined STATX_INO
 /* Much of the format printing requires a struct stat or timespec */
-static inline struct timespec
-statx_timestamp_to_timespec (struct statx_timestamp tsx)
+अटल अंतरभूत काष्ठा timespec
+statx_timestamp_to_timespec (काष्ठा statx_timestamp tsx)
 {
-  struct timespec ts;
+  काष्ठा timespec ts;
 
   ts.tv_sec = tsx.tv_sec;
   ts.tv_nsec = tsx.tv_nsec;
-  return ts;
+  वापस ts;
 }
 
-static inline void
-statx_to_stat (struct statx *stx, struct stat *stat)
+अटल अंतरभूत व्योम
+statx_to_stat (काष्ठा statx *stx, काष्ठा stat *stat)
 {
   stat->st_dev = makedev (stx->stx_dev_major, stx->stx_dev_minor);
   stat->st_ino = stx->stx_ino;
@@ -39,7 +39,7 @@ statx_to_stat (struct statx *stx, struct stat *stat)
   stat->st_uid = stx->stx_uid;
   stat->st_gid = stx->stx_gid;
   stat->st_rdev = makedev (stx->stx_rdev_major, stx->stx_rdev_minor);
-  stat->st_size = stx->stx_size;
+  stat->st_आकार = stx->stx_आकार;
   stat->st_blksize = stx->stx_blksize;
 /* define to avoid sc_prohibit_stat_st_blocks.  */
 #  define SC_ST_BLOCKS st_blocks
@@ -49,4 +49,4 @@ statx_to_stat (struct statx *stx, struct stat *stat)
   stat->st_ctim = statx_timestamp_to_timespec (stx->stx_ctime);
 }
 # endif /* HAVE_STATX && defined STATX_INO */
-#endif /* COREUTILS_STATX_H */
+#पूर्ण_अगर /* COREUTILS_STATX_H */

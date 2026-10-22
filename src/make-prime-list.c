@@ -17,28 +17,28 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with
 this program.  If not, see https://www.gnu.org/licenses/.  */
 
-#include <inttypes.h>
+#समावेश <inttypes.h>
 
-#include <limits.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <errno.h>
+#समावेश <limits.h>
+#समावेश <stdint.h>
+#समावेश <stdio.h>
+#समावेश <string.h>
+#समावेश <stdlib.h>
+#समावेश <errno.h>
 
 /* This program is compiled in a separate directory to avoid linking to Gnulib
    which may be cross-compiled.  Therefore, we also do not have config.h and
    attribute.h.  Just define what we need.  */
-#if 2 < __GNUC__ + (95 <= __GNUC_MINOR__)
+#अगर 2 < __GNUC__ + (95 <= __GNUC_MINOR__)
 # define ATTRIBUTE_CONST __attribute__ ((__const__))
-#else
+#अन्यथा
 # define ATTRIBUTE_CONST
-#endif
-#if 3 < __GNUC__
+#पूर्ण_अगर
+#अगर 3 < __GNUC__
 # define ATTRIBUTE_MALLOC __attribute__ ((__malloc__))
-#else
+#अन्यथा
 # define ATTRIBUTE_MALLOC
-#endif
+#पूर्ण_अगर
 
 
 /* An unsigned type that is no narrower than 32 bits and no narrower
@@ -47,37 +47,37 @@ this program.  If not, see https://www.gnu.org/licenses/.  */
    __int128 works on your platform.  If this heuristic does not work
    for you, please report a bug; in the meantime compile with, e.g.,
    -Dwide_uint='unsigned __int128' to override the heuristic.  */
-#ifndef wide_uint
-# if 4 < __GNUC__ + (6 <= __GNUC_MINOR__) && ULONG_MAX >> 31 >> 31 >> 1 != 0
-typedef unsigned __int128 wide_uint;
-# else
-typedef uintmax_t wide_uint;
+#अगर_अघोषित wide_uint
+# अगर 4 < __GNUC__ + (6 <= __GNUC_MINOR__) && अच_दीर्घ_उच्च >> 31 >> 31 >> 1 != 0
+प्रकार अचिन्हित __int128 wide_uint;
+# अन्यथा
+प्रकार uintmax_t wide_uint;
 # endif
-#endif
+#पूर्ण_अगर
 
-struct prime
+काष्ठा अभाज्य
 {
-  unsigned p;
+  अचिन्हित p;
   wide_uint pinv; /* Inverse mod b = 2^{bitsize of wide_uint} */
   wide_uint lim; /* floor ((wide_uint) -1 / p) */
 };
 
 ATTRIBUTE_CONST
-static wide_uint
+अटल wide_uint
 binvert (wide_uint a)
 {
   wide_uint x = 0xf5397db1 >> (4 * ((a / 2) & 0x7));
-  for (;;)
+  क्रम (;;)
     {
       wide_uint y = 2 * x - x * x * a;
-      if (y == x)
-        return x;
+      अगर (y == x)
+        वापस x;
       x = y;
     }
 }
 
-static void
-process_prime (struct prime *info, unsigned p)
+अटल व्योम
+process_अभाज्य (काष्ठा अभाज्य *info, अचिन्हित p)
 {
   wide_uint max = -1;
   info->p = p;
@@ -85,163 +85,163 @@ process_prime (struct prime *info, unsigned p)
   info->lim = max / p;
 }
 
-static void
-print_wide_uint (wide_uint n, int nesting, unsigned wide_uint_bits)
+अटल व्योम
+print_wide_uint (wide_uint n, पूर्णांक nesting, अचिन्हित wide_uint_bits)
 {
   /* Number of bits per integer literal.  8 is too many, because
      uintmax_t is 32 bits on some machines so we cannot shift by 32 bits.
      So use 7.  */
-  int hex_digits_per_literal = 7;
-  int bits_per_literal = hex_digits_per_literal * 4;
+  पूर्णांक hex_digits_per_literal = 7;
+  पूर्णांक bits_per_literal = hex_digits_per_literal * 4;
 
-  unsigned remainder = n & ((1 << bits_per_literal) - 1);
+  अचिन्हित remainder = n & ((1 << bits_per_literal) - 1);
 
-  if (n != remainder)
+  अगर (n != remainder)
     {
-      int needs_parentheses = n >> bits_per_literal >> bits_per_literal != 0;
-      if (needs_parentheses)
-        printf ("(");
+      पूर्णांक needs_parentheses = n >> bits_per_literal >> bits_per_literal != 0;
+      अगर (needs_parentheses)
+        म_लिखो ("(");
       print_wide_uint (n >> bits_per_literal, nesting + 1, wide_uint_bits);
-      if (needs_parentheses)
-        printf (")\n%*s", nesting + 3, "");
-      printf (" << %d | ", bits_per_literal);
+      अगर (needs_parentheses)
+        म_लिखो (")\n%*s", nesting + 3, "");
+      म_लिखो (" << %d | ", bits_per_literal);
     }
-  else if (nesting)
+  अन्यथा अगर (nesting)
     {
-      printf ("(mp_limb_t) ");
+      म_लिखो ("(mp_limb_t) ");
       hex_digits_per_literal
         = ((wide_uint_bits - 1) % bits_per_literal) % 4 + 1;
     }
 
-  printf ("0x%0*xU", hex_digits_per_literal, remainder);
+  म_लिखो ("0x%0*xU", hex_digits_per_literal, remainder);
 }
 
 /* Work around <https://gcc.gnu.org/PR109635>.  */
-#if 13 <= __GNUC__
+#अगर 13 <= __GNUC__
 # pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value"
-#endif
+#पूर्ण_अगर
 
-static void
-output_primes (const struct prime *primes, unsigned nprimes)
+अटल व्योम
+output_primes (स्थिर काष्ठा अभाज्य *primes, अचिन्हित nprimes)
 {
-  unsigned i;
-  unsigned p;
-  int is_prime;
+  अचिन्हित i;
+  अचिन्हित p;
+  पूर्णांक is_अभाज्य;
 
   /* Compute wide_uint_bits by repeated shifting, rather than by
      multiplying sizeof by CHAR_BIT, as this works even if the
      wide_uint representation has holes.  */
-  unsigned wide_uint_bits = 0;
+  अचिन्हित wide_uint_bits = 0;
   wide_uint mask = -1;
-  for (wide_uint_bits = 0; mask; wide_uint_bits++)
+  क्रम (wide_uint_bits = 0; mask; wide_uint_bits++)
     mask >>= 1;
 
-  puts ("/* Generated file -- DO NOT EDIT */\n");
-  printf ("#define WIDE_UINT_BITS %u\n", wide_uint_bits);
+  माला_दो ("/* Generated file -- DO NOT EDIT */\n");
+  म_लिखो ("#define WIDE_UINT_BITS %u\n", wide_uint_bits);
 
-  for (i = 0; i < nprimes; i++)
+  क्रम (i = 0; i < nprimes; i++)
     {
       /* Check that primes[i].p fits in int_least16_t on all platforms,
          and that its square fits in int_least32_t on all platforms,
          as factor.c relies on this.  */
-      if ((1 << (16 - 1)) <= primes[i].p)
-        abort ();
+      अगर ((1 << (16 - 1)) <= primes[i].p)
+        पात ();
 
-      printf ("P (%u,\n   (", primes[i].p);
+      म_लिखो ("P (%u,\n   (", primes[i].p);
       print_wide_uint (primes[i].pinv, 0, wide_uint_bits);
-      printf ("),\n   (mp_limb_t) -1 / %u)\n", primes[i].p);
+      म_लिखो ("),\n   (mp_limb_t) -1 / %u)\n", primes[i].p);
     }
 
   /* Find next prime */
   p = primes[nprimes - 1].p;
-  do
+  करो
     {
       p += 2;
-      for (i = 0, is_prime = 1; is_prime; i++)
+      क्रम (i = 0, is_अभाज्य = 1; is_अभाज्य; i++)
         {
-          if (primes[i].p * primes[i].p > p)
-            break;
-          if (p * primes[i].pinv <= primes[i].lim)
+          अगर (primes[i].p * primes[i].p > p)
+            अवरोध;
+          अगर (p * primes[i].pinv <= primes[i].lim)
             {
-              is_prime = 0;
-              break;
+              is_अभाज्य = 0;
+              अवरोध;
             }
         }
     }
-  while (!is_prime);
+  जबतक (!is_अभाज्य);
 
-  printf ("#define SQUARE_OF_FIRST_OMITTED_PRIME %u\n", p * p);
+  म_लिखो ("#define SQUARE_OF_FIRST_OMITTED_PRIME %u\n", p * p);
 }
 
 ATTRIBUTE_MALLOC
-static void *
-xalloc (size_t s)
+अटल व्योम *
+xalloc (माप_प्रकार s)
 {
-  void *p = malloc (s);
-  if (p)
-    return p;
+  व्योम *p = दो_स्मृति (s);
+  अगर (p)
+    वापस p;
 
-  fprintf (stderr, "Virtual memory exhausted.\n");
-  exit (EXIT_FAILURE);
+  ख_लिखो (मानक_त्रुटि, "Virtual memory exhausted.\n");
+  निकास (निकास_त्रुटि);
 }
 
-int
-main (int argc, char **argv)
+पूर्णांक
+मुख्य (पूर्णांक argc, अक्षर **argv)
 {
-  int limit;
+  पूर्णांक limit;
 
-  char *sieve;
-  size_t size, i;
+  अक्षर *sieve;
+  माप_प्रकार आकार, i;
 
-  struct prime *prime_list;
-  unsigned nprimes;
+  काष्ठा अभाज्य *अभाज्य_list;
+  अचिन्हित nprimes;
 
-  if (argc != 2)
+  अगर (argc != 2)
     {
-      fprintf (stderr, "Usage: %s LIMIT\n"
+      ख_लिखो (मानक_त्रुटि, "Usage: %s LIMIT\n"
                "Produces a list of odd primes <= LIMIT\n", argv[0]);
-      return EXIT_FAILURE;
+      वापस निकास_त्रुटि;
     }
-  limit = atoi (argv[1]);
-  if (limit < 3)
-    return EXIT_SUCCESS;
+  limit = म_से_प (argv[1]);
+  अगर (limit < 3)
+    वापस निकास_सफल;
 
   /* Make limit odd */
-  if ( !(limit & 1))
+  अगर ( !(limit & 1))
     limit--;
 
-  size = (limit - 1) / 2;
+  आकार = (limit - 1) / 2;
   /* sieve[i] represents 3+2*i */
-  sieve = xalloc (size);
-  memset (sieve, 1, size);
+  sieve = xalloc (आकार);
+  स_रखो (sieve, 1, आकार);
 
-  prime_list = xalloc (size * sizeof (*prime_list));
+  अभाज्य_list = xalloc (आकार * माप (*अभाज्य_list));
   nprimes = 0;
 
-  for (i = 0; i < size;)
+  क्रम (i = 0; i < आकार;)
     {
-      unsigned p = 3 + 2 * i;
-      unsigned j;
+      अचिन्हित p = 3 + 2 * i;
+      अचिन्हित j;
 
-      process_prime (&prime_list[nprimes++], p);
+      process_अभाज्य (&अभाज्य_list[nprimes++], p);
 
-      for (j = (p * p - 3) / 2; j < size; j += p)
+      क्रम (j = (p * p - 3) / 2; j < आकार; j += p)
         sieve[j] = 0;
 
-      while (++i < size && sieve[i] == 0)
+      जबतक (++i < आकार && sieve[i] == 0)
         ;
     }
 
-  output_primes (prime_list, nprimes);
+  output_primes (अभाज्य_list, nprimes);
 
-  free (sieve);
-  free (prime_list);
+  मुक्त (sieve);
+  मुक्त (अभाज्य_list);
 
-  if (ferror (stdout) || fclose (stdout))
+  अगर (ख_त्रुटि (मानक_निकास) || ख_बंद (मानक_निकास))
     {
-      fprintf (stderr, "write error: %s\n", strerror (errno));
-      return EXIT_FAILURE;
+      ख_लिखो (मानक_त्रुटि, "write error: %s\n", म_त्रुटि (त्रुटि_सं));
+      वापस निकास_त्रुटि;
     }
 
-  return EXIT_SUCCESS;
+  वापस निकास_सफल;
 }
