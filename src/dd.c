@@ -16,22 +16,22 @@
 
 /* Written by Paul Rubin, David MacKenzie, and Stuart Kemp. */
 
-#include <config.h>
+#অন্তর্ভাৱ <config.h>
 
-#include <sys/types.h>
-#include <signal.h>
+#অন্তর্ভাৱ <sys/types.h>
+#অন্তর্ভাৱ <signal.h>
 
-#include "system.h"
-#include "alignalloc.h"
-#include "close-stream.h"
-#include "fd-reopen.h"
-#include "gethrxtime.h"
-#include "human.h"
-#include "ioblksize.h"
-#include "long-options.h"
-#include "quote.h"
-#include "xstrtol.h"
-#include "xtime.h"
+#অন্তর্ভাৱ "system.h"
+#অন্তর্ভাৱ "alignalloc.h"
+#অন্তর্ভাৱ "close-stream.h"
+#অন্তর্ভাৱ "fd-reopen.h"
+#অন্তর্ভাৱ "gethrxtime.h"
+#অন্তর্ভাৱ "human.h"
+#অন্তর্ভাৱ "ioblksize.h"
+#অন্তর্ভাৱ "long-options.h"
+#অন্তর্ভাৱ "quote.h"
+#অন্তর্ভাৱ "xstrtol.h"
+#অন্তর্ভাৱ "xtime.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "dd"
@@ -61,19 +61,19 @@
 #undef O_NOCACHE
 
 #define output_char(c)				\
-  do						\
+  কৰা						\
     {						\
       obuf[oc++] = (c);				\
-      if (oc >= output_blocksize)		\
+      যদি (oc >= output_blocksize)		\
         write_output ();			\
     }						\
-  while (0)
+  যেতিয়ালৈ (0)
 
 /* Default input and output blocksize. */
 #define DEFAULT_BLOCKSIZE 512
 
 /* Conversions bit masks. */
-enum
+গণনা
   {
     C_ASCII = 01,
 
@@ -101,7 +101,7 @@ enum
   };
 
 /* Status levels.  */
-enum
+গণনা
   {
     STATUS_NONE = 1,
     STATUS_NOXFER = 2,
@@ -110,147 +110,147 @@ enum
   };
 
 /* The name of the input file, or NULL for the standard input. */
-static char const *input_file = NULL;
+স্থির ৱর্ণ ধ্রুৱ *প্ৰবেশ_file = রিক্ত;
 
 /* The name of the output file, or NULL for the standard output. */
-static char const *output_file = NULL;
+স্থির ৱর্ণ ধ্রুৱ *output_file = রিক্ত;
 
 /* The page size on this host.  */
-static idx_t page_size;
+স্থির idx_t page_size;
 
 /* The number of bytes in which atomic reads are done. */
-static idx_t input_blocksize = 0;
+স্থির idx_t প্ৰবেশ_blocksize = 0;
 
 /* The number of bytes in which atomic writes are done. */
-static idx_t output_blocksize = 0;
+স্থির idx_t output_blocksize = 0;
 
 /* Conversion buffer size, in bytes.  0 prevents conversions. */
-static idx_t conversion_blocksize = 0;
+স্থির idx_t conversion_blocksize = 0;
 
 /* Skip this many records of 'input_blocksize' bytes before input. */
-static intmax_t skip_records = 0;
+স্থির intmax_t skip_records = 0;
 
 /* Skip this many bytes before input in addition of 'skip_records'
    records.  */
-static idx_t skip_bytes = 0;
+স্থির idx_t skip_bytes = 0;
 
 /* Skip this many records of 'output_blocksize' bytes before output. */
-static intmax_t seek_records = 0;
+স্থির intmax_t seek_records = 0;
 
 /* Skip this many bytes in addition to 'seek_records' records before
    output.  */
-static intmax_t seek_bytes = 0;
+স্থির intmax_t seek_bytes = 0;
 
 /* Whether the final output was done with a seek (rather than a write).  */
-static bool final_op_was_seek;
+স্থির bool final_op_was_seek;
 
 /* Copy only this many records.  The default is effectively infinity.  */
-static intmax_t max_records = INTMAX_MAX;
+স্থির intmax_t max_records = INTMAX_MAX;
 
 /* Copy this many bytes in addition to 'max_records' records.  */
-static idx_t max_bytes = 0;
+স্থির idx_t max_bytes = 0;
 
 /* Bit vector of conversions to apply. */
-static int conversions_mask = 0;
+স্থির পূর্ণাঙ্ক conversions_mask = 0;
 
 /* Open flags for the input and output files.  */
-static int input_flags = 0;
-static int output_flags = 0;
+স্থির পূর্ণাঙ্ক প্ৰবেশ_flags = 0;
+স্থির পূর্ণাঙ্ক output_flags = 0;
 
 /* Status flags for what is printed to stderr.  */
-static int status_level = STATUS_DEFAULT;
+স্থির পূর্ণাঙ্ক status_level = STATUS_DEFAULT;
 
 /* If nonzero, filter characters through the translation table.  */
-static bool translation_needed = false;
+স্থির bool translation_needed = false;
 
 /* Number of partial blocks written. */
-static intmax_t w_partial = 0;
+স্থির intmax_t w_partial = 0;
 
 /* Number of full blocks written. */
-static intmax_t w_full = 0;
+স্থির intmax_t w_full = 0;
 
 /* Number of partial blocks read. */
-static intmax_t r_partial = 0;
+স্থির intmax_t r_partial = 0;
 
 /* Number of full blocks read. */
-static intmax_t r_full = 0;
+স্থির intmax_t r_full = 0;
 
 /* Number of bytes written.  */
-static intmax_t w_bytes = 0;
+স্থির intmax_t w_bytes = 0;
 
 /* Last-reported number of bytes written, or negative if never reported.  */
-static intmax_t reported_w_bytes = -1;
+স্থির intmax_t reported_w_bytes = -1;
 
 /* Time that dd started.  */
-static xtime_t start_time;
+স্থির xtime_t start_time;
 
 /* Next time to report periodic progress.  */
-static xtime_t next_time;
+স্থির xtime_t next_time;
 
 /* If positive, the number of bytes output in the current progress line.  */
-static int progress_len;
+স্থির পূর্ণাঙ্ক progress_len;
 
 /* True if input is seekable.  */
-static bool input_seekable;
+স্থির bool প্ৰবেশ_seekable;
 
 /* Error number corresponding to initial attempt to lseek input.
    If ESPIPE, do not issue any more diagnostics about it.  */
-static int input_seek_errno;
+স্থির পূর্ণাঙ্ক প্ৰবেশ_seek_errno;
 
 /* File offset of the input, in bytes, or -1 if it overflowed.  */
-static off_t input_offset;
+স্থির off_t প্ৰবেশ_offset;
 
 /* True if a partial read should be diagnosed.  */
-static bool warn_partial_read;
+স্থির bool warn_partial_read;
 
 /* Records truncated by conv=block. */
-static intmax_t r_truncate = 0;
+স্থির intmax_t r_truncate = 0;
 
 /* Output representation of newline and space characters.
    They change if we're converting to EBCDIC.  */
-static char newline_character = '\n';
-static char space_character = ' ';
+স্থির ৱর্ণ newline_character = '\n';
+স্থির ৱর্ণ space_character = ' ';
 
 /* I/O buffers.  */
-static char *ibuf;
-static char *obuf;
+স্থির ৱর্ণ *ibuf;
+স্থির ৱর্ণ *obuf;
 
 /* Current index into 'obuf'. */
-static idx_t oc = 0;
+স্থির idx_t oc = 0;
 
 /* Index into current line, for 'conv=block' and 'conv=unblock'.  */
-static idx_t col = 0;
+স্থির idx_t col = 0;
 
 /* The set of signals that are caught.  */
-static sigset_t caught_signals;
+স্থির sigset_t caught_signals;
 
 /* If nonzero, the value of the pending fatal signal.  */
-static sig_atomic_t volatile interrupt_signal;
+স্থির sig_atomic_t চঞ্চল interrupt_signal;
 
 /* A count of the number of pending info signals that have been received.  */
-static sig_atomic_t volatile info_signal_count;
+স্থির sig_atomic_t চঞ্চল info_signal_গুনতি;
 
 /* Whether to discard cache for input or output.  */
-static bool i_nocache, o_nocache;
+স্থির bool i_nocache, o_nocache;
 
 /* Whether to instruct the kernel to discard the complete file.  */
-static bool i_nocache_eof, o_nocache_eof;
+স্থির bool i_nocache_eof, o_nocache_eof;
 
 /* Function used for read (to handle iflag=fullblock parameter).  */
-static ssize_t (*iread_fnc) (int fd, char *buf, idx_t size);
+স্থির ssize_t (*iread_fnc) (পূর্ণাঙ্ক fd, ৱর্ণ *buf, idx_t size);
 
 /* A longest symbol in the struct symbol_values tables below.  */
-#define LONGEST_SYMBOL "count_bytes"
+#define LONGEST_প্ৰতীক "count_bytes"
 
 /* A symbol and the corresponding integer value.  */
-struct symbol_value
+সংরচনা প্ৰতীক_মান
 {
-  char symbol[sizeof LONGEST_SYMBOL];
-  int value;
+  ৱর্ণ প্ৰতীক[পরিমাণ LONGEST_প্ৰতীক];
+  পূর্ণাঙ্ক মান;
 };
 
 /* Conversion symbols, for conv="...".  */
-static struct symbol_value const conversions[] =
+স্থির সংরচনা প্ৰতীক_মান ধ্রুৱ conversions[] =
 {
   {"ascii", C_ASCII | C_UNBLOCK | C_TWOBUFS},	/* EBCDIC to ASCII. */
   {"ebcdic", C_EBCDIC | C_BLOCK | C_TWOBUFS},	/* ASCII to EBCDIC. */
@@ -272,13 +272,13 @@ static struct symbol_value const conversions[] =
 };
 
 #define FFS_MASK(x) ((x) ^ ((x) & ((x) - 1)))
-enum
+গণনা
   {
     /* Compute a value that's bitwise disjoint from the union
        of all O_ values.  */
     v = ~(0
           | O_APPEND
-          | O_BINARY
+          | O_দ্বিমিক
           | O_CIO
           | O_DIRECT
           | O_DIRECTORY
@@ -300,8 +300,8 @@ enum
     O_NOCACHE = FFS_MASK (v2),
     v3 = v2 ^ O_NOCACHE,
 
-    O_COUNT_BYTES = FFS_MASK (v3),
-    v4 = v3 ^ O_COUNT_BYTES,
+    O_গুনতি_BYTES = FFS_MASK (v3),
+    v4 = v3 ^ O_গুনতি_BYTES,
 
     O_SKIP_BYTES = FFS_MASK (v4),
     v5 = v4 ^ O_SKIP_BYTES,
@@ -312,7 +312,7 @@ enum
 /* Ensure that we got something.  */
 static_assert (O_FULLBLOCK != 0);
 static_assert (O_NOCACHE != 0);
-static_assert (O_COUNT_BYTES != 0);
+static_assert (O_গুনতি_BYTES != 0);
 static_assert (O_SKIP_BYTES != 0);
 static_assert (O_SEEK_BYTES != 0);
 
@@ -321,15 +321,15 @@ static_assert (O_SEEK_BYTES != 0);
 /* Ensure that this is a single-bit value.  */
 static_assert ( ! MULTIPLE_BITS_SET (O_FULLBLOCK));
 static_assert ( ! MULTIPLE_BITS_SET (O_NOCACHE));
-static_assert ( ! MULTIPLE_BITS_SET (O_COUNT_BYTES));
+static_assert ( ! MULTIPLE_BITS_SET (O_গুনতি_BYTES));
 static_assert ( ! MULTIPLE_BITS_SET (O_SKIP_BYTES));
 static_assert ( ! MULTIPLE_BITS_SET (O_SEEK_BYTES));
 
 /* Flags, for iflag="..." and oflag="...".  */
-static struct symbol_value const flags[] =
+স্থির সংরচনা প্ৰতীক_মান ধ্রুৱ flags[] =
 {
   {"append",	  O_APPEND},
-  {"binary",	  O_BINARY},
+  {"binary",	  O_দ্বিমিক},
   {"cio",	  O_CIO},
   {"direct",	  O_DIRECT},
   {"directory",   O_DIRECTORY},
@@ -343,14 +343,14 @@ static struct symbol_value const flags[] =
   {"sync",	  O_SYNC},
   {"text",	  O_TEXT},
   {"fullblock",   O_FULLBLOCK}, /* Accumulate full blocks from input.  */
-  {"count_bytes", O_COUNT_BYTES},
+  {"count_bytes", O_গুনতি_BYTES},
   {"skip_bytes",  O_SKIP_BYTES},
   {"seek_bytes",  O_SEEK_BYTES},
   {"",		0}
 };
 
 /* Status, for status="...".  */
-static struct symbol_value const statuses[] =
+স্থির সংরচনা প্ৰতীক_মান ধ্রুৱ statuses[] =
 {
   {"none",	STATUS_NONE},
   {"noxfer",	STATUS_NOXFER},
@@ -359,14 +359,14 @@ static struct symbol_value const statuses[] =
 };
 
 /* Translation table formed by applying successive transformations. */
-static unsigned char trans_table[256];
+স্থির unsigned ৱর্ণ trans_table[256];
 
 /* Standard translation tables, taken from POSIX 1003.1-2013.
    Beware of imitations; there are lots of ASCII<->EBCDIC tables
    floating around the net, perhaps valid for some applications but
    not correct here.  */
 
-static char const ascii_to_ebcdic[] =
+স্থির ৱর্ণ ধ্রুৱ ascii_to_ebcdic[] =
 {
   '\000', '\001', '\002', '\003', '\067', '\055', '\056', '\057',
   '\026', '\005', '\045', '\013', '\014', '\015', '\016', '\017',
@@ -402,7 +402,7 @@ static char const ascii_to_ebcdic[] =
   '\356', '\357', '\372', '\373', '\374', '\375', '\376', '\377'
 };
 
-static char const ascii_to_ibm[] =
+স্থির ৱর্ণ ধ্রুৱ ascii_to_ibm[] =
 {
   '\000', '\001', '\002', '\003', '\067', '\055', '\056', '\057',
   '\026', '\005', '\045', '\013', '\014', '\015', '\016', '\017',
@@ -438,7 +438,7 @@ static char const ascii_to_ibm[] =
   '\356', '\357', '\372', '\373', '\374', '\375', '\376', '\377'
 };
 
-static char const ebcdic_to_ascii[] =
+স্থির ৱর্ণ ধ্রুৱ ebcdic_to_ascii[] =
 {
   '\000', '\001', '\002', '\003', '\234', '\011', '\206', '\177',
   '\227', '\215', '\216', '\013', '\014', '\015', '\016', '\017',
@@ -475,7 +475,7 @@ static char const ebcdic_to_ascii[] =
 };
 
 /* True if we need to close the standard output *stream*.  */
-static bool close_stdout_required = true;
+স্থির bool close_stdout_required = true;
 
 /* The only reason to close the standard output *stream* is if
    parse_long_options fails (as it does for --help or --version).
@@ -488,12 +488,12 @@ static bool close_stdout_required = true;
    call, once parse_long_options has succeeded.
    Meanwhile, we guarantee that the standard error stream is flushed,
    by inlining the last half of close_stdout as needed.  */
-static void
-maybe_close_stdout (void)
+স্থির শূন্য
+maybe_close_stdout (শূন্য)
 {
-  if (close_stdout_required)
+  যদি (close_stdout_required)
     close_stdout ();
-  else if (close_stream (stderr) != 0)
+  অন্যথা যদি (close_stream (stderr) != 0)
     _exit (EXIT_FAILURE);
 }
 
@@ -501,10 +501,10 @@ maybe_close_stdout (void)
    and do not exit.  */
 
 ATTRIBUTE_FORMAT ((__printf__, 2, 3))
-static void
-diagnose (int errnum, char const *fmt, ...)
+স্থির শূন্য
+diagnose (পূর্ণাঙ্ক errnum, ৱর্ণ ধ্রুৱ *fmt, ...)
 {
-  if (0 < progress_len)
+  যদি (0 < progress_len)
     {
       fputc ('\n', stderr);
       progress_len = 0;
@@ -516,12 +516,12 @@ diagnose (int errnum, char const *fmt, ...)
   va_end (ap);
 }
 
-void
-usage (int status)
+শূন্য
+usage (পূর্ণাঙ্ক status)
 {
-  if (status != EXIT_SUCCESS)
+  যদি (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  অন্যথা
     {
       printf (_("\
 Usage: %s [OPERAND]...\n\
@@ -533,41 +533,41 @@ Copy a file, converting and formatting according to the operands.\n\
 \n\
 "), stdout);
       oputs (_("\
-  bs=BYTES        read and write up to BYTES bytes at a time (default: 512);\n\
+  bs=BYTES        পঠ and লিখ up to BYTES bytes at a time (স্ৱভাৱ: 512);\n\
                   overrides ibs and obs\n\
 "));
       oputs (_("\
   cbs=BYTES       convert BYTES bytes at a time\n\
 "));
       oputs (_("\
-  conv=CONVS      convert the file as per the comma separated symbol list\n\
+  conv=CONVS      convert the file as per the comma separated প্ৰতীক list\n\
 "));
       oputs (_("\
-  count=N         copy only N input blocks\n\
+  গুনতি=N         copy only N প্ৰবেশ blocks\n\
 "));
       oputs (_("\
-  ibs=BYTES       read up to BYTES bytes at a time (default: 512)\n\
+  ibs=BYTES       পঠ up to BYTES bytes at a time (স্ৱভাৱ: 512)\n\
 "));
       oputs (_("\
-  if=FILE         read from FILE instead of standard input\n\
+  যদি=FILE         পঠ from FILE instead of standard প্ৰবেশ\n\
 "));
       oputs (_("\
-  iflag=FLAGS     read as per the comma separated symbol list\n\
+  iflag=FLAGS     পঠ as per the comma separated প্ৰতীক list\n\
 "));
       oputs (_("\
-  obs=BYTES       write BYTES bytes at a time (default: 512)\n\
+  obs=BYTES       লিখ BYTES bytes at a time (স্ৱভাৱ: 512)\n\
 "));
       oputs (_("\
-  of=FILE         write to FILE instead of standard output\n\
+  of=FILE         লিখ to FILE instead of standard output\n\
 "));
       oputs (_("\
-  oflag=FLAGS     write as per the comma separated symbol list\n\
+  oflag=FLAGS     লিখ as per the comma separated প্ৰতীক list\n\
 "));
       oputs (_("\
   seek=N          (or oseek=N) skip N obs sized output blocks\n\
 "));
       oputs (_("\
-  skip=N          (or iseek=N) skip N ibs sized input blocks\n\
+  skip=N          (or iseek=N) skip N ibs sized প্ৰবেশ blocks\n\
 "));
       oputs (_("\
   status=LEVEL    The LEVEL of information to print to standard error;\n\
@@ -579,11 +579,11 @@ Copy a file, converting and formatting according to the operands.\n\
 \n\
 N and BYTES may be followed by the following multiplicative suffixes:\n\
 c=1, w=2, b=512, kB=1000, K=1024, MB=1000*1000, M=1024*1024, xM=M,\n\
-GB=1000*1000*1000, G=1024*1024*1024, and so on for T, P, E, Z, Y, R, Q.\n\
-Binary prefixes can be used, too: KiB=K, MiB=M, and so on.\n\
+GB=1000*1000*1000, G=1024*1024*1024, and so on বাবে T, P, E, Z, Y, R, Q.\n\
+দ্বিমিক_2 prefixes can be used, too: KiB=K, MiB=M, and so on.\n\
 If N ends in 'B', it counts bytes not blocks.\n\
 \n\
-Each CONV symbol may be:\n\
+Each CONV প্ৰতীক may be:\n\
 \n\
 "), stdout);
       fputs (_("\
@@ -592,63 +592,63 @@ Each CONV symbol may be:\n\
   ibm       from ASCII to alternate EBCDIC\n\
   block     pad newline-terminated records with spaces to cbs-size\n\
   unblock   replace trailing spaces in cbs-size records with newline\n\
-  lcase     change upper case to lower case\n\
-  ucase     change lower case to upper case\n\
-  sparse    try to seek rather than write all-NUL output blocks\n\
-  swab      swap every pair of input bytes\n\
-  sync      pad every input block with NULs to ibs-size; when used\n\
+  lcase     change upper পক্ষ to lower পক্ষ\n\
+  ucase     change lower পক্ষ to upper পক্ষ\n\
+  sparse    try to seek rather than লিখ all-NUL output blocks\n\
+  swab      swap every pair of প্ৰবেশ bytes\n\
+  sync      pad every প্ৰবেশ block with NULs to ibs-size; when used\n\
             with block or unblock, pad with spaces rather than NULs\n\
 "), stdout);
       fputs (_("\
-  excl      fail if the output file already exists\n\
-  nocreat   do not create the output file\n\
-  notrunc   do not truncate the output file\n\
-  noerror   continue after read errors\n\
-  fdatasync  physically write output file data before finishing\n\
-  fsync     likewise, but also write metadata\n\
+  excl      fail যদি the output file already exists\n\
+  nocreat   কৰা not create the output file\n\
+  notrunc   কৰা not truncate the output file\n\
+  noerror   অনুৱর্ত after পঠ errors\n\
+  fdatasync  physically লিখ output file data before finishing\n\
+  fsync     likewise, but also লিখ metadata\n\
 "), stdout);
       fputs (_("\
 \n\
-Each FLAG symbol may be:\n\
+Each FLAG প্ৰতীক may be:\n\
 \n\
-  append    append mode (makes sense only for output; conv=notrunc suggested)\n\
+  append    append mode (makes sense only বাবে output; conv=notrunc suggested)\n\
 "), stdout);
-      if (O_CIO)
+      যদি (O_CIO)
         fputs (_("  cio       use concurrent I/O for data\n"), stdout);
-      if (O_DIRECT)
+      যদি (O_DIRECT)
         fputs (_("  direct    use direct I/O for data\n"), stdout);
       fputs (_("  directory  fail unless a directory\n"), stdout);
-      if (O_DSYNC)
+      যদি (O_DSYNC)
         fputs (_("  dsync     use synchronized I/O for data\n"), stdout);
-      if (O_SYNC)
+      যদি (O_SYNC)
         fputs (_("  sync      likewise, but also for metadata\n"), stdout);
       fputs (_("  fullblock  accumulate full blocks of input (iflag only)\n"),
              stdout);
-      if (O_NONBLOCK)
+      যদি (O_NONBLOCK)
         fputs (_("  nonblock  use non-blocking I/O\n"), stdout);
-      if (O_NOATIME)
+      যদি (O_NOATIME)
         fputs (_("  noatime   do not update access time\n"), stdout);
-#if HAVE_POSIX_FADVISE
-      if (O_NOCACHE)
+#যদি HAVE_POSIX_FADVISE
+      যদি (O_NOCACHE)
         fputs (_("  nocache   Request to drop cache.  See also oflag=sync\n"),
                stdout);
 #endif
-      if (O_NOCTTY)
+      যদি (O_NOCTTY)
         fputs (_("  noctty    do not assign controlling terminal from file\n"),
                stdout);
-      if (HAVE_WORKING_O_NOFOLLOW)
+      যদি (HAVE_WORKING_O_NOFOLLOW)
         fputs (_("  nofollow  do not follow symlinks\n"), stdout);
-      if (O_NOLINKS)
+      যদি (O_NOLINKS)
         fputs (_("  nolinks   fail if multiply-linked\n"), stdout);
-      if (O_BINARY)
+      যদি (O_দ্বিমিক)
         fputs (_("  binary    use binary I/O for data\n"), stdout);
-      if (O_TEXT)
+      যদি (O_TEXT)
         fputs (_("  text      use text I/O for data\n"), stdout);
 
       {
         printf (_("\
 \n\
-Sending a %s signal to a running 'dd' process makes it\n\
+Sending a %s সঙ্কেত to a running 'dd' process makes it\n\
 print I/O statistics to standard error and then resume copying.\n\
 \n\
 Options are:\n\
@@ -665,44 +665,44 @@ Options are:\n\
 
 /* Common options to use when displaying sizes and rates.  */
 
-enum { human_opts = (human_autoscale | human_round_to_nearest
+গণনা { human_opts = (human_autoscale | human_round_to_nearest
                      | human_space_before_unit | human_SI | human_B) };
 
 /* Ensure input buffer IBUF is allocated.  */
 
-static void
-alloc_ibuf (void)
+স্থির শূন্য
+alloc_ibuf (শূন্য)
 {
-  if (ibuf)
-    return;
+  যদি (ibuf)
+    ঘূৰাই;
 
   bool extra_byte_for_swab = !!(conversions_mask & C_SWAB);
-  ibuf = alignalloc (page_size, input_blocksize + extra_byte_for_swab);
-  if (!ibuf)
+  ibuf = alignalloc (page_size, প্ৰবেশ_blocksize + extra_byte_for_swab);
+  যদি (!ibuf)
     {
-      char hbuf[LONGEST_HUMAN_READABLE + 1];
+      ৱর্ণ hbuf[LONGEST_HUMAN_READABLE + 1];
       error (EXIT_FAILURE, 0,
              _("memory exhausted by input buffer of size %td bytes (%s)"),
-             input_blocksize,
-             human_readable (input_blocksize, hbuf,
+             প্ৰবেশ_blocksize,
+             human_readable (প্ৰবেশ_blocksize, hbuf,
                              human_opts | human_base_1024, 1, 1));
     }
 }
 
 /* Ensure output buffer OBUF is allocated/initialized.  */
 
-static void
-alloc_obuf (void)
+স্থির শূন্য
+alloc_obuf (শূন্য)
 {
-  if (obuf)
-    return;
+  যদি (obuf)
+    ঘূৰাই;
 
-  if (conversions_mask & C_TWOBUFS)
+  যদি (conversions_mask & C_TWOBUFS)
     {
       obuf = alignalloc (page_size, output_blocksize);
-      if (!obuf)
+      যদি (!obuf)
         {
-          char hbuf[LONGEST_HUMAN_READABLE + 1];
+          ৱর্ণ hbuf[LONGEST_HUMAN_READABLE + 1];
           error (EXIT_FAILURE, 0,
                  _("memory exhausted by output buffer of size %td"
                    " bytes (%s)"),
@@ -711,70 +711,70 @@ alloc_obuf (void)
                                  human_opts | human_base_1024, 1, 1));
         }
     }
-  else
+  অন্যথা
     {
       alloc_ibuf ();
       obuf = ibuf;
     }
 }
 
-static void
-translate_charset (char const *new_trans)
+স্থির শূন্য
+translate_charset (ৱর্ণ ধ্রুৱ *new_trans)
 {
-  for (int i = 0; i < 256; i++)
+  বাবে (পূর্ণাঙ্ক i = 0; i < 256; i++)
     trans_table[i] = new_trans[trans_table[i]];
   translation_needed = true;
 }
 
 /* Return true if I has more than one bit set.  I must be nonnegative.  */
 
-static inline bool
-multiple_bits_set (int i)
+স্থির অন্তঃস্থ bool
+multiple_bits_set (পূর্ণাঙ্ক i)
 {
-  return MULTIPLE_BITS_SET (i);
+  ঘূৰাই MULTIPLE_BITS_SET (i);
 }
 
-static bool
-abbreviation_lacks_prefix (char const *message)
+স্থির bool
+abbreviation_lacks_prefix (ৱর্ণ ধ্রুৱ *message)
 {
-  return message[strlen (message) - 2] == ' ';
+  ঘূৰাই message[strlen (message) - 2] == ' ';
 }
 
 /* Print transfer statistics.  */
 
-static void
+স্থির শূন্য
 print_xfer_stats (xtime_t progress_time)
 {
   xtime_t now = progress_time ? progress_time : gethrxtime ();
-  static char const slash_s[] = "/s";
-  char hbuf[3][LONGEST_HUMAN_READABLE + sizeof slash_s];
-  double delta_s;
-  char const *bytes_per_second;
-  char const *si = human_readable (w_bytes, hbuf[0], human_opts, 1, 1);
-  char const *iec = human_readable (w_bytes, hbuf[1],
+  স্থির ৱর্ণ ধ্রুৱ slash_s[] = "/s";
+  ৱর্ণ hbuf[3][LONGEST_HUMAN_READABLE + পরিমাণ slash_s];
+  দ্ৱিগুণ delta_s;
+  ৱর্ণ ধ্রুৱ *bytes_per_second;
+  ৱর্ণ ধ্রুৱ *si = human_readable (w_bytes, hbuf[0], human_opts, 1, 1);
+  ৱর্ণ ধ্রুৱ *iec = human_readable (w_bytes, hbuf[1],
                                     human_opts | human_base_1024, 1, 1);
 
   /* Use integer arithmetic to compute the transfer rate,
      since that makes it easy to use SI abbreviations.  */
-  char *bpsbuf = hbuf[2];
-  int bpsbufsize = sizeof hbuf[2];
-  if (start_time < now)
+  ৱর্ণ *bpsbuf = hbuf[2];
+  পূর্ণাঙ্ক bpsbufsize = পরিমাণ hbuf[2];
+  যদি (start_time < now)
     {
-      double XTIME_PRECISIONe0 = XTIME_PRECISION;
+      দ্ৱিগুণ XTIME_PRECISIONe0 = XTIME_PRECISION;
       xtime_t delta_xtime = now - start_time;
       delta_s = delta_xtime / XTIME_PRECISIONe0;
       bytes_per_second = human_readable (w_bytes, bpsbuf, human_opts,
                                          XTIME_PRECISION, delta_xtime);
       strcat (bytes_per_second - bpsbuf + bpsbuf, slash_s);
     }
-  else
+  অন্যথা
     {
       delta_s = 0;
       snprintf (bpsbuf, bpsbufsize, "%s B/s", _("Infinity"));
       bytes_per_second = bpsbuf;
     }
 
-  if (progress_time)
+  যদি (progress_time)
     fputc ('\r', stderr);
 
   /* Use full seconds when printing progress, since the progress
@@ -782,11 +782,11 @@ print_xfer_stats (xtime_t progress_time)
      displaying any subsecond jitter.  Use default precision with %g
      otherwise, as this provides more-useful output then.  With long
      transfers %g can generate a number with an exponent; that is OK.  */
-  char delta_s_buf[24];
-  snprintf (delta_s_buf, sizeof delta_s_buf,
+  ৱর্ণ delta_s_buf[24];
+  snprintf (delta_s_buf, পরিমাণ delta_s_buf,
             progress_time ? "%.0f s" : "%g s", delta_s);
 
-  int stats_len
+  পূর্ণাঙ্ক stats_len
     = (abbreviation_lacks_prefix (si)
        ? fprintf (stderr,
                   ngettext ("%jd byte copied, %s, %s",
@@ -801,7 +801,7 @@ print_xfer_stats (xtime_t progress_time)
                   _("%jd bytes (%s, %s) copied, %s, %s"),
                   w_bytes, si, iec, delta_s_buf, bytes_per_second));
 
-  if (progress_time)
+  যদি (progress_time)
     {
       /* Erase any trailing junk on the output line by outputting
          spaces.  In theory this could glitch the display because the
@@ -809,23 +809,23 @@ print_xfer_stats (xtime_t progress_time)
          could consume fewer screen columns than the strlen difference
          from the previously formatted translation.  In practice this
          does not seem to be a problem.  */
-      if (0 <= stats_len && stats_len < progress_len)
+      যদি (0 <= stats_len && stats_len < progress_len)
         fprintf (stderr, "%*s", progress_len - stats_len, "");
       progress_len = stats_len;
     }
-  else
+  অন্যথা
     fputc ('\n', stderr);
 
   reported_w_bytes = w_bytes;
 }
 
-static void
-print_stats (void)
+স্থির শূন্য
+print_stats (শূন্য)
 {
-  if (status_level == STATUS_NONE)
-    return;
+  যদি (status_level == STATUS_NONE)
+    ঘূৰাই;
 
-  if (0 < progress_len)
+  যদি (0 < progress_len)
     {
       fputc ('\n', stderr);
       progress_len = 0;
@@ -836,68 +836,68 @@ print_stats (void)
              "%jd+%jd records out\n"),
            r_full, r_partial, w_full, w_partial);
 
-  if (r_truncate != 0)
+  যদি (r_truncate != 0)
     fprintf (stderr,
              ngettext ("%jd truncated record\n",
                        "%jd truncated records\n",
                        select_plural (r_truncate)),
              r_truncate);
 
-  if (status_level == STATUS_NOXFER)
-    return;
+  যদি (status_level == STATUS_NOXFER)
+    ঘূৰাই;
 
   print_xfer_stats (0);
 }
 
 /* An ordinary signal was received; arrange for the program to exit.  */
 
-static void
-interrupt_handler (int sig)
+স্থির শূন্য
+interrupt_handler (পূর্ণাঙ্ক sig)
 {
-  if (! SA_RESETHAND)
-    signal (sig, SIG_DFL);
+  যদি (! SA_RESETHAND)
+    সঙ্কেত (sig, SIG_DFL);
   interrupt_signal = sig;
 }
 
 /* An info signal was received; arrange for the program to print status.  */
 
-static void
-siginfo_handler (MAYBE_UNUSED int sig)
+স্থির শূন্য
+siginfo_handler (MAYBE_UNUSED পূর্ণাঙ্ক sig)
 {
-  info_signal_count++;
+  info_signal_গুনতি++;
 }
 
 /* Install the signal handlers.  */
 
-static void
-install_signal_handlers (void)
+স্থির শূন্য
+install_signal_handlers (শূন্য)
 {
   bool catch_siginfo = ! (SIGINFO == SIGUSR1 && getenv ("POSIXLY_CORRECT"));
 
-  struct sigaction act;
+  সংরচনা sigaction act;
   sigemptyset (&caught_signals);
-  if (catch_siginfo)
+  যদি (catch_siginfo)
     sigaddset (&caught_signals, SIGINFO);
-  sigaction (SIGINT, NULL, &act);
-  if (act.sa_handler != SIG_IGN)
+  sigaction (SIGINT, রিক্ত, &act);
+  যদি (act.sa_handler != SIG_IGN)
     sigaddset (&caught_signals, SIGINT);
   act.sa_mask = caught_signals;
 
-  if (sigismember (&caught_signals, SIGINFO))
+  যদি (sigismember (&caught_signals, SIGINFO))
     {
       act.sa_handler = siginfo_handler;
       /* Note we don't use SA_RESTART here and instead
          handle EINTR explicitly in iftruncate etc.
          to avoid blocking on uncommitted read/write calls.  */
       act.sa_flags = 0;
-      sigaction (SIGINFO, &act, NULL);
+      sigaction (SIGINFO, &act, রিক্ত);
     }
 
-  if (sigismember (&caught_signals, SIGINT))
+  যদি (sigismember (&caught_signals, SIGINT))
     {
       act.sa_handler = interrupt_handler;
       act.sa_flags = SA_NODEFER | SA_RESETHAND;
-      sigaction (SIGINT, &act, NULL);
+      sigaction (SIGINT, &act, রিক্ত);
     }
 }
 
@@ -906,38 +906,38 @@ install_signal_handlers (void)
    is in an unspecified state, so keep trying to close FD but do not
    consider EBADF to be an error.  Do not process signals.  This all
    differs somewhat from functions like ifdatasync and ifsync.  */
-static int
-iclose (int fd)
+স্থির পূর্ণাঙ্ক
+iclose (পূর্ণাঙ্ক fd)
 {
-  if (close (fd) != 0)
-    do
-      if (errno != EINTR)
-        return -1;
-    while (close (fd) != 0 && errno != EBADF);
+  যদি (close (fd) != 0)
+    কৰা
+      যদি (errno != EINTR)
+        ঘূৰাই -1;
+    যেতিয়ালৈ (close (fd) != 0 && errno != EBADF);
 
-  return 0;
+  ঘূৰাই 0;
 }
 
-static int synchronize_output (void);
+স্থির পূর্ণাঙ্ক synchronize_output (শূন্য);
 
-static void
-cleanup (void)
+স্থির শূন্য
+cleanup (শূন্য)
 {
-  if (!interrupt_signal)
+  যদি (!interrupt_signal)
     {
-      int sync_status = synchronize_output ();
-      if (sync_status)
+      পূর্ণাঙ্ক sync_status = synchronize_output ();
+      যদি (sync_status)
         exit (sync_status);
     }
 
-  if (iclose (STDIN_FILENO) != 0)
+  যদি (iclose (STDIN_FILENO) != 0)
     error (EXIT_FAILURE, errno, _("closing input file %s"),
-           quoteaf (input_file));
+           quoteaf (প্ৰবেশ_file));
 
   /* Don't remove this call to close, even though close_stdout
      closes standard output.  This close is necessary when cleanup
      is called as a consequence of signal handling.  */
-  if (iclose (STDOUT_FILENO) != 0)
+  যদি (iclose (STDOUT_FILENO) != 0)
     error (EXIT_FAILURE, errno,
            _("closing output file %s"), quoteaf (output_file));
 }
@@ -946,13 +946,13 @@ cleanup (void)
    should be called periodically.  Ideally there should never be an
    unbounded amount of time when signals are not being processed.  */
 
-static void
-process_signals (void)
+স্থির শূন্য
+process_signals (শূন্য)
 {
-  while (interrupt_signal || info_signal_count)
+  যেতিয়ালৈ (interrupt_signal || info_signal_গুনতি)
     {
-      int interrupt;
-      int infos;
+      পূর্ণাঙ্ক interrupt;
+      পূর্ণাঙ্ক infos;
       sigset_t oldset;
 
       sigprocmask (SIG_BLOCK, &caught_signals, &oldset);
@@ -960,23 +960,23 @@ process_signals (void)
       /* Reload interrupt_signal and info_signal_count, in case a new
          signal was handled before sigprocmask took effect.  */
       interrupt = interrupt_signal;
-      infos = info_signal_count;
+      infos = info_signal_গুনতি;
 
-      if (infos)
-        info_signal_count = infos - 1;
+      যদি (infos)
+        info_signal_গুনতি = infos - 1;
 
-      sigprocmask (SIG_SETMASK, &oldset, NULL);
+      sigprocmask (SIG_SETMASK, &oldset, রিক্ত);
 
-      if (interrupt)
+      যদি (interrupt)
         cleanup ();
       print_stats ();
-      if (interrupt)
-        raise (interrupt);
+      যদি (interrupt)
+        উত্থাপয (interrupt);
     }
 }
 
-static void
-finish_up (void)
+স্থির শূন্য
+finish_up (শূন্য)
 {
   /* Process signals first, so that cleanup is called at most once.  */
   process_signals ();
@@ -984,8 +984,8 @@ finish_up (void)
   print_stats ();
 }
 
-static void
-quit (int code)
+স্থির শূন্য
+quit (পূর্ণাঙ্ক code)
 {
   finish_up ();
   exit (code);
@@ -996,27 +996,27 @@ quit (int code)
    while storing the remainder internally per FD.
    Pass LEN == 0 to get the current remainder.  */
 
-static off_t
-cache_round (int fd, off_t len)
+স্থির off_t
+cache_round (পূর্ণাঙ্ক fd, off_t len)
 {
-  static off_t i_pending, o_pending;
+  স্থির off_t i_pending, o_pending;
   off_t *pending = (fd == STDIN_FILENO ? &i_pending : &o_pending);
 
-  if (len)
+  যদি (len)
     {
       intmax_t c_pending;
-      if (ckd_add (&c_pending, *pending, len))
+      যদি (ckd_add (&c_pending, *pending, len))
         c_pending = INTMAX_MAX;
       *pending = c_pending % IO_BUFSIZE;
-      if (c_pending > *pending)
+      যদি (c_pending > *pending)
         len = c_pending - *pending;
-      else
+      অন্যথা
         len = 0;
     }
-  else
+  অন্যথা
     len = *pending;
 
-  return len;
+  ঘূৰাই len;
 }
 
 /* Discard the cache from the current offset of either
@@ -1024,49 +1024,49 @@ cache_round (int fd, off_t len)
    Return true on success.
    Return false on failure, with errno set.  */
 
-static bool
-invalidate_cache (int fd, off_t len)
+স্থির bool
+invalidate_cache (পূর্ণাঙ্ক fd, off_t len)
 {
-  int adv_ret = -1;
+  পূর্ণাঙ্ক adv_ret = -1;
   off_t offset;
   bool nocache_eof = (fd == STDIN_FILENO ? i_nocache_eof : o_nocache_eof);
 
   /* Minimize syscalls.  */
   off_t clen = cache_round (fd, len);
-  if (len && !clen)
-    return true; /* Don't advise this time.  */
-  else if (! len && ! clen && ! nocache_eof)
-    return true;
+  যদি (len && !clen)
+    ঘূৰাই true; /* Don't advise this time.  */
+  অন্যথা যদি (! len && ! clen && ! nocache_eof)
+    ঘূৰাই true;
   off_t pending = len ? cache_round (fd, 0) : 0;
 
-  if (fd == STDIN_FILENO)
+  যদি (fd == STDIN_FILENO)
     {
-      if (input_seekable)
-        offset = input_offset;
-      else
+      যদি (প্ৰবেশ_seekable)
+        offset = প্ৰবেশ_offset;
+      অন্যথা
         {
           offset = -1;
           errno = ESPIPE;
         }
     }
-  else
+  অন্যথা
     {
-      static off_t output_offset = -2;
+      স্থির off_t output_offset = -2;
 
-      if (output_offset != -1)
+      যদি (output_offset != -1)
         {
-          if (output_offset < 0)
+          যদি (output_offset < 0)
             output_offset = lseek (fd, 0, SEEK_CUR);
-          else if (len)
+          অন্যথা যদি (len)
             output_offset += clen + pending;
         }
 
       offset = output_offset;
     }
 
-  if (0 <= offset)
+  যদি (0 <= offset)
    {
-     if (! len && clen && nocache_eof)
+     যদি (! len && clen && nocache_eof)
        {
          pending = clen;
          clen = 0;
@@ -1076,57 +1076,57 @@ invalidate_cache (int fd, off_t len)
         we've read, so as not to dump any read ahead cache.
         Note also the kernel is conservative and only invalidates
         full pages in the specified range.  */
-#if HAVE_POSIX_FADVISE
+#যদি HAVE_POSIX_FADVISE
      offset = offset - clen - pending;
      /* ensure full page specified when invalidating to eof.  */
-     if (clen == 0)
+     যদি (clen == 0)
        offset -= offset % page_size;
      adv_ret = posix_fadvise (fd, offset, clen, POSIX_FADV_DONTNEED);
      errno = adv_ret;
-#else
+#অন্যথা
      errno = ENOTSUP;
 #endif
    }
 
-  return adv_ret == 0;
+  ঘূৰাই adv_ret == 0;
 }
 
 /* Read from FD into the buffer BUF of size SIZE, processing any
    signals that arrive before bytes are read.  Return the number of
    bytes read if successful, -1 (setting errno) on failure.  */
 
-static ssize_t
-iread (int fd, char *buf, idx_t size)
+স্থির ssize_t
+iread (পূর্ণাঙ্ক fd, ৱর্ণ *buf, idx_t size)
 {
   ssize_t nread;
-  static ssize_t prev_nread;
+  স্থির ssize_t prev_nread;
 
-  do
+  কৰা
     {
       process_signals ();
-      nread = read (fd, buf, size);
+      nread = পঠ (fd, buf, size);
       /* Ignore final read error with iflag=direct as that
          returns EINVAL due to the non aligned file offset.  */
-      if (nread == -1 && errno == EINVAL
+      যদি (nread == -1 && errno == EINVAL
           && 0 < prev_nread && prev_nread < size
-          && (input_flags & O_DIRECT))
+          && (প্ৰবেশ_flags & O_DIRECT))
         {
           errno = 0;
           nread = 0;
         }
     }
-  while (nread < 0 && errno == EINTR);
+  যেতিয়ালৈ (nread < 0 && errno == EINTR);
 
   /* Short read may be due to received signal.  */
-  if (0 < nread && nread < size)
+  যদি (0 < nread && nread < size)
     process_signals ();
 
-  if (0 < nread && warn_partial_read)
+  যদি (0 < nread && warn_partial_read)
     {
-      if (0 < prev_nread && prev_nread < size)
+      যদি (0 < prev_nread && prev_nread < size)
         {
           idx_t prev = prev_nread;
-          if (status_level != STATUS_NONE)
+          যদি (status_level != STATUS_NONE)
             diagnose (0, ngettext (("warning: partial read (%td byte); "
                                     "suggest iflag=fullblock"),
                                    ("warning: partial read (%td bytes); "
@@ -1138,28 +1138,28 @@ iread (int fd, char *buf, idx_t size)
     }
 
   prev_nread = nread;
-  return nread;
+  ঘূৰাই nread;
 }
 
 /* Wrapper around iread function to accumulate full blocks.  */
-static ssize_t
-iread_fullblock (int fd, char *buf, idx_t size)
+স্থির ssize_t
+iread_fullblock (পূর্ণাঙ্ক fd, ৱর্ণ *buf, idx_t size)
 {
   ssize_t nread = 0;
 
-  while (0 < size)
+  যেতিয়ালৈ (0 < size)
     {
       ssize_t ncurr = iread (fd, buf, size);
-      if (ncurr < 0)
-        return ncurr;
-      if (ncurr == 0)
-        break;
+      যদি (ncurr < 0)
+        ঘূৰাই ncurr;
+      যদি (ncurr == 0)
+        ভঙ্গ;
       nread += ncurr;
       buf   += ncurr;
       size  -= ncurr;
     }
 
-  return nread;
+  ঘূৰাই nread;
 }
 
 /* Write to FD the buffer BUF of size SIZE, processing any signals
@@ -1167,15 +1167,15 @@ iread_fullblock (int fd, char *buf, idx_t size)
    this is less than SIZE.  Keep trying if there are partial
    writes.  */
 
-static idx_t
-iwrite (int fd, char const *buf, idx_t size)
+স্থির idx_t
+iwrite (পূর্ণাঙ্ক fd, ৱর্ণ ধ্রুৱ *buf, idx_t size)
 {
   idx_t total_written = 0;
 
-  if ((output_flags & O_DIRECT) && size < output_blocksize)
+  যদি ((output_flags & O_DIRECT) && size < output_blocksize)
     {
-      int old_flags = fcntl (STDOUT_FILENO, F_GETFL);
-      if (fcntl (STDOUT_FILENO, F_SETFL, old_flags & ~O_DIRECT) != 0
+      পূর্ণাঙ্ক old_flags = fcntl (STDOUT_FILENO, F_GETFL);
+      যদি (fcntl (STDOUT_FILENO, F_SETFL, old_flags & ~O_DIRECT) != 0
           && status_level != STATUS_NONE)
         diagnose (errno, _("failed to turn off O_DIRECT: %s"),
                   quotef (output_file));
@@ -1196,189 +1196,189 @@ iwrite (int fd, char const *buf, idx_t size)
          to attempt to clear all data from the page cache.  */
     }
 
-  while (total_written < size)
+  যেতিয়ালৈ (total_written < size)
     {
       ssize_t nwritten = 0;
       process_signals ();
 
       /* Perform a seek for a NUL block if sparse output is enabled.  */
       final_op_was_seek = false;
-      if ((conversions_mask & C_SPARSE) && is_nul (buf, size))
+      যদি ((conversions_mask & C_SPARSE) && is_nul (buf, size))
         {
-          if (lseek (fd, size, SEEK_CUR) < 0)
+          যদি (lseek (fd, size, SEEK_CUR) < 0)
             {
               conversions_mask &= ~C_SPARSE;
               /* Don't warn about the advisory sparse request.  */
             }
-          else
+          অন্যথা
             {
               final_op_was_seek = true;
               nwritten = size;
             }
         }
 
-      if (!nwritten)
-        nwritten = write (fd, buf + total_written, size - total_written);
+      যদি (!nwritten)
+        nwritten = লিখ (fd, buf + total_written, size - total_written);
 
-      if (nwritten < 0)
+      যদি (nwritten < 0)
         {
-          if (errno != EINTR)
-            break;
+          যদি (errno != EINTR)
+            ভঙ্গ;
         }
-      else if (nwritten == 0)
+      অন্যথা যদি (nwritten == 0)
         {
           /* Some buggy drivers return 0 when one tries to write beyond
              a device's end.  (Example: Linux kernel 1.2.13 on /dev/fd0.)
              Set errno to ENOSPC so they get a sensible diagnostic.  */
           errno = ENOSPC;
-          break;
+          ভঙ্গ;
         }
-      else
+      অন্যথা
         total_written += nwritten;
     }
 
-  if (o_nocache && total_written)
+  যদি (o_nocache && total_written)
     invalidate_cache (fd, total_written);
 
-  return total_written;
+  ঘূৰাই total_written;
 }
 
 /* Write, then empty, the output buffer 'obuf'. */
 
-static void
-write_output (void)
+স্থির শূন্য
+write_output (শূন্য)
 {
   idx_t nwritten = iwrite (STDOUT_FILENO, obuf, output_blocksize);
   w_bytes += nwritten;
-  if (nwritten != output_blocksize)
+  যদি (nwritten != output_blocksize)
     {
       diagnose (errno, _("writing to %s"), quoteaf (output_file));
-      if (nwritten != 0)
+      যদি (nwritten != 0)
         w_partial++;
       quit (EXIT_FAILURE);
     }
-  else
+  অন্যথা
     w_full++;
   oc = 0;
 }
 
 /* Restart on EINTR from fdatasync.  */
 
-static int
-ifdatasync (int fd)
+স্থির পূর্ণাঙ্ক
+ifdatasync (পূর্ণাঙ্ক fd)
 {
-  int ret;
+  পূর্ণাঙ্ক ret;
 
-  do
+  কৰা
     {
       process_signals ();
       ret = fdatasync (fd);
     }
-  while (ret < 0 && errno == EINTR);
+  যেতিয়ালৈ (ret < 0 && errno == EINTR);
 
-  return ret;
+  ঘূৰাই ret;
 }
 
 /* Restart on EINTR from fd_reopen.  */
 
-static int
-ifd_reopen (int desired_fd, char const *file, int flag, mode_t mode)
+স্থির পূর্ণাঙ্ক
+ifd_reopen (পূর্ণাঙ্ক desired_fd, ৱর্ণ ধ্রুৱ *file, পূর্ণাঙ্ক flag, mode_t mode)
 {
-  int ret;
+  পূর্ণাঙ্ক ret;
 
-  do
+  কৰা
     {
       process_signals ();
       ret = fd_reopen (desired_fd, file, flag, mode);
     }
-  while (ret < 0 && errno == EINTR);
+  যেতিয়ালৈ (ret < 0 && errno == EINTR);
 
-  return ret;
+  ঘূৰাই ret;
 }
 
 /* Restart on EINTR from fstat.  */
 
-static int
-ifstat (int fd, struct stat *st)
+স্থির পূর্ণাঙ্ক
+ifstat (পূর্ণাঙ্ক fd, সংরচনা stat *st)
 {
-  int ret;
+  পূর্ণাঙ্ক ret;
 
-  do
+  কৰা
     {
       process_signals ();
       ret = fstat (fd, st);
     }
-  while (ret < 0 && errno == EINTR);
+  যেতিয়ালৈ (ret < 0 && errno == EINTR);
 
-  return ret;
+  ঘূৰাই ret;
 }
 
 /* Restart on EINTR from fsync.  */
 
-static int
-ifsync (int fd)
+স্থির পূর্ণাঙ্ক
+ifsync (পূর্ণাঙ্ক fd)
 {
-  int ret;
+  পূর্ণাঙ্ক ret;
 
-  do
+  কৰা
     {
       process_signals ();
       ret = fsync (fd);
     }
-  while (ret < 0 && errno == EINTR);
+  যেতিয়ালৈ (ret < 0 && errno == EINTR);
 
-  return ret;
+  ঘূৰাই ret;
 }
 
 /* Restart on EINTR from ftruncate.  */
 
-static int
-iftruncate (int fd, off_t length)
+স্থির পূর্ণাঙ্ক
+iftruncate (পূর্ণাঙ্ক fd, off_t length)
 {
-  int ret;
+  পূর্ণাঙ্ক ret;
 
-  do
+  কৰা
     {
       process_signals ();
       ret = ftruncate (fd, length);
     }
-  while (ret < 0 && errno == EINTR);
+  যেতিয়ালৈ (ret < 0 && errno == EINTR);
 
-  return ret;
+  ঘূৰাই ret;
 }
 
 /* Return true if STR is of the form "PATTERN" or "PATTERNDELIM...".  */
 
 ATTRIBUTE_PURE
-static bool
-operand_matches (char const *str, char const *pattern, char delim)
+স্থির bool
+operand_matches (ৱর্ণ ধ্রুৱ *str, ৱর্ণ ধ্রুৱ *pattern, ৱর্ণ delim)
 {
-  while (*pattern)
-    if (*str++ != *pattern++)
-      return false;
-  return !*str || *str == delim;
+  যেতিয়ালৈ (*pattern)
+    যদি (*str++ != *pattern++)
+      ঘূৰাই false;
+  ঘূৰাই !*str || *str == delim;
 }
 
 /* Interpret one "conv=..." or similar operand STR according to the
    symbols in TABLE, returning the flags specified.  If the operand
    cannot be parsed, use ERROR_MSGID to generate a diagnostic.  */
 
-static int
-parse_symbols (char const *str, struct symbol_value const *table,
-               bool exclusive, char const *error_msgid)
+স্থির পূর্ণাঙ্ক
+parse_symbols (ৱর্ণ ধ্রুৱ *str, সংরচনা প্ৰতীক_মান ধ্রুৱ *table,
+               bool exclusive, ৱর্ণ ধ্রুৱ *error_msgid)
 {
-  int value = 0;
+  পূর্ণাঙ্ক মান = 0;
 
-  while (true)
+  যেতিয়ালৈ (true)
     {
-      char const *strcomma = strchr (str, ',');
-      struct symbol_value const *entry;
+      ৱর্ণ ধ্রুৱ *strcomma = strchr (str, ',');
+      সংরচনা প্ৰতীক_মান ধ্রুৱ *entry;
 
-      for (entry = table;
-           ! (operand_matches (str, entry->symbol, ',') && entry->value);
+      বাবে (entry = table;
+           ! (operand_matches (str, entry->প্ৰতীক, ',') && entry->মান);
            entry++)
         {
-          if (! entry->symbol[0])
+          যদি (! entry->প্ৰতীক[0])
             {
               idx_t slen = strcomma ? strcomma - str : strlen (str);
               diagnose (0, "%s: %s", _(error_msgid),
@@ -1388,16 +1388,16 @@ parse_symbols (char const *str, struct symbol_value const *table,
             }
         }
 
-      if (exclusive)
-        value = entry->value;
-      else
-        value |= entry->value;
-      if (!strcomma)
-        break;
+      যদি (exclusive)
+        মান = entry->মান;
+      অন্যথা
+        মান |= entry->মান;
+      যদি (!strcomma)
+        ভঙ্গ;
       str = strcomma + 1;
     }
 
-  return value;
+  ঘূৰাই মান;
 }
 
 /* Return the value of STR, interpreted as a non-negative decimal integer,
@@ -1405,143 +1405,143 @@ parse_symbols (char const *str, struct symbol_value const *table,
    Set *INVALID to an appropriate error value and return INTMAX_MAX if
    it is an overflow, an indeterminate value if some other error occurred.  */
 
-static intmax_t
-parse_integer (char const *str, strtol_error *invalid)
+স্থির intmax_t
+parse_integer (ৱর্ণ ধ্রুৱ *str, strtol_error *invalid)
 {
   /* Call xstrtoumax, not xstrtoimax, since we don't want to
      allow strings like " -0".  Initialize N to an indeterminate value;
      calling code should not rely on this function returning 0
      when *INVALID represents a non-overflow error.  */
-  int indeterminate = 0;
-  static char const suffixes[] = "bcEGkKMPQRTwYZ0";
+  পূর্ণাঙ্ক indeterminate = 0;
+  স্থির ৱর্ণ ধ্রুৱ suffixes[] = "bcEGkKMPQRTwYZ0";
   intmax_t result = 1;
   bool overflow = false;
   bool warn_zero_multiplier = false;
   strtol_error e;
 
-  while (true)
+  যেতিয়ালৈ (true)
     {
       uintmax_t n = indeterminate;
-      char *suffix;
+      ৱর্ণ *suffix;
       e = xstrtoumax (str, &suffix, 10, &n, suffixes);
 
-      if ((e & ~LONGINT_OVERFLOW) == LONGINT_INVALID_SUFFIX_CHAR
+      যদি ((e & ~LONGINT_OVERFLOW) == LONGINT_INVALID_SUFFIX_CHAR
           && *suffix == 'B' && str < suffix && suffix[-1] != 'B')
         {
           suffix++;
-          if (!*suffix)
+          যদি (!*suffix)
             e &= ~LONGINT_INVALID_SUFFIX_CHAR;
         }
 
       bool multiply
         = ((e & ~LONGINT_OVERFLOW) == LONGINT_INVALID_SUFFIX_CHAR
            && *suffix == 'x');
-      if (multiply)
+      যদি (multiply)
         e &= ~LONGINT_INVALID_SUFFIX_CHAR;
 
-      if ((e & ~LONGINT_OVERFLOW) != LONGINT_OK)
+      যদি ((e & ~LONGINT_OVERFLOW) != LONGINT_OK)
         {
-          if (! (e & LONGINT_OVERFLOW) && n <= INTMAX_MAX)
+          যদি (! (e & LONGINT_OVERFLOW) && n <= INTMAX_MAX)
             {
               *invalid = e;
-              return indeterminate;
+              ঘূৰাই indeterminate;
             }
           e = LONGINT_OVERFLOW;
         }
 
-      if (n == 0)
+      যদি (n == 0)
         result = 0;
-      else if (result != 0)
+      অন্যথা যদি (result != 0)
         {
           intmax_t product;
-          if ((e & LONGINT_OVERFLOW)
+          যদি ((e & LONGINT_OVERFLOW)
               || overflow
               || ckd_mul (&product, result, n))
             overflow = true;
-          else
+          অন্যথা
             result = product;
         }
 
-      if (multiply && STRPREFIX (str, "0x"))
+      যদি (multiply && STRPREFIX (str, "0x"))
         warn_zero_multiplier = true;
 
-      if (! multiply)
-        break;
+      যদি (! multiply)
+        ভঙ্গ;
       str = suffix + 1;
     }
 
-  if (result == 0)
+  যদি (result == 0)
     {
-      if (warn_zero_multiplier)
+      যদি (warn_zero_multiplier)
         diagnose (0, _("warning: %s is a zero multiplier; "
                        "use %s if that is intended"),
                   quote_n (0, "0x"), quote_n (1, "00x"));
       e = LONGINT_OK;
     }
-  else if (overflow)
+  অন্যথা যদি (overflow)
     {
       e = LONGINT_OVERFLOW;
       result = INTMAX_MAX;
     }
 
   *invalid = e;
-  return result;
+  ঘূৰাই result;
 }
 
 /* OPERAND is of the form "X=...".  Return true if X is NAME.  */
 
 ATTRIBUTE_PURE
-static bool
-operand_is (char const *operand, char const *name)
+স্থির bool
+operand_is (ৱর্ণ ধ্রুৱ *operand, ৱর্ণ ধ্রুৱ *name)
 {
-  return operand_matches (operand, name, '=');
+  ঘূৰাই operand_matches (operand, name, '=');
 }
 
-static void
-scanargs (int argc, char *const *argv)
+স্থির শূন্য
+scanargs (পূর্ণাঙ্ক argc, ৱর্ণ *ধ্রুৱ *argv)
 {
   idx_t blocksize = 0;
-  intmax_t count = INTMAX_MAX;
+  intmax_t গুনতি = INTMAX_MAX;
   intmax_t skip = 0;
   intmax_t seek = 0;
-  bool count_B = false, skip_B = false, seek_B = false;
+  bool গুনতি_B = false, skip_B = false, seek_B = false;
 
-  for (int i = optind; i < argc; i++)
+  বাবে (পূর্ণাঙ্ক i = optind; i < argc; i++)
     {
-      char const *name = argv[i];
-      char const *val = strchr (name, '=');
+      ৱর্ণ ধ্রুৱ *name = argv[i];
+      ৱর্ণ ধ্রুৱ *val = strchr (name, '=');
 
-      if (val == NULL)
+      যদি (val == রিক্ত)
         {
           diagnose (0, _("unrecognized operand %s"), quoteaf (name));
           usage (EXIT_FAILURE);
         }
       val++;
 
-      if (operand_is (name, "if"))
-        input_file = val;
-      else if (operand_is (name, "of"))
+      যদি (operand_is (name, "if"))
+        প্ৰবেশ_file = val;
+      অন্যথা যদি (operand_is (name, "of"))
         output_file = val;
-      else if (operand_is (name, "conv"))
+      অন্যথা যদি (operand_is (name, "conv"))
         conversions_mask |= parse_symbols (val, conversions, false,
                                            N_("invalid conversion"));
-      else if (operand_is (name, "iflag"))
-        input_flags |= parse_symbols (val, flags, false,
+      অন্যথা যদি (operand_is (name, "iflag"))
+        প্ৰবেশ_flags |= parse_symbols (val, flags, false,
                                       N_("invalid input flag"));
-      else if (operand_is (name, "oflag"))
+      অন্যথা যদি (operand_is (name, "oflag"))
         output_flags |= parse_symbols (val, flags, false,
                                        N_("invalid output flag"));
-      else if (operand_is (name, "status"))
+      অন্যথা যদি (operand_is (name, "status"))
         status_level = parse_symbols (val, statuses, true,
                                       N_("invalid status level"));
-      else
+      অন্যথা
         {
           strtol_error invalid = LONGINT_OK;
           intmax_t n = parse_integer (val, &invalid);
           bool has_B = !!strchr (val, 'B');
           intmax_t n_min = 0;
           intmax_t n_max = INTMAX_MAX;
-          idx_t *converted_idx = NULL;
+          idx_t *converted_idx = রিক্ত;
 
           /* Maximum blocksize.  Keep it smaller than IDX_MAX, so that
              it fits into blocksize vars even if 1 is added for conv=swab.
@@ -1550,117 +1550,117 @@ scanargs (int argc, char *const *argv)
              benefit of the large-offset seek code.  */
           idx_t max_blocksize = MIN (IDX_MAX - 1, MIN (SSIZE_MAX, OFF_T_MAX));
 
-          if (operand_is (name, "ibs"))
+          যদি (operand_is (name, "ibs"))
             {
               n_min = 1;
               n_max = max_blocksize;
-              converted_idx = &input_blocksize;
+              converted_idx = &প্ৰবেশ_blocksize;
             }
-          else if (operand_is (name, "obs"))
+          অন্যথা যদি (operand_is (name, "obs"))
             {
               n_min = 1;
               n_max = max_blocksize;
               converted_idx = &output_blocksize;
             }
-          else if (operand_is (name, "bs"))
+          অন্যথা যদি (operand_is (name, "bs"))
             {
               n_min = 1;
               n_max = max_blocksize;
               converted_idx = &blocksize;
             }
-          else if (operand_is (name, "cbs"))
+          অন্যথা যদি (operand_is (name, "cbs"))
             {
               n_min = 1;
               n_max = MIN (SIZE_MAX, IDX_MAX);
               converted_idx = &conversion_blocksize;
             }
-          else if (operand_is (name, "skip") || operand_is (name, "iseek"))
+          অন্যথা যদি (operand_is (name, "skip") || operand_is (name, "iseek"))
             {
               skip = n;
               skip_B = has_B;
             }
-          else if (operand_is (name + (*name == 'o'), "seek"))
+          অন্যথা যদি (operand_is (name + (*name == 'o'), "seek"))
             {
               seek = n;
               seek_B = has_B;
             }
-          else if (operand_is (name, "count"))
+          অন্যথা যদি (operand_is (name, "count"))
             {
-              count = n;
-              count_B = has_B;
+              গুনতি = n;
+              গুনতি_B = has_B;
             }
-          else
+          অন্যথা
             {
               diagnose (0, _("unrecognized operand %s"), quoteaf (name));
               usage (EXIT_FAILURE);
             }
 
-          if (n < n_min)
+          যদি (n < n_min)
             invalid = LONGINT_INVALID;
-          else if (n_max < n)
+          অন্যথা যদি (n_max < n)
             invalid = LONGINT_OVERFLOW;
 
-          if (invalid != LONGINT_OK)
+          যদি (invalid != LONGINT_OK)
             error (EXIT_FAILURE, invalid == LONGINT_OVERFLOW ? EOVERFLOW : 0,
                    "%s: %s", _("invalid number"), quoteaf (val));
-          else if (converted_idx)
+          অন্যথা যদি (converted_idx)
             *converted_idx = n;
         }
     }
 
-  if (blocksize)
-    input_blocksize = output_blocksize = blocksize;
-  else
+  যদি (blocksize)
+    প্ৰবেশ_blocksize = output_blocksize = blocksize;
+  অন্যথা
     {
       /* POSIX says dd aggregates partial reads into
          output_blocksize if bs= is not specified.  */
       conversions_mask |= C_TWOBUFS;
     }
 
-  if (input_blocksize == 0)
-    input_blocksize = DEFAULT_BLOCKSIZE;
-  if (output_blocksize == 0)
+  যদি (প্ৰবেশ_blocksize == 0)
+    প্ৰবেশ_blocksize = DEFAULT_BLOCKSIZE;
+  যদি (output_blocksize == 0)
     output_blocksize = DEFAULT_BLOCKSIZE;
-  if (conversion_blocksize == 0)
+  যদি (conversion_blocksize == 0)
     conversions_mask &= ~(C_BLOCK | C_UNBLOCK);
 
-  if (input_flags & (O_DSYNC | O_SYNC))
-    input_flags |= O_RSYNC;
+  যদি (প্ৰবেশ_flags & (O_DSYNC | O_SYNC))
+    প্ৰবেশ_flags |= O_RSYNC;
 
-  if (output_flags & O_FULLBLOCK)
+  যদি (output_flags & O_FULLBLOCK)
     {
       diagnose (0, "%s: %s", _("invalid output flag"), quote ("fullblock"));
       usage (EXIT_FAILURE);
     }
 
-  if (skip_B)
-    input_flags |= O_SKIP_BYTES;
-  if (input_flags & O_SKIP_BYTES && skip != 0)
+  যদি (skip_B)
+    প্ৰবেশ_flags |= O_SKIP_BYTES;
+  যদি (প্ৰবেশ_flags & O_SKIP_BYTES && skip != 0)
     {
-      skip_records = skip / input_blocksize;
-      skip_bytes = skip % input_blocksize;
+      skip_records = skip / প্ৰবেশ_blocksize;
+      skip_bytes = skip % প্ৰবেশ_blocksize;
     }
-  else if (skip != 0)
+  অন্যথা যদি (skip != 0)
     skip_records = skip;
 
-  if (count_B)
-    input_flags |= O_COUNT_BYTES;
-  if (input_flags & O_COUNT_BYTES && count != INTMAX_MAX)
+  যদি (গুনতি_B)
+    প্ৰবেশ_flags |= O_গুনতি_BYTES;
+  যদি (প্ৰবেশ_flags & O_গুনতি_BYTES && গুনতি != INTMAX_MAX)
     {
-      max_records = count / input_blocksize;
-      max_bytes = count % input_blocksize;
+      max_records = গুনতি / প্ৰবেশ_blocksize;
+      max_bytes = গুনতি % প্ৰবেশ_blocksize;
     }
-  else if (count != INTMAX_MAX)
-    max_records = count;
+  অন্যথা যদি (গুনতি != INTMAX_MAX)
+    max_records = গুনতি;
 
-  if (seek_B)
+  যদি (seek_B)
     output_flags |= O_SEEK_BYTES;
-  if (output_flags & O_SEEK_BYTES && seek != 0)
+  যদি (output_flags & O_SEEK_BYTES && seek != 0)
     {
       seek_records = seek / output_blocksize;
       seek_bytes = seek % output_blocksize;
     }
-  else if (seek != 0)
+  অন্যথা যদি (seek != 0)
     seek_records = seek;
 
   /* Warn about partial reads if bs=SIZE is given and iflag=fullblock
@@ -1668,35 +1668,35 @@ scanargs (int argc, char *const *argv)
      This helps to avoid confusion with miscounts, and to avoid issues
      with direct I/O on GNU/Linux.  */
   warn_partial_read =
-    (! (conversions_mask & C_TWOBUFS) && ! (input_flags & O_FULLBLOCK)
+    (! (conversions_mask & C_TWOBUFS) && ! (প্ৰবেশ_flags & O_FULLBLOCK)
      && (skip_records
          || (0 < max_records && max_records < INTMAX_MAX)
-         || (input_flags | output_flags) & O_DIRECT));
+         || (প্ৰবেশ_flags | output_flags) & O_DIRECT));
 
-  iread_fnc = ((input_flags & O_FULLBLOCK)
+  iread_fnc = ((প্ৰবেশ_flags & O_FULLBLOCK)
                ? iread_fullblock
                : iread);
-  input_flags &= ~O_FULLBLOCK;
+  প্ৰবেশ_flags &= ~O_FULLBLOCK;
 
-  if (multiple_bits_set (conversions_mask & (C_ASCII | C_EBCDIC | C_IBM)))
+  যদি (multiple_bits_set (conversions_mask & (C_ASCII | C_EBCDIC | C_IBM)))
     error (EXIT_FAILURE, 0, _("cannot combine any two of {ascii,ebcdic,ibm}"));
-  if (multiple_bits_set (conversions_mask & (C_BLOCK | C_UNBLOCK)))
+  যদি (multiple_bits_set (conversions_mask & (C_BLOCK | C_UNBLOCK)))
     error (EXIT_FAILURE, 0, _("cannot combine block and unblock"));
-  if (multiple_bits_set (conversions_mask & (C_LCASE | C_UCASE)))
+  যদি (multiple_bits_set (conversions_mask & (C_LCASE | C_UCASE)))
     error (EXIT_FAILURE, 0, _("cannot combine lcase and ucase"));
-  if (multiple_bits_set (conversions_mask & (C_EXCL | C_NOCREAT)))
+  যদি (multiple_bits_set (conversions_mask & (C_EXCL | C_NOCREAT)))
     error (EXIT_FAILURE, 0, _("cannot combine excl and nocreat"));
-  if (multiple_bits_set (input_flags & (O_DIRECT | O_NOCACHE))
+  যদি (multiple_bits_set (প্ৰবেশ_flags & (O_DIRECT | O_NOCACHE))
       || multiple_bits_set (output_flags & (O_DIRECT | O_NOCACHE)))
     error (EXIT_FAILURE, 0, _("cannot combine direct and nocache"));
 
-  if (input_flags & O_NOCACHE)
+  যদি (প্ৰবেশ_flags & O_NOCACHE)
     {
       i_nocache = true;
       i_nocache_eof = (max_records == 0 && max_bytes == 0);
-      input_flags &= ~O_NOCACHE;
+      প্ৰবেশ_flags &= ~O_NOCACHE;
     }
-  if (output_flags & O_NOCACHE)
+  যদি (output_flags & O_NOCACHE)
     {
       o_nocache = true;
       o_nocache_eof = (max_records == 0 && max_bytes == 0);
@@ -1706,32 +1706,32 @@ scanargs (int argc, char *const *argv)
 
 /* Fix up translation table. */
 
-static void
-apply_translations (void)
+স্থির শূন্য
+apply_translations (শূন্য)
 {
-  if (conversions_mask & C_ASCII)
+  যদি (conversions_mask & C_ASCII)
     translate_charset (ebcdic_to_ascii);
 
-  if (conversions_mask & C_UCASE)
+  যদি (conversions_mask & C_UCASE)
     {
-      for (int i = 0; i < 256; i++)
+      বাবে (পূর্ণাঙ্ক i = 0; i < 256; i++)
         trans_table[i] = toupper (trans_table[i]);
       translation_needed = true;
     }
-  else if (conversions_mask & C_LCASE)
+  অন্যথা যদি (conversions_mask & C_LCASE)
     {
-      for (int i = 0; i < 256; i++)
+      বাবে (পূর্ণাঙ্ক i = 0; i < 256; i++)
         trans_table[i] = tolower (trans_table[i]);
       translation_needed = true;
     }
 
-  if (conversions_mask & C_EBCDIC)
+  যদি (conversions_mask & C_EBCDIC)
     {
       translate_charset (ascii_to_ebcdic);
       newline_character = ascii_to_ebcdic['\n'];
       space_character = ascii_to_ebcdic[' '];
     }
-  else if (conversions_mask & C_IBM)
+  অন্যথা যদি (conversions_mask & C_IBM)
     {
       translate_charset (ascii_to_ibm);
       newline_character = ascii_to_ibm['\n'];
@@ -1742,11 +1742,11 @@ apply_translations (void)
 /* Apply the character-set translations specified by the user
    to the NREAD bytes in BUF.  */
 
-static void
-translate_buffer (char *buf, idx_t nread)
+স্থির শূন্য
+translate_buffer (ৱর্ণ *buf, idx_t nread)
 {
-  char *cp = buf;
-  for (idx_t i = nread; i; i--, cp++)
+  ৱর্ণ *cp = buf;
+  বাবে (idx_t i = nread; i; i--, cp++)
     *cp = trans_table[to_uchar (*cp)];
 }
 
@@ -1757,44 +1757,44 @@ translate_buffer (char *buf, idx_t nread)
    resulting *NREAD even, and set *SAVED_BYTE to -1 otherwise.
    Return the buffer's adjusted start, either BUF or BUF + 1.  */
 
-static char *
-swab_buffer (char *buf, idx_t *nread, int *saved_byte)
+স্থির ৱর্ণ *
+swab_buffer (ৱর্ণ *buf, idx_t *nread, পূর্ণাঙ্ক *saved_byte)
 {
-  if (*nread == 0)
-    return buf;
+  যদি (*nread == 0)
+    ঘূৰাই buf;
 
   /* Update *SAVED_BYTE, and set PREV_SAVED to its old value.  */
-  int prev_saved = *saved_byte;
-  if ((prev_saved < 0) == (*nread & 1))
+  পূর্ণাঙ্ক prev_saved = *saved_byte;
+  যদি ((prev_saved < 0) == (*nread & 1))
     {
-      unsigned char c = buf[--*nread];
+      unsigned ৱর্ণ c = buf[--*nread];
       *saved_byte = c;
     }
-  else
+  অন্যথা
     *saved_byte = -1;
 
   /* Do the byte-swapping by moving every other byte two
      positions toward the end, working from the end of the buffer
      toward the beginning.  This way we move only half the data.  */
-  for (idx_t i = *nread; 1 < i; i -= 2)
+  বাবে (idx_t i = *nread; 1 < i; i -= 2)
     buf[i] = buf[i - 2];
 
-  if (prev_saved < 0)
-    return buf + 1;
+  যদি (prev_saved < 0)
+    ঘূৰাই buf + 1;
 
   buf[1] = prev_saved;
   ++*nread;
-  return buf;
+  ঘূৰাই buf;
 }
 
 /* Add OFFSET to the input offset, setting the overflow flag if
    necessary.  */
 
-static void
-advance_input_offset (intmax_t offset)
+স্থির শূন্য
+advance_প্ৰবেশ_offset (intmax_t offset)
 {
-  if (0 <= input_offset && ckd_add (&input_offset, input_offset, offset))
-    input_offset = -1;
+  যদি (0 <= প্ৰবেশ_offset && ckd_add (&প্ৰবেশ_offset, প্ৰবেশ_offset, offset))
+    প্ৰবেশ_offset = -1;
 }
 
 /* Throw away RECORDS blocks of BLOCKSIZE bytes plus BYTES bytes on
@@ -1806,8 +1806,8 @@ advance_input_offset (intmax_t offset)
    reached.  If FDESC is STDOUT_FILENO, on return, BYTES is the
    remaining bytes in addition to the remaining records.  */
 
-static intmax_t
-skip (int fdesc, char const *file, intmax_t records, idx_t blocksize,
+স্থির intmax_t
+skip (পূর্ণাঙ্ক fdesc, ৱর্ণ ধ্রুৱ *file, intmax_t records, idx_t blocksize,
       idx_t *bytes)
 {
   /* Try lseek and if an error indicates it was an inappropriate operation --
@@ -1816,50 +1816,50 @@ skip (int fdesc, char const *file, intmax_t records, idx_t blocksize,
 
   errno = 0;
   off_t offset;
-  if (! ckd_mul (&offset, records, blocksize)
+  যদি (! ckd_mul (&offset, records, blocksize)
       && ! ckd_add (&offset, offset, *bytes)
       && 0 <= lseek (fdesc, offset, SEEK_CUR))
     {
-      if (fdesc == STDIN_FILENO)
+      যদি (fdesc == STDIN_FILENO)
         {
-           struct stat st;
-           if (ifstat (STDIN_FILENO, &st) != 0)
+           সংরচনা stat st;
+           যদি (ifstat (STDIN_FILENO, &st) != 0)
              error (EXIT_FAILURE, errno, _("cannot fstat %s"), quoteaf (file));
-           if (usable_st_size (&st) && 0 < st.st_size && 0 <= input_offset
-               && st.st_size - input_offset < offset)
+           যদি (usable_st_size (&st) && 0 < st.st_size && 0 <= প্ৰবেশ_offset
+               && st.st_size - প্ৰবেশ_offset < offset)
              {
                /* When skipping past EOF, return the number of _full_ blocks
                 * that are not skipped, and set offset to EOF, so the caller
                 * can determine the requested skip was not satisfied.  */
                records = ( offset - st.st_size ) / blocksize;
-               offset = st.st_size - input_offset;
+               offset = st.st_size - প্ৰবেশ_offset;
              }
-           else
+           অন্যথা
              records = 0;
-           advance_input_offset (offset);
+           advance_প্ৰবেশ_offset (offset);
         }
-      else
+      অন্যথা
         {
           records = 0;
           *bytes = 0;
         }
-      return records;
+      ঘূৰাই records;
     }
-  else
+  অন্যথা
     {
-      int lseek_errno = errno;
+      পূর্ণাঙ্ক lseek_errno = errno;
 
       /* The seek request may have failed above if it was too big
          (> device size, > max file size, etc.)
          Or it may not have been done at all (> OFF_T_MAX).
          Therefore try to seek to the end of the file,
          to avoid redundant reading.  */
-      if (lseek (fdesc, 0, SEEK_END) >= 0)
+      যদি (lseek (fdesc, 0, SEEK_END) >= 0)
         {
           /* File is seekable, and we're at the end of it, and
              size <= OFF_T_MAX. So there's no point using read to advance.  */
 
-          if (!lseek_errno)
+          যদি (!lseek_errno)
             {
               /* The original seek was not attempted as offset > OFF_T_MAX.
                  We should error for write as can't get to the desired
@@ -1882,46 +1882,46 @@ skip (int fdesc, char const *file, intmax_t records, idx_t blocksize,
         }
       /* else file_size && offset > OFF_T_MAX or file ! seekable */
 
-      char *buf;
-      if (fdesc == STDIN_FILENO)
+      ৱর্ণ *buf;
+      যদি (fdesc == STDIN_FILENO)
         {
           alloc_ibuf ();
           buf = ibuf;
         }
-      else
+      অন্যথা
         {
           alloc_obuf ();
           buf = obuf;
         }
 
-      do
+      কৰা
         {
           ssize_t nread = iread_fnc (fdesc, buf, records ? blocksize : *bytes);
-          if (nread < 0)
+          যদি (nread < 0)
             {
-              if (fdesc == STDIN_FILENO)
+              যদি (fdesc == STDIN_FILENO)
                 {
                   diagnose (errno, _("error reading %s"), quoteaf (file));
-                  if (conversions_mask & C_NOERROR)
+                  যদি (conversions_mask & C_NOERROR)
                     print_stats ();
                 }
-              else
+              অন্যথা
                 diagnose (lseek_errno, _("%s: cannot seek"), quotef (file));
               quit (EXIT_FAILURE);
             }
-          else if (nread == 0)
-            break;
-          else if (fdesc == STDIN_FILENO)
-            advance_input_offset (nread);
+          অন্যথা যদি (nread == 0)
+            ভঙ্গ;
+          অন্যথা যদি (fdesc == STDIN_FILENO)
+            advance_প্ৰবেশ_offset (nread);
 
-          if (records != 0)
+          যদি (records != 0)
             records--;
-          else
+          অন্যথা
             *bytes = 0;
         }
-      while (records || *bytes);
+      যেতিয়ালৈ (records || *bytes);
 
-      return records;
+      ঘূৰাই records;
     }
 }
 
@@ -1931,53 +1931,53 @@ skip (int fdesc, char const *file, intmax_t records, idx_t blocksize,
    Return true if successful, or if the input is already known to not
    be seekable.  */
 
-static bool
-advance_input_after_read_error (idx_t nbytes)
+স্থির bool
+advance_প্ৰবেশ_after_read_error (idx_t nbytes)
 {
-  if (! input_seekable)
+  যদি (! প্ৰবেশ_seekable)
     {
-      if (input_seek_errno == ESPIPE)
-        return true;
-      errno = input_seek_errno;
+      যদি (প্ৰবেশ_seek_errno == ESPIPE)
+        ঘূৰাই true;
+      errno = প্ৰবেশ_seek_errno;
     }
-  else
+  অন্যথা
     {
       off_t offset;
-      advance_input_offset (nbytes);
-      if (input_offset < 0)
+      advance_প্ৰবেশ_offset (nbytes);
+      যদি (প্ৰবেশ_offset < 0)
         {
           diagnose (0, _("offset overflow while reading file %s"),
-                    quoteaf (input_file));
-          return false;
+                    quoteaf (প্ৰবেশ_file));
+          ঘূৰাই false;
         }
       offset = lseek (STDIN_FILENO, 0, SEEK_CUR);
-      if (0 <= offset)
+      যদি (0 <= offset)
         {
           off_t diff;
-          if (offset == input_offset)
-            return true;
-          diff = input_offset - offset;
-          if (! (0 <= diff && diff <= nbytes) && status_level != STATUS_NONE)
+          যদি (offset == প্ৰবেশ_offset)
+            ঘূৰাই true;
+          diff = প্ৰবেশ_offset - offset;
+          যদি (! (0 <= diff && diff <= nbytes) && status_level != STATUS_NONE)
             diagnose (0, _("warning: invalid file offset after failed read"));
-          if (0 <= lseek (STDIN_FILENO, diff, SEEK_CUR))
-            return true;
-          if (errno == 0)
+          যদি (0 <= lseek (STDIN_FILENO, diff, SEEK_CUR))
+            ঘূৰাই true;
+          যদি (errno == 0)
             diagnose (0, _("cannot work around kernel bug after all"));
         }
     }
 
-  diagnose (errno, _("%s: cannot seek"), quotef (input_file));
-  return false;
+  diagnose (errno, _("%s: cannot seek"), quotef (প্ৰবেশ_file));
+  ঘূৰাই false;
 }
 
 /* Copy NREAD bytes of BUF, with no conversions.  */
 
-static void
-copy_simple (char const *buf, idx_t nread)
+স্থির শূন্য
+copy_simple (ৱর্ণ ধ্রুৱ *buf, idx_t nread)
 {
-  char const *start = buf;	/* First uncopied char in BUF.  */
+  ৱর্ণ ধ্রুৱ *start = buf;	/* First uncopied char in BUF.  */
 
-  do
+  কৰা
     {
       idx_t nfree = MIN (nread, output_blocksize - oc);
 
@@ -1986,35 +1986,35 @@ copy_simple (char const *buf, idx_t nread)
       nread -= nfree;		/* Update the number of bytes left to copy. */
       start += nfree;
       oc += nfree;
-      if (oc >= output_blocksize)
+      যদি (oc >= output_blocksize)
         write_output ();
     }
-  while (nread != 0);
+  যেতিয়ালৈ (nread != 0);
 }
 
 /* Copy NREAD bytes of BUF, doing conv=block
    (pad newline-terminated records to 'conversion_blocksize',
    replacing the newline with trailing spaces).  */
 
-static void
-copy_with_block (char const *buf, idx_t nread)
+স্থির শূন্য
+copy_with_block (ৱর্ণ ধ্রুৱ *buf, idx_t nread)
 {
-  for (idx_t i = nread; i; i--, buf++)
+  বাবে (idx_t i = nread; i; i--, buf++)
     {
-      if (*buf == newline_character)
+      যদি (*buf == newline_character)
         {
-          if (col < conversion_blocksize)
+          যদি (col < conversion_blocksize)
             {
-              for (idx_t j = col; j < conversion_blocksize; j++)
+              বাবে (idx_t j = col; j < conversion_blocksize; j++)
                 output_char (space_character);
             }
           col = 0;
         }
-      else
+      অন্যথা
         {
-          if (col == conversion_blocksize)
+          যদি (col == conversion_blocksize)
             r_truncate++;
-          else if (col < conversion_blocksize)
+          অন্যথা যদি (col < conversion_blocksize)
             output_char (*buf);
           col++;
         }
@@ -2025,28 +2025,28 @@ copy_with_block (char const *buf, idx_t nread)
    (replace trailing spaces in 'conversion_blocksize'-sized records
    with a newline).  */
 
-static void
-copy_with_unblock (char const *buf, idx_t nread)
+স্থির শূন্য
+copy_with_unblock (ৱর্ণ ধ্রুৱ *buf, idx_t nread)
 {
-  static idx_t pending_spaces = 0;
+  স্থির idx_t pending_spaces = 0;
 
-  for (idx_t i = 0; i < nread; i++)
+  বাবে (idx_t i = 0; i < nread; i++)
     {
-      char c = buf[i];
+      ৱর্ণ c = buf[i];
 
-      if (col++ >= conversion_blocksize)
+      যদি (col++ >= conversion_blocksize)
         {
           col = pending_spaces = 0; /* Wipe out any pending spaces.  */
           i--;			/* Push the char back; get it later. */
           output_char (newline_character);
         }
-      else if (c == space_character)
+      অন্যথা যদি (c == space_character)
         pending_spaces++;
-      else
+      অন্যথা
         {
           /* 'c' is the character after a run of spaces that were not
              at the end of the conversion buffer.  Output them.  */
-          while (pending_spaces)
+          যেতিয়ালৈ (pending_spaces)
             {
               output_char (space_character);
               --pending_spaces;
@@ -2059,34 +2059,34 @@ copy_with_unblock (char const *buf, idx_t nread)
 /* Set the file descriptor flags for FD that correspond to the nonzero bits
    in ADD_FLAGS.  The file's name is NAME.  */
 
-static void
-set_fd_flags (int fd, int add_flags, char const *name)
+স্থির শূন্য
+set_fd_flags (পূর্ণাঙ্ক fd, পূর্ণাঙ্ক add_flags, ৱর্ণ ধ্রুৱ *name)
 {
   /* Ignore file creation flags that are no-ops on file descriptors.  */
   add_flags &= ~ (O_NOCTTY | O_NOFOLLOW);
 
-  if (add_flags)
+  যদি (add_flags)
     {
-      int old_flags = fcntl (fd, F_GETFL);
-      int new_flags = old_flags | add_flags;
+      পূর্ণাঙ্ক old_flags = fcntl (fd, F_GETFL);
+      পূর্ণাঙ্ক new_flags = old_flags | add_flags;
       bool ok = true;
-      if (old_flags < 0)
+      যদি (old_flags < 0)
         ok = false;
-      else if (old_flags != new_flags)
+      অন্যথা যদি (old_flags != new_flags)
         {
-          if (new_flags & (O_DIRECTORY | O_NOLINKS))
+          যদি (new_flags & (O_DIRECTORY | O_NOLINKS))
             {
               /* NEW_FLAGS contains at least one file creation flag that
                  requires some checking of the open file descriptor.  */
-              struct stat st;
-              if (ifstat (fd, &st) != 0)
+              সংরচনা stat st;
+              যদি (ifstat (fd, &st) != 0)
                 ok = false;
-              else if ((new_flags & O_DIRECTORY) && ! S_ISDIR (st.st_mode))
+              অন্যথা যদি ((new_flags & O_DIRECTORY) && ! S_ISDIR (st.st_mode))
                 {
                   errno = ENOTDIR;
                   ok = false;
                 }
-              else if ((new_flags & O_NOLINKS) && 1 < st.st_nlink)
+              অন্যথা যদি ((new_flags & O_NOLINKS) && 1 < st.st_nlink)
                 {
                   errno = EMLINK;
                   ok = false;
@@ -2094,40 +2094,40 @@ set_fd_flags (int fd, int add_flags, char const *name)
               new_flags &= ~ (O_DIRECTORY | O_NOLINKS);
             }
 
-          if (ok && old_flags != new_flags
+          যদি (ok && old_flags != new_flags
               && fcntl (fd, F_SETFL, new_flags) == -1)
             ok = false;
         }
 
-      if (!ok)
+      যদি (!ok)
         error (EXIT_FAILURE, errno, _("setting flags for %s"), quoteaf (name));
     }
 }
 
 /* The main loop.  */
 
-static int
-dd_copy (void)
+স্থির পূর্ণাঙ্ক
+dd_copy (শূন্য)
 {
-  char *bufstart;		/* Input buffer. */
+  ৱর্ণ *bufstart;		/* Input buffer. */
   ssize_t nread;		/* Bytes read in the current block.  */
 
   /* If nonzero, then the previously read block was partial and
      PARTREAD was its size.  */
   idx_t partread = 0;
 
-  int exit_status = EXIT_SUCCESS;
+  পূর্ণাঙ্ক exit_status = EXIT_SUCCESS;
   idx_t n_bytes_read;
 
-  if (skip_records != 0 || skip_bytes != 0)
+  যদি (skip_records != 0 || skip_bytes != 0)
     {
       intmax_t us_bytes;
       bool us_bytes_overflow =
-        (ckd_mul (&us_bytes, skip_records, input_blocksize)
+        (ckd_mul (&us_bytes, skip_records, প্ৰবেশ_blocksize)
          || ckd_add (&us_bytes, skip_bytes, us_bytes));
-      off_t input_offset0 = input_offset;
-      intmax_t us_blocks = skip (STDIN_FILENO, input_file,
-                                 skip_records, input_blocksize, &skip_bytes);
+      off_t প্ৰবেশ_offset0 = প্ৰবেশ_offset;
+      intmax_t us_blocks = skip (STDIN_FILENO, প্ৰবেশ_file,
+                                 skip_records, প্ৰবেশ_blocksize, &skip_bytes);
 
       /* POSIX doesn't say what to do when dd detects it has been
          asked to skip past EOF, so I assume it's non-fatal.
@@ -2135,249 +2135,249 @@ dd_copy (void)
              1. file is too small
              2. pipe has not enough data
              3. partial reads  */
-      if ((us_blocks
-           || (0 <= input_offset
+      যদি ((us_blocks
+           || (0 <= প্ৰবেশ_offset
                && (us_bytes_overflow
-                   || us_bytes != input_offset - input_offset0)))
+                   || us_bytes != প্ৰবেশ_offset - প্ৰবেশ_offset0)))
           && status_level != STATUS_NONE)
         {
           diagnose (0, _("%s: cannot skip to specified offset"),
-                    quotef (input_file));
+                    quotef (প্ৰবেশ_file));
         }
     }
 
-  if (seek_records != 0 || seek_bytes != 0)
+  যদি (seek_records != 0 || seek_bytes != 0)
     {
       idx_t bytes = seek_bytes;
       intmax_t write_records = skip (STDOUT_FILENO, output_file,
                                       seek_records, output_blocksize, &bytes);
 
-      if (write_records != 0 || bytes != 0)
+      যদি (write_records != 0 || bytes != 0)
         {
           memset (obuf, 0, write_records ? output_blocksize : bytes);
 
-          do
+          কৰা
             {
               idx_t size = write_records ? output_blocksize : bytes;
-              if (iwrite (STDOUT_FILENO, obuf, size) != size)
+              যদি (iwrite (STDOUT_FILENO, obuf, size) != size)
                 {
                   diagnose (errno, _("writing to %s"), quoteaf (output_file));
                   quit (EXIT_FAILURE);
                 }
 
-              if (write_records != 0)
+              যদি (write_records != 0)
                 write_records--;
-              else
+              অন্যথা
                 bytes = 0;
             }
-          while (write_records || bytes);
+          যেতিয়ালৈ (write_records || bytes);
         }
     }
 
-  if (max_records == 0 && max_bytes == 0)
-    return exit_status;
+  যদি (max_records == 0 && max_bytes == 0)
+    ঘূৰাই exit_status;
 
   alloc_ibuf ();
   alloc_obuf ();
-  int saved_byte = -1;
+  পূর্ণাঙ্ক saved_byte = -1;
 
-  while (true)
+  যেতিয়ালৈ (true)
     {
-      if (status_level == STATUS_PROGRESS)
+      যদি (status_level == STATUS_PROGRESS)
         {
           xtime_t progress_time = gethrxtime ();
-          if (next_time <= progress_time)
+          যদি (next_time <= progress_time)
             {
               print_xfer_stats (progress_time);
               next_time += XTIME_PRECISION;
             }
         }
 
-      if (r_partial + r_full >= max_records + !!max_bytes)
-        break;
+      যদি (r_partial + r_full >= max_records + !!max_bytes)
+        ভঙ্গ;
 
       /* Zero the buffer before reading, so that if we get a read error,
          whatever data we are able to read is followed by zeros.
          This minimizes data loss. */
-      if ((conversions_mask & C_SYNC) && (conversions_mask & C_NOERROR))
+      যদি ((conversions_mask & C_SYNC) && (conversions_mask & C_NOERROR))
         memset (ibuf,
                 (conversions_mask & (C_BLOCK | C_UNBLOCK)) ? ' ' : '\0',
-                input_blocksize);
+                প্ৰবেশ_blocksize);
 
-      if (r_partial + r_full >= max_records)
+      যদি (r_partial + r_full >= max_records)
         nread = iread_fnc (STDIN_FILENO, ibuf, max_bytes);
-      else
-        nread = iread_fnc (STDIN_FILENO, ibuf, input_blocksize);
+      অন্যথা
+        nread = iread_fnc (STDIN_FILENO, ibuf, প্ৰবেশ_blocksize);
 
-      if (nread > 0)
+      যদি (nread > 0)
         {
-          advance_input_offset (nread);
-          if (i_nocache)
+          advance_প্ৰবেশ_offset (nread);
+          যদি (i_nocache)
             invalidate_cache (STDIN_FILENO, nread);
         }
-      else if (nread == 0)
+      অন্যথা যদি (nread == 0)
         {
           i_nocache_eof |= i_nocache;
           o_nocache_eof |= o_nocache && ! (conversions_mask & C_NOTRUNC);
-          break;			/* EOF.  */
+          ভঙ্গ;			/* EOF.  */
         }
-      else
+      অন্যথা
         {
-          if (!(conversions_mask & C_NOERROR) || status_level != STATUS_NONE)
-            diagnose (errno, _("error reading %s"), quoteaf (input_file));
+          যদি (!(conversions_mask & C_NOERROR) || status_level != STATUS_NONE)
+            diagnose (errno, _("error reading %s"), quoteaf (প্ৰবেশ_file));
 
-          if (conversions_mask & C_NOERROR)
+          যদি (conversions_mask & C_NOERROR)
             {
               print_stats ();
-              idx_t bad_portion = input_blocksize - partread;
+              idx_t bad_portion = প্ৰবেশ_blocksize - partread;
 
               /* We already know this data is not cached,
                  but call this so that correct offsets are maintained.  */
               invalidate_cache (STDIN_FILENO, bad_portion);
 
               /* Seek past the bad block if possible. */
-              if (!advance_input_after_read_error (bad_portion))
+              যদি (!advance_প্ৰবেশ_after_read_error (bad_portion))
                 {
                   exit_status = EXIT_FAILURE;
 
                   /* Suppress duplicate diagnostics.  */
-                  input_seekable = false;
-                  input_seek_errno = ESPIPE;
+                  প্ৰবেশ_seekable = false;
+                  প্ৰবেশ_seek_errno = ESPIPE;
                 }
-              if ((conversions_mask & C_SYNC) && !partread)
+              যদি ((conversions_mask & C_SYNC) && !partread)
                 /* Replace the missing input with null bytes and
                    proceed normally.  */
                 nread = 0;
-              else
-                continue;
+              অন্যথা
+                অনুৱর্ত;
             }
-          else
+          অন্যথা
             {
               /* Write any partial block. */
               exit_status = EXIT_FAILURE;
-              break;
+              ভঙ্গ;
             }
         }
 
       n_bytes_read = nread;
 
-      if (n_bytes_read < input_blocksize)
+      যদি (n_bytes_read < প্ৰবেশ_blocksize)
         {
           r_partial++;
           partread = n_bytes_read;
-          if (conversions_mask & C_SYNC)
+          যদি (conversions_mask & C_SYNC)
             {
-              if (!(conversions_mask & C_NOERROR))
+              যদি (!(conversions_mask & C_NOERROR))
                 /* If C_NOERROR, we zeroed the block before reading. */
                 memset (ibuf + n_bytes_read,
                         (conversions_mask & (C_BLOCK | C_UNBLOCK)) ? ' ' : '\0',
-                        input_blocksize - n_bytes_read);
-              n_bytes_read = input_blocksize;
+                        প্ৰবেশ_blocksize - n_bytes_read);
+              n_bytes_read = প্ৰবেশ_blocksize;
             }
         }
-      else
+      অন্যথা
         {
           r_full++;
           partread = 0;
         }
 
-      if (ibuf == obuf)		/* If not C_TWOBUFS. */
+      যদি (ibuf == obuf)		/* If not C_TWOBUFS. */
         {
           idx_t nwritten = iwrite (STDOUT_FILENO, obuf, n_bytes_read);
           w_bytes += nwritten;
-          if (nwritten != n_bytes_read)
+          যদি (nwritten != n_bytes_read)
             {
               diagnose (errno, _("error writing %s"), quoteaf (output_file));
-              if (nwritten != 0)
+              যদি (nwritten != 0)
                 w_partial++;
-              return EXIT_FAILURE;
+              ঘূৰাই EXIT_FAILURE;
             }
-          else if (n_bytes_read == input_blocksize)
+          অন্যথা যদি (n_bytes_read == প্ৰবেশ_blocksize)
             w_full++;
-          else
+          অন্যথা
             w_partial++;
-          continue;
+          অনুৱর্ত;
         }
 
       /* Do any translations on the whole buffer at once.  */
 
-      if (translation_needed)
+      যদি (translation_needed)
         translate_buffer (ibuf, n_bytes_read);
 
-      if (conversions_mask & C_SWAB)
+      যদি (conversions_mask & C_SWAB)
         bufstart = swab_buffer (ibuf, &n_bytes_read, &saved_byte);
-      else
+      অন্যথা
         bufstart = ibuf;
 
-      if (conversions_mask & C_BLOCK)
+      যদি (conversions_mask & C_BLOCK)
         copy_with_block (bufstart, n_bytes_read);
-      else if (conversions_mask & C_UNBLOCK)
+      অন্যথা যদি (conversions_mask & C_UNBLOCK)
         copy_with_unblock (bufstart, n_bytes_read);
-      else
+      অন্যথা
         copy_simple (bufstart, n_bytes_read);
     }
 
   /* If we have a char left as a result of conv=swab, output it.  */
-  if (0 <= saved_byte)
+  যদি (0 <= saved_byte)
     {
-      char saved_char = saved_byte;
-      if (conversions_mask & C_BLOCK)
+      ৱর্ণ saved_char = saved_byte;
+      যদি (conversions_mask & C_BLOCK)
         copy_with_block (&saved_char, 1);
-      else if (conversions_mask & C_UNBLOCK)
+      অন্যথা যদি (conversions_mask & C_UNBLOCK)
         copy_with_unblock (&saved_char, 1);
-      else
+      অন্যথা
         output_char (saved_char);
     }
 
-  if ((conversions_mask & C_BLOCK) && col > 0)
+  যদি ((conversions_mask & C_BLOCK) && col > 0)
     {
       /* If the final input line didn't end with a '\n', pad
          the output block to 'conversion_blocksize' chars.  */
-      for (idx_t i = col; i < conversion_blocksize; i++)
+      বাবে (idx_t i = col; i < conversion_blocksize; i++)
         output_char (space_character);
     }
 
-  if (col && (conversions_mask & C_UNBLOCK))
+  যদি (col && (conversions_mask & C_UNBLOCK))
     {
       /* If there was any output, add a final '\n'.  */
       output_char (newline_character);
     }
 
   /* Write out the last block. */
-  if (oc != 0)
+  যদি (oc != 0)
     {
       idx_t nwritten = iwrite (STDOUT_FILENO, obuf, oc);
       w_bytes += nwritten;
-      if (nwritten != 0)
+      যদি (nwritten != 0)
         w_partial++;
-      if (nwritten != oc)
+      যদি (nwritten != oc)
         {
           diagnose (errno, _("error writing %s"), quoteaf (output_file));
-          return EXIT_FAILURE;
+          ঘূৰাই EXIT_FAILURE;
         }
     }
 
   /* If the last write was converted to a seek, then for a regular file
      or shared memory object, ftruncate to extend the size.  */
-  if (final_op_was_seek)
+  যদি (final_op_was_seek)
     {
-      struct stat stdout_stat;
-      if (ifstat (STDOUT_FILENO, &stdout_stat) != 0)
+      সংরচনা stat stdout_stat;
+      যদি (ifstat (STDOUT_FILENO, &stdout_stat) != 0)
         {
           diagnose (errno, _("cannot fstat %s"), quoteaf (output_file));
-          return EXIT_FAILURE;
+          ঘূৰাই EXIT_FAILURE;
         }
-      if (S_ISREG (stdout_stat.st_mode) || S_TYPEISSHM (&stdout_stat))
+      যদি (S_ISREG (stdout_stat.st_mode) || S_TYPEISSHM (&stdout_stat))
         {
           off_t output_offset = lseek (STDOUT_FILENO, 0, SEEK_CUR);
-          if (0 <= output_offset && stdout_stat.st_size < output_offset)
+          যদি (0 <= output_offset && stdout_stat.st_size < output_offset)
             {
-              if (iftruncate (STDOUT_FILENO, output_offset) != 0)
+              যদি (iftruncate (STDOUT_FILENO, output_offset) != 0)
                 {
                   diagnose (errno, _("failed to truncate to %jd bytes"
                                      " in output file %s"),
                             (intmax_t) {output_offset}, quoteaf (output_file));
-                  return EXIT_FAILURE;
+                  ঘূৰাই EXIT_FAILURE;
                 }
             }
         }
@@ -2385,12 +2385,12 @@ dd_copy (void)
 
   /* fdatasync/fsync can take a long time, so issue a final progress
      indication now if progress has been made since the previous indication.  */
-  if (conversions_mask & (C_FDATASYNC | C_FSYNC)
+  যদি (conversions_mask & (C_FDATASYNC | C_FSYNC)
       && status_level == STATUS_PROGRESS
       && 0 <= reported_w_bytes && reported_w_bytes < w_bytes)
     print_xfer_stats (0);
 
-  return exit_status;
+  ঘূৰাই exit_status;
 }
 
 /* Synchronize output according to conversions_mask.
@@ -2399,16 +2399,16 @@ dd_copy (void)
    Clear bits in conversions_mask so that synchronization is done only once.
    Return zero if successful, an exit status otherwise.  */
 
-static int
-synchronize_output (void)
+স্থির পূর্ণাঙ্ক
+synchronize_output (শূন্য)
 {
-  int exit_status = 0;
-  int mask = conversions_mask;
+  পূর্ণাঙ্ক exit_status = 0;
+  পূর্ণাঙ্ক mask = conversions_mask;
   conversions_mask &= ~ (C_FDATASYNC | C_FSYNC);
 
-  if ((mask & C_FDATASYNC) && ifdatasync (STDOUT_FILENO) != 0)
+  যদি ((mask & C_FDATASYNC) && ifdatasync (STDOUT_FILENO) != 0)
     {
-      if (errno != ENOSYS && errno != EINVAL)
+      যদি (errno != ENOSYS && errno != EINVAL)
         {
           diagnose (errno, _("fdatasync failed for %s"), quoteaf (output_file));
           exit_status = EXIT_FAILURE;
@@ -2416,17 +2416,17 @@ synchronize_output (void)
       mask |= C_FSYNC;
     }
 
-  if ((mask & C_FSYNC) && ifsync (STDOUT_FILENO) != 0)
+  যদি ((mask & C_FSYNC) && ifsync (STDOUT_FILENO) != 0)
     {
       diagnose (errno, _("fsync failed for %s"), quoteaf (output_file));
-      return EXIT_FAILURE;
+      ঘূৰাই EXIT_FAILURE;
     }
 
-  return exit_status;
+  ঘূৰাই exit_status;
 }
 
-int
-main (int argc, char **argv)
+পূর্ণাঙ্ক
+main (পূর্ণাঙ্ক argc, ৱর্ণ **argv)
 {
   off_t offset;
 
@@ -2445,11 +2445,11 @@ main (int argc, char **argv)
 
   parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE, Version,
                                    true, usage, AUTHORS,
-                                   (char const *) NULL);
+                                   (ৱর্ণ ধ্রুৱ *) রিক্ত);
   close_stdout_required = false;
 
   /* Initialize translation table to identity translation. */
-  for (int i = 0; i < 256; i++)
+  বাবে (পূর্ণাঙ্ক i = 0; i < 256; i++)
     trans_table[i] = i;
 
   /* Decode arguments. */
@@ -2457,39 +2457,39 @@ main (int argc, char **argv)
 
   apply_translations ();
 
-  if (input_file == NULL)
+  যদি (প্ৰবেশ_file == রিক্ত)
     {
-      input_file = _("standard input");
-      set_fd_flags (STDIN_FILENO, input_flags, input_file);
+      প্ৰবেশ_file = _("standard input");
+      set_fd_flags (STDIN_FILENO, প্ৰবেশ_flags, প্ৰবেশ_file);
     }
-  else
+  অন্যথা
     {
-      if (ifd_reopen (STDIN_FILENO, input_file, O_RDONLY | input_flags, 0) < 0)
+      যদি (ifd_reopen (STDIN_FILENO, প্ৰবেশ_file, O_RDONLY | প্ৰবেশ_flags, 0) < 0)
         error (EXIT_FAILURE, errno, _("failed to open %s"),
-               quoteaf (input_file));
+               quoteaf (প্ৰবেশ_file));
     }
 
   offset = lseek (STDIN_FILENO, 0, SEEK_CUR);
-  input_seekable = (0 <= offset);
-  input_offset = MAX (0, offset);
-  input_seek_errno = errno;
+  প্ৰবেশ_seekable = (0 <= offset);
+  প্ৰবেশ_offset = MAX (0, offset);
+  প্ৰবেশ_seek_errno = errno;
 
-  if (output_file == NULL)
+  যদি (output_file == রিক্ত)
     {
       output_file = _("standard output");
       set_fd_flags (STDOUT_FILENO, output_flags, output_file);
     }
-  else
+  অন্যথা
     {
       mode_t perms = MODE_RW_UGO;
-      int opts
+      পূর্ণাঙ্ক opts
         = (output_flags
            | (conversions_mask & C_NOCREAT ? 0 : O_CREAT)
            | (conversions_mask & C_EXCL ? O_EXCL : 0)
            | (seek_records || (conversions_mask & C_NOTRUNC) ? 0 : O_TRUNC));
 
       off_t size;
-      if ((ckd_mul (&size, seek_records, output_blocksize)
+      যদি ((ckd_mul (&size, seek_records, output_blocksize)
            || ckd_add (&size, seek_bytes, size))
           && !(conversions_mask & C_NOTRUNC))
         error (EXIT_FAILURE, 0,
@@ -2501,28 +2501,28 @@ main (int argc, char **argv)
       /* Open the output file with *read* access only if we might
          need to read to satisfy a 'seek=' request.  If we can't read
          the file, go ahead with write-only access; it might work.  */
-      if ((! seek_records
+      যদি ((! seek_records
            || ifd_reopen (STDOUT_FILENO, output_file, O_RDWR | opts, perms) < 0)
           && (ifd_reopen (STDOUT_FILENO, output_file, O_WRONLY | opts, perms)
               < 0))
         error (EXIT_FAILURE, errno, _("failed to open %s"),
                quoteaf (output_file));
 
-      if (seek_records != 0 && !(conversions_mask & C_NOTRUNC))
+      যদি (seek_records != 0 && !(conversions_mask & C_NOTRUNC))
         {
-          if (iftruncate (STDOUT_FILENO, size) != 0)
+          যদি (iftruncate (STDOUT_FILENO, size) != 0)
             {
               /* Complain only when ftruncate fails on a regular file, a
                  directory, or a shared memory object, as POSIX 1003.1-2004
                  specifies ftruncate's behavior only for these file types.
                  For example, do not complain when Linux kernel 2.4 ftruncate
                  fails on /dev/fd0.  */
-              int ftruncate_errno = errno;
-              struct stat stdout_stat;
-              if (ifstat (STDOUT_FILENO, &stdout_stat) != 0)
+              পূর্ণাঙ্ক ftruncate_errno = errno;
+              সংরচনা stat stdout_stat;
+              যদি (ifstat (STDOUT_FILENO, &stdout_stat) != 0)
                 error (EXIT_FAILURE, errno, _("cannot fstat %s"),
                        quoteaf (output_file));
-              else if (S_ISREG (stdout_stat.st_mode)
+              অন্যথা যদি (S_ISREG (stdout_stat.st_mode)
                        || S_ISDIR (stdout_stat.st_mode)
                        || S_TYPEISSHM (&stdout_stat))
                 {
@@ -2539,32 +2539,32 @@ main (int argc, char **argv)
   start_time = gethrxtime ();
   next_time = start_time + XTIME_PRECISION;
 
-  int copy_status = dd_copy ();
-  int sync_status = synchronize_output ();
-  int exit_status = copy_status | sync_status;
+  পূর্ণাঙ্ক copy_status = dd_copy ();
+  পূর্ণাঙ্ক sync_status = synchronize_output ();
+  পূর্ণাঙ্ক exit_status = copy_status | sync_status;
 
-  if (max_records == 0 && max_bytes == 0)
+  যদি (max_records == 0 && max_bytes == 0)
     {
       /* Special case to invalidate cache to end of file.  */
-      if (i_nocache && !invalidate_cache (STDIN_FILENO, 0))
+      যদি (i_nocache && !invalidate_cache (STDIN_FILENO, 0))
         {
           diagnose (errno, _("failed to discard cache for: %s"),
-                    quotef (input_file));
+                    quotef (প্ৰবেশ_file));
           exit_status = EXIT_FAILURE;
         }
-      if (o_nocache && !invalidate_cache (STDOUT_FILENO, 0))
+      যদি (o_nocache && !invalidate_cache (STDOUT_FILENO, 0))
         {
           diagnose (errno, _("failed to discard cache for: %s"),
                     quotef (output_file));
           exit_status = EXIT_FAILURE;
         }
     }
-  else
+  অন্যথা
     {
       /* Invalidate any pending region or to EOF if appropriate.  */
-      if (i_nocache || i_nocache_eof)
+      যদি (i_nocache || i_nocache_eof)
         invalidate_cache (STDIN_FILENO, 0);
-      if (o_nocache || o_nocache_eof)
+      যদি (o_nocache || o_nocache_eof)
         invalidate_cache (STDOUT_FILENO, 0);
     }
 

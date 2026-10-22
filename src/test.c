@@ -20,35 +20,35 @@
 /* Define TEST_STANDALONE to get the /bin/test version.  Otherwise, you get
    the shell builtin version. */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
+#অন্তর্ভাৱ <config.h>
+#অন্তর্ভাৱ <stdio.h>
+#অন্তর্ভাৱ <sys/types.h>
 
 #define TEST_STANDALONE 1
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME (test_mode == TEST_TEST ? "test" : "[")
 
-#include "system.h"
-#include "assure.h"
-#include "c-ctype.h"
-#include "issymlink.h"
-#include "quote.h"
-#include "stat-time.h"
-#include "strnumcmp.h"
-#include "test.h"
+#অন্তর্ভাৱ "system.h"
+#অন্তর্ভাৱ "assure.h"
+#অন্তর্ভাৱ "c-ctype.h"
+#অন্তর্ভাৱ "issymlink.h"
+#অন্তর্ভাৱ "quote.h"
+#অন্তর্ভাৱ "stat-time.h"
+#অন্তর্ভাৱ "strnumcmp.h"
+#অন্তর্ভাৱ "test.h"
 
-#include <stdarg.h>
+#অন্তর্ভাৱ <stdarg.h>
 
-#if HAVE_SYS_PARAM_H
+#যদি HAVE_SYS_PARAM_H
 # include <sys/param.h>
 #endif
 
 /* Exit status for syntax errors, etc.  */
-enum { TEST_TRUE, TEST_FALSE, TEST_FAILURE };
+গণনা { TEST_TRUE, TEST_FALSE, TEST_FAILURE };
 
 /* Binary operators.  */
-enum binop
+গণনা binop
   {
     /* String comparisons, e.g., EQ_STRING_BINOP for = or ==.  */
     EQ_STRING_BINOP, GT_STRING_BINOP, LT_STRING_BINOP, NE_STRING_BINOP,
@@ -58,36 +58,36 @@ enum binop
     EF_BINOP, NT_BINOP, OT_BINOP
   };
 
-#if defined TEST_STANDALONE
+#যদি defined TEST_STANDALONE
 # define test_exit(val) exit (val)
-# define test_main_return(val) return val
-#else
-   static jmp_buf test_exit_buf;
-   static int test_error_return = 0;
+# define test_main_return(val) ঘূৰাই val
+#অন্যথা
+   স্থির jmp_buf test_exit_buf;
+   স্থির পূর্ণাঙ্ক test_error_return = 0;
 # define test_exit(val) test_error_return = val, longjmp (test_exit_buf, 1)
 # define test_main_return(val) test_exit (val)
 #endif /* !TEST_STANDALONE */
 
-static int pos;		/* The offset of the current argument in ARGV. */
-static int argc;	/* The number of arguments present in ARGV. */
-static char **argv;	/* The argument list. */
+স্থির পূর্ণাঙ্ক pos;		/* The offset of the current argument in ARGV. */
+স্থির পূর্ণাঙ্ক argc;	/* The number of arguments present in ARGV. */
+স্থির ৱর্ণ **argv;	/* The argument list. */
 
-static bool unary_operator (void);
-static bool binary_operator (bool, enum binop);
-static bool two_arguments (void);
-static bool three_arguments (void);
-static bool posixtest (int);
+স্থির bool unary_operator (শূন্য);
+স্থির bool দ্বিমিক_operator (bool, গণনা binop);
+স্থির bool two_arguments (শূন্য);
+স্থির bool three_arguments (শূন্য);
+স্থির bool posixtest (পূর্ণাঙ্ক);
 
-static bool expr (void);
-static bool term (void);
-static bool and (void);
-static bool or (void);
+স্থির bool ৰাশিমালা (শূন্য);
+স্থির bool term (শূন্য);
+স্থির bool and (শূন্য);
+স্থির bool or (শূন্য);
 
-static void beyond (void);
+স্থির শূন্য beyond (শূন্য);
 
 ATTRIBUTE_FORMAT ((printf, 1, 2))
-static _Noreturn void
-test_syntax_error (char const *format, ...)
+স্থির _Noreturn শূন্য
+test_syntax_error (ৱর্ণ ধ্রুৱ *format, ...)
 {
   va_list ap;
   va_start (ap, format);
@@ -99,17 +99,17 @@ test_syntax_error (char const *format, ...)
    past the end of the argument list.  This check is suppressed if the
    argument is false.  */
 
-static void
+স্থির শূন্য
 advance (bool f)
 {
   ++pos;
 
-  if (f && pos >= argc)
+  যদি (f && pos >= argc)
     beyond ();
 }
 
-static void
-unary_advance (void)
+স্থির শূন্য
+unary_advance (শূন্য)
 {
   advance (true);
   ++pos;
@@ -119,8 +119,8 @@ unary_advance (void)
  * beyond - call when we're beyond the end of the argument list (an
  *	error condition)
  */
-static _Noreturn void
-beyond (void)
+স্থির _Noreturn শূন্য
+beyond (শূন্য)
 {
   test_syntax_error (_("missing argument after %s"), quote (argv[argc - 1]));
 }
@@ -128,34 +128,34 @@ beyond (void)
 /* If the characters pointed to by STRING constitute a valid number,
    return a pointer to the start of the number, skipping any blanks or
    leading '+'.  Otherwise, report an error and exit.  */
-static char const *
-find_int (char const *string)
+স্থির ৱর্ণ ধ্রুৱ *
+find_int (ৱর্ণ ধ্রুৱ *string)
 {
-  char const *p;
-  char const *number_start;
+  ৱর্ণ ধ্রুৱ *p;
+  ৱর্ণ ধ্রুৱ *সংখ্যা_start;
 
-  for (p = string; isspace (to_uchar (*p)); p++)
-    continue;
+  বাবে (p = string; isspace (to_uchar (*p)); p++)
+    অনুৱর্ত;
 
-  if (*p == '+')
+  যদি (*p == '+')
     {
       p++;
-      number_start = p;
+      সংখ্যা_start = p;
     }
-  else
+  অন্যথা
     {
-      number_start = p;
+      সংখ্যা_start = p;
       p += (*p == '-');
     }
 
-  if (c_isdigit (*p++))
+  যদি (c_isdigit (*p++))
     {
-      while (c_isdigit (*p))
+      যেতিয়ালৈ (c_isdigit (*p))
         p++;
-      while (isspace (to_uchar (*p)))
+      যেতিয়ালৈ (isspace (to_uchar (*p)))
         p++;
-      if (!*p)
-        return number_start;
+      যদি (!*p)
+        ঘূৰাই সংখ্যা_start;
     }
 
   test_syntax_error (_("invalid integer %s"), quote (string));
@@ -164,21 +164,21 @@ find_int (char const *string)
 /* Return the modification time of FILENAME.
    If unsuccessful, return an invalid timestamp that is less
    than all valid timestamps.  */
-static struct timespec
-get_mtime (char const *filename)
+স্থির সংরচনা timespec
+get_mtime (ৱর্ণ ধ্রুৱ *filename)
 {
-  struct stat finfo;
-  return (stat (filename, &finfo) < 0
+  সংরচনা stat finfo;
+  ঘূৰাই (stat (filename, &finfo) < 0
           ? make_timespec (TYPE_MINIMUM (time_t), -1)
           : get_stat_mtime (&finfo));
 }
 
 /* Return the type of S, one of the test command's binary operators.
    If S is not a binary operator, return -1.  */
-static int
-binop (char const *s)
+স্থির পূর্ণাঙ্ক
+binop (ৱর্ণ ধ্রুৱ *s)
 {
-  return (  streq (s, "="  ) ? EQ_STRING_BINOP
+  ঘূৰাই (  streq (s, "="  ) ? EQ_STRING_BINOP
           : streq (s, "==" ) ? EQ_STRING_BINOP /* an alias for = */
           : streq (s, "!=" ) ? NE_STRING_BINOP
           : streq (s, ">"  ) ? GT_STRING_BINOP
@@ -213,142 +213,142 @@ binop (char const *s)
  *	'-l' string
  *	positive and negative integers
  */
-static bool
-term (void)
+স্থির bool
+term (শূন্য)
 {
-  bool value;
+  bool মান;
   bool negated = false;
-  int bop;
+  পূর্ণাঙ্ক bop;
 
   /* Deal with leading 'not's.  */
-  while (pos < argc && argv[pos][0] == '!' && argv[pos][1] == '\0')
+  যেতিয়ালৈ (pos < argc && argv[pos][0] == '!' && argv[pos][1] == '\0')
     {
       advance (true);
       negated = !negated;
     }
 
-  if (pos >= argc)
+  যদি (pos >= argc)
     beyond ();
 
   /* A paren-bracketed argument. */
-  if (argv[pos][0] == '(' && argv[pos][1] == '\0')
+  যদি (argv[pos][0] == '(' && argv[pos][1] == '\0')
     {
-      int nargs;
+      পূর্ণাঙ্ক nargs;
 
       advance (true);
 
-      for (nargs = 1;
+      বাবে (nargs = 1;
            pos + nargs < argc && ! streq (argv[pos + nargs], ")");
            nargs++)
-        if (nargs == 4)
+        যদি (nargs == 4)
           {
             nargs = argc - pos;
-            break;
+            ভঙ্গ;
           }
 
-      value = posixtest (nargs);
-      if (!argv[pos])
+      মান = posixtest (nargs);
+      যদি (!argv[pos])
         test_syntax_error (_("%s expected"), quote (")"));
-      else
-        if (argv[pos][0] != ')' || argv[pos][1])
+      অন্যথা
+        যদি (argv[pos][0] != ')' || argv[pos][1])
           test_syntax_error (_("%s expected, found %s"),
                              quote_n (0, ")"), quote_n (1, argv[pos]));
       advance (false);
     }
 
   /* Are there enough arguments left that this could be dyadic?  */
-  else if (4 <= argc - pos && streq (argv[pos], "-l")
+  অন্যথা যদি (4 <= argc - pos && streq (argv[pos], "-l")
            && 0 <= (bop = binop (argv[pos + 2])))
-    value = binary_operator (true, bop);
-  else if (3 <= argc - pos
+    মান = দ্বিমিক_operator (true, bop);
+  অন্যথা যদি (3 <= argc - pos
            && 0 <= (bop = binop (argv[pos + 1])))
-    value = binary_operator (false, bop);
+    মান = দ্বিমিক_operator (false, bop);
 
   /* It might be a switch type argument.  */
-  else if (argv[pos][0] == '-' && argv[pos][1] && argv[pos][1] != 'a'
+  অন্যথা যদি (argv[pos][0] == '-' && argv[pos][1] && argv[pos][1] != 'a'
            && argv[pos][1] != 'o' && argv[pos][2] == '\0')
-    value = unary_operator ();
-  else
+    মান = unary_operator ();
+  অন্যথা
     {
-      value = (argv[pos][0] != '\0');
+      মান = (argv[pos][0] != '\0');
       advance (false);
     }
 
-  return negated ^ value;
+  ঘূৰাই negated ^ মান;
 }
 
-static bool
-binary_operator (bool l_is_l, enum binop bop)
+স্থির bool
+দ্বিমিক_operator (bool l_is_l, গণনা binop bop)
 {
-  int op;
+  পূর্ণাঙ্ক op;
 
-  if (l_is_l)
+  যদি (l_is_l)
     advance (false);
   op = pos + 1;
 
   /* Is the right integer expression of the form '-l string'? */
   bool r_is_l = op < argc - 2 && streq (argv[op + 1], "-l");
-  if (r_is_l)
+  যদি (r_is_l)
     advance (false);
 
   pos += 3;
 
-  switch (bop)
+  ৱিকল্প (bop)
     {
-    case EQ_BINOP: case GE_BINOP: case GT_BINOP:
-    case LE_BINOP: case LT_BINOP: case NE_BINOP:
+    পক্ষ EQ_BINOP: পক্ষ GE_BINOP: পক্ষ GT_BINOP:
+    পক্ষ LE_BINOP: পক্ষ LT_BINOP: পক্ষ NE_BINOP:
       {
-        char lbuf[INT_BUFSIZE_BOUND (uintmax_t)];
-        char rbuf[INT_BUFSIZE_BOUND (uintmax_t)];
-        char const *l = (l_is_l
+        ৱর্ণ lbuf[INT_BUFSIZE_BOUND (uintmax_t)];
+        ৱর্ণ rbuf[INT_BUFSIZE_BOUND (uintmax_t)];
+        ৱর্ণ ধ্রুৱ *l = (l_is_l
                          ? umaxtostr (strlen (argv[op - 1]), lbuf)
                          : find_int (argv[op - 1]));
-        char const *r = (r_is_l
+        ৱর্ণ ধ্রুৱ *r = (r_is_l
                          ? umaxtostr (strlen (argv[op + 2]), rbuf)
                          : find_int (argv[op + 1]));
-        int cmp = strintcmp (l, r);
-        switch (+bop)
+        পূর্ণাঙ্ক cmp = strintcmp (l, r);
+        ৱিকল্প (+bop)
           {
-          case EQ_BINOP: return cmp == 0;
-          case GE_BINOP: return cmp >= 0;
-          case GT_BINOP: return cmp >  0;
-          case LE_BINOP: return cmp <= 0;
-          case LT_BINOP: return cmp <  0;
-          case NE_BINOP: return cmp != 0;
+          পক্ষ EQ_BINOP: ঘূৰাই cmp == 0;
+          পক্ষ GE_BINOP: ঘূৰাই cmp >= 0;
+          পক্ষ GT_BINOP: ঘূৰাই cmp >  0;
+          পক্ষ LE_BINOP: ঘূৰাই cmp <= 0;
+          পক্ষ LT_BINOP: ঘূৰাই cmp <  0;
+          পক্ষ NE_BINOP: ঘূৰাই cmp != 0;
           }
         unreachable ();
       }
 
-    case NT_BINOP: case OT_BINOP:
+    পক্ষ NT_BINOP: পক্ষ OT_BINOP:
       {
-        if (l_is_l | r_is_l)
+        যদি (l_is_l | r_is_l)
           test_syntax_error (_("%s does not accept -l"),
                              argv[op]);
-        int cmp = timespec_cmp (get_mtime (argv[op - 1]),
+        পূর্ণাঙ্ক cmp = timespec_cmp (get_mtime (argv[op - 1]),
                                 get_mtime (argv[op + 1]));
-        return bop == OT_BINOP ? cmp < 0 : cmp > 0;
+        ঘূৰাই bop == OT_BINOP ? cmp < 0 : cmp > 0;
       }
 
-    case EF_BINOP:
-      if (l_is_l | r_is_l)
+    পক্ষ EF_BINOP:
+      যদি (l_is_l | r_is_l)
         test_syntax_error (_("-ef does not accept -l"));
-      else
+      অন্যথা
         {
-          struct stat st[2];
-          return (stat (argv[op - 1], &st[0]) == 0
+          সংরচনা stat st[2];
+          ঘূৰাই (stat (argv[op - 1], &st[0]) == 0
                   && stat (argv[op + 1], &st[1]) == 0
                   && psame_inode (&st[0], &st[1]));
         }
 
-    case EQ_STRING_BINOP:
-    case NE_STRING_BINOP:
-      return streq (argv[op - 1], argv[op + 1]) == (bop == EQ_STRING_BINOP);
+    পক্ষ EQ_STRING_BINOP:
+    পক্ষ NE_STRING_BINOP:
+      ঘূৰাই streq (argv[op - 1], argv[op + 1]) == (bop == EQ_STRING_BINOP);
 
-    case GT_STRING_BINOP:
-    case LT_STRING_BINOP:
+    পক্ষ GT_STRING_BINOP:
+    পক্ষ LT_STRING_BINOP:
       {
-        int cmp = strcoll (argv[op - 1], argv[op + 1]);
-        return bop == LT_STRING_BINOP ? cmp < 0 : cmp > 0;
+        পূর্ণাঙ্ক cmp = strcoll (argv[op - 1], argv[op + 1]);
+        ঘূৰাই bop == LT_STRING_BINOP ? cmp < 0 : cmp > 0;
       }
     }
 
@@ -356,14 +356,14 @@ binary_operator (bool l_is_l, enum binop bop)
   affirm (false);
 }
 
-static bool
-unary_operator (void)
+স্থির bool
+unary_operator (শূন্য)
 {
-  struct stat stat_buf;
+  সংরচনা stat stat_buf;
 
-  switch (argv[pos][1])
+  ৱিকল্প (argv[pos][1])
     {
-    default:
+    স্ৱভাৱ:
       test_syntax_error (_("%s: unary operator expected"), quote (argv[pos]));
 
       /* All of the following unary operators use unary_advance (), which
@@ -371,131 +371,131 @@ unary_operator (void)
          pos right past it.  This means that pos - 1 is the location of the
          argument. */
 
-    case 'e':			/* file exists in the file system? */
+    পক্ষ 'e':			/* file exists in the file system? */
       unary_advance ();
-      return stat (argv[pos - 1], &stat_buf) == 0;
+      ঘূৰাই stat (argv[pos - 1], &stat_buf) == 0;
 
-    case 'r':			/* file is readable? */
+    পক্ষ 'r':			/* file is readable? */
       unary_advance ();
-      return euidaccess (argv[pos - 1], R_OK) == 0;
+      ঘূৰাই euidaccess (argv[pos - 1], R_OK) == 0;
 
-    case 'w':			/* File is writable? */
+    পক্ষ 'w':			/* File is writable? */
       unary_advance ();
-      return euidaccess (argv[pos - 1], W_OK) == 0;
+      ঘূৰাই euidaccess (argv[pos - 1], W_OK) == 0;
 
-    case 'x':			/* File is executable? */
+    পক্ষ 'x':			/* File is executable? */
       unary_advance ();
-      return euidaccess (argv[pos - 1], X_OK) == 0;
+      ঘূৰাই euidaccess (argv[pos - 1], X_OK) == 0;
 
-    case 'N':  /* File exists and has been modified since it was last read? */
+    পক্ষ 'N':  /* File exists and has been modified since it was last read? */
       {
         unary_advance ();
-        if (stat (argv[pos - 1], &stat_buf) != 0)
-          return false;
-        struct timespec atime = get_stat_atime (&stat_buf);
-        struct timespec mtime = get_stat_mtime (&stat_buf);
-        return (timespec_cmp (mtime, atime) > 0);
+        যদি (stat (argv[pos - 1], &stat_buf) != 0)
+          ঘূৰাই false;
+        সংরচনা timespec atime = get_stat_atime (&stat_buf);
+        সংরচনা timespec mtime = get_stat_mtime (&stat_buf);
+        ঘূৰাই (timespec_cmp (mtime, atime) > 0);
       }
 
-    case 'O':			/* File is owned by you? */
+    পক্ষ 'O':			/* File is owned by you? */
       {
         unary_advance ();
-        if (stat (argv[pos - 1], &stat_buf) != 0)
-          return false;
+        যদি (stat (argv[pos - 1], &stat_buf) != 0)
+          ঘূৰাই false;
         errno = 0;
         uid_t euid = geteuid ();
         uid_t NO_UID = -1;
-        return ! (euid == NO_UID && errno) && euid == stat_buf.st_uid;
+        ঘূৰাই ! (euid == NO_UID && errno) && euid == stat_buf.st_uid;
       }
 
-    case 'G':			/* File is owned by your group? */
+    পক্ষ 'G':			/* File is owned by your group? */
       {
         unary_advance ();
-        if (stat (argv[pos - 1], &stat_buf) != 0)
-          return false;
+        যদি (stat (argv[pos - 1], &stat_buf) != 0)
+          ঘূৰাই false;
         errno = 0;
         gid_t egid = getegid ();
         gid_t NO_GID = -1;
-        return ! (egid == NO_GID && errno) && egid == stat_buf.st_gid;
+        ঘূৰাই ! (egid == NO_GID && errno) && egid == stat_buf.st_gid;
       }
 
-    case 'f':			/* File is a file? */
+    পক্ষ 'f':			/* File is a file? */
       unary_advance ();
       /* Under POSIX, -f is true if the given file exists
          and is a regular file. */
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      ঘূৰাই (stat (argv[pos - 1], &stat_buf) == 0
               && S_ISREG (stat_buf.st_mode));
 
-    case 'd':			/* File is a directory? */
+    পক্ষ 'd':			/* File is a directory? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      ঘূৰাই (stat (argv[pos - 1], &stat_buf) == 0
               && S_ISDIR (stat_buf.st_mode));
 
-    case 's':			/* File has something in it? */
+    পক্ষ 's':			/* File has something in it? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      ঘূৰাই (stat (argv[pos - 1], &stat_buf) == 0
               && 0 < stat_buf.st_size);
 
-    case 'S':			/* File is a socket? */
+    পক্ষ 'S':			/* File is a socket? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      ঘূৰাই (stat (argv[pos - 1], &stat_buf) == 0
               && S_ISSOCK (stat_buf.st_mode));
 
-    case 'c':			/* File is character special? */
+    পক্ষ 'c':			/* File is character special? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      ঘূৰাই (stat (argv[pos - 1], &stat_buf) == 0
               && S_ISCHR (stat_buf.st_mode));
 
-    case 'b':			/* File is block special? */
+    পক্ষ 'b':			/* File is block special? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      ঘূৰাই (stat (argv[pos - 1], &stat_buf) == 0
               && S_ISBLK (stat_buf.st_mode));
 
-    case 'p':			/* File is a named pipe? */
+    পক্ষ 'p':			/* File is a named pipe? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      ঘূৰাই (stat (argv[pos - 1], &stat_buf) == 0
               && S_ISFIFO (stat_buf.st_mode));
 
-    case 'L':			/* Same as -h  */
+    পক্ষ 'L':			/* Same as -h  */
       /*FALLTHROUGH*/
 
-    case 'h':			/* File is a symbolic link? */
+    পক্ষ 'h':			/* File is a symbolic link? */
       unary_advance ();
-      return issymlink (argv[pos - 1]) == 1;
+      ঘূৰাই issymlink (argv[pos - 1]) == 1;
 
-    case 'u':			/* File is setuid? */
+    পক্ষ 'u':			/* File is setuid? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      ঘূৰাই (stat (argv[pos - 1], &stat_buf) == 0
               && (stat_buf.st_mode & S_ISUID));
 
-    case 'g':			/* File is setgid? */
+    পক্ষ 'g':			/* File is setgid? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      ঘূৰাই (stat (argv[pos - 1], &stat_buf) == 0
               && (stat_buf.st_mode & S_ISGID));
 
-    case 'k':			/* File has sticky bit set? */
+    পক্ষ 'k':			/* File has sticky bit set? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      ঘূৰাই (stat (argv[pos - 1], &stat_buf) == 0
               && (stat_buf.st_mode & S_ISVTX));
 
-    case 't':			/* File (fd) is a terminal? */
+    পক্ষ 't':			/* File (fd) is a terminal? */
       {
-        long int fd;
-        char const *arg;
+        long পূর্ণাঙ্ক fd;
+        ৱর্ণ ধ্রুৱ *arg;
         unary_advance ();
         arg = find_int (argv[pos - 1]);
         errno = 0;
-        fd = strtol (arg, NULL, 10);
-        return (errno != ERANGE && 0 <= fd && fd <= INT_MAX && isatty (fd));
+        fd = strtol (arg, রিক্ত, 10);
+        ঘূৰাই (errno != ERANGE && 0 <= fd && fd <= INT_MAX && isatty (fd));
       }
 
-    case 'n':			/* True if arg has some length. */
+    পক্ষ 'n':			/* True if arg has some length. */
       unary_advance ();
-      return argv[pos - 1][0] != 0;
+      ঘূৰাই argv[pos - 1][0] != 0;
 
-    case 'z':			/* True if arg has no length. */
+    পক্ষ 'z':			/* True if arg has no length. */
       unary_advance ();
-      return argv[pos - 1][0] == '\0';
+      ঘূৰাই argv[pos - 1][0] == '\0';
     }
 }
 
@@ -504,16 +504,16 @@ unary_operator (void)
  *	term
  *	term '-a' and
  */
-static bool
-and (void)
+স্থির bool
+and (শূন্য)
 {
-  bool value = true;
+  bool মান = true;
 
-  while (true)
+  যেতিয়ালৈ (true)
     {
-      value &= term ();
-      if (! (pos < argc && streq (argv[pos], "-a")))
-        return value;
+      মান &= term ();
+      যদি (! (pos < argc && streq (argv[pos], "-a")))
+        ঘূৰাই মান;
       advance (false);
     }
 }
@@ -523,16 +523,16 @@ and (void)
  *	and
  *	and '-o' or
  */
-static bool
-or (void)
+স্থির bool
+or (শূন্য)
 {
-  bool value = false;
+  bool মান = false;
 
-  while (true)
+  যেতিয়ালৈ (true)
     {
-      value |= and ();
-      if (! (pos < argc && streq (argv[pos], "-o")))
-        return value;
+      মান |= and ();
+      যদি (! (pos < argc && streq (argv[pos], "-o")))
+        ঘূৰাই মান;
       advance (false);
     }
 }
@@ -541,122 +541,122 @@ or (void)
  * expr:
  *	or
  */
-static bool
-expr (void)
+স্থির bool
+ৰাশিমালা (শূন্য)
 {
-  if (pos >= argc)
+  যদি (pos >= argc)
     beyond ();
 
-  return or ();		/* Same with this. */
+  ঘূৰাই or ();		/* Same with this. */
 }
 
-static bool
-one_argument (void)
+স্থির bool
+one_argument (শূন্য)
 {
-  return argv[pos++][0] != '\0';
+  ঘূৰাই argv[pos++][0] != '\0';
 }
 
-static bool
-two_arguments (void)
+স্থির bool
+two_arguments (শূন্য)
 {
-  bool value;
+  bool মান;
 
-  if (streq (argv[pos], "!"))
+  যদি (streq (argv[pos], "!"))
     {
       advance (false);
-      value = ! one_argument ();
+      মান = ! one_argument ();
     }
-  else if (argv[pos][0] == '-'
+  অন্যথা যদি (argv[pos][0] == '-'
            && argv[pos][1] != '\0'
            && argv[pos][2] == '\0')
     {
-      value = unary_operator ();
+      মান = unary_operator ();
     }
-  else
+  অন্যথা
     beyond ();
-  return (value);
+  ঘূৰাই (মান);
 }
 
-static bool
-three_arguments (void)
+স্থির bool
+three_arguments (শূন্য)
 {
-  bool value;
-  int bop = binop (argv[pos + 1]);
+  bool মান;
+  পূর্ণাঙ্ক bop = binop (argv[pos + 1]);
 
-  if (0 <= bop)
-    value = binary_operator (false, bop);
-  else if (streq (argv[pos], "!"))
+  যদি (0 <= bop)
+    মান = দ্বিমিক_operator (false, bop);
+  অন্যথা যদি (streq (argv[pos], "!"))
     {
       advance (true);
-      value = !two_arguments ();
+      মান = !two_arguments ();
     }
-  else if (streq (argv[pos], "(") && streq (argv[pos + 2], ")"))
+  অন্যথা যদি (streq (argv[pos], "(") && streq (argv[pos + 2], ")"))
     {
       advance (false);
-      value = one_argument ();
+      মান = one_argument ();
       advance (false);
     }
-  else if (streq (argv[pos + 1], "-a") || streq (argv[pos + 1], "-o")
+  অন্যথা যদি (streq (argv[pos + 1], "-a") || streq (argv[pos + 1], "-o")
            || streq (argv[pos + 1], ">") || streq (argv[pos + 1], "<"))
-    value = expr ();
-  else
+    মান = ৰাশিমালা ();
+  অন্যথা
     test_syntax_error (_("%s: binary operator expected"),
                        quote (argv[pos + 1]));
-  return (value);
+  ঘূৰাই (মান);
 }
 
 /* This is an implementation of a Posix.2 proposal by David Korn. */
-static bool
-posixtest (int nargs)
+স্থির bool
+posixtest (পূর্ণাঙ্ক nargs)
 {
-  bool value;
+  bool মান;
 
-  switch (nargs)
+  ৱিকল্প (nargs)
     {
-      case 1:
-        value = one_argument ();
-        break;
+      পক্ষ 1:
+        মান = one_argument ();
+        ভঙ্গ;
 
-      case 2:
-        value = two_arguments ();
-        break;
+      পক্ষ 2:
+        মান = two_arguments ();
+        ভঙ্গ;
 
-      case 3:
-        value = three_arguments ();
-        break;
+      পক্ষ 3:
+        মান = three_arguments ();
+        ভঙ্গ;
 
-      case 4:
-        if (streq (argv[pos], "!"))
+      পক্ষ 4:
+        যদি (streq (argv[pos], "!"))
           {
             advance (true);
-            value = !three_arguments ();
-            break;
+            মান = !three_arguments ();
+            ভঙ্গ;
           }
-        if (streq (argv[pos], "(") && streq (argv[pos + 3], ")"))
+        যদি (streq (argv[pos], "(") && streq (argv[pos + 3], ")"))
           {
             advance (false);
-            value = two_arguments ();
+            মান = two_arguments ();
             advance (false);
-            break;
+            ভঙ্গ;
           }
         FALLTHROUGH;
-      case 5:
-      default:
+      পক্ষ 5:
+      স্ৱভাৱ:
         affirm (0 < nargs);
-        value = expr ();
+        মান = ৰাশিমালা ();
     }
 
-  return (value);
+  ঘূৰাই (মান);
 }
 
-#if defined TEST_STANDALONE
+#যদি defined TEST_STANDALONE
 
-void
-usage (int status)
+শূন্য
+usage (পূর্ণাঙ্ক status)
 {
-  if (status != EXIT_SUCCESS)
+  যদি (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  অন্যথা
     {
       fputs (_("\
 Usage: test EXPRESSION\n\
@@ -768,7 +768,7 @@ EXPRESSION is true or false and sets exit status.  It is one of:\n\
   -L FILE     FILE exists and is a symbolic link (same as -h)\n\
 "));
       oputs (_("\
-  -N FILE     FILE exists and has been modified since it was last read\n\
+  -N FILE     FILE exists and has been modified since it was last পঠ\n\
 "));
       oputs (_("\
   -O FILE     FILE exists and is owned by the effective user ID\n\
@@ -777,7 +777,7 @@ EXPRESSION is true or false and sets exit status.  It is one of:\n\
   -p FILE     FILE exists and is a named pipe\n\
 "));
       oputs (_("\
-  -r FILE     FILE exists and the user has read access\n\
+  -r FILE     FILE exists and the user has পঠ access\n\
 "));
       oputs (_("\
   -s FILE     FILE exists and has a size greater than zero\n\
@@ -792,20 +792,20 @@ EXPRESSION is true or false and sets exit status.  It is one of:\n\
   -u FILE     FILE exists and its set-user-ID bit is set\n\
 "));
       oputs (_("\
-  -w FILE     FILE exists and the user has write access\n\
+  -w FILE     FILE exists and the user has লিখ access\n\
 "));
       oputs (_("\
-  -x FILE     FILE exists and the user has execute (or search) access\n\
+  -x FILE     FILE exists and the user has execute (or অনুসন্ধান) access\n\
 "));
       fputs (_("\
 \n\
-Except for -h and -L, all FILE-related tests dereference symbolic links.\n\
-Beware that parentheses need to be escaped (e.g., by backslashes) for shells.\n\
+Except বাবে -h and -L, all FILE-related tests dereference symbolic links.\n\
+Beware that parentheses need to be escaped (e.g., by backslashes) বাবে shells.\n\
 INTEGER may also be -l STRING, which evaluates to the length of STRING.\n\
 "), stdout);
       fputs (_("\
 \n\
-Binary -a and -o are ambiguous.  Use 'test EXPR1 && test EXPR2'\n\
+দ্বিমিক_2 -a and -o are ambiguous.  Use 'test EXPR1 && test EXPR2'\n\
 or 'test EXPR1 || test EXPR2' instead.\n\
 "), stdout);
       fputs (_("\
@@ -819,7 +819,7 @@ or 'test EXPR1 || test EXPR2' instead.\n\
 }
 #endif /* TEST_STANDALONE */
 
-#if !defined TEST_STANDALONE
+#যদি !defined TEST_STANDALONE
 # define main test_command
 #endif
 
@@ -833,19 +833,19 @@ or 'test EXPR1 || test EXPR2' instead.\n\
  * test:
  *	test expr
  */
-int
-main (int margc, char **margv)
+পূর্ণাঙ্ক
+main (পূর্ণাঙ্ক margc, ৱর্ণ **margv)
 {
-  bool value;
+  bool মান;
 
-#if !defined TEST_STANDALONE
-  int code;
+#যদি !defined TEST_STANDALONE
+  পূর্ণাঙ্ক code;
 
   code = setjmp (test_exit_buf);
 
-  if (code)
-    return (test_error_return);
-#else /* TEST_STANDALONE */
+  যদি (code)
+    ঘূৰাই (test_error_return);
+#অন্যথা /* TEST_STANDALONE */
   initialize_main (&margc, &margv);
   set_program_name (margv[0]);
   setlocale (LC_ALL, "");
@@ -858,7 +858,7 @@ main (int margc, char **margv)
 
   argv = margv;
 
-  if (test_mode == TEST_LBRACKET)
+  যদি (test_mode == TEST_LBRACKET)
     {
       /* Recognize --help or --version, but only when invoked in the
          "[" form, when the last argument is not "]".  Use direct
@@ -866,19 +866,19 @@ main (int margc, char **margv)
          abbreviations.  POSIX allows "[ --help" and "[ --version" to
          have the usual GNU behavior, but it requires "test --help"
          and "test --version" to exit silently with status 0.  */
-      if (margc == 2)
+      যদি (margc == 2)
         {
-          if (streq (margv[1], "--help"))
+          যদি (streq (margv[1], "--help"))
             usage (EXIT_SUCCESS);
 
-          if (streq (margv[1], "--version"))
+          যদি (streq (margv[1], "--version"))
             {
               version_etc (stdout, PROGRAM_NAME, PACKAGE_NAME, Version, AUTHORS,
-                           (char *) NULL);
+                           (ৱর্ণ *) রিক্ত);
               test_main_return (EXIT_SUCCESS);
             }
         }
-      if (margc < 2 || !streq (margv[margc - 1], "]"))
+      যদি (margc < 2 || !streq (margv[margc - 1], "]"))
         test_syntax_error (_("missing %s"), quote ("]"));
 
       --margc;
@@ -887,13 +887,13 @@ main (int margc, char **margv)
   argc = margc;
   pos = 1;
 
-  if (pos >= argc)
+  যদি (pos >= argc)
     test_main_return (TEST_FALSE);
 
-  value = posixtest (argc - 1);
+  মান = posixtest (argc - 1);
 
-  if (pos != argc)
+  যদি (pos != argc)
     test_syntax_error (_("extra argument %s"), quote (argv[pos]));
 
-  test_main_return (value ? TEST_TRUE : TEST_FALSE);
+  test_main_return (মান ? TEST_TRUE : TEST_FALSE);
 }

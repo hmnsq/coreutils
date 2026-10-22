@@ -14,14 +14,14 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
+#অন্তর্ভাৱ <config.h>
 
-#include "cksum_crc.h"
+#অন্তর্ভাৱ "cksum_crc.h"
 
-#include <stdio.h>
-#include <sys/types.h>
-#include <x86intrin.h>
-#include "system.h"
+#অন্তর্ভাৱ <stdio.h>
+#অন্তর্ভাৱ <sys/types.h>
+#অন্তর্ভাৱ <x86intrin.h>
+#অন্তর্ভাৱ "system.h"
 
 /* Number of bytes to read at once.  */
 #define BUFLEN (1 << 16)
@@ -31,7 +31,7 @@
 bool
 cksum_pclmul (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
 {
-  __m128i buf[BUFLEN / sizeof (__m128i)];
+  __m128i buf[BUFLEN / পরিমাণ (__m128i)];
   uint_fast32_t crc = 0;
   intmax_t length = 0;
   size_t bytes_read;
@@ -39,8 +39,8 @@ cksum_pclmul (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
   __m128i four_mult_constant;
   __m128i shuffle_constant;
 
-  if (!fp || !crc_out || !length_out)
-    return false;
+  যদি (!fp || !crc_out || !length_out)
+    ঘূৰাই false;
 
   /* These constants and general algorithms are taken from the Intel whitepaper
      "Fast CRC Computation for Generic Polynomials Using PCLMULQDQ Instruction"
@@ -52,7 +52,7 @@ cksum_pclmul (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
   shuffle_constant = _mm_set_epi8 (0, 1, 2, 3, 4, 5, 6, 7, 8,
                                    9, 10, 11, 12, 13, 14, 15);
 
-  while ((bytes_read = fread (buf, 1, BUFLEN, fp)) > 0)
+  যেতিয়ালৈ ((bytes_read = fread (buf, 1, BUFLEN, fp)) > 0)
     {
       __m128i *datap;
       __m128i data;
@@ -66,16 +66,16 @@ cksum_pclmul (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
       __m128i fold_data;
       __m128i xor_crc;
 
-      if (ckd_add (&length, length, bytes_read))
+      যদি (ckd_add (&length, length, bytes_read))
         {
           errno = EOVERFLOW;
-          return false;
+          ঘূৰাই false;
         }
 
       datap = buf;
 
       /* Fold in parallel eight 16-byte blocks into four 16-byte blocks */
-      if (bytes_read >= 16 * 8)
+      যদি (bytes_read >= 16 * 8)
         {
           data = _mm_loadu_si128 (datap);
           data = _mm_shuffle_epi8 (data, shuffle_constant);
@@ -92,7 +92,7 @@ cksum_pclmul (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
           data7 = _mm_shuffle_epi8 (data7, shuffle_constant);
 
 
-          while (bytes_read >= 16 * 8)
+          যেতিয়ালৈ (bytes_read >= 16 * 8)
             {
               datap += 4;
 
@@ -146,14 +146,14 @@ cksum_pclmul (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
         }
 
       /* Fold two 16-byte blocks into one 16-byte block */
-      if (bytes_read >= 32)
+      যদি (bytes_read >= 32)
         {
           data = _mm_loadu_si128 (datap);
           data = _mm_shuffle_epi8 (data, shuffle_constant);
           xor_crc = _mm_set_epi32 (crc, 0, 0, 0);
           crc = 0;
           data = _mm_xor_si128 (data, xor_crc);
-          while (bytes_read >= 32)
+          যেতিয়ালৈ (bytes_read >= 32)
             {
               datap++;
 
@@ -170,15 +170,15 @@ cksum_pclmul (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
         }
 
       /* And finish up last 0-31 bytes in a byte by byte fashion */
-      unsigned char *cp = (unsigned char *)datap;
-      while (bytes_read--)
+      unsigned ৱর্ণ *cp = (unsigned ৱর্ণ *)datap;
+      যেতিয়ালৈ (bytes_read--)
         crc = (crc << 8) ^ crctab[0][((crc >> 24) ^ *cp++) & 0xFF];
-      if (feof (fp))
-        break;
+      যদি (feof (fp))
+        ভঙ্গ;
     }
 
   *crc_out = crc;
   *length_out = length;
 
-  return !ferror (fp);
+  ঘূৰাই !ferror (fp);
 }

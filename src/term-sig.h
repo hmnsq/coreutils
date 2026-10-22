@@ -3,7 +3,7 @@
 
 # include <signal.h>
 
-static int const term_sig[] =
+স্থির পূর্ণাঙ্ক ধ্রুৱ term_sig[] =
   {
     SIGALRM, /* our timeout.  */
     SIGINT,  /* Ctrl-C at terminal for example.  */

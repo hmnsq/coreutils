@@ -17,9 +17,9 @@
 /* Include this file _after_ system headers if possible.  */
 
 /* sys/stat.h and minmax.h will already have been included by system.h. */
-#include <stdbit.h>
-#include "stat-size.h"
-#include "sys-limits.h"
+#অন্তর্ভাৱ <stdbit.h>
+#অন্তর্ভাৱ "stat-size.h"
+#অন্তর্ভাৱ "sys-limits.h"
 
 
 /* As of Feb 2024, 256KiB is determined to be the best blksize
@@ -76,9 +76,9 @@
    In the future we could use the above method if available
    and default to io_blksize() if not.
  */
-enum { IO_BUFSIZE = 256 * 1024 };
-static inline idx_t
-io_blksize (struct stat const *st)
+গণনা { IO_BUFSIZE = 256 * 1024 };
+স্থির অন্তঃস্থ idx_t
+io_blksize (সংরচনা stat ধ্রুৱ *st)
 {
   /* Treat impossible blocksizes as if they were IO_BUFSIZE.  */
   idx_t blocksize = STP_BLKSIZE (st) <= 0 ? IO_BUFSIZE : STP_BLKSIZE (st);
@@ -93,13 +93,13 @@ io_blksize (struct stat const *st)
      This misinformation can cause coreutils to use wrong-sized blocks.
      Work around some of the performance bug by substituting the next
      power of two when the reported blocksize is not a power of two.  */
-  if (S_ISREG (st->st_mode) && blocksize & (blocksize - 1))
+  যদি (S_ISREG (st->st_mode) && blocksize & (blocksize - 1))
     {
-      int leading_zeros = stdc_leading_zeros_ull (blocksize);
-      if (IDX_MAX < ULLONG_MAX || leading_zeros)
+      পূর্ণাঙ্ক leading_zeros = stdc_leading_zeros_ull (blocksize);
+      যদি (IDX_MAX < ULLONG_MAX || leading_zeros)
         {
           unsigned long long power = 1ull << (ULLONG_WIDTH - leading_zeros);
-          if (power <= IDX_MAX)
+          যদি (power <= IDX_MAX)
             blocksize = power;
         }
     }
@@ -107,5 +107,5 @@ io_blksize (struct stat const *st)
   /* Don’t go above the maximum number of bytes
      to read or write in a single system call,
      as that is asking for trouble.  */
-  return MIN (SYS_BUFSIZE_MAX, blocksize);
+  ঘূৰাই MIN (SYS_BUFSIZE_MAX, blocksize);
 }

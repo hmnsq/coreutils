@@ -16,18 +16,18 @@
 
 /* Written by David MacKenzie, djm@gnu.ai.mit.edu. */
 
-#include <config.h>
+#অন্তর্ভাৱ <config.h>
 
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#অন্তর্ভাৱ <stdio.h>
+#অন্তর্ভাৱ <getopt.h>
+#অন্তর্ভাৱ <sys/types.h>
 
-#include "system.h"
-#include "fadvise.h"
-#include "ioblksize.h"
-#include "mcel.h"
-#include "mbbuf.h"
-#include "xdectoint.h"
+#অন্তর্ভাৱ "system.h"
+#অন্তর্ভাৱ "fadvise.h"
+#অন্তর্ভাৱ "ioblksize.h"
+#অন্তর্ভাৱ "mcel.h"
+#অন্তর্ভাৱ "mbbuf.h"
+#অন্তর্ভাৱ "xdectoint.h"
 
 #define TAB_WIDTH 8
 
@@ -37,45 +37,45 @@
 #define AUTHORS proper_name ("David MacKenzie")
 
 /* If nonzero, try to break on whitespace. */
-static bool break_spaces;
+স্থির bool break_spaces;
 
 /* Mode to operate in.  */
-static enum
+স্থির গণনা
   {
-    COUNT_COLUMNS,
-    COUNT_BYTES,
-    COUNT_CHARACTERS
-  } counting_mode = COUNT_COLUMNS;
+    গুনতি_COLUMNS,
+    গুনতি_BYTES,
+    গুনতি_CHARACTERS
+  } counting_mode = গুনতি_COLUMNS;
 
 /* If nonzero, at least one of the files we read was standard input. */
-static bool have_read_stdin;
+স্থির bool have_read_stdin;
 
-static char const shortopts[] = "bcsw:0::1::2::3::4::5::6::7::8::9::";
+স্থির ৱর্ণ ধ্রুৱ shortopts[] = "bcsw:0::1::2::3::4::5::6::7::8::9::";
 
-static struct option const longopts[] =
+স্থির সংরচনা option ধ্রুৱ longopts[] =
 {
-  {"bytes", no_argument, NULL, 'b'},
-  {"characters", no_argument, NULL, 'c'},
-  {"spaces", no_argument, NULL, 's'},
-  {"width", required_argument, NULL, 'w'},
+  {"bytes", no_argument, রিক্ত, 'b'},
+  {"characters", no_argument, রিক্ত, 'c'},
+  {"spaces", no_argument, রিক্ত, 's'},
+  {"width", required_argument, রিক্ত, 'w'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {রিক্ত, 0, রিক্ত, 0}
 };
 
-void
-usage (int status)
+শূন্য
+usage (পূর্ণাঙ্ক status)
 {
-  if (status != EXIT_SUCCESS)
+  যদি (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  অন্যথা
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE]...\n\
 "),
               program_name);
       fputs (_("\
-Wrap input lines in each FILE, writing to standard output.\n\
+Wrap প্ৰবেশ সাৰিগুলি in each FILE, writing to standard output.\n\
 "), stdout);
 
       emit_stdin_note ();
@@ -83,15 +83,15 @@ Wrap input lines in each FILE, writing to standard output.\n\
 
       oputs (_("\
   -b, --bytes\n\
-         count bytes rather than columns\n\
+         গুনতি bytes rather than columns\n\
 "));
       oputs (_("\
   -c, --characters\n\
-         count characters rather than columns\n\
+         গুনতি characters rather than columns\n\
 "));
       oputs (_("\
   -s, --spaces\n\
-         break after blanks, or in words greater than WIDTH\n\
+         ভঙ্গ after blanks, or in শব্দগুলি greater than WIDTH\n\
 "));
       oputs (_("\
   -w, --width=WIDTH\n\
@@ -108,34 +108,34 @@ Wrap input lines in each FILE, writing to standard output.\n\
    printing C will move the cursor to.
    The first column is 0. */
 
-static size_t
+স্থির size_t
 adjust_column (size_t column, mcel_t g)
 {
-  if (counting_mode != COUNT_BYTES)
+  যদি (counting_mode != গুনতি_BYTES)
     {
-      if (g.ch == '\b')
+      যদি (g.ch == '\b')
         column -= !!column;
-      else if (g.ch == '\r')
+      অন্যথা যদি (g.ch == '\r')
         column = 0;
-      else if (g.ch == '\t')
+      অন্যথা যদি (g.ch == '\t')
         column += TAB_WIDTH - column % TAB_WIDTH;
-      else
+      অন্যথা
         {
-          int width = (counting_mode == COUNT_CHARACTERS
+          পূর্ণাঙ্ক width = (counting_mode == গুনতি_CHARACTERS
                        ? 1 : c32width (g.ch));
           /* Default to a width of 1 if there is an invalid character.  */
           column += width < 0 ? 1 : width;
         }
     }
-  else
+  অন্যথা
     column += g.len;
-  return column;
+  ঘূৰাই column;
 }
 
-static void
-write_out (char const *line, size_t line_len, bool newline)
+স্থির শূন্য
+write_out (ৱর্ণ ধ্রুৱ *সাৰি, size_t সাৰি_len, bool newline)
 {
-  if (fwrite (line, sizeof (char), line_len, stdout) != line_len
+  যদি (fwrite (সাৰি, পরিমাণ (ৱর্ণ), সাৰি_len, stdout) != সাৰি_len
       || (newline && putchar ('\n') < 0))
     write_error ();
 }
@@ -144,141 +144,141 @@ write_out (char const *line, size_t line_len, bool newline)
    to stdout, with maximum line length WIDTH.
    Return true if successful.  */
 
-static bool
-fold_file (char const *filename, size_t width)
+স্থির bool
+fold_file (ৱর্ণ ধ্রুৱ *filename, size_t width)
 {
   FILE *istream;
   size_t column = 0;		/* Screen column where next char will go. */
   idx_t offset_out = 0;		/* Index in 'line_out' for next char. */
-  static char line_out[IO_BUFSIZE];
-  static char line_in[IO_BUFSIZE];
+  স্থির ৱর্ণ সাৰি_out[IO_BUFSIZE];
+  স্থির ৱর্ণ সাৰি_in[IO_BUFSIZE];
   mbbuf_t mbbuf;
-  int saved_errno;
+  পূর্ণাঙ্ক saved_errno;
 
-  if (streq (filename, "-"))
+  যদি (streq (filename, "-"))
     {
       istream = stdin;
       have_read_stdin = true;
     }
-  else
+  অন্যথা
     istream = fopen (filename, "r");
 
-  if (istream == NULL)
+  যদি (istream == রিক্ত)
     {
       error (0, errno, "%s", quotef (filename));
-      return false;
+      ঘূৰাই false;
     }
 
   fadvise (istream, FADVISE_SEQUENTIAL);
-  mbbuf_init (&mbbuf, line_in, sizeof line_in, istream);
+  mbbuf_init (&mbbuf, সাৰি_in, পরিমাণ সাৰি_in, istream);
 
   mcel_t g;
-  while ((g = mbbuf_get_char (&mbbuf)).ch != MBBUF_EOF)
+  যেতিয়ালৈ ((g = mbbuf_get_char (&mbbuf)).ch != MBBUF_EOF)
     {
-      if (g.ch == '\n')
+      যদি (g.ch == '\n')
         {
-          write_out (line_out, offset_out, /*newline=*/ true);
+          write_out (সাৰি_out, offset_out, /*newline=*/ true);
           column = offset_out = 0;
-          continue;
+          অনুৱর্ত;
         }
     rescan:
       column = adjust_column (column, g);
 
-      if (column > width)
+      যদি (column > width)
         {
           /* This character would make the line too long.
              Print the line plus a newline, and make this character
              start the next line. */
-          if (break_spaces)
+          যদি (break_spaces)
             {
-              int space_length = 0;
+              পূর্ণাঙ্ক space_length = 0;
               idx_t logical_end = offset_out;
-              char *logical_p = line_out;
-              char *logical_lim = logical_p + logical_end;
+              ৱর্ণ *logical_p = সাৰি_out;
+              ৱর্ণ *logical_lim = logical_p + logical_end;
 
-              for (mcel_t g2; logical_p < logical_lim; logical_p += g2.len)
+              বাবে (mcel_t g2; logical_p < logical_lim; logical_p += g2.len)
                 {
                   g2 = mcel_scan (logical_p, logical_lim);
-                  if (c32issep (g2.ch))
+                  যদি (c32issep (g2.ch))
                     {
                       space_length = g2.len;
-                      logical_end = logical_p - line_out;
+                      logical_end = logical_p - সাৰি_out;
                     }
                 }
 
-              if (space_length)
+              যদি (space_length)
                 {
                   logical_end += space_length;
                   /* Found a blank.  Don't output the part after it. */
-                  write_out (line_out, logical_end, /*newline=*/ true);
+                  write_out (সাৰি_out, logical_end, /*newline=*/ true);
                   /* Move the remainder to the beginning of the next line.
                      The areas being copied here might overlap. */
-                  memmove (line_out, line_out + logical_end,
+                  memmove (সাৰি_out, সাৰি_out + logical_end,
                            offset_out - logical_end);
                   offset_out -= logical_end;
                   column = 0;
-                  char *printed_p = line_out;
-                  char *printed_lim = printed_p + offset_out;
-                  for (mcel_t g2; printed_p < printed_lim;
+                  ৱর্ণ *printed_p = সাৰি_out;
+                  ৱর্ণ *printed_lim = printed_p + offset_out;
+                  বাবে (mcel_t g2; printed_p < printed_lim;
                        printed_p += g2.len)
                     {
                       g2 = mcel_scan (printed_p, printed_lim);
                       column = adjust_column (column, g2);
                     }
-                  goto rescan;
+                  গচ্ছ rescan;
                 }
             }
 
-          if (offset_out == 0)
+          যদি (offset_out == 0)
             {
-              memcpy (line_out, mbbuf_char_offset (&mbbuf, g), g.len);
+              memcpy (সাৰি_out, mbbuf_char_offset (&mbbuf, g), g.len);
               offset_out += g.len;
-              continue;
+              অনুৱর্ত;
             }
 
-          write_out (line_out, offset_out, /*newline=*/ true);
+          write_out (সাৰি_out, offset_out, /*newline=*/ true);
           column = offset_out = 0;
-          goto rescan;
+          গচ্ছ rescan;
         }
 
       /* This can occur if we have read characters with a width of
          zero.  */
-      if (sizeof line_out <= offset_out + g.len)
+      যদি (পরিমাণ সাৰি_out <= offset_out + g.len)
         {
-          write_out (line_out, offset_out, /*newline=*/ false);
+          write_out (সাৰি_out, offset_out, /*newline=*/ false);
           offset_out = 0;
         }
 
-      memcpy (line_out + offset_out, mbbuf_char_offset (&mbbuf, g), g.len);
+      memcpy (সাৰি_out + offset_out, mbbuf_char_offset (&mbbuf, g), g.len);
       offset_out += g.len;
     }
 
   saved_errno = errno;
-  if (!ferror (istream))
+  যদি (!ferror (istream))
     saved_errno = 0;
 
-  if (offset_out)
-    write_out (line_out, offset_out, /*newline=*/ false);
+  যদি (offset_out)
+    write_out (সাৰি_out, offset_out, /*newline=*/ false);
 
-  if (streq (filename, "-"))
+  যদি (streq (filename, "-"))
     clearerr (istream);
-  else if (fclose (istream) != 0 && !saved_errno)
+  অন্যথা যদি (fclose (istream) != 0 && !saved_errno)
     saved_errno = errno;
 
-  if (saved_errno)
+  যদি (saved_errno)
     {
       error (0, saved_errno, "%s", quotef (filename));
-      return false;
+      ঘূৰাই false;
     }
 
-  return true;
+  ঘূৰাই true;
 }
 
-int
-main (int argc, char **argv)
+পূর্ণাঙ্ক
+main (পূর্ণাঙ্ক argc, ৱর্ণ **argv)
 {
   size_t width = 80;
-  int optc;
+  পূর্ণাঙ্ক optc;
   bool ok;
 
   initialize_main (&argc, &argv);
@@ -289,61 +289,61 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, shortopts, longopts, NULL)) != -1)
+  যেতিয়ালৈ ((optc = getopt_long (argc, argv, shortopts, longopts, রিক্ত)) != -1)
     {
-      char optargbuf[2];
+      ৱর্ণ optargbuf[2];
 
-      switch (optc)
+      ৱিকল্প (optc)
         {
-        case 'b':		/* Count bytes rather than columns. */
-          counting_mode = COUNT_BYTES;
-          break;
+        পক্ষ 'b':		/* Count bytes rather than columns. */
+          counting_mode = গুনতি_BYTES;
+          ভঙ্গ;
 
-        case 'c':               /* Count characters rather than columns. */
-          counting_mode = COUNT_CHARACTERS;
-          break;
+        পক্ষ 'c':               /* Count characters rather than columns. */
+          counting_mode = গুনতি_CHARACTERS;
+          ভঙ্গ;
 
-        case 's':		/* Break at word boundaries. */
+        পক্ষ 's':		/* Break at word boundaries. */
           break_spaces = true;
-          break;
+          ভঙ্গ;
 
-        case '0': case '1': case '2': case '3': case '4':
-        case '5': case '6': case '7': case '8': case '9':
-          if (optarg)
+        পক্ষ '0': পক্ষ '1': পক্ষ '2': পক্ষ '3': পক্ষ '4':
+        পক্ষ '5': পক্ষ '6': পক্ষ '7': পক্ষ '8': পক্ষ '9':
+          যদি (optarg)
             optarg--;
-          else
+          অন্যথা
             {
               optargbuf[0] = optc;
               optargbuf[1] = '\0';
               optarg = optargbuf;
             }
           FALLTHROUGH;
-        case 'w':		/* Line width. */
+        পক্ষ 'w':		/* Line width. */
           width = xnumtoumax (optarg, 10, 1, SIZE_MAX - TAB_WIDTH - 1, "",
                               _("invalid number of columns"), 0,
                               XTOINT_MIN_RANGE | XTOINT_MAX_RANGE);
-          break;
+          ভঙ্গ;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        স্ৱভাৱ:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (argc == optind)
+  যদি (argc == optind)
     ok = fold_file ("-", width);
-  else
+  অন্যথা
     {
       ok = true;
-      for (int i = optind; i < argc; i++)
+      বাবে (পূর্ণাঙ্ক i = optind; i < argc; i++)
         ok &= fold_file (argv[i], width);
     }
 
-  if (have_read_stdin && fclose (stdin) == EOF)
+  যদি (have_read_stdin && fclose (stdin) == EOF)
     error (EXIT_FAILURE, errno, "-");
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  ঘূৰাই ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

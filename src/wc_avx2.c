@@ -14,46 +14,46 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
+#অন্তর্ভাৱ <config.h>
 
-#include "wc.h"
-#include "system.h"
-#include "ioblksize.h"
+#অন্তর্ভাৱ "wc.h"
+#অন্তর্ভাৱ "system.h"
+#অন্তর্ভাৱ "ioblksize.h"
 
-#include <x86intrin.h>
+#অন্তর্ভাৱ <x86intrin.h>
 
 /* Read FD and return a summary.  */
-extern struct wc_lines
-wc_lines_avx2 (int fd)
+বাহ্য সংরচনা wc_সাৰিগুলি
+wc_সাৰিগুলি_avx2 (পূর্ণাঙ্ক fd)
 {
-  intmax_t lines = 0;
+  intmax_t সাৰিগুলি = 0;
   intmax_t bytes = 0;
 
   __m256i endlines = _mm256_set1_epi8 ('\n');
 
-  while (true)
+  যেতিয়ালৈ (true)
     {
-       __m256i avx_buf[IO_BUFSIZE / sizeof (__m256i)];
-      ssize_t bytes_read = read (fd, avx_buf, sizeof avx_buf);
-      if (bytes_read <= 0)
-        return (struct wc_lines) { bytes_read == 0 ? 0 : errno, lines, bytes };
+       __m256i avx_buf[IO_BUFSIZE / পরিমাণ (__m256i)];
+      ssize_t bytes_read = পঠ (fd, avx_buf, পরিমাণ avx_buf);
+      যদি (bytes_read <= 0)
+        ঘূৰাই (সংরচনা wc_সাৰিগুলি) { bytes_read == 0 ? 0 : errno, সাৰিগুলি, bytes };
 
       bytes += bytes_read;
       __m256i *datap = avx_buf;
 
-      while (bytes_read >= 32)
+      যেতিয়ালৈ (bytes_read >= 32)
         {
            __m256i to_match = _mm256_load_si256 (datap);
            __m256i matches = _mm256_cmpeq_epi8 (to_match, endlines);
-           int mask = _mm256_movemask_epi8 (matches);
-           lines += __builtin_popcount (mask);
+           পূর্ণাঙ্ক mask = _mm256_movemask_epi8 (matches);
+           সাৰিগুলি += __builtin_popcount (mask);
            datap += 1;
            bytes_read -= 32;
         }
 
       /* Finish up any left over bytes */
-      char *end = (char *) datap + bytes_read;
-      for (char *p = (char *) datap; p < end; p++)
-        lines += *p == '\n';
+      ৱর্ণ *end = (ৱর্ণ *) datap + bytes_read;
+      বাবে (ৱর্ণ *p = (ৱর্ণ *) datap; p < end; p++)
+        সাৰিগুলি += *p == '\n';
     }
 }

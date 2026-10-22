@@ -16,243 +16,243 @@
 
 /* Written by David MacKenzie <djm@gnu.ai.mit.edu> */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
-#include <signal.h>
-#include <pwd.h>
-#include <grp.h>
-#include <selinux/label.h>
-#include <spawn.h>
-#include <sys/wait.h>
+#অন্তর্ভাৱ <config.h>
+#অন্তর্ভাৱ <stdio.h>
+#অন্তর্ভাৱ <getopt.h>
+#অন্তর্ভাৱ <sys/types.h>
+#অন্তর্ভাৱ <signal.h>
+#অন্তর্ভাৱ <pwd.h>
+#অন্তর্ভাৱ <grp.h>
+#অন্তর্ভাৱ <selinux/label.h>
+#অন্তর্ভাৱ <spawn.h>
+#অন্তর্ভাৱ <sys/wait.h>
 
-#include "system.h"
-#include "backupfile.h"
-#include "cp-hash.h"
-#include "copy.h"
-#include "filenamecat.h"
-#include "full-read.h"
-#include "mkancesdirs.h"
-#include "mkdir-p.h"
-#include "modechange.h"
-#include "prog-fprintf.h"
-#include "quote.h"
-#include "savewd.h"
-#include "selinux.h"
-#include "stat-time.h"
-#include "targetdir.h"
-#include "utimens.h"
-#include "xstrtol.h"
+#অন্তর্ভাৱ "system.h"
+#অন্তর্ভাৱ "backupfile.h"
+#অন্তর্ভাৱ "cp-hash.h"
+#অন্তর্ভাৱ "copy.h"
+#অন্তর্ভাৱ "filenamecat.h"
+#অন্তর্ভাৱ "full-read.h"
+#অন্তর্ভাৱ "mkancesdirs.h"
+#অন্তর্ভাৱ "mkdir-p.h"
+#অন্তর্ভাৱ "modechange.h"
+#অন্তর্ভাৱ "prog-fprintf.h"
+#অন্তর্ভাৱ "quote.h"
+#অন্তর্ভাৱ "savewd.h"
+#অন্তর্ভাৱ "selinux.h"
+#অন্তর্ভাৱ "stat-time.h"
+#অন্তর্ভাৱ "targetdir.h"
+#অন্তর্ভাৱ "utimens.h"
+#অন্তর্ভাৱ "xstrtol.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "install"
 
 #define AUTHORS proper_name ("David MacKenzie")
 
-static int selinux_enabled = 0;
-static bool use_default_selinux_context = true;
+স্থির পূর্ণাঙ্ক selinux_enabled = 0;
+স্থির bool use_default_selinux_context = true;
 
-#if ! HAVE_ENDGRENT
-# define endgrent() ((void) 0)
+#যদি ! HAVE_ENDGRENT
+# define endgrent() ((শূন্য) 0)
 #endif
 
-#if ! HAVE_ENDPWENT
-# define endpwent() ((void) 0)
+#যদি ! HAVE_ENDPWENT
+# define endpwent() ((শূন্য) 0)
 #endif
 
 /* The user name that will own the files, or NULL to make the owner
    the current user ID. */
-static char *owner_name;
+স্থির ৱর্ণ *owner_name;
 
 /* The user ID corresponding to 'owner_name'. */
-static uid_t owner_id;
+স্থির uid_t owner_id;
 
 /* The group name that will own the files, or NULL to make the group
    the current group ID. */
-static char *group_name;
+স্থির ৱর্ণ *group_name;
 
 /* The group ID corresponding to 'group_name'. */
-static gid_t group_id;
+স্থির gid_t group_id;
 
 #define DEFAULT_MODE (S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH)
 
 /* The file mode bits to which non-directory files will be set.  The umask has
    no effect. */
-static mode_t mode = DEFAULT_MODE;
+স্থির mode_t mode = DEFAULT_MODE;
 
 /* Similar, but for directories.  */
-static mode_t dir_mode = DEFAULT_MODE;
+স্থির mode_t dir_mode = DEFAULT_MODE;
 
 /* The file mode bits that the user cares about.  This should be a
    superset of DIR_MODE and a subset of CHMOD_MODE_BITS.  This matters
    for directories, since otherwise directories may keep their S_ISUID
    or S_ISGID bits.  */
-static mode_t dir_mode_bits = CHMOD_MODE_BITS;
+স্থির mode_t dir_mode_bits = CHMOD_MODE_BITS;
 
 /* Compare files before installing (-C) */
-static bool copy_only_if_needed;
+স্থির bool copy_only_if_needed;
 
 /* If true, strip executable files after copying them. */
-static bool strip_files;
+স্থির bool strip_files;
 
 /* If true, install a directory instead of a regular file. */
-static bool dir_arg;
+স্থির bool dir_arg;
 
 /* Program used to strip binaries, "strip" is default */
-static char const *strip_program = "strip";
+স্থির ৱর্ণ ধ্রুৱ *strip_program = "strip";
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+গণনা
 {
   DEBUG_OPTION = CHAR_MAX + 1,
   PRESERVE_CONTEXT_OPTION,
   STRIP_PROGRAM_OPTION
 };
 
-static struct option const long_options[] =
+স্থির সংরচনা option ধ্রুৱ long_options[] =
 {
-  {"backup", optional_argument, NULL, 'b'},
-  {"compare", no_argument, NULL, 'C'},
+  {"backup", optional_argument, রিক্ত, 'b'},
+  {"compare", no_argument, রিক্ত, 'C'},
   {GETOPT_SELINUX_CONTEXT_OPTION_DECL},
-  {"debug", no_argument, NULL, DEBUG_OPTION},
-  {"directory", no_argument, NULL, 'd'},
-  {"group", required_argument, NULL, 'g'},
-  {"mode", required_argument, NULL, 'm'},
-  {"no-target-directory", no_argument, NULL, 'T'},
-  {"owner", required_argument, NULL, 'o'},
-  {"preserve-timestamps", no_argument, NULL, 'p'},
-  {"preserve-context", no_argument, NULL, PRESERVE_CONTEXT_OPTION},
-  {"strip", no_argument, NULL, 's'},
-  {"strip-program", required_argument, NULL, STRIP_PROGRAM_OPTION},
-  {"suffix", required_argument, NULL, 'S'},
-  {"target-directory", required_argument, NULL, 't'},
-  {"verbose", no_argument, NULL, 'v'},
+  {"debug", no_argument, রিক্ত, DEBUG_OPTION},
+  {"directory", no_argument, রিক্ত, 'd'},
+  {"group", required_argument, রিক্ত, 'g'},
+  {"mode", required_argument, রিক্ত, 'm'},
+  {"no-target-directory", no_argument, রিক্ত, 'T'},
+  {"owner", required_argument, রিক্ত, 'o'},
+  {"preserve-timestamps", no_argument, রিক্ত, 'p'},
+  {"preserve-context", no_argument, রিক্ত, PRESERVE_CONTEXT_OPTION},
+  {"strip", no_argument, রিক্ত, 's'},
+  {"strip-program", required_argument, রিক্ত, STRIP_PROGRAM_OPTION},
+  {"suffix", required_argument, রিক্ত, 'S'},
+  {"target-directory", required_argument, রিক্ত, 't'},
+  {"verbose", no_argument, রিক্ত, 'v'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {রিক্ত, 0, রিক্ত, 0}
 };
 
 /* Compare content of opened files using file descriptors A_FD and B_FD. Return
    true if files are equal. */
-static bool
-have_same_content (int a_fd, int b_fd)
+স্থির bool
+have_same_content (পূর্ণাঙ্ক a_fd, পূর্ণাঙ্ক b_fd)
 {
-  enum { CMP_BLOCK_SIZE = 4096 };
-  static char a_buff[CMP_BLOCK_SIZE];
-  static char b_buff[CMP_BLOCK_SIZE];
+  গণনা { CMP_BLOCK_SIZE = 4096 };
+  স্থির ৱর্ণ a_buff[CMP_BLOCK_SIZE];
+  স্থির ৱর্ণ b_buff[CMP_BLOCK_SIZE];
 
   idx_t size;
-  while (0 < (size = full_read (a_fd, a_buff, sizeof a_buff))) {
-    if (size != full_read (b_fd, b_buff, sizeof b_buff))
-      return false;
+  যেতিয়ালৈ (0 < (size = full_read (a_fd, a_buff, পরিমাণ a_buff))) {
+    যদি (size != full_read (b_fd, b_buff, পরিমাণ b_buff))
+      ঘূৰাই false;
 
-    if (!memeq (a_buff, b_buff, size))
-      return false;
+    যদি (!memeq (a_buff, b_buff, size))
+      ঘূৰাই false;
   }
 
-  return size == 0;
+  ঘূৰাই size == 0;
 }
 
 /* Return true for mode with non-permission bits. */
-static bool
-extra_mode (mode_t input)
+স্থির bool
+extra_mode (mode_t প্ৰবেশ)
 {
   mode_t mask = S_IRWXUGO | S_IFMT;
-  return !! (input & ~ mask);
+  ঘূৰাই !! (প্ৰবেশ & ~ mask);
 }
 
 /* Return true if copy of file SRC_NAME to file DEST_NAME aka
    DEST_DIRFD+DEST_RELNAME is necessary. */
-static bool
-need_copy (char const *src_name, char const *dest_name,
-           int dest_dirfd, char const *dest_relname,
-           const struct cp_options *x)
+স্থির bool
+need_copy (ৱর্ণ ধ্রুৱ *src_name, ৱর্ণ ধ্রুৱ *dest_name,
+           পূর্ণাঙ্ক dest_dirfd, ৱর্ণ ধ্রুৱ *dest_relname,
+           ধ্রুৱ সংরচনা cp_options *x)
 {
-  if (extra_mode (mode))
-    return true;
+  যদি (extra_mode (mode))
+    ঘূৰাই true;
 
   /* compare files using stat */
-  struct stat src_sb;
-  if (stat (src_name, &src_sb) != 0)
-    return true;
+  সংরচনা stat src_sb;
+  যদি (stat (src_name, &src_sb) != 0)
+    ঘূৰাই true;
 
-  struct stat dest_sb;
-  if (fstatat (dest_dirfd, dest_relname, &dest_sb, AT_SYMLINK_NOFOLLOW) != 0)
-    return true;
+  সংরচনা stat dest_sb;
+  যদি (fstatat (dest_dirfd, dest_relname, &dest_sb, AT_SYMLINK_NOFOLLOW) != 0)
+    ঘূৰাই true;
 
-  if (!S_ISREG (src_sb.st_mode) || !S_ISREG (dest_sb.st_mode)
+  যদি (!S_ISREG (src_sb.st_mode) || !S_ISREG (dest_sb.st_mode)
       || extra_mode (src_sb.st_mode) || extra_mode (dest_sb.st_mode))
-    return true;
+    ঘূৰাই true;
 
-  if (src_sb.st_size != dest_sb.st_size
+  যদি (src_sb.st_size != dest_sb.st_size
       || (dest_sb.st_mode & CHMOD_MODE_BITS) != mode)
-    return true;
+    ঘূৰাই true;
 
-  if (owner_id == (uid_t) -1)
+  যদি (owner_id == (uid_t) -1)
     {
       errno = 0;
       uid_t ruid = getuid ();
-      if ((ruid == (uid_t) -1 && errno) || dest_sb.st_uid != ruid)
-        return true;
+      যদি ((ruid == (uid_t) -1 && errno) || dest_sb.st_uid != ruid)
+        ঘূৰাই true;
     }
-  else if (dest_sb.st_uid != owner_id)
-    return true;
+  অন্যথা যদি (dest_sb.st_uid != owner_id)
+    ঘূৰাই true;
 
-  if (group_id == (uid_t) -1)
+  যদি (group_id == (uid_t) -1)
     {
       errno = 0;
       gid_t rgid = getgid ();
-      if ((rgid == (uid_t) -1 && errno) || dest_sb.st_gid != rgid)
-        return true;
+      যদি ((rgid == (uid_t) -1 && errno) || dest_sb.st_gid != rgid)
+        ঘূৰাই true;
     }
-  else if (dest_sb.st_gid != group_id)
-    return true;
+  অন্যথা যদি (dest_sb.st_gid != group_id)
+    ঘূৰাই true;
 
   /* compare SELinux context if preserving */
-  if (selinux_enabled && x->preserve_security_context)
+  যদি (selinux_enabled && x->preserve_security_context)
     {
-      char *file_scontext_raw = NULL;
-      if (getfilecon_raw (src_name, &file_scontext_raw) == -1)
-        return true;
+      ৱর্ণ *file_scontext_raw = রিক্ত;
+      যদি (getfilecon_raw (src_name, &file_scontext_raw) == -1)
+        ঘূৰাই true;
 
-      char *to_scontext_raw = NULL;
-      if (getfilecon_raw (dest_name, &to_scontext_raw) == -1)
+      ৱর্ণ *to_scontext_raw = রিক্ত;
+      যদি (getfilecon_raw (dest_name, &to_scontext_raw) == -1)
         {
           freecon (file_scontext_raw);
-          return true;
+          ঘূৰাই true;
         }
 
       bool scontext_match = streq (file_scontext_raw, to_scontext_raw);
 
       freecon (file_scontext_raw);
       freecon (to_scontext_raw);
-      if (!scontext_match)
-        return true;
+      যদি (!scontext_match)
+        ঘূৰাই true;
     }
 
   /* compare files content */
-  int src_fd = open (src_name, O_RDONLY | O_BINARY);
-  if (src_fd < 0)
-    return true;
+  পূর্ণাঙ্ক src_fd = open (src_name, O_RDONLY | O_দ্বিমিক);
+  যদি (src_fd < 0)
+    ঘূৰাই true;
 
-  int dest_fd = openat (dest_dirfd, dest_relname, O_RDONLY | O_BINARY);
-  if (dest_fd < 0)
+  পূর্ণাঙ্ক dest_fd = openat (dest_dirfd, dest_relname, O_RDONLY | O_দ্বিমিক);
+  যদি (dest_fd < 0)
     {
       close (src_fd);
-      return true;
+      ঘূৰাই true;
     }
 
   bool content_match = have_same_content (src_fd, dest_fd);
 
   close (src_fd);
   close (dest_fd);
-  return !content_match;
+  ঘূৰাই !content_match;
 }
 
-static void
-cp_option_init (struct cp_options *x)
+স্থির শূন্য
+cp_option_init (সংরচনা cp_options *x)
 {
   cp_options_default (x);
   x->copy_as_regular = true;
@@ -290,59 +290,59 @@ cp_option_init (struct cp_options *x)
   x->update = UPDATE_ALL;
   x->require_preserve_context = false;  /* Not used by install currently.  */
   x->preserve_security_context = false; /* Whether to copy context from src.  */
-  x->set_security_context = NULL; /* Whether to set sys default context.  */
+  x->set_security_context = রিক্ত; /* Whether to set sys default context.  */
   x->preserve_xattr = false;
   x->verbose = false;
-  x->dest_info = NULL;
-  x->src_info = NULL;
+  x->dest_info = রিক্ত;
+  x->src_info = রিক্ত;
 }
 
-static struct selabel_handle *
-get_labeling_handle (void)
+স্থির সংরচনা selabel_handle *
+get_labeling_handle (শূন্য)
 {
-  static bool initialized;
-  static struct selabel_handle *hnd;
-  if (!initialized)
+  স্থির bool initialized;
+  স্থির সংরচনা selabel_handle *hnd;
+  যদি (!initialized)
     {
       initialized = true;
-      hnd = selabel_open (SELABEL_CTX_FILE, NULL, 0);
-      if (!hnd)
+      hnd = selabel_open (SELABEL_CTX_FILE, রিক্ত, 0);
+      যদি (!hnd)
         error (0, errno, _("warning: security labeling handle failed"));
     }
-  return hnd;
+  ঘূৰাই hnd;
 }
 
 /* Modify file context to match the specified policy.
    If an error occurs the file will remain with the default directory
    context.  Note this sets the context to that returned by selabel_lookup
    and thus discards MLS levels and user identity of the FILE.  */
-static void
-setdefaultfilecon (char const *file)
+স্থির শূন্য
+setdefaultfilecon (ৱর্ণ ধ্রুৱ *file)
 {
-  if (selinux_enabled != 1)
+  যদি (selinux_enabled != 1)
     {
       /* Indicate no context found. */
-      return;
+      ঘূৰাই;
     }
 
-  struct stat st;
-  if (lstat (file, &st) != 0)
-    return;
+  সংরচনা stat st;
+  যদি (lstat (file, &st) != 0)
+    ঘূৰাই;
 
-  struct selabel_handle *hnd = get_labeling_handle ();
-  if (!hnd)
-    return;
+  সংরচনা selabel_handle *hnd = get_labeling_handle ();
+  যদি (!hnd)
+    ঘূৰাই;
 
-  char *scontext_raw = NULL;
-  if (selabel_lookup_raw (hnd, &scontext_raw, file, st.st_mode) != 0)
+  ৱর্ণ *scontext_raw = রিক্ত;
+  যদি (selabel_lookup_raw (hnd, &scontext_raw, file, st.st_mode) != 0)
     {
-      if (errno != ENOENT && ! ignorable_ctx_err (errno))
+      যদি (errno != ENOENT && ! ignorable_ctx_err (errno))
         error (0, errno, _("warning: %s: context lookup failed"),
                quotef (file));
-      return;
+      ঘূৰাই;
     }
 
-  if (lsetfilecon_raw (file, scontext_raw) < 0 && errno != ENOTSUP)
+  যদি (lsetfilecon_raw (file, scontext_raw) < 0 && errno != ENOTSUP)
     error (0, errno,
            _("warning: %s: failed to change context to %s"),
            quotef_n (0, file), quote_n (1, scontext_raw));
@@ -351,40 +351,40 @@ setdefaultfilecon (char const *file)
 }
 
 /* Report that directory DIR was made, if OPTIONS requests this.  */
-static void
-announce_mkdir (char const *dir, void *options)
+স্থির শূন্য
+announce_mkdir (ৱর্ণ ধ্রুৱ *dir, শূন্য *options)
 {
-  struct cp_options const *x = options;
-  if (x->verbose)
+  সংরচনা cp_options ধ্রুৱ *x = options;
+  যদি (x->verbose)
     prog_fprintf (stdout, _("creating directory %s"), quoteaf (dir));
 }
 
 /* Make ancestor directory DIR, whose last file name component is
    COMPONENT, with options OPTIONS.  Assume the working directory is
    COMPONENT's parent.  */
-static int
-make_ancestor (char const *dir, char const *component, void *options)
+স্থির পূর্ণাঙ্ক
+make_ancestor (ৱর্ণ ধ্রুৱ *dir, ৱর্ণ ধ্রুৱ *component, শূন্য *options)
 {
-  struct cp_options const *x = options;
-  if (x->set_security_context
+  সংরচনা cp_options ধ্রুৱ *x = options;
+  যদি (x->set_security_context
       && defaultcon (x->set_security_context, component, S_IFDIR) < 0
       && ! ignorable_ctx_err (errno))
     error (0, errno, _("failed to set default creation context for %s"),
            quoteaf (dir));
 
-  int r = mkdir (component, DEFAULT_MODE);
-  if (r == 0)
+  পূর্ণাঙ্ক r = mkdir (component, DEFAULT_MODE);
+  যদি (r == 0)
     announce_mkdir (dir, options);
-  return r;
+  ঘূৰাই r;
 }
 
 /* Process a command-line file name, for the -d option.  */
-static int
-process_dir (char *dir, struct savewd *wd, void *options)
+স্থির পূর্ণাঙ্ক
+process_dir (ৱর্ণ *dir, সংরচনা savewd *wd, শূন্য *options)
 {
-  struct cp_options const *x = options;
+  সংরচনা cp_options ধ্রুৱ *x = options;
 
-  int ret = (make_dir_parents (dir, wd, make_ancestor, options,
+  পূর্ণাঙ্ক ret = (make_dir_parents (dir, wd, make_ancestor, options,
                                dir_mode, announce_mkdir,
                                dir_mode_bits, owner_id, group_id, false)
           ? EXIT_SUCCESS
@@ -395,29 +395,29 @@ process_dir (char *dir, struct savewd *wd, void *options)
      final component of DIR is created.  So for now, create the
      final component with the context from previous component
      and here we set the context for the final component. */
-  if (ret == EXIT_SUCCESS && x->set_security_context)
+  যদি (ret == EXIT_SUCCESS && x->set_security_context)
     {
-      if (! restorecon (x->set_security_context, last_component (dir), false)
+      যদি (! restorecon (x->set_security_context, last_component (dir), false)
           && ! ignorable_ctx_err (errno))
         error (0, errno, _("failed to restore context for %s"),
                quoteaf (dir));
     }
 
-  return ret;
+  ঘূৰাই ret;
 }
 
-enum copy_status { COPY_FAILED, COPY_OK, COPY_SKIPPED };
+গণনা copy_status { COPY_FAILED, COPY_OK, COPY_SKIPPED };
 
 /* Copy file FROM onto file TO aka TO_DIRFD+TO_RELNAME, creating TO if
    necessary.  Return COPY_OK if successful or COPY_SKIPPED if the copy
    was skipped.  */
 
-static enum copy_status
-copy_file (char const *from, char const *to,
-           int to_dirfd, char const *to_relname, const struct cp_options *x)
+স্থির গণনা copy_status
+copy_file (ৱর্ণ ধ্রুৱ *from, ৱর্ণ ধ্রুৱ *to,
+           পূর্ণাঙ্ক to_dirfd, ৱর্ণ ধ্রুৱ *to_relname, ধ্রুৱ সংরচনা cp_options *x)
 {
-  if (copy_only_if_needed && !need_copy (from, to, to_dirfd, to_relname, x))
-    return COPY_SKIPPED;
+  যদি (copy_only_if_needed && !need_copy (from, to, to_dirfd, to_relname, x))
+    ঘূৰাই COPY_SKIPPED;
 
   /* Allow installing from non-regular files like /dev/null.
      Charles Karney reported that some Sun version of install allows that
@@ -426,15 +426,15 @@ copy_file (char const *from, char const *to,
      is a directory.  */
 
   bool copy_into_self;
-  return (copy (from, to, to_dirfd, to_relname, 0, x, &copy_into_self, NULL)
+  ঘূৰাই (copy (from, to, to_dirfd, to_relname, 0, x, &copy_into_self, রিক্ত)
           ? COPY_OK : COPY_FAILED);
 }
 
 /* Set the attributes of file or directory NAME aka DIRFD+RELNAME.
    Return true if successful.  */
 
-static bool
-change_attributes (char const *name, int dirfd, char const *relname)
+স্থির bool
+change_attributes (ৱর্ণ ধ্রুৱ *name, পূর্ণাঙ্ক dirfd, ৱর্ণ ধ্রুৱ *relname)
 {
   bool ok = false;
   /* chown must precede chmod because on some systems,
@@ -449,36 +449,36 @@ change_attributes (char const *name, int dirfd, char const *relname)
      If the file doesn't end up with the group they asked for, they'll
      want to know.  */
 
-  if (! (owner_id == (uid_t) -1 && group_id == (gid_t) -1)
+  যদি (! (owner_id == (uid_t) -1 && group_id == (gid_t) -1)
       && lchownat (dirfd, relname, owner_id, group_id) != 0)
     error (0, errno, _("cannot change ownership of %s"), quoteaf (name));
-  else if (chmodat (dirfd, relname, mode) != 0)
+  অন্যথা যদি (chmodat (dirfd, relname, mode) != 0)
     error (0, errno, _("cannot change permissions of %s"), quoteaf (name));
-  else
+  অন্যথা
     ok = true;
 
-  if (use_default_selinux_context)
+  যদি (use_default_selinux_context)
     setdefaultfilecon (name);
 
-  return ok;
+  ঘূৰাই ok;
 }
 
 /* Set the timestamps of file DEST aka DIRFD+RELNAME to match those of SRC_SB.
    Return true if successful.  */
 
-static bool
-change_timestamps (struct stat const *src_sb, char const *dest,
-                   int dirfd, char const *relname)
+স্থির bool
+change_timestamps (সংরচনা stat ধ্রুৱ *src_sb, ৱর্ণ ধ্রুৱ *dest,
+                   পূর্ণাঙ্ক dirfd, ৱর্ণ ধ্রুৱ *relname)
 {
-  struct timespec timespec[2] = { get_stat_atime (src_sb),
+  সংরচনা timespec timespec[2] = { get_stat_atime (src_sb),
                                   get_stat_mtime (src_sb) };
 
-  if (utimensat (dirfd, relname, timespec, 0))
+  যদি (utimensat (dirfd, relname, timespec, 0))
     {
       error (0, errno, _("cannot set timestamps for %s"), quoteaf (dest));
-      return false;
+      ঘূৰাই false;
     }
-  return true;
+  ঘূৰাই true;
 }
 
 /* Strip the symbol table from the file NAME.
@@ -487,35 +487,35 @@ change_timestamps (struct stat const *src_sb, char const *dest,
    magic numbers vary so much from system to system that making
    it portable would be very difficult.  Not worth the effort. */
 
-static bool
-strip (char const *name)
+স্থির bool
+strip (ৱর্ণ ধ্রুৱ *name)
 {
   posix_spawnattr_t attr;
-  posix_spawnattr_t *attrp = NULL;
+  posix_spawnattr_t *attrp = রিক্ত;
 
   /* Try to use vfork for systems where it matters.  */
-  if (posix_spawnattr_init (&attr) == 0)
+  যদি (posix_spawnattr_init (&attr) == 0)
     {
-      if (posix_spawnattr_setflags (&attr, POSIX_SPAWN_USEVFORK) == 0)
+      যদি (posix_spawnattr_setflags (&attr, POSIX_SPAWN_USEVFORK) == 0)
         attrp = &attr;
-      else
+      অন্যথা
         posix_spawnattr_destroy (&attr);
     }
 
   /* Construct the arguments to 'strip'.  */
-  char *concat_name = NULL;
-  char const *safe_name = name;
-  if (name && *name == '-')
-    safe_name = concat_name = file_name_concat (".", name, NULL);
-  char const *const argv[] = { strip_program, safe_name, NULL };
+  ৱর্ণ *concat_name = রিক্ত;
+  ৱর্ণ ধ্রুৱ *safe_name = name;
+  যদি (name && *name == '-')
+    safe_name = concat_name = file_name_concat (".", name, রিক্ত);
+  ৱর্ণ ধ্রুৱ *ধ্রুৱ argv[] = { strip_program, safe_name, রিক্ত };
 
   /* Run 'strip'.  */
   pid_t pid;
-  int result = posix_spawnp (&pid, strip_program, NULL, attrp,
-                             (char * const *) argv, environ);
+  পূর্ণাঙ্ক result = posix_spawnp (&pid, strip_program, রিক্ত, attrp,
+                             (ৱর্ণ * ধ্রুৱ *) argv, environ);
 
   bool ok = false;
-  if (result != 0)
+  যদি (result != 0)
     {
       error (0, result,
              streq (strip_program, "strip")
@@ -523,73 +523,73 @@ strip (char const *name)
                : _("cannot run strip program %s"),
              quoteaf (strip_program));
     }
-  else
+  অন্যথা
     {
       /* Wait for 'strip' to complete, and emit a warning message on failure  */
-      int status;
-      if (waitpid (pid, &status, 0) < 0)
+      পূর্ণাঙ্ক status;
+      যদি (waitpid (pid, &status, 0) < 0)
         error (0, errno, _("waiting for strip"));
-      else if (! WIFEXITED (status) || WEXITSTATUS (status))
+      অন্যথা যদি (! WIFEXITED (status) || WEXITSTATUS (status))
         error (0, 0, _("strip process terminated abnormally"));
-      else
+      অন্যথা
         ok = true;
     }
 
-  free (concat_name);
-  if (attrp)
+  মুক্ত (concat_name);
+  যদি (attrp)
     posix_spawnattr_destroy (attrp);
 
-  return ok;
+  ঘূৰাই ok;
 }
 
 /* Initialize the user and group ownership of the files to install. */
 
-static void
-get_ids (void)
+স্থির শূন্য
+get_ids (শূন্য)
 {
-  if (owner_name)
+  যদি (owner_name)
     {
-      struct passwd *pw = getpwnam (owner_name);
-      if (pw == NULL)
+      সংরচনা passwd *pw = getpwnam (owner_name);
+      যদি (pw == রিক্ত)
         {
           uintmax_t tmp;
-          if (xstrtoumax (owner_name, NULL, 0, &tmp, "") != LONGINT_OK
+          যদি (xstrtoumax (owner_name, রিক্ত, 0, &tmp, "") != LONGINT_OK
               || ckd_add (&owner_id, tmp, 0))
             error (EXIT_FAILURE, 0, _("invalid user %s"),
                    quoteaf (owner_name));
         }
-      else
+      অন্যথা
         owner_id = pw->pw_uid;
       endpwent ();
     }
-  else
+  অন্যথা
     owner_id = (uid_t) -1;
 
-  if (group_name)
+  যদি (group_name)
     {
-      struct group *gr = getgrnam (group_name);
-      if (gr == NULL)
+      সংরচনা group *gr = getgrnam (group_name);
+      যদি (gr == রিক্ত)
         {
           uintmax_t tmp;
-          if (xstrtoumax (group_name, NULL, 0, &tmp, "") != LONGINT_OK
+          যদি (xstrtoumax (group_name, রিক্ত, 0, &tmp, "") != LONGINT_OK
               || ckd_add (&group_id, tmp, 0))
             error (EXIT_FAILURE, 0, _("invalid group %s"),
                    quoteaf (group_name));
         }
-      else
+      অন্যথা
         group_id = gr->gr_gid;
       endgrent ();
     }
-  else
+  অন্যথা
     group_id = (gid_t) -1;
 }
 
-void
-usage (int status)
+শূন্য
+usage (পূর্ণাঙ্ক status)
 {
-  if (status != EXIT_SUCCESS)
+  যদি (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  অন্যথা
     {
       printf (_("\
 Usage: %s [OPTION]... [-T] SOURCE DEST\n\
@@ -606,7 +606,7 @@ package on a GNU/Linux system, you should instead be using a package manager\n\
 like yum(1) or apt-get(1).\n\
 \n\
 In the first three forms, copy SOURCE to DEST or multiple SOURCE(s) to\n\
-the existing DIRECTORY, while setting permission modes and owner/group.\n\
+the existing DIRECTORY, যেতিয়ালৈ setting permission modes and owner/group.\n\
 In the 4th form, create all components of the given DIRECTORY(ies).\n\
 "), stdout);
 
@@ -627,8 +627,8 @@ In the 4th form, create all components of the given DIRECTORY(ies).\n\
       oputs (_("\
   -C, --compare\n\
          compare content of source and destination files,\n\
-         and if no change to content, ownership, and permissions,\n\
-         do not modify the destination at all\n\
+         and যদি no change to content, ownership, and permissions,\n\
+         কৰা not modify the destination at all\n\
 "));
       oputs (_("\
   -d, --directory\n\
@@ -664,7 +664,7 @@ In the 4th form, create all components of the given DIRECTORY(ies).\n\
 "));
       oputs (_("\
   -s, --strip\n\
-         strip symbol tables\n\
+         strip প্ৰতীক tables\n\
 "));
       oputs (_("\
       --strip-program=PROGRAM\n\
@@ -693,11 +693,11 @@ In the 4th form, create all components of the given DIRECTORY(ies).\n\
       oputs (_("\
   -Z\n\
          set SELinux security context of destination file\n\
-         and each created directory, to default type\n\
+         and each created directory, to স্ৱভাৱ type\n\
 "));
       oputs (_("\
       --context[=CTX]\n\
-         like -Z, or if CTX is specified then set the\n\
+         like -Z, or যদি CTX is specified then set the\n\
          SELinux or SMACK security context to CTX\n\
 "));
 
@@ -713,32 +713,32 @@ In the 4th form, create all components of the given DIRECTORY(ies).\n\
    appropriate attributes.  X gives the command options.
    Return true if successful.  */
 
-static bool
-install_file_in_file (char const *from, char const *to,
-                      int to_dirfd, char const *to_relname,
-                      const struct cp_options *x)
+স্থির bool
+install_file_in_file (ৱর্ণ ধ্রুৱ *from, ৱর্ণ ধ্রুৱ *to,
+                      পূর্ণাঙ্ক to_dirfd, ৱর্ণ ধ্রুৱ *to_relname,
+                      ধ্রুৱ সংরচনা cp_options *x)
 {
-  struct stat from_sb;
-  if (x->preserve_timestamps && stat (from, &from_sb) != 0)
+  সংরচনা stat from_sb;
+  যদি (x->preserve_timestamps && stat (from, &from_sb) != 0)
     {
       error (0, errno, _("cannot stat %s"), quoteaf (from));
-      return false;
+      ঘূৰাই false;
     }
-  enum copy_status copy_status = copy_file (from, to, to_dirfd, to_relname, x);
-  if (copy_status == COPY_FAILED)
-    return false;
-  if (copy_status == COPY_OK && strip_files && ! strip (to))
+  গণনা copy_status copy_status = copy_file (from, to, to_dirfd, to_relname, x);
+  যদি (copy_status == COPY_FAILED)
+    ঘূৰাই false;
+  যদি (copy_status == COPY_OK && strip_files && ! strip (to))
     {
-      if (unlinkat (to_dirfd, to_relname, 0) != 0)  /* Cleanup.  */
+      যদি (unlinkat (to_dirfd, to_relname, 0) != 0)  /* Cleanup.  */
         error (EXIT_FAILURE, errno, _("cannot unlink %s"), quoteaf (to));
-      return false;
+      ঘূৰাই false;
     }
-  if (x->preserve_timestamps && (copy_status == COPY_SKIPPED || strip_files
+  যদি (x->preserve_timestamps && (copy_status == COPY_SKIPPED || strip_files
                                  || ! S_ISREG (from_sb.st_mode))
       && ! change_timestamps (&from_sb, to, to_dirfd, to_relname))
-    return false;
+    ঘূৰাই false;
 
-  return copy_status == COPY_SKIPPED
+  ঘূৰাই copy_status == COPY_SKIPPED
          || change_attributes (to, to_dirfd, to_relname);
 }
 
@@ -746,51 +746,51 @@ install_file_in_file (char const *from, char const *to,
    while maintaining the current Working Directory.
    Return true if successful.  */
 
-static bool
-mkancesdirs_safe_wd (char const *from, char *to, struct cp_options *x,
+স্থির bool
+mkancesdirs_safe_wd (ৱর্ণ ধ্রুৱ *from, ৱর্ণ *to, সংরচনা cp_options *x,
                      bool save_always)
 {
   bool save_working_directory =
     save_always
     || ! (IS_ABSOLUTE_FILE_NAME (from) && IS_ABSOLUTE_FILE_NAME (to));
 
-  struct savewd wd;
+  সংরচনা savewd wd;
   savewd_init (&wd);
-  if (! save_working_directory)
+  যদি (! save_working_directory)
     savewd_finish (&wd);
 
-  int status = EXIT_SUCCESS;
-  if (mkancesdirs (to, &wd, make_ancestor, x) == -1)
+  পূর্ণাঙ্ক status = EXIT_SUCCESS;
+  যদি (mkancesdirs (to, &wd, make_ancestor, x) == -1)
     {
       error (0, errno, _("cannot create directory %s"), quoteaf (to));
       status = EXIT_FAILURE;
     }
 
-  if (save_working_directory)
+  যদি (save_working_directory)
     {
-      int restore_result = savewd_restore (&wd, status);
-      int restore_errno = errno;
+      পূর্ণাঙ্ক restore_result = savewd_restore (&wd, status);
+      পূর্ণাঙ্ক restore_errno = errno;
       savewd_finish (&wd);
-      if (EXIT_SUCCESS < restore_result)
-        return false;
-      if (restore_result < 0 && status == EXIT_SUCCESS)
+      যদি (EXIT_SUCCESS < restore_result)
+        ঘূৰাই false;
+      যদি (restore_result < 0 && status == EXIT_SUCCESS)
         {
           error (0, restore_errno, _("cannot create directory %s"),
                  quoteaf (to));
-          return false;
+          ঘূৰাই false;
         }
     }
-  return status == EXIT_SUCCESS;
+  ঘূৰাই status == EXIT_SUCCESS;
 }
 
 /* Copy file FROM onto file TO, creating any missing parent directories of TO.
    Return true if successful.  */
 
-static bool
-install_file_in_file_parents (char const *from, char *to,
-                              const struct cp_options *x)
+স্থির bool
+install_file_in_file_parents (ৱর্ণ ধ্রুৱ *from, ৱর্ণ *to,
+                              ধ্রুৱ সংরচনা cp_options *x)
 {
-  return (mkancesdirs_safe_wd (from, to, (struct cp_options *)x, false)
+  ঘূৰাই (mkancesdirs_safe_wd (from, to, (সংরচনা cp_options *)x, false)
           && install_file_in_file (from, to, AT_FDCWD, to, x));
 }
 
@@ -798,34 +798,34 @@ install_file_in_file_parents (char const *from, char *to,
    and give the copy the appropriate attributes.
    Return true if successful.  */
 
-static bool
-install_file_in_dir (char const *from, char const *to_dir,
-                     const struct cp_options *x, bool mkdir_and_install,
-                     int *target_dirfd)
+স্থির bool
+install_file_in_dir (ৱর্ণ ধ্রুৱ *from, ৱর্ণ ধ্রুৱ *to_dir,
+                     ধ্রুৱ সংরচনা cp_options *x, bool mkdir_and_install,
+                     পূর্ণাঙ্ক *target_dirfd)
 {
-  char const *from_base = last_component (from);
-  char *to_relname;
-  char *to = file_name_concat (to_dir, from_base, &to_relname);
+  ৱর্ণ ধ্রুৱ *from_base = last_component (from);
+  ৱর্ণ *to_relname;
+  ৱর্ণ *to = file_name_concat (to_dir, from_base, &to_relname);
   bool ret = true;
 
-  if (!target_dirfd_valid (*target_dirfd)
+  যদি (!target_dirfd_valid (*target_dirfd)
       && (ret = mkdir_and_install)
-      && (ret = mkancesdirs_safe_wd (from, to, (struct cp_options *) x, true)))
+      && (ret = mkancesdirs_safe_wd (from, to, (সংরচনা cp_options *) x, true)))
     {
-      int fd = open (to_dir, O_PATHSEARCH | O_DIRECTORY);
-      if (fd < 0)
+      পূর্ণাঙ্ক fd = open (to_dir, O_PATHSEARCH | O_DIRECTORY);
+      যদি (fd < 0)
         {
           error (0, errno, _("cannot open %s"), quoteaf (to));
           ret = false;
         }
-      else
+      অন্যথা
         *target_dirfd = fd;
     }
 
-  if (ret)
+  যদি (ret)
     {
-      int to_dirfd = *target_dirfd;
-      if (!target_dirfd_valid (to_dirfd))
+      পূর্ণাঙ্ক to_dirfd = *target_dirfd;
+      যদি (!target_dirfd_valid (to_dirfd))
         {
           to_dirfd = AT_FDCWD;
           to_relname = to;
@@ -833,23 +833,23 @@ install_file_in_dir (char const *from, char const *to_dir,
       ret = install_file_in_file (from, to, to_dirfd, to_relname, x);
     }
 
-  free (to);
-  return ret;
+  মুক্ত (to);
+  ঘূৰাই ret;
 }
 
-int
-main (int argc, char **argv)
+পূর্ণাঙ্ক
+main (পূর্ণাঙ্ক argc, ৱর্ণ **argv)
 {
-  char const *specified_mode = NULL;
+  ৱর্ণ ধ্রুৱ *specified_mode = রিক্ত;
   bool make_backups = false;
-  char const *backup_suffix = NULL;
-  char *version_control_string = NULL;
+  ৱর্ণ ধ্রুৱ *backup_suffix = রিক্ত;
+  ৱর্ণ *version_control_string = রিক্ত;
   bool mkdir_and_install = false;
-  struct cp_options x;
-  char const *target_directory = NULL;
+  সংরচনা cp_options x;
+  ৱর্ণ ধ্রুৱ *target_directory = রিক্ত;
   bool no_target_directory = false;
   bool strip_program_specified = false;
-  char const *scontext = NULL;
+  ৱর্ণ ধ্রুৱ *scontext = রিক্ত;
   /* set iff kernel has extra selinux system calls */
   selinux_enabled = (0 < is_selinux_enabled ());
 
@@ -865,84 +865,84 @@ main (int argc, char **argv)
 
   umask (0);
 
-  int optc;
-  while ((optc = getopt_long (argc, argv, "bcCsDdg:m:o:pt:TvS:Z", long_options,
-                              NULL))
+  পূর্ণাঙ্ক optc;
+  যেতিয়ালৈ ((optc = getopt_long (argc, argv, "bcCsDdg:m:o:pt:TvS:Z", long_options,
+                              রিক্ত))
          != -1)
     {
-      switch (optc)
+      ৱিকল্প (optc)
         {
-        case 'b':
+        পক্ষ 'b':
           make_backups = true;
-          if (optarg)
+          যদি (optarg)
             version_control_string = optarg;
-          break;
-        case 'c':
-          break;
-        case 'C':
+          ভঙ্গ;
+        পক্ষ 'c':
+          ভঙ্গ;
+        পক্ষ 'C':
           copy_only_if_needed = true;
-          break;
-        case 's':
+          ভঙ্গ;
+        পক্ষ 's':
           strip_files = true;
 #ifdef SIGCHLD
           /* System V fork+wait does not work if SIGCHLD is ignored.  */
-          signal (SIGCHLD, SIG_DFL);
+          সঙ্কেত (SIGCHLD, SIG_DFL);
 #endif
-          break;
-        case DEBUG_OPTION:
+          ভঙ্গ;
+        পক্ষ DEBUG_OPTION:
           x.debug = x.verbose = true;
-          break;
-        case STRIP_PROGRAM_OPTION:
+          ভঙ্গ;
+        পক্ষ STRIP_PROGRAM_OPTION:
           strip_program = xstrdup (optarg);
           strip_program_specified = true;
-          break;
-        case 'd':
+          ভঙ্গ;
+        পক্ষ 'd':
           dir_arg = true;
-          break;
-        case 'D':
+          ভঙ্গ;
+        পক্ষ 'D':
           mkdir_and_install = true;
-          break;
-        case 'v':
+          ভঙ্গ;
+        পক্ষ 'v':
           x.verbose = true;
-          break;
-        case 'g':
+          ভঙ্গ;
+        পক্ষ 'g':
           group_name = optarg;
-          break;
-        case 'm':
+          ভঙ্গ;
+        পক্ষ 'm':
           specified_mode = optarg;
-          break;
-        case 'o':
+          ভঙ্গ;
+        পক্ষ 'o':
           owner_name = optarg;
-          break;
-        case 'p':
+          ভঙ্গ;
+        পক্ষ 'p':
           x.preserve_timestamps = true;
-          break;
-        case 'S':
+          ভঙ্গ;
+        পক্ষ 'S':
           make_backups = true;
           backup_suffix = optarg;
-          break;
-        case 't':
-          if (target_directory)
+          ভঙ্গ;
+        পক্ষ 't':
+          যদি (target_directory)
             error (EXIT_FAILURE, 0,
                    _("multiple target directories specified"));
           target_directory = optarg;
-          break;
-        case 'T':
+          ভঙ্গ;
+        পক্ষ 'T':
           no_target_directory = true;
-          break;
+          ভঙ্গ;
 
-        case PRESERVE_CONTEXT_OPTION:
-          if (! selinux_enabled)
+        পক্ষ PRESERVE_CONTEXT_OPTION:
+          যদি (! selinux_enabled)
             {
               error (0, 0, _("WARNING: ignoring --preserve-context; "
                              "this kernel is not SELinux-enabled"));
-              break;
+              ভঙ্গ;
             }
           x.preserve_security_context = true;
           use_default_selinux_context = false;
-          break;
-        case 'Z':
-          if (selinux_enabled)
+          ভঙ্গ;
+        পক্ষ 'Z':
+          যদি (selinux_enabled)
             {
               /* Disable use of the install(1) specific setdefaultfilecon().
                  Note setdefaultfilecon() is different from the newer and more
@@ -952,30 +952,30 @@ main (int argc, char **argv)
                  TODO: consider removing setdefaultfilecon() in future.  */
               use_default_selinux_context = false;
 
-              if (optarg)
+              যদি (optarg)
                 scontext = optarg;
-              else
+              অন্যথা
                 x.set_security_context = get_labeling_handle ();
             }
-          else if (optarg)
+          অন্যথা যদি (optarg)
             {
               error (0, 0,
                      _("warning: ignoring --context; "
                        "it requires an SELinux-enabled kernel"));
             }
-          break;
+          ভঙ্গ;
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        স্ৱভাৱ:
           usage (EXIT_FAILURE);
         }
     }
 
   /* Check for invalid combinations of arguments. */
-  if (dir_arg && strip_files)
+  যদি (dir_arg && strip_files)
     error (EXIT_FAILURE, 0,
            _("the strip option may not be used when installing a directory"));
-  if (dir_arg && target_directory)
+  যদি (dir_arg && target_directory)
     error (EXIT_FAILURE, 0,
            _("target directory not allowed when installing a directory"));
 
@@ -985,113 +985,113 @@ main (int argc, char **argv)
                    : no_backups);
   set_simple_backup_suffix (backup_suffix);
 
-  if (x.preserve_security_context && (x.set_security_context || scontext))
+  যদি (x.preserve_security_context && (x.set_security_context || scontext))
     error (EXIT_FAILURE, 0,
            _("cannot set target context and preserve it"));
 
-  if (scontext && setfscreatecon (scontext) < 0)
+  যদি (scontext && setfscreatecon (scontext) < 0)
     error (EXIT_FAILURE, errno,
            _("failed to set default file creation context to %s"),
          quote (scontext));
 
-  int n_files = argc - optind;
-  char **file = argv + optind;
+  পূর্ণাঙ্ক n_files = argc - optind;
+  ৱর্ণ **file = argv + optind;
 
-  if (n_files <= ! (dir_arg || target_directory))
+  যদি (n_files <= ! (dir_arg || target_directory))
     {
-      if (n_files <= 0)
+      যদি (n_files <= 0)
         error (0, 0, _("missing file operand"));
-      else
+      অন্যথা
         error (0, 0, _("missing destination file operand after %s"),
                quoteaf (file[0]));
       usage (EXIT_FAILURE);
     }
 
-  struct stat sb;
-  int target_dirfd = AT_FDCWD;
-  if (no_target_directory)
+  সংরচনা stat sb;
+  পূর্ণাঙ্ক target_dirfd = AT_FDCWD;
+  যদি (no_target_directory)
     {
-      if (target_directory)
+      যদি (target_directory)
         error (EXIT_FAILURE, 0,
                _("cannot combine --target-directory (-t) "
                  "and --no-target-directory (-T)"));
-      if (2 < n_files)
+      যদি (2 < n_files)
         {
           error (0, 0, _("extra operand %s"), quoteaf (file[2]));
           usage (EXIT_FAILURE);
         }
     }
-  else if (target_directory)
+  অন্যথা যদি (target_directory)
     {
       target_dirfd = target_directory_operand (target_directory, &sb);
-      if (! (target_dirfd_valid (target_dirfd)
+      যদি (! (target_dirfd_valid (target_dirfd)
              || (mkdir_and_install && errno == ENOENT)))
         error (EXIT_FAILURE, errno, _("failed to access %s"),
                quoteaf (target_directory));
     }
-  else if (!dir_arg)
+  অন্যথা যদি (!dir_arg)
     {
-      char const *lastfile = file[n_files - 1];
-      int fd = target_directory_operand (lastfile, &sb);
-      if (target_dirfd_valid (fd))
+      ৱর্ণ ধ্রুৱ *lastfile = file[n_files - 1];
+      পূর্ণাঙ্ক fd = target_directory_operand (lastfile, &sb);
+      যদি (target_dirfd_valid (fd))
         {
           target_dirfd = fd;
           target_directory = lastfile;
           n_files--;
         }
-      else if (2 < n_files)
+      অন্যথা যদি (2 < n_files)
         error (EXIT_FAILURE, errno, _("target %s"), quoteaf (lastfile));
     }
 
-  if (specified_mode)
+  যদি (specified_mode)
     {
-      struct mode_change *change = mode_compile (specified_mode);
-      if (!change)
+      সংরচনা mode_change *change = mode_compile (specified_mode);
+      যদি (!change)
         error (EXIT_FAILURE, 0, _("invalid mode %s"), quote (specified_mode));
-      mode = mode_adjust (0, false, 0, change, NULL);
+      mode = mode_adjust (0, false, 0, change, রিক্ত);
       dir_mode = mode_adjust (0, true, 0, change, &dir_mode_bits);
-      free (change);
+      মুক্ত (change);
     }
 
-  if (strip_program_specified && !strip_files)
+  যদি (strip_program_specified && !strip_files)
     error (0, 0, _("WARNING: ignoring --strip-program option as -s option was "
                    "not specified"));
 
-  if (copy_only_if_needed && strip_files)
+  যদি (copy_only_if_needed && strip_files)
     {
       error (0, 0, _("options --compare (-C) and --strip are mutually "
                      "exclusive"));
       usage (EXIT_FAILURE);
     }
 
-  if (copy_only_if_needed && extra_mode (mode))
+  যদি (copy_only_if_needed && extra_mode (mode))
     error (0, 0, _("the --compare (-C) option is ignored when you"
                    " specify a mode with non-permission bits"));
 
   get_ids ();
 
-  int exit_status = EXIT_SUCCESS;
-  if (dir_arg)
+  পূর্ণাঙ্ক exit_status = EXIT_SUCCESS;
+  যদি (dir_arg)
     exit_status = savewd_process_files (n_files, file, process_dir, &x);
-  else
+  অন্যথা
     {
       /* FIXME: it's a little gross that this initialization is
          required by copy.c::copy. */
       hash_init ();
 
-      if (!target_directory)
+      যদি (!target_directory)
         {
-          if (! (mkdir_and_install
+          যদি (! (mkdir_and_install
                  ? install_file_in_file_parents (file[0], file[1], &x)
                  : install_file_in_file (file[0], file[1], AT_FDCWD,
                                          file[1], &x)))
             exit_status = EXIT_FAILURE;
         }
-      else
+      অন্যথা
         {
           dest_info_init (&x);
-          for (int i = 0; i < n_files; i++)
-            if (! install_file_in_dir (file[i], target_directory, &x,
+          বাবে (পূর্ণাঙ্ক i = 0; i < n_files; i++)
+            যদি (! install_file_in_dir (file[i], target_directory, &x,
                                        i == 0 && mkdir_and_install,
                                        &target_dirfd))
               exit_status = EXIT_FAILURE;

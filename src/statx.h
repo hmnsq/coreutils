@@ -17,20 +17,20 @@
 #ifndef COREUTILS_STATX_H
 # define COREUTILS_STATX_H
 
-# if HAVE_STATX && defined STATX_INO
+# যদি HAVE_STATX && defined STATX_INO
 /* Much of the format printing requires a struct stat or timespec */
-static inline struct timespec
-statx_timestamp_to_timespec (struct statx_timestamp tsx)
+স্থির অন্তঃস্থ সংরচনা timespec
+statx_timestamp_to_timespec (সংরচনা statx_timestamp tsx)
 {
-  struct timespec ts;
+  সংরচনা timespec ts;
 
   ts.tv_sec = tsx.tv_sec;
   ts.tv_nsec = tsx.tv_nsec;
-  return ts;
+  ঘূৰাই ts;
 }
 
-static inline void
-statx_to_stat (struct statx *stx, struct stat *stat)
+স্থির অন্তঃস্থ শূন্য
+statx_to_stat (সংরচনা statx *stx, সংরচনা stat *stat)
 {
   stat->st_dev = makedev (stx->stx_dev_major, stx->stx_dev_minor);
   stat->st_ino = stx->stx_ino;
