@@ -15,50 +15,50 @@
 #ifndef BLAKE2_IMPL_H
 #define BLAKE2_IMPL_H
 
-#include <endian.h>
-#if BYTE_ORDER == LITTLE_ENDIAN
+#ضمن <endian.h>
+#إذا BYTE_ORDER == LITTLE_ENDIAN
 # define NATIVE_LITTLE_ENDIAN 1
 #endif
 
-#include <stdint.h>
-#include <string.h>
+#ضمن <stdint.h>
+#ضمن <string.h>
 
-#if !defined(__cplusplus) && (!defined(__STDC_VERSION__) || __STDC_VERSION__ < 199901L)
-  #if   defined(_MSC_VER)
+#إذا !defined(__cplusplus) && (!defined(__STDC_VERSION__) || __STDC_VERSION__ < 199901L)
+  #إذا   defined(_MSC_VER)
     #define BLAKE2_INLINE __inline
-  #elif defined(__GNUC__)
+  #وإلاإذا defined(__GNUC__)
     #define BLAKE2_INLINE __inline__
-  #else
+  #وإلا
     #define BLAKE2_INLINE
   #endif
-#else
-  #define BLAKE2_INLINE inline
+#وإلا
+  #define BLAKE2_INLINE مضمن
 #endif
 
-static BLAKE2_INLINE uint32_t load32( const void *src )
+ساكن BLAKE2_INLINE uint32_t load32( ثابت فراغ *src )
 {
-#if defined(NATIVE_LITTLE_ENDIAN)
+#إذا defined(NATIVE_LITTLE_ENDIAN)
   uint32_t w;
-  memcpy(&w, src, sizeof w);
-  return w;
-#else
-  const uint8_t *p = ( const uint8_t * )src;
-  return (( uint32_t )( p[0] ) <<  0) |
+  memcpy(&w, src, حجم w);
+  أرجع w;
+#وإلا
+  ثابت uint8_t *p = ( ثابت uint8_t * )src;
+  أرجع (( uint32_t )( p[0] ) <<  0) |
          (( uint32_t )( p[1] ) <<  8) |
          (( uint32_t )( p[2] ) << 16) |
          (( uint32_t )( p[3] ) << 24) ;
 #endif
 }
 
-static BLAKE2_INLINE uint64_t load64( const void *src )
+ساكن BLAKE2_INLINE uint64_t load64( ثابت فراغ *src )
 {
-#if defined(NATIVE_LITTLE_ENDIAN)
+#إذا defined(NATIVE_LITTLE_ENDIAN)
   uint64_t w;
-  memcpy(&w, src, sizeof w);
-  return w;
-#else
-  const uint8_t *p = ( const uint8_t * )src;
-  return (( uint64_t )( p[0] ) <<  0) |
+  memcpy(&w, src, حجم w);
+  أرجع w;
+#وإلا
+  ثابت uint8_t *p = ( ثابت uint8_t * )src;
+  أرجع (( uint64_t )( p[0] ) <<  0) |
          (( uint64_t )( p[1] ) <<  8) |
          (( uint64_t )( p[2] ) << 16) |
          (( uint64_t )( p[3] ) << 24) |
@@ -69,35 +69,35 @@ static BLAKE2_INLINE uint64_t load64( const void *src )
 #endif
 }
 
-static BLAKE2_INLINE uint16_t load16( const void *src )
+ساكن BLAKE2_INLINE uint16_t load16( ثابت فراغ *src )
 {
-#if defined(NATIVE_LITTLE_ENDIAN)
+#إذا defined(NATIVE_LITTLE_ENDIAN)
   uint16_t w;
-  memcpy(&w, src, sizeof w);
-  return w;
-#else
-  const uint8_t *p = ( const uint8_t * )src;
-  return ( uint16_t )((( uint32_t )( p[0] ) <<  0) |
+  memcpy(&w, src, حجم w);
+  أرجع w;
+#وإلا
+  ثابت uint8_t *p = ( ثابت uint8_t * )src;
+  أرجع ( uint16_t )((( uint32_t )( p[0] ) <<  0) |
                       (( uint32_t )( p[1] ) <<  8));
 #endif
 }
 
-static BLAKE2_INLINE void store16( void *dst, uint16_t w )
+ساكن BLAKE2_INLINE فراغ store16( فراغ *dst, uint16_t w )
 {
-#if defined(NATIVE_LITTLE_ENDIAN)
-  memcpy(dst, &w, sizeof w);
-#else
+#إذا defined(NATIVE_LITTLE_ENDIAN)
+  memcpy(dst, &w, حجم w);
+#وإلا
   uint8_t *p = ( uint8_t * )dst;
   *p++ = ( uint8_t )w; w >>= 8;
   *p++ = ( uint8_t )w;
 #endif
 }
 
-static BLAKE2_INLINE void store32( void *dst, uint32_t w )
+ساكن BLAKE2_INLINE فراغ store32( فراغ *dst, uint32_t w )
 {
-#if defined(NATIVE_LITTLE_ENDIAN)
-  memcpy(dst, &w, sizeof w);
-#else
+#إذا defined(NATIVE_LITTLE_ENDIAN)
+  memcpy(dst, &w, حجم w);
+#وإلا
   uint8_t *p = ( uint8_t * )dst;
   p[0] = (uint8_t)(w >>  0);
   p[1] = (uint8_t)(w >>  8);
@@ -106,11 +106,11 @@ static BLAKE2_INLINE void store32( void *dst, uint32_t w )
 #endif
 }
 
-static BLAKE2_INLINE void store64( void *dst, uint64_t w )
+ساكن BLAKE2_INLINE فراغ store64( فراغ *dst, uint64_t w )
 {
-#if defined(NATIVE_LITTLE_ENDIAN)
-  memcpy(dst, &w, sizeof w);
-#else
+#إذا defined(NATIVE_LITTLE_ENDIAN)
+  memcpy(dst, &w, حجم w);
+#وإلا
   uint8_t *p = ( uint8_t * )dst;
   p[0] = (uint8_t)(w >>  0);
   p[1] = (uint8_t)(w >>  8);
@@ -123,10 +123,10 @@ static BLAKE2_INLINE void store64( void *dst, uint64_t w )
 #endif
 }
 
-static BLAKE2_INLINE uint64_t load48( const void *src )
+ساكن BLAKE2_INLINE uint64_t load48( ثابت فراغ *src )
 {
-  const uint8_t *p = ( const uint8_t * )src;
-  return (( uint64_t )( p[0] ) <<  0) |
+  ثابت uint8_t *p = ( ثابت uint8_t * )src;
+  أرجع (( uint64_t )( p[0] ) <<  0) |
          (( uint64_t )( p[1] ) <<  8) |
          (( uint64_t )( p[2] ) << 16) |
          (( uint64_t )( p[3] ) << 24) |
@@ -134,7 +134,7 @@ static BLAKE2_INLINE uint64_t load48( const void *src )
          (( uint64_t )( p[5] ) << 40) ;
 }
 
-static BLAKE2_INLINE void store48( void *dst, uint64_t w )
+ساكن BLAKE2_INLINE فراغ store48( فراغ *dst, uint64_t w )
 {
   uint8_t *p = ( uint8_t * )dst;
   p[0] = (uint8_t)(w >>  0);
@@ -145,20 +145,20 @@ static BLAKE2_INLINE void store48( void *dst, uint64_t w )
   p[5] = (uint8_t)(w >> 40);
 }
 
-static BLAKE2_INLINE uint32_t rotr32( const uint32_t w, const unsigned c )
+ساكن BLAKE2_INLINE uint32_t rotr32( ثابت uint32_t w, ثابت unsigned c )
 {
-  return ( w >> c ) | ( w << ( 32 - c ) );
+  أرجع ( w >> c ) | ( w << ( 32 - c ) );
 }
 
-static BLAKE2_INLINE uint64_t rotr64( const uint64_t w, const unsigned c )
+ساكن BLAKE2_INLINE uint64_t rotr64( ثابت uint64_t w, ثابت unsigned c )
 {
-  return ( w >> c ) | ( w << ( 64 - c ) );
+  أرجع ( w >> c ) | ( w << ( 64 - c ) );
 }
 
 /* prevents compiler optimizing out memset() */
-static BLAKE2_INLINE void secure_zero_memory(void *v, size_t n)
+ساكن BLAKE2_INLINE فراغ secure_zero_memory(فراغ *v, size_t n)
 {
-  static void *(*const volatile memset_v)(void *, int, size_t) = &memset;
+  ساكن فراغ *(*ثابت متطاير memset_v)(فراغ *, صحيح, size_t) = &memset;
   memset_v(v, 0, n);
 }
 

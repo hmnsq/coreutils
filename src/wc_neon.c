@@ -16,34 +16,34 @@
 
 /* Written by Collin Funk <collin.funk1@gmail.com>, 2026.  */
 
-#include <config.h>
+#ضمن <config.h>
 
-#include "wc.h"
-#include "system.h"
-#include "ioblksize.h"
+#ضمن "wc.h"
+#ضمن "system.h"
+#ضمن "ioblksize.h"
 
-#include <arm_neon.h>
+#ضمن <arm_neon.h>
 
 /* Read FD and return a summary.  */
-extern struct wc_lines
-wc_lines_neon (int fd)
+خارجي بنية wc_أسطر
+wc_أسطر_neon (صحيح fd)
 {
-  intmax_t lines = 0;
+  intmax_t أسطر = 0;
   intmax_t bytes = 0;
 
-  const uint8x16_t endlines = vdupq_n_u8 ('\n');
+  ثابت uint8x16_t endlines = vdupq_n_u8 ('\n');
 
-  while (true)
+  طالما (true)
     {
-      unsigned char alignas (16) neon_buf[IO_BUFSIZE];
-      ssize_t bytes_read = read (fd, neon_buf, sizeof neon_buf);
-      if (bytes_read <= 0)
-        return (struct wc_lines) { bytes_read == 0 ? 0 : errno, lines, bytes };
+      unsigned حرف alignas (16) neon_buf[IO_BUFSIZE];
+      ssize_t bytes_read = اقرأ (fd, neon_buf, حجم neon_buf);
+      إذا (bytes_read <= 0)
+        أرجع (بنية wc_أسطر) { bytes_read == 0 ? 0 : errno, أسطر, bytes };
 
       bytes += bytes_read;
-      unsigned char *datap = neon_buf;
+      unsigned حرف *datap = neon_buf;
 
-      while (8192 <= bytes_read)
+      طالما (8192 <= bytes_read)
         {
           /* Accumulator.  */
           int8x16_t acc0 = vdupq_n_s8 (0);
@@ -52,7 +52,7 @@ wc_lines_neon (int fd)
           int8x16_t acc3 = vdupq_n_s8 (0);
 
           /* Process all 8192 bytes in 64 byte chunks.  */
-          for (int i = 0; i < 128; ++i)
+          لكل (صحيح i = 0; i < 128; ++i)
             {
               /* Load 64 bytes from DATAP.  */
               uint8x16_t v0 = vld1q_u8 (datap);
@@ -93,7 +93,7 @@ wc_lines_neon (int fd)
           /* Extract the lane sums.  Since each newline was counted as -1, we
              subtract the sum of them from LINES to get the total number of
              lines.  */
-          lines -= (vgetq_lane_s64 (c0, 0) + vgetq_lane_s64 (c0, 1)
+          أسطر -= (vgetq_lane_s64 (c0, 0) + vgetq_lane_s64 (c0, 1)
                     + vgetq_lane_s64 (c1, 0) + vgetq_lane_s64 (c1, 1)
                     + vgetq_lane_s64 (c2, 0) + vgetq_lane_s64 (c2, 1)
                     + vgetq_lane_s64 (c3, 0) + vgetq_lane_s64 (c3, 1));
@@ -102,8 +102,8 @@ wc_lines_neon (int fd)
         }
 
       /* Finish up any left over bytes.  */
-      unsigned char *end = (unsigned char *) datap + bytes_read;
-      for (unsigned char *p = (unsigned char *) datap; p < end; p++)
-        lines += *p == '\n';
+      unsigned حرف *end = (unsigned حرف *) datap + bytes_read;
+      لكل (unsigned حرف *p = (unsigned حرف *) datap; p < end; p++)
+        أسطر += *p == '\n';
     }
 }

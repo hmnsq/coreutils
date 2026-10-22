@@ -18,24 +18,24 @@
    --human-readable option added by lm@sgi.com.
    --si and large file support added by eggert@twinsun.com.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <getopt.h>
-#include <c-ctype.h>
+#ضمن <config.h>
+#ضمن <stdio.h>
+#ضمن <sys/types.h>
+#ضمن <getopt.h>
+#ضمن <c-ctype.h>
 
-#include "system.h"
-#include "assure.h"
-#include "canonicalize.h"
-#include "fsusage.h"
-#include "human.h"
-#include "mbswidth.h"
-#include "mountlist.h"
-#include "quote.h"
-#include "find-mount-point.h"
-#include "hash.h"
-#include "xstrtol-error.h"
-#include "xvasprintf.h"
+#ضمن "system.h"
+#ضمن "assure.h"
+#ضمن "canonicalize.h"
+#ضمن "fsusage.h"
+#ضمن "human.h"
+#ضمن "mbswidth.h"
+#ضمن "mountlist.h"
+#ضمن "quote.h"
+#ضمن "find-mount-point.h"
+#ضمن "hash.h"
+#ضمن "xstrtol-error.h"
+#ضمن "xvasprintf.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "df"
@@ -45,54 +45,54 @@
   proper_name ("David MacKenzie"), \
   proper_name ("Paul Eggert")
 
-struct devlist
+بنية devlist
 {
-  dev_t dev_num;
-  struct mount_entry *me;
-  struct devlist *next;
-  struct devlist *next_same_dev;
-  struct devlist *seen_last; /* valid for hashed devlist entries only */
+  dev_t dev_رقم;
+  بنية mount_entry *me;
+  بنية devlist *next;
+  بنية devlist *next_same_dev;
+  بنية devlist *seen_last; /* valid for hashed devlist entries only */
 };
 
 /* Filled with device numbers of examined file systems to avoid
    duplicates in output.  */
-static Hash_table *devlist_table;
+ساكن Hash_table *devlist_table;
 
 /* If true, show even file systems with zero size or
    uninteresting types.  */
-static bool show_all_fs;
+ساكن bool show_all_fs;
 
 /* If true, show only local file systems.  */
-static bool show_local_fs;
+ساكن bool show_local_fs;
 
 /* If true, output data for each file system corresponding to a
    command line argument -- even if it's a dummy (automounter) entry.  */
-static bool show_listed_fs;
+ساكن bool show_listed_fs;
 
 /* Human-readable options for output.  */
-static int human_output_opts = -1;
+ساكن صحيح human_output_opts = -1;
 
 /* The units to use when printing sizes.  */
-static uintmax_t output_block_size;
+ساكن uintmax_t output_block_size;
 
 /* True if a file system has been processed for output.  */
-static bool file_systems_processed;
+ساكن bool file_systems_processed;
 
 /* If true, invoke the 'sync' system call before getting any usage data.
    Using this option can make df very slow, especially with many or very
    busy file systems.  This may make a difference on some systems --
    SunOS 4.1.3, for one.  It is *not* necessary on GNU/Linux.  */
-static bool require_sync;
+ساكن bool require_sync;
 
 /* Desired exit status.  */
-static int exit_status;
+ساكن صحيح exit_status;
 
 /* A file system type to display.  */
 
-struct fs_type_list
+بنية fs_type_list
 {
-  char *fs_name;
-  struct fs_type_list *fs_next;
+  حرف *fs_name;
+  بنية fs_type_list *fs_next;
 };
 
 /* Linked list of file system types to display.
@@ -106,27 +106,27 @@ struct fs_type_list
    Some file system types:
    4.2 4.3 ufs nfs swap ignore io vm efs dbg */
 
-static struct fs_type_list *fs_select_list;
+ساكن بنية fs_type_list *fs_select_list;
 
 /* Linked list of file system types to omit.
    If the list is empty, don't exclude any types.  */
 
-static struct fs_type_list *fs_exclude_list;
+ساكن بنية fs_type_list *fs_exclude_list;
 
 /* Linked list of mounted file systems.  */
-static struct mount_entry *mount_list;
+ساكن بنية mount_entry *mount_list;
 
 /* If true, print file system type as well.  */
-static bool print_type;
+ساكن bool اطبع_type;
 
 /* If true, print a grand total at the end.  */
-static bool print_grand_total;
+ساكن bool اطبع_grand_total;
 
 /* Grand total data.  */
-static struct fs_usage grand_fsu = { .fsu_blocksize = 1 };
+ساكن بنية fs_usage grand_fsu = { .fsu_blocksize = 1 };
 
 /* Display modes.  */
-static enum
+ساكن تعداد
 {
   DEFAULT_MODE,
   INODES_MODE,
@@ -136,7 +136,7 @@ static enum
 } header_mode = DEFAULT_MODE;
 
 /* Displayable fields.  */
-typedef enum
+تعريفنوع تعداد
 {
   SOURCE_FIELD, /* file system */
   FSTYPE_FIELD, /* FS type */
@@ -154,7 +154,7 @@ typedef enum
 } display_field_t;
 
 /* Flag if a field contains a block, an inode or another value.  */
-typedef enum
+تعريفنوع تعداد
 {
   BLOCK_FLD, /* Block values field */
   INODE_FLD, /* Inode values field */
@@ -162,19 +162,19 @@ typedef enum
 } field_type_t;
 
 /* Attributes of a display field.  */
-struct field_data_t
+بنية field_data_t
 {
   display_field_t field;
-  char const *arg;
+  حرف ثابت *arg;
   field_type_t field_type;
-  char const *caption;/* NULL means use default header of this field.  */
-  int width;          /* Auto adjusted (up) widths used to align columns.  */
-  bool align_right;   /* Whether to right-align columns, not left-align.  */
+  حرف ثابت *caption;/* NULL means use default header of this field.  */
+  صحيح width;          /* Auto adjusted (up) widths used to align columns.  */
+  bool align_يمين;   /* Whether to right-align columns, not left-align.  */
   bool used;
 };
 
 /* Header strings, minimum width and alignment for the above fields.  */
-static struct field_data_t field_data[] = {
+ساكن بنية field_data_t field_data[] = {
   [SOURCE_FIELD] = { SOURCE_FIELD,
     "source", OTHER_FLD, N_("Filesystem"), 14, false,  false },
 
@@ -212,11 +212,11 @@ static struct field_data_t field_data[] = {
     "file",   OTHER_FLD, N_("File"),        0, false,  false }
 };
 
-static char const *all_args_string =
+ساكن حرف ثابت *all_وسائط_string =
   "source,fstype,itotal,iused,iavail,ipcent,size,"
   "used,avail,pcent,file,target";
 
-static struct
+ساكن بنية
 {
   /* The current number of processed rows (including header).  */
   idx_t nrows;
@@ -225,7 +225,7 @@ static struct
   idx_t nrows_alloc;
 
   /* Storage for pointers for each string (cell of table).  */
-  char ***rows COUNTED_BY (nrows);
+  حرف ***rows COUNTED_BY (nrows);
 
   /* The current number of output columns.  */
   idx_t ncolumns;
@@ -234,25 +234,25 @@ static struct
   idx_t ncolumns_alloc;
 
   /* Storage for the definition of output columns.  */
-  struct field_data_t **columns COUNTED_BY (ncolumns);
+  بنية field_data_t **columns COUNTED_BY (ncolumns);
 } table;
 
 /* Field values.  */
-struct field_values_t
+بنية field_قيم_t
 {
-  uintmax_t input_units;
+  uintmax_t مدخل_units;
   uintmax_t output_units;
   uintmax_t total;
   uintmax_t available;
   bool negate_available;
-  uintmax_t available_to_root;
+  uintmax_t available_to_جذر;
   uintmax_t used;
   bool negate_used;
 };
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+تعداد
 {
   NO_SYNC_OPTION = CHAR_MAX + 1,
   SYNC_OPTION,
@@ -260,62 +260,62 @@ enum
   OUTPUT_OPTION
 };
 
-static struct option const long_options[] =
+ساكن بنية option ثابت long_options[] =
 {
-  {"all", no_argument, NULL, 'a'},
-  {"block-size", required_argument, NULL, 'B'},
-  {"inodes", no_argument, NULL, 'i'},
-  {"human-readable", no_argument, NULL, 'h'},
-  {"si", no_argument, NULL, 'H'},
-  {"local", no_argument, NULL, 'l'},
-  {"output", optional_argument, NULL, OUTPUT_OPTION},
-  {"portability", no_argument, NULL, 'P'},
-  {"print-type", no_argument, NULL, 'T'},
-  {"sync", no_argument, NULL, SYNC_OPTION},
-  {"no-sync", no_argument, NULL, NO_SYNC_OPTION},
-  {"total", no_argument, NULL, TOTAL_OPTION},
-  {"type", required_argument, NULL, 't'},
-  {"exclude-type", required_argument, NULL, 'x'},
+  {"all", no_argument, عدم, 'a'},
+  {"block-size", required_argument, عدم, 'B'},
+  {"inodes", no_argument, عدم, 'i'},
+  {"human-readable", no_argument, عدم, 'h'},
+  {"si", no_argument, عدم, 'H'},
+  {"local", no_argument, عدم, 'l'},
+  {"output", optional_argument, عدم, OUTPUT_OPTION},
+  {"portability", no_argument, عدم, 'P'},
+  {"print-type", no_argument, عدم, 'T'},
+  {"sync", no_argument, عدم, SYNC_OPTION},
+  {"no-sync", no_argument, عدم, NO_SYNC_OPTION},
+  {"total", no_argument, عدم, TOTAL_OPTION},
+  {"type", required_argument, عدم, 't'},
+  {"exclude-type", required_argument, عدم, 'x'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {عدم, 0, عدم, 0}
 };
 
 /* Stat FILE and put the results into *ST.  Return 0 if successful, an
    error number otherwise.  Try to open FILE before statting, to
    trigger automounts.  */
 
-static int
-automount_stat_err (char const *file, struct stat *st)
+ساكن صحيح
+automount_stat_err (حرف ثابت *file, بنية stat *st)
 {
-  int fd = open (file, O_RDONLY | O_NOCTTY | O_NONBLOCK);
-  if (fd < 0)
+  صحيح fd = open (file, O_RDONLY | O_NOCTTY | O_NONBLOCK);
+  إذا (fd < 0)
     {
-      if (errno == ENOENT || errno == ENOTDIR)
-        return errno;
-      return stat (file, st) == 0 ? 0 : errno;
+      إذا (errno == ENOENT || errno == ENOTDIR)
+        أرجع errno;
+      أرجع stat (file, st) == 0 ? 0 : errno;
     }
-  else
+  وإلا
     {
-      int err = fstat (fd, st) == 0 ? 0 : errno;
+      صحيح err = fstat (fd, st) == 0 ? 0 : errno;
       close (fd);
-      return err;
+      أرجع err;
     }
 }
 
-enum { MBSWIDTH_FLAGS = MBSW_REJECT_INVALID | MBSW_REJECT_UNPRINTABLE };
+تعداد { MBSWIDTH_FLAGS = MBSW_REJECT_INVALID | MBSW_REJECT_UNPRINTABLE };
 
 /* Replace problematic chars with '?'.
    Since only control characters are currently considered,
    this should work in all encodings.  */
 
-static void
-replace_control_chars (char *cell)
+ساكن فراغ
+replace_control_chars (حرف *cell)
 {
-  char *p = cell;
-  while (*p)
+  حرف *p = cell;
+  طالما (*p)
     {
-      if (c_iscntrl (*p))
+      إذا (c_iscntrl (*p))
         *p = '?';
       p++;
     }
@@ -323,32 +323,32 @@ replace_control_chars (char *cell)
 
 /* Replace problematic chars with '?'.  */
 
-static void
-replace_invalid_chars (char *cell)
+ساكن فراغ
+replace_invalid_chars (حرف *cell)
 {
-  char *srcend = cell + strlen (cell);
-  char *dst = cell;
+  حرف *srcend = cell + strlen (cell);
+  حرف *dst = cell;
   mbstate_t mbstate; mbszero (&mbstate);
   size_t n;
 
-  for (char *src = cell; src != srcend; src += n)
+  لكل (حرف *src = cell; src != srcend; src += n)
     {
       char32_t wc;
       size_t srcbytes = srcend - src;
       n = mbrtoc32 (&wc, src, srcbytes, &mbstate);
       bool ok = n <= srcbytes;
 
-      if (ok)
+      إذا (ok)
         ok = !c32iscntrl (wc);
-      else
+      وإلا
         n = 1;
 
-      if (ok)
+      إذا (ok)
         {
           memmove (dst, src, n);
           dst += n;
         }
-      else
+      وإلا
         {
           *dst++ = '?';
           mbszero (&mbstate);
@@ -358,11 +358,11 @@ replace_invalid_chars (char *cell)
   *dst = '\0';
 }
 
-static void
-replace_problematic_chars (char *cell)
+ساكن فراغ
+replace_problematic_chars (حرف *cell)
 {
-  static int tty_out = -1;
-  if (tty_out < 0)
+  ساكن صحيح tty_out = -1;
+  إذا (tty_out < 0)
     tty_out = isatty (STDOUT_FILENO);
 
   (tty_out ? replace_invalid_chars : replace_control_chars) (cell) ;
@@ -372,43 +372,43 @@ replace_problematic_chars (char *cell)
 /* Dynamically allocate a row of pointers in TABLE.ROWS, which
    can then be accessed with standard 2D array notation.  */
 
-static void
-alloc_table_row (void)
+ساكن فراغ
+alloc_table_row (فراغ)
 {
-  if (table.nrows == table.nrows_alloc)
+  إذا (table.nrows == table.nrows_alloc)
     table.rows = xpalloc (table.rows, &table.nrows_alloc, 1, -1,
-                          sizeof *table.rows);
-  idx_t const row_idx = table.nrows++;
-  table.rows[row_idx] = xinmalloc (table.ncolumns, sizeof *table.rows[0]);
+                          حجم *table.rows);
+  idx_t ثابت row_idx = table.nrows++;
+  table.rows[row_idx] = xinmalloc (table.ncolumns, حجم *table.rows[0]);
 }
 
 /* Output each cell in the table, accounting for the
    alignment and max width of each column.  */
 
-static void
-print_table (void)
+ساكن فراغ
+اطبع_table (فراغ)
 {
-  for (idx_t row = 0; row < table.nrows; row++)
+  لكل (idx_t row = 0; row < table.nrows; row++)
     {
-      for (idx_t col = 0; col < table.ncolumns; col++)
+      لكل (idx_t col = 0; col < table.ncolumns; col++)
         {
-          char *cell = table.rows[row][col];
+          حرف *cell = table.rows[row][col];
 
           /* Note the SOURCE_FIELD used to be displayed on it's own line
              if (!posix_format && mbswidth (cell) > 20), but that
              functionality was probably more problematic than helpful,
              hence changed in commit v8.10-40-g99679ff.  */
-          if (col != 0)
+          إذا (col != 0)
             putchar (' ');
 
-          int width = mbswidth (cell, MBSWIDTH_FLAGS);
-          int fill = width < 0 ? 0 : table.columns[col]->width - width;
-          if (table.columns[col]->align_right)
-            for (; 0 < fill; fill--)
+          صحيح width = mbswidth (cell, MBSWIDTH_FLAGS);
+          صحيح fill = width < 0 ? 0 : table.columns[col]->width - width;
+          إذا (table.columns[col]->align_يمين)
+            لكل (; 0 < fill; fill--)
               putchar (' ');
           fputs (cell, stdout);
-          if (col + 1 < table.ncolumns)
-            for (; 0 < fill; fill--)
+          إذا (col + 1 < table.ncolumns)
+            لكل (; 0 < fill; fill--)
               putchar (' ');
         }
       putchar ('\n');
@@ -418,15 +418,15 @@ print_table (void)
 /* Dynamically allocate a struct field_t in TABLE.COLUMNS, which
    can then be accessed with standard array notation.  */
 
-static void
-alloc_field (int f, char const *c)
+ساكن فراغ
+alloc_field (صحيح f, حرف ثابت *c)
 {
-  if (table.ncolumns == table.ncolumns_alloc)
+  إذا (table.ncolumns == table.ncolumns_alloc)
     table.columns = xpalloc (table.columns, &table.ncolumns_alloc, 1, -1,
-                             sizeof *table.columns);
-  idx_t const column_idx = table.ncolumns++;
+                             حجم *table.columns);
+  idx_t ثابت column_idx = table.ncolumns++;
   table.columns[column_idx] = &field_data[f];
-  if (c != NULL)
+  إذا (c != عدم)
     field_data[f].caption = c;
 
   affirm (!field_data[f].used);
@@ -438,37 +438,37 @@ alloc_field (int f, char const *c)
 
 /* Given a string, ARG, containing a comma-separated list of arguments
    to the --output option, add the appropriate fields to columns.  */
-static void
-decode_output_arg (char const *arg)
+ساكن فراغ
+decode_output_arg (حرف ثابت *arg)
 {
-  char *arg_writable = xstrdup (arg);
-  char *s = arg_writable;
-  do
+  حرف *arg_writable = xstrdup (arg);
+  حرف *s = arg_writable;
+  افعل
     {
       /* find next comma */
-      char *comma = strchr (s, ',');
+      حرف *comma = strchr (s, ',');
 
       /* If we found a comma, put a NUL in its place and advance.  */
-      if (comma)
+      إذا (comma)
         *comma++ = 0;
 
       /* process S.  */
       display_field_t field = INVALID_FIELD;
-      for (idx_t i = 0; i < countof (field_data); i++)
+      لكل (idx_t i = 0; i < countof (field_data); i++)
         {
-          if (streq (field_data[i].arg, s))
+          إذا (streq (field_data[i].arg, s))
             {
               field = i;
-              break;
+              اكسر;
             }
         }
-      if (field == INVALID_FIELD)
+      إذا (field == INVALID_FIELD)
         {
           error (0, 0, _("option --output: field %s unknown"), quote (s));
           usage (EXIT_FAILURE);
         }
 
-      if (field_data[field].used)
+      إذا (field_data[field].used)
         {
           /* Prevent the fields from being used more than once.  */
           error (0, 0, _("option --output: field %s used more than once"),
@@ -476,124 +476,124 @@ decode_output_arg (char const *arg)
           usage (EXIT_FAILURE);
         }
 
-      switch (field)
+      بدل (field)
         {
-        case SOURCE_FIELD:
-        case FSTYPE_FIELD:
-        case USED_FIELD:
-        case PCENT_FIELD:
-        case ITOTAL_FIELD:
-        case IUSED_FIELD:
-        case IAVAIL_FIELD:
-        case IPCENT_FIELD:
-        case TARGET_FIELD:
-        case FILE_FIELD:
-          alloc_field (field, NULL);
-          break;
+        حالة SOURCE_FIELD:
+        حالة FSTYPE_FIELD:
+        حالة USED_FIELD:
+        حالة PCENT_FIELD:
+        حالة ITOTAL_FIELD:
+        حالة IUSED_FIELD:
+        حالة IAVAIL_FIELD:
+        حالة IPCENT_FIELD:
+        حالة TARGET_FIELD:
+        حالة FILE_FIELD:
+          alloc_field (field, عدم);
+          اكسر;
 
-        case SIZE_FIELD:
+        حالة SIZE_FIELD:
           alloc_field (field, N_("Size"));
-          break;
+          اكسر;
 
-        case AVAIL_FIELD:
+        حالة AVAIL_FIELD:
           alloc_field (field, N_("Avail"));
-          break;
+          اكسر;
 
-        case INVALID_FIELD:
-        default:
+        حالة INVALID_FIELD:
+        افتراضي:
           affirm (!"invalid field");
         }
       s = comma;
     }
-  while (s);
+  طالما (s);
 
-  free (arg_writable);
+  حرر (arg_writable);
 }
 
 /* Get the appropriate columns for the mode.  */
-static void
-get_field_list (void)
+ساكن فراغ
+get_field_list (فراغ)
 {
-  switch (header_mode)
+  بدل (header_mode)
     {
-    case DEFAULT_MODE:
-      alloc_field (SOURCE_FIELD, NULL);
-      if (print_type)
-        alloc_field (FSTYPE_FIELD, NULL);
-      alloc_field (SIZE_FIELD,   NULL);
-      alloc_field (USED_FIELD,   NULL);
-      alloc_field (AVAIL_FIELD,  NULL);
-      alloc_field (PCENT_FIELD,  NULL);
-      alloc_field (TARGET_FIELD, NULL);
-      break;
+    حالة DEFAULT_MODE:
+      alloc_field (SOURCE_FIELD, عدم);
+      إذا (اطبع_type)
+        alloc_field (FSTYPE_FIELD, عدم);
+      alloc_field (SIZE_FIELD,   عدم);
+      alloc_field (USED_FIELD,   عدم);
+      alloc_field (AVAIL_FIELD,  عدم);
+      alloc_field (PCENT_FIELD,  عدم);
+      alloc_field (TARGET_FIELD, عدم);
+      اكسر;
 
-    case HUMAN_MODE:
-      alloc_field (SOURCE_FIELD, NULL);
-      if (print_type)
-        alloc_field (FSTYPE_FIELD, NULL);
+    حالة HUMAN_MODE:
+      alloc_field (SOURCE_FIELD, عدم);
+      إذا (اطبع_type)
+        alloc_field (FSTYPE_FIELD, عدم);
 
       alloc_field (SIZE_FIELD,   N_("Size"));
-      alloc_field (USED_FIELD,   NULL);
+      alloc_field (USED_FIELD,   عدم);
       alloc_field (AVAIL_FIELD,  N_("Avail"));
-      alloc_field (PCENT_FIELD,  NULL);
-      alloc_field (TARGET_FIELD, NULL);
-      break;
+      alloc_field (PCENT_FIELD,  عدم);
+      alloc_field (TARGET_FIELD, عدم);
+      اكسر;
 
-    case INODES_MODE:
-      alloc_field (SOURCE_FIELD, NULL);
-      if (print_type)
-        alloc_field (FSTYPE_FIELD, NULL);
-      alloc_field (ITOTAL_FIELD,  NULL);
-      alloc_field (IUSED_FIELD,   NULL);
-      alloc_field (IAVAIL_FIELD,  NULL);
-      alloc_field (IPCENT_FIELD,  NULL);
-      alloc_field (TARGET_FIELD,  NULL);
-      break;
+    حالة INODES_MODE:
+      alloc_field (SOURCE_FIELD, عدم);
+      إذا (اطبع_type)
+        alloc_field (FSTYPE_FIELD, عدم);
+      alloc_field (ITOTAL_FIELD,  عدم);
+      alloc_field (IUSED_FIELD,   عدم);
+      alloc_field (IAVAIL_FIELD,  عدم);
+      alloc_field (IPCENT_FIELD,  عدم);
+      alloc_field (TARGET_FIELD,  عدم);
+      اكسر;
 
-    case POSIX_MODE:
-      alloc_field (SOURCE_FIELD, NULL);
-      if (print_type)
-        alloc_field (FSTYPE_FIELD, NULL);
-      alloc_field (SIZE_FIELD,   NULL);
-      alloc_field (USED_FIELD,   NULL);
-      alloc_field (AVAIL_FIELD,  NULL);
+    حالة POSIX_MODE:
+      alloc_field (SOURCE_FIELD, عدم);
+      إذا (اطبع_type)
+        alloc_field (FSTYPE_FIELD, عدم);
+      alloc_field (SIZE_FIELD,   عدم);
+      alloc_field (USED_FIELD,   عدم);
+      alloc_field (AVAIL_FIELD,  عدم);
       alloc_field (PCENT_FIELD,  N_("Capacity"));
-      alloc_field (TARGET_FIELD, NULL);
-      break;
+      alloc_field (TARGET_FIELD, عدم);
+      اكسر;
 
-    case OUTPUT_MODE:
-      if (!table.ncolumns)
+    حالة OUTPUT_MODE:
+      إذا (!table.ncolumns)
         {
           /* Add all fields if --output was given without a field list.  */
-          decode_output_arg (all_args_string);
+          decode_output_arg (all_وسائط_string);
         }
-      break;
+      اكسر;
 
-    default:
+    افتراضي:
       unreachable ();
     }
 }
 
 /* Obtain the appropriate header entries.  */
 
-static void
-get_header (void)
+ساكن فراغ
+get_header (فراغ)
 {
   alloc_table_row ();
 
-  for (idx_t col = 0; col < table.ncolumns; col++)
+  لكل (idx_t col = 0; col < table.ncolumns; col++)
     {
-      char *cell;
-      char const *header = _(table.columns[col]->caption);
+      حرف *cell;
+      حرف ثابت *header = _(table.columns[col]->caption);
 
-      if (table.columns[col]->field == SIZE_FIELD
+      إذا (table.columns[col]->field == SIZE_FIELD
           && (header_mode == DEFAULT_MODE
               || (header_mode == OUTPUT_MODE
                   && !(human_output_opts & human_autoscale))))
         {
-          char buf[LONGEST_HUMAN_READABLE + 1];
+          حرف buf[LONGEST_HUMAN_READABLE + 1];
 
-          int opts = (human_suppress_point_zero
+          صحيح opts = (human_suppress_point_zero
                       | human_autoscale | human_SI
                       | (human_output_opts
                          & (human_group_digits | human_base_1024 | human_B)));
@@ -606,42 +606,42 @@ get_header (void)
           bool divisible_by_1000;
           bool divisible_by_1024;
 
-          do
+          افعل
             {
               divisible_by_1000 = q1000 % 1000 == 0;  q1000 /= 1000;
               divisible_by_1024 = q1024 % 1024 == 0;  q1024 /= 1024;
             }
-          while (divisible_by_1000 & divisible_by_1024);
+          طالما (divisible_by_1000 & divisible_by_1024);
 
-          if (divisible_by_1000 < divisible_by_1024)
+          إذا (divisible_by_1000 < divisible_by_1024)
             opts |= human_base_1024;
-          if (divisible_by_1024 < divisible_by_1000)
+          إذا (divisible_by_1024 < divisible_by_1000)
             opts &= ~human_base_1024;
-          if (! (opts & human_base_1024))
+          إذا (! (opts & human_base_1024))
             opts |= human_B;
 
-          char *num = human_readable (output_block_size, buf, opts, 1, 1);
+          حرف *رقم = human_readable (output_block_size, buf, opts, 1, 1);
 
           /* Reset the header back to the default in OUTPUT_MODE.  */
           header = _("blocks");
 
           /* TRANSLATORS: this is the "1K-blocks" header in "df" output.  */
-          cell = xasprintf (_("%s-%s"), num, header);
+          cell = xasprintf (_("%s-%s"), رقم, header);
         }
-      else if (header_mode == POSIX_MODE
+      وإلا إذا (header_mode == POSIX_MODE
                && table.columns[col]->field == SIZE_FIELD)
         {
           /* TRANSLATORS: this is the "1024-blocks" header in "df -P".  */
           cell = xasprintf (_("%ju-%s"), output_block_size, header);
         }
-      else
+      وإلا
         cell = xstrdup (header);
 
       replace_problematic_chars (cell);
 
       table.rows[table.nrows - 1][col] = cell;
 
-      int cell_width = mbswidth (cell, MBSWIDTH_FLAGS);
+      صحيح cell_width = mbswidth (cell, MBSWIDTH_FLAGS);
       table.columns[col]->width = MAX (table.columns[col]->width, cell_width);
     }
 }
@@ -649,62 +649,62 @@ get_header (void)
 /* Is FSTYPE a type of file system that should be listed?  */
 
 ATTRIBUTE_PURE
-static bool
-selected_fstype (char const *fstype)
+ساكن bool
+selected_fstype (حرف ثابت *fstype)
 {
-  if (fs_select_list == NULL || fstype == NULL)
-    return true;
-  for (const struct fs_type_list *fsp = fs_select_list; fsp;
+  إذا (fs_select_list == عدم || fstype == عدم)
+    أرجع true;
+  لكل (ثابت بنية fs_type_list *fsp = fs_select_list; fsp;
        fsp = fsp->fs_next)
-    if (streq (fstype, fsp->fs_name))
-      return true;
-  return false;
+    إذا (streq (fstype, fsp->fs_name))
+      أرجع true;
+  أرجع false;
 }
 
 /* Is FSTYPE a type of file system that should be omitted?  */
 
 ATTRIBUTE_PURE
-static bool
-excluded_fstype (char const *fstype)
+ساكن bool
+excluded_fstype (حرف ثابت *fstype)
 {
-  if (fs_exclude_list == NULL || fstype == NULL)
-    return false;
-  for (const struct fs_type_list *fsp = fs_exclude_list; fsp;
+  إذا (fs_exclude_list == عدم || fstype == عدم)
+    أرجع false;
+  لكل (ثابت بنية fs_type_list *fsp = fs_exclude_list; fsp;
        fsp = fsp->fs_next)
-    if (streq (fstype, fsp->fs_name))
-      return true;
-  return false;
+    إذا (streq (fstype, fsp->fs_name))
+      أرجع true;
+  أرجع false;
 }
 
-static size_t
-devlist_hash (void const *x, size_t table_size)
+ساكن size_t
+devlist_hash (فراغ ثابت *x, size_t table_size)
 {
-  struct devlist const *p = x;
-  return (uintmax_t) {p->dev_num} % table_size;
+  بنية devlist ثابت *p = x;
+  أرجع (uintmax_t) {p->dev_رقم} % table_size;
 }
 
-static bool
-devlist_compare (void const *x, void const *y)
+ساكن bool
+devlist_compare (فراغ ثابت *x, فراغ ثابت *y)
 {
-  struct devlist const *a = x;
-  struct devlist const *b = y;
-  return a->dev_num == b->dev_num;
+  بنية devlist ثابت *a = x;
+  بنية devlist ثابت *b = y;
+  أرجع a->dev_رقم == b->dev_رقم;
 }
 
-static struct devlist *
+ساكن بنية devlist *
 devlist_for_dev (dev_t dev)
 {
-  if (devlist_table == NULL)
-    return NULL;
-  struct devlist dev_entry;
-  dev_entry.dev_num = dev;
+  إذا (devlist_table == عدم)
+    أرجع عدم;
+  بنية devlist dev_entry;
+  dev_entry.dev_رقم = dev;
 
-  struct devlist *found = hash_lookup (devlist_table, &dev_entry);
-  if (found == NULL)
-    return NULL;
+  بنية devlist *found = hash_lookup (devlist_table, &dev_entry);
+  إذا (found == عدم)
+    أرجع عدم;
 
   /* Return the last devlist entry we have seen with this dev_num */
-  return found->seen_last;
+  أرجع found->seen_last;
 }
 
 /* Filter mount list by skipping duplicate entries.
@@ -714,32 +714,32 @@ devlist_for_dev (dev_t dev)
    me_mountdir wins.  If DEVICES_ONLY is true (set with df -a), only update
    the global devlist_table, rather than filtering the global mount_list.  */
 
-static void
+ساكن فراغ
 filter_mount_list (bool devices_only)
 {
   /* Temporary list to keep entries ordered.  */
-  struct devlist *device_list = NULL;
-  int mount_list_size = 0;
+  بنية devlist *device_list = عدم;
+  صحيح mount_list_size = 0;
 
-  for (struct mount_entry *me = mount_list; me; me = me->me_next)
+  لكل (بنية mount_entry *me = mount_list; me; me = me->me_next)
     mount_list_size++;
 
-  devlist_table = hash_initialize (mount_list_size, NULL,
-                                   devlist_hash, devlist_compare, NULL);
-  if (devlist_table == NULL)
+  devlist_table = hash_initialize (mount_list_size, عدم,
+                                   devlist_hash, devlist_compare, عدم);
+  إذا (devlist_table == عدم)
     xalloc_die ();
 
   /* Sort all 'wanted' entries into the list device_list.  */
-  for (struct mount_entry *me = mount_list; me;)
+  لكل (بنية mount_entry *me = mount_list; me;)
     {
-      struct stat buf;
-      struct mount_entry *discard_me = NULL;
-      struct devlist *last_seen_dev = NULL, *seen_dev = NULL;
+      بنية stat buf;
+      بنية mount_entry *discard_me = عدم;
+      بنية devlist *last_seen_dev = عدم, *seen_dev = عدم;
 
       /* Avoid stating remote file systems as that may hang.
          On Linux we probably have me_dev populated from /proc/self/mountinfo,
          however we still stat() in case another device was mounted later.  */
-      if ((me->me_remote && show_local_fs)
+      إذا ((me->me_remote && show_local_fs)
           || (me->me_dummy && !show_all_fs && !show_listed_fs)
           || (!selected_fstype (me->me_type) || excluded_fstype (me->me_type))
           || -1 == stat (me->me_mountdir, &buf))
@@ -749,21 +749,21 @@ filter_mount_list (bool devices_only)
              If stat failed; add ME to be able to complain about it later.  */
           buf.st_dev = me->me_dev;
         }
-      else
+      وإلا
         {
           /* If we've already seen this device...  */
           last_seen_dev = seen_dev = devlist_for_dev (buf.st_dev);
 
-          for (; seen_dev && ! discard_me; seen_dev = seen_dev->next_same_dev)
+          لكل (; seen_dev && ! discard_me; seen_dev = seen_dev->next_same_dev)
             {
-              bool target_nearer_root = strlen (seen_dev->me->me_mountdir)
+              bool target_nearer_جذر = strlen (seen_dev->me->me_mountdir)
                                         > strlen (me->me_mountdir);
               /* With bind mounts, prefer items nearer the root of the source */
-              bool source_below_root = seen_dev->me->me_mntroot != NULL
-                                       && me->me_mntroot != NULL
+              bool source_below_جذر = seen_dev->me->me_mntroot != عدم
+                                       && me->me_mntroot != عدم
                                        && (strlen (seen_dev->me->me_mntroot)
                                            < strlen (me->me_mntroot));
-              if (! print_grand_total
+              إذا (! اطبع_grand_total
                   && me->me_remote && seen_dev->me->me_remote
                   && ! streq (seen_dev->me->me_devname, me->me_devname))
                 {
@@ -772,11 +772,11 @@ filter_mount_list (bool devices_only)
                      However avoid this when producing a total to give
                      a more accurate value in that case.  */
                 }
-              else if ((strchr (me->me_devname, '/')
+              وإلا إذا ((strchr (me->me_devname, '/')
                        /* let "real" devices with '/' in the name win.  */
                         && ! strchr (seen_dev->me->me_devname, '/'))
                        /* let points towards the root of the device win.  */
-                       || (target_nearer_root && ! source_below_root)
+                       || (target_nearer_جذر && ! source_below_جذر)
                        /* let an entry overmounted on a new device win...  */
                        || (! streq (seen_dev->me->me_devname, me->me_devname)
                            /* ... but only when matching an existing mnt point,
@@ -790,7 +790,7 @@ filter_mount_list (bool devices_only)
                   discard_me = seen_dev->me;
                   seen_dev->me = me;
                 }
-              else
+              وإلا
                 {
                   /* Discard mount entry currently being processed.  */
                   discard_me = me;
@@ -799,24 +799,24 @@ filter_mount_list (bool devices_only)
             }
         }
 
-      if (discard_me)
+      إذا (discard_me)
         {
           me = me->me_next;
-          if (! devices_only)
+          إذا (! devices_only)
             free_mount_entry (discard_me);
         }
-      else
+      وإلا
         {
           /* Add the device number to the device_table.  */
-          struct devlist *devlist = xmalloc (sizeof *devlist);
+          بنية devlist *devlist = xmalloc (حجم *devlist);
           devlist->me = me;
-          devlist->dev_num = buf.st_dev;
+          devlist->dev_رقم = buf.st_dev;
           devlist->next_same_dev = last_seen_dev;
           devlist->next = device_list;
           device_list = devlist;
 
-          struct devlist *hash_entry = hash_insert (devlist_table, devlist);
-          if (hash_entry == NULL)
+          بنية devlist *hash_entry = hash_أدرج (devlist_table, devlist);
+          إذا (hash_entry == عدم)
             xalloc_die ();
           /* Ensure lookups use this latest devlist.  */
           hash_entry->seen_last = devlist;
@@ -826,21 +826,21 @@ filter_mount_list (bool devices_only)
     }
 
   /* Finally rebuild the mount_list from the devlist.  */
-  if (! devices_only)
+  إذا (! devices_only)
     {
-      mount_list = NULL;
-      while (device_list)
+      mount_list = عدم;
+      طالما (device_list)
         {
           /* Add the mount entry.  */
-          struct mount_entry *me = device_list->me;
+          بنية mount_entry *me = device_list->me;
           me->me_next = mount_list;
           mount_list = me;
-          struct devlist *next = device_list->next;
-          free (device_list);
+          بنية devlist *next = device_list->next;
+          حرر (device_list);
           device_list = next;
         }
       hash_free (devlist_table);
-      devlist_table = NULL;
+      devlist_table = عدم;
     }
 }
 
@@ -849,24 +849,24 @@ filter_mount_list (bool devices_only)
    Return the corresponding mount entry if found or NULL if not.  */
 
 ATTRIBUTE_PURE
-static struct mount_entry const *
+ساكن بنية mount_entry ثابت *
 me_for_dev (dev_t dev)
 {
-  struct devlist *dl = devlist_for_dev (dev);
-  if (dl)
-        return dl->me;
+  بنية devlist *dl = devlist_for_dev (dev);
+  إذا (dl)
+        أرجع dl->me;
 
-  return NULL;
+  أرجع عدم;
 }
 
 /* Return true if N is a known integer value.  On many file systems,
    UINTMAX_MAX represents an unknown value; on AIX, UINTMAX_MAX - 1
    represents unknown.  Use a rule that works on AIX file systems, and
    that almost-always works on other types.  */
-static bool
-known_value (uintmax_t n)
+ساكن bool
+known_قيمة (uintmax_t n)
 {
-  return n < UINTMAX_MAX - 1;
+  أرجع n < UINTMAX_MAX - 1;
 }
 
 /* Like human_readable (N, BUF, human_output_opts, INPUT_UNITS, OUTPUT_UNITS),
@@ -876,19 +876,19 @@ known_value (uintmax_t n)
       expressed in two's complement.
     - Otherwise, return "-" if N is unknown.  */
 
-static char const *
-df_readable (bool negative, uintmax_t n, char *buf,
-             uintmax_t input_units, uintmax_t output_units)
+ساكن حرف ثابت *
+df_readable (bool negative, uintmax_t n, حرف *buf,
+             uintmax_t مدخل_units, uintmax_t output_units)
 {
-  if (! known_value (n) && !negative)
-    return "-";
-  else
+  إذا (! known_قيمة (n) && !negative)
+    أرجع "-";
+  وإلا
     {
-      char *p = human_readable (negative ? -n : n, buf + negative,
-                                human_output_opts, input_units, output_units);
-      if (negative)
+      حرف *p = human_readable (negative ? -n : n, buf + negative,
+                                human_output_opts, مدخل_units, output_units);
+      إذا (negative)
         *--p = '-';
-      return p;
+      أرجع p;
     }
 }
 
@@ -896,31 +896,31 @@ df_readable (bool negative, uintmax_t n, char *buf,
    negation flag.  It adds value of SRC and SRC_NEG to DEST and DEST_NEG.
    The result will be in DEST and DEST_NEG.  See df_readable to understand
    how the negation flag is used.  */
-static void
+ساكن فراغ
 add_uint_with_neg_flag (uintmax_t *dest, bool *dest_neg,
                         uintmax_t src, bool src_neg)
 {
-  if (*dest_neg == src_neg)
+  إذا (*dest_neg == src_neg)
     {
       *dest += src;
-      return;
+      أرجع;
     }
 
-  if (*dest_neg)
+  إذا (*dest_neg)
     *dest = -*dest;
 
-  if (src_neg)
+  إذا (src_neg)
     src = -src;
 
-  if (src < *dest)
+  إذا (src < *dest)
     *dest -= src;
-  else
+  وإلا
     {
       *dest = src - *dest;
       *dest_neg = src_neg;
     }
 
-  if (*dest_neg)
+  إذا (*dest_neg)
     *dest = -*dest;
 }
 
@@ -928,70 +928,70 @@ add_uint_with_neg_flag (uintmax_t *dest, bool *dest_neg,
    i.e., of the form HHHHHHHH-HHHH-HHHH-HHHH-HHHHHHHHHHHH, where
    each H is an upper or lower case hexadecimal digit.  */
 ATTRIBUTE_PURE
-static bool
-has_uuid_suffix (char const *s)
+ساكن bool
+has_uuid_suffix (حرف ثابت *s)
 {
   size_t len = strlen (s);
-  return (36 < len
+  أرجع (36 < len
           && strspn (s + len - 36, "-0123456789abcdefABCDEF") == 36);
 }
 
 /* Obtain the block values BV and inode values IV
    from the file system usage FSU.  */
-static void
-get_field_values (struct field_values_t *bv,
-                  struct field_values_t *iv,
-                  const struct fs_usage *fsu)
+ساكن فراغ
+get_field_قيم (بنية field_قيم_t *bv,
+                  بنية field_قيم_t *iv,
+                  ثابت بنية fs_usage *fsu)
 {
   /* Inode values.  */
-  iv->input_units = iv->output_units = 1;
+  iv->مدخل_units = iv->output_units = 1;
   iv->total = fsu->fsu_files;
-  iv->available = iv->available_to_root = fsu->fsu_ffree;
+  iv->available = iv->available_to_جذر = fsu->fsu_ffree;
   iv->negate_available = false;
 
   iv->used = UINTMAX_MAX;
   iv->negate_used = false;
-  if (known_value (iv->total) && known_value (iv->available_to_root))
+  إذا (known_قيمة (iv->total) && known_قيمة (iv->available_to_جذر))
     {
-      iv->used = iv->total - iv->available_to_root;
-      iv->negate_used = (iv->total < iv->available_to_root);
+      iv->used = iv->total - iv->available_to_جذر;
+      iv->negate_used = (iv->total < iv->available_to_جذر);
     }
 
   /* Block values.  */
-  bv->input_units = fsu->fsu_blocksize;
+  bv->مدخل_units = fsu->fsu_blocksize;
   bv->output_units = output_block_size;
   bv->total = fsu->fsu_blocks;
   bv->available = fsu->fsu_bavail;
-  bv->available_to_root = fsu->fsu_bfree;
-  bv->negate_available = (fsu->fsu_bavail_top_bit_set
-                         && known_value (fsu->fsu_bavail));
+  bv->available_to_جذر = fsu->fsu_bfree;
+  bv->negate_available = (fsu->fsu_bavail_قمة_bit_set
+                         && known_قيمة (fsu->fsu_bavail));
 
   bv->used = UINTMAX_MAX;
   bv->negate_used = false;
-  if (known_value (bv->total) && known_value (bv->available_to_root))
+  إذا (known_قيمة (bv->total) && known_قيمة (bv->available_to_جذر))
     {
-      bv->used = bv->total - bv->available_to_root;
-      bv->negate_used = (bv->total < bv->available_to_root);
+      bv->used = bv->total - bv->available_to_جذر;
+      bv->negate_used = (bv->total < bv->available_to_جذر);
     }
 }
 
 /* Add block and inode values to grand total.  */
-static void
-add_to_grand_total (struct field_values_t *bv, struct field_values_t *iv)
+ساكن فراغ
+add_to_grand_total (بنية field_قيم_t *bv, بنية field_قيم_t *iv)
 {
-  if (known_value (iv->total))
+  إذا (known_قيمة (iv->total))
     grand_fsu.fsu_files += iv->total;
-  if (known_value (iv->available))
+  إذا (known_قيمة (iv->available))
     grand_fsu.fsu_ffree += iv->available;
 
-  if (known_value (bv->total))
-    grand_fsu.fsu_blocks += bv->input_units * bv->total;
-  if (known_value (bv->available_to_root))
-    grand_fsu.fsu_bfree += bv->input_units * bv->available_to_root;
-  if (known_value (bv->available))
+  إذا (known_قيمة (bv->total))
+    grand_fsu.fsu_blocks += bv->مدخل_units * bv->total;
+  إذا (known_قيمة (bv->available_to_جذر))
+    grand_fsu.fsu_bfree += bv->مدخل_units * bv->available_to_جذر;
+  إذا (known_قيمة (bv->available))
     add_uint_with_neg_flag (&grand_fsu.fsu_bavail,
-                            &grand_fsu.fsu_bavail_top_bit_set,
-                            bv->input_units * bv->available,
+                            &grand_fsu.fsu_bavail_قمة_bit_set,
+                            bv->مدخل_units * bv->available,
                             bv->negate_available);
 }
 
@@ -1010,92 +1010,92 @@ add_to_grand_total (struct field_values_t *bv, struct field_values_t *iv)
    Caller must set PROCESS_ALL to true when iterating over all entries, as
    when df is invoked with no non-option argument.  See below for details.  */
 
-static void
-get_dev (char const *device, char const *mount_point, char const *file,
-         char const *stat_file, char const *fstype,
+ساكن فراغ
+get_dev (حرف ثابت *device, حرف ثابت *mount_point, حرف ثابت *file,
+         حرف ثابت *stat_file, حرف ثابت *fstype,
          bool me_dummy, bool me_remote,
-         const struct fs_usage *force_fsu,
+         ثابت بنية fs_usage *force_fsu,
          bool process_all)
 {
-  if (me_remote && show_local_fs)
-    return;
+  إذا (me_remote && show_local_fs)
+    أرجع;
 
-  if (me_dummy && !show_all_fs && !show_listed_fs)
-    return;
+  إذا (me_dummy && !show_all_fs && !show_listed_fs)
+    أرجع;
 
-  if (!selected_fstype (fstype) || excluded_fstype (fstype))
-    return;
+  إذا (!selected_fstype (fstype) || excluded_fstype (fstype))
+    أرجع;
 
   /* Ignore relative MOUNT_POINTs, which are present for example
      in /proc/mounts on Linux with network namespaces.  */
-  if (!force_fsu && ! IS_ABSOLUTE_FILE_NAME (mount_point))
-    return;
+  إذا (!force_fsu && ! IS_ABSOLUTE_FILE_NAME (mount_point))
+    أرجع;
 
-  if (!stat_file)
+  إذا (!stat_file)
     stat_file = mount_point;
 
-  struct fs_usage fsu;
-  if (force_fsu)
+  بنية fs_usage fsu;
+  إذا (force_fsu)
     fsu = *force_fsu;
-  else if (get_fs_usage (stat_file, device, &fsu))
+  وإلا إذا (get_fs_usage (stat_file, device, &fsu))
     {
       /* If we can't access a system provided entry due
          to it not being present (now), or due to permissions,
          just output placeholder values rather than failing.  */
-      if (process_all && (errno == EACCES || errno == ENOENT))
+      إذا (process_all && (errno == EACCES || errno == ENOENT))
         {
-          if (! show_all_fs)
-            return;
+          إذا (! show_all_fs)
+            أرجع;
 
           fstype = "-";
-          fsu.fsu_bavail_top_bit_set = false;
+          fsu.fsu_bavail_قمة_bit_set = false;
           fsu.fsu_blocksize = fsu.fsu_blocks = fsu.fsu_bfree =
           fsu.fsu_bavail = fsu.fsu_files = fsu.fsu_ffree = UINTMAX_MAX;
         }
-      else
+      وإلا
         {
           error (0, errno, "%s", quotef (stat_file));
           exit_status = EXIT_FAILURE;
-          return;
+          أرجع;
         }
     }
-  else if (process_all && show_all_fs)
+  وإلا إذا (process_all && show_all_fs)
     {
       /* Ensure we don't output incorrect stats for over-mounted directories.
          Discard stats when the device name doesn't match.  Though don't
          discard when used and current mount entries are both remote due
          to the possibility of aliased host names or exports.  */
-      struct stat sb;
-      if (stat (stat_file, &sb) == 0)
+      بنية stat sb;
+      إذا (stat (stat_file, &sb) == 0)
         {
-          struct mount_entry const * dev_me = me_for_dev (sb.st_dev);
-          if (dev_me && ! streq (dev_me->me_devname, device)
+          بنية mount_entry ثابت * dev_me = me_for_dev (sb.st_dev);
+          إذا (dev_me && ! streq (dev_me->me_devname, device)
               && (! dev_me->me_remote || ! me_remote))
             {
               fstype = "-";
-              fsu.fsu_bavail_top_bit_set = false;
+              fsu.fsu_bavail_قمة_bit_set = false;
               fsu.fsu_blocksize = fsu.fsu_blocks = fsu.fsu_bfree =
               fsu.fsu_bavail = fsu.fsu_files = fsu.fsu_ffree = UINTMAX_MAX;
             }
         }
     }
 
-  if (fsu.fsu_blocks == 0 && !show_all_fs && !show_listed_fs)
-    return;
+  إذا (fsu.fsu_blocks == 0 && !show_all_fs && !show_listed_fs)
+    أرجع;
 
-  if (! force_fsu)
+  إذا (! force_fsu)
     file_systems_processed = true;
 
   alloc_table_row ();
 
-  if (! device)
+  إذا (! device)
     device = "-";		/* unknown */
 
-  if (! file)
+  إذا (! file)
     file = "-";			/* unspecified */
 
-  char *dev_name = xstrdup (device);
-  char *resolved_dev;
+  حرف *dev_name = xstrdup (device);
+  حرف *resolved_dev;
 
   /* On some systems, dev_name is a long-named symlink like
      /dev/disk/by-uuid/828fc648-9f30-43d8-a0b1-f7196a2edb66 pointing to a
@@ -1103,81 +1103,81 @@ get_dev (char const *device, char const *mount_point, char const *file,
      like /dev/mapper/luks-828fc648-9f30-43d8-a0b1-f7196a2edb66 and point to
      /dev/dm-0.  When process_all is true and dev_name is a symlink whose
      name ends with a UUID use the resolved name instead.  */
-  if (process_all
+  إذا (process_all
       && has_uuid_suffix (dev_name)
       && (resolved_dev = canonicalize_filename_mode (dev_name, CAN_EXISTING)))
     {
-      free (dev_name);
+      حرر (dev_name);
       dev_name = resolved_dev;
     }
 
-  if (! fstype)
+  إذا (! fstype)
     fstype = "-";		/* unknown */
 
-  struct field_values_t block_values;
-  struct field_values_t inode_values;
-  get_field_values (&block_values, &inode_values, &fsu);
+  بنية field_قيم_t block_قيم;
+  بنية field_قيم_t inode_قيم;
+  get_field_قيم (&block_قيم, &inode_قيم, &fsu);
 
   /* Add to grand total unless processing grand total line.  */
-  if (print_grand_total && ! force_fsu)
-    add_to_grand_total (&block_values, &inode_values);
+  إذا (اطبع_grand_total && ! force_fsu)
+    add_to_grand_total (&block_قيم, &inode_قيم);
 
-  for (idx_t col = 0; col < table.ncolumns; col++)
+  لكل (idx_t col = 0; col < table.ncolumns; col++)
     {
-      char buf[LONGEST_HUMAN_READABLE + 2];
-      char *cell;
+      حرف buf[LONGEST_HUMAN_READABLE + 2];
+      حرف *cell;
 
-      struct field_values_t *v;
-      switch (table.columns[col]->field_type)
+      بنية field_قيم_t *v;
+      بدل (table.columns[col]->field_type)
         {
-        case BLOCK_FLD:
-          v = &block_values;
-          break;
-        case INODE_FLD:
-          v = &inode_values;
-          break;
-        case OTHER_FLD:
-          v = NULL;
-          break;
-        default:
+        حالة BLOCK_FLD:
+          v = &block_قيم;
+          اكسر;
+        حالة INODE_FLD:
+          v = &inode_قيم;
+          اكسر;
+        حالة OTHER_FLD:
+          v = عدم;
+          اكسر;
+        افتراضي:
           affirm (!"bad field_type");
         }
 
-      switch (table.columns[col]->field)
+      بدل (table.columns[col]->field)
         {
-        case SOURCE_FIELD:
+        حالة SOURCE_FIELD:
           cell = xstrdup (dev_name);
-          break;
+          اكسر;
 
-        case FSTYPE_FIELD:
+        حالة FSTYPE_FIELD:
           cell = xstrdup (fstype);
-          break;
+          اكسر;
 
-        case SIZE_FIELD:
-        case ITOTAL_FIELD:
+        حالة SIZE_FIELD:
+        حالة ITOTAL_FIELD:
           cell = xstrdup (df_readable (false, v->total, buf,
-                                       v->input_units, v->output_units));
-          break;
+                                       v->مدخل_units, v->output_units));
+          اكسر;
 
-        case USED_FIELD:
-        case IUSED_FIELD:
+        حالة USED_FIELD:
+        حالة IUSED_FIELD:
           cell = xstrdup (df_readable (v->negate_used, v->used, buf,
-                                       v->input_units, v->output_units));
-          break;
+                                       v->مدخل_units, v->output_units));
+          اكسر;
 
-        case AVAIL_FIELD:
-        case IAVAIL_FIELD:
+        حالة AVAIL_FIELD:
+        حالة IAVAIL_FIELD:
           cell = xstrdup (df_readable (v->negate_available, v->available, buf,
-                                       v->input_units, v->output_units));
-          break;
+                                       v->مدخل_units, v->output_units));
+          اكسر;
 
-        case PCENT_FIELD:
-        case IPCENT_FIELD:
+        حالة PCENT_FIELD:
+        حالة IPCENT_FIELD:
           {
-            double pct = -1;
-            if (! known_value (v->used) || ! known_value (v->available))
+            مزدوج pct = -1;
+            إذا (! known_قيمة (v->used) || ! known_قيمة (v->available))
               ;
-            else if (!v->negate_used
+            وإلا إذا (!v->negate_used
                      && v->used <= UINTMAX_MAX / 100
                      && v->used + v->available != 0
                      && (v->used + v->available < v->used)
@@ -1187,195 +1187,195 @@ get_dev (char const *device, char const *mount_point, char const *file,
                 uintmax_t nonroot_total = v->used + v->available;
                 pct = u100 / nonroot_total + (u100 % nonroot_total != 0);
               }
-            else
+            وإلا
               {
                 /* The calculation cannot be done easily with integer
                    arithmetic.  Fall back on floating point.  This can suffer
                    from minor rounding errors, but doing it exactly requires
                    multiple precision arithmetic, and it's not worth the
                    aggravation.  */
-                double u = v->negate_used ? - (double) - v->used : v->used;
-                double a = v->negate_available
-                           ? - (double) - v->available : v->available;
-                double nonroot_total = u + a;
-                if (nonroot_total)
+                مزدوج u = v->negate_used ? - (مزدوج) - v->used : v->used;
+                مزدوج a = v->negate_available
+                           ? - (مزدوج) - v->available : v->available;
+                مزدوج nonroot_total = u + a;
+                إذا (nonroot_total)
                   {
-                    long int lipct = pct = u * 100 / nonroot_total;
-                    double ipct = lipct;
+                    long صحيح lipct = pct = u * 100 / nonroot_total;
+                    مزدوج ipct = lipct;
 
                     /* Like 'pct = ceil (dpct);', but avoid ceil so that
                        the math library needn't be linked.  */
-                    if (ipct - 1 < pct && pct <= ipct + 1)
+                    إذا (ipct - 1 < pct && pct <= ipct + 1)
                       pct = ipct + (ipct < pct);
                   }
               }
 
             cell = pct < 0 ? xstrdup ("-") : xasprintf ("%.0f%%", pct);
-            break;
+            اكسر;
           }
 
-        case FILE_FIELD:
+        حالة FILE_FIELD:
           cell = xstrdup (file);
-          break;
+          اكسر;
 
-        case TARGET_FIELD:
+        حالة TARGET_FIELD:
 #ifdef HIDE_AUTOMOUNT_PREFIX
           /* Don't print the first directory name in MOUNT_POINT if it's an
              artifact of an automounter.  This is a bit too aggressive to be
              the default.  */
-          if (STRNCMP_LIT (mount_point, "/auto/") == 0)
+          إذا (STRNCMP_LIT (mount_point, "/auto/") == 0)
             mount_point += 5;
-          else if (STRNCMP_LIT (mount_point, "/tmp_mnt/") == 0)
+          وإلا إذا (STRNCMP_LIT (mount_point, "/tmp_mnt/") == 0)
             mount_point += 8;
 #endif
           cell = xstrdup (mount_point);
-          break;
+          اكسر;
 
-        case INVALID_FIELD:
-        default:
+        حالة INVALID_FIELD:
+        افتراضي:
           affirm (!"unhandled field");
         }
 
       affirm (cell);
 
       replace_problematic_chars (cell);
-      int cell_width = mbswidth (cell, MBSWIDTH_FLAGS);
+      صحيح cell_width = mbswidth (cell, MBSWIDTH_FLAGS);
       table.columns[col]->width = MAX (table.columns[col]->width, cell_width);
       table.rows[table.nrows - 1][col] = cell;
     }
-  free (dev_name);
+  حرر (dev_name);
 }
 
 /* Scan the mount list returning the _last_ device found for MOUNT.
    NULL is returned if MOUNT not found.  The result is malloced.  */
-static char *
-last_device_for_mount (char const *mount)
+ساكن حرف *
+last_device_for_mount (حرف ثابت *mount)
 {
-  struct mount_entry const *le = NULL;
+  بنية mount_entry ثابت *le = عدم;
 
-  for (struct mount_entry const *me = mount_list; me; me = me->me_next)
+  لكل (بنية mount_entry ثابت *me = mount_list; me; me = me->me_next)
     {
-      if (streq (me->me_mountdir, mount))
+      إذا (streq (me->me_mountdir, mount))
         le = me;
     }
 
-  if (le)
+  إذا (le)
     {
-      char *devname = le->me_devname;
-      char *canon_dev = canonicalize_file_name (devname);
-      if (canon_dev && IS_ABSOLUTE_FILE_NAME (canon_dev))
-        return canon_dev;
-      free (canon_dev);
-      return xstrdup (le->me_devname);
+      حرف *devname = le->me_devname;
+      حرف *canon_dev = canonicalize_file_name (devname);
+      إذا (canon_dev && IS_ABSOLUTE_FILE_NAME (canon_dev))
+        أرجع canon_dev;
+      حرر (canon_dev);
+      أرجع xstrdup (le->me_devname);
     }
-  else
-    return NULL;
+  وإلا
+    أرجع عدم;
 }
 
 /* If DEVICE corresponds to a mount point, show its usage
    and return true.  Otherwise, return false.  */
-static bool
-get_device (char const *device)
+ساكن bool
+get_device (حرف ثابت *device)
 {
-  struct mount_entry const *best_match = NULL;
+  بنية mount_entry ثابت *best_match = عدم;
   bool best_match_accessible = false;
   bool eclipsed_device = false;
-  char const *file = device;
+  حرف ثابت *file = device;
 
-  char *resolved = canonicalize_file_name (device);
-  if (resolved && IS_ABSOLUTE_FILE_NAME (resolved))
+  حرف *resolved = canonicalize_file_name (device);
+  إذا (resolved && IS_ABSOLUTE_FILE_NAME (resolved))
     device = resolved;
 
   size_t best_match_len = SIZE_MAX;
-  for (struct mount_entry const *me = mount_list; me; me = me->me_next)
+  لكل (بنية mount_entry ثابت *me = mount_list; me; me = me->me_next)
     {
       /* TODO: Should cache canon_dev in the mount_entry struct.  */
-      char *devname = me->me_devname;
-      char *canon_dev = canonicalize_file_name (me->me_devname);
-      if (canon_dev && IS_ABSOLUTE_FILE_NAME (canon_dev))
+      حرف *devname = me->me_devname;
+      حرف *canon_dev = canonicalize_file_name (me->me_devname);
+      إذا (canon_dev && IS_ABSOLUTE_FILE_NAME (canon_dev))
         devname = canon_dev;
 
-      if (streq (device, devname))
+      إذا (streq (device, devname))
         {
-          char *last_device = last_device_for_mount (me->me_mountdir);
+          حرف *last_device = last_device_for_mount (me->me_mountdir);
           eclipsed_device = last_device && ! streq (last_device, devname);
           size_t len = strlen (me->me_mountdir);
 
-          if (! eclipsed_device
+          إذا (! eclipsed_device
               && (! best_match_accessible || len < best_match_len))
             {
-              struct stat device_stats;
+              بنية stat device_stats;
               bool this_match_accessible = false;
 
-              if (stat (me->me_mountdir, &device_stats) == 0)
+              إذا (stat (me->me_mountdir, &device_stats) == 0)
                 best_match_accessible = this_match_accessible = true;
 
-              if (this_match_accessible
+              إذا (this_match_accessible
                   || (! best_match_accessible && len < best_match_len))
                 {
                   best_match = me;
-                  if (len == 1) /* Traditional root.  */
+                  إذا (len == 1) /* Traditional root.  */
                     {
-                      free (last_device);
-                      free (canon_dev);
-                      break;
+                      حرر (last_device);
+                      حرر (canon_dev);
+                      اكسر;
                     }
-                  else
+                  وإلا
                     best_match_len = len;
                 }
             }
 
-          free (last_device);
+          حرر (last_device);
         }
 
-      free (canon_dev);
+      حرر (canon_dev);
     }
 
-  free (resolved);
+  حرر (resolved);
 
-  if (best_match)
+  إذا (best_match)
     {
-      get_dev (best_match->me_devname, best_match->me_mountdir, file, NULL,
+      get_dev (best_match->me_devname, best_match->me_mountdir, file, عدم,
                best_match->me_type, best_match->me_dummy,
-               best_match->me_remote, NULL, false);
-      return true;
+               best_match->me_remote, عدم, false);
+      أرجع true;
     }
-  else if (eclipsed_device)
+  وإلا إذا (eclipsed_device)
     {
       error (0, 0, _("cannot access %s: over-mounted by another device"),
              quoteaf (file));
       exit_status = EXIT_FAILURE;
-      return true;
+      أرجع true;
     }
 
-  return false;
+  أرجع false;
 }
 
 /* Figure out which device file or directory POINT is mounted on
    and show its device usage.
    STATP must be the result of 'stat (POINT, STATP)'.  */
-static void
-get_point (char const *point, const struct stat *statp)
+ساكن فراغ
+get_point (حرف ثابت *point, ثابت بنية stat *statp)
 {
-  struct stat device_stats;
-  struct mount_entry const *best_match = NULL;
+  بنية stat device_stats;
+  بنية mount_entry ثابت *best_match = عدم;
 
   /* Calculate the real absolute file name for POINT, and use that to find
      the mount point.  This avoids statting unavailable mount points,
      which can hang df.  */
-  char *resolved = canonicalize_file_name (point);
-  if (resolved && resolved[0] == '/')
+  حرف *resolved = canonicalize_file_name (point);
+  إذا (resolved && resolved[0] == '/')
     {
       size_t resolved_len = strlen (resolved);
       size_t best_match_len = 0;
 
-      for (struct mount_entry *me = mount_list; me; me = me->me_next)
+      لكل (بنية mount_entry *me = mount_list; me; me = me->me_next)
         {
-          if (!streq (me->me_type, "lofs")
+          إذا (!streq (me->me_type, "lofs")
               && (!best_match || best_match->me_dummy || !me->me_dummy))
             {
               size_t len = strlen (me->me_mountdir);
-              if (best_match_len <= len && len <= resolved_len
+              إذا (best_match_len <= len && len <= resolved_len
                   && (len == 1 /* root file system */
                       || ((len == resolved_len || resolved[len] == '/')
                           && STREQ_LEN (me->me_mountdir, resolved, len))))
@@ -1386,25 +1386,25 @@ get_point (char const *point, const struct stat *statp)
             }
         }
     }
-  free (resolved);
-  if (best_match
+  حرر (resolved);
+  إذا (best_match
       && (stat (best_match->me_mountdir, &device_stats) != 0
           || device_stats.st_dev != statp->st_dev))
-    best_match = NULL;
+    best_match = عدم;
 
-  if (! best_match)
-    for (struct mount_entry *me = mount_list; me; me = me->me_next)
+  إذا (! best_match)
+    لكل (بنية mount_entry *me = mount_list; me; me = me->me_next)
       {
-        if (me->me_dev == (dev_t) -1)
+        إذا (me->me_dev == (dev_t) -1)
           {
-            if (stat (me->me_mountdir, &device_stats) == 0)
+            إذا (stat (me->me_mountdir, &device_stats) == 0)
               me->me_dev = device_stats.st_dev;
-            else
+            وإلا
               {
                 /* Report only I/O errors.  Other errors might be
                    caused by shadowed mount points, which means POINT
                    can't possibly be on this file system.  */
-                if (errno == EIO)
+                إذا (errno == EIO)
                   {
                     error (0, errno, "%s", quotef (me->me_mountdir));
                     exit_status = EXIT_FAILURE;
@@ -1415,36 +1415,36 @@ get_point (char const *point, const struct stat *statp)
               }
           }
 
-        if (statp->st_dev == me->me_dev
+        إذا (statp->st_dev == me->me_dev
             && !streq (me->me_type, "lofs")
             && (!best_match || best_match->me_dummy || !me->me_dummy))
           {
             /* Skip bogus mtab entries.  */
-            if (stat (me->me_mountdir, &device_stats) != 0
+            إذا (stat (me->me_mountdir, &device_stats) != 0
                 || device_stats.st_dev != me->me_dev)
               me->me_dev = (dev_t) -2;
-            else
+            وإلا
               best_match = me;
           }
       }
 
-  if (best_match)
+  إذا (best_match)
     get_dev (best_match->me_devname, best_match->me_mountdir, point, point,
              best_match->me_type, best_match->me_dummy, best_match->me_remote,
-             NULL, false);
-  else
+             عدم, false);
+  وإلا
     {
       /* We couldn't find the mount entry corresponding to POINT.  Go ahead and
          print as much info as we can; methods that require the device to be
          present will fail at a later point.  */
 
       /* Find the actual mount point.  */
-      char *mp = find_mount_point (point, statp);
-      if (mp)
+      حرف *mp = find_mount_point (point, statp);
+      إذا (mp)
         {
-          get_dev (NULL, mp, point, NULL, NULL,
-                   false, false, NULL, false);
-          free (mp);
+          get_dev (عدم, mp, point, عدم, عدم,
+                   false, false, عدم, false);
+          حرر (mp);
         }
     }
 }
@@ -1452,12 +1452,12 @@ get_point (char const *point, const struct stat *statp)
 /* Determine what kind of node NAME is and show the device usage
    for it.  STATP is the results of 'stat' on NAME.  */
 
-static void
-get_entry (char const *name, struct stat const *statp)
+ساكن فراغ
+get_entry (حرف ثابت *name, بنية stat ثابت *statp)
 {
-  if ((S_ISBLK (statp->st_mode) || S_ISCHR (statp->st_mode))
+  إذا ((S_ISBLK (statp->st_mode) || S_ISCHR (statp->st_mode))
       && get_device (name))
-    return;
+    أرجع;
 
   get_point (name, statp);
 }
@@ -1465,53 +1465,53 @@ get_entry (char const *name, struct stat const *statp)
 /* Show all mounted file systems, except perhaps those that are of
    an unselected type or are empty.  */
 
-static void
-get_all_entries (void)
+ساكن فراغ
+get_all_entries (فراغ)
 {
   filter_mount_list (show_all_fs);
 
-  for (struct mount_entry *me = mount_list; me; me = me->me_next)
-    get_dev (me->me_devname, me->me_mountdir, NULL, NULL, me->me_type,
-             me->me_dummy, me->me_remote, NULL, true);
+  لكل (بنية mount_entry *me = mount_list; me; me = me->me_next)
+    get_dev (me->me_devname, me->me_mountdir, عدم, عدم, me->me_type,
+             me->me_dummy, me->me_remote, عدم, true);
 }
 
 /* Add FSTYPE to the list of file system types to display.  */
 
-static void
-add_fs_type (char const *fstype)
+ساكن فراغ
+add_fs_type (حرف ثابت *fstype)
 {
-  struct fs_type_list *fsp;
+  بنية fs_type_list *fsp;
 
-  fsp = xmalloc (sizeof *fsp);
-  fsp->fs_name = (char *) fstype;
+  fsp = xmalloc (حجم *fsp);
+  fsp->fs_name = (حرف *) fstype;
   fsp->fs_next = fs_select_list;
   fs_select_list = fsp;
 }
 
 /* Add FSTYPE to the list of file system types to be omitted.  */
 
-static void
-add_excluded_fs_type (char const *fstype)
+ساكن فراغ
+add_excluded_fs_type (حرف ثابت *fstype)
 {
-  struct fs_type_list *fsp;
+  بنية fs_type_list *fsp;
 
-  fsp = xmalloc (sizeof *fsp);
-  fsp->fs_name = (char *) fstype;
+  fsp = xmalloc (حجم *fsp);
+  fsp->fs_name = (حرف *) fstype;
   fsp->fs_next = fs_exclude_list;
   fs_exclude_list = fsp;
 }
 
-void
-usage (int status)
+فراغ
+usage (صحيح status)
 {
-  if (status != EXIT_SUCCESS)
+  إذا (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  وإلا
     {
       printf (_("Usage: %s [OPTION]... [FILE]...\n"), program_name);
       fputs (_("\
 Show information about the file system on which each FILE resides,\n\
-or all file systems by default.\n\
+or all file systems by افتراضي.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
@@ -1529,11 +1529,11 @@ or all file systems by default.\n\
 "));
       oputs (_("\
   -h, --human-readable\n\
-         print sizes in powers of 1024 (e.g., 1023M)\n\
+         اطبع_2 sizes in powers of 1024 (e.g., 1023M)\n\
 "));
       oputs (_("\
   -H, --si\n\
-         print sizes in powers of 1000 (e.g., 1.1G)\n\
+         اطبع_2 sizes in powers of 1000 (e.g., 1.1G)\n\
 "));
       oputs (_("\
   -i, --inodes\n\
@@ -1549,12 +1549,12 @@ or all file systems by default.\n\
 "));
       oputs (_("\
       --no-sync\n\
-         do not invoke sync before getting usage info (default)\n\
+         افعل not invoke sync before getting usage info (افتراضي)\n\
 "));
       oputs (_("\
       --output[=FIELD_LIST]\n\
          use the output format defined by FIELD_LIST,\n\
-         or print all fields if FIELD_LIST is omitted\n\
+         or اطبع_2 all fields إذا FIELD_LIST is omitted\n\
 "));
       oputs (_("\
   -P, --portability\n\
@@ -1574,8 +1574,8 @@ or all file systems by default.\n\
          limit listing to file systems of type TYPE\n\
 "));
       oputs (_("\
-  -T, --print-type\n\
-         print file system type\n\
+  -T, --اطبع_2-type\n\
+         اطبع_2 file system type\n\
 "));
       oputs (_("\
   -x, --exclude-type=TYPE\n\
@@ -1599,10 +1599,10 @@ field names are: 'source', 'fstype', 'itotal', 'iused', 'iavail', 'ipcent',\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+صحيح
+main (صحيح argc, حرف **argv)
 {
-  struct stat *stats = NULL;
+  بنية stat *stats = عدم;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -1615,244 +1615,244 @@ main (int argc, char **argv)
   /* If true, use the POSIX output format.  */
   bool posix_format = false;
 
-  char const *msg_mut_excl = _("options %s and %s are mutually exclusive");
+  حرف ثابت *رسالة_mut_excl = _("options %s and %s are mutually exclusive");
 
-  while (true)
+  طالما (true)
     {
-      int oi = -1;
-      int c = getopt_long (argc, argv, "aB:iF:hHklmPTt:vx:", long_options,
+      صحيح oi = -1;
+      صحيح c = getopt_long (argc, argv, "aB:iF:hHklmPTt:vx:", long_options,
                            &oi);
-      if (c == -1)
-        break;
+      إذا (c == -1)
+        اكسر;
 
-      switch (c)
+      بدل (c)
         {
-        case 'a':
+        حالة 'a':
           show_all_fs = true;
-          break;
-        case 'B':
+          اكسر;
+        حالة 'B':
           {
-            enum strtol_error e = human_options (optarg, &human_output_opts,
+            تعداد strtol_error e = human_options (optarg, &human_output_opts,
                                                  &output_block_size);
-            if (e != LONGINT_OK)
+            إذا (e != LONGINT_OK)
               xstrtol_fatal (e, oi, c, long_options, optarg);
           }
-          break;
-        case 'i':
-          if (header_mode == OUTPUT_MODE)
+          اكسر;
+        حالة 'i':
+          إذا (header_mode == OUTPUT_MODE)
             {
-              error (0, 0, msg_mut_excl, "-i", "--output");
+              error (0, 0, رسالة_mut_excl, "-i", "--output");
               usage (EXIT_FAILURE);
             }
           header_mode = INODES_MODE;
-          break;
-        case 'h':
+          اكسر;
+        حالة 'h':
           human_output_opts = human_autoscale | human_SI | human_base_1024;
           output_block_size = 1;
-          break;
-        case 'H':
+          اكسر;
+        حالة 'H':
           human_output_opts = human_autoscale | human_SI;
           output_block_size = 1;
-          break;
-        case 'k':
+          اكسر;
+        حالة 'k':
           human_output_opts = 0;
           output_block_size = 1024;
-          break;
-        case 'l':
+          اكسر;
+        حالة 'l':
           show_local_fs = true;
-          break;
-        case 'm': /* obsolescent, exists for BSD compatibility */
+          اكسر;
+        حالة 'm': /* obsolescent, exists for BSD compatibility */
           human_output_opts = 0;
           output_block_size = 1024 * 1024;
-          break;
-        case 'T':
-          if (header_mode == OUTPUT_MODE)
+          اكسر;
+        حالة 'T':
+          إذا (header_mode == OUTPUT_MODE)
             {
-              error (0, 0, msg_mut_excl, "-T", "--output");
+              error (0, 0, رسالة_mut_excl, "-T", "--output");
               usage (EXIT_FAILURE);
             }
-          print_type = true;
-          break;
-        case 'P':
-          if (header_mode == OUTPUT_MODE)
+          اطبع_type = true;
+          اكسر;
+        حالة 'P':
+          إذا (header_mode == OUTPUT_MODE)
             {
-              error (0, 0, msg_mut_excl, "-P", "--output");
+              error (0, 0, رسالة_mut_excl, "-P", "--output");
               usage (EXIT_FAILURE);
             }
           posix_format = true;
-          break;
-        case SYNC_OPTION:
+          اكسر;
+        حالة SYNC_OPTION:
           require_sync = true;
-          break;
-        case NO_SYNC_OPTION:
+          اكسر;
+        حالة NO_SYNC_OPTION:
           require_sync = false;
-          break;
+          اكسر;
 
-        case 'F':
+        حالة 'F':
           /* Accept -F as a synonym for -t for compatibility with Solaris.  */
-        case 't':
+        حالة 't':
           add_fs_type (optarg);
-          break;
+          اكسر;
 
-        case 'v':		/* For SysV compatibility.  */
+        حالة 'v':		/* For SysV compatibility.  */
           /* ignore */
-          break;
-        case 'x':
+          اكسر;
+        حالة 'x':
           add_excluded_fs_type (optarg);
-          break;
+          اكسر;
 
-        case OUTPUT_OPTION:
-          if (header_mode == INODES_MODE)
+        حالة OUTPUT_OPTION:
+          إذا (header_mode == INODES_MODE)
             {
-              error (0, 0, msg_mut_excl, "-i", "--output");
+              error (0, 0, رسالة_mut_excl, "-i", "--output");
               usage (EXIT_FAILURE);
             }
-          if (posix_format && header_mode == DEFAULT_MODE)
+          إذا (posix_format && header_mode == DEFAULT_MODE)
             {
-              error (0, 0, msg_mut_excl, "-P", "--output");
+              error (0, 0, رسالة_mut_excl, "-P", "--output");
               usage (EXIT_FAILURE);
             }
-          if (print_type)
+          إذا (اطبع_type)
             {
-              error (0, 0, msg_mut_excl, "-T", "--output");
+              error (0, 0, رسالة_mut_excl, "-T", "--output");
               usage (EXIT_FAILURE);
             }
           header_mode = OUTPUT_MODE;
-          if (optarg)
+          إذا (optarg)
             decode_output_arg (optarg);
-          break;
+          اكسر;
 
-        case TOTAL_OPTION:
-          print_grand_total = true;
-          break;
+        حالة TOTAL_OPTION:
+          اطبع_grand_total = true;
+          اكسر;
 
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        افتراضي:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (human_output_opts == -1)
+  إذا (human_output_opts == -1)
     {
-      if (posix_format)
+      إذا (posix_format)
         {
           human_output_opts = 0;
           output_block_size = (getenv ("POSIXLY_CORRECT") ? 512 : 1024);
         }
-      else
+      وإلا
         human_options (getenv ("DF_BLOCK_SIZE"),
                        &human_output_opts, &output_block_size);
     }
 
-  if (header_mode == INODES_MODE || header_mode == OUTPUT_MODE)
+  إذا (header_mode == INODES_MODE || header_mode == OUTPUT_MODE)
     ;
-  else if (human_output_opts & human_autoscale)
+  وإلا إذا (human_output_opts & human_autoscale)
     header_mode = HUMAN_MODE;
-  else if (posix_format)
+  وإلا إذا (posix_format)
     header_mode = POSIX_MODE;
 
   /* Fail if the same file system type was both selected and excluded.  */
   {
     bool match = false;
-    for (struct fs_type_list *fs_incl = fs_select_list; fs_incl;
+    لكل (بنية fs_type_list *fs_incl = fs_select_list; fs_incl;
          fs_incl = fs_incl->fs_next)
       {
-        for (struct fs_type_list *fs_excl = fs_exclude_list; fs_excl;
+        لكل (بنية fs_type_list *fs_excl = fs_exclude_list; fs_excl;
              fs_excl = fs_excl->fs_next)
           {
-            if (streq (fs_incl->fs_name, fs_excl->fs_name))
+            إذا (streq (fs_incl->fs_name, fs_excl->fs_name))
               {
                 error (0, 0,
                        _("file system type %s both selected and excluded"),
                        quote (fs_incl->fs_name));
                 match = true;
-                break;
+                اكسر;
               }
           }
       }
-    if (match)
-      return EXIT_FAILURE;
+    إذا (match)
+      أرجع EXIT_FAILURE;
   }
 
-  if (optind < argc)
+  إذا (optind < argc)
     {
       /* stat each of the given entries to make sure any corresponding
          partition is automounted.  This must be done before reading the
          file system table.  */
-      stats = xnmalloc (argc - optind, sizeof *stats);
-      for (int i = optind; i < argc; ++i)
+      stats = xnmalloc (argc - optind, حجم *stats);
+      لكل (صحيح i = optind; i < argc; ++i)
         {
-          int err = automount_stat_err (argv[i], &stats[i - optind]);
-          if (err != 0)
+          صحيح err = automount_stat_err (argv[i], &stats[i - optind]);
+          إذا (err != 0)
             {
               error (0, err, "%s", quotef (argv[i]));
               exit_status = EXIT_FAILURE;
-              argv[i] = NULL;
+              argv[i] = عدم;
             }
         }
     }
 
   mount_list =
-    read_file_system_list ((fs_select_list != NULL
-                            || fs_exclude_list != NULL
-                            || print_type
+    read_file_system_list ((fs_select_list != عدم
+                            || fs_exclude_list != عدم
+                            || اطبع_type
                             || field_data[FSTYPE_FIELD].used
                             || show_local_fs));
 
-  if (mount_list == NULL)
+  إذا (mount_list == عدم)
     {
       /* Couldn't read the table of mounted file systems.
          Fail if df was invoked with no file name arguments,
          or when either of -a, -l, -t or -x is used with file name
          arguments.  Otherwise, merely give a warning and proceed.  */
-      int status = 0;
-      if ( ! (optind < argc)
+      صحيح status = 0;
+      إذا ( ! (optind < argc)
            || (show_all_fs
                || show_local_fs
-               || fs_select_list != NULL
-               || fs_exclude_list != NULL))
+               || fs_select_list != عدم
+               || fs_exclude_list != عدم))
         {
           status = EXIT_FAILURE;
         }
-      char const *warning = (status == 0 ? _("Warning: ") : "");
+      حرف ثابت *warning = (status == 0 ? _("Warning: ") : "");
       error (status, errno, "%s%s", warning,
              _("cannot read table of mounted file systems"));
     }
 
-  if (require_sync)
+  إذا (require_sync)
     sync ();
 
   get_field_list ();
   get_header ();
 
-  if (stats)
+  إذا (stats)
     {
       /* Display explicitly requested empty file systems.  */
       show_listed_fs = true;
 
-      for (int i = optind; i < argc; ++i)
-        if (argv[i])
+      لكل (صحيح i = optind; i < argc; ++i)
+        إذا (argv[i])
           get_entry (argv[i], &stats[i - optind]);
     }
-  else
+  وإلا
     get_all_entries ();
 
-  if (file_systems_processed)
+  إذا (file_systems_processed)
     {
-      if (print_grand_total)
+      إذا (اطبع_grand_total)
         get_dev ("total",
                  (field_data[SOURCE_FIELD].used ? "-" : "total"),
-                 NULL, NULL, NULL, false, false, &grand_fsu, false);
+                 عدم, عدم, عدم, false, false, &grand_fsu, false);
 
-      print_table ();
+      اطبع_table ();
     }
-  else
+  وإلا
     {
       /* Print the "no FS processed" diagnostic only if there was no preceding
          diagnostic, e.g., if all have been excluded.  */
-      if (exit_status == EXIT_SUCCESS)
+      إذا (exit_status == EXIT_SUCCESS)
         error (EXIT_FAILURE, 0, _("no file systems processed"));
     }
 
