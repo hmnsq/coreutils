@@ -14,18 +14,18 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include <stdarg.h>
-#include <sys/types.h>
+#अन्तर्भाव <config.h>
+#अन्तर्भाव <stdarg.h>
+#अन्तर्भाव <sys/types.h>
 
-#include "system.h"
+#अन्तर्भाव "system.h"
 
-#include "prog-fprintf.h"
+#अन्तर्भाव "prog-fprintf.h"
 
 /* Display program name followed by variable list.
    Used for e.g. verbose output */
-void
-prog_fprintf (FILE *fp, char const *fmt, ...)
+शून्य
+prog_fprintf (FILE *fp, वर्ण ध्रुव *fmt, ...)
 {
   va_list ap;
   fputs (program_name, fp);

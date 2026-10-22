@@ -1,2 +1,2 @@
-#include "true.h"
-enum true_modes true_mode = TRUE_TRUE;
+#अन्तर्भाव "true.h"
+गणना true_modes true_mode = TRUE_TRUE;
