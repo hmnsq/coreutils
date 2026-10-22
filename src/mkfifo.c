@@ -16,173 +16,173 @@
 
 /* David MacKenzie <djm@ai.mit.edu>  */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
-#include <selinux/label.h>
+#अन्तर्भाव <config.h>
+#अन्तर्भाव <stdio.h>
+#अन्तर्भाव <getopt.h>
+#अन्तर्भाव <sys/types.h>
+#अन्तर्भाव <selinux/label.h>
 
-#include "system.h"
-#include "modechange.h"
-#include "quote.h"
-#include "selinux.h"
-#include "smack.h"
+#अन्तर्भाव "system.h"
+#अन्तर्भाव "modechange.h"
+#अन्तर्भाव "quote.h"
+#अन्तर्भाव "selinux.h"
+#अन्तर्भाव "smack.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "mkfifo"
+#परिभाषय क्रमादेशः_NAME "mkfifo"
 
-#define AUTHORS proper_name ("David MacKenzie")
+#परिभाषय AUTHORS proper_name ("David MacKenzie")
 
-static struct option const longopts[] =
+स्थिर संरचना option ध्रुव longopts[] =
 {
   {GETOPT_SELINUX_CONTEXT_OPTION_DECL},
-  {"mode", required_argument, NULL, 'm'},
+  {"mode", required_तर्कः, रिक्त, 'm'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_संस्करणम्_OPTION_DECL},
+  {रिक्त, 0, रिक्त, 0}
 };
 
-void
-usage (int status)
+शून्य
+usage (पूर्णाङ्क स्थितिः)
 {
-  if (status != EXIT_SUCCESS)
+  यदि (स्थितिः != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  अन्यथा
     {
-      printf (_("Usage: %s [OPTION]... NAME...\n"), program_name);
+      प्रारूप_लिख (_("Usage: %s [OPTION]... NAME...\n"), क्रमादेशः_name);
       fputs (_("\
-Create named pipes (FIFOs) with the given NAMEs.\n\
+Create named pipes (FIFOs) with the given नामानि_2.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -m, --mode=MODE\n\
-         set file permission bits to MODE, not a=rw - umask\n\
+  -m, --बहुलकम्_2=बहुलकम्\n\
+         समुच्चयः_2 file permission द्वयङ्काः_2 गन्तव्यम् बहुलकम्, not a=rw - umask\n\
 "));
       oputs (_("\
   -Z\n\
-         set the SELinux security context to default type\n\
+         समुच्चयः_2 the SELinux security context गन्तव्यम् स्वभाव type\n\
 "));
       oputs (_("\
       --context[=CTX]\n\
-         like -Z, or if CTX is specified then set the\n\
-         SELinux or SMACK security context to CTX\n\
+         like -Z, or यदि CTX is specified then समुच्चयः_2 the\n\
+         SELinux or SMACK security context गन्तव्यम् CTX\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (संस्करणम्_OPTION_DESCRIPTION);
+      emit_ancillary_info (क्रमादेशः_NAME);
     }
-  exit (status);
+  निर्गच्छ (स्थितिः);
 }
 
-int
-main (int argc, char **argv)
+पूर्णाङ्क
+मुख्यम् (पूर्णाङ्क argc, वर्ण **argv)
 {
-  char const *specified_mode = NULL;
-  char const *scontext = NULL;
-  struct selabel_handle *set_security_context = NULL;
+  वर्ण ध्रुव *specified_बहुलकम् = रिक्त;
+  वर्ण ध्रुव *scontext = रिक्त;
+  संरचना selabel_handle *समुच्चयः_security_context = रिक्त;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  समुच्चयः_क्रमादेशः_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  int optc;
-  while ((optc = getopt_long (argc, argv, "m:Z", longopts, NULL)) != -1)
+  पूर्णाङ्क optc;
+  यावत् ((optc = getopt_long (argc, argv, "m:Z", longopts, रिक्त)) != -1)
     {
-      switch (optc)
+      विकल्प (optc)
         {
-        case 'm':
-          specified_mode = optarg;
-          break;
-        case 'Z':
-          if (is_smack_enabled ())
+        पक्ष 'm':
+          specified_बहुलकम् = optarg;
+          भङ्ग;
+        पक्ष 'Z':
+          यदि (is_smack_enabled ())
             {
               /* We don't yet support -Z to restore context with SMACK.  */
               scontext = optarg;
             }
-          else if (is_selinux_enabled () > 0)
+          अन्यथा यदि (is_selinux_enabled () > 0)
             {
-              if (optarg)
+              यदि (optarg)
                 scontext = optarg;
-              else
+              अन्यथा
                 {
-                  set_security_context = selabel_open (SELABEL_CTX_FILE,
-                                                       NULL, 0);
-                  if (! set_security_context)
+                  समुच्चयः_security_context = selabel_open (SELABEL_CTX_FILE,
+                                                       रिक्त, 0);
+                  यदि (! समुच्चयः_security_context)
                     error (0, errno, _("warning: ignoring --context"));
                 }
             }
-          else if (optarg)
+          अन्यथा यदि (optarg)
             {
               error (0, 0,
                      _("warning: ignoring --context; "
                        "it requires an SELinux/SMACK-enabled kernel"));
             }
-          break;
+          भङ्ग;
         case_GETOPT_HELP_CHAR;
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        case_GETOPT_संस्करणम्_CHAR (क्रमादेशः_NAME, AUTHORS);
+        स्वभाव:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (optind == argc)
+  यदि (optind == argc)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
-  if (scontext)
+  यदि (scontext)
     {
-      int ret = 0;
-      if (is_smack_enabled ())
-        ret = smack_set_label_for_self (scontext);
-      else
+      पूर्णाङ्क ret = 0;
+      यदि (is_smack_enabled ())
+        ret = smack_समुच्चयः_label_for_self (scontext);
+      अन्यथा
         ret = setfscreatecon (scontext);
 
-      if (ret < 0)
+      यदि (ret < 0)
         error (EXIT_FAILURE, errno,
                _("failed to set default file creation context to %s"),
                quote (scontext));
     }
 
-  mode_t newmode = MODE_RW_UGO;
-  if (specified_mode)
+  mode_t newmode = बहुलकम्_RW_UGO;
+  यदि (specified_बहुलकम्)
     {
-      struct mode_change *change = mode_compile (specified_mode);
-      if (!change)
+      संरचना बहुलकम्_change *change = बहुलकम्_compile (specified_बहुलकम्);
+      यदि (!change)
         error (EXIT_FAILURE, 0, _("invalid mode"));
-      mode_t umask_value = umask (0);
-      umask (umask_value);
-      newmode = mode_adjust (newmode, false, umask_value, change, NULL);
-      free (change);
-      if (newmode & ~S_IRWXUGO)
+      mode_t umask_मानम् = umask (0);
+      umask (umask_मानम्);
+      newmode = बहुलकम्_adjust (newmode, false, umask_मानम्, change, रिक्त);
+      मुक्त (change);
+      यदि (newmode & ~S_IRWXUGO)
         error (EXIT_FAILURE, 0,
                _("mode must specify only file permission bits"));
     }
 
-  int exit_status = EXIT_SUCCESS;
-  for (; optind < argc; ++optind)
+  पूर्णाङ्क exit_स्थितिः = EXIT_SUCCESS;
+  प्रति (; optind < argc; ++optind)
     {
-      if (set_security_context)
-        defaultcon (set_security_context, argv[optind], S_IFIFO);
-      if (mkfifo (argv[optind], newmode) != 0)
+      यदि (समुच्चयः_security_context)
+        defaultcon (समुच्चयः_security_context, argv[optind], S_IFIFO);
+      यदि (mkfifo (argv[optind], newmode) != 0)
         {
           error (0, errno, _("cannot create fifo %s"), quoteaf (argv[optind]));
-          exit_status = EXIT_FAILURE;
+          exit_स्थितिः = EXIT_FAILURE;
         }
-      else if (specified_mode && lchmod (argv[optind], newmode) != 0)
+      अन्यथा यदि (specified_बहुलकम् && lchmod (argv[optind], newmode) != 0)
         {
           error (0, errno, _("cannot set permissions of %s"),
                  quoteaf (argv[optind]));
-          exit_status = EXIT_FAILURE;
+          exit_स्थितिः = EXIT_FAILURE;
         }
     }
 
-  return exit_status;
+  प्रत्यागम exit_स्थितिः;
 }

@@ -17,138 +17,138 @@
 
 /* Written by David MacKenzie and Jim Meyering. */
 
-#include <config.h>
-#include <getopt.h>
-#include <stdio.h>
-#include <sys/types.h>
+#अन्तर्भाव <config.h>
+#अन्तर्भाव <getopt.h>
+#अन्तर्भाव <stdio.h>
+#अन्तर्भाव <sys/types.h>
 
-#include "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
-#include "system.h"
+#अन्तर्भाव "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
+#अन्तर्भाव "system.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "dirname"
+#परिभाषय क्रमादेशः_NAME "dirname"
 
-#define AUTHORS \
+#परिभाषय AUTHORS \
   proper_name ("David MacKenzie"), \
   proper_name ("Jim Meyering")
 
-static bool quote_output;
+स्थिर bool quote_output;
 
-static struct option const longopts[] =
+स्थिर संरचना option ध्रुव longopts[] =
 {
-  {"zero", no_argument, NULL, 'z'},
+  {"zero", no_तर्कः, रिक्त, 'z'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_संस्करणम्_OPTION_DECL},
+  {रिक्त, 0, रिक्त, 0}
 };
 
-void
-usage (int status)
+शून्य
+usage (पूर्णाङ्क स्थितिः)
 {
-  if (status != EXIT_SUCCESS)
+  यदि (स्थितिः != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  अन्यथा
     {
-      printf (_("\
+      प्रारूप_लिख (_("\
 Usage: %s [OPTION] NAME...\n\
 "),
-              program_name);
+              क्रमादेशः_name);
       fputs (_("\
-Output each NAME with its last non-slash component and trailing slashes\n\
-removed; if NAME contains no /'s, output '.' (meaning the current directory).\n\
+Output each NAME with its चरमः non-slash component and trailing slashes\n\
+removed; यदि NAME अन्तर्भवति no /'s, output '.' (meaning the current directory).\n\
 \n\
 "), stdout);
       oputs (_("\
   -z, --zero\n\
-         end each output line with NUL, not newline\n\
+         अन्तः each output पङ्क्तिः with NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      printf (_("\
+      oputs (संस्करणम्_OPTION_DESCRIPTION);
+      प्रारूप_लिख (_("\
 \n\
 Examples:\n\
   %s /usr/bin/          -> \"/usr\"\n\
   %s dir1/str dir2/str  -> \"dir1\" followed by \"dir2\"\n\
   %s stdio.h            -> \".\"\n\
 "),
-              program_name, program_name, program_name);
-      emit_ancillary_info (PROGRAM_NAME);
+              क्रमादेशः_name, क्रमादेशः_name, क्रमादेशः_name);
+      emit_ancillary_info (क्रमादेशः_NAME);
     }
-  exit (status);
+  निर्गच्छ (स्थितिः);
 }
 
-int
-main (int argc, char **argv)
+पूर्णाङ्क
+मुख्यम् (पूर्णाङ्क argc, वर्ण **argv)
 {
   bool use_nuls = false;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  समुच्चयः_क्रमादेशः_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while (true)
+  यावत् (true)
     {
-      int c = getopt_long (argc, argv, "z", longopts, NULL);
+      पूर्णाङ्क c = getopt_long (argc, argv, "z", longopts, रिक्त);
 
-      if (c == -1)
-        break;
+      यदि (c == -1)
+        भङ्ग;
 
-      switch (c)
+      विकल्प (c)
         {
-        case 'z':
+        पक्ष 'z':
           use_nuls = true;
-          break;
+          भङ्ग;
 
         case_GETOPT_HELP_CHAR;
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_संस्करणम्_CHAR (क्रमादेशः_NAME, AUTHORS);
 
-        default:
+        स्वभाव:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (argc < optind + 1)
+  यदि (argc < optind + 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
 
-  if (!use_nuls && isatty (STDOUT_FILENO))
+  यदि (!use_nuls && isatty (STDOUT_FILENO))
     {
-      int qs = getenv_quoting_style ();
-      if (qs < 0)
+      पूर्णाङ्क qs = getenv_quoting_style ();
+      यदि (qs < 0)
         qs = shell_escape_quoting_style;
-      if (qs != literal_quoting_style)
+      यदि (qs != literal_quoting_style)
         {
-          set_quoting_style (NULL, qs);
+          समुच्चयः_quoting_style (रिक्त, qs);
           quote_output = true;
         }
     }
 
-  for (; optind < argc; optind++)
+  प्रति (; optind < argc; optind++)
     {
-      char const *result = argv[optind];
-      idx_t len = dir_len (result);
+      वर्ण ध्रुव *परिणाम = argv[optind];
+      idx_t len = dir_len (परिणाम);
 
-      if (! len)
+      यदि (! len)
         {
-          static char const dot = '.';
-          result = &dot;
+          स्थिर वर्ण ध्रुव dot = '.';
+          परिणाम = &dot;
           len = 1;
         }
-      if (quote_output)
+      यदि (quote_output)
         {
-          result = quoteN_mem (result, len);
-          len = strlen (result);
+          परिणाम = quoteN_mem (परिणाम, len);
+          len = वाक्यदैर्घ्यम् (परिणाम);
         }
-      fwrite (result, 1, len, stdout);
-      putchar (use_nuls ? '\0' :'\n');
+      fwrite (परिणाम, 1, len, stdout);
+      अक्षरं_लिख (use_nuls ? '\0' :'\n');
     }
 
-  return EXIT_SUCCESS;
+  प्रत्यागम EXIT_SUCCESS;
 }

@@ -14,45 +14,45 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include "system.h"
-#include "true.h"
+#अन्तर्भाव <config.h>
+#अन्तर्भाव <stdio.h>
+#अन्तर्भाव <sys/types.h>
+#अन्तर्भाव "system.h"
+#अन्तर्भाव "true.h"
 
-#define EXIT_STATUS (true_mode != TRUE_TRUE)
-#define PROGRAM_NAME (true_mode == TRUE_TRUE ? "true" : "false")
+#परिभाषय EXIT_स्थितिः (true_बहुलकम् != TRUE_TRUE)
+#परिभाषय क्रमादेशः_NAME (true_बहुलकम् == TRUE_TRUE ? "true" : "false")
 
-#define AUTHORS proper_name ("Jim Meyering")
+#परिभाषय AUTHORS proper_name ("Jim Meyering")
 
-void
-usage (int status)
+शून्य
+usage (पूर्णाङ्क स्थितिः)
 {
-  printf (_("\
-Usage: %s [ignored command line arguments]\n\
+  प्रारूप_लिख (_("\
+Usage: %s [ignored command पङ्क्तिः arguments]\n\
   or:  %s OPTION\n\
 "),
-          program_name, program_name);
-  printf ("%s\n\n",
-          _(EXIT_STATUS == EXIT_SUCCESS
+          क्रमादेशः_name, क्रमादेशः_name);
+  प्रारूप_लिख ("%s\n\n",
+          _(EXIT_स्थितिः == EXIT_SUCCESS
             ? N_("Exit with a status code indicating success.")
             : N_("Exit with a status code indicating failure.")));
   oputs (HELP_OPTION_DESCRIPTION);
-  oputs (VERSION_OPTION_DESCRIPTION);
-  printf (USAGE_BUILTIN_WARNING, PROGRAM_NAME);
-  emit_ancillary_info (PROGRAM_NAME);
-  exit (status);
+  oputs (संस्करणम्_OPTION_DESCRIPTION);
+  प्रारूप_लिख (USAGE_BUILTIN_WARNING, क्रमादेशः_NAME);
+  emit_ancillary_info (क्रमादेशः_NAME);
+  निर्गच्छ (स्थितिः);
 }
 
-int
-main (int argc, char **argv)
+पूर्णाङ्क
+मुख्यम् (पूर्णाङ्क argc, वर्ण **argv)
 {
   /* Recognize --help or --version only if it's the only command-line
      argument.  */
-  if (argc == 2)
+  यदि (argc == 2)
     {
       initialize_main (&argc, &argv);
-      set_program_name (argv[0]);
+      समुच्चयः_क्रमादेशः_name (argv[0]);
       setlocale (LC_ALL, "");
       bindtextdomain (PACKAGE, LOCALEDIR);
       textdomain (PACKAGE);
@@ -61,13 +61,13 @@ main (int argc, char **argv)
          edge case where writes fail with GNU specific options.  */
       atexit (close_stdout);
 
-      if (streq (argv[1], "--help"))
-        usage (EXIT_STATUS);
+      यदि (streq (argv[1], "--help"))
+        usage (EXIT_स्थितिः);
 
-      if (streq (argv[1], "--version"))
-        version_etc (stdout, PROGRAM_NAME, PACKAGE_NAME, Version, AUTHORS,
-                     (char *) NULL);
+      यदि (streq (argv[1], "--version"))
+        संस्करणम्_etc (stdout, क्रमादेशः_NAME, PACKAGE_NAME, संस्करणम्, AUTHORS,
+                     (वर्ण *) रिक्त);
     }
 
-  return EXIT_STATUS;
+  प्रत्यागम EXIT_स्थितिः;
 }

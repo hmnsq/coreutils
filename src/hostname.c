@@ -16,96 +16,96 @@
 
 /* Written by Jim Meyering.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
+#अन्तर्भाव <config.h>
+#अन्तर्भाव <stdio.h>
+#अन्तर्भाव <sys/types.h>
 
-#include "system.h"
-#include "long-options.h"
-#include "quote.h"
-#include "xgethostname.h"
+#अन्तर्भाव "system.h"
+#अन्तर्भाव "long-options.h"
+#अन्तर्भाव "quote.h"
+#अन्तर्भाव "xgethostname.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "hostname"
+#परिभाषय क्रमादेशः_NAME "hostname"
 
-#define AUTHORS proper_name ("Jim Meyering")
+#परिभाषय AUTHORS proper_name ("Jim Meyering")
 
-#ifndef HAVE_SETHOSTNAME
-# if defined HAVE_SYSINFO && defined HAVE_SYS_SYSTEMINFO_H
+#यदि_अपरिभाषितम् HAVE_SETHOSTNAME
+# यदि defined HAVE_SYSINFO && defined HAVE_SYS_SYSTEMINFO_H
 #  include <sys/systeminfo.h>
 # endif
 
-static int
-sethostname (char const *name, size_t namelen)
+स्थिर पूर्णाङ्क
+sethostname (वर्ण ध्रुव *name, size_t namelen)
 {
-# if defined HAVE_SYSINFO && defined HAVE_SYS_SYSTEMINFO_H
+# यदि defined HAVE_SYSINFO && defined HAVE_SYS_SYSTEMINFO_H
   /* Using sysinfo() is the SVR4 mechanism to set a hostname. */
-  return (sysinfo (SI_SET_HOSTNAME, name, namelen) < 0 ? -1 : 0);
-# else
+  प्रत्यागम (sysinfo (SI_समुच्चयः_HOSTNAME, name, namelen) < 0 ? -1 : 0);
+# अन्यथा
   errno = ENOTSUP;
-  return -1;
+  प्रत्यागम -1;
 # endif
 }
-#endif
+#यदि_अन्तः
 
-void
-usage (int status)
+शून्य
+usage (पूर्णाङ्क स्थितिः)
 {
-  if (status != EXIT_SUCCESS)
+  यदि (स्थितिः != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  अन्यथा
     {
-      printf (_("\
+      प्रारूप_लिख (_("\
 Usage: %s [NAME]\n\
   or:  %s OPTION\n\
-Print or set the hostname of the current system.\n\
+Print or समुच्चयः_2 the hostname सम्बन्धि the current system.\n\
 \n\
 "),
-             program_name, program_name);
+             क्रमादेशः_name, क्रमादेशः_name);
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (संस्करणम्_OPTION_DESCRIPTION);
+      emit_ancillary_info (क्रमादेशः_NAME);
     }
-  exit (status);
+  निर्गच्छ (स्थितिः);
 }
 
-int
-main (int argc, char **argv)
+पूर्णाङ्क
+मुख्यम् (पूर्णाङ्क argc, वर्ण **argv)
 {
-  char *hostname;
+  वर्ण *hostname;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  समुच्चयः_क्रमादेशः_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
-                                   Version, true, usage, AUTHORS,
-                                   (char const *) NULL);
+  parse_gnu_standard_options_only (argc, argv, क्रमादेशः_NAME, PACKAGE_NAME,
+                                   संस्करणम्, true, usage, AUTHORS,
+                                   (वर्ण ध्रुव *) रिक्त);
 
-  if (optind + 1 < argc)
+  यदि (optind + 1 < argc)
      {
        error (0, 0, _("extra operand %s"), quote (argv[optind + 1]));
        usage (EXIT_FAILURE);
      }
 
-  if (optind + 1 == argc)
+  यदि (optind + 1 == argc)
     {
       /* Set hostname to operand.  */
-      char const *name = argv[optind];
-      if (sethostname (name, strlen (name)) != 0)
+      वर्ण ध्रुव *name = argv[optind];
+      यदि (sethostname (name, वाक्यदैर्घ्यम् (name)) != 0)
         error (EXIT_FAILURE, errno, _("cannot set name to %s"),
                quote (name));
     }
-  else
+  अन्यथा
     {
       hostname = xgethostname ();
-      if (hostname == NULL)
+      यदि (hostname == रिक्त)
         error (EXIT_FAILURE, errno, _("cannot determine hostname"));
-      puts (hostname);
+      पङ्क्तिं_लिख (hostname);
     }
 
   main_exit (EXIT_SUCCESS);

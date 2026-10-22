@@ -16,148 +16,148 @@
 
 /* Written by David MacKenzie <djm@ai.mit.edu>  */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
-#include <selinux/label.h>
+#अन्तर्भाव <config.h>
+#अन्तर्भाव <stdio.h>
+#अन्तर्भाव <getopt.h>
+#अन्तर्भाव <sys/types.h>
+#अन्तर्भाव <selinux/label.h>
 
-#include "system.h"
-#include "modechange.h"
-#include "quote.h"
-#include "selinux.h"
-#include "smack.h"
-#include "xstrtol.h"
+#अन्तर्भाव "system.h"
+#अन्तर्भाव "modechange.h"
+#अन्तर्भाव "quote.h"
+#अन्तर्भाव "selinux.h"
+#अन्तर्भाव "smack.h"
+#अन्तर्भाव "xstrtol.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "mknod"
+#परिभाषय क्रमादेशः_NAME "mknod"
 
-#define AUTHORS proper_name ("David MacKenzie")
+#परिभाषय AUTHORS proper_name ("David MacKenzie")
 
-static struct option const longopts[] =
+स्थिर संरचना option ध्रुव longopts[] =
 {
   {GETOPT_SELINUX_CONTEXT_OPTION_DECL},
-  {"mode", required_argument, NULL, 'm'},
+  {"mode", required_तर्कः, रिक्त, 'm'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_संस्करणम्_OPTION_DECL},
+  {रिक्त, 0, रिक्त, 0}
 };
 
-void
-usage (int status)
+शून्य
+usage (पूर्णाङ्क स्थितिः)
 {
-  if (status != EXIT_SUCCESS)
+  यदि (स्थितिः != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  अन्यथा
     {
-      printf (_("Usage: %s [OPTION]... NAME TYPE [MAJOR MINOR]\n"),
-              program_name);
+      प्रारूप_लिख (_("Usage: %s [OPTION]... NAME TYPE [MAJOR MINOR]\n"),
+              क्रमादेशः_name);
       fputs (_("\
-Create the special file NAME of the given TYPE.\n\
+Create the special file NAME सम्बन्धि the given TYPE.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -m, --mode=MODE\n\
-         set file permission bits to MODE, not a=rw - umask\n\
+  -m, --बहुलकम्_2=बहुलकम्\n\
+         समुच्चयः_2 file permission द्वयङ्काः_2 गन्तव्यम् बहुलकम्, not a=rw - umask\n\
 "));
       oputs (_("\
   -Z\n\
-         set the SELinux security context to default type\n\
+         समुच्चयः_2 the SELinux security context गन्तव्यम् स्वभाव type\n\
 "));
       oputs (_("\
       --context[=CTX]\n\
-         like -Z, or if CTX is specified then set the\n\
-         SELinux or SMACK security context to CTX\n\
+         like -Z, or यदि CTX is specified then समुच्चयः_2 the\n\
+         SELinux or SMACK security context गन्तव्यम् CTX\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (संस्करणम्_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
 Both MAJOR and MINOR must be specified when TYPE is b, c, or u, and they\n\
 must be omitted when TYPE is p.  If MAJOR or MINOR begins with 0x or 0X,\n\
-it is interpreted as hexadecimal; otherwise, if it begins with 0, as octal;\n\
+it is interpreted as hexadecimal; otherwise, यदि it begins with 0, as octal;\n\
 otherwise, as decimal.  TYPE may be:\n\
 "), stdout);
       fputs (_("\
 \n\
-  b      create a block (buffered) special file\n\
+  b      create a खण्डम् (buffered) special file\n\
   c, u   create a character (unbuffered) special file\n\
   p      create a FIFO\n\
 "), stdout);
-      printf (USAGE_BUILTIN_WARNING, PROGRAM_NAME);
-      emit_ancillary_info (PROGRAM_NAME);
+      प्रारूप_लिख (USAGE_BUILTIN_WARNING, क्रमादेशः_NAME);
+      emit_ancillary_info (क्रमादेशः_NAME);
     }
-  exit (status);
+  निर्गच्छ (स्थितिः);
 }
 
-int
-main (int argc, char **argv)
+पूर्णाङ्क
+मुख्यम् (पूर्णाङ्क argc, वर्ण **argv)
 {
-  char const *specified_mode = NULL;
-  char const *scontext = NULL;
-  struct selabel_handle *set_security_context = NULL;
+  वर्ण ध्रुव *specified_बहुलकम् = रिक्त;
+  वर्ण ध्रुव *scontext = रिक्त;
+  संरचना selabel_handle *समुच्चयः_security_context = रिक्त;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  समुच्चयः_क्रमादेशः_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  int optc;
-  while ((optc = getopt_long (argc, argv, "m:Z", longopts, NULL)) != -1)
+  पूर्णाङ्क optc;
+  यावत् ((optc = getopt_long (argc, argv, "m:Z", longopts, रिक्त)) != -1)
     {
-      switch (optc)
+      विकल्प (optc)
         {
-        case 'm':
-          specified_mode = optarg;
-          break;
-        case 'Z':
-          if (is_smack_enabled ())
+        पक्ष 'm':
+          specified_बहुलकम् = optarg;
+          भङ्ग;
+        पक्ष 'Z':
+          यदि (is_smack_enabled ())
             {
               /* We don't yet support -Z to restore context with SMACK.  */
               scontext = optarg;
             }
-          else if (is_selinux_enabled () > 0)
+          अन्यथा यदि (is_selinux_enabled () > 0)
             {
-              if (optarg)
+              यदि (optarg)
                 scontext = optarg;
-              else
+              अन्यथा
                 {
-                  set_security_context = selabel_open (SELABEL_CTX_FILE,
-                                                       NULL, 0);
-                  if (! set_security_context)
+                  समुच्चयः_security_context = selabel_open (SELABEL_CTX_FILE,
+                                                       रिक्त, 0);
+                  यदि (! समुच्चयः_security_context)
                     error (0, errno, _("warning: ignoring --context"));
                 }
             }
-          else if (optarg)
+          अन्यथा यदि (optarg)
             {
               error (0, 0,
                      _("warning: ignoring --context; "
                        "it requires an SELinux/SMACK-enabled kernel"));
             }
-          break;
+          भङ्ग;
         case_GETOPT_HELP_CHAR;
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        case_GETOPT_संस्करणम्_CHAR (क्रमादेशः_NAME, AUTHORS);
+        स्वभाव:
           usage (EXIT_FAILURE);
         }
     }
 
-  mode_t newmode = MODE_RW_UGO;
-  if (specified_mode)
+  mode_t newmode = बहुलकम्_RW_UGO;
+  यदि (specified_बहुलकम्)
     {
-      struct mode_change *change = mode_compile (specified_mode);
-      if (!change)
+      संरचना बहुलकम्_change *change = बहुलकम्_compile (specified_बहुलकम्);
+      यदि (!change)
         error (EXIT_FAILURE, 0, _("invalid mode"));
-      mode_t umask_value = umask (0);
-      umask (umask_value);
-      newmode = mode_adjust (newmode, false, umask_value, change, NULL);
-      free (change);
-      if (newmode & ~S_IRWXUGO)
+      mode_t umask_मानम् = umask (0);
+      umask (umask_मानम्);
+      newmode = बहुलकम्_adjust (newmode, false, umask_मानम्, change, रिक्त);
+      मुक्त (change);
+      यदि (newmode & ~S_IRWXUGO)
         error (EXIT_FAILURE, 0,
                _("mode must specify only file permission bits"));
     }
@@ -165,41 +165,41 @@ main (int argc, char **argv)
   /* If the number of arguments is 0 or 1,
      or (if it's 2 or more and the second one starts with 'p'), then there
      must be exactly two operands.  Otherwise, there must be four.  */
-  int expected_operands = (argc <= optind
+  पूर्णाङ्क expected_operands = (argc <= optind
                            || (optind + 1 < argc && argv[optind + 1][0] == 'p')
                            ? 2 : 4);
 
-  if (argc - optind < expected_operands)
+  यदि (argc - optind < expected_operands)
     {
-      if (argc <= optind)
+      यदि (argc <= optind)
         error (0, 0, _("missing operand"));
-      else
+      अन्यथा
         error (0, 0, _("missing operand after %s"), quote (argv[argc - 1]));
-      if (expected_operands == 4 && argc - optind == 2)
+      यदि (expected_operands == 4 && argc - optind == 2)
         fprintf (stderr, "%s\n",
                  _("Special files require major and minor device numbers."));
       usage (EXIT_FAILURE);
     }
 
-  if (expected_operands < argc - optind)
+  यदि (expected_operands < argc - optind)
     {
       error (0, 0, _("extra operand %s"),
              quote (argv[optind + expected_operands]));
-      if (expected_operands == 2 && argc - optind == 4)
+      यदि (expected_operands == 2 && argc - optind == 4)
         fprintf (stderr, "%s\n",
                  _("Fifos do not have major and minor device numbers."));
       usage (EXIT_FAILURE);
     }
 
-  if (scontext)
+  यदि (scontext)
     {
-      int ret = 0;
-      if (is_smack_enabled ())
-        ret = smack_set_label_for_self (scontext);
-      else
+      पूर्णाङ्क ret = 0;
+      यदि (is_smack_enabled ())
+        ret = smack_समुच्चयः_label_for_self (scontext);
+      अन्यथा
         ret = setfscreatecon (scontext);
 
-      if (ret < 0)
+      यदि (ret < 0)
         error (EXIT_FAILURE, errno,
                _("failed to set default file creation context to %s"),
                quote (scontext));
@@ -208,72 +208,72 @@ main (int argc, char **argv)
   /* Only check the first character, to allow mnemonic usage like
      'mknod /dev/rst0 character 18 0'. */
 
-  mode_t node_type;
-  switch (argv[optind + 1][0])
+  mode_t ग्रन्थिः_type;
+  विकल्प (argv[optind + 1][0])
     {
-    case 'b':			/* 'block' or 'buffered' */
-#ifndef S_IFBLK
+    पक्ष 'b':			/* 'block' or 'buffered' */
+#यदि_अपरिभाषितम् S_IFBLK
       error (EXIT_FAILURE, 0, _("block special files not supported"));
-#else
-      node_type = S_IFBLK;
-#endif
-      goto block_or_character;
+#अन्यथा
+      ग्रन्थिः_type = S_IFBLK;
+#यदि_अन्तः
+      गच्छ खण्डम्_or_character;
 
-    case 'c':			/* 'character' */
-    case 'u':			/* 'unbuffered' */
-#ifndef S_IFCHR
+    पक्ष 'c':			/* 'character' */
+    पक्ष 'u':			/* 'unbuffered' */
+#यदि_अपरिभाषितम् S_IFCHR
       error (EXIT_FAILURE, 0, _("character special files not supported"));
-#else
-      node_type = S_IFCHR;
-#endif
-      goto block_or_character;
+#अन्यथा
+      ग्रन्थिः_type = S_IFCHR;
+#यदि_अन्तः
+      गच्छ खण्डम्_or_character;
 
-    block_or_character:
+    खण्डम्_or_character:
       {
-        char const *s_major = argv[optind + 2];
+        वर्ण ध्रुव *s_major = argv[optind + 2];
         uintmax_t i_major;
-        if (xstrtoumax (s_major, NULL, 0, &i_major, "") != LONGINT_OK
+        यदि (xstrtoumax (s_major, रिक्त, 0, &i_major, "") != LONGINT_OK
             || i_major != (major_t) i_major)
           error (EXIT_FAILURE, 0,
                  _("invalid major device number %s"), quote (s_major));
 
-        char const *s_minor = argv[optind + 3];
+        वर्ण ध्रुव *s_minor = argv[optind + 3];
         uintmax_t i_minor;
-        if (xstrtoumax (s_minor, NULL, 0, &i_minor, "") != LONGINT_OK
+        यदि (xstrtoumax (s_minor, रिक्त, 0, &i_minor, "") != LONGINT_OK
             || i_minor != (minor_t) i_minor)
           error (EXIT_FAILURE, 0,
                  _("invalid minor device number %s"), quote (s_minor));
 
         dev_t device = makedev (i_major, i_minor);
-#ifdef NODEV
-        if (device == NODEV)
+#यदि_परिभाषितम् NODEV
+        यदि (device == NODEV)
           error (EXIT_FAILURE, 0, _("invalid device %s %s"),
                  s_major, s_minor);
-#endif
+#यदि_अन्तः
 
-        if (set_security_context)
-          defaultcon (set_security_context, argv[optind], node_type);
+        यदि (समुच्चयः_security_context)
+          defaultcon (समुच्चयः_security_context, argv[optind], ग्रन्थिः_type);
 
-        if (mknod (argv[optind], newmode | node_type, device) != 0)
+        यदि (mknod (argv[optind], newmode | ग्रन्थिः_type, device) != 0)
           error (EXIT_FAILURE, errno, "%s", quotef (argv[optind]));
       }
-      break;
+      भङ्ग;
 
-    case 'p':			/* 'pipe' */
-      if (set_security_context)
-        defaultcon (set_security_context, argv[optind], S_IFIFO);
-      if (mkfifo (argv[optind], newmode) != 0)
+    पक्ष 'p':			/* 'pipe' */
+      यदि (समुच्चयः_security_context)
+        defaultcon (समुच्चयः_security_context, argv[optind], S_IFIFO);
+      यदि (mkfifo (argv[optind], newmode) != 0)
         error (EXIT_FAILURE, errno, "%s", quotef (argv[optind]));
-      break;
+      भङ्ग;
 
-    default:
+    स्वभाव:
       error (0, 0, _("invalid device type %s"), quote (argv[optind + 1]));
       usage (EXIT_FAILURE);
     }
 
-  if (specified_mode && lchmod (argv[optind], newmode) != 0)
+  यदि (specified_बहुलकम् && lchmod (argv[optind], newmode) != 0)
     error (EXIT_FAILURE, errno, _("cannot set permissions of %s"),
            quoteaf (argv[optind]));
 
-  return EXIT_SUCCESS;
+  प्रत्यागम EXIT_SUCCESS;
 }

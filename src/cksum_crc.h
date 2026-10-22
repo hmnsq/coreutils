@@ -14,37 +14,37 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#ifndef __CKSUM_CRC_H__
+#यदि_अपरिभाषितम् __CKSUM_CRC_H__
 # define __CKSUM_CRC_H__
 
 # include <stdint.h>
 # include <stdio.h>
 
-extern bool cksum_debug;
+बाह्य bool cksum_debug;
 
-extern int
-crc_sum_stream (FILE *stream, void *resstream, intmax_t *length);
+बाह्य पूर्णाङ्क
+crc_योग_प्रवाहः (FILE *प्रवाहः, शून्य *resstream, intmax_t *दीर्घता);
 
-extern int
-crc32b_sum_stream (FILE *stream, void *resstream, intmax_t *length);
+बाह्य पूर्णाङ्क
+crc32b_योग_प्रवाहः (FILE *प्रवाहः, शून्य *resstream, intmax_t *दीर्घता);
 
-extern void
-output_crc (char const *file, int binary_file, void const *digest, bool raw,
-            bool tagged, unsigned char delim, bool args, intmax_t length)
+बाह्य शून्य
+output_crc (वर्ण ध्रुव *file, पूर्णाङ्क द्विमान_file, शून्य ध्रुव *digest, bool raw,
+            bool tagged, अचिह्नित वर्ण delim, bool तर्काः, intmax_t दीर्घता)
   _GL_ATTRIBUTE_NONNULL ((3));
 
-extern bool
-cksum_vmull (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out);
+बाह्य bool
+cksum_vmull (FILE *fp, uint_fast32_t *crc_बहिर्गमनम्, intmax_t *दीर्घता_बहिर्गमनम्);
 
-extern bool
-cksum_pclmul (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out);
+बाह्य bool
+cksum_pclmul (FILE *fp, uint_fast32_t *crc_बहिर्गमनम्, intmax_t *दीर्घता_बहिर्गमनम्);
 
-extern bool
-cksum_avx2 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out);
+बाह्य bool
+cksum_avx2 (FILE *fp, uint_fast32_t *crc_बहिर्गमनम्, intmax_t *दीर्घता_बहिर्गमनम्);
 
-extern bool
-cksum_avx512 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out);
+बाह्य bool
+cksum_avx512 (FILE *fp, uint_fast32_t *crc_बहिर्गमनम्, intmax_t *दीर्घता_बहिर्गमनम्);
 
-extern uint_fast32_t const crctab[8][256];
+बाह्य uint_fast32_t ध्रुव crctab[8][256];
 
-#endif
+#यदि_अन्तः

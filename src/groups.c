@@ -17,57 +17,57 @@
 /* Written by James Youngman based on id.c and groups.sh,
    which were written by Arnold Robbins and David MacKenzie. */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <pwd.h>
-#include <grp.h>
-#include <getopt.h>
+#अन्तर्भाव <config.h>
+#अन्तर्भाव <stdio.h>
+#अन्तर्भाव <sys/types.h>
+#अन्तर्भाव <pwd.h>
+#अन्तर्भाव <grp.h>
+#अन्तर्भाव <getopt.h>
 
-#include "system.h"
-#include "group-list.h"
-#include "quote.h"
+#अन्तर्भाव "system.h"
+#अन्तर्भाव "group-list.h"
+#अन्तर्भाव "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "groups"
+#परिभाषय क्रमादेशः_NAME "groups"
 
-#define AUTHORS \
+#परिभाषय AUTHORS \
   proper_name ("David MacKenzie"), \
   proper_name ("James Youngman")
 
 
-static struct option const longopts[] =
+स्थिर संरचना option ध्रुव longopts[] =
 {
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_संस्करणम्_OPTION_DECL},
+  {रिक्त, 0, रिक्त, 0}
 };
 
-void
-usage (int status)
+शून्य
+usage (पूर्णाङ्क स्थितिः)
 {
-  if (status != EXIT_SUCCESS)
+  यदि (स्थितिः != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  अन्यथा
     {
-      printf (_("Usage: %s [OPTION]... [USERNAME]...\n"), program_name);
+      प्रारूप_लिख (_("Usage: %s [OPTION]... [USERNAME]...\n"), क्रमादेशः_name);
       fputs (_("\
-Print group memberships for each USERNAME or, if no USERNAME is specified, for\
+Print गणः memberships प्रति each USERNAME or, यदि no USERNAME is specified, प्रति\
 \n\
-the current process (which may differ if the groups database has changed).\n"),
+the current process (which may भेदः यदि the groups database has परिवर्तितम्).\n"),
              stdout);
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (संस्करणम्_OPTION_DESCRIPTION);
+      emit_ancillary_info (क्रमादेशः_NAME);
     }
-  exit (status);
+  निर्गच्छ (स्थितिः);
 }
 
-int
-main (int argc, char **argv)
+पूर्णाङ्क
+मुख्यम् (पूर्णाङ्क argc, वर्ण **argv)
 {
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  समुच्चयः_क्रमादेशः_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
@@ -76,20 +76,20 @@ main (int argc, char **argv)
 
   /* Processing the arguments this way makes groups.c behave differently to
      groups.sh if one of the arguments is "--".  */
-  int optc;
-  while ((optc = getopt_long (argc, argv, "", longopts, NULL)) != -1)
+  पूर्णाङ्क optc;
+  यावत् ((optc = getopt_long (argc, argv, "", longopts, रिक्त)) != -1)
     {
-      switch (optc)
+      विकल्प (optc)
         {
         case_GETOPT_HELP_CHAR;
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        case_GETOPT_संस्करणम्_CHAR (क्रमादेशः_NAME, AUTHORS);
+        स्वभाव:
           usage (EXIT_FAILURE);
         }
     }
 
   bool ok = true;
-  if (optind == argc)
+  यदि (optind == argc)
     {
       /* No arguments.  Divulge the details of the current process. */
       uid_t NO_UID = -1;
@@ -97,48 +97,48 @@ main (int argc, char **argv)
 
       errno = 0;
       uid_t ruid = getuid ();
-      if (ruid == NO_UID && errno)
+      यदि (ruid == NO_UID && errno)
         error (EXIT_FAILURE, errno, _("cannot get real UID"));
 
       errno = 0;
       gid_t egid = getegid ();
-      if (egid == NO_GID && errno)
+      यदि (egid == NO_GID && errno)
         error (EXIT_FAILURE, errno, _("cannot get effective GID"));
 
       errno = 0;
       gid_t rgid = getgid ();
-      if (rgid == NO_GID && errno)
+      यदि (rgid == NO_GID && errno)
         error (EXIT_FAILURE, errno, _("cannot get real GID"));
 
-      if (!print_group_list (NULL, ruid, rgid, egid, true, ' '))
+      यदि (!print_गणः_list (रिक्त, ruid, rgid, egid, true, ' '))
         ok = false;
-      putchar ('\n');
+      अक्षरं_लिख ('\n');
     }
-  else
+  अन्यथा
     {
       /* At least one argument.  Divulge the details of the specified users.  */
-      for ( ; optind < argc; optind++)
+      प्रति ( ; optind < argc; optind++)
         {
-          struct passwd *pwd = getpwnam (argv[optind]);
-          if (pwd == NULL)
+          संरचना passwd *pwd = getpwnam (argv[optind]);
+          यदि (pwd == रिक्त)
             {
               error (0, 0, _("%s: no such user"), quote (argv[optind]));
               ok = false;
-              continue;
+              अनुवर्त;
             }
           uid_t ruid = pwd->pw_uid;
           gid_t rgid = pwd->pw_gid;
           gid_t egid = rgid;
 
-          printf ("%s : ", argv[optind]);
-          if (!print_group_list (argv[optind], ruid, rgid, egid, true, ' '))
+          प्रारूप_लिख ("%s : ", argv[optind]);
+          यदि (!print_गणः_list (argv[optind], ruid, rgid, egid, true, ' '))
             ok = false;
-          putchar ('\n');
+          अक्षरं_लिख ('\n');
 
-          if (ferror (stdout))
+          यदि (ferror (stdout))
             write_error ();
         }
     }
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  प्रत्यागम ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

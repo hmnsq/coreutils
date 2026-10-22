@@ -14,44 +14,44 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include <getopt.h>
-#include <stdio.h>
-#include <sys/types.h>
+#अन्तर्भाव <config.h>
+#अन्तर्भाव <getopt.h>
+#अन्तर्भाव <stdio.h>
+#अन्तर्भाव <sys/types.h>
 
-#include "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
-#include "system.h"
-#include "quote.h"
+#अन्तर्भाव "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
+#अन्तर्भाव "system.h"
+#अन्तर्भाव "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "basename"
+#परिभाषय क्रमादेशः_NAME "basename"
 
-#define AUTHORS proper_name ("David MacKenzie")
+#परिभाषय AUTHORS proper_name ("David MacKenzie")
 
-static bool quote_output;
+स्थिर bool quote_output;
 
-static struct option const longopts[] =
+स्थिर संरचना option ध्रुव longopts[] =
 {
-  {"multiple", no_argument, NULL, 'a'},
-  {"suffix", required_argument, NULL, 's'},
-  {"zero", no_argument, NULL, 'z'},
+  {"multiple", no_तर्कः, रिक्त, 'a'},
+  {"suffix", required_तर्कः, रिक्त, 's'},
+  {"zero", no_तर्कः, रिक्त, 'z'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_संस्करणम्_OPTION_DECL},
+  {रिक्त, 0, रिक्त, 0}
 };
 
-void
-usage (int status)
+शून्य
+usage (पूर्णाङ्क स्थितिः)
 {
-  if (status != EXIT_SUCCESS)
+  यदि (स्थितिः != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  अन्यथा
     {
-      printf (_("\
+      प्रारूप_लिख (_("\
 Usage: %s NAME [SUFFIX]\n\
   or:  %s OPTION... NAME...\n\
 "),
-              program_name, program_name);
+              क्रमादेशः_name, क्रमादेशः_name);
       fputs (_("\
 Print NAME with any leading directory components removed.\n\
 If specified, also remove a trailing SUFFIX.\n\
@@ -60,46 +60,46 @@ If specified, also remove a trailing SUFFIX.\n\
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -a, --multiple\n\
-         support multiple arguments and treat each as a NAME\n\
+  -a, --गुणजः\n\
+         support गुणजः arguments and treat each as a NAME\n\
 "));
       oputs (_("\
   -s, --suffix=SUFFIX\n\
-         remove a trailing SUFFIX; implies -a\n\
+         remove a trailing SUFFIX; उपपादयति -a\n\
 "));
       oputs (_("\
   -z, --zero\n\
-         end each output line with NUL, not newline\n\
+         अन्तः each output पङ्क्तिः with NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      printf (_("\
+      oputs (संस्करणम्_OPTION_DESCRIPTION);
+      प्रारूप_लिख (_("\
 \n\
 Examples:\n\
-  %s /usr/bin/sort          -> \"sort\"\n\
+  %s /usr/bin/क्रमय          -> \"क्रमय\"\n\
   %s include/stdio.h .h     -> \"stdio\"\n\
   %s -s .h include/stdio.h  -> \"stdio\"\n\
   %s -a any/str1 any/str2   -> \"str1\" followed by \"str2\"\n\
 "),
-              program_name, program_name, program_name, program_name);
-      emit_ancillary_info (PROGRAM_NAME);
+              क्रमादेशः_name, क्रमादेशः_name, क्रमादेशः_name, क्रमादेशः_name);
+      emit_ancillary_info (क्रमादेशः_NAME);
     }
-  exit (status);
+  निर्गच्छ (स्थितिः);
 }
 
 /* Remove SUFFIX from the end of NAME if it is there, unless NAME
    consists entirely of SUFFIX.  */
 
-static void
-remove_suffix (char *name, char const *suffix, idx_t suffix_len)
+स्थिर शून्य
+remove_suffix (वर्ण *name, वर्ण ध्रुव *suffix, idx_t suffix_len)
 {
-  char *np = name + strlen (name);
-  char const *sp = suffix + suffix_len;
+  वर्ण *np = name + वाक्यदैर्घ्यम् (name);
+  वर्ण ध्रुव *sp = suffix + suffix_len;
 
-  while (np > name && sp > suffix)
-    if (*--np != *--sp)
-      return;
-  if (np > name)
+  यावत् (np > name && sp > suffix)
+    यदि (*--np != *--sp)
+      प्रत्यागम;
+  यदि (np > name)
     *np = '\0';
 }
 
@@ -107,11 +107,11 @@ remove_suffix (char *name, char const *suffix, idx_t suffix_len)
    length of SUFFIX_LEN bytes, remove the trailing SUFFIX.
    Finally, output the result string.  */
 
-static void
-perform_basename (char const *string, char const *suffix, idx_t suffix_len,
+स्थिर शून्य
+perform_basename (वर्ण ध्रुव *string, वर्ण ध्रुव *suffix, idx_t suffix_len,
                   bool use_nuls)
 {
-  char *name = base_name (string);
+  वर्ण *name = आधारः_name (string);
   strip_trailing_slashes (name);
 
   /* Per POSIX, 'basename // /' must return '//' on platforms with
@@ -120,96 +120,96 @@ perform_basename (char const *string, char const *suffix, idx_t suffix_len,
      skipping suffix stripping if base_name returned an absolute path
      or a drive letter (only possible if name is a file-system
      root).  */
-  if (0 < suffix_len && IS_RELATIVE_FILE_NAME (name)
-      && ! FILE_SYSTEM_PREFIX_LEN (name))
+  यदि (0 < suffix_len && IS_RELATIVE_FILE_NAME (name)
+      && ! FILE_SYSTEM_उपसर्गः_LEN (name))
     remove_suffix (name, suffix, suffix_len);
 
   fputs (quote_output ? quoteN (name) : name, stdout);
-  putchar (use_nuls ? '\0' : '\n');
-  free (name);
+  अक्षरं_लिख (use_nuls ? '\0' : '\n');
+  मुक्त (name);
 }
 
-int
-main (int argc, char **argv)
+पूर्णाङ्क
+मुख्यम् (पूर्णाङ्क argc, वर्ण **argv)
 {
-  bool multiple_names = false;
+  bool गुणजः_नामानि = false;
   bool use_nuls = false;
-  char const *suffix = NULL;
+  वर्ण ध्रुव *suffix = रिक्त;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  समुच्चयः_क्रमादेशः_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while (true)
+  यावत् (true)
     {
-      int c = getopt_long (argc, argv, "+as:z", longopts, NULL);
+      पूर्णाङ्क c = getopt_long (argc, argv, "+as:z", longopts, रिक्त);
 
-      if (c == -1)
-        break;
+      यदि (c == -1)
+        भङ्ग;
 
-      switch (c)
+      विकल्प (c)
         {
-        case 's':
+        पक्ष 's':
           suffix = optarg;
           /* -s implies -a, so...  */
           FALLTHROUGH;
 
-        case 'a':
-          multiple_names = true;
-          break;
+        पक्ष 'a':
+          गुणजः_नामानि = true;
+          भङ्ग;
 
-        case 'z':
+        पक्ष 'z':
           use_nuls = true;
-          break;
+          भङ्ग;
 
         case_GETOPT_HELP_CHAR;
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_संस्करणम्_CHAR (क्रमादेशः_NAME, AUTHORS);
 
-        default:
+        स्वभाव:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (argc < optind + 1)
+  यदि (argc < optind + 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
-  if (! multiple_names)
+  यदि (! गुणजः_नामानि)
     {
-      if (optind + 2 == argc)
+      यदि (optind + 2 == argc)
         suffix = argv[optind + 1];
-      else if (optind + 2 < argc)
+      अन्यथा यदि (optind + 2 < argc)
         {
           error (0, 0, _("extra operand %s"), quote (argv[optind + 2]));
           usage (EXIT_FAILURE);
         }
     }
 
-  if (!use_nuls && isatty (STDOUT_FILENO))
+  यदि (!use_nuls && isatty (STDOUT_FILENO))
     {
-      int qs = getenv_quoting_style ();
-      if (qs < 0)
+      पूर्णाङ्क qs = getenv_quoting_style ();
+      यदि (qs < 0)
         qs = shell_escape_quoting_style;
-      if (qs != literal_quoting_style)
+      यदि (qs != literal_quoting_style)
         {
-          set_quoting_style (NULL, qs);
+          समुच्चयः_quoting_style (रिक्त, qs);
           quote_output = true;
         }
     }
 
-  idx_t suffix_len = suffix ? strlen (suffix) : 0;
+  idx_t suffix_len = suffix ? वाक्यदैर्घ्यम् (suffix) : 0;
 
-  char **file = argv + optind;
-  int n_files = multiple_names ? argc - optind : 1;
+  वर्ण **file = argv + optind;
+  पूर्णाङ्क n_files = गुणजः_नामानि ? argc - optind : 1;
 
-  for (int i = 0; i < n_files; ++i)
+  प्रति (पूर्णाङ्क i = 0; i < n_files; ++i)
     perform_basename (file[i], suffix, suffix_len, use_nuls);
 
-  return EXIT_SUCCESS;
+  प्रत्यागम EXIT_SUCCESS;
 }

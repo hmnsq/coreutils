@@ -16,48 +16,48 @@
 
 /* Written by Simon Josefsson <simon@josefsson.org>.  */
 
-#include <config.h>
+#अन्तर्भाव <config.h>
 
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
-#include <gmp.h>
+#अन्तर्भाव <stdio.h>
+#अन्तर्भाव <getopt.h>
+#अन्तर्भाव <sys/types.h>
+#अन्तर्भाव <gmp.h>
 
-#include "system.h"
-#include "assure.h"
-#include "c-ctype.h"
-#include "fadvise.h"
-#include "quote.h"
-#include "xstrtol.h"
-#include "xbinary-io.h"
+#अन्तर्भाव "system.h"
+#अन्तर्भाव "assure.h"
+#अन्तर्भाव "c-ctype.h"
+#अन्तर्भाव "fadvise.h"
+#अन्तर्भाव "quote.h"
+#अन्तर्भाव "xstrtol.h"
+#अन्तर्भाव "xbinary-io.h"
 
-#if BASE_TYPE == 42
+#यदि आधारः_TYPE == 42
 # define AUTHORS \
   proper_name ("Simon Josefsson"), \
   proper_name ("Assaf Gordon")
-#else
+#अन्यथा
 # define AUTHORS proper_name ("Simon Josefsson")
-#endif
+#यदि_अन्तः
 
-#if BASE_TYPE == 32
+#यदि आधारः_TYPE == 32
 # include "base32.h"
-# define PROGRAM_NAME "base32"
-#elif BASE_TYPE == 64
+# define क्रमादेशः_NAME "base32"
+#नोचेद्यदि आधारः_TYPE == 64
 # include "base64.h"
-# define PROGRAM_NAME "base64"
-#elif BASE_TYPE == 42
+# define क्रमादेशः_NAME "base64"
+#नोचेद्यदि आधारः_TYPE == 42
 # include "base32.h"
 # include "base64.h"
 # include "assure.h"
-# define PROGRAM_NAME "basenc"
-#else
-# error missing/invalid BASE_TYPE definition
-#endif
+# define क्रमादेशः_NAME "basenc"
+#अन्यथा
+# error missing/invalid आधारः_TYPE definition
+#यदि_अन्तः
 
 
 
-#if BASE_TYPE == 42
-enum
+#यदि आधारः_TYPE == 42
+गणना
 {
   BASE64_OPTION = CHAR_MAX + 1,
   BASE64URL_OPTION,
@@ -69,56 +69,56 @@ enum
   BASE2LSBF_OPTION,
   Z85_OPTION
 };
-#endif
+#यदि_अन्तः
 
-static struct option const long_options[] =
+स्थिर संरचना option ध्रुव long_options[] =
 {
-  {"decode", no_argument, NULL, 'd'},
-  {"wrap", required_argument, NULL, 'w'},
-  {"ignore-garbage", no_argument, NULL, 'i'},
-#if BASE_TYPE == 42
-  {"base64",    no_argument, NULL, BASE64_OPTION},
-  {"base64url", no_argument, NULL, BASE64URL_OPTION},
-  {"base58",    no_argument, NULL, BASE58_OPTION},
-  {"base32",    no_argument, NULL, BASE32_OPTION},
-  {"base32hex", no_argument, NULL, BASE32HEX_OPTION},
-  {"base16",    no_argument, NULL, BASE16_OPTION},
-  {"base2msbf", no_argument, NULL, BASE2MSBF_OPTION},
-  {"base2lsbf", no_argument, NULL, BASE2LSBF_OPTION},
-  {"z85",       no_argument, NULL, Z85_OPTION},
-#endif
+  {"decode", no_तर्कः, रिक्त, 'd'},
+  {"wrap", required_तर्कः, रिक्त, 'w'},
+  {"ignore-garbage", no_तर्कः, रिक्त, 'i'},
+#यदि आधारः_TYPE == 42
+  {"base64",    no_तर्कः, रिक्त, BASE64_OPTION},
+  {"base64url", no_तर्कः, रिक्त, BASE64URL_OPTION},
+  {"base58",    no_तर्कः, रिक्त, BASE58_OPTION},
+  {"base32",    no_तर्कः, रिक्त, BASE32_OPTION},
+  {"base32hex", no_तर्कः, रिक्त, BASE32HEX_OPTION},
+  {"base16",    no_तर्कः, रिक्त, BASE16_OPTION},
+  {"base2msbf", no_तर्कः, रिक्त, BASE2MSBF_OPTION},
+  {"base2lsbf", no_तर्कः, रिक्त, BASE2LSBF_OPTION},
+  {"z85",       no_तर्कः, रिक्त, Z85_OPTION},
+#यदि_अन्तः
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_संस्करणम्_OPTION_DECL},
+  {रिक्त, 0, रिक्त, 0}
 };
 
-void
-usage (int status)
+शून्य
+usage (पूर्णाङ्क स्थितिः)
 {
-  if (status != EXIT_SUCCESS)
+  यदि (स्थितिः != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  अन्यथा
     {
-      printf (_("\
+      प्रारूप_लिख (_("\
 Usage: %s [OPTION]... [FILE]\n\
-"), program_name);
+"), क्रमादेशः_name);
 
-#if BASE_TYPE == 42
+#यदि आधारः_TYPE == 42
       fputs (_("\
-basenc encode or decode FILE, or standard input, to standard output.\n\
+basenc encode or decode FILE, or standard निवेशः, गन्तव्यम् standard output.\n\
 "), stdout);
-#else
-      printf (_("\
-Base%d encode or decode FILE, or standard input, to standard output.\n\
-"), BASE_TYPE);
-#endif
+#अन्यथा
+      प्रारूप_लिख (_("\
+आधारः%d encode or decode FILE, or standard निवेशः, गन्तव्यम् standard output.\n\
+"), आधारः_TYPE);
+#यदि_अन्तः
 
       emit_stdin_note ();
       emit_mandatory_arg_note ();
-#if BASE_TYPE == 42
+#यदि आधारः_TYPE == 42
       oputs (_("\
       --base64\n\
-         same as base64(1) program (RFC4648 section 4)\n\
+         same as base64(1) क्रमादेशः (RFC4648 section 4)\n\
 "));
       oputs (_("\
       --base64url\n\
@@ -130,7 +130,7 @@ Base%d encode or decode FILE, or standard input, to standard output.\n\
 "));
       oputs (_("\
       --base32\n\
-         same as base32(1) program (RFC4648 section 6)\n\
+         same as base32(1) क्रमादेशः (RFC4648 section 6)\n\
 "));
       oputs (_("\
       --base32hex\n\
@@ -146,84 +146,84 @@ Base%d encode or decode FILE, or standard input, to standard output.\n\
 "));
       oputs (_("\
       --base2lsbf\n\
-         bit string with least significant bit (lsb) first\n\
+         bit string with न्यूनतमम् significant bit (lsb) first\n\
 "));
-#endif
+#यदि_अन्तः
       oputs (_("\
   -d, --decode\n\
-         decode data\n\
+         decode दत्त\n\
 "));
       oputs (_("\
   -i, --ignore-garbage\n\
          when decoding, ignore non-alphabet characters\n\
 "));
       oputs (_("\
-  -w, --wrap=COLS\n\
-         wrap encoded lines after COLS character (default 76).\n\
-         Use 0 to disable line wrapping\n\
+  -w, --wrap=स्तम्भसङ्ख्या\n\
+         wrap encoded पङ्क्तयः after स्तम्भसङ्ख्या character (स्वभाव 76).\n\
+         Use 0 गन्तव्यम् disable पङ्क्तिः wrapping\n\
 "));
-#if BASE_TYPE == 42
+#यदि आधारः_TYPE == 42
       oputs (_("\
       --z85\n\
          ascii85-like encoding (ZeroMQ spec:32/Z85);\n\
-         when encoding, input length must be a multiple of 4;\n\
-         when decoding, input length must be a multiple of 5\n\
+         when encoding, निवेशः दीर्घता must be a गुणजः सम्बन्धि 4;\n\
+         when decoding, निवेशः दीर्घता must be a गुणजः सम्बन्धि 5\n\
 "));
-#endif
+#यदि_अन्तः
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-#if BASE_TYPE == 42
+      oputs (संस्करणम्_OPTION_DESCRIPTION);
+#यदि आधारः_TYPE == 42
       fputs (_("\
 \n\
-When decoding, the input may contain newlines in addition to the bytes of\n\
-the formal alphabet.  Use --ignore-garbage to attempt to recover\n\
-from any other non-alphabet bytes in the encoded stream.\n\
+When decoding, the निवेशः may contain newlines अन्तर् addition गन्तव्यम् the अष्टकानि सम्बन्धि\n\
+the formal alphabet.  Use --ignore-garbage गन्तव्यम् attempt गन्तव्यम् recover\n\
+from any other non-alphabet अष्टकानि अन्तर् the encoded प्रवाहः.\n\
 "), stdout);
-#else
-      printf (_("\
+#अन्यथा
+      प्रारूप_लिख (_("\
 \n\
-The data are encoded as described for the %s alphabet in RFC 4648.\n\
-When decoding, the input may contain newlines in addition to the bytes of\n\
-the formal %s alphabet.  Use --ignore-garbage to attempt to recover\n\
-from any other non-alphabet bytes in the encoded stream.\n"),
-              PROGRAM_NAME, PROGRAM_NAME);
-#endif
-      emit_ancillary_info (PROGRAM_NAME);
+The दत्त are encoded as described प्रति the %s alphabet अन्तर् RFC 4648.\n\
+When decoding, the निवेशः may contain newlines अन्तर् addition गन्तव्यम् the अष्टकानि सम्बन्धि\n\
+the formal %s alphabet.  Use --ignore-garbage गन्तव्यम् attempt गन्तव्यम् recover\n\
+from any other non-alphabet अष्टकानि अन्तर् the encoded प्रवाहः.\n"),
+              क्रमादेशः_NAME, क्रमादेशः_NAME);
+#यदि_अन्तः
+      emit_ancillary_info (क्रमादेशः_NAME);
     }
 
-  exit (status);
+  निर्गच्छ (स्थितिः);
 }
 
-#if BASE_TYPE != 64
-static int
-base32_required_padding (int len)
+#यदि आधारः_TYPE != 64
+स्थिर पूर्णाङ्क
+base32_required_padding (पूर्णाङ्क len)
 {
-  int partial = len % 8;
-  return partial ? 8 - partial : 0;
+  पूर्णाङ्क partial = len % 8;
+  प्रत्यागम partial ? 8 - partial : 0;
 }
-#endif
+#यदि_अन्तः
 
-#if BASE_TYPE != 32
-static int
-base64_required_padding (int len)
+#यदि आधारः_TYPE != 32
+स्थिर पूर्णाङ्क
+base64_required_padding (पूर्णाङ्क len)
 {
-  int partial = len % 4;
-  return partial ? 4 - partial : 0;
+  पूर्णाङ्क partial = len % 4;
+  प्रत्यागम partial ? 4 - partial : 0;
 }
-#endif
+#यदि_अन्तः
 
-#if BASE_TYPE == 42
-static int
-no_required_padding (MAYBE_UNUSED int len)
+#यदि आधारः_TYPE == 42
+स्थिर पूर्णाङ्क
+no_required_padding (MAYBE_अप्रयुक्तम् पूर्णाङ्क len)
 {
-  return 0;
+  प्रत्यागम 0;
 }
-#endif
+#यदि_अन्तः
 
-#define ENC_BLOCKSIZE (1024 * 3 * 10)
+#परिभाषय ENC_BLOCKSIZE (1024 * 3 * 10)
 
-#if BASE_TYPE == 32
-# define BASE_LENGTH BASE32_LENGTH
+#यदि आधारः_TYPE == 32
+# define आधारः_दीर्घता BASE32_दीर्घता
 # define REQUIRED_PADDING base32_required_padding
 /* Note that increasing this may decrease performance if --ignore-garbage
    is used, because of the memmove operation below.  */
@@ -233,14 +233,14 @@ no_required_padding (MAYBE_UNUSED int len)
 static_assert (ENC_BLOCKSIZE % 40 == 0); /* Padding chars only on last block. */
 static_assert (DEC_BLOCKSIZE % 40 == 0); /* Complete encoded blocks are used. */
 
-# define base_encode base32_encode
-# define base_decode_context base32_decode_context
-# define base_decode_ctx_init base32_decode_ctx_init
-# define base_decode_ctx base32_decode_ctx
-# define base_decode_ctx_finalize decode_ctx_finalize
+# define आधारः_encode base32_encode
+# define आधारः_decode_context base32_decode_context
+# define आधारः_decode_ctx_init base32_decode_ctx_init
+# define आधारः_decode_ctx base32_decode_ctx
+# define आधारः_decode_ctx_finalize decode_ctx_finalize
 # define isubase isubase32
-#elif BASE_TYPE == 64
-# define BASE_LENGTH BASE64_LENGTH
+#नोचेद्यदि आधारः_TYPE == 64
+# define आधारः_दीर्घता BASE64_दीर्घता
 # define REQUIRED_PADDING base64_required_padding
 /* Note that increasing this may decrease performance if --ignore-garbage
    is used, because of the memmove operation below.  */
@@ -250,16 +250,16 @@ static_assert (DEC_BLOCKSIZE % 40 == 0); /* Complete encoded blocks are used. */
 static_assert (ENC_BLOCKSIZE % 12 == 0); /* Padding chars only on last block. */
 static_assert (DEC_BLOCKSIZE % 12 == 0); /* Complete encoded blocks are used. */
 
-# define base_encode base64_encode
-# define base_decode_context base64_decode_context
-# define base_decode_ctx_init base64_decode_ctx_init
-# define base_decode_ctx base64_decode_ctx
-# define base_decode_ctx_finalize decode_ctx_finalize
+# define आधारः_encode base64_encode
+# define आधारः_decode_context base64_decode_context
+# define आधारः_decode_ctx_init base64_decode_ctx_init
+# define आधारः_decode_ctx base64_decode_ctx
+# define आधारः_decode_ctx_finalize decode_ctx_finalize
 # define isubase isubase64
-#elif BASE_TYPE == 42
+#नोचेद्यदि आधारः_TYPE == 42
 
 
-# define BASE_LENGTH base_length
+# define आधारः_दीर्घता आधारः_दीर्घता_2
 # define REQUIRED_PADDING required_padding
 
 /* Note that increasing this may decrease performance if --ignore-garbage
@@ -268,303 +268,303 @@ static_assert (DEC_BLOCKSIZE % 12 == 0); /* Complete encoded blocks are used. */
 static_assert (DEC_BLOCKSIZE % 40 == 0); /* complete encoded blocks for base32*/
 static_assert (DEC_BLOCKSIZE % 12 == 0); /* complete encoded blocks for base64*/
 
-static idx_t (*base_length) (idx_t len);
-static int (*required_padding) (int i);
-static bool (*isubase) (unsigned char ch);
-static void (*base_encode) (char const *restrict in, idx_t inlen,
-                            char *restrict out, idx_t outlen);
+स्थिर idx_t (*आधारः_दीर्घता_2) (idx_t len);
+स्थिर पूर्णाङ्क (*required_padding) (पूर्णाङ्क i);
+स्थिर bool (*isubase) (अचिह्नित वर्ण ch);
+स्थिर शून्य (*आधारः_encode) (वर्ण ध्रुव *सीमित अन्तर्, idx_t inlen,
+                            वर्ण *सीमित बहिर्गमनम्, idx_t outlen);
 
-struct base16_decode_context
+संरचना base16_decode_context
 {
   /* Either a 4-bit nibble, or negative if we have no nibble.  */
-  signed char nibble;
+  चिह्नित वर्ण nibble;
 };
 
-struct z85_decode_context
+संरचना z85_decode_context
 {
-  int i;
-  unsigned char octets[5];
+  पूर्णाङ्क i;
+  अचिह्नित वर्ण octets[5];
 };
 
-struct base58_context
+संरचना base58_context
 {
-  idx_t size;
-  idx_t capacity;
-  unsigned char *buf COUNTED_BY (capacity);
+  idx_t आकार;
+  idx_t क्षमता;
+  अचिह्नित वर्ण *buf COUNTED_BY (क्षमता);
 };
 
-struct base2_decode_context
+संरचना base2_decode_context
 {
-  unsigned char octet;
-  int bit_pos;
+  अचिह्नित वर्ण octet;
+  पूर्णाङ्क bit_pos;
 };
 
-struct base_decode_context
+संरचना आधारः_decode_context
 {
-  union {
-    struct base64_decode_context base64;
-    struct base32_decode_context base32;
-    struct base16_decode_context base16;
-    struct base2_decode_context base2;
-    struct z85_decode_context z85;
-    struct base58_context base58;
+  सङ्घ {
+    संरचना base64_decode_context base64;
+    संरचना base32_decode_context base32;
+    संरचना base16_decode_context base16;
+    संरचना base2_decode_context base2;
+    संरचना z85_decode_context z85;
+    संरचना base58_context base58;
   } ctx;
-  char *inbuf;
+  वर्ण *inbuf;
   idx_t bufsize;
 };
-static void (*base_decode_ctx_init) (struct base_decode_context *ctx);
-static bool (*base_decode_ctx) (struct base_decode_context *ctx,
-                                char const *restrict in, idx_t inlen,
-                                char *restrict out, idx_t *outlen);
-static bool (*base_decode_ctx_finalize) (struct base_decode_context *ctx,
-                                         char *restrict *out, idx_t *outlen);
+स्थिर शून्य (*आधारः_decode_ctx_init) (संरचना आधारः_decode_context *ctx);
+स्थिर bool (*आधारः_decode_ctx) (संरचना आधारः_decode_context *ctx,
+                                वर्ण ध्रुव *सीमित अन्तर्, idx_t inlen,
+                                वर्ण *सीमित बहिर्गमनम्, idx_t *outlen);
+स्थिर bool (*आधारः_decode_ctx_finalize) (संरचना आधारः_decode_context *ctx,
+                                         वर्ण *सीमित *बहिर्गमनम्, idx_t *outlen);
 
-struct base_encode_context
+संरचना आधारः_encode_context
 {
-  union {
-    struct base58_context base58;
+  सङ्घ {
+    संरचना base58_context base58;
   } ctx;
 };
 
-static void (*base_encode_ctx_init) (struct base_encode_context *ctx);
-static bool (*base_encode_ctx) (struct base_encode_context *ctx,
-                                char const *restrict in, idx_t inlen,
-                                char *restrict out, idx_t *outlen);
-static bool (*base_encode_ctx_finalize) (struct base_encode_context *ctx,
-                                         char *restrict *out, idx_t *outlen);
+स्थिर शून्य (*आधारः_encode_ctx_init) (संरचना आधारः_encode_context *ctx);
+स्थिर bool (*आधारः_encode_ctx) (संरचना आधारः_encode_context *ctx,
+                                वर्ण ध्रुव *सीमित अन्तर्, idx_t inlen,
+                                वर्ण *सीमित बहिर्गमनम्, idx_t *outlen);
+स्थिर bool (*आधारः_encode_ctx_finalize) (संरचना आधारः_encode_context *ctx,
+                                         वर्ण *सीमित *बहिर्गमनम्, idx_t *outlen);
 
-static bool
-no_padding (MAYBE_UNUSED struct base_decode_context *ctx)
+स्थिर bool
+no_padding (MAYBE_अप्रयुक्तम् संरचना आधारः_decode_context *ctx)
 {
-  return false;
+  प्रत्यागम false;
 }
 
-static int
-no_pending_length (MAYBE_UNUSED struct base_decode_context *ctx)
+स्थिर पूर्णाङ्क
+no_pending_दीर्घता (MAYBE_अप्रयुक्तम् संरचना आधारः_decode_context *ctx)
 {
-  return 0;
+  प्रत्यागम 0;
 }
-#endif
+#यदि_अन्तः
 
-#if BASE_TYPE == 42
-static bool (*has_padding) (struct base_decode_context *ctx);
-static int (*get_pending_length) (struct base_decode_context *ctx);
+#यदि आधारः_TYPE == 42
+स्थिर bool (*has_padding) (संरचना आधारः_decode_context *ctx);
+स्थिर पूर्णाङ्क (*get_pending_दीर्घता) (संरचना आधारः_decode_context *ctx);
 
-static bool
-base64_ctx_has_padding (struct base_decode_context *ctx)
+स्थिर bool
+base64_ctx_has_padding (संरचना आधारः_decode_context *ctx)
 {
-  return ctx->ctx.base64.i && ctx->ctx.base64.buf[ctx->ctx.base64.i - 1] == '=';
-}
-
-static bool
-base32_ctx_has_padding (struct base_decode_context *ctx)
-{
-  return ctx->ctx.base32.i && ctx->ctx.base32.buf[ctx->ctx.base32.i - 1] == '=';
+  प्रत्यागम ctx->ctx.base64.i && ctx->ctx.base64.buf[ctx->ctx.base64.i - 1] == '=';
 }
 
-static int
-base64_ctx_get_pending_length (struct base_decode_context *ctx)
+स्थिर bool
+base32_ctx_has_padding (संरचना आधारः_decode_context *ctx)
 {
-  return ctx->ctx.base64.i;
+  प्रत्यागम ctx->ctx.base32.i && ctx->ctx.base32.buf[ctx->ctx.base32.i - 1] == '=';
 }
 
-static int
-base32_ctx_get_pending_length (struct base_decode_context *ctx)
+स्थिर पूर्णाङ्क
+base64_ctx_get_pending_दीर्घता (संरचना आधारः_decode_context *ctx)
 {
-  return ctx->ctx.base32.i;
+  प्रत्यागम ctx->ctx.base64.i;
 }
 
-static int
-base16_ctx_get_pending_length (MAYBE_UNUSED struct base_decode_context *ctx)
+स्थिर पूर्णाङ्क
+base32_ctx_get_pending_दीर्घता (संरचना आधारः_decode_context *ctx)
 {
-  return 1; /* Always check nibble state.  */
+  प्रत्यागम ctx->ctx.base32.i;
 }
 
-static int
-z85_ctx_get_pending_length (struct base_decode_context *ctx)
+स्थिर पूर्णाङ्क
+base16_ctx_get_pending_दीर्घता (MAYBE_अप्रयुक्तम् संरचना आधारः_decode_context *ctx)
 {
-  return ctx->ctx.z85.i;
+  प्रत्यागम 1; /* Always check nibble state.  */
 }
 
-static int
-base2_ctx_get_pending_length (struct base_decode_context *ctx)
+स्थिर पूर्णाङ्क
+z85_ctx_get_pending_दीर्घता (संरचना आधारः_decode_context *ctx)
 {
-  return ctx->ctx.base2.bit_pos;
-}
-#else
-static bool
-has_padding (struct base_decode_context *ctx)
-{
-  return ctx->i && ctx->buf[ctx->i - 1] == '=';
+  प्रत्यागम ctx->ctx.z85.i;
 }
 
-static int
-get_pending_length (struct base_decode_context *ctx)
+स्थिर पूर्णाङ्क
+base2_ctx_get_pending_दीर्घता (संरचना आधारः_decode_context *ctx)
 {
-  return ctx->i;
+  प्रत्यागम ctx->ctx.base2.bit_pos;
 }
-#endif
+#अन्यथा
+स्थिर bool
+has_padding (संरचना आधारः_decode_context *ctx)
+{
+  प्रत्यागम ctx->i && ctx->buf[ctx->i - 1] == '=';
+}
+
+स्थिर पूर्णाङ्क
+get_pending_दीर्घता (संरचना आधारः_decode_context *ctx)
+{
+  प्रत्यागम ctx->i;
+}
+#यदि_अन्तः
 
 
 /* Process any pending data in CTX, while auto padding if appropriate.
    Return TRUE on success, FALSE on failure.  */
 
-static bool
-decode_ctx_finalize (struct base_decode_context *ctx,
-                     char *restrict *out, idx_t *outlen)
+स्थिर bool
+decode_ctx_finalize (संरचना आधारः_decode_context *ctx,
+                     वर्ण *सीमित *बहिर्गमनम्, idx_t *outlen)
 {
-  if (get_pending_length (ctx) == 0)
+  यदि (get_pending_दीर्घता (ctx) == 0)
     {
       *outlen = 0;
-      return true;
+      प्रत्यागम true;
     }
 
   /* Auto-pad input and flush the context */
-  char padbuf[8] ATTRIBUTE_NONSTRING = "========";
-  idx_t pending_len = get_pending_length (ctx);
+  वर्ण padbuf[8] ATTRIBUTE_NONSTRING = "========";
+  idx_t pending_len = get_pending_दीर्घता (ctx);
   idx_t auto_padding = REQUIRED_PADDING (pending_len);
   idx_t n = *outlen;
-  bool result;
+  bool परिणाम;
 
-  if (auto_padding && ! has_padding (ctx))
+  यदि (auto_padding && ! has_padding (ctx))
     {
-      affirm (auto_padding <= sizeof (padbuf));
-      result = base_decode_ctx (ctx, padbuf, auto_padding, *out, &n);
+      affirm (auto_padding <= परिमाण (padbuf));
+      परिणाम = आधारः_decode_ctx (ctx, padbuf, auto_padding, *बहिर्गमनम्, &n);
     }
-  else
+  अन्यथा
     {
-      result = base_decode_ctx (ctx, "", 0, *out, &n);
+      परिणाम = आधारः_decode_ctx (ctx, "", 0, *बहिर्गमनम्, &n);
     }
 
   *outlen = n;
-  return result;
+  प्रत्यागम परिणाम;
 }
 
-#if BASE_TYPE == 42
+#यदि आधारः_TYPE == 42
 
-static idx_t
-base64_length_wrapper (idx_t len)
+स्थिर idx_t
+base64_दीर्घता_wrapper (idx_t len)
 {
-  return BASE64_LENGTH (len);
+  प्रत्यागम BASE64_दीर्घता (len);
 }
 
-static void
-base64_decode_ctx_init_wrapper (struct base_decode_context *ctx)
+स्थिर शून्य
+base64_decode_ctx_init_wrapper (संरचना आधारः_decode_context *ctx)
 {
   base64_decode_ctx_init (&ctx->ctx.base64);
 }
 
-static bool
-base64_decode_ctx_wrapper (struct base_decode_context *ctx,
-                           char const *restrict in, idx_t inlen,
-                           char *restrict out, idx_t *outlen)
+स्थिर bool
+base64_decode_ctx_wrapper (संरचना आधारः_decode_context *ctx,
+                           वर्ण ध्रुव *सीमित अन्तर्, idx_t inlen,
+                           वर्ण *सीमित बहिर्गमनम्, idx_t *outlen)
 {
-  return base64_decode_ctx (&ctx->ctx.base64, in, inlen, out, outlen);
+  प्रत्यागम base64_decode_ctx (&ctx->ctx.base64, अन्तर्, inlen, बहिर्गमनम्, outlen);
 }
 
-static void
-init_inbuf (struct base_decode_context *ctx)
+स्थिर शून्य
+init_inbuf (संरचना आधारः_decode_context *ctx)
 {
   ctx->bufsize = DEC_BLOCKSIZE;
   ctx->inbuf = xcharalloc (ctx->bufsize);
 }
 
-static void
-prepare_inbuf (struct base_decode_context *ctx, idx_t inlen)
+स्थिर शून्य
+prepare_inbuf (संरचना आधारः_decode_context *ctx, idx_t inlen)
 {
-  if (ctx->bufsize < inlen)
+  यदि (ctx->bufsize < inlen)
     ctx->inbuf = xpalloc (ctx->inbuf, &ctx->bufsize,
-                          inlen - ctx->bufsize, -1, sizeof *ctx->inbuf);
+                          inlen - ctx->bufsize, -1, परिमाण *ctx->inbuf);
 }
 
 
-static void
-base64url_encode (char const *restrict in, idx_t inlen,
-                  char *restrict out, idx_t outlen)
+स्थिर शून्य
+base64url_encode (वर्ण ध्रुव *सीमित अन्तर्, idx_t inlen,
+                  वर्ण *सीमित बहिर्गमनम्, idx_t outlen)
 {
-  base64_encode (in, inlen, out, outlen);
+  base64_encode (अन्तर्, inlen, बहिर्गमनम्, outlen);
   /* translate 62nd and 63rd characters */
-  char *p = out;
-  while (outlen--)
+  वर्ण *p = बहिर्गमनम्;
+  यावत् (outlen--)
     {
-      if (*p == '+')
+      यदि (*p == '+')
         *p = '-';
-      else if (*p == '/')
+      अन्यथा यदि (*p == '/')
         *p = '_';
       ++p;
     }
 }
 
-static bool
-isubase64url (unsigned char ch)
+स्थिर bool
+isubase64url (अचिह्नित वर्ण ch)
 {
-  return (ch == '-' || ch == '_'
+  प्रत्यागम (ch == '-' || ch == '_'
           || (ch != '+' && ch != '/' && isubase64 (ch)));
 }
 
-static void
-base64url_decode_ctx_init_wrapper (struct base_decode_context *ctx)
+स्थिर शून्य
+base64url_decode_ctx_init_wrapper (संरचना आधारः_decode_context *ctx)
 {
   base64_decode_ctx_init (&ctx->ctx.base64);
   init_inbuf (ctx);
 }
 
 
-static bool
-base64url_decode_ctx_wrapper (struct base_decode_context *ctx,
-                              char const *restrict in, idx_t inlen,
-                              char *restrict out, idx_t *outlen)
+स्थिर bool
+base64url_decode_ctx_wrapper (संरचना आधारः_decode_context *ctx,
+                              वर्ण ध्रुव *सीमित अन्तर्, idx_t inlen,
+                              वर्ण *सीमित बहिर्गमनम्, idx_t *outlen)
 {
   prepare_inbuf (ctx, inlen);
-  memcpy (ctx->inbuf, in, inlen);
+  स्मृतिं_प्रतिलिख (ctx->inbuf, अन्तर्, inlen);
 
   /* translate 62nd and 63rd characters */
   idx_t i = inlen;
-  char *p = ctx->inbuf;
-  while (i--)
+  वर्ण *p = ctx->inbuf;
+  यावत् (i--)
     {
-      if (*p == '+' || *p == '/')
+      यदि (*p == '+' || *p == '/')
         {
           *outlen = 0;
-          return false; /* reject base64 input */
+          प्रत्यागम false; /* reject base64 input */
         }
-      else if (*p == '-')
+      अन्यथा यदि (*p == '-')
         *p = '+';
-      else if (*p == '_')
+      अन्यथा यदि (*p == '_')
         *p = '/';
       ++p;
     }
 
-  return base64_decode_ctx (&ctx->ctx.base64, ctx->inbuf, inlen,
-                            out, outlen);
+  प्रत्यागम base64_decode_ctx (&ctx->ctx.base64, ctx->inbuf, inlen,
+                            बहिर्गमनम्, outlen);
 }
 
 
 
-static idx_t
-base32_length_wrapper (idx_t len)
+स्थिर idx_t
+base32_दीर्घता_wrapper (idx_t len)
 {
-  return BASE32_LENGTH (len);
+  प्रत्यागम BASE32_दीर्घता (len);
 }
 
-static void
-base32_decode_ctx_init_wrapper (struct base_decode_context *ctx)
+स्थिर शून्य
+base32_decode_ctx_init_wrapper (संरचना आधारः_decode_context *ctx)
 {
   base32_decode_ctx_init (&ctx->ctx.base32);
 }
 
-static bool
-base32_decode_ctx_wrapper (struct base_decode_context *ctx,
-                           char const *restrict in, idx_t inlen,
-                           char *restrict out, idx_t *outlen)
+स्थिर bool
+base32_decode_ctx_wrapper (संरचना आधारः_decode_context *ctx,
+                           वर्ण ध्रुव *सीमित अन्तर्, idx_t inlen,
+                           वर्ण *सीमित बहिर्गमनम्, idx_t *outlen)
 {
-  return base32_decode_ctx (&ctx->ctx.base32, in, inlen, out, outlen);
+  प्रत्यागम base32_decode_ctx (&ctx->ctx.base32, अन्तर्, inlen, बहिर्गमनम्, outlen);
 }
 
 /* ABCDEFGHIJKLMNOPQRSTUVWXYZ234567
-     to
+गन्तव्यम्
    0123456789ABCDEFGHIJKLMNOPQRSTUV */
-static const char base32_norm_to_hex[32 + 9] = {
+स्थिर ध्रुव वर्ण base32_norm_गन्तव्यम्_hex[32 + 9] = {
 /*0x32, 0x33, 0x34, 0x35, 0x36, 0x37, */
   'Q',  'R',  'S',  'T',  'U',  'V',
 
@@ -584,9 +584,9 @@ static const char base32_norm_to_hex[32 + 9] = {
 };
 
 /* 0123456789ABCDEFGHIJKLMNOPQRSTUV
-     to
+गन्तव्यम्
    ABCDEFGHIJKLMNOPQRSTUVWXYZ234567 */
-static const char base32_hex_to_norm[32 + 9] = {
+स्थिर ध्रुव वर्ण base32_hex_गन्तव्यम्_norm[32 + 9] = {
   /* from: 0x30 .. 0x39 ('0' to '9') */
   /* to:*/ 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
 
@@ -603,56 +603,56 @@ static const char base32_hex_to_norm[32 + 9] = {
 };
 
 
-inline static bool
-isubase32hex (unsigned char ch)
+अन्तःस्थ स्थिर bool
+isubase32hex (अचिह्नित वर्ण ch)
 {
-  return ('0' <= ch && ch <= '9') || ('A' <= ch && ch <= 'V');
+  प्रत्यागम ('0' <= ch && ch <= '9') || ('A' <= ch && ch <= 'V');
 }
 
 
-static void
-base32hex_encode (char const *restrict in, idx_t inlen,
-                  char *restrict out, idx_t outlen)
+स्थिर शून्य
+base32hex_encode (वर्ण ध्रुव *सीमित अन्तर्, idx_t inlen,
+                  वर्ण *सीमित बहिर्गमनम्, idx_t outlen)
 {
-  base32_encode (in, inlen, out, outlen);
+  base32_encode (अन्तर्, inlen, बहिर्गमनम्, outlen);
 
-  for (char *p = out; outlen--; p++)
+  प्रति (वर्ण *p = बहिर्गमनम्; outlen--; p++)
     {
       affirm (0x32 <= *p && *p <= 0x5a);          /* LCOV_EXCL_LINE */
-      *p = base32_norm_to_hex[*p - 0x32];
+      *p = base32_norm_गन्तव्यम्_hex[*p - 0x32];
     }
 }
 
 
-static void
-base32hex_decode_ctx_init_wrapper (struct base_decode_context *ctx)
+स्थिर शून्य
+base32hex_decode_ctx_init_wrapper (संरचना आधारः_decode_context *ctx)
 {
   base32_decode_ctx_init (&ctx->ctx.base32);
   init_inbuf (ctx);
 }
 
 
-static bool
-base32hex_decode_ctx_wrapper (struct base_decode_context *ctx,
-                              char const *restrict in, idx_t inlen,
-                              char *restrict out, idx_t *outlen)
+स्थिर bool
+base32hex_decode_ctx_wrapper (संरचना आधारः_decode_context *ctx,
+                              वर्ण ध्रुव *सीमित अन्तर्, idx_t inlen,
+                              वर्ण *सीमित बहिर्गमनम्, idx_t *outlen)
 {
   prepare_inbuf (ctx, inlen);
 
   idx_t i = inlen;
-  char *p = ctx->inbuf;
-  while (i--)
+  वर्ण *p = ctx->inbuf;
+  यावत् (i--)
     {
-      if (isubase32hex (*in))
-        *p = base32_hex_to_norm[*in - 0x30];
-      else
-        *p = *in;
+      यदि (isubase32hex (*अन्तर्))
+        *p = base32_hex_गन्तव्यम्_norm[*अन्तर् - 0x30];
+      अन्यथा
+        *p = *अन्तर्;
       ++p;
-      ++in;
+      ++अन्तर्;
     }
 
-  return base32_decode_ctx (&ctx->ctx.base32, ctx->inbuf, inlen,
-                            out, outlen);
+  प्रत्यागम base32_decode_ctx (&ctx->ctx.base32, ctx->inbuf, inlen,
+                            बहिर्गमनम्, outlen);
 }
 /* With this approach this file works independent of the charset used
    (think EBCDIC).  However, it does assume that the characters in the
@@ -682,7 +682,7 @@ base32hex_decode_ctx_wrapper (struct base_decode_context *ctx,
    : (_) == 'F' || (_) == 'f' ? 15              \
    : -1)
 
-static signed char const base16_to_int[256] = {
+स्थिर चिह्नित वर्ण ध्रुव base16_गन्तव्यम्_int[256] = {
   B16 (0), B16 (1), B16 (2), B16 (3),
   B16 (4), B16 (5), B16 (6), B16 (7),
   B16 (8), B16 (9), B16 (10), B16 (11),
@@ -749,181 +749,181 @@ static signed char const base16_to_int[256] = {
   B16 (252), B16 (253), B16 (254), B16 (255)
 };
 
-static bool
-isubase16 (unsigned char ch)
+स्थिर bool
+isubase16 (अचिह्नित वर्ण ch)
 {
-  return ch < sizeof base16_to_int && 0 <= base16_to_int[ch];
+  प्रत्यागम ch < परिमाण base16_गन्तव्यम्_int && 0 <= base16_गन्तव्यम्_int[ch];
 }
 
-static idx_t
-base16_length (idx_t len)
+स्थिर idx_t
+base16_दीर्घता (idx_t len)
 {
-  return len * 2;
+  प्रत्यागम len * 2;
 }
 
 
-static void
-base16_encode (char const *restrict in, idx_t inlen,
-               char *restrict out, idx_t outlen)
+स्थिर शून्य
+base16_encode (वर्ण ध्रुव *सीमित अन्तर्, idx_t inlen,
+               वर्ण *सीमित बहिर्गमनम्, idx_t outlen)
 {
-  static const char base16[16] ATTRIBUTE_NONSTRING = "0123456789ABCDEF";
+  स्थिर ध्रुव वर्ण base16[16] ATTRIBUTE_NONSTRING = "0123456789ABCDEF";
 
-  while (inlen && outlen)
+  यावत् (inlen && outlen)
     {
-      unsigned char c = *in;
-      *out++ = base16[c >> 4];
-      *out++ = base16[c & 0x0F];
-      ++in;
+      अचिह्नित वर्ण c = *अन्तर्;
+      *बहिर्गमनम्++ = base16[c >> 4];
+      *बहिर्गमनम्++ = base16[c & 0x0F];
+      ++अन्तर्;
       inlen--;
       outlen -= 2;
     }
 }
 
 
-static void
-base16_decode_ctx_init (struct base_decode_context *ctx)
+स्थिर शून्य
+base16_decode_ctx_init (संरचना आधारः_decode_context *ctx)
 {
   init_inbuf (ctx);
   ctx->ctx.base16.nibble = -1;
 }
 
 
-static bool
-base16_decode_ctx (struct base_decode_context *ctx,
-                   char const *restrict in, idx_t inlen,
-                   char *restrict out, idx_t *outlen)
+स्थिर bool
+base16_decode_ctx (संरचना आधारः_decode_context *ctx,
+                   वर्ण ध्रुव *सीमित अन्तर्, idx_t inlen,
+                   वर्ण *सीमित बहिर्गमनम्, idx_t *outlen)
 {
-  bool ignore_lines = true;  /* for now, always ignore them */
-  char *out0 = out;
-  signed char nibble = ctx->ctx.base16.nibble;
+  bool ignore_पङ्क्तयः = true;  /* for now, always ignore them */
+  वर्ण *out0 = बहिर्गमनम्;
+  चिह्नित वर्ण nibble = ctx->ctx.base16.nibble;
 
   /* inlen==0 is request to flush output.
      if there is a dangling high nibble - we are missing the low nibble,
      so return false - indicating an invalid input.  */
-  if (inlen == 0)
+  यदि (inlen == 0)
     {
       *outlen = 0;
-      return nibble < 0;
+      प्रत्यागम nibble < 0;
     }
 
-  while (inlen--)
+  यावत् (inlen--)
     {
-      unsigned char c = *in++;
-      if (ignore_lines && c == '\n')
-        continue;
+      अचिह्नित वर्ण c = *अन्तर्++;
+      यदि (ignore_पङ्क्तयः && c == '\n')
+        अनुवर्त;
 
-      if (sizeof base16_to_int <= c || base16_to_int[c] < 0)
+      यदि (परिमाण base16_गन्तव्यम्_int <= c || base16_गन्तव्यम्_int[c] < 0)
         {
-          *outlen = out - out0;
-          return false; /* garbage - return false */
+          *outlen = बहिर्गमनम् - out0;
+          प्रत्यागम false; /* garbage - return false */
         }
 
-      if (nibble < 0)
-        nibble = base16_to_int[c];
-      else
+      यदि (nibble < 0)
+        nibble = base16_गन्तव्यम्_int[c];
+      अन्यथा
         {
           /* have both nibbles, write octet */
-          *out++ = (nibble << 4) + base16_to_int[c];
+          *बहिर्गमनम्++ = (nibble << 4) + base16_गन्तव्यम्_int[c];
           nibble = -1;
         }
     }
 
   ctx->ctx.base16.nibble = nibble;
-  *outlen = out - out0;
-  return true;
+  *outlen = बहिर्गमनम् - out0;
+  प्रत्यागम true;
 }
 
 
 
-ATTRIBUTE_PURE
-static idx_t
-z85_length (idx_t len)
+ATTRIBUTE_विशुद्धम्
+स्थिर idx_t
+z85_दीर्घता (idx_t len)
 {
   /* Z85 does not allow padding, so no need to round to highest integer.  */
   idx_t z85_len = (len * 5) / 4;
   affirm (0 <= z85_len);
-  return z85_len;
+  प्रत्यागम z85_len;
 }
 
-static bool
-isuz85 (unsigned char ch)
+स्थिर bool
+isuz85 (अचिह्नित वर्ण ch)
 {
-  return c_isalnum (ch) || strchr (".-:+=^!/*?&<>()[]{}@%$#", ch) != NULL;
+  प्रत्यागम c_isalnum (ch) || strchr (".-:+=^!/*?&<>()[]{}@%$#", ch) != रिक्त;
 }
 
-static char const z85_encoding[85] ATTRIBUTE_NONSTRING =
+स्थिर वर्ण ध्रुव z85_encoding[85] ATTRIBUTE_NONSTRING =
   "0123456789"
   "abcdefghijklmnopqrstuvwxyz"
   "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
   ".-:+=^!/*?&<>()[]{}@%$#";
 
-static void
-z85_encode (char const *restrict in, idx_t inlen,
-            char *restrict out, idx_t outlen)
+स्थिर शून्य
+z85_encode (वर्ण ध्रुव *सीमित अन्तर्, idx_t inlen,
+            वर्ण *सीमित बहिर्गमनम्, idx_t outlen)
 {
-  int i = 0;
-  unsigned char quad[4];
+  पूर्णाङ्क i = 0;
+  अचिह्नित वर्ण quad[4];
   idx_t outidx = 0;
 
-  while (true)
+  यावत् (true)
     {
-      if (inlen == 0)
+      यदि (inlen == 0)
         {
           /* no more input, exactly on 4 octet boundary. */
-          if (i == 0)
-            return;
+          यदि (i == 0)
+            प्रत्यागम;
 
           /* currently, there's no way to return an error in encoding.  */
           error (EXIT_FAILURE, 0,
                  _("invalid input (length must be multiple of 4 characters)"));
         }
-      else
+      अन्यथा
         {
-          quad[i++] = *in++;
+          quad[i++] = *अन्तर्++;
           --inlen;
         }
 
       /* Got a quad, encode it */
-      if (i == 4)
+      यदि (i == 4)
         {
           int_fast64_t val = quad[0];
           val = (val << 24) + (quad[1] << 16) + (quad[2] << 8) + quad[3];
 
-          for (int j = 4; j >= 0; --j)
+          प्रति (पूर्णाङ्क j = 4; j >= 0; --j)
             {
-              int c = val % 85;
+              पूर्णाङ्क c = val % 85;
               val /= 85;
 
               /* NOTE: if there is padding (which is trimmed by z85
                  before outputting the result), the output buffer 'out'
                  might not include enough allocated bytes for the padding,
                  so don't store them. */
-              if (outidx + j < outlen)
-                out[j] = z85_encoding[c];
+              यदि (outidx + j < outlen)
+                बहिर्गमनम्[j] = z85_encoding[c];
             }
-          out += 5;
+          बहिर्गमनम् += 5;
           outidx += 5;
           i = 0;
         }
     }
 }
 
-static void
-z85_decode_ctx_init (struct base_decode_context *ctx)
+स्थिर शून्य
+z85_decode_ctx_init (संरचना आधारः_decode_context *ctx)
 {
   init_inbuf (ctx);
   ctx->ctx.z85.i = 0;
 }
 
 
-# define Z85_LO_CTX_TO_32BIT_VAL(ctx) \
+# define Z85_LO_CTX_गन्तव्यम्_32_BIT_VAL(ctx) \
   (((ctx)->ctx.z85.octets[1] * 85 * 85 * 85) +      \
    ((ctx)->ctx.z85.octets[2] * 85 * 85) +	    \
    ((ctx)->ctx.z85.octets[3] * 85) +		    \
    ((ctx)->ctx.z85.octets[4]))
 
 
-# define Z85_HI_CTX_TO_32BIT_VAL(ctx) \
+# define Z85_HI_CTX_गन्तव्यम्_32_BIT_VAL(ctx) \
   ((int_fast64_t) (ctx)->ctx.z85.octets[0] * 85 * 85 * 85 * 85 )
 
 /*
@@ -937,7 +937,7 @@ z85_decode_ctx_init (struct base_decode_context *ctx)
  70 - 79:  * ? & < > ( ) [ ] {
  80 - 84:  } @ % $ #
 */
-static signed char const z85_decoding[93] = {
+स्थिर चिह्नित वर्ण ध्रुव z85_decoding[93] = {
   68, -1,  84,  83, 82,  72, -1,               /* ! " # $ % & ' */
   75, 76,  70,  65, -1,  63, 62, 69,           /* ( ) * + , - . / */
   0,  1,   2,   3,  4,   5,  6,   7,  8,  9,   /* '0' to '9' */
@@ -952,131 +952,131 @@ static signed char const z85_decoding[93] = {
   79, -1,  80                                  /* { | } */
 };
 
-static bool
-z85_decode_ctx (struct base_decode_context *ctx,
-                char const *restrict in, idx_t inlen,
-                char *restrict out, idx_t *outlen)
+स्थिर bool
+z85_decode_ctx (संरचना आधारः_decode_context *ctx,
+                वर्ण ध्रुव *सीमित अन्तर्, idx_t inlen,
+                वर्ण *सीमित बहिर्गमनम्, idx_t *outlen)
 {
-  bool ignore_lines = true;  /* for now, always ignore them */
+  bool ignore_पङ्क्तयः = true;  /* for now, always ignore them */
 
   *outlen = 0;
 
   /* inlen==0 is request to flush output.
      if there are dangling values - we are missing entries,
      so return false - indicating an invalid input.  */
-  if (inlen == 0)
+  यदि (inlen == 0)
     {
-      if (ctx->ctx.z85.i > 0)
+      यदि (ctx->ctx.z85.i > 0)
         {
           /* Z85 variant does not allow padding - input must
              be a multiple of 5 - so return error.  */
-          return false;
+          प्रत्यागम false;
         }
-      return true;
+      प्रत्यागम true;
     }
 
-  while (inlen--)
+  यावत् (inlen--)
     {
-      if (ignore_lines && *in == '\n')
+      यदि (ignore_पङ्क्तयः && *अन्तर् == '\n')
         {
-          ++in;
-          continue;
+          ++अन्तर्;
+          अनुवर्त;
         }
 
       /* z85 decoding */
-      unsigned char c = *in;
+      अचिह्नित वर्ण c = *अन्तर्;
 
-      if (c >= 33 && c <= 125)
+      यदि (c >= 33 && c <= 125)
         {
-          signed char ch = z85_decoding[c - 33];
-          if (ch < 0)
-            return false; /* garbage - return false */
+          चिह्नित वर्ण ch = z85_decoding[c - 33];
+          यदि (ch < 0)
+            प्रत्यागम false; /* garbage - return false */
           c = ch;
         }
-      else
-        return false; /* garbage - return false */
+      अन्यथा
+        प्रत्यागम false; /* garbage - return false */
 
-      ++in;
+      ++अन्तर्;
 
       ctx->ctx.z85.octets[ctx->ctx.z85.i++] = c;
-      if (ctx->ctx.z85.i == 5)
+      यदि (ctx->ctx.z85.i == 5)
         {
           /* decode the lowest 4 octets, then check for overflows.  */
-          int_fast64_t val = Z85_LO_CTX_TO_32BIT_VAL (ctx);
+          int_fast64_t val = Z85_LO_CTX_गन्तव्यम्_32_BIT_VAL (ctx);
 
           /* The Z85 spec and the reference implementation say nothing
              about overflows. To be on the safe side, reject them.  */
 
-          val += Z85_HI_CTX_TO_32BIT_VAL (ctx);
-          if ((val >> 24) & ~0xFF)
-            return false;
+          val += Z85_HI_CTX_गन्तव्यम्_32_BIT_VAL (ctx);
+          यदि ((val >> 24) & ~0xFF)
+            प्रत्यागम false;
 
-          *out++ = val >> 24;
-          *out++ = (val >> 16) & 0xFF;
-          *out++ = (val >> 8) & 0xFF;
-          *out++ = val & 0xFF;
+          *बहिर्गमनम्++ = val >> 24;
+          *बहिर्गमनम्++ = (val >> 16) & 0xFF;
+          *बहिर्गमनम्++ = (val >> 8) & 0xFF;
+          *बहिर्गमनम्++ = val & 0xFF;
 
           *outlen += 4;
 
           ctx->ctx.z85.i = 0;
         }
     }
-  return true;
+  प्रत्यागम true;
 }
 
 
-inline static bool
-isubase2 (unsigned char ch)
+अन्तःस्थ स्थिर bool
+isubase2 (अचिह्नित वर्ण ch)
 {
-  return ch == '0' || ch == '1';
+  प्रत्यागम ch == '0' || ch == '1';
 }
 
-static idx_t
-base2_length (idx_t len)
+स्थिर idx_t
+base2_दीर्घता (idx_t len)
 {
-  return len * 8;
+  प्रत्यागम len * 8;
 }
 
 
-inline static void
-base2msbf_encode (char const *restrict in, idx_t inlen,
-                  char *restrict out, idx_t outlen)
+अन्तःस्थ स्थिर शून्य
+base2msbf_encode (वर्ण ध्रुव *सीमित अन्तर्, idx_t inlen,
+                  वर्ण *सीमित बहिर्गमनम्, idx_t outlen)
 {
-  while (inlen && outlen)
+  यावत् (inlen && outlen)
     {
-      unsigned char c = *in;
-      for (int i = 0; i < 8; i++)
+      अचिह्नित वर्ण c = *अन्तर्;
+      प्रति (पूर्णाङ्क i = 0; i < 8; i++)
         {
-          *out++ = c & 0x80 ? '1' : '0';
+          *बहिर्गमनम्++ = c & 0x80 ? '1' : '0';
           c <<= 1;
         }
       inlen--;
       outlen -= 8;
-      ++in;
+      ++अन्तर्;
     }
 }
 
-inline static void
-base2lsbf_encode (char const *restrict in, idx_t inlen,
-                  char *restrict out, idx_t outlen)
+अन्तःस्थ स्थिर शून्य
+base2lsbf_encode (वर्ण ध्रुव *सीमित अन्तर्, idx_t inlen,
+                  वर्ण *सीमित बहिर्गमनम्, idx_t outlen)
 {
-  while (inlen && outlen)
+  यावत् (inlen && outlen)
     {
-      unsigned char c = *in;
-      for (int i = 0; i < 8; i++)
+      अचिह्नित वर्ण c = *अन्तर्;
+      प्रति (पूर्णाङ्क i = 0; i < 8; i++)
         {
-          *out++ = c & 0x01 ? '1' : '0';
+          *बहिर्गमनम्++ = c & 0x01 ? '1' : '0';
           c >>= 1;
         }
       inlen--;
       outlen -= 8;
-      ++in;
+      ++अन्तर्;
     }
 }
 
 
-static void
-base2_decode_ctx_init (struct base_decode_context *ctx)
+स्थिर शून्य
+base2_decode_ctx_init (संरचना आधारः_decode_context *ctx)
 {
   init_inbuf (ctx);
   ctx->ctx.base2.octet = 0;
@@ -1084,100 +1084,100 @@ base2_decode_ctx_init (struct base_decode_context *ctx)
 }
 
 
-static bool
-base2lsbf_decode_ctx (struct base_decode_context *ctx,
-                      char const *restrict in, idx_t inlen,
-                      char *restrict out, idx_t *outlen)
+स्थिर bool
+base2lsbf_decode_ctx (संरचना आधारः_decode_context *ctx,
+                      वर्ण ध्रुव *सीमित अन्तर्, idx_t inlen,
+                      वर्ण *सीमित बहिर्गमनम्, idx_t *outlen)
 {
-  bool ignore_lines = true;  /* for now, always ignore them */
+  bool ignore_पङ्क्तयः = true;  /* for now, always ignore them */
 
   *outlen = 0;
 
   /* inlen==0 is request to flush output.
      if there is a dangling bit - we are missing some bits,
      so return false - indicating an invalid input.  */
-  if (inlen == 0)
-    return ctx->ctx.base2.bit_pos == 0;
+  यदि (inlen == 0)
+    प्रत्यागम ctx->ctx.base2.bit_pos == 0;
 
-  while (inlen--)
+  यावत् (inlen--)
     {
-      if (ignore_lines && *in == '\n')
+      यदि (ignore_पङ्क्तयः && *अन्तर् == '\n')
         {
-          ++in;
-          continue;
+          ++अन्तर्;
+          अनुवर्त;
         }
 
-      if (!isubase2 (*in))
-        return false;
+      यदि (!isubase2 (*अन्तर्))
+        प्रत्यागम false;
 
-      bool bit = (*in == '1');
+      bool bit = (*अन्तर् == '1');
       ctx->ctx.base2.octet |= bit << ctx->ctx.base2.bit_pos;
       ++ctx->ctx.base2.bit_pos;
 
-      if (ctx->ctx.base2.bit_pos == 8)
+      यदि (ctx->ctx.base2.bit_pos == 8)
         {
-          *out++ = ctx->ctx.base2.octet;
+          *बहिर्गमनम्++ = ctx->ctx.base2.octet;
           ctx->ctx.base2.octet = 0;
           ++*outlen;
           ctx->ctx.base2.bit_pos = 0;
         }
 
-      ++in;
+      ++अन्तर्;
     }
 
-  return true;
+  प्रत्यागम true;
 }
 
-static bool
-base2msbf_decode_ctx (struct base_decode_context *ctx,
-                      char const *restrict in, idx_t inlen,
-                      char *restrict out, idx_t *outlen)
+स्थिर bool
+base2msbf_decode_ctx (संरचना आधारः_decode_context *ctx,
+                      वर्ण ध्रुव *सीमित अन्तर्, idx_t inlen,
+                      वर्ण *सीमित बहिर्गमनम्, idx_t *outlen)
 {
-  bool ignore_lines = true;  /* for now, always ignore them */
+  bool ignore_पङ्क्तयः = true;  /* for now, always ignore them */
 
   *outlen = 0;
 
   /* inlen==0 is request to flush output.
      if there is a dangling bit - we are missing some bits,
      so return false - indicating an invalid input.  */
-  if (inlen == 0)
-    return ctx->ctx.base2.bit_pos == 0;
+  यदि (inlen == 0)
+    प्रत्यागम ctx->ctx.base2.bit_pos == 0;
 
-  while (inlen--)
+  यावत् (inlen--)
     {
-      if (ignore_lines && *in == '\n')
+      यदि (ignore_पङ्क्तयः && *अन्तर् == '\n')
         {
-          ++in;
-          continue;
+          ++अन्तर्;
+          अनुवर्त;
         }
 
-      if (!isubase2 (*in))
-        return false;
+      यदि (!isubase2 (*अन्तर्))
+        प्रत्यागम false;
 
-      bool bit = (*in == '1');
-      if (ctx->ctx.base2.bit_pos == 0)
+      bool bit = (*अन्तर् == '1');
+      यदि (ctx->ctx.base2.bit_pos == 0)
         ctx->ctx.base2.bit_pos = 8;
       --ctx->ctx.base2.bit_pos;
       ctx->ctx.base2.octet |= bit << ctx->ctx.base2.bit_pos;
 
-      if (ctx->ctx.base2.bit_pos == 0)
+      यदि (ctx->ctx.base2.bit_pos == 0)
         {
-          *out++ = ctx->ctx.base2.octet;
+          *बहिर्गमनम्++ = ctx->ctx.base2.octet;
           ctx->ctx.base2.octet = 0;
           ++*outlen;
         }
 
-      ++in;
+      ++अन्तर्;
     }
 
-  return true;
+  प्रत्यागम true;
 }
 
 /* Map from GMP (up to base 62):
    "0123456789 ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuv";
    to base 58:
    "123456789A BCDEFGHJKLMNPQRSTUVWXYZabc defghijkmnopqrstuvwxyz";  */
-static signed char const gmp_to_base58[256] = {
+स्थिर चिह्नित वर्ण ध्रुव gmp_गन्तव्यम्_base58[256] = {
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -1196,7 +1196,7 @@ static signed char const gmp_to_base58[256] = {
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1
 };
 
-static signed char const base58_to_gmp[256] = {
+स्थिर चिह्नित वर्ण ध्रुव base58_गन्तव्यम्_gmp[256] = {
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -1215,16 +1215,16 @@ static signed char const base58_to_gmp[256] = {
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1
 };
 
-static bool
-isubase58 (unsigned char ch)
+स्थिर bool
+isubase58 (अचिह्नित वर्ण ch)
 {
-  return ch < sizeof base58_to_gmp && 0 <= base58_to_gmp[ch];
+  प्रत्यागम ch < परिमाण base58_गन्तव्यम्_gmp && 0 <= base58_गन्तव्यम्_gmp[ch];
 }
 
 
-ATTRIBUTE_PURE
-static idx_t
-base58_length (idx_t len)
+ATTRIBUTE_विशुद्धम्
+स्थिर idx_t
+base58_दीर्घता (idx_t len)
 {
   /* Base58 output length is approximately log(256)/log(58),
      which is approximately len * 138 / 100,
@@ -1232,408 +1232,408 @@ base58_length (idx_t len)
      +1 to ensure we've enough place for NUL  */
   idx_t base58_len = ((len + 99) / 100) * 138 + 1;
   affirm (0 < base58_len);
-  return base58_len;
+  प्रत्यागम base58_len;
 }
 
 
-static void
-base58_encode_ctx_init (struct base_encode_context *ctx)
+स्थिर शून्य
+base58_encode_ctx_init (संरचना आधारः_encode_context *ctx)
 {
-  ctx->ctx.base58.buf = NULL;
-  ctx->ctx.base58.size = 0;
-  ctx->ctx.base58.capacity = 0;
+  ctx->ctx.base58.buf = रिक्त;
+  ctx->ctx.base58.आकार = 0;
+  ctx->ctx.base58.क्षमता = 0;
 }
 
 
-static bool
-base58_encode_ctx (struct base_encode_context *ctx,
-                   char const *restrict in, idx_t inlen,
-                   MAYBE_UNUSED char *restrict out, idx_t *outlen)
+स्थिर bool
+base58_encode_ctx (संरचना आधारः_encode_context *ctx,
+                   वर्ण ध्रुव *सीमित अन्तर्, idx_t inlen,
+                   MAYBE_अप्रयुक्तम् वर्ण *सीमित बहिर्गमनम्, idx_t *outlen)
 {
   *outlen = 0;   /* Only accumulate input in this function.  */
 
-  if (inlen == 0)
-    return true;
+  यदि (inlen == 0)
+    प्रत्यागम true;
 
-  idx_t free_space = ctx->ctx.base58.capacity - ctx->ctx.base58.size;
-  if (free_space < inlen)
+  idx_t free_space = ctx->ctx.base58.क्षमता - ctx->ctx.base58.आकार;
+  यदि (free_space < inlen)
     {
       ctx->ctx.base58.buf = xpalloc (ctx->ctx.base58.buf,
-                                     &ctx->ctx.base58.capacity,
+                                     &ctx->ctx.base58.क्षमता,
                                      inlen - free_space,
-                                     -1, sizeof *ctx->ctx.base58.buf);
+                                     -1, परिमाण *ctx->ctx.base58.buf);
     }
 
-  memcpy (ctx->ctx.base58.buf + ctx->ctx.base58.size, in, inlen);
-  ctx->ctx.base58.size += inlen;
+  स्मृतिं_प्रतिलिख (ctx->ctx.base58.buf + ctx->ctx.base58.आकार, अन्तर्, inlen);
+  ctx->ctx.base58.आकार += inlen;
 
-  return true;
+  प्रत्यागम true;
 }
 
-static void
-base58_encode (char const *data, size_t data_len,
-               char *out, idx_t *outlen)
+स्थिर शून्य
+base58_encode (वर्ण ध्रुव *दत्त, size_t दत्त_len,
+               वर्ण *बहिर्गमनम्, idx_t *outlen)
 {
-  affirm (base_length (data_len) <= *outlen);
+  affirm (आधारः_दीर्घता_2 (दत्त_len) <= *outlen);
 
   size_t zeros = 0;
-  while (zeros < data_len && data[zeros] == 0)
+  यावत् (zeros < दत्त_len && दत्त[zeros] == 0)
     zeros++;
 
-  memset (out, '1', zeros);
-  char *p = out + zeros;
+  स्मृतिं_पूरय (बहिर्गमनम्, '1', zeros);
+  वर्ण *p = बहिर्गमनम् + zeros;
 
   /* Use GMP to convert from base 256 to base 58.  */
-  mpz_t num;
-  mpz_init (num);
-  if (data_len - zeros)
+  mpz_t अङ्कः;
+  mpz_init (अङ्कः);
+  यदि (दत्त_len - zeros)
     {
-      mpz_import (num, data_len - zeros, 1, 1, 0, 0, data + zeros);
-      for (p = mpz_get_str (p, 58, num); *p; p++)
-        *p = gmp_to_base58[to_uchar (*p)];
+      mpz_import (अङ्कः, दत्त_len - zeros, 1, 1, 0, 0, दत्त + zeros);
+      प्रति (p = mpz_get_str (p, 58, अङ्कः); *p; p++)
+        *p = gmp_गन्तव्यम्_base58[गन्तव्यम्_uchar (*p)];
     }
-  mpz_clear (num);
+  mpz_clear (अङ्कः);
 
-  *outlen = p - out;
+  *outlen = p - बहिर्गमनम्;
 }
 
 
-static bool
-base58_encode_ctx_finalize (struct base_encode_context *ctx,
-                            char *restrict *out, idx_t *outlen)
+स्थिर bool
+base58_encode_ctx_finalize (संरचना आधारः_encode_context *ctx,
+                            वर्ण *सीमित *बहिर्गमनम्, idx_t *outlen)
 {
   /* Ensure output buffer is large enough.  */
-  idx_t max_outlen = base_length (ctx->ctx.base58.size);
-  if (max_outlen > *outlen)
+  idx_t max_outlen = आधारः_दीर्घता_2 (ctx->ctx.base58.आकार);
+  यदि (max_outlen > *outlen)
     {
-      *out = xrealloc (*out, max_outlen);
+      *बहिर्गमनम् = xrealloc (*बहिर्गमनम्, max_outlen);
       *outlen = max_outlen;
     }
 
-  base58_encode ((char *)ctx->ctx.base58.buf, ctx->ctx.base58.size,
-                 *out, outlen);
+  base58_encode ((वर्ण *)ctx->ctx.base58.buf, ctx->ctx.base58.आकार,
+                 *बहिर्गमनम्, outlen);
 
-  free (ctx->ctx.base58.buf);
-  ctx->ctx.base58.buf = NULL;
-  ctx->ctx.base58.size = 0;
-  ctx->ctx.base58.capacity = 0;
+  मुक्त (ctx->ctx.base58.buf);
+  ctx->ctx.base58.buf = रिक्त;
+  ctx->ctx.base58.आकार = 0;
+  ctx->ctx.base58.क्षमता = 0;
 
-  return true;
+  प्रत्यागम true;
 }
 
 
-static void
-base58_decode_ctx_init (struct base_decode_context *ctx)
+स्थिर शून्य
+base58_decode_ctx_init (संरचना आधारः_decode_context *ctx)
 {
-  ctx->ctx.base58.size = 0;
-  ctx->ctx.base58.capacity = 0;
-  ctx->ctx.base58.buf = NULL;
+  ctx->ctx.base58.आकार = 0;
+  ctx->ctx.base58.क्षमता = 0;
+  ctx->ctx.base58.buf = रिक्त;
 }
 
-static bool
-base58_decode_ctx (struct base_decode_context *ctx,
-                   char const *restrict in, idx_t inlen,
-                   MAYBE_UNUSED char *restrict out, idx_t *outlen)
+स्थिर bool
+base58_decode_ctx (संरचना आधारः_decode_context *ctx,
+                   वर्ण ध्रुव *सीमित अन्तर्, idx_t inlen,
+                   MAYBE_अप्रयुक्तम् वर्ण *सीमित बहिर्गमनम्, idx_t *outlen)
 {
-  bool ignore_lines = true;  /* for now, always ignore them */
+  bool ignore_पङ्क्तयः = true;  /* for now, always ignore them */
 
   *outlen = 0;   /* Only accumulate input in this function.  */
 
-  if (inlen == 0)
-    return true;
+  यदि (inlen == 0)
+    प्रत्यागम true;
 
-  idx_t free_space = ctx->ctx.base58.capacity - ctx->ctx.base58.size;
+  idx_t free_space = ctx->ctx.base58.क्षमता - ctx->ctx.base58.आकार;
   free_space -= 1;  /* Ensure we leave space for NUL (for mpz_set_str).  */
-  if (free_space < inlen)
+  यदि (free_space < inlen)
     {
       ctx->ctx.base58.buf = xpalloc (ctx->ctx.base58.buf,
-                                     &ctx->ctx.base58.capacity,
+                                     &ctx->ctx.base58.क्षमता,
                                      inlen - free_space,
-                                     -1, sizeof *ctx->ctx.base58.buf);
+                                     -1, परिमाण *ctx->ctx.base58.buf);
     }
 
   /* Accumulate all valid input characters in our buffer.
      Note we don't rely on mpz_set_str() for validation
      as that allows (skips) all whitespace.  */
-  for (idx_t i = 0; i < inlen; i++)
+  प्रति (idx_t i = 0; i < inlen; i++)
     {
-      unsigned char c = in[i];
+      अचिह्नित वर्ण c = अन्तर्[i];
 
-      if (ignore_lines && c == '\n')
-        continue;
+      यदि (ignore_पङ्क्तयः && c == '\n')
+        अनुवर्त;
 
-      if (!isubase58 (c))
-        return false;
+      यदि (!isubase58 (c))
+        प्रत्यागम false;
 
-      ctx->ctx.base58.buf[ctx->ctx.base58.size++] = base58_to_gmp[to_uchar (c)];
+      ctx->ctx.base58.buf[ctx->ctx.base58.आकार++] = base58_गन्तव्यम्_gmp[गन्तव्यम्_uchar (c)];
     }
 
-  return true;
+  प्रत्यागम true;
 }
 
 
-static bool
-base58_decode (char const *data, size_t data_len,
-               char *restrict out, idx_t *outlen)
+स्थिर bool
+base58_decode (वर्ण ध्रुव *दत्त, size_t दत्त_len,
+               वर्ण *सीमित बहिर्गमनम्, idx_t *outlen)
 {
-  affirm (data_len <= *outlen);
+  affirm (दत्त_len <= *outlen);
 
   size_t ones = 0;
-  while (ones < data_len && data[ones] == base58_to_gmp['1'])
+  यावत् (ones < दत्त_len && दत्त[ones] == base58_गन्तव्यम्_gmp['1'])
     ones++;
 
-  memset (out, 0, ones);
+  स्मृतिं_पूरय (बहिर्गमनम्, 0, ones);
 
   /* Use GMP to convert from base 58 to base 256.  */
-  mpz_t num;
-  mpz_init (num);
+  mpz_t अङ्कः;
+  mpz_init (अङ्कः);
 
-  if ((data_len - ones) && mpz_set_str (num, data + ones, 58) != 0)
+  यदि ((दत्त_len - ones) && mpz_समुच्चयः_str (अङ्कः, दत्त + ones, 58) != 0)
     {
-      mpz_clear (num);
+      mpz_clear (अङ्कः);
       *outlen = 0;
-      return false;
+      प्रत्यागम false;
     }
 
-  size_t exported_size = 0;
-  if (data_len - ones)
+  size_t exported_आकार = 0;
+  यदि (दत्त_len - ones)
     {
-      size_t binary_size = (mpz_sizeinbase (num, 2) + 7) / 8;
-      affirm (*outlen - ones >= binary_size);
-      mpz_export (out + ones, &exported_size, 1, 1, 0, 0, num);
+      size_t द्विमान_आकार = (mpz_sizeinbase (अङ्कः, 2) + 7) / 8;
+      affirm (*outlen - ones >= द्विमान_आकार);
+      mpz_export (बहिर्गमनम् + ones, &exported_आकार, 1, 1, 0, 0, अङ्कः);
     }
 
-  mpz_clear (num);
-  *outlen = ones + exported_size;
-  return true;
+  mpz_clear (अङ्कः);
+  *outlen = ones + exported_आकार;
+  प्रत्यागम true;
 }
 
 
-static bool
-base58_decode_ctx_finalize (struct base_decode_context *ctx,
-                            char *restrict *out, idx_t *outlen)
+स्थिर bool
+base58_decode_ctx_finalize (संरचना आधारः_decode_context *ctx,
+                            वर्ण *सीमित *बहिर्गमनम्, idx_t *outlen)
 {
   /* Ensure output buffer is large enough.
      Worst case is input is all '1's.  */
-  idx_t max_outlen = ctx->ctx.base58.size;
-  if (max_outlen > *outlen)
+  idx_t max_outlen = ctx->ctx.base58.आकार;
+  यदि (max_outlen > *outlen)
     {
-      *out = xrealloc (*out, max_outlen);
+      *बहिर्गमनम् = xrealloc (*बहिर्गमनम्, max_outlen);
       *outlen = max_outlen;
     }
 
   /* Ensure input buffer is NUL terminated (for mpz_get_str).  */
-  if (ctx->ctx.base58.size)
-    ctx->ctx.base58.buf[ctx->ctx.base58.size] = '\0';
+  यदि (ctx->ctx.base58.आकार)
+    ctx->ctx.base58.buf[ctx->ctx.base58.आकार] = '\0';
 
-  bool ret = base58_decode ((char *)ctx->ctx.base58.buf, ctx->ctx.base58.size,
-                            *out, outlen);
+  bool ret = base58_decode ((वर्ण *)ctx->ctx.base58.buf, ctx->ctx.base58.आकार,
+                            *बहिर्गमनम्, outlen);
 
-  free (ctx->ctx.base58.buf);
-  ctx->ctx.base58.buf = NULL;
-  ctx->ctx.base58.size = 0;
-  ctx->ctx.base58.capacity = 0;
+  मुक्त (ctx->ctx.base58.buf);
+  ctx->ctx.base58.buf = रिक्त;
+  ctx->ctx.base58.आकार = 0;
+  ctx->ctx.base58.क्षमता = 0;
 
-  return ret;
+  प्रत्यागम ret;
 }
 
-#endif /* BASE_TYPE == 42, i.e., "basenc"*/
+#यदि_अन्तः /* BASE_TYPE == 42, i.e., "basenc"*/
 
 
 
-static void
-wrap_write (char const *buffer, idx_t len,
-            idx_t wrap_column, idx_t *current_column, FILE *out)
+स्थिर शून्य
+wrap_write (वर्ण ध्रुव *बफर, idx_t len,
+            idx_t wrap_column, idx_t *current_column, FILE *बहिर्गमनम्)
 {
-  if (wrap_column == 0)
+  यदि (wrap_column == 0)
     {
       /* Simple write. */
-      if (fwrite (buffer, 1, len, stdout) < len)
+      यदि (fwrite (बफर, 1, len, stdout) < len)
         write_error ();
     }
-  else
-    for (idx_t written = 0; written < len; )
+  अन्यथा
+    प्रति (idx_t written = 0; written < len; )
       {
-        idx_t to_write = MIN (wrap_column - *current_column, len - written);
+        idx_t गन्तव्यम्_write = MIN (wrap_column - *current_column, len - written);
 
-        if (to_write == 0)
+        यदि (गन्तव्यम्_write == 0)
           {
-            if (fputc ('\n', out) == EOF)
+            यदि (fputc ('\n', बहिर्गमनम्) == EOF)
               write_error ();
             *current_column = 0;
           }
-        else
+        अन्यथा
           {
-            if (fwrite (buffer + written, 1, to_write, stdout) < to_write)
+            यदि (fwrite (बफर + written, 1, गन्तव्यम्_write, stdout) < गन्तव्यम्_write)
               write_error ();
-            *current_column += to_write;
-            written += to_write;
+            *current_column += गन्तव्यम्_write;
+            written += गन्तव्यम्_write;
           }
       }
 }
 
-static _Noreturn void
-finish_and_exit (FILE *in, char const *infile)
+स्थिर _Noreturn शून्य
+finish_and_exit (FILE *अन्तर्, वर्ण ध्रुव *infile)
 {
-  if (fclose (in) != 0)
+  यदि (fclose (अन्तर्) != 0)
     {
-      if (streq (infile, "-"))
+      यदि (streq (infile, "-"))
         error (EXIT_FAILURE, errno, _("closing standard input"));
-      else
+      अन्यथा
         error (EXIT_FAILURE, errno, "%s", quotef (infile));
     }
 
-  exit (EXIT_SUCCESS);
+  निर्गच्छ (EXIT_SUCCESS);
 }
 
-static _Noreturn void
-do_encode (FILE *in, char const *infile, FILE *out, idx_t wrap_column)
+स्थिर _Noreturn शून्य
+do_encode (FILE *अन्तर्, वर्ण ध्रुव *infile, FILE *बहिर्गमनम्, idx_t wrap_column)
 {
   idx_t current_column = 0;
-  char *inbuf, *outbuf;
-  idx_t sum;
+  वर्ण *inbuf, *outbuf;
+  idx_t योग;
 
   inbuf = xmalloc (ENC_BLOCKSIZE);
-  outbuf = xmalloc (BASE_LENGTH (ENC_BLOCKSIZE));
+  outbuf = xmalloc (आधारः_दीर्घता (ENC_BLOCKSIZE));
 
-#if BASE_TYPE == 42
+#यदि आधारः_TYPE == 42
   /* Initialize encoding context if needed (for base58) */
-  struct base_encode_context encode_ctx;
-  bool use_ctx = (base_encode_ctx_init != NULL);
-  if (use_ctx)
-    base_encode_ctx_init (&encode_ctx);
-#endif
+  संरचना आधारः_encode_context encode_ctx;
+  bool use_ctx = (आधारः_encode_ctx_init != रिक्त);
+  यदि (use_ctx)
+    आधारः_encode_ctx_init (&encode_ctx);
+#यदि_अन्तः
 
-  do
+  कुरु
     {
       idx_t n;
 
-      sum = 0;
-      do
+      योग = 0;
+      कुरु
         {
-          n = fread (inbuf + sum, 1, ENC_BLOCKSIZE - sum, in);
-          sum += n;
+          n = fread (inbuf + योग, 1, ENC_BLOCKSIZE - योग, अन्तर्);
+          योग += n;
         }
-      while (!feof (in) && !ferror (in) && sum < ENC_BLOCKSIZE);
+      यावत् (!feof (अन्तर्) && !ferror (अन्तर्) && योग < ENC_BLOCKSIZE);
 
-      if (sum > 0)
+      यदि (योग > 0)
         {
-#if BASE_TYPE == 42
-          if (use_ctx)
+#यदि आधारः_TYPE == 42
+          यदि (use_ctx)
             {
               idx_t outlen = 0;
-              base_encode_ctx (&encode_ctx, inbuf, sum, outbuf, &outlen);
+              आधारः_encode_ctx (&encode_ctx, inbuf, योग, outbuf, &outlen);
 
-              wrap_write (outbuf, outlen, wrap_column, &current_column, out);
+              wrap_write (outbuf, outlen, wrap_column, &current_column, बहिर्गमनम्);
             }
-          else
-#endif
+          अन्यथा
+#यदि_अन्तः
             {
               /* Process input one block at a time.  Note that ENC_BLOCKSIZE
                  is sized so that no pad chars will appear in output. */
-              base_encode (inbuf, sum, outbuf, BASE_LENGTH (sum));
+              आधारः_encode (inbuf, योग, outbuf, आधारः_दीर्घता (योग));
 
-              wrap_write (outbuf, BASE_LENGTH (sum), wrap_column,
-                          &current_column, out);
+              wrap_write (outbuf, आधारः_दीर्घता (योग), wrap_column,
+                          &current_column, बहिर्गमनम्);
             }
         }
     }
-  while (!feof (in) && !ferror (in) && sum == ENC_BLOCKSIZE);
+  यावत् (!feof (अन्तर्) && !ferror (अन्तर्) && योग == ENC_BLOCKSIZE);
 
-#if BASE_TYPE == 42
-  if (use_ctx && base_encode_ctx_finalize)
+#यदि आधारः_TYPE == 42
+  यदि (use_ctx && आधारः_encode_ctx_finalize)
     {
-      idx_t outlen = BASE_LENGTH (ENC_BLOCKSIZE);
-      base_encode_ctx_finalize (&encode_ctx, &outbuf, &outlen);
+      idx_t outlen = आधारः_दीर्घता (ENC_BLOCKSIZE);
+      आधारः_encode_ctx_finalize (&encode_ctx, &outbuf, &outlen);
 
-      wrap_write (outbuf, outlen, wrap_column, &current_column, out);
+      wrap_write (outbuf, outlen, wrap_column, &current_column, बहिर्गमनम्);
     }
-#endif
+#यदि_अन्तः
 
   /* When wrapping, terminate last line. */
-  if (wrap_column && current_column > 0 && fputc ('\n', out) == EOF)
+  यदि (wrap_column && current_column > 0 && fputc ('\n', बहिर्गमनम्) == EOF)
     write_error ();
 
-  if (ferror (in))
+  यदि (ferror (अन्तर्))
     error (EXIT_FAILURE, errno, _("read error"));
 
-  finish_and_exit (in, infile);
+  finish_and_exit (अन्तर्, infile);
 }
 
-static _Noreturn void
-do_decode (FILE *in, char const *infile, FILE *out, bool ignore_garbage)
+स्थिर _Noreturn शून्य
+do_decode (FILE *अन्तर्, वर्ण ध्रुव *infile, FILE *बहिर्गमनम्, bool ignore_garbage)
 {
-  char *inbuf, *outbuf;
-  idx_t sum;
-  struct base_decode_context ctx;
+  वर्ण *inbuf, *outbuf;
+  idx_t योग;
+  संरचना आधारः_decode_context ctx;
 
-  inbuf = xmalloc (BASE_LENGTH (DEC_BLOCKSIZE));
+  inbuf = xmalloc (आधारः_दीर्घता (DEC_BLOCKSIZE));
   outbuf = xmalloc (DEC_BLOCKSIZE);
 
-#if BASE_TYPE == 42
-  ctx.inbuf = NULL;
-#endif
-  base_decode_ctx_init (&ctx);
+#यदि आधारः_TYPE == 42
+  ctx.inbuf = रिक्त;
+#यदि_अन्तः
+  आधारः_decode_ctx_init (&ctx);
 
-  do
+  कुरु
     {
       bool ok;
 
-      sum = 0;
-      do
+      योग = 0;
+      कुरु
         {
-          idx_t n = fread (inbuf + sum,
-                           1, BASE_LENGTH (DEC_BLOCKSIZE) - sum, in);
+          idx_t n = fread (inbuf + योग,
+                           1, आधारः_दीर्घता (DEC_BLOCKSIZE) - योग, अन्तर्);
 
-          if (ignore_garbage)
+          यदि (ignore_garbage)
             {
-              for (idx_t i = 0; n > 0 && i < n;)
+              प्रति (idx_t i = 0; n > 0 && i < n;)
                 {
-                  if (isubase (inbuf[sum + i])
-                      || (REQUIRED_PADDING (1) && inbuf[sum + i] == '='))
+                  यदि (isubase (inbuf[योग + i])
+                      || (REQUIRED_PADDING (1) && inbuf[योग + i] == '='))
                     i++;
-                  else
-                    memmove (inbuf + sum + i, inbuf + sum + i + 1, --n - i);
+                  अन्यथा
+                    memmove (inbuf + योग + i, inbuf + योग + i + 1, --n - i);
                 }
             }
 
-          sum += n;
+          योग += n;
 
-          if (ferror (in))
+          यदि (ferror (अन्तर्))
             error (EXIT_FAILURE, errno, _("read error"));
         }
-      while (sum < BASE_LENGTH (DEC_BLOCKSIZE) && !feof (in));
+      यावत् (योग < आधारः_दीर्घता (DEC_BLOCKSIZE) && !feof (अन्तर्));
 
-      while (sum || feof (in))
+      यावत् (योग || feof (अन्तर्))
         {
           idx_t n = DEC_BLOCKSIZE;
-          if (sum)
-            ok = base_decode_ctx (&ctx, inbuf, sum, outbuf, &n);
-          else
-            ok = base_decode_ctx_finalize (&ctx, &outbuf, &n);
+          यदि (योग)
+            ok = आधारः_decode_ctx (&ctx, inbuf, योग, outbuf, &n);
+          अन्यथा
+            ok = आधारः_decode_ctx_finalize (&ctx, &outbuf, &n);
 
-          if (fwrite (outbuf, 1, n, out) < n)
+          यदि (fwrite (outbuf, 1, n, बहिर्गमनम्) < n)
             write_error ();
 
-          if (! ok)
+          यदि (! ok)
             error (EXIT_FAILURE, 0, _("invalid input"));
 
-          if (sum == 0)
-            break;
-          sum = 0;
+          यदि (योग == 0)
+            भङ्ग;
+          योग = 0;
         }
     }
-  while (!feof (in));
+  यावत् (!feof (अन्तर्));
 
-  finish_and_exit (in, infile);
+  finish_and_exit (अन्तर्, infile);
 }
 
-int
-main (int argc, char **argv)
+पूर्णाङ्क
+मुख्यम् (पूर्णाङ्क argc, वर्ण **argv)
 {
-  int opt;
-  FILE *input_fh;
-  char const *infile;
+  पूर्णाङ्क opt;
+  FILE *निवेशः_fh;
+  वर्ण ध्रुव *infile;
 
   /* True if --decode has been given and we should decode data. */
   bool decode = false;
@@ -1642,195 +1642,195 @@ main (int argc, char **argv)
   /* Wrap encoded data around the 76th column, by default. */
   idx_t wrap_column = 76;
 
-#if BASE_TYPE == 42
-  int base_type = 0;
-#endif
+#यदि आधारः_TYPE == 42
+  पूर्णाङ्क आधारः_type = 0;
+#यदि_अन्तः
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  समुच्चयः_क्रमादेशः_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while ((opt = getopt_long (argc, argv, "diw:", long_options, NULL)) != -1)
-    switch (opt)
+  यावत् ((opt = getopt_long (argc, argv, "diw:", long_options, रिक्त)) != -1)
+    विकल्प (opt)
       {
-      case 'd':
+      पक्ष 'd':
         decode = true;
-        break;
+        भङ्ग;
 
-      case 'w':
+      पक्ष 'w':
         {
           intmax_t w;
-          strtol_error s_err = xstrtoimax (optarg, NULL, 10, &w, "");
-          if (LONGINT_OVERFLOW < s_err || w < 0)
+          strtol_error s_err = xstrtoimax (optarg, रिक्त, 10, &w, "");
+          यदि (LONGINT_अतिप्रवाहः < s_err || w < 0)
             error (EXIT_FAILURE, 0, "%s: %s",
                    _("invalid wrap size"), quote (optarg));
-          wrap_column = s_err == LONGINT_OVERFLOW || IDX_MAX < w ? 0 : w;
+          wrap_column = s_err == LONGINT_अतिप्रवाहः || IDX_MAX < w ? 0 : w;
         }
-        break;
+        भङ्ग;
 
-      case 'i':
+      पक्ष 'i':
         ignore_garbage = true;
-        break;
+        भङ्ग;
 
-#if BASE_TYPE == 42
-      case BASE64_OPTION:
-      case BASE64URL_OPTION:
-      case BASE32_OPTION:
-      case BASE32HEX_OPTION:
-      case BASE16_OPTION:
-      case BASE2MSBF_OPTION:
-      case BASE2LSBF_OPTION:
-      case Z85_OPTION:
-      case BASE58_OPTION:
-        base_type = opt;
-        break;
-#endif
+#यदि आधारः_TYPE == 42
+      पक्ष BASE64_OPTION:
+      पक्ष BASE64URL_OPTION:
+      पक्ष BASE32_OPTION:
+      पक्ष BASE32HEX_OPTION:
+      पक्ष BASE16_OPTION:
+      पक्ष BASE2MSBF_OPTION:
+      पक्ष BASE2LSBF_OPTION:
+      पक्ष Z85_OPTION:
+      पक्ष BASE58_OPTION:
+        आधारः_type = opt;
+        भङ्ग;
+#यदि_अन्तः
 
       case_GETOPT_HELP_CHAR;
 
-      case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+      case_GETOPT_संस्करणम्_CHAR (क्रमादेशः_NAME, AUTHORS);
 
-      default:
+      स्वभाव:
         usage (EXIT_FAILURE);
-        break;
+        भङ्ग;
       }
 
-#if BASE_TYPE == 42
+#यदि आधारः_TYPE == 42
   required_padding = no_required_padding;
   has_padding = no_padding;
-  get_pending_length = no_pending_length;
-  base_decode_ctx_finalize = decode_ctx_finalize;
+  get_pending_दीर्घता = no_pending_दीर्घता;
+  आधारः_decode_ctx_finalize = decode_ctx_finalize;
 
-  switch (base_type)
+  विकल्प (आधारः_type)
     {
-    case BASE64_OPTION:
-      base_length = base64_length_wrapper;
+    पक्ष BASE64_OPTION:
+      आधारः_दीर्घता_2 = base64_दीर्घता_wrapper;
       required_padding = base64_required_padding;
       has_padding = base64_ctx_has_padding;
-      get_pending_length = base64_ctx_get_pending_length;
+      get_pending_दीर्घता = base64_ctx_get_pending_दीर्घता;
       isubase = isubase64;
-      base_encode = base64_encode;
-      base_decode_ctx_init = base64_decode_ctx_init_wrapper;
-      base_decode_ctx = base64_decode_ctx_wrapper;
-      break;
+      आधारः_encode = base64_encode;
+      आधारः_decode_ctx_init = base64_decode_ctx_init_wrapper;
+      आधारः_decode_ctx = base64_decode_ctx_wrapper;
+      भङ्ग;
 
-    case BASE64URL_OPTION:
-      base_length = base64_length_wrapper;
+    पक्ष BASE64URL_OPTION:
+      आधारः_दीर्घता_2 = base64_दीर्घता_wrapper;
       required_padding = base64_required_padding;
       has_padding = base64_ctx_has_padding;
-      get_pending_length = base64_ctx_get_pending_length;
+      get_pending_दीर्घता = base64_ctx_get_pending_दीर्घता;
       isubase = isubase64url;
-      base_encode = base64url_encode;
-      base_decode_ctx_init = base64url_decode_ctx_init_wrapper;
-      base_decode_ctx = base64url_decode_ctx_wrapper;
-      break;
+      आधारः_encode = base64url_encode;
+      आधारः_decode_ctx_init = base64url_decode_ctx_init_wrapper;
+      आधारः_decode_ctx = base64url_decode_ctx_wrapper;
+      भङ्ग;
 
-    case BASE32_OPTION:
-      base_length = base32_length_wrapper;
+    पक्ष BASE32_OPTION:
+      आधारः_दीर्घता_2 = base32_दीर्घता_wrapper;
       required_padding = base32_required_padding;
       has_padding = base32_ctx_has_padding;
-      get_pending_length = base32_ctx_get_pending_length;
+      get_pending_दीर्घता = base32_ctx_get_pending_दीर्घता;
       isubase = isubase32;
-      base_encode = base32_encode;
-      base_decode_ctx_init = base32_decode_ctx_init_wrapper;
-      base_decode_ctx = base32_decode_ctx_wrapper;
-      break;
+      आधारः_encode = base32_encode;
+      आधारः_decode_ctx_init = base32_decode_ctx_init_wrapper;
+      आधारः_decode_ctx = base32_decode_ctx_wrapper;
+      भङ्ग;
 
-    case BASE32HEX_OPTION:
-      base_length = base32_length_wrapper;
+    पक्ष BASE32HEX_OPTION:
+      आधारः_दीर्घता_2 = base32_दीर्घता_wrapper;
       required_padding = base32_required_padding;
       has_padding = base32_ctx_has_padding;
-      get_pending_length = base32_ctx_get_pending_length;
+      get_pending_दीर्घता = base32_ctx_get_pending_दीर्घता;
       isubase = isubase32hex;
-      base_encode = base32hex_encode;
-      base_decode_ctx_init = base32hex_decode_ctx_init_wrapper;
-      base_decode_ctx = base32hex_decode_ctx_wrapper;
-      break;
+      आधारः_encode = base32hex_encode;
+      आधारः_decode_ctx_init = base32hex_decode_ctx_init_wrapper;
+      आधारः_decode_ctx = base32hex_decode_ctx_wrapper;
+      भङ्ग;
 
-    case BASE16_OPTION:
-      base_length = base16_length;
-      get_pending_length = base16_ctx_get_pending_length;
+    पक्ष BASE16_OPTION:
+      आधारः_दीर्घता_2 = base16_दीर्घता;
+      get_pending_दीर्घता = base16_ctx_get_pending_दीर्घता;
       isubase = isubase16;
-      base_encode = base16_encode;
-      base_decode_ctx_init = base16_decode_ctx_init;
-      base_decode_ctx = base16_decode_ctx;
-      break;
+      आधारः_encode = base16_encode;
+      आधारः_decode_ctx_init = base16_decode_ctx_init;
+      आधारः_decode_ctx = base16_decode_ctx;
+      भङ्ग;
 
-    case BASE2MSBF_OPTION:
-      base_length = base2_length;
-      get_pending_length = base2_ctx_get_pending_length;
+    पक्ष BASE2MSBF_OPTION:
+      आधारः_दीर्घता_2 = base2_दीर्घता;
+      get_pending_दीर्घता = base2_ctx_get_pending_दीर्घता;
       isubase = isubase2;
-      base_encode = base2msbf_encode;
-      base_decode_ctx_init = base2_decode_ctx_init;
-      base_decode_ctx = base2msbf_decode_ctx;
-      break;
+      आधारः_encode = base2msbf_encode;
+      आधारः_decode_ctx_init = base2_decode_ctx_init;
+      आधारः_decode_ctx = base2msbf_decode_ctx;
+      भङ्ग;
 
-    case BASE2LSBF_OPTION:
-      base_length = base2_length;
-      get_pending_length = base2_ctx_get_pending_length;
+    पक्ष BASE2LSBF_OPTION:
+      आधारः_दीर्घता_2 = base2_दीर्घता;
+      get_pending_दीर्घता = base2_ctx_get_pending_दीर्घता;
       isubase = isubase2;
-      base_encode = base2lsbf_encode;
-      base_decode_ctx_init = base2_decode_ctx_init;
-      base_decode_ctx = base2lsbf_decode_ctx;
-      break;
+      आधारः_encode = base2lsbf_encode;
+      आधारः_decode_ctx_init = base2_decode_ctx_init;
+      आधारः_decode_ctx = base2lsbf_decode_ctx;
+      भङ्ग;
 
-    case Z85_OPTION:
-      base_length = z85_length;
-      get_pending_length = z85_ctx_get_pending_length;
+    पक्ष Z85_OPTION:
+      आधारः_दीर्घता_2 = z85_दीर्घता;
+      get_pending_दीर्घता = z85_ctx_get_pending_दीर्घता;
       isubase = isuz85;
-      base_encode = z85_encode;
-      base_decode_ctx_init = z85_decode_ctx_init;
-      base_decode_ctx = z85_decode_ctx;
-      break;
+      आधारः_encode = z85_encode;
+      आधारः_decode_ctx_init = z85_decode_ctx_init;
+      आधारः_decode_ctx = z85_decode_ctx;
+      भङ्ग;
 
-    case BASE58_OPTION:
-      base_length = base58_length;
+    पक्ष BASE58_OPTION:
+      आधारः_दीर्घता_2 = base58_दीर्घता;
       isubase = isubase58;
-      base_encode_ctx_init = base58_encode_ctx_init;
-      base_encode_ctx = base58_encode_ctx;
-      base_encode_ctx_finalize = base58_encode_ctx_finalize;
-      base_decode_ctx_init = base58_decode_ctx_init;
-      base_decode_ctx = base58_decode_ctx;
-      base_decode_ctx_finalize = base58_decode_ctx_finalize;
-      break;
+      आधारः_encode_ctx_init = base58_encode_ctx_init;
+      आधारः_encode_ctx = base58_encode_ctx;
+      आधारः_encode_ctx_finalize = base58_encode_ctx_finalize;
+      आधारः_decode_ctx_init = base58_decode_ctx_init;
+      आधारः_decode_ctx = base58_decode_ctx;
+      आधारः_decode_ctx_finalize = base58_decode_ctx_finalize;
+      भङ्ग;
 
-    default:
+    स्वभाव:
       error (0, 0, _("missing encoding type"));
       usage (EXIT_FAILURE);
     }
-#endif
+#यदि_अन्तः
 
-  if (argc - optind > 1)
+  यदि (argc - optind > 1)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind + 1]));
       usage (EXIT_FAILURE);
     }
 
-  if (optind < argc)
+  यदि (optind < argc)
     infile = argv[optind];
-  else
+  अन्यथा
     infile = "-";
 
-  if (streq (infile, "-"))
+  यदि (streq (infile, "-"))
     {
-      xset_binary_mode (STDIN_FILENO, O_BINARY);
-      input_fh = stdin;
+      xset_द्विमान_बहुलकम् (STDIN_FILENO, O_द्विमान);
+      निवेशः_fh = stdin;
     }
-  else
+  अन्यथा
     {
-      input_fh = fopen (infile, "rb");
-      if (input_fh == NULL)
+      निवेशः_fh = fopen (infile, "rb");
+      यदि (निवेशः_fh == रिक्त)
         error (EXIT_FAILURE, errno, "%s", quotef (infile));
     }
 
-  fadvise (input_fh, FADVISE_SEQUENTIAL);
+  fadvise (निवेशः_fh, FADVISE_SEQUENTIAL);
 
-  if (decode)
-    do_decode (input_fh, infile, stdout, ignore_garbage);
-  else
-    do_encode (input_fh, infile, stdout, wrap_column);
+  यदि (decode)
+    do_decode (निवेशः_fh, infile, stdout, ignore_garbage);
+  अन्यथा
+    do_encode (निवेशः_fh, infile, stdout, wrap_column);
 }

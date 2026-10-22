@@ -23,53 +23,53 @@
 
    David MacKenzie <djm@gnu.ai.mit.edu> */
 
-#include <config.h>
+#अन्तर्भाव <config.h>
 
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#अन्तर्भाव <stdio.h>
+#अन्तर्भाव <getopt.h>
+#अन्तर्भाव <sys/types.h>
 
-#include "system.h"
+#अन्तर्भाव "system.h"
 
-#include "assure.h"
-#include "c-ctype.h"
-#include "full-read.h"
-#include "stat-size.h"
-#include "xbinary-io.h"
-#include "xdectoint.h"
+#अन्तर्भाव "assure.h"
+#अन्तर्भाव "c-ctype.h"
+#अन्तर्भाव "full-read.h"
+#अन्तर्भाव "stat-size.h"
+#अन्तर्भाव "xbinary-io.h"
+#अन्तर्भाव "xdectoint.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "head"
+#परिभाषय क्रमादेशः_NAME "head"
 
-#define AUTHORS \
+#परिभाषय AUTHORS \
   proper_name ("David MacKenzie"), \
   proper_name ("Jim Meyering")
 
 /* Number of lines/chars/blocks to head. */
-#define DEFAULT_NUMBER 10
+#परिभाषय DEFAULT_सङ्ख्या 10
 
 /* Useful only when eliding tail bytes or lines.
    If true, skip the is-regular-file test used to determine whether
    to use the lseek optimization.  Instead, use the more general (and
    more expensive) code unconditionally. Intended solely for testing.  */
-static bool presume_input_pipe;
+स्थिर bool presume_निवेशः_pipe;
 
 /* If true, print filename headers. */
-static bool print_headers;
+स्थिर bool print_शीर्षकाणि;
 
 /* Character to split lines by. */
-static char line_end = '\n';
+स्थिर वर्ण पङ्क्तिः_अन्तः = '\n';
 
 /* When to print the filename banners. */
-enum header_mode
+गणना शीर्षकम्_बहुलकम्
 {
-  multiple_files, always, never
+  गुणजः_files, always, never
 };
 
 /* Have we ever read standard input?  */
-static bool have_read_stdin;
+स्थिर bool have_read_stdin;
 
-enum Copy_fd_status
+गणना Copy_fd_स्थितिः
   {
     COPY_FD_OK = 0,
     COPY_FD_READ_ERROR,
@@ -78,119 +78,119 @@ enum Copy_fd_status
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+गणना
 {
-  PRESUME_INPUT_PIPE_OPTION = CHAR_MAX + 1
+  PRESUME_निवेशः_PIPE_OPTION = CHAR_MAX + 1
 };
 
-static struct option const long_options[] =
+स्थिर संरचना option ध्रुव long_options[] =
 {
-  {"bytes", required_argument, NULL, 'c'},
-  {"lines", required_argument, NULL, 'n'},
-  {"-presume-input-pipe", no_argument, NULL,
-   PRESUME_INPUT_PIPE_OPTION}, /* do not document */
-  {"quiet", no_argument, NULL, 'q'},
-  {"silent", no_argument, NULL, 'q'},
-  {"verbose", no_argument, NULL, 'v'},
-  {"zero-terminated", no_argument, NULL, 'z'},
+  {"bytes", required_तर्कः, रिक्त, 'c'},
+  {"lines", required_तर्कः, रिक्त, 'n'},
+  {"-presume-input-pipe", no_तर्कः, रिक्त,
+   PRESUME_निवेशः_PIPE_OPTION}, /* do not document */
+  {"quiet", no_तर्कः, रिक्त, 'q'},
+  {"silent", no_तर्कः, रिक्त, 'q'},
+  {"verbose", no_तर्कः, रिक्त, 'v'},
+  {"zero-terminated", no_तर्कः, रिक्त, 'z'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_संस्करणम्_OPTION_DECL},
+  {रिक्त, 0, रिक्त, 0}
 };
 
-void
-usage (int status)
+शून्य
+usage (पूर्णाङ्क स्थितिः)
 {
-  if (status != EXIT_SUCCESS)
+  यदि (स्थितिः != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  अन्यथा
     {
-      printf (_("\
+      प्रारूप_लिख (_("\
 Usage: %s [OPTION]... [FILE]...\n\
 "),
-              program_name);
-      printf (_("\
-Print the first %d lines of each FILE to standard output.\n\
-With more than one FILE, precede each with a header giving the file name.\n\
-"), DEFAULT_NUMBER);
+              क्रमादेशः_name);
+      प्रारूप_लिख (_("\
+Print the first %d पङ्क्तयः सम्बन्धि each FILE गन्तव्यम् standard output.\n\
+With अधिकम् than one FILE, precede each with a शीर्षकम् giving the file name.\n\
+"), DEFAULT_सङ्ख्या);
 
       emit_stdin_note ();
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -c, --bytes=[-]NUM\n\
-         print the first NUM bytes of each file;\n\
-         with the leading '-', print all but the last NUM bytes of each file\n\
+  -c, --अष्टकानि=[-]अङ्कः_2\n\
+         print the first अङ्कः_2 अष्टकानि सम्बन्धि each file;\n\
+         with the leading '-', print all but the चरमः अङ्कः_2 अष्टकानि सम्बन्धि each file\n\
 "));
       oprintf (_("\
-  -n, --lines=[-]NUM\n\
-         print the first NUM lines instead of the first %d;\n\
-         with the leading '-', print all but the last NUM lines of each file\n\
-"), DEFAULT_NUMBER);
+  -n, --पङ्क्तयः=[-]अङ्कः_2\n\
+         print the first अङ्कः_2 पङ्क्तयः instead सम्बन्धि the first %d;\n\
+         with the leading '-', print all but the चरमः अङ्कः_2 पङ्क्तयः सम्बन्धि each file\n\
+"), DEFAULT_सङ्ख्या);
       oputs (_("\
   -q, --quiet, --silent\n\
-         never print headers giving file names\n\
+         never print शीर्षकाणि giving file नामानि\n\
 "));
       oputs (_("\
   -v, --verbose\n\
-         always print headers giving file names\n\
+         always print शीर्षकाणि giving file नामानि\n\
 "));
       oputs (_("\
   -z, --zero-terminated\n\
-         line delimiter is NUL, not newline\n\
+         पङ्क्तिः delimiter is NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (संस्करणम्_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-NUM may have a multiplier suffix:\n\
+अङ्कः_2 may have a multiplier suffix:\n\
 b 512, kB 1000, K 1024, MB 1000*1000, M 1024*1024,\n\
-GB 1000*1000*1000, G 1024*1024*1024, and so on for T, P, E, Z, Y, R, Q.\n\
-Binary prefixes can be used, too: KiB=K, MiB=M, and so on.\n\
+GB 1000*1000*1000, G 1024*1024*1024, and so on प्रति T, P, E, Z, Y, R, Q.\n\
+द्विमान_2 prefixes can be प्रयुक्तम्, too: KiB=K, MiB=M, and so on.\n\
 "), stdout);
-      emit_ancillary_info (PROGRAM_NAME);
+      emit_ancillary_info (क्रमादेशः_NAME);
     }
-  exit (status);
+  निर्गच्छ (स्थितिः);
 }
 
-static void
-diagnose_read_failure (char const *filename)
+स्थिर शून्य
+diagnose_read_failure (वर्ण ध्रुव *filename)
 {
   error (0, errno, _("error reading %s"), quoteaf (filename));
 }
 
-static void
-diagnose_copy_fd_failure (enum Copy_fd_status err, char const *filename)
+स्थिर शून्य
+diagnose_copy_fd_failure (गणना Copy_fd_स्थितिः err, वर्ण ध्रुव *filename)
 {
-  switch (err)
+  विकल्प (err)
     {
-    case COPY_FD_READ_ERROR:
+    पक्ष COPY_FD_READ_ERROR:
       diagnose_read_failure (filename);
-      break;
-    case COPY_FD_UNEXPECTED_EOF:
+      भङ्ग;
+    पक्ष COPY_FD_UNEXPECTED_EOF:
       error (0, errno, _("%s: file has shrunk too much"), quotef (filename));
-      break;
-    case COPY_FD_OK: default:
+      भङ्ग;
+    पक्ष COPY_FD_OK: स्वभाव:
       affirm (false);
     }
 }
 
-static void
-write_header (char const *filename)
+स्थिर शून्य
+write_शीर्षकम् (वर्ण ध्रुव *filename)
 {
-  static bool first_file = true;
+  स्थिर bool first_file = true;
 
-  printf ("%s==> %s <==\n", (first_file ? "" : "\n"), quotef (filename));
+  प्रारूप_लिख ("%s==> %s <==\n", (first_file ? "" : "\n"), quotef (filename));
   first_file = false;
 }
 
 /* Write N_BYTES from BUFFER to stdout.
    Exit immediately on error with a single diagnostic.  */
 
-static void
-xwrite_stdout (char const *buffer, size_t n_bytes)
+स्थिर शून्य
+xwrite_stdout (वर्ण ध्रुव *बफर, size_t n_अष्टकानि)
 {
-  if (n_bytes > 0 && fwrite (buffer, 1, n_bytes, stdout) < n_bytes)
+  यदि (n_अष्टकानि > 0 && fwrite (बफर, 1, n_अष्टकानि, stdout) < n_अष्टकानि)
     {
       clearerr (stdout); /* To avoid redundant close_stdout diagnostic.  */
       fpurge (stdout);
@@ -202,35 +202,35 @@ xwrite_stdout (char const *buffer, size_t n_bytes)
 /* Copy no more than N_BYTES from file descriptor SRC_FD to stdout.
    Return an appropriate indication of success or read failure.  */
 
-static enum Copy_fd_status
-copy_fd (int src_fd, uintmax_t n_bytes)
+स्थिर गणना Copy_fd_स्थितिः
+copy_fd (पूर्णाङ्क src_fd, uintmax_t n_अष्टकानि)
 {
-  char buf[BUFSIZ];
+  वर्ण buf[BUFSIZ];
 
   /* Copy the file contents.  */
-  while (0 < n_bytes)
+  यावत् (0 < n_अष्टकानि)
     {
-      idx_t n_to_read = MIN (n_bytes, sizeof buf);
-      ssize_t n_read = read (src_fd, buf, n_to_read);
-      if (n_read < 0)
-        return COPY_FD_READ_ERROR;
+      idx_t n_गन्तव्यम्_read = MIN (n_अष्टकानि, परिमाण buf);
+      ssize_t n_read = पठ (src_fd, buf, n_गन्तव्यम्_read);
+      यदि (n_read < 0)
+        प्रत्यागम COPY_FD_READ_ERROR;
 
-      n_bytes -= n_read;
+      n_अष्टकानि -= n_read;
 
-      if (n_read == 0 && n_bytes != 0)
-        return COPY_FD_UNEXPECTED_EOF;
+      यदि (n_read == 0 && n_अष्टकानि != 0)
+        प्रत्यागम COPY_FD_UNEXPECTED_EOF;
 
       xwrite_stdout (buf, n_read);
     }
 
-  return COPY_FD_OK;
+  प्रत्यागम COPY_FD_OK;
 }
 
 /* Report an lseek failure at OFFSET compared to WHENCE, for FILENAME.  */
-static void
-elseek_diagnostic (off_t offset, int whence, char const *filename)
+स्थिर शून्य
+elseek_diagnostic (off_t विस्थापनम्, पूर्णाङ्क whence, वर्ण ध्रुव *filename)
 {
-  intmax_t off = offset;
+  intmax_t off = विस्थापनम्;
   error (0, errno,
          _(whence == SEEK_SET
            ? N_("%s: cannot seek to offset %jd")
@@ -243,15 +243,15 @@ elseek_diagnostic (off_t offset, int whence, char const *filename)
    SEEK_CUR.  Return the resulting offset.  Give a diagnostic and
    return -1 if lseek fails.  */
 
-static off_t
-elseek (int fd, off_t offset, int whence, char const *filename)
+स्थिर off_t
+elseek (पूर्णाङ्क fd, off_t विस्थापनम्, पूर्णाङ्क whence, वर्ण ध्रुव *filename)
 {
-  off_t new_offset = lseek (fd, offset, whence);
+  off_t new_विस्थापनम् = lseek (fd, विस्थापनम्, whence);
 
-  if (new_offset < 0)
-    elseek_diagnostic (offset, whence, filename);
+  यदि (new_विस्थापनम् < 0)
+    elseek_diagnostic (विस्थापनम्, whence, filename);
 
-  return new_offset;
+  प्रत्यागम new_विस्थापनम्;
 }
 
 /* For an input file with name FILENAME and descriptor FD,
@@ -261,29 +261,29 @@ elseek (int fd, off_t offset, int whence, char const *filename)
    just before the elided bytes before returning.
    Return true upon success.
    Give a diagnostic and return false upon error.  */
-static bool
-elide_tail_bytes_pipe (char const *filename, int fd, uintmax_t n_elide,
+स्थिर bool
+elide_पुच्छ_अष्टकानि_pipe (वर्ण ध्रुव *filename, पूर्णाङ्क fd, uintmax_t n_elide,
                        off_t current_pos)
 {
   uintmax_t desired_pos = current_pos;
   bool ok = true;
 
-#ifndef HEAD_TAIL_PIPE_READ_BUFSIZE
-# define HEAD_TAIL_PIPE_READ_BUFSIZE BUFSIZ
-#endif
-#define READ_BUFSIZE HEAD_TAIL_PIPE_READ_BUFSIZE
+#यदि_अपरिभाषितम् शीर्ष_पुच्छ_PIPE_READ_BUFSIZE
+# define शीर्ष_पुच्छ_PIPE_READ_BUFSIZE BUFSIZ
+#यदि_अन्तः
+#परिभाषय READ_BUFSIZE शीर्ष_पुच्छ_PIPE_READ_BUFSIZE
 
   /* If we're eliding no more than this many bytes, then it's ok to allocate
      more memory in order to use a more time-efficient algorithm.
      FIXME: use a fraction of available memory instead, as in sort.
      FIXME: is this even worthwhile?  */
-#ifndef HEAD_TAIL_PIPE_BYTECOUNT_THRESHOLD
-# define HEAD_TAIL_PIPE_BYTECOUNT_THRESHOLD 1024 * 1024
-#endif
+#यदि_अपरिभाषितम् शीर्ष_पुच्छ_PIPE_BYTECOUNT_देहली
+# define शीर्ष_पुच्छ_PIPE_BYTECOUNT_देहली 1024 * 1024
+#यदि_अन्तः
 
-#if HEAD_TAIL_PIPE_BYTECOUNT_THRESHOLD < 2 * READ_BUFSIZE
+#यदि शीर्ष_पुच्छ_PIPE_BYTECOUNT_देहली < 2 * READ_BUFSIZE
 # error "HEAD_TAIL_PIPE_BYTECOUNT_THRESHOLD must be at least 2 * READ_BUFSIZE"
-#endif
+#यदि_अन्तः
 
   /* Two cases to consider...
      1) n_elide is small enough that we can afford to double-buffer:
@@ -297,42 +297,42 @@ elide_tail_bytes_pipe (char const *filename, int fd, uintmax_t n_elide,
      a ridiculous amount, but when given only a small input.  */
 
   static_assert (READ_BUFSIZE <= IDX_MAX);
-  static_assert (HEAD_TAIL_PIPE_BYTECOUNT_THRESHOLD <= IDX_MAX - READ_BUFSIZE);
-  if (n_elide <= HEAD_TAIL_PIPE_BYTECOUNT_THRESHOLD)
+  static_assert (शीर्ष_पुच्छ_PIPE_BYTECOUNT_देहली <= IDX_MAX - READ_BUFSIZE);
+  यदि (n_elide <= शीर्ष_पुच्छ_PIPE_BYTECOUNT_देहली)
     {
-      idx_t in_elide = n_elide;
+      idx_t अन्तर्_elide = n_elide;
       bool first = true;
       bool eof = false;
-      idx_t n_to_read = READ_BUFSIZE + n_elide;
-      char *b[2];
-      b[0] = xnmalloc (2, n_to_read);
-      b[1] = b[0] + n_to_read;
+      idx_t n_गन्तव्यम्_read = READ_BUFSIZE + n_elide;
+      वर्ण *b[2];
+      b[0] = xnmalloc (2, n_गन्तव्यम्_read);
+      b[1] = b[0] + n_गन्तव्यम्_read;
 
-      for (bool i = false; ! eof ; i = !i)
+      प्रति (bool i = false; ! eof ; i = !i)
         {
-          idx_t n_read = full_read (fd, b[i], n_to_read);
+          idx_t n_read = पूर्णम्_read (fd, b[i], n_गन्तव्यम्_read);
           idx_t delta = 0;
-          if (n_read < n_to_read)
+          यदि (n_read < n_गन्तव्यम्_read)
             {
-              if (errno != 0)
+              यदि (errno != 0)
                 {
                   diagnose_read_failure (filename);
                   ok = false;
-                  break;
+                  भङ्ग;
                 }
 
               /* reached EOF */
-              if (n_read <= in_elide)
+              यदि (n_read <= अन्तर्_elide)
                 {
-                  if (first)
+                  यदि (first)
                     {
                       /* The input is no larger than the number of bytes
                          to elide.  So there's nothing to output, and
                          we're done.  */
                     }
-                  else
+                  अन्यथा
                     {
-                      delta = in_elide - n_read;
+                      delta = अन्तर्_elide - n_read;
                     }
                 }
               eof = true;
@@ -340,30 +340,30 @@ elide_tail_bytes_pipe (char const *filename, int fd, uintmax_t n_elide,
 
           /* Output any (but maybe just part of the) elided data from
              the previous round.  */
-          if (! first)
+          यदि (! first)
             {
-              desired_pos += in_elide - delta;
-              xwrite_stdout (b[!i] + READ_BUFSIZE, in_elide - delta);
+              desired_pos += अन्तर्_elide - delta;
+              xwrite_stdout (b[!i] + READ_BUFSIZE, अन्तर्_elide - delta);
             }
           first = false;
 
-          if (in_elide < n_read)
+          यदि (अन्तर्_elide < n_read)
             {
-              desired_pos += n_read - in_elide;
-              xwrite_stdout (b[i], n_read - in_elide);
+              desired_pos += n_read - अन्तर्_elide;
+              xwrite_stdout (b[i], n_read - अन्तर्_elide);
             }
         }
 
-      free (b[0]);
+      मुक्त (b[0]);
     }
-  else
+  अन्यथा
     {
       /* Read blocks of size READ_BUFSIZE, until we've read at least n_elide
          bytes.  Then, for each new buffer we read, also write an old one.  */
 
       bool eof = false;
       idx_t n_read;
-      char **b = NULL;
+      वर्ण **b = रिक्त;
 
       idx_t remainder = n_elide % READ_BUFSIZE;
       /* The number of buffers needed to hold n_elide bytes plus one
@@ -374,57 +374,57 @@ elide_tail_bytes_pipe (char const *filename, int fd, uintmax_t n_elide,
       idx_t n_array_alloc = 0;
 
       bool buffered_enough = false;
-      idx_t i, i_next;
-      for (i = 0, i_next = 1; !eof; i = i_next, i_next = (i_next + 1) % n_bufs)
+      idx_t i, i_अग्र;
+      प्रति (i = 0, i_अग्र = 1; !eof; i = i_अग्र, i_अग्र = (i_अग्र + 1) % n_bufs)
         {
-          if (n_array_alloc == i)
+          यदि (n_array_alloc == i)
             b = xpalloc (b, &n_array_alloc, 1, MIN (n_bufs, PTRDIFF_MAX),
-                         sizeof *b);
+                         परिमाण *b);
 
-          if (! buffered_enough)
+          यदि (! buffered_enough)
             {
               b[i] = xmalloc (READ_BUFSIZE);
               n_alloc = i + 1;
             }
-          n_read = full_read (fd, b[i], READ_BUFSIZE);
-          if (n_read < READ_BUFSIZE)
+          n_read = पूर्णम्_read (fd, b[i], READ_BUFSIZE);
+          यदि (n_read < READ_BUFSIZE)
             {
-              if (errno != 0)
+              यदि (errno != 0)
                 {
                   diagnose_read_failure (filename);
                   ok = false;
-                  goto free_mem;
+                  गच्छ free_mem;
                 }
               eof = true;
             }
 
-          if (i + 1 == n_bufs)
+          यदि (i + 1 == n_bufs)
             buffered_enough = true;
 
-          if (buffered_enough)
+          यदि (buffered_enough)
             {
               desired_pos += n_read;
-              xwrite_stdout (b[i_next], n_read);
+              xwrite_stdout (b[i_अग्र], n_read);
             }
         }
 
       /* Output the remainder: rem bytes from b[i] + n_read.  */
       idx_t rem = READ_BUFSIZE - remainder;
-      if (buffered_enough)
+      यदि (buffered_enough)
         {
-          idx_t n_bytes_left_in_b_i = READ_BUFSIZE - n_read;
+          idx_t n_अष्टकानि_वामः_अन्तर्_b_i = READ_BUFSIZE - n_read;
           desired_pos += rem;
-          if (rem < n_bytes_left_in_b_i)
+          यदि (rem < n_अष्टकानि_वामः_अन्तर्_b_i)
             {
               xwrite_stdout (b[i] + n_read, rem);
             }
-          else
+          अन्यथा
             {
-              xwrite_stdout (b[i] + n_read, n_bytes_left_in_b_i);
-              xwrite_stdout (b[i_next], rem - n_bytes_left_in_b_i);
+              xwrite_stdout (b[i] + n_read, n_अष्टकानि_वामः_अन्तर्_b_i);
+              xwrite_stdout (b[i_अग्र], rem - n_अष्टकानि_वामः_अन्तर्_b_i);
             }
         }
-      else if (i + 1 == n_bufs)
+      अन्यथा यदि (i + 1 == n_bufs)
         {
           /* This happens when
              n_elide < file_size < (n_bufs - 1) * READ_BUFSIZE.
@@ -442,18 +442,18 @@ elide_tail_bytes_pipe (char const *filename, int fd, uintmax_t n_elide,
           idx_t y = READ_BUFSIZE - rem;
           idx_t x = n_read - y;
           desired_pos += x;
-          xwrite_stdout (b[i_next], x);
+          xwrite_stdout (b[i_अग्र], x);
         }
 
     free_mem:
-      for (i = 0; i < n_alloc; i++)
-        free (b[i]);
-      free (b);
+      प्रति (i = 0; i < n_alloc; i++)
+        मुक्त (b[i]);
+      मुक्त (b);
     }
 
-  if (0 <= current_pos && elseek (fd, desired_pos, SEEK_SET, filename) < 0)
+  यदि (0 <= current_pos && elseek (fd, desired_pos, SEEK_SET, filename) < 0)
     ok = false;
-  return ok;
+  प्रत्यागम ok;
 }
 
 /* For the file FILENAME with descriptor FD, output all but the last N_ELIDE
@@ -464,29 +464,29 @@ elide_tail_bytes_pipe (char const *filename, int fd, uintmax_t n_elide,
 /* NOTE: if the input file shrinks by more than N_ELIDE bytes between
    the length determination and the actual reading, then head fails.  */
 
-static bool
-elide_tail_bytes_file (char const *filename, int fd, uintmax_t n_elide,
-                       struct stat const *st, off_t current_pos)
+स्थिर bool
+elide_पुच्छ_अष्टकानि_file (वर्ण ध्रुव *filename, पूर्णाङ्क fd, uintmax_t n_elide,
+                       संरचना stat ध्रुव *st, off_t current_pos)
 {
-  off_t size = st->st_size;
-  if (current_pos < 0 || size <= STP_BLKSIZE (st))
-    return elide_tail_bytes_pipe (filename, fd, n_elide, current_pos);
-  else
+  off_t आकार = st->st_आकार;
+  यदि (current_pos < 0 || आकार <= STP_BLKSIZE (st))
+    प्रत्यागम elide_पुच्छ_अष्टकानि_pipe (filename, fd, n_elide, current_pos);
+  अन्यथा
     {
       /* Be careful here.  The current position may actually be
          beyond the end of the file.  */
-      off_t diff = size - current_pos;
-      off_t bytes_remaining = diff < 0 ? 0 : diff;
+      off_t diff = आकार - current_pos;
+      off_t अष्टकानि_remaining = diff < 0 ? 0 : diff;
 
-      if (bytes_remaining <= n_elide)
-        return true;
+      यदि (अष्टकानि_remaining <= n_elide)
+        प्रत्यागम true;
 
-      enum Copy_fd_status err = copy_fd (fd, bytes_remaining - n_elide);
-      if (err == COPY_FD_OK)
-        return true;
+      गणना Copy_fd_स्थितिः err = copy_fd (fd, अष्टकानि_remaining - n_elide);
+      यदि (err == COPY_FD_OK)
+        प्रत्यागम true;
 
       diagnose_copy_fd_failure (err, filename);
-      return false;
+      प्रत्यागम false;
     }
 }
 
@@ -497,143 +497,143 @@ elide_tail_bytes_file (char const *filename, int fd, uintmax_t n_elide,
    Buffer the specified number of lines as a linked list of LBUFFERs,
    adding them as needed.  Return true if successful.  */
 
-static bool
-elide_tail_lines_pipe (char const *filename, int fd, uintmax_t n_elide,
+स्थिर bool
+elide_पुच्छ_पङ्क्तयः_pipe (वर्ण ध्रुव *filename, पूर्णाङ्क fd, uintmax_t n_elide,
                        off_t current_pos)
 {
-  struct linebuffer
+  संरचना linebuffer
   {
-    char buffer[BUFSIZ + 1];
+    वर्ण बफर[BUFSIZ + 1];
     size_t nbytes;
     size_t nlines;
-    struct linebuffer *next;
+    संरचना linebuffer *अग्र;
   };
   off_t desired_pos = current_pos;
-  typedef struct linebuffer LBUFFER;
-  LBUFFER *first, *last, *tmp;
-  size_t total_lines = 0;	/* Total number of newlines in all buffers.  */
+  प्रकारनिर्देश संरचना linebuffer LBUFFER;
+  LBUFFER *first, *चरमः, *tmp;
+  size_t योग_पङ्क्तयः = 0;	/* Total number of newlines in all buffers.  */
   bool ok = true;
   ssize_t n_read;		/* Size in bytes of most recent read */
 
-  first = last = xmalloc (sizeof (LBUFFER));
+  first = चरमः = xmalloc (परिमाण (LBUFFER));
   first->nbytes = first->nlines = 0;
-  first->next = NULL;
-  tmp = xmalloc (sizeof (LBUFFER));
+  first->अग्र = रिक्त;
+  tmp = xmalloc (परिमाण (LBUFFER));
 
   /* Always read into a fresh buffer.
      Read, (producing no output) until we've accumulated at least
      n_elide newlines, or until EOF, whichever comes first.  */
-  while (true)
+  यावत् (true)
     {
-      n_read = read (fd, tmp->buffer, BUFSIZ);
-      if (n_read <= 0)
-        break;
+      n_read = पठ (fd, tmp->बफर, BUFSIZ);
+      यदि (n_read <= 0)
+        भङ्ग;
 
-      if (! n_elide)
+      यदि (! n_elide)
         {
           desired_pos += n_read;
-          xwrite_stdout (tmp->buffer, n_read);
-          continue;
+          xwrite_stdout (tmp->बफर, n_read);
+          अनुवर्त;
         }
 
       tmp->nbytes = n_read;
       tmp->nlines = 0;
-      tmp->next = NULL;
+      tmp->अग्र = रिक्त;
 
       /* Count the number of newlines just read.  */
       {
-        char *buffer_end = tmp->buffer + n_read;
-        *buffer_end = line_end;
-        char const *p = tmp->buffer;
-        while ((p = rawmemchr (p, line_end)) < buffer_end)
+        वर्ण *बफर_अन्तः = tmp->बफर + n_read;
+        *बफर_अन्तः = पङ्क्तिः_अन्तः;
+        वर्ण ध्रुव *p = tmp->बफर;
+        यावत् ((p = rawmemchr (p, पङ्क्तिः_अन्तः)) < बफर_अन्तः)
           {
             ++p;
             ++tmp->nlines;
           }
       }
-      total_lines += tmp->nlines;
+      योग_पङ्क्तयः += tmp->nlines;
 
       /* If there is enough room in the last buffer read, just append the new
          one to it.  This is because when reading from a pipe, 'n_read' can
          often be very small.  */
-      if (tmp->nbytes + last->nbytes < BUFSIZ)
+      यदि (tmp->nbytes + चरमः->nbytes < BUFSIZ)
         {
-          memcpy (&last->buffer[last->nbytes], tmp->buffer, tmp->nbytes);
-          last->nbytes += tmp->nbytes;
-          last->nlines += tmp->nlines;
+          स्मृतिं_प्रतिलिख (&चरमः->बफर[चरमः->nbytes], tmp->बफर, tmp->nbytes);
+          चरमः->nbytes += tmp->nbytes;
+          चरमः->nlines += tmp->nlines;
         }
-      else
+      अन्यथा
         {
           /* If there's not enough room, link the new buffer onto the end of
              the list, then either free up the oldest buffer for the next
              read if that would leave enough lines, or else malloc a new one.
              Some compaction mechanism is possible but probably not
              worthwhile.  */
-          last = last->next = tmp;
-          if (n_elide < total_lines - first->nlines)
+          चरमः = चरमः->अग्र = tmp;
+          यदि (n_elide < योग_पङ्क्तयः - first->nlines)
             {
               desired_pos += first->nbytes;
-              xwrite_stdout (first->buffer, first->nbytes);
+              xwrite_stdout (first->बफर, first->nbytes);
               tmp = first;
-              total_lines -= first->nlines;
-              first = first->next;
+              योग_पङ्क्तयः -= first->nlines;
+              first = first->अग्र;
             }
-          else
-            tmp = xmalloc (sizeof (LBUFFER));
+          अन्यथा
+            tmp = xmalloc (परिमाण (LBUFFER));
         }
     }
 
-  free (tmp);
+  मुक्त (tmp);
 
-  if (n_read < 0)
+  यदि (n_read < 0)
     {
       diagnose_read_failure (filename);
       ok = false;
-      goto free_lbuffers;
+      गच्छ free_lbuffers;
     }
 
   /* If we read any bytes at all, count the incomplete line
      on files that don't end with a newline.  */
-  if (last->nbytes && last->buffer[last->nbytes - 1] != line_end)
+  यदि (चरमः->nbytes && चरमः->बफर[चरमः->nbytes - 1] != पङ्क्तिः_अन्तः)
     {
-      ++last->nlines;
-      ++total_lines;
+      ++चरमः->nlines;
+      ++योग_पङ्क्तयः;
     }
 
-  for (tmp = first; n_elide < total_lines - tmp->nlines; tmp = tmp->next)
+  प्रति (tmp = first; n_elide < योग_पङ्क्तयः - tmp->nlines; tmp = tmp->अग्र)
     {
       desired_pos += tmp->nbytes;
-      xwrite_stdout (tmp->buffer, tmp->nbytes);
-      total_lines -= tmp->nlines;
+      xwrite_stdout (tmp->बफर, tmp->nbytes);
+      योग_पङ्क्तयः -= tmp->nlines;
     }
 
   /* Print the first 'total_lines - n_elide' lines of tmp->buffer.  */
-  if (n_elide < total_lines)
+  यदि (n_elide < योग_पङ्क्तयः)
     {
-      size_t n = total_lines - n_elide;
-      char const *buffer_end = tmp->buffer + tmp->nbytes;
-      char const *p = tmp->buffer;
-      while (n && (p = memchr (p, line_end, buffer_end - p)))
+      size_t n = योग_पङ्क्तयः - n_elide;
+      वर्ण ध्रुव *बफर_अन्तः = tmp->बफर + tmp->nbytes;
+      वर्ण ध्रुव *p = tmp->बफर;
+      यावत् (n && (p = memchr (p, पङ्क्तिः_अन्तः, बफर_अन्तः - p)))
         {
           ++p;
           ++tmp->nlines;
           --n;
         }
-      desired_pos += p - tmp->buffer;
-      xwrite_stdout (tmp->buffer, p - tmp->buffer);
+      desired_pos += p - tmp->बफर;
+      xwrite_stdout (tmp->बफर, p - tmp->बफर);
     }
 
 free_lbuffers:
-  while (first)
+  यावत् (first)
     {
-      tmp = first->next;
-      free (first);
+      tmp = first->अग्र;
+      मुक्त (first);
       first = tmp;
     }
 
-  if (0 <= current_pos && elseek (fd, desired_pos, SEEK_SET, filename) < 0)
+  यदि (0 <= current_pos && elseek (fd, desired_pos, SEEK_SET, filename) < 0)
     ok = false;
-  return ok;
+  प्रत्यागम ok;
 }
 
 /* Output all but the last N_LINES lines of the input stream defined by
@@ -647,105 +647,105 @@ free_lbuffers:
    NOTE: this code is very similar to that of tail.c's file_lines function.
    Unfortunately, factoring out some common core looks like it'd result
    in a less efficient implementation or a messy interface.  */
-static bool
-elide_tail_lines_seekable (char const *pretty_filename, int fd,
-                           uintmax_t n_lines,
-                           off_t start_pos, off_t size)
+स्थिर bool
+elide_पुच्छ_पङ्क्तयः_seekable (वर्ण ध्रुव *pretty_filename, पूर्णाङ्क fd,
+                           uintmax_t n_पङ्क्तयः,
+                           off_t start_pos, off_t आकार)
 {
-  char buffer[BUFSIZ];
-  ssize_t bytes_read;
-  off_t pos = size;
+  वर्ण बफर[BUFSIZ];
+  ssize_t अष्टकानि_read;
+  off_t pos = आकार;
 
   /* Set 'bytes_read' to the size of the last, probably partial, buffer;
      0 < 'bytes_read' <= 'BUFSIZ'.  */
-  bytes_read = (pos - start_pos) % BUFSIZ;
-  if (bytes_read == 0)
-    bytes_read = BUFSIZ;
+  अष्टकानि_read = (pos - start_pos) % BUFSIZ;
+  यदि (अष्टकानि_read == 0)
+    अष्टकानि_read = BUFSIZ;
   /* Make 'pos' a multiple of 'BUFSIZ' (0 if the file is short), so that all
      reads will be on block boundaries, which might increase efficiency.  */
-  pos -= bytes_read;
-  if (elseek (fd, pos, SEEK_SET, pretty_filename) < 0)
-    return false;
-  bytes_read = read (fd, buffer, bytes_read);
-  if (bytes_read < 0)
+  pos -= अष्टकानि_read;
+  यदि (elseek (fd, pos, SEEK_SET, pretty_filename) < 0)
+    प्रत्यागम false;
+  अष्टकानि_read = पठ (fd, बफर, अष्टकानि_read);
+  यदि (अष्टकानि_read < 0)
     {
       diagnose_read_failure (pretty_filename);
-      return false;
+      प्रत्यागम false;
     }
 
   /* n_lines == 0 case needs special treatment. */
-  const bool all_lines = !n_lines;
+  ध्रुव bool all_पङ्क्तयः = !n_पङ्क्तयः;
 
   /* Count the incomplete line on files that don't end with a newline.  */
-  if (n_lines && bytes_read && buffer[bytes_read - 1] != line_end)
-    --n_lines;
+  यदि (n_पङ्क्तयः && अष्टकानि_read && बफर[अष्टकानि_read - 1] != पङ्क्तिः_अन्तः)
+    --n_पङ्क्तयः;
 
-  while (true)
+  यावत् (true)
     {
       /* Scan backward, counting the newlines in this bufferfull.  */
 
-      idx_t n = bytes_read;
-      while (n)
+      idx_t n = अष्टकानि_read;
+      यावत् (n)
         {
-          if (all_lines)
+          यदि (all_पङ्क्तयः)
             n -= 1;
-          else
+          अन्यथा
             {
-              char const *nl;
-              nl = memrchr (buffer, line_end, n);
-              if (nl == NULL)
-                break;
-              n = nl - buffer;
+              वर्ण ध्रुव *nl;
+              nl = memrchr (बफर, पङ्क्तिः_अन्तः, n);
+              यदि (nl == रिक्त)
+                भङ्ग;
+              n = nl - बफर;
             }
-          if (n_lines-- == 0)
+          यदि (n_पङ्क्तयः-- == 0)
             {
               /* Found it.  */
               /* If necessary, restore the file pointer and copy
                  input to output up to position, POS.  */
-              if (start_pos < pos)
+              यदि (start_pos < pos)
                 {
-                  enum Copy_fd_status err;
-                  if (elseek (fd, start_pos, SEEK_SET, pretty_filename) < 0)
-                    return false;
+                  गणना Copy_fd_स्थितिः err;
+                  यदि (elseek (fd, start_pos, SEEK_SET, pretty_filename) < 0)
+                    प्रत्यागम false;
 
                   err = copy_fd (fd, pos - start_pos);
-                  if (err != COPY_FD_OK)
+                  यदि (err != COPY_FD_OK)
                     {
                       diagnose_copy_fd_failure (err, pretty_filename);
-                      return false;
+                      प्रत्यागम false;
                     }
                 }
 
               /* Output the initial portion of the buffer
                  in which we found the desired newline byte.  */
-              xwrite_stdout (buffer, n + 1);
+              xwrite_stdout (बफर, n + 1);
 
               /* Set file pointer to the byte after what we've output.  */
-              return 0 <= elseek (fd, pos + n + 1, SEEK_SET, pretty_filename);
+              प्रत्यागम 0 <= elseek (fd, pos + n + 1, SEEK_SET, pretty_filename);
             }
         }
 
       /* Not enough newlines in that bufferfull.  */
-      if (pos == start_pos)
+      यदि (pos == start_pos)
         {
           /* Not enough lines in the file.  */
-          return true;
+          प्रत्यागम true;
         }
       pos -= BUFSIZ;
-      if (elseek (fd, pos, SEEK_SET, pretty_filename) < 0)
-        return false;
+      यदि (elseek (fd, pos, SEEK_SET, pretty_filename) < 0)
+        प्रत्यागम false;
 
-      bytes_read = read (fd, buffer, BUFSIZ);
-      if (bytes_read < 0)
+      अष्टकानि_read = पठ (fd, बफर, BUFSIZ);
+      यदि (अष्टकानि_read < 0)
         {
           diagnose_read_failure (pretty_filename);
-          return false;
+          प्रत्यागम false;
         }
 
       /* FIXME: is this dead code?
          Consider the test, pos == start_pos, above. */
-      if (bytes_read == 0)
-        return true;
+      यदि (अष्टकानि_read == 0)
+        प्रत्यागम true;
     }
 }
 
@@ -754,144 +754,144 @@ elide_tail_lines_seekable (char const *pretty_filename, int fd,
    at CURRENT_POS.  The file's status is ST.  Return true on success.
    Give a diagnostic and return false upon error.  */
 
-static bool
-elide_tail_lines_file (char const *filename, int fd, uintmax_t n_elide,
-                       struct stat const *st, off_t current_pos)
+स्थिर bool
+elide_पुच्छ_पङ्क्तयः_file (वर्ण ध्रुव *filename, पूर्णाङ्क fd, uintmax_t n_elide,
+                       संरचना stat ध्रुव *st, off_t current_pos)
 {
-  off_t size = st->st_size;
-  if (current_pos < 0 || size <= STP_BLKSIZE (st))
-    return elide_tail_lines_pipe (filename, fd, n_elide, current_pos);
-  else
+  off_t आकार = st->st_आकार;
+  यदि (current_pos < 0 || आकार <= STP_BLKSIZE (st))
+    प्रत्यागम elide_पुच्छ_पङ्क्तयः_pipe (filename, fd, n_elide, current_pos);
+  अन्यथा
     {
       /* Find the offset, OFF, of the Nth newline from the end,
          but not counting the last byte of the file.
          If found, write from current position to OFF, inclusive.
          Otherwise, just return true.  */
 
-      return (size <= current_pos
-              || elide_tail_lines_seekable (filename, fd, n_elide,
-                                            current_pos, size));
+      प्रत्यागम (आकार <= current_pos
+              || elide_पुच्छ_पङ्क्तयः_seekable (filename, fd, n_elide,
+                                            current_pos, आकार));
     }
 }
 
-static bool
-head_bytes (char const *filename, int fd, uintmax_t bytes_to_write)
+स्थिर bool
+शीर्ष_अष्टकानि (वर्ण ध्रुव *filename, पूर्णाङ्क fd, uintmax_t अष्टकानि_गन्तव्यम्_write)
 {
-  if (copy_fd (fd, bytes_to_write) == COPY_FD_READ_ERROR)
+  यदि (copy_fd (fd, अष्टकानि_गन्तव्यम्_write) == COPY_FD_READ_ERROR)
     {
       diagnose_read_failure (filename);
-      return false;
+      प्रत्यागम false;
     }
-  return true;
+  प्रत्यागम true;
 }
 
-static bool
-head_lines (char const *filename, int fd, uintmax_t lines_to_write)
+स्थिर bool
+शीर्ष_पङ्क्तयः (वर्ण ध्रुव *filename, पूर्णाङ्क fd, uintmax_t पङ्क्तयः_गन्तव्यम्_write)
 {
-  char buffer[BUFSIZ];
+  वर्ण बफर[BUFSIZ];
 
-  while (lines_to_write)
+  यावत् (पङ्क्तयः_गन्तव्यम्_write)
     {
-      ssize_t bytes_read = read (fd, buffer, BUFSIZ);
-      idx_t bytes_to_write = 0;
+      ssize_t अष्टकानि_read = पठ (fd, बफर, BUFSIZ);
+      idx_t अष्टकानि_गन्तव्यम्_write = 0;
 
-      if (bytes_read < 0)
+      यदि (अष्टकानि_read < 0)
         {
           diagnose_read_failure (filename);
-          return false;
+          प्रत्यागम false;
         }
-      if (bytes_read == 0)
-        break;
-      while (bytes_to_write < bytes_read)
-        if (buffer[bytes_to_write++] == line_end && --lines_to_write == 0)
+      यदि (अष्टकानि_read == 0)
+        भङ्ग;
+      यावत् (अष्टकानि_गन्तव्यम्_write < अष्टकानि_read)
+        यदि (बफर[अष्टकानि_गन्तव्यम्_write++] == पङ्क्तिः_अन्तः && --पङ्क्तयः_गन्तव्यम्_write == 0)
           {
-            off_t n_bytes_past_EOL = bytes_read - bytes_to_write;
+            off_t n_अष्टकानि_past_EOL = अष्टकानि_read - अष्टकानि_गन्तव्यम्_write;
             /* If we have read more data than that on the specified number
                of lines, try to seek back to the position we would have
                gotten to had we been reading one byte at a time.  */
-            if (lseek (fd, -n_bytes_past_EOL, SEEK_CUR) < 0)
+            यदि (lseek (fd, -n_अष्टकानि_past_EOL, SEEK_CUR) < 0)
               {
-                struct stat st;
-                if (fstat (fd, &st) != 0 || S_ISREG (st.st_mode))
-                  elseek_diagnostic (-n_bytes_past_EOL, SEEK_CUR, filename);
+                संरचना stat st;
+                यदि (fstat (fd, &st) != 0 || S_ISREG (st.st_बहुलकम्))
+                  elseek_diagnostic (-n_अष्टकानि_past_EOL, SEEK_CUR, filename);
               }
-            break;
+            भङ्ग;
           }
-      xwrite_stdout (buffer, bytes_to_write);
+      xwrite_stdout (बफर, अष्टकानि_गन्तव्यम्_write);
     }
-  return true;
+  प्रत्यागम true;
 }
 
-static bool
-head (char const *filename, int fd, uintmax_t n_units, bool count_lines,
-      bool elide_from_end)
+स्थिर bool
+शीर्ष (वर्ण ध्रुव *filename, पूर्णाङ्क fd, uintmax_t n_units, bool गणनम्_पङ्क्तयः,
+      bool elide_from_अन्तः)
 {
-  if (print_headers)
-    write_header (filename);
+  यदि (print_शीर्षकाणि)
+    write_शीर्षकम् (filename);
 
-  if (elide_from_end)
+  यदि (elide_from_अन्तः)
     {
       /* Optimize for "infinite" elisions.  */
-      if (n_units == UINTMAX_MAX)
-        return true;
+      यदि (n_units == UINTMAX_MAX)
+        प्रत्यागम true;
 
       off_t current_pos = -1;
-      struct stat st;
-      if (fstat (fd, &st) != 0)
+      संरचना stat st;
+      यदि (fstat (fd, &st) != 0)
         {
           error (0, errno, _("cannot fstat %s"),
                  quoteaf (filename));
-          return false;
+          प्रत्यागम false;
         }
-      if (! presume_input_pipe && S_ISREG (st.st_mode))
+      यदि (! presume_निवेशः_pipe && S_ISREG (st.st_बहुलकम्))
         {
           current_pos = elseek (fd, 0, SEEK_CUR, filename);
-          if (current_pos < 0)
-            return false;
+          यदि (current_pos < 0)
+            प्रत्यागम false;
         }
-      if (count_lines)
-        return elide_tail_lines_file (filename, fd, n_units, &st, current_pos);
-      else
-        return elide_tail_bytes_file (filename, fd, n_units, &st, current_pos);
+      यदि (गणनम्_पङ्क्तयः)
+        प्रत्यागम elide_पुच्छ_पङ्क्तयः_file (filename, fd, n_units, &st, current_pos);
+      अन्यथा
+        प्रत्यागम elide_पुच्छ_अष्टकानि_file (filename, fd, n_units, &st, current_pos);
     }
-  if (count_lines)
-    return head_lines (filename, fd, n_units);
-  else
-    return head_bytes (filename, fd, n_units);
+  यदि (गणनम्_पङ्क्तयः)
+    प्रत्यागम शीर्ष_पङ्क्तयः (filename, fd, n_units);
+  अन्यथा
+    प्रत्यागम शीर्ष_अष्टकानि (filename, fd, n_units);
 }
 
-static bool
-head_file (char const *filename, uintmax_t n_units, bool count_lines,
-           bool elide_from_end)
+स्थिर bool
+शीर्ष_file (वर्ण ध्रुव *filename, uintmax_t n_units, bool गणनम्_पङ्क्तयः,
+           bool elide_from_अन्तः)
 {
-  int fd;
+  पूर्णाङ्क fd;
   bool ok;
   bool is_stdin = streq (filename, "-");
 
-  if (is_stdin)
+  यदि (is_stdin)
     {
       have_read_stdin = true;
       fd = STDIN_FILENO;
       filename = _("standard input");
-      xset_binary_mode (STDIN_FILENO, O_BINARY);
+      xset_द्विमान_बहुलकम् (STDIN_FILENO, O_द्विमान);
     }
-  else
+  अन्यथा
     {
-      fd = open (filename, O_RDONLY | O_BINARY);
-      if (fd < 0)
+      fd = उद्घाटय (filename, O_RDONLY | O_द्विमान);
+      यदि (fd < 0)
         {
           error (0, errno, _("cannot open %s for reading"), quoteaf (filename));
-          return false;
+          प्रत्यागम false;
         }
     }
 
-  ok = head (filename, fd, n_units, count_lines, elide_from_end);
-  if (!is_stdin && close (fd) != 0)
+  ok = शीर्ष (filename, fd, n_units, गणनम्_पङ्क्तयः, elide_from_अन्तः);
+  यदि (!is_stdin && close (fd) != 0)
     {
       error (0, errno, _("failed to close %s"), quoteaf (filename));
-      return false;
+      प्रत्यागम false;
     }
-  return ok;
+  प्रत्यागम ok;
 }
 
 /* Convert a string of decimal digits, N_STRING, with an optional suffix
@@ -901,97 +901,97 @@ head_file (char const *filename, uintmax_t n_units, bool count_lines,
    COUNT_LINES indicates whether N_STRING is a number of bytes or a number
    of lines.  It is used solely to give a more specific diagnostic.  */
 
-static uintmax_t
-string_to_integer (bool count_lines, char const *n_string)
+स्थिर uintmax_t
+string_गन्तव्यम्_integer (bool गणनम्_पङ्क्तयः, वर्ण ध्रुव *n_string)
 {
-  return xnumtoumax (n_string, 10, 0, UINTMAX_MAX, "bkKmMGTPEZYRQ0",
-                     (count_lines
+  प्रत्यागम xnumtoumax (n_string, 10, 0, UINTMAX_MAX, "bkKmMGTPEZYRQ0",
+                     (गणनम्_पङ्क्तयः
                       ? _("invalid number of lines")
                       : _("invalid number of bytes")),
                      0, XTOINT_MAX_QUIET);
 }
 
-int
-main (int argc, char **argv)
+पूर्णाङ्क
+मुख्यम् (पूर्णाङ्क argc, वर्ण **argv)
 {
-  enum header_mode header_mode = multiple_files;
+  गणना शीर्षकम्_बहुलकम् शीर्षकम्_बहुलकम् = गुणजः_files;
   bool ok = true;
-  int c;
+  पूर्णाङ्क c;
 
   /* Number of items to output, or to elide from the end.
      UINTMAX_MAX stands for an essentially unlimited number.  */
-  uintmax_t n_units = DEFAULT_NUMBER;
+  uintmax_t n_units = DEFAULT_सङ्ख्या;
 
   /* If true, interpret the numeric argument as the number of lines.
      Otherwise, interpret it as the number of bytes.  */
-  bool count_lines = true;
+  bool गणनम्_पङ्क्तयः = true;
 
   /* Elide the specified number of lines or bytes, counting from
      the end of the file.  */
-  bool elide_from_end = false;
+  bool elide_from_अन्तः = false;
 
   /* Initializer for file_list if no file-arguments
      were specified on the command line.  */
-  static char const *const default_file_list[] = {"-", NULL};
-  char const *const *file_list;
+  स्थिर वर्ण ध्रुव *ध्रुव default_file_list[] = {"-", रिक्त};
+  वर्ण ध्रुव *ध्रुव *file_list;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  समुच्चयः_क्रमादेशः_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  if (1 < argc && argv[1][0] == '-' && c_isdigit (argv[1][1]))
+  यदि (1 < argc && argv[1][0] == '-' && c_isdigit (argv[1][1]))
     {
-      char *a = argv[1];
-      char *n_string = ++a;
-      char *end_n_string;
-      char multiplier_char = 0;
+      वर्ण *a = argv[1];
+      वर्ण *n_string = ++a;
+      वर्ण *अन्तः_n_string;
+      वर्ण multiplier_char = 0;
 
       /* Old option syntax; a dash, one or more digits, and one or
          more option letters.  Move past the number. */
-      do ++a;
-      while (c_isdigit (*a));
+      कुरु ++a;
+      यावत् (c_isdigit (*a));
 
       /* Pointer to the byte after the last digit.  */
-      end_n_string = a;
+      अन्तः_n_string = a;
 
       /* Parse any appended option letters. */
-      for (; *a; a++)
+      प्रति (; *a; a++)
         {
-          switch (*a)
+          विकल्प (*a)
             {
-            case 'c':
-              count_lines = false;
+            पक्ष 'c':
+              गणनम्_पङ्क्तयः = false;
               multiplier_char = 0;
-              break;
+              भङ्ग;
 
-            case 'b':
-            case 'k':
-            case 'm':
-              count_lines = false;
+            पक्ष 'b':
+            पक्ष 'k':
+            पक्ष 'm':
+              गणनम्_पङ्क्तयः = false;
               multiplier_char = *a;
-              break;
+              भङ्ग;
 
-            case 'l':
-              count_lines = true;
-              break;
+            पक्ष 'l':
+              गणनम्_पङ्क्तयः = true;
+              भङ्ग;
 
-            case 'q':
-              header_mode = never;
-              break;
+            पक्ष 'q':
+              शीर्षकम्_बहुलकम् = never;
+              भङ्ग;
 
-            case 'v':
-              header_mode = always;
-              break;
+            पक्ष 'v':
+              शीर्षकम्_बहुलकम् = always;
+              भङ्ग;
 
-            case 'z':
-              line_end = '\0';
-              break;
+            पक्ष 'z':
+              पङ्क्तिः_अन्तः = '\0';
+              भङ्ग;
 
-            default:
+            स्वभाव:
               error (0, 0, _("invalid trailing option -- %c"), *a);
               usage (EXIT_FAILURE);
             }
@@ -999,11 +999,11 @@ main (int argc, char **argv)
 
       /* Append the multiplier character (if any) onto the end of
          the digit string.  Then add NUL byte if necessary.  */
-      *end_n_string = multiplier_char;
-      if (multiplier_char)
-        *(++end_n_string) = 0;
+      *अन्तः_n_string = multiplier_char;
+      यदि (multiplier_char)
+        *(++अन्तः_n_string) = 0;
 
-      n_units = string_to_integer (count_lines, n_string);
+      n_units = string_गन्तव्यम्_integer (गणनम्_पङ्क्तयः, n_string);
 
       /* Make the options we just parsed invisible to getopt. */
       argv[1] = argv[0];
@@ -1011,70 +1011,70 @@ main (int argc, char **argv)
       argc--;
     }
 
-  while ((c = getopt_long (argc, argv, "c:n:qvz0123456789",
-                           long_options, NULL))
+  यावत् ((c = getopt_long (argc, argv, "c:n:qvz0123456789",
+                           long_options, रिक्त))
          != -1)
     {
-      switch (c)
+      विकल्प (c)
         {
-        case PRESUME_INPUT_PIPE_OPTION:
-          presume_input_pipe = true;
-          break;
+        पक्ष PRESUME_निवेशः_PIPE_OPTION:
+          presume_निवेशः_pipe = true;
+          भङ्ग;
 
-        case 'c':
-          count_lines = false;
-          elide_from_end = (*optarg == '-');
-          if (elide_from_end)
+        पक्ष 'c':
+          गणनम्_पङ्क्तयः = false;
+          elide_from_अन्तः = (*optarg == '-');
+          यदि (elide_from_अन्तः)
             ++optarg;
-          n_units = string_to_integer (count_lines, optarg);
-          break;
+          n_units = string_गन्तव्यम्_integer (गणनम्_पङ्क्तयः, optarg);
+          भङ्ग;
 
-        case 'n':
-          count_lines = true;
-          elide_from_end = (*optarg == '-');
-          if (elide_from_end)
+        पक्ष 'n':
+          गणनम्_पङ्क्तयः = true;
+          elide_from_अन्तः = (*optarg == '-');
+          यदि (elide_from_अन्तः)
             ++optarg;
-          n_units = string_to_integer (count_lines, optarg);
-          break;
+          n_units = string_गन्तव्यम्_integer (गणनम्_पङ्क्तयः, optarg);
+          भङ्ग;
 
-        case 'q':
-          header_mode = never;
-          break;
+        पक्ष 'q':
+          शीर्षकम्_बहुलकम् = never;
+          भङ्ग;
 
-        case 'v':
-          header_mode = always;
-          break;
+        पक्ष 'v':
+          शीर्षकम्_बहुलकम् = always;
+          भङ्ग;
 
-        case 'z':
-          line_end = '\0';
-          break;
+        पक्ष 'z':
+          पङ्क्तिः_अन्तः = '\0';
+          भङ्ग;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_संस्करणम्_CHAR (क्रमादेशः_NAME, AUTHORS);
 
-        default:
-          if (c_isdigit (c))
+        स्वभाव:
+          यदि (c_isdigit (c))
             error (0, 0, _("invalid trailing option -- %c"), c);
           usage (EXIT_FAILURE);
         }
     }
 
-  if (header_mode == always
-      || (header_mode == multiple_files && optind < argc - 1))
-    print_headers = true;
+  यदि (शीर्षकम्_बहुलकम् == always
+      || (शीर्षकम्_बहुलकम् == गुणजः_files && optind < argc - 1))
+    print_शीर्षकाणि = true;
 
   file_list = (optind < argc
-               ? (char const *const *) &argv[optind]
+               ? (वर्ण ध्रुव *ध्रुव *) &argv[optind]
                : default_file_list);
 
-  xset_binary_mode (STDOUT_FILENO, O_BINARY);
+  xset_द्विमान_बहुलकम् (STDOUT_FILENO, O_द्विमान);
 
-  for (size_t i = 0; file_list[i]; ++i)
-    ok &= head_file (file_list[i], n_units, count_lines, elide_from_end);
+  प्रति (size_t i = 0; file_list[i]; ++i)
+    ok &= शीर्ष_file (file_list[i], n_units, गणनम्_पङ्क्तयः, elide_from_अन्तः);
 
-  if (have_read_stdin && close (STDIN_FILENO) < 0)
+  यदि (have_read_stdin && close (STDIN_FILENO) < 0)
     error (EXIT_FAILURE, errno, "-");
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  प्रत्यागम ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

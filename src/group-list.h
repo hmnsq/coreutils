@@ -15,5 +15,5 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-bool print_group (gid_t, bool);
-bool print_group_list (char const *, uid_t, gid_t, gid_t, bool, char);
+bool print_गणः (gid_t, bool);
+bool print_गणः_list (वर्ण ध्रुव *, uid_t, gid_t, gid_t, bool, वर्ण);

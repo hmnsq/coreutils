@@ -17,197 +17,197 @@
 /* Written by Paul Rubin, phr@ocf.berkeley.edu
    and David MacKenzie, djm@gnu.ai.mit.edu. */
 
-#include <config.h>
+#अन्तर्भाव <config.h>
 
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#अन्तर्भाव <stdio.h>
+#अन्तर्भाव <getopt.h>
+#अन्तर्भाव <sys/types.h>
 
-#include <argmatch.h>
-#include <argv-iter.h>
-#include <fadvise.h>
-#include <physmem.h>
-#include <readtokens0.h>
-#include <stat-size.h>
-#include <xbinary-io.h>
+#अन्तर्भाव <argmatch.h>
+#अन्तर्भाव <argv-iter.h>
+#अन्तर्भाव <fadvise.h>
+#अन्तर्भाव <physmem.h>
+#अन्तर्भाव <readtokens0.h>
+#अन्तर्भाव <stat-size.h>
+#अन्तर्भाव <xbinary-io.h>
 
-#ifdef USE_NEON_WC_LINECOUNT
+#यदि_परिभाषितम् USE_NEON_WC_LINECOUNT
 # include <sys/auxv.h>
 # include <asm/hwcap.h>
-#endif
+#यदि_अन्तः
 
-#include "system.h"
-#include "assure.h"
-#include "cpu-supports.h"
-#include "ioblksize.h"
-#include "wc.h"
-#include "utf8.h"
+#अन्तर्भाव "system.h"
+#अन्तर्भाव "assure.h"
+#अन्तर्भाव "cpu-supports.h"
+#अन्तर्भाव "ioblksize.h"
+#अन्तर्भाव "wc.h"
+#अन्तर्भाव "utf8.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "wc"
+#परिभाषय क्रमादेशः_NAME "wc"
 
-#define AUTHORS \
+#परिभाषय AUTHORS \
   proper_name ("Paul Rubin"), \
   proper_name ("David MacKenzie")
 
-static bool wc_isprint[UCHAR_MAX + 1];
-static bool wc_isspace[UCHAR_MAX + 1];
+स्थिर bool wc_isprint[UCHAR_MAX + 1];
+स्थिर bool wc_isspace[UCHAR_MAX + 1];
 
-static bool debug;
+स्थिर bool debug;
 
 /* Cumulative number of lines, words, chars and bytes in all files so far.
    max_line_length is the maximum over all files processed so far.  */
-static uintmax_t total_lines;
-static uintmax_t total_words;
-static uintmax_t total_chars;
-static uintmax_t total_bytes;
-static bool total_lines_overflow;
-static bool total_words_overflow;
-static bool total_chars_overflow;
-static bool total_bytes_overflow;
-static intmax_t max_line_length;
+स्थिर uintmax_t योग_पङ्क्तयः;
+स्थिर uintmax_t योग_शब्दाः;
+स्थिर uintmax_t योग_chars;
+स्थिर uintmax_t योग_अष्टकानि;
+स्थिर bool योग_पङ्क्तयः_अतिप्रवाहः;
+स्थिर bool योग_शब्दाः_अतिप्रवाहः;
+स्थिर bool योग_chars_अतिप्रवाहः;
+स्थिर bool योग_अष्टकानि_अतिप्रवाहः;
+स्थिर intmax_t max_पङ्क्तिः_दीर्घता;
 
 /* Which counts to print. */
-static bool print_lines, print_words, print_chars, print_bytes;
-static bool print_linelength;
+स्थिर bool print_पङ्क्तयः, print_शब्दाः, print_chars, print_अष्टकानि;
+स्थिर bool print_linelength;
 
 /* The print width of each count.  */
-static int number_width;
+स्थिर पूर्णाङ्क सङ्ख्या_विस्तारः;
 
 /* True if we have ever read the standard input. */
-static bool have_read_stdin;
+स्थिर bool have_read_stdin;
 
 /* Used to determine if file size can be determined without reading.  */
-static idx_t page_size;
+स्थिर idx_t page_आकार;
 
 /* Enable to _not_ treat non breaking space as a word separator.  */
-static bool posixly_correct;
+स्थिर bool posixly_correct;
 
 /* The result of calling fstat or stat on a file descriptor or file.  */
-struct fstatus
+संरचना fstatus
 {
   /* If positive, fstat or stat has not been called yet.  Otherwise,
      this is the value returned from fstat or stat.  */
-  int failed;
+  पूर्णाङ्क failed;
 
   /* If FAILED is zero, this is the file's status.  */
-  struct stat st;
+  संरचना stat st;
 };
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+गणना
 {
-  DEBUG_PROGRAM_OPTION = CHAR_MAX + 1,
+  DEBUG_क्रमादेशः_OPTION = CHAR_MAX + 1,
   FILES0_FROM_OPTION,
-  TOTAL_OPTION,
+  योग_OPTION,
 };
 
-static struct option const longopts[] =
+स्थिर संरचना option ध्रुव longopts[] =
 {
-  {"bytes", no_argument, NULL, 'c'},
-  {"chars", no_argument, NULL, 'm'},
-  {"lines", no_argument, NULL, 'l'},
-  {"words", no_argument, NULL, 'w'},
-  {"debug", no_argument, NULL, DEBUG_PROGRAM_OPTION},
-  {"files0-from", required_argument, NULL, FILES0_FROM_OPTION},
-  {"max-line-length", no_argument, NULL, 'L'},
-  {"total", required_argument, NULL, TOTAL_OPTION},
+  {"bytes", no_तर्कः, रिक्त, 'c'},
+  {"chars", no_तर्कः, रिक्त, 'm'},
+  {"lines", no_तर्कः, रिक्त, 'l'},
+  {"words", no_तर्कः, रिक्त, 'w'},
+  {"debug", no_तर्कः, रिक्त, DEBUG_क्रमादेशः_OPTION},
+  {"files0-from", required_तर्कः, रिक्त, FILES0_FROM_OPTION},
+  {"max-line-length", no_तर्कः, रिक्त, 'L'},
+  {"total", required_तर्कः, रिक्त, योग_OPTION},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_संस्करणम्_OPTION_DECL},
+  {रिक्त, 0, रिक्त, 0}
 };
 
-enum total_type
+गणना योग_type
   {
-    total_auto,         /* 0: default or --total=auto */
-    total_always,       /* 1: --total=always */
-    total_only,         /* 2: --total=only */
-    total_never         /* 3: --total=never */
+    योग_auto,         /* 0: default or --total=auto */
+    योग_always,       /* 1: --total=always */
+    योग_only,         /* 2: --total=only */
+    योग_never         /* 3: --total=never */
   };
-static char const *const total_args[] =
+स्थिर वर्ण ध्रुव *ध्रुव योग_तर्काः[] =
 {
-  "auto", "always", "only", "never", NULL
+  "auto", "always", "only", "never", रिक्त
 };
-static enum total_type const total_types[] =
+स्थिर गणना योग_type ध्रुव योग_types[] =
 {
-  total_auto, total_always, total_only, total_never
+  योग_auto, योग_always, योग_only, योग_never
 };
-ARGMATCH_VERIFY (total_args, total_types);
-static enum total_type total_mode = total_auto;
+ARGMATCH_VERIFY (योग_तर्काः, योग_types);
+स्थिर गणना योग_type योग_बहुलकम् = योग_auto;
 
-#ifdef USE_AVX2_WC_LINECOUNT
-static bool
-avx2_supported (void)
+#यदि_परिभाषितम् USE_AVX2_WC_LINECOUNT
+स्थिर bool
+avx2_supported (शून्य)
 {
   bool avx2_enabled = cpu_supports ("avx2");
-  if (debug)
+  यदि (debug)
     error (0, 0, (avx2_enabled
                   ? _("using avx2 hardware support")
                   : _("avx2 support not detected")));
 
-  return avx2_enabled;
+  प्रत्यागम avx2_enabled;
 }
-#endif
+#यदि_अन्तः
 
-#ifdef USE_AVX512_WC_LINECOUNT
-static bool
-avx512_supported (void)
+#यदि_परिभाषितम् USE_AVX512_WC_LINECOUNT
+स्थिर bool
+avx512_supported (शून्य)
 {
   bool avx512_enabled = (cpu_supports ("avx512f")
                          && cpu_supports ("avx512bw"));
 
-  if (debug)
+  यदि (debug)
     error (0, 0, (avx512_enabled
                   ? _("using avx512 hardware support")
                   : _("avx512 support not detected")));
 
-  return avx512_enabled;
+  प्रत्यागम avx512_enabled;
 }
-#endif
+#यदि_अन्तः
 
-#ifdef USE_NEON_WC_LINECOUNT
-static bool
-neon_supported (void)
+#यदि_परिभाषितम् USE_NEON_WC_LINECOUNT
+स्थिर bool
+neon_supported (शून्य)
 {
   bool neon_enabled = (cpu_may_support ("asimd")
                        && 0 < (getauxval (AT_HWCAP) & HWCAP_ASIMD));
-  if (debug)
+  यदि (debug)
     error (0, 0, (neon_enabled
                   ? _("using neon hardware support")
                   : _("neon support not detected")));
 
-  return neon_enabled;
+  प्रत्यागम neon_enabled;
 }
-#endif
+#यदि_अन्तः
 
-void
-usage (int status)
+शून्य
+usage (पूर्णाङ्क स्थितिः)
 {
-  if (status != EXIT_SUCCESS)
+  यदि (स्थितिः != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  अन्यथा
     {
-      printf (_("\
+      प्रारूप_लिख (_("\
 Usage: %s [OPTION]... [FILE]...\n\
   or:  %s [OPTION]... --files0-from=F\n\
 "),
-              program_name, program_name);
+              क्रमादेशः_name, क्रमादेशः_name);
       fputs (_("\
-Print newline, word, and byte counts for each FILE, and a total line if\n\
-more than one FILE is specified.  A word is a nonempty sequence of non white\n\
-space delimited by white space characters or by start or end of input.\n\
+Print newline, word, and byte counts प्रति each FILE, and a योग_2 पङ्क्तिः यदि\n\
+अधिकम् than one FILE is specified.  A word is a nonempty sequence सम्बन्धि non white\n\
+space delimited by white space characters or by start or अन्तः सम्बन्धि निवेशः.\n\
 "), stdout);
 
       emit_stdin_note ();
 
       fputs (_("\
 \n\
-The options below may be used to select which counts are printed, always in\n\
-the following order: newline, word, character, byte, maximum line length.\n\
+The options अधः may be प्रयुक्तम् गन्तव्यम् select which counts are printed, always अन्तर्\n\
+the following क्रमः: newline, word, character, byte, अधिकतमम् पङ्क्तिः दीर्घता.\n\
 "), stdout);
       oputs (_("\
-  -c, --bytes\n\
+  -c, --अष्टकानि\n\
          print the byte counts\n\
 "));
       oputs (_("\
@@ -215,144 +215,144 @@ the following order: newline, word, character, byte, maximum line length.\n\
          print the character counts\n\
 "));
       oputs (_("\
-  -l, --lines\n\
+  -l, --पङ्क्तयः\n\
          print the newline counts\n\
 "));
       oputs (_("\
       --debug\n\
-         indicate what line count acceleration is used\n\
+         indicate what पङ्क्तिः गणनम् acceleration is प्रयुक्तम्\n\
 "));
       oputs (_("\
       --files0-from=F\n\
-         read input from the files specified by\n\
-         NUL-terminated names in file F;\n\
-         If F is -, read names from standard input\n\
+         पठ निवेशः from the files specified by\n\
+         NUL-terminated नामानि अन्तर् file F;\n\
+         If F is -, पठ नामानि from standard निवेशः\n\
 "));
       oputs (_("\
-  -L, --max-line-length\n\
-         print the maximum display width\n\
+  -L, --max-पङ्क्तिः-दीर्घता\n\
+         print the अधिकतमम् display विस्तारः\n\
 "));
       oputs (_("\
-  -w, --words\n\
+  -w, --शब्दाः\n\
          print the word counts\n\
 "));
       oputs (_("\
-      --total=WHEN\n\
-         when to print a line with total counts;\n\
-         WHEN can be: auto, always, only, never\n\
+      --योग_2=WHEN\n\
+         when गन्तव्यम् print a पङ्क्तिः with योग_2 counts;\n\
+         WHEN can be: स्वचालित, always, only, never\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (संस्करणम्_OPTION_DESCRIPTION);
+      emit_ancillary_info (क्रमादेशः_NAME);
     }
-  exit (status);
+  निर्गच्छ (स्थितिः);
 }
 
 /* Return non zero if POSIXLY_CORRECT is not set and WC is a non breaking
    space.  */
-ATTRIBUTE_PURE
-static int
+ATTRIBUTE_विशुद्धम्
+स्थिर पूर्णाङ्क
 maybe_c32isnbspace (char32_t wc)
 {
-  return ! posixly_correct && c32isnbspace (wc);
+  प्रत्यागम ! posixly_correct && c32isnbspace (wc);
 }
 
 /* FILE is the name of the file (or null for standard input)
    associated with the specified counters.  */
-static void
-write_counts (uintmax_t lines,
-              uintmax_t words,
+स्थिर शून्य
+write_counts (uintmax_t पङ्क्तयः,
+              uintmax_t शब्दाः,
               uintmax_t chars,
-              uintmax_t bytes,
+              uintmax_t अष्टकानि,
               intmax_t linelength,
-              char const *file)
+              वर्ण ध्रुव *file)
 {
-  static char const format_sp_int[] = " %*s";
-  char const *format_int = format_sp_int + 1;
-  char buf[MAX (INT_BUFSIZE_BOUND (intmax_t),
+  स्थिर वर्ण ध्रुव format_sp_int[] = " %*s";
+  वर्ण ध्रुव *format_int = format_sp_int + 1;
+  वर्ण buf[MAX (INT_BUFSIZE_BOUND (intmax_t),
                 INT_BUFSIZE_BOUND (uintmax_t))];
 
-  if (print_lines)
+  यदि (print_पङ्क्तयः)
     {
-      printf (format_int, number_width, umaxtostr (lines, buf));
+      प्रारूप_लिख (format_int, सङ्ख्या_विस्तारः, umaxtostr (पङ्क्तयः, buf));
       format_int = format_sp_int;
     }
-  if (print_words)
+  यदि (print_शब्दाः)
     {
-      printf (format_int, number_width, umaxtostr (words, buf));
+      प्रारूप_लिख (format_int, सङ्ख्या_विस्तारः, umaxtostr (शब्दाः, buf));
       format_int = format_sp_int;
     }
-  if (print_chars)
+  यदि (print_chars)
     {
-      printf (format_int, number_width, umaxtostr (chars, buf));
+      प्रारूप_लिख (format_int, सङ्ख्या_विस्तारः, umaxtostr (chars, buf));
       format_int = format_sp_int;
     }
-  if (print_bytes)
+  यदि (print_अष्टकानि)
     {
-      printf (format_int, number_width, umaxtostr (bytes, buf));
+      प्रारूप_लिख (format_int, सङ्ख्या_विस्तारः, umaxtostr (अष्टकानि, buf));
       format_int = format_sp_int;
     }
-  if (print_linelength)
-    printf (format_int, number_width, imaxtostr (linelength, buf));
-  if (file)
-    printf (" %s", strchr (file, '\n') ? quotef (file) : file);
-  putchar ('\n');
+  यदि (print_linelength)
+    प्रारूप_लिख (format_int, सङ्ख्या_विस्तारः, imaxtostr (linelength, buf));
+  यदि (file)
+    प्रारूप_लिख (" %s", strchr (file, '\n') ? quotef (file) : file);
+  अक्षरं_लिख ('\n');
 
-  if (ferror (stdout))
+  यदि (ferror (stdout))
     write_error ();
 }
 
 /* Read FD and return a summary.  */
-static struct wc_lines
-wc_lines (int fd)
+स्थिर संरचना wc_पङ्क्तयः
+wc_पङ्क्तयः (पूर्णाङ्क fd)
 {
-#ifdef USE_AVX512_WC_LINECOUNT
-  static signed char use_avx512;
-  if (!use_avx512)
+#यदि_परिभाषितम् USE_AVX512_WC_LINECOUNT
+  स्थिर चिह्नित वर्ण use_avx512;
+  यदि (!use_avx512)
     use_avx512 = avx512_supported () ? 1 : -1;
-  if (0 < use_avx512)
-    return wc_lines_avx512 (fd);
-#endif
-#ifdef USE_AVX2_WC_LINECOUNT
-  static signed char use_avx2;
-  if (!use_avx2)
+  यदि (0 < use_avx512)
+    प्रत्यागम wc_पङ्क्तयः_avx512 (fd);
+#यदि_अन्तः
+#यदि_परिभाषितम् USE_AVX2_WC_LINECOUNT
+  स्थिर चिह्नित वर्ण use_avx2;
+  यदि (!use_avx2)
     use_avx2 = avx2_supported () ? 1 : -1;
-  if (0 < use_avx2)
-    return wc_lines_avx2 (fd);
-#endif
-#ifdef USE_NEON_WC_LINECOUNT
-  static signed char use_neon;
-  if (!use_neon)
+  यदि (0 < use_avx2)
+    प्रत्यागम wc_पङ्क्तयः_avx2 (fd);
+#यदि_अन्तः
+#यदि_परिभाषितम् USE_NEON_WC_LINECOUNT
+  स्थिर चिह्नित वर्ण use_neon;
+  यदि (!use_neon)
     use_neon = neon_supported () ? 1 : -1;
-  if (0 < use_neon)
-    return wc_lines_neon (fd);
-#endif
+  यदि (0 < use_neon)
+    प्रत्यागम wc_पङ्क्तयः_neon (fd);
+#यदि_अन्तः
 
-  intmax_t lines = 0, bytes = 0;
-  bool long_lines = false;
+  intmax_t पङ्क्तयः = 0, अष्टकानि = 0;
+  bool long_पङ्क्तयः = false;
 
-  while (true)
+  यावत् (true)
     {
-      char buf[IO_BUFSIZE + 1];
-      ssize_t bytes_read = read (fd, buf, IO_BUFSIZE);
-      if (bytes_read <= 0)
-        return (struct wc_lines) { bytes_read == 0 ? 0 : errno, lines, bytes };
+      वर्ण buf[IO_BUFSIZE + 1];
+      ssize_t अष्टकानि_read = पठ (fd, buf, IO_BUFSIZE);
+      यदि (अष्टकानि_read <= 0)
+        प्रत्यागम (संरचना wc_पङ्क्तयः) { अष्टकानि_read == 0 ? 0 : errno, पङ्क्तयः, अष्टकानि };
 
-      bytes += bytes_read;
-      char *end = buf + bytes_read;
+      अष्टकानि += अष्टकानि_read;
+      वर्ण *अन्तः = buf + अष्टकानि_read;
       idx_t buflines = 0;
 
-      if (! long_lines)
+      यदि (! long_पङ्क्तयः)
         {
           /* Avoid function call overhead for shorter lines.  */
-          for (char *p = buf; p < end; p++)
+          प्रति (वर्ण *p = buf; p < अन्तः; p++)
             buflines += *p == '\n';
         }
-      else
+      अन्यथा
         {
           /* rawmemchr is more efficient with longer lines.  */
-          *end = '\n';
-          for (char *p = buf; (p = rawmemchr (p, '\n')) < end; p++)
+          *अन्तः = '\n';
+          प्रति (वर्ण *p = buf; (p = rawmemchr (p, '\n')) < अन्तः; p++)
             buflines++;
         }
 
@@ -362,41 +362,41 @@ wc_lines (int fd)
           FIXME: This line length was determined in 2015, on both
           x86_64 and ppc64, but it's worth re-evaluating in future with
           newer compilers, CPUs, or memchr() implementations etc.  */
-      long_lines = 15 * buflines <= bytes_read;
-      lines += buflines;
+      long_पङ्क्तयः = 15 * buflines <= अष्टकानि_read;
+      पङ्क्तयः += buflines;
     }
 }
 
 /* Count words.  FILE_X is the name of the file (or null for standard
    input) that is open on descriptor FD.  *FSTATUS is its status.
    Return true if successful.  */
-static bool
-wc (int fd, char const *file_x, struct fstatus *fstatus)
+स्थिर bool
+wc (पूर्णाङ्क fd, वर्ण ध्रुव *file_x, संरचना fstatus *fstatus)
 {
-  int err = 0;
-  char buf[IO_BUFSIZE + 1];
-  intmax_t lines, words, chars, bytes, linelength;
-  bool count_bytes, count_chars, count_complicated;
-  char const *file = file_x ? file_x : _("standard input");
+  पूर्णाङ्क err = 0;
+  वर्ण buf[IO_BUFSIZE + 1];
+  intmax_t पङ्क्तयः, शब्दाः, chars, अष्टकानि, linelength;
+  bool गणनम्_अष्टकानि_2, गणनम्_chars, गणनम्_complicated;
+  वर्ण ध्रुव *file = file_x ? file_x : _("standard input");
 
-  lines = words = chars = bytes = linelength = 0;
+  पङ्क्तयः = शब्दाः = chars = अष्टकानि = linelength = 0;
 
   /* If in the current locale, chars are equivalent to bytes, we prefer
      counting bytes, because that's easier.  */
-  if (MB_CUR_MAX > 1)
+  यदि (MB_CUR_MAX > 1)
     {
-      count_bytes = print_bytes;
-      count_chars = print_chars;
+      गणनम्_अष्टकानि_2 = print_अष्टकानि;
+      गणनम्_chars = print_chars;
     }
-  else
+  अन्यथा
     {
-      count_bytes = print_bytes || print_chars;
-      count_chars = false;
+      गणनम्_अष्टकानि_2 = print_अष्टकानि || print_chars;
+      गणनम्_chars = false;
     }
-  count_complicated = print_words || print_linelength;
+  गणनम्_complicated = print_शब्दाः || print_linelength;
 
   /* Advise the kernel of our access pattern only if we will read().  */
-  if (!count_bytes || count_chars || print_lines || count_complicated)
+  यदि (!गणनम्_अष्टकानि_2 || गणनम्_chars || print_पङ्क्तयः || गणनम्_complicated)
     fdadvise (fd, 0, 0, FADVISE_SEQUENTIAL);
 
   /* When counting only bytes, save some line- and word-counting
@@ -409,24 +409,24 @@ wc (int fd, char const *file_x, struct fstatus *fstatus)
      '(dd ibs=99k skip=1 count=0; ./wc -c) < /etc/group'
      should make wc report '0' bytes.  */
 
-  if (count_bytes && !count_chars && !print_lines && !count_complicated)
+  यदि (गणनम्_अष्टकानि_2 && !गणनम्_chars && !print_पङ्क्तयः && !गणनम्_complicated)
     {
       bool skip_read = false;
 
-      if (0 < fstatus->failed)
+      यदि (0 < fstatus->failed)
         fstatus->failed = fstat (fd, &fstatus->st);
 
       /* For sized files, seek to one st_blksize before EOF rather than to EOF.
          This works better for files in proc-like file systems where
          the size is only approximate.  */
-      if (! fstatus->failed && usable_st_size (&fstatus->st)
-          && 0 <= fstatus->st.st_size)
+      यदि (! fstatus->failed && usable_st_आकार (&fstatus->st)
+          && 0 <= fstatus->st.st_आकार)
         {
-          off_t end_pos = fstatus->st.st_size;
+          off_t अन्तः_pos = fstatus->st.st_आकार;
           off_t current_pos = lseek (fd, 0, SEEK_CUR);
-          if (current_pos < 0)
+          यदि (current_pos < 0)
             ;
-          else if (end_pos % page_size)
+          अन्यथा यदि (अन्तः_pos % page_आकार)
             {
               /* We need special handling of /proc and /sys files etc. only
                  when they're a multiple of PAGE_SIZE.  In the common case
@@ -436,93 +436,93 @@ wc (int fd, char const *file_x, struct fstatus *fstatus)
                  Be careful here.  The current position may actually be
                  beyond the end of the file.  As in the example above.  */
 
-              if (current_pos < end_pos)
+              यदि (current_pos < अन्तः_pos)
                 {
-                  bytes = end_pos - current_pos;
+                  अष्टकानि = अन्तः_pos - current_pos;
                   skip_read = true;
                 }
             }
-          else if (0 < end_pos)
+          अन्यथा यदि (0 < अन्तः_pos)
             {
-              off_t ep_1 = end_pos - 1;
+              off_t ep_1 = अन्तः_pos - 1;
               off_t hi_pos = ep_1 - ep_1 % STP_BLKSIZE (&fstatus->st);
-              if (current_pos < hi_pos)
-                bytes = hi_pos - current_pos;
+              यदि (current_pos < hi_pos)
+                अष्टकानि = hi_pos - current_pos;
             }
 
-          if (0 < bytes && lseek (fd, bytes, SEEK_CUR) < 0)
+          यदि (0 < अष्टकानि && lseek (fd, अष्टकानि, SEEK_CUR) < 0)
             {
-              bytes = 0;
+              अष्टकानि = 0;
               skip_read = false;
             }
         }
 
-      if (! skip_read)
+      यदि (! skip_read)
         {
           fdadvise (fd, 0, 0, FADVISE_SEQUENTIAL);
-          for (ssize_t bytes_read;
-               (bytes_read = read (fd, buf, IO_BUFSIZE));
-               bytes += bytes_read)
-            if (bytes_read < 0)
+          प्रति (ssize_t अष्टकानि_read;
+               (अष्टकानि_read = पठ (fd, buf, IO_BUFSIZE));
+               अष्टकानि += अष्टकानि_read)
+            यदि (अष्टकानि_read < 0)
               {
                 err = errno;
-                break;
+                भङ्ग;
               }
         }
     }
-  else if (!count_chars && !count_complicated)
+  अन्यथा यदि (!गणनम्_chars && !गणनम्_complicated)
     {
       /* Use a separate loop when counting only lines or lines and bytes --
          but not chars or words.  */
-      struct wc_lines w = wc_lines (fd);
+      संरचना wc_पङ्क्तयः w = wc_पङ्क्तयः (fd);
       err = w.err;
-      lines = w.lines;
-      bytes = w.bytes;
+      पङ्क्तयः = w.पङ्क्तयः;
+      अष्टकानि = w.अष्टकानि;
     }
-  else if (MB_CUR_MAX > 1)
+  अन्यथा यदि (MB_CUR_MAX > 1)
     {
-      bool in_word = false;
+      bool अन्तर्_word = false;
       intmax_t linepos = 0;
       mbstate_t state; mbszero (&state);
-      bool in_shift = false;
-      bool count_utf8 = !count_complicated && !print_lines
+      bool अन्तर्_सरणम् = false;
+      bool गणनम्_utf8 = !गणनम्_complicated && !print_पङ्क्तयः
                         && is_utf8_charset ();
-      idx_t prev = 0; /* Number of bytes carried over from previous round.  */
+      idx_t पूर्व = 0; /* Number of bytes carried over from previous round.  */
 
-      for (ssize_t bytes_read;
-           ((bytes_read = read (fd, buf + prev, IO_BUFSIZE - prev))
-            || prev);
+      प्रति (ssize_t अष्टकानि_read;
+           ((अष्टकानि_read = पठ (fd, buf + पूर्व, IO_BUFSIZE - पूर्व))
+            || पूर्व);
            )
         {
-          if (bytes_read < 0)
+          यदि (अष्टकानि_read < 0)
             {
               err = errno;
-              break;
+              भङ्ग;
             }
 
-          bytes += bytes_read;
-          char const *p = buf;
-          char const *plim = p + prev + bytes_read;
-          bool try_count_utf8 = count_utf8;
-          do
+          अष्टकानि += अष्टकानि_read;
+          वर्ण ध्रुव *p = buf;
+          वर्ण ध्रुव *plim = p + पूर्व + अष्टकानि_read;
+          bool try_गणनम्_utf8 = गणनम्_utf8;
+          कुरु
             {
-              if (try_count_utf8 && !in_shift)
+              यदि (try_गणनम्_utf8 && !अन्तर्_सरणम्)
                 {
                   /* Scan at most once per buffer, to avoid repeatedly
                      scanning ASCII after decoding errors.  */
-                  try_count_utf8 = false;
+                  try_गणनम्_utf8 = false;
                   idx_t n = plim - p;
-                  chars += u8_count (p, &n);
+                  chars += u8_गणनम् (p, &n);
                   p += n;
-                  if (p == plim)
-                    break;
+                  यदि (p == plim)
+                    भङ्ग;
                 }
 
               char32_t wide_char;
               idx_t charbytes;
               bool single_byte;
 
-              if (!in_shift && 0 <= *p && *p < 0x80)
+              यदि (!अन्तर्_सरणम् && 0 <= *p && *p < 0x80)
                 {
                   /* Handle most ASCII characters quickly, without calling
                      mbrtoc32.  */
@@ -530,25 +530,25 @@ wc (int fd, char const *file_x, struct fstatus *fstatus)
                   wide_char = *p;
                   single_byte = true;
                 }
-              else
+              अन्यथा
                 {
-                  idx_t prev_bytes = prev;
-                  idx_t scanbytes = plim - (p + prev);
-                  size_t n = mbrtoc32 (&wide_char, p + prev, scanbytes, &state);
-                  prev = 0;
+                  idx_t पूर्व_अष्टकानि = पूर्व;
+                  idx_t scanbytes = plim - (p + पूर्व);
+                  size_t n = mbrtoc32 (&wide_char, p + पूर्व, scanbytes, &state);
+                  पूर्व = 0;
 
-                  if (scanbytes < n)
+                  यदि (scanbytes < n)
                     {
-                      if (n == (size_t) -2 && plim - p < IO_BUFSIZE
-                          && bytes_read)
+                      यदि (n == (size_t) -2 && plim - p < IO_BUFSIZE
+                          && अष्टकानि_read)
                         {
                           /* An incomplete character that is not ridiculously
                              long and there may be more input.  Move the bytes
                              to buffer start and prepare to read more data.  */
-                          prev = plim - p;
-                          memmove (buf, p, prev);
-                          in_shift = true;
-                          break;
+                          पूर्व = plim - p;
+                          memmove (buf, p, पूर्व);
+                          अन्तर्_सरणम् = true;
+                          भङ्ग;
                         }
 
                       /* Remember that we read a byte, but don't complain
@@ -557,7 +557,7 @@ wc (int fd, char const *file_x, struct fstatus *fstatus)
                          character (that is, chars is not incremented).  */
                       p++;
                       mbszero (&state);
-                      in_shift = false;
+                      अन्तर्_सरणम् = false;
 
                       /* Treat encoding errors as non white space.
                          POSIX says a word is "a non-zero-length string of
@@ -567,182 +567,182 @@ wc (int fd, char const *file_x, struct fstatus *fstatus)
                          means when the input contains encoding errors.
                          Since encoding errors are not white space,
                          treat them that way here.  */
-                      words += !in_word;
-                      in_word = true;
-                      continue;
+                      शब्दाः += !अन्तर्_word;
+                      अन्तर्_word = true;
+                      अनुवर्त;
                     }
 
                   /* Include bytes already consumed into STATE in an earlier
                      read, but still present at P in the buffer.  */
-                  charbytes = prev_bytes + n + !n;
-                  single_byte = charbytes == !in_shift;
-                  in_shift = !mbsinit (&state);
+                  charbytes = पूर्व_अष्टकानि + n + !n;
+                  single_byte = charbytes == !अन्तर्_सरणम्;
+                  अन्तर्_सरणम् = !mbsinit (&state);
                 }
 
-              switch (wide_char)
+              विकल्प (wide_char)
                 {
-                case '\n':
-                  lines++;
+                पक्ष '\n':
+                  पङ्क्तयः++;
                   FALLTHROUGH;
-                case '\r':
-                case '\f':
-                  if (linepos > linelength)
+                पक्ष '\r':
+                पक्ष '\f':
+                  यदि (linepos > linelength)
                     linelength = linepos;
                   linepos = 0;
-                  in_word = false;
-                  break;
+                  अन्तर्_word = false;
+                  भङ्ग;
 
-                case '\t':
+                पक्ष '\t':
                   linepos += 8 - (linepos % 8);
-                  in_word = false;
-                  break;
+                  अन्तर्_word = false;
+                  भङ्ग;
 
-                case ' ':
+                पक्ष ' ':
                   linepos++;
                   FALLTHROUGH;
-                case '\v':
-                  in_word = false;
-                  break;
+                पक्ष '\v':
+                  अन्तर्_word = false;
+                  भङ्ग;
 
-                default:;
-                  bool in_word2;
-                  if (single_byte && wide_char <= UCHAR_MAX)
+                स्वभाव:;
+                  bool अन्तर्_word2;
+                  यदि (single_byte && wide_char <= UCHAR_MAX)
                     {
                       linepos += wc_isprint[wide_char];
-                      in_word2 = !wc_isspace[wide_char];
+                      अन्तर्_word2 = !wc_isspace[wide_char];
                     }
-                  else
+                  अन्यथा
                     {
                       /* c32width can be expensive on macOS for example,
                          so avoid if not needed.  */
-                      if (print_linelength)
+                      यदि (print_linelength)
                         {
-                          int width = c32width (wide_char);
-                          if (width > 0)
-                            linepos += width;
+                          पूर्णाङ्क विस्तारः = c32width (wide_char);
+                          यदि (विस्तारः > 0)
+                            linepos += विस्तारः;
                         }
-                      in_word2 = (! c32isspace (wide_char)
+                      अन्तर्_word2 = (! c32isspace (wide_char)
                                   && ! maybe_c32isnbspace (wide_char));
                     }
 
                   /* Count words by counting word starts, i.e., each
                      white space character (or the start of input)
                      followed by non white space.  */
-                  words += !in_word & in_word2;
-                  in_word = in_word2;
-                  break;
+                  शब्दाः += !अन्तर्_word & अन्तर्_word2;
+                  अन्तर्_word = अन्तर्_word2;
+                  भङ्ग;
                 }
 
               p += charbytes;
               chars++;
             }
-          while (p < plim);
+          यावत् (p < plim);
         }
-      if (linepos > linelength)
+      यदि (linepos > linelength)
         linelength = linepos;
     }
-  else
+  अन्यथा
     {
-      bool in_word = false;
+      bool अन्तर्_word = false;
       intmax_t linepos = 0;
 
-      for (ssize_t bytes_read; (bytes_read = read (fd, buf, IO_BUFSIZE)); )
+      प्रति (ssize_t अष्टकानि_read; (अष्टकानि_read = पठ (fd, buf, IO_BUFSIZE)); )
         {
-          if (bytes_read < 0)
+          यदि (अष्टकानि_read < 0)
             {
               err = errno;
-              break;
+              भङ्ग;
             }
 
-          bytes += bytes_read;
-          char const *p = buf;
-          do
+          अष्टकानि += अष्टकानि_read;
+          वर्ण ध्रुव *p = buf;
+          कुरु
             {
-              unsigned char c = *p++;
-              switch (c)
+              अचिह्नित वर्ण c = *p++;
+              विकल्प (c)
                 {
-                case '\n':
-                  lines++;
+                पक्ष '\n':
+                  पङ्क्तयः++;
                   FALLTHROUGH;
-                case '\r':
-                case '\f':
-                  if (linepos > linelength)
+                पक्ष '\r':
+                पक्ष '\f':
+                  यदि (linepos > linelength)
                     linelength = linepos;
                   linepos = 0;
-                  in_word = false;
-                  break;
+                  अन्तर्_word = false;
+                  भङ्ग;
 
-                case '\t':
+                पक्ष '\t':
                   linepos += 8 - (linepos % 8);
-                  in_word = false;
-                  break;
+                  अन्तर्_word = false;
+                  भङ्ग;
 
-                case ' ':
+                पक्ष ' ':
                   linepos++;
                   FALLTHROUGH;
-                case '\v':
-                  in_word = false;
-                  break;
+                पक्ष '\v':
+                  अन्तर्_word = false;
+                  भङ्ग;
 
-                default:
+                स्वभाव:
                   linepos += wc_isprint[c];
-                  bool in_word2 = !wc_isspace[c];
-                  words += !in_word & in_word2;
-                  in_word = in_word2;
-                  break;
+                  bool अन्तर्_word2 = !wc_isspace[c];
+                  शब्दाः += !अन्तर्_word & अन्तर्_word2;
+                  अन्तर्_word = अन्तर्_word2;
+                  भङ्ग;
                 }
             }
-          while (--bytes_read);
+          यावत् (--अष्टकानि_read);
         }
-      if (linepos > linelength)
+      यदि (linepos > linelength)
         linelength = linepos;
     }
 
-  if (count_chars < print_chars)
-    chars = bytes;
+  यदि (गणनम्_chars < print_chars)
+    chars = अष्टकानि;
 
-  if (total_mode != total_only)
-    write_counts (lines, words, chars, bytes, linelength, file_x);
+  यदि (योग_बहुलकम् != योग_only)
+    write_counts (पङ्क्तयः, शब्दाः, chars, अष्टकानि, linelength, file_x);
 
-  total_lines_overflow |= ckd_add (&total_lines, total_lines, lines);
-  total_words_overflow |= ckd_add (&total_words, total_words, words);
-  total_chars_overflow |= ckd_add (&total_chars, total_chars, chars);
-  total_bytes_overflow |= ckd_add (&total_bytes, total_bytes, bytes);
+  योग_पङ्क्तयः_अतिप्रवाहः |= ckd_सङ्कलय (&योग_पङ्क्तयः, योग_पङ्क्तयः, पङ्क्तयः);
+  योग_शब्दाः_अतिप्रवाहः |= ckd_सङ्कलय (&योग_शब्दाः, योग_शब्दाः, शब्दाः);
+  योग_chars_अतिप्रवाहः |= ckd_सङ्कलय (&योग_chars, योग_chars, chars);
+  योग_अष्टकानि_अतिप्रवाहः |= ckd_सङ्कलय (&योग_अष्टकानि, योग_अष्टकानि, अष्टकानि);
 
-  if (linelength > max_line_length)
-    max_line_length = linelength;
+  यदि (linelength > max_पङ्क्तिः_दीर्घता)
+    max_पङ्क्तिः_दीर्घता = linelength;
 
-  if (err)
+  यदि (err)
     error (0, err, "%s", quotef (file));
-  return !err;
+  प्रत्यागम !err;
 }
 
-static bool
-wc_file (char const *file, struct fstatus *fstatus)
+स्थिर bool
+wc_file (वर्ण ध्रुव *file, संरचना fstatus *fstatus)
 {
-  if (! file || streq (file, "-"))
+  यदि (! file || streq (file, "-"))
     {
       have_read_stdin = true;
-      xset_binary_mode (STDIN_FILENO, O_BINARY);
-      return wc (STDIN_FILENO, file, fstatus);
+      xset_द्विमान_बहुलकम् (STDIN_FILENO, O_द्विमान);
+      प्रत्यागम wc (STDIN_FILENO, file, fstatus);
     }
-  else
+  अन्यथा
     {
-      int fd = open (file, O_RDONLY | O_BINARY);
-      if (fd == -1)
+      पूर्णाङ्क fd = उद्घाटय (file, O_RDONLY | O_द्विमान);
+      यदि (fd == -1)
         {
           error (0, errno, "%s", quotef (file));
-          return false;
+          प्रत्यागम false;
         }
-      else
+      अन्यथा
         {
           bool ok = wc (fd, file, fstatus);
-          if (close (fd) != 0)
+          यदि (close (fd) != 0)
             {
               error (0, errno, "%s", quotef (file));
-              return false;
+              प्रत्यागम false;
             }
-          return ok;
+          प्रत्यागम ok;
         }
     }
 }
@@ -753,154 +753,154 @@ wc_file (char const *file, struct fstatus *fstatus)
    to stat the file.  Handle the case of (nfiles == 0) in the same way;
    that happens when we don't know how long the list of file names will be.  */
 
-static struct fstatus *
-get_input_fstatus (idx_t nfiles, char *const *file)
+स्थिर संरचना fstatus *
+get_निवेशः_fstatus (idx_t nfiles, वर्ण *ध्रुव *file)
 {
-  struct fstatus *fstatus = xnmalloc (nfiles ? nfiles : 1, sizeof *fstatus);
+  संरचना fstatus *fstatus = xnmalloc (nfiles ? nfiles : 1, परिमाण *fstatus);
 
-  if (nfiles == 0
+  यदि (nfiles == 0
       || (nfiles == 1
-          && ((print_lines + print_words + print_chars
-               + print_bytes + print_linelength)
+          && ((print_पङ्क्तयः + print_शब्दाः + print_chars
+               + print_अष्टकानि + print_linelength)
               == 1)))
     fstatus[0].failed = 1;
-  else
+  अन्यथा
     {
-      for (idx_t i = 0; i < nfiles; i++)
+      प्रति (idx_t i = 0; i < nfiles; i++)
         fstatus[i].failed = (! file[i] || streq (file[i], "-")
                              ? fstat (STDIN_FILENO, &fstatus[i].st)
                              : stat (file[i], &fstatus[i].st));
     }
 
-  return fstatus;
+  प्रत्यागम fstatus;
 }
 
 /* Return a print width suitable for the NFILES files whose status is
    recorded in FSTATUS.  Optimize the same special case that
    get_input_fstatus optimizes.  */
 
-ATTRIBUTE_PURE
-static int
-compute_number_width (idx_t nfiles, struct fstatus const *fstatus)
+ATTRIBUTE_विशुद्धम्
+स्थिर पूर्णाङ्क
+compute_सङ्ख्या_विस्तारः (idx_t nfiles, संरचना fstatus ध्रुव *fstatus)
 {
-  int width = 1;
+  पूर्णाङ्क विस्तारः = 1;
 
-  if (0 < nfiles && fstatus[0].failed <= 0)
+  यदि (0 < nfiles && fstatus[0].failed <= 0)
     {
-      int minimum_width = 1;
-      uintmax_t regular_total = 0;
+      पूर्णाङ्क minimum_विस्तारः = 1;
+      uintmax_t regular_योग = 0;
 
-      for (idx_t i = 0; i < nfiles; i++)
-        if (! fstatus[i].failed)
+      प्रति (idx_t i = 0; i < nfiles; i++)
+        यदि (! fstatus[i].failed)
           {
-            if (!S_ISREG (fstatus[i].st.st_mode))
-              minimum_width = 7;
-            else if (ckd_add (&regular_total, regular_total,
-                              fstatus[i].st.st_size))
+            यदि (!S_ISREG (fstatus[i].st.st_बहुलकम्))
+              minimum_विस्तारः = 7;
+            अन्यथा यदि (ckd_सङ्कलय (&regular_योग, regular_योग,
+                              fstatus[i].st.st_आकार))
               {
-                regular_total = UINTMAX_MAX;
-                break;
+                regular_योग = UINTMAX_MAX;
+                भङ्ग;
               }
           }
 
-      for (; 10 <= regular_total; regular_total /= 10)
-        width++;
-      if (width < minimum_width)
-        width = minimum_width;
+      प्रति (; 10 <= regular_योग; regular_योग /= 10)
+        विस्तारः++;
+      यदि (विस्तारः < minimum_विस्तारः)
+        विस्तारः = minimum_विस्तारः;
     }
 
-  return width;
+  प्रत्यागम विस्तारः;
 }
 
 
-int
-main (int argc, char **argv)
+पूर्णाङ्क
+मुख्यम् (पूर्णाङ्क argc, वर्ण **argv)
 {
-  int optc;
+  पूर्णाङ्क optc;
   idx_t nfiles;
-  char **files;
-  char *files_from = NULL;
-  struct fstatus *fstatus;
-  struct Tokens tok;
+  वर्ण **files;
+  वर्ण *files_from = रिक्त;
+  संरचना fstatus *fstatus;
+  संरचना Tokens tok;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  समुच्चयः_क्रमादेशः_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  page_size = getpagesize ();
+  page_आकार = getpagesize ();
   /* Line buffer stdout to ensure lines are written atomically and immediately
      so that processes running in parallel do not intersperse their output.  */
-  setvbuf (stdout, NULL, _IOLBF, 0);
+  setvbuf (stdout, रिक्त, _IOLBF, 0);
 
-  posixly_correct = (getenv ("POSIXLY_CORRECT") != NULL);
+  posixly_correct = (getenv ("POSIXLY_CORRECT") != रिक्त);
 
-  while ((optc = getopt_long (argc, argv, "clLmw", longopts, NULL)) != -1)
-    switch (optc)
+  यावत् ((optc = getopt_long (argc, argv, "clLmw", longopts, रिक्त)) != -1)
+    विकल्प (optc)
       {
-      case 'c':
-        print_bytes = true;
-        break;
+      पक्ष 'c':
+        print_अष्टकानि = true;
+        भङ्ग;
 
-      case 'm':
+      पक्ष 'm':
         print_chars = true;
-        break;
+        भङ्ग;
 
-      case 'l':
-        print_lines = true;
-        break;
+      पक्ष 'l':
+        print_पङ्क्तयः = true;
+        भङ्ग;
 
-      case 'w':
-        print_words = true;
-        break;
+      पक्ष 'w':
+        print_शब्दाः = true;
+        भङ्ग;
 
-      case 'L':
+      पक्ष 'L':
         print_linelength = true;
-        break;
+        भङ्ग;
 
-      case DEBUG_PROGRAM_OPTION:
+      पक्ष DEBUG_क्रमादेशः_OPTION:
         debug = true;
-        break;
+        भङ्ग;
 
-      case FILES0_FROM_OPTION:
+      पक्ष FILES0_FROM_OPTION:
         files_from = optarg;
-        break;
+        भङ्ग;
 
-      case TOTAL_OPTION:
-        total_mode = XARGMATCH ("--total", optarg, total_args, total_types);
-        break;
+      पक्ष योग_OPTION:
+        योग_बहुलकम् = XARGMATCH ("--total", optarg, योग_तर्काः, योग_types);
+        भङ्ग;
 
       case_GETOPT_HELP_CHAR;
 
-      case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+      case_GETOPT_संस्करणम्_CHAR (क्रमादेशः_NAME, AUTHORS);
 
-      default:
+      स्वभाव:
         usage (EXIT_FAILURE);
       }
 
-  if (! (print_lines || print_words || print_chars || print_bytes
+  यदि (! (print_पङ्क्तयः || print_शब्दाः || print_chars || print_अष्टकानि
          || print_linelength))
-    print_lines = print_words = print_bytes = true;
+    print_पङ्क्तयः = print_शब्दाः = print_अष्टकानि = true;
 
-  if (print_linelength)
-    for (int i = 0; i <= UCHAR_MAX; i++)
+  यदि (print_linelength)
+    प्रति (पूर्णाङ्क i = 0; i <= UCHAR_MAX; i++)
       wc_isprint[i] = !!isprint (i);
-  if (print_words)
-    for (int i = 0; i <= UCHAR_MAX; i++)
-      wc_isspace[i] = isspace (i) || maybe_c32isnbspace (btoc32 (i));
+  यदि (print_शब्दाः)
+    प्रति (पूर्णाङ्क i = 0; i <= UCHAR_MAX; i++)
+      wc_isspace[i] = रिक्तम्_वा (i) || maybe_c32isnbspace (btoc32 (i));
 
   bool read_tokens = false;
-  struct argv_iterator *ai;
-  if (files_from)
+  संरचना argv_iterator *ai;
+  यदि (files_from)
     {
-      FILE *stream;
+      FILE *प्रवाहः;
 
       /* When using --files0-from=F, you may not specify any files
          on the command-line.  */
-      if (optind < argc)
+      यदि (optind < argc)
         {
           error (0, 0, _("extra operand %s"), quoteaf (argv[optind]));
           fprintf (stderr, "%s\n",
@@ -908,63 +908,63 @@ main (int argc, char **argv)
           usage (EXIT_FAILURE);
         }
 
-      if (streq (files_from, "-"))
-        stream = stdin;
-      else
+      यदि (streq (files_from, "-"))
+        प्रवाहः = stdin;
+      अन्यथा
         {
-          stream = fopen (files_from, "r");
-          if (stream == NULL)
+          प्रवाहः = fopen (files_from, "r");
+          यदि (प्रवाहः == रिक्त)
             error (EXIT_FAILURE, errno, _("cannot open %s for reading"),
                    quoteaf (files_from));
         }
 
       /* Read the file list into RAM if we can detect its size and that
          size is reasonable.  Otherwise, we'll read a name at a time.  */
-      struct stat st;
-      if (fstat (fileno (stream), &st) == 0
-          && S_ISREG (st.st_mode)
-          && st.st_size <= MIN (10 * 1024 * 1024, physmem_available () / 2))
+      संरचना stat st;
+      यदि (fstat (fileno (प्रवाहः), &st) == 0
+          && S_ISREG (st.st_बहुलकम्)
+          && st.st_आकार <= MIN (10 * 1024 * 1024, physmem_उपलब्धम् () / 2))
         {
           read_tokens = true;
           readtokens0_init (&tok);
-          if (! readtokens0 (stream, &tok) || fclose (stream) != 0)
+          यदि (! readtokens0 (प्रवाहः, &tok) || fclose (प्रवाहः) != 0)
             error (EXIT_FAILURE, 0, _("cannot read file names from %s"),
                    quoteaf (files_from));
           files = tok.tok;
           nfiles = tok.n_tok;
           ai = argv_iter_init_argv (files);
         }
-      else
+      अन्यथा
         {
-          files = NULL;
+          files = रिक्त;
           nfiles = 0;
-          ai = argv_iter_init_stream (stream);
+          ai = argv_iter_init_प्रवाहः (प्रवाहः);
         }
     }
-  else
+  अन्यथा
     {
-      static char *stdin_only[] = { NULL };
+      स्थिर वर्ण *stdin_only[] = { रिक्त };
       files = (optind < argc ? argv + optind : stdin_only);
       nfiles = (optind < argc ? argc - optind : 1);
       ai = argv_iter_init_argv (files);
     }
 
-  if (!ai)
+  यदि (!ai)
     xalloc_die ();
 
-  fstatus = get_input_fstatus (nfiles, files);
-  if (total_mode == total_only)
-    number_width = 1;  /* No extra padding, since no alignment requirement.  */
-  else
-    number_width = compute_number_width (nfiles, fstatus);
+  fstatus = get_निवेशः_fstatus (nfiles, files);
+  यदि (योग_बहुलकम् == योग_only)
+    सङ्ख्या_विस्तारः = 1;  /* No extra padding, since no alignment requirement.  */
+  अन्यथा
+    सङ्ख्या_विस्तारः = compute_सङ्ख्या_विस्तारः (nfiles, fstatus);
 
   bool ok = true;
-  enum argv_iter_err ai_err;
-  char *file_name;
-  for (int i = 0; (file_name = argv_iter (ai, &ai_err)); i++)
+  गणना argv_iter_err ai_err;
+  वर्ण *file_name;
+  प्रति (पूर्णाङ्क i = 0; (file_name = argv_iter (ai, &ai_err)); i++)
     {
       bool skip_file = false;
-      if (files_from && streq (files_from, "-") && streq (file_name, "-"))
+      यदि (files_from && streq (files_from, "-") && streq (file_name, "-"))
         {
           /* Give a better diagnostic in an unusual case:
              printf - | wc --files0-from=- */
@@ -974,98 +974,98 @@ main (int argc, char **argv)
           skip_file = true;
         }
 
-      if (!file_name[0])
+      यदि (!file_name[0])
         {
           /* Diagnose a zero-length file name.  When it's one
              among many, knowing the record number may help.
              FIXME: currently print the record number only with
              --files0-from=FILE.  Maybe do it for argv, too?  */
-          if (files_from == NULL)
+          यदि (files_from == रिक्त)
             error (0, 0, "%s", _("invalid zero-length file name"));
-          else
+          अन्यथा
             {
               /* Using the standard 'filename:line-number:' prefix here is
                  not totally appropriate, since NUL is the separator, not NL,
                  but it might be better than nothing.  */
               error (0, 0, "%s:%zu: %s", quotef (files_from),
-                     argv_iter_n_args (ai), _("invalid zero-length file name"));
+                     argv_iter_n_तर्काः (ai), _("invalid zero-length file name"));
             }
           skip_file = true;
         }
 
-      if (skip_file)
+      यदि (skip_file)
         ok = false;
-      else
+      अन्यथा
         ok &= wc_file (file_name, &fstatus[nfiles ? i : 0]);
 
-      if (! nfiles)
+      यदि (! nfiles)
         fstatus[0].failed = 1;
     }
-  switch (ai_err)
+  विकल्प (ai_err)
     {
-    case AI_ERR_EOF:
-      break;
+    पक्ष AI_ERR_EOF:
+      भङ्ग;
 
-    case AI_ERR_READ:
+    पक्ष AI_ERR_READ:
       error (0, errno, _("%s: read error"), quotef (files_from));
       ok = false;
-      break;
+      भङ्ग;
 
-    case AI_ERR_MEM:
+    पक्ष AI_ERR_MEM:
       xalloc_die ();
 
-    case AI_ERR_OK: default:
+    पक्ष AI_ERR_OK: स्वभाव:
       affirm (false);
     }
 
   /* No arguments on the command line is fine.  That means read from stdin.
      However, no arguments on the --files0-from input stream is an error
      means don't read anything.  */
-  if (ok && !files_from && argv_iter_n_args (ai) == 0)
-    ok &= wc_file (NULL, &fstatus[0]);
+  यदि (ok && !files_from && argv_iter_n_तर्काः (ai) == 0)
+    ok &= wc_file (रिक्त, &fstatus[0]);
 
-  if (read_tokens)
+  यदि (read_tokens)
     readtokens0_free (&tok);
 
-  if (total_mode != total_never
-      && (total_mode != total_auto || 1 < argv_iter_n_args (ai)))
+  यदि (योग_बहुलकम् != योग_never
+      && (योग_बहुलकम् != योग_auto || 1 < argv_iter_n_तर्काः (ai)))
     {
-      if (total_lines_overflow)
+      यदि (योग_पङ्क्तयः_अतिप्रवाहः)
         {
-          total_lines = UINTMAX_MAX;
+          योग_पङ्क्तयः = UINTMAX_MAX;
           error (0, EOVERFLOW, _("total lines"));
           ok = false;
         }
-      if (total_words_overflow)
+      यदि (योग_शब्दाः_अतिप्रवाहः)
         {
-          total_words = UINTMAX_MAX;
+          योग_शब्दाः = UINTMAX_MAX;
           error (0, EOVERFLOW, _("total words"));
           ok = false;
         }
-      if (total_chars_overflow)
+      यदि (योग_chars_अतिप्रवाहः)
         {
-          total_chars = UINTMAX_MAX;
+          योग_chars = UINTMAX_MAX;
           error (0, EOVERFLOW, _("total characters"));
           ok = false;
         }
-      if (total_bytes_overflow)
+      यदि (योग_अष्टकानि_अतिप्रवाहः)
         {
-          total_bytes = UINTMAX_MAX;
+          योग_अष्टकानि = UINTMAX_MAX;
           error (0, EOVERFLOW, _("total bytes"));
           ok = false;
         }
 
-      write_counts (total_lines, total_words, total_chars, total_bytes,
-                    max_line_length,
-                    total_mode != total_only ? _("total") : NULL);
+      write_counts (योग_पङ्क्तयः, योग_शब्दाः, योग_chars, योग_अष्टकानि,
+                    max_पङ्क्तिः_दीर्घता,
+                    योग_बहुलकम् != योग_only ? _("total") : रिक्त);
     }
 
   argv_iter_free (ai);
 
-  free (fstatus);
+  मुक्त (fstatus);
 
-  if (have_read_stdin && close (STDIN_FILENO) != 0)
+  यदि (have_read_stdin && close (STDIN_FILENO) != 0)
     error (EXIT_FAILURE, errno, "-");
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  प्रत्यागम ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

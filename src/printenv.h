@@ -14,35 +14,35 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#ifndef PRINTENV_H
+#यदि_अपरिभाषितम् PRINTENV_H
 # define PRINTENV_H 1
 
-static inline void
-print_envvar (char const *entry, char terminator, bool quoted)
+स्थिर अन्तःस्थ शून्य
+print_envvar (वर्ण ध्रुव *प्रविष्टिः, वर्ण terminator, bool quoted)
 {
-  if (! quoted)
-    fputs (entry, stdout);
-  else
+  यदि (! quoted)
+    fputs (प्रविष्टिः, stdout);
+  अन्यथा
     {
-      idx_t const entry_len = strlen (entry);
-      char const *equal = memchr (entry, '=', entry_len);
+      idx_t ध्रुव प्रविष्टिः_len = वाक्यदैर्घ्यम् (प्रविष्टिः);
+      वर्ण ध्रुव *equal = memchr (प्रविष्टिः, '=', प्रविष्टिः_len);
 
       /* If the parent process manipulates ENVIRON directly, it is possible
          that an entry does not contain an equal sign.  */
-      idx_t const var_len = equal ? equal - entry : entry_len;
-      fputs (quoteN_mem (entry, var_len), stdout);
+      idx_t ध्रुव var_len = equal ? equal - प्रविष्टिः : प्रविष्टिः_len;
+      fputs (quoteN_mem (प्रविष्टिः, var_len), stdout);
 
-      if (equal)
+      यदि (equal)
         {
-          putchar ('=');
-          char const *val = equal + 1;
-          idx_t const val_len = entry_len - (val - entry);
+          अक्षरं_लिख ('=');
+          वर्ण ध्रुव *val = equal + 1;
+          idx_t ध्रुव val_len = प्रविष्टिः_len - (val - प्रविष्टिः);
           /* Prefer "VAR=" over "VAR=''".  */
-          if (0 < val_len)
+          यदि (0 < val_len)
             fputs (quoteN_mem (val, val_len), stdout);
         }
     }
-  putchar (terminator);
+  अक्षरं_लिख (terminator);
 }
 
-#endif
+#यदि_अन्तः

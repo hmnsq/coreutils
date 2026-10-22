@@ -17,54 +17,54 @@
 
 /* Written by Jim Meyering.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
+#अन्तर्भाव <config.h>
+#अन्तर्भाव <stdio.h>
+#अन्तर्भाव <sys/types.h>
 
-#include "system.h"
-#include "long-options.h"
-#include "quote.h"
+#अन्तर्भाव "system.h"
+#अन्तर्भाव "long-options.h"
+#अन्तर्भाव "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "hostid"
+#परिभाषय क्रमादेशः_NAME "hostid"
 
-#define AUTHORS proper_name ("Jim Meyering")
+#परिभाषय AUTHORS proper_name ("Jim Meyering")
 
-void
-usage (int status)
+शून्य
+usage (पूर्णाङ्क स्थितिः)
 {
-  if (status != EXIT_SUCCESS)
+  यदि (स्थितिः != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  अन्यथा
     {
-      printf (_("\
+      प्रारूप_लिख (_("\
 Usage: %s [OPTION]\n\
-Print the numeric identifier (in hexadecimal) for the current host.\n\
+Print the numeric identifier (अन्तर् hexadecimal) प्रति the current host.\n\
 \n\
-"), program_name);
+"), क्रमादेशः_name);
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (संस्करणम्_OPTION_DESCRIPTION);
+      emit_ancillary_info (क्रमादेशः_NAME);
     }
-  exit (status);
+  निर्गच्छ (स्थितिः);
 }
 
-int
-main (int argc, char **argv)
+पूर्णाङ्क
+मुख्यम् (पूर्णाङ्क argc, वर्ण **argv)
 {
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  समुच्चयः_क्रमादेशः_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
-                                   Version, true, usage, AUTHORS,
-                                   (char const *) NULL);
+  parse_gnu_standard_options_only (argc, argv, क्रमादेशः_NAME, PACKAGE_NAME,
+                                   संस्करणम्, true, usage, AUTHORS,
+                                   (वर्ण ध्रुव *) रिक्त);
 
-  if (optind < argc)
+  यदि (optind < argc)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind]));
       usage (EXIT_FAILURE);
@@ -73,9 +73,9 @@ main (int argc, char **argv)
   /* POSIX says gethostid returns a "32-bit identifier" but is silent
      whether it's sign-extended.  Turn off any sign-extension.  This
      is a no-op unless unsigned int is wider than 32 bits.  */
-  unsigned int id = gethostid () & 0xffffffff;
+  अचिह्नित पूर्णाङ्क id = gethostid () & 0xffffffff;
 
-  printf ("%08x\n", id);
+  प्रारूप_लिख ("%08x\n", id);
 
-  return EXIT_SUCCESS;
+  प्रत्यागम EXIT_SUCCESS;
 }

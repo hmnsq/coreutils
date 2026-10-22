@@ -12,53 +12,53 @@
    More information about the BLAKE2 hash function can be found at
    https://blake2.net.
 */
-#ifndef BLAKE2_IMPL_H
-#define BLAKE2_IMPL_H
+#यदि_अपरिभाषितम् BLAKE2_IMPL_H
+#परिभाषय BLAKE2_IMPL_H
 
-#include <endian.h>
-#if BYTE_ORDER == LITTLE_ENDIAN
+#अन्तर्भाव <endian.h>
+#यदि BYTE_ORDER == LITTLE_ENDIAN
 # define NATIVE_LITTLE_ENDIAN 1
-#endif
+#यदि_अन्तः
 
-#include <stdint.h>
-#include <string.h>
+#अन्तर्भाव <stdint.h>
+#अन्तर्भाव <string.h>
 
-#if !defined(__cplusplus) && (!defined(__STDC_VERSION__) || __STDC_VERSION__ < 199901L)
-  #if   defined(_MSC_VER)
-    #define BLAKE2_INLINE __inline
-  #elif defined(__GNUC__)
-    #define BLAKE2_INLINE __inline__
-  #else
-    #define BLAKE2_INLINE
-  #endif
-#else
-  #define BLAKE2_INLINE inline
-#endif
+#यदि !defined(__cplusplus) && (!defined(__STDC_VERSION__) || __STDC_VERSION__ < 199901L)
+  #यदि   defined(_MSC_VER)
+    #परिभाषय BLAKE2_INLINE __inline
+  #नोचेद्यदि defined(__GNUC__)
+    #परिभाषय BLAKE2_INLINE __inline__
+  #अन्यथा
+    #परिभाषय BLAKE2_INLINE
+  #यदि_अन्तः
+#अन्यथा
+  #परिभाषय BLAKE2_INLINE अन्तःस्थ
+#यदि_अन्तः
 
-static BLAKE2_INLINE uint32_t load32( const void *src )
+स्थिर BLAKE2_INLINE uint32_t load32( ध्रुव शून्य *src )
 {
-#if defined(NATIVE_LITTLE_ENDIAN)
+#यदि defined(NATIVE_LITTLE_ENDIAN)
   uint32_t w;
-  memcpy(&w, src, sizeof w);
-  return w;
-#else
-  const uint8_t *p = ( const uint8_t * )src;
-  return (( uint32_t )( p[0] ) <<  0) |
+  स्मृतिं_प्रतिलिख(&w, src, परिमाण w);
+  प्रत्यागम w;
+#अन्यथा
+  ध्रुव uint8_t *p = ( ध्रुव uint8_t * )src;
+  प्रत्यागम (( uint32_t )( p[0] ) <<  0) |
          (( uint32_t )( p[1] ) <<  8) |
          (( uint32_t )( p[2] ) << 16) |
          (( uint32_t )( p[3] ) << 24) ;
-#endif
+#यदि_अन्तः
 }
 
-static BLAKE2_INLINE uint64_t load64( const void *src )
+स्थिर BLAKE2_INLINE uint64_t load64( ध्रुव शून्य *src )
 {
-#if defined(NATIVE_LITTLE_ENDIAN)
+#यदि defined(NATIVE_LITTLE_ENDIAN)
   uint64_t w;
-  memcpy(&w, src, sizeof w);
-  return w;
-#else
-  const uint8_t *p = ( const uint8_t * )src;
-  return (( uint64_t )( p[0] ) <<  0) |
+  स्मृतिं_प्रतिलिख(&w, src, परिमाण w);
+  प्रत्यागम w;
+#अन्यथा
+  ध्रुव uint8_t *p = ( ध्रुव uint8_t * )src;
+  प्रत्यागम (( uint64_t )( p[0] ) <<  0) |
          (( uint64_t )( p[1] ) <<  8) |
          (( uint64_t )( p[2] ) << 16) |
          (( uint64_t )( p[3] ) << 24) |
@@ -66,51 +66,51 @@ static BLAKE2_INLINE uint64_t load64( const void *src )
          (( uint64_t )( p[5] ) << 40) |
          (( uint64_t )( p[6] ) << 48) |
          (( uint64_t )( p[7] ) << 56) ;
-#endif
+#यदि_अन्तः
 }
 
-static BLAKE2_INLINE uint16_t load16( const void *src )
+स्थिर BLAKE2_INLINE uint16_t load16( ध्रुव शून्य *src )
 {
-#if defined(NATIVE_LITTLE_ENDIAN)
+#यदि defined(NATIVE_LITTLE_ENDIAN)
   uint16_t w;
-  memcpy(&w, src, sizeof w);
-  return w;
-#else
-  const uint8_t *p = ( const uint8_t * )src;
-  return ( uint16_t )((( uint32_t )( p[0] ) <<  0) |
+  स्मृतिं_प्रतिलिख(&w, src, परिमाण w);
+  प्रत्यागम w;
+#अन्यथा
+  ध्रुव uint8_t *p = ( ध्रुव uint8_t * )src;
+  प्रत्यागम ( uint16_t )((( uint32_t )( p[0] ) <<  0) |
                       (( uint32_t )( p[1] ) <<  8));
-#endif
+#यदि_अन्तः
 }
 
-static BLAKE2_INLINE void store16( void *dst, uint16_t w )
+स्थिर BLAKE2_INLINE शून्य store16( शून्य *dst, uint16_t w )
 {
-#if defined(NATIVE_LITTLE_ENDIAN)
-  memcpy(dst, &w, sizeof w);
-#else
+#यदि defined(NATIVE_LITTLE_ENDIAN)
+  स्मृतिं_प्रतिलिख(dst, &w, परिमाण w);
+#अन्यथा
   uint8_t *p = ( uint8_t * )dst;
   *p++ = ( uint8_t )w; w >>= 8;
   *p++ = ( uint8_t )w;
-#endif
+#यदि_अन्तः
 }
 
-static BLAKE2_INLINE void store32( void *dst, uint32_t w )
+स्थिर BLAKE2_INLINE शून्य store32( शून्य *dst, uint32_t w )
 {
-#if defined(NATIVE_LITTLE_ENDIAN)
-  memcpy(dst, &w, sizeof w);
-#else
+#यदि defined(NATIVE_LITTLE_ENDIAN)
+  स्मृतिं_प्रतिलिख(dst, &w, परिमाण w);
+#अन्यथा
   uint8_t *p = ( uint8_t * )dst;
   p[0] = (uint8_t)(w >>  0);
   p[1] = (uint8_t)(w >>  8);
   p[2] = (uint8_t)(w >> 16);
   p[3] = (uint8_t)(w >> 24);
-#endif
+#यदि_अन्तः
 }
 
-static BLAKE2_INLINE void store64( void *dst, uint64_t w )
+स्थिर BLAKE2_INLINE शून्य store64( शून्य *dst, uint64_t w )
 {
-#if defined(NATIVE_LITTLE_ENDIAN)
-  memcpy(dst, &w, sizeof w);
-#else
+#यदि defined(NATIVE_LITTLE_ENDIAN)
+  स्मृतिं_प्रतिलिख(dst, &w, परिमाण w);
+#अन्यथा
   uint8_t *p = ( uint8_t * )dst;
   p[0] = (uint8_t)(w >>  0);
   p[1] = (uint8_t)(w >>  8);
@@ -120,13 +120,13 @@ static BLAKE2_INLINE void store64( void *dst, uint64_t w )
   p[5] = (uint8_t)(w >> 40);
   p[6] = (uint8_t)(w >> 48);
   p[7] = (uint8_t)(w >> 56);
-#endif
+#यदि_अन्तः
 }
 
-static BLAKE2_INLINE uint64_t load48( const void *src )
+स्थिर BLAKE2_INLINE uint64_t load48( ध्रुव शून्य *src )
 {
-  const uint8_t *p = ( const uint8_t * )src;
-  return (( uint64_t )( p[0] ) <<  0) |
+  ध्रुव uint8_t *p = ( ध्रुव uint8_t * )src;
+  प्रत्यागम (( uint64_t )( p[0] ) <<  0) |
          (( uint64_t )( p[1] ) <<  8) |
          (( uint64_t )( p[2] ) << 16) |
          (( uint64_t )( p[3] ) << 24) |
@@ -134,7 +134,7 @@ static BLAKE2_INLINE uint64_t load48( const void *src )
          (( uint64_t )( p[5] ) << 40) ;
 }
 
-static BLAKE2_INLINE void store48( void *dst, uint64_t w )
+स्थिर BLAKE2_INLINE शून्य store48( शून्य *dst, uint64_t w )
 {
   uint8_t *p = ( uint8_t * )dst;
   p[0] = (uint8_t)(w >>  0);
@@ -145,21 +145,21 @@ static BLAKE2_INLINE void store48( void *dst, uint64_t w )
   p[5] = (uint8_t)(w >> 40);
 }
 
-static BLAKE2_INLINE uint32_t rotr32( const uint32_t w, const unsigned c )
+स्थिर BLAKE2_INLINE uint32_t rotr32( ध्रुव uint32_t w, ध्रुव अचिह्नित c )
 {
-  return ( w >> c ) | ( w << ( 32 - c ) );
+  प्रत्यागम ( w >> c ) | ( w << ( 32 - c ) );
 }
 
-static BLAKE2_INLINE uint64_t rotr64( const uint64_t w, const unsigned c )
+स्थिर BLAKE2_INLINE uint64_t rotr64( ध्रुव uint64_t w, ध्रुव अचिह्नित c )
 {
-  return ( w >> c ) | ( w << ( 64 - c ) );
+  प्रत्यागम ( w >> c ) | ( w << ( 64 - c ) );
 }
 
 /* prevents compiler optimizing out memset() */
-static BLAKE2_INLINE void secure_zero_memory(void *v, size_t n)
+स्थिर BLAKE2_INLINE शून्य secure_zero_स्मृतिः(शून्य *v, size_t n)
 {
-  static void *(*const volatile memset_v)(void *, int, size_t) = &memset;
+  स्थिर शून्य *(*ध्रुव चञ्चल memset_v)(शून्य *, पूर्णाङ्क, size_t) = &स्मृतिं_पूरय;
   memset_v(v, 0, n);
 }
 
-#endif
+#यदि_अन्तः

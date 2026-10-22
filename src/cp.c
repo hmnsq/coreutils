@@ -16,30 +16,30 @@
 
    Written by Torbjörn Granlund, David MacKenzie, and Jim Meyering. */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <getopt.h>
-#include <selinux/label.h>
+#अन्तर्भाव <config.h>
+#अन्तर्भाव <stdio.h>
+#अन्तर्भाव <sys/types.h>
+#अन्तर्भाव <getopt.h>
+#अन्तर्भाव <selinux/label.h>
 
-#include "system.h"
-#include "argmatch.h"
-#include "assure.h"
-#include "backupfile.h"
-#include "copy.h"
-#include "cp-hash.h"
-#include "filenamecat.h"
-#include "ignore-value.h"
-#include "quote.h"
-#include "stat-time.h"
-#include "targetdir.h"
-#include "utimens.h"
-#include "acl.h"
+#अन्तर्भाव "system.h"
+#अन्तर्भाव "argmatch.h"
+#अन्तर्भाव "assure.h"
+#अन्तर्भाव "backupfile.h"
+#अन्तर्भाव "copy.h"
+#अन्तर्भाव "cp-hash.h"
+#अन्तर्भाव "filenamecat.h"
+#अन्तर्भाव "ignore-value.h"
+#अन्तर्भाव "quote.h"
+#अन्तर्भाव "stat-time.h"
+#अन्तर्भाव "targetdir.h"
+#अन्तर्भाव "utimens.h"
+#अन्तर्भाव "acl.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "cp"
+#परिभाषय क्रमादेशः_NAME "cp"
 
-#define AUTHORS \
+#परिभाषय AUTHORS \
   proper_name_lite ("Torbjorn Granlund", "Torbj\303\266rn Granlund"), \
   proper_name ("David MacKenzie"), \
   proper_name ("Jim Meyering")
@@ -47,24 +47,24 @@
 /* Used by do_copy, make_dir_parents_private, and re_protect
    to keep a list of leading directories whose protections
    need to be fixed after copying. */
-struct dir_attr
+संरचना dir_attr
 {
-  struct stat st;
-  bool restore_mode;
-  size_t slash_offset;
-  struct dir_attr *next;
+  संरचना stat st;
+  bool restore_बहुलकम्;
+  size_t slash_विस्थापनम्;
+  संरचना dir_attr *अग्र;
 };
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+गणना
 {
-  ATTRIBUTES_ONLY_OPTION = CHAR_MAX + 1,
+  गुणाः_ONLY_OPTION = CHAR_MAX + 1,
   COPY_CONTENTS_OPTION,
   DEBUG_OPTION,
-  NO_PRESERVE_ATTRIBUTES_OPTION,
+  NO_PRESERVE_गुणाः_OPTION,
   PARENTS_OPTION,
-  PRESERVE_ATTRIBUTES_OPTION,
+  PRESERVE_गुणाः_OPTION,
   REFLINK_OPTION,
   SPARSE_OPTION,
   STRIP_TRAILING_SLASHES_OPTION,
@@ -73,98 +73,98 @@ enum
 };
 
 /* True if the kernel is SELinux enabled.  */
-static bool selinux_enabled;
+स्थिर bool selinux_enabled;
 
 /* If true, the command "cp x/e_file e_dir" uses "e_dir/x/e_file"
    as its destination instead of the usual "e_dir/e_file." */
-static bool parents_option = false;
+स्थिर bool parents_option = false;
 
 /* Remove any trailing slashes from each SOURCE argument.  */
-static bool remove_trailing_slashes;
+स्थिर bool remove_trailing_slashes;
 
-static char const *const sparse_type_string[] =
+स्थिर वर्ण ध्रुव *ध्रुव sparse_type_string[] =
 {
-  "never", "auto", "always", NULL
+  "never", "auto", "always", रिक्त
 };
-static enum Sparse_type const sparse_type[] =
+स्थिर गणना Sparse_type ध्रुव sparse_type[] =
 {
   SPARSE_NEVER, SPARSE_AUTO, SPARSE_ALWAYS
 };
 ARGMATCH_VERIFY (sparse_type_string, sparse_type);
 
-static char const *const reflink_type_string[] =
+स्थिर वर्ण ध्रुव *ध्रुव reflink_type_string[] =
 {
-  "auto", "always", "never", NULL
+  "auto", "always", "never", रिक्त
 };
-static enum Reflink_type const reflink_type[] =
+स्थिर गणना Reflink_type ध्रुव reflink_type[] =
 {
   REFLINK_AUTO, REFLINK_ALWAYS, REFLINK_NEVER
 };
 ARGMATCH_VERIFY (reflink_type_string, reflink_type);
 
-static char const *const update_type_string[] =
+स्थिर वर्ण ध्रुव *ध्रुव update_type_string[] =
 {
-  "all", "none", "none-fail", "older", NULL
+  "all", "none", "none-fail", "older", रिक्त
 };
-static enum Update_type const update_type[] =
+स्थिर गणना Update_type ध्रुव update_type[] =
 {
   UPDATE_ALL, UPDATE_NONE, UPDATE_NONE_FAIL, UPDATE_OLDER,
 };
 ARGMATCH_VERIFY (update_type_string, update_type);
 
-static struct option const long_opts[] =
+स्थिर संरचना option ध्रुव long_opts[] =
 {
-  {"archive", no_argument, NULL, 'a'},
-  {"attributes-only", no_argument, NULL, ATTRIBUTES_ONLY_OPTION},
-  {"backup", optional_argument, NULL, 'b'},
-  {"copy-contents", no_argument, NULL, COPY_CONTENTS_OPTION},
-  {"debug", no_argument, NULL, DEBUG_OPTION},
-  {"dereference", no_argument, NULL, 'L'},
-  {"force", no_argument, NULL, 'f'},
-  {"interactive", no_argument, NULL, 'i'},
-  {"link", no_argument, NULL, 'l'},
-  {"no-clobber", no_argument, NULL, 'n'},   /* Deprecated.  */
-  {"no-dereference", no_argument, NULL, 'P'},
-  {"no-preserve", required_argument, NULL, NO_PRESERVE_ATTRIBUTES_OPTION},
-  {"no-target-directory", no_argument, NULL, 'T'},
-  {"one-file-system", no_argument, NULL, 'x'},
-  {"parents", no_argument, NULL, PARENTS_OPTION},
-  {"path", no_argument, NULL, PARENTS_OPTION},   /* Deprecated.  */
-  {"preserve", optional_argument, NULL, PRESERVE_ATTRIBUTES_OPTION},
-  {"recursive", no_argument, NULL, 'R'},
-  {"remove-destination", no_argument, NULL, UNLINK_DEST_BEFORE_OPENING},
-  {"sparse", required_argument, NULL, SPARSE_OPTION},
-  {"reflink", optional_argument, NULL, REFLINK_OPTION},
-  {"strip-trailing-slashes", no_argument, NULL,
+  {"archive", no_तर्कः, रिक्त, 'a'},
+  {"attributes-only", no_तर्कः, रिक्त, गुणाः_ONLY_OPTION},
+  {"backup", optional_तर्कः, रिक्त, 'b'},
+  {"copy-contents", no_तर्कः, रिक्त, COPY_CONTENTS_OPTION},
+  {"debug", no_तर्कः, रिक्त, DEBUG_OPTION},
+  {"dereference", no_तर्कः, रिक्त, 'L'},
+  {"force", no_तर्कः, रिक्त, 'f'},
+  {"interactive", no_तर्कः, रिक्त, 'i'},
+  {"link", no_तर्कः, रिक्त, 'l'},
+  {"no-clobber", no_तर्कः, रिक्त, 'n'},   /* Deprecated.  */
+  {"no-dereference", no_तर्कः, रिक्त, 'P'},
+  {"no-preserve", required_तर्कः, रिक्त, NO_PRESERVE_गुणाः_OPTION},
+  {"no-target-directory", no_तर्कः, रिक्त, 'T'},
+  {"one-file-system", no_तर्कः, रिक्त, 'x'},
+  {"parents", no_तर्कः, रिक्त, PARENTS_OPTION},
+  {"path", no_तर्कः, रिक्त, PARENTS_OPTION},   /* Deprecated.  */
+  {"preserve", optional_तर्कः, रिक्त, PRESERVE_गुणाः_OPTION},
+  {"recursive", no_तर्कः, रिक्त, 'R'},
+  {"remove-destination", no_तर्कः, रिक्त, UNLINK_DEST_BEFORE_OPENING},
+  {"sparse", required_तर्कः, रिक्त, SPARSE_OPTION},
+  {"reflink", optional_तर्कः, रिक्त, REFLINK_OPTION},
+  {"strip-trailing-slashes", no_तर्कः, रिक्त,
    STRIP_TRAILING_SLASHES_OPTION},
-  {"suffix", required_argument, NULL, 'S'},
-  {"symbolic-link", no_argument, NULL, 's'},
-  {"target-directory", required_argument, NULL, 't'},
-  {"update", optional_argument, NULL, 'u'},
-  {"verbose", no_argument, NULL, 'v'},
-  {"keep-directory-symlink", no_argument, NULL,
+  {"suffix", required_तर्कः, रिक्त, 'S'},
+  {"symbolic-link", no_तर्कः, रिक्त, 's'},
+  {"target-directory", required_तर्कः, रिक्त, 't'},
+  {"update", optional_तर्कः, रिक्त, 'u'},
+  {"verbose", no_तर्कः, रिक्त, 'v'},
+  {"keep-directory-symlink", no_तर्कः, रिक्त,
     KEEP_DIRECTORY_SYMLINK_OPTION},
   {GETOPT_SELINUX_CONTEXT_OPTION_DECL},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_संस्करणम्_OPTION_DECL},
+  {रिक्त, 0, रिक्त, 0}
 };
 
-void
-usage (int status)
+शून्य
+usage (पूर्णाङ्क स्थितिः)
 {
-  if (status != EXIT_SUCCESS)
+  यदि (स्थितिः != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  अन्यथा
     {
-      printf (_("\
+      प्रारूप_लिख (_("\
 Usage: %s [OPTION]... [-T] SOURCE DEST\n\
   or:  %s [OPTION]... SOURCE... DIRECTORY\n\
   or:  %s [OPTION]... -t DIRECTORY SOURCE...\n\
 "),
-              program_name, program_name, program_name);
+              क्रमादेशः_name, क्रमादेशः_name, क्रमादेशः_name);
       fputs (_("\
-Copy SOURCE to DEST, or multiple SOURCE(s) to DIRECTORY.\n\
+Copy SOURCE गन्तव्यम् DEST, or गुणजः SOURCE(s) गन्तव्यम् DIRECTORY.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
@@ -174,20 +174,20 @@ Copy SOURCE to DEST, or multiple SOURCE(s) to DIRECTORY.\n\
          same as -dR --preserve=all\n\
 "));
       oputs (_("\
-      --attributes-only\n\
-         don't copy the file data, just the attributes\n\
+      --गुणाः-only\n\
+         don't copy the file दत्त, just the गुणाः\n\
 "));
       oputs (_("\
       --backup[=CONTROL]\n\
-         make a backup of each existing destination file\n\
+         make a backup सम्बन्धि each existing destination file\n\
 "));
       oputs (_("\
   -b\n\
-         like --backup but does not accept an argument\n\
+         like --backup but does not accept an तर्कः\n\
 "));
       oputs (_("\
       --copy-contents\n\
-         copy contents of special files when recursive\n\
+         copy contents सम्बन्धि special files when recursive\n\
 "));
       oputs (_("\
   -d\n\
@@ -195,12 +195,12 @@ Copy SOURCE to DEST, or multiple SOURCE(s) to DIRECTORY.\n\
 "));
       oputs (_("\
       --debug\n\
-         explain how a file is copied.  Implies -v\n\
+         explain how a file is copied.  उपपादयति_2 -v\n\
 "));
       oputs (_("\
   -f, --force\n\
-         if an existing destination file cannot be opened, remove it and try\n\
-         again (this option is ignored when the -n option is also used)\n\
+         यदि an existing destination file cannot be opened, remove it and try\n\
+         again (this option is ignored when the -n option is also प्रयुक्तम्)\n\
 "));
       oputs (_("\
   -i, --interactive\n\
@@ -208,23 +208,23 @@ Copy SOURCE to DEST, or multiple SOURCE(s) to DIRECTORY.\n\
 "));
       oputs (_("\
   -H\n\
-         follow command-line symbolic links in SOURCE\n\
+         follow command-पङ्क्तिः symbolic links अन्तर् SOURCE\n\
 "));
       oputs (_("\
   -L, --dereference\n\
-         always follow symbolic links in SOURCE\n\
+         always follow symbolic links अन्तर् SOURCE\n\
 "));
       oputs (_("\
   -P, --no-dereference\n\
-         never follow symbolic links in SOURCE\n\
+         never follow symbolic links अन्तर् SOURCE\n\
 "));
       oputs (_("\
       --keep-directory-symlink\n\
-         follow existing symlinks to directories\n\
+         follow existing symlinks गन्तव्यम् directories\n\
 "));
       oputs (_("\
   -l, --link\n\
-         hard link files instead of copying\n\
+         hard link files instead सम्बन्धि copying\n\
 "));
       oputs (_("\
   -n, --no-clobber\n\
@@ -232,19 +232,19 @@ Copy SOURCE to DEST, or multiple SOURCE(s) to DIRECTORY.\n\
 "));
       oputs (_("\
   -p\n\
-         same as --preserve=mode,ownership,timestamps\n\
+         same as --preserve=बहुलकम्_2,ownership,timestamps\n\
 "));
       oputs (_("\
       --preserve[=ATTR_LIST]\n\
-         preserve the specified attributes\n\
+         preserve the specified गुणाः\n\
 "));
       oputs (_("\
       --no-preserve=ATTR_LIST\n\
-         don't preserve the specified attributes\n\
+         don't preserve the specified गुणाः\n\
 "));
       oputs (_("\
       --parents\n\
-         use full source file name under DIRECTORY\n\
+         use पूर्णम् source file name under DIRECTORY\n\
 "));
       oputs (_("\
   -R, -r, --recursive\n\
@@ -252,24 +252,24 @@ Copy SOURCE to DEST, or multiple SOURCE(s) to DIRECTORY.\n\
 "));
       oputs (_("\
       --reflink[=WHEN]\n\
-         control clone/CoW copies. See below\n\
+         control clone/CoW copies. See अधः\n\
 "));
       oputs (_("\
       --remove-destination\n\
-         remove each existing destination file before attempting to open it\n\
+         remove each existing destination file before attempting गन्तव्यम् उद्घाटय it\n\
          (contrast with --force)\n\
 "));
       oputs (_("\
       --sparse=WHEN\n\
-         control creation of sparse files. See below\n\
+         control creation सम्बन्धि sparse files. See अधः\n\
 "));
       oputs (_("\
       --strip-trailing-slashes\n\
-         remove any trailing slashes from each SOURCE argument\n\
+         remove any trailing slashes from each SOURCE तर्कः\n\
 "));
       oputs (_("\
   -s, --symbolic-link\n\
-         make symbolic links instead of copying\n\
+         make symbolic links instead सम्बन्धि copying\n\
 "));
       oputs (_("\
   -S, --suffix=SUFFIX\n\
@@ -281,20 +281,20 @@ Copy SOURCE to DEST, or multiple SOURCE(s) to DIRECTORY.\n\
 "));
       oputs (_("\
   -T, --no-target-directory\n\
-         treat DEST as a normal file\n\
+         treat DEST as a प्रसामान्यम् file\n\
 "));
       oputs (_("\
       --update[=UPDATE]\n\
          control which existing files are updated;\n\
-         UPDATE={all,none,none-fail,older(default)}\n\
+         UPDATE={all,none,none-fail,older(स्वभाव)}\n\
 "));
       oputs (_("\
   -u\n\
-         equivalent to --update[=older].  See below\n\
+         equivalent गन्तव्यम् --update[=older].  See अधः\n\
 "));
       oputs (_("\
   -v, --verbose\n\
-         explain what is being done\n\
+         explain what is being समाप्तम्\n\
 "));
       oputs (_("\
   -x, --one-file-system\n\
@@ -302,49 +302,49 @@ Copy SOURCE to DEST, or multiple SOURCE(s) to DIRECTORY.\n\
 "));
       oputs (_("\
   -Z\n\
-         set SELinux security context of destination file to default type\n\
+         समुच्चयः_2 SELinux security context सम्बन्धि destination file गन्तव्यम् स्वभाव type\n\
 "));
       oputs (_("\
       --context[=CTX]\n\
-         like -Z, or if CTX is specified then set the\n\
-         SELinux or SMACK security context to CTX\n\
+         like -Z, or यदि CTX is specified then समुच्चयः_2 the\n\
+         SELinux or SMACK security context गन्तव्यम् CTX\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (संस्करणम्_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-ATTR_LIST is a comma-separated list of attributes. Attributes are 'mode' for\n\
-permissions (including any ACL and xattr permissions), 'ownership' for user\n\
-and group, 'timestamps' for file timestamps, 'links' for hard links, 'context'\
-\nfor security context, 'xattr' for extended attributes, and 'all' for all\n\
-attributes.\n\
+ATTR_LIST is a comma-separated list सम्बन्धि गुणाः. गुणाः_2 are 'mode' प्रति\n\
+permissions (including any ACL and xattr permissions), 'ownership' प्रति user\n\
+and गणः, 'timestamps' प्रति file timestamps, 'links' प्रति hard links, 'context'\
+\nfor security context, 'xattr' प्रति extended गुणाः, and 'all' प्रति all\n\
+गुणाः.\n\
 "), stdout);
       fputs (_("\
 \n\
-By default, sparse SOURCE files are detected by a crude heuristic and the\n\
+By स्वभाव, sparse SOURCE files are detected by a crude heuristic and the\n\
 corresponding DEST file is made sparse as well.  That is the behavior\n\
-selected by --sparse=auto.  Specify --sparse=always to create a sparse DEST\n\
-file whenever the SOURCE file contains a long enough sequence of zero bytes.\n\
-Use --sparse=never to inhibit creation of sparse files.\n\
+selected by --sparse=स्वचालित.  Specify --sparse=always गन्तव्यम् create a sparse DEST\n\
+file whenever the SOURCE file अन्तर्भवति a दीर्घ enough sequence सम्बन्धि zero अष्टकानि.\n\
+Use --sparse=never गन्तव्यम् inhibit creation सम्बन्धि sparse files.\n\
 "), stdout);
       emit_update_parameters_note ();
       fputs (_("\
 \n\
-By default or with --reflink=auto, cp will try a lightweight copy, where the\n\
-data blocks are copied only when modified, falling back to a standard copy\n\
-if this is not possible.  With --reflink[=always] cp will fail if CoW is not\n\
-supported, while --reflink=never ensures a standard copy is performed.\n\
+By स्वभाव or with --reflink=स्वचालित, cp will try a lightweight copy, where the\n\
+दत्त खण्डानि are copied only when modified, falling पृष्ठभागः गन्तव्यम् a standard copy\n\
+यदि this is not possible.  With --reflink[=always] cp will fail यदि CoW is not\n\
+supported, यावत् --reflink=never ensures a standard copy is performed.\n\
 "), stdout);
       emit_backup_suffix_note ();
       fputs (_("\
 \n\
-As a special case, cp makes a backup of SOURCE when the force and backup\n\
-options are given and SOURCE and DEST are the same name for an existing,\n\
+As a special पक्ष, cp makes a backup सम्बन्धि SOURCE when the force and backup\n\
+options are given and SOURCE and DEST are the same name प्रति an existing,\n\
 regular file.\n\
 "), stdout);
-      emit_ancillary_info (PROGRAM_NAME);
+      emit_ancillary_info (क्रमादेशः_NAME);
     }
-  exit (status);
+  निर्गच्छ (स्थितिः);
 }
 
 /* Ensure that parents of CONST_DST_NAME have correct protections, for
@@ -367,78 +367,78 @@ regular file.\n\
    directories specified by ATTR_LIST have the proper permissions
    when done.  */
 
-static bool
-re_protect (char const *const_dst_name, char const *dst_src_name,
-            int dst_dirfd, char const *dst_relname,
-            struct dir_attr *attr_list, const struct cp_options *x)
+स्थिर bool
+re_protect (वर्ण ध्रुव *const_dst_name, वर्ण ध्रुव *dst_src_name,
+            पूर्णाङ्क dst_dirfd, वर्ण ध्रुव *dst_relname,
+            संरचना dir_attr *attr_list, ध्रुव संरचना cp_options *x)
 {
-  char *dst_name;		/* A copy of CONST_DST_NAME we can change. */
+  वर्ण *dst_name;		/* A copy of CONST_DST_NAME we can change. */
 
-  ASSIGN_STRDUPA (dst_name, const_dst_name);
+  नियोजय_STRDUPA (dst_name, const_dst_name);
 
   /* The suffix of DST_NAME that is a copy of the source file name,
      possibly truncated to name a parent directory.  */
-  char const *src_name = dst_name + (dst_src_name - const_dst_name);
+  वर्ण ध्रुव *src_name = dst_name + (dst_src_name - const_dst_name);
 
   /* Likewise, but with any leading '/'s skipped.  */
-  char const *relname = dst_name + (dst_relname - const_dst_name);
+  वर्ण ध्रुव *relname = dst_name + (dst_relname - const_dst_name);
 
-  for (struct dir_attr *p = attr_list; p; p = p->next)
+  प्रति (संरचना dir_attr *p = attr_list; p; p = p->अग्र)
     {
-      dst_name[p->slash_offset] = '\0';
+      dst_name[p->slash_विस्थापनम्] = '\0';
 
       /* Adjust the times (and if possible, ownership) for the copy.
          chown turns off set[ug]id bits for non-root,
          so do the chmod last.  */
 
-      if (x->preserve_timestamps)
+      यदि (x->preserve_timestamps)
         {
-          struct timespec timespec[2] = { get_stat_atime (&p->st),
+          संरचना timespec timespec[2] = { get_stat_atime (&p->st),
                                           get_stat_mtime (&p->st) };
 
-          if (utimensat (dst_dirfd, relname, timespec, 0))
+          यदि (utimensat (dst_dirfd, relname, timespec, 0))
             {
               error (0, errno, _("failed to preserve times for %s"),
                      quoteaf (dst_name));
-              return false;
+              प्रत्यागम false;
             }
         }
 
-      if (x->preserve_ownership)
+      यदि (x->preserve_ownership)
         {
-          if (lchownat (dst_dirfd, relname, p->st.st_uid, p->st.st_gid)
+          यदि (lchownat (dst_dirfd, relname, p->st.st_uid, p->st.st_gid)
               != 0)
             {
-              if (! chown_failure_ok (x))
+              यदि (! chown_failure_ok (x))
                 {
                   error (0, errno, _("failed to preserve ownership for %s"),
                          quoteaf (dst_name));
-                  return false;
+                  प्रत्यागम false;
                 }
               /* Failing to preserve ownership is OK. Still, try to preserve
                  the group, but ignore the possible error. */
-              ignore_value (lchownat (dst_dirfd, relname, -1, p->st.st_gid));
+              ignore_मानम् (lchownat (dst_dirfd, relname, -1, p->st.st_gid));
             }
         }
 
-      if (x->preserve_mode)
+      यदि (x->preserve_बहुलकम्)
         {
-          if (xcopy_acl (src_name, -1, dst_name, -1, p->st.st_mode) != 0)
-            return false;
+          यदि (xcopy_acl (src_name, -1, dst_name, -1, p->st.st_बहुलकम्) != 0)
+            प्रत्यागम false;
         }
-      else if (p->restore_mode)
+      अन्यथा यदि (p->restore_बहुलकम्)
         {
-          if (lchmodat (dst_dirfd, relname, p->st.st_mode) != 0)
+          यदि (lchmodat (dst_dirfd, relname, p->st.st_बहुलकम्) != 0)
             {
               error (0, errno, _("failed to preserve permissions for %s"),
                      quoteaf (dst_name));
-              return false;
+              प्रत्यागम false;
             }
         }
 
-      dst_name[p->slash_offset] = '/';
+      dst_name[p->slash_विस्थापनम्] = '/';
     }
-  return true;
+  प्रत्यागम true;
 }
 
 /* Ensure that the parent directory of CONST_DIR exists, for
@@ -461,90 +461,90 @@ re_protect (char const *const_dst_name, char const *dst_src_name,
 
 /* FIXME: Synch this function with the one in ../lib/mkdir-p.c.  */
 
-static bool
-make_dir_parents_private (char const *const_dir, size_t src_offset,
-                          int dst_dirfd,
-                          char const *verbose_fmt_string,
-                          struct dir_attr **attr_list, bool *new_dst,
-                          const struct cp_options *x)
+स्थिर bool
+make_dir_parents_वैयक्तिकम् (वर्ण ध्रुव *const_dir, size_t src_विस्थापनम्,
+                          पूर्णाङ्क dst_dirfd,
+                          वर्ण ध्रुव *verbose_fmt_string,
+                          संरचना dir_attr **attr_list, bool *new_dst,
+                          ध्रुव संरचना cp_options *x)
 {
   idx_t dirlen = dir_len (const_dir);
 
-  *attr_list = NULL;
+  *attr_list = रिक्त;
 
   /* Succeed immediately if the parent of CONST_DIR must already exist,
      as the target directory has already been checked.  */
-  if (dirlen <= src_offset)
-    return true;
+  यदि (dirlen <= src_विस्थापनम्)
+    प्रत्यागम true;
 
   /* A copy of CONST_DIR we can change.  */
-  char *dir;
-  ASSIGN_STRDUPA (dir, const_dir);
+  वर्ण *dir;
+  नियोजय_STRDUPA (dir, const_dir);
 
   /* Source name in DIR.  */
-  char *src = dir + src_offset;
+  वर्ण *src = dir + src_विस्थापनम्;
 
   /* Leading directory of DIR.  */
-  char *dst_dir = alloca (dirlen + 1);
-  memcpy (dst_dir, dir, dirlen);
+  वर्ण *dst_dir = alloca (dirlen + 1);
+  स्मृतिं_प्रतिलिख (dst_dir, dir, dirlen);
   dst_dir[dirlen] = '\0';
-  char const *dst_reldir = dst_dir + src_offset;
-  while (*dst_reldir == '/')
+  वर्ण ध्रुव *dst_reldir = dst_dir + src_विस्थापनम्;
+  यावत् (*dst_reldir == '/')
     dst_reldir++;
 
   /* XXX: If all dirs are present at the destination,
      no permissions or security contexts will be updated.  */
-  struct stat stats;
-  if (fstatat (dst_dirfd, dst_reldir, &stats, 0) != 0)
+  संरचना stat stats;
+  यदि (fstatat (dst_dirfd, dst_reldir, &stats, 0) != 0)
     {
       /* A parent of CONST_DIR does not exist.
          Make all missing intermediate directories. */
-      char *slash = src;
+      वर्ण *slash = src;
 
-      while (*slash == '/')
+      यावत् (*slash == '/')
         slash++;
       dst_reldir = slash;
 
-      while ((slash = strchr (slash, '/')))
+      यावत् ((slash = strchr (slash, '/')))
         {
-          struct dir_attr *new;
+          संरचना dir_attr *new;
 
           *slash = '\0';
           bool missing_dir = fstatat (dst_dirfd, dst_reldir, &stats, 0) != 0;
 
-          if (missing_dir || x->preserve_ownership || x->preserve_mode
+          यदि (missing_dir || x->preserve_ownership || x->preserve_बहुलकम्
               || x->preserve_timestamps)
             {
               /* Add this directory to the list of directories whose
                  modes might need fixing later. */
-              struct stat src_st;
-              int src_errno = (stat (src, &src_st) != 0
+              संरचना stat src_st;
+              पूर्णाङ्क src_errno = (stat (src, &src_st) != 0
                                ? errno
-                               : S_ISDIR (src_st.st_mode)
+                               : S_ISDIR (src_st.st_बहुलकम्)
                                ? 0
                                : ENOTDIR);
-              if (src_errno)
+              यदि (src_errno)
                 {
                   error (0, src_errno, _("failed to get attributes of %s"),
                          quoteaf (src));
-                  return false;
+                  प्रत्यागम false;
                 }
 
-              new = xmalloc (sizeof *new);
+              new = xmalloc (परिमाण *new);
               new->st = src_st;
-              new->slash_offset = slash - dir;
-              new->restore_mode = false;
-              new->next = *attr_list;
+              new->slash_विस्थापनम् = slash - dir;
+              new->restore_बहुलकम् = false;
+              new->अग्र = *attr_list;
               *attr_list = new;
             }
 
           /* If required set the default context for created dirs.  */
-          if (! set_process_security_ctx (src, dir,
-                                          missing_dir ? new->st.st_mode : 0,
+          यदि (! समुच्चयः_process_security_ctx (src, dir,
+                                          missing_dir ? new->st.st_बहुलकम् : 0,
                                           missing_dir, x))
-            return false;
+            प्रत्यागम false;
 
-          if (missing_dir)
+          यदि (missing_dir)
             {
               /* This component does not exist.  We must set
                  *new_dst and new->st.st_mode inside this loop because,
@@ -552,15 +552,15 @@ make_dir_parents_private (char const *const_dir, size_t src_offset,
                  make_dir_parents_private creates only e_dir/../a if
                  ./b already exists. */
               *new_dst = true;
-              mode_t src_mode = new->st.st_mode;
+              mode_t src_बहुलकम् = new->st.st_बहुलकम्;
 
               /* If the ownership or special mode bits might change,
                  omit some permissions at first, so unauthorized users
                  cannot nip in before the file is ready.  */
-              mode_t omitted_permissions = (src_mode
+              mode_t omitted_permissions = (src_बहुलकम्
                                             & (x->preserve_ownership
                                                ? S_IRWXG | S_IRWXO
-                                               : x->preserve_mode
+                                               : x->preserve_बहुलकम्
                                                ? S_IWGRP | S_IWOTH
                                                : 0));
 
@@ -568,156 +568,156 @@ make_dir_parents_private (char const *const_dir, size_t src_offset,
                  (src_mode & ~S_IRWXUGO) != 0.  However, common practice is
                  to ask mkdir to copy all the CHMOD_MODE_BITS, letting mkdir
                  decide what to do with S_ISUID | S_ISGID | S_ISVTX.  */
-              mode_t mkdir_mode = (x->explicit_no_preserve_mode
-                                   ? S_IRWXUGO : src_mode);
-              mkdir_mode &= CHMOD_MODE_BITS & ~omitted_permissions;
-              if (mkdirat (dst_dirfd, dst_reldir, mkdir_mode) != 0)
+              mode_t mkdir_बहुलकम् = (x->explicit_no_preserve_बहुलकम्
+                                   ? S_IRWXUGO : src_बहुलकम्);
+              mkdir_बहुलकम् &= CHMOD_बहुलकम्_द्वयङ्काः & ~omitted_permissions;
+              यदि (mkdirat (dst_dirfd, dst_reldir, mkdir_बहुलकम्) != 0)
                 {
                   error (0, errno, _("cannot make directory %s"),
                          quoteaf (dir));
-                  return false;
+                  प्रत्यागम false;
                 }
-              else
+              अन्यथा
                 {
-                  if (verbose_fmt_string != NULL)
-                    printf (verbose_fmt_string, src, dir);
+                  यदि (verbose_fmt_string != रिक्त)
+                    प्रारूप_लिख (verbose_fmt_string, src, dir);
                 }
 
               /* We need search and write permissions to the new directory
                  for writing the directory's contents. Check if these
                  permissions are there.  */
 
-              if (fstatat (dst_dirfd, dst_reldir, &stats, AT_SYMLINK_NOFOLLOW))
+              यदि (fstatat (dst_dirfd, dst_reldir, &stats, AT_SYMLINK_NOFOLLOW))
                 {
                   error (0, errno, _("failed to get attributes of %s"),
                          quoteaf (dir));
-                  return false;
+                  प्रत्यागम false;
                 }
 
 
-              if (! x->preserve_mode)
+              यदि (! x->preserve_बहुलकम्)
                 {
-                  if (omitted_permissions & ~stats.st_mode)
+                  यदि (omitted_permissions & ~stats.st_बहुलकम्)
                     omitted_permissions &= ~ cached_umask ();
-                  if (omitted_permissions & ~stats.st_mode
-                      || (stats.st_mode & S_IRWXU) != S_IRWXU)
+                  यदि (omitted_permissions & ~stats.st_बहुलकम्
+                      || (stats.st_बहुलकम् & S_IRWXU) != S_IRWXU)
                     {
-                      new->st.st_mode = stats.st_mode | omitted_permissions;
-                      new->restore_mode = true;
+                      new->st.st_बहुलकम् = stats.st_बहुलकम् | omitted_permissions;
+                      new->restore_बहुलकम् = true;
                     }
                 }
 
-              mode_t accessible = stats.st_mode | S_IRWXU;
-              if (stats.st_mode != accessible)
+              mode_t accessible = stats.st_बहुलकम् | S_IRWXU;
+              यदि (stats.st_बहुलकम् != accessible)
                 {
                   /* Make the new directory searchable and writable.
                      The original permissions will be restored later.  */
 
-                  if (lchmodat (dst_dirfd, dst_reldir, accessible) != 0)
+                  यदि (lchmodat (dst_dirfd, dst_reldir, accessible) != 0)
                     {
                       error (0, errno, _("setting permissions for %s"),
                              quoteaf (dir));
-                      return false;
+                      प्रत्यागम false;
                     }
                 }
             }
-          else if (!S_ISDIR (stats.st_mode))
+          अन्यथा यदि (!S_ISDIR (stats.st_बहुलकम्))
             {
               error (0, 0, _("%s exists but is not a directory"),
                      quoteaf (dir));
-              return false;
+              प्रत्यागम false;
             }
-          else
+          अन्यथा
             *new_dst = false;
 
           /* For existing dirs, set the security context as per that already
              set for the process global context.  */
-          if (! *new_dst
-              && (x->set_security_context || x->preserve_security_context))
+          यदि (! *new_dst
+              && (x->समुच्चयः_security_context || x->preserve_security_context))
             {
-              if (! set_file_security_ctx (dir, false, x)
+              यदि (! समुच्चयः_file_security_ctx (dir, false, x)
                   && x->require_preserve_context)
-                return false;
+                प्रत्यागम false;
             }
 
           *slash++ = '/';
 
           /* Avoid unnecessary calls to 'stat' when given
              file names containing multiple adjacent slashes.  */
-          while (*slash == '/')
+          यावत् (*slash == '/')
             slash++;
         }
     }
 
   /* We get here if the parent of DIR already exists.  */
 
-  else if (!S_ISDIR (stats.st_mode))
+  अन्यथा यदि (!S_ISDIR (stats.st_बहुलकम्))
     {
       error (0, 0, _("%s exists but is not a directory"), quoteaf (dst_dir));
-      return false;
+      प्रत्यागम false;
     }
-  else
+  अन्यथा
     {
       *new_dst = false;
     }
-  return true;
+  प्रत्यागम true;
 }
 
 /* Scan the arguments, and copy each by calling copy.
    Return true if successful.  */
 
-static bool
-do_copy (int n_files, char **file, char const *target_directory,
-         bool no_target_directory, struct cp_options *x)
+स्थिर bool
+do_copy (पूर्णाङ्क n_files, वर्ण **file, वर्ण ध्रुव *target_directory,
+         bool no_target_directory, संरचना cp_options *x)
 {
-  if (n_files <= !target_directory)
+  यदि (n_files <= !target_directory)
     {
-      if (n_files <= 0)
+      यदि (n_files <= 0)
         error (0, 0, _("missing file operand"));
-      else
+      अन्यथा
         error (0, 0, _("missing destination file operand after %s"),
                quoteaf (file[0]));
       usage (EXIT_FAILURE);
     }
 
-  struct stat sb;
-  sb.st_mode = 0;
-  int target_dirfd = AT_FDCWD;
+  संरचना stat sb;
+  sb.st_बहुलकम् = 0;
+  पूर्णाङ्क target_dirfd = AT_FDCWD;
   bool new_dst = false;
   bool ok = true;
-  if (no_target_directory)
+  यदि (no_target_directory)
     {
-      if (target_directory)
+      यदि (target_directory)
         error (EXIT_FAILURE, 0,
                _("cannot combine --target-directory (-t) "
                  "and --no-target-directory (-T)"));
-      if (2 < n_files)
+      यदि (2 < n_files)
         {
           error (0, 0, _("extra operand %s"), quoteaf (file[2]));
           usage (EXIT_FAILURE);
         }
     }
-  else if (target_directory)
+  अन्यथा यदि (target_directory)
     {
-      target_dirfd = target_directory_operand (target_directory, &sb);
-      if (! target_dirfd_valid (target_dirfd))
+      target_dirfd = target_directory_सङ्कार्यम् (target_directory, &sb);
+      यदि (! target_dirfd_valid (target_dirfd))
         error (EXIT_FAILURE, errno, _("target directory %s"),
                quoteaf (target_directory));
     }
-  else
+  अन्यथा
     {
-      char const *lastfile = file[n_files - 1];
-      int fd = target_directory_operand (lastfile, &sb);
-      if (target_dirfd_valid (fd))
+      वर्ण ध्रुव *lastfile = file[n_files - 1];
+      पूर्णाङ्क fd = target_directory_सङ्कार्यम् (lastfile, &sb);
+      यदि (target_dirfd_valid (fd))
         {
           target_dirfd = fd;
           target_directory = lastfile;
           n_files--;
         }
-      else
+      अन्यथा
         {
-          int err = errno;
-          if (err == ENOENT)
+          पूर्णाङ्क err = errno;
+          यदि (err == ENOENT)
             new_dst = true;
 
           /* The last operand LASTFILE cannot be opened as a directory.
@@ -729,15 +729,15 @@ do_copy (int n_files, char **file, char const *target_directory,
              In this case use stat to test whether LASTFILE is a
              directory, in case opening a non-directory with (O_SEARCH
              | O_DIRECTORY) failed with EACCES not ENOTDIR.  */
-          if (2 < n_files
-              || (O_PATHSEARCH == O_SEARCH && err == EACCES
-                  && (sb.st_mode || stat (lastfile, &sb) == 0)
-                  && S_ISDIR (sb.st_mode)))
+          यदि (2 < n_files
+              || (O_PATHSEARCH == O_अन्वेषणम् && err == EACCES
+                  && (sb.st_बहुलकम् || stat (lastfile, &sb) == 0)
+                  && S_ISDIR (sb.st_बहुलकम्)))
             error (EXIT_FAILURE, err, _("target %s"), quoteaf (lastfile));
         }
     }
 
-  if (target_directory)
+  यदि (target_directory)
     {
       /* cp file1...filen edir
          Copy the files 'file1' through 'filen'
@@ -746,99 +746,99 @@ do_copy (int n_files, char **file, char const *target_directory,
       /* Initialize these hash tables only if we'll need them.
          The problems they're used to detect can arise only if
          there are two or more files to copy.  */
-      if (2 <= n_files)
+      यदि (2 <= n_files)
         {
           dest_info_init (x);
           src_info_init (x);
         }
 
-      for (int i = 0; i < n_files; i++)
+      प्रति (पूर्णाङ्क i = 0; i < n_files; i++)
         {
-          char *dst_name;
+          वर्ण *dst_name;
           bool parent_exists = true;  /* True if dir_name (dst_name) exists. */
-          struct dir_attr *attr_list;
-          char *arg_in_concat;
-          char *arg = file[i];
+          संरचना dir_attr *attr_list;
+          वर्ण *arg_अन्तर्_concat;
+          वर्ण *arg = file[i];
 
           /* Trailing slashes are meaningful (i.e., maybe worth preserving)
              only in the source file names.  */
-          if (remove_trailing_slashes)
+          यदि (remove_trailing_slashes)
             strip_trailing_slashes (arg);
 
-          if (parents_option)
+          यदि (parents_option)
             {
-              char *arg_no_trailing_slash;
+              वर्ण *arg_no_trailing_slash;
 
               /* Use 'arg' without trailing slashes in constructing destination
                  file names.  Otherwise, we can end up trying to create a
                  directory using a name with trailing slash, which fails on
                  NetBSD 1.[34] systems.  */
-              ASSIGN_STRDUPA (arg_no_trailing_slash, arg);
+              नियोजय_STRDUPA (arg_no_trailing_slash, arg);
               strip_trailing_slashes (arg_no_trailing_slash);
 
               /* Append all of 'arg' (minus any trailing slash) to 'dest'.  */
               dst_name = file_name_concat (target_directory,
                                            arg_no_trailing_slash,
-                                           &arg_in_concat);
+                                           &arg_अन्तर्_concat);
 
               /* For --parents, we have to make sure that the directory
                  dir_name (dst_name) exists.  We may have to create a few
                  leading directories. */
               parent_exists =
-                (make_dir_parents_private
-                 (dst_name, arg_in_concat - dst_name, target_dirfd,
-                  (x->verbose ? "%s -> %s\n" : NULL),
+                (make_dir_parents_वैयक्तिकम्
+                 (dst_name, arg_अन्तर्_concat - dst_name, target_dirfd,
+                  (x->verbose ? "%s -> %s\n" : रिक्त),
                   &attr_list, &new_dst, x));
             }
-          else
+          अन्यथा
             {
-              char *arg_base;
+              वर्ण *arg_आधारः;
               /* Append the last component of 'arg' to 'target_directory'.  */
-              ASSIGN_STRDUPA (arg_base, last_component (arg));
-              strip_trailing_slashes (arg_base);
+              नियोजय_STRDUPA (arg_आधारः, चरमः_component (arg));
+              strip_trailing_slashes (arg_आधारः);
               /* For 'cp -R source/.. dest', don't copy into 'dest/..'. */
-              arg_base += streq (arg_base, "..");
-              dst_name = file_name_concat (target_directory, arg_base,
-                                           &arg_in_concat);
+              arg_आधारः += streq (arg_आधारः, "..");
+              dst_name = file_name_concat (target_directory, arg_आधारः,
+                                           &arg_अन्तर्_concat);
             }
 
-          if (!parent_exists)
+          यदि (!parent_exists)
             {
               /* make_dir_parents_private failed, so don't even
                  attempt the copy.  */
               ok = false;
             }
-          else
+          अन्यथा
             {
-              char const *dst_relname = arg_in_concat;
-              while (*dst_relname == '/')
+              वर्ण ध्रुव *dst_relname = arg_अन्तर्_concat;
+              यावत् (*dst_relname == '/')
                 dst_relname++;
 
               bool copy_into_self;
               ok &= copy (arg, dst_name, target_dirfd, dst_relname,
-                          new_dst, x, &copy_into_self, NULL);
+                          new_dst, x, &copy_into_self, रिक्त);
 
-              if (parents_option)
-                ok &= re_protect (dst_name, arg_in_concat, target_dirfd,
+              यदि (parents_option)
+                ok &= re_protect (dst_name, arg_अन्तर्_concat, target_dirfd,
                                   dst_relname, attr_list, x);
             }
 
-          if (parents_option)
+          यदि (parents_option)
             {
-              while (attr_list)
+              यावत् (attr_list)
                 {
-                  struct dir_attr *p = attr_list;
-                  attr_list = attr_list->next;
-                  free (p);
+                  संरचना dir_attr *p = attr_list;
+                  attr_list = attr_list->अग्र;
+                  मुक्त (p);
                 }
             }
 
-          free (dst_name);
+          मुक्त (dst_name);
         }
     }
-  else /* !target_directory */
+  अन्यथा /* !target_directory */
     {
-      if (parents_option)
+      यदि (parents_option)
         {
           error (0, 0,
                  _("with --parents, the destination must be a directory"));
@@ -851,15 +851,15 @@ do_copy (int n_files, char **file, char const *target_directory,
          'cp --force --backup foo foo' to 'cp --force foo fooSUFFIX'
          where SUFFIX is determined by any version control options used.  */
 
-      char const *source = file[0];
-      char const *dest = file[1];
-      if (x->unlink_dest_after_failed_open
+      वर्ण ध्रुव *source = file[0];
+      वर्ण ध्रुव *dest = file[1];
+      यदि (x->unlink_dest_after_failed_open
           && x->backup_type != no_backups
           && streq (source, dest)
           && !new_dst
-          && (sb.st_mode != 0 || stat (dest, &sb) == 0) && S_ISREG (sb.st_mode))
+          && (sb.st_बहुलकम् != 0 || stat (dest, &sb) == 0) && S_ISREG (sb.st_बहुलकम्))
         {
-          static struct cp_options x_tmp;
+          स्थिर संरचना cp_options x_tmp;
 
           dest = find_backup_file_name (AT_FDCWD, dest, x->backup_type);
           /* Set x->backup_type to 'no_backups' so that the normal backup
@@ -872,15 +872,15 @@ do_copy (int n_files, char **file, char const *target_directory,
           x = &x_tmp;
         }
 
-      bool unused;
-      ok = copy (source, dest, AT_FDCWD, dest, -new_dst, x, &unused, NULL);
+      bool अप्रयुक्तम्;
+      ok = copy (source, dest, AT_FDCWD, dest, -new_dst, x, &अप्रयुक्तम्, रिक्त);
     }
 
-  return ok;
+  प्रत्यागम ok;
 }
 
-static void
-cp_option_init (struct cp_options *x)
+स्थिर शून्य
+cp_option_init (संरचना cp_options *x)
 {
   cp_options_default (x);
   x->copy_as_regular = true;
@@ -889,30 +889,30 @@ cp_option_init (struct cp_options *x)
   x->unlink_dest_after_failed_open = false;
   x->hard_link = false;
   x->interactive = I_UNSPECIFIED;
-  x->move_mode = false;
-  x->install_mode = false;
+  x->move_बहुलकम् = false;
+  x->install_बहुलकम् = false;
   x->one_file_system = false;
-  x->reflink_mode = REFLINK_AUTO;
+  x->reflink_बहुलकम् = REFLINK_AUTO;
 
   x->preserve_ownership = false;
   x->preserve_links = false;
-  x->preserve_mode = false;
+  x->preserve_बहुलकम् = false;
   x->preserve_timestamps = false;
-  x->explicit_no_preserve_mode = false;
+  x->explicit_no_preserve_बहुलकम् = false;
   x->preserve_security_context = false; /* -a or --preserve=context.  */
   x->require_preserve_context = false;  /* --preserve=context.  */
-  x->set_security_context = NULL;       /* -Z, set sys default context. */
+  x->समुच्चयः_security_context = रिक्त;       /* -Z, set sys default context. */
   x->preserve_xattr = false;
   x->reduce_diagnostics = false;
   x->require_preserve_xattr = false;
 
-  x->data_copy_required = true;
+  x->दत्त_copy_required = true;
   x->require_preserve = false;
   x->recursive = false;
-  x->sparse_mode = SPARSE_AUTO;
+  x->sparse_बहुलकम् = SPARSE_AUTO;
   x->symbolic_link = false;
-  x->set_mode = false;
-  x->mode = 0;
+  x->समुच्चयः_बहुलकम् = false;
+  x->बहुलकम्_2 = 0;
 
   /* Not used.  */
   x->stdin_tty = false;
@@ -925,20 +925,20 @@ cp_option_init (struct cp_options *x)
      in general one cannot do that safely, give the current semantics of
      open's O_EXCL flag, (which POSIX doesn't even allow cp to use, btw).
      But POSIX requires it.  */
-  x->open_dangling_dest_symlink = getenv ("POSIXLY_CORRECT") != NULL;
+  x->open_dangling_dest_symlink = getenv ("POSIXLY_CORRECT") != रिक्त;
 
-  x->dest_info = NULL;
-  x->src_info = NULL;
+  x->dest_info = रिक्त;
+  x->src_info = रिक्त;
 }
 
 /* Given a string, ARG, containing a comma-separated list of arguments
    to the --preserve option, set the appropriate fields of X to ON_OFF.  */
-static void
-decode_preserve_arg (char const *arg, struct cp_options *x, bool on_off)
+स्थिर शून्य
+decode_preserve_arg (वर्ण ध्रुव *arg, संरचना cp_options *x, bool on_off)
 {
-  enum File_attribute
+  गणना File_attribute
     {
-      PRESERVE_MODE,
+      PRESERVE_बहुलकम्,
       PRESERVE_TIMESTAMPS,
       PRESERVE_OWNERSHIP,
       PRESERVE_LINK,
@@ -946,99 +946,99 @@ decode_preserve_arg (char const *arg, struct cp_options *x, bool on_off)
       PRESERVE_XATTR,
       PRESERVE_ALL
     };
-  static enum File_attribute const preserve_vals[] =
+  स्थिर गणना File_attribute ध्रुव preserve_vals[] =
     {
-      PRESERVE_MODE, PRESERVE_TIMESTAMPS,
+      PRESERVE_बहुलकम्, PRESERVE_TIMESTAMPS,
       PRESERVE_OWNERSHIP, PRESERVE_LINK, PRESERVE_CONTEXT, PRESERVE_XATTR,
       PRESERVE_ALL
     };
   /* Valid arguments to the '--preserve' option. */
-  static char const *const preserve_args[] =
+  स्थिर वर्ण ध्रुव *ध्रुव preserve_तर्काः[] =
     {
       "mode", "timestamps",
-      "ownership", "links", "context", "xattr", "all", NULL
+      "ownership", "links", "context", "xattr", "all", रिक्त
     };
-  ARGMATCH_VERIFY (preserve_args, preserve_vals);
+  ARGMATCH_VERIFY (preserve_तर्काः, preserve_vals);
 
-  char *arg_writable = xstrdup (arg);
-  char *s = arg_writable;
-  do
+  वर्ण *arg_writable = xstrdup (arg);
+  वर्ण *s = arg_writable;
+  कुरु
     {
       /* find next comma */
-      char *comma = strchr (s, ',');
-      enum File_attribute val;
+      वर्ण *comma = strchr (s, ',');
+      गणना File_attribute val;
 
       /* If we found a comma, put a NUL in its place and advance.  */
-      if (comma)
+      यदि (comma)
         *comma++ = 0;
 
       /* process S.  */
       val = XARGMATCH (on_off ? "--preserve" : "--no-preserve",
-                       s, preserve_args, preserve_vals);
-      switch (val)
+                       s, preserve_तर्काः, preserve_vals);
+      विकल्प (val)
         {
-        case PRESERVE_MODE:
-          x->preserve_mode = on_off;
-          x->explicit_no_preserve_mode = !on_off;
-          break;
+        पक्ष PRESERVE_बहुलकम्:
+          x->preserve_बहुलकम् = on_off;
+          x->explicit_no_preserve_बहुलकम् = !on_off;
+          भङ्ग;
 
-        case PRESERVE_TIMESTAMPS:
+        पक्ष PRESERVE_TIMESTAMPS:
           x->preserve_timestamps = on_off;
-          break;
+          भङ्ग;
 
-        case PRESERVE_OWNERSHIP:
+        पक्ष PRESERVE_OWNERSHIP:
           x->preserve_ownership = on_off;
-          break;
+          भङ्ग;
 
-        case PRESERVE_LINK:
+        पक्ष PRESERVE_LINK:
           x->preserve_links = on_off;
-          break;
+          भङ्ग;
 
-        case PRESERVE_CONTEXT:
+        पक्ष PRESERVE_CONTEXT:
           x->require_preserve_context = on_off;
           x->preserve_security_context = on_off;
-          break;
+          भङ्ग;
 
-        case PRESERVE_XATTR:
+        पक्ष PRESERVE_XATTR:
           x->preserve_xattr = on_off;
           x->require_preserve_xattr = on_off;
-          break;
+          भङ्ग;
 
-        case PRESERVE_ALL:
-          x->preserve_mode = on_off;
+        पक्ष PRESERVE_ALL:
+          x->preserve_बहुलकम् = on_off;
           x->preserve_timestamps = on_off;
           x->preserve_ownership = on_off;
           x->preserve_links = on_off;
-          x->explicit_no_preserve_mode = !on_off;
-          if (selinux_enabled)
+          x->explicit_no_preserve_बहुलकम् = !on_off;
+          यदि (selinux_enabled)
             x->preserve_security_context = on_off;
           x->preserve_xattr = on_off;
-          break;
+          भङ्ग;
 
-        default:
+        स्वभाव:
           affirm (false);
         }
       s = comma;
     }
-  while (s);
+  यावत् (s);
 
-  free (arg_writable);
+  मुक्त (arg_writable);
 }
 
-int
-main (int argc, char **argv)
+पूर्णाङ्क
+मुख्यम् (पूर्णाङ्क argc, वर्ण **argv)
 {
   bool make_backups = false;
-  char const *backup_suffix = NULL;
-  char *version_control_string = NULL;
-  struct cp_options x;
+  वर्ण ध्रुव *backup_suffix = रिक्त;
+  वर्ण *संस्करणम्_control_string = रिक्त;
+  संरचना cp_options x;
   bool copy_contents = false;
-  char *target_directory = NULL;
+  वर्ण *target_directory = रिक्त;
   bool no_target_directory = false;
-  char const *scontext = NULL;
+  वर्ण ध्रुव *scontext = रिक्त;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  समुच्चयः_क्रमादेशः_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
@@ -1048,199 +1048,199 @@ main (int argc, char **argv)
   selinux_enabled = (0 < is_selinux_enabled ());
   cp_option_init (&x);
 
-  int c;
-  while ((c = getopt_long (argc, argv, "abdfHilLnprst:uvxPRS:TZ",
-                           long_opts, NULL))
+  पूर्णाङ्क c;
+  यावत् ((c = getopt_long (argc, argv, "abdfHilLnprst:uvxPRS:TZ",
+                           long_opts, रिक्त))
          != -1)
     {
-      switch (c)
+      विकल्प (c)
         {
-        case SPARSE_OPTION:
-          x.sparse_mode = XARGMATCH ("--sparse", optarg,
+        पक्ष SPARSE_OPTION:
+          x.sparse_बहुलकम् = XARGMATCH ("--sparse", optarg,
                                      sparse_type_string, sparse_type);
-          break;
+          भङ्ग;
 
-        case REFLINK_OPTION:
-          if (optarg == NULL)
-            x.reflink_mode = REFLINK_ALWAYS;
-          else
-            x.reflink_mode = XARGMATCH ("--reflink", optarg,
+        पक्ष REFLINK_OPTION:
+          यदि (optarg == रिक्त)
+            x.reflink_बहुलकम् = REFLINK_ALWAYS;
+          अन्यथा
+            x.reflink_बहुलकम् = XARGMATCH ("--reflink", optarg,
                                        reflink_type_string, reflink_type);
-          break;
+          भङ्ग;
 
-        case 'a':
+        पक्ष 'a':
           /* Like -dR --preserve=all with reduced failure diagnostics.  */
           x.dereference = DEREF_NEVER;
           x.preserve_links = true;
           x.preserve_ownership = true;
-          x.preserve_mode = true;
+          x.preserve_बहुलकम् = true;
           x.preserve_timestamps = true;
           x.require_preserve = true;
-          if (selinux_enabled)
+          यदि (selinux_enabled)
              x.preserve_security_context = true;
           x.preserve_xattr = true;
           x.reduce_diagnostics = true;
           x.recursive = true;
-          break;
+          भङ्ग;
 
-        case 'b':
+        पक्ष 'b':
           make_backups = true;
-          if (optarg)
-            version_control_string = optarg;
-          break;
+          यदि (optarg)
+            संस्करणम्_control_string = optarg;
+          भङ्ग;
 
-        case ATTRIBUTES_ONLY_OPTION:
-          x.data_copy_required = false;
-          break;
+        पक्ष गुणाः_ONLY_OPTION:
+          x.दत्त_copy_required = false;
+          भङ्ग;
 
-        case DEBUG_OPTION:
+        पक्ष DEBUG_OPTION:
           x.debug = x.verbose = true;
-          break;
+          भङ्ग;
 
-        case COPY_CONTENTS_OPTION:
+        पक्ष COPY_CONTENTS_OPTION:
           copy_contents = true;
-          break;
+          भङ्ग;
 
-        case 'd':
+        पक्ष 'd':
           x.preserve_links = true;
           x.dereference = DEREF_NEVER;
-          break;
+          भङ्ग;
 
-        case 'f':
+        पक्ष 'f':
           x.unlink_dest_after_failed_open = true;
-          break;
+          भङ्ग;
 
-        case 'H':
-          x.dereference = DEREF_COMMAND_LINE_ARGUMENTS;
-          break;
+        पक्ष 'H':
+          x.dereference = DEREF_COMMAND_पङ्क्तिः_ARGUMENTS;
+          भङ्ग;
 
-        case 'i':
+        पक्ष 'i':
           x.interactive = I_ASK_USER;
-          break;
+          भङ्ग;
 
-        case 'l':
+        पक्ष 'l':
           x.hard_link = true;
-          break;
+          भङ्ग;
 
-        case 'L':
+        पक्ष 'L':
           x.dereference = DEREF_ALWAYS;
-          break;
+          भङ्ग;
 
-        case 'n':
+        पक्ष 'n':
           x.interactive = I_ALWAYS_SKIP;
-          break;
+          भङ्ग;
 
-        case 'P':
+        पक्ष 'P':
           x.dereference = DEREF_NEVER;
-          break;
+          भङ्ग;
 
-        case NO_PRESERVE_ATTRIBUTES_OPTION:
+        पक्ष NO_PRESERVE_गुणाः_OPTION:
           decode_preserve_arg (optarg, &x, false);
-          break;
+          भङ्ग;
 
-        case PRESERVE_ATTRIBUTES_OPTION:
-          if (optarg == NULL)
+        पक्ष PRESERVE_गुणाः_OPTION:
+          यदि (optarg == रिक्त)
             {
               /* Fall through to the case for 'p' below.  */
             }
-          else
+          अन्यथा
             {
               decode_preserve_arg (optarg, &x, true);
               x.require_preserve = true;
-              break;
+              भङ्ग;
             }
           FALLTHROUGH;
 
-        case 'p':
+        पक्ष 'p':
           x.preserve_ownership = true;
-          x.preserve_mode = true;
+          x.preserve_बहुलकम् = true;
           x.preserve_timestamps = true;
           x.require_preserve = true;
-          break;
+          भङ्ग;
 
-        case PARENTS_OPTION:
+        पक्ष PARENTS_OPTION:
           parents_option = true;
-          break;
+          भङ्ग;
 
-        case 'r':
-        case 'R':
+        पक्ष 'r':
+        पक्ष 'R':
           x.recursive = true;
-          break;
+          भङ्ग;
 
-        case UNLINK_DEST_BEFORE_OPENING:
+        पक्ष UNLINK_DEST_BEFORE_OPENING:
           x.unlink_dest_before_opening = true;
-          break;
+          भङ्ग;
 
-        case STRIP_TRAILING_SLASHES_OPTION:
+        पक्ष STRIP_TRAILING_SLASHES_OPTION:
           remove_trailing_slashes = true;
-          break;
+          भङ्ग;
 
-        case 's':
+        पक्ष 's':
           x.symbolic_link = true;
-          break;
+          भङ्ग;
 
-        case 't':
-          if (target_directory)
+        पक्ष 't':
+          यदि (target_directory)
             error (EXIT_FAILURE, 0,
                    _("multiple target directories specified"));
           target_directory = optarg;
-          break;
+          भङ्ग;
 
-        case 'T':
+        पक्ष 'T':
           no_target_directory = true;
-          break;
+          भङ्ग;
 
-        case 'u':
+        पक्ष 'u':
           x.update = UPDATE_OLDER;
-          if (optarg)
+          यदि (optarg)
             x.update = XARGMATCH ("--update", optarg,
                                   update_type_string, update_type);
-          break;
+          भङ्ग;
 
-        case 'v':
+        पक्ष 'v':
           x.verbose = true;
-          break;
+          भङ्ग;
 
-        case KEEP_DIRECTORY_SYMLINK_OPTION:
+        पक्ष KEEP_DIRECTORY_SYMLINK_OPTION:
           x.keep_directory_symlink = true;
-          break;
+          भङ्ग;
 
-        case 'x':
+        पक्ष 'x':
           x.one_file_system = true;
-          break;
+          भङ्ग;
 
-        case 'Z':
+        पक्ष 'Z':
           /* politely decline if we're not on a selinux-enabled kernel.  */
-          if (selinux_enabled)
+          यदि (selinux_enabled)
             {
-              if (optarg)
+              यदि (optarg)
                 scontext = optarg;
-              else
+              अन्यथा
                 {
-                  x.set_security_context = selabel_open (SELABEL_CTX_FILE,
-                                                         NULL, 0);
-                  if (! x.set_security_context)
+                  x.समुच्चयः_security_context = selabel_open (SELABEL_CTX_FILE,
+                                                         रिक्त, 0);
+                  यदि (! x.समुच्चयः_security_context)
                     error (0, errno, _("warning: ignoring --context"));
                 }
             }
-          else if (optarg)
+          अन्यथा यदि (optarg)
             {
               error (0, 0,
                      _("warning: ignoring --context; "
                        "it requires an SELinux-enabled kernel"));
             }
-          break;
+          भङ्ग;
 
-        case 'S':
+        पक्ष 'S':
           make_backups = true;
           backup_suffix = optarg;
-          break;
+          भङ्ग;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_संस्करणम्_CHAR (क्रमादेशः_NAME, AUTHORS);
 
-        default:
+        स्वभाव:
           usage (EXIT_FAILURE);
         }
     }
@@ -1249,19 +1249,19 @@ main (int argc, char **argv)
      This will also have the effect of disabling copy offload as that may
      propagate holes.  For e.g. FreeBSD documents that copy_file_range()
      will try to propagate holes.  */
-  if (x.reflink_mode == REFLINK_AUTO && x.sparse_mode == SPARSE_NEVER)
-    x.reflink_mode = REFLINK_NEVER;
+  यदि (x.reflink_बहुलकम् == REFLINK_AUTO && x.sparse_बहुलकम् == SPARSE_NEVER)
+    x.reflink_बहुलकम् = REFLINK_NEVER;
 
-  if (x.hard_link && x.symbolic_link)
+  यदि (x.hard_link && x.symbolic_link)
     {
       error (0, 0, _("cannot make both hard and symbolic links"));
       usage (EXIT_FAILURE);
     }
 
-  if (x.interactive == I_ALWAYS_SKIP)
+  यदि (x.interactive == I_ALWAYS_SKIP)
     x.update = UPDATE_NONE;
 
-  if (make_backups
+  यदि (make_backups
       && (x.update == UPDATE_NONE
           || x.update == UPDATE_NONE_FAIL))
     {
@@ -1270,40 +1270,40 @@ main (int argc, char **argv)
       usage (EXIT_FAILURE);
     }
 
-  if (x.reflink_mode == REFLINK_ALWAYS && x.sparse_mode != SPARSE_AUTO)
+  यदि (x.reflink_बहुलकम् == REFLINK_ALWAYS && x.sparse_बहुलकम् != SPARSE_AUTO)
     {
       error (0, 0, _("--reflink can be used only with --sparse=auto"));
       usage (EXIT_FAILURE);
     }
 
   x.backup_type = (make_backups
-                   ? xget_version (_("backup type"),
-                                   version_control_string)
+                   ? xget_संस्करणम् (_("backup type"),
+                                   संस्करणम्_control_string)
                    : no_backups);
-  set_simple_backup_suffix (backup_suffix);
+  समुच्चयः_simple_backup_suffix (backup_suffix);
 
-  if (x.dereference == DEREF_UNDEFINED)
+  यदि (x.dereference == DEREF_UNDEFINED)
     {
-      if (x.recursive && ! x.hard_link)
+      यदि (x.recursive && ! x.hard_link)
         /* This is compatible with FreeBSD.  */
         x.dereference = DEREF_NEVER;
-      else
+      अन्यथा
         x.dereference = DEREF_ALWAYS;
     }
 
-  if (x.recursive)
+  यदि (x.recursive)
     x.copy_as_regular = copy_contents;
 
   /* Ensure -Z overrides -a.  */
-  if ((x.set_security_context || scontext)
+  यदि ((x.समुच्चयः_security_context || scontext)
       && ! x.require_preserve_context)
     x.preserve_security_context = false;
 
-  if (x.preserve_security_context && (x.set_security_context || scontext))
+  यदि (x.preserve_security_context && (x.समुच्चयः_security_context || scontext))
     error (EXIT_FAILURE, 0,
            _("cannot set target context and preserve it"));
 
-  if (x.require_preserve_context && ! selinux_enabled)
+  यदि (x.require_preserve_context && ! selinux_enabled)
     error (EXIT_FAILURE, 0,
            _("cannot preserve security context "
              "without an SELinux-enabled kernel"));
@@ -1314,16 +1314,16 @@ main (int argc, char **argv)
        if (scontext && !restorecon (NULL, dst_path, 0))
           error (...);
    */
-  if (scontext && setfscreatecon (scontext) < 0)
+  यदि (scontext && setfscreatecon (scontext) < 0)
     error (EXIT_FAILURE, errno,
            _("failed to set default file creation context to %s"),
            quote (scontext));
 
-#if !USE_XATTR
-  if (x.require_preserve_xattr)
+#यदि !USE_XATTR
+  यदि (x.require_preserve_xattr)
     error (EXIT_FAILURE, 0, _("cannot preserve extended attributes, cp is "
                               "built without xattr support"));
-#endif
+#यदि_अन्तः
 
   /* Allocate space for remembering copied and created files.  */
 

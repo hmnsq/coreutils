@@ -53,16 +53,16 @@ see https://www.gnu.org/licenses/.  */
    expected.
 */
 
-#define __BITS4 (W_TYPE_SIZE / 4)
-#define __ll_B ((UWtype) 1 << (W_TYPE_SIZE / 2))
-#define __ll_lowpart(t) ((UWtype) (t) & (__ll_B - 1))
-#define __ll_highpart(t) ((UWtype) (t) >> (W_TYPE_SIZE / 2))
+#परिभाषय __BITS4 (W_TYPE_आकार / 4)
+#परिभाषय __ll_B ((UWtype) 1 << (W_TYPE_आकार / 2))
+#परिभाषय __ll_lowpart(t) ((UWtype) (t) & (__ll_B - 1))
+#परिभाषय __ll_highpart(t) ((UWtype) (t) >> (W_TYPE_आकार / 2))
 
 /* This is used to make sure no undesirable sharing between different libraries
    that use this file takes place.  */
-#ifndef __MPN
-#define __MPN(x) __##x
-#endif
+#यदि_अपरिभाषितम् __MPN
+#परिभाषय __MPN(x) __##x
+#यदि_अन्तः
 
 /* Define auxiliary asm macros.
 
@@ -151,102 +151,102 @@ see https://www.gnu.org/licenses/.  */
    code to ensure the result is 0 when the input is 0, which we don't need
    or want.  */
 
-#ifdef _LONG_LONG_LIMB
-#define count_leading_zeros_gcc_clz(count,x)	\
-  do {						\
+#यदि_परिभाषितम् _LONG_LONG_LIMB
+#परिभाषय गणनम्_leading_zeros_gcc_clz(गणनम्,x)	\
+  कुरु {						\
     ASSERT ((x) != 0);				\
-    (count) = __builtin_clzll (x);		\
-  } while (0)
-#else
-#define count_leading_zeros_gcc_clz(count,x)	\
-  do {						\
+    (गणनम्) = __builtin_clzll (x);		\
+  } यावत् (0)
+#अन्यथा
+#परिभाषय गणनम्_leading_zeros_gcc_clz(गणनम्,x)	\
+  कुरु {						\
     ASSERT ((x) != 0);				\
-    (count) = __builtin_clzl (x);		\
-  } while (0)
-#endif
+    (गणनम्) = __builtin_clzl (x);		\
+  } यावत् (0)
+#यदि_अन्तः
 
-#ifdef _LONG_LONG_LIMB
-#define count_trailing_zeros_gcc_ctz(count,x)	\
-  do {						\
+#यदि_परिभाषितम् _LONG_LONG_LIMB
+#परिभाषय गणनम्_trailing_zeros_gcc_ctz(गणनम्,x)	\
+  कुरु {						\
     ASSERT ((x) != 0);				\
-    (count) = __builtin_ctzll (x);		\
-  } while (0)
-#else
-#define count_trailing_zeros_gcc_ctz(count,x)	\
-  do {						\
+    (गणनम्) = __builtin_ctzll (x);		\
+  } यावत् (0)
+#अन्यथा
+#परिभाषय गणनम्_trailing_zeros_gcc_ctz(गणनम्,x)	\
+  कुरु {						\
     ASSERT ((x) != 0);				\
-    (count) = __builtin_ctzl (x);		\
-  } while (0)
-#endif
+    (गणनम्) = __builtin_ctzl (x);		\
+  } यावत् (0)
+#यदि_अन्तः
 
 
 /* FIXME: The macros using external routines like __MPN(count_leading_zeros)
    don't need to be under !NO_ASM */
-#if ! defined (NO_ASM)
+#यदि ! defined (NO_ASM)
 
-#if defined (__alpha) && W_TYPE_SIZE == 64
+#यदि defined (__alpha) && W_TYPE_आकार == 64
 /* Most alpha-based machines, except Cray systems. */
-#if defined (__GNUC__)
-#if __GMP_GNUC_PREREQ (3,3)
-#define umul_ppmm(ph, pl, m0, m1) \
-  do {									\
+#यदि defined (__GNUC__)
+#यदि __GMP_GNUC_PREREQ (3,3)
+#परिभाषय umul_ppmm(ph, pl, m0, m1) \
+  कुरु {									\
     UDItype __m0 = (m0), __m1 = (m1);					\
     (ph) = __builtin_alpha_umulh (__m0, __m1);				\
     (pl) = __m0 * __m1;							\
-  } while (0)
-#else
-#define umul_ppmm(ph, pl, m0, m1) \
-  do {									\
+  } यावत् (0)
+#अन्यथा
+#परिभाषय umul_ppmm(ph, pl, m0, m1) \
+  कुरु {									\
     UDItype __m0 = (m0), __m1 = (m1);					\
     __asm__ ("umulh %r1,%2,%0"						\
 	     : "=r" (ph)						\
 	     : "%rJ" (__m0), "rI" (__m1));				\
     (pl) = __m0 * __m1;							\
-  } while (0)
-#endif
-#else /* ! __GNUC__ */
-#include <machine/builtins.h>
-#define umul_ppmm(ph, pl, m0, m1) \
-  do {									\
+  } यावत् (0)
+#यदि_अन्तः
+#अन्यथा /* ! __GNUC__ */
+#अन्तर्भाव <machine/builtins.h>
+#परिभाषय umul_ppmm(ph, pl, m0, m1) \
+  कुरु {									\
     UDItype __m0 = (m0), __m1 = (m1);					\
     (ph) = __UMULH (__m0, __m1);					\
     (pl) = __m0 * __m1;							\
-  } while (0)
-#endif
-#ifndef LONGLONG_STANDALONE
-#define udiv_qrnnd(q, r, n1, n0, d) \
-  do { UWtype __di;							\
+  } यावत् (0)
+#यदि_अन्तः
+#यदि_अपरिभाषितम् LONGLONG_STANDALONE
+#परिभाषय udiv_qrnnd(q, r, n1, n0, d) \
+  कुरु { UWtype __di;							\
     __di = __MPN(invert_limb) (d);					\
     udiv_qrnnd_preinv (q, r, n1, n0, d, __di);				\
-  } while (0)
-#define UDIV_PREINV_ALWAYS  1
-#define UDIV_NEEDS_NORMALIZATION 1
-#endif /* LONGLONG_STANDALONE */
+  } यावत् (0)
+#परिभाषय UDIV_PREINV_ALWAYS  1
+#परिभाषय UDIV_NEEDS_NORMALIZATION 1
+#यदि_अन्तः /* LONGLONG_STANDALONE */
 
 /* clz_tab is required in all configurations, since mpn/alpha/cntlz.asm
    always goes into libgmp.so, even when not actually used.  */
-#define COUNT_LEADING_ZEROS_NEED_CLZ_TAB
+#परिभाषय गणनम्_LEADING_ZEROS_NEED_CLZ_TAB
 
-#if defined (__GNUC__) && HAVE_HOST_CPU_alpha_CIX
-#define count_leading_zeros(COUNT,X) \
-  __asm__("ctlz %1,%0" : "=r"(COUNT) : "r"(X))
-#define count_trailing_zeros(COUNT,X) \
-  __asm__("cttz %1,%0" : "=r"(COUNT) : "r"(X))
-#endif /* clz/ctz using cix */
+#यदि defined (__GNUC__) && HAVE_HOST_CPU_alpha_CIX
+#परिभाषय गणनम्_leading_zeros(गणनम्_2,X) \
+  __asm__("ctlz %1,%0" : "=r"(गणनम्_2) : "r"(X))
+#परिभाषय गणनम्_trailing_zeros(गणनम्_2,X) \
+  __asm__("cttz %1,%0" : "=r"(गणनम्_2) : "r"(X))
+#यदि_अन्तः /* clz/ctz using cix */
 
-#if ! defined (count_leading_zeros)				\
+#यदि ! defined (गणनम्_leading_zeros)				\
   && defined (__GNUC__) && ! defined (LONGLONG_STANDALONE)
 /* ALPHA_CMPBGE_0 gives "cmpbge $31,src,dst", ie. test src bytes == 0.
    "$31" is written explicitly in the asm, since an "r" constraint won't
    select reg 31.  There seems no need to worry about "r31" syntax for cray,
    since gcc itself (pre-release 3.4) emits just $31 in various places.	 */
-#define ALPHA_CMPBGE_0(dst, src)					\
-  do { asm ("cmpbge $31, %1, %0" : "=r" (dst) : "r" (src)); } while (0)
+#परिभाषय ALPHA_CMPBGE_0(dst, src)					\
+  कुरु { asm ("cmpbge $31, %1, %0" : "=r" (dst) : "r" (src)); } यावत् (0)
 /* Zero bytes are turned into bits with cmpbge, a __clz_tab lookup counts
    them, locating the highest non-zero byte.  A second __clz_tab lookup
    counts the leading zero bits in that byte, giving the result.  */
-#define count_leading_zeros(count, x)					\
-  do {									\
+#परिभाषय गणनम्_leading_zeros(गणनम्, x)					\
+  कुरु {									\
     UWtype  __clz__b, __clz__c, __clz__x = (x);				\
     ALPHA_CMPBGE_0 (__clz__b,  __clz__x);	    /* zero bytes */	\
     __clz__b = __clz_tab [(__clz__b >> 1) ^ 0x7F];  /* 8 to 1 byte */	\
@@ -254,146 +254,146 @@ see https://www.gnu.org/licenses/.  */
     __clz__x >>= __clz__b;						\
     __clz__c = __clz_tab [__clz__x];		    /* 8 to 1 bit */	\
     __clz__b = 65 - __clz__b;						\
-    (count) = __clz__b - __clz__c;					\
-  } while (0)
-#define COUNT_LEADING_ZEROS_NEED_CLZ_TAB
-#endif /* clz using cmpbge */
+    (गणनम्) = __clz__b - __clz__c;					\
+  } यावत् (0)
+#परिभाषय गणनम्_LEADING_ZEROS_NEED_CLZ_TAB
+#यदि_अन्तः /* clz using cmpbge */
 
-#if ! defined (count_leading_zeros) && ! defined (LONGLONG_STANDALONE)
-#if HAVE_ATTRIBUTE_CONST
-long __MPN(count_leading_zeros) (UDItype) __attribute__ ((const));
-#else
-long __MPN(count_leading_zeros) (UDItype);
-#endif
-#define count_leading_zeros(count, x) \
-  ((count) = __MPN(count_leading_zeros) (x))
-#endif /* clz using mpn */
-#endif /* __alpha */
+#यदि ! defined (गणनम्_leading_zeros) && ! defined (LONGLONG_STANDALONE)
+#यदि HAVE_ATTRIBUTE_CONST
+दीर्घ __MPN(गणनम्_leading_zeros) (UDItype) __attribute__ ((ध्रुव));
+#अन्यथा
+दीर्घ __MPN(गणनम्_leading_zeros) (UDItype);
+#यदि_अन्तः
+#परिभाषय गणनम्_leading_zeros(गणनम्, x) \
+  ((गणनम्) = __MPN(गणनम्_leading_zeros) (x))
+#यदि_अन्तः /* clz using mpn */
+#यदि_अन्तः /* __alpha */
 
-#if defined (__AVR) && W_TYPE_SIZE == 8
-#define umul_ppmm(ph, pl, m0, m1) \
-  do {									\
-    unsigned short __p = (unsigned short) (m0) * (m1);			\
+#यदि defined (__AVR) && W_TYPE_आकार == 8
+#परिभाषय umul_ppmm(ph, pl, m0, m1) \
+  कुरु {									\
+    अचिह्नित ह्रस्व __p = (अचिह्नित ह्रस्व) (m0) * (m1);			\
     (ph) = __p >> 8;							\
     (pl) = __p;								\
-  } while (0)
-#endif /* AVR */
+  } यावत् (0)
+#यदि_अन्तः /* AVR */
 
-#if defined (_CRAY) && W_TYPE_SIZE == 64
-#include <intrinsics.h>
-#define UDIV_PREINV_ALWAYS  1
-#define UDIV_NEEDS_NORMALIZATION 1
-long __MPN(count_leading_zeros) (UDItype);
-#define count_leading_zeros(count, x) \
-  ((count) = _leadz ((UWtype) (x)))
-#if defined (_CRAYIEEE)		/* I.e., Cray T90/ieee, T3D, and T3E */
-#define umul_ppmm(ph, pl, m0, m1) \
-  do {									\
+#यदि defined (_CRAY) && W_TYPE_आकार == 64
+#अन्तर्भाव <intrinsics.h>
+#परिभाषय UDIV_PREINV_ALWAYS  1
+#परिभाषय UDIV_NEEDS_NORMALIZATION 1
+दीर्घ __MPN(गणनम्_leading_zeros) (UDItype);
+#परिभाषय गणनम्_leading_zeros(गणनम्, x) \
+  ((गणनम्) = _leadz ((UWtype) (x)))
+#यदि defined (_CRAYIEEE)		/* I.e., Cray T90/ieee, T3D, and T3E */
+#परिभाषय umul_ppmm(ph, pl, m0, m1) \
+  कुरु {									\
     UDItype __m0 = (m0), __m1 = (m1);					\
-    (ph) = _int_mult_upper (__m0, __m1);				\
+    (ph) = int_mult_ऊर्ध्वस्थम् (__m0, __m1);				\
     (pl) = __m0 * __m1;							\
-  } while (0)
-#ifndef LONGLONG_STANDALONE
-#define udiv_qrnnd(q, r, n1, n0, d) \
-  do { UWtype __di;							\
+  } यावत् (0)
+#यदि_अपरिभाषितम् LONGLONG_STANDALONE
+#परिभाषय udiv_qrnnd(q, r, n1, n0, d) \
+  कुरु { UWtype __di;							\
     __di = __MPN(invert_limb) (d);					\
     udiv_qrnnd_preinv (q, r, n1, n0, d, __di);				\
-  } while (0)
-#endif /* LONGLONG_STANDALONE */
-#endif /* _CRAYIEEE */
-#endif /* _CRAY */
+  } यावत् (0)
+#यदि_अन्तः /* LONGLONG_STANDALONE */
+#यदि_अन्तः /* _CRAYIEEE */
+#यदि_अन्तः /* _CRAY */
 
-#if defined (__ia64) && W_TYPE_SIZE == 64
+#यदि defined (__ia64) && W_TYPE_आकार == 64
 /* This form encourages gcc (pre-release 3.4 at least) to emit predicated
    "sub r=r,r" and "sub r=r,r,1", giving a 2 cycle latency.  The generic
    code using "al<bl" arithmetically comes out making an actual 0 or 1 in a
    register, which takes an extra cycle.  */
-#define sub_ddmmss(sh, sl, ah, al, bh, bl)      \
-  do {						\
+#परिभाषय sub_ddmmss(sh, sl, ah, al, bh, bl)      \
+  कुरु {						\
     UWtype __x;					\
     __x = (al) - (bl);				\
-    if ((al) < (bl))				\
+    यदि ((al) < (bl))				\
       (sh) = (ah) - (bh) - 1;			\
-    else					\
+    अन्यथा					\
       (sh) = (ah) - (bh);			\
     (sl) = __x;					\
-  } while (0)
-#if defined (__GNUC__) && ! defined (__INTEL_COMPILER)
+  } यावत् (0)
+#यदि defined (__GNUC__) && ! defined (__INTEL_COMPILER)
 /* Do both product parts in assembly, since that gives better code with
    all gcc versions.  Some callers will just use the upper part, and in
    that situation we waste an instruction, but not any cycles.  */
-#define umul_ppmm(ph, pl, m0, m1) \
+#परिभाषय umul_ppmm(ph, pl, m0, m1) \
     __asm__ ("xma.hu %0 = %2, %3, f0\n\txma.l %1 = %2, %3, f0"		\
 	     : "=&f" (ph), "=f" (pl)					\
 	     : "f" (m0), "f" (m1))
-#define count_leading_zeros(count, x) \
-  do {									\
+#परिभाषय गणनम्_leading_zeros(गणनम्, x) \
+  कुरु {									\
     UWtype _x = (x), _y, _a, _c;					\
     __asm__ ("mux1 %0 = %1, @rev" : "=r" (_y) : "r" (_x));		\
     __asm__ ("czx1.l %0 = %1" : "=r" (_a) : "r" (-_y | _y));		\
     _c = (_a - 1) << 3;							\
     _x >>= _c;								\
-    if (_x >= 1 << 4)							\
+    यदि (_x >= 1 << 4)							\
       _x >>= 4, _c += 4;						\
-    if (_x >= 1 << 2)							\
+    यदि (_x >= 1 << 2)							\
       _x >>= 2, _c += 2;						\
     _c += _x >> 1;							\
-    (count) =  W_TYPE_SIZE - 1 - _c;					\
-  } while (0)
+    (गणनम्) =  W_TYPE_आकार - 1 - _c;					\
+  } यावत् (0)
 /* similar to what gcc does for __builtin_ffs, but 0 based rather than 1
    based, and we don't need a special case for x==0 here */
-#define count_trailing_zeros(count, x)					\
-  do {									\
+#परिभाषय गणनम्_trailing_zeros(गणनम्, x)					\
+  कुरु {									\
     UWtype __ctz_x = (x);						\
     __asm__ ("popcnt %0 = %1"						\
-	     : "=r" (count)						\
+	     : "=r" (गणनम्)						\
 	     : "r" ((__ctz_x-1) & ~__ctz_x));				\
-  } while (0)
-#endif
-#if defined (__INTEL_COMPILER)
-#include <ia64intrin.h>
-#define umul_ppmm(ph, pl, m0, m1)					\
-  do {									\
+  } यावत् (0)
+#यदि_अन्तः
+#यदि defined (__INTEL_COMPILER)
+#अन्तर्भाव <ia64intrin.h>
+#परिभाषय umul_ppmm(ph, pl, m0, m1)					\
+  कुरु {									\
     UWtype __m0 = (m0), __m1 = (m1);					\
     ph = _m64_xmahu (__m0, __m1, 0);					\
     pl = __m0 * __m1;							\
-  } while (0)
-#endif
-#ifndef LONGLONG_STANDALONE
-#define udiv_qrnnd(q, r, n1, n0, d) \
-  do { UWtype __di;							\
+  } यावत् (0)
+#यदि_अन्तः
+#यदि_अपरिभाषितम् LONGLONG_STANDALONE
+#परिभाषय udiv_qrnnd(q, r, n1, n0, d) \
+  कुरु { UWtype __di;							\
     __di = __MPN(invert_limb) (d);					\
     udiv_qrnnd_preinv (q, r, n1, n0, d, __di);				\
-  } while (0)
-#define UDIV_PREINV_ALWAYS  1
-#define UDIV_NEEDS_NORMALIZATION 1
-#endif
-#endif
+  } यावत् (0)
+#परिभाषय UDIV_PREINV_ALWAYS  1
+#परिभाषय UDIV_NEEDS_NORMALIZATION 1
+#यदि_अन्तः
+#यदि_अन्तः
 
 
-#if defined (__GNUC__)
+#यदि defined (__GNUC__)
 
 /* We sometimes need to clobber "cc" with gcc2, but that would not be
    understood by gcc1.  Use cpp to avoid major code duplication.  */
-#if __GNUC__ < 2
-#define __CLOBBER_CC
-#define __AND_CLOBBER_CC
-#else /* __GNUC__ >= 2 */
-#define __CLOBBER_CC : "cc"
-#define __AND_CLOBBER_CC , "cc"
-#endif /* __GNUC__ < 2 */
+#यदि __GNUC__ < 2
+#परिभाषय __CLOBBER_CC
+#परिभाषय __AND_CLOBBER_CC
+#अन्यथा /* __GNUC__ >= 2 */
+#परिभाषय __CLOBBER_CC : "cc"
+#परिभाषय __AND_CLOBBER_CC , "cc"
+#यदि_अन्तः /* __GNUC__ < 2 */
 
-#if (defined (__a29k__) || defined (_AM29K)) && W_TYPE_SIZE == 32
-#define add_ssaaaa(sh, sl, ah, al, bh, bl) \
+#यदि (defined (__a29k__) || defined (_AM29K)) && W_TYPE_आकार == 32
+#परिभाषय सङ्कलय_ssaaaa(sh, sl, ah, al, bh, bl) \
   __asm__ ("add %1,%4,%5\n\taddc %0,%2,%3"				\
 	   : "=r" (sh), "=&r" (sl)					\
 	   : "r" (ah), "rI" (bh), "%r" (al), "rI" (bl))
-#define sub_ddmmss(sh, sl, ah, al, bh, bl) \
+#परिभाषय sub_ddmmss(sh, sl, ah, al, bh, bl) \
   __asm__ ("sub %1,%4,%5\n\tsubc %0,%2,%3"				\
 	   : "=r" (sh), "=&r" (sl)					\
 	   : "r" (ah), "rI" (bh), "r" (al), "rI" (bl))
-#define umul_ppmm(xh, xl, m0, m1) \
-  do {									\
+#परिभाषय umul_ppmm(xh, xl, m0, m1) \
+  कुरु {									\
     USItype __m0 = (m0), __m1 = (m1);					\
     __asm__ ("multiplu %0,%1,%2"					\
 	     : "=r" (xl)						\
@@ -401,20 +401,20 @@ long __MPN(count_leading_zeros) (UDItype);
     __asm__ ("multmu %0,%1,%2"						\
 	     : "=r" (xh)						\
 	     : "r" (__m0), "r" (__m1));					\
-  } while (0)
-#define udiv_qrnnd(q, r, n1, n0, d) \
+  } यावत् (0)
+#परिभाषय udiv_qrnnd(q, r, n1, n0, d) \
   __asm__ ("dividu %0,%3,%4"						\
 	   : "=r" (q), "=q" (r)						\
 	   : "1" (n1), "r" (n0), "r" (d))
-#define count_leading_zeros(count, x) \
+#परिभाषय गणनम्_leading_zeros(गणनम्, x) \
     __asm__ ("clz %0,%1"						\
-	     : "=r" (count)						\
+	     : "=r" (गणनम्)						\
 	     : "r" (x))
-#define COUNT_LEADING_ZEROS_0 32
-#endif /* __a29k__ */
+#परिभाषय गणनम्_LEADING_ZEROS_0 32
+#यदि_अन्तः /* __a29k__ */
 
-#if defined (__arc__)
-#define add_ssaaaa(sh, sl, ah, al, bh, bl) \
+#यदि defined (__arc__)
+#परिभाषय सङ्कलय_ssaaaa(sh, sl, ah, al, bh, bl) \
   __asm__ ("add.f\t%1, %4, %5\n\tadc\t%0, %2, %3"			\
 	   : "=r" (sh),							\
 	     "=&r" (sl)							\
@@ -422,7 +422,7 @@ long __MPN(count_leading_zeros) (UDItype);
 	     "rICal" ((USItype) (bh)),					\
 	     "%r" ((USItype) (al)),					\
 	     "rICal" ((USItype) (bl)))
-#define sub_ddmmss(sh, sl, ah, al, bh, bl) \
+#परिभाषय sub_ddmmss(sh, sl, ah, al, bh, bl) \
   __asm__ ("sub.f\t%1, %4, %5\n\tsbc\t%0, %2, %3"			\
 	   : "=r" (sh),							\
 	     "=&r" (sl)							\
@@ -430,83 +430,83 @@ long __MPN(count_leading_zeros) (UDItype);
 	     "rICal" ((USItype) (bh)),					\
 	     "r" ((USItype) (al)),					\
 	     "rICal" ((USItype) (bl)))
-#endif
+#यदि_अन्तः
 
-#if defined (__arm__) && (defined (__thumb2__) || !defined (__thumb__)) \
-    && W_TYPE_SIZE == 32
-#define add_ssaaaa(sh, sl, ah, al, bh, bl) \
-  do {									\
-    if (__builtin_constant_p (bl) && -(USItype)(bl) < (USItype)(bl))	\
+#यदि defined (__arm__) && (defined (__thumb2__) || !defined (__thumb__)) \
+    && W_TYPE_आकार == 32
+#परिभाषय सङ्कलय_ssaaaa(sh, sl, ah, al, bh, bl) \
+  कुरु {									\
+    यदि (__builtin_constant_p (bl) && -(USItype)(bl) < (USItype)(bl))	\
       __asm__ ("subs\t%1, %4, %5\n\tadc\t%0, %2, %3"			\
 	   : "=r" (sh), "=&r" (sl)					\
 	       : "r" (ah), "rI" (bh),					\
 		 "%r" (al), "rI" (-(USItype)(bl)) __CLOBBER_CC);	\
-    else								\
+    अन्यथा								\
       __asm__ ("adds\t%1, %4, %5\n\tadc\t%0, %2, %3"			\
 	   : "=r" (sh), "=&r" (sl)					\
 	   : "r" (ah), "rI" (bh), "%r" (al), "rI" (bl) __CLOBBER_CC);	\
-  } while (0)
+  } यावत् (0)
 /* FIXME: Extend the immediate range for the low word by using both ADDS and
    SUBS, since they set carry in the same way.  We need separate definitions
    for thumb and non-thumb since thumb lacks RSC.  */
-#if defined (__thumb__)
-#define sub_ddmmss(sh, sl, ah, al, bh, bl) \
-  do {									\
-    if (__builtin_constant_p (ah) && __builtin_constant_p (bh)		\
+#यदि defined (__thumb__)
+#परिभाषय sub_ddmmss(sh, sl, ah, al, bh, bl) \
+  कुरु {									\
+    यदि (__builtin_constant_p (ah) && __builtin_constant_p (bh)		\
 	&& (ah) == (bh))						\
       __asm__ ("subs\t%1, %2, %3\n\tsbc\t%0, %0, %0"			\
 	       : "=r" (sh), "=r" (sl)					\
 	       : "r" (al), "rI" (bl) __CLOBBER_CC);			\
-    else if (__builtin_constant_p (al))					\
+    अन्यथा यदि (__builtin_constant_p (al))					\
       __asm__ ("rsbs\t%1, %5, %4\n\tsbc\t%0, %2, %3"			\
 	       : "=r" (sh), "=&r" (sl)					\
 	       : "r" (ah), "rI" (bh), "rI" (al), "r" (bl) __CLOBBER_CC); \
-    else								\
+    अन्यथा								\
       __asm__ ("subs\t%1, %4, %5\n\tsbc\t%0, %2, %3"			\
 	       : "=r" (sh), "=&r" (sl)					\
 	       : "r" (ah), "rI" (bh), "r" (al), "rI" (bl) __CLOBBER_CC); \
-    } while (0)
-#else
-#define sub_ddmmss(sh, sl, ah, al, bh, bl) \
-  do {									\
-    if (__builtin_constant_p (ah) && __builtin_constant_p (bh)		\
+    } यावत् (0)
+#अन्यथा
+#परिभाषय sub_ddmmss(sh, sl, ah, al, bh, bl) \
+  कुरु {									\
+    यदि (__builtin_constant_p (ah) && __builtin_constant_p (bh)		\
 	&& (ah) == (bh))						\
       __asm__ ("subs\t%1, %2, %3\n\tsbc\t%0, %0, %0"			\
 	       : "=r" (sh), "=r" (sl)					\
 	       : "r" (al), "rI" (bl) __CLOBBER_CC);			\
-    else if (__builtin_constant_p (al))					\
+    अन्यथा यदि (__builtin_constant_p (al))					\
       {									\
-	if (__builtin_constant_p (ah))					\
+	यदि (__builtin_constant_p (ah))					\
 	  __asm__ ("rsbs\t%1, %5, %4\n\trsc\t%0, %3, %2"		\
 		   : "=r" (sh), "=&r" (sl)				\
 		   : "rI" (ah), "r" (bh), "rI" (al), "r" (bl) __CLOBBER_CC); \
-	else								\
+	अन्यथा								\
 	  __asm__ ("rsbs\t%1, %5, %4\n\tsbc\t%0, %2, %3"		\
 		   : "=r" (sh), "=&r" (sl)				\
 		   : "r" (ah), "rI" (bh), "rI" (al), "r" (bl) __CLOBBER_CC); \
       }									\
-    else if (__builtin_constant_p (ah))					\
+    अन्यथा यदि (__builtin_constant_p (ah))					\
       {									\
-	if (__builtin_constant_p (bl))					\
+	यदि (__builtin_constant_p (bl))					\
 	  __asm__ ("subs\t%1, %4, %5\n\trsc\t%0, %3, %2"		\
 		   : "=r" (sh), "=&r" (sl)				\
 		   : "rI" (ah), "r" (bh), "r" (al), "rI" (bl) __CLOBBER_CC); \
-	else								\
+	अन्यथा								\
 	  __asm__ ("rsbs\t%1, %5, %4\n\trsc\t%0, %3, %2"		\
 		   : "=r" (sh), "=&r" (sl)				\
 		   : "rI" (ah), "r" (bh), "rI" (al), "r" (bl) __CLOBBER_CC); \
       }									\
-    else								\
+    अन्यथा								\
       __asm__ ("subs\t%1, %4, %5\n\tsbc\t%0, %2, %3"			\
 	       : "=r" (sh), "=&r" (sl)					\
 	       : "r" (ah), "rI" (bh), "r" (al), "rI" (bl) __CLOBBER_CC); \
-    } while (0)
-#endif
-#if defined (__ARM_ARCH_2__) || defined (__ARM_ARCH_2A__) \
+    } यावत् (0)
+#यदि_अन्तः
+#यदि defined (__ARM_ARCH_2__) || defined (__ARM_ARCH_2A__) \
     || defined (__ARM_ARCH_3__)
-#define umul_ppmm(xh, xl, a, b)						\
-  do {									\
-    register USItype __t0, __t1, __t2;					\
+#परिभाषय umul_ppmm(xh, xl, a, b)						\
+  कुरु {									\
+    पञ्जिका USItype __t0, __t1, __t2;					\
     __asm__ ("%@ Inlined umul_ppmm\n"					\
 	   "	mov	%2, %5, lsr #16\n"				\
 	   "	mov	%0, %6, lsr #16\n"				\
@@ -523,174 +523,174 @@ long __MPN(count_leading_zeros) (UDItype);
 	   : "=&r" ((USItype) (xh)), "=r" ((USItype) (xl)),		\
 	     "=&r" (__t0), "=&r" (__t1), "=r" (__t2)			\
 	   : "r" ((USItype) (a)), "r" ((USItype) (b)) __CLOBBER_CC);	\
-  } while (0)
-#ifndef LONGLONG_STANDALONE
-#define udiv_qrnnd(q, r, n1, n0, d) \
-  do { UWtype __r;							\
+  } यावत् (0)
+#यदि_अपरिभाषितम् LONGLONG_STANDALONE
+#परिभाषय udiv_qrnnd(q, r, n1, n0, d) \
+  कुरु { UWtype __r;							\
     (q) = __MPN(udiv_qrnnd) (&__r, (n1), (n0), (d));			\
     (r) = __r;								\
-  } while (0)
-extern UWtype __MPN(udiv_qrnnd) (UWtype *, UWtype, UWtype, UWtype);
-#endif /* LONGLONG_STANDALONE */
-#else /* ARMv4 or newer */
-#define umul_ppmm(xh, xl, a, b) \
+  } यावत् (0)
+बाह्य UWtype __MPN(udiv_qrnnd) (UWtype *, UWtype, UWtype, UWtype);
+#यदि_अन्तः /* LONGLONG_STANDALONE */
+#अन्यथा /* ARMv4 or newer */
+#परिभाषय umul_ppmm(xh, xl, a, b) \
   __asm__ ("umull %0,%1,%2,%3" : "=&r" (xl), "=&r" (xh) : "r" (a), "r" (b))
-#define smul_ppmm(xh, xl, a, b) \
+#परिभाषय smul_ppmm(xh, xl, a, b) \
   __asm__ ("smull %0,%1,%2,%3" : "=&r" (xl), "=&r" (xh) : "r" (a), "r" (b))
-#ifndef LONGLONG_STANDALONE
-#define udiv_qrnnd(q, r, n1, n0, d) \
-  do { UWtype __di;							\
+#यदि_अपरिभाषितम् LONGLONG_STANDALONE
+#परिभाषय udiv_qrnnd(q, r, n1, n0, d) \
+  कुरु { UWtype __di;							\
     __di = __MPN(invert_limb) (d);					\
     udiv_qrnnd_preinv (q, r, n1, n0, d, __di);				\
-  } while (0)
-#define UDIV_PREINV_ALWAYS  1
-#define UDIV_NEEDS_NORMALIZATION 1
-#endif /* LONGLONG_STANDALONE */
-#endif /* defined(__ARM_ARCH_2__) ... */
-#define count_leading_zeros(count, x)  count_leading_zeros_gcc_clz(count, x)
-#define count_trailing_zeros(count, x)  count_trailing_zeros_gcc_ctz(count, x)
-#endif /* __arm__ */
+  } यावत् (0)
+#परिभाषय UDIV_PREINV_ALWAYS  1
+#परिभाषय UDIV_NEEDS_NORMALIZATION 1
+#यदि_अन्तः /* LONGLONG_STANDALONE */
+#यदि_अन्तः /* defined(__ARM_ARCH_2__) ... */
+#परिभाषय गणनम्_leading_zeros(गणनम्, x)  गणनम्_leading_zeros_gcc_clz(गणनम्, x)
+#परिभाषय गणनम्_trailing_zeros(गणनम्, x)  गणनम्_trailing_zeros_gcc_ctz(गणनम्, x)
+#यदि_अन्तः /* __arm__ */
 
-#if defined (__aarch64__) && W_TYPE_SIZE == 64
-#define add_ssaaaa(sh, sl, ah, al, bh, bl) \
-  do {									\
-    if (__builtin_constant_p (bl) && ~(UDItype)(bl) <= (UDItype)(bl))	\
+#यदि defined (__aarch64__) && W_TYPE_आकार == 64
+#परिभाषय सङ्कलय_ssaaaa(sh, sl, ah, al, bh, bl) \
+  कुरु {									\
+    यदि (__builtin_constant_p (bl) && ~(UDItype)(bl) <= (UDItype)(bl))	\
       __asm__ ("subs\t%1, %x4, %5\n\tadc\t%0, %x2, %x3"			\
 	       : "=r" (sh), "=&r" (sl)					\
 	       : "rZ" ((UDItype)(ah)), "rZ" ((UDItype)(bh)),		\
 		 "%r" ((UDItype)(al)), "rI" (-(UDItype)(bl)) __CLOBBER_CC);\
-    else								\
+    अन्यथा								\
       __asm__ ("adds\t%1, %x4, %5\n\tadc\t%0, %x2, %x3"			\
 	       : "=r" (sh), "=&r" (sl)					\
 	       : "rZ" ((UDItype)(ah)), "rZ" ((UDItype)(bh)),		\
 		 "%r" ((UDItype)(al)), "rI" ((UDItype)(bl)) __CLOBBER_CC);\
-  } while (0)
-#define sub_ddmmss(sh, sl, ah, al, bh, bl) \
-  do {									\
-    if (__builtin_constant_p (bl) && ~(UDItype)(bl) <= (UDItype)(bl))	\
+  } यावत् (0)
+#परिभाषय sub_ddmmss(sh, sl, ah, al, bh, bl) \
+  कुरु {									\
+    यदि (__builtin_constant_p (bl) && ~(UDItype)(bl) <= (UDItype)(bl))	\
       __asm__ ("adds\t%1, %x4, %5\n\tsbc\t%0, %x2, %x3"			\
 	       : "=r,r" (sh), "=&r,&r" (sl)				\
 	       : "rZ,rZ" ((UDItype)(ah)), "rZ,rZ" ((UDItype)(bh)),	\
 		 "r,Z"   ((UDItype)(al)), "rI,r" (-(UDItype)(bl)) __CLOBBER_CC);\
-    else								\
+    अन्यथा								\
       __asm__ ("subs\t%1, %x4, %5\n\tsbc\t%0, %x2, %x3"			\
 	       : "=r,r" (sh), "=&r,&r" (sl)				\
 	       : "rZ,rZ" ((UDItype)(ah)), "rZ,rZ" ((UDItype)(bh)),	\
 		 "r,Z"   ((UDItype)(al)), "rI,r"  ((UDItype)(bl)) __CLOBBER_CC);\
-  } while(0);
-#if __GMP_GNUC_PREREQ (4,9)
-#define umul_ppmm(w1, w0, u, v) \
-  do {									\
-    typedef unsigned int __ll_UTItype __attribute__((mode(TI)));	\
+  } यावत्(0);
+#यदि __GMP_GNUC_PREREQ (4,9)
+#परिभाषय umul_ppmm(w1, w0, u, v) \
+  कुरु {									\
+    प्रकारनिर्देश अचिह्नित पूर्णाङ्क __ll_UTItype __attribute__((बहुलकम्_2(TI)));	\
     __ll_UTItype __ll = (__ll_UTItype)(u) * (v);			\
     w1 = __ll >> 64;							\
     w0 = __ll;								\
-  } while (0)
-#endif
-#if !defined (umul_ppmm)
-#define umul_ppmm(ph, pl, m0, m1) \
-  do {									\
+  } यावत् (0)
+#यदि_अन्तः
+#यदि !defined (umul_ppmm)
+#परिभाषय umul_ppmm(ph, pl, m0, m1) \
+  कुरु {									\
     UDItype __m0 = (m0), __m1 = (m1);					\
     __asm__ ("umulh\t%0, %1, %2" : "=r" (ph) : "r" (__m0), "r" (__m1));	\
     (pl) = __m0 * __m1;							\
-  } while (0)
-#endif
-#define count_leading_zeros(count, x)  count_leading_zeros_gcc_clz(count, x)
-#define count_trailing_zeros(count, x)  count_trailing_zeros_gcc_ctz(count, x)
-#endif /* __aarch64__ */
+  } यावत् (0)
+#यदि_अन्तः
+#परिभाषय गणनम्_leading_zeros(गणनम्, x)  गणनम्_leading_zeros_gcc_clz(गणनम्, x)
+#परिभाषय गणनम्_trailing_zeros(गणनम्, x)  गणनम्_trailing_zeros_gcc_ctz(गणनम्, x)
+#यदि_अन्तः /* __aarch64__ */
 
-#if defined (__clipper__) && W_TYPE_SIZE == 32
-#define umul_ppmm(w1, w0, u, v) \
-  ({union {UDItype __ll;						\
-	   struct {USItype __l, __h;} __i;				\
+#यदि defined (__clipper__) && W_TYPE_आकार == 32
+#परिभाषय umul_ppmm(w1, w0, u, v) \
+  ({सङ्घ {UDItype __ll;						\
+	   संरचना {USItype __l, __h;} __i;				\
 	  } __x;							\
   __asm__ ("mulwux %2,%0"						\
 	   : "=r" (__x.__ll)						\
 	   : "%0" ((USItype)(u)), "r" ((USItype)(v)));			\
   (w1) = __x.__i.__h; (w0) = __x.__i.__l;})
-#define smul_ppmm(w1, w0, u, v) \
-  ({union {DItype __ll;							\
-	   struct {SItype __l, __h;} __i;				\
+#परिभाषय smul_ppmm(w1, w0, u, v) \
+  ({सङ्घ {DItype __ll;							\
+	   संरचना {SItype __l, __h;} __i;				\
 	  } __x;							\
   __asm__ ("mulwx %2,%0"						\
 	   : "=r" (__x.__ll)						\
 	   : "%0" ((SItype)(u)), "r" ((SItype)(v)));			\
   (w1) = __x.__i.__h; (w0) = __x.__i.__l;})
-#define __umulsidi3(u, v) \
+#परिभाषय __umulsidi3(u, v) \
   ({UDItype __w;							\
     __asm__ ("mulwux %2,%0"						\
 	     : "=r" (__w) : "%0" ((USItype)(u)), "r" ((USItype)(v)));	\
     __w; })
-#endif /* __clipper__ */
+#यदि_अन्तः /* __clipper__ */
 
 /* Fujitsu vector computers.  */
-#if defined (__uxp__) && W_TYPE_SIZE == 32
-#define umul_ppmm(ph, pl, u, v) \
-  do {									\
-    union {UDItype __ll;						\
-	   struct {USItype __h, __l;} __i;				\
+#यदि defined (__uxp__) && W_TYPE_आकार == 32
+#परिभाषय umul_ppmm(ph, pl, u, v) \
+  कुरु {									\
+    सङ्घ {UDItype __ll;						\
+	   संरचना {USItype __h, __l;} __i;				\
 	  } __x;							\
     __asm__ ("mult.lu %1,%2,%0"	: "=r" (__x.__ll) : "%r" (u), "rK" (v));\
     (ph) = __x.__i.__h;							\
     (pl) = __x.__i.__l;							\
-  } while (0)
-#define smul_ppmm(ph, pl, u, v) \
-  do {									\
-    union {UDItype __ll;						\
-	   struct {USItype __h, __l;} __i;				\
+  } यावत् (0)
+#परिभाषय smul_ppmm(ph, pl, u, v) \
+  कुरु {									\
+    सङ्घ {UDItype __ll;						\
+	   संरचना {USItype __h, __l;} __i;				\
 	  } __x;							\
     __asm__ ("mult.l %1,%2,%0" : "=r" (__x.__ll) : "%r" (u), "rK" (v));	\
     (ph) = __x.__i.__h;							\
     (pl) = __x.__i.__l;							\
-  } while (0)
-#endif
+  } यावत् (0)
+#यदि_अन्तः
 
-#if defined (__gmicro__) && W_TYPE_SIZE == 32
-#define add_ssaaaa(sh, sl, ah, al, bh, bl) \
+#यदि defined (__gmicro__) && W_TYPE_आकार == 32
+#परिभाषय सङ्कलय_ssaaaa(sh, sl, ah, al, bh, bl) \
   __asm__ ("add.w %5,%1\n\taddx %3,%0"					\
 	   : "=g" (sh), "=&g" (sl)					\
 	   : "0"  ((USItype)(ah)), "g" ((USItype)(bh)),			\
 	     "%1" ((USItype)(al)), "g" ((USItype)(bl)))
-#define sub_ddmmss(sh, sl, ah, al, bh, bl) \
+#परिभाषय sub_ddmmss(sh, sl, ah, al, bh, bl) \
   __asm__ ("sub.w %5,%1\n\tsubx %3,%0"					\
 	   : "=g" (sh), "=&g" (sl)					\
 	   : "0" ((USItype)(ah)), "g" ((USItype)(bh)),			\
 	     "1" ((USItype)(al)), "g" ((USItype)(bl)))
-#define umul_ppmm(ph, pl, m0, m1) \
+#परिभाषय umul_ppmm(ph, pl, m0, m1) \
   __asm__ ("mulx %3,%0,%1"						\
 	   : "=g" (ph), "=r" (pl)					\
 	   : "%0" ((USItype)(m0)), "g" ((USItype)(m1)))
-#define udiv_qrnnd(q, r, nh, nl, d) \
+#परिभाषय udiv_qrnnd(q, r, nh, nl, d) \
   __asm__ ("divx %4,%0,%1"						\
 	   : "=g" (q), "=r" (r)						\
 	   : "1" ((USItype)(nh)), "0" ((USItype)(nl)), "g" ((USItype)(d)))
-#define count_leading_zeros(count, x) \
+#परिभाषय गणनम्_leading_zeros(गणनम्, x) \
   __asm__ ("bsch/1 %1,%0"						\
-	   : "=g" (count) : "g" ((USItype)(x)), "0" ((USItype)0))
-#endif
+	   : "=g" (गणनम्) : "g" ((USItype)(x)), "0" ((USItype)0))
+#यदि_अन्तः
 
-#if defined (__hppa) && W_TYPE_SIZE == 32
-#define add_ssaaaa(sh, sl, ah, al, bh, bl) \
+#यदि defined (__hppa) && W_TYPE_आकार == 32
+#परिभाषय सङ्कलय_ssaaaa(sh, sl, ah, al, bh, bl) \
   __asm__ ("add%I5 %5,%r4,%1\n\taddc %r2,%r3,%0"			\
 	   : "=r" (sh), "=&r" (sl)					\
 	   : "rM" (ah), "rM" (bh), "%rM" (al), "rI" (bl))
-#define sub_ddmmss(sh, sl, ah, al, bh, bl) \
+#परिभाषय sub_ddmmss(sh, sl, ah, al, bh, bl) \
   __asm__ ("sub%I4 %4,%r5,%1\n\tsubb %r2,%r3,%0"			\
 	   : "=r" (sh), "=&r" (sl)					\
 	   : "rM" (ah), "rM" (bh), "rI" (al), "rM" (bl))
-#if defined (_PA_RISC1_1)
-#define umul_ppmm(wh, wl, u, v) \
-  do {									\
-    union {UDItype __ll;						\
-	   struct {USItype __h, __l;} __i;				\
+#यदि defined (_PA_RISC1_1)
+#परिभाषय umul_ppmm(wh, wl, u, v) \
+  कुरु {									\
+    सङ्घ {UDItype __ll;						\
+	   संरचना {USItype __h, __l;} __i;				\
 	  } __x;							\
     __asm__ ("xmpyu %1,%2,%0" : "=*f" (__x.__ll) : "*f" (u), "*f" (v));	\
     (wh) = __x.__i.__h;							\
     (wl) = __x.__i.__l;							\
-  } while (0)
-#endif
-#define count_leading_zeros(count, x) \
-  do {									\
+  } यावत् (0)
+#यदि_अन्तः
+#परिभाषय गणनम्_leading_zeros(गणनम्, x) \
+  कुरु {									\
     USItype __tmp;							\
     __asm__ (								\
        "ldi		1,%0\n"						\
@@ -708,28 +708,28 @@ extern UWtype __MPN(udiv_qrnnd) (UWtype *, UWtype, UWtype, UWtype);
 "	ldo		2(%0),%0	; Yes.  Perform add.\n"		\
 "	extru		%1,30,1,%1	; Extract bit 1.\n"		\
 "	sub		%0,%1,%0	; Subtract it.\n"		\
-	: "=r" (count), "=r" (__tmp) : "1" (x));			\
-  } while (0)
-#endif /* hppa */
+	: "=r" (गणनम्), "=r" (__tmp) : "1" (x));			\
+  } यावत् (0)
+#यदि_अन्तः /* hppa */
 
 /* These macros are for ABI=2.0w.  In ABI=2.0n they can't be used, since GCC
    (3.2) puts longlong into two adjacent 32-bit registers.  Presumably this
    is just a case of no direct support for 2.0n but treating it like 1.0. */
-#if defined (__hppa) && W_TYPE_SIZE == 64 && ! defined (_LONG_LONG_LIMB)
-#define add_ssaaaa(sh, sl, ah, al, bh, bl) \
+#यदि defined (__hppa) && W_TYPE_आकार == 64 && ! defined (_LONG_LONG_LIMB)
+#परिभाषय सङ्कलय_ssaaaa(sh, sl, ah, al, bh, bl) \
   __asm__ ("add%I5 %5,%r4,%1\n\tadd,dc %r2,%r3,%0"			\
 	   : "=r" (sh), "=&r" (sl)					\
 	   : "rM" (ah), "rM" (bh), "%rM" (al), "rI" (bl))
-#define sub_ddmmss(sh, sl, ah, al, bh, bl) \
+#परिभाषय sub_ddmmss(sh, sl, ah, al, bh, bl) \
   __asm__ ("sub%I4 %4,%r5,%1\n\tsub,db %r2,%r3,%0"			\
 	   : "=r" (sh), "=&r" (sl)					\
 	   : "rM" (ah), "rM" (bh), "rI" (al), "rM" (bl))
-#endif /* hppa */
+#यदि_अन्तः /* hppa */
 
-#if (defined (__i370__) || defined (__s390__) || defined (__mvs__)) && W_TYPE_SIZE == 32
-#if defined (__zarch__) || defined (HAVE_HOST_CPU_s390_zarch)
-#define add_ssaaaa(sh, sl, ah, al, bh, bl)				\
-  do {									\
+#यदि (defined (__i370__) || defined (__s390__) || defined (__mvs__)) && W_TYPE_आकार == 32
+#यदि defined (__zarch__) || defined (HAVE_HOST_CPU_s390_zarch)
+#परिभाषय सङ्कलय_ssaaaa(sh, sl, ah, al, bh, bl)				\
+  कुरु {									\
 /*  if (__builtin_constant_p (bl))					\
       __asm__ ("alfi\t%1,%o5\n\talcr\t%0,%3"				\
 	       : "=r" (sh), "=&r" (sl)					\
@@ -738,9 +738,9 @@ extern UWtype __MPN(udiv_qrnnd) (UWtype *, UWtype, UWtype, UWtype);
 */    __asm__ ("alr\t%1,%5\n\talcr\t%0,%3"				\
 	       : "=r" (sh), "=&r" (sl)					\
 	       : "0"  (ah), "r" (bh), "%1" (al), "r" (bl)__CLOBBER_CC);	\
-  } while (0)
-#define sub_ddmmss(sh, sl, ah, al, bh, bl)				\
-  do {									\
+  } यावत् (0)
+#परिभाषय sub_ddmmss(sh, sl, ah, al, bh, bl)				\
+  कुरु {									\
 /*  if (__builtin_constant_p (bl))					\
       __asm__ ("slfi\t%1,%o5\n\tslbr\t%0,%3"				\
 	       : "=r" (sh), "=&r" (sl)					\
@@ -749,184 +749,184 @@ extern UWtype __MPN(udiv_qrnnd) (UWtype *, UWtype, UWtype, UWtype);
 */    __asm__ ("slr\t%1,%5\n\tslbr\t%0,%3"				\
 	       : "=r" (sh), "=&r" (sl)					\
 	       : "0" (ah), "r" (bh), "1" (al), "r" (bl) __CLOBBER_CC);	\
-  } while (0)
-#if __GMP_GNUC_PREREQ (4,5)
-#define umul_ppmm(xh, xl, m0, m1)					\
-  do {									\
-    union {UDItype __ll;						\
-	   struct {USItype __h, __l;} __i;				\
+  } यावत् (0)
+#यदि __GMP_GNUC_PREREQ (4,5)
+#परिभाषय umul_ppmm(xh, xl, m0, m1)					\
+  कुरु {									\
+    सङ्घ {UDItype __ll;						\
+	   संरचना {USItype __h, __l;} __i;				\
 	  } __x;							\
     __x.__ll = (UDItype) (m0) * (UDItype) (m1);				\
     (xh) = __x.__i.__h; (xl) = __x.__i.__l;				\
-  } while (0)
-#else
-#if 0
+  } यावत् (0)
+#अन्यथा
+#यदि 0
 /* FIXME: this fails if gcc knows about the 64-bit registers.  Use only
    with a new enough processor pretending we have 32-bit registers.  */
-#define umul_ppmm(xh, xl, m0, m1)					\
-  do {									\
-    union {UDItype __ll;						\
-	   struct {USItype __h, __l;} __i;				\
+#परिभाषय umul_ppmm(xh, xl, m0, m1)					\
+  कुरु {									\
+    सङ्घ {UDItype __ll;						\
+	   संरचना {USItype __h, __l;} __i;				\
 	  } __x;							\
     __asm__ ("mlr\t%0,%2"						\
 	     : "=r" (__x.__ll)						\
 	     : "%0" (m0), "r" (m1));					\
     (xh) = __x.__i.__h; (xl) = __x.__i.__l;				\
-  } while (0)
-#else
-#define umul_ppmm(xh, xl, m0, m1)					\
-  do {									\
+  } यावत् (0)
+#अन्यथा
+#परिभाषय umul_ppmm(xh, xl, m0, m1)					\
+  कुरु {									\
   /* When we have 64-bit regs and gcc is aware of that, we cannot simply use
      DImode for the product, since that would be allocated to a single 64-bit
      register, whereas mlr uses the low 32-bits of an even-odd register pair.
   */									\
-    register USItype __r0 __asm__ ("0");				\
-    register USItype __r1 __asm__ ("1") = (m0);				\
+    पञ्जिका USItype __r0 __asm__ ("0");				\
+    पञ्जिका USItype __r1 __asm__ ("1") = (m0);				\
     __asm__ ("mlr\t%0,%3"						\
 	     : "=r" (__r0), "=r" (__r1)					\
 	     : "r" (__r1), "r" (m1));					\
     (xh) = __r0; (xl) = __r1;						\
-  } while (0)
-#endif /* if 0 */
-#endif
-#if 0
+  } यावत् (0)
+#यदि_अन्तः /* if 0 */
+#यदि_अन्तः
+#यदि 0
 /* FIXME: this fails if gcc knows about the 64-bit registers.  Use only
    with a new enough processor pretending we have 32-bit registers.  */
-#define udiv_qrnnd(q, r, n1, n0, d)					\
-  do {									\
-    union {UDItype __ll;						\
-	   struct {USItype __h, __l;} __i;				\
+#परिभाषय udiv_qrnnd(q, r, n1, n0, d)					\
+  कुरु {									\
+    सङ्घ {UDItype __ll;						\
+	   संरचना {USItype __h, __l;} __i;				\
 	  } __x;							\
     __x.__i.__h = n1; __x.__i.__l = n0;					\
     __asm__ ("dlr\t%0,%2"						\
 	     : "=r" (__x.__ll)						\
 	     : "0" (__x.__ll), "r" (d));				\
     (q) = __x.__i.__l; (r) = __x.__i.__h;				\
-  } while (0)
-#else
-#define udiv_qrnnd(q, r, n1, n0, d)					\
-  do {									\
-    register USItype __r0 __asm__ ("0") = (n1);				\
-    register USItype __r1 __asm__ ("1") = (n0);				\
+  } यावत् (0)
+#अन्यथा
+#परिभाषय udiv_qrnnd(q, r, n1, n0, d)					\
+  कुरु {									\
+    पञ्जिका USItype __r0 __asm__ ("0") = (n1);				\
+    पञ्जिका USItype __r1 __asm__ ("1") = (n0);				\
     __asm__ ("dlr\t%0,%4"						\
 	     : "=r" (__r0), "=r" (__r1)					\
 	     : "r" (__r0), "r" (__r1), "r" (d));			\
     (q) = __r1; (r) = __r0;						\
-  } while (0)
-#endif /* if 0 */
-#else /* if __zarch__ */
+  } यावत् (0)
+#यदि_अन्तः /* if 0 */
+#अन्यथा /* if __zarch__ */
 /* FIXME: this fails if gcc knows about the 64-bit registers.  */
-#define smul_ppmm(xh, xl, m0, m1)					\
-  do {									\
-    union {DItype __ll;							\
-	   struct {USItype __h, __l;} __i;				\
+#परिभाषय smul_ppmm(xh, xl, m0, m1)					\
+  कुरु {									\
+    सङ्घ {DItype __ll;							\
+	   संरचना {USItype __h, __l;} __i;				\
 	  } __x;							\
     __asm__ ("mr\t%0,%2"						\
 	     : "=r" (__x.__ll)						\
 	     : "%0" (m0), "r" (m1));					\
     (xh) = __x.__i.__h; (xl) = __x.__i.__l;				\
-  } while (0)
+  } यावत् (0)
 /* FIXME: this fails if gcc knows about the 64-bit registers.  */
-#define sdiv_qrnnd(q, r, n1, n0, d)					\
-  do {									\
-    union {DItype __ll;							\
-	   struct {USItype __h, __l;} __i;				\
+#परिभाषय sdiv_qrnnd(q, r, n1, n0, d)					\
+  कुरु {									\
+    सङ्घ {DItype __ll;							\
+	   संरचना {USItype __h, __l;} __i;				\
 	  } __x;							\
     __x.__i.__h = n1; __x.__i.__l = n0;					\
     __asm__ ("dr\t%0,%2"						\
 	     : "=r" (__x.__ll)						\
 	     : "0" (__x.__ll), "r" (d));				\
     (q) = __x.__i.__l; (r) = __x.__i.__h;				\
-  } while (0)
-#endif /* if __zarch__ */
-#endif
+  } यावत् (0)
+#यदि_अन्तः /* if __zarch__ */
+#यदि_अन्तः
 
-#if defined (__s390x__) && W_TYPE_SIZE == 64
+#यदि defined (__s390x__) && W_TYPE_आकार == 64
 /* We need to cast operands with register constraints, otherwise their types
    will be assumed to be SImode by gcc.  For these machines, such operations
    will insert a value into the low 32 bits, and leave the high 32 bits with
    garbage.  */
-#define add_ssaaaa(sh, sl, ah, al, bh, bl)				\
-  do {									\
+#परिभाषय सङ्कलय_ssaaaa(sh, sl, ah, al, bh, bl)				\
+  कुरु {									\
     __asm__ ("algr\t%1,%5\n\talcgr\t%0,%3"				\
 	       : "=r" (sh), "=&r" (sl)					\
 	       : "0"  ((UDItype)(ah)), "r" ((UDItype)(bh)),		\
 		 "%1" ((UDItype)(al)), "r" ((UDItype)(bl)) __CLOBBER_CC); \
-  } while (0)
-#define sub_ddmmss(sh, sl, ah, al, bh, bl)				\
-  do {									\
+  } यावत् (0)
+#परिभाषय sub_ddmmss(sh, sl, ah, al, bh, bl)				\
+  कुरु {									\
     __asm__ ("slgr\t%1,%5\n\tslbgr\t%0,%3"				\
 	     : "=r" (sh), "=&r" (sl)					\
 	     : "0" ((UDItype)(ah)), "r" ((UDItype)(bh)),		\
 	       "1" ((UDItype)(al)), "r" ((UDItype)(bl)) __CLOBBER_CC);	\
-  } while (0)
-#if !defined (__clang__)
-#define umul_ppmm(xh, xl, m0, m1)					\
-  do {									\
-    union {unsigned int __attribute__ ((mode(TI))) __ll;		\
-	   struct {UDItype __h, __l;} __i;				\
+  } यावत् (0)
+#यदि !defined (__clang__)
+#परिभाषय umul_ppmm(xh, xl, m0, m1)					\
+  कुरु {									\
+    सङ्घ {अचिह्नित पूर्णाङ्क __attribute__ ((बहुलकम्_2(TI))) __ll;		\
+	   संरचना {UDItype __h, __l;} __i;				\
 	  } __x;							\
     __asm__ ("mlgr\t%0,%2"						\
 	     : "=r" (__x.__ll)						\
 	     : "%0" ((UDItype)(m0)), "r" ((UDItype)(m1)));		\
     (xh) = __x.__i.__h; (xl) = __x.__i.__l;				\
-  } while (0)
-#define udiv_qrnnd(q, r, n1, n0, d)					\
-  do {									\
-    union {unsigned int __attribute__ ((mode(TI))) __ll;		\
-	   struct {UDItype __h, __l;} __i;				\
+  } यावत् (0)
+#परिभाषय udiv_qrnnd(q, r, n1, n0, d)					\
+  कुरु {									\
+    सङ्घ {अचिह्नित पूर्णाङ्क __attribute__ ((बहुलकम्_2(TI))) __ll;		\
+	   संरचना {UDItype __h, __l;} __i;				\
 	  } __x;							\
     __x.__i.__h = n1; __x.__i.__l = n0;					\
     __asm__ ("dlgr\t%0,%2"						\
 	     : "=r" (__x.__ll)						\
 	     : "0" (__x.__ll), "r" ((UDItype)(d)));			\
     (q) = __x.__i.__l; (r) = __x.__i.__h;				\
-  } while (0)
-#endif
-#if 0 /* FIXME: Enable for z10 (?) */
-#define count_leading_zeros(cnt, x)					\
-  do {									\
-    union {unsigned int __attribute__ ((mode(TI))) __ll;		\
-	   struct {UDItype __h, __l;} __i;				\
+  } यावत् (0)
+#यदि_अन्तः
+#यदि 0 /* FIXME: Enable for z10 (?) */
+#परिभाषय गणनम्_leading_zeros(cnt, x)					\
+  कुरु {									\
+    सङ्घ {अचिह्नित पूर्णाङ्क __attribute__ ((बहुलकम्_2(TI))) __ll;		\
+	   संरचना {UDItype __h, __l;} __i;				\
 	  } __clr_cnt;							\
     __asm__ ("flogr\t%0,%1"						\
 	     : "=r" (__clr_cnt.__ll)					\
 	     : "r" (x) __CLOBBER_CC);					\
     (cnt) = __clr_cnt.__i.__h;						\
-  } while (0)
-#endif
-#endif
+  } यावत् (0)
+#यदि_अन्तः
+#यदि_अन्तः
 
 /* On x86 and x86_64, every asm implicitly clobbers "flags" and "fpsr",
    so we don't need __CLOBBER_CC.  */
-#if (defined (__i386__) || defined (__i486__)) && W_TYPE_SIZE == 32
-#define add_ssaaaa(sh, sl, ah, al, bh, bl) \
+#यदि (defined (__i386__) || defined (__i486__)) && W_TYPE_आकार == 32
+#परिभाषय सङ्कलय_ssaaaa(sh, sl, ah, al, bh, bl) \
   __asm__ ("addl %5,%k1\n\tadcl %3,%k0"					\
 	   : "=r" (sh), "=&r" (sl)					\
 	   : "0"  ((USItype)(ah)), "g" ((USItype)(bh)),			\
 	     "%1" ((USItype)(al)), "g" ((USItype)(bl)))
-#define sub_ddmmss(sh, sl, ah, al, bh, bl) \
+#परिभाषय sub_ddmmss(sh, sl, ah, al, bh, bl) \
   __asm__ ("subl %5,%k1\n\tsbbl %3,%k0"					\
 	   : "=r" (sh), "=&r" (sl)					\
 	   : "0" ((USItype)(ah)), "g" ((USItype)(bh)),			\
 	     "1" ((USItype)(al)), "g" ((USItype)(bl)))
-#define umul_ppmm(w1, w0, u, v) \
+#परिभाषय umul_ppmm(w1, w0, u, v) \
   __asm__ ("mull %3"							\
 	   : "=a" (w0), "=d" (w1)					\
 	   : "%0" ((USItype)(u)), "rm" ((USItype)(v)))
-#define udiv_qrnnd(q, r, n1, n0, dx) /* d renamed to dx avoiding "=d" */\
+#परिभाषय udiv_qrnnd(q, r, n1, n0, dx) /* d renamed to dx avoiding "=d" */\
   __asm__ ("divl %4"		     /* stringification in K&R C */	\
 	   : "=a" (q), "=d" (r)						\
 	   : "0" ((USItype)(n0)), "1" ((USItype)(n1)), "rm" ((USItype)(dx)))
 
-#if HAVE_HOST_CPU_i586 || HAVE_HOST_CPU_pentium || HAVE_HOST_CPU_pentiummmx
+#यदि HAVE_HOST_CPU_i586 || HAVE_HOST_CPU_pentium || HAVE_HOST_CPU_pentiummmx
 /* Pentium bsrl takes between 10 and 72 cycles depending where the most
    significant 1 bit is, hence the use of the following alternatives.  bsfl
    is slow too, between 18 and 42 depending where the least significant 1
    bit is, so let the generic count_trailing_zeros below make use of the
    count_leading_zeros here too.  */
 
-#if HAVE_HOST_CPU_pentiummmx && ! defined (LONGLONG_STANDALONE)
+#यदि HAVE_HOST_CPU_pentiummmx && ! defined (LONGLONG_STANDALONE)
 /* The following should be a fixed 14 or 15 cycles, but possibly plus an L1
    cache miss reading from __clz_tab.  For P55 it's favoured over the float
    below so as to avoid mixing MMX and x87, since the penalty for switching
@@ -945,8 +945,8 @@ extern UWtype __MPN(udiv_qrnnd) (UWtype *, UWtype, UWtype, UWtype);
    constant could be folded into __clz_tab[], but it doesn't seem worth
    making a different table just for that.  */
 
-#define count_leading_zeros(c,n)					\
-  do {									\
+#परिभाषय गणनम्_leading_zeros(c,n)					\
+  कुरु {									\
     USItype  __n = (n);							\
     USItype  __shift;							\
     __asm__ ("cmpl  $0x1000000, %1\n"					\
@@ -958,249 +958,249 @@ extern UWtype __MPN(udiv_qrnnd) (UWtype *, UWtype, UWtype, UWtype);
 	     : "=&r" (__shift) : "r"  (__n));				\
     __shift = __shift*8 + 24 + 1;					\
     (c) = 32 + 1 - __shift - __clz_tab[__n >> __shift];			\
-  } while (0)
-#define COUNT_LEADING_ZEROS_NEED_CLZ_TAB
-#define COUNT_LEADING_ZEROS_0   31   /* n==0 indistinguishable from n==1 */
+  } यावत् (0)
+#परिभाषय गणनम्_LEADING_ZEROS_NEED_CLZ_TAB
+#परिभाषय गणनम्_LEADING_ZEROS_0   31   /* n==0 indistinguishable from n==1 */
 
-#else /* ! pentiummmx || LONGLONG_STANDALONE */
+#अन्यथा /* ! pentiummmx || LONGLONG_STANDALONE */
 /* The following should be a fixed 14 cycles or so.  Some scheduling
    opportunities should be available between the float load/store too.  This
    sort of code is used in gcc 3 for __builtin_ffs (with "n&-n") and is
    apparently suggested by the Intel optimizing manual (don't know exactly
    where).  gcc 2.95 or up will be best for this, so the "double" is
    correctly aligned on the stack.  */
-#define count_leading_zeros(c,n)					\
-  do {									\
-    union {								\
-      double    d;							\
-      unsigned  a[2];							\
+#परिभाषय गणनम्_leading_zeros(c,n)					\
+  कुरु {									\
+    सङ्घ {								\
+      द्विगुण    d;							\
+      अचिह्नित  a[2];							\
     } __u;								\
     __u.d = (UWtype) (n);						\
     (c) = 0x3FF + 31 - (__u.a[1] >> 20);				\
-  } while (0)
-#define COUNT_LEADING_ZEROS_0   (0x3FF + 31)
-#endif /* pentiummx */
+  } यावत् (0)
+#परिभाषय गणनम्_LEADING_ZEROS_0   (0x3FF + 31)
+#यदि_अन्तः /* pentiummx */
 
-#else /* ! pentium */
+#अन्यथा /* ! pentium */
 
-#if __GMP_GNUC_PREREQ (3,4)  /* using bsrl */
-#define count_leading_zeros(count,x)  count_leading_zeros_gcc_clz(count,x)
-#endif /* gcc clz */
+#यदि __GMP_GNUC_PREREQ (3,4)  /* using bsrl */
+#परिभाषय गणनम्_leading_zeros(गणनम्,x)  गणनम्_leading_zeros_gcc_clz(गणनम्,x)
+#यदि_अन्तः /* gcc clz */
 
 /* On P6, gcc prior to 3.0 generates a partial register stall for
    __cbtmp^31, due to using "xorb $31" instead of "xorl $31", the former
    being 1 code byte smaller.  "31-__cbtmp" is a workaround, probably at the
    cost of one extra instruction.  Do this for "i386" too, since that means
    generic x86.  */
-#if ! defined (count_leading_zeros) && __GNUC__ < 3			\
+#यदि ! defined (गणनम्_leading_zeros) && __GNUC__ < 3			\
   && (HAVE_HOST_CPU_i386						\
       || HAVE_HOST_CPU_i686						\
       || HAVE_HOST_CPU_pentiumpro					\
       || HAVE_HOST_CPU_pentium2						\
       || HAVE_HOST_CPU_pentium3)
-#define count_leading_zeros(count, x)					\
-  do {									\
+#परिभाषय गणनम्_leading_zeros(गणनम्, x)					\
+  कुरु {									\
     USItype __cbtmp;							\
     ASSERT ((x) != 0);							\
     __asm__ ("bsrl %1,%0" : "=r" (__cbtmp) : "rm" ((USItype)(x)));	\
-    (count) = 31 - __cbtmp;						\
-  } while (0)
-#endif /* gcc<3 asm bsrl */
+    (गणनम्) = 31 - __cbtmp;						\
+  } यावत् (0)
+#यदि_अन्तः /* gcc<3 asm bsrl */
 
-#ifndef count_leading_zeros
-#define count_leading_zeros(count, x)					\
-  do {									\
+#यदि_अपरिभाषितम् गणनम्_leading_zeros
+#परिभाषय गणनम्_leading_zeros(गणनम्, x)					\
+  कुरु {									\
     USItype __cbtmp;							\
     ASSERT ((x) != 0);							\
     __asm__ ("bsrl %1,%0" : "=r" (__cbtmp) : "rm" ((USItype)(x)));	\
-    (count) = __cbtmp ^ 31;						\
-  } while (0)
-#endif /* asm bsrl */
+    (गणनम्) = __cbtmp ^ 31;						\
+  } यावत् (0)
+#यदि_अन्तः /* asm bsrl */
 
-#if __GMP_GNUC_PREREQ (3,4)  /* using bsfl */
-#define count_trailing_zeros(count,x)  count_trailing_zeros_gcc_ctz(count,x)
-#endif /* gcc ctz */
+#यदि __GMP_GNUC_PREREQ (3,4)  /* using bsfl */
+#परिभाषय गणनम्_trailing_zeros(गणनम्,x)  गणनम्_trailing_zeros_gcc_ctz(गणनम्,x)
+#यदि_अन्तः /* gcc ctz */
 
-#ifndef count_trailing_zeros
-#define count_trailing_zeros(count, x)					\
-  do {									\
+#यदि_अपरिभाषितम् गणनम्_trailing_zeros
+#परिभाषय गणनम्_trailing_zeros(गणनम्, x)					\
+  कुरु {									\
     ASSERT ((x) != 0);							\
-    __asm__ ("bsfl %1,%k0" : "=r" (count) : "rm" ((USItype)(x)));	\
-  } while (0)
-#endif /* asm bsfl */
+    __asm__ ("bsfl %1,%k0" : "=r" (गणनम्) : "rm" ((USItype)(x)));	\
+  } यावत् (0)
+#यदि_अन्तः /* asm bsfl */
 
-#endif /* ! pentium */
+#यदि_अन्तः /* ! pentium */
 
-#endif /* 80x86 */
+#यदि_अन्तः /* 80x86 */
 
-#if defined (__amd64__) && W_TYPE_SIZE == 64
-#define add_ssaaaa(sh, sl, ah, al, bh, bl) \
+#यदि defined (__amd64__) && W_TYPE_आकार == 64
+#परिभाषय सङ्कलय_ssaaaa(sh, sl, ah, al, bh, bl) \
   __asm__ ("addq %5,%q1\n\tadcq %3,%q0"					\
 	   : "=r" (sh), "=&r" (sl)					\
 	   : "0"  ((UDItype)(ah)), "rme" ((UDItype)(bh)),		\
 	     "%1" ((UDItype)(al)), "rme" ((UDItype)(bl)))
-#define sub_ddmmss(sh, sl, ah, al, bh, bl) \
+#परिभाषय sub_ddmmss(sh, sl, ah, al, bh, bl) \
   __asm__ ("subq %5,%q1\n\tsbbq %3,%q0"					\
 	   : "=r" (sh), "=&r" (sl)					\
 	   : "0" ((UDItype)(ah)), "rme" ((UDItype)(bh)),		\
 	     "1" ((UDItype)(al)), "rme" ((UDItype)(bl)))
-#if X86_ASM_MULX \
+#यदि X86_ASM_MULX \
    && (HAVE_HOST_CPU_haswell || HAVE_HOST_CPU_broadwell \
        || HAVE_HOST_CPU_skylake || HAVE_HOST_CPU_bd4 || HAVE_HOST_CPU_zen)
-#define umul_ppmm(w1, w0, u, v) \
+#परिभाषय umul_ppmm(w1, w0, u, v) \
   __asm__ ("mulx\t%3, %q0, %q1"						\
 	   : "=r" (w0), "=r" (w1)					\
 	   : "%d" ((UDItype)(u)), "rm" ((UDItype)(v)))
-#else
-#define umul_ppmm(w1, w0, u, v) \
+#अन्यथा
+#परिभाषय umul_ppmm(w1, w0, u, v) \
   __asm__ ("mulq\t%3"							\
 	   : "=a" (w0), "=d" (w1)					\
 	   : "%0" ((UDItype)(u)), "rm" ((UDItype)(v)))
-#endif
-#define udiv_qrnnd(q, r, n1, n0, dx) /* d renamed to dx avoiding "=d" */\
+#यदि_अन्तः
+#परिभाषय udiv_qrnnd(q, r, n1, n0, dx) /* d renamed to dx avoiding "=d" */\
   __asm__ ("divq %4"		     /* stringification in K&R C */	\
 	   : "=a" (q), "=d" (r)						\
 	   : "0" ((UDItype)(n0)), "1" ((UDItype)(n1)), "rm" ((UDItype)(dx)))
 
-#if HAVE_HOST_CPU_haswell || HAVE_HOST_CPU_broadwell || HAVE_HOST_CPU_skylake \
+#यदि HAVE_HOST_CPU_haswell || HAVE_HOST_CPU_broadwell || HAVE_HOST_CPU_skylake \
   || HAVE_HOST_CPU_k10 || HAVE_HOST_CPU_bd1 || HAVE_HOST_CPU_bd2	\
   || HAVE_HOST_CPU_bd3 || HAVE_HOST_CPU_bd4 || HAVE_HOST_CPU_zen	\
   || HAVE_HOST_CPU_bobcat || HAVE_HOST_CPU_jaguar
-#define count_leading_zeros(count, x)					\
-  do {									\
+#परिभाषय गणनम्_leading_zeros(गणनम्, x)					\
+  कुरु {									\
     /* This is lzcnt, spelled for older assemblers.  Destination and */	\
     /* source must be a 64-bit registers, hence cast and %q.         */	\
-    __asm__ ("rep;bsr\t%1, %q0" : "=r" (count) : "rm" ((UDItype)(x)));	\
-  } while (0)
-#define COUNT_LEADING_ZEROS_0 64
-#else
-#define count_leading_zeros(count, x)					\
-  do {									\
+    __asm__ ("rep;bsr\t%1, %q0" : "=r" (गणनम्) : "rm" ((UDItype)(x)));	\
+  } यावत् (0)
+#परिभाषय गणनम्_LEADING_ZEROS_0 64
+#अन्यथा
+#परिभाषय गणनम्_leading_zeros(गणनम्, x)					\
+  कुरु {									\
     UDItype __cbtmp;							\
     ASSERT ((x) != 0);							\
     __asm__ ("bsr\t%1,%0" : "=r" (__cbtmp) : "rm" ((UDItype)(x)));	\
-    (count) = __cbtmp ^ 63;						\
-  } while (0)
-#endif
+    (गणनम्) = __cbtmp ^ 63;						\
+  } यावत् (0)
+#यदि_अन्तः
 
-#if HAVE_HOST_CPU_bd2 || HAVE_HOST_CPU_bd3 || HAVE_HOST_CPU_bd4 \
+#यदि HAVE_HOST_CPU_bd2 || HAVE_HOST_CPU_bd3 || HAVE_HOST_CPU_bd4 \
   || HAVE_HOST_CPU_zen || HAVE_HOST_CPU_jaguar
-#define count_trailing_zeros(count, x)					\
-  do {									\
+#परिभाषय गणनम्_trailing_zeros(गणनम्, x)					\
+  कुरु {									\
     /* This is tzcnt, spelled for older assemblers.  Destination and */	\
     /* source must be a 64-bit registers, hence cast and %q.         */	\
-    __asm__ ("rep;bsf\t%1, %q0" : "=r" (count) : "rm" ((UDItype)(x)));	\
-  } while (0)
-#define COUNT_TRAILING_ZEROS_0 64
-#else
-#define count_trailing_zeros(count, x)					\
-  do {									\
+    __asm__ ("rep;bsf\t%1, %q0" : "=r" (गणनम्) : "rm" ((UDItype)(x)));	\
+  } यावत् (0)
+#परिभाषय गणनम्_TRAILING_ZEROS_0 64
+#अन्यथा
+#परिभाषय गणनम्_trailing_zeros(गणनम्, x)					\
+  कुरु {									\
     ASSERT ((x) != 0);							\
-    __asm__ ("bsf\t%1, %q0" : "=r" (count) : "rm" ((UDItype)(x)));	\
-  } while (0)
-#endif
-#endif /* __amd64__ */
+    __asm__ ("bsf\t%1, %q0" : "=r" (गणनम्) : "rm" ((UDItype)(x)));	\
+  } यावत् (0)
+#यदि_अन्तः
+#यदि_अन्तः /* __amd64__ */
 
-#if defined (__i860__) && W_TYPE_SIZE == 32
-#define rshift_rhlc(r,h,l,c) \
+#यदि defined (__i860__) && W_TYPE_आकार == 32
+#परिभाषय rshift_rhlc(r,h,l,c) \
   __asm__ ("shr %3,r0,r0\;shrd %1,%2,%0"				\
 	   "=r" (r) : "r" (h), "r" (l), "rn" (c))
-#endif /* i860 */
+#यदि_अन्तः /* i860 */
 
-#if defined (__i960__) && W_TYPE_SIZE == 32
-#define add_ssaaaa(sh, sl, ah, al, bh, bl) \
+#यदि defined (__i960__) && W_TYPE_आकार == 32
+#परिभाषय सङ्कलय_ssaaaa(sh, sl, ah, al, bh, bl) \
   __asm__ ("cmpo 1,0\;addc %5,%4,%1\;addc %3,%2,%0"			\
 	   : "=r" (sh), "=&r" (sl)					\
 	   : "dI" (ah), "dI" (bh), "%dI" (al), "dI" (bl))
-#define sub_ddmmss(sh, sl, ah, al, bh, bl) \
+#परिभाषय sub_ddmmss(sh, sl, ah, al, bh, bl) \
   __asm__ ("cmpo 0,0\;subc %5,%4,%1\;subc %3,%2,%0"			\
 	   : "=r" (sh), "=&r" (sl)					\
 	   : "dI" (ah), "dI" (bh), "dI" (al), "dI" (bl))
-#define umul_ppmm(w1, w0, u, v) \
-  ({union {UDItype __ll;						\
-	   struct {USItype __l, __h;} __i;				\
+#परिभाषय umul_ppmm(w1, w0, u, v) \
+  ({सङ्घ {UDItype __ll;						\
+	   संरचना {USItype __l, __h;} __i;				\
 	  } __x;							\
   __asm__ ("emul %2,%1,%0"						\
 	   : "=d" (__x.__ll) : "%dI" (u), "dI" (v));			\
   (w1) = __x.__i.__h; (w0) = __x.__i.__l;})
-#define __umulsidi3(u, v) \
+#परिभाषय __umulsidi3(u, v) \
   ({UDItype __w;							\
     __asm__ ("emul %2,%1,%0" : "=d" (__w) : "%dI" (u), "dI" (v));	\
     __w; })
-#define udiv_qrnnd(q, r, nh, nl, d) \
-  do {									\
-    union {UDItype __ll;						\
-	   struct {USItype __l, __h;} __i;				\
+#परिभाषय udiv_qrnnd(q, r, nh, nl, d) \
+  कुरु {									\
+    सङ्घ {UDItype __ll;						\
+	   संरचना {USItype __l, __h;} __i;				\
 	  } __nn;							\
     __nn.__i.__h = (nh); __nn.__i.__l = (nl);				\
     __asm__ ("ediv %d,%n,%0"						\
 	   : "=d" (__rq.__ll) : "dI" (__nn.__ll), "dI" (d));		\
     (r) = __rq.__i.__l; (q) = __rq.__i.__h;				\
-  } while (0)
-#define count_leading_zeros(count, x) \
-  do {									\
+  } यावत् (0)
+#परिभाषय गणनम्_leading_zeros(गणनम्, x) \
+  कुरु {									\
     USItype __cbtmp;							\
     __asm__ ("scanbit %1,%0" : "=r" (__cbtmp) : "r" (x));		\
-    (count) = __cbtmp ^ 31;						\
-  } while (0)
-#define COUNT_LEADING_ZEROS_0 (-32) /* sic */
-#if defined (__i960mx)		/* what is the proper symbol to test??? */
-#define rshift_rhlc(r,h,l,c) \
-  do {									\
-    union {UDItype __ll;						\
-	   struct {USItype __l, __h;} __i;				\
+    (गणनम्) = __cbtmp ^ 31;						\
+  } यावत् (0)
+#परिभाषय गणनम्_LEADING_ZEROS_0 (-32) /* sic */
+#यदि defined (__i960mx)		/* what is the proper symbol to test??? */
+#परिभाषय rshift_rhlc(r,h,l,c) \
+  कुरु {									\
+    सङ्घ {UDItype __ll;						\
+	   संरचना {USItype __l, __h;} __i;				\
 	  } __nn;							\
     __nn.__i.__h = (h); __nn.__i.__l = (l);				\
     __asm__ ("shre %2,%1,%0" : "=d" (r) : "dI" (__nn.__ll), "dI" (c));	\
   }
-#endif /* i960mx */
-#endif /* i960 */
+#यदि_अन्तः /* i960mx */
+#यदि_अन्तः /* i960 */
 
 
-#if defined (__loongarch64) && W_TYPE_SIZE == 64
-#define umul_ppmm(w1, w0, u, v) \
-  do {									\
+#यदि defined (__loongarch64) && W_TYPE_आकार == 64
+#परिभाषय umul_ppmm(w1, w0, u, v) \
+  कुरु {									\
     UDItype __u = (u), __v = (v);					\
     (w0) = __u * __v;							\
-    (w1) = __extension__ (unsigned __int128) __u * __v >> 64;		\
-  } while (0)
-#endif
+    (w1) = __extension__ (अचिह्नित __int128) __u * __v >> 64;		\
+  } यावत् (0)
+#यदि_अन्तः
 
 
-#if (defined (__mc68000__) || defined (__mc68020__) || defined(mc68020) \
+#यदि (defined (__mc68000__) || defined (__mc68020__) || defined(mc68020) \
      || defined (__m68k__) || defined (__mc5200__) || defined (__mc5206e__) \
-     || defined (__mc5307__)) && W_TYPE_SIZE == 32
-#define add_ssaaaa(sh, sl, ah, al, bh, bl) \
+     || defined (__mc5307__)) && W_TYPE_आकार == 32
+#परिभाषय सङ्कलय_ssaaaa(sh, sl, ah, al, bh, bl) \
   __asm__ ("add%.l %5,%1\n\taddx%.l %3,%0"				\
 	   : "=d" (sh), "=&d" (sl)					\
 	   : "0"  ((USItype)(ah)), "d" ((USItype)(bh)),			\
 	     "%1" ((USItype)(al)), "g" ((USItype)(bl)))
-#define sub_ddmmss(sh, sl, ah, al, bh, bl) \
+#परिभाषय sub_ddmmss(sh, sl, ah, al, bh, bl) \
   __asm__ ("sub%.l %5,%1\n\tsubx%.l %3,%0"				\
 	   : "=d" (sh), "=&d" (sl)					\
 	   : "0" ((USItype)(ah)), "d" ((USItype)(bh)),			\
 	     "1" ((USItype)(al)), "g" ((USItype)(bl)))
 /* The '020, '030, '040 and CPU32 have 32x32->64 and 64/32->32q-32r.  */
-#if defined (__mc68020__) || defined(mc68020) \
+#यदि defined (__mc68020__) || defined(mc68020) \
      || defined (__mc68030__) || defined (mc68030) \
      || defined (__mc68040__) || defined (mc68040) \
      || defined (__mcpu32__) || defined (mcpu32) \
      || defined (__NeXT__)
-#define umul_ppmm(w1, w0, u, v) \
+#परिभाषय umul_ppmm(w1, w0, u, v) \
   __asm__ ("mulu%.l %3,%1:%0"						\
 	   : "=d" (w0), "=d" (w1)					\
 	   : "%0" ((USItype)(u)), "dmi" ((USItype)(v)))
-#define udiv_qrnnd(q, r, n1, n0, d) \
+#परिभाषय udiv_qrnnd(q, r, n1, n0, d) \
   __asm__ ("divu%.l %4,%1:%0"						\
 	   : "=d" (q), "=d" (r)						\
 	   : "0" ((USItype)(n0)), "1" ((USItype)(n1)), "dmi" ((USItype)(d)))
-#define sdiv_qrnnd(q, r, n1, n0, d) \
+#परिभाषय sdiv_qrnnd(q, r, n1, n0, d) \
   __asm__ ("divs%.l %4,%1:%0"						\
 	   : "=d" (q), "=d" (r)						\
 	   : "0" ((USItype)(n0)), "1" ((USItype)(n1)), "dmi" ((USItype)(d)))
-#else /* for other 68k family members use 16x16->32 multiplication */
-#define umul_ppmm(xh, xl, a, b) \
-  do { USItype __umul_tmp1, __umul_tmp2;				\
+#अन्यथा /* for other 68k family members use 16x16->32 multiplication */
+#परिभाषय umul_ppmm(xh, xl, a, b) \
+  कुरु { USItype __umul_tmp1, __umul_tmp2;				\
 	__asm__ ("| Inlined umul_ppmm\n"				\
 "	move%.l	%5,%3\n"						\
 "	move%.l	%2,%0\n"						\
@@ -1226,150 +1226,150 @@ extern UWtype __MPN(udiv_qrnnd) (UWtype *, UWtype, UWtype, UWtype);
 	      : "=&d" (xh), "=&d" (xl),					\
 		"=&d" (__umul_tmp1), "=&d" (__umul_tmp2)			\
 	      : "%2" ((USItype)(a)), "d" ((USItype)(b)));		\
-  } while (0)
-#endif /* not mc68020 */
+  } यावत् (0)
+#यदि_अन्तः /* not mc68020 */
 /* The '020, '030, '040 and '060 have bitfield insns.
    GCC 3.4 defines __mc68020__ when in CPU32 mode, check for __mcpu32__ to
    exclude bfffo on that chip (bitfield insns not available).  */
-#if (defined (__mc68020__) || defined (mc68020)    \
+#यदि (defined (__mc68020__) || defined (mc68020)    \
      || defined (__mc68030__) || defined (mc68030) \
      || defined (__mc68040__) || defined (mc68040) \
      || defined (__mc68060__) || defined (mc68060) \
      || defined (__NeXT__))			   \
   && ! defined (__mcpu32__)
-#define count_leading_zeros(count, x) \
+#परिभाषय गणनम्_leading_zeros(गणनम्, x) \
   __asm__ ("bfffo %1{%b2:%b2},%0"					\
-	   : "=d" (count)						\
+	   : "=d" (गणनम्)						\
 	   : "od" ((USItype) (x)), "n" (0))
-#define COUNT_LEADING_ZEROS_0 32
-#endif
-#endif /* mc68000 */
+#परिभाषय गणनम्_LEADING_ZEROS_0 32
+#यदि_अन्तः
+#यदि_अन्तः /* mc68000 */
 
-#if defined (__m88000__) && W_TYPE_SIZE == 32
-#define add_ssaaaa(sh, sl, ah, al, bh, bl) \
+#यदि defined (__m88000__) && W_TYPE_आकार == 32
+#परिभाषय सङ्कलय_ssaaaa(sh, sl, ah, al, bh, bl) \
   __asm__ ("addu.co %1,%r4,%r5\n\taddu.ci %0,%r2,%r3"			\
 	   : "=r" (sh), "=&r" (sl)					\
 	   : "rJ" (ah), "rJ" (bh), "%rJ" (al), "rJ" (bl))
-#define sub_ddmmss(sh, sl, ah, al, bh, bl) \
+#परिभाषय sub_ddmmss(sh, sl, ah, al, bh, bl) \
   __asm__ ("subu.co %1,%r4,%r5\n\tsubu.ci %0,%r2,%r3"			\
 	   : "=r" (sh), "=&r" (sl)					\
 	   : "rJ" (ah), "rJ" (bh), "rJ" (al), "rJ" (bl))
-#define count_leading_zeros(count, x) \
-  do {									\
+#परिभाषय गणनम्_leading_zeros(गणनम्, x) \
+  कुरु {									\
     USItype __cbtmp;							\
     __asm__ ("ff1 %0,%1" : "=r" (__cbtmp) : "r" (x));			\
-    (count) = __cbtmp ^ 31;						\
-  } while (0)
-#define COUNT_LEADING_ZEROS_0 63 /* sic */
-#if defined (__m88110__)
-#define umul_ppmm(wh, wl, u, v) \
-  do {									\
-    union {UDItype __ll;						\
-	   struct {USItype __h, __l;} __i;				\
+    (गणनम्) = __cbtmp ^ 31;						\
+  } यावत् (0)
+#परिभाषय गणनम्_LEADING_ZEROS_0 63 /* sic */
+#यदि defined (__m88110__)
+#परिभाषय umul_ppmm(wh, wl, u, v) \
+  कुरु {									\
+    सङ्घ {UDItype __ll;						\
+	   संरचना {USItype __h, __l;} __i;				\
 	  } __x;							\
     __asm__ ("mulu.d %0,%1,%2" : "=r" (__x.__ll) : "r" (u), "r" (v));	\
     (wh) = __x.__i.__h;							\
     (wl) = __x.__i.__l;							\
-  } while (0)
-#define udiv_qrnnd(q, r, n1, n0, d) \
-  ({union {UDItype __ll;						\
-	   struct {USItype __h, __l;} __i;				\
+  } यावत् (0)
+#परिभाषय udiv_qrnnd(q, r, n1, n0, d) \
+  ({सङ्घ {UDItype __ll;						\
+	   संरचना {USItype __h, __l;} __i;				\
 	  } __x, __q;							\
   __x.__i.__h = (n1); __x.__i.__l = (n0);				\
   __asm__ ("divu.d %0,%1,%2"						\
 	   : "=r" (__q.__ll) : "r" (__x.__ll), "r" (d));		\
   (r) = (n0) - __q.__l * (d); (q) = __q.__l; })
-#endif /* __m88110__ */
-#endif /* __m88000__ */
+#यदि_अन्तः /* __m88110__ */
+#यदि_अन्तः /* __m88000__ */
 
-#if defined (__mips) && W_TYPE_SIZE == 32
-#if __GMP_GNUC_PREREQ (4,4)
-#define umul_ppmm(w1, w0, u, v) \
-  do {									\
+#यदि defined (__mips) && W_TYPE_आकार == 32
+#यदि __GMP_GNUC_PREREQ (4,4)
+#परिभाषय umul_ppmm(w1, w0, u, v) \
+  कुरु {									\
     UDItype __ll = (UDItype)(u) * (v);					\
     w1 = __ll >> 32;							\
     w0 = __ll;								\
-  } while (0)
-#endif
-#if !defined (umul_ppmm) && __GMP_GNUC_PREREQ (2,7) && !defined (__clang__)
-#define umul_ppmm(w1, w0, u, v) \
+  } यावत् (0)
+#यदि_अन्तः
+#यदि !defined (umul_ppmm) && __GMP_GNUC_PREREQ (2,7) && !defined (__clang__)
+#परिभाषय umul_ppmm(w1, w0, u, v) \
   __asm__ ("multu %2,%3" : "=l" (w0), "=h" (w1) : "d" (u), "d" (v))
-#endif
-#if !defined (umul_ppmm)
-#define umul_ppmm(w1, w0, u, v) \
+#यदि_अन्तः
+#यदि !defined (umul_ppmm)
+#परिभाषय umul_ppmm(w1, w0, u, v) \
   __asm__ ("multu %2,%3\n\tmflo %0\n\tmfhi %1"				\
 	   : "=d" (w0), "=d" (w1) : "d" (u), "d" (v))
-#endif
-#endif /* __mips */
+#यदि_अन्तः
+#यदि_अन्तः /* __mips */
 
-#if (defined (__mips) && __mips >= 3) && W_TYPE_SIZE == 64
-#if defined (_MIPS_ARCH_MIPS64R6)
-#define umul_ppmm(w1, w0, u, v) \
-  do {									\
+#यदि (defined (__mips) && __mips >= 3) && W_TYPE_आकार == 64
+#यदि defined (_MIPS_ARCH_MIPS64R6)
+#परिभाषय umul_ppmm(w1, w0, u, v) \
+  कुरु {									\
     UDItype __m0 = (u), __m1 = (v);					\
     (w0) = __m0 * __m1;							\
     __asm__ ("dmuhu\t%0, %1, %2" : "=d" (w1) : "d" (__m0), "d" (__m1));	\
-  } while (0)
-#endif
-#if !defined (umul_ppmm) && __GMP_GNUC_PREREQ (4,4)
-#define umul_ppmm(w1, w0, u, v) \
-  do {									\
-    typedef unsigned int __ll_UTItype __attribute__((mode(TI)));	\
+  } यावत् (0)
+#यदि_अन्तः
+#यदि !defined (umul_ppmm) && __GMP_GNUC_PREREQ (4,4)
+#परिभाषय umul_ppmm(w1, w0, u, v) \
+  कुरु {									\
+    प्रकारनिर्देश अचिह्नित पूर्णाङ्क __ll_UTItype __attribute__((बहुलकम्_2(TI)));	\
     __ll_UTItype __ll = (__ll_UTItype)(u) * (v);			\
     w1 = __ll >> 64;							\
     w0 = __ll;								\
-  } while (0)
-#endif
-#if !defined (umul_ppmm) && __GMP_GNUC_PREREQ (2,7) && !defined (__clang__)
-#define umul_ppmm(w1, w0, u, v) \
+  } यावत् (0)
+#यदि_अन्तः
+#यदि !defined (umul_ppmm) && __GMP_GNUC_PREREQ (2,7) && !defined (__clang__)
+#परिभाषय umul_ppmm(w1, w0, u, v) \
   __asm__ ("dmultu %2,%3"						\
 	   : "=l" (w0), "=h" (w1)					\
 	   : "d" ((UDItype)(u)), "d" ((UDItype)(v)))
-#endif
-#if !defined (umul_ppmm)
-#define umul_ppmm(w1, w0, u, v) \
+#यदि_अन्तः
+#यदि !defined (umul_ppmm)
+#परिभाषय umul_ppmm(w1, w0, u, v) \
   __asm__ ("dmultu %2,%3\n\tmflo %0\n\tmfhi %1"				\
 	   : "=d" (w0), "=d" (w1)					\
 	   : "d" ((UDItype)(u)), "d" ((UDItype)(v)))
-#endif
-#endif /* __mips */
+#यदि_अन्तः
+#यदि_अन्तः /* __mips */
 
-#if defined (__mmix__) && W_TYPE_SIZE == 64
-#define umul_ppmm(w1, w0, u, v) \
+#यदि defined (__mmix__) && W_TYPE_आकार == 64
+#परिभाषय umul_ppmm(w1, w0, u, v) \
   __asm__ ("MULU %0,%2,%3" : "=r" (w0), "=z" (w1) : "r" (u), "r" (v))
-#endif
+#यदि_अन्तः
 
-#if defined (__ns32000__) && W_TYPE_SIZE == 32
-#define umul_ppmm(w1, w0, u, v) \
-  ({union {UDItype __ll;						\
-	   struct {USItype __l, __h;} __i;				\
+#यदि defined (__ns32000__) && W_TYPE_आकार == 32
+#परिभाषय umul_ppmm(w1, w0, u, v) \
+  ({सङ्घ {UDItype __ll;						\
+	   संरचना {USItype __l, __h;} __i;				\
 	  } __x;							\
   __asm__ ("meid %2,%0"							\
 	   : "=g" (__x.__ll)						\
 	   : "%0" ((USItype)(u)), "g" ((USItype)(v)));			\
   (w1) = __x.__i.__h; (w0) = __x.__i.__l;})
-#define __umulsidi3(u, v) \
+#परिभाषय __umulsidi3(u, v) \
   ({UDItype __w;							\
     __asm__ ("meid %2,%0"						\
 	     : "=g" (__w)						\
 	     : "%0" ((USItype)(u)), "g" ((USItype)(v)));		\
     __w; })
-#define udiv_qrnnd(q, r, n1, n0, d) \
-  ({union {UDItype __ll;						\
-	   struct {USItype __l, __h;} __i;				\
+#परिभाषय udiv_qrnnd(q, r, n1, n0, d) \
+  ({सङ्घ {UDItype __ll;						\
+	   संरचना {USItype __l, __h;} __i;				\
 	  } __x;							\
   __x.__i.__h = (n1); __x.__i.__l = (n0);				\
   __asm__ ("deid %2,%0"							\
 	   : "=g" (__x.__ll)						\
 	   : "0" (__x.__ll), "g" ((USItype)(d)));			\
   (r) = __x.__i.__l; (q) = __x.__i.__h; })
-#define count_trailing_zeros(count,x) \
-  do {									\
+#परिभाषय गणनम्_trailing_zeros(गणनम्,x) \
+  कुरु {									\
     __asm__ ("ffsd	%2,%0"						\
-	     : "=r" (count)						\
+	     : "=r" (गणनम्)						\
 	     : "0" ((USItype) 0), "r" ((USItype) (x)));			\
-  } while (0)
-#endif /* __ns32000__ */
+  } यावत् (0)
+#यदि_अन्तः /* __ns32000__ */
 
 /* In the past we had a block of various #defines tested
        _ARCH_PPC    - AIX
@@ -1390,241 +1390,241 @@ extern UWtype __MPN(udiv_qrnnd) (UWtype *, UWtype, UWtype, UWtype);
    the system vendor compilers.  (Is that vendor compilers with inline asm,
    or what?)  */
 
-#if (HAVE_HOST_CPU_FAMILY_power || HAVE_HOST_CPU_FAMILY_powerpc)	\
-  && W_TYPE_SIZE == 32
-#define add_ssaaaa(sh, sl, ah, al, bh, bl) \
-  do {									\
-    if (__builtin_constant_p (bh) && (bh) == 0)				\
+#यदि (HAVE_HOST_CPU_FAMILY_power || HAVE_HOST_CPU_FAMILY_powerpc)	\
+  && W_TYPE_आकार == 32
+#परिभाषय सङ्कलय_ssaaaa(sh, sl, ah, al, bh, bl) \
+  कुरु {									\
+    यदि (__builtin_constant_p (bh) && (bh) == 0)				\
       __asm__ ("add%I4c %1,%3,%4\n\taddze %0,%2"			\
 	       : "=r" (sh), "=&r" (sl) : "r" (ah), "%r" (al), "rI" (bl)	\
 		 __CLOBBER_CC);						\
-    else if (__builtin_constant_p (bh) && (bh) == ~(USItype) 0)		\
+    अन्यथा यदि (__builtin_constant_p (bh) && (bh) == ~(USItype) 0)		\
       __asm__ ("add%I4c %1,%3,%4\n\taddme %0,%2"			\
 	       : "=r" (sh), "=&r" (sl) : "r" (ah), "%r" (al), "rI" (bl)	\
 		 __CLOBBER_CC);						\
-    else								\
+    अन्यथा								\
       __asm__ ("add%I5c %1,%4,%5\n\tadde %0,%2,%3"			\
 	       : "=r" (sh), "=&r" (sl)					\
 	       : "r" (ah), "r" (bh), "%r" (al), "rI" (bl)		\
 		 __CLOBBER_CC);						\
-  } while (0)
-#define sub_ddmmss(sh, sl, ah, al, bh, bl) \
-  do {									\
-    if (__builtin_constant_p (ah) && (ah) == 0)				\
+  } यावत् (0)
+#परिभाषय sub_ddmmss(sh, sl, ah, al, bh, bl) \
+  कुरु {									\
+    यदि (__builtin_constant_p (ah) && (ah) == 0)				\
       __asm__ ("subf%I3c %1,%4,%3\n\tsubfze %0,%2"			\
 	       : "=r" (sh), "=&r" (sl) : "r" (bh), "rI" (al), "r" (bl)	\
 		 __CLOBBER_CC);						\
-    else if (__builtin_constant_p (ah) && (ah) == ~(USItype) 0)		\
+    अन्यथा यदि (__builtin_constant_p (ah) && (ah) == ~(USItype) 0)		\
       __asm__ ("subf%I3c %1,%4,%3\n\tsubfme %0,%2"			\
 	       : "=r" (sh), "=&r" (sl) : "r" (bh), "rI" (al), "r" (bl)	\
 		 __CLOBBER_CC);						\
-    else if (__builtin_constant_p (bh) && (bh) == 0)			\
+    अन्यथा यदि (__builtin_constant_p (bh) && (bh) == 0)			\
       __asm__ ("subf%I3c %1,%4,%3\n\taddme %0,%2"			\
 	       : "=r" (sh), "=&r" (sl) : "r" (ah), "rI" (al), "r" (bl)	\
 		 __CLOBBER_CC);						\
-    else if (__builtin_constant_p (bh) && (bh) == ~(USItype) 0)		\
+    अन्यथा यदि (__builtin_constant_p (bh) && (bh) == ~(USItype) 0)		\
       __asm__ ("subf%I3c %1,%4,%3\n\taddze %0,%2"			\
 	       : "=r" (sh), "=&r" (sl) : "r" (ah), "rI" (al), "r" (bl)	\
 		 __CLOBBER_CC);						\
-    else								\
+    अन्यथा								\
       __asm__ ("subf%I4c %1,%5,%4\n\tsubfe %0,%3,%2"			\
 	       : "=r" (sh), "=&r" (sl)					\
 	       : "r" (ah), "r" (bh), "rI" (al), "r" (bl)		\
 		 __CLOBBER_CC);						\
-  } while (0)
-#define count_leading_zeros(count, x) \
-  __asm__ ("cntlzw %0,%1" : "=r" (count) : "r" (x))
-#define COUNT_LEADING_ZEROS_0 32
-#if HAVE_HOST_CPU_FAMILY_powerpc
-#if __GMP_GNUC_PREREQ (4,4)
-#define umul_ppmm(w1, w0, u, v) \
-  do {									\
+  } यावत् (0)
+#परिभाषय गणनम्_leading_zeros(गणनम्, x) \
+  __asm__ ("cntlzw %0,%1" : "=r" (गणनम्) : "r" (x))
+#परिभाषय गणनम्_LEADING_ZEROS_0 32
+#यदि HAVE_HOST_CPU_FAMILY_powerpc
+#यदि __GMP_GNUC_PREREQ (4,4)
+#परिभाषय umul_ppmm(w1, w0, u, v) \
+  कुरु {									\
     UDItype __ll = (UDItype)(u) * (v);					\
     w1 = __ll >> 32;							\
     w0 = __ll;								\
-  } while (0)
-#endif
-#if !defined (umul_ppmm)
-#define umul_ppmm(ph, pl, m0, m1) \
-  do {									\
+  } यावत् (0)
+#यदि_अन्तः
+#यदि !defined (umul_ppmm)
+#परिभाषय umul_ppmm(ph, pl, m0, m1) \
+  कुरु {									\
     USItype __m0 = (m0), __m1 = (m1);					\
     __asm__ ("mulhwu %0,%1,%2" : "=r" (ph) : "%r" (m0), "r" (m1));	\
     (pl) = __m0 * __m1;							\
-  } while (0)
-#endif
-#define smul_ppmm(ph, pl, m0, m1) \
-  do {									\
+  } यावत् (0)
+#यदि_अन्तः
+#परिभाषय smul_ppmm(ph, pl, m0, m1) \
+  कुरु {									\
     SItype __m0 = (m0), __m1 = (m1);					\
     __asm__ ("mulhw %0,%1,%2" : "=r" (ph) : "%r" (m0), "r" (m1));	\
     (pl) = __m0 * __m1;							\
-  } while (0)
-#else
-#define smul_ppmm(xh, xl, m0, m1) \
+  } यावत् (0)
+#अन्यथा
+#परिभाषय smul_ppmm(xh, xl, m0, m1) \
   __asm__ ("mul %0,%2,%3" : "=r" (xh), "=q" (xl) : "r" (m0), "r" (m1))
-#define sdiv_qrnnd(q, r, nh, nl, d) \
+#परिभाषय sdiv_qrnnd(q, r, nh, nl, d) \
   __asm__ ("div %0,%2,%4" : "=r" (q), "=q" (r) : "r" (nh), "1" (nl), "r" (d))
-#endif
-#endif /* 32-bit POWER architecture variants.  */
+#यदि_अन्तः
+#यदि_अन्तः /* 32-bit POWER architecture variants.  */
 
 /* We should test _IBMR2 here when we add assembly support for the system
    vendor compilers.  */
-#if HAVE_HOST_CPU_FAMILY_powerpc && W_TYPE_SIZE == 64
-#if !defined (_LONG_LONG_LIMB)
+#यदि HAVE_HOST_CPU_FAMILY_powerpc && W_TYPE_आकार == 64
+#यदि !defined (_LONG_LONG_LIMB)
 /* _LONG_LONG_LIMB is ABI=mode32 where adde operates on 32-bit values.  So
    use adde etc only when not _LONG_LONG_LIMB.  */
-#define add_ssaaaa(sh, sl, ah, al, bh, bl) \
-  do {									\
-    if (__builtin_constant_p (bh) && (bh) == 0)				\
+#परिभाषय सङ्कलय_ssaaaa(sh, sl, ah, al, bh, bl) \
+  कुरु {									\
+    यदि (__builtin_constant_p (bh) && (bh) == 0)				\
       __asm__ ("add%I4c %1,%3,%4\n\taddze %0,%2"			\
 	       : "=r" (sh), "=&r" (sl)					\
 	       : "r"  ((UDItype)(ah)),					\
 		 "%r" ((UDItype)(al)), "rI" ((UDItype)(bl))		\
 		 __CLOBBER_CC);						\
-    else if (__builtin_constant_p (bh) && (bh) == ~(UDItype) 0)		\
+    अन्यथा यदि (__builtin_constant_p (bh) && (bh) == ~(UDItype) 0)		\
       __asm__ ("add%I4c %1,%3,%4\n\taddme %0,%2"			\
 	       : "=r" (sh), "=&r" (sl)					\
 	       : "r"  ((UDItype)(ah)),					\
 		 "%r" ((UDItype)(al)), "rI" ((UDItype)(bl))		\
 		 __CLOBBER_CC);						\
-    else								\
+    अन्यथा								\
       __asm__ ("add%I5c %1,%4,%5\n\tadde %0,%2,%3"			\
 	       : "=r" (sh), "=&r" (sl)					\
 	       : "r"  ((UDItype)(ah)), "r"  ((UDItype)(bh)),		\
 		 "%r" ((UDItype)(al)), "rI" ((UDItype)(bl))		\
 		 __CLOBBER_CC);						\
-  } while (0)
+  } यावत् (0)
 /* We use "*rI" for the constant operand here, since with just "I", gcc barfs.
    This might seem strange, but gcc folds away the dead code late.  */
-#define sub_ddmmss(sh, sl, ah, al, bh, bl) \
-  do {									\
-    if (__builtin_constant_p (bl)					\
+#परिभाषय sub_ddmmss(sh, sl, ah, al, bh, bl) \
+  कुरु {									\
+    यदि (__builtin_constant_p (bl)					\
 	&& (bl) > -0x8000 && (bl) <= 0x8000 && (bl) != 0) {		\
-	if (__builtin_constant_p (ah) && (ah) == 0)			\
+	यदि (__builtin_constant_p (ah) && (ah) == 0)			\
 	  __asm__ ("addic %1,%3,%4\n\tsubfze %0,%2"			\
 		   : "=r" (sh), "=&r" (sl)				\
 		   :                       "r" ((UDItype)(bh)),		\
 		     "r" ((UDItype)(al)), "*rI" (-((UDItype)(bl)))	\
 		     __CLOBBER_CC);					\
-	else if (__builtin_constant_p (ah) && (ah) == ~(UDItype) 0)	\
+	अन्यथा यदि (__builtin_constant_p (ah) && (ah) == ~(UDItype) 0)	\
 	  __asm__ ("addic %1,%3,%4\n\tsubfme %0,%2"			\
 		   : "=r" (sh), "=&r" (sl)				\
 		   :                       "r" ((UDItype)(bh)),		\
 		     "r" ((UDItype)(al)), "*rI" (-((UDItype)(bl)))	\
 		     __CLOBBER_CC);					\
-	else if (__builtin_constant_p (bh) && (bh) == 0)		\
+	अन्यथा यदि (__builtin_constant_p (bh) && (bh) == 0)		\
 	  __asm__ ("addic %1,%3,%4\n\taddme %0,%2"			\
 		   : "=r" (sh), "=&r" (sl)				\
 		   : "r" ((UDItype)(ah)),				\
 		     "r" ((UDItype)(al)), "*rI" (-((UDItype)(bl)))	\
 		     __CLOBBER_CC);					\
-	else if (__builtin_constant_p (bh) && (bh) == ~(UDItype) 0)	\
+	अन्यथा यदि (__builtin_constant_p (bh) && (bh) == ~(UDItype) 0)	\
 	  __asm__ ("addic %1,%3,%4\n\taddze %0,%2"			\
 		   : "=r" (sh), "=&r" (sl)				\
 		   : "r" ((UDItype)(ah)),				\
 		     "r" ((UDItype)(al)), "*rI" (-((UDItype)(bl)))	\
 		     __CLOBBER_CC);					\
-	else								\
+	अन्यथा								\
 	  __asm__ ("addic %1,%4,%5\n\tsubfe %0,%3,%2"			\
 		   : "=r" (sh), "=&r" (sl)				\
 		   : "r" ((UDItype)(ah)), "r" ((UDItype)(bh)),		\
 		     "r" ((UDItype)(al)), "*rI" (-((UDItype)(bl)))	\
 		     __CLOBBER_CC);					\
-    } else {								\
-	if (__builtin_constant_p (ah) && (ah) == 0)			\
+    } अन्यथा {								\
+	यदि (__builtin_constant_p (ah) && (ah) == 0)			\
 	  __asm__ ("subf%I3c %1,%4,%3\n\tsubfze %0,%2"			\
 		   : "=r" (sh), "=&r" (sl)				\
 		   :                       "r" ((UDItype)(bh)),		\
 		     "rI" ((UDItype)(al)), "r" ((UDItype)(bl))		\
 		     __CLOBBER_CC);					\
-	else if (__builtin_constant_p (ah) && (ah) == ~(UDItype) 0)	\
+	अन्यथा यदि (__builtin_constant_p (ah) && (ah) == ~(UDItype) 0)	\
 	  __asm__ ("subf%I3c %1,%4,%3\n\tsubfme %0,%2"			\
 		   : "=r" (sh), "=&r" (sl)				\
 		   :                       "r" ((UDItype)(bh)),		\
 		     "rI" ((UDItype)(al)), "r" ((UDItype)(bl))		\
 		     __CLOBBER_CC);					\
-	else if (__builtin_constant_p (bh) && (bh) == 0)		\
+	अन्यथा यदि (__builtin_constant_p (bh) && (bh) == 0)		\
 	  __asm__ ("subf%I3c %1,%4,%3\n\taddme %0,%2"			\
 		   : "=r" (sh), "=&r" (sl)				\
 		   : "r"  ((UDItype)(ah)),				\
 		     "rI" ((UDItype)(al)), "r" ((UDItype)(bl))		\
 		     __CLOBBER_CC);					\
-	else if (__builtin_constant_p (bh) && (bh) == ~(UDItype) 0)	\
+	अन्यथा यदि (__builtin_constant_p (bh) && (bh) == ~(UDItype) 0)	\
 	  __asm__ ("subf%I3c %1,%4,%3\n\taddze %0,%2"			\
 		   : "=r" (sh), "=&r" (sl)				\
 		   : "r"  ((UDItype)(ah)),				\
 		     "rI" ((UDItype)(al)), "r" ((UDItype)(bl))		\
 		     __CLOBBER_CC);					\
-	else								\
+	अन्यथा								\
 	  __asm__ ("subf%I4c %1,%5,%4\n\tsubfe %0,%3,%2"		\
 		   : "=r" (sh), "=&r" (sl)				\
 		   : "r"  ((UDItype)(ah)), "r" ((UDItype)(bh)),		\
 		     "rI" ((UDItype)(al)), "r" ((UDItype)(bl))		\
 		     __CLOBBER_CC);					\
     }									\
-  } while (0)
-#endif /* ! _LONG_LONG_LIMB */
-#define count_leading_zeros(count, x) \
-  __asm__ ("cntlzd %0,%1" : "=r" (count) : "r" (x))
-#define COUNT_LEADING_ZEROS_0 64
-#if __GMP_GNUC_PREREQ (4,8)
-#define umul_ppmm(w1, w0, u, v) \
-  do {									\
-    typedef unsigned int __ll_UTItype __attribute__((mode(TI)));	\
+  } यावत् (0)
+#यदि_अन्तः /* ! _LONG_LONG_LIMB */
+#परिभाषय गणनम्_leading_zeros(गणनम्, x) \
+  __asm__ ("cntlzd %0,%1" : "=r" (गणनम्) : "r" (x))
+#परिभाषय गणनम्_LEADING_ZEROS_0 64
+#यदि __GMP_GNUC_PREREQ (4,8)
+#परिभाषय umul_ppmm(w1, w0, u, v) \
+  कुरु {									\
+    प्रकारनिर्देश अचिह्नित पूर्णाङ्क __ll_UTItype __attribute__((बहुलकम्_2(TI)));	\
     __ll_UTItype __ll = (__ll_UTItype)(u) * (v);			\
     w1 = __ll >> 64;							\
     w0 = __ll;								\
-  } while (0)
-#endif
-#if !defined (umul_ppmm)
-#define umul_ppmm(ph, pl, m0, m1) \
-  do {									\
+  } यावत् (0)
+#यदि_अन्तः
+#यदि !defined (umul_ppmm)
+#परिभाषय umul_ppmm(ph, pl, m0, m1) \
+  कुरु {									\
     UDItype __m0 = (m0), __m1 = (m1);					\
     __asm__ ("mulhdu %0,%1,%2" : "=r" (ph) : "%r" (__m0), "r" (__m1));	\
     (pl) = __m0 * __m1;							\
-  } while (0)
-#endif
-#define smul_ppmm(ph, pl, m0, m1) \
-  do {									\
+  } यावत् (0)
+#यदि_अन्तः
+#परिभाषय smul_ppmm(ph, pl, m0, m1) \
+  कुरु {									\
     DItype __m0 = (m0), __m1 = (m1);					\
     __asm__ ("mulhd %0,%1,%2" : "=r" (ph) : "%r" (__m0), "r" (__m1));	\
     (pl) = __m0 * __m1;							\
-  } while (0)
-#endif /* 64-bit PowerPC.  */
+  } यावत् (0)
+#यदि_अन्तः /* 64-bit PowerPC.  */
 
-#if defined (__pyr__) && W_TYPE_SIZE == 32
-#define add_ssaaaa(sh, sl, ah, al, bh, bl) \
+#यदि defined (__pyr__) && W_TYPE_आकार == 32
+#परिभाषय सङ्कलय_ssaaaa(sh, sl, ah, al, bh, bl) \
   __asm__ ("addw %5,%1\n\taddwc %3,%0"					\
 	   : "=r" (sh), "=&r" (sl)					\
 	   : "0"  ((USItype)(ah)), "g" ((USItype)(bh)),			\
 	     "%1" ((USItype)(al)), "g" ((USItype)(bl)))
-#define sub_ddmmss(sh, sl, ah, al, bh, bl) \
+#परिभाषय sub_ddmmss(sh, sl, ah, al, bh, bl) \
   __asm__ ("subw %5,%1\n\tsubwb %3,%0"					\
 	   : "=r" (sh), "=&r" (sl)					\
 	   : "0" ((USItype)(ah)), "g" ((USItype)(bh)),			\
 	     "1" ((USItype)(al)), "g" ((USItype)(bl)))
 /* This insn works on Pyramids with AP, XP, or MI CPUs, but not with SP.  */
-#define umul_ppmm(w1, w0, u, v) \
-  ({union {UDItype __ll;						\
-	   struct {USItype __h, __l;} __i;				\
+#परिभाषय umul_ppmm(w1, w0, u, v) \
+  ({सङ्घ {UDItype __ll;						\
+	   संरचना {USItype __h, __l;} __i;				\
 	  } __x;							\
   __asm__ ("movw %1,%R0\n\tuemul %2,%0"					\
 	   : "=&r" (__x.__ll)						\
 	   : "g" ((USItype) (u)), "g" ((USItype)(v)));			\
   (w1) = __x.__i.__h; (w0) = __x.__i.__l;})
-#endif /* __pyr__ */
+#यदि_अन्तः /* __pyr__ */
 
-#if defined (__ibm032__) /* RT/ROMP */  && W_TYPE_SIZE == 32
-#define add_ssaaaa(sh, sl, ah, al, bh, bl) \
+#यदि defined (__ibm032__) /* RT/ROMP */  && W_TYPE_आकार == 32
+#परिभाषय सङ्कलय_ssaaaa(sh, sl, ah, al, bh, bl) \
   __asm__ ("a %1,%5\n\tae %0,%3"					\
 	   : "=r" (sh), "=&r" (sl)					\
 	   : "0"  ((USItype)(ah)), "r" ((USItype)(bh)),			\
 	     "%1" ((USItype)(al)), "r" ((USItype)(bl)))
-#define sub_ddmmss(sh, sl, ah, al, bh, bl) \
+#परिभाषय sub_ddmmss(sh, sl, ah, al, bh, bl) \
   __asm__ ("s %1,%5\n\tse %0,%3"					\
 	   : "=r" (sh), "=&r" (sl)					\
 	   : "0" ((USItype)(ah)), "r" ((USItype)(bh)),			\
 	     "1" ((USItype)(al)), "r" ((USItype)(bl)))
-#define smul_ppmm(ph, pl, m0, m1) \
+#परिभाषय smul_ppmm(ph, pl, m0, m1) \
   __asm__ (								\
        "s	r2,r2\n"						\
 "	mts r10,%2\n"							\
@@ -1649,102 +1649,102 @@ extern UWtype __MPN(udiv_qrnnd) (UWtype *, UWtype, UWtype, UWtype);
 	   : "=r" (ph), "=r" (pl)					\
 	   : "%r" ((USItype)(m0)), "r" ((USItype)(m1))			\
 	   : "r2")
-#define count_leading_zeros(count, x) \
-  do {									\
-    if ((x) >= 0x10000)							\
+#परिभाषय गणनम्_leading_zeros(गणनम्, x) \
+  कुरु {									\
+    यदि ((x) >= 0x10000)							\
       __asm__ ("clz	%0,%1"						\
-	       : "=r" (count) : "r" ((USItype)(x) >> 16));		\
-    else								\
+	       : "=r" (गणनम्) : "r" ((USItype)(x) >> 16));		\
+    अन्यथा								\
       {									\
 	__asm__ ("clz	%0,%1"						\
-		 : "=r" (count) : "r" ((USItype)(x)));			\
-	(count) += 16;							\
+		 : "=r" (गणनम्) : "r" ((USItype)(x)));			\
+	(गणनम्) += 16;							\
       }									\
-  } while (0)
-#endif /* RT/ROMP */
+  } यावत् (0)
+#यदि_अन्तः /* RT/ROMP */
 
-#if defined (__riscv) && defined (__riscv_mul) && W_TYPE_SIZE == 64
-#define umul_ppmm(ph, pl, u, v) \
-  do {									\
+#यदि defined (__riscv) && defined (__riscv_mul) && W_TYPE_आकार == 64
+#परिभाषय umul_ppmm(ph, pl, u, v) \
+  कुरु {									\
     UDItype __u = (u), __v = (v);					\
     (pl) = __u * __v;							\
     __asm__ ("mulhu\t%0, %1, %2" : "=r" (ph) : "%r" (__u), "r" (__v));	\
-  } while (0)
-#endif
+  } यावत् (0)
+#यदि_अन्तः
 
-#if (defined (__SH2__) || defined (__SH3__) || defined (__SH4__)) && W_TYPE_SIZE == 32
-#define umul_ppmm(w1, w0, u, v) \
+#यदि (defined (__SH2__) || defined (__SH3__) || defined (__SH4__)) && W_TYPE_आकार == 32
+#परिभाषय umul_ppmm(w1, w0, u, v) \
   __asm__ ("dmulu.l %2,%3\n\tsts macl,%1\n\tsts mach,%0"		\
 	   : "=r" (w1), "=r" (w0) : "r" (u), "r" (v) : "macl", "mach")
-#endif
+#यदि_अन्तः
 
-#if defined (__sparc__) && W_TYPE_SIZE == 32
-#define add_ssaaaa(sh, sl, ah, al, bh, bl) \
+#यदि defined (__sparc__) && W_TYPE_आकार == 32
+#परिभाषय सङ्कलय_ssaaaa(sh, sl, ah, al, bh, bl) \
   __asm__ ("addcc %r4,%5,%1\n\taddx %r2,%3,%0"				\
 	   : "=r" (sh), "=&r" (sl)					\
 	   : "rJ" (ah), "rI" (bh),"%rJ" (al), "rI" (bl)			\
 	   __CLOBBER_CC)
-#define sub_ddmmss(sh, sl, ah, al, bh, bl) \
+#परिभाषय sub_ddmmss(sh, sl, ah, al, bh, bl) \
   __asm__ ("subcc %r4,%5,%1\n\tsubx %r2,%3,%0"				\
 	   : "=r" (sh), "=&r" (sl)					\
 	   : "rJ" (ah), "rI" (bh), "rJ" (al), "rI" (bl)	\
 	   __CLOBBER_CC)
 /* FIXME: When gcc -mcpu=v9 is used on solaris, gcc/config/sol2-sld-64.h
    doesn't define anything to indicate that to us, it only sets __sparcv8. */
-#if defined (__sparc_v9__) || defined (__sparcv9)
+#यदि defined (__sparc_v9__) || defined (__sparcv9)
 /* Perhaps we should use floating-point operations here?  */
-#if 0
+#यदि 0
 /* Triggers a bug making mpz/tests/t-gcd.c fail.
    Perhaps we simply need explicitly zero-extend the inputs?  */
-#define umul_ppmm(w1, w0, u, v) \
+#परिभाषय umul_ppmm(w1, w0, u, v) \
   __asm__ ("mulx %2,%3,%%g1; srl %%g1,0,%1; srlx %%g1,32,%0" :		\
 	   "=r" (w1), "=r" (w0) : "r" (u), "r" (v) : "g1")
-#else
+#अन्यथा
 /* Use v8 umul until above bug is fixed.  */
-#define umul_ppmm(w1, w0, u, v) \
+#परिभाषय umul_ppmm(w1, w0, u, v) \
   __asm__ ("umul %2,%3,%1;rd %%y,%0" : "=r" (w1), "=r" (w0) : "r" (u), "r" (v))
-#endif
+#यदि_अन्तः
 /* Use a plain v8 divide for v9.  */
-#define udiv_qrnnd(q, r, n1, n0, d) \
-  do {									\
+#परिभाषय udiv_qrnnd(q, r, n1, n0, d) \
+  कुरु {									\
     USItype __q;							\
     __asm__ ("mov %1,%%y;nop;nop;nop;udiv %2,%3,%0"			\
 	     : "=r" (__q) : "r" (n1), "r" (n0), "r" (d));		\
     (r) = (n0) - __q * (d);						\
     (q) = __q;								\
-  } while (0)
-#else
-#if defined (__sparc_v8__)   /* gcc normal */				\
+  } यावत् (0)
+#अन्यथा
+#यदि defined (__sparc_v8__)   /* gcc normal */				\
   || defined (__sparcv8)     /* gcc solaris */				\
   || HAVE_HOST_CPU_supersparc
 /* Don't match immediate range because, 1) it is not often useful,
    2) the 'I' flag thinks of the range as a 13 bit signed interval,
    while we want to match a 13 bit interval, sign extended to 32 bits,
    but INTERPRETED AS UNSIGNED.  */
-#define umul_ppmm(w1, w0, u, v) \
+#परिभाषय umul_ppmm(w1, w0, u, v) \
   __asm__ ("umul %2,%3,%1;rd %%y,%0" : "=r" (w1), "=r" (w0) : "r" (u), "r" (v))
 
-#if HAVE_HOST_CPU_supersparc
-#else
+#यदि HAVE_HOST_CPU_supersparc
+#अन्यथा
 /* Don't use this on SuperSPARC because its udiv only handles 53 bit
    dividends and will trap to the kernel for the rest. */
-#define udiv_qrnnd(q, r, n1, n0, d) \
-  do {									\
+#परिभाषय udiv_qrnnd(q, r, n1, n0, d) \
+  कुरु {									\
     USItype __q;							\
     __asm__ ("mov %1,%%y;nop;nop;nop;udiv %2,%3,%0"			\
 	     : "=r" (__q) : "r" (n1), "r" (n0), "r" (d));		\
     (r) = (n0) - __q * (d);						\
     (q) = __q;								\
-  } while (0)
-#endif /* HAVE_HOST_CPU_supersparc */
+  } यावत् (0)
+#यदि_अन्तः /* HAVE_HOST_CPU_supersparc */
 
-#else /* ! __sparc_v8__ */
-#if defined (__sparclite__)
+#अन्यथा /* ! __sparc_v8__ */
+#यदि defined (__sparclite__)
 /* This has hardware multiply but not divide.  It also has two additional
    instructions scan (ffs from high bit) and divscc.  */
-#define umul_ppmm(w1, w0, u, v) \
+#परिभाषय umul_ppmm(w1, w0, u, v) \
   __asm__ ("umul %2,%3,%1;rd %%y,%0" : "=r" (w1), "=r" (w0) : "r" (u), "r" (v))
-#define udiv_qrnnd(q, r, n1, n0, d) \
+#परिभाषय udiv_qrnnd(q, r, n1, n0, d) \
   __asm__ ("! Inlined udiv_qrnnd\n"					\
 "	wr	%%g0,%2,%%y	! Not a delayed write for sparclite\n"	\
 "	tst	%%g0\n"							\
@@ -1786,17 +1786,17 @@ extern UWtype __MPN(udiv_qrnnd) (UWtype *, UWtype, UWtype, UWtype);
 "1:	! End of inline udiv_qrnnd"					\
 	   : "=r" (q), "=r" (r) : "r" (n1), "r" (n0), "rI" (d)		\
 	   : "%g1" __AND_CLOBBER_CC)
-#define count_leading_zeros(count, x) \
-  __asm__ ("scan %1,1,%0" : "=r" (count) : "r" (x))
+#परिभाषय गणनम्_leading_zeros(गणनम्, x) \
+  __asm__ ("scan %1,1,%0" : "=r" (गणनम्) : "r" (x))
 /* Early sparclites return 63 for an argument of 0, but they warn that future
    implementations might change this.  Therefore, leave COUNT_LEADING_ZEROS_0
    undefined.  */
-#endif /* __sparclite__ */
-#endif /* __sparc_v8__ */
-#endif /* __sparc_v9__ */
+#यदि_अन्तः /* __sparclite__ */
+#यदि_अन्तः /* __sparc_v8__ */
+#यदि_अन्तः /* __sparc_v9__ */
 /* Default to sparc v7 versions of umul_ppmm and udiv_qrnnd.  */
-#ifndef umul_ppmm
-#define umul_ppmm(w1, w0, u, v) \
+#यदि_अपरिभाषितम् umul_ppmm
+#परिभाषय umul_ppmm(w1, w0, u, v) \
   __asm__ ("! Inlined umul_ppmm\n"					\
 "	wr	%%g0,%2,%%y	! SPARC has 0-3 delay insn after a wr\n" \
 "	sra	%3,31,%%g2	! Don't move this insn\n"		\
@@ -1839,21 +1839,21 @@ extern UWtype __MPN(udiv_qrnnd) (UWtype *, UWtype, UWtype, UWtype);
 "	rd	%%y,%1"							\
 	   : "=r" (w1), "=r" (w0) : "%rI" (u), "r" (v)			\
 	   : "%g1", "%g2" __AND_CLOBBER_CC)
-#endif
-#ifndef udiv_qrnnd
-#ifndef LONGLONG_STANDALONE
-#define udiv_qrnnd(q, r, n1, n0, d) \
-  do { UWtype __r;							\
+#यदि_अन्तः
+#यदि_अपरिभाषितम् udiv_qrnnd
+#यदि_अपरिभाषितम् LONGLONG_STANDALONE
+#परिभाषय udiv_qrnnd(q, r, n1, n0, d) \
+  कुरु { UWtype __r;							\
     (q) = __MPN(udiv_qrnnd) (&__r, (n1), (n0), (d));			\
     (r) = __r;								\
-  } while (0)
-extern UWtype __MPN(udiv_qrnnd) (UWtype *, UWtype, UWtype, UWtype);
-#endif /* LONGLONG_STANDALONE */
-#endif /* udiv_qrnnd */
-#endif /* __sparc__ */
+  } यावत् (0)
+बाह्य UWtype __MPN(udiv_qrnnd) (UWtype *, UWtype, UWtype, UWtype);
+#यदि_अन्तः /* LONGLONG_STANDALONE */
+#यदि_अन्तः /* udiv_qrnnd */
+#यदि_अन्तः /* __sparc__ */
 
-#if defined (__sparc__) && W_TYPE_SIZE == 64
-#define add_ssaaaa(sh, sl, ah, al, bh, bl) \
+#यदि defined (__sparc__) && W_TYPE_आकार == 64
+#परिभाषय सङ्कलय_ssaaaa(sh, sl, ah, al, bh, bl) \
   __asm__ (								\
        "addcc	%r4,%5,%1\n"						\
       "	addccc	%r6,%7,%%g0\n"						\
@@ -1863,7 +1863,7 @@ extern UWtype __MPN(udiv_qrnnd) (UWtype *, UWtype, UWtype, UWtype);
 	 "%rJ" ((UDItype)(al)), "rI" ((UDItype)(bl)),			\
 	 "%rJ" ((UDItype)(al) >> 32), "rI" ((UDItype)(bl) >> 32)	\
 	   __CLOBBER_CC)
-#define sub_ddmmss(sh, sl, ah, al, bh, bl) \
+#परिभाषय sub_ddmmss(sh, sl, ah, al, bh, bl) \
   __asm__ (								\
        "subcc	%r4,%5,%1\n"						\
       "	subccc	%r6,%7,%%g0\n"						\
@@ -1873,225 +1873,225 @@ extern UWtype __MPN(udiv_qrnnd) (UWtype *, UWtype, UWtype, UWtype);
 	 "rJ" ((UDItype)(al)), "rI" ((UDItype)(bl)),			\
 	 "rJ" ((UDItype)(al) >> 32), "rI" ((UDItype)(bl) >> 32)		\
 	   __CLOBBER_CC)
-#if __VIS__ >= 0x300
-#undef add_ssaaaa
-#define add_ssaaaa(sh, sl, ah, al, bh, bl) \
+#यदि __VIS__ >= 0x300
+#अपरिभाषय सङ्कलय_ssaaaa
+#परिभाषय सङ्कलय_ssaaaa(sh, sl, ah, al, bh, bl) \
   __asm__ (								\
        "addcc	%r4, %5, %1\n"						\
       "	addxc	%r2, %r3, %0"						\
 	  : "=r" (sh), "=&r" (sl)					\
        : "rJ"  ((UDItype)(ah)), "rJ" ((UDItype)(bh)),			\
 	 "%rJ" ((UDItype)(al)), "rI" ((UDItype)(bl)) __CLOBBER_CC)
-#define umul_ppmm(ph, pl, m0, m1) \
-  do {									\
+#परिभाषय umul_ppmm(ph, pl, m0, m1) \
+  कुरु {									\
     UDItype __m0 = (m0), __m1 = (m1);					\
     (pl) = __m0 * __m1;							\
     __asm__ ("umulxhi\t%2, %1, %0"					\
 	     : "=r" (ph)						\
 	     : "%r" (__m0), "r" (__m1));				\
-  } while (0)
-#define count_leading_zeros(count, x) \
-  __asm__ ("lzd\t%1,%0" : "=r" (count) : "r" (x))
+  } यावत् (0)
+#परिभाषय गणनम्_leading_zeros(गणनम्, x) \
+  __asm__ ("lzd\t%1,%0" : "=r" (गणनम्) : "r" (x))
 /* Needed by count_leading_zeros_32 in sparc64.h.  */
-#define COUNT_LEADING_ZEROS_NEED_CLZ_TAB
-#endif
-#endif
+#परिभाषय गणनम्_LEADING_ZEROS_NEED_CLZ_TAB
+#यदि_अन्तः
+#यदि_अन्तः
 
-#if (defined (__vax) || defined (__vax__)) && W_TYPE_SIZE == 32
-#define add_ssaaaa(sh, sl, ah, al, bh, bl) \
+#यदि (defined (__vax) || defined (__vax__)) && W_TYPE_आकार == 32
+#परिभाषय सङ्कलय_ssaaaa(sh, sl, ah, al, bh, bl) \
   __asm__ ("addl2 %5,%1\n\tadwc %3,%0"					\
 	   : "=g" (sh), "=&g" (sl)					\
 	   : "0"  ((USItype)(ah)), "g" ((USItype)(bh)),			\
 	     "%1" ((USItype)(al)), "g" ((USItype)(bl)))
-#define sub_ddmmss(sh, sl, ah, al, bh, bl) \
+#परिभाषय sub_ddmmss(sh, sl, ah, al, bh, bl) \
   __asm__ ("subl2 %5,%1\n\tsbwc %3,%0"					\
 	   : "=g" (sh), "=&g" (sl)					\
 	   : "0" ((USItype)(ah)), "g" ((USItype)(bh)),			\
 	     "1" ((USItype)(al)), "g" ((USItype)(bl)))
-#define smul_ppmm(xh, xl, m0, m1) \
-  do {									\
-    union {UDItype __ll;						\
-	   struct {USItype __l, __h;} __i;				\
+#परिभाषय smul_ppmm(xh, xl, m0, m1) \
+  कुरु {									\
+    सङ्घ {UDItype __ll;						\
+	   संरचना {USItype __l, __h;} __i;				\
 	  } __x;							\
     USItype __m0 = (m0), __m1 = (m1);					\
     __asm__ ("emul %1,%2,$0,%0"						\
 	     : "=g" (__x.__ll) : "g" (__m0), "g" (__m1));		\
     (xh) = __x.__i.__h; (xl) = __x.__i.__l;				\
-  } while (0)
-#define sdiv_qrnnd(q, r, n1, n0, d) \
-  do {									\
-    union {DItype __ll;							\
-	   struct {SItype __l, __h;} __i;				\
+  } यावत् (0)
+#परिभाषय sdiv_qrnnd(q, r, n1, n0, d) \
+  कुरु {									\
+    सङ्घ {DItype __ll;							\
+	   संरचना {SItype __l, __h;} __i;				\
 	  } __x;							\
     __x.__i.__h = n1; __x.__i.__l = n0;					\
     __asm__ ("ediv %3,%2,%0,%1"						\
 	     : "=g" (q), "=g" (r) : "g" (__x.__ll), "g" (d));		\
-  } while (0)
-#if 0
+  } यावत् (0)
+#यदि 0
 /* FIXME: This instruction appears to be unimplemented on some systems (vax
    8800 maybe). */
-#define count_trailing_zeros(count,x)					\
-  do {									\
+#परिभाषय गणनम्_trailing_zeros(गणनम्,x)					\
+  कुरु {									\
     __asm__ ("ffs 0, 31, %1, %0"					\
-	     : "=g" (count)						\
+	     : "=g" (गणनम्)						\
 	     : "g" ((USItype) (x)));					\
-  } while (0)
-#endif
-#endif /* vax */
+  } यावत् (0)
+#यदि_अन्तः
+#यदि_अन्तः /* vax */
 
-#if defined (__z8000__) && W_TYPE_SIZE == 16
-#define add_ssaaaa(sh, sl, ah, al, bh, bl) \
+#यदि defined (__z8000__) && W_TYPE_आकार == 16
+#परिभाषय सङ्कलय_ssaaaa(sh, sl, ah, al, bh, bl) \
   __asm__ ("add	%H1,%H5\n\tadc	%H0,%H3"				\
 	   : "=r" (sh), "=&r" (sl)					\
-	   : "0"  ((unsigned int)(ah)), "r" ((unsigned int)(bh)),	\
-	     "%1" ((unsigned int)(al)), "rQR" ((unsigned int)(bl)))
-#define sub_ddmmss(sh, sl, ah, al, bh, bl) \
+	   : "0"  ((अचिह्नित पूर्णाङ्क)(ah)), "r" ((अचिह्नित पूर्णाङ्क)(bh)),	\
+	     "%1" ((अचिह्नित पूर्णाङ्क)(al)), "rQR" ((अचिह्नित पूर्णाङ्क)(bl)))
+#परिभाषय sub_ddmmss(sh, sl, ah, al, bh, bl) \
   __asm__ ("sub	%H1,%H5\n\tsbc	%H0,%H3"				\
 	   : "=r" (sh), "=&r" (sl)					\
-	   : "0" ((unsigned int)(ah)), "r" ((unsigned int)(bh)),	\
-	     "1" ((unsigned int)(al)), "rQR" ((unsigned int)(bl)))
-#define umul_ppmm(xh, xl, m0, m1) \
-  do {									\
-    union {long int __ll;						\
-	   struct {unsigned int __h, __l;} __i;				\
+	   : "0" ((अचिह्नित पूर्णाङ्क)(ah)), "r" ((अचिह्नित पूर्णाङ्क)(bh)),	\
+	     "1" ((अचिह्नित पूर्णाङ्क)(al)), "rQR" ((अचिह्नित पूर्णाङ्क)(bl)))
+#परिभाषय umul_ppmm(xh, xl, m0, m1) \
+  कुरु {									\
+    सङ्घ {दीर्घ पूर्णाङ्क __ll;						\
+	   संरचना {अचिह्नित पूर्णाङ्क __h, __l;} __i;				\
 	  } __x;							\
-    unsigned int __m0 = (m0), __m1 = (m1);				\
+    अचिह्नित पूर्णाङ्क __m0 = (m0), __m1 = (m1);				\
     __asm__ ("mult	%S0,%H3"					\
 	     : "=r" (__x.__i.__h), "=r" (__x.__i.__l)			\
 	     : "%1" (m0), "rQR" (m1));					\
     (xh) = __x.__i.__h; (xl) = __x.__i.__l;				\
-    (xh) += ((((signed int) __m0 >> 15) & __m1)				\
-	     + (((signed int) __m1 >> 15) & __m0));			\
-  } while (0)
-#endif /* __z8000__ */
+    (xh) += ((((चिह्नित पूर्णाङ्क) __m0 >> 15) & __m1)				\
+	     + (((चिह्नित पूर्णाङ्क) __m1 >> 15) & __m0));			\
+  } यावत् (0)
+#यदि_अन्तः /* __z8000__ */
 
-#endif /* __GNUC__ */
+#यदि_अन्तः /* __GNUC__ */
 
-#endif /* NO_ASM */
+#यदि_अन्तः /* NO_ASM */
 
 
 /* FIXME: "sidi" here is highly doubtful, should sometimes be "diti".  */
-#if !defined (umul_ppmm) && defined (__umulsidi3)
-#define umul_ppmm(ph, pl, m0, m1) \
-  do {									\
+#यदि !defined (umul_ppmm) && defined (__umulsidi3)
+#परिभाषय umul_ppmm(ph, pl, m0, m1) \
+  कुरु {									\
     UDWtype __ll = __umulsidi3 (m0, m1);				\
-    ph = (UWtype) (__ll >> W_TYPE_SIZE);				\
+    ph = (UWtype) (__ll >> W_TYPE_आकार);				\
     pl = (UWtype) __ll;							\
-  } while (0)
-#endif
+  } यावत् (0)
+#यदि_अन्तः
 
-#if !defined (__umulsidi3)
-#define __umulsidi3(u, v) \
+#यदि !defined (__umulsidi3)
+#परिभाषय __umulsidi3(u, v) \
   ({UWtype __hi, __lo;							\
     umul_ppmm (__hi, __lo, u, v);					\
-    ((UDWtype) __hi << W_TYPE_SIZE) | __lo; })
-#endif
+    ((UDWtype) __hi << W_TYPE_आकार) | __lo; })
+#यदि_अन्तः
 
 
-#if defined (__cplusplus)
-#define __longlong_h_C "C"
-#else
-#define __longlong_h_C
-#endif
+#यदि defined (__cplusplus)
+#परिभाषय __longlong_h_C "C"
+#अन्यथा
+#परिभाषय __longlong_h_C
+#यदि_अन्तः
 
 /* Use mpn_umul_ppmm or mpn_udiv_qrnnd functions, if they exist.  The "_r"
    forms have "reversed" arguments, meaning the pointer is last, which
    sometimes allows better parameter passing, in particular on 64-bit
    hppa. */
 
-#define mpn_umul_ppmm  __MPN(umul_ppmm)
-extern __longlong_h_C UWtype mpn_umul_ppmm (UWtype *, UWtype, UWtype);
+#परिभाषय mpn_umul_ppmm  __MPN(umul_ppmm)
+बाह्य __longlong_h_C UWtype mpn_umul_ppmm (UWtype *, UWtype, UWtype);
 
-#if ! defined (umul_ppmm) && HAVE_NATIVE_mpn_umul_ppmm  \
+#यदि ! defined (umul_ppmm) && HAVE_NATIVE_mpn_umul_ppmm  \
   && ! defined (LONGLONG_STANDALONE)
-#define umul_ppmm(wh, wl, u, v)						\
-  do {									\
+#परिभाषय umul_ppmm(wh, wl, u, v)						\
+  कुरु {									\
     UWtype __umul_ppmm__p0;						\
     (wh) = mpn_umul_ppmm (&__umul_ppmm__p0, (UWtype) (u), (UWtype) (v));\
     (wl) = __umul_ppmm__p0;						\
-  } while (0)
-#endif
+  } यावत् (0)
+#यदि_अन्तः
 
-#define mpn_umul_ppmm_r  __MPN(umul_ppmm_r)
-extern __longlong_h_C UWtype mpn_umul_ppmm_r (UWtype, UWtype, UWtype *);
+#परिभाषय mpn_umul_ppmm_r  __MPN(umul_ppmm_r)
+बाह्य __longlong_h_C UWtype mpn_umul_ppmm_r (UWtype, UWtype, UWtype *);
 
-#if ! defined (umul_ppmm) && HAVE_NATIVE_mpn_umul_ppmm_r	\
+#यदि ! defined (umul_ppmm) && HAVE_NATIVE_mpn_umul_ppmm_r	\
   && ! defined (LONGLONG_STANDALONE)
-#define umul_ppmm(wh, wl, u, v)						\
-  do {									\
+#परिभाषय umul_ppmm(wh, wl, u, v)						\
+  कुरु {									\
     UWtype __umul_p0;							\
     (wh) = mpn_umul_ppmm_r ((UWtype) (u), (UWtype) (v), &__umul_p0);	\
     (wl) = __umul_p0;							\
-  } while (0)
-#endif
+  } यावत् (0)
+#यदि_अन्तः
 
-#define mpn_udiv_qrnnd  __MPN(udiv_qrnnd)
-extern __longlong_h_C UWtype mpn_udiv_qrnnd (UWtype *, UWtype, UWtype, UWtype);
+#परिभाषय mpn_udiv_qrnnd  __MPN(udiv_qrnnd)
+बाह्य __longlong_h_C UWtype mpn_udiv_qrnnd (UWtype *, UWtype, UWtype, UWtype);
 
-#if ! defined (udiv_qrnnd) && HAVE_NATIVE_mpn_udiv_qrnnd	\
+#यदि ! defined (udiv_qrnnd) && HAVE_NATIVE_mpn_udiv_qrnnd	\
   && ! defined (LONGLONG_STANDALONE)
-#define udiv_qrnnd(q, r, n1, n0, d)					\
-  do {									\
+#परिभाषय udiv_qrnnd(q, r, n1, n0, d)					\
+  कुरु {									\
     UWtype __udiv_qrnnd_r;						\
     (q) = mpn_udiv_qrnnd (&__udiv_qrnnd_r,				\
 			  (UWtype) (n1), (UWtype) (n0), (UWtype) d);	\
     (r) = __udiv_qrnnd_r;						\
-  } while (0)
-#endif
+  } यावत् (0)
+#यदि_अन्तः
 
-#define mpn_udiv_qrnnd_r  __MPN(udiv_qrnnd_r)
-extern __longlong_h_C UWtype mpn_udiv_qrnnd_r (UWtype, UWtype, UWtype, UWtype *);
+#परिभाषय mpn_udiv_qrnnd_r  __MPN(udiv_qrnnd_r)
+बाह्य __longlong_h_C UWtype mpn_udiv_qrnnd_r (UWtype, UWtype, UWtype, UWtype *);
 
-#if ! defined (udiv_qrnnd) && HAVE_NATIVE_mpn_udiv_qrnnd_r	\
+#यदि ! defined (udiv_qrnnd) && HAVE_NATIVE_mpn_udiv_qrnnd_r	\
   && ! defined (LONGLONG_STANDALONE)
-#define udiv_qrnnd(q, r, n1, n0, d)					\
-  do {									\
+#परिभाषय udiv_qrnnd(q, r, n1, n0, d)					\
+  कुरु {									\
     UWtype __udiv_qrnnd_r;						\
     (q) = mpn_udiv_qrnnd_r ((UWtype) (n1), (UWtype) (n0), (UWtype) d,	\
 			    &__udiv_qrnnd_r);				\
     (r) = __udiv_qrnnd_r;						\
-  } while (0)
-#endif
+  } यावत् (0)
+#यदि_अन्तः
 
 
 /* If this machine has no inline assembler, use C macros.  */
 
-#if !defined (add_ssaaaa)
-#define add_ssaaaa(sh, sl, ah, al, bh, bl) \
-  do {									\
+#यदि !defined (सङ्कलय_ssaaaa)
+#परिभाषय सङ्कलय_ssaaaa(sh, sl, ah, al, bh, bl) \
+  कुरु {									\
     UWtype __x;								\
     UWtype __al = (al);							\
     UWtype __bl = (bl);							\
     __x = __al + __bl;							\
     (sh) = (ah) + (bh) + (__x < __al);					\
     (sl) = __x;								\
-  } while (0)
-#endif
+  } यावत् (0)
+#यदि_अन्तः
 
-#if !defined (sub_ddmmss)
-#define sub_ddmmss(sh, sl, ah, al, bh, bl) \
-  do {									\
+#यदि !defined (sub_ddmmss)
+#परिभाषय sub_ddmmss(sh, sl, ah, al, bh, bl) \
+  कुरु {									\
     UWtype __x;								\
     UWtype __al = (al);							\
     UWtype __bl = (bl);							\
     __x = __al - __bl;							\
     (sh) = (ah) - (bh) - (__al < __bl);					\
     (sl) = __x;								\
-  } while (0)
-#endif
+  } यावत् (0)
+#यदि_अन्तः
 
 /* If we lack umul_ppmm but have smul_ppmm, define umul_ppmm in terms of
    smul_ppmm.  */
-#if !defined (umul_ppmm) && defined (smul_ppmm)
-#define umul_ppmm(w1, w0, u, v)						\
-  do {									\
+#यदि !defined (umul_ppmm) && defined (smul_ppmm)
+#परिभाषय umul_ppmm(w1, w0, u, v)						\
+  कुरु {									\
     UWtype __w1;							\
     UWtype __xm0 = (u), __xm1 = (v);					\
     smul_ppmm (__w1, w0, __xm0, __xm1);					\
-    (w1) = __w1 + (-(__xm0 >> (W_TYPE_SIZE - 1)) & __xm1)		\
-		+ (-(__xm1 >> (W_TYPE_SIZE - 1)) & __xm0);		\
-  } while (0)
-#endif
+    (w1) = __w1 + (-(__xm0 >> (W_TYPE_आकार - 1)) & __xm1)		\
+		+ (-(__xm1 >> (W_TYPE_आकार - 1)) & __xm0);		\
+  } यावत् (0)
+#यदि_अन्तः
 
 /* If we still don't have umul_ppmm, define it using plain C.
 
@@ -2103,9 +2103,9 @@ extern __longlong_h_C UWtype mpn_udiv_qrnnd_r (UWtype, UWtype, UWtype, UWtype *)
    performance problems than a couple of extra instructions on the diagonal
    of sqr_basecase.  */
 
-#if !defined (umul_ppmm)
-#define umul_ppmm(w1, w0, u, v)						\
-  do {									\
+#यदि !defined (umul_ppmm)
+#परिभाषय umul_ppmm(w1, w0, u, v)						\
+  कुरु {									\
     UWtype __x0, __x1, __x2, __x3;					\
     UHWtype __ul, __vl, __uh, __vh;					\
     UWtype __u = (u), __v = (v);					\
@@ -2122,30 +2122,30 @@ extern __longlong_h_C UWtype mpn_udiv_qrnnd_r (UWtype, UWtype, UWtype, UWtype *)
 									\
     __x1 += __ll_highpart (__x0);/* this can't give carry */		\
     __x1 += __x2;		/* but this indeed can */		\
-    if (__x1 < __x2)		/* did we get it? */			\
+    यदि (__x1 < __x2)		/* did we get it? */			\
       __x3 += __ll_B;		/* yes, add it in the proper pos. */	\
 									\
     (w1) = __x3 + __ll_highpart (__x1);					\
-    (w0) = (__x1 << W_TYPE_SIZE/2) + __ll_lowpart (__x0);		\
-  } while (0)
-#endif
+    (w0) = (__x1 << W_TYPE_आकार/2) + __ll_lowpart (__x0);		\
+  } यावत् (0)
+#यदि_अन्तः
 
 /* If we don't have smul_ppmm, define it using umul_ppmm (which surely will
    exist in one form or another.  */
-#if !defined (smul_ppmm)
-#define smul_ppmm(w1, w0, u, v)						\
-  do {									\
+#यदि !defined (smul_ppmm)
+#परिभाषय smul_ppmm(w1, w0, u, v)						\
+  कुरु {									\
     UWtype __w1;							\
     UWtype __xm0 = (u), __xm1 = (v);					\
     umul_ppmm (__w1, w0, __xm0, __xm1);					\
-    (w1) = __w1 - (-(__xm0 >> (W_TYPE_SIZE - 1)) & __xm1)		\
-		- (-(__xm1 >> (W_TYPE_SIZE - 1)) & __xm0);		\
-  } while (0)
-#endif
+    (w1) = __w1 - (-(__xm0 >> (W_TYPE_आकार - 1)) & __xm1)		\
+		- (-(__xm1 >> (W_TYPE_आकार - 1)) & __xm0);		\
+  } यावत् (0)
+#यदि_अन्तः
 
 /* Define this unconditionally, so it can be used for debugging.  */
-#define __udiv_qrnnd_c(q, r, n1, n0, d) \
-  do {									\
+#परिभाषय __udiv_qrnnd_c(q, r, n1, n0, d) \
+  कुरु {									\
     UWtype __d1, __d0, __q1, __q0, __r1, __r0, __m;			\
 									\
     ASSERT ((d) != 0);							\
@@ -2158,11 +2158,11 @@ extern __longlong_h_C UWtype mpn_udiv_qrnnd_r (UWtype, UWtype, UWtype, UWtype *)
     __r1 = (n1) - __q1 * __d1;						\
     __m = __q1 * __d0;							\
     __r1 = __r1 * __ll_B | __ll_highpart (n0);				\
-    if (__r1 < __m)							\
+    यदि (__r1 < __m)							\
       {									\
 	__q1--, __r1 += (d);						\
-	if (__r1 >= (d)) /* i.e. we didn't get carry when adding to __r1 */\
-	  if (__r1 < __m)						\
+	यदि (__r1 >= (d)) /* i.e. we didn't get carry when adding to __r1 */\
+	  यदि (__r1 < __m)						\
 	    __q1--, __r1 += (d);					\
       }									\
     __r1 -= __m;							\
@@ -2171,119 +2171,119 @@ extern __longlong_h_C UWtype mpn_udiv_qrnnd_r (UWtype, UWtype, UWtype, UWtype *)
     __r0 = __r1  - __q0 * __d1;						\
     __m = __q0 * __d0;							\
     __r0 = __r0 * __ll_B | __ll_lowpart (n0);				\
-    if (__r0 < __m)							\
+    यदि (__r0 < __m)							\
       {									\
 	__q0--, __r0 += (d);						\
-	if (__r0 >= (d))						\
-	  if (__r0 < __m)						\
+	यदि (__r0 >= (d))						\
+	  यदि (__r0 < __m)						\
 	    __q0--, __r0 += (d);					\
       }									\
     __r0 -= __m;							\
 									\
     (q) = __q1 * __ll_B | __q0;						\
     (r) = __r0;								\
-  } while (0)
+  } यावत् (0)
 
 /* If the processor has no udiv_qrnnd but sdiv_qrnnd, go through
    __udiv_w_sdiv (defined in libgcc or elsewhere).  */
-#if !defined (udiv_qrnnd) && defined (sdiv_qrnnd) \
+#यदि !defined (udiv_qrnnd) && defined (sdiv_qrnnd) \
   && ! defined (LONGLONG_STANDALONE)
-#define udiv_qrnnd(q, r, nh, nl, d) \
-  do {									\
+#परिभाषय udiv_qrnnd(q, r, nh, nl, d) \
+  कुरु {									\
     UWtype __r;								\
     (q) = __MPN(udiv_w_sdiv) (&__r, nh, nl, d);				\
     (r) = __r;								\
-  } while (0)
+  } यावत् (0)
 __GMP_DECLSPEC UWtype __MPN(udiv_w_sdiv) (UWtype *, UWtype, UWtype, UWtype);
-#endif
+#यदि_अन्तः
 
 /* If udiv_qrnnd was not defined for this processor, use __udiv_qrnnd_c.  */
-#if !defined (udiv_qrnnd)
-#define UDIV_NEEDS_NORMALIZATION 1
-#define udiv_qrnnd __udiv_qrnnd_c
-#endif
+#यदि !defined (udiv_qrnnd)
+#परिभाषय UDIV_NEEDS_NORMALIZATION 1
+#परिभाषय udiv_qrnnd __udiv_qrnnd_c
+#यदि_अन्तः
 
-#if !defined (count_leading_zeros)
-#define count_leading_zeros(count, x) \
-  do {									\
+#यदि !defined (गणनम्_leading_zeros)
+#परिभाषय गणनम्_leading_zeros(गणनम्, x) \
+  कुरु {									\
     UWtype __xr = (x);							\
     UWtype __a;								\
 									\
-    if (W_TYPE_SIZE == 32)						\
+    यदि (W_TYPE_आकार == 32)						\
       {									\
 	__a = __xr < ((UWtype) 1 << 2*__BITS4)				\
 	  ? (__xr < ((UWtype) 1 << __BITS4) ? 1 : __BITS4 + 1)		\
 	  : (__xr < ((UWtype) 1 << 3*__BITS4) ? 2*__BITS4 + 1		\
 	  : 3*__BITS4 + 1);						\
       }									\
-    else								\
+    अन्यथा								\
       {									\
-	for (__a = W_TYPE_SIZE - 8; __a > 0; __a -= 8)			\
-	  if (((__xr >> __a) & 0xff) != 0)				\
-	    break;							\
+	प्रति (__a = W_TYPE_आकार - 8; __a > 0; __a -= 8)			\
+	  यदि (((__xr >> __a) & 0xff) != 0)				\
+	    भङ्ग;							\
 	++__a;								\
       }									\
 									\
-    (count) = W_TYPE_SIZE + 1 - __a - __clz_tab[__xr >> __a];		\
-  } while (0)
+    (गणनम्) = W_TYPE_आकार + 1 - __a - __clz_tab[__xr >> __a];		\
+  } यावत् (0)
 /* This version gives a well-defined value for zero. */
-#define COUNT_LEADING_ZEROS_0 (W_TYPE_SIZE - 1)
-#define COUNT_LEADING_ZEROS_NEED_CLZ_TAB
-#define COUNT_LEADING_ZEROS_SLOW
-#endif
+#परिभाषय गणनम्_LEADING_ZEROS_0 (W_TYPE_आकार - 1)
+#परिभाषय गणनम्_LEADING_ZEROS_NEED_CLZ_TAB
+#परिभाषय गणनम्_LEADING_ZEROS_SLOW
+#यदि_अन्तः
 
 /* clz_tab needed by mpn/x86/pentium/mod_1.asm in a fat binary */
-#if HAVE_HOST_CPU_FAMILY_x86 && WANT_FAT_BINARY
-#define COUNT_LEADING_ZEROS_NEED_CLZ_TAB
-#endif
+#यदि HAVE_HOST_CPU_FAMILY_x86 && WANT_FAT_द्विमान
+#परिभाषय गणनम्_LEADING_ZEROS_NEED_CLZ_TAB
+#यदि_अन्तः
 
-#ifdef COUNT_LEADING_ZEROS_NEED_CLZ_TAB
-extern const unsigned char __GMP_DECLSPEC __clz_tab[129];
-#endif
+#यदि_परिभाषितम् गणनम्_LEADING_ZEROS_NEED_CLZ_TAB
+बाह्य ध्रुव अचिह्नित वर्ण __GMP_DECLSPEC __clz_tab[129];
+#यदि_अन्तः
 
-#if !defined (count_trailing_zeros)
-#if !defined (COUNT_LEADING_ZEROS_SLOW)
+#यदि !defined (गणनम्_trailing_zeros)
+#यदि !defined (गणनम्_LEADING_ZEROS_SLOW)
 /* Define count_trailing_zeros using an asm count_leading_zeros.  */
-#define count_trailing_zeros(count, x)					\
-  do {									\
+#परिभाषय गणनम्_trailing_zeros(गणनम्, x)					\
+  कुरु {									\
     UWtype __ctz_x = (x);						\
     UWtype __ctz_c;							\
     ASSERT (__ctz_x != 0);						\
-    count_leading_zeros (__ctz_c, __ctz_x & -__ctz_x);			\
-    (count) = W_TYPE_SIZE - 1 - __ctz_c;				\
-  } while (0)
-#else
+    गणनम्_leading_zeros (__ctz_c, __ctz_x & -__ctz_x);			\
+    (गणनम्) = W_TYPE_आकार - 1 - __ctz_c;				\
+  } यावत् (0)
+#अन्यथा
 /* Define count_trailing_zeros in plain C, assuming small counts are common.
    We use clz_tab without ado, since the C count_leading_zeros above will have
    pulled it in.  */
-#define count_trailing_zeros(count, x)					\
-  do {									\
+#परिभाषय गणनम्_trailing_zeros(गणनम्, x)					\
+  कुरु {									\
     UWtype __ctz_x = (x);						\
-    int __ctz_c;							\
+    पूर्णाङ्क __ctz_c;							\
 									\
-    if (LIKELY ((__ctz_x & 0xff) != 0))					\
-      (count) = __clz_tab[__ctz_x & -__ctz_x] - 2;			\
-    else								\
+    यदि (LIKELY ((__ctz_x & 0xff) != 0))					\
+      (गणनम्) = __clz_tab[__ctz_x & -__ctz_x] - 2;			\
+    अन्यथा								\
       {									\
-	for (__ctz_c = 8 - 2; __ctz_c < W_TYPE_SIZE - 2; __ctz_c += 8)	\
+	प्रति (__ctz_c = 8 - 2; __ctz_c < W_TYPE_आकार - 2; __ctz_c += 8)	\
 	  {								\
 	    __ctz_x >>= 8;						\
-	    if (LIKELY ((__ctz_x & 0xff) != 0))				\
-	      break;							\
+	    यदि (LIKELY ((__ctz_x & 0xff) != 0))				\
+	      भङ्ग;							\
 	  }								\
 									\
-	(count) = __ctz_c + __clz_tab[__ctz_x & -__ctz_x];		\
+	(गणनम्) = __ctz_c + __clz_tab[__ctz_x & -__ctz_x];		\
       }									\
-  } while (0)
-#endif
-#endif
+  } यावत् (0)
+#यदि_अन्तः
+#यदि_अन्तः
 
-#ifndef UDIV_NEEDS_NORMALIZATION
-#define UDIV_NEEDS_NORMALIZATION 0
-#endif
+#यदि_अपरिभाषितम् UDIV_NEEDS_NORMALIZATION
+#परिभाषय UDIV_NEEDS_NORMALIZATION 0
+#यदि_अन्तः
 
 /* Whether udiv_qrnnd is actually implemented with udiv_qrnnd_preinv, and
    that hence the latter should always be used.  */
-#ifndef UDIV_PREINV_ALWAYS
-#define UDIV_PREINV_ALWAYS 0
-#endif
+#यदि_अपरिभाषितम् UDIV_PREINV_ALWAYS
+#परिभाषय UDIV_PREINV_ALWAYS 0
+#यदि_अन्तः

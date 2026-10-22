@@ -16,20 +16,20 @@
 
 /* Written by Pádraig Brady.  LD_PRELOAD idea from Brian Dessent.  */
 
-#include <config.h>
-#include <stddef.h>
-#include <stdio.h>
-#include <stdlib.h>
+#अन्तर्भाव <config.h>
+#अन्तर्भाव <stddef.h>
+#अन्तर्भाव <stdio.h>
+#अन्तर्भाव <stdlib.h>
 
-#include "gettext.h"
-#define _(msgid) gettext (msgid)
+#अन्तर्भाव "gettext.h"
+#परिभाषय _(msgid) gettext (msgid)
 
 /* Deactivate config.h's "rpl_"-prefixed definitions, since we don't
    link gnulib here, and the replacements aren't needed.  */
-#undef fprintf
-#undef free
-#undef malloc
-#undef strtoul
+#अपरिभाषय fprintf
+#अपरिभाषय मुक्त
+#अपरिभाषय स्मृतिं_देहि
+#अपरिभाषय strtoul
 
 /* Note currently for glibc (2.3.5) the following call does not change
    the buffer size, and more problematically does not give any indication
@@ -67,67 +67,67 @@
    However I think it's just a buggy implementation due to the various
    inconsistencies with write sizes and subsequent writes.  */
 
-static void
-apply_mode (FILE *stream, char const *stream_name, char const *envvar)
+स्थिर शून्य
+apply_बहुलकम् (FILE *प्रवाहः, वर्ण ध्रुव *प्रवाहः_name, वर्ण ध्रुव *envvar)
 {
-  char *buf = NULL;
-  int setvbuf_mode;
-  unsigned long int size = 0;
+  वर्ण *buf = रिक्त;
+  पूर्णाङ्क setvbuf_बहुलकम्;
+  अचिह्नित दीर्घ पूर्णाङ्क आकार = 0;
 
-  char const *mode = getenv (envvar);
-  if (!mode)
-    return;
+  वर्ण ध्रुव *बहुलकम्_2 = getenv (envvar);
+  यदि (!बहुलकम्_2)
+    प्रत्यागम;
 
-  if (*mode == '0')
-    setvbuf_mode = _IONBF;
-  else if (*mode == 'L')
-    setvbuf_mode = _IOLBF;      /* FIXME: should we allow 1ML  */
-  else
+  यदि (*बहुलकम्_2 == '0')
+    setvbuf_बहुलकम् = _IONBF;
+  अन्यथा यदि (*बहुलकम्_2 == 'L')
+    setvbuf_बहुलकम् = _IOLBF;      /* FIXME: should we allow 1ML  */
+  अन्यथा
     {
-      setvbuf_mode = _IOFBF;
-      char *mode_end;
-      size = strtoul (mode, &mode_end, 10);
-      if (size == 0 || *mode_end)
+      setvbuf_बहुलकम् = _IOFBF;
+      वर्ण *बहुलकम्_अन्तः;
+      आकार = strtoul (बहुलकम्_2, &बहुलकम्_अन्तः, 10);
+      यदि (आकार == 0 || *बहुलकम्_अन्तः)
         {
           fprintf (stderr, _("invalid buffering mode %s for %s\n"),
-                   mode, stream_name);
-          return;
+                   बहुलकम्_2, प्रवाहः_name);
+          प्रत्यागम;
         }
 
       /* If strtoul might have overflowed or if the size is more than
          half of size_t range, treat it as an allocation failure.
          Huge sizes can cause problems with some stdio implementations.  */
-      buf = (size <= ((unsigned long int) -2 < (size_t) -1 / 2
-                      ? (unsigned long int) -2 : (size_t) -1 / 2)
-             ? malloc (size) : NULL);
-      if (!buf)
+      buf = (आकार <= ((अचिह्नित दीर्घ पूर्णाङ्क) -2 < (size_t) -1 / 2
+                      ? (अचिह्नित दीर्घ पूर्णाङ्क) -2 : (size_t) -1 / 2)
+             ? स्मृतिं_देहि (आकार) : रिक्त);
+      यदि (!buf)
         {
           /* We could defer the allocation to libc, however since
              glibc currently ignores the combination of null buffer
              with non zero size, we'll fail here.  */
           fprintf (stderr,
                    _("failed to allocate a %lu byte stdio buffer\n"),
-                   size);
-          return;
+                   आकार);
+          प्रत्यागम;
         }
       /* buf will be freed by fclose.  */
     }
 
-  if (setvbuf (stream, buf, setvbuf_mode, size) != 0)
+  यदि (setvbuf (प्रवाहः, buf, setvbuf_बहुलकम्, आकार) != 0)
     {
       fprintf (stderr, _("could not set buffering of %s to mode %s\n"),
-               stream_name, mode);
-      free (buf);
+               प्रवाहः_name, बहुलकम्_2);
+      मुक्त (buf);
     }
 }
 
 /* Use __attribute to avoid elision of __attribute__ on SUNPRO_C etc.  */
-static void __attribute ((constructor))
-stdbuf (void)
+स्थिर शून्य __attribute ((constructor))
+stdbuf (शून्य)
 {
   /* Do first so can write errors to stderr.  */
-  apply_mode (stderr, "stderr", "_STDBUF_E");
+  apply_बहुलकम् (stderr, "stderr", "_STDBUF_E");
 
-  apply_mode (stdin, "stdin", "_STDBUF_I");
-  apply_mode (stdout, "stdout", "_STDBUF_O");
+  apply_बहुलकम् (stdin, "stdin", "_STDBUF_I");
+  apply_बहुलकम् (stdout, "stdout", "_STDBUF_O");
 }

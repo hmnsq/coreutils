@@ -14,165 +14,165 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
+#अन्तर्भाव <config.h>
 
-#include <stdio.h>
-#include <sys/types.h>
-#include "system.h"
-#include "c-ctype.h"
-#include "fadvise.h"
-#include "quote.h"
+#अन्तर्भाव <stdio.h>
+#अन्तर्भाव <sys/types.h>
+#अन्तर्भाव "system.h"
+#अन्तर्भाव "c-ctype.h"
+#अन्तर्भाव "fadvise.h"
+#अन्तर्भाव "quote.h"
 
-#include "expand-common.h"
+#अन्तर्भाव "expand-common.h"
 
 /* If true, convert blanks even after nonblank characters have been
    read on the line.  */
-bool convert_entire_line = false;
+bool convert_entire_पङ्क्तिः = false;
 
 /* If nonzero, the size of all tab stops.  If zero, use 'tab_list' instead.  */
-static colno tab_size = 0;
+स्थिर colno tab_आकार = 0;
 
 /* If nonzero, the size of all tab stops after the last specified.  */
-static colno extend_size = 0;
+स्थिर colno extend_आकार = 0;
 
 /* If nonzero, an increment for additional tab stops after the last specified.*/
-static colno increment_size = 0;
+स्थिर colno increment_आकार = 0;
 
 /* The maximum distance between tab stops.  */
-idx_t max_column_width;
+idx_t max_column_विस्तारः;
 
 /* Array of the explicit column numbers of the tab stops;
    after 'tab_list' is exhausted, each additional tab is replaced
    by a space.  The first column is column 0.  */
-static colno *tab_list = NULL;
+स्थिर colno *tab_list = रिक्त;
 
 /* The number of allocated entries in 'tab_list'.  */
-static idx_t n_tabs_allocated = 0;
+स्थिर idx_t n_tabs_allocated = 0;
 
 /* The index of the first invalid element of 'tab_list',
    where the next element can be added.  */
-static idx_t first_free_tab = 0;
+स्थिर idx_t first_free_tab = 0;
 
 /* Null-terminated array of input filenames.  */
-static char **file_list = NULL;
+स्थिर वर्ण **file_list = रिक्त;
 
 /* Default for 'file_list' if no files are given on the command line.  */
-static char *stdin_argv[] =
+स्थिर वर्ण *stdin_argv[] =
 {
-  (char *) "-", NULL
+  (वर्ण *) "-", रिक्त
 };
 
 /* True if we have ever read standard input.  */
-static bool have_read_stdin = false;
+स्थिर bool have_read_stdin = false;
 
 /* The desired exit status.  */
-int exit_status = EXIT_SUCCESS;
+पूर्णाङ्क exit_स्थितिः = EXIT_SUCCESS;
 
 
-static void
-set_max_column_width (colno width)
+स्थिर शून्य
+समुच्चयः_max_column_विस्तारः (colno विस्तारः)
 {
-  if (max_column_width < width)
+  यदि (max_column_विस्तारः < विस्तारः)
     {
-      if (ckd_add (&max_column_width, width, 0))
+      यदि (ckd_सङ्कलय (&max_column_विस्तारः, विस्तारः, 0))
         error (EXIT_FAILURE, 0, _("tabs are too far apart"));
     }
 }
 
 /* Add tab stop TABVAL to the end of 'tab_list'.  */
-extern void
-add_tab_stop (colno tabval)
+बाह्य शून्य
+सङ्कलय_tab_stop (colno tabval)
 {
-  colno prev_column = first_free_tab ? tab_list[first_free_tab - 1] : 0;
-  colno column_width = prev_column <= tabval ? tabval - prev_column : 0;
+  colno पूर्व_column = first_free_tab ? tab_list[first_free_tab - 1] : 0;
+  colno column_विस्तारः = पूर्व_column <= tabval ? tabval - पूर्व_column : 0;
 
-  if (first_free_tab == n_tabs_allocated)
-    tab_list = xpalloc (tab_list, &n_tabs_allocated, 1, -1, sizeof *tab_list);
+  यदि (first_free_tab == n_tabs_allocated)
+    tab_list = xpalloc (tab_list, &n_tabs_allocated, 1, -1, परिमाण *tab_list);
   tab_list[first_free_tab++] = tabval;
 
-  set_max_column_width (column_width);
+  समुच्चयः_max_column_विस्तारः (column_विस्तारः);
 }
 
-static bool
-set_extend_size (colno tabval)
+स्थिर bool
+समुच्चयः_extend_आकार (colno tabval)
 {
   bool ok = true;
 
-  if (extend_size)
+  यदि (extend_आकार)
     {
       error (0, 0,
              _("'/' specifier only allowed"
                " with the last value"));
       ok = false;
     }
-  extend_size = tabval;
+  extend_आकार = tabval;
 
-  set_max_column_width (extend_size);
+  समुच्चयः_max_column_विस्तारः (extend_आकार);
 
-  return ok;
+  प्रत्यागम ok;
 }
 
-static bool
-set_increment_size (colno tabval)
+स्थिर bool
+समुच्चयः_increment_आकार (colno tabval)
 {
   bool ok = true;
 
-  if (increment_size)
+  यदि (increment_आकार)
     {
       error (0,0,
              _("'+' specifier only allowed"
                " with the last value"));
       ok = false;
     }
-  increment_size = tabval;
+  increment_आकार = tabval;
 
-  set_max_column_width (increment_size);
+  समुच्चयः_max_column_विस्तारः (increment_आकार);
 
-  return ok;
+  प्रत्यागम ok;
 }
 
 /* Add the comma or blank separated list of tab stops STOPS
    to the list of tab stops.  */
-extern void
-parse_tab_stops (char const *stops)
+बाह्य शून्य
+parse_tab_stops (वर्ण ध्रुव *stops)
 {
   bool have_tabval = false;
   colno tabval = 0;
   bool extend_tabval = false;
   bool increment_tabval = false;
-  char const *num_start = NULL;
+  वर्ण ध्रुव *अङ्कः_start = रिक्त;
   bool ok = true;
 
-  for (; *stops; stops++)
+  प्रति (; *stops; stops++)
     {
-      if (*stops == ',' || isblank (to_uchar (*stops)))
+      यदि (*stops == ',' || isblank (गन्तव्यम्_uchar (*stops)))
         {
-          if (have_tabval)
+          यदि (have_tabval)
             {
-              if (extend_tabval)
+              यदि (extend_tabval)
                 {
-                  if (! set_extend_size (tabval))
+                  यदि (! समुच्चयः_extend_आकार (tabval))
                     {
                       ok = false;
-                      break;
+                      भङ्ग;
                     }
                 }
-              else if (increment_tabval)
+              अन्यथा यदि (increment_tabval)
                 {
-                  if (! set_increment_size (tabval))
+                  यदि (! समुच्चयः_increment_आकार (tabval))
                     {
                       ok = false;
-                      break;
+                      भङ्ग;
                     }
                 }
-              else
-                add_tab_stop (tabval);
+              अन्यथा
+                सङ्कलय_tab_stop (tabval);
             }
           have_tabval = false;
         }
-      else if (*stops == '/')
+      अन्यथा यदि (*stops == '/')
         {
-          if (have_tabval)
+          यदि (have_tabval)
             {
               error (0, 0, _("'/' specifier not at start of number: %s"),
                      quote (stops));
@@ -181,9 +181,9 @@ parse_tab_stops (char const *stops)
           extend_tabval = true;
           increment_tabval = false;
         }
-      else if (*stops == '+')
+      अन्यथा यदि (*stops == '+')
         {
-          if (have_tabval)
+          यदि (have_tabval)
             {
               error (0, 0, _("'+' specifier not at start of number: %s"),
                      quote (stops));
@@ -192,67 +192,67 @@ parse_tab_stops (char const *stops)
           increment_tabval = true;
           extend_tabval = false;
         }
-      else if (c_isdigit (*stops))
+      अन्यथा यदि (c_isdigit (*stops))
         {
-          if (!have_tabval)
+          यदि (!have_tabval)
             {
               tabval = 0;
               have_tabval = true;
-              num_start = stops;
+              अङ्कः_start = stops;
             }
 
           /* Detect overflow.  */
-          if (!DECIMAL_DIGIT_ACCUMULATE (tabval, *stops - '0'))
+          यदि (!DECIMAL_DIGIT_ACCUMULATE (tabval, *stops - '0'))
             {
-              idx_t len = strspn (num_start, "0123456789");
-              char *bad_num = ximemdup0 (num_start, len);
-              error (0, 0, _("tab stop is too large %s"), quote (bad_num));
-              free (bad_num);
+              idx_t len = strspn (अङ्कः_start, "0123456789");
+              वर्ण *bad_अङ्कः = ximemdup0 (अङ्कः_start, len);
+              error (0, 0, _("tab stop is too large %s"), quote (bad_अङ्कः));
+              मुक्त (bad_अङ्कः);
               ok = false;
-              stops = num_start + len - 1;
+              stops = अङ्कः_start + len - 1;
             }
         }
-      else
+      अन्यथा
         {
           error (0, 0, _("tab size contains invalid character(s): %s"),
                  quote (stops));
           ok = false;
-          break;
+          भङ्ग;
         }
     }
 
-  if (ok && have_tabval)
+  यदि (ok && have_tabval)
     {
-      if (extend_tabval)
-        ok &= set_extend_size (tabval);
-      else if (increment_tabval)
-        ok &= set_increment_size (tabval);
-      else
-        add_tab_stop (tabval);
+      यदि (extend_tabval)
+        ok &= समुच्चयः_extend_आकार (tabval);
+      अन्यथा यदि (increment_tabval)
+        ok &= समुच्चयः_increment_आकार (tabval);
+      अन्यथा
+        सङ्कलय_tab_stop (tabval);
     }
 
-  if (! ok)
-    exit (EXIT_FAILURE);
+  यदि (! ok)
+    निर्गच्छ (EXIT_FAILURE);
 }
 
 /* Check that the list of tab stops TABS, with ENTRIES entries,
    contains only nonzero, ascending values.  */
 
-static void
-validate_tab_stops (colno const *tabs, idx_t entries)
+स्थिर शून्य
+validate_tab_stops (colno ध्रुव *tabs, idx_t entries)
 {
-  colno prev_tab = 0;
+  colno पूर्व_tab = 0;
 
-  for (idx_t i = 0; i < entries; i++)
+  प्रति (idx_t i = 0; i < entries; i++)
     {
-      if (tabs[i] == 0)
+      यदि (tabs[i] == 0)
         error (EXIT_FAILURE, 0, _("tab size cannot be 0"));
-      if (tabs[i] <= prev_tab)
+      यदि (tabs[i] <= पूर्व_tab)
         error (EXIT_FAILURE, 0, _("tab sizes must be ascending"));
-      prev_tab = tabs[i];
+      पूर्व_tab = tabs[i];
     }
 
-  if (increment_size && extend_size)
+  यदि (increment_आकार && extend_आकार)
     error (EXIT_FAILURE, 0, _("'/' specifier is mutually exclusive with '+'"));
 }
 
@@ -264,19 +264,19 @@ validate_tab_stops (colno const *tabs, idx_t entries)
    tab-stops = N (if value N specified as the only value).
    tab-stops = distinct values given on command line (if multiple values given).
 */
-extern void
-finalize_tab_stops (void)
+बाह्य शून्य
+finalize_tab_stops (शून्य)
 {
   validate_tab_stops (tab_list, first_free_tab);
 
-  if (first_free_tab == 0)
-    tab_size = max_column_width = extend_size
-                                  ? extend_size : increment_size
-                                                  ? increment_size : 8;
-  else if (first_free_tab == 1 && ! extend_size && ! increment_size)
-    tab_size = tab_list[0];
-  else
-    tab_size = 0;
+  यदि (first_free_tab == 0)
+    tab_आकार = max_column_विस्तारः = extend_आकार
+                                  ? extend_आकार : increment_आकार
+                                                  ? increment_आकार : 8;
+  अन्यथा यदि (first_free_tab == 1 && ! extend_आकार && ! increment_आकार)
+    tab_आकार = tab_list[0];
+  अन्यथा
+    tab_आकार = 0;
 }
 
 
@@ -284,59 +284,59 @@ finalize_tab_stops (void)
    many multiple tab-sizes.  Set *LAST_TAB depending on whether we are
    returning COLUMN + 1 merely because we're past the last tab.
    If the number would overflow, diagnose this and exit.  */
-extern colno
-get_next_tab_column (colno column, idx_t *tab_index, bool *last_tab)
+बाह्य colno
+get_अग्र_tab_column (colno column, idx_t *tab_सूचकांक, bool *चरमः_tab)
 {
-  *last_tab = false;
+  *चरमः_tab = false;
   colno tab_distance;
 
   /* single tab-size - return multiples of it */
-  if (tab_size)
-    tab_distance = tab_size - column % tab_size;
-  else
+  यदि (tab_आकार)
+    tab_distance = tab_आकार - column % tab_आकार;
+  अन्यथा
     {
       /* multiple tab-sizes - iterate them until the tab position is beyond
          the current input column. */
-      for ( ; *tab_index < first_free_tab ; (*tab_index)++ )
+      प्रति ( ; *tab_सूचकांक < first_free_tab ; (*tab_सूचकांक)++ )
         {
-          colno tab = tab_list[*tab_index];
-          if (column < tab)
-            return tab;
+          colno tab = tab_list[*tab_सूचकांक];
+          यदि (column < tab)
+            प्रत्यागम tab;
         }
 
       /* relative last tab - return multiples of it */
-      if (extend_size)
-        tab_distance = extend_size - column % extend_size;
-      else if (increment_size)
+      यदि (extend_आकार)
+        tab_distance = extend_आकार - column % extend_आकार;
+      अन्यथा यदि (increment_आकार)
         {
           /* incremental last tab - add increment_size to the previous
              tab stop */
-          colno end_tab = tab_list[first_free_tab - 1];
-          tab_distance = increment_size - ((column - end_tab) % increment_size);
+          colno अन्तः_tab = tab_list[first_free_tab - 1];
+          tab_distance = increment_आकार - ((column - अन्तः_tab) % increment_आकार);
         }
-      else
+      अन्यथा
         {
-          *last_tab = true;
+          *चरमः_tab = true;
           tab_distance = 1;
         }
     }
 
   colno tab_stop;
-  if (ckd_add (&tab_stop, column, tab_distance))
+  यदि (ckd_सङ्कलय (&tab_stop, column, tab_distance))
     error (EXIT_FAILURE, 0, _("input line is too long"));
-  return tab_stop;
+  प्रत्यागम tab_stop;
 }
 
 
 /* Sets new file-list */
-extern void
-set_file_list (char **list)
+बाह्य शून्य
+समुच्चयः_file_list (वर्ण **list)
 {
   have_read_stdin = false;
 
-  if (!list)
+  यदि (!list)
     file_list = stdin_argv;
-  else
+  अन्यथा
     file_list = list;
 }
 
@@ -345,72 +345,72 @@ set_file_list (char **list)
    Open a filename of '-' as the standard input.
    Return NULL if there are no more input files.  */
 
-extern FILE *
-next_file (FILE *fp)
+बाह्य FILE *
+अग्र_file (FILE *fp)
 {
-  static char *prev_file;
-  char *file;
+  स्थिर वर्ण *पूर्व_file;
+  वर्ण *file;
 
-  if (fp)
+  यदि (fp)
     {
-      int err = errno;
-      if (!ferror (fp))
+      पूर्णाङ्क err = errno;
+      यदि (!ferror (fp))
         err = 0;
-      if (streq (prev_file, "-"))
+      यदि (streq (पूर्व_file, "-"))
         clearerr (fp);		/* Also clear EOF.  */
-      else if (fclose (fp) != 0)
+      अन्यथा यदि (fclose (fp) != 0)
         err = errno;
-      if (err)
+      यदि (err)
         {
-          error (0, err, "%s", quotef (prev_file));
-          exit_status = EXIT_FAILURE;
+          error (0, err, "%s", quotef (पूर्व_file));
+          exit_स्थितिः = EXIT_FAILURE;
         }
     }
 
-  while ((file = *file_list++) != NULL)
+  यावत् ((file = *file_list++) != रिक्त)
     {
-      if (streq (file, "-"))
+      यदि (streq (file, "-"))
         {
           have_read_stdin = true;
           fp = stdin;
         }
-      else
+      अन्यथा
         fp = fopen (file, "r");
-      if (fp)
+      यदि (fp)
         {
-          prev_file = file;
+          पूर्व_file = file;
           fadvise (fp, FADVISE_SEQUENTIAL);
-          return fp;
+          प्रत्यागम fp;
         }
       error (0, errno, "%s", quotef (file));
-      exit_status = EXIT_FAILURE;
+      exit_स्थितिः = EXIT_FAILURE;
     }
-  return NULL;
+  प्रत्यागम रिक्त;
 }
 
 /* Close standard input if we have read from it.  */
-extern void
-cleanup_file_list_stdin (void)
+बाह्य शून्य
+cleanup_file_list_stdin (शून्य)
 {
-    if (have_read_stdin && fclose (stdin) != 0)
+    यदि (have_read_stdin && fclose (stdin) != 0)
       error (EXIT_FAILURE, errno, "-");
 }
 
 /* Emit the --help output for --tabs=LIST option accepted by expand and
    unexpand.  */
-extern void
-emit_tab_list_info (char const *program)
+बाह्य शून्य
+emit_tab_list_info (वर्ण ध्रुव *क्रमादेशः)
 {
   /* suppress syntax check for emit_mandatory_arg_note() */
-  oputs_ (program, _("\
+  oputs_ (क्रमादेशः, _("\
   -t, --tabs=LIST\n\
-         use comma separated list of tab positions.\n\
+         use comma separated list सम्बन्धि tab positions.\n\
 "));
   fputs (_("\
-         The last specified position can be prefixed with '/'\n\
-         to specify a tab size to use after the last\n\
-         explicitly specified tab stop.  Also a prefix of '+'\n\
-         can be used to align remaining tab stops relative to\n\
-         the last specified tab stop instead of the first column\n\
+         The चरमः specified position can be prefixed with '/'\n\
+         गन्तव्यम् specify a tab आकार गन्तव्यम् use after the चरमः\n\
+         explicitly specified tab stop.  Also a उपसर्गः सम्बन्धि '+'\n\
+         can be प्रयुक्तम् गन्तव्यम् align remaining tab stops relative गन्तव्यम्\n\
+         the चरमः specified tab stop instead सम्बन्धि the first column\n\
 "), stdout);
 }

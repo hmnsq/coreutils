@@ -15,12 +15,12 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#ifndef REMOVE_H
+#यदि_अपरिभाषितम् REMOVE_H
 # define REMOVE_H
 
 # include "dev-ino.h"
 
-enum rm_interactive
+गणना rm_interactive
 {
   /* Start with any number larger than 1, so that any legacy tests
      against values of 0 or 1 will fail.  */
@@ -29,13 +29,13 @@ enum rm_interactive
   RMI_NEVER
 };
 
-struct rm_options
+संरचना rm_options
 {
   /* If true, ignore nonexistent files.  */
   bool ignore_missing_files;
 
   /* If true, query the user about whether to remove each file.  */
-  enum rm_interactive interactive;
+  गणना rm_interactive interactive;
 
   /* FIXME: remove  */
   /* If true, do not traverse into (or remove) any directory that is
@@ -50,15 +50,15 @@ struct rm_options
   bool recursive;
 
   /* If true, remove empty directories.  */
-  bool remove_empty_directories;
+  bool remove_रिक्तानि_directories;
 
   /* Pointer to the device and inode numbers of '/', when --recursive
      and preserving '/'.  Otherwise null.  */
-  struct dev_ino *root_dev_ino;
+  संरचना dev_ino *मूलम्_dev_ino;
 
   /* If true, do not traverse into (or remove) any directory that is
      the root of a file system.  I.e., a separate device.  */
-  bool preserve_all_root;
+  bool preserve_all_मूलम्;
 
   /* If nonzero, stdin is a tty.  */
   bool stdin_tty;
@@ -75,7 +75,7 @@ struct rm_options
   bool require_restore_cwd;
 };
 
-enum RM_status
+गणना RM_स्थितिः
 {
   /* These must be listed in order of increasing seriousness. */
   RM_OK = 2,
@@ -85,19 +85,19 @@ enum RM_status
   RM_NONEMPTY_DIR
 };
 
-# define VALID_STATUS(S) \
+# define VALID_स्थितिः(S) \
   ((S) == RM_OK || (S) == RM_USER_ACCEPTED || (S) == RM_USER_DECLINED \
    || (S) == RM_ERROR)
 
-# define UPDATE_STATUS(S, New_value)				\
-  do								\
+# define UPDATE_स्थितिः(S, New_मानम्)				\
+  कुरु								\
     {								\
-      if ((New_value) == RM_ERROR				\
-          || ((New_value) == RM_USER_DECLINED && (S) == RM_OK))	\
-        (S) = (New_value);					\
+      यदि ((New_मानम्) == RM_ERROR				\
+          || ((New_मानम्) == RM_USER_DECLINED && (S) == RM_OK))	\
+        (S) = (New_मानम्);					\
     }								\
-  while (0)
+  यावत् (0)
 
-extern enum RM_status rm (char *const *file, struct rm_options const *x);
+बाह्य गणना RM_स्थितिः rm (वर्ण *ध्रुव *file, संरचना rm_options ध्रुव *x);
 
-#endif
+#यदि_अन्तः

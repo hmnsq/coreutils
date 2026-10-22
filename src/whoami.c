@@ -18,58 +18,58 @@
 /* Equivalent to 'id -un'. */
 /* Written by Richard Mlynarik. */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <pwd.h>
+#अन्तर्भाव <config.h>
+#अन्तर्भाव <stdio.h>
+#अन्तर्भाव <sys/types.h>
+#अन्तर्भाव <pwd.h>
 
-#include "system.h"
-#include "long-options.h"
-#include "quote.h"
+#अन्तर्भाव "system.h"
+#अन्तर्भाव "long-options.h"
+#अन्तर्भाव "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "whoami"
+#परिभाषय क्रमादेशः_NAME "whoami"
 
-#define AUTHORS proper_name ("Richard Mlynarik")
+#परिभाषय AUTHORS proper_name ("Richard Mlynarik")
 
-void
-usage (int status)
+शून्य
+usage (पूर्णाङ्क स्थितिः)
 {
-  if (status != EXIT_SUCCESS)
+  यदि (स्थितिः != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  अन्यथा
     {
-      printf (_("Usage: %s [OPTION]...\n"), program_name);
+      प्रारूप_लिख (_("Usage: %s [OPTION]...\n"), क्रमादेशः_name);
       fputs (_("\
 Print the user name associated with the current effective user ID.\n\
 Same as id -un.\n\
 \n\
 "), stdout);
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (संस्करणम्_OPTION_DESCRIPTION);
+      emit_ancillary_info (क्रमादेशः_NAME);
     }
-  exit (status);
+  निर्गच्छ (स्थितिः);
 }
 
-int
-main (int argc, char **argv)
+पूर्णाङ्क
+मुख्यम् (पूर्णाङ्क argc, वर्ण **argv)
 {
   uid_t NO_UID = -1;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  समुच्चयः_क्रमादेशः_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
-                                   Version, true, usage, AUTHORS,
-                                   (char const *) NULL);
+  parse_gnu_standard_options_only (argc, argv, क्रमादेशः_NAME, PACKAGE_NAME,
+                                   संस्करणम्, true, usage, AUTHORS,
+                                   (वर्ण ध्रुव *) रिक्त);
 
-  if (optind != argc)
+  यदि (optind != argc)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind]));
       usage (EXIT_FAILURE);
@@ -77,10 +77,10 @@ main (int argc, char **argv)
 
   errno = 0;
   uid_t uid = geteuid ();
-  struct passwd *pw = uid == NO_UID && errno ? NULL : getpwuid (uid);
-  if (!pw)
+  संरचना passwd *pw = uid == NO_UID && errno ? रिक्त : getpwuid (uid);
+  यदि (!pw)
     error (EXIT_FAILURE, errno, _("cannot find name for user ID %ju"),
            (uintmax_t) uid);
-  puts (pw->pw_name);
-  return EXIT_SUCCESS;
+  पङ्क्तिं_लिख (pw->pw_name);
+  प्रत्यागम EXIT_SUCCESS;
 }

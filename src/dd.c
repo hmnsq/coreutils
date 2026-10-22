@@ -16,70 +16,70 @@
 
 /* Written by Paul Rubin, David MacKenzie, and Stuart Kemp. */
 
-#include <config.h>
+#अन्तर्भाव <config.h>
 
-#include <sys/types.h>
-#include <signal.h>
+#अन्तर्भाव <sys/types.h>
+#अन्तर्भाव <signal.h>
 
-#include "system.h"
-#include "alignalloc.h"
-#include "close-stream.h"
-#include "fd-reopen.h"
-#include "gethrxtime.h"
-#include "human.h"
-#include "ioblksize.h"
-#include "long-options.h"
-#include "quote.h"
-#include "xstrtol.h"
-#include "xtime.h"
+#अन्तर्भाव "system.h"
+#अन्तर्भाव "alignalloc.h"
+#अन्तर्भाव "close-stream.h"
+#अन्तर्भाव "fd-reopen.h"
+#अन्तर्भाव "gethrxtime.h"
+#अन्तर्भाव "human.h"
+#अन्तर्भाव "ioblksize.h"
+#अन्तर्भाव "long-options.h"
+#अन्तर्भाव "quote.h"
+#अन्तर्भाव "xstrtol.h"
+#अन्तर्भाव "xtime.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "dd"
+#परिभाषय क्रमादेशः_NAME "dd"
 
-#define AUTHORS \
+#परिभाषय AUTHORS \
   proper_name ("Paul Rubin"), \
   proper_name ("David MacKenzie"), \
   proper_name ("Stuart Kemp")
 
 /* NonStop circa 2011 lacks SA_RESETHAND; see Bug#9076.  */
-#ifndef SA_RESETHAND
+#यदि_अपरिभाषितम् SA_RESETHAND
 # define SA_RESETHAND 0
-#endif
+#यदि_अन्तः
 
-#ifndef SIGINFO
+#यदि_अपरिभाषितम् SIGINFO
 # define SIGINFO SIGUSR1
-#endif
+#यदि_अन्तः
 
 /* This may belong in GNULIB's fcntl module instead.
    Define O_CIO to 0 if it is not supported by this OS. */
-#ifndef O_CIO
+#यदि_अपरिभाषितम् O_CIO
 # define O_CIO 0
-#endif
+#यदि_अन्तः
 
 /* On AIX 5.1 and AIX 5.2, O_NOCACHE is defined via <fcntl.h>
    and would interfere with our use of that name, below.  */
-#undef O_NOCACHE
+#अपरिभाषय O_NOCACHE
 
-#define output_char(c)				\
-  do						\
+#परिभाषय output_char(c)				\
+  कुरु						\
     {						\
       obuf[oc++] = (c);				\
-      if (oc >= output_blocksize)		\
+      यदि (oc >= output_blocksize)		\
         write_output ();			\
     }						\
-  while (0)
+  यावत् (0)
 
 /* Default input and output blocksize. */
-#define DEFAULT_BLOCKSIZE 512
+#परिभाषय DEFAULT_BLOCKSIZE 512
 
 /* Conversions bit masks. */
-enum
+गणना
   {
     C_ASCII = 01,
 
     C_EBCDIC = 02,
     C_IBM = 04,
-    C_BLOCK = 010,
+    C_खण्डम् = 010,
     C_UNBLOCK = 020,
     C_LCASE = 040,
     C_UCASE = 0100,
@@ -101,161 +101,161 @@ enum
   };
 
 /* Status levels.  */
-enum
+गणना
   {
-    STATUS_NONE = 1,
-    STATUS_NOXFER = 2,
-    STATUS_DEFAULT = 3,
-    STATUS_PROGRESS = 4
+    स्थितिः_NONE = 1,
+    स्थितिः_NOXFER = 2,
+    स्थितिः_DEFAULT = 3,
+    स्थितिः_प्रगतिः = 4
   };
 
 /* The name of the input file, or NULL for the standard input. */
-static char const *input_file = NULL;
+स्थिर वर्ण ध्रुव *निवेशः_file = रिक्त;
 
 /* The name of the output file, or NULL for the standard output. */
-static char const *output_file = NULL;
+स्थिर वर्ण ध्रुव *output_file = रिक्त;
 
 /* The page size on this host.  */
-static idx_t page_size;
+स्थिर idx_t page_आकार;
 
 /* The number of bytes in which atomic reads are done. */
-static idx_t input_blocksize = 0;
+स्थिर idx_t निवेशः_blocksize = 0;
 
 /* The number of bytes in which atomic writes are done. */
-static idx_t output_blocksize = 0;
+स्थिर idx_t output_blocksize = 0;
 
 /* Conversion buffer size, in bytes.  0 prevents conversions. */
-static idx_t conversion_blocksize = 0;
+स्थिर idx_t conversion_blocksize = 0;
 
 /* Skip this many records of 'input_blocksize' bytes before input. */
-static intmax_t skip_records = 0;
+स्थिर intmax_t skip_लेखाः = 0;
 
 /* Skip this many bytes before input in addition of 'skip_records'
    records.  */
-static idx_t skip_bytes = 0;
+स्थिर idx_t skip_अष्टकानि = 0;
 
 /* Skip this many records of 'output_blocksize' bytes before output. */
-static intmax_t seek_records = 0;
+स्थिर intmax_t seek_लेखाः = 0;
 
 /* Skip this many bytes in addition to 'seek_records' records before
    output.  */
-static intmax_t seek_bytes = 0;
+स्थिर intmax_t seek_अष्टकानि = 0;
 
 /* Whether the final output was done with a seek (rather than a write).  */
-static bool final_op_was_seek;
+स्थिर bool final_op_was_seek;
 
 /* Copy only this many records.  The default is effectively infinity.  */
-static intmax_t max_records = INTMAX_MAX;
+स्थिर intmax_t max_लेखाः = INTMAX_MAX;
 
 /* Copy this many bytes in addition to 'max_records' records.  */
-static idx_t max_bytes = 0;
+स्थिर idx_t max_अष्टकानि = 0;
 
 /* Bit vector of conversions to apply. */
-static int conversions_mask = 0;
+स्थिर पूर्णाङ्क conversions_आवरणम् = 0;
 
 /* Open flags for the input and output files.  */
-static int input_flags = 0;
-static int output_flags = 0;
+स्थिर पूर्णाङ्क निवेशः_flags = 0;
+स्थिर पूर्णाङ्क output_flags = 0;
 
 /* Status flags for what is printed to stderr.  */
-static int status_level = STATUS_DEFAULT;
+स्थिर पूर्णाङ्क स्थितिः_level = स्थितिः_DEFAULT;
 
 /* If nonzero, filter characters through the translation table.  */
-static bool translation_needed = false;
+स्थिर bool translation_needed = false;
 
 /* Number of partial blocks written. */
-static intmax_t w_partial = 0;
+स्थिर intmax_t w_partial = 0;
 
 /* Number of full blocks written. */
-static intmax_t w_full = 0;
+स्थिर intmax_t w_पूर्णम् = 0;
 
 /* Number of partial blocks read. */
-static intmax_t r_partial = 0;
+स्थिर intmax_t r_partial = 0;
 
 /* Number of full blocks read. */
-static intmax_t r_full = 0;
+स्थिर intmax_t r_पूर्णम् = 0;
 
 /* Number of bytes written.  */
-static intmax_t w_bytes = 0;
+स्थिर intmax_t w_अष्टकानि = 0;
 
 /* Last-reported number of bytes written, or negative if never reported.  */
-static intmax_t reported_w_bytes = -1;
+स्थिर intmax_t reported_w_अष्टकानि = -1;
 
 /* Time that dd started.  */
-static xtime_t start_time;
+स्थिर xtime_t start_time;
 
 /* Next time to report periodic progress.  */
-static xtime_t next_time;
+स्थिर xtime_t अग्र_time;
 
 /* If positive, the number of bytes output in the current progress line.  */
-static int progress_len;
+स्थिर पूर्णाङ्क प्रगतिः_len;
 
 /* True if input is seekable.  */
-static bool input_seekable;
+स्थिर bool निवेशः_seekable;
 
 /* Error number corresponding to initial attempt to lseek input.
    If ESPIPE, do not issue any more diagnostics about it.  */
-static int input_seek_errno;
+स्थिर पूर्णाङ्क निवेशः_seek_errno;
 
 /* File offset of the input, in bytes, or -1 if it overflowed.  */
-static off_t input_offset;
+स्थिर off_t निवेशः_विस्थापनम्;
 
 /* True if a partial read should be diagnosed.  */
-static bool warn_partial_read;
+स्थिर bool warn_partial_read;
 
 /* Records truncated by conv=block. */
-static intmax_t r_truncate = 0;
+स्थिर intmax_t r_truncate = 0;
 
 /* Output representation of newline and space characters.
    They change if we're converting to EBCDIC.  */
-static char newline_character = '\n';
-static char space_character = ' ';
+स्थिर वर्ण newline_character = '\n';
+स्थिर वर्ण space_character = ' ';
 
 /* I/O buffers.  */
-static char *ibuf;
-static char *obuf;
+स्थिर वर्ण *ibuf;
+स्थिर वर्ण *obuf;
 
 /* Current index into 'obuf'. */
-static idx_t oc = 0;
+स्थिर idx_t oc = 0;
 
 /* Index into current line, for 'conv=block' and 'conv=unblock'.  */
-static idx_t col = 0;
+स्थिर idx_t col = 0;
 
 /* The set of signals that are caught.  */
-static sigset_t caught_signals;
+स्थिर sigset_t caught_सङ्केताः;
 
 /* If nonzero, the value of the pending fatal signal.  */
-static sig_atomic_t volatile interrupt_signal;
+स्थिर sig_atomic_t चञ्चल व्यवधानम्_signal;
 
 /* A count of the number of pending info signals that have been received.  */
-static sig_atomic_t volatile info_signal_count;
+स्थिर sig_atomic_t चञ्चल info_signal_गणनम्;
 
 /* Whether to discard cache for input or output.  */
-static bool i_nocache, o_nocache;
+स्थिर bool i_nocache, o_nocache;
 
 /* Whether to instruct the kernel to discard the complete file.  */
-static bool i_nocache_eof, o_nocache_eof;
+स्थिर bool i_nocache_eof, o_nocache_eof;
 
 /* Function used for read (to handle iflag=fullblock parameter).  */
-static ssize_t (*iread_fnc) (int fd, char *buf, idx_t size);
+स्थिर ssize_t (*iread_fnc) (पूर्णाङ्क fd, वर्ण *buf, idx_t आकार);
 
 /* A longest symbol in the struct symbol_values tables below.  */
-#define LONGEST_SYMBOL "count_bytes"
+#परिभाषय LONGEST_चिह्नम् "count_bytes"
 
 /* A symbol and the corresponding integer value.  */
-struct symbol_value
+संरचना चिह्नम्_मानम्
 {
-  char symbol[sizeof LONGEST_SYMBOL];
-  int value;
+  वर्ण चिह्नम्[परिमाण LONGEST_चिह्नम्];
+  पूर्णाङ्क मानम्;
 };
 
 /* Conversion symbols, for conv="...".  */
-static struct symbol_value const conversions[] =
+स्थिर संरचना चिह्नम्_मानम् ध्रुव conversions[] =
 {
   {"ascii", C_ASCII | C_UNBLOCK | C_TWOBUFS},	/* EBCDIC to ASCII. */
-  {"ebcdic", C_EBCDIC | C_BLOCK | C_TWOBUFS},	/* ASCII to EBCDIC. */
-  {"ibm", C_IBM | C_BLOCK | C_TWOBUFS},	/* Different ASCII to EBCDIC. */
-  {"block", C_BLOCK | C_TWOBUFS},	/* Variable to fixed length records. */
+  {"ebcdic", C_EBCDIC | C_खण्डम् | C_TWOBUFS},	/* ASCII to EBCDIC. */
+  {"ibm", C_IBM | C_खण्डम् | C_TWOBUFS},	/* Different ASCII to EBCDIC. */
+  {"block", C_खण्डम् | C_TWOBUFS},	/* Variable to fixed length records. */
   {"unblock", C_UNBLOCK | C_TWOBUFS},	/* Fixed to variable length records. */
   {"lcase", C_LCASE | C_TWOBUFS},	/* Translate upper to lower case. */
   {"ucase", C_UCASE | C_TWOBUFS},	/* Translate lower to upper case. */
@@ -271,16 +271,16 @@ static struct symbol_value const conversions[] =
   {"", 0}
 };
 
-#define FFS_MASK(x) ((x) ^ ((x) & ((x) - 1)))
-enum
+#परिभाषय FFS_आवरणम्(x) ((x) ^ ((x) & ((x) - 1)))
+गणना
   {
     /* Compute a value that's bitwise disjoint from the union
        of all O_ values.  */
     v = ~(0
           | O_APPEND
-          | O_BINARY
+          | O_द्विमान
           | O_CIO
-          | O_DIRECT
+          | O_प्रत्यक्षम्
           | O_DIRECTORY
           | O_DSYNC
           | O_EXCL
@@ -294,44 +294,44 @@ enum
           ),
 
     /* Use its lowest bits for private flags.  */
-    O_FULLBLOCK = FFS_MASK (v),
+    O_FULLBLOCK = FFS_आवरणम् (v),
     v2 = v ^ O_FULLBLOCK,
 
-    O_NOCACHE = FFS_MASK (v2),
+    O_NOCACHE = FFS_आवरणम् (v2),
     v3 = v2 ^ O_NOCACHE,
 
-    O_COUNT_BYTES = FFS_MASK (v3),
-    v4 = v3 ^ O_COUNT_BYTES,
+    O_गणनम्_अष्टकानि = FFS_आवरणम् (v3),
+    v4 = v3 ^ O_गणनम्_अष्टकानि,
 
-    O_SKIP_BYTES = FFS_MASK (v4),
-    v5 = v4 ^ O_SKIP_BYTES,
+    O_SKIP_अष्टकानि = FFS_आवरणम् (v4),
+    v5 = v4 ^ O_SKIP_अष्टकानि,
 
-    O_SEEK_BYTES = FFS_MASK (v5)
+    O_SEEK_अष्टकानि = FFS_आवरणम् (v5)
   };
 
 /* Ensure that we got something.  */
 static_assert (O_FULLBLOCK != 0);
 static_assert (O_NOCACHE != 0);
-static_assert (O_COUNT_BYTES != 0);
-static_assert (O_SKIP_BYTES != 0);
-static_assert (O_SEEK_BYTES != 0);
+static_assert (O_गणनम्_अष्टकानि != 0);
+static_assert (O_SKIP_अष्टकानि != 0);
+static_assert (O_SEEK_अष्टकानि != 0);
 
-#define MULTIPLE_BITS_SET(i) (((i) & ((i) - 1)) != 0)
+#परिभाषय गुणजः_द्वयङ्काः_समुच्चयः(i) (((i) & ((i) - 1)) != 0)
 
 /* Ensure that this is a single-bit value.  */
-static_assert ( ! MULTIPLE_BITS_SET (O_FULLBLOCK));
-static_assert ( ! MULTIPLE_BITS_SET (O_NOCACHE));
-static_assert ( ! MULTIPLE_BITS_SET (O_COUNT_BYTES));
-static_assert ( ! MULTIPLE_BITS_SET (O_SKIP_BYTES));
-static_assert ( ! MULTIPLE_BITS_SET (O_SEEK_BYTES));
+static_assert ( ! गुणजः_द्वयङ्काः_समुच्चयः (O_FULLBLOCK));
+static_assert ( ! गुणजः_द्वयङ्काः_समुच्चयः (O_NOCACHE));
+static_assert ( ! गुणजः_द्वयङ्काः_समुच्चयः (O_गणनम्_अष्टकानि));
+static_assert ( ! गुणजः_द्वयङ्काः_समुच्चयः (O_SKIP_अष्टकानि));
+static_assert ( ! गुणजः_द्वयङ्काः_समुच्चयः (O_SEEK_अष्टकानि));
 
 /* Flags, for iflag="..." and oflag="...".  */
-static struct symbol_value const flags[] =
+स्थिर संरचना चिह्नम्_मानम् ध्रुव flags[] =
 {
   {"append",	  O_APPEND},
-  {"binary",	  O_BINARY},
+  {"binary",	  O_द्विमान},
   {"cio",	  O_CIO},
-  {"direct",	  O_DIRECT},
+  {"direct",	  O_प्रत्यक्षम्},
   {"directory",   O_DIRECTORY},
   {"dsync",	  O_DSYNC},
   {"noatime",	  O_NOATIME},
@@ -343,30 +343,30 @@ static struct symbol_value const flags[] =
   {"sync",	  O_SYNC},
   {"text",	  O_TEXT},
   {"fullblock",   O_FULLBLOCK}, /* Accumulate full blocks from input.  */
-  {"count_bytes", O_COUNT_BYTES},
-  {"skip_bytes",  O_SKIP_BYTES},
-  {"seek_bytes",  O_SEEK_BYTES},
+  {"count_bytes", O_गणनम्_अष्टकानि},
+  {"skip_bytes",  O_SKIP_अष्टकानि},
+  {"seek_bytes",  O_SEEK_अष्टकानि},
   {"",		0}
 };
 
 /* Status, for status="...".  */
-static struct symbol_value const statuses[] =
+स्थिर संरचना चिह्नम्_मानम् ध्रुव statuses[] =
 {
-  {"none",	STATUS_NONE},
-  {"noxfer",	STATUS_NOXFER},
-  {"progress",	STATUS_PROGRESS},
+  {"none",	स्थितिः_NONE},
+  {"noxfer",	स्थितिः_NOXFER},
+  {"progress",	स्थितिः_प्रगतिः},
   {"",		0}
 };
 
 /* Translation table formed by applying successive transformations. */
-static unsigned char trans_table[256];
+स्थिर अचिह्नित वर्ण trans_सारणी[256];
 
 /* Standard translation tables, taken from POSIX 1003.1-2013.
    Beware of imitations; there are lots of ASCII<->EBCDIC tables
    floating around the net, perhaps valid for some applications but
    not correct here.  */
 
-static char const ascii_to_ebcdic[] =
+स्थिर वर्ण ध्रुव ascii_गन्तव्यम्_ebcdic[] =
 {
   '\000', '\001', '\002', '\003', '\067', '\055', '\056', '\057',
   '\026', '\005', '\045', '\013', '\014', '\015', '\016', '\017',
@@ -402,7 +402,7 @@ static char const ascii_to_ebcdic[] =
   '\356', '\357', '\372', '\373', '\374', '\375', '\376', '\377'
 };
 
-static char const ascii_to_ibm[] =
+स्थिर वर्ण ध्रुव ascii_गन्तव्यम्_ibm[] =
 {
   '\000', '\001', '\002', '\003', '\067', '\055', '\056', '\057',
   '\026', '\005', '\045', '\013', '\014', '\015', '\016', '\017',
@@ -438,7 +438,7 @@ static char const ascii_to_ibm[] =
   '\356', '\357', '\372', '\373', '\374', '\375', '\376', '\377'
 };
 
-static char const ebcdic_to_ascii[] =
+स्थिर वर्ण ध्रुव ebcdic_गन्तव्यम्_ascii[] =
 {
   '\000', '\001', '\002', '\003', '\234', '\011', '\206', '\177',
   '\227', '\215', '\216', '\013', '\014', '\015', '\016', '\017',
@@ -475,7 +475,7 @@ static char const ebcdic_to_ascii[] =
 };
 
 /* True if we need to close the standard output *stream*.  */
-static bool close_stdout_required = true;
+स्थिर bool close_stdout_required = true;
 
 /* The only reason to close the standard output *stream* is if
    parse_long_options fails (as it does for --help or --version).
@@ -488,12 +488,12 @@ static bool close_stdout_required = true;
    call, once parse_long_options has succeeded.
    Meanwhile, we guarantee that the standard error stream is flushed,
    by inlining the last half of close_stdout as needed.  */
-static void
-maybe_close_stdout (void)
+स्थिर शून्य
+maybe_close_stdout (शून्य)
 {
-  if (close_stdout_required)
+  यदि (close_stdout_required)
     close_stdout ();
-  else if (close_stream (stderr) != 0)
+  अन्यथा यदि (close_प्रवाहः (stderr) != 0)
     _exit (EXIT_FAILURE);
 }
 
@@ -501,155 +501,155 @@ maybe_close_stdout (void)
    and do not exit.  */
 
 ATTRIBUTE_FORMAT ((__printf__, 2, 3))
-static void
-diagnose (int errnum, char const *fmt, ...)
+स्थिर शून्य
+diagnose (पूर्णाङ्क errnum, वर्ण ध्रुव *fmt, ...)
 {
-  if (0 < progress_len)
+  यदि (0 < प्रगतिः_len)
     {
       fputc ('\n', stderr);
-      progress_len = 0;
+      प्रगतिः_len = 0;
     }
 
   va_list ap;
   va_start (ap, fmt);
   verror (0, errnum, fmt, ap);
-  va_end (ap);
+  va_अन्तः (ap);
 }
 
-void
-usage (int status)
+शून्य
+usage (पूर्णाङ्क स्थितिः)
 {
-  if (status != EXIT_SUCCESS)
+  यदि (स्थितिः != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  अन्यथा
     {
-      printf (_("\
-Usage: %s [OPERAND]...\n\
+      प्रारूप_लिख (_("\
+Usage: %s [सङ्कार्यम्]...\n\
   or:  %s OPTION\n\
 "),
-              program_name, program_name);
+              क्रमादेशः_name, क्रमादेशः_name);
       fputs (_("\
-Copy a file, converting and formatting according to the operands.\n\
+Copy a file, converting and formatting according गन्तव्यम् the operands.\n\
 \n\
 "), stdout);
       oputs (_("\
-  bs=BYTES        read and write up to BYTES bytes at a time (default: 512);\n\
+  bs=अष्टकानि_2        पठ and लिख ऊर्ध्वम् गन्तव्यम् अष्टकानि_2 अष्टकानि at a time (स्वभाव: 512);\n\
                   overrides ibs and obs\n\
 "));
       oputs (_("\
-  cbs=BYTES       convert BYTES bytes at a time\n\
+  cbs=अष्टकानि_2       convert अष्टकानि_2 अष्टकानि at a time\n\
 "));
       oputs (_("\
-  conv=CONVS      convert the file as per the comma separated symbol list\n\
+  conv=CONVS      convert the file as प्रत्येकम् the comma separated चिह्नम् list\n\
 "));
       oputs (_("\
-  count=N         copy only N input blocks\n\
+  गणनम्=N         copy only N निवेशः खण्डानि\n\
 "));
       oputs (_("\
-  ibs=BYTES       read up to BYTES bytes at a time (default: 512)\n\
+  ibs=अष्टकानि_2       पठ ऊर्ध्वम् गन्तव्यम् अष्टकानि_2 अष्टकानि at a time (स्वभाव: 512)\n\
 "));
       oputs (_("\
-  if=FILE         read from FILE instead of standard input\n\
+  यदि=FILE         पठ from FILE instead सम्बन्धि standard निवेशः\n\
 "));
       oputs (_("\
-  iflag=FLAGS     read as per the comma separated symbol list\n\
+  iflag=FLAGS     पठ as प्रत्येकम् the comma separated चिह्नम् list\n\
 "));
       oputs (_("\
-  obs=BYTES       write BYTES bytes at a time (default: 512)\n\
+  obs=अष्टकानि_2       लिख अष्टकानि_2 अष्टकानि at a time (स्वभाव: 512)\n\
 "));
       oputs (_("\
-  of=FILE         write to FILE instead of standard output\n\
+  सम्बन्धि=FILE         लिख गन्तव्यम् FILE instead सम्बन्धि standard output\n\
 "));
       oputs (_("\
-  oflag=FLAGS     write as per the comma separated symbol list\n\
+  oflag=FLAGS     लिख as प्रत्येकम् the comma separated चिह्नम् list\n\
 "));
       oputs (_("\
-  seek=N          (or oseek=N) skip N obs sized output blocks\n\
+  seek=N          (or oseek=N) skip N obs sized output खण्डानि\n\
 "));
       oputs (_("\
-  skip=N          (or iseek=N) skip N ibs sized input blocks\n\
+  skip=N          (or iseek=N) skip N ibs sized निवेशः खण्डानि\n\
 "));
       oputs (_("\
-  status=LEVEL    The LEVEL of information to print to standard error;\n\
+  स्थितिः=LEVEL    The LEVEL सम्बन्धि information गन्तव्यम् print गन्तव्यम् standard error;\n\
                   'none' suppresses everything but error messages,\n\
                   'noxfer' suppresses the final transfer statistics,\n\
                   'progress' shows periodic transfer statistics\n\
 "));
       fputs (_("\
 \n\
-N and BYTES may be followed by the following multiplicative suffixes:\n\
+N and अष्टकानि_2 may be followed by the following multiplicative suffixes:\n\
 c=1, w=2, b=512, kB=1000, K=1024, MB=1000*1000, M=1024*1024, xM=M,\n\
-GB=1000*1000*1000, G=1024*1024*1024, and so on for T, P, E, Z, Y, R, Q.\n\
-Binary prefixes can be used, too: KiB=K, MiB=M, and so on.\n\
-If N ends in 'B', it counts bytes not blocks.\n\
+GB=1000*1000*1000, G=1024*1024*1024, and so on प्रति T, P, E, Z, Y, R, Q.\n\
+द्विमान_2 prefixes can be प्रयुक्तम्, too: KiB=K, MiB=M, and so on.\n\
+If N अन्ताः अन्तर् 'B', it counts अष्टकानि not खण्डानि.\n\
 \n\
-Each CONV symbol may be:\n\
+Each CONV चिह्नम् may be:\n\
 \n\
 "), stdout);
       fputs (_("\
-  ascii     from EBCDIC to ASCII\n\
-  ebcdic    from ASCII to EBCDIC\n\
-  ibm       from ASCII to alternate EBCDIC\n\
-  block     pad newline-terminated records with spaces to cbs-size\n\
-  unblock   replace trailing spaces in cbs-size records with newline\n\
-  lcase     change upper case to lower case\n\
-  ucase     change lower case to upper case\n\
-  sparse    try to seek rather than write all-NUL output blocks\n\
-  swab      swap every pair of input bytes\n\
-  sync      pad every input block with NULs to ibs-size; when used\n\
-            with block or unblock, pad with spaces rather than NULs\n\
+  ascii     from EBCDIC गन्तव्यम् ASCII\n\
+  ebcdic    from ASCII गन्तव्यम् EBCDIC\n\
+  ibm       from ASCII गन्तव्यम् alternate EBCDIC\n\
+  खण्डम्     pad newline-terminated लेखाः with spaces गन्तव्यम् cbs-आकार\n\
+  unblock   replace trailing spaces अन्तर् cbs-आकार लेखाः with newline\n\
+  lcase     change ऊर्ध्वस्थम् पक्ष गन्तव्यम् अधस्तनम् पक्ष\n\
+  ucase     change अधस्तनम् पक्ष गन्तव्यम् ऊर्ध्वस्थम् पक्ष\n\
+  sparse    try गन्तव्यम् seek rather than लिख all-NUL output खण्डानि\n\
+  swab      swap every pair सम्बन्धि निवेशः अष्टकानि\n\
+  sync      pad every निवेशः खण्डम् with NULs गन्तव्यम् ibs-आकार; when प्रयुक्तम्\n\
+            with खण्डम् or unblock, pad with spaces rather than NULs\n\
 "), stdout);
       fputs (_("\
-  excl      fail if the output file already exists\n\
-  nocreat   do not create the output file\n\
-  notrunc   do not truncate the output file\n\
-  noerror   continue after read errors\n\
-  fdatasync  physically write output file data before finishing\n\
-  fsync     likewise, but also write metadata\n\
+  excl      fail यदि the output file already exists\n\
+  nocreat   कुरु not create the output file\n\
+  notrunc   कुरु not truncate the output file\n\
+  noerror   अनुवर्त after पठ errors\n\
+  fdatasync  physically लिख output file दत्त before finishing\n\
+  fsync     likewise, but also लिख metadata\n\
 "), stdout);
       fputs (_("\
 \n\
-Each FLAG symbol may be:\n\
+Each FLAG चिह्नम् may be:\n\
 \n\
-  append    append mode (makes sense only for output; conv=notrunc suggested)\n\
+  append    append बहुलकम्_2 (makes sense only प्रति output; conv=notrunc suggested)\n\
 "), stdout);
-      if (O_CIO)
+      यदि (O_CIO)
         fputs (_("  cio       use concurrent I/O for data\n"), stdout);
-      if (O_DIRECT)
+      यदि (O_प्रत्यक्षम्)
         fputs (_("  direct    use direct I/O for data\n"), stdout);
       fputs (_("  directory  fail unless a directory\n"), stdout);
-      if (O_DSYNC)
+      यदि (O_DSYNC)
         fputs (_("  dsync     use synchronized I/O for data\n"), stdout);
-      if (O_SYNC)
+      यदि (O_SYNC)
         fputs (_("  sync      likewise, but also for metadata\n"), stdout);
       fputs (_("  fullblock  accumulate full blocks of input (iflag only)\n"),
              stdout);
-      if (O_NONBLOCK)
+      यदि (O_NONBLOCK)
         fputs (_("  nonblock  use non-blocking I/O\n"), stdout);
-      if (O_NOATIME)
+      यदि (O_NOATIME)
         fputs (_("  noatime   do not update access time\n"), stdout);
-#if HAVE_POSIX_FADVISE
-      if (O_NOCACHE)
+#यदि HAVE_POSIX_FADVISE
+      यदि (O_NOCACHE)
         fputs (_("  nocache   Request to drop cache.  See also oflag=sync\n"),
                stdout);
-#endif
-      if (O_NOCTTY)
+#यदि_अन्तः
+      यदि (O_NOCTTY)
         fputs (_("  noctty    do not assign controlling terminal from file\n"),
                stdout);
-      if (HAVE_WORKING_O_NOFOLLOW)
+      यदि (HAVE_WORKING_O_NOFOLLOW)
         fputs (_("  nofollow  do not follow symlinks\n"), stdout);
-      if (O_NOLINKS)
+      यदि (O_NOLINKS)
         fputs (_("  nolinks   fail if multiply-linked\n"), stdout);
-      if (O_BINARY)
+      यदि (O_द्विमान)
         fputs (_("  binary    use binary I/O for data\n"), stdout);
-      if (O_TEXT)
+      यदि (O_TEXT)
         fputs (_("  text      use text I/O for data\n"), stdout);
 
       {
-        printf (_("\
+        प्रारूप_लिख (_("\
 \n\
-Sending a %s signal to a running 'dd' process makes it\n\
-print I/O statistics to standard error and then resume copying.\n\
+Sending a %s सङ्केत गन्तव्यम् a running 'dd' process makes it\n\
+print I/O statistics गन्तव्यम् standard error and then resume copying.\n\
 \n\
 Options are:\n\
 \n\
@@ -657,124 +657,124 @@ Options are:\n\
       }
 
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (संस्करणम्_OPTION_DESCRIPTION);
+      emit_ancillary_info (क्रमादेशः_NAME);
     }
-  exit (status);
+  निर्गच्छ (स्थितिः);
 }
 
 /* Common options to use when displaying sizes and rates.  */
 
-enum { human_opts = (human_autoscale | human_round_to_nearest
+गणना { human_opts = (human_autoscale | human_आवर्तनम्_गन्तव्यम्_निकटतमः
                      | human_space_before_unit | human_SI | human_B) };
 
 /* Ensure input buffer IBUF is allocated.  */
 
-static void
-alloc_ibuf (void)
+स्थिर शून्य
+alloc_ibuf (शून्य)
 {
-  if (ibuf)
-    return;
+  यदि (ibuf)
+    प्रत्यागम;
 
-  bool extra_byte_for_swab = !!(conversions_mask & C_SWAB);
-  ibuf = alignalloc (page_size, input_blocksize + extra_byte_for_swab);
-  if (!ibuf)
+  bool extra_byte_for_swab = !!(conversions_आवरणम् & C_SWAB);
+  ibuf = alignalloc (page_आकार, निवेशः_blocksize + extra_byte_for_swab);
+  यदि (!ibuf)
     {
-      char hbuf[LONGEST_HUMAN_READABLE + 1];
+      वर्ण hbuf[LONGEST_HUMAN_READABLE + 1];
       error (EXIT_FAILURE, 0,
              _("memory exhausted by input buffer of size %td bytes (%s)"),
-             input_blocksize,
-             human_readable (input_blocksize, hbuf,
-                             human_opts | human_base_1024, 1, 1));
+             निवेशः_blocksize,
+             human_readable (निवेशः_blocksize, hbuf,
+                             human_opts | human_आधारः_1024, 1, 1));
     }
 }
 
 /* Ensure output buffer OBUF is allocated/initialized.  */
 
-static void
-alloc_obuf (void)
+स्थिर शून्य
+alloc_obuf (शून्य)
 {
-  if (obuf)
-    return;
+  यदि (obuf)
+    प्रत्यागम;
 
-  if (conversions_mask & C_TWOBUFS)
+  यदि (conversions_आवरणम् & C_TWOBUFS)
     {
-      obuf = alignalloc (page_size, output_blocksize);
-      if (!obuf)
+      obuf = alignalloc (page_आकार, output_blocksize);
+      यदि (!obuf)
         {
-          char hbuf[LONGEST_HUMAN_READABLE + 1];
+          वर्ण hbuf[LONGEST_HUMAN_READABLE + 1];
           error (EXIT_FAILURE, 0,
                  _("memory exhausted by output buffer of size %td"
                    " bytes (%s)"),
                  output_blocksize,
                  human_readable (output_blocksize, hbuf,
-                                 human_opts | human_base_1024, 1, 1));
+                                 human_opts | human_आधारः_1024, 1, 1));
         }
     }
-  else
+  अन्यथा
     {
       alloc_ibuf ();
       obuf = ibuf;
     }
 }
 
-static void
-translate_charset (char const *new_trans)
+स्थिर शून्य
+translate_charset (वर्ण ध्रुव *new_trans)
 {
-  for (int i = 0; i < 256; i++)
-    trans_table[i] = new_trans[trans_table[i]];
+  प्रति (पूर्णाङ्क i = 0; i < 256; i++)
+    trans_सारणी[i] = new_trans[trans_सारणी[i]];
   translation_needed = true;
 }
 
 /* Return true if I has more than one bit set.  I must be nonnegative.  */
 
-static inline bool
-multiple_bits_set (int i)
+स्थिर अन्तःस्थ bool
+गुणजः_द्वयङ्काः_समुच्चयः_2 (पूर्णाङ्क i)
 {
-  return MULTIPLE_BITS_SET (i);
+  प्रत्यागम गुणजः_द्वयङ्काः_समुच्चयः (i);
 }
 
-static bool
-abbreviation_lacks_prefix (char const *message)
+स्थिर bool
+abbreviation_lacks_उपसर्गः (वर्ण ध्रुव *सन्देशः_2)
 {
-  return message[strlen (message) - 2] == ' ';
+  प्रत्यागम सन्देशः_2[वाक्यदैर्घ्यम् (सन्देशः_2) - 2] == ' ';
 }
 
 /* Print transfer statistics.  */
 
-static void
-print_xfer_stats (xtime_t progress_time)
+स्थिर शून्य
+print_xfer_stats (xtime_t प्रगतिः_time)
 {
-  xtime_t now = progress_time ? progress_time : gethrxtime ();
-  static char const slash_s[] = "/s";
-  char hbuf[3][LONGEST_HUMAN_READABLE + sizeof slash_s];
-  double delta_s;
-  char const *bytes_per_second;
-  char const *si = human_readable (w_bytes, hbuf[0], human_opts, 1, 1);
-  char const *iec = human_readable (w_bytes, hbuf[1],
-                                    human_opts | human_base_1024, 1, 1);
+  xtime_t now = प्रगतिः_time ? प्रगतिः_time : gethrxtime ();
+  स्थिर वर्ण ध्रुव slash_s[] = "/s";
+  वर्ण hbuf[3][LONGEST_HUMAN_READABLE + परिमाण slash_s];
+  द्विगुण delta_s;
+  वर्ण ध्रुव *अष्टकानि_प्रत्येकम्_second;
+  वर्ण ध्रुव *si = human_readable (w_अष्टकानि, hbuf[0], human_opts, 1, 1);
+  वर्ण ध्रुव *iec = human_readable (w_अष्टकानि, hbuf[1],
+                                    human_opts | human_आधारः_1024, 1, 1);
 
   /* Use integer arithmetic to compute the transfer rate,
      since that makes it easy to use SI abbreviations.  */
-  char *bpsbuf = hbuf[2];
-  int bpsbufsize = sizeof hbuf[2];
-  if (start_time < now)
+  वर्ण *bpsbuf = hbuf[2];
+  पूर्णाङ्क bpsbufsize = परिमाण hbuf[2];
+  यदि (start_time < now)
     {
-      double XTIME_PRECISIONe0 = XTIME_PRECISION;
+      द्विगुण XTIME_PRECISIONe0 = XTIME_PRECISION;
       xtime_t delta_xtime = now - start_time;
       delta_s = delta_xtime / XTIME_PRECISIONe0;
-      bytes_per_second = human_readable (w_bytes, bpsbuf, human_opts,
+      अष्टकानि_प्रत्येकम्_second = human_readable (w_अष्टकानि, bpsbuf, human_opts,
                                          XTIME_PRECISION, delta_xtime);
-      strcat (bytes_per_second - bpsbuf + bpsbuf, slash_s);
+      वाक्यं_योजय (अष्टकानि_प्रत्येकम्_second - bpsbuf + bpsbuf, slash_s);
     }
-  else
+  अन्यथा
     {
       delta_s = 0;
       snprintf (bpsbuf, bpsbufsize, "%s B/s", _("Infinity"));
-      bytes_per_second = bpsbuf;
+      अष्टकानि_प्रत्येकम्_second = bpsbuf;
     }
 
-  if (progress_time)
+  यदि (प्रगतिः_time)
     fputc ('\r', stderr);
 
   /* Use full seconds when printing progress, since the progress
@@ -782,26 +782,26 @@ print_xfer_stats (xtime_t progress_time)
      displaying any subsecond jitter.  Use default precision with %g
      otherwise, as this provides more-useful output then.  With long
      transfers %g can generate a number with an exponent; that is OK.  */
-  char delta_s_buf[24];
-  snprintf (delta_s_buf, sizeof delta_s_buf,
-            progress_time ? "%.0f s" : "%g s", delta_s);
+  वर्ण delta_s_buf[24];
+  snprintf (delta_s_buf, परिमाण delta_s_buf,
+            प्रगतिः_time ? "%.0f s" : "%g s", delta_s);
 
-  int stats_len
-    = (abbreviation_lacks_prefix (si)
+  पूर्णाङ्क stats_len
+    = (abbreviation_lacks_उपसर्गः (si)
        ? fprintf (stderr,
                   ngettext ("%jd byte copied, %s, %s",
                             "%jd bytes copied, %s, %s",
-                            select_plural (w_bytes)),
-                  w_bytes, delta_s_buf, bytes_per_second)
-       : abbreviation_lacks_prefix (iec)
+                            select_plural (w_अष्टकानि)),
+                  w_अष्टकानि, delta_s_buf, अष्टकानि_प्रत्येकम्_second)
+       : abbreviation_lacks_उपसर्गः (iec)
        ? fprintf (stderr,
                   _("%jd bytes (%s) copied, %s, %s"),
-                  w_bytes, si, delta_s_buf, bytes_per_second)
+                  w_अष्टकानि, si, delta_s_buf, अष्टकानि_प्रत्येकम्_second)
        : fprintf (stderr,
                   _("%jd bytes (%s, %s) copied, %s, %s"),
-                  w_bytes, si, iec, delta_s_buf, bytes_per_second));
+                  w_अष्टकानि, si, iec, delta_s_buf, अष्टकानि_प्रत्येकम्_second));
 
-  if (progress_time)
+  यदि (प्रगतिः_time)
     {
       /* Erase any trailing junk on the output line by outputting
          spaces.  In theory this could glitch the display because the
@@ -809,95 +809,95 @@ print_xfer_stats (xtime_t progress_time)
          could consume fewer screen columns than the strlen difference
          from the previously formatted translation.  In practice this
          does not seem to be a problem.  */
-      if (0 <= stats_len && stats_len < progress_len)
-        fprintf (stderr, "%*s", progress_len - stats_len, "");
-      progress_len = stats_len;
+      यदि (0 <= stats_len && stats_len < प्रगतिः_len)
+        fprintf (stderr, "%*s", प्रगतिः_len - stats_len, "");
+      प्रगतिः_len = stats_len;
     }
-  else
+  अन्यथा
     fputc ('\n', stderr);
 
-  reported_w_bytes = w_bytes;
+  reported_w_अष्टकानि = w_अष्टकानि;
 }
 
-static void
-print_stats (void)
+स्थिर शून्य
+print_stats (शून्य)
 {
-  if (status_level == STATUS_NONE)
-    return;
+  यदि (स्थितिः_level == स्थितिः_NONE)
+    प्रत्यागम;
 
-  if (0 < progress_len)
+  यदि (0 < प्रगतिः_len)
     {
       fputc ('\n', stderr);
-      progress_len = 0;
+      प्रगतिः_len = 0;
     }
 
   fprintf (stderr,
            _("%jd+%jd records in\n"
              "%jd+%jd records out\n"),
-           r_full, r_partial, w_full, w_partial);
+           r_पूर्णम्, r_partial, w_पूर्णम्, w_partial);
 
-  if (r_truncate != 0)
+  यदि (r_truncate != 0)
     fprintf (stderr,
              ngettext ("%jd truncated record\n",
                        "%jd truncated records\n",
                        select_plural (r_truncate)),
              r_truncate);
 
-  if (status_level == STATUS_NOXFER)
-    return;
+  यदि (स्थितिः_level == स्थितिः_NOXFER)
+    प्रत्यागम;
 
   print_xfer_stats (0);
 }
 
 /* An ordinary signal was received; arrange for the program to exit.  */
 
-static void
-interrupt_handler (int sig)
+स्थिर शून्य
+व्यवधानम्_handler (पूर्णाङ्क sig)
 {
-  if (! SA_RESETHAND)
-    signal (sig, SIG_DFL);
-  interrupt_signal = sig;
+  यदि (! SA_RESETHAND)
+    सङ्केत (sig, SIG_DFL);
+  व्यवधानम्_signal = sig;
 }
 
 /* An info signal was received; arrange for the program to print status.  */
 
-static void
-siginfo_handler (MAYBE_UNUSED int sig)
+स्थिर शून्य
+siginfo_handler (MAYBE_अप्रयुक्तम् पूर्णाङ्क sig)
 {
-  info_signal_count++;
+  info_signal_गणनम्++;
 }
 
 /* Install the signal handlers.  */
 
-static void
-install_signal_handlers (void)
+स्थिर शून्य
+install_signal_handlers (शून्य)
 {
   bool catch_siginfo = ! (SIGINFO == SIGUSR1 && getenv ("POSIXLY_CORRECT"));
 
-  struct sigaction act;
-  sigemptyset (&caught_signals);
-  if (catch_siginfo)
-    sigaddset (&caught_signals, SIGINFO);
-  sigaction (SIGINT, NULL, &act);
-  if (act.sa_handler != SIG_IGN)
-    sigaddset (&caught_signals, SIGINT);
-  act.sa_mask = caught_signals;
+  संरचना sigaction act;
+  sigemptyset (&caught_सङ्केताः);
+  यदि (catch_siginfo)
+    sigaddset (&caught_सङ्केताः, SIGINFO);
+  sigaction (SIGINT, रिक्त, &act);
+  यदि (act.sa_handler != SIG_IGN)
+    sigaddset (&caught_सङ्केताः, SIGINT);
+  act.sa_mask = caught_सङ्केताः;
 
-  if (sigismember (&caught_signals, SIGINFO))
+  यदि (sigismember (&caught_सङ्केताः, SIGINFO))
     {
       act.sa_handler = siginfo_handler;
       /* Note we don't use SA_RESTART here and instead
          handle EINTR explicitly in iftruncate etc.
          to avoid blocking on uncommitted read/write calls.  */
       act.sa_flags = 0;
-      sigaction (SIGINFO, &act, NULL);
+      sigaction (SIGINFO, &act, रिक्त);
     }
 
-  if (sigismember (&caught_signals, SIGINT))
+  यदि (sigismember (&caught_सङ्केताः, SIGINT))
     {
-      act.sa_handler = interrupt_handler;
+      act.sa_handler = व्यवधानम्_handler;
       act.sa_flags = SA_NODEFER | SA_RESETHAND;
-      sigaction (SIGINT, &act, NULL);
+      sigaction (SIGINT, &act, रिक्त);
     }
 }
 
@@ -906,38 +906,38 @@ install_signal_handlers (void)
    is in an unspecified state, so keep trying to close FD but do not
    consider EBADF to be an error.  Do not process signals.  This all
    differs somewhat from functions like ifdatasync and ifsync.  */
-static int
-iclose (int fd)
+स्थिर पूर्णाङ्क
+iclose (पूर्णाङ्क fd)
 {
-  if (close (fd) != 0)
-    do
-      if (errno != EINTR)
-        return -1;
-    while (close (fd) != 0 && errno != EBADF);
+  यदि (close (fd) != 0)
+    कुरु
+      यदि (errno != EINTR)
+        प्रत्यागम -1;
+    यावत् (close (fd) != 0 && errno != EBADF);
 
-  return 0;
+  प्रत्यागम 0;
 }
 
-static int synchronize_output (void);
+स्थिर पूर्णाङ्क synchronize_output (शून्य);
 
-static void
-cleanup (void)
+स्थिर शून्य
+cleanup (शून्य)
 {
-  if (!interrupt_signal)
+  यदि (!व्यवधानम्_signal)
     {
-      int sync_status = synchronize_output ();
-      if (sync_status)
-        exit (sync_status);
+      पूर्णाङ्क sync_स्थितिः = synchronize_output ();
+      यदि (sync_स्थितिः)
+        निर्गच्छ (sync_स्थितिः);
     }
 
-  if (iclose (STDIN_FILENO) != 0)
+  यदि (iclose (STDIN_FILENO) != 0)
     error (EXIT_FAILURE, errno, _("closing input file %s"),
-           quoteaf (input_file));
+           quoteaf (निवेशः_file));
 
   /* Don't remove this call to close, even though close_stdout
      closes standard output.  This close is necessary when cleanup
      is called as a consequence of signal handling.  */
-  if (iclose (STDOUT_FILENO) != 0)
+  यदि (iclose (STDOUT_FILENO) != 0)
     error (EXIT_FAILURE, errno,
            _("closing output file %s"), quoteaf (output_file));
 }
@@ -946,49 +946,49 @@ cleanup (void)
    should be called periodically.  Ideally there should never be an
    unbounded amount of time when signals are not being processed.  */
 
-static void
-process_signals (void)
+स्थिर शून्य
+process_सङ्केताः (शून्य)
 {
-  while (interrupt_signal || info_signal_count)
+  यावत् (व्यवधानम्_signal || info_signal_गणनम्)
     {
-      int interrupt;
-      int infos;
+      पूर्णाङ्क व्यवधानम्;
+      पूर्णाङ्क infos;
       sigset_t oldset;
 
-      sigprocmask (SIG_BLOCK, &caught_signals, &oldset);
+      sigprocmask (SIG_BLOCK, &caught_सङ्केताः, &oldset);
 
       /* Reload interrupt_signal and info_signal_count, in case a new
          signal was handled before sigprocmask took effect.  */
-      interrupt = interrupt_signal;
-      infos = info_signal_count;
+      व्यवधानम् = व्यवधानम्_signal;
+      infos = info_signal_गणनम्;
 
-      if (infos)
-        info_signal_count = infos - 1;
+      यदि (infos)
+        info_signal_गणनम् = infos - 1;
 
-      sigprocmask (SIG_SETMASK, &oldset, NULL);
+      sigprocmask (SIG_SETMASK, &oldset, रिक्त);
 
-      if (interrupt)
+      यदि (व्यवधानम्)
         cleanup ();
       print_stats ();
-      if (interrupt)
-        raise (interrupt);
+      यदि (व्यवधानम्)
+        उत्थापय (व्यवधानम्);
     }
 }
 
-static void
-finish_up (void)
+स्थिर शून्य
+finish_ऊर्ध्वम् (शून्य)
 {
   /* Process signals first, so that cleanup is called at most once.  */
-  process_signals ();
+  process_सङ्केताः ();
   cleanup ();
   print_stats ();
 }
 
-static void
-quit (int code)
+स्थिर शून्य
+quit (पूर्णाङ्क संहिता)
 {
-  finish_up ();
-  exit (code);
+  finish_ऊर्ध्वम् ();
+  निर्गच्छ (संहिता);
 }
 
 /* Return LEN rounded down to a multiple of IO_BUFSIZE
@@ -996,27 +996,27 @@ quit (int code)
    while storing the remainder internally per FD.
    Pass LEN == 0 to get the current remainder.  */
 
-static off_t
-cache_round (int fd, off_t len)
+स्थिर off_t
+cache_आवर्तनम् (पूर्णाङ्क fd, off_t len)
 {
-  static off_t i_pending, o_pending;
+  स्थिर off_t i_pending, o_pending;
   off_t *pending = (fd == STDIN_FILENO ? &i_pending : &o_pending);
 
-  if (len)
+  यदि (len)
     {
       intmax_t c_pending;
-      if (ckd_add (&c_pending, *pending, len))
+      यदि (ckd_सङ्कलय (&c_pending, *pending, len))
         c_pending = INTMAX_MAX;
       *pending = c_pending % IO_BUFSIZE;
-      if (c_pending > *pending)
+      यदि (c_pending > *pending)
         len = c_pending - *pending;
-      else
+      अन्यथा
         len = 0;
     }
-  else
+  अन्यथा
     len = *pending;
 
-  return len;
+  प्रत्यागम len;
 }
 
 /* Discard the cache from the current offset of either
@@ -1024,49 +1024,49 @@ cache_round (int fd, off_t len)
    Return true on success.
    Return false on failure, with errno set.  */
 
-static bool
-invalidate_cache (int fd, off_t len)
+स्थिर bool
+invalidate_cache (पूर्णाङ्क fd, off_t len)
 {
-  int adv_ret = -1;
-  off_t offset;
+  पूर्णाङ्क adv_ret = -1;
+  off_t विस्थापनम्;
   bool nocache_eof = (fd == STDIN_FILENO ? i_nocache_eof : o_nocache_eof);
 
   /* Minimize syscalls.  */
-  off_t clen = cache_round (fd, len);
-  if (len && !clen)
-    return true; /* Don't advise this time.  */
-  else if (! len && ! clen && ! nocache_eof)
-    return true;
-  off_t pending = len ? cache_round (fd, 0) : 0;
+  off_t clen = cache_आवर्तनम् (fd, len);
+  यदि (len && !clen)
+    प्रत्यागम true; /* Don't advise this time.  */
+  अन्यथा यदि (! len && ! clen && ! nocache_eof)
+    प्रत्यागम true;
+  off_t pending = len ? cache_आवर्तनम् (fd, 0) : 0;
 
-  if (fd == STDIN_FILENO)
+  यदि (fd == STDIN_FILENO)
     {
-      if (input_seekable)
-        offset = input_offset;
-      else
+      यदि (निवेशः_seekable)
+        विस्थापनम् = निवेशः_विस्थापनम्;
+      अन्यथा
         {
-          offset = -1;
+          विस्थापनम् = -1;
           errno = ESPIPE;
         }
     }
-  else
+  अन्यथा
     {
-      static off_t output_offset = -2;
+      स्थिर off_t output_विस्थापनम् = -2;
 
-      if (output_offset != -1)
+      यदि (output_विस्थापनम् != -1)
         {
-          if (output_offset < 0)
-            output_offset = lseek (fd, 0, SEEK_CUR);
-          else if (len)
-            output_offset += clen + pending;
+          यदि (output_विस्थापनम् < 0)
+            output_विस्थापनम् = lseek (fd, 0, SEEK_CUR);
+          अन्यथा यदि (len)
+            output_विस्थापनम् += clen + pending;
         }
 
-      offset = output_offset;
+      विस्थापनम् = output_विस्थापनम्;
     }
 
-  if (0 <= offset)
+  यदि (0 <= विस्थापनम्)
    {
-     if (! len && clen && nocache_eof)
+     यदि (! len && clen && nocache_eof)
        {
          pending = clen;
          clen = 0;
@@ -1076,90 +1076,90 @@ invalidate_cache (int fd, off_t len)
         we've read, so as not to dump any read ahead cache.
         Note also the kernel is conservative and only invalidates
         full pages in the specified range.  */
-#if HAVE_POSIX_FADVISE
-     offset = offset - clen - pending;
+#यदि HAVE_POSIX_FADVISE
+     विस्थापनम् = विस्थापनम् - clen - pending;
      /* ensure full page specified when invalidating to eof.  */
-     if (clen == 0)
-       offset -= offset % page_size;
-     adv_ret = posix_fadvise (fd, offset, clen, POSIX_FADV_DONTNEED);
+     यदि (clen == 0)
+       विस्थापनम् -= विस्थापनम् % page_आकार;
+     adv_ret = posix_fadvise (fd, विस्थापनम्, clen, POSIX_FADV_DONTNEED);
      errno = adv_ret;
-#else
+#अन्यथा
      errno = ENOTSUP;
-#endif
+#यदि_अन्तः
    }
 
-  return adv_ret == 0;
+  प्रत्यागम adv_ret == 0;
 }
 
 /* Read from FD into the buffer BUF of size SIZE, processing any
    signals that arrive before bytes are read.  Return the number of
    bytes read if successful, -1 (setting errno) on failure.  */
 
-static ssize_t
-iread (int fd, char *buf, idx_t size)
+स्थिर ssize_t
+iread (पूर्णाङ्क fd, वर्ण *buf, idx_t आकार)
 {
   ssize_t nread;
-  static ssize_t prev_nread;
+  स्थिर ssize_t पूर्व_nread;
 
-  do
+  कुरु
     {
-      process_signals ();
-      nread = read (fd, buf, size);
+      process_सङ्केताः ();
+      nread = पठ (fd, buf, आकार);
       /* Ignore final read error with iflag=direct as that
          returns EINVAL due to the non aligned file offset.  */
-      if (nread == -1 && errno == EINVAL
-          && 0 < prev_nread && prev_nread < size
-          && (input_flags & O_DIRECT))
+      यदि (nread == -1 && errno == EINVAL
+          && 0 < पूर्व_nread && पूर्व_nread < आकार
+          && (निवेशः_flags & O_प्रत्यक्षम्))
         {
           errno = 0;
           nread = 0;
         }
     }
-  while (nread < 0 && errno == EINTR);
+  यावत् (nread < 0 && errno == EINTR);
 
   /* Short read may be due to received signal.  */
-  if (0 < nread && nread < size)
-    process_signals ();
+  यदि (0 < nread && nread < आकार)
+    process_सङ्केताः ();
 
-  if (0 < nread && warn_partial_read)
+  यदि (0 < nread && warn_partial_read)
     {
-      if (0 < prev_nread && prev_nread < size)
+      यदि (0 < पूर्व_nread && पूर्व_nread < आकार)
         {
-          idx_t prev = prev_nread;
-          if (status_level != STATUS_NONE)
+          idx_t पूर्व = पूर्व_nread;
+          यदि (स्थितिः_level != स्थितिः_NONE)
             diagnose (0, ngettext (("warning: partial read (%td byte); "
                                     "suggest iflag=fullblock"),
                                    ("warning: partial read (%td bytes); "
                                     "suggest iflag=fullblock"),
-                                   select_plural (prev)),
-                      prev);
+                                   select_plural (पूर्व)),
+                      पूर्व);
           warn_partial_read = false;
         }
     }
 
-  prev_nread = nread;
-  return nread;
+  पूर्व_nread = nread;
+  प्रत्यागम nread;
 }
 
 /* Wrapper around iread function to accumulate full blocks.  */
-static ssize_t
-iread_fullblock (int fd, char *buf, idx_t size)
+स्थिर ssize_t
+iread_fullblock (पूर्णाङ्क fd, वर्ण *buf, idx_t आकार)
 {
   ssize_t nread = 0;
 
-  while (0 < size)
+  यावत् (0 < आकार)
     {
-      ssize_t ncurr = iread (fd, buf, size);
-      if (ncurr < 0)
-        return ncurr;
-      if (ncurr == 0)
-        break;
+      ssize_t ncurr = iread (fd, buf, आकार);
+      यदि (ncurr < 0)
+        प्रत्यागम ncurr;
+      यदि (ncurr == 0)
+        भङ्ग;
       nread += ncurr;
       buf   += ncurr;
-      size  -= ncurr;
+      आकार  -= ncurr;
     }
 
-  return nread;
+  प्रत्यागम nread;
 }
 
 /* Write to FD the buffer BUF of size SIZE, processing any signals
@@ -1167,16 +1167,16 @@ iread_fullblock (int fd, char *buf, idx_t size)
    this is less than SIZE.  Keep trying if there are partial
    writes.  */
 
-static idx_t
-iwrite (int fd, char const *buf, idx_t size)
+स्थिर idx_t
+iwrite (पूर्णाङ्क fd, वर्ण ध्रुव *buf, idx_t आकार)
 {
-  idx_t total_written = 0;
+  idx_t योग_written = 0;
 
-  if ((output_flags & O_DIRECT) && size < output_blocksize)
+  यदि ((output_flags & O_प्रत्यक्षम्) && आकार < output_blocksize)
     {
-      int old_flags = fcntl (STDOUT_FILENO, F_GETFL);
-      if (fcntl (STDOUT_FILENO, F_SETFL, old_flags & ~O_DIRECT) != 0
-          && status_level != STATUS_NONE)
+      पूर्णाङ्क old_flags = fcntl (STDOUT_FILENO, F_GETFL);
+      यदि (fcntl (STDOUT_FILENO, F_SETFL, old_flags & ~O_प्रत्यक्षम्) != 0
+          && स्थितिः_level != स्थितिः_NONE)
         diagnose (errno, _("failed to turn off O_DIRECT: %s"),
                   quotef (output_file));
 
@@ -1190,197 +1190,197 @@ iwrite (int fd, char const *buf, idx_t size)
 
       /* Attempt to ensure that the final block is committed
          to stable storage as quickly as possible.  */
-      conversions_mask |= C_FSYNC;
+      conversions_आवरणम् |= C_FSYNC;
 
       /* After the subsequent fsync we'll call invalidate_cache
          to attempt to clear all data from the page cache.  */
     }
 
-  while (total_written < size)
+  यावत् (योग_written < आकार)
     {
       ssize_t nwritten = 0;
-      process_signals ();
+      process_सङ्केताः ();
 
       /* Perform a seek for a NUL block if sparse output is enabled.  */
       final_op_was_seek = false;
-      if ((conversions_mask & C_SPARSE) && is_nul (buf, size))
+      यदि ((conversions_आवरणम् & C_SPARSE) && is_nul (buf, आकार))
         {
-          if (lseek (fd, size, SEEK_CUR) < 0)
+          यदि (lseek (fd, आकार, SEEK_CUR) < 0)
             {
-              conversions_mask &= ~C_SPARSE;
+              conversions_आवरणम् &= ~C_SPARSE;
               /* Don't warn about the advisory sparse request.  */
             }
-          else
+          अन्यथा
             {
               final_op_was_seek = true;
-              nwritten = size;
+              nwritten = आकार;
             }
         }
 
-      if (!nwritten)
-        nwritten = write (fd, buf + total_written, size - total_written);
+      यदि (!nwritten)
+        nwritten = लिख (fd, buf + योग_written, आकार - योग_written);
 
-      if (nwritten < 0)
+      यदि (nwritten < 0)
         {
-          if (errno != EINTR)
-            break;
+          यदि (errno != EINTR)
+            भङ्ग;
         }
-      else if (nwritten == 0)
+      अन्यथा यदि (nwritten == 0)
         {
           /* Some buggy drivers return 0 when one tries to write beyond
              a device's end.  (Example: Linux kernel 1.2.13 on /dev/fd0.)
              Set errno to ENOSPC so they get a sensible diagnostic.  */
           errno = ENOSPC;
-          break;
+          भङ्ग;
         }
-      else
-        total_written += nwritten;
+      अन्यथा
+        योग_written += nwritten;
     }
 
-  if (o_nocache && total_written)
-    invalidate_cache (fd, total_written);
+  यदि (o_nocache && योग_written)
+    invalidate_cache (fd, योग_written);
 
-  return total_written;
+  प्रत्यागम योग_written;
 }
 
 /* Write, then empty, the output buffer 'obuf'. */
 
-static void
-write_output (void)
+स्थिर शून्य
+write_output (शून्य)
 {
   idx_t nwritten = iwrite (STDOUT_FILENO, obuf, output_blocksize);
-  w_bytes += nwritten;
-  if (nwritten != output_blocksize)
+  w_अष्टकानि += nwritten;
+  यदि (nwritten != output_blocksize)
     {
       diagnose (errno, _("writing to %s"), quoteaf (output_file));
-      if (nwritten != 0)
+      यदि (nwritten != 0)
         w_partial++;
       quit (EXIT_FAILURE);
     }
-  else
-    w_full++;
+  अन्यथा
+    w_पूर्णम्++;
   oc = 0;
 }
 
 /* Restart on EINTR from fdatasync.  */
 
-static int
-ifdatasync (int fd)
+स्थिर पूर्णाङ्क
+ifdatasync (पूर्णाङ्क fd)
 {
-  int ret;
+  पूर्णाङ्क ret;
 
-  do
+  कुरु
     {
-      process_signals ();
+      process_सङ्केताः ();
       ret = fdatasync (fd);
     }
-  while (ret < 0 && errno == EINTR);
+  यावत् (ret < 0 && errno == EINTR);
 
-  return ret;
+  प्रत्यागम ret;
 }
 
 /* Restart on EINTR from fd_reopen.  */
 
-static int
-ifd_reopen (int desired_fd, char const *file, int flag, mode_t mode)
+स्थिर पूर्णाङ्क
+ifd_reopen (पूर्णाङ्क desired_fd, वर्ण ध्रुव *file, पूर्णाङ्क flag, mode_t बहुलकम्_2)
 {
-  int ret;
+  पूर्णाङ्क ret;
 
-  do
+  कुरु
     {
-      process_signals ();
-      ret = fd_reopen (desired_fd, file, flag, mode);
+      process_सङ्केताः ();
+      ret = fd_reopen (desired_fd, file, flag, बहुलकम्_2);
     }
-  while (ret < 0 && errno == EINTR);
+  यावत् (ret < 0 && errno == EINTR);
 
-  return ret;
+  प्रत्यागम ret;
 }
 
 /* Restart on EINTR from fstat.  */
 
-static int
-ifstat (int fd, struct stat *st)
+स्थिर पूर्णाङ्क
+ifstat (पूर्णाङ्क fd, संरचना stat *st)
 {
-  int ret;
+  पूर्णाङ्क ret;
 
-  do
+  कुरु
     {
-      process_signals ();
+      process_सङ्केताः ();
       ret = fstat (fd, st);
     }
-  while (ret < 0 && errno == EINTR);
+  यावत् (ret < 0 && errno == EINTR);
 
-  return ret;
+  प्रत्यागम ret;
 }
 
 /* Restart on EINTR from fsync.  */
 
-static int
-ifsync (int fd)
+स्थिर पूर्णाङ्क
+ifsync (पूर्णाङ्क fd)
 {
-  int ret;
+  पूर्णाङ्क ret;
 
-  do
+  कुरु
     {
-      process_signals ();
+      process_सङ्केताः ();
       ret = fsync (fd);
     }
-  while (ret < 0 && errno == EINTR);
+  यावत् (ret < 0 && errno == EINTR);
 
-  return ret;
+  प्रत्यागम ret;
 }
 
 /* Restart on EINTR from ftruncate.  */
 
-static int
-iftruncate (int fd, off_t length)
+स्थिर पूर्णाङ्क
+iftruncate (पूर्णाङ्क fd, off_t दीर्घता)
 {
-  int ret;
+  पूर्णाङ्क ret;
 
-  do
+  कुरु
     {
-      process_signals ();
-      ret = ftruncate (fd, length);
+      process_सङ्केताः ();
+      ret = ftruncate (fd, दीर्घता);
     }
-  while (ret < 0 && errno == EINTR);
+  यावत् (ret < 0 && errno == EINTR);
 
-  return ret;
+  प्रत्यागम ret;
 }
 
 /* Return true if STR is of the form "PATTERN" or "PATTERNDELIM...".  */
 
-ATTRIBUTE_PURE
-static bool
-operand_matches (char const *str, char const *pattern, char delim)
+ATTRIBUTE_विशुद्धम्
+स्थिर bool
+सङ्कार्यम्_matches (वर्ण ध्रुव *str, वर्ण ध्रुव *आदर्शः_2, वर्ण delim)
 {
-  while (*pattern)
-    if (*str++ != *pattern++)
-      return false;
-  return !*str || *str == delim;
+  यावत् (*आदर्शः_2)
+    यदि (*str++ != *आदर्शः_2++)
+      प्रत्यागम false;
+  प्रत्यागम !*str || *str == delim;
 }
 
 /* Interpret one "conv=..." or similar operand STR according to the
    symbols in TABLE, returning the flags specified.  If the operand
    cannot be parsed, use ERROR_MSGID to generate a diagnostic.  */
 
-static int
-parse_symbols (char const *str, struct symbol_value const *table,
-               bool exclusive, char const *error_msgid)
+स्थिर पूर्णाङ्क
+parse_symbols (वर्ण ध्रुव *str, संरचना चिह्नम्_मानम् ध्रुव *सारणी,
+               bool exclusive, वर्ण ध्रुव *error_msgid)
 {
-  int value = 0;
+  पूर्णाङ्क मानम् = 0;
 
-  while (true)
+  यावत् (true)
     {
-      char const *strcomma = strchr (str, ',');
-      struct symbol_value const *entry;
+      वर्ण ध्रुव *strcomma = strchr (str, ',');
+      संरचना चिह्नम्_मानम् ध्रुव *प्रविष्टिः;
 
-      for (entry = table;
-           ! (operand_matches (str, entry->symbol, ',') && entry->value);
-           entry++)
+      प्रति (प्रविष्टिः = सारणी;
+           ! (सङ्कार्यम्_matches (str, प्रविष्टिः->चिह्नम्, ',') && प्रविष्टिः->मानम्);
+           प्रविष्टिः++)
         {
-          if (! entry->symbol[0])
+          यदि (! प्रविष्टिः->चिह्नम्[0])
             {
-              idx_t slen = strcomma ? strcomma - str : strlen (str);
+              idx_t slen = strcomma ? strcomma - str : वाक्यदैर्घ्यम् (str);
               diagnose (0, "%s: %s", _(error_msgid),
                         quotearg_n_style_mem (0, locale_quoting_style,
                                               str, slen));
@@ -1388,16 +1388,16 @@ parse_symbols (char const *str, struct symbol_value const *table,
             }
         }
 
-      if (exclusive)
-        value = entry->value;
-      else
-        value |= entry->value;
-      if (!strcomma)
-        break;
+      यदि (exclusive)
+        मानम् = प्रविष्टिः->मानम्;
+      अन्यथा
+        मानम् |= प्रविष्टिः->मानम्;
+      यदि (!strcomma)
+        भङ्ग;
       str = strcomma + 1;
     }
 
-  return value;
+  प्रत्यागम मानम्;
 }
 
 /* Return the value of STR, interpreted as a non-negative decimal integer,
@@ -1405,143 +1405,143 @@ parse_symbols (char const *str, struct symbol_value const *table,
    Set *INVALID to an appropriate error value and return INTMAX_MAX if
    it is an overflow, an indeterminate value if some other error occurred.  */
 
-static intmax_t
-parse_integer (char const *str, strtol_error *invalid)
+स्थिर intmax_t
+parse_integer (वर्ण ध्रुव *str, strtol_error *invalid)
 {
   /* Call xstrtoumax, not xstrtoimax, since we don't want to
      allow strings like " -0".  Initialize N to an indeterminate value;
      calling code should not rely on this function returning 0
      when *INVALID represents a non-overflow error.  */
-  int indeterminate = 0;
-  static char const suffixes[] = "bcEGkKMPQRTwYZ0";
-  intmax_t result = 1;
-  bool overflow = false;
+  पूर्णाङ्क indeterminate = 0;
+  स्थिर वर्ण ध्रुव suffixes[] = "bcEGkKMPQRTwYZ0";
+  intmax_t परिणाम = 1;
+  bool अतिप्रवाहः = false;
   bool warn_zero_multiplier = false;
   strtol_error e;
 
-  while (true)
+  यावत् (true)
     {
       uintmax_t n = indeterminate;
-      char *suffix;
+      वर्ण *suffix;
       e = xstrtoumax (str, &suffix, 10, &n, suffixes);
 
-      if ((e & ~LONGINT_OVERFLOW) == LONGINT_INVALID_SUFFIX_CHAR
+      यदि ((e & ~LONGINT_अतिप्रवाहः) == LONGINT_INVALID_SUFFIX_CHAR
           && *suffix == 'B' && str < suffix && suffix[-1] != 'B')
         {
           suffix++;
-          if (!*suffix)
+          यदि (!*suffix)
             e &= ~LONGINT_INVALID_SUFFIX_CHAR;
         }
 
       bool multiply
-        = ((e & ~LONGINT_OVERFLOW) == LONGINT_INVALID_SUFFIX_CHAR
+        = ((e & ~LONGINT_अतिप्रवाहः) == LONGINT_INVALID_SUFFIX_CHAR
            && *suffix == 'x');
-      if (multiply)
+      यदि (multiply)
         e &= ~LONGINT_INVALID_SUFFIX_CHAR;
 
-      if ((e & ~LONGINT_OVERFLOW) != LONGINT_OK)
+      यदि ((e & ~LONGINT_अतिप्रवाहः) != LONGINT_OK)
         {
-          if (! (e & LONGINT_OVERFLOW) && n <= INTMAX_MAX)
+          यदि (! (e & LONGINT_अतिप्रवाहः) && n <= INTMAX_MAX)
             {
               *invalid = e;
-              return indeterminate;
+              प्रत्यागम indeterminate;
             }
-          e = LONGINT_OVERFLOW;
+          e = LONGINT_अतिप्रवाहः;
         }
 
-      if (n == 0)
-        result = 0;
-      else if (result != 0)
+      यदि (n == 0)
+        परिणाम = 0;
+      अन्यथा यदि (परिणाम != 0)
         {
-          intmax_t product;
-          if ((e & LONGINT_OVERFLOW)
-              || overflow
-              || ckd_mul (&product, result, n))
-            overflow = true;
-          else
-            result = product;
+          intmax_t गुणनफलम्;
+          यदि ((e & LONGINT_अतिप्रवाहः)
+              || अतिप्रवाहः
+              || ckd_mul (&गुणनफलम्, परिणाम, n))
+            अतिप्रवाहः = true;
+          अन्यथा
+            परिणाम = गुणनफलम्;
         }
 
-      if (multiply && STRPREFIX (str, "0x"))
+      यदि (multiply && STRPREFIX (str, "0x"))
         warn_zero_multiplier = true;
 
-      if (! multiply)
-        break;
+      यदि (! multiply)
+        भङ्ग;
       str = suffix + 1;
     }
 
-  if (result == 0)
+  यदि (परिणाम == 0)
     {
-      if (warn_zero_multiplier)
+      यदि (warn_zero_multiplier)
         diagnose (0, _("warning: %s is a zero multiplier; "
                        "use %s if that is intended"),
                   quote_n (0, "0x"), quote_n (1, "00x"));
       e = LONGINT_OK;
     }
-  else if (overflow)
+  अन्यथा यदि (अतिप्रवाहः)
     {
-      e = LONGINT_OVERFLOW;
-      result = INTMAX_MAX;
+      e = LONGINT_अतिप्रवाहः;
+      परिणाम = INTMAX_MAX;
     }
 
   *invalid = e;
-  return result;
+  प्रत्यागम परिणाम;
 }
 
 /* OPERAND is of the form "X=...".  Return true if X is NAME.  */
 
-ATTRIBUTE_PURE
-static bool
-operand_is (char const *operand, char const *name)
+ATTRIBUTE_विशुद्धम्
+स्थिर bool
+सङ्कार्यम्_is (वर्ण ध्रुव *सङ्कार्यम्_2, वर्ण ध्रुव *name)
 {
-  return operand_matches (operand, name, '=');
+  प्रत्यागम सङ्कार्यम्_matches (सङ्कार्यम्_2, name, '=');
 }
 
-static void
-scanargs (int argc, char *const *argv)
+स्थिर शून्य
+scanargs (पूर्णाङ्क argc, वर्ण *ध्रुव *argv)
 {
   idx_t blocksize = 0;
-  intmax_t count = INTMAX_MAX;
+  intmax_t गणनम् = INTMAX_MAX;
   intmax_t skip = 0;
   intmax_t seek = 0;
-  bool count_B = false, skip_B = false, seek_B = false;
+  bool गणनम्_B = false, skip_B = false, seek_B = false;
 
-  for (int i = optind; i < argc; i++)
+  प्रति (पूर्णाङ्क i = optind; i < argc; i++)
     {
-      char const *name = argv[i];
-      char const *val = strchr (name, '=');
+      वर्ण ध्रुव *name = argv[i];
+      वर्ण ध्रुव *val = strchr (name, '=');
 
-      if (val == NULL)
+      यदि (val == रिक्त)
         {
           diagnose (0, _("unrecognized operand %s"), quoteaf (name));
           usage (EXIT_FAILURE);
         }
       val++;
 
-      if (operand_is (name, "if"))
-        input_file = val;
-      else if (operand_is (name, "of"))
+      यदि (सङ्कार्यम्_is (name, "if"))
+        निवेशः_file = val;
+      अन्यथा यदि (सङ्कार्यम्_is (name, "of"))
         output_file = val;
-      else if (operand_is (name, "conv"))
-        conversions_mask |= parse_symbols (val, conversions, false,
+      अन्यथा यदि (सङ्कार्यम्_is (name, "conv"))
+        conversions_आवरणम् |= parse_symbols (val, conversions, false,
                                            N_("invalid conversion"));
-      else if (operand_is (name, "iflag"))
-        input_flags |= parse_symbols (val, flags, false,
+      अन्यथा यदि (सङ्कार्यम्_is (name, "iflag"))
+        निवेशः_flags |= parse_symbols (val, flags, false,
                                       N_("invalid input flag"));
-      else if (operand_is (name, "oflag"))
+      अन्यथा यदि (सङ्कार्यम्_is (name, "oflag"))
         output_flags |= parse_symbols (val, flags, false,
                                        N_("invalid output flag"));
-      else if (operand_is (name, "status"))
-        status_level = parse_symbols (val, statuses, true,
+      अन्यथा यदि (सङ्कार्यम्_is (name, "status"))
+        स्थितिः_level = parse_symbols (val, statuses, true,
                                       N_("invalid status level"));
-      else
+      अन्यथा
         {
           strtol_error invalid = LONGINT_OK;
           intmax_t n = parse_integer (val, &invalid);
           bool has_B = !!strchr (val, 'B');
           intmax_t n_min = 0;
           intmax_t n_max = INTMAX_MAX;
-          idx_t *converted_idx = NULL;
+          idx_t *converted_idx = रिक्त;
 
           /* Maximum blocksize.  Keep it smaller than IDX_MAX, so that
              it fits into blocksize vars even if 1 is added for conv=swab.
@@ -1550,204 +1550,204 @@ scanargs (int argc, char *const *argv)
              benefit of the large-offset seek code.  */
           idx_t max_blocksize = MIN (IDX_MAX - 1, MIN (SSIZE_MAX, OFF_T_MAX));
 
-          if (operand_is (name, "ibs"))
+          यदि (सङ्कार्यम्_is (name, "ibs"))
             {
               n_min = 1;
               n_max = max_blocksize;
-              converted_idx = &input_blocksize;
+              converted_idx = &निवेशः_blocksize;
             }
-          else if (operand_is (name, "obs"))
+          अन्यथा यदि (सङ्कार्यम्_is (name, "obs"))
             {
               n_min = 1;
               n_max = max_blocksize;
               converted_idx = &output_blocksize;
             }
-          else if (operand_is (name, "bs"))
+          अन्यथा यदि (सङ्कार्यम्_is (name, "bs"))
             {
               n_min = 1;
               n_max = max_blocksize;
               converted_idx = &blocksize;
             }
-          else if (operand_is (name, "cbs"))
+          अन्यथा यदि (सङ्कार्यम्_is (name, "cbs"))
             {
               n_min = 1;
               n_max = MIN (SIZE_MAX, IDX_MAX);
               converted_idx = &conversion_blocksize;
             }
-          else if (operand_is (name, "skip") || operand_is (name, "iseek"))
+          अन्यथा यदि (सङ्कार्यम्_is (name, "skip") || सङ्कार्यम्_is (name, "iseek"))
             {
               skip = n;
               skip_B = has_B;
             }
-          else if (operand_is (name + (*name == 'o'), "seek"))
+          अन्यथा यदि (सङ्कार्यम्_is (name + (*name == 'o'), "seek"))
             {
               seek = n;
               seek_B = has_B;
             }
-          else if (operand_is (name, "count"))
+          अन्यथा यदि (सङ्कार्यम्_is (name, "count"))
             {
-              count = n;
-              count_B = has_B;
+              गणनम् = n;
+              गणनम्_B = has_B;
             }
-          else
+          अन्यथा
             {
               diagnose (0, _("unrecognized operand %s"), quoteaf (name));
               usage (EXIT_FAILURE);
             }
 
-          if (n < n_min)
+          यदि (n < n_min)
             invalid = LONGINT_INVALID;
-          else if (n_max < n)
-            invalid = LONGINT_OVERFLOW;
+          अन्यथा यदि (n_max < n)
+            invalid = LONGINT_अतिप्रवाहः;
 
-          if (invalid != LONGINT_OK)
-            error (EXIT_FAILURE, invalid == LONGINT_OVERFLOW ? EOVERFLOW : 0,
+          यदि (invalid != LONGINT_OK)
+            error (EXIT_FAILURE, invalid == LONGINT_अतिप्रवाहः ? EOVERFLOW : 0,
                    "%s: %s", _("invalid number"), quoteaf (val));
-          else if (converted_idx)
+          अन्यथा यदि (converted_idx)
             *converted_idx = n;
         }
     }
 
-  if (blocksize)
-    input_blocksize = output_blocksize = blocksize;
-  else
+  यदि (blocksize)
+    निवेशः_blocksize = output_blocksize = blocksize;
+  अन्यथा
     {
       /* POSIX says dd aggregates partial reads into
          output_blocksize if bs= is not specified.  */
-      conversions_mask |= C_TWOBUFS;
+      conversions_आवरणम् |= C_TWOBUFS;
     }
 
-  if (input_blocksize == 0)
-    input_blocksize = DEFAULT_BLOCKSIZE;
-  if (output_blocksize == 0)
+  यदि (निवेशः_blocksize == 0)
+    निवेशः_blocksize = DEFAULT_BLOCKSIZE;
+  यदि (output_blocksize == 0)
     output_blocksize = DEFAULT_BLOCKSIZE;
-  if (conversion_blocksize == 0)
-    conversions_mask &= ~(C_BLOCK | C_UNBLOCK);
+  यदि (conversion_blocksize == 0)
+    conversions_आवरणम् &= ~(C_खण्डम् | C_UNBLOCK);
 
-  if (input_flags & (O_DSYNC | O_SYNC))
-    input_flags |= O_RSYNC;
+  यदि (निवेशः_flags & (O_DSYNC | O_SYNC))
+    निवेशः_flags |= O_RSYNC;
 
-  if (output_flags & O_FULLBLOCK)
+  यदि (output_flags & O_FULLBLOCK)
     {
       diagnose (0, "%s: %s", _("invalid output flag"), quote ("fullblock"));
       usage (EXIT_FAILURE);
     }
 
-  if (skip_B)
-    input_flags |= O_SKIP_BYTES;
-  if (input_flags & O_SKIP_BYTES && skip != 0)
+  यदि (skip_B)
+    निवेशः_flags |= O_SKIP_अष्टकानि;
+  यदि (निवेशः_flags & O_SKIP_अष्टकानि && skip != 0)
     {
-      skip_records = skip / input_blocksize;
-      skip_bytes = skip % input_blocksize;
+      skip_लेखाः = skip / निवेशः_blocksize;
+      skip_अष्टकानि = skip % निवेशः_blocksize;
     }
-  else if (skip != 0)
-    skip_records = skip;
+  अन्यथा यदि (skip != 0)
+    skip_लेखाः = skip;
 
-  if (count_B)
-    input_flags |= O_COUNT_BYTES;
-  if (input_flags & O_COUNT_BYTES && count != INTMAX_MAX)
+  यदि (गणनम्_B)
+    निवेशः_flags |= O_गणनम्_अष्टकानि;
+  यदि (निवेशः_flags & O_गणनम्_अष्टकानि && गणनम् != INTMAX_MAX)
     {
-      max_records = count / input_blocksize;
-      max_bytes = count % input_blocksize;
+      max_लेखाः = गणनम् / निवेशः_blocksize;
+      max_अष्टकानि = गणनम् % निवेशः_blocksize;
     }
-  else if (count != INTMAX_MAX)
-    max_records = count;
+  अन्यथा यदि (गणनम् != INTMAX_MAX)
+    max_लेखाः = गणनम्;
 
-  if (seek_B)
-    output_flags |= O_SEEK_BYTES;
-  if (output_flags & O_SEEK_BYTES && seek != 0)
+  यदि (seek_B)
+    output_flags |= O_SEEK_अष्टकानि;
+  यदि (output_flags & O_SEEK_अष्टकानि && seek != 0)
     {
-      seek_records = seek / output_blocksize;
-      seek_bytes = seek % output_blocksize;
+      seek_लेखाः = seek / output_blocksize;
+      seek_अष्टकानि = seek % output_blocksize;
     }
-  else if (seek != 0)
-    seek_records = seek;
+  अन्यथा यदि (seek != 0)
+    seek_लेखाः = seek;
 
   /* Warn about partial reads if bs=SIZE is given and iflag=fullblock
      is not, and if counting or skipping bytes or using direct I/O.
      This helps to avoid confusion with miscounts, and to avoid issues
      with direct I/O on GNU/Linux.  */
   warn_partial_read =
-    (! (conversions_mask & C_TWOBUFS) && ! (input_flags & O_FULLBLOCK)
-     && (skip_records
-         || (0 < max_records && max_records < INTMAX_MAX)
-         || (input_flags | output_flags) & O_DIRECT));
+    (! (conversions_आवरणम् & C_TWOBUFS) && ! (निवेशः_flags & O_FULLBLOCK)
+     && (skip_लेखाः
+         || (0 < max_लेखाः && max_लेखाः < INTMAX_MAX)
+         || (निवेशः_flags | output_flags) & O_प्रत्यक्षम्));
 
-  iread_fnc = ((input_flags & O_FULLBLOCK)
+  iread_fnc = ((निवेशः_flags & O_FULLBLOCK)
                ? iread_fullblock
                : iread);
-  input_flags &= ~O_FULLBLOCK;
+  निवेशः_flags &= ~O_FULLBLOCK;
 
-  if (multiple_bits_set (conversions_mask & (C_ASCII | C_EBCDIC | C_IBM)))
+  यदि (गुणजः_द्वयङ्काः_समुच्चयः_2 (conversions_आवरणम् & (C_ASCII | C_EBCDIC | C_IBM)))
     error (EXIT_FAILURE, 0, _("cannot combine any two of {ascii,ebcdic,ibm}"));
-  if (multiple_bits_set (conversions_mask & (C_BLOCK | C_UNBLOCK)))
+  यदि (गुणजः_द्वयङ्काः_समुच्चयः_2 (conversions_आवरणम् & (C_खण्डम् | C_UNBLOCK)))
     error (EXIT_FAILURE, 0, _("cannot combine block and unblock"));
-  if (multiple_bits_set (conversions_mask & (C_LCASE | C_UCASE)))
+  यदि (गुणजः_द्वयङ्काः_समुच्चयः_2 (conversions_आवरणम् & (C_LCASE | C_UCASE)))
     error (EXIT_FAILURE, 0, _("cannot combine lcase and ucase"));
-  if (multiple_bits_set (conversions_mask & (C_EXCL | C_NOCREAT)))
+  यदि (गुणजः_द्वयङ्काः_समुच्चयः_2 (conversions_आवरणम् & (C_EXCL | C_NOCREAT)))
     error (EXIT_FAILURE, 0, _("cannot combine excl and nocreat"));
-  if (multiple_bits_set (input_flags & (O_DIRECT | O_NOCACHE))
-      || multiple_bits_set (output_flags & (O_DIRECT | O_NOCACHE)))
+  यदि (गुणजः_द्वयङ्काः_समुच्चयः_2 (निवेशः_flags & (O_प्रत्यक्षम् | O_NOCACHE))
+      || गुणजः_द्वयङ्काः_समुच्चयः_2 (output_flags & (O_प्रत्यक्षम् | O_NOCACHE)))
     error (EXIT_FAILURE, 0, _("cannot combine direct and nocache"));
 
-  if (input_flags & O_NOCACHE)
+  यदि (निवेशः_flags & O_NOCACHE)
     {
       i_nocache = true;
-      i_nocache_eof = (max_records == 0 && max_bytes == 0);
-      input_flags &= ~O_NOCACHE;
+      i_nocache_eof = (max_लेखाः == 0 && max_अष्टकानि == 0);
+      निवेशः_flags &= ~O_NOCACHE;
     }
-  if (output_flags & O_NOCACHE)
+  यदि (output_flags & O_NOCACHE)
     {
       o_nocache = true;
-      o_nocache_eof = (max_records == 0 && max_bytes == 0);
+      o_nocache_eof = (max_लेखाः == 0 && max_अष्टकानि == 0);
       output_flags &= ~O_NOCACHE;
     }
 }
 
 /* Fix up translation table. */
 
-static void
-apply_translations (void)
+स्थिर शून्य
+apply_translations (शून्य)
 {
-  if (conversions_mask & C_ASCII)
-    translate_charset (ebcdic_to_ascii);
+  यदि (conversions_आवरणम् & C_ASCII)
+    translate_charset (ebcdic_गन्तव्यम्_ascii);
 
-  if (conversions_mask & C_UCASE)
+  यदि (conversions_आवरणम् & C_UCASE)
     {
-      for (int i = 0; i < 256; i++)
-        trans_table[i] = toupper (trans_table[i]);
+      प्रति (पूर्णाङ्क i = 0; i < 256; i++)
+        trans_सारणी[i] = महाक्षरम् (trans_सारणी[i]);
       translation_needed = true;
     }
-  else if (conversions_mask & C_LCASE)
+  अन्यथा यदि (conversions_आवरणम् & C_LCASE)
     {
-      for (int i = 0; i < 256; i++)
-        trans_table[i] = tolower (trans_table[i]);
+      प्रति (पूर्णाङ्क i = 0; i < 256; i++)
+        trans_सारणी[i] = tolower (trans_सारणी[i]);
       translation_needed = true;
     }
 
-  if (conversions_mask & C_EBCDIC)
+  यदि (conversions_आवरणम् & C_EBCDIC)
     {
-      translate_charset (ascii_to_ebcdic);
-      newline_character = ascii_to_ebcdic['\n'];
-      space_character = ascii_to_ebcdic[' '];
+      translate_charset (ascii_गन्तव्यम्_ebcdic);
+      newline_character = ascii_गन्तव्यम्_ebcdic['\n'];
+      space_character = ascii_गन्तव्यम्_ebcdic[' '];
     }
-  else if (conversions_mask & C_IBM)
+  अन्यथा यदि (conversions_आवरणम् & C_IBM)
     {
-      translate_charset (ascii_to_ibm);
-      newline_character = ascii_to_ibm['\n'];
-      space_character = ascii_to_ibm[' '];
+      translate_charset (ascii_गन्तव्यम्_ibm);
+      newline_character = ascii_गन्तव्यम्_ibm['\n'];
+      space_character = ascii_गन्तव्यम्_ibm[' '];
     }
 }
 
 /* Apply the character-set translations specified by the user
    to the NREAD bytes in BUF.  */
 
-static void
-translate_buffer (char *buf, idx_t nread)
+स्थिर शून्य
+translate_बफर (वर्ण *buf, idx_t nread)
 {
-  char *cp = buf;
-  for (idx_t i = nread; i; i--, cp++)
-    *cp = trans_table[to_uchar (*cp)];
+  वर्ण *cp = buf;
+  प्रति (idx_t i = nread; i; i--, cp++)
+    *cp = trans_सारणी[गन्तव्यम्_uchar (*cp)];
 }
 
 /* Swap *NREAD bytes in BUF, which should have room for an extra byte
@@ -1757,44 +1757,44 @@ translate_buffer (char *buf, idx_t nread)
    resulting *NREAD even, and set *SAVED_BYTE to -1 otherwise.
    Return the buffer's adjusted start, either BUF or BUF + 1.  */
 
-static char *
-swab_buffer (char *buf, idx_t *nread, int *saved_byte)
+स्थिर वर्ण *
+swab_बफर (वर्ण *buf, idx_t *nread, पूर्णाङ्क *saved_byte)
 {
-  if (*nread == 0)
-    return buf;
+  यदि (*nread == 0)
+    प्रत्यागम buf;
 
   /* Update *SAVED_BYTE, and set PREV_SAVED to its old value.  */
-  int prev_saved = *saved_byte;
-  if ((prev_saved < 0) == (*nread & 1))
+  पूर्णाङ्क पूर्व_saved = *saved_byte;
+  यदि ((पूर्व_saved < 0) == (*nread & 1))
     {
-      unsigned char c = buf[--*nread];
+      अचिह्नित वर्ण c = buf[--*nread];
       *saved_byte = c;
     }
-  else
+  अन्यथा
     *saved_byte = -1;
 
   /* Do the byte-swapping by moving every other byte two
      positions toward the end, working from the end of the buffer
      toward the beginning.  This way we move only half the data.  */
-  for (idx_t i = *nread; 1 < i; i -= 2)
+  प्रति (idx_t i = *nread; 1 < i; i -= 2)
     buf[i] = buf[i - 2];
 
-  if (prev_saved < 0)
-    return buf + 1;
+  यदि (पूर्व_saved < 0)
+    प्रत्यागम buf + 1;
 
-  buf[1] = prev_saved;
+  buf[1] = पूर्व_saved;
   ++*nread;
-  return buf;
+  प्रत्यागम buf;
 }
 
 /* Add OFFSET to the input offset, setting the overflow flag if
    necessary.  */
 
-static void
-advance_input_offset (intmax_t offset)
+स्थिर शून्य
+advance_निवेशः_विस्थापनम् (intmax_t विस्थापनम्)
 {
-  if (0 <= input_offset && ckd_add (&input_offset, input_offset, offset))
-    input_offset = -1;
+  यदि (0 <= निवेशः_विस्थापनम् && ckd_सङ्कलय (&निवेशः_विस्थापनम्, निवेशः_विस्थापनम्, विस्थापनम्))
+    निवेशः_विस्थापनम् = -1;
 }
 
 /* Throw away RECORDS blocks of BLOCKSIZE bytes plus BYTES bytes on
@@ -1806,60 +1806,60 @@ advance_input_offset (intmax_t offset)
    reached.  If FDESC is STDOUT_FILENO, on return, BYTES is the
    remaining bytes in addition to the remaining records.  */
 
-static intmax_t
-skip (int fdesc, char const *file, intmax_t records, idx_t blocksize,
-      idx_t *bytes)
+स्थिर intmax_t
+skip (पूर्णाङ्क fdesc, वर्ण ध्रुव *file, intmax_t लेखाः, idx_t blocksize,
+      idx_t *अष्टकानि)
 {
   /* Try lseek and if an error indicates it was an inappropriate operation --
      or if the file offset is not representable as an off_t --
      fall back on using read.  */
 
   errno = 0;
-  off_t offset;
-  if (! ckd_mul (&offset, records, blocksize)
-      && ! ckd_add (&offset, offset, *bytes)
-      && 0 <= lseek (fdesc, offset, SEEK_CUR))
+  off_t विस्थापनम्;
+  यदि (! ckd_mul (&विस्थापनम्, लेखाः, blocksize)
+      && ! ckd_सङ्कलय (&विस्थापनम्, विस्थापनम्, *अष्टकानि)
+      && 0 <= lseek (fdesc, विस्थापनम्, SEEK_CUR))
     {
-      if (fdesc == STDIN_FILENO)
+      यदि (fdesc == STDIN_FILENO)
         {
-           struct stat st;
-           if (ifstat (STDIN_FILENO, &st) != 0)
+           संरचना stat st;
+           यदि (ifstat (STDIN_FILENO, &st) != 0)
              error (EXIT_FAILURE, errno, _("cannot fstat %s"), quoteaf (file));
-           if (usable_st_size (&st) && 0 < st.st_size && 0 <= input_offset
-               && st.st_size - input_offset < offset)
+           यदि (usable_st_आकार (&st) && 0 < st.st_आकार && 0 <= निवेशः_विस्थापनम्
+               && st.st_आकार - निवेशः_विस्थापनम् < विस्थापनम्)
              {
                /* When skipping past EOF, return the number of _full_ blocks
                 * that are not skipped, and set offset to EOF, so the caller
                 * can determine the requested skip was not satisfied.  */
-               records = ( offset - st.st_size ) / blocksize;
-               offset = st.st_size - input_offset;
+               लेखाः = ( विस्थापनम् - st.st_आकार ) / blocksize;
+               विस्थापनम् = st.st_आकार - निवेशः_विस्थापनम्;
              }
-           else
-             records = 0;
-           advance_input_offset (offset);
+           अन्यथा
+             लेखाः = 0;
+           advance_निवेशः_विस्थापनम् (विस्थापनम्);
         }
-      else
+      अन्यथा
         {
-          records = 0;
-          *bytes = 0;
+          लेखाः = 0;
+          *अष्टकानि = 0;
         }
-      return records;
+      प्रत्यागम लेखाः;
     }
-  else
+  अन्यथा
     {
-      int lseek_errno = errno;
+      पूर्णाङ्क lseek_errno = errno;
 
       /* The seek request may have failed above if it was too big
          (> device size, > max file size, etc.)
          Or it may not have been done at all (> OFF_T_MAX).
          Therefore try to seek to the end of the file,
          to avoid redundant reading.  */
-      if (lseek (fdesc, 0, SEEK_END) >= 0)
+      यदि (lseek (fdesc, 0, SEEK_END) >= 0)
         {
           /* File is seekable, and we're at the end of it, and
              size <= OFF_T_MAX. So there's no point using read to advance.  */
 
-          if (!lseek_errno)
+          यदि (!lseek_errno)
             {
               /* The original seek was not attempted as offset > OFF_T_MAX.
                  We should error for write as can't get to the desired
@@ -1882,46 +1882,46 @@ skip (int fdesc, char const *file, intmax_t records, idx_t blocksize,
         }
       /* else file_size && offset > OFF_T_MAX or file ! seekable */
 
-      char *buf;
-      if (fdesc == STDIN_FILENO)
+      वर्ण *buf;
+      यदि (fdesc == STDIN_FILENO)
         {
           alloc_ibuf ();
           buf = ibuf;
         }
-      else
+      अन्यथा
         {
           alloc_obuf ();
           buf = obuf;
         }
 
-      do
+      कुरु
         {
-          ssize_t nread = iread_fnc (fdesc, buf, records ? blocksize : *bytes);
-          if (nread < 0)
+          ssize_t nread = iread_fnc (fdesc, buf, लेखाः ? blocksize : *अष्टकानि);
+          यदि (nread < 0)
             {
-              if (fdesc == STDIN_FILENO)
+              यदि (fdesc == STDIN_FILENO)
                 {
                   diagnose (errno, _("error reading %s"), quoteaf (file));
-                  if (conversions_mask & C_NOERROR)
+                  यदि (conversions_आवरणम् & C_NOERROR)
                     print_stats ();
                 }
-              else
+              अन्यथा
                 diagnose (lseek_errno, _("%s: cannot seek"), quotef (file));
               quit (EXIT_FAILURE);
             }
-          else if (nread == 0)
-            break;
-          else if (fdesc == STDIN_FILENO)
-            advance_input_offset (nread);
+          अन्यथा यदि (nread == 0)
+            भङ्ग;
+          अन्यथा यदि (fdesc == STDIN_FILENO)
+            advance_निवेशः_विस्थापनम् (nread);
 
-          if (records != 0)
-            records--;
-          else
-            *bytes = 0;
+          यदि (लेखाः != 0)
+            लेखाः--;
+          अन्यथा
+            *अष्टकानि = 0;
         }
-      while (records || *bytes);
+      यावत् (लेखाः || *अष्टकानि);
 
-      return records;
+      प्रत्यागम लेखाः;
     }
 }
 
@@ -1931,90 +1931,90 @@ skip (int fdesc, char const *file, intmax_t records, idx_t blocksize,
    Return true if successful, or if the input is already known to not
    be seekable.  */
 
-static bool
-advance_input_after_read_error (idx_t nbytes)
+स्थिर bool
+advance_निवेशः_after_read_error (idx_t nbytes)
 {
-  if (! input_seekable)
+  यदि (! निवेशः_seekable)
     {
-      if (input_seek_errno == ESPIPE)
-        return true;
-      errno = input_seek_errno;
+      यदि (निवेशः_seek_errno == ESPIPE)
+        प्रत्यागम true;
+      errno = निवेशः_seek_errno;
     }
-  else
+  अन्यथा
     {
-      off_t offset;
-      advance_input_offset (nbytes);
-      if (input_offset < 0)
+      off_t विस्थापनम्;
+      advance_निवेशः_विस्थापनम् (nbytes);
+      यदि (निवेशः_विस्थापनम् < 0)
         {
           diagnose (0, _("offset overflow while reading file %s"),
-                    quoteaf (input_file));
-          return false;
+                    quoteaf (निवेशः_file));
+          प्रत्यागम false;
         }
-      offset = lseek (STDIN_FILENO, 0, SEEK_CUR);
-      if (0 <= offset)
+      विस्थापनम् = lseek (STDIN_FILENO, 0, SEEK_CUR);
+      यदि (0 <= विस्थापनम्)
         {
           off_t diff;
-          if (offset == input_offset)
-            return true;
-          diff = input_offset - offset;
-          if (! (0 <= diff && diff <= nbytes) && status_level != STATUS_NONE)
+          यदि (विस्थापनम् == निवेशः_विस्थापनम्)
+            प्रत्यागम true;
+          diff = निवेशः_विस्थापनम् - विस्थापनम्;
+          यदि (! (0 <= diff && diff <= nbytes) && स्थितिः_level != स्थितिः_NONE)
             diagnose (0, _("warning: invalid file offset after failed read"));
-          if (0 <= lseek (STDIN_FILENO, diff, SEEK_CUR))
-            return true;
-          if (errno == 0)
+          यदि (0 <= lseek (STDIN_FILENO, diff, SEEK_CUR))
+            प्रत्यागम true;
+          यदि (errno == 0)
             diagnose (0, _("cannot work around kernel bug after all"));
         }
     }
 
-  diagnose (errno, _("%s: cannot seek"), quotef (input_file));
-  return false;
+  diagnose (errno, _("%s: cannot seek"), quotef (निवेशः_file));
+  प्रत्यागम false;
 }
 
 /* Copy NREAD bytes of BUF, with no conversions.  */
 
-static void
-copy_simple (char const *buf, idx_t nread)
+स्थिर शून्य
+copy_simple (वर्ण ध्रुव *buf, idx_t nread)
 {
-  char const *start = buf;	/* First uncopied char in BUF.  */
+  वर्ण ध्रुव *start = buf;	/* First uncopied char in BUF.  */
 
-  do
+  कुरु
     {
       idx_t nfree = MIN (nread, output_blocksize - oc);
 
-      memcpy (obuf + oc, start, nfree);
+      स्मृतिं_प्रतिलिख (obuf + oc, start, nfree);
 
       nread -= nfree;		/* Update the number of bytes left to copy. */
       start += nfree;
       oc += nfree;
-      if (oc >= output_blocksize)
+      यदि (oc >= output_blocksize)
         write_output ();
     }
-  while (nread != 0);
+  यावत् (nread != 0);
 }
 
 /* Copy NREAD bytes of BUF, doing conv=block
    (pad newline-terminated records to 'conversion_blocksize',
    replacing the newline with trailing spaces).  */
 
-static void
-copy_with_block (char const *buf, idx_t nread)
+स्थिर शून्य
+copy_with_खण्डम् (वर्ण ध्रुव *buf, idx_t nread)
 {
-  for (idx_t i = nread; i; i--, buf++)
+  प्रति (idx_t i = nread; i; i--, buf++)
     {
-      if (*buf == newline_character)
+      यदि (*buf == newline_character)
         {
-          if (col < conversion_blocksize)
+          यदि (col < conversion_blocksize)
             {
-              for (idx_t j = col; j < conversion_blocksize; j++)
+              प्रति (idx_t j = col; j < conversion_blocksize; j++)
                 output_char (space_character);
             }
           col = 0;
         }
-      else
+      अन्यथा
         {
-          if (col == conversion_blocksize)
+          यदि (col == conversion_blocksize)
             r_truncate++;
-          else if (col < conversion_blocksize)
+          अन्यथा यदि (col < conversion_blocksize)
             output_char (*buf);
           col++;
         }
@@ -2025,28 +2025,28 @@ copy_with_block (char const *buf, idx_t nread)
    (replace trailing spaces in 'conversion_blocksize'-sized records
    with a newline).  */
 
-static void
-copy_with_unblock (char const *buf, idx_t nread)
+स्थिर शून्य
+copy_with_unblock (वर्ण ध्रुव *buf, idx_t nread)
 {
-  static idx_t pending_spaces = 0;
+  स्थिर idx_t pending_spaces = 0;
 
-  for (idx_t i = 0; i < nread; i++)
+  प्रति (idx_t i = 0; i < nread; i++)
     {
-      char c = buf[i];
+      वर्ण c = buf[i];
 
-      if (col++ >= conversion_blocksize)
+      यदि (col++ >= conversion_blocksize)
         {
           col = pending_spaces = 0; /* Wipe out any pending spaces.  */
           i--;			/* Push the char back; get it later. */
           output_char (newline_character);
         }
-      else if (c == space_character)
+      अन्यथा यदि (c == space_character)
         pending_spaces++;
-      else
+      अन्यथा
         {
           /* 'c' is the character after a run of spaces that were not
              at the end of the conversion buffer.  Output them.  */
-          while (pending_spaces)
+          यावत् (pending_spaces)
             {
               output_char (space_character);
               --pending_spaces;
@@ -2059,34 +2059,34 @@ copy_with_unblock (char const *buf, idx_t nread)
 /* Set the file descriptor flags for FD that correspond to the nonzero bits
    in ADD_FLAGS.  The file's name is NAME.  */
 
-static void
-set_fd_flags (int fd, int add_flags, char const *name)
+स्थिर शून्य
+समुच्चयः_fd_flags (पूर्णाङ्क fd, पूर्णाङ्क सङ्कलय_flags, वर्ण ध्रुव *name)
 {
   /* Ignore file creation flags that are no-ops on file descriptors.  */
-  add_flags &= ~ (O_NOCTTY | O_NOFOLLOW);
+  सङ्कलय_flags &= ~ (O_NOCTTY | O_NOFOLLOW);
 
-  if (add_flags)
+  यदि (सङ्कलय_flags)
     {
-      int old_flags = fcntl (fd, F_GETFL);
-      int new_flags = old_flags | add_flags;
+      पूर्णाङ्क old_flags = fcntl (fd, F_GETFL);
+      पूर्णाङ्क new_flags = old_flags | सङ्कलय_flags;
       bool ok = true;
-      if (old_flags < 0)
+      यदि (old_flags < 0)
         ok = false;
-      else if (old_flags != new_flags)
+      अन्यथा यदि (old_flags != new_flags)
         {
-          if (new_flags & (O_DIRECTORY | O_NOLINKS))
+          यदि (new_flags & (O_DIRECTORY | O_NOLINKS))
             {
               /* NEW_FLAGS contains at least one file creation flag that
                  requires some checking of the open file descriptor.  */
-              struct stat st;
-              if (ifstat (fd, &st) != 0)
+              संरचना stat st;
+              यदि (ifstat (fd, &st) != 0)
                 ok = false;
-              else if ((new_flags & O_DIRECTORY) && ! S_ISDIR (st.st_mode))
+              अन्यथा यदि ((new_flags & O_DIRECTORY) && ! S_ISDIR (st.st_बहुलकम्))
                 {
                   errno = ENOTDIR;
                   ok = false;
                 }
-              else if ((new_flags & O_NOLINKS) && 1 < st.st_nlink)
+              अन्यथा यदि ((new_flags & O_NOLINKS) && 1 < st.st_nlink)
                 {
                   errno = EMLINK;
                   ok = false;
@@ -2094,40 +2094,40 @@ set_fd_flags (int fd, int add_flags, char const *name)
               new_flags &= ~ (O_DIRECTORY | O_NOLINKS);
             }
 
-          if (ok && old_flags != new_flags
+          यदि (ok && old_flags != new_flags
               && fcntl (fd, F_SETFL, new_flags) == -1)
             ok = false;
         }
 
-      if (!ok)
+      यदि (!ok)
         error (EXIT_FAILURE, errno, _("setting flags for %s"), quoteaf (name));
     }
 }
 
 /* The main loop.  */
 
-static int
-dd_copy (void)
+स्थिर पूर्णाङ्क
+dd_copy (शून्य)
 {
-  char *bufstart;		/* Input buffer. */
+  वर्ण *bufstart;		/* Input buffer. */
   ssize_t nread;		/* Bytes read in the current block.  */
 
   /* If nonzero, then the previously read block was partial and
      PARTREAD was its size.  */
   idx_t partread = 0;
 
-  int exit_status = EXIT_SUCCESS;
-  idx_t n_bytes_read;
+  पूर्णाङ्क exit_स्थितिः = EXIT_SUCCESS;
+  idx_t n_अष्टकानि_read;
 
-  if (skip_records != 0 || skip_bytes != 0)
+  यदि (skip_लेखाः != 0 || skip_अष्टकानि != 0)
     {
-      intmax_t us_bytes;
-      bool us_bytes_overflow =
-        (ckd_mul (&us_bytes, skip_records, input_blocksize)
-         || ckd_add (&us_bytes, skip_bytes, us_bytes));
-      off_t input_offset0 = input_offset;
-      intmax_t us_blocks = skip (STDIN_FILENO, input_file,
-                                 skip_records, input_blocksize, &skip_bytes);
+      intmax_t us_अष्टकानि;
+      bool us_अष्टकानि_अतिप्रवाहः =
+        (ckd_mul (&us_अष्टकानि, skip_लेखाः, निवेशः_blocksize)
+         || ckd_सङ्कलय (&us_अष्टकानि, skip_अष्टकानि, us_अष्टकानि));
+      off_t निवेशः_offset0 = निवेशः_विस्थापनम्;
+      intmax_t us_खण्डानि = skip (STDIN_FILENO, निवेशः_file,
+                                 skip_लेखाः, निवेशः_blocksize, &skip_अष्टकानि);
 
       /* POSIX doesn't say what to do when dd detects it has been
          asked to skip past EOF, so I assume it's non-fatal.
@@ -2135,249 +2135,249 @@ dd_copy (void)
              1. file is too small
              2. pipe has not enough data
              3. partial reads  */
-      if ((us_blocks
-           || (0 <= input_offset
-               && (us_bytes_overflow
-                   || us_bytes != input_offset - input_offset0)))
-          && status_level != STATUS_NONE)
+      यदि ((us_खण्डानि
+           || (0 <= निवेशः_विस्थापनम्
+               && (us_अष्टकानि_अतिप्रवाहः
+                   || us_अष्टकानि != निवेशः_विस्थापनम् - निवेशः_offset0)))
+          && स्थितिः_level != स्थितिः_NONE)
         {
           diagnose (0, _("%s: cannot skip to specified offset"),
-                    quotef (input_file));
+                    quotef (निवेशः_file));
         }
     }
 
-  if (seek_records != 0 || seek_bytes != 0)
+  यदि (seek_लेखाः != 0 || seek_अष्टकानि != 0)
     {
-      idx_t bytes = seek_bytes;
-      intmax_t write_records = skip (STDOUT_FILENO, output_file,
-                                      seek_records, output_blocksize, &bytes);
+      idx_t अष्टकानि = seek_अष्टकानि;
+      intmax_t write_लेखाः = skip (STDOUT_FILENO, output_file,
+                                      seek_लेखाः, output_blocksize, &अष्टकानि);
 
-      if (write_records != 0 || bytes != 0)
+      यदि (write_लेखाः != 0 || अष्टकानि != 0)
         {
-          memset (obuf, 0, write_records ? output_blocksize : bytes);
+          स्मृतिं_पूरय (obuf, 0, write_लेखाः ? output_blocksize : अष्टकानि);
 
-          do
+          कुरु
             {
-              idx_t size = write_records ? output_blocksize : bytes;
-              if (iwrite (STDOUT_FILENO, obuf, size) != size)
+              idx_t आकार = write_लेखाः ? output_blocksize : अष्टकानि;
+              यदि (iwrite (STDOUT_FILENO, obuf, आकार) != आकार)
                 {
                   diagnose (errno, _("writing to %s"), quoteaf (output_file));
                   quit (EXIT_FAILURE);
                 }
 
-              if (write_records != 0)
-                write_records--;
-              else
-                bytes = 0;
+              यदि (write_लेखाः != 0)
+                write_लेखाः--;
+              अन्यथा
+                अष्टकानि = 0;
             }
-          while (write_records || bytes);
+          यावत् (write_लेखाः || अष्टकानि);
         }
     }
 
-  if (max_records == 0 && max_bytes == 0)
-    return exit_status;
+  यदि (max_लेखाः == 0 && max_अष्टकानि == 0)
+    प्रत्यागम exit_स्थितिः;
 
   alloc_ibuf ();
   alloc_obuf ();
-  int saved_byte = -1;
+  पूर्णाङ्क saved_byte = -1;
 
-  while (true)
+  यावत् (true)
     {
-      if (status_level == STATUS_PROGRESS)
+      यदि (स्थितिः_level == स्थितिः_प्रगतिः)
         {
-          xtime_t progress_time = gethrxtime ();
-          if (next_time <= progress_time)
+          xtime_t प्रगतिः_time = gethrxtime ();
+          यदि (अग्र_time <= प्रगतिः_time)
             {
-              print_xfer_stats (progress_time);
-              next_time += XTIME_PRECISION;
+              print_xfer_stats (प्रगतिः_time);
+              अग्र_time += XTIME_PRECISION;
             }
         }
 
-      if (r_partial + r_full >= max_records + !!max_bytes)
-        break;
+      यदि (r_partial + r_पूर्णम् >= max_लेखाः + !!max_अष्टकानि)
+        भङ्ग;
 
       /* Zero the buffer before reading, so that if we get a read error,
          whatever data we are able to read is followed by zeros.
          This minimizes data loss. */
-      if ((conversions_mask & C_SYNC) && (conversions_mask & C_NOERROR))
-        memset (ibuf,
-                (conversions_mask & (C_BLOCK | C_UNBLOCK)) ? ' ' : '\0',
-                input_blocksize);
+      यदि ((conversions_आवरणम् & C_SYNC) && (conversions_आवरणम् & C_NOERROR))
+        स्मृतिं_पूरय (ibuf,
+                (conversions_आवरणम् & (C_खण्डम् | C_UNBLOCK)) ? ' ' : '\0',
+                निवेशः_blocksize);
 
-      if (r_partial + r_full >= max_records)
-        nread = iread_fnc (STDIN_FILENO, ibuf, max_bytes);
-      else
-        nread = iread_fnc (STDIN_FILENO, ibuf, input_blocksize);
+      यदि (r_partial + r_पूर्णम् >= max_लेखाः)
+        nread = iread_fnc (STDIN_FILENO, ibuf, max_अष्टकानि);
+      अन्यथा
+        nread = iread_fnc (STDIN_FILENO, ibuf, निवेशः_blocksize);
 
-      if (nread > 0)
+      यदि (nread > 0)
         {
-          advance_input_offset (nread);
-          if (i_nocache)
+          advance_निवेशः_विस्थापनम् (nread);
+          यदि (i_nocache)
             invalidate_cache (STDIN_FILENO, nread);
         }
-      else if (nread == 0)
+      अन्यथा यदि (nread == 0)
         {
           i_nocache_eof |= i_nocache;
-          o_nocache_eof |= o_nocache && ! (conversions_mask & C_NOTRUNC);
-          break;			/* EOF.  */
+          o_nocache_eof |= o_nocache && ! (conversions_आवरणम् & C_NOTRUNC);
+          भङ्ग;			/* EOF.  */
         }
-      else
+      अन्यथा
         {
-          if (!(conversions_mask & C_NOERROR) || status_level != STATUS_NONE)
-            diagnose (errno, _("error reading %s"), quoteaf (input_file));
+          यदि (!(conversions_आवरणम् & C_NOERROR) || स्थितिः_level != स्थितिः_NONE)
+            diagnose (errno, _("error reading %s"), quoteaf (निवेशः_file));
 
-          if (conversions_mask & C_NOERROR)
+          यदि (conversions_आवरणम् & C_NOERROR)
             {
               print_stats ();
-              idx_t bad_portion = input_blocksize - partread;
+              idx_t bad_portion = निवेशः_blocksize - partread;
 
               /* We already know this data is not cached,
                  but call this so that correct offsets are maintained.  */
               invalidate_cache (STDIN_FILENO, bad_portion);
 
               /* Seek past the bad block if possible. */
-              if (!advance_input_after_read_error (bad_portion))
+              यदि (!advance_निवेशः_after_read_error (bad_portion))
                 {
-                  exit_status = EXIT_FAILURE;
+                  exit_स्थितिः = EXIT_FAILURE;
 
                   /* Suppress duplicate diagnostics.  */
-                  input_seekable = false;
-                  input_seek_errno = ESPIPE;
+                  निवेशः_seekable = false;
+                  निवेशः_seek_errno = ESPIPE;
                 }
-              if ((conversions_mask & C_SYNC) && !partread)
+              यदि ((conversions_आवरणम् & C_SYNC) && !partread)
                 /* Replace the missing input with null bytes and
                    proceed normally.  */
                 nread = 0;
-              else
-                continue;
+              अन्यथा
+                अनुवर्त;
             }
-          else
+          अन्यथा
             {
               /* Write any partial block. */
-              exit_status = EXIT_FAILURE;
-              break;
+              exit_स्थितिः = EXIT_FAILURE;
+              भङ्ग;
             }
         }
 
-      n_bytes_read = nread;
+      n_अष्टकानि_read = nread;
 
-      if (n_bytes_read < input_blocksize)
+      यदि (n_अष्टकानि_read < निवेशः_blocksize)
         {
           r_partial++;
-          partread = n_bytes_read;
-          if (conversions_mask & C_SYNC)
+          partread = n_अष्टकानि_read;
+          यदि (conversions_आवरणम् & C_SYNC)
             {
-              if (!(conversions_mask & C_NOERROR))
+              यदि (!(conversions_आवरणम् & C_NOERROR))
                 /* If C_NOERROR, we zeroed the block before reading. */
-                memset (ibuf + n_bytes_read,
-                        (conversions_mask & (C_BLOCK | C_UNBLOCK)) ? ' ' : '\0',
-                        input_blocksize - n_bytes_read);
-              n_bytes_read = input_blocksize;
+                स्मृतिं_पूरय (ibuf + n_अष्टकानि_read,
+                        (conversions_आवरणम् & (C_खण्डम् | C_UNBLOCK)) ? ' ' : '\0',
+                        निवेशः_blocksize - n_अष्टकानि_read);
+              n_अष्टकानि_read = निवेशः_blocksize;
             }
         }
-      else
+      अन्यथा
         {
-          r_full++;
+          r_पूर्णम्++;
           partread = 0;
         }
 
-      if (ibuf == obuf)		/* If not C_TWOBUFS. */
+      यदि (ibuf == obuf)		/* If not C_TWOBUFS. */
         {
-          idx_t nwritten = iwrite (STDOUT_FILENO, obuf, n_bytes_read);
-          w_bytes += nwritten;
-          if (nwritten != n_bytes_read)
+          idx_t nwritten = iwrite (STDOUT_FILENO, obuf, n_अष्टकानि_read);
+          w_अष्टकानि += nwritten;
+          यदि (nwritten != n_अष्टकानि_read)
             {
               diagnose (errno, _("error writing %s"), quoteaf (output_file));
-              if (nwritten != 0)
+              यदि (nwritten != 0)
                 w_partial++;
-              return EXIT_FAILURE;
+              प्रत्यागम EXIT_FAILURE;
             }
-          else if (n_bytes_read == input_blocksize)
-            w_full++;
-          else
+          अन्यथा यदि (n_अष्टकानि_read == निवेशः_blocksize)
+            w_पूर्णम्++;
+          अन्यथा
             w_partial++;
-          continue;
+          अनुवर्त;
         }
 
       /* Do any translations on the whole buffer at once.  */
 
-      if (translation_needed)
-        translate_buffer (ibuf, n_bytes_read);
+      यदि (translation_needed)
+        translate_बफर (ibuf, n_अष्टकानि_read);
 
-      if (conversions_mask & C_SWAB)
-        bufstart = swab_buffer (ibuf, &n_bytes_read, &saved_byte);
-      else
+      यदि (conversions_आवरणम् & C_SWAB)
+        bufstart = swab_बफर (ibuf, &n_अष्टकानि_read, &saved_byte);
+      अन्यथा
         bufstart = ibuf;
 
-      if (conversions_mask & C_BLOCK)
-        copy_with_block (bufstart, n_bytes_read);
-      else if (conversions_mask & C_UNBLOCK)
-        copy_with_unblock (bufstart, n_bytes_read);
-      else
-        copy_simple (bufstart, n_bytes_read);
+      यदि (conversions_आवरणम् & C_खण्डम्)
+        copy_with_खण्डम् (bufstart, n_अष्टकानि_read);
+      अन्यथा यदि (conversions_आवरणम् & C_UNBLOCK)
+        copy_with_unblock (bufstart, n_अष्टकानि_read);
+      अन्यथा
+        copy_simple (bufstart, n_अष्टकानि_read);
     }
 
   /* If we have a char left as a result of conv=swab, output it.  */
-  if (0 <= saved_byte)
+  यदि (0 <= saved_byte)
     {
-      char saved_char = saved_byte;
-      if (conversions_mask & C_BLOCK)
-        copy_with_block (&saved_char, 1);
-      else if (conversions_mask & C_UNBLOCK)
+      वर्ण saved_char = saved_byte;
+      यदि (conversions_आवरणम् & C_खण्डम्)
+        copy_with_खण्डम् (&saved_char, 1);
+      अन्यथा यदि (conversions_आवरणम् & C_UNBLOCK)
         copy_with_unblock (&saved_char, 1);
-      else
+      अन्यथा
         output_char (saved_char);
     }
 
-  if ((conversions_mask & C_BLOCK) && col > 0)
+  यदि ((conversions_आवरणम् & C_खण्डम्) && col > 0)
     {
       /* If the final input line didn't end with a '\n', pad
          the output block to 'conversion_blocksize' chars.  */
-      for (idx_t i = col; i < conversion_blocksize; i++)
+      प्रति (idx_t i = col; i < conversion_blocksize; i++)
         output_char (space_character);
     }
 
-  if (col && (conversions_mask & C_UNBLOCK))
+  यदि (col && (conversions_आवरणम् & C_UNBLOCK))
     {
       /* If there was any output, add a final '\n'.  */
       output_char (newline_character);
     }
 
   /* Write out the last block. */
-  if (oc != 0)
+  यदि (oc != 0)
     {
       idx_t nwritten = iwrite (STDOUT_FILENO, obuf, oc);
-      w_bytes += nwritten;
-      if (nwritten != 0)
+      w_अष्टकानि += nwritten;
+      यदि (nwritten != 0)
         w_partial++;
-      if (nwritten != oc)
+      यदि (nwritten != oc)
         {
           diagnose (errno, _("error writing %s"), quoteaf (output_file));
-          return EXIT_FAILURE;
+          प्रत्यागम EXIT_FAILURE;
         }
     }
 
   /* If the last write was converted to a seek, then for a regular file
      or shared memory object, ftruncate to extend the size.  */
-  if (final_op_was_seek)
+  यदि (final_op_was_seek)
     {
-      struct stat stdout_stat;
-      if (ifstat (STDOUT_FILENO, &stdout_stat) != 0)
+      संरचना stat stdout_stat;
+      यदि (ifstat (STDOUT_FILENO, &stdout_stat) != 0)
         {
           diagnose (errno, _("cannot fstat %s"), quoteaf (output_file));
-          return EXIT_FAILURE;
+          प्रत्यागम EXIT_FAILURE;
         }
-      if (S_ISREG (stdout_stat.st_mode) || S_TYPEISSHM (&stdout_stat))
+      यदि (S_ISREG (stdout_stat.st_बहुलकम्) || S_TYPEISSHM (&stdout_stat))
         {
-          off_t output_offset = lseek (STDOUT_FILENO, 0, SEEK_CUR);
-          if (0 <= output_offset && stdout_stat.st_size < output_offset)
+          off_t output_विस्थापनम् = lseek (STDOUT_FILENO, 0, SEEK_CUR);
+          यदि (0 <= output_विस्थापनम् && stdout_stat.st_आकार < output_विस्थापनम्)
             {
-              if (iftruncate (STDOUT_FILENO, output_offset) != 0)
+              यदि (iftruncate (STDOUT_FILENO, output_विस्थापनम्) != 0)
                 {
                   diagnose (errno, _("failed to truncate to %jd bytes"
                                      " in output file %s"),
-                            (intmax_t) {output_offset}, quoteaf (output_file));
-                  return EXIT_FAILURE;
+                            (intmax_t) {output_विस्थापनम्}, quoteaf (output_file));
+                  प्रत्यागम EXIT_FAILURE;
                 }
             }
         }
@@ -2385,12 +2385,12 @@ dd_copy (void)
 
   /* fdatasync/fsync can take a long time, so issue a final progress
      indication now if progress has been made since the previous indication.  */
-  if (conversions_mask & (C_FDATASYNC | C_FSYNC)
-      && status_level == STATUS_PROGRESS
-      && 0 <= reported_w_bytes && reported_w_bytes < w_bytes)
+  यदि (conversions_आवरणम् & (C_FDATASYNC | C_FSYNC)
+      && स्थितिः_level == स्थितिः_प्रगतिः
+      && 0 <= reported_w_अष्टकानि && reported_w_अष्टकानि < w_अष्टकानि)
     print_xfer_stats (0);
 
-  return exit_status;
+  प्रत्यागम exit_स्थितिः;
 }
 
 /* Synchronize output according to conversions_mask.
@@ -2399,41 +2399,41 @@ dd_copy (void)
    Clear bits in conversions_mask so that synchronization is done only once.
    Return zero if successful, an exit status otherwise.  */
 
-static int
-synchronize_output (void)
+स्थिर पूर्णाङ्क
+synchronize_output (शून्य)
 {
-  int exit_status = 0;
-  int mask = conversions_mask;
-  conversions_mask &= ~ (C_FDATASYNC | C_FSYNC);
+  पूर्णाङ्क exit_स्थितिः = 0;
+  पूर्णाङ्क आवरणम् = conversions_आवरणम्;
+  conversions_आवरणम् &= ~ (C_FDATASYNC | C_FSYNC);
 
-  if ((mask & C_FDATASYNC) && ifdatasync (STDOUT_FILENO) != 0)
+  यदि ((आवरणम् & C_FDATASYNC) && ifdatasync (STDOUT_FILENO) != 0)
     {
-      if (errno != ENOSYS && errno != EINVAL)
+      यदि (errno != ENOSYS && errno != EINVAL)
         {
           diagnose (errno, _("fdatasync failed for %s"), quoteaf (output_file));
-          exit_status = EXIT_FAILURE;
+          exit_स्थितिः = EXIT_FAILURE;
         }
-      mask |= C_FSYNC;
+      आवरणम् |= C_FSYNC;
     }
 
-  if ((mask & C_FSYNC) && ifsync (STDOUT_FILENO) != 0)
+  यदि ((आवरणम् & C_FSYNC) && ifsync (STDOUT_FILENO) != 0)
     {
       diagnose (errno, _("fsync failed for %s"), quoteaf (output_file));
-      return EXIT_FAILURE;
+      प्रत्यागम EXIT_FAILURE;
     }
 
-  return exit_status;
+  प्रत्यागम exit_स्थितिः;
 }
 
-int
-main (int argc, char **argv)
+पूर्णाङ्क
+मुख्यम् (पूर्णाङ्क argc, वर्ण **argv)
 {
-  off_t offset;
+  off_t विस्थापनम्;
 
   install_signal_handlers ();
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  समुच्चयः_क्रमादेशः_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
@@ -2441,92 +2441,92 @@ main (int argc, char **argv)
   /* Arrange to close stdout if parse_long_options exits.  */
   atexit (maybe_close_stdout);
 
-  page_size = getpagesize ();
+  page_आकार = getpagesize ();
 
-  parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE, Version,
+  parse_gnu_standard_options_only (argc, argv, क्रमादेशः_NAME, PACKAGE, संस्करणम्,
                                    true, usage, AUTHORS,
-                                   (char const *) NULL);
+                                   (वर्ण ध्रुव *) रिक्त);
   close_stdout_required = false;
 
   /* Initialize translation table to identity translation. */
-  for (int i = 0; i < 256; i++)
-    trans_table[i] = i;
+  प्रति (पूर्णाङ्क i = 0; i < 256; i++)
+    trans_सारणी[i] = i;
 
   /* Decode arguments. */
   scanargs (argc, argv);
 
   apply_translations ();
 
-  if (input_file == NULL)
+  यदि (निवेशः_file == रिक्त)
     {
-      input_file = _("standard input");
-      set_fd_flags (STDIN_FILENO, input_flags, input_file);
+      निवेशः_file = _("standard input");
+      समुच्चयः_fd_flags (STDIN_FILENO, निवेशः_flags, निवेशः_file);
     }
-  else
+  अन्यथा
     {
-      if (ifd_reopen (STDIN_FILENO, input_file, O_RDONLY | input_flags, 0) < 0)
+      यदि (ifd_reopen (STDIN_FILENO, निवेशः_file, O_RDONLY | निवेशः_flags, 0) < 0)
         error (EXIT_FAILURE, errno, _("failed to open %s"),
-               quoteaf (input_file));
+               quoteaf (निवेशः_file));
     }
 
-  offset = lseek (STDIN_FILENO, 0, SEEK_CUR);
-  input_seekable = (0 <= offset);
-  input_offset = MAX (0, offset);
-  input_seek_errno = errno;
+  विस्थापनम् = lseek (STDIN_FILENO, 0, SEEK_CUR);
+  निवेशः_seekable = (0 <= विस्थापनम्);
+  निवेशः_विस्थापनम् = MAX (0, विस्थापनम्);
+  निवेशः_seek_errno = errno;
 
-  if (output_file == NULL)
+  यदि (output_file == रिक्त)
     {
       output_file = _("standard output");
-      set_fd_flags (STDOUT_FILENO, output_flags, output_file);
+      समुच्चयः_fd_flags (STDOUT_FILENO, output_flags, output_file);
     }
-  else
+  अन्यथा
     {
-      mode_t perms = MODE_RW_UGO;
-      int opts
+      mode_t perms = बहुलकम्_RW_UGO;
+      पूर्णाङ्क opts
         = (output_flags
-           | (conversions_mask & C_NOCREAT ? 0 : O_CREAT)
-           | (conversions_mask & C_EXCL ? O_EXCL : 0)
-           | (seek_records || (conversions_mask & C_NOTRUNC) ? 0 : O_TRUNC));
+           | (conversions_आवरणम् & C_NOCREAT ? 0 : O_CREAT)
+           | (conversions_आवरणम् & C_EXCL ? O_EXCL : 0)
+           | (seek_लेखाः || (conversions_आवरणम् & C_NOTRUNC) ? 0 : O_TRUNC));
 
-      off_t size;
-      if ((ckd_mul (&size, seek_records, output_blocksize)
-           || ckd_add (&size, seek_bytes, size))
-          && !(conversions_mask & C_NOTRUNC))
+      off_t आकार;
+      यदि ((ckd_mul (&आकार, seek_लेखाः, output_blocksize)
+           || ckd_सङ्कलय (&आकार, seek_अष्टकानि, आकार))
+          && !(conversions_आवरणम् & C_NOTRUNC))
         error (EXIT_FAILURE, 0,
                _("offset too large: "
                  "cannot truncate to a length of seek=%jd"
                  " (%td-byte) blocks"),
-               seek_records, output_blocksize);
+               seek_लेखाः, output_blocksize);
 
       /* Open the output file with *read* access only if we might
          need to read to satisfy a 'seek=' request.  If we can't read
          the file, go ahead with write-only access; it might work.  */
-      if ((! seek_records
+      यदि ((! seek_लेखाः
            || ifd_reopen (STDOUT_FILENO, output_file, O_RDWR | opts, perms) < 0)
           && (ifd_reopen (STDOUT_FILENO, output_file, O_WRONLY | opts, perms)
               < 0))
         error (EXIT_FAILURE, errno, _("failed to open %s"),
                quoteaf (output_file));
 
-      if (seek_records != 0 && !(conversions_mask & C_NOTRUNC))
+      यदि (seek_लेखाः != 0 && !(conversions_आवरणम् & C_NOTRUNC))
         {
-          if (iftruncate (STDOUT_FILENO, size) != 0)
+          यदि (iftruncate (STDOUT_FILENO, आकार) != 0)
             {
               /* Complain only when ftruncate fails on a regular file, a
                  directory, or a shared memory object, as POSIX 1003.1-2004
                  specifies ftruncate's behavior only for these file types.
                  For example, do not complain when Linux kernel 2.4 ftruncate
                  fails on /dev/fd0.  */
-              int ftruncate_errno = errno;
-              struct stat stdout_stat;
-              if (ifstat (STDOUT_FILENO, &stdout_stat) != 0)
+              पूर्णाङ्क ftruncate_errno = errno;
+              संरचना stat stdout_stat;
+              यदि (ifstat (STDOUT_FILENO, &stdout_stat) != 0)
                 error (EXIT_FAILURE, errno, _("cannot fstat %s"),
                        quoteaf (output_file));
-              else if (S_ISREG (stdout_stat.st_mode)
-                       || S_ISDIR (stdout_stat.st_mode)
+              अन्यथा यदि (S_ISREG (stdout_stat.st_बहुलकम्)
+                       || S_ISDIR (stdout_stat.st_बहुलकम्)
                        || S_TYPEISSHM (&stdout_stat))
                 {
-                  intmax_t isize = size;
+                  intmax_t isize = आकार;
                   error (EXIT_FAILURE, ftruncate_errno,
                          _("failed to truncate to %jd bytes"
                            " in output file %s"),
@@ -2537,37 +2537,37 @@ main (int argc, char **argv)
     }
 
   start_time = gethrxtime ();
-  next_time = start_time + XTIME_PRECISION;
+  अग्र_time = start_time + XTIME_PRECISION;
 
-  int copy_status = dd_copy ();
-  int sync_status = synchronize_output ();
-  int exit_status = copy_status | sync_status;
+  पूर्णाङ्क copy_स्थितिः = dd_copy ();
+  पूर्णाङ्क sync_स्थितिः = synchronize_output ();
+  पूर्णाङ्क exit_स्थितिः = copy_स्थितिः | sync_स्थितिः;
 
-  if (max_records == 0 && max_bytes == 0)
+  यदि (max_लेखाः == 0 && max_अष्टकानि == 0)
     {
       /* Special case to invalidate cache to end of file.  */
-      if (i_nocache && !invalidate_cache (STDIN_FILENO, 0))
+      यदि (i_nocache && !invalidate_cache (STDIN_FILENO, 0))
         {
           diagnose (errno, _("failed to discard cache for: %s"),
-                    quotef (input_file));
-          exit_status = EXIT_FAILURE;
+                    quotef (निवेशः_file));
+          exit_स्थितिः = EXIT_FAILURE;
         }
-      if (o_nocache && !invalidate_cache (STDOUT_FILENO, 0))
+      यदि (o_nocache && !invalidate_cache (STDOUT_FILENO, 0))
         {
           diagnose (errno, _("failed to discard cache for: %s"),
                     quotef (output_file));
-          exit_status = EXIT_FAILURE;
+          exit_स्थितिः = EXIT_FAILURE;
         }
     }
-  else
+  अन्यथा
     {
       /* Invalidate any pending region or to EOF if appropriate.  */
-      if (i_nocache || i_nocache_eof)
+      यदि (i_nocache || i_nocache_eof)
         invalidate_cache (STDIN_FILENO, 0);
-      if (o_nocache || o_nocache_eof)
+      यदि (o_nocache || o_nocache_eof)
         invalidate_cache (STDOUT_FILENO, 0);
     }
 
-  finish_up ();
-  main_exit (exit_status);
+  finish_ऊर्ध्वम् ();
+  main_exit (exit_स्थितिः);
 }

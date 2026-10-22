@@ -34,227 +34,227 @@
 tac -r -s '.\|
 ' file */
 
-#include <config.h>
+#अन्तर्भाव <config.h>
 
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
-#include "system.h"
+#अन्तर्भाव <stdio.h>
+#अन्तर्भाव <getopt.h>
+#अन्तर्भाव <sys/types.h>
+#अन्तर्भाव "system.h"
 
-#include <regex.h>
+#अन्तर्भाव <regex.h>
 
-#include "filenamecat.h"
-#include "full-read.h"
-#include "full-write.h"
-#include "temp-stream.h"
-#include "xbinary-io.h"
+#अन्तर्भाव "filenamecat.h"
+#अन्तर्भाव "full-read.h"
+#अन्तर्भाव "full-write.h"
+#अन्तर्भाव "temp-stream.h"
+#अन्तर्भाव "xbinary-io.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "tac"
+#परिभाषय क्रमादेशः_NAME "tac"
 
-#define AUTHORS \
+#परिभाषय AUTHORS \
   proper_name ("Jay Lepreau"), \
   proper_name ("David MacKenzie")
 
 
 /* The number of bytes per atomic read. */
-#define INITIAL_READSIZE 8192
+#परिभाषय INITIAL_READSIZE 8192
 
 /* The number of bytes per atomic write. */
-#define WRITESIZE 8192
+#परिभाषय WRITESIZE 8192
 
 /* The string that separates the records of the file. */
-static char const *separator = "\n";
+स्थिर वर्ण ध्रुव *separator = "\n";
 
 /* True if we have ever read standard input.  */
-static bool have_read_stdin = false;
+स्थिर bool have_read_stdin = false;
 
 /* If true, print 'separator' along with the record preceding it
    in the file; otherwise with the record following it. */
-static bool separator_ends_record = true;
+स्थिर bool separator_अन्ताः_लेखः = true;
 
 /* 0 if 'separator' is to be matched as a regular expression;
    otherwise, the length of 'separator', used as a sentinel to
    stop the search. */
-static size_t sentinel_length = 1;
+स्थिर size_t sentinel_दीर्घता = 1;
 
 /* The length of a match with 'separator'.  If 'sentinel_length' is 0,
    'match_length' is computed every time a match succeeds;
    otherwise, it is simply the length of 'separator'. */
-static size_t match_length;
+स्थिर size_t मेलनम्_दीर्घता;
 
 /* The input buffer. */
-static char *G_buffer;
+स्थिर वर्ण *G_बफर;
 
 /* The number of bytes to read at once into 'buffer'. */
-static size_t read_size;
+स्थिर size_t read_आकार;
 
 /* The size of 'buffer'.  This is read_size * 2 + sentinel_length + 2.
    The extra 2 bytes allow 'past_end' to have a value beyond the
    end of 'G_buffer' and 'match_start' to run off the front of 'G_buffer'. */
-static size_t G_buffer_size;
+स्थिर size_t G_बफर_आकार;
 
 /* The compiled regular expression representing 'separator'. */
-static struct re_pattern_buffer compiled_separator;
-static char compiled_separator_fastmap[UCHAR_MAX + 1];
-static struct re_registers regs;
+स्थिर संरचना re_आदर्शः_बफर compiled_separator;
+स्थिर वर्ण compiled_separator_fastmap[UCHAR_MAX + 1];
+स्थिर संरचना re_registers regs;
 
-static struct option const longopts[] =
+स्थिर संरचना option ध्रुव longopts[] =
 {
-  {"before", no_argument, NULL, 'b'},
-  {"regex", no_argument, NULL, 'r'},
-  {"separator", required_argument, NULL, 's'},
+  {"before", no_तर्कः, रिक्त, 'b'},
+  {"regex", no_तर्कः, रिक्त, 'r'},
+  {"separator", required_तर्कः, रिक्त, 's'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_संस्करणम्_OPTION_DECL},
+  {रिक्त, 0, रिक्त, 0}
 };
 
-void
-usage (int status)
+शून्य
+usage (पूर्णाङ्क स्थितिः)
 {
-  if (status != EXIT_SUCCESS)
+  यदि (स्थितिः != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  अन्यथा
     {
-      printf (_("\
+      प्रारूप_लिख (_("\
 Usage: %s [OPTION]... [FILE]...\n\
 "),
-              program_name);
+              क्रमादेशः_name);
       fputs (_("\
-Write each FILE to standard output, last line first.\n\
+Write each FILE गन्तव्यम् standard output, चरमः पङ्क्तिः first.\n\
 "), stdout);
 
       emit_stdin_note ();
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -b, --before             attach the separator before instead of after\n\
+  -b, --before             attach the separator before instead सम्बन्धि after\n\
 "));
       oputs (_("\
   -r, --regex              interpret the separator as a regular expression\n\
 "));
       oputs (_("\
-  -s, --separator=STRING   use STRING as the separator instead of newline\n\
+  -s, --separator=STRING   use STRING as the separator instead सम्बन्धि newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (संस्करणम्_OPTION_DESCRIPTION);
       fputs (_("\n\
-Non-seekable input is buffered to $TMPDIR, defaulting to /tmp.\n\
+Non-seekable निवेशः is buffered गन्तव्यम् $TMPDIR, defaulting गन्तव्यम् /tmp.\n\
 "), stdout);
-      emit_ancillary_info (PROGRAM_NAME);
+      emit_ancillary_info (क्रमादेशः_NAME);
     }
-  exit (status);
+  निर्गच्छ (स्थितिः);
 }
 
 /* Print the characters from START to PAST_END - 1.
    If START is null, just flush the buffer. */
 
-static void
-output (char const *start, char const *past_end)
+स्थिर शून्य
+output (वर्ण ध्रुव *start, वर्ण ध्रुव *past_अन्तः)
 {
-  static char buffer[WRITESIZE];
-  static size_t bytes_in_buffer = 0;
-  size_t bytes_to_add = past_end - start;
-  size_t bytes_available = WRITESIZE - bytes_in_buffer;
+  स्थिर वर्ण बफर[WRITESIZE];
+  स्थिर size_t अष्टकानि_अन्तर्_बफर = 0;
+  size_t अष्टकानि_गन्तव्यम्_सङ्कलय = past_अन्तः - start;
+  size_t अष्टकानि_उपलब्धम् = WRITESIZE - अष्टकानि_अन्तर्_बफर;
 
-  if (!start)
+  यदि (!start)
     {
-      if (full_write (STDOUT_FILENO, buffer, bytes_in_buffer)
-          != bytes_in_buffer)
+      यदि (पूर्णम्_write (STDOUT_FILENO, बफर, अष्टकानि_अन्तर्_बफर)
+          != अष्टकानि_अन्तर्_बफर)
         write_error ();
-      bytes_in_buffer = 0;
-      return;
+      अष्टकानि_अन्तर्_बफर = 0;
+      प्रत्यागम;
     }
 
   /* Write out as many full buffers as possible. */
-  while (bytes_to_add >= bytes_available)
+  यावत् (अष्टकानि_गन्तव्यम्_सङ्कलय >= अष्टकानि_उपलब्धम्)
     {
-      memcpy (buffer + bytes_in_buffer, start, bytes_available);
-      bytes_to_add -= bytes_available;
-      start += bytes_available;
-      if (full_write (STDOUT_FILENO, buffer, WRITESIZE) != WRITESIZE)
+      स्मृतिं_प्रतिलिख (बफर + अष्टकानि_अन्तर्_बफर, start, अष्टकानि_उपलब्धम्);
+      अष्टकानि_गन्तव्यम्_सङ्कलय -= अष्टकानि_उपलब्धम्;
+      start += अष्टकानि_उपलब्धम्;
+      यदि (पूर्णम्_write (STDOUT_FILENO, बफर, WRITESIZE) != WRITESIZE)
         write_error ();
-      bytes_in_buffer = 0;
-      bytes_available = WRITESIZE;
+      अष्टकानि_अन्तर्_बफर = 0;
+      अष्टकानि_उपलब्धम् = WRITESIZE;
     }
 
-  memcpy (buffer + bytes_in_buffer, start, bytes_to_add);
-  bytes_in_buffer += bytes_to_add;
+  स्मृतिं_प्रतिलिख (बफर + अष्टकानि_अन्तर्_बफर, start, अष्टकानि_गन्तव्यम्_सङ्कलय);
+  अष्टकानि_अन्तर्_बफर += अष्टकानि_गन्तव्यम्_सङ्कलय;
 }
 
 /* Print in reverse the file open on descriptor FD for reading FILE.
    The file is already positioned at FILE_POS, which should be near its end.
    Return true if successful.  */
 
-static bool
-tac_seekable (int input_fd, char const *file, off_t file_pos)
+स्थिर bool
+tac_seekable (पूर्णाङ्क निवेशः_fd, वर्ण ध्रुव *file, off_t file_pos)
 {
   /* Pointer to the location in 'G_buffer' where the search for
      the next separator will begin. */
-  char *match_start;
+  वर्ण *मेलनम्_start;
 
   /* Pointer to one past the rightmost character in 'G_buffer' that
      has not been printed yet. */
-  char *past_end;
+  वर्ण *past_अन्तः;
 
   /* Length of the record growing in 'G_buffer'. */
-  ptrdiff_t saved_record_size;
+  ptrdiff_t saved_लेखः_आकार;
 
   /* True if 'output' has not been called yet for any file.
      Only used when the separator is attached to the preceding record. */
   bool first_time = true;
-  char first_char = *separator;	/* Speed optimization, non-regexp. */
-  char const *separator1 = separator + 1; /* Speed optimization, non-regexp. */
-  size_t match_length1 = match_length - 1; /* Speed optimization, non-regexp. */
+  वर्ण first_char = *separator;	/* Speed optimization, non-regexp. */
+  वर्ण ध्रुव *separator1 = separator + 1; /* Speed optimization, non-regexp. */
+  size_t मेलनम्_length1 = मेलनम्_दीर्घता - 1; /* Speed optimization, non-regexp. */
 
   /* Arrange for the first read to lop off enough to leave the rest of the
      file a multiple of 'read_size'.  Since 'read_size' can change, this may
      not always hold during the program run, but since it usually will, leave
      it here for i/o efficiency (page/sector boundaries and all that).
      Note: the efficiency gain has not been verified. */
-  size_t remainder = file_pos % read_size;
-  if (remainder != 0)
+  size_t remainder = file_pos % read_आकार;
+  यदि (remainder != 0)
     {
       file_pos -= remainder;
-      if (lseek (input_fd, file_pos, SEEK_SET) < 0)
+      यदि (lseek (निवेशः_fd, file_pos, SEEK_SET) < 0)
         error (0, errno, _("%s: seek failed"), quotef (file));
     }
 
   /* Scan backward, looking for end of file.  This caters to proc-like
      file systems where the file size is just an estimate.  */
-  while ((saved_record_size = read (input_fd, G_buffer, read_size)) == 0
+  यावत् ((saved_लेखः_आकार = पठ (निवेशः_fd, G_बफर, read_आकार)) == 0
          && file_pos != 0)
     {
-      off_t rsize = read_size;
-      if (lseek (input_fd, -rsize, SEEK_CUR) < 0)
+      off_t rsize = read_आकार;
+      यदि (lseek (निवेशः_fd, -rsize, SEEK_CUR) < 0)
         error (0, errno, _("%s: seek failed"), quotef (file));
-      file_pos -= read_size;
+      file_pos -= read_आकार;
     }
 
   /* Now scan forward, looking for end of file.  */
-  while (saved_record_size == read_size)
+  यावत् (saved_लेखः_आकार == read_आकार)
     {
-      ssize_t nread = read (input_fd, G_buffer, read_size);
-      if (nread == 0)
-        break;
-      saved_record_size = nread;
-      if (saved_record_size < 0)
-        break;
+      ssize_t nread = पठ (निवेशः_fd, G_बफर, read_आकार);
+      यदि (nread == 0)
+        भङ्ग;
+      saved_लेखः_आकार = nread;
+      यदि (saved_लेखः_आकार < 0)
+        भङ्ग;
       file_pos += nread;
     }
 
-  if (saved_record_size < 0)
+  यदि (saved_लेखः_आकार < 0)
     {
       error (0, errno, _("%s: read error"), quotef (file));
-      return false;
+      प्रत्यागम false;
     }
 
-  match_start = past_end = G_buffer + saved_record_size;
+  मेलनम्_start = past_अन्तः = G_बफर + saved_लेखः_आकार;
   /* For non-regexp search, move past impossible positions for a match. */
-  if (sentinel_length)
-    match_start -= match_length1;
+  यदि (sentinel_दीर्घता)
+    मेलनम्_start -= मेलनम्_length1;
 
-  while (true)
+  यावत् (true)
     {
       /* Search backward from 'match_start' - 1 to 'G_buffer' for a match
          with 'separator'; for speed, use strncmp if 'separator' contains no
@@ -262,120 +262,120 @@ tac_seekable (int input_fd, char const *file, off_t file_pos)
          If the match succeeds, set 'match_start' to point to the start of
          the match and 'match_length' to the length of the match.
          Otherwise, make 'match_start' < 'G_buffer'. */
-      if (sentinel_length == 0)
+      यदि (sentinel_दीर्घता == 0)
         {
-          size_t i = match_start - G_buffer;
+          size_t i = मेलनम्_start - G_बफर;
           regoff_t ri = i;
           regoff_t range = 1 - ri;
           regoff_t ret;
 
-          if (1 < range)
+          यदि (1 < range)
             error (EXIT_FAILURE, 0, _("record too large"));
 
-          if (range == 1
-              || ((ret = re_search (&compiled_separator, G_buffer,
+          यदि (range == 1
+              || ((ret = re_अन्वेषणम् (&compiled_separator, G_बफर,
                                     i, i - 1, range, &regs))
                   == -1))
-            match_start = G_buffer - 1;
-          else if (ret == -2)
+            मेलनम्_start = G_बफर - 1;
+          अन्यथा यदि (ret == -2)
             error (EXIT_FAILURE, 0,
                    _("error in regular expression search"));
-          else
+          अन्यथा
             {
-              match_start = G_buffer + regs.start[0];
-              match_length = regs.end[0] - regs.start[0];
+              मेलनम्_start = G_बफर + regs.start[0];
+              मेलनम्_दीर्घता = regs.अन्तः[0] - regs.start[0];
             }
         }
-      else
+      अन्यथा
         {
           /* 'match_length' is constant for non-regexp boundaries. */
-          while (*--match_start != first_char
-                 || (match_length1 && !STREQ_LEN (match_start + 1, separator1,
-                                                  match_length1)))
+          यावत् (*--मेलनम्_start != first_char
+                 || (मेलनम्_length1 && !STREQ_LEN (मेलनम्_start + 1, separator1,
+                                                  मेलनम्_length1)))
             /* Do nothing. */ ;
         }
 
       /* Check whether we backed off the front of 'G_buffer' without finding
          a match for 'separator'. */
-      if (match_start < G_buffer)
+      यदि (मेलनम्_start < G_बफर)
         {
-          if (file_pos == 0)
+          यदि (file_pos == 0)
             {
               /* Hit the beginning of the file; print the remaining record. */
-              output (G_buffer, past_end);
-              return true;
+              output (G_बफर, past_अन्तः);
+              प्रत्यागम true;
             }
 
-          saved_record_size = past_end - G_buffer;
-          if (saved_record_size > read_size)
+          saved_लेखः_आकार = past_अन्तः - G_बफर;
+          यदि (saved_लेखः_आकार > read_आकार)
             {
               /* 'G_buffer_size' is about twice 'read_size', so since
                  we want to read in another 'read_size' bytes before
                  the data already in 'G_buffer', we need to increase
                  'G_buffer_size'. */
-              char *newbuffer;
-              size_t offset = sentinel_length ? sentinel_length : 1;
-              size_t old_G_buffer_size = G_buffer_size;
+              वर्ण *newbuffer;
+              size_t विस्थापनम् = sentinel_दीर्घता ? sentinel_दीर्घता : 1;
+              size_t old_G_बफर_आकार = G_बफर_आकार;
 
-              read_size *= 2;
-              G_buffer_size = read_size * 2 + sentinel_length + 2;
-              if (G_buffer_size < old_G_buffer_size)
+              read_आकार *= 2;
+              G_बफर_आकार = read_आकार * 2 + sentinel_दीर्घता + 2;
+              यदि (G_बफर_आकार < old_G_बफर_आकार)
                 xalloc_die ();
-              newbuffer = xrealloc (G_buffer - offset, G_buffer_size);
-              newbuffer += offset;
-              G_buffer = newbuffer;
+              newbuffer = xrealloc (G_बफर - विस्थापनम्, G_बफर_आकार);
+              newbuffer += विस्थापनम्;
+              G_बफर = newbuffer;
             }
 
           /* Back up to the start of the next bufferfull of the file.  */
-          if (file_pos >= read_size)
-            file_pos -= read_size;
-          else
+          यदि (file_pos >= read_आकार)
+            file_pos -= read_आकार;
+          अन्यथा
             {
-              read_size = file_pos;
+              read_आकार = file_pos;
               file_pos = 0;
             }
-          if (lseek (input_fd, file_pos, SEEK_SET) < 0)
+          यदि (lseek (निवेशः_fd, file_pos, SEEK_SET) < 0)
             error (0, errno, _("%s: seek failed"), quotef (file));
 
           /* Shift the pending record data right to make room for the new.
              The source and destination regions probably overlap.  */
-          memmove (G_buffer + read_size, G_buffer, saved_record_size);
-          past_end = G_buffer + read_size + saved_record_size;
+          memmove (G_बफर + read_आकार, G_बफर, saved_लेखः_आकार);
+          past_अन्तः = G_बफर + read_आकार + saved_लेखः_आकार;
           /* For non-regexp searches, avoid unnecessary scanning. */
-          if (sentinel_length)
-            match_start = G_buffer + read_size;
-          else
-            match_start = past_end;
+          यदि (sentinel_दीर्घता)
+            मेलनम्_start = G_बफर + read_आकार;
+          अन्यथा
+            मेलनम्_start = past_अन्तः;
 
-          if (full_read (input_fd, G_buffer, read_size) != read_size)
+          यदि (पूर्णम्_read (निवेशः_fd, G_बफर, read_आकार) != read_आकार)
             {
               error (0, errno, _("%s: read error"), quotef (file));
-              return false;
+              प्रत्यागम false;
             }
         }
-      else
+      अन्यथा
         {
           /* Found a match of 'separator'. */
-          if (separator_ends_record)
+          यदि (separator_अन्ताः_लेखः)
             {
-              char *match_end = match_start + match_length;
+              वर्ण *मेलनम्_अन्तः = मेलनम्_start + मेलनम्_दीर्घता;
 
               /* If this match of 'separator' isn't at the end of the
                  file, print the record. */
-              if (!first_time || match_end != past_end)
-                output (match_end, past_end);
-              past_end = match_end;
+              यदि (!first_time || मेलनम्_अन्तः != past_अन्तः)
+                output (मेलनम्_अन्तः, past_अन्तः);
+              past_अन्तः = मेलनम्_अन्तः;
               first_time = false;
             }
-          else
+          अन्यथा
             {
-              output (match_start, past_end);
-              past_end = match_start;
+              output (मेलनम्_start, past_अन्तः);
+              past_अन्तः = मेलनम्_start;
             }
 
           /* For non-regex matching, we can back up.  */
-          if (sentinel_length > 0)
-            match_start -= match_length - 1;
+          यदि (sentinel_दीर्घता > 0)
+            मेलनम्_start -= मेलनम्_दीर्घता - 1;
         }
     }
 }
@@ -384,205 +384,205 @@ tac_seekable (int input_fd, char const *file, off_t file_pos)
    a temporary file, and set *G_TMP and *G_TEMPFILE to the resulting stream
    and file name.  Return the number of bytes copied, or -1 on error.  */
 
-static off_t
-copy_to_temp (FILE **g_tmp, char **g_tempfile, int input_fd, char const *file)
+स्थिर off_t
+copy_गन्तव्यम्_अस्थायी (FILE **g_tmp, वर्ण **g_tempfile, पूर्णाङ्क निवेशः_fd, वर्ण ध्रुव *file)
 {
   FILE *fp;
-  char *file_name;
-  uintmax_t bytes_copied = 0;
-  if (!temp_stream (&fp, &file_name))
-    return -1;
+  वर्ण *file_name;
+  uintmax_t अष्टकानि_copied = 0;
+  यदि (!अस्थायी_प्रवाहः (&fp, &file_name))
+    प्रत्यागम -1;
 
-  while (true)
+  यावत् (true)
     {
-      ssize_t bytes_read = read (input_fd, G_buffer, read_size);
-      if (bytes_read == 0)
-        break;
-      if (bytes_read < 0)
+      ssize_t अष्टकानि_read = पठ (निवेशः_fd, G_बफर, read_आकार);
+      यदि (अष्टकानि_read == 0)
+        भङ्ग;
+      यदि (अष्टकानि_read < 0)
         {
           error (0, errno, _("%s: read error"), quotef (file));
-          return -1;
+          प्रत्यागम -1;
         }
 
-      if (fwrite (G_buffer, 1, bytes_read, fp) != bytes_read)
+      यदि (fwrite (G_बफर, 1, अष्टकानि_read, fp) != अष्टकानि_read)
         {
           error (0, errno, _("%s: write error"), quotef (file_name));
-          return -1;
+          प्रत्यागम -1;
         }
 
       /* Implicitly <= OFF_T_MAX due to preceding fwrite(),
          but unsigned type used to avoid compiler warnings
          not aware of this fact.  */
-      bytes_copied += bytes_read;
+      अष्टकानि_copied += अष्टकानि_read;
     }
 
-  if (fflush (fp) != 0)
+  यदि (fflush (fp) != 0)
     {
       error (0, errno, _("%s: write error"), quotef (file_name));
-      return -1;
+      प्रत्यागम -1;
     }
 
   *g_tmp = fp;
   *g_tempfile = file_name;
-  return bytes_copied;
+  प्रत्यागम अष्टकानि_copied;
 }
 
 /* Copy INPUT_FD to a temporary, then tac that file.
    Return true if successful.  */
 
-static bool
-tac_nonseekable (int input_fd, char const *file)
+स्थिर bool
+tac_nonseekable (पूर्णाङ्क निवेशः_fd, वर्ण ध्रुव *file)
 {
-  FILE *tmp_stream;
-  char *tmp_file;
-  off_t bytes_copied = copy_to_temp (&tmp_stream, &tmp_file, input_fd, file);
-  if (bytes_copied < 0)
-    return false;
+  FILE *tmp_प्रवाहः;
+  वर्ण *tmp_file;
+  off_t अष्टकानि_copied = copy_गन्तव्यम्_अस्थायी (&tmp_प्रवाहः, &tmp_file, निवेशः_fd, file);
+  यदि (अष्टकानि_copied < 0)
+    प्रत्यागम false;
 
-  bool ok = tac_seekable (fileno (tmp_stream), tmp_file, bytes_copied);
-  return ok;
+  bool ok = tac_seekable (fileno (tmp_प्रवाहः), tmp_file, अष्टकानि_copied);
+  प्रत्यागम ok;
 }
 
 /* Print FILE in reverse, copying it to a temporary
    file first if it is not seekable.
    Return true if successful.  */
 
-static bool
-tac_file (char const *filename)
+स्थिर bool
+tac_file (वर्ण ध्रुव *filename)
 {
   bool ok;
-  off_t file_size;
-  int fd;
+  off_t file_आकार;
+  पूर्णाङ्क fd;
   bool is_stdin = streq (filename, "-");
 
-  if (is_stdin)
+  यदि (is_stdin)
     {
       have_read_stdin = true;
       fd = STDIN_FILENO;
       filename = _("standard input");
-      xset_binary_mode (STDIN_FILENO, O_BINARY);
+      xset_द्विमान_बहुलकम् (STDIN_FILENO, O_द्विमान);
     }
-  else
+  अन्यथा
     {
-      fd = open (filename, O_RDONLY | O_BINARY);
-      if (fd < 0)
+      fd = उद्घाटय (filename, O_RDONLY | O_द्विमान);
+      यदि (fd < 0)
         {
           error (0, errno, _("failed to open %s for reading"),
                  quoteaf (filename));
-          return false;
+          प्रत्यागम false;
         }
     }
 
-  file_size = lseek (fd, 0, SEEK_END);
+  file_आकार = lseek (fd, 0, SEEK_END);
 
-  ok = (file_size < 0 || isatty (fd)
+  ok = (file_आकार < 0 || isatty (fd)
         ? tac_nonseekable (fd, filename)
-        : tac_seekable (fd, filename, file_size));
+        : tac_seekable (fd, filename, file_आकार));
 
-  if (!is_stdin && close (fd) != 0)
+  यदि (!is_stdin && close (fd) != 0)
     {
       error (0, errno, _("%s: read error"), quotef (filename));
       ok = false;
     }
-  return ok;
+  प्रत्यागम ok;
 }
 
-int
-main (int argc, char **argv)
+पूर्णाङ्क
+मुख्यम् (पूर्णाङ्क argc, वर्ण **argv)
 {
-  char const *error_message;	/* Return value from re_compile_pattern. */
-  int optc;
+  वर्ण ध्रुव *error_सन्देशः_2;	/* Return value from re_compile_pattern. */
+  पूर्णाङ्क optc;
   bool ok;
-  size_t half_buffer_size;
+  size_t half_बफर_आकार;
 
   /* Initializer for file_list if no file-arguments
      were specified on the command line.  */
-  static char const *const default_file_list[] = {"-", NULL};
-  char const *const *file;
+  स्थिर वर्ण ध्रुव *ध्रुव default_file_list[] = {"-", रिक्त};
+  वर्ण ध्रुव *ध्रुव *file;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  समुच्चयः_क्रमादेशः_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "brs:", longopts, NULL)) != -1)
+  यावत् ((optc = getopt_long (argc, argv, "brs:", longopts, रिक्त)) != -1)
     {
-      switch (optc)
+      विकल्प (optc)
         {
-        case 'b':
-          separator_ends_record = false;
-          break;
-        case 'r':
-          sentinel_length = 0;
-          break;
-        case 's':
+        पक्ष 'b':
+          separator_अन्ताः_लेखः = false;
+          भङ्ग;
+        पक्ष 'r':
+          sentinel_दीर्घता = 0;
+          भङ्ग;
+        पक्ष 's':
           separator = optarg;
-          break;
+          भङ्ग;
         case_GETOPT_HELP_CHAR;
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        case_GETOPT_संस्करणम्_CHAR (क्रमादेशः_NAME, AUTHORS);
+        स्वभाव:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (sentinel_length == 0)
+  यदि (sentinel_दीर्घता == 0)
     {
-      if (*separator == 0)
+      यदि (*separator == 0)
         error (EXIT_FAILURE, 0, _("separator cannot be empty"));
 
-      compiled_separator.buffer = NULL;
+      compiled_separator.बफर = रिक्त;
       compiled_separator.allocated = 0;
       compiled_separator.fastmap = compiled_separator_fastmap;
-      compiled_separator.translate = NULL;
-      error_message = re_compile_pattern (separator, strlen (separator),
+      compiled_separator.translate = रिक्त;
+      error_सन्देशः_2 = re_compile_आदर्शः (separator, वाक्यदैर्घ्यम् (separator),
                                           &compiled_separator);
-      if (error_message)
-        error (EXIT_FAILURE, 0, "%s", (error_message));
+      यदि (error_सन्देशः_2)
+        error (EXIT_FAILURE, 0, "%s", (error_सन्देशः_2));
     }
-  else
-    match_length = sentinel_length = *separator ? strlen (separator) : 1;
+  अन्यथा
+    मेलनम्_दीर्घता = sentinel_दीर्घता = *separator ? वाक्यदैर्घ्यम् (separator) : 1;
 
-  read_size = INITIAL_READSIZE;
-  while (sentinel_length >= read_size / 2)
+  read_आकार = INITIAL_READSIZE;
+  यावत् (sentinel_दीर्घता >= read_आकार / 2)
     {
-      if (SIZE_MAX / 2 < read_size)
+      यदि (SIZE_MAX / 2 < read_आकार)
         xalloc_die ();
-      read_size *= 2;
+      read_आकार *= 2;
     }
-  half_buffer_size = read_size + sentinel_length + 1;
-  G_buffer_size = 2 * half_buffer_size;
-  if (! (read_size < half_buffer_size && half_buffer_size < G_buffer_size))
+  half_बफर_आकार = read_आकार + sentinel_दीर्घता + 1;
+  G_बफर_आकार = 2 * half_बफर_आकार;
+  यदि (! (read_आकार < half_बफर_आकार && half_बफर_आकार < G_बफर_आकार))
     xalloc_die ();
-  G_buffer = xmalloc (G_buffer_size);
-  if (sentinel_length)
+  G_बफर = xmalloc (G_बफर_आकार);
+  यदि (sentinel_दीर्घता)
     {
-      memcpy (G_buffer, separator, sentinel_length + !!*separator);
-      G_buffer += sentinel_length;
+      स्मृतिं_प्रतिलिख (G_बफर, separator, sentinel_दीर्घता + !!*separator);
+      G_बफर += sentinel_दीर्घता;
     }
-  else
+  अन्यथा
     {
-      ++G_buffer;
+      ++G_बफर;
     }
 
   file = (optind < argc
-          ? (char const *const *) &argv[optind]
+          ? (वर्ण ध्रुव *ध्रुव *) &argv[optind]
           : default_file_list);
 
-  xset_binary_mode (STDOUT_FILENO, O_BINARY);
+  xset_द्विमान_बहुलकम् (STDOUT_FILENO, O_द्विमान);
 
   {
     ok = true;
-    for (size_t i = 0; file[i]; ++i)
+    प्रति (size_t i = 0; file[i]; ++i)
       ok &= tac_file (file[i]);
   }
 
   /* Flush the output buffer. */
-  output ((char *) NULL, (char *) NULL);
+  output ((वर्ण *) रिक्त, (वर्ण *) रिक्त);
 
-  if (have_read_stdin && close (STDIN_FILENO) < 0)
+  यदि (have_read_stdin && close (STDIN_FILENO) < 0)
     {
       error (0, errno, "-");
       ok = false;
