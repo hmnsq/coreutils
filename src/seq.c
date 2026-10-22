@@ -16,18 +16,18 @@
 
 /* Written by Ulrich Drepper.  */
 
-#include <config.h>
-#include <getopt.h>
-#include <stdio.h>
-#include <sys/types.h>
+#अन्तर्भाव <config.h>
+#अन्तर्भाव <getopt.h>
+#अन्तर्भाव <stdio.h>
+#अन्तर्भाव <sys/types.h>
 
-#include "system.h"
-#include "c-ctype.h"
-#include "cl-strtod.h"
-#include "full-write.h"
-#include "quote.h"
-#include "xstrtod.h"
-#include "xvasprintf.h"
+#अन्तर्भाव "system.h"
+#अन्तर्भाव "c-ctype.h"
+#अन्तर्भाव "cl-strtod.h"
+#अन्तर्भाव "full-write.h"
+#अन्तर्भाव "quote.h"
+#अन्तर्भाव "xstrtod.h"
+#अन्तर्भाव "xvasprintf.h"
 
 /* Roll our own isfinite/isnan rather than using <math.h>, so that we don't
    have to worry about linking -lm just for isfinite.  */
@@ -49,34 +49,34 @@
 #define AUTHORS proper_name ("Ulrich Drepper")
 
 /* True if the locale settings were honored.  */
-static bool locale_ok;
+स्थिर bool locale_ok;
 
 /* If true print all number with equal width.  */
-static bool equal_width;
+स्थिर bool equal_width;
 
 /* The string used to separate two numbers.  */
-static char const *separator = "\n";
+स्थिर वर्ण ध्रुव *separator = "\n";
 
 /* The string output after all numbers have been output.
    Usually "\n" or "\0".  */
-static char const terminator[] = "\n";
+स्थिर वर्ण ध्रुव terminator[] = "\n";
 
-static struct option const long_options[] =
+स्थिर संरचना option ध्रुव long_options[] =
 {
-  { "equal-width", no_argument, NULL, 'w'},
-  { "format", required_argument, NULL, 'f'},
-  { "separator", required_argument, NULL, 's'},
+  { "equal-width", no_argument, रिक्त, 'w'},
+  { "format", required_argument, रिक्त, 'f'},
+  { "separator", required_argument, रिक्त, 's'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  { NULL, 0, NULL, 0}
+  { रिक्त, 0, रिक्त, 0}
 };
 
-void
-usage (int status)
+शून्य
+usage (पूर्णाङ्क status)
 {
-  if (status != EXIT_SUCCESS)
+  सचे (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  अञ्ञथा
     {
       printf (_("\
 Usage: %s [OPTION]... LAST\n\
@@ -95,7 +95,7 @@ Print numbers from FIRST to LAST, in steps of INCREMENT.\n\
 "));
       oputs (_("\
   -s, --separator=STRING\n\
-         use STRING to separate numbers (default: \\n)\n\
+         use STRING to separate numbers (स्वभाव: \\n)\n\
 "));
       oputs (_("\
   -w, --equal-width\n\
@@ -107,16 +107,16 @@ Print numbers from FIRST to LAST, in steps of INCREMENT.\n\
 \n\
 If FIRST or INCREMENT is omitted, it defaults to 1.  That is, an\n\
 omitted INCREMENT defaults to 1 even when LAST is smaller than FIRST.\n\
-The sequence of numbers ends when the sum of the current number and\n\
+The sequence of numbers ends when the sum of the current सङ्ख्या and\n\
 INCREMENT would become greater than LAST.\n\
-FIRST, INCREMENT, and LAST are interpreted as floating point values.\n\
-INCREMENT is usually positive if FIRST is smaller than LAST, and\n\
-INCREMENT is usually negative if FIRST is greater than LAST.\n\
+FIRST, INCREMENT, and LAST are interpreted as floating point मानानि.\n\
+INCREMENT is usually positive सचे FIRST is smaller than LAST, and\n\
+INCREMENT is usually negative सचे FIRST is greater than LAST.\n\
 INCREMENT must not be 0; none of FIRST, INCREMENT and LAST may be NaN.\n\
 "), stdout);
       fputs (_("\
-FORMAT must be suitable for printing one argument of type 'double';\n\
-it defaults to %.PRECf if FIRST, INCREMENT, and LAST are all fixed point\n\
+FORMAT must be suitable अत्थाय printing one argument of type 'double';\n\
+it defaults to %.PRECf सचे FIRST, INCREMENT, and LAST are all fixed point\n\
 decimal numbers with maximum precision PREC, and to %g otherwise.\n\
 "), stdout);
       emit_ancillary_info (PROGRAM_NAME);
@@ -125,10 +125,10 @@ decimal numbers with maximum precision PREC, and to %g otherwise.\n\
 }
 
 /* A command-line operand.  */
-struct operand
+संरचना operand
 {
   /* Its value, converted to 'long double'.  */
-  long double value;
+  long द्विगुण मानम्;
 
   /* Its print width, if it were printed out in a form similar to its
      input form.  An input like "-.1" is treated like "-0.1", and an
@@ -138,12 +138,12 @@ struct operand
 
   /* Number of digits after the decimal point, or INT_MAX if the
      number can't easily be expressed as a fixed-point number.  */
-  int precision;
+  पूर्णाङ्क precision;
 };
-typedef struct operand operand;
+प्रकारनिर्देश संरचना operand operand;
 
 /* Description of what a number-generating format will generate.  */
-struct layout
+संरचना layout
 {
   /* Number of bytes before and after the number.  */
   size_t prefix_len;
@@ -153,18 +153,18 @@ struct layout
 /* Read a long double value from the command line.
    Return if the string is correct else signal error.  */
 
-static operand
-scan_arg (char const *arg)
+स्थिर operand
+scan_arg (वर्ण ध्रुव *arg)
 {
   operand ret;
 
-  if (! xstrtold (arg, NULL, &ret.value, cl_strtold))
+  सचे (! xstrtold (arg, रिक्त, &ret.मानम्, cl_strtold))
     {
       error (0, 0, _("invalid floating point argument: %s"), quote (arg));
       usage (EXIT_FAILURE);
     }
 
-  if (isnan (ret.value))
+  सचे (isnan (ret.मानम्))
     {
       error (0, 0, _("invalid %s argument: %s"), quote_n (0, "not-a-number"),
              quote_n (1, arg));
@@ -172,7 +172,7 @@ scan_arg (char const *arg)
     }
 
   /* We don't output spaces or '+' so don't include in width */
-  while (isspace (to_uchar (*arg)) || *arg == '+')
+  याव (isspace (to_uchar (*arg)) || *arg == '+')
     arg++;
 
   /* Default to auto width and precision.  */
@@ -180,51 +180,51 @@ scan_arg (char const *arg)
   ret.precision = INT_MAX;
 
   /* Use no precision (and possibly fast generation) for integers.  */
-  char const *decimal_point = strchr (arg, '.');
-  if (! decimal_point && ! strchr (arg, 'p') /* not a hex float */)
+  वर्ण ध्रुव *decimal_point = strchr (arg, '.');
+  सचे (! decimal_point && ! strchr (arg, 'p') /* not a hex float */)
     ret.precision = 0;
 
   /* auto set width and precision for decimal inputs.  */
-  if (! arg[strcspn (arg, "xX")] && isfinite (ret.value))
+  सचे (! arg[strcspn (arg, "xX")] && isfinite (ret.मानम्))
     {
       size_t fraction_len = 0;
       ret.width = strlen (arg);
 
-      if (decimal_point)
+      सचे (decimal_point)
         {
           fraction_len = strcspn (decimal_point + 1, "eE");
-          if (fraction_len <= INT_MAX)
+          सचे (fraction_len <= INT_MAX)
             ret.precision = fraction_len;
           ret.width += (fraction_len == 0                       /* #.  -> #   */
                         ? -1
                         : (decimal_point == arg                 /* .#  -> 0.# */
                            || !c_isdigit (decimal_point[-1]))); /* -.# -> 0.# */
         }
-      char const *e = strchr (arg, 'e');
-      if (! e)
+      वर्ण ध्रुव *e = strchr (arg, 'e');
+      सचे (! e)
         e = strchr (arg, 'E');
-      if (e)
+      सचे (e)
         {
-          long exponent = MAX (strtol (e + 1, NULL, 10), -LONG_MAX);
+          long exponent = MAX (strtol (e + 1, रिक्त, 10), -LONG_MAX);
           ret.precision += exponent < 0 ? -exponent
                                         : - MIN (ret.precision, exponent);
           /* Don't account for e.... in the width since this is not output.  */
           ret.width -= strlen (arg) - (e - arg);
           /* Adjust the width as per the exponent.  */
-          if (exponent < 0)
+          सचे (exponent < 0)
             {
-              if (decimal_point)
+              सचे (decimal_point)
                 {
-                  if (e == decimal_point + 1) /* undo #. -> # above  */
+                  सचे (e == decimal_point + 1) /* undo #. -> # above  */
                     ret.width++;
                 }
-              else
+              अञ्ञथा
                 ret.width++;
               exponent = -exponent;
             }
-          else
+          अञ्ञथा
             {
-              if (decimal_point && ret.precision == 0 && fraction_len)
+              सचे (decimal_point && ret.precision == 0 && fraction_len)
                 ret.width--; /* discount space for '.'  */
               exponent -= MIN (fraction_len, exponent);
             }
@@ -232,7 +232,7 @@ scan_arg (char const *arg)
         }
     }
 
-  return ret;
+  पटिनिवत्त ret;
 }
 
 /* If FORMAT is a valid printf format for a double argument, return
@@ -240,15 +240,15 @@ scan_arg (char const *arg)
    store into *LAYOUT a description of the output layout; otherwise,
    report an error and exit.  */
 
-static char const *
-long_double_format (char const *fmt, struct layout *layout)
+स्थिर वर्ण ध्रुव *
+long_double_format (वर्ण ध्रुव *fmt, संरचना layout *layout)
 {
   size_t i;
   size_t prefix_len = 0;
 
-  for (i = 0; ! (fmt[i] == '%' && fmt[i + 1] != '%'); i += (fmt[i] == '%') + 1)
+  अत्थाय (i = 0; ! (fmt[i] == '%' && fmt[i + 1] != '%'); i += (fmt[i] == '%') + 1)
     {
-      if (!fmt[i])
+      सचे (!fmt[i])
         error (EXIT_FAILURE, 0,
                _("format %s has no %% directive"), quote (fmt));
       prefix_len++;
@@ -257,7 +257,7 @@ long_double_format (char const *fmt, struct layout *layout)
   i++;
   i += strspn (fmt + i, "-+#0 '");
   i += strspn (fmt + i, "0123456789");
-  if (fmt[i] == '.')
+  सचे (fmt[i] == '.')
     {
       i++;
       i += strspn (fmt + i, "0123456789");
@@ -266,53 +266,53 @@ long_double_format (char const *fmt, struct layout *layout)
   size_t length_modifier_offset = i;
   bool has_L = (fmt[i] == 'L');
   i += has_L;
-  if (fmt[i] == '\0')
+  सचे (fmt[i] == '\0')
     error (EXIT_FAILURE, 0, _("format %s ends in %%"), quote (fmt));
-  if (! strchr ("efgaEFGA", fmt[i]))
+  सचे (! strchr ("efgaEFGA", fmt[i]))
     error (EXIT_FAILURE, 0,
            _("format %s has unknown %%%c directive"), quote (fmt), fmt[i]);
 
   size_t suffix_len = 0;
-  for (i++; ; i += (fmt[i] == '%') + 1)
-    if (fmt[i] == '%' && fmt[i + 1] != '%')
+  अत्थाय (i++; ; i += (fmt[i] == '%') + 1)
+    सचे (fmt[i] == '%' && fmt[i + 1] != '%')
       error (EXIT_FAILURE, 0, _("format %s has too many %% directives"),
              quote (fmt));
-    else if (fmt[i])
+    अञ्ञथा सचे (fmt[i])
       suffix_len++;
-    else
+    अञ्ञथा
       {
         size_t format_size = i + 1;
-        char *ldfmt = xmalloc (format_size + 1);
+        वर्ण *ldfmt = xmalloc (format_size + 1);
         memcpy (ldfmt, fmt, length_modifier_offset);
         ldfmt[length_modifier_offset] = 'L';
         strcpy (ldfmt + length_modifier_offset + 1,
                 fmt + length_modifier_offset + has_L);
         layout->prefix_len = prefix_len;
         layout->suffix_len = suffix_len;
-        return ldfmt;
+        पटिनिवत्त ldfmt;
       }
 }
 
 /* Actually print the sequence of numbers in the specified range, with the
    given or default stepping and format.  */
 
-static void
-print_numbers (char const *fmt, struct layout layout,
-               long double first, long double step, long double last)
+स्थिर शून्य
+print_numbers (वर्ण ध्रुव *fmt, संरचना layout layout,
+               long द्विगुण first, long द्विगुण step, long द्विगुण last)
 {
   bool out_of_range = (step < 0 ? first < last : last < first);
 
-  if (! out_of_range)
+  सचे (! out_of_range)
     {
-      long double x = first;
+      long द्विगुण x = first;
 
-      for (long double i = 1; ; i++)
+      अत्थाय (long द्विगुण i = 1; ; i++)
         {
-          long double x0 = x;
-          if (printf (fmt, x) < 0)
+          long द्विगुण x0 = x;
+          सचे (printf (fmt, x) < 0)
             write_error ();
-          if (out_of_range)
-            break;
+          सचे (out_of_range)
+            भङ्ग;
 
           /* Mathematically equivalent to 'x += step;', and typically
              less subject to rounding error.  */
@@ -320,7 +320,7 @@ print_numbers (char const *fmt, struct layout layout,
 
           out_of_range = (step < 0 ? x < last : last < x);
 
-          if (out_of_range)
+          सचे (out_of_range)
             {
               /* If the number just past LAST prints as a value equal
                  to LAST, and prints differently from the previous
@@ -329,137 +329,137 @@ print_numbers (char const *fmt, struct layout layout,
                  "seq 0 0.000001 0.000003" to print 0.000003 instead
                  of stopping at 0.000002.  */
 
-              bool print_extra_number = false;
-              if (locale_ok)
+              bool print_extra_सङ्ख्या = false;
+              सचे (locale_ok)
                 setlocale (LC_NUMERIC, "C");
-              char *x_str;
-              int x_strlen = asprintf (&x_str, fmt, x);
-              if (locale_ok)
+              वर्ण *x_str;
+              पूर्णाङ्क x_strlen = asprintf (&x_str, fmt, x);
+              सचे (locale_ok)
                 setlocale (LC_NUMERIC, "");
-              if (x_strlen < 0)
+              सचे (x_strlen < 0)
                 xalloc_die ();
               x_str[x_strlen - layout.suffix_len] = '\0';
 
-              long double x_val;
-              if (xstrtold (x_str + layout.prefix_len, NULL,
+              long द्विगुण x_val;
+              सचे (xstrtold (x_str + layout.prefix_len, रिक्त,
                             &x_val, cl_strtold)
                   && x_val == last)
                 {
-                  char *x0_str = NULL;
-                  int x0_strlen = asprintf (&x0_str, fmt, x0);
-                  if (x0_strlen < 0)
+                  वर्ण *x0_str = रिक्त;
+                  पूर्णाङ्क x0_strlen = asprintf (&x0_str, fmt, x0);
+                  सचे (x0_strlen < 0)
                     xalloc_die ();
                   x0_str[x0_strlen - layout.suffix_len] = '\0';
-                  print_extra_number = !streq (x0_str, x_str);
-                  free (x0_str);
+                  print_extra_सङ्ख्या = !streq (x0_str, x_str);
+                  मुक्त (x0_str);
                 }
 
-              free (x_str);
-              if (! print_extra_number)
-                break;
+              मुक्त (x_str);
+              सचे (! print_extra_सङ्ख्या)
+                भङ्ग;
             }
 
-          if (fputs (separator, stdout) == EOF)
+          सचे (fputs (separator, stdout) == EOF)
             write_error ();
         }
 
-      if (fputs (terminator, stdout) == EOF)
+      सचे (fputs (terminator, stdout) == EOF)
         write_error ();
     }
 }
 
 /* Return the default format given FIRST, STEP, and LAST.  */
-static char const *
+स्थिर वर्ण ध्रुव *
 get_default_format (operand first, operand step, operand last)
 {
-  static char format_buf[sizeof "%0.Lf" + 2 * INT_STRLEN_BOUND (int)];
+  स्थिर वर्ण format_buf[परिमाण "%0.Lf" + 2 * INT_STRLEN_BOUND (पूर्णाङ्क)];
 
-  int prec = MAX (first.precision, step.precision);
+  पूर्णाङ्क prec = MAX (first.precision, step.precision);
 
-  if (prec != INT_MAX && last.precision != INT_MAX)
+  सचे (prec != INT_MAX && last.precision != INT_MAX)
     {
-      if (equal_width)
+      सचे (equal_width)
         {
           /* increase first_width by any increased precision in step */
           size_t first_width = first.width + (prec - first.precision);
           /* adjust last_width to use precision from first/step */
           size_t last_width = last.width + (prec - last.precision);
-          if (last.precision && prec == 0)
+          सचे (last.precision && prec == 0)
             last_width--;  /* don't include space for '.' */
-          if (last.precision == 0 && prec)
+          सचे (last.precision == 0 && prec)
             last_width++;  /* include space for '.' */
-          if (first.precision == 0 && prec)
+          सचे (first.precision == 0 && prec)
             first_width++;  /* include space for '.' */
           size_t width = MAX (first_width, last_width);
-          if (width <= INT_MAX)
+          सचे (width <= INT_MAX)
             {
-              int w = width;
+              पूर्णाङ्क w = width;
               sprintf (format_buf, "%%0%d.%dLf", w, prec);
-              return format_buf;
+              पटिनिवत्त format_buf;
             }
         }
-      else
+      अञ्ञथा
         {
           sprintf (format_buf, "%%.%dLf", prec);
-          return format_buf;
+          पटिनिवत्त format_buf;
         }
     }
 
-  return "%Lg";
+  पटिनिवत्त "%Lg";
 }
 
 /* The nonempty char array P represents a valid non-negative decimal integer.
    ENDP points just after the last char in P.
    Adjust the array to describe the next-larger integer and return
    whether this grows the array by one on the left.  */
-static bool
-incr_grows (char *p, char *endp)
+स्थिर bool
+incr_grows (वर्ण *p, वर्ण *endp)
 {
-  do
+  करोहि
     {
       endp--;
-      if (*endp < '9')
+      सचे (*endp < '9')
         {
           (*endp)++;
-          return false;
+          पटिनिवत्त false;
         }
       *endp = '0';
     }
-  while (p < endp);
+  याव (p < endp);
 
   p[-1] = '1';
-  return true;
+  पटिनिवत्त true;
 }
 
 /* Compare A and B with lengths A_LEN and B_LEN.  A and B are integers
    represented by nonempty arrays of digits without redundant leading '0'.
    Return negative if A < B, 0 if A = B, positive if A > B.  */
-static int
-cmp (char const *a, idx_t a_len, char const *b, idx_t b_len)
+स्थिर पूर्णाङ्क
+cmp (वर्ण ध्रुव *a, idx_t a_len, वर्ण ध्रुव *b, idx_t b_len)
 {
-  return a_len == b_len ? memcmp (a, b, a_len) : _GL_CMP (a_len, b_len);
+  पटिनिवत्त a_len == b_len ? memcmp (a, b, a_len) : _GL_CMP (a_len, b_len);
 }
 
 /* Trim leading 0's from S, but if S is all 0's, leave one.
    Return a pointer to the trimmed string.  */
 ATTRIBUTE_PURE
-static char const *
-trim_leading_zeros (char const *s)
+स्थिर वर्ण ध्रुव *
+trim_leading_zeros (वर्ण ध्रुव *s)
 {
-  char const *p = s;
-  while (*s == '0')
+  वर्ण ध्रुव *p = s;
+  याव (*s == '0')
     ++s;
 
   /* If there were only 0's, back up, to leave one.  */
-  if (!*s && s != p)
+  सचे (!*s && s != p)
     --s;
-  return s;
+  पटिनिवत्त s;
 }
 
 /* Print all whole numbers from A to B, inclusive -- to stdout, each
    followed by a newline.  Then exit.  */
-static void
-seq_fast (char const *a, char const *b, uintmax_t step)
+स्थिर शून्य
+seq_fast (वर्ण ध्रुव *a, वर्ण ध्रुव *b, uintmax_t step)
 {
   /* Skip past any redundant leading '0's.  Without this, our naive cmp
      function would declare 000 to be larger than 99.  */
@@ -472,33 +472,33 @@ seq_fast (char const *a, char const *b, uintmax_t step)
 
   /* Allow for at least 31 digits without realloc.
      1 more than p_len is needed for the inf case.  */
-  enum { INITIAL_ALLOC_DIGITS = 31 };
+  गणना { INITIAL_ALLOC_DIGITS = 31 };
   idx_t inc_size = MAX (MAX (p_len + 1, b_len), INITIAL_ALLOC_DIGITS);
   /* Ensure we only increase by at most 1 digit at buffer boundaries.  */
   static_assert (SEQ_FAST_STEP_LIMIT_DIGITS < INITIAL_ALLOC_DIGITS - 1);
 
   /* Copy A (sans NUL) to end of new buffer.  */
-  char *p0 = xmalloc (inc_size);
-  char *endp = p0 + inc_size;
-  char *p = memcpy (endp - p_len, a, p_len);
+  वर्ण *p0 = xmalloc (inc_size);
+  वर्ण *endp = p0 + inc_size;
+  वर्ण *p = memcpy (endp - p_len, a, p_len);
 
   /* Reduce number of write calls which is seen to
      give a speed-up of more than 2x over naive stdio code
      when printing the first 10^9 integers.  */
-  char buf[BUFSIZ];
-  char *buf_end = buf + sizeof buf;
-  char *bufp = buf;
+  वर्ण buf[BUFSIZ];
+  वर्ण *buf_end = buf + परिमाण buf;
+  वर्ण *bufp = buf;
 
-  while (inf || cmp (p, endp - p, b, b_len) <= 0)
+  याव (inf || cmp (p, endp - p, b, b_len) <= 0)
     {
       /* Append number, flushing output buffer while the number's
          digits do not fit with room for a separator or terminator.  */
-      char *pp = p;
-      while (buf_end - bufp <= endp - pp)
+      वर्ण *pp = p;
+      याव (buf_end - bufp <= endp - pp)
         {
           memcpy (bufp, pp, buf_end - bufp);
           pp += buf_end - bufp;
-          if (full_write (STDOUT_FILENO, buf, sizeof buf) != sizeof buf)
+          सचे (full_write (STDOUT_FILENO, buf, परिमाण buf) != परिमाण buf)
             write_error ();
           bufp = buf;
         }
@@ -509,28 +509,28 @@ seq_fast (char const *a, char const *b, uintmax_t step)
       *bufp++ = *separator;
 
       /* Grow number buffer if needed for the inf case.  */
-      if (p == p0)
+      सचे (p == p0)
         {
-          char *new_p0 = xpalloc (NULL, &inc_size, 1, -1, 1);
+          वर्ण *new_p0 = xpalloc (रिक्त, &inc_size, 1, -1, 1);
           idx_t saved_p_len = endp - p;
           endp = new_p0 + inc_size;
           p = memcpy (endp - saved_p_len, p0, saved_p_len);
-          free (p0);
+          मुक्त (p0);
           p0 = new_p0;
         }
 
       /* Compute next number.  */
-      for (uintmax_t n_incr = step; n_incr; n_incr--)
+      अत्थाय (uintmax_t n_incr = step; n_incr; n_incr--)
         p -= incr_grows (p, endp);
     }
 
   /* Write the remaining buffered output with a terminator instead of
      a separator.  */
   idx_t remaining = bufp - buf;
-  if (remaining)
+  सचे (remaining)
     {
       bufp[-1] = *terminator;
-      if (full_write (STDOUT_FILENO, buf, remaining) != remaining)
+      सचे (full_write (STDOUT_FILENO, buf, remaining) != remaining)
         write_error ();
     }
 
@@ -539,18 +539,18 @@ seq_fast (char const *a, char const *b, uintmax_t step)
 
 /* Return true if S consists of at least one digit and no non-digits.  */
 ATTRIBUTE_PURE
-static bool
-all_digits_p (char const *s)
+स्थिर bool
+all_digits_p (वर्ण ध्रुव *s)
 {
   size_t n = strlen (s);
-  return c_isdigit (s[0]) && n == strspn (s, "0123456789");
+  पटिनिवत्त c_isdigit (s[0]) && n == strspn (s, "0123456789");
 }
 
-int
-main (int argc, char **argv)
+पूर्णाङ्क
+main (पूर्णाङ्क argc, वर्ण **argv)
 {
   /* The printf(3) format used for output.  */
-  char const *format_str = NULL;
+  वर्ण ध्रुव *format_str = रिक्त;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -563,68 +563,68 @@ main (int argc, char **argv)
   /* We have to handle negative numbers in the command line but this
      conflicts with the command line arguments.  So explicitly check first
      whether the next argument looks like a negative number.  */
-  while (optind < argc)
+  याव (optind < argc)
     {
-      int optc;
-      if (argv[optind][0] == '-'
+      पूर्णाङ्क optc;
+      सचे (argv[optind][0] == '-'
           && ((optc = argv[optind][1]) == '.' || c_isdigit (optc)))
         {
           /* means negative number */
-          break;
+          भङ्ग;
         }
 
-      optc = getopt_long (argc, argv, "+f:s:w", long_options, NULL);
-      if (optc == -1)
-        break;
+      optc = getopt_long (argc, argv, "+f:s:w", long_options, रिक्त);
+      सचे (optc == -1)
+        भङ्ग;
 
-      switch (optc)
+      विकल्प (optc)
         {
-        case 'f':
+        पक्ष 'f':
           format_str = optarg;
-          break;
+          भङ्ग;
 
-        case 's':
+        पक्ष 's':
           separator = optarg;
-          break;
+          भङ्ग;
 
-        case 'w':
+        पक्ष 'w':
           equal_width = true;
-          break;
+          भङ्ग;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        स्वभाव:
           usage (EXIT_FAILURE);
         }
     }
 
-  int n_args = argc - optind;
-  if (n_args < 1)
+  पूर्णाङ्क n_args = argc - optind;
+  सचे (n_args < 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
-  if (3 < n_args)
+  सचे (3 < n_args)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind + 3]));
       usage (EXIT_FAILURE);
     }
 
-  struct layout layout = { 0, 0 };
-  if (format_str)
+  संरचना layout layout = { 0, 0 };
+  सचे (format_str)
     format_str = long_double_format (format_str, &layout);
 
-  if (format_str != NULL && equal_width)
+  सचे (format_str != रिक्त && equal_width)
     {
       error (0, 0, _("format string may not be specified"
                      " when printing equal width strings"));
       usage (EXIT_FAILURE);
     }
 
-  char const *user_start = n_args == 1 ? "1" : argv[optind];
+  वर्ण ध्रुव *user_start = n_args == 1 ? "1" : argv[optind];
 
   /* If the following hold:
      - no format string, [FIXME: relax this, eventually]
@@ -635,35 +635,35 @@ main (int argc, char **argv)
      operating on arbitrarily large numbers.  */
   operand step = { 1, 1, 0 };
   bool fast_step_ok = false;
-  if (n_args != 3
+  सचे (n_args != 3
       || (all_digits_p (argv[optind + 1])
-          && xstrtold (argv[optind + 1], NULL, &step.value, cl_strtold)
-          && 0 < step.value && step.value <= SEQ_FAST_STEP_LIMIT))
+          && xstrtold (argv[optind + 1], रिक्त, &step.मानम्, cl_strtold)
+          && 0 < step.मानम् && step.मानम् <= SEQ_FAST_STEP_LIMIT))
     fast_step_ok = true;
 
-  if (all_digits_p (argv[optind])
+  सचे (all_digits_p (argv[optind])
       && (n_args == 1 || all_digits_p (argv[optind + 1]))
       && (n_args < 3 || (fast_step_ok
                          && all_digits_p (argv[optind + 2])))
       && !equal_width && !format_str && strlen (separator) == 1)
     {
-      char const *s1 = user_start;
-      char const *s2 = argv[optind + (n_args - 1)];
-      seq_fast (s1, s2, step.value);
+      वर्ण ध्रुव *s1 = user_start;
+      वर्ण ध्रुव *s2 = argv[optind + (n_args - 1)];
+      seq_fast (s1, s2, step.मानम्);
     }
 
   operand first = { 1, 1, 0 };
   operand last = scan_arg (argv[optind++]);
 
-  if (optind < argc)
+  सचे (optind < argc)
     {
       first = last;
       last = scan_arg (argv[optind++]);
 
-      if (optind < argc)
+      सचे (optind < argc)
         {
           step = last;
-          if (step.value == 0)
+          सचे (step.मानम् == 0)
             {
               error (0, 0, _("invalid Zero increment value: %s"),
                      quote (argv[optind - 1]));
@@ -676,29 +676,29 @@ main (int argc, char **argv)
 
   /* Try the fast method again, for integers of the form 1e1 etc.,
      or "inf" end value.  */
-  if (first.precision == 0 && step.precision == 0 && last.precision == 0
-      && isfinite (first.value) && 0 <= first.value && 0 <= last.value
-      && 0 < step.value && step.value <= SEQ_FAST_STEP_LIMIT
+  सचे (first.precision == 0 && step.precision == 0 && last.precision == 0
+      && isfinite (first.मानम्) && 0 <= first.मानम् && 0 <= last.मानम्
+      && 0 < step.मानम् && step.मानम् <= SEQ_FAST_STEP_LIMIT
       && !equal_width && !format_str && strlen (separator) == 1)
     {
-      char *s1 = (all_digits_p (user_start)
-                  ? xstrdup (user_start) : xasprintf ("%0.Lf", first.value));
+      वर्ण *s1 = (all_digits_p (user_start)
+                  ? xstrdup (user_start) : xasprintf ("%0.Lf", first.मानम्));
       /* Ensure "inf" is used.  */
-      char *s2 = (! isfinite (last.value)
-                  ? xstrdup ("inf") : xasprintf ("%0.Lf", last.value));
+      वर्ण *s2 = (! isfinite (last.मानम्)
+                  ? xstrdup ("inf") : xasprintf ("%0.Lf", last.मानम्));
 
-      if (*s1 != '-' && *s2 != '-')
-        seq_fast (s1, s2, step.value);
+      सचे (*s1 != '-' && *s2 != '-')
+        seq_fast (s1, s2, step.मानम्);
 
-      free (s1);
-      free (s2);
+      मुक्त (s1);
+      मुक्त (s2);
       /* Upon any failure, let the more general code deal with it.  */
     }
 
-  if (format_str == NULL)
+  सचे (format_str == रिक्त)
     format_str = get_default_format (first, step, last);
 
-  print_numbers (format_str, layout, first.value, step.value, last.value);
+  print_numbers (format_str, layout, first.मानम्, step.मानम्, last.मानम्);
 
   main_exit (EXIT_SUCCESS);
 }

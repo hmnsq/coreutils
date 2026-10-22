@@ -33,17 +33,17 @@
 
    David MacKenzie <djm@gnu.ai.mit.edu> */
 
-#include <config.h>
+#अन्तर्भाव <config.h>
 
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#अन्तर्भाव <stdio.h>
+#अन्तर्भाव <getopt.h>
+#अन्तर्भाव <sys/types.h>
 
-#include "system.h"
-#include "ioblksize.h"
-#include "mbbuf.h"
-#include "mcel.h"
-#include "expand-common.h"
+#अन्तर्भाव "system.h"
+#अन्तर्भाव "ioblksize.h"
+#अन्तर्भाव "mbbuf.h"
+#अन्तर्भाव "mcel.h"
+#अन्तर्भाव "expand-common.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "unexpand"
@@ -54,27 +54,27 @@
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+गणना
 {
   CONVERT_FIRST_ONLY_OPTION = CHAR_MAX + 1
 };
 
-static struct option const longopts[] =
+स्थिर संरचना option ध्रुव longopts[] =
 {
-  {"tabs", required_argument, NULL, 't'},
-  {"all", no_argument, NULL, 'a'},
-  {"first-only", no_argument, NULL, CONVERT_FIRST_ONLY_OPTION},
+  {"tabs", required_argument, रिक्त, 't'},
+  {"all", no_argument, रिक्त, 'a'},
+  {"first-only", no_argument, रिक्त, CONVERT_FIRST_ONLY_OPTION},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {रिक्त, 0, रिक्त, 0}
 };
 
-void
-usage (int status)
+शून्य
+usage (पूर्णाङ्क status)
 {
-  if (status != EXIT_SUCCESS)
+  सचे (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  अञ्ञथा
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE]...\n\
@@ -110,30 +110,30 @@ Convert blanks in each FILE to tabs, writing to standard output.\n\
 /* Change blanks to tabs, writing to stdout.
    Read each file in 'file_list', in order.  */
 
-static void
-unexpand (void)
+स्थिर शून्य
+unexpand (शून्य)
 {
   /* Input stream.  */
-  FILE *fp = next_file (NULL);
+  FILE *fp = next_file (रिक्त);
 
   /* The array of pending blanks.  In non-POSIX locales, blanks can
      include characters other than spaces, so the blanks must be
      stored, not merely counted.  */
-  char *pending_blank;
+  वर्ण *pending_blank;
 
-  if (!fp)
-    return;
+  सचे (!fp)
+    पटिनिवत्त;
 
-  static char line_in[IO_BUFSIZE];
+  स्थिर वर्ण पङ्क्तिः_in[IO_BUFSIZE];
   mbbuf_t mbbuf;
-  mbbuf_init (&mbbuf, line_in, sizeof line_in, fp);
+  mbbuf_init (&mbbuf, पङ्क्तिः_in, परिमाण पङ्क्तिः_in, fp);
 
   /* The worst case is a non-blank character, then one blank, then a
      tab stop, then MAX_COLUMN_WIDTH - 1 blanks, then a non-blank; so
      allocate MAX_COLUMN_WIDTH bytes to store the blanks.  */
   pending_blank = xinmalloc (max_column_width, MB_CUR_MAX);
 
-  while (true)
+  याव (true)
     {
       /* Input character, or EOF.  */
       mcel_t g;
@@ -168,56 +168,56 @@ unexpand (void)
 
       /* Convert a line of text.  */
 
-      do
+      करोहि
         {
-          while ((g = mbbuf_get_char (&mbbuf)).ch == MBBUF_EOF
+          याव ((g = mbbuf_get_char (&mbbuf)).ch == MBBUF_EOF
                  && (fp = next_file (fp)))
-            mbbuf_init (&mbbuf, line_in, sizeof line_in, fp);
+            mbbuf_init (&mbbuf, पङ्क्तिः_in, परिमाण पङ्क्तिः_in, fp);
 
-          if (convert)
+          सचे (convert)
             {
               bool blank = c32issep (g.ch);
 
-              if (blank)
+              सचे (blank)
                 {
                   bool last_tab;
 
                   next_tab_column = get_next_tab_column (column, &tab_index,
                                                          &last_tab);
 
-                  if (last_tab)
+                  सचे (last_tab)
                     convert = false;
 
-                  if (convert)
+                  सचे (convert)
                     {
-                      if (g.ch == '\t')
+                      सचे (g.ch == '\t')
                         {
                           column = next_tab_column;
 
-                          if (pending)
+                          सचे (pending)
                             pending_blank[0] = '\t';
                         }
-                      else
+                      अञ्ञथा
                         {
-                          int width = c32width (g.ch);
+                          पूर्णाङ्क width = c32width (g.ch);
                           column += width < 0 ? 1 : width;
 
-                          if (! (prev_blank && column >= next_tab_column))
+                          सचे (! (prev_blank && column >= next_tab_column))
                             {
                               /* It is not yet known whether the pending blanks
                                  will be replaced by tabs.  */
-                              if (column == next_tab_column)
+                              सचे (column == next_tab_column)
                                 one_blank_before_tab_stop = true;
                               memcpy (pending_blank + pending,
                                       mbbuf_char_offset (&mbbuf, g), g.len);
                               pending += g.len;
                               prev_blank = true;
-                              continue;
+                              अनुवर्त;
                             }
 
                           /* Replace the pending blanks by a tab or two.  */
                           g.len = 0;
-                          if (putc ('\t', stdout) < 0)
+                          सचे (putc ('\t', stdout) < 0)
                             write_error ();
                           pending_blank[0] = '\t';
                         }
@@ -227,7 +227,7 @@ unexpand (void)
                       pending = one_blank_before_tab_stop;
                     }
                 }
-              else if (g.ch == '\b')
+              अञ्ञथा सचे (g.ch == '\b')
                 {
                   /* Go back one column, and force recalculation of the
                      next tab stop.  */
@@ -235,47 +235,47 @@ unexpand (void)
                   next_tab_column = column;
                   tab_index -= !!tab_index;
                 }
-              else
+              अञ्ञथा
                 {
-                  int width = c32width (g.ch);
-                  if (ckd_add (&column, column, width < 0 ? 1 : width))
+                  पूर्णाङ्क width = c32width (g.ch);
+                  सचे (ckd_add (&column, column, width < 0 ? 1 : width))
                     error (EXIT_FAILURE, 0, _("input line is too long"));
                 }
 
-              if (pending)
+              सचे (pending)
                 {
-                  if (pending > 1 && one_blank_before_tab_stop)
+                  सचे (pending > 1 && one_blank_before_tab_stop)
                     pending_blank[0] = '\t';
-                  if (fwrite (pending_blank, 1, pending, stdout) != pending)
+                  सचे (fwrite (pending_blank, 1, pending, stdout) != pending)
                     write_error ();
                   pending = 0;
                   one_blank_before_tab_stop = false;
                 }
 
               prev_blank = blank;
-              convert &= convert_entire_line || blank;
+              convert &= convert_entire_पङ्क्तिः || blank;
             }
 
-          if (g.ch == MBBUF_EOF)
+          सचे (g.ch == MBBUF_EOF)
             {
-              free (pending_blank);
-              return;
+              मुक्त (pending_blank);
+              पटिनिवत्त;
             }
 
-          fwrite (mbbuf_char_offset (&mbbuf, g), sizeof (char), g.len, stdout);
-          if (ferror (stdout))
+          fwrite (mbbuf_char_offset (&mbbuf, g), परिमाण (वर्ण), g.len, stdout);
+          सचे (ferror (stdout))
             write_error ();
         }
-      while (g.ch != '\n');
+      याव (g.ch != '\n');
     }
 }
 
-int
-main (int argc, char **argv)
+पूर्णाङ्क
+main (पूर्णाङ्क argc, वर्ण **argv)
 {
   bool have_tabval = false;
   colno tabval IF_LINT ( = 0);
-  int c;
+  पूर्णाङ्क c;
 
   /* If true, cancel the effect of any -a (explicit or implicit in -t),
      so that only leading blanks will be considered.  */
@@ -289,55 +289,55 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((c = getopt_long (argc, argv, ",0123456789at:", longopts, NULL))
+  याव ((c = getopt_long (argc, argv, ",0123456789at:", longopts, रिक्त))
          != -1)
     {
-      switch (c)
+      विकल्प (c)
         {
-        case '?':
+        पक्ष '?':
           usage (EXIT_FAILURE);
-        case 'a':
-          convert_entire_line = true;
-          break;
-        case 't':
-          convert_entire_line = true;
+        पक्ष 'a':
+          convert_entire_पङ्क्तिः = true;
+          भङ्ग;
+        पक्ष 't':
+          convert_entire_पङ्क्तिः = true;
           parse_tab_stops (optarg);
-          break;
-        case CONVERT_FIRST_ONLY_OPTION:
+          भङ्ग;
+        पक्ष CONVERT_FIRST_ONLY_OPTION:
           convert_first_only = true;
-          break;
-        case ',':
-          if (have_tabval)
+          भङ्ग;
+        पक्ष ',':
+          सचे (have_tabval)
             add_tab_stop (tabval);
           have_tabval = false;
-          break;
+          भङ्ग;
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
-          if (!have_tabval)
+        स्वभाव:
+          सचे (!have_tabval)
             {
               tabval = 0;
               have_tabval = true;
             }
-          if (!DECIMAL_DIGIT_ACCUMULATE (tabval, c - '0'))
+          सचे (!DECIMAL_DIGIT_ACCUMULATE (tabval, c - '0'))
             error (EXIT_FAILURE, 0, _("tab stop is too large"));
-          break;
+          भङ्ग;
         }
     }
 
-  if (convert_first_only)
-    convert_entire_line = false;
+  सचे (convert_first_only)
+    convert_entire_पङ्क्तिः = false;
 
-  if (have_tabval)
+  सचे (have_tabval)
     add_tab_stop (tabval);
 
   finalize_tab_stops ();
 
-  set_file_list ((optind < argc) ? &argv[optind] : NULL);
+  set_file_list ((optind < argc) ? &argv[optind] : रिक्त);
 
   unexpand ();
 
   cleanup_file_list_stdin ();
 
-  return exit_status;
+  पटिनिवत्त exit_status;
 }

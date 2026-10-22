@@ -16,19 +16,19 @@
 
 /* Written by Daniel Walsh <dwalsh@redhat.com> */
 
-#include <config.h>
-#include <selinux/label.h>
-#include <selinux/context.h>
-#include <sys/types.h>
+#अन्तर्भाव <config.h>
+#अन्तर्भाव <selinux/label.h>
+#अन्तर्भाव <selinux/context.h>
+#अन्तर्भाव <sys/types.h>
 
-#include "system.h"
-#include "canonicalize.h"
-#include "xfts.h"
-#include "selinux.h"
+#अन्तर्भाव "system.h"
+#अन्तर्भाव "canonicalize.h"
+#अन्तर्भाव "xfts.h"
+#अन्तर्भाव "selinux.h"
 
-#if HAVE_SELINUX_LABEL_H
+#सचे HAVE_SELINUX_LABEL_H
 
-# if ! HAVE_MODE_TO_SECURITY_CLASS
+# सचे ! HAVE_MODE_TO_SECURITY_CLASS
 /*
   This function has been added to libselinux-2.1.12-5, but is here
   for support with older versions of SELinux
@@ -36,27 +36,27 @@
   Translates a mode into an Internal SELinux security_class definition.
   Returns 0 on failure, with errno set to EINVAL.
 */
-static security_class_t
+स्थिर security_class_t
 mode_to_security_class (mode_t m)
 {
 
-  if (S_ISREG (m))
-    return string_to_security_class ("file");
-  if (S_ISDIR (m))
-    return string_to_security_class ("dir");
-  if (S_ISCHR (m))
-    return string_to_security_class ("chr_file");
-  if (S_ISBLK (m))
-    return string_to_security_class ("blk_file");
-  if (S_ISFIFO (m))
-    return string_to_security_class ("fifo_file");
-  if (S_ISLNK (m))
-    return string_to_security_class ("lnk_file");
-  if (S_ISSOCK (m))
-    return string_to_security_class ("sock_file");
+  सचे (S_ISREG (m))
+    पटिनिवत्त string_to_security_class ("file");
+  सचे (S_ISDIR (m))
+    पटिनिवत्त string_to_security_class ("dir");
+  सचे (S_ISCHR (m))
+    पटिनिवत्त string_to_security_class ("chr_file");
+  सचे (S_ISBLK (m))
+    पटिनिवत्त string_to_security_class ("blk_file");
+  सचे (S_ISFIFO (m))
+    पटिनिवत्त string_to_security_class ("fifo_file");
+  सचे (S_ISLNK (m))
+    पटिनिवत्त string_to_security_class ("lnk_file");
+  सचे (S_ISSOCK (m))
+    पटिनिवत्त string_to_security_class ("sock_file");
 
   errno = EINVAL;
-  return 0;
+  पटिनिवत्त 0;
 }
 # endif
 
@@ -68,33 +68,33 @@ mode_to_security_class (mode_t m)
   Returns -1 on failure.  errno will be set appropriately.
 */
 
-static int
-computecon_raw (char const *path, mode_t mode, char **con)
+स्थिर पूर्णाङ्क
+computecon_raw (वर्ण ध्रुव *path, mode_t mode, वर्ण **con)
 {
-  char *scon_raw = NULL;
-  char *tcon_raw = NULL;
+  वर्ण *scon_raw = रिक्त;
+  वर्ण *tcon_raw = रिक्त;
   security_class_t tclass;
-  int rc = -1;
+  पूर्णाङ्क rc = -1;
 
-  char *dir = dir_name (path);
-  if (!dir)
-    goto quit;
-  if (getcon_raw (&scon_raw) < 0)
-    goto quit;
-  if (getfilecon_raw (dir, &tcon_raw) < 0)
-    goto quit;
+  वर्ण *dir = dir_name (path);
+  सचे (!dir)
+    गच्छ quit;
+  सचे (getcon_raw (&scon_raw) < 0)
+    गच्छ quit;
+  सचे (getfilecon_raw (dir, &tcon_raw) < 0)
+    गच्छ quit;
   tclass = mode_to_security_class (mode);
-  if (!tclass)
-    goto quit;
+  सचे (!tclass)
+    गच्छ quit;
   rc = security_compute_create_raw (scon_raw, tcon_raw, tclass, con);
 
  quit:;
-  int err = errno;
-  free (dir);
+  पूर्णाङ्क err = errno;
+  मुक्त (dir);
   freecon (scon_raw);
   freecon (tcon_raw);
   errno = err;
-  return rc;
+  पटिनिवत्त rc;
 }
 
 /*
@@ -106,63 +106,63 @@ computecon_raw (char const *path, mode_t mode, char **con)
 
   Returns -1 on failure.  errno will be set appropriately.
 */
-int
-defaultcon (struct selabel_handle *selabel_handle,
-            char const *path, mode_t mode)
+पूर्णाङ्क
+defaultcon (संरचना selabel_handle *selabel_handle,
+            वर्ण ध्रुव *path, mode_t mode)
 {
-  int rc = -1;
-  char *scon_raw = NULL;
-  char *tcon_raw = NULL;
-  context_t scontext = NULL, tcontext = NULL;
-  char const *contype;
-  char const *constr;
-  char *newpath = NULL;
+  पूर्णाङ्क rc = -1;
+  वर्ण *scon_raw = रिक्त;
+  वर्ण *tcon_raw = रिक्त;
+  context_t scontext = रिक्त, tcontext = रिक्त;
+  वर्ण ध्रुव *contype;
+  वर्ण ध्रुव *constr;
+  वर्ण *newpath = रिक्त;
 
-  if (! IS_ABSOLUTE_FILE_NAME (path))
+  सचे (! IS_ABSOLUTE_FILE_NAME (path))
     {
       /* Generate absolute name as required by subsequent selabel_lookup.  */
       newpath = canonicalize_filename_mode (path, CAN_MISSING);
-      if (! newpath)
-        goto quit;
+      सचे (! newpath)
+        गच्छ quit;
       path = newpath;
     }
 
-  if (selabel_lookup_raw (selabel_handle, &scon_raw, path, mode) < 0)
+  सचे (selabel_lookup_raw (selabel_handle, &scon_raw, path, mode) < 0)
     {
       /* "No such file or directory" is a confusing error,
          when processing files, when in fact it was the
          associated default context that was not found.
          Therefore map the error to something more appropriate
          to the context in which we're using selabel_lookup().  */
-      if (errno == ENOENT)
+      सचे (errno == ENOENT)
         errno = ENODATA;
-      goto quit;
+      गच्छ quit;
     }
-  if (computecon_raw (path, mode, &tcon_raw) < 0)
-    goto quit;
-  if (!(scontext = context_new (scon_raw)))
-    goto quit;
-  if (!(tcontext = context_new (tcon_raw)))
-    goto quit;
+  सचे (computecon_raw (path, mode, &tcon_raw) < 0)
+    गच्छ quit;
+  सचे (!(scontext = context_new (scon_raw)))
+    गच्छ quit;
+  सचे (!(tcontext = context_new (tcon_raw)))
+    गच्छ quit;
 
-  if (!(contype = context_type_get (scontext)))
-    goto quit;
-  if (context_type_set (tcontext, contype))
-    goto quit;
-  if (!(constr = context_str (tcontext)))
-    goto quit;
+  सचे (!(contype = context_type_get (scontext)))
+    गच्छ quit;
+  सचे (context_type_set (tcontext, contype))
+    गच्छ quit;
+  सचे (!(constr = context_str (tcontext)))
+    गच्छ quit;
 
   rc = setfscreatecon_raw (constr);
 
  quit:;
-  int err = errno;
+  पूर्णाङ्क err = errno;
   context_free (scontext);
   context_free (tcontext);
   freecon (scon_raw);
   freecon (tcon_raw);
-  free (newpath);
+  मुक्त (newpath);
   errno = err;
-  return rc;
+  पटिनिवत्त rc;
 }
 
 /*
@@ -174,99 +174,99 @@ defaultcon (struct selabel_handle *selabel_handle,
 
   Returns -1 on failure.  errno will be set appropriately.
 */
-static int
-restorecon_private (struct selabel_handle *selabel_handle, char const *path)
+स्थिर पूर्णाङ्क
+restorecon_private (संरचना selabel_handle *selabel_handle, वर्ण ध्रुव *path)
 {
-  int rc = -1;
-  struct stat sb;
-  char *scon_raw = NULL;
-  char *tcon_raw = NULL;
-  context_t scontext = NULL, tcontext = NULL;
-  char const *contype;
-  char const *constr;
-  int fd;
+  पूर्णाङ्क rc = -1;
+  संरचना stat sb;
+  वर्ण *scon_raw = रिक्त;
+  वर्ण *tcon_raw = रिक्त;
+  context_t scontext = रिक्त, tcontext = रिक्त;
+  वर्ण ध्रुव *contype;
+  वर्ण ध्रुव *constr;
+  पूर्णाङ्क fd;
 
-  if (!selabel_handle)
+  सचे (!selabel_handle)
     {
-      if (getfscreatecon_raw (&tcon_raw) < 0)
-        return rc;
-      if (!tcon_raw)
+      सचे (getfscreatecon_raw (&tcon_raw) < 0)
+        पटिनिवत्त rc;
+      सचे (!tcon_raw)
         {
           errno = ENODATA;
-          return rc;
+          पटिनिवत्त rc;
         }
       rc = lsetfilecon_raw (path, tcon_raw);
-      int err = errno;
+      पूर्णाङ्क err = errno;
       freecon (tcon_raw);
       errno = err;
-      return rc;
+      पटिनिवत्त rc;
     }
 
   fd = open (path, O_RDONLY | O_NOFOLLOW);
-  if (fd == -1 && (errno != ELOOP))
-    goto quit;
+  सचे (fd == -1 && (errno != ELOOP))
+    गच्छ quit;
 
-  if (fd != -1)
+  सचे (fd != -1)
     {
-      if (fstat (fd, &sb) < 0)
-        goto quit;
+      सचे (fstat (fd, &sb) < 0)
+        गच्छ quit;
     }
-  else
+  अञ्ञथा
     {
-      if (lstat (path, &sb) < 0)
-        goto quit;
+      सचे (lstat (path, &sb) < 0)
+        गच्छ quit;
     }
 
-  if (selabel_lookup_raw (selabel_handle, &scon_raw, path, sb.st_mode) < 0)
+  सचे (selabel_lookup_raw (selabel_handle, &scon_raw, path, sb.st_mode) < 0)
     {
       /* "No such file or directory" is a confusing error,
          when processing files, when in fact it was the
          associated default context that was not found.
          Therefore map the error to something more appropriate
          to the context in which we're using selabel_lookup.  */
-      if (errno == ENOENT)
+      सचे (errno == ENOENT)
         errno = ENODATA;
-      goto quit;
+      गच्छ quit;
     }
-  if (!(scontext = context_new (scon_raw)))
-    goto quit;
+  सचे (!(scontext = context_new (scon_raw)))
+    गच्छ quit;
 
-  if (fd != -1)
+  सचे (fd != -1)
     {
-      if (fgetfilecon_raw (fd, &tcon_raw) < 0)
-        goto quit;
+      सचे (fgetfilecon_raw (fd, &tcon_raw) < 0)
+        गच्छ quit;
     }
-  else
+  अञ्ञथा
     {
-      if (lgetfilecon_raw (path, &tcon_raw) < 0)
-        goto quit;
+      सचे (lgetfilecon_raw (path, &tcon_raw) < 0)
+        गच्छ quit;
     }
 
-  if (!(tcontext = context_new (tcon_raw)))
-    goto quit;
+  सचे (!(tcontext = context_new (tcon_raw)))
+    गच्छ quit;
 
-  if (!(contype = context_type_get (scontext)))
-    goto quit;
-  if (context_type_set (tcontext, contype))
-    goto quit;
-  if (!(constr = context_str (tcontext)))
-    goto quit;
+  सचे (!(contype = context_type_get (scontext)))
+    गच्छ quit;
+  सचे (context_type_set (tcontext, contype))
+    गच्छ quit;
+  सचे (!(constr = context_str (tcontext)))
+    गच्छ quit;
 
-  if (fd != -1)
+  सचे (fd != -1)
     rc = fsetfilecon_raw (fd, constr);
-  else
+  अञ्ञथा
     rc = lsetfilecon_raw (path, constr);
 
  quit:;
-  int err = errno;
-  if (fd != -1)
+  पूर्णाङ्क err = errno;
+  सचे (fd != -1)
     close (fd);
   context_free (scontext);
   context_free (tcontext);
   freecon (scon_raw);
   freecon (tcon_raw);
   errno = err;
-  return rc;
+  पटिनिवत्त rc;
 }
 
 /*
@@ -282,46 +282,46 @@ restorecon_private (struct selabel_handle *selabel_handle, char const *path)
   Return false on failure.  errno will be set appropriately.
 */
 bool
-restorecon (struct selabel_handle *selabel_handle,
-            char const *path, bool recurse)
+restorecon (संरचना selabel_handle *selabel_handle,
+            वर्ण ध्रुव *path, bool recurse)
 {
-  char *newpath = NULL;
+  वर्ण *newpath = रिक्त;
 
-  if (! IS_ABSOLUTE_FILE_NAME (path))
+  सचे (! IS_ABSOLUTE_FILE_NAME (path))
     {
       /* Generate absolute name as required by subsequent selabel_lookup.
          When RECURSE, this also generates absolute names in the
          fts entries, which may be quicker to process in any case.  */
       newpath = canonicalize_filename_mode (path, CAN_MISSING);
-      if (! newpath)
-        return false;
+      सचे (! newpath)
+        पटिनिवत्त false;
       path = newpath;
     }
 
-  if (! recurse)
+  सचे (! recurse)
     {
       bool ok = restorecon_private (selabel_handle, path) != -1;
-      int err = errno;
-      free (newpath);
+      पूर्णाङ्क err = errno;
+      मुक्त (newpath);
       errno = err;
-      return ok;
+      पटिनिवत्त ok;
     }
 
-  char const *ftspath[2] = { path, NULL };
-  FTS *fts = xfts_open ((char *const *) ftspath, FTS_PHYSICAL, NULL);
+  वर्ण ध्रुव *ftspath[2] = { path, रिक्त };
+  FTS *fts = xfts_open ((वर्ण *ध्रुव *) ftspath, FTS_PHYSICAL, रिक्त);
 
-  int err = 0;
-  for (FTSENT *ent; (ent = fts_read (fts)); )
-    if (restorecon_private (selabel_handle, fts->fts_path) < 0)
+  पूर्णाङ्क err = 0;
+  अत्थाय (FTSENT *ent; (ent = fts_read (fts)); )
+    सचे (restorecon_private (selabel_handle, fts->fts_path) < 0)
       err = errno;
 
-  if (errno != 0)
+  सचे (errno != 0)
     err = errno;
 
-  if (fts_close (fts) != 0)
+  सचे (fts_close (fts) != 0)
     err = errno;
 
-  free (newpath);
-  return !err;
+  मुक्त (newpath);
+  पटिनिवत्त !err;
 }
 #endif

@@ -14,25 +14,25 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
+#अन्तर्भाव <config.h>
+#अन्तर्भाव <stdio.h>
+#अन्तर्भाव <sys/types.h>
 
-#include "system.h"
-#include "long-options.h"
-#include "quote.h"
+#अन्तर्भाव "system.h"
+#अन्तर्भाव "long-options.h"
+#अन्तर्भाव "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "logname"
 
 #define AUTHORS proper_name ("David MacKenzie")
 
-void
-usage (int status)
+शून्य
+usage (पूर्णाङ्क status)
 {
-  if (status != EXIT_SUCCESS)
+  सचे (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  अञ्ञथा
     {
       printf (_("Usage: %s [OPTION]\n"), program_name);
       fputs (_("\
@@ -46,8 +46,8 @@ Print the user's login name.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+पूर्णाङ्क
+main (पूर्णाङ्क argc, वर्ण **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -59,9 +59,9 @@ main (int argc, char **argv)
 
   parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
                                    Version, true, usage, AUTHORS,
-                                   (char const *) NULL);
+                                   (वर्ण ध्रुव *) रिक्त);
 
-  if (optind < argc)
+  सचे (optind < argc)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind]));
       usage (EXIT_FAILURE);
@@ -69,10 +69,10 @@ main (int argc, char **argv)
 
   /* POSIX requires using getlogin (or equivalent code) and prohibits
      using a fallback technique.  */
-  char const *cp = getlogin ();
-  if (! cp)
+  वर्ण ध्रुव *cp = getlogin ();
+  सचे (! cp)
     error (EXIT_FAILURE, 0, _("no login name"));
 
   puts (cp);
-  return EXIT_SUCCESS;
+  पटिनिवत्त EXIT_SUCCESS;
 }
