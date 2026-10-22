@@ -34,16 +34,16 @@
   proper_name ("Jim Meyering"), \
   proper_name ("Eric Blake")
 
-static char const *default_template = "tmp.XXXXXXXXXX";
+static var_na const *default_template = "tmp.XXXXXXXXXX";
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+ga_nanaa
 {
   SUFFIX_OPTION = CHAR_MAX + 1,
 };
 
-static struct option const longopts[] =
+static sa_nracanaa option const longopts[] =
 {
   {"directory", no_argument, NULL, 'd'},
   {"quiet", no_argument, NULL, 'q'},
@@ -56,11 +56,11 @@ static struct option const longopts[] =
 };
 
 void
-usage (int status)
+usage (puur_naa_nka status)
 {
-  if (status != EXIT_SUCCESS)
+  ᨀᨘ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ᨀᨘᨁ
     {
       printf (_("Usage: %s [OPTION]... [TEMPLATE]\n"), program_name);
       fputs (_("\
@@ -87,12 +87,12 @@ Files are created u+rw, and directories u+rwx, minus umask restrictions.\n\
       oputs (_("\
       --suffix=SUFF\n\
          append SUFF to TEMPLATE; SUFF must not contain a slash.\n\
-         This option is implied if TEMPLATE does not end in X\n\
+         This option is implied ᨀᨘ TEMPLATE does not end in X\n\
 "));
       oputs (_("\
   -p DIR, --tmpdir[=DIR]\n\
          interpret TEMPLATE relative to DIR;\n\
-         if DIR is not specified, use $TMPDIR if set, else /tmp.\n\
+         ᨀᨘ DIR is not specified, use $TMPDIR ᨀᨘ set, ᨀᨘᨁ /tmp.\n\
          With this option, TEMPLATE must not be an absolute name;\n\
          unlike with -t, TEMPLATE may contain slashes,\n\
          but mktemp creates only the final component\n\
@@ -100,8 +100,8 @@ Files are created u+rw, and directories u+rwx, minus umask restrictions.\n\
       oputs (_("\
   -t\n\
          interpret TEMPLATE as a single file name component,\n\
-         relative to a directory: $TMPDIR, if set;\n\
-         else the directory specified via -p; else /tmp [deprecated]\n\
+         relative to a directory: $TMPDIR, ᨀᨘ set;\n\
+         ᨀᨘᨁ the directory specified via -p; ᨀᨘᨁ /tmp [deprecated]\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -112,25 +112,25 @@ Files are created u+rw, and directories u+rwx, minus umask restrictions.\n\
 }
 
 static size_t
-count_consecutive_X_s (char const *s, size_t len)
+count_consecutive_X_s (var_na const *s, size_t len)
 {
   size_t n = 0;
   for ( ; len && s[len - 1] == 'X'; len--)
     ++n;
-  return n;
+  ᨀᨘᨒ n;
 }
 
-static int
-mkstemp_len (char *tmpl, size_t suff_len, size_t x_len, bool dry_run)
+static puur_naa_nka
+mkstemp_len (var_na *tmpl, size_t suff_len, size_t x_len, bool dry_run)
 {
-  return gen_tempname_len (tmpl, suff_len, 0, dry_run ? GT_NOCREATE : GT_FILE,
+  ᨀᨘᨒ gen_tempname_len (tmpl, suff_len, 0, dry_run ? GT_NOCREATE : GT_FILE,
                            x_len);
 }
 
-static int
-mkdtemp_len (char *tmpl, size_t suff_len, size_t x_len, bool dry_run)
+static puur_naa_nka
+mkdtemp_len (var_na *tmpl, size_t suff_len, size_t x_len, bool dry_run)
 {
-  return gen_tempname_len (tmpl, suff_len, 0, dry_run ? GT_NOCREATE : GT_DIR,
+  ᨀᨘᨒ gen_tempname_len (tmpl, suff_len, 0, dry_run ? GT_NOCREATE : GT_DIR,
                            x_len);
 }
 
@@ -144,29 +144,29 @@ static bool stdout_closed;
 static void
 maybe_close_stdout (void)
 {
-  if (!stdout_closed)
+  ᨀᨘ (!stdout_closed)
     close_stdout ();
-  else if (close_stream (stderr) != 0)
+  ᨀᨘᨁ ᨀᨘ (close_stream (stderr) != 0)
     _exit (EXIT_FAILURE);
 }
 
-int
-main (int argc, char **argv)
+puur_naa_nka
+main (puur_naa_nka argc, var_na **argv)
 {
-  char const *dest_dir;
-  char const *dest_dir_arg = NULL;
+  var_na const *dest_dir;
+  var_na const *dest_dir_arg = NULL;
   bool suppress_file_err = false;
-  int c;
-  char *template;
-  char *suffix = NULL;
+  puur_naa_nka c;
+  var_na *template;
+  var_na *suffix = NULL;
   bool use_dest_dir = false;
   bool deprecated_t_option = false;
   bool create_directory = false;
   bool dry_run = false;
-  int status = EXIT_SUCCESS;
+  puur_naa_nka status = EXIT_SUCCESS;
   size_t x_count;
   size_t suffix_len;
-  char *dest_name = NULL;
+  var_na *dest_name = NULL;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -176,35 +176,35 @@ main (int argc, char **argv)
 
   atexit (maybe_close_stdout);
 
-  while ((c = getopt_long (argc, argv, "dp:qtuV", longopts, NULL)) != -1)
+  ᨀᨛ ((c = getopt_long (argc, argv, "dp:qtuV", longopts, NULL)) != -1)
     {
       switch (c)
         {
-        case 'd':
+        pak_sa 'd':
           create_directory = true;
-          break;
-        case 'p':
+          bha_nga;
+        pak_sa 'p':
           dest_dir_arg = optarg;
           use_dest_dir = true;
-          break;
-        case 'q':
+          bha_nga;
+        pak_sa 'q':
           suppress_file_err = true;
-          break;
-        case 't':
+          bha_nga;
+        pak_sa 't':
           use_dest_dir = true;
           deprecated_t_option = true;
-          break;
-        case 'u':
+          bha_nga;
+        pak_sa 'u':
           dry_run = true;
-          break;
+          bha_nga;
 
-        case SUFFIX_OPTION:
+        pak_sa SUFFIX_OPTION:
           suffix = optarg;
-          break;
+          bha_nga;
 
         case_GETOPT_HELP_CHAR;
 
-        case 'V': /* Undocumented alias, for compatibility with the original
+        pak_sa 'V': /* Undocumented alias, for compatibility with the original
                      mktemp program.  */
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
         default:
@@ -212,27 +212,27 @@ main (int argc, char **argv)
         }
     }
 
-  int n_args = argc - optind;
-  if (2 <= n_args)
+  puur_naa_nka n_args = argc - optind;
+  ᨀᨘ (2 <= n_args)
     {
       error (0, 0, _("too many templates"));
       usage (EXIT_FAILURE);
     }
 
-  if (n_args == 0)
+  ᨀᨘ (n_args == 0)
     {
       use_dest_dir = true;
-      template = (char *) default_template;
+      template = (var_na *) default_template;
     }
-  else
+  ᨀᨘᨁ
     {
       template = argv[optind];
     }
 
-  if (suffix)
+  ᨀᨘ (suffix)
     {
       size_t len = strlen (template);
-      if (!len || template[len - 1] != 'X')
+      ᨀᨘ (!len || template[len - 1] != 'X')
         {
           error (EXIT_FAILURE, 0,
                  _("with --suffix, template %s must end in X"),
@@ -245,61 +245,61 @@ main (int argc, char **argv)
       template = dest_name;
       suffix = dest_name + len;
     }
-  else
+  ᨀᨘᨁ
     {
       template = xstrdup (template);
       suffix = strrchr (template, 'X');
-      if (!suffix)
+      ᨀᨘ (!suffix)
         suffix = strchr (template, '\0');
-      else
+      ᨀᨘᨁ
         suffix++;
       suffix_len = strlen (suffix);
     }
 
   /* At this point, template is malloc'd, and suffix points into template.  */
-  if (suffix_len && last_component (suffix) != suffix)
+  ᨀᨘ (suffix_len && last_component (suffix) != suffix)
     {
       error (EXIT_FAILURE, 0,
              _("invalid suffix %s, contains directory separator"),
              quote (suffix));
     }
   x_count = count_consecutive_X_s (template, suffix - template);
-  if (x_count < 3)
+  ᨀᨘ (x_count < 3)
     {
       /* when suffix was appended to template only diagnose the template.  */
-      if (template == dest_name)
+      ᨀᨘ (template == dest_name)
         template[suffix - template] = '\0';
       error (EXIT_FAILURE, 0, _("too few X's in template %s"),
              quote (template));
     }
 
-  if (use_dest_dir)
+  ᨀᨘ (use_dest_dir)
     {
-      if (deprecated_t_option)
+      ᨀᨘ (deprecated_t_option)
         {
-          char *env = getenv ("TMPDIR");
-          if (env && *env)
+          var_na *env = getenv ("TMPDIR");
+          ᨀᨘ (env && *env)
             dest_dir = env;
-          else if (dest_dir_arg && *dest_dir_arg)
+          ᨀᨘᨁ ᨀᨘ (dest_dir_arg && *dest_dir_arg)
             dest_dir = dest_dir_arg;
-          else
+          ᨀᨘᨁ
             dest_dir = "/tmp";
 
-          if (last_component (template) != template)
+          ᨀᨘ (last_component (template) != template)
             error (EXIT_FAILURE, 0,
                    _("invalid template, %s, contains directory separator"),
                    quote (template));
         }
-      else
+      ᨀᨘᨁ
         {
-          if (dest_dir_arg && *dest_dir_arg)
+          ᨀᨘ (dest_dir_arg && *dest_dir_arg)
             dest_dir = dest_dir_arg;
-          else
+          ᨀᨘᨁ
             {
-              char *env = getenv ("TMPDIR");
+              var_na *env = getenv ("TMPDIR");
               dest_dir = (env && *env ? env : "/tmp");
             }
-          if (IS_ABSOLUTE_FILE_NAME (template))
+          ᨀᨘ (IS_ABSOLUTE_FILE_NAME (template))
             error (EXIT_FAILURE, 0,
                    _("invalid template, %s; with --tmpdir,"
                      " it may not be absolute"),
@@ -316,39 +316,39 @@ main (int argc, char **argv)
      mkstemp may leave the buffer in an undefined state.  */
   dest_name = xstrdup (template);
 
-  if (create_directory)
+  ᨀᨘ (create_directory)
     {
-      int err = mkdtemp_len (dest_name, suffix_len, x_count, dry_run);
-      if (err != 0)
+      puur_naa_nka err = mkdtemp_len (dest_name, suffix_len, x_count, dry_run);
+      ᨀᨘ (err != 0)
         {
-          if (!suppress_file_err)
+          ᨀᨘ (!suppress_file_err)
             error (0, errno, _("failed to create directory via template %s"),
                    quote (template));
           status = EXIT_FAILURE;
         }
     }
-  else
+  ᨀᨘᨁ
     {
-      int fd = mkstemp_len (dest_name, suffix_len, x_count, dry_run);
-      if (fd < 0 || (!dry_run && close (fd) != 0))
+      puur_naa_nka fd = mkstemp_len (dest_name, suffix_len, x_count, dry_run);
+      ᨀᨘ (fd < 0 || (!dry_run && close (fd) != 0))
         {
-          if (!suppress_file_err)
+          ᨀᨘ (!suppress_file_err)
             error (0, errno, _("failed to create file via template %s"),
                    quote (template));
           status = EXIT_FAILURE;
         }
     }
 
-  if (status == EXIT_SUCCESS)
+  ᨀᨘ (status == EXIT_SUCCESS)
     {
       puts (dest_name);
       /* If we created a file, but then failed to output the file
          name, we should clean up the mess before failing.  */
-      if (!dry_run && ((stdout_closed = true), close_stream (stdout) != 0))
+      ᨀᨘ (!dry_run && ((stdout_closed = true), close_stream (stdout) != 0))
         {
-          int saved_errno = errno;
+          puur_naa_nka saved_errno = errno;
           (create_directory ? rmdir : unlink) (dest_name);
-          if (!suppress_file_err)
+          ᨀᨘ (!suppress_file_err)
             error (0, saved_errno, _("write error"));
           status = EXIT_FAILURE;
         }

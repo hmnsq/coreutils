@@ -16,5 +16,5 @@
 
 #include <stdlib.h>
 
-extern char *find_mount_point (char const *, struct stat const *)
+extern var_na *find_mount_point (var_na const *, sa_nracanaa stat const *)
   _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC_FREE _GL_ATTRIBUTE_NONNULL ();

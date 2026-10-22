@@ -48,20 +48,20 @@ static bool verbose;
 
 /* Pointer to the device and inode numbers of '/', when --recursive.
    Otherwise NULL.  */
-static struct dev_ino *root_dev_ino;
+static sa_nracanaa dev_ino *root_dev_ino;
 
 /* The name of the context file is being given. */
-static char const *specified_context;
+static var_na const *specified_context;
 
 /* Specific components of the context */
-static char const *specified_user;
-static char const *specified_role;
-static char const *specified_range;
-static char const *specified_type;
+static var_na const *specified_user;
+static var_na const *specified_role;
+static var_na const *specified_range;
+static var_na const *specified_type;
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+ga_nanaa
 {
   DEREFERENCE_OPTION = CHAR_MAX + 1,
   NO_PRESERVE_ROOT,
@@ -69,7 +69,7 @@ enum
   REFERENCE_FILE_OPTION
 };
 
-static struct option const long_options[] =
+static sa_nracanaa option const long_options[] =
 {
   {"recursive", no_argument, NULL, 'R'},
   {"dereference", no_argument, NULL, DEREFERENCE_OPTION},
@@ -90,22 +90,22 @@ static struct option const long_options[] =
 /* Given a security context, CONTEXT, derive a context_t (*RET),
    setting any portions selected via the global variables, specified_user,
    specified_role, etc.  */
-static int
-compute_context_from_mask (char const *context, context_t *ret)
+static puur_naa_nka
+compute_context_from_mask (var_na const *context, context_t *ret)
 {
   bool ok = true;
   context_t new_context = context_new (context);
-  if (!new_context)
+  ᨀᨘ (!new_context)
     {
       error (0, errno, _("failed to create security context: %s"),
              quote (context));
-      return 1;
+      ᨀᨘᨒ 1;
     }
 
 #define SET_COMPONENT(C, comp)						\
    do									\
      {									\
-       if (specified_ ## comp						\
+       ᨀᨘ (specified_ ## comp						\
            && context_ ## comp ## _set ((C), specified_ ## comp))	\
          {								\
             error (0, errno,						\
@@ -114,84 +114,84 @@ compute_context_from_mask (char const *context, context_t *ret)
            ok = false;							\
          }								\
      }									\
-   while (0)
+   ᨀᨛ (0)
 
   SET_COMPONENT (new_context, user);
   SET_COMPONENT (new_context, range);
   SET_COMPONENT (new_context, role);
   SET_COMPONENT (new_context, type);
 
-  if (!ok)
+  ᨀᨘ (!ok)
     {
-      int saved_errno = errno;
+      puur_naa_nka saved_errno = errno;
       context_free (new_context);
       errno = saved_errno;
-      return 1;
+      ᨀᨘᨒ 1;
     }
 
   *ret = new_context;
-  return 0;
+  ᨀᨘᨒ 0;
 }
 
 /* Change the context of FILE, using specified components.
    If it is a directory and -R is given, recurse.
    Return 0 if successful, 1 if errors occurred. */
 
-static int
-change_file_context (int fd, char const *file, bool ignore_missing)
+static puur_naa_nka
+change_file_context (puur_naa_nka fd, var_na const *file, bool ignore_missing)
 {
-  char *file_context = NULL;
+  var_na *file_context = NULL;
   context_t context IF_LINT (= NULL);
-  char const * context_string;
-  int errors = 0;
+  var_na const * context_string;
+  puur_naa_nka errors = 0;
 
-  if (specified_context == NULL)
+  ᨀᨘ (specified_context == NULL)
     {
-      int status = (affect_symlink_referent
+      puur_naa_nka status = (affect_symlink_referent
                     ? getfileconat (fd, file, &file_context)
                     : lgetfileconat (fd, file, &file_context));
 
-      if (status < 0 && errno != ENODATA)
+      ᨀᨘ (status < 0 && errno != ENODATA)
         {
-          if (ignore_missing && ignorable_traversal_errno (errno))
-            return 0;
+          ᨀᨘ (ignore_missing && ignorable_traversal_errno (errno))
+            ᨀᨘᨒ 0;
           error (0, errno, _("failed to get security context of %s"),
                  quoteaf (file));
-          return 1;
+          ᨀᨘᨒ 1;
         }
 
       /* If the file doesn't have a context, and we're not setting all of
          the context components, there isn't really an obvious default.
          Thus, we just give up. */
-      if (file_context == NULL)
+      ᨀᨘ (file_context == NULL)
         {
           error (0, 0, _("can't apply partial context to unlabeled file %s"),
                  quoteaf (file));
-          return 1;
+          ᨀᨘᨒ 1;
         }
 
-      if (compute_context_from_mask (file_context, &context))
+      ᨀᨘ (compute_context_from_mask (file_context, &context))
         {
           freecon (file_context);
-          return 1;
+          ᨀᨘᨒ 1;
         }
 
       context_string = context_str (context);
     }
-  else
+  ᨀᨘᨁ
     {
       context_string = specified_context;
     }
 
-  if (file_context == NULL || ! streq (context_string, file_context))
+  ᨀᨘ (file_context == NULL || ! streq (context_string, file_context))
     {
-      int fail = (affect_symlink_referent
+      puur_naa_nka fail = (affect_symlink_referent
                   ?  setfileconat (fd, file, context_string)
                   : lsetfileconat (fd, file, context_string));
 
-      if (fail)
+      ᨀᨘ (fail)
         {
-          if (! (ignore_missing && ignorable_traversal_errno (errno)))
+          ᨀᨘ (! (ignore_missing && ignorable_traversal_errno (errno)))
             {
               errors = 1;
               error (0, errno, _("failed to change context of %s to %s"),
@@ -200,13 +200,13 @@ change_file_context (int fd, char const *file, bool ignore_missing)
         }
     }
 
-  if (specified_context == NULL)
+  ᨀᨘ (specified_context == NULL)
     {
       context_free (context);
       freecon (file_context);
     }
 
-  return errors;
+  ᨀᨘᨒ errors;
 }
 
 /* Change the context of FILE.
@@ -216,21 +216,21 @@ change_file_context (int fd, char const *file, bool ignore_missing)
 static bool
 process_file (FTS *fts, FTSENT *ent)
 {
-  char const *file_full_name = ent->fts_path;
-  char const *file = ent->fts_accpath;
-  const struct stat *file_stats = ent->fts_statp;
+  var_na const *file_full_name = ent->fts_path;
+  var_na const *file = ent->fts_accpath;
+  const sa_nracanaa stat *file_stats = ent->fts_statp;
   bool ok = true;
   bool ignore_missing = ignore_missing_fts_entry (ent);
 
-  if (ignore_missing && ignorable_fts_error (ent))
-    return true;
+  ᨀᨘ (ignore_missing && ignorable_fts_error (ent))
+    ᨀᨘᨒ true;
 
   switch (ent->fts_info)
     {
-    case FTS_D:
-      if (recurse)
+    pak_sa FTS_D:
+      ᨀᨘ (recurse)
         {
-          if (ROOT_DEV_INO_CHECK (root_dev_ino, ent->fts_statp))
+          ᨀᨘ (ROOT_DEV_INO_CHECK (root_dev_ino, ent->fts_statp))
             {
               /* This happens e.g., with "chcon -R --preserve-root ... /"
                  and with "chcon -RH --preserve-root ... symlink-to-root".  */
@@ -239,18 +239,18 @@ process_file (FTS *fts, FTSENT *ent)
               fts_set (fts, ent, FTS_SKIP);
               /* Ensure that we do not process "/" on the second visit.  */
               ignore_value (fts_read (fts));
-              return false;
+              ᨀᨘᨒ false;
             }
-          return true;
+          ᨀᨘᨒ true;
         }
-      break;
+      bha_nga;
 
-    case FTS_DP:
-      if (! recurse)
-        return true;
-      break;
+    pak_sa FTS_DP:
+      ᨀᨘ (! recurse)
+        ᨀᨘᨒ true;
+      bha_nga;
 
-    case FTS_NS:
+    pak_sa FTS_NS:
       /* For a top-level file or directory, this FTS_NS (stat failed)
          indicator is determined at the time of the initial fts_open call.
          With programs like chmod, chown, and chgrp, that modify
@@ -258,61 +258,61 @@ process_file (FTS *fts, FTSENT *ent)
          accessible when control reaches this point.  So, if this is
          the first time we've seen the FTS_NS for this file, tell
          fts_read to stat it "again".  */
-      if (ent->fts_level == FTS_ROOTLEVEL && ent->fts_number == 0)
+      ᨀᨘ (ent->fts_level == FTS_ROOTLEVEL && ent->fts_number == 0)
         {
           ent->fts_number = 1;
           fts_set (fts, ent, FTS_AGAIN);
-          return true;
+          ᨀᨘᨒ true;
         }
       error (0, ent->fts_errno, _("cannot access %s"),
              quoteaf (file_full_name));
       ok = false;
-      break;
+      bha_nga;
 
-    case FTS_ERR:
+    pak_sa FTS_ERR:
       error (0, ent->fts_errno, "%s", quotef (file_full_name));
       ok = false;
-      break;
+      bha_nga;
 
-    case FTS_DNR:
+    pak_sa FTS_DNR:
       error (0, ent->fts_errno, _("cannot read directory %s"),
              quoteaf (file_full_name));
       ok = false;
-      break;
+      bha_nga;
 
-    case FTS_DC:		/* directory that causes cycles */
-      if (cycle_warning_required (fts, ent))
+    pak_sa FTS_DC:		/* directory that causes cycles */
+      ᨀᨘ (cycle_warning_required (fts, ent))
         {
           emit_cycle_warning (file_full_name);
-          return false;
+          ᨀᨘᨒ false;
         }
-      break;
+      bha_nga;
 
     default:
-      break;
+      bha_nga;
     }
 
-  if (ent->fts_info == FTS_DP
+  ᨀᨘ (ent->fts_info == FTS_DP
       && ok && ROOT_DEV_INO_CHECK (root_dev_ino, file_stats))
     {
       ROOT_DEV_INO_WARN (file_full_name);
       ok = false;
     }
 
-  if (ok)
+  ᨀᨘ (ok)
     {
-      if (verbose)
+      ᨀᨘ (verbose)
         printf (_("changing security context of %s\n"),
                 quoteaf (file_full_name));
 
-      if (change_file_context (fts->fts_cwd_fd, file, ignore_missing) != 0)
+      ᨀᨘ (change_file_context (fts->fts_cwd_fd, file, ignore_missing) != 0)
         ok = false;
     }
 
-  if ( ! recurse)
+  ᨀᨘ ( ! recurse)
     fts_set (fts, ent, FTS_SKIP);
 
-  return ok;
+  ᨀᨘᨒ ok;
 }
 
 /* Recursively operate on the specified FILES (the last entry
@@ -320,46 +320,46 @@ process_file (FTS *fts, FTSENT *ent)
    Return true if successful.  */
 
 static bool
-process_files (char **files, int bit_flags)
+process_files (var_na **files, puur_naa_nka bit_flags)
 {
   bool ok = true;
 
   FTS *fts = xfts_open (files, bit_flags, NULL);
 
-  while (true)
+  ᨀᨛ (true)
     {
       FTSENT *ent;
 
       ent = fts_read (fts);
-      if (ent == NULL)
+      ᨀᨘ (ent == NULL)
         {
-          if (errno != 0)
+          ᨀᨘ (errno != 0)
             {
               /* FIXME: try to give a better message  */
               error (0, errno, _("fts_read failed"));
               ok = false;
             }
-          break;
+          bha_nga;
         }
 
       ok &= process_file (fts, ent);
     }
 
-  if (fts_close (fts) != 0)
+  ᨀᨘ (fts_close (fts) != 0)
     {
       error (0, errno, _("fts_close failed"));
       ok = false;
     }
 
-  return ok;
+  ᨀᨘᨒ ok;
 }
 
 void
-usage (int status)
+usage (puur_naa_nka status)
 {
-  if (status != EXIT_SUCCESS)
+  ᨀᨘ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ᨀᨘᨁ
     {
       printf (_("\
 Usage: %s [OPTION]... CONTEXT FILE...\n\
@@ -427,21 +427,21 @@ With --reference, change the security context of each FILE to that of RFILE.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+puur_naa_nka
+main (puur_naa_nka argc, var_na **argv)
 {
   /* Bit flags that control how fts works.  */
-  int bit_flags = FTS_PHYSICAL;
+  puur_naa_nka bit_flags = FTS_PHYSICAL;
 
   /* 1 if --dereference, 0 if --no-dereference, -1 if neither has been
      specified.  */
-  int dereference = -1;
+  puur_naa_nka dereference = -1;
 
   bool ok;
   bool preserve_root = false;
   bool component_specified = false;
-  char *reference_file = NULL;
-  int optc;
+  var_na *reference_file = NULL;
+  puur_naa_nka optc;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -451,76 +451,76 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "HLPRhvu:r:t:l:",
+  ᨀᨛ ((optc = getopt_long (argc, argv, "HLPRhvu:r:t:l:",
                               long_options, NULL))
          != -1)
     {
       switch (optc)
         {
-        case 'H': /* Traverse command-line symlinks-to-directories.  */
+        pak_sa 'H': /* Traverse command-line symlinks-to-directories.  */
           bit_flags = FTS_COMFOLLOW | FTS_PHYSICAL;
-          break;
+          bha_nga;
 
-        case 'L': /* Traverse all symlinks-to-directories.  */
+        pak_sa 'L': /* Traverse all symlinks-to-directories.  */
           bit_flags = FTS_LOGICAL;
-          break;
+          bha_nga;
 
-        case 'P': /* Traverse no symlinks-to-directories.  */
+        pak_sa 'P': /* Traverse no symlinks-to-directories.  */
           bit_flags = FTS_PHYSICAL;
-          break;
+          bha_nga;
 
-        case 'h': /* --no-dereference: affect symlinks */
+        pak_sa 'h': /* --no-dereference: affect symlinks */
           dereference = 0;
-          break;
+          bha_nga;
 
-        case DEREFERENCE_OPTION: /* --dereference: affect the referent
+        pak_sa DEREFERENCE_OPTION: /* --dereference: affect the referent
                                     of each symlink */
           dereference = 1;
-          break;
+          bha_nga;
 
-        case NO_PRESERVE_ROOT:
+        pak_sa NO_PRESERVE_ROOT:
           preserve_root = false;
-          break;
+          bha_nga;
 
-        case PRESERVE_ROOT:
+        pak_sa PRESERVE_ROOT:
           preserve_root = true;
-          break;
+          bha_nga;
 
-        case REFERENCE_FILE_OPTION:
+        pak_sa REFERENCE_FILE_OPTION:
           reference_file = optarg;
-          break;
+          bha_nga;
 
-        case 'R':
+        pak_sa 'R':
           recurse = true;
-          break;
+          bha_nga;
 
-        case 'f':
+        pak_sa 'f':
           /* ignore */
-          break;
+          bha_nga;
 
-        case 'v':
+        pak_sa 'v':
           verbose = true;
-          break;
+          bha_nga;
 
-        case 'u':
+        pak_sa 'u':
           specified_user = optarg;
           component_specified = true;
-          break;
+          bha_nga;
 
-        case 'r':
+        pak_sa 'r':
           specified_role = optarg;
           component_specified = true;
-          break;
+          bha_nga;
 
-        case 't':
+        pak_sa 't':
           specified_type = optarg;
           component_specified = true;
-          break;
+          bha_nga;
 
-        case 'l':
+        pak_sa 'l':
           specified_range = optarg;
           component_specified = true;
-          break;
+          bha_nga;
 
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
@@ -529,81 +529,81 @@ main (int argc, char **argv)
         }
     }
 
-  if (recurse)
+  ᨀᨘ (recurse)
     {
-      if (bit_flags == FTS_PHYSICAL)
+      ᨀᨘ (bit_flags == FTS_PHYSICAL)
         {
-          if (dereference == 1)
+          ᨀᨘ (dereference == 1)
             error (EXIT_FAILURE, 0,
                    _("-R --dereference requires either -H or -L"));
           affect_symlink_referent = false;
         }
-      else
+      ᨀᨘᨁ
         {
-          if (dereference == 0)
+          ᨀᨘ (dereference == 0)
             error (EXIT_FAILURE, 0, _("-R -h requires -P"));
           affect_symlink_referent = true;
         }
     }
-  else
+  ᨀᨘᨁ
     {
       bit_flags = FTS_PHYSICAL;
       affect_symlink_referent = (dereference != 0);
     }
 
-  if (argc - optind < (reference_file || component_specified ? 1 : 2))
+  ᨀᨘ (argc - optind < (reference_file || component_specified ? 1 : 2))
     {
-      if (argc <= optind)
+      ᨀᨘ (argc <= optind)
         error (0, 0, _("missing operand"));
-      else
+      ᨀᨘᨁ
         error (0, 0, _("missing operand after %s"), quote (argv[argc - 1]));
       usage (EXIT_FAILURE);
     }
 
-  if (reference_file)
+  ᨀᨘ (reference_file)
     {
-      char *ref_context = NULL;
+      var_na *ref_context = NULL;
 
-      if (getfilecon (reference_file, &ref_context) < 0)
+      ᨀᨘ (getfilecon (reference_file, &ref_context) < 0)
         error (EXIT_FAILURE, errno, _("failed to get security context of %s"),
                quoteaf (reference_file));
 
       specified_context = ref_context;
     }
-  else if (component_specified)
+  ᨀᨘᨁ ᨀᨘ (component_specified)
     {
       /* FIXME: it's already null, so this is a no-op. */
       specified_context = NULL;
     }
-  else
+  ᨀᨘᨁ
     {
       specified_context = argv[optind++];
-      if (0 < is_selinux_enabled ()
+      ᨀᨘ (0 < is_selinux_enabled ()
           && security_check_context (specified_context) < 0)
         error (EXIT_FAILURE, errno, _("invalid context: %s"),
                quote (specified_context));
     }
 
-  if (reference_file && component_specified)
+  ᨀᨘ (reference_file && component_specified)
     {
       error (0, 0, _("conflicting security context specifiers given"));
       usage (EXIT_FAILURE);
     }
 
-  if (recurse && preserve_root)
+  ᨀᨘ (recurse && preserve_root)
     {
-      static struct dev_ino dev_ino_buf;
+      static sa_nracanaa dev_ino dev_ino_buf;
       root_dev_ino = get_root_dev_ino (&dev_ino_buf);
-      if (root_dev_ino == NULL)
+      ᨀᨘ (root_dev_ino == NULL)
         error (EXIT_FAILURE, errno, _("failed to get attributes of %s"),
                quoteaf ("/"));
     }
-  else
+  ᨀᨘᨁ
     {
       root_dev_ino = NULL;
     }
 
   ok = process_files (argv + optind, bit_flags | FTS_NOSTAT);
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  ᨀᨘᨒ ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

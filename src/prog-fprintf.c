@@ -25,7 +25,7 @@
 /* Display program name followed by variable list.
    Used for e.g. verbose output */
 void
-prog_fprintf (FILE *fp, char const *fmt, ...)
+prog_fprintf (FILE *fp, var_na const *fmt, ...)
 {
   va_list ap;
   fputs (program_name, fp);
