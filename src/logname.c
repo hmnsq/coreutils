@@ -14,54 +14,54 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <config.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <stdio.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <sys/types.h>
 
-#include "system.h"
-#include "long-options.h"
-#include "quote.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "system.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "long-options.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "logname"
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ ਪ੍ਰੋਗਰਾਮ_NAME "logname"
 
-#define AUTHORS proper_name ("David MacKenzie")
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ AUTHORS proper_name ("David MacKenzie")
 
-void
-usage (int status)
+ਖਾਲੀ
+usage (ਪੂਰਨ ਸਥਿਤੀ)
 {
-  if (status != EXIT_SUCCESS)
+  ਜੇ (ਸਥਿਤੀ != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ਨਹੀਂਤਾਂ
     {
-      printf (_("Usage: %s [OPTION]\n"), program_name);
+      ਲਿਖੋ (_("Usage: %s [OPTION]\n"), ਪ੍ਰੋਗਰਾਮ_name);
       fputs (_("\
 Print the user's login name.\n\
 \n\
 "), stdout);
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (ਸੰਸਕਰਣ_OPTION_DESCRIPTION);
+      emit_ancillary_info (ਪ੍ਰੋਗਰਾਮ_NAME);
     }
-  exit (status);
+  ਬਾਹਰ_ਨਿਕਲੋ (ਸਥਿਤੀ);
 }
 
-int
-main (int argc, char **argv)
+ਪੂਰਨ
+ਮੁੱਖ (ਪੂਰਨ argc, ਅੱਖਰ **argv)
 {
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  ਸੈੱਟ_ਪ੍ਰੋਗਰਾਮ_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
-                                   Version, true, usage, AUTHORS,
-                                   (char const *) NULL);
+  parse_gnu_standard_options_only (argc, argv, ਪ੍ਰੋਗਰਾਮ_NAME, PACKAGE_NAME,
+                                   ਸੰਸਕਰਣ, true, usage, AUTHORS,
+                                   (ਅੱਖਰ ਅਚਲ *) ਨਿਰਾ);
 
-  if (optind < argc)
+  ਜੇ (optind < argc)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind]));
       usage (EXIT_FAILURE);
@@ -69,10 +69,10 @@ main (int argc, char **argv)
 
   /* POSIX requires using getlogin (or equivalent code) and prohibits
      using a fallback technique.  */
-  char const *cp = getlogin ();
-  if (! cp)
+  ਅੱਖਰ ਅਚਲ *cp = getlogin ();
+  ਜੇ (! cp)
     error (EXIT_FAILURE, 0, _("no login name"));
 
   puts (cp);
-  return EXIT_SUCCESS;
+  ਵਾਪਸ EXIT_SUCCESS;
 }

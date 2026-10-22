@@ -16,189 +16,189 @@
 
 /* Created by hacking who.c by Kaveh Ghazi ghazi@caip.rutgers.edu.  */
 
-#include <config.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <config.h>
 
-#include <stdio.h>
-#include <sys/types.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <stdio.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <sys/types.h>
 
-#include "system.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "system.h"
 
-#include "long-options.h"
-#include "quote.h"
-#include "readutmp.h"
-#include "fprintftime.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "long-options.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "quote.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "readutmp.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "fprintftime.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "uptime"
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ ਪ੍ਰੋਗਰਾਮ_NAME "uptime"
 
-#define AUTHORS \
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ AUTHORS \
   proper_name ("Joseph Arceneaux"), \
   proper_name ("David MacKenzie"), \
   proper_name ("Kaveh Ghazi")
 
-static int
-print_uptime (idx_t n, STRUCT_UTMP const *utmp_buf)
+ਸਥਿਰ ਪੂਰਨ
+print_uptime (idx_t n, STRUCT_UTMP ਅਚਲ *utmp_buf)
 {
-  int status = EXIT_SUCCESS;
-  time_t boot_time = 0;
+  ਪੂਰਨ ਸਥਿਤੀ = EXIT_SUCCESS;
+  time_t boot_ਸਮਾਂ = 0;
 
   /* Loop through all the utmp entries we just read and count up the valid
      ones, also in the process possibly gleaning boottime. */
   idx_t entries = 0;
-  for (idx_t i = 0; i < n; i++)
+  ਲਈ (idx_t i = 0; i < n; i++)
     {
-      STRUCT_UTMP const *this = &utmp_buf[i];
+      STRUCT_UTMP ਅਚਲ *this = &utmp_buf[i];
       entries += IS_USER_PROCESS (this);
-      if (UT_TYPE_BOOT_TIME (this))
-        boot_time = this->ut_ts.tv_sec;
+      ਜੇ (UT_TYPE_BOOT_ਸਮਾਂ (this))
+        boot_ਸਮਾਂ = this->ut_ts.tv_sec;
     }
   /* The gnulib module 'readutmp' is supposed to provide a BOOT_TIME entry
      on all platforms.  */
-  if (boot_time == 0)
+  ਜੇ (boot_ਸਮਾਂ == 0)
     {
       error (0, errno, _("couldn't get boot time"));
-      status = EXIT_FAILURE;
+      ਸਥਿਤੀ = EXIT_FAILURE;
     }
 
-  time_t time_now = time (NULL);
-  struct tm *tmn = time_now == (time_t) -1 ? NULL : localtime (&time_now);
+  time_t ਸਮਾਂ_now = ਸਮਾਂ (ਨਿਰਾ);
+  ਬਣਤਰ tm *tmn = ਸਮਾਂ_now == (time_t) -1 ? ਨਿਰਾ : localtime (&ਸਮਾਂ_now);
   /* procps' version of uptime also prints the seconds field, but
      previous versions of coreutils don't. */
-  if (tmn)
+  ਜੇ (tmn)
     /* TRANSLATORS: This prints the current clock time. */
     fprintftime (stdout, _(" %H:%M:%S  "), tmn, (timezone_t) 0, 0);
-  else
+  ਨਹੀਂਤਾਂ
     {
-      printf (_(" ??:????  "));
-      status = EXIT_FAILURE;
+      ਲਿਖੋ (_(" ??:????  "));
+      ਸਥਿਤੀ = EXIT_FAILURE;
     }
 
   intmax_t uptime;
-  if (time_now == (time_t) -1 || boot_time == 0
-      || ckd_sub (&uptime, time_now, boot_time) || uptime < 0)
+  ਜੇ (ਸਮਾਂ_now == (time_t) -1 || boot_ਸਮਾਂ == 0
+      || ckd_sub (&uptime, ਸਮਾਂ_now, boot_ਸਮਾਂ) || uptime < 0)
     {
-      printf (_("up ???? days ??:??,  "));
-      status = EXIT_FAILURE;
+      ਲਿਖੋ (_("up ???? days ??:??,  "));
+      ਸਥਿਤੀ = EXIT_FAILURE;
     }
-  else
+  ਨਹੀਂਤਾਂ
     {
       intmax_t updays = uptime / 86400;
-      int uphours = uptime % 86400 / 3600;
-      int upmins = uptime % 86400 % 3600 / 60;
-      if (0 < updays)
-        printf (ngettext ("up %jd day %2d:%02d,  ",
+      ਪੂਰਨ uphours = uptime % 86400 / 3600;
+      ਪੂਰਨ upmins = uptime % 86400 % 3600 / 60;
+      ਜੇ (0 < updays)
+        ਲਿਖੋ (ngettext ("up %jd day %2d:%02d,  ",
                           "up %jd days %2d:%02d,  ",
                           select_plural (updays)),
                 updays, uphours, upmins);
-      else
-        printf (_("up %2d:%02d,  "), uphours, upmins);
+      ਨਹੀਂਤਾਂ
+        ਲਿਖੋ (_("up %2d:%02d,  "), uphours, upmins);
     }
 
-  printf (ngettext ("%td user", "%td users", select_plural (entries)),
+  ਲਿਖੋ (ngettext ("%td user", "%td users", select_plural (entries)),
           entries);
 
-  double avg[3];
-  int loads = getloadavg (avg, 3);
+  ਦੁੱਗਣਾ avg[3];
+  ਪੂਰਨ loads = getloadavg (avg, 3);
 
-  if (loads == -1)
-    putchar ('\n');
-  else
+  ਜੇ (loads == -1)
+    ਅੱਖਰ_ਲਿਖੋ ('\n');
+  ਨਹੀਂਤਾਂ
     {
-      if (loads > 0)
-        printf (_(",  load average: %.2f"), avg[0]);
-      if (loads > 1)
-        printf (", %.2f", avg[1]);
-      if (loads > 2)
-        printf (", %.2f", avg[2]);
-      if (loads > 0)
-        putchar ('\n');
+      ਜੇ (loads > 0)
+        ਲਿਖੋ (_(",  load average: %.2f"), avg[0]);
+      ਜੇ (loads > 1)
+        ਲਿਖੋ (", %.2f", avg[1]);
+      ਜੇ (loads > 2)
+        ਲਿਖੋ (", %.2f", avg[2]);
+      ਜੇ (loads > 0)
+        ਅੱਖਰ_ਲਿਖੋ ('\n');
     }
 
-  return status;
+  ਵਾਪਸ ਸਥਿਤੀ;
 }
 
 /* Display the system uptime and the number of users on the system,
    according to utmp file FILENAME.  Use read_utmp OPTIONS to read the
    utmp file.  */
 
-static _Noreturn void
-uptime (char const *filename, int options)
+ਸਥਿਰ _Noreturn ਖਾਲੀ
+uptime (ਅੱਖਰ ਅਚਲ *filename, ਪੂਰਨ options)
 {
   idx_t n_users;
   STRUCT_UTMP *utmp_buf;
-  int read_utmp_status = (read_utmp (filename, &n_users, &utmp_buf, options) < 0
+  ਪੂਰਨ read_utmp_ਸਥਿਤੀ = (read_utmp (filename, &n_users, &utmp_buf, options) < 0
                           ? EXIT_FAILURE : EXIT_SUCCESS);
-  if (read_utmp_status != EXIT_SUCCESS)
+  ਜੇ (read_utmp_ਸਥਿਤੀ != EXIT_SUCCESS)
     {
       error (0, errno, "%s", quotef (filename));
       n_users = 0;
-      utmp_buf = NULL;
+      utmp_buf = ਨਿਰਾ;
     }
 
-  int print_uptime_status = print_uptime (n_users, utmp_buf);
-  exit (MAX (read_utmp_status, print_uptime_status));
+  ਪੂਰਨ print_uptime_ਸਥਿਤੀ = print_uptime (n_users, utmp_buf);
+  ਬਾਹਰ_ਨਿਕਲੋ (MAX (read_utmp_ਸਥਿਤੀ, print_uptime_ਸਥਿਤੀ));
 }
 
-void
-usage (int status)
+ਖਾਲੀ
+usage (ਪੂਰਨ ਸਥਿਤੀ)
 {
-  if (status != EXIT_SUCCESS)
+  ਜੇ (ਸਥਿਤੀ != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ਨਹੀਂਤਾਂ
     {
-      printf (_("Usage: %s [OPTION]... [FILE]\n"), program_name);
-      printf (_("\
-Print the current time, the length of time the system has been up,\n\
-the number of users on the system, and the average number of jobs\n\
-in the run queue over the last 1, 5 and 15 minutes."));
-#ifdef __linux__
+      ਲਿਖੋ (_("Usage: %s [OPTION]... [FILE]\n"), ਪ੍ਰੋਗਰਾਮ_name);
+      ਲਿਖੋ (_("\
+Print the current ਸਮਾਂ, the ਲੰਮਾਈ ਦਾ ਸਮਾਂ the system has been ਉੱਪਰ,\n\
+the ਸੰਖਿਆ ਦਾ users on the system, and the ਔਸਤਨ ਸੰਖਿਆ ਦਾ jobs\n\
+ਵਿੱਚ the ਲੜੀਵਾਰ_2 ਕਤਾਰ over the ਆਖਰੀ 1, 5 and 15 minutes."));
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ __linux__
       /* It would be better to introduce a configure test for this,
          but such a test is hard to write.  For the moment then, we
          have a hack which depends on the preprocessor used at compile
          time to tell us what the running kernel is.  Ugh.  */
-      printf (_("  \
-Processes in\n\
-an uninterruptible sleep state also contribute to the load average.\n"));
-#else
-      printf (_("\n"));
-#endif
-      printf (_("\
+      ਲਿਖੋ (_("  \
+Processes ਵਿੱਚ\n\
+an uninterruptible sleep state also contribute ਮੰਜ਼ਿਲ the ਲੱਦੋ ਔਸਤਨ.\n"));
+#ਨਹੀਂਤਾਂ
+      ਲਿਖੋ (_("\n"));
+#ਜੇ_ਅੰਤ
+      ਲਿਖੋ (_("\
 If FILE is not specified, use %s.  %s as FILE is common.\n\
 \n"),
               UTMP_FILE, WTMP_FILE);
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (ਸੰਸਕਰਣ_OPTION_DESCRIPTION);
+      emit_ancillary_info (ਪ੍ਰੋਗਰਾਮ_NAME);
     }
-  exit (status);
+  ਬਾਹਰ_ਨਿਕਲੋ (ਸਥਿਤੀ);
 }
 
-int
-main (int argc, char **argv)
+ਪੂਰਨ
+ਮੁੱਖ (ਪੂਰਨ argc, ਅੱਖਰ **argv)
 {
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  ਸੈੱਟ_ਪ੍ਰੋਗਰਾਮ_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
-                                   Version, true, usage, AUTHORS,
-                                   (char const *) NULL);
+  parse_gnu_standard_options_only (argc, argv, ਪ੍ਰੋਗਰਾਮ_NAME, PACKAGE_NAME,
+                                   ਸੰਸਕਰਣ, true, usage, AUTHORS,
+                                   (ਅੱਖਰ ਅਚਲ *) ਨਿਰਾ);
 
-  switch (argc - optind)
+  ਚੋਣ (argc - optind)
     {
-    case 0:			/* uptime */
+    ਹਾਲਤ 0:			/* uptime */
       uptime (UTMP_FILE, READ_UTMP_CHECK_PIDS);
-      break;
+      ਰੋਕੋ;
 
-    case 1:			/* uptime <utmp file> */
+    ਹਾਲਤ 1:			/* uptime <utmp file> */
       uptime (argv[optind], 0);
-      break;
+      ਰੋਕੋ;
 
-    default:			/* lose */
+    ਮੂਲ:			/* lose */
       error (0, 0, _("extra operand %s"), quote (argv[optind + 1]));
       usage (EXIT_FAILURE);
     }

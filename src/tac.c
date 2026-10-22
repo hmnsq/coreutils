@@ -34,227 +34,227 @@
 tac -r -s '.\|
 ' file */
 
-#include <config.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <config.h>
 
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
-#include "system.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ <stdio.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <getopt.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <sys/types.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ "system.h"
 
-#include <regex.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <regex.h>
 
-#include "filenamecat.h"
-#include "full-read.h"
-#include "full-write.h"
-#include "temp-stream.h"
-#include "xbinary-io.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "filenamecat.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "full-read.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "full-write.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "temp-stream.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "xbinary-io.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "tac"
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ ਪ੍ਰੋਗਰਾਮ_NAME "tac"
 
-#define AUTHORS \
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ AUTHORS \
   proper_name ("Jay Lepreau"), \
   proper_name ("David MacKenzie")
 
 
 /* The number of bytes per atomic read. */
-#define INITIAL_READSIZE 8192
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ INITIAL_READSIZE 8192
 
 /* The number of bytes per atomic write. */
-#define WRITESIZE 8192
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ WRITESIZE 8192
 
 /* The string that separates the records of the file. */
-static char const *separator = "\n";
+ਸਥਿਰ ਅੱਖਰ ਅਚਲ *separator = "\n";
 
 /* True if we have ever read standard input.  */
-static bool have_read_stdin = false;
+ਸਥਿਰ bool have_read_stdin = false;
 
 /* If true, print 'separator' along with the record preceding it
    in the file; otherwise with the record following it. */
-static bool separator_ends_record = true;
+ਸਥਿਰ bool separator_ਸਿਰੇ_ਰਿਕਾਰਡ = true;
 
 /* 0 if 'separator' is to be matched as a regular expression;
    otherwise, the length of 'separator', used as a sentinel to
    stop the search. */
-static size_t sentinel_length = 1;
+ਸਥਿਰ size_t sentinel_ਲੰਮਾਈ = 1;
 
 /* The length of a match with 'separator'.  If 'sentinel_length' is 0,
    'match_length' is computed every time a match succeeds;
    otherwise, it is simply the length of 'separator'. */
-static size_t match_length;
+ਸਥਿਰ size_t ਮੇਲ_ਲੰਮਾਈ;
 
 /* The input buffer. */
-static char *G_buffer;
+ਸਥਿਰ ਅੱਖਰ *G_ਬਫਰ;
 
 /* The number of bytes to read at once into 'buffer'. */
-static size_t read_size;
+ਸਥਿਰ size_t read_ਮਾਪ;
 
 /* The size of 'buffer'.  This is read_size * 2 + sentinel_length + 2.
    The extra 2 bytes allow 'past_end' to have a value beyond the
    end of 'G_buffer' and 'match_start' to run off the front of 'G_buffer'. */
-static size_t G_buffer_size;
+ਸਥਿਰ size_t G_ਬਫਰ_ਮਾਪ;
 
 /* The compiled regular expression representing 'separator'. */
-static struct re_pattern_buffer compiled_separator;
-static char compiled_separator_fastmap[UCHAR_MAX + 1];
-static struct re_registers regs;
+ਸਥਿਰ ਬਣਤਰ re_ਨਮੂਨਾ_ਬਫਰ compiled_separator;
+ਸਥਿਰ ਅੱਖਰ compiled_separator_fastmap[UCHAR_MAX + 1];
+ਸਥਿਰ ਬਣਤਰ re_registers regs;
 
-static struct option const longopts[] =
+ਸਥਿਰ ਬਣਤਰ option ਅਚਲ longopts[] =
 {
-  {"before", no_argument, NULL, 'b'},
-  {"regex", no_argument, NULL, 'r'},
-  {"separator", required_argument, NULL, 's'},
+  {"before", no_ਦਲੀਲ, ਨਿਰਾ, 'b'},
+  {"regex", no_ਦਲੀਲ, ਨਿਰਾ, 'r'},
+  {"separator", required_ਦਲੀਲ, ਨਿਰਾ, 's'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_ਸੰਸਕਰਣ_OPTION_DECL},
+  {ਨਿਰਾ, 0, ਨਿਰਾ, 0}
 };
 
-void
-usage (int status)
+ਖਾਲੀ
+usage (ਪੂਰਨ ਸਥਿਤੀ)
 {
-  if (status != EXIT_SUCCESS)
+  ਜੇ (ਸਥਿਤੀ != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ਨਹੀਂਤਾਂ
     {
-      printf (_("\
+      ਲਿਖੋ (_("\
 Usage: %s [OPTION]... [FILE]...\n\
 "),
-              program_name);
+              ਪ੍ਰੋਗਰਾਮ_name);
       fputs (_("\
-Write each FILE to standard output, last line first.\n\
+Write each FILE ਮੰਜ਼ਿਲ standard output, ਆਖਰੀ ਸਤਰ ਪਹਿਲਾ.\n\
 "), stdout);
 
       emit_stdin_note ();
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -b, --before             attach the separator before instead of after\n\
+  -b, --before             attach the separator before instead ਦਾ after\n\
 "));
       oputs (_("\
-  -r, --regex              interpret the separator as a regular expression\n\
+  -r, --regex              interpret the separator as a regular ਵਿਅੰਜਕ_2\n\
 "));
       oputs (_("\
-  -s, --separator=STRING   use STRING as the separator instead of newline\n\
+  -s, --separator=STRING   use STRING as the separator instead ਦਾ newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (ਸੰਸਕਰਣ_OPTION_DESCRIPTION);
       fputs (_("\n\
-Non-seekable input is buffered to $TMPDIR, defaulting to /tmp.\n\
+Non-seekable ਨਿਵੇਸ਼ is buffered ਮੰਜ਼ਿਲ $TMPDIR, defaulting ਮੰਜ਼ਿਲ /tmp.\n\
 "), stdout);
-      emit_ancillary_info (PROGRAM_NAME);
+      emit_ancillary_info (ਪ੍ਰੋਗਰਾਮ_NAME);
     }
-  exit (status);
+  ਬਾਹਰ_ਨਿਕਲੋ (ਸਥਿਤੀ);
 }
 
 /* Print the characters from START to PAST_END - 1.
    If START is null, just flush the buffer. */
 
-static void
-output (char const *start, char const *past_end)
+ਸਥਿਰ ਖਾਲੀ
+output (ਅੱਖਰ ਅਚਲ *ਸ਼ੁਰੂ, ਅੱਖਰ ਅਚਲ *past_ਸਿਰਾ)
 {
-  static char buffer[WRITESIZE];
-  static size_t bytes_in_buffer = 0;
-  size_t bytes_to_add = past_end - start;
-  size_t bytes_available = WRITESIZE - bytes_in_buffer;
+  ਸਥਿਰ ਅੱਖਰ ਬਫਰ[WRITESIZE];
+  ਸਥਿਰ size_t ਬਾਈਟਾਂ_ਵਿੱਚ_ਬਫਰ = 0;
+  size_t ਬਾਈਟਾਂ_ਮੰਜ਼ਿਲ_ਜੋੜੋ = past_ਸਿਰਾ - ਸ਼ੁਰੂ;
+  size_t ਬਾਈਟਾਂ_ਉਪਲਬਧ = WRITESIZE - ਬਾਈਟਾਂ_ਵਿੱਚ_ਬਫਰ;
 
-  if (!start)
+  ਜੇ (!ਸ਼ੁਰੂ)
     {
-      if (full_write (STDOUT_FILENO, buffer, bytes_in_buffer)
-          != bytes_in_buffer)
+      ਜੇ (ਭਰਿਆ_write (STDOUT_FILENO, ਬਫਰ, ਬਾਈਟਾਂ_ਵਿੱਚ_ਬਫਰ)
+          != ਬਾਈਟਾਂ_ਵਿੱਚ_ਬਫਰ)
         write_error ();
-      bytes_in_buffer = 0;
-      return;
+      ਬਾਈਟਾਂ_ਵਿੱਚ_ਬਫਰ = 0;
+      ਵਾਪਸ;
     }
 
   /* Write out as many full buffers as possible. */
-  while (bytes_to_add >= bytes_available)
+  ਜਦੋਂ (ਬਾਈਟਾਂ_ਮੰਜ਼ਿਲ_ਜੋੜੋ >= ਬਾਈਟਾਂ_ਉਪਲਬਧ)
     {
-      memcpy (buffer + bytes_in_buffer, start, bytes_available);
-      bytes_to_add -= bytes_available;
-      start += bytes_available;
-      if (full_write (STDOUT_FILENO, buffer, WRITESIZE) != WRITESIZE)
+      ਸਮ੍ਰਿਤੀ_ਨਕਲ (ਬਫਰ + ਬਾਈਟਾਂ_ਵਿੱਚ_ਬਫਰ, ਸ਼ੁਰੂ, ਬਾਈਟਾਂ_ਉਪਲਬਧ);
+      ਬਾਈਟਾਂ_ਮੰਜ਼ਿਲ_ਜੋੜੋ -= ਬਾਈਟਾਂ_ਉਪਲਬਧ;
+      ਸ਼ੁਰੂ += ਬਾਈਟਾਂ_ਉਪਲਬਧ;
+      ਜੇ (ਭਰਿਆ_write (STDOUT_FILENO, ਬਫਰ, WRITESIZE) != WRITESIZE)
         write_error ();
-      bytes_in_buffer = 0;
-      bytes_available = WRITESIZE;
+      ਬਾਈਟਾਂ_ਵਿੱਚ_ਬਫਰ = 0;
+      ਬਾਈਟਾਂ_ਉਪਲਬਧ = WRITESIZE;
     }
 
-  memcpy (buffer + bytes_in_buffer, start, bytes_to_add);
-  bytes_in_buffer += bytes_to_add;
+  ਸਮ੍ਰਿਤੀ_ਨਕਲ (ਬਫਰ + ਬਾਈਟਾਂ_ਵਿੱਚ_ਬਫਰ, ਸ਼ੁਰੂ, ਬਾਈਟਾਂ_ਮੰਜ਼ਿਲ_ਜੋੜੋ);
+  ਬਾਈਟਾਂ_ਵਿੱਚ_ਬਫਰ += ਬਾਈਟਾਂ_ਮੰਜ਼ਿਲ_ਜੋੜੋ;
 }
 
 /* Print in reverse the file open on descriptor FD for reading FILE.
    The file is already positioned at FILE_POS, which should be near its end.
    Return true if successful.  */
 
-static bool
-tac_seekable (int input_fd, char const *file, off_t file_pos)
+ਸਥਿਰ bool
+tac_seekable (ਪੂਰਨ ਨਿਵੇਸ਼_fd, ਅੱਖਰ ਅਚਲ *file, off_t file_pos)
 {
   /* Pointer to the location in 'G_buffer' where the search for
      the next separator will begin. */
-  char *match_start;
+  ਅੱਖਰ *ਮੇਲ_ਸ਼ੁਰੂ;
 
   /* Pointer to one past the rightmost character in 'G_buffer' that
      has not been printed yet. */
-  char *past_end;
+  ਅੱਖਰ *past_ਸਿਰਾ;
 
   /* Length of the record growing in 'G_buffer'. */
-  ptrdiff_t saved_record_size;
+  ptrdiff_t saved_ਰਿਕਾਰਡ_ਮਾਪ;
 
   /* True if 'output' has not been called yet for any file.
      Only used when the separator is attached to the preceding record. */
-  bool first_time = true;
-  char first_char = *separator;	/* Speed optimization, non-regexp. */
-  char const *separator1 = separator + 1; /* Speed optimization, non-regexp. */
-  size_t match_length1 = match_length - 1; /* Speed optimization, non-regexp. */
+  bool ਪਹਿਲਾ_ਸਮਾਂ = true;
+  ਅੱਖਰ ਪਹਿਲਾ_char = *separator;	/* Speed optimization, non-regexp. */
+  ਅੱਖਰ ਅਚਲ *separator1 = separator + 1; /* Speed optimization, non-regexp. */
+  size_t ਮੇਲ_length1 = ਮੇਲ_ਲੰਮਾਈ - 1; /* Speed optimization, non-regexp. */
 
   /* Arrange for the first read to lop off enough to leave the rest of the
      file a multiple of 'read_size'.  Since 'read_size' can change, this may
      not always hold during the program run, but since it usually will, leave
      it here for i/o efficiency (page/sector boundaries and all that).
      Note: the efficiency gain has not been verified. */
-  size_t remainder = file_pos % read_size;
-  if (remainder != 0)
+  size_t remainder = file_pos % read_ਮਾਪ;
+  ਜੇ (remainder != 0)
     {
       file_pos -= remainder;
-      if (lseek (input_fd, file_pos, SEEK_SET) < 0)
+      ਜੇ (lseek (ਨਿਵੇਸ਼_fd, file_pos, SEEK_SET) < 0)
         error (0, errno, _("%s: seek failed"), quotef (file));
     }
 
   /* Scan backward, looking for end of file.  This caters to proc-like
      file systems where the file size is just an estimate.  */
-  while ((saved_record_size = read (input_fd, G_buffer, read_size)) == 0
+  ਜਦੋਂ ((saved_ਰਿਕਾਰਡ_ਮਾਪ = ਪਠ (ਨਿਵੇਸ਼_fd, G_ਬਫਰ, read_ਮਾਪ)) == 0
          && file_pos != 0)
     {
-      off_t rsize = read_size;
-      if (lseek (input_fd, -rsize, SEEK_CUR) < 0)
+      off_t rsize = read_ਮਾਪ;
+      ਜੇ (lseek (ਨਿਵੇਸ਼_fd, -rsize, SEEK_CUR) < 0)
         error (0, errno, _("%s: seek failed"), quotef (file));
-      file_pos -= read_size;
+      file_pos -= read_ਮਾਪ;
     }
 
   /* Now scan forward, looking for end of file.  */
-  while (saved_record_size == read_size)
+  ਜਦੋਂ (saved_ਰਿਕਾਰਡ_ਮਾਪ == read_ਮਾਪ)
     {
-      ssize_t nread = read (input_fd, G_buffer, read_size);
-      if (nread == 0)
-        break;
-      saved_record_size = nread;
-      if (saved_record_size < 0)
-        break;
+      ssize_t nread = ਪਠ (ਨਿਵੇਸ਼_fd, G_ਬਫਰ, read_ਮਾਪ);
+      ਜੇ (nread == 0)
+        ਰੋਕੋ;
+      saved_ਰਿਕਾਰਡ_ਮਾਪ = nread;
+      ਜੇ (saved_ਰਿਕਾਰਡ_ਮਾਪ < 0)
+        ਰੋਕੋ;
       file_pos += nread;
     }
 
-  if (saved_record_size < 0)
+  ਜੇ (saved_ਰਿਕਾਰਡ_ਮਾਪ < 0)
     {
       error (0, errno, _("%s: read error"), quotef (file));
-      return false;
+      ਵਾਪਸ false;
     }
 
-  match_start = past_end = G_buffer + saved_record_size;
+  ਮੇਲ_ਸ਼ੁਰੂ = past_ਸਿਰਾ = G_ਬਫਰ + saved_ਰਿਕਾਰਡ_ਮਾਪ;
   /* For non-regexp search, move past impossible positions for a match. */
-  if (sentinel_length)
-    match_start -= match_length1;
+  ਜੇ (sentinel_ਲੰਮਾਈ)
+    ਮੇਲ_ਸ਼ੁਰੂ -= ਮੇਲ_length1;
 
-  while (true)
+  ਜਦੋਂ (true)
     {
       /* Search backward from 'match_start' - 1 to 'G_buffer' for a match
          with 'separator'; for speed, use strncmp if 'separator' contains no
@@ -262,120 +262,120 @@ tac_seekable (int input_fd, char const *file, off_t file_pos)
          If the match succeeds, set 'match_start' to point to the start of
          the match and 'match_length' to the length of the match.
          Otherwise, make 'match_start' < 'G_buffer'. */
-      if (sentinel_length == 0)
+      ਜੇ (sentinel_ਲੰਮਾਈ == 0)
         {
-          size_t i = match_start - G_buffer;
+          size_t i = ਮੇਲ_ਸ਼ੁਰੂ - G_ਬਫਰ;
           regoff_t ri = i;
           regoff_t range = 1 - ri;
           regoff_t ret;
 
-          if (1 < range)
+          ਜੇ (1 < range)
             error (EXIT_FAILURE, 0, _("record too large"));
 
-          if (range == 1
-              || ((ret = re_search (&compiled_separator, G_buffer,
+          ਜੇ (range == 1
+              || ((ret = re_ਖੋਜ (&compiled_separator, G_ਬਫਰ,
                                     i, i - 1, range, &regs))
                   == -1))
-            match_start = G_buffer - 1;
-          else if (ret == -2)
+            ਮੇਲ_ਸ਼ੁਰੂ = G_ਬਫਰ - 1;
+          ਨਹੀਂਤਾਂ ਜੇ (ret == -2)
             error (EXIT_FAILURE, 0,
                    _("error in regular expression search"));
-          else
+          ਨਹੀਂਤਾਂ
             {
-              match_start = G_buffer + regs.start[0];
-              match_length = regs.end[0] - regs.start[0];
+              ਮੇਲ_ਸ਼ੁਰੂ = G_ਬਫਰ + regs.ਸ਼ੁਰੂ[0];
+              ਮੇਲ_ਲੰਮਾਈ = regs.ਸਿਰਾ[0] - regs.ਸ਼ੁਰੂ[0];
             }
         }
-      else
+      ਨਹੀਂਤਾਂ
         {
           /* 'match_length' is constant for non-regexp boundaries. */
-          while (*--match_start != first_char
-                 || (match_length1 && !STREQ_LEN (match_start + 1, separator1,
-                                                  match_length1)))
+          ਜਦੋਂ (*--ਮੇਲ_ਸ਼ੁਰੂ != ਪਹਿਲਾ_char
+                 || (ਮੇਲ_length1 && !STREQ_LEN (ਮੇਲ_ਸ਼ੁਰੂ + 1, separator1,
+                                                  ਮੇਲ_length1)))
             /* Do nothing. */ ;
         }
 
       /* Check whether we backed off the front of 'G_buffer' without finding
          a match for 'separator'. */
-      if (match_start < G_buffer)
+      ਜੇ (ਮੇਲ_ਸ਼ੁਰੂ < G_ਬਫਰ)
         {
-          if (file_pos == 0)
+          ਜੇ (file_pos == 0)
             {
               /* Hit the beginning of the file; print the remaining record. */
-              output (G_buffer, past_end);
-              return true;
+              output (G_ਬਫਰ, past_ਸਿਰਾ);
+              ਵਾਪਸ true;
             }
 
-          saved_record_size = past_end - G_buffer;
-          if (saved_record_size > read_size)
+          saved_ਰਿਕਾਰਡ_ਮਾਪ = past_ਸਿਰਾ - G_ਬਫਰ;
+          ਜੇ (saved_ਰਿਕਾਰਡ_ਮਾਪ > read_ਮਾਪ)
             {
               /* 'G_buffer_size' is about twice 'read_size', so since
                  we want to read in another 'read_size' bytes before
                  the data already in 'G_buffer', we need to increase
                  'G_buffer_size'. */
-              char *newbuffer;
-              size_t offset = sentinel_length ? sentinel_length : 1;
-              size_t old_G_buffer_size = G_buffer_size;
+              ਅੱਖਰ *newbuffer;
+              size_t ਵਿੱਥ = sentinel_ਲੰਮਾਈ ? sentinel_ਲੰਮਾਈ : 1;
+              size_t old_G_ਬਫਰ_ਮਾਪ = G_ਬਫਰ_ਮਾਪ;
 
-              read_size *= 2;
-              G_buffer_size = read_size * 2 + sentinel_length + 2;
-              if (G_buffer_size < old_G_buffer_size)
+              read_ਮਾਪ *= 2;
+              G_ਬਫਰ_ਮਾਪ = read_ਮਾਪ * 2 + sentinel_ਲੰਮਾਈ + 2;
+              ਜੇ (G_ਬਫਰ_ਮਾਪ < old_G_ਬਫਰ_ਮਾਪ)
                 xalloc_die ();
-              newbuffer = xrealloc (G_buffer - offset, G_buffer_size);
-              newbuffer += offset;
-              G_buffer = newbuffer;
+              newbuffer = xrealloc (G_ਬਫਰ - ਵਿੱਥ, G_ਬਫਰ_ਮਾਪ);
+              newbuffer += ਵਿੱਥ;
+              G_ਬਫਰ = newbuffer;
             }
 
           /* Back up to the start of the next bufferfull of the file.  */
-          if (file_pos >= read_size)
-            file_pos -= read_size;
-          else
+          ਜੇ (file_pos >= read_ਮਾਪ)
+            file_pos -= read_ਮਾਪ;
+          ਨਹੀਂਤਾਂ
             {
-              read_size = file_pos;
+              read_ਮਾਪ = file_pos;
               file_pos = 0;
             }
-          if (lseek (input_fd, file_pos, SEEK_SET) < 0)
+          ਜੇ (lseek (ਨਿਵੇਸ਼_fd, file_pos, SEEK_SET) < 0)
             error (0, errno, _("%s: seek failed"), quotef (file));
 
           /* Shift the pending record data right to make room for the new.
              The source and destination regions probably overlap.  */
-          memmove (G_buffer + read_size, G_buffer, saved_record_size);
-          past_end = G_buffer + read_size + saved_record_size;
+          memmove (G_ਬਫਰ + read_ਮਾਪ, G_ਬਫਰ, saved_ਰਿਕਾਰਡ_ਮਾਪ);
+          past_ਸਿਰਾ = G_ਬਫਰ + read_ਮਾਪ + saved_ਰਿਕਾਰਡ_ਮਾਪ;
           /* For non-regexp searches, avoid unnecessary scanning. */
-          if (sentinel_length)
-            match_start = G_buffer + read_size;
-          else
-            match_start = past_end;
+          ਜੇ (sentinel_ਲੰਮਾਈ)
+            ਮੇਲ_ਸ਼ੁਰੂ = G_ਬਫਰ + read_ਮਾਪ;
+          ਨਹੀਂਤਾਂ
+            ਮੇਲ_ਸ਼ੁਰੂ = past_ਸਿਰਾ;
 
-          if (full_read (input_fd, G_buffer, read_size) != read_size)
+          ਜੇ (ਭਰਿਆ_read (ਨਿਵੇਸ਼_fd, G_ਬਫਰ, read_ਮਾਪ) != read_ਮਾਪ)
             {
               error (0, errno, _("%s: read error"), quotef (file));
-              return false;
+              ਵਾਪਸ false;
             }
         }
-      else
+      ਨਹੀਂਤਾਂ
         {
           /* Found a match of 'separator'. */
-          if (separator_ends_record)
+          ਜੇ (separator_ਸਿਰੇ_ਰਿਕਾਰਡ)
             {
-              char *match_end = match_start + match_length;
+              ਅੱਖਰ *ਮੇਲ_ਸਿਰਾ = ਮੇਲ_ਸ਼ੁਰੂ + ਮੇਲ_ਲੰਮਾਈ;
 
               /* If this match of 'separator' isn't at the end of the
                  file, print the record. */
-              if (!first_time || match_end != past_end)
-                output (match_end, past_end);
-              past_end = match_end;
-              first_time = false;
+              ਜੇ (!ਪਹਿਲਾ_ਸਮਾਂ || ਮੇਲ_ਸਿਰਾ != past_ਸਿਰਾ)
+                output (ਮੇਲ_ਸਿਰਾ, past_ਸਿਰਾ);
+              past_ਸਿਰਾ = ਮੇਲ_ਸਿਰਾ;
+              ਪਹਿਲਾ_ਸਮਾਂ = false;
             }
-          else
+          ਨਹੀਂਤਾਂ
             {
-              output (match_start, past_end);
-              past_end = match_start;
+              output (ਮੇਲ_ਸ਼ੁਰੂ, past_ਸਿਰਾ);
+              past_ਸਿਰਾ = ਮੇਲ_ਸ਼ੁਰੂ;
             }
 
           /* For non-regex matching, we can back up.  */
-          if (sentinel_length > 0)
-            match_start -= match_length - 1;
+          ਜੇ (sentinel_ਲੰਮਾਈ > 0)
+            ਮੇਲ_ਸ਼ੁਰੂ -= ਮੇਲ_ਲੰਮਾਈ - 1;
         }
     }
 }
@@ -384,205 +384,205 @@ tac_seekable (int input_fd, char const *file, off_t file_pos)
    a temporary file, and set *G_TMP and *G_TEMPFILE to the resulting stream
    and file name.  Return the number of bytes copied, or -1 on error.  */
 
-static off_t
-copy_to_temp (FILE **g_tmp, char **g_tempfile, int input_fd, char const *file)
+ਸਥਿਰ off_t
+copy_ਮੰਜ਼ਿਲ_ਆਰਜ਼ੀ (FILE **g_tmp, ਅੱਖਰ **g_tempfile, ਪੂਰਨ ਨਿਵੇਸ਼_fd, ਅੱਖਰ ਅਚਲ *file)
 {
   FILE *fp;
-  char *file_name;
-  uintmax_t bytes_copied = 0;
-  if (!temp_stream (&fp, &file_name))
-    return -1;
+  ਅੱਖਰ *file_name;
+  uintmax_t ਬਾਈਟਾਂ_copied = 0;
+  ਜੇ (!ਆਰਜ਼ੀ_ਧਾਰਾ (&fp, &file_name))
+    ਵਾਪਸ -1;
 
-  while (true)
+  ਜਦੋਂ (true)
     {
-      ssize_t bytes_read = read (input_fd, G_buffer, read_size);
-      if (bytes_read == 0)
-        break;
-      if (bytes_read < 0)
+      ssize_t ਬਾਈਟਾਂ_read = ਪਠ (ਨਿਵੇਸ਼_fd, G_ਬਫਰ, read_ਮਾਪ);
+      ਜੇ (ਬਾਈਟਾਂ_read == 0)
+        ਰੋਕੋ;
+      ਜੇ (ਬਾਈਟਾਂ_read < 0)
         {
           error (0, errno, _("%s: read error"), quotef (file));
-          return -1;
+          ਵਾਪਸ -1;
         }
 
-      if (fwrite (G_buffer, 1, bytes_read, fp) != bytes_read)
+      ਜੇ (fwrite (G_ਬਫਰ, 1, ਬਾਈਟਾਂ_read, fp) != ਬਾਈਟਾਂ_read)
         {
           error (0, errno, _("%s: write error"), quotef (file_name));
-          return -1;
+          ਵਾਪਸ -1;
         }
 
       /* Implicitly <= OFF_T_MAX due to preceding fwrite(),
          but unsigned type used to avoid compiler warnings
          not aware of this fact.  */
-      bytes_copied += bytes_read;
+      ਬਾਈਟਾਂ_copied += ਬਾਈਟਾਂ_read;
     }
 
-  if (fflush (fp) != 0)
+  ਜੇ (fflush (fp) != 0)
     {
       error (0, errno, _("%s: write error"), quotef (file_name));
-      return -1;
+      ਵਾਪਸ -1;
     }
 
   *g_tmp = fp;
   *g_tempfile = file_name;
-  return bytes_copied;
+  ਵਾਪਸ ਬਾਈਟਾਂ_copied;
 }
 
 /* Copy INPUT_FD to a temporary, then tac that file.
    Return true if successful.  */
 
-static bool
-tac_nonseekable (int input_fd, char const *file)
+ਸਥਿਰ bool
+tac_nonseekable (ਪੂਰਨ ਨਿਵੇਸ਼_fd, ਅੱਖਰ ਅਚਲ *file)
 {
-  FILE *tmp_stream;
-  char *tmp_file;
-  off_t bytes_copied = copy_to_temp (&tmp_stream, &tmp_file, input_fd, file);
-  if (bytes_copied < 0)
-    return false;
+  FILE *tmp_ਧਾਰਾ;
+  ਅੱਖਰ *tmp_file;
+  off_t ਬਾਈਟਾਂ_copied = copy_ਮੰਜ਼ਿਲ_ਆਰਜ਼ੀ (&tmp_ਧਾਰਾ, &tmp_file, ਨਿਵੇਸ਼_fd, file);
+  ਜੇ (ਬਾਈਟਾਂ_copied < 0)
+    ਵਾਪਸ false;
 
-  bool ok = tac_seekable (fileno (tmp_stream), tmp_file, bytes_copied);
-  return ok;
+  bool ok = tac_seekable (fileno (tmp_ਧਾਰਾ), tmp_file, ਬਾਈਟਾਂ_copied);
+  ਵਾਪਸ ok;
 }
 
 /* Print FILE in reverse, copying it to a temporary
    file first if it is not seekable.
    Return true if successful.  */
 
-static bool
-tac_file (char const *filename)
+ਸਥਿਰ bool
+tac_file (ਅੱਖਰ ਅਚਲ *filename)
 {
   bool ok;
-  off_t file_size;
-  int fd;
+  off_t file_ਮਾਪ;
+  ਪੂਰਨ fd;
   bool is_stdin = streq (filename, "-");
 
-  if (is_stdin)
+  ਜੇ (is_stdin)
     {
       have_read_stdin = true;
       fd = STDIN_FILENO;
       filename = _("standard input");
-      xset_binary_mode (STDIN_FILENO, O_BINARY);
+      xset_ਦੁਆਧਾਰੀ_ਬਹੁਲਕ (STDIN_FILENO, O_ਦੁਆਧਾਰੀ);
     }
-  else
+  ਨਹੀਂਤਾਂ
     {
-      fd = open (filename, O_RDONLY | O_BINARY);
-      if (fd < 0)
+      fd = open (filename, O_RDONLY | O_ਦੁਆਧਾਰੀ);
+      ਜੇ (fd < 0)
         {
           error (0, errno, _("failed to open %s for reading"),
                  quoteaf (filename));
-          return false;
+          ਵਾਪਸ false;
         }
     }
 
-  file_size = lseek (fd, 0, SEEK_END);
+  file_ਮਾਪ = lseek (fd, 0, SEEK_END);
 
-  ok = (file_size < 0 || isatty (fd)
+  ok = (file_ਮਾਪ < 0 || isatty (fd)
         ? tac_nonseekable (fd, filename)
-        : tac_seekable (fd, filename, file_size));
+        : tac_seekable (fd, filename, file_ਮਾਪ));
 
-  if (!is_stdin && close (fd) != 0)
+  ਜੇ (!is_stdin && close (fd) != 0)
     {
       error (0, errno, _("%s: read error"), quotef (filename));
       ok = false;
     }
-  return ok;
+  ਵਾਪਸ ok;
 }
 
-int
-main (int argc, char **argv)
+ਪੂਰਨ
+ਮੁੱਖ (ਪੂਰਨ argc, ਅੱਖਰ **argv)
 {
-  char const *error_message;	/* Return value from re_compile_pattern. */
-  int optc;
+  ਅੱਖਰ ਅਚਲ *error_ਸੁਨੇਹਾ_2;	/* Return value from re_compile_pattern. */
+  ਪੂਰਨ optc;
   bool ok;
-  size_t half_buffer_size;
+  size_t half_ਬਫਰ_ਮਾਪ;
 
   /* Initializer for file_list if no file-arguments
      were specified on the command line.  */
-  static char const *const default_file_list[] = {"-", NULL};
-  char const *const *file;
+  ਸਥਿਰ ਅੱਖਰ ਅਚਲ *ਅਚਲ default_file_list[] = {"-", ਨਿਰਾ};
+  ਅੱਖਰ ਅਚਲ *ਅਚਲ *file;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  ਸੈੱਟ_ਪ੍ਰੋਗਰਾਮ_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "brs:", longopts, NULL)) != -1)
+  ਜਦੋਂ ((optc = getopt_long (argc, argv, "brs:", longopts, ਨਿਰਾ)) != -1)
     {
-      switch (optc)
+      ਚੋਣ (optc)
         {
-        case 'b':
-          separator_ends_record = false;
-          break;
-        case 'r':
-          sentinel_length = 0;
-          break;
-        case 's':
+        ਹਾਲਤ 'b':
+          separator_ਸਿਰੇ_ਰਿਕਾਰਡ = false;
+          ਰੋਕੋ;
+        ਹਾਲਤ 'r':
+          sentinel_ਲੰਮਾਈ = 0;
+          ਰੋਕੋ;
+        ਹਾਲਤ 's':
           separator = optarg;
-          break;
+          ਰੋਕੋ;
         case_GETOPT_HELP_CHAR;
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        case_GETOPT_ਸੰਸਕਰਣ_CHAR (ਪ੍ਰੋਗਰਾਮ_NAME, AUTHORS);
+        ਮੂਲ:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (sentinel_length == 0)
+  ਜੇ (sentinel_ਲੰਮਾਈ == 0)
     {
-      if (*separator == 0)
+      ਜੇ (*separator == 0)
         error (EXIT_FAILURE, 0, _("separator cannot be empty"));
 
-      compiled_separator.buffer = NULL;
+      compiled_separator.ਬਫਰ = ਨਿਰਾ;
       compiled_separator.allocated = 0;
       compiled_separator.fastmap = compiled_separator_fastmap;
-      compiled_separator.translate = NULL;
-      error_message = re_compile_pattern (separator, strlen (separator),
+      compiled_separator.translate = ਨਿਰਾ;
+      error_ਸੁਨੇਹਾ_2 = re_compile_ਨਮੂਨਾ (separator, ਲੜੀ_ਲੰਬਾਈ (separator),
                                           &compiled_separator);
-      if (error_message)
-        error (EXIT_FAILURE, 0, "%s", (error_message));
+      ਜੇ (error_ਸੁਨੇਹਾ_2)
+        error (EXIT_FAILURE, 0, "%s", (error_ਸੁਨੇਹਾ_2));
     }
-  else
-    match_length = sentinel_length = *separator ? strlen (separator) : 1;
+  ਨਹੀਂਤਾਂ
+    ਮੇਲ_ਲੰਮਾਈ = sentinel_ਲੰਮਾਈ = *separator ? ਲੜੀ_ਲੰਬਾਈ (separator) : 1;
 
-  read_size = INITIAL_READSIZE;
-  while (sentinel_length >= read_size / 2)
+  read_ਮਾਪ = INITIAL_READSIZE;
+  ਜਦੋਂ (sentinel_ਲੰਮਾਈ >= read_ਮਾਪ / 2)
     {
-      if (SIZE_MAX / 2 < read_size)
+      ਜੇ (SIZE_MAX / 2 < read_ਮਾਪ)
         xalloc_die ();
-      read_size *= 2;
+      read_ਮਾਪ *= 2;
     }
-  half_buffer_size = read_size + sentinel_length + 1;
-  G_buffer_size = 2 * half_buffer_size;
-  if (! (read_size < half_buffer_size && half_buffer_size < G_buffer_size))
+  half_ਬਫਰ_ਮਾਪ = read_ਮਾਪ + sentinel_ਲੰਮਾਈ + 1;
+  G_ਬਫਰ_ਮਾਪ = 2 * half_ਬਫਰ_ਮਾਪ;
+  ਜੇ (! (read_ਮਾਪ < half_ਬਫਰ_ਮਾਪ && half_ਬਫਰ_ਮਾਪ < G_ਬਫਰ_ਮਾਪ))
     xalloc_die ();
-  G_buffer = xmalloc (G_buffer_size);
-  if (sentinel_length)
+  G_ਬਫਰ = xmalloc (G_ਬਫਰ_ਮਾਪ);
+  ਜੇ (sentinel_ਲੰਮਾਈ)
     {
-      memcpy (G_buffer, separator, sentinel_length + !!*separator);
-      G_buffer += sentinel_length;
+      ਸਮ੍ਰਿਤੀ_ਨਕਲ (G_ਬਫਰ, separator, sentinel_ਲੰਮਾਈ + !!*separator);
+      G_ਬਫਰ += sentinel_ਲੰਮਾਈ;
     }
-  else
+  ਨਹੀਂਤਾਂ
     {
-      ++G_buffer;
+      ++G_ਬਫਰ;
     }
 
   file = (optind < argc
-          ? (char const *const *) &argv[optind]
+          ? (ਅੱਖਰ ਅਚਲ *ਅਚਲ *) &argv[optind]
           : default_file_list);
 
-  xset_binary_mode (STDOUT_FILENO, O_BINARY);
+  xset_ਦੁਆਧਾਰੀ_ਬਹੁਲਕ (STDOUT_FILENO, O_ਦੁਆਧਾਰੀ);
 
   {
     ok = true;
-    for (size_t i = 0; file[i]; ++i)
+    ਲਈ (size_t i = 0; file[i]; ++i)
       ok &= tac_file (file[i]);
   }
 
   /* Flush the output buffer. */
-  output ((char *) NULL, (char *) NULL);
+  output ((ਅੱਖਰ *) ਨਿਰਾ, (ਅੱਖਰ *) ਨਿਰਾ);
 
-  if (have_read_stdin && close (STDIN_FILENO) < 0)
+  ਜੇ (have_read_stdin && close (STDIN_FILENO) < 0)
     {
       error (0, errno, "-");
       ok = false;

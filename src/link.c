@@ -20,72 +20,72 @@
 
    Simply call the system 'link' function */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <config.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <stdio.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <sys/types.h>
 
-#include "system.h"
-#include "long-options.h"
-#include "quote.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "system.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "long-options.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "link"
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ ਪ੍ਰੋਗਰਾਮ_NAME "link"
 
-#define AUTHORS proper_name ("Michael Stone")
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ AUTHORS proper_name ("Michael Stone")
 
-void
-usage (int status)
+ਖਾਲੀ
+usage (ਪੂਰਨ ਸਥਿਤੀ)
 {
-  if (status != EXIT_SUCCESS)
+  ਜੇ (ਸਥਿਤੀ != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ਨਹੀਂਤਾਂ
     {
-      printf (_("\
+      ਲਿਖੋ (_("\
 Usage: %s FILE1 FILE2\n\
-  or:  %s OPTION\n"), program_name, program_name);
-      fputs (_("Call the link function to create a link named FILE2\
- to an existing FILE1.\n\n"),
+  or:  %s OPTION\n"), ਪ੍ਰੋਗਰਾਮ_name, ਪ੍ਰੋਗਰਾਮ_name);
+      fputs (_("Call the link function ਮੰਜ਼ਿਲ create a link named FILE2\
+ ਮੰਜ਼ਿਲ an existing FILE1.\n\n"),
              stdout);
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (ਸੰਸਕਰਣ_OPTION_DESCRIPTION);
+      emit_ancillary_info (ਪ੍ਰੋਗਰਾਮ_NAME);
     }
-  exit (status);
+  ਬਾਹਰ_ਨਿਕਲੋ (ਸਥਿਤੀ);
 }
 
-int
-main (int argc, char **argv)
+ਪੂਰਨ
+ਮੁੱਖ (ਪੂਰਨ argc, ਅੱਖਰ **argv)
 {
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  ਸੈੱਟ_ਪ੍ਰੋਗਰਾਮ_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
-                                   Version, true, usage, AUTHORS,
-                                   (char const *) NULL);
+  parse_gnu_standard_options_only (argc, argv, ਪ੍ਰੋਗਰਾਮ_NAME, PACKAGE_NAME,
+                                   ਸੰਸਕਰਣ, true, usage, AUTHORS,
+                                   (ਅੱਖਰ ਅਚਲ *) ਨਿਰਾ);
 
-  if (argc < optind + 2)
+  ਜੇ (argc < optind + 2)
     {
-      if (argc < optind + 1)
+      ਜੇ (argc < optind + 1)
         error (0, 0, _("missing operand"));
-      else
+      ਨਹੀਂਤਾਂ
         error (0, 0, _("missing operand after %s"), quote (argv[optind]));
       usage (EXIT_FAILURE);
     }
 
-  if (optind + 2 < argc)
+  ਜੇ (optind + 2 < argc)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind + 2]));
       usage (EXIT_FAILURE);
     }
 
-  if (link (argv[optind], argv[optind + 1]) != 0)
+  ਜੇ (link (argv[optind], argv[optind + 1]) != 0)
     error (EXIT_FAILURE, errno, _("cannot create link %s to %s"),
            quoteaf_n (0, argv[optind + 1]), quoteaf_n (1, argv[optind]));
 
-  return EXIT_SUCCESS;
+  ਵਾਪਸ EXIT_SUCCESS;
 }

@@ -16,73 +16,73 @@
 
 /* Written by Jim Meyering  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <signal.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <config.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <stdio.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <sys/types.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <signal.h>
 
-#include "system.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "system.h"
 
-#include "filenamecat.h"
-#include "fd-reopen.h"
-#include "long-options.h"
-#include "unistd--.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "filenamecat.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "fd-reopen.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "long-options.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "unistd--.h"
 
-#define PROGRAM_NAME "nohup"
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ ਪ੍ਰੋਗਰਾਮ_NAME "nohup"
 
-#define AUTHORS proper_name ("Jim Meyering")
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ AUTHORS proper_name ("Jim Meyering")
 
 /* Exit statuses.  */
-enum
+ਗਿਣਤੀ
   {
     /* 'nohup' itself failed.  */
     POSIX_NOHUP_FAILURE = 127
   };
 
-void
-usage (int status)
+ਖਾਲੀ
+usage (ਪੂਰਨ ਸਥਿਤੀ)
 {
-  if (status != EXIT_SUCCESS)
+  ਜੇ (ਸਥਿਤੀ != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ਨਹੀਂਤਾਂ
     {
-      printf (_("\
+      ਲਿਖੋ (_("\
 Usage: %s COMMAND [ARG]...\n\
   or:  %s OPTION\n\
 "),
-              program_name, program_name);
+              ਪ੍ਰੋਗਰਾਮ_name, ਪ੍ਰੋਗਰਾਮ_name);
 
       fputs (_("\
-Run COMMAND, ignoring hangup signals.\n\
+ਲੜੀਵਾਰ COMMAND, ignoring hangup ਸੰਕੇਤ_2.\n\
 \n\
 "), stdout);
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      printf (_("\n\
-If standard input is a terminal, redirect it from an unreadable file.\n\
-If standard output is a terminal, append output to 'nohup.out' if possible,\n\
+      oputs (ਸੰਸਕਰਣ_OPTION_DESCRIPTION);
+      ਲਿਖੋ (_("\n\
+If standard ਨਿਵੇਸ਼ is a terminal, redirect it from an unreadable file.\n\
+If standard output is a terminal, append output ਮੰਜ਼ਿਲ 'nohup.out' ਜੇ possible,\n\
 '$HOME/nohup.out' otherwise.\n\
-If standard error is a terminal, redirect it to standard output.\n\
-To save output to FILE, use '%s COMMAND > FILE'.\n"),
-              program_name);
-      printf (USAGE_BUILTIN_WARNING, PROGRAM_NAME);
-      emit_exec_status (PROGRAM_NAME);
-      emit_ancillary_info (PROGRAM_NAME);
+If standard error is a terminal, redirect it ਮੰਜ਼ਿਲ standard output.\n\
+ਮੰਜ਼ਿਲ_2 save output ਮੰਜ਼ਿਲ FILE, use '%s COMMAND > FILE'.\n"),
+              ਪ੍ਰੋਗਰਾਮ_name);
+      ਲਿਖੋ (USAGE_BUILTIN_WARNING, ਪ੍ਰੋਗਰਾਮ_NAME);
+      emit_exec_ਸਥਿਤੀ (ਪ੍ਰੋਗਰਾਮ_NAME);
+      emit_ancillary_info (ਪ੍ਰੋਗਰਾਮ_NAME);
     }
-  exit (status);
+  ਬਾਹਰ_ਨਿਕਲੋ (ਸਥਿਤੀ);
 }
 
 /* GCC 13 gets confused by the dup2 calls
    <https://gcc.gnu.org/PR109839>.  */
-#if 13 <= __GNUC__
+#ਜੇ 13 <= __GNUC__
 # pragma GCC diagnostic ignored "-Wanalyzer-fd-leak"
-#endif
+#ਜੇ_ਅੰਤ
 
-int
-main (int argc, char **argv)
+ਪੂਰਨ
+ਮੁੱਖ (ਪੂਰਨ argc, ਅੱਖਰ **argv)
 {
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  ਸੈੱਟ_ਪ੍ਰੋਗਰਾਮ_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
@@ -91,22 +91,22 @@ main (int argc, char **argv)
      for env, exec, nice, time, and xargs where it requires internal
      failure give something in the range 1-125.  For consistency with
      other tools, fail with EXIT_CANCELED unless POSIXLY_CORRECT.  */
-  int exit_internal_failure = (getenv ("POSIXLY_CORRECT")
+  ਪੂਰਨ exit_ਅੰਦਰੂਨੀ_failure = (getenv ("POSIXLY_CORRECT")
                                ? POSIX_NOHUP_FAILURE : EXIT_CANCELED);
-  initialize_exit_failure (exit_internal_failure);
+  initialize_exit_failure (exit_ਅੰਦਰੂਨੀ_failure);
   atexit (close_stdout);
 
-  parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
-                                   Version, false, usage, AUTHORS,
-                                   (char const *) NULL);
+  parse_gnu_standard_options_only (argc, argv, ਪ੍ਰੋਗਰਾਮ_NAME, PACKAGE_NAME,
+                                   ਸੰਸਕਰਣ, false, usage, AUTHORS,
+                                   (ਅੱਖਰ ਅਚਲ *) ਨਿਰਾ);
 
-  if (argc <= optind)
+  ਜੇ (argc <= optind)
     {
       error (0, 0, _("missing operand"));
-      usage (exit_internal_failure);
+      usage (exit_ਅੰਦਰੂਨੀ_failure);
     }
 
-  bool ignoring_input = isatty (STDIN_FILENO);
+  bool ignoring_ਨਿਵੇਸ਼ = isatty (STDIN_FILENO);
   bool redirecting_stdout = isatty (STDOUT_FILENO);
   bool stdout_is_closed = (!redirecting_stdout && errno == EBADF);
   bool redirecting_stderr = isatty (STDERR_FILENO);
@@ -114,12 +114,12 @@ main (int argc, char **argv)
   /* If standard input is a tty, replace it with /dev/null if possible.
      Note that it is deliberately opened for *writing*,
      to ensure any read evokes an error.  */
-  if (ignoring_input)
+  ਜੇ (ignoring_ਨਿਵੇਸ਼)
     {
-      if (fd_reopen (STDIN_FILENO, "/dev/null", O_WRONLY, 0) < 0)
-        error (exit_internal_failure, errno,
+      ਜੇ (fd_reopen (STDIN_FILENO, "/dev/null", O_WRONLY, 0) < 0)
+        error (exit_ਅੰਦਰੂਨੀ_failure, errno,
                _("failed to render standard input unusable"));
-      if (!redirecting_stdout && !redirecting_stderr)
+      ਜੇ (!redirecting_stdout && !redirecting_stderr)
         error (0, 0, _("ignoring input"));
     }
 
@@ -127,53 +127,53 @@ main (int argc, char **argv)
      First try nohup.out, then $HOME/nohup.out.  If standard error is
      a tty and standard output is closed, open nohup.out or
      $HOME/nohup.out without redirecting anything.  */
-  int out_fd = STDOUT_FILENO;
-  if (redirecting_stdout || (redirecting_stderr && stdout_is_closed))
+  ਪੂਰਨ ਬਾਹਰਲਾ_fd = STDOUT_FILENO;
+  ਜੇ (redirecting_stdout || (redirecting_stderr && stdout_is_closed))
     {
-      char *in_home = NULL;
-      char const *file = "nohup.out";
-      int flags = O_CREAT | O_WRONLY | O_APPEND;
-      mode_t mode = S_IRUSR | S_IWUSR;
-      mode_t umask_value = umask (0);
-      out_fd = (redirecting_stdout
-                ? fd_reopen (STDOUT_FILENO, file, flags, mode)
-                : open (file, flags, mode));
+      ਅੱਖਰ *ਵਿੱਚ_home = ਨਿਰਾ;
+      ਅੱਖਰ ਅਚਲ *file = "nohup.out";
+      ਪੂਰਨ flags = O_CREAT | O_WRONLY | O_APPEND;
+      mode_t ਬਹੁਲਕ_2 = S_IRUSR | S_IWUSR;
+      mode_t umask_ਮੁੱਲ = umask (0);
+      ਬਾਹਰਲਾ_fd = (redirecting_stdout
+                ? fd_reopen (STDOUT_FILENO, file, flags, ਬਹੁਲਕ_2)
+                : open (file, flags, ਬਹੁਲਕ_2));
 
-      if (out_fd < 0)
+      ਜੇ (ਬਾਹਰਲਾ_fd < 0)
         {
-          int saved_errno = errno;
-          char const *home = getenv ("HOME");
-          if (home)
+          ਪੂਰਨ saved_errno = errno;
+          ਅੱਖਰ ਅਚਲ *home = getenv ("HOME");
+          ਜੇ (home)
             {
-              in_home = file_name_concat (home, file, NULL);
-              out_fd = (redirecting_stdout
-                        ? fd_reopen (STDOUT_FILENO, in_home, flags, mode)
-                        : open (in_home, flags, mode));
+              ਵਿੱਚ_home = file_name_concat (home, file, ਨਿਰਾ);
+              ਬਾਹਰਲਾ_fd = (redirecting_stdout
+                        ? fd_reopen (STDOUT_FILENO, ਵਿੱਚ_home, flags, ਬਹੁਲਕ_2)
+                        : open (ਵਿੱਚ_home, flags, ਬਹੁਲਕ_2));
             }
-          if (out_fd < 0)
+          ਜੇ (ਬਾਹਰਲਾ_fd < 0)
             {
-              int saved_errno2 = errno;
+              ਪੂਰਨ saved_errno2 = errno;
               error (0, saved_errno, _("failed to open %s"), quoteaf (file));
-              if (in_home)
+              ਜੇ (ਵਿੱਚ_home)
                 error (0, saved_errno2, _("failed to open %s"),
-                       quoteaf (in_home));
-              return exit_internal_failure;
+                       quoteaf (ਵਿੱਚ_home));
+              ਵਾਪਸ exit_ਅੰਦਰੂਨੀ_failure;
             }
-          file = in_home;
+          file = ਵਿੱਚ_home;
         }
 
-      umask (umask_value);
+      umask (umask_ਮੁੱਲ);
       error (0, 0,
-             _(ignoring_input
+             _(ignoring_ਨਿਵੇਸ਼
                ? N_("ignoring input and appending output to %s")
                : N_("appending output to %s")),
              quoteaf (file));
-      free (in_home);
+      ਮੁਕਤ (ਵਿੱਚ_home);
     }
 
   /* If standard error is a tty, redirect it.  */
-  int saved_stderr_fd = STDERR_FILENO;
-  if (redirecting_stderr)
+  ਪੂਰਨ saved_stderr_fd = STDERR_FILENO;
+  ਜੇ (redirecting_stderr)
     {
       /* Save a copy of stderr before redirecting, so we can use the original
          if execve fails.  It's no big deal if this dup fails.  It might
@@ -182,19 +182,19 @@ main (int argc, char **argv)
       saved_stderr_fd = fcntl (STDERR_FILENO, F_DUPFD_CLOEXEC,
                                STDERR_FILENO + 1);
 
-      if (!redirecting_stdout)
+      ਜੇ (!redirecting_stdout)
         error (0, 0,
-               _(ignoring_input
+               _(ignoring_ਨਿਵੇਸ਼
                  ? N_("ignoring input and redirecting standard error "
                       "to standard output")
                  : N_("redirecting standard error to standard output")));
 
-      if (dup2 (out_fd, STDERR_FILENO) < 0)
-        error (exit_internal_failure, errno,
+      ਜੇ (dup2 (ਬਾਹਰਲਾ_fd, STDERR_FILENO) < 0)
+        error (exit_ਅੰਦਰੂਨੀ_failure, errno,
                _("failed to redirect standard error"));
 
-      if (stdout_is_closed)
-        close (out_fd);
+      ਜੇ (stdout_is_closed)
+        close (ਬਾਹਰਲਾ_fd);
     }
 
   /* error() flushes stderr, but does not check for write failure.
@@ -203,18 +203,18 @@ main (int argc, char **argv)
      encountered a write failure, there is no need to try calling
      error() again, particularly since we may have just changed the
      underlying fd out from under stderr.  */
-  if (ferror (stderr))
-    return exit_internal_failure;
+  ਜੇ (ferror (stderr))
+    ਵਾਪਸ exit_ਅੰਦਰੂਨੀ_failure;
 
   /* Windows does not support SIGHUP.  */
-#ifdef SIGHUP
-  signal (SIGHUP, SIG_IGN);
-#endif
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SIGHUP
+  ਸੰਕੇਤ (SIGHUP, SIG_IGN);
+#ਜੇ_ਅੰਤ
 
-  char **cmd = argv + optind;
+  ਅੱਖਰ **cmd = argv + optind;
   execvp (*cmd, cmd);
-  int exit_status = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
-  int saved_errno = errno;
+  ਪੂਰਨ exit_ਸਥਿਤੀ = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
+  ਪੂਰਨ saved_errno = errno;
 
   /* The execve failed.  Output a diagnostic to stderr only if:
      - stderr was initially redirected to a non-tty, or
@@ -222,8 +222,8 @@ main (int argc, char **argv)
      can dup2 it to point back to that same tty.
      In other words, output the diagnostic if possible, but only if
      it will go to the original stderr.  */
-  if (dup2 (saved_stderr_fd, STDERR_FILENO) == STDERR_FILENO)
+  ਜੇ (dup2 (saved_stderr_fd, STDERR_FILENO) == STDERR_FILENO)
     error (0, saved_errno, _("failed to run command %s"), quoteaf (*cmd));
 
-  return exit_status;
+  ਵਾਪਸ exit_ਸਥਿਤੀ;
 }

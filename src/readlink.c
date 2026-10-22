@@ -16,76 +16,76 @@
 
 /* Written by Dmitry V. Levin */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <config.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <stdio.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <getopt.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <sys/types.h>
 
-#include "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
-#include "system.h"
-#include "canonicalize.h"
-#include "areadlink.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
+#ਅਨ੍ਤਰ੍ਭਾਵ "system.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "canonicalize.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "areadlink.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "readlink"
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ ਪ੍ਰੋਗਰਾਮ_NAME "readlink"
 
-#define AUTHORS proper_name ("Dmitry V. Levin")
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ AUTHORS proper_name ("Dmitry V. Levin")
 
 /* If true, do not output the trailing newline.  */
-static bool no_newline;
+ਸਥਿਰ bool no_newline;
 
 /* If true, report error messages.  */
-static bool verbose;
+ਸਥਿਰ bool verbose;
 
 /* If true, quote output according to the selected quoting style.  */
-static bool quote_output;
+ਸਥਿਰ bool quote_output;
 
-static struct option const longopts[] =
+ਸਥਿਰ ਬਣਤਰ option ਅਚਲ longopts[] =
 {
-  {"canonicalize", no_argument, NULL, 'f'},
-  {"canonicalize-existing", no_argument, NULL, 'e'},
-  {"canonicalize-missing", no_argument, NULL, 'm'},
-  {"no-newline", no_argument, NULL, 'n'},
-  {"quiet", no_argument, NULL, 'q'},
-  {"silent", no_argument, NULL, 's'},
-  {"verbose", no_argument, NULL, 'v'},
-  {"zero", no_argument, NULL, 'z'},
+  {"canonicalize", no_ਦਲੀਲ, ਨਿਰਾ, 'f'},
+  {"canonicalize-existing", no_ਦਲੀਲ, ਨਿਰਾ, 'e'},
+  {"canonicalize-missing", no_ਦਲੀਲ, ਨਿਰਾ, 'm'},
+  {"no-newline", no_ਦਲੀਲ, ਨਿਰਾ, 'n'},
+  {"quiet", no_ਦਲੀਲ, ਨਿਰਾ, 'q'},
+  {"silent", no_ਦਲੀਲ, ਨਿਰਾ, 's'},
+  {"verbose", no_ਦਲੀਲ, ਨਿਰਾ, 'v'},
+  {"zero", no_ਦਲੀਲ, ਨਿਰਾ, 'z'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_ਸੰਸਕਰਣ_OPTION_DECL},
+  {ਨਿਰਾ, 0, ਨਿਰਾ, 0}
 };
 
-void
-usage (int status)
+ਖਾਲੀ
+usage (ਪੂਰਨ ਸਥਿਤੀ)
 {
-  if (status != EXIT_SUCCESS)
+  ਜੇ (ਸਥਿਤੀ != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ਨਹੀਂਤਾਂ
     {
-      printf (_("Usage: %s [OPTION]... FILE...\n"), program_name);
+      ਲਿਖੋ (_("Usage: %s [OPTION]... FILE...\n"), ਪ੍ਰੋਗਰਾਮ_name);
       fputs (_("Print value of a symbolic link or canonical file name\n\n"),
              stdout);
       oputs (_("\
   -f, --canonicalize\n\
          canonicalize by following every symlink\n\
-         in every component of the given name recursively;\n\
-         all but the last component must exist\n\
+         ਵਿੱਚ every component ਦਾ the given name recursively;\n\
+         all but the ਆਖਰੀ component must exist\n\
 "));
       oputs (_("\
   -e, --canonicalize-existing\n\
          canonicalize by following every symlink\n\
-         in every component of the given name recursively;\n\
+         ਵਿੱਚ every component ਦਾ the given name recursively;\n\
          all components must exist\n\
 "));
       oputs (_("\
   -m, --canonicalize-missing\n\
          canonicalize by following every symlink\n\
-         in every component of the given name recursively,\n\
+         ਵਿੱਚ every component ਦਾ the given name recursively,\n\
          without requirements on components existence\n\
 "));
       oputs (_("\
   -n, --no-newline\n\
-         do not output the trailing delimiter\n\
+         ਕਰੋ not output the trailing delimiter\n\
 "));
       oputs (_("\
   -q, --quiet\n\
@@ -93,126 +93,126 @@ usage (int status)
       oputs (_("\
   -s, --silent\n\
          suppress most error messages\n\
-         (on by default if POSIXLY_CORRECT is not set)\n\
+         (on by ਮੂਲ ਜੇ POSIXLY_CORRECT is not ਸੈੱਟ_2)\n\
 "));
       oputs (_("\
   -v, --verbose\n\
          report error messages\n\
-         (on by default if POSIXLY_CORRECT is set)\n\
+         (on by ਮੂਲ ਜੇ POSIXLY_CORRECT is ਸੈੱਟ_2)\n\
 "));
       oputs (_("\
   -z, --zero\n\
-         end each output line with NUL, not newline\n\
+         ਸਿਰਾ each output ਸਤਰ with NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (ਸੰਸਕਰਣ_OPTION_DESCRIPTION);
+      emit_ancillary_info (ਪ੍ਰੋਗਰਾਮ_NAME);
     }
-  exit (status);
+  ਬਾਹਰ_ਨਿਕਲੋ (ਸਥਿਤੀ);
 }
 
-int
-main (int argc, char **argv)
+ਪੂਰਨ
+ਮੁੱਖ (ਪੂਰਨ argc, ਅੱਖਰ **argv)
 {
   /* If not -1, use this method to canonicalize.  */
-  int can_mode = -1;
-  int status = EXIT_SUCCESS;
-  int optc;
+  ਪੂਰਨ can_ਬਹੁਲਕ = -1;
+  ਪੂਰਨ ਸਥਿਤੀ = EXIT_SUCCESS;
+  ਪੂਰਨ optc;
   bool use_nuls = false;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  ਸੈੱਟ_ਪ੍ਰੋਗਰਾਮ_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "efmnqsvz", longopts, NULL)) != -1)
+  ਜਦੋਂ ((optc = getopt_long (argc, argv, "efmnqsvz", longopts, ਨਿਰਾ)) != -1)
     {
-      switch (optc)
+      ਚੋਣ (optc)
         {
-        case 'e':
-          can_mode = CAN_EXISTING;
-          break;
-        case 'f':
-          can_mode = CAN_ALL_BUT_LAST;
-          break;
-        case 'm':
-          can_mode = CAN_MISSING;
-          break;
-        case 'n':
+        ਹਾਲਤ 'e':
+          can_ਬਹੁਲਕ = CAN_EXISTING;
+          ਰੋਕੋ;
+        ਹਾਲਤ 'f':
+          can_ਬਹੁਲਕ = CAN_ALL_BUT_ਆਖਰੀ;
+          ਰੋਕੋ;
+        ਹਾਲਤ 'm':
+          can_ਬਹੁਲਕ = CAN_MISSING;
+          ਰੋਕੋ;
+        ਹਾਲਤ 'n':
           no_newline = true;
-          break;
-        case 'q':
-        case 's':
+          ਰੋਕੋ;
+        ਹਾਲਤ 'q':
+        ਹਾਲਤ 's':
           verbose = false;
-          break;
-        case 'v':
+          ਰੋਕੋ;
+        ਹਾਲਤ 'v':
           verbose = true;
-          break;
-        case 'z':
+          ਰੋਕੋ;
+        ਹਾਲਤ 'z':
           use_nuls = true;
-          break;
+          ਰੋਕੋ;
         case_GETOPT_HELP_CHAR;
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        case_GETOPT_ਸੰਸਕਰਣ_CHAR (ਪ੍ਰੋਗਰਾਮ_NAME, AUTHORS);
+        ਮੂਲ:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (optind >= argc)
+  ਜੇ (optind >= argc)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
-  if (argc - optind > 1)
+  ਜੇ (argc - optind > 1)
     {
-      if (no_newline)
+      ਜੇ (no_newline)
         error (0, 0, _("ignoring --no-newline with multiple arguments"));
       no_newline = false;
     }
 
-  if (!use_nuls && isatty (STDOUT_FILENO))
+  ਜੇ (!use_nuls && isatty (STDOUT_FILENO))
     {
-      int qs = getenv_quoting_style ();
-      if (qs < 0)
+      ਪੂਰਨ qs = getenv_quoting_style ();
+      ਜੇ (qs < 0)
         qs = shell_escape_quoting_style;
-      if (qs != literal_quoting_style)
+      ਜੇ (qs != literal_quoting_style)
         {
-          set_quoting_style (NULL, qs);
+          ਸੈੱਟ_quoting_style (ਨਿਰਾ, qs);
           quote_output = true;
         }
     }
 
   /* POSIX requires a diagnostic message written to standard error and a
      non-zero exit status when given a file that is not a symbolic link.  */
-  if (getenv ("POSIXLY_CORRECT") != NULL)
+  ਜੇ (getenv ("POSIXLY_CORRECT") != ਨਿਰਾ)
     verbose = true;
 
-  for (; optind < argc; ++optind)
+  ਲਈ (; optind < argc; ++optind)
     {
-      char const *fname = argv[optind];
-      char *value = (can_mode != -1
-                     ? canonicalize_filename_mode (fname, can_mode)
-                     : areadlink_with_size (fname, 63));
-      if (value)
+      ਅੱਖਰ ਅਚਲ *fname = argv[optind];
+      ਅੱਖਰ *ਮੁੱਲ = (can_ਬਹੁਲਕ != -1
+                     ? canonicalize_filename_ਬਹੁਲਕ (fname, can_ਬਹੁਲਕ)
+                     : areadlink_with_ਮਾਪ (fname, 63));
+      ਜੇ (ਮੁੱਲ)
         {
-          fputs (quote_output ? quoteN (value) : value, stdout);
-          if (! no_newline)
-            putchar (use_nuls ? '\0' : '\n');
-          free (value);
-          if (ferror (stdout))
+          fputs (quote_output ? quoteN (ਮੁੱਲ) : ਮੁੱਲ, stdout);
+          ਜੇ (! no_newline)
+            ਅੱਖਰ_ਲਿਖੋ (use_nuls ? '\0' : '\n');
+          ਮੁਕਤ (ਮੁੱਲ);
+          ਜੇ (ferror (stdout))
             write_error ();
         }
-      else
+      ਨਹੀਂਤਾਂ
         {
-          status = EXIT_FAILURE;
-          if (verbose)
+          ਸਥਿਤੀ = EXIT_FAILURE;
+          ਜੇ (verbose)
             error (0, errno, "%s", quotef (fname));
         }
     }
 
-  return status;
+  ਵਾਪਸ ਸਥਿਤੀ;
 }

@@ -77,29 +77,29 @@
 */
 
 
-#include <config.h>
-#include <getopt.h>
-#include <stdbit.h>
-#include <stdio.h>
-#include <gmp.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <config.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <getopt.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <stdbit.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <stdio.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <gmp.h>
 
-#include "system.h"
-#include "assure.h"
-#include "full-write.h"
-#include "quote.h"
-#include "readtokens.h"
-#include "xstrtol.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "system.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "assure.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "full-write.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "quote.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "readtokens.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "xstrtol.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "factor"
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ ਪ੍ਰੋਗਰਾਮ_NAME "factor"
 
-#define AUTHORS \
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ AUTHORS \
   proper_name ("Paul Rubin"),                                           \
   proper_name_lite ("Torbjorn Granlund", "Torbj\303\266rn Granlund"),   \
   proper_name_lite ("Niels Moller", "Niels M\303\266ller")
 
 /* Token delimiters when reading from a file.  */
-static char const DELIM[] = "\n\t ";
+ਸਥਿਰ ਅੱਖਰ ਅਚਲ DELIM[] = "\n\t ";
 
 /* GMP uses the unsigned integer type mp_limb_t as its word in
    multiprecision arithmetic.  This code uses the same word for single
@@ -117,45 +117,45 @@ static char const DELIM[] = "\n\t ";
 /* The word size in bits.
    In the rest of this file's comments, B = 2^W_TYPE_SIZE is the base,
    and the notation (a1,a0) stands for B*a1 + a0.  */
-#ifdef GMP_LIMB_BITS
-# define W_TYPE_SIZE GMP_LIMB_BITS
-#else
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ GMP_LIMB_ਬਿੱਟ
+# define W_TYPE_ਮਾਪ GMP_LIMB_ਬਿੱਟ
+#ਨਹੀਂਤਾਂ
 /* An older GMP, or mini-gmp; guess the usual value.  */
-# define W_TYPE_SIZE ULONG_WIDTH
-#endif
+# define W_TYPE_ਮਾਪ ULONG_ਚੌੜਾਈ
+#ਜੇ_ਅੰਤ
 
 /* The maximum value of a word.  */
-#define MP_LIMB_MAX ((mp_limb_t) -1)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ MP_LIMB_MAX ((mp_limb_t) -1)
 
 /* Check W_TYPE_SIZE's value, as it might be a guess.  */
-static_assert (MP_LIMB_MAX >> (W_TYPE_SIZE - 1) == 1);
+static_assert (MP_LIMB_MAX >> (W_TYPE_ਮਾਪ - 1) == 1);
 
 /* Check that the builder didn't specify something perverse like
    "-DMINI_GMP_LIMB_TYPE=short -DW_TYPE_SIZE=USHRT_WIDTH".
    This could result in undefined behavior due to signed integer
    overflow if a word promotes to int.  */
-static_assert (INT_MAX < MP_LIMB_MAX);
+static_assert (ਵੱਧ_ਤੋਂ_ਵੱਧ_ਅੰਕ < MP_LIMB_MAX);
 
-#ifndef USE_LONGLONG_H
-# if (defined INT32_MAX && defined UINT32_MAX \
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ USE_LONGLONG_H
+# ਜੇ (defined INT32_MAX && defined UINT32_MAX \
       && defined INT64_MAX && defined UINT64_MAX)
 #  define USE_LONGLONG_H true
-# else
+# ਨਹੀਂਤਾਂ
 #  define USE_LONGLONG_H false
 # endif
-#endif
+#ਜੇ_ਅੰਤ
 
-#if USE_LONGLONG_H
+#ਜੇ USE_LONGLONG_H
 
 /* Make definitions for longlong.h to make it do what it can do for us */
 
-typedef mp_limb_t UWtype;
-typedef unsigned int UHWtype;
+ਕਿਸਮਪਰਿਭਾਸ਼ਾ mp_limb_t UWtype;
+ਕਿਸਮਪਰਿਭਾਸ਼ਾ ਬਿਨਾਨਿਸ਼ਾਨੀ ਪੂਰਨ UHWtype;
 # undef UDWtype
-typedef int32_t SItype;
-typedef uint32_t USItype;
-typedef int64_t DItype;
-typedef uint64_t UDItype;
+ਕਿਸਮਪਰਿਭਾਸ਼ਾ int32_t SItype;
+ਕਿਸਮਪਰਿਭਾਸ਼ਾ uint32_t USItype;
+ਕਿਸਮਪਰਿਭਾਸ਼ਾ int64_t DItype;
+ਕਿਸਮਪਰਿਭਾਸ਼ਾ uint64_t UDItype;
 # define LONGLONG_STANDALONE     /* Don't require GMP's longlong.h mdep files */
 
 /* FIXME make longlong.h really standalone, so that ASSERT, __GMP_DECLSPEC
@@ -163,112 +163,112 @@ typedef uint64_t UDItype;
 # define ASSERT(x)
 # define __GMP_DECLSPEC
 # ifndef __GMP_GNUC_PREREQ
-#  if defined __GNUC__ && defined __GNUC_MINOR__
+#  ਜੇ defined __GNUC__ && defined __GNUC_MINOR__
 #   define __GMP_GNUC_PREREQ(a, b) ((a) < __GNUC__ + ((b) <= __GNUC_MINOR__))
-#  else
+#  ਨਹੀਂਤਾਂ
 #   define __GMP_GNUC_PREREQ(a, b) false
 #  endif
 # endif
 
 /* longlong.h uses these macros only in certain system compiler combinations.
    Ensure usage to pacify -Wunused-macros.  */
-# if defined ASSERT || defined __GMP_DECLSPEC || defined __GMP_GNUC_PREREQ
+# ਜੇ defined ASSERT || defined __GMP_DECLSPEC || defined __GMP_GNUC_PREREQ
 # endif
 
 /* longlong.h uses casts even when useless.  */
-# if 14 <= __GNUC__
+# ਜੇ 14 <= __GNUC__
 #  pragma GCC diagnostic ignored "-Wuseless-cast"
 # endif
 
-# if _ARCH_PPC
+# ਜੇ _ARCH_PPC
 #  define HAVE_HOST_CPU_FAMILY_powerpc 1
 # endif
 # include "longlong.h"
-#endif
+#ਜੇ_ਅੰਤ
 
 /* 2*3*5*7*11...*101 fits in 128 bits, and has 26 prime factors.
    This code can be extended in the future as needed; show as an example
    2*3*5*7*11...*193 which fits in 257 bits, and has 44 prime factors.  */
-#if 2 * W_TYPE_SIZE <= 128
-enum { MAX_NFACTS = 26 };
-#elif 2 * W_TYPE_SIZE <= 257
-enum { MAX_NFACTS = 44 };
-#else
+#ਜੇ 2 * W_TYPE_ਮਾਪ <= 128
+ਗਿਣਤੀ { MAX_NFACTS = 26 };
+#ਜਾਂਜੇ 2 * W_TYPE_ਮਾਪ <= 257
+ਗਿਣਤੀ { MAX_NFACTS = 44 };
+#ਨਹੀਂਤਾਂ
 # error "configuration has a wide word; please update MAX_NFACTS definition"
-#endif
+#ਜੇ_ਅੰਤ
 
-enum
+ਗਿਣਤੀ
 {
   DEV_DEBUG_OPTION = CHAR_MAX + 1
 };
 
-static struct option const long_options[] =
+ਸਥਿਰ ਬਣਤਰ option ਅਚਲ long_options[] =
 {
-  {"exponents", no_argument, NULL, 'h'},
-  {"-debug", no_argument, NULL, DEV_DEBUG_OPTION},
+  {"exponents", no_ਦਲੀਲ, ਨਿਰਾ, 'h'},
+  {"-debug", no_ਦਲੀਲ, ਨਿਰਾ, DEV_DEBUG_OPTION},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_ਸੰਸਕਰਣ_OPTION_DECL},
+  {ਨਿਰਾ, 0, ਨਿਰਾ, 0}
 };
 
 /* If true, use p^e output format.  */
-static bool print_exponents;
+ਸਥਿਰ bool print_exponents;
 
 /* This represents an unsigned integer twice as wide as a word.  */
-typedef struct { mp_limb_t uu[2]; } uuint;
+ਕਿਸਮਪਰਿਭਾਸ਼ਾ ਬਣਤਰ { mp_limb_t uu[2]; } uuint;
 
 /* Accessors and constructors for the type.  Programs should not
    access the type's internals directly, in case some future version
    replaces the type with unsigned __int256 or whatever.  */
-static mp_limb_t lo (uuint u) { return u.uu[0]; }
-static mp_limb_t hi (uuint u) { return u.uu[1]; }
-static void hiset (uuint *u, mp_limb_t hi) { u->uu[1] = hi; }
-static bool hi_is_set (uuint const *pu) { return pu->uu[1] != 0; }
-static void
+ਸਥਿਰ mp_limb_t lo (uuint u) { ਵਾਪਸ u.uu[0]; }
+ਸਥਿਰ mp_limb_t hi (uuint u) { ਵਾਪਸ u.uu[1]; }
+ਸਥਿਰ ਖਾਲੀ hiset (uuint *u, mp_limb_t hi) { u->uu[1] = hi; }
+ਸਥਿਰ bool hi_is_ਸੈੱਟ (uuint ਅਚਲ *pu) { ਵਾਪਸ pu->uu[1] != 0; }
+ਸਥਿਰ ਖਾਲੀ
 uuset (mp_limb_t *phi, mp_limb_t *plo, uuint uu)
 {
   *phi = hi (uu);
   *plo = lo (uu);
 }
-static uuint
+ਸਥਿਰ uuint
 make_uuint (mp_limb_t hi, mp_limb_t lo)
 {
-  return (uuint) {{lo, hi}};
+  ਵਾਪਸ (uuint) {{lo, hi}};
 }
 
 /* BIG_POWER_OF_10 is a positive power of 10 that fits in a word.
    The larger it is, the more efficient the code will likely be.
    LOG_BIG_POWER_OF_10 = log (BIG_POWER_OF_10).  */
-#if W_TYPE_SIZE < 4
+#ਜੇ W_TYPE_ਮਾਪ < 4
 # error "Configuration error; platform word is impossibly narrow"
-#elif W_TYPE_SIZE < 30
+#ਜਾਂਜੇ W_TYPE_ਮਾਪ < 30
 /* An unusually narrow word.  */
-static mp_limb_t const BIG_POWER_OF_10 = 10;
-enum { LOG_BIG_POWER_OF_10 = 1 };
-#elif W_TYPE_SIZE < 64
+ਸਥਿਰ mp_limb_t ਅਚਲ BIG_POWER_ਦਾ_10 = 10;
+ਗਿਣਤੀ { LOG_BIG_POWER_ਦਾ_10 = 1 };
+#ਜਾਂਜੇ W_TYPE_ਮਾਪ < 64
 /* Almost surely a 32-bit word.  */
-static mp_limb_t const BIG_POWER_OF_10 = 1000000000;
-enum { LOG_BIG_POWER_OF_10 = 9 };
-#elif W_TYPE_SIZE < 128
+ਸਥਿਰ mp_limb_t ਅਚਲ BIG_POWER_ਦਾ_10 = 1000000000;
+ਗਿਣਤੀ { LOG_BIG_POWER_ਦਾ_10 = 9 };
+#ਜਾਂਜੇ W_TYPE_ਮਾਪ < 128
 /* Almost surely a 64-bit word.  */
-static mp_limb_t const BIG_POWER_OF_10 = 10000000000000000000llu;
-enum { LOG_BIG_POWER_OF_10 = 19 };
-#else
+ਸਥਿਰ mp_limb_t ਅਚਲ BIG_POWER_ਦਾ_10 = 10000000000000000000llu;
+ਗਿਣਤੀ { LOG_BIG_POWER_ਦਾ_10 = 19 };
+#ਨਹੀਂਤਾਂ
 /* An unusually wide word.  */
-static mp_limb_t const BIG_POWER_OF_10 =
+ਸਥਿਰ mp_limb_t ਅਚਲ BIG_POWER_ਦਾ_10 =
   (mp_limb_t) 10000000000000000000llu * 10000000000000000000llu;
-enum { LOG_BIG_POWER_OF_10 = 38 };
-#endif
+ਗਿਣਤੀ { LOG_BIG_POWER_ਦਾ_10 = 38 };
+#ਜੇ_ਅੰਤ
 
 /* Check that struct factors can use unsigned char to record a uuint's
    prime factor's multiplicity, which is at most 2 * W_TYPE_SIZE - 1.  */
-static_assert (2 * W_TYPE_SIZE - 1 <= UCHAR_MAX);
+static_assert (2 * W_TYPE_ਮਾਪ - 1 <= UCHAR_MAX);
 
 /* Likewise for recording the number of prime factors.  */
 static_assert (MAX_NFACTS <= UCHAR_MAX);
 
 /* Prime factors of a uuint.  At most one is a uuint.  */
-struct factors
+ਬਣਤਰ factors
 {
   /* If PLARGE.uu[1] is nonzero, PLARGE is a double-word prime factor
      with multiplicity 1; otherwise, PLARGE is not a factor and
@@ -278,55 +278,55 @@ struct factors
   /* Distinct single-word prime factors, their multiplicities,
      and their number.  */
   mp_limb_t     p[MAX_NFACTS];
-  unsigned char e[MAX_NFACTS];
-  unsigned char nfactors;
+  ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ e[MAX_NFACTS];
+  ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ nfactors;
 };
 
 /* An mpz's prime factor and multiplicity.  */
-struct mp_factor
+ਬਣਤਰ mp_ਗੁਣਕ
 {
   mpz_t p;
   mp_bitcnt_t e;
 };
 
 /* Prime factors of an mpz_t.  */
-struct mp_factors
+ਬਣਤਰ mp_factors
 {
   idx_t nfactors;
   idx_t nalloc;
 
   /* A vector of distinct prime factors, a count of the factors,
      and the number of allocated slots in the vector.  */
-  struct mp_factor *f COUNTED_BY (nfactors);
+  ਬਣਤਰ mp_ਗੁਣਕ *f COUNTED_BY (nfactors);
 };
 
-static void factor (struct factors *, mp_limb_t, mp_limb_t);
-static void factor_up (struct factors *, mp_limb_t, mp_limb_t, idx_t);
+ਸਥਿਰ ਖਾਲੀ ਗੁਣਕ (ਬਣਤਰ factors *, mp_limb_t, mp_limb_t);
+ਸਥਿਰ ਖਾਲੀ ਗੁਣਕ_ਉੱਪਰ (ਬਣਤਰ factors *, mp_limb_t, mp_limb_t, idx_t);
 
 /* Set (w1,w0) = u * v.  */
-#ifndef umul_ppmm
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ umul_ppmm
 /* Speed things up if there is an unsigned type uuroom_t that is wide
    enough to hold two words.  */
-# if W_TYPE_SIZE <= UINTMAX_WIDTH / 2
+# ਜੇ W_TYPE_ਮਾਪ <= UINTMAX_ਚੌੜਾਈ / 2
 #  define uuroom_t uintmax_t
-# elif W_TYPE_SIZE <= 64 && defined __SIZEOF_INT128__
-#  define uuroom_t unsigned __int128
+# elif W_TYPE_ਮਾਪ <= 64 && defined __SIZEOF_INT128__
+#  define uuroom_t ਬਿਨਾਨਿਸ਼ਾਨੀ __int128
 # endif
 # ifdef uuroom_t
 #  define umul_ppmm(w1, w0, u, v)		\
-    do {					\
+    ਕਰੋ {					\
       uuroom_t _u = u, _w = _u * (v);		\
-      (w1) = _w >> W_TYPE_SIZE;			\
+      (w1) = _w >> W_TYPE_ਮਾਪ;			\
       (w0) = _w;				\
-    } while (false)
+    } ਜਦੋਂ (false)
 # endif
-#endif
-#ifndef umul_ppmm
-static mp_limb_t const __ll_B = (mp_limb_t) 1 << (W_TYPE_SIZE / 2);
-static mp_limb_t __ll_lowpart (mp_limb_t t) { return t & (__ll_B - 1); }
-static mp_limb_t __ll_highpart (mp_limb_t t) { return t >> (W_TYPE_SIZE / 2); }
+#ਜੇ_ਅੰਤ
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ umul_ppmm
+ਸਥਿਰ mp_limb_t ਅਚਲ __ll_B = (mp_limb_t) 1 << (W_TYPE_ਮਾਪ / 2);
+ਸਥਿਰ mp_limb_t __ll_lowpart (mp_limb_t t) { ਵਾਪਸ t & (__ll_B - 1); }
+ਸਥਿਰ mp_limb_t __ll_highpart (mp_limb_t t) { ਵਾਪਸ t >> (W_TYPE_ਮਾਪ / 2); }
 # define umul_ppmm(w1, w0, u, v)                                        \
-  do {                                                                  \
+  ਕਰੋ {                                                                  \
     mp_limb_t __u = u, __v = v,						\
                                                                         \
       __ul = __ll_lowpart (__u),					\
@@ -340,30 +340,30 @@ static mp_limb_t __ll_highpart (mp_limb_t t) { return t >> (W_TYPE_SIZE / 2); }
       __x3 = __uh * __vh;						\
                                                                         \
     __x1 += __ll_highpart (__x0);/* This can't give carry.  */		\
-    if (ckd_add (&__x1, __x1, __x2))	/* Did this give a carry?  */	\
+    ਜੇ (ckd_ਜੋੜੋ (&__x1, __x1, __x2))	/* Did this give a carry?  */	\
       __x3 += __ll_B;		/* Yes, add it in the proper pos.  */	\
                                                                         \
     (w1) = __x3 + __ll_highpart (__x1);                                 \
-    (w0) = (__x1 << W_TYPE_SIZE / 2) + __ll_lowpart (__x0);             \
-  } while (false)
-#endif
+    (w0) = (__x1 << W_TYPE_ਮਾਪ / 2) + __ll_lowpart (__x0);             \
+  } ਜਦੋਂ (false)
+#ਜੇ_ਅੰਤ
 
 /* Set (q,r) to the quotient and remainder of dividing (n1,n0) by d.  */
-#if !defined udiv_qrnnd || defined UDIV_NEEDS_NORMALIZATION
+#ਜੇ !defined udiv_qrnnd || defined UDIV_NEEDS_NORMALIZATION
 /* Define our own, not needing normalization.  This function is
    currently not performance critical, so keep it simple.  Similar to
    the mod macro below.  */
 # undef udiv_qrnnd
 # define udiv_qrnnd(q, r, n1, n0, d)                                    \
-  do {                                                                  \
+  ਕਰੋ {                                                                  \
     mp_limb_t __d1 = d, __d0 = 0, __q = 0, __r1 = n1, __r0 = n0;	\
                                                                         \
     affirm (__r1 < __d1);                                               \
-    for (int __i = W_TYPE_SIZE; __i > 0; __i--)                         \
+    ਲਈ (ਪੂਰਨ __i = W_TYPE_ਮਾਪ; __i > 0; __i--)                         \
       {                                                                 \
         rsh2 (__d1, __d0, __d1, __d0, 1);                               \
         __q <<= 1;                                                      \
-        if (ge2 (__r1, __r0, __d1, __d0))                               \
+        ਜੇ (ge2 (__r1, __r0, __d1, __d0))                               \
           {                                                             \
             __q++;                                                      \
             sub_ddmmss (__r1, __r0, __r1, __r0, __d1, __d0);            \
@@ -371,127 +371,127 @@ static mp_limb_t __ll_highpart (mp_limb_t t) { return t >> (W_TYPE_SIZE / 2); }
       }                                                                 \
     (r) = __r0;                                                         \
     (q) = __q;                                                          \
-  } while (false)
-#endif
+  } ਜਦੋਂ (false)
+#ਜੇ_ਅੰਤ
 
 /* Set (sh,sl) = (ah,al) + (bh,bl).  Overflow wraps around.  */
-#if !defined add_ssaaaa
-# define add_ssaaaa(sh, sl, ah, al, bh, bl)                             \
-   ((sh) = (ah) + (bh) + ckd_add (&(sl), al, bl))
-#endif
+#ਜੇ !defined ਜੋੜੋ_ssaaaa
+# define ਜੋੜੋ_ssaaaa(sh, sl, ah, al, bh, bl)                             \
+   ((sh) = (ah) + (bh) + ckd_ਜੋੜੋ (&(sl), al, bl))
+#ਜੇ_ਅੰਤ
 
 /* Set (rh,rl) = (ah,al) >> cnt, where 0 < cnt < W_TYPE_SIZE.  */
-#define rsh2(rh, rl, ah, al, cnt)                                       \
-  do {                                                                  \
-    (rl) = ((ah) << (W_TYPE_SIZE - (cnt))) | ((al) >> (cnt));           \
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ rsh2(rh, rl, ah, al, cnt)                                       \
+  ਕਰੋ {                                                                  \
+    (rl) = ((ah) << (W_TYPE_ਮਾਪ - (cnt))) | ((al) >> (cnt));           \
     (rh) = (ah) >> (cnt);                                               \
-  } while (false)
+  } ਜਦੋਂ (false)
 
 /* Set (rh,rl) = (ah,al) << cnt, where 0 < cnt < W_TYPE_SIZE.
    Overflow wraps around.  */
-#define lsh2(rh, rl, ah, al, cnt)                                       \
-  do {                                                                  \
-    (rh) = ((ah) << cnt) | ((al) >> (W_TYPE_SIZE - (cnt)));             \
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ lsh2(rh, rl, ah, al, cnt)                                       \
+  ਕਰੋ {                                                                  \
+    (rh) = ((ah) << cnt) | ((al) >> (W_TYPE_ਮਾਪ - (cnt)));             \
     (rl) = (al) << (cnt);                                               \
-  } while (false)
+  } ਜਦੋਂ (false)
 
 /* (ah,hl) < (bh,bl)?  */
-static bool
+ਸਥਿਰ bool
 lt2 (mp_limb_t ah, mp_limb_t al, mp_limb_t bh, mp_limb_t bl)
 {
   mp_limb_t dh, dl;
   bool vh = ckd_sub (&dh, ah, bh);
   mp_limb_t vl = ckd_sub (&dl, al, bl);
-  return vh | ckd_sub (&dh, dh, vl);
+  ਵਾਪਸ vh | ckd_sub (&dh, dh, vl);
 }
 
 /* (ah,hl) >= (bh,bl)?  */
-static bool
+ਸਥਿਰ bool
 ge2 (mp_limb_t ah, mp_limb_t al, mp_limb_t bh, mp_limb_t bl)
 {
-  return !lt2 (ah, al, bh, bl);
+  ਵਾਪਸ !lt2 (ah, al, bh, bl);
 }
 
 /* Set (rh,rl) = (ah,al) - (bh,bl).  Overflow wraps around.  */
-#ifndef sub_ddmmss
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ sub_ddmmss
 # define sub_ddmmss(rh, rl, ah, al, bh, bl)                             \
    ((rh) = (ah) - (bh) - ckd_sub (&(rl), al, bl))
-#endif
+#ਜੇ_ਅੰਤ
 
 /* Set r = (a - b) mod n, where a < n & b <= n.  */
-#define submod(r,a,b,n)                                                 \
-  do {                                                                  \
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ submod(r,a,b,n)                                                 \
+  ਕਰੋ {                                                                  \
     mp_limb_t _s, _t = -ckd_sub (&_s, a, b);				\
     (r) = ((n) & _t) + _s;						\
-  } while (false)
+  } ਜਦੋਂ (false)
 
 /* Set r = (a + b) mod n, where a < n & b <= n.  */
-#define addmod(r,a,b,n)                                                 \
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ addmod(r,a,b,n)                                                 \
   submod (r, a, (n) - (b), n)
 
 /* Modular two-word addition and subtraction.  For performance reasons, the
    most significant bit of n1 must be clear.  The destination variables must be
    distinct from the mod operand.  */
-#define addmod2(r1, r0, a1, a0, b1, b0, n1, n0)                         \
-  do {                                                                  \
-    add_ssaaaa (r1, r0, a1, a0, b1, b0);				\
-    if (ge2 (r1, r0, n1, n0))						\
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ addmod2(r1, r0, a1, a0, b1, b0, n1, n0)                         \
+  ਕਰੋ {                                                                  \
+    ਜੋੜੋ_ssaaaa (r1, r0, a1, a0, b1, b0);				\
+    ਜੇ (ge2 (r1, r0, n1, n0))						\
       sub_ddmmss (r1, r0, r1, r0, n1, n0);				\
-  } while (false)
-#define submod2(r1, r0, a1, a0, b1, b0, n1, n0)                         \
-  do {                                                                  \
+  } ਜਦੋਂ (false)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ submod2(r1, r0, a1, a0, b1, b0, n1, n0)                         \
+  ਕਰੋ {                                                                  \
     bool _v1 = ckd_sub (&(r1), a1, b1);					\
     mp_limb_t _v0 = ckd_sub (&(r0), a0, b0);				\
-    if (_v1 | ckd_sub (&(r1), r1, _v0))					\
-      add_ssaaaa (r1, r0, r1, r0, n1, n0);				\
-  } while (false)
+    ਜੇ (_v1 | ckd_sub (&(r1), r1, _v0))					\
+      ਜੋੜੋ_ssaaaa (r1, r0, r1, r0, n1, n0);				\
+  } ਜਦੋਂ (false)
 
 /* Return 0 if x < B/2, MP_LIMB_MAX otherwise.  */
-static mp_limb_t
-highbit_to_mask (mp_limb_t x)
+ਸਥਿਰ mp_limb_t
+highbit_ਮੰਜ਼ਿਲ_ਨਕਾਬ (mp_limb_t x)
 {
-  return - (x >> (W_TYPE_SIZE - 1));
+  ਵਾਪਸ - (x >> (W_TYPE_ਮਾਪ - 1));
 }
 
 /* Return (a1,a0) mod (d1,d0), where d1 != 0.  */
-ATTRIBUTE_PURE static uuint
+ATTRIBUTE_ਸ਼ੁੱਧ ਸਥਿਰ uuint
 mod2 (mp_limb_t a1, mp_limb_t a0, mp_limb_t d1, mp_limb_t d0)
 {
   affirm (d1 != 0);
 
-  if (a1)
+  ਜੇ (a1)
     {
-      int cntd = stdc_leading_zeros (d1);
-      int cnta = stdc_leading_zeros (a1);
-      int cnt = cntd - cnta;
-      if (0 < cnt)
+      ਪੂਰਨ cntd = stdc_leading_zeros (d1);
+      ਪੂਰਨ cnta = stdc_leading_zeros (a1);
+      ਪੂਰਨ cnt = cntd - cnta;
+      ਜੇ (0 < cnt)
         {
           lsh2 (d1, d0, d1, d0, cnt);
-          for (int i = 0; i < cnt; i++)
+          ਲਈ (ਪੂਰਨ i = 0; i < cnt; i++)
             {
-              if (ge2 (a1, a0, d1, d0))
+              ਜੇ (ge2 (a1, a0, d1, d0))
                 sub_ddmmss (a1, a0, a1, a0, d1, d0);
               rsh2 (d1, d0, d1, d0, 1);
             }
         }
     }
 
-  return make_uuint (a1, a0);
+  ਵਾਪਸ make_uuint (a1, a0);
 }
 
 /* Return the greatest common divisor of a and b,
    where b is odd.  */
 ATTRIBUTE_CONST
-static mp_limb_t
-gcd_odd (mp_limb_t a, mp_limb_t b)
+ਸਥਿਰ mp_limb_t
+ਮਹੱਤਮ_ਸਾਂਝਾ_ਭਾਜਕ_odd (mp_limb_t a, mp_limb_t b)
 {
-  if (a == 0)
-    return b;
+  ਜੇ (a == 0)
+    ਵਾਪਸ b;
 
   /* Take out least significant one bit, to make room for sign */
   b >>= 1;
 
-  for (;;)
+  ਲਈ (;;)
     {
       mp_limb_t t;
       mp_limb_t bgta;
@@ -500,10 +500,10 @@ gcd_odd (mp_limb_t a, mp_limb_t b)
       mp_limb_t ao = a >> stdc_trailing_zeros (a);
 
       t = (ao >> 1) - b;
-      if (t == 0)
-        return ao;
+      ਜੇ (t == 0)
+        ਵਾਪਸ ao;
 
-      bgta = highbit_to_mask (t);
+      bgta = highbit_ਮੰਜ਼ਿਲ_ਨਕਾਬ (t);
 
       /* b <-- min (a, b) */
       b += (bgta & t);
@@ -515,220 +515,220 @@ gcd_odd (mp_limb_t a, mp_limb_t b)
 
 /* Return the greatest common divisor of (a1,a0) and (b1,b0),
    where (b1,b0) is odd.  */
-ATTRIBUTE_PURE static uuint
+ATTRIBUTE_ਸ਼ੁੱਧ ਸਥਿਰ uuint
 gcd2_odd (mp_limb_t a1, mp_limb_t a0, mp_limb_t b1, mp_limb_t b0)
 {
   affirm (b0 & 1);
 
-  if (!a0)
+  ਜੇ (!a0)
     {
       a0 = a1, a1 = 0;
-      if (!a0)
-        return make_uuint (b1, b0);
+      ਜੇ (!a0)
+        ਵਾਪਸ make_uuint (b1, b0);
     }
-  goto make_A_odd;
+  ਜਾਓ make_A_odd;
 
-  for (;;)
+  ਲਈ (;;)
     {
-      if ((b1 | a1) == 0)
-        return make_uuint (0, gcd_odd (b0, a0));
+      ਜੇ ((b1 | a1) == 0)
+        ਵਾਪਸ make_uuint (0, ਮਹੱਤਮ_ਸਾਂਝਾ_ਭਾਜਕ_odd (b0, a0));
 
-      if (lt2 (b1, b0, a1, a0))
+      ਜੇ (lt2 (b1, b0, a1, a0))
         {
           sub_ddmmss (a1, a0, a1, a0, b1, b0);
-          if (!a0)
+          ਜੇ (!a0)
             a0 = a1, a1 = 0;
         make_A_odd:
           assume (a0);
-          int ctz = stdc_trailing_zeros (a0);
-          if (ctz)
+          ਪੂਰਨ ctz = stdc_trailing_zeros (a0);
+          ਜੇ (ctz)
             rsh2 (a1, a0, a1, a0, ctz);
         }
-      else
+      ਨਹੀਂਤਾਂ
         {
           sub_ddmmss (b1, b0, b1, b0, a1, a0);
-          if (!b0)
+          ਜੇ (!b0)
             {
               b0 = b1, b1 = 0;
-              if (!b0)
-                break;
+              ਜੇ (!b0)
+                ਰੋਕੋ;
             }
-          int ctz = stdc_trailing_zeros (b0);
-          if (ctz)
+          ਪੂਰਨ ctz = stdc_trailing_zeros (b0);
+          ਜੇ (ctz)
             rsh2 (b1, b0, b1, b0, ctz);
         }
     }
 
-  return make_uuint (a1, a0);
+  ਵਾਪਸ make_uuint (a1, a0);
 }
 
 /* Store into FACTORS a prime factor PRIME with multiplicity M.  */
-static void
-factor_insert_multiplicity (struct factors *factors,
-                            mp_limb_t prime, int m)
+ਸਥਿਰ ਖਾਲੀ
+ਗੁਣਕ_ਪਾਓ_multiplicity (ਬਣਤਰ factors *factors,
+                            mp_limb_t ਅਭਾਜ, ਪੂਰਨ m)
 {
-  int nfactors = factors->nfactors;
+  ਪੂਰਨ nfactors = factors->nfactors;
   mp_limb_t *p = factors->p;
-  unsigned char *e = factors->e;
+  ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ *e = factors->e;
 
   /* Locate position for insert new or increment e.  */
-  int i;
-  for (i = nfactors; 0 < i; i--)
+  ਪੂਰਨ i;
+  ਲਈ (i = nfactors; 0 < i; i--)
     {
-      if (p[i - 1] < prime)
-        break;
-      if (p[i - 1] == prime)
+      ਜੇ (p[i - 1] < ਅਭਾਜ)
+        ਰੋਕੋ;
+      ਜੇ (p[i - 1] == ਅਭਾਜ)
         {
           e[i - 1] += m;
-          return;
+          ਵਾਪਸ;
         }
     }
 
   factors->nfactors = nfactors + 1;
-  memmove (&p[i + 1], &p[i], (nfactors - i) * sizeof *p);
-  memmove (&e[i + 1], &e[i], (nfactors - i) * sizeof *e);
+  memmove (&p[i + 1], &p[i], (nfactors - i) * ਆਕਾਰ *p);
+  memmove (&e[i + 1], &e[i], (nfactors - i) * ਆਕਾਰ *e);
   e[i] = m;
-  p[i] = prime;
+  p[i] = ਅਭਾਜ;
 }
 
 /* Store into FACTORS a prime factor PRIME.  */
-static void
-factor_insert (struct factors *factors, mp_limb_t prime)
+ਸਥਿਰ ਖਾਲੀ
+ਗੁਣਕ_ਪਾਓ (ਬਣਤਰ factors *factors, mp_limb_t ਅਭਾਜ)
 {
-  factor_insert_multiplicity (factors, prime, 1);
+  ਗੁਣਕ_ਪਾਓ_multiplicity (factors, ਅਭਾਜ, 1);
 }
 
 /* Store into FACTORS a prime factor (P1,P0).  If P1 != 0,
    FACTORS must not already contain a large prime factor.  */
-static void
-factor_insert_large (struct factors *factors,
+ਸਥਿਰ ਖਾਲੀ
+ਗੁਣਕ_ਪਾਓ_large (ਬਣਤਰ factors *factors,
                      mp_limb_t p1, mp_limb_t p0)
 {
-  if (p1 > 0)
+  ਜੇ (p1 > 0)
     {
-      affirm (!hi_is_set (&factors->plarge));
+      affirm (!hi_is_ਸੈੱਟ (&factors->plarge));
       factors->plarge = make_uuint (p1, p0);
     }
-  else
-    factor_insert (factors, p0);
+  ਨਹੀਂਤਾਂ
+    ਗੁਣਕ_ਪਾਓ (factors, p0);
 }
 
-#ifndef mpz_inits
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ mpz_inits
 
 # include <stdarg.h>
 
 # define mpz_inits(...) mpz_va_init (mpz_init, __VA_ARGS__)
 # define mpz_clears(...) mpz_va_init (mpz_clear, __VA_ARGS__)
 
-static void
-mpz_va_init (void (*mpz_single_init)(mpz_t), ...)
+ਸਥਿਰ ਖਾਲੀ
+mpz_va_init (ਖਾਲੀ (*mpz_single_init)(mpz_t), ...)
 {
   va_list ap;
 
-  va_start (ap, mpz_single_init);
+  va_ਸ਼ੁਰੂ (ap, mpz_single_init);
 
   mpz_t *mpz;
-  while ((mpz = va_arg (ap, mpz_t *)))
+  ਜਦੋਂ ((mpz = va_arg (ap, mpz_t *)))
     mpz_single_init (*mpz);
 
-  va_end (ap);
+  va_ਸਿਰਾ (ap);
 }
-#endif
+#ਜੇ_ਅੰਤ
 
-#ifndef mpn_tdiv_qr
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ mpn_tdiv_qr
 
-static void
-copy_mpn_from_mpz (mp_limb_t *p, mp_size_t n, mpz_t z)
+ਸਥਿਰ ਖਾਲੀ
+copy_mpn_from_mpz (mp_limb_t *p, mp_ਮਾਪ_t n, mpz_t z)
 {
-  mp_size_t zsize = mpz_size (z);
+  mp_ਮਾਪ_t zsize = mpz_ਮਾਪ (z);
   mpn_copyi (p, mpz_limbs_read (z), zsize);
   mpn_zero (p + zsize, n - zsize);
 }
 
-static void
-mpn_tdiv_qr (mp_limb_t *qp, mp_limb_t *rp, MAYBE_UNUSED mp_size_t qxn,
-             mp_limb_t const *np, mp_size_t nn,
-             mp_limb_t const *dp, mp_size_t dn)
+ਸਥਿਰ ਖਾਲੀ
+mpn_tdiv_qr (mp_limb_t *qp, mp_limb_t *rp, MAYBE_ਅਣਵਰਤਿਆ mp_ਮਾਪ_t qxn,
+             mp_limb_t ਅਚਲ *np, mp_ਮਾਪ_t nn,
+             mp_limb_t ਅਚਲ *dp, mp_ਮਾਪ_t dn)
 {
   mpz_t q, r, n, d;
-  mpz_inits (q, r, NULL);
+  mpz_inits (q, r, ਨਿਰਾ);
   mpz_tdiv_qr (q, r, mpz_roinit_n (n, np, nn), mpz_roinit_n (d, dp, dn));
   copy_mpn_from_mpz (qp, nn - dn + 1, q);
   copy_mpn_from_mpz (rp, dn, r);
-  mpz_clears (q, r, NULL);
+  mpz_clears (q, r, ਨਿਰਾ);
 }
-#endif
+#ਜੇ_ਅੰਤ
 
-static struct mp_factors mp_factor (mpz_t);
+ਸਥਿਰ ਬਣਤਰ mp_factors mp_ਗੁਣਕ (mpz_t);
 
 /* Return an empty set of factors.  */
-static struct mp_factors
-mp_no_factors (void)
+ਸਥਿਰ ਬਣਤਰ mp_factors
+mp_no_factors (ਖਾਲੀ)
 {
-  return (struct mp_factors) {0};
+  ਵਾਪਸ (ਬਣਤਰ mp_factors) {0};
 }
 
 /* Free storage allocated for FACTORS, making it uninitialized.  */
-static void
-mp_factor_clear (struct mp_factors *factors)
+ਸਥਿਰ ਖਾਲੀ
+mp_ਗੁਣਕ_clear (ਬਣਤਰ mp_factors *factors)
 {
-  struct mp_factor *f = factors->f;
-  for (idx_t i = 0; i < factors->nfactors; i++)
+  ਬਣਤਰ mp_ਗੁਣਕ *f = factors->f;
+  ਲਈ (idx_t i = 0; i < factors->nfactors; i++)
     mpz_clear (f[i].p);
-  free (f);
+  ਮੁਕਤ (f);
 }
 
 /* Store into FACTORS a prime factor PRIME with multiplicity M.  */
-static void
-mp_factor_insert (struct mp_factors *factors, mpz_t prime, mp_bitcnt_t m)
+ਸਥਿਰ ਖਾਲੀ
+mp_ਗੁਣਕ_ਪਾਓ (ਬਣਤਰ mp_factors *factors, mpz_t ਅਭਾਜ, mp_bitcnt_t m)
 {
   idx_t nfactors = factors->nfactors;
-  struct mp_factor *f = factors->f;
+  ਬਣਤਰ mp_ਗੁਣਕ *f = factors->f;
   idx_t i;
 
   /* Locate position for insert new or increment e.  */
-  for (i = nfactors; 0 < i; i--)
+  ਲਈ (i = nfactors; 0 < i; i--)
     {
-      int sgn = mpz_cmp (f[i - 1].p, prime);
-      if (sgn < 0)
-        break;
-      if (sgn == 0)
+      ਪੂਰਨ sgn = mpz_cmp (f[i - 1].p, ਅਭਾਜ);
+      ਜੇ (sgn < 0)
+        ਰੋਕੋ;
+      ਜੇ (sgn == 0)
         {
           f[i - 1].e += m;
-          return;
+          ਵਾਪਸ;
         }
     }
 
-  if (nfactors == factors->nalloc)
-    factors->f = f = xpalloc (f, &factors->nalloc, 1, -1, sizeof *f);
+  ਜੇ (nfactors == factors->nalloc)
+    factors->f = f = xpalloc (f, &factors->nalloc, 1, -1, ਆਕਾਰ *f);
 
   factors->nfactors = nfactors + 1;
-  memmove (&f[i + 1], &f[i], (nfactors - i) * sizeof *f);
+  memmove (&f[i + 1], &f[i], (nfactors - i) * ਆਕਾਰ *f);
   f[i].e = m;
-  mpz_init_set (f[i].p, prime);
+  mpz_init_ਸੈੱਟ (f[i].p, ਅਭਾਜ);
 }
 
 /* Store into FACTORS a prime factor PRIME with multiplicity M.  */
-static void
-mp_factor_insert1 (struct mp_factors *factors, mp_limb_t prime, mp_bitcnt_t m)
+ਸਥਿਰ ਖਾਲੀ
+mp_ਗੁਣਕ_insert1 (ਬਣਤਰ mp_factors *factors, mp_limb_t ਅਭਾਜ, mp_bitcnt_t m)
 {
-  mpz_t pz = MPZ_ROINIT_N (&prime, 1);
-  mp_factor_insert (factors, pz, m);
+  mpz_t pz = MPZ_ROINIT_N (&ਅਭਾਜ, 1);
+  mp_ਗੁਣਕ_ਪਾਓ (factors, pz, m);
 }
 
 
 /* primes_ptab[i] is prime i, where the zeroth prime is 3.
    However, the last 7 entries are sentinels.  */
-#define P(a,b,c) a,
-static int_least16_t const primes_ptab[] = {
-#include "primes.h"
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ P(a,b,c) a,
+ਸਥਿਰ int_least16_t ਅਚਲ ਅਭਾਜ_ਸੰਖਿਆਵਾਂ_ptab[] = {
+#ਅਨ੍ਤਰ੍ਭਾਵ "primes.h"
 0,0,0,0,0,0,0                           /* 7 sentinels for 8-way loop */
 };
-#undef P
+#ਪਰਿਭਾਸ਼ਾ_ਰੱਦ P
 
-enum { PRIMES_PTAB_ENTRIES = countof (primes_ptab) - 8 + 1 };
+ਗਿਣਤੀ { ਅਭਾਜ_ਸੰਖਿਆਵਾਂ_PTAB_ENTRIES = countof (ਅਭਾਜ_ਸੰਖਿਆਵਾਂ_ptab) - 8 + 1 };
 
-struct primes_dtab
+ਬਣਤਰ ਅਭਾਜ_ਸੰਖਿਆਵਾਂ_dtab
 {
   mp_limb_t binv, lim;
 };
@@ -739,20 +739,20 @@ struct primes_dtab
    primes_dtab[i].lim is the maximum value that won't overflow in
    mp_limb_t arithmetic when multiplied by the ith prime.
    However, the last 7 entries of primes_dtab are sentinels.  */
-#define P(a,b,c) {b,c},
-static const struct primes_dtab primes_dtab[] = {
-#include "primes.h"
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ P(a,b,c) {b,c},
+ਸਥਿਰ ਅਚਲ ਬਣਤਰ ਅਭਾਜ_ਸੰਖਿਆਵਾਂ_dtab ਅਭਾਜ_ਸੰਖਿਆਵਾਂ_dtab[] = {
+#ਅਨ੍ਤਰ੍ਭਾਵ "primes.h"
 {1,0},{1,0},{1,0},{1,0},{1,0},{1,0},{1,0} /* 7 sentinels for 8-way loop */
 };
-#undef P
+#ਪਰਿਭਾਸ਼ਾ_ਰੱਦ P
 
 /* Verify that a word is not wider than
    the integers used to generate primes.h.  */
-static_assert (W_TYPE_SIZE <= WIDE_UINT_BITS);
+static_assert (W_TYPE_ਮਾਪ <= WIDE_UINT_ਬਿੱਟ);
 
 /* debugging for developers.  Enables devmsg().
    This flag is used only in the GMP code.  */
-static bool dev_debug = false;
+ਸਥਿਰ bool dev_debug = false;
 
 /* Number of Miller-Rabin tests to run.  For more, see:
 
@@ -770,9 +770,9 @@ static bool dev_debug = false;
    which mpz_probab_prime_p always uses.  So default MR_REPS to 24,
    the maximum value for which mpz_probab_prime_p does not do extra
    Miller-Rabin tests.  */
-#ifndef MR_REPS
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ MR_REPS
 # define MR_REPS 24
-#endif
+#ਜੇ_ਅੰਤ
 
 /* Trial division with odd primes uses the following trick.
 
@@ -809,17 +809,17 @@ static bool dev_debug = false;
 
 /* The kernel of factor_using_division.  This function is called in a
    loop unrolled by hand.  */
-static inline mp_limb_t
-divblock (struct factors *factors, mp_limb_t t0, struct primes_dtab const *pd,
-          idx_t i, int ioff)
+ਸਥਿਰ ਸਤਰਅੰਦਰ mp_limb_t
+divblock (ਬਣਤਰ factors *factors, mp_limb_t t0, ਬਣਤਰ ਅਭਾਜ_ਸੰਖਿਆਵਾਂ_dtab ਅਚਲ *pd,
+          idx_t i, ਪੂਰਨ ioff)
 {
-  for (;;)
+  ਲਈ (;;)
     {
       mp_limb_t q = t0 * pd[ioff].binv;
-      if (LIKELY (pd[ioff].lim < q))
-        return t0;
+      ਜੇ (LIKELY (pd[ioff].lim < q))
+        ਵਾਪਸ t0;
       t0 = q;
-      factor_insert (factors, primes_ptab[i + ioff]);
+      ਗੁਣਕ_ਪਾਓ (factors, ਅਭਾਜ_ਸੰਖਿਆਵਾਂ_ptab[i + ioff]);
     }
 }
 
@@ -828,55 +828,55 @@ divblock (struct factors *factors, mp_limb_t t0, struct primes_dtab const *pd,
    However, primes less than prime I have
    already been considered, and need not be looked at again.
    Return (T1,T0) divided by the factors found.  */
-static uuint
-factor_using_division (struct factors *factors, mp_limb_t t1, mp_limb_t t0,
+ਸਥਿਰ uuint
+ਗੁਣਕ_using_division (ਬਣਤਰ factors *factors, mp_limb_t t1, mp_limb_t t0,
                        idx_t i)
 {
-  if (t0 % 2 == 0)
+  ਜੇ (t0 % 2 == 0)
     {
-      int cnt;
+      ਪੂਰਨ cnt;
 
-      if (t0 == 0)
+      ਜੇ (t0 == 0)
         {
           assume (t1);
           cnt = stdc_trailing_zeros (t1);
           t0 = t1 >> cnt;
           t1 = 0;
-          cnt += W_TYPE_SIZE;
+          cnt += W_TYPE_ਮਾਪ;
         }
-      else
+      ਨਹੀਂਤਾਂ
         {
           cnt = stdc_trailing_zeros (t0);
           rsh2 (t1, t0, t1, t0, cnt);
         }
 
-      factor_insert_multiplicity (factors, 2, cnt);
+      ਗੁਣਕ_ਪਾਓ_multiplicity (factors, 2, cnt);
     }
 
-  for (; t1 > 0 && i < PRIMES_PTAB_ENTRIES; i++)
+  ਲਈ (; t1 > 0 && i < ਅਭਾਜ_ਸੰਖਿਆਵਾਂ_PTAB_ENTRIES; i++)
     {
-      mp_limb_t p = primes_ptab[i];
-      for (;;)
+      mp_limb_t p = ਅਭਾਜ_ਸੰਖਿਆਵਾਂ_ptab[i];
+      ਲਈ (;;)
         {
           mp_limb_t q1, q0, hi;
-          MAYBE_UNUSED mp_limb_t lo;
+          MAYBE_ਅਣਵਰਤਿਆ mp_limb_t lo;
 
-          q0 = t0 * primes_dtab[i].binv;
+          q0 = t0 * ਅਭਾਜ_ਸੰਖਿਆਵਾਂ_dtab[i].binv;
           umul_ppmm (hi, lo, q0, p);
-          if (hi > t1)
-            break;
+          ਜੇ (hi > t1)
+            ਰੋਕੋ;
           hi = t1 - hi;
-          q1 = hi * primes_dtab[i].binv;
-          if (LIKELY (q1 > primes_dtab[i].lim))
-            break;
+          q1 = hi * ਅਭਾਜ_ਸੰਖਿਆਵਾਂ_dtab[i].binv;
+          ਜੇ (LIKELY (q1 > ਅਭਾਜ_ਸੰਖਿਆਵਾਂ_dtab[i].lim))
+            ਰੋਕੋ;
           t1 = q1; t0 = q0;
-          factor_insert (factors, p);
+          ਗੁਣਕ_ਪਾਓ (factors, p);
         }
     }
 
-  for (; i < PRIMES_PTAB_ENTRIES; i += 8)
+  ਲਈ (; i < ਅਭਾਜ_ਸੰਖਿਆਵਾਂ_PTAB_ENTRIES; i += 8)
     {
-      const struct primes_dtab *pd = &primes_dtab[i];
+      ਅਚਲ ਬਣਤਰ ਅਭਾਜ_ਸੰਖਿਆਵਾਂ_dtab *pd = &ਅਭਾਜ_ਸੰਖਿਆਵਾਂ_dtab[i];
       t0 = divblock (factors, t0, pd, i, 0);
       t0 = divblock (factors, t0, pd, i, 1);
       t0 = divblock (factors, t0, pd, i, 2);
@@ -886,110 +886,110 @@ factor_using_division (struct factors *factors, mp_limb_t t1, mp_limb_t t0,
       t0 = divblock (factors, t0, pd, i, 6);
       t0 = divblock (factors, t0, pd, i, 7);
 
-      if (PRIMES_PTAB_ENTRIES <= i + 8)
-        break;
-      int_least32_t p = primes_ptab[i + 8];
-      if (p * p > t0)
-        break;
+      ਜੇ (ਅਭਾਜ_ਸੰਖਿਆਵਾਂ_PTAB_ENTRIES <= i + 8)
+        ਰੋਕੋ;
+      int_least32_t p = ਅਭਾਜ_ਸੰਖਿਆਵਾਂ_ptab[i + 8];
+      ਜੇ (p * p > t0)
+        ਰੋਕੋ;
     }
 
-  return make_uuint (t1, t0);
+  ਵਾਪਸ make_uuint (t1, t0);
 }
 
 /* Return the number of limbs in positive N.  */
-static mp_size_t
-mp_size (mpz_t n)
+ਸਥਿਰ mp_ਮਾਪ_t
+mp_ਮਾਪ (mpz_t n)
 {
   /* Tell the compiler that N is positive; this can speed up access to N.  */
   assume (0 < mpz_sgn (n));
 
-  return mpz_size (n);
+  ਵਾਪਸ mpz_ਮਾਪ (n);
 }
 
 /* Insert into MP_FACTORS the factors of N if N < B^2 / 2,
    and return true.  Otherwise, return false.
    Primes less than prime PRIME_IDX have
    already been considered, and need not be looked at again.  */
-static bool
-mp_finish_up_in_single (struct mp_factors *mp_factors, mpz_t n,
-                        idx_t prime_idx)
+ਸਥਿਰ bool
+mp_ਅੰਤ_ਉੱਪਰ_ਵਿੱਚ_single (ਬਣਤਰ mp_factors *mp_factors, mpz_t n,
+                        idx_t ਅਭਾਜ_idx)
 {
-  if (2 < mp_size (n))
-    return false;
+  ਜੇ (2 < mp_ਮਾਪ (n))
+    ਵਾਪਸ false;
   mp_limb_t n1 = mpz_getlimbn (n, 1);
-  if (n1 >> (W_TYPE_SIZE - 1))
-    return false;
+  ਜੇ (n1 >> (W_TYPE_ਮਾਪ - 1))
+    ਵਾਪਸ false;
   mp_limb_t n0 = mpz_getlimbn (n, 0);
-  mpz_set_ui (n, 1);
+  mpz_ਸੈੱਟ_ui (n, 1);
 
-  struct factors factors;
-  factor_up (&factors, n1, n0, prime_idx);
+  ਬਣਤਰ factors factors;
+  ਗੁਣਕ_ਉੱਪਰ (&factors, n1, n0, ਅਭਾਜ_idx);
 
-  if (hi_is_set (&factors.plarge))
+  ਜੇ (hi_is_ਸੈੱਟ (&factors.plarge))
     {
       mpz_t p = MPZ_ROINIT_N (factors.plarge.uu, 2);
-      mp_factor_insert (mp_factors, p, 1);
+      mp_ਗੁਣਕ_ਪਾਓ (mp_factors, p, 1);
     }
 
-  for (int i = factors.nfactors; 0 < i; i--)
+  ਲਈ (ਪੂਰਨ i = factors.nfactors; 0 < i; i--)
     {
       mpz_t p = MPZ_ROINIT_N (&factors.p[i - 1], 1);
-      mp_factor_insert (mp_factors, p, factors.e[i - 1]);
+      mp_ਗੁਣਕ_ਪਾਓ (mp_factors, p, factors.e[i - 1]);
     }
 
-  return true;
+  ਵਾਪਸ true;
 }
 
 /* Insert into MP_FACTORS the factors of N if N < B^2 / 2, and
    return true.  Otherwise, return false.  N must be odd.  */
-static bool
-mp_finish_in_single (struct mp_factors *mp_factors, mpz_t n)
+ਸਥਿਰ bool
+mp_ਅੰਤ_ਵਿੱਚ_single (ਬਣਤਰ mp_factors *mp_factors, mpz_t n)
 {
-  return mp_finish_up_in_single (mp_factors, n, 0);
+  ਵਾਪਸ mp_ਅੰਤ_ਉੱਪਰ_ਵਿੱਚ_single (mp_factors, n, 0);
 }
 
 /* Return some or all factors of T.
    Divide T by the factors found.  */
-static struct mp_factors
-mp_factor_using_division (mpz_t t)
+ਸਥਿਰ ਬਣਤਰ mp_factors
+mp_ਗੁਣਕ_using_division (mpz_t t)
 {
   devmsg ("[trial division] ");
-  struct mp_factors factors = mp_no_factors ();
+  ਬਣਤਰ mp_factors factors = mp_no_factors ();
 
   mp_bitcnt_t m = mpz_scan1 (t, 0);
-  if (m)
+  ਜੇ (m)
     {
       mpz_fdiv_q_2exp (t, t, m);
-      mp_factor_insert1 (&factors, 2, m);
-      if (mp_finish_in_single (&factors, t))
-        return factors;
+      mp_ਗੁਣਕ_insert1 (&factors, 2, m);
+      ਜੇ (mp_ਅੰਤ_ਵਿੱਚ_single (&factors, t))
+        ਵਾਪਸ factors;
     }
 
-  for (idx_t i = 0; i < PRIMES_PTAB_ENTRIES; i++)
+  ਲਈ (idx_t i = 0; i < ਅਭਾਜ_ਸੰਖਿਆਵਾਂ_PTAB_ENTRIES; i++)
     {
-      mp_limb_t d = primes_ptab[i];
-      for (m = 0; mpz_divisible_ui_p (t, d); m++)
+      mp_limb_t d = ਅਭਾਜ_ਸੰਖਿਆਵਾਂ_ptab[i];
+      ਲਈ (m = 0; mpz_divisible_ui_p (t, d); m++)
         {
           mpz_divexact_ui (t, t, d);
-          if (mp_finish_up_in_single (&factors, t, i))
+          ਜੇ (mp_ਅੰਤ_ਉੱਪਰ_ਵਿੱਚ_single (&factors, t, i))
             {
-              mp_factor_insert1 (&factors, d, m + 1);
-              return factors;
+              mp_ਗੁਣਕ_insert1 (&factors, d, m + 1);
+              ਵਾਪਸ factors;
             }
         }
-      if (m)
-        mp_factor_insert1 (&factors, d, m);
-      static_assert (SQUARE_OF_FIRST_OMITTED_PRIME
+      ਜੇ (m)
+        mp_ਗੁਣਕ_insert1 (&factors, d, m);
+      static_assert (ਵਰਗਫਲ_ਦਾ_ਪਹਿਲਾ_OMITTED_ਅਭਾਜ
                      <= MIN (MP_LIMB_MAX, ULONG_MAX));
-      if (mpz_cmp_ui (t, d * d) < 0)
-        break;
+      ਜੇ (mpz_cmp_ui (t, d * d) < 0)
+        ਰੋਕੋ;
     }
 
-  return factors;
+  ਵਾਪਸ factors;
 }
 
 /* Entry i contains (2i+1)^(-1) mod 2^8.  */
-static const unsigned char binvert_table[128] =
+ਸਥਿਰ ਅਚਲ ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ binvert_ਸਾਰਣੀ[128] =
 {
   0x01, 0xAB, 0xCD, 0xB7, 0x39, 0xA3, 0xC5, 0xEF,
   0xF1, 0x1B, 0x3D, 0xA7, 0x29, 0x13, 0x35, 0xDF,
@@ -1010,99 +1010,99 @@ static const unsigned char binvert_table[128] =
 };
 
 /* Compute n^(-1) mod B.  n must be odd.  */
-static mp_limb_t
+ਸਥਿਰ mp_limb_t
 binv_limb (mp_limb_t n)
 {
-  mp_limb_t inv = binvert_table[(n / 2) & 0x7F];
-  if ( 8 < W_TYPE_SIZE) inv = 2 * inv - inv * inv * n;
-  if (16 < W_TYPE_SIZE) inv = 2 * inv - inv * inv * n;
-  if (32 < W_TYPE_SIZE) inv = 2 * inv - inv * inv * n;
-  for (int invbits = 64; invbits < W_TYPE_SIZE; invbits *= 2)
+  mp_limb_t inv = binvert_ਸਾਰਣੀ[(n / 2) & 0x7F];
+  ਜੇ ( 8 < W_TYPE_ਮਾਪ) inv = 2 * inv - inv * inv * n;
+  ਜੇ (16 < W_TYPE_ਮਾਪ) inv = 2 * inv - inv * inv * n;
+  ਜੇ (32 < W_TYPE_ਮਾਪ) inv = 2 * inv - inv * inv * n;
+  ਲਈ (ਪੂਰਨ invbits = 64; invbits < W_TYPE_ਮਾਪ; invbits *= 2)
     inv = 2 * inv - inv * inv * n;
-  return inv;
+  ਵਾਪਸ inv;
 }
 
 /* q = u / d, assuming d|u.  */
-#define divexact_21(q1, q0, u1, u0, d)                                  \
-  do {                                                                  \
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ divexact_21(q1, q0, u1, u0, d)                                  \
+  ਕਰੋ {                                                                  \
     mp_limb_t _di, _q0;							\
     _di = binv_limb (d);						\
     _q0 = (u0) * _di;                                                   \
-    if ((u1) >= (d))                                                    \
+    ਜੇ ((u1) >= (d))                                                    \
       {                                                                 \
         mp_limb_t _p1;							\
-        MAYBE_UNUSED mp_limb_t _p0;					\
+        MAYBE_ਅਣਵਰਤਿਆ mp_limb_t _p0;					\
         umul_ppmm (_p1, _p0, _q0, d);                                   \
         (q1) = ((u1) - _p1) * _di;                                      \
         (q0) = _q0;                                                     \
       }                                                                 \
-    else                                                                \
+    ਨਹੀਂਤਾਂ                                                                \
       {                                                                 \
         (q0) = _q0;                                                     \
         (q1) = 0;                                                       \
       }                                                                 \
-  } while (false)
+  } ਜਦੋਂ (false)
 
 /* x B (mod n).  */
-#define redcify(r_prim, r, n)                                           \
-  do {                                                                  \
-    MAYBE_UNUSED mp_limb_t _redcify_q;					\
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ redcify(r_prim, r, n)                                           \
+  ਕਰੋ {                                                                  \
+    MAYBE_ਅਣਵਰਤਿਆ mp_limb_t _redcify_q;					\
     udiv_qrnnd (_redcify_q, r_prim, r, 0, n);                           \
-  } while (false)
+  } ਜਦੋਂ (false)
 
 /* x B^2 (mod n).  Requires x > 0, n1 < B/2.  */
-#define redcify2(r1, r0, x, n1, n0)                                     \
-  do {                                                                  \
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ redcify2(r1, r0, x, n1, n0)                                     \
+  ਕਰੋ {                                                                  \
     mp_limb_t _r1, _r0, _i;						\
-    if ((x) < (n1))                                                     \
+    ਜੇ ((x) < (n1))                                                     \
       {                                                                 \
         _r1 = (x); _r0 = 0;                                             \
-        _i = W_TYPE_SIZE;                                               \
+        _i = W_TYPE_ਮਾਪ;                                               \
       }                                                                 \
-    else                                                                \
+    ਨਹੀਂਤਾਂ                                                                \
       {                                                                 \
         _r1 = 0; _r0 = (x);                                             \
-        _i = 2 * W_TYPE_SIZE;                                           \
+        _i = 2 * W_TYPE_ਮਾਪ;                                           \
       }                                                                 \
-    while (_i-- > 0)                                                    \
+    ਜਦੋਂ (_i-- > 0)                                                    \
       {                                                                 \
         lsh2 (_r1, _r0, _r1, _r0, 1);                                   \
-        if (ge2 (_r1, _r0, n1, n0))					\
+        ਜੇ (ge2 (_r1, _r0, n1, n0))					\
           sub_ddmmss (_r1, _r0, _r1, _r0, n1, n0);			\
       }                                                                 \
     (r1) = _r1;                                                         \
     (r0) = _r0;                                                         \
-  } while (false)
+  } ਜਦੋਂ (false)
 
 /* Modular two-word multiplication, r = a * b mod m, with mi = m^(-1) mod B.
    Both a and b must be in redc form, the result will be in redc form too.  */
-static inline mp_limb_t
+ਸਥਿਰ ਸਤਰਅੰਦਰ mp_limb_t
 mulredc (mp_limb_t a, mp_limb_t b, mp_limb_t m, mp_limb_t mi)
 {
   mp_limb_t rh, rl, q, th, xh;
-  MAYBE_UNUSED mp_limb_t tl;
+  MAYBE_ਅਣਵਰਤਿਆ mp_limb_t tl;
 
   umul_ppmm (rh, rl, a, b);
   q = rl * mi;
   umul_ppmm (th, tl, q, m);
-  if (ckd_sub (&xh, rh, th))
+  ਜੇ (ckd_sub (&xh, rh, th))
     xh += m;
 
-  return xh;
+  ਵਾਪਸ xh;
 }
 
 /* Modular two-word multiplication, r = a * b mod m, with mi = m^(-1) mod B.
    Both a and b must be in redc form, the result will be in redc form too.
    For performance reasons, the most significant bit of m must be clear.  */
-static mp_limb_t
+ਸਥਿਰ mp_limb_t
 mulredc2 (mp_limb_t *r1p,
           mp_limb_t a1, mp_limb_t a0, mp_limb_t b1, mp_limb_t b0,
           mp_limb_t m1, mp_limb_t m0, mp_limb_t mi)
 {
   mp_limb_t r1, r0, q, p1, t1, t0, s1, s0;
-  MAYBE_UNUSED mp_limb_t p0;
+  MAYBE_ਅਣਵਰਤਿਆ mp_limb_t p0;
   mi = -mi;
-  affirm ((m1 >> (W_TYPE_SIZE - 1)) == 0);
+  affirm ((m1 >> (W_TYPE_ਮਾਪ - 1)) == 0);
 
   /* First compute a0 * (b1,b0) B^{-1}
         +-----+
@@ -1122,10 +1122,10 @@ mulredc2 (mp_limb_t *r1p,
   q = mi * t0;
   umul_ppmm (p1, p0, q, m0);
   umul_ppmm (s1, s0, q, m1);
-  r0 += (t0 != 0); /* Carry */
-  add_ssaaaa (r1, r0, r1, r0, 0, p1);
-  add_ssaaaa (r1, r0, r1, r0, 0, t1);
-  add_ssaaaa (r1, r0, r1, r0, s1, s0);
+  r0 += (t0 != 0); /*ਹਾਸਲ*/
+  ਜੋੜੋ_ssaaaa (r1, r0, r1, r0, 0, p1);
+  ਜੋੜੋ_ssaaaa (r1, r0, r1, r0, 0, t1);
+  ਜੋੜੋ_ssaaaa (r1, r0, r1, r0, s1, s0);
 
   /* Next, (a1 * (b1,b0) + (r1,r0) B^{-1}
         +-----+
@@ -1144,73 +1144,73 @@ mulredc2 (mp_limb_t *r1p,
   */
   umul_ppmm (t1, t0, a1, b0);
   umul_ppmm (s1, s0, a1, b1);
-  add_ssaaaa (t1, t0, t1, t0, 0, r0);
+  ਜੋੜੋ_ssaaaa (t1, t0, t1, t0, 0, r0);
   q = mi * t0;
-  add_ssaaaa (r1, r0, s1, s0, 0, r1);
+  ਜੋੜੋ_ssaaaa (r1, r0, s1, s0, 0, r1);
   umul_ppmm (p1, p0, q, m0);
   umul_ppmm (s1, s0, q, m1);
-  r0 += (t0 != 0); /* Carry */
-  add_ssaaaa (r1, r0, r1, r0, 0, p1);
-  add_ssaaaa (r1, r0, r1, r0, 0, t1);
-  add_ssaaaa (r1, r0, r1, r0, s1, s0);
+  r0 += (t0 != 0); /*ਹਾਸਲ*/
+  ਜੋੜੋ_ssaaaa (r1, r0, r1, r0, 0, p1);
+  ਜੋੜੋ_ssaaaa (r1, r0, r1, r0, 0, t1);
+  ਜੋੜੋ_ssaaaa (r1, r0, r1, r0, s1, s0);
 
-  if (ge2 (r1, r0, m1, m0))
+  ਜੇ (ge2 (r1, r0, m1, m0))
     sub_ddmmss (r1, r0, r1, r0, m1, m0);
 
   *r1p = r1;
-  return r0;
+  ਵਾਪਸ r0;
 }
 
-static bool mp_prime_p (mpz_t);
+ਸਥਿਰ bool mp_ਅਭਾਜ_p (mpz_t);
 
 /* Is N prime?  N cannot be even or be a composite number less than
    SQUARE_OF_FIRST_OMITTED_PRIME.  */
-static bool
-prime_p (mp_limb_t n)
+ਸਥਿਰ bool
+ਅਭਾਜ_p (mp_limb_t n)
 {
-  if (n <= 1)
-    return false;
+  ਜੇ (n <= 1)
+    ਵਾਪਸ false;
 
   /* We have already cast out small primes.  */
-  if (n < SQUARE_OF_FIRST_OMITTED_PRIME)
-    return true;
+  ਜੇ (n < ਵਰਗਫਲ_ਦਾ_ਪਹਿਲਾ_OMITTED_ਅਭਾਜ)
+    ਵਾਪਸ true;
 
   mpz_t mn = MPZ_ROINIT_N (&n, 1);
-  return mp_prime_p (mn);
+  ਵਾਪਸ mp_ਅਭਾਜ_p (mn);
 }
 
 /* Is (n1,n0) prime?  (n1,n0) cannot be even or be a composite number
    less than SQUARE_OF_FIRST_OMITTED_PRIME.  */
-static bool
+ਸਥਿਰ bool
 prime2_p (mp_limb_t n1, mp_limb_t n0)
 {
-  if (n1 == 0)
-    return prime_p (n0);
+  ਜੇ (n1 == 0)
+    ਵਾਪਸ ਅਭਾਜ_p (n0);
 
   uuint n = make_uuint (n1, n0);
   mpz_t mn = MPZ_ROINIT_N (n.uu, 2);
-  return mp_prime_p (mn);
+  ਵਾਪਸ mp_ਅਭਾਜ_p (mn);
 }
 
 /* Is N prime?  N cannot be even or be a composite number less than
    SQUARE_OF_FIRST_OMITTED_PRIME.  */
-static bool
-mp_prime_p (mpz_t n)
+ਸਥਿਰ bool
+mp_ਅਭਾਜ_p (mpz_t n)
 {
-  if (mpz_cmp_ui (n, 1) <= 0)
-    return false;
+  ਜੇ (mpz_cmp_ui (n, 1) <= 0)
+    ਵਾਪਸ false;
 
   /* We have already cast out small primes.  */
-  if (mpz_cmp_ui (n, SQUARE_OF_FIRST_OMITTED_PRIME) < 0)
-    return true;
+  ਜੇ (mpz_cmp_ui (n, ਵਰਗਫਲ_ਦਾ_ਪਹਿਲਾ_OMITTED_ਅਭਾਜ) < 0)
+    ਵਾਪਸ true;
 
-  return !!mpz_probab_prime_p (n, MR_REPS);
+  ਵਾਪਸ !!mpz_probab_ਅਭਾਜ_p (n, MR_REPS);
 }
 
 /* Insert into FACTORS the result of factoring N,
    using Pollard-rho with starting value A.  N must be odd.  */
-static void
-factor_using_pollard_rho (struct factors *factors, mp_limb_t n, mp_limb_t a)
+ਸਥਿਰ ਖਾਲੀ
+ਗੁਣਕ_using_pollard_rho (ਬਣਤਰ factors *factors, mp_limb_t n, mp_limb_t a)
 {
   mp_limb_t x, z, y, P, t, ni, g;
 
@@ -1221,15 +1221,15 @@ factor_using_pollard_rho (struct factors *factors, mp_limb_t n, mp_limb_t a)
   addmod (x, P, P, n);          /* i.e., redcify(2) */
   y = z = x;
 
-  while (n != 1)
+  ਜਦੋਂ (n != 1)
     {
       affirm (a < n);
 
       ni = binv_limb (n);	/* FIXME: when could we use old 'ni' value?  */
 
-      for (;;)
+      ਲਈ (;;)
         {
-          do
+          ਕਰੋ
             {
               x = mulredc (x, x, n, ni);
               addmod (x, x, a, n);
@@ -1237,19 +1237,19 @@ factor_using_pollard_rho (struct factors *factors, mp_limb_t n, mp_limb_t a)
               submod (t, z, x, n);
               P = mulredc (P, t, n, ni);
 
-              if ((k & 31) == 1)
+              ਜੇ ((k & 31) == 1)
                 {
-                  if (gcd_odd (P, n) != 1)
-                    goto factor_found;
+                  ਜੇ (ਮਹੱਤਮ_ਸਾਂਝਾ_ਭਾਜਕ_odd (P, n) != 1)
+                    ਜਾਓ ਗੁਣਕ_ਮਿਲਿਆ;
                   y = x;
                 }
             }
-          while (--k != 0);
+          ਜਦੋਂ (--k != 0);
 
           z = x;
           k = l;
           l = 2 * l;
-          for (int_fast64_t i = 0; i < k; i++)
+          ਲਈ (int_fast64_t i = 0; i < k; i++)
             {
               x = mulredc (x, x, n, ni);
               addmod (x, x, a, n);
@@ -1257,35 +1257,35 @@ factor_using_pollard_rho (struct factors *factors, mp_limb_t n, mp_limb_t a)
           y = x;
         }
 
-    factor_found:
-      do
+    ਗੁਣਕ_ਮਿਲਿਆ:
+      ਕਰੋ
         {
           y = mulredc (y, y, n, ni);
           addmod (y, y, a, n);
 
           submod (t, z, y, n);
-          g = gcd_odd (t, n);
+          g = ਮਹੱਤਮ_ਸਾਂਝਾ_ਭਾਜਕ_odd (t, n);
         }
-      while (g == 1);
+      ਜਦੋਂ (g == 1);
 
-      if (n == g)
+      ਜੇ (n == g)
         {
           /* Found n itself as factor.  Restart with different params.  */
-          factor_using_pollard_rho (factors, n, a + 1);
-          return;
+          ਗੁਣਕ_using_pollard_rho (factors, n, a + 1);
+          ਵਾਪਸ;
         }
 
       n = n / g;
 
-      if (!prime_p (g))
-        factor_using_pollard_rho (factors, g, a + 1);
-      else
-        factor_insert (factors, g);
+      ਜੇ (!ਅਭਾਜ_p (g))
+        ਗੁਣਕ_using_pollard_rho (factors, g, a + 1);
+      ਨਹੀਂਤਾਂ
+        ਗੁਣਕ_ਪਾਓ (factors, g);
 
-      if (prime_p (n))
+      ਜੇ (ਅਭਾਜ_p (n))
         {
-          factor_insert (factors, n);
-          break;
+          ਗੁਣਕ_ਪਾਓ (factors, n);
+          ਰੋਕੋ;
         }
 
       x = x % n;
@@ -1294,8 +1294,8 @@ factor_using_pollard_rho (struct factors *factors, mp_limb_t n, mp_limb_t a)
     }
 }
 
-static void
-factor_using_pollard_rho2 (struct factors *factors,
+ਸਥਿਰ ਖਾਲੀ
+ਗੁਣਕ_using_pollard_rho2 (ਬਣਤਰ factors *factors,
                            mp_limb_t n1, mp_limb_t n0, mp_limb_t a)
 {
   mp_limb_t x1, x0, z1, z0, y1, y0, P1, P0, t1, t0, g1, g0, r1m;
@@ -1308,13 +1308,13 @@ factor_using_pollard_rho2 (struct factors *factors,
   y1 = z1 = x1;
   y0 = z0 = x0;
 
-  while (n1 != 0 || n0 != 1)
+  ਜਦੋਂ (n1 != 0 || n0 != 1)
     {
       mp_limb_t ni = binv_limb (n0);
 
-      for (;;)
+      ਲਈ (;;)
         {
-          do
+          ਕਰੋ
             {
               x0 = mulredc2 (&r1m, x1, x0, x1, x0, n1, n0, ni);
               x1 = r1m;
@@ -1324,20 +1324,20 @@ factor_using_pollard_rho2 (struct factors *factors,
               P0 = mulredc2 (&r1m, P1, P0, t1, t0, n1, n0, ni);
               P1 = r1m;
 
-              if ((k & 31) == 1)
+              ਜੇ ((k & 31) == 1)
                 {
                   uuset (&g1, &g0, gcd2_odd (P1, P0, n1, n0));
-                  if (g1 != 0 || g0 != 1)
-                    goto factor_found;
+                  ਜੇ (g1 != 0 || g0 != 1)
+                    ਜਾਓ ਗੁਣਕ_ਮਿਲਿਆ;
                   y1 = x1; y0 = x0;
                 }
             }
-          while (--k != 0);
+          ਜਦੋਂ (--k != 0);
 
           z1 = x1; z0 = x0;
           k = l;
           l = 2 * l;
-          for (int_fast64_t i = 0; i < k; i++)
+          ਲਈ (int_fast64_t i = 0; i < k; i++)
             {
               x0 = mulredc2 (&r1m, x1, x0, x1, x0, n1, n0, ni);
               x1 = r1m;
@@ -1346,8 +1346,8 @@ factor_using_pollard_rho2 (struct factors *factors,
           y1 = x1; y0 = x0;
         }
 
-    factor_found:
-      do
+    ਗੁਣਕ_ਮਿਲਿਆ:
+      ਕਰੋ
         {
           y0 = mulredc2 (&r1m, y1, y0, y1, y0, n1, n0, ni);
           y1 = r1m;
@@ -1356,28 +1356,28 @@ factor_using_pollard_rho2 (struct factors *factors,
           submod2 (t1, t0, z1, z0, y1, y0, n1, n0);
           uuset (&g1, &g0, gcd2_odd (t1, t0, n1, n0));
         }
-      while (g1 == 0 && g0 == 1);
+      ਜਦੋਂ (g1 == 0 && g0 == 1);
 
-      if (g1 == 0)
+      ਜੇ (g1 == 0)
         {
           /* The found factor is one word, and > 1.  */
           divexact_21 (n1, n0, n1, n0, g0);     /* n = n / g */
 
-          if (!prime_p (g0))
-            factor_using_pollard_rho (factors, g0, a + 1);
-          else
-            factor_insert (factors, g0);
+          ਜੇ (!ਅਭਾਜ_p (g0))
+            ਗੁਣਕ_using_pollard_rho (factors, g0, a + 1);
+          ਨਹੀਂਤਾਂ
+            ਗੁਣਕ_ਪਾਓ (factors, g0);
         }
-      else
+      ਨਹੀਂਤਾਂ
         {
           /* The found factor is two words.  This is highly unlikely, thus hard
              to trigger.  Please be careful before you change this code!  */
 
-          if (n1 == g1 && n0 == g0)
+          ਜੇ (n1 == g1 && n0 == g0)
             {
               /* Found n itself as factor.  Restart with different params.  */
-              factor_using_pollard_rho2 (factors, n1, n0, a + 1);
-              return;
+              ਗੁਣਕ_using_pollard_rho2 (factors, n1, n0, a + 1);
+              ਵਾਪਸ;
             }
 
           /* Compute n = n / g.  Since the result will fit one word,
@@ -1386,28 +1386,28 @@ factor_using_pollard_rho2 (struct factors *factors,
           n0 = binv_limb (g0) * n0;
           n1 = 0;
 
-          if (!prime2_p (g1, g0))
-            factor_using_pollard_rho2 (factors, g1, g0, a + 1);
-          else
-            factor_insert_large (factors, g1, g0);
+          ਜੇ (!prime2_p (g1, g0))
+            ਗੁਣਕ_using_pollard_rho2 (factors, g1, g0, a + 1);
+          ਨਹੀਂਤਾਂ
+            ਗੁਣਕ_ਪਾਓ_large (factors, g1, g0);
         }
 
-      if (n1 == 0)
+      ਜੇ (n1 == 0)
         {
-          if (prime_p (n0))
+          ਜੇ (ਅਭਾਜ_p (n0))
             {
-              factor_insert (factors, n0);
-              break;
+              ਗੁਣਕ_ਪਾਓ (factors, n0);
+              ਰੋਕੋ;
             }
 
-          factor_using_pollard_rho (factors, n0, a);
-          return;
+          ਗੁਣਕ_using_pollard_rho (factors, n0, a);
+          ਵਾਪਸ;
         }
 
-      if (prime2_p (n1, n0))
+      ਜੇ (prime2_p (n1, n0))
         {
-          factor_insert_large (factors, n1, n0);
-          break;
+          ਗੁਣਕ_ਪਾਓ_large (factors, n1, n0);
+          ਰੋਕੋ;
         }
 
       uuset (&x1, &x0, mod2 (x1, x0, n1, n0));
@@ -1418,45 +1418,45 @@ factor_using_pollard_rho2 (struct factors *factors,
 
 /* Set RP = (AP + BP) mod MP.  All values are nonnegative and take up
    N>0 words, and AP and BP are both less than MP.  */
-static void
-mp_modadd (mp_limb_t *rp, mp_limb_t const *ap, mp_limb_t const *bp,
-           mp_limb_t const *mp, mp_size_t n)
+ਸਥਿਰ ਖਾਲੀ
+mp_modadd (mp_limb_t *rp, mp_limb_t ਅਚਲ *ap, mp_limb_t ਅਚਲ *bp,
+           mp_limb_t ਅਚਲ *mp, mp_ਮਾਪ_t n)
 {
-  mp_limb_t cy = mpn_add_n (rp, ap, bp, n);
-  if (cy || mpn_cmp (rp, mp, n) >= 0)
+  mp_limb_t cy = mpn_ਜੋੜੋ_n (rp, ap, bp, n);
+  ਜੇ (cy || mpn_cmp (rp, mp, n) >= 0)
     mpn_sub_n (rp, rp, mp, n);
 }
 
 /* Set RP = (AP - BP) mod MP.  All values are nonnegative and take up
    N>0 words, and AP and BP are both less than MP.  */
-static void
-mp_modsub (mp_limb_t *rp, mp_limb_t const *ap, mp_limb_t const *bp,
-           mp_limb_t const *mp, mp_size_t n)
+ਸਥਿਰ ਖਾਲੀ
+mp_modsub (mp_limb_t *rp, mp_limb_t ਅਚਲ *ap, mp_limb_t ਅਚਲ *bp,
+           mp_limb_t ਅਚਲ *mp, mp_ਮਾਪ_t n)
 {
   mp_limb_t cy = mpn_sub_n (rp, ap, bp, n);
-  if (cy)
-    mpn_add_n (rp, rp, mp, n);
+  ਜੇ (cy)
+    mpn_ਜੋੜੋ_n (rp, rp, mp, n);
 }
 
 /* Set RP = (AP - B0) mod MP.  All values are nonnegative, AP and MP
    both take up N>0 words, and AP < MP.  */
-static void
-mp_modadd_1 (mp_limb_t *rp, mp_limb_t const *ap, mp_limb_t b0,
-             mp_limb_t const *mp, mp_size_t n)
+ਸਥਿਰ ਖਾਲੀ
+mp_modadd_1 (mp_limb_t *rp, mp_limb_t ਅਚਲ *ap, mp_limb_t b0,
+             mp_limb_t ਅਚਲ *mp, mp_ਮਾਪ_t n)
 {
-  mp_limb_t cy = mpn_add_1 (rp, ap, n, b0);
-  if (cy || mpn_cmp (rp, mp, n) >= 0)
+  mp_limb_t cy = mpn_ਜੋੜੋ_1 (rp, ap, n, b0);
+  ਜੇ (cy || mpn_cmp (rp, mp, n) >= 0)
     mpn_sub_n (rp, rp, mp, n);
 }
 
-static void
-mp_mulredc (mp_limb_t *rp, mp_limb_t const *ap, mp_limb_t const *bp,
-            mp_limb_t const *mp, mp_size_t n, mp_limb_t m0inv, mp_limb_t *tp)
+ਸਥਿਰ ਖਾਲੀ
+mp_mulredc (mp_limb_t *rp, mp_limb_t ਅਚਲ *ap, mp_limb_t ਅਚਲ *bp,
+            mp_limb_t ਅਚਲ *mp, mp_ਮਾਪ_t n, mp_limb_t m0inv, mp_limb_t *tp)
 {
   tp[n] = mpn_mul_1 (tp, ap, n, bp[0]);
   tp[0] = mpn_addmul_1 (tp, mp, n, tp[0] * m0inv);
 
-  for (mp_size_t i = 1; i < n; i++)
+  ਲਈ (mp_ਮਾਪ_t i = 1; i < n; i++)
     {
       tp[n + i] = mpn_addmul_1 (tp + i, ap, n, bp[i]);
       tp[i] = mpn_addmul_1 (tp + i, mp, n, tp[i] * m0inv);
@@ -1466,25 +1466,25 @@ mp_mulredc (mp_limb_t *rp, mp_limb_t const *ap, mp_limb_t const *bp,
 
 /* Maximum value for N in mp_factor_using_pollard_rho,
    to avoid integer overflow when it calls xinmalloc.  */
-#define MP_FACTOR_USING_POLLARD_RHO_N_MAX \
-  ((MIN (IDX_MAX, TYPE_MAXIMUM (mp_size_t)) - 3) / 10)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ MP_ਗੁਣਕ_USING_POLLARD_RHO_N_MAX \
+  ((MIN (IDX_MAX, TYPE_ਵੱਧ_ਤੋਂ_ਵੱਧ (mp_ਮਾਪ_t)) - 3) / 10)
 
 /* Insert into FACTORS the result of factoring MP, of size N,
    using Pollard-rho with starting value A.  MP must be odd. */
-static void
-mp_factor_using_pollard_rho (struct mp_factors *factors,
-                             mp_limb_t const *mp, mp_size_t n,
+ਸਥਿਰ ਖਾਲੀ
+mp_ਗੁਣਕ_using_pollard_rho (ਬਣਤਰ mp_factors *factors,
+                             mp_limb_t ਅਚਲ *mp, mp_ਮਾਪ_t n,
                              mp_limb_t a)
 {
-  devmsg ("[pollard-rho (%lu)] ", (unsigned long int) a);
+  devmsg ("[pollard-rho (%lu)] ", (ਬਿਨਾਨਿਸ਼ਾਨੀ ਲੰਮਾ ਪੂਰਨ) a);
 
-  static_assert (10 * MP_FACTOR_USING_POLLARD_RHO_N_MAX + 3
-                 <= MIN (IDX_MAX, TYPE_MAXIMUM (mp_size_t)));
-  mp_limb_t *scratch = xinmalloc (10 * n + 3, sizeof *scratch);
+  static_assert (10 * MP_ਗੁਣਕ_USING_POLLARD_RHO_N_MAX + 3
+                 <= MIN (IDX_MAX, TYPE_ਵੱਧ_ਤੋਂ_ਵੱਧ (mp_ਮਾਪ_t)));
+  mp_limb_t *scratch = xinmalloc (10 * n + 3, ਆਕਾਰ *scratch);
   mp_limb_t *qp = scratch + 2 * n + 1, *pp = qp + n + 2,
     *xp = pp + n, *yp = xp + n, *zp = yp + n,
     *tp = zp + n, *sp = tp + n, *gp = sp + n;
-  mp_size_t gn;
+  mp_ਮਾਪ_t gn;
 
   mpn_zero (scratch, n);
   scratch[n] = 1;
@@ -1496,9 +1496,9 @@ mp_factor_using_pollard_rho (struct mp_factors *factors,
 
   mp_limb_t m0inv = binv_limb (-mp[0]);
 
-  for (int_fast64_t k = 1; ; k *= 2)
+  ਲਈ (int_fast64_t k = 1; ; k *= 2)
     {
-      for (int_fast64_t i = k; 0 < i; i--)
+      ਲਈ (int_fast64_t i = k; 0 < i; i--)
         {
           mp_mulredc (tp, xp, xp, mp, n, m0inv, scratch);
           mp_modadd_1 (xp, tp, a, mp, n);
@@ -1506,24 +1506,24 @@ mp_factor_using_pollard_rho (struct mp_factors *factors,
           mp_modsub (tp, zp, xp, mp, n);
           mp_mulredc (pp, pp, tp, mp, n, m0inv, scratch);
 
-          if (i % 128 == 1)
+          ਜੇ (i % 128 == 1)
             {
-              if (mpn_zero_p (pp, n))
+              ਜੇ (mpn_zero_p (pp, n))
                 {
-                  mp_factor_using_pollard_rho (factors, mp, n, a + 1);
-                  goto finish;
+                  mp_ਗੁਣਕ_using_pollard_rho (factors, mp, n, a + 1);
+                  ਜਾਓ ਅੰਤ;
                 }
               mpn_copyi (tp, pp, n);
               mpn_copyi (sp, mp, n);
-              gn = mpn_gcd (gp, tp, n, sp, n);
-              if (gn != 1 || gp[0] != 1)
-                goto factor_found;
+              gn = mpn_ਮਹੱਤਮ_ਸਾਂਝਾ_ਭਾਜਕ (gp, tp, n, sp, n);
+              ਜੇ (gn != 1 || gp[0] != 1)
+                ਜਾਓ ਗੁਣਕ_ਮਿਲਿਆ;
               mpn_copyi (yp, xp, n);
             }
         }
 
       mpn_copyi (zp, xp, n);
-      for (int_fast64_t i = 2 * k; 0 < i; i--)
+      ਲਈ (int_fast64_t i = 2 * k; 0 < i; i--)
         {
           mp_mulredc (tp, xp, xp, mp, n, m0inv, scratch);
           mp_modadd_1 (xp, tp, a, mp, n);
@@ -1531,145 +1531,145 @@ mp_factor_using_pollard_rho (struct mp_factors *factors,
       mpn_copyi (yp, xp, n);
     }
 
- factor_found:
-  do
+ ਗੁਣਕ_ਮਿਲਿਆ:
+  ਕਰੋ
     {
       mp_mulredc (tp, yp, yp, mp, n, m0inv, scratch);
       mp_modadd_1 (yp, tp, a, mp, n);
       mp_modsub (tp, zp, yp, mp, n);
       mpn_copyi (sp, mp, n);
-      gn = mpn_gcd (gp, tp, n, sp, n);
+      gn = mpn_ਮਹੱਤਮ_ਸਾਂਝਾ_ਭਾਜਕ (gp, tp, n, sp, n);
     }
-  while (gn == 1 && gp[0] == 1);
+  ਜਦੋਂ (gn == 1 && gp[0] == 1);
 
   mpz_t g = MPZ_ROINIT_N (gp, gn);
   mpz_t m = MPZ_ROINIT_N ((mp_limb_t *) mp, n), q;
   mpz_init (q);
   mpz_divexact (q, m, g);
 
-  if (!mp_finish_in_single (factors, g))
+  ਜੇ (!mp_ਅੰਤ_ਵਿੱਚ_single (factors, g))
     {
-      if (mp_prime_p (g))
-        mp_factor_insert (factors, g, 1);
-      else
-        mp_factor_using_pollard_rho (factors, gp, gn, a + 1);
+      ਜੇ (mp_ਅਭਾਜ_p (g))
+        mp_ਗੁਣਕ_ਪਾਓ (factors, g, 1);
+      ਨਹੀਂਤਾਂ
+        mp_ਗੁਣਕ_using_pollard_rho (factors, gp, gn, a + 1);
     }
 
-  if (!mp_finish_in_single (factors, q))
+  ਜੇ (!mp_ਅੰਤ_ਵਿੱਚ_single (factors, q))
     {
-      if (mp_prime_p (q))
-        mp_factor_insert (factors, q, 1);
-      else
+      ਜੇ (mp_ਅਭਾਜ_p (q))
+        mp_ਗੁਣਕ_ਪਾਓ (factors, q, 1);
+      ਨਹੀਂਤਾਂ
         {
           devmsg ("[composite factor--restarting pollard-rho] ");
-          mp_factor_using_pollard_rho (factors, mpz_limbs_read (q),
-                                       mp_size (q), a + 1);
+          mp_ਗੁਣਕ_using_pollard_rho (factors, mpz_limbs_read (q),
+                                       mp_ਮਾਪ (q), a + 1);
         }
     }
 
   mpz_clear (q);
 
- finish:
-  free (scratch);
+ ਅੰਤ:
+  ਮੁਕਤ (scratch);
 }
 
 /* Insert into FACTORS the prime factors of the two-word number (T1,T0).
    Primes less than the prime with index PRIME_IDX
    have already been considered, and need not be looked at again.  */
-static void
-factor_up (struct factors *factors, mp_limb_t t1, mp_limb_t t0,
-           idx_t prime_idx)
+ਸਥਿਰ ਖਾਲੀ
+ਗੁਣਕ_ਉੱਪਰ (ਬਣਤਰ factors *factors, mp_limb_t t1, mp_limb_t t0,
+           idx_t ਅਭਾਜ_idx)
 {
   factors->nfactors = 0;
   hiset (&factors->plarge, 0);
 
-  if (t1 == 0 && t0 < 2)
-    return;
+  ਜੇ (t1 == 0 && t0 < 2)
+    ਵਾਪਸ;
 
-  uuset (&t1, &t0, factor_using_division (factors, t1, t0, prime_idx));
+  uuset (&t1, &t0, ਗੁਣਕ_using_division (factors, t1, t0, ਅਭਾਜ_idx));
 
-  if (t1 == 0 && t0 < 2)
-    return;
+  ਜੇ (t1 == 0 && t0 < 2)
+    ਵਾਪਸ;
 
-  if (prime2_p (t1, t0))
-    factor_insert_large (factors, t1, t0);
-  else
+  ਜੇ (prime2_p (t1, t0))
+    ਗੁਣਕ_ਪਾਓ_large (factors, t1, t0);
+  ਨਹੀਂਤਾਂ
     {
-      if (t1 == 0)
-        factor_using_pollard_rho (factors, t0, 1);
-      else
-        factor_using_pollard_rho2 (factors, t1, t0, 1);
+      ਜੇ (t1 == 0)
+        ਗੁਣਕ_using_pollard_rho (factors, t0, 1);
+      ਨਹੀਂਤਾਂ
+        ਗੁਣਕ_using_pollard_rho2 (factors, t1, t0, 1);
     }
 }
 
 /* Compute the prime factors of the two-word number (T1,T0),
    and put the results in FACTORS.  */
-static void
-factor (struct factors *factors, mp_limb_t t1, mp_limb_t t0)
+ਸਥਿਰ ਖਾਲੀ
+ਗੁਣਕ (ਬਣਤਰ factors *factors, mp_limb_t t1, mp_limb_t t0)
 {
-  factor_up (factors, t1, t0, 0);
+  ਗੁਣਕ_ਉੱਪਰ (factors, t1, t0, 0);
 }
 
 /* Return the prime factors of T.  */
-static struct mp_factors
-mp_factor (mpz_t t)
+ਸਥਿਰ ਬਣਤਰ mp_factors
+mp_ਗੁਣਕ (mpz_t t)
 {
-  struct mp_factors factors = mp_no_factors ();
+  ਬਣਤਰ mp_factors factors = mp_no_factors ();
 
-  if (mpz_sgn (t) != 0)
+  ਜੇ (mpz_sgn (t) != 0)
     {
-      factors = mp_factor_using_division (t);
+      factors = mp_ਗੁਣਕ_using_division (t);
 
-      if (mpz_cmp_ui (t, 1) != 0)
+      ਜੇ (mpz_cmp_ui (t, 1) != 0)
         {
           devmsg ("[is number prime?] ");
-          if (mp_prime_p (t))
-            mp_factor_insert (&factors, t, 1);
-          else
-            mp_factor_using_pollard_rho (&factors, mpz_limbs_read (t),
-                                         mp_size (t), 1);
+          ਜੇ (mp_ਅਭਾਜ_p (t))
+            mp_ਗੁਣਕ_ਪਾਓ (&factors, t, 1);
+          ਨਹੀਂਤਾਂ
+            mp_ਗੁਣਕ_using_pollard_rho (&factors, mpz_limbs_read (t),
+                                         mp_ਮਾਪ (t), 1);
         }
     }
 
-  return factors;
+  ਵਾਪਸ factors;
 }
 
 /* Convert to *U the value represented by S, and return LONGINT_OK.
    Return LONGINT_OVERFLOW if S is composed of all digits but is too
    large to fit in *U, otherwise LONGINT_INVALID if S is not a valid
    positive integer.  */
-static strtol_error
-strtouuint (uuint *u, char const *s)
+ਸਥਿਰ strtol_error
+strtouuint (uuint *u, ਅੱਖਰ ਅਚਲ *s)
 {
   mp_limb_t hi = 0, lo = *s++ - '0';
 
-  if (UNLIKELY (9 < lo))
-    return LONGINT_INVALID;
+  ਜੇ (UNLIKELY (9 < lo))
+    ਵਾਪਸ LONGINT_INVALID;
 
-  for (; LIKELY (0 <= *s - '0' && *s - '0' <= 9); s++)
+  ਲਈ (; LIKELY (0 <= *s - '0' && *s - '0' <= 9); s++)
     {
-      if (UNLIKELY (ckd_mul (&hi, hi, 10)))
-        goto overflow;
+      ਜੇ (UNLIKELY (ckd_mul (&hi, hi, 10)))
+        ਜਾਓ ਉਛਾਲ;
 
-      int lo_carry = (lo >> (W_TYPE_SIZE - 3)) + (lo >> (W_TYPE_SIZE - 1));
-      lo_carry += 10 * lo < 2 * lo;
+      ਪੂਰਨ lo_ਹਾਸਲ = (lo >> (W_TYPE_ਮਾਪ - 3)) + (lo >> (W_TYPE_ਮਾਪ - 1));
+      lo_ਹਾਸਲ += 10 * lo < 2 * lo;
 
       lo = 10 * lo;
-      lo_carry += ckd_add (&lo, lo, *s - '0');
-      if (UNLIKELY (ckd_add (&hi, hi, lo_carry)))
-        goto overflow;
+      lo_ਹਾਸਲ += ckd_ਜੋੜੋ (&lo, lo, *s - '0');
+      ਜੇ (UNLIKELY (ckd_ਜੋੜੋ (&hi, hi, lo_ਹਾਸਲ)))
+        ਜਾਓ ਉਛਾਲ;
     }
 
-  if (UNLIKELY (*s))
-    return LONGINT_INVALID;
+  ਜੇ (UNLIKELY (*s))
+    ਵਾਪਸ LONGINT_INVALID;
 
   *u = make_uuint (hi, lo);
-  return LONGINT_OK;
+  ਵਾਪਸ LONGINT_OK;
 
- overflow:
+ ਉਛਾਲ:
   /* Since s[0] caused the overflow, we know it is a valid integer.  */
   s++;
-  return s[strspn (s, "0123456789")] ? LONGINT_INVALID : LONGINT_OVERFLOW;
+  ਵਾਪਸ s[strspn (s, "0123456789")] ? LONGINT_INVALID : LONGINT_ਉਛਾਲ;
 }
 
 /* FACTOR_PIPE_BUF is chosen to give good performance,
@@ -1677,14 +1677,14 @@ strtouuint (uuint *u, char const *s)
    consumers can read atomically through pipes.
    Also it's big enough to cater for max line length
    even with 128 bit word.  */
-#ifndef _POSIX_PIPE_BUF
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ _POSIX_PIPE_BUF
 # define _POSIX_PIPE_BUF 512
-#endif
-#ifdef PIPE_BUF
-enum { FACTOR_PIPE_BUF = PIPE_BUF };
-#else
-enum { FACTOR_PIPE_BUF = _POSIX_PIPE_BUF };
-#endif
+#ਜੇ_ਅੰਤ
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ PIPE_BUF
+ਗਿਣਤੀ { ਗੁਣਕ_PIPE_BUF = PIPE_BUF };
+#ਨਹੀਂਤਾਂ
+ਗਿਣਤੀ { ਗੁਣਕ_PIPE_BUF = _POSIX_PIPE_BUF };
+#ਜੇ_ਅੰਤ
 
 /* Structure and routines for buffering and outputting full lines, to
    support parallel operation efficiently.
@@ -1700,19 +1700,19 @@ enum { FACTOR_PIPE_BUF = _POSIX_PIPE_BUF };
    line for a uuint plus the string length of a uuint - it'd be a bit
    of a pain to figure out exactly how small it can be without causing
    trouble.  */
-static char lbuf_buf[2 * FACTOR_PIPE_BUF];
-static idx_t lbuffered;
+ਸਥਿਰ ਅੱਖਰ lbuf_buf[2 * ਗੁਣਕ_PIPE_BUF];
+ਸਥਿਰ idx_t lbuffered;
 
 /* Write complete LBUF to standard output.  */
-static void
-lbuf_flush (void)
+ਸਥਿਰ ਖਾਲੀ
+lbuf_flush (ਖਾਲੀ)
 {
-  idx_t size = lbuffered;
+  idx_t ਮਾਪ = lbuffered;
 
   /* Update lbuffered now, to avoid infinite recursion on write error.  */
   lbuffered = 0;
 
-  if (full_write (STDOUT_FILENO, lbuf_buf, size) != size)
+  ਜੇ (ਭਰਿਆ_write (STDOUT_FILENO, lbuf_buf, ਮਾਪ) != ਮਾਪ)
     write_error ();
 }
 
@@ -1722,94 +1722,94 @@ lbuf_flush (void)
    and contains <= FACTOR_PIPE_BUF bytes, so consumers can read atomically.
    But if the first FACTOR_PIPE_BUF bytes contain no newlines,
    give up on atomicity and just write the first FACTOR_PIPE_BUF bytes.  */
-static void
-lbuf_half_flush (void)
+ਸਥਿਰ ਖਾਲੀ
+lbuf_half_flush (ਖਾਲੀ)
 {
-  char *nl = memrchr (lbuf_buf, '\n', FACTOR_PIPE_BUF);
-  char *suffix = nl ? nl + 1 : lbuf_buf + FACTOR_PIPE_BUF;
-  idx_t prefix_size = suffix - lbuf_buf;
-  idx_t suffix_size = lbuffered - prefix_size;
-  lbuffered = prefix_size;
+  ਅੱਖਰ *nl = memrchr (lbuf_buf, '\n', ਗੁਣਕ_PIPE_BUF);
+  ਅੱਖਰ *suffix = nl ? nl + 1 : lbuf_buf + ਗੁਣਕ_PIPE_BUF;
+  idx_t ਅਗੇਤਰ_ਮਾਪ = suffix - lbuf_buf;
+  idx_t suffix_ਮਾਪ = lbuffered - ਅਗੇਤਰ_ਮਾਪ;
+  lbuffered = ਅਗੇਤਰ_ਮਾਪ;
   lbuf_flush ();
-  lbuffered = suffix_size;
-  memmove (lbuf_buf, suffix, suffix_size);
+  lbuffered = suffix_ਮਾਪ;
+  memmove (lbuf_buf, suffix, suffix_ਮਾਪ);
 }
 
 /* Add a character C to lbuf_buf.  */
-static void
-lbuf_putc (char c)
+ਸਥਿਰ ਖਾਲੀ
+lbuf_putc (ਅੱਖਰ c)
 {
   lbuf_buf[lbuffered++] = c;
 }
 
 /* Add a newline to lbuf_buf.  Then, if enough bytes are already
    buffered, write the buffer atomically to standard output.  */
-static void
-lbuf_putnl (void)
+ਸਥਿਰ ਖਾਲੀ
+lbuf_putnl (ਖਾਲੀ)
 {
   lbuf_putc ('\n');
 
   /* Provide immediate output for interactive use.  */
-  static int line_buffered = -1;
-  if (line_buffered < 0)
-    line_buffered = isatty (STDOUT_FILENO);
+  ਸਥਿਰ ਪੂਰਨ ਸਤਰ_buffered = -1;
+  ਜੇ (ਸਤਰ_buffered < 0)
+    ਸਤਰ_buffered = isatty (STDOUT_FILENO);
 
-  if (line_buffered)
+  ਜੇ (ਸਤਰ_buffered)
     lbuf_flush ();
-  else if (FACTOR_PIPE_BUF <= lbuffered)
+  ਨਹੀਂਤਾਂ ਜੇ (ਗੁਣਕ_PIPE_BUF <= lbuffered)
     lbuf_half_flush ();
 }
 
 /* Append the string representation of I to lbuf_buf, followed by
    everything from BUFEND to lbuf_buf's end.  Use the area just before
    BUFEND temporarily.  */
-static void
-lbuf_putint_append (mp_limb_t i, char *bufend)
+ਸਥਿਰ ਖਾਲੀ
+lbuf_putint_append (mp_limb_t i, ਅੱਖਰ *bufend)
 {
-  char *istr = bufend;
-  do
+  ਅੱਖਰ *istr = bufend;
+  ਕਰੋ
     {
       *--istr = '0' + i % 10;
       i /= 10;
     }
-  while (i);
+  ਜਦੋਂ (i);
 
-  char *p = lbuf_buf + lbuffered;
-  do
+  ਅੱਖਰ *p = lbuf_buf + lbuffered;
+  ਕਰੋ
     *p++ = *istr++;
-  while (istr < lbuf_buf + sizeof lbuf_buf);
+  ਜਦੋਂ (istr < lbuf_buf + ਆਕਾਰ lbuf_buf);
 
   lbuffered = p - lbuf_buf;
 }
 
 /* Append the string representation of I to lbuf_buf.  */
-static void
+ਸਥਿਰ ਖਾਲੀ
 lbuf_putint (mp_limb_t i)
 {
-  lbuf_putint_append (i, lbuf_buf + sizeof lbuf_buf);
+  lbuf_putint_append (i, lbuf_buf + ਆਕਾਰ lbuf_buf);
 }
-static void
+ਸਥਿਰ ਖਾਲੀ
 lbuf_putbitcnt (mp_bitcnt_t i)
 {
-  char *bufend = lbuf_buf + sizeof lbuf_buf;
-  for (; MP_LIMB_MAX < i; i /= 10)
+  ਅੱਖਰ *bufend = lbuf_buf + ਆਕਾਰ lbuf_buf;
+  ਲਈ (; MP_LIMB_MAX < i; i /= 10)
     *--bufend = '0' + i % 10;
   lbuf_putint_append (i, bufend);
 }
 
 /* Append the string representation of T to lbuf_buf.  */
-static void
+ਸਥਿਰ ਖਾਲੀ
 print_uuint (uuint t)
 {
   mp_limb_t t1 = hi (t), t0 = lo (t);
-  char *bufend = lbuf_buf + sizeof lbuf_buf;
+  ਅੱਖਰ *bufend = lbuf_buf + ਆਕਾਰ lbuf_buf;
 
-  while (t1)
+  ਜਦੋਂ (t1)
     {
-      mp_limb_t r = t1 % BIG_POWER_OF_10;
-      t1 /= BIG_POWER_OF_10;
-      udiv_qrnnd (t0, r, r, t0, BIG_POWER_OF_10);
-      for (int i = 0; i < LOG_BIG_POWER_OF_10; i++)
+      mp_limb_t r = t1 % BIG_POWER_ਦਾ_10;
+      t1 /= BIG_POWER_ਦਾ_10;
+      udiv_qrnnd (t0, r, r, t0, BIG_POWER_ਦਾ_10);
+      ਲਈ (ਪੂਰਨ i = 0; i < LOG_BIG_POWER_ਦਾ_10; i++)
         {
           *--bufend = '0' + r % 10;
           r /= 10;
@@ -1820,57 +1820,57 @@ print_uuint (uuint t)
 }
 
 /* Buffer the mpz I to lbuf_buf, possibly writing if it is long.  */
-static void
-lbuf_putmpz (mpz_t const i)
+ਸਥਿਰ ਖਾਲੀ
+lbuf_putmpz (mpz_t ਅਚਲ i)
 {
   idx_t sizeinbase = mpz_sizeinbase (i, 10);
-  char *lbuf_bufend = lbuf_buf + sizeof lbuf_buf;
-  char *p = lbuf_buf + lbuffered;
-  if (sizeinbase < lbuf_bufend - p)
+  ਅੱਖਰ *lbuf_bufend = lbuf_buf + ਆਕਾਰ lbuf_buf;
+  ਅੱਖਰ *p = lbuf_buf + lbuffered;
+  ਜੇ (sizeinbase < lbuf_bufend - p)
     {
       mpz_get_str (p, 10, i);
       p += sizeinbase;
       lbuffered = p - !p[-1] - lbuf_buf;
-      while (FACTOR_PIPE_BUF <= lbuffered)
+      ਜਦੋਂ (ਗੁਣਕ_PIPE_BUF <= lbuffered)
         lbuf_half_flush ();
     }
-  else
+  ਨਹੀਂਤਾਂ
     {
       lbuf_flush ();
-      char *istr = ximalloc (sizeinbase + 1);
+      ਅੱਖਰ *istr = ximalloc (sizeinbase + 1);
       mpz_get_str (istr, 10, i);
       idx_t istrlen = sizeinbase - !istr[sizeinbase - 1];
-      if (full_write (STDOUT_FILENO, istr, istrlen) != istrlen)
+      ਜੇ (ਭਰਿਆ_write (STDOUT_FILENO, istr, istrlen) != istrlen)
         write_error ();
-      free (istr);
+      ਮੁਕਤ (istr);
     }
 }
 
 /* Emit the factors of T, which is less than B^2 / 2.  */
-static void
+ਸਥਿਰ ਖਾਲੀ
 print_factors_single (uuint t)
 {
-  struct factors factors;
+  ਬਣਤਰ factors factors;
 
   print_uuint (t);
   lbuf_putc (':');
 
-  factor (&factors, hi (t), lo (t));
+  ਗੁਣਕ (&factors, hi (t), lo (t));
 
-  for (int j = 0; j < factors.nfactors; j++)
-    for (int k = 0; k < factors.e[j]; k++)
+  ਲਈ (ਪੂਰਨ j = 0; j < factors.nfactors; j++)
+    ਲਈ (ਪੂਰਨ k = 0; k < factors.e[j]; k++)
       {
         lbuf_putc (' ');
         print_uuint (make_uuint (0, factors.p[j]));
-        if (print_exponents && factors.e[j] > 1)
+        ਜੇ (print_exponents && factors.e[j] > 1)
           {
             lbuf_putc ('^');
             lbuf_putint (factors.e[j]);
-            break;
+            ਰੋਕੋ;
           }
       }
 
-  if (hi_is_set (&factors.plarge))
+  ਜੇ (hi_is_ਸੈੱਟ (&factors.plarge))
     {
       lbuf_putc (' ');
       print_uuint (factors.plarge);
@@ -1884,12 +1884,12 @@ print_factors_single (uuint t)
    For longer numbers, we prefer the MP algorithm even if the native algorithm
    has enough digits, because the algorithm is better.  The turnover point
    depends on the value.  */
-static bool
-print_factors (char const *input)
+ਸਥਿਰ bool
+print_factors (ਅੱਖਰ ਅਚਲ *ਨਿਵੇਸ਼)
 {
   /* Skip initial spaces and '+'.  */
-  char const *str = input;
-  while (*str == ' ')
+  ਅੱਖਰ ਅਚਲ *str = ਨਿਵੇਸ਼;
+  ਜਦੋਂ (*str == ' ')
     str++;
   str += *str == '+';
 
@@ -1901,141 +1901,141 @@ print_factors (char const *input)
   strtol_error err = strtouuint (&u, str);
   mpz_t t;
 
-  switch (err)
+  ਚੋਣ (err)
     {
-    case LONGINT_OK:
-      if (hi (u) >> (W_TYPE_SIZE - 1) == 0)
+    ਹਾਲਤ LONGINT_OK:
+      ਜੇ (hi (u) >> (W_TYPE_ਮਾਪ - 1) == 0)
         {
           devmsg ("[using single-precision arithmetic] ");
           print_factors_single (u);
-          return true;
+          ਵਾਪਸ true;
         }
       FALLTHROUGH;
-    case LONGINT_OVERFLOW:
+    ਹਾਲਤ LONGINT_ਉਛਾਲ:
       /* Try GMP.  */
-      if (0 <= mpz_init_set_str (t, str, 10))
-        break;
+      ਜੇ (0 <= mpz_init_ਸੈੱਟ_str (t, str, 10))
+        ਰੋਕੋ;
       FALLTHROUGH;
 
-    case LONGINT_INVALID:
-    case LONGINT_INVALID_SUFFIX_CHAR:
-    case LONGINT_INVALID_SUFFIX_CHAR_WITH_OVERFLOW:
-    default:
-      error (0, 0, _("%s is not a valid positive integer"), quote (input));
-      return false;
+    ਹਾਲਤ LONGINT_INVALID:
+    ਹਾਲਤ LONGINT_INVALID_SUFFIX_CHAR:
+    ਹਾਲਤ LONGINT_INVALID_SUFFIX_CHAR_WITH_ਉਛਾਲ:
+    ਮੂਲ:
+      error (0, 0, _("%s is not a valid positive integer"), quote (ਨਿਵੇਸ਼));
+      ਵਾਪਸ false;
     }
 
   devmsg ("[using arbitrary-precision arithmetic] ");
-  if (MP_FACTOR_USING_POLLARD_RHO_N_MAX < mp_size (t))
+  ਜੇ (MP_ਗੁਣਕ_USING_POLLARD_RHO_N_MAX < mp_ਮਾਪ (t))
     xalloc_die ();
 
   lbuf_putmpz (t);
   lbuf_putc (':');
-  struct mp_factors factors = mp_factor (t);
+  ਬਣਤਰ mp_factors factors = mp_ਗੁਣਕ (t);
 
-  for (idx_t j = 0; j < factors.nfactors; j++)
-    for (mp_bitcnt_t k = 0; k < factors.f[j].e; k++)
+  ਲਈ (idx_t j = 0; j < factors.nfactors; j++)
+    ਲਈ (mp_bitcnt_t k = 0; k < factors.f[j].e; k++)
       {
         lbuf_putc (' ');
         lbuf_putmpz (factors.f[j].p);
-        if (print_exponents && factors.f[j].e > 1)
+        ਜੇ (print_exponents && factors.f[j].e > 1)
           {
             lbuf_putc ('^');
             lbuf_putbitcnt (factors.f[j].e);
-            break;
+            ਰੋਕੋ;
           }
       }
 
-  mp_factor_clear (&factors);
+  mp_ਗੁਣਕ_clear (&factors);
   mpz_clear (t);
   lbuf_putnl ();
-  return true;
+  ਵਾਪਸ true;
 }
 
 /* Output a usage diagnostic and exit with STATUS.  */
-void
-usage (int status)
+ਖਾਲੀ
+usage (ਪੂਰਨ ਸਥਿਤੀ)
 {
-  if (status != EXIT_SUCCESS)
+  ਜੇ (ਸਥਿਤੀ != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ਨਹੀਂਤਾਂ
     {
-      printf (_("\
-Usage: %s [OPTION] [NUMBER]...\n\
+      ਲਿਖੋ (_("\
+Usage: %s [OPTION] [ਸੰਖਿਆ_2]...\n\
 "),
-              program_name);
+              ਪ੍ਰੋਗਰਾਮ_name);
       fputs (_("\
-Print the prime factors of each specified integer NUMBER.  If none\n\
-are specified on the command line, read them from standard input.\n\
+Print the ਅਭਾਜ factors ਦਾ each specified integer ਸੰਖਿਆ_2.  If none\n\
+are specified on the command ਸਤਰ, ਪਠ them from standard ਨਿਵੇਸ਼.\n\
 \n\
 "), stdout);
       oputs (_("\
   -h, --exponents\n\
-         print repeated factors in form p^e unless e is 1\n\
+         print repeated factors ਵਿੱਚ form p^e unless e is 1\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (ਸੰਸਕਰਣ_OPTION_DESCRIPTION);
+      emit_ancillary_info (ਪ੍ਰੋਗਰਾਮ_NAME);
     }
-  exit (status);
+  ਬਾਹਰ_ਨਿਕਲੋ (ਸਥਿਤੀ);
 }
 
 /* Read numbers from stdin, one per line, and output their factors.  */
-static bool
-do_stdin (void)
+ਸਥਿਰ bool
+do_stdin (ਖਾਲੀ)
 {
   bool ok = true;
-  token_buffer tokenbuffer;
+  token_ਬਫਰ tokenbuffer;
 
   init_tokenbuffer (&tokenbuffer);
 
-  while (true)
+  ਜਦੋਂ (true)
     {
-      size_t token_length = readtoken (stdin, DELIM, sizeof (DELIM) - 1,
+      size_t token_ਲੰਮਾਈ = readtoken (stdin, DELIM, ਆਕਾਰ (DELIM) - 1,
                                        &tokenbuffer);
-      if (token_length == (size_t) -1)
+      ਜੇ (token_ਲੰਮਾਈ == (size_t) -1)
         {
-          if (ferror (stdin))
+          ਜੇ (ferror (stdin))
             error (EXIT_FAILURE, errno, _("error reading input"));
-          break;
+          ਰੋਕੋ;
         }
 
-      ok &= print_factors (tokenbuffer.buffer);
+      ok &= print_factors (tokenbuffer.ਬਫਰ);
     }
-  free (tokenbuffer.buffer);
+  ਮੁਕਤ (tokenbuffer.ਬਫਰ);
 
-  return ok;
+  ਵਾਪਸ ok;
 }
 
-int
-main (int argc, char **argv)
+ਪੂਰਨ
+ਮੁੱਖ (ਪੂਰਨ argc, ਅੱਖਰ **argv)
 {
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  ਸੈੱਟ_ਪ੍ਰੋਗਰਾਮ_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  int c;
-  while ((c = getopt_long (argc, argv, "h", long_options, NULL)) != -1)
+  ਪੂਰਨ c;
+  ਜਦੋਂ ((c = getopt_long (argc, argv, "h", long_options, ਨਿਰਾ)) != -1)
     {
-      switch (c)
+      ਚੋਣ (c)
         {
-        case 'h':  /* NetBSD used -h for this functionality first.  */
+        ਹਾਲਤ 'h':  /* NetBSD used -h for this functionality first.  */
           print_exponents = true;
-          break;
+          ਰੋਕੋ;
 
-        case DEV_DEBUG_OPTION:
+        ਹਾਲਤ DEV_DEBUG_OPTION:
           dev_debug = true;
-          break;
+          ਰੋਕੋ;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_ਸੰਸਕਰਣ_CHAR (ਪ੍ਰੋਗਰਾਮ_NAME, AUTHORS);
 
-        default:
+        ਮੂਲ:
           usage (EXIT_FAILURE);
         }
     }
@@ -2043,15 +2043,15 @@ main (int argc, char **argv)
   atexit (lbuf_flush);
 
   bool ok;
-  if (argc <= optind)
+  ਜੇ (argc <= optind)
     ok = do_stdin ();
-  else
+  ਨਹੀਂਤਾਂ
     {
       ok = true;
-      for (int i = optind; i < argc; i++)
-        if (! print_factors (argv[i]))
+      ਲਈ (ਪੂਰਨ i = optind; i < argc; i++)
+        ਜੇ (! print_factors (argv[i]))
           ok = false;
     }
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  ਵਾਪਸ ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

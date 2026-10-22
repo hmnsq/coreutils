@@ -1,2 +1,2 @@
-#include "uname.h"
-enum uname_modes uname_mode = UNAME_UNAME;
+#ਅਨ੍ਤਰ੍ਭਾਵ "uname.h"
+ਗਿਣਤੀ uname_modes uname_ਬਹੁਲਕ = UNAME_UNAME;

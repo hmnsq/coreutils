@@ -19,128 +19,128 @@
 
    Written by Alex Deymo <deymo@chromium.org>.  */
 
-#include <config.h>
-#include <getopt.h>
-#include <stdio.h>
-#if HAVE_PRCTL
+#ਅਨ੍ਤਰ੍ਭਾਵ <config.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <getopt.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <stdio.h>
+#ਜੇ HAVE_PRCTL
 # include <sys/prctl.h>
-#endif
+#ਜੇ_ਅੰਤ
 
-#include "system.h"
-#include "quote.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "system.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "quote.h"
 
-#ifdef SINGLE_BINARY
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SINGLE_ਦੁਆਧਾਰੀ
 /* Declare the main function on each one of the selected tools.  This name
    needs to match the one passed as CFLAGS on single-binary.mk (generated
    by gen-single-binary.sh). */
-# define SINGLE_BINARY_PROGRAM(prog_name_str, main_name) \
-  int single_binary_main_##main_name (int, char **);
+# define SINGLE_ਦੁਆਧਾਰੀ_ਪ੍ਰੋਗਰਾਮ(prog_name_str, main_name) \
+  ਪੂਰਨ single_ਦੁਆਧਾਰੀ_main##main_name (ਪੂਰਨ, ਅੱਖਰ **);
 # include "coreutils.h"
-# undef SINGLE_BINARY_PROGRAM
-#endif
+# undef SINGLE_ਦੁਆਧਾਰੀ_ਪ੍ਰੋਗਰਾਮ
+#ਜੇ_ਅੰਤ
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "coreutils"
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ ਪ੍ਰੋਗਰਾਮ_NAME "coreutils"
 
-#define AUTHORS \
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ AUTHORS \
   proper_name ("Alex Deymo")
 
-static struct option const long_options[] =
+ਸਥਿਰ ਬਣਤਰ option ਅਚਲ long_options[] =
 {
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_ਸੰਸਕਰਣ_OPTION_DECL},
+  {ਨਿਰਾ, 0, ਨਿਰਾ, 0}
 };
 
 
-void
-usage (int status)
+ਖਾਲੀ
+usage (ਪੂਰਨ ਸਥਿਤੀ)
 {
-  if (status != EXIT_SUCCESS)
+  ਜੇ (ਸਥਿਤੀ != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ਨਹੀਂਤਾਂ
     {
-      printf (_("\
-Usage: %s --coreutils-prog=PROGRAM_NAME [PARAMETERS]... \n"),
-              program_name);
+      ਲਿਖੋ (_("\
+Usage: %s --coreutils-prog=ਪ੍ਰੋਗਰਾਮ_NAME [PARAMETERS]... \n"),
+              ਪ੍ਰੋਗਰਾਮ_name);
       fputs (_("\
-Execute the PROGRAM_NAME built-in program with the given PARAMETERS.\n\
+Execute the ਪ੍ਰੋਗਰਾਮ_NAME built-ਵਿੱਚ ਪ੍ਰੋਗਰਾਮ with the given PARAMETERS.\n\
 \n"), stdout);
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (ਸੰਸਕਰਣ_OPTION_DESCRIPTION);
 
-#ifdef SINGLE_BINARY
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SINGLE_ਦੁਆਧਾਰੀ
 /* XXX: Ideally we'd like to present "install" here, not "ginstall".  */
-      char const *prog_name_list =
-# define SINGLE_BINARY_PROGRAM(prog_name_str, main_name) " " prog_name_str
+      ਅੱਖਰ ਅਚਲ *prog_name_list =
+# define SINGLE_ਦੁਆਧਾਰੀ_ਪ੍ਰੋਗਰਾਮ(prog_name_str, main_name) " " prog_name_str
 # include "coreutils.h"
-# undef SINGLE_BINARY_PROGRAM
+# undef SINGLE_ਦੁਆਧਾਰੀ_ਪ੍ਰੋਗਰਾਮ
       ;
-      printf ("\n\
-Built-in programs:\n\
+      ਲਿਖੋ ("\n\
+Built-ਵਿੱਚ programs:\n\
 %s\n", prog_name_list);
-#endif
+#ਜੇ_ਅੰਤ
 
-      printf (_("\
+      ਲਿਖੋ (_("\
 \n\
-Use: '%s --coreutils-prog=PROGRAM_NAME --help' for individual program help.\n"),
-              program_name);
-      emit_ancillary_info (PROGRAM_NAME);
+Use: '%s --coreutils-prog=PROGRAM_NAME --help' ਲਈ individual ਪ੍ਰੋਗਰਾਮ help.\n"),
+              ਪ੍ਰੋਗਰਾਮ_name);
+      emit_ancillary_info (ਪ੍ਰੋਗਰਾਮ_NAME);
     }
-  exit (status);
+  ਬਾਹਰ_ਨਿਕਲੋ (ਸਥਿਤੀ);
 }
 
-static void
-launch_program (char const *prog_name, int prog_argc, char **prog_argv)
+ਸਥਿਰ ਖਾਲੀ
+launch_ਪ੍ਰੋਗਰਾਮ (ਅੱਖਰ ਅਚਲ *prog_name, ਪੂਰਨ prog_argc, ਅੱਖਰ **prog_argv)
 {
-  int (*prog_main) (int, char **) = NULL;
+  ਪੂਰਨ (*prog_main) (ਪੂਰਨ, ਅੱਖਰ **) = ਨਿਰਾ;
 
   /* Ensure that at least one parameter was passed.  */
-  if (!prog_argc || !prog_argv || !prog_argv[0] || !prog_name)
-    return;
+  ਜੇ (!prog_argc || !prog_argv || !prog_argv[0] || !prog_name)
+    ਵਾਪਸ;
 
-#ifdef SINGLE_BINARY
-  if (false);
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SINGLE_ਦੁਆਧਾਰੀ
+  ਜੇ (false);
   /* Look up the right main program.  */
-# define SINGLE_BINARY_PROGRAM(prog_name_str, main_name) \
-  else if (streq (prog_name_str, prog_name)) \
-    prog_main = single_binary_main_##main_name;
+# define SINGLE_ਦੁਆਧਾਰੀ_ਪ੍ਰੋਗਰਾਮ(prog_name_str, main_name) \
+  ਨਹੀਂਤਾਂ ਜੇ (streq (prog_name_str, prog_name)) \
+    prog_main = single_ਦੁਆਧਾਰੀ_main##main_name;
 # include "coreutils.h"
-# undef SINGLE_BINARY_PROGRAM
-#endif
+# undef SINGLE_ਦੁਆਧਾਰੀ_ਪ੍ਰੋਗਰਾਮ
+#ਜੇ_ਅੰਤ
 
-  if (! prog_main)
-    return;
+  ਜੇ (! prog_main)
+    ਵਾਪਸ;
 
-#if HAVE_PRCTL && defined PR_SET_NAME
+#ਜੇ HAVE_PRCTL && defined PR_ਸੈੱਟ_NAME
   /* Not being able to set the program name is not a fatal error.  */
-  prctl (PR_SET_NAME, last_component (prog_argv[0]));
-#endif
-#if HAVE_PRCTL && defined PR_SET_MM_ARG_START
+  prctl (PR_ਸੈੱਟ_NAME, ਆਖਰੀ_component (prog_argv[0]));
+#ਜੇ_ਅੰਤ
+#ਜੇ HAVE_PRCTL && defined PR_ਸੈੱਟ_MM_ARG_ਸ਼ੁਰੂ
   /* Shift the beginning of the command line to prog_argv[0] (if set) so
      /proc/$pid/cmdline reflects a more specific value.  Note one needs
      CAP_SYS_RESOURCE or root privileges for this to succeed.  */
-  prctl (PR_SET_MM, PR_SET_MM_ARG_START, prog_argv[0], 0, 0);
-#endif
+  prctl (PR_ਸੈੱਟ_MM, PR_ਸੈੱਟ_MM_ARG_ਸ਼ੁਰੂ, prog_argv[0], 0, 0);
+#ਜੇ_ਅੰਤ
 
-  exit (prog_main (prog_argc, prog_argv));
+  ਬਾਹਰ_ਨਿਕਲੋ (prog_main (prog_argc, prog_argv));
 }
 
-int
-main (int argc, char **argv)
+ਪੂਰਨ
+ਮੁੱਖ (ਪੂਰਨ argc, ਅੱਖਰ **argv)
 {
-  char *prog_name = last_component (argv[0]);
-  int optc;
+  ਅੱਖਰ *prog_name = ਆਖਰੀ_component (argv[0]);
+  ਪੂਰਨ optc;
 
   /* Map external name to internal name.  */
-  char ginstall[] = "ginstall";
-  if (streq (prog_name, "install"))
+  ਅੱਖਰ ginstall[] = "ginstall";
+  ਜੇ (streq (prog_name, "install"))
     prog_name = ginstall;
 
   /* If this program is called directly as "coreutils" or if the value of
      argv[0] is an unknown tool (which "coreutils" is), we proceed and parse
      the options.  */
-  launch_program (prog_name, argc, argv);
+  launch_ਪ੍ਰੋਗਰਾਮ (prog_name, argc, argv);
 
   /* No known program was selected via argv[0].  Try parsing the first
      argument as --coreutils-prog=PROGRAM to determine the program.  The
@@ -149,57 +149,57 @@ main (int argc, char **argv)
      The third argument is what the program will see as argv[0].  */
 
   size_t nskip = 0;
-  if (argc >= 2)
+  ਜੇ (argc >= 2)
     {
-      char *arg_name = NULL;
+      ਅੱਖਰ *arg_name = ਨਿਰਾ;
 
       /* If calling coreutils directly, the "script" name isn't passed.
          Distinguish the two cases with a -shebang suffix.  */
-      if (STRPREFIX (argv[1], "--coreutils-prog="))
+      ਜੇ (STRPREFIX (argv[1], "--coreutils-prog="))
         {
           nskip = 1;
-          arg_name = prog_name = argv[1] + strlen ("--coreutils-prog=");
+          arg_name = prog_name = argv[1] + ਲੜੀ_ਲੰਬਾਈ ("--coreutils-prog=");
         }
-      else if (STRPREFIX (argv[1], "--coreutils-prog-shebang="))
+      ਨਹੀਂਤਾਂ ਜੇ (STRPREFIX (argv[1], "--coreutils-prog-shebang="))
         {
           nskip = 2;
-          prog_name = argv[1] + strlen ("--coreutils-prog-shebang=");
-          if (argc >= 3)
-            arg_name = last_component (argv[2]);
-          else
+          prog_name = argv[1] + ਲੜੀ_ਲੰਬਾਈ ("--coreutils-prog-shebang=");
+          ਜੇ (argc >= 3)
+            arg_name = ਆਖਰੀ_component (argv[2]);
+          ਨਹੀਂਤਾਂ
             arg_name = prog_name;
         }
 
-      if (nskip)
+      ਜੇ (nskip)
         {
           argv[nskip] = arg_name; /* XXX: Discards any specified path.  */
-          launch_program (prog_name, argc - nskip, argv + nskip);
+          launch_ਪ੍ਰੋਗਰਾਮ (prog_name, argc - nskip, argv + nskip);
         }
     }
 
   /* Only process options if calling multi-call binary directly,
      otherwise `foo --version` would succeed.  */
-  if (nskip || (prog_name && !str_endswith (prog_name, "coreutils")))
+  ਜੇ (nskip || (prog_name && !str_endswith (prog_name, "coreutils")))
     {
       fprintf (stderr, _("%s: unknown program %s\n"),
-               PROGRAM_NAME, quote (prog_name));
-      exit (EXIT_FAILURE);
+               ਪ੍ਰੋਗਰਾਮ_NAME, quote (prog_name));
+      ਬਾਹਰ_ਨਿਕਲੋ (EXIT_FAILURE);
     }
 
   /* From here on, we behave like any other coreutils program.  */
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  ਸੈੱਟ_ਪ੍ਰੋਗਰਾਮ_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
   atexit (close_stdout);
 
-  if ((optc = getopt_long (argc, argv, "", long_options, NULL)) != -1)
-    switch (optc)
+  ਜੇ ((optc = getopt_long (argc, argv, "", long_options, ਨਿਰਾ)) != -1)
+    ਚੋਣ (optc)
       {
       case_GETOPT_HELP_CHAR;
 
-      case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+      case_GETOPT_ਸੰਸਕਰਣ_CHAR (ਪ੍ਰੋਗਰਾਮ_NAME, AUTHORS);
       }
 
   usage (EXIT_FAILURE);

@@ -14,23 +14,23 @@
 
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-#ifndef SET_FIELDS_H
-# define SET_FIELDS_H
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ ਸੈੱਟ_FIELDS_H
+# define ਸੈੱਟ_FIELDS_H
 
-struct field_range_pair
+ਬਣਤਰ ਖੇਤਰ_range_pair
   {
     uintmax_t lo;
     uintmax_t hi;
   };
 
 /* Array of `struct range_pair' holding all the finite ranges. */
-extern struct field_range_pair *frp;
+ਬਾਹਰੀ ਬਣਤਰ ਖੇਤਰ_range_pair *frp;
 
 /* Number of finite ranges specified by the user. */
-extern idx_t n_frp;
+ਬਾਹਰੀ idx_t n_frp;
 
 /* field list parsing options */
-enum
+ਗਿਣਤੀ
 {
   SETFLD_ALLOW_DASH = 0x01,     /* allow single dash meaning 'all fields' */
   SETFLD_COMPLEMENT = 0x02,     /* complement the field list */
@@ -39,6 +39,6 @@ enum
 };
 
 /* allocates and initializes the FRP array and N_FRP count */
-extern void set_fields (char const *fieldstr, unsigned int options);
+ਬਾਹਰੀ ਖਾਲੀ ਸੈੱਟ_fields (ਅੱਖਰ ਅਚਲ *fieldstr, ਬਿਨਾਨਿਸ਼ਾਨੀ ਪੂਰਨ options);
 
-#endif
+#ਜੇ_ਅੰਤ

@@ -15,103 +15,103 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <config.h>
 
-#include <sys/types.h>
-#include <fnmatch.h>
-#include <getopt.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <sys/types.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <fnmatch.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <getopt.h>
 
-#include "system.h"
-#include "dircolors.h"
-#include "c-ctype.h"
-#include "c-strcase.h"
-#include "obstack.h"
-#include "quote.h"
-#include "stdio--.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "system.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "dircolors.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "c-ctype.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "c-strcase.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "obstack.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "quote.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "stdio--.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "dircolors"
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ ਪ੍ਰੋਗਰਾਮ_NAME "dircolors"
 
-#define AUTHORS proper_name ("H. Peter Anvin")
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ AUTHORS proper_name ("H. Peter Anvin")
 
-#define obstack_chunk_alloc malloc
-#define obstack_chunk_free free
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ obstack_chunk_alloc ਸਮ੍ਰਿਤੀ_ਦਿਓ
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ obstack_chunk_free ਮੁਕਤ
 
-enum Shell_syntax
+ਗਿਣਤੀ Shell_syntax
 {
   SHELL_SYNTAX_BOURNE,
   SHELL_SYNTAX_C,
   SHELL_SYNTAX_UNKNOWN
 };
 
-#define APPEND_CHAR(C) obstack_1grow (&lsc_obstack, C)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ APPEND_CHAR(C) obstack_1grow (&lsc_obstack, C)
 
 /* Accumulate in this obstack the value for the LS_COLORS environment
    variable.  */
-static struct obstack lsc_obstack;
+ਸਥਿਰ ਬਣਤਰ obstack lsc_obstack;
 
-static char const *const slack_codes[] =
+ਸਥਿਰ ਅੱਖਰ ਅਚਲ *ਅਚਲ slack_codes[] =
 {
   "NORMAL", "NORM", "FILE", "RESET", "DIR", "LNK", "LINK",
   "SYMLINK", "ORPHAN", "MISSING", "FIFO", "PIPE", "SOCK", "BLK", "BLOCK",
   "CHR", "CHAR", "DOOR", "EXEC", "LEFT", "LEFTCODE", "RIGHT", "RIGHTCODE",
   "END", "ENDCODE", "SUID", "SETUID", "SGID", "SETGID", "STICKY",
   "OTHER_WRITABLE", "OWR", "STICKY_OTHER_WRITABLE", "OWT", "CAPABILITY",
-  "MULTIHARDLINK", "CLRTOEOL", NULL
+  "MULTIHARDLINK", "CLRTOEOL", ਨਿਰਾ
 };
 
-static char const *const ls_codes[] =
+ਸਥਿਰ ਅੱਖਰ ਅਚਲ *ਅਚਲ ls_codes[] =
 {
   "no", "no", "fi", "rs", "di", "ln", "ln", "ln", "or", "mi", "pi", "pi",
   "so", "bd", "bd", "cd", "cd", "do", "ex", "lc", "lc", "rc", "rc", "ec", "ec",
   "su", "su", "sg", "sg", "st", "ow", "ow", "tw", "tw", "ca", "mh", "cl",
-  NULL
+  ਨਿਰਾ
 };
 static_assert (countof (slack_codes) == countof (ls_codes));
 
 /* Whether to output escaped ls color codes for display.  */
-static bool print_ls_colors;
+ਸਥਿਰ bool print_ls_colors;
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+ਗਿਣਤੀ
 {
   PRINT_LS_COLORS_OPTION = CHAR_MAX + 1,
 };
 
-static struct option const long_options[] =
+ਸਥਿਰ ਬਣਤਰ option ਅਚਲ long_options[] =
   {
-    {"bourne-shell", no_argument, NULL, 'b'},
-    {"sh", no_argument, NULL, 'b'},
-    {"csh", no_argument, NULL, 'c'},
-    {"c-shell", no_argument, NULL, 'c'},
-    {"print-database", no_argument, NULL, 'p'},
-    {"print-ls-colors", no_argument, NULL, PRINT_LS_COLORS_OPTION},
+    {"bourne-shell", no_ਦਲੀਲ, ਨਿਰਾ, 'b'},
+    {"sh", no_ਦਲੀਲ, ਨਿਰਾ, 'b'},
+    {"csh", no_ਦਲੀਲ, ਨਿਰਾ, 'c'},
+    {"c-shell", no_ਦਲੀਲ, ਨਿਰਾ, 'c'},
+    {"print-database", no_ਦਲੀਲ, ਨਿਰਾ, 'p'},
+    {"print-ls-colors", no_ਦਲੀਲ, ਨਿਰਾ, PRINT_LS_COLORS_OPTION},
     {GETOPT_HELP_OPTION_DECL},
-    {GETOPT_VERSION_OPTION_DECL},
-    {NULL, 0, NULL, 0}
+    {GETOPT_ਸੰਸਕਰਣ_OPTION_DECL},
+    {ਨਿਰਾ, 0, ਨਿਰਾ, 0}
   };
 
-void
-usage (int status)
+ਖਾਲੀ
+usage (ਪੂਰਨ ਸਥਿਤੀ)
 {
-  if (status != EXIT_SUCCESS)
+  ਜੇ (ਸਥਿਤੀ != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ਨਹੀਂਤਾਂ
     {
-      printf (_("Usage: %s [OPTION]... [FILE]\n"), program_name);
+      ਲਿਖੋ (_("Usage: %s [OPTION]... [FILE]\n"), ਪ੍ਰੋਗਰਾਮ_name);
       fputs (_("\
-Output commands to set the LS_COLORS environment variable.\n\
+Output commands ਮੰਜ਼ਿਲ ਸੈੱਟ_2 the LS_COLORS environment variable.\n\
 \n\
-Determine format of output:\n\
+Determine format ਦਾ output:\n\
 "), stdout);
       oputs (_("\
   -b, --sh, --bourne-shell\n\
-         output Bourne shell code to set LS_COLORS\n\
+         output Bourne shell ਕੋਡ ਮੰਜ਼ਿਲ ਸੈੱਟ_2 LS_COLORS\n\
 "));
       oputs (_("\
   -c, --csh, --c-shell\n\
-         output C shell code to set LS_COLORS\n\
+         output C shell ਕੋਡ ਮੰਜ਼ਿਲ ਸੈੱਟ_2 LS_COLORS\n\
 "));
       oputs (_("\
   -p, --print-database\n\
@@ -119,125 +119,125 @@ Determine format of output:\n\
 "));
       oputs (_("\
       --print-ls-colors\n\
-         output fully escaped colors for display\n\
+         output fully escaped colors ਲਈ display\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (ਸੰਸਕਰਣ_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-If FILE is specified, read it to determine which colors to use for which\n\
-file types and extensions.  Otherwise, a precompiled database is used.\n\
-For details on the format of these files, run 'dircolors --print-database'.\n\
+If FILE is specified, ਪਠ it ਮੰਜ਼ਿਲ determine which colors ਮੰਜ਼ਿਲ use ਲਈ which\n\
+file types and extensions.  Otherwise, a precompiled database is ਵਰਤਿਆ.\n\
+For details on the format ਦਾ these files, ਲੜੀਵਾਰ_2 'dircolors --print-database'.\n\
 "), stdout);
-      emit_ancillary_info (PROGRAM_NAME);
+      emit_ancillary_info (ਪ੍ਰੋਗਰਾਮ_NAME);
     }
 
-  exit (status);
+  ਬਾਹਰ_ਨਿਕਲੋ (ਸਥਿਤੀ);
 }
 
 /* If the SHELL environment variable is set to 'csh' or 'tcsh,'
    assume C shell.  Else Bourne shell.  */
 
-static enum Shell_syntax
-guess_shell_syntax (void)
+ਸਥਿਰ ਗਿਣਤੀ Shell_syntax
+guess_shell_syntax (ਖਾਲੀ)
 {
-  char *shell;
+  ਅੱਖਰ *shell;
 
   shell = getenv ("SHELL");
-  if (shell == NULL || *shell == '\0')
-    return SHELL_SYNTAX_UNKNOWN;
+  ਜੇ (shell == ਨਿਰਾ || *shell == '\0')
+    ਵਾਪਸ SHELL_SYNTAX_UNKNOWN;
 
-  shell = last_component (shell);
+  shell = ਆਖਰੀ_component (shell);
 
-  if (streq (shell, "csh") || streq (shell, "tcsh"))
-    return SHELL_SYNTAX_C;
+  ਜੇ (streq (shell, "csh") || streq (shell, "tcsh"))
+    ਵਾਪਸ SHELL_SYNTAX_C;
 
-  return SHELL_SYNTAX_BOURNE;
+  ਵਾਪਸ SHELL_SYNTAX_BOURNE;
 }
 
-static void
-parse_line (char const *line, char **keyword, char **arg)
+ਸਥਿਰ ਖਾਲੀ
+parse_ਸਤਰ (ਅੱਖਰ ਅਚਲ *ਸਤਰ, ਅੱਖਰ **keyword, ਅੱਖਰ **arg)
 {
-  char const *p;
-  char const *keyword_start;
-  char const *arg_start;
+  ਅੱਖਰ ਅਚਲ *p;
+  ਅੱਖਰ ਅਚਲ *keyword_ਸ਼ੁਰੂ;
+  ਅੱਖਰ ਅਚਲ *arg_ਸ਼ੁਰੂ;
 
-  *keyword = NULL;
-  *arg = NULL;
+  *keyword = ਨਿਰਾ;
+  *arg = ਨਿਰਾ;
 
-  for (p = line; c_isspace (*p); ++p)
-    continue;
+  ਲਈ (p = ਸਤਰ; c_isspace (*p); ++p)
+    ਜਾਰੀ;
 
   /* Ignore blank lines and shell-style comments.  */
-  if (*p == '\0' || *p == '#')
-    return;
+  ਜੇ (*p == '\0' || *p == '#')
+    ਵਾਪਸ;
 
-  keyword_start = p;
+  keyword_ਸ਼ੁਰੂ = p;
 
-  while (!c_isspace (*p) && *p != '\0')
+  ਜਦੋਂ (!c_isspace (*p) && *p != '\0')
     {
       ++p;
     }
 
-  *keyword = ximemdup0 (keyword_start, p - keyword_start);
-  if (*p  == '\0')
-    return;
+  *keyword = ximemdup0 (keyword_ਸ਼ੁਰੂ, p - keyword_ਸ਼ੁਰੂ);
+  ਜੇ (*p  == '\0')
+    ਵਾਪਸ;
 
-  do
+  ਕਰੋ
     {
       ++p;
     }
-  while (c_isspace (*p));
+  ਜਦੋਂ (c_isspace (*p));
 
-  if (*p == '\0' || *p == '#')
-    return;
+  ਜੇ (*p == '\0' || *p == '#')
+    ਵਾਪਸ;
 
-  arg_start = p;
+  arg_ਸ਼ੁਰੂ = p;
 
-  while (*p != '\0' && *p != '#')
+  ਜਦੋਂ (*p != '\0' && *p != '#')
     ++p;
 
-  for (--p; c_isspace (*p); --p)
-    continue;
+  ਲਈ (--p; c_isspace (*p); --p)
+    ਜਾਰੀ;
   ++p;
 
-  *arg = ximemdup0 (arg_start, p - arg_start);
+  *arg = ximemdup0 (arg_ਸ਼ੁਰੂ, p - arg_ਸ਼ੁਰੂ);
 }
 
 /* Accumulate STR to LS_COLORS data.
    If outputting shell syntax, then escape appropriately.  */
 
-static void
-append_quoted (char const *str)
+ਸਥਿਰ ਖਾਲੀ
+append_quoted (ਅੱਖਰ ਅਚਲ *str)
 {
   bool need_backslash = true;
 
-  while (*str != '\0')
+  ਜਦੋਂ (*str != '\0')
     {
-      if (! print_ls_colors)
-        switch (*str)
+      ਜੇ (! print_ls_colors)
+        ਚੋਣ (*str)
           {
-          case '\'':
+          ਹਾਲਤ '\'':
             APPEND_CHAR ('\'');
             APPEND_CHAR ('\\');
             APPEND_CHAR ('\'');
             need_backslash = true;
-            break;
+            ਰੋਕੋ;
 
-          case '\\':
-          case '^':
+          ਹਾਲਤ '\\':
+          ਹਾਲਤ '^':
             need_backslash = !need_backslash;
-            break;
+            ਰੋਕੋ;
 
-          case ':':
-          case '=':
-            if (need_backslash)
+          ਹਾਲਤ ':':
+          ਹਾਲਤ '=':
+            ਜੇ (need_backslash)
               APPEND_CHAR ('\\');
             FALLTHROUGH;
 
-          default:
+          ਮੂਲ:
             need_backslash = true;
-            break;
+            ਰੋਕੋ;
           }
 
       APPEND_CHAR (*str);
@@ -248,21 +248,21 @@ append_quoted (char const *str)
 /* Accumulate entry to LS_COLORS data.
    Use shell syntax unless PRINT_LS_COLORS is set.  */
 
-static void
-append_entry (char prefix, char const *item, char const *arg)
+ਸਥਿਰ ਖਾਲੀ
+append_ਇੰਦਰਾਜ (ਅੱਖਰ ਅਗੇਤਰ, ਅੱਖਰ ਅਚਲ *ਵਸਤੂ, ਅੱਖਰ ਅਚਲ *arg)
 {
-  if (print_ls_colors)
+  ਜੇ (print_ls_colors)
     {
       append_quoted ("\x1B[");
       append_quoted (arg);
       APPEND_CHAR ('m');
     }
-  if (prefix)
-    APPEND_CHAR (prefix);
-  append_quoted (item);
+  ਜੇ (ਅਗੇਤਰ)
+    APPEND_CHAR (ਅਗੇਤਰ);
+  append_quoted (ਵਸਤੂ);
   APPEND_CHAR (print_ls_colors ? '\t' : '=');
   append_quoted (arg);
-  if (print_ls_colors)
+  ਜੇ (print_ls_colors)
     append_quoted ("\x1B[0m");
   APPEND_CHAR (print_ls_colors ? '\n' : ':');
 }
@@ -274,197 +274,197 @@ append_entry (char prefix, char const *item, char const *arg)
    upon failure (unrecognized keyword is the only way to fail here).
    Return true if successful.  */
 
-static bool
-dc_parse_stream (FILE *fp, char const *filename)
+ਸਥਿਰ bool
+dc_parse_ਧਾਰਾ (FILE *fp, ਅੱਖਰ ਅਚਲ *filename)
 {
-  idx_t line_number = 0;
-  char const *next_G_line = G_line;
-  char *input_line = NULL;
-  size_t input_line_size = 0;
-  char const *line;
-  char const *term;
-  char const *colorterm;
+  idx_t ਸਤਰ_ਸੰਖਿਆ = 0;
+  ਅੱਖਰ ਅਚਲ *ਅਗਲਾ_G_ਸਤਰ = G_ਸਤਰ;
+  ਅੱਖਰ *ਨਿਵੇਸ਼_ਸਤਰ = ਨਿਰਾ;
+  size_t ਨਿਵੇਸ਼_ਸਤਰ_ਮਾਪ = 0;
+  ਅੱਖਰ ਅਚਲ *ਸਤਰ;
+  ਅੱਖਰ ਅਚਲ *ਪਦ;
+  ਅੱਖਰ ਅਚਲ *colorterm;
   bool ok = true;
 
   /* State for the parser.  */
-  enum { ST_TERMNO, ST_TERMYES, ST_TERMSURE, ST_GLOBAL } state = ST_GLOBAL;
+  ਗਿਣਤੀ { ST_TERMNO, ST_TERMYES, ST_TERMSURE, ST_GLOBAL } state = ST_GLOBAL;
 
   /* Get terminal type */
-  term = getenv ("TERM");
-  if (term == NULL || *term == '\0')
-    term = "none";
+  ਪਦ = getenv ("TERM");
+  ਜੇ (ਪਦ == ਨਿਰਾ || *ਪਦ == '\0')
+    ਪਦ = "none";
 
   /* Also match $COLORTERM.  */
   colorterm = getenv ("COLORTERM");
-  if (colorterm == NULL)
+  ਜੇ (colorterm == ਨਿਰਾ)
     colorterm = "";  /* Doesn't match default "?*"  */
 
-  while (true)
+  ਜਦੋਂ (true)
     {
-      char *keywd, *arg;
+      ਅੱਖਰ *keywd, *arg;
       bool unrecognized;
 
-      ++line_number;
+      ++ਸਤਰ_ਸੰਖਿਆ;
 
-      if (fp)
+      ਜੇ (fp)
         {
-          if (getline (&input_line, &input_line_size, fp) <= 0)
+          ਜੇ (getline (&ਨਿਵੇਸ਼_ਸਤਰ, &ਨਿਵੇਸ਼_ਸਤਰ_ਮਾਪ, fp) <= 0)
             {
-              if (ferror (fp))
+              ਜੇ (ferror (fp))
                 {
                   error (0, errno, _("%s: read error"), quotef (filename));
                   ok = false;
                 }
-              free (input_line);
-              break;
+              ਮੁਕਤ (ਨਿਵੇਸ਼_ਸਤਰ);
+              ਰੋਕੋ;
             }
-          line = input_line;
+          ਸਤਰ = ਨਿਵੇਸ਼_ਸਤਰ;
         }
-      else
+      ਨਹੀਂਤਾਂ
         {
-          if (next_G_line == G_line + sizeof G_line)
-            break;
-          line = next_G_line;
-          next_G_line += strlen (next_G_line) + 1;
+          ਜੇ (ਅਗਲਾ_G_ਸਤਰ == G_ਸਤਰ + ਆਕਾਰ G_ਸਤਰ)
+            ਰੋਕੋ;
+          ਸਤਰ = ਅਗਲਾ_G_ਸਤਰ;
+          ਅਗਲਾ_G_ਸਤਰ += ਲੜੀ_ਲੰਬਾਈ (ਅਗਲਾ_G_ਸਤਰ) + 1;
         }
 
-      parse_line (line, &keywd, &arg);
+      parse_ਸਤਰ (ਸਤਰ, &keywd, &arg);
 
-      if (keywd == NULL)
-        continue;
+      ਜੇ (keywd == ਨਿਰਾ)
+        ਜਾਰੀ;
 
-      if (arg == NULL)
+      ਜੇ (arg == ਨਿਰਾ)
         {
           error (0, 0, _("%s:%td: invalid line;  missing second token"),
-                 quotef (filename), line_number);
+                 quotef (filename), ਸਤਰ_ਸੰਖਿਆ);
           ok = false;
-          free (keywd);
-          continue;
+          ਮੁਕਤ (keywd);
+          ਜਾਰੀ;
         }
 
       unrecognized = false;
-      if (c_strcasecmp (keywd, "TERM") == 0)
+      ਜੇ (c_strcasecmp (keywd, "TERM") == 0)
         {
-          if (state != ST_TERMSURE)
-            state = fnmatch (arg, term, 0) == 0 ? ST_TERMSURE : ST_TERMNO;
+          ਜੇ (state != ST_TERMSURE)
+            state = fnmatch (arg, ਪਦ, 0) == 0 ? ST_TERMSURE : ST_TERMNO;
         }
-      else if (c_strcasecmp (keywd, "COLORTERM") == 0)
+      ਨਹੀਂਤਾਂ ਜੇ (c_strcasecmp (keywd, "COLORTERM") == 0)
         {
-          if (state != ST_TERMSURE)
+          ਜੇ (state != ST_TERMSURE)
             state = fnmatch (arg, colorterm, 0) == 0 ? ST_TERMSURE : ST_TERMNO;
         }
-      else
+      ਨਹੀਂਤਾਂ
         {
-          if (state == ST_TERMSURE)
+          ਜੇ (state == ST_TERMSURE)
             state = ST_TERMYES;  /* Another {COLOR,}TERM can cancel.  */
 
-          if (state != ST_TERMNO)
+          ਜੇ (state != ST_TERMNO)
             {
-              if (keywd[0] == '.')
-                append_entry ('*', keywd, arg);
-              else if (keywd[0] == '*')
-                append_entry (0, keywd, arg);
-              else if (c_strcasecmp (keywd, "OPTIONS") == 0
+              ਜੇ (keywd[0] == '.')
+                append_ਇੰਦਰਾਜ ('*', keywd, arg);
+              ਨਹੀਂਤਾਂ ਜੇ (keywd[0] == '*')
+                append_ਇੰਦਰਾਜ (0, keywd, arg);
+              ਨਹੀਂਤਾਂ ਜੇ (c_strcasecmp (keywd, "OPTIONS") == 0
                        || c_strcasecmp (keywd, "COLOR") == 0
                        || c_strcasecmp (keywd, "EIGHTBIT") == 0)
                 {
                   /* Ignore.  */
                 }
-              else
+              ਨਹੀਂਤਾਂ
                 {
-                  int i;
+                  ਪੂਰਨ i;
 
-                  for (i = 0; slack_codes[i] != NULL; ++i)
-                    if (c_strcasecmp (keywd, slack_codes[i]) == 0)
-                      break;
+                  ਲਈ (i = 0; slack_codes[i] != ਨਿਰਾ; ++i)
+                    ਜੇ (c_strcasecmp (keywd, slack_codes[i]) == 0)
+                      ਰੋਕੋ;
 
-                  if (slack_codes[i] != NULL)
-                    append_entry (0, ls_codes[i], arg);
-                  else
+                  ਜੇ (slack_codes[i] != ਨਿਰਾ)
+                    append_ਇੰਦਰਾਜ (0, ls_codes[i], arg);
+                  ਨਹੀਂਤਾਂ
                     unrecognized = true;
                 }
             }
-          else
+          ਨਹੀਂਤਾਂ
             unrecognized = true;
         }
 
-      if (unrecognized && (state == ST_TERMSURE || state == ST_TERMYES))
+      ਜੇ (unrecognized && (state == ST_TERMSURE || state == ST_TERMYES))
         {
           error (0, 0, _("%s:%td: unrecognized keyword %s"),
                  (filename ? quotef (filename) : _("<internal>")),
-                 line_number, keywd);
+                 ਸਤਰ_ਸੰਖਿਆ, keywd);
           ok = false;
         }
 
-      free (keywd);
-      free (arg);
+      ਮੁਕਤ (keywd);
+      ਮੁਕਤ (arg);
     }
 
-  return ok;
+  ਵਾਪਸ ok;
 }
 
-static bool
-dc_parse_file (char const *filename)
+ਸਥਿਰ bool
+dc_parse_file (ਅੱਖਰ ਅਚਲ *filename)
 {
   bool ok;
 
-  if (! streq (filename, "-") && freopen (filename, "r", stdin) == NULL)
+  ਜੇ (! streq (filename, "-") && freopen (filename, "r", stdin) == ਨਿਰਾ)
     {
       error (0, errno, "%s", quotef (filename));
-      return false;
+      ਵਾਪਸ false;
     }
 
-  ok = dc_parse_stream (stdin, filename);
+  ok = dc_parse_ਧਾਰਾ (stdin, filename);
 
-  if (fclose (stdin) != 0)
+  ਜੇ (fclose (stdin) != 0)
     {
       error (0, errno, "%s", quotef (filename));
-      return false;
+      ਵਾਪਸ false;
     }
 
-  return ok;
+  ਵਾਪਸ ok;
 }
 
-int
-main (int argc, char **argv)
+ਪੂਰਨ
+ਮੁੱਖ (ਪੂਰਨ argc, ਅੱਖਰ **argv)
 {
   bool ok = true;
-  int optc;
-  enum Shell_syntax syntax = SHELL_SYNTAX_UNKNOWN;
+  ਪੂਰਨ optc;
+  ਗਿਣਤੀ Shell_syntax syntax = SHELL_SYNTAX_UNKNOWN;
   bool print_database = false;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  ਸੈੱਟ_ਪ੍ਰੋਗਰਾਮ_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "bcp", long_options, NULL)) != -1)
-    switch (optc)
+  ਜਦੋਂ ((optc = getopt_long (argc, argv, "bcp", long_options, ਨਿਰਾ)) != -1)
+    ਚੋਣ (optc)
       {
-      case 'b':	/* Bourne shell syntax.  */
+      ਹਾਲਤ 'b':	/* Bourne shell syntax.  */
         syntax = SHELL_SYNTAX_BOURNE;
-        break;
+        ਰੋਕੋ;
 
-      case 'c':	/* C shell syntax.  */
+      ਹਾਲਤ 'c':	/* C shell syntax.  */
         syntax = SHELL_SYNTAX_C;
-        break;
+        ਰੋਕੋ;
 
-      case 'p':
+      ਹਾਲਤ 'p':
         print_database = true;
-        break;
+        ਰੋਕੋ;
 
-      case PRINT_LS_COLORS_OPTION:
+      ਹਾਲਤ PRINT_LS_COLORS_OPTION:
         print_ls_colors = true;
-        break;
+        ਰੋਕੋ;
 
       case_GETOPT_HELP_CHAR;
 
-      case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+      case_GETOPT_ਸੰਸਕਰਣ_CHAR (ਪ੍ਰੋਗਰਾਮ_NAME, AUTHORS);
 
-      default:
+      ਮੂਲ:
         usage (EXIT_FAILURE);
       }
 
@@ -473,7 +473,7 @@ main (int argc, char **argv)
 
   /* It doesn't make sense to use --print with either of
      --bourne or --c-shell.  */
-  if ((print_database | print_ls_colors) && syntax != SHELL_SYNTAX_UNKNOWN)
+  ਜੇ ((print_database | print_ls_colors) && syntax != SHELL_SYNTAX_UNKNOWN)
     {
       error (0, 0,
              _("the options to output non shell syntax,\n"
@@ -481,7 +481,7 @@ main (int argc, char **argv)
       usage (EXIT_FAILURE);
     }
 
-  if (print_database && print_ls_colors)
+  ਜੇ (print_database && print_ls_colors)
     {
       error (0, 0,
              _("options --print-database and --print-ls-colors "
@@ -489,68 +489,68 @@ main (int argc, char **argv)
       usage (EXIT_FAILURE);
     }
 
-  if ((!print_database) < argc)
+  ਜੇ ((!print_database) < argc)
     {
       error (0, 0, _("extra operand %s"),
              quote (argv[!print_database]));
-      if (print_database)
+      ਜੇ (print_database)
         fprintf (stderr, "%s\n",
                  _("file operands cannot be combined with "
                    "--print-database (-p)"));
       usage (EXIT_FAILURE);
     }
 
-  if (print_database)
+  ਜੇ (print_database)
     {
-      char const *p = G_line;
-      while (p - G_line < sizeof G_line)
+      ਅੱਖਰ ਅਚਲ *p = G_ਸਤਰ;
+      ਜਦੋਂ (p - G_ਸਤਰ < ਆਕਾਰ G_ਸਤਰ)
         {
           puts (p);
-          p += strlen (p) + 1;
+          p += ਲੜੀ_ਲੰਬਾਈ (p) + 1;
         }
     }
-  else
+  ਨਹੀਂਤਾਂ
     {
       /* If shell syntax was not explicitly specified, try to guess it. */
-      if (syntax == SHELL_SYNTAX_UNKNOWN && ! print_ls_colors)
+      ਜੇ (syntax == SHELL_SYNTAX_UNKNOWN && ! print_ls_colors)
         {
           syntax = guess_shell_syntax ();
-          if (syntax == SHELL_SYNTAX_UNKNOWN)
+          ਜੇ (syntax == SHELL_SYNTAX_UNKNOWN)
             error (EXIT_FAILURE, 0,
                    _("no SHELL environment variable,"
                      " and no shell type option given"));
         }
 
       obstack_init (&lsc_obstack);
-      if (argc == 0)
-        ok = dc_parse_stream (NULL, NULL);
-      else
+      ਜੇ (argc == 0)
+        ok = dc_parse_ਧਾਰਾ (ਨਿਰਾ, ਨਿਰਾ);
+      ਨਹੀਂਤਾਂ
         ok = dc_parse_file (argv[0]);
 
-      if (ok)
+      ਜੇ (ok)
         {
-          size_t len = obstack_object_size (&lsc_obstack);
-          char *s = obstack_finish (&lsc_obstack);
-          char const *prefix;
-          char const *suffix;
+          size_t len = obstack_object_ਮਾਪ (&lsc_obstack);
+          ਅੱਖਰ *s = obstack_ਅੰਤ (&lsc_obstack);
+          ਅੱਖਰ ਅਚਲ *ਅਗੇਤਰ;
+          ਅੱਖਰ ਅਚਲ *suffix;
 
-          if (syntax == SHELL_SYNTAX_BOURNE)
+          ਜੇ (syntax == SHELL_SYNTAX_BOURNE)
             {
-              prefix = "LS_COLORS='";
+              ਅਗੇਤਰ = "LS_COLORS='";
               suffix = "';\nexport LS_COLORS\n";
             }
-          else
+          ਨਹੀਂਤਾਂ
             {
-              prefix = "setenv LS_COLORS '";
+              ਅਗੇਤਰ = "setenv LS_COLORS '";
               suffix = "'\n";
             }
-          if (! print_ls_colors)
-            fputs (prefix, stdout);
+          ਜੇ (! print_ls_colors)
+            fputs (ਅਗੇਤਰ, stdout);
           fwrite (s, 1, len, stdout);
-          if (! print_ls_colors)
+          ਜੇ (! print_ls_colors)
             fputs (suffix, stdout);
         }
     }
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  ਵਾਪਸ ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

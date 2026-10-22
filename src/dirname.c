@@ -17,138 +17,138 @@
 
 /* Written by David MacKenzie and Jim Meyering. */
 
-#include <config.h>
-#include <getopt.h>
-#include <stdio.h>
-#include <sys/types.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <config.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <getopt.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <stdio.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <sys/types.h>
 
-#include "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
-#include "system.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
+#ਅਨ੍ਤਰ੍ਭਾਵ "system.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "dirname"
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ ਪ੍ਰੋਗਰਾਮ_NAME "dirname"
 
-#define AUTHORS \
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ AUTHORS \
   proper_name ("David MacKenzie"), \
   proper_name ("Jim Meyering")
 
-static bool quote_output;
+ਸਥਿਰ bool quote_output;
 
-static struct option const longopts[] =
+ਸਥਿਰ ਬਣਤਰ option ਅਚਲ longopts[] =
 {
-  {"zero", no_argument, NULL, 'z'},
+  {"zero", no_ਦਲੀਲ, ਨਿਰਾ, 'z'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_ਸੰਸਕਰਣ_OPTION_DECL},
+  {ਨਿਰਾ, 0, ਨਿਰਾ, 0}
 };
 
-void
-usage (int status)
+ਖਾਲੀ
+usage (ਪੂਰਨ ਸਥਿਤੀ)
 {
-  if (status != EXIT_SUCCESS)
+  ਜੇ (ਸਥਿਤੀ != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ਨਹੀਂਤਾਂ
     {
-      printf (_("\
+      ਲਿਖੋ (_("\
 Usage: %s [OPTION] NAME...\n\
 "),
-              program_name);
+              ਪ੍ਰੋਗਰਾਮ_name);
       fputs (_("\
-Output each NAME with its last non-slash component and trailing slashes\n\
-removed; if NAME contains no /'s, output '.' (meaning the current directory).\n\
+Output each NAME with its ਆਖਰੀ non-slash component and trailing slashes\n\
+removed; ਜੇ NAME ਸ਼ਾਮਲ_ਹੈ no /'s, output '.' (meaning the current directory).\n\
 \n\
 "), stdout);
       oputs (_("\
   -z, --zero\n\
-         end each output line with NUL, not newline\n\
+         ਸਿਰਾ each output ਸਤਰ with NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      printf (_("\
+      oputs (ਸੰਸਕਰਣ_OPTION_DESCRIPTION);
+      ਲਿਖੋ (_("\
 \n\
 Examples:\n\
   %s /usr/bin/          -> \"/usr\"\n\
   %s dir1/str dir2/str  -> \"dir1\" followed by \"dir2\"\n\
   %s stdio.h            -> \".\"\n\
 "),
-              program_name, program_name, program_name);
-      emit_ancillary_info (PROGRAM_NAME);
+              ਪ੍ਰੋਗਰਾਮ_name, ਪ੍ਰੋਗਰਾਮ_name, ਪ੍ਰੋਗਰਾਮ_name);
+      emit_ancillary_info (ਪ੍ਰੋਗਰਾਮ_NAME);
     }
-  exit (status);
+  ਬਾਹਰ_ਨਿਕਲੋ (ਸਥਿਤੀ);
 }
 
-int
-main (int argc, char **argv)
+ਪੂਰਨ
+ਮੁੱਖ (ਪੂਰਨ argc, ਅੱਖਰ **argv)
 {
   bool use_nuls = false;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  ਸੈੱਟ_ਪ੍ਰੋਗਰਾਮ_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while (true)
+  ਜਦੋਂ (true)
     {
-      int c = getopt_long (argc, argv, "z", longopts, NULL);
+      ਪੂਰਨ c = getopt_long (argc, argv, "z", longopts, ਨਿਰਾ);
 
-      if (c == -1)
-        break;
+      ਜੇ (c == -1)
+        ਰੋਕੋ;
 
-      switch (c)
+      ਚੋਣ (c)
         {
-        case 'z':
+        ਹਾਲਤ 'z':
           use_nuls = true;
-          break;
+          ਰੋਕੋ;
 
         case_GETOPT_HELP_CHAR;
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_ਸੰਸਕਰਣ_CHAR (ਪ੍ਰੋਗਰਾਮ_NAME, AUTHORS);
 
-        default:
+        ਮੂਲ:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (argc < optind + 1)
+  ਜੇ (argc < optind + 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
 
-  if (!use_nuls && isatty (STDOUT_FILENO))
+  ਜੇ (!use_nuls && isatty (STDOUT_FILENO))
     {
-      int qs = getenv_quoting_style ();
-      if (qs < 0)
+      ਪੂਰਨ qs = getenv_quoting_style ();
+      ਜੇ (qs < 0)
         qs = shell_escape_quoting_style;
-      if (qs != literal_quoting_style)
+      ਜੇ (qs != literal_quoting_style)
         {
-          set_quoting_style (NULL, qs);
+          ਸੈੱਟ_quoting_style (ਨਿਰਾ, qs);
           quote_output = true;
         }
     }
 
-  for (; optind < argc; optind++)
+  ਲਈ (; optind < argc; optind++)
     {
-      char const *result = argv[optind];
-      idx_t len = dir_len (result);
+      ਅੱਖਰ ਅਚਲ *ਨਤੀਜਾ = argv[optind];
+      idx_t len = dir_len (ਨਤੀਜਾ);
 
-      if (! len)
+      ਜੇ (! len)
         {
-          static char const dot = '.';
-          result = &dot;
+          ਸਥਿਰ ਅੱਖਰ ਅਚਲ dot = '.';
+          ਨਤੀਜਾ = &dot;
           len = 1;
         }
-      if (quote_output)
+      ਜੇ (quote_output)
         {
-          result = quoteN_mem (result, len);
-          len = strlen (result);
+          ਨਤੀਜਾ = quoteN_mem (ਨਤੀਜਾ, len);
+          len = ਲੜੀ_ਲੰਬਾਈ (ਨਤੀਜਾ);
         }
-      fwrite (result, 1, len, stdout);
-      putchar (use_nuls ? '\0' :'\n');
+      fwrite (ਨਤੀਜਾ, 1, len, stdout);
+      ਅੱਖਰ_ਲਿਖੋ (use_nuls ? '\0' :'\n');
     }
 
-  return EXIT_SUCCESS;
+  ਵਾਪਸ EXIT_SUCCESS;
 }

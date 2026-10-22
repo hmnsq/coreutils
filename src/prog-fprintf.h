@@ -14,12 +14,12 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#ifndef PROG_FPRINTF_H
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ PROG_FPRINTF_H
 # define PROG_FPRINTF_H
 
 # include <stdio.h>
 
-extern void prog_fprintf (FILE *fp, char const *fmt, ...)
+ਬਾਹਰੀ ਖਾਲੀ prog_fprintf (FILE *fp, ਅੱਖਰ ਅਚਲ *fmt, ...)
   _GL_ATTRIBUTE_FORMAT ((__printf__, 2, 3)) _GL_ATTRIBUTE_NONNULL ((1, 2));
 
-#endif
+#ਜੇ_ਅੰਤ

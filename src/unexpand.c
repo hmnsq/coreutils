@@ -33,55 +33,55 @@
 
    David MacKenzie <djm@gnu.ai.mit.edu> */
 
-#include <config.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <config.h>
 
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <stdio.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <getopt.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <sys/types.h>
 
-#include "system.h"
-#include "ioblksize.h"
-#include "mbbuf.h"
-#include "mcel.h"
-#include "expand-common.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "system.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "ioblksize.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "mbbuf.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "mcel.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "expand-common.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "unexpand"
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ ਪ੍ਰੋਗਰਾਮ_NAME "unexpand"
 
-#define AUTHORS proper_name ("David MacKenzie")
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ AUTHORS proper_name ("David MacKenzie")
 
 
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+ਗਿਣਤੀ
 {
-  CONVERT_FIRST_ONLY_OPTION = CHAR_MAX + 1
+  CONVERT_ਪਹਿਲਾ_ONLY_OPTION = CHAR_MAX + 1
 };
 
-static struct option const longopts[] =
+ਸਥਿਰ ਬਣਤਰ option ਅਚਲ longopts[] =
 {
-  {"tabs", required_argument, NULL, 't'},
-  {"all", no_argument, NULL, 'a'},
-  {"first-only", no_argument, NULL, CONVERT_FIRST_ONLY_OPTION},
+  {"tabs", required_ਦਲੀਲ, ਨਿਰਾ, 't'},
+  {"all", no_ਦਲੀਲ, ਨਿਰਾ, 'a'},
+  {"first-only", no_ਦਲੀਲ, ਨਿਰਾ, CONVERT_ਪਹਿਲਾ_ONLY_OPTION},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_ਸੰਸਕਰਣ_OPTION_DECL},
+  {ਨਿਰਾ, 0, ਨਿਰਾ, 0}
 };
 
-void
-usage (int status)
+ਖਾਲੀ
+usage (ਪੂਰਨ ਸਥਿਤੀ)
 {
-  if (status != EXIT_SUCCESS)
+  ਜੇ (ਸਥਿਤੀ != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ਨਹੀਂਤਾਂ
     {
-      printf (_("\
+      ਲਿਖੋ (_("\
 Usage: %s [OPTION]... [FILE]...\n\
 "),
-              program_name);
+              ਪ੍ਰੋਗਰਾਮ_name);
       fputs (_("\
-Convert blanks in each FILE to tabs, writing to standard output.\n\
+Convert blanks ਵਿੱਚ each FILE ਮੰਜ਼ਿਲ tabs, writing ਮੰਜ਼ਿਲ standard output.\n\
 "), stdout);
 
       emit_stdin_note ();
@@ -89,51 +89,51 @@ Convert blanks in each FILE to tabs, writing to standard output.\n\
 
       oputs (_("\
   -a, --all\n\
-         convert all blanks, instead of just initial blanks\n\
+         convert all blanks, instead ਦਾ just initial blanks\n\
 "));
       oputs (_("\
-      --first-only\n\
-         convert only leading sequences of blanks (overrides -a)\n\
+      --ਪਹਿਲਾ-only\n\
+         convert only leading sequences ਦਾ blanks (overrides -a)\n\
 "));
       oputs (_("\
   -t, --tabs=N\n\
-         have tabs N characters apart instead of 8 (enables -a)\n\
+         have tabs N characters apart instead ਦਾ 8 (enables -a)\n\
 "));
-      emit_tab_list_info (PROGRAM_NAME);
+      emit_tab_list_info (ਪ੍ਰੋਗਰਾਮ_NAME);
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (ਸੰਸਕਰਣ_OPTION_DESCRIPTION);
+      emit_ancillary_info (ਪ੍ਰੋਗਰਾਮ_NAME);
     }
-  exit (status);
+  ਬਾਹਰ_ਨਿਕਲੋ (ਸਥਿਤੀ);
 }
 
 /* Change blanks to tabs, writing to stdout.
    Read each file in 'file_list', in order.  */
 
-static void
-unexpand (void)
+ਸਥਿਰ ਖਾਲੀ
+unexpand (ਖਾਲੀ)
 {
   /* Input stream.  */
-  FILE *fp = next_file (NULL);
+  FILE *fp = ਅਗਲਾ_file (ਨਿਰਾ);
 
   /* The array of pending blanks.  In non-POSIX locales, blanks can
      include characters other than spaces, so the blanks must be
      stored, not merely counted.  */
-  char *pending_blank;
+  ਅੱਖਰ *pending_blank;
 
-  if (!fp)
-    return;
+  ਜੇ (!fp)
+    ਵਾਪਸ;
 
-  static char line_in[IO_BUFSIZE];
+  ਸਥਿਰ ਅੱਖਰ ਸਤਰ_ਵਿੱਚ[IO_BUFSIZE];
   mbbuf_t mbbuf;
-  mbbuf_init (&mbbuf, line_in, sizeof line_in, fp);
+  mbbuf_init (&mbbuf, ਸਤਰ_ਵਿੱਚ, ਆਕਾਰ ਸਤਰ_ਵਿੱਚ, fp);
 
   /* The worst case is a non-blank character, then one blank, then a
      tab stop, then MAX_COLUMN_WIDTH - 1 blanks, then a non-blank; so
      allocate MAX_COLUMN_WIDTH bytes to store the blanks.  */
-  pending_blank = xinmalloc (max_column_width, MB_CUR_MAX);
+  pending_blank = xinmalloc (max_ਕਾਲਮ_ਚੌੜਾਈ, MB_CUR_MAX);
 
-  while (true)
+  ਜਦੋਂ (true)
     {
       /* Input character, or EOF.  */
       mcel_t g;
@@ -146,13 +146,13 @@ unexpand (void)
          is true:  */
 
       /* Column of next input character.  */
-      colno column = 0;
+      colno ਕਾਲਮ = 0;
 
       /* Column the next input tab stop is on.  */
-      colno next_tab_column = 0;
+      colno ਅਗਲਾ_tab_ਕਾਲਮ = 0;
 
       /* Index in TAB_LIST of next tab stop to examine.  */
-      idx_t tab_index = 0;
+      idx_t tab_ਸੂਚਕਾਂਕ = 0;
 
       /* If true, the first pending blank came just before a tab stop.  */
       bool one_blank_before_tab_stop = false;
@@ -168,56 +168,56 @@ unexpand (void)
 
       /* Convert a line of text.  */
 
-      do
+      ਕਰੋ
         {
-          while ((g = mbbuf_get_char (&mbbuf)).ch == MBBUF_EOF
-                 && (fp = next_file (fp)))
-            mbbuf_init (&mbbuf, line_in, sizeof line_in, fp);
+          ਜਦੋਂ ((g = mbbuf_get_char (&mbbuf)).ch == MBBUF_EOF
+                 && (fp = ਅਗਲਾ_file (fp)))
+            mbbuf_init (&mbbuf, ਸਤਰ_ਵਿੱਚ, ਆਕਾਰ ਸਤਰ_ਵਿੱਚ, fp);
 
-          if (convert)
+          ਜੇ (convert)
             {
               bool blank = c32issep (g.ch);
 
-              if (blank)
+              ਜੇ (blank)
                 {
-                  bool last_tab;
+                  bool ਆਖਰੀ_tab;
 
-                  next_tab_column = get_next_tab_column (column, &tab_index,
-                                                         &last_tab);
+                  ਅਗਲਾ_tab_ਕਾਲਮ = get_ਅਗਲਾ_tab_ਕਾਲਮ (ਕਾਲਮ, &tab_ਸੂਚਕਾਂਕ,
+                                                         &ਆਖਰੀ_tab);
 
-                  if (last_tab)
+                  ਜੇ (ਆਖਰੀ_tab)
                     convert = false;
 
-                  if (convert)
+                  ਜੇ (convert)
                     {
-                      if (g.ch == '\t')
+                      ਜੇ (g.ch == '\t')
                         {
-                          column = next_tab_column;
+                          ਕਾਲਮ = ਅਗਲਾ_tab_ਕਾਲਮ;
 
-                          if (pending)
+                          ਜੇ (pending)
                             pending_blank[0] = '\t';
                         }
-                      else
+                      ਨਹੀਂਤਾਂ
                         {
-                          int width = c32width (g.ch);
-                          column += width < 0 ? 1 : width;
+                          ਪੂਰਨ ਚੌੜਾਈ = c32width (g.ch);
+                          ਕਾਲਮ += ਚੌੜਾਈ < 0 ? 1 : ਚੌੜਾਈ;
 
-                          if (! (prev_blank && column >= next_tab_column))
+                          ਜੇ (! (prev_blank && ਕਾਲਮ >= ਅਗਲਾ_tab_ਕਾਲਮ))
                             {
                               /* It is not yet known whether the pending blanks
                                  will be replaced by tabs.  */
-                              if (column == next_tab_column)
+                              ਜੇ (ਕਾਲਮ == ਅਗਲਾ_tab_ਕਾਲਮ)
                                 one_blank_before_tab_stop = true;
-                              memcpy (pending_blank + pending,
-                                      mbbuf_char_offset (&mbbuf, g), g.len);
+                              ਸਮ੍ਰਿਤੀ_ਨਕਲ (pending_blank + pending,
+                                      mbbuf_char_ਵਿੱਥ (&mbbuf, g), g.len);
                               pending += g.len;
                               prev_blank = true;
-                              continue;
+                              ਜਾਰੀ;
                             }
 
                           /* Replace the pending blanks by a tab or two.  */
                           g.len = 0;
-                          if (putc ('\t', stdout) < 0)
+                          ਜੇ (putc ('\t', stdout) < 0)
                             write_error ();
                           pending_blank[0] = '\t';
                         }
@@ -227,117 +227,117 @@ unexpand (void)
                       pending = one_blank_before_tab_stop;
                     }
                 }
-              else if (g.ch == '\b')
+              ਨਹੀਂਤਾਂ ਜੇ (g.ch == '\b')
                 {
                   /* Go back one column, and force recalculation of the
                      next tab stop.  */
-                  column -= !!column;
-                  next_tab_column = column;
-                  tab_index -= !!tab_index;
+                  ਕਾਲਮ -= !!ਕਾਲਮ;
+                  ਅਗਲਾ_tab_ਕਾਲਮ = ਕਾਲਮ;
+                  tab_ਸੂਚਕਾਂਕ -= !!tab_ਸੂਚਕਾਂਕ;
                 }
-              else
+              ਨਹੀਂਤਾਂ
                 {
-                  int width = c32width (g.ch);
-                  if (ckd_add (&column, column, width < 0 ? 1 : width))
+                  ਪੂਰਨ ਚੌੜਾਈ = c32width (g.ch);
+                  ਜੇ (ckd_ਜੋੜੋ (&ਕਾਲਮ, ਕਾਲਮ, ਚੌੜਾਈ < 0 ? 1 : ਚੌੜਾਈ))
                     error (EXIT_FAILURE, 0, _("input line is too long"));
                 }
 
-              if (pending)
+              ਜੇ (pending)
                 {
-                  if (pending > 1 && one_blank_before_tab_stop)
+                  ਜੇ (pending > 1 && one_blank_before_tab_stop)
                     pending_blank[0] = '\t';
-                  if (fwrite (pending_blank, 1, pending, stdout) != pending)
+                  ਜੇ (fwrite (pending_blank, 1, pending, stdout) != pending)
                     write_error ();
                   pending = 0;
                   one_blank_before_tab_stop = false;
                 }
 
               prev_blank = blank;
-              convert &= convert_entire_line || blank;
+              convert &= convert_entire_ਸਤਰ || blank;
             }
 
-          if (g.ch == MBBUF_EOF)
+          ਜੇ (g.ch == MBBUF_EOF)
             {
-              free (pending_blank);
-              return;
+              ਮੁਕਤ (pending_blank);
+              ਵਾਪਸ;
             }
 
-          fwrite (mbbuf_char_offset (&mbbuf, g), sizeof (char), g.len, stdout);
-          if (ferror (stdout))
+          fwrite (mbbuf_char_ਵਿੱਥ (&mbbuf, g), ਆਕਾਰ (ਅੱਖਰ), g.len, stdout);
+          ਜੇ (ferror (stdout))
             write_error ();
         }
-      while (g.ch != '\n');
+      ਜਦੋਂ (g.ch != '\n');
     }
 }
 
-int
-main (int argc, char **argv)
+ਪੂਰਨ
+ਮੁੱਖ (ਪੂਰਨ argc, ਅੱਖਰ **argv)
 {
   bool have_tabval = false;
   colno tabval IF_LINT ( = 0);
-  int c;
+  ਪੂਰਨ c;
 
   /* If true, cancel the effect of any -a (explicit or implicit in -t),
      so that only leading blanks will be considered.  */
-  bool convert_first_only = false;
+  bool convert_ਪਹਿਲਾ_only = false;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  ਸੈੱਟ_ਪ੍ਰੋਗਰਾਮ_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while ((c = getopt_long (argc, argv, ",0123456789at:", longopts, NULL))
+  ਜਦੋਂ ((c = getopt_long (argc, argv, ",0123456789at:", longopts, ਨਿਰਾ))
          != -1)
     {
-      switch (c)
+      ਚੋਣ (c)
         {
-        case '?':
+        ਹਾਲਤ '?':
           usage (EXIT_FAILURE);
-        case 'a':
-          convert_entire_line = true;
-          break;
-        case 't':
-          convert_entire_line = true;
+        ਹਾਲਤ 'a':
+          convert_entire_ਸਤਰ = true;
+          ਰੋਕੋ;
+        ਹਾਲਤ 't':
+          convert_entire_ਸਤਰ = true;
           parse_tab_stops (optarg);
-          break;
-        case CONVERT_FIRST_ONLY_OPTION:
-          convert_first_only = true;
-          break;
-        case ',':
-          if (have_tabval)
-            add_tab_stop (tabval);
+          ਰੋਕੋ;
+        ਹਾਲਤ CONVERT_ਪਹਿਲਾ_ONLY_OPTION:
+          convert_ਪਹਿਲਾ_only = true;
+          ਰੋਕੋ;
+        ਹਾਲਤ ',':
+          ਜੇ (have_tabval)
+            ਜੋੜੋ_tab_stop (tabval);
           have_tabval = false;
-          break;
+          ਰੋਕੋ;
         case_GETOPT_HELP_CHAR;
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
-          if (!have_tabval)
+        case_GETOPT_ਸੰਸਕਰਣ_CHAR (ਪ੍ਰੋਗਰਾਮ_NAME, AUTHORS);
+        ਮੂਲ:
+          ਜੇ (!have_tabval)
             {
               tabval = 0;
               have_tabval = true;
             }
-          if (!DECIMAL_DIGIT_ACCUMULATE (tabval, c - '0'))
+          ਜੇ (!DECIMAL_DIGIT_ACCUMULATE (tabval, c - '0'))
             error (EXIT_FAILURE, 0, _("tab stop is too large"));
-          break;
+          ਰੋਕੋ;
         }
     }
 
-  if (convert_first_only)
-    convert_entire_line = false;
+  ਜੇ (convert_ਪਹਿਲਾ_only)
+    convert_entire_ਸਤਰ = false;
 
-  if (have_tabval)
-    add_tab_stop (tabval);
+  ਜੇ (have_tabval)
+    ਜੋੜੋ_tab_stop (tabval);
 
   finalize_tab_stops ();
 
-  set_file_list ((optind < argc) ? &argv[optind] : NULL);
+  ਸੈੱਟ_file_list ((optind < argc) ? &argv[optind] : ਨਿਰਾ);
 
   unexpand ();
 
   cleanup_file_list_stdin ();
 
-  return exit_status;
+  ਵਾਪਸ exit_ਸਥਿਤੀ;
 }

@@ -23,32 +23,32 @@
    Variable blocks added by lm@sgi.com and eggert@twinsun.com.
    Rewritten to use nftw, then to use fts by Jim Meyering.  */
 
-#include <config.h>
-#include <getopt.h>
-#include <sys/types.h>
-#include "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
-#include "system.h"
-#include "argv-iter.h"
-#include "assure.h"
-#include "di-set.h"
-#include "exclude.h"
-#include "fts-missing.h"
-#include "human.h"
-#include "mountlist.h"
-#include "quote.h"
-#include "show-date.h"
-#include "stat-size.h"
-#include "stat-time.h"
-#include "stdio--.h"
-#include "xfts.h"
-#include "xmemdup0.h"
-#include "xstrtol.h"
-#include "xstrtol-error.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ <config.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <getopt.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <sys/types.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
+#ਅਨ੍ਤਰ੍ਭਾਵ "system.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "argv-iter.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "assure.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "di-set.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "exclude.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "fts-missing.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "human.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "mountlist.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "quote.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "show-date.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "stat-size.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "stat-time.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "stdio--.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "xfts.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "xmemdup0.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "xstrtol.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "xstrtol-error.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "du"
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ ਪ੍ਰੋਗਰਾਮ_NAME "du"
 
-#define AUTHORS \
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ AUTHORS \
   proper_name_lite ("Torbjorn Granlund", "Torbj\303\266rn Granlund"), \
   proper_name ("David MacKenzie"), \
   proper_name ("Paul Eggert"), \
@@ -56,441 +56,441 @@
 
 /* A set of dev/ino pairs to help identify files and directories
    whose sizes have already been counted.  */
-static struct di_set *di_files;
+ਸਥਿਰ ਬਣਤਰ di_ਸੈੱਟ *di_files;
 
 /* A set containing a dev/ino pair for each local mount point directory.  */
-static struct di_set *di_mnt;
+ਸਥਿਰ ਬਣਤਰ di_ਸੈੱਟ *di_mnt;
 
 /* Keep track of the preceding "level" (depth in hierarchy)
    from one call of process_file to the next.  */
-static idx_t prev_level;
+ਸਥਿਰ idx_t prev_level;
 
 /* Define a class for collecting directory information. */
-struct duinfo
+ਬਣਤਰ duinfo
 {
   /* Size of files in directory.  */
-  uintmax_t size;
+  uintmax_t ਮਾਪ;
 
   /* Number of inodes in directory.  */
   uintmax_t inodes;
 
   /* Latest timestamp found.  If tmax.tv_sec == TYPE_MINIMUM (time_t)
      && tmax.tv_nsec < 0, no timestamp has been found.  */
-  struct timespec tmax;
+  ਬਣਤਰ timespec tmax;
 };
 
 /* Initialize directory data.  */
-static inline void
-duinfo_init (struct duinfo *a)
+ਸਥਿਰ ਸਤਰਅੰਦਰ ਖਾਲੀ
+duinfo_init (ਬਣਤਰ duinfo *a)
 {
-  a->size = 0;
+  a->ਮਾਪ = 0;
   a->inodes = 0;
   a->tmax.tv_sec = TYPE_MINIMUM (time_t);
   a->tmax.tv_nsec = -1;
 }
 
 /* Set directory data.  */
-static inline void
-duinfo_set (struct duinfo *a, uintmax_t size, struct timespec tmax)
+ਸਥਿਰ ਸਤਰਅੰਦਰ ਖਾਲੀ
+duinfo_ਸੈੱਟ (ਬਣਤਰ duinfo *a, uintmax_t ਮਾਪ, ਬਣਤਰ timespec tmax)
 {
-  a->size = size;
+  a->ਮਾਪ = ਮਾਪ;
   a->inodes = 1;
   a->tmax = tmax;
 }
 
 /* Accumulate directory data.  */
-static inline void
-duinfo_add (struct duinfo *a, struct duinfo const *b)
+ਸਥਿਰ ਸਤਰਅੰਦਰ ਖਾਲੀ
+duinfo_ਜੋੜੋ (ਬਣਤਰ duinfo *a, ਬਣਤਰ duinfo ਅਚਲ *b)
 {
-  uintmax_t sum = a->size + b->size;
-  a->size = a->size <= sum ? sum : UINTMAX_MAX;
+  uintmax_t ਜੋੜ = a->ਮਾਪ + b->ਮਾਪ;
+  a->ਮਾਪ = a->ਮਾਪ <= ਜੋੜ ? ਜੋੜ : UINTMAX_MAX;
   a->inodes = a->inodes + b->inodes;
-  if (timespec_cmp (a->tmax, b->tmax) < 0)
+  ਜੇ (timespec_cmp (a->tmax, b->tmax) < 0)
     a->tmax = b->tmax;
 }
 
 /* A structure for per-directory level information.  */
-struct dulevel
+ਬਣਤਰ dulevel
 {
   /* Entries in this directory.  */
-  struct duinfo ent;
+  ਬਣਤਰ duinfo ent;
 
   /* Total for subdirectories.  */
-  struct duinfo subdir;
+  ਬਣਤਰ duinfo subdir;
 };
 
 /* If true, display counts for all files, not just directories.  */
-static bool opt_all = false;
+ਸਥਿਰ bool opt_all = false;
 
 /* If true, rather than using the device usage of each file,
    use the apparent size (stat.st_size if usable, 0 otherwise).  */
-static bool apparent_size = false;
+ਸਥਿਰ bool apparent_ਮਾਪ = false;
 
 /* If true, count each hard link of files with multiple links.  */
-static bool opt_count_all = false;
+ਸਥਿਰ bool opt_ਗਿਣਤੀ_all = false;
 
 /* If true, hash all files to look for hard links.  */
-static bool hash_all;
+ਸਥਿਰ bool hash_all;
 
 /* If true, output the NUL byte instead of a newline at the end of each line. */
-static bool opt_nul_terminate_output = false;
+ਸਥਿਰ bool opt_nul_terminate_output = false;
 
 /* If true, quote output pathnames according to the selected quoting style.  */
-static bool quote_output;
+ਸਥਿਰ bool quote_output;
 
 /* If true, print a grand total at the end.  */
-static bool print_grand_total = false;
+ਸਥਿਰ bool print_grand_ਕੁੱਲ = false;
 
 /* If nonzero, do not add sizes of subdirectories.  */
-static bool opt_separate_dirs = false;
+ਸਥਿਰ bool opt_separate_dirs = false;
 
 /* Show the total for each directory (and file if --all) that is at
    most MAX_DEPTH levels down from the root of the hierarchy.  The root
    is at level 0, so 'du --max-depth=0' is equivalent to 'du -s'.  */
-static idx_t max_depth = IDX_MAX;
+ਸਥਿਰ idx_t max_ਡੂੰਘਾਈ = IDX_MAX;
 
 /* Only output entries with at least this SIZE if positive,
    or at most if negative.  See --threshold option.  */
-static intmax_t opt_threshold = 0;
+ਸਥਿਰ intmax_t opt_ਹੱਦ = 0;
 
 /* Human-readable options for output.  */
-static int human_output_opts;
+ਸਥਿਰ ਪੂਰਨ human_output_opts;
 
 /* Output inodes count instead of blocks used.  */
-static bool opt_inodes = false;
+ਸਥਿਰ bool opt_inodes = false;
 
 /* If true, print most recently modified date, using the specified format.  */
-static bool opt_time = false;
+ਸਥਿਰ bool opt_ਸਮਾਂ = false;
 
 /* Type of time to display. controlled by --time.  */
 
-enum time_type
+ਗਿਣਤੀ ਸਮਾਂ_type
   {
-    time_mtime,			/* default */
-    time_ctime,
-    time_atime
+    ਸਮਾਂ_mtime,			/* default */
+    ਸਮਾਂ_ctime,
+    ਸਮਾਂ_atime
   };
 
-static enum time_type time_type = time_mtime;
+ਸਥਿਰ ਗਿਣਤੀ ਸਮਾਂ_type ਸਮਾਂ_type = ਸਮਾਂ_mtime;
 
 /* User specified date / time style */
-static char const *time_style = NULL;
+ਸਥਿਰ ਅੱਖਰ ਅਚਲ *ਸਮਾਂ_style = ਨਿਰਾ;
 
 /* Format used to display date / time. Controlled by --time-style */
-static char const *time_format = NULL;
+ਸਥਿਰ ਅੱਖਰ ਅਚਲ *ਸਮਾਂ_format = ਨਿਰਾ;
 
 /* The local time zone rules, as per the TZ environment variable.  */
-static timezone_t localtz;
+ਸਥਿਰ timezone_t localtz;
 
 /* The units to use when printing sizes.  */
-static uintmax_t output_block_size;
+ਸਥਿਰ uintmax_t output_ਖੰਡ_ਮਾਪ;
 
 /* File name patterns to exclude.  */
-static struct exclude *exclude;
+ਸਥਿਰ ਬਣਤਰ exclude *exclude;
 
 /* Grand total size of all args, in bytes. Also latest modified date. */
-static struct duinfo tot_dui;
+ਸਥਿਰ ਬਣਤਰ duinfo tot_dui;
 
-#define IS_DIR_TYPE(Type)	\
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ IS_DIR_TYPE(Type)	\
   ((Type) == FTS_DP		\
    || (Type) == FTS_DNR)
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+ਗਿਣਤੀ
 {
   EXCLUDE_OPTION = CHAR_MAX + 1,
   FILES0_FROM_OPTION,
   HUMAN_SI_OPTION,
-#if GNULIB_FTS_DEBUG
+#ਜੇ GNULIB_FTS_DEBUG
   FTS_DEBUG,
-#endif
-  TIME_OPTION,
-  TIME_STYLE_OPTION,
+#ਜੇ_ਅੰਤ
+  ਸਮਾਂ_OPTION,
+  ਸਮਾਂ_STYLE_OPTION,
   INODES_OPTION
 };
 
-static struct option const long_options[] =
+ਸਥਿਰ ਬਣਤਰ option ਅਚਲ long_options[] =
 {
-  {"all", no_argument, NULL, 'a'},
-  {"apparent-size", no_argument, NULL, 'A'},
-  {"block-size", required_argument, NULL, 'B'},
-  {"bytes", no_argument, NULL, 'b'},
-  {"count-links", no_argument, NULL, 'l'},
-#if GNULIB_FTS_DEBUG
-  {"-debug", no_argument, NULL, FTS_DEBUG},
-#endif
-  {"dereference", no_argument, NULL, 'L'},
-  {"dereference-args", no_argument, NULL, 'D'},
-  {"exclude", required_argument, NULL, EXCLUDE_OPTION},
-  {"exclude-from", required_argument, NULL, 'X'},
-  {"files0-from", required_argument, NULL, FILES0_FROM_OPTION},
-  {"human-readable", no_argument, NULL, 'h'},
-  {"inodes", no_argument, NULL, INODES_OPTION},
-  {"si", no_argument, NULL, HUMAN_SI_OPTION},
-  {"max-depth", required_argument, NULL, 'd'},
-  {"null", no_argument, NULL, '0'},
-  {"no-dereference", no_argument, NULL, 'P'},
-  {"one-file-system", no_argument, NULL, 'x'},
-  {"separate-dirs", no_argument, NULL, 'S'},
-  {"summarize", no_argument, NULL, 's'},
-  {"total", no_argument, NULL, 'c'},
-  {"threshold", required_argument, NULL, 't'},
-  {"time", optional_argument, NULL, TIME_OPTION},
-  {"time-style", required_argument, NULL, TIME_STYLE_OPTION},
+  {"all", no_ਦਲੀਲ, ਨਿਰਾ, 'a'},
+  {"apparent-size", no_ਦਲੀਲ, ਨਿਰਾ, 'A'},
+  {"block-size", required_ਦਲੀਲ, ਨਿਰਾ, 'B'},
+  {"bytes", no_ਦਲੀਲ, ਨਿਰਾ, 'b'},
+  {"count-links", no_ਦਲੀਲ, ਨਿਰਾ, 'l'},
+#ਜੇ GNULIB_FTS_DEBUG
+  {"-debug", no_ਦਲੀਲ, ਨਿਰਾ, FTS_DEBUG},
+#ਜੇ_ਅੰਤ
+  {"dereference", no_ਦਲੀਲ, ਨਿਰਾ, 'L'},
+  {"dereference-args", no_ਦਲੀਲ, ਨਿਰਾ, 'D'},
+  {"exclude", required_ਦਲੀਲ, ਨਿਰਾ, EXCLUDE_OPTION},
+  {"exclude-from", required_ਦਲੀਲ, ਨਿਰਾ, 'X'},
+  {"files0-from", required_ਦਲੀਲ, ਨਿਰਾ, FILES0_FROM_OPTION},
+  {"human-readable", no_ਦਲੀਲ, ਨਿਰਾ, 'h'},
+  {"inodes", no_ਦਲੀਲ, ਨਿਰਾ, INODES_OPTION},
+  {"si", no_ਦਲੀਲ, ਨਿਰਾ, HUMAN_SI_OPTION},
+  {"max-depth", required_ਦਲੀਲ, ਨਿਰਾ, 'd'},
+  {"null", no_ਦਲੀਲ, ਨਿਰਾ, '0'},
+  {"no-dereference", no_ਦਲੀਲ, ਨਿਰਾ, 'P'},
+  {"one-file-system", no_ਦਲੀਲ, ਨਿਰਾ, 'x'},
+  {"separate-dirs", no_ਦਲੀਲ, ਨਿਰਾ, 'S'},
+  {"summarize", no_ਦਲੀਲ, ਨਿਰਾ, 's'},
+  {"total", no_ਦਲੀਲ, ਨਿਰਾ, 'c'},
+  {"threshold", required_ਦਲੀਲ, ਨਿਰਾ, 't'},
+  {"time", optional_ਦਲੀਲ, ਨਿਰਾ, ਸਮਾਂ_OPTION},
+  {"time-style", required_ਦਲੀਲ, ਨਿਰਾ, ਸਮਾਂ_STYLE_OPTION},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_ਸੰਸਕਰਣ_OPTION_DECL},
+  {ਨਿਰਾ, 0, ਨਿਰਾ, 0}
 };
 
-static char const *const time_args[] =
+ਸਥਿਰ ਅੱਖਰ ਅਚਲ *ਅਚਲ ਸਮਾਂ_ਦਲੀਲਾਂ[] =
 {
-  "atime", "access", "use", "ctime", "status", NULL
+  "atime", "access", "use", "ctime", "status", ਨਿਰਾ
 };
-static enum time_type const time_types[] =
+ਸਥਿਰ ਗਿਣਤੀ ਸਮਾਂ_type ਅਚਲ ਸਮਾਂ_types[] =
 {
-  time_atime, time_atime, time_atime, time_ctime, time_ctime
+  ਸਮਾਂ_atime, ਸਮਾਂ_atime, ਸਮਾਂ_atime, ਸਮਾਂ_ctime, ਸਮਾਂ_ctime
 };
-ARGMATCH_VERIFY (time_args, time_types);
+ARGMATCH_VERIFY (ਸਮਾਂ_ਦਲੀਲਾਂ, ਸਮਾਂ_types);
 
 /* 'full-iso' uses full ISO-style dates and times.  'long-iso' uses longer
    ISO-style timestamps, though shorter than 'full-iso'.  'iso' uses shorter
    ISO-style timestamps.  */
-enum time_style
+ਗਿਣਤੀ ਸਮਾਂ_style
   {
-    full_iso_time_style,       /* --time-style=full-iso */
-    long_iso_time_style,       /* --time-style=long-iso */
-    iso_time_style	       /* --time-style=iso */
+    ਭਰਿਆ_iso_ਸਮਾਂ_style,       /* --time-style=full-iso */
+    long_iso_ਸਮਾਂ_style,       /* --time-style=long-iso */
+    iso_ਸਮਾਂ_style	       /* --time-style=iso */
   };
 
-static char const *const time_style_args[] =
+ਸਥਿਰ ਅੱਖਰ ਅਚਲ *ਅਚਲ ਸਮਾਂ_style_ਦਲੀਲਾਂ[] =
 {
-  "full-iso", "long-iso", "iso", NULL
+  "full-iso", "long-iso", "iso", ਨਿਰਾ
 };
-static enum time_style const time_style_types[] =
+ਸਥਿਰ ਗਿਣਤੀ ਸਮਾਂ_style ਅਚਲ ਸਮਾਂ_style_types[] =
 {
-  full_iso_time_style, long_iso_time_style, iso_time_style
+  ਭਰਿਆ_iso_ਸਮਾਂ_style, long_iso_ਸਮਾਂ_style, iso_ਸਮਾਂ_style
 };
-ARGMATCH_VERIFY (time_style_args, time_style_types);
+ARGMATCH_VERIFY (ਸਮਾਂ_style_ਦਲੀਲਾਂ, ਸਮਾਂ_style_types);
 
-void
-usage (int status)
+ਖਾਲੀ
+usage (ਪੂਰਨ ਸਥਿਤੀ)
 {
-  if (status != EXIT_SUCCESS)
+  ਜੇ (ਸਥਿਤੀ != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ਨਹੀਂਤਾਂ
     {
-      printf (_("\
+      ਲਿਖੋ (_("\
 Usage: %s [OPTION]... [FILE]...\n\
   or:  %s [OPTION]... --files0-from=F\n\
-"), program_name, program_name);
+"), ਪ੍ਰੋਗਰਾਮ_name, ਪ੍ਰੋਗਰਾਮ_name);
       fputs (_("\
-Summarize device usage of the set of FILEs, recursively for directories.\n\
+Summarize device usage ਦਾ the ਸੈੱਟ_2 ਦਾ FILEs, recursively ਲਈ directories.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
 
       oputs (_("\
   -0, --null\n\
-         end each output line with NUL, not newline\n\
+         ਸਿਰਾ each output ਸਤਰ with NUL, not newline\n\
 "));
       oputs (_("\
   -a, --all\n\
-         write counts for all files, not just directories\n\
+         ਲਿਖ counts ਲਈ all files, not just directories\n\
 "));
       oputs (_("\
-  -A, --apparent-size\n\
+  -A, --apparent-ਮਾਪ\n\
          print apparent sizes rather than device usage;\n\
-         although the apparent size is usually smaller, it may be\n\
-         larger due to holes in ('sparse') files,\n\
-         internal fragmentation, indirect blocks, etc.\n\
+         although the apparent ਮਾਪ is usually smaller, it may be\n\
+         larger due ਮੰਜ਼ਿਲ holes ਵਿੱਚ ('sparse') files,\n\
+         ਅੰਦਰੂਨੀ fragmentation, ਅਸਿੱਧਾ ਖੰਡਾਂ, etc.\n\
 "));
       oputs (_("\
-  -B, --block-size=SIZE\n\
-         scale sizes by SIZE before printing them; See SIZE format below;\n\
-         E.g., '-BM' prints sizes in units of 1,048,576 bytes\n\
+  -B, --ਖੰਡ-ਮਾਪ=ਮਾਪ_2\n\
+         scale sizes by ਮਾਪ_2 before printing them; See ਮਾਪ_2 format ਹੇਠਾਂ;\n\
+         E.g., '-BM' prints sizes ਵਿੱਚ units ਦਾ 1,048,576 ਬਾਈਟਾਂ\n\
 "));
       oputs (_("\
-  -b, --bytes\n\
-         equivalent to '--apparent-size --block-size=1'\n\
+  -b, --ਬਾਈਟਾਂ\n\
+         equivalent ਮੰਜ਼ਿਲ '--apparent-size --block-size=1'\n\
 "));
       oputs (_("\
-  -c, --total\n\
-         produce a grand total\n\
+  -c, --ਕੁੱਲ\n\
+         produce a grand ਕੁੱਲ\n\
 "));
       oputs (_("\
-  -D, --dereference-args\n\
-         dereference only symlinks that are listed on the command line\n\
+  -D, --dereference-ਦਲੀਲਾਂ\n\
+         dereference only symlinks that are listed on the command ਸਤਰ\n\
 "));
       oputs (_("\
-  -d, --max-depth=N\n\
-         print the total for a directory (or file, with --all)\n\
-         only if it is N or fewer levels below the command\n\
-         line argument;  --max-depth=0 is the same as --summarize\n\
+  -d, --max-ਡੂੰਘਾਈ=N\n\
+         print the ਕੁੱਲ ਲਈ a directory (or file, with --all)\n\
+         only ਜੇ it is N or fewer ਪੱਧਰ ਹੇਠਾਂ the command\n\
+         ਸਤਰ ਦਲੀਲ;  --max-ਡੂੰਘਾਈ=0 is the same as --summarize\n\
 "));
       oputs (_("\
       --files0-from=F\n\
-         summarize device usage of the NUL-terminated file names\n\
-         specified in file F;  if F is -, read names from standard input\n\
+         summarize device usage ਦਾ the NUL-terminated file ਨਾਂ\n\
+         specified ਵਿੱਚ file F;  ਜੇ F is -, ਪਠ ਨਾਂ from standard ਨਿਵੇਸ਼\n\
 "));
       oputs (_("\
   -H\n\
-         equivalent to --dereference-args (-D)\n\
+         equivalent ਮੰਜ਼ਿਲ --dereference-ਦਲੀਲਾਂ (-D)\n\
 "));
       oputs (_("\
   -h, --human-readable\n\
-         print sizes in human readable format (e.g., 1K 234M 2G)\n\
+         print sizes ਵਿੱਚ human readable format (e.g., 1K 234M 2G)\n\
 "));
       oputs (_("\
       --inodes\n\
-         list inode usage information instead of block usage\n\
+         list inode usage information instead ਦਾ ਖੰਡ usage\n\
 "));
       oputs (_("\
   -k\n\
-         like --block-size=1K\n\
+         like --ਖੰਡ-ਮਾਪ=1K\n\
 "));
       oputs (_("\
   -L, --dereference\n\
          dereference all symbolic links\n\
 "));
       oputs (_("\
-  -l, --count-links\n\
-         count sizes many times if hard linked\n\
+  -l, --ਗਿਣਤੀ_2-links\n\
+         ਗਿਣਤੀ_2 sizes many times ਜੇ hard linked\n\
 "));
       oputs (_("\
   -m\n\
-         like --block-size=1M\n\
+         like --ਖੰਡ-ਮਾਪ=1M\n\
 "));
       oputs (_("\
   -P, --no-dereference\n\
-         don't follow any symbolic links (this is the default)\n\
+         don't follow any symbolic links (this is the ਮੂਲ)\n\
 "));
       oputs (_("\
   -S, --separate-dirs\n\
-         for directories do not include size of subdirectories\n\
+         ਲਈ directories ਕਰੋ not include ਮਾਪ ਦਾ subdirectories\n\
 "));
       oputs (_("\
       --si\n\
-         like -h, but use powers of 1000 not 1024\n\
+         like -h, but use powers ਦਾ 1000 not 1024\n\
 "));
       oputs (_("\
   -s, --summarize\n\
-         display only a total for each argument\n\
+         display only a ਕੁੱਲ ਲਈ each ਦਲੀਲ\n\
 "));
       oputs (_("\
-  -t, --threshold=SIZE\n\
-         exclude entries smaller than SIZE if positive,\n\
-         or entries greater than SIZE if negative\n\
+  -t, --ਹੱਦ=ਮਾਪ_2\n\
+         exclude entries smaller than ਮਾਪ_2 ਜੇ ਸਕਾਰਾਤਮਕ,\n\
+         or entries greater than ਮਾਪ_2 ਜੇ negative\n\
 "));
       oputs (_("\
-      --time\n\
-         show time of the last modification of any file in the directory,\n\
-         or any of its subdirectories\n\
+      --ਸਮਾਂ\n\
+         show ਸਮਾਂ ਦਾ the ਆਖਰੀ modification ਦਾ any file ਵਿੱਚ the directory,\n\
+         or any ਦਾ its subdirectories\n\
 "));
       oputs (_("\
-      --time=WORD\n\
-         show time as WORD instead of modification time:\n\
-         atime, access, use, ctime or status\n\
+      --ਸਮਾਂ=ਸ਼ਬਦ\n\
+         show ਸਮਾਂ as ਸ਼ਬਦ instead ਦਾ modification ਸਮਾਂ:\n\
+         atime, access, use, ctime or ਸਥਿਤੀ\n\
 "));
       oputs (_("\
-      --time-style=STYLE\n\
-         time/date format with --time; see TIME_STYLE below\n\
+      --ਸਮਾਂ-style=STYLE\n\
+         ਸਮਾਂ/date format with --ਸਮਾਂ; see ਸਮਾਂ_STYLE ਹੇਠਾਂ\n\
 "));
       oputs (_("\
   -X, --exclude-from=FILE\n\
-         exclude files that match any pattern in FILE\n\
+         exclude files that ਮੇਲ any ਨਮੂਨਾ_2 ਵਿੱਚ FILE\n\
 "));
       oputs (_("\
-      --exclude=PATTERN\n\
-         exclude files that match PATTERN\n\
+      --exclude=ਨਮੂਨਾ\n\
+         exclude files that ਮੇਲ ਨਮੂਨਾ\n\
 "));
       oputs (_("\
   -x, --one-file-system\n\
          skip directories on different file systems\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (ਸੰਸਕਰਣ_OPTION_DESCRIPTION);
       emit_blocksize_note ("DU");
-      emit_size_note ();
+      emit_ਮਾਪ_note ();
       fputs (_("\
 \n\
-The --time-style STYLE argument can be full-iso, long-iso, iso, or +FORMAT.\n\
-FORMAT is interpreted like in date(1).\n\
-Also the TIME_STYLE environment variable sets the default style to use.\n\
+The --ਸਮਾਂ-style STYLE ਦਲੀਲ can be ਭਰਿਆ-iso, ਲੰਮਾ-iso, iso, or +FORMAT.\n\
+FORMAT is interpreted like ਵਿੱਚ date(1).\n\
+Also the ਸਮਾਂ_STYLE environment variable sets the ਮੂਲ style ਮੰਜ਼ਿਲ use.\n\
 "), stdout);
-      emit_ancillary_info (PROGRAM_NAME);
+      emit_ancillary_info (ਪ੍ਰੋਗਰਾਮ_NAME);
     }
-  exit (status);
+  ਬਾਹਰ_ਨਿਕਲੋ (ਸਥਿਤੀ);
 }
 
 /* Try to insert the INO/DEV pair into DI_SET.
    Return true if the pair is successfully inserted,
    false if the pair was already there.  */
-static bool
-hash_ins (struct di_set *di_set, ino_t ino, dev_t dev)
+ਸਥਿਰ bool
+hash_ins (ਬਣਤਰ di_ਸੈੱਟ *di_ਸੈੱਟ, ino_t ino, dev_t dev)
 {
-  int inserted = di_set_insert (di_set, dev, ino);
-  if (inserted < 0)
+  ਪੂਰਨ inserted = di_ਸੈੱਟ_ਪਾਓ (di_ਸੈੱਟ, dev, ino);
+  ਜੇ (inserted < 0)
     xalloc_die ();
-  return inserted;
+  ਵਾਪਸ inserted;
 }
 
 /* Print N_BYTES.  Convert it to a readable value before printing.  */
 
-static void
-print_only_size (uintmax_t n_bytes)
+ਸਥਿਰ ਖਾਲੀ
+print_only_ਮਾਪ (uintmax_t n_ਬਾਈਟਾਂ)
 {
-  char buf[LONGEST_HUMAN_READABLE + 1];
-  fputs ((n_bytes == UINTMAX_MAX
+  ਅੱਖਰ buf[LONGEST_HUMAN_READABLE + 1];
+  fputs ((n_ਬਾਈਟਾਂ == UINTMAX_MAX
           ? _("Infinity")
-          : human_readable (n_bytes, buf, human_output_opts,
-                            1, output_block_size)),
+          : human_readable (n_ਬਾਈਟਾਂ, buf, human_output_opts,
+                            1, output_ਖੰਡ_ਮਾਪ)),
          stdout);
 }
 
 /* Print size (and optionally time) indicated by *PDUI, followed by STRING,
    quoting STRING if QUOTE is true.  */
 
-static void
-print_size (const struct duinfo *pdui, char const *string, bool quote)
+ਸਥਿਰ ਖਾਲੀ
+print_ਮਾਪ (ਅਚਲ ਬਣਤਰ duinfo *pdui, ਅੱਖਰ ਅਚਲ *string, bool quote)
 {
-  print_only_size (opt_inodes
+  print_only_ਮਾਪ (opt_inodes
                    ? pdui->inodes
-                   : pdui->size);
+                   : pdui->ਮਾਪ);
 
-  if (opt_time)
+  ਜੇ (opt_ਸਮਾਂ)
     {
-      putchar ('\t');
-      bool ok = show_date (time_format, pdui->tmax, localtz);
-      if (!ok)
+      ਅੱਖਰ_ਲਿਖੋ ('\t');
+      bool ok = show_date (ਸਮਾਂ_format, pdui->tmax, localtz);
+      ਜੇ (!ok)
         {
           /* If failed to format date, print raw seconds instead.  */
-          char buf[INT_BUFSIZE_BOUND (intmax_t)];
+          ਅੱਖਰ buf[INT_BUFSIZE_BOUND (intmax_t)];
           fputs (timetostr (pdui->tmax.tv_sec, buf), stdout);
         }
     }
-  putchar ('\t');
+  ਅੱਖਰ_ਲਿਖੋ ('\t');
   fputs (quote ? quoteN (string) : string, stdout);
-  putchar (opt_nul_terminate_output ? '\0' : '\n');
-  if (fflush (stdout) < 0)
+  ਅੱਖਰ_ਲਿਖੋ (opt_nul_terminate_output ? '\0' : '\n');
+  ਜੇ (fflush (stdout) < 0)
     write_error ();
 }
 
 /* Fill the di_mnt set with local mount point dev/ino pairs.  */
 
-static void
-fill_mount_table (void)
+ਸਥਿਰ ਖਾਲੀ
+fill_mount_ਸਾਰਣੀ (ਖਾਲੀ)
 {
-  struct mount_entry *mnt_ent = read_file_system_list (false);
-  while (mnt_ent)
+  ਬਣਤਰ mount_ਇੰਦਰਾਜ *mnt_ent = read_file_system_list (false);
+  ਜਦੋਂ (mnt_ent)
     {
-      struct mount_entry *mnt_free;
-      if (!mnt_ent->me_remote && !mnt_ent->me_dummy)
+      ਬਣਤਰ mount_ਇੰਦਰਾਜ *mnt_free;
+      ਜੇ (!mnt_ent->me_remote && !mnt_ent->me_dummy)
         {
-          struct stat buf;
-          if (!stat (mnt_ent->me_mountdir, &buf))
+          ਬਣਤਰ stat buf;
+          ਜੇ (!stat (mnt_ent->me_mountdir, &buf))
             hash_ins (di_mnt, buf.st_ino, buf.st_dev);
-          else
+          ਨਹੀਂਤਾਂ
             {
               /* Ignore stat failure.  False positives are too common.
                  E.g., "Permission denied" on /run/user/<name>/gvfs.  */
@@ -498,40 +498,40 @@ fill_mount_table (void)
         }
 
       mnt_free = mnt_ent;
-      mnt_ent = mnt_ent->me_next;
-      free_mount_entry (mnt_free);
+      mnt_ent = mnt_ent->me_ਅਗਲਾ;
+      free_mount_ਇੰਦਰਾਜ (mnt_free);
     }
 }
 
 /* This function checks whether any of the directories in the cycle that
    fts detected is a mount point.  */
 
-static bool
-mount_point_in_fts_cycle (FTSENT const *ent)
+ਸਥਿਰ bool
+mount_ਬਿੰਦੂ_ਵਿੱਚ_fts_ਚੱਕਰ (FTSENT ਅਚਲ *ent)
 {
-  FTSENT const *cycle_ent = ent->fts_cycle;
+  FTSENT ਅਚਲ *ਚੱਕਰ_ent = ent->fts_ਚੱਕਰ;
 
-  if (!di_mnt)
+  ਜੇ (!di_mnt)
     {
       /* Initialize the set of dev,inode pairs.  */
-      di_mnt = di_set_alloc ();
-      if (!di_mnt)
+      di_mnt = di_ਸੈੱਟ_alloc ();
+      ਜੇ (!di_mnt)
         xalloc_die ();
 
-      fill_mount_table ();
+      fill_mount_ਸਾਰਣੀ ();
     }
 
-  while (ent && ent != cycle_ent)
+  ਜਦੋਂ (ent && ent != ਚੱਕਰ_ent)
     {
-      if (di_set_lookup (di_mnt, ent->fts_statp->st_dev,
+      ਜੇ (di_ਸੈੱਟ_lookup (di_mnt, ent->fts_statp->st_dev,
                          ent->fts_statp->st_ino) > 0)
         {
-          return true;
+          ਵਾਪਸ true;
         }
-      ent = ent->fts_parent;
+      ent = ent->fts_ਮਾਪਾ;
     }
 
-  return false;
+  ਵਾਪਸ false;
 }
 
 /* This function is called once for every file system object that fts
@@ -539,13 +539,13 @@ mount_point_in_fts_cycle (FTSENT const *ent)
    that and accumulates per-directory totals based on changes in
    the depth of the current entry.  It returns true on success.  */
 
-static bool
+ਸਥਿਰ bool
 process_file (FTS *fts, FTSENT *ent)
 {
   bool ok = true;
-  struct duinfo dui;
-  struct duinfo dui_to_print;
-  static idx_t n_alloc;
+  ਬਣਤਰ duinfo dui;
+  ਬਣਤਰ duinfo dui_ਮੰਜ਼ਿਲ_print;
+  ਸਥਿਰ idx_t n_alloc;
   /* First element of the structure contains:
      The sum of the sizes of all entries in the single directory
      at the corresponding level.  Although this does include the sizes
@@ -554,44 +554,44 @@ process_file (FTS *fts, FTSENT *ent)
      Second element of the structure contains:
      The sum of the sizes of all entries in the hierarchy at or below the
      directory at the specified level.  */
-  static struct dulevel *dulvl;
+  ਸਥਿਰ ਬਣਤਰ dulevel *dulvl;
 
-  char const *file = ent->fts_path;
-  const struct stat *sb = ent->fts_statp;
-  int info = ent->fts_info;
-  bool ignore_missing = ignore_missing_fts_entry (ent);
+  ਅੱਖਰ ਅਚਲ *file = ent->fts_ਰਸਤਾ;
+  ਅਚਲ ਬਣਤਰ stat *sb = ent->fts_statp;
+  ਪੂਰਨ info = ent->fts_info;
+  bool ignore_missing = ignore_missing_fts_ਇੰਦਰਾਜ (ent);
 
-  if (ignore_missing && ignorable_fts_error (ent))
-    return true;
+  ਜੇ (ignore_missing && ignorable_fts_error (ent))
+    ਵਾਪਸ true;
 
-  if (info == FTS_DNR)
+  ਜੇ (info == FTS_DNR)
     {
       /* An error occurred, but the size is known, so count it.  */
       error (0, ent->fts_errno, _("cannot read directory %s"), quoteaf (file));
       ok = false;
     }
-  else if (info != FTS_DP)
+  ਨਹੀਂਤਾਂ ਜੇ (info != FTS_DP)
     {
       bool excluded = excluded_file_name (exclude, file);
-      if (! excluded)
+      ਜੇ (! excluded)
         {
           /* Make the stat buffer *SB valid, or fail noisily.  */
 
-          if (info == FTS_NSOK)
+          ਜੇ (info == FTS_NSOK)
             {
-              fts_set (fts, ent, FTS_AGAIN);
-              MAYBE_UNUSED FTSENT const *e = fts_read (fts);
+              fts_ਸੈੱਟ (fts, ent, FTS_AGAIN);
+              MAYBE_ਅਣਵਰਤਿਆ FTSENT ਅਚਲ *e = fts_read (fts);
               affirm (e == ent);
               info = ent->fts_info;
 
-              if (ignore_missing && ignorable_fts_error (ent))
-                return true;
+              ਜੇ (ignore_missing && ignorable_fts_error (ent))
+                ਵਾਪਸ true;
             }
 
-          if (info == FTS_NS || info == FTS_SLNONE)
+          ਜੇ (info == FTS_NS || info == FTS_SLNONE)
             {
               error (0, ent->fts_errno, _("cannot access %s"), quoteaf (file));
-              return false;
+              ਵਾਪਸ false;
             }
 
           /* The --one-file-system (-x) option cannot exclude anything
@@ -599,93 +599,93 @@ process_file (FTS *fts, FTSENT *ent)
              a file or directory only when its device number is different
              from that of its just-processed parent directory, and du does
              not process the parent of a command-line argument.  */
-          if (fts->fts_options & FTS_XDEV
+          ਜੇ (fts->fts_options & FTS_XDEV
               && FTS_ROOTLEVEL < ent->fts_level
               && fts->fts_dev != sb->st_dev)
             excluded = true;
         }
 
-      if (excluded
-          || (! opt_count_all
-              && (hash_all || (! S_ISDIR (sb->st_mode) && 1 < sb->st_nlink))
+      ਜੇ (excluded
+          || (! opt_ਗਿਣਤੀ_all
+              && (hash_all || (! S_ISDIR (sb->st_ਬਹੁਲਕ) && 1 < sb->st_nlink))
               && ! hash_ins (di_files, sb->st_ino, sb->st_dev)))
         {
           /* If ignoring a directory in preorder, skip its children.
              Ignore the next fts_read output too, as it's a postorder
              visit to the same directory.  */
-          if (info == FTS_D)
+          ਜੇ (info == FTS_D)
             {
-              fts_set (fts, ent, FTS_SKIP);
-              MAYBE_UNUSED FTSENT const *e = fts_read (fts);
+              fts_ਸੈੱਟ (fts, ent, FTS_SKIP);
+              MAYBE_ਅਣਵਰਤਿਆ FTSENT ਅਚਲ *e = fts_read (fts);
               affirm (e == ent);
             }
 
-          return true;
+          ਵਾਪਸ true;
         }
 
-      switch (info)
+      ਚੋਣ (info)
         {
-        case FTS_D:
-          return true;
+        ਹਾਲਤ FTS_D:
+          ਵਾਪਸ true;
 
-        case FTS_ERR:
+        ਹਾਲਤ FTS_ERR:
           /* An error occurred, but the size is known, so count it.  */
           error (0, ent->fts_errno, "%s", quotef (file));
           ok = false;
-          break;
+          ਰੋਕੋ;
 
-        case FTS_DC:
+        ਹਾਲਤ FTS_DC:
           /* If not following symlinks and not a (bind) mount point.  */
-          if (cycle_warning_required (fts, ent)
-              && ! mount_point_in_fts_cycle (ent))
+          ਜੇ (ਚੱਕਰ_warning_required (fts, ent)
+              && ! mount_ਬਿੰਦੂ_ਵਿੱਚ_fts_ਚੱਕਰ (ent))
             {
-              emit_cycle_warning (file);
-              return false;
+              emit_ਚੱਕਰ_warning (file);
+              ਵਾਪਸ false;
             }
-          return true;
+          ਵਾਪਸ true;
         }
     }
 
-  duinfo_set (&dui,
-              (apparent_size
-               ? (usable_st_size (sb) ? MAX (0, sb->st_size) : 0)
+  duinfo_ਸੈੱਟ (&dui,
+              (apparent_ਮਾਪ
+               ? (usable_st_ਮਾਪ (sb) ? MAX (0, sb->st_ਮਾਪ) : 0)
                : (uintmax_t) STP_NBLOCKS (sb) * ST_NBLOCKSIZE),
-              (time_type == time_mtime ? get_stat_mtime (sb)
-               : time_type == time_atime ? get_stat_atime (sb)
+              (ਸਮਾਂ_type == ਸਮਾਂ_mtime ? get_stat_mtime (sb)
+               : ਸਮਾਂ_type == ਸਮਾਂ_atime ? get_stat_atime (sb)
                : get_stat_ctime (sb)));
 
   idx_t level = ent->fts_level;
-  dui_to_print = dui;
+  dui_ਮੰਜ਼ਿਲ_print = dui;
 
-  if (n_alloc == 0)
+  ਜੇ (n_alloc == 0)
     {
       n_alloc = level + 10;
-      dulvl = xcalloc (n_alloc, sizeof *dulvl);
+      dulvl = xcalloc (n_alloc, ਆਕਾਰ *dulvl);
     }
-  else
+  ਨਹੀਂਤਾਂ
     {
-      if (level == prev_level)
+      ਜੇ (level == prev_level)
         {
           /* This is usually the most common case.  Do nothing.  */
         }
-      else if (level > prev_level)
+      ਨਹੀਂਤਾਂ ਜੇ (level > prev_level)
         {
           /* Descending the hierarchy.
              Clear the accumulators for *all* levels between prev_level
              and the current one.  The depth may change dramatically,
              e.g., from 1 to 10.  */
 
-          if (n_alloc <= level)
+          ਜੇ (n_alloc <= level)
             dulvl = xpalloc (dulvl, &n_alloc, level - n_alloc + 1, -1,
-                             sizeof *dulvl);
+                             ਆਕਾਰ *dulvl);
 
-          for (idx_t i = prev_level + 1; i <= level; i++)
+          ਲਈ (idx_t i = prev_level + 1; i <= level; i++)
             {
               duinfo_init (&dulvl[i].ent);
               duinfo_init (&dulvl[i].subdir);
             }
         }
-      else /* level < prev_level */
+      ਨਹੀਂਤਾਂ /* level < prev_level */
         {
           /* Ascending the hierarchy.
              Process a directory only after all entries in that
@@ -694,11 +694,11 @@ process_file (FTS *fts, FTSENT *ent)
              Here, the current level is always one smaller than the
              previous one.  */
           affirm (level == prev_level - 1);
-          duinfo_add (&dui_to_print, &dulvl[prev_level].ent);
-          if (!opt_separate_dirs)
-            duinfo_add (&dui_to_print, &dulvl[prev_level].subdir);
-          duinfo_add (&dulvl[level].subdir, &dulvl[prev_level].ent);
-          duinfo_add (&dulvl[level].subdir, &dulvl[prev_level].subdir);
+          duinfo_ਜੋੜੋ (&dui_ਮੰਜ਼ਿਲ_print, &dulvl[prev_level].ent);
+          ਜੇ (!opt_separate_dirs)
+            duinfo_ਜੋੜੋ (&dui_ਮੰਜ਼ਿਲ_print, &dulvl[prev_level].subdir);
+          duinfo_ਜੋੜੋ (&dulvl[level].subdir, &dulvl[prev_level].ent);
+          duinfo_ਜੋੜੋ (&dulvl[level].subdir, &dulvl[prev_level].subdir);
         }
     }
 
@@ -706,26 +706,26 @@ process_file (FTS *fts, FTSENT *ent)
 
   /* Let the size of a directory entry contribute to the total for the
      containing directory, unless --separate-dirs (-S) is specified.  */
-  if (! (opt_separate_dirs && IS_DIR_TYPE (info)))
-    duinfo_add (&dulvl[level].ent, &dui);
+  ਜੇ (! (opt_separate_dirs && IS_DIR_TYPE (info)))
+    duinfo_ਜੋੜੋ (&dulvl[level].ent, &dui);
 
   /* Even if this directory is unreadable or we can't chdir into it,
      do let its size contribute to the total. */
-  duinfo_add (&tot_dui, &dui);
+  duinfo_ਜੋੜੋ (&tot_dui, &dui);
 
-  if ((IS_DIR_TYPE (info) && level <= max_depth)
-      || (opt_all && level <= max_depth)
+  ਜੇ ((IS_DIR_TYPE (info) && level <= max_ਡੂੰਘਾਈ)
+      || (opt_all && level <= max_ਡੂੰਘਾਈ)
       || level == 0)
     {
       /* Print or elide this entry according to the --threshold option.  */
-      uintmax_t v = opt_inodes ? dui_to_print.inodes : dui_to_print.size;
-      if (opt_threshold < 0
-          ? v <= -opt_threshold
-          : v >= opt_threshold)
-        print_size (&dui_to_print, file, quote_output);
+      uintmax_t v = opt_inodes ? dui_ਮੰਜ਼ਿਲ_print.inodes : dui_ਮੰਜ਼ਿਲ_print.ਮਾਪ;
+      ਜੇ (opt_ਹੱਦ < 0
+          ? v <= -opt_ਹੱਦ
+          : v >= opt_ਹੱਦ)
+        print_ਮਾਪ (&dui_ਮੰਜ਼ਿਲ_print, file, quote_output);
     }
 
-  return ok;
+  ਵਾਪਸ ok;
 }
 
 /* Recursively print the sizes of the directories (and, if selected, files)
@@ -733,26 +733,26 @@ process_file (FTS *fts, FTSENT *ent)
    BIT_FLAGS controls how fts works.
    Return true if successful.  */
 
-static bool
-du_files (char **files, int bit_flags)
+ਸਥਿਰ bool
+du_files (ਅੱਖਰ **files, ਪੂਰਨ ਦੋਆਧਾਰੀ_ਅੰਕ_flags)
 {
   bool ok = true;
 
-  if (*files)
+  ਜੇ (*files)
     {
-      FTS *fts = xfts_open (files, bit_flags, NULL);
+      FTS *fts = xfts_open (files, ਦੋਆਧਾਰੀ_ਅੰਕ_flags, ਨਿਰਾ);
 
-      while (true)
+      ਜਦੋਂ (true)
         {
           FTSENT *ent;
 
           ent = fts_read (fts);
-          if (ent == NULL)
+          ਜੇ (ent == ਨਿਰਾ)
             {
-              if (errno != 0)
+              ਜੇ (errno != 0)
                 {
                   error (0, errno, _("fts_read failed: %s"),
-                         quotef (fts->fts_path));
+                         quotef (fts->fts_ਰਸਤਾ));
                   ok = false;
                 }
 
@@ -760,50 +760,50 @@ du_files (char **files, int bit_flags)
                  global, prev_level, used in process_file.  Otherwise, its
                  (level == prev_level - 1) assertion could fail.  */
               prev_level = 0;
-              break;
+              ਰੋਕੋ;
             }
 
-#if GNULIB_FTS_DEBUG
-          if (fts_debug)
+#ਜੇ GNULIB_FTS_DEBUG
+          ਜੇ (fts_debug)
             fts_cross_check (fts);
-#endif
+#ਜੇ_ਅੰਤ
 
           ok &= process_file (fts, ent);
         }
 
-      if (fts_close (fts) != 0)
+      ਜੇ (fts_close (fts) != 0)
         {
           error (0, errno, _("fts_close failed"));
           ok = false;
         }
     }
 
-  return ok;
+  ਵਾਪਸ ok;
 }
 
-int
-main (int argc, char **argv)
+ਪੂਰਨ
+ਮੁੱਖ (ਪੂਰਨ argc, ਅੱਖਰ **argv)
 {
-  char *cwd_only[2];
-  bool max_depth_specified = false;
+  ਅੱਖਰ *cwd_only[2];
+  bool max_ਡੂੰਘਾਈ_specified = false;
   bool ok = true;
-  char *files_from = NULL;
+  ਅੱਖਰ *files_from = ਨਿਰਾ;
 
   /* Bit flags that control how fts works.  */
-  int bit_flags = FTS_NOSTAT;
+  ਪੂਰਨ ਦੋਆਧਾਰੀ_ਅੰਕ_flags = FTS_NOSTAT;
 
   /* Select one of the three FTS_ options that control if/when
      to follow a symlink.  */
-  int symlink_deref_bits = FTS_PHYSICAL;
+  ਪੂਰਨ symlink_deref_ਬਿੱਟ = FTS_PHYSICAL;
 
   /* If true, display only a total for each argument. */
   bool opt_summarize_only = false;
 
   cwd_only[0] = bad_cast (".");
-  cwd_only[1] = NULL;
+  cwd_only[1] = ਨਿਰਾ;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  ਸੈੱਟ_ਪ੍ਰੋਗਰਾਮ_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
@@ -813,282 +813,282 @@ main (int argc, char **argv)
   exclude = new_exclude ();
 
   human_options (getenv ("DU_BLOCK_SIZE"),
-                 &human_output_opts, &output_block_size);
+                 &human_output_opts, &output_ਖੰਡ_ਮਾਪ);
 
-  while (true)
+  ਜਦੋਂ (true)
     {
-      int oi = -1;
-      int c = getopt_long (argc, argv, "0aAbd:chHklmst:xB:DLPSX:",
+      ਪੂਰਨ oi = -1;
+      ਪੂਰਨ c = getopt_long (argc, argv, "0aAbd:chHklmst:xB:DLPSX:",
                            long_options, &oi);
-      if (c == -1)
-        break;
+      ਜੇ (c == -1)
+        ਰੋਕੋ;
 
-      switch (c)
+      ਚੋਣ (c)
         {
-#if GNULIB_FTS_DEBUG
-        case FTS_DEBUG:
+#ਜੇ GNULIB_FTS_DEBUG
+        ਹਾਲਤ FTS_DEBUG:
           fts_debug = true;
-          break;
-#endif
+          ਰੋਕੋ;
+#ਜੇ_ਅੰਤ
 
-        case '0':
+        ਹਾਲਤ '0':
           opt_nul_terminate_output = true;
-          break;
+          ਰੋਕੋ;
 
-        case 'a':
+        ਹਾਲਤ 'a':
           opt_all = true;
-          break;
+          ਰੋਕੋ;
 
-        case 'A':
-          apparent_size = true;
-          break;
+        ਹਾਲਤ 'A':
+          apparent_ਮਾਪ = true;
+          ਰੋਕੋ;
 
-        case 'b':
-          apparent_size = true;
+        ਹਾਲਤ 'b':
+          apparent_ਮਾਪ = true;
           human_output_opts = 0;
-          output_block_size = 1;
-          break;
+          output_ਖੰਡ_ਮਾਪ = 1;
+          ਰੋਕੋ;
 
-        case 'c':
-          print_grand_total = true;
-          break;
+        ਹਾਲਤ 'c':
+          print_grand_ਕੁੱਲ = true;
+          ਰੋਕੋ;
 
-        case 'h':
-          human_output_opts = human_autoscale | human_SI | human_base_1024;
-          output_block_size = 1;
-          break;
+        ਹਾਲਤ 'h':
+          human_output_opts = human_autoscale | human_SI | human_ਅਧਾਰ_1024;
+          output_ਖੰਡ_ਮਾਪ = 1;
+          ਰੋਕੋ;
 
-        case HUMAN_SI_OPTION:
+        ਹਾਲਤ HUMAN_SI_OPTION:
           human_output_opts = human_autoscale | human_SI;
-          output_block_size = 1;
-          break;
+          output_ਖੰਡ_ਮਾਪ = 1;
+          ਰੋਕੋ;
 
-        case 'k':
+        ਹਾਲਤ 'k':
           human_output_opts = 0;
-          output_block_size = 1024;
-          break;
+          output_ਖੰਡ_ਮਾਪ = 1024;
+          ਰੋਕੋ;
 
-        case 'd':		/* --max-depth=N */
+        ਹਾਲਤ 'd':		/* --max-depth=N */
           {
             intmax_t tmp;
-            if (xstrtoimax (optarg, NULL, 0, &tmp, "") == LONGINT_OK
-                && ! ckd_add (&max_depth, tmp, 0) && 0 <= max_depth)
-              max_depth_specified = true;
-            else
+            ਜੇ (xstrtoimax (optarg, ਨਿਰਾ, 0, &tmp, "") == LONGINT_OK
+                && ! ckd_ਜੋੜੋ (&max_ਡੂੰਘਾਈ, tmp, 0) && 0 <= max_ਡੂੰਘਾਈ)
+              max_ਡੂੰਘਾਈ_specified = true;
+            ਨਹੀਂਤਾਂ
               {
                 error (0, 0, _("invalid maximum depth %s"),
                        quote (optarg));
                 ok = false;
               }
           }
-          break;
+          ਰੋਕੋ;
 
-        case 'm':
+        ਹਾਲਤ 'm':
           human_output_opts = 0;
-          output_block_size = 1024 * 1024;
-          break;
+          output_ਖੰਡ_ਮਾਪ = 1024 * 1024;
+          ਰੋਕੋ;
 
-        case 'l':
-          opt_count_all = true;
-          break;
+        ਹਾਲਤ 'l':
+          opt_ਗਿਣਤੀ_all = true;
+          ਰੋਕੋ;
 
-        case 's':
+        ਹਾਲਤ 's':
           opt_summarize_only = true;
-          break;
+          ਰੋਕੋ;
 
-        case 't':
+        ਹਾਲਤ 't':
           {
-            enum strtol_error e;
-            e = xstrtoimax (optarg, NULL, 0, &opt_threshold,
+            ਗਿਣਤੀ strtol_error e;
+            e = xstrtoimax (optarg, ਨਿਰਾ, 0, &opt_ਹੱਦ,
                             "kKmMGTPEZYRQ0");
-            if (e != LONGINT_OK)
+            ਜੇ (e != LONGINT_OK)
               xstrtol_fatal (e, oi, c, long_options, optarg);
-            if (opt_threshold == 0 && *optarg == '-')
+            ਜੇ (opt_ਹੱਦ == 0 && *optarg == '-')
               {
                 /* Do not allow -0, as this wouldn't make sense anyway.  */
                 error (EXIT_FAILURE, 0, _("invalid --threshold argument '-0'"));
               }
           }
-          break;
+          ਰੋਕੋ;
 
-        case 'x':
-          bit_flags |= FTS_XDEV;
-          break;
+        ਹਾਲਤ 'x':
+          ਦੋਆਧਾਰੀ_ਅੰਕ_flags |= FTS_XDEV;
+          ਰੋਕੋ;
 
-        case 'B':
+        ਹਾਲਤ 'B':
           {
-            enum strtol_error e = human_options (optarg, &human_output_opts,
-                                                 &output_block_size);
-            if (e != LONGINT_OK)
+            ਗਿਣਤੀ strtol_error e = human_options (optarg, &human_output_opts,
+                                                 &output_ਖੰਡ_ਮਾਪ);
+            ਜੇ (e != LONGINT_OK)
               xstrtol_fatal (e, oi, c, long_options, optarg);
           }
-          break;
+          ਰੋਕੋ;
 
-        case 'H':  /* NOTE: before 2008-12, -H was equivalent to --si.  */
-        case 'D':
-          symlink_deref_bits = FTS_COMFOLLOW | FTS_PHYSICAL;
-          break;
+        ਹਾਲਤ 'H':  /* NOTE: before 2008-12, -H was equivalent to --si.  */
+        ਹਾਲਤ 'D':
+          symlink_deref_ਬਿੱਟ = FTS_COMFOLLOW | FTS_PHYSICAL;
+          ਰੋਕੋ;
 
-        case 'L': /* --dereference */
-          symlink_deref_bits = FTS_LOGICAL;
-          break;
+        ਹਾਲਤ 'L': /* --dereference */
+          symlink_deref_ਬਿੱਟ = FTS_LOGICAL;
+          ਰੋਕੋ;
 
-        case 'P': /* --no-dereference */
-          symlink_deref_bits = FTS_PHYSICAL;
-          break;
+        ਹਾਲਤ 'P': /* --no-dereference */
+          symlink_deref_ਬਿੱਟ = FTS_PHYSICAL;
+          ਰੋਕੋ;
 
-        case 'S':
+        ਹਾਲਤ 'S':
           opt_separate_dirs = true;
-          break;
+          ਰੋਕੋ;
 
-        case 'X':
-          if (add_exclude_file (add_exclude, exclude, optarg,
+        ਹਾਲਤ 'X':
+          ਜੇ (ਜੋੜੋ_exclude_file (ਜੋੜੋ_exclude, exclude, optarg,
                                 EXCLUDE_WILDCARDS, '\n'))
             {
               error (0, errno, "%s", quotef (optarg));
               ok = false;
             }
-          break;
+          ਰੋਕੋ;
 
-        case FILES0_FROM_OPTION:
+        ਹਾਲਤ FILES0_FROM_OPTION:
           files_from = optarg;
-          break;
+          ਰੋਕੋ;
 
-        case EXCLUDE_OPTION:
-          add_exclude (exclude, optarg, EXCLUDE_WILDCARDS);
-          break;
+        ਹਾਲਤ EXCLUDE_OPTION:
+          ਜੋੜੋ_exclude (exclude, optarg, EXCLUDE_WILDCARDS);
+          ਰੋਕੋ;
 
-        case INODES_OPTION:
+        ਹਾਲਤ INODES_OPTION:
           opt_inodes = true;
-          break;
+          ਰੋਕੋ;
 
-        case TIME_OPTION:
-          opt_time = true;
-          time_type =
+        ਹਾਲਤ ਸਮਾਂ_OPTION:
+          opt_ਸਮਾਂ = true;
+          ਸਮਾਂ_type =
             (optarg
-             ? XARGMATCH ("--time", optarg, time_args, time_types)
-             : time_mtime);
+             ? XARGMATCH ("--time", optarg, ਸਮਾਂ_ਦਲੀਲਾਂ, ਸਮਾਂ_types)
+             : ਸਮਾਂ_mtime);
           localtz = tzalloc (getenv ("TZ"));
-          break;
+          ਰੋਕੋ;
 
-        case TIME_STYLE_OPTION:
-          time_style = optarg;
-          break;
+        ਹਾਲਤ ਸਮਾਂ_STYLE_OPTION:
+          ਸਮਾਂ_style = optarg;
+          ਰੋਕੋ;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_ਸੰਸਕਰਣ_CHAR (ਪ੍ਰੋਗਰਾਮ_NAME, AUTHORS);
 
-        default:
+        ਮੂਲ:
           ok = false;
         }
     }
 
-  if (!ok)
+  ਜੇ (!ok)
     usage (EXIT_FAILURE);
 
-  if (!opt_nul_terminate_output && isatty (STDOUT_FILENO))
+  ਜੇ (!opt_nul_terminate_output && isatty (STDOUT_FILENO))
     {
-      int qs = getenv_quoting_style ();
-      if (qs < 0)
+      ਪੂਰਨ qs = getenv_quoting_style ();
+      ਜੇ (qs < 0)
         qs = shell_escape_quoting_style;
-      if (qs != literal_quoting_style)
+      ਜੇ (qs != literal_quoting_style)
         {
-          set_quoting_style (NULL, qs);
+          ਸੈੱਟ_quoting_style (ਨਿਰਾ, qs);
           quote_output = true;
         }
     }
 
-  if (opt_all && opt_summarize_only)
+  ਜੇ (opt_all && opt_summarize_only)
     {
       error (0, 0, _("cannot both summarize and show all entries"));
       usage (EXIT_FAILURE);
     }
 
-  if (opt_summarize_only && max_depth_specified && max_depth == 0)
+  ਜੇ (opt_summarize_only && max_ਡੂੰਘਾਈ_specified && max_ਡੂੰਘਾਈ == 0)
     {
       error (0, 0,
              _("warning: summarizing is the same as using --max-depth=0"));
     }
 
-  if (opt_summarize_only && max_depth_specified && max_depth != 0)
+  ਜੇ (opt_summarize_only && max_ਡੂੰਘਾਈ_specified && max_ਡੂੰਘਾਈ != 0)
     {
       error (0, 0, _("warning: summarizing conflicts with --max-depth=%td"),
-             max_depth);
+             max_ਡੂੰਘਾਈ);
       usage (EXIT_FAILURE);
     }
 
-  if (opt_summarize_only)
-    max_depth = 0;
+  ਜੇ (opt_summarize_only)
+    max_ਡੂੰਘਾਈ = 0;
 
-  if (opt_inodes)
+  ਜੇ (opt_inodes)
     {
-      if (apparent_size)
+      ਜੇ (apparent_ਮਾਪ)
         {
           error (0, 0, _("warning: options --apparent-size and -b are "
                          "ineffective with --inodes"));
         }
-      output_block_size = 1;
+      output_ਖੰਡ_ਮਾਪ = 1;
     }
 
   /* Process time style if printing last times.  */
-  if (opt_time)
+  ਜੇ (opt_ਸਮਾਂ)
     {
-      if (! time_style)
+      ਜੇ (! ਸਮਾਂ_style)
         {
-          time_style = getenv ("TIME_STYLE");
+          ਸਮਾਂ_style = getenv ("TIME_STYLE");
 
           /* Ignore TIMESTYLE="locale", for compatibility with ls.  */
-          if (! time_style || streq (time_style, "locale"))
-            time_style = "long-iso";
-          else if (*time_style == '+')
+          ਜੇ (! ਸਮਾਂ_style || streq (ਸਮਾਂ_style, "locale"))
+            ਸਮਾਂ_style = "long-iso";
+          ਨਹੀਂਤਾਂ ਜੇ (*ਸਮਾਂ_style == '+')
             {
               /* Ignore anything after a newline, for compatibility
                  with ls.  */
-              char const *p = strchr (time_style, '\n');
-              if (p)
-                time_style = xmemdup0 (time_style, p - time_style);
+              ਅੱਖਰ ਅਚਲ *p = strchr (ਸਮਾਂ_style, '\n');
+              ਜੇ (p)
+                ਸਮਾਂ_style = xmemdup0 (ਸਮਾਂ_style, p - ਸਮਾਂ_style);
             }
-          else
+          ਨਹੀਂਤਾਂ
             {
               /* Ignore "posix-" prefix, for compatibility with ls.  */
-              static char const posix_prefix[] = "posix-";
-              static const size_t prefix_len = sizeof posix_prefix - 1;
-              while (STREQ_LEN (time_style, posix_prefix, prefix_len))
-                time_style += prefix_len;
+              ਸਥਿਰ ਅੱਖਰ ਅਚਲ posix_ਅਗੇਤਰ[] = "posix-";
+              ਸਥਿਰ ਅਚਲ size_t ਅਗੇਤਰ_len = ਆਕਾਰ posix_ਅਗੇਤਰ - 1;
+              ਜਦੋਂ (STREQ_LEN (ਸਮਾਂ_style, posix_ਅਗੇਤਰ, ਅਗੇਤਰ_len))
+                ਸਮਾਂ_style += ਅਗੇਤਰ_len;
             }
         }
 
-      if (*time_style == '+')
-        time_format = time_style + 1;
-      else
+      ਜੇ (*ਸਮਾਂ_style == '+')
+        ਸਮਾਂ_format = ਸਮਾਂ_style + 1;
+      ਨਹੀਂਤਾਂ
         {
-          switch (x_timestyle_match (time_style, /*allow_posix=*/ false,
-                                     time_style_args,
-                                     (char const *) time_style_types,
-                                     sizeof (*time_style_types), EXIT_FAILURE))
+          ਚੋਣ (x_timestyle_ਮੇਲ (ਸਮਾਂ_style, /*allow_posix=*/ false,
+                                     ਸਮਾਂ_style_ਦਲੀਲਾਂ,
+                                     (ਅੱਖਰ ਅਚਲ *) ਸਮਾਂ_style_types,
+                                     ਆਕਾਰ (*ਸਮਾਂ_style_types), EXIT_FAILURE))
             {
-            case full_iso_time_style:
-              time_format = "%Y-%m-%d %H:%M:%S.%N %z";
-              break;
+            ਹਾਲਤ ਭਰਿਆ_iso_ਸਮਾਂ_style:
+              ਸਮਾਂ_format = "%Y-%m-%d %H:%M:%S.%N %z";
+              ਰੋਕੋ;
 
-            case long_iso_time_style:
-              time_format = "%Y-%m-%d %H:%M";
-              break;
+            ਹਾਲਤ long_iso_ਸਮਾਂ_style:
+              ਸਮਾਂ_format = "%Y-%m-%d %H:%M";
+              ਰੋਕੋ;
 
-            case iso_time_style:
-              time_format = "%Y-%m-%d";
-              break;
+            ਹਾਲਤ iso_ਸਮਾਂ_style:
+              ਸਮਾਂ_format = "%Y-%m-%d";
+              ਰੋਕੋ;
             }
         }
     }
 
-  struct argv_iterator *ai;
-  if (files_from)
+  ਬਣਤਰ argv_iterator *ai;
+  ਜੇ (files_from)
     {
       /* When using --files0-from=F, you may not specify any files
          on the command-line.  */
-      if (optind < argc)
+      ਜੇ (optind < argc)
         {
           error (0, 0, _("extra operand %s"), quote (argv[optind]));
           fprintf (stderr, "%s\n",
@@ -1096,66 +1096,66 @@ main (int argc, char **argv)
           usage (EXIT_FAILURE);
         }
 
-      if (! (streq (files_from, "-") || freopen (files_from, "r", stdin)))
+      ਜੇ (! (streq (files_from, "-") || freopen (files_from, "r", stdin)))
         error (EXIT_FAILURE, errno, _("cannot open %s for reading"),
                quoteaf (files_from));
 
-      ai = argv_iter_init_stream (stdin);
+      ai = argv_iter_init_ਧਾਰਾ (stdin);
 
       /* It's not easy here to count the arguments, so assume the
          worst.  */
       hash_all = true;
     }
-  else
+  ਨਹੀਂਤਾਂ
     {
-      char **files = (optind < argc ? argv + optind : cwd_only);
+      ਅੱਖਰ **files = (optind < argc ? argv + optind : cwd_only);
       ai = argv_iter_init_argv (files);
 
       /* Hash all dev,ino pairs if there are multiple arguments, or if
          following non-command-line symlinks, because in either case a
          file with just one hard link might be seen more than once.  */
-      hash_all = (optind + 1 < argc || symlink_deref_bits == FTS_LOGICAL);
+      hash_all = (optind + 1 < argc || symlink_deref_ਬਿੱਟ == FTS_LOGICAL);
     }
 
-  if (!ai)
+  ਜੇ (!ai)
     xalloc_die ();
 
   /* Initialize the set of dev,inode pairs.  */
-  di_files = di_set_alloc ();
-  if (!di_files)
+  di_files = di_ਸੈੱਟ_alloc ();
+  ਜੇ (!di_files)
     xalloc_die ();
 
   /* If not hashing everything, process_file won't find cycles on its
      own, so ask fts_read to check for them accurately.  */
-  if (opt_count_all || ! hash_all)
-    bit_flags |= FTS_TIGHT_CYCLE_CHECK;
+  ਜੇ (opt_ਗਿਣਤੀ_all || ! hash_all)
+    ਦੋਆਧਾਰੀ_ਅੰਕ_flags |= FTS_TIGHT_ਚੱਕਰ_CHECK;
 
-  bit_flags |= symlink_deref_bits;
-  static char *temp_argv[] = { NULL, NULL };
+  ਦੋਆਧਾਰੀ_ਅੰਕ_flags |= symlink_deref_ਬਿੱਟ;
+  ਸਥਿਰ ਅੱਖਰ *ਆਰਜ਼ੀ_argv[] = { ਨਿਰਾ, ਨਿਰਾ };
 
-  while (true)
+  ਜਦੋਂ (true)
     {
       bool skip_file = false;
-      enum argv_iter_err ai_err;
-      char *file_name = argv_iter (ai, &ai_err);
-      if (!file_name)
+      ਗਿਣਤੀ argv_iter_err ai_err;
+      ਅੱਖਰ *file_name = argv_iter (ai, &ai_err);
+      ਜੇ (!file_name)
         {
-          switch (ai_err)
+          ਚੋਣ (ai_err)
             {
-            case AI_ERR_EOF:
-              goto argv_iter_done;
-            case AI_ERR_READ:
+            ਹਾਲਤ AI_ERR_EOF:
+              ਜਾਓ argv_iter_ਪੂਰਾ;
+            ਹਾਲਤ AI_ERR_READ:
               error (0, errno, _("%s: read error"),
                      quotef (files_from));
               ok = false;
-              goto argv_iter_done;
-            case AI_ERR_MEM:
+              ਜਾਓ argv_iter_ਪੂਰਾ;
+            ਹਾਲਤ AI_ERR_MEM:
               xalloc_die ();
-            case AI_ERR_OK: default:
+            ਹਾਲਤ AI_ERR_OK: ਮੂਲ:
               affirm (!"unexpected error code from argv_iter");
             }
         }
-      if (files_from && streq (files_from, "-") && streq (file_name, "-"))
+      ਜੇ (files_from && streq (files_from, "-") && streq (file_name, "-"))
         {
           /* Give a better diagnostic in an unusual case:
              printf - | du --files0-from=- */
@@ -1169,46 +1169,46 @@ main (int argc, char **argv)
          This works around a glitch in fts, which fails immediately
          (without looking at the other file names) when given an empty
          file name.  */
-      if (!file_name[0])
+      ਜੇ (!file_name[0])
         {
           /* Diagnose a zero-length file name.  When it's one
              among many, knowing the record number may help.
              FIXME: currently print the record number only with
              --files0-from=FILE.  Maybe do it for argv, too?  */
-          if (files_from == NULL)
+          ਜੇ (files_from == ਨਿਰਾ)
             error (0, 0, "%s", _("invalid zero-length file name"));
-          else
+          ਨਹੀਂਤਾਂ
             {
               /* Using the standard 'filename:line-number:' prefix here is
                  not totally appropriate, since NUL is the separator, not NL,
                  but it might be better than nothing.  */
-              idx_t file_number = argv_iter_n_args (ai);
+              idx_t file_ਸੰਖਿਆ = argv_iter_n_ਦਲੀਲਾਂ (ai);
               error (0, 0, "%s:%td: %s", quotef (files_from),
-                     file_number, _("invalid zero-length file name"));
+                     file_ਸੰਖਿਆ, _("invalid zero-length file name"));
             }
           skip_file = true;
         }
 
-      if (skip_file)
+      ਜੇ (skip_file)
         ok = false;
-      else
+      ਨਹੀਂਤਾਂ
         {
-          temp_argv[0] = file_name;
-          ok &= du_files (temp_argv, bit_flags);
+          ਆਰਜ਼ੀ_argv[0] = file_name;
+          ok &= du_files (ਆਰਜ਼ੀ_argv, ਦੋਆਧਾਰੀ_ਅੰਕ_flags);
         }
     }
- argv_iter_done:
+ argv_iter_ਪੂਰਾ:
 
   argv_iter_free (ai);
-  di_set_free (di_files);
-  if (di_mnt)
-    di_set_free (di_mnt);
+  di_ਸੈੱਟ_free (di_files);
+  ਜੇ (di_mnt)
+    di_ਸੈੱਟ_free (di_mnt);
 
-  if (files_from && (ferror (stdin) || fclose (stdin) != 0) && ok)
+  ਜੇ (files_from && (ferror (stdin) || fclose (stdin) != 0) && ok)
     error (EXIT_FAILURE, 0, _("error reading %s"), quoteaf (files_from));
 
-  if (print_grand_total)
-    print_size (&tot_dui, _("total"), false);
+  ਜੇ (print_grand_ਕੁੱਲ)
+    print_ਮਾਪ (&tot_dui, _("total"), false);
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  ਵਾਪਸ ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

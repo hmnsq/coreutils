@@ -14,58 +14,58 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <wchar.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <config.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <stdio.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <sys/types.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <wchar.h>
 
-#include "system.h"
-#include "c-ctype.h"
-#include "cl-strtod.h"
-#include "octhexdigits.h"
-#include "quote.h"
-#include "unicodeio.h"
-#include "xprintf.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "system.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "c-ctype.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "cl-strtod.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "octhexdigits.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "quote.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "unicodeio.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "xprintf.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "printf"
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ ਪ੍ਰੋਗਰਾਮ_NAME "printf"
 
-#define AUTHORS proper_name ("David MacKenzie")
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ AUTHORS proper_name ("David MacKenzie")
 
 /* The value to return to the calling program.  */
-static int exit_status;
+ਸਥਿਰ ਪੂਰਨ exit_ਸਥਿਤੀ;
 
 /* True if the POSIXLY_CORRECT environment variable is set.  */
-static bool posixly_correct;
+ਸਥਿਰ bool posixly_correct;
 
 /* This message appears in N_() here rather than just in _() below because
    the sole use would have been in a #define.  */
-static char const *const cfcc_msg =
+ਸਥਿਰ ਅੱਖਰ ਅਚਲ *ਅਚਲ cfcc_ਸੁਨੇਹਾ =
  N_("warning: %s: character(s) following character constant have been ignored");
 
-void
-usage (int status)
+ਖਾਲੀ
+usage (ਪੂਰਨ ਸਥਿਤੀ)
 {
-  if (status != EXIT_SUCCESS)
+  ਜੇ (ਸਥਿਤੀ != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ਨਹੀਂਤਾਂ
     {
-      printf (_("\
-Usage: %s FORMAT [ARGUMENT]...\n\
+      ਲਿਖੋ (_("\
+Usage: %s FORMAT [ਦਲੀਲ_2]...\n\
   or:  %s OPTION\n\
 "),
-              program_name, program_name);
+              ਪ੍ਰੋਗਰਾਮ_name, ਪ੍ਰੋਗਰਾਮ_name);
       fputs (_("\
-Print ARGUMENT(s) according to FORMAT, or execute according to OPTION:\n\
+Print ਦਲੀਲ_2(s) according ਮੰਜ਼ਿਲ FORMAT, or execute according ਮੰਜ਼ਿਲ OPTION:\n\
 \n\
 "), stdout);
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (ਸੰਸਕਰਣ_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-FORMAT controls the output as in C printf.  Interpreted sequences are:\n\
+FORMAT controls the output as ਵਿੱਚ C ਲਿਖੋ.  Interpreted sequences are:\n\
 \n\
-  \\\"      double quote\n\
+  \\\"      ਦੁੱਗਣਾ quote\n\
 "), stdout);
       fputs (_("\
   \\\\      backslash\n\
@@ -74,38 +74,38 @@ FORMAT controls the output as in C printf.  Interpreted sequences are:\n\
   \\c      produce no further output\n\
   \\e      escape\n\
   \\f      form feed\n\
-  \\n      new line\n\
-  \\r      carriage return\n\
+  \\n      new ਸਤਰ\n\
+  \\r      carriage ਵਾਪਸ\n\
   \\t      horizontal tab\n\
   \\v      vertical tab\n\
 "), stdout);
       fputs (_("\
-  \\NNN    byte with octal value NNN (1 to 3 digits)\n\
-  \\xHH    byte with hexadecimal value HH (1 to 2 digits)\n\
-  \\uHHHH  Unicode (ISO/IEC 10646) character with hex value HHHH (4 digits)\n\
-  \\UHHHHHHHH  Unicode character with hex value HHHHHHHH (8 digits)\n\
+  \\NNN    byte with octal ਮੁੱਲ NNN (1 ਮੰਜ਼ਿਲ 3 digits)\n\
+  \\xHH    byte with hexadecimal ਮੁੱਲ HH (1 ਮੰਜ਼ਿਲ 2 digits)\n\
+  \\uHHHH  Unicode (ISO/IEC 10646) character with hex ਮੁੱਲ HHHH (4 digits)\n\
+  \\UHHHHHHHH  Unicode character with hex ਮੁੱਲ HHHHHHHH (8 digits)\n\
 "), stdout);
       fputs (_("\
 \n\
   %%      a single %\n\
-  %b      ARGUMENT as a string with '\\' escapes interpreted,\n\
+  %b      ਦਲੀਲ_2 as a string with '\\' escapes interpreted,\n\
           except that octal escapes should have a leading 0 like \\0NNN\n\
-  %q      ARGUMENT is printed in a format that can be reused as shell input,\n\
+  %q      ਦਲੀਲ_2 is printed ਵਿੱਚ a format that can be reused as shell ਨਿਵੇਸ਼,\n\
           escaping non-printable characters with the POSIX $'' syntax\
 \n\n\
-and all C printf(3) format specifications ending with one of diouxXfaAeEgGcs,\n\
-with ARGUMENTs converted to proper type first.\n\
+and all C ਲਿਖੋ(3) format specifications ending with one ਦਾ diouxXfaAeEgGcs,\n\
+with ARGUMENTs converted ਮੰਜ਼ਿਲ proper type ਪਹਿਲਾ.\n\
 "), stdout);
       fputs (_("\
-FORMAT is reused to convert all specified arguments.\n\
+FORMAT is reused ਮੰਜ਼ਿਲ convert all specified arguments.\n\
 "), stdout);
       fputs (_("\
-The following table shows supported conversion specifiers,\n\
-with examples including usage of width, precision, and flags.\n\
+The following ਸਾਰਣੀ shows supported conversion specifiers,\n\
+with examples including usage ਦਾ ਚੌੜਾਈ, precision, and flags.\n\
 \n\
   CONVERSION  Shell format example        Output\n\
-  %s          '[%10s]' 'left pad'         [  left pad]\n\
-  %s          '[%-10s]' 'right pad'       [right pad ]\n\
+  %s          '[%10s]' 'left pad'         [  ਖੱਬਾ pad]\n\
+  %s          '[%-10s]' 'right pad'       [ਸੱਜਾ pad ]\n\
   %c %s       '%c %.3s' un unibyte        u uni\n\
 \n\
   %d %i       \"%'d ;%04i\" 1234 '-1'       1,234 ;-001\n\
@@ -120,56 +120,56 @@ with examples including usage of width, precision, and flags.\n\
   %b          '%bfoo' 'bar\\cbaz' qux      bar\n\
   %q          '%q ' 'a' \\;b $'c\\n'        a ';b' 'c'$'\\n'\n\
 "), stdout);
-      printf (USAGE_BUILTIN_WARNING, PROGRAM_NAME);
-      emit_ancillary_info (PROGRAM_NAME);
+      ਲਿਖੋ (USAGE_BUILTIN_WARNING, ਪ੍ਰੋਗਰਾਮ_NAME);
+      emit_ancillary_info (ਪ੍ਰੋਗਰਾਮ_NAME);
     }
-  exit (status);
+  ਬਾਹਰ_ਨਿਕਲੋ (ਸਥਿਤੀ);
 }
 
-static void
-verify_numeric (char const *s, char const *end)
+ਸਥਿਰ ਖਾਲੀ
+verify_numeric (ਅੱਖਰ ਅਚਲ *s, ਅੱਖਰ ਅਚਲ *ਸਿਰਾ)
 {
-  if (s == end)
+  ਜੇ (s == ਸਿਰਾ)
     {
       error (0, 0, _("%s: expected a numeric value"), quote (s));
-      exit_status = EXIT_FAILURE;
+      exit_ਸਥਿਤੀ = EXIT_FAILURE;
     }
-  else if (errno)
+  ਨਹੀਂਤਾਂ ਜੇ (errno)
     {
       error (0, errno, "%s", quote (s));
-      exit_status = EXIT_FAILURE;
+      exit_ਸਥਿਤੀ = EXIT_FAILURE;
     }
-  else if (*end)
+  ਨਹੀਂਤਾਂ ਜੇ (*ਸਿਰਾ)
     {
       error (0, 0, _("%s: value not completely converted"), quote (s));
-      exit_status = EXIT_FAILURE;
+      exit_ਸਥਿਤੀ = EXIT_FAILURE;
     }
 }
 
-#define STRTOX(TYPE, FUNC_NAME, LIB_FUNC_EXPR)				 \
-static TYPE								 \
-FUNC_NAME (char const *s)						 \
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ STRTOX(TYPE, FUNC_NAME, LIB_FUNC_ਵਿਅੰਜਕ)				 \
+ਸਥਿਰ TYPE								 \
+FUNC_NAME (ਅੱਖਰ ਅਚਲ *s)						 \
 {									 \
-  char *end;								 \
+  ਅੱਖਰ *ਸਿਰਾ;								 \
   TYPE val;								 \
                                                                          \
-  if ((*s == '\"' || *s == '\'') && *(s + 1))				 \
+  ਜੇ ((*s == '\"' || *s == '\'') && *(s + 1))				 \
     {									 \
-      unsigned char ch = *++s;						 \
+      ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ ch = *++s;						 \
       val = ch;								 \
                                                                          \
-      if (MB_CUR_MAX > 1 && *(s + 1))					 \
+      ਜੇ (MB_CUR_MAX > 1 && *(s + 1))					 \
         {								 \
           mbstate_t mbstate; mbszero (&mbstate);			 \
           wchar_t wc;							 \
-          size_t slen = strlen (s);					 \
-          ssize_t bytes;						 \
+          size_t slen = ਲੜੀ_ਲੰਬਾਈ (s);					 \
+          ssize_t ਬਾਈਟਾਂ;						 \
           /* Use mbrtowc not mbrtoc32, as per POSIX.  */		 \
-          bytes = mbrtowc (&wc, s, slen, &mbstate);			 \
-          if (0 < bytes)						 \
+          ਬਾਈਟਾਂ = mbrtowc (&wc, s, slen, &mbstate);			 \
+          ਜੇ (0 < ਬਾਈਟਾਂ)						 \
             {								 \
               val = wc;							 \
-              s += bytes - 1;						 \
+              s += ਬਾਈਟਾਂ - 1;						 \
             }								 \
         }								 \
                                                                          \
@@ -177,59 +177,59 @@ FUNC_NAME (char const *s)						 \
          are characters following the character constant and that GNU	 \
          printf is ignoring those characters.  If POSIXLY_CORRECT *is*	 \
          set, then don't give the warning.  */				 \
-      if (*++s != 0 && !posixly_correct)				 \
-        error (0, 0, _(cfcc_msg), s);					 \
+      ਜੇ (*++s != 0 && !posixly_correct)				 \
+        error (0, 0, _(cfcc_ਸੁਨੇਹਾ), s);					 \
     }									 \
-  else									 \
+  ਨਹੀਂਤਾਂ									 \
     {									 \
       errno = 0;							 \
-      val = (LIB_FUNC_EXPR);						 \
-      verify_numeric (s, end);						 \
+      val = (LIB_FUNC_ਵਿਅੰਜਕ);						 \
+      verify_numeric (s, ਸਿਰਾ);						 \
     }									 \
-  return val;								 \
+  ਵਾਪਸ val;								 \
 }									 \
 
-STRTOX (intmax_t,    vstrtoimax, strtoimax (s, &end, 0))
-STRTOX (uintmax_t,   vstrtoumax, strtoumax (s, &end, 0))
-STRTOX (long double, vstrtold,   cl_strtold (s, &end))
+STRTOX (intmax_t,    vstrtoimax, strtoimax (s, &ਸਿਰਾ, 0))
+STRTOX (uintmax_t,   vstrtoumax, strtoumax (s, &ਸਿਰਾ, 0))
+STRTOX (ਲੰਮਾ ਦੁੱਗਣਾ, vstrtold,   cl_strtold (s, &ਸਿਰਾ))
 
 /* Output a single-character \ escape.  */
 
-static void
-print_esc_char (char c)
+ਸਥਿਰ ਖਾਲੀ
+print_esc_char (ਅੱਖਰ c)
 {
-  switch (c)
+  ਚੋਣ (c)
     {
-    case 'a':			/* Alert. */
-      putchar ('\a');
-      break;
-    case 'b':			/* Backspace. */
-      putchar ('\b');
-      break;
-    case 'c':			/* Cancel the rest of the output. */
-      exit (EXIT_SUCCESS);
-      break;
-    case 'e':			/* Escape. */
-      putchar ('\x1B');
-      break;
-    case 'f':			/* Form feed. */
-      putchar ('\f');
-      break;
-    case 'n':			/* New line. */
-      putchar ('\n');
-      break;
-    case 'r':			/* Carriage return. */
-      putchar ('\r');
-      break;
-    case 't':			/* Horizontal tab. */
-      putchar ('\t');
-      break;
-    case 'v':			/* Vertical tab. */
-      putchar ('\v');
-      break;
-    default:
-      putchar (c);
-      break;
+    ਹਾਲਤ 'a':			/* Alert. */
+      ਅੱਖਰ_ਲਿਖੋ ('\a');
+      ਰੋਕੋ;
+    ਹਾਲਤ 'b':			/* Backspace. */
+      ਅੱਖਰ_ਲਿਖੋ ('\b');
+      ਰੋਕੋ;
+    ਹਾਲਤ 'c':			/* Cancel the rest of the output. */
+      ਬਾਹਰ_ਨਿਕਲੋ (EXIT_SUCCESS);
+      ਰੋਕੋ;
+    ਹਾਲਤ 'e':			/* Escape. */
+      ਅੱਖਰ_ਲਿਖੋ ('\x1B');
+      ਰੋਕੋ;
+    ਹਾਲਤ 'f':			/* Form feed. */
+      ਅੱਖਰ_ਲਿਖੋ ('\f');
+      ਰੋਕੋ;
+    ਹਾਲਤ 'n':			/* New line. */
+      ਅੱਖਰ_ਲਿਖੋ ('\n');
+      ਰੋਕੋ;
+    ਹਾਲਤ 'r':			/* Carriage return. */
+      ਅੱਖਰ_ਲਿਖੋ ('\r');
+      ਰੋਕੋ;
+    ਹਾਲਤ 't':			/* Horizontal tab. */
+      ਅੱਖਰ_ਲਿਖੋ ('\t');
+      ਰੋਕੋ;
+    ਹਾਲਤ 'v':			/* Vertical tab. */
+      ਅੱਖਰ_ਲਿਖੋ ('\v');
+      ਰੋਕੋ;
+    ਮੂਲ:
+      ਅੱਖਰ_ਲਿਖੋ (c);
+      ਰੋਕੋ;
     }
 }
 
@@ -239,82 +239,82 @@ print_esc_char (char c)
    If OCTAL_0 is nonzero, octal escapes are of the form \0ooo, where o
    is an octal digit; otherwise they are of the form \ooo.  */
 
-static int
-print_esc (char const *escstart, bool octal_0)
+ਸਥਿਰ ਪੂਰਨ
+print_esc (ਅੱਖਰ ਅਚਲ *escstart, bool octal_0)
 {
-  char const *p = escstart + 1;
-  int esc_value = 0;		/* Value of \nnn escape. */
-  int esc_length;		/* Length of \nnn escape. */
+  ਅੱਖਰ ਅਚਲ *p = escstart + 1;
+  ਪੂਰਨ esc_ਮੁੱਲ = 0;		/* Value of \nnn escape. */
+  ਪੂਰਨ esc_ਲੰਮਾਈ;		/* Length of \nnn escape. */
 
-  if (*p == 'x')
+  ਜੇ (*p == 'x')
     {
       /* A hexadecimal \xhh escape sequence must have 1 or 2 hex. digits.  */
-      for (esc_length = 0, ++p;
-           esc_length < 2 && c_isxdigit (*p);
-           ++esc_length, ++p)
-        esc_value = esc_value * 16 + fromhex (*p);
-      if (esc_length == 0)
+      ਲਈ (esc_ਲੰਮਾਈ = 0, ++p;
+           esc_ਲੰਮਾਈ < 2 && c_isxdigit (*p);
+           ++esc_ਲੰਮਾਈ, ++p)
+        esc_ਮੁੱਲ = esc_ਮੁੱਲ * 16 + fromhex (*p);
+      ਜੇ (esc_ਲੰਮਾਈ == 0)
         error (EXIT_FAILURE, 0, _("missing hexadecimal number in escape"));
-      putchar (esc_value);
+      ਅੱਖਰ_ਲਿਖੋ (esc_ਮੁੱਲ);
     }
-  else if (isoct (*p))
+  ਨਹੀਂਤਾਂ ਜੇ (isoct (*p))
     {
       /* Parse \0ooo (if octal_0 && *p == '0') or \ooo (otherwise).
          Allow \ooo if octal_0 && *p != '0'; this is an undocumented
          extension to POSIX that is compatible with Bash 2.05b.  */
-      for (esc_length = 0, p += octal_0 && *p == '0';
-           esc_length < 3 && isoct (*p);
-           ++esc_length, ++p)
-        esc_value = esc_value * 8 + fromoct (*p);
-      putchar (esc_value);
+      ਲਈ (esc_ਲੰਮਾਈ = 0, p += octal_0 && *p == '0';
+           esc_ਲੰਮਾਈ < 3 && isoct (*p);
+           ++esc_ਲੰਮਾਈ, ++p)
+        esc_ਮੁੱਲ = esc_ਮੁੱਲ * 8 + fromoct (*p);
+      ਅੱਖਰ_ਲਿਖੋ (esc_ਮੁੱਲ);
     }
-  else if (*p && strchr ("\"\\abcefnrtv", *p))
+  ਨਹੀਂਤਾਂ ਜੇ (*p && strchr ("\"\\abcefnrtv", *p))
     print_esc_char (*p++);
-  else if (*p == 'u' || *p == 'U')
+  ਨਹੀਂਤਾਂ ਜੇ (*p == 'u' || *p == 'U')
     {
-      char esc_char = *p;
-      unsigned int uni_value;
+      ਅੱਖਰ esc_char = *p;
+      ਬਿਨਾਨਿਸ਼ਾਨੀ ਪੂਰਨ uni_ਮੁੱਲ;
 
-      uni_value = 0;
-      for (esc_length = (esc_char == 'u' ? 4 : 8), ++p;
-           esc_length > 0;
-           --esc_length, ++p)
+      uni_ਮੁੱਲ = 0;
+      ਲਈ (esc_ਲੰਮਾਈ = (esc_char == 'u' ? 4 : 8), ++p;
+           esc_ਲੰਮਾਈ > 0;
+           --esc_ਲੰਮਾਈ, ++p)
         {
-          if (! c_isxdigit (*p))
+          ਜੇ (! c_isxdigit (*p))
             error (EXIT_FAILURE, 0, _("missing hexadecimal number in escape"));
-          uni_value = uni_value * 16 + fromhex (*p);
+          uni_ਮੁੱਲ = uni_ਮੁੱਲ * 16 + fromhex (*p);
         }
 
       /* Error for invalid code points 0000D800 through 0000DFFF inclusive.
          Note print_unicode_char() would print the literal \u.. in this case. */
-      if (uni_value >= 0xd800 && uni_value <= 0xdfff)
+      ਜੇ (uni_ਮੁੱਲ >= 0xd800 && uni_ਮੁੱਲ <= 0xdfff)
         error (EXIT_FAILURE, 0, _("invalid universal character name \\%c%0*x"),
-               esc_char, (esc_char == 'u' ? 4 : 8), uni_value);
+               esc_char, (esc_char == 'u' ? 4 : 8), uni_ਮੁੱਲ);
 
-      print_unicode_char (stdout, uni_value, 0);
+      print_unicode_char (stdout, uni_ਮੁੱਲ, 0);
     }
-  else
+  ਨਹੀਂਤਾਂ
     {
-      putchar ('\\');
-      if (*p)
+      ਅੱਖਰ_ਲਿਖੋ ('\\');
+      ਜੇ (*p)
         {
-          putchar (*p);
+          ਅੱਖਰ_ਲਿਖੋ (*p);
           p++;
         }
     }
-  return p - escstart - 1;
+  ਵਾਪਸ p - escstart - 1;
 }
 
 /* Print string STR, evaluating \ escapes. */
 
-static void
-print_esc_string (char const *str)
+ਸਥਿਰ ਖਾਲੀ
+print_esc_string (ਅੱਖਰ ਅਚਲ *str)
 {
-  for (; *str; str++)
-    if (*str == '\\')
+  ਲਈ (; *str; str++)
+    ਜੇ (*str == '\\')
       str += print_esc (str, true);
-    else
-      putchar (*str);
+    ਨਹੀਂਤਾਂ
+      ਅੱਖਰ_ਲਿਖੋ (*str);
 }
 
 /* Evaluate a printf conversion specification.  START is the start of
@@ -323,196 +323,196 @@ print_esc_string (char const *str)
    values, if HAVE_FIELD_WIDTH and HAVE_PRECISION are true, respectively.
    ARGUMENT is the argument to be formatted.  */
 
-static void
-print_direc (char const *start, char conversion,
-             bool have_field_width, int field_width,
-             bool have_precision, int precision,
-             char const *argument)
+ਸਥਿਰ ਖਾਲੀ
+print_direc (ਅੱਖਰ ਅਚਲ *ਸ਼ੁਰੂ, ਅੱਖਰ conversion,
+             bool have_ਖੇਤਰ_ਚੌੜਾਈ, ਪੂਰਨ ਖੇਤਰ_ਚੌੜਾਈ,
+             bool have_precision, ਪੂਰਨ precision,
+             ਅੱਖਰ ਅਚਲ *ਦਲੀਲ)
 {
-  char *p;		/* Null-terminated copy of % directive. */
+  ਅੱਖਰ *p;		/* Null-terminated copy of % directive. */
 
   /* Create a null-terminated copy of the % directive, with an
      intmax_t-wide length modifier substituted for any existing
      integer length modifier.  */
   {
-    char *q;
-    char const *length_modifier;
-    size_t length_modifier_len;
+    ਅੱਖਰ *q;
+    ਅੱਖਰ ਅਚਲ *ਲੰਮਾਈ_modifier;
+    size_t ਲੰਮਾਈ_modifier_len;
 
-    switch (conversion)
+    ਚੋਣ (conversion)
       {
-      case 'd': case 'i': case 'o': case 'u': case 'x': case 'X':
-        length_modifier = "j";
-        length_modifier_len = 1;
-        break;
+      ਹਾਲਤ 'd': ਹਾਲਤ 'i': ਹਾਲਤ 'o': ਹਾਲਤ 'u': ਹਾਲਤ 'x': ਹਾਲਤ 'X':
+        ਲੰਮਾਈ_modifier = "j";
+        ਲੰਮਾਈ_modifier_len = 1;
+        ਰੋਕੋ;
 
-      case 'a': case 'e': case 'f': case 'g':
-      case 'A': case 'E': case 'F': case 'G':
-        length_modifier = "L";
-        length_modifier_len = 1;
-        break;
+      ਹਾਲਤ 'a': ਹਾਲਤ 'e': ਹਾਲਤ 'f': ਹਾਲਤ 'g':
+      ਹਾਲਤ 'A': ਹਾਲਤ 'E': ਹਾਲਤ 'F': ਹਾਲਤ 'G':
+        ਲੰਮਾਈ_modifier = "L";
+        ਲੰਮਾਈ_modifier_len = 1;
+        ਰੋਕੋ;
 
-      default:
-        length_modifier = start;  /* Any valid pointer will do.  */
-        length_modifier_len = 0;
-        break;
+      ਮੂਲ:
+        ਲੰਮਾਈ_modifier = ਸ਼ੁਰੂ;  /* Any valid pointer will do.  */
+        ਲੰਮਾਈ_modifier_len = 0;
+        ਰੋਕੋ;
       }
 
-    size_t length = strlen (start);
-    p = xmalloc (length + length_modifier_len + 2);
-    q = mempcpy (p, start, length);
-    q = mempcpy (q, length_modifier, length_modifier_len);
+    size_t ਲੰਮਾਈ = ਲੜੀ_ਲੰਬਾਈ (ਸ਼ੁਰੂ);
+    p = xmalloc (ਲੰਮਾਈ + ਲੰਮਾਈ_modifier_len + 2);
+    q = mempcpy (p, ਸ਼ੁਰੂ, ਲੰਮਾਈ);
+    q = mempcpy (q, ਲੰਮਾਈ_modifier, ਲੰਮਾਈ_modifier_len);
     *q++ = conversion;
     *q = '\0';
   }
 
-  switch (conversion)
+  ਚੋਣ (conversion)
     {
-    case 'd':
-    case 'i':
+    ਹਾਲਤ 'd':
+    ਹਾਲਤ 'i':
       {
-        intmax_t arg = argument ? vstrtoimax (argument) : 0;
-        if (!have_field_width)
+        intmax_t arg = ਦਲੀਲ ? vstrtoimax (ਦਲੀਲ) : 0;
+        ਜੇ (!have_ਖੇਤਰ_ਚੌੜਾਈ)
           {
-            if (!have_precision)
+            ਜੇ (!have_precision)
               xprintf (p, arg);
-            else
+            ਨਹੀਂਤਾਂ
               xprintf (p, precision, arg);
           }
-        else
+        ਨਹੀਂਤਾਂ
           {
-            if (!have_precision)
-              xprintf (p, field_width, arg);
-            else
-              xprintf (p, field_width, precision, arg);
+            ਜੇ (!have_precision)
+              xprintf (p, ਖੇਤਰ_ਚੌੜਾਈ, arg);
+            ਨਹੀਂਤਾਂ
+              xprintf (p, ਖੇਤਰ_ਚੌੜਾਈ, precision, arg);
           }
       }
-      break;
+      ਰੋਕੋ;
 
-    case 'o':
-    case 'u':
-    case 'x':
-    case 'X':
+    ਹਾਲਤ 'o':
+    ਹਾਲਤ 'u':
+    ਹਾਲਤ 'x':
+    ਹਾਲਤ 'X':
       {
-        uintmax_t arg = argument ? vstrtoumax (argument) : 0;
-        if (!have_field_width)
+        uintmax_t arg = ਦਲੀਲ ? vstrtoumax (ਦਲੀਲ) : 0;
+        ਜੇ (!have_ਖੇਤਰ_ਚੌੜਾਈ)
           {
-            if (!have_precision)
+            ਜੇ (!have_precision)
               xprintf (p, arg);
-            else
+            ਨਹੀਂਤਾਂ
               xprintf (p, precision, arg);
           }
-        else
+        ਨਹੀਂਤਾਂ
           {
-            if (!have_precision)
-              xprintf (p, field_width, arg);
-            else
-              xprintf (p, field_width, precision, arg);
+            ਜੇ (!have_precision)
+              xprintf (p, ਖੇਤਰ_ਚੌੜਾਈ, arg);
+            ਨਹੀਂਤਾਂ
+              xprintf (p, ਖੇਤਰ_ਚੌੜਾਈ, precision, arg);
           }
       }
-      break;
+      ਰੋਕੋ;
 
-    case 'a':
-    case 'A':
-    case 'e':
-    case 'E':
-    case 'f':
-    case 'F':
-    case 'g':
-    case 'G':
+    ਹਾਲਤ 'a':
+    ਹਾਲਤ 'A':
+    ਹਾਲਤ 'e':
+    ਹਾਲਤ 'E':
+    ਹਾਲਤ 'f':
+    ਹਾਲਤ 'F':
+    ਹਾਲਤ 'g':
+    ਹਾਲਤ 'G':
       {
-        long double arg = argument ? vstrtold (argument) : 0;
-        if (!have_field_width)
+        ਲੰਮਾ ਦੁੱਗਣਾ arg = ਦਲੀਲ ? vstrtold (ਦਲੀਲ) : 0;
+        ਜੇ (!have_ਖੇਤਰ_ਚੌੜਾਈ)
           {
-            if (!have_precision)
+            ਜੇ (!have_precision)
               xprintf (p, arg);
-            else
+            ਨਹੀਂਤਾਂ
               xprintf (p, precision, arg);
           }
-        else
+        ਨਹੀਂਤਾਂ
           {
-            if (!have_precision)
-              xprintf (p, field_width, arg);
-            else
-              xprintf (p, field_width, precision, arg);
+            ਜੇ (!have_precision)
+              xprintf (p, ਖੇਤਰ_ਚੌੜਾਈ, arg);
+            ਨਹੀਂਤਾਂ
+              xprintf (p, ਖੇਤਰ_ਚੌੜਾਈ, precision, arg);
           }
       }
-      break;
+      ਰੋਕੋ;
 
-    case 'c':
+    ਹਾਲਤ 'c':
       {
-        char c = argument ? *argument : '\0';
-        if (!have_field_width)
+        ਅੱਖਰ c = ਦਲੀਲ ? *ਦਲੀਲ : '\0';
+        ਜੇ (!have_ਖੇਤਰ_ਚੌੜਾਈ)
           xprintf (p, c);
-        else
-          xprintf (p, field_width, c);
+        ਨਹੀਂਤਾਂ
+          xprintf (p, ਖੇਤਰ_ਚੌੜਾਈ, c);
       }
-      break;
+      ਰੋਕੋ;
 
-    case 's':
-      if (!argument)
-        argument = "";
-      if (!have_field_width)
+    ਹਾਲਤ 's':
+      ਜੇ (!ਦਲੀਲ)
+        ਦਲੀਲ = "";
+      ਜੇ (!have_ਖੇਤਰ_ਚੌੜਾਈ)
         {
-          if (!have_precision)
-            xprintf (p, argument);
-          else
-            xprintf (p, precision, argument);
+          ਜੇ (!have_precision)
+            xprintf (p, ਦਲੀਲ);
+          ਨਹੀਂਤਾਂ
+            xprintf (p, precision, ਦਲੀਲ);
         }
-      else
+      ਨਹੀਂਤਾਂ
         {
-          if (!have_precision)
-            xprintf (p, field_width, argument);
-          else
-            xprintf (p, field_width, precision, argument);
+          ਜੇ (!have_precision)
+            xprintf (p, ਖੇਤਰ_ਚੌੜਾਈ, ਦਲੀਲ);
+          ਨਹੀਂਤਾਂ
+            xprintf (p, ਖੇਤਰ_ਚੌੜਾਈ, precision, ਦਲੀਲ);
         }
-      break;
+      ਰੋਕੋ;
     }
 
-  free (p);
+  ਮੁਕਤ (p);
 }
 
 /* Set curr_arg from indexed %i$ or otherwise next in sequence.
    POS can be 0,1,2,3 corresponding to
    [%][width][.precision][conversion] respectively.  */
 
-struct arg_cursor
+ਬਣਤਰ arg_cursor
 {
-  char const *f;	/* Pointer into 'format'.  */
-  int curr_arg;		/* Current offset.  */
-  int curr_s_arg;	/* Current sequential offset.  */
-  int end_arg;		/* End arg processed.  */
-  int direc_arg;	/* Arg for main directive.  */
+  ਅੱਖਰ ਅਚਲ *f;	/* Pointer into 'format'.  */
+  ਪੂਰਨ curr_arg;		/* Current offset.  */
+  ਪੂਰਨ curr_s_arg;	/* Current sequential offset.  */
+  ਪੂਰਨ ਸਿਰਾ_arg;		/* End arg processed.  */
+  ਪੂਰਨ direc_arg;	/* Arg for main directive.  */
 };
-ATTRIBUTE_PURE static struct arg_cursor
-get_curr_arg (int pos, struct arg_cursor ac)
+ATTRIBUTE_ਸ਼ੁੱਧ ਸਥਿਰ ਬਣਤਰ arg_cursor
+get_curr_arg (ਪੂਰਨ pos, ਬਣਤਰ arg_cursor ac)
 {
   /* Convert sequences like "123$" by hand to avoid problems with strtol,
      which might treat "$" as part of the number in some locales.  */
-  int arg = 0;
-  char const *f = ac.f;
-  if (pos < 3 && c_isdigit (*f))
+  ਪੂਰਨ arg = 0;
+  ਅੱਖਰ ਅਚਲ *f = ac.f;
+  ਜੇ (pos < 3 && c_isdigit (*f))
     {
       bool v = false;
-      int a = *f++ - '0';
-      for (; c_isdigit (*f); f++)
+      ਪੂਰਨ a = *f++ - '0';
+      ਲਈ (; c_isdigit (*f); f++)
         {
           v |= ckd_mul (&a, a, 10);
-          v |= ckd_add (&a, a, *f - '0');
+          v |= ckd_ਜੋੜੋ (&a, a, *f - '0');
         }
-      if (*f == '$')
-        arg = v ? INT_MAX : a;
+      ਜੇ (*f == '$')
+        arg = v ? ਵੱਧ_ਤੋਂ_ਵੱਧ_ਅੰਕ : a;
     }
 
-  if (0 < arg)
+  ਜੇ (0 < arg)
     {
       /* Process indexed %i$ format.  */
       arg--;
       ac.f = f + 1;
-      if (pos == 0)
+      ਜੇ (pos == 0)
         ac.direc_arg = arg;
     }
-  else
+  ਨਹੀਂਤਾਂ
     {
       /* Process sequential arg.  */
       arg = (pos == 0 ? (ac.direc_arg = -1)
@@ -520,237 +520,237 @@ get_curr_arg (int pos, struct arg_cursor ac)
              : ac.direc_arg);
     }
 
-  if (0 <= arg)
+  ਜੇ (0 <= arg)
     {
       ac.curr_arg = arg;
-      ac.end_arg = MAX (ac.end_arg, arg);
+      ac.ਸਿਰਾ_arg = MAX (ac.ਸਿਰਾ_arg, arg);
     }
-  return ac;
+  ਵਾਪਸ ac;
 }
 
 /* Print the text in FORMAT, using ARGV (with ARGC elements) for
    arguments to any '%' directives.
    Return the number of elements of ARGV used.  */
 
-static int
-print_formatted (char const *format, int argc, char **argv)
+ਸਥਿਰ ਪੂਰਨ
+print_formatted (ਅੱਖਰ ਅਚਲ *format, ਪੂਰਨ argc, ਅੱਖਰ **argv)
 {
-  struct arg_cursor ac;
-  ac.curr_arg = ac.curr_s_arg = ac.end_arg = ac.direc_arg = -1;
-  char const *direc_start;	/* Start of % directive.  */
-  char *direc;			/* Generated % directive.  */
-  char *pdirec;			/* Pointer to current end of directive.  */
-  bool have_field_width;	/* True if FIELD_WIDTH is valid.  */
-  int field_width = 0;		/* Arg to first '*'.  */
+  ਬਣਤਰ arg_cursor ac;
+  ac.curr_arg = ac.curr_s_arg = ac.ਸਿਰਾ_arg = ac.direc_arg = -1;
+  ਅੱਖਰ ਅਚਲ *direc_ਸ਼ੁਰੂ;	/* Start of % directive.  */
+  ਅੱਖਰ *direc;			/* Generated % directive.  */
+  ਅੱਖਰ *pdirec;			/* Pointer to current end of directive.  */
+  bool have_ਖੇਤਰ_ਚੌੜਾਈ;	/* True if FIELD_WIDTH is valid.  */
+  ਪੂਰਨ ਖੇਤਰ_ਚੌੜਾਈ = 0;		/* Arg to first '*'.  */
   bool have_precision;		/* True if PRECISION is valid.  */
-  int precision = 0;		/* Arg to second '*'.  */
-  char ok[UCHAR_MAX + 1];	/* ok['x'] is true if %x is allowed.  */
+  ਪੂਰਨ precision = 0;		/* Arg to second '*'.  */
+  ਅੱਖਰ ok[UCHAR_MAX + 1];	/* ok['x'] is true if %x is allowed.  */
 
-  direc = xmalloc (strlen (format) + 1);
+  direc = xmalloc (ਲੜੀ_ਲੰਬਾਈ (format) + 1);
 
-  for (ac.f = format; *ac.f; ac.f++)
+  ਲਈ (ac.f = format; *ac.f; ac.f++)
     {
-      switch (*ac.f)
+      ਚੋਣ (*ac.f)
         {
-        case '%':
-          direc_start = ac.f;
+        ਹਾਲਤ '%':
+          direc_ਸ਼ੁਰੂ = ac.f;
           pdirec = direc;
           *pdirec++ = *ac.f++;
-          have_field_width = have_precision = false;
-          if (*ac.f == '%')
+          have_ਖੇਤਰ_ਚੌੜਾਈ = have_precision = false;
+          ਜੇ (*ac.f == '%')
             {
-              putchar ('%');
-              break;
+              ਅੱਖਰ_ਲਿਖੋ ('%');
+              ਰੋਕੋ;
             }
 
           ac = get_curr_arg (0, ac);
 
-          if (*ac.f == 'b')
+          ਜੇ (*ac.f == 'b')
             {
               /* FIXME: Field width and precision are not supported
                  for %b, even though POSIX requires it.  */
               ac = get_curr_arg (3, ac);
-              if (ac.curr_arg < argc)
+              ਜੇ (ac.curr_arg < argc)
                 print_esc_string (argv[ac.curr_arg]);
-              break;
+              ਰੋਕੋ;
             }
 
-          if (*ac.f == 'q')
+          ਜੇ (*ac.f == 'q')
             {
               ac = get_curr_arg (3, ac);
-              if (ac.curr_arg < argc)
+              ਜੇ (ac.curr_arg < argc)
                 {
                   fputs (quotearg_style (shell_escape_quoting_style,
                                          argv[ac.curr_arg]), stdout);
                 }
-              break;
+              ਰੋਕੋ;
             }
 
-          memset (ok, 0, sizeof ok);
+          memset (ok, 0, ਆਕਾਰ ok);
           ok['a'] = ok['A'] = ok['c'] = ok['d'] = ok['e'] = ok['E'] =
             ok['f'] = ok['F'] = ok['g'] = ok['G'] = ok['i'] = ok['o'] =
             ok['s'] = ok['u'] = ok['x'] = ok['X'] = 1;
 
-          for (;; ac.f++)
+          ਲਈ (;; ac.f++)
             {
-              switch (*ac.f)
+              ਚੋਣ (*ac.f)
                 {
-#if (__GLIBC__ == 2 && 2 <= __GLIBC_MINOR__) || 3 <= __GLIBC__
-                case 'I':
-#endif
-                case '\'':
+#ਜੇ (__GLIBC__ == 2 && 2 <= __GLIBC_MINOR__) || 3 <= __GLIBC__
+                ਹਾਲਤ 'I':
+#ਜੇ_ਅੰਤ
+                ਹਾਲਤ '\'':
                   ok['a'] = ok['A'] = ok['c'] = ok['e'] = ok['E'] =
                     ok['o'] = ok['s'] = ok['x'] = ok['X'] = 0;
-                  break;
-                case '-': case '+': case ' ':
-                  break;
-                case '#':
+                  ਰੋਕੋ;
+                ਹਾਲਤ '-': ਹਾਲਤ '+': ਹਾਲਤ ' ':
+                  ਰੋਕੋ;
+                ਹਾਲਤ '#':
                   ok['c'] = ok['d'] = ok['i'] = ok['s'] = ok['u'] = 0;
-                  break;
-                case '0':
+                  ਰੋਕੋ;
+                ਹਾਲਤ '0':
                   ok['c'] = ok['s'] = 0;
-                  break;
-                default:
-                  goto no_more_flag_characters;
+                  ਰੋਕੋ;
+                ਮੂਲ:
+                  ਜਾਓ no_ਹੋਰ_flag_characters;
                 }
               *pdirec++ = *ac.f;
             }
-        no_more_flag_characters:
+        no_ਹੋਰ_flag_characters:
 
-          if (*ac.f == '*')
+          ਜੇ (*ac.f == '*')
             {
               *pdirec++ = *ac.f++;
 
               ac = get_curr_arg (1, ac);
 
-              if (ac.curr_arg < argc)
+              ਜੇ (ac.curr_arg < argc)
                 {
-                  intmax_t width = vstrtoimax (argv[ac.curr_arg]);
-                  if (INT_MIN <= width && width <= INT_MAX)
-                    field_width = width;
-                  else
+                  intmax_t ਚੌੜਾਈ = vstrtoimax (argv[ac.curr_arg]);
+                  ਜੇ (INT_MIN <= ਚੌੜਾਈ && ਚੌੜਾਈ <= ਵੱਧ_ਤੋਂ_ਵੱਧ_ਅੰਕ)
+                    ਖੇਤਰ_ਚੌੜਾਈ = ਚੌੜਾਈ;
+                  ਨਹੀਂਤਾਂ
                     error (EXIT_FAILURE, 0, _("invalid field width: %s"),
                            quote (argv[ac.curr_arg]));
                 }
-              else
-                field_width = 0;
-              have_field_width = true;
+              ਨਹੀਂਤਾਂ
+                ਖੇਤਰ_ਚੌੜਾਈ = 0;
+              have_ਖੇਤਰ_ਚੌੜਾਈ = true;
             }
-          else
-            while (c_isdigit (*ac.f))
+          ਨਹੀਂਤਾਂ
+            ਜਦੋਂ (c_isdigit (*ac.f))
               *pdirec++ = *ac.f++;
-          if (*ac.f == '.')
+          ਜੇ (*ac.f == '.')
             {
               *pdirec++ = *ac.f++;
               ok['c'] = 0;
-              if (*ac.f == '*')
+              ਜੇ (*ac.f == '*')
                 {
                   *pdirec++ = *ac.f++;
 
                   ac = get_curr_arg (2, ac);
 
-                  if (ac.curr_arg < argc)
+                  ਜੇ (ac.curr_arg < argc)
                     {
                       intmax_t prec = vstrtoimax (argv[ac.curr_arg]);
-                      if (prec < 0)
+                      ਜੇ (prec < 0)
                         {
                           /* A negative precision is taken as if the
                              precision were omitted, so -1 is safe
                              here even if prec < INT_MIN.  */
                           precision = -1;
                         }
-                      else if (INT_MAX < prec)
+                      ਨਹੀਂਤਾਂ ਜੇ (ਵੱਧ_ਤੋਂ_ਵੱਧ_ਅੰਕ < prec)
                         error (EXIT_FAILURE, 0, _("invalid precision: %s"),
                                quote (argv[ac.curr_arg]));
-                      else
+                      ਨਹੀਂਤਾਂ
                         precision = prec;
                     }
-                  else
+                  ਨਹੀਂਤਾਂ
                     precision = 0;
                   have_precision = true;
                 }
-              else
-                while (c_isdigit (*ac.f))
+              ਨਹੀਂਤਾਂ
+                ਜਦੋਂ (c_isdigit (*ac.f))
                   *pdirec++ = *ac.f++;
             }
 
           *pdirec++ = '\0';
 
-          while (*ac.f == 'l' || *ac.f == 'L' || *ac.f == 'h'
+          ਜਦੋਂ (*ac.f == 'l' || *ac.f == 'L' || *ac.f == 'h'
                  || *ac.f == 'j' || *ac.f == 't' || *ac.f == 'z')
             ++ac.f;
 
           {
-            unsigned char conversion = *ac.f;
-            int speclen = MIN (ac.f + 1 - direc_start, INT_MAX);
-            if (! ok[conversion])
+            ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ conversion = *ac.f;
+            ਪੂਰਨ speclen = MIN (ac.f + 1 - direc_ਸ਼ੁਰੂ, ਵੱਧ_ਤੋਂ_ਵੱਧ_ਅੰਕ);
+            ਜੇ (! ok[conversion])
               error (EXIT_FAILURE, 0,
                      _("%.*s: invalid conversion specification"),
-                     speclen, direc_start);
+                     speclen, direc_ਸ਼ੁਰੂ);
           }
 
           ac = get_curr_arg (3, ac);
 
           print_direc (direc, *ac.f,
-                       have_field_width, field_width,
+                       have_ਖੇਤਰ_ਚੌੜਾਈ, ਖੇਤਰ_ਚੌੜਾਈ,
                        have_precision, precision,
-                       ac.curr_arg < argc ? argv[ac.curr_arg] : NULL);
+                       ac.curr_arg < argc ? argv[ac.curr_arg] : ਨਿਰਾ);
 
-          break;
+          ਰੋਕੋ;
 
-        case '\\':
+        ਹਾਲਤ '\\':
           ac.f += print_esc (ac.f, false);
-          break;
+          ਰੋਕੋ;
 
-        default:
-          putchar (*ac.f);
+        ਮੂਲ:
+          ਅੱਖਰ_ਲਿਖੋ (*ac.f);
         }
     }
 
-  free (direc);
-  return MIN (argc, ac.end_arg + 1);
+  ਮੁਕਤ (direc);
+  ਵਾਪਸ MIN (argc, ac.ਸਿਰਾ_arg + 1);
 }
 
-int
-main (int argc, char **argv)
+ਪੂਰਨ
+ਮੁੱਖ (ਪੂਰਨ argc, ਅੱਖਰ **argv)
 {
-  char *format;
-  int args_used;
+  ਅੱਖਰ *format;
+  ਪੂਰਨ ਦਲੀਲਾਂ_ਵਰਤਿਆ;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  ਸੈੱਟ_ਪ੍ਰੋਗਰਾਮ_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  posixly_correct = (getenv ("POSIXLY_CORRECT") != NULL);
+  posixly_correct = (getenv ("POSIXLY_CORRECT") != ਨਿਰਾ);
 
   /* We directly parse options, rather than use parse_long_options, in
      order to avoid accepting abbreviations.  */
-  if (argc == 2)
+  ਜੇ (argc == 2)
     {
-      if (streq (argv[1], "--help"))
+      ਜੇ (streq (argv[1], "--help"))
         usage (EXIT_SUCCESS);
 
-      if (streq (argv[1], "--version"))
+      ਜੇ (streq (argv[1], "--version"))
         {
-          version_etc (stdout, PROGRAM_NAME, PACKAGE_NAME, Version, AUTHORS,
-                       (char *) NULL);
-          return EXIT_SUCCESS;
+          ਸੰਸਕਰਣ_etc (stdout, ਪ੍ਰੋਗਰਾਮ_NAME, PACKAGE_NAME, ਸੰਸਕਰਣ, AUTHORS,
+                       (ਅੱਖਰ *) ਨਿਰਾ);
+          ਵਾਪਸ EXIT_SUCCESS;
         }
     }
 
   /* The above handles --help and --version.
      Since there is no other invocation of getopt, handle '--' here.  */
-  if (1 < argc && streq (argv[1], "--"))
+  ਜੇ (1 < argc && streq (argv[1], "--"))
     {
       --argc;
       ++argv;
     }
 
-  if (argc <= 1)
+  ਜੇ (argc <= 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
@@ -760,18 +760,18 @@ main (int argc, char **argv)
   argc -= 2;
   argv += 2;
 
-  do
+  ਕਰੋ
     {
-      args_used = print_formatted (format, argc, argv);
-      argc -= args_used;
-      argv += args_used;
+      ਦਲੀਲਾਂ_ਵਰਤਿਆ = print_formatted (format, argc, argv);
+      argc -= ਦਲੀਲਾਂ_ਵਰਤਿਆ;
+      argv += ਦਲੀਲਾਂ_ਵਰਤਿਆ;
     }
-  while (args_used > 0 && argc > 0);
+  ਜਦੋਂ (ਦਲੀਲਾਂ_ਵਰਤਿਆ > 0 && argc > 0);
 
-  if (argc > 0)
+  ਜੇ (argc > 0)
     error (0, 0,
            _("warning: ignoring excess arguments, starting with %s"),
            quote (argv[0]));
 
-  return exit_status;
+  ਵਾਪਸ exit_ਸਥਿਤੀ;
 }

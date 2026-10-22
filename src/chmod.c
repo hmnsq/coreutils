@@ -16,32 +16,32 @@
 
 /* Written by David MacKenzie <djm@gnu.ai.mit.edu> */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <config.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <stdio.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <getopt.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <sys/types.h>
 
-#include "system.h"
-#include "assure.h"
-#include "dev-ino.h"
-#include "filemode.h"
-#include "fts-missing.h"
-#include "ignore-value.h"
-#include "modechange.h"
-#include "quote.h"
-#include "root-dev-ino.h"
-#include "xfts.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "system.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "assure.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "dev-ino.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "filemode.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "fts-missing.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "ignore-value.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "modechange.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "quote.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "root-dev-ino.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "xfts.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "chmod"
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ ਪ੍ਰੋਗਰਾਮ_NAME "chmod"
 
-#define AUTHORS \
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ AUTHORS \
   proper_name ("David MacKenzie"), \
   proper_name ("Jim Meyering")
 
-struct change_status
+ਬਣਤਰ change_ਸਥਿਤੀ
 {
-  enum
+  ਗਿਣਤੀ
     {
       CH_NO_STAT,
       CH_FAILED,
@@ -49,15 +49,15 @@ struct change_status
       CH_NO_CHANGE_REQUESTED,
       CH_SUCCEEDED
     }
-    status;
-  mode_t old_mode;
-  mode_t new_mode;
+    ਸਥਿਤੀ;
+  mode_t old_ਬਹੁਲਕ;
+  mode_t new_ਬਹੁਲਕ;
 };
 
-enum Verbosity
+ਗਿਣਤੀ Verbosity
 {
   /* Print a message for each file that is processed.  */
-  V_high,
+  V_ਉੱਚਾ,
 
   /* Print a message for each file whose attributes we change.  */
   V_changes_only,
@@ -67,170 +67,170 @@ enum Verbosity
 };
 
 /* The desired change to the mode.  */
-static struct mode_change *change;
+ਸਥਿਰ ਬਣਤਰ ਬਹੁਲਕ_change *change;
 
 /* The initial umask value, if it might be needed.  */
-static mode_t umask_value;
+ਸਥਿਰ mode_t umask_ਮੁੱਲ;
 
 /* If true, change the modes of directories recursively. */
-static bool recurse;
+ਸਥਿਰ bool recurse;
 
 /* 1 if --dereference, 0 if --no-dereference, -1 if neither has been
    specified.  */
-static int dereference = -1;
+ਸਥਿਰ ਪੂਰਨ dereference = -1;
 
 /* If true, force silence (suppress most of error messages). */
-static bool force_silent;
+ਸਥਿਰ bool force_silent;
 
 /* If true, diagnose surprises from naive misuses like "chmod -r file".
    POSIX allows diagnostics here, as portable code is supposed to use
    "chmod -- -r file".  */
-static bool diagnose_surprises;
+ਸਥਿਰ bool diagnose_surprises;
 
 /* Level of verbosity.  */
-static enum Verbosity verbosity = V_off;
+ਸਥਿਰ ਗਿਣਤੀ Verbosity verbosity = V_off;
 
 /* Pointer to the device and inode numbers of '/', when --recursive.
    Otherwise NULL.  */
-static struct dev_ino *root_dev_ino;
+ਸਥਿਰ ਬਣਤਰ dev_ino *ਜੜ੍ਹ_dev_ino;
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+ਗਿਣਤੀ
 {
   DEREFERENCE_OPTION = CHAR_MAX + 1,
-  NO_PRESERVE_ROOT,
-  PRESERVE_ROOT,
+  NO_PRESERVE_ਜੜ੍ਹ,
+  PRESERVE_ਜੜ੍ਹ,
   REFERENCE_FILE_OPTION
 };
 
-static struct option const long_options[] =
+ਸਥਿਰ ਬਣਤਰ option ਅਚਲ long_options[] =
 {
-  {"changes", no_argument, NULL, 'c'},
-  {"dereference", no_argument, NULL, DEREFERENCE_OPTION},
-  {"recursive", no_argument, NULL, 'R'},
-  {"no-dereference", no_argument, NULL, 'h'},
-  {"no-preserve-root", no_argument, NULL, NO_PRESERVE_ROOT},
-  {"preserve-root", no_argument, NULL, PRESERVE_ROOT},
-  {"quiet", no_argument, NULL, 'f'},
-  {"reference", required_argument, NULL, REFERENCE_FILE_OPTION},
-  {"silent", no_argument, NULL, 'f'},
-  {"verbose", no_argument, NULL, 'v'},
+  {"changes", no_ਦਲੀਲ, ਨਿਰਾ, 'c'},
+  {"dereference", no_ਦਲੀਲ, ਨਿਰਾ, DEREFERENCE_OPTION},
+  {"recursive", no_ਦਲੀਲ, ਨਿਰਾ, 'R'},
+  {"no-dereference", no_ਦਲੀਲ, ਨਿਰਾ, 'h'},
+  {"no-preserve-root", no_ਦਲੀਲ, ਨਿਰਾ, NO_PRESERVE_ਜੜ੍ਹ},
+  {"preserve-root", no_ਦਲੀਲ, ਨਿਰਾ, PRESERVE_ਜੜ੍ਹ},
+  {"quiet", no_ਦਲੀਲ, ਨਿਰਾ, 'f'},
+  {"reference", required_ਦਲੀਲ, ਨਿਰਾ, REFERENCE_FILE_OPTION},
+  {"silent", no_ਦਲੀਲ, ਨਿਰਾ, 'f'},
+  {"verbose", no_ਦਲੀਲ, ਨਿਰਾ, 'v'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_ਸੰਸਕਰਣ_OPTION_DECL},
+  {ਨਿਰਾ, 0, ਨਿਰਾ, 0}
 };
 
 /* Return true if the chmodable permission bits of FILE changed.
    The old mode was OLD_MODE, but it was changed to NEW_MODE.  */
 
-static bool
-mode_changed (int dir_fd, char const *file, char const *file_full_name,
-              mode_t old_mode, mode_t new_mode, bool ignore_missing,
+ਸਥਿਰ bool
+ਬਹੁਲਕ_ਬਦਲਿਆ (ਪੂਰਨ dir_fd, ਅੱਖਰ ਅਚਲ *file, ਅੱਖਰ ਅਚਲ *file_ਭਰਿਆ_name,
+              mode_t old_ਬਹੁਲਕ, mode_t new_ਬਹੁਲਕ, bool ignore_missing,
               bool *file_missing)
 {
   *file_missing = false;
-  if (new_mode & (S_ISUID | S_ISGID | S_ISVTX))
+  ਜੇ (new_ਬਹੁਲਕ & (S_ISUID | S_ISGID | S_ISVTX))
     {
       /* The new mode contains unusual bits that the call to chmod may
          have silently cleared.  Check whether they actually changed.  */
 
-      struct stat new_stats;
+      ਬਣਤਰ stat new_stats;
 
-      if (fstatat (dir_fd, file, &new_stats, 0) != 0)
+      ਜੇ (fstatat (dir_fd, file, &new_stats, 0) != 0)
         {
           *file_missing = (ignore_missing
                            && ignorable_traversal_errno (errno));
-          if (! *file_missing && ! force_silent)
+          ਜੇ (! *file_missing && ! force_silent)
             error (0, errno, _("getting new attributes of %s"),
-                   quoteaf (file_full_name));
-          return false;
+                   quoteaf (file_ਭਰਿਆ_name));
+          ਵਾਪਸ false;
         }
 
-      new_mode = new_stats.st_mode;
+      new_ਬਹੁਲਕ = new_stats.st_ਬਹੁਲਕ;
     }
 
-  return ((old_mode ^ new_mode) & CHMOD_MODE_BITS) != 0;
+  ਵਾਪਸ ((old_ਬਹੁਲਕ ^ new_ਬਹੁਲਕ) & CHMOD_ਬਹੁਲਕ_ਬਿੱਟ) != 0;
 }
 
 /* Tell the user how/if the MODE of FILE has been changed.
    CH describes what (if anything) has happened. */
 
-static void
-describe_change (char const *file, struct change_status const *ch)
+ਸਥਿਰ ਖਾਲੀ
+describe_change (ਅੱਖਰ ਅਚਲ *file, ਬਣਤਰ change_ਸਥਿਤੀ ਅਚਲ *ch)
 {
-  char perms[12];		/* "-rwxrwxrwx" ls-style modes. */
-  char old_perms[12];
-  char const *fmt;
-  char const *quoted_file = quoteaf (file);
+  ਅੱਖਰ perms[12];		/* "-rwxrwxrwx" ls-style modes. */
+  ਅੱਖਰ old_perms[12];
+  ਅੱਖਰ ਅਚਲ *fmt;
+  ਅੱਖਰ ਅਚਲ *quoted_file = quoteaf (file);
 
-  switch (ch->status)
+  ਚੋਣ (ch->ਸਥਿਤੀ)
     {
-    case CH_NOT_APPLIED:
-      printf (_("neither symbolic link %s nor referent has been changed\n"),
+    ਹਾਲਤ CH_NOT_APPLIED:
+      ਲਿਖੋ (_("neither symbolic link %s nor referent has been changed\n"),
               quoted_file);
-      return;
+      ਵਾਪਸ;
 
-    case CH_NO_STAT:
-      printf (_("%s could not be accessed\n"), quoted_file);
-      return;
+    ਹਾਲਤ CH_NO_STAT:
+      ਲਿਖੋ (_("%s could not be accessed\n"), quoted_file);
+      ਵਾਪਸ;
 
-    case CH_FAILED: case CH_NO_CHANGE_REQUESTED: case CH_SUCCEEDED:
-      break;
+    ਹਾਲਤ CH_FAILED: ਹਾਲਤ CH_NO_CHANGE_REQUESTED: ਹਾਲਤ CH_SUCCEEDED:
+      ਰੋਕੋ;
   }
 
-  unsigned long int
-    old_m = ch->old_mode & CHMOD_MODE_BITS,
-    m = ch->new_mode & CHMOD_MODE_BITS;
+  ਬਿਨਾਨਿਸ਼ਾਨੀ ਲੰਮਾ ਪੂਰਨ
+    old_m = ch->old_ਬਹੁਲਕ & CHMOD_ਬਹੁਲਕ_ਬਿੱਟ,
+    m = ch->new_ਬਹੁਲਕ & CHMOD_ਬਹੁਲਕ_ਬਿੱਟ;
 
-  strmode (ch->new_mode, perms);
+  strmode (ch->new_ਬਹੁਲਕ, perms);
   perms[10] = '\0';		/* Remove trailing space.  */
 
-  strmode (ch->old_mode, old_perms);
+  strmode (ch->old_ਬਹੁਲਕ, old_perms);
   old_perms[10] = '\0';		/* Remove trailing space.  */
 
-  switch (ch->status)
+  ਚੋਣ (ch->ਸਥਿਤੀ)
     {
-    case CH_SUCCEEDED:
+    ਹਾਲਤ CH_SUCCEEDED:
       fmt = _("mode of %s changed from %04lo (%s) to %04lo (%s)\n");
-      break;
-    case CH_FAILED:
+      ਰੋਕੋ;
+    ਹਾਲਤ CH_FAILED:
       fmt = _("failed to change mode of %s from %04lo (%s) to %04lo (%s)\n");
-      break;
-    case CH_NO_CHANGE_REQUESTED:
+      ਰੋਕੋ;
+    ਹਾਲਤ CH_NO_CHANGE_REQUESTED:
       fmt = _("mode of %s retained as %04lo (%s)\n");
-      printf (fmt, quoted_file, m, &perms[1]);
-      return;
-    case CH_NO_STAT: case CH_NOT_APPLIED: default:
+      ਲਿਖੋ (fmt, quoted_file, m, &perms[1]);
+      ਵਾਪਸ;
+    ਹਾਲਤ CH_NO_STAT: ਹਾਲਤ CH_NOT_APPLIED: ਮੂਲ:
       affirm (false);
     }
-  printf (fmt, quoted_file, old_m, &old_perms[1], m, &perms[1]);
+  ਲਿਖੋ (fmt, quoted_file, old_m, &old_perms[1], m, &perms[1]);
 }
 
 /* Change the mode of FILE.
    Return true if successful.  This function is called
    once for every file system object that fts encounters.  */
 
-static bool
+ਸਥਿਰ bool
 process_file (FTS *fts, FTSENT *ent)
 {
-  char const *file_full_name = ent->fts_path;
-  char const *file = ent->fts_accpath;
-  const struct stat *file_stats = ent->fts_statp;
-  struct change_status ch = {0};
-  ch.status = CH_NO_STAT;
-  struct stat stat_buf;
-  bool ignore_missing = ignore_missing_fts_entry (ent);
+  ਅੱਖਰ ਅਚਲ *file_ਭਰਿਆ_name = ent->fts_ਰਸਤਾ;
+  ਅੱਖਰ ਅਚਲ *file = ent->fts_accpath;
+  ਅਚਲ ਬਣਤਰ stat *file_stats = ent->fts_statp;
+  ਬਣਤਰ change_ਸਥਿਤੀ ch = {0};
+  ch.ਸਥਿਤੀ = CH_NO_STAT;
+  ਬਣਤਰ stat stat_buf;
+  bool ignore_missing = ignore_missing_fts_ਇੰਦਰਾਜ (ent);
 
-  if (ignore_missing && ignorable_fts_error (ent))
-    return true;
+  ਜੇ (ignore_missing && ignorable_fts_error (ent))
+    ਵਾਪਸ true;
 
-  switch (ent->fts_info)
+  ਚੋਣ (ent->fts_info)
     {
-    case FTS_DP:
-      return true;
+    ਹਾਲਤ FTS_DP:
+      ਵਾਪਸ true;
 
-    case FTS_NS:
+    ਹਾਲਤ FTS_NS:
       /* For a top-level file or directory, this FTS_NS (stat failed)
          indicator is determined at the time of the initial fts_open call.
          With programs like chmod, chown, and chgrp, that modify
@@ -238,208 +238,208 @@ process_file (FTS *fts, FTSENT *ent)
          accessible when control reaches this point.  So, if this is
          the first time we've seen the FTS_NS for this file, tell
          fts_read to stat it "again".  */
-      if (ent->fts_level == FTS_ROOTLEVEL && ent->fts_number == 0)
+      ਜੇ (ent->fts_level == FTS_ROOTLEVEL && ent->fts_ਸੰਖਿਆ == 0)
         {
-          ent->fts_number = 1;
-          fts_set (fts, ent, FTS_AGAIN);
-          return true;
+          ent->fts_ਸੰਖਿਆ = 1;
+          fts_ਸੈੱਟ (fts, ent, FTS_AGAIN);
+          ਵਾਪਸ true;
         }
-      if (! force_silent)
+      ਜੇ (! force_silent)
         error (0, ent->fts_errno, _("cannot access %s"),
-               quoteaf (file_full_name));
-      break;
+               quoteaf (file_ਭਰਿਆ_name));
+      ਰੋਕੋ;
 
-    case FTS_ERR:
-      if (! force_silent)
-        error (0, ent->fts_errno, "%s", quotef (file_full_name));
-      break;
+    ਹਾਲਤ FTS_ERR:
+      ਜੇ (! force_silent)
+        error (0, ent->fts_errno, "%s", quotef (file_ਭਰਿਆ_name));
+      ਰੋਕੋ;
 
-    case FTS_DNR:
-      if (! force_silent)
+    ਹਾਲਤ FTS_DNR:
+      ਜੇ (! force_silent)
         error (0, ent->fts_errno, _("cannot read directory %s"),
-               quoteaf (file_full_name));
-      break;
+               quoteaf (file_ਭਰਿਆ_name));
+      ਰੋਕੋ;
 
-    case FTS_SLNONE:
-      if (dereference)
+    ਹਾਲਤ FTS_SLNONE:
+      ਜੇ (dereference)
         {
-          if (! force_silent)
+          ਜੇ (! force_silent)
             error (0, 0, _("cannot operate on dangling symlink %s"),
-                   quoteaf (file_full_name));
-          break;
+                   quoteaf (file_ਭਰਿਆ_name));
+          ਰੋਕੋ;
         }
-      ch.status = CH_NOT_APPLIED;
-      break;
+      ch.ਸਥਿਤੀ = CH_NOT_APPLIED;
+      ਰੋਕੋ;
 
-    case FTS_SL:
-      if (dereference == 1)
+    ਹਾਲਤ FTS_SL:
+      ਜੇ (dereference == 1)
         {
-          if (fstatat (fts->fts_cwd_fd, file, &stat_buf, 0) != 0)
+          ਜੇ (fstatat (fts->fts_cwd_fd, file, &stat_buf, 0) != 0)
             {
-              if (ignore_missing
+              ਜੇ (ignore_missing
                   && ignorable_traversal_errno (errno))
-                return true;
-              if (! force_silent)
+                ਵਾਪਸ true;
+              ਜੇ (! force_silent)
                 error (0, errno, _("cannot dereference %s"),
-                       quoteaf (file_full_name));
-              break;
+                       quoteaf (file_ਭਰਿਆ_name));
+              ਰੋਕੋ;
             }
 
           file_stats = &stat_buf;
         }
-      ch.status = CH_NOT_APPLIED;
-      break;
+      ch.ਸਥਿਤੀ = CH_NOT_APPLIED;
+      ਰੋਕੋ;
 
-    case FTS_DC:		/* directory that causes cycles */
-      if (cycle_warning_required (fts, ent))
+    ਹਾਲਤ FTS_DC:		/* directory that causes cycles */
+      ਜੇ (ਚੱਕਰ_warning_required (fts, ent))
         {
-          emit_cycle_warning (file_full_name);
-          return false;
+          emit_ਚੱਕਰ_warning (file_ਭਰਿਆ_name);
+          ਵਾਪਸ false;
         }
       FALLTHROUGH;
-    default:
-      ch.status = CH_NOT_APPLIED;
-      break;
+    ਮੂਲ:
+      ch.ਸਥਿਤੀ = CH_NOT_APPLIED;
+      ਰੋਕੋ;
     }
 
-  if (ch.status == CH_NOT_APPLIED
-      && ROOT_DEV_INO_CHECK (root_dev_ino, file_stats))
+  ਜੇ (ch.ਸਥਿਤੀ == CH_NOT_APPLIED
+      && ਜੜ੍ਹ_DEV_INO_CHECK (ਜੜ੍ਹ_dev_ino, file_stats))
     {
-      ROOT_DEV_INO_WARN (file_full_name);
+      ਜੜ੍ਹ_DEV_INO_WARN (file_ਭਰਿਆ_name);
       /* Tell fts not to traverse into this hierarchy.  */
-      fts_set (fts, ent, FTS_SKIP);
+      fts_ਸੈੱਟ (fts, ent, FTS_SKIP);
       /* Ensure that we do not process "/" on the second visit.  */
-      ignore_value (fts_read (fts));
-      return false;
+      ignore_ਮੁੱਲ (fts_read (fts));
+      ਵਾਪਸ false;
     }
 
-  if (ch.status == CH_NOT_APPLIED)
+  ਜੇ (ch.ਸਥਿਤੀ == CH_NOT_APPLIED)
     {
-      ch.old_mode = file_stats->st_mode;
-      ch.new_mode = mode_adjust (ch.old_mode, S_ISDIR (ch.old_mode) != 0,
-                                 umask_value, change, NULL);
+      ch.old_ਬਹੁਲਕ = file_stats->st_ਬਹੁਲਕ;
+      ch.new_ਬਹੁਲਕ = ਬਹੁਲਕ_adjust (ch.old_ਬਹੁਲਕ, S_ISDIR (ch.old_ਬਹੁਲਕ) != 0,
+                                 umask_ਮੁੱਲ, change, ਨਿਰਾ);
       bool follow_symlink = !!dereference;
-      if (dereference == -1) /* -H with/without -R, -P without -R.  */
+      ਜੇ (dereference == -1) /* -H with/without -R, -P without -R.  */
         follow_symlink = ent->fts_level == FTS_ROOTLEVEL;
-      if (fchmodat (fts->fts_cwd_fd, file, ch.new_mode,
+      ਜੇ (fchmodat (fts->fts_cwd_fd, file, ch.new_ਬਹੁਲਕ,
                     follow_symlink ? 0 : AT_SYMLINK_NOFOLLOW) == 0)
-        ch.status = CH_SUCCEEDED;
-      else
+        ch.ਸਥਿਤੀ = CH_SUCCEEDED;
+      ਨਹੀਂਤਾਂ
         {
-          if (ignore_missing
+          ਜੇ (ignore_missing
               && ignorable_traversal_errno (errno))
-            return true;
-          if (! is_ENOTSUP (errno))
+            ਵਾਪਸ true;
+          ਜੇ (! is_ENOTSUP (errno))
             {
-              if (! force_silent)
+              ਜੇ (! force_silent)
                 error (0, errno, _("changing permissions of %s"),
-                       quoteaf (file_full_name));
+                       quoteaf (file_ਭਰਿਆ_name));
 
-              ch.status = CH_FAILED;
+              ch.ਸਥਿਤੀ = CH_FAILED;
             }
           /* else treat not supported as not applied.  */
         }
     }
 
-  if (verbosity != V_off)
+  ਜੇ (verbosity != V_off)
     {
       bool file_missing;
-      if (ch.status == CH_SUCCEEDED
-          && !mode_changed (fts->fts_cwd_fd, file, file_full_name,
-                            ch.old_mode, ch.new_mode, ignore_missing,
+      ਜੇ (ch.ਸਥਿਤੀ == CH_SUCCEEDED
+          && !ਬਹੁਲਕ_ਬਦਲਿਆ (fts->fts_cwd_fd, file, file_ਭਰਿਆ_name,
+                            ch.old_ਬਹੁਲਕ, ch.new_ਬਹੁਲਕ, ignore_missing,
                             &file_missing))
         {
-          if (file_missing)
-            return true;
-          ch.status = CH_NO_CHANGE_REQUESTED;
+          ਜੇ (file_missing)
+            ਵਾਪਸ true;
+          ch.ਸਥਿਤੀ = CH_NO_CHANGE_REQUESTED;
         }
 
-      if (ch.status == CH_SUCCEEDED || verbosity == V_high)
-        describe_change (file_full_name, &ch);
+      ਜੇ (ch.ਸਥਿਤੀ == CH_SUCCEEDED || verbosity == V_ਉੱਚਾ)
+        describe_change (file_ਭਰਿਆ_name, &ch);
     }
 
-  if (CH_NO_CHANGE_REQUESTED <= ch.status && diagnose_surprises)
+  ਜੇ (CH_NO_CHANGE_REQUESTED <= ch.ਸਥਿਤੀ && diagnose_surprises)
     {
-      mode_t naively_expected_mode =
-        mode_adjust (ch.old_mode, S_ISDIR (ch.old_mode) != 0,
-                     0, change, NULL);
-      if (ch.new_mode & ~naively_expected_mode)
+      mode_t naively_expected_ਬਹੁਲਕ =
+        ਬਹੁਲਕ_adjust (ch.old_ਬਹੁਲਕ, S_ISDIR (ch.old_ਬਹੁਲਕ) != 0,
+                     0, change, ਨਿਰਾ);
+      ਜੇ (ch.new_ਬਹੁਲਕ & ~naively_expected_ਬਹੁਲਕ)
         {
-          char new_perms[12];
-          char naively_expected_perms[12];
-          strmode (ch.new_mode, new_perms);
-          strmode (naively_expected_mode, naively_expected_perms);
+          ਅੱਖਰ new_perms[12];
+          ਅੱਖਰ naively_expected_perms[12];
+          strmode (ch.new_ਬਹੁਲਕ, new_perms);
+          strmode (naively_expected_ਬਹੁਲਕ, naively_expected_perms);
           new_perms[10] = naively_expected_perms[10] = '\0';
           error (0, 0,
                  _("%s: new permissions are %s, not %s"),
-                 quotef (file_full_name),
+                 quotef (file_ਭਰਿਆ_name),
                  new_perms + 1, naively_expected_perms + 1);
-          ch.status = CH_FAILED;
+          ch.ਸਥਿਤੀ = CH_FAILED;
         }
     }
 
-  if ( ! recurse)
-    fts_set (fts, ent, FTS_SKIP);
+  ਜੇ ( ! recurse)
+    fts_ਸੈੱਟ (fts, ent, FTS_SKIP);
 
-  return CH_NOT_APPLIED <= ch.status;
+  ਵਾਪਸ CH_NOT_APPLIED <= ch.ਸਥਿਤੀ;
 }
 
 /* Recursively change the modes of the specified FILES (the last entry
    of which is null).  BIT_FLAGS controls how fts works.
    Return true if successful.  */
 
-static bool
-process_files (char **files, int bit_flags)
+ਸਥਿਰ bool
+process_files (ਅੱਖਰ **files, ਪੂਰਨ ਦੋਆਧਾਰੀ_ਅੰਕ_flags)
 {
   bool ok = true;
 
-  FTS *fts = xfts_open (files, bit_flags, NULL);
+  FTS *fts = xfts_open (files, ਦੋਆਧਾਰੀ_ਅੰਕ_flags, ਨਿਰਾ);
 
-  while (true)
+  ਜਦੋਂ (true)
     {
       FTSENT *ent;
 
       ent = fts_read (fts);
-      if (ent == NULL)
+      ਜੇ (ent == ਨਿਰਾ)
         {
-          if (errno != 0)
+          ਜੇ (errno != 0)
             {
               /* FIXME: try to give a better message  */
-              if (! force_silent)
+              ਜੇ (! force_silent)
                 error (0, errno, _("fts_read failed"));
               ok = false;
             }
-          break;
+          ਰੋਕੋ;
         }
 
       ok &= process_file (fts, ent);
     }
 
-  if (fts_close (fts) != 0)
+  ਜੇ (fts_close (fts) != 0)
     {
       error (0, errno, _("fts_close failed"));
       ok = false;
     }
 
-  return ok;
+  ਵਾਪਸ ok;
 }
 
-void
-usage (int status)
+ਖਾਲੀ
+usage (ਪੂਰਨ ਸਥਿਤੀ)
 {
-  if (status != EXIT_SUCCESS)
+  ਜੇ (ਸਥਿਤੀ != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ਨਹੀਂਤਾਂ
     {
-      printf (_("\
-Usage: %s [OPTION]... MODE[,MODE]... FILE...\n\
-  or:  %s [OPTION]... OCTAL-MODE FILE...\n\
+      ਲਿਖੋ (_("\
+Usage: %s [OPTION]... ਬਹੁਲਕ[,ਬਹੁਲਕ]... FILE...\n\
+  or:  %s [OPTION]... OCTAL-ਬਹੁਲਕ FILE...\n\
   or:  %s [OPTION]... --reference=RFILE FILE...\n\
 "),
-              program_name, program_name, program_name);
+              ਪ੍ਰੋਗਰਾਮ_name, ਪ੍ਰੋਗਰਾਮ_name, ਪ੍ਰੋਗਰਾਮ_name);
       fputs (_("\
-Change the mode of each FILE to MODE.\n\
-With --reference, change the mode of each FILE to that of RFILE.\n\
+Change the ਬਹੁਲਕ_2 ਦਾ each FILE ਮੰਜ਼ਿਲ ਬਹੁਲਕ.\n\
+With --reference, change the ਬਹੁਲਕ_2 ਦਾ each FILE ਮੰਜ਼ਿਲ that ਦਾ RFILE.\n\
 \n\
 "), stdout);
       oputs (_("\
@@ -452,11 +452,11 @@ With --reference, change the mode of each FILE to that of RFILE.\n\
 "));
       oputs (_("\
   -v, --verbose\n\
-         output a diagnostic for every file processed\n\
+         output a diagnostic ਲਈ every file processed\n\
 "));
       oputs (_("\
       --dereference\n\
-         affect the referent of each symbolic link,\n\
+         affect the referent ਦਾ each symbolic link,\n\
          rather than the symbolic link itself\n\
 "));
       oputs (_("\
@@ -464,17 +464,17 @@ With --reference, change the mode of each FILE to that of RFILE.\n\
          affect each symbolic link, rather than the referent\n\
 "));
       oputs (_("\
-      --no-preserve-root\n\
-         do not treat '/' specially (the default)\n\
+      --no-preserve-ਜੜ੍ਹ\n\
+         ਕਰੋ not treat '/' specially (the ਮੂਲ)\n\
 "));
       oputs (_("\
-      --preserve-root\n\
-         fail to operate recursively on '/'\n\
+      --preserve-ਜੜ੍ਹ\n\
+         fail ਮੰਜ਼ਿਲ ਚਲਾਓ recursively on '/'\n\
 "));
       oputs (_("\
       --reference=RFILE\n\
-         use RFILE's mode instead of specifying MODE values.\n\
-         RFILE is always dereferenced if a symbolic link.\n\
+         use RFILE's ਬਹੁਲਕ_2 instead ਦਾ specifying ਬਹੁਲਕ ਮੁੱਲਾਂ.\n\
+         RFILE is always dereferenced ਜੇ a symbolic link.\n\
 "));
       oputs (_("\
   -R, --recursive\n\
@@ -482,84 +482,84 @@ With --reference, change the mode of each FILE to that of RFILE.\n\
 "));
       emit_symlink_recurse_options ("-H");
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (ਸੰਸਕਰਣ_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-Each MODE is of the form '[ugoa]*([-+=]([rwxXst]*|[ugo]))+|[-+=][0-7]+'.\n\
+Each ਬਹੁਲਕ is ਦਾ the form '[ugoa]*([-+=]([rwxXst]*|[ugo]))+|[-+=][0-7]+'.\n\
 "), stdout);
-      emit_ancillary_info (PROGRAM_NAME);
+      emit_ancillary_info (ਪ੍ਰੋਗਰਾਮ_NAME);
     }
-  exit (status);
+  ਬਾਹਰ_ਨਿਕਲੋ (ਸਥਿਤੀ);
 }
 
 /* Parse the ASCII mode given on the command line into a linked list
    of 'struct mode_change' and apply that to each file argument. */
 
-int
-main (int argc, char **argv)
+ਪੂਰਨ
+ਮੁੱਖ (ਪੂਰਨ argc, ਅੱਖਰ **argv)
 {
-  char *mode = NULL;
-  idx_t mode_len = 0;
-  idx_t mode_alloc = 0;
+  ਅੱਖਰ *ਬਹੁਲਕ_2 = ਨਿਰਾ;
+  idx_t ਬਹੁਲਕ_len = 0;
+  idx_t ਬਹੁਲਕ_alloc = 0;
   bool ok;
-  bool preserve_root = false;
-  char const *reference_file = NULL;
-  int c;
-  int bit_flags = FTS_COMFOLLOW | FTS_PHYSICAL;
+  bool preserve_ਜੜ੍ਹ = false;
+  ਅੱਖਰ ਅਚਲ *reference_file = ਨਿਰਾ;
+  ਪੂਰਨ c;
+  ਪੂਰਨ ਦੋਆਧਾਰੀ_ਅੰਕ_flags = FTS_COMFOLLOW | FTS_PHYSICAL;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  ਸੈੱਟ_ਪ੍ਰੋਗਰਾਮ_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while ((c = getopt_long (argc, argv,
+  ਜਦੋਂ ((c = getopt_long (argc, argv,
                            ("HLPRcfhvr::w::x::X::s::t::u::g::o::a::,::+::=::"
                             "0::1::2::3::4::5::6::7::"),
-                           long_options, NULL))
+                           long_options, ਨਿਰਾ))
          != -1)
     {
-      switch (c)
+      ਚੋਣ (c)
         {
 
-        case 'H': /* Traverse command-line symlinks-to-directories.  */
-          bit_flags = FTS_COMFOLLOW | FTS_PHYSICAL;
-          break;
+        ਹਾਲਤ 'H': /* Traverse command-line symlinks-to-directories.  */
+          ਦੋਆਧਾਰੀ_ਅੰਕ_flags = FTS_COMFOLLOW | FTS_PHYSICAL;
+          ਰੋਕੋ;
 
-        case 'L': /* Traverse all symlinks-to-directories.  */
-          bit_flags = FTS_LOGICAL;
-          break;
+        ਹਾਲਤ 'L': /* Traverse all symlinks-to-directories.  */
+          ਦੋਆਧਾਰੀ_ਅੰਕ_flags = FTS_LOGICAL;
+          ਰੋਕੋ;
 
-        case 'P': /* Traverse no symlinks-to-directories.  */
-          bit_flags = FTS_PHYSICAL;
-          break;
+        ਹਾਲਤ 'P': /* Traverse no symlinks-to-directories.  */
+          ਦੋਆਧਾਰੀ_ਅੰਕ_flags = FTS_PHYSICAL;
+          ਰੋਕੋ;
 
-        case 'h': /* --no-dereference: affect symlinks */
+        ਹਾਲਤ 'h': /* --no-dereference: affect symlinks */
           dereference = 0;
-          break;
+          ਰੋਕੋ;
 
-        case DEREFERENCE_OPTION: /* --dereference: affect the referent
+        ਹਾਲਤ DEREFERENCE_OPTION: /* --dereference: affect the referent
                                     of each symlink */
           dereference = 1;
-          break;
+          ਰੋਕੋ;
 
-        case 'r':
-        case 'w':
-        case 'x':
-        case 'X':
-        case 's':
-        case 't':
-        case 'u':
-        case 'g':
-        case 'o':
-        case 'a':
-        case ',':
-        case '+':
-        case '=':
-        case '0': case '1': case '2': case '3':
-        case '4': case '5': case '6': case '7':
+        ਹਾਲਤ 'r':
+        ਹਾਲਤ 'w':
+        ਹਾਲਤ 'x':
+        ਹਾਲਤ 'X':
+        ਹਾਲਤ 's':
+        ਹਾਲਤ 't':
+        ਹਾਲਤ 'u':
+        ਹਾਲਤ 'g':
+        ਹਾਲਤ 'o':
+        ਹਾਲਤ 'a':
+        ਹਾਲਤ ',':
+        ਹਾਲਤ '+':
+        ਹਾਲਤ '=':
+        ਹਾਲਤ '0': ਹਾਲਤ '1': ਹਾਲਤ '2': ਹਾਲਤ '3':
+        ਹਾਲਤ '4': ਹਾਲਤ '5': ਹਾਲਤ '6': ਹਾਲਤ '7':
           /* Support non-portable uses like "chmod -w", but diagnose
              surprises due to umask confusion.  Even though "--", "--r",
              etc., are valid modes, there is no "case '-'" here since
@@ -570,119 +570,119 @@ main (int argc, char **argv)
                string was given, concatenate the previous string, a
                comma, and the new string (e.g., "-s,-rwx").  */
 
-            char const *arg = argv[optind - 1];
-            idx_t arg_len = strlen (arg);
-            idx_t mode_comma_len = mode_len + !!mode_len;
-            idx_t new_mode_len = mode_comma_len + arg_len;
-            assume (0 <= new_mode_len);  /* Pacify GCC bug #109613.  */
-            if (mode_alloc <= new_mode_len)
-              mode = xpalloc (mode, &mode_alloc,
-                              new_mode_len + 1 - mode_alloc, -1, 1);
-            mode[mode_len] = ',';
-            memcpy (mode + mode_comma_len, arg, arg_len + 1);
-            mode_len = new_mode_len;
+            ਅੱਖਰ ਅਚਲ *arg = argv[optind - 1];
+            idx_t arg_len = ਲੜੀ_ਲੰਬਾਈ (arg);
+            idx_t ਬਹੁਲਕ_comma_len = ਬਹੁਲਕ_len + !!ਬਹੁਲਕ_len;
+            idx_t new_ਬਹੁਲਕ_len = ਬਹੁਲਕ_comma_len + arg_len;
+            assume (0 <= new_ਬਹੁਲਕ_len);  /* Pacify GCC bug #109613.  */
+            ਜੇ (ਬਹੁਲਕ_alloc <= new_ਬਹੁਲਕ_len)
+              ਬਹੁਲਕ_2 = xpalloc (ਬਹੁਲਕ_2, &ਬਹੁਲਕ_alloc,
+                              new_ਬਹੁਲਕ_len + 1 - ਬਹੁਲਕ_alloc, -1, 1);
+            ਬਹੁਲਕ_2[ਬਹੁਲਕ_len] = ',';
+            ਸਮ੍ਰਿਤੀ_ਨਕਲ (ਬਹੁਲਕ_2 + ਬਹੁਲਕ_comma_len, arg, arg_len + 1);
+            ਬਹੁਲਕ_len = new_ਬਹੁਲਕ_len;
 
             diagnose_surprises = true;
           }
-          break;
-        case NO_PRESERVE_ROOT:
-          preserve_root = false;
-          break;
-        case PRESERVE_ROOT:
-          preserve_root = true;
-          break;
-        case REFERENCE_FILE_OPTION:
+          ਰੋਕੋ;
+        ਹਾਲਤ NO_PRESERVE_ਜੜ੍ਹ:
+          preserve_ਜੜ੍ਹ = false;
+          ਰੋਕੋ;
+        ਹਾਲਤ PRESERVE_ਜੜ੍ਹ:
+          preserve_ਜੜ੍ਹ = true;
+          ਰੋਕੋ;
+        ਹਾਲਤ REFERENCE_FILE_OPTION:
           reference_file = optarg;
-          break;
-        case 'R':
+          ਰੋਕੋ;
+        ਹਾਲਤ 'R':
           recurse = true;
-          break;
-        case 'c':
+          ਰੋਕੋ;
+        ਹਾਲਤ 'c':
           verbosity = V_changes_only;
-          break;
-        case 'f':
+          ਰੋਕੋ;
+        ਹਾਲਤ 'f':
           force_silent = true;
-          break;
-        case 'v':
-          verbosity = V_high;
-          break;
+          ਰੋਕੋ;
+        ਹਾਲਤ 'v':
+          verbosity = V_ਉੱਚਾ;
+          ਰੋਕੋ;
         case_GETOPT_HELP_CHAR;
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        case_GETOPT_ਸੰਸਕਰਣ_CHAR (ਪ੍ਰੋਗਰਾਮ_NAME, AUTHORS);
+        ਮੂਲ:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (recurse)
+  ਜੇ (recurse)
     {
-      if (bit_flags == FTS_PHYSICAL)
+      ਜੇ (ਦੋਆਧਾਰੀ_ਅੰਕ_flags == FTS_PHYSICAL)
         {
-          if (dereference == 1)
+          ਜੇ (dereference == 1)
             error (EXIT_FAILURE, 0,
                    _("-R --dereference requires either -H or -L"));
           dereference = 0;
         }
     }
 
-  if (dereference == -1 && bit_flags == FTS_LOGICAL)
+  ਜੇ (dereference == -1 && ਦੋਆਧਾਰੀ_ਅੰਕ_flags == FTS_LOGICAL)
     dereference = 1;
 
-  if (reference_file)
+  ਜੇ (reference_file)
     {
-      if (mode)
+      ਜੇ (ਬਹੁਲਕ_2)
         {
           error (0, 0, _("cannot combine mode and --reference options"));
           usage (EXIT_FAILURE);
         }
     }
-  else
+  ਨਹੀਂਤਾਂ
     {
-      if (!mode)
-        mode = argv[optind++];
+      ਜੇ (!ਬਹੁਲਕ_2)
+        ਬਹੁਲਕ_2 = argv[optind++];
     }
 
-  if (optind >= argc)
+  ਜੇ (optind >= argc)
     {
-      if (!mode || mode != argv[optind - 1])
+      ਜੇ (!ਬਹੁਲਕ_2 || ਬਹੁਲਕ_2 != argv[optind - 1])
         error (0, 0, _("missing operand"));
-      else
+      ਨਹੀਂਤਾਂ
         error (0, 0, _("missing operand after %s"), quote (argv[argc - 1]));
       usage (EXIT_FAILURE);
     }
 
-  if (reference_file)
+  ਜੇ (reference_file)
     {
-      change = mode_create_from_ref (reference_file);
-      if (!change)
+      change = ਬਹੁਲਕ_create_from_ref (reference_file);
+      ਜੇ (!change)
         error (EXIT_FAILURE, errno, _("failed to get attributes of %s"),
                quoteaf (reference_file));
     }
-  else
+  ਨਹੀਂਤਾਂ
     {
-      change = mode_compile (mode);
-      if (!change)
+      change = ਬਹੁਲਕ_compile (ਬਹੁਲਕ_2);
+      ਜੇ (!change)
         {
-          error (0, 0, _("invalid mode: %s"), quote (mode));
+          error (0, 0, _("invalid mode: %s"), quote (ਬਹੁਲਕ_2));
           usage (EXIT_FAILURE);
         }
-      umask_value = umask (0);
+      umask_ਮੁੱਲ = umask (0);
     }
 
-  if (recurse && preserve_root)
+  ਜੇ (recurse && preserve_ਜੜ੍ਹ)
     {
-      static struct dev_ino dev_ino_buf;
-      root_dev_ino = get_root_dev_ino (&dev_ino_buf);
-      if (root_dev_ino == NULL)
+      ਸਥਿਰ ਬਣਤਰ dev_ino dev_ino_buf;
+      ਜੜ੍ਹ_dev_ino = get_ਜੜ੍ਹ_dev_ino (&dev_ino_buf);
+      ਜੇ (ਜੜ੍ਹ_dev_ino == ਨਿਰਾ)
         error (EXIT_FAILURE, errno, _("failed to get attributes of %s"),
                quoteaf ("/"));
     }
-  else
+  ਨਹੀਂਤਾਂ
     {
-      root_dev_ino = NULL;
+      ਜੜ੍ਹ_dev_ino = ਨਿਰਾ;
     }
 
-  bit_flags |= FTS_DEFER_STAT;
-  ok = process_files (argv + optind, bit_flags);
+  ਦੋਆਧਾਰੀ_ਅੰਕ_flags |= FTS_DEFER_STAT;
+  ok = process_files (argv + optind, ਦੋਆਧਾਰੀ_ਅੰਕ_flags);
 
   main_exit (ok ? EXIT_SUCCESS : EXIT_FAILURE);
 }

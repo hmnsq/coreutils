@@ -15,25 +15,25 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#ifndef FTS_MISSING_H
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ FTS_MISSING_H
 # define FTS_MISSING_H
 
 # include "fts_.h"
 
-static inline bool
-ignore_missing_fts_entry (FTSENT const *ent)
+ਸਥਿਰ ਸਤਰਅੰਦਰ bool
+ignore_missing_fts_ਇੰਦਰਾਜ (FTSENT ਅਚਲ *ent)
 {
-  return (FTS_ROOTLEVEL < ent->fts_level
+  ਵਾਪਸ (FTS_ROOTLEVEL < ent->fts_level
           && ent->fts_info != FTS_SL
           && ent->fts_info != FTS_SLNONE);
 }
 
-static inline bool
-ignorable_fts_error (FTSENT const *ent)
+ਸਥਿਰ ਸਤਰਅੰਦਰ bool
+ignorable_fts_error (FTSENT ਅਚਲ *ent)
 {
-  return (ignorable_traversal_errno (ent->fts_errno)
+  ਵਾਪਸ (ignorable_traversal_errno (ent->fts_errno)
           && (ent->fts_info == FTS_NS || ent->fts_info == FTS_ERR
               || ent->fts_info == FTS_DNR));
 }
 
-#endif /* FTS_MISSING_H */
+#ਜੇ_ਅੰਤ /* FTS_MISSING_H */

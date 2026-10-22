@@ -21,46 +21,46 @@
 
    By tege@sics.se, Torbjörn Granlund, advised by rms, Richard Stallman.  */
 
-#include <config.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <config.h>
 
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <stdio.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <getopt.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <sys/types.h>
 
-#if HAVE_STROPTS_H
+#ਜੇ HAVE_STROPTS_H
 # include <stropts.h>
-#endif
-#include <sys/ioctl.h>
+#ਜੇ_ਅੰਤ
+#ਅਨ੍ਤਰ੍ਭਾਵ <sys/ioctl.h>
 
-#include "system.h"
-#include "alignalloc.h"
-#include "assure.h"
-#include "ioblksize.h"
-#include "fadvise.h"
-#include "full-write.h"
-#include "isapipe.h"
-#include "splice.h"
-#include "unistd--.h"
-#include "xbinary-io.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "system.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "alignalloc.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "assure.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "ioblksize.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "fadvise.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "full-write.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "isapipe.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "splice.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "unistd--.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "xbinary-io.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "cat"
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ ਪ੍ਰੋਗਰਾਮ_NAME "cat"
 
-#define AUTHORS \
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ AUTHORS \
   proper_name_lite ("Torbjorn Granlund", "Torbj\303\266rn Granlund"), \
   proper_name ("Richard M. Stallman")
 
 /* Name of input file.  May be "-".  */
-static char const *infile;
+ਸਥਿਰ ਅੱਖਰ ਅਚਲ *infile;
 
 /* Descriptor on which input file is open.  */
-static int input_desc;
+ਸਥਿਰ ਪੂਰਨ ਨਿਵੇਸ਼_desc;
 
 /* Buffer for line numbers.
    An 11 digit counter may overflow within an hour on a P2/466,
    an 18 digit counter needs about 1000y */
-#define LINE_COUNTER_BUF_LEN 20
-static char line_buf[LINE_COUNTER_BUF_LEN] =
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ ਸਤਰ_COUNTER_BUF_LEN 20
+ਸਥਿਰ ਅੱਖਰ ਸਤਰ_buf[ਸਤਰ_COUNTER_BUF_LEN] =
   {
     ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
     ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '0',
@@ -69,57 +69,57 @@ static char line_buf[LINE_COUNTER_BUF_LEN] =
 
 /* Position in 'line_buf' where printing starts.  This will not change
    unless the number of lines is larger than 999999.  */
-static char *line_num_print = line_buf + LINE_COUNTER_BUF_LEN - 8;
+ਸਥਿਰ ਅੱਖਰ *ਸਤਰ_ਅੰਕ_print = ਸਤਰ_buf + ਸਤਰ_COUNTER_BUF_LEN - 8;
 
 /* Position of the first digit in 'line_buf'.  */
-static char *line_num_start = line_buf + LINE_COUNTER_BUF_LEN - 3;
+ਸਥਿਰ ਅੱਖਰ *ਸਤਰ_ਅੰਕ_ਸ਼ੁਰੂ = ਸਤਰ_buf + ਸਤਰ_COUNTER_BUF_LEN - 3;
 
 /* Position of the last digit in 'line_buf'.  */
-static char *line_num_end = line_buf + LINE_COUNTER_BUF_LEN - 3;
+ਸਥਿਰ ਅੱਖਰ *ਸਤਰ_ਅੰਕ_ਸਿਰਾ = ਸਤਰ_buf + ਸਤਰ_COUNTER_BUF_LEN - 3;
 
 /* Preserves the 'cat' function's local 'newlines' between invocations.  */
-static int newlines2 = 0;
+ਸਥਿਰ ਪੂਰਨ newlines2 = 0;
 
 /* Whether there is a pending CR to process.  */
-static bool pending_cr = false;
+ਸਥਿਰ bool pending_cr = false;
 
-void
-usage (int status)
+ਖਾਲੀ
+usage (ਪੂਰਨ ਸਥਿਤੀ)
 {
-  if (status != EXIT_SUCCESS)
+  ਜੇ (ਸਥਿਤੀ != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ਨਹੀਂਤਾਂ
     {
-      printf (_("\
+      ਲਿਖੋ (_("\
 Usage: %s [OPTION]... [FILE]...\n\
 "),
-              program_name);
+              ਪ੍ਰੋਗਰਾਮ_name);
       fputs (_("\
-Concatenate FILE(s) to standard output.\n\
+Concatenate FILE(s) ਮੰਜ਼ਿਲ standard output.\n\
 "), stdout);
 
       emit_stdin_note ();
 
       oputs (_("\
-  -A, --show-all           equivalent to -vET\n\
+  -A, --show-all           equivalent ਮੰਜ਼ਿਲ -vET\n\
 "));
       oputs (_("\
-  -b, --number-nonblank    number nonempty output lines, overrides -n\n\
+  -b, --ਸੰਖਿਆ-nonblank    ਸੰਖਿਆ nonempty output ਸਤਰਾਂ, overrides -n\n\
 "));
       oputs (_("\
-  -e                       equivalent to -vE\n\
+  -e                       equivalent ਮੰਜ਼ਿਲ -vE\n\
 "));
       oputs (_("\
-  -E, --show-ends          display $ or ^M$ at end of each line\n\
+  -E, --show-ਸਿਰੇ          display $ or ^M$ at ਸਿਰਾ ਦਾ each ਸਤਰ\n\
 "));
       oputs (_("\
-  -n, --number             number all output lines\n\
+  -n, --ਸੰਖਿਆ             ਸੰਖਿਆ all output ਸਤਰਾਂ\n\
 "));
       oputs (_("\
-  -s, --squeeze-blank      suppress repeated empty output lines\n\
+  -s, --squeeze-blank      suppress repeated ਖਾਲੀ_ਥਾਵਾਂ output ਸਤਰਾਂ\n\
 "));
       oputs (_("\
-  -t                       equivalent to -vT\n\
+  -t                       equivalent ਮੰਜ਼ਿਲ -vT\n\
 "));
       oputs (_("\
   -T, --show-tabs          display TAB characters as ^I\n\
@@ -128,72 +128,72 @@ Concatenate FILE(s) to standard output.\n\
   -u                       (ignored)\n\
 "));
       oputs (_("\
-  -v, --show-nonprinting   use ^ and M- notation, except for LFD and TAB\n\
+  -v, --show-nonprinting   use ^ and M- notation, except ਲਈ LFD and TAB\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      printf (_("\
+      oputs (ਸੰਸਕਰਣ_OPTION_DESCRIPTION);
+      ਲਿਖੋ (_("\
 \n\
 Examples:\n\
   %s f - g  Output f's contents, then standard input, then g's contents.\n\
-  %s        Copy standard input to standard output.\n\
+  %s        Copy standard ਨਿਵੇਸ਼ ਮੰਜ਼ਿਲ standard output.\n\
 "),
-              program_name, program_name);
-      emit_ancillary_info (PROGRAM_NAME);
+              ਪ੍ਰੋਗਰਾਮ_name, ਪ੍ਰੋਗਰਾਮ_name);
+      emit_ancillary_info (ਪ੍ਰੋਗਰਾਮ_NAME);
     }
-  exit (status);
+  ਬਾਹਰ_ਨਿਕਲੋ (ਸਥਿਤੀ);
 }
 
 /* Compute the next line number.  */
 
-static void
-next_line_num (void)
+ਸਥਿਰ ਖਾਲੀ
+ਅਗਲਾ_ਸਤਰ_ਅੰਕ (ਖਾਲੀ)
 {
-  char *endp = line_num_end;
-  do
+  ਅੱਖਰ *endp = ਸਤਰ_ਅੰਕ_ਸਿਰਾ;
+  ਕਰੋ
     {
-      if ((*endp)++ < '9')
-        return;
+      ਜੇ ((*endp)++ < '9')
+        ਵਾਪਸ;
       *endp-- = '0';
     }
-  while (endp >= line_num_start);
+  ਜਦੋਂ (endp >= ਸਤਰ_ਅੰਕ_ਸ਼ੁਰੂ);
 
-  if (line_num_start > line_buf)
-    *--line_num_start = '1';
-  else
-    *line_buf = '>';
-  if (line_num_start < line_num_print)
-    line_num_print--;
+  ਜੇ (ਸਤਰ_ਅੰਕ_ਸ਼ੁਰੂ > ਸਤਰ_buf)
+    *--ਸਤਰ_ਅੰਕ_ਸ਼ੁਰੂ = '1';
+  ਨਹੀਂਤਾਂ
+    *ਸਤਰ_buf = '>';
+  ਜੇ (ਸਤਰ_ਅੰਕ_ਸ਼ੁਰੂ < ਸਤਰ_ਅੰਕ_print)
+    ਸਤਰ_ਅੰਕ_print--;
 }
 
 /* Plain cat.  Copy the file behind 'input_desc' to STDOUT_FILENO.
    BUF (of size BUFSIZE) is the I/O buffer, used by reads and writes.
    Return true if successful.  */
 
-static bool
-simple_cat (char *buf, idx_t bufsize)
+ਸਥਿਰ bool
+simple_cat (ਅੱਖਰ *buf, idx_t bufsize)
 {
   /* Loop until the end of the file.  */
 
-  while (true)
+  ਜਦੋਂ (true)
     {
       /* Read a block of input.  */
 
-      ssize_t n_read = read (input_desc, buf, bufsize);
-      if (n_read < 0)
+      ssize_t n_read = ਪਠ (ਨਿਵੇਸ਼_desc, buf, bufsize);
+      ਜੇ (n_read < 0)
         {
           error (0, errno, "%s", quotef (infile));
-          return false;
+          ਵਾਪਸ false;
         }
 
       /* End of this file?  */
 
-      if (n_read == 0)
-        return true;
+      ਜੇ (n_read == 0)
+        ਵਾਪਸ true;
 
       /* Write this block out.  */
 
-      if (full_write (STDOUT_FILENO, buf, n_read) != n_read)
+      ਜੇ (ਭਰਿਆ_write (STDOUT_FILENO, buf, n_read) != n_read)
         write_error ();
     }
 }
@@ -202,13 +202,13 @@ simple_cat (char *buf, idx_t bufsize)
    Pending is defined to be the *BPOUT - OUTBUF bytes starting at OUTBUF.
    Then set *BPOUT to OUTPUT if it's not already that value.  */
 
-static inline void
-write_pending (char *outbuf, char **bpout)
+ਸਥਿਰ ਸਤਰਅੰਦਰ ਖਾਲੀ
+write_pending (ਅੱਖਰ *outbuf, ਅੱਖਰ **bpout)
 {
   idx_t n_write = *bpout - outbuf;
-  if (0 < n_write)
+  ਜੇ (0 < n_write)
     {
-      if (full_write (STDOUT_FILENO, outbuf, n_write) != n_write)
+      ਜੇ (ਭਰਿਆ_write (STDOUT_FILENO, outbuf, n_write) != n_write)
         write_error ();
       *bpout = outbuf;
     }
@@ -226,80 +226,80 @@ write_pending (char *outbuf, char **bpout)
    A newline character is always put at the end of the buffer, to make
    an explicit test for buffer end unnecessary.  */
 
-static bool
-cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
-     bool show_nonprinting, bool show_tabs, bool number, bool number_nonblank,
-     bool show_ends, bool squeeze_blank)
+ਸਥਿਰ bool
+cat (ਅੱਖਰ *inbuf, idx_t insize, ਅੱਖਰ *outbuf, idx_t outsize,
+     bool show_nonprinting, bool show_tabs, bool ਸੰਖਿਆ, bool ਸੰਖਿਆ_nonblank,
+     bool show_ਸਿਰੇ, bool squeeze_blank)
 {
   /* Last character read from the input buffer.  */
-  unsigned char ch;
+  ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ ch;
 
   /* Determines how many consecutive newlines there have been in the
      input.  0 newlines makes NEWLINES -1, 1 newline makes NEWLINES 1,
      etc.  Initially 0 to indicate that we are at the beginning of a
      new line.  The "state" of the procedure is determined by
      NEWLINES.  */
-  int newlines = newlines2;
+  ਪੂਰਨ newlines = newlines2;
 
-#ifdef FIONREAD
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ FIONREAD
   /* If nonzero, use the FIONREAD ioctl, as an optimization.
      (On Ultrix, it is not supported on NFS file systems.)  */
   bool use_fionread = true;
-#endif
+#ਜੇ_ਅੰਤ
 
   /* The inbuf pointers are initialized so that BPIN > EOB, and thereby input
      is read immediately.  */
 
   /* Pointer to the first non-valid byte in the input buffer, i.e., the
      current end of the buffer.  */
-  char *eob = inbuf;
+  ਅੱਖਰ *eob = inbuf;
 
   /* Pointer to the next character in the input buffer.  */
-  char *bpin = eob + 1;
+  ਅੱਖਰ *bpin = eob + 1;
 
   /* Pointer to the position where the next character shall be written.  */
-  char *bpout = outbuf;
+  ਅੱਖਰ *bpout = outbuf;
 
-  while (true)
+  ਜਦੋਂ (true)
     {
-      do
+      ਕਰੋ
         {
           /* Write if there are at least OUTSIZE bytes in OUTBUF.  */
 
-          if (outbuf + outsize <= bpout)
+          ਜੇ (outbuf + outsize <= bpout)
             {
-              char *wp = outbuf;
-              idx_t remaining_bytes;
-              do
+              ਅੱਖਰ *wp = outbuf;
+              idx_t ਬਚਿਆ_ਬਾਈਟਾਂ;
+              ਕਰੋ
                 {
-                  if (full_write (STDOUT_FILENO, wp, outsize) != outsize)
+                  ਜੇ (ਭਰਿਆ_write (STDOUT_FILENO, wp, outsize) != outsize)
                     write_error ();
                   wp += outsize;
-                  remaining_bytes = bpout - wp;
+                  ਬਚਿਆ_ਬਾਈਟਾਂ = bpout - wp;
                 }
-              while (outsize <= remaining_bytes);
+              ਜਦੋਂ (outsize <= ਬਚਿਆ_ਬਾਈਟਾਂ);
 
               /* Move the remaining bytes to the beginning of the
                  buffer.  */
 
-              memmove (outbuf, wp, remaining_bytes);
-              bpout = outbuf + remaining_bytes;
+              memmove (outbuf, wp, ਬਚਿਆ_ਬਾਈਟਾਂ);
+              bpout = outbuf + ਬਚਿਆ_ਬਾਈਟਾਂ;
             }
 
           /* Is INBUF empty?  */
 
-          if (bpin > eob)
+          ਜੇ (bpin > eob)
             {
-              bool input_pending = false;
-#ifdef FIONREAD
-              int n_to_read = 0;
+              bool ਨਿਵੇਸ਼_pending = false;
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ FIONREAD
+              ਪੂਰਨ n_ਮੰਜ਼ਿਲ_read = 0;
 
               /* Is there any input to read immediately?
                  If not, we are about to wait,
                  so write all buffered output before waiting.  */
 
-              if (use_fionread
-                  && ioctl (input_desc, FIONREAD, &n_to_read) < 0)
+              ਜੇ (use_fionread
+                  && ioctl (ਨਿਵੇਸ਼_desc, FIONREAD, &n_ਮੰਜ਼ਿਲ_read) < 0)
                 {
                   /* Ultrix returns EOPNOTSUPP on NFS;
                      HP-UX returns ENOTTY on pipes.
@@ -307,40 +307,40 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
                      More/BSD returns ENODEV on special files
                      like /dev/null.
                      Irix-5 returns ENOSYS on pipes.  */
-                  if (errno == EOPNOTSUPP || errno == ENOTTY
+                  ਜੇ (errno == EOPNOTSUPP || errno == ENOTTY
                       || errno == EINVAL || errno == ENODEV
                       || errno == ENOSYS)
                     use_fionread = false;
-                  else
+                  ਨਹੀਂਤਾਂ
                     {
                       error (0, errno, _("cannot do ioctl on %s"),
                              quoteaf (infile));
                       newlines2 = newlines;
-                      return false;
+                      ਵਾਪਸ false;
                     }
                 }
-              if (n_to_read != 0)
-                input_pending = true;
-#endif
+              ਜੇ (n_ਮੰਜ਼ਿਲ_read != 0)
+                ਨਿਵੇਸ਼_pending = true;
+#ਜੇ_ਅੰਤ
 
-              if (!input_pending)
+              ਜੇ (!ਨਿਵੇਸ਼_pending)
                 write_pending (outbuf, &bpout);
 
               /* Read more input into INBUF.  */
 
-              ssize_t n_read = read (input_desc, inbuf, insize);
-              if (n_read < 0)
+              ssize_t n_read = ਪਠ (ਨਿਵੇਸ਼_desc, inbuf, insize);
+              ਜੇ (n_read < 0)
                 {
                   error (0, errno, "%s", quotef (infile));
                   write_pending (outbuf, &bpout);
                   newlines2 = newlines;
-                  return false;
+                  ਵਾਪਸ false;
                 }
-              if (n_read == 0)
+              ਜੇ (n_read == 0)
                 {
                   write_pending (outbuf, &bpout);
                   newlines2 = newlines;
-                  return true;
+                  ਵਾਪਸ true;
                 }
 
               /* Update the pointers and insert a sentinel at the buffer
@@ -350,16 +350,16 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
               eob = bpin + n_read;
               *eob = '\n';
             }
-          else
+          ਨਹੀਂਤਾਂ
             {
               /* It was a real (not a sentinel) newline.  */
 
               /* Was the last line empty?
                  (i.e., have two or more consecutive newlines been read?)  */
 
-              if (++newlines > 0)
+              ਜੇ (++newlines > 0)
                 {
-                  if (newlines >= 2)
+                  ਜੇ (newlines >= 2)
                     {
                       /* Limit this to 2 here.  Otherwise, with lots of
                          consecutive newlines, the counter could wrap
@@ -369,26 +369,26 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
                       /* Are multiple adjacent empty lines to be substituted
                          by single ditto (-s), and this was the second empty
                          line?  */
-                      if (squeeze_blank)
+                      ਜੇ (squeeze_blank)
                         {
                           ch = *bpin++;
-                          continue;
+                          ਜਾਰੀ;
                         }
                     }
 
                   /* Are line numbers to be written at empty lines (-n)?  */
 
-                  if (number && !number_nonblank)
+                  ਜੇ (ਸੰਖਿਆ && !ਸੰਖਿਆ_nonblank)
                     {
-                      next_line_num ();
-                      bpout = stpcpy (bpout, line_num_print);
+                      ਅਗਲਾ_ਸਤਰ_ਅੰਕ ();
+                      bpout = stpcpy (bpout, ਸਤਰ_ਅੰਕ_print);
                     }
                 }
 
               /* Output a currency symbol if requested (-e).  */
-              if (show_ends)
+              ਜੇ (show_ਸਿਰੇ)
                 {
-                  if (pending_cr)
+                  ਜੇ (pending_cr)
                     {
                       *bpout++ = '^';
                       *bpout++ = 'M';
@@ -403,11 +403,11 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
             }
           ch = *bpin++;
         }
-      while (ch == '\n');
+      ਜਦੋਂ (ch == '\n');
 
       /* Here CH cannot contain a newline character.  */
 
-      if (pending_cr)
+      ਜੇ (pending_cr)
         {
           *bpout++ = '\r';
           pending_cr = false;
@@ -415,10 +415,10 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
 
       /* Are we at the beginning of a line, and line numbers are requested?  */
 
-      if (newlines >= 0 && number)
+      ਜੇ (newlines >= 0 && ਸੰਖਿਆ)
         {
-          next_line_num ();
-          bpout = stpcpy (bpout, line_num_print);
+          ਅਗਲਾ_ਸਤਰ_ਅੰਕ ();
+          bpout = stpcpy (bpout, ਸਤਰ_ਅੰਕ_print);
         }
 
       /* The loops below continue until a newline character is found,
@@ -427,48 +427,48 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
 
       /* If quoting, i.e., at least one of -v, -e, or -t specified,
          scan for chars that need conversion.  */
-      if (show_nonprinting)
+      ਜੇ (show_nonprinting)
         {
-          while (true)
+          ਜਦੋਂ (true)
             {
-              if (ch >= 32)
+              ਜੇ (ch >= 32)
                 {
-                  if (ch < 127)
+                  ਜੇ (ch < 127)
                     *bpout++ = ch;
-                  else if (ch == 127)
+                  ਨਹੀਂਤਾਂ ਜੇ (ch == 127)
                     {
                       *bpout++ = '^';
                       *bpout++ = '?';
                     }
-                  else
+                  ਨਹੀਂਤਾਂ
                     {
                       *bpout++ = 'M';
                       *bpout++ = '-';
-                      if (ch >= 128 + 32)
+                      ਜੇ (ch >= 128 + 32)
                         {
-                          if (ch < 128 + 127)
+                          ਜੇ (ch < 128 + 127)
                             *bpout++ = ch - 128;
-                          else
+                          ਨਹੀਂਤਾਂ
                             {
                               *bpout++ = '^';
                               *bpout++ = '?';
                             }
                         }
-                      else
+                      ਨਹੀਂਤਾਂ
                         {
                           *bpout++ = '^';
                           *bpout++ = ch - 128 + 64;
                         }
                     }
                 }
-              else if (ch == '\t' && !show_tabs)
+              ਨਹੀਂਤਾਂ ਜੇ (ch == '\t' && !show_tabs)
                 *bpout++ = '\t';
-              else if (ch == '\n')
+              ਨਹੀਂਤਾਂ ਜੇ (ch == '\n')
                 {
                   newlines = -1;
-                  break;
+                  ਰੋਕੋ;
                 }
-              else
+              ਨਹੀਂਤਾਂ
                 {
                   *bpout++ = '^';
                   *bpout++ = ch + 64;
@@ -477,35 +477,35 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
               ch = *bpin++;
             }
         }
-      else
+      ਨਹੀਂਤਾਂ
         {
           /* Not quoting, neither of -v, -e, or -t specified.  */
-          while (true)
+          ਜਦੋਂ (true)
             {
-              if (ch == '\t' && show_tabs)
+              ਜੇ (ch == '\t' && show_tabs)
                 {
                   *bpout++ = '^';
                   *bpout++ = ch + 64;
                 }
-              else if (ch != '\n')
+              ਨਹੀਂਤਾਂ ਜੇ (ch != '\n')
                 {
-                  if (ch == '\r' && *bpin == '\n' && show_ends)
+                  ਜੇ (ch == '\r' && *bpin == '\n' && show_ਸਿਰੇ)
                     {
-                      if (bpin == eob)
+                      ਜੇ (bpin == eob)
                         pending_cr = true;
-                      else
+                      ਨਹੀਂਤਾਂ
                         {
                           *bpout++ = '^';
                           *bpout++ = 'M';
                         }
                     }
-                  else
+                  ਨਹੀਂਤਾਂ
                     *bpout++ = ch;
                 }
-              else
+              ਨਹੀਂਤਾਂ
                 {
                   newlines = -1;
-                  break;
+                  ਰੋਕੋ;
                 }
 
               ch = *bpin++;
@@ -518,8 +518,8 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
    Return 1 if successful, 0 if ordinary read+write should be tried,
    -1 if a serious problem has been diagnosed.  */
 
-static int
-copy_cat (void)
+ਸਥਿਰ ਪੂਰਨ
+copy_cat (ਖਾਲੀ)
 {
   /* Copy at most COPY_MAX bytes at a time; this is min
      (SSIZE_MAX, SIZE_MAX) truncated to a value that is
@@ -532,20 +532,20 @@ copy_cat (void)
      so fall back on read+write if the copy_file_range is
      unsupported or the input file seems empty.  */
 
-  for (bool some_copied = false; ; some_copied = true)
-    switch (copy_file_range (input_desc, NULL, STDOUT_FILENO, NULL,
+  ਲਈ (bool some_copied = false; ; some_copied = true)
+    ਚੋਣ (copy_file_range (ਨਿਵੇਸ਼_desc, ਨਿਰਾ, STDOUT_FILENO, ਨਿਰਾ,
                              copy_max, 0))
       {
-      case 0:
-        return some_copied;
+      ਹਾਲਤ 0:
+        ਵਾਪਸ some_copied;
 
-      case -1:
-        if (errno == ENOSYS || is_ENOTSUP (errno) || errno == EINVAL
+      ਹਾਲਤ -1:
+        ਜੇ (errno == ENOSYS || is_ENOTSUP (errno) || errno == EINVAL
             || errno == EBADF || errno == EXDEV || errno == ETXTBSY
             || errno == EPERM || errno == EFBIG)
-          return 0;
+          ਵਾਪਸ 0;
         error (0, errno, "%s", quotef (infile));
-        return -1;
+        ਵਾਪਸ -1;
       }
 }
 
@@ -553,164 +553,164 @@ copy_cat (void)
    Return 1 if successful, 0 if ordinary read+write should be tried,
    -1 if a serious problem has been diagnosed.  */
 
-static int
-splice_cat (void)
+ਸਥਿਰ ਪੂਰਨ
+splice_cat (ਖਾਲੀ)
 {
   bool some_copied = false;
-  bool in_ok = true;
-  bool out_ok = true;
+  bool ਵਿੱਚ_ok = true;
+  bool ਬਾਹਰਲਾ_ok = true;
 
-#if HAVE_SPLICE
+#ਜੇ HAVE_SPLICE
 
   /* If PIPEFD[0] is a non-negative value, we have an open pipe from a
      previous call to this function.  At the start of this function the
      pipe will always be empty.  */
-  static int pipefd[2] = { -1, -1 };
+  ਸਥਿਰ ਪੂਰਨ pipefd[2] = { -1, -1 };
 
   /* The size of the pipe referred to by PIPEFD.  */
-  static idx_t pipefd_pipe_size = 0;
+  ਸਥਿਰ idx_t pipefd_pipe_ਮਾਪ = 0;
 
   /* Create an intermediate pipe if it is not already open.
      Even if both input and output are pipes,
      so that read and write errors can be distinguished.  */
-  if (pipefd[0] < 0)
+  ਜੇ (pipefd[0] < 0)
     {
-      if (pipe (pipefd) < 0)
-        return false;
-      pipefd_pipe_size = increase_pipe_size (pipefd[1]);
+      ਜੇ (pipe (pipefd) < 0)
+        ਵਾਪਸ false;
+      pipefd_pipe_ਮਾਪ = increase_pipe_ਮਾਪ (pipefd[1]);
     }
 
   /* Increase the size of the pipe referred to by standard output.  */
-  static int stdout_is_pipe = -1;
-  static idx_t stdout_pipe_size = 0;
-  if (stdout_is_pipe == -1)
+  ਸਥਿਰ ਪੂਰਨ stdout_is_pipe = -1;
+  ਸਥਿਰ idx_t stdout_pipe_ਮਾਪ = 0;
+  ਜੇ (stdout_is_pipe == -1)
     {
       stdout_is_pipe = 0 < isapipe (STDOUT_FILENO);
-      if (stdout_is_pipe)
-        stdout_pipe_size = increase_pipe_size (STDOUT_FILENO);
+      ਜੇ (stdout_is_pipe)
+        stdout_pipe_ਮਾਪ = increase_pipe_ਮਾਪ (STDOUT_FILENO);
     }
 
-  idx_t pipe_size = MAX (pipefd_pipe_size, stdout_pipe_size);
+  idx_t pipe_ਮਾਪ = MAX (pipefd_pipe_ਮਾਪ, stdout_pipe_ਮਾਪ);
 
-  while (true)
+  ਜਦੋਂ (true)
     {
-      ssize_t bytes_read = splice (input_desc, NULL, pipefd[1], NULL,
-                                   pipe_size, 0);
+      ssize_t ਬਾਈਟਾਂ_read = splice (ਨਿਵੇਸ਼_desc, ਨਿਰਾ, pipefd[1], ਨਿਰਾ,
+                                   pipe_ਮਾਪ, 0);
       /* If we successfully splice'd input previously, assume that any
          subsequent error is fatal.  If not, then fall back to read
          and write.  */
-      in_ok = 0 <= bytes_read || ! some_copied;
-      if (bytes_read == 0)
+      ਵਿੱਚ_ok = 0 <= ਬਾਈਟਾਂ_read || ! some_copied;
+      ਜੇ (ਬਾਈਟਾਂ_read == 0)
         some_copied = true;  /* Indicate splice complete.  */
-      if (bytes_read <= 0)
-        goto done;
+      ਜੇ (ਬਾਈਟਾਂ_read <= 0)
+        ਜਾਓ ਪੂਰਾ;
       /* We need to drain the intermediate pipe to standard output.  */
-      while (0 < bytes_read)
+      ਜਦੋਂ (0 < ਬਾਈਟਾਂ_read)
         {
-          ssize_t bytes_written = splice (pipefd[0], NULL, STDOUT_FILENO, NULL,
-                                          pipe_size, 0);
+          ssize_t ਬਾਈਟਾਂ_written = splice (pipefd[0], ਨਿਰਾ, STDOUT_FILENO, ਨਿਰਾ,
+                                          pipe_ਮਾਪ, 0);
           /* If we successfully splice'd output, assume any subsequent
              error is fatal.  If not, than drain the intermediate pipe and
              continue using read and write.  */
-          if (bytes_written < 0)
+          ਜੇ (ਬਾਈਟਾਂ_written < 0)
             {
-              if (some_copied)
-                out_ok = false;
-              else
+              ਜੇ (some_copied)
+                ਬਾਹਰਲਾ_ok = false;
+              ਨਹੀਂਤਾਂ
                 {
-                  char buf[BUFSIZ];
-                  while (0 < bytes_read)
+                  ਅੱਖਰ buf[BUFSIZ];
+                  ਜਦੋਂ (0 < ਬਾਈਟਾਂ_read)
                     {
-                      ssize_t count = MIN (bytes_read, sizeof buf);
-                      ssize_t n_read = read (pipefd[0], buf, count);
+                      ssize_t ਗਿਣਤੀ_2 = MIN (ਬਾਈਟਾਂ_read, ਆਕਾਰ buf);
+                      ssize_t n_read = ਪਠ (pipefd[0], buf, ਗਿਣਤੀ_2);
                       /* Failure not associated with in or out.  */
-                      in_ok = out_ok = 0 <= n_read;
-                      if (n_read <= 0)
-                        goto done;
-                      if (full_write (STDOUT_FILENO, buf, n_read) != n_read)
+                      ਵਿੱਚ_ok = ਬਾਹਰਲਾ_ok = 0 <= n_read;
+                      ਜੇ (n_read <= 0)
+                        ਜਾਓ ਪੂਰਾ;
+                      ਜੇ (ਭਰਿਆ_write (STDOUT_FILENO, buf, n_read) != n_read)
                         write_error ();
-                      bytes_read -= n_read;
+                      ਬਾਈਟਾਂ_read -= n_read;
                     }
                 }
             }
-          if (bytes_written <= 0)
-            goto done;
+          ਜੇ (ਬਾਈਟਾਂ_written <= 0)
+            ਜਾਓ ਪੂਰਾ;
           some_copied = true;
-          bytes_read -= bytes_written;
+          ਬਾਈਟਾਂ_read -= ਬਾਈਟਾਂ_written;
         }
     }
 
- done:
-  if (! in_ok && ! out_ok)
+ ਪੂਰਾ:
+  ਜੇ (! ਵਿੱਚ_ok && ! ਬਾਹਰਲਾ_ok)
     {
       /* Recreate the pipe on internal error.  */
-      int saved_errno = errno;
+      ਪੂਰਨ saved_errno = errno;
       close (pipefd[0]);
       close (pipefd[1]);
       errno = saved_errno;
       pipefd[0] = pipefd[1] = -1;
-      pipefd_pipe_size = 0;
+      pipefd_pipe_ਮਾਪ = 0;
       error (0, errno, "%s", _("splice error"));
     }
-  else if (! in_ok)
+  ਨਹੀਂਤਾਂ ਜੇ (! ਵਿੱਚ_ok)
     error (0, errno, "%s", quotef (infile));
-  else if (! out_ok)
+  ਨਹੀਂਤਾਂ ਜੇ (! ਬਾਹਰਲਾ_ok)
     write_error ();
-#endif
+#ਜੇ_ਅੰਤ
 
-  return (in_ok && out_ok) ? some_copied : -1;
+  ਵਾਪਸ (ਵਿੱਚ_ok && ਬਾਹਰਲਾ_ok) ? some_copied : -1;
 }
 
 /* Reuse an aligned buffer across inputs, growing it only as needed.  */
 
-static char *
-ensure_buf_size (char *buf, idx_t *buf_alloc, idx_t alignment, idx_t size)
+ਸਥਿਰ ਅੱਖਰ *
+ensure_buf_ਮਾਪ (ਅੱਖਰ *buf, idx_t *buf_alloc, idx_t alignment, idx_t ਮਾਪ)
 {
-  affirm (buf != NULL || *buf_alloc < size);
+  affirm (buf != ਨਿਰਾ || *buf_alloc < ਮਾਪ);
 
-  if (*buf_alloc < size)
+  ਜੇ (*buf_alloc < ਮਾਪ)
     {
       alignfree (buf);
-      buf = xalignalloc (alignment, size);
-      *buf_alloc = size;
+      buf = xalignalloc (alignment, ਮਾਪ);
+      *buf_alloc = ਮਾਪ;
     }
 
-  return buf;
+  ਵਾਪਸ buf;
 }
 
-int
-main (int argc, char **argv)
+ਪੂਰਨ
+ਮੁੱਖ (ਪੂਰਨ argc, ਅੱਖਰ **argv)
 {
   /* Nonzero if we have ever read standard input.  */
   bool have_read_stdin = false;
 
-  struct stat ostat_buf;
+  ਬਣਤਰ stat ostat_buf;
 
   /* Variables that are set according to the specified options.  */
-  bool number = false;
-  bool number_nonblank = false;
+  bool ਸੰਖਿਆ = false;
+  bool ਸੰਖਿਆ_nonblank = false;
   bool squeeze_blank = false;
-  bool show_ends = false;
+  bool show_ਸਿਰੇ = false;
   bool show_nonprinting = false;
   bool show_tabs = false;
-  int file_open_mode = O_RDONLY;
+  ਪੂਰਨ file_open_ਬਹੁਲਕ = O_RDONLY;
 
-  static struct option const long_options[] =
+  ਸਥਿਰ ਬਣਤਰ option ਅਚਲ long_options[] =
   {
-    {"number-nonblank", no_argument, NULL, 'b'},
-    {"number", no_argument, NULL, 'n'},
-    {"squeeze-blank", no_argument, NULL, 's'},
-    {"show-nonprinting", no_argument, NULL, 'v'},
-    {"show-ends", no_argument, NULL, 'E'},
-    {"show-tabs", no_argument, NULL, 'T'},
-    {"show-all", no_argument, NULL, 'A'},
+    {"number-nonblank", no_ਦਲੀਲ, ਨਿਰਾ, 'b'},
+    {"number", no_ਦਲੀਲ, ਨਿਰਾ, 'n'},
+    {"squeeze-blank", no_ਦਲੀਲ, ਨਿਰਾ, 's'},
+    {"show-nonprinting", no_ਦਲੀਲ, ਨਿਰਾ, 'v'},
+    {"show-ends", no_ਦਲੀਲ, ਨਿਰਾ, 'E'},
+    {"show-tabs", no_ਦਲੀਲ, ਨਿਰਾ, 'T'},
+    {"show-all", no_ਦਲੀਲ, ਨਿਰਾ, 'A'},
     {GETOPT_HELP_OPTION_DECL},
-    {GETOPT_VERSION_OPTION_DECL},
-    {NULL, 0, NULL, 0}
+    {GETOPT_ਸੰਸਕਰਣ_OPTION_DECL},
+    {ਨਿਰਾ, 0, ਨਿਰਾ, 0}
   };
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  ਸੈੱਟ_ਪ੍ਰੋਗਰਾਮ_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
@@ -723,156 +723,156 @@ main (int argc, char **argv)
 
   /* Parse command line options.  */
 
-  int c;
-  while ((c = getopt_long (argc, argv, "benstuvAET", long_options, NULL))
+  ਪੂਰਨ c;
+  ਜਦੋਂ ((c = getopt_long (argc, argv, "benstuvAET", long_options, ਨਿਰਾ))
          != -1)
     {
-      switch (c)
+      ਚੋਣ (c)
         {
-        case 'b':
-          number = true;
-          number_nonblank = true;
-          break;
+        ਹਾਲਤ 'b':
+          ਸੰਖਿਆ = true;
+          ਸੰਖਿਆ_nonblank = true;
+          ਰੋਕੋ;
 
-        case 'e':
-          show_ends = true;
+        ਹਾਲਤ 'e':
+          show_ਸਿਰੇ = true;
           show_nonprinting = true;
-          break;
+          ਰੋਕੋ;
 
-        case 'n':
-          number = true;
-          break;
+        ਹਾਲਤ 'n':
+          ਸੰਖਿਆ = true;
+          ਰੋਕੋ;
 
-        case 's':
+        ਹਾਲਤ 's':
           squeeze_blank = true;
-          break;
+          ਰੋਕੋ;
 
-        case 't':
+        ਹਾਲਤ 't':
           show_tabs = true;
           show_nonprinting = true;
-          break;
+          ਰੋਕੋ;
 
-        case 'u':
+        ਹਾਲਤ 'u':
           /* We provide the -u feature unconditionally.  */
-          break;
+          ਰੋਕੋ;
 
-        case 'v':
+        ਹਾਲਤ 'v':
           show_nonprinting = true;
-          break;
+          ਰੋਕੋ;
 
-        case 'A':
+        ਹਾਲਤ 'A':
           show_nonprinting = true;
-          show_ends = true;
+          show_ਸਿਰੇ = true;
           show_tabs = true;
-          break;
+          ਰੋਕੋ;
 
-        case 'E':
-          show_ends = true;
-          break;
+        ਹਾਲਤ 'E':
+          show_ਸਿਰੇ = true;
+          ਰੋਕੋ;
 
-        case 'T':
+        ਹਾਲਤ 'T':
           show_tabs = true;
-          break;
+          ਰੋਕੋ;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_ਸੰਸਕਰਣ_CHAR (ਪ੍ਰੋਗਰਾਮ_NAME, AUTHORS);
 
-        default:
+        ਮੂਲ:
           usage (EXIT_FAILURE);
         }
     }
 
   /* Get device, i-node number, and optimal blocksize of output.  */
 
-  if (fstat (STDOUT_FILENO, &ostat_buf) < 0)
+  ਜੇ (fstat (STDOUT_FILENO, &ostat_buf) < 0)
     error (EXIT_FAILURE, errno, _("standard output"));
 
   /* Optimal size of i/o operations of output.  */
   idx_t outsize = io_blksize (&ostat_buf);
 
   /* Device, I-node number and lazily-acquired flags of the output.  */
-  int out_flags = -2;
+  ਪੂਰਨ ਬਾਹਰਲਾ_flags = -2;
 
   /* True if the output is a regular file.  */
-  bool out_isreg = S_ISREG (ostat_buf.st_mode) != 0;
+  bool ਬਾਹਰਲਾ_isreg = S_ISREG (ostat_buf.st_ਬਹੁਲਕ) != 0;
 
-  if (! (number || show_ends || squeeze_blank))
+  ਜੇ (! (ਸੰਖਿਆ || show_ਸਿਰੇ || squeeze_blank))
     {
-      file_open_mode |= O_BINARY;
-      xset_binary_mode (STDOUT_FILENO, O_BINARY);
+      file_open_ਬਹੁਲਕ |= O_ਦੁਆਧਾਰੀ;
+      xset_ਦੁਆਧਾਰੀ_ਬਹੁਲਕ (STDOUT_FILENO, O_ਦੁਆਧਾਰੀ);
     }
 
   /* Main loop.  */
 
   infile = "-";
-  int argind = optind;
+  ਪੂਰਨ argind = optind;
   bool ok = true;
-  idx_t page_size = getpagesize ();
-  char *inbuf = NULL;
-  char *outbuf = NULL;
+  idx_t ਪੰਨਾ_ਮਾਪ = getpagesize ();
+  ਅੱਖਰ *inbuf = ਨਿਰਾ;
+  ਅੱਖਰ *outbuf = ਨਿਰਾ;
   idx_t inbuf_alloc = 0;
   idx_t outbuf_alloc = 0;
 
-  do
+  ਕਰੋ
     {
-      if (argind < argc)
+      ਜੇ (argind < argc)
         infile = argv[argind];
 
       bool reading_stdin = streq (infile, "-");
-      if (reading_stdin)
+      ਜੇ (reading_stdin)
         {
           have_read_stdin = true;
-          input_desc = STDIN_FILENO;
-          if (file_open_mode & O_BINARY)
-            xset_binary_mode (STDIN_FILENO, O_BINARY);
+          ਨਿਵੇਸ਼_desc = STDIN_FILENO;
+          ਜੇ (file_open_ਬਹੁਲਕ & O_ਦੁਆਧਾਰੀ)
+            xset_ਦੁਆਧਾਰੀ_ਬਹੁਲਕ (STDIN_FILENO, O_ਦੁਆਧਾਰੀ);
         }
-      else
+      ਨਹੀਂਤਾਂ
         {
-          input_desc = open (infile, file_open_mode);
-          if (input_desc < 0)
+          ਨਿਵੇਸ਼_desc = open (infile, file_open_ਬਹੁਲਕ);
+          ਜੇ (ਨਿਵੇਸ਼_desc < 0)
             {
               error (0, errno, "%s", quotef (infile));
               ok = false;
-              continue;
+              ਜਾਰੀ;
             }
         }
 
-      struct stat istat_buf;
-      if (fstat (input_desc, &istat_buf) < 0)
+      ਬਣਤਰ stat istat_buf;
+      ਜੇ (fstat (ਨਿਵੇਸ਼_desc, &istat_buf) < 0)
         {
           error (0, errno, "%s", quotef (infile));
           ok = false;
-          goto contin;
+          ਜਾਓ contin;
         }
 
       /* Optimal size of i/o operations of input.  */
       idx_t insize = io_blksize (&istat_buf);
 
-      fdadvise (input_desc, 0, 0, FADVISE_SEQUENTIAL);
+      fdadvise (ਨਿਵੇਸ਼_desc, 0, 0, FADVISE_SEQUENTIAL);
 
       /* Don't copy a file to itself if that would merely exhaust the
          output device.  It's better to catch this error earlier
          rather than later.  */
 
-      if (! (S_ISFIFO (istat_buf.st_mode) || S_ISSOCK (istat_buf.st_mode)
+      ਜੇ (! (S_ISFIFO (istat_buf.st_ਬਹੁਲਕ) || S_ISSOCK (istat_buf.st_ਬਹੁਲਕ)
              || S_TYPEISSHM (&istat_buf) || S_TYPEISTMO (&istat_buf))
           && ! (S_TYPEISSHM (&ostat_buf) || S_TYPEISTMO (&ostat_buf))
           && SAME_INODE (istat_buf, ostat_buf))
         {
-          off_t in_pos = lseek (input_desc, 0, SEEK_CUR);
-          if (0 <= in_pos)
+          off_t ਵਿੱਚ_pos = lseek (ਨਿਵੇਸ਼_desc, 0, SEEK_CUR);
+          ਜੇ (0 <= ਵਿੱਚ_pos)
             {
-              if (out_flags < -1)
-                out_flags = fcntl (STDOUT_FILENO, F_GETFL);
-              int whence = (0 <= out_flags && out_flags & O_APPEND
+              ਜੇ (ਬਾਹਰਲਾ_flags < -1)
+                ਬਾਹਰਲਾ_flags = fcntl (STDOUT_FILENO, F_GETFL);
+              ਪੂਰਨ whence = (0 <= ਬਾਹਰਲਾ_flags && ਬਾਹਰਲਾ_flags & O_APPEND
                             ? SEEK_END : SEEK_CUR);
-              if (in_pos < lseek (STDOUT_FILENO, 0, whence))
+              ਜੇ (ਵਿੱਚ_pos < lseek (STDOUT_FILENO, 0, whence))
                 {
                   error (0, 0, _("%s: input file is output file"),
                          quotef (infile));
                   ok = false;
-                  goto contin;
+                  ਜਾਓ contin;
                 }
             }
         }
@@ -881,38 +881,38 @@ main (int argc, char **argv)
          options were given use 'cat'; if not, use 'copy_cat' if it
          works, 'simple_cat' otherwise.  */
 
-      if (! (number || show_ends || show_nonprinting
+      ਜੇ (! (ਸੰਖਿਆ || show_ਸਿਰੇ || show_nonprinting
              || show_tabs || squeeze_blank))
         {
-          int copy_cat_status =
-            out_isreg && S_ISREG (istat_buf.st_mode) ? copy_cat () : 0;
-          if (copy_cat_status != 0)
-            ok &= 0 < copy_cat_status;
-          else
+          ਪੂਰਨ copy_cat_ਸਥਿਤੀ =
+            ਬਾਹਰਲਾ_isreg && S_ISREG (istat_buf.st_ਬਹੁਲਕ) ? copy_cat () : 0;
+          ਜੇ (copy_cat_ਸਥਿਤੀ != 0)
+            ok &= 0 < copy_cat_ਸਥਿਤੀ;
+          ਨਹੀਂਤਾਂ
             {
               /* Note 32768 was determined as the limit when splice
                  starts to have a performance advantage.
                  It also excludes zero length files which may not
                  be compatible with splice in some edge cases.  */
-              int splice_cat_status = ((usable_st_size (&istat_buf)
-                                        && istat_buf.st_size <= 32768)
+              ਪੂਰਨ splice_cat_ਸਥਿਤੀ = ((usable_st_ਮਾਪ (&istat_buf)
+                                        && istat_buf.st_ਮਾਪ <= 32768)
                                        ? 0 : splice_cat ());
-              if (splice_cat_status != 0)
-                ok &= 0 < splice_cat_status;
-              else
+              ਜੇ (splice_cat_ਸਥਿਤੀ != 0)
+                ok &= 0 < splice_cat_ਸਥਿਤੀ;
+              ਨਹੀਂਤਾਂ
                 {
                   insize = MAX (insize, outsize);
-                  inbuf = ensure_buf_size (inbuf, &inbuf_alloc,
-                                           page_size, insize);
+                  inbuf = ensure_buf_ਮਾਪ (inbuf, &inbuf_alloc,
+                                           ਪੰਨਾ_ਮਾਪ, insize);
                   ok &= simple_cat (inbuf, insize);
                 }
             }
         }
-      else
+      ਨਹੀਂਤਾਂ
         {
           /* Allocate, with an extra byte for a newline sentinel.  */
-          inbuf = ensure_buf_size (inbuf, &inbuf_alloc,
-                                   page_size, insize + 1);
+          inbuf = ensure_buf_ਮਾਪ (inbuf, &inbuf_alloc,
+                                   ਪੰਨਾ_ਮਾਪ, insize + 1);
 
           /* Why are
              (OUTSIZE - 1 + INSIZE * 4 + LINE_COUNTER_BUF_LEN)
@@ -936,40 +936,40 @@ main (int argc, char **argv)
              on some paging implementations.  */
 
           idx_t bufsize;
-          if (ckd_mul (&bufsize, insize, 4)
-              || ckd_add (&bufsize, bufsize, outsize)
-              || ckd_add (&bufsize, bufsize, LINE_COUNTER_BUF_LEN - 1))
+          ਜੇ (ckd_mul (&bufsize, insize, 4)
+              || ckd_ਜੋੜੋ (&bufsize, bufsize, outsize)
+              || ckd_ਜੋੜੋ (&bufsize, bufsize, ਸਤਰ_COUNTER_BUF_LEN - 1))
             xalloc_die ();
-          outbuf = ensure_buf_size (outbuf, &outbuf_alloc,
-                                    page_size, bufsize);
+          outbuf = ensure_buf_ਮਾਪ (outbuf, &outbuf_alloc,
+                                    ਪੰਨਾ_ਮਾਪ, bufsize);
 
           ok &= cat (inbuf, insize, outbuf, outsize, show_nonprinting,
-                     show_tabs, number, number_nonblank, show_ends,
+                     show_tabs, ਸੰਖਿਆ, ਸੰਖਿਆ_nonblank, show_ਸਿਰੇ,
                      squeeze_blank);
         }
 
     contin:
-      if (!reading_stdin && close (input_desc) < 0)
+      ਜੇ (!reading_stdin && close (ਨਿਵੇਸ਼_desc) < 0)
         {
           error (0, errno, "%s", quotef (infile));
           ok = false;
         }
     }
-  while (++argind < argc);
+  ਜਦੋਂ (++argind < argc);
 
-  if (pending_cr)
+  ਜੇ (pending_cr)
     {
-      if (full_write (STDOUT_FILENO, "\r", 1) != 1)
+      ਜੇ (ਭਰਿਆ_write (STDOUT_FILENO, "\r", 1) != 1)
         write_error ();
     }
 
-#ifdef lint
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ lint
   alignfree (outbuf);
   alignfree (inbuf);
-#endif
+#ਜੇ_ਅੰਤ
 
-  if (have_read_stdin && close (STDIN_FILENO) < 0)
+  ਜੇ (have_read_stdin && close (STDIN_FILENO) < 0)
     error (EXIT_FAILURE, errno, _("closing standard input"));
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  ਵਾਪਸ ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

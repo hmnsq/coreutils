@@ -14,37 +14,37 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#ifndef __CKSUM_CRC_H__
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ __CKSUM_CRC_H__
 # define __CKSUM_CRC_H__
 
 # include <stdint.h>
 # include <stdio.h>
 
-extern bool cksum_debug;
+ਬਾਹਰੀ bool cksum_debug;
 
-extern int
-crc_sum_stream (FILE *stream, void *resstream, intmax_t *length);
+ਬਾਹਰੀ ਪੂਰਨ
+ਚੱਕਰੀ_ਜਾਂਚ_ਜੋੜ_ਧਾਰਾ (FILE *ਧਾਰਾ, ਖਾਲੀ *resstream, intmax_t *ਲੰਮਾਈ);
 
-extern int
-crc32b_sum_stream (FILE *stream, void *resstream, intmax_t *length);
+ਬਾਹਰੀ ਪੂਰਨ
+crc32b_ਜੋੜ_ਧਾਰਾ (FILE *ਧਾਰਾ, ਖਾਲੀ *resstream, intmax_t *ਲੰਮਾਈ);
 
-extern void
-output_crc (char const *file, int binary_file, void const *digest, bool raw,
-            bool tagged, unsigned char delim, bool args, intmax_t length)
+ਬਾਹਰੀ ਖਾਲੀ
+output_ਚੱਕਰੀ_ਜਾਂਚ (ਅੱਖਰ ਅਚਲ *file, ਪੂਰਨ ਦੁਆਧਾਰੀ_file, ਖਾਲੀ ਅਚਲ *digest, bool raw,
+            bool tagged, ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ delim, bool ਦਲੀਲਾਂ, intmax_t ਲੰਮਾਈ)
   _GL_ATTRIBUTE_NONNULL ((3));
 
-extern bool
-cksum_vmull (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out);
+ਬਾਹਰੀ bool
+cksum_vmull (FILE *fp, uint_fast32_t *ਚੱਕਰੀ_ਜਾਂਚ_ਬਾਹਰਲਾ, intmax_t *ਲੰਮਾਈ_ਬਾਹਰਲਾ);
 
-extern bool
-cksum_pclmul (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out);
+ਬਾਹਰੀ bool
+cksum_pclmul (FILE *fp, uint_fast32_t *ਚੱਕਰੀ_ਜਾਂਚ_ਬਾਹਰਲਾ, intmax_t *ਲੰਮਾਈ_ਬਾਹਰਲਾ);
 
-extern bool
-cksum_avx2 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out);
+ਬਾਹਰੀ bool
+cksum_avx2 (FILE *fp, uint_fast32_t *ਚੱਕਰੀ_ਜਾਂਚ_ਬਾਹਰਲਾ, intmax_t *ਲੰਮਾਈ_ਬਾਹਰਲਾ);
 
-extern bool
-cksum_avx512 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out);
+ਬਾਹਰੀ bool
+cksum_avx512 (FILE *fp, uint_fast32_t *ਚੱਕਰੀ_ਜਾਂਚ_ਬਾਹਰਲਾ, intmax_t *ਲੰਮਾਈ_ਬਾਹਰਲਾ);
 
-extern uint_fast32_t const crctab[8][256];
+ਬਾਹਰੀ uint_fast32_t ਅਚਲ crctab[8][256];
 
-#endif
+#ਜੇ_ਅੰਤ

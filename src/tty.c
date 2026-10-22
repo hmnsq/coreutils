@@ -21,16 +21,16 @@
 
    Written by David MacKenzie <djm@gnu.ai.mit.edu>.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <config.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <stdio.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <getopt.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <sys/types.h>
 
-#include "system.h"
-#include "quote.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "system.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "quote.h"
 
 /* Exit statuses.  */
-enum
+ਗਿਣਤੀ
   {
     TTY_STDIN_NOTTY = 1,
     TTY_USAGE = 2,
@@ -39,52 +39,52 @@ enum
   };
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "tty"
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ ਪ੍ਰੋਗਰਾਮ_NAME "tty"
 
-#define AUTHORS proper_name ("David MacKenzie")
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ AUTHORS proper_name ("David MacKenzie")
 
 /* If true, return an exit status but produce no output. */
-static bool silent;
+ਸਥਿਰ bool silent;
 
-static struct option const longopts[] =
+ਸਥਿਰ ਬਣਤਰ option ਅਚਲ longopts[] =
 {
-  {"silent", no_argument, NULL, 's'},
-  {"quiet", no_argument, NULL, 's'},
+  {"silent", no_ਦਲੀਲ, ਨਿਰਾ, 's'},
+  {"quiet", no_ਦਲੀਲ, ਨਿਰਾ, 's'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_ਸੰਸਕਰਣ_OPTION_DECL},
+  {ਨਿਰਾ, 0, ਨਿਰਾ, 0}
 };
 
-void
-usage (int status)
+ਖਾਲੀ
+usage (ਪੂਰਨ ਸਥਿਤੀ)
 {
-  if (status != EXIT_SUCCESS)
+  ਜੇ (ਸਥਿਤੀ != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ਨਹੀਂਤਾਂ
     {
-      printf (_("Usage: %s [OPTION]...\n"), program_name);
+      ਲਿਖੋ (_("Usage: %s [OPTION]...\n"), ਪ੍ਰੋਗਰਾਮ_name);
       fputs (_("\
-Print the file name of the terminal connected to standard input.\n\
+Print the file name ਦਾ the terminal connected ਮੰਜ਼ਿਲ standard ਨਿਵੇਸ਼.\n\
 \n\
 "), stdout);
       oputs (_("\
   -s, --silent, --quiet\n\
-         print nothing, only return an exit status\n\
+         print nothing, only ਵਾਪਸ an ਬਾਹਰ_ਨਿਕਲੋ ਸਥਿਤੀ\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (ਸੰਸਕਰਣ_OPTION_DESCRIPTION);
+      emit_ancillary_info (ਪ੍ਰੋਗਰਾਮ_NAME);
     }
-  exit (status);
+  ਬਾਹਰ_ਨਿਕਲੋ (ਸਥਿਤੀ);
 }
 
-int
-main (int argc, char **argv)
+ਪੂਰਨ
+ਮੁੱਖ (ਪੂਰਨ argc, ਅੱਖਰ **argv)
 {
-  int optc;
+  ਪੂਰਨ optc;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  ਸੈੱਟ_ਪ੍ਰੋਗਰਾਮ_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
@@ -92,46 +92,46 @@ main (int argc, char **argv)
   initialize_exit_failure (TTY_WRITE_ERROR);
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "s", longopts, NULL)) != -1)
+  ਜਦੋਂ ((optc = getopt_long (argc, argv, "s", longopts, ਨਿਰਾ)) != -1)
     {
-      switch (optc)
+      ਚੋਣ (optc)
         {
-        case 's':
+        ਹਾਲਤ 's':
           silent = true;
-          break;
+          ਰੋਕੋ;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_ਸੰਸਕਰਣ_CHAR (ਪ੍ਰੋਗਰਾਮ_NAME, AUTHORS);
 
-        default:
+        ਮੂਲ:
           usage (TTY_USAGE);
         }
     }
 
-  if (optind < argc)
+  ਜੇ (optind < argc)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind]));
       usage (TTY_USAGE);
     }
 
-  if (silent)
-    return isatty (STDIN_FILENO) ? EXIT_SUCCESS : TTY_STDIN_NOTTY;
+  ਜੇ (silent)
+    ਵਾਪਸ isatty (STDIN_FILENO) ? EXIT_SUCCESS : TTY_STDIN_NOTTY;
 
-  int status;
-  char const *tty = ttyname (STDIN_FILENO);
+  ਪੂਰਨ ਸਥਿਤੀ;
+  ਅੱਖਰ ਅਚਲ *tty = ttyname (STDIN_FILENO);
 
-  if (tty)
-    status = EXIT_SUCCESS;
-  else
+  ਜੇ (tty)
+    ਸਥਿਤੀ = EXIT_SUCCESS;
+  ਨਹੀਂਤਾਂ
     {
-      int ttyname_err = errno;
-      if (isatty (STDIN_FILENO))
+      ਪੂਰਨ ttyname_err = errno;
+      ਜੇ (isatty (STDIN_FILENO))
         error (TTY_TTYNAME_FAILURE, ttyname_err, _("ttyname error"));
       tty = _("not a tty");
-      status = TTY_STDIN_NOTTY;
+      ਸਥਿਤੀ = TTY_STDIN_NOTTY;
     }
 
   puts (tty);
-  return status;
+  ਵਾਪਸ ਸਥਿਤੀ;
 }

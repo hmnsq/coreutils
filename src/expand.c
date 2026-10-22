@@ -32,47 +32,47 @@
 
    David MacKenzie <djm@gnu.ai.mit.edu> */
 
-#include <config.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <config.h>
 
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <stdio.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <getopt.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <sys/types.h>
 
-#include "system.h"
-#include "ioblksize.h"
-#include "mcel.h"
-#include "mbbuf.h"
-#include "expand-common.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "system.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "ioblksize.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "mcel.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "mbbuf.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "expand-common.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "expand"
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ ਪ੍ਰੋਗਰਾਮ_NAME "expand"
 
-#define AUTHORS proper_name ("David MacKenzie")
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ AUTHORS proper_name ("David MacKenzie")
 
-static char const shortopts[] = "it:0::1::2::3::4::5::6::7::8::9::";
+ਸਥਿਰ ਅੱਖਰ ਅਚਲ shortopts[] = "it:0::1::2::3::4::5::6::7::8::9::";
 
-static struct option const longopts[] =
+ਸਥਿਰ ਬਣਤਰ option ਅਚਲ longopts[] =
 {
-  {"tabs", required_argument, NULL, 't'},
-  {"initial", no_argument, NULL, 'i'},
+  {"tabs", required_ਦਲੀਲ, ਨਿਰਾ, 't'},
+  {"initial", no_ਦਲੀਲ, ਨਿਰਾ, 'i'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_ਸੰਸਕਰਣ_OPTION_DECL},
+  {ਨਿਰਾ, 0, ਨਿਰਾ, 0}
 };
 
-void
-usage (int status)
+ਖਾਲੀ
+usage (ਪੂਰਨ ਸਥਿਤੀ)
 {
-  if (status != EXIT_SUCCESS)
+  ਜੇ (ਸਥਿਤੀ != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ਨਹੀਂਤਾਂ
     {
-      printf (_("\
+      ਲਿਖੋ (_("\
 Usage: %s [OPTION]... [FILE]...\n\
 "),
-              program_name);
+              ਪ੍ਰੋਗਰਾਮ_name);
       fputs (_("\
-Convert tabs in each FILE to spaces, writing to standard output.\n\
+Convert tabs ਵਿੱਚ each FILE ਮੰਜ਼ਿਲ spaces, writing ਮੰਜ਼ਿਲ standard output.\n\
 "), stdout);
 
       emit_stdin_note ();
@@ -80,38 +80,38 @@ Convert tabs in each FILE to spaces, writing to standard output.\n\
 
       oputs (_("\
   -i, --initial\n\
-         do not convert tabs after non blanks\n\
+         ਕਰੋ not convert tabs after non blanks\n\
 "));
       oputs (_("\
   -t, --tabs=N\n\
          have tabs N characters apart, not 8\n\
 "));
-      emit_tab_list_info (PROGRAM_NAME);
+      emit_tab_list_info (ਪ੍ਰੋਗਰਾਮ_NAME);
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (ਸੰਸਕਰਣ_OPTION_DESCRIPTION);
+      emit_ancillary_info (ਪ੍ਰੋਗਰਾਮ_NAME);
     }
-  exit (status);
+  ਬਾਹਰ_ਨਿਕਲੋ (ਸਥਿਤੀ);
 }
 
 
 /* Change tabs to spaces, writing to stdout.
    Read each file in 'file_list', in order.  */
 
-static void
-expand (void)
+ਸਥਿਰ ਖਾਲੀ
+expand (ਖਾਲੀ)
 {
   /* Input stream.  */
-  FILE *fp = next_file (NULL);
+  FILE *fp = ਅਗਲਾ_file (ਨਿਰਾ);
 
-  if (!fp)
-    return;
+  ਜੇ (!fp)
+    ਵਾਪਸ;
 
-  static char line_in[IO_BUFSIZE];
+  ਸਥਿਰ ਅੱਖਰ ਸਤਰ_ਵਿੱਚ[IO_BUFSIZE];
   mbbuf_t mbbuf;
-  mbbuf_init (&mbbuf, line_in, sizeof line_in, fp);
+  mbbuf_init (&mbbuf, ਸਤਰ_ਵਿੱਚ, ਆਕਾਰ ਸਤਰ_ਵਿੱਚ, fp);
 
-  while (true)
+  ਜਦੋਂ (true)
     {
       /* Input character, or EOF.  */
       mcel_t g;
@@ -124,122 +124,122 @@ expand (void)
          is true:  */
 
       /* Column of next input character.  */
-      colno column = 0;
+      colno ਕਾਲਮ = 0;
 
       /* Index in TAB_LIST of next tab stop to examine.  */
-      idx_t tab_index = 0;
+      idx_t tab_ਸੂਚਕਾਂਕ = 0;
 
 
       /* Convert a line of text.  */
 
-      do
+      ਕਰੋ
         {
-          while ((g = mbbuf_get_char (&mbbuf)).ch == MBBUF_EOF
-                 && (fp = next_file (fp)))
-            mbbuf_init (&mbbuf, line_in, sizeof line_in, fp);
+          ਜਦੋਂ ((g = mbbuf_get_char (&mbbuf)).ch == MBBUF_EOF
+                 && (fp = ਅਗਲਾ_file (fp)))
+            mbbuf_init (&mbbuf, ਸਤਰ_ਵਿੱਚ, ਆਕਾਰ ਸਤਰ_ਵਿੱਚ, fp);
 
-          if (convert)
+          ਜੇ (convert)
             {
-              convert &= convert_entire_line || c32issep (g.ch);
+              convert &= convert_entire_ਸਤਰ || c32issep (g.ch);
 
-              if (g.ch == '\t')
+              ਜੇ (g.ch == '\t')
                 {
                   /* Column the next input tab stop is on.  */
-                  bool last_tab;
-                  colno next_tab_column
-                    = get_next_tab_column (column, &tab_index, &last_tab);
+                  bool ਆਖਰੀ_tab;
+                  colno ਅਗਲਾ_tab_ਕਾਲਮ
+                    = get_ਅਗਲਾ_tab_ਕਾਲਮ (ਕਾਲਮ, &tab_ਸੂਚਕਾਂਕ, &ਆਖਰੀ_tab);
 
-                  while (++column < next_tab_column)
-                    if (putchar (' ') < 0)
+                  ਜਦੋਂ (++ਕਾਲਮ < ਅਗਲਾ_tab_ਕਾਲਮ)
+                    ਜੇ (ਅੱਖਰ_ਲਿਖੋ (' ') < 0)
                       write_error ();
 
-                  if (putchar (' ') < 0)
+                  ਜੇ (ਅੱਖਰ_ਲਿਖੋ (' ') < 0)
                     write_error ();
 
-                  continue;
+                  ਜਾਰੀ;
                 }
-              else if (g.ch == '\b')
+              ਨਹੀਂਤਾਂ ਜੇ (g.ch == '\b')
                 {
                   /* Go back one column, and force recalculation of the
                      next tab stop.  */
-                  column -= !!column;
-                  tab_index -= !!tab_index;
+                  ਕਾਲਮ -= !!ਕਾਲਮ;
+                  tab_ਸੂਚਕਾਂਕ -= !!tab_ਸੂਚਕਾਂਕ;
                 }
-              else
+              ਨਹੀਂਤਾਂ
                 {
-                  int width = c32width (g.ch);
-                  if (ckd_add (&column, column, width < 0 ? 1 : width))
+                  ਪੂਰਨ ਚੌੜਾਈ = c32width (g.ch);
+                  ਜੇ (ckd_ਜੋੜੋ (&ਕਾਲਮ, ਕਾਲਮ, ਚੌੜਾਈ < 0 ? 1 : ਚੌੜਾਈ))
                     error (EXIT_FAILURE, 0, _("input line is too long"));
                 }
 
             }
 
-          if (g.ch == MBBUF_EOF)
-            return;
+          ਜੇ (g.ch == MBBUF_EOF)
+            ਵਾਪਸ;
 
-          fwrite (mbbuf_char_offset (&mbbuf, g), sizeof (char), g.len, stdout);
-          if (ferror (stdout))
+          fwrite (mbbuf_char_ਵਿੱਥ (&mbbuf, g), ਆਕਾਰ (ਅੱਖਰ), g.len, stdout);
+          ਜੇ (ferror (stdout))
             write_error ();
         }
-      while (g.ch != '\n');
+      ਜਦੋਂ (g.ch != '\n');
     }
 }
 
-int
-main (int argc, char **argv)
+ਪੂਰਨ
+ਮੁੱਖ (ਪੂਰਨ argc, ਅੱਖਰ **argv)
 {
-  int c;
+  ਪੂਰਨ c;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  ਸੈੱਟ_ਪ੍ਰੋਗਰਾਮ_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
-  convert_entire_line = true;
+  convert_entire_ਸਤਰ = true;
 
-  while ((c = getopt_long (argc, argv, shortopts, longopts, NULL)) != -1)
+  ਜਦੋਂ ((c = getopt_long (argc, argv, shortopts, longopts, ਨਿਰਾ)) != -1)
     {
-      switch (c)
+      ਚੋਣ (c)
         {
-        case 'i':
-          convert_entire_line = false;
-          break;
+        ਹਾਲਤ 'i':
+          convert_entire_ਸਤਰ = false;
+          ਰੋਕੋ;
 
-        case 't':
+        ਹਾਲਤ 't':
           parse_tab_stops (optarg);
-          break;
+          ਰੋਕੋ;
 
-        case '0': case '1': case '2': case '3': case '4':
-        case '5': case '6': case '7': case '8': case '9':
-          if (optarg)
+        ਹਾਲਤ '0': ਹਾਲਤ '1': ਹਾਲਤ '2': ਹਾਲਤ '3': ਹਾਲਤ '4':
+        ਹਾਲਤ '5': ਹਾਲਤ '6': ਹਾਲਤ '7': ਹਾਲਤ '8': ਹਾਲਤ '9':
+          ਜੇ (optarg)
             parse_tab_stops (optarg - 1);
-          else
+          ਨਹੀਂਤਾਂ
             {
-              char tab_stop[2];
+              ਅੱਖਰ tab_stop[2];
               tab_stop[0] = c;
               tab_stop[1] = '\0';
               parse_tab_stops (tab_stop);
             }
-          break;
+          ਰੋਕੋ;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_ਸੰਸਕਰਣ_CHAR (ਪ੍ਰੋਗਰਾਮ_NAME, AUTHORS);
 
-        default:
+        ਮੂਲ:
           usage (EXIT_FAILURE);
         }
     }
 
   finalize_tab_stops ();
 
-  set_file_list (optind < argc ? &argv[optind] : NULL);
+  ਸੈੱਟ_file_list (optind < argc ? &argv[optind] : ਨਿਰਾ);
 
   expand ();
 
   cleanup_file_list_stdin ();
 
-  return exit_status;
+  ਵਾਪਸ exit_ਸਥਿਤੀ;
 }

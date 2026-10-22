@@ -22,86 +22,86 @@
 
    David MacKenzie <djm@ai.mit.edu>  */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <config.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <stdio.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <getopt.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <sys/types.h>
 
-#include "system.h"
-#include "issymlink.h"
-#include "prog-fprintf.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "system.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "issymlink.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "prog-fprintf.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "rmdir"
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ ਪ੍ਰੋਗਰਾਮ_NAME "rmdir"
 
-#define AUTHORS proper_name ("David MacKenzie")
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ AUTHORS proper_name ("David MacKenzie")
 
 /* If true, remove empty parent directories.  */
-static bool remove_empty_parents;
+ਸਥਿਰ bool remove_ਖਾਲੀ_ਥਾਵਾਂ_parents;
 
 /* If true, don't treat failure to remove a nonempty directory
    as an error.  */
-static bool ignore_fail_on_non_empty;
+ਸਥਿਰ bool ignore_fail_on_non_ਖਾਲੀ_ਥਾਵਾਂ;
 
 /* If true, output a diagnostic for every directory processed.  */
-static bool verbose;
+ਸਥਿਰ bool verbose;
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+ਗਿਣਤੀ
 {
-  IGNORE_FAIL_ON_NON_EMPTY_OPTION = CHAR_MAX + 1
+  IGNORE_FAIL_ON_NON_ਖਾਲੀ_ਥਾਵਾਂ_OPTION = CHAR_MAX + 1
 };
 
-static struct option const longopts[] =
+ਸਥਿਰ ਬਣਤਰ option ਅਚਲ longopts[] =
 {
   /* Don't name this '--force' because it's not close enough in meaning
      to e.g. rm's -f option.  */
-  {"ignore-fail-on-non-empty", no_argument, NULL,
-   IGNORE_FAIL_ON_NON_EMPTY_OPTION},
+  {"ignore-fail-on-non-empty", no_ਦਲੀਲ, ਨਿਰਾ,
+   IGNORE_FAIL_ON_NON_ਖਾਲੀ_ਥਾਵਾਂ_OPTION},
 
-  {"path", no_argument, NULL, 'p'},  /* Deprecated.  */
-  {"parents", no_argument, NULL, 'p'},
-  {"verbose", no_argument, NULL, 'v'},
+  {"path", no_ਦਲੀਲ, ਨਿਰਾ, 'p'},  /* Deprecated.  */
+  {"parents", no_ਦਲੀਲ, ਨਿਰਾ, 'p'},
+  {"verbose", no_ਦਲੀਲ, ਨਿਰਾ, 'v'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_ਸੰਸਕਰਣ_OPTION_DECL},
+  {ਨਿਰਾ, 0, ਨਿਰਾ, 0}
 };
 
 /* Return true if ERROR_NUMBER is one of the values associated
    with a failed rmdir due to non-empty target directory.  */
-static bool
-errno_rmdir_non_empty (int error_number)
+ਸਥਿਰ bool
+errno_rmdir_non_ਖਾਲੀ_ਥਾਵਾਂ (ਪੂਰਨ error_ਸੰਖਿਆ)
 {
-  return error_number == ENOTEMPTY || error_number == EEXIST;
+  ਵਾਪਸ error_ਸੰਖਿਆ == ENOTEMPTY || error_ਸੰਖਿਆ == EEXIST;
 }
 
 /* Return true if when rmdir fails with errno == ERROR_NUMBER
    the directory may be non empty.  */
-static bool
-errno_may_be_non_empty (int error_number)
+ਸਥਿਰ bool
+errno_may_be_non_ਖਾਲੀ_ਥਾਵਾਂ (ਪੂਰਨ error_ਸੰਖਿਆ)
 {
-  switch (error_number)
+  ਚੋਣ (error_ਸੰਖਿਆ)
     {
-    case EACCES:
-    case EPERM:
-    case EROFS:
-    case EBUSY:
-      return true;
-    default:
-      return false;
+    ਹਾਲਤ EACCES:
+    ਹਾਲਤ EPERM:
+    ਹਾਲਤ EROFS:
+    ਹਾਲਤ EBUSY:
+      ਵਾਪਸ true;
+    ਮੂਲ:
+      ਵਾਪਸ false;
     }
 }
 
 /* Return true if an rmdir failure with errno == error_number
    for DIR is ignorable.  */
-static bool
-ignorable_failure (int error_number, char const *dir)
+ਸਥਿਰ bool
+ignorable_failure (ਪੂਰਨ error_ਸੰਖਿਆ, ਅੱਖਰ ਅਚਲ *dir)
 {
-  return (ignore_fail_on_non_empty
-          && (errno_rmdir_non_empty (error_number)
-              || (errno_may_be_non_empty (error_number)
-                  && directory_status (AT_FDCWD, dir) == DS_NONEMPTY)));
+  ਵਾਪਸ (ignore_fail_on_non_ਖਾਲੀ_ਥਾਵਾਂ
+          && (errno_rmdir_non_ਖਾਲੀ_ਥਾਵਾਂ (error_ਸੰਖਿਆ)
+              || (errno_may_be_non_ਖਾਲੀ_ਥਾਵਾਂ (error_ਸੰਖਿਆ)
+                  && directory_ਸਥਿਤੀ (AT_FDCWD, dir) == DS_NONEMPTY)));
 }
 
 /* Remove any empty parent directories of DIR.
@@ -109,143 +109,143 @@ ignorable_failure (int error_number, char const *dir)
    (beginning with the rightmost) is replaced with a NUL byte.
    Return true if successful.  */
 
-static bool
-remove_parents (char *dir)
+ਸਥਿਰ bool
+remove_parents (ਅੱਖਰ *dir)
 {
   bool ok = true;
 
   strip_trailing_slashes (dir);
-  while (true)
+  ਜਦੋਂ (true)
     {
-      char *slash = strrchr (dir, '/');
-      if (slash == NULL)
-        break;
+      ਅੱਖਰ *slash = strrchr (dir, '/');
+      ਜੇ (slash == ਨਿਰਾ)
+        ਰੋਕੋ;
       /* Remove any characters after the slash, skipping any extra
          slashes in a row. */
-      while (slash > dir && *slash == '/')
+      ਜਦੋਂ (slash > dir && *slash == '/')
         --slash;
       slash[1] = 0;
 
       /* Give a diagnostic for each attempted removal if --verbose.  */
-      if (verbose)
+      ਜੇ (verbose)
         prog_fprintf (stdout, _("removing directory, %s"), quoteaf (dir));
 
       ok = (rmdir (dir) == 0);
-      int rmdir_errno = errno;
+      ਪੂਰਨ rmdir_errno = errno;
 
-      if (! ok)
+      ਜੇ (! ok)
         {
           /* Stop quietly if --ignore-fail-on-non-empty. */
-          if (ignorable_failure (rmdir_errno, dir))
+          ਜੇ (ignorable_failure (rmdir_errno, dir))
             {
               ok = true;
             }
-          else
+          ਨਹੀਂਤਾਂ
             {
-              char const *error_msg;
-              if (rmdir_errno != ENOTDIR)
+              ਅੱਖਰ ਅਚਲ *error_ਸੁਨੇਹਾ;
+              ਜੇ (rmdir_errno != ENOTDIR)
                 {
                   /* Barring race conditions,
                      DIR is expected to be a directory.  */
-                  error_msg = N_("failed to remove directory %s");
+                  error_ਸੁਨੇਹਾ = N_("failed to remove directory %s");
                 }
-              else
+              ਨਹੀਂਤਾਂ
                 {
                   /* A path component could be a symbolic link */
-                  error_msg = N_("failed to remove %s");
+                  error_ਸੁਨੇਹਾ = N_("failed to remove %s");
                 }
-              error (0, rmdir_errno, _(error_msg), quoteaf (dir));
+              error (0, rmdir_errno, _(error_ਸੁਨੇਹਾ), quoteaf (dir));
             }
-          break;
+          ਰੋਕੋ;
         }
     }
-  return ok;
+  ਵਾਪਸ ok;
 }
 
-void
-usage (int status)
+ਖਾਲੀ
+usage (ਪੂਰਨ ਸਥਿਤੀ)
 {
-  if (status != EXIT_SUCCESS)
+  ਜੇ (ਸਥਿਤੀ != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ਨਹੀਂਤਾਂ
     {
-      printf (_("Usage: %s [OPTION]... DIRECTORY...\n"), program_name);
+      ਲਿਖੋ (_("Usage: %s [OPTION]... DIRECTORY...\n"), ਪ੍ਰੋਗਰਾਮ_name);
       fputs (_("\
-Remove the DIRECTORY(ies), if they are empty.\n\
+Remove the DIRECTORY(ies), ਜੇ they are ਖਾਲੀ_ਥਾਵਾਂ.\n\
 \n\
 "), stdout);
       oputs (_("\
-      --ignore-fail-on-non-empty\n\
-         ignore each failure to remove a non-empty directory\n\
+      --ignore-fail-on-non-ਖਾਲੀ_ਥਾਵਾਂ\n\
+         ignore each failure ਮੰਜ਼ਿਲ remove a non-ਖਾਲੀ_ਥਾਵਾਂ directory\n\
 "));
       oputs (_("\
   -p, --parents\n\
          remove DIRECTORY and its ancestors;\n\
-         e.g., 'rmdir -p a/b' is similar to 'rmdir a/b a'\n\
+         e.g., 'rmdir -p a/b' is similar ਮੰਜ਼ਿਲ 'rmdir a/b a'\n\
 "));
       oputs (_("\
   -v, --verbose\n\
-         output a diagnostic for every directory processed\n\
+         output a diagnostic ਲਈ every directory processed\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (ਸੰਸਕਰਣ_OPTION_DESCRIPTION);
+      emit_ancillary_info (ਪ੍ਰੋਗਰਾਮ_NAME);
     }
-  exit (status);
+  ਬਾਹਰ_ਨਿਕਲੋ (ਸਥਿਤੀ);
 }
 
-int
-main (int argc, char **argv)
+ਪੂਰਨ
+ਮੁੱਖ (ਪੂਰਨ argc, ਅੱਖਰ **argv)
 {
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  ਸੈੱਟ_ਪ੍ਰੋਗਰਾਮ_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  int optc;
-  while ((optc = getopt_long (argc, argv, "pv", longopts, NULL)) != -1)
+  ਪੂਰਨ optc;
+  ਜਦੋਂ ((optc = getopt_long (argc, argv, "pv", longopts, ਨਿਰਾ)) != -1)
     {
-      switch (optc)
+      ਚੋਣ (optc)
         {
-        case 'p':
-          remove_empty_parents = true;
-          break;
-        case IGNORE_FAIL_ON_NON_EMPTY_OPTION:
-          ignore_fail_on_non_empty = true;
-          break;
-        case 'v':
+        ਹਾਲਤ 'p':
+          remove_ਖਾਲੀ_ਥਾਵਾਂ_parents = true;
+          ਰੋਕੋ;
+        ਹਾਲਤ IGNORE_FAIL_ON_NON_ਖਾਲੀ_ਥਾਵਾਂ_OPTION:
+          ignore_fail_on_non_ਖਾਲੀ_ਥਾਵਾਂ = true;
+          ਰੋਕੋ;
+        ਹਾਲਤ 'v':
           verbose = true;
-          break;
+          ਰੋਕੋ;
         case_GETOPT_HELP_CHAR;
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        case_GETOPT_ਸੰਸਕਰਣ_CHAR (ਪ੍ਰੋਗਰਾਮ_NAME, AUTHORS);
+        ਮੂਲ:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (optind == argc)
+  ਜੇ (optind == argc)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
   bool ok = true;
-  for (; optind < argc; ++optind)
+  ਲਈ (; optind < argc; ++optind)
     {
-      char *dir = argv[optind];
+      ਅੱਖਰ *dir = argv[optind];
 
       /* Give a diagnostic for each attempted removal if --verbose.  */
-      if (verbose)
+      ਜੇ (verbose)
         prog_fprintf (stdout, _("removing directory, %s"), quoteaf (dir));
 
-      if (rmdir (dir) != 0)
+      ਜੇ (rmdir (dir) != 0)
         {
-          int rmdir_errno = errno;
-          if (ignorable_failure (rmdir_errno, dir))
-            continue;
+          ਪੂਰਨ rmdir_errno = errno;
+          ਜੇ (ignorable_failure (rmdir_errno, dir))
+            ਜਾਰੀ;
 
           /* Distinguish the case for a symlink with trailing slash.
              On Linux, rmdir(2) confusingly does not follow the symlink,
@@ -253,21 +253,21 @@ main (int argc, char **argv)
              is followed.  We don't provide consistent behavior here,
              but at least we provide a more accurate error message.  */
           bool custom_error = false;
-          if (rmdir_errno == ENOTDIR)
+          ਜੇ (rmdir_errno == ENOTDIR)
             {
-              char const *last_unix_slash = strrchr (dir, '/');
-              if (last_unix_slash && (*(last_unix_slash + 1) == '\0'))
+              ਅੱਖਰ ਅਚਲ *ਆਖਰੀ_unix_slash = strrchr (dir, '/');
+              ਜੇ (ਆਖਰੀ_unix_slash && (*(ਆਖਰੀ_unix_slash + 1) == '\0'))
                 {
-                  struct stat st;
-                  int ret = stat (dir, &st);
+                  ਬਣਤਰ stat st;
+                  ਪੂਰਨ ret = stat (dir, &st);
                   /* Some other issue following, or is actually a directory. */
-                  if ((ret != 0 && errno != ENOTDIR)
-                      || (ret == 0 && S_ISDIR (st.st_mode)))
+                  ਜੇ ((ret != 0 && errno != ENOTDIR)
+                      || (ret == 0 && S_ISDIR (st.st_ਬਹੁਲਕ)))
                     {
                       /* Ensure the last component was a symlink.  */
-                      char *dir_arg = xstrdup (dir);
+                      ਅੱਖਰ *dir_arg = xstrdup (dir);
                       strip_trailing_slashes (dir);
-                      if (issymlink (dir) == 1)
+                      ਜੇ (issymlink (dir) == 1)
                         {
                           error (0, 0,
                                  _("failed to remove %s:"
@@ -275,21 +275,21 @@ main (int argc, char **argv)
                                  quoteaf (dir_arg));
                           custom_error = true;
                         }
-                      free (dir_arg);
+                      ਮੁਕਤ (dir_arg);
                     }
                 }
             }
 
-          if (! custom_error)
+          ਜੇ (! custom_error)
             error (0, rmdir_errno, _("failed to remove %s"), quoteaf (dir));
 
           ok = false;
         }
-      else if (remove_empty_parents)
+      ਨਹੀਂਤਾਂ ਜੇ (remove_ਖਾਲੀ_ਥਾਵਾਂ_parents)
         {
           ok &= remove_parents (dir);
         }
     }
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  ਵਾਪਸ ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

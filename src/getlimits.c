@@ -16,162 +16,162 @@
 
 /* Written by Pádraig Brady  */
 
-#include <config.h>             /* sets _FILE_OFFSET_BITS=64 etc. */
-#include <signal.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <float.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <config.h>             /* sets _FILE_OFFSET_BITS=64 etc. */
+#ਅਨ੍ਤਰ੍ਭਾਵ <signal.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <stdio.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <sys/types.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <float.h>
 
-#include "errno-iter.h"
-#include "ftoastr.h"
-#include "system.h"
-#include "ioblksize.h"
-#include "long-options.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "errno-iter.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "ftoastr.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "system.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "ioblksize.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "long-options.h"
 
-#define PROGRAM_NAME "getlimits"
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ ਪ੍ਰੋਗਰਾਮ_NAME "getlimits"
 
-#define AUTHORS proper_name_lite ("Padraig Brady", "P\303\241draig Brady")
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ AUTHORS proper_name_lite ("Padraig Brady", "P\303\241draig Brady")
 
-#ifndef TIME_T_MAX
-# define TIME_T_MAX TYPE_MAXIMUM (time_t)
-#endif
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ ਸਮਾਂ_T_MAX
+# define ਸਮਾਂ_T_MAX TYPE_ਵੱਧ_ਤੋਂ_ਵੱਧ (time_t)
+#ਜੇ_ਅੰਤ
 
-#ifndef TIME_T_MIN
-# define TIME_T_MIN TYPE_MINIMUM (time_t)
-#endif
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ ਸਮਾਂ_T_MIN
+# define ਸਮਾਂ_T_MIN TYPE_MINIMUM (time_t)
+#ਜੇ_ਅੰਤ
 
-#ifndef SSIZE_MIN
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SSIZE_MIN
 # define SSIZE_MIN TYPE_MINIMUM (ssize_t)
-#endif
+#ਜੇ_ਅੰਤ
 
-#ifndef PID_T_MIN
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ PID_T_MIN
 # define PID_T_MIN TYPE_MINIMUM (pid_t)
-#endif
+#ਜੇ_ਅੰਤ
 
-#ifndef OFF64_T_MAX
-# define OFF64_T_MAX TYPE_MAXIMUM (off64_t)
-#endif
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ OFF64_T_MAX
+# define OFF64_T_MAX TYPE_ਵੱਧ_ਤੋਂ_ਵੱਧ (off64_t)
+#ਜੇ_ਅੰਤ
 
-#ifndef OFF64_T_MIN
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ OFF64_T_MIN
 # define OFF64_T_MIN TYPE_MINIMUM (off64_t)
-#endif
+#ਜੇ_ਅੰਤ
 
-#ifndef SIGRTMIN
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SIGRTMIN
 # define SIGRTMIN 0
 # undef SIGRTMAX
-#endif
-#ifndef SIGRTMAX
+#ਜੇ_ਅੰਤ
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ SIGRTMAX
 # define SIGRTMAX (SIGRTMIN - 1)
-#endif
+#ਜੇ_ਅੰਤ
 
 /* These are not interesting to print.
  * Instead of these defines it would be nice to be able to do
  * #ifdef (TYPE##_MIN) in function macro below.  */
-#define SIZE_MIN 0
-#define UCHAR_MIN 0
-#define UINT_MIN 0
-#define ULONG_MIN 0
-#define UINTMAX_MIN 0
-#define UID_T_MIN 0
-#define GID_T_MIN 0
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ ਮਾਪ_MIN 0
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ UCHAR_MIN 0
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ UINT_MIN 0
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ ULONG_MIN 0
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ UINTMAX_MIN 0
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ UID_T_MIN 0
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ GID_T_MIN 0
 
-void
-usage (int status)
+ਖਾਲੀ
+usage (ਪੂਰਨ ਸਥਿਤੀ)
 {
-  if (status != EXIT_SUCCESS)
+  ਜੇ (ਸਥਿਤੀ != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ਨਹੀਂਤਾਂ
     {
-      printf (_("\
+      ਲਿਖੋ (_("\
 Usage: %s\n\
-"), program_name);
+"), ਪ੍ਰੋਗਰਾਮ_name);
 
       fputs (_("\
-Output platform dependent limits in a format useful for shell scripts.\n\
+Output platform dependent limits ਵਿੱਚ a format useful ਲਈ shell scripts.\n\
 \n\
 "), stdout);
       fputs (HELP_OPTION_DESCRIPTION, stdout);
-      fputs (VERSION_OPTION_DESCRIPTION, stdout);
-      emit_ancillary_info (PROGRAM_NAME);
+      fputs (ਸੰਸਕਰਣ_OPTION_DESCRIPTION, stdout);
+      emit_ancillary_info (ਪ੍ਰੋਗਰਾਮ_NAME);
     }
-  exit (status);
+  ਬਾਹਰ_ਨਿਕਲੋ (ਸਥਿਤੀ);
 }
 
 /* Add one to the absolute value of the number whose textual
    representation is BUF + 1.  Do this in-place, in the buffer.
    Return a pointer to the result, which is normally BUF + 1, but is
    BUF if the representation grew in size.  */
-static char const *
-decimal_absval_add_one (char *buf)
+ਸਥਿਰ ਅੱਖਰ ਅਚਲ *
+decimal_absval_ਜੋੜੋ_one (ਅੱਖਰ *buf)
 {
   bool negative = (buf[1] == '-');
-  char *absnum = buf + 1 + negative;
-  char *p = absnum + strlen (absnum);
+  ਅੱਖਰ *absnum = buf + 1 + negative;
+  ਅੱਖਰ *p = absnum + ਲੜੀ_ਲੰਬਾਈ (absnum);
   absnum[-1] = '0';
-  while (*--p == '9')
+  ਜਦੋਂ (*--p == '9')
     *p = '0';
   ++*p;
-  char *result = MIN (absnum, p);
-  if (negative)
-    *--result = '-';
-  return result;
+  ਅੱਖਰ *ਨਤੀਜਾ = MIN (absnum, p);
+  ਜੇ (negative)
+    *--ਨਤੀਜਾ = '-';
+  ਵਾਪਸ ਨਤੀਜਾ;
 }
 
-#define PRINT_FLOATTYPE(N, T, FTOASTR, BUFSIZE)                         \
-static void                                                             \
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ PRINT_FLOATTYPE(N, T, FTOASTR, BUFSIZE)                         \
+ਸਥਿਰ ਖਾਲੀ                                                             \
 N (T x)                                                                 \
 {                                                                       \
-  char buf[BUFSIZE];                                                    \
-  FTOASTR (buf, sizeof buf, FTOASTR_LEFT_JUSTIFY, 0, x);                \
+  ਅੱਖਰ buf[BUFSIZE];                                                    \
+  FTOASTR (buf, ਆਕਾਰ buf, FTOASTR_ਖੱਬਾ_JUSTIFY, 0, x);                \
   puts (buf);                                                           \
 }
 
-PRINT_FLOATTYPE (print_FLT, float, ftoastr, FLT_BUFSIZE_BOUND)
-PRINT_FLOATTYPE (print_DBL, double, dtoastr, DBL_BUFSIZE_BOUND)
-PRINT_FLOATTYPE (print_LDBL, long double, ldtoastr, LDBL_BUFSIZE_BOUND)
+PRINT_FLOATTYPE (print_FLT, ਦਸ਼ਮਲਵ, ftoastr, FLT_BUFSIZE_BOUND)
+PRINT_FLOATTYPE (print_DBL, ਦੁੱਗਣਾ, dtoastr, DBL_BUFSIZE_BOUND)
+PRINT_FLOATTYPE (print_LDBL, ਲੰਮਾ ਦੁੱਗਣਾ, ldtoastr, LDBL_BUFSIZE_BOUND)
 
-static int
-print_errno (void *name, int e)
+ਸਥਿਰ ਪੂਰਨ
+print_errno (ਖਾਲੀ *name, ਪੂਰਨ e)
 {
-  char const *err_name = name ? name : strerrorname_np (e);
-  if (err_name)
-    printf ("%s=%s\n", err_name,
+  ਅੱਖਰ ਅਚਲ *err_name = name ? name : strerrorname_np (e);
+  ਜੇ (err_name)
+    ਲਿਖੋ ("%s=%s\n", err_name,
             quotearg_style (shell_escape_quoting_style, strerror (e)));
-  return 0;
+  ਵਾਪਸ 0;
 }
 
-int
-main (int argc, char **argv)
+ਪੂਰਨ
+ਮੁੱਖ (ਪੂਰਨ argc, ਅੱਖਰ **argv)
 {
-  char limit[1 + MAX (INT_BUFSIZE_BOUND (intmax_t),
+  ਅੱਖਰ ਹੱਦਬੰਦੀ[1 + MAX (INT_BUFSIZE_BOUND (intmax_t),
                       INT_BUFSIZE_BOUND (uintmax_t))];
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  ਸੈੱਟ_ਪ੍ਰੋਗਰਾਮ_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
-                                   VERSION, true, usage, AUTHORS,
-                                   (char const *) NULL);
+  parse_gnu_standard_options_only (argc, argv, ਪ੍ਰੋਗਰਾਮ_NAME, PACKAGE_NAME,
+                                   ਸੰਸਕਰਣ_2, true, usage, AUTHORS,
+                                   (ਅੱਖਰ ਅਚਲ *) ਨਿਰਾ);
 
-#define print_int(TYPE)                                                  \
-  sprintf (limit + 1, "%ju", (uintmax_t) {TYPE##_MAX});                  \
-  printf (#TYPE"_MAX=%s\n", limit + 1);                                  \
-  printf (#TYPE"_OFLOW=%s\n", decimal_absval_add_one (limit));           \
-  if (TYPE##_MIN)                                                        \
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ print_int(TYPE)                                                  \
+  sprintf (ਹੱਦਬੰਦੀ + 1, "%ju", (uintmax_t) {TYPE##_MAX});                  \
+  ਲਿਖੋ (#TYPE"_MAX=%s\n", ਹੱਦਬੰਦੀ + 1);                                  \
+  ਲਿਖੋ (#TYPE"_OFLOW=%s\n", decimal_absval_ਜੋੜੋ_one (ਹੱਦਬੰਦੀ));           \
+  ਜੇ (TYPE##_MIN)                                                        \
     {                                                                    \
-      sprintf (limit + 1, "%jd", (intmax_t) {TYPE##_MIN});               \
-      printf (#TYPE"_MIN=%s\n", limit + 1);                              \
-      printf (#TYPE"_UFLOW=%s\n", decimal_absval_add_one (limit));       \
+      sprintf (ਹੱਦਬੰਦੀ + 1, "%jd", (intmax_t) {TYPE##_MIN});               \
+      ਲਿਖੋ (#TYPE"_MIN=%s\n", ਹੱਦਬੰਦੀ + 1);                              \
+      ਲਿਖੋ (#TYPE"_UFLOW=%s\n", decimal_absval_ਜੋੜੋ_one (ਹੱਦਬੰਦੀ));       \
     }
 
-#define print_float(TYPE)                                                \
-  printf (#TYPE"_MIN="); print_##TYPE (TYPE##_MIN);                      \
-  printf (#TYPE"_MAX="); print_##TYPE (TYPE##_MAX);
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ print_float(TYPE)                                                \
+  ਲਿਖੋ (#TYPE"_MIN="); print_##TYPE (TYPE##_MIN);                      \
+  ਲਿਖੋ (#TYPE"_MAX="); print_##TYPE (TYPE##_MAX);
 
   /* Variable sized ints */
   print_int (CHAR);
@@ -182,9 +182,9 @@ main (int argc, char **argv)
   print_int (UINT);
   print_int (LONG);
   print_int (ULONG);
-  print_int (SIZE);
+  print_int (ਮਾਪ_2);
   print_int (SSIZE);
-  print_int (TIME_T);
+  print_int (ਸਮਾਂ_T);
   print_int (UID_T);
   print_int (GID_T);
   print_int (PID_T);
@@ -199,25 +199,25 @@ main (int argc, char **argv)
   print_float (LDBL);
 
   /* Other useful constants */
-  printf ("SIGRTMIN=%jd\n", (intmax_t) {SIGRTMIN});
-  printf ("SIGRTMAX=%jd\n", (intmax_t) {SIGRTMAX});
-  printf ("IO_BUFSIZE=%ju\n", (uintmax_t) {IO_BUFSIZE});
+  ਲਿਖੋ ("SIGRTMIN=%jd\n", (intmax_t) {SIGRTMIN});
+  ਲਿਖੋ ("SIGRTMAX=%jd\n", (intmax_t) {SIGRTMAX});
+  ਲਿਖੋ ("IO_BUFSIZE=%ju\n", (uintmax_t) {IO_BUFSIZE});
 
   /* Errnos */
-  errno_iterate (print_errno, NULL);
+  errno_iterate (print_errno, ਨਿਰਾ);
   /* Common errno aliases */
-#if defined ENOTEMPTY && ENOTEMPTY == EEXIST
-  print_errno ((char*)"ENOTEMPTY", EEXIST);
-#endif
-#if defined ENOTSUP && ENOTSUP == EOPNOTSUPP
-  print_errno ((char*)"ENOTSUP", EOPNOTSUPP);
-#endif
-#if defined EWOULDBLOCK && EWOULDBLOCK == EAGAIN
-  print_errno ((char*)"EWOULDBLOCK", EAGAIN);
-#endif
-#if defined EDEADLOCK && EDEADLOCK == EDEADLK
-  print_errno ((char*)"EDEADLOCK", EDEADLK);
-#endif
+#ਜੇ defined ENOTEMPTY && ENOTEMPTY == EEXIST
+  print_errno ((ਅੱਖਰ*)"ENOTEMPTY", EEXIST);
+#ਜੇ_ਅੰਤ
+#ਜੇ defined ENOTSUP && ENOTSUP == EOPNOTSUPP
+  print_errno ((ਅੱਖਰ*)"ENOTSUP", EOPNOTSUPP);
+#ਜੇ_ਅੰਤ
+#ਜੇ defined EWOULDBLOCK && EWOULDBLOCK == EAGAIN
+  print_errno ((ਅੱਖਰ*)"EWOULDBLOCK", EAGAIN);
+#ਜੇ_ਅੰਤ
+#ਜੇ defined EDEADLOCK && EDEADLOCK == EDEADLK
+  print_errno ((ਅੱਖਰ*)"EDEADLOCK", EDEADLK);
+#ਜੇ_ਅੰਤ
 
-  return EXIT_SUCCESS;
+  ਵਾਪਸ EXIT_SUCCESS;
 }

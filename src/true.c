@@ -14,45 +14,45 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include "system.h"
-#include "true.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ <config.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <stdio.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <sys/types.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ "system.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "true.h"
 
-#define EXIT_STATUS (true_mode != TRUE_TRUE)
-#define PROGRAM_NAME (true_mode == TRUE_TRUE ? "true" : "false")
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ EXIT_ਸਥਿਤੀ (true_ਬਹੁਲਕ != TRUE_TRUE)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ ਪ੍ਰੋਗਰਾਮ_NAME (true_ਬਹੁਲਕ == TRUE_TRUE ? "true" : "false")
 
-#define AUTHORS proper_name ("Jim Meyering")
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ AUTHORS proper_name ("Jim Meyering")
 
-void
-usage (int status)
+ਖਾਲੀ
+usage (ਪੂਰਨ ਸਥਿਤੀ)
 {
-  printf (_("\
-Usage: %s [ignored command line arguments]\n\
+  ਲਿਖੋ (_("\
+Usage: %s [ignored command ਸਤਰ arguments]\n\
   or:  %s OPTION\n\
 "),
-          program_name, program_name);
-  printf ("%s\n\n",
-          _(EXIT_STATUS == EXIT_SUCCESS
+          ਪ੍ਰੋਗਰਾਮ_name, ਪ੍ਰੋਗਰਾਮ_name);
+  ਲਿਖੋ ("%s\n\n",
+          _(EXIT_ਸਥਿਤੀ == EXIT_SUCCESS
             ? N_("Exit with a status code indicating success.")
             : N_("Exit with a status code indicating failure.")));
   oputs (HELP_OPTION_DESCRIPTION);
-  oputs (VERSION_OPTION_DESCRIPTION);
-  printf (USAGE_BUILTIN_WARNING, PROGRAM_NAME);
-  emit_ancillary_info (PROGRAM_NAME);
-  exit (status);
+  oputs (ਸੰਸਕਰਣ_OPTION_DESCRIPTION);
+  ਲਿਖੋ (USAGE_BUILTIN_WARNING, ਪ੍ਰੋਗਰਾਮ_NAME);
+  emit_ancillary_info (ਪ੍ਰੋਗਰਾਮ_NAME);
+  ਬਾਹਰ_ਨਿਕਲੋ (ਸਥਿਤੀ);
 }
 
-int
-main (int argc, char **argv)
+ਪੂਰਨ
+ਮੁੱਖ (ਪੂਰਨ argc, ਅੱਖਰ **argv)
 {
   /* Recognize --help or --version only if it's the only command-line
      argument.  */
-  if (argc == 2)
+  ਜੇ (argc == 2)
     {
       initialize_main (&argc, &argv);
-      set_program_name (argv[0]);
+      ਸੈੱਟ_ਪ੍ਰੋਗਰਾਮ_name (argv[0]);
       setlocale (LC_ALL, "");
       bindtextdomain (PACKAGE, LOCALEDIR);
       textdomain (PACKAGE);
@@ -61,13 +61,13 @@ main (int argc, char **argv)
          edge case where writes fail with GNU specific options.  */
       atexit (close_stdout);
 
-      if (streq (argv[1], "--help"))
-        usage (EXIT_STATUS);
+      ਜੇ (streq (argv[1], "--help"))
+        usage (EXIT_ਸਥਿਤੀ);
 
-      if (streq (argv[1], "--version"))
-        version_etc (stdout, PROGRAM_NAME, PACKAGE_NAME, Version, AUTHORS,
-                     (char *) NULL);
+      ਜੇ (streq (argv[1], "--version"))
+        ਸੰਸਕਰਣ_etc (stdout, ਪ੍ਰੋਗਰਾਮ_NAME, PACKAGE_NAME, ਸੰਸਕਰਣ, AUTHORS,
+                     (ਅੱਖਰ *) ਨਿਰਾ);
     }
 
-  return EXIT_STATUS;
+  ਵਾਪਸ EXIT_ਸਥਿਤੀ;
 }

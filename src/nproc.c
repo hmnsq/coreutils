@@ -16,122 +16,122 @@
 
 /* Written by Giuseppe Scrivano.  */
 
-#include <config.h>
-#include <getopt.h>
-#include <stdio.h>
-#include <sys/types.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <config.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <getopt.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <stdio.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <sys/types.h>
 
-#include "system.h"
-#include "nproc.h"
-#include "quote.h"
-#include "xdectoint.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "system.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "nproc.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "quote.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "xdectoint.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "nproc"
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ ਪ੍ਰੋਗਰਾਮ_NAME "nproc"
 
-#define AUTHORS proper_name ("Giuseppe Scrivano")
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ AUTHORS proper_name ("Giuseppe Scrivano")
 
-enum
+ਗਿਣਤੀ
 {
   ALL_OPTION = CHAR_MAX + 1,
   IGNORE_OPTION
 };
 
-static struct option const longopts[] =
+ਸਥਿਰ ਬਣਤਰ option ਅਚਲ longopts[] =
 {
-  {"all", no_argument, NULL, ALL_OPTION},
-  {"ignore", required_argument, NULL, IGNORE_OPTION},
+  {"all", no_ਦਲੀਲ, ਨਿਰਾ, ALL_OPTION},
+  {"ignore", required_ਦਲੀਲ, ਨਿਰਾ, IGNORE_OPTION},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_ਸੰਸਕਰਣ_OPTION_DECL},
+  {ਨਿਰਾ, 0, ਨਿਰਾ, 0}
 };
 
-void
-usage (int status)
+ਖਾਲੀ
+usage (ਪੂਰਨ ਸਥਿਤੀ)
 {
-  if (status != EXIT_SUCCESS)
+  ਜੇ (ਸਥਿਤੀ != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ਨਹੀਂਤਾਂ
     {
-      printf (_("Usage: %s [OPTION]...\n"), program_name);
+      ਲਿਖੋ (_("Usage: %s [OPTION]...\n"), ਪ੍ਰੋਗਰਾਮ_name);
       fputs (_("\
-Print the number of processing units available to the current process,\n\
-which may be less than the number of online processors.\n\
-If the 'OMP_NUM_THREADS' or 'OMP_THREAD_LIMIT' environment variables are set,\n\
-then they will determine the minimum and maximum returned value respectively.\n\
+Print the ਸੰਖਿਆ ਦਾ processing units ਉਪਲਬਧ ਮੰਜ਼ਿਲ the current process,\n\
+which may be less than the ਸੰਖਿਆ ਦਾ online processors.\n\
+If the 'OMP_NUM_THREADS' or 'OMP_THREAD_LIMIT' environment variables are ਸੈੱਟ_2,\n\
+then they will determine the minimum and ਵੱਧ_ਤੋਂ_ਵੱਧ returned ਮੁੱਲ respectively.\n\
 \n\
 "), stdout);
       oputs (_("\
       --all\n\
-         print the number of installed processors,\n\
+         print the ਸੰਖਿਆ ਦਾ installed processors,\n\
          disregarding any OpenMP environment variables, or CPU quotas.\n\
 "));
       oputs (_("\
       --ignore=N\n\
-         if possible, exclude N processing units.\n\
-         The result is guaranteed to be at least 1.\n\
+         ਜੇ possible, exclude N processing units.\n\
+         The ਨਤੀਜਾ is guaranteed ਮੰਜ਼ਿਲ be at ਘੱਟ_ਤੋਂ_ਘੱਟ 1.\n\
 "));
 
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (ਸੰਸਕਰਣ_OPTION_DESCRIPTION);
+      emit_ancillary_info (ਪ੍ਰੋਗਰਾਮ_NAME);
     }
-  exit (status);
+  ਬਾਹਰ_ਨਿਕਲੋ (ਸਥਿਤੀ);
 }
 
-int
-main (int argc, char **argv)
+ਪੂਰਨ
+ਮੁੱਖ (ਪੂਰਨ argc, ਅੱਖਰ **argv)
 {
-  unsigned long ignore = 0;
+  ਬਿਨਾਨਿਸ਼ਾਨੀ ਲੰਮਾ ignore = 0;
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  ਸੈੱਟ_ਪ੍ਰੋਗਰਾਮ_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  enum nproc_query mode = NPROC_CURRENT_OVERRIDABLE;
+  ਗਿਣਤੀ nproc_query ਬਹੁਲਕ_2 = NPROC_CURRENT_OVERRIDABLE;
 
-  while (true)
+  ਜਦੋਂ (true)
     {
-      int c = getopt_long (argc, argv, "", longopts, NULL);
-      if (c == -1)
-        break;
-      switch (c)
+      ਪੂਰਨ c = getopt_long (argc, argv, "", longopts, ਨਿਰਾ);
+      ਜੇ (c == -1)
+        ਰੋਕੋ;
+      ਚੋਣ (c)
         {
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_ਸੰਸਕਰਣ_CHAR (ਪ੍ਰੋਗਰਾਮ_NAME, AUTHORS);
 
-        case ALL_OPTION:
-          mode = NPROC_ALL;
-          break;
+        ਹਾਲਤ ALL_OPTION:
+          ਬਹੁਲਕ_2 = NPROC_ALL;
+          ਰੋਕੋ;
 
-        case IGNORE_OPTION:
+        ਹਾਲਤ IGNORE_OPTION:
           ignore = xnumtoumax (optarg, 10, 0, ULONG_MAX, "",
                                _("invalid number"), 0, XTOINT_MAX_QUIET);
-          break;
+          ਰੋਕੋ;
 
-        default:
+        ਮੂਲ:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (argc != optind)
+  ਜੇ (argc != optind)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind]));
       usage (EXIT_FAILURE);
     }
 
-  unsigned long nproc = num_processors (mode);
+  ਬਿਨਾਨਿਸ਼ਾਨੀ ਲੰਮਾ nproc = ਅੰਕ_processors (ਬਹੁਲਕ_2);
 
-  if (ignore < nproc)
+  ਜੇ (ignore < nproc)
     nproc -= ignore;
-  else
+  ਨਹੀਂਤਾਂ
     nproc = 1;
 
-  printf ("%lu\n", nproc);
+  ਲਿਖੋ ("%lu\n", nproc);
 
-  return EXIT_SUCCESS;
+  ਵਾਪਸ EXIT_SUCCESS;
 }

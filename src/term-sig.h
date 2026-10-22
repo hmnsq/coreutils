@@ -1,9 +1,9 @@
-#ifndef TERM_SIG_H
-# define TERM_SIG_H
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ ਪਦ_SIG_H
+# define ਪਦ_SIG_H
 
 # include <signal.h>
 
-static int const term_sig[] =
+ਸਥਿਰ ਪੂਰਨ ਅਚਲ ਪਦ_sig[] =
   {
     SIGALRM, /* our timeout.  */
     SIGINT,  /* Ctrl-C at terminal for example.  */
@@ -47,4 +47,4 @@ static int const term_sig[] =
 # endif
   };
 
-#endif
+#ਜੇ_ਅੰਤ

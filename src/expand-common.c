@@ -14,165 +14,165 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <config.h>
 
-#include <stdio.h>
-#include <sys/types.h>
-#include "system.h"
-#include "c-ctype.h"
-#include "fadvise.h"
-#include "quote.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ <stdio.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <sys/types.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ "system.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "c-ctype.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "fadvise.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "quote.h"
 
-#include "expand-common.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "expand-common.h"
 
 /* If true, convert blanks even after nonblank characters have been
    read on the line.  */
-bool convert_entire_line = false;
+bool convert_entire_ਸਤਰ = false;
 
 /* If nonzero, the size of all tab stops.  If zero, use 'tab_list' instead.  */
-static colno tab_size = 0;
+ਸਥਿਰ colno tab_ਮਾਪ = 0;
 
 /* If nonzero, the size of all tab stops after the last specified.  */
-static colno extend_size = 0;
+ਸਥਿਰ colno extend_ਮਾਪ = 0;
 
 /* If nonzero, an increment for additional tab stops after the last specified.*/
-static colno increment_size = 0;
+ਸਥਿਰ colno increment_ਮਾਪ = 0;
 
 /* The maximum distance between tab stops.  */
-idx_t max_column_width;
+idx_t max_ਕਾਲਮ_ਚੌੜਾਈ;
 
 /* Array of the explicit column numbers of the tab stops;
    after 'tab_list' is exhausted, each additional tab is replaced
    by a space.  The first column is column 0.  */
-static colno *tab_list = NULL;
+ਸਥਿਰ colno *tab_list = ਨਿਰਾ;
 
 /* The number of allocated entries in 'tab_list'.  */
-static idx_t n_tabs_allocated = 0;
+ਸਥਿਰ idx_t n_tabs_allocated = 0;
 
 /* The index of the first invalid element of 'tab_list',
    where the next element can be added.  */
-static idx_t first_free_tab = 0;
+ਸਥਿਰ idx_t ਪਹਿਲਾ_free_tab = 0;
 
 /* Null-terminated array of input filenames.  */
-static char **file_list = NULL;
+ਸਥਿਰ ਅੱਖਰ **file_list = ਨਿਰਾ;
 
 /* Default for 'file_list' if no files are given on the command line.  */
-static char *stdin_argv[] =
+ਸਥਿਰ ਅੱਖਰ *stdin_argv[] =
 {
-  (char *) "-", NULL
+  (ਅੱਖਰ *) "-", ਨਿਰਾ
 };
 
 /* True if we have ever read standard input.  */
-static bool have_read_stdin = false;
+ਸਥਿਰ bool have_read_stdin = false;
 
 /* The desired exit status.  */
-int exit_status = EXIT_SUCCESS;
+ਪੂਰਨ exit_ਸਥਿਤੀ = EXIT_SUCCESS;
 
 
-static void
-set_max_column_width (colno width)
+ਸਥਿਰ ਖਾਲੀ
+ਸੈੱਟ_max_ਕਾਲਮ_ਚੌੜਾਈ (colno ਚੌੜਾਈ)
 {
-  if (max_column_width < width)
+  ਜੇ (max_ਕਾਲਮ_ਚੌੜਾਈ < ਚੌੜਾਈ)
     {
-      if (ckd_add (&max_column_width, width, 0))
+      ਜੇ (ckd_ਜੋੜੋ (&max_ਕਾਲਮ_ਚੌੜਾਈ, ਚੌੜਾਈ, 0))
         error (EXIT_FAILURE, 0, _("tabs are too far apart"));
     }
 }
 
 /* Add tab stop TABVAL to the end of 'tab_list'.  */
-extern void
-add_tab_stop (colno tabval)
+ਬਾਹਰੀ ਖਾਲੀ
+ਜੋੜੋ_tab_stop (colno tabval)
 {
-  colno prev_column = first_free_tab ? tab_list[first_free_tab - 1] : 0;
-  colno column_width = prev_column <= tabval ? tabval - prev_column : 0;
+  colno prev_ਕਾਲਮ = ਪਹਿਲਾ_free_tab ? tab_list[ਪਹਿਲਾ_free_tab - 1] : 0;
+  colno ਕਾਲਮ_ਚੌੜਾਈ = prev_ਕਾਲਮ <= tabval ? tabval - prev_ਕਾਲਮ : 0;
 
-  if (first_free_tab == n_tabs_allocated)
-    tab_list = xpalloc (tab_list, &n_tabs_allocated, 1, -1, sizeof *tab_list);
-  tab_list[first_free_tab++] = tabval;
+  ਜੇ (ਪਹਿਲਾ_free_tab == n_tabs_allocated)
+    tab_list = xpalloc (tab_list, &n_tabs_allocated, 1, -1, ਆਕਾਰ *tab_list);
+  tab_list[ਪਹਿਲਾ_free_tab++] = tabval;
 
-  set_max_column_width (column_width);
+  ਸੈੱਟ_max_ਕਾਲਮ_ਚੌੜਾਈ (ਕਾਲਮ_ਚੌੜਾਈ);
 }
 
-static bool
-set_extend_size (colno tabval)
+ਸਥਿਰ bool
+ਸੈੱਟ_extend_ਮਾਪ (colno tabval)
 {
   bool ok = true;
 
-  if (extend_size)
+  ਜੇ (extend_ਮਾਪ)
     {
       error (0, 0,
              _("'/' specifier only allowed"
                " with the last value"));
       ok = false;
     }
-  extend_size = tabval;
+  extend_ਮਾਪ = tabval;
 
-  set_max_column_width (extend_size);
+  ਸੈੱਟ_max_ਕਾਲਮ_ਚੌੜਾਈ (extend_ਮਾਪ);
 
-  return ok;
+  ਵਾਪਸ ok;
 }
 
-static bool
-set_increment_size (colno tabval)
+ਸਥਿਰ bool
+ਸੈੱਟ_increment_ਮਾਪ (colno tabval)
 {
   bool ok = true;
 
-  if (increment_size)
+  ਜੇ (increment_ਮਾਪ)
     {
       error (0,0,
              _("'+' specifier only allowed"
                " with the last value"));
       ok = false;
     }
-  increment_size = tabval;
+  increment_ਮਾਪ = tabval;
 
-  set_max_column_width (increment_size);
+  ਸੈੱਟ_max_ਕਾਲਮ_ਚੌੜਾਈ (increment_ਮਾਪ);
 
-  return ok;
+  ਵਾਪਸ ok;
 }
 
 /* Add the comma or blank separated list of tab stops STOPS
    to the list of tab stops.  */
-extern void
-parse_tab_stops (char const *stops)
+ਬਾਹਰੀ ਖਾਲੀ
+parse_tab_stops (ਅੱਖਰ ਅਚਲ *stops)
 {
   bool have_tabval = false;
   colno tabval = 0;
   bool extend_tabval = false;
   bool increment_tabval = false;
-  char const *num_start = NULL;
+  ਅੱਖਰ ਅਚਲ *ਅੰਕ_ਸ਼ੁਰੂ = ਨਿਰਾ;
   bool ok = true;
 
-  for (; *stops; stops++)
+  ਲਈ (; *stops; stops++)
     {
-      if (*stops == ',' || isblank (to_uchar (*stops)))
+      ਜੇ (*stops == ',' || isblank (ਮੰਜ਼ਿਲ_uchar (*stops)))
         {
-          if (have_tabval)
+          ਜੇ (have_tabval)
             {
-              if (extend_tabval)
+              ਜੇ (extend_tabval)
                 {
-                  if (! set_extend_size (tabval))
+                  ਜੇ (! ਸੈੱਟ_extend_ਮਾਪ (tabval))
                     {
                       ok = false;
-                      break;
+                      ਰੋਕੋ;
                     }
                 }
-              else if (increment_tabval)
+              ਨਹੀਂਤਾਂ ਜੇ (increment_tabval)
                 {
-                  if (! set_increment_size (tabval))
+                  ਜੇ (! ਸੈੱਟ_increment_ਮਾਪ (tabval))
                     {
                       ok = false;
-                      break;
+                      ਰੋਕੋ;
                     }
                 }
-              else
-                add_tab_stop (tabval);
+              ਨਹੀਂਤਾਂ
+                ਜੋੜੋ_tab_stop (tabval);
             }
           have_tabval = false;
         }
-      else if (*stops == '/')
+      ਨਹੀਂਤਾਂ ਜੇ (*stops == '/')
         {
-          if (have_tabval)
+          ਜੇ (have_tabval)
             {
               error (0, 0, _("'/' specifier not at start of number: %s"),
                      quote (stops));
@@ -181,9 +181,9 @@ parse_tab_stops (char const *stops)
           extend_tabval = true;
           increment_tabval = false;
         }
-      else if (*stops == '+')
+      ਨਹੀਂਤਾਂ ਜੇ (*stops == '+')
         {
-          if (have_tabval)
+          ਜੇ (have_tabval)
             {
               error (0, 0, _("'+' specifier not at start of number: %s"),
                      quote (stops));
@@ -192,67 +192,67 @@ parse_tab_stops (char const *stops)
           increment_tabval = true;
           extend_tabval = false;
         }
-      else if (c_isdigit (*stops))
+      ਨਹੀਂਤਾਂ ਜੇ (c_isdigit (*stops))
         {
-          if (!have_tabval)
+          ਜੇ (!have_tabval)
             {
               tabval = 0;
               have_tabval = true;
-              num_start = stops;
+              ਅੰਕ_ਸ਼ੁਰੂ = stops;
             }
 
           /* Detect overflow.  */
-          if (!DECIMAL_DIGIT_ACCUMULATE (tabval, *stops - '0'))
+          ਜੇ (!DECIMAL_DIGIT_ACCUMULATE (tabval, *stops - '0'))
             {
-              idx_t len = strspn (num_start, "0123456789");
-              char *bad_num = ximemdup0 (num_start, len);
-              error (0, 0, _("tab stop is too large %s"), quote (bad_num));
-              free (bad_num);
+              idx_t len = strspn (ਅੰਕ_ਸ਼ੁਰੂ, "0123456789");
+              ਅੱਖਰ *bad_ਅੰਕ = ximemdup0 (ਅੰਕ_ਸ਼ੁਰੂ, len);
+              error (0, 0, _("tab stop is too large %s"), quote (bad_ਅੰਕ));
+              ਮੁਕਤ (bad_ਅੰਕ);
               ok = false;
-              stops = num_start + len - 1;
+              stops = ਅੰਕ_ਸ਼ੁਰੂ + len - 1;
             }
         }
-      else
+      ਨਹੀਂਤਾਂ
         {
           error (0, 0, _("tab size contains invalid character(s): %s"),
                  quote (stops));
           ok = false;
-          break;
+          ਰੋਕੋ;
         }
     }
 
-  if (ok && have_tabval)
+  ਜੇ (ok && have_tabval)
     {
-      if (extend_tabval)
-        ok &= set_extend_size (tabval);
-      else if (increment_tabval)
-        ok &= set_increment_size (tabval);
-      else
-        add_tab_stop (tabval);
+      ਜੇ (extend_tabval)
+        ok &= ਸੈੱਟ_extend_ਮਾਪ (tabval);
+      ਨਹੀਂਤਾਂ ਜੇ (increment_tabval)
+        ok &= ਸੈੱਟ_increment_ਮਾਪ (tabval);
+      ਨਹੀਂਤਾਂ
+        ਜੋੜੋ_tab_stop (tabval);
     }
 
-  if (! ok)
-    exit (EXIT_FAILURE);
+  ਜੇ (! ok)
+    ਬਾਹਰ_ਨਿਕਲੋ (EXIT_FAILURE);
 }
 
 /* Check that the list of tab stops TABS, with ENTRIES entries,
    contains only nonzero, ascending values.  */
 
-static void
-validate_tab_stops (colno const *tabs, idx_t entries)
+ਸਥਿਰ ਖਾਲੀ
+validate_tab_stops (colno ਅਚਲ *tabs, idx_t entries)
 {
   colno prev_tab = 0;
 
-  for (idx_t i = 0; i < entries; i++)
+  ਲਈ (idx_t i = 0; i < entries; i++)
     {
-      if (tabs[i] == 0)
+      ਜੇ (tabs[i] == 0)
         error (EXIT_FAILURE, 0, _("tab size cannot be 0"));
-      if (tabs[i] <= prev_tab)
+      ਜੇ (tabs[i] <= prev_tab)
         error (EXIT_FAILURE, 0, _("tab sizes must be ascending"));
       prev_tab = tabs[i];
     }
 
-  if (increment_size && extend_size)
+  ਜੇ (increment_ਮਾਪ && extend_ਮਾਪ)
     error (EXIT_FAILURE, 0, _("'/' specifier is mutually exclusive with '+'"));
 }
 
@@ -264,19 +264,19 @@ validate_tab_stops (colno const *tabs, idx_t entries)
    tab-stops = N (if value N specified as the only value).
    tab-stops = distinct values given on command line (if multiple values given).
 */
-extern void
-finalize_tab_stops (void)
+ਬਾਹਰੀ ਖਾਲੀ
+finalize_tab_stops (ਖਾਲੀ)
 {
-  validate_tab_stops (tab_list, first_free_tab);
+  validate_tab_stops (tab_list, ਪਹਿਲਾ_free_tab);
 
-  if (first_free_tab == 0)
-    tab_size = max_column_width = extend_size
-                                  ? extend_size : increment_size
-                                                  ? increment_size : 8;
-  else if (first_free_tab == 1 && ! extend_size && ! increment_size)
-    tab_size = tab_list[0];
-  else
-    tab_size = 0;
+  ਜੇ (ਪਹਿਲਾ_free_tab == 0)
+    tab_ਮਾਪ = max_ਕਾਲਮ_ਚੌੜਾਈ = extend_ਮਾਪ
+                                  ? extend_ਮਾਪ : increment_ਮਾਪ
+                                                  ? increment_ਮਾਪ : 8;
+  ਨਹੀਂਤਾਂ ਜੇ (ਪਹਿਲਾ_free_tab == 1 && ! extend_ਮਾਪ && ! increment_ਮਾਪ)
+    tab_ਮਾਪ = tab_list[0];
+  ਨਹੀਂਤਾਂ
+    tab_ਮਾਪ = 0;
 }
 
 
@@ -284,59 +284,59 @@ finalize_tab_stops (void)
    many multiple tab-sizes.  Set *LAST_TAB depending on whether we are
    returning COLUMN + 1 merely because we're past the last tab.
    If the number would overflow, diagnose this and exit.  */
-extern colno
-get_next_tab_column (colno column, idx_t *tab_index, bool *last_tab)
+ਬਾਹਰੀ colno
+get_ਅਗਲਾ_tab_ਕਾਲਮ (colno ਕਾਲਮ, idx_t *tab_ਸੂਚਕਾਂਕ, bool *ਆਖਰੀ_tab)
 {
-  *last_tab = false;
-  colno tab_distance;
+  *ਆਖਰੀ_tab = false;
+  colno tab_ਦੂਰੀ;
 
   /* single tab-size - return multiples of it */
-  if (tab_size)
-    tab_distance = tab_size - column % tab_size;
-  else
+  ਜੇ (tab_ਮਾਪ)
+    tab_ਦੂਰੀ = tab_ਮਾਪ - ਕਾਲਮ % tab_ਮਾਪ;
+  ਨਹੀਂਤਾਂ
     {
       /* multiple tab-sizes - iterate them until the tab position is beyond
          the current input column. */
-      for ( ; *tab_index < first_free_tab ; (*tab_index)++ )
+      ਲਈ ( ; *tab_ਸੂਚਕਾਂਕ < ਪਹਿਲਾ_free_tab ; (*tab_ਸੂਚਕਾਂਕ)++ )
         {
-          colno tab = tab_list[*tab_index];
-          if (column < tab)
-            return tab;
+          colno tab = tab_list[*tab_ਸੂਚਕਾਂਕ];
+          ਜੇ (ਕਾਲਮ < tab)
+            ਵਾਪਸ tab;
         }
 
       /* relative last tab - return multiples of it */
-      if (extend_size)
-        tab_distance = extend_size - column % extend_size;
-      else if (increment_size)
+      ਜੇ (extend_ਮਾਪ)
+        tab_ਦੂਰੀ = extend_ਮਾਪ - ਕਾਲਮ % extend_ਮਾਪ;
+      ਨਹੀਂਤਾਂ ਜੇ (increment_ਮਾਪ)
         {
           /* incremental last tab - add increment_size to the previous
              tab stop */
-          colno end_tab = tab_list[first_free_tab - 1];
-          tab_distance = increment_size - ((column - end_tab) % increment_size);
+          colno ਸਿਰਾ_tab = tab_list[ਪਹਿਲਾ_free_tab - 1];
+          tab_ਦੂਰੀ = increment_ਮਾਪ - ((ਕਾਲਮ - ਸਿਰਾ_tab) % increment_ਮਾਪ);
         }
-      else
+      ਨਹੀਂਤਾਂ
         {
-          *last_tab = true;
-          tab_distance = 1;
+          *ਆਖਰੀ_tab = true;
+          tab_ਦੂਰੀ = 1;
         }
     }
 
   colno tab_stop;
-  if (ckd_add (&tab_stop, column, tab_distance))
+  ਜੇ (ckd_ਜੋੜੋ (&tab_stop, ਕਾਲਮ, tab_ਦੂਰੀ))
     error (EXIT_FAILURE, 0, _("input line is too long"));
-  return tab_stop;
+  ਵਾਪਸ tab_stop;
 }
 
 
 /* Sets new file-list */
-extern void
-set_file_list (char **list)
+ਬਾਹਰੀ ਖਾਲੀ
+ਸੈੱਟ_file_list (ਅੱਖਰ **list)
 {
   have_read_stdin = false;
 
-  if (!list)
+  ਜੇ (!list)
     file_list = stdin_argv;
-  else
+  ਨਹੀਂਤਾਂ
     file_list = list;
 }
 
@@ -345,72 +345,72 @@ set_file_list (char **list)
    Open a filename of '-' as the standard input.
    Return NULL if there are no more input files.  */
 
-extern FILE *
-next_file (FILE *fp)
+ਬਾਹਰੀ FILE *
+ਅਗਲਾ_file (FILE *fp)
 {
-  static char *prev_file;
-  char *file;
+  ਸਥਿਰ ਅੱਖਰ *prev_file;
+  ਅੱਖਰ *file;
 
-  if (fp)
+  ਜੇ (fp)
     {
-      int err = errno;
-      if (!ferror (fp))
+      ਪੂਰਨ err = errno;
+      ਜੇ (!ferror (fp))
         err = 0;
-      if (streq (prev_file, "-"))
+      ਜੇ (streq (prev_file, "-"))
         clearerr (fp);		/* Also clear EOF.  */
-      else if (fclose (fp) != 0)
+      ਨਹੀਂਤਾਂ ਜੇ (fclose (fp) != 0)
         err = errno;
-      if (err)
+      ਜੇ (err)
         {
           error (0, err, "%s", quotef (prev_file));
-          exit_status = EXIT_FAILURE;
+          exit_ਸਥਿਤੀ = EXIT_FAILURE;
         }
     }
 
-  while ((file = *file_list++) != NULL)
+  ਜਦੋਂ ((file = *file_list++) != ਨਿਰਾ)
     {
-      if (streq (file, "-"))
+      ਜੇ (streq (file, "-"))
         {
           have_read_stdin = true;
           fp = stdin;
         }
-      else
+      ਨਹੀਂਤਾਂ
         fp = fopen (file, "r");
-      if (fp)
+      ਜੇ (fp)
         {
           prev_file = file;
           fadvise (fp, FADVISE_SEQUENTIAL);
-          return fp;
+          ਵਾਪਸ fp;
         }
       error (0, errno, "%s", quotef (file));
-      exit_status = EXIT_FAILURE;
+      exit_ਸਥਿਤੀ = EXIT_FAILURE;
     }
-  return NULL;
+  ਵਾਪਸ ਨਿਰਾ;
 }
 
 /* Close standard input if we have read from it.  */
-extern void
-cleanup_file_list_stdin (void)
+ਬਾਹਰੀ ਖਾਲੀ
+cleanup_file_list_stdin (ਖਾਲੀ)
 {
-    if (have_read_stdin && fclose (stdin) != 0)
+    ਜੇ (have_read_stdin && fclose (stdin) != 0)
       error (EXIT_FAILURE, errno, "-");
 }
 
 /* Emit the --help output for --tabs=LIST option accepted by expand and
    unexpand.  */
-extern void
-emit_tab_list_info (char const *program)
+ਬਾਹਰੀ ਖਾਲੀ
+emit_tab_list_info (ਅੱਖਰ ਅਚਲ *ਪ੍ਰੋਗਰਾਮ)
 {
   /* suppress syntax check for emit_mandatory_arg_note() */
-  oputs_ (program, _("\
+  oputs_ (ਪ੍ਰੋਗਰਾਮ, _("\
   -t, --tabs=LIST\n\
-         use comma separated list of tab positions.\n\
+         use comma separated list ਦਾ tab positions.\n\
 "));
   fputs (_("\
-         The last specified position can be prefixed with '/'\n\
-         to specify a tab size to use after the last\n\
-         explicitly specified tab stop.  Also a prefix of '+'\n\
-         can be used to align remaining tab stops relative to\n\
-         the last specified tab stop instead of the first column\n\
+         The ਆਖਰੀ specified position can be prefixed with '/'\n\
+         ਮੰਜ਼ਿਲ specify a tab ਮਾਪ ਮੰਜ਼ਿਲ use after the ਆਖਰੀ\n\
+         explicitly specified tab stop.  Also a ਅਗੇਤਰ ਦਾ '+'\n\
+         can be ਵਰਤਿਆ ਮੰਜ਼ਿਲ align ਬਚਿਆ tab stops relative ਮੰਜ਼ਿਲ\n\
+         the ਆਖਰੀ specified tab stop instead ਦਾ the ਪਹਿਲਾ ਕਾਲਮ\n\
 "), stdout);
 }

@@ -14,128 +14,128 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include <getopt.h>
-#include <stdio.h>
-#include <sys/types.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <config.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <getopt.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <stdio.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <sys/types.h>
 
-#include "system.h"
-#include "quote.h"
-#include "root-dev-ino.h"
-#include "xgetcwd.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "system.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "quote.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "root-dev-ino.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "xgetcwd.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "pwd"
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ ਪ੍ਰੋਗਰਾਮ_NAME "pwd"
 
-#define AUTHORS proper_name ("Jim Meyering")
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ AUTHORS proper_name ("Jim Meyering")
 
-struct file_name
+ਬਣਤਰ file_name
 {
   idx_t n_alloc;
-  char *buf COUNTED_BY (n_alloc);
-  char *start;
+  ਅੱਖਰ *buf COUNTED_BY (n_alloc);
+  ਅੱਖਰ *ਸ਼ੁਰੂ;
 };
 
-static struct option const longopts[] =
+ਸਥਿਰ ਬਣਤਰ option ਅਚਲ longopts[] =
 {
-  {"logical", no_argument, NULL, 'L'},
-  {"physical", no_argument, NULL, 'P'},
+  {"logical", no_ਦਲੀਲ, ਨਿਰਾ, 'L'},
+  {"physical", no_ਦਲੀਲ, ਨਿਰਾ, 'P'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_ਸੰਸਕਰਣ_OPTION_DECL},
+  {ਨਿਰਾ, 0, ਨਿਰਾ, 0}
 };
 
-void
-usage (int status)
+ਖਾਲੀ
+usage (ਪੂਰਨ ਸਥਿਤੀ)
 {
-  if (status != EXIT_SUCCESS)
+  ਜੇ (ਸਥਿਤੀ != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ਨਹੀਂਤਾਂ
     {
-      printf (_("Usage: %s [OPTION]...\n"), program_name);
+      ਲਿਖੋ (_("Usage: %s [OPTION]...\n"), ਪ੍ਰੋਗਰਾਮ_name);
       fputs (_("\
-Print the full filename of the current working directory.\n\
+Print the ਭਰਿਆ filename ਦਾ the current working directory.\n\
 \n\
 "), stdout);
       oputs (_("\
   -L, --logical\n\
-         use PWD from environment, even if it contains symlinks\n\
+         use PWD from environment, even ਜੇ it ਸ਼ਾਮਲ_ਹੈ symlinks\n\
 "));
       oputs (_("\
   -P, --physical\n\
          resolve all symlinks\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (ਸੰਸਕਰਣ_OPTION_DESCRIPTION);
       fputs (_("\n\
 If no option is specified, -P is assumed.\n\
 "), stdout);
-      printf (USAGE_BUILTIN_WARNING, PROGRAM_NAME);
-      emit_ancillary_info (PROGRAM_NAME);
+      ਲਿਖੋ (USAGE_BUILTIN_WARNING, ਪ੍ਰੋਗਰਾਮ_NAME);
+      emit_ancillary_info (ਪ੍ਰੋਗਰਾਮ_NAME);
     }
-  exit (status);
+  ਬਾਹਰ_ਨਿਕਲੋ (ਸਥਿਤੀ);
 }
 
-static void
-file_name_free (struct file_name *p)
+ਸਥਿਰ ਖਾਲੀ
+file_name_free (ਬਣਤਰ file_name *p)
 {
-  free (p->buf);
-  free (p);
+  ਮੁਕਤ (p->buf);
+  ਮੁਕਤ (p);
 }
 
-static struct file_name *
-file_name_init (void)
+ਸਥਿਰ ਬਣਤਰ file_name *
+file_name_init (ਖਾਲੀ)
 {
-  struct file_name *p = xmalloc (sizeof *p);
+  ਬਣਤਰ file_name *p = xmalloc (ਆਕਾਰ *p);
 
   /* Start with a buffer larger than likely file names, but beware of systems
      on which PATH_MAX is very large -- e.g., INT_MAX.  */
-  int init_alloc = 2 * MIN (PATH_MAX, 16 * 1024);
+  ਪੂਰਨ init_alloc = 2 * MIN (PATH_MAX, 16 * 1024);
   p->n_alloc = init_alloc;
 
   p->buf = xmalloc (init_alloc);
-  p->start = p->buf + init_alloc - 1;
-  p->start[0] = '\0';
-  return p;
+  p->ਸ਼ੁਰੂ = p->buf + init_alloc - 1;
+  p->ਸ਼ੁਰੂ[0] = '\0';
+  ਵਾਪਸ p;
 }
 
 /* Prepend the name S of length S_LEN, to the growing file_name, P.  */
-static void
-file_name_prepend (struct file_name *p, char const *s, size_t s_len)
+ਸਥਿਰ ਖਾਲੀ
+file_name_prepend (ਬਣਤਰ file_name *p, ਅੱਖਰ ਅਚਲ *s, size_t s_len)
 {
-  idx_t n_free = p->start - p->buf;
-  if (n_free < 1 + s_len)
+  idx_t n_free = p->ਸ਼ੁਰੂ - p->buf;
+  ਜੇ (n_free < 1 + s_len)
     {
       /* Call xpalloc with NULL not p->buf, since with the latter
          we'd end up copying the data twice: once via realloc, then again
          to align it with the end of the new buffer.  By passing NULL we
          copy it only once.  */
-      idx_t n_used = p->n_alloc - n_free;
-      char *buf = xpalloc (NULL, &p->n_alloc, 1 + s_len - n_free, -1, 1);
-      p->start = memcpy (buf + p->n_alloc - n_used, p->start, n_used);
-      free (p->buf);
+      idx_t n_ਵਰਤਿਆ = p->n_alloc - n_free;
+      ਅੱਖਰ *buf = xpalloc (ਨਿਰਾ, &p->n_alloc, 1 + s_len - n_free, -1, 1);
+      p->ਸ਼ੁਰੂ = ਸਮ੍ਰਿਤੀ_ਨਕਲ (buf + p->n_alloc - n_ਵਰਤਿਆ, p->ਸ਼ੁਰੂ, n_ਵਰਤਿਆ);
+      ਮੁਕਤ (p->buf);
       p->buf = buf;
     }
 
-  p->start -= 1 + s_len;
-  p->start[0] = '/';
-  memcpy (p->start + 1, s, s_len);
+  p->ਸ਼ੁਰੂ -= 1 + s_len;
+  p->ਸ਼ੁਰੂ[0] = '/';
+  ਸਮ੍ਰਿਤੀ_ਨਕਲ (p->ਸ਼ੁਰੂ + 1, s, s_len);
 }
 
 /* Return a string (malloc'd) consisting of N '/'-separated ".." components.  */
-static char *
-nth_parent (size_t n)
+ਸਥਿਰ ਅੱਖਰ *
+nth_ਮਾਪਾ (size_t n)
 {
-  char *buf = xnmalloc (3, n);
-  char *p = buf;
+  ਅੱਖਰ *buf = xnmalloc (3, n);
+  ਅੱਖਰ *p = buf;
 
-  for (size_t i = 0; i < n; i++)
+  ਲਈ (size_t i = 0; i < n; i++)
     {
-      memcpy (p, "../", 3);
+      ਸਮ੍ਰਿਤੀ_ਨਕਲ (p, "../", 3);
       p += 3;
     }
   p[-1] = '\0';
-  return buf;
+  ਵਾਪਸ buf;
 }
 
 /* Determine the basename of the current directory, where DOT_SB is the
@@ -149,90 +149,90 @@ nth_parent (size_t n)
    PARENT_HEIGHT is 1.  This is solely for diagnostics.
    Exit nonzero upon error.  */
 
-static void
-find_dir_entry (struct stat *dot_sb, struct file_name *file_name,
-                size_t parent_height)
+ਸਥਿਰ ਖਾਲੀ
+ਲੱਭੋ_dir_ਇੰਦਰਾਜ (ਬਣਤਰ stat *dot_sb, ਬਣਤਰ file_name *file_name,
+                size_t ਮਾਪਾ_ਉਚਾਈ)
 {
   DIR *dirp = opendir ("..");
-  if (dirp == NULL)
+  ਜੇ (dirp == ਨਿਰਾ)
     error (EXIT_FAILURE, errno, _("cannot open directory %s"),
-           quote (nth_parent (parent_height)));
+           quote (nth_ਮਾਪਾ (ਮਾਪਾ_ਉਚਾਈ)));
 
-  int fd = dirfd (dirp);
-  if ((0 <= fd ? fchdir (fd) : chdir ("..")) < 0)
+  ਪੂਰਨ fd = dirfd (dirp);
+  ਜੇ ((0 <= fd ? fchdir (fd) : chdir ("..")) < 0)
     error (EXIT_FAILURE, errno, _("failed to chdir to %s"),
-           quote (nth_parent (parent_height)));
+           quote (nth_ਮਾਪਾ (ਮਾਪਾ_ਉਚਾਈ)));
 
-  struct stat parent_sb;
-  if ((0 <= fd ? fstat (fd, &parent_sb) : stat (".", &parent_sb)) < 0)
+  ਬਣਤਰ stat ਮਾਪਾ_sb;
+  ਜੇ ((0 <= fd ? fstat (fd, &ਮਾਪਾ_sb) : stat (".", &ਮਾਪਾ_sb)) < 0)
     error (EXIT_FAILURE, errno, _("failed to stat %s"),
-           quote (nth_parent (parent_height)));
+           quote (nth_ਮਾਪਾ (ਮਾਪਾ_ਉਚਾਈ)));
 
   /* If parent and child directory are on different devices, then we
      can't rely on d_ino for useful i-node numbers; use lstat instead.  */
-  bool use_lstat = (parent_sb.st_dev != dot_sb->st_dev);
+  bool use_lstat = (ਮਾਪਾ_sb.st_dev != dot_sb->st_dev);
 
-  bool found = false;
-  while (true)
+  bool ਮਿਲਿਆ = false;
+  ਜਦੋਂ (true)
     {
-      struct dirent const *dp;
+      ਬਣਤਰ dirent ਅਚਲ *dp;
 
       errno = 0;
-      if ((dp = readdir_ignoring_dot_and_dotdot (dirp)) == NULL)
+      ਜੇ ((dp = readdir_ignoring_dot_and_dotdot (dirp)) == ਨਿਰਾ)
         {
-          if (errno)
+          ਜੇ (errno)
             {
               /* Save/restore errno across closedir call.  */
-              int e = errno;
+              ਪੂਰਨ e = errno;
               closedir (dirp);
               errno = e;
 
               /* Arrange to give a diagnostic after exiting this loop.  */
-              dirp = NULL;
+              dirp = ਨਿਰਾ;
             }
-          break;
+          ਰੋਕੋ;
         }
 
       ino_t ino = D_INO (dp);
 
-      struct stat ent_sb;
-      if (ino == NOT_AN_INODE_NUMBER || use_lstat)
+      ਬਣਤਰ stat ent_sb;
+      ਜੇ (ino == NOT_AN_INODE_ਸੰਖਿਆ || use_lstat)
         {
-          if (lstat (dp->d_name, &ent_sb) < 0)
+          ਜੇ (lstat (dp->d_name, &ent_sb) < 0)
             {
               /* Skip any entry we can't stat.  */
-              continue;
+              ਜਾਰੀ;
             }
           ino = ent_sb.st_ino;
         }
 
-      if (ino != dot_sb->st_ino)
-        continue;
+      ਜੇ (ino != dot_sb->st_ino)
+        ਜਾਰੀ;
 
       /* If we're not crossing a device boundary, then a simple i-node
          match is enough.  */
-      if ( ! use_lstat || ent_sb.st_dev == dot_sb->st_dev)
+      ਜੇ ( ! use_lstat || ent_sb.st_dev == dot_sb->st_dev)
         {
           file_name_prepend (file_name, dp->d_name, _D_EXACT_NAMLEN (dp));
-          found = true;
-          break;
+          ਮਿਲਿਆ = true;
+          ਰੋਕੋ;
         }
     }
 
-  if (dirp == NULL || closedir (dirp) != 0)
+  ਜੇ (dirp == ਨਿਰਾ || closedir (dirp) != 0)
     {
       /* Note that this diagnostic serves for both readdir
          and closedir failures.  */
       error (EXIT_FAILURE, errno, _("reading directory %s"),
-             quote (nth_parent (parent_height)));
+             quote (nth_ਮਾਪਾ (ਮਾਪਾ_ਉਚਾਈ)));
     }
 
-  if ( ! found)
+  ਜੇ ( ! ਮਿਲਿਆ)
     error (EXIT_FAILURE, 0,
            _("couldn't find directory entry in %s with matching i-node"),
-           quote (nth_parent (parent_height)));
+           quote (nth_ਮਾਪਾ (ਮਾਪਾ_ਉਚਾਈ)));
 
-  *dot_sb = parent_sb;
+  *dot_sb = ਮਾਪਾ_sb;
 }
 
 /* Construct the full, absolute name of the current working
@@ -258,129 +258,129 @@ find_dir_entry (struct stat *dot_sb, struct file_name *file_name,
    in case the unreadable directory is close enough to the root that
    getcwd works from there.  */
 
-static void
-robust_getcwd (struct file_name *file_name)
+ਸਥਿਰ ਖਾਲੀ
+robust_getcwd (ਬਣਤਰ file_name *file_name)
 {
-  size_t height = 1;
-  struct dev_ino dev_ino_buf;
-  struct dev_ino *root_dev_ino = get_root_dev_ino (&dev_ino_buf);
+  size_t ਉਚਾਈ = 1;
+  ਬਣਤਰ dev_ino dev_ino_buf;
+  ਬਣਤਰ dev_ino *ਜੜ੍ਹ_dev_ino = get_ਜੜ੍ਹ_dev_ino (&dev_ino_buf);
 
-  if (root_dev_ino == NULL)
+  ਜੇ (ਜੜ੍ਹ_dev_ino == ਨਿਰਾ)
     error (EXIT_FAILURE, errno, _("failed to get attributes of %s"),
            quoteaf ("/"));
 
-  struct stat dot_sb;
-  if (stat (".", &dot_sb) < 0)
+  ਬਣਤਰ stat dot_sb;
+  ਜੇ (stat (".", &dot_sb) < 0)
     error (EXIT_FAILURE, errno, _("failed to stat %s"), quoteaf ("."));
 
-  while (true)
+  ਜਦੋਂ (true)
     {
       /* If we've reached the root, we're done.  */
-      if (PSAME_INODE (&dot_sb, root_dev_ino))
-        break;
+      ਜੇ (PSAME_INODE (&dot_sb, ਜੜ੍ਹ_dev_ino))
+        ਰੋਕੋ;
 
-      find_dir_entry (&dot_sb, file_name, height++);
+      ਲੱਭੋ_dir_ਇੰਦਰਾਜ (&dot_sb, file_name, ਉਚਾਈ++);
     }
 
   /* See if a leading slash is needed; file_name_prepend adds one.  */
-  if (file_name->start[0] == '\0')
+  ਜੇ (file_name->ਸ਼ੁਰੂ[0] == '\0')
     file_name_prepend (file_name, "", 0);
 }
 
 
 /* Return PWD from the environment if it is acceptable for 'pwd -L'
    output, otherwise NULL.  */
-static char const *
-logical_getcwd (void)
+ਸਥਿਰ ਅੱਖਰ ਅਚਲ *
+logical_getcwd (ਖਾਲੀ)
 {
-  char const *wd = getenv ("PWD");
+  ਅੱਖਰ ਅਚਲ *wd = getenv ("PWD");
 
   /* Textual validation first.  */
-  if (!wd || wd[0] != '/')
-    return NULL;
-  char const *p = wd;
-  while ((p = strstr (p, "/.")))
+  ਜੇ (!wd || wd[0] != '/')
+    ਵਾਪਸ ਨਿਰਾ;
+  ਅੱਖਰ ਅਚਲ *p = wd;
+  ਜਦੋਂ ((p = ਲੜੀ_ਖੋਜ (p, "/.")))
     {
-      if (!p[2] || p[2] == '/'
+      ਜੇ (!p[2] || p[2] == '/'
           || (p[2] == '.' && (!p[3] || p[3] == '/')))
-        return NULL;
+        ਵਾਪਸ ਨਿਰਾ;
       p++;
     }
 
   /* System call validation.  */
-  struct stat st1;
-  struct stat st2;
-  if (stat (wd, &st1) == 0 && stat (".", &st2) == 0 && psame_inode (&st1, &st2))
-    return wd;
-  return NULL;
+  ਬਣਤਰ stat st1;
+  ਬਣਤਰ stat st2;
+  ਜੇ (stat (wd, &st1) == 0 && stat (".", &st2) == 0 && psame_inode (&st1, &st2))
+    ਵਾਪਸ wd;
+  ਵਾਪਸ ਨਿਰਾ;
 }
 
 
-int
-main (int argc, char **argv)
+ਪੂਰਨ
+ਮੁੱਖ (ਪੂਰਨ argc, ਅੱਖਰ **argv)
 {
   /* POSIX requires a default of -L, but most scripts expect -P.
      Currently shells default to -L, while stand-alone
      pwd implementations default to -P.  */
-  bool logical = (getenv ("POSIXLY_CORRECT") != NULL);
+  bool logical = (getenv ("POSIXLY_CORRECT") != ਨਿਰਾ);
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  ਸੈੱਟ_ਪ੍ਰੋਗਰਾਮ_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while (true)
+  ਜਦੋਂ (true)
     {
-      int c = getopt_long (argc, argv, "LP", longopts, NULL);
-      if (c == -1)
-        break;
-      switch (c)
+      ਪੂਰਨ c = getopt_long (argc, argv, "LP", longopts, ਨਿਰਾ);
+      ਜੇ (c == -1)
+        ਰੋਕੋ;
+      ਚੋਣ (c)
         {
-        case 'L':
+        ਹਾਲਤ 'L':
           logical = true;
-          break;
-        case 'P':
+          ਰੋਕੋ;
+        ਹਾਲਤ 'P':
           logical = false;
-          break;
+          ਰੋਕੋ;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_ਸੰਸਕਰਣ_CHAR (ਪ੍ਰੋਗਰਾਮ_NAME, AUTHORS);
 
-        default:
+        ਮੂਲ:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (optind < argc)
+  ਜੇ (optind < argc)
     error (0, 0, _("ignoring non-option arguments"));
 
-  if (logical)
+  ਜੇ (logical)
     {
-      char const *wd = logical_getcwd ();
-      if (wd)
+      ਅੱਖਰ ਅਚਲ *wd = logical_getcwd ();
+      ਜੇ (wd)
         {
           puts (wd);
-          return EXIT_SUCCESS;
+          ਵਾਪਸ EXIT_SUCCESS;
         }
     }
 
-  char *wd = xgetcwd ();
-  if (wd != NULL)
+  ਅੱਖਰ *wd = xgetcwd ();
+  ਜੇ (wd != ਨਿਰਾ)
     {
       puts (wd);
-      free (wd);
+      ਮੁਕਤ (wd);
     }
-  else
+  ਨਹੀਂਤਾਂ
     {
-      struct file_name *file_name = file_name_init ();
+      ਬਣਤਰ file_name *file_name = file_name_init ();
       robust_getcwd (file_name);
-      puts (file_name->start);
+      puts (file_name->ਸ਼ੁਰੂ);
       file_name_free (file_name);
     }
 
-  return EXIT_SUCCESS;
+  ਵਾਪਸ EXIT_SUCCESS;
 }

@@ -13,8 +13,8 @@
    https://blake2.net.
 */
 
-int blake2b_stream (FILE *stream, void *resstream, size_t outbytes)
+ਪੂਰਨ blake2b_ਧਾਰਾ (FILE *ਧਾਰਾ, ਖਾਲੀ *resstream, size_t outbytes)
   _GL_ATTRIBUTE_NONNULL ((1));
-typedef int ( *blake2fn )( FILE *, void *, size_t );
-#define BLAKE2S_OUTBYTES 32
-#define BLAKE2B_OUTBYTES 64
+ਕਿਸਮਪਰਿਭਾਸ਼ਾ ਪੂਰਨ ( *blake2fn )( FILE *, ਖਾਲੀ *, size_t );
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ BLAKE2S_OUTBYTES 32
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ BLAKE2B_OUTBYTES 64

@@ -1,2 +1,2 @@
-#include "chown.h"
-enum chown_modes chown_mode = CHOWN_CHGRP;
+#ਅਨ੍ਤਰ੍ਭਾਵ "chown.h"
+ਗਿਣਤੀ chown_modes chown_ਬਹੁਲਕ = CHOWN_CHGRP;

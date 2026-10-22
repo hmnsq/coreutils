@@ -16,173 +16,173 @@
 
 /* David MacKenzie <djm@ai.mit.edu>  */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
-#include <selinux/label.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <config.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <stdio.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <getopt.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <sys/types.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <selinux/label.h>
 
-#include "system.h"
-#include "modechange.h"
-#include "quote.h"
-#include "selinux.h"
-#include "smack.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "system.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "modechange.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "quote.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "selinux.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "smack.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "mkfifo"
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ ਪ੍ਰੋਗਰਾਮ_NAME "mkfifo"
 
-#define AUTHORS proper_name ("David MacKenzie")
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ AUTHORS proper_name ("David MacKenzie")
 
-static struct option const longopts[] =
+ਸਥਿਰ ਬਣਤਰ option ਅਚਲ longopts[] =
 {
   {GETOPT_SELINUX_CONTEXT_OPTION_DECL},
-  {"mode", required_argument, NULL, 'm'},
+  {"mode", required_ਦਲੀਲ, ਨਿਰਾ, 'm'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_ਸੰਸਕਰਣ_OPTION_DECL},
+  {ਨਿਰਾ, 0, ਨਿਰਾ, 0}
 };
 
-void
-usage (int status)
+ਖਾਲੀ
+usage (ਪੂਰਨ ਸਥਿਤੀ)
 {
-  if (status != EXIT_SUCCESS)
+  ਜੇ (ਸਥਿਤੀ != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ਨਹੀਂਤਾਂ
     {
-      printf (_("Usage: %s [OPTION]... NAME...\n"), program_name);
+      ਲਿਖੋ (_("Usage: %s [OPTION]... NAME...\n"), ਪ੍ਰੋਗਰਾਮ_name);
       fputs (_("\
-Create named pipes (FIFOs) with the given NAMEs.\n\
+Create named pipes (FIFOs) with the given ਨਾਂ_2.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -m, --mode=MODE\n\
-         set file permission bits to MODE, not a=rw - umask\n\
+  -m, --ਬਹੁਲਕ_2=ਬਹੁਲਕ\n\
+         ਸੈੱਟ_2 file permission ਬਿੱਟ_2 ਮੰਜ਼ਿਲ ਬਹੁਲਕ, not a=rw - umask\n\
 "));
       oputs (_("\
   -Z\n\
-         set the SELinux security context to default type\n\
+         ਸੈੱਟ_2 the SELinux security context ਮੰਜ਼ਿਲ ਮੂਲ type\n\
 "));
       oputs (_("\
       --context[=CTX]\n\
-         like -Z, or if CTX is specified then set the\n\
-         SELinux or SMACK security context to CTX\n\
+         like -Z, or ਜੇ CTX is specified then ਸੈੱਟ_2 the\n\
+         SELinux or SMACK security context ਮੰਜ਼ਿਲ CTX\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (ਸੰਸਕਰਣ_OPTION_DESCRIPTION);
+      emit_ancillary_info (ਪ੍ਰੋਗਰਾਮ_NAME);
     }
-  exit (status);
+  ਬਾਹਰ_ਨਿਕਲੋ (ਸਥਿਤੀ);
 }
 
-int
-main (int argc, char **argv)
+ਪੂਰਨ
+ਮੁੱਖ (ਪੂਰਨ argc, ਅੱਖਰ **argv)
 {
-  char const *specified_mode = NULL;
-  char const *scontext = NULL;
-  struct selabel_handle *set_security_context = NULL;
+  ਅੱਖਰ ਅਚਲ *specified_ਬਹੁਲਕ = ਨਿਰਾ;
+  ਅੱਖਰ ਅਚਲ *scontext = ਨਿਰਾ;
+  ਬਣਤਰ selabel_handle *ਸੈੱਟ_security_context = ਨਿਰਾ;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  ਸੈੱਟ_ਪ੍ਰੋਗਰਾਮ_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  int optc;
-  while ((optc = getopt_long (argc, argv, "m:Z", longopts, NULL)) != -1)
+  ਪੂਰਨ optc;
+  ਜਦੋਂ ((optc = getopt_long (argc, argv, "m:Z", longopts, ਨਿਰਾ)) != -1)
     {
-      switch (optc)
+      ਚੋਣ (optc)
         {
-        case 'm':
-          specified_mode = optarg;
-          break;
-        case 'Z':
-          if (is_smack_enabled ())
+        ਹਾਲਤ 'm':
+          specified_ਬਹੁਲਕ = optarg;
+          ਰੋਕੋ;
+        ਹਾਲਤ 'Z':
+          ਜੇ (is_smack_enabled ())
             {
               /* We don't yet support -Z to restore context with SMACK.  */
               scontext = optarg;
             }
-          else if (is_selinux_enabled () > 0)
+          ਨਹੀਂਤਾਂ ਜੇ (is_selinux_enabled () > 0)
             {
-              if (optarg)
+              ਜੇ (optarg)
                 scontext = optarg;
-              else
+              ਨਹੀਂਤਾਂ
                 {
-                  set_security_context = selabel_open (SELABEL_CTX_FILE,
-                                                       NULL, 0);
-                  if (! set_security_context)
+                  ਸੈੱਟ_security_context = selabel_open (SELABEL_CTX_FILE,
+                                                       ਨਿਰਾ, 0);
+                  ਜੇ (! ਸੈੱਟ_security_context)
                     error (0, errno, _("warning: ignoring --context"));
                 }
             }
-          else if (optarg)
+          ਨਹੀਂਤਾਂ ਜੇ (optarg)
             {
               error (0, 0,
                      _("warning: ignoring --context; "
                        "it requires an SELinux/SMACK-enabled kernel"));
             }
-          break;
+          ਰੋਕੋ;
         case_GETOPT_HELP_CHAR;
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        case_GETOPT_ਸੰਸਕਰਣ_CHAR (ਪ੍ਰੋਗਰਾਮ_NAME, AUTHORS);
+        ਮੂਲ:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (optind == argc)
+  ਜੇ (optind == argc)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
-  if (scontext)
+  ਜੇ (scontext)
     {
-      int ret = 0;
-      if (is_smack_enabled ())
-        ret = smack_set_label_for_self (scontext);
-      else
+      ਪੂਰਨ ret = 0;
+      ਜੇ (is_smack_enabled ())
+        ret = smack_ਸੈੱਟ_label_for_self (scontext);
+      ਨਹੀਂਤਾਂ
         ret = setfscreatecon (scontext);
 
-      if (ret < 0)
+      ਜੇ (ret < 0)
         error (EXIT_FAILURE, errno,
                _("failed to set default file creation context to %s"),
                quote (scontext));
     }
 
-  mode_t newmode = MODE_RW_UGO;
-  if (specified_mode)
+  mode_t newmode = ਬਹੁਲਕ_RW_UGO;
+  ਜੇ (specified_ਬਹੁਲਕ)
     {
-      struct mode_change *change = mode_compile (specified_mode);
-      if (!change)
+      ਬਣਤਰ ਬਹੁਲਕ_change *change = ਬਹੁਲਕ_compile (specified_ਬਹੁਲਕ);
+      ਜੇ (!change)
         error (EXIT_FAILURE, 0, _("invalid mode"));
-      mode_t umask_value = umask (0);
-      umask (umask_value);
-      newmode = mode_adjust (newmode, false, umask_value, change, NULL);
-      free (change);
-      if (newmode & ~S_IRWXUGO)
+      mode_t umask_ਮੁੱਲ = umask (0);
+      umask (umask_ਮੁੱਲ);
+      newmode = ਬਹੁਲਕ_adjust (newmode, false, umask_ਮੁੱਲ, change, ਨਿਰਾ);
+      ਮੁਕਤ (change);
+      ਜੇ (newmode & ~S_IRWXUGO)
         error (EXIT_FAILURE, 0,
                _("mode must specify only file permission bits"));
     }
 
-  int exit_status = EXIT_SUCCESS;
-  for (; optind < argc; ++optind)
+  ਪੂਰਨ exit_ਸਥਿਤੀ = EXIT_SUCCESS;
+  ਲਈ (; optind < argc; ++optind)
     {
-      if (set_security_context)
-        defaultcon (set_security_context, argv[optind], S_IFIFO);
-      if (mkfifo (argv[optind], newmode) != 0)
+      ਜੇ (ਸੈੱਟ_security_context)
+        defaultcon (ਸੈੱਟ_security_context, argv[optind], S_IFIFO);
+      ਜੇ (mkfifo (argv[optind], newmode) != 0)
         {
           error (0, errno, _("cannot create fifo %s"), quoteaf (argv[optind]));
-          exit_status = EXIT_FAILURE;
+          exit_ਸਥਿਤੀ = EXIT_FAILURE;
         }
-      else if (specified_mode && lchmod (argv[optind], newmode) != 0)
+      ਨਹੀਂਤਾਂ ਜੇ (specified_ਬਹੁਲਕ && lchmod (argv[optind], newmode) != 0)
         {
           error (0, errno, _("cannot set permissions of %s"),
                  quoteaf (argv[optind]));
-          exit_status = EXIT_FAILURE;
+          exit_ਸਥਿਤੀ = EXIT_FAILURE;
         }
     }
 
-  return exit_status;
+  ਵਾਪਸ exit_ਸਥਿਤੀ;
 }

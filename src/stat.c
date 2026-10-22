@@ -16,159 +16,159 @@
 
    Written by Michael Meskes.  */
 
-#include <config.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <config.h>
 
 /* Keep this conditional in sync with the similar conditional in
    ../m4/stat-prog.m4.  */
-#if ((STAT_STATVFS || STAT_STATVFS64)                                       \
+#ਜੇ ((STAT_STATVFS || STAT_STATVFS64)                                       \
      && (HAVE_STRUCT_STATVFS_F_BASETYPE || HAVE_STRUCT_STATVFS_F_FSTYPENAME \
          || (! HAVE_STRUCT_STATFS_F_FSTYPENAME && HAVE_STRUCT_STATVFS_F_TYPE)))
 # define USE_STATVFS 1
-#else
+#ਨਹੀਂਤਾਂ
 # define USE_STATVFS 0
-#endif
+#ਜੇ_ਅੰਤ
 
-#include <stdio.h>
-#include <sys/types.h>
-#include <pwd.h>
-#include <grp.h>
-#if USE_STATVFS
+#ਅਨ੍ਤਰ੍ਭਾਵ <stdio.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <sys/types.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <pwd.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <grp.h>
+#ਜੇ USE_STATVFS
 # include <sys/statvfs.h>
-#elif HAVE_SYS_VFS_H
+#ਜਾਂਜੇ HAVE_SYS_VFS_H
 # include <sys/vfs.h>
-#elif HAVE_SYS_MOUNT_H && HAVE_SYS_PARAM_H
+#ਜਾਂਜੇ HAVE_SYS_MOUNT_H && HAVE_SYS_PARAM_H
 /* NOTE: freebsd5.0 needs sys/param.h and sys/mount.h for statfs.
    It does have statvfs.h, but shouldn't use it, since it doesn't
    HAVE_STRUCT_STATVFS_F_BASETYPE.  So find a clean way to fix it.  */
 /* NetBSD 1.5.2 needs these, for the declaration of struct statfs. */
 # include <sys/param.h>
 # include <sys/mount.h>
-# if HAVE_NFS_NFS_CLNT_H && HAVE_NFS_VFS_H
+# ਜੇ HAVE_NFS_NFS_CLNT_H && HAVE_NFS_VFS_H
 /* Ultrix 4.4 needs these for the declaration of struct statfs.  */
 #  include <netinet/in.h>
 #  include <nfs/nfs_clnt.h>
 #  include <nfs/vfs.h>
 # endif
-#elif HAVE_OS_H /* BeOS */
+#ਜਾਂਜੇ HAVE_OS_H /* BeOS */
 # include <fs_info.h>
-#endif
-#include <selinux/selinux.h>
-#include <getopt.h>
+#ਜੇ_ਅੰਤ
+#ਅਨ੍ਤਰ੍ਭਾਵ <selinux/selinux.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <getopt.h>
 
-#include "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
-#include "system.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
+#ਅਨ੍ਤਰ੍ਭਾਵ "system.h"
 
-#include "areadlink.h"
-#include "c-ctype.h"
-#include "file-type.h"
-#include "filemode.h"
-#include "fs.h"
-#include "mountlist.h"
-#include "octhexdigits.h"
-#include "quote.h"
-#include "stat-size.h"
-#include "stat-time.h"
-#include "strftime.h"
-#include "find-mount-point.h"
-#include "xvasprintf.h"
-#include "statx.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "areadlink.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "c-ctype.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "file-type.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "filemode.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "fs.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "mountlist.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "octhexdigits.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "quote.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "stat-size.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "stat-time.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "strftime.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "find-mount-point.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "xvasprintf.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "statx.h"
 
-#if HAVE_STATX && defined STATX_INO
+#ਜੇ HAVE_STATX && defined STATX_INO
 # define USE_STATX 1
-#else
+#ਨਹੀਂਤਾਂ
 # define USE_STATX 0
-#endif
+#ਜੇ_ਅੰਤ
 
-#if USE_STATVFS
+#ਜੇ USE_STATVFS
 # define STRUCT_STATXFS_F_FSID_IS_INTEGER STRUCT_STATVFS_F_FSID_IS_INTEGER
 # define HAVE_STRUCT_STATXFS_F_TYPE HAVE_STRUCT_STATVFS_F_TYPE
-# if HAVE_STRUCT_STATVFS_F_NAMEMAX
+# ਜੇ HAVE_STRUCT_STATVFS_F_NAMEMAX
 #  define SB_F_NAMEMAX(S) ((S)->f_namemax)
 # endif
-# if ! STAT_STATVFS && STAT_STATVFS64
-#  define STRUCT_STATVFS struct statvfs64
+# ਜੇ ! STAT_STATVFS && STAT_STATVFS64
+#  define STRUCT_STATVFS ਬਣਤਰ statvfs64
 #  define STATFS statvfs64
-# else
-#  define STRUCT_STATVFS struct statvfs
+# ਨਹੀਂਤਾਂ
+#  define STRUCT_STATVFS ਬਣਤਰ statvfs
 #  define STATFS statvfs
 # endif
 # define STATFS_FRSIZE(S) ((S)->f_frsize)
-#else
+#ਨਹੀਂਤਾਂ
 # define HAVE_STRUCT_STATXFS_F_TYPE HAVE_STRUCT_STATFS_F_TYPE
-# if HAVE_STRUCT_STATFS_F_NAMELEN
+# ਜੇ HAVE_STRUCT_STATFS_F_NAMELEN
 #  define SB_F_NAMEMAX(S) ((S)->f_namelen)
 # elif HAVE_STRUCT_STATFS_F_NAMEMAX
 #  define SB_F_NAMEMAX(S) ((S)->f_namemax)
 # endif
 # define STATFS statfs
-# if HAVE_OS_H /* BeOS */
+# ਜੇ HAVE_OS_H /* BeOS */
 /* BeOS has a statvfs function, but it does not return sensible values
    for f_files, f_ffree and f_favail, and lacks f_type, f_basetype and
    f_fstypename.  Use 'struct fs_info' instead.  */
 NODISCARD
-static int
-statfs (char const *filename, struct fs_info *buf)
+ਸਥਿਰ ਪੂਰਨ
+statfs (ਅੱਖਰ ਅਚਲ *filename, ਬਣਤਰ fs_info *buf)
 {
-  dev_t device = dev_for_path (filename);
-  if (device < 0)
+  dev_t device = dev_for_ਰਸਤਾ (filename);
+  ਜੇ (device < 0)
     {
-      errno = (device == B_ENTRY_NOT_FOUND ? ENOENT
-               : device == B_BAD_VALUE ? EINVAL
+      errno = (device == B_ਇੰਦਰਾਜ_NOT_ਮਿਲਿਆ ? ENOENT
+               : device == B_BAD_ਮੁੱਲ ? EINVAL
                : device == B_NAME_TOO_LONG ? ENAMETOOLONG
-               : device == B_NO_MEMORY ? ENOMEM
+               : device == B_NO_ਸਮ੍ਰਿਤੀ ? ENOMEM
                : device == B_FILE_ERROR ? EIO
                : 0);
-      return -1;
+      ਵਾਪਸ -1;
     }
   /* If successful, buf->dev will be == device.  */
-  return fs_stat_dev (device, buf);
+  ਵਾਪਸ fs_stat_dev (device, buf);
 }
 #  define f_fsid dev
-#  define f_blocks total_blocks
-#  define f_bfree free_blocks
-#  define f_bavail free_blocks
-#  define f_bsize io_size
-#  define f_files total_nodes
+#  define f_ਖੰਡਾਂ ਕੁੱਲ_ਖੰਡਾਂ
+#  define f_bfree free_ਖੰਡਾਂ
+#  define f_bavail free_ਖੰਡਾਂ
+#  define f_bsize io_ਮਾਪ
+#  define f_files ਕੁੱਲ_nodes
 #  define f_ffree free_nodes
-#  define STRUCT_STATVFS struct fs_info
+#  define STRUCT_STATVFS ਬਣਤਰ fs_info
 #  define STRUCT_STATXFS_F_FSID_IS_INTEGER true
-#  define STATFS_FRSIZE(S) ((S)->block_size)
-# else
-#  define STRUCT_STATVFS struct statfs
+#  define STATFS_FRSIZE(S) ((S)->ਖੰਡ_ਮਾਪ)
+# ਨਹੀਂਤਾਂ
+#  define STRUCT_STATVFS ਬਣਤਰ statfs
 #  define STRUCT_STATXFS_F_FSID_IS_INTEGER STRUCT_STATFS_F_FSID_IS_INTEGER
-#  if HAVE_STRUCT_STATFS_F_FRSIZE
+#  ਜੇ HAVE_STRUCT_STATFS_F_FRSIZE
 #   define STATFS_FRSIZE(S) ((S)->f_frsize)
-#  else
+#  ਨਹੀਂਤਾਂ
 #   define STATFS_FRSIZE(S) 0
 #  endif
 # endif
-#endif
+#ਜੇ_ਅੰਤ
 
-#ifdef SB_F_NAMEMAX
-# define OUT_NAMEMAX out_uint
-#else
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ SB_F_NAMEMAX
+# define ਬਾਹਰਲਾ_NAMEMAX ਬਾਹਰਲਾ_uint
+#ਨਹੀਂਤਾਂ
 /* Depending on whether statvfs or statfs is used,
    neither f_namemax or f_namelen may be available.  */
 # define SB_F_NAMEMAX(S) "?"
-# define OUT_NAMEMAX out_string
-#endif
+# define ਬਾਹਰਲਾ_NAMEMAX ਬਾਹਰਲਾ_string
+#ਜੇ_ਅੰਤ
 
-#if HAVE_STRUCT_STATVFS_F_BASETYPE
+#ਜੇ HAVE_STRUCT_STATVFS_F_BASETYPE
 # define STATXFS_FILE_SYSTEM_TYPE_MEMBER_NAME f_basetype
-#else
-# if HAVE_STRUCT_STATVFS_F_FSTYPENAME || HAVE_STRUCT_STATFS_F_FSTYPENAME
+#ਨਹੀਂਤਾਂ
+# ਜੇ HAVE_STRUCT_STATVFS_F_FSTYPENAME || HAVE_STRUCT_STATFS_F_FSTYPENAME
 #  define STATXFS_FILE_SYSTEM_TYPE_MEMBER_NAME f_fstypename
 # elif HAVE_OS_H /* BeOS */
 #  define STATXFS_FILE_SYSTEM_TYPE_MEMBER_NAME fsh_name
 # endif
-#endif
+#ਜੇ_ਅੰਤ
 
-#if HAVE_GETATTRAT
+#ਜੇ HAVE_GETATTRAT
 # include <attr.h>
 # include <sys/nvpair.h>
-#endif
+#ਜੇ_ਅੰਤ
 
-static char const digits[] = "0123456789";
+ਸਥਿਰ ਅੱਖਰ ਅਚਲ digits[] = "0123456789";
 
 /* Flags that are portable for use in printf, for at least one
    conversion specifier; make_format removes non-portable flags as
@@ -176,72 +176,72 @@ static char const digits[] = "0123456789";
    listed here; it is removed by make_format because it has undefined
    behavior elsewhere and because it is incompatible with
    out_epoch_sec.  */
-static char const printf_flags[] = "'-+ #0I";
+ਸਥਿਰ ਅੱਖਰ ਅਚਲ printf_flags[] = "'-+ #0I";
 
 /* Formats for the --terse option.  */
-static char const fmt_terse_fs[] = "%Qn %i %l %t %s %S %b %f %a %c %d\n";
-static char const fmt_terse_regular[] = "%Qn %s %b %f %u %g %D %i %h %t %T"
+ਸਥਿਰ ਅੱਖਰ ਅਚਲ fmt_terse_fs[] = "%Qn %i %l %t %s %S %b %f %a %c %d\n";
+ਸਥਿਰ ਅੱਖਰ ਅਚਲ fmt_terse_regular[] = "%Qn %s %b %f %u %g %D %i %h %t %T"
                                         " %X %Y %Z %W %o\n";
-static char const fmt_terse_selinux[] = "%Qn %s %b %f %u %g %D %i %h %t %T"
+ਸਥਿਰ ਅੱਖਰ ਅਚਲ fmt_terse_selinux[] = "%Qn %s %b %f %u %g %D %i %h %t %T"
                                         " %X %Y %Z %W %o %C\n";
 
-#define PROGRAM_NAME "stat"
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ ਪ੍ਰੋਗਰਾਮ_NAME "stat"
 
-#define AUTHORS proper_name ("Michael Meskes")
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ AUTHORS proper_name ("Michael Meskes")
 
-enum
+ਗਿਣਤੀ
 {
   PRINTF_OPTION = CHAR_MAX + 1
 };
 
-enum cached_mode
+ਗਿਣਤੀ cached_ਬਹੁਲਕ
 {
   cached_default,
   cached_never,
   cached_always
 };
 
-static char const *const cached_args[] =
+ਸਥਿਰ ਅੱਖਰ ਅਚਲ *ਅਚਲ cached_ਦਲੀਲਾਂ[] =
 {
-  "default", "never", "always", NULL
+  "default", "never", "always", ਨਿਰਾ
 };
 
-static enum cached_mode const cached_modes[] =
+ਸਥਿਰ ਗਿਣਤੀ cached_ਬਹੁਲਕ ਅਚਲ cached_modes[] =
 {
   cached_default, cached_never, cached_always
 };
 
-static struct option const long_options[] =
+ਸਥਿਰ ਬਣਤਰ option ਅਚਲ long_options[] =
 {
-  {"dereference", no_argument, NULL, 'L'},
-  {"file-system", no_argument, NULL, 'f'},
-  {"format", required_argument, NULL, 'c'},
-  {"printf", required_argument, NULL, PRINTF_OPTION},
-  {"terse", no_argument, NULL, 't'},
-  {"cached", required_argument, NULL, 0},
+  {"dereference", no_ਦਲੀਲ, ਨਿਰਾ, 'L'},
+  {"file-system", no_ਦਲੀਲ, ਨਿਰਾ, 'f'},
+  {"format", required_ਦਲੀਲ, ਨਿਰਾ, 'c'},
+  {"printf", required_ਦਲੀਲ, ਨਿਰਾ, PRINTF_OPTION},
+  {"terse", no_ਦਲੀਲ, ਨਿਰਾ, 't'},
+  {"cached", required_ਦਲੀਲ, ਨਿਰਾ, 0},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_ਸੰਸਕਰਣ_OPTION_DECL},
+  {ਨਿਰਾ, 0, ਨਿਰਾ, 0}
 };
 
 /* Whether to follow symbolic links;  True for --dereference (-L).  */
-static bool follow_links;
+ਸਥਿਰ bool follow_links;
 
 /* Whether to interpret backslash-escape sequences.
    True for --printf=FMT, not for --format=FMT (-c).  */
-static bool interpret_backslash_escapes;
+ਸਥਿਰ bool interpret_backslash_escapes;
 
 /* The trailing delimiter string:
    "" for --printf=FMT, "\n" for --format=FMT (-c).  */
-static char const *trailing_delim = "";
+ਸਥਿਰ ਅੱਖਰ ਅਚਲ *trailing_delim = "";
 
 /* The representation of the decimal point in the current locale.  */
-static char const *decimal_point;
-static size_t decimal_point_len;
+ਸਥਿਰ ਅੱਖਰ ਅਚਲ *decimal_ਬਿੰਦੂ;
+ਸਥਿਰ size_t decimal_ਬਿੰਦੂ_len;
 
-static bool
-print_stat (char *pformat, size_t prefix_len, char mod, char m,
-            int fd, char const *filename, void const *data);
+ਸਥਿਰ bool
+print_stat (ਅੱਖਰ *pformat, size_t ਅਗੇਤਰ_len, ਅੱਖਰ mod, ਅੱਖਰ m,
+            ਪੂਰਨ fd, ਅੱਖਰ ਅਚਲ *filename, ਖਾਲੀ ਅਚਲ *ਅੰਕੜੇ);
 
 /* Return the type of the specified file system.
    Some systems have statfvs.f_basetype[FSTYPSZ] (AIX, HP-UX, and Solaris).
@@ -250,15 +250,15 @@ print_stat (char *pformat, size_t prefix_len, char mod, char m,
    Still others have neither and have to get by with f_type (GNU/Linux).
    But f_type may only exist in statfs (Cygwin).  */
 NODISCARD
-static char const *
-human_fstype (STRUCT_STATVFS const *statfsbuf)
+ਸਥਿਰ ਅੱਖਰ ਅਚਲ *
+human_fstype (STRUCT_STATVFS ਅਚਲ *statfsbuf)
 {
-#ifdef STATXFS_FILE_SYSTEM_TYPE_MEMBER_NAME
-  return statfsbuf->STATXFS_FILE_SYSTEM_TYPE_MEMBER_NAME;
-#else
-  switch (statfsbuf->f_type)
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ STATXFS_FILE_SYSTEM_TYPE_MEMBER_NAME
+  ਵਾਪਸ statfsbuf->STATXFS_FILE_SYSTEM_TYPE_MEMBER_NAME;
+#ਨਹੀਂਤਾਂ
+  ਚੋਣ (statfsbuf->f_type)
     {
-# if defined __linux__ || defined __ANDROID__
+# ਜੇ defined __linux__ || defined __ANDROID__
 
       /* Compare with what's in libc:
          f=/a/libc/sysdeps/unix/sysv/linux/linux_fsinfo.h
@@ -280,759 +280,759 @@ human_fstype (STRUCT_STATVFS const *statfsbuf)
          a comment.  The S_MAGIC_... name and constant are automatically
          combined to produce the #define directives in fs.h.  */
 
-    case S_MAGIC_AAFS: /* 0x5A3C69F0 local */
-      return "aafs";
-    case S_MAGIC_ACFS: /* 0x61636673 remote */
-      return "acfs";
-    case S_MAGIC_ADFS: /* 0xADF5 local */
-      return "adfs";
-    case S_MAGIC_AFFS: /* 0xADFF local */
-      return "affs";
-    case S_MAGIC_AFS: /* 0x5346414F remote */
-      return "afs";
-    case S_MAGIC_ANON_INODE_FS: /* 0x09041934 local */
-      return "anon-inode FS";
-    case S_MAGIC_AUFS: /* 0x61756673 remote */
+    ਹਾਲਤ S_MAGIC_AAFS: /* 0x5A3C69F0 local */
+      ਵਾਪਸ "aafs";
+    ਹਾਲਤ S_MAGIC_ACFS: /* 0x61636673 remote */
+      ਵਾਪਸ "acfs";
+    ਹਾਲਤ S_MAGIC_ADFS: /* 0xADF5 local */
+      ਵਾਪਸ "adfs";
+    ਹਾਲਤ S_MAGIC_AFFS: /* 0xADFF local */
+      ਵਾਪਸ "affs";
+    ਹਾਲਤ S_MAGIC_AFS: /* 0x5346414F remote */
+      ਵਾਪਸ "afs";
+    ਹਾਲਤ S_MAGIC_ANON_INODE_FS: /* 0x09041934 local */
+      ਵਾਪਸ "anon-inode FS";
+    ਹਾਲਤ S_MAGIC_AUFS: /* 0x61756673 remote */
       /* FIXME: change syntax or add an optional attribute like "inotify:no".
          The above is labeled as "remote" so that tail always uses polling,
          but this isn't really a remote file system type.  */
-      return "aufs";
-    case S_MAGIC_AUTOFS: /* 0x0187 local */
-      return "autofs";
-    case S_MAGIC_BALLOON_KVM: /* 0x13661366 local */
-      return "balloon-kvm-fs";
-    case S_MAGIC_BCACHEFS: /* 0xCA451A4E local */
-      return "bcachefs";
-    case S_MAGIC_BEFS: /* 0x42465331 local */
-      return "befs";
-    case S_MAGIC_BDEVFS: /* 0x62646576 local */
-      return "bdevfs";
-    case S_MAGIC_BFS: /* 0x1BADFACE local */
-      return "bfs";
-    case S_MAGIC_BINDERFS: /* 0x6C6F6F70 local */
-      return "binderfs";
-    case S_MAGIC_BPF_FS: /* 0xCAFE4A11 local */
-      return "bpf_fs";
-    case S_MAGIC_BINFMTFS: /* 0x42494E4D local */
-      return "binfmt_misc";
-    case S_MAGIC_BTRFS: /* 0x9123683E local */
-      return "btrfs";
-    case S_MAGIC_BTRFS_TEST: /* 0x73727279 local */
-      return "btrfs_test";
-    case S_MAGIC_CEPH: /* 0x00C36400 remote */
-      return "ceph";
-    case S_MAGIC_CGROUP: /* 0x0027E0EB local */
-      return "cgroupfs";
-    case S_MAGIC_CGROUP2: /* 0x63677270 local */
-      return "cgroup2fs";
-    case S_MAGIC_CIFS: /* 0xFF534D42 remote */
-      return "cifs";
-    case S_MAGIC_CODA: /* 0x73757245 remote */
-      return "coda";
-    case S_MAGIC_COH: /* 0x012FF7B7 local */
-      return "coh";
-    case S_MAGIC_CONFIGFS: /* 0x62656570 local */
-      return "configfs";
-    case S_MAGIC_CRAMFS: /* 0x28CD3D45 local */
-      return "cramfs";
-    case S_MAGIC_CRAMFS_WEND: /* 0x453DCD28 local */
-      return "cramfs-wend";
-    case S_MAGIC_DAXFS: /* 0x64646178 local */
-      return "daxfs";
-    case S_MAGIC_DEBUGFS: /* 0x64626720 local */
-      return "debugfs";
-    case S_MAGIC_DEVFS: /* 0x1373 local */
-      return "devfs";
-    case S_MAGIC_DEVMEM: /* 0x454D444D local */
-      return "devmem";
-    case S_MAGIC_DEVPTS: /* 0x1CD1 local */
-      return "devpts";
-    case S_MAGIC_DMA_BUF: /* 0x444D4142 local */
-      return "dma-buf-fs";
-    case S_MAGIC_ECRYPTFS: /* 0xF15F local */
-      return "ecryptfs";
-    case S_MAGIC_EFIVARFS: /* 0xDE5E81E4 local */
-      return "efivarfs";
-    case S_MAGIC_EFS: /* 0x00414A53 local */
-      return "efs";
-    case S_MAGIC_EROFS_V1: /* 0xE0F5E1E2 local */
-      return "erofs";
-    case S_MAGIC_EXFAT: /* 0x2011BAB0 local */
-      return "exfat";
-    case S_MAGIC_EXFS: /* 0x45584653 local */
-      return "exfs";
-    case S_MAGIC_EXOFS: /* 0x5DF5 local */
-      return "exofs";
-    case S_MAGIC_EXT: /* 0x137D local */
-      return "ext";
-    case S_MAGIC_EXT2: /* 0xEF53 local */
-      return "ext2/ext3";
-    case S_MAGIC_EXT2_OLD: /* 0xEF51 local */
-      return "ext2";
-    case S_MAGIC_F2FS: /* 0xF2F52010 local */
-      return "f2fs";
-    case S_MAGIC_FAIL_FS: /* 0x4641494C local */
-      return "failfs";
-    case S_MAGIC_FAT: /* 0x4006 local */
-      return "fat";
-    case S_MAGIC_FHGFS: /* 0x19830326 remote */
-      return "fhgfs";
-    case S_MAGIC_FUSE: /* 0x65735546 remote */
-      return "fuse";
-    case S_MAGIC_FUSECTL: /* 0x65735543 remote */
-      return "fusectl";
-    case S_MAGIC_FUTEXFS: /* 0x0BAD1DEA local */
-      return "futexfs";
-    case S_MAGIC_GFS: /* 0x01161970 remote */
-      return "gfs/gfs2";
-    case S_MAGIC_GPFS: /* 0x47504653 remote */
-      return "gpfs";
-    case S_MAGIC_GUEST_MEMFD: /* 0x474D454D remote */
-      return "guest-memfd";
-    case S_MAGIC_HFS: /* 0x4244 local */
-      return "hfs";
-    case S_MAGIC_HFS_PLUS: /* 0x482B local */
-      return "hfs+";
-    case S_MAGIC_HFS_X: /* 0x4858 local */
-      return "hfsx";
-    case S_MAGIC_HOSTFS: /* 0x00C0FFEE local */
-      return "hostfs";
-    case S_MAGIC_HPFS: /* 0xF995E849 local */
-      return "hpfs";
-    case S_MAGIC_HUGETLBFS: /* 0x958458F6 local */
-      return "hugetlbfs";
-    case S_MAGIC_MTD_INODE_FS: /* 0x11307854 local */
-      return "inodefs";
-    case S_MAGIC_IBRIX: /* 0x013111A8 remote */
-      return "ibrix";
-    case S_MAGIC_INOTIFYFS: /* 0x2BAD1DEA local */
-      return "inotifyfs";
-    case S_MAGIC_ISOFS: /* 0x9660 local */
-      return "isofs";
-    case S_MAGIC_ISOFS_R_WIN: /* 0x4004 local */
-      return "isofs";
-    case S_MAGIC_ISOFS_WIN: /* 0x4000 local */
-      return "isofs";
-    case S_MAGIC_JFFS: /* 0x07C0 local */
-      return "jffs";
-    case S_MAGIC_JFFS2: /* 0x72B6 local */
-      return "jffs2";
-    case S_MAGIC_JFS: /* 0x3153464A local */
-      return "jfs";
-    case S_MAGIC_KAFS: /* 0x6B414653 remote */
-      return "k-afs";
-    case S_MAGIC_LOGFS: /* 0xC97E8168 local */
-      return "logfs";
-    case S_MAGIC_LUSTRE: /* 0x0BD00BD0 remote */
-      return "lustre";
-    case S_MAGIC_M1FS: /* 0x5346314D local */
-      return "m1fs";
-    case S_MAGIC_MINIX: /* 0x137F local */
-      return "minix";
-    case S_MAGIC_MINIX_30: /* 0x138F local */
-      return "minix (30 char.)";
-    case S_MAGIC_MINIX_V2: /* 0x2468 local */
-      return "minix v2";
-    case S_MAGIC_MINIX_V2_30: /* 0x2478 local */
-      return "minix v2 (30 char.)";
-    case S_MAGIC_MINIX_V3: /* 0x4D5A local */
-      return "minix3";
-    case S_MAGIC_MQUEUE: /* 0x19800202 local */
-      return "mqueue";
-    case S_MAGIC_MSDOS: /* 0x4D44 local */
-      return "msdos";
-    case S_MAGIC_NCP: /* 0x564C remote */
-      return "novell";
-    case S_MAGIC_NFS: /* 0x6969 remote */
-      return "nfs";
-    case S_MAGIC_NFSD: /* 0x6E667364 remote */
-      return "nfsd";
-    case S_MAGIC_NILFS: /* 0x3434 local */
-      return "nilfs";
-    case S_MAGIC_NSFS: /* 0x6E736673 local */
-      return "nsfs";
-    case S_MAGIC_NTFS: /* 0x5346544E local */
-      return "ntfs";
-    case S_MAGIC_NULL_FS: /* 0x4E554C4C local */
-      return "nullfs";
-    case S_MAGIC_OPENPROM: /* 0x9FA1 local */
-      return "openprom";
-    case S_MAGIC_OCFS2: /* 0x7461636F remote */
-      return "ocfs2";
-    case S_MAGIC_OVERLAYFS: /* 0x794C7630 remote */
+      ਵਾਪਸ "aufs";
+    ਹਾਲਤ S_MAGIC_AUTOFS: /* 0x0187 local */
+      ਵਾਪਸ "autofs";
+    ਹਾਲਤ S_MAGIC_BALLOON_KVM: /* 0x13661366 local */
+      ਵਾਪਸ "balloon-kvm-fs";
+    ਹਾਲਤ S_MAGIC_BCACHEFS: /* 0xCA451A4E local */
+      ਵਾਪਸ "bcachefs";
+    ਹਾਲਤ S_MAGIC_BEFS: /* 0x42465331 local */
+      ਵਾਪਸ "befs";
+    ਹਾਲਤ S_MAGIC_BDEVFS: /* 0x62646576 local */
+      ਵਾਪਸ "bdevfs";
+    ਹਾਲਤ S_MAGIC_BFS: /* 0x1BADFACE local */
+      ਵਾਪਸ "bfs";
+    ਹਾਲਤ S_MAGIC_BINDERFS: /* 0x6C6F6F70 local */
+      ਵਾਪਸ "binderfs";
+    ਹਾਲਤ S_MAGIC_BPF_FS: /* 0xCAFE4A11 local */
+      ਵਾਪਸ "bpf_fs";
+    ਹਾਲਤ S_MAGIC_BINFMTFS: /* 0x42494E4D local */
+      ਵਾਪਸ "binfmt_misc";
+    ਹਾਲਤ S_MAGIC_BTRFS: /* 0x9123683E local */
+      ਵਾਪਸ "btrfs";
+    ਹਾਲਤ S_MAGIC_BTRFS_TEST: /* 0x73727279 local */
+      ਵਾਪਸ "btrfs_test";
+    ਹਾਲਤ S_MAGIC_CEPH: /* 0x00C36400 remote */
+      ਵਾਪਸ "ceph";
+    ਹਾਲਤ S_MAGIC_CGROUP: /* 0x0027E0EB local */
+      ਵਾਪਸ "cgroupfs";
+    ਹਾਲਤ S_MAGIC_CGROUP2: /* 0x63677270 local */
+      ਵਾਪਸ "cgroup2fs";
+    ਹਾਲਤ S_MAGIC_CIFS: /* 0xFF534D42 remote */
+      ਵਾਪਸ "cifs";
+    ਹਾਲਤ S_MAGIC_CODA: /* 0x73757245 remote */
+      ਵਾਪਸ "coda";
+    ਹਾਲਤ S_MAGIC_COH: /* 0x012FF7B7 local */
+      ਵਾਪਸ "coh";
+    ਹਾਲਤ S_MAGIC_CONFIGFS: /* 0x62656570 local */
+      ਵਾਪਸ "configfs";
+    ਹਾਲਤ S_MAGIC_CRAMFS: /* 0x28CD3D45 local */
+      ਵਾਪਸ "cramfs";
+    ਹਾਲਤ S_MAGIC_CRAMFS_WEND: /* 0x453DCD28 local */
+      ਵਾਪਸ "cramfs-wend";
+    ਹਾਲਤ S_MAGIC_DAXFS: /* 0x64646178 local */
+      ਵਾਪਸ "daxfs";
+    ਹਾਲਤ S_MAGIC_DEBUGFS: /* 0x64626720 local */
+      ਵਾਪਸ "debugfs";
+    ਹਾਲਤ S_MAGIC_DEVFS: /* 0x1373 local */
+      ਵਾਪਸ "devfs";
+    ਹਾਲਤ S_MAGIC_DEVMEM: /* 0x454D444D local */
+      ਵਾਪਸ "devmem";
+    ਹਾਲਤ S_MAGIC_DEVPTS: /* 0x1CD1 local */
+      ਵਾਪਸ "devpts";
+    ਹਾਲਤ S_MAGIC_DMA_BUF: /* 0x444D4142 local */
+      ਵਾਪਸ "dma-buf-fs";
+    ਹਾਲਤ S_MAGIC_ECRYPTFS: /* 0xF15F local */
+      ਵਾਪਸ "ecryptfs";
+    ਹਾਲਤ S_MAGIC_EFIVARFS: /* 0xDE5E81E4 local */
+      ਵਾਪਸ "efivarfs";
+    ਹਾਲਤ S_MAGIC_EFS: /* 0x00414A53 local */
+      ਵਾਪਸ "efs";
+    ਹਾਲਤ S_MAGIC_EROFS_V1: /* 0xE0F5E1E2 local */
+      ਵਾਪਸ "erofs";
+    ਹਾਲਤ S_MAGIC_EXFAT: /* 0x2011BAB0 local */
+      ਵਾਪਸ "exfat";
+    ਹਾਲਤ S_MAGIC_EXFS: /* 0x45584653 local */
+      ਵਾਪਸ "exfs";
+    ਹਾਲਤ S_MAGIC_EXOFS: /* 0x5DF5 local */
+      ਵਾਪਸ "exofs";
+    ਹਾਲਤ S_MAGIC_EXT: /* 0x137D local */
+      ਵਾਪਸ "ext";
+    ਹਾਲਤ S_MAGIC_EXT2: /* 0xEF53 local */
+      ਵਾਪਸ "ext2/ext3";
+    ਹਾਲਤ S_MAGIC_EXT2_OLD: /* 0xEF51 local */
+      ਵਾਪਸ "ext2";
+    ਹਾਲਤ S_MAGIC_F2FS: /* 0xF2F52010 local */
+      ਵਾਪਸ "f2fs";
+    ਹਾਲਤ S_MAGIC_FAIL_FS: /* 0x4641494C local */
+      ਵਾਪਸ "failfs";
+    ਹਾਲਤ S_MAGIC_FAT: /* 0x4006 local */
+      ਵਾਪਸ "fat";
+    ਹਾਲਤ S_MAGIC_FHGFS: /* 0x19830326 remote */
+      ਵਾਪਸ "fhgfs";
+    ਹਾਲਤ S_MAGIC_FUSE: /* 0x65735546 remote */
+      ਵਾਪਸ "fuse";
+    ਹਾਲਤ S_MAGIC_FUSECTL: /* 0x65735543 remote */
+      ਵਾਪਸ "fusectl";
+    ਹਾਲਤ S_MAGIC_FUTEXFS: /* 0x0BAD1DEA local */
+      ਵਾਪਸ "futexfs";
+    ਹਾਲਤ S_MAGIC_GFS: /* 0x01161970 remote */
+      ਵਾਪਸ "gfs/gfs2";
+    ਹਾਲਤ S_MAGIC_GPFS: /* 0x47504653 remote */
+      ਵਾਪਸ "gpfs";
+    ਹਾਲਤ S_MAGIC_GUEST_MEMFD: /* 0x474D454D remote */
+      ਵਾਪਸ "guest-memfd";
+    ਹਾਲਤ S_MAGIC_HFS: /* 0x4244 local */
+      ਵਾਪਸ "hfs";
+    ਹਾਲਤ S_MAGIC_HFS_PLUS: /* 0x482B local */
+      ਵਾਪਸ "hfs+";
+    ਹਾਲਤ S_MAGIC_HFS_X: /* 0x4858 local */
+      ਵਾਪਸ "hfsx";
+    ਹਾਲਤ S_MAGIC_HOSTFS: /* 0x00C0FFEE local */
+      ਵਾਪਸ "hostfs";
+    ਹਾਲਤ S_MAGIC_HPFS: /* 0xF995E849 local */
+      ਵਾਪਸ "hpfs";
+    ਹਾਲਤ S_MAGIC_HUGETLBFS: /* 0x958458F6 local */
+      ਵਾਪਸ "hugetlbfs";
+    ਹਾਲਤ S_MAGIC_MTD_INODE_FS: /* 0x11307854 local */
+      ਵਾਪਸ "inodefs";
+    ਹਾਲਤ S_MAGIC_IBRIX: /* 0x013111A8 remote */
+      ਵਾਪਸ "ibrix";
+    ਹਾਲਤ S_MAGIC_INOTIFYFS: /* 0x2BAD1DEA local */
+      ਵਾਪਸ "inotifyfs";
+    ਹਾਲਤ S_MAGIC_ISOFS: /* 0x9660 local */
+      ਵਾਪਸ "isofs";
+    ਹਾਲਤ S_MAGIC_ISOFS_R_WIN: /* 0x4004 local */
+      ਵਾਪਸ "isofs";
+    ਹਾਲਤ S_MAGIC_ISOFS_WIN: /* 0x4000 local */
+      ਵਾਪਸ "isofs";
+    ਹਾਲਤ S_MAGIC_JFFS: /* 0x07C0 local */
+      ਵਾਪਸ "jffs";
+    ਹਾਲਤ S_MAGIC_JFFS2: /* 0x72B6 local */
+      ਵਾਪਸ "jffs2";
+    ਹਾਲਤ S_MAGIC_JFS: /* 0x3153464A local */
+      ਵਾਪਸ "jfs";
+    ਹਾਲਤ S_MAGIC_KAFS: /* 0x6B414653 remote */
+      ਵਾਪਸ "k-afs";
+    ਹਾਲਤ S_MAGIC_LOGFS: /* 0xC97E8168 local */
+      ਵਾਪਸ "logfs";
+    ਹਾਲਤ S_MAGIC_LUSTRE: /* 0x0BD00BD0 remote */
+      ਵਾਪਸ "lustre";
+    ਹਾਲਤ S_MAGIC_M1FS: /* 0x5346314D local */
+      ਵਾਪਸ "m1fs";
+    ਹਾਲਤ S_MAGIC_MINIX: /* 0x137F local */
+      ਵਾਪਸ "minix";
+    ਹਾਲਤ S_MAGIC_MINIX_30: /* 0x138F local */
+      ਵਾਪਸ "minix (30 char.)";
+    ਹਾਲਤ S_MAGIC_MINIX_V2: /* 0x2468 local */
+      ਵਾਪਸ "minix v2";
+    ਹਾਲਤ S_MAGIC_MINIX_V2_30: /* 0x2478 local */
+      ਵਾਪਸ "minix v2 (30 char.)";
+    ਹਾਲਤ S_MAGIC_MINIX_V3: /* 0x4D5A local */
+      ਵਾਪਸ "minix3";
+    ਹਾਲਤ S_MAGIC_MQUEUE: /* 0x19800202 local */
+      ਵਾਪਸ "mqueue";
+    ਹਾਲਤ S_MAGIC_MSDOS: /* 0x4D44 local */
+      ਵਾਪਸ "msdos";
+    ਹਾਲਤ S_MAGIC_NCP: /* 0x564C remote */
+      ਵਾਪਸ "novell";
+    ਹਾਲਤ S_MAGIC_NFS: /* 0x6969 remote */
+      ਵਾਪਸ "nfs";
+    ਹਾਲਤ S_MAGIC_NFSD: /* 0x6E667364 remote */
+      ਵਾਪਸ "nfsd";
+    ਹਾਲਤ S_MAGIC_NILFS: /* 0x3434 local */
+      ਵਾਪਸ "nilfs";
+    ਹਾਲਤ S_MAGIC_NSFS: /* 0x6E736673 local */
+      ਵਾਪਸ "nsfs";
+    ਹਾਲਤ S_MAGIC_NTFS: /* 0x5346544E local */
+      ਵਾਪਸ "ntfs";
+    ਹਾਲਤ S_MAGIC_NULL_FS: /* 0x4E554C4C local */
+      ਵਾਪਸ "nullfs";
+    ਹਾਲਤ S_MAGIC_OPENPROM: /* 0x9FA1 local */
+      ਵਾਪਸ "openprom";
+    ਹਾਲਤ S_MAGIC_OCFS2: /* 0x7461636F remote */
+      ਵਾਪਸ "ocfs2";
+    ਹਾਲਤ S_MAGIC_OVERLAYFS: /* 0x794C7630 remote */
       /* This may overlay remote file systems.
          Also there have been issues reported with inotify and overlayfs,
          so mark as "remote" so that polling is used.  */
-      return "overlayfs";
-    case S_MAGIC_PANFS: /* 0xAAD7AAEA remote */
-      return "panfs";
-    case S_MAGIC_PID_FS: /* 0x50494446 local */
-      return "pidfs";
-    case S_MAGIC_PIPEFS: /* 0x50495045 remote */
+      ਵਾਪਸ "overlayfs";
+    ਹਾਲਤ S_MAGIC_PANFS: /* 0xAAD7AAEA remote */
+      ਵਾਪਸ "panfs";
+    ਹਾਲਤ S_MAGIC_PID_FS: /* 0x50494446 local */
+      ਵਾਪਸ "pidfs";
+    ਹਾਲਤ S_MAGIC_PIPEFS: /* 0x50495045 remote */
       /* FIXME: change syntax or add an optional attribute like "inotify:no".
          pipefs is labeled as "remote" so that tail always polls,
          but it isn't really remote file system type.  */
-      return "pipefs";
-    case S_MAGIC_PPC_CMM: /* 0xC7571590 local */
-      return "ppc-cmm-fs";
-    case S_MAGIC_PRL_FS: /* 0x7C7C6673 remote */
-      return "prl_fs";
-    case S_MAGIC_PROC: /* 0x9FA0 local */
-      return "proc";
-    case S_MAGIC_PSTOREFS: /* 0x6165676C local */
-      return "pstorefs";
-    case S_MAGIC_QNX4: /* 0x002F local */
-      return "qnx4";
-    case S_MAGIC_QNX6: /* 0x68191122 local */
-      return "qnx6";
-    case S_MAGIC_RAMFS: /* 0x858458F6 local */
-      return "ramfs";
-    case S_MAGIC_RDTGROUP: /* 0x07655821 local */
-      return "rdt";
-    case S_MAGIC_REISERFS: /* 0x52654973 local */
-      return "reiserfs";
-    case S_MAGIC_ROMFS: /* 0x7275 local */
-      return "romfs";
-    case S_MAGIC_RPC_PIPEFS: /* 0x67596969 local */
-      return "rpc_pipefs";
-    case S_MAGIC_SDCARDFS: /* 0x5DCA2DF5 local */
-      return "sdcardfs";
-    case S_MAGIC_SECRETMEM: /* 0x5345434D local */
-      return "secretmem";
-    case S_MAGIC_SECURITYFS: /* 0x73636673 local */
-      return "securityfs";
-    case S_MAGIC_SELINUX: /* 0xF97CFF8C local */
-      return "selinux";
-    case S_MAGIC_SMACK: /* 0x43415D53 local */
-      return "smackfs";
-    case S_MAGIC_SMB: /* 0x517B remote */
-      return "smb";
-    case S_MAGIC_SMB2: /* 0xFE534D42 remote */
-      return "smb2";
-    case S_MAGIC_SNFS: /* 0xBEEFDEAD remote */
-      return "snfs";
-    case S_MAGIC_SOCKFS: /* 0x534F434B local */
-      return "sockfs";
-    case S_MAGIC_SQUASHFS: /* 0x73717368 local */
-      return "squashfs";
-    case S_MAGIC_SYSFS: /* 0x62656572 local */
-      return "sysfs";
-    case S_MAGIC_SYSV2: /* 0x012FF7B6 local */
-      return "sysv2";
-    case S_MAGIC_SYSV4: /* 0x012FF7B5 local */
-      return "sysv4";
-    case S_MAGIC_TMPFS: /* 0x01021994 local */
-      return "tmpfs";
-    case S_MAGIC_TRACEFS: /* 0x74726163 local */
-      return "tracefs";
-    case S_MAGIC_UBIFS: /* 0x24051905 local */
-      return "ubifs";
-    case S_MAGIC_UDF: /* 0x15013346 local */
-      return "udf";
-    case S_MAGIC_UFS: /* 0x00011954 local */
-      return "ufs";
-    case S_MAGIC_UFS_BYTESWAPPED: /* 0x54190100 local */
-      return "ufs";
-    case S_MAGIC_USBDEVFS: /* 0x9FA2 local */
-      return "usbdevfs";
-    case S_MAGIC_V9FS: /* 0x01021997 local */
-      return "v9fs";
-    case S_MAGIC_VBOXSF: /* 0x786F4256 remote */
-      return "vboxsf";
-    case S_MAGIC_VMHGFS: /* 0xBACBACBC remote */
-      return "vmhgfs";
-    case S_MAGIC_VXFS: /* 0xA501FCF5 remote */
+      ਵਾਪਸ "pipefs";
+    ਹਾਲਤ S_MAGIC_PPC_CMM: /* 0xC7571590 local */
+      ਵਾਪਸ "ppc-cmm-fs";
+    ਹਾਲਤ S_MAGIC_PRL_FS: /* 0x7C7C6673 remote */
+      ਵਾਪਸ "prl_fs";
+    ਹਾਲਤ S_MAGIC_PROC: /* 0x9FA0 local */
+      ਵਾਪਸ "proc";
+    ਹਾਲਤ S_MAGIC_PSTOREFS: /* 0x6165676C local */
+      ਵਾਪਸ "pstorefs";
+    ਹਾਲਤ S_MAGIC_QNX4: /* 0x002F local */
+      ਵਾਪਸ "qnx4";
+    ਹਾਲਤ S_MAGIC_QNX6: /* 0x68191122 local */
+      ਵਾਪਸ "qnx6";
+    ਹਾਲਤ S_MAGIC_RAMFS: /* 0x858458F6 local */
+      ਵਾਪਸ "ramfs";
+    ਹਾਲਤ S_MAGIC_RDTGROUP: /* 0x07655821 local */
+      ਵਾਪਸ "rdt";
+    ਹਾਲਤ S_MAGIC_REISERFS: /* 0x52654973 local */
+      ਵਾਪਸ "reiserfs";
+    ਹਾਲਤ S_MAGIC_ROMFS: /* 0x7275 local */
+      ਵਾਪਸ "romfs";
+    ਹਾਲਤ S_MAGIC_RPC_PIPEFS: /* 0x67596969 local */
+      ਵਾਪਸ "rpc_pipefs";
+    ਹਾਲਤ S_MAGIC_SDCARDFS: /* 0x5DCA2DF5 local */
+      ਵਾਪਸ "sdcardfs";
+    ਹਾਲਤ S_MAGIC_SECRETMEM: /* 0x5345434D local */
+      ਵਾਪਸ "secretmem";
+    ਹਾਲਤ S_MAGIC_SECURITYFS: /* 0x73636673 local */
+      ਵਾਪਸ "securityfs";
+    ਹਾਲਤ S_MAGIC_SELINUX: /* 0xF97CFF8C local */
+      ਵਾਪਸ "selinux";
+    ਹਾਲਤ S_MAGIC_SMACK: /* 0x43415D53 local */
+      ਵਾਪਸ "smackfs";
+    ਹਾਲਤ S_MAGIC_SMB: /* 0x517B remote */
+      ਵਾਪਸ "smb";
+    ਹਾਲਤ S_MAGIC_SMB2: /* 0xFE534D42 remote */
+      ਵਾਪਸ "smb2";
+    ਹਾਲਤ S_MAGIC_SNFS: /* 0xBEEFDEAD remote */
+      ਵਾਪਸ "snfs";
+    ਹਾਲਤ S_MAGIC_SOCKFS: /* 0x534F434B local */
+      ਵਾਪਸ "sockfs";
+    ਹਾਲਤ S_MAGIC_SQUASHFS: /* 0x73717368 local */
+      ਵਾਪਸ "squashfs";
+    ਹਾਲਤ S_MAGIC_SYSFS: /* 0x62656572 local */
+      ਵਾਪਸ "sysfs";
+    ਹਾਲਤ S_MAGIC_SYSV2: /* 0x012FF7B6 local */
+      ਵਾਪਸ "sysv2";
+    ਹਾਲਤ S_MAGIC_SYSV4: /* 0x012FF7B5 local */
+      ਵਾਪਸ "sysv4";
+    ਹਾਲਤ S_MAGIC_TMPFS: /* 0x01021994 local */
+      ਵਾਪਸ "tmpfs";
+    ਹਾਲਤ S_MAGIC_TRACEFS: /* 0x74726163 local */
+      ਵਾਪਸ "tracefs";
+    ਹਾਲਤ S_MAGIC_UBIFS: /* 0x24051905 local */
+      ਵਾਪਸ "ubifs";
+    ਹਾਲਤ S_MAGIC_UDF: /* 0x15013346 local */
+      ਵਾਪਸ "udf";
+    ਹਾਲਤ S_MAGIC_UFS: /* 0x00011954 local */
+      ਵਾਪਸ "ufs";
+    ਹਾਲਤ S_MAGIC_UFS_BYTESWAPPED: /* 0x54190100 local */
+      ਵਾਪਸ "ufs";
+    ਹਾਲਤ S_MAGIC_USBDEVFS: /* 0x9FA2 local */
+      ਵਾਪਸ "usbdevfs";
+    ਹਾਲਤ S_MAGIC_V9FS: /* 0x01021997 local */
+      ਵਾਪਸ "v9fs";
+    ਹਾਲਤ S_MAGIC_VBOXSF: /* 0x786F4256 remote */
+      ਵਾਪਸ "vboxsf";
+    ਹਾਲਤ S_MAGIC_VMHGFS: /* 0xBACBACBC remote */
+      ਵਾਪਸ "vmhgfs";
+    ਹਾਲਤ S_MAGIC_VXFS: /* 0xA501FCF5 remote */
       /* Veritas File System can run in single instance or clustered mode,
          so mark as remote to cater for the latter case.  */
-      return "vxfs";
-    case S_MAGIC_VZFS: /* 0x565A4653 local */
-      return "vzfs";
-    case S_MAGIC_WSLFS: /* 0x53464846 local */
-      return "wslfs";
-    case S_MAGIC_XENFS: /* 0xABBA1974 local */
-      return "xenfs";
-    case S_MAGIC_XENIX: /* 0x012FF7B4 local */
-      return "xenix";
-    case S_MAGIC_XFS: /* 0x58465342 local */
-      return "xfs";
-    case S_MAGIC_XIAFS: /* 0x012FD16D local */
-      return "xia";
-    case S_MAGIC_Z3FOLD: /* 0x0033 local */
-      return "z3fold";
-    case S_MAGIC_ZFS: /* 0x2FC12FC1 local */
-      return "zfs";
-    case S_MAGIC_ZONEFS: /* 0x5A4F4653 local */
-      return "zonefs";
-    case S_MAGIC_ZSMALLOC: /* 0x58295829 local */
-      return "zsmallocfs";
+      ਵਾਪਸ "vxfs";
+    ਹਾਲਤ S_MAGIC_VZFS: /* 0x565A4653 local */
+      ਵਾਪਸ "vzfs";
+    ਹਾਲਤ S_MAGIC_WSLFS: /* 0x53464846 local */
+      ਵਾਪਸ "wslfs";
+    ਹਾਲਤ S_MAGIC_XENFS: /* 0xABBA1974 local */
+      ਵਾਪਸ "xenfs";
+    ਹਾਲਤ S_MAGIC_XENIX: /* 0x012FF7B4 local */
+      ਵਾਪਸ "xenix";
+    ਹਾਲਤ S_MAGIC_XFS: /* 0x58465342 local */
+      ਵਾਪਸ "xfs";
+    ਹਾਲਤ S_MAGIC_XIAFS: /* 0x012FD16D local */
+      ਵਾਪਸ "xia";
+    ਹਾਲਤ S_MAGIC_Z3FOLD: /* 0x0033 local */
+      ਵਾਪਸ "z3fold";
+    ਹਾਲਤ S_MAGIC_ZFS: /* 0x2FC12FC1 local */
+      ਵਾਪਸ "zfs";
+    ਹਾਲਤ S_MAGIC_ZONEFS: /* 0x5A4F4653 local */
+      ਵਾਪਸ "zonefs";
+    ਹਾਲਤ S_MAGIC_ZSMALLOC: /* 0x58295829 local */
+      ਵਾਪਸ "zsmallocfs";
 
 
 # elif __GNU__
-    case FSTYPE_UFS:
-      return "ufs";
-    case FSTYPE_NFS:
-      return "nfs";
-    case FSTYPE_GFS:
-      return "gfs";
-    case FSTYPE_LFS:
-      return "lfs";
-    case FSTYPE_SYSV:
-      return "sysv";
-    case FSTYPE_FTP:
-      return "ftp";
-    case FSTYPE_TAR:
-      return "tar";
-    case FSTYPE_AR:
-      return "ar";
-    case FSTYPE_CPIO:
-      return "cpio";
-    case FSTYPE_MSLOSS:
-      return "msloss";
-    case FSTYPE_CPM:
-      return "cpm";
-    case FSTYPE_HFS:
-      return "hfs";
-    case FSTYPE_DTFS:
-      return "dtfs";
-    case FSTYPE_GRFS:
-      return "grfs";
-    case FSTYPE_TERM:
-      return "term";
-    case FSTYPE_DEV:
-      return "dev";
-    case FSTYPE_PROC:
-      return "proc";
-    case FSTYPE_IFSOCK:
-      return "ifsock";
-    case FSTYPE_AFS:
-      return "afs";
-    case FSTYPE_DFS:
-      return "dfs";
-    case FSTYPE_PROC9:
-      return "proc9";
-    case FSTYPE_SOCKET:
-      return "socket";
-    case FSTYPE_MISC:
-      return "misc";
-    case FSTYPE_EXT2FS:
-      return "ext2/ext3";
-    case FSTYPE_HTTP:
-      return "http";
-    case FSTYPE_MEMFS:
-      return "memfs";
-    case FSTYPE_ISO9660:
-      return "iso9660";
+    ਹਾਲਤ FSTYPE_UFS:
+      ਵਾਪਸ "ufs";
+    ਹਾਲਤ FSTYPE_NFS:
+      ਵਾਪਸ "nfs";
+    ਹਾਲਤ FSTYPE_GFS:
+      ਵਾਪਸ "gfs";
+    ਹਾਲਤ FSTYPE_LFS:
+      ਵਾਪਸ "lfs";
+    ਹਾਲਤ FSTYPE_SYSV:
+      ਵਾਪਸ "sysv";
+    ਹਾਲਤ FSTYPE_FTP:
+      ਵਾਪਸ "ftp";
+    ਹਾਲਤ FSTYPE_TAR:
+      ਵਾਪਸ "tar";
+    ਹਾਲਤ FSTYPE_AR:
+      ਵਾਪਸ "ar";
+    ਹਾਲਤ FSTYPE_CPIO:
+      ਵਾਪਸ "cpio";
+    ਹਾਲਤ FSTYPE_MSLOSS:
+      ਵਾਪਸ "msloss";
+    ਹਾਲਤ FSTYPE_CPM:
+      ਵਾਪਸ "cpm";
+    ਹਾਲਤ FSTYPE_HFS:
+      ਵਾਪਸ "hfs";
+    ਹਾਲਤ FSTYPE_DTFS:
+      ਵਾਪਸ "dtfs";
+    ਹਾਲਤ FSTYPE_GRFS:
+      ਵਾਪਸ "grfs";
+    ਹਾਲਤ FSTYPE_ਪਦ:
+      ਵਾਪਸ "term";
+    ਹਾਲਤ FSTYPE_DEV:
+      ਵਾਪਸ "dev";
+    ਹਾਲਤ FSTYPE_PROC:
+      ਵਾਪਸ "proc";
+    ਹਾਲਤ FSTYPE_IFSOCK:
+      ਵਾਪਸ "ifsock";
+    ਹਾਲਤ FSTYPE_AFS:
+      ਵਾਪਸ "afs";
+    ਹਾਲਤ FSTYPE_DFS:
+      ਵਾਪਸ "dfs";
+    ਹਾਲਤ FSTYPE_PROC9:
+      ਵਾਪਸ "proc9";
+    ਹਾਲਤ FSTYPE_SOCKET:
+      ਵਾਪਸ "socket";
+    ਹਾਲਤ FSTYPE_MISC:
+      ਵਾਪਸ "misc";
+    ਹਾਲਤ FSTYPE_EXT2FS:
+      ਵਾਪਸ "ext2/ext3";
+    ਹਾਲਤ FSTYPE_HTTP:
+      ਵਾਪਸ "http";
+    ਹਾਲਤ FSTYPE_MEMFS:
+      ਵਾਪਸ "memfs";
+    ਹਾਲਤ FSTYPE_ISO9660:
+      ਵਾਪਸ "iso9660";
 # endif
-    default:
+    ਮੂਲ:
       {
-        unsigned long int type = statfsbuf->f_type;
-        static char buf[sizeof "UNKNOWN (0x%lx)" - 3
-                        + (sizeof type * CHAR_BIT + 3) / 4];
+        ਬਿਨਾਨਿਸ਼ਾਨੀ ਲੰਮਾ ਪੂਰਨ type = statfsbuf->f_type;
+        ਸਥਿਰ ਅੱਖਰ buf[ਆਕਾਰ "UNKNOWN (0x%lx)" - 3
+                        + (ਆਕਾਰ type * CHAR_BIT + 3) / 4];
         sprintf (buf, "UNKNOWN (0x%lx)", type);
-        return buf;
+        ਵਾਪਸ buf;
       }
     }
-#endif
+#ਜੇ_ਅੰਤ
 }
 
 NODISCARD
-static char *
-human_access (struct stat const *statbuf)
+ਸਥਿਰ ਅੱਖਰ *
+human_access (ਬਣਤਰ stat ਅਚਲ *statbuf)
 {
-  static char modebuf[12];
+  ਸਥਿਰ ਅੱਖਰ modebuf[12];
   filemodestring (statbuf, modebuf);
   modebuf[10] = 0;
-  return modebuf;
+  ਵਾਪਸ modebuf;
 }
 
 NODISCARD
-static char *
-human_time (struct timespec t)
+ਸਥਿਰ ਅੱਖਰ *
+human_ਸਮਾਂ (ਬਣਤਰ timespec t)
 {
   /* STR must be at least INT_BUFSIZE_BOUND (intmax_t) big, either
      because localtime_rz fails, or because the time zone is truly
      outlandish so that %z expands to a long string.  */
-  static char str[INT_BUFSIZE_BOUND (intmax_t)
-                  + INT_STRLEN_BOUND (int) /* YYYY */
+  ਸਥਿਰ ਅੱਖਰ str[INT_BUFSIZE_BOUND (intmax_t)
+                  + INT_STRLEN_BOUND (ਪੂਰਨ) /* YYYY */
                   + 1 /* because YYYY might equal INT_MAX + 1900 */
-                  + sizeof "-MM-DD HH:MM:SS.NNNNNNNNN +"];
-  static timezone_t tz;
-  if (!tz)
+                  + ਆਕਾਰ "-MM-DD HH:MM:SS.NNNNNNNNN +"];
+  ਸਥਿਰ timezone_t tz;
+  ਜੇ (!tz)
     tz = tzalloc (getenv ("TZ"));
-  struct tm tm;
-  int ns = t.tv_nsec;
-  if (localtime_rz (tz, &t.tv_sec, &tm))
-    nstrftime (str, sizeof str, "%Y-%m-%d %H:%M:%S.%N %z", &tm, tz, ns);
-  else
+  ਬਣਤਰ tm tm;
+  ਪੂਰਨ ns = t.tv_nsec;
+  ਜੇ (localtime_rz (tz, &t.tv_sec, &tm))
+    nstrftime (str, ਆਕਾਰ str, "%Y-%m-%d %H:%M:%S.%N %z", &tm, tz, ns);
+  ਨਹੀਂਤਾਂ
     {
-      char secbuf[INT_BUFSIZE_BOUND (intmax_t)];
+      ਅੱਖਰ secbuf[INT_BUFSIZE_BOUND (intmax_t)];
       sprintf (str, "%s.%09d", timetostr (t.tv_sec, secbuf), ns);
     }
-  return str;
+  ਵਾਪਸ str;
 }
 
 /* PFORMAT points to a '%' followed by a prefix of a format, all of
    size PREFIX_LEN.  The flags allowed for this format are
    ALLOWED_FLAGS; remove other printf flags from the prefix, then
    append SUFFIX.  */
-static void
-make_format (char *pformat, size_t prefix_len, char const *allowed_flags,
-             char const *suffix)
+ਸਥਿਰ ਖਾਲੀ
+make_format (ਅੱਖਰ *pformat, size_t ਅਗੇਤਰ_len, ਅੱਖਰ ਅਚਲ *allowed_flags,
+             ਅੱਖਰ ਅਚਲ *suffix)
 {
-  char *dst = pformat + 1;
-  char const *src;
-  char const *srclim = pformat + prefix_len;
-  for (src = dst; src < srclim && strchr (printf_flags, *src); src++)
-    if (strchr (allowed_flags, *src))
+  ਅੱਖਰ *dst = pformat + 1;
+  ਅੱਖਰ ਅਚਲ *src;
+  ਅੱਖਰ ਅਚਲ *srclim = pformat + ਅਗੇਤਰ_len;
+  ਲਈ (src = dst; src < srclim && strchr (printf_flags, *src); src++)
+    ਜੇ (strchr (allowed_flags, *src))
       *dst++ = *src;
-  while (src < srclim)
+  ਜਦੋਂ (src < srclim)
     *dst++ = *src++;
   strcpy (dst, suffix);
 }
 
-static void
-out_string (char *pformat, size_t prefix_len, char const *arg)
+ਸਥਿਰ ਖਾਲੀ
+ਬਾਹਰਲਾ_string (ਅੱਖਰ *pformat, size_t ਅਗੇਤਰ_len, ਅੱਖਰ ਅਚਲ *arg)
 {
-  make_format (pformat, prefix_len, "-", "s");
-  printf (pformat, arg);
+  make_format (pformat, ਅਗੇਤਰ_len, "-", "s");
+  ਲਿਖੋ (pformat, arg);
 }
-static int
-out_int (char *pformat, size_t prefix_len, intmax_t arg)
+ਸਥਿਰ ਪੂਰਨ
+ਬਾਹਰਲਾ_int (ਅੱਖਰ *pformat, size_t ਅਗੇਤਰ_len, intmax_t arg)
 {
-  make_format (pformat, prefix_len, "'-+ 0", "jd");
-  return printf (pformat, arg);
+  make_format (pformat, ਅਗੇਤਰ_len, "'-+ 0", "jd");
+  ਵਾਪਸ ਲਿਖੋ (pformat, arg);
 }
-static int
-out_uint (char *pformat, size_t prefix_len, uintmax_t arg)
+ਸਥਿਰ ਪੂਰਨ
+ਬਾਹਰਲਾ_uint (ਅੱਖਰ *pformat, size_t ਅਗੇਤਰ_len, uintmax_t arg)
 {
-  make_format (pformat, prefix_len, "'-0", "ju");
-  return printf (pformat, arg);
+  make_format (pformat, ਅਗੇਤਰ_len, "'-0", "ju");
+  ਵਾਪਸ ਲਿਖੋ (pformat, arg);
 }
-static void
-out_uint_o (char *pformat, size_t prefix_len, uintmax_t arg)
+ਸਥਿਰ ਖਾਲੀ
+ਬਾਹਰਲਾ_uint_o (ਅੱਖਰ *pformat, size_t ਅਗੇਤਰ_len, uintmax_t arg)
 {
-  make_format (pformat, prefix_len, "-#0", "jo");
-  printf (pformat, arg);
+  make_format (pformat, ਅਗੇਤਰ_len, "-#0", "jo");
+  ਲਿਖੋ (pformat, arg);
 }
-static void
-out_uint_x (char *pformat, size_t prefix_len, uintmax_t arg)
+ਸਥਿਰ ਖਾਲੀ
+ਬਾਹਰਲਾ_uint_x (ਅੱਖਰ *pformat, size_t ਅਗੇਤਰ_len, uintmax_t arg)
 {
-  make_format (pformat, prefix_len, "-#0", "jx");
-  printf (pformat, arg);
+  make_format (pformat, ਅਗੇਤਰ_len, "-#0", "jx");
+  ਲਿਖੋ (pformat, arg);
 }
-static int
-out_minus_zero (char *pformat, size_t prefix_len)
+ਸਥਿਰ ਪੂਰਨ
+ਬਾਹਰਲਾ_minus_zero (ਅੱਖਰ *pformat, size_t ਅਗੇਤਰ_len)
 {
-  make_format (pformat, prefix_len, "'-+ 0", ".0f");
-  return printf (pformat, -0.25);
+  make_format (pformat, ਅਗੇਤਰ_len, "'-+ 0", ".0f");
+  ਵਾਪਸ ਲਿਖੋ (pformat, -0.25);
 }
 
 /* Output the number of seconds since the Epoch, using a format that
    acts like printf's %f format.  */
-static void
-out_epoch_sec (char *pformat, size_t prefix_len,
-               struct timespec arg)
+ਸਥਿਰ ਖਾਲੀ
+ਬਾਹਰਲਾ_epoch_sec (ਅੱਖਰ *pformat, size_t ਅਗੇਤਰ_len,
+               ਬਣਤਰ timespec arg)
 {
-  char *dot = memchr (pformat, '.', prefix_len);
-  size_t sec_prefix_len = prefix_len;
-  int width = 0;
-  int precision = 0;
-  bool frac_left_adjust = false;
+  ਅੱਖਰ *dot = memchr (pformat, '.', ਅਗੇਤਰ_len);
+  size_t sec_ਅਗੇਤਰ_len = ਅਗੇਤਰ_len;
+  ਪੂਰਨ ਚੌੜਾਈ = 0;
+  ਪੂਰਨ precision = 0;
+  bool frac_ਖੱਬਾ_adjust = false;
 
-  if (dot)
+  ਜੇ (dot)
     {
-      sec_prefix_len = dot - pformat;
-      pformat[prefix_len] = '\0';
+      sec_ਅਗੇਤਰ_len = dot - pformat;
+      pformat[ਅਗੇਤਰ_len] = '\0';
 
-      if (c_isdigit (dot[1]))
+      ਜੇ (c_isdigit (dot[1]))
         {
-          long int lprec = strtol (dot + 1, NULL, 10);
-          precision = (lprec <= INT_MAX ? lprec : INT_MAX);
+          ਲੰਮਾ ਪੂਰਨ lprec = strtol (dot + 1, ਨਿਰਾ, 10);
+          precision = (lprec <= ਵੱਧ_ਤੋਂ_ਵੱਧ_ਅੰਕ ? lprec : ਵੱਧ_ਤੋਂ_ਵੱਧ_ਅੰਕ);
         }
-      else
+      ਨਹੀਂਤਾਂ
         {
           precision = 9;
         }
 
-      if (precision && c_isdigit (dot[-1]))
+      ਜੇ (precision && c_isdigit (dot[-1]))
         {
           /* If a nontrivial width is given, subtract the width of the
              decimal point and PRECISION digits that will be output
              later.  */
-          char *p = dot;
+          ਅੱਖਰ *p = dot;
           *dot = '\0';
 
-          do
+          ਕਰੋ
             --p;
-          while (c_isdigit (p[-1]));
+          ਜਦੋਂ (c_isdigit (p[-1]));
 
-          long int lwidth = strtol (p, NULL, 10);
-          width = (lwidth <= INT_MAX ? lwidth : INT_MAX);
-          if (1 < width)
+          ਲੰਮਾ ਪੂਰਨ lwidth = strtol (p, ਨਿਰਾ, 10);
+          ਚੌੜਾਈ = (lwidth <= ਵੱਧ_ਤੋਂ_ਵੱਧ_ਅੰਕ ? lwidth : ਵੱਧ_ਤੋਂ_ਵੱਧ_ਅੰਕ);
+          ਜੇ (1 < ਚੌੜਾਈ)
             {
               p += (*p == '0');
-              sec_prefix_len = p - pformat;
-              int w_d = (decimal_point_len < width
-                         ? width - decimal_point_len
+              sec_ਅਗੇਤਰ_len = p - pformat;
+              ਪੂਰਨ w_d = (decimal_ਬਿੰਦੂ_len < ਚੌੜਾਈ
+                         ? ਚੌੜਾਈ - decimal_ਬਿੰਦੂ_len
                          : 0);
-              if (1 < w_d)
+              ਜੇ (1 < w_d)
                 {
-                  int w = w_d - precision;
-                  if (1 < w)
+                  ਪੂਰਨ w = w_d - precision;
+                  ਜੇ (1 < w)
                     {
-                      char *dst = pformat;
-                      for (char const *src = dst; src < p; src++)
+                      ਅੱਖਰ *dst = pformat;
+                      ਲਈ (ਅੱਖਰ ਅਚਲ *src = dst; src < p; src++)
                         {
-                          if (*src == '-')
-                            frac_left_adjust = true;
-                          else
+                          ਜੇ (*src == '-')
+                            frac_ਖੱਬਾ_adjust = true;
+                          ਨਹੀਂਤਾਂ
                             *dst++ = *src;
                         }
-                      sec_prefix_len =
+                      sec_ਅਗੇਤਰ_len =
                         (dst - pformat
-                         + (frac_left_adjust ? 0 : sprintf (dst, "%d", w)));
+                         + (frac_ਖੱਬਾ_adjust ? 0 : sprintf (dst, "%d", w)));
                     }
                 }
             }
         }
     }
 
-  int divisor = 1;
-  for (int i = precision; i < 9; i++)
-    divisor *= 10;
-  int frac_sec = arg.tv_nsec / divisor;
-  int int_len;
+  ਪੂਰਨ ਭਾਜਕ = 1;
+  ਲਈ (ਪੂਰਨ i = precision; i < 9; i++)
+    ਭਾਜਕ *= 10;
+  ਪੂਰਨ frac_sec = arg.tv_nsec / ਭਾਜਕ;
+  ਪੂਰਨ int_len;
 
-  if (TYPE_SIGNED (time_t))
+  ਜੇ (TYPE_SIGNED (time_t))
     {
       bool minus_zero = false;
-      if (arg.tv_sec < 0 && arg.tv_nsec != 0)
+      ਜੇ (arg.tv_sec < 0 && arg.tv_nsec != 0)
         {
-          int frac_sec_modulus = 1000000000 / divisor;
+          ਪੂਰਨ frac_sec_modulus = 1000000000 / ਭਾਜਕ;
           frac_sec = (frac_sec_modulus - frac_sec
-                      - (arg.tv_nsec % divisor != 0));
+                      - (arg.tv_nsec % ਭਾਜਕ != 0));
           arg.tv_sec += (frac_sec != 0);
           minus_zero = (arg.tv_sec == 0);
         }
       int_len = (minus_zero
-                 ? out_minus_zero (pformat, sec_prefix_len)
-                 : out_int (pformat, sec_prefix_len, arg.tv_sec));
+                 ? ਬਾਹਰਲਾ_minus_zero (pformat, sec_ਅਗੇਤਰ_len)
+                 : ਬਾਹਰਲਾ_int (pformat, sec_ਅਗੇਤਰ_len, arg.tv_sec));
     }
-  else
-    int_len = out_uint (pformat, sec_prefix_len, arg.tv_sec);
+  ਨਹੀਂਤਾਂ
+    int_len = ਬਾਹਰਲਾ_uint (pformat, sec_ਅਗੇਤਰ_len, arg.tv_sec);
 
-  if (precision)
+  ਜੇ (precision)
     {
-      int prec = (precision < 9 ? precision : 9);
-      int trailing_prec = precision - prec;
-      int ilen = (int_len < 0 ? 0 : int_len);
-      int trailing_width = (ilen < width && decimal_point_len < width - ilen
-                            ? width - ilen - decimal_point_len - prec
+      ਪੂਰਨ prec = (precision < 9 ? precision : 9);
+      ਪੂਰਨ trailing_prec = precision - prec;
+      ਪੂਰਨ ilen = (int_len < 0 ? 0 : int_len);
+      ਪੂਰਨ trailing_ਚੌੜਾਈ = (ilen < ਚੌੜਾਈ && decimal_ਬਿੰਦੂ_len < ਚੌੜਾਈ - ilen
+                            ? ਚੌੜਾਈ - ilen - decimal_ਬਿੰਦੂ_len - prec
                             : 0);
-      printf ("%s%.*d%-*.*d", decimal_point, prec, frac_sec,
-              trailing_width, trailing_prec, 0);
+      ਲਿਖੋ ("%s%.*d%-*.*d", decimal_ਬਿੰਦੂ, prec, frac_sec,
+              trailing_ਚੌੜਾਈ, trailing_prec, 0);
     }
 }
 
 /* Print the context information of FILENAME, and return true iff the
    context could not be obtained.  */
 NODISCARD
-static bool
-out_file_context (char *pformat, size_t prefix_len, char const *filename)
+ਸਥਿਰ bool
+ਬਾਹਰਲਾ_file_context (ਅੱਖਰ *pformat, size_t ਅਗੇਤਰ_len, ਅੱਖਰ ਅਚਲ *filename)
 {
-  char *scontext;
+  ਅੱਖਰ *scontext;
   bool fail = false;
 
-  if ((follow_links
+  ਜੇ ((follow_links
        ? getfilecon (filename, &scontext)
        : lgetfilecon (filename, &scontext)) < 0)
     {
       error (0, errno, _("failed to get security context of %s"),
              quoteaf (filename));
-      scontext = NULL;
+      scontext = ਨਿਰਾ;
       fail = true;
     }
-  strcpy (pformat + prefix_len, "s");
-  printf (pformat, (scontext ? scontext : "?"));
-  if (scontext)
+  strcpy (pformat + ਅਗੇਤਰ_len, "s");
+  ਲਿਖੋ (pformat, (scontext ? scontext : "?"));
+  ਜੇ (scontext)
     freecon (scontext);
-  return fail;
+  ਵਾਪਸ fail;
 }
 
 /* Set the quoting style once it is needed.  */
-static void
-initialize_quoting_style (void)
+ਸਥਿਰ ਖਾਲੀ
+initialize_quoting_style (ਖਾਲੀ)
 {
-  static bool initialized;
-  if (!initialized)
+  ਸਥਿਰ bool initialized;
+  ਜੇ (!initialized)
     {
       initialized = true;
-      int qs = getenv_quoting_style ();
-      set_quoting_style (NULL, 0 <= qs ? qs : shell_escape_quoting_style);
+      ਪੂਰਨ qs = getenv_quoting_style ();
+      ਸੈੱਟ_quoting_style (ਨਿਰਾ, 0 <= qs ? qs : shell_escape_quoting_style);
     }
 }
 
 /* Print statfs info.  Return zero upon success, nonzero upon failure.  */
 NODISCARD
-static bool
-print_statfs (char *pformat, size_t prefix_len, MAYBE_UNUSED char mod, char m,
-              MAYBE_UNUSED int fd, char const *filename,
-              void const *data)
+ਸਥਿਰ bool
+print_statfs (ਅੱਖਰ *pformat, size_t ਅਗੇਤਰ_len, MAYBE_ਅਣਵਰਤਿਆ ਅੱਖਰ mod, ਅੱਖਰ m,
+              MAYBE_ਅਣਵਰਤਿਆ ਪੂਰਨ fd, ਅੱਖਰ ਅਚਲ *filename,
+              ਖਾਲੀ ਅਚਲ *ਅੰਕੜੇ)
 {
-  STRUCT_STATVFS const *statfsbuf = data;
+  STRUCT_STATVFS ਅਚਲ *statfsbuf = ਅੰਕੜੇ;
   bool fail = false;
 
-  switch (m)
+  ਚੋਣ (m)
     {
-    case 'n':
-      if (mod == 'Q')
+    ਹਾਲਤ 'n':
+      ਜੇ (mod == 'Q')
         {
           initialize_quoting_style ();
           filename = quoteN (filename);
         }
-      out_string (pformat, prefix_len, filename);
-      break;
+      ਬਾਹਰਲਾ_string (pformat, ਅਗੇਤਰ_len, filename);
+      ਰੋਕੋ;
 
-    case 'i':
+    ਹਾਲਤ 'i':
       {
-#if STRUCT_STATXFS_F_FSID_IS_INTEGER
+#ਜੇ STRUCT_STATXFS_F_FSID_IS_INTEGER
         uintmax_t fsid = statfsbuf->f_fsid;
-#else
-        typedef unsigned int fsid_word;
-        static_assert (alignof (STRUCT_STATVFS) % alignof (fsid_word) == 0);
-        static_assert (offsetof (STRUCT_STATVFS, f_fsid) % alignof (fsid_word)
+#ਨਹੀਂਤਾਂ
+        ਕਿਸਮਪਰਿਭਾਸ਼ਾ ਬਿਨਾਨਿਸ਼ਾਨੀ ਪੂਰਨ fsid_ਸ਼ਬਦ;
+        static_assert (alignof (STRUCT_STATVFS) % alignof (fsid_ਸ਼ਬਦ) == 0);
+        static_assert (offsetof (STRUCT_STATVFS, f_fsid) % alignof (fsid_ਸ਼ਬਦ)
                        == 0);
-        static_assert (sizeof statfsbuf->f_fsid % alignof (fsid_word) == 0);
-        fsid_word const *p = (fsid_word *) &statfsbuf->f_fsid;
+        static_assert (ਆਕਾਰ statfsbuf->f_fsid % alignof (fsid_ਸ਼ਬਦ) == 0);
+        fsid_ਸ਼ਬਦ ਅਚਲ *p = (fsid_ਸ਼ਬਦ *) &statfsbuf->f_fsid;
 
         /* Assume a little-endian word order, as that is compatible
            with glibc's statvfs implementation.  */
         uintmax_t fsid = 0;
-        int words = sizeof statfsbuf->f_fsid / sizeof *p;
-        for (int i = 0; i < words && i * sizeof *p < sizeof fsid; i++)
+        ਪੂਰਨ ਸ਼ਬਦ_4 = ਆਕਾਰ statfsbuf->f_fsid / ਆਕਾਰ *p;
+        ਲਈ (ਪੂਰਨ i = 0; i < ਸ਼ਬਦ_4 && i * ਆਕਾਰ *p < ਆਕਾਰ fsid; i++)
           {
-            uintmax_t u = p[words - 1 - i];
-            fsid |= u << (i * CHAR_BIT * sizeof *p);
+            uintmax_t u = p[ਸ਼ਬਦ_4 - 1 - i];
+            fsid |= u << (i * CHAR_BIT * ਆਕਾਰ *p);
           }
-#endif
-        out_uint_x (pformat, prefix_len, fsid);
+#ਜੇ_ਅੰਤ
+        ਬਾਹਰਲਾ_uint_x (pformat, ਅਗੇਤਰ_len, fsid);
       }
-      break;
+      ਰੋਕੋ;
 
-    case 'l':
-      OUT_NAMEMAX (pformat, prefix_len, SB_F_NAMEMAX (statfsbuf));
-      break;
-    case 't':
-#if HAVE_STRUCT_STATXFS_F_TYPE
-      out_uint_x (pformat, prefix_len, statfsbuf->f_type);
-#else
+    ਹਾਲਤ 'l':
+      ਬਾਹਰਲਾ_NAMEMAX (pformat, ਅਗੇਤਰ_len, SB_F_NAMEMAX (statfsbuf));
+      ਰੋਕੋ;
+    ਹਾਲਤ 't':
+#ਜੇ HAVE_STRUCT_STATXFS_F_TYPE
+      ਬਾਹਰਲਾ_uint_x (pformat, ਅਗੇਤਰ_len, statfsbuf->f_type);
+#ਨਹੀਂਤਾਂ
       fputc ('?', stdout);
-#endif
-      break;
-    case 'T':
-      out_string (pformat, prefix_len, human_fstype (statfsbuf));
-      break;
-    case 'b':
-      out_int (pformat, prefix_len, statfsbuf->f_blocks);
-      break;
-    case 'f':
-      out_int (pformat, prefix_len, statfsbuf->f_bfree);
-      break;
-    case 'a':
-      out_int (pformat, prefix_len, statfsbuf->f_bavail);
-      break;
-    case 's':
-      out_uint (pformat, prefix_len, statfsbuf->f_bsize);
-      break;
-    case 'S':
+#ਜੇ_ਅੰਤ
+      ਰੋਕੋ;
+    ਹਾਲਤ 'T':
+      ਬਾਹਰਲਾ_string (pformat, ਅਗੇਤਰ_len, human_fstype (statfsbuf));
+      ਰੋਕੋ;
+    ਹਾਲਤ 'b':
+      ਬਾਹਰਲਾ_int (pformat, ਅਗੇਤਰ_len, statfsbuf->f_ਖੰਡਾਂ);
+      ਰੋਕੋ;
+    ਹਾਲਤ 'f':
+      ਬਾਹਰਲਾ_int (pformat, ਅਗੇਤਰ_len, statfsbuf->f_bfree);
+      ਰੋਕੋ;
+    ਹਾਲਤ 'a':
+      ਬਾਹਰਲਾ_int (pformat, ਅਗੇਤਰ_len, statfsbuf->f_bavail);
+      ਰੋਕੋ;
+    ਹਾਲਤ 's':
+      ਬਾਹਰਲਾ_uint (pformat, ਅਗੇਤਰ_len, statfsbuf->f_bsize);
+      ਰੋਕੋ;
+    ਹਾਲਤ 'S':
       {
         uintmax_t frsize = STATFS_FRSIZE (statfsbuf);
-        if (! frsize)
+        ਜੇ (! frsize)
           frsize = statfsbuf->f_bsize;
-        out_uint (pformat, prefix_len, frsize);
+        ਬਾਹਰਲਾ_uint (pformat, ਅਗੇਤਰ_len, frsize);
       }
-      break;
-    case 'c':
-      out_uint (pformat, prefix_len, statfsbuf->f_files);
-      break;
-    case 'd':
-      out_int (pformat, prefix_len, statfsbuf->f_ffree);
-      break;
-    default:
+      ਰੋਕੋ;
+    ਹਾਲਤ 'c':
+      ਬਾਹਰਲਾ_uint (pformat, ਅਗੇਤਰ_len, statfsbuf->f_files);
+      ਰੋਕੋ;
+    ਹਾਲਤ 'd':
+      ਬਾਹਰਲਾ_int (pformat, ਅਗੇਤਰ_len, statfsbuf->f_ffree);
+      ਰੋਕੋ;
+    ਮੂਲ:
       fputc ('?', stdout);
-      break;
+      ਰੋਕੋ;
     }
-  return fail;
+  ਵਾਪਸ fail;
 }
 
 /* Return any bind mounted source for a path.
    The caller should not free the returned buffer.
    Return NULL if no bind mount found.  */
 NODISCARD
-static char const *
-find_bind_mount (char const * name)
+ਸਥਿਰ ਅੱਖਰ ਅਚਲ *
+ਲੱਭੋ_bind_mount (ਅੱਖਰ ਅਚਲ * name)
 {
-  char const * bind_mount = NULL;
+  ਅੱਖਰ ਅਚਲ * bind_mount = ਨਿਰਾ;
 
-  static struct mount_entry *mount_list;
-  static bool tried_mount_list = false;
-  if (!tried_mount_list) /* attempt/warn once per process.  */
+  ਸਥਿਰ ਬਣਤਰ mount_ਇੰਦਰਾਜ *mount_list;
+  ਸਥਿਰ bool tried_mount_list = false;
+  ਜੇ (!tried_mount_list) /* attempt/warn once per process.  */
     {
-      if (!(mount_list = read_file_system_list (false)))
+      ਜੇ (!(mount_list = read_file_system_list (false)))
         error (0, errno, "%s", _("cannot read table of mounted file systems"));
       tried_mount_list = true;
     }
 
-  struct stat name_stats;
-  if (stat (name, &name_stats) != 0)
-    return NULL;
+  ਬਣਤਰ stat name_stats;
+  ਜੇ (stat (name, &name_stats) != 0)
+    ਵਾਪਸ ਨਿਰਾ;
 
-  for (struct mount_entry *me = mount_list; me; me = me->me_next)
+  ਲਈ (ਬਣਤਰ mount_ਇੰਦਰਾਜ *me = mount_list; me; me = me->me_ਅਗਲਾ)
     {
-      if (me->me_dummy && me->me_devname[0] == '/'
+      ਜੇ (me->me_dummy && me->me_devname[0] == '/'
           && streq (me->me_mountdir, name))
         {
-          struct stat dev_stats;
+          ਬਣਤਰ stat dev_stats;
 
-          if (stat (me->me_devname, &dev_stats) == 0
+          ਜੇ (stat (me->me_devname, &dev_stats) == 0
               && psame_inode (&name_stats, &dev_stats))
             {
               bind_mount = me->me_devname;
-              break;
+              ਰੋਕੋ;
             }
         }
     }
 
-  return bind_mount;
+  ਵਾਪਸ bind_mount;
 }
 
 /* Print mount point.  Return zero upon success, nonzero upon failure.  */
 NODISCARD
-static bool
-out_mount_point (char const *filename, char *pformat, size_t prefix_len,
-                 const struct stat *statp)
+ਸਥਿਰ bool
+ਬਾਹਰਲਾ_mount_ਬਿੰਦੂ (ਅੱਖਰ ਅਚਲ *filename, ਅੱਖਰ *pformat, size_t ਅਗੇਤਰ_len,
+                 ਅਚਲ ਬਣਤਰ stat *statp)
 {
 
-  char const *np = "?", *bp = NULL;
-  char *mp = NULL;
+  ਅੱਖਰ ਅਚਲ *np = "?", *bp = ਨਿਰਾ;
+  ਅੱਖਰ *mp = ਨਿਰਾ;
   bool fail = true;
 
   /* Look for bind mounts first.  Note we output the immediate alias,
      rather than further resolving to a base device mount point.  */
-  if (follow_links || !S_ISLNK (statp->st_mode))
+  ਜੇ (follow_links || !S_ISLNK (statp->st_ਬਹੁਲਕ))
     {
-      char *resolved = canonicalize_file_name (filename);
-      if (!resolved)
+      ਅੱਖਰ *resolved = canonicalize_file_name (filename);
+      ਜੇ (!resolved)
         {
           error (0, errno, _("failed to canonicalize %s"), quoteaf (filename));
-          goto print_mount_point;
+          ਜਾਓ print_mount_ਬਿੰਦੂ;
         }
-      bp = find_bind_mount (resolved);
-      free (resolved);
-      if (bp)
+      bp = ਲੱਭੋ_bind_mount (resolved);
+      ਮੁਕਤ (resolved);
+      ਜੇ (bp)
         {
           fail = false;
-          goto print_mount_point;
+          ਜਾਓ print_mount_ਬਿੰਦੂ;
         }
     }
 
@@ -1041,399 +1041,399 @@ out_mount_point (char const *filename, char *pformat, size_t prefix_len,
      Note we don't detect if any of the directory components
      are bind mounted to the same device, but that's OK
      since we've not directly queried them.  */
-  if ((mp = find_mount_point (filename, statp)))
+  ਜੇ ((mp = ਲੱਭੋ_mount_ਬਿੰਦੂ (filename, statp)))
     {
       /* This dir might be bind mounted to another device,
          so we resolve the bound source in that case also.  */
-      bp = find_bind_mount (mp);
+      bp = ਲੱਭੋ_bind_mount (mp);
       fail = false;
     }
 
-print_mount_point:
+print_mount_ਬਿੰਦੂ:
 
-  out_string (pformat, prefix_len, bp ? bp : mp ? mp : np);
-  free (mp);
-  return fail;
+  ਬਾਹਰਲਾ_string (pformat, ਅਗੇਤਰ_len, bp ? bp : mp ? mp : np);
+  ਮੁਕਤ (mp);
+  ਵਾਪਸ fail;
 }
 
 /* Map a TS with negative TS.tv_nsec to {0,0}.  */
-static inline struct timespec
-neg_to_zero (struct timespec ts)
+ਸਥਿਰ ਸਤਰਅੰਦਰ ਬਣਤਰ timespec
+neg_ਮੰਜ਼ਿਲ_zero (ਬਣਤਰ timespec ts)
 {
-  if (0 <= ts.tv_nsec)
-    return ts;
-  struct timespec z = {0};
-  return z;
+  ਜੇ (0 <= ts.tv_nsec)
+    ਵਾਪਸ ts;
+  ਬਣਤਰ timespec z = {0};
+  ਵਾਪਸ z;
 }
 
 /* Output a single-character \ escape.  */
 
-static void
-print_esc_char (char c)
+ਸਥਿਰ ਖਾਲੀ
+print_esc_char (ਅੱਖਰ c)
 {
-  switch (c)
+  ਚੋਣ (c)
     {
-    case 'a':			/* Alert. */
+    ਹਾਲਤ 'a':			/* Alert. */
       c ='\a';
-      break;
-    case 'b':			/* Backspace. */
+      ਰੋਕੋ;
+    ਹਾਲਤ 'b':			/* Backspace. */
       c ='\b';
-      break;
-    case 'e':			/* Escape. */
+      ਰੋਕੋ;
+    ਹਾਲਤ 'e':			/* Escape. */
       c ='\x1B';
-      break;
-    case 'f':			/* Form feed. */
+      ਰੋਕੋ;
+    ਹਾਲਤ 'f':			/* Form feed. */
       c ='\f';
-      break;
-    case 'n':			/* New line. */
+      ਰੋਕੋ;
+    ਹਾਲਤ 'n':			/* New line. */
       c ='\n';
-      break;
-    case 'r':			/* Carriage return. */
+      ਰੋਕੋ;
+    ਹਾਲਤ 'r':			/* Carriage return. */
       c ='\r';
-      break;
-    case 't':			/* Horizontal tab. */
+      ਰੋਕੋ;
+    ਹਾਲਤ 't':			/* Horizontal tab. */
       c ='\t';
-      break;
-    case 'v':			/* Vertical tab. */
+      ਰੋਕੋ;
+    ਹਾਲਤ 'v':			/* Vertical tab. */
       c ='\v';
-      break;
-    case '"':
-    case '\\':
-      break;
-    default:
+      ਰੋਕੋ;
+    ਹਾਲਤ '"':
+    ਹਾਲਤ '\\':
+      ਰੋਕੋ;
+    ਮੂਲ:
       error (0, 0, _("warning: unrecognized escape '\\%c'"), c);
-      break;
+      ਰੋਕੋ;
     }
-  putchar (c);
+  ਅੱਖਰ_ਲਿਖੋ (c);
 }
 
-ATTRIBUTE_PURE
-static size_t
-format_code_offset (char const *directive)
+ATTRIBUTE_ਸ਼ੁੱਧ
+ਸਥਿਰ size_t
+format_ਕੋਡ_ਵਿੱਥ (ਅੱਖਰ ਅਚਲ *directive)
 {
   size_t len = strspn (directive + 1, printf_flags);
-  char const *fmt_char = directive + len + 1;
+  ਅੱਖਰ ਅਚਲ *fmt_char = directive + len + 1;
   fmt_char += strspn (fmt_char, digits);
-  if (*fmt_char == '.')
+  ਜੇ (*fmt_char == '.')
     fmt_char += 1 + strspn (fmt_char + 1, digits);
-  return fmt_char - directive;
+  ਵਾਪਸ fmt_char - directive;
 }
 
 /* Print the information specified by the format string, FORMAT,
    calling PRINT_FUNC for each %-directive encountered.
    Return zero upon success, nonzero upon failure.  */
 NODISCARD
-static bool
-print_it (char const *format, int fd, char const *filename,
-          bool (*print_func) (char *, size_t, char, char,
-                              int, char const *, void const *),
-          void const *data)
+ਸਥਿਰ bool
+print_it (ਅੱਖਰ ਅਚਲ *format, ਪੂਰਨ fd, ਅੱਖਰ ਅਚਲ *filename,
+          bool (*print_func) (ਅੱਖਰ *, size_t, ਅੱਖਰ, ਅੱਖਰ,
+                              ਪੂਰਨ, ਅੱਖਰ ਅਚਲ *, ਖਾਲੀ ਅਚਲ *),
+          ਖਾਲੀ ਅਚਲ *ਅੰਕੜੇ)
 {
   bool fail = false;
 
   /* Add 2 to accommodate our conversion of the stat '%s' format string
      to the longer printf '%llu' one.  */
-  enum
+  ਗਿਣਤੀ
     {
-      MAX_ADDITIONAL_BYTES =
-        (MAX (sizeof "jd",
-              MAX (sizeof "jo", MAX (sizeof "ju", sizeof "jx")))
+      MAX_ADDITIONAL_ਬਾਈਟਾਂ =
+        (MAX (ਆਕਾਰ "jd",
+              MAX (ਆਕਾਰ "jo", MAX (ਆਕਾਰ "ju", ਆਕਾਰ "jx")))
          - 1)
     };
-  size_t n_alloc = strlen (format) + MAX_ADDITIONAL_BYTES + 1;
-  char *dest = xmalloc (n_alloc);
-  for (char const *b = format; *b; b++)
+  size_t n_alloc = ਲੜੀ_ਲੰਬਾਈ (format) + MAX_ADDITIONAL_ਬਾਈਟਾਂ + 1;
+  ਅੱਖਰ *dest = xmalloc (n_alloc);
+  ਲਈ (ਅੱਖਰ ਅਚਲ *b = format; *b; b++)
     {
-      switch (*b)
+      ਚੋਣ (*b)
         {
-        case '%':
+        ਹਾਲਤ '%':
           {
-            size_t len = format_code_offset (b);
-            char fmt_char = *(b + len);
-            char mod_char = 0;
-            memcpy (dest, b, len);
+            size_t len = format_ਕੋਡ_ਵਿੱਥ (b);
+            ਅੱਖਰ fmt_char = *(b + len);
+            ਅੱਖਰ mod_char = 0;
+            ਸਮ੍ਰਿਤੀ_ਨਕਲ (dest, b, len);
             b += len;
 
-            switch (fmt_char)
+            ਚੋਣ (fmt_char)
               {
-              case '\0':
+              ਹਾਲਤ '\0':
                 --b;
                 FALLTHROUGH;
-              case '%':
-                if (1 < len)
+              ਹਾਲਤ '%':
+                ਜੇ (1 < len)
                   {
                     dest[len] = fmt_char;
                     dest[len + 1] = '\0';
                     error (EXIT_FAILURE, 0, _("%s: invalid directive"),
                            quote (dest));
                   }
-                putchar ('%');
-                break;
-              case 'H':
-              case 'L':
-              case 'Q':
+                ਅੱਖਰ_ਲਿਖੋ ('%');
+                ਰੋਕੋ;
+              ਹਾਲਤ 'H':
+              ਹਾਲਤ 'L':
+              ਹਾਲਤ 'Q':
                 mod_char = fmt_char;
                 fmt_char = *(b + 1);
-                if ((mod_char == 'Q' && fmt_char == 'n')
+                ਜੇ ((mod_char == 'Q' && fmt_char == 'n')
                     || (print_func == print_stat
                         && (mod_char == 'H' || mod_char == 'L')
                         && (fmt_char == 'd' || fmt_char == 'r')))
                   {
                     b++;
                   }
-                else
+                ਨਹੀਂਤਾਂ
                   {
                     fmt_char = mod_char;
                     mod_char = 0;
                   }
                 FALLTHROUGH;
-              default:
+              ਮੂਲ:
                 fail |= print_func (dest, len, mod_char, fmt_char,
-                                    fd, filename, data);
-                break;
+                                    fd, filename, ਅੰਕੜੇ);
+                ਰੋਕੋ;
               }
-            break;
+            ਰੋਕੋ;
           }
 
-        case '\\':
-          if ( ! interpret_backslash_escapes)
+        ਹਾਲਤ '\\':
+          ਜੇ ( ! interpret_backslash_escapes)
             {
-              putchar ('\\');
-              break;
+              ਅੱਖਰ_ਲਿਖੋ ('\\');
+              ਰੋਕੋ;
             }
           ++b;
-          if (isoct (*b))
+          ਜੇ (isoct (*b))
             {
-              int esc_value = fromoct (*b);
-              int esc_length = 1;	/* number of octal digits */
-              for (++b; esc_length < 3 && isoct (*b);
-                   ++esc_length, ++b)
+              ਪੂਰਨ esc_ਮੁੱਲ = fromoct (*b);
+              ਪੂਰਨ esc_ਲੰਮਾਈ = 1;	/* number of octal digits */
+              ਲਈ (++b; esc_ਲੰਮਾਈ < 3 && isoct (*b);
+                   ++esc_ਲੰਮਾਈ, ++b)
                 {
-                  esc_value = esc_value * 8 + fromoct (*b);
+                  esc_ਮੁੱਲ = esc_ਮੁੱਲ * 8 + fromoct (*b);
                 }
-              putchar (esc_value);
+              ਅੱਖਰ_ਲਿਖੋ (esc_ਮੁੱਲ);
               --b;
             }
-          else if (*b == 'x' && c_isxdigit (b[1]))
+          ਨਹੀਂਤਾਂ ਜੇ (*b == 'x' && c_isxdigit (b[1]))
             {
-              int esc_value = fromhex (b[1]);	/* Value of \xhh escape. */
+              ਪੂਰਨ esc_ਮੁੱਲ = fromhex (b[1]);	/* Value of \xhh escape. */
               /* A hexadecimal \xhh escape sequence must have
                  1 or 2 hex. digits.  */
               ++b;
-              if (c_isxdigit (b[1]))
+              ਜੇ (c_isxdigit (b[1]))
                 {
                   ++b;
-                  esc_value = esc_value * 16 + fromhex (*b);
+                  esc_ਮੁੱਲ = esc_ਮੁੱਲ * 16 + fromhex (*b);
                 }
-              putchar (esc_value);
+              ਅੱਖਰ_ਲਿਖੋ (esc_ਮੁੱਲ);
             }
-          else if (*b == '\0')
+          ਨਹੀਂਤਾਂ ਜੇ (*b == '\0')
             {
               error (0, 0, _("warning: backslash at end of format"));
-              putchar ('\\');
+              ਅੱਖਰ_ਲਿਖੋ ('\\');
               /* Arrange to exit the loop.  */
               --b;
             }
-          else
+          ਨਹੀਂਤਾਂ
             {
               print_esc_char (*b);
             }
-          break;
+          ਰੋਕੋ;
 
-        default:
-          putchar (*b);
-          break;
+        ਮੂਲ:
+          ਅੱਖਰ_ਲਿਖੋ (*b);
+          ਰੋਕੋ;
         }
     }
-  free (dest);
+  ਮੁਕਤ (dest);
 
   fputs (trailing_delim, stdout);
 
-  return fail;
+  ਵਾਪਸ fail;
 }
 
 /* Stat the file system and print what we find.  */
 NODISCARD
-static bool
-do_statfs (char const *filename, char const *format)
+ਸਥਿਰ bool
+do_statfs (ਅੱਖਰ ਅਚਲ *filename, ਅੱਖਰ ਅਚਲ *format)
 {
   STRUCT_STATVFS statfsbuf;
 
-  if (streq (filename, "-"))
+  ਜੇ (streq (filename, "-"))
     {
       error (0, 0, _("using %s to denote standard input does not work"
                      " in file system mode"), quoteaf (filename));
-      return false;
+      ਵਾਪਸ false;
     }
 
-  if (STATFS (filename, &statfsbuf) != 0)
+  ਜੇ (STATFS (filename, &statfsbuf) != 0)
     {
       error (0, errno, _("cannot read file system information for %s"),
              quoteaf (filename));
-      return false;
+      ਵਾਪਸ false;
     }
 
   bool fail = print_it (format, -1, filename, print_statfs, &statfsbuf);
-  return ! fail;
+  ਵਾਪਸ ! fail;
 }
 
-struct print_args {
-  struct stat *st;
-  struct timespec btime;
+ਬਣਤਰ print_ਦਲੀਲਾਂ {
+  ਬਣਤਰ stat *st;
+  ਬਣਤਰ timespec btime;
 };
 
 /* Ask statx to avoid syncing? */
-static bool dont_sync;
+ਸਥਿਰ bool dont_sync;
 
 /* Ask statx to force sync? */
-static bool force_sync;
+ਸਥਿਰ bool force_sync;
 
-#if USE_STATX
-static unsigned int
-fmt_to_mask (char fmt)
+#ਜੇ USE_STATX
+ਸਥਿਰ ਬਿਨਾਨਿਸ਼ਾਨੀ ਪੂਰਨ
+fmt_ਮੰਜ਼ਿਲ_ਨਕਾਬ (ਅੱਖਰ fmt)
 {
-  switch (fmt)
+  ਚੋਣ (fmt)
     {
-    case 'N':
-      return STATX_MODE;
-    case 'd':
-    case 'D':
-      return STATX_MODE;
-    case 'i':
-      return STATX_INO;
-    case 'a':
-    case 'A':
-      return STATX_MODE;
-    case 'f':
-      return STATX_MODE|STATX_TYPE;
-    case 'F':
-      return STATX_TYPE;
-    case 'h':
-      return STATX_NLINK;
-    case 'u':
-    case 'U':
-      return STATX_UID;
-    case 'g':
-    case 'G':
-      return STATX_GID;
-    case 'm':
-      return STATX_MODE|STATX_INO;
-    case 's':
-      return STATX_SIZE;
-    case 't':
-    case 'T':
-      return STATX_MODE;
-    case 'b':
-      return STATX_BLOCKS;
-    case 'w':
-    case 'W':
-      return STATX_BTIME;
-    case 'x':
-    case 'X':
-      return STATX_ATIME;
-    case 'y':
-    case 'Y':
-      return STATX_MTIME;
-    case 'z':
-    case 'Z':
-      return STATX_CTIME;
+    ਹਾਲਤ 'N':
+      ਵਾਪਸ STATX_ਬਹੁਲਕ;
+    ਹਾਲਤ 'd':
+    ਹਾਲਤ 'D':
+      ਵਾਪਸ STATX_ਬਹੁਲਕ;
+    ਹਾਲਤ 'i':
+      ਵਾਪਸ STATX_INO;
+    ਹਾਲਤ 'a':
+    ਹਾਲਤ 'A':
+      ਵਾਪਸ STATX_ਬਹੁਲਕ;
+    ਹਾਲਤ 'f':
+      ਵਾਪਸ STATX_ਬਹੁਲਕ|STATX_TYPE;
+    ਹਾਲਤ 'F':
+      ਵਾਪਸ STATX_TYPE;
+    ਹਾਲਤ 'h':
+      ਵਾਪਸ STATX_NLINK;
+    ਹਾਲਤ 'u':
+    ਹਾਲਤ 'U':
+      ਵਾਪਸ STATX_UID;
+    ਹਾਲਤ 'g':
+    ਹਾਲਤ 'G':
+      ਵਾਪਸ STATX_GID;
+    ਹਾਲਤ 'm':
+      ਵਾਪਸ STATX_ਬਹੁਲਕ|STATX_INO;
+    ਹਾਲਤ 's':
+      ਵਾਪਸ STATX_ਮਾਪ;
+    ਹਾਲਤ 't':
+    ਹਾਲਤ 'T':
+      ਵਾਪਸ STATX_ਬਹੁਲਕ;
+    ਹਾਲਤ 'b':
+      ਵਾਪਸ STATX_ਖੰਡਾਂ;
+    ਹਾਲਤ 'w':
+    ਹਾਲਤ 'W':
+      ਵਾਪਸ STATX_BTIME;
+    ਹਾਲਤ 'x':
+    ਹਾਲਤ 'X':
+      ਵਾਪਸ STATX_ATIME;
+    ਹਾਲਤ 'y':
+    ਹਾਲਤ 'Y':
+      ਵਾਪਸ STATX_MTIME;
+    ਹਾਲਤ 'z':
+    ਹਾਲਤ 'Z':
+      ਵਾਪਸ STATX_CTIME;
     }
-  return 0;
+  ਵਾਪਸ 0;
 }
 
-ATTRIBUTE_PURE
-static unsigned int
-format_to_mask (char const *format)
+ATTRIBUTE_ਸ਼ੁੱਧ
+ਸਥਿਰ ਬਿਨਾਨਿਸ਼ਾਨੀ ਪੂਰਨ
+format_ਮੰਜ਼ਿਲ_ਨਕਾਬ (ਅੱਖਰ ਅਚਲ *format)
 {
-  unsigned int mask = 0;
+  ਬਿਨਾਨਿਸ਼ਾਨੀ ਪੂਰਨ ਨਕਾਬ = 0;
 
-  for (char const *b = format; *b; b++)
+  ਲਈ (ਅੱਖਰ ਅਚਲ *b = format; *b; b++)
     {
-      if (*b != '%')
-        continue;
+      ਜੇ (*b != '%')
+        ਜਾਰੀ;
 
-      b += format_code_offset (b);
-      if (*b == '\0')
-        break;
-      mask |= fmt_to_mask (*b);
+      b += format_ਕੋਡ_ਵਿੱਥ (b);
+      ਜੇ (*b == '\0')
+        ਰੋਕੋ;
+      ਨਕਾਬ |= fmt_ਮੰਜ਼ਿਲ_ਨਕਾਬ (*b);
     }
-  return mask;
+  ਵਾਪਸ ਨਕਾਬ;
 }
 
 /* statx the file and print what we find */
 NODISCARD
-static bool
-do_stat (char const *filename, char const *format, char const *format2)
+ਸਥਿਰ bool
+do_stat (ਅੱਖਰ ਅਚਲ *filename, ਅੱਖਰ ਅਚਲ *format, ਅੱਖਰ ਅਚਲ *format2)
 {
-  int fd = streq (filename, "-") ? 0 : AT_FDCWD;
-  int flags = 0;
-  struct stat st;
-  struct statx stx = {0};
-  char const *pathname = filename;
-  struct print_args pa;
+  ਪੂਰਨ fd = streq (filename, "-") ? 0 : AT_FDCWD;
+  ਪੂਰਨ flags = 0;
+  ਬਣਤਰ stat st;
+  ਬਣਤਰ statx stx = {0};
+  ਅੱਖਰ ਅਚਲ *pathname = filename;
+  ਬਣਤਰ print_ਦਲੀਲਾਂ pa;
   pa.st = &st;
-  pa.btime = (struct timespec) {.tv_sec = -1, .tv_nsec = -1};
+  pa.btime = (ਬਣਤਰ timespec) {.tv_sec = -1, .tv_nsec = -1};
 
-  if (AT_FDCWD != fd)
+  ਜੇ (AT_FDCWD != fd)
     {
       pathname = "";
-      flags = AT_EMPTY_PATH;
+      flags = AT_ਖਾਲੀ_ਥਾਵਾਂ_ਰਸਤਾ;
     }
-  else if (!follow_links)
+  ਨਹੀਂਤਾਂ ਜੇ (!follow_links)
     {
       flags = AT_SYMLINK_NOFOLLOW;
     }
 
-  if (dont_sync)
+  ਜੇ (dont_sync)
     flags |= AT_STATX_DONT_SYNC;
-  else if (force_sync)
+  ਨਹੀਂਤਾਂ ਜੇ (force_sync)
     flags |= AT_STATX_FORCE_SYNC;
 
-  if (! force_sync)
+  ਜੇ (! force_sync)
     flags |= AT_NO_AUTOMOUNT;
 
-  fd = statx (fd, pathname, flags, format_to_mask (format), &stx);
-  if (fd < 0)
+  fd = statx (fd, pathname, flags, format_ਮੰਜ਼ਿਲ_ਨਕਾਬ (format), &stx);
+  ਜੇ (fd < 0)
     {
-      if (flags & AT_EMPTY_PATH)
+      ਜੇ (flags & AT_ਖਾਲੀ_ਥਾਵਾਂ_ਰਸਤਾ)
         error (0, errno, _("cannot stat standard input"));
-      else
+      ਨਹੀਂਤਾਂ
         error (0, errno, _("cannot statx %s"), quoteaf (filename));
-      return false;
+      ਵਾਪਸ false;
     }
 
-  if (S_ISBLK (stx.stx_mode) || S_ISCHR (stx.stx_mode))
+  ਜੇ (S_ISBLK (stx.stx_ਬਹੁਲਕ) || S_ISCHR (stx.stx_ਬਹੁਲਕ))
     format = format2;
 
-  statx_to_stat (&stx, &st);
-  if (stx.stx_mask & STATX_BTIME)
-    pa.btime = statx_timestamp_to_timespec (stx.stx_btime);
+  statx_ਮੰਜ਼ਿਲ_stat (&stx, &st);
+  ਜੇ (stx.stx_ਨਕਾਬ & STATX_BTIME)
+    pa.btime = statx_timestamp_ਮੰਜ਼ਿਲ_timespec (stx.stx_btime);
 
   bool fail = print_it (format, fd, filename, print_stat, &pa);
-  return ! fail;
+  ਵਾਪਸ ! fail;
 }
 
-#else /* USE_STATX */
+#ਨਹੀਂਤਾਂ /* USE_STATX */
 
-static struct timespec
-get_birthtime (int fd, char const *filename, struct stat const *st)
+ਸਥਿਰ ਬਣਤਰ timespec
+get_birthtime (ਪੂਰਨ fd, ਅੱਖਰ ਅਚਲ *filename, ਬਣਤਰ stat ਅਚਲ *st)
 {
-  struct timespec ts = get_stat_birthtime (st);
+  ਬਣਤਰ timespec ts = get_stat_birthtime (st);
 
-# if HAVE_GETATTRAT
-  if (ts.tv_nsec < 0)
+# ਜੇ HAVE_GETATTRAT
+  ਜੇ (ts.tv_nsec < 0)
     {
       nvlist_t *response;
-      if ((fd < 0
+      ਜੇ ((fd < 0
            ? getattrat (AT_FDCWD, XATTR_VIEW_READWRITE, filename, &response)
            : fgetattr (fd, XATTR_VIEW_READWRITE, &response))
           == 0)
         {
           uint64_t *val;
           uint_t n;
-          if (nvlist_lookup_uint64_array (response, A_CRTIME, &val, &n) == 0
+          ਜੇ (nvlist_lookup_uint64_array (response, A_CRTIME, &val, &n) == 0
               && 2 <= n
-              && val[0] <= TYPE_MAXIMUM (time_t)
+              && val[0] <= TYPE_ਵੱਧ_ਤੋਂ_ਵੱਧ (time_t)
               && val[1] < 1000000000 * 2 /* for leap seconds */)
             {
               ts.tv_sec = val[0];
@@ -1444,232 +1444,232 @@ get_birthtime (int fd, char const *filename, struct stat const *st)
     }
 # endif
 
-  return ts;
+  ਵਾਪਸ ts;
 }
 
 
 /* stat the file and print what we find */
 NODISCARD
-static bool
-do_stat (char const *filename, char const *format,
-         char const *format2)
+ਸਥਿਰ bool
+do_stat (ਅੱਖਰ ਅਚਲ *filename, ਅੱਖਰ ਅਚਲ *format,
+         ਅੱਖਰ ਅਚਲ *format2)
 {
-  int fd = streq (filename, "-") ? 0 : -1;
-  struct stat statbuf;
-  struct print_args pa;
+  ਪੂਰਨ fd = streq (filename, "-") ? 0 : -1;
+  ਬਣਤਰ stat statbuf;
+  ਬਣਤਰ print_ਦਲੀਲਾਂ pa;
   pa.st = &statbuf;
-  pa.btime = (struct timespec) {.tv_sec = -1, .tv_nsec = -1};
+  pa.btime = (ਬਣਤਰ timespec) {.tv_sec = -1, .tv_nsec = -1};
 
-  if (0 <= fd)
+  ਜੇ (0 <= fd)
     {
-      if (fstat (fd, &statbuf) != 0)
+      ਜੇ (fstat (fd, &statbuf) != 0)
         {
           error (0, errno, _("cannot stat standard input"));
-          return false;
+          ਵਾਪਸ false;
         }
     }
   /* We can't use the shorter
      (follow_links?stat:lstat) (filename, &statbug)
      since stat might be a function-like macro.  */
-  else if ((follow_links
+  ਨਹੀਂਤਾਂ ਜੇ ((follow_links
             ? stat (filename, &statbuf)
             : lstat (filename, &statbuf)) != 0)
     {
       error (0, errno, _("cannot stat %s"), quoteaf (filename));
-      return false;
+      ਵਾਪਸ false;
     }
 
-  if (S_ISBLK (statbuf.st_mode) || S_ISCHR (statbuf.st_mode))
+  ਜੇ (S_ISBLK (statbuf.st_ਬਹੁਲਕ) || S_ISCHR (statbuf.st_ਬਹੁਲਕ))
     format = format2;
 
   bool fail = print_it (format, fd, filename, print_stat, &pa);
-  return ! fail;
+  ਵਾਪਸ ! fail;
 }
-#endif /* USE_STATX */
+#ਜੇ_ਅੰਤ /* USE_STATX */
 
 /* POSIX requires 'ls' to print file sizes without a sign, even
    when negative.  Be consistent with that.  */
 
-static uintmax_t
-unsigned_file_size (off_t size)
+ਸਥਿਰ uintmax_t
+unsigned_file_ਮਾਪ (off_t ਮਾਪ)
 {
-  return size + (size < 0) * ((uintmax_t) OFF_T_MAX - OFF_T_MIN + 1);
+  ਵਾਪਸ ਮਾਪ + (ਮਾਪ < 0) * ((uintmax_t) OFF_T_MAX - OFF_T_MIN + 1);
 }
 
 /* Print stat info.  Return zero upon success, nonzero upon failure.  */
-static bool
-print_stat (char *pformat, size_t prefix_len, char mod, char m,
-            MAYBE_UNUSED int fd, char const *filename, void const *data)
+ਸਥਿਰ bool
+print_stat (ਅੱਖਰ *pformat, size_t ਅਗੇਤਰ_len, ਅੱਖਰ mod, ਅੱਖਰ m,
+            MAYBE_ਅਣਵਰਤਿਆ ਪੂਰਨ fd, ਅੱਖਰ ਅਚਲ *filename, ਖਾਲੀ ਅਚਲ *ਅੰਕੜੇ)
 {
-  struct print_args *parg = (struct print_args *) data;
-  struct stat *statbuf = parg->st;
-  struct timespec btime = parg->btime;
-  struct passwd *pw_ent;
-  struct group *gw_ent;
+  ਬਣਤਰ print_ਦਲੀਲਾਂ *parg = (ਬਣਤਰ print_ਦਲੀਲਾਂ *) ਅੰਕੜੇ;
+  ਬਣਤਰ stat *statbuf = parg->st;
+  ਬਣਤਰ timespec btime = parg->btime;
+  ਬਣਤਰ passwd *pw_ent;
+  ਬਣਤਰ ਸਮੂਹ *gw_ent;
   bool fail = false;
 
-  switch (m)
+  ਚੋਣ (m)
     {
-    case 'n':
-      if (mod == 'Q')
+    ਹਾਲਤ 'n':
+      ਜੇ (mod == 'Q')
         {
           initialize_quoting_style ();
           filename = quoteN (filename);
         }
-      out_string (pformat, prefix_len, filename);
-      break;
-    case 'N':
+      ਬਾਹਰਲਾ_string (pformat, ਅਗੇਤਰ_len, filename);
+      ਰੋਕੋ;
+    ਹਾਲਤ 'N':
       initialize_quoting_style ();
-      out_string (pformat, prefix_len, quoteN (filename));
-      if (S_ISLNK (statbuf->st_mode))
+      ਬਾਹਰਲਾ_string (pformat, ਅਗੇਤਰ_len, quoteN (filename));
+      ਜੇ (S_ISLNK (statbuf->st_ਬਹੁਲਕ))
         {
-          char *linkname = areadlink_with_size (filename, statbuf->st_size);
-          if (linkname == NULL)
+          ਅੱਖਰ *linkname = areadlink_with_ਮਾਪ (filename, statbuf->st_ਮਾਪ);
+          ਜੇ (linkname == ਨਿਰਾ)
             {
               error (0, errno, _("cannot read symbolic link %s"),
                      quoteaf (filename));
-              return true;
+              ਵਾਪਸ true;
             }
-          printf (" -> ");
-          out_string (pformat, prefix_len, quoteN (linkname));
-          free (linkname);
+          ਲਿਖੋ (" -> ");
+          ਬਾਹਰਲਾ_string (pformat, ਅਗੇਤਰ_len, quoteN (linkname));
+          ਮੁਕਤ (linkname);
         }
-      break;
-    case 'd':
-      if (mod == 'H')
-        out_uint (pformat, prefix_len, major (statbuf->st_dev));
-      else if (mod == 'L')
-        out_uint (pformat, prefix_len, minor (statbuf->st_dev));
-      else
-        out_uint (pformat, prefix_len, statbuf->st_dev);
-      break;
-    case 'D':
-      out_uint_x (pformat, prefix_len, statbuf->st_dev);
-      break;
-    case 'i':
-      out_uint (pformat, prefix_len, statbuf->st_ino);
-      break;
-    case 'a':
-      out_uint_o (pformat, prefix_len, statbuf->st_mode & CHMOD_MODE_BITS);
-      break;
-    case 'A':
-      out_string (pformat, prefix_len, human_access (statbuf));
-      break;
-    case 'f':
-      out_uint_x (pformat, prefix_len, statbuf->st_mode);
-      break;
-    case 'F':
-      out_string (pformat, prefix_len, file_type (statbuf));
-      break;
-    case 'h':
-      out_uint (pformat, prefix_len, statbuf->st_nlink);
-      break;
-    case 'u':
-      out_uint (pformat, prefix_len, statbuf->st_uid);
-      break;
-    case 'U':
+      ਰੋਕੋ;
+    ਹਾਲਤ 'd':
+      ਜੇ (mod == 'H')
+        ਬਾਹਰਲਾ_uint (pformat, ਅਗੇਤਰ_len, major (statbuf->st_dev));
+      ਨਹੀਂਤਾਂ ਜੇ (mod == 'L')
+        ਬਾਹਰਲਾ_uint (pformat, ਅਗੇਤਰ_len, minor (statbuf->st_dev));
+      ਨਹੀਂਤਾਂ
+        ਬਾਹਰਲਾ_uint (pformat, ਅਗੇਤਰ_len, statbuf->st_dev);
+      ਰੋਕੋ;
+    ਹਾਲਤ 'D':
+      ਬਾਹਰਲਾ_uint_x (pformat, ਅਗੇਤਰ_len, statbuf->st_dev);
+      ਰੋਕੋ;
+    ਹਾਲਤ 'i':
+      ਬਾਹਰਲਾ_uint (pformat, ਅਗੇਤਰ_len, statbuf->st_ino);
+      ਰੋਕੋ;
+    ਹਾਲਤ 'a':
+      ਬਾਹਰਲਾ_uint_o (pformat, ਅਗੇਤਰ_len, statbuf->st_ਬਹੁਲਕ & CHMOD_ਬਹੁਲਕ_ਬਿੱਟ);
+      ਰੋਕੋ;
+    ਹਾਲਤ 'A':
+      ਬਾਹਰਲਾ_string (pformat, ਅਗੇਤਰ_len, human_access (statbuf));
+      ਰੋਕੋ;
+    ਹਾਲਤ 'f':
+      ਬਾਹਰਲਾ_uint_x (pformat, ਅਗੇਤਰ_len, statbuf->st_ਬਹੁਲਕ);
+      ਰੋਕੋ;
+    ਹਾਲਤ 'F':
+      ਬਾਹਰਲਾ_string (pformat, ਅਗੇਤਰ_len, file_type (statbuf));
+      ਰੋਕੋ;
+    ਹਾਲਤ 'h':
+      ਬਾਹਰਲਾ_uint (pformat, ਅਗੇਤਰ_len, statbuf->st_nlink);
+      ਰੋਕੋ;
+    ਹਾਲਤ 'u':
+      ਬਾਹਰਲਾ_uint (pformat, ਅਗੇਤਰ_len, statbuf->st_uid);
+      ਰੋਕੋ;
+    ਹਾਲਤ 'U':
       pw_ent = getpwuid (statbuf->st_uid);
-      out_string (pformat, prefix_len,
+      ਬਾਹਰਲਾ_string (pformat, ਅਗੇਤਰ_len,
                   pw_ent ? pw_ent->pw_name : "UNKNOWN");
-      break;
-    case 'g':
-      out_uint (pformat, prefix_len, statbuf->st_gid);
-      break;
-    case 'G':
+      ਰੋਕੋ;
+    ਹਾਲਤ 'g':
+      ਬਾਹਰਲਾ_uint (pformat, ਅਗੇਤਰ_len, statbuf->st_gid);
+      ਰੋਕੋ;
+    ਹਾਲਤ 'G':
       gw_ent = getgrgid (statbuf->st_gid);
-      out_string (pformat, prefix_len,
+      ਬਾਹਰਲਾ_string (pformat, ਅਗੇਤਰ_len,
                   gw_ent ? gw_ent->gr_name : "UNKNOWN");
-      break;
-    case 'm':
-      fail |= out_mount_point (filename, pformat, prefix_len, statbuf);
-      break;
-    case 's':
-      out_uint (pformat, prefix_len, unsigned_file_size (statbuf->st_size));
-      break;
-    case 'r':
-      if (mod == 'H')
-        out_uint (pformat, prefix_len, major (statbuf->st_rdev));
-      else if (mod == 'L')
-        out_uint (pformat, prefix_len, minor (statbuf->st_rdev));
-      else
-        out_uint (pformat, prefix_len, statbuf->st_rdev);
-      break;
-    case 'R':
-      out_uint_x (pformat, prefix_len, statbuf->st_rdev);
-      break;
-    case 't':
-      out_uint_x (pformat, prefix_len, major (statbuf->st_rdev));
-      break;
-    case 'T':
-      out_uint_x (pformat, prefix_len, minor (statbuf->st_rdev));
-      break;
-    case 'B':
-      out_uint (pformat, prefix_len, ST_NBLOCKSIZE);
-      break;
-    case 'b':
-      out_uint (pformat, prefix_len, STP_NBLOCKS (statbuf));
-      break;
-    case 'o':
-      out_uint (pformat, prefix_len, STP_BLKSIZE (statbuf));
-      break;
-    case 'w':
+      ਰੋਕੋ;
+    ਹਾਲਤ 'm':
+      fail |= ਬਾਹਰਲਾ_mount_ਬਿੰਦੂ (filename, pformat, ਅਗੇਤਰ_len, statbuf);
+      ਰੋਕੋ;
+    ਹਾਲਤ 's':
+      ਬਾਹਰਲਾ_uint (pformat, ਅਗੇਤਰ_len, unsigned_file_ਮਾਪ (statbuf->st_ਮਾਪ));
+      ਰੋਕੋ;
+    ਹਾਲਤ 'r':
+      ਜੇ (mod == 'H')
+        ਬਾਹਰਲਾ_uint (pformat, ਅਗੇਤਰ_len, major (statbuf->st_rdev));
+      ਨਹੀਂਤਾਂ ਜੇ (mod == 'L')
+        ਬਾਹਰਲਾ_uint (pformat, ਅਗੇਤਰ_len, minor (statbuf->st_rdev));
+      ਨਹੀਂਤਾਂ
+        ਬਾਹਰਲਾ_uint (pformat, ਅਗੇਤਰ_len, statbuf->st_rdev);
+      ਰੋਕੋ;
+    ਹਾਲਤ 'R':
+      ਬਾਹਰਲਾ_uint_x (pformat, ਅਗੇਤਰ_len, statbuf->st_rdev);
+      ਰੋਕੋ;
+    ਹਾਲਤ 't':
+      ਬਾਹਰਲਾ_uint_x (pformat, ਅਗੇਤਰ_len, major (statbuf->st_rdev));
+      ਰੋਕੋ;
+    ਹਾਲਤ 'T':
+      ਬਾਹਰਲਾ_uint_x (pformat, ਅਗੇਤਰ_len, minor (statbuf->st_rdev));
+      ਰੋਕੋ;
+    ਹਾਲਤ 'B':
+      ਬਾਹਰਲਾ_uint (pformat, ਅਗੇਤਰ_len, ST_NBLOCKSIZE);
+      ਰੋਕੋ;
+    ਹਾਲਤ 'b':
+      ਬਾਹਰਲਾ_uint (pformat, ਅਗੇਤਰ_len, STP_NBLOCKS (statbuf));
+      ਰੋਕੋ;
+    ਹਾਲਤ 'o':
+      ਬਾਹਰਲਾ_uint (pformat, ਅਗੇਤਰ_len, STP_BLKSIZE (statbuf));
+      ਰੋਕੋ;
+    ਹਾਲਤ 'w':
       {
-#if ! USE_STATX
+#ਜੇ ! USE_STATX
         btime = get_birthtime (fd, filename, statbuf);
-#endif
-        if (btime.tv_nsec < 0)
-          out_string (pformat, prefix_len, "-");
-        else
-          out_string (pformat, prefix_len, human_time (btime));
+#ਜੇ_ਅੰਤ
+        ਜੇ (btime.tv_nsec < 0)
+          ਬਾਹਰਲਾ_string (pformat, ਅਗੇਤਰ_len, "-");
+        ਨਹੀਂਤਾਂ
+          ਬਾਹਰਲਾ_string (pformat, ਅਗੇਤਰ_len, human_ਸਮਾਂ (btime));
       }
-      break;
-    case 'W':
+      ਰੋਕੋ;
+    ਹਾਲਤ 'W':
       {
-#if ! USE_STATX
+#ਜੇ ! USE_STATX
         btime = get_birthtime (fd, filename, statbuf);
-#endif
-        out_epoch_sec (pformat, prefix_len, neg_to_zero (btime));
+#ਜੇ_ਅੰਤ
+        ਬਾਹਰਲਾ_epoch_sec (pformat, ਅਗੇਤਰ_len, neg_ਮੰਜ਼ਿਲ_zero (btime));
       }
-      break;
-    case 'x':
-      out_string (pformat, prefix_len, human_time (get_stat_atime (statbuf)));
-      break;
-    case 'X':
-      out_epoch_sec (pformat, prefix_len, get_stat_atime (statbuf));
-      break;
-    case 'y':
-      out_string (pformat, prefix_len, human_time (get_stat_mtime (statbuf)));
-      break;
-    case 'Y':
-      out_epoch_sec (pformat, prefix_len, get_stat_mtime (statbuf));
-      break;
-    case 'z':
-      out_string (pformat, prefix_len, human_time (get_stat_ctime (statbuf)));
-      break;
-    case 'Z':
-      out_epoch_sec (pformat, prefix_len, get_stat_ctime (statbuf));
-      break;
-    case 'C':
-      fail |= out_file_context (pformat, prefix_len, filename);
-      break;
-    default:
+      ਰੋਕੋ;
+    ਹਾਲਤ 'x':
+      ਬਾਹਰਲਾ_string (pformat, ਅਗੇਤਰ_len, human_ਸਮਾਂ (get_stat_atime (statbuf)));
+      ਰੋਕੋ;
+    ਹਾਲਤ 'X':
+      ਬਾਹਰਲਾ_epoch_sec (pformat, ਅਗੇਤਰ_len, get_stat_atime (statbuf));
+      ਰੋਕੋ;
+    ਹਾਲਤ 'y':
+      ਬਾਹਰਲਾ_string (pformat, ਅਗੇਤਰ_len, human_ਸਮਾਂ (get_stat_mtime (statbuf)));
+      ਰੋਕੋ;
+    ਹਾਲਤ 'Y':
+      ਬਾਹਰਲਾ_epoch_sec (pformat, ਅਗੇਤਰ_len, get_stat_mtime (statbuf));
+      ਰੋਕੋ;
+    ਹਾਲਤ 'z':
+      ਬਾਹਰਲਾ_string (pformat, ਅਗੇਤਰ_len, human_ਸਮਾਂ (get_stat_ctime (statbuf)));
+      ਰੋਕੋ;
+    ਹਾਲਤ 'Z':
+      ਬਾਹਰਲਾ_epoch_sec (pformat, ਅਗੇਤਰ_len, get_stat_ctime (statbuf));
+      ਰੋਕੋ;
+    ਹਾਲਤ 'C':
+      fail |= ਬਾਹਰਲਾ_file_context (pformat, ਅਗੇਤਰ_len, filename);
+      ਰੋਕੋ;
+    ਮੂਲ:
       fputc ('?', stdout);
-      break;
+      ਰੋਕੋ;
     }
-  return fail;
+  ਵਾਪਸ fail;
 }
 
 /* Return an allocated format string in static storage that
    corresponds to whether FS and TERSE options were declared.  */
-static char *
+ਸਥਿਰ ਅੱਖਰ *
 default_format (bool fs, bool terse, bool device)
 {
-  char *format;
-  if (fs)
+  ਅੱਖਰ *format;
+  ਜੇ (fs)
     {
-      if (terse)
+      ਜੇ (terse)
         format = xstrdup (fmt_terse_fs);
-      else
+      ਨਹੀਂਤਾਂ
         {
           /* TRANSLATORS: This string uses format specifiers from
              'stat --help' with --file-system, and NOT from printf.  */
@@ -1680,27 +1680,27 @@ default_format (bool fs, bool terse, bool device)
                               "Inodes: Total: %-10c Free: %d\n"));
         }
     }
-  else /* ! fs */
+  ਨਹੀਂਤਾਂ /* ! fs */
     {
-      if (terse)
+      ਜੇ (terse)
         {
-          if (0 < is_selinux_enabled ())
+          ਜੇ (0 < is_selinux_enabled ())
             format = xstrdup (fmt_terse_selinux);
-          else
+          ਨਹੀਂਤਾਂ
             format = xstrdup (fmt_terse_regular);
         }
-      else
+      ਨਹੀਂਤਾਂ
         {
-          char *temp;
+          ਅੱਖਰ *ਆਰਜ਼ੀ;
           /* TRANSLATORS: This string uses format specifiers from
              'stat --help' without --file-system, and NOT from printf.  */
           format = xstrdup (_("\
   File: %N\n\
-  Size: %-10s\tBlocks: %-10b IO Block: %-6o %F\n\
+  ਮਾਪ_3: %-10s\t_ਖੰਡਾਂ: %-10b IO ਖੰਡ_3: %-6o %F\n\
 "));
 
-          temp = format;
-          if (device)
+          ਆਰਜ਼ੀ = format;
+          ਜੇ (device)
             {
               /* TRANSLATORS: This string uses format specifiers from
                  'stat --help' without --file-system, and NOT from printf.  */
@@ -1708,7 +1708,7 @@ default_format (bool fs, bool terse, bool device)
 " "Device: %Hd,%Ld\tInode: %-10i  Links: %-5h Device type: %Hr,%Lr\n\
 "));
             }
-          else
+          ਨਹੀਂਤਾਂ
             {
               /* TRANSLATORS: This string uses format specifiers from
                  'stat --help' without --file-system, and NOT from printf.  */
@@ -1716,26 +1716,26 @@ default_format (bool fs, bool terse, bool device)
 " "Device: %Hd,%Ld\tInode: %-10i  Links: %h\n\
 "));
             }
-          free (temp);
+          ਮੁਕਤ (ਆਰਜ਼ੀ);
 
-          temp = format;
+          ਆਰਜ਼ੀ = format;
           /* TRANSLATORS: This string uses format specifiers from
              'stat --help' without --file-system, and NOT from printf.  */
           format = xasprintf ("%s%s", format, _("\
 " "Access: (%04a/%10.10A)  Uid: (%5u/%8U)   Gid: (%5g/%8G)\n\
 "));
-          free (temp);
+          ਮੁਕਤ (ਆਰਜ਼ੀ);
 
-          if (0 < is_selinux_enabled ())
+          ਜੇ (0 < is_selinux_enabled ())
             {
-              temp = format;
+              ਆਰਜ਼ੀ = format;
               /* TRANSLATORS: This string uses format specifiers from
                  'stat --help' without --file-system, and NOT from printf.  */
               format = xasprintf ("%s%s", format, _("Context: %C\n"));
-              free (temp);
+              ਮੁਕਤ (ਆਰਜ਼ੀ);
             }
 
-          temp = format;
+          ਆਰਜ਼ੀ = format;
           format = xasprintf ("%s%s", format,
                               /* TRANSLATORS: This string uses format specifiers
                                  from 'stat --help' without --file-system, and
@@ -1744,22 +1744,22 @@ default_format (bool fs, bool terse, bool device)
                                 "Modify: %y\n"
                                 "Change: %z\n"
                                 " Birth: %w\n"));
-          free (temp);
+          ਮੁਕਤ (ਆਰਜ਼ੀ);
         }
     }
-  return format;
+  ਵਾਪਸ format;
 }
 
-void
-usage (int status)
+ਖਾਲੀ
+usage (ਪੂਰਨ ਸਥਿਤੀ)
 {
-  if (status != EXIT_SUCCESS)
+  ਜੇ (ਸਥਿਤੀ != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ਨਹੀਂਤਾਂ
     {
-      printf (_("Usage: %s [OPTION]... FILE...\n"), program_name);
+      ਲਿਖੋ (_("Usage: %s [OPTION]... FILE...\n"), ਪ੍ਰੋਗਰਾਮ_name);
       fputs (_("\
-Display file or file system status.\n\
+Display file or file system ਸਥਿਤੀ.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
@@ -1770,222 +1770,222 @@ Display file or file system status.\n\
 "));
       oputs (_("\
   -f, --file-system\n\
-         display file system status instead of file status\n\
+         display file system ਸਥਿਤੀ instead ਦਾ file ਸਥਿਤੀ\n\
 "));
       oputs (_("\
-      --cached=MODE\n\
-         specify how to use cached attributes;\n\
-         useful on remote file systems. See MODE below\n\
+      --cached=ਬਹੁਲਕ\n\
+         specify how ਮੰਜ਼ਿਲ use cached ਗੁਣ;\n\
+         useful on remote file systems. See ਬਹੁਲਕ ਹੇਠਾਂ\n\
 "));
       oputs (_("\
   -c, --format=FORMAT\n\
-         use the specified FORMAT instead of the default;\n\
-         output a newline after each use of FORMAT\n\
+         use the specified FORMAT instead ਦਾ the ਮੂਲ;\n\
+         output a newline after each use ਦਾ FORMAT\n\
 "));
       oputs (_("\
-      --printf=FORMAT\n\
+      --ਲਿਖੋ=FORMAT\n\
          like --format, but interpret backslash escapes,\n\
-         and do not output a mandatory trailing newline;\n\
-         if you want a newline, include \\n in FORMAT\n\
+         and ਕਰੋ not output a mandatory trailing newline;\n\
+         ਜੇ you want a newline, include \\n ਵਿੱਚ FORMAT\n\
 "));
       oputs (_("\
   -t, --terse\n\
-         print the information in terse form\n\
+         print the information ਵਿੱਚ terse form\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (ਸੰਸਕਰਣ_OPTION_DESCRIPTION);
 
       fputs (_("\n\
-The MODE argument of --cached can be: always, never, or default.\n\
-'always' will use cached attributes if available, while\n\
-'never' will try to synchronize with the latest attributes, and\n\
-'default' will leave it up to the underlying file system.\n\
+The ਬਹੁਲਕ ਦਲੀਲ ਦਾ --cached can be: always, never, or ਮੂਲ.\n\
+'always' will use cached ਗੁਣ ਜੇ ਉਪਲਬਧ, ਜਦੋਂ\n\
+'never' will try ਮੰਜ਼ਿਲ synchronize with the latest ਗੁਣ, and\n\
+'default' will leave it ਉੱਪਰ ਮੰਜ਼ਿਲ the underlying file system.\n\
 "), stdout);
 
       fputs (_("\n\
-The valid format sequences for files (without --file-system):\n\
+The valid format sequences ਲਈ files (without --file-system):\n\
 \n\
-  %a   permission bits in octal (see '#' and '0' printf flags)\n\
-  %A   permission bits and file type in human readable form\n\
-  %b   number of blocks allocated (see %B)\n\
-  %B   the size in bytes of each block reported by %b\n\
+  %a   permission ਬਿੱਟ_2 ਵਿੱਚ octal (see '#' and '0' ਲਿਖੋ flags)\n\
+  %A   permission ਬਿੱਟ_2 and file type ਵਿੱਚ human readable form\n\
+  %b   ਸੰਖਿਆ ਦਾ ਖੰਡਾਂ allocated (see %B)\n\
+  %B   the ਮਾਪ ਵਿੱਚ ਬਾਈਟਾਂ ਦਾ each ਖੰਡ reported by %b\n\
   %C   SELinux security context string\n\
 "), stdout);
       fputs (_("\
-  %d   device number in decimal (st_dev)\n\
-  %D   device number in hex (st_dev)\n\
-  %Hd  major device number in decimal\n\
-  %Ld  minor device number in decimal\n\
-  %f   raw mode in hex\n\
+  %d   device ਸੰਖਿਆ ਵਿੱਚ decimal (st_dev)\n\
+  %D   device ਸੰਖਿਆ ਵਿੱਚ hex (st_dev)\n\
+  %Hd  major device ਸੰਖਿਆ ਵਿੱਚ decimal\n\
+  %Ld  minor device ਸੰਖਿਆ ਵਿੱਚ decimal\n\
+  %f   raw ਬਹੁਲਕ_2 ਵਿੱਚ hex\n\
   %F   file type\n\
-  %g   group ID of owner\n\
-  %G   group name of owner\n\
+  %g   ਸਮੂਹ ID ਦਾ owner\n\
+  %G   ਸਮੂਹ name ਦਾ owner\n\
 "), stdout);
       fputs (_("\
-  %h   number of hard links\n\
-  %i   inode number\n\
-  %m   mount point\n\
+  %h   ਸੰਖਿਆ ਦਾ hard links\n\
+  %i   inode ਸੰਖਿਆ\n\
+  %m   mount ਬਿੰਦੂ\n\
   %n   file name\n\
   %Qn  quoted file name\n\
-  %N   quoted file name with dereference if symbolic link\n\
-  %o   optimal I/O transfer size hint\n\
-  %s   total size, in bytes\n\
-  %r   device type in decimal (st_rdev)\n\
-  %R   device type in hex (st_rdev)\n\
-  %Hr  major device type in decimal, for character/block device special files\n\
-  %Lr  minor device type in decimal, for character/block device special files\n\
-  %t   major device type in hex, for character/block device special files\n\
-  %T   minor device type in hex, for character/block device special files\n\
+  %N   quoted file name with dereference ਜੇ symbolic link\n\
+  %o   optimal I/O transfer ਮਾਪ hint\n\
+  %s   ਕੁੱਲ ਮਾਪ, ਵਿੱਚ ਬਾਈਟਾਂ\n\
+  %r   device type ਵਿੱਚ decimal (st_rdev)\n\
+  %R   device type ਵਿੱਚ hex (st_rdev)\n\
+  %Hr  major device type ਵਿੱਚ decimal, ਲਈ character/ਖੰਡ device special files\n\
+  %Lr  minor device type ਵਿੱਚ decimal, ਲਈ character/ਖੰਡ device special files\n\
+  %t   major device type ਵਿੱਚ hex, ਲਈ character/ਖੰਡ device special files\n\
+  %T   minor device type ਵਿੱਚ hex, ਲਈ character/ਖੰਡ device special files\n\
 "), stdout);
       fputs (_("\
-  %u   user ID of owner\n\
-  %U   user name of owner\n\
-  %w   time of file birth, human-readable; - if unknown\n\
-  %W   time of file birth, seconds since Epoch; 0 if unknown\n\
-  %x   time of last access, human-readable\n\
-  %X   time of last access, seconds since Epoch\n\
-  %y   time of last data modification, human-readable\n\
-  %Y   time of last data modification, seconds since Epoch\n\
-  %z   time of last status change, human-readable\n\
-  %Z   time of last status change, seconds since Epoch\n\
+  %u   user ID ਦਾ owner\n\
+  %U   user name ਦਾ owner\n\
+  %w   ਸਮਾਂ ਦਾ file birth, human-readable; - ਜੇ unknown\n\
+  %W   ਸਮਾਂ ਦਾ file birth, seconds since Epoch; 0 ਜੇ unknown\n\
+  %x   ਸਮਾਂ ਦਾ ਆਖਰੀ access, human-readable\n\
+  %X   ਸਮਾਂ ਦਾ ਆਖਰੀ access, seconds since Epoch\n\
+  %y   ਸਮਾਂ ਦਾ ਆਖਰੀ ਅੰਕੜੇ modification, human-readable\n\
+  %Y   ਸਮਾਂ ਦਾ ਆਖਰੀ ਅੰਕੜੇ modification, seconds since Epoch\n\
+  %z   ਸਮਾਂ ਦਾ ਆਖਰੀ ਸਥਿਤੀ change, human-readable\n\
+  %Z   ਸਮਾਂ ਦਾ ਆਖਰੀ ਸਥਿਤੀ change, seconds since Epoch\n\
 \n\
 "), stdout);
 
       fputs (_("\
-Valid format sequences for file systems:\n\
+Valid format sequences ਲਈ file systems:\n\
 \n\
-  %a   free blocks available to non-superuser\n\
-  %b   total data blocks in file system\n\
-  %c   total file nodes in file system\n\
-  %d   free file nodes in file system\n\
-  %f   free blocks in file system\n\
+  %a   ਮੁਕਤ ਖੰਡਾਂ ਉਪਲਬਧ ਮੰਜ਼ਿਲ non-superuser\n\
+  %b   ਕੁੱਲ ਅੰਕੜੇ ਖੰਡਾਂ ਵਿੱਚ file system\n\
+  %c   ਕੁੱਲ file nodes ਵਿੱਚ file system\n\
+  %d   ਮੁਕਤ file nodes ਵਿੱਚ file system\n\
+  %f   ਮੁਕਤ ਖੰਡਾਂ ਵਿੱਚ file system\n\
 "), stdout);
       fputs (_("\
-  %i   file system ID in hex\n\
-  %l   maximum length of filenames\n\
+  %i   file system ID ਵਿੱਚ hex\n\
+  %l   ਵੱਧ_ਤੋਂ_ਵੱਧ ਲੰਮਾਈ ਦਾ filenames\n\
   %n   file name\n\
   %Qn  quoted file name\n\
-  %s   block size (for faster transfers)\n\
-  %S   fundamental block size (for block counts)\n\
-  %t   file system type in hex\n\
-  %T   file system type in human readable form\n\
+  %s   ਖੰਡ ਮਾਪ (ਲਈ faster transfers)\n\
+  %S   fundamental ਖੰਡ ਮਾਪ (ਲਈ ਖੰਡ counts)\n\
+  %t   file system type ਵਿੱਚ hex\n\
+  %T   file system type ਵਿੱਚ human readable form\n\
 "), stdout);
 
-      printf (_("\n\
---terse is equivalent to the following FORMAT:\n\
+      ਲਿਖੋ (_("\n\
+--terse is equivalent ਮੰਜ਼ਿਲ the following FORMAT:\n\
     %s\
 "),
-#if HAVE_SELINUX_SELINUX_H
+#ਜੇ HAVE_SELINUX_SELINUX_H
               fmt_terse_selinux
-#else
+#ਨਹੀਂਤਾਂ
               fmt_terse_regular
-#endif
+#ਜੇ_ਅੰਤ
               );
 
-        printf (_("\
---terse --file-system is equivalent to the following FORMAT:\n\
+        ਲਿਖੋ (_("\
+--terse --file-system is equivalent ਮੰਜ਼ਿਲ the following FORMAT:\n\
     %s\
 "), fmt_terse_fs);
 
-      printf (USAGE_BUILTIN_WARNING, PROGRAM_NAME);
-      emit_ancillary_info (PROGRAM_NAME);
+      ਲਿਖੋ (USAGE_BUILTIN_WARNING, ਪ੍ਰੋਗਰਾਮ_NAME);
+      emit_ancillary_info (ਪ੍ਰੋਗਰਾਮ_NAME);
     }
-  exit (status);
+  ਬਾਹਰ_ਨਿਕਲੋ (ਸਥਿਤੀ);
 }
 
-int
-main (int argc, char *argv[])
+ਪੂਰਨ
+ਮੁੱਖ (ਪੂਰਨ argc, ਅੱਖਰ *argv[])
 {
-  int c;
+  ਪੂਰਨ c;
   bool fs = false;
   bool terse = false;
-  char *format = NULL;
-  char *format2;
+  ਅੱਖਰ *format = ਨਿਰਾ;
+  ਅੱਖਰ *format2;
   bool ok = true;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  ਸੈੱਟ_ਪ੍ਰੋਗਰਾਮ_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
-  struct lconv const *locale = localeconv ();
-  decimal_point = (locale->decimal_point[0] ? locale->decimal_point : ".");
-  decimal_point_len = strlen (decimal_point);
+  ਬਣਤਰ lconv ਅਚਲ *locale = localeconv ();
+  decimal_ਬਿੰਦੂ = (locale->decimal_ਬਿੰਦੂ[0] ? locale->decimal_ਬਿੰਦੂ : ".");
+  decimal_ਬਿੰਦੂ_len = ਲੜੀ_ਲੰਬਾਈ (decimal_ਬਿੰਦੂ);
 
   atexit (close_stdout);
 
-  while ((c = getopt_long (argc, argv, "c:fLt", long_options, NULL)) != -1)
+  ਜਦੋਂ ((c = getopt_long (argc, argv, "c:fLt", long_options, ਨਿਰਾ)) != -1)
     {
-      switch (c)
+      ਚੋਣ (c)
         {
-        case PRINTF_OPTION:
+        ਹਾਲਤ PRINTF_OPTION:
           format = optarg;
           interpret_backslash_escapes = true;
           trailing_delim = "";
-          break;
+          ਰੋਕੋ;
 
-        case 'c':
+        ਹਾਲਤ 'c':
           format = optarg;
           interpret_backslash_escapes = false;
           trailing_delim = "\n";
-          break;
+          ਰੋਕੋ;
 
-        case 'L':
+        ਹਾਲਤ 'L':
           follow_links = true;
-          break;
+          ਰੋਕੋ;
 
-        case 'f':
+        ਹਾਲਤ 'f':
           fs = true;
-          break;
+          ਰੋਕੋ;
 
-        case 't':
+        ਹਾਲਤ 't':
           terse = true;
-          break;
+          ਰੋਕੋ;
 
-        case 0:
-          switch (XARGMATCH ("--cached", optarg, cached_args, cached_modes))
+        ਹਾਲਤ 0:
+          ਚੋਣ (XARGMATCH ("--cached", optarg, cached_ਦਲੀਲਾਂ, cached_modes))
             {
-              case cached_never:
+              ਹਾਲਤ cached_never:
                 force_sync = true;
                 dont_sync = false;
-                break;
-              case cached_always:
+                ਰੋਕੋ;
+              ਹਾਲਤ cached_always:
                 force_sync = false;
                 dont_sync = true;
-                break;
-              case cached_default:
+                ਰੋਕੋ;
+              ਹਾਲਤ cached_default:
                 force_sync = false;
                 dont_sync = false;
             }
-          break;
+          ਰੋਕੋ;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_ਸੰਸਕਰਣ_CHAR (ਪ੍ਰੋਗਰਾਮ_NAME, AUTHORS);
 
-        default:
+        ਮੂਲ:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (argc == optind)
+  ਜੇ (argc == optind)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
-  if (format)
+  ਜੇ (format)
     {
       format2 = format;
     }
-  else
+  ਨਹੀਂਤਾਂ
     {
       format = default_format (fs, terse, /* device= */ false);
       format2 = default_format (fs, terse, /* device= */ true);
     }
 
-  for (int i = optind; i < argc; i++)
+  ਲਈ (ਪੂਰਨ i = optind; i < argc; i++)
     ok &= (fs
            ? do_statfs (argv[i], format)
            : do_stat (argv[i], format, format2));

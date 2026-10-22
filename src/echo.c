@@ -14,62 +14,62 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include "system.h"
-#include "assure.h"
-#include "c-ctype.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ <config.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <stdio.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <sys/types.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ "system.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "assure.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "c-ctype.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "echo"
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ ਪ੍ਰੋਗਰਾਮ_NAME "echo"
 
-#define AUTHORS \
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ AUTHORS \
   proper_name ("Brian Fox"), \
   proper_name ("Chet Ramey")
 
 /* If true, interpret backslash escapes by default.  */
-#ifndef DEFAULT_ECHO_TO_XPG
-enum { DEFAULT_ECHO_TO_XPG = false };
-#endif
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ DEFAULT_ECHO_ਮੰਜ਼ਿਲ_XPG
+ਗਿਣਤੀ { DEFAULT_ECHO_ਮੰਜ਼ਿਲ_XPG = false };
+#ਜੇ_ਅੰਤ
 
-void
-usage (int status)
+ਖਾਲੀ
+usage (ਪੂਰਨ ਸਥਿਤੀ)
 {
   /* STATUS should always be EXIT_SUCCESS (unlike in most other
      utilities which would call emit_try_help otherwise).  */
-  affirm (status == EXIT_SUCCESS);
+  affirm (ਸਥਿਤੀ == EXIT_SUCCESS);
 
-  printf (_("\
+  ਲਿਖੋ (_("\
 Usage: %s [SHORT-OPTION]... [STRING]...\n\
   or:  %s LONG-OPTION\n\
-"), program_name, program_name);
+"), ਪ੍ਰੋਗਰਾਮ_name, ਪ੍ਰੋਗਰਾਮ_name);
   fputs (_("\
-Echo the STRING(s) to standard output.\n\
+Echo the STRING(s) ਮੰਜ਼ਿਲ standard output.\n\
 \n\
 "), stdout);
   oputs (_("\
-  -n     do not output the trailing newline\n\
+  -n     ਕਰੋ not output the trailing newline\n\
 "));
-  oputs (_(DEFAULT_ECHO_TO_XPG
+  oputs (_(DEFAULT_ECHO_ਮੰਜ਼ਿਲ_XPG
            ? N_("\
-  -e     enable interpretation of backslash escapes (default)\n\
+  -e     enable interpretation ਦਾ backslash escapes (ਮੂਲ)\n\
 ")
            : N_("\
-  -e     enable interpretation of backslash escapes\n\
+  -e     enable interpretation ਦਾ backslash escapes\n\
 ")));
-  oputs (_(DEFAULT_ECHO_TO_XPG
+  oputs (_(DEFAULT_ECHO_ਮੰਜ਼ਿਲ_XPG
            ? N_("\
-  -E     disable interpretation of backslash escapes\n\
+  -E     disable interpretation ਦਾ backslash escapes\n\
 ")
            : N_("\
-  -E     disable interpretation of backslash escapes (default)\n\
+  -E     disable interpretation ਦਾ backslash escapes (ਮੂਲ)\n\
 ")));
   oputs (HELP_OPTION_DESCRIPTION);
-  oputs (VERSION_OPTION_DESCRIPTION);
+  oputs (ਸੰਸਕਰਣ_OPTION_DESCRIPTION);
   fputs (_("\
 \n\
-If -e is in effect, the following sequences are recognized:\n\
+If -e is ਵਿੱਚ effect, the following sequences are recognized:\n\
 \n\
 "), stdout);
   fputs (_("\
@@ -79,37 +79,37 @@ If -e is in effect, the following sequences are recognized:\n\
   \\c      produce no further output\n\
   \\e      escape\n\
   \\f      form feed\n\
-  \\n      new line\n\
-  \\r      carriage return\n\
+  \\n      new ਸਤਰ\n\
+  \\r      carriage ਵਾਪਸ\n\
   \\t      horizontal tab\n\
   \\v      vertical tab\n\
 "), stdout);
   fputs (_("\
-  \\0NNN   byte with octal value NNN (1 to 3 digits)\n\
-  \\xHH    byte with hexadecimal value HH (1 to 2 digits)\n\
+  \\0NNN   byte with octal ਮੁੱਲ NNN (1 ਮੰਜ਼ਿਲ 3 digits)\n\
+  \\xHH    byte with hexadecimal ਮੁੱਲ HH (1 ਮੰਜ਼ਿਲ 2 digits)\n\
 "), stdout);
-  printf (USAGE_BUILTIN_WARNING, PROGRAM_NAME);
+  ਲਿਖੋ (USAGE_BUILTIN_WARNING, ਪ੍ਰੋਗਰਾਮ_NAME);
   fputs (_("\n\
-Consider using the printf(1) command instead,\n\
-as it avoids problems when outputting option-like strings.\n\
+Consider using the ਲਿਖੋ(1) command instead,\n\
+as it avoids problems when outputting option-like ਲੜੀਆਂ.\n\
 "), stdout);
-  emit_ancillary_info (PROGRAM_NAME);
-  exit (status);
+  emit_ancillary_info (ਪ੍ਰੋਗਰਾਮ_NAME);
+  ਬਾਹਰ_ਨਿਕਲੋ (ਸਥਿਤੀ);
 }
 
 /* Convert C from hexadecimal character to integer.  */
-static int
-hextobin (unsigned char c)
+ਸਥਿਰ ਪੂਰਨ
+hextobin (ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ c)
 {
-  switch (c)
+  ਚੋਣ (c)
     {
-    default: return c - '0';
-    case 'a': case 'A': return 10;
-    case 'b': case 'B': return 11;
-    case 'c': case 'C': return 12;
-    case 'd': case 'D': return 13;
-    case 'e': case 'E': return 14;
-    case 'f': case 'F': return 15;
+    ਮੂਲ: ਵਾਪਸ c - '0';
+    ਹਾਲਤ 'a': ਹਾਲਤ 'A': ਵਾਪਸ 10;
+    ਹਾਲਤ 'b': ਹਾਲਤ 'B': ਵਾਪਸ 11;
+    ਹਾਲਤ 'c': ਹਾਲਤ 'C': ਵਾਪਸ 12;
+    ਹਾਲਤ 'd': ਹਾਲਤ 'D': ਵਾਪਸ 13;
+    ਹਾਲਤ 'e': ਹਾਲਤ 'E': ਵਾਪਸ 14;
+    ਹਾਲਤ 'f': ਹਾਲਤ 'F': ਵਾਪਸ 15;
     }
 }
 
@@ -117,22 +117,22 @@ hextobin (unsigned char c)
    '-n', then don't print a trailing newline.  We also support the
    echo syntax from Version 9 unix systems. */
 
-int
-main (int argc, char **argv)
+ਪੂਰਨ
+ਮੁੱਖ (ਪੂਰਨ argc, ਅੱਖਰ **argv)
 {
   bool display_return = true;
   bool posixly_correct = !!getenv ("POSIXLY_CORRECT");
   bool allow_options =
     (! posixly_correct
-     || (! DEFAULT_ECHO_TO_XPG && 1 < argc && streq (argv[1], "-n")));
+     || (! DEFAULT_ECHO_ਮੰਜ਼ਿਲ_XPG && 1 < argc && streq (argv[1], "-n")));
 
   /* System V machines already have a /bin/sh with a v9 behavior.
      Use the identical behavior for these machines so that the
      existing system shell scripts won't barf.  */
-  bool do_v9 = DEFAULT_ECHO_TO_XPG;
+  bool do_v9 = DEFAULT_ECHO_ਮੰਜ਼ਿਲ_XPG;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  ਸੈੱਟ_ਪ੍ਰੋਗਰਾਮ_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
@@ -141,60 +141,60 @@ main (int argc, char **argv)
 
   /* We directly parse options, rather than use parse_long_options, in
      order to avoid accepting abbreviations.  */
-  if (allow_options && argc == 2)
+  ਜੇ (allow_options && argc == 2)
     {
-      if (streq (argv[1], "--help"))
+      ਜੇ (streq (argv[1], "--help"))
         usage (EXIT_SUCCESS);
 
-      if (streq (argv[1], "--version"))
+      ਜੇ (streq (argv[1], "--version"))
         {
-          version_etc (stdout, PROGRAM_NAME, PACKAGE_NAME, Version, AUTHORS,
-                       (char *) NULL);
-          return EXIT_SUCCESS;
+          ਸੰਸਕਰਣ_etc (stdout, ਪ੍ਰੋਗਰਾਮ_NAME, PACKAGE_NAME, ਸੰਸਕਰਣ, AUTHORS,
+                       (ਅੱਖਰ *) ਨਿਰਾ);
+          ਵਾਪਸ EXIT_SUCCESS;
         }
     }
 
   --argc;
   ++argv;
 
-  if (allow_options)
-    while (argc > 0 && *argv[0] == '-')
+  ਜੇ (allow_options)
+    ਜਦੋਂ (argc > 0 && *argv[0] == '-')
       {
-        char const *temp = argv[0] + 1;
+        ਅੱਖਰ ਅਚਲ *ਆਰਜ਼ੀ = argv[0] + 1;
         size_t i;
 
         /* If it appears that we are handling options, then make sure that
            all of the options specified are actually valid.  Otherwise, the
            string should just be echoed.  */
 
-        for (i = 0; temp[i]; i++)
-          switch (temp[i])
+        ਲਈ (i = 0; ਆਰਜ਼ੀ[i]; i++)
+          ਚੋਣ (ਆਰਜ਼ੀ[i])
             {
-            case 'e': case 'E': case 'n':
-              break;
-            default:
-              goto just_echo;
+            ਹਾਲਤ 'e': ਹਾਲਤ 'E': ਹਾਲਤ 'n':
+              ਰੋਕੋ;
+            ਮੂਲ:
+              ਜਾਓ just_echo;
             }
 
-        if (i == 0)
-          goto just_echo;
+        ਜੇ (i == 0)
+          ਜਾਓ just_echo;
 
         /* All of the options in TEMP are valid options to ECHO.
            Handle them. */
-        while (*temp)
-          switch (*temp++)
+        ਜਦੋਂ (*ਆਰਜ਼ੀ)
+          ਚੋਣ (*ਆਰਜ਼ੀ++)
             {
-            case 'e':
+            ਹਾਲਤ 'e':
               do_v9 = true;
-              break;
+              ਰੋਕੋ;
 
-            case 'E':
+            ਹਾਲਤ 'E':
               do_v9 = false;
-              break;
+              ਰੋਕੋ;
 
-            case 'n':
+            ਹਾਲਤ 'n':
               display_return = false;
-              break;
+              ਰੋਕੋ;
             }
 
         argc--;
@@ -203,84 +203,84 @@ main (int argc, char **argv)
 
 just_echo:
 
-  if (do_v9 || posixly_correct)
+  ਜੇ (do_v9 || posixly_correct)
     {
-      while (argc > 0)
+      ਜਦੋਂ (argc > 0)
         {
-          char const *s = argv[0];
-          unsigned char c;
+          ਅੱਖਰ ਅਚਲ *s = argv[0];
+          ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ c;
 
-          while ((c = *s++))
+          ਜਦੋਂ ((c = *s++))
             {
-              if (c == '\\' && *s)
+              ਜੇ (c == '\\' && *s)
                 {
-                  switch (c = *s++)
+                  ਚੋਣ (c = *s++)
                     {
-                    case 'a': c = '\a'; break;
-                    case 'b': c = '\b'; break;
-                    case 'c': return EXIT_SUCCESS;
-                    case 'e': c = '\x1B'; break;
-                    case 'f': c = '\f'; break;
-                    case 'n': c = '\n'; break;
-                    case 'r': c = '\r'; break;
-                    case 't': c = '\t'; break;
-                    case 'v': c = '\v'; break;
-                    case 'x':
+                    ਹਾਲਤ 'a': c = '\a'; ਰੋਕੋ;
+                    ਹਾਲਤ 'b': c = '\b'; ਰੋਕੋ;
+                    ਹਾਲਤ 'c': ਵਾਪਸ EXIT_SUCCESS;
+                    ਹਾਲਤ 'e': c = '\x1B'; ਰੋਕੋ;
+                    ਹਾਲਤ 'f': c = '\f'; ਰੋਕੋ;
+                    ਹਾਲਤ 'n': c = '\n'; ਰੋਕੋ;
+                    ਹਾਲਤ 'r': c = '\r'; ਰੋਕੋ;
+                    ਹਾਲਤ 't': c = '\t'; ਰੋਕੋ;
+                    ਹਾਲਤ 'v': c = '\v'; ਰੋਕੋ;
+                    ਹਾਲਤ 'x':
                       {
-                        unsigned char ch = *s;
-                        if (! c_isxdigit (ch))
-                          goto not_an_escape;
+                        ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ ch = *s;
+                        ਜੇ (! c_isxdigit (ch))
+                          ਜਾਓ not_an_escape;
                         s++;
                         c = hextobin (ch);
                         ch = *s;
-                        if (c_isxdigit (ch))
+                        ਜੇ (c_isxdigit (ch))
                           {
                             s++;
                             c = c * 16 + hextobin (ch);
                           }
                       }
-                      break;
-                    case '0':
+                      ਰੋਕੋ;
+                    ਹਾਲਤ '0':
                       c = 0;
-                      if (! ('0' <= *s && *s <= '7'))
-                        break;
+                      ਜੇ (! ('0' <= *s && *s <= '7'))
+                        ਰੋਕੋ;
                       c = *s++;
                       FALLTHROUGH;
-                    case '1': case '2': case '3':
-                    case '4': case '5': case '6': case '7':
+                    ਹਾਲਤ '1': ਹਾਲਤ '2': ਹਾਲਤ '3':
+                    ਹਾਲਤ '4': ਹਾਲਤ '5': ਹਾਲਤ '6': ਹਾਲਤ '7':
                       c -= '0';
-                      if ('0' <= *s && *s <= '7')
+                      ਜੇ ('0' <= *s && *s <= '7')
                         c = c * 8 + (*s++ - '0');
-                      if ('0' <= *s && *s <= '7')
+                      ਜੇ ('0' <= *s && *s <= '7')
                         c = c * 8 + (*s++ - '0');
-                      break;
-                    case '\\': break;
+                      ਰੋਕੋ;
+                    ਹਾਲਤ '\\': ਰੋਕੋ;
 
                     not_an_escape:
-                    default:  putchar ('\\'); break;
+                    ਮੂਲ:  ਅੱਖਰ_ਲਿਖੋ ('\\'); ਰੋਕੋ;
                     }
                 }
-              putchar (c);
+              ਅੱਖਰ_ਲਿਖੋ (c);
             }
           argc--;
           argv++;
-          if (argc > 0)
-            putchar (' ');
+          ਜੇ (argc > 0)
+            ਅੱਖਰ_ਲਿਖੋ (' ');
         }
     }
-  else
+  ਨਹੀਂਤਾਂ
     {
-      while (argc > 0)
+      ਜਦੋਂ (argc > 0)
         {
           fputs (argv[0], stdout);
           argc--;
           argv++;
-          if (argc > 0)
-            putchar (' ');
+          ਜੇ (argc > 0)
+            ਅੱਖਰ_ਲਿਖੋ (' ');
         }
     }
 
-  if (display_return)
-    putchar ('\n');
-  return EXIT_SUCCESS;
+  ਜੇ (display_return)
+    ਅੱਖਰ_ਲਿਖੋ ('\n');
+  ਵਾਪਸ EXIT_SUCCESS;
 }
