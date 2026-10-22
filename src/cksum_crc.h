@@ -14,37 +14,37 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#ifndef __CKSUM_CRC_H__
+#که_نه_تعریف_شوی __CKSUM_CRC_H__
 # define __CKSUM_CRC_H__
 
 # include <stdint.h>
 # include <stdio.h>
 
-extern bool cksum_debug;
+خارجي bool cksum_debug;
 
-extern int
-crc_sum_stream (FILE *stream, void *resstream, intmax_t *length);
+خارجي صحيح
+دوراني_ازموینه_مجموعه_بهیر (FILE *بهیر, فراغ *resstream, intmax_t *اوږدتیا);
 
-extern int
-crc32b_sum_stream (FILE *stream, void *resstream, intmax_t *length);
+خارجي صحيح
+crc32b_مجموعه_بهیر (FILE *بهیر, فراغ *resstream, intmax_t *اوږدتیا);
 
-extern void
-output_crc (char const *file, int binary_file, void const *digest, bool raw,
-            bool tagged, unsigned char delim, bool args, intmax_t length)
+خارجي فراغ
+output_دوراني_ازموینه (حرف ثابت *file, صحيح دوګونی_file, فراغ ثابت *digest, bool raw,
+            bool tagged, بینښه حرف delim, bool دلیلونه, intmax_t اوږدتیا)
   _GL_ATTRIBUTE_NONNULL ((3));
 
-extern bool
-cksum_vmull (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out);
+خارجي bool
+cksum_vmull (FILE *fp, uint_fast32_t *دوراني_ازموینه_بهر, intmax_t *اوږدتیا_بهر);
 
-extern bool
-cksum_pclmul (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out);
+خارجي bool
+cksum_pclmul (FILE *fp, uint_fast32_t *دوراني_ازموینه_بهر, intmax_t *اوږدتیا_بهر);
 
-extern bool
-cksum_avx2 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out);
+خارجي bool
+cksum_avx2 (FILE *fp, uint_fast32_t *دوراني_ازموینه_بهر, intmax_t *اوږدتیا_بهر);
 
-extern bool
-cksum_avx512 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out);
+خارجي bool
+cksum_avx512 (FILE *fp, uint_fast32_t *دوراني_ازموینه_بهر, intmax_t *اوږدتیا_بهر);
 
-extern uint_fast32_t const crctab[8][256];
+خارجي uint_fast32_t ثابت crctab[8][256];
 
-#endif
+#د_که_پای

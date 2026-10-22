@@ -14,48 +14,48 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
+#ضمن <config.h>
 
-#include "cksum_crc.h"
+#ضمن "cksum_crc.h"
 
-#include <stdio.h>
-#include <sys/types.h>
-#include <x86intrin.h>
-#include "system.h"
+#ضمن <stdio.h>
+#ضمن <sys/types.h>
+#ضمن <x86intrin.h>
+#ضمن "system.h"
 
 /* Number of bytes to read at once.  */
-#define BUFLEN (1 << 16)
+#تعریف_کړه BUFLEN (1 << 16)
 
 /* Calculate CRC32 using PCLMULQDQ CPU instruction found in x86/x64 CPUs */
 
 bool
-cksum_pclmul (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
+cksum_pclmul (FILE *fp, uint_fast32_t *دوراني_ازموینه_بهر, intmax_t *اوږدتیا_بهر)
 {
-  __m128i buf[BUFLEN / sizeof (__m128i)];
-  uint_fast32_t crc = 0;
-  intmax_t length = 0;
-  size_t bytes_read;
+  __m128i buf[BUFLEN / حجم (__m128i)];
+  uint_fast32_t دوراني_ازموینه = 0;
+  intmax_t اوږدتیا = 0;
+  size_t بایټونه_read;
   __m128i single_mult_constant;
   __m128i four_mult_constant;
   __m128i shuffle_constant;
 
-  if (!fp || !crc_out || !length_out)
-    return false;
+  إذا (!fp || !دوراني_ازموینه_بهر || !اوږدتیا_بهر)
+    أرجع false;
 
   /* These constants and general algorithms are taken from the Intel whitepaper
      "Fast CRC Computation for Generic Polynomials Using PCLMULQDQ Instruction"
   */
-  single_mult_constant = _mm_set_epi64x (0xC5B9CD4C, 0xE8A45605);
-  four_mult_constant = _mm_set_epi64x (0x8833794C, 0xE6228B11);
+  single_mult_constant = mm_سېټ_epi64x (0xC5B9CD4C, 0xE8A45605);
+  four_mult_constant = mm_سېټ_epi64x (0x8833794C, 0xE6228B11);
 
   /* Constant to byteswap a full SSE register */
-  shuffle_constant = _mm_set_epi8 (0, 1, 2, 3, 4, 5, 6, 7, 8,
+  shuffle_constant = mm_سېټ_epi8 (0, 1, 2, 3, 4, 5, 6, 7, 8,
                                    9, 10, 11, 12, 13, 14, 15);
 
-  while ((bytes_read = fread (buf, 1, BUFLEN, fp)) > 0)
+  طالما ((بایټونه_read = fread (buf, 1, BUFLEN, fp)) > 0)
     {
       __m128i *datap;
-      __m128i data;
+      __m128i معلومات;
       __m128i data2;
       __m128i data3;
       __m128i data4;
@@ -63,27 +63,27 @@ cksum_pclmul (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
       __m128i data6;
       __m128i data7;
       __m128i data8;
-      __m128i fold_data;
-      __m128i xor_crc;
+      __m128i fold_معلومات;
+      __m128i xor_دوراني_ازموینه;
 
-      if (ckd_add (&length, length, bytes_read))
+      إذا (ckd_جمع_کړه (&اوږدتیا, اوږدتیا, بایټونه_read))
         {
           errno = EOVERFLOW;
-          return false;
+          أرجع false;
         }
 
       datap = buf;
 
       /* Fold in parallel eight 16-byte blocks into four 16-byte blocks */
-      if (bytes_read >= 16 * 8)
+      إذا (بایټونه_read >= 16 * 8)
         {
-          data = _mm_loadu_si128 (datap);
-          data = _mm_shuffle_epi8 (data, shuffle_constant);
+          معلومات = _mm_loadu_si128 (datap);
+          معلومات = _mm_shuffle_epi8 (معلومات, shuffle_constant);
           /* XOR in initial CRC value (for us 0 so no effect), or CRC value
              calculated for previous BUFLEN buffer from fread */
-          xor_crc = _mm_set_epi32 (crc, 0, 0, 0);
-          crc = 0;
-          data = _mm_xor_si128 (data, xor_crc);
+          xor_دوراني_ازموینه = mm_سېټ_epi32 (دوراني_ازموینه, 0, 0, 0);
+          دوراني_ازموینه = 0;
+          معلومات = _mm_xor_si128 (معلومات, xor_دوراني_ازموینه);
           data3 = _mm_loadu_si128 (datap + 1);
           data3 = _mm_shuffle_epi8 (data3, shuffle_constant);
           data5 = _mm_loadu_si128 (datap + 2);
@@ -92,13 +92,13 @@ cksum_pclmul (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
           data7 = _mm_shuffle_epi8 (data7, shuffle_constant);
 
 
-          while (bytes_read >= 16 * 8)
+          طالما (بایټونه_read >= 16 * 8)
             {
               datap += 4;
 
               /* Do multiplication here for four consecutive 16 byte blocks */
-              data2 = _mm_clmulepi64_si128 (data, four_mult_constant, 0x00);
-              data = _mm_clmulepi64_si128 (data, four_mult_constant, 0x11);
+              data2 = _mm_clmulepi64_si128 (معلومات, four_mult_constant, 0x00);
+              معلومات = _mm_clmulepi64_si128 (معلومات, four_mult_constant, 0x11);
               data4 = _mm_clmulepi64_si128 (data3, four_mult_constant, 0x00);
               data3 = _mm_clmulepi64_si128 (data3, four_mult_constant, 0x11);
               data6 = _mm_clmulepi64_si128 (data5, four_mult_constant, 0x00);
@@ -111,10 +111,10 @@ cksum_pclmul (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
                  "consumes" the first four blocks from the buffer.
                  Keep xor result in variables for multiplication in next
                  round of loop. */
-              data = _mm_xor_si128 (data, data2);
+              معلومات = _mm_xor_si128 (معلومات, data2);
               data2 = _mm_loadu_si128 (datap);
               data2 = _mm_shuffle_epi8 (data2, shuffle_constant);
-              data = _mm_xor_si128 (data, data2);
+              معلومات = _mm_xor_si128 (معلومات, data2);
 
               data3 = _mm_xor_si128 (data3, data4);
               data4 = _mm_loadu_si128 (datap + 1);
@@ -131,12 +131,12 @@ cksum_pclmul (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
               data8 = _mm_shuffle_epi8 (data8, shuffle_constant);
               data7 = _mm_xor_si128 (data7, data8);
 
-              bytes_read -= (16 * 4);
+              بایټونه_read -= (16 * 4);
             }
           /* At end of loop we write out results from variables back into
              the buffer, for use in single fold loop */
-          data = _mm_shuffle_epi8 (data, shuffle_constant);
-          _mm_storeu_si128 (datap, data);
+          معلومات = _mm_shuffle_epi8 (معلومات, shuffle_constant);
+          _mm_storeu_si128 (datap, معلومات);
           data3 = _mm_shuffle_epi8 (data3, shuffle_constant);
           _mm_storeu_si128 (datap + 1, data3);
           data5 = _mm_shuffle_epi8 (data5, shuffle_constant);
@@ -146,39 +146,39 @@ cksum_pclmul (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
         }
 
       /* Fold two 16-byte blocks into one 16-byte block */
-      if (bytes_read >= 32)
+      إذا (بایټونه_read >= 32)
         {
-          data = _mm_loadu_si128 (datap);
-          data = _mm_shuffle_epi8 (data, shuffle_constant);
-          xor_crc = _mm_set_epi32 (crc, 0, 0, 0);
-          crc = 0;
-          data = _mm_xor_si128 (data, xor_crc);
-          while (bytes_read >= 32)
+          معلومات = _mm_loadu_si128 (datap);
+          معلومات = _mm_shuffle_epi8 (معلومات, shuffle_constant);
+          xor_دوراني_ازموینه = mm_سېټ_epi32 (دوراني_ازموینه, 0, 0, 0);
+          دوراني_ازموینه = 0;
+          معلومات = _mm_xor_si128 (معلومات, xor_دوراني_ازموینه);
+          طالما (بایټونه_read >= 32)
             {
               datap++;
 
-              data2 = _mm_clmulepi64_si128 (data, single_mult_constant, 0x00);
-              data = _mm_clmulepi64_si128 (data, single_mult_constant, 0x11);
-              fold_data = _mm_loadu_si128 (datap);
-              fold_data = _mm_shuffle_epi8 (fold_data, shuffle_constant);
-              data = _mm_xor_si128 (data, data2);
-              data = _mm_xor_si128 (data, fold_data);
-              bytes_read -= 16;
+              data2 = _mm_clmulepi64_si128 (معلومات, single_mult_constant, 0x00);
+              معلومات = _mm_clmulepi64_si128 (معلومات, single_mult_constant, 0x11);
+              fold_معلومات = _mm_loadu_si128 (datap);
+              fold_معلومات = _mm_shuffle_epi8 (fold_معلومات, shuffle_constant);
+              معلومات = _mm_xor_si128 (معلومات, data2);
+              معلومات = _mm_xor_si128 (معلومات, fold_معلومات);
+              بایټونه_read -= 16;
             }
-          data = _mm_shuffle_epi8 (data, shuffle_constant);
-          _mm_storeu_si128 (datap, data);
+          معلومات = _mm_shuffle_epi8 (معلومات, shuffle_constant);
+          _mm_storeu_si128 (datap, معلومات);
         }
 
       /* And finish up last 0-31 bytes in a byte by byte fashion */
-      unsigned char *cp = (unsigned char *)datap;
-      while (bytes_read--)
-        crc = (crc << 8) ^ crctab[0][((crc >> 24) ^ *cp++) & 0xFF];
-      if (feof (fp))
-        break;
+      بینښه حرف *cp = (بینښه حرف *)datap;
+      طالما (بایټونه_read--)
+        دوراني_ازموینه = (دوراني_ازموینه << 8) ^ crctab[0][((دوراني_ازموینه >> 24) ^ *cp++) & 0xFF];
+      إذا (feof (fp))
+        اكسر;
     }
 
-  *crc_out = crc;
-  *length_out = length;
+  *دوراني_ازموینه_بهر = دوراني_ازموینه;
+  *اوږدتیا_بهر = اوږدتیا;
 
-  return !ferror (fp);
+  أرجع !ferror (fp);
 }

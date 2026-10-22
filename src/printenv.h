@@ -14,35 +14,35 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#ifndef PRINTENV_H
+#که_نه_تعریف_شوی PRINTENV_H
 # define PRINTENV_H 1
 
-static inline void
-print_envvar (char const *entry, char terminator, bool quoted)
+ساكن مضمن فراغ
+print_envvar (حرف ثابت *ثبت, حرف terminator, bool quoted)
 {
-  if (! quoted)
-    fputs (entry, stdout);
-  else
+  إذا (! quoted)
+    fputs (ثبت, stdout);
+  وإلا
     {
-      idx_t const entry_len = strlen (entry);
-      char const *equal = memchr (entry, '=', entry_len);
+      idx_t ثابت ثبت_len = مزي_اوږدوالی (ثبت);
+      حرف ثابت *equal = memchr (ثبت, '=', ثبت_len);
 
       /* If the parent process manipulates ENVIRON directly, it is possible
          that an entry does not contain an equal sign.  */
-      idx_t const var_len = equal ? equal - entry : entry_len;
-      fputs (quoteN_mem (entry, var_len), stdout);
+      idx_t ثابت var_len = equal ? equal - ثبت : ثبت_len;
+      fputs (quoteN_mem (ثبت, var_len), stdout);
 
-      if (equal)
+      إذا (equal)
         {
-          putchar ('=');
-          char const *val = equal + 1;
-          idx_t const val_len = entry_len - (val - entry);
+          توری_چاپ_کړه ('=');
+          حرف ثابت *val = equal + 1;
+          idx_t ثابت val_len = ثبت_len - (val - ثبت);
           /* Prefer "VAR=" over "VAR=''".  */
-          if (0 < val_len)
+          إذا (0 < val_len)
             fputs (quoteN_mem (val, val_len), stdout);
         }
     }
-  putchar (terminator);
+  توری_چاپ_کړه (terminator);
 }
 
-#endif
+#د_که_پای

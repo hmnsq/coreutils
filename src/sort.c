@@ -20,76 +20,76 @@
 
    Ørn E. Hansen added NLS support in 1997.  */
 
-#include <config.h>
+#ضمن <config.h>
 
-#include <getopt.h>
-#include <pthread.h>
-#include <sys/resource.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <signal.h>
-#include <spawn.h>
-#include "system.h"
-#include "argmatch.h"
-#include "assure.h"
-#include "c-ctype.h"
-#include "fadvise.h"
-#include "filevercmp.h"
-#include "findprog.h"
-#include "flexmember.h"
-#include "hard-locale.h"
-#include "hash.h"
-#include "heap.h"
-#include "ignore-value.h"
-#include "mbswidth.h"
-#include "nproc.h"
-#include "physmem.h"
-#include "posixver.h"
-#include "quote.h"
-#include "randread.h"
-#include "readtokens0.h"
-#include "stdlib--.h"
-#include "strnumcmp.h"
-#include "term-sig.h"
-#include "unistd--.h"
-#include "xmemcoll.h"
-#include "xnanosleep.h"
-#include "xstrtol.h"
-#include "xstrtol-error.h"
+#ضمن <getopt.h>
+#ضمن <pthread.h>
+#ضمن <sys/resource.h>
+#ضمن <sys/types.h>
+#ضمن <sys/wait.h>
+#ضمن <signal.h>
+#ضمن <spawn.h>
+#ضمن "system.h"
+#ضمن "argmatch.h"
+#ضمن "assure.h"
+#ضمن "c-ctype.h"
+#ضمن "fadvise.h"
+#ضمن "filevercmp.h"
+#ضمن "findprog.h"
+#ضمن "flexmember.h"
+#ضمن "hard-locale.h"
+#ضمن "hash.h"
+#ضمن "heap.h"
+#ضمن "ignore-value.h"
+#ضمن "mbswidth.h"
+#ضمن "nproc.h"
+#ضمن "physmem.h"
+#ضمن "posixver.h"
+#ضمن "quote.h"
+#ضمن "randread.h"
+#ضمن "readtokens0.h"
+#ضمن "stdlib--.h"
+#ضمن "strnumcmp.h"
+#ضمن "term-sig.h"
+#ضمن "unistd--.h"
+#ضمن "xmemcoll.h"
+#ضمن "xnanosleep.h"
+#ضمن "xstrtol.h"
+#ضمن "xstrtol-error.h"
 
-#ifndef RLIMIT_DATA
-struct rlimit { size_t rlim_cur; };
+#که_نه_تعریف_شوی RLIMIT_معلومات
+بنية rlimit { size_t rlim_cur; };
 # define getrlimit(Resource, Rlp) (-1)
-#endif
+#د_که_پای
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "sort"
+#تعریف_کړه پروګرام_NAME "sort"
 
-#define AUTHORS \
+#تعریف_کړه AUTHORS \
   proper_name ("Mike Haertel"), \
   proper_name ("Paul Eggert")
 
-#if HAVE_LANGINFO_CODESET
+#إذا HAVE_LANGINFO_CODESET
 # include <langinfo.h>
-#endif
+#د_که_پای
 
-#if !defined OPEN_MAX && defined NR_OPEN
+#إذا !defined OPEN_MAX && defined NR_OPEN
 # define OPEN_MAX NR_OPEN
-#endif
-#if !defined OPEN_MAX
+#د_که_پای
+#إذا !defined OPEN_MAX
 # define OPEN_MAX 20
-#endif
+#د_که_پای
 
-#define UCHAR_LIM (UCHAR_MAX + 1)
+#تعریف_کړه UCHAR_LIM (UCHAR_MAX + 1)
 
-#ifndef DEFAULT_TMPDIR
+#که_نه_تعریف_شوی DEFAULT_TMPDIR
 # define DEFAULT_TMPDIR "/tmp"
-#endif
+#د_که_پای
 
 /* Maximum number of lines to merge every time a NODE is taken from
    the merge queue.  Node is at LEVEL in the binary merge tree,
    and is responsible for merging TOTAL lines. */
-#define MAX_MERGE(total, level) (((total) >> (2 * ((level) + 1))) + 1)
+#تعریف_کړه MAX_یوځای(ټول, level) (((ټول) >> (2 * ((level) + 1))) + 1)
 
 /* Heuristic value for the number of lines for which it is worth creating
    a subthread, during an internal merge sort.  I.e., it is a small number
@@ -99,26 +99,26 @@ struct rlimit { size_t rlim_cur; };
    lines of gensort -a output is sorted slightly faster with --parallel=2
    than with --parallel=1.  By contrast, using --parallel=1 is about 10%
    faster than using --parallel=2 with a 64K-line input.  */
-enum { SUBTHREAD_LINES_HEURISTIC = 128 * 1024 };
-static_assert (4 <= SUBTHREAD_LINES_HEURISTIC);
+تعداد { SUBTHREAD_کرښې_HEURISTIC = 128 * 1024 };
+static_assert (4 <= SUBTHREAD_کرښې_HEURISTIC);
 
 /* The number of threads after which there are
    diminishing performance gains.  */
-enum { DEFAULT_MAX_THREADS = 8 };
+تعداد { DEFAULT_MAX_تارونه = 8 };
 
 /* Exit statuses.  */
-enum
+تعداد
   {
     /* POSIX says to exit with status 1 if invoked with -c and the
        input is not properly sorted.  */
-    SORT_OUT_OF_ORDER = 1,
+    ترتیبول_بهر_د_ترتیب = 1,
 
     /* POSIX says any other irregular exit must exit with a status
        code greater than 1.  */
-    SORT_FAILURE = 2
+    ترتیبول_FAILURE = 2
   };
 
-enum
+تعداد
   {
     /* The number of times we should try to spawn a compression process
        (we retry if the posix_spawnp call fails with EAGAIN).  We don't _need_
@@ -132,81 +132,81 @@ enum
     MAX_TRIES_DECOMPRESS = 9
   };
 
-enum
+تعداد
   {
     /* Level of the end-of-merge node, one level above the root. */
-    MERGE_END = 0,
+    یوځای_پای_ټکی = 0,
 
     /* Level of the root node in merge tree. */
-    MERGE_ROOT = 1
+    یوځای_ریښه = 1
   };
 
 /* The representation of the decimal point in the current locale.  */
-static char decimal_point;
+ساكن حرف decimal_ټکی;
 
 /* Thousands separator; if outside char range, there is no separator.  */
-static int thousands_sep;
+ساكن صحيح thousands_sep;
 /* We currently ignore multi-byte grouping chars.  */
-static bool thousands_sep_ignored;
+ساكن bool thousands_sep_ignored;
 
 /* Nonzero if the corresponding locales are hard.  */
-static bool hard_LC_COLLATE;
-#if HAVE_NL_LANGINFO
-static bool hard_LC_TIME;
-#endif
+ساكن bool hard_LC_COLLATE;
+#إذا HAVE_NL_LANGINFO
+ساكن bool hard_LC_وخت;
+#د_که_پای
 
-#define NONZERO(x) ((x) != 0)
+#تعریف_کړه NONZERO(x) ((x) != 0)
 
 /* The kind of blanks for '-b' to skip in various options. */
-enum blanktype { bl_start, bl_end, bl_both };
+تعداد blanktype { bl_پیل, bl_پای_ټکی, bl_both };
 
 /* The character marking end of line. Default to \n. */
-static char eolchar = '\n';
+ساكن حرف eolchar = '\n';
 
 /* Lines are held in memory as counted strings. */
-struct line
+بنية کرښه
 {
-  char *text;			/* Text of the line. */
-  size_t length;		/* Length including final newline. */
-  char *keybeg;			/* Start of first key. */
-  char *keylim;			/* Limit of first key. */
+  حرف *متن;			/* Text of the line. */
+  size_t اوږدتیا;		/* Length including final newline. */
+  حرف *keybeg;			/* Start of first key. */
+  حرف *keylim;			/* Limit of first key. */
 };
 
 /* Input buffers. */
-struct buffer
+بنية بفر
 {
-  char *buf;			/* Dynamically allocated buffer,
+  حرف *buf;			/* Dynamically allocated buffer,
                                    partitioned into 3 regions:
                                    - input data;
                                    - unused area;
                                    - an array of lines, in reverse order.  */
-  size_t used;			/* Number of bytes used for input data.  */
+  size_t کارول_شوی;			/* Number of bytes used for input data.  */
   size_t nlines;		/* Number of lines in the line array.  */
   idx_t alloc;			/* Number of bytes allocated. */
-  size_t left;			/* Number of bytes left from previous reads. */
-  size_t line_bytes;		/* Number of bytes to reserve for each line. */
+  size_t کیڼ;			/* Number of bytes left from previous reads. */
+  size_t کرښه_بایټونه;		/* Number of bytes to reserve for each line. */
   bool eof;			/* An EOF has been read.  */
 };
 
 /* Policy for sizing the main sort buffer.  INITIAL is the allocation
    to try first.  LIMIT is the largest allocation to try while reading
    normal input; a single input line can still force a larger buffer.  */
-struct sort_buffer_policy
+بنية ترتیبول_بفر_policy
 {
   size_t initial;
-  size_t limit;
+  size_t حد;
   bool growth_failed;
 };
 
 /* Sort key.  */
-struct keyfield
+بنية keyfield
 {
   size_t sword;			/* Zero-origin 'word' to start at. */
   size_t schar;			/* Additional characters to skip. */
   size_t eword;			/* Zero-origin last 'word' of key. */
   size_t echar;			/* Additional characters in field. */
-  bool const *ignore;		/* Boolean array of characters to ignore. */
-  char const *translate;	/* Translation applied to characters. */
+  bool ثابت *ignore;		/* Boolean array of characters to ignore. */
+  حرف ثابت *translate;	/* Translation applied to characters. */
   bool skipsblanks;		/* Skip leading blanks when finding start.  */
   bool skipeblanks;		/* Skip leading blanks when finding end.  */
   bool numeric;			/* Flag for numeric comparison.  Handle
@@ -218,47 +218,47 @@ struct keyfield
   bool human_numeric;		/* Flag for sorting by human readable
                                    units with either SI or IEC prefixes. */
   bool month;			/* Flag for comparison by month name. */
-  bool reverse;			/* Reverse the sense of comparison. */
-  bool version;			/* sort by version number */
-  bool traditional_used;	/* Traditional key option format is used. */
-  struct keyfield *next;	/* Next keyfield to try. */
+  bool سرچپه;			/* Reverse the sense of comparison. */
+  bool نسخه_3;			/* sort by version number */
+  bool traditional_کارول_شوی;	/* Traditional key option format is used. */
+  بنية keyfield *بل;	/* Next keyfield to try. */
 };
 
-struct month
+بنية month
 {
-  char const *name;
-  int val;
+  حرف ثابت *name;
+  صحيح val;
 };
 
 /* Binary merge tree node. */
-struct merge_node
+بنية یوځای_غوټه
 {
-  struct line *lo;              /* Lines to merge from LO child node. */
-  struct line *hi;              /* Lines to merge from HI child node. */
-  struct line *end_lo;          /* End of available lines from LO. */
-  struct line *end_hi;          /* End of available lines from HI. */
-  struct line **dest;           /* Pointer to destination of merge. */
+  بنية کرښه *lo;              /* Lines to merge from LO child node. */
+  بنية کرښه *hi;              /* Lines to merge from HI child node. */
+  بنية کرښه *پای_ټکی_lo;          /* End of available lines from LO. */
+  بنية کرښه *پای_ټکی_hi;          /* End of available lines from HI. */
+  بنية کرښه **dest;           /* Pointer to destination of merge. */
   size_t nlo;                   /* Total Lines remaining from LO. */
   size_t nhi;                   /* Total lines remaining from HI. */
-  struct merge_node *parent;    /* Parent node. */
-  struct merge_node *lo_child;  /* LO child node. */
-  struct merge_node *hi_child;  /* HI child node. */
-  unsigned int level;           /* Level in merge tree. */
+  بنية یوځای_غوټه *پلار;    /* Parent node. */
+  بنية یوځای_غوټه *lo_ماشوم;  /* LO child node. */
+  بنية یوځای_غوټه *hi_ماشوم;  /* HI child node. */
+  بینښه صحيح level;           /* Level in merge tree. */
   bool queued;                  /* Node is already in heap. */
-  pthread_mutex_t lock;         /* Lock for node operations. */
+  pthread_mutex_t قلف;         /* Lock for node operations. */
 };
 
 /* Priority queue of merge nodes. */
-struct merge_node_queue
+بنية یوځای_غوټه_کتار
 {
-  struct heap *priority_queue;  /* Priority queue of merge tree nodes. */
+  بنية ډېرۍ *لومړیتوب_کتار;  /* Priority queue of merge tree nodes. */
   pthread_mutex_t mutex;        /* Lock for queue operations. */
   pthread_cond_t cond;          /* Conditional wait for empty queue to populate
                                    when popping. */
 };
 
 /* Used to implement --unique (-u).  */
-static struct line saved_line;
+ساكن بنية کرښه saved_کرښه;
 
 /* FIXME: None of these tables work with multibyte character sets.
    Also, there are many other bugs when handling multibyte characters.
@@ -267,22 +267,22 @@ static struct line saved_line;
    tricky.  */
 
 /* Table of blanks.  */
-static bool blanks[UCHAR_LIM];
+ساكن bool blanks[UCHAR_LIM];
 
 /* Table of non-printing characters. */
-static bool nonprinting[UCHAR_LIM];
+ساكن bool nonprinting[UCHAR_LIM];
 
 /* Table of non-dictionary characters (not letters, digits, or blanks). */
-static bool nondictionary[UCHAR_LIM];
+ساكن bool nondictionary[UCHAR_LIM];
 
 /* Translation table folding lower case to upper.  */
-static char fold_toupper[UCHAR_LIM];
+ساكن حرف fold_toupper[UCHAR_LIM];
 
-#define MONTHS_PER_YEAR 12
+#تعریف_کړه MONTHS_فی_YEAR 12
 
 /* Table mapping month names to integers.
    Alphabetic order allows binary search. */
-static struct month monthtab[] =
+ساكن بنية month monthtab[] =
 {
   {"APR", 4},
   {"AUG", 8},
@@ -299,31 +299,31 @@ static struct month monthtab[] =
 };
 
 /* During the merge phase, the number of files to merge at once. */
-#define NMERGE_DEFAULT 16
+#تعریف_کړه NMERGE_DEFAULT 16
 
 /* Minimum size for a merge or check buffer.  */
-#define MIN_MERGE_BUFFER_SIZE (2 + sizeof (struct line))
+#تعریف_کړه MIN_یوځای_بفر_اندازه (2 + حجم (بنية کرښه))
 
 /* Minimum sort size; the code might not work with smaller sizes.  */
-#define MIN_SORT_SIZE (nmerge * MIN_MERGE_BUFFER_SIZE)
+#تعریف_کړه MIN_ترتیبول_اندازه (nmerge * MIN_یوځای_بفر_اندازه)
 
 /* The number of bytes needed for a merge or check buffer, which can
    function relatively efficiently even if it holds only one line.  If
    a longer line is seen, this value is increased.  */
-static size_t merge_buffer_size = MAX (MIN_MERGE_BUFFER_SIZE, 256 * 1024);
+ساكن size_t یوځای_بفر_اندازه = MAX (MIN_یوځای_بفر_اندازه, 256 * 1024);
 
 /* The approximate maximum number of bytes of main memory to use, as
    specified by the user.  Zero if the user has not specified a size.  */
-static size_t sort_size;
+ساكن size_t ترتیبول_اندازه;
 
 /* The initial allocation factor for non-regular files.
    This is used, e.g., when reading from a pipe.
    Don't make it too big, since it is multiplied by ~130 to
    obtain the size of the actual buffer sort will allocate.
    Also, there may be 8 threads all doing this at the same time.  */
-#define INPUT_FILE_SIZE_GUESS (128 * 1024)
+#تعریف_کړه ننوت_FILE_اندازه_GUESS (128 * 1024)
 
-static struct
+ساكن بنية
 {
   /* Number of temporary directory names used.  */
   idx_t n_dirs;
@@ -333,114 +333,114 @@ static struct
 
   /* Array of directory names in which any temporary files are
      to be created. */
-  char const **dirs COUNTED_BY (n_dirs);
-} temp_dirs;
+  حرف ثابت **dirs COUNTED_BY (n_dirs);
+} لنډمهاله_dirs;
 
 
 
 /* Flag to reverse the order of all comparisons. */
-static bool reverse;
+ساكن bool سرچپه;
 
 /* Flag for stable sort.  This turns off the last ditch bytewise
    comparison of lines, and instead leaves lines in the same order
    they were read if all keys compare equal.  */
-static bool stable;
+ساكن bool stable;
 
 /* An int value outside char range.  */
-enum { NON_CHAR = CHAR_MAX + 1 };
+تعداد { NON_CHAR = CHAR_MAX + 1 };
 
 /* If TAB has this value, blanks separate fields.  */
-enum { TAB_DEFAULT = CHAR_MAX + 1 };
+تعداد { TAB_DEFAULT = CHAR_MAX + 1 };
 
 /* Tab character separating fields.  If TAB_DEFAULT, then fields are
    separated by the empty string between a non-blank character and a blank
    character. */
-static int tab = TAB_DEFAULT;
+ساكن صحيح tab = TAB_DEFAULT;
 
 /* Flag to remove consecutive duplicate lines from the output.
    Only the last of a sequence of equal lines will be output. */
-static bool unique;
+ساكن bool unique;
 
 /* Nonzero if any of the input files are the standard input. */
-static bool have_read_stdin;
+ساكن bool have_read_stdin;
 
 /* List of key field comparisons to be tried.  */
-static struct keyfield *keylist;
+ساكن بنية keyfield *keylist;
 
 /* Program used to (de)compress temp files.  Must accept -d.  */
-static char const *compress_program;
+ساكن حرف ثابت *compress_پروګرام;
 
 /* Annotate the output with extra info to aid the user.  */
-static bool debug;
+ساكن bool debug;
 
 /* Maximum number of files to merge in one go.  If more than this
    number are present, temp files will be used. */
-static unsigned int nmerge = NMERGE_DEFAULT;
+ساكن بینښه صحيح nmerge = NMERGE_DEFAULT;
 
 /* Whether SIGPIPE had the default disposition at startup.  */
-static bool default_SIGPIPE;
+ساكن bool default_SIGPIPE;
 
 /* The list of temporary files. */
-struct tempnode
+بنية tempnode
 {
-  struct tempnode *volatile next;
+  بنية tempnode *متطاير بل;
   pid_t pid;     /* The subprocess PID; undefined if state == UNCOMPRESSED.  */
-  char state;
-  char name[FLEXIBLE_ARRAY_MEMBER];
+  حرف state;
+  حرف name[FLEXIBLE_ARRAY_MEMBER];
 };
-static struct tempnode *volatile temphead;
-static struct tempnode *volatile *temptail = &temphead;
+ساكن بنية tempnode *متطاير temphead;
+ساكن بنية tempnode *متطاير *temptail = &temphead;
 
 /* Clean up any remaining temporary files.  */
 
-static void
-cleanup (void)
+ساكن فراغ
+cleanup (فراغ)
 {
-  for (struct tempnode const *node = temphead; node; node = node->next)
-    unlink (node->name);
-  temphead = NULL;
+  لكل (بنية tempnode ثابت *غوټه = temphead; غوټه; غوټه = غوټه->بل)
+    unlink (غوټه->name);
+  temphead = عدم;
 }
 
 /* Handle interrupts and hangups. */
 
-static void
-sighandler (int sig)
+ساكن فراغ
+sighandler (صحيح sig)
 {
   cleanup ();
 
-  signal (sig, SIG_DFL);
-  raise (sig);
+  إشارة (sig, SIG_DFL);
+  ارفع (sig);
 }
 
 /* Report MESSAGE for FILE, then clean up and exit.
    If FILE is null, it represents standard output.  */
 
-static void
-sort_die (char const *message, char const *file)
+ساكن فراغ
+ترتیبول_die (حرف ثابت *پیغام_2, حرف ثابت *file)
 {
   /* If we got EPIPE writing to stdout (from a previous fwrite() or fclose()
      and SIGPIPE was originally SIG_DFL, mimic standard SIGPIPE behavior.  */
-  if (errno == EPIPE && !file && default_SIGPIPE)
+  إذا (errno == EPIPE && !file && default_SIGPIPE)
     sighandler (SIGPIPE);
 
-  error (SORT_FAILURE, errno, "%s: %s", message,
+  error (ترتیبول_FAILURE, errno, "%s: %s", پیغام_2,
          quotef (file ? file : _("standard output")));
 }
 
-void
-usage (int status)
+فراغ
+usage (صحيح حالت)
 {
-  if (status != EXIT_SUCCESS)
+  إذا (حالت != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  وإلا
     {
-      printf (_("\
+      چاپ_کړه (_("\
 Usage: %s [OPTION]... [FILE]...\n\
   or:  %s [OPTION]... --files0-from=F\n\
 "),
-              program_name, program_name);
+              پروګرام_name, پروګرام_name);
       fputs (_("\
-Write sorted concatenation of all FILE(s) to standard output.\n\
+Write sorted concatenation د all FILE(s) منزل standard output.\n\
 "), stdout);
 
       emit_stdin_note ();
@@ -452,58 +452,58 @@ Ordering options:\n\
 "), stdout);
       oputs (_("\
   -b, --ignore-leading-blanks\n\
-         ignore leading blanks when finding sort keys in each line\n\
+         ignore leading blanks when finding ترتیبول کلیګانې دننه each کرښه\n\
 "));
       oputs (_("\
-  -d, --dictionary-order\n\
+  -d, --dictionary-ترتیب\n\
          consider only blanks and alphanumeric characters\n\
 "));
       oputs (_("\
-  -f, --ignore-case\n\
-         fold lower case to upper case characters\n\
+  -f, --ignore-حالة\n\
+         fold ښکتنی حالة منزل پاسنی حالة characters\n\
 "));
       oputs (_("\
-  -g, --general-numeric-sort\n\
-         compare according to general numerical value\n\
+  -g, --general-numeric-ترتیبول\n\
+         compare according منزل general numerical ارزښت\n\
 "));
       oputs (_("\
   -i, --ignore-nonprinting\n\
          consider only printable characters\n\
 "));
       oputs (_("\
-  -M, --month-sort\n\
+  -M, --month-ترتیبول\n\
          compare (unknown) < 'JAN' < ... < 'DEC'\n\
 "));
       oputs (_("\
-  -h, --human-numeric-sort\n\
+  -h, --human-numeric-ترتیبول\n\
          compare human readable numbers (e.g., 2K 1G)\n\
 "));
       oputs (_("\
-  -n, --numeric-sort\n\
-         compare according to string numerical value;\n\
-         see full documentation for supported strings\n\
+  -n, --numeric-ترتیبول\n\
+         compare according منزل string numerical ارزښت;\n\
+         see ډک documentation لكل supported مزي_ګانې\n\
 "));
       oputs (_("\
-  -R, --random-sort\n\
-         shuffle, but group identical keys.  See also shuf(1)\n\
+  -R, --random-ترتیبول\n\
+         shuffle, but ډله identical کلیګانې.  See also shuf(1)\n\
 "));
       oputs (_("\
-      --random-source=FILE\n\
-         get random bytes from FILE\n\
+      --random-سرچینه_2=FILE\n\
+         get random بایټونه from FILE\n\
 "));
       oputs (_("\
-  -r, --reverse\n\
-         reverse the result of comparisons\n\
+  -r, --سرچپه\n\
+         سرچپه the پایله د comparisons\n\
 "));
       oputs (_("\
-      --sort=WORD\n\
-         sort according to WORD:\n\
+      --ترتیبول=کلمه\n\
+         ترتیبول according منزل کلمه:\n\
            general-numeric -g, human-numeric -h, month -M,\n\
-           numeric -n, random -R, version -V\n\
+           numeric -n, random -R, نسخه_3 -V\n\
 "));
       oputs (_("\
-  -V, --version-sort\n\
-         natural sort of (version) numbers within text\n\
+  -V, --نسخه_3-ترتیبول\n\
+         natural ترتیبول د (نسخه_3) numbers within متن\n\
 "));
       fputs (_("\
 \n\
@@ -511,173 +511,173 @@ Other options:\n\
 \n\
 "), stdout);
       oputs (_("\
-      --batch-size=NMERGE\n\
-         merge at most NMERGE inputs at once; for more use temp files\n\
+      --batch-اندازه=NMERGE\n\
+         یوځای at most NMERGE inputs at once; لكل نور use لنډمهاله files\n\
 "));
       oputs (_("\
-  -c, --check, --check=diagnose-first\n\
-         check for sorted input; do not sort\n\
+  -c, --check, --check=diagnose-لومړی\n\
+         check لكل sorted ننوت; افعل not ترتیبول\n\
 "));
       oputs (_("\
   -C, --check=quiet, --check=silent\n\
-         like -c, but do not report first bad line\n\
+         like -c, but افعل not report لومړی bad کرښه\n\
 "));
       oputs (_("\
-      --compress-program=PROG\n\
+      --compress-پروګرام=PROG\n\
          compress temporaries with PROG; decompress them with PROG -d\n\
 "));
       oputs (_("\
       --debug\n\
-         annotate the part of the line used to sort,\n\
-         and warn about questionable usage to standard error\n\
+         annotate the part د the کرښه کارول_شوی منزل ترتیبول,\n\
+         and warn about questionable usage منزل standard error\n\
 "));
       oputs (_("\
       --files0-from=F\n\
-         read input from the files specified by NUL-terminated names in file F;\
+         اقرأ ننوت from the files specified by NUL-terminated نومونه دننه file F;\
 \n\
-         If F is -, read names from standard input\n\
+         If F is -, اقرأ نومونه from standard ننوت\n\
 "));
       oputs (_("\
-  -k, --key=KEYDEF\n\
-         sort via a key; KEYDEF gives location and type\n\
+  -k, --کلی=KEYDEF\n\
+         ترتیبول له_لارې a کلی; KEYDEF gives location and type\n\
 "));
       oputs (_("\
-  -m, --merge\n\
-         merge already sorted files; do not sort\n\
+  -m, --یوځای\n\
+         یوځای already sorted files; افعل not ترتیبول\n\
 "));
       oputs (_("\
   -o, --output=FILE\n\
-         write result to FILE instead of standard output\n\
+         اكتب پایله منزل FILE instead د standard output\n\
 "));
       oputs (_("\
   -s, --stable\n\
-         stabilize sort by disabling last-resort comparison\n\
+         stabilize ترتیبول by disabling وروستی-resort comparison\n\
 "));
       oputs (_("\
-  -S, --buffer-size=SIZE\n\
-         use SIZE for main memory buffer\n\
+  -S, --بفر-اندازه=اندازه_2\n\
+         use اندازه_2 لكل اصلي حافظه بفر\n\
 "));
       oputs (_("\
-  -t, --field-separator=SEP\n\
-         use SEP instead of non-blank to blank transition\n\
+  -t, --ډګر-separator=SEP\n\
+         use SEP instead د non-blank منزل blank transition\n\
 "));
       oprintf (_("\
   -T, --temporary-directory=DIR\n\
-         use DIR for temporaries, not $TMPDIR or %s;\n\
-         multiple options specify multiple directories\n\
+         use DIR لكل temporaries, not $TMPDIR or %s;\n\
+         مضرب options specify مضرب directories\n\
 "), DEFAULT_TMPDIR);
       oputs (_("\
       --parallel=N\n\
-         change the number of sorts run concurrently to N\n\
+         change the شمېره د sorts پرلپسې_2 concurrently منزل N\n\
 "));
       oputs (_("\
   -u, --unique\n\
-         output only the first of lines with equal keys;\n\
-         with -c, check for strict ordering\n\
+         output only the لومړی د کرښې with equal کلیګانې;\n\
+         with -c, check لكل strict ordering\n\
 "));
       oputs (_("\
   -z, --zero-terminated\n\
-         line delimiter is NUL, not newline\n\
+         کرښه delimiter is NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (نسخه_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-KEYDEF is F[.C][OPTS][,F[.C][OPTS]] for start and stop position, where F is a\n\
-field number and C a character position in the field; both are origin 1, and\n\
-the stop position defaults to the line's end.  If neither -t nor -b is in\n\
-effect, characters in a field are counted from the beginning of the preceding\n\
-whitespace.  OPTS is one or more single-letter ordering options [bdfgiMhnRrV],\
+KEYDEF is F[.C][OPTS][,F[.C][OPTS]] لكل پیل and stop position, where F is a\n\
+ډګر شمېره and C a character position دننه the ډګر; both are origin 1, and\n\
+the stop position defaults منزل the کرښه's پای_ټکی.  If neither -t nor -b is دننه\n\
+effect, characters دننه a ډګر are counted from the beginning د the preceding\n\
+whitespace.  OPTS is one or نور single-letter ordering options [bdfgiMhnRrV],\
 \n\
-which override global ordering options for that key.  If no key is given, use\n\
-the entire line as the key.  Use --debug to diagnose incorrect key usage.\n\
+which override global ordering options لكل that کلی.  If no کلی is given, use\n\
+the entire کرښه as the کلی.  Use --debug منزل diagnose incorrect کلی usage.\n\
 \n\
-SIZE may be followed by the following multiplicative suffixes:\n\
+اندازه_2 may be followed by the following multiplicative suffixes:\n\
 "), stdout);
       fputs (_("\
-% 1% of memory, b 1, K 1024 (default), and so on for M, G, T, P, E, Z, Y, R, Q.\
+% 1% د حافظه, b 1, K 1024 (افتراضي), and so on لكل M, G, T, P, E, Z, Y, R, Q.\
 \n\n\
 *** WARNING ***\n\
-The locale specified by the environment affects sort order.\n\
-Set LC_ALL=C to get the traditional sort order that uses\n\
-native byte values.\n\
+The locale specified by the environment affects ترتیبول ترتیب.\n\
+سېټ_3 LC_ALL=C منزل get the traditional ترتیبول ترتیب that کاروي\n\
+native byte ارزښتونه.\n\
 "), stdout );
-      emit_ancillary_info (PROGRAM_NAME);
+      emit_ancillary_info (پروګرام_NAME);
     }
 
-  exit (status);
+  وتل (حالت);
 }
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+تعداد
 {
   CHECK_OPTION = CHAR_MAX + 1,
-  COMPRESS_PROGRAM_OPTION,
-  DEBUG_PROGRAM_OPTION,
+  COMPRESS_پروګرام_OPTION,
+  DEBUG_پروګرام_OPTION,
   FILES0_FROM_OPTION,
   NMERGE_OPTION,
-  RANDOM_SOURCE_OPTION,
-  SORT_OPTION,
+  RANDOM_سرچینه_OPTION,
+  ترتیبول_OPTION,
   PARALLEL_OPTION
 };
 
-static char const short_options[] = "-bcCdfghik:mMno:rRsS:t:T:uVy:z";
+ساكن حرف ثابت short_options[] = "-bcCdfghik:mMno:rRsS:t:T:uVy:z";
 
-static struct option const long_options[] =
+ساكن بنية option ثابت long_options[] =
 {
-  {"ignore-leading-blanks", no_argument, NULL, 'b'},
-  {"check", optional_argument, NULL, CHECK_OPTION},
-  {"compress-program", required_argument, NULL, COMPRESS_PROGRAM_OPTION},
-  {"debug", no_argument, NULL, DEBUG_PROGRAM_OPTION},
-  {"dictionary-order", no_argument, NULL, 'd'},
-  {"ignore-case", no_argument, NULL, 'f'},
-  {"files0-from", required_argument, NULL, FILES0_FROM_OPTION},
-  {"general-numeric-sort", no_argument, NULL, 'g'},
-  {"ignore-nonprinting", no_argument, NULL, 'i'},
-  {"key", required_argument, NULL, 'k'},
-  {"merge", no_argument, NULL, 'm'},
-  {"month-sort", no_argument, NULL, 'M'},
-  {"numeric-sort", no_argument, NULL, 'n'},
-  {"human-numeric-sort", no_argument, NULL, 'h'},
-  {"version-sort", no_argument, NULL, 'V'},
-  {"random-sort", no_argument, NULL, 'R'},
-  {"random-source", required_argument, NULL, RANDOM_SOURCE_OPTION},
-  {"sort", required_argument, NULL, SORT_OPTION},
-  {"output", required_argument, NULL, 'o'},
-  {"reverse", no_argument, NULL, 'r'},
-  {"stable", no_argument, NULL, 's'},
-  {"batch-size", required_argument, NULL, NMERGE_OPTION},
-  {"buffer-size", required_argument, NULL, 'S'},
-  {"field-separator", required_argument, NULL, 't'},
-  {"temporary-directory", required_argument, NULL, 'T'},
-  {"unique", no_argument, NULL, 'u'},
-  {"zero-terminated", no_argument, NULL, 'z'},
-  {"parallel", required_argument, NULL, PARALLEL_OPTION},
+  {"ignore-leading-blanks", no_دلیل, عدم, 'b'},
+  {"check", optional_دلیل, عدم, CHECK_OPTION},
+  {"compress-program", required_دلیل, عدم, COMPRESS_پروګرام_OPTION},
+  {"debug", no_دلیل, عدم, DEBUG_پروګرام_OPTION},
+  {"dictionary-order", no_دلیل, عدم, 'd'},
+  {"ignore-case", no_دلیل, عدم, 'f'},
+  {"files0-from", required_دلیل, عدم, FILES0_FROM_OPTION},
+  {"general-numeric-sort", no_دلیل, عدم, 'g'},
+  {"ignore-nonprinting", no_دلیل, عدم, 'i'},
+  {"key", required_دلیل, عدم, 'k'},
+  {"merge", no_دلیل, عدم, 'm'},
+  {"month-sort", no_دلیل, عدم, 'M'},
+  {"numeric-sort", no_دلیل, عدم, 'n'},
+  {"human-numeric-sort", no_دلیل, عدم, 'h'},
+  {"version-sort", no_دلیل, عدم, 'V'},
+  {"random-sort", no_دلیل, عدم, 'R'},
+  {"random-source", required_دلیل, عدم, RANDOM_سرچینه_OPTION},
+  {"sort", required_دلیل, عدم, ترتیبول_OPTION},
+  {"output", required_دلیل, عدم, 'o'},
+  {"reverse", no_دلیل, عدم, 'r'},
+  {"stable", no_دلیل, عدم, 's'},
+  {"batch-size", required_دلیل, عدم, NMERGE_OPTION},
+  {"buffer-size", required_دلیل, عدم, 'S'},
+  {"field-separator", required_دلیل, عدم, 't'},
+  {"temporary-directory", required_دلیل, عدم, 'T'},
+  {"unique", no_دلیل, عدم, 'u'},
+  {"zero-terminated", no_دلیل, عدم, 'z'},
+  {"parallel", required_دلیل, عدم, PARALLEL_OPTION},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0},
+  {GETOPT_نسخه_OPTION_DECL},
+  {عدم, 0, عدم, 0},
 };
 
-#define CHECK_TABLE \
+#تعریف_کړه CHECK_جدول \
   _ct_("quiet",          'C') \
   _ct_("silent",         'C') \
   _ct_("diagnose-first", 'c')
 
-static char const *const check_args[] =
+ساكن حرف ثابت *ثابت check_دلیلونه[] =
 {
-#define _ct_(_s, _c) _s,
-  CHECK_TABLE NULL
-#undef  _ct_
+#تعریف_کړه _ct_(_s, _c) _s,
+  CHECK_جدول عدم
+#تعریف_لغوه  _ct_
 };
-static char const check_types[] =
+ساكن حرف ثابت check_types[] =
 {
-#define _ct_(_s, _c) _c,
-  CHECK_TABLE
-#undef  _ct_
+#تعریف_کړه _ct_(_s, _c) _c,
+  CHECK_جدول
+#تعریف_لغوه  _ct_
 };
 
-#define SORT_TABLE \
+#تعریف_کړه ترتیبول_جدول \
   _st_("general-numeric", 'g') \
   _st_("human-numeric",   'h') \
   _st_("month",           'M') \
@@ -685,87 +685,87 @@ static char const check_types[] =
   _st_("random",          'R') \
   _st_("version",         'V')
 
-static char const *const sort_args[] =
+ساكن حرف ثابت *ثابت ترتیبول_دلیلونه[] =
 {
-#define _st_(_s, _c) _s,
-  SORT_TABLE NULL
-#undef  _st_
+#تعریف_کړه _st_(_s, _c) _s,
+  ترتیبول_جدول عدم
+#تعریف_لغوه  _st_
 };
-static char const sort_types[] =
+ساكن حرف ثابت ترتیبول_types[] =
 {
-#define _st_(_s, _c) _c,
-  SORT_TABLE
-#undef  _st_
+#تعریف_کړه _st_(_s, _c) _c,
+  ترتیبول_جدول
+#تعریف_لغوه  _st_
 };
 
 /* The set of signals that are caught.  */
-static sigset_t caught_signals;
+ساكن sigset_t caught_سیګنالونه;
 
 /* Critical section status.  */
-struct cs_status
+بنية cs_حالت
 {
   bool valid;
   sigset_t sigs;
 };
 
 /* Enter a critical section.  */
-static void
-cs_enter (struct cs_status *status)
+ساكن فراغ
+cs_enter (بنية cs_حالت *حالت)
 {
-  int ret = pthread_sigmask (SIG_BLOCK, &caught_signals, &status->sigs);
-  status->valid = ret == 0;
+  صحيح ret = pthread_sigmask (SIG_BLOCK, &caught_سیګنالونه, &حالت->sigs);
+  حالت->valid = ret == 0;
 }
 
 /* Leave a critical section.  */
-static void
-cs_leave (struct cs_status const *status)
+ساكن فراغ
+cs_leave (بنية cs_حالت ثابت *حالت)
 {
-  if (status->valid)
+  إذا (حالت->valid)
     {
       /* Ignore failure when restoring the signal mask. */
-      pthread_sigmask (SIG_SETMASK, &status->sigs, NULL);
+      pthread_sigmask (SIG_SETMASK, &حالت->sigs, عدم);
     }
 }
 
 /* Possible states for a temp file.  If compressed, the file's status
    is unreaped or reaped, depending on whether 'sort' has waited for
    the subprocess to finish.  */
-enum { UNCOMPRESSED, UNREAPED, REAPED };
+تعداد { UNCOMPRESSED, UNREAPED, REAPED };
 
 /* A file to be sorted.  */
-struct sortfile
+بنية sortfile
 {
   /* The file's name.  */
-  char const *name;
+  حرف ثابت *name;
 
   /* Non-null if this is a temporary file, in which case NAME == TEMP->name.  */
-  struct tempnode *temp;
+  بنية tempnode *لنډمهاله;
 };
 
 /* Map PIDs of unreaped subprocesses to their struct tempnode objects.  */
-static Hash_table *proctab;
+ساكن Hash_جدول *proctab;
 
-enum { INIT_PROCTAB_SIZE = 47 };
+تعداد { INIT_PROCTAB_اندازه = 47 };
 
-static size_t
-proctab_hasher (void const *entry, size_t tabsize)
+ساكن size_t
+proctab_hasher (فراغ ثابت *ثبت, size_t tabsize)
 {
-  struct tempnode const *node = entry;
-  return node->pid % tabsize;
+  بنية tempnode ثابت *غوټه = ثبت;
+  أرجع غوټه->pid % tabsize;
 }
 
-static bool
-proctab_comparator (void const *e1, void const *e2)
+ساكن bool
+proctab_comparator (فراغ ثابت *e1, فراغ ثابت *e2)
 {
-  struct tempnode const *n1 = e1;
-  struct tempnode const *n2 = e2;
-  return n1->pid == n2->pid;
+  بنية tempnode ثابت *n1 = e1;
+  بنية tempnode ثابت *n2 = e2;
+  أرجع n1->pid == n2->pid;
 }
 
 /* The number of unreaped child processes.  */
-static pid_t nprocs;
+ساكن pid_t nprocs;
 
-static bool delete_proc (pid_t);
+ساكن bool delete_proc (pid_t);
 
 /* If PID is positive, wait for the child process with that PID to
    exit, and assume that PID has already been removed from the process
@@ -774,88 +774,88 @@ static bool delete_proc (pid_t);
    child's process ID.  However, if PID is 0 and no children have
    exited, return 0 without waiting.  */
 
-static pid_t
+ساكن pid_t
 reap (pid_t pid)
 {
-  int status;
-  pid_t cpid = waitpid ((pid ? pid : -1), &status, (pid ? 0 : WNOHANG));
+  صحيح حالت;
+  pid_t cpid = waitpid ((pid ? pid : -1), &حالت, (pid ? 0 : WNOHANG));
 
-  if (cpid < 0)
-    error (SORT_FAILURE, errno, _("waiting for %s [-d]"),
-           quoteaf (compress_program));
-  else if (0 < cpid && (0 < pid || delete_proc (cpid)))
+  إذا (cpid < 0)
+    error (ترتیبول_FAILURE, errno, _("waiting for %s [-d]"),
+           quoteaf (compress_پروګرام));
+  وإلا إذا (0 < cpid && (0 < pid || delete_proc (cpid)))
     {
-      if (! WIFEXITED (status) || WEXITSTATUS (status))
-        error (SORT_FAILURE, 0, _("%s [-d] terminated abnormally"),
-               quoteaf (compress_program));
+      إذا (! WIFEXITED (حالت) || WEXITSTATUS (حالت))
+        error (ترتیبول_FAILURE, 0, _("%s [-d] terminated abnormally"),
+               quoteaf (compress_پروګرام));
       --nprocs;
     }
 
-  return cpid;
+  أرجع cpid;
 }
 
 /* TEMP represents a new process; add it to the process table.  Create
    the process table the first time it's called.  */
 
-static void
-register_proc (struct tempnode *temp)
+ساكن فراغ
+ثبتوونکی_proc (بنية tempnode *لنډمهاله)
 {
-  if (! proctab)
+  إذا (! proctab)
     {
-      proctab = hash_initialize (INIT_PROCTAB_SIZE, NULL,
+      proctab = hash_initialize (INIT_PROCTAB_اندازه, عدم,
                                  proctab_hasher,
                                  proctab_comparator,
-                                 NULL);
-      if (! proctab)
+                                 عدم);
+      إذا (! proctab)
         xalloc_die ();
     }
 
-  temp->state = UNREAPED;
+  لنډمهاله->state = UNREAPED;
 
-  if (! hash_insert (proctab, temp))
+  إذا (! hash_ورننباسه (proctab, لنډمهاله))
     xalloc_die ();
 }
 
 /* If PID is in the process table, remove it and return true.
    Otherwise, return false.  */
 
-static bool
+ساكن bool
 delete_proc (pid_t pid)
 {
-  struct tempnode test;
+  بنية tempnode test;
 
   test.pid = pid;
-  struct tempnode *node = hash_remove (proctab, &test);
-  if (! node)
-    return false;
-  node->state = REAPED;
-  return true;
+  بنية tempnode *غوټه = hash_remove (proctab, &test);
+  إذا (! غوټه)
+    أرجع false;
+  غوټه->state = REAPED;
+  أرجع true;
 }
 
 /* Remove PID from the process table, and wait for it to exit if it
    hasn't already.  */
 
-static void
+ساكن فراغ
 wait_proc (pid_t pid)
 {
-  if (delete_proc (pid))
+  إذا (delete_proc (pid))
     reap (pid);
 }
 
 /* Reap any exited children.  Do not block; reap only those that have
    already exited.  */
 
-static void
-reap_exited (void)
+ساكن فراغ
+reap_exited (فراغ)
 {
-  while (0 < nprocs && reap (0))
-    continue;
+  طالما (0 < nprocs && reap (0))
+    استمر;
 }
 
 /* Reap at least one exited child, waiting if necessary.  */
 
-static void
-reap_some (void)
+ساكن فراغ
+reap_some (فراغ)
 {
   reap (-1);
   reap_exited ();
@@ -863,23 +863,23 @@ reap_some (void)
 
 /* Reap all children, waiting if necessary.  */
 
-static void
-reap_all (void)
+ساكن فراغ
+reap_all (فراغ)
 {
-  while (0 < nprocs)
+  طالما (0 < nprocs)
     reap (-1);
 }
 
 /* Cleanup actions to take when exiting.  */
 
-static void
-exit_cleanup (void)
+ساكن فراغ
+exit_cleanup (فراغ)
 {
-  if (temphead)
+  إذا (temphead)
     {
       /* Clean up any remaining temporary files in a critical section so
          that a signal handler does not try to clean them too.  */
-      struct cs_status cs;
+      بنية cs_حالت cs;
       cs_enter (&cs);
       cleanup ();
       cs_leave (&cs);
@@ -894,61 +894,61 @@ exit_cleanup (void)
    failure is due to file descriptor exhaustion and
    SURVIVE_FD_EXHAUSTION; otherwise, die.  */
 
-static struct tempnode *
-create_temp_file (int *pfd, bool survive_fd_exhaustion)
+ساكن بنية tempnode *
+create_لنډمهاله_file (صحيح *pfd, bool survive_fd_exhaustion)
 {
-  static char const slashbase[] = "/sortXXXXXX";
-  static idx_t temp_dir_index;
-  int fd;
-  int saved_errno;
-  char const *temp_dir = temp_dirs.dirs[temp_dir_index];
-  size_t len = strlen (temp_dir);
-  struct tempnode *node =
-    xmalloc (FLEXSIZEOF (struct tempnode, name, len + sizeof slashbase));
-  char *file = node->name;
-  struct cs_status cs;
+  ساكن حرف ثابت slashbase[] = "/sortXXXXXX";
+  ساكن idx_t لنډمهاله_dir_شاخص;
+  صحيح fd;
+  صحيح saved_errno;
+  حرف ثابت *لنډمهاله_dir = لنډمهاله_dirs.dirs[لنډمهاله_dir_شاخص];
+  size_t len = مزي_اوږدوالی (لنډمهاله_dir);
+  بنية tempnode *غوټه =
+    xmalloc (FLEXSIZEOF (بنية tempnode, name, len + حجم slashbase));
+  حرف *file = غوټه->name;
+  بنية cs_حالت cs;
 
-  memcpy (file, temp_dir, len);
-  memcpy (file + len, slashbase, sizeof slashbase);
-  node->next = NULL;
-  if (++temp_dir_index == temp_dirs.n_dirs)
-    temp_dir_index = 0;
+  حافظه_نقل (file, لنډمهاله_dir, len);
+  حافظه_نقل (file + len, slashbase, حجم slashbase);
+  غوټه->بل = عدم;
+  إذا (++لنډمهاله_dir_شاخص == لنډمهاله_dirs.n_dirs)
+    لنډمهاله_dir_شاخص = 0;
 
   /* Create the temporary file in a critical section, to avoid races.  */
   cs_enter (&cs);
   fd = mkostemp (file, O_CLOEXEC);
-  if (0 <= fd)
+  إذا (0 <= fd)
     {
-      *temptail = node;
-      temptail = &node->next;
+      *temptail = غوټه;
+      temptail = &غوټه->بل;
     }
   saved_errno = errno;
   cs_leave (&cs);
   errno = saved_errno;
 
-  if (fd < 0)
+  إذا (fd < 0)
     {
-      if (! (survive_fd_exhaustion && errno == EMFILE))
-        error (SORT_FAILURE, errno, _("cannot create temporary file in %s"),
-               quoteaf (temp_dir));
-      free (node);
-      node = NULL;
+      إذا (! (survive_fd_exhaustion && errno == EMFILE))
+        error (ترتیبول_FAILURE, errno, _("cannot create temporary file in %s"),
+               quoteaf (لنډمهاله_dir));
+      حرر (غوټه);
+      غوټه = عدم;
     }
 
   *pfd = fd;
-  return node;
+  أرجع غوټه;
 }
 
 /* Return a pointer to stdout status, or NULL on failure.  */
 
-static struct stat *
-get_outstatus (void)
+ساكن بنية stat *
+get_outstatus (فراغ)
 {
-  static int outstat_errno;
-  static struct stat outstat;
-  if (outstat_errno == 0)
+  ساكن صحيح outstat_errno;
+  ساكن بنية stat outstat;
+  إذا (outstat_errno == 0)
     outstat_errno = fstat (STDOUT_FILENO, &outstat) == 0 ? -1 : errno;
-  return outstat_errno < 0 ? &outstat : NULL;
+  أرجع outstat_errno < 0 ? &outstat : عدم;
 }
 
 /* Return a stream for FILE, opened with mode HOW.  If HOW is "w",
@@ -999,127 +999,127 @@ get_outstatus (void)
    cache immediately after processing.  This is done implicitly
    however when the files are unlinked.  */
 
-static FILE *
-stream_open (char const *file, char const *how)
+ساكن FILE *
+بهیر_open (حرف ثابت *file, حرف ثابت *how)
 {
   FILE *fp;
 
-  if (*how == 'r')
+  إذا (*how == 'r')
     {
-      if (streq (file, "-"))
+      إذا (streq (file, "-"))
         {
           have_read_stdin = true;
           fp = stdin;
         }
-      else
+      وإلا
         {
-          int fd = open (file, O_RDONLY | O_CLOEXEC);
-          fp = fd < 0 ? NULL : fdopen (fd, how);
+          صحيح fd = open (file, O_RDONLY | O_CLOEXEC);
+          fp = fd < 0 ? عدم : fdopen (fd, how);
         }
       fadvise (fp, FADVISE_SEQUENTIAL);
     }
-  else if (*how == 'w')
+  وإلا إذا (*how == 'w')
     {
-      if (file && ftruncate (STDOUT_FILENO, 0) != 0)
+      إذا (file && ftruncate (STDOUT_FILENO, 0) != 0)
         {
-          int ftruncate_errno = errno;
-          struct stat *outst = get_outstatus ();
-          if (!outst || S_ISREG (outst->st_mode) || S_TYPEISSHM (outst))
-            error (SORT_FAILURE, ftruncate_errno, _("%s: error truncating"),
+          صحيح ftruncate_errno = errno;
+          بنية stat *outst = get_outstatus ();
+          إذا (!outst || S_ISREG (outst->st_ډېرپېښ) || S_TYPEISSHM (outst))
+            error (ترتیبول_FAILURE, ftruncate_errno, _("%s: error truncating"),
                    quotef (file));
         }
       fp = stdout;
     }
-  else
+  وإلا
     affirm (!"unexpected mode passed to stream_open");
 
-  return fp;
+  أرجع fp;
 }
 
 /* Same as stream_open, except always return a non-null value; die on
    failure.  */
 
-static FILE *
-xfopen (char const *file, char const *how)
+ساكن FILE *
+xfopen (حرف ثابت *file, حرف ثابت *how)
 {
-  FILE *fp = stream_open (file, how);
-  if (!fp)
-    sort_die (_("open failed"), file);
-  return fp;
+  FILE *fp = بهیر_open (file, how);
+  إذا (!fp)
+    ترتیبول_die (_("open failed"), file);
+  أرجع fp;
 }
 
 /* Close FP, whose name is FILE, and report any errors.  */
 
-static void
-xfclose (FILE *fp, char const *file)
+ساكن فراغ
+xfclose (FILE *fp, حرف ثابت *file)
 {
-  switch (fileno (fp))
+  بدل (fileno (fp))
     {
-    case STDIN_FILENO:
+    حالة STDIN_FILENO:
       /* Allow reading stdin from tty more than once.  */
       clearerr (fp);
-      break;
+      اكسر;
 
-    case STDOUT_FILENO:
+    حالة STDOUT_FILENO:
       /* Don't close stdout just yet.  close_stdout does that.  */
-      if (fflush (fp) != 0)
-        sort_die (_("fflush failed"), file);
-      break;
+      إذا (fflush (fp) != 0)
+        ترتیبول_die (_("fflush failed"), file);
+      اكسر;
 
-    default:
-      if (fclose (fp) != 0)
-        sort_die (_("close failed"), file);
-      break;
+    افتراضي:
+      إذا (fclose (fp) != 0)
+        ترتیبول_die (_("close failed"), file);
+      اكسر;
     }
 }
 
 /* Move OLDFD to NEWFD.  If OLDFD != NEWFD, NEWFD is not close-on-exec.  */
 
-static void
-move_fd (int oldfd, int newfd)
+ساكن فراغ
+move_fd (صحيح oldfd, صحيح newfd)
 {
-  if (oldfd != newfd)
+  إذا (oldfd != newfd)
     {
       /* These should never fail for our usage.  */
-      ignore_value (dup2 (oldfd, newfd));
-      ignore_value (close (oldfd));
+      ignore_ارزښت (dup2 (oldfd, newfd));
+      ignore_ارزښت (close (oldfd));
     }
 }
 
 /* Setup ACTION to move OLDFD to NEWFD.  If OLDFD != NEWFD, NEWFD is not
    close-on-exec.  Returns 0 if successful, or an error number otherwise.  */
 
-static int
+ساكن صحيح
 posix_spawn_file_actions_move_fd (posix_spawn_file_actions_t *actions,
-                                  int oldfd, int newfd)
+                                  صحيح oldfd, صحيح newfd)
 {
-  int result = 0;
-  if (oldfd != newfd)
+  صحيح پایله = 0;
+  إذا (oldfd != newfd)
     {
-      result = posix_spawn_file_actions_adddup2 (actions, oldfd, newfd);
-      if (result == 0)
-        result = posix_spawn_file_actions_addclose (actions, oldfd);
+      پایله = posix_spawn_file_actions_adddup2 (actions, oldfd, newfd);
+      إذا (پایله == 0)
+        پایله = posix_spawn_file_actions_addclose (actions, oldfd);
     }
-  return result;
+  أرجع پایله;
 }
 
 /* Look up COMPRESS_PROGRAM in $PATH, and return the resolved program name.
    Upon error, return NULL with errno set.  */
 
-static char const *
-get_resolved_compress_program (void)
+ساكن حرف ثابت *
+get_resolved_compress_پروګرام (فراغ)
 {
   /* Use a cache, to perform the search only once.  */
-  static char const *resolved_compress_program_cache /* = NULL */;
+  ساكن حرف ثابت *resolved_compress_پروګرام_cache /* = NULL */;
 
-  if (resolved_compress_program_cache == NULL)
+  إذا (resolved_compress_پروګرام_cache == عدم)
     {
-      resolved_compress_program_cache =
-        find_in_given_path (compress_program, getenv ("PATH"), NULL, false);
+      resolved_compress_پروګرام_cache =
+        پیدا_کړه_دننه_given_لار (compress_پروګرام, getenv ("PATH"), عدم, false);
       /* If resolved_compress_program_cache == NULL, errno is set here.  */
     }
 
-  return resolved_compress_program_cache;
+  أرجع resolved_compress_پروګرام_cache;
 }
 
 /* Execute COMPRESS_PROGRAM in a child process.  The child processes pid is
@@ -1127,15 +1127,15 @@ get_resolved_compress_program (void)
    a child process before giving up.  Return 0 on success, or an error number
    otherwise.  */
 
-static int
-pipe_child (pid_t *pid, int pipefds[2], int tempfd, bool decompress,
+ساكن صحيح
+pipe_ماشوم (pid_t *pid, صحيح pipefds[2], صحيح tempfd, bool decompress,
             size_t tries)
 {
-  char const *resolved_compress_program;
-  struct tempnode *saved_temphead;
-  double wait_retry = 0.25;
-  struct cs_status cs;
-  int result;
+  حرف ثابت *resolved_compress_پروګرام;
+  بنية tempnode *saved_temphead;
+  مزدوج wait_retry = 0.25;
+  بنية cs_حالت cs;
+  صحيح پایله;
   posix_spawnattr_t attr;
   posix_spawn_file_actions_t actions;
 
@@ -1143,42 +1143,42 @@ pipe_child (pid_t *pid, int pipefds[2], int tempfd, bool decompress,
      handle access issues to COMPRESS_PROGRAM, because on some
      implementations/emulations of posix_spawn we get only a
      generic (fatal) error from the child in that case.  */
-  resolved_compress_program = get_resolved_compress_program ();
-  if (resolved_compress_program == NULL)
-    return errno;
+  resolved_compress_پروګرام = get_resolved_compress_پروګرام ();
+  إذا (resolved_compress_پروګرام == عدم)
+    أرجع errno;
 
-  if ((result = posix_spawnattr_init (&attr)))
-    return result;
-  if ((result = posix_spawnattr_setflags (&attr, POSIX_SPAWN_USEVFORK))
-      || (result = posix_spawn_file_actions_init (&actions)))
+  إذا ((پایله = posix_spawnattr_init (&attr)))
+    أرجع پایله;
+  إذا ((پایله = posix_spawnattr_setflags (&attr, POSIX_SPAWN_USEVFORK))
+      || (پایله = posix_spawn_file_actions_init (&actions)))
     {
       posix_spawnattr_destroy (&attr);
-      return result;
+      أرجع پایله;
     }
 
-  if (pipe2 (pipefds, O_CLOEXEC) < 0)
+  إذا (pipe2 (pipefds, O_CLOEXEC) < 0)
     {
-      int saved_errno = errno;
+      صحيح saved_errno = errno;
       posix_spawnattr_destroy (&attr);
       posix_spawn_file_actions_destroy (&actions);
-      return saved_errno;
+      أرجع saved_errno;
     }
 
-  if ((result = posix_spawn_file_actions_addclose (&actions, STDIN_FILENO))
-      || (result = posix_spawn_file_actions_addclose (&actions, STDOUT_FILENO))
+  إذا ((پایله = posix_spawn_file_actions_addclose (&actions, STDIN_FILENO))
+      || (پایله = posix_spawn_file_actions_addclose (&actions, STDOUT_FILENO))
       || (decompress
-          ? ((result = posix_spawn_file_actions_addclose (&actions,
+          ? ((پایله = posix_spawn_file_actions_addclose (&actions,
                                                           pipefds[0]))
-             || (result = posix_spawn_file_actions_move_fd (&actions, tempfd,
+             || (پایله = posix_spawn_file_actions_move_fd (&actions, tempfd,
                                                             STDIN_FILENO))
-             || (result = posix_spawn_file_actions_move_fd (&actions,
+             || (پایله = posix_spawn_file_actions_move_fd (&actions,
                                                             pipefds[1],
                                                             STDOUT_FILENO)))
-          : ((result = posix_spawn_file_actions_addclose (&actions,
+          : ((پایله = posix_spawn_file_actions_addclose (&actions,
                                                           pipefds[1]))
-             || (result = posix_spawn_file_actions_move_fd (&actions, tempfd,
+             || (پایله = posix_spawn_file_actions_move_fd (&actions, tempfd,
                                                             STDOUT_FILENO))
-             || (result = posix_spawn_file_actions_move_fd (&actions,
+             || (پایله = posix_spawn_file_actions_move_fd (&actions,
                                                             pipefds[0],
                                                             STDIN_FILENO)))))
     {
@@ -1186,14 +1186,14 @@ pipe_child (pid_t *pid, int pipefds[2], int tempfd, bool decompress,
       close (pipefds[1]);
       posix_spawnattr_destroy (&attr);
       posix_spawn_file_actions_destroy (&actions);
-      return result;
+      أرجع پایله;
     }
 
-  char const *const argv[] =
+  حرف ثابت *ثابت argv[] =
     {
-      resolved_compress_program,
-      decompress ? "-d" : NULL,
-      NULL
+      resolved_compress_پروګرام,
+      decompress ? "-d" : عدم,
+      عدم
     };
 
   /* At least NMERGE + 1 subprocesses are needed.  More could be created, but
@@ -1203,27 +1203,27 @@ pipe_child (pid_t *pid, int pipefds[2], int tempfd, bool decompress,
      previous merge finish (1 subprocess) in parallel with the current
      merge (NMERGE + 1 subprocesses).  */
 
-  if (nmerge + 1 < nprocs)
+  إذا (nmerge + 1 < nprocs)
     reap_some ();
 
-  while (tries--)
+  طالما (tries--)
     {
       /* This is so the child process won't delete our temp files
          if it receives a signal before exec-ing.  */
       cs_enter (&cs);
       saved_temphead = temphead;
-      temphead = NULL;
+      temphead = عدم;
 
-      result = posix_spawnp (pid, resolved_compress_program, &actions, &attr,
-                             (char * const *) argv, environ);
+      پایله = posix_spawnp (pid, resolved_compress_پروګرام, &actions, &attr,
+                             (حرف * ثابت *) argv, environ);
 
       temphead = saved_temphead;
 
       cs_leave (&cs);
 
-      if (result != EAGAIN)
-        break;
-      else
+      إذا (پایله != EAGAIN)
+        اكسر;
+      وإلا
         {
           /* [v]fork/clone are indicating resource constraints,
              so back-off for a while and retry.  */
@@ -1236,15 +1236,15 @@ pipe_child (pid_t *pid, int pipefds[2], int tempfd, bool decompress,
   posix_spawnattr_destroy (&attr);
   posix_spawn_file_actions_destroy (&actions);
 
-  if (result)
+  إذا (پایله)
     {
       close (pipefds[0]);
       close (pipefds[1]);
     }
-  else
+  وإلا
     ++nprocs;
 
-  return result;
+  أرجع پایله;
 }
 
 /* Create a temporary file and, if asked for, start a compressor
@@ -1253,57 +1253,57 @@ pipe_child (pid_t *pid, int pipefds[2], int tempfd, bool decompress,
    fails, return NULL if the failure is due to file descriptor
    exhaustion and SURVIVE_FD_EXHAUSTION; otherwise, die.  */
 
-static struct tempnode *
-maybe_create_temp (FILE **pfp, bool survive_fd_exhaustion)
+ساكن بنية tempnode *
+maybe_create_لنډمهاله (FILE **pfp, bool survive_fd_exhaustion)
 {
-  int tempfd;
-  struct tempnode *node = create_temp_file (&tempfd, survive_fd_exhaustion);
-  if (! node)
-    return NULL;
+  صحيح tempfd;
+  بنية tempnode *غوټه = create_لنډمهاله_file (&tempfd, survive_fd_exhaustion);
+  إذا (! غوټه)
+    أرجع عدم;
 
-  node->state = UNCOMPRESSED;
+  غوټه->state = UNCOMPRESSED;
 
-  if (compress_program)
+  إذا (compress_پروګرام)
     {
-      int pipefds[2];
-      static int last_result = 0;
+      صحيح pipefds[2];
+      ساكن صحيح وروستی_پایله = 0;
 
-      int result = pipe_child (&node->pid, pipefds, tempfd, false,
+      صحيح پایله = pipe_ماشوم (&غوټه->pid, pipefds, tempfd, false,
                                MAX_TRIES_COMPRESS);
 
-      if (result)
+      إذا (پایله)
         {
-          if (result != last_result)
-            error (0, result, _("could not run compress program %s"),
-                   quoteaf (compress_program));
+          إذا (پایله != وروستی_پایله)
+            error (0, پایله, _("could not run compress program %s"),
+                   quoteaf (compress_پروګرام));
         }
-      else
+      وإلا
         {
           close (tempfd);
           close (pipefds[0]);
           tempfd = pipefds[1];
 
-          register_proc (node);
+          ثبتوونکی_proc (غوټه);
         }
 
-      last_result = result;
+      وروستی_پایله = پایله;
     }
 
   *pfp = fdopen (tempfd, "w");
-  if (! *pfp)
-    sort_die (_("couldn't create temporary file"), node->name);
+  إذا (! *pfp)
+    ترتیبول_die (_("couldn't create temporary file"), غوټه->name);
 
-  return node;
+  أرجع غوټه;
 }
 
 /* Create a temporary file and, if asked for, start a compressor
    to that file.  Set *PFP to the file handle and return the address
    of the new temp node.  Die on failure.  */
 
-static struct tempnode *
-create_temp (FILE **pfp)
+ساكن بنية tempnode *
+create_لنډمهاله (FILE **pfp)
 {
-  return maybe_create_temp (pfp, false);
+  أرجع maybe_create_لنډمهاله (pfp, false);
 }
 
 /* Open a compressed temp file and start a decompression process through
@@ -1311,372 +1311,372 @@ create_temp (FILE **pfp)
    EMFILE) if we ran out of file descriptors, and die on any other
    kind of failure.  */
 
-static FILE *
-open_temp (struct tempnode *temp)
+ساكن FILE *
+open_لنډمهاله (بنية tempnode *لنډمهاله)
 {
-  int tempfd, pipefds[2];
-  FILE *fp = NULL;
+  صحيح tempfd, pipefds[2];
+  FILE *fp = عدم;
 
-  if (temp->state == UNREAPED)
-    wait_proc (temp->pid);
+  إذا (لنډمهاله->state == UNREAPED)
+    wait_proc (لنډمهاله->pid);
 
-  tempfd = open (temp->name, O_RDONLY);
-  if (tempfd < 0)
-    return NULL;
+  tempfd = open (لنډمهاله->name, O_RDONLY);
+  إذا (tempfd < 0)
+    أرجع عدم;
 
-  pid_t child;
-  int result = pipe_child (&child, pipefds, tempfd, true,
+  pid_t ماشوم;
+  صحيح پایله = pipe_ماشوم (&ماشوم, pipefds, tempfd, true,
                            MAX_TRIES_DECOMPRESS);
 
-  if (result)
+  إذا (پایله)
     {
-      if (result != EMFILE)
-        error (SORT_FAILURE, result, _("could not run compress program %s -d"),
-               quoteaf (compress_program));
+      إذا (پایله != EMFILE)
+        error (ترتیبول_FAILURE, پایله, _("could not run compress program %s -d"),
+               quoteaf (compress_پروګرام));
       close (tempfd);
       errno = EMFILE;
     }
-  else
+  وإلا
     {
-      temp->pid = child;
-      register_proc (temp);
+      لنډمهاله->pid = ماشوم;
+      ثبتوونکی_proc (لنډمهاله);
       close (tempfd);
       close (pipefds[1]);
 
       fp = fdopen (pipefds[0], "r");
-      if (! fp)
+      إذا (! fp)
         {
-          int saved_errno = errno;
+          صحيح saved_errno = errno;
           close (pipefds[0]);
           errno = saved_errno;
         }
     }
 
-  return fp;
+  أرجع fp;
 }
 
 /* Append DIR to the array of temporary directory names.  */
-static void
-add_temp_dir (char const *dir)
+ساكن فراغ
+جمع_کړه_لنډمهاله_dir (حرف ثابت *dir)
 {
-  if (temp_dirs.n_dirs == temp_dirs.n_dirs_alloc)
-    temp_dirs.dirs = xpalloc (temp_dirs.dirs, &temp_dirs.n_dirs_alloc, 1, -1,
-                              sizeof *temp_dirs.dirs);
+  إذا (لنډمهاله_dirs.n_dirs == لنډمهاله_dirs.n_dirs_alloc)
+    لنډمهاله_dirs.dirs = xpalloc (لنډمهاله_dirs.dirs, &لنډمهاله_dirs.n_dirs_alloc, 1, -1,
+                              حجم *لنډمهاله_dirs.dirs);
 
-  idx_t const dir_idx = temp_dirs.n_dirs++;
-  temp_dirs.dirs[dir_idx] = dir;
+  idx_t ثابت dir_idx = لنډمهاله_dirs.n_dirs++;
+  لنډمهاله_dirs.dirs[dir_idx] = dir;
 }
 
 /* Remove NAME from the list of temporary files.  */
 
-static void
-zaptemp (char const *name)
+ساكن فراغ
+zaptemp (حرف ثابت *name)
 {
-  struct tempnode *volatile *pnode;
-  struct tempnode *node;
-  struct tempnode *next;
-  int unlink_status;
-  int unlink_errno = 0;
-  struct cs_status cs;
+  بنية tempnode *متطاير *pnode;
+  بنية tempnode *غوټه;
+  بنية tempnode *بل;
+  صحيح unlink_حالت;
+  صحيح unlink_errno = 0;
+  بنية cs_حالت cs;
 
-  for (pnode = &temphead; (node = *pnode)->name != name; pnode = &node->next)
-    continue;
+  لكل (pnode = &temphead; (غوټه = *pnode)->name != name; pnode = &غوټه->بل)
+    استمر;
 
-  if (node->state == UNREAPED)
-    wait_proc (node->pid);
+  إذا (غوټه->state == UNREAPED)
+    wait_proc (غوټه->pid);
 
   /* Unlink the temporary file in a critical section to avoid races.  */
-  next = node->next;
+  بل = غوټه->بل;
   cs_enter (&cs);
-  unlink_status = unlink (name);
+  unlink_حالت = unlink (name);
   unlink_errno = errno;
-  *pnode = next;
+  *pnode = بل;
   cs_leave (&cs);
 
-  if (unlink_status != 0)
+  إذا (unlink_حالت != 0)
     error (0, unlink_errno, _("warning: cannot remove: %s"), quotef (name));
-  if (! next)
+  إذا (! بل)
     temptail = pnode;
-  free (node);
+  حرر (غوټه);
 }
 
-#if HAVE_NL_LANGINFO
+#إذا HAVE_NL_LANGINFO
 
-static int
-struct_month_cmp (void const *m1, void const *m2)
+ساكن صحيح
+struct_month_cmp (فراغ ثابت *m1, فراغ ثابت *m2)
 {
-  struct month const *month1 = m1;
-  struct month const *month2 = m2;
-  return strcmp (month1->name, month2->name);
+  بنية month ثابت *month1 = m1;
+  بنية month ثابت *month2 = m2;
+  أرجع strcmp (month1->name, month2->name);
 }
 
-#endif
+#د_که_پای
 
 /* Initialize the character class tables. */
 
-static void
-inittables (void)
+ساكن فراغ
+inittables (فراغ)
 {
-  for (size_t i = 0; i < UCHAR_LIM; ++i)
+  لكل (size_t i = 0; i < UCHAR_LIM; ++i)
     {
       blanks[i] = i == '\n' || isblank (i);
-      nondictionary[i] = ! blanks[i] && ! isalnum (i);
+      nondictionary[i] = ! blanks[i] && ! که_توری_یا_عدد (i);
       nonprinting[i] = ! isprint (i);
-      fold_toupper[i] = toupper (i);
+      fold_toupper[i] = لوی_توری (i);
     }
 
-#if HAVE_NL_LANGINFO
+#إذا HAVE_NL_LANGINFO
   /* If we're not in the "C" locale, read different names for months.  */
-  if (hard_LC_TIME)
+  إذا (hard_LC_وخت)
     {
-      for (size_t i = 0; i < MONTHS_PER_YEAR; i++)
+      لكل (size_t i = 0; i < MONTHS_فی_YEAR; i++)
         {
-          char const *s;
+          حرف ثابت *s;
           size_t s_len;
           size_t j, k;
-          char *name;
+          حرف *name;
 
           s = nl_langinfo (ABMON_1 + i);
-          s_len = strlen (s);
+          s_len = مزي_اوږدوالی (s);
           monthtab[i].name = name = xmalloc (s_len + 1);
           monthtab[i].val = i + 1;
 
-          for (j = k = 0; j < s_len; j++)
-            if (! isblank (to_uchar (s[j])))
-              name[k++] = fold_toupper[to_uchar (s[j])];
+          لكل (j = k = 0; j < s_len; j++)
+            إذا (! isblank (منزل_uchar (s[j])))
+              name[k++] = fold_toupper[منزل_uchar (s[j])];
           name[k] = '\0';
         }
-      qsort (monthtab, MONTHS_PER_YEAR, sizeof *monthtab, struct_month_cmp);
+      qsort (monthtab, MONTHS_فی_YEAR, حجم *monthtab, struct_month_cmp);
     }
-#endif
+#د_که_پای
 }
 
 /* Specify how many inputs may be merged at once.
    This may be set on the command-line with the
    --batch-size option. */
-static void
-specify_nmerge (int oi, char c, char const *s)
+ساكن فراغ
+specify_nmerge (صحيح oi, حرف c, حرف ثابت *s)
 {
   uintmax_t n;
-  struct rlimit rlimit;
-  enum strtol_error e = xstrtoumax (s, NULL, 10, &n, "");
+  بنية rlimit rlimit;
+  تعداد strtol_error e = xstrtoumax (s, عدم, 10, &n, "");
 
   /* Try to find out how many file descriptors we'll be able
      to open.  We need at least nmerge + 3 (STDIN_FILENO,
      STDOUT_FILENO and STDERR_FILENO). */
-  unsigned int max_nmerge = ((getrlimit (RLIMIT_NOFILE, &rlimit) == 0
+  بینښه صحيح max_nmerge = ((getrlimit (RLIMIT_NOFILE, &rlimit) == 0
                               ? rlimit.rlim_cur
                               : OPEN_MAX)
                              - 3);
 
-  if (e == LONGINT_OK)
+  إذا (e == LONGINT_OK)
     {
       nmerge = n;
-      if (nmerge != n)
-        e = LONGINT_OVERFLOW;
-      else
+      إذا (nmerge != n)
+        e = LONGINT_ډکېدنه;
+      وإلا
         {
-          if (nmerge < 2)
+          إذا (nmerge < 2)
             {
               error (0, 0, _("invalid --%s argument %s"),
                      long_options[oi].name, quote (s));
-              error (SORT_FAILURE, 0,
+              error (ترتیبول_FAILURE, 0,
                      _("minimum --%s argument is %s"),
                      long_options[oi].name, quote ("2"));
             }
-          else if (max_nmerge < nmerge)
+          وإلا إذا (max_nmerge < nmerge)
             {
-              e = LONGINT_OVERFLOW;
+              e = LONGINT_ډکېدنه;
             }
-          else
-            return;
+          وإلا
+            أرجع;
         }
     }
 
-  if (e == LONGINT_OVERFLOW)
+  إذا (e == LONGINT_ډکېدنه)
     {
       error (0, 0, _("--%s argument %s too large"),
              long_options[oi].name, quote (s));
-      error (SORT_FAILURE, 0,
+      error (ترتیبول_FAILURE, 0,
              _("maximum --%s argument with current rlimit is %u"),
              long_options[oi].name, max_nmerge);
     }
-  else
+  وإلا
     xstrtol_fatal (e, oi, c, long_options, s);
 }
 
 /* Specify the amount of main memory to use when sorting.  */
-static void
-specify_sort_size (int oi, char c, char const *s)
+ساكن فراغ
+specify_ترتیبول_اندازه (صحيح oi, حرف c, حرف ثابت *s)
 {
   uintmax_t n;
-  char *suffix;
-  enum strtol_error e = xstrtoumax (s, &suffix, 10, &n, "EgGkKmMPQRtTYZ");
+  حرف *suffix;
+  تعداد strtol_error e = xstrtoumax (s, &suffix, 10, &n, "EgGkKmMPQRtTYZ");
 
   /* The default unit is KiB.  */
-  if (e == LONGINT_OK && c_isdigit (suffix[-1]) && ckd_mul (&n, n, 1024))
-    e = LONGINT_OVERFLOW;
+  إذا (e == LONGINT_OK && c_isdigit (suffix[-1]) && ckd_mul (&n, n, 1024))
+    e = LONGINT_ډکېدنه;
 
   /* A 'b' suffix means bytes; a '%' suffix means percent of memory.  */
-  if (e == LONGINT_INVALID_SUFFIX_CHAR && c_isdigit (suffix[-1]) && ! suffix[1])
-    switch (suffix[0])
+  إذا (e == LONGINT_INVALID_SUFFIX_CHAR && c_isdigit (suffix[-1]) && ! suffix[1])
+    بدل (suffix[0])
       {
-      case 'b':
+      حالة 'b':
         e = LONGINT_OK;
-        break;
+        اكسر;
 
-      case '%':
+      حالة '%':
         {
-          double mem = physmem_total () * n / 100;
+          مزدوج mem = physmem_ټول () * n / 100;
 
           /* Use "<", not "<=", to avoid problems with rounding.  */
-          if (mem < UINTMAX_MAX)
+          إذا (mem < UINTMAX_MAX)
             {
               n = mem;
               e = LONGINT_OK;
             }
-          else
-            e = LONGINT_OVERFLOW;
+          وإلا
+            e = LONGINT_ډکېدنه;
         }
-        break;
+        اكسر;
       }
 
-  if (e == LONGINT_OK)
+  إذا (e == LONGINT_OK)
     {
       /* If multiple sort sizes are specified, take the maximum, so
          that option order does not matter.  */
-      if (n < sort_size)
-        return;
+      إذا (n < ترتیبول_اندازه)
+        أرجع;
 
-      sort_size = n;
-      if (sort_size == n)
+      ترتیبول_اندازه = n;
+      إذا (ترتیبول_اندازه == n)
         {
-          sort_size = MAX (sort_size, MIN_SORT_SIZE);
-          return;
+          ترتیبول_اندازه = MAX (ترتیبول_اندازه, MIN_ترتیبول_اندازه);
+          أرجع;
         }
 
-      e = LONGINT_OVERFLOW;
+      e = LONGINT_ډکېدنه;
     }
 
   xstrtol_fatal (e, oi, c, long_options, s);
 }
 
 /* Specify the number of threads to spawn during internal sort.  */
-static size_t
-specify_nthreads (int oi, char c, char const *s)
+ساكن size_t
+specify_nthreads (صحيح oi, حرف c, حرف ثابت *s)
 {
   uintmax_t nthreads;
-  enum strtol_error e = xstrtoumax (s, NULL, 10, &nthreads, "");
-  if (e == LONGINT_OVERFLOW)
-    return SIZE_MAX;
-  if (e != LONGINT_OK)
+  تعداد strtol_error e = xstrtoumax (s, عدم, 10, &nthreads, "");
+  إذا (e == LONGINT_ډکېدنه)
+    أرجع SIZE_MAX;
+  إذا (e != LONGINT_OK)
     xstrtol_fatal (e, oi, c, long_options, s);
-  if (SIZE_MAX < nthreads)
+  إذا (SIZE_MAX < nthreads)
     nthreads = SIZE_MAX;
-  if (nthreads == 0)
-    error (SORT_FAILURE, 0, _("number in parallel must be nonzero"));
-  return nthreads;
+  إذا (nthreads == 0)
+    error (ترتیبول_FAILURE, 0, _("number in parallel must be nonzero"));
+  أرجع nthreads;
 }
 
 /* Return the default sort size.  This is a growth limit, not necessarily
    the initial allocation size.  */
-static size_t
-default_sort_size (void)
+ساكن size_t
+default_ترتیبول_اندازه (فراغ)
 {
   /* Let SIZE be MEM, but no more than the maximum object size,
      total memory, or system resource limits.  Don't bother to check
      for values like RLIM_INFINITY since in practice they are not much
      less than SIZE_MAX.  */
-  size_t size = SIZE_MAX;
-  struct rlimit rlimit;
-  if (getrlimit (RLIMIT_DATA, &rlimit) == 0 && rlimit.rlim_cur < size)
-    size = rlimit.rlim_cur;
-#ifdef RLIMIT_AS
-  if (getrlimit (RLIMIT_AS, &rlimit) == 0 && rlimit.rlim_cur < size)
-    size = rlimit.rlim_cur;
-#endif
+  size_t اندازه = SIZE_MAX;
+  بنية rlimit rlimit;
+  إذا (getrlimit (RLIMIT_معلومات, &rlimit) == 0 && rlimit.rlim_cur < اندازه)
+    اندازه = rlimit.rlim_cur;
+#که_تعریف_شوی RLIMIT_AS
+  إذا (getrlimit (RLIMIT_AS, &rlimit) == 0 && rlimit.rlim_cur < اندازه)
+    اندازه = rlimit.rlim_cur;
+#د_که_پای
 
   /* Leave a large safety margin for the above limits, as failure can
      occur when they are exceeded.  */
-  size /= 2;
+  اندازه /= 2;
 
-#ifdef RLIMIT_RSS
+#که_تعریف_شوی RLIMIT_RSS
   /* Leave a 1/16 margin for RSS to leave room for code, stack, etc.
      Exceeding RSS is not fatal, but can be quite slow.  */
-  if (getrlimit (RLIMIT_RSS, &rlimit) == 0 && rlimit.rlim_cur / 16 * 15 < size)
-    size = rlimit.rlim_cur / 16 * 15;
-#endif
+  إذا (getrlimit (RLIMIT_RSS, &rlimit) == 0 && rlimit.rlim_cur / 16 * 15 < اندازه)
+    اندازه = rlimit.rlim_cur / 16 * 15;
+#د_که_پای
 
   /* Let MEM be available memory or 1/8 of total memory, whichever
      is greater.  */
-  double avail = physmem_available ();
-  double total = physmem_total ();
-  double mem = MAX (avail, total / 8);
+  مزدوج avail = physmem_شته ();
+  مزدوج ټول = physmem_ټول ();
+  مزدوج mem = MAX (avail, ټول / 8);
 
   /* Leave a 1/4 margin for physical memory.  */
-  if (total * 0.75 < size)
-    size = total * 0.75;
+  إذا (ټول * 0.75 < اندازه)
+    اندازه = ټول * 0.75;
 
   /* Return the minimum of MEM and SIZE, but no less than
      MIN_SORT_SIZE.  Avoid the MIN macro here, as it is not quite
      right when only one argument is floating point.  */
-  if (mem < size)
-    size = mem;
-  return MAX (size, MIN_SORT_SIZE);
+  إذا (mem < اندازه)
+    اندازه = mem;
+  أرجع MAX (اندازه, MIN_ترتیبول_اندازه);
 }
 
 /* Return true if *ALLOC has been adjusted to a size suitable for a sort
    buffer.  */
 
-static bool
-line_aligned_size (size_t *alloc)
+ساكن bool
+کرښه_aligned_اندازه (size_t *alloc)
 {
-  size_t size = *alloc;
-  size_t alignment = sizeof (struct line);
-  size_t padding = alignment - size % alignment;
+  size_t اندازه = *alloc;
+  size_t alignment = حجم (بنية کرښه);
+  size_t padding = alignment - اندازه % alignment;
   size_t aligned;
 
-  if (ckd_add (&aligned, size, padding))
-    return false;
+  إذا (ckd_جمع_کړه (&aligned, اندازه, padding))
+    أرجع false;
 
   *alloc = aligned;
-  return true;
+  أرجع true;
 }
 
 /* Return the default initial allocation for a growable sort buffer.  */
 
-static size_t
-default_initial_sort_size (size_t line_bytes)
+ساكن size_t
+default_initial_ترتیبول_اندازه (size_t کرښه_بایټونه)
 {
-  size_t size = line_bytes + 2;
-  size_t input_size;
+  size_t اندازه = کرښه_بایټونه + 2;
+  size_t ننوت_اندازه;
 
-  if (ckd_mul (&input_size, INPUT_FILE_SIZE_GUESS, line_bytes + 1)
-      || ckd_add (&size, size, input_size))
-    return SIZE_MAX;
+  إذا (ckd_mul (&ننوت_اندازه, ننوت_FILE_اندازه_GUESS, کرښه_بایټونه + 1)
+      || ckd_جمع_کړه (&اندازه, اندازه, ننوت_اندازه))
+    أرجع SIZE_MAX;
 
-  return MAX (size, MIN_SORT_SIZE);
+  أرجع MAX (اندازه, MIN_ترتیبول_اندازه);
 }
 
 /* Store into *WORST_CASE the allocation needed for FILE_SIZE input bytes
    in the worst case, where each input byte is a line delimiter except
    for a final non-delimiter byte.  Return false on overflow.  */
 
-static bool
-input_size_buffer_bytes (uintmax_t file_size, size_t line_bytes,
+ساكن bool
+ننوت_اندازه_بفر_بایټونه (uintmax_t file_اندازه, size_t کرښه_بایټونه,
                          size_t *worst_case)
 {
-  size_t worst_case_per_input_byte = line_bytes + 1;
+  size_t worst_case_فی_ننوت_byte = کرښه_بایټونه + 1;
 
-  if (SIZE_MAX / worst_case_per_input_byte < file_size)
-    return false;
+  إذا (SIZE_MAX / worst_case_فی_ننوت_byte < file_اندازه)
+    أرجع false;
 
-  size_t size = file_size * worst_case_per_input_byte;
-  if (SIZE_MAX - size < 1)
-    return false;
+  size_t اندازه = file_اندازه * worst_case_فی_ننوت_byte;
+  إذا (SIZE_MAX - اندازه < 1)
+    أرجع false;
 
-  *worst_case = size + 1;
-  return true;
+  *worst_case = اندازه + 1;
+  أرجع true;
 }
 
 /* Set *POLICY to the sort buffer policy to use with the input files identified
@@ -1686,241 +1686,241 @@ input_size_buffer_bytes (uintmax_t file_size, size_t line_bytes,
    information.  Do not exceed the size bound specified by the user
    (or a default size bound, if the user does not specify one).  */
 
-static void
-sort_buffer_policy (FILE *const *fps, size_t nfps,
-                    char *const *files, size_t nfiles,
-                    size_t line_bytes,
-                    struct sort_buffer_policy *policy)
+ساكن فراغ
+ترتیبول_بفر_policy (FILE *ثابت *fps, size_t nfps,
+                    حرف *ثابت *files, size_t nfiles,
+                    size_t کرښه_بایټونه,
+                    بنية ترتیبول_بفر_policy *policy)
 {
-  size_t size_bound = sort_size ? sort_size : default_sort_size ();
+  size_t اندازه_bound = ترتیبول_اندازه ? ترتیبول_اندازه : default_ترتیبول_اندازه ();
   size_t initial_bound =
-    sort_size ? size_bound : default_initial_sort_size (line_bytes);
+    ترتیبول_اندازه ? اندازه_bound : default_initial_ترتیبول_اندازه (کرښه_بایټونه);
 
   /* In the worst case, each input byte is a newline.  */
-  size_t worst_case_per_input_byte = line_bytes + 1;
+  size_t worst_case_فی_ننوت_byte = کرښه_بایټونه + 1;
 
   /* Keep enough room for one extra input line and an extra byte.
      This extra room might be needed when preparing to read EOF.  */
-  size_t size = worst_case_per_input_byte + 1;
+  size_t اندازه = worst_case_فی_ننوت_byte + 1;
 
-  initial_bound = MIN (initial_bound, size_bound);
-  policy->limit = size_bound;
+  initial_bound = MIN (initial_bound, اندازه_bound);
+  policy->حد = اندازه_bound;
   policy->growth_failed = false;
 
-  for (size_t i = 0; i < nfiles; i++)
+  لكل (size_t i = 0; i < nfiles; i++)
     {
-      struct stat st;
-      off_t file_size;
+      بنية stat st;
+      off_t file_اندازه;
       size_t worst_case;
-      bool known_size;
+      bool معلوم_اندازه;
 
-      if (size_bound <= size)
+      إذا (اندازه_bound <= اندازه)
         {
-          policy->initial = size_bound;
-          return;
+          policy->initial = اندازه_bound;
+          أرجع;
         }
 
-      if ((i < nfps ? fstat (fileno (fps[i]), &st)
+      إذا ((i < nfps ? fstat (fileno (fps[i]), &st)
            : streq (files[i], "-") ? fstat (STDIN_FILENO, &st)
            : stat (files[i], &st))
           != 0)
-        sort_die (_("stat failed"), files[i]);
+        ترتیبول_die (_("stat failed"), files[i]);
 
-      known_size = usable_st_size (&st) && 0 < st.st_size;
-      if (known_size)
-        file_size = st.st_size;
-      else
+      معلوم_اندازه = usable_st_اندازه (&st) && 0 < st.st_اندازه;
+      إذا (معلوم_اندازه)
+        file_اندازه = st.st_اندازه;
+      وإلا
         {
           /* The file has unknown size.  If the user specified a sort
              buffer size, use that; otherwise, guess the size.  */
-          if (sort_size)
+          إذا (ترتیبول_اندازه)
             {
-              policy->initial = size_bound;
-              return;
+              policy->initial = اندازه_bound;
+              أرجع;
             }
-          file_size = INPUT_FILE_SIZE_GUESS;
+          file_اندازه = ننوت_FILE_اندازه_GUESS;
         }
 
       /* Add the amount of memory needed to represent the worst case
          where the input consists entirely of newlines followed by a
          single non-newline.  Check for overflow.  */
-      if (! input_size_buffer_bytes (file_size, line_bytes, &worst_case)
-          || size_bound - size <= worst_case)
+      إذا (! ننوت_اندازه_بفر_بایټونه (file_اندازه, کرښه_بایټونه, &worst_case)
+          || اندازه_bound - اندازه <= worst_case)
         {
-          policy->initial = size_bound;
-          return;
+          policy->initial = اندازه_bound;
+          أرجع;
         }
 
-      if (! known_size && ! sort_size
-          && (initial_bound <= size || initial_bound - size <= worst_case))
+      إذا (! معلوم_اندازه && ! ترتیبول_اندازه
+          && (initial_bound <= اندازه || initial_bound - اندازه <= worst_case))
         {
-          policy->initial = MAX (size, initial_bound);
-          return;
+          policy->initial = MAX (اندازه, initial_bound);
+          أرجع;
         }
 
-      size += worst_case;
+      اندازه += worst_case;
     }
 
-  policy->initial = MAX (size, MIN_SORT_SIZE);
+  policy->initial = MAX (اندازه, MIN_ترتیبول_اندازه);
 }
 
 /* Initialize BUF.  Reserve LINE_BYTES bytes for each line; LINE_BYTES
    must be at least sizeof (struct line).  Allocate ALLOC bytes
    initially.  */
 
-static void
-initbuf (struct buffer *buf, size_t line_bytes, size_t alloc)
+ساكن فراغ
+initbuf (بنية بفر *buf, size_t کرښه_بایټونه, size_t alloc)
 {
   /* Ensure that the line array is properly aligned.  If the desired
      size cannot be allocated, repeatedly halve it until allocation
      succeeds.  The smaller allocation may hurt overall performance,
      but that's better than failing.  */
-  while (true)
+  طالما (true)
     {
-      if (! line_aligned_size (&alloc))
-        buf->buf = NULL;
-      else
-        buf->buf = malloc (alloc);
-      if (buf->buf)
-        break;
+      إذا (! کرښه_aligned_اندازه (&alloc))
+        buf->buf = عدم;
+      وإلا
+        buf->buf = حافظه_ورکړه (alloc);
+      إذا (buf->buf)
+        اكسر;
       alloc /= 2;
-      if (alloc <= line_bytes + 1)
+      إذا (alloc <= کرښه_بایټونه + 1)
         xalloc_die ();
     }
 
-  buf->line_bytes = line_bytes;
+  buf->کرښه_بایټونه = کرښه_بایټونه;
   buf->alloc = alloc;
-  buf->used = buf->left = buf->nlines = 0;
+  buf->کارول_شوی = buf->کیڼ = buf->nlines = 0;
   buf->eof = false;
 }
 
 /* Return one past the limit of the line array.  */
 
-static inline struct line *
-buffer_linelim (struct buffer const *buf)
+ساكن مضمن بنية کرښه *
+بفر_linelim (بنية بفر ثابت *buf)
 {
-  void *linelim = buf->buf + buf->alloc;
-  return linelim;
+  فراغ *linelim = buf->buf + buf->alloc;
+  أرجع linelim;
 }
 
 /* Try to resize BUF to ALLOC bytes.  Return true if successful.  This
    preserves the input data and the line array, adjusting line pointers
    when the buffer base changes.  */
 
-static bool
-try_growbuf (struct buffer *buf, size_t alloc)
+ساكن bool
+try_growbuf (بنية بفر *buf, size_t alloc)
 {
-  if (! line_aligned_size (&alloc) || alloc <= buf->alloc)
-    return false;
+  إذا (! کرښه_aligned_اندازه (&alloc) || alloc <= buf->alloc)
+    أرجع false;
 
-  char *newbuf = malloc (alloc);
-  if (! newbuf)
-    return false;
+  حرف *newbuf = حافظه_ورکړه (alloc);
+  إذا (! newbuf)
+    أرجع false;
 
-  char *oldbuf = buf->buf;
-  struct line *old_linelim = buffer_linelim (buf);
-  struct line *old_line = old_linelim - buf->nlines;
+  حرف *oldbuf = buf->buf;
+  بنية کرښه *old_linelim = بفر_linelim (buf);
+  بنية کرښه *old_کرښه = old_linelim - buf->nlines;
 
-  memcpy (newbuf, oldbuf, buf->used);
+  حافظه_نقل (newbuf, oldbuf, buf->کارول_شوی);
 
-  struct line *new_linelim = (void *) (newbuf + alloc);
-  struct line *new_line = new_linelim - buf->nlines;
-  memcpy (new_line, old_line, buf->nlines * sizeof *new_line);
+  بنية کرښه *new_linelim = (فراغ *) (newbuf + alloc);
+  بنية کرښه *new_کرښه = new_linelim - buf->nlines;
+  حافظه_نقل (new_کرښه, old_کرښه, buf->nlines * حجم *new_کرښه);
 
-  for (struct line *line = new_line; line < new_linelim; line++)
+  لكل (بنية کرښه *کرښه = new_کرښه; کرښه < new_linelim; کرښه++)
     {
-      line->text = newbuf + (line->text - oldbuf);
-      if (keylist)
+      کرښه->متن = newbuf + (کرښه->متن - oldbuf);
+      إذا (keylist)
         {
-          line->keybeg = newbuf + (line->keybeg - oldbuf);
-          line->keylim = newbuf + (line->keylim - oldbuf);
+          کرښه->keybeg = newbuf + (کرښه->keybeg - oldbuf);
+          کرښه->keylim = newbuf + (کرښه->keylim - oldbuf);
         }
     }
 
-  free (oldbuf);
+  حرر (oldbuf);
   buf->buf = newbuf;
   buf->alloc = alloc;
-  return true;
+  أرجع true;
 }
 
 /* Try to grow BUF according to POLICY.  Return true if the buffer grew.  */
 
-static bool
-maybe_growbuf (struct buffer *buf, struct sort_buffer_policy *policy)
+ساكن bool
+maybe_growbuf (بنية بفر *buf, بنية ترتیبول_بفر_policy *policy)
 {
-  if (! policy || policy->growth_failed || policy->limit <= buf->alloc)
-    return false;
+  إذا (! policy || policy->growth_failed || policy->حد <= buf->alloc)
+    أرجع false;
 
   size_t alloc;
-  if (buf->alloc <= policy->limit / 3)
+  إذا (buf->alloc <= policy->حد / 3)
     alloc = buf->alloc * 3;
-  else
-    alloc = policy->limit;
+  وإلا
+    alloc = policy->حد;
 
-  if (try_growbuf (buf, alloc))
-    return true;
+  إذا (try_growbuf (buf, alloc))
+    أرجع true;
 
   policy->growth_failed = true;
-  return false;
+  أرجع false;
 }
 
 /* Return a pointer to the first character of the field specified
    by KEY in LINE. */
 
-static char *
-begfield (struct line const *line, struct keyfield const *key)
+ساكن حرف *
+begfield (بنية کرښه ثابت *کرښه, بنية keyfield ثابت *کلی)
 {
-  char *ptr = line->text, *lim = ptr + line->length - 1;
-  size_t sword = key->sword;
-  size_t schar = key->schar;
+  حرف *ptr = کرښه->متن, *lim = ptr + کرښه->اوږدتیا - 1;
+  size_t sword = کلی->sword;
+  size_t schar = کلی->schar;
 
   /* The leading field separator itself is included in a field when -t
      is absent.  */
 
-  if (tab != TAB_DEFAULT)
-    while (ptr < lim && sword--)
+  إذا (tab != TAB_DEFAULT)
+    طالما (ptr < lim && sword--)
       {
-        char *sep = memchr (ptr, tab, lim - ptr);
+        حرف *sep = memchr (ptr, tab, lim - ptr);
         ptr = sep ? sep : lim;
-        if (ptr < lim)
+        إذا (ptr < lim)
           ++ptr;
       }
-  else
-    while (ptr < lim && sword--)
+  وإلا
+    طالما (ptr < lim && sword--)
       {
-        while (ptr < lim && blanks[to_uchar (*ptr)])
+        طالما (ptr < lim && blanks[منزل_uchar (*ptr)])
           ++ptr;
-        while (ptr < lim && !blanks[to_uchar (*ptr)])
+        طالما (ptr < lim && !blanks[منزل_uchar (*ptr)])
           ++ptr;
       }
 
   /* If we're ignoring leading blanks when computing the Start
      of the field, skip past them here.  */
-  if (key->skipsblanks)
-    while (ptr < lim && blanks[to_uchar (*ptr)])
+  إذا (کلی->skipsblanks)
+    طالما (ptr < lim && blanks[منزل_uchar (*ptr)])
       ++ptr;
 
   /* Advance PTR by SCHAR (if possible), but no further than LIM.  */
-  size_t remaining_bytes = lim - ptr;
-  if (schar < remaining_bytes)
+  size_t پاتې_شوی_بایټونه = lim - ptr;
+  إذا (schar < پاتې_شوی_بایټونه)
     ptr += schar;
-  else
+  وإلا
     ptr = lim;
 
-  return ptr;
+  أرجع ptr;
 }
 
 /* Return the limit of (a pointer to the first character after) the field
    in LINE specified by KEY. */
 
-ATTRIBUTE_PURE
-static char *
-limfield (struct line const *line, struct keyfield const *key)
+ATTRIBUTE_خالص
+ساكن حرف *
+limfield (بنية کرښه ثابت *کرښه, بنية keyfield ثابت *کلی)
 {
-  char *ptr = line->text, *lim = ptr + line->length - 1;
-  size_t eword = key->eword, echar = key->echar;
+  حرف *ptr = کرښه->متن, *lim = ptr + کرښه->اوږدتیا - 1;
+  size_t eword = کلی->eword, echar = کلی->echar;
 
-  if (echar == 0)
+  إذا (echar == 0)
     eword++; /* Skip all of end field.  */
 
   /* Move PTR past EWORD fields or to one past the last byte on LINE,
@@ -1930,24 +1930,24 @@ limfield (struct line const *line, struct keyfield const *key)
      'beginning' is the first character following the delimiting TAB.
      Otherwise, leave PTR pointing at the first 'blank' character after
      the preceding field.  */
-  if (tab != TAB_DEFAULT)
-    while (ptr < lim && eword--)
+  إذا (tab != TAB_DEFAULT)
+    طالما (ptr < lim && eword--)
       {
-        char *sep = memchr (ptr, tab, lim - ptr);
+        حرف *sep = memchr (ptr, tab, lim - ptr);
         ptr = sep ? sep : lim;
-        if (ptr < lim && (eword || echar))
+        إذا (ptr < lim && (eword || echar))
           ++ptr;
       }
-  else
-    while (ptr < lim && eword--)
+  وإلا
+    طالما (ptr < lim && eword--)
       {
-        while (ptr < lim && blanks[to_uchar (*ptr)])
+        طالما (ptr < lim && blanks[منزل_uchar (*ptr)])
           ++ptr;
-        while (ptr < lim && !blanks[to_uchar (*ptr)])
+        طالما (ptr < lim && !blanks[منزل_uchar (*ptr)])
           ++ptr;
       }
 
-#ifdef POSIX_UNSPECIFIED
+#که_تعریف_شوی POSIX_UNSPECIFIED
   /* The following block of code makes GNU sort incompatible with
      standard Unix sort, so it's ifdef'd out for now.
      The POSIX spec isn't clear on how to interpret this.
@@ -1979,42 +1979,42 @@ limfield (struct line const *line, struct keyfield const *key)
      */
 
   /* Make LIM point to the end of (one byte past) the current field.  */
-  if (tab != TAB_DEFAULT)
+  إذا (tab != TAB_DEFAULT)
     {
-      char *newlim;
+      حرف *newlim;
       newlim = memchr (ptr, tab, lim - ptr);
-      if (newlim)
+      إذا (newlim)
         lim = newlim;
     }
-  else
+  وإلا
     {
-      char *newlim;
+      حرف *newlim;
       newlim = ptr;
-      while (newlim < lim && blanks[to_uchar (*newlim)])
+      طالما (newlim < lim && blanks[منزل_uchar (*newlim)])
         ++newlim;
-      while (newlim < lim && !blanks[to_uchar (*newlim)])
+      طالما (newlim < lim && !blanks[منزل_uchar (*newlim)])
         ++newlim;
       lim = newlim;
     }
-#endif
+#د_که_پای
 
-  if (echar != 0) /* We need to skip over a portion of the end field.  */
+  إذا (echar != 0) /* We need to skip over a portion of the end field.  */
     {
       /* If we're ignoring leading blanks when computing the End
          of the field, skip past them here.  */
-      if (key->skipeblanks)
-        while (ptr < lim && blanks[to_uchar (*ptr)])
+      إذا (کلی->skipeblanks)
+        طالما (ptr < lim && blanks[منزل_uchar (*ptr)])
           ++ptr;
 
       /* Advance PTR by ECHAR (if possible), but no further than LIM.  */
-      size_t remaining_bytes = lim - ptr;
-      if (echar < remaining_bytes)
+      size_t پاتې_شوی_بایټونه = lim - ptr;
+      إذا (echar < پاتې_شوی_بایټونه)
         ptr += echar;
-      else
+      وإلا
         ptr = lim;
     }
 
-  return ptr;
+  أرجع ptr;
 }
 
 /* Fill BUF reading from FP, moving buf->left bytes from the end
@@ -2023,127 +2023,127 @@ limfield (struct line const *line, struct keyfield const *key)
    table too.  FILE is the name of the file corresponding to FP.
    Return true if some input was read.  */
 
-static bool
-fillbuf (struct buffer *buf, FILE *fp, char const *file,
-         struct sort_buffer_policy *policy)
+ساكن bool
+fillbuf (بنية بفر *buf, FILE *fp, حرف ثابت *file,
+         بنية ترتیبول_بفر_policy *policy)
 {
-  struct keyfield const *key = keylist;
-  char eol = eolchar;
-  size_t line_bytes = buf->line_bytes;
-  size_t mergesize = merge_buffer_size - MIN_MERGE_BUFFER_SIZE;
+  بنية keyfield ثابت *کلی = keylist;
+  حرف eol = eolchar;
+  size_t کرښه_بایټونه = buf->کرښه_بایټونه;
+  size_t mergesize = یوځای_بفر_اندازه - MIN_یوځای_بفر_اندازه;
 
-  if (buf->eof)
-    return false;
+  إذا (buf->eof)
+    أرجع false;
 
-  if (buf->used != buf->left)
+  إذا (buf->کارول_شوی != buf->کیڼ)
     {
-      memmove (buf->buf, buf->buf + buf->used - buf->left, buf->left);
-      buf->used = buf->left;
+      memmove (buf->buf, buf->buf + buf->کارول_شوی - buf->کیڼ, buf->کیڼ);
+      buf->کارول_شوی = buf->کیڼ;
       buf->nlines = 0;
     }
 
-  while (true)
+  طالما (true)
     {
-      char *ptr = buf->buf + buf->used;
-      struct line *linelim = buffer_linelim (buf);
-      struct line *line = linelim - buf->nlines;
-      size_t avail = (char *) linelim - buf->nlines * line_bytes - ptr;
-      char *line_start = buf->nlines ? line->text + line->length : buf->buf;
+      حرف *ptr = buf->buf + buf->کارول_شوی;
+      بنية کرښه *linelim = بفر_linelim (buf);
+      بنية کرښه *کرښه = linelim - buf->nlines;
+      size_t avail = (حرف *) linelim - buf->nlines * کرښه_بایټونه - ptr;
+      حرف *کرښه_پیل = buf->nlines ? کرښه->متن + کرښه->اوږدتیا : buf->buf;
 
-      while (line_bytes + 1 < avail)
+      طالما (کرښه_بایټونه + 1 < avail)
         {
           /* Read as many bytes as possible, but do not read so many
              bytes that there might not be enough room for the
              corresponding line array.  The worst case is when the
              rest of the input file consists entirely of newlines,
              except that the last byte is not a newline.  */
-          size_t readsize = (avail - 1) / (line_bytes + 1);
-          size_t bytes_read = fread (ptr, 1, readsize, fp);
-          char *ptrlim = ptr + bytes_read;
-          char *p;
-          avail -= bytes_read;
+          size_t readsize = (avail - 1) / (کرښه_بایټونه + 1);
+          size_t بایټونه_read = fread (ptr, 1, readsize, fp);
+          حرف *ptrlim = ptr + بایټونه_read;
+          حرف *p;
+          avail -= بایټونه_read;
 
-          if (bytes_read != readsize)
+          إذا (بایټونه_read != readsize)
             {
-              if (ferror (fp))
-                sort_die (_("read failed"), file);
-              if (feof (fp))
+              إذا (ferror (fp))
+                ترتیبول_die (_("read failed"), file);
+              إذا (feof (fp))
                 {
                   buf->eof = true;
-                  if (buf->buf == ptrlim)
-                    return false;
-                  if (line_start != ptrlim && ptrlim[-1] != eol)
+                  إذا (buf->buf == ptrlim)
+                    أرجع false;
+                  إذا (کرښه_پیل != ptrlim && ptrlim[-1] != eol)
                     *ptrlim++ = eol;
                 }
             }
 
           /* Find and record each line in the just-read input.  */
-          while ((p = memchr (ptr, eol, ptrlim - ptr)))
+          طالما ((p = memchr (ptr, eol, ptrlim - ptr)))
             {
               /* Delimit the line with NUL. This eliminates the need to
                  temporarily replace the last byte with NUL when calling
                  xmemcoll, which increases performance.  */
               *p = '\0';
               ptr = p + 1;
-              line--;
-              line->text = line_start;
-              line->length = ptr - line_start;
-              mergesize = MAX (mergesize, line->length);
-              avail -= line_bytes;
+              کرښه--;
+              کرښه->متن = کرښه_پیل;
+              کرښه->اوږدتیا = ptr - کرښه_پیل;
+              mergesize = MAX (mergesize, کرښه->اوږدتیا);
+              avail -= کرښه_بایټونه;
 
-              if (key)
+              إذا (کلی)
                 {
                   /* Precompute the position of the first key for
                      efficiency.  */
-                  line->keylim = (key->eword == SIZE_MAX
+                  کرښه->keylim = (کلی->eword == SIZE_MAX
                                   ? p
-                                  : limfield (line, key));
+                                  : limfield (کرښه, کلی));
 
-                  if (key->sword != SIZE_MAX)
-                    line->keybeg = begfield (line, key);
-                  else
+                  إذا (کلی->sword != SIZE_MAX)
+                    کرښه->keybeg = begfield (کرښه, کلی);
+                  وإلا
                     {
-                      if (key->skipsblanks)
-                        while (blanks[to_uchar (*line_start)])
-                          line_start++;
-                      line->keybeg = line_start;
+                      إذا (کلی->skipsblanks)
+                        طالما (blanks[منزل_uchar (*کرښه_پیل)])
+                          کرښه_پیل++;
+                      کرښه->keybeg = کرښه_پیل;
                     }
                 }
 
-              line_start = ptr;
+              کرښه_پیل = ptr;
             }
 
           ptr = ptrlim;
-          if (buf->eof)
-            break;
+          إذا (buf->eof)
+            اكسر;
         }
 
-      buf->used = ptr - buf->buf;
-      buf->nlines = buffer_linelim (buf) - line;
-      if (buf->nlines != 0)
+      buf->کارول_شوی = ptr - buf->buf;
+      buf->nlines = بفر_linelim (buf) - کرښه;
+      إذا (buf->nlines != 0)
         {
-          if (! buf->eof && maybe_growbuf (buf, policy))
-            continue;
-          buf->left = ptr - line_start;
-          merge_buffer_size = mergesize + MIN_MERGE_BUFFER_SIZE;
-          return true;
+          إذا (! buf->eof && maybe_growbuf (buf, policy))
+            استمر;
+          buf->کیڼ = ptr - کرښه_پیل;
+          یوځای_بفر_اندازه = mergesize + MIN_یوځای_بفر_اندازه;
+          أرجع true;
         }
 
       {
         /* The current input line is too long to fit in the buffer.
            Increase the buffer size and try again, keeping it properly
            aligned.  */
-        idx_t line_alloc = buf->alloc / sizeof (struct line);
-        buf->buf = xpalloc (buf->buf, &line_alloc, 1, -1, sizeof (struct line));
-        buf->alloc = line_alloc * sizeof (struct line);
+        idx_t کرښه_alloc = buf->alloc / حجم (بنية کرښه);
+        buf->buf = xpalloc (buf->buf, &کرښه_alloc, 1, -1, حجم (بنية کرښه));
+        buf->alloc = کرښه_alloc * حجم (بنية کرښه);
       }
     }
 }
 
 /* Table that maps characters to order-of-magnitude values.  */
-static char const unit_order[UCHAR_LIM] =
+ساكن حرف ثابت unit_ترتیب[UCHAR_LIM] =
   {
-#if ! ('K' == 75 && 'M' == 77 && 'G' == 71 && 'T' == 84 && 'P' == 80 \
+#إذا ! ('K' == 75 && 'M' == 77 && 'G' == 71 && 'T' == 84 && 'P' == 80 \
        && 'E' == 69 && 'Z' == 90 && 'Y' == 89 && 'R' == 82 && 'Q' == 81 \
        && 'k' == 107)
     /* This initializer syntax works on all C99 hosts.  For now, use
@@ -2152,7 +2152,7 @@ static char const unit_order[UCHAR_LIM] =
     ['K']=1, ['M']=2, ['G']=3, ['T']=4, ['P']=5, ['E']=6, ['Z']=7, ['Y']=8,
     ['R']=9, ['Q']=10,
     ['k']=1,
-#else
+#وإلا
     /* Generate the following table with this command:
        perl -e 'my %a=(k=>1,K=>1,M=>2,G=>3,T=>4,P=>5,E=>6,Z=>7,Y=>8,R=>9,Q=>10);
        foreach my $i (0..255) {my $c=chr($i); $a{$c} ||= 0;print "$a{$c}, "}'\
@@ -2168,20 +2168,20 @@ static char const unit_order[UCHAR_LIM] =
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-#endif
+#د_که_پای
   };
 
 /* Traverse number given as *number consisting of digits, thousands_sep, and
    decimal_point chars only.  Returns the highest digit found in the number,
    or '\0' if no digit has been found.  Upon return *number points at the
    character that immediately follows after the given number.  */
-static char
-traverse_raw_number (char const **number)
+ساكن حرف
+traverse_raw_شمېره (حرف ثابت **شمېره)
 {
-  char const *p = *number;
-  char ch;
-  char max_digit = '\0';
-  bool ends_with_thousands_sep = false;
+  حرف ثابت *p = *شمېره;
+  حرف ch;
+  حرف max_digit = '\0';
+  bool پایونه_with_thousands_sep = false;
 
   /* Scan to end of number.
      Decimals or separators not followed by digits stop the scan.
@@ -2189,33 +2189,33 @@ traverse_raw_number (char const **number)
      to be lacking in units.
      FIXME: add support for multibyte thousands_sep and decimal_point.  */
 
-  while (c_isdigit (ch = *p++))
+  طالما (c_isdigit (ch = *p++))
     {
-      if (max_digit < ch)
+      إذا (max_digit < ch)
         max_digit = ch;
 
       /* Allow to skip only one occurrence of thousands_sep to avoid finding
          the unit in the next column in case thousands_sep matches as blank
          and is used as column delimiter.  */
-      ends_with_thousands_sep = (*p == thousands_sep);
-      if (ends_with_thousands_sep)
+      پایونه_with_thousands_sep = (*p == thousands_sep);
+      إذا (پایونه_with_thousands_sep)
         ++p;
     }
 
-  if (ends_with_thousands_sep)
+  إذا (پایونه_with_thousands_sep)
     {
       /* thousands_sep not followed by digit is not allowed.  */
-      *number = p - 2;
-      return max_digit;
+      *شمېره = p - 2;
+      أرجع max_digit;
     }
 
-  if (ch == decimal_point)
-    while (c_isdigit (ch = *p++))
-      if (max_digit < ch)
+  إذا (ch == decimal_ټکی)
+    طالما (c_isdigit (ch = *p++))
+      إذا (max_digit < ch)
         max_digit = ch;
 
-  *number = p - 1;
-  return max_digit;
+  *شمېره = p - 1;
+  أرجع max_digit;
 }
 
 /* Return an integer that represents the order of magnitude of the
@@ -2223,85 +2223,85 @@ traverse_raw_number (char const **number)
    separators and a decimal point, but it may not contain leading blanks.
    Negative numbers get negative orders; zero numbers have a zero order.  */
 
-ATTRIBUTE_PURE
-static int
-find_unit_order (char const *number)
+ATTRIBUTE_خالص
+ساكن صحيح
+پیدا_کړه_unit_ترتیب (حرف ثابت *شمېره)
 {
-  bool minus_sign = (*number == '-');
-  char const *p = number + minus_sign;
-  char max_digit = traverse_raw_number (&p);
-  if ('0' < max_digit)
+  bool minus_sign = (*شمېره == '-');
+  حرف ثابت *p = شمېره + minus_sign;
+  حرف max_digit = traverse_raw_شمېره (&p);
+  إذا ('0' < max_digit)
     {
-      unsigned char ch = *p;
-      int order = unit_order[ch];
-      return (minus_sign ? -order : order);
+      بینښه حرف ch = *p;
+      صحيح ترتیب = unit_ترتیب[ch];
+      أرجع (minus_sign ? -ترتیب : ترتیب);
     }
-  else
-    return 0;
+  وإلا
+    أرجع 0;
 }
 
 /* Compare numbers A and B ending in units with SI or IEC prefixes
        <none/unknown> < K/k < M < G < T < P < E < Z < Y < R < Q */
 
-ATTRIBUTE_PURE
-static int
-human_numcompare (char const *a, char const *b)
+ATTRIBUTE_خالص
+ساكن صحيح
+human_numcompare (حرف ثابت *a, حرف ثابت *b)
 {
-  while (blanks[to_uchar (*a)])
+  طالما (blanks[منزل_uchar (*a)])
     a++;
-  while (blanks[to_uchar (*b)])
+  طالما (blanks[منزل_uchar (*b)])
     b++;
 
-  int diff = find_unit_order (a) - find_unit_order (b);
-  return (diff ? diff : strnumcmp (a, b, decimal_point, thousands_sep));
+  صحيح diff = پیدا_کړه_unit_ترتیب (a) - پیدا_کړه_unit_ترتیب (b);
+  أرجع (diff ? diff : strnumcmp (a, b, decimal_ټکی, thousands_sep));
 }
 
 /* Compare strings A and B as numbers without explicitly converting them to
    machine numbers.  Comparatively slow for short strings, but asymptotically
    hideously fast. */
 
-ATTRIBUTE_PURE
-static int
-numcompare (char const *a, char const *b)
+ATTRIBUTE_خالص
+ساكن صحيح
+numcompare (حرف ثابت *a, حرف ثابت *b)
 {
-  while (blanks[to_uchar (*a)])
+  طالما (blanks[منزل_uchar (*a)])
     a++;
-  while (blanks[to_uchar (*b)])
+  طالما (blanks[منزل_uchar (*b)])
     b++;
 
-  return strnumcmp (a, b, decimal_point, thousands_sep);
+  أرجع strnumcmp (a, b, decimal_ټکی, thousands_sep);
 }
 
-static int
-nan_compare (long double a, long double b)
+ساكن صحيح
+nan_compare (اوږد مزدوج a, اوږد مزدوج b)
 {
-  char buf[2][sizeof "-nan""()" + CHAR_BIT * sizeof a];
-  snprintf (buf[0], sizeof buf[0], "%Lf", a);
-  snprintf (buf[1], sizeof buf[1], "%Lf", b);
-  return strcmp (buf[0], buf[1]);
+  حرف buf[2][حجم "-nan""()" + CHAR_BIT * حجم a];
+  snprintf (buf[0], حجم buf[0], "%Lf", a);
+  snprintf (buf[1], حجم buf[1], "%Lf", b);
+  أرجع strcmp (buf[0], buf[1]);
 }
 
-static int
-general_numcompare (char const *sa, char const *sb)
+ساكن صحيح
+general_numcompare (حرف ثابت *sa, حرف ثابت *sb)
 {
   /* FIXME: maybe add option to try expensive FP conversion
      only if A and B can't be compared more cheaply/accurately.  */
 
-  char *ea;
-  char *eb;
-  long double a = strtold (sa, &ea);
-  long double b = strtold (sb, &eb);
+  حرف *ea;
+  حرف *eb;
+  اوږد مزدوج a = strtold (sa, &ea);
+  اوږد مزدوج b = strtold (sb, &eb);
 
   /* Put conversion errors at the start of the collating sequence.  */
-  if (sa == ea)
-    return sb == eb ? 0 : -1;
-  if (sb == eb)
-    return 1;
+  إذا (sa == ea)
+    أرجع sb == eb ? 0 : -1;
+  إذا (sb == eb)
+    أرجع 1;
 
   /* Sort numbers in the usual way, where -0 == +0.  Put NaNs after
      conversion errors but before numbers; sort them by internal
      bit-pattern, for lack of a more portable alternative.  */
-  return (a < b ? -1
+  أرجع (a < b ? -1
           : a > b ? 1
           : a == b ? 0
           : b == b ? -1
@@ -2312,69 +2312,69 @@ general_numcompare (char const *sa, char const *sb)
 /* Return an integer in 1..12 of the month name MONTH.
    Return 0 if the name in S is not recognized.  */
 
-static int
-getmonth (char const *month, char **ea)
+ساكن صحيح
+getmonth (حرف ثابت *month, حرف **ea)
 {
   size_t lo = 0;
-  size_t hi = MONTHS_PER_YEAR;
+  size_t hi = MONTHS_فی_YEAR;
 
-  while (blanks[to_uchar (*month)])
+  طالما (blanks[منزل_uchar (*month)])
     month++;
 
-  do
+  افعل
     {
       size_t ix = (lo + hi) / 2;
-      char const *m = month;
-      char const *n = monthtab[ix].name;
+      حرف ثابت *m = month;
+      حرف ثابت *n = monthtab[ix].name;
 
-      for (;; m++, n++)
+      لكل (;; m++, n++)
         {
-          if (!*n)
+          إذا (!*n)
             {
-              if (ea)
-                *ea = (char *) m;
-              return monthtab[ix].val;
+              إذا (ea)
+                *ea = (حرف *) m;
+              أرجع monthtab[ix].val;
             }
-          if (to_uchar (fold_toupper[to_uchar (*m)]) < to_uchar (*n))
+          إذا (منزل_uchar (fold_toupper[منزل_uchar (*m)]) < منزل_uchar (*n))
             {
               hi = ix;
-              break;
+              اكسر;
             }
-          else if (to_uchar (fold_toupper[to_uchar (*m)]) > to_uchar (*n))
+          وإلا إذا (منزل_uchar (fold_toupper[منزل_uchar (*m)]) > منزل_uchar (*n))
             {
               lo = ix + 1;
-              break;
+              اكسر;
             }
         }
     }
-  while (lo < hi);
+  طالما (lo < hi);
 
-  return 0;
+  أرجع 0;
 }
 
 /* When using the OpenSSL implementation, dynamically link only if -R.
    This saves startup time in the usual (sans -R) case.  */
 
-#if DLOPEN_LIBCRYPTO && HAVE_OPENSSL_MD5
+#إذا DLOPEN_LIBCRYPTO && HAVE_OPENSSL_MD5
 /* In the typical case where md5.h does not #undef HAVE_OPENSSL_MD5,
    trick md5.h into declaring and using pointers to functions not functions.
    This causes the compiler's -lcrypto option to have no effect,
    as sort.o no longer uses any crypto symbols statically.  */
 
-# if 14 <= __GNUC__
-#  pragma GCC diagnostic push
+# إذا 14 <= __GNUC__
+#  pragma GCC diagnostic ټېل
 #  pragma GCC diagnostic ignored "-Wmissing-variable-declarations"
 # endif
 # define MD5_Init (*ptr_MD5_Init)
 # define MD5_Update (*ptr_MD5_Update)
 # define MD5_Final (*ptr_MD5_Final)
-#endif
+#د_که_پای
 
-#include "md5.h"
+#ضمن "md5.h"
 
-#if DLOPEN_LIBCRYPTO && HAVE_OPENSSL_MD5
-# if 14 <= __GNUC__
-#  pragma GCC diagnostic pop
+#إذا DLOPEN_LIBCRYPTO && HAVE_OPENSSL_MD5
+# إذا 14 <= __GNUC__
+#  pragma GCC diagnostic راوباسه
 # endif
 # include <dlfcn.h>
 
@@ -2383,109 +2383,109 @@ getmonth (char const *month, char **ea)
 # include "sd-dlopen.h"
 SD_ELF_NOTE_DLOPEN ("random-sort",
                     "Support for random sorting",
-                    SD_ELF_NOTE_DLOPEN_PRIORITY_REQUIRED,
+                    SD_ELF_NOTE_DLOPEN_لومړیتوب_REQUIRED,
                     LIBCRYPTO_SONAME);
 
 /* Diagnose a dynamic linking failure.  */
-static void
-link_failure (void)
+ساكن فراغ
+link_failure (فراغ)
 {
-  error (SORT_FAILURE, 0, "%s", dlerror ());
+  error (ترتیبول_FAILURE, 0, "%s", dlerror ());
 }
 
 /* Return a function pointer in HANDLE for SYMBOL.  */
-static void *
-symbol_address (void *handle, char const *symbol)
+ساكن فراغ *
+نښه_پته (فراغ *handle, حرف ثابت *نښه)
 {
-  void *address = dlsym (handle, symbol);
-  if (!address)
+  فراغ *پته = dlsym (handle, نښه);
+  إذا (!پته)
     link_failure ();
-  return address;
+  أرجع پته;
 }
-#endif
+#د_که_پای
 
 /* Dynamically link the crypto library, if it needs linking.  */
-static void
-link_libcrypto (void)
+ساكن فراغ
+link_libcrypto (فراغ)
 {
-#if DLOPEN_LIBCRYPTO && HAVE_OPENSSL_MD5
-  void *handle = dlopen (LIBCRYPTO_SONAME, RTLD_LAZY | RTLD_GLOBAL);
-  if (!handle)
+#إذا DLOPEN_LIBCRYPTO && HAVE_OPENSSL_MD5
+  فراغ *handle = dlopen (LIBCRYPTO_SONAME, RTLD_LAZY | RTLD_GLOBAL);
+  إذا (!handle)
     link_failure ();
-  ptr_MD5_Init = symbol_address (handle, "MD5_Init");
-  ptr_MD5_Update = symbol_address (handle, "MD5_Update");
-  ptr_MD5_Final = symbol_address (handle, "MD5_Final");
-#endif
+  ptr_MD5_Init = نښه_پته (handle, "MD5_Init");
+  ptr_MD5_Update = نښه_پته (handle, "MD5_Update");
+  ptr_MD5_Final = نښه_پته (handle, "MD5_Final");
+#د_که_پای
 }
 
 /* A randomly chosen MD5 state, used for random comparison.  */
-static struct md5_ctx random_md5_state;
+ساكن بنية md5_ctx random_md5_state;
 
 /* Initialize the randomly chosen MD5 state.  */
 
-static void
-random_md5_state_init (char const *random_source)
+ساكن فراغ
+random_md5_state_init (حرف ثابت *random_سرچینه)
 {
-  unsigned char buf[MD5_DIGEST_SIZE];
-  struct randread_source *r = randread_new (random_source, sizeof buf);
-  if (! r)
-    sort_die (_("open failed"), random_source ? random_source : "getrandom");
-  randread (r, buf, sizeof buf);
-  if (randread_free (r) != 0)
-    sort_die (_("close failed"), random_source);
+  بینښه حرف buf[MD5_DIGEST_اندازه];
+  بنية randread_سرچینه *r = randread_new (random_سرچینه, حجم buf);
+  إذا (! r)
+    ترتیبول_die (_("open failed"), random_سرچینه ? random_سرچینه : "getrandom");
+  randread (r, buf, حجم buf);
+  إذا (randread_free (r) != 0)
+    ترتیبول_die (_("close failed"), random_سرچینه);
   link_libcrypto ();
   md5_init_ctx (&random_md5_state);
-  md5_process_bytes (buf, sizeof buf, &random_md5_state);
+  md5_process_بایټونه (buf, حجم buf, &random_md5_state);
 }
 
 /* This is like strxfrm, except it reports any error and exits.  */
 
-static size_t
-xstrxfrm (char *restrict dest, char const *restrict src, size_t destsize)
+ساكن size_t
+xstrxfrm (حرف *محدود dest, حرف ثابت *محدود src, size_t destsize)
 {
   errno = 0;
-  size_t translated_size = strxfrm (dest, src, destsize);
+  size_t translated_اندازه = strxfrm (dest, src, destsize);
 
-  if (errno)
+  إذا (errno)
     {
       error (0, errno, _("string transformation failed"));
       error (0, 0, _("set LC_ALL='C' to work around the problem"));
-      error (SORT_FAILURE, 0,
+      error (ترتیبول_FAILURE, 0,
              _("the original string was %s"),
              quotearg_n_style (0, locale_quoting_style, src));
     }
 
-  return translated_size;
+  أرجع translated_اندازه;
 }
 
 /* Compare the keys TEXTA (of length LENA) and TEXTB (of length LENB)
    using one or more random hash functions.  TEXTA[LENA] and
    TEXTB[LENB] must be zero.  */
 
-static int
-compare_random (char *restrict texta, size_t lena,
-                char *restrict textb, size_t lenb)
+ساكن صحيح
+compare_random (حرف *محدود texta, size_t lena,
+                حرف *محدود textb, size_t lenb)
 {
   /* XFRM_DIFF records the equivalent of memcmp on the transformed
      data.  This is used to break ties if there is a checksum
      collision, and this is good enough given the astronomically low
      probability of a collision.  */
-  int xfrm_diff = 0;
+  صحيح xfrm_diff = 0;
 
-  char stackbuf[4000];
-  char *buf = stackbuf;
-  size_t bufsize = sizeof stackbuf;
-  void *allocated = NULL;
-  uint32_t dig[2][MD5_DIGEST_SIZE / sizeof (uint32_t)];
-  struct md5_ctx s[2];
+  حرف stackbuf[4000];
+  حرف *buf = stackbuf;
+  size_t bufsize = حجم stackbuf;
+  فراغ *allocated = عدم;
+  uint32_t dig[2][MD5_DIGEST_اندازه / حجم (uint32_t)];
+  بنية md5_ctx s[2];
   s[0] = s[1] = random_md5_state;
 
-  if (hard_LC_COLLATE)
+  إذا (hard_LC_COLLATE)
     {
-      char const *lima = texta + lena;
-      char const *limb = textb + lenb;
+      حرف ثابت *lima = texta + lena;
+      حرف ثابت *limb = textb + lenb;
 
-      while (true)
+      طالما (true)
         {
           /* Transform the text into the basis of comparison, so that byte
              strings that would otherwise considered to be equal are
@@ -2503,38 +2503,38 @@ compare_random (char *restrict texta, size_t lena,
              twice on typical implementations.  Don't worry about
              size_t overflow, as the guess need not be correct.  */
           size_t guess_bufsize = 3 * (lena + lenb) + 2;
-          if (bufsize < guess_bufsize)
+          إذا (bufsize < guess_bufsize)
             {
               bufsize = MAX (guess_bufsize, bufsize * 3 / 2);
-              free (allocated);
-              buf = allocated = malloc (bufsize);
-              if (! buf)
+              حرر (allocated);
+              buf = allocated = حافظه_ورکړه (bufsize);
+              إذا (! buf)
                 {
                   buf = stackbuf;
-                  bufsize = sizeof stackbuf;
+                  bufsize = حجم stackbuf;
                 }
             }
 
           size_t sizea =
             (texta < lima ? xstrxfrm (buf, texta, bufsize) + 1 : 0);
-          bool a_fits = sizea <= bufsize;
+          bool a_ځاییږي = sizea <= bufsize;
           size_t sizeb =
             (textb < limb
-             ? (xstrxfrm ((a_fits ? buf + sizea : NULL), textb,
-                          (a_fits ? bufsize - sizea : 0))
+             ? (xstrxfrm ((a_ځاییږي ? buf + sizea : عدم), textb,
+                          (a_ځاییږي ? bufsize - sizea : 0))
                 + 1)
              : 0);
 
-          if (! (a_fits && sizea + sizeb <= bufsize))
+          إذا (! (a_ځاییږي && sizea + sizeb <= bufsize))
             {
               bufsize = sizea + sizeb;
-              if (bufsize < SIZE_MAX / 3)
+              إذا (bufsize < SIZE_MAX / 3)
                 bufsize = bufsize * 3 / 2;
-              free (allocated);
+              حرر (allocated);
               buf = allocated = xmalloc (bufsize);
-              if (texta < lima)
+              إذا (texta < lima)
                 strxfrm (buf, texta, sizea);
-              if (textb < limb)
+              إذا (textb < limb)
                 strxfrm (buf + sizea, textb, sizeb);
             }
 
@@ -2542,147 +2542,147 @@ compare_random (char *restrict texta, size_t lena,
              exiting the loop if both strings are exhausted.  When
              exiting the loop, prepare to finish off the tiebreaker
              comparison properly.  */
-          if (texta < lima)
-            texta += strlen (texta) + 1;
-          if (textb < limb)
-            textb += strlen (textb) + 1;
-          if (! (texta < lima || textb < limb))
+          إذا (texta < lima)
+            texta += مزي_اوږدوالی (texta) + 1;
+          إذا (textb < limb)
+            textb += مزي_اوږدوالی (textb) + 1;
+          إذا (! (texta < lima || textb < limb))
             {
               lena = sizea; texta = buf;
               lenb = sizeb; textb = buf + sizea;
-              break;
+              اكسر;
             }
 
           /* Accumulate the transformed data in the corresponding
              checksums.  */
-          md5_process_bytes (buf, sizea, &s[0]);
-          md5_process_bytes (buf + sizea, sizeb, &s[1]);
+          md5_process_بایټونه (buf, sizea, &s[0]);
+          md5_process_بایټونه (buf + sizea, sizeb, &s[1]);
 
           /* Update the tiebreaker comparison of the transformed data.  */
-          if (! xfrm_diff)
+          إذا (! xfrm_diff)
             {
               xfrm_diff = memcmp (buf, buf + sizea, MIN (sizea, sizeb));
-              if (! xfrm_diff)
+              إذا (! xfrm_diff)
                 xfrm_diff = _GL_CMP (sizea, sizeb);
             }
         }
     }
 
   /* Compute and compare the checksums.  */
-  md5_process_bytes (texta, lena, &s[0]); md5_finish_ctx (&s[0], dig[0]);
-  md5_process_bytes (textb, lenb, &s[1]); md5_finish_ctx (&s[1], dig[1]);
-  int diff = memcmp (dig[0], dig[1], sizeof dig[0]);
+  md5_process_بایټونه (texta, lena, &s[0]); md5_پای_ctx (&s[0], dig[0]);
+  md5_process_بایټونه (textb, lenb, &s[1]); md5_پای_ctx (&s[1], dig[1]);
+  صحيح diff = memcmp (dig[0], dig[1], حجم dig[0]);
 
   /* Fall back on the tiebreaker if the checksums collide.  */
-  if (! diff)
+  إذا (! diff)
     {
-      if (! xfrm_diff)
+      إذا (! xfrm_diff)
         {
           xfrm_diff = memcmp (texta, textb, MIN (lena, lenb));
-          if (! xfrm_diff)
+          إذا (! xfrm_diff)
             xfrm_diff = _GL_CMP (lena, lenb);
         }
 
       diff = xfrm_diff;
     }
 
-  free (allocated);
+  حرر (allocated);
 
-  return diff;
+  أرجع diff;
 }
 
 /* Return the printable width of the block of memory starting at
    TEXT and ending just before LIM, counting each tab as one byte.
    FIXME: Should we generally be counting non printable chars?  */
 
-static size_t
-debug_width (char const *text, char const *lim)
+ساكن size_t
+debug_پلنوالی (حرف ثابت *متن, حرف ثابت *lim)
 {
-  size_t width = mbsnwidth (text, lim - text, 0);
-  while (text < lim)
-    width += (*text++ == '\t');
-  return width;
+  size_t پلنوالی = mbsnwidth (متن, lim - متن, 0);
+  طالما (متن < lim)
+    پلنوالی += (*متن++ == '\t');
+  أرجع پلنوالی;
 }
 
 /* For debug mode, "underline" a key at the
    specified offset and screen width.  */
 
-static void
-mark_key (size_t offset, size_t width)
+ساكن فراغ
+mark_کلی (size_t دننه_واټن, size_t پلنوالی)
 {
-  while (offset--)
-    putchar (' ');
+  طالما (دننه_واټن--)
+    توری_چاپ_کړه (' ');
 
-  if (!width)
-    printf (_("^ no match for key\n"));
-  else
+  إذا (!پلنوالی)
+    چاپ_کړه (_("^ no match for key\n"));
+  وإلا
     {
-      do
-        putchar ('_');
-      while (--width);
+      افعل
+        توری_چاپ_کړه ('_');
+      طالما (--پلنوالی);
 
-      putchar ('\n');
+      توری_چاپ_کړه ('\n');
     }
 }
 
 /* Return true if KEY is a numeric key.  */
 
-static inline bool
-key_numeric (struct keyfield const *key)
+ساكن مضمن bool
+کلی_numeric (بنية keyfield ثابت *کلی)
 {
-  return key->numeric || key->general_numeric || key->human_numeric;
+  أرجع کلی->numeric || کلی->general_numeric || کلی->human_numeric;
 }
 
 /* For LINE, output a debugging line that underlines KEY in LINE.
    If KEY is null, underline the whole line.  */
 
-static void
-debug_key (struct line const *line, struct keyfield const *key)
+ساكن فراغ
+debug_کلی (بنية کرښه ثابت *کرښه, بنية keyfield ثابت *کلی)
 {
-  char *text = line->text;
-  char *beg = text;
-  char *lim = text + line->length - 1;
+  حرف *متن = کرښه->متن;
+  حرف *beg = متن;
+  حرف *lim = متن + کرښه->اوږدتیا - 1;
 
-  if (key)
+  إذا (کلی)
     {
-      if (key->sword != SIZE_MAX)
-        beg = begfield (line, key);
-      if (key->eword != SIZE_MAX)
+      إذا (کلی->sword != SIZE_MAX)
+        beg = begfield (کرښه, کلی);
+      إذا (کلی->eword != SIZE_MAX)
         {
-          lim = limfield (line, key);
+          lim = limfield (کرښه, کلی);
           /* Treat field ends before field starts as empty fields.  */
           lim = MAX (beg, lim);
         }
 
-      if ((key->skipsblanks && key->sword == SIZE_MAX)
-          || key->month || key_numeric (key))
+      إذا ((کلی->skipsblanks && کلی->sword == SIZE_MAX)
+          || کلی->month || کلی_numeric (کلی))
         {
-          char saved = *lim;
+          حرف saved = *lim;
           *lim = '\0';
 
-          while (blanks[to_uchar (*beg)])
+          طالما (blanks[منزل_uchar (*beg)])
             beg++;
 
-          char *tighter_lim = beg;
+          حرف *tighter_lim = beg;
 
-          if (lim < beg)
+          إذا (lim < beg)
             tighter_lim = lim;
-          else if (key->month)
+          وإلا إذا (کلی->month)
             getmonth (beg, &tighter_lim);
-          else if (key->general_numeric)
-            ignore_value (strtold (beg, &tighter_lim));
-          else if (key->numeric || key->human_numeric)
+          وإلا إذا (کلی->general_numeric)
+            ignore_ارزښت (strtold (beg, &tighter_lim));
+          وإلا إذا (کلی->numeric || کلی->human_numeric)
             {
-              char const *p = beg + (beg < lim && *beg == '-');
-              char max_digit = traverse_raw_number (&p);
-              if ('0' <= max_digit)
+              حرف ثابت *p = beg + (beg < lim && *beg == '-');
+              حرف max_digit = traverse_raw_شمېره (&p);
+              إذا ('0' <= max_digit)
                 {
-                  unsigned char ch = *p;
-                  tighter_lim = (char *) p
-                    + (key->human_numeric && unit_order[ch]);
+                  بینښه حرف ch = *p;
+                  tighter_lim = (حرف *) p
+                    + (کلی->human_numeric && unit_ترتیب[ch]);
                 }
             }
-          else
+          وإلا
             tighter_lim = lim;
 
           *lim = saved;
@@ -2690,228 +2690,228 @@ debug_key (struct line const *line, struct keyfield const *key)
         }
     }
 
-  size_t offset = debug_width (text, beg);
-  size_t width = debug_width (beg, lim);
-  mark_key (offset, width);
+  size_t دننه_واټن = debug_پلنوالی (متن, beg);
+  size_t پلنوالی = debug_پلنوالی (beg, lim);
+  mark_کلی (دننه_واټن, پلنوالی);
 }
 
 /* Debug LINE by underlining its keys.  */
 
-static void
-debug_line (struct line const *line)
+ساكن فراغ
+debug_کرښه (بنية کرښه ثابت *کرښه)
 {
-  struct keyfield const *key = keylist;
+  بنية keyfield ثابت *کلی = keylist;
 
-  do
-    debug_key (line, key);
-  while (key && ((key = key->next) || ! (unique || stable)));
+  افعل
+    debug_کلی (کرښه, کلی);
+  طالما (کلی && ((کلی = کلی->بل) || ! (unique || stable)));
 }
 
 /* Return whether sorting options specified for key.  */
 
-static bool
-default_key_compare (struct keyfield const *key)
+ساكن bool
+default_کلی_compare (بنية keyfield ثابت *کلی)
 {
-  return ! (key->ignore
-            || key->translate
-            || key->skipsblanks
-            || key->skipeblanks
-            || key_numeric (key)
-            || key->month
-            || key->version
-            || key->random
+  أرجع ! (کلی->ignore
+            || کلی->translate
+            || کلی->skipsblanks
+            || کلی->skipeblanks
+            || کلی_numeric (کلی)
+            || کلی->month
+            || کلی->نسخه_3
+            || کلی->random
             /* || key->reverse */
            );
 }
 
 /* Convert a key to the short options used to specify it.  */
 
-static void
-key_to_opts (struct keyfield const *key, char *opts)
+ساكن فراغ
+کلی_منزل_opts (بنية keyfield ثابت *کلی, حرف *opts)
 {
-  if (key->skipsblanks || key->skipeblanks)
+  إذا (کلی->skipsblanks || کلی->skipeblanks)
     *opts++ = 'b';/* either disables global -b  */
-  if (key->ignore == nondictionary)
+  إذا (کلی->ignore == nondictionary)
     *opts++ = 'd';
-  if (key->translate)
+  إذا (کلی->translate)
     *opts++ = 'f';
-  if (key->general_numeric)
+  إذا (کلی->general_numeric)
     *opts++ = 'g';
-  if (key->human_numeric)
+  إذا (کلی->human_numeric)
     *opts++ = 'h';
-  if (key->ignore == nonprinting)
+  إذا (کلی->ignore == nonprinting)
     *opts++ = 'i';
-  if (key->month)
+  إذا (کلی->month)
     *opts++ = 'M';
-  if (key->numeric)
+  إذا (کلی->numeric)
     *opts++ = 'n';
-  if (key->random)
+  إذا (کلی->random)
     *opts++ = 'R';
-  if (key->reverse)
+  إذا (کلی->سرچپه)
     *opts++ = 'r';
-  if (key->version)
+  إذا (کلی->نسخه_3)
     *opts++ = 'V';
   *opts = '\0';
 }
 
 /* Output data independent key warnings to stderr.  */
 
-static void
-key_warnings (struct keyfield const *gkey, bool gkey_only)
+ساكن فراغ
+کلی_warnings (بنية keyfield ثابت *gkey, bool gkey_only)
 {
-  struct keyfield ugkey = *gkey;
-  unsigned long keynum = 1;
-  bool basic_numeric_field = false;
-  bool general_numeric_field = false;
-  bool basic_numeric_field_span = false;
-  bool general_numeric_field_span = false;
+  بنية keyfield ugkey = *gkey;
+  بینښه اوږد keynum = 1;
+  bool basic_numeric_ډګر = false;
+  bool general_numeric_ډګر = false;
+  bool basic_numeric_ډګر_پراختیا = false;
+  bool general_numeric_ډګر_پراختیا = false;
 
-  for (struct keyfield *key = keylist; key; key = key->next, keynum++)
+  لكل (بنية keyfield *کلی = keylist; کلی; کلی = کلی->بل, keynum++)
     {
-      if (key_numeric (key))
+      إذا (کلی_numeric (کلی))
         {
-          if (key->general_numeric)
-            general_numeric_field = true;
-          else
-            basic_numeric_field = true;
+          إذا (کلی->general_numeric)
+            general_numeric_ډګر = true;
+          وإلا
+            basic_numeric_ډګر = true;
         }
 
-      if (key->traditional_used)
+      إذا (کلی->traditional_کارول_شوی)
         {
-          size_t sword = key->sword;
-          size_t eword = key->eword;
-          char tmp[INT_BUFSIZE_BOUND (uintmax_t)];
+          size_t sword = کلی->sword;
+          size_t eword = کلی->eword;
+          حرف tmp[INT_BUFSIZE_BOUND (uintmax_t)];
           /* obsolescent syntax +A.x -B.y is equivalent to:
                -k A+1.x+1,B.y   (when y = 0)
                -k A+1.x+1,B+1.y (when y > 0)  */
-          char obuf[INT_BUFSIZE_BOUND (sword) * 2 + 4]; /* +# -#  */
-          char nbuf[INT_BUFSIZE_BOUND (sword) * 2 + 5]; /* -k #,#  */
-          char *po = obuf;
-          char *pn = nbuf;
+          حرف obuf[INT_BUFSIZE_BOUND (sword) * 2 + 4]; /* +# -#  */
+          حرف nbuf[INT_BUFSIZE_BOUND (sword) * 2 + 5]; /* -k #,#  */
+          حرف *po = obuf;
+          حرف *pn = nbuf;
 
-          if (sword == SIZE_MAX)
+          إذا (sword == SIZE_MAX)
             sword++;
 
           po = stpcpy (stpcpy (po, "+"), umaxtostr (sword, tmp));
           pn = stpcpy (stpcpy (pn, "-k "), umaxtostr (sword + 1, tmp));
-          if (key->eword != SIZE_MAX)
+          إذا (کلی->eword != SIZE_MAX)
             {
               stpcpy (stpcpy (po, " -"), umaxtostr (eword + 1, tmp));
               stpcpy (stpcpy (pn, ","),
                       umaxtostr (eword + 1
-                                 + (key->echar == SIZE_MAX), tmp));
+                                 + (کلی->echar == SIZE_MAX), tmp));
             }
           error (0, 0, _("obsolescent key %s used; consider %s instead"),
                  quote_n (0, obuf), quote_n (1, nbuf));
         }
 
       /* Warn about field specs that will never match.  */
-      bool zero_width = key->sword != SIZE_MAX && key->eword < key->sword;
-      if (zero_width)
+      bool zero_پلنوالی = کلی->sword != SIZE_MAX && کلی->eword < کلی->sword;
+      إذا (zero_پلنوالی)
         error (0, 0, _("key %lu has zero width and will be ignored"), keynum);
 
       /* Warn about significant leading blanks.  */
-      bool implicit_skip = key_numeric (key) || key->month;
-      bool line_offset = key->eword == 0 && key->echar != 0; /* -k1.x,1.y  */
-      if (!zero_width && !gkey_only && tab == TAB_DEFAULT && !line_offset
-          && ((!key->skipsblanks && !implicit_skip)
-              || (!key->skipsblanks && key->schar)
-              || (!key->skipeblanks && key->echar)))
+      bool implicit_skip = کلی_numeric (کلی) || کلی->month;
+      bool کرښه_دننه_واټن = کلی->eword == 0 && کلی->echar != 0; /* -k1.x,1.y  */
+      إذا (!zero_پلنوالی && !gkey_only && tab == TAB_DEFAULT && !کرښه_دننه_واټن
+          && ((!کلی->skipsblanks && !implicit_skip)
+              || (!کلی->skipsblanks && کلی->schar)
+              || (!کلی->skipeblanks && کلی->echar)))
         error (0, 0, _("leading blanks are significant in key %lu; "
                        "consider also specifying 'b'"), keynum);
 
       /* Warn about numeric comparisons spanning fields,
          as field delimiters could be interpreted as part
          of the number (maybe only in other locales).  */
-      if (!gkey_only && key_numeric (key))
+      إذا (!gkey_only && کلی_numeric (کلی))
         {
-          size_t sword = key->sword + 1;
-          size_t eword = key->eword + 1;
-          if (!sword)
+          size_t sword = کلی->sword + 1;
+          size_t eword = کلی->eword + 1;
+          إذا (!sword)
             sword++;
-          if (!eword || sword < eword)
+          إذا (!eword || sword < eword)
             {
               error (0, 0, _("key %lu is numeric and spans multiple fields"),
                      keynum);
-              if (key->general_numeric)
-                general_numeric_field_span = true;
-              else
-                basic_numeric_field_span = true;
+              إذا (کلی->general_numeric)
+                general_numeric_ډګر_پراختیا = true;
+              وإلا
+                basic_numeric_ډګر_پراختیا = true;
             }
         }
 
       /* Flag global options not copied or specified in any key.  */
-      if (ugkey.ignore && (ugkey.ignore == key->ignore))
-        ugkey.ignore = NULL;
-      if (ugkey.translate && (ugkey.translate == key->translate))
-        ugkey.translate = NULL;
-      ugkey.skipsblanks &= !key->skipsblanks;
-      ugkey.skipeblanks &= !key->skipeblanks;
-      ugkey.month &= !key->month;
-      ugkey.numeric &= !key->numeric;
-      ugkey.general_numeric &= !key->general_numeric;
-      ugkey.human_numeric &= !key->human_numeric;
-      ugkey.random &= !key->random;
-      ugkey.version &= !key->version;
-      ugkey.reverse &= !key->reverse;
+      إذا (ugkey.ignore && (ugkey.ignore == کلی->ignore))
+        ugkey.ignore = عدم;
+      إذا (ugkey.translate && (ugkey.translate == کلی->translate))
+        ugkey.translate = عدم;
+      ugkey.skipsblanks &= !کلی->skipsblanks;
+      ugkey.skipeblanks &= !کلی->skipeblanks;
+      ugkey.month &= !کلی->month;
+      ugkey.numeric &= !کلی->numeric;
+      ugkey.general_numeric &= !کلی->general_numeric;
+      ugkey.human_numeric &= !کلی->human_numeric;
+      ugkey.random &= !کلی->random;
+      ugkey.نسخه_3 &= !کلی->نسخه_3;
+      ugkey.سرچپه &= !کلی->سرچپه;
     }
 
   /* Explicitly warn if field delimiters in this locale
      don't constrain numbers.  */
-  bool number_locale_warned = false;
-  if (basic_numeric_field_span)
+  bool شمېره_locale_warned = false;
+  إذا (basic_numeric_ډګر_پراختیا)
     {
-      if (tab == TAB_DEFAULT
-          ? thousands_sep != NON_CHAR && (isblank (to_uchar (thousands_sep)))
+      إذا (tab == TAB_DEFAULT
+          ? thousands_sep != NON_CHAR && (isblank (منزل_uchar (thousands_sep)))
           : tab == thousands_sep)
         {
           error (0, 0,
                  _("field separator %s is treated as a "
                    "group separator in numbers"),
-                 quote (((char []) {thousands_sep, 0})));
-          number_locale_warned = true;
+                 quote (((حرف []) {thousands_sep, 0})));
+          شمېره_locale_warned = true;
         }
     }
-  if (basic_numeric_field_span || general_numeric_field_span)
+  إذا (basic_numeric_ډګر_پراختیا || general_numeric_ډګر_پراختیا)
     {
-      if (tab == TAB_DEFAULT
-          ? thousands_sep != NON_CHAR && (isblank (to_uchar (decimal_point)))
-          : tab == decimal_point)
+      إذا (tab == TAB_DEFAULT
+          ? thousands_sep != NON_CHAR && (isblank (منزل_uchar (decimal_ټکی)))
+          : tab == decimal_ټکی)
         {
           error (0, 0,
                  _("field separator %s is treated as a "
                    "decimal point in numbers"),
-                 quote (((char []) {decimal_point, 0})));
-          number_locale_warned = true;
+                 quote (((حرف []) {decimal_ټکی, 0})));
+          شمېره_locale_warned = true;
         }
-      else if (tab == '-')
+      وإلا إذا (tab == '-')
         {
           error (0, 0,
                  _("field separator %s is treated as a "
                    "minus sign in numbers"),
-                 quote (((char []) {tab, 0})));
+                 quote (((حرف []) {tab, 0})));
         }
-      else if (general_numeric_field_span && tab == '+')
+      وإلا إذا (general_numeric_ډګر_پراختیا && tab == '+')
         {
           error (0, 0,
                  _("field separator %s is treated as a "
                    "plus sign in numbers"),
-                 quote (((char []) {tab, 0})));
+                 quote (((حرف []) {tab, 0})));
         }
     }
 
   /* Explicitly indicate the decimal point used in this locale,
      as it suggests that robust scripts need to consider
      setting the locale when comparing numbers.  */
-  if ((basic_numeric_field || general_numeric_field) && ! number_locale_warned)
+  إذا ((basic_numeric_ډګر || general_numeric_ډګر) && ! شمېره_locale_warned)
     {
       error (0, 0,
              _("numbers use %s as a decimal point in this locale"),
-             quote (((char []) {decimal_point, 0})));
+             quote (((حرف []) {decimal_ټکی, 0})));
 
     }
 
-  if (basic_numeric_field && thousands_sep_ignored)
+  إذا (basic_numeric_ډګر && thousands_sep_ignored)
     {
       error (0, 0,
              _("the multi-byte number group separator "
@@ -2920,55 +2920,55 @@ key_warnings (struct keyfield const *gkey, bool gkey_only)
 
   /* Warn about ignored global options flagged above.
      This clears all flags if UGKEY is the only one in the list.  */
-  if (!default_key_compare (&ugkey)
-      || (ugkey.reverse && (stable || unique) && keylist))
+  إذا (!default_کلی_compare (&ugkey)
+      || (ugkey.سرچپه && (stable || unique) && keylist))
     {
-      bool ugkey_reverse = ugkey.reverse;
-      if (!(stable || unique))
-        ugkey.reverse = false;
+      bool ugkey_سرچپه = ugkey.سرچپه;
+      إذا (!(stable || unique))
+        ugkey.سرچپه = false;
       /* The following is too big, but guaranteed to be "big enough".  */
-      char opts[sizeof short_options];
-      key_to_opts (&ugkey, opts);
+      حرف opts[حجم short_options];
+      کلی_منزل_opts (&ugkey, opts);
       error (0, 0,
              ngettext ("option '-%s' is ignored",
                        "options '-%s' are ignored",
-                       select_plural (strlen (opts))), opts);
-      ugkey.reverse = ugkey_reverse;
+                       select_plural (مزي_اوږدوالی (opts))), opts);
+      ugkey.سرچپه = ugkey_سرچپه;
     }
-  if (ugkey.reverse && !(stable || unique) && keylist)
+  إذا (ugkey.سرچپه && !(stable || unique) && keylist)
     error (0, 0, _("option '-r' only applies to last-resort comparison"));
 }
 
 /* Return either the sense of DIFF or its reverse, depending on REVERSED.
    If REVERSED, do not simply negate DIFF as that can mishandle INT_MIN.  */
 
-static int
-diff_reversed (int diff, bool reversed)
+ساكن صحيح
+diff_reversed (صحيح diff, bool reversed)
 {
-  return reversed ? _GL_CMP (0, diff) : diff;
+  أرجع reversed ? _GL_CMP (0, diff) : diff;
 }
 
 /* Compare two lines A and B trying every key in sequence until there
    are no more keys or a difference is found. */
 
-static int
-keycompare (struct line const *a, struct line const *b)
+ساكن صحيح
+keycompare (بنية کرښه ثابت *a, بنية کرښه ثابت *b)
 {
-  struct keyfield *key = keylist;
+  بنية keyfield *کلی = keylist;
 
   /* For the first iteration only, the key positions have been
      precomputed for us. */
-  char *texta = a->keybeg;
-  char *textb = b->keybeg;
-  char *lima = a->keylim;
-  char *limb = b->keylim;
+  حرف *texta = a->keybeg;
+  حرف *textb = b->keybeg;
+  حرف *lima = a->keylim;
+  حرف *limb = b->keylim;
 
-  int diff;
+  صحيح diff;
 
-  while (true)
+  طالما (true)
     {
-      char const *translate = key->translate;
-      bool const *ignore = key->ignore;
+      حرف ثابت *translate = کلی->translate;
+      bool ثابت *ignore = کلی->ignore;
 
       /* Treat field ends before field starts as empty fields.  */
       lima = MAX (texta, lima);
@@ -2978,21 +2978,21 @@ keycompare (struct line const *a, struct line const *b)
       size_t lena = lima - texta;
       size_t lenb = limb - textb;
 
-      if (hard_LC_COLLATE || key_numeric (key)
-          || key->month || key->random || key->version)
+      إذا (hard_LC_COLLATE || کلی_numeric (کلی)
+          || کلی->month || کلی->random || کلی->نسخه_3)
         {
           /* Ordinarily use the keys in-place, temporarily null-terminated.  */
-          char *ta = texta;
-          char *tb = textb;
+          حرف *ta = texta;
+          حرف *tb = textb;
           size_t tlena = lena;
           size_t tlenb = lenb;
-          char enda = ta[tlena];
-          char endb = tb[tlenb];
+          حرف enda = ta[tlena];
+          حرف endb = tb[tlenb];
 
-          void *allocated = NULL;
-          char stackbuf[4000];
+          فراغ *allocated = عدم;
+          حرف stackbuf[4000];
 
-          if (ignore || translate)
+          إذا (ignore || translate)
             {
               /* Compute with copies of the keys, which are the result of
                  translating or ignoring characters, and which need their
@@ -3001,191 +3001,191 @@ keycompare (struct line const *a, struct line const *b)
               size_t i;
 
               /* Allocate space for copies.  */
-              size_t size = lena + 1 + lenb + 1;
-              if (size <= sizeof stackbuf)
+              size_t اندازه = lena + 1 + lenb + 1;
+              إذا (اندازه <= حجم stackbuf)
                 ta = stackbuf;
-              else
-                ta = allocated = xmalloc (size);
+              وإلا
+                ta = allocated = xmalloc (اندازه);
               tb = ta + lena + 1;
 
               /* Put into each copy a version of the key in which the
                  requested characters are ignored or translated.  */
-              for (tlena = i = 0; i < lena; i++)
-                if (! (ignore && ignore[to_uchar (texta[i])]))
+              لكل (tlena = i = 0; i < lena; i++)
+                إذا (! (ignore && ignore[منزل_uchar (texta[i])]))
                   ta[tlena++] = (translate
-                                 ? translate[to_uchar (texta[i])]
+                                 ? translate[منزل_uchar (texta[i])]
                                  : texta[i]);
 
-              for (tlenb = i = 0; i < lenb; i++)
-                if (! (ignore && ignore[to_uchar (textb[i])]))
+              لكل (tlenb = i = 0; i < lenb; i++)
+                إذا (! (ignore && ignore[منزل_uchar (textb[i])]))
                   tb[tlenb++] = (translate
-                                 ? translate[to_uchar (textb[i])]
+                                 ? translate[منزل_uchar (textb[i])]
                                  : textb[i]);
             }
 
           ta[tlena] = '\0';
           tb[tlenb] = '\0';
 
-          if (key->numeric)
+          إذا (کلی->numeric)
             diff = numcompare (ta, tb);
-          else if (key->general_numeric)
+          وإلا إذا (کلی->general_numeric)
             diff = general_numcompare (ta, tb);
-          else if (key->human_numeric)
+          وإلا إذا (کلی->human_numeric)
             diff = human_numcompare (ta, tb);
-          else if (key->month)
-            diff = getmonth (ta, NULL) - getmonth (tb, NULL);
-          else if (key->random)
+          وإلا إذا (کلی->month)
+            diff = getmonth (ta, عدم) - getmonth (tb, عدم);
+          وإلا إذا (کلی->random)
             diff = compare_random (ta, tlena, tb, tlenb);
-          else if (key->version)
+          وإلا إذا (کلی->نسخه_3)
             diff = filenvercmp (ta, tlena, tb, tlenb);
-          else
+          وإلا
             {
               /* Locale-dependent string sorting.  This is slower than
                  C-locale sorting, which is implemented below.  */
-              if (tlena == 0)
+              إذا (tlena == 0)
                 diff = - NONZERO (tlenb);
-              else if (tlenb == 0)
+              وإلا إذا (tlenb == 0)
                 diff = 1;
-              else
+              وإلا
                 diff = xmemcoll0 (ta, tlena + 1, tb, tlenb + 1);
             }
 
           ta[tlena] = enda;
           tb[tlenb] = endb;
 
-          free (allocated);
+          حرر (allocated);
         }
-      else if (ignore)
+      وإلا إذا (ignore)
         {
-#define CMP_WITH_IGNORE(A, B)						\
-  do									\
+#تعریف_کړه CMP_WITH_IGNORE(A, B)						\
+  افعل									\
     {									\
-          while (true)							\
+          طالما (true)							\
             {								\
-              while (texta < lima && ignore[to_uchar (*texta)])		\
+              طالما (texta < lima && ignore[منزل_uchar (*texta)])		\
                 ++texta;						\
-              while (textb < limb && ignore[to_uchar (*textb)])		\
+              طالما (textb < limb && ignore[منزل_uchar (*textb)])		\
                 ++textb;						\
-              if (! (texta < lima && textb < limb))			\
+              إذا (! (texta < lima && textb < limb))			\
                 {							\
                   diff = (texta < lima) - (textb < limb);		\
-                  break;						\
+                  اكسر;						\
                 }							\
-              diff = to_uchar (A) - to_uchar (B);			\
-              if (diff)							\
-                break;							\
+              diff = منزل_uchar (A) - منزل_uchar (B);			\
+              إذا (diff)							\
+                اكسر;							\
               ++texta;							\
               ++textb;							\
             }								\
                                                                         \
     }									\
-  while (0)
+  طالما (0)
 
-          if (translate)
-            CMP_WITH_IGNORE (translate[to_uchar (*texta)],
-                             translate[to_uchar (*textb)]);
-          else
+          إذا (translate)
+            CMP_WITH_IGNORE (translate[منزل_uchar (*texta)],
+                             translate[منزل_uchar (*textb)]);
+          وإلا
             CMP_WITH_IGNORE (*texta, *textb);
         }
-      else
+      وإلا
         {
           size_t lenmin = MIN (lena, lenb);
-          if (lenmin == 0)
+          إذا (lenmin == 0)
             diff = 0;
-          else if (translate)
+          وإلا إذا (translate)
             {
               size_t i = 0;
-              do
+              افعل
                 {
-                  diff = (to_uchar (translate[to_uchar (texta[i])])
-                          - to_uchar (translate[to_uchar (textb[i])]));
-                  if (diff)
-                    break;
+                  diff = (منزل_uchar (translate[منزل_uchar (texta[i])])
+                          - منزل_uchar (translate[منزل_uchar (textb[i])]));
+                  إذا (diff)
+                    اكسر;
                   i++;
                 }
-              while (i < lenmin);
+              طالما (i < lenmin);
             }
-          else
+          وإلا
             diff = memcmp (texta, textb, lenmin);
 
-          if (! diff)
+          إذا (! diff)
             diff = _GL_CMP (lena, lenb);
         }
 
-      if (diff)
-        break;
+      إذا (diff)
+        اكسر;
 
-      key = key->next;
-      if (! key)
-        return 0;
+      کلی = کلی->بل;
+      إذا (! کلی)
+        أرجع 0;
 
       /* Find the beginning and limit of the next field.  */
-      if (key->eword != SIZE_MAX)
-        lima = limfield (a, key), limb = limfield (b, key);
-      else
-        lima = a->text + a->length - 1, limb = b->text + b->length - 1;
+      إذا (کلی->eword != SIZE_MAX)
+        lima = limfield (a, کلی), limb = limfield (b, کلی);
+      وإلا
+        lima = a->متن + a->اوږدتیا - 1, limb = b->متن + b->اوږدتیا - 1;
 
-      if (key->sword != SIZE_MAX)
-        texta = begfield (a, key), textb = begfield (b, key);
-      else
+      إذا (کلی->sword != SIZE_MAX)
+        texta = begfield (a, کلی), textb = begfield (b, کلی);
+      وإلا
         {
-          texta = a->text, textb = b->text;
-          if (key->skipsblanks)
+          texta = a->متن, textb = b->متن;
+          إذا (کلی->skipsblanks)
             {
-              while (texta < lima && blanks[to_uchar (*texta)])
+              طالما (texta < lima && blanks[منزل_uchar (*texta)])
                 ++texta;
-              while (textb < limb && blanks[to_uchar (*textb)])
+              طالما (textb < limb && blanks[منزل_uchar (*textb)])
                 ++textb;
             }
         }
     }
 
-  return diff_reversed (diff, key->reverse);
+  أرجع diff_reversed (diff, کلی->سرچپه);
 }
 
 /* Compare two lines A and B, returning negative, zero, or positive
    depending on whether A compares less than, equal to, or greater than B. */
 
-static int
-compare (struct line const *a, struct line const *b)
+ساكن صحيح
+compare (بنية کرښه ثابت *a, بنية کرښه ثابت *b)
 {
-  int diff;
+  صحيح diff;
   size_t alen, blen;
 
   /* First try to compare on the specified keys (if any).
      The only two cases with no key at all are unadorned sort,
      and unadorned sort -r. */
-  if (keylist)
+  إذا (keylist)
     {
       diff = keycompare (a, b);
-      if (diff || unique || stable)
-        return diff;
+      إذا (diff || unique || stable)
+        أرجع diff;
     }
 
   /* If the keys all compare equal (or no keys were specified)
      fall through to the default comparison.  */
-  alen = a->length - 1, blen = b->length - 1;
+  alen = a->اوږدتیا - 1, blen = b->اوږدتیا - 1;
 
-  if (alen == 0)
+  إذا (alen == 0)
     diff = - NONZERO (blen);
-  else if (blen == 0)
+  وإلا إذا (blen == 0)
     diff = 1;
-  else if (hard_LC_COLLATE)
+  وإلا إذا (hard_LC_COLLATE)
     {
       /* xmemcoll0 is a performance enhancement as
          it will not unconditionally write '\0' after the
          passed in buffers, which was seen to give around
          a 3% increase in performance for short lines.  */
-      diff = xmemcoll0 (a->text, alen + 1, b->text, blen + 1);
+      diff = xmemcoll0 (a->متن, alen + 1, b->متن, blen + 1);
     }
-  else
+  وإلا
     {
-      diff = memcmp (a->text, b->text, MIN (alen, blen));
-      if (!diff)
+      diff = memcmp (a->متن, b->متن, MIN (alen, blen));
+      إذا (!diff)
         diff = _GL_CMP (alen, blen);
     }
 
-  return diff_reversed (diff, reverse);
+  أرجع diff_reversed (diff, سرچپه);
 }
 
 /* Write LINE to output stream FP; the output file's name is
@@ -3193,36 +3193,36 @@ compare (struct line const *a, struct line const *b)
    otherwise.  If debugging is enabled and FP is standard output,
    append some debugging information.  */
 
-static void
-write_line (struct line const *line, FILE *fp, char const *output_file)
+ساكن فراغ
+write_کرښه (بنية کرښه ثابت *کرښه, FILE *fp, حرف ثابت *output_file)
 {
-  char *buf = line->text;
-  size_t n_bytes = line->length;
-  char *ebuf = buf + n_bytes;
+  حرف *buf = کرښه->متن;
+  size_t n_بایټونه = کرښه->اوږدتیا;
+  حرف *ebuf = buf + n_بایټونه;
 
-  if (!output_file && debug)
+  إذا (!output_file && debug)
     {
       /* Convert TAB to '>' and EOL to \n, and then output debugging info.  */
-      char const *c = buf;
+      حرف ثابت *c = buf;
 
-      while (c < ebuf)
+      طالما (c < ebuf)
         {
-          char wc = *c++;
-          if (wc == '\t')
+          حرف wc = *c++;
+          إذا (wc == '\t')
             wc = '>';
-          else if (c == ebuf)
+          وإلا إذا (c == ebuf)
             wc = '\n';
-          if (fputc (wc, fp) == EOF)
-            sort_die (_("write failed"), output_file);
+          إذا (fputc (wc, fp) == EOF)
+            ترتیبول_die (_("write failed"), output_file);
         }
 
-      debug_line (line);
+      debug_کرښه (کرښه);
     }
-  else
+  وإلا
     {
       ebuf[-1] = eolchar;
-      if (fwrite (buf, 1, n_bytes, fp) != n_bytes)
-        sort_die (_("write failed"), output_file);
+      إذا (fwrite (buf, 1, n_بایټونه, fp) != n_بایټونه)
+        ترتیبول_die (_("write failed"), output_file);
       ebuf[-1] = '\0';
     }
 }
@@ -3232,85 +3232,85 @@ write_line (struct line const *line, FILE *fp, char const *output_file)
    diagnostic (FILE_NAME, line number, contents of line) to stderr if
    they are not in order.  */
 
-static bool
-check (char const *file_name, char checkonly)
+ساكن bool
+check (حرف ثابت *file_name, حرف checkonly)
 {
   FILE *fp = xfopen (file_name, "r");
-  struct buffer buf;		/* Input buffer. */
-  struct line temp;		/* Copy of previous line. */
+  بنية بفر buf;		/* Input buffer. */
+  بنية کرښه لنډمهاله;		/* Copy of previous line. */
   size_t alloc = 0;
-  uintmax_t line_number = 0;
-  struct keyfield const *key = keylist;
+  uintmax_t کرښه_شمېره = 0;
+  بنية keyfield ثابت *کلی = keylist;
   bool nonunique = ! unique;
   bool ordered = true;
 
-  initbuf (&buf, sizeof (struct line),
-           MAX (merge_buffer_size, sort_size));
-  temp.text = NULL;
+  initbuf (&buf, حجم (بنية کرښه),
+           MAX (یوځای_بفر_اندازه, ترتیبول_اندازه));
+  لنډمهاله.متن = عدم;
 
-  while (fillbuf (&buf, fp, file_name, NULL))
+  طالما (fillbuf (&buf, fp, file_name, عدم))
     {
-      struct line const *line = buffer_linelim (&buf);
-      struct line const *linebase = line - buf.nlines;
+      بنية کرښه ثابت *کرښه = بفر_linelim (&buf);
+      بنية کرښه ثابت *linebase = کرښه - buf.nlines;
 
       /* Make sure the line saved from the old buffer contents is
          less than or equal to the first line of the new buffer. */
-      if (alloc && nonunique <= compare (&temp, line - 1))
+      إذا (alloc && nonunique <= compare (&لنډمهاله, کرښه - 1))
         {
-        found_disorder:
+        وموندل_disorder:
           {
-            if (checkonly == 'c')
+            إذا (checkonly == 'c')
               {
-                struct line const *disorder_line = line - 1;
-                uintmax_t disorder_line_number =
-                  buffer_linelim (&buf) - disorder_line + line_number;
+                بنية کرښه ثابت *disorder_کرښه = کرښه - 1;
+                uintmax_t disorder_کرښه_شمېره =
+                  بفر_linelim (&buf) - disorder_کرښه + کرښه_شمېره;
                 fprintf (stderr, _("%s: %s:%ju: disorder: "),
-                         program_name, file_name, disorder_line_number);
-                write_line (disorder_line, stderr, _("standard error"));
+                         پروګرام_name, file_name, disorder_کرښه_شمېره);
+                write_کرښه (disorder_کرښه, stderr, _("standard error"));
               }
 
             ordered = false;
-            break;
+            اكسر;
           }
         }
 
       /* Compare each line in the buffer with its successor.  */
-      while (linebase < --line)
-        if (nonunique <= compare (line, line - 1))
-          goto found_disorder;
+      طالما (linebase < --کرښه)
+        إذا (nonunique <= compare (کرښه, کرښه - 1))
+          اذهب وموندل_disorder;
 
-      line_number += buf.nlines;
+      کرښه_شمېره += buf.nlines;
 
       /* Save the last line of the buffer.  */
-      if (alloc < line->length)
+      إذا (alloc < کرښه->اوږدتیا)
         {
-          do
+          افعل
             {
               alloc *= 2;
-              if (! alloc)
+              إذا (! alloc)
                 {
-                  alloc = line->length;
-                  break;
+                  alloc = کرښه->اوږدتیا;
+                  اكسر;
                 }
             }
-          while (alloc < line->length);
+          طالما (alloc < کرښه->اوږدتیا);
 
-          free (temp.text);
-          temp.text = xmalloc (alloc);
+          حرر (لنډمهاله.متن);
+          لنډمهاله.متن = xmalloc (alloc);
         }
-      memcpy (temp.text, line->text, line->length);
-      temp.length = line->length;
-      if (key)
+      حافظه_نقل (لنډمهاله.متن, کرښه->متن, کرښه->اوږدتیا);
+      لنډمهاله.اوږدتیا = کرښه->اوږدتیا;
+      إذا (کلی)
         {
-          temp.keybeg = temp.text + (line->keybeg - line->text);
-          temp.keylim = temp.text + (line->keylim - line->text);
+          لنډمهاله.keybeg = لنډمهاله.متن + (کرښه->keybeg - کرښه->متن);
+          لنډمهاله.keylim = لنډمهاله.متن + (کرښه->keylim - کرښه->متن);
         }
     }
 
   xfclose (fp, file_name);
-  free (buf.buf);
-  free (temp.text);
-  return ordered;
+  حرر (buf.buf);
+  حرر (لنډمهاله.متن);
+  أرجع ordered;
 }
 
 /* Open FILES (there are NFILES of them) and store the resulting array
@@ -3318,23 +3318,23 @@ check (char const *file_name, char checkonly)
    number of successfully opened files, setting errno if this value is
    less than NFILES.  */
 
-static size_t
-open_input_files (struct sortfile *files, size_t nfiles, FILE ***pfps)
+ساكن size_t
+open_ننوت_files (بنية sortfile *files, size_t nfiles, FILE ***pfps)
 {
-  FILE **fps = *pfps = xnmalloc (nfiles, sizeof *fps);
-  int i;
+  FILE **fps = *pfps = xnmalloc (nfiles, حجم *fps);
+  صحيح i;
 
   /* Open as many input files as we can.  */
-  for (i = 0; i < nfiles; i++)
+  لكل (i = 0; i < nfiles; i++)
     {
-      fps[i] = (files[i].temp && files[i].temp->state != UNCOMPRESSED
-                ? open_temp (files[i].temp)
-                : stream_open (files[i].name, "r"));
-      if (!fps[i])
-        break;
+      fps[i] = (files[i].لنډمهاله && files[i].لنډمهاله->state != UNCOMPRESSED
+                ? open_لنډمهاله (files[i].لنډمهاله)
+                : بهیر_open (files[i].name, "r"));
+      إذا (!fps[i])
+        اكسر;
     }
 
-  return i;
+  أرجع i;
 }
 
 /* Merge lines from FILES onto OFP.  NTEMPS is the number of temporary
@@ -3345,52 +3345,52 @@ open_input_files (struct sortfile *files, size_t nfiles, FILE ***pfps)
    OUTPUT_FILE gives the name of the output file.  If it is null,
    the output file is standard output.  */
 
-static void
-mergefps (struct sortfile *files, size_t ntemps, size_t nfiles,
-          FILE *ofp, char const *output_file, FILE **fps)
+ساكن فراغ
+mergefps (بنية sortfile *files, size_t ntemps, size_t nfiles,
+          FILE *ofp, حرف ثابت *output_file, FILE **fps)
 {
-  struct buffer *buffer = xnmalloc (nfiles, sizeof *buffer);
+  بنية بفر *بفر = xnmalloc (nfiles, حجم *بفر);
                                 /* Input buffers for each file. */
-  struct line saved;		/* Saved line storage for unique check. */
-  struct line const *savedline = NULL;
+  بنية کرښه saved;		/* Saved line storage for unique check. */
+  بنية کرښه ثابت *savedline = عدم;
                                 /* &saved if there is a saved line. */
   size_t savealloc = 0;		/* Size allocated for the saved line. */
-  struct line const **cur = xnmalloc (nfiles, sizeof *cur);
+  بنية کرښه ثابت **cur = xnmalloc (nfiles, حجم *cur);
                                 /* Current line in each line table. */
-  struct line const **base = xnmalloc (nfiles, sizeof *base);
+  بنية کرښه ثابت **بنسټ_2 = xnmalloc (nfiles, حجم *بنسټ_2);
                                 /* Base of each line table.  */
-  size_t *ord = xnmalloc (nfiles, sizeof *ord);
+  size_t *ord = xnmalloc (nfiles, حجم *ord);
                                 /* Table representing a permutation of fps,
                                    such that cur[ord[0]] is the smallest line
                                    and will be next output. */
   size_t t;
-  struct keyfield const *key = keylist;
-  saved.text = NULL;
+  بنية keyfield ثابت *کلی = keylist;
+  saved.متن = عدم;
 
   /* Read initial lines from each input file. */
-  for (size_t i = 0; i < nfiles; )
+  لكل (size_t i = 0; i < nfiles; )
     {
-      initbuf (&buffer[i], sizeof (struct line),
-               MAX (merge_buffer_size, sort_size / nfiles));
-      if (fillbuf (&buffer[i], fps[i], files[i].name, NULL))
+      initbuf (&بفر[i], حجم (بنية کرښه),
+               MAX (یوځای_بفر_اندازه, ترتیبول_اندازه / nfiles));
+      إذا (fillbuf (&بفر[i], fps[i], files[i].name, عدم))
         {
-          struct line const *linelim = buffer_linelim (&buffer[i]);
+          بنية کرښه ثابت *linelim = بفر_linelim (&بفر[i]);
           cur[i] = linelim - 1;
-          base[i] = linelim - buffer[i].nlines;
+          بنسټ_2[i] = linelim - بفر[i].nlines;
           i++;
         }
-      else
+      وإلا
         {
           /* fps[i] is empty; eliminate it from future consideration.  */
           xfclose (fps[i], files[i].name);
-          if (i < ntemps)
+          إذا (i < ntemps)
             {
               ntemps--;
               zaptemp (files[i].name);
             }
-          free (buffer[i].buf);
+          حرر (بفر[i].buf);
           --nfiles;
-          for (size_t j = i; j < nfiles; ++j)
+          لكل (size_t j = i; j < nfiles; ++j)
             {
               files[j] = files[j + 1];
               fps[j] = fps[j + 1];
@@ -3401,93 +3401,93 @@ mergefps (struct sortfile *files, size_t ntemps, size_t nfiles,
   /* Set up the ord table according to comparisons among input lines.
      Since this only reorders two items if one is strictly greater than
      the other, it is stable. */
-  for (size_t i = 0; i < nfiles; ++i)
+  لكل (size_t i = 0; i < nfiles; ++i)
     ord[i] = i;
-  for (size_t i = 1; i < nfiles; ++i)
-    if (0 < compare (cur[ord[i - 1]], cur[ord[i]]))
+  لكل (size_t i = 1; i < nfiles; ++i)
+    إذا (0 < compare (cur[ord[i - 1]], cur[ord[i]]))
       t = ord[i - 1], ord[i - 1] = ord[i], ord[i] = t, i = 0;
 
   /* Repeatedly output the smallest line until no input remains. */
-  while (nfiles)
+  طالما (nfiles)
     {
-      struct line const *smallest = cur[ord[0]];
+      بنية کرښه ثابت *تر_ټولو_کوچنی = cur[ord[0]];
 
       /* If uniquified output is turned on, output only the first of
          an identical series of lines. */
-      if (unique)
+      إذا (unique)
         {
-          if (savedline && compare (savedline, smallest))
+          إذا (savedline && compare (savedline, تر_ټولو_کوچنی))
             {
-              savedline = NULL;
-              write_line (&saved, ofp, output_file);
+              savedline = عدم;
+              write_کرښه (&saved, ofp, output_file);
             }
-          if (!savedline)
+          إذا (!savedline)
             {
               savedline = &saved;
-              if (savealloc < smallest->length)
+              إذا (savealloc < تر_ټولو_کوچنی->اوږدتیا)
                 {
-                  do
-                    if (! savealloc)
+                  افعل
+                    إذا (! savealloc)
                       {
-                        savealloc = smallest->length;
-                        break;
+                        savealloc = تر_ټولو_کوچنی->اوږدتیا;
+                        اكسر;
                       }
-                  while ((savealloc *= 2) < smallest->length);
+                  طالما ((savealloc *= 2) < تر_ټولو_کوچنی->اوږدتیا);
 
-                  free (saved.text);
-                  saved.text = xmalloc (savealloc);
+                  حرر (saved.متن);
+                  saved.متن = xmalloc (savealloc);
                 }
-              saved.length = smallest->length;
-              memcpy (saved.text, smallest->text, saved.length);
-              if (key)
+              saved.اوږدتیا = تر_ټولو_کوچنی->اوږدتیا;
+              حافظه_نقل (saved.متن, تر_ټولو_کوچنی->متن, saved.اوږدتیا);
+              إذا (کلی)
                 {
                   saved.keybeg =
-                    saved.text + (smallest->keybeg - smallest->text);
+                    saved.متن + (تر_ټولو_کوچنی->keybeg - تر_ټولو_کوچنی->متن);
                   saved.keylim =
-                    saved.text + (smallest->keylim - smallest->text);
+                    saved.متن + (تر_ټولو_کوچنی->keylim - تر_ټولو_کوچنی->متن);
                 }
             }
         }
-      else
-        write_line (smallest, ofp, output_file);
+      وإلا
+        write_کرښه (تر_ټولو_کوچنی, ofp, output_file);
 
       /* Check if we need to read more lines into memory. */
-      if (base[ord[0]] < smallest)
-        cur[ord[0]] = smallest - 1;
-      else
+      إذا (بنسټ_2[ord[0]] < تر_ټولو_کوچنی)
+        cur[ord[0]] = تر_ټولو_کوچنی - 1;
+      وإلا
         {
-          if (fillbuf (&buffer[ord[0]], fps[ord[0]], files[ord[0]].name,
-                       NULL))
+          إذا (fillbuf (&بفر[ord[0]], fps[ord[0]], files[ord[0]].name,
+                       عدم))
             {
-              struct line const *linelim = buffer_linelim (&buffer[ord[0]]);
+              بنية کرښه ثابت *linelim = بفر_linelim (&بفر[ord[0]]);
               cur[ord[0]] = linelim - 1;
-              base[ord[0]] = linelim - buffer[ord[0]].nlines;
+              بنسټ_2[ord[0]] = linelim - بفر[ord[0]].nlines;
             }
-          else
+          وإلا
             {
               /* We reached EOF on fps[ord[0]].  */
-              for (size_t i = 1; i < nfiles; ++i)
-                if (ord[i] > ord[0])
+              لكل (size_t i = 1; i < nfiles; ++i)
+                إذا (ord[i] > ord[0])
                   --ord[i];
               --nfiles;
               xfclose (fps[ord[0]], files[ord[0]].name);
-              if (ord[0] < ntemps)
+              إذا (ord[0] < ntemps)
                 {
                   ntemps--;
                   zaptemp (files[ord[0]].name);
                 }
-              free (buffer[ord[0]].buf);
-              for (size_t i = ord[0]; i < nfiles; ++i)
+              حرر (بفر[ord[0]].buf);
+              لكل (size_t i = ord[0]; i < nfiles; ++i)
                 {
                   fps[i] = fps[i + 1];
                   files[i] = files[i + 1];
-                  buffer[i] = buffer[i + 1];
+                  بفر[i] = بفر[i + 1];
                   cur[i] = cur[i + 1];
-                  base[i] = base[i + 1];
+                  بنسټ_2[i] = بنسټ_2[i + 1];
                 }
-              for (size_t i = 0; i < nfiles; ++i)
+              لكل (size_t i = 0; i < nfiles; ++i)
                 ord[i] = ord[i + 1];
-              continue;
+              استمر;
             }
         }
 
@@ -3500,37 +3500,37 @@ mergefps (struct sortfile *files, size_t ntemps, size_t nfiles,
         size_t hi = nfiles;
         size_t probe = lo;
         size_t ord0 = ord[0];
-        size_t count_of_smaller_lines;
+        size_t شمېر_د_smaller_کرښې;
 
-        while (lo < hi)
+        طالما (lo < hi)
           {
-            int cmp = compare (cur[ord0], cur[ord[probe]]);
-            if (cmp < 0 || (cmp == 0 && ord0 < ord[probe]))
+            صحيح cmp = compare (cur[ord0], cur[ord[probe]]);
+            إذا (cmp < 0 || (cmp == 0 && ord0 < ord[probe]))
               hi = probe;
-            else
+            وإلا
               lo = probe + 1;
             probe = (lo + hi) / 2;
           }
 
-        count_of_smaller_lines = lo - 1;
-        for (size_t j = 0; j < count_of_smaller_lines; j++)
+        شمېر_د_smaller_کرښې = lo - 1;
+        لكل (size_t j = 0; j < شمېر_د_smaller_کرښې; j++)
           ord[j] = ord[j + 1];
-        ord[count_of_smaller_lines] = ord0;
+        ord[شمېر_د_smaller_کرښې] = ord0;
       }
     }
 
-  if (unique && savedline)
+  إذا (unique && savedline)
     {
-      write_line (&saved, ofp, output_file);
-      free (saved.text);
+      write_کرښه (&saved, ofp, output_file);
+      حرر (saved.متن);
     }
 
   xfclose (ofp, output_file);
-  free (fps);
-  free (buffer);
-  free (ord);
-  free (base);
-  free (cur);
+  حرر (fps);
+  حرر (بفر);
+  حرر (ord);
+  حرر (بنسټ_2);
+  حرر (cur);
 }
 
 /* Merge lines from FILES onto OFP.  NTEMPS is the number of temporary
@@ -3543,16 +3543,16 @@ mergefps (struct sortfile *files, size_t ntemps, size_t nfiles,
    less than NFILES if we ran low on file descriptors, but in this
    case it is never less than 2.  */
 
-static size_t
-mergefiles (struct sortfile *files, size_t ntemps, size_t nfiles,
-            FILE *ofp, char const *output_file)
+ساكن size_t
+mergefiles (بنية sortfile *files, size_t ntemps, size_t nfiles,
+            FILE *ofp, حرف ثابت *output_file)
 {
   FILE **fps;
-  size_t nopened = open_input_files (files, nfiles, &fps);
-  if (nopened < nfiles && nopened < 2)
-    sort_die (_("open failed"), files[nopened].name);
+  size_t nopened = open_ننوت_files (files, nfiles, &fps);
+  إذا (nopened < nfiles && nopened < 2)
+    ترتیبول_die (_("open failed"), files[nopened].name);
   mergefps (files, ntemps, nopened, ofp, output_file, fps);
-  return nopened;
+  أرجع nopened;
 }
 
 /* Merge into T (of size NLINES) the two sorted arrays of lines
@@ -3561,35 +3561,35 @@ mergefiles (struct sortfile *files, size_t ntemps, size_t nfiles,
    T and LO point just past their respective arrays, and the arrays
    are in reverse order.  NLINES must be at least 2.  */
 
-static void
-mergelines (struct line *restrict t, size_t nlines,
-            struct line const *restrict lo)
+ساكن فراغ
+mergelines (بنية کرښه *محدود t, size_t nlines,
+            بنية کرښه ثابت *محدود lo)
 {
   size_t nlo = nlines / 2;
   size_t nhi = nlines - nlo;
-  struct line *hi = t - nlo;
+  بنية کرښه *hi = t - nlo;
 
-  while (true)
-    if (compare (lo - 1, hi - 1) <= 0)
+  طالما (true)
+    إذا (compare (lo - 1, hi - 1) <= 0)
       {
         *--t = *--lo;
-        if (! --nlo)
+        إذا (! --nlo)
           {
             /* HI must equal T now, and there is no need to copy from
                HI to T. */
-            return;
+            أرجع;
           }
       }
-    else
+    وإلا
       {
         *--t = *--hi;
-        if (! --nhi)
+        إذا (! --nhi)
           {
-            do
+            افعل
               *--t = *--lo;
-            while (--nlo);
+            طالما (--nlo);
 
-            return;
+            أرجع;
           }
       }
 }
@@ -3608,96 +3608,96 @@ mergelines (struct line *restrict t, size_t nlines,
    writes that this memory optimization was originally published by
    D. A. Bell, Comp J. 1 (1958), 75.  */
 
-static void
-sequential_sort (struct line *restrict lines, size_t nlines,
-                 struct line *restrict temp, bool to_temp)
+ساكن فراغ
+sequential_ترتیبول (بنية کرښه *محدود کرښې, size_t nlines,
+                 بنية کرښه *محدود لنډمهاله, bool منزل_لنډمهاله)
 {
-  if (nlines == 2)
+  إذا (nlines == 2)
     {
       /* Declare 'swap' as int, not bool, to work around a bug
         <https://lists.gnu.org/r/bug-coreutils/2005-10/msg00086.html>
          in the IBM xlc 6.0.0.0 compiler in 64-bit mode.  */
-      int swap = (0 < compare (&lines[-1], &lines[-2]));
-      if (to_temp)
+      صحيح بدلون = (0 < compare (&کرښې[-1], &کرښې[-2]));
+      إذا (منزل_لنډمهاله)
         {
-          temp[-1] = lines[-1 - swap];
-          temp[-2] = lines[-2 + swap];
+          لنډمهاله[-1] = کرښې[-1 - بدلون];
+          لنډمهاله[-2] = کرښې[-2 + بدلون];
         }
-      else if (swap)
+      وإلا إذا (بدلون)
         {
-          temp[-1] = lines[-1];
-          lines[-1] = lines[-2];
-          lines[-2] = temp[-1];
+          لنډمهاله[-1] = کرښې[-1];
+          کرښې[-1] = کرښې[-2];
+          کرښې[-2] = لنډمهاله[-1];
         }
     }
-  else
+  وإلا
     {
       size_t nlo = nlines / 2;
       size_t nhi = nlines - nlo;
-      struct line *lo = lines;
-      struct line *hi = lines - nlo;
+      بنية کرښه *lo = کرښې;
+      بنية کرښه *hi = کرښې - nlo;
 
-      sequential_sort (hi, nhi, temp - (to_temp ? nlo : 0), to_temp);
-      if (1 < nlo)
-        sequential_sort (lo, nlo, temp, !to_temp);
-      else if (!to_temp)
-        temp[-1] = lo[-1];
+      sequential_ترتیبول (hi, nhi, لنډمهاله - (منزل_لنډمهاله ? nlo : 0), منزل_لنډمهاله);
+      إذا (1 < nlo)
+        sequential_ترتیبول (lo, nlo, لنډمهاله, !منزل_لنډمهاله);
+      وإلا إذا (!منزل_لنډمهاله)
+        لنډمهاله[-1] = lo[-1];
 
-      struct line *dest;
-      struct line const *sorted_lo;
-      if (to_temp)
+      بنية کرښه *dest;
+      بنية کرښه ثابت *sorted_lo;
+      إذا (منزل_لنډمهاله)
         {
-          dest = temp;
-          sorted_lo = lines;
+          dest = لنډمهاله;
+          sorted_lo = کرښې;
         }
-      else
+      وإلا
         {
-          dest = lines;
-          sorted_lo = temp;
+          dest = کرښې;
+          sorted_lo = لنډمهاله;
         }
       mergelines (dest, nlines, sorted_lo);
     }
 }
 
-static struct merge_node *init_node (struct merge_node *restrict,
-                                     struct merge_node *restrict,
-                                     struct line *, size_t, size_t, bool);
+ساكن بنية یوځای_غوټه *init_غوټه (بنية یوځای_غوټه *محدود,
+                                     بنية یوځای_غوټه *محدود,
+                                     بنية کرښه *, size_t, size_t, bool);
 
 
 /* Create and return a merge tree for NTHREADS threads, sorting NLINES
    lines, with destination DEST.  */
-static struct merge_node *
-merge_tree_init (size_t nthreads, size_t nlines, struct line *dest)
+ساكن بنية یوځای_غوټه *
+یوځای_ونه_init (size_t nthreads, size_t nlines, بنية کرښه *dest)
 {
-  struct merge_node *merge_tree = xmalloc (2 * sizeof *merge_tree * nthreads);
+  بنية یوځای_غوټه *یوځای_ونه = xmalloc (2 * حجم *یوځای_ونه * nthreads);
 
-  struct merge_node *root = merge_tree;
-  root->lo = root->hi = root->end_lo = root->end_hi = NULL;
-  root->dest = NULL;
-  root->nlo = root->nhi = nlines;
-  root->parent = NULL;
-  root->level = MERGE_END;
-  root->queued = false;
-  pthread_mutex_init (&root->lock, NULL);
+  بنية یوځای_غوټه *ریښه = یوځای_ونه;
+  ریښه->lo = ریښه->hi = ریښه->پای_ټکی_lo = ریښه->پای_ټکی_hi = عدم;
+  ریښه->dest = عدم;
+  ریښه->nlo = ریښه->nhi = nlines;
+  ریښه->پلار = عدم;
+  ریښه->level = یوځای_پای_ټکی;
+  ریښه->queued = false;
+  pthread_mutex_init (&ریښه->قلف, عدم);
 
-  init_node (root, root + 1, dest, nthreads, nlines, false);
-  return merge_tree;
+  init_غوټه (ریښه, ریښه + 1, dest, nthreads, nlines, false);
+  أرجع یوځای_ونه;
 }
 
 /* Destroy the merge tree. */
-static void
-merge_tree_destroy (size_t nthreads, struct merge_node *merge_tree)
+ساكن فراغ
+یوځای_ونه_destroy (size_t nthreads, بنية یوځای_غوټه *یوځای_ونه)
 {
   size_t n_nodes = nthreads * 2;
-  struct merge_node *node = merge_tree;
+  بنية یوځای_غوټه *غوټه = یوځای_ونه;
 
-  while (n_nodes--)
+  طالما (n_nodes--)
     {
-      pthread_mutex_destroy (&node->lock);
-      node++;
+      pthread_mutex_destroy (&غوټه->قلف);
+      غوټه++;
     }
 
-  free (merge_tree);
+  حرر (یوځای_ونه);
 }
 
 /* Initialize a merge tree node and its descendants.  The node's
@@ -3707,128 +3707,128 @@ merge_tree_destroy (size_t nthreads, struct merge_node *merge_tree)
    TOTAL_LINES.  IS_LO_CHILD is true if the node is the low child of
    its parent.  */
 
-static struct merge_node *
-init_node (struct merge_node *restrict parent,
-           struct merge_node *restrict node_pool,
-           struct line *dest, size_t nthreads,
-           size_t total_lines, bool is_lo_child)
+ساكن بنية یوځای_غوټه *
+init_غوټه (بنية یوځای_غوټه *محدود پلار,
+           بنية یوځای_غوټه *محدود غوټه_pool,
+           بنية کرښه *dest, size_t nthreads,
+           size_t ټول_کرښې, bool is_lo_ماشوم)
 {
-  size_t nlines = (is_lo_child ? parent->nlo : parent->nhi);
+  size_t nlines = (is_lo_ماشوم ? پلار->nlo : پلار->nhi);
   size_t nlo = nlines / 2;
   size_t nhi = nlines - nlo;
-  struct line *lo = dest - total_lines;
-  struct line *hi = lo - nlo;
-  struct line **parent_end = (is_lo_child ? &parent->end_lo : &parent->end_hi);
+  بنية کرښه *lo = dest - ټول_کرښې;
+  بنية کرښه *hi = lo - nlo;
+  بنية کرښه **پلار_پای_ټکی = (is_lo_ماشوم ? &پلار->پای_ټکی_lo : &پلار->پای_ټکی_hi);
 
-  struct merge_node *node = node_pool++;
-  node->lo = node->end_lo = lo;
-  node->hi = node->end_hi = hi;
-  node->dest = parent_end;
-  node->nlo = nlo;
-  node->nhi = nhi;
-  node->parent = parent;
-  node->level = parent->level + 1;
-  node->queued = false;
-  pthread_mutex_init (&node->lock, NULL);
+  بنية یوځای_غوټه *غوټه = غوټه_pool++;
+  غوټه->lo = غوټه->پای_ټکی_lo = lo;
+  غوټه->hi = غوټه->پای_ټکی_hi = hi;
+  غوټه->dest = پلار_پای_ټکی;
+  غوټه->nlo = nlo;
+  غوټه->nhi = nhi;
+  غوټه->پلار = پلار;
+  غوټه->level = پلار->level + 1;
+  غوټه->queued = false;
+  pthread_mutex_init (&غوټه->قلف, عدم);
 
-  if (nthreads > 1)
+  إذا (nthreads > 1)
     {
-      size_t lo_threads = nthreads / 2;
-      size_t hi_threads = nthreads - lo_threads;
-      node->lo_child = node_pool;
-      node_pool = init_node (node, node_pool, lo, lo_threads,
-                             total_lines, true);
-      node->hi_child = node_pool;
-      node_pool = init_node (node, node_pool, hi, hi_threads,
-                             total_lines, false);
+      size_t lo_تارونه = nthreads / 2;
+      size_t hi_تارونه = nthreads - lo_تارونه;
+      غوټه->lo_ماشوم = غوټه_pool;
+      غوټه_pool = init_غوټه (غوټه, غوټه_pool, lo, lo_تارونه,
+                             ټول_کرښې, true);
+      غوټه->hi_ماشوم = غوټه_pool;
+      غوټه_pool = init_غوټه (غوټه, غوټه_pool, hi, hi_تارونه,
+                             ټول_کرښې, false);
     }
-  else
+  وإلا
     {
-      node->lo_child = NULL;
-      node->hi_child = NULL;
+      غوټه->lo_ماشوم = عدم;
+      غوټه->hi_ماشوم = عدم;
     }
-  return node_pool;
+  أرجع غوټه_pool;
 }
 
 
 /* Compare two merge nodes A and B for priority.  */
 
-static int
-compare_nodes (void const *a, void const *b)
+ساكن صحيح
+compare_nodes (فراغ ثابت *a, فراغ ثابت *b)
 {
-  struct merge_node const *nodea = a;
-  struct merge_node const *nodeb = b;
-  if (nodea->level == nodeb->level)
-      return (nodea->nlo + nodea->nhi) < (nodeb->nlo + nodeb->nhi);
-  return nodea->level < nodeb->level;
+  بنية یوځای_غوټه ثابت *nodea = a;
+  بنية یوځای_غوټه ثابت *nodeb = b;
+  إذا (nodea->level == nodeb->level)
+      أرجع (nodea->nlo + nodea->nhi) < (nodeb->nlo + nodeb->nhi);
+  أرجع nodea->level < nodeb->level;
 }
 
 /* Lock a merge tree NODE.  */
 
-static inline void
-lock_node (struct merge_node *node)
+ساكن مضمن فراغ
+قلف_غوټه (بنية یوځای_غوټه *غوټه)
 {
-  pthread_mutex_lock (&node->lock);
+  pthread_mutex_قلف (&غوټه->قلف);
 }
 
 /* Unlock a merge tree NODE. */
 
-static inline void
-unlock_node (struct merge_node *node)
+ساكن مضمن فراغ
+unlock_غوټه (بنية یوځای_غوټه *غوټه)
 {
-  pthread_mutex_unlock (&node->lock);
+  pthread_mutex_unlock (&غوټه->قلف);
 }
 
 /* Destroy merge QUEUE. */
 
-static void
-queue_destroy (struct merge_node_queue *queue)
+ساكن فراغ
+کتار_destroy (بنية یوځای_غوټه_کتار *کتار)
 {
-  heap_free (queue->priority_queue);
-  pthread_cond_destroy (&queue->cond);
-  pthread_mutex_destroy (&queue->mutex);
+  ډېرۍ_free (کتار->لومړیتوب_کتار);
+  pthread_cond_destroy (&کتار->cond);
+  pthread_mutex_destroy (&کتار->mutex);
 }
 
 /* Initialize merge QUEUE, allocating space suitable for a maximum of
    NTHREADS threads.  */
 
-static void
-queue_init (struct merge_node_queue *queue, size_t nthreads)
+ساكن فراغ
+کتار_init (بنية یوځای_غوټه_کتار *کتار, size_t nthreads)
 {
   /* Though it's highly unlikely all nodes are in the heap at the same
      time, the heap should accommodate all of them.  Counting a null
      dummy head for the heap, reserve 2 * NTHREADS nodes.  */
-  queue->priority_queue = heap_alloc (compare_nodes, 2 * nthreads);
-  pthread_mutex_init (&queue->mutex, NULL);
-  pthread_cond_init (&queue->cond, NULL);
+  کتار->لومړیتوب_کتار = ډېرۍ_alloc (compare_nodes, 2 * nthreads);
+  pthread_mutex_init (&کتار->mutex, عدم);
+  pthread_cond_init (&کتار->cond, عدم);
 }
 
 /* Insert NODE into QUEUE.  The caller either holds a lock on NODE, or
    does not need to lock NODE.  */
 
-static void
-queue_insert (struct merge_node_queue *queue, struct merge_node *node)
+ساكن فراغ
+کتار_ورننباسه (بنية یوځای_غوټه_کتار *کتار, بنية یوځای_غوټه *غوټه)
 {
-  pthread_mutex_lock (&queue->mutex);
-  heap_insert (queue->priority_queue, node);
-  node->queued = true;
-  pthread_cond_signal (&queue->cond);
-  pthread_mutex_unlock (&queue->mutex);
+  pthread_mutex_قلف (&کتار->mutex);
+  ډېرۍ_ورننباسه (کتار->لومړیتوب_کتار, غوټه);
+  غوټه->queued = true;
+  pthread_cond_signal (&کتار->cond);
+  pthread_mutex_unlock (&کتار->mutex);
 }
 
 /* Pop the top node off the priority QUEUE, lock the node, return it.  */
 
-static struct merge_node *
-queue_pop (struct merge_node_queue *queue)
+ساكن بنية یوځای_غوټه *
+کتار_راوباسه (بنية یوځای_غوټه_کتار *کتار)
 {
-  struct merge_node *node;
-  pthread_mutex_lock (&queue->mutex);
-  while (! (node = heap_remove_top (queue->priority_queue)))
-    pthread_cond_wait (&queue->cond, &queue->mutex);
-  pthread_mutex_unlock (&queue->mutex);
-  lock_node (node);
-  node->queued = false;
-  return node;
+  بنية یوځای_غوټه *غوټه;
+  pthread_mutex_قلف (&کتار->mutex);
+  طالما (! (غوټه = ډېرۍ_remove_سر (کتار->لومړیتوب_کتار)))
+    pthread_cond_wait (&کتار->cond, &کتار->mutex);
+  pthread_mutex_unlock (&کتار->mutex);
+  قلف_غوټه (غوټه);
+  غوټه->queued = false;
+  أرجع غوټه;
 }
 
 /* Output LINE to TFP, unless -u is specified and the line compares
@@ -3838,17 +3838,17 @@ queue_pop (struct merge_node_queue *queue)
    This function does not save the line for comparison later, so it is
    appropriate only for internal sort.  */
 
-static void
-write_unique (struct line const *line, FILE *tfp, char const *temp_output)
+ساكن فراغ
+write_unique (بنية کرښه ثابت *کرښه, FILE *tfp, حرف ثابت *لنډمهاله_output)
 {
-  if (unique)
+  إذا (unique)
     {
-      if (saved_line.text && ! compare (line, &saved_line))
-        return;
-      saved_line = *line;
+      إذا (saved_کرښه.متن && ! compare (کرښه, &saved_کرښه))
+        أرجع;
+      saved_کرښه = *کرښه;
     }
 
-  write_line (line, tfp, temp_output);
+  write_کرښه (کرښه, tfp, لنډمهاله_output);
 }
 
 /* Merge the lines currently available to a NODE in the binary
@@ -3858,103 +3858,103 @@ write_unique (struct line const *line, FILE *tfp, char const *temp_output)
    If merging at the top level, send output to TFP.  TEMP_OUTPUT is
    the name of TFP, or is null if TFP is standard output.  */
 
-static void
-mergelines_node (struct merge_node *restrict node, size_t total_lines,
-                 FILE *tfp, char const *temp_output)
+ساكن فراغ
+mergelines_غوټه (بنية یوځای_غوټه *محدود غوټه, size_t ټول_کرښې,
+                 FILE *tfp, حرف ثابت *لنډمهاله_output)
 {
-  struct line *lo_orig = node->lo;
-  struct line *hi_orig = node->hi;
-  size_t to_merge = MAX_MERGE (total_lines, node->level);
+  بنية کرښه *lo_orig = غوټه->lo;
+  بنية کرښه *hi_orig = غوټه->hi;
+  size_t منزل_یوځای = MAX_یوځای (ټول_کرښې, غوټه->level);
   size_t merged_lo;
   size_t merged_hi;
 
-  if (node->level > MERGE_ROOT)
+  إذا (غوټه->level > یوځای_ریښه)
     {
       /* Merge to destination buffer. */
-      struct line *dest = *node->dest;
-      while (node->lo != node->end_lo && node->hi != node->end_hi && to_merge--)
-        if (compare (node->lo - 1, node->hi - 1) <= 0)
-          *--dest = *--node->lo;
-        else
-          *--dest = *--node->hi;
+      بنية کرښه *dest = *غوټه->dest;
+      طالما (غوټه->lo != غوټه->پای_ټکی_lo && غوټه->hi != غوټه->پای_ټکی_hi && منزل_یوځای--)
+        إذا (compare (غوټه->lo - 1, غوټه->hi - 1) <= 0)
+          *--dest = *--غوټه->lo;
+        وإلا
+          *--dest = *--غوټه->hi;
 
-      merged_lo = lo_orig - node->lo;
-      merged_hi = hi_orig - node->hi;
+      merged_lo = lo_orig - غوټه->lo;
+      merged_hi = hi_orig - غوټه->hi;
 
-      if (node->nhi == merged_hi)
-        while (node->lo != node->end_lo && to_merge--)
-          *--dest = *--node->lo;
-      else if (node->nlo == merged_lo)
-        while (node->hi != node->end_hi && to_merge--)
-          *--dest = *--node->hi;
-      *node->dest = dest;
+      إذا (غوټه->nhi == merged_hi)
+        طالما (غوټه->lo != غوټه->پای_ټکی_lo && منزل_یوځای--)
+          *--dest = *--غوټه->lo;
+      وإلا إذا (غوټه->nlo == merged_lo)
+        طالما (غوټه->hi != غوټه->پای_ټکی_hi && منزل_یوځای--)
+          *--dest = *--غوټه->hi;
+      *غوټه->dest = dest;
     }
-  else
+  وإلا
     {
       /* Merge directly to output. */
-      while (node->lo != node->end_lo && node->hi != node->end_hi && to_merge--)
+      طالما (غوټه->lo != غوټه->پای_ټکی_lo && غوټه->hi != غوټه->پای_ټکی_hi && منزل_یوځای--)
         {
-          if (compare (node->lo - 1, node->hi - 1) <= 0)
-            write_unique (--node->lo, tfp, temp_output);
-          else
-            write_unique (--node->hi, tfp, temp_output);
+          إذا (compare (غوټه->lo - 1, غوټه->hi - 1) <= 0)
+            write_unique (--غوټه->lo, tfp, لنډمهاله_output);
+          وإلا
+            write_unique (--غوټه->hi, tfp, لنډمهاله_output);
         }
 
-      merged_lo = lo_orig - node->lo;
-      merged_hi = hi_orig - node->hi;
+      merged_lo = lo_orig - غوټه->lo;
+      merged_hi = hi_orig - غوټه->hi;
 
-      if (node->nhi == merged_hi)
+      إذا (غوټه->nhi == merged_hi)
         {
-          while (node->lo != node->end_lo && to_merge--)
-            write_unique (--node->lo, tfp, temp_output);
+          طالما (غوټه->lo != غوټه->پای_ټکی_lo && منزل_یوځای--)
+            write_unique (--غوټه->lo, tfp, لنډمهاله_output);
         }
-      else if (node->nlo == merged_lo)
+      وإلا إذا (غوټه->nlo == merged_lo)
         {
-          while (node->hi != node->end_hi && to_merge--)
-            write_unique (--node->hi, tfp, temp_output);
+          طالما (غوټه->hi != غوټه->پای_ټکی_hi && منزل_یوځای--)
+            write_unique (--غوټه->hi, tfp, لنډمهاله_output);
         }
     }
 
   /* Update NODE. */
-  merged_lo = lo_orig - node->lo;
-  merged_hi = hi_orig - node->hi;
-  node->nlo -= merged_lo;
-  node->nhi -= merged_hi;
+  merged_lo = lo_orig - غوټه->lo;
+  merged_hi = hi_orig - غوټه->hi;
+  غوټه->nlo -= merged_lo;
+  غوټه->nhi -= merged_hi;
 }
 
 /* Into QUEUE, insert NODE if it is not already queued, and if one of
    NODE's children has available lines and the other either has
    available lines or has exhausted its lines.  */
 
-static void
-queue_check_insert (struct merge_node_queue *queue, struct merge_node *node)
+ساكن فراغ
+کتار_check_ورننباسه (بنية یوځای_غوټه_کتار *کتار, بنية یوځای_غوټه *غوټه)
 {
-  if (! node->queued)
+  إذا (! غوټه->queued)
     {
-      bool lo_avail = (node->lo - node->end_lo) != 0;
-      bool hi_avail = (node->hi - node->end_hi) != 0;
-      if (lo_avail ? hi_avail || ! node->nhi : hi_avail && ! node->nlo)
-        queue_insert (queue, node);
+      bool lo_avail = (غوټه->lo - غوټه->پای_ټکی_lo) != 0;
+      bool hi_avail = (غوټه->hi - غوټه->پای_ټکی_hi) != 0;
+      إذا (lo_avail ? hi_avail || ! غوټه->nhi : hi_avail && ! غوټه->nlo)
+        کتار_ورننباسه (کتار, غوټه);
     }
 }
 
 /* Into QUEUE, insert NODE's parent if the parent can now be worked on.  */
 
-static void
-queue_check_insert_parent (struct merge_node_queue *queue,
-                           struct merge_node *node)
+ساكن فراغ
+کتار_check_ورننباسه_پلار (بنية یوځای_غوټه_کتار *کتار,
+                           بنية یوځای_غوټه *غوټه)
 {
-  if (node->level > MERGE_ROOT)
+  إذا (غوټه->level > یوځای_ریښه)
     {
-      lock_node (node->parent);
-      queue_check_insert (queue, node->parent);
-      unlock_node (node->parent);
+      قلف_غوټه (غوټه->پلار);
+      کتار_check_ورننباسه (کتار, غوټه->پلار);
+      unlock_غوټه (غوټه->پلار);
     }
-  else if (node->nlo + node->nhi == 0)
+  وإلا إذا (غوټه->nlo + غوټه->nhi == 0)
     {
       /* If the MERGE_ROOT NODE has finished merging, insert the
          MERGE_END node.  */
-      queue_insert (queue, node->parent);
+      کتار_ورننباسه (کتار, غوټه->پلار);
     }
 }
 
@@ -3964,72 +3964,72 @@ queue_check_insert_parent (struct merge_node_queue *queue,
    level, send output to TFP.  TEMP_OUTPUT is the name of TFP, or is
    null if TFP is standard output.  */
 
-static void
-merge_loop (struct merge_node_queue *queue,
-            size_t total_lines, FILE *tfp, char const *temp_output)
+ساكن فراغ
+یوځای_loop (بنية یوځای_غوټه_کتار *کتار,
+            size_t ټول_کرښې, FILE *tfp, حرف ثابت *لنډمهاله_output)
 {
-  while (true)
+  طالما (true)
     {
-      struct merge_node *node = queue_pop (queue);
+      بنية یوځای_غوټه *غوټه = کتار_راوباسه (کتار);
 
-      if (node->level == MERGE_END)
+      إذا (غوټه->level == یوځای_پای_ټکی)
         {
-          unlock_node (node);
+          unlock_غوټه (غوټه);
           /* Reinsert so other threads can pop it. */
-          queue_insert (queue, node);
-          break;
+          کتار_ورننباسه (کتار, غوټه);
+          اكسر;
         }
-      mergelines_node (node, total_lines, tfp, temp_output);
-      queue_check_insert (queue, node);
-      queue_check_insert_parent (queue, node);
+      mergelines_غوټه (غوټه, ټول_کرښې, tfp, لنډمهاله_output);
+      کتار_check_ورننباسه (کتار, غوټه);
+      کتار_check_ورننباسه_پلار (کتار, غوټه);
 
-      unlock_node (node);
+      unlock_غوټه (غوټه);
     }
 }
 
 
-static void sortlines (struct line *restrict, size_t, size_t,
-                       struct merge_node *, struct merge_node_queue *,
-                       FILE *, char const *);
+ساكن فراغ sortlines (بنية کرښه *محدود, size_t, size_t,
+                       بنية یوځای_غوټه *, بنية یوځای_غوټه_کتار *,
+                       FILE *, حرف ثابت *);
 
 /* Thread arguments for sortlines_thread. */
 
-struct thread_args
+بنية thread_دلیلونه
 {
   /* Source, i.e., the array of lines to sort.  This points just past
      the end of the array.  */
-  struct line *lines;
+  بنية کرښه *کرښې;
 
   /* Number of threads to use.  If 0 or 1, sort single-threaded.  */
   size_t nthreads;
 
   /* Number of lines in LINES and DEST.  */
-  size_t const total_lines;
+  size_t ثابت ټول_کرښې;
 
   /* Merge node. Lines from this node and this node's sibling will merged
      to this node's parent. */
-  struct merge_node *const node;
+  بنية یوځای_غوټه *ثابت غوټه;
 
   /* The priority queue controlling available work for the entire
      internal sort.  */
-  struct merge_node_queue *const queue;
+  بنية یوځای_غوټه_کتار *ثابت کتار;
 
   /* If at the top level, the file to output to, and the file's name.
      If the file is standard output, the file's name is null.  */
   FILE *tfp;
-  char const *output_temp;
+  حرف ثابت *output_لنډمهاله;
 };
 
 /* Like sortlines, except with a signature acceptable to pthread_create.  */
 
-static void *
-sortlines_thread (void *data)
+ساكن فراغ *
+sortlines_thread (فراغ *معلومات)
 {
-  struct thread_args const *args = data;
-  sortlines (args->lines, args->nthreads, args->total_lines,
-             args->node, args->queue, args->tfp,
-             args->output_temp);
-  return NULL;
+  بنية thread_دلیلونه ثابت *دلیلونه = معلومات;
+  sortlines (دلیلونه->کرښې, دلیلونه->nthreads, دلیلونه->ټول_کرښې,
+             دلیلونه->غوټه, دلیلونه->کتار, دلیلونه->tfp,
+             دلیلونه->output_لنډمهاله);
+  أرجع عدم;
 }
 
 /* Sort lines, possibly in parallel.  The arguments are as in struct
@@ -4056,47 +4056,47 @@ sortlines_thread (void *data)
    merge. This continues until all lines at all nodes of the merge tree
    have been merged. */
 
-static void
-sortlines (struct line *restrict lines, size_t nthreads,
-           size_t total_lines, struct merge_node *node,
-           struct merge_node_queue *queue, FILE *tfp, char const *temp_output)
+ساكن فراغ
+sortlines (بنية کرښه *محدود کرښې, size_t nthreads,
+           size_t ټول_کرښې, بنية یوځای_غوټه *غوټه,
+           بنية یوځای_غوټه_کتار *کتار, FILE *tfp, حرف ثابت *لنډمهاله_output)
 {
-  size_t nlines = node->nlo + node->nhi;
+  size_t nlines = غوټه->nlo + غوټه->nhi;
 
   /* Calculate thread arguments. */
-  size_t lo_threads = nthreads / 2;
-  size_t hi_threads = nthreads - lo_threads;
+  size_t lo_تارونه = nthreads / 2;
+  size_t hi_تارونه = nthreads - lo_تارونه;
   pthread_t thread;
-  struct thread_args args = {lines, lo_threads, total_lines,
-                             node->lo_child, queue, tfp, temp_output};
+  بنية thread_دلیلونه دلیلونه = {کرښې, lo_تارونه, ټول_کرښې,
+                             غوټه->lo_ماشوم, کتار, tfp, لنډمهاله_output};
 
-  if (nthreads > 1 && SUBTHREAD_LINES_HEURISTIC <= nlines
-      && pthread_create (&thread, NULL, sortlines_thread, &args) == 0)
+  إذا (nthreads > 1 && SUBTHREAD_کرښې_HEURISTIC <= nlines
+      && pthread_create (&thread, عدم, sortlines_thread, &دلیلونه) == 0)
     {
-      sortlines (lines - node->nlo, hi_threads, total_lines,
-                 node->hi_child, queue, tfp, temp_output);
-      pthread_join (thread, NULL);
+      sortlines (کرښې - غوټه->nlo, hi_تارونه, ټول_کرښې,
+                 غوټه->hi_ماشوم, کتار, tfp, لنډمهاله_output);
+      pthread_join (thread, عدم);
     }
-  else
+  وإلا
     {
       /* Nthreads = 1, this is a leaf NODE, or pthread_create failed.
          Sort with 1 thread. */
-      size_t nlo = node->nlo;
-      size_t nhi = node->nhi;
-      struct line *temp = lines - total_lines;
-      if (1 < nhi)
-        sequential_sort (lines - nlo, nhi, temp - nlo / 2, false);
-      if (1 < nlo)
-        sequential_sort (lines, nlo, temp, false);
+      size_t nlo = غوټه->nlo;
+      size_t nhi = غوټه->nhi;
+      بنية کرښه *لنډمهاله = کرښې - ټول_کرښې;
+      إذا (1 < nhi)
+        sequential_ترتیبول (کرښې - nlo, nhi, لنډمهاله - nlo / 2, false);
+      إذا (1 < nlo)
+        sequential_ترتیبول (کرښې, nlo, لنډمهاله, false);
 
       /* Update merge NODE. No need to lock yet. */
-      node->lo = lines;
-      node->hi = lines - nlo;
-      node->end_lo = lines - nlo;
-      node->end_hi = lines - nlo - nhi;
+      غوټه->lo = کرښې;
+      غوټه->hi = کرښې - nlo;
+      غوټه->پای_ټکی_lo = کرښې - nlo;
+      غوټه->پای_ټکی_hi = کرښې - nlo - nhi;
 
-      queue_insert (queue, node);
-      merge_loop (queue, total_lines, tfp, temp_output);
+      کتار_ورننباسه (کتار, غوټه);
+      یوځای_loop (کتار, ټول_کرښې, tfp, لنډمهاله_output);
     }
 }
 
@@ -4117,25 +4117,25 @@ sortlines (struct line *restrict lines, size_t nthreads,
    Catching these obscure cases would slow down performance in
    common cases.  */
 
-static void
-avoid_trashing_input (struct sortfile *files, size_t ntemps,
-                      size_t nfiles, char const *outfile)
+ساكن فراغ
+avoid_trashing_ننوت (بنية sortfile *files, size_t ntemps,
+                      size_t nfiles, حرف ثابت *outfile)
 {
-  struct tempnode *tempcopy = NULL;
+  بنية tempnode *tempcopy = عدم;
 
-  for (size_t i = ntemps; i < nfiles; i++)
+  لكل (size_t i = ntemps; i < nfiles; i++)
     {
       bool is_stdin = streq (files[i].name, "-");
       bool same;
-      struct stat instat;
+      بنية stat instat;
 
-      if (outfile && streq (outfile, files[i].name) && !is_stdin)
+      إذا (outfile && streq (outfile, files[i].name) && !is_stdin)
         same = true;
-      else
+      وإلا
         {
-          struct stat *outst = get_outstatus ();
-          if (!outst)
-            break;
+          بنية stat *outst = get_outstatus ();
+          إذا (!outst)
+            اكسر;
 
           same = (((is_stdin
                     ? fstat (STDIN_FILENO, &instat)
@@ -4144,17 +4144,17 @@ avoid_trashing_input (struct sortfile *files, size_t ntemps,
                   && psame_inode (&instat, outst));
         }
 
-      if (same)
+      إذا (same)
         {
-          if (! tempcopy)
+          إذا (! tempcopy)
             {
               FILE *tftp;
-              tempcopy = create_temp (&tftp);
+              tempcopy = create_لنډمهاله (&tftp);
               mergefiles (&files[i], 0, 1, tftp, tempcopy->name);
             }
 
           files[i].name = tempcopy->name;
-          files[i].temp = tempcopy;
+          files[i].لنډمهاله = tempcopy;
         }
     }
 }
@@ -4168,16 +4168,16 @@ avoid_trashing_input (struct sortfile *files, size_t ntemps,
    Catching these obscure cases could slow down performance in
    common cases.  */
 
-static void
-check_inputs (char *const *files, size_t nfiles)
+ساكن فراغ
+check_inputs (حرف *ثابت *files, size_t nfiles)
 {
-  for (size_t i = 0; i < nfiles; i++)
+  لكل (size_t i = 0; i < nfiles; i++)
     {
-      if (streq (files[i], "-"))
-        continue;
+      إذا (streq (files[i], "-"))
+        استمر;
 
-      if (euidaccess (files[i], R_OK) != 0)
-        sort_die (_("cannot read"), files[i]);
+      إذا (euidaccess (files[i], R_OK) != 0)
+        ترتیبول_die (_("cannot read"), files[i]);
     }
 }
 
@@ -4185,15 +4185,15 @@ check_inputs (char *const *files, size_t nfiles)
    and point stdout to it.  Do not truncate the file.
    Exit with a diagnostic on failure.  */
 
-static void
-check_output (char const *outfile)
+ساكن فراغ
+check_output (حرف ثابت *outfile)
 {
-  if (outfile)
+  إذا (outfile)
     {
-      int oflags = O_WRONLY | O_BINARY | O_CLOEXEC | O_CREAT;
-      int outfd = open (outfile, oflags, MODE_RW_UGO);
-      if (outfd < 0)
-        sort_die (_("open failed"), outfile);
+      صحيح oflags = O_WRONLY | O_دوګونی | O_CLOEXEC | O_CREAT;
+      صحيح outfd = open (outfile, oflags, ډېرپېښ_RW_UGO);
+      إذا (outfd < 0)
+        ترتیبول_die (_("open failed"), outfile);
       move_fd (outfd, STDOUT_FILENO);
     }
 }
@@ -4203,17 +4203,17 @@ check_output (char const *outfile)
    NFILES is the total number of files.  Put the output in
    OUTPUT_FILE; a null OUTPUT_FILE stands for standard output.  */
 
-static void
-merge (struct sortfile *files, size_t ntemps, size_t nfiles,
-       char const *output_file)
+ساكن فراغ
+یوځای (بنية sortfile *files, size_t ntemps, size_t nfiles,
+       حرف ثابت *output_file)
 {
-  while (nmerge < nfiles)
+  طالما (nmerge < nfiles)
     {
       /* Number of input files processed so far.  */
-      size_t in;
+      size_t دننه;
 
       /* Number of output files generated so far.  */
-      size_t out;
+      size_t بهر;
 
       /* nfiles % NMERGE; this counts input files that are left over
          after all full-sized merges have been done.  */
@@ -4225,69 +4225,69 @@ merge (struct sortfile *files, size_t ntemps, size_t nfiles,
       /* Do as many NMERGE-size merges as possible. In the case that
          nmerge is bogus, increment by the maximum number of file
          descriptors allowed.  */
-      for (out = in = 0; nmerge <= nfiles - in; out++)
+      لكل (بهر = دننه = 0; nmerge <= nfiles - دننه; بهر++)
         {
           FILE *tfp;
-          struct tempnode *temp = create_temp (&tfp);
-          size_t num_merged = mergefiles (&files[in], MIN (ntemps, nmerge),
-                                          nmerge, tfp, temp->name);
-          ntemps -= MIN (ntemps, num_merged);
-          files[out].name = temp->name;
-          files[out].temp = temp;
-          in += num_merged;
+          بنية tempnode *لنډمهاله = create_لنډمهاله (&tfp);
+          size_t عدد_merged = mergefiles (&files[دننه], MIN (ntemps, nmerge),
+                                          nmerge, tfp, لنډمهاله->name);
+          ntemps -= MIN (ntemps, عدد_merged);
+          files[بهر].name = لنډمهاله->name;
+          files[بهر].لنډمهاله = لنډمهاله;
+          دننه += عدد_merged;
         }
 
-      remainder = nfiles - in;
-      cheap_slots = nmerge - out % nmerge;
+      remainder = nfiles - دننه;
+      cheap_slots = nmerge - بهر % nmerge;
 
-      if (cheap_slots < remainder)
+      إذا (cheap_slots < remainder)
         {
           /* So many files remain that they can't all be put into the last
              NMERGE-sized output window.  Do one more merge.  Merge as few
              files as possible, to avoid needless I/O.  */
           size_t nshortmerge = remainder - cheap_slots + 1;
           FILE *tfp;
-          struct tempnode *temp = create_temp (&tfp);
-          size_t num_merged = mergefiles (&files[in], MIN (ntemps, nshortmerge),
-                                          nshortmerge, tfp, temp->name);
-          ntemps -= MIN (ntemps, num_merged);
-          files[out].name = temp->name;
-          files[out++].temp = temp;
-          in += num_merged;
+          بنية tempnode *لنډمهاله = create_لنډمهاله (&tfp);
+          size_t عدد_merged = mergefiles (&files[دننه], MIN (ntemps, nshortmerge),
+                                          nshortmerge, tfp, لنډمهاله->name);
+          ntemps -= MIN (ntemps, عدد_merged);
+          files[بهر].name = لنډمهاله->name;
+          files[بهر++].لنډمهاله = لنډمهاله;
+          دننه += عدد_merged;
         }
 
       /* Put the remaining input files into the last NMERGE-sized output
          window, so they will be merged in the next pass.  */
-      memmove (&files[out], &files[in], (nfiles - in) * sizeof *files);
-      ntemps += out;
-      nfiles -= in - out;
+      memmove (&files[بهر], &files[دننه], (nfiles - دننه) * حجم *files);
+      ntemps += بهر;
+      nfiles -= دننه - بهر;
     }
 
-  avoid_trashing_input (files, ntemps, nfiles, output_file);
+  avoid_trashing_ننوت (files, ntemps, nfiles, output_file);
 
   /* We aren't guaranteed that this final mergefiles will work, therefore we
      try to merge into the output, and then merge as much as we can into a
      temp file if we can't. Repeat.  */
 
-  while (true)
+  طالما (true)
     {
       /* Merge directly into the output file if possible.  */
       FILE **fps;
-      size_t nopened = open_input_files (files, nfiles, &fps);
+      size_t nopened = open_ننوت_files (files, nfiles, &fps);
 
-      if (nopened == nfiles)
+      إذا (nopened == nfiles)
         {
-          FILE *ofp = stream_open (output_file, "w");
-          if (ofp)
+          FILE *ofp = بهیر_open (output_file, "w");
+          إذا (ofp)
             {
               mergefps (files, ntemps, nfiles, ofp, output_file, fps);
-              break;
+              اكسر;
             }
-          if (errno != EMFILE || nopened <= 2)
-            sort_die (_("open failed"), output_file);
+          إذا (errno != EMFILE || nopened <= 2)
+            ترتیبول_die (_("open failed"), output_file);
         }
-      else if (nopened <= 2)
-        sort_die (_("open failed"), files[nopened].name);
+      وإلا إذا (nopened <= 2)
+        ترتیبول_die (_("open failed"), files[nopened].name);
 
       /* We ran out of file descriptors.  Close one of the input
          files, to gain a file descriptor.  Then create a temporary
@@ -4295,23 +4295,23 @@ merge (struct sortfile *files, size_t ntemps, size_t nfiles,
          (e.g., some other process could open a file between the time
          we closed and tried to create).  */
       FILE *tfp;
-      struct tempnode *temp;
-      do
+      بنية tempnode *لنډمهاله;
+      افعل
         {
           nopened--;
           xfclose (fps[nopened], files[nopened].name);
-          temp = maybe_create_temp (&tfp, ! (nopened <= 2));
+          لنډمهاله = maybe_create_لنډمهاله (&tfp, ! (nopened <= 2));
         }
-      while (!temp);
+      طالما (!لنډمهاله);
 
       /* Merge into the newly allocated temporary.  */
-      mergefps (&files[0], MIN (ntemps, nopened), nopened, tfp, temp->name,
+      mergefps (&files[0], MIN (ntemps, nopened), nopened, tfp, لنډمهاله->name,
                 fps);
       ntemps -= MIN (ntemps, nopened);
-      files[0].name = temp->name;
-      files[0].temp = temp;
+      files[0].name = لنډمهاله->name;
+      files[0].لنډمهاله = لنډمهاله;
 
-      memmove (&files[1], &files[nopened], (nfiles - nopened) * sizeof *files);
+      memmove (&files[1], &files[nopened], (nfiles - nopened) * حجم *files);
       ntemps++;
       nfiles -= nopened - 1;
     }
@@ -4319,130 +4319,130 @@ merge (struct sortfile *files, size_t ntemps, size_t nfiles,
 
 /* Sort NFILES FILES onto OUTPUT_FILE.  Use at most NTHREADS threads.  */
 
-static void
-sort (char *const *files, size_t nfiles, char const *output_file,
+ساكن فراغ
+ترتیبول (حرف *ثابت *files, size_t nfiles, حرف ثابت *output_file,
       size_t nthreads)
 {
-  struct buffer buf;
-  struct sort_buffer_policy policy;
+  بنية بفر buf;
+  بنية ترتیبول_بفر_policy policy;
   size_t ntemps = 0;
   bool output_file_created = false;
 
   buf.alloc = 0;
-  policy.initial = policy.limit = 0;
+  policy.initial = policy.حد = 0;
   policy.growth_failed = false;
 
-  while (nfiles)
+  طالما (nfiles)
     {
-      char const *temp_output;
-      char const *file = *files;
+      حرف ثابت *لنډمهاله_output;
+      حرف ثابت *file = *files;
       FILE *fp = xfopen (file, "r");
       FILE *tfp;
 
-      size_t bytes_per_line;
-      if (nthreads > 1)
+      size_t بایټونه_فی_کرښه;
+      إذا (nthreads > 1)
         {
           /* Get log P. */
           size_t tmp = 1;
           size_t mult = 1;
-          while (tmp < nthreads)
+          طالما (tmp < nthreads)
             {
               tmp *= 2;
               mult++;
             }
-          bytes_per_line = (mult * sizeof (struct line));
+          بایټونه_فی_کرښه = (mult * حجم (بنية کرښه));
         }
-      else
-        bytes_per_line = sizeof (struct line) * 3 / 2;
+      وإلا
+        بایټونه_فی_کرښه = حجم (بنية کرښه) * 3 / 2;
 
-      if (! buf.alloc)
+      إذا (! buf.alloc)
         {
-          sort_buffer_policy (&fp, 1, files, nfiles, bytes_per_line,
+          ترتیبول_بفر_policy (&fp, 1, files, nfiles, بایټونه_فی_کرښه,
                               &policy);
-          initbuf (&buf, bytes_per_line, policy.initial);
+          initbuf (&buf, بایټونه_فی_کرښه, policy.initial);
         }
       buf.eof = false;
       files++;
       nfiles--;
 
-      while (fillbuf (&buf, fp, file, &policy))
+      طالما (fillbuf (&buf, fp, file, &policy))
         {
-          struct line *line;
+          بنية کرښه *کرښه;
 
-          if (buf.eof && nfiles
-              && (bytes_per_line + 1
-                  < (buf.alloc - buf.used - bytes_per_line * buf.nlines)))
+          إذا (buf.eof && nfiles
+              && (بایټونه_فی_کرښه + 1
+                  < (buf.alloc - buf.کارول_شوی - بایټونه_فی_کرښه * buf.nlines)))
             {
               /* End of file, but there is more input and buffer room.
                  Concatenate the next input file; this is faster in
                  the usual case.  */
-              buf.left = buf.used;
-              break;
+              buf.کیڼ = buf.کارول_شوی;
+              اكسر;
             }
 
-          saved_line.text = NULL;
-          line = buffer_linelim (&buf);
-          if (buf.eof && !nfiles && !ntemps && !buf.left)
+          saved_کرښه.متن = عدم;
+          کرښه = بفر_linelim (&buf);
+          إذا (buf.eof && !nfiles && !ntemps && !buf.کیڼ)
             {
               xfclose (fp, file);
               tfp = xfopen (output_file, "w");
-              temp_output = output_file;
+              لنډمهاله_output = output_file;
               output_file_created = true;
             }
-          else
+          وإلا
             {
               ++ntemps;
-              temp_output = create_temp (&tfp)->name;
+              لنډمهاله_output = create_لنډمهاله (&tfp)->name;
             }
-          if (1 < buf.nlines)
+          إذا (1 < buf.nlines)
             {
-              if (nthreads > 1)
+              إذا (nthreads > 1)
                 {
-                  struct merge_node_queue queue;
-                  queue_init (&queue, nthreads);
-                  struct merge_node *merge_tree =
-                    merge_tree_init (nthreads, buf.nlines, line);
+                  بنية یوځای_غوټه_کتار کتار;
+                  کتار_init (&کتار, nthreads);
+                  بنية یوځای_غوټه *یوځای_ونه =
+                    یوځای_ونه_init (nthreads, buf.nlines, کرښه);
 
-                  sortlines (line, nthreads, buf.nlines, merge_tree + 1,
-                             &queue, tfp, temp_output);
+                  sortlines (کرښه, nthreads, buf.nlines, یوځای_ونه + 1,
+                             &کتار, tfp, لنډمهاله_output);
 
-                  merge_tree_destroy (nthreads, merge_tree);
-                  queue_destroy (&queue);
+                  یوځای_ونه_destroy (nthreads, یوځای_ونه);
+                  کتار_destroy (&کتار);
                 }
-              else
+              وإلا
                 {
-                  sequential_sort (line, buf.nlines,
-                                   line - buf.nlines, false);
-                  for (size_t i = 0; i < buf.nlines; i++)
-                    write_unique (line - i - 1, tfp, temp_output);
+                  sequential_ترتیبول (کرښه, buf.nlines,
+                                   کرښه - buf.nlines, false);
+                  لكل (size_t i = 0; i < buf.nlines; i++)
+                    write_unique (کرښه - i - 1, tfp, لنډمهاله_output);
                 }
             }
-          else
-            write_unique (line - 1, tfp, temp_output);
+          وإلا
+            write_unique (کرښه - 1, tfp, لنډمهاله_output);
 
-          xfclose (tfp, temp_output);
+          xfclose (tfp, لنډمهاله_output);
 
-          if (output_file_created)
-            goto finish;
+          إذا (output_file_created)
+            اذهب پای;
         }
       xfclose (fp, file);
     }
 
- finish:
-  free (buf.buf);
+ پای:
+  حرر (buf.buf);
 
-  if (! output_file_created)
+  إذا (! output_file_created)
     {
-      struct tempnode *node = temphead;
-      struct sortfile *tempfiles = xnmalloc (ntemps, sizeof *tempfiles);
-      for (size_t i = 0; node; i++)
+      بنية tempnode *غوټه = temphead;
+      بنية sortfile *tempfiles = xnmalloc (ntemps, حجم *tempfiles);
+      لكل (size_t i = 0; غوټه; i++)
         {
-          tempfiles[i].name = node->name;
-          tempfiles[i].temp = node;
-          node = node->next;
+          tempfiles[i].name = غوټه->name;
+          tempfiles[i].لنډمهاله = غوټه;
+          غوټه = غوټه->بل;
         }
-      merge (tempfiles, ntemps, ntemps, output_file);
-      free (tempfiles);
+      یوځای (tempfiles, ntemps, ntemps, output_file);
+      حرر (tempfiles);
     }
 
   reap_all ();
@@ -4450,49 +4450,49 @@ sort (char *const *files, size_t nfiles, char const *output_file,
 
 /* Insert a malloc'd copy of key KEY_ARG at the end of the key list.  */
 
-static void
-insertkey (struct keyfield *key_arg)
+ساكن فراغ
+insertkey (بنية keyfield *کلی_arg)
 {
-  struct keyfield **p;
-  struct keyfield *key = xmemdup (key_arg, sizeof *key);
+  بنية keyfield **p;
+  بنية keyfield *کلی = xmemdup (کلی_arg, حجم *کلی);
 
-  for (p = &keylist; *p; p = &(*p)->next)
-    continue;
-  *p = key;
-  key->next = NULL;
+  لكل (p = &keylist; *p; p = &(*p)->بل)
+    استمر;
+  *p = کلی;
+  کلی->بل = عدم;
 }
 
 /* Report a bad field specification SPEC, with extra info MSGID.  */
 
-static void
-badfieldspec (char const *spec, char const *msgid)
+ساكن فراغ
+badfieldspec (حرف ثابت *spec, حرف ثابت *msgid)
 {
-  error (SORT_FAILURE, 0, _("%s: invalid field specification %s"),
+  error (ترتیبول_FAILURE, 0, _("%s: invalid field specification %s"),
          _(msgid), quote (spec));
 }
 
 /* Report incompatible options.  */
 
-static void
-incompatible_options (char const *opts)
+ساكن فراغ
+incompatible_options (حرف ثابت *opts)
 {
-  error (SORT_FAILURE, 0, _("options '-%s' are incompatible"), (opts));
+  error (ترتیبول_FAILURE, 0, _("options '-%s' are incompatible"), (opts));
 }
 
 /* Check compatibility of ordering options.  */
 
-static void
-check_ordering_compatibility (void)
+ساكن فراغ
+check_ordering_compatibility (فراغ)
 {
-  for (struct keyfield *key = keylist; key; key = key->next)
-    if (1 < (key->numeric + key->general_numeric + key->human_numeric
-             + key->month + (key->version | key->random | !!key->ignore)))
+  لكل (بنية keyfield *کلی = keylist; کلی; کلی = کلی->بل)
+    إذا (1 < (کلی->numeric + کلی->general_numeric + کلی->human_numeric
+             + کلی->month + (کلی->نسخه_3 | کلی->random | !!کلی->ignore)))
       {
         /* The following is too big, but guaranteed to be "big enough".  */
-        char opts[sizeof short_options];
+        حرف opts[حجم short_options];
         /* Clear flags we're not interested in.  */
-        key->skipsblanks = key->skipeblanks = key->reverse = false;
-        key_to_opts (key, opts);
+        کلی->skipsblanks = کلی->skipeblanks = کلی->سرچپه = false;
+        کلی_منزل_opts (کلی, opts);
         incompatible_options (opts);
       }
 }
@@ -4503,33 +4503,33 @@ check_ordering_compatibility (void)
    substitute SIZE_MAX.  If MSGID is null, return NULL after
    failure; otherwise, report MSGID and exit on failure.  */
 
-static char const *
-parse_field_count (char const *string, size_t *val, char const *msgid)
+ساكن حرف ثابت *
+parse_ډګر_شمېر (حرف ثابت *string, size_t *val, حرف ثابت *msgid)
 {
-  char *suffix;
+  حرف *suffix;
   uintmax_t n;
 
-  switch (xstrtoumax (string, &suffix, 10, &n, ""))
+  بدل (xstrtoumax (string, &suffix, 10, &n, ""))
     {
-    case LONGINT_OK:
-    case LONGINT_INVALID_SUFFIX_CHAR:
+    حالة LONGINT_OK:
+    حالة LONGINT_INVALID_SUFFIX_CHAR:
       *val = n;
-      if (*val == n)
-        break;
+      إذا (*val == n)
+        اكسر;
       FALLTHROUGH;
-    case LONGINT_OVERFLOW:
-    case LONGINT_OVERFLOW | LONGINT_INVALID_SUFFIX_CHAR:
+    حالة LONGINT_ډکېدنه:
+    حالة LONGINT_ډکېدنه | LONGINT_INVALID_SUFFIX_CHAR:
       *val = SIZE_MAX;
-      break;
+      اكسر;
 
-    case LONGINT_INVALID:
-      if (msgid)
-        error (SORT_FAILURE, 0, _("%s: invalid count at start of %s"),
+    حالة LONGINT_INVALID:
+      إذا (msgid)
+        error (ترتیبول_FAILURE, 0, _("%s: invalid count at start of %s"),
                _(msgid), quote (string));
-      return NULL;
+      أرجع عدم;
     }
 
-  return suffix;
+  أرجع suffix;
 }
 
 /* Set the ordering options for KEY specified in S.
@@ -4537,174 +4537,174 @@ parse_field_count (char const *string, size_t *val, char const *msgid)
    is not a valid ordering option.
    BLANKTYPE is the kind of blanks that 'b' should skip. */
 
-static char *
-set_ordering (char const *s, struct keyfield *key, enum blanktype blanktype)
+ساكن حرف *
+سېټ_ordering (حرف ثابت *s, بنية keyfield *کلی, تعداد blanktype blanktype)
 {
-  while (*s)
+  طالما (*s)
     {
-      switch (*s)
+      بدل (*s)
         {
-        case 'b':
-          if (blanktype == bl_start || blanktype == bl_both)
-            key->skipsblanks = true;
-          if (blanktype == bl_end || blanktype == bl_both)
-            key->skipeblanks = true;
-          break;
-        case 'd':
-          key->ignore = nondictionary;
-          break;
-        case 'f':
-          key->translate = fold_toupper;
-          break;
-        case 'g':
-          key->general_numeric = true;
-          break;
-        case 'h':
-          key->human_numeric = true;
-          break;
-        case 'i':
+        حالة 'b':
+          إذا (blanktype == bl_پیل || blanktype == bl_both)
+            کلی->skipsblanks = true;
+          إذا (blanktype == bl_پای_ټکی || blanktype == bl_both)
+            کلی->skipeblanks = true;
+          اكسر;
+        حالة 'd':
+          کلی->ignore = nondictionary;
+          اكسر;
+        حالة 'f':
+          کلی->translate = fold_toupper;
+          اكسر;
+        حالة 'g':
+          کلی->general_numeric = true;
+          اكسر;
+        حالة 'h':
+          کلی->human_numeric = true;
+          اكسر;
+        حالة 'i':
           /* Option order should not matter, so don't let -i override
              -d.  -d implies -i, but -i does not imply -d.  */
-          if (! key->ignore)
-            key->ignore = nonprinting;
-          break;
-        case 'M':
-          key->month = true;
-          break;
-        case 'n':
-          key->numeric = true;
-          break;
-        case 'R':
-          key->random = true;
-          break;
-        case 'r':
-          key->reverse = true;
-          break;
-        case 'V':
-          key->version = true;
-          break;
-        default:
-          return (char *) s;
+          إذا (! کلی->ignore)
+            کلی->ignore = nonprinting;
+          اكسر;
+        حالة 'M':
+          کلی->month = true;
+          اكسر;
+        حالة 'n':
+          کلی->numeric = true;
+          اكسر;
+        حالة 'R':
+          کلی->random = true;
+          اكسر;
+        حالة 'r':
+          کلی->سرچپه = true;
+          اكسر;
+        حالة 'V':
+          کلی->نسخه_3 = true;
+          اكسر;
+        افتراضي:
+          أرجع (حرف *) s;
         }
       ++s;
     }
-  return (char *) s;
+  أرجع (حرف *) s;
 }
 
 /* Initialize KEY.  */
 
-static struct keyfield *
-key_init (struct keyfield *key)
+ساكن بنية keyfield *
+کلی_init (بنية keyfield *کلی)
 {
-  memset (key, 0, sizeof *key);
-  key->eword = SIZE_MAX;
-  return key;
+  memset (کلی, 0, حجم *کلی);
+  کلی->eword = SIZE_MAX;
+  أرجع کلی;
 }
 
-int
-main (int argc, char **argv)
+صحيح
+اصلي (صحيح argc, حرف **argv)
 {
-  struct keyfield *key;
-  struct keyfield key_buf;
-  struct keyfield gkey;
+  بنية keyfield *کلی;
+  بنية keyfield کلی_buf;
+  بنية keyfield gkey;
   bool gkey_only = false;
-  char const *s;
-  int c = 0;
-  char checkonly = 0;
+  حرف ثابت *s;
+  صحيح c = 0;
+  حرف checkonly = 0;
   bool mergeonly = false;
-  char *random_source = NULL;
+  حرف *random_سرچینه = عدم;
   bool need_random = false;
   size_t nthreads = 0;
   size_t nfiles = 0;
-  bool posixly_correct = (getenv ("POSIXLY_CORRECT") != NULL);
-  int posix_ver = posix2_version ();
+  bool posixly_correct = (getenv ("POSIXLY_CORRECT") != عدم);
+  صحيح posix_ver = posix2_نسخه ();
   bool traditional_usage = ! (200112 <= posix_ver && posix_ver < 200809);
-  char **files;
-  char *files_from = NULL;
-  struct Tokens tok;
-  char const *outfile = NULL;
+  حرف **files;
+  حرف *files_from = عدم;
+  بنية نښې tok;
+  حرف ثابت *outfile = عدم;
   bool locale_ok;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  سېټ_پروګرام_name (argv[0]);
   locale_ok = !! setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
-  initialize_exit_failure (SORT_FAILURE);
+  initialize_exit_failure (ترتیبول_FAILURE);
 
   hard_LC_COLLATE = hard_locale (LC_COLLATE);
-#if HAVE_NL_LANGINFO
-  hard_LC_TIME = hard_locale (LC_TIME);
-#endif
+#إذا HAVE_NL_LANGINFO
+  hard_LC_وخت = hard_locale (LC_وخت);
+#د_که_پای
 
   /* Get locale's representation of the decimal point.  */
   {
-    struct lconv const *locale = localeconv ();
+    بنية lconv ثابت *locale = localeconv ();
 
     /* If the locale doesn't define a decimal point, or if the decimal
        point is multibyte, use the C locale's decimal point.  FIXME:
        add support for multibyte decimal points.  */
-    decimal_point = locale->decimal_point[0];
-    if (! decimal_point || locale->decimal_point[1])
-      decimal_point = '.';
+    decimal_ټکی = locale->decimal_ټکی[0];
+    إذا (! decimal_ټکی || locale->decimal_ټکی[1])
+      decimal_ټکی = '.';
 
     /* FIXME: add support for multibyte thousands separators.  */
     thousands_sep = locale->thousands_sep[0];
-    if (thousands_sep && locale->thousands_sep[1])
+    إذا (thousands_sep && locale->thousands_sep[1])
       thousands_sep_ignored = true;
-    if (! thousands_sep || locale->thousands_sep[1])
+    إذا (! thousands_sep || locale->thousands_sep[1])
       thousands_sep = NON_CHAR;
   }
 
   inittables ();
 
   {
-    enum { nsigs = countof (term_sig) };
+    تعداد { nsigs = countof (غړی_sig) };
 
-    struct sigaction act;
+    بنية sigaction act;
 
-    sigemptyset (&caught_signals);
-    for (size_t i = 0; i < nsigs; i++)
+    sigemptyset (&caught_سیګنالونه);
+    لكل (size_t i = 0; i < nsigs; i++)
       {
-        if (term_sig[i] == SIGPIPE)
-          continue;  /* Handled below.  */
-        sigaction (term_sig[i], NULL, &act);
-        if (act.sa_handler != SIG_IGN)
-          sigaddset (&caught_signals, term_sig[i]);
+        إذا (غړی_sig[i] == SIGPIPE)
+          استمر;  /* Handled below.  */
+        sigaction (غړی_sig[i], عدم, &act);
+        إذا (act.sa_handler != SIG_IGN)
+          sigaddset (&caught_سیګنالونه, غړی_sig[i]);
       }
 
     act.sa_handler = sighandler;
-    act.sa_mask = caught_signals;
+    act.sa_mask = caught_سیګنالونه;
     act.sa_flags = 0;
 
-    for (size_t i = 0; i < nsigs; i++)
+    لكل (size_t i = 0; i < nsigs; i++)
       {
-        if (term_sig[i] == SIGPIPE)
-          continue;  /* Handled below.  */
-        if (sigismember (&caught_signals, term_sig[i]))
-          sigaction (term_sig[i], &act, NULL);
+        إذا (غړی_sig[i] == SIGPIPE)
+          استمر;  /* Handled below.  */
+        إذا (sigismember (&caught_سیګنالونه, غړی_sig[i]))
+          sigaction (غړی_sig[i], &act, عدم);
       }
   }
-  signal (SIGCHLD, SIG_DFL); /* Don't inherit CHLD handling from parent.  */
+  إشارة (SIGCHLD, SIG_DFL); /* Don't inherit CHLD handling from parent.  */
 
   /* The signal mask is known, so it is safe to invoke exit_cleanup.  */
   atexit (exit_cleanup);
 
-  key_init (&gkey);
+  کلی_init (&gkey);
   gkey.sword = SIZE_MAX;
 
-  files = xnmalloc (argc, sizeof *files);
+  files = xnmalloc (argc, حجم *files);
 
-  while (true)
+  طالما (true)
     {
       /* Parse an operand as a file after "--" was seen; or if
          pedantic and a file was seen, unless the POSIX version
          is not 1003.1-2001 and -c was not seen and the operand is
          "-o FILE" or "-oFILE".  */
-      int oi = -1;
+      صحيح oi = -1;
 
-      if (c == -1
+      إذا (c == -1
           || (posixly_correct && nfiles != 0
               && ! (traditional_usage
                     && ! checkonly
@@ -4715,42 +4715,42 @@ main (int argc, char **argv)
                                 long_options, &oi))
               == -1))
         {
-          if (argc <= optind)
-            break;
+          إذا (argc <= optind)
+            اكسر;
           files[nfiles++] = argv[optind++];
         }
-      else switch (c)
+      وإلا بدل (c)
         {
-        case 1:
-          key = NULL;
-          if (optarg[0] == '+')
+        حالة 1:
+          کلی = عدم;
+          إذا (optarg[0] == '+')
             {
               bool minus_pos_usage = (optind != argc && argv[optind][0] == '-'
                                       && c_isdigit (argv[optind][1]));
               traditional_usage |= minus_pos_usage && !posixly_correct;
-              if (traditional_usage)
+              إذا (traditional_usage)
                 {
                   /* Treat +POS1 [-POS2] as a key if possible; but silently
                      treat an operand as a file if it is not a valid +POS1.  */
-                  key = key_init (&key_buf);
-                  s = parse_field_count (optarg + 1, &key->sword, NULL);
-                  if (s && *s == '.')
-                    s = parse_field_count (s + 1, &key->schar, NULL);
-                  if (! (key->sword || key->schar))
-                    key->sword = SIZE_MAX;
-                  if (! s || *set_ordering (s, key, bl_start))
-                    key = NULL;
-                  else
+                  کلی = کلی_init (&کلی_buf);
+                  s = parse_ډګر_شمېر (optarg + 1, &کلی->sword, عدم);
+                  إذا (s && *s == '.')
+                    s = parse_ډګر_شمېر (s + 1, &کلی->schar, عدم);
+                  إذا (! (کلی->sword || کلی->schar))
+                    کلی->sword = SIZE_MAX;
+                  إذا (! s || *سېټ_ordering (s, کلی, bl_پیل))
+                    کلی = عدم;
+                  وإلا
                     {
-                      if (minus_pos_usage)
+                      إذا (minus_pos_usage)
                         {
-                          char const *optarg1 = argv[optind++];
-                          s = parse_field_count (optarg1 + 1, &key->eword,
+                          حرف ثابت *optarg1 = argv[optind++];
+                          s = parse_ډګر_شمېر (optarg1 + 1, &کلی->eword,
                                              N_("invalid number after '-'"));
-                          if (*s == '.')
-                            s = parse_field_count (s + 1, &key->echar,
+                          إذا (*s == '.')
+                            s = parse_ډګر_شمېر (s + 1, &کلی->echar,
                                                N_("invalid number after '.'"));
-                          if (!key->echar && key->eword)
+                          إذا (!کلی->echar && کلی->eword)
                             {
                               /* obsolescent syntax +A.x -B.y is equivalent to:
                                    -k A+1.x+1,B.y   (when y = 0)
@@ -4758,186 +4758,186 @@ main (int argc, char **argv)
                                  So eword is decremented as in the -k case
                                  only when the end field (B) is specified and
                                  echar (y) is 0.  */
-                              key->eword--;
+                              کلی->eword--;
                             }
-                          if (*set_ordering (s, key, bl_end))
+                          إذا (*سېټ_ordering (s, کلی, bl_پای_ټکی))
                             badfieldspec (optarg1,
                                       N_("stray character in field spec"));
                         }
-                      key->traditional_used = true;
-                      insertkey (key);
+                      کلی->traditional_کارول_شوی = true;
+                      insertkey (کلی);
                     }
                 }
             }
-          if (! key)
+          إذا (! کلی)
             files[nfiles++] = optarg;
-          break;
+          اكسر;
 
-        case SORT_OPTION:
-          c = XARGMATCH ("--sort", optarg, sort_args, sort_types);
+        حالة ترتیبول_OPTION:
+          c = XARGMATCH ("--sort", optarg, ترتیبول_دلیلونه, ترتیبول_types);
           FALLTHROUGH;
-        case 'b':
-        case 'd':
-        case 'f':
-        case 'g':
-        case 'h':
-        case 'i':
-        case 'M':
-        case 'n':
-        case 'r':
-        case 'R':
-        case 'V':
+        حالة 'b':
+        حالة 'd':
+        حالة 'f':
+        حالة 'g':
+        حالة 'h':
+        حالة 'i':
+        حالة 'M':
+        حالة 'n':
+        حالة 'r':
+        حالة 'R':
+        حالة 'V':
           {
-            char str[2];
+            حرف str[2];
             str[0] = c;
             str[1] = '\0';
-            set_ordering (str, &gkey, bl_both);
+            سېټ_ordering (str, &gkey, bl_both);
           }
-          break;
+          اكسر;
 
-        case CHECK_OPTION:
+        حالة CHECK_OPTION:
           c = (optarg
-               ? XARGMATCH ("--check", optarg, check_args, check_types)
+               ? XARGMATCH ("--check", optarg, check_دلیلونه, check_types)
                : 'c');
           FALLTHROUGH;
-        case 'c':
-        case 'C':
-          if (checkonly && checkonly != c)
+        حالة 'c':
+        حالة 'C':
+          إذا (checkonly && checkonly != c)
             incompatible_options ("cC");
           checkonly = c;
-          break;
+          اكسر;
 
-        case COMPRESS_PROGRAM_OPTION:
-          if (compress_program && !streq (compress_program, optarg))
-            error (SORT_FAILURE, 0, _("multiple compress programs specified"));
-          compress_program = optarg;
-          break;
+        حالة COMPRESS_پروګرام_OPTION:
+          إذا (compress_پروګرام && !streq (compress_پروګرام, optarg))
+            error (ترتیبول_FAILURE, 0, _("multiple compress programs specified"));
+          compress_پروګرام = optarg;
+          اكسر;
 
-        case DEBUG_PROGRAM_OPTION:
+        حالة DEBUG_پروګرام_OPTION:
           debug = true;
-          break;
+          اكسر;
 
-        case FILES0_FROM_OPTION:
+        حالة FILES0_FROM_OPTION:
           files_from = optarg;
-          break;
+          اكسر;
 
-        case 'k':
-          key = key_init (&key_buf);
+        حالة 'k':
+          کلی = کلی_init (&کلی_buf);
 
           /* Get POS1. */
-          s = parse_field_count (optarg, &key->sword,
+          s = parse_ډګر_شمېر (optarg, &کلی->sword,
                                  N_("invalid number at field start"));
-          if (! key->sword--)
+          إذا (! کلی->sword--)
             {
               /* Provoke with 'sort -k0' */
               badfieldspec (optarg, N_("field number is zero"));
             }
-          if (*s == '.')
+          إذا (*s == '.')
             {
-              s = parse_field_count (s + 1, &key->schar,
+              s = parse_ډګر_شمېر (s + 1, &کلی->schar,
                                      N_("invalid number after '.'"));
-              if (! key->schar--)
+              إذا (! کلی->schar--)
                 {
                   /* Provoke with 'sort -k1.0' */
                   badfieldspec (optarg, N_("character offset is zero"));
                 }
             }
-          if (! (key->sword || key->schar))
-            key->sword = SIZE_MAX;
-          s = set_ordering (s, key, bl_start);
-          if (*s != ',')
+          إذا (! (کلی->sword || کلی->schar))
+            کلی->sword = SIZE_MAX;
+          s = سېټ_ordering (s, کلی, bl_پیل);
+          إذا (*s != ',')
             {
-              key->eword = SIZE_MAX;
-              key->echar = 0;
+              کلی->eword = SIZE_MAX;
+              کلی->echar = 0;
             }
-          else
+          وإلا
             {
               /* Get POS2. */
-              s = parse_field_count (s + 1, &key->eword,
+              s = parse_ډګر_شمېر (s + 1, &کلی->eword,
                                      N_("invalid number after ','"));
-              if (! key->eword--)
+              إذا (! کلی->eword--)
                 {
                   /* Provoke with 'sort -k1,0' */
                   badfieldspec (optarg, N_("field number is zero"));
                 }
-              if (*s == '.')
+              إذا (*s == '.')
                 {
-                  s = parse_field_count (s + 1, &key->echar,
+                  s = parse_ډګر_شمېر (s + 1, &کلی->echar,
                                          N_("invalid number after '.'"));
                 }
-              s = set_ordering (s, key, bl_end);
+              s = سېټ_ordering (s, کلی, bl_پای_ټکی);
             }
-          if (*s)
+          إذا (*s)
             badfieldspec (optarg, N_("stray character in field spec"));
-          insertkey (key);
-          break;
+          insertkey (کلی);
+          اكسر;
 
-        case 'm':
+        حالة 'm':
           mergeonly = true;
-          break;
+          اكسر;
 
-        case NMERGE_OPTION:
+        حالة NMERGE_OPTION:
           specify_nmerge (oi, c, optarg);
-          break;
+          اكسر;
 
-        case 'o':
-          if (outfile && !streq (outfile, optarg))
-            error (SORT_FAILURE, 0, _("multiple output files specified"));
+        حالة 'o':
+          إذا (outfile && !streq (outfile, optarg))
+            error (ترتیبول_FAILURE, 0, _("multiple output files specified"));
           outfile = optarg;
-          break;
+          اكسر;
 
-        case RANDOM_SOURCE_OPTION:
-          if (random_source && !streq (random_source, optarg))
-            error (SORT_FAILURE, 0, _("multiple random sources specified"));
-          random_source = optarg;
-          break;
+        حالة RANDOM_سرچینه_OPTION:
+          إذا (random_سرچینه && !streq (random_سرچینه, optarg))
+            error (ترتیبول_FAILURE, 0, _("multiple random sources specified"));
+          random_سرچینه = optarg;
+          اكسر;
 
-        case 's':
+        حالة 's':
           stable = true;
-          break;
+          اكسر;
 
-        case 'S':
-          specify_sort_size (oi, c, optarg);
-          break;
+        حالة 'S':
+          specify_ترتیبول_اندازه (oi, c, optarg);
+          اكسر;
 
-        case 't':
+        حالة 't':
           {
-            char newtab = optarg[0];
-            if (! newtab)
-              error (SORT_FAILURE, 0, _("empty tab"));
-            if (optarg[1])
+            حرف newtab = optarg[0];
+            إذا (! newtab)
+              error (ترتیبول_FAILURE, 0, _("empty tab"));
+            إذا (optarg[1])
               {
-                if (streq (optarg, "\\0"))
+                إذا (streq (optarg, "\\0"))
                   newtab = '\0';
-                else
+                وإلا
                   {
                     /* Provoke with 'sort -txx'.  Complain about
                        "multi-character tab" instead of "multibyte tab", so
                        that the diagnostic's wording does not need to be
                        changed once multibyte characters are supported.  */
-                    error (SORT_FAILURE, 0, _("multi-character tab %s"),
+                    error (ترتیبول_FAILURE, 0, _("multi-character tab %s"),
                            quote (optarg));
                   }
               }
-            if (tab != TAB_DEFAULT && tab != newtab)
-              error (SORT_FAILURE, 0, _("incompatible tabs"));
+            إذا (tab != TAB_DEFAULT && tab != newtab)
+              error (ترتیبول_FAILURE, 0, _("incompatible tabs"));
             tab = newtab;
           }
-          break;
+          اكسر;
 
-        case 'T':
-          add_temp_dir (optarg);
-          break;
+        حالة 'T':
+          جمع_کړه_لنډمهاله_dir (optarg);
+          اكسر;
 
-        case PARALLEL_OPTION:
+        حالة PARALLEL_OPTION:
           nthreads = specify_nthreads (oi, c, optarg);
-          break;
+          اكسر;
 
-        case 'u':
+        حالة 'u':
           unique = true;
-          break;
+          اكسر;
 
-        case 'y':
+        حالة 'y':
           /* Accept and ignore e.g. -y0 for compatibility with Solaris 2.x
              through Solaris 7.  It is also accepted by many non-Solaris
              "sort" implementations, e.g., AIX 5.2, HP-UX 11i v2, IRIX 6.5.
@@ -4948,105 +4948,105 @@ main (int argc, char **argv)
              emulate Solaris 8 and 9 "sort -y 100" which ignores the "100",
              and which in general ignores the argument after "-y" if it
              consists entirely of digits (it can even be empty).  */
-          if (optarg == argv[optind - 1])
+          إذا (optarg == argv[optind - 1])
             {
-              char const *p;
-              for (p = optarg; c_isdigit (*p); p++)
-                continue;
+              حرف ثابت *p;
+              لكل (p = optarg; c_isdigit (*p); p++)
+                استمر;
               optind -= (*p != '\0');
             }
-          break;
+          اكسر;
 
-        case 'z':
+        حالة 'z':
           eolchar = 0;
-          break;
+          اكسر;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_نسخه_CHAR (پروګرام_NAME, AUTHORS);
 
-        default:
-          usage (SORT_FAILURE);
+        افتراضي:
+          usage (ترتیبول_FAILURE);
         }
     }
 
   /* Ignore SIGPIPE so write failures are reported via EPIPE errno.
      For stdout, sort_die() will reraise SIGPIPE if it was originally SIG_DFL.
      For compression pipes, sort_die() will exit with SORT_FAILURE.  */
-  default_SIGPIPE = (signal (SIGPIPE, SIG_IGN) == SIG_DFL);
+  default_SIGPIPE = (إشارة (SIGPIPE, SIG_IGN) == SIG_DFL);
 
-  if (files_from)
+  إذا (files_from)
     {
       /* When using --files0-from=F, you may not specify any files
          on the command-line.  */
-      if (nfiles)
+      إذا (nfiles)
         {
           error (0, 0, _("extra operand %s"), quoteaf (files[0]));
           fprintf (stderr, "%s\n",
                    _("file operands cannot be combined with --files0-from"));
-          usage (SORT_FAILURE);
+          usage (ترتیبول_FAILURE);
         }
 
-      FILE *stream = xfopen (files_from, "r");
+      FILE *بهیر = xfopen (files_from, "r");
 
       readtokens0_init (&tok);
 
-      if (! readtokens0 (stream, &tok))
-        error (SORT_FAILURE, 0, _("cannot read file names from %s"),
+      إذا (! readtokens0 (بهیر, &tok))
+        error (ترتیبول_FAILURE, 0, _("cannot read file names from %s"),
                quoteaf (files_from));
-      xfclose (stream, files_from);
+      xfclose (بهیر, files_from);
 
-      if (tok.n_tok)
+      إذا (tok.n_tok)
         {
-          free (files);
+          حرر (files);
           files = tok.tok;
           nfiles = tok.n_tok;
-          for (size_t i = 0; i < nfiles; i++)
+          لكل (size_t i = 0; i < nfiles; i++)
             {
-              if (streq (files[i], "-"))
-                error (SORT_FAILURE, 0, _("when reading file names from "
+              إذا (streq (files[i], "-"))
+                error (ترتیبول_FAILURE, 0, _("when reading file names from "
                                           "standard input, "
                                           "no file name of %s allowed"),
                        quoteaf (files[i]));
-              else if (files[i][0] == '\0')
+              وإلا إذا (files[i][0] == '\0')
                 {
                   /* Using the standard 'filename:line-number:' prefix here is
                      not totally appropriate, since NUL is the separator,
                      not NL, but it might be better than nothing.  */
-                  unsigned long int file_number = i + 1;
-                  error (SORT_FAILURE, 0,
+                  بینښه اوږد صحيح file_شمېره = i + 1;
+                  error (ترتیبول_FAILURE, 0,
                          _("%s:%lu: invalid zero-length file name"),
-                         quotef (files_from), file_number);
+                         quotef (files_from), file_شمېره);
                 }
             }
         }
-      else
-        error (SORT_FAILURE, 0, _("no input from %s"),
+      وإلا
+        error (ترتیبول_FAILURE, 0, _("no input from %s"),
                quoteaf (files_from));
     }
 
   /* Inheritance of global options to individual keys. */
-  for (key = keylist; key; key = key->next)
+  لكل (کلی = keylist; کلی; کلی = کلی->بل)
     {
-      if (default_key_compare (key) && !key->reverse)
+      إذا (default_کلی_compare (کلی) && !کلی->سرچپه)
         {
-          key->ignore = gkey.ignore;
-          key->translate = gkey.translate;
-          key->skipsblanks = gkey.skipsblanks;
-          key->skipeblanks = gkey.skipeblanks;
-          key->month = gkey.month;
-          key->numeric = gkey.numeric;
-          key->general_numeric = gkey.general_numeric;
-          key->human_numeric = gkey.human_numeric;
-          key->version = gkey.version;
-          key->random = gkey.random;
-          key->reverse = gkey.reverse;
+          کلی->ignore = gkey.ignore;
+          کلی->translate = gkey.translate;
+          کلی->skipsblanks = gkey.skipsblanks;
+          کلی->skipeblanks = gkey.skipeblanks;
+          کلی->month = gkey.month;
+          کلی->numeric = gkey.numeric;
+          کلی->general_numeric = gkey.general_numeric;
+          کلی->human_numeric = gkey.human_numeric;
+          کلی->نسخه_3 = gkey.نسخه_3;
+          کلی->random = gkey.random;
+          کلی->سرچپه = gkey.سرچپه;
         }
 
-      need_random |= key->random;
+      need_random |= کلی->random;
     }
 
-  if (!keylist && !default_key_compare (&gkey))
+  إذا (!keylist && !default_کلی_compare (&gkey))
     {
       gkey_only = true;
       insertkey (&gkey);
@@ -5055,11 +5055,11 @@ main (int argc, char **argv)
 
   check_ordering_compatibility ();
 
-  if (debug)
+  إذا (debug)
     {
-      if (checkonly || outfile)
+      إذا (checkonly || outfile)
         {
-          static char opts[] = "X --debug";
+          ساكن حرف opts[] = "X --debug";
           opts[0] = (checkonly ? checkonly : 'o');
           incompatible_options (opts);
         }
@@ -5069,60 +5069,60 @@ main (int argc, char **argv)
 
       /* OpenBSD can only set some categories with LC_ALL above,
          so set LC_COLLATE explicitly to flag errors.  */
-      if (locale_ok)
+      إذا (locale_ok)
         locale_ok = !! setlocale (LC_COLLATE, "");
-      if (! locale_ok)
+      إذا (! locale_ok)
           error (0, 0, "%s", _("failed to set locale"));
-      if (hard_LC_COLLATE)
+      إذا (hard_LC_COLLATE)
         error (0, 0, _("text ordering performed using %s sorting rules"),
-               quote (setlocale (LC_COLLATE, NULL)));
-      else
+               quote (setlocale (LC_COLLATE, عدم)));
+      وإلا
         error (0, 0, "%s",
                _("text ordering performed using simple byte comparison"));
 
-      key_warnings (&gkey, gkey_only);
+      کلی_warnings (&gkey, gkey_only);
     }
 
-  reverse = gkey.reverse;
+  سرچپه = gkey.سرچپه;
 
-  if (need_random)
-    random_md5_state_init (random_source);
+  إذا (need_random)
+    random_md5_state_init (random_سرچینه);
 
-  if (temp_dirs.n_dirs == 0)
+  إذا (لنډمهاله_dirs.n_dirs == 0)
     {
-      char const *tmp_dir = getenv ("TMPDIR");
-      add_temp_dir (tmp_dir ? tmp_dir : DEFAULT_TMPDIR);
+      حرف ثابت *tmp_dir = getenv ("TMPDIR");
+      جمع_کړه_لنډمهاله_dir (tmp_dir ? tmp_dir : DEFAULT_TMPDIR);
     }
 
-  if (nfiles == 0)
+  إذا (nfiles == 0)
     {
       nfiles = 1;
-      free (files);
-      files = xmalloc (sizeof *files);
-      *files = (char *) "-";
+      حرر (files);
+      files = xmalloc (حجم *files);
+      *files = (حرف *) "-";
     }
 
   /* Need to re-check that we meet the minimum requirement for memory
      usage with the final value for NMERGE. */
-  if (0 < sort_size)
-    sort_size = MAX (sort_size, MIN_SORT_SIZE);
+  إذا (0 < ترتیبول_اندازه)
+    ترتیبول_اندازه = MAX (ترتیبول_اندازه, MIN_ترتیبول_اندازه);
 
-  if (checkonly)
+  إذا (checkonly)
     {
-      if (nfiles > 1)
-        error (SORT_FAILURE, 0, _("extra operand %s not allowed with -%c"),
+      إذا (nfiles > 1)
+        error (ترتیبول_FAILURE, 0, _("extra operand %s not allowed with -%c"),
                quoteaf (files[1]), checkonly);
 
-      if (outfile)
+      إذا (outfile)
         {
-          static char opts[] = {0, 'o', 0};
+          ساكن حرف opts[] = {0, 'o', 0};
           opts[0] = checkonly;
           incompatible_options (opts);
         }
 
       /* POSIX requires that sort return 1 IFF invoked with -c or -C and the
          input is not properly sorted.  */
-      exit (check (files[0], checkonly) ? EXIT_SUCCESS : SORT_OUT_OF_ORDER);
+      وتل (check (files[0], checkonly) ? EXIT_SUCCESS : ترتیبول_بهر_د_ترتیب);
     }
 
   /* Check all inputs are accessible, or exit immediately.  */
@@ -5131,32 +5131,32 @@ main (int argc, char **argv)
   /* Check output is writable, or exit immediately.  */
   check_output (outfile);
 
-  if (mergeonly)
+  إذا (mergeonly)
     {
-      struct sortfile *sortfiles = xcalloc (nfiles, sizeof *sortfiles);
+      بنية sortfile *sortfiles = xcalloc (nfiles, حجم *sortfiles);
 
-      for (size_t i = 0; i < nfiles; ++i)
+      لكل (size_t i = 0; i < nfiles; ++i)
         sortfiles[i].name = files[i];
 
-      merge (sortfiles, 0, nfiles, outfile);
+      یوځای (sortfiles, 0, nfiles, outfile);
     }
-  else
+  وإلا
     {
-      if (!nthreads)
+      إذا (!nthreads)
         {
-          unsigned long int np = num_processors (NPROC_CURRENT_OVERRIDABLE);
-          nthreads = MIN (np, DEFAULT_MAX_THREADS);
+          بینښه اوږد صحيح np = عدد_processors (NPROC_CURRENT_OVERRIDABLE);
+          nthreads = MIN (np, DEFAULT_MAX_تارونه);
         }
 
       /* Avoid integer overflow later.  */
-      size_t nthreads_max = SIZE_MAX / (2 * sizeof (struct merge_node));
+      size_t nthreads_max = SIZE_MAX / (2 * حجم (بنية یوځای_غوټه));
       nthreads = MIN (nthreads, nthreads_max);
 
-      sort (files, nfiles, outfile, nthreads);
+      ترتیبول (files, nfiles, outfile, nthreads);
     }
 
-  if (have_read_stdin && fclose (stdin) == EOF)
-    sort_die (_("close failed"), "-");
+  إذا (have_read_stdin && fclose (stdin) == EOF)
+    ترتیبول_die (_("close failed"), "-");
 
   main_exit (EXIT_SUCCESS);
 }

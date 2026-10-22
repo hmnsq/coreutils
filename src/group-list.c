@@ -18,92 +18,92 @@
    Major rewrite by David MacKenzie, djm@gnu.ai.mit.edu.
    Extracted from id.c by James Youngman. */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <pwd.h>
-#include <grp.h>
+#ضمن <config.h>
+#ضمن <stdio.h>
+#ضمن <sys/types.h>
+#ضمن <pwd.h>
+#ضمن <grp.h>
 
-#include "system.h"
-#include "mgetgroups.h"
-#include "quote.h"
-#include "group-list.h"
+#ضمن "system.h"
+#ضمن "mgetgroups.h"
+#ضمن "quote.h"
+#ضمن "group-list.h"
 
 
 /* Print all of the distinct groups the user is in. */
-extern bool
-print_group_list (char const *username,
+خارجي bool
+print_ډله_list (حرف ثابت *username,
                   uid_t ruid, gid_t rgid, gid_t egid,
-                  bool use_names, char delim)
+                  bool use_نومونه, حرف delim)
 {
   bool ok = true;
-  struct passwd *pwd = NULL;
+  بنية passwd *pwd = عدم;
 
-  if (username)
+  إذا (username)
     {
       pwd = getpwuid (ruid);
-      if (pwd == NULL)
+      إذا (pwd == عدم)
         ok = false;
     }
 
-  if (!print_group (rgid, use_names))
+  إذا (!print_ډله (rgid, use_نومونه))
     ok = false;
 
-  if (egid != rgid)
+  إذا (egid != rgid)
     {
-      putchar (delim);
-      if (!print_group (egid, use_names))
+      توری_چاپ_کړه (delim);
+      إذا (!print_ډله (egid, use_نومونه))
         ok = false;
     }
 
   {
     gid_t *groups;
 
-    int n_groups = xgetgroups (username, (pwd ? pwd->pw_gid : egid), &groups);
-    if (n_groups < 0)
+    صحيح n_groups = xgetgroups (username, (pwd ? pwd->pw_gid : egid), &groups);
+    إذا (n_groups < 0)
       {
-        if (username)
+        إذا (username)
           {
             error (0, errno, _("failed to get groups for user %s"),
                    quote (username));
           }
-        else
+        وإلا
           {
             error (0, errno, _("failed to get groups for the current process"));
           }
-        return false;
+        أرجع false;
       }
 
-    for (int i = 0; i < n_groups; i++)
-      if (groups[i] != rgid && groups[i] != egid)
+    لكل (صحيح i = 0; i < n_groups; i++)
+      إذا (groups[i] != rgid && groups[i] != egid)
         {
-          putchar (delim);
-          if (!print_group (groups[i], use_names))
+          توری_چاپ_کړه (delim);
+          إذا (!print_ډله (groups[i], use_نومونه))
             ok = false;
         }
-    free (groups);
+    حرر (groups);
   }
-  return ok;
+  أرجع ok;
 }
 
 /* Print the name or value of group ID GID. */
-extern bool
-print_group (gid_t gid, bool use_name)
+خارجي bool
+print_ډله (gid_t gid, bool use_name)
 {
-  struct group *grp = NULL;
+  بنية ډله *grp = عدم;
   bool ok = true;
 
-  if (use_name)
+  إذا (use_name)
     {
       grp = getgrgid (gid);
-      if (grp == NULL)
+      إذا (grp == عدم)
         {
-          if (TYPE_SIGNED (gid_t))
+          إذا (TYPE_SIGNED (gid_t))
             {
               intmax_t g = gid;
               error (0, 0, _("cannot find name for group ID %jd"), g);
             }
-          else
+          وإلا
             {
               uintmax_t g = gid;
               error (0, 0, _("cannot find name for group ID %ju"), g);
@@ -112,9 +112,9 @@ print_group (gid_t gid, bool use_name)
         }
     }
 
-  if (grp)
-    printf ("%s", grp->gr_name);
-  else
-    printf ("%ju", (uintmax_t) gid);
-  return ok;
+  إذا (grp)
+    چاپ_کړه ("%s", grp->gr_name);
+  وإلا
+    چاپ_کړه ("%ju", (uintmax_t) gid);
+  أرجع ok;
 }

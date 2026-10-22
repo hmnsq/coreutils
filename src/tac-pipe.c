@@ -16,244 +16,244 @@
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
 /* FIXME */
-#include "assure.h"
+#ضمن "assure.h"
 
 /* FIXME: this is small for testing */
-#define BUFFER_SIZE (8)
+#تعریف_کړه بفر_اندازه (8)
 
-#define LEN(X, I) ((X)->p[(I)].one_past_end - (X)->p[(I)].start)
-#define EMPTY(X) ((X)->n_bufs == 1 && LEN (X, 0) == 0)
+#تعریف_کړه LEN(X, I) ((X)->p[(I)].one_past_پای_ټکی - (X)->p[(I)].پیل)
+#تعریف_کړه تشه_2(X) ((X)->n_bufs == 1 && LEN (X, 0) == 0)
 
-#define ONE_PAST_END(X, I) ((X)->p[(I)].one_past_end)
+#تعریف_کړه ONE_PAST_پای_ټکی(X, I) ((X)->p[(I)].one_past_پای_ټکی)
 
-struct Line_ptr
+بنية کرښه_ptr
 {
   size_t i;
-  char *ptr;
+  حرف *ptr;
 };
-typedef struct Line_ptr Line_ptr;
+تعريفنوع بنية کرښه_ptr کرښه_ptr;
 
-struct B_pair
+بنية B_pair
 {
-  char *start;
-  char *one_past_end;
+  حرف *پیل;
+  حرف *one_past_پای_ټکی;
 };
 
-struct Buf
+بنية Buf
 {
   size_t n_bufs;
-  struct obstack obs;
-  struct B_pair *p;
+  بنية obstack obs;
+  بنية B_pair *p;
 };
-typedef struct Buf Buf;
+تعريفنوع بنية Buf Buf;
 
-static bool
-buf_init_from_stdin (Buf *x, char eol_byte)
+ساكن bool
+buf_init_from_stdin (Buf *x, حرف eol_byte)
 {
-  bool last_byte_is_eol_byte = true;
+  bool وروستی_byte_is_eol_byte = true;
   bool ok = true;
 
-#define OBS (&(x->obs))
+#تعریف_کړه OBS (&(x->obs))
   obstack_init (OBS);
 
-  while (true)
+  طالما (true)
     {
-      char *buf = malloc (BUFFER_SIZE);
+      حرف *buf = حافظه_ورکړه (بفر_اندازه);
 
-      if (buf == NULL)
+      إذا (buf == عدم)
         {
           /* Fall back on the code that relies on a temporary file.
              Write all buffers to that file and free them.  */
           /* FIXME */
           ok = false;
-          break;
+          اكسر;
         }
-      idx_t bytes_read = full_read (STDIN_FILENO, buf, BUFFER_SIZE);
-      if (bytes_read != BUFFER_SIZE && errno != 0)
+      idx_t بایټونه_read = ډک_read (STDIN_FILENO, buf, بفر_اندازه);
+      إذا (بایټونه_read != بفر_اندازه && errno != 0)
         error (EXIT_FAILURE, errno, _("read error"));
 
       {
-        struct B_pair bp;
-        bp.start = buf;
-        bp.one_past_end = buf + bytes_read;
-        obstack_grow (OBS, &bp, sizeof (bp));
+        بنية B_pair bp;
+        bp.پیل = buf;
+        bp.one_past_پای_ټکی = buf + بایټونه_read;
+        obstack_grow (OBS, &bp, حجم (bp));
       }
 
-      if (bytes_read != 0)
-        last_byte_is_eol_byte = (buf[bytes_read - 1] == eol_byte);
+      إذا (بایټونه_read != 0)
+        وروستی_byte_is_eol_byte = (buf[بایټونه_read - 1] == eol_byte);
 
-      if (bytes_read < BUFFER_SIZE)
-        break;
+      إذا (بایټونه_read < بفر_اندازه)
+        اكسر;
     }
 
-  if (ok)
+  إذا (ok)
     {
       /* If the file was non-empty and lacked an EOL_BYTE at its end,
          then add a buffer containing just that one byte.  */
-      if (!last_byte_is_eol_byte)
+      إذا (!وروستی_byte_is_eol_byte)
         {
-          char *buf = malloc (1);
-          if (buf == NULL)
+          حرف *buf = حافظه_ورکړه (1);
+          إذا (buf == عدم)
             {
               /* FIXME: just like above */
               ok = false;
             }
-          else
+          وإلا
             {
-              struct B_pair bp;
+              بنية B_pair bp;
               *buf = eol_byte;
-              bp.start = buf;
-              bp.one_past_end = buf + 1;
-              obstack_grow (OBS, &bp, sizeof (bp));
+              bp.پیل = buf;
+              bp.one_past_پای_ټکی = buf + 1;
+              obstack_grow (OBS, &bp, حجم (bp));
             }
         }
     }
 
-  x->n_bufs = obstack_object_size (OBS) / sizeof (x->p[0]);
-  x->p = (struct B_pair *) obstack_finish (OBS);
+  x->n_bufs = obstack_object_اندازه (OBS) / حجم (x->p[0]);
+  x->p = (بنية B_pair *) obstack_پای (OBS);
 
   /* If there are two or more buffers and the last buffer is empty,
      then free the last one and decrement the buffer count.  */
-  if (x->n_bufs >= 2
-      && x->p[x->n_bufs - 1].start == x->p[x->n_bufs - 1].one_past_end)
-    free (x->p[--(x->n_bufs)].start);
+  إذا (x->n_bufs >= 2
+      && x->p[x->n_bufs - 1].پیل == x->p[x->n_bufs - 1].one_past_پای_ټکی)
+    حرر (x->p[--(x->n_bufs)].پیل);
 
-  return ok;
+  أرجع ok;
 }
 
-static void
+ساكن فراغ
 buf_free (Buf *x)
 {
-  for (size_t i = 0; i < x->n_bufs; i++)
-    free (x->p[i].start);
-  obstack_free (OBS, NULL);
+  لكل (size_t i = 0; i < x->n_bufs; i++)
+    حرر (x->p[i].پیل);
+  obstack_free (OBS, عدم);
 }
 
-Line_ptr
-line_ptr_decrement (const Buf *x, const Line_ptr *lp)
+کرښه_ptr
+کرښه_ptr_decrement (ثابت Buf *x, ثابت کرښه_ptr *lp)
 {
-  Line_ptr lp_new;
+  کرښه_ptr lp_new;
 
-  if (lp->ptr > x->p[lp->i].start)
+  إذا (lp->ptr > x->p[lp->i].پیل)
     {
       lp_new.i = lp->i;
       lp_new.ptr = lp->ptr - 1;
     }
-  else
+  وإلا
     {
       affirm (lp->i > 0);
       lp_new.i = lp->i - 1;
-      lp_new.ptr = ONE_PAST_END (x, lp->i - 1) - 1;
+      lp_new.ptr = ONE_PAST_پای_ټکی (x, lp->i - 1) - 1;
     }
-  return lp_new;
+  أرجع lp_new;
 }
 
-Line_ptr
-line_ptr_increment (const Buf *x, const Line_ptr *lp)
+کرښه_ptr
+کرښه_ptr_increment (ثابت Buf *x, ثابت کرښه_ptr *lp)
 {
-  Line_ptr lp_new;
+  کرښه_ptr lp_new;
 
-  affirm (lp->ptr <= ONE_PAST_END (x, lp->i) - 1);
-  if (lp->ptr < ONE_PAST_END (x, lp->i) - 1)
+  affirm (lp->ptr <= ONE_PAST_پای_ټکی (x, lp->i) - 1);
+  إذا (lp->ptr < ONE_PAST_پای_ټکی (x, lp->i) - 1)
     {
       lp_new.i = lp->i;
       lp_new.ptr = lp->ptr + 1;
     }
-  else
+  وإلا
     {
       affirm (lp->i < x->n_bufs - 1);
       lp_new.i = lp->i + 1;
-      lp_new.ptr = x->p[lp->i + 1].start;
+      lp_new.ptr = x->p[lp->i + 1].پیل;
     }
-  return lp_new;
+  أرجع lp_new;
 }
 
-static bool
-find_bol (const Buf *x,
-          const Line_ptr *last_bol, Line_ptr *new_bol, char eol_byte)
+ساكن bool
+پیدا_کړه_bol (ثابت Buf *x,
+          ثابت کرښه_ptr *وروستی_bol, کرښه_ptr *new_bol, حرف eol_byte)
 {
   size_t i;
-  Line_ptr tmp;
-  char *last_bol_ptr;
+  کرښه_ptr tmp;
+  حرف *وروستی_bol_ptr;
 
-  if (last_bol->ptr == x->p[0].start)
-    return false;
+  إذا (وروستی_bol->ptr == x->p[0].پیل)
+    أرجع false;
 
-  tmp = line_ptr_decrement (x, last_bol);
-  last_bol_ptr = tmp.ptr;
+  tmp = کرښه_ptr_decrement (x, وروستی_bol);
+  وروستی_bol_ptr = tmp.ptr;
   i = tmp.i;
-  while (true)
+  طالما (true)
     {
-      char *nl = memrchr (x->p[i].start, last_bol_ptr, eol_byte);
-      if (nl)
+      حرف *nl = memrchr (x->p[i].پیل, وروستی_bol_ptr, eol_byte);
+      إذا (nl)
         {
-          Line_ptr nl_pos;
+          کرښه_ptr nl_pos;
           nl_pos.i = i;
           nl_pos.ptr = nl;
-          *new_bol = line_ptr_increment (x, &nl_pos);
-          return true;
+          *new_bol = کرښه_ptr_increment (x, &nl_pos);
+          أرجع true;
         }
 
-      if (i == 0)
-        break;
+      إذا (i == 0)
+        اكسر;
 
       --i;
-      last_bol_ptr = ONE_PAST_END (x, i);
+      وروستی_bol_ptr = ONE_PAST_پای_ټکی (x, i);
     }
 
   /* If last_bol->ptr didn't point at the first byte of X, then reaching
      this point means that we're about to return the line that is at the
      beginning of X.  */
-  if (last_bol->ptr != x->p[0].start)
+  إذا (وروستی_bol->ptr != x->p[0].پیل)
     {
       new_bol->i = 0;
-      new_bol->ptr = x->p[0].start;
-      return true;
+      new_bol->ptr = x->p[0].پیل;
+      أرجع true;
     }
 
-  return false;
+  أرجع false;
 }
 
-static void
-print_line (FILE *out_stream, const Buf *x,
-            const Line_ptr *bol, const Line_ptr *bol_next)
+ساكن فراغ
+print_کرښه (FILE *بهر_بهیر, ثابت Buf *x,
+            ثابت کرښه_ptr *bol, ثابت کرښه_ptr *bol_بل)
 {
-  for (size_t i = bol->i; i <= bol_next->i; i++)
+  لكل (size_t i = bol->i; i <= bol_بل->i; i++)
     {
-      char *a = (i == bol->i ? bol->ptr : x->p[i].start);
-      char *b = (i == bol_next->i ? bol_next->ptr : ONE_PAST_END (x, i));
-      fwrite (a, 1, b - a, out_stream);
+      حرف *a = (i == bol->i ? bol->ptr : x->p[i].پیل);
+      حرف *b = (i == bol_بل->i ? bol_بل->ptr : ONE_PAST_پای_ټکی (x, i));
+      fwrite (a, 1, b - a, بهر_بهیر);
     }
 }
 
-static bool
+ساكن bool
 tac_mem ()
 {
   Buf x;
-  Line_ptr bol;
-  char eol_byte = '\n';
+  کرښه_ptr bol;
+  حرف eol_byte = '\n';
 
-  if (! buf_init_from_stdin (&x, eol_byte))
+  إذا (! buf_init_from_stdin (&x, eol_byte))
     {
       buf_free (&x);
-      return false;
+      أرجع false;
     }
 
   /* Special case the empty file.  */
-  if (EMPTY (&x))
-    return true;
+  إذا (تشه_2 (&x))
+    أرجع true;
 
   /* Initially, point at one past the last byte of the file.  */
   bol.i = x.n_bufs - 1;
-  bol.ptr = ONE_PAST_END (&x, bol.i);
+  bol.ptr = ONE_PAST_پای_ټکی (&x, bol.i);
 
-  while (true)
+  طالما (true)
     {
-      Line_ptr new_bol;
-      if (! find_bol (&x, &bol, &new_bol, eol_byte))
-        break;
-      print_line (stdout, &x, &new_bol, &bol);
+      کرښه_ptr new_bol;
+      إذا (! پیدا_کړه_bol (&x, &bol, &new_bol, eol_byte))
+        اكسر;
+      print_کرښه (stdout, &x, &new_bol, &bol);
       bol = new_bol;
     }
-  return true;
+  أرجع true;
 }

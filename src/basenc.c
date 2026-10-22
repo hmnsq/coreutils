@@ -16,48 +16,48 @@
 
 /* Written by Simon Josefsson <simon@josefsson.org>.  */
 
-#include <config.h>
+#ضمن <config.h>
 
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
-#include <gmp.h>
+#ضمن <stdio.h>
+#ضمن <getopt.h>
+#ضمن <sys/types.h>
+#ضمن <gmp.h>
 
-#include "system.h"
-#include "assure.h"
-#include "c-ctype.h"
-#include "fadvise.h"
-#include "quote.h"
-#include "xstrtol.h"
-#include "xbinary-io.h"
+#ضمن "system.h"
+#ضمن "assure.h"
+#ضمن "c-ctype.h"
+#ضمن "fadvise.h"
+#ضمن "quote.h"
+#ضمن "xstrtol.h"
+#ضمن "xbinary-io.h"
 
-#if BASE_TYPE == 42
+#إذا بنسټ_TYPE == 42
 # define AUTHORS \
   proper_name ("Simon Josefsson"), \
   proper_name ("Assaf Gordon")
-#else
+#وإلا
 # define AUTHORS proper_name ("Simon Josefsson")
-#endif
+#د_که_پای
 
-#if BASE_TYPE == 32
+#إذا بنسټ_TYPE == 32
 # include "base32.h"
-# define PROGRAM_NAME "base32"
-#elif BASE_TYPE == 64
+# define پروګرام_NAME "base32"
+#وإلاإذا بنسټ_TYPE == 64
 # include "base64.h"
-# define PROGRAM_NAME "base64"
-#elif BASE_TYPE == 42
+# define پروګرام_NAME "base64"
+#وإلاإذا بنسټ_TYPE == 42
 # include "base32.h"
 # include "base64.h"
 # include "assure.h"
-# define PROGRAM_NAME "basenc"
-#else
-# error missing/invalid BASE_TYPE definition
-#endif
+# define پروګرام_NAME "basenc"
+#وإلا
+# error missing/invalid بنسټ_TYPE definition
+#د_که_پای
 
 
 
-#if BASE_TYPE == 42
-enum
+#إذا بنسټ_TYPE == 42
+تعداد
 {
   BASE64_OPTION = CHAR_MAX + 1,
   BASE64URL_OPTION,
@@ -69,60 +69,60 @@ enum
   BASE2LSBF_OPTION,
   Z85_OPTION
 };
-#endif
+#د_که_پای
 
-static struct option const long_options[] =
+ساكن بنية option ثابت long_options[] =
 {
-  {"decode", no_argument, NULL, 'd'},
-  {"wrap", required_argument, NULL, 'w'},
-  {"ignore-garbage", no_argument, NULL, 'i'},
-#if BASE_TYPE == 42
-  {"base64",    no_argument, NULL, BASE64_OPTION},
-  {"base64url", no_argument, NULL, BASE64URL_OPTION},
-  {"base58",    no_argument, NULL, BASE58_OPTION},
-  {"base32",    no_argument, NULL, BASE32_OPTION},
-  {"base32hex", no_argument, NULL, BASE32HEX_OPTION},
-  {"base16",    no_argument, NULL, BASE16_OPTION},
-  {"base2msbf", no_argument, NULL, BASE2MSBF_OPTION},
-  {"base2lsbf", no_argument, NULL, BASE2LSBF_OPTION},
-  {"z85",       no_argument, NULL, Z85_OPTION},
-#endif
+  {"decode", no_دلیل, عدم, 'd'},
+  {"wrap", required_دلیل, عدم, 'w'},
+  {"ignore-garbage", no_دلیل, عدم, 'i'},
+#إذا بنسټ_TYPE == 42
+  {"base64",    no_دلیل, عدم, BASE64_OPTION},
+  {"base64url", no_دلیل, عدم, BASE64URL_OPTION},
+  {"base58",    no_دلیل, عدم, BASE58_OPTION},
+  {"base32",    no_دلیل, عدم, BASE32_OPTION},
+  {"base32hex", no_دلیل, عدم, BASE32HEX_OPTION},
+  {"base16",    no_دلیل, عدم, BASE16_OPTION},
+  {"base2msbf", no_دلیل, عدم, BASE2MSBF_OPTION},
+  {"base2lsbf", no_دلیل, عدم, BASE2LSBF_OPTION},
+  {"z85",       no_دلیل, عدم, Z85_OPTION},
+#د_که_پای
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_نسخه_OPTION_DECL},
+  {عدم, 0, عدم, 0}
 };
 
-void
-usage (int status)
+فراغ
+usage (صحيح حالت)
 {
-  if (status != EXIT_SUCCESS)
+  إذا (حالت != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  وإلا
     {
-      printf (_("\
+      چاپ_کړه (_("\
 Usage: %s [OPTION]... [FILE]\n\
-"), program_name);
+"), پروګرام_name);
 
-#if BASE_TYPE == 42
+#إذا بنسټ_TYPE == 42
       fputs (_("\
-basenc encode or decode FILE, or standard input, to standard output.\n\
+basenc encode or decode FILE, or standard ننوت, منزل standard output.\n\
 "), stdout);
-#else
-      printf (_("\
-Base%d encode or decode FILE, or standard input, to standard output.\n\
-"), BASE_TYPE);
-#endif
+#وإلا
+      چاپ_کړه (_("\
+بنسټ%d encode or decode FILE, or standard ننوت, منزل standard output.\n\
+"), بنسټ_TYPE);
+#د_که_پای
 
       emit_stdin_note ();
       emit_mandatory_arg_note ();
-#if BASE_TYPE == 42
+#إذا بنسټ_TYPE == 42
       oputs (_("\
       --base64\n\
-         same as base64(1) program (RFC4648 section 4)\n\
+         same as base64(1) پروګرام (RFC4648 section 4)\n\
 "));
       oputs (_("\
       --base64url\n\
-         file- and url-safe base64 (RFC4648 section 5)\n\
+         file- and url-خوندي base64 (RFC4648 section 5)\n\
 "));
       oputs (_("\
       --base58\n\
@@ -130,7 +130,7 @@ Base%d encode or decode FILE, or standard input, to standard output.\n\
 "));
       oputs (_("\
       --base32\n\
-         same as base32(1) program (RFC4648 section 6)\n\
+         same as base32(1) پروګرام (RFC4648 section 6)\n\
 "));
       oputs (_("\
       --base32hex\n\
@@ -142,88 +142,88 @@ Base%d encode or decode FILE, or standard input, to standard output.\n\
 "));
       oputs (_("\
       --base2msbf\n\
-         bit string with most significant bit (msb) first\n\
+         بټ string with most significant بټ (msb) لومړی\n\
 "));
       oputs (_("\
       --base2lsbf\n\
-         bit string with least significant bit (lsb) first\n\
+         بټ string with لږترلږه significant بټ (lsb) لومړی\n\
 "));
-#endif
+#د_که_پای
       oputs (_("\
   -d, --decode\n\
-         decode data\n\
+         decode معلومات\n\
 "));
       oputs (_("\
   -i, --ignore-garbage\n\
          when decoding, ignore non-alphabet characters\n\
 "));
       oputs (_("\
-  -w, --wrap=COLS\n\
-         wrap encoded lines after COLS character (default 76).\n\
-         Use 0 to disable line wrapping\n\
+  -w, --wrap=ستون_شمېر\n\
+         wrap encoded کرښې after ستون_شمېر character (افتراضي 76).\n\
+         Use 0 منزل disable کرښه wrapping\n\
 "));
-#if BASE_TYPE == 42
+#إذا بنسټ_TYPE == 42
       oputs (_("\
       --z85\n\
          ascii85-like encoding (ZeroMQ spec:32/Z85);\n\
-         when encoding, input length must be a multiple of 4;\n\
-         when decoding, input length must be a multiple of 5\n\
+         when encoding, ننوت اوږدتیا must be a مضرب د 4;\n\
+         when decoding, ننوت اوږدتیا must be a مضرب د 5\n\
 "));
-#endif
+#د_که_پای
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-#if BASE_TYPE == 42
+      oputs (نسخه_OPTION_DESCRIPTION);
+#إذا بنسټ_TYPE == 42
       fputs (_("\
 \n\
-When decoding, the input may contain newlines in addition to the bytes of\n\
-the formal alphabet.  Use --ignore-garbage to attempt to recover\n\
-from any other non-alphabet bytes in the encoded stream.\n\
+When decoding, the ننوت may contain newlines دننه addition منزل the بایټونه د\n\
+the formal alphabet.  Use --ignore-garbage منزل attempt منزل recover\n\
+from any other non-alphabet بایټونه دننه the encoded بهیر.\n\
 "), stdout);
-#else
-      printf (_("\
+#وإلا
+      چاپ_کړه (_("\
 \n\
-The data are encoded as described for the %s alphabet in RFC 4648.\n\
-When decoding, the input may contain newlines in addition to the bytes of\n\
-the formal %s alphabet.  Use --ignore-garbage to attempt to recover\n\
-from any other non-alphabet bytes in the encoded stream.\n"),
-              PROGRAM_NAME, PROGRAM_NAME);
-#endif
-      emit_ancillary_info (PROGRAM_NAME);
+The معلومات are encoded as described لكل the %s alphabet دننه RFC 4648.\n\
+When decoding, the ننوت may contain newlines دننه addition منزل the بایټونه د\n\
+the formal %s alphabet.  Use --ignore-garbage منزل attempt منزل recover\n\
+from any other non-alphabet بایټونه دننه the encoded بهیر.\n"),
+              پروګرام_NAME, پروګرام_NAME);
+#د_که_پای
+      emit_ancillary_info (پروګرام_NAME);
     }
 
-  exit (status);
+  وتل (حالت);
 }
 
-#if BASE_TYPE != 64
-static int
-base32_required_padding (int len)
+#إذا بنسټ_TYPE != 64
+ساكن صحيح
+base32_required_padding (صحيح len)
 {
-  int partial = len % 8;
-  return partial ? 8 - partial : 0;
+  صحيح partial = len % 8;
+  أرجع partial ? 8 - partial : 0;
 }
-#endif
+#د_که_پای
 
-#if BASE_TYPE != 32
-static int
-base64_required_padding (int len)
+#إذا بنسټ_TYPE != 32
+ساكن صحيح
+base64_required_padding (صحيح len)
 {
-  int partial = len % 4;
-  return partial ? 4 - partial : 0;
+  صحيح partial = len % 4;
+  أرجع partial ? 4 - partial : 0;
 }
-#endif
+#د_که_پای
 
-#if BASE_TYPE == 42
-static int
-no_required_padding (MAYBE_UNUSED int len)
+#إذا بنسټ_TYPE == 42
+ساكن صحيح
+no_required_padding (MAYBE_ناکارول_شوی صحيح len)
 {
-  return 0;
+  أرجع 0;
 }
-#endif
+#د_که_پای
 
-#define ENC_BLOCKSIZE (1024 * 3 * 10)
+#تعریف_کړه ENC_BLOCKSIZE (1024 * 3 * 10)
 
-#if BASE_TYPE == 32
-# define BASE_LENGTH BASE32_LENGTH
+#إذا بنسټ_TYPE == 32
+# define بنسټ_اوږدتیا BASE32_اوږدتیا
 # define REQUIRED_PADDING base32_required_padding
 /* Note that increasing this may decrease performance if --ignore-garbage
    is used, because of the memmove operation below.  */
@@ -233,14 +233,14 @@ no_required_padding (MAYBE_UNUSED int len)
 static_assert (ENC_BLOCKSIZE % 40 == 0); /* Padding chars only on last block. */
 static_assert (DEC_BLOCKSIZE % 40 == 0); /* Complete encoded blocks are used. */
 
-# define base_encode base32_encode
-# define base_decode_context base32_decode_context
-# define base_decode_ctx_init base32_decode_ctx_init
-# define base_decode_ctx base32_decode_ctx
-# define base_decode_ctx_finalize decode_ctx_finalize
+# define بنسټ_encode base32_encode
+# define بنسټ_decode_context base32_decode_context
+# define بنسټ_decode_ctx_init base32_decode_ctx_init
+# define بنسټ_decode_ctx base32_decode_ctx
+# define بنسټ_decode_ctx_finalize decode_ctx_finalize
 # define isubase isubase32
-#elif BASE_TYPE == 64
-# define BASE_LENGTH BASE64_LENGTH
+#وإلاإذا بنسټ_TYPE == 64
+# define بنسټ_اوږدتیا BASE64_اوږدتیا
 # define REQUIRED_PADDING base64_required_padding
 /* Note that increasing this may decrease performance if --ignore-garbage
    is used, because of the memmove operation below.  */
@@ -250,16 +250,16 @@ static_assert (DEC_BLOCKSIZE % 40 == 0); /* Complete encoded blocks are used. */
 static_assert (ENC_BLOCKSIZE % 12 == 0); /* Padding chars only on last block. */
 static_assert (DEC_BLOCKSIZE % 12 == 0); /* Complete encoded blocks are used. */
 
-# define base_encode base64_encode
-# define base_decode_context base64_decode_context
-# define base_decode_ctx_init base64_decode_ctx_init
-# define base_decode_ctx base64_decode_ctx
-# define base_decode_ctx_finalize decode_ctx_finalize
+# define بنسټ_encode base64_encode
+# define بنسټ_decode_context base64_decode_context
+# define بنسټ_decode_ctx_init base64_decode_ctx_init
+# define بنسټ_decode_ctx base64_decode_ctx
+# define بنسټ_decode_ctx_finalize decode_ctx_finalize
 # define isubase isubase64
-#elif BASE_TYPE == 42
+#وإلاإذا بنسټ_TYPE == 42
 
 
-# define BASE_LENGTH base_length
+# define بنسټ_اوږدتیا بنسټ_اوږدتیا_2
 # define REQUIRED_PADDING required_padding
 
 /* Note that increasing this may decrease performance if --ignore-garbage
@@ -268,303 +268,303 @@ static_assert (DEC_BLOCKSIZE % 12 == 0); /* Complete encoded blocks are used. */
 static_assert (DEC_BLOCKSIZE % 40 == 0); /* complete encoded blocks for base32*/
 static_assert (DEC_BLOCKSIZE % 12 == 0); /* complete encoded blocks for base64*/
 
-static idx_t (*base_length) (idx_t len);
-static int (*required_padding) (int i);
-static bool (*isubase) (unsigned char ch);
-static void (*base_encode) (char const *restrict in, idx_t inlen,
-                            char *restrict out, idx_t outlen);
+ساكن idx_t (*بنسټ_اوږدتیا_2) (idx_t len);
+ساكن صحيح (*required_padding) (صحيح i);
+ساكن bool (*isubase) (بینښه حرف ch);
+ساكن فراغ (*بنسټ_encode) (حرف ثابت *محدود دننه, idx_t inlen,
+                            حرف *محدود بهر, idx_t outlen);
 
-struct base16_decode_context
+بنية base16_decode_context
 {
   /* Either a 4-bit nibble, or negative if we have no nibble.  */
-  signed char nibble;
+  نښهدار حرف nibble;
 };
 
-struct z85_decode_context
+بنية z85_decode_context
 {
-  int i;
-  unsigned char octets[5];
+  صحيح i;
+  بینښه حرف octets[5];
 };
 
-struct base58_context
+بنية base58_context
 {
-  idx_t size;
-  idx_t capacity;
-  unsigned char *buf COUNTED_BY (capacity);
+  idx_t اندازه;
+  idx_t ظرفیت;
+  بینښه حرف *buf COUNTED_BY (ظرفیت);
 };
 
-struct base2_decode_context
+بنية base2_decode_context
 {
-  unsigned char octet;
-  int bit_pos;
+  بینښه حرف octet;
+  صحيح بټ_pos;
 };
 
-struct base_decode_context
+بنية بنسټ_decode_context
 {
-  union {
-    struct base64_decode_context base64;
-    struct base32_decode_context base32;
-    struct base16_decode_context base16;
-    struct base2_decode_context base2;
-    struct z85_decode_context z85;
-    struct base58_context base58;
+  اتحاد {
+    بنية base64_decode_context base64;
+    بنية base32_decode_context base32;
+    بنية base16_decode_context base16;
+    بنية base2_decode_context base2;
+    بنية z85_decode_context z85;
+    بنية base58_context base58;
   } ctx;
-  char *inbuf;
+  حرف *inbuf;
   idx_t bufsize;
 };
-static void (*base_decode_ctx_init) (struct base_decode_context *ctx);
-static bool (*base_decode_ctx) (struct base_decode_context *ctx,
-                                char const *restrict in, idx_t inlen,
-                                char *restrict out, idx_t *outlen);
-static bool (*base_decode_ctx_finalize) (struct base_decode_context *ctx,
-                                         char *restrict *out, idx_t *outlen);
+ساكن فراغ (*بنسټ_decode_ctx_init) (بنية بنسټ_decode_context *ctx);
+ساكن bool (*بنسټ_decode_ctx) (بنية بنسټ_decode_context *ctx,
+                                حرف ثابت *محدود دننه, idx_t inlen,
+                                حرف *محدود بهر, idx_t *outlen);
+ساكن bool (*بنسټ_decode_ctx_finalize) (بنية بنسټ_decode_context *ctx,
+                                         حرف *محدود *بهر, idx_t *outlen);
 
-struct base_encode_context
+بنية بنسټ_encode_context
 {
-  union {
-    struct base58_context base58;
+  اتحاد {
+    بنية base58_context base58;
   } ctx;
 };
 
-static void (*base_encode_ctx_init) (struct base_encode_context *ctx);
-static bool (*base_encode_ctx) (struct base_encode_context *ctx,
-                                char const *restrict in, idx_t inlen,
-                                char *restrict out, idx_t *outlen);
-static bool (*base_encode_ctx_finalize) (struct base_encode_context *ctx,
-                                         char *restrict *out, idx_t *outlen);
+ساكن فراغ (*بنسټ_encode_ctx_init) (بنية بنسټ_encode_context *ctx);
+ساكن bool (*بنسټ_encode_ctx) (بنية بنسټ_encode_context *ctx,
+                                حرف ثابت *محدود دننه, idx_t inlen,
+                                حرف *محدود بهر, idx_t *outlen);
+ساكن bool (*بنسټ_encode_ctx_finalize) (بنية بنسټ_encode_context *ctx,
+                                         حرف *محدود *بهر, idx_t *outlen);
 
-static bool
-no_padding (MAYBE_UNUSED struct base_decode_context *ctx)
+ساكن bool
+no_padding (MAYBE_ناکارول_شوی بنية بنسټ_decode_context *ctx)
 {
-  return false;
+  أرجع false;
 }
 
-static int
-no_pending_length (MAYBE_UNUSED struct base_decode_context *ctx)
+ساكن صحيح
+no_pending_اوږدتیا (MAYBE_ناکارول_شوی بنية بنسټ_decode_context *ctx)
 {
-  return 0;
+  أرجع 0;
 }
-#endif
+#د_که_پای
 
-#if BASE_TYPE == 42
-static bool (*has_padding) (struct base_decode_context *ctx);
-static int (*get_pending_length) (struct base_decode_context *ctx);
+#إذا بنسټ_TYPE == 42
+ساكن bool (*has_padding) (بنية بنسټ_decode_context *ctx);
+ساكن صحيح (*get_pending_اوږدتیا) (بنية بنسټ_decode_context *ctx);
 
-static bool
-base64_ctx_has_padding (struct base_decode_context *ctx)
+ساكن bool
+base64_ctx_has_padding (بنية بنسټ_decode_context *ctx)
 {
-  return ctx->ctx.base64.i && ctx->ctx.base64.buf[ctx->ctx.base64.i - 1] == '=';
-}
-
-static bool
-base32_ctx_has_padding (struct base_decode_context *ctx)
-{
-  return ctx->ctx.base32.i && ctx->ctx.base32.buf[ctx->ctx.base32.i - 1] == '=';
+  أرجع ctx->ctx.base64.i && ctx->ctx.base64.buf[ctx->ctx.base64.i - 1] == '=';
 }
 
-static int
-base64_ctx_get_pending_length (struct base_decode_context *ctx)
+ساكن bool
+base32_ctx_has_padding (بنية بنسټ_decode_context *ctx)
 {
-  return ctx->ctx.base64.i;
+  أرجع ctx->ctx.base32.i && ctx->ctx.base32.buf[ctx->ctx.base32.i - 1] == '=';
 }
 
-static int
-base32_ctx_get_pending_length (struct base_decode_context *ctx)
+ساكن صحيح
+base64_ctx_get_pending_اوږدتیا (بنية بنسټ_decode_context *ctx)
 {
-  return ctx->ctx.base32.i;
+  أرجع ctx->ctx.base64.i;
 }
 
-static int
-base16_ctx_get_pending_length (MAYBE_UNUSED struct base_decode_context *ctx)
+ساكن صحيح
+base32_ctx_get_pending_اوږدتیا (بنية بنسټ_decode_context *ctx)
 {
-  return 1; /* Always check nibble state.  */
+  أرجع ctx->ctx.base32.i;
 }
 
-static int
-z85_ctx_get_pending_length (struct base_decode_context *ctx)
+ساكن صحيح
+base16_ctx_get_pending_اوږدتیا (MAYBE_ناکارول_شوی بنية بنسټ_decode_context *ctx)
 {
-  return ctx->ctx.z85.i;
+  أرجع 1; /* Always check nibble state.  */
 }
 
-static int
-base2_ctx_get_pending_length (struct base_decode_context *ctx)
+ساكن صحيح
+z85_ctx_get_pending_اوږدتیا (بنية بنسټ_decode_context *ctx)
 {
-  return ctx->ctx.base2.bit_pos;
-}
-#else
-static bool
-has_padding (struct base_decode_context *ctx)
-{
-  return ctx->i && ctx->buf[ctx->i - 1] == '=';
+  أرجع ctx->ctx.z85.i;
 }
 
-static int
-get_pending_length (struct base_decode_context *ctx)
+ساكن صحيح
+base2_ctx_get_pending_اوږدتیا (بنية بنسټ_decode_context *ctx)
 {
-  return ctx->i;
+  أرجع ctx->ctx.base2.بټ_pos;
 }
-#endif
+#وإلا
+ساكن bool
+has_padding (بنية بنسټ_decode_context *ctx)
+{
+  أرجع ctx->i && ctx->buf[ctx->i - 1] == '=';
+}
+
+ساكن صحيح
+get_pending_اوږدتیا (بنية بنسټ_decode_context *ctx)
+{
+  أرجع ctx->i;
+}
+#د_که_پای
 
 
 /* Process any pending data in CTX, while auto padding if appropriate.
    Return TRUE on success, FALSE on failure.  */
 
-static bool
-decode_ctx_finalize (struct base_decode_context *ctx,
-                     char *restrict *out, idx_t *outlen)
+ساكن bool
+decode_ctx_finalize (بنية بنسټ_decode_context *ctx,
+                     حرف *محدود *بهر, idx_t *outlen)
 {
-  if (get_pending_length (ctx) == 0)
+  إذا (get_pending_اوږدتیا (ctx) == 0)
     {
       *outlen = 0;
-      return true;
+      أرجع true;
     }
 
   /* Auto-pad input and flush the context */
-  char padbuf[8] ATTRIBUTE_NONSTRING = "========";
-  idx_t pending_len = get_pending_length (ctx);
+  حرف padbuf[8] ATTRIBUTE_NONSTRING = "========";
+  idx_t pending_len = get_pending_اوږدتیا (ctx);
   idx_t auto_padding = REQUIRED_PADDING (pending_len);
   idx_t n = *outlen;
-  bool result;
+  bool پایله;
 
-  if (auto_padding && ! has_padding (ctx))
+  إذا (auto_padding && ! has_padding (ctx))
     {
-      affirm (auto_padding <= sizeof (padbuf));
-      result = base_decode_ctx (ctx, padbuf, auto_padding, *out, &n);
+      affirm (auto_padding <= حجم (padbuf));
+      پایله = بنسټ_decode_ctx (ctx, padbuf, auto_padding, *بهر, &n);
     }
-  else
+  وإلا
     {
-      result = base_decode_ctx (ctx, "", 0, *out, &n);
+      پایله = بنسټ_decode_ctx (ctx, "", 0, *بهر, &n);
     }
 
   *outlen = n;
-  return result;
+  أرجع پایله;
 }
 
-#if BASE_TYPE == 42
+#إذا بنسټ_TYPE == 42
 
-static idx_t
-base64_length_wrapper (idx_t len)
+ساكن idx_t
+base64_اوږدتیا_wrapper (idx_t len)
 {
-  return BASE64_LENGTH (len);
+  أرجع BASE64_اوږدتیا (len);
 }
 
-static void
-base64_decode_ctx_init_wrapper (struct base_decode_context *ctx)
+ساكن فراغ
+base64_decode_ctx_init_wrapper (بنية بنسټ_decode_context *ctx)
 {
   base64_decode_ctx_init (&ctx->ctx.base64);
 }
 
-static bool
-base64_decode_ctx_wrapper (struct base_decode_context *ctx,
-                           char const *restrict in, idx_t inlen,
-                           char *restrict out, idx_t *outlen)
+ساكن bool
+base64_decode_ctx_wrapper (بنية بنسټ_decode_context *ctx,
+                           حرف ثابت *محدود دننه, idx_t inlen,
+                           حرف *محدود بهر, idx_t *outlen)
 {
-  return base64_decode_ctx (&ctx->ctx.base64, in, inlen, out, outlen);
+  أرجع base64_decode_ctx (&ctx->ctx.base64, دننه, inlen, بهر, outlen);
 }
 
-static void
-init_inbuf (struct base_decode_context *ctx)
+ساكن فراغ
+init_inbuf (بنية بنسټ_decode_context *ctx)
 {
   ctx->bufsize = DEC_BLOCKSIZE;
   ctx->inbuf = xcharalloc (ctx->bufsize);
 }
 
-static void
-prepare_inbuf (struct base_decode_context *ctx, idx_t inlen)
+ساكن فراغ
+prepare_inbuf (بنية بنسټ_decode_context *ctx, idx_t inlen)
 {
-  if (ctx->bufsize < inlen)
+  إذا (ctx->bufsize < inlen)
     ctx->inbuf = xpalloc (ctx->inbuf, &ctx->bufsize,
-                          inlen - ctx->bufsize, -1, sizeof *ctx->inbuf);
+                          inlen - ctx->bufsize, -1, حجم *ctx->inbuf);
 }
 
 
-static void
-base64url_encode (char const *restrict in, idx_t inlen,
-                  char *restrict out, idx_t outlen)
+ساكن فراغ
+base64url_encode (حرف ثابت *محدود دننه, idx_t inlen,
+                  حرف *محدود بهر, idx_t outlen)
 {
-  base64_encode (in, inlen, out, outlen);
+  base64_encode (دننه, inlen, بهر, outlen);
   /* translate 62nd and 63rd characters */
-  char *p = out;
-  while (outlen--)
+  حرف *p = بهر;
+  طالما (outlen--)
     {
-      if (*p == '+')
+      إذا (*p == '+')
         *p = '-';
-      else if (*p == '/')
+      وإلا إذا (*p == '/')
         *p = '_';
       ++p;
     }
 }
 
-static bool
-isubase64url (unsigned char ch)
+ساكن bool
+isubase64url (بینښه حرف ch)
 {
-  return (ch == '-' || ch == '_'
+  أرجع (ch == '-' || ch == '_'
           || (ch != '+' && ch != '/' && isubase64 (ch)));
 }
 
-static void
-base64url_decode_ctx_init_wrapper (struct base_decode_context *ctx)
+ساكن فراغ
+base64url_decode_ctx_init_wrapper (بنية بنسټ_decode_context *ctx)
 {
   base64_decode_ctx_init (&ctx->ctx.base64);
   init_inbuf (ctx);
 }
 
 
-static bool
-base64url_decode_ctx_wrapper (struct base_decode_context *ctx,
-                              char const *restrict in, idx_t inlen,
-                              char *restrict out, idx_t *outlen)
+ساكن bool
+base64url_decode_ctx_wrapper (بنية بنسټ_decode_context *ctx,
+                              حرف ثابت *محدود دننه, idx_t inlen,
+                              حرف *محدود بهر, idx_t *outlen)
 {
   prepare_inbuf (ctx, inlen);
-  memcpy (ctx->inbuf, in, inlen);
+  حافظه_نقل (ctx->inbuf, دننه, inlen);
 
   /* translate 62nd and 63rd characters */
   idx_t i = inlen;
-  char *p = ctx->inbuf;
-  while (i--)
+  حرف *p = ctx->inbuf;
+  طالما (i--)
     {
-      if (*p == '+' || *p == '/')
+      إذا (*p == '+' || *p == '/')
         {
           *outlen = 0;
-          return false; /* reject base64 input */
+          أرجع false; /* reject base64 input */
         }
-      else if (*p == '-')
+      وإلا إذا (*p == '-')
         *p = '+';
-      else if (*p == '_')
+      وإلا إذا (*p == '_')
         *p = '/';
       ++p;
     }
 
-  return base64_decode_ctx (&ctx->ctx.base64, ctx->inbuf, inlen,
-                            out, outlen);
+  أرجع base64_decode_ctx (&ctx->ctx.base64, ctx->inbuf, inlen,
+                            بهر, outlen);
 }
 
 
 
-static idx_t
-base32_length_wrapper (idx_t len)
+ساكن idx_t
+base32_اوږدتیا_wrapper (idx_t len)
 {
-  return BASE32_LENGTH (len);
+  أرجع BASE32_اوږدتیا (len);
 }
 
-static void
-base32_decode_ctx_init_wrapper (struct base_decode_context *ctx)
+ساكن فراغ
+base32_decode_ctx_init_wrapper (بنية بنسټ_decode_context *ctx)
 {
   base32_decode_ctx_init (&ctx->ctx.base32);
 }
 
-static bool
-base32_decode_ctx_wrapper (struct base_decode_context *ctx,
-                           char const *restrict in, idx_t inlen,
-                           char *restrict out, idx_t *outlen)
+ساكن bool
+base32_decode_ctx_wrapper (بنية بنسټ_decode_context *ctx,
+                           حرف ثابت *محدود دننه, idx_t inlen,
+                           حرف *محدود بهر, idx_t *outlen)
 {
-  return base32_decode_ctx (&ctx->ctx.base32, in, inlen, out, outlen);
+  أرجع base32_decode_ctx (&ctx->ctx.base32, دننه, inlen, بهر, outlen);
 }
 
 /* ABCDEFGHIJKLMNOPQRSTUVWXYZ234567
-     to
+منزل
    0123456789ABCDEFGHIJKLMNOPQRSTUV */
-static const char base32_norm_to_hex[32 + 9] = {
+ساكن ثابت حرف base32_norm_منزل_hex[32 + 9] = {
 /*0x32, 0x33, 0x34, 0x35, 0x36, 0x37, */
   'Q',  'R',  'S',  'T',  'U',  'V',
 
@@ -584,9 +584,9 @@ static const char base32_norm_to_hex[32 + 9] = {
 };
 
 /* 0123456789ABCDEFGHIJKLMNOPQRSTUV
-     to
+منزل
    ABCDEFGHIJKLMNOPQRSTUVWXYZ234567 */
-static const char base32_hex_to_norm[32 + 9] = {
+ساكن ثابت حرف base32_hex_منزل_norm[32 + 9] = {
   /* from: 0x30 .. 0x39 ('0' to '9') */
   /* to:*/ 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
 
@@ -603,56 +603,56 @@ static const char base32_hex_to_norm[32 + 9] = {
 };
 
 
-inline static bool
-isubase32hex (unsigned char ch)
+مضمن ساكن bool
+isubase32hex (بینښه حرف ch)
 {
-  return ('0' <= ch && ch <= '9') || ('A' <= ch && ch <= 'V');
+  أرجع ('0' <= ch && ch <= '9') || ('A' <= ch && ch <= 'V');
 }
 
 
-static void
-base32hex_encode (char const *restrict in, idx_t inlen,
-                  char *restrict out, idx_t outlen)
+ساكن فراغ
+base32hex_encode (حرف ثابت *محدود دننه, idx_t inlen,
+                  حرف *محدود بهر, idx_t outlen)
 {
-  base32_encode (in, inlen, out, outlen);
+  base32_encode (دننه, inlen, بهر, outlen);
 
-  for (char *p = out; outlen--; p++)
+  لكل (حرف *p = بهر; outlen--; p++)
     {
       affirm (0x32 <= *p && *p <= 0x5a);          /* LCOV_EXCL_LINE */
-      *p = base32_norm_to_hex[*p - 0x32];
+      *p = base32_norm_منزل_hex[*p - 0x32];
     }
 }
 
 
-static void
-base32hex_decode_ctx_init_wrapper (struct base_decode_context *ctx)
+ساكن فراغ
+base32hex_decode_ctx_init_wrapper (بنية بنسټ_decode_context *ctx)
 {
   base32_decode_ctx_init (&ctx->ctx.base32);
   init_inbuf (ctx);
 }
 
 
-static bool
-base32hex_decode_ctx_wrapper (struct base_decode_context *ctx,
-                              char const *restrict in, idx_t inlen,
-                              char *restrict out, idx_t *outlen)
+ساكن bool
+base32hex_decode_ctx_wrapper (بنية بنسټ_decode_context *ctx,
+                              حرف ثابت *محدود دننه, idx_t inlen,
+                              حرف *محدود بهر, idx_t *outlen)
 {
   prepare_inbuf (ctx, inlen);
 
   idx_t i = inlen;
-  char *p = ctx->inbuf;
-  while (i--)
+  حرف *p = ctx->inbuf;
+  طالما (i--)
     {
-      if (isubase32hex (*in))
-        *p = base32_hex_to_norm[*in - 0x30];
-      else
-        *p = *in;
+      إذا (isubase32hex (*دننه))
+        *p = base32_hex_منزل_norm[*دننه - 0x30];
+      وإلا
+        *p = *دننه;
       ++p;
-      ++in;
+      ++دننه;
     }
 
-  return base32_decode_ctx (&ctx->ctx.base32, ctx->inbuf, inlen,
-                            out, outlen);
+  أرجع base32_decode_ctx (&ctx->ctx.base32, ctx->inbuf, inlen,
+                            بهر, outlen);
 }
 /* With this approach this file works independent of the charset used
    (think EBCDIC).  However, it does assume that the characters in the
@@ -682,7 +682,7 @@ base32hex_decode_ctx_wrapper (struct base_decode_context *ctx,
    : (_) == 'F' || (_) == 'f' ? 15              \
    : -1)
 
-static signed char const base16_to_int[256] = {
+ساكن نښهدار حرف ثابت base16_منزل_int[256] = {
   B16 (0), B16 (1), B16 (2), B16 (3),
   B16 (4), B16 (5), B16 (6), B16 (7),
   B16 (8), B16 (9), B16 (10), B16 (11),
@@ -749,181 +749,181 @@ static signed char const base16_to_int[256] = {
   B16 (252), B16 (253), B16 (254), B16 (255)
 };
 
-static bool
-isubase16 (unsigned char ch)
+ساكن bool
+isubase16 (بینښه حرف ch)
 {
-  return ch < sizeof base16_to_int && 0 <= base16_to_int[ch];
+  أرجع ch < حجم base16_منزل_int && 0 <= base16_منزل_int[ch];
 }
 
-static idx_t
-base16_length (idx_t len)
+ساكن idx_t
+base16_اوږدتیا (idx_t len)
 {
-  return len * 2;
+  أرجع len * 2;
 }
 
 
-static void
-base16_encode (char const *restrict in, idx_t inlen,
-               char *restrict out, idx_t outlen)
+ساكن فراغ
+base16_encode (حرف ثابت *محدود دننه, idx_t inlen,
+               حرف *محدود بهر, idx_t outlen)
 {
-  static const char base16[16] ATTRIBUTE_NONSTRING = "0123456789ABCDEF";
+  ساكن ثابت حرف base16[16] ATTRIBUTE_NONSTRING = "0123456789ABCDEF";
 
-  while (inlen && outlen)
+  طالما (inlen && outlen)
     {
-      unsigned char c = *in;
-      *out++ = base16[c >> 4];
-      *out++ = base16[c & 0x0F];
-      ++in;
+      بینښه حرف c = *دننه;
+      *بهر++ = base16[c >> 4];
+      *بهر++ = base16[c & 0x0F];
+      ++دننه;
       inlen--;
       outlen -= 2;
     }
 }
 
 
-static void
-base16_decode_ctx_init (struct base_decode_context *ctx)
+ساكن فراغ
+base16_decode_ctx_init (بنية بنسټ_decode_context *ctx)
 {
   init_inbuf (ctx);
   ctx->ctx.base16.nibble = -1;
 }
 
 
-static bool
-base16_decode_ctx (struct base_decode_context *ctx,
-                   char const *restrict in, idx_t inlen,
-                   char *restrict out, idx_t *outlen)
+ساكن bool
+base16_decode_ctx (بنية بنسټ_decode_context *ctx,
+                   حرف ثابت *محدود دننه, idx_t inlen,
+                   حرف *محدود بهر, idx_t *outlen)
 {
-  bool ignore_lines = true;  /* for now, always ignore them */
-  char *out0 = out;
-  signed char nibble = ctx->ctx.base16.nibble;
+  bool ignore_کرښې = true;  /* for now, always ignore them */
+  حرف *out0 = بهر;
+  نښهدار حرف nibble = ctx->ctx.base16.nibble;
 
   /* inlen==0 is request to flush output.
      if there is a dangling high nibble - we are missing the low nibble,
      so return false - indicating an invalid input.  */
-  if (inlen == 0)
+  إذا (inlen == 0)
     {
       *outlen = 0;
-      return nibble < 0;
+      أرجع nibble < 0;
     }
 
-  while (inlen--)
+  طالما (inlen--)
     {
-      unsigned char c = *in++;
-      if (ignore_lines && c == '\n')
-        continue;
+      بینښه حرف c = *دننه++;
+      إذا (ignore_کرښې && c == '\n')
+        استمر;
 
-      if (sizeof base16_to_int <= c || base16_to_int[c] < 0)
+      إذا (حجم base16_منزل_int <= c || base16_منزل_int[c] < 0)
         {
-          *outlen = out - out0;
-          return false; /* garbage - return false */
+          *outlen = بهر - out0;
+          أرجع false; /* garbage - return false */
         }
 
-      if (nibble < 0)
-        nibble = base16_to_int[c];
-      else
+      إذا (nibble < 0)
+        nibble = base16_منزل_int[c];
+      وإلا
         {
           /* have both nibbles, write octet */
-          *out++ = (nibble << 4) + base16_to_int[c];
+          *بهر++ = (nibble << 4) + base16_منزل_int[c];
           nibble = -1;
         }
     }
 
   ctx->ctx.base16.nibble = nibble;
-  *outlen = out - out0;
-  return true;
+  *outlen = بهر - out0;
+  أرجع true;
 }
 
 
 
-ATTRIBUTE_PURE
-static idx_t
-z85_length (idx_t len)
+ATTRIBUTE_خالص
+ساكن idx_t
+z85_اوږدتیا (idx_t len)
 {
   /* Z85 does not allow padding, so no need to round to highest integer.  */
   idx_t z85_len = (len * 5) / 4;
   affirm (0 <= z85_len);
-  return z85_len;
+  أرجع z85_len;
 }
 
-static bool
-isuz85 (unsigned char ch)
+ساكن bool
+isuz85 (بینښه حرف ch)
 {
-  return c_isalnum (ch) || strchr (".-:+=^!/*?&<>()[]{}@%$#", ch) != NULL;
+  أرجع c_isalnum (ch) || strchr (".-:+=^!/*?&<>()[]{}@%$#", ch) != عدم;
 }
 
-static char const z85_encoding[85] ATTRIBUTE_NONSTRING =
+ساكن حرف ثابت z85_encoding[85] ATTRIBUTE_NONSTRING =
   "0123456789"
   "abcdefghijklmnopqrstuvwxyz"
   "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
   ".-:+=^!/*?&<>()[]{}@%$#";
 
-static void
-z85_encode (char const *restrict in, idx_t inlen,
-            char *restrict out, idx_t outlen)
+ساكن فراغ
+z85_encode (حرف ثابت *محدود دننه, idx_t inlen,
+            حرف *محدود بهر, idx_t outlen)
 {
-  int i = 0;
-  unsigned char quad[4];
+  صحيح i = 0;
+  بینښه حرف quad[4];
   idx_t outidx = 0;
 
-  while (true)
+  طالما (true)
     {
-      if (inlen == 0)
+      إذا (inlen == 0)
         {
           /* no more input, exactly on 4 octet boundary. */
-          if (i == 0)
-            return;
+          إذا (i == 0)
+            أرجع;
 
           /* currently, there's no way to return an error in encoding.  */
           error (EXIT_FAILURE, 0,
                  _("invalid input (length must be multiple of 4 characters)"));
         }
-      else
+      وإلا
         {
-          quad[i++] = *in++;
+          quad[i++] = *دننه++;
           --inlen;
         }
 
       /* Got a quad, encode it */
-      if (i == 4)
+      إذا (i == 4)
         {
           int_fast64_t val = quad[0];
           val = (val << 24) + (quad[1] << 16) + (quad[2] << 8) + quad[3];
 
-          for (int j = 4; j >= 0; --j)
+          لكل (صحيح j = 4; j >= 0; --j)
             {
-              int c = val % 85;
+              صحيح c = val % 85;
               val /= 85;
 
               /* NOTE: if there is padding (which is trimmed by z85
                  before outputting the result), the output buffer 'out'
                  might not include enough allocated bytes for the padding,
                  so don't store them. */
-              if (outidx + j < outlen)
-                out[j] = z85_encoding[c];
+              إذا (outidx + j < outlen)
+                بهر[j] = z85_encoding[c];
             }
-          out += 5;
+          بهر += 5;
           outidx += 5;
           i = 0;
         }
     }
 }
 
-static void
-z85_decode_ctx_init (struct base_decode_context *ctx)
+ساكن فراغ
+z85_decode_ctx_init (بنية بنسټ_decode_context *ctx)
 {
   init_inbuf (ctx);
   ctx->ctx.z85.i = 0;
 }
 
 
-# define Z85_LO_CTX_TO_32BIT_VAL(ctx) \
+# define Z85_LO_CTX_منزل_32_بټ_VAL(ctx) \
   (((ctx)->ctx.z85.octets[1] * 85 * 85 * 85) +      \
    ((ctx)->ctx.z85.octets[2] * 85 * 85) +	    \
    ((ctx)->ctx.z85.octets[3] * 85) +		    \
    ((ctx)->ctx.z85.octets[4]))
 
 
-# define Z85_HI_CTX_TO_32BIT_VAL(ctx) \
+# define Z85_HI_CTX_منزل_32_بټ_VAL(ctx) \
   ((int_fast64_t) (ctx)->ctx.z85.octets[0] * 85 * 85 * 85 * 85 )
 
 /*
@@ -937,7 +937,7 @@ z85_decode_ctx_init (struct base_decode_context *ctx)
  70 - 79:  * ? & < > ( ) [ ] {
  80 - 84:  } @ % $ #
 */
-static signed char const z85_decoding[93] = {
+ساكن نښهدار حرف ثابت z85_decoding[93] = {
   68, -1,  84,  83, 82,  72, -1,               /* ! " # $ % & ' */
   75, 76,  70,  65, -1,  63, 62, 69,           /* ( ) * + , - . / */
   0,  1,   2,   3,  4,   5,  6,   7,  8,  9,   /* '0' to '9' */
@@ -952,232 +952,232 @@ static signed char const z85_decoding[93] = {
   79, -1,  80                                  /* { | } */
 };
 
-static bool
-z85_decode_ctx (struct base_decode_context *ctx,
-                char const *restrict in, idx_t inlen,
-                char *restrict out, idx_t *outlen)
+ساكن bool
+z85_decode_ctx (بنية بنسټ_decode_context *ctx,
+                حرف ثابت *محدود دننه, idx_t inlen,
+                حرف *محدود بهر, idx_t *outlen)
 {
-  bool ignore_lines = true;  /* for now, always ignore them */
+  bool ignore_کرښې = true;  /* for now, always ignore them */
 
   *outlen = 0;
 
   /* inlen==0 is request to flush output.
      if there are dangling values - we are missing entries,
      so return false - indicating an invalid input.  */
-  if (inlen == 0)
+  إذا (inlen == 0)
     {
-      if (ctx->ctx.z85.i > 0)
+      إذا (ctx->ctx.z85.i > 0)
         {
           /* Z85 variant does not allow padding - input must
              be a multiple of 5 - so return error.  */
-          return false;
+          أرجع false;
         }
-      return true;
+      أرجع true;
     }
 
-  while (inlen--)
+  طالما (inlen--)
     {
-      if (ignore_lines && *in == '\n')
+      إذا (ignore_کرښې && *دننه == '\n')
         {
-          ++in;
-          continue;
+          ++دننه;
+          استمر;
         }
 
       /* z85 decoding */
-      unsigned char c = *in;
+      بینښه حرف c = *دننه;
 
-      if (c >= 33 && c <= 125)
+      إذا (c >= 33 && c <= 125)
         {
-          signed char ch = z85_decoding[c - 33];
-          if (ch < 0)
-            return false; /* garbage - return false */
+          نښهدار حرف ch = z85_decoding[c - 33];
+          إذا (ch < 0)
+            أرجع false; /* garbage - return false */
           c = ch;
         }
-      else
-        return false; /* garbage - return false */
+      وإلا
+        أرجع false; /* garbage - return false */
 
-      ++in;
+      ++دننه;
 
       ctx->ctx.z85.octets[ctx->ctx.z85.i++] = c;
-      if (ctx->ctx.z85.i == 5)
+      إذا (ctx->ctx.z85.i == 5)
         {
           /* decode the lowest 4 octets, then check for overflows.  */
-          int_fast64_t val = Z85_LO_CTX_TO_32BIT_VAL (ctx);
+          int_fast64_t val = Z85_LO_CTX_منزل_32_بټ_VAL (ctx);
 
           /* The Z85 spec and the reference implementation say nothing
              about overflows. To be on the safe side, reject them.  */
 
-          val += Z85_HI_CTX_TO_32BIT_VAL (ctx);
-          if ((val >> 24) & ~0xFF)
-            return false;
+          val += Z85_HI_CTX_منزل_32_بټ_VAL (ctx);
+          إذا ((val >> 24) & ~0xFF)
+            أرجع false;
 
-          *out++ = val >> 24;
-          *out++ = (val >> 16) & 0xFF;
-          *out++ = (val >> 8) & 0xFF;
-          *out++ = val & 0xFF;
+          *بهر++ = val >> 24;
+          *بهر++ = (val >> 16) & 0xFF;
+          *بهر++ = (val >> 8) & 0xFF;
+          *بهر++ = val & 0xFF;
 
           *outlen += 4;
 
           ctx->ctx.z85.i = 0;
         }
     }
-  return true;
+  أرجع true;
 }
 
 
-inline static bool
-isubase2 (unsigned char ch)
+مضمن ساكن bool
+isubase2 (بینښه حرف ch)
 {
-  return ch == '0' || ch == '1';
+  أرجع ch == '0' || ch == '1';
 }
 
-static idx_t
-base2_length (idx_t len)
+ساكن idx_t
+base2_اوږدتیا (idx_t len)
 {
-  return len * 8;
+  أرجع len * 8;
 }
 
 
-inline static void
-base2msbf_encode (char const *restrict in, idx_t inlen,
-                  char *restrict out, idx_t outlen)
+مضمن ساكن فراغ
+base2msbf_encode (حرف ثابت *محدود دننه, idx_t inlen,
+                  حرف *محدود بهر, idx_t outlen)
 {
-  while (inlen && outlen)
+  طالما (inlen && outlen)
     {
-      unsigned char c = *in;
-      for (int i = 0; i < 8; i++)
+      بینښه حرف c = *دننه;
+      لكل (صحيح i = 0; i < 8; i++)
         {
-          *out++ = c & 0x80 ? '1' : '0';
+          *بهر++ = c & 0x80 ? '1' : '0';
           c <<= 1;
         }
       inlen--;
       outlen -= 8;
-      ++in;
+      ++دننه;
     }
 }
 
-inline static void
-base2lsbf_encode (char const *restrict in, idx_t inlen,
-                  char *restrict out, idx_t outlen)
+مضمن ساكن فراغ
+base2lsbf_encode (حرف ثابت *محدود دننه, idx_t inlen,
+                  حرف *محدود بهر, idx_t outlen)
 {
-  while (inlen && outlen)
+  طالما (inlen && outlen)
     {
-      unsigned char c = *in;
-      for (int i = 0; i < 8; i++)
+      بینښه حرف c = *دننه;
+      لكل (صحيح i = 0; i < 8; i++)
         {
-          *out++ = c & 0x01 ? '1' : '0';
+          *بهر++ = c & 0x01 ? '1' : '0';
           c >>= 1;
         }
       inlen--;
       outlen -= 8;
-      ++in;
+      ++دننه;
     }
 }
 
 
-static void
-base2_decode_ctx_init (struct base_decode_context *ctx)
+ساكن فراغ
+base2_decode_ctx_init (بنية بنسټ_decode_context *ctx)
 {
   init_inbuf (ctx);
   ctx->ctx.base2.octet = 0;
-  ctx->ctx.base2.bit_pos = 0;
+  ctx->ctx.base2.بټ_pos = 0;
 }
 
 
-static bool
-base2lsbf_decode_ctx (struct base_decode_context *ctx,
-                      char const *restrict in, idx_t inlen,
-                      char *restrict out, idx_t *outlen)
+ساكن bool
+base2lsbf_decode_ctx (بنية بنسټ_decode_context *ctx,
+                      حرف ثابت *محدود دننه, idx_t inlen,
+                      حرف *محدود بهر, idx_t *outlen)
 {
-  bool ignore_lines = true;  /* for now, always ignore them */
+  bool ignore_کرښې = true;  /* for now, always ignore them */
 
   *outlen = 0;
 
   /* inlen==0 is request to flush output.
      if there is a dangling bit - we are missing some bits,
      so return false - indicating an invalid input.  */
-  if (inlen == 0)
-    return ctx->ctx.base2.bit_pos == 0;
+  إذا (inlen == 0)
+    أرجع ctx->ctx.base2.بټ_pos == 0;
 
-  while (inlen--)
+  طالما (inlen--)
     {
-      if (ignore_lines && *in == '\n')
+      إذا (ignore_کرښې && *دننه == '\n')
         {
-          ++in;
-          continue;
+          ++دننه;
+          استمر;
         }
 
-      if (!isubase2 (*in))
-        return false;
+      إذا (!isubase2 (*دننه))
+        أرجع false;
 
-      bool bit = (*in == '1');
-      ctx->ctx.base2.octet |= bit << ctx->ctx.base2.bit_pos;
-      ++ctx->ctx.base2.bit_pos;
+      bool بټ = (*دننه == '1');
+      ctx->ctx.base2.octet |= بټ << ctx->ctx.base2.بټ_pos;
+      ++ctx->ctx.base2.بټ_pos;
 
-      if (ctx->ctx.base2.bit_pos == 8)
+      إذا (ctx->ctx.base2.بټ_pos == 8)
         {
-          *out++ = ctx->ctx.base2.octet;
+          *بهر++ = ctx->ctx.base2.octet;
           ctx->ctx.base2.octet = 0;
           ++*outlen;
-          ctx->ctx.base2.bit_pos = 0;
+          ctx->ctx.base2.بټ_pos = 0;
         }
 
-      ++in;
+      ++دننه;
     }
 
-  return true;
+  أرجع true;
 }
 
-static bool
-base2msbf_decode_ctx (struct base_decode_context *ctx,
-                      char const *restrict in, idx_t inlen,
-                      char *restrict out, idx_t *outlen)
+ساكن bool
+base2msbf_decode_ctx (بنية بنسټ_decode_context *ctx,
+                      حرف ثابت *محدود دننه, idx_t inlen,
+                      حرف *محدود بهر, idx_t *outlen)
 {
-  bool ignore_lines = true;  /* for now, always ignore them */
+  bool ignore_کرښې = true;  /* for now, always ignore them */
 
   *outlen = 0;
 
   /* inlen==0 is request to flush output.
      if there is a dangling bit - we are missing some bits,
      so return false - indicating an invalid input.  */
-  if (inlen == 0)
-    return ctx->ctx.base2.bit_pos == 0;
+  إذا (inlen == 0)
+    أرجع ctx->ctx.base2.بټ_pos == 0;
 
-  while (inlen--)
+  طالما (inlen--)
     {
-      if (ignore_lines && *in == '\n')
+      إذا (ignore_کرښې && *دننه == '\n')
         {
-          ++in;
-          continue;
+          ++دننه;
+          استمر;
         }
 
-      if (!isubase2 (*in))
-        return false;
+      إذا (!isubase2 (*دننه))
+        أرجع false;
 
-      bool bit = (*in == '1');
-      if (ctx->ctx.base2.bit_pos == 0)
-        ctx->ctx.base2.bit_pos = 8;
-      --ctx->ctx.base2.bit_pos;
-      ctx->ctx.base2.octet |= bit << ctx->ctx.base2.bit_pos;
+      bool بټ = (*دننه == '1');
+      إذا (ctx->ctx.base2.بټ_pos == 0)
+        ctx->ctx.base2.بټ_pos = 8;
+      --ctx->ctx.base2.بټ_pos;
+      ctx->ctx.base2.octet |= بټ << ctx->ctx.base2.بټ_pos;
 
-      if (ctx->ctx.base2.bit_pos == 0)
+      إذا (ctx->ctx.base2.بټ_pos == 0)
         {
-          *out++ = ctx->ctx.base2.octet;
+          *بهر++ = ctx->ctx.base2.octet;
           ctx->ctx.base2.octet = 0;
           ++*outlen;
         }
 
-      ++in;
+      ++دننه;
     }
 
-  return true;
+  أرجع true;
 }
 
 /* Map from GMP (up to base 62):
    "0123456789 ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuv";
    to base 58:
    "123456789A BCDEFGHJKLMNPQRSTUVWXYZabc defghijkmnopqrstuvwxyz";  */
-static signed char const gmp_to_base58[256] = {
+ساكن نښهدار حرف ثابت gmp_منزل_base58[256] = {
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -1196,7 +1196,7 @@ static signed char const gmp_to_base58[256] = {
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1
 };
 
-static signed char const base58_to_gmp[256] = {
+ساكن نښهدار حرف ثابت base58_منزل_gmp[256] = {
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -1215,16 +1215,16 @@ static signed char const base58_to_gmp[256] = {
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1
 };
 
-static bool
-isubase58 (unsigned char ch)
+ساكن bool
+isubase58 (بینښه حرف ch)
 {
-  return ch < sizeof base58_to_gmp && 0 <= base58_to_gmp[ch];
+  أرجع ch < حجم base58_منزل_gmp && 0 <= base58_منزل_gmp[ch];
 }
 
 
-ATTRIBUTE_PURE
-static idx_t
-base58_length (idx_t len)
+ATTRIBUTE_خالص
+ساكن idx_t
+base58_اوږدتیا (idx_t len)
 {
   /* Base58 output length is approximately log(256)/log(58),
      which is approximately len * 138 / 100,
@@ -1232,605 +1232,605 @@ base58_length (idx_t len)
      +1 to ensure we've enough place for NUL  */
   idx_t base58_len = ((len + 99) / 100) * 138 + 1;
   affirm (0 < base58_len);
-  return base58_len;
+  أرجع base58_len;
 }
 
 
-static void
-base58_encode_ctx_init (struct base_encode_context *ctx)
+ساكن فراغ
+base58_encode_ctx_init (بنية بنسټ_encode_context *ctx)
 {
-  ctx->ctx.base58.buf = NULL;
-  ctx->ctx.base58.size = 0;
-  ctx->ctx.base58.capacity = 0;
+  ctx->ctx.base58.buf = عدم;
+  ctx->ctx.base58.اندازه = 0;
+  ctx->ctx.base58.ظرفیت = 0;
 }
 
 
-static bool
-base58_encode_ctx (struct base_encode_context *ctx,
-                   char const *restrict in, idx_t inlen,
-                   MAYBE_UNUSED char *restrict out, idx_t *outlen)
+ساكن bool
+base58_encode_ctx (بنية بنسټ_encode_context *ctx,
+                   حرف ثابت *محدود دننه, idx_t inlen,
+                   MAYBE_ناکارول_شوی حرف *محدود بهر, idx_t *outlen)
 {
   *outlen = 0;   /* Only accumulate input in this function.  */
 
-  if (inlen == 0)
-    return true;
+  إذا (inlen == 0)
+    أرجع true;
 
-  idx_t free_space = ctx->ctx.base58.capacity - ctx->ctx.base58.size;
-  if (free_space < inlen)
+  idx_t free_space = ctx->ctx.base58.ظرفیت - ctx->ctx.base58.اندازه;
+  إذا (free_space < inlen)
     {
       ctx->ctx.base58.buf = xpalloc (ctx->ctx.base58.buf,
-                                     &ctx->ctx.base58.capacity,
+                                     &ctx->ctx.base58.ظرفیت,
                                      inlen - free_space,
-                                     -1, sizeof *ctx->ctx.base58.buf);
+                                     -1, حجم *ctx->ctx.base58.buf);
     }
 
-  memcpy (ctx->ctx.base58.buf + ctx->ctx.base58.size, in, inlen);
-  ctx->ctx.base58.size += inlen;
+  حافظه_نقل (ctx->ctx.base58.buf + ctx->ctx.base58.اندازه, دننه, inlen);
+  ctx->ctx.base58.اندازه += inlen;
 
-  return true;
+  أرجع true;
 }
 
-static void
-base58_encode (char const *data, size_t data_len,
-               char *out, idx_t *outlen)
+ساكن فراغ
+base58_encode (حرف ثابت *معلومات, size_t معلومات_len,
+               حرف *بهر, idx_t *outlen)
 {
-  affirm (base_length (data_len) <= *outlen);
+  affirm (بنسټ_اوږدتیا_2 (معلومات_len) <= *outlen);
 
   size_t zeros = 0;
-  while (zeros < data_len && data[zeros] == 0)
+  طالما (zeros < معلومات_len && معلومات[zeros] == 0)
     zeros++;
 
-  memset (out, '1', zeros);
-  char *p = out + zeros;
+  memset (بهر, '1', zeros);
+  حرف *p = بهر + zeros;
 
   /* Use GMP to convert from base 256 to base 58.  */
-  mpz_t num;
-  mpz_init (num);
-  if (data_len - zeros)
+  mpz_t عدد;
+  mpz_init (عدد);
+  إذا (معلومات_len - zeros)
     {
-      mpz_import (num, data_len - zeros, 1, 1, 0, 0, data + zeros);
-      for (p = mpz_get_str (p, 58, num); *p; p++)
-        *p = gmp_to_base58[to_uchar (*p)];
+      mpz_import (عدد, معلومات_len - zeros, 1, 1, 0, 0, معلومات + zeros);
+      لكل (p = mpz_get_str (p, 58, عدد); *p; p++)
+        *p = gmp_منزل_base58[منزل_uchar (*p)];
     }
-  mpz_clear (num);
+  mpz_clear (عدد);
 
-  *outlen = p - out;
+  *outlen = p - بهر;
 }
 
 
-static bool
-base58_encode_ctx_finalize (struct base_encode_context *ctx,
-                            char *restrict *out, idx_t *outlen)
+ساكن bool
+base58_encode_ctx_finalize (بنية بنسټ_encode_context *ctx,
+                            حرف *محدود *بهر, idx_t *outlen)
 {
   /* Ensure output buffer is large enough.  */
-  idx_t max_outlen = base_length (ctx->ctx.base58.size);
-  if (max_outlen > *outlen)
+  idx_t max_outlen = بنسټ_اوږدتیا_2 (ctx->ctx.base58.اندازه);
+  إذا (max_outlen > *outlen)
     {
-      *out = xrealloc (*out, max_outlen);
+      *بهر = xrealloc (*بهر, max_outlen);
       *outlen = max_outlen;
     }
 
-  base58_encode ((char *)ctx->ctx.base58.buf, ctx->ctx.base58.size,
-                 *out, outlen);
+  base58_encode ((حرف *)ctx->ctx.base58.buf, ctx->ctx.base58.اندازه,
+                 *بهر, outlen);
 
-  free (ctx->ctx.base58.buf);
-  ctx->ctx.base58.buf = NULL;
-  ctx->ctx.base58.size = 0;
-  ctx->ctx.base58.capacity = 0;
+  حرر (ctx->ctx.base58.buf);
+  ctx->ctx.base58.buf = عدم;
+  ctx->ctx.base58.اندازه = 0;
+  ctx->ctx.base58.ظرفیت = 0;
 
-  return true;
+  أرجع true;
 }
 
 
-static void
-base58_decode_ctx_init (struct base_decode_context *ctx)
+ساكن فراغ
+base58_decode_ctx_init (بنية بنسټ_decode_context *ctx)
 {
-  ctx->ctx.base58.size = 0;
-  ctx->ctx.base58.capacity = 0;
-  ctx->ctx.base58.buf = NULL;
+  ctx->ctx.base58.اندازه = 0;
+  ctx->ctx.base58.ظرفیت = 0;
+  ctx->ctx.base58.buf = عدم;
 }
 
-static bool
-base58_decode_ctx (struct base_decode_context *ctx,
-                   char const *restrict in, idx_t inlen,
-                   MAYBE_UNUSED char *restrict out, idx_t *outlen)
+ساكن bool
+base58_decode_ctx (بنية بنسټ_decode_context *ctx,
+                   حرف ثابت *محدود دننه, idx_t inlen,
+                   MAYBE_ناکارول_شوی حرف *محدود بهر, idx_t *outlen)
 {
-  bool ignore_lines = true;  /* for now, always ignore them */
+  bool ignore_کرښې = true;  /* for now, always ignore them */
 
   *outlen = 0;   /* Only accumulate input in this function.  */
 
-  if (inlen == 0)
-    return true;
+  إذا (inlen == 0)
+    أرجع true;
 
-  idx_t free_space = ctx->ctx.base58.capacity - ctx->ctx.base58.size;
+  idx_t free_space = ctx->ctx.base58.ظرفیت - ctx->ctx.base58.اندازه;
   free_space -= 1;  /* Ensure we leave space for NUL (for mpz_set_str).  */
-  if (free_space < inlen)
+  إذا (free_space < inlen)
     {
       ctx->ctx.base58.buf = xpalloc (ctx->ctx.base58.buf,
-                                     &ctx->ctx.base58.capacity,
+                                     &ctx->ctx.base58.ظرفیت,
                                      inlen - free_space,
-                                     -1, sizeof *ctx->ctx.base58.buf);
+                                     -1, حجم *ctx->ctx.base58.buf);
     }
 
   /* Accumulate all valid input characters in our buffer.
      Note we don't rely on mpz_set_str() for validation
      as that allows (skips) all whitespace.  */
-  for (idx_t i = 0; i < inlen; i++)
+  لكل (idx_t i = 0; i < inlen; i++)
     {
-      unsigned char c = in[i];
+      بینښه حرف c = دننه[i];
 
-      if (ignore_lines && c == '\n')
-        continue;
+      إذا (ignore_کرښې && c == '\n')
+        استمر;
 
-      if (!isubase58 (c))
-        return false;
+      إذا (!isubase58 (c))
+        أرجع false;
 
-      ctx->ctx.base58.buf[ctx->ctx.base58.size++] = base58_to_gmp[to_uchar (c)];
+      ctx->ctx.base58.buf[ctx->ctx.base58.اندازه++] = base58_منزل_gmp[منزل_uchar (c)];
     }
 
-  return true;
+  أرجع true;
 }
 
 
-static bool
-base58_decode (char const *data, size_t data_len,
-               char *restrict out, idx_t *outlen)
+ساكن bool
+base58_decode (حرف ثابت *معلومات, size_t معلومات_len,
+               حرف *محدود بهر, idx_t *outlen)
 {
-  affirm (data_len <= *outlen);
+  affirm (معلومات_len <= *outlen);
 
   size_t ones = 0;
-  while (ones < data_len && data[ones] == base58_to_gmp['1'])
+  طالما (ones < معلومات_len && معلومات[ones] == base58_منزل_gmp['1'])
     ones++;
 
-  memset (out, 0, ones);
+  memset (بهر, 0, ones);
 
   /* Use GMP to convert from base 58 to base 256.  */
-  mpz_t num;
-  mpz_init (num);
+  mpz_t عدد;
+  mpz_init (عدد);
 
-  if ((data_len - ones) && mpz_set_str (num, data + ones, 58) != 0)
+  إذا ((معلومات_len - ones) && mpz_سېټ_str (عدد, معلومات + ones, 58) != 0)
     {
-      mpz_clear (num);
+      mpz_clear (عدد);
       *outlen = 0;
-      return false;
+      أرجع false;
     }
 
-  size_t exported_size = 0;
-  if (data_len - ones)
+  size_t exported_اندازه = 0;
+  إذا (معلومات_len - ones)
     {
-      size_t binary_size = (mpz_sizeinbase (num, 2) + 7) / 8;
-      affirm (*outlen - ones >= binary_size);
-      mpz_export (out + ones, &exported_size, 1, 1, 0, 0, num);
+      size_t دوګونی_اندازه = (mpz_sizeinbase (عدد, 2) + 7) / 8;
+      affirm (*outlen - ones >= دوګونی_اندازه);
+      mpz_export (بهر + ones, &exported_اندازه, 1, 1, 0, 0, عدد);
     }
 
-  mpz_clear (num);
-  *outlen = ones + exported_size;
-  return true;
+  mpz_clear (عدد);
+  *outlen = ones + exported_اندازه;
+  أرجع true;
 }
 
 
-static bool
-base58_decode_ctx_finalize (struct base_decode_context *ctx,
-                            char *restrict *out, idx_t *outlen)
+ساكن bool
+base58_decode_ctx_finalize (بنية بنسټ_decode_context *ctx,
+                            حرف *محدود *بهر, idx_t *outlen)
 {
   /* Ensure output buffer is large enough.
      Worst case is input is all '1's.  */
-  idx_t max_outlen = ctx->ctx.base58.size;
-  if (max_outlen > *outlen)
+  idx_t max_outlen = ctx->ctx.base58.اندازه;
+  إذا (max_outlen > *outlen)
     {
-      *out = xrealloc (*out, max_outlen);
+      *بهر = xrealloc (*بهر, max_outlen);
       *outlen = max_outlen;
     }
 
   /* Ensure input buffer is NUL terminated (for mpz_get_str).  */
-  if (ctx->ctx.base58.size)
-    ctx->ctx.base58.buf[ctx->ctx.base58.size] = '\0';
+  إذا (ctx->ctx.base58.اندازه)
+    ctx->ctx.base58.buf[ctx->ctx.base58.اندازه] = '\0';
 
-  bool ret = base58_decode ((char *)ctx->ctx.base58.buf, ctx->ctx.base58.size,
-                            *out, outlen);
+  bool ret = base58_decode ((حرف *)ctx->ctx.base58.buf, ctx->ctx.base58.اندازه,
+                            *بهر, outlen);
 
-  free (ctx->ctx.base58.buf);
-  ctx->ctx.base58.buf = NULL;
-  ctx->ctx.base58.size = 0;
-  ctx->ctx.base58.capacity = 0;
+  حرر (ctx->ctx.base58.buf);
+  ctx->ctx.base58.buf = عدم;
+  ctx->ctx.base58.اندازه = 0;
+  ctx->ctx.base58.ظرفیت = 0;
 
-  return ret;
+  أرجع ret;
 }
 
-#endif /* BASE_TYPE == 42, i.e., "basenc"*/
+#د_که_پای /* BASE_TYPE == 42, i.e., "basenc"*/
 
 
 
-static void
-wrap_write (char const *buffer, idx_t len,
-            idx_t wrap_column, idx_t *current_column, FILE *out)
+ساكن فراغ
+wrap_write (حرف ثابت *بفر, idx_t len,
+            idx_t wrap_ستنه, idx_t *current_ستنه, FILE *بهر)
 {
-  if (wrap_column == 0)
+  إذا (wrap_ستنه == 0)
     {
       /* Simple write. */
-      if (fwrite (buffer, 1, len, stdout) < len)
+      إذا (fwrite (بفر, 1, len, stdout) < len)
         write_error ();
     }
-  else
-    for (idx_t written = 0; written < len; )
+  وإلا
+    لكل (idx_t written = 0; written < len; )
       {
-        idx_t to_write = MIN (wrap_column - *current_column, len - written);
+        idx_t منزل_write = MIN (wrap_ستنه - *current_ستنه, len - written);
 
-        if (to_write == 0)
+        إذا (منزل_write == 0)
           {
-            if (fputc ('\n', out) == EOF)
+            إذا (fputc ('\n', بهر) == EOF)
               write_error ();
-            *current_column = 0;
+            *current_ستنه = 0;
           }
-        else
+        وإلا
           {
-            if (fwrite (buffer + written, 1, to_write, stdout) < to_write)
+            إذا (fwrite (بفر + written, 1, منزل_write, stdout) < منزل_write)
               write_error ();
-            *current_column += to_write;
-            written += to_write;
+            *current_ستنه += منزل_write;
+            written += منزل_write;
           }
       }
 }
 
-static _Noreturn void
-finish_and_exit (FILE *in, char const *infile)
+ساكن _Noreturn فراغ
+پای_and_exit (FILE *دننه, حرف ثابت *infile)
 {
-  if (fclose (in) != 0)
+  إذا (fclose (دننه) != 0)
     {
-      if (streq (infile, "-"))
+      إذا (streq (infile, "-"))
         error (EXIT_FAILURE, errno, _("closing standard input"));
-      else
+      وإلا
         error (EXIT_FAILURE, errno, "%s", quotef (infile));
     }
 
-  exit (EXIT_SUCCESS);
+  وتل (EXIT_SUCCESS);
 }
 
-static _Noreturn void
-do_encode (FILE *in, char const *infile, FILE *out, idx_t wrap_column)
+ساكن _Noreturn فراغ
+do_encode (FILE *دننه, حرف ثابت *infile, FILE *بهر, idx_t wrap_ستنه)
 {
-  idx_t current_column = 0;
-  char *inbuf, *outbuf;
-  idx_t sum;
+  idx_t current_ستنه = 0;
+  حرف *inbuf, *outbuf;
+  idx_t مجموعه;
 
   inbuf = xmalloc (ENC_BLOCKSIZE);
-  outbuf = xmalloc (BASE_LENGTH (ENC_BLOCKSIZE));
+  outbuf = xmalloc (بنسټ_اوږدتیا (ENC_BLOCKSIZE));
 
-#if BASE_TYPE == 42
+#إذا بنسټ_TYPE == 42
   /* Initialize encoding context if needed (for base58) */
-  struct base_encode_context encode_ctx;
-  bool use_ctx = (base_encode_ctx_init != NULL);
-  if (use_ctx)
-    base_encode_ctx_init (&encode_ctx);
-#endif
+  بنية بنسټ_encode_context encode_ctx;
+  bool use_ctx = (بنسټ_encode_ctx_init != عدم);
+  إذا (use_ctx)
+    بنسټ_encode_ctx_init (&encode_ctx);
+#د_که_پای
 
-  do
+  افعل
     {
       idx_t n;
 
-      sum = 0;
-      do
+      مجموعه = 0;
+      افعل
         {
-          n = fread (inbuf + sum, 1, ENC_BLOCKSIZE - sum, in);
-          sum += n;
+          n = fread (inbuf + مجموعه, 1, ENC_BLOCKSIZE - مجموعه, دننه);
+          مجموعه += n;
         }
-      while (!feof (in) && !ferror (in) && sum < ENC_BLOCKSIZE);
+      طالما (!feof (دننه) && !ferror (دننه) && مجموعه < ENC_BLOCKSIZE);
 
-      if (sum > 0)
+      إذا (مجموعه > 0)
         {
-#if BASE_TYPE == 42
-          if (use_ctx)
+#إذا بنسټ_TYPE == 42
+          إذا (use_ctx)
             {
               idx_t outlen = 0;
-              base_encode_ctx (&encode_ctx, inbuf, sum, outbuf, &outlen);
+              بنسټ_encode_ctx (&encode_ctx, inbuf, مجموعه, outbuf, &outlen);
 
-              wrap_write (outbuf, outlen, wrap_column, &current_column, out);
+              wrap_write (outbuf, outlen, wrap_ستنه, &current_ستنه, بهر);
             }
-          else
-#endif
+          وإلا
+#د_که_پای
             {
               /* Process input one block at a time.  Note that ENC_BLOCKSIZE
                  is sized so that no pad chars will appear in output. */
-              base_encode (inbuf, sum, outbuf, BASE_LENGTH (sum));
+              بنسټ_encode (inbuf, مجموعه, outbuf, بنسټ_اوږدتیا (مجموعه));
 
-              wrap_write (outbuf, BASE_LENGTH (sum), wrap_column,
-                          &current_column, out);
+              wrap_write (outbuf, بنسټ_اوږدتیا (مجموعه), wrap_ستنه,
+                          &current_ستنه, بهر);
             }
         }
     }
-  while (!feof (in) && !ferror (in) && sum == ENC_BLOCKSIZE);
+  طالما (!feof (دننه) && !ferror (دننه) && مجموعه == ENC_BLOCKSIZE);
 
-#if BASE_TYPE == 42
-  if (use_ctx && base_encode_ctx_finalize)
+#إذا بنسټ_TYPE == 42
+  إذا (use_ctx && بنسټ_encode_ctx_finalize)
     {
-      idx_t outlen = BASE_LENGTH (ENC_BLOCKSIZE);
-      base_encode_ctx_finalize (&encode_ctx, &outbuf, &outlen);
+      idx_t outlen = بنسټ_اوږدتیا (ENC_BLOCKSIZE);
+      بنسټ_encode_ctx_finalize (&encode_ctx, &outbuf, &outlen);
 
-      wrap_write (outbuf, outlen, wrap_column, &current_column, out);
+      wrap_write (outbuf, outlen, wrap_ستنه, &current_ستنه, بهر);
     }
-#endif
+#د_که_پای
 
   /* When wrapping, terminate last line. */
-  if (wrap_column && current_column > 0 && fputc ('\n', out) == EOF)
+  إذا (wrap_ستنه && current_ستنه > 0 && fputc ('\n', بهر) == EOF)
     write_error ();
 
-  if (ferror (in))
+  إذا (ferror (دننه))
     error (EXIT_FAILURE, errno, _("read error"));
 
-  finish_and_exit (in, infile);
+  پای_and_exit (دننه, infile);
 }
 
-static _Noreturn void
-do_decode (FILE *in, char const *infile, FILE *out, bool ignore_garbage)
+ساكن _Noreturn فراغ
+do_decode (FILE *دننه, حرف ثابت *infile, FILE *بهر, bool ignore_garbage)
 {
-  char *inbuf, *outbuf;
-  idx_t sum;
-  struct base_decode_context ctx;
+  حرف *inbuf, *outbuf;
+  idx_t مجموعه;
+  بنية بنسټ_decode_context ctx;
 
-  inbuf = xmalloc (BASE_LENGTH (DEC_BLOCKSIZE));
+  inbuf = xmalloc (بنسټ_اوږدتیا (DEC_BLOCKSIZE));
   outbuf = xmalloc (DEC_BLOCKSIZE);
 
-#if BASE_TYPE == 42
-  ctx.inbuf = NULL;
-#endif
-  base_decode_ctx_init (&ctx);
+#إذا بنسټ_TYPE == 42
+  ctx.inbuf = عدم;
+#د_که_پای
+  بنسټ_decode_ctx_init (&ctx);
 
-  do
+  افعل
     {
       bool ok;
 
-      sum = 0;
-      do
+      مجموعه = 0;
+      افعل
         {
-          idx_t n = fread (inbuf + sum,
-                           1, BASE_LENGTH (DEC_BLOCKSIZE) - sum, in);
+          idx_t n = fread (inbuf + مجموعه,
+                           1, بنسټ_اوږدتیا (DEC_BLOCKSIZE) - مجموعه, دننه);
 
-          if (ignore_garbage)
+          إذا (ignore_garbage)
             {
-              for (idx_t i = 0; n > 0 && i < n;)
+              لكل (idx_t i = 0; n > 0 && i < n;)
                 {
-                  if (isubase (inbuf[sum + i])
-                      || (REQUIRED_PADDING (1) && inbuf[sum + i] == '='))
+                  إذا (isubase (inbuf[مجموعه + i])
+                      || (REQUIRED_PADDING (1) && inbuf[مجموعه + i] == '='))
                     i++;
-                  else
-                    memmove (inbuf + sum + i, inbuf + sum + i + 1, --n - i);
+                  وإلا
+                    memmove (inbuf + مجموعه + i, inbuf + مجموعه + i + 1, --n - i);
                 }
             }
 
-          sum += n;
+          مجموعه += n;
 
-          if (ferror (in))
+          إذا (ferror (دننه))
             error (EXIT_FAILURE, errno, _("read error"));
         }
-      while (sum < BASE_LENGTH (DEC_BLOCKSIZE) && !feof (in));
+      طالما (مجموعه < بنسټ_اوږدتیا (DEC_BLOCKSIZE) && !feof (دننه));
 
-      while (sum || feof (in))
+      طالما (مجموعه || feof (دننه))
         {
           idx_t n = DEC_BLOCKSIZE;
-          if (sum)
-            ok = base_decode_ctx (&ctx, inbuf, sum, outbuf, &n);
-          else
-            ok = base_decode_ctx_finalize (&ctx, &outbuf, &n);
+          إذا (مجموعه)
+            ok = بنسټ_decode_ctx (&ctx, inbuf, مجموعه, outbuf, &n);
+          وإلا
+            ok = بنسټ_decode_ctx_finalize (&ctx, &outbuf, &n);
 
-          if (fwrite (outbuf, 1, n, out) < n)
+          إذا (fwrite (outbuf, 1, n, بهر) < n)
             write_error ();
 
-          if (! ok)
+          إذا (! ok)
             error (EXIT_FAILURE, 0, _("invalid input"));
 
-          if (sum == 0)
-            break;
-          sum = 0;
+          إذا (مجموعه == 0)
+            اكسر;
+          مجموعه = 0;
         }
     }
-  while (!feof (in));
+  طالما (!feof (دننه));
 
-  finish_and_exit (in, infile);
+  پای_and_exit (دننه, infile);
 }
 
-int
-main (int argc, char **argv)
+صحيح
+اصلي (صحيح argc, حرف **argv)
 {
-  int opt;
-  FILE *input_fh;
-  char const *infile;
+  صحيح opt;
+  FILE *ننوت_fh;
+  حرف ثابت *infile;
 
   /* True if --decode has been given and we should decode data. */
   bool decode = false;
   /* True if we should ignore non-base-alphabetic characters. */
   bool ignore_garbage = false;
   /* Wrap encoded data around the 76th column, by default. */
-  idx_t wrap_column = 76;
+  idx_t wrap_ستنه = 76;
 
-#if BASE_TYPE == 42
-  int base_type = 0;
-#endif
+#إذا بنسټ_TYPE == 42
+  صحيح بنسټ_type = 0;
+#د_که_پای
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  سېټ_پروګرام_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while ((opt = getopt_long (argc, argv, "diw:", long_options, NULL)) != -1)
-    switch (opt)
+  طالما ((opt = getopt_long (argc, argv, "diw:", long_options, عدم)) != -1)
+    بدل (opt)
       {
-      case 'd':
+      حالة 'd':
         decode = true;
-        break;
+        اكسر;
 
-      case 'w':
+      حالة 'w':
         {
           intmax_t w;
-          strtol_error s_err = xstrtoimax (optarg, NULL, 10, &w, "");
-          if (LONGINT_OVERFLOW < s_err || w < 0)
+          strtol_error s_err = xstrtoimax (optarg, عدم, 10, &w, "");
+          إذا (LONGINT_ډکېدنه < s_err || w < 0)
             error (EXIT_FAILURE, 0, "%s: %s",
                    _("invalid wrap size"), quote (optarg));
-          wrap_column = s_err == LONGINT_OVERFLOW || IDX_MAX < w ? 0 : w;
+          wrap_ستنه = s_err == LONGINT_ډکېدنه || IDX_MAX < w ? 0 : w;
         }
-        break;
+        اكسر;
 
-      case 'i':
+      حالة 'i':
         ignore_garbage = true;
-        break;
+        اكسر;
 
-#if BASE_TYPE == 42
-      case BASE64_OPTION:
-      case BASE64URL_OPTION:
-      case BASE32_OPTION:
-      case BASE32HEX_OPTION:
-      case BASE16_OPTION:
-      case BASE2MSBF_OPTION:
-      case BASE2LSBF_OPTION:
-      case Z85_OPTION:
-      case BASE58_OPTION:
-        base_type = opt;
-        break;
-#endif
+#إذا بنسټ_TYPE == 42
+      حالة BASE64_OPTION:
+      حالة BASE64URL_OPTION:
+      حالة BASE32_OPTION:
+      حالة BASE32HEX_OPTION:
+      حالة BASE16_OPTION:
+      حالة BASE2MSBF_OPTION:
+      حالة BASE2LSBF_OPTION:
+      حالة Z85_OPTION:
+      حالة BASE58_OPTION:
+        بنسټ_type = opt;
+        اكسر;
+#د_که_پای
 
       case_GETOPT_HELP_CHAR;
 
-      case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+      case_GETOPT_نسخه_CHAR (پروګرام_NAME, AUTHORS);
 
-      default:
+      افتراضي:
         usage (EXIT_FAILURE);
-        break;
+        اكسر;
       }
 
-#if BASE_TYPE == 42
+#إذا بنسټ_TYPE == 42
   required_padding = no_required_padding;
   has_padding = no_padding;
-  get_pending_length = no_pending_length;
-  base_decode_ctx_finalize = decode_ctx_finalize;
+  get_pending_اوږدتیا = no_pending_اوږدتیا;
+  بنسټ_decode_ctx_finalize = decode_ctx_finalize;
 
-  switch (base_type)
+  بدل (بنسټ_type)
     {
-    case BASE64_OPTION:
-      base_length = base64_length_wrapper;
+    حالة BASE64_OPTION:
+      بنسټ_اوږدتیا_2 = base64_اوږدتیا_wrapper;
       required_padding = base64_required_padding;
       has_padding = base64_ctx_has_padding;
-      get_pending_length = base64_ctx_get_pending_length;
+      get_pending_اوږدتیا = base64_ctx_get_pending_اوږدتیا;
       isubase = isubase64;
-      base_encode = base64_encode;
-      base_decode_ctx_init = base64_decode_ctx_init_wrapper;
-      base_decode_ctx = base64_decode_ctx_wrapper;
-      break;
+      بنسټ_encode = base64_encode;
+      بنسټ_decode_ctx_init = base64_decode_ctx_init_wrapper;
+      بنسټ_decode_ctx = base64_decode_ctx_wrapper;
+      اكسر;
 
-    case BASE64URL_OPTION:
-      base_length = base64_length_wrapper;
+    حالة BASE64URL_OPTION:
+      بنسټ_اوږدتیا_2 = base64_اوږدتیا_wrapper;
       required_padding = base64_required_padding;
       has_padding = base64_ctx_has_padding;
-      get_pending_length = base64_ctx_get_pending_length;
+      get_pending_اوږدتیا = base64_ctx_get_pending_اوږدتیا;
       isubase = isubase64url;
-      base_encode = base64url_encode;
-      base_decode_ctx_init = base64url_decode_ctx_init_wrapper;
-      base_decode_ctx = base64url_decode_ctx_wrapper;
-      break;
+      بنسټ_encode = base64url_encode;
+      بنسټ_decode_ctx_init = base64url_decode_ctx_init_wrapper;
+      بنسټ_decode_ctx = base64url_decode_ctx_wrapper;
+      اكسر;
 
-    case BASE32_OPTION:
-      base_length = base32_length_wrapper;
+    حالة BASE32_OPTION:
+      بنسټ_اوږدتیا_2 = base32_اوږدتیا_wrapper;
       required_padding = base32_required_padding;
       has_padding = base32_ctx_has_padding;
-      get_pending_length = base32_ctx_get_pending_length;
+      get_pending_اوږدتیا = base32_ctx_get_pending_اوږدتیا;
       isubase = isubase32;
-      base_encode = base32_encode;
-      base_decode_ctx_init = base32_decode_ctx_init_wrapper;
-      base_decode_ctx = base32_decode_ctx_wrapper;
-      break;
+      بنسټ_encode = base32_encode;
+      بنسټ_decode_ctx_init = base32_decode_ctx_init_wrapper;
+      بنسټ_decode_ctx = base32_decode_ctx_wrapper;
+      اكسر;
 
-    case BASE32HEX_OPTION:
-      base_length = base32_length_wrapper;
+    حالة BASE32HEX_OPTION:
+      بنسټ_اوږدتیا_2 = base32_اوږدتیا_wrapper;
       required_padding = base32_required_padding;
       has_padding = base32_ctx_has_padding;
-      get_pending_length = base32_ctx_get_pending_length;
+      get_pending_اوږدتیا = base32_ctx_get_pending_اوږدتیا;
       isubase = isubase32hex;
-      base_encode = base32hex_encode;
-      base_decode_ctx_init = base32hex_decode_ctx_init_wrapper;
-      base_decode_ctx = base32hex_decode_ctx_wrapper;
-      break;
+      بنسټ_encode = base32hex_encode;
+      بنسټ_decode_ctx_init = base32hex_decode_ctx_init_wrapper;
+      بنسټ_decode_ctx = base32hex_decode_ctx_wrapper;
+      اكسر;
 
-    case BASE16_OPTION:
-      base_length = base16_length;
-      get_pending_length = base16_ctx_get_pending_length;
+    حالة BASE16_OPTION:
+      بنسټ_اوږدتیا_2 = base16_اوږدتیا;
+      get_pending_اوږدتیا = base16_ctx_get_pending_اوږدتیا;
       isubase = isubase16;
-      base_encode = base16_encode;
-      base_decode_ctx_init = base16_decode_ctx_init;
-      base_decode_ctx = base16_decode_ctx;
-      break;
+      بنسټ_encode = base16_encode;
+      بنسټ_decode_ctx_init = base16_decode_ctx_init;
+      بنسټ_decode_ctx = base16_decode_ctx;
+      اكسر;
 
-    case BASE2MSBF_OPTION:
-      base_length = base2_length;
-      get_pending_length = base2_ctx_get_pending_length;
+    حالة BASE2MSBF_OPTION:
+      بنسټ_اوږدتیا_2 = base2_اوږدتیا;
+      get_pending_اوږدتیا = base2_ctx_get_pending_اوږدتیا;
       isubase = isubase2;
-      base_encode = base2msbf_encode;
-      base_decode_ctx_init = base2_decode_ctx_init;
-      base_decode_ctx = base2msbf_decode_ctx;
-      break;
+      بنسټ_encode = base2msbf_encode;
+      بنسټ_decode_ctx_init = base2_decode_ctx_init;
+      بنسټ_decode_ctx = base2msbf_decode_ctx;
+      اكسر;
 
-    case BASE2LSBF_OPTION:
-      base_length = base2_length;
-      get_pending_length = base2_ctx_get_pending_length;
+    حالة BASE2LSBF_OPTION:
+      بنسټ_اوږدتیا_2 = base2_اوږدتیا;
+      get_pending_اوږدتیا = base2_ctx_get_pending_اوږدتیا;
       isubase = isubase2;
-      base_encode = base2lsbf_encode;
-      base_decode_ctx_init = base2_decode_ctx_init;
-      base_decode_ctx = base2lsbf_decode_ctx;
-      break;
+      بنسټ_encode = base2lsbf_encode;
+      بنسټ_decode_ctx_init = base2_decode_ctx_init;
+      بنسټ_decode_ctx = base2lsbf_decode_ctx;
+      اكسر;
 
-    case Z85_OPTION:
-      base_length = z85_length;
-      get_pending_length = z85_ctx_get_pending_length;
+    حالة Z85_OPTION:
+      بنسټ_اوږدتیا_2 = z85_اوږدتیا;
+      get_pending_اوږدتیا = z85_ctx_get_pending_اوږدتیا;
       isubase = isuz85;
-      base_encode = z85_encode;
-      base_decode_ctx_init = z85_decode_ctx_init;
-      base_decode_ctx = z85_decode_ctx;
-      break;
+      بنسټ_encode = z85_encode;
+      بنسټ_decode_ctx_init = z85_decode_ctx_init;
+      بنسټ_decode_ctx = z85_decode_ctx;
+      اكسر;
 
-    case BASE58_OPTION:
-      base_length = base58_length;
+    حالة BASE58_OPTION:
+      بنسټ_اوږدتیا_2 = base58_اوږدتیا;
       isubase = isubase58;
-      base_encode_ctx_init = base58_encode_ctx_init;
-      base_encode_ctx = base58_encode_ctx;
-      base_encode_ctx_finalize = base58_encode_ctx_finalize;
-      base_decode_ctx_init = base58_decode_ctx_init;
-      base_decode_ctx = base58_decode_ctx;
-      base_decode_ctx_finalize = base58_decode_ctx_finalize;
-      break;
+      بنسټ_encode_ctx_init = base58_encode_ctx_init;
+      بنسټ_encode_ctx = base58_encode_ctx;
+      بنسټ_encode_ctx_finalize = base58_encode_ctx_finalize;
+      بنسټ_decode_ctx_init = base58_decode_ctx_init;
+      بنسټ_decode_ctx = base58_decode_ctx;
+      بنسټ_decode_ctx_finalize = base58_decode_ctx_finalize;
+      اكسر;
 
-    default:
+    افتراضي:
       error (0, 0, _("missing encoding type"));
       usage (EXIT_FAILURE);
     }
-#endif
+#د_که_پای
 
-  if (argc - optind > 1)
+  إذا (argc - optind > 1)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind + 1]));
       usage (EXIT_FAILURE);
     }
 
-  if (optind < argc)
+  إذا (optind < argc)
     infile = argv[optind];
-  else
+  وإلا
     infile = "-";
 
-  if (streq (infile, "-"))
+  إذا (streq (infile, "-"))
     {
-      xset_binary_mode (STDIN_FILENO, O_BINARY);
-      input_fh = stdin;
+      xset_دوګونی_ډېرپېښ (STDIN_FILENO, O_دوګونی);
+      ننوت_fh = stdin;
     }
-  else
+  وإلا
     {
-      input_fh = fopen (infile, "rb");
-      if (input_fh == NULL)
+      ننوت_fh = fopen (infile, "rb");
+      إذا (ننوت_fh == عدم)
         error (EXIT_FAILURE, errno, "%s", quotef (infile));
     }
 
-  fadvise (input_fh, FADVISE_SEQUENTIAL);
+  fadvise (ننوت_fh, FADVISE_SEQUENTIAL);
 
-  if (decode)
-    do_decode (input_fh, infile, stdout, ignore_garbage);
-  else
-    do_encode (input_fh, infile, stdout, wrap_column);
+  إذا (decode)
+    do_decode (ننوت_fh, infile, stdout, ignore_garbage);
+  وإلا
+    do_encode (ننوت_fh, infile, stdout, wrap_ستنه);
 }

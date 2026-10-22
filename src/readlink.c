@@ -16,76 +16,76 @@
 
 /* Written by Dmitry V. Levin */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#ضمن <config.h>
+#ضمن <stdio.h>
+#ضمن <getopt.h>
+#ضمن <sys/types.h>
 
-#include "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
-#include "system.h"
-#include "canonicalize.h"
-#include "areadlink.h"
+#ضمن "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
+#ضمن "system.h"
+#ضمن "canonicalize.h"
+#ضمن "areadlink.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "readlink"
+#تعریف_کړه پروګرام_NAME "readlink"
 
-#define AUTHORS proper_name ("Dmitry V. Levin")
+#تعریف_کړه AUTHORS proper_name ("Dmitry V. Levin")
 
 /* If true, do not output the trailing newline.  */
-static bool no_newline;
+ساكن bool no_newline;
 
 /* If true, report error messages.  */
-static bool verbose;
+ساكن bool verbose;
 
 /* If true, quote output according to the selected quoting style.  */
-static bool quote_output;
+ساكن bool quote_output;
 
-static struct option const longopts[] =
+ساكن بنية option ثابت longopts[] =
 {
-  {"canonicalize", no_argument, NULL, 'f'},
-  {"canonicalize-existing", no_argument, NULL, 'e'},
-  {"canonicalize-missing", no_argument, NULL, 'm'},
-  {"no-newline", no_argument, NULL, 'n'},
-  {"quiet", no_argument, NULL, 'q'},
-  {"silent", no_argument, NULL, 's'},
-  {"verbose", no_argument, NULL, 'v'},
-  {"zero", no_argument, NULL, 'z'},
+  {"canonicalize", no_دلیل, عدم, 'f'},
+  {"canonicalize-existing", no_دلیل, عدم, 'e'},
+  {"canonicalize-missing", no_دلیل, عدم, 'm'},
+  {"no-newline", no_دلیل, عدم, 'n'},
+  {"quiet", no_دلیل, عدم, 'q'},
+  {"silent", no_دلیل, عدم, 's'},
+  {"verbose", no_دلیل, عدم, 'v'},
+  {"zero", no_دلیل, عدم, 'z'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_نسخه_OPTION_DECL},
+  {عدم, 0, عدم, 0}
 };
 
-void
-usage (int status)
+فراغ
+usage (صحيح حالت)
 {
-  if (status != EXIT_SUCCESS)
+  إذا (حالت != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  وإلا
     {
-      printf (_("Usage: %s [OPTION]... FILE...\n"), program_name);
+      چاپ_کړه (_("Usage: %s [OPTION]... FILE...\n"), پروګرام_name);
       fputs (_("Print value of a symbolic link or canonical file name\n\n"),
              stdout);
       oputs (_("\
   -f, --canonicalize\n\
          canonicalize by following every symlink\n\
-         in every component of the given name recursively;\n\
-         all but the last component must exist\n\
+         دننه every component د the given name recursively;\n\
+         all but the وروستی component must exist\n\
 "));
       oputs (_("\
   -e, --canonicalize-existing\n\
          canonicalize by following every symlink\n\
-         in every component of the given name recursively;\n\
+         دننه every component د the given name recursively;\n\
          all components must exist\n\
 "));
       oputs (_("\
   -m, --canonicalize-missing\n\
          canonicalize by following every symlink\n\
-         in every component of the given name recursively,\n\
+         دننه every component د the given name recursively,\n\
          without requirements on components existence\n\
 "));
       oputs (_("\
   -n, --no-newline\n\
-         do not output the trailing delimiter\n\
+         افعل not output the trailing delimiter\n\
 "));
       oputs (_("\
   -q, --quiet\n\
@@ -93,126 +93,126 @@ usage (int status)
       oputs (_("\
   -s, --silent\n\
          suppress most error messages\n\
-         (on by default if POSIXLY_CORRECT is not set)\n\
+         (on by افتراضي إذا POSIXLY_CORRECT is not سېټ_2)\n\
 "));
       oputs (_("\
   -v, --verbose\n\
          report error messages\n\
-         (on by default if POSIXLY_CORRECT is set)\n\
+         (on by افتراضي إذا POSIXLY_CORRECT is سېټ_2)\n\
 "));
       oputs (_("\
   -z, --zero\n\
-         end each output line with NUL, not newline\n\
+         پای_ټکی each output کرښه with NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (نسخه_OPTION_DESCRIPTION);
+      emit_ancillary_info (پروګرام_NAME);
     }
-  exit (status);
+  وتل (حالت);
 }
 
-int
-main (int argc, char **argv)
+صحيح
+اصلي (صحيح argc, حرف **argv)
 {
   /* If not -1, use this method to canonicalize.  */
-  int can_mode = -1;
-  int status = EXIT_SUCCESS;
-  int optc;
+  صحيح can_ډېرپېښ = -1;
+  صحيح حالت = EXIT_SUCCESS;
+  صحيح optc;
   bool use_nuls = false;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  سېټ_پروګرام_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "efmnqsvz", longopts, NULL)) != -1)
+  طالما ((optc = getopt_long (argc, argv, "efmnqsvz", longopts, عدم)) != -1)
     {
-      switch (optc)
+      بدل (optc)
         {
-        case 'e':
-          can_mode = CAN_EXISTING;
-          break;
-        case 'f':
-          can_mode = CAN_ALL_BUT_LAST;
-          break;
-        case 'm':
-          can_mode = CAN_MISSING;
-          break;
-        case 'n':
+        حالة 'e':
+          can_ډېرپېښ = CAN_EXISTING;
+          اكسر;
+        حالة 'f':
+          can_ډېرپېښ = CAN_ALL_BUT_وروستی;
+          اكسر;
+        حالة 'm':
+          can_ډېرپېښ = CAN_MISSING;
+          اكسر;
+        حالة 'n':
           no_newline = true;
-          break;
-        case 'q':
-        case 's':
+          اكسر;
+        حالة 'q':
+        حالة 's':
           verbose = false;
-          break;
-        case 'v':
+          اكسر;
+        حالة 'v':
           verbose = true;
-          break;
-        case 'z':
+          اكسر;
+        حالة 'z':
           use_nuls = true;
-          break;
+          اكسر;
         case_GETOPT_HELP_CHAR;
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        case_GETOPT_نسخه_CHAR (پروګرام_NAME, AUTHORS);
+        افتراضي:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (optind >= argc)
+  إذا (optind >= argc)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
-  if (argc - optind > 1)
+  إذا (argc - optind > 1)
     {
-      if (no_newline)
+      إذا (no_newline)
         error (0, 0, _("ignoring --no-newline with multiple arguments"));
       no_newline = false;
     }
 
-  if (!use_nuls && isatty (STDOUT_FILENO))
+  إذا (!use_nuls && isatty (STDOUT_FILENO))
     {
-      int qs = getenv_quoting_style ();
-      if (qs < 0)
+      صحيح qs = getenv_quoting_style ();
+      إذا (qs < 0)
         qs = shell_escape_quoting_style;
-      if (qs != literal_quoting_style)
+      إذا (qs != literal_quoting_style)
         {
-          set_quoting_style (NULL, qs);
+          سېټ_quoting_style (عدم, qs);
           quote_output = true;
         }
     }
 
   /* POSIX requires a diagnostic message written to standard error and a
      non-zero exit status when given a file that is not a symbolic link.  */
-  if (getenv ("POSIXLY_CORRECT") != NULL)
+  إذا (getenv ("POSIXLY_CORRECT") != عدم)
     verbose = true;
 
-  for (; optind < argc; ++optind)
+  لكل (; optind < argc; ++optind)
     {
-      char const *fname = argv[optind];
-      char *value = (can_mode != -1
-                     ? canonicalize_filename_mode (fname, can_mode)
-                     : areadlink_with_size (fname, 63));
-      if (value)
+      حرف ثابت *fname = argv[optind];
+      حرف *ارزښت = (can_ډېرپېښ != -1
+                     ? canonicalize_filename_ډېرپېښ (fname, can_ډېرپېښ)
+                     : areadlink_with_اندازه (fname, 63));
+      إذا (ارزښت)
         {
-          fputs (quote_output ? quoteN (value) : value, stdout);
-          if (! no_newline)
-            putchar (use_nuls ? '\0' : '\n');
-          free (value);
-          if (ferror (stdout))
+          fputs (quote_output ? quoteN (ارزښت) : ارزښت, stdout);
+          إذا (! no_newline)
+            توری_چاپ_کړه (use_nuls ? '\0' : '\n');
+          حرر (ارزښت);
+          إذا (ferror (stdout))
             write_error ();
         }
-      else
+      وإلا
         {
-          status = EXIT_FAILURE;
-          if (verbose)
+          حالت = EXIT_FAILURE;
+          إذا (verbose)
             error (0, errno, "%s", quotef (fname));
         }
     }
 
-  return status;
+  أرجع حالت;
 }

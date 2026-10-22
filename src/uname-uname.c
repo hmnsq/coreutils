@@ -1,2 +1,2 @@
-#include "uname.h"
-enum uname_modes uname_mode = UNAME_UNAME;
+#ضمن "uname.h"
+تعداد uname_modes uname_ډېرپېښ = UNAME_UNAME;

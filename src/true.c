@@ -14,45 +14,45 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include "system.h"
-#include "true.h"
+#ضمن <config.h>
+#ضمن <stdio.h>
+#ضمن <sys/types.h>
+#ضمن "system.h"
+#ضمن "true.h"
 
-#define EXIT_STATUS (true_mode != TRUE_TRUE)
-#define PROGRAM_NAME (true_mode == TRUE_TRUE ? "true" : "false")
+#تعریف_کړه EXIT_حالت (true_ډېرپېښ != TRUE_TRUE)
+#تعریف_کړه پروګرام_NAME (true_ډېرپېښ == TRUE_TRUE ? "true" : "false")
 
-#define AUTHORS proper_name ("Jim Meyering")
+#تعریف_کړه AUTHORS proper_name ("Jim Meyering")
 
-void
-usage (int status)
+فراغ
+usage (صحيح حالت)
 {
-  printf (_("\
-Usage: %s [ignored command line arguments]\n\
+  چاپ_کړه (_("\
+Usage: %s [ignored command کرښه arguments]\n\
   or:  %s OPTION\n\
 "),
-          program_name, program_name);
-  printf ("%s\n\n",
-          _(EXIT_STATUS == EXIT_SUCCESS
+          پروګرام_name, پروګرام_name);
+  چاپ_کړه ("%s\n\n",
+          _(EXIT_حالت == EXIT_SUCCESS
             ? N_("Exit with a status code indicating success.")
             : N_("Exit with a status code indicating failure.")));
   oputs (HELP_OPTION_DESCRIPTION);
-  oputs (VERSION_OPTION_DESCRIPTION);
-  printf (USAGE_BUILTIN_WARNING, PROGRAM_NAME);
-  emit_ancillary_info (PROGRAM_NAME);
-  exit (status);
+  oputs (نسخه_OPTION_DESCRIPTION);
+  چاپ_کړه (USAGE_BUILTIN_WARNING, پروګرام_NAME);
+  emit_ancillary_info (پروګرام_NAME);
+  وتل (حالت);
 }
 
-int
-main (int argc, char **argv)
+صحيح
+اصلي (صحيح argc, حرف **argv)
 {
   /* Recognize --help or --version only if it's the only command-line
      argument.  */
-  if (argc == 2)
+  إذا (argc == 2)
     {
       initialize_main (&argc, &argv);
-      set_program_name (argv[0]);
+      سېټ_پروګرام_name (argv[0]);
       setlocale (LC_ALL, "");
       bindtextdomain (PACKAGE, LOCALEDIR);
       textdomain (PACKAGE);
@@ -61,13 +61,13 @@ main (int argc, char **argv)
          edge case where writes fail with GNU specific options.  */
       atexit (close_stdout);
 
-      if (streq (argv[1], "--help"))
-        usage (EXIT_STATUS);
+      إذا (streq (argv[1], "--help"))
+        usage (EXIT_حالت);
 
-      if (streq (argv[1], "--version"))
-        version_etc (stdout, PROGRAM_NAME, PACKAGE_NAME, Version, AUTHORS,
-                     (char *) NULL);
+      إذا (streq (argv[1], "--version"))
+        نسخه_etc (stdout, پروګرام_NAME, PACKAGE_NAME, نسخه, AUTHORS,
+                     (حرف *) عدم);
     }
 
-  return EXIT_STATUS;
+  أرجع EXIT_حالت;
 }

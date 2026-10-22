@@ -17,28 +17,28 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with
 this program.  If not, see https://www.gnu.org/licenses/.  */
 
-#include <inttypes.h>
+#ضمن <inttypes.h>
 
-#include <limits.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <errno.h>
+#ضمن <limits.h>
+#ضمن <stdint.h>
+#ضمن <stdio.h>
+#ضمن <string.h>
+#ضمن <stdlib.h>
+#ضمن <errno.h>
 
 /* This program is compiled in a separate directory to avoid linking to Gnulib
    which may be cross-compiled.  Therefore, we also do not have config.h and
    attribute.h.  Just define what we need.  */
-#if 2 < __GNUC__ + (95 <= __GNUC_MINOR__)
+#إذا 2 < __GNUC__ + (95 <= __GNUC_MINOR__)
 # define ATTRIBUTE_CONST __attribute__ ((__const__))
-#else
+#وإلا
 # define ATTRIBUTE_CONST
-#endif
-#if 3 < __GNUC__
+#د_که_پای
+#إذا 3 < __GNUC__
 # define ATTRIBUTE_MALLOC __attribute__ ((__malloc__))
-#else
+#وإلا
 # define ATTRIBUTE_MALLOC
-#endif
+#د_که_پای
 
 
 /* An unsigned type that is no narrower than 32 bits and no narrower
@@ -47,37 +47,37 @@ this program.  If not, see https://www.gnu.org/licenses/.  */
    __int128 works on your platform.  If this heuristic does not work
    for you, please report a bug; in the meantime compile with, e.g.,
    -Dwide_uint='unsigned __int128' to override the heuristic.  */
-#ifndef wide_uint
-# if 4 < __GNUC__ + (6 <= __GNUC_MINOR__) && ULONG_MAX >> 31 >> 31 >> 1 != 0
-typedef unsigned __int128 wide_uint;
-# else
-typedef uintmax_t wide_uint;
+#که_نه_تعریف_شوی wide_uint
+# إذا 4 < __GNUC__ + (6 <= __GNUC_MINOR__) && ULONG_MAX >> 31 >> 31 >> 1 != 0
+تعريفنوع بینښه __int128 wide_uint;
+# وإلا
+تعريفنوع uintmax_t wide_uint;
 # endif
-#endif
+#د_که_پای
 
-struct prime
+بنية اولي
 {
-  unsigned p;
+  بینښه p;
   wide_uint pinv; /* Inverse mod b = 2^{bitsize of wide_uint} */
   wide_uint lim; /* floor ((wide_uint) -1 / p) */
 };
 
 ATTRIBUTE_CONST
-static wide_uint
+ساكن wide_uint
 binvert (wide_uint a)
 {
   wide_uint x = 0xf5397db1 >> (4 * ((a / 2) & 0x7));
-  for (;;)
+  لكل (;;)
     {
       wide_uint y = 2 * x - x * x * a;
-      if (y == x)
-        return x;
+      إذا (y == x)
+        أرجع x;
       x = y;
     }
 }
 
-static void
-process_prime (struct prime *info, unsigned p)
+ساكن فراغ
+process_اولي (بنية اولي *info, بینښه p)
 {
   wide_uint max = -1;
   info->p = p;
@@ -85,163 +85,163 @@ process_prime (struct prime *info, unsigned p)
   info->lim = max / p;
 }
 
-static void
-print_wide_uint (wide_uint n, int nesting, unsigned wide_uint_bits)
+ساكن فراغ
+print_wide_uint (wide_uint n, صحيح nesting, بینښه wide_uint_بټونه)
 {
   /* Number of bits per integer literal.  8 is too many, because
      uintmax_t is 32 bits on some machines so we cannot shift by 32 bits.
      So use 7.  */
-  int hex_digits_per_literal = 7;
-  int bits_per_literal = hex_digits_per_literal * 4;
+  صحيح hex_digits_فی_literal = 7;
+  صحيح بټونه_فی_literal = hex_digits_فی_literal * 4;
 
-  unsigned remainder = n & ((1 << bits_per_literal) - 1);
+  بینښه remainder = n & ((1 << بټونه_فی_literal) - 1);
 
-  if (n != remainder)
+  إذا (n != remainder)
     {
-      int needs_parentheses = n >> bits_per_literal >> bits_per_literal != 0;
-      if (needs_parentheses)
-        printf ("(");
-      print_wide_uint (n >> bits_per_literal, nesting + 1, wide_uint_bits);
-      if (needs_parentheses)
-        printf (")\n%*s", nesting + 3, "");
-      printf (" << %d | ", bits_per_literal);
+      صحيح needs_parentheses = n >> بټونه_فی_literal >> بټونه_فی_literal != 0;
+      إذا (needs_parentheses)
+        چاپ_کړه ("(");
+      print_wide_uint (n >> بټونه_فی_literal, nesting + 1, wide_uint_بټونه);
+      إذا (needs_parentheses)
+        چاپ_کړه (")\n%*s", nesting + 3, "");
+      چاپ_کړه (" << %d | ", بټونه_فی_literal);
     }
-  else if (nesting)
+  وإلا إذا (nesting)
     {
-      printf ("(mp_limb_t) ");
-      hex_digits_per_literal
-        = ((wide_uint_bits - 1) % bits_per_literal) % 4 + 1;
+      چاپ_کړه ("(mp_limb_t) ");
+      hex_digits_فی_literal
+        = ((wide_uint_بټونه - 1) % بټونه_فی_literal) % 4 + 1;
     }
 
-  printf ("0x%0*xU", hex_digits_per_literal, remainder);
+  چاپ_کړه ("0x%0*xU", hex_digits_فی_literal, remainder);
 }
 
 /* Work around <https://gcc.gnu.org/PR109635>.  */
-#if 13 <= __GNUC__
+#إذا 13 <= __GNUC__
 # pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value"
-#endif
+#د_که_پای
 
-static void
-output_primes (const struct prime *primes, unsigned nprimes)
+ساكن فراغ
+output_لومړني_عددونه (ثابت بنية اولي *لومړني_عددونه, بینښه nprimes)
 {
-  unsigned i;
-  unsigned p;
-  int is_prime;
+  بینښه i;
+  بینښه p;
+  صحيح is_اولي;
 
   /* Compute wide_uint_bits by repeated shifting, rather than by
      multiplying sizeof by CHAR_BIT, as this works even if the
      wide_uint representation has holes.  */
-  unsigned wide_uint_bits = 0;
-  wide_uint mask = -1;
-  for (wide_uint_bits = 0; mask; wide_uint_bits++)
-    mask >>= 1;
+  بینښه wide_uint_بټونه = 0;
+  wide_uint ماسک = -1;
+  لكل (wide_uint_بټونه = 0; ماسک; wide_uint_بټونه++)
+    ماسک >>= 1;
 
   puts ("/* Generated file -- DO NOT EDIT */\n");
-  printf ("#define WIDE_UINT_BITS %u\n", wide_uint_bits);
+  چاپ_کړه ("#define WIDE_UINT_BITS %u\n", wide_uint_بټونه);
 
-  for (i = 0; i < nprimes; i++)
+  لكل (i = 0; i < nprimes; i++)
     {
       /* Check that primes[i].p fits in int_least16_t on all platforms,
          and that its square fits in int_least32_t on all platforms,
          as factor.c relies on this.  */
-      if ((1 << (16 - 1)) <= primes[i].p)
+      إذا ((1 << (16 - 1)) <= لومړني_عددونه[i].p)
         abort ();
 
-      printf ("P (%u,\n   (", primes[i].p);
-      print_wide_uint (primes[i].pinv, 0, wide_uint_bits);
-      printf ("),\n   (mp_limb_t) -1 / %u)\n", primes[i].p);
+      چاپ_کړه ("P (%u,\n   (", لومړني_عددونه[i].p);
+      print_wide_uint (لومړني_عددونه[i].pinv, 0, wide_uint_بټونه);
+      چاپ_کړه ("),\n   (mp_limb_t) -1 / %u)\n", لومړني_عددونه[i].p);
     }
 
   /* Find next prime */
-  p = primes[nprimes - 1].p;
-  do
+  p = لومړني_عددونه[nprimes - 1].p;
+  افعل
     {
       p += 2;
-      for (i = 0, is_prime = 1; is_prime; i++)
+      لكل (i = 0, is_اولي = 1; is_اولي; i++)
         {
-          if (primes[i].p * primes[i].p > p)
-            break;
-          if (p * primes[i].pinv <= primes[i].lim)
+          إذا (لومړني_عددونه[i].p * لومړني_عددونه[i].p > p)
+            اكسر;
+          إذا (p * لومړني_عددونه[i].pinv <= لومړني_عددونه[i].lim)
             {
-              is_prime = 0;
-              break;
+              is_اولي = 0;
+              اكسر;
             }
         }
     }
-  while (!is_prime);
+  طالما (!is_اولي);
 
-  printf ("#define SQUARE_OF_FIRST_OMITTED_PRIME %u\n", p * p);
+  چاپ_کړه ("#define SQUARE_OF_FIRST_OMITTED_PRIME %u\n", p * p);
 }
 
 ATTRIBUTE_MALLOC
-static void *
+ساكن فراغ *
 xalloc (size_t s)
 {
-  void *p = malloc (s);
-  if (p)
-    return p;
+  فراغ *p = حافظه_ورکړه (s);
+  إذا (p)
+    أرجع p;
 
   fprintf (stderr, "Virtual memory exhausted.\n");
-  exit (EXIT_FAILURE);
+  وتل (EXIT_FAILURE);
 }
 
-int
-main (int argc, char **argv)
+صحيح
+اصلي (صحيح argc, حرف **argv)
 {
-  int limit;
+  صحيح حد;
 
-  char *sieve;
-  size_t size, i;
+  حرف *sieve;
+  size_t اندازه, i;
 
-  struct prime *prime_list;
-  unsigned nprimes;
+  بنية اولي *اولي_list;
+  بینښه nprimes;
 
-  if (argc != 2)
+  إذا (argc != 2)
     {
       fprintf (stderr, "Usage: %s LIMIT\n"
                "Produces a list of odd primes <= LIMIT\n", argv[0]);
-      return EXIT_FAILURE;
+      أرجع EXIT_FAILURE;
     }
-  limit = atoi (argv[1]);
-  if (limit < 3)
-    return EXIT_SUCCESS;
+  حد = atoi (argv[1]);
+  إذا (حد < 3)
+    أرجع EXIT_SUCCESS;
 
   /* Make limit odd */
-  if ( !(limit & 1))
-    limit--;
+  إذا ( !(حد & 1))
+    حد--;
 
-  size = (limit - 1) / 2;
+  اندازه = (حد - 1) / 2;
   /* sieve[i] represents 3+2*i */
-  sieve = xalloc (size);
-  memset (sieve, 1, size);
+  sieve = xalloc (اندازه);
+  memset (sieve, 1, اندازه);
 
-  prime_list = xalloc (size * sizeof (*prime_list));
+  اولي_list = xalloc (اندازه * حجم (*اولي_list));
   nprimes = 0;
 
-  for (i = 0; i < size;)
+  لكل (i = 0; i < اندازه;)
     {
-      unsigned p = 3 + 2 * i;
-      unsigned j;
+      بینښه p = 3 + 2 * i;
+      بینښه j;
 
-      process_prime (&prime_list[nprimes++], p);
+      process_اولي (&اولي_list[nprimes++], p);
 
-      for (j = (p * p - 3) / 2; j < size; j += p)
+      لكل (j = (p * p - 3) / 2; j < اندازه; j += p)
         sieve[j] = 0;
 
-      while (++i < size && sieve[i] == 0)
+      طالما (++i < اندازه && sieve[i] == 0)
         ;
     }
 
-  output_primes (prime_list, nprimes);
+  output_لومړني_عددونه (اولي_list, nprimes);
 
-  free (sieve);
-  free (prime_list);
+  حرر (sieve);
+  حرر (اولي_list);
 
-  if (ferror (stdout) || fclose (stdout))
+  إذا (ferror (stdout) || fclose (stdout))
     {
       fprintf (stderr, "write error: %s\n", strerror (errno));
-      return EXIT_FAILURE;
+      أرجع EXIT_FAILURE;
     }
 
-  return EXIT_SUCCESS;
+  أرجع EXIT_SUCCESS;
 }

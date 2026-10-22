@@ -14,39 +14,39 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#ifndef COREUTILS_STATX_H
+#که_نه_تعریف_شوی COREUTILS_STATX_H
 # define COREUTILS_STATX_H
 
-# if HAVE_STATX && defined STATX_INO
+# إذا HAVE_STATX && defined STATX_INO
 /* Much of the format printing requires a struct stat or timespec */
-static inline struct timespec
-statx_timestamp_to_timespec (struct statx_timestamp tsx)
+ساكن مضمن بنية timespec
+statx_timestamp_منزل_timespec (بنية statx_timestamp tsx)
 {
-  struct timespec ts;
+  بنية timespec ts;
 
   ts.tv_sec = tsx.tv_sec;
   ts.tv_nsec = tsx.tv_nsec;
-  return ts;
+  أرجع ts;
 }
 
-static inline void
-statx_to_stat (struct statx *stx, struct stat *stat)
+ساكن مضمن فراغ
+statx_منزل_stat (بنية statx *stx, بنية stat *stat)
 {
   stat->st_dev = makedev (stx->stx_dev_major, stx->stx_dev_minor);
   stat->st_ino = stx->stx_ino;
-  stat->st_mode = stx->stx_mode;
+  stat->st_ډېرپېښ = stx->stx_ډېرپېښ;
   stat->st_nlink = stx->stx_nlink;
   stat->st_uid = stx->stx_uid;
   stat->st_gid = stx->stx_gid;
   stat->st_rdev = makedev (stx->stx_rdev_major, stx->stx_rdev_minor);
-  stat->st_size = stx->stx_size;
+  stat->st_اندازه = stx->stx_اندازه;
   stat->st_blksize = stx->stx_blksize;
 /* define to avoid sc_prohibit_stat_st_blocks.  */
-#  define SC_ST_BLOCKS st_blocks
-  stat->SC_ST_BLOCKS = stx->stx_blocks;
-  stat->st_atim = statx_timestamp_to_timespec (stx->stx_atime);
-  stat->st_mtim = statx_timestamp_to_timespec (stx->stx_mtime);
-  stat->st_ctim = statx_timestamp_to_timespec (stx->stx_ctime);
+#  define SC_ST_بلاکونه st_بلاکونه
+  stat->SC_ST_بلاکونه = stx->stx_بلاکونه;
+  stat->st_atim = statx_timestamp_منزل_timespec (stx->stx_atime);
+  stat->st_mtim = statx_timestamp_منزل_timespec (stx->stx_mtime);
+  stat->st_ctim = statx_timestamp_منزل_timespec (stx->stx_ctime);
 }
 # endif /* HAVE_STATX && defined STATX_INO */
-#endif /* COREUTILS_STATX_H */
+#د_که_پای /* COREUTILS_STATX_H */

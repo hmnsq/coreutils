@@ -1,2 +1,2 @@
-#include "test.h"
-enum test_modes test_mode = TEST_LBRACKET;
+#ضمن "test.h"
+تعداد test_modes test_ډېرپېښ = TEST_LBRACKET;

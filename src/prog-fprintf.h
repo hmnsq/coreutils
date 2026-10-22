@@ -14,12 +14,12 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#ifndef PROG_FPRINTF_H
+#که_نه_تعریف_شوی PROG_FPRINTF_H
 # define PROG_FPRINTF_H
 
 # include <stdio.h>
 
-extern void prog_fprintf (FILE *fp, char const *fmt, ...)
+خارجي فراغ prog_fprintf (FILE *fp, حرف ثابت *fmt, ...)
   _GL_ATTRIBUTE_FORMAT ((__printf__, 2, 3)) _GL_ATTRIBUTE_NONNULL ((1, 2));
 
-#endif
+#د_که_پای

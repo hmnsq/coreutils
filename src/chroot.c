@@ -16,70 +16,70 @@
 
 /* Written by Roland McGrath.  */
 
-#include <config.h>
-#include <getopt.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <pwd.h>
-#include <grp.h>
+#ضمن <config.h>
+#ضمن <getopt.h>
+#ضمن <stdio.h>
+#ضمن <sys/types.h>
+#ضمن <pwd.h>
+#ضمن <grp.h>
 
-#include "system.h"
-#include "ignore-value.h"
-#include "mgetgroups.h"
-#include "quote.h"
-#include "userspec.h"
-#include "xstrtol.h"
+#ضمن "system.h"
+#ضمن "ignore-value.h"
+#ضمن "mgetgroups.h"
+#ضمن "quote.h"
+#ضمن "userspec.h"
+#ضمن "xstrtol.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "chroot"
+#تعریف_کړه پروګرام_NAME "chroot"
 
-#define AUTHORS proper_name ("Roland McGrath")
+#تعریف_کړه AUTHORS proper_name ("Roland McGrath")
 
-#ifndef MAXGID
+#که_نه_تعریف_شوی MAXGID
 # define MAXGID GID_T_MAX
-#endif
+#د_که_پای
 
-static inline bool uid_unset (uid_t uid) { return uid == (uid_t) -1; }
-static inline bool gid_unset (gid_t gid) { return gid == (gid_t) -1; }
-#define uid_set(x) (!uid_unset (x))
-#define gid_set(x) (!gid_unset (x))
+ساكن مضمن bool uid_unset (uid_t uid) { أرجع uid == (uid_t) -1; }
+ساكن مضمن bool gid_unset (gid_t gid) { أرجع gid == (gid_t) -1; }
+#تعریف_کړه uid_سېټ(x) (!uid_unset (x))
+#تعریف_کړه gid_سېټ(x) (!gid_unset (x))
 
-enum
+تعداد
 {
   GROUPS = UCHAR_MAX + 1,
   USERSPEC,
   SKIP_CHDIR
 };
 
-static struct option const long_opts[] =
+ساكن بنية option ثابت long_opts[] =
 {
-  {"groups", required_argument, NULL, GROUPS},
-  {"userspec", required_argument, NULL, USERSPEC},
-  {"skip-chdir", no_argument, NULL, SKIP_CHDIR},
+  {"groups", required_دلیل, عدم, GROUPS},
+  {"userspec", required_دلیل, عدم, USERSPEC},
+  {"skip-chdir", no_دلیل, عدم, SKIP_CHDIR},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_نسخه_OPTION_DECL},
+  {عدم, 0, عدم, 0}
 };
 
-#if ! HAVE_SETGROUPS
+#إذا ! HAVE_SETGROUPS
 /* At least Interix lacks supplemental group support.  */
-static int
-setgroups (size_t size, MAYBE_UNUSED gid_t const *list)
+ساكن صحيح
+setgroups (size_t اندازه, MAYBE_ناکارول_شوی gid_t ثابت *list)
 {
-  if (size == 0)
+  إذا (اندازه == 0)
     {
       /* Return success when clearing supplemental groups
          as ! HAVE_SETGROUPS should only be the case on
          platforms that don't support supplemental groups.  */
-      return 0;
+      أرجع 0;
     }
-  else
+  وإلا
     {
       errno = ENOTSUP;
-      return -1;
+      أرجع -1;
     }
 }
-#endif
+#د_که_پای
 
 /* Determine the group IDs for the specified supplementary GROUPS,
    which is a comma separated list of supplementary groups (names or numbers).
@@ -89,103 +89,103 @@ setgroups (size_t size, MAYBE_UNUSED gid_t const *list)
    Upon any failure return nonzero, and issue diagnostic if SHOW_ERRORS is true.
    Otherwise return zero.  */
 
-static int
-parse_additional_groups (char const *groups, GETGROUPS_T **pgids,
+ساكن صحيح
+parse_additional_groups (حرف ثابت *groups, GETGROUPS_T **pgids,
                          idx_t *pn_gids, bool show_errors)
 {
-  GETGROUPS_T *gids = NULL;
+  GETGROUPS_T *gids = عدم;
   idx_t n_gids_allocated = 0;
   idx_t n_gids = 0;
-  char *buffer = xstrdup (groups);
-  int ret = 0;
+  حرف *بفر = xstrdup (groups);
+  صحيح ret = 0;
 
-  for (char const *tmp = strtok (buffer, ","); tmp;
-       tmp = strtok (NULL, ","))
+  لكل (حرف ثابت *tmp = strtok (بفر, ","); tmp;
+       tmp = strtok (عدم, ","))
     {
-      struct group *g;
-      uintmax_t value;
+      بنية ډله *g;
+      uintmax_t ارزښت;
 
-      if (xstrtoumax (tmp, NULL, 10, &value, "") == LONGINT_OK
-          && value <= MAXGID)
+      إذا (xstrtoumax (tmp, عدم, 10, &ارزښت, "") == LONGINT_OK
+          && ارزښت <= MAXGID)
         {
-          while (isspace (to_uchar (*tmp)))
+          طالما (که_تشه (منزل_uchar (*tmp)))
             tmp++;
-          if (*tmp != '+')
+          إذا (*tmp != '+')
             {
               /* Handle the case where the name is numeric.  */
               g = getgrnam (tmp);
-              if (g != NULL)
-                value = g->gr_gid;
+              إذا (g != عدم)
+                ارزښت = g->gr_gid;
             }
           /* Flag that we've got a group from the number.  */
-          g = (struct group *) (intptr_t) ! NULL;
+          g = (بنية ډله *) (intptr_t) ! عدم;
         }
-      else
+      وإلا
         {
           g = getgrnam (tmp);
-          if (g != NULL)
-            value = g->gr_gid;
+          إذا (g != عدم)
+            ارزښت = g->gr_gid;
         }
 
-      if (g == NULL)
+      إذا (g == عدم)
         {
           ret = -1;
 
-          if (show_errors)
+          إذا (show_errors)
             {
               error (0, errno, _("invalid group %s"), quote (tmp));
-              continue;
+              استمر;
             }
 
-          break;
+          اكسر;
         }
 
-      if (n_gids == n_gids_allocated)
-        gids = xpalloc (gids, &n_gids_allocated, 1, -1, sizeof *gids);
-      gids[n_gids++] = value;
+      إذا (n_gids == n_gids_allocated)
+        gids = xpalloc (gids, &n_gids_allocated, 1, -1, حجم *gids);
+      gids[n_gids++] = ارزښت;
     }
 
-  if (ret == 0 && n_gids == 0)
+  إذا (ret == 0 && n_gids == 0)
     {
-      if (show_errors)
+      إذا (show_errors)
         error (0, 0, _("invalid group list %s"), quote (groups));
       ret = -1;
     }
 
   *pgids = gids;
 
-  if (ret == 0)
+  إذا (ret == 0)
     *pn_gids = n_gids;
 
-  free (buffer);
-  return ret;
+  حرر (بفر);
+  أرجع ret;
 }
 
 /* Return whether the passed path is equivalent to "/".
    Note we don't compare against get_root_dev_ino() as "/"
    could be bind mounted to a separate location.  */
 
-static bool
-is_root (char const *dir)
+ساكن bool
+is_ریښه (حرف ثابت *dir)
 {
-  char *resolved = canonicalize_file_name (dir);
-  bool is_res_root = resolved && streq ("/", resolved);
-  free (resolved);
-  return is_res_root;
+  حرف *resolved = canonicalize_file_name (dir);
+  bool is_res_ریښه = resolved && streq ("/", resolved);
+  حرر (resolved);
+  أرجع is_res_ریښه;
 }
 
-void
-usage (int status)
+فراغ
+usage (صحيح حالت)
 {
-  if (status != EXIT_SUCCESS)
+  إذا (حالت != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  وإلا
     {
-      printf (_("\
-Usage: %s [OPTION]... NEWROOT [COMMAND [ARG]...]\n"), program_name);
+      چاپ_کړه (_("\
+Usage: %s [OPTION]... NEWROOT [COMMAND [ARG]...]\n"), پروګرام_name);
 
       fputs (_("\
-Run COMMAND with root directory set to NEWROOT.\n\
+پرلپسې COMMAND with ریښه directory سېټ_2 منزل NEWROOT.\n\
 \n\
 "), stdout);
 
@@ -194,35 +194,35 @@ Run COMMAND with root directory set to NEWROOT.\n\
          specify supplementary groups as g1,g2,..,gN\n\
 "));
       oputs (_("\
-      --userspec=USER:GROUP\n\
-         specify user and group (ID or name) to use\n\
+      --userspec=USER:ډله_2\n\
+         specify user and ډله (ID or name) منزل use\n\
 "));
       oprintf (_("\
       --skip-chdir\n\
-         do not change working directory to %s\n\
+         افعل not change working directory منزل %s\n\
 "), quoteaf ("/"));
 
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (نسخه_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-If no command is given, run '\"$SHELL\" -i' (default: '/bin/sh -i').\n\
+If no command is given, پرلپسې_2 '\"$SHELL\" -i' (افتراضي: '/bin/sh -i').\n\
 "), stdout);
-      emit_exec_status (PROGRAM_NAME);
-      emit_ancillary_info (PROGRAM_NAME);
+      emit_exec_حالت (پروګرام_NAME);
+      emit_ancillary_info (پروګرام_NAME);
     }
-  exit (status);
+  وتل (حالت);
 }
 
-int
-main (int argc, char **argv)
+صحيح
+اصلي (صحيح argc, حرف **argv)
 {
-  int c;
+  صحيح c;
 
   /* Input user and groups spec.  */
-  char *userspec = NULL;
-  char const *username = NULL;
-  char const *groups = NULL;
+  حرف *userspec = عدم;
+  حرف ثابت *username = عدم;
+  حرف ثابت *groups = عدم;
   bool skip_chdir = false;
 
   /* Parsed user and group IDs.  */
@@ -231,11 +231,11 @@ main (int argc, char **argv)
   /* Whether GID was inferred from UID outside the chroot,
      in which case a look-up inside the chroot takes precedence.  */
   bool gid_inferred = false;
-  GETGROUPS_T *out_gids = NULL;
+  GETGROUPS_T *بهر_gids = عدم;
   idx_t n_gids = 0;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  سېټ_پروګرام_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
@@ -243,56 +243,56 @@ main (int argc, char **argv)
   initialize_exit_failure (EXIT_CANCELED);
   atexit (close_stdout);
 
-  while ((c = getopt_long (argc, argv, "+", long_opts, NULL)) != -1)
+  طالما ((c = getopt_long (argc, argv, "+", long_opts, عدم)) != -1)
     {
-      switch (c)
+      بدل (c)
         {
-        case USERSPEC:
+        حالة USERSPEC:
           {
             userspec = optarg;
             /* Treat 'user:' just like 'user'
                as we lookup the primary group by default
                (and support doing so for UIDs as well as names.  */
-            idx_t userlen = strlen (userspec);
-            if (userlen && userspec[userlen - 1] == ':')
+            idx_t userlen = مزي_اوږدوالی (userspec);
+            إذا (userlen && userspec[userlen - 1] == ':')
               userspec[userlen - 1] = '\0';
-            break;
+            اكسر;
           }
 
-        case GROUPS:
+        حالة GROUPS:
           groups = optarg;
-          break;
+          اكسر;
 
-        case SKIP_CHDIR:
+        حالة SKIP_CHDIR:
           skip_chdir = true;
-          break;
+          اكسر;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_نسخه_CHAR (پروګرام_NAME, AUTHORS);
 
-        default:
+        افتراضي:
           usage (EXIT_CANCELED);
         }
     }
 
-  if (argc <= optind)
+  إذا (argc <= optind)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_CANCELED);
     }
 
-  char const *newroot = argv[optind];
-  bool is_oldroot = is_root (newroot);
+  حرف ثابت *newroot = argv[optind];
+  bool is_oldroot = is_ریښه (newroot);
 
-  if (! is_oldroot && skip_chdir)
+  إذا (! is_oldroot && skip_chdir)
     {
       error (0, 0, _("option --skip-chdir only permitted if NEWROOT is old %s"),
              quoteaf ("/"));
       usage (EXIT_CANCELED);
     }
 
-  if (! is_oldroot)
+  إذا (! is_oldroot)
     {
       /* We have to look up users and groups twice.
         - First, outside the chroot to load potentially necessary passwd/group
@@ -300,17 +300,17 @@ main (int argc, char **argv)
         - Second, inside chroot to redo parsing in case IDs are different.
           Within chroot lookup is the main justification for having
           the --user option supported by the chroot command itself.  */
-      if (userspec)
-        ignore_value (parse_user_spec (userspec, &uid, &gid, NULL, NULL));
+      إذا (userspec)
+        ignore_ارزښت (parse_user_spec (userspec, &uid, &gid, عدم, عدم));
 
       /* If no gid is supplied or looked up, do so now.
         Also lookup the username for use with getgroups.  */
-      if (uid_set (uid) && (! groups || gid_unset (gid)))
+      إذا (uid_سېټ (uid) && (! groups || gid_unset (gid)))
         {
-          const struct passwd *pwd;
-          if ((pwd = getpwuid (uid)))
+          ثابت بنية passwd *pwd;
+          إذا ((pwd = getpwuid (uid)))
             {
-              if (gid_unset (gid))
+              إذا (gid_unset (gid))
                 {
                   gid = pwd->pw_gid;
                   gid_inferred = true;
@@ -319,37 +319,37 @@ main (int argc, char **argv)
             }
         }
 
-      if (groups && *groups)
-        ignore_value (parse_additional_groups (groups, &out_gids, &n_gids,
+      إذا (groups && *groups)
+        ignore_ارزښت (parse_additional_groups (groups, &بهر_gids, &n_gids,
                                                false));
-#if HAVE_SETGROUPS
-      else if (! groups && gid_set (gid) && username)
+#إذا HAVE_SETGROUPS
+      وإلا إذا (! groups && gid_سېټ (gid) && username)
         {
-          int ngroups = xgetgroups (username, gid, &out_gids);
-          if (0 < ngroups)
+          صحيح ngroups = xgetgroups (username, gid, &بهر_gids);
+          إذا (0 < ngroups)
             n_gids = ngroups;
         }
-#endif
+#د_که_پای
     }
 
-  if (chroot (newroot) != 0)
+  إذا (chroot (newroot) != 0)
     error (EXIT_CANCELED, errno, _("cannot change root directory to %s"),
            quoteaf (newroot));
 
-  if (! skip_chdir && chdir ("/"))
+  إذا (! skip_chdir && chdir ("/"))
     error (EXIT_CANCELED, errno, _("cannot chdir to root directory"));
 
-  if (argc == optind + 1)
+  إذا (argc == optind + 1)
     {
       /* No command.  Run an interactive shell.  */
-      char *shell = getenv ("SHELL");
-      if (shell == NULL)
+      حرف *shell = getenv ("SHELL");
+      إذا (shell == عدم)
         shell = bad_cast ("/bin/sh");
       argv[0] = shell;
       argv[1] = bad_cast ("-i");
-      argv[2] = NULL;
+      argv[2] = عدم;
     }
-  else
+  وإلا
     {
       /* The following arguments give the command.  */
       argv += optind + 1;
@@ -357,27 +357,27 @@ main (int argc, char **argv)
 
   /* Attempt to set all three: supplementary groups, group ID, user ID.
      Diagnose any failures.  If any have failed, exit before execvp.  */
-  if (userspec)
+  إذا (userspec)
     {
       bool warn;
-      char const *err = parse_user_spec_warn (userspec, &uid, &gid,
-                                              NULL, NULL, &warn);
-      if (err)
+      حرف ثابت *err = parse_user_spec_warn (userspec, &uid, &gid,
+                                              عدم, عدم, &warn);
+      إذا (err)
         error (warn ? 0 : EXIT_CANCELED, 0, "%s", (err));
     }
 
   /* If no gid is supplied or looked up, do so now.
      Also lookup the username for use with getgroups.  */
-  if (uid_set (uid) && (! groups || gid_unset (gid) || gid_inferred))
+  إذا (uid_سېټ (uid) && (! groups || gid_unset (gid) || gid_inferred))
     {
-      const struct passwd *pwd;
-      if ((pwd = getpwuid (uid)))
+      ثابت بنية passwd *pwd;
+      إذا ((pwd = getpwuid (uid)))
         {
-          if (gid_unset (gid) || gid_inferred)
+          إذا (gid_unset (gid) || gid_inferred)
             gid = pwd->pw_gid;
           username = pwd->pw_name;
         }
-      else if (gid_unset (gid))
+      وإلا إذا (gid_unset (gid))
         {
           error (EXIT_CANCELED, errno,
                  _("no group specified for unknown uid: %ju"),
@@ -385,54 +385,54 @@ main (int argc, char **argv)
         }
     }
 
-  GETGROUPS_T *gids = out_gids;
-  GETGROUPS_T *in_gids = NULL;
-  if (groups && *groups)
+  GETGROUPS_T *gids = بهر_gids;
+  GETGROUPS_T *دننه_gids = عدم;
+  إذا (groups && *groups)
     {
-      if (parse_additional_groups (groups, &in_gids, &n_gids, !n_gids) != 0)
+      إذا (parse_additional_groups (groups, &دننه_gids, &n_gids, !n_gids) != 0)
         {
-          if (! n_gids)
-            return EXIT_CANCELED;
+          إذا (! n_gids)
+            أرجع EXIT_CANCELED;
           /* else look-up outside the chroot worked, then go with those.  */
         }
-      else
-        gids = in_gids;
+      وإلا
+        gids = دننه_gids;
     }
-#if HAVE_SETGROUPS
-  else if (! groups && gid_set (gid) && username)
+#إذا HAVE_SETGROUPS
+  وإلا إذا (! groups && gid_سېټ (gid) && username)
     {
-      int ngroups = xgetgroups (username, gid, &in_gids);
-      if (ngroups <= 0)
+      صحيح ngroups = xgetgroups (username, gid, &دننه_gids);
+      إذا (ngroups <= 0)
         {
-          if (! n_gids)
+          إذا (! n_gids)
             error (EXIT_CANCELED, errno,
                    _("failed to get supplemental groups"));
           /* else look-up outside the chroot worked, then go with those.  */
         }
-      else
+      وإلا
         {
           n_gids = ngroups;
-          gids = in_gids;
+          gids = دننه_gids;
         }
     }
-#endif
+#د_که_پای
 
-  if ((uid_set (uid) || groups) && setgroups (n_gids, gids) != 0)
+  إذا ((uid_سېټ (uid) || groups) && setgroups (n_gids, gids) != 0)
     error (EXIT_CANCELED, errno, _("failed to set supplemental groups"));
 
-  free (in_gids);
-  free (out_gids);
+  حرر (دننه_gids);
+  حرر (بهر_gids);
 
-  if (gid_set (gid) && setgid (gid))
+  إذا (gid_سېټ (gid) && setgid (gid))
     error (EXIT_CANCELED, errno, _("failed to set group-ID"));
 
-  if (uid_set (uid) && setuid (uid))
+  إذا (uid_سېټ (uid) && setuid (uid))
     error (EXIT_CANCELED, errno, _("failed to set user-ID"));
 
   /* Execute the given command.  */
   execvp (argv[0], argv);
 
-  int exit_status = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
+  صحيح exit_حالت = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
   error (0, errno, _("failed to run command %s"), quote (argv[0]));
-  return exit_status;
+  أرجع exit_حالت;
 }
