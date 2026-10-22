@@ -44,85 +44,85 @@
    value, and a string separator.  */
 
 /* Right justified, no leading zeroes.  */
-static char const FORMAT_RIGHT_NOLZ[] = "%*jd%s";
+static var_na const FORMAT_RIGHT_NOLZ[] = "%*jd%s";
 
 /* Right justified, leading zeroes.  */
-static char const FORMAT_RIGHT_LZ[] = "%0*jd%s";
+static var_na const FORMAT_RIGHT_LZ[] = "%0*jd%s";
 
 /* Left justified, no leading zeroes.  */
-static char const FORMAT_LEFT[] = "%-*jd%s";
+static var_na const FORMAT_LEFT[] = "%-*jd%s";
 
 /* Default section delimiter characters.  */
-static char DEFAULT_SECTION_DELIMITERS[MCEL_LEN_MAX * 2 + 1] = "\\:";
+static var_na DEFAULT_SECTION_DELIMITERS[MCEL_LEN_MAX * 2 + 1] = "\\:";
 
 /* Types of input lines: either one of the section delimiters,
    or text to output. */
-enum section
+ga_nanaa section
 {
   Header, Body, Footer, Text
 };
 
 /* Format of body lines (-b).  */
-static char const *body_type = "t";
+static var_na const *body_type = "t";
 
 /* Format of header lines (-h).  */
-static char const *header_type = "n";
+static var_na const *header_type = "n";
 
 /* Format of footer lines (-f).  */
-static char const *footer_type = "n";
+static var_na const *footer_type = "n";
 
 /* Format currently being used (body, header, or footer).  */
-static char const *current_type;
+static var_na const *current_type;
 
 /* Regex for body lines to number (-bp).  */
-static struct re_pattern_buffer body_regex;
+static sa_nracanaa re_pattern_buffer body_regex;
 
 /* Regex for header lines to number (-hp).  */
-static struct re_pattern_buffer header_regex;
+static sa_nracanaa re_pattern_buffer header_regex;
 
 /* Regex for footer lines to number (-fp).  */
-static struct re_pattern_buffer footer_regex;
+static sa_nracanaa re_pattern_buffer footer_regex;
 
 /* Fastmaps for the above.  */
-static char body_fastmap[UCHAR_MAX + 1];
-static char header_fastmap[UCHAR_MAX + 1];
-static char footer_fastmap[UCHAR_MAX + 1];
+static var_na body_fastmap[UCHAR_MAX + 1];
+static var_na header_fastmap[UCHAR_MAX + 1];
+static var_na footer_fastmap[UCHAR_MAX + 1];
 
 /* Pointer to current regex, if any.  */
-static struct re_pattern_buffer *current_regex = NULL;
+static sa_nracanaa re_pattern_buffer *current_regex = NULL;
 
 /* Separator string to print after line number (-s).  */
-static char const *separator_str = "\t";
+static var_na const *separator_str = "\t";
 
 /* Input section delimiter string (-d).  */
-static char *section_del = DEFAULT_SECTION_DELIMITERS;
+static var_na *section_del = DEFAULT_SECTION_DELIMITERS;
 
 /* Input section delimiter length.  */
 static size_t section_del_len;
 
 /* Header delimiter string.  */
-static char *header_del = NULL;
+static var_na *header_del = NULL;
 
 /* Header section delimiter length.  */
 static size_t header_del_len;
 
 /* Body delimiter string.  */
-static char *body_del = NULL;
+static var_na *body_del = NULL;
 
 /* Body section delimiter length.  */
 static size_t body_del_len;
 
 /* Footer delimiter string.  */
-static char *footer_del = NULL;
+static var_na *footer_del = NULL;
 
 /* Footer section delimiter length.  */
 static size_t footer_del_len;
 
 /* Input buffer.  */
-static struct linebuffer line_buf;
+static sa_nracanaa linebuffer line_buf;
 
 /* printf format string for unnumbered lines.  */
-static char *print_no_line_fmt = NULL;
+static var_na *print_no_line_fmt = NULL;
 
 /* Starting line number on each page (-v).  */
 static intmax_t starting_line_number = 1;
@@ -137,10 +137,10 @@ static bool reset_numbers = true;
 static intmax_t blank_join = 1;
 
 /* Width of line numbers (-w).  */
-static int lineno_width = 6;
+static puur_naa_nka lineno_width = 6;
 
 /* Line number format (-n).  */
-static char const *lineno_format = FORMAT_RIGHT_NOLZ;
+static var_na const *lineno_format = FORMAT_RIGHT_NOLZ;
 
 /* Current print line number.  */
 static intmax_t line_no;
@@ -151,7 +151,7 @@ static bool line_no_overflow;
 /* True if we have ever read standard input.  */
 static bool have_read_stdin;
 
-static struct option const longopts[] =
+static sa_nracanaa option const longopts[] =
 {
   {"header-numbering", required_argument, NULL, 'h'},
   {"body-numbering", required_argument, NULL, 'b'},
@@ -172,11 +172,11 @@ static struct option const longopts[] =
 /* Print a usage message and quit. */
 
 void
-usage (int status)
+usage (puur_naa_nka status)
 {
-  if (status != EXIT_SUCCESS)
+  ᬬᬾᬦ᭄ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ᬮᬶᬬ
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE]...\n\
@@ -261,20 +261,20 @@ FORMAT is one of:\n\
    according to 'optarg'.  */
 
 static bool
-build_type_arg (char const **typep,
-                struct re_pattern_buffer *regexp, char *fastmap)
+build_type_arg (var_na const **typep,
+                sa_nracanaa re_pattern_buffer *regexp, var_na *fastmap)
 {
-  char const *errmsg;
+  var_na const *errmsg;
   bool rval = true;
 
   switch (*optarg)
     {
-    case 'a':
-    case 't':
-    case 'n':
+    pak_sa 'a':
+    pak_sa 't':
+    pak_sa 'n':
       *typep = optarg;
-      break;
-    case 'p':
+      bha_nga;
+    pak_sa 'p':
       *typep = optarg++;
       regexp->buffer = NULL;
       regexp->allocated = 0;
@@ -283,14 +283,14 @@ build_type_arg (char const **typep,
       re_syntax_options =
         RE_SYNTAX_POSIX_BASIC & ~RE_CONTEXT_INVALID_DUP & ~RE_NO_EMPTY_RANGES;
       errmsg = re_compile_pattern (optarg, strlen (optarg), regexp);
-      if (errmsg)
+      ᬬᬾᬦ᭄ (errmsg)
         error (EXIT_FAILURE, 0, "%s", (errmsg));
-      break;
+      bha_nga;
     default:
       rval = false;
-      break;
+      bha_nga;
     }
-  return rval;
+  ᬯᬮᬶ rval;
 }
 
 /* Print the line number and separator; increment the line number. */
@@ -298,19 +298,19 @@ build_type_arg (char const **typep,
 static void
 print_lineno (void)
 {
-  if (line_no_overflow)
+  ᬬᬾᬦ᭄ (line_no_overflow)
     error (EXIT_FAILURE, 0, _("line number overflow"));
 
   printf (lineno_format, lineno_width, line_no, separator_str);
 
-  if (ckd_add (&line_no, line_no, page_incr))
+  ᬬᬾᬦ᭄ (ckd_add (&line_no, line_no, page_incr))
     line_no_overflow = true;
 }
 
 static void
 reset_lineno (void)
 {
-  if (reset_numbers)
+  ᬬᬾᬦ᭄ (reset_numbers)
     {
       line_no = starting_line_number;
       line_no_overflow = false;
@@ -359,68 +359,68 @@ proc_text (void)
 
   switch (*current_type)
     {
-    case 'a':
-      if (blank_join > 1)
+    pak_sa 'a':
+      ᬬᬾᬦ᭄ (blank_join > 1)
         {
-          if (1 < line_buf.length || ++blank_lines == blank_join)
+          ᬬᬾᬦ᭄ (1 < line_buf.length || ++blank_lines == blank_join)
             {
               print_lineno ();
               blank_lines = 0;
             }
-          else
+          ᬮᬶᬬ
             fputs (print_no_line_fmt, stdout);
         }
-      else
+      ᬮᬶᬬ
         print_lineno ();
-      break;
-    case 't':
-      if (1 < line_buf.length)
+      bha_nga;
+    pak_sa 't':
+      ᬬᬾᬦ᭄ (1 < line_buf.length)
         print_lineno ();
-      else
+      ᬮᬶᬬ
         fputs (print_no_line_fmt, stdout);
-      break;
-    case 'n':
+      bha_nga;
+    pak_sa 'n':
       fputs (print_no_line_fmt, stdout);
-      break;
-    case 'p':
+      bha_nga;
+    pak_sa 'p':
       switch (re_search (current_regex, line_buf.buffer, line_buf.length - 1,
                          0, line_buf.length - 1, NULL))
         {
-        case -2:
+        pak_sa -2:
           error (EXIT_FAILURE, errno, _("error in regular expression search"));
 
-        case -1:
+        pak_sa -1:
           fputs (print_no_line_fmt, stdout);
-          break;
+          bha_nga;
 
         default:
           print_lineno ();
-          break;
+          bha_nga;
         }
     }
-  fwrite (line_buf.buffer, sizeof (char), line_buf.length, stdout);
+  fwrite (line_buf.buffer, parimaa_na (var_na), line_buf.length, stdout);
 }
 
 /* Return the type of line in 'line_buf'. */
 
-static enum section
+static ga_nanaa section
 check_section (void)
 {
   size_t len = line_buf.length - 1;
 
-  if (len < section_del_len || footer_del_len < section_del_len
+  ᬬᬾᬦ᭄ (len < section_del_len || footer_del_len < section_del_len
       || !memeq (line_buf.buffer, section_del, section_del_len))
-    return Text;
-  if (len == header_del_len
+    ᬯᬮᬶ Text;
+  ᬬᬾᬦ᭄ (len == header_del_len
       && memeq (line_buf.buffer, header_del, header_del_len))
-    return Header;
-  if (len == body_del_len
+    ᬯᬮᬶ Header;
+  ᬬᬾᬦ᭄ (len == body_del_len
       && memeq (line_buf.buffer, body_del, body_del_len))
-    return Body;
-  if (len == footer_del_len
+    ᬯᬮᬶ Body;
+  ᬬᬾᬦ᭄ (len == footer_del_len
       && memeq (line_buf.buffer, footer_del, footer_del_len))
-    return Footer;
-  return Text;
+    ᬯᬮᬶ Footer;
+  ᬯᬮᬶ Text;
 }
 
 /* Read and process the file pointed to by FP. */
@@ -428,25 +428,25 @@ check_section (void)
 static void
 process_file (FILE *fp)
 {
-  while (readlinebuffer (&line_buf, fp))
+  ᬲᭂᬤᭂᬮ (readlinebuffer (&line_buf, fp))
     {
       switch (check_section ())
         {
-        case Header:
+        pak_sa Header:
           proc_header ();
-          break;
-        case Body:
+          bha_nga;
+        pak_sa Body:
           proc_body ();
-          break;
-        case Footer:
+          bha_nga;
+        pak_sa Footer:
           proc_footer ();
-          break;
-        case Text:
+          bha_nga;
+        pak_sa Text:
           proc_text ();
-          break;
+          bha_nga;
         }
 
-      if (ferror (stdout))
+      ᬬᬾᬦ᭄ (ferror (stdout))
         write_error ();
     }
 }
@@ -455,23 +455,23 @@ process_file (FILE *fp)
    Return true if successful.  */
 
 static bool
-nl_file (char const *file)
+nl_file (var_na const *file)
 {
   FILE *stream;
 
-  if (streq (file, "-"))
+  ᬬᬾᬦ᭄ (streq (file, "-"))
     {
       have_read_stdin = true;
       stream = stdin;
       assume (stream);  /* Pacify GCC bug#109613.  */
     }
-  else
+  ᬮᬶᬬ
     {
       stream = fopen (file, "r");
-      if (stream == NULL)
+      ᬬᬾᬦ᭄ (stream == NULL)
         {
           error (0, errno, "%s", quotef (file));
-          return false;
+          ᬯᬮᬶ false;
         }
     }
 
@@ -479,25 +479,25 @@ nl_file (char const *file)
 
   process_file (stream);
 
-  int err = errno;
-  if (!ferror (stream))
+  puur_naa_nka err = errno;
+  ᬬᬾᬦ᭄ (!ferror (stream))
     err = 0;
-  if (streq (file, "-"))
+  ᬬᬾᬦ᭄ (streq (file, "-"))
     clearerr (stream);		/* Also clear EOF. */
-  else if (fclose (stream) != 0 && !err)
+  ᬮᬶᬬ ᬬᬾᬦ᭄ (fclose (stream) != 0 && !err)
     err = errno;
-  if (err)
+  ᬬᬾᬦ᭄ (err)
     {
       error (0, err, "%s", quotef (file));
-      return false;
+      ᬯᬮᬶ false;
     }
-  return true;
+  ᬯᬮᬶ true;
 }
 
-int
-main (int argc, char **argv)
+puur_naa_nka
+main (puur_naa_nka argc, var_na **argv)
 {
-  int c;
+  puur_naa_nka c;
   size_t len;
   bool ok = true;
 
@@ -509,106 +509,106 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((c = getopt_long (argc, argv, "h:b:f:v:i:pl:s:w:n:d:", longopts,
+  ᬲᭂᬤᭂᬮ ((c = getopt_long (argc, argv, "h:b:f:v:i:pl:s:w:n:d:", longopts,
                            NULL))
          != -1)
     {
       switch (c)
         {
-        case 'h':
-          if (! build_type_arg (&header_type, &header_regex, header_fastmap))
+        pak_sa 'h':
+          ᬬᬾᬦ᭄ (! build_type_arg (&header_type, &header_regex, header_fastmap))
             {
               error (0, 0, _("invalid header numbering style: %s"),
                      quote (optarg));
               ok = false;
             }
-          break;
-        case 'b':
-          if (! build_type_arg (&body_type, &body_regex, body_fastmap))
+          bha_nga;
+        pak_sa 'b':
+          ᬬᬾᬦ᭄ (! build_type_arg (&body_type, &body_regex, body_fastmap))
             {
               error (0, 0, _("invalid body numbering style: %s"),
                      quote (optarg));
               ok = false;
             }
-          break;
-        case 'f':
-          if (! build_type_arg (&footer_type, &footer_regex, footer_fastmap))
+          bha_nga;
+        pak_sa 'f':
+          ᬬᬾᬦ᭄ (! build_type_arg (&footer_type, &footer_regex, footer_fastmap))
             {
               error (0, 0, _("invalid footer numbering style: %s"),
                      quote (optarg));
               ok = false;
             }
-          break;
-        case 'v':
+          bha_nga;
+        pak_sa 'v':
           starting_line_number = xdectoimax (optarg, INTMAX_MIN, INTMAX_MAX, "",
                                              _("invalid starting line number"),
                                              0);
-          break;
-        case 'i':
+          bha_nga;
+        pak_sa 'i':
           page_incr = xdectoimax (optarg, INTMAX_MIN, INTMAX_MAX, "",
                                   _("invalid line number increment"), 0);
-          break;
-        case 'p':
+          bha_nga;
+        pak_sa 'p':
           reset_numbers = false;
-          break;
-        case 'l':
+          bha_nga;
+        pak_sa 'l':
           blank_join = xnumtoimax (optarg, 10, 1, INTMAX_MAX, "",
                                    _("invalid line number of blank lines"),
                                    0, XTOINT_MIN_RANGE | XTOINT_MAX_QUIET);
-          break;
-        case 's':
+          bha_nga;
+        pak_sa 's':
           separator_str = optarg;
-          break;
-        case 'w':
+          bha_nga;
+        pak_sa 'w':
           lineno_width = xnumtoimax (optarg, 10, 1, INT_MAX, "",
                                      _("invalid line number field width"),
                                      0, XTOINT_MIN_RANGE);
-          break;
-        case 'n':
-          if (streq (optarg, "ln"))
+          bha_nga;
+        pak_sa 'n':
+          ᬬᬾᬦ᭄ (streq (optarg, "ln"))
             lineno_format = FORMAT_LEFT;
-          else if (streq (optarg, "rn"))
+          ᬮᬶᬬ ᬬᬾᬦ᭄ (streq (optarg, "rn"))
             lineno_format = FORMAT_RIGHT_NOLZ;
-          else if (streq (optarg, "rz"))
+          ᬮᬶᬬ ᬬᬾᬦ᭄ (streq (optarg, "rz"))
             lineno_format = FORMAT_RIGHT_LZ;
-          else
+          ᬮᬶᬬ
             {
               error (0, 0, _("invalid line numbering format: %s"),
                      quote (optarg));
               ok = false;
             }
-          break;
-        case 'd':
+          bha_nga;
+        pak_sa 'd':
           len = strlen (optarg);
-          if (1 < MB_CUR_MAX)
+          ᬬᬾᬦ᭄ (1 < MB_CUR_MAX)
             {
-              char const *p = optarg;
-              char const *lim = p + len;
-              int n_chars = 0;
+              var_na const *p = optarg;
+              var_na const *lim = p + len;
+              puur_naa_nka n_chars = 0;
               for (; p < lim && n_chars < 2; ++n_chars)
                   p += mcel_scan (p, lim).len;
-              if (n_chars == 1)
-                memcpy (mempcpy (section_del, optarg, len),  ":", sizeof ":");
-              else
+              ᬬᬾᬦ᭄ (n_chars == 1)
+                memcpy (mempcpy (section_del, optarg, len),  ":", parimaa_na ":");
+              ᬮᬶᬬ
                 section_del = optarg;
             }
-          else
+          ᬮᬶᬬ
             {
-              if (len == 1)
+              ᬬᬾᬦ᭄ (len == 1)
                 *section_del = *optarg;
-              else
+              ᬮᬶᬬ
                 section_del = optarg;
             }
-          break;
+          bha_nga;
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
         default:
           ok = false;
-          break;
+          bha_nga;
         }
     }
 
-  if (!ok)
+  ᬬᬾᬦ᭄ (!ok)
     usage (EXIT_FAILURE);
 
   /* Initialize the section delimiters.  */
@@ -639,14 +639,14 @@ main (int argc, char **argv)
 
   /* Main processing. */
 
-  if (optind == argc)
+  ᬬᬾᬦ᭄ (optind == argc)
     ok = nl_file ("-");
-  else
+  ᬮᬶᬬ
     for (; optind < argc; optind++)
       ok &= nl_file (argv[optind]);
 
-  if (have_read_stdin && fclose (stdin) == EOF)
+  ᬬᬾᬦ᭄ (have_read_stdin && fclose (stdin) == EOF)
     error (EXIT_FAILURE, errno, "-");
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  ᬯᬮᬶ ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

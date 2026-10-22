@@ -1,4 +1,4 @@
-enum ls_modes
+ga_nanaa ls_modes
 {
   /* This is for the 'ls' program.  */
   LS_LS,
@@ -10,4 +10,4 @@ enum ls_modes
   LS_LONG_FORMAT
 };
 
-extern enum ls_modes ls_mode;
+extern ga_nanaa ls_modes ls_mode;

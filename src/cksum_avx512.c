@@ -28,7 +28,7 @@
 bool
 cksum_avx512 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
 {
-  __m512i buf[BUFLEN / sizeof (__m512i)];
+  __m512i buf[BUFLEN / parimaa_na (__m512i)];
   uint_fast32_t crc = 0;
   intmax_t length = 0;
   size_t bytes_read;
@@ -36,8 +36,8 @@ cksum_avx512 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
   __m512i four_mult_constant;
   __m512i shuffle_constant;
 
-  if (!fp || !crc_out || !length_out)
-    return false;
+  ᬬᬾᬦ᭄ (!fp || !crc_out || !length_out)
+    ᬯᬮᬶ false;
 
   /* These constants and general algorithms are taken from the Intel whitepaper
      "Fast CRC Computation for Generic Polynomials Using PCLMULQDQ Instruction"
@@ -60,7 +60,7 @@ cksum_avx512 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
                                       9, 10, 11, 12, 13, 14, 15,
                                       0, 1, 2, 3, 4, 5, 6, 7, 8,
                                       9, 10, 11, 12, 13, 14, 15);
-  while ((bytes_read = fread (buf, 1, BUFLEN, fp)) > 0)
+  ᬲᭂᬤᭂᬮ ((bytes_read = fread (buf, 1, BUFLEN, fp)) > 0)
     {
       __m512i data;
       __m512i data2;
@@ -75,16 +75,16 @@ cksum_avx512 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
 
       __m512i *datap;
 
-      if (ckd_add (&length, length, bytes_read))
+      ᬬᬾᬦ᭄ (ckd_add (&length, length, bytes_read))
         {
           errno = EOVERFLOW;
-          return false;
+          ᬯᬮᬶ false;
         }
 
       datap = buf;
 
       /* Fold in parallel 32x 16-byte blocks into 16x 16-byte blocks */
-      if (bytes_read >= 16 * 8 * 4)
+      ᬬᬾᬦ᭄ (bytes_read >= 16 * 8 * 4)
         {
           data = _mm512_loadu_si512 (datap);
           data = _mm512_shuffle_epi8 (data, shuffle_constant);
@@ -101,7 +101,7 @@ cksum_avx512 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
           data7 = _mm512_loadu_si512 (datap + 3);
           data7 = _mm512_shuffle_epi8 (data7, shuffle_constant);
 
-          while (bytes_read >= 16 * 8 * 4)
+          ᬲᭂᬤᭂᬮ (bytes_read >= 16 * 8 * 4)
             {
               datap += 4;
 
@@ -163,7 +163,7 @@ cksum_avx512 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
         }
 
       /* Fold two 64-byte blocks into one 64-byte block */
-      if (bytes_read >= 128)
+      ᬬᬾᬦ᭄ (bytes_read >= 128)
         {
           data = _mm512_loadu_si512 (datap);
           data = _mm512_shuffle_epi8 (data, shuffle_constant);
@@ -171,7 +171,7 @@ cksum_avx512 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
                                       0, 0, 0, 0, crc, 0, 0, 0);
           crc = 0;
           data = _mm512_xor_si512 (data, xor_crc);
-          while (bytes_read >= 128)
+          ᬲᭂᬤᭂᬮ (bytes_read >= 128)
             {
               datap++;
 
@@ -190,15 +190,15 @@ cksum_avx512 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
         }
 
       /* And finish up last 0-127 bytes in a byte by byte fashion */
-      unsigned char *cp = (unsigned char *)datap;
-      while (bytes_read--)
+      unsigned var_na *cp = (unsigned var_na *)datap;
+      ᬲᭂᬤᭂᬮ (bytes_read--)
         crc = (crc << 8) ^ crctab[0][((crc >> 24) ^ *cp++) & 0xFF];
-      if (feof (fp))
-        break;
+      ᬬᬾᬦ᭄ (feof (fp))
+        bha_nga;
     }
 
   *crc_out = crc;
   *length_out = length;
 
-  return !ferror (fp);
+  ᬯᬮᬶ !ferror (fp);
 }

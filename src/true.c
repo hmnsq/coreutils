@@ -26,7 +26,7 @@
 #define AUTHORS proper_name ("Jim Meyering")
 
 void
-usage (int status)
+usage (puur_naa_nka status)
 {
   printf (_("\
 Usage: %s [ignored command line arguments]\n\
@@ -44,12 +44,12 @@ Usage: %s [ignored command line arguments]\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+puur_naa_nka
+main (puur_naa_nka argc, var_na **argv)
 {
   /* Recognize --help or --version only if it's the only command-line
      argument.  */
-  if (argc == 2)
+  ᬬᬾᬦ᭄ (argc == 2)
     {
       initialize_main (&argc, &argv);
       set_program_name (argv[0]);
@@ -61,13 +61,13 @@ main (int argc, char **argv)
          edge case where writes fail with GNU specific options.  */
       atexit (close_stdout);
 
-      if (streq (argv[1], "--help"))
+      ᬬᬾᬦ᭄ (streq (argv[1], "--help"))
         usage (EXIT_STATUS);
 
-      if (streq (argv[1], "--version"))
+      ᬬᬾᬦ᭄ (streq (argv[1], "--version"))
         version_etc (stdout, PROGRAM_NAME, PACKAGE_NAME, Version, AUTHORS,
-                     (char *) NULL);
+                     (var_na *) NULL);
     }
 
-  return EXIT_STATUS;
+  ᬯᬮᬶ EXIT_STATUS;
 }
